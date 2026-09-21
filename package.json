@@ -1,0 +1,23 @@
+{
+  "name": "mohen-agent-2.0",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "pnpm --filter @mohen/web dev",
+    "build": "pnpm --filter @mohen/web build",
+    "lint": "pnpm --filter @mohen/web lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "guard:docs": "node scripts/check-doc-budget.mjs",
+    "guard:structure": "node scripts/check-structure.mjs",
+    "guard": "pnpm guard:docs && pnpm guard:structure && pnpm test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.2.0"
+  }
+}

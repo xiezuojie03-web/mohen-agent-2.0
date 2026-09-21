@@ -1,0 +1,32 @@
+[
+  {
+    "provider": "shanghai_library",
+    "tier": "S1",
+    "evidence_allowed": true
+  },
+  {
+    "provider": "government_heritage",
+    "tier": "S1",
+    "evidence_allowed": true
+  },
+  {
+    "provider": "wikimedia_commons",
+    "tier": "S2",
+    "evidence_allowed": true
+  },
+  {
+    "provider": "internet_archive",
+    "tier": "S2",
+    "evidence_allowed": true
+  },
+  {
+    "provider": "amap",
+    "tier": "S3",
+    "evidence_allowed": "modern_spatial_only"
+  },
+  {
+    "provider": "social_media",
+    "tier": "S4",
+    "evidence_allowed": false
+  }
+]
