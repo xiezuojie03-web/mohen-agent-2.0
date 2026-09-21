@@ -10,6 +10,7 @@ test-results/
 !.env.example
 data/raw/*
 !data/raw/.gitkeep
+!data/raw/README.md
 data/staging/*
 !data/staging/.gitkeep
 data/exports/*
