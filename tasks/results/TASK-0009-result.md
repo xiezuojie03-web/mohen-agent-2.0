@@ -120,8 +120,8 @@
 | 项 | 值 |
 |---|---|
 | 基线 HEAD | `ae185a46c1ff4714da08460b47960483f13c2d34` |
-| 本任务 commit | **见 §4（commit hash 由提交时写入）** |
-| worktree clean | **见 §4** |
+| 本任务 commit | **`b005c4e6bf39af6f0f67d77acf06166d714c6f18`**（7 files changed, +1105 / −3） |
+| worktree clean | **YES**（回填 commit 后干净） |
 
 ---
 
@@ -157,6 +157,6 @@
 ## 4. 提交与收尾
 
 - **基线 HEAD**：`ae185a46c1ff4714da08460b47960483f13c2d34`
-- **本任务 commit**：`<见提交后回填>` — message：`TASK-0009: 金泽历史空间源采集与审计（Source → Raw → Evidence → Map Index → Gate 复核）`
-- **worktree clean**：提交后 `<见回填>`。
+- **本任务 commit**：`b005c4e6bf39af6f0f67d77acf06166d714c6f18` — message：`TASK-0009: 金泽历史空间源采集与审计（Source → Raw → Evidence → Map Index → Gate 复核）`
+- **worktree clean**：**YES**（仅余本结果文档的 commit-hash 回填，见紧随其后的 `docs(TASK-0009): 回填 commit hash`）。
 - **STOP**：本任务完成后停止，**不启动 TASK-0010**。
