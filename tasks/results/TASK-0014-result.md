@@ -82,7 +82,7 @@
 
 | commit | 内容 |
 |---|---|
-| `<见提交后回填>` | TASK-0014 主体：Eligibility/Composition/Beat 引擎层 + Registry + 15 个可复用 Surface + Shell 重写 + 测试/E2E/截图脚本 + 报告 |
+| `d7393cd` | TASK-0014 主体：Eligibility/Composition/Beat 引擎层 + Registry + 15 个可复用 Surface + Shell 重写 + 测试/E2E/截图脚本 + 报告 + `TASK-0013/0014` 任务书入库 + `_probes/` 忽略规则（28 files） |
 
 - tracked worktree：提交后 `git status --short` 为空（tracked）；`_probes/` 按设计被忽略。
 - DB / Legacy / 迁移：**零触碰**。
