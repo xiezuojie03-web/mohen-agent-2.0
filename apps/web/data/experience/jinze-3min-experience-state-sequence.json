@@ -1,0 +1,396 @@
+{
+  "schema": "mohen-experience-state-sequence/v1",
+  "experience_id": "jinze-3min/jinze-water-net",
+  "states": [
+    {
+      "scene_id": "jinze-3min/s01-today-hook",
+      "experience_state": {
+        "experience_id": "jinze-3min/jinze-water-net",
+        "scene_id": "jinze-3min/s01-today-hook",
+        "goal": "用今天的精确地图建立现场感，并抛出核心问题",
+        "time_state": "2026（当下）",
+        "spatial_state": {
+          "mode": "GEOGRAPHIC_EXACT",
+          "map_state": "modern_map_current_objects",
+          "modern_coordinates_visible": true,
+          "note": "任何模式下，现代坐标都不作为历史坐标呈现"
+        },
+        "focus_entities": [
+          "wananqiao",
+          "pujiqiao",
+          "yihaosi-site"
+        ],
+        "active_relations": [],
+        "active_changes": [],
+        "active_evidence": [
+          "wanan_gov_2025",
+          "puji_gov_2025",
+          "puji_photo_caption",
+          "poi_wanan_current",
+          "poi_puji_current",
+          "poi_yihao_area"
+        ],
+        "active_visual_assets": [
+          "75f9bd12-a0d7-51b5-09b9-94a830d7e00e"
+        ],
+        "uncertainties": [],
+        "user_question": "为什么在不到一公里的金泽水乡空间里，两座宋桥、一处宋代寺院遗址会如此靠近？",
+        "next_possible_actions": [
+          "FOCUS_PLACE",
+          "OPEN_EVIDENCE"
+        ]
+      },
+      "composition_state": {
+        "primarySurface": "modern_map",
+        "secondarySurface": "current_photo",
+        "contextSurface": "timeline",
+        "narrativeDensity": "low",
+        "visualIntensity": "high",
+        "transitionIntent": "establishing"
+      }
+    },
+    {
+      "scene_id": "jinze-3min/s02-time-travel",
+      "experience_state": {
+        "experience_id": "jinze-3min/jinze-water-net",
+        "scene_id": "jinze-3min/s02-time-travel",
+        "goal": "把时间拨向南宋，并显式执行『精确度改变 → 空间呈现随之改变』",
+        "time_state": "南宋景定—咸淳（1260–1267）",
+        "spatial_state": {
+          "mode": "RELATIONAL_HISTORICAL",
+          "map_state": "relational_space_no_coordinates",
+          "modern_coordinates_visible": false,
+          "note": "任何模式下，现代坐标都不作为历史坐标呈现"
+        },
+        "focus_entities": [
+          "wananqiao",
+          "pujiqiao",
+          "yihaosi-site"
+        ],
+        "active_relations": [],
+        "active_changes": [],
+        "active_evidence": [
+          "yihao_museum_1938",
+          "yihao_news_lvyihao",
+          "wanan_gov_2025",
+          "puji_gov_2025"
+        ],
+        "active_visual_assets": [],
+        "uncertainties": [
+          "U7",
+          "U8"
+        ],
+        "user_question": null,
+        "next_possible_actions": [
+          "SET_TIME",
+          "FOCUS_PLACE"
+        ]
+      },
+      "composition_state": {
+        "primarySurface": "timeline",
+        "secondarySurface": "modern_map",
+        "contextSurface": "text_focus",
+        "narrativeDensity": "medium",
+        "visualIntensity": "medium",
+        "transitionIntent": "coordinate-fade"
+      }
+    },
+    {
+      "scene_id": "jinze-3min/s03-two-bridges-water",
+      "experience_state": {
+        "experience_id": "jinze-3min/jinze-water-net",
+        "scene_id": "jinze-3min/s03-two-bridges-water",
+        "goal": "用有证据的桥—水关系建立第一层历史拓扑（不画历史河道）",
+        "time_state": "南宋—元（着录形成的时段）",
+        "spatial_state": {
+          "mode": "RELATIONAL_HISTORICAL",
+          "map_state": "relational_space_no_coordinates",
+          "modern_coordinates_visible": false,
+          "note": "任何模式下，现代坐标都不作为历史坐标呈现"
+        },
+        "focus_entities": [
+          "pujiqiao",
+          "wananqiao",
+          "jinzetang"
+        ],
+        "active_relations": [
+          "pujiqiao--spans_waterway--jinzetang",
+          "wananqiao--spans_waterway--jinzetang",
+          "pujiqiao--spans_same_waterway--wananqiao",
+          "pujiqiao--relative_position_south_of--wananqiao"
+        ],
+        "active_changes": [],
+        "active_evidence": [
+          "puji_gov_2025",
+          "wanan_gov_2025",
+          "wanan_gov_2023",
+          "shl_dmz_yingxiang_jinzetang",
+          "rel_spans_same_waterway",
+          "jinzetang_textual"
+        ],
+        "active_visual_assets": [],
+        "uncertainties": [
+          "U7",
+          "U13"
+        ],
+        "user_question": null,
+        "next_possible_actions": [
+          "SHOW_HISTORICAL_LAYER",
+          "OPEN_EVIDENCE"
+        ]
+      },
+      "composition_state": {
+        "primarySurface": "relational_space",
+        "secondarySurface": "timeline",
+        "contextSurface": "text_focus",
+        "narrativeDensity": "medium",
+        "visualIntensity": "medium",
+        "transitionIntent": "topology-build"
+      }
+    },
+    {
+      "scene_id": "jinze-3min/s04-temple-enters",
+      "experience_state": {
+        "experience_id": "jinze-3min/jinze-water-net",
+        "scene_id": "jinze-3min/s04-temple-enters",
+        "goal": "让颐浩寺以有证据的时间链登场，同时明确寺—桥功能关系未被证明",
+        "time_state": "南宋景定元年（1260）→ 元贞元年（1295）",
+        "spatial_state": {
+          "mode": "RELATIONAL_HISTORICAL",
+          "map_state": "relational_space_no_coordinates",
+          "modern_coordinates_visible": false,
+          "note": "任何模式下，现代坐标都不作为历史坐标呈现"
+        },
+        "focus_entities": [
+          "yihaosi-site",
+          "lvyihao"
+        ],
+        "active_relations": [
+          "yihaosi-site--former_site_of--lvyihao",
+          "yihaosi-site--named_after--lvyihao"
+        ],
+        "active_changes": [],
+        "active_evidence": [
+          "yihao_museum_1938",
+          "yihao_news_lvyihao",
+          "yihao_a5_quote",
+          "yihao_civ_1992"
+        ],
+        "active_visual_assets": [
+          "e818b2a1-10c9-1f62-e37c-34068ea97b60"
+        ],
+        "uncertainties": [
+          "U5",
+          "U11"
+        ],
+        "user_question": null,
+        "next_possible_actions": [
+          "OPEN_EVIDENCE",
+          "SET_TIME"
+        ]
+      },
+      "composition_state": {
+        "primarySurface": "relational_space",
+        "secondarySurface": "timeline",
+        "contextSurface": "evidence_panel",
+        "narrativeDensity": "medium",
+        "visualIntensity": "medium",
+        "transitionIntent": "node-add"
+      }
+    },
+    {
+      "scene_id": "jinze-3min/s05-evidence-reveal",
+      "experience_state": {
+        "experience_id": "jinze-3min/jinze-water-net",
+        "scene_id": "jinze-3min/s05-evidence-reveal",
+        "goal": "把已知 / 冲突 / 未知并排呈现——不确定性本身成为体验的一部分",
+        "time_state": "着录层（20 世纪末至今的方志与档案）",
+        "spatial_state": {
+          "mode": "RELATIONAL_HISTORICAL",
+          "map_state": "evidence_panel_over_relational_space",
+          "modern_coordinates_visible": false,
+          "note": "任何模式下，现代坐标都不作为历史坐标呈现"
+        },
+        "focus_entities": [
+          "pujiqiao",
+          "wananqiao",
+          "jinzetang"
+        ],
+        "active_relations": [
+          "pujiqiao--spans_waterway--jinzetang",
+          "wananqiao--spans_waterway--jinzetang",
+          "yihaosi-site--temple_bridge_association--pujiqiao(E2)"
+        ],
+        "active_changes": [],
+        "active_evidence": [
+          "shl_dmx_wanan_xiuzhoutang",
+          "wanan_gov_2025",
+          "wanan_gov_2023",
+          "puji_shtong_nanshi",
+          "puji_museum_nanshi",
+          "puji_assoc_zhongbu",
+          "puji_gov_2025"
+        ],
+        "active_visual_assets": [],
+        "uncertainties": [
+          "U6",
+          "U9",
+          "U13"
+        ],
+        "user_question": null,
+        "next_possible_actions": [
+          "OPEN_EVIDENCE"
+        ]
+      },
+      "composition_state": {
+        "primarySurface": "evidence_panel",
+        "secondarySurface": "relational_space",
+        "contextSurface": "timeline",
+        "narrativeDensity": "high",
+        "visualIntensity": "low",
+        "transitionIntent": "panel-split"
+      }
+    },
+    {
+      "scene_id": "jinze-3min/s06-change-through-time",
+      "experience_state": {
+        "experience_id": "jinze-3min/jinze-water-net",
+        "scene_id": "jinze-3min/s06-change-through-time",
+        "goal": "用有证据的变更链呈现 700 年的存续与毁建（不补画面）",
+        "time_state": "1342 → 1938 → 1992 → 当代",
+        "spatial_state": {
+          "mode": "RELATIONAL_HISTORICAL",
+          "map_state": "timeline_with_relational_space",
+          "modern_coordinates_visible": false,
+          "note": "任何模式下，现代坐标都不作为历史坐标呈现"
+        },
+        "focus_entities": [
+          "wananqiao",
+          "yihaosi-site"
+        ],
+        "active_relations": [],
+        "active_changes": [
+          "wananqiao/tingqiao-form-unknown",
+          "yihaosi-site/rebuilt-on-original-site"
+        ],
+        "active_evidence": [
+          "wanan_gov_2025",
+          "wanan_gov_2023",
+          "yihao_museum_1938",
+          "yihao_civ_1992"
+        ],
+        "active_visual_assets": [
+          "e818b2a1-10c9-1f62-e37c-34068ea97b60"
+        ],
+        "uncertainties": [
+          "U10"
+        ],
+        "user_question": null,
+        "next_possible_actions": [
+          "SET_TIME",
+          "OPEN_EVIDENCE"
+        ]
+      },
+      "composition_state": {
+        "primarySurface": "timeline",
+        "secondarySurface": "relational_space",
+        "contextSurface": "current_photo",
+        "narrativeDensity": "medium",
+        "visualIntensity": "medium",
+        "transitionIntent": "timeline-sweep"
+      }
+    },
+    {
+      "scene_id": "jinze-3min/s07-return-today",
+      "experience_state": {
+        "experience_id": "jinze-3min/jinze-water-net",
+        "scene_id": "jinze-3min/s07-return-today",
+        "goal": "回到今天的地理与现场照片，邀请观察而不宣称今貌即原貌",
+        "time_state": "2026（当下）",
+        "spatial_state": {
+          "mode": "GEOGRAPHIC_EXACT",
+          "map_state": "modern_map_current_objects",
+          "modern_coordinates_visible": true,
+          "note": "任何模式下，现代坐标都不作为历史坐标呈现"
+        },
+        "focus_entities": [
+          "wananqiao",
+          "pujiqiao",
+          "yihaosi-site"
+        ],
+        "active_relations": [],
+        "active_changes": [],
+        "active_evidence": [
+          "poi_wanan_current",
+          "poi_puji_current",
+          "poi_yihao_area"
+        ],
+        "active_visual_assets": [
+          "d46a8996-20bf-149d-38aa-aa0ed5012216",
+          "75f9bd12-a0d7-51b5-09b9-94a830d7e00e",
+          "e818b2a1-10c9-1f62-e37c-34068ea97b60"
+        ],
+        "uncertainties": [],
+        "user_question": null,
+        "next_possible_actions": [
+          "SET_VISUAL_MODE",
+          "FOCUS_PLACE"
+        ]
+      },
+      "composition_state": {
+        "primarySurface": "current_photo",
+        "secondarySurface": "modern_map",
+        "contextSurface": "timeline",
+        "narrativeDensity": "low",
+        "visualIntensity": "high",
+        "transitionIntent": "coordinate-return"
+      }
+    },
+    {
+      "scene_id": "jinze-3min/s08-next-question",
+      "experience_state": {
+        "experience_id": "jinze-3min/jinze-water-net",
+        "scene_id": "jinze-3min/s08-next-question",
+        "goal": "给出主发现、留下一个可追问的问题，并演示『补丁不重启』",
+        "time_state": "跨时段（发现陈述）",
+        "spatial_state": {
+          "mode": "RELATIONAL_HISTORICAL",
+          "map_state": "text_focus_over_relational_space",
+          "modern_coordinates_visible": false,
+          "note": "任何模式下，现代坐标都不作为历史坐标呈现"
+        },
+        "focus_entities": [
+          "yihaosi-site",
+          "pujiqiao"
+        ],
+        "active_relations": [
+          "yihaosi-site--temple_bridge_association--pujiqiao(E2)"
+        ],
+        "active_changes": [],
+        "active_evidence": [
+          "puji_gov_2025",
+          "wanan_gov_2025",
+          "rel_spans_same_waterway"
+        ],
+        "active_visual_assets": [],
+        "uncertainties": [
+          "U5"
+        ],
+        "user_question": "那颐浩寺和普济桥以前真的有关系吗？",
+        "next_possible_actions": [
+          "PROPOSE_ROUTE",
+          "REPLAN",
+          "OPEN_EVIDENCE"
+        ]
+      },
+      "composition_state": {
+        "primarySurface": "text_focus",
+        "secondarySurface": "evidence_panel",
+        "contextSurface": "relational_space",
+        "narrativeDensity": "high",
+        "visualIntensity": "low",
+        "transitionIntent": "patch-preview"
+      }
+    }
+  ]
+}

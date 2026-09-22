@@ -20,6 +20,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@mohen/experience-engine':
+        specifier: workspace:*
+        version: link:../../packages/experience-engine
       next:
         specifier: ^15.5.0
         version: 15.5.25(@playwright/test@1.63.0)(@types/node@22.20.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)

@@ -1,5 +1,4 @@
 export type Surface = "map" | "historical_map" | "image" | "relation" | "narrative" | "evidence" | "route";
-
 export interface CompositionState {
   primarySurface: Surface;
   secondarySurface?: Surface;
@@ -33,3 +32,6 @@ export type ExperienceAction =
   | { type: "PATCH_NARRATIVE"; title?: string; body?: string }
   | { type: "PROPOSE_ROUTE"; routeId: string }
   | { type: "REPLAN"; reason: string };
+
+// TASK-0013：冻结体验脚本运行时（Experience Script → ExperienceState → CompositionState）
+export * from "./experience-runtime";
