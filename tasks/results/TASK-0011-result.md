@@ -3,6 +3,7 @@
 - 日期：2026-09-22
 - 状态：**完成**（测试 / 守卫 / build / commit / worktree clean，STOP 于本任务，不启动 TASK-0012）
 - 任务书：`tasks/TASK-0011-jinze-minimum-slice-evidence-closure-sprint.md`
+- Commit：`b8e86bb`（回填 commit：见文末）
 
 ---
 
@@ -114,3 +115,7 @@ P-01/P-02/P-03 **RESEARCH FIRST 完成**；P-04/P-07 **Opportunistic Only**（E2
 ## 5. 下一步（不自行启动）
 
 等待总架构对 `jinze-evidence-closure-human-review.csv` T11-C1…C5 的裁定；TASK-0012 由总架构下发。
+
+---
+
+回填：主提交 `b8e86bb`（13 files, +2792/-98），本回填提交后 worktree clean。
