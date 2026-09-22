@@ -224,7 +224,7 @@ Legacy `external_maps[].towns` **不能**读作「该图上画了金泽」：
 
 > `data/exports/**` 被 `.gitignore` 排除、仅保留 `.gitkeep`（TASK-0006 的报告同样未入库）→ **未强制 `-f` 添加**，保持项目既有约定。
 
-commit：`<见提交后回填>`
+commit：**`aca83ae`**（4 files changed, 1609 insertions；提交后工作树 clean）
 
 ---
 
