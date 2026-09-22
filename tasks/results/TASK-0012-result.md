@@ -66,6 +66,7 @@
 | commit | 内容 |
 |---|---|
 | `8e96f73` | TASK-0012 主体：构建器 + 测试 + 任务书 + result 文档（4 files，+2069） |
+| `1f13ced` | TASK-0012A：Primary Discovery 认识论分类 hotfix（构建器 + 测试 #21 + result 文档） |
 
 worktree：tracked 文件 clean（exports/gitignore 产物与 TASK-0011 期遗留的 probe/_debug 脚本不属本任务交付）。
 
