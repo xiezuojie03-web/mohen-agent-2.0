@@ -415,4 +415,37 @@ describe("TASK-0012 Jinze 3-minute Evidence-Grounded Experience Script", () => {
     );
     expect(after).toEqual(before);
   }, 180_000);
+
+  // 21. TASK-0012A 长期不变式：组合 Discovery / Interpretation 不得自动升级为 FACT_EVIDENCED
+  it("21. Evidence(A)+Evidence(B)+Evidence(C) ≠ Evidence(A+B+C 组合解释)：组合命题只能 INTERPRETATION_CANDIDATE", async () => {
+    const { script } = built;
+    // 21a. primary discovery 显式分类为 INTERPRETATION_CANDIDATE（组合命题无直接 Evidence）
+    expect(script.discoveries.primary.epistemic_classification).toBe("INTERPRETATION_CANDIDATE");
+    expect(script.discoveries.primary.classification_note).toContain("组合命题无直接证据");
+    // 21b. 组合命题措辞不得出现在任何 FACT_EVIDENCED 单元（只有组合命题本身有直接证据才允许）
+    for (const u of allUnits(script)) {
+      if (u.level === "FACT_EVIDENCED") {
+        expect(u.text).not.toMatch(/三个节点|同一片水网/);
+      }
+    }
+    // 21c. 解释框架单元存在：INTERPRETATION_CANDIDATE、无证据引用、显式声明不是已证历史事实
+    const interp = allUnits(script).filter((u: any) => u.unit_id === "s08-u1b");
+    expect(interp.length).toBe(1);
+    expect(interp[0].level).toBe("INTERPRETATION_CANDIDATE");
+    expect(interp[0].text).toContain("解释框架");
+    expect(interp[0].text).toContain("不是已证历史事实");
+    expect(interp[0].evidence_refs).toEqual([]);
+    // 21d. 事实部分保留：桥—水同水道单元为 FACT_EVIDENCED 且带证据（产品价值不降级）
+    const fact = allUnits(script).find((u: any) => u.unit_id === "s08-u1");
+    expect(fact.level).toBe("FACT_EVIDENCED");
+    expect(fact.text).toContain("跨同一条有名的水道");
+    expect(fact.evidence_refs).toContain("rel_spans_same_waterway");
+    // 21e. 解释之后紧接 UNKNOWN 边界（寺—桥功能关联无证据支持也无证据否证）
+    const s08 = script.scenes.find((s: any) => s.scene_id.endsWith("s08-next-question")).narrative;
+    const iInterp = s08.findIndex((u: any) => u.unit_id === "s08-u1b");
+    expect(iInterp).toBeGreaterThan(-1);
+    expect(s08[iInterp + 1].level).toBe("UNKNOWN");
+    expect(s08[iInterp + 1].text).toContain("没有任何证据支持");
+    expect(s08[iInterp + 1].text).toContain("没有证据否证");
+  });
 });

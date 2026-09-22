@@ -392,12 +392,20 @@ const SCENES = [
     map_state: "text_focus_over_relational_space",
     experience_hook_refs: [],
     narrative: [
+      // TASK-0012A：组合判断不得仅因成分事实有证据而标 FACT_EVIDENCED。
+      // 拆分为：事实（桥—水）→ 解释框架（组合命题）→ 未知边界，三段紧邻。
       {
         unit_id: "s08-u1",
         level: "FACT_EVIDENCED",
+        text: "先说经得起证据的部分：两座宋桥被独立着录为跨同一条有名的水道。",
+        evidence_refs: ["puji_gov_2025", "wanan_gov_2025", "rel_spans_same_waterway"],
+      },
+      {
+        unit_id: "s08-u1b",
+        level: "INTERPRETATION_CANDIDATE",
         text:
-          "本条体验的主发现：这三处遗存，不是三件孤立的文物，而是同一片水网上的三个节点——两座宋桥被独立着录为跨同一条有名的水道，寺就建在这片水网所在的镇区。看懂『水上的关系』，比只看『文物的年代』更接近金泽。",
-        evidence_refs: ["puji_gov_2025", "wanan_gov_2025", "rel_spans_same_waterway", "yihao_museum_1938"],
+          "本条体验的主发现，是墨痕基于这些已知事实提出的解释框架，不是已证历史事实：把三处遗存放回水的关系中理解，可以把它们从三个孤立文物重新看成一组值得继续追问的空间节点。",
+        evidence_refs: [],
       },
       {
         unit_id: "s08-u2",
@@ -440,6 +448,12 @@ const T11_RULINGS = [
 const DISCOVERIES = {
   primary: {
     discovery_id: "jinze-3min/discovery/primary",
+    // TASK-0012A：组合判断的认识论分类必须显式。成分事实各有 Evidence，
+    // 但「三处遗存 = 同一片水网上的三个节点」这一组合命题本身无直接 Evidence
+    // → INTERPRETATION_CANDIDATE，不得为 FACT_EVIDENCED。
+    epistemic_classification: "INTERPRETATION_CANDIDATE",
+    classification_note:
+      "Evidence(桥A跨水)+Evidence(桥B跨水)+Evidence(寺在镇区) ≠ Evidence(三节点组合解释)。组合命题无直接证据，只能作为墨痕提出的解释框架呈现。",
     statement:
       "三处遗存不是三件孤立文物，而是同一片水网上的三个节点：两座宋桥被独立着录为跨同一条有名的水道（E1），寺就建在这片水网所在的镇区——把『水上的关系』当理解框架，比把每件遗存当孤立的年代标本更接近金泽；同时显式标注：寺与桥之间的历史功能关联仍未被证据支持。",
     evidence_basis: [
@@ -698,6 +712,15 @@ async function validate(script) {
   if (!script.discoveries.primary || !script.discoveries.primary.statement)
     errors.push("primary discovery must be exactly 1");
   if (script.discoveries.secondary.length > 2) errors.push("secondary discoveries > 2");
+  // TASK-0012A：组合解释防线——Evidence(A)+Evidence(B)+Evidence(C) ≠ Evidence(A+B+C 解释)。
+  // 组合命题只能 INTERPRETATION_CANDIDATE；其措辞不得泄漏进任何 FACT_EVIDENCED 单元。
+  if (script.discoveries.primary.epistemic_classification !== "INTERPRETATION_CANDIDATE")
+    errors.push("primary discovery must be classified INTERPRETATION_CANDIDATE (composite claim has no direct evidence)");
+  const COMPOSITE_PHRASE = /(三个节点|同一片水网)/;
+  for (const s of script.scenes)
+    for (const u of s.narrative)
+      if (u.level === "FACT_EVIDENCED" && COMPOSITE_PHRASE.test(u.text))
+        errors.push(`${u.unit_id}: composite interpretation phrase leaked into FACT_EVIDENCED`);
   return errors;
 }
 
