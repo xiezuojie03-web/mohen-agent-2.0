@@ -381,7 +381,15 @@ async function main() {
                :'sh', :'ph', :'th', :'em', 0, 'candidate')
        on conflict (evidence_id) do update set
          source_id=excluded.source_id, locator=excluded.locator, quote_text=excluded.quote_text,
-         region_json=excluded.region_json, subject_hint=excluded.subject_hint,
+         -- TASK-0009 §2 minimal repair: preserve the human_review overlay (written by
+         -- persist-spatial-review.mjs) while still refreshing machine/provider fields from this run.
+         -- The existing row's region_json.human_review survives; all other keys come from excluded.
+         region_json = case
+           when evidence.region_json->'human_review' IS NOT NULL
+             then jsonb_set(excluded.region_json, '{human_review}', evidence.region_json->'human_review', true)
+           else excluded.region_json
+         end,
+         subject_hint=excluded.subject_hint,
          place_hint=excluded.place_hint, time_hint=excluded.time_hint,
          extraction_method=excluded.extraction_method, verification_status='candidate'`,
       {
