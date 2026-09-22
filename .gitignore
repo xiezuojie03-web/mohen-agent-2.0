@@ -19,3 +19,7 @@ data/exports/*
 .DS_Store
 Thumbs.db
 *.tsbuildinfo
+
+# TASK-0007/0009 期的一次性探测脚本（探针/临时导表/对齐试验）。
+# 不删除（保留取证痕迹），但不入库：从今日起统一收在 _probes/ 下。
+pipelines/**/_probes/

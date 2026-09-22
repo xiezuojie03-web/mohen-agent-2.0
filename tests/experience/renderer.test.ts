@@ -137,8 +137,12 @@ describe("TASK-0013 — spatial honesty (§17-4/5/6, 核心验收点一)", () =>
       if (a.kind.startsWith("provider_current_object")) expect(a.coord_system).toBe("GCJ-02");
       if (a.kind === "town_level_reference") expect(a.coord_system).toBe("WGS-84");
     }
-    // RelationalSpaceSurface 源码不 import current_sources
-    const relSrc = fs.readFileSync(path.join(EXP_DIR, "surfaces", "RelationalSpaceSurface.tsx"), "utf8");
+    // RelationalSpaceSurface（TASK-0014 后位于 SpatialSurfaces.tsx 内）不得消费 current_sources
+    const spatialSrc = fs.readFileSync(path.join(EXP_DIR, "surfaces", "SpatialSurfaces.tsx"), "utf8");
+    const relStart = spatialSrc.indexOf("export function RelationalSpaceSurface");
+    expect(relStart).toBeGreaterThan(-1);
+    const relEnd = spatialSrc.indexOf("export function", relStart + 10);
+    const relSrc = spatialSrc.slice(relStart, relEnd === -1 ? undefined : relEnd);
     expect(relSrc).not.toContain("current_sources");
     expect(relSrc).not.toContain("location_raw");
   });
@@ -166,8 +170,8 @@ describe("TASK-0013 — Evidence Reveal (§17-7, 核心验收点二)", () => {
       expect(c.decision).toContain("ACCEPT_CONFLICT");
       expect(c.decision).not.toMatch(/RESOLVED|SELECTED/i);
     }
-    // 冲突卡渲染源码：两卡并列 + 显式「不替你选边」，无任何单选逻辑
-    const evSrc = fs.readFileSync(path.join(EXP_DIR, "surfaces", "EvidencePanelSurface.tsx"), "utf8");
+    // 冲突卡渲染源码（TASK-0014 后位于 EvidenceNarrativeSurfaces.tsx）：两卡并列 + 「不替你选边」，无单选逻辑
+    const evSrc = fs.readFileSync(path.join(EXP_DIR, "surfaces", "EvidenceNarrativeSurfaces.tsx"), "utf8");
     expect(evSrc).toContain("不替你选边");
     expect(evSrc).not.toMatch(/default.*answer|selectedAnswer|pickCorrect/i);
     // s05 叙事中有 CONFLICT 级单元（冲突作为体验内容，不是附录）
@@ -193,9 +197,9 @@ describe("TASK-0013 — s08 epistemic rendering (§17-8, 核心验收点三)", (
     expect(interpBlock).toMatch(/dashed/i);
     expect(factBlock).not.toMatch(/font-style:\s*italic/);
     expect(interpBlock).toMatch(/font-style:\s*italic/);
-    // 主发现以解释框架身份渲染（badge 而非事实徽章）
-    const shellSrc = fs.readFileSync(path.join(EXP_DIR, "ExperienceShell.tsx"), "utf8");
-    expect(shellSrc).toContain("墨痕的解释框架 · 非已证事实");
+    // 主发现以解释框架身份渲染（badge 而非事实徽章；TASK-0014 后收敛到 DiscoverySurface）
+    const surfacesSrc = fs.readFileSync(path.join(EXP_DIR, "surfaces", "EvidenceNarrativeSurfaces.tsx"), "utf8");
+    expect(surfacesSrc).toMatch(/墨痕的解释\s*\/\s*尚未证实/);
   });
 });
 
@@ -248,7 +252,11 @@ describe("TASK-0013 — visual policy (§17-12/13/14)", () => {
       expect(a.uri).toMatch(/^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
       expect(a.rights).toContain("CC");
     }
-    const photoSrc = fs.readFileSync(path.join(EXP_DIR, "surfaces", "CurrentPhotoSurface.tsx"), "utf8");
+    const surfacesAll = fs.readFileSync(path.join(EXP_DIR, "surfaces", "EvidenceNarrativeSurfaces.tsx"), "utf8");
+    const photoStart = surfacesAll.indexOf("export function CurrentPhotoSurface");
+    expect(photoStart).toBeGreaterThan(-1);
+    const photoEnd = surfacesAll.indexOf("export function", photoStart + 10);
+    const photoSrc = surfacesAll.slice(photoStart, photoEnd === -1 ? undefined : photoEnd);
     expect(photoSrc).toContain("scene.visual_assets");
     expect(photoSrc).toContain("今日实景");
     expect(photoSrc).not.toMatch(/sepia|grayscale|做旧/); // 不做旧
@@ -318,11 +326,12 @@ describe("TASK-0013 — boundaries & hard invariants (§17-16/17/18, §21)", () 
 
   it("17. 路由文件存在且直接进入体验（无门户/聊天落地页），SurfaceRenderer 按表面分发（无场景组件）", () => {
     fs.accessSync(path.join(EXP_DIR, "page.tsx"));
-    const rendererSrc = fs.readFileSync(path.join(EXP_DIR, "surfaces", "SurfaceRenderer.tsx"), "utf8");
-    for (const surface of ["modern_map", "timeline", "relational_space", "evidence_panel", "current_photo", "text_focus"]) {
-      expect(rendererSrc).toContain(`case "${surface}"`);
+    // TASK-0014：SurfaceRenderer 升级为 Surface Registry（surfaceType → component）
+    const registrySrc = fs.readFileSync(path.join(EXP_DIR, "surfaceRegistry.tsx"), "utf8");
+    for (const surface of ["current_map", "approximate_area", "relational_space", "timeline", "conflict_compare", "current_photo", "discovery", "question"]) {
+      expect(registrySrc).toContain(`${surface}:`);
     }
-    // 硬架构测试：不存在 JinzeSceneNN 式组件
+    // 硬架构测试：不存在 JinzeSceneNN / BeatNN 式场景组件
     const all = fs.readdirSync(EXP_DIR, { withFileTypes: true, recursive: true }).map((e) => e.name);
     expect(all.some((n) => /JinzeScene\d+|Scene0\d\.tsx/i.test(n))).toBe(false);
   });

@@ -2,31 +2,36 @@
 
 // apps/web/app/experience/jinze-water-net/ExperienceShell.tsx
 //
-// TASK-0013 — 持续存在的 Experience Space（Persistent Experience Shell）。
+// TASK-0014 — Experience Composition 2.0 导演层。
 //
-// 五个层（§4）：Experience Canvas / Narrative Layer / Time Context /
-// Evidence–Uncertainty Layer / Agent Action Layer —— 是同一体验空间内的
-// 五个面，不是五个页面；场景切换只重新组合本空间（CompositionState 驱动）。
+// 链路（§5A 硬规则）：
+//   Beat（presentation） → WorldEvidenceState → Surface Eligibility
+//   → resolveComposition（只能从 eligible 里选） → Surface Registry → Surface Component
 //
-// 硬规则：
-// - 全部剧情/冲突/裁定/发现文本来自冻结 script（props），本文件零剧情字面量；
-// - canonical follow-up 消费冻结 patch JSON，Patch-not-Replace（不重置、不重放）；
-// - INTERPRETATION_CANDIDATE 必须与 FACT_EVIDENCED 视觉不同（见 experience.css）。
+// 原则：墨痕少说，世界多变。默认可见文字显著减少；证据按需揭示；
+// Evidence 不足时敢于「不画」（UnknownGapSurface）。
 
-import { useReducer, useState, useEffect, useRef } from "react";
+import { useMemo, useReducer, useState, useEffect, useRef } from "react";
 import {
   createRuntimeState,
   reduceExperience,
   deriveView,
+  resolveComposition,
+  beatForScene,
+  validateBeatCoverage,
+  ACTION_LABELS,
   SPATIAL_MODE_LABELS,
   LEVEL_LABELS,
-  ACTION_LABELS,
+  type NarrativeLevel,
   type ExperienceScript,
   type FollowupPatch,
-  type NarrativeLevel,
+  type SpatialMode,
+  type SurfaceType,
 } from "@mohen/experience-engine";
-import SurfaceRenderer from "./surfaces/SurfaceRenderer";
-import type { SliceShape } from "./surfaces/types";
+import { BEATS, TEMPLE_BRIDGE_NON_ANSWER, type BeatPresentation } from "./beats";
+import { buildWorldEvidenceState } from "./beats";
+import { resolveSurface, UnknownGapSurface } from "./surfaceRegistry";
+import type { SliceShape, SurfaceContext } from "./surfaces/types";
 import "./experience.css";
 
 export interface ExperienceShellProps {
@@ -35,22 +40,87 @@ export interface ExperienceShellProps {
   slice: SliceShape;
 }
 
-type RuntimeAction = Parameters<ReturnType<typeof makeReducer>>[1];
-function makeReducer(script: ExperienceScript, patch: FollowupPatch) {
-  return (s: ReturnType<typeof createRuntimeState>, a: Parameters<typeof reduceExperience>[1]) =>
-    reduceExperience(s, a, script, patch);
-}
+const CONFLICT_ORDER: Record<string, string> = {
+  "看第一组分歧": "T11-C2",
+  "看第二组分歧": "T11-C1",
+};
 
 export default function ExperienceShell({ script, patch, slice }: ExperienceShellProps) {
-  const reducer = makeReducer(script, patch);
+  const reducer = (s: ReturnType<typeof createRuntimeState>, a: Parameters<typeof reduceExperience>[1]) =>
+    reduceExperience(s, a, script, patch);
   const [state, dispatch] = useReducer(reducer, undefined, () => createRuntimeState(script));
+
+  const [revealed, setRevealed] = useState<string[]>([]);
+  const [revealedConflicts, setRevealedConflicts] = useState<string[]>([]);
+  const [templeAsked, setTempleAsked] = useState(false);
+  const [templeIncluded, setTempleIncluded] = useState(false);
   const [focusPlace, setFocusPlace] = useState<string | null>(null);
   const [visualMode, setVisualMode] = useState<"normal" | "photo">("normal");
+  const [sourceOpen, setSourceOpen] = useState(false);
+  const [nonAnswer, setNonAnswer] = useState<string | null>(null);
 
   const view = deriveView(state, script);
   const scene = view.scene;
+  const beat: BeatPresentation = beatForScene(BEATS, scene.scene_id) ?? BEATS[0];
 
-  // —— s01→s02 的「坐标淡出」：离开精确地理场景时，保留上一画布 1.1s 作退场层
+  // —— Evidence-aware：世界证据状态 → eligibility → composition（只从 eligible 选）
+  const world = useMemo(
+    () =>
+      buildWorldEvidenceState(script, slice, { historicalVisualAssets: 0, historicalMapImageAvailable: false }),
+    [script, slice]
+  );
+  const { selection, composition } = useMemo(() => resolveComposition(beat.recipe, world), [beat.recipe, world]);
+
+  // 用户显式切换主角（看时间变化 / 看今貌照片）：只在 eligible 时生效，不是许可证
+  const [surfaceOverride, setSurfaceOverride] = useState<SurfaceType | null>(null);
+  // 换场即回到该场的默认主角；上下文性的出处抽屉也随之收起
+  useEffect(() => {
+    setSurfaceOverride(null);
+    setSourceOpen(false);
+  }, [scene.scene_id]);
+  // preference 只是排序，不是许可证：逐个按 eligibility 过滤，ineligible 一律丢弃
+  const isEligible = (t?: SurfaceType) => !!t && selection.eligibleSurfaces.some((e) => e.surfaceType === t && e.eligible);
+  const preferChain: Array<SurfaceType | undefined> = [
+    surfaceOverride ?? undefined,
+    ...(beat.preferPrimaryByScene?.[scene.scene_id] ?? ([] as string[])).map((t) => t as SurfaceType),
+    ...((beat.primaryPreference ?? []) as string[]).map((t) => t as SurfaceType),
+    composition.primarySurface,
+  ];
+  const primaryType = preferChain.find(isEligible);
+
+  const PrimarySurface = resolveSurface(primaryType, selection.eligibleSurfaces) ?? UnknownGapSurface;
+
+  // secondary / context：退让但存在（§13）。action_dock / agent_prompt 由本 Shell 的专属版本渲染，避免重复
+  const BESPOKE: SurfaceType[] = ["action_dock", "agent_prompt"];
+  const SecondarySurface = resolveSurface(
+    composition.secondarySurfaces.find((t) => !BESPOKE.includes(t) && t !== primaryType),
+    selection.eligibleSurfaces
+  );
+  const ContextSurface = resolveSurface(
+    composition.contextSurfaces.find((t) => !BESPOKE.includes(t) && t !== primaryType && t !== composition.secondarySurfaces[0]),
+    selection.eligibleSurfaces
+  );
+  const AgentPrompt = resolveSurface("agent_prompt", selection.eligibleSurfaces);
+  const SourceInspect = resolveSurface("source_inspect", selection.eligibleSurfaces);
+
+  const ctx: SurfaceContext = {
+    scene,
+    script,
+    slice,
+    beat,
+    world,
+    selection,
+    composition,
+    focusPlace,
+    revealed,
+    revealedConflicts,
+    askedMissingRelation: templeAsked,
+    optionalGroupIncluded: templeIncluded,
+    visualMode: primaryType === "current_photo" ? "photo" : "normal",
+    patchActive: state.patchActive,
+  };
+
+  // —— s01→s02 的坐标退出：保留上一画布作为退场层
   const [exiting, setExiting] = useState<string | null>(null);
   const prevSceneId = useRef(scene.scene_id);
   useEffect(() => {
@@ -61,208 +131,157 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
       return () => clearTimeout(t);
     }
   }, [scene.scene_id]);
+  const prevScene = exiting ? script.scenes.find((s) => s.scene_id === exiting) ?? null : null;
+  const isCoordinateExit = prevScene?.spatial_mode === "GEOGRAPHIC_EXACT" && scene.spatial_mode !== "GEOGRAPHIC_EXACT";
+  const ExitSurface =
+    prevScene && beatForScene(BEATS, prevScene.scene_id)
+      ? resolveSurface(
+          resolveComposition(beatForScene(BEATS, prevScene.scene_id)!.recipe, world).composition.primarySurface,
+          selection.eligibleSurfaces
+        ) ?? UnknownGapSurface
+      : null;
 
-  const prevScene =
-    exiting != null ? script.scenes.find((s) => s.scene_id === exiting) ?? null : null;
-  const isCoordinateExit =
-    prevScene?.spatial_mode === "GEOGRAPHIC_EXACT" && scene.spatial_mode !== "GEOGRAPHIC_EXACT";
-
-  // —— 动作分发（用户可见标签见 ACTION_LABELS；内部枚举不出现在 UI 文案中）
-  function runAction(action: string) {
-    switch (action) {
-      case "OPEN_EVIDENCE":
-        dispatch({ type: state.evidenceOpen ? "CLOSE_EVIDENCE" : "OPEN_EVIDENCE" });
-        break;
-      case "FOCUS_PLACE": {
-        const places = ["普济桥", "万安桥", "颐浩寺遗址"];
-        const i = places.indexOf(focusPlace ?? "");
-        setFocusPlace(places[(i + 1) % places.length]);
-        break;
-      }
-      case "SET_TIME":
-      case "SHOW_HISTORICAL_LAYER":
-        // 时间/历史层信息已由 Time Context 与关系空间呈现；此动作将其置顶强调
-        setFocusPlace(null);
-        break;
-      case "SET_VISUAL_MODE":
-        setVisualMode((m) => (m === "photo" ? "normal" : "photo"));
-        break;
-      case "PROPOSE_ROUTE":
-      case "REPLAN":
-        // 最小实现：展开 Agent 建议区（来自冻结 patch.next_actions，不编造）
-        dispatch({ type: "OPEN_EVIDENCE" });
-        break;
-      default:
-        break;
-    }
+  function revealNext() {
+    const pool = beat.revealUnitIds.filter((id) => !revealed.includes(id));
+    if (pool.length === 0) return;
+    setRevealed((r) => [...r, pool[0]]);
   }
 
-  const densityClass =
-    scene.composition.narrativeDensity === "high"
-      ? "density-high"
-      : scene.composition.narrativeDensity === "low"
-        ? "density-low"
-        : "density-medium";
-  const intensityClass = `intensity-${scene.composition.visualIntensity}`;
+  function onAction(a: string) {
+    setNonAnswer(null);
+    if (a === "看事实" || a === "了解更多") return revealNext();
+    if (a === "把寺也放进来") return setTempleIncluded(true);
+    if (a === "寺与桥有关系吗") {
+      setTempleAsked(true);
+      setTempleIncluded(true);
+      return setNonAnswer(TEMPLE_BRIDGE_NON_ANSWER);
+    }
+    if (a === "寺的位置有多确定？") return setSurfaceOverride("approximate_area");
+    if (CONFLICT_ORDER[a]) return setRevealedConflicts((r) => (r.includes(CONFLICT_ORDER[a]) ? r : [...r, CONFLICT_ORDER[a]]));
+    // 「史料原页」= 历史地图/史料在自己的文档空间中查看（不配准）+ 出处列表按需展开
+    if (a === "看史料原页") {
+      setSurfaceOverride("historical_map_native");
+      return setSourceOpen(true);
+    }
+    if (a === "看时间变化") return setSurfaceOverride("timeline");
+    if (a === "看今貌照片") return setSurfaceOverride("current_photo");
+    if (a.startsWith("追问")) return dispatch({ type: "TRIGGER_FOLLOWUP" });
+    // 其余为推进型行动（回到它们刚出现的时代 / 看留下的关系 …）
+    dispatch({ type: "NEXT" });
+  }
+
+  const coverage = validateBeatCoverage(BEATS, script.scenes.map((s) => s.scene_id));
+  const defaultUnits = scene.narrative.filter((u) => beat.defaultUnitIds.includes(u.unit_id));
+  const revealedUnits = scene.narrative.filter((u) => revealed.includes(u.unit_id) && !beat.defaultUnitIds.includes(u.unit_id));
 
   return (
-    <div className={`exp ${densityClass} ${intensityClass}`} data-scene={scene.scene_id}>
-      {/* —— Time Context（层 3）—— */}
+    <div className={`exp exp--c2 recipe-${composition.recipe} intensity-${composition.visualIntensity}`} data-beat={beat.beatId} data-scene={scene.scene_id}>
+      {/* Time Context */}
       <header className="exp-timebar">
         <div className="exp-timebar__left">
           <span className="exp-brand">墨痕</span>
-          <span className="exp-q">{script.primary_question}</span>
+          <span className="exp-beat">{beat.label}</span>
         </div>
         <div className="exp-timebar__right">
           <span className="exp-time">{scene.time_state}</span>
-          <span
-            className={`exp-mode exp-mode--${scene.spatial_mode === "GEOGRAPHIC_EXACT" ? "exact" : "relational"}`}
-            data-testid="spatial-mode-label"
-          >
-            {SPATIAL_MODE_LABELS[scene.spatial_mode]}
+          <span className={`exp-mode exp-mode--${scene.spatial_mode === "GEOGRAPHIC_EXACT" ? "exact" : "relational"}`} data-testid="spatial-mode-label">
+            {SPATIAL_MODE_LABELS[scene.spatial_mode as SpatialMode]}
           </span>
           <span className="exp-progress">
-            {state.sceneIndex + 1} / {script.scenes.length}
+            Beat {BEATS.indexOf(beat) + 1}/5 · {state.sceneIndex + 1}/{script.scenes.length}
           </span>
         </div>
       </header>
 
-      {/* —— Experience Canvas（层 1）：CompositionState 控制视觉重心 —— */}
-      <main className={`exp-canvas exp-canvas--${scene.composition.primarySurface}`}>
-        {prevScene && (
-          <div
-            className={`exp-canvas__fading ${isCoordinateExit ? "exp-canvas__fading--coords-out" : ""}`}
-            aria-hidden
-          >
-            <SurfaceRenderer
-              scene={prevScene}
-              slice={slice}
-              focusPlace={focusPlace}
-              visualMode="normal"
-              script={script}
-              compact
-            />
+      {/* Experience Canvas：一个时刻只有一个主角 */}
+      <main className="exp-canvas" data-testid="experience-canvas">
+        {prevScene && ExitSurface && (
+          <div className={`exp-canvas__fading ${isCoordinateExit ? "exp-canvas__fading--coords-out" : ""}`} aria-hidden>
+            <ExitSurface ctx={{ ...ctx, scene: prevScene }} compact />
           </div>
         )}
         <div className="exp-canvas__current" key={scene.scene_id}>
-          <SurfaceRenderer
-            scene={scene}
-            slice={slice}
-            focusPlace={focusPlace}
-            visualMode={visualMode}
-            script={script}
-          />
+          <PrimarySurface ctx={ctx} onAction={onAction} />
         </div>
-        <span className="exp-transition-hint">转场：{scene.composition.transitionIntent}</span>
+        <span
+          className="exp-transition-hint"
+          data-testid="transition-hint"
+          title={`recipe=${composition.recipe} primary=${primaryType ?? "fallback"}`}
+        >
+          {composition.recipe} · 主角={primaryType ?? composition.fallback ?? "fallback"}
+        </span>
       </main>
 
-      {/* —— Narrative Layer（层 2）—— */}
-      <section className={`exp-narrative exp-narrative--${densityClass}`} data-testid="narrative-layer">
-        <h2 className="exp-goal">{scene.experience_goal}</h2>
-        {scene.narrative.map((u) => (
-          <p key={u.unit_id} className={`unit unit--${u.level}`} data-testid={`unit-${u.unit_id}`}>
-            <span className="unit__badge">{LEVEL_LABELS[u.level as NarrativeLevel]}</span>
-            <span className="unit__text">{u.text}</span>
-            {u.evidence_refs.length > 0 && (
-              <span className="unit__refs">
-                证据 ×{u.evidence_refs.length}
-              </span>
-            )}
-          </p>
-        ))}
-        {/* s08：Primary Discovery 以解释框架身份出现（TASK-0012A 冻结语义） */}
-        {view.isLast && (
-          <blockquote className="exp-discovery exp-discovery--interpretation" data-testid="primary-discovery">
-            <span className="exp-discovery__badge">
-              {script.discoveries.primary.epistemic_classification === "INTERPRETATION_CANDIDATE"
-                ? "墨痕的解释框架 · 非已证事实"
-                : "发现"}
-            </span>
-            <p>{script.discoveries.primary.statement}</p>
-            <footer>未决对点：{script.discoveries.primary.unresolved_counterpoint}</footer>
-          </blockquote>
+      {/* 墨痕短发言 + secondary/context（退让）+ 默认可见单元 + 行动 */}
+      <section className="exp-stage">
+        {AgentPrompt && <AgentPrompt ctx={ctx} />}
+        {SecondarySurface && (
+          <div className="exp-secondary" data-testid="secondary-surface">
+            <SecondarySurface ctx={ctx} onAction={onAction} compact />
+          </div>
         )}
+
+        {nonAnswer && (
+          <p className="unit unit--UNKNOWN" data-testid="temple-bridge-non-answer">
+            <span className="unit__badge">未知（缺证据）</span>
+            <span className="unit__text">{nonAnswer}</span>
+          </p>
+        )}
+
+        <div className="exp-narrative">
+          {defaultUnits.map((u) => (
+            <p key={u.unit_id} className={`unit unit--${u.level}`} data-testid={`unit-${u.unit_id}`}>
+              <span className="unit__badge">{LEVEL_LABELS[u.level as NarrativeLevel]}</span>
+              <span className="unit__text">{u.text}</span>
+            </p>
+          ))}
+          {revealedUnits.map((u) => (
+            <p key={u.unit_id} className={`unit unit--${u.level}`}>
+              <span className="unit__badge">{LEVEL_LABELS[u.level as NarrativeLevel]}</span>
+              <span className="unit__text">{u.text}</span>
+            </p>
+          ))}
+        </div>
+
+        {ContextSurface && (
+          <div className="exp-context" data-testid="context-surface">
+            <ContextSurface ctx={ctx} onAction={onAction} compact />
+          </div>
+        )}
+
+        <div className="action-dock" data-testid="action-dock">
+          {beat.actions.map((a) => (
+            <button key={a} className={`exp-btn ${a.startsWith("追问") ? "exp-btn--followup" : "exp-btn--context"}`} onClick={() => onAction(a)} data-testid={`action-${a}`}>
+              {a}
+            </button>
+          ))}
+          {scene.narrative.filter((u) => beat.revealUnitIds.includes(u.unit_id) && !revealed.includes(u.unit_id)).length > 0 && (
+            <button className="exp-btn exp-btn--context" onClick={revealNext}>看事实</button>
+          )}
+        </div>
+
+        <nav className="exp-actions">
+          <button className="exp-btn" disabled={view.isFirst} onClick={() => dispatch({ type: "PREV" })}>
+            {ACTION_LABELS.PREV}
+          </button>
+          <button className="exp-btn exp-btn--primary" disabled={view.isLast} onClick={() => dispatch({ type: "NEXT" })} data-testid="next-button">
+            {ACTION_LABELS.NEXT}
+          </button>
+        </nav>
       </section>
 
-      {/* —— Agent Action Layer（层 5）—— */}
-      <nav className="exp-actions" data-testid="action-layer">
-        <button className="exp-btn" disabled={view.isFirst} onClick={() => dispatch({ type: "PREV" })}>
-          {ACTION_LABELS.PREV}
-        </button>
-        {scene.allowed_user_actions.map((a) => (
-          <button key={a} className="exp-btn exp-btn--context" onClick={() => runAction(a)}>
-            {ACTION_LABELS[a] ?? a}
-          </button>
-        ))}
-        {view.canFollowUp && (
-          <button
-            className="exp-btn exp-btn--followup"
-            data-testid="followup-button"
-            onClick={() => dispatch({ type: "TRIGGER_FOLLOWUP" })}
-          >
-            追问：{script.followup.trigger_question}
-          </button>
-        )}
-        <button
-          className="exp-btn exp-btn--primary"
-          disabled={view.isLast}
-          onClick={() => dispatch({ type: "NEXT" })}
-          data-testid="next-button"
-        >
-          {ACTION_LABELS.NEXT}
-        </button>
-      </nav>
-
-      {/* —— Evidence / Uncertainty Layer（层 4）：滑出面板 —— */}
-      {state.evidenceOpen && (
-        <aside className="exp-evidence" data-testid="evidence-layer">
+      {/* Source Inspect（按需）——由 Surface Registry 里的 SourceInspectSurface 渲染 */}
+      {sourceOpen && SourceInspect && (
+        <aside className="exp-evidence" data-testid="source-inspect">
           <div className="exp-evidence__head">
-            <h3>证据与未决</h3>
-            <button className="exp-btn" onClick={() => dispatch({ type: "CLOSE_EVIDENCE" })}>
-              收起证据
-            </button>
+            <h3>史料 / 出处</h3>
+            <button className="exp-btn" onClick={() => setSourceOpen(false)}>收起</button>
           </div>
-
-          {view.sceneConflicts.length > 0 && (
-            <div className="exp-conflicts" data-testid="conflict-cards">
-              <p className="exp-evidence__note">
-                以下着录冲突按冻结裁定保留并列呈现——墨痕不替你选「正确答案」。
-              </p>
-              {view.sceneConflicts.map((c) => {
-                const ruling = script.t11_rulings_applied.find((r) => r.ruling === c.ruling);
-                return (
-                  <article key={c.ruling} className="conflict-card">
-                    <header>
-                      <strong>{c.topic}</strong>
-                      <span className="conflict-card__ruling">{c.ruling} · 未裁决</span>
-                    </header>
-                    <p>{ruling?.applied ?? c.decision}</p>
-                  </article>
-                );
-              })}
-            </div>
-          )}
-
-          <div className="exp-evidence__section">
-            <h4>本场景不确定项</h4>
-            <p>{scene.uncertainty}</p>
-          </div>
-
-          <div className="exp-evidence__section">
-            <h4>冻结裁定（T11-C1…C5）</h4>
-            <ul>
-              {script.t11_rulings_applied.map((r) => (
-                <li key={r.ruling}>
-                  <strong>{r.ruling}</strong> {r.topic}：{r.applied}
-                </li>
-              ))}
-            </ul>
-          </div>
-
+          <SourceInspect ctx={ctx} />
         </aside>
       )}
 
-      {/* —— Patch 面板：独立常驻（不依赖证据抽屉开合；Patch-not-Replace 的可见性）—— */}
+      {/* Patch-not-Replace（保留 TASK-0013 行为） */}
       {state.patchActive && (
         <aside className="exp-evidence exp-evidence--patch" data-testid="patch-card">
           <div className="exp-evidence__head">
@@ -273,52 +292,25 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
           <div className="exp-patch__cols">
             <div>
               <h5>保留（已知）</h5>
-              <ul>
-                {Object.entries(patch.preserved).map(([k, v]) => (
-                  <li key={k}>
-                    <b>{k}</b>：{typeof v === "string" ? v : JSON.stringify(v)}
-                  </li>
-                ))}
-              </ul>
+              <ul>{Object.entries(patch.preserved).map(([k, v]) => (<li key={k}><b>{k}</b>：{typeof v === "string" ? v : JSON.stringify(v)}</li>))}</ul>
             </div>
             <div>
               <h5>改变（前景化）</h5>
-              <ul>
-                {Object.entries(patch.changed).map(([k, v]) => (
-                  <li key={k}>
-                    <b>{k}</b>：{typeof v === "string" ? v : JSON.stringify(v)}
-                  </li>
-                ))}
-              </ul>
+              <ul>{Object.entries(patch.changed).map(([k, v]) => (<li key={k}><b>{k}</b>：{typeof v === "string" ? v : JSON.stringify(v)}</li>))}</ul>
             </div>
           </div>
           <div className="exp-evidence__section">
             <h5>缺失证据 / 下一步（不编造答案）</h5>
-            <ul>
-              {patch.next_actions.map((a) => (
-                <li key={a.action}>
-                  <b>{a.action}</b>：{a.text}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="exp-evidence__section">
-            <h5>补丁不变量</h5>
-            <ul>
-              {patch.invariants.map((inv) => (
-                <li key={inv}>{inv}</li>
-              ))}
-            </ul>
+            <ul>{patch.next_actions.map((a) => (<li key={a.action}><b>{a.action}</b>：{a.text}</li>))}</ul>
           </div>
         </aside>
       )}
-
-      {/* —— Patch 后常驻提示（Patch-not-Replace 的可见性）—— */}
       {state.patchActive && (
         <div className="exp-patchpill" data-testid="patch-pill">
-          Patch · {patch.base_scene_count} 场全部保留 · 已走 {new Set(state.trail.filter((t) => !t.startsWith("patch:"))).size} 处
+          Patch · {patch.base_scene_count} 场全部保留 · Beat {BEATS.indexOf(beat) + 1}/5 未重置
         </div>
       )}
+      {!coverage.ok && <p className="exp-error">Beat coverage error: {coverage.errors.join("; ")}</p>}
     </div>
   );
 }

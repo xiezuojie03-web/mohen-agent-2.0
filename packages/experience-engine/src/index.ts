@@ -35,3 +35,8 @@ export type ExperienceAction =
 
 // TASK-0013：冻结体验脚本运行时（Experience Script → ExperienceState → CompositionState）
 export * from "./experience-runtime";
+
+// TASK-0014：Evidence-aware Surface Selection / Composition Recipes / Experience Beats
+export * from "./surface-eligibility";
+export * from "./composition-recipes";
+export * from "./experience-beats";

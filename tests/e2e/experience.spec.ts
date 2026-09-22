@@ -1,57 +1,74 @@
-// tests/e2e/experience.spec.ts — TASK-0013 最低 E2E（任务书 §17）。
-// 流程：open → s01→s02 断言现代精确坐标消失 → s05 打开证据断言双冲突可见
-//       → s08 断言解释与事实视觉区分 → canonical follow-up 断言 Patch 激活且历史保留。
-// 注：本测试依赖本机 Playwright 浏览器可用；若因已记录的环境限制失败，如实报告。
+// tests/e2e/experience.spec.ts — TASK-0014 最低 E2E（任务书 §15 末条 / §16）。
+//
+// 覆盖五 Beat + Approximate Area + Historical Map Native + Follow-up Patch。
+// 与 scripts/e2e-composition2-capture.mjs（真实浏览器 25 断言 + 9 截图）保持同义断言。
+// 注：依赖本机 Playwright 浏览器与 BaseURL；若因已记录的环境限制（`pnpm dev` webServer 超时）失败，如实报告。
 
 import { test, expect } from "@playwright/test";
 
-test("experience living vertical slice", async ({ page }) => {
+/** 只取「当前画布」里的 Surface：退场层可能残留同名 Surface */
+const cur = (page: import("@playwright/test").Page, id: string) =>
+  page.locator(".exp-canvas__current").getByTestId(id);
+
+test("experience composition 2.0 — five beats + surface eligibility", async ({ page }) => {
   await page.goto("/experience/jinze-water-net");
 
-  // —— s01：当前精确地理
-  await expect(page.getByTestId("surface-modern-map")).toBeVisible();
+  // —— Beat01 Hook / Current Space
+  await expect(cur(page, "surface-current-map")).toBeVisible();
   await expect(page.getByTestId("spatial-mode-label")).toContainText("现代精确坐标");
-  await expect(page.getByTestId("unit-s01-u1")).toContainText("宋代石桥");
+  await expect(page.locator(".exp-secondary").getByTestId("surface-question")).toBeVisible();
 
-  // —— s01 → s02：时间后退，现代坐标淡出，关系历史空间出现
+  // —— Beat02 Time / Space Shift：现代坐标退出 → 关系历史空间
   await page.getByTestId("next-button").click();
-  await expect(page.getByTestId("surface-timeline")).toBeVisible();
+  await expect(cur(page, "surface-relational-space")).toBeVisible();
   await expect(page.getByTestId("spatial-mode-label")).toContainText("关系历史空间");
-  await expect(page.getByTestId("surface-modern-map")).toHaveCount(0);
+  await expect(cur(page, "surface-current-map")).toHaveCount(0);
 
-  // —— 走到 s05，打开证据，断言双冲突可见
-  await page.getByTestId("next-button").click(); // s03
+  // —— Beat03 Relationship Discovery：桥—水—桥，寺进入但不自动连线
+  await page.getByTestId("next-button").click();
+  await page.getByRole("button", { name: "把寺也放进来" }).click();
+  await page.getByRole("button", { name: "寺与桥有关系吗" }).click();
+  await expect(page.getByTestId("temple-bridge-non-answer")).toContainText("没有找到");
+  await expect(page.locator(".exp-canvas__current").getByTestId("absent-relation")).toHaveCount(1);
+
+  // —— Approximate Area：近似区域不得退化成精确点
+  await page.getByRole("button", { name: "寺的位置有多确定？" }).click();
+  await expect(cur(page, "surface-approximate-area")).toBeVisible();
+  await expect(cur(page, "surface-approximate-area")).toContainText("没有中心精确 marker");
+
+  // —— Beat04 Evidence & Change：progressive conflict reveal，未裁决
   await page.getByTestId("next-button").click(); // s04
   await page.getByTestId("next-button").click(); // s05
-  await expect(page.getByTestId("surface-evidence-panel")).toBeVisible();
-  await expect(page.getByTestId("conflict-T11-C1")).toContainText("普济桥方位");
-  await expect(page.getByTestId("conflict-T11-C2")).toContainText("万安桥跨水道");
-  // 走 Agent Action Layer 的「查看证据」也应可用（Evidence/Uncertainty Layer）
-  await page.getByRole("button", { name: "查看证据" }).click();
-  await expect(page.getByTestId("evidence-layer")).toBeVisible();
+  await expect(cur(page, "surface-conflict-compare")).toBeVisible();
+  await page.getByRole("button", { name: "看第一组分歧" }).click();
+  await page.getByRole("button", { name: "看第二组分歧" }).click();
+  await expect(page.getByTestId("conflict-T11-C1")).toContainText("未裁决");
+  await expect(page.getByTestId("conflict-T11-C2")).toContainText("未裁决");
 
-  // —— s08：Fact → Interpretation → Unknown，视觉分级不同
-  await page.getByRole("button", { name: "收起证据" }).click();
+  // —— Historical Map Native prototype：不暗示现代配准
+  await page.getByRole("button", { name: "看史料原页" }).click();
+  await expect(cur(page, "surface-historical-map-native")).toContainText("不做现代配准");
+  await expect(cur(page, "surface-historical-map-native")).toContainText("PARTIAL_CONFIRM");
+  await page.getByRole("button", { name: "收起" }).click();
+
+  // —— Beat04 temporal focus：时间成为主角，毁损与重建视觉区分
   await page.getByTestId("next-button").click(); // s06
-  await page.getByTestId("next-button").click(); // s07
-  await page.getByTestId("next-button").click(); // s08
-  await expect(page.getByTestId("surface-text-focus")).toBeVisible();
-  const fact = page.getByTestId("unit-s08-u1");
-  const interp = page.getByTestId("unit-s08-u1b");
-  await expect(fact).toContainText("跨同一条有名的水道");
-  await expect(interp).toContainText("解释框架");
-  const factStyle = await fact.evaluate((el) => getComputedStyle(el).borderLeftStyle);
-  const interpStyle = await interp.evaluate((el) => getComputedStyle(el).borderStyle);
-  expect(factStyle).toBe("solid");
-  expect(interpStyle).toContain("dashed");
+  await expect(cur(page, "surface-timeline")).toBeVisible();
+  await expect(cur(page, "surface-timeline")).toContainText("原址重建");
 
-  // —— canonical follow-up：Patch-not-Replace（无 reload、无重放、历史保留）
+  // —— Beat05 Return & Next Question：回到今天 → 解释框架（不是事实）
+  await page.getByTestId("next-button").click(); // s07
+  await expect(cur(page, "surface-current-map")).toBeVisible();
+  await page.getByTestId("next-button").click(); // s08
+  await expect(cur(page, "surface-discovery")).toBeVisible();
+  await expect(page.getByTestId("primary-discovery")).toContainText("墨痕的解释");
+
+  // —— Follow-up：Patch-not-Replace（无 reload、无重放、历史保留）
   const beforeUrl = page.url();
-  await page.getByTestId("followup-button").click();
+  await page.getByRole("button", { name: /追问/ }).click();
   await expect(page.getByTestId("patch-card")).toContainText("体验未重启");
   await expect(page.getByTestId("patch-card")).toContainText("research_lead");
   await expect(page.getByTestId("patch-pill")).toBeVisible();
-  expect(page.url()).toBe(beforeUrl); // 无路由跳转
-  // 场景进度未重置（仍在 8/8），叙事层仍在
-  await expect(page.locator(".exp-progress")).toContainText("8 / 8");
+  expect(page.url()).toBe(beforeUrl);
+  await expect(page.locator(".exp-progress")).toContainText("8/8");
 });

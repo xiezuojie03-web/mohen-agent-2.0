@@ -26,9 +26,53 @@ export interface SliceShape {
     location_raw: string;
     source_label: string;
   }>;
+  /** 登记的史料源（HistoricalMapNative 只在 native 文档空间里展示，不做配准） */
+  historical_sources: Array<{
+    key: string;
+    kind: string;
+    note: string;
+    method: string;
+    attributable_to_slice_objects: boolean;
+  }>;
   spatial_extent_current: {
     gcj02_bbox: { max_lat: number; max_lng: number; min_lat: number; min_lng: number };
     gcj02_span_m: { ew_m: number; ns_m: number; note: string };
     anchor_count: number;
   };
+}
+
+// ---------------------------------------------------------------------------
+// TASK-0014：Surface Component Contract（§4）
+// Surface 只消费 semantic state/data，不拥有历史真相。
+// ---------------------------------------------------------------------------
+import type { ExperienceScript, ExperienceScene, WorldEvidenceState, SurfaceSelection } from "@mohen/experience-engine";
+import type { CompositionState2 } from "@mohen/experience-engine";
+import type { BeatPresentation } from "../beats";
+
+export interface SurfaceContext {
+  scene: ExperienceScene;
+  script: ExperienceScript;
+  slice: SliceShape;
+  beat: BeatPresentation;
+  world: WorldEvidenceState;
+  selection: SurfaceSelection;
+  composition: CompositionState2;
+  /** 聚焦对象（FOCUS_PLACE） */
+  focusPlace: string | null;
+  /** 已揭示的叙事单元 id（progressive disclosure） */
+  revealed: string[];
+  /** 已揭示的冲突组（T11-C1/C2 逐层） */
+  revealedConflicts: string[];
+  /** 用户是否询问过「这两者有关系吗」（用于「没有一条线」的表达，语义通用） */
+  askedMissingRelation: boolean;
+  /** 可选对象组是否已「放进来」（由该体验的 Beat 行动驱动，语义通用） */
+  optionalGroupIncluded: boolean;
+  visualMode: "normal" | "photo";
+  patchActive: boolean;
+}
+
+export interface SurfaceComponentProps {
+  ctx: SurfaceContext;
+  onAction?: (action: string) => void;
+  compact?: boolean;
 }
