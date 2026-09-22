@@ -3,19 +3,84 @@
 
 "use client";
 
+import { useState } from "react";
 import { LEVEL_LABELS, type NarrativeLevel } from "@mohen/experience-engine";
 import type { SurfaceComponentProps } from "./types";
+import {
+  TEMPORAL,
+  temporalStateFromWording,
+  withDepth,
+  svgStyle,
+  type TemporalState,
+} from "../../../../lib/mohen-visual/visual-grammar";
+import { VisualLegend } from "../../../../lib/mohen-visual/spatial-canvas";
 
 const L = (lv: string) => LEVEL_LABELS[lv as NarrativeLevel] ?? lv;
 
 // ---------------------------------------------------------------------------
-// TimelineSurface 2.0：时间成为主角；支持 出现/毁损/重建/当代 的视觉区分（§3, Beat04）
+// Temporal Landscape V3（TASK-0015 §9）
+//
+// 时间不是「年份 + 资料卡列表」，而是一条连续结构：
+//   · 每个对象一条 lifeline（延续 / 中断 / 原址重建各有语法）
+//   · 毁损 = 生命线断裂（rupture）+ 断裂段斜纹占位
+//   · 原址重建 = 中断之后重新起线（双划节奏）
+//   · unknown 合法占据时间结构（斜纹占位，不作时间断言）
+//   · 无年份的事件**不落在时间轴上**（有事件 ≠ 有年代）
+//   · 回到今天 = 结构右端的当代终点
 // ---------------------------------------------------------------------------
+
+const TL = { w: 760, h: 470, ax: 152, axisY: 64, rowTop: 104, rowH: 62, rightPad: 76 };
+const TL_AW = TL.w - TL.ax - TL.rightPad;
+const TL_NOW_GAP = 44;
+
+interface TlEvent {
+  year: number | null;
+  text: string;
+  state: TemporalState | null;
+}
+
+/** 只对切片自带的 time_hint 做分类，不生成任何新的年代断言 */
+function parseTimeHint(hint: string): TlEvent[] {
+  return String(hint ?? "")
+    .split(/→|->/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map((tok) => {
+      const m = tok.match(/\d{4}/);
+      return { year: m ? Number(m[0]) : null, text: tok, state: temporalStateFromWording(tok) };
+    });
+}
+
 export function TimelineSurface({ ctx, compact }: SurfaceComponentProps) {
-  const changes = ctx.slice.changes.filter((c) => c.change_epistemic === "evidenced");
+  const [focusKey, setFocusKey] = useState<string | null>(null);
+
+  const rows = ctx.slice.features
+    .map((f) => {
+      const key = f.feature_key.split("/").pop() ?? f.feature_key;
+      const changes = ctx.slice.changes.filter((c) => c.feature_key === f.feature_key);
+      if (changes.length === 0) return null;
+      const events = changes.flatMap((c) => parseTimeHint(c.time_hint));
+      const toPresent = changes.some(
+        (c) => c.change_status === "survives" || c.change_status === "rebuilt" || /今|当代|今天/.test(c.to_state)
+      );
+      return { key, label: f.canonical_label, events, toPresent };
+    })
+    .filter((r): r is { key: string; label: string; events: TlEvent[]; toPresent: boolean } => r !== null);
+
+  const years = rows
+    .flatMap((r) => r.events.map((e) => e.year))
+    .filter((y): y is number => typeof y === "number")
+    .sort((a, b) => a - b);
+  const uniqueYears = [...new Set(years)];
+  const minY = uniqueYears.length ? uniqueYears[0] : 0;
+  const maxY = uniqueYears.length ? uniqueYears[uniqueYears.length - 1] : 1;
+  const xOf = (year: number) => TL.ax + ((year - minY) / (maxY - minY || 1)) * TL_AW;
+  const xNow = TL.ax + TL_AW + TL_NOW_GAP;
+  const lastRowY = TL.rowTop + (rows.length - 1) * TL.rowH + TL.rowH / 2;
+
   return (
-    <div className="surf surf-timeline" data-testid="surface-timeline">
-      <p className="surf__caption">时间成为主角 · 只列有据的变化</p>
+    <div className="surf surf-timeline surf-timeline--v3" data-testid="surface-timeline">
+      <p className="surf__caption">时间景观 · 时间本身是连续结构 · 只画有着录的变化</p>
       <div className="timeline-band">
         <span className="timeline-now">今天</span>
         <span className="timeline-arrow" aria-hidden>
@@ -25,45 +90,174 @@ export function TimelineSurface({ ctx, compact }: SurfaceComponentProps) {
           {ctx.scene.time_state}
         </span>
       </div>
-      {!compact && (
-        <ol className="timeline-track">
-          {changes.map((c) => (
-            <li key={c.change_key} className={`tl-step tl-step--${statusKind(c)}`} data-testid={`tl-${c.change_key.split("/")[1]}`}>
-              <span className="tl-step__dot" />
-              <div>
-                <b>{c.canonical_label}</b>
-                <p className="tl-step__from">{c.from_state}</p>
-                <p className="tl-step__to">→ {c.to_state}</p>
-              </div>
-              <span className="tl-step__tag">{tagOf(statusKind(c))}</span>
-            </li>
+      <svg viewBox={`0 0 ${TL.w} ${TL.h}`} className="surf-timeline__svg" role="img" aria-label="时间景观：对象生命线与变化事件">
+        <defs>
+          <pattern id="tl-hatch" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+            <line x1="0" y1="0" x2="0" y2="8" style={{ stroke: "var(--mist)", strokeWidth: 1.1, opacity: 0.5 }} />
+          </pattern>
+        </defs>
+
+        {/* 时间轴：连续的量尺，不是年份卡片 */}
+        <g className="tl-axis">
+          <line x1={TL.ax - 30} y1={TL.axisY} x2={xNow + 22} y2={TL.axisY} className="tl-axis__line" />
+          {uniqueYears.map((y) => (
+            <g key={`tk-${y}`}>
+              <line x1={xOf(y)} y1={TL.axisY} x2={xOf(y)} y2={lastRowY + 28} className="tl-axis__grid" />
+              <text x={xOf(y)} y={TL.axisY - 10} textAnchor="middle" className="tl-axis__year">
+                {y}
+              </text>
+            </g>
           ))}
-          {ctx.slice.changes
-            .filter((c) => c.change_epistemic !== "evidenced")
-            .map((c) => (
-              <li key={c.change_key} className="tl-step tl-step--unknown" data-testid={`tl-unknown-${c.change_key.split("/")[1]}`}>
-                <span className="tl-step__dot" />
-                <div>
-                  <b>{c.canonical_label}</b>
-                  <p className="tl-step__from">{c.from_state || "历史年代：不着录（切片不作时间断言）"}</p>
-                </div>
-                <span className="tl-step__tag">未知</span>
-              </li>
-            ))}
-        </ol>
-      )}
+          <line x1={xNow} y1={TL.axisY - 16} x2={xNow} y2={lastRowY + 28} className="tl-axis__now" style={svgStyle(TEMPORAL.return_to_present)} />
+          <text x={xNow} y={TL.axisY - 22} textAnchor="middle" className="tl-axis__nowlabel">
+            今
+          </text>
+        </g>
+
+        {rows.map((row, i) => {
+          const ry = TL.rowTop + i * TL.rowH + TL.rowH / 2;
+          const depth = focusKey ? (focusKey === row.key ? "primary" : "context") : "primary";
+          const rowYears = row.events.map((e) => e.year).filter((y): y is number => typeof y === "number");
+          const startYear = rowYears.length ? Math.min(...rowYears) : null;
+          const endYear = rowYears.length ? Math.max(...rowYears) : null;
+          const destruction = row.events.find((e) => e.state === "destruction" && e.year !== null) ?? null;
+          const reconstruction =
+            row.events.find((e) => e.state === "reconstruction" && e.year !== null && (!destruction || (e.year as number) > (destruction.year as number))) ?? null;
+
+          return (
+            <g
+              key={row.key}
+              className={`tl-row tl-d-${depth}`}
+              data-testid={`tl-row-${row.key}`}
+              onClick={() => setFocusKey((cur) => (cur === row.key ? null : row.key))}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") setFocusKey((cur) => (cur === row.key ? null : row.key));
+              }}
+            >
+              {/* 命中区（整行可点击聚焦，其余行退为语境） */}
+              <rect x={0} y={ry - TL.rowH / 2} width={TL.w} height={TL.rowH} className="tl-row__hit" />
+              <text x={TL.ax - 18} y={ry + 5} textAnchor="end" className="tl-row__label">
+                {row.label}
+              </text>
+
+              {startYear === null ? (
+                // unknown 合法占据时间结构：有对象、无年代 → 占位，不断言
+                <>
+                  <rect
+                    x={TL.ax}
+                    y={ry - 13}
+                    width={xNow - TL.ax}
+                    height={26}
+                    className="tl-unknown"
+                    style={{ fill: "url(#tl-hatch)", stroke: TEMPORAL.unknown.stroke, strokeWidth: 1, strokeDasharray: "2 7", opacity: TEMPORAL.unknown.opacity }}
+                  />
+                  <text x={TL.ax + 10} y={ry + 4} className="tl-unknown__label">
+                    未知 · 不作时间断言
+                  </text>
+                </>
+              ) : (
+                (() => {
+                  const end = row.toPresent ? xNow : xOf(endYear as number);
+                  const cont = withDepth(TEMPORAL.continuity, depth);
+                  const rec = withDepth(TEMPORAL.reconstruction, depth);
+                  const segs: Array<{ x1: number; x2: number; token: typeof cont }> = [];
+                  if (destruction) {
+                    segs.push({ x1: xOf(startYear), x2: xOf(destruction.year as number), token: cont });
+                    if (reconstruction) segs.push({ x1: xOf(reconstruction.year as number), x2: end, token: rec });
+                  } else {
+                    segs.push({ x1: xOf(startYear), x2: end, token: cont });
+                  }
+                  return (
+                    <>
+                      {segs.map((s, k) => (
+                        <line key={k} x1={s.x1} y1={ry} x2={s.x2} y2={ry} className="tl-lifeline" style={svgStyle(s.token)} />
+                      ))}
+                      {destruction && (
+                        <>
+                          {/* 断裂段：斜纹占位（生命线在此中断） */}
+                          <rect
+                            x={xOf(destruction.year as number)}
+                            y={ry - 15}
+                            width={Math.max(6, (reconstruction ? xOf(reconstruction.year as number) : end) - xOf(destruction.year as number))}
+                            height={30}
+                            className="tl-gap"
+                            style={{ fill: "url(#tl-hatch)", stroke: "none", opacity: 0.8 }}
+                          />
+                          {/* rupture：断口 */}
+                          <g className="tl-rupture" style={svgStyle(withDepth(TEMPORAL.destruction, depth))}>
+                            <line x1={xOf(destruction.year as number)} y1={ry - 16} x2={xOf(destruction.year as number)} y2={ry + 16} style={{ stroke: TEMPORAL.destruction.stroke, strokeWidth: 3.2, strokeDasharray: "3 6" }} />
+                            <path
+                              d={`M ${xOf(destruction.year as number) - 5} ${ry - 9} l 5 6 l -5 6 l 5 6`}
+                              style={{ fill: "none", stroke: TEMPORAL.destruction.stroke, strokeWidth: 2 }}
+                            />
+                          </g>
+                        </>
+                      )}
+                      {reconstruction && (
+                        <g className="tl-rebuild" style={svgStyle(rec)}>
+                          <line x1={xOf(reconstruction.year as number)} y1={ry - 14} x2={xOf(reconstruction.year as number)} y2={ry + 14} style={{ stroke: rec.stroke, strokeWidth: 3, strokeDasharray: "8 4 2 4" }} />
+                          <circle cx={xOf(reconstruction.year as number)} cy={ry} r={7} style={{ fill: "var(--paper)", stroke: rec.stroke, strokeWidth: 2 }} />
+                          <line x1={xOf(reconstruction.year as number) - 3.5} y1={ry} x2={xOf(reconstruction.year as number) + 3.5} y2={ry} style={{ stroke: rec.stroke, strokeWidth: 2 }} />
+                          <line x1={xOf(reconstruction.year as number)} y1={ry - 3.5} x2={xOf(reconstruction.year as number)} y2={ry + 3.5} style={{ stroke: rec.stroke, strokeWidth: 2 }} />
+                        </g>
+                      )}
+                      {/* 有年份的事件落在轴上；无年份的事件只能挂在轴外（不伪造年代） */}
+                      {row.events.map((e, k) =>
+                        e.year === null ? (
+                          <g key={`dl-${k}`} className="tl-dateless" style={svgStyle(TEMPORAL.unknown)}>
+                            <circle cx={xNow + 30} cy={ry + (k % 2 === 0 ? -12 : 12)} r={6} style={{ fill: "var(--paper)", stroke: TEMPORAL.unknown.stroke, strokeWidth: 1.4, strokeDasharray: "2 5" }} />
+                            <text x={xNow + 30} y={ry + (k % 2 === 0 ? -8 : 16)} textAnchor="middle" className="tl-dateless__q">
+                              ?
+                            </text>
+                          </g>
+                        ) : (
+                          <g key={`ev-${k}`} className={`tl-event tl-event--${e.state ?? "none"}`}>
+                            {e.state === "appearance" && (
+                              <circle cx={xOf(e.year)} cy={ry} r={5.5} style={svgStyle(withDepth(TEMPORAL.appearance, depth))} />
+                            )}
+                            {e.state === "change" && (
+                              <rect x={xOf(e.year) - 4.5} y={ry - 4.5} width={9} height={9} style={{ ...svgStyle(withDepth(TEMPORAL.change, depth)), strokeWidth: 2 }} />
+                            )}
+                            {e.state === "destruction" && (
+                              <g style={svgStyle(withDepth(TEMPORAL.destruction, depth))}>
+                                <line x1={xOf(e.year) - 5} y1={ry - 5} x2={xOf(e.year) + 5} y2={ry + 5} style={{ stroke: TEMPORAL.destruction.stroke, strokeWidth: 2.6 }} />
+                                <line x1={xOf(e.year) + 5} y1={ry - 5} x2={xOf(e.year) - 5} y2={ry + 5} style={{ stroke: TEMPORAL.destruction.stroke, strokeWidth: 2.6 }} />
+                              </g>
+                            )}
+                            {e.state === "reconstruction" && null}
+                            {e.state === null && <circle cx={xOf(e.year)} cy={ry} r={3} style={svgStyle(withDepth(TEMPORAL.continuity, depth))} />}
+                          </g>
+                        )
+                      )}
+                      {row.toPresent && (
+                        <g className="tl-present" style={svgStyle(withDepth(TEMPORAL.return_to_present, depth))}>
+                          <line x1={end} y1={ry - 12} x2={end} y2={ry + 12} style={{ stroke: TEMPORAL.return_to_present.stroke, strokeWidth: 3 }} />
+                        </g>
+                      )}
+                    </>
+                  );
+                })()
+              )}
+            </g>
+          );
+        })}
+      </svg>
+      <VisualLegend
+        className="vg-legend--temporal"
+        items={[
+          { token: TEMPORAL.continuity, text: "延续", shape: "line" },
+          { token: TEMPORAL.change, text: "变化", shape: "line" },
+          { token: TEMPORAL.destruction, text: "毁损", shape: "line" },
+          { token: TEMPORAL.reconstruction, text: "原址重建", shape: "line" },
+          { token: TEMPORAL.unknown, text: "未知", shape: "band" },
+          { token: TEMPORAL.return_to_present, text: "今", shape: "line" },
+        ]}
+      />
+      {!compact && <p className="surf__note">有事件但无年份的，只挂在轴外 —— 不落在时间轴上。</p>}
     </div>
   );
-}
-
-function statusKind(c: { to_state: string; change_status: string }): string {
-  if (/毁/.test(c.to_state)) return "destroyed";
-  if (/重建|原址/.test(c.to_state)) return "rebuilt";
-  if (/仍|今天|今天仍/.test(c.to_state)) return "survives";
-  return "appeared";
-}
-function tagOf(kind: string): string {
-  return { appeared: "出现", destroyed: "毁损 / 毁坏", rebuilt: "原址重建", survives: "延续到今天", unknown: "未知" }[kind] ?? "变化";
 }
 
 // ---------------------------------------------------------------------------

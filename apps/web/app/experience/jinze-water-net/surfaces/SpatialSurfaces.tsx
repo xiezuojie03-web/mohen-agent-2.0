@@ -1,17 +1,37 @@
 // Spatial Surfaces — 可复用空间组件。
 //
-// 硬规则（§4 / §19-5）：
+// 硬规则（§4 / §19-5 / §13）：
 //   组件不得拥有或硬编码任何 town-specific 历史真相。
 //   所有名称、布局、标签都由 semantic input（slice / world）推导；
 //   所有形状都是 symbol / topology，不是历史 Claim（§10/§11）。
+//
+// TASK-0015：
+//   CurrentMapSurface      → Current Geographic Surface V2（deterministic vector geographic canvas）
+//   RelationalSpaceSurface → Relational Historical Surface V3（人文拓扑空间，最高优先级）
+//   二者都改用公共视觉基础 lib/mohen-visual（Visual Grammar + SpatialCanvas）。
 
 "use client";
 
+import { useState } from "react";
 import type { SliceShape, SurfaceComponentProps } from "./types";
 import { LEVEL_LABELS, type NarrativeLevel } from "@mohen/experience-engine";
+import {
+  SpatialCanvas,
+  VisualLegend,
+  type CanvasLayer,
+  type CanvasPrimitive,
+  type CanvasView,
+  type LabelRequest,
+} from "../../../../lib/mohen-visual/spatial-canvas";
+import {
+  SPATIAL,
+  nodeRoleForFeatureType,
+  relationRoleForEpistemic,
+  type NodeRole,
+} from "../../../../lib/mohen-visual/visual-grammar";
 
 // ---------------------------------------------------------------------------
-// 通用工具：短键 / 语义标签 / 确定性布局（不含任何镇名或事实）
+// 通用工具：短键 / 语义标签（不含任何镇名或事实）
 // ---------------------------------------------------------------------------
 
 /** feature_key → 末段短键 */
@@ -24,40 +44,6 @@ export function labelForAnchor(slice: SliceShape, anchorKey: string): string {
   const prefix = anchorKey.split("/")[0];
   const hit = slice.features.find((f) => shortKey(f.feature_key) === prefix);
   return hit?.canonical_label ?? prefix;
-}
-
-/** 确定性布局：按 feature_type 分配固定槽位（水道上为 spine，桥横跨其上方，其余居下） */
-const CANVAS = { w: 760, h: 470, spineY: 250, aboveY: 138, belowY: 392, asideY: 412 };
-
-function layoutFor(slice: SliceShape): Record<string, { x: number; y: number }> {
-  const out: Record<string, { x: number; y: number }> = {};
-  const feats = slice.features.map((f) => ({ key: shortKey(f.feature_key), type: f.feature_type }));
-
-  const spine = feats.filter((f) => f.type === "waterway");
-  spine.forEach((f, i) => {
-    out[f.key] = { x: CANVAS.w / 2 + (i - (spine.length - 1) / 2) * 0, y: CANVAS.spineY };
-  });
-
-  const bridges = feats.filter((f) => f.type === "bridge");
-  bridges.forEach((f, i) => {
-    out[f.key] = {
-      x: CANVAS.w / 2 + (i - (bridges.length - 1) / 2) * 288,
-      y: CANVAS.aboveY,
-    };
-  });
-
-  const sites = feats.filter((f) => !out[f.key] && /site|temple|building|place/.test(f.type));
-  sites.forEach((f, i) => {
-    out[f.key] = { x: CANVAS.w / 2 + (i - (sites.length - 1) / 2) * 288, y: CANVAS.belowY };
-  });
-
-  // 其余（人物/其他引用）排到右下，避免与主体重叠
-  const rest = feats.filter((f) => !out[f.key]);
-  rest.forEach((f, i) => {
-    out[f.key] = { x: CANVAS.w - 180 - i * 96, y: CANVAS.asideY };
-  });
-
-  return out;
 }
 
 /** 关系谓词 → 人话标签（语义词汇表，非镇名） */
@@ -78,69 +64,189 @@ export function levelLabel(level: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// CurrentMapSurface：可靠当前精确坐标 → 精确点表达（§5A.2-1）
+// Current Geographic Surface V2（TASK-0015 §7）
+//
+// 数据边界（如实，不粉饰）：
+//   本切片只有「可靠当前对象点 / 近似对象区」与切片自己声明的跨度，
+//   **没有任何水道、道路、POI 线面几何** → 一律不画，宁可抽象也不编造。
+//   只画：经纬网 + 比例尺 + 指北 + 范围框 + 有来源的当前锚点。
 // ---------------------------------------------------------------------------
+
+/** 图框坐标系：由 spatial_extent_current.gcj02_bbox 声明（另一坐标系的记录一律不并入） */
+const FRAME_CRS = "GCJ-02";
+const GEO_VIEW: CanvasView = { width: 760, height: 470, pad: 96 };
+/** 底部隔离带：放「另一坐标系」的参考锚（分列记录、不混算） */
+const GEO_STRIP = 66;
+
 export function CurrentMapSurface({ ctx, compact }: SurfaceComponentProps) {
-  const points = ctx.slice.current_sources
-    .filter((a) => a.kind === "provider_current_object_point")
-    .map((a) => {
-      const [lng, lat] = a.location_raw.split(",").map(Number);
-      return { key: a.anchor_key, lng, lat, label: labelForAnchor(ctx.slice, a.anchor_key) };
-    });
+  const W = GEO_VIEW.width;
+  const H = GEO_VIEW.height;
+  const x0 = 108;
+  const x1 = W - 88;
+  const y0 = 74;
+  const y1 = H - GEO_VIEW.pad - GEO_STRIP;
   const bbox = ctx.slice.spatial_extent_current.gcj02_bbox;
   const span = ctx.slice.spatial_extent_current.gcj02_span_m;
-  const W = CANVAS.w;
-  const H = CANVAS.h;
-  const pad = 96;
-  const project = (p: { lng: number; lat: number }) => ({
-    x: pad + ((p.lng - bbox.min_lng) / (bbox.max_lng - bbox.min_lng || 1)) * (W - pad * 2),
-    y: pad + ((bbox.max_lat - p.lat) / (bbox.max_lat - bbox.min_lat || 1)) * (H - pad * 2),
+  const degLng = bbox.max_lng - bbox.min_lng || 1;
+  const degLat = bbox.max_lat - bbox.min_lat || 1;
+  const fw = x1 - x0;
+  const fh = y1 - y0;
+
+  const project = (lng: number, lat: number) => ({
+    x: x0 + ((lng - bbox.min_lng) / degLng) * fw,
+    y: y0 + ((bbox.max_lat - lat) / degLat) * fh,
   });
+  const parsePair = (raw: string): { a: number; b: number } | null => {
+    const [p, q] = raw.split(",").map(Number);
+    return Number.isFinite(p) && Number.isFinite(q) ? { a: p, b: q } : null;
+  };
+
+  // 只有与图框同坐标系的锚点才被投影（§12-6：不换算、不混算）
+  const inFrame = ctx.slice.current_sources.filter((a) => a.coord_system === FRAME_CRS);
+  const offFrame = ctx.slice.current_sources.filter((a) => a.coord_system !== FRAME_CRS);
+
+  const exact: CanvasPrimitive[] = [];
+  const approx: CanvasPrimitive[] = [];
+  for (const a of inFrame) {
+    const pair = parsePair(a.location_raw);
+    if (!pair) continue;
+    const { x, y } = project(pair.a, pair.b);
+    const label = labelForAnchor(ctx.slice, a.anchor_key);
+    if (a.kind === "provider_current_object_point") {
+      exact.push({
+        kind: "marker",
+        key: `exact-${shortKey(a.anchor_key)}`,
+        x,
+        y,
+        glyph: "exact",
+        label,
+        sub: `${pair.a.toFixed(6)}, ${pair.b.toFixed(6)}`,
+        className: "map-point",
+      });
+    } else if (a.kind === "provider_current_object_area") {
+      approx.push({
+        kind: "approximate",
+        key: `area-${shortKey(a.anchor_key)}`,
+        x,
+        y,
+        rx: 74,
+        ry: 52,
+        label,
+        sub: "近似范围 · 无精确点",
+        className: "approx-area",
+      });
+    }
+  }
+
+  // 比例尺：只使用切片自己声明的跨度（估读，不声称面积）
+  const mPerPx = span.ew_m > 0 ? span.ew_m / fw : 0;
+  const NICE = [10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000];
+  const barMeters = NICE.filter((n) => n <= span.ew_m * 0.4).pop() ?? NICE[0];
+  const barPx = mPerPx > 0 ? barMeters / mPerPx : 0;
+
+  const stripY = y1 + 40;
+  const refs: CanvasPrimitive[] = offFrame.map((a, i) => ({
+    kind: "marker",
+    key: `ref-${i}`,
+    x: x0 + ((i + 0.5) * fw) / Math.max(1, offFrame.length),
+    y: stripY,
+    glyph: "reference",
+    label: `${a.coord_system} · ${a.location_raw}`,
+    sub: "参考锚 · 不并入本图",
+    className: "map-ref",
+  }));
+
+  const labels: LabelRequest[] = [
+    { key: "geo-crs", text: `本图坐标系 ${FRAME_CRS}（原值，零换算）`, x: x0, y: y0 - 26, prefer: "above", size: 11, className: "vg-label vg-label--sub" },
+    { key: "geo-lng0", text: `${bbox.min_lng.toFixed(4)}°E`, x: x0, y: y1 + 18, prefer: "below", size: 10, className: "vg-tick" },
+    { key: "geo-lng1", text: `${bbox.max_lng.toFixed(4)}°E`, x: x1, y: y1 + 18, prefer: "below", size: 10, className: "vg-tick" },
+    {
+      key: "geo-strip",
+      text: "↓ 另一坐标系的记录：分列登记，不并入本图、不做换算",
+      x: x0,
+      y: y1 + 26,
+      prefer: "below",
+      size: 10,
+      className: "vg-label vg-label--sub",
+    },
+  ];
+
+  const layers: CanvasLayer[] = [
+    {
+      id: "frame",
+      semantic: "frame",
+      primitives: [
+        {
+          kind: "graticule",
+          key: "grid",
+          x0,
+          y0,
+          w: fw,
+          h: fh,
+          cols: 4,
+          rows: 4,
+          ticks: [`${bbox.max_lat.toFixed(4)}°N`, `${bbox.min_lat.toFixed(4)}°N`],
+        },
+        {
+          kind: "extent",
+          key: "bbox",
+          x: x0,
+          y: y0,
+          w: fw,
+          h: fh,
+          corners: [
+            `${bbox.min_lng.toFixed(4)},${bbox.max_lat.toFixed(4)}`,
+            `${bbox.max_lng.toFixed(4)},${bbox.max_lat.toFixed(4)}`,
+            `${bbox.min_lng.toFixed(4)},${bbox.min_lat.toFixed(4)}`,
+            `${bbox.max_lng.toFixed(4)},${bbox.min_lat.toFixed(4)}`,
+          ],
+        },
+        ...(barPx > 0
+          ? [
+              {
+                kind: "scalebar" as const,
+                key: "scale",
+                x: x0 + 10,
+                y: y1 - 14,
+                lengthPx: barPx,
+                label: `${barMeters} m（按切片声明跨度估读）`,
+              },
+            ]
+          : []),
+        { kind: "northarrow", key: "north", x: x1 - 22, y: y0 + 34 },
+      ],
+    },
+    { id: "approx", semantic: "annotations", primitives: approx },
+    { id: "points", semantic: "nodes", primitives: exact },
+    { id: "refs", semantic: "annotations", primitives: refs },
+  ];
 
   return (
-    <div className="surf surf-map" data-testid="surface-current-map">
+    <div className="surf surf-map surf-map--v2" data-testid="surface-current-map">
       <p className="surf__caption">
-        当前精确空间 · 坐标系 {points.length ? "GCJ-02" : "—"}（原值，零换算）· 只代表<b>今天</b>
+        当前地理空间 · {FRAME_CRS} 原值 · 只代表<b>今天</b>
       </p>
-      <svg viewBox={`0 0 ${W} ${H}`} className="surf-map__svg" role="img" aria-label="当前精确坐标图">
-        <g className="coord-grid">
-          {[0, 0.25, 0.5, 0.75, 1].map((t) => (
-            <line key={`v${t}`} x1={pad + t * (W - pad * 2)} y1={pad - 26} x2={pad + t * (W - pad * 2)} y2={H - pad + 26} />
-          ))}
-          {[0, 0.25, 0.5, 0.75, 1].map((t) => (
-            <line key={`h${t}`} x1={pad - 26} y1={pad + t * (H - pad * 2)} x2={W - pad + 26} y2={pad + t * (H - pad * 2)} />
-          ))}
-          <text x={pad - 6} y={H - pad + 44} className="coord-tick">
-            {bbox.min_lng.toFixed(4)}°E
-          </text>
-          <text x={W - pad} y={H - pad + 44} className="coord-tick" textAnchor="end">
-            {bbox.max_lng.toFixed(4)}°E
-          </text>
-          <text x={pad - 32} y={pad + 2} className="coord-tick">
-            {bbox.max_lat.toFixed(4)}°N
-          </text>
-        </g>
-        {points.map((p) => {
-          const { x, y } = project(p);
-          const focused = ctx.focusPlace === p.label;
-          return (
-            <g key={p.key} className={`map-point ${focused ? "map-point--focus" : ""}`} data-place={p.label} data-testid={`current-point-${p.key.split("/")[0]}`}>
-              <circle cx={x} cy={y} r={11} className="map-point__dot" />
-              <circle cx={x} cy={y} r={19} className="map-point__halo" />
-              <text x={x + 26} y={y + 4} className="map-point__label">
-                {p.label}
-              </text>
-              <text x={x + 26} y={y + 21} className="map-point__coord">
-                {p.lng.toFixed(6)}, {p.lat.toFixed(6)}
-              </text>
-            </g>
-          );
-        })}
-        <text x={W - pad} y={pad - 34} textAnchor="end" className="coord-scale">
-          {span.ns_m} m × {span.ew_m} m（按 GCJ-02 原值估读）
-        </text>
-      </svg>
-      {!compact && <p className="surf__note">这是「现在」。往回走的时候，这些坐标会失去作证的资格。</p>}
+      <SpatialCanvas
+        view={GEO_VIEW}
+        layers={layers}
+        labels={labels}
+        title="当前地理空间：可靠当前锚点与声明跨度"
+        className="surf-map__svg"
+        testId="current-geographic-canvas"
+      />
+      <VisualLegend
+        className="vg-legend--geo"
+        items={[
+          { token: SPATIAL.node, text: "当前对象点", shape: "dot" },
+          { token: SPATIAL.approximate_area, text: "近似范围", shape: "dot" },
+          { token: SPATIAL.approximate_area, text: "参考锚（另一坐标系）", shape: "dot" },
+        ]}
+      />
+      {!compact && (
+        <p className="surf__note">
+          这里没有水道 / 道路：本切片没有任何可靠线面几何，宁可抽象，也不画一条编出来的河。
+        </p>
+      )}
     </div>
   );
 }
@@ -192,16 +298,54 @@ export function ApproximateAreaSurface({ ctx, compact }: SurfaceComponentProps) 
 }
 
 // ---------------------------------------------------------------------------
-// RelationalSpaceSurface 2.0：水道为 spine、桥表达"跨越"、candidate/unknown 明显不同（§10）
+// Relational Historical Surface V3（TASK-0015 §8 —— 最高优先级）
+//
+// 目标：不是知识图谱，而是「人文拓扑空间」。
+//   · 水道 = 构图骨架（semantic spine，不是历史几何）
+//   · bridge = crossing：骑在骨架上的跨越节点（形状本身说明「跨越」）
+//   · temple = cultural_node：带开口的围合（可进入）
+//   · E1 实线稳定 / E2 虚线可追问 / E3 点线弱线索 / 无线 = 中断的线（负空间）
+//   · 寺↔桥：线索是虚的，历史功能关系没有一条连通的线
+//   遮掉解释文字后仍应读出：水系骨架 → 两桥与水强关系 → 寺进入 → 寺桥未证。
 // ---------------------------------------------------------------------------
+
+const REL_VIEW: CanvasView = { width: 760, height: 470, pad: 40 };
+const REL_GEOMETRY = { spineY: 214, bandH: 88, crossingGap: 228, culturalGap: 196, culturalY: 356, asideY: 96 };
+
 export function RelationalSpaceSurface({ ctx, compact }: SurfaceComponentProps) {
-  const LAYOUT = layoutFor(ctx.slice);
-  const nodes = ctx.slice.features.map((f) => ({
+  const [focusKey, setFocusKey] = useState<string | null>(null);
+  const W = REL_VIEW.width;
+
+  const all = ctx.slice.features.map((f) => ({
     key: shortKey(f.feature_key),
     label: f.canonical_label,
     type: f.feature_type,
-    pos: LAYOUT[shortKey(f.feature_key)] ?? { x: 380, y: 300 },
+    role: nodeRoleForFeatureType(f.feature_type),
   }));
+  const roleOf: Record<string, NodeRole> = {};
+  for (const n of all) roleOf[n.key] = n.role;
+
+  const crossings = all.filter((n) => n.role === "crossing");
+  const culturals = all.filter((n) => n.role === "cultural_node");
+  const asides = all.filter((n) => n.role !== "spine" && n.role !== "crossing" && n.role !== "cultural_node");
+  const spine = all.find((n) => n.role === "spine");
+
+  const pos: Record<string, { x: number; y: number }> = {};
+  crossings.forEach((n, i) => {
+    pos[n.key] = { x: W / 2 + (i - (crossings.length - 1) / 2) * REL_GEOMETRY.crossingGap, y: REL_GEOMETRY.spineY };
+  });
+  culturals.forEach((n, i) => {
+    pos[n.key] = { x: W / 2 + (i - (culturals.length - 1) / 2) * REL_GEOMETRY.culturalGap, y: REL_GEOMETRY.culturalY };
+  });
+  asides.forEach((n, i) => {
+    pos[n.key] = { x: W / 2 + (i - (asides.length - 1) / 2) * REL_GEOMETRY.culturalGap, y: REL_GEOMETRY.asideY };
+  });
+
+  // 「寺/人」组：默认不进入画面，由 Beat 行动放进（progressive reveal）
+  const isOptional = (n: { role: NodeRole }) => n.role === "cultural_node" || n.role === "node";
+  const visibleNodes = ctx.optionalGroupIncluded ? all.filter((n) => n.role !== "spine") : all.filter((n) => !isOptional(n) && n.role !== "spine");
+  const visibleKeys = new Set(visibleNodes.map((n) => n.key));
+
   const edges = ctx.slice.relations.map((r) => ({
     key: r.relation_key,
     from: shortKey(r.subject_feature_key),
@@ -209,140 +353,122 @@ export function RelationalSpaceSurface({ ctx, compact }: SurfaceComponentProps) 
     predicate: predicateLabel(r.predicate),
     cls: r.epistemic_class,
   }));
-  // 可选对象组未「放进来」时不渲染（由 Beat 行动驱动，组件不含具体对象语义）
-  const isOptional = (n: { type: string; key: string }) =>
-    /site|temple/.test(n.type) || /person|reference/.test(n.type) || /site|temple|person|reference/.test(n.key);
-  const visibleNodes = ctx.optionalGroupIncluded ? nodes : nodes.filter((n) => !isOptional(n));
-  const visibleEdges = edges
-    .filter((e) => visibleNodes.some((n) => n.key === e.from) && visibleNodes.some((n) => n.key === e.to))
+
+  const drawnEdges = edges
+    .filter((e) => visibleKeys.has(e.from) && visibleKeys.has(e.to))
+    // 「跨越」由 crossing 节点的形态表达（骑在骨架上），不再重复画一条线
+    .filter((e) => !(roleOf[e.from] === "spine" || roleOf[e.to] === "spine"))
     // 对称关系在数据里可能以两个方向各存一条（同一主张的镜像表述）：
-    // 画面上只保留一条，否则会出现两条几乎重合的线。
-    // 这只是展示层去重，切片里的关系条数不变。
+    // 画面上只保留一条，否则会出现两条几乎重合的线（展示层去重，切片条数不变）
     .filter((e, _i, arr) => {
       const pair = [e.from, e.to].sort().join("|");
-      const twin = arr.find(
-        (x) => x.key !== e.key && [x.from, x.to].sort().join("|") === pair && x.predicate === e.predicate
-      );
+      const twin = arr.find((x) => x.key !== e.key && [x.from, x.to].sort().join("|") === pair && x.predicate === e.predicate);
       return !twin || e.from <= twin.from;
     });
-  const spine = visibleNodes.find((n) => n.type === "waterway");
-  // 让标签避开水道带（spine）：落在带内时推到带外，避免文字互相压叠
-  const bandTop = spine ? spine.pos.y - 31 : 0;
-  const bandBottom = spine ? spine.pos.y + 31 : 0;
-  const avoidBand = (y: number, edgeY: number) =>
-    spine && y > bandTop && y < bandBottom ? (edgeY < spine.pos.y ? bandTop - 12 : bandBottom + 22) : y;
-  // 「没有一条线」：被询问「这两者有关系吗」时，
-  // 只对「关联型断言」（association/relation/link）且非 E1 的连接标注缺证据——
-  // 其余弱线索仍以虚线保留，不冒充"缺失"。
-  const absentEdges = ctx.askedMissingRelation
-    ? ctx.slice.relations
-        .filter((r) => /association|relation|link|connect/i.test(r.predicate) && r.epistemic_class !== "E1")
-        .map((r) => ({ from: shortKey(r.subject_feature_key), to: shortKey(r.object_feature_key) }))
-        .filter((e) => visibleNodes.some((n) => n.key === e.from) && visibleNodes.some((n) => n.key === e.to))
-    : [];
+
+  const pairCount = (e: { from: string; to: string }) =>
+    drawnEdges.filter((x) => [x.from, x.to].sort().join("|") === [e.from, e.to].sort().join("|")).length;
+  const pairIndex = (e: { key: string; from: string; to: string }) =>
+    drawnEdges
+      .filter((x) => [x.from, x.to].sort().join("|") === [e.from, e.to].sort().join("|"))
+      .findIndex((x) => x.key === e.key);
+
+  const relationPrimitives: CanvasPrimitive[] = drawnEdges.map((e) => {
+    const a = pos[e.from];
+    const b = pos[e.to];
+    const bothCrossings = roleOf[e.from] === "crossing" && roleOf[e.to] === "crossing";
+    const n = pairCount(e);
+    const idx = pairIndex(e);
+    const shift = bothCrossings ? 0 : (idx - (n - 1) / 2) * 34;
+    const curve = bothCrossings ? (e.cls === "E1" ? 0 : 74) : 0;
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const len = Math.hypot(dx, dy) || 1;
+    const nx = (-dy / len) * shift;
+    const ny = (dx / len) * shift;
+    // 被问到的「关联型」断言且非 E1 → 画成**中断**的线：线索是虚的，中间是负空间
+    const askedMissing =
+      ctx.askedMissingRelation && /association|关联|relation|link|connect|未证实/i.test(e.predicate) && e.cls !== "E1";
+    return {
+      kind: "relation",
+      key: e.key,
+      from: [a.x + nx, a.y + ny],
+      to: [b.x + nx, b.y + ny],
+      role: relationRoleForEpistemic(e.cls),
+      label: askedMissing ? "还没有一条线" : e.predicate,
+      interrupted: askedMissing,
+      curve,
+      className: askedMissing
+        ? "rel rel--absent"
+        : e.cls !== "E1"
+          ? "rel rel--candidate rel__line--dashed"
+          : "rel rel--E1",
+      testId: askedMissing ? "absent-relation" : undefined,
+    };
+  });
+
+  const nodePrimitives: CanvasPrimitive[] = visibleNodes.map((n) => ({
+    kind: "node",
+    key: n.key,
+    x: pos[n.key].x,
+    y: pos[n.key].y,
+    role: n.role,
+    label: n.label,
+    depth: ctx.optionalGroupIncluded && (n.role === "cultural_node" || n.role === "node") ? "emerging" : undefined,
+    className: `node node--${n.type}`,
+  }));
+
+  const layers: CanvasLayer[] = [
+    {
+      id: "water",
+      semantic: "water",
+      primitives: spine
+        ? [
+            {
+              kind: "spine",
+              key: spine.key,
+              x1: 34,
+              x2: W - 34,
+              y: REL_GEOMETRY.spineY,
+              height: REL_GEOMETRY.bandH,
+              label: `${spine.label} · 关系骨架（非历史几何）`,
+            },
+          ]
+        : [],
+    },
+    { id: "relations", semantic: "relations", primitives: relationPrimitives },
+    { id: "nodes", semantic: "nodes", primitives: nodePrimitives },
+  ];
 
   return (
-    <div className="surf surf-relational" data-testid="surface-relational-space">
+    <div className="surf surf-relational surf-relational--v3" data-testid="surface-relational-space">
       <p className="surf__caption">
-        关系历史空间 · <b>无经纬度</b> · 不表达距离与走向 —— 水道是 spine，桥表达「跨越」
+        人文拓扑空间 · <b>无经纬度</b> · 不表达距离与走向 —— 水道是骨架，桥是跨越
       </p>
-      <svg viewBox="0 0 760 470" className="surf-relational__svg" role="img" aria-label="关系空间拓扑">
-        {spine && (
-          <>
-            <rect x={96} y={spine.pos.y - 31} width={568} height={62} rx={12} className="waterband" />
-            <text x={112} y={spine.pos.y + 6} textAnchor="start" className="waterband__label">
-              {spine.label} · 关系空间的 spine
-            </text>
-          </>
-        )}
-
-        {visibleEdges.map((e) => {
-          const a = LAYOUT[e.from];
-          const b = LAYOUT[e.to];
-          if (!a || !b) return null;
-          const dashed = e.cls !== "E1";
-          // 同一对节点之间的多条关系不得重叠：沿法线方向分配平行偏移
-          const pair = [e.from, e.to].sort().join("|");
-          const siblings = visibleEdges.filter((x) => [x.from, x.to].sort().join("|") === pair);
-          const idx = siblings.findIndex((x) => x.key === e.key);
-          const o = siblings.length > 1 ? (idx - (siblings.length - 1) / 2) * 34 : 0;
-          const dx = b.x - a.x;
-          const dy = b.y - a.y;
-          const len = Math.hypot(dx, dy) || 1;
-          const nx = (-dy / len) * o;
-          const ny = (dx / len) * o;
-          const mx = (a.x + b.x) / 2 + nx;
-          const my = (a.y + b.y) / 2 + ny;
-          return (
-            <g key={e.key} className={`rel rel--${e.cls}`} data-testid={`rel-${e.from}-${e.to}`}>
-              <line
-                x1={a.x + nx}
-                y1={a.y + ny}
-                x2={b.x + nx}
-                y2={b.y + ny}
-                className={dashed ? "rel__line rel__line--dashed" : "rel__line"}
-              />
-              <text
-                x={mx}
-                y={avoidBand(my - 9, my)}
-                textAnchor="middle"
-                className={dashed ? "rel__label rel__label--dashed" : "rel__label"}
-              >
-                {e.predicate}〔{e.cls}〕
-              </text>
-            </g>
-          );
-        })}
-
-        {/* 缺失关系以「没有一条线」表达——缺失本身是内容，不是遗漏 */}
-        {absentEdges.map((e) => {
-          const a = LAYOUT[e.from];
-          const b = LAYOUT[e.to];
-          if (!a || !b) return null;
-          // 与候选虚线平行错开，避免与 E2/E3 线索线压在一起
-          const dx = b.x - a.x;
-          const dy = b.y - a.y;
-          const len = Math.hypot(dx, dy) || 1;
-          const nx = (-dy / len) * 30;
-          const ny = (dx / len) * 30;
-          return (
-            <g key={`absent-${e.from}-${e.to}`} className="rel rel--absent" data-testid="absent-relation">
-              <line
-                x1={a.x + nx}
-                y1={a.y + ny}
-                x2={b.x + nx}
-                y2={b.y + ny}
-                className="rel__line rel__line--absent"
-              />
-              <text
-                x={(a.x + b.x) / 2}
-                y={avoidBand(Math.max(a.y, b.y) - 46, (a.y + b.y) / 2)}
-                textAnchor="middle"
-                className="rel__label--absent"
-              >
-                还没有一条线 · 这不是遗漏，是证据状态
-              </text>
-            </g>
-          );
-        })}
-
-        {visibleNodes.map((n) => (
-          <g
-            key={n.key}
-            transform={`translate(${n.pos.x},${n.pos.y})`}
-            className={`node node--${n.type} ${ctx.focusPlace === n.label ? "node--focus" : ""}`}
-            data-place={n.label}
-          >
-            <circle r={n.type === "waterway" ? 32 : 27} className="node__circle" />
-            <text y={5} textAnchor="middle" className="node__label">
-              {n.label}
-            </text>
-          </g>
-        ))}
-      </svg>
+      <SpatialCanvas
+        view={REL_VIEW}
+        layers={layers}
+        title="关系历史空间：水道为骨架、桥为跨越、寺为文化节点"
+        focusKey={focusKey}
+        onSelect={(k) => setFocusKey((cur) => (cur === k ? null : k))}
+        className="surf-relational__svg"
+        testId="relational-canvas"
+      />
+      <VisualLegend
+        className="vg-legend--rel"
+        items={[
+          { token: SPATIAL.spine, text: "水系骨架", shape: "band" },
+          { token: SPATIAL.crossing, text: "跨越节点", shape: "dot" },
+          { token: SPATIAL.cultural_node, text: "文化节点", shape: "dot" },
+          { token: SPATIAL.relation_confirmed, text: "已证", shape: "line" },
+          { token: SPATIAL.relation_candidate, text: "候选（未落定）", shape: "line" },
+          { token: SPATIAL.relation_weak, text: "弱线索", shape: "line" },
+          { token: SPATIAL.relation_missing, text: "无线", shape: "line" },
+        ]}
+      />
       {!compact && (
         <p className="surf__note">
-          实线＝有据关系（E1）；虚线＝仅有线索的候选（E2/E3）。被问到的连接若没有实线——那正是还没有证据的地方。
+          实线＝有据；虚线＝候选；点线＝弱线索；断开＝被问到的连接还没有证据。
         </p>
       )}
     </div>

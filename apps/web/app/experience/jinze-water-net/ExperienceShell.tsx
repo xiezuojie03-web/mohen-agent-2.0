@@ -203,6 +203,14 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
         <div className="exp-canvas__current" key={scene.scene_id}>
           <PrimarySurface ctx={ctx} onAction={onAction} />
         </div>
+        {/* §10 转场必须表达 epistemic change：不只是动画，而是明示「坐标失去作证资格」。
+            只要不在「当下」场景（非 GEOGRAPHIC_EXACT），当前坐标就没有历史定位资格；
+            回到今天（GEOGRAPHIC_EXACT）时该提示自动消失。 */}
+        {scene.spatial_mode !== "GEOGRAPHIC_EXACT" && (
+          <span className="exp-epistemic-shift" data-testid="coordinate-authority-lost">
+            当前坐标在此失去历史定位资格
+          </span>
+        )}
         <span
           className="exp-transition-hint"
           data-testid="transition-hint"

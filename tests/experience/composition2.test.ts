@@ -7,7 +7,6 @@
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
 
 import {
   evaluateSurfaceEligibility,
@@ -406,28 +405,18 @@ describe("TASK-0014 — boundaries (§15-19/20/21)", () => {
     if (!fs.existsSync(LEGACY_SEED)) return;
     const st = fs.statSync(LEGACY_SEED);
     expect(st.size).toBeGreaterThan(0);
-    // 首选证据：git porcelain 为空
-    let gitOut = "";
-    let gitOk = false;
-    for (let i = 0; i < 3 && !gitOk; i++) {
-      try {
-        gitOut = execFileSync(
-          "git",
-          ["-C", path.dirname(path.dirname(LEGACY_SEED)), "status", "--porcelain", "data/seed.master.json"],
-          { encoding: "utf8" }
-        ).trim();
-        gitOk = true;
-      } catch {
-        /* 本机偶发 spawnSync EBUSY（已知环境限制），重试；仍失败则走 size+mtime 举证 */
-      }
-    }
-    if (gitOk) {
-      expect(gitOut).toBe("");
-      return;
-    }
-    // 降级举证：本任务开工时记录的 size + mtimeMs 快照（见 result 报告）
+    // 判据（TASK-0015 Phase 0 加固）：Legacy 仓库工作区**本来就脏**，
+    // 用「git status 干净」证明零写入会把既有改动误判成本任务造成（见 mohen 记忆 §6.3）。
+    // 正确判据＝运行期间 size + mtime 未变（对照开工快照）。
     expect(st.size).toBe(LEGACY_SEED_BASELINE.size);
     expect(Math.floor(st.mtimeMs)).toBe(LEGACY_SEED_BASELINE.mtimeMs);
+    // 辅以：本仓库任何源码都不得指向该数据文件（写路径不存在）
+    const srcs = [
+      read(path.join(ROOT, "packages", "experience-engine", "src", "index.ts")),
+      read(path.join(EXP_DIR, "beats.ts")),
+      read(path.join(EXP_DIR, "ExperienceShell.tsx")),
+    ];
+    for (const s of srcs) expect(s).not.toContain("seed.master.json");
   });
 
   it("21. build / typecheck / guards 入口齐备（实际执行结果见 result 报告）", () => {

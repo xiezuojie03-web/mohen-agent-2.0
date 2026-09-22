@@ -12,6 +12,8 @@ export interface SliceShape {
   }>;
   changes: Array<{
     change_key: string;
+    /** 变化所属对象（与 features[].feature_key 对齐） */
+    feature_key: string;
     canonical_label: string;
     change_status: string;
     change_epistemic: string;
