@@ -2,7 +2,7 @@
 
 **Status:** **PASS**
 **基线 HEAD:** `3a59fc0cca560c27aea6bda4927e05ed29fb2b97`
-**本任务 commit:** 见 §7（主 commit + hash 回填 commit）
+**本任务 commit:** `1790ffb574b58208a557abd0f861c503f0dd1a12`（15 files changed, +4082 / −9）→ 本报告 hash 回填见紧随其后的文档 commit
 **交付范围:** 金泽最小切片 —— 万安桥 → 普济桥 → 颐浩寺/颐浩寺遗址 → 连接三者所必需的最小水系语境
 **Stop rule:** 本文件完成后 **STOP**，不启动 TASK-0011。
 
@@ -226,6 +226,6 @@
 | 项 | 值 |
 |---|---|
 | 基线 HEAD | `3a59fc0cca560c27aea6bda4927e05ed29fb2b97` |
-| 本任务 commit | 见紧随其后的 hash 回填 commit（message：`TASK-0010: 金泽历史空间最小切片重建（HR-MAP-01 → Feature/Anchor/Change/Relation → Slice → Readiness Gate）`） |
+| 本任务 commit | **`1790ffb574b58208a557abd0f861c503f0dd1a12`**（15 files changed, +4082 / −9）— message：`TASK-0010: 金泽历史空间最小切片重建（HR-MAP-01 → Feature/Anchor/Change/Relation → Slice → Readiness Gate）` |
 | worktree clean | **YES**（回填 commit 后干净） |
 | **STOP** | 本任务完成，**不启动 TASK-0011**。 |
