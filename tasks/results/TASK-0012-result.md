@@ -65,7 +65,7 @@
 
 | commit | 内容 |
 |---|---|
-| （本轮）TASK-0012 主体 | 构建器 + 测试 + 任务书 + result 文档 |
+| `8e96f73` | TASK-0012 主体：构建器 + 测试 + 任务书 + result 文档（4 files，+2069） |
 
 worktree：tracked 文件 clean（exports/gitignore 产物与 TASK-0011 期遗留的 probe/_debug 脚本不属本任务交付）。
 
