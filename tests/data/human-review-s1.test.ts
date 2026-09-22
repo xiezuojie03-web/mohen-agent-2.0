@@ -42,8 +42,11 @@ const baseline = fs.existsSync(LEGACY_SEED)
 describe("TASK-0005 Human Review + S1 Evidence", () => {
   // 1. HR-1～HR-6 六项决策均可追溯
   it("1. HR-1~HR-6 六项决策均可追溯", async () => {
+    // 只取 TASK-0005 的 `HR-*` 命名空间：后续任务在同一机制里新增了 `SHR-*`（空间编辑决策），
+    // 二者前缀与语义均不同义，混计会把「别的任务加了决策」误报成「本任务决策被改」。
     const rows = await db.rows(
-      `select hr_code, decision_code, status_after, actor from human_review_decisions order by hr_code`
+      `select hr_code, decision_code, status_after, actor from human_review_decisions
+        where hr_code ~ '^HR-[1-6]$' order by hr_code`
     );
     const byCode = Object.fromEntries(rows.map((r) => [r.hr_code, r]));
     expect(rows.length).toBe(6);
@@ -82,16 +85,22 @@ describe("TASK-0005 Human Review + S1 Evidence", () => {
   // 4. HR-5 视觉资产不能进入 heritage-primary selection
   it("4. HR-5 视觉资产不能进入 heritage-primary selection", async () => {
     const total = await db.rows(`select count(*)::int as c from visual_assets`);
+    // 不断言「总量 == 排除量」：那是 TASK-0005 结束时库内只有这 20 张才成立的**当时快照**，
+    // 不是不变量。后续任务可以合法新增可用的遗产视觉资产（TASK-0008 WP-C/D 即如此）。
+    expect(Number(total[0].c)).toBeGreaterThanOrEqual(20);
+
     const excluded = await db.rows(
       `select count(*)::int as c from visual_assets where eligibility_tags && array['excluded_from_heritage_primary']`
     );
-    expect(Number(total[0].c)).toBeGreaterThan(0);
-    expect(Number(excluded[0].c)).toBe(Number(total[0].c)); // 全部被排除
-    // heritage-primary 可用资产 = 0
-    const eligible = await db.rows(
-      `select count(*)::int as c from visual_assets where not (eligibility_tags && array['excluded_from_heritage_primary'])`
+    expect(Number(excluded[0].c)).toBe(20); // HR-5 批次恰好 20 张，一张都不许被「换标签复活」
+
+    // 真正的不变量：heritage-primary（effective 视图）里不得出现任何一张被排除资产
+    const leaked = await db.rows(
+      `select count(*)::int as c from effective_visual_assets e
+         join visual_assets a on a.asset_id = e.asset_id
+        where a.eligibility_tags && array['excluded_from_heritage_primary']`
     );
-    expect(Number(eligible[0].c)).toBe(0);
+    expect(Number(leaked[0].c)).toBe(0);
   });
 
   // 5. HR-6 conflict 不会被静默覆盖
@@ -200,7 +209,10 @@ describe("TASK-0005 Human Review + S1 Evidence", () => {
 
   // 11. 重跑幂等（persist-human-review 重跑计数不变）
   it("11. 重跑 persist-human-review 幂等", async () => {
-    const before = await db.rows(`select count(*)::int as c from human_review_decisions`);
+    // 只数本任务的 `HR-*` 命名空间：别的任务在同一机制里加决策，不应被误读为「本管线不幂等」。
+    const before = await db.rows(
+      `select count(*)::int as c from human_review_decisions where hr_code ~ '^HR-[1-6]$'`
+    );
     const beforeEx = await db.rows(
       `select count(*)::int as c from visual_assets where eligibility_tags && array['excluded_from_heritage_primary']`
     );
@@ -209,12 +221,14 @@ describe("TASK-0005 Human Review + S1 Evidence", () => {
       stdio: "pipe",
       env: { ...process.env },
     });
-    const after = await db.rows(`select count(*)::int as c from human_review_decisions`);
+    const after = await db.rows(
+      `select count(*)::int as c from human_review_decisions where hr_code ~ '^HR-[1-6]$'`
+    );
     const afterEx = await db.rows(
       `select count(*)::int as c from visual_assets where eligibility_tags && array['excluded_from_heritage_primary']`
     );
     expect(Number(after[0].c)).toBe(Number(before[0].c)); // 仍为 6
-    expect(Number(afterEx[0].c)).toBe(Number(beforeEx[0].c)); // 仍为全部
+    expect(Number(afterEx[0].c)).toBe(Number(beforeEx[0].c)); // 仍为 20
   }, 60_000);
 
   // 12. Legacy 零写

@@ -277,8 +277,16 @@ describe("TASK-0007 Jinze Spatial Grounding", () => {
 
   // 10. No forced global georeferencing
   it("10. 未做强制全局配准（无新 migration、管线无配准实现）", async () => {
-    const migs = fs.readdirSync(path.join(PROJECT_ROOT, "supabase", "migrations")).filter((f) => f.endsWith(".sql"));
-    expect(migs.length, "本任务不得新增 migration").toBe(4);
+    const migDir = path.join(PROJECT_ROOT, "supabase", "migrations");
+    const migs = fs.readdirSync(migDir).filter((f) => f.endsWith(".sql"));
+    // 本任务的不变量是「**本任务未为配准新增 migration**」，不是「migration 总数恒为 4」——
+    // 后者会把别的任务合法新增的 migration（如 TASK-0008 的 006 视觉链接）误报成本任务违约。
+    // 改为直接检查现存 migration 内容：不得出现配准/仿射/控制点实现。
+    const georefMigs = migs.filter((f) => {
+      const sql = fs.readFileSync(path.join(migDir, f), "utf8");
+      return /georeferenc|affine|control_point|controlPoint/i.test(sql);
+    });
+    expect(georefMigs, "不得新增配准相关 migration").toEqual([]);
     const src = fs.readFileSync(PIPELINE, "utf8");
     expect(src.includes("georeferenc")).toBe(false);
     expect(src.includes("affine")).toBe(false);

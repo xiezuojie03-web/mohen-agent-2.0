@@ -101,9 +101,11 @@ describe("TASK-0006 Jinze Minimum Knowledge Weave", () => {
 
   // 6. HR-5 visual exclusion unchanged
   it("6. HR-5 视觉排除不变", async () => {
-    expect(await n(`select count(*)::int c from visual_assets`)).toBe(20);
+    // 不变量是「HR-5 批次保持被排除」，不是「全库总量恒为 20」——
+    // 后续任务可以合法新增可用遗产视觉资产（TASK-0008 WP-C/D 即如此）。
     expect(await n(`select count(*)::int c from visual_assets where eligibility_tags && array['excluded_from_heritage_primary']`)).toBe(20);
-    expect(await n(`select count(*)::int c from visual_assets where not (eligibility_tags && array['excluded_from_heritage_primary'])`)).toBe(0);
+    // 被排除资产一张都不得进入 effective（heritage-primary）视图
+    expect(await n(`select count(*)::int c from effective_visual_assets e join visual_assets a on a.asset_id=e.asset_id where a.eligibility_tags && array['excluded_from_heritage_primary']`)).toBe(0);
   });
 
   // 7. HR-6 conflict unchanged
@@ -222,7 +224,8 @@ describe("TASK-0006 Jinze Minimum Knowledge Weave", () => {
 
   // 15. Existing TASK-0003/0004/0005 invariants remain green
   it("15. 既有 TASK-0003/0004/0005 不变量继续成立", async () => {
-    expect(await n(`select count(*)::int c from human_review_decisions`)).toBe(6);
+    // 只数 `HR-*` 命名空间：这是 TASK-0005 的不变量。后续任务的 `SHR-*` 属另一语义，不得混计。
+    expect(await n(`select count(*)::int c from human_review_decisions where hr_code ~ '^HR-[1-6]$'`)).toBe(6);
     expect(await n(`
       select count(*)::int c from relations r
         join entities s on r.subject_id=s.entity_id join entities o on r.object_id=o.entity_id

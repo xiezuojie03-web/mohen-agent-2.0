@@ -69,12 +69,23 @@ export function getConnection() {
 
 // 将 :'name' 占位替换为安全转义后的 SQL 字符串字面量（自动双写单引号、转义反斜杠）。
 // 仅匹配带引号的 :'name'，避免与 ::int / ::jsonb 等类型转换语法冲突。
+//
+// ★ 必须使用 E'' 前缀（TASK-0008 修复）★
+//   本函数把反斜杠转义为 `\\`。该转义**只在转义字符串（E''）中才成立**：
+//     - standard_conforming_strings = off  → 普通 '' 也解释反斜杠，转义生效；
+//     - standard_conforming_strings = on   → 普通 '' 里反斜杠是**字面量**，
+//       于是 `\\` 原样入库 —— 即把 1 个反斜杠写成了 2 个（静默数据失真）。
+//   本机实测该参数为 **on**（PostgreSQL 18.6 默认），因此修复前：
+//     · 任何含反斜杠的值（Windows 路径 raw_path、JSON 里的 \" 等）都被双写；
+//     · 更严重的是含 `"` 的 JSON 文本会被写成 `\\"`，JSON 解析时
+//       `\\`=字面反斜杠 + `"`=字符串结束 → jsonb 报 “Token ... is invalid” 而**整条写入失败**。
+//   加 E 前缀后，反斜杠转义在两种设置下都成立，行为不再依赖服务端会话参数。
 function renderSql(sql, params) {
   if (!params) return sql;
   return sql.replace(/:'([^']+)'/g, (_m, name) => {
     const v = params[name];
     if (v === null || v === undefined) return "NULL";
-    return `'${String(v).replace(/\\/g, "\\\\").replace(/'/g, "''")}'`;
+    return `E'${String(v).replace(/\\/g, "\\\\").replace(/'/g, "''")}'`;
   });
 }
 

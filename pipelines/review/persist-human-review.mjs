@@ -163,10 +163,20 @@ async function main() {
   //    provider_label_mismatch 资产）打 excluded_from_heritage_primary 标记。
   //    注：这些资产的 source_id 仍指向 Legacy provider=hushang-jingwei 来源记录（TASK-0004 §5），
   //    故按 file_path 精确识别本批 20 张，而非按 source_records.provider。
+  //
+  //    ⚠ 2026-09-22 修正（TASK-0008 期间发现并修复的跨任务缺陷）：
+  //    原选择条件只有 `file_path ilike '%upload.wikimedia.org%' or '%commons.wikimedia%'`，
+  //    语义是「**任何**托管在 Commons 的资产」。TASK-0005 当时库内只有这 20 张，恰好等价；
+  //    但 TASK-0008 WP-C 之后，库内新增了 8 张**同样托管在 Commons** 的金泽古桥实景
+  //    （它们正是 WP-E 的有效证据），于是**重跑本管线会把它们一起打成排除**，
+  //    造成 effective_visual_assets 归零、并触发 migration 006 的守卫（拒绝为被排除资产建 confirmed 链接）。
+  //    修法：把范围**收窄到 HR-5 真正评审过的那一批**——TASK-0004 从 Legacy 迁入时创建的那条来源记录。
+  //    这样「本批 20 张」是一个**稳定的批次身份**，而不是「凡是 Commons 图都算」。
   const tagged = await run(
     `update visual_assets
        set eligibility_tags = array_append(eligibility_tags, 'excluded_from_heritage_primary')
-       where (file_path ilike '%upload.wikimedia.org%' or file_path ilike '%commons.wikimedia%')
+       where source_id in (select source_id from source_records where provider = 'hushang-jingwei')
+         and (file_path ilike '%upload.wikimedia.org%' or file_path ilike '%commons.wikimedia%')
          and not (eligibility_tags && array['excluded_from_heritage_primary'])`
   );
   const taggedCount = await queryValue(
