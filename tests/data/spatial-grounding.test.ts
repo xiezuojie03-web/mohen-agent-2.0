@@ -318,7 +318,15 @@ describe("TASK-0007 Jinze Spatial Grounding", () => {
     expect(await n(`select count(*)::int c from claims where generated_by='mohen-knowledge-weave'`)).toBe(5);
     expect(await n(`select count(*)::int c from knowledge_paths`)).toBe(3);
     expect(await n(`select count(*)::int c from discovery_candidates`)).toBe(4);
-    expect(await n(`select count(*)::int c from relations`)).toBe(30);
+    // §12-26（TASK-0010 修正）：此处原本断言 `relations` 总数 = 30 —— 那是**过期的绝对总数**。
+    // 改为断言真正的不变量：legacy 映射恒 24、非 crossLink 关系必带 Evidence、
+    // 且切片关系（TASK-0010 起）落在 historical_spatial_relations 而非 relations。
+    expect(await n(`select count(*)::int c from relations where legacy_id is not null`)).toBe(24);
+    expect(
+      await n(`select count(*)::int c from relations r
+                where r.predicate <> 'crossLink'
+                  and not exists (select 1 from relation_evidence re where re.relation_id=r.relation_id)`)
+    ).toBe(0);
     // 空间任务不得产生 claim / relation / discovery
     expect(
       await n(`select count(*)::int c from claims where generated_by ilike '%spatial%'`)

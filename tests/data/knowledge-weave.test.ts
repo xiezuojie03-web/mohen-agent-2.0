@@ -48,8 +48,17 @@ describe("TASK-0006 Jinze Minimum Knowledge Weave", () => {
           and not exists (select 1 from relation_evidence re where re.relation_id=r.relation_id)`
     );
     expect(noEv).toBe(0);
-    // 本任务未新增任何 relation（relations 总数保持 30）
-    expect(await n(`select count(*)::int c from relations`)).toBe(30);
+    // §12-26（TASK-0010 修正）：此处原本断言 `relations` 总数 = 30 —— 那是**过期的绝对总数**，
+    // 任何后续任务合法新增关系都会让它假报警。改为断言真正的不变量：
+    //   (a) Knowledge Weave 冻结的 legacy 映射关系恒为 24；
+    //   (b) 非 crossLink 关系必须带 Evidence（已在上方断言）；
+    //   (c) 本任务不得向 relations 写入切片关系（切片关系落 historical_spatial_relations）。
+    expect(await n(`select count(*)::int c from relations where legacy_id is not null`)).toBe(24);
+    expect(
+      await n(`select count(*)::int c from relations
+                where predicate in ('spans_waterway','relative_position_south_of','temple_bridge_association','former_site_of')`)
+    ).toBe(0);
+    expect(await n(`select count(*)::int c from relations where status::text in ('verified','published')`)).toBe(0);
     // 结构型 crossLink 恒无 Evidence（不得被当作知识边）
     const crossWithEv = await n(
       `select count(*)::int c from relations r join relation_evidence re on re.relation_id=r.relation_id where r.predicate='crossLink'`

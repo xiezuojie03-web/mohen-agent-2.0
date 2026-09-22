@@ -94,3 +94,17 @@ NODE_PATH="C:/Users/Administrator/.workbuddy/binaries/node/workspace/node_module
 
 `HISTORICAL_MAP_READY=YES` 需要"描绘金泽本身 或 给出可辩护金泽空间锚点"的地图；**宏观区域图不够**。
 取得直接/局部金泽图 → 标 `BREAKTHROUGH_CANDIDATE` + 备复核证据，**但不自判** Map Gate。
+
+## 交接边界（下游 = Assemble）
+
+本 skill 到此为止：**采到并审计完源**。把源变成「历史空间切片」（特征 / 时间语义 / 接地 /
+E1–E4 关系 / 变更 / 就绪门）是下游 **`mohen-historical-spatial-reconstruction`** 的职责，见该 SKILL.md。
+
+两条交接纪律：
+1. 本 skill 产出的 `source/page identity`、`grid sheet`、`unresolved labels` 等复核结论，
+   **不得**被下游改写成「已确认」；下游只能以**新的** Human Review Decision **追加**（如 `HR-MAP-01`），
+   且不得沿用 `HR-[1-6]` / `SHR-*` 前缀以免碰撞。
+2. 「Historical Spatial Source = YES」**不等于**「图上有可归因于某对象的要素」。若图上标签未读出/
+   UNRESOLVED，下游**必须**把该图登记为「不可归因于切片对象」（`attributable_to_slice_objects=false`），
+   禁止因「这个区域应该有某镇」而生成历史位置。
+
