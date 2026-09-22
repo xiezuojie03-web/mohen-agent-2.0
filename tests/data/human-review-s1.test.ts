@@ -128,11 +128,13 @@ describe("TASK-0005 Human Review + S1 Evidence", () => {
     expect(rawFiles.length).toBe(20);
     expect(fs.existsSync(path.join(S1_RUN_DIR, "manifest.json"))).toBe(true);
 
-    // source_records 按 (provider, checksum) 去重 → shanghai-library 实际 9 条（4 个 gj_instances + 2 kg 的 0 命中同 checksum 折叠）
+    // §12-26 不变式断言：S1 登记的 9 条 shanghai-library 源必须**仍在**（不得被后续任务
+    // 删除/折叠），但总数不作绝对断言——TASK-0011 起证据闭环任务可合法新增
+    // shanghai-library 源（geonames / red-building / gen-person / yutu-work 各 1）。
     const src = await db.rows(
       `select count(*)::int as c from source_records where provider='shanghai-library'`
     );
-    expect(Number(src[0].c)).toBe(9);
+    expect(Number(src[0].c)).toBeGreaterThanOrEqual(9);
 
     // 不含 key 的 source_uri：抽查是否含 "?key="
     const keyed = await db.rows(
@@ -150,10 +152,13 @@ describe("TASK-0005 Human Review + S1 Evidence", () => {
     );
     expect(Number(st[0].c)).toBe(0);
 
-    // record 型证据 quote 仅为「书名：…」（书目 metadata），不含正文长句
+    // record 型证据 quote 仅为「书名：…」（书目 metadata），不含正文长句。
+    // §12-26：按 extraction_method 限定**本任务（S1）**登记的行，不得按 provider
+    // 全局宽捞——TASK-0011 起同 provider 下有结构化 record 型证据（foaf:name=… 等）。
     const rec = await db.rows(
       `select quote_text from evidence e join source_records s on e.source_id=s.source_id
-        where s.provider='shanghai-library' and e.evidence_type='record'`
+        where s.provider='shanghai-library' and e.evidence_type='record'
+          and e.extraction_method like 's1_%'`
     );
     expect(rec.length).toBeGreaterThan(0);
     for (const r of rec) {

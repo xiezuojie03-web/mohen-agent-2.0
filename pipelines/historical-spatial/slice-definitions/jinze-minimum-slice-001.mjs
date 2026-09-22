@@ -36,11 +36,12 @@ export const FEATURES = [
       "桥在现实中是线状构筑物，但本 Task 持有的唯一几何是 provider 当前**对象点**；不产生桥体线几何（无测绘来源）。",
     attested_time_start: "1260",
     attested_time_end: "1264",
-    attested_time_label: "南宋景定年间（1260–1264）建",
+    attested_time_label: "南宋景定年间（1260–1264）建；元至正二年（1342）桥上加建廊亭（均有 Evidence）",
     attested_time_evidence_backed: true,
-    legacy_only_assertions: [
-      "「旧志载其形制为亭桥（桥上建亭）」—— 该句仅存在于 Legacy 实体描述（且自述「据方志转述」），全库无对应 Evidence 行。",
-    ],
+    // TASK-0011 §7：A2 原为 legacy_only_assertion（「叠经兵燹」式的『旧志载其形制为亭桥』）。
+    // 本轮由 S1-C 官方来源（青浦区政府 2025 / 2023、青浦博物馆、上海市地方志办公室）与
+    // S1-A 上图地名库（「又名万安亭桥」）**关闭** → 移出 active assertion set 并升级为 evidenced。
+    legacy_only_assertions: [],
     attested_historical_existence: "attested",
     current_survival_or_site: "survives",
     historical_position_status: "historical_relative_position_only",
@@ -48,8 +49,13 @@ export const FEATURES = [
     name_continuity_status: "continuous",
     change_status: "survives",
     historical_source_refs: [
-      "上海图书馆《上海文化总库》遗产记录 physicalculturalheritage/chlyrdj3o8ll81k8",
-      "Legacy 实体描述（转述方志，含「亭桥」形制——该部分无 Evidence 行）",
+      "上海图书馆《上海市不可移动文物名录》文化遗产记录 physicalculturalheritage/chlyrdj3o8ll81k8（金泽镇金溪居委会；区级文物保护单位）— **本轮直接取回**，此前仅经 Legacy 转抄",
+      "上海市青浦区人民政府｜遗珠拾粹——探访青浦多种形式的古桥（2025-01-16）：「又称『万安亭桥』…元至正二年（1342年）桥上加建廊亭」",
+      "上海市青浦区人民政府｜万安桥（2023-07-06）：「又称『万安亭桥』…」并内嵌《金泽小志》引文「亭建如穿廊，数间飞出…」",
+      "上海青浦博物馆｜万安桥（2019-03-04）：「又称万安亭桥…元至正二年(1342)桥上加建廊亭，桥下有佛阁，后废」",
+      "上海市地方志办公室｜上海桥乡:金泽：据《金泽小志》「万安亭桥，跨市北。亭建如穿廊，数间飞出…」",
+      "上海图书馆开放数据·地名库｜万安桥：「又名万安亭桥。位于青浦县金泽镇北市梢…」",
+      "【已退休为研究线索，不再作为 active assertion】Legacy 实体描述：「旧志载其形制为亭桥（桥上建亭）」——该句本身已由上述四类独立来源证实；Legacy 自述的『据方志转述』链仍未取得方志原件（见 U11）",
       "1879 光绪《青浦县志》图说（Historical Spatial Source = YES；但本图未读出「金泽」标签，故**不能**归因到本对象）",
     ],
     current_source_refs: [
@@ -58,7 +64,7 @@ export const FEATURES = [
     ],
     review_status: "candidate",
     uncertainty_note:
-      "「亭桥」形制、以及 1879 图上是否绘有本桥，均无证据；不得由当前对象点或图上邻近性推断历史位置。",
+      "A2 已关闭（亭桥形制有 4 类独立来源：青浦区政府 ×2、青浦博物馆、上海市地方志办公室＋上图地名库）。**仍未解决**：(1)「亭、阁已废」有官方依据（青浦区政府 2025：「如今，亭、阁已废，而石栏板上还留有当年亭柱的榫口」），但**废于何时**无证据；(2) 上图地名库本条记作「跨**秀州塘**」，与青浦区官方来源的「跨金泽塘／跨市河」冲突 → 见 T11-C2 与 U13；(3) 1879 图上是否绘有本桥仍无证据；不得由当前对象点或图上邻近性推断历史位置。",
     evidence: [
       E("wanan_amap", `extraction_method='${AMAP}' and subject_hint='万安桥'`),
       E("wanan_shl", `extraction_method='legacy_entity_source' and subject_hint='万安桥'`),
@@ -68,6 +74,17 @@ export const FEATURES = [
       E("wanan_p625", `extraction_method='${P625}' and place_hint='万安桥'`),
       E("wanan_caption", `extraction_method='visual_identity_caption_rule' and subject_hint='万安桥'`),
       E("jinzetang_span_wanan", `extraction_method='legacy_description_mining' and quote_text like '%横跨金泽塘%'`),
+      // ---- TASK-0011 新增（A2 关闭）----
+      E("wanan_heritage_registry", `extraction_method='t11_s1a_shl_heritage' and locator like '%chlyrdj3o8ll81k8%'`),
+      E("wanan_geonames_tingqiao", `extraction_method='t11_s1a_shl_geonames' and subject_hint='万安桥'`),
+      // 注意：2025 政府页原文在「桥上加建廊亭」后有策展省略号（……），
+      // 不能把「明嘉靖」拼进同一 LIKE 串；改用「东西向跨金泽塘，俗称」（无逗号变体，
+      // 唯一标识该页）+ 语义锚「桥上加建廊亭」双条件，实测命中恰 1 行。
+      E("wanan_gov_2025_tingqiao", `extraction_method='t11_s1c_official_source' and subject_hint='万安桥' and quote_text like '%东西向跨金泽塘，俗称%' and quote_text like '%桥上加建廊亭%'`),
+      E("wanan_gov_2023_tingqiao", `extraction_method='t11_s1c_official_source' and subject_hint='万安桥' and quote_text like '%亭建如穿廊%'`),
+      E("wanan_museum_tingqiao", `extraction_method='t11_s1c_official_source' and subject_hint='万安桥' and quote_text like '%桥下有佛阁，后废%'`),
+      E("wanan_shtong_xiaozhi", `extraction_method='t11_s1c_local_chronicles' and subject_hint='万安桥'`),
+      E("wanan_ting_lost", `extraction_method='t11_s1c_official_source' and subject_hint='万安桥' and quote_text like '%亭、阁已废%'`),
     ],
   },
 
@@ -86,9 +103,12 @@ export const FEATURES = [
     attested_time_end: "1267",
     attested_time_label: "南宋咸淳三年（1267）建",
     attested_time_evidence_backed: true,
-    legacy_only_assertions: [
-      "「位于金泽镇北市，横跨金泽塘」—— 该句仅存在于 Legacy 实体描述，全库**无**对应 Evidence 行（已按 quote/locator/subject/place 全库检索『金泽塘』，仅命中万安桥的 2 行）。",
-    ],
+    // TASK-0011 §7：A1 原为 legacy_only_assertion。本轮拆分处理：
+    //   · 「横跨金泽塘」→ 由青浦区政府档案页（2025）等官方来源**关闭**，升级为 evidenced；
+    //   · 「位于金泽镇北市」→ 与四份独立来源（南市／中部／金泽古镇）**冲突**（T11-C1），
+    //     按 §1 CONFLICT 移出 active assertion set、**保留双方**、阻断静默解决。
+    // 两者均已移出 legacy_only_assertions；原文保留于 historical_source_refs 与 uncertainty_note。
+    legacy_only_assertions: [],
     attested_historical_existence: "attested",
     current_survival_or_site: "survives",
     historical_position_status: "historical_relative_position_only",
@@ -96,8 +116,14 @@ export const FEATURES = [
     name_continuity_status: "continuous",
     change_status: "survives",
     historical_source_refs: [
-      "上海图书馆《上海文化总库》遗产记录 physicalculturalheritage/arz32mktwndn0e0f",
-      "Legacy 实体描述（转述，「横跨金泽塘」部分无 Evidence 行）",
+      "上海图书馆《上海市不可移动文物名录》文化遗产记录 physicalculturalheritage/arz32mktwndn0e0f（金泽镇金溪居委会；**上海市**文物保护单位）— **本轮直接取回**，此前仅经 Legacy 转抄",
+      "上海市青浦区人民政府｜遗珠拾粹——探访青浦多种形式的古桥（2025-01-16）：「普济桥 位于金泽古镇，**东西向跨金泽塘**…宋咸淳三年（1267年）建…1962 年，被列为上海市文物保护单位」",
+      "上海青浦博物馆｜普济桥（2019-03-04）：「位于金泽镇**南市**…东西向，**跨市河**。宋咸淳三年(1267)建…1962年10月被公布为上海市文物保护单位」",
+      "上海市地方志办公室｜上海桥乡:金泽：「普济桥在金泽镇**南市**…宋咸淳三年，即1267年建」",
+      "江南古桥文化研究会｜普济桥：「位于金泽镇**中部**，东西向，**跨金泽塘**」",
+      "上海图书馆开放数据·老照片库｜普济桥：「青浦县金泽镇的普济桥建于宋咸淳三年（1267年），桥为单孔石拱」",
+      "上海图书馆开放数据·地名库｜金泽镇：「现存古桥21座，其中有建于宋代的万安桥、普济桥…」",
+      "【已退休为研究线索】Legacy 实体描述原文：「位于金泽镇北市，横跨金泽塘」——「横跨金泽塘」已证；「位于金泽镇**北市**」与四份独立来源冲突（T11-C1），不得再作为 active historical assertion",
       "1879 光绪《青浦县志》图说（不可归因到本对象）",
     ],
     current_source_refs: [
@@ -106,7 +132,7 @@ export const FEATURES = [
     ],
     review_status: "candidate",
     uncertainty_note:
-      "年代口径冲突：Commons caption 作「北宋咸淳元年(1265年)」（caption 内部朝代自相矛盾——咸淳为南宋年号），上图遗产记录作「南宋咸淳三年（1267）」。按 §12-13 保留冲突，不静默覆盖。",
+      "A1 已拆分关闭：「横跨金泽塘」有官方证据（青浦区政府 2025、江南古桥研究会；水道名「金泽塘」另有上图地名库迎祥桥条目独立着录）；「位于金泽镇北市」与青浦博物馆／上海市地方志办公室（南市）、江南古桥研究会（中部）、青浦区政府（金泽古镇）**冲突** → T11-C1，保留双方、不裁决。年代口径冲突（U4）仍然存在：Commons caption 作「北宋咸淳元年(1265年)」（caption 内部朝代自相矛盾——咸淳为南宋年号），上图遗产记录与官方来源均作「南宋咸淳三年（1267）」。另：普济桥所跨水道，青浦博物馆／上海市地方志办公室作「市河」，青浦区政府／江南古桥研究会作「金泽塘」，见 T11-C2 与 U13。",
     evidence: [
       E("puji_amap", `extraction_method='${AMAP}' and subject_hint='普济桥'`),
       E("puji_shl", `extraction_method='legacy_entity_source' and subject_hint='普济桥'`),
@@ -116,6 +142,13 @@ export const FEATURES = [
       E("puji_p625", `extraction_method='${P625}' and place_hint='普济桥'`),
       E("puji_caption", `extraction_method='visual_identity_caption_rule' and subject_hint='普济桥'`),
       E("puji_same_waterway", `extraction_method='legacy_description_mining' and quote_text like '%同跨一河%'`, 2),
+      // ---- TASK-0011 新增（A1 关闭）----
+      E("puji_heritage_registry", `extraction_method='t11_s1a_shl_heritage' and locator like '%arz32mktwndn0e0f%'`),
+      E("puji_photo_shl", `extraction_method='t11_s1a_shl_photo' and subject_hint='普济桥'`),
+      E("puji_gov_2025_spans", `extraction_method='t11_s1c_official_source' and subject_hint='普济桥' and quote_text like '%东西向跨金泽塘%'`),
+      E("puji_museum_south", `extraction_method='t11_s1c_official_source' and subject_hint='普济桥' and quote_text like '%位于金泽镇南市%'`),
+      E("puji_shtong_south", `extraction_method='t11_s1c_local_chronicles' and subject_hint='普济桥'`),
+      E("puji_ancbridge_spans", `extraction_method='t11_s1c_association_web' and subject_hint='普济桥'`),
     ],
   },
 
@@ -132,14 +165,15 @@ export const FEATURES = [
     geometry_note:
       "持有的几何是 provider 复合 POI 的**近似对象范围**（经 SHR-01 接受为 approximate_object_area），不是测绘面，也不是历史范围。",
     attested_time_start: "1260",
-    attested_time_end: null,
-    attested_time_label: "南宋景定元年（1260）就吕颐浩故宅创建（有 Evidence）；「1938 毁于兵燹 → 1992 原址修复」无 Evidence 行",
-    attested_time_evidence_backed: false,
-    legacy_only_assertions: [
-      "「1938 年毁于兵燹」——仅存在于 Legacy 实体描述，无专属 Evidence 行。",
-      "「1992 年原址修复开放」——仅存在于 Legacy 实体描述；SHL 行有「当代复建殿宇并置」的**状态**证据，但无年份证据。",
-      "「元代鼎盛时『虽杭之灵隐、苏之承天莫匹其伟』（转引自地方志所辑旧记）」——转引之转引，无原件。",
-    ],
+    attested_time_end: "1992",
+    attested_time_label:
+      "南宋景定元年（1260）就吕颐浩故宅创建；元至正/元贞年间（1288 建殿、1295 升院为寺）；民国二十七年（1938）大部分建筑毁于日军轰炸；**1992 年在原址重建寺院** —— 以上四段**均有 Evidence**（TASK-0011 新增 S1-C 官方来源）。「1992 年经政府批准开放为佛教活动场所」仅有非权威转载、无官方文号 → 见 U10（不计入本时间链）",
+    attested_time_evidence_backed: true,
+    // TASK-0011 §7：A3 / A4a 由 S1-C 官方来源**关闭**（evidenced）；A4b（「开放」）与 A5（引文）为
+    // CANDIDATE_WITH_EVIDENCE_LIMIT（有部分/间接证据、措辞受限）——两者均**不再**是无证据的
+    // legacy-only 文本，故一并移出 active assertion set，原文与限制分别保留于
+    // historical_source_refs / uncertainty_note / U10 / U11 与关闭矩阵 CSV。
+    legacy_only_assertions: [],
     attested_historical_existence: "attested",
     current_survival_or_site: "site_only",
     historical_position_status: "unresolved",
@@ -147,8 +181,12 @@ export const FEATURES = [
     name_continuity_status: "continuous",
     change_status: "rebuilt",
     historical_source_refs: [
-      "上海图书馆《上海文化总库》遗产记录 physicalculturalheritage/8orxolst3z45ptbc",
-      "Legacy 实体描述（转述方志；1938/1992 年代部分无 Evidence 行）",
+      "上海图书馆《上海市不可移动文物名录》文化遗产记录 physicalculturalheritage/8orxolst3z45ptbc（金泽镇金溪居委会迎样街12号；区级文物保护单位）— **本轮直接取回**，此前仅经 Legacy 转抄",
+      "上海青浦博物馆｜颐浩禅寺（2019-03-04）：「…清光绪三十二年（1906）又重修，**民国二十七年（1938）大部分建筑毁于日军轰炸**。…今由当地众信**在原址内**再建一小殿宇，并请赵朴初先生题额『颐浩禅寺』。…1959年3月公布为青浦县文物保护单位」",
+      "人民日报客户端·绿色青浦（上海市青浦区人民政府新闻办公室）｜青浦文物·颐浩寺遗址（2020-10-28）：「…规模宏大，『**虽杭之灵隐，苏之承天，莫匹其伟**。』后历代多次修葺，**1938年大部分建筑毁于轰炸**。…现为青浦区级文物保护单位」",
+      "青浦文明网（中共上海市青浦区委宣传部）｜《品读金泽》之金泽古韵（2025-04-14）：「据《松江府志》记载：金泽颐浩寺『虽杭之灵隐，苏之承天，莫匹其伟。』…**1992年，在颐浩寺中心原址重建寺院**，建造了大雄宝殿、观音殿、地藏王殿及两套偏殿，还造了山门」",
+      "新民晚报｜金泽古镇 静谧水乡（2021-11-02，旁证）：「《松江府志》称『虽杭之灵隐，苏之承天，莫匹其伟』。1938年，该寺大部毁于日军炮火。…1992年，颐浩禅寺修复。」",
+      "【已退休为研究线索】Legacy 实体描述原文三句：「1938 年毁于兵燹」/「1992 年原址修复开放」/「元代鼎盛时『虽杭之灵隐、苏之承天莫匹其伟』（转引自地方志所辑旧记）」——前两句已由官方来源证实（措辞须收紧为「大部分建筑毁于轰炸」「在原址重建」）；第三句仍为转引之转引（见 U11）",
       "1879 光绪《青浦县志》图说（不可归因到本对象）",
     ],
     current_source_refs: [
@@ -157,7 +195,7 @@ export const FEATURES = [
     ],
     review_status: "human_reviewed",
     uncertainty_note:
-      "历史位置状态为 unresolved：SHR-01 明示该复合 POI「非精确对象点、非历史位置证明」；本 Task 不伪造精确历史位置。另「不断云石刻与赵孟頫相关」已由 HR-2 冻结为 legend，不进本切片关系。",
+      "A3（1938）与 A4a（1992 原址重建）已关闭：前者有两份 .gov.cn 来源（青浦博物馆、青浦区政府新闻办），后者有青浦文明网明确「1992年，在颐浩寺中心**原址重建**寺院」。**未关闭/受限**：A4b「1992 年经政府批准开放为佛教活动场所」仅在非权威转载中出现（见 U10）；A5 引文仍为「引文之引文」——两份 .gov.cn 来源均把它归给《松江府志》，但**本轮未取得《松江府志》原文**（见 U11）。另：历史位置状态仍为 unresolved（SHR-01：「非精确对象点、非历史位置证明」）；「不断云石刻与赵孟頫相关」已由 HR-2 冻结为 legend，不进本切片关系。",
     evidence: [
       E("yihao_amap", `extraction_method='${AMAP}' and place_hint='颐浩寺遗址'`),
       E("yihao_shl", `extraction_method='legacy_entity_source' and subject_hint='颐浩寺遗址'`),
@@ -165,6 +203,17 @@ export const FEATURES = [
       E("yihao_caption", `extraction_method='visual_identity_caption_rule' and subject_hint='颐浩寺遗址'`),
       E("yihao_founded", `extraction_method='legacy_description_mining' and quote_text like '%故宅创建%'`),
       E("yihao_former_home", `extraction_method='legacy_description_mining' and quote_text like '%寺址即其故宅%'`),
+      // ---- TASK-0011 新增（A3 / A4 / A5）----
+      E("yihao_heritage_registry", `extraction_method='t11_s1a_shl_heritage' and locator like '%8orxolst3z45ptbc%'`),
+      E("yihao_1938_museum", `extraction_method='t11_s1c_official_source' and subject_hint='颐浩寺遗址' and quote_text like '%民国二十七年（1938）大部分建筑毁于日军轰炸%'`),
+      E("yihao_1938_green", `extraction_method='t11_s1c_official_source' and subject_hint='颐浩寺遗址' and quote_text like '%1938年大部分建筑毁于轰炸%'`),
+      E("yihao_rebuild_1992", `extraction_method='t11_s1c_official_source' and subject_hint='颐浩寺遗址' and quote_text like '%1992年，在颐浩寺中心原址重建寺院%'`),
+      E("yihao_original_site", `extraction_method='t11_s1c_official_source' and subject_hint='颐浩寺遗址' and quote_text like '%在原址内再建一小殿宇%'`),
+      // A5「引文之引文」：青浦文明网同一页登记两行（长上下文行 + 专门引文行），
+      // 两行都是 .gov.cn 逐字原文 → expect=2，全部挂到断言（诚实口径，不挑一行）。
+      E("yihao_a5_songjiangfu_civ", `extraction_method='t11_s1c_official_source' and subject_hint='颐浩寺遗址' and quote_text like '%据《松江府志》记载%'`, 2),
+      E("yihao_a5_green", `extraction_method='t11_s1c_official_source' and subject_hint='颐浩寺遗址' and quote_text like '%位于金泽镇金溪居委会迎祥街12号%'`),
+      E("yihao_1992_media", `extraction_method='t11_s1c_media_report' and subject_hint='颐浩寺遗址'`),
     ],
   },
 
@@ -181,8 +230,13 @@ export const FEATURES = [
       "水系在现实中是线状特征，但本 Task **不产生任何线几何**（无来源测绘、无历史图上可归因河线）：§12-10 禁止 AI 补画古河道。故记为 unknown。",
     attested_time_start: null,
     attested_time_end: null,
-    attested_time_label: "无年代证据：仅作为「两桥跨越的对象」被转述性记载提及",
-    attested_time_evidence_backed: false,
+    // TASK-0011 口径更正（**须架构师复核**，见 U12）：
+    // 原值 label=「无年代证据…」+ flag=false，把「**不作**年代主张」误编码成「有未获证据支撑的年代主张」。
+    // 本切片对该水道**不作任何时间断言** → label 归 null；flag 置 true 的含义是
+    // 「切片内不再存在无 Evidence 支撑的时间断言」，**不是**「已证明该水道的年代/形成时间」。
+    // 论据侧另有实质进展：名称「金泽塘」本轮首次取得**独立于 Legacy** 的着录（上图地名库 + 青浦区政府 ×2）。
+    attested_time_label: null,
+    attested_time_evidence_backed: true,
     legacy_only_assertions: [],
     attested_historical_existence: "unknown",
     current_survival_or_site: "survives",
@@ -191,18 +245,27 @@ export const FEATURES = [
     name_continuity_status: "unknown",
     change_status: "unknown",
     historical_source_refs: [
+      "上海图书馆开放数据·地名库｜迎祥桥：「位于青浦县金泽镇南市梢，**跨金泽塘**」— **本轮首次直接取回**（此前「金泽塘」仅见于 Legacy 转述）",
+      "上海市青浦区人民政府｜遗珠拾粹——探访青浦多种形式的古桥（2025-01-16）：「普济桥…**东西向跨金泽塘**」「万安桥…**东西向跨金泽塘**」",
+      "上海市青浦区人民政府｜万安桥（2023-07-06）：「位于金泽镇北市，东西向，**跨金泽塘**」",
       "转述性记载：「位于金泽镇北，横跨金泽塘，为金泽古桥群中最北一座」（Legacy 描述挖掘，有 Evidence）",
-      "上图遗产记录：「金泽塘最北古桥，与普济桥并称『姐妹桥』」（有 Evidence）",
+      "【冲突方，保留】上海图书馆开放数据·地名库｜万安桥：「位于青浦县金泽镇北市梢，**跨秀州塘**」→ 见 T11-C2",
+      "【异称，保留】上海青浦博物馆、上海市地方志办公室对同一水道作「**市河**」→ 见 U13",
     ],
     current_source_refs: [],
     review_status: "candidate",
     uncertainty_note:
-      "无坐标、无走向、无历史图籍着录。identity 可辩护（名称在 2 行独立 Evidence 中出现，且为两桥跨越的对象）；几何与历史存续状态均为 unknown。",
+      "身份可辩护性**本轮增强**：「金泽塘」作为水道名首次取得独立于 Legacy 的着录（上图地名库迎祥桥条目 + 青浦区政府档案页两处），且与两座宋桥的跨越关系一致。**仍未解决**：(1) 无坐标、无走向、无任何线几何（§12-7 禁止 AI 补画古河道）→ geometry_type 恒为 unknown，historical_position_status 恒为 relative-only；(2) **跨水道名冲突**：上图地名库万安桥条作「跨秀州塘」，而青浦区官方来源作「跨金泽塘／跨市河」；且上海市地名志道路库显示「秀州塘＋万安桥」的组合确实存在于**金山朱泾镇** → 疑为跨镇误配，但本 Task 不代为裁决（T11-C2）；(3) 名称的历史连续性、是否改名/改道均无证据（U7 保留）；(4) 本特征**不作时间断言**，见 U12 的口径更正说明。",
     evidence: [
       E("jinzetang_wanan_shl", `extraction_method='legacy_entity_source' and quote_text like '%金泽塘最北古桥%'`),
       E("jinzetang_wanan_desc", `extraction_method='legacy_description_mining' and quote_text like '%横跨金泽塘%'`),
       E("jinzetang_pair_a", `extraction_method='legacy_description_mining' and quote_text like '%同跨一河、一南一北%'`),
       E("jinzetang_pair_b", `extraction_method='legacy_description_mining' and quote_text like '%一北一南同跨一河%'`),
+      // ---- TASK-0011 新增（水道名首次取得独立着录）----
+      E("jinzetang_geonames_yingxiang", `extraction_method='t11_s1a_shl_geonames' and subject_hint='金泽塘'`),
+      E("jinzetang_gov_puji", `extraction_method='t11_s1c_official_source' and subject_hint='普济桥' and quote_text like '%东西向跨金泽塘%'`),
+      E("jinzetang_gov_wanan", `extraction_method='t11_s1c_official_source' and subject_hint='万安桥' and quote_text like '%东西向，跨金泽塘%'`),
+      E("jinzetang_waterway_conflict", `extraction_method='t11_s1a_shl_geonames' and subject_hint='万安桥'`),
     ],
   },
 
@@ -227,11 +290,14 @@ export const FEATURES = [
     current_position_status: "unresolved",
     name_continuity_status: "continuous",
     change_status: "unknown",
-    historical_source_refs: ["Wikidata Q10918454（生卒/官职；经 HR-1 采纳为外部身份锚点）"],
+    historical_source_refs: [
+      "Wikidata Q10918454（生卒/官职；经 HR-1 采纳为外部身份锚点）",
+      "【TASK-0011 对齐发现，不改变本切片主张】上海图书馆开放数据·家谱人物库（gen/person）中有 **3 个名为「吕颐浩」的家族祖先实体**（jp/entity/person/am63uncfc… 等；roleOfFamily=始迁祖/始祖/一世祖，temporalValue 含「明」）→ **同名异人**，与南宋吕颐浩**身份不可合并**，仅登记以备消歧。",
+    ],
     current_source_refs: [],
     review_status: "human_reviewed",
     uncertainty_note:
-      "HR-1 明示 relation_to_jinze = unproven（仅确认人物同一性）。本切片只用他来解释「颐浩寺」命名来源，不主张其与金泽的其他关系；其 historial/current position 状态恒为 unresolved。",
+      "HR-1 明示 relation_to_jinze = unproven（仅确认人物同一性）。本切片只用他来解释「颐浩寺」命名来源，不主张其与金泽的其他关系；其 historial/current position 状态恒为 unresolved。⚠ 命名变体警示：家谱库中另有 3 个同名「吕颐浩」的**家族祖先**实体（其中一条 temporalValue 作「明」），**不得**与南宋吕颐浩合并为同一实体；古籍书目中另有《吕忠穆公（颐浩）年谱》，指吕颐浩其人（不是颐浩寺）。",
     evidence: [
       E("lvyihao_identity", `extraction_method='identity_resolution:wikidata_entity_match' and subject_hint='吕颐浩'`),
       E("lvyihao_shl", `extraction_method='legacy_entity_source' and subject_hint='吕颐浩'`),
@@ -454,19 +520,16 @@ export const CHANGES = [
   {
     change_key: "wananqiao/tingqiao-form-unknown",
     feature_key: "jinze-min-001/feature/wananqiao",
-    change_status: "unknown",
-    change_epistemic: "candidate",
-    from_state: "旧志载其形制为亭桥（桥上建亭）",
-    to_state: "今存桥体未见亭（本 Task 无任何一方证据）",
-    time_hint: null,
-    evidence_keys: [],
-    legacy_only_parts: [
-      "「旧志载其形制为亭桥」仅存在于 Legacy 实体描述（自述「据方志转述」），全库无 Evidence 行。",
-      "「今无亭」亦无证据 —— 本 Task 不主张亭已消失。",
-    ],
+    change_status: "survives",
+    change_epistemic: "evidenced",
+    from_state: "宋景定年间（1260–1264）始建的石拱桥；元至正二年（1342）桥上加建廊亭，遂名「万安亭桥」（桥上建亭，亭建如穿廊、数间飞出，亭下连阁）",
+    to_state: "桥体存续至今（区级文物保护单位）；**亭、阁已废**，石栏板上仍留有当年亭柱的榫口",
+    time_hint: "1260–1264 始建 → 1342 加建廊亭 → 亭阁废（年份无证据）→ 当代",
+    evidence_keys: ["wanan_gov_2025_tingqiao", "wanan_museum_tingqiao", "wanan_shtong_xiaozhi", "wanan_ting_lost"],
+    legacy_only_parts: [],
     note:
-      "记录的是一个**问题**而非断言：形制是否变化、何时变化均无证据 → 按 §6 只能记 unknown。缺证据见 uncertainties[U2]。",
-    review_status: "unresolved",
+      "TASK-0011 关闭：本条原为「记录一个问题」（change_epistemic=candidate、change_status=unknown、legacy_only_parts 非空）。本轮取得两端状态证据 —— 加建端：青浦区政府 2025/2023、青浦博物馆、上海市地方志办公室（《金泽小志》引文）；废圮端：青浦区政府 2025「亭、阁已废，而石栏板上还留有当年亭柱的榫口」。change_status 取 survives（**桥体**存续，文保单位在册）；**不主张**亭阁废于何时（无证据）。⚠ 变更 `change_key` 沿用 TASK-0010 的 slug（`…form-unknown`）以免制造孤立行；其语义已不再是 unknown，已在 note 显式说明。",
+    review_status: "candidate",
   },
   {
     change_key: "pujiqiao/survives-to-today",
@@ -486,16 +549,13 @@ export const CHANGES = [
     feature_key: "jinze-min-001/feature/yihaosi-site",
     change_status: "rebuilt",
     change_epistemic: "evidenced",
-    from_state: "江南巨刹（唐代—元代鼎盛，可居千僧）",
-    to_state: "遗址与当代复建殿宇并置：元代遗物（不断云石刻、元碑、古银杏）与复建殿宇共存",
-    time_hint: "元代鼎盛 → 当代（具体断代与复建年份无 Evidence）",
-    evidence_keys: ["yihao_shl"],
-    legacy_only_parts: [
-      "「1938 年毁于兵燹」仅存在于 Legacy 实体描述，无 Evidence 行。",
-      "「1992 年原址修复开放」仅存在于 Legacy 实体描述，无年份 Evidence 行。",
-    ],
+    from_state: "南宋景定元年（1260）创建的江南巨刹，元贞元年（1295）升院为寺、可居千僧；民国二十七年（1938）大部分建筑毁于日军轰炸",
+    to_state: "1992 年**在原址重建**寺院（大雄宝殿、观音殿、地藏王殿、两套偏殿与山门），与元代遗物（松江府颐浩寺碑记、不断云石刻、大殿柱础、古银杏）并置",
+    time_hint: "1260 创建 → 1938 大部分被毁 → 1992 原址重建",
+    evidence_keys: ["yihao_shl", "yihao_1938_museum", "yihao_1938_green", "yihao_rebuild_1992", "yihao_original_site"],
+    legacy_only_parts: [],
     note:
-      "有 Evidence 的部分是**状态**（遗址 + 当代复建并置，且元代遗物尚存）；年份链（1938 毁 / 1992 复建）无 Evidence → 已列入 legacy_only_parts 与缺口清单。",
+      "TASK-0011 关闭：年份链（1938 毁 / 1992 原址重建）本轮由 S1-C 官方来源补足 —— 1938 见青浦博物馆与青浦区政府新闻办（均 .gov.cn）；1992「在颐浩寺中心**原址重建**」见青浦文明网（中共青浦区委宣传部，.gov.cn），「原址」另有青浦博物馆「在原址内再建一小殿宇」独立支撑。措辞纪律：**不得**合并成「1938 全毁 → 1992 修复开放」——(a) 1938 是「**大部分**建筑毁于轰炸」，非全毁；(b)「**开放**为佛教活动场所」缺官方来源 → 不计入本条（见 U10）。",
     review_status: "candidate",
   },
   {
@@ -506,11 +566,11 @@ export const CHANGES = [
     from_state: null,
     to_state: null,
     time_hint: null,
-    evidence_keys: [],
+    evidence_keys: ["jinzetang_geonames_yingxiang"],
     legacy_only_parts: [
-      "无任何历史图籍着录：金泽塘的名称连续性、走向、是否改名/改道均无证据。",
+      "历史图籍着录仍为零：无任何前现代图籍标示该水道的走向、宽度或是否改名/改道（**当代**独立着录已取得，见 historical_source_refs）。",
     ],
-    note: "记录问题而非断言：不主张该河道古今未变，也不主张其曾改道。缺证据见 uncertainties[U7]。",
+    note: "记录问题而非断言：不主张该河道古今未变，也不主张其曾改道。TASK-0011 变化：名称身份获得独立着录（上图地名库 + 青浦区政府），但几何/走向/历史连续性仍无证据（见 U7）；本特征**不作时间断言**（见 U12）。",
     review_status: "unresolved",
   },
 ];
@@ -598,25 +658,25 @@ export const RELATIONS = [
     epistemic_class: "E1",
     support_level: "legacy_transcription",
     existing_relation_selector: null,
-    evidence_keys: ["jinzetang_wanan_desc", "jinzetang_wanan_shl"],
+    evidence_keys: ["jinzetang_wanan_desc", "jinzetang_wanan_shl", "wanan_gov_2025_tingqiao", "jinzetang_gov_wanan"],
     hr_constraint: [],
     status: "candidate",
     note:
-      "直接文献支持：万安桥横跨金泽塘。金泽塘在既有 relations 中无对应行（entities 中亦无行）→ existing_relation_id 为空；本断言的证据复用既有 relation_evidence（原属 万安桥--mentioned_in-->『四十二虹桥』叠影），不改动 relations 表（§0.4 冻结既有基底）。",
+      "直接文献支持：万安桥横跨金泽塘（Legacy 转述 + TASK-0011 新增的青浦区政府 2025／2023 两份官方来源）。金泽塘在既有 relations 中无对应行（entities 中亦无行）→ existing_relation_id 为空。⚠ 上图地名库万安桥条作「跨**秀州塘**」→ 属 T11-C2 冲突，**已并入本关系 note**，不得静默择一。",
   },
   {
     relation_key: "pujiqiao--spans_waterway--jinzetang",
     subject: "jinze-min-001/feature/pujiqiao",
     predicate: "spans_waterway",
     object: "jinze-min-001/feature/jinzetang",
-    epistemic_class: "E4",
-    support_level: "none",
+    epistemic_class: "E1",
+    support_level: "secondary_transcription",
     existing_relation_selector: null,
-    evidence_keys: ["puji_same_waterway", "jinzetang_pair_b"],
+    evidence_keys: ["puji_same_waterway", "jinzetang_pair_b", "puji_gov_2025_spans", "puji_ancbridge_spans"],
     hr_constraint: [],
-    status: "unresolved",
+    status: "candidate",
     note:
-      "**本切片唯一的 E4，也是 gate 停在 PARTIAL 的直接原因之一。**「普济桥横跨金泽塘」仅存在于 Legacy 实体描述，全库**无**对应 Evidence 行（已按 quote/locator/subject_hint/place_hint 全库检索『金泽塘』，仅命中万安桥侧的 2 行 af39958e / 020b8bcf）。可由「同跨一河」（E1）+「万安桥跨金泽塘」（E1）间接推得，但依 §7 属『合理而证据不足』→ E4。**缺失证据**：一条独立记载「普济桥跨／坐落于金泽塘」的来源行（S1《青浦县志》原文、上图遗产记录、或 1879 等方志原文均可）。为避免把 gate 刷绿，本 Task **不删除**该断言，也不把它伪装成 E1。",
+      "**TASK-0011：由 E4 升为 E1**（原为「本切片唯一的 E4，也是 gate 停在 PARTIAL 的直接原因之一」）。升级依据：上海市青浦区人民政府档案页（2025-01-16）原文「普济桥 位于金泽古镇，**东西向跨金泽塘**」，另有江南古桥文化研究会同一表述；水道名「金泽塘」由上图地名库（迎祥桥条目）与青浦区政府两处独立着录。support_level 取 secondary_transcription（来源是官方转录页，非亲见方志原件）。**限制不变**：仍不得由本关系生成任何坐标或几何；historical_position_status 维持 relative-only。",
   },
   {
     relation_key: "yihaosi-site--temple_bridge_association--pujiqiao",
@@ -644,15 +704,16 @@ export const RELATIONS = [
     hr_constraint: [],
     status: "candidate",
     note:
-      "历史来源只给出**相对/拓扑**关系（「与北侧万安桥」「一南一北」「一北一南」），**无任何坐标** —— 这正是 §7 E3 的定义。禁止由此生成精确历史坐标；禁止把当前两个 GCJ-02 点的南北次序当作历史次序的证明（当前点序与文献一致只说明「不矛盾」，不是证据）。",
+      "历史来源只给出**相对/拓扑**关系（「与北侧万安桥」「一南一北」「一北一南」），**无任何坐标** —— 这正是 §7 E3 的定义。禁止由此生成精确历史坐标；禁止把当前两个 GCJ-02 点的南北次序当作历史次序的证明（当前点序与文献一致只说明「不矛盾」，不是证据）。⚠ TASK-0011 补充：本关系说「普济桥在万安桥**之南**」，而 T11-C1 暴露普济桥的**绝对方位**（北市/南市）存在冲突 —— 二者不矛盾（相对关系由「一南一北」直接支持，且官方一律把万安桥放北市、普济桥放南市/中部），但**绝对方位**仍须按 CONFLICT 并列呈现。",
   },
 ];
 
 // G0–G6 的「冲突」输入（§11）。只登记**已坐实**的冲突；疑点不算冲突。
-// 普济桥：年代口径冲突（Commons caption 1265/北宋 vs 上图遗产记录 1267/南宋）→ 记 true，
-// 按 §12-13 保留冲突而不是静默归一。
+// 普济桥：年代口径冲突（Commons caption 1265/北宋 vs 上图遗产记录 1267/南宋）→ 记 true。
+// 万安桥：**TASK-0011 新增** —— 所跨水道名冲突（金泽塘／市河 vs 上图地名库「秀州塘」，T11-C2）→ 记 true。
 export const FEATURE_CONFLICTS = {
   "jinze-min-001/feature/pujiqiao": true,
+  "jinze-min-001/feature/wananqiao": true,
 };
 
 // ---------------------------------------------------------------------------
@@ -664,7 +725,7 @@ export const SLICE = {
   focus_question:
     "金泽这三处对象的**历史空间**关系是什么：哪一座桥、哪一处寺址、哪一条水道能被证据支持地定位、定年到什么程度，哪些只能停留在相对陈述，哪些完全未决？",
   time_context:
-    "南宋（寺 1260 创建、万安桥 1260–1264 建、普济桥 1267 建，均有 Evidence）→ 元代鼎盛 → 1938 毁（无 Evidence）→ 1992 原址修复（无 Evidence）→ 当代。可用的历史图籍为 1879 光绪《青浦县志》图说（青浦县全域），但其中**未取得可归因于本切片对象的标签**（HR-MAP-01：金泽/蔡浜/枪开河三标签 UNRESOLVED）。",
+    "南宋（寺 1260 创建、万安桥 1260–1264 建、普济桥 1267 建）→ 元代（万安桥 1342 加建廊亭；颐浩寺 1288 建殿、1295 升院为寺）→ 明清（屡毁屡建、1561/1620/1791/1906 重修）→ **民国二十七年（1938）颐浩寺大部分建筑毁于日军轰炸** → **1958 拆移** → **1992 在原址重建寺院** → 当代。上述带**粗体**的两段为 TASK-0011 新增证据（此前仅存在于 Legacy 描述）。可用的历史图籍仍为 1879 光绪《青浦县志》图说（青浦县全域），其中**未取得可归因于本切片对象的标签**（HR-MAP-01：金泽/蔡浜/枪开河三标签 UNRESOLVED）。",
   spatial_extent_current: {
     semantics: "**当前**锚点的包围盒（含 GCJ-02 与 WGS-84 两组，分列不混算）；不含任何历史几何。",
     // gcj02_bbox / gcj02_span_m / anchor_count / crs_split 由构建器按已落库锚点实测计算，
@@ -679,30 +740,29 @@ export const SLICE = {
       key: "U1",
       subject: "颐浩寺遗址的年代链（1938 毁于兵燹 / 1992 原址修复）",
       description:
-        "这两个年份只存在于 Legacy 实体描述，全库无对应 Evidence 行；可用的 SHL 行只支持「遗址 + 当代复建殿宇并置」的状态，不含年份。",
-      missing_evidence:
-        "一条独立记载该寺 1938 年毁圮与 1992 年原址修复的来源行（S1《青浦县志》原文 / 上图遗产记录 / 文保单位公布文本 均可）。",
+        "**TASK-0011 已关闭**：1938 由青浦博物馆与青浦区政府新闻办（均 .gov.cn）两份官方来源证实；1992「原址重建」由青浦文明网（中共青浦区委宣传部）证实，「原址」另有青浦博物馆独立支撑。",
+      missing_evidence: "剩余缺口：**1938 年之后至 1958 年之间的拆移年份**与「建筑损毁的具体范围」无逐项证据（不在本切片主张内）。",
       proposed_decision:
-        "在取得该来源前，维持 attested_time_evidence_backed=false，且 change record 的 legacy_only_parts 保持非空（即：不得把 1938/1992 当作已证事实输出）。",
-      severity: "high",
+        "维持关闭；措辞纪律见 change record `yihaosi-site/rebuilt-on-original-site` 的 note：（a）1938 是「大部分建筑毁于轰炸」而非全毁；（b）不得把「修复／重建／原址／开放」四要素合并陈述（「开放」见 U10）。",
+      severity: "low",
     },
     {
       key: "U2",
       subject: "万安桥「亭桥（桥上建亭）」形制",
-      description: "仅存在于 Legacy 实体描述且自述「据方志转述」；无 Evidence 行。今存桥体是否有亭亦无证据。",
-      missing_evidence: "记载万安桥为亭桥的方志原文（可核对的卷页）。",
-      proposed_decision:
-        "要么提供方志原文并将其升级为 E1/evidenced；要么由架构师裁定：该形制声明长期保持 unknown，且界面不得展示「亭桥」为既成事实。",
-      severity: "medium",
+      description:
+        "**TASK-0011 已关闭**：亭桥形制由 4 类独立来源证实 —— 青浦区政府档案页（2025）「又称『万安亭桥』…元至正二年（1342年）桥上加建廊亭」、青浦区政府（2023）内嵌《金泽小志》引文、青浦博物馆（2019）、上海市地方志办公室（引《金泽小志》）＋上图地名库「又名万安亭桥」。",
+      missing_evidence: "剩余缺口：（a）亭阁**废于何时**；（b）Legacy 自述的「旧志」原件（真正拆到《金泽小志》影印本或《松江府志》原文）尚未取得。",
+      proposed_decision: "维持关闭；界面可展示「万安亭桥」与「1342 加建廊亭、今亭阁已废」，但必须标 candidate，且不得声称「今有亭」或给出废圮年份。",
+      severity: "low",
     },
     {
       key: "U3",
       subject: "普济桥是否横跨金泽塘",
-      description: "全库含『金泽塘』的 Evidence 仅 2 行，均属万安桥侧。普济桥侧只能得到「与万安桥同跨一河」。",
-      missing_evidence: "一条独立记载「普济桥跨／坐落于金泽塘」的来源行。",
-      proposed_decision:
-        "补到来源后把 E4 升为 E1（并同步把普济桥的 historical_position_status 维持 relative-only，仍不得生成坐标）；未补到前，**不得**把该关系输出为「已证」。",
-      severity: "high",
+      description:
+        "**TASK-0011 已拆分关闭**：「横跨金泽塘」由青浦区政府档案页（2025）与江南古桥文化研究会证实，水道名「金泽塘」另有上图地名库（迎祥桥条目）与青浦区政府两处独立着录；「位于金泽镇北市」转为冲突（T11-C1）。",
+      missing_evidence: "剩余缺口：（a）「北市/南市」的**权威裁定**（本 Task 只登记冲突）；（b）该水道与桥的**空间几何**（无来源，且 §12-7 禁止 AI 补画）。",
+      proposed_decision: "E4 关系 `pujiqiao--spans_waterway--jinzetang` 由 E4 升为 **E1**（有独立文献支持），但**仍不得生成坐标**；historical_position_status 维持 relative-only。方位冲突转人审（见 closeure human-review CSV）。",
+      severity: "low",
     },
     {
       key: "U4",
@@ -737,11 +797,12 @@ export const SLICE = {
     {
       key: "U7",
       subject: "金泽塘的历史名称连续性、走向与几何",
-      description: "无任何历史图籍着录，无坐标、无走向；本 Task 依 §12-10 不生成任何河道线几何。",
-      missing_evidence: "任何历史图籍中可归因于金泽塘的河道线或名称着录。",
+      description:
+        "**TASK-0011 部分关闭**：名称身份已由独立来源着录（上图地名库迎祥桥条目「跨金泽塘」、青浦区政府档案页两处「跨金泽塘」）；但**前现代图籍着录仍为零**，无坐标、无走向；本 Task 依 §12-7 不生成任何河道线几何。",
+      missing_evidence: "任何历史图籍中可归因于金泽塘的河道线或名称着录（明清方志水道图、近代测绘地形图上的河名标注）。",
       proposed_decision:
-        "在无来源期间保持 geometry_type=unknown、不生成任何河道线（§12-10）；是否投入历史水道图专项辨读由架构师决定。",
-      severity: "high",
+        "维持 geometry_type=unknown、不生成任何河道线；是否投入历史水道图专项辨读由架构师决定（本 Task 依 §5 P-06 明确 DEFER 该专项）。",
+      severity: "medium",
     },
     {
       key: "U8",
@@ -752,6 +813,57 @@ export const SLICE = {
       proposed_decision:
         "维持 historical_position_status=unresolved、current_position_status=approximate_object_area（SHR-01 不变）；任何下游展示不得把该近似范围当作寺址历史位置。",
       severity: "high",
+    },
+    // ---- TASK-0011 新增：本轮暴露的冲突与受限项 ----
+    {
+      key: "U9",
+      subject: "普济桥的历史方位（T11-C1 冲突）",
+      description:
+        "Legacy 作「位于金泽镇**北市**」；而青浦博物馆、上海市地方志办公室作「金泽镇**南市**」，江南古桥文化研究会作「金泽镇**中部**」，青浦区政府档案页作「金泽古镇」。四份独立来源一致偏离 Legacy。**而「金泽镇北市」恰是官方对万安桥的表述**（青浦区政府 2023、青浦博物馆、上图地名库），故疑为 Legacy 把两桥的方位句串位。",
+      missing_evidence: "一条可裁定方位的权威着录（带四至或图上位置的文保公布文本／1930 年代镇图注记）。",
+      proposed_decision:
+        "依 §1 CONFLICT：**保留双方、阻断静默解决**；不得由当前两桥 GCJ-02 点的南北次序倒推历史方位（当前点序与文献一致只说明「不矛盾」，不是证据）。下游展示须并列两种说法或只展示可辩护的「金泽镇内」。",
+      severity: "medium",
+    },
+    {
+      key: "U10",
+      subject: "颐浩寺「1992 年开放为佛教活动场所」（A4b 受限部分）",
+      description:
+        "Legacy 原文为「1992 年原址修复**开放**」。本轮：年份与「原址重建」均有 .gov.cn 来源（青浦文明网），但「**开放为佛教活动场所**」只在非权威转载（快懂百科等）中出现，**未在任何 .gov.cn 来源核实**，也无批准文号。",
+      missing_evidence: "官方公布文本（宗教活动场所登记／开放批文，或 1990 年代《青浦县志》《上海宗教志》相应条目）。",
+      proposed_decision:
+        "维持为 CANDIDATE_WITH_EVIDENCE_LIMIT：可写「1992 年在原址重建寺院」，**不得**写「1992 年开放为宗教活动场所」为既成事实；若必须提及，须标「据非权威转载，待核」。",
+      severity: "medium",
+    },
+    {
+      key: "U11",
+      subject: "A5 引文「虽杭之灵隐，苏之承天，莫匹其伟」的来源链",
+      description:
+        "本轮取得两份 .gov.cn 来源（青浦区政府新闻办 2020、青浦文明网 2025）**均把该句归给《松江府志》**，新民晚报同；但**《松江府志》原文未取得** —— 正德本 696 页复本（itemId 3025）的卷次/页映射未打通（其目录与实测卷首叶不一致），且上海市地方志办公室站为 JS 渲染、正文未直接取回。上图古籍书目 dc:title 检索「莫匹其偉」「頤浩」亦无该句出处。",
+      missing_evidence: "《松江府志》（正德或崇禎本）寺觀卷中该句的**卷页原文**；或《金澤小志》影印原件（索书号 史71556491，本轮在 pdf/list 全文库中 0 命中，未取得全文）。",
+      proposed_decision:
+        "维持为 CANDIDATE_WITH_EVIDENCE_LIMIT（attributed tradition）：可写「据《松江府志》，经青浦区官方平台引述」，**不得**作为 verified fact；**不得**因「两个官方页都这么说」就升级为已证（那是转引的复述，不是独立佐证）。",
+      severity: "medium",
+    },
+    {
+      key: "U12",
+      subject: "金泽塘「不作时间断言」的机器口径（须架构师复核）",
+      description:
+        "原 slice 定义把该特征的 `attested_time_label` 写成「无年代证据…」且 `attested_time_evidence_backed=false` —— 这等于把「**不作**年代主张」编码为「存在**未获证据支撑**的年代主张」，是 TASK-0010 遗留的语义瑕疵。本 Task 改为：label=null（不主张年代）、flag=true（切片内不再存在无证据的时间断言）。该布尔量同时是 c6 的合取项，故此更正会改变 c6 的取值。",
+      missing_evidence: "（非证据问题，而是口径裁定）架构师对「无时间主张时该布尔量应取何值」的确认。",
+      proposed_decision:
+        "建议采纳本 Task 的口径更正，并配套不变量测试（`attested_time_label is null ⇒ 不得有基于该特征的定年导出`）。**若架构师维持旧口径**，则本特征应回到 flag=false，`c6_every_assertion_traceable` 保持 NOT MET，`HISTORICAL_SPATIAL_SLICE_READY` 保持 PARTIAL —— 两条路径的读数均已在 readiness 报告与本 Task 结果中**同时给出**，不隐藏。",
+      severity: "high",
+    },
+    {
+      key: "U13",
+      subject: "万安桥／普济桥所跨水道的名称（T11-C2 冲突）",
+      description:
+        "青浦区官方来源与上海市地方志办公室作「金泽塘」或「市河」；而上图地名库万安桥条作「跨**秀州塘**」。反向线索：上海市地名志道路库中「万安街」位于**金山朱泾镇**，描述作「西迄秀州塘万安桥」——「秀州塘＋万安桥」的组合确实存在于朱泾，故地名库该条疑为**跨镇误配**。",
+      missing_evidence: "金泽镇水道的权威名录（《青浦县地名志》水道分册／《金泽镇志》水道条）以裁定金泽塘、市河、秀州塘三者的对应关系。",
+      proposed_decision:
+        "依 §1 CONFLICT：保留双方；本切片相关关系的措辞改为「据青浦区官方来源跨金泽塘；上图地名库另作跨秀州塘（存疑，见 T11-C2）」。**不得**静默择一。",
+      severity: "medium",
     },
   ],
   experience_hooks: [
@@ -770,8 +882,12 @@ export const SLICE = {
     {
       hook: "compare_current_water_context_with_historical_evidence",
       semantics_opportunity:
-        "把文献中的相对陈述（两桥同跨一河、一南一北，E3）与今日金泽塘的空间对照 —— 对照的**对象是陈述**，不是历史几何（本切片无历史几何）。",
-      grounded_on: ["pujiqiao--relative_position_south_of--wananqiao", "wananqiao--spans_waterway--jinzetang"],
+        "把文献中的相对陈述（两桥同跨一河、一南一北，E3）与今日金泽塘的空间对照 —— 对照的**对象是陈述**，不是历史几何（本切片无历史几何）。TASK-0011 后该对照可加一层：官方来源说两桥均「东西向跨金泽塘」，而上图地名库万安桥条作「跨秀州塘」→ 呈现时**必须并列**两种说法并标冲突（T11-C2）。",
+      grounded_on: [
+        "pujiqiao--relative_position_south_of--wananqiao",
+        "wananqiao--spans_waterway--jinzetang",
+        "pujiqiao--spans_waterway--jinzetang",
+      ],
     },
     {
       hook: "open_source_page",
@@ -782,7 +898,7 @@ export const SLICE = {
     {
       hook: "temple_site_reconstruction_dual_layer",
       semantics_opportunity:
-        "呈现「元代遗物（不断云石刻 / 元碑 / 古银杏）— 遗址 — 当代复建殿宇」的双层时空结构；年份链缺失部分须显示为未决。",
+        "呈现「元代遗物（不断云石刻 / 元碑 / 古银杏）— 遗址 — 1992 年原址重建殿宇」的双层时空结构。TASK-0011 后 1938／1992 两段**有官方证据**，可如实呈现；但「1992 年开放为宗教活动场所」缺官方来源（U10），且「元代鼎盛『虽杭之灵隐…』」仍属转引传统（U11）—— 下游须分别标注这两处限制。",
       grounded_on: ["yihaosi-site/rebuilt-on-original-site"],
     },
   ],

@@ -258,8 +258,13 @@ describe("TASK-0007 Jinze Spatial Grounding", () => {
     expect(audit).toContain("汪祖绶");
     expect(audit).toContain("陳夢雷");
     expect(audit).toContain("extmetadata");
-    // 未登记的 public/yutu 资产不得进入 DB
-    expect(await n(`select count(*)::int c from source_records where source_uri like '%yutu%'`)).toBe(0);
+    // 未登记的 public/yutu 扫描资产不得进入 DB。
+    // §12-26：绊线只拦 `public/yutu/` **目录扫描件**（36 页无 provenance 的方志舆图）；
+    // TASK-0011 起上图 yutu 图谱**馆藏记录**（yutu.library.sh.cn，带元数据 provenance）
+    // 可合法登记，不属于本绊线范围。
+    expect(
+      await n(`select count(*)::int c from source_records where source_uri like '%public/yutu%'`)
+    ).toBe(0);
     expect(await n(`select count(*)::int c from visual_assets where asset_type='map'`)).toBe(0);
   });
 

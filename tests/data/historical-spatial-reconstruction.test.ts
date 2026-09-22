@@ -245,11 +245,13 @@ describe("TASK-0010 Jinze Historical Spatial Reconstruction — Minimum Slice", 
       await n(`select count(*)::int c from historical_spatial_relations
                 where support_level='none' and epistemic_class <> 'E4'`)
     ).toBe(0);
+    // §12-26 不变式断言：E4 是「显式声明无支持」的分类，不要求切片必须含有 E4。
+    // （TASK-0011 起普济桥跨水道已 E4→E1，本切片 E4 计数可为 0；若存在 E4，
+    //   必须 unresolved + support_level=none + note 点名缺失证据。）
     const e4 = await q(
       `select relation_key, status, support_level, coalesce(array_length(evidence_ids,1),0)::int ev, note
          from historical_spatial_relations where epistemic_class='E4'`
     );
-    expect(e4.length).toBeGreaterThanOrEqual(1); // 本切片确实存在证据不足的关系
     for (const r of e4) {
       expect(r.status).toBe("unresolved");
       expect(r.support_level).toBe("none");
@@ -549,14 +551,15 @@ describe("TASK-0010 Jinze Historical Spatial Reconstruction — Minimum Slice", 
       "jinze-historical-spatial-slice-readiness.md",
     ];
     for (const f of must) expect(fs.existsSync(path.join(dir, f)), `缺交付物 ${f}`).toBe(true);
-    // 本切片确有需架构师裁决的未决项（≥1 条 E4 + 多个 high/medium uncertainty）→ §15-7 文件必须存在
+    // §15-7 不变式：人审 CSV 仅在存在未决项时**必须**产出。
+    // （TASK-0011 起 E4 已全部关闭，未决关系计数可为 0；但切片仍可有其它
+    //   待裁决项（ambiguous anchors / uncertainty），导出器可继续产出 CSV。）
     const hasUnresolved = await n(
       `select count(*)::int c from historical_spatial_relations where epistemic_class='E4'`
     );
-    expect(hasUnresolved).toBeGreaterThan(0);
     const hrCsv = path.join(dir, "jinze-historical-spatial-human-review.csv");
-    expect(fs.existsSync(hrCsv)).toBe(true);
-    {
+    if (hasUnresolved > 0) expect(fs.existsSync(hrCsv)).toBe(true);
+    if (fs.existsSync(hrCsv)) {
       const text = fs.readFileSync(hrCsv, "utf8");
       expect(text).toContain("proposal_ref");
       // 提案不得冒充已落库决策
