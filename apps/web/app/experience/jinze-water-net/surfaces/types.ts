@@ -75,6 +75,8 @@ export interface SurfaceContext {
   evidenceInspection?: boolean;
   /** TASK-0017：检视所溯源的关系 key 列表（可解析回 world.relationEvidence） */
   evidenceInspectionRefs?: string[];
+  /** EXP-0001：DEV 模式（?inspector=1）才展示内部 runtime label；普通模式隐藏 relationKey 等噪音 */
+  devMode?: boolean;
 }
 
 export interface SurfaceComponentProps {

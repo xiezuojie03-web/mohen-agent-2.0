@@ -1058,3 +1058,88 @@
   pointer-events: none;
   z-index: 3;
 }
+
+/* =========================================================================
+   EXP-0001 — IntentGuide：人类可感知收口层（替代原 Inspector 的普通用户入口）
+   设计：克制、纸本、人文；优先级 清楚 → 探索节奏 → 人文气质 → 视觉记忆点。
+   ========================================================================= */
+.exp-intent-guide {
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--stone);
+  background: #fffdf7;
+  border-radius: 10px;
+  padding: 14px 18px;
+  box-shadow: 0 2px 10px rgba(26, 26, 26, 0.05);
+  display: grid;
+  gap: 10px;
+  max-width: 1080px;
+}
+.exp-intent-guide__head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.exp-intent-guide__chip {
+  flex: none;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: var(--cinnabar);
+  border: 1px dashed var(--cinnabar);
+  border-radius: 999px;
+  padding: 3px 12px;
+  font-family: "Microsoft YaHei", sans-serif;
+}
+.exp-intent-guide__blurb {
+  font-size: 13px;
+  color: var(--mist);
+  font-family: "Microsoft YaHei", sans-serif;
+}
+.exp-intent-guide__lead {
+  margin: 0;
+  font-size: clamp(18px, 2.4vw, 26px);
+  line-height: 1.55;
+  font-weight: 600;
+  color: var(--ink);
+}
+.exp-intent-guide__body { display: grid; gap: 8px; }
+.exp-intent-guide__body h5 {
+  margin: 0 0 4px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--mist);
+  font-family: "Microsoft YaHei", sans-serif;
+}
+.exp-ig-known ul,
+.exp-ig-missing ul,
+.exp-ig-observe ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.exp-ig-known li { color: var(--stone); }
+.exp-ig-missing li { color: var(--cinnabar); }
+.exp-ig-temporal { font-size: 15px; line-height: 1.7; color: #3a3f37; }
+.exp-ig-observe ul { list-style: "▸ "; }
+.exp-ig-observe li { color: #3a3f37; }
+.exp-intent-guide__actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 2px; }
+
+/* 四意图：画布强调 + 收口层左键色，让「思考方式切换」可被感知（gap #5） */
+.exp-canvas--intent-verify_historical_relation { border-color: var(--cinnabar); }
+.exp-intent-guide--verify_historical_relation { border-left-color: var(--cinnabar); }
+.exp-canvas--intent-inspect_evidence { border-color: var(--stone); }
+.exp-intent-guide--inspect_evidence { border-left-color: var(--stone); }
+.exp-canvas--intent-explore_temporal_change { border-color: #6b5b3a; }
+.exp-intent-guide--explore_temporal_change { border-left-color: #6b5b3a; }
+.exp-canvas--intent-propose_present_action { border-color: #3a6b6b; }
+.exp-intent-guide--propose_present_action { border-left-color: #3a6b6b; }
+
+/* 窄屏：收口层与画布自然堆叠 */
+@media (max-width: 720px) {
+  .exp-intent-guide { padding: 12px 14px; }
+  .exp-intent-guide__lead { font-size: clamp(17px, 4.6vw, 22px); }
+  .exp-intent-guide__actions .exp-btn { flex: 1 1 auto; }
+}

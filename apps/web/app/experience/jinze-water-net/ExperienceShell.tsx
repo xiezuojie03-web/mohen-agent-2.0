@@ -33,6 +33,8 @@ import { BEATS, TEMPLE_BRIDGE_NON_ANSWER, type BeatPresentation } from "./beats"
 import { buildWorldEvidenceState } from "./beats";
 import { resolveSurface, UnknownGapSurface } from "./surfaceRegistry";
 import type { SliceShape, SurfaceContext } from "./surfaces/types";
+import IntentGuide from "./IntentGuide";
+import { translateIntentToExperience } from "./intentTranslation";
 import "./experience.css";
 
 export interface ExperienceShellProps {
@@ -63,9 +65,42 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
     [script, slice]
   );
 
+  // EXP-0001 §5：Inspector 降为 DEV/debug。普通模式（默认）隐藏 replan-card 内部 label；
+  // 仅 ?inspector=1 才展示（runtime contract 仍保留给评审/调试）。
+  // 硬测试：inspector 消失后，墨痕仍通过 IntentGuide + Canvas/Surface 存在。
+  const [devInspector, setDevInspector] = useState(false);
+  useEffect(() => {
+    // 读 ?inspector=1 决定 DEV/debug 模式；用裸 location 读取 query（不写导航、不 reload）。
+    setDevInspector(typeof window !== "undefined" && new URLSearchParams(location.search).has("inspector"));
+  }, []);
+
+  // EXP-0001：Guide 的「继续探索」按钮 —— 映射 replanPlan.nextActions 到既有 Surface（不新造）
+  function handleReplanExplore() {
+    if (!state.replanPlan) return;
+    const explore = state.replanPlan.nextActions.find((a) => a.action !== "return_present");
+    if (!explore) return;
+    const map: Record<string, SurfaceType> = {
+      open_evidence: "evidence_reveal",
+      timeline: "timeline",
+      open_relation: "relational_space",
+      open_photo: "current_photo",
+    };
+    const surf = map[explore.action];
+    if (surf) setSurfaceOverride(surf);
+  }
+
   const reducer = (s: ReturnType<typeof createRuntimeState>, a: Parameters<typeof reduceExperience>[1]) =>
     reduceExperience(s, a, script, patch, world);
   const [state, dispatch] = useReducer(reducer, undefined, () => createRuntimeState(script));
+
+  // EXP-0001：把 runtime 四意图输出翻译成人类可感知收口（只读 adapter，不改 runtime contract）
+  const translation = useMemo(
+    () =>
+      state.replanPlan && state.evidenceDecision && state.followUpIntent
+        ? translateIntentToExperience(state.followUpIntent.kind, state.evidenceDecision, state.replanPlan, slice)
+        : null,
+    [state.replanPlan, state.evidenceDecision, state.followUpIntent, slice]
+  );
 
   // TASK-0016：Replan 期间由 EvidenceDecision 驱动 Surface 选择（证明不是固定 beat 选 surface）
   const replanSelection = useMemo(
@@ -137,6 +172,8 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
     evidenceInspection:
       !!state.replanPlan && state.replanViewActive && state.replanPlan.intentKind === "inspect_evidence",
     evidenceInspectionRefs: state.evidenceDecision?.evidenceRefs,
+    // EXP-0001：普通模式隐藏内部 runtime label；仅 DEV 模式透出 relationKey 等溯源串
+    devMode: devInspector,
   };
 
   // —— s01→s02 的坐标退出：保留上一画布作为退场层
@@ -216,8 +253,21 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
         </div>
       </header>
 
+      {/* EXP-0001：人类可感知收口层（墨痕因问题不同切换判断方式的主要入口；替代原 Inspector） */}
+      {state.replanPlan && state.replanViewActive && translation && (
+        <IntentGuide
+          translation={translation}
+          onReturn={() => dispatch({ type: "RETURN_TO_PRESENT" })}
+          onExplore={handleReplanExplore}
+        />
+      )}
+
       {/* Experience Canvas：一个时刻只有一个主角 */}
-      <main className="exp-canvas" data-testid="experience-canvas">
+      <main
+        className={`exp-canvas exp-canvas--intent-${translation?.intentKind ?? "none"}`}
+        data-testid="experience-canvas"
+        data-intent-experience={translation?.intentKind ?? "none"}
+      >
         {prevScene && ExitSurface && (
           <div className={`exp-canvas__fading ${isCoordinateExit ? "exp-canvas__fading--coords-out" : ""}`} aria-hidden>
             <ExitSurface ctx={{ ...ctx, scene: prevScene }} compact />
@@ -350,8 +400,9 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
       )}
 
       {/* TASK-0016 — Evidence-Aware Replan Runtime 真实输出（非冻结答案 JSON 冒充）。
-          渲染全部由 runtime 计算出的 FollowUpIntent / EvidenceDecision / ReplanPlan 值。 */}
-      {state.replanPlan && state.evidenceDecision && state.followUpIntent && (
+          渲染全部由 runtime 计算出的 FollowUpIntent / EvidenceDecision / ReplanPlan 值。
+          EXP-0001 §5：Inspector 仅 DEV/debug 可见（?inspector=1）；普通用户由 IntentGuide + Surface 收口。 */}
+      {devInspector && state.replanPlan && state.evidenceDecision && state.followUpIntent && (
         <aside
           className="exp-evidence exp-evidence--replan"
           data-testid="replan-card"

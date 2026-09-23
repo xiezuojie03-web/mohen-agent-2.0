@@ -15,6 +15,8 @@ import fs from "node:fs";
 import path from "node:path";
 
 const BASE = process.env.BASE_URL ?? "http://127.0.0.1:3001";
+// EXP-0001 §5：Inspector 已降为 DEV-only；本 TASK-0017 脚本验证 runtime 内部 label，统一 DEV 模式运行。
+const INSPECTOR_QS = "?inspector=1";
 const OUT = path.join(process.cwd(), "data", "exports", "task-0017-captures");
 fs.mkdirSync(OUT, { recursive: true });
 
@@ -79,7 +81,7 @@ const cur = (id) => page.locator(".exp-canvas__current").getByTestId(id);
 
 // 走到 s08（追问入口：beat-05 / 下一问场景）
 async function walkToFollowup() {
-  await page.goto(BASE + "/experience/jinze-water-net", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/experience/jinze-water-net" + INSPECTOR_QS, { waitUntil: "networkidle" });
   await cur("surface-current-map").waitFor({ timeout: 20000 });
   await page.waitForTimeout(1100);
   await page.addStyleTag({ content: "nextjs-portal{display:none !important}" });

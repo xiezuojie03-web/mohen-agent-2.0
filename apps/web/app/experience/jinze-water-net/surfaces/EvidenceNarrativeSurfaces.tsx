@@ -315,7 +315,10 @@ export function EvidenceRevealSurface({ ctx, onAction }: SurfaceComponentProps) 
                 {r.isCurrentAssociationOnly && (
                   <li className="evidence-rel__warn">仅今天共址 / 复合 POI —— 非前现代文献记载的历史关系</li>
                 )}
-                <li className="evidence-rel__prov">溯源：{r.relationKey}</li>
+                {/* EXP-0001：relationKey 是内部溯源串，普通用户视作噪音（gap #2）；仅 DEV 模式可见 */}
+                {ctx.devMode && r.relationKey && (
+                  <li className="evidence-rel__prov">溯源（DEV）：{r.relationKey}</li>
+                )}
               </ul>
             </article>
           ))}
