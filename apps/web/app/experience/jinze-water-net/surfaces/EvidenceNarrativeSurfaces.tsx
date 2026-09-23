@@ -6,6 +6,7 @@
 import { useState } from "react";
 import { LEVEL_LABELS, type NarrativeLevel } from "@mohen/experience-engine";
 import type { SurfaceComponentProps } from "./types";
+import { predicateLabel } from "./SpatialSurfaces";
 import {
   TEMPORAL,
   temporalStateFromWording,
@@ -262,13 +263,65 @@ export function TimelineSurface({ ctx, compact }: SurfaceComponentProps) {
 
 // ---------------------------------------------------------------------------
 // EvidenceRevealSurface：只揭示当前问题所需 Evidence（progressive disclosure）
+//
+// TASK-0017（inspect_evidence）：当处于证据检视模式时，evidence_reveal 成为
+// 「体验主表达」——直接把被检视关系的依据与缺口作为画面主体，
+// 而不是弹出一个开发者式 Inspector。依据与缺口都来自 world.relationEvidence，
+// 可经 relationKey 溯源，不编造。
 // ---------------------------------------------------------------------------
 export function EvidenceRevealSurface({ ctx, onAction }: SurfaceComponentProps) {
   const units = ctx.scene.narrative.filter((u) => ctx.revealed.includes(u.unit_id));
   const hidden = ctx.scene.narrative.filter((u) => !ctx.revealed.includes(u.unit_id));
+
+  const featureLabel = (key: string) => {
+    const short = key.split("/").pop() ?? key;
+    return (
+      ctx.slice.features.find((f) => (f.feature_key.split("/").pop() ?? f.feature_key) === short)?.canonical_label ?? short
+    );
+  };
+
+  // 证据检视模式：把被溯源的关系依据与缺口作为主表达
+  const inspectRels = ctx.evidenceInspection
+    ? (ctx.world.relationEvidence ?? []).filter((r) => (ctx.evidenceInspectionRefs ?? []).includes(r.relationKey ?? ""))
+    : [];
+  const showInspection = ctx.evidenceInspection && inspectRels.length > 0;
+
   return (
     <div className="surf surf-evidence-reveal" data-testid="surface-evidence-reveal">
       <p className="surf__caption">证据按需出现 · 不一次铺满</p>
+
+      {showInspection && (
+        <div className="evidence-inspection" data-testid="evidence-inspection">
+          <p className="evidence-inspection__lead">墨痕凭什么这么判断 —— 依据与缺口（不升级 · 不编造）</p>
+          {inspectRels.map((r) => (
+            <article
+              key={r.relationKey}
+              className="evidence-rel"
+              data-testid="evidence-rel"
+              data-relation-key={r.relationKey}
+              data-epistemic-class={r.epistemicClass}
+            >
+              <header className="evidence-rel__head">
+                <strong>
+                  {featureLabel(r.subject)} ↔ {featureLabel(r.object)}
+                </strong>
+                <span className={`tag tag--${r.epistemicClass.toLowerCase()}`}>
+                  {r.epistemicClass}（不升 E1）
+                </span>
+              </header>
+              <p className="evidence-rel__basis">{r.basis}</p>
+              <ul className="evidence-rel__meta">
+                <li>关系谓词：{predicateLabel(r.predicate)}</li>
+                {r.isCurrentAssociationOnly && (
+                  <li className="evidence-rel__warn">仅今天共址 / 复合 POI —— 非前现代文献记载的历史关系</li>
+                )}
+                <li className="evidence-rel__prov">溯源：{r.relationKey}</li>
+              </ul>
+            </article>
+          ))}
+        </div>
+      )}
+
       <div className="evidence-units">
         {units.map((u) => (
           <div key={u.unit_id} className={`unit unit--${u.level}`}>

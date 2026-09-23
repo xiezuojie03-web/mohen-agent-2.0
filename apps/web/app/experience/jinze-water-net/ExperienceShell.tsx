@@ -133,6 +133,10 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
     optionalGroupIncluded: templeIncluded,
     visualMode: primaryType === "current_photo" ? "photo" : "normal",
     patchActive: state.patchActive,
+    // TASK-0017：证据检视模式（inspect_evidence）下，让 evidence_reveal 成为主表达而非开发者式 Inspector
+    evidenceInspection:
+      !!state.replanPlan && state.replanViewActive && state.replanPlan.intentKind === "inspect_evidence",
+    evidenceInspectionRefs: state.evidenceDecision?.evidenceRefs,
   };
 
   // —— s01→s02 的坐标退出：保留上一画布作为退场层
@@ -225,7 +229,12 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
         {/* §10 转场必须表达 epistemic change：不只是动画，而是明示「坐标失去作证资格」。
             只要不在「当下」场景（非 GEOGRAPHIC_EXACT），当前坐标就没有历史定位资格；
             回到今天（GEOGRAPHIC_EXACT）时该提示自动消失。 */}
-        {(scene.spatial_mode !== "GEOGRAPHIC_EXACT" || state.replanViewActive) && (
+        {/* §10 转场表达 epistemic change：replan 视角激活时，由 replanPlan.currentCoordsLoseHistoricalAuthority
+            决定（D=propose_present_action 回到今天语境，当前坐标不失去历史权威；A/C 失去）。
+            非 replan 时沿用场景级规则：非 GEOGRAPHIC_EXACT 即失去。 */}
+        {(state.replanPlan
+          ? state.replanPlan.currentCoordsLoseHistoricalAuthority
+          : scene.spatial_mode !== "GEOGRAPHIC_EXACT") && (
           <span className="exp-epistemic-shift" data-testid="coordinate-authority-lost">
             当前坐标在此失去历史定位资格
           </span>
@@ -350,6 +359,10 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
           data-epistemic-class={state.evidenceDecision.supportedEpistemicClass}
           data-current-coords-authority={state.replanPlan.currentCoordsLoseHistoricalAuthority ? "lost" : "kept"}
           data-intent={state.followUpIntent.kind}
+          data-action-status={state.replanPlan.actionStatus}
+          data-spatial-authority={state.replanPlan.spatialAuthority}
+          data-temporal-focus={state.replanPlan.temporalFocus}
+          data-route-verified={state.evidenceDecision?.present?.routeVerified ? "yes" : "no"}
           data-deterministic={String(state.followUpIntent.deterministic)}
         >
           <div className="exp-evidence__head">
@@ -357,6 +370,39 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
             <span className="conflict-card__ruling">{state.followUpIntent.kind}</span>
           </div>
           <p className="exp-patch__q">你的追问：{state.followupQuestion}</p>
+
+          {/* 意图分流：四类意图必须体现为不同的体验表达（§6「一模板四皮肤」禁令） */}
+          {state.replanPlan.intentKind === "inspect_evidence" && (
+            <div className="exp-evidence__section" data-testid="replan-evidence-inspect">
+              <h5>证据检视（inspect_evidence）</h5>
+              <p>打开当前判断的依据与缺口；<b>不升 E1</b>；依据与缺口均来自既有世界状态，不编造。</p>
+              {state.evidenceDecision.evidenceRefs && state.evidenceDecision.evidenceRefs.length > 0 && (
+                <ul data-testid="replan-evidence-refs">
+                  {state.evidenceDecision.evidenceRefs.map((ref, i) => (
+                    <li key={i} data-relation-key={ref}>溯源：{ref}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+          {state.replanPlan.intentKind === "explore_temporal_change" && (
+            <div className="exp-evidence__section" data-testid="replan-temporal">
+              <h5>时间探索（explore_temporal_change）</h5>
+              <p>时间成为主角：只消费有据的时间变化，<b>未知年份保持未知</b>，不把现代坐标当历史几何。</p>
+            </div>
+          )}
+          {state.replanPlan.intentKind === "propose_present_action" && (
+            <div className="exp-evidence__section" data-testid="replan-present-proposal">
+              <h5>现场建议（propose_present_action）</h5>
+              <p>回到今天语境：只提<b>受约束的现实观察建议</b>，路线可达性尚未验证，<b>非已验证导航</b>（无逐段路线）。</p>
+            </div>
+          )}
+          {state.replanPlan.intentKind === "verify_historical_relation" && (
+            <div className="exp-evidence__section" data-testid="replan-verify-relation">
+              <h5>关系核验（verify_historical_relation）</h5>
+              <p>当前坐标失去历史定位资格；关系 epistemic class 保持 <b>{state.replanPlan.relationEpistemicClass}</b>（不升 E1）。</p>
+            </div>
+          )}
 
           <div className="exp-evidence__section">
             <h5>证据判断</h5>
@@ -390,8 +436,13 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
             <ul data-testid="replan-plan">
               <li>主 surface：{state.replanPlan.targetSurface}</li>
               <li>证据焦点：{state.replanPlan.evidenceFocus}</li>
-              <li>关系 epistemic class 保持：<b>{state.replanPlan.relationEpistemicClass}</b>（不升 E1）</li>
+              {state.replanPlan.relationEpistemicClass && (
+                <li>关系 epistemic class 保持：<b>{state.replanPlan.relationEpistemicClass}</b>（不升 E1）</li>
+              )}
               <li>当前坐标失去历史权威：{state.replanPlan.currentCoordsLoseHistoricalAuthority ? "是" : "否"}</li>
+              <li>时空权威：{state.replanPlan.spatialAuthority}</li>
+              <li>时间焦点：{state.replanPlan.temporalFocus}</li>
+              <li>行动状态：{state.replanPlan.actionStatus}{state.replanPlan.actionStatus === "proposal_not_routed" ? "（受约束建议 · 非已验证导航）" : ""}</li>
             </ul>
             <h5>下一步（不编造答案）</h5>
             <ul>

@@ -47,6 +47,8 @@ export interface RelationEvidence {
   isCurrentAssociationOnly: boolean;
   /** 证据依据（人话，来自既有状态，不编造新事实） */
   basis: string;
+  /** 可解析回切片关系行的 key（供证据检视溯源，不编造） */
+  relationKey?: string;
 }
 
 /** 世界证据状态（Renderer/Selection 的输入；不得由组件自行推断） */

@@ -36,6 +36,8 @@ export function buildWorldEvidenceState(
     predicate: r.predicate,
     epistemicClass: (r.epistemic_class ?? "UNKNOWN") as RelationEvidence["epistemicClass"],
     isCurrentAssociationOnly: r.epistemic_class === "E2" && r.predicate === "temple_bridge_association",
+    // 可解析回切片关系行的 key（供证据检视溯源；TASK-0017）
+    relationKey: r.relation_key,
     basis:
       r.epistemic_class === "E2" && r.predicate === "temple_bridge_association"
         ? "现代 provider 复合 POI（寺与桥同属一个 POI 名）+ 同街地址 → 这是今天的关联，不是前现代文献记载的历史功能关系"
@@ -158,7 +160,14 @@ export const BEATS: BeatPresentation[] = [
     // s08-u1b（主发现）由 DiscoverySurface 以解释框架身份渲染，不再以文字块重复
     defaultUnitIds: ["s08-u2"],
     revealUnitIds: ["s07-u1", "s07-u2", "s08-u1", "s08-u3", "s08-u4"],
-    actions: ["看今貌照片", "了解更多", "追问：那颐浩寺和普济桥以前真的有关系吗？"],
+    actions: [
+      "看今貌照片",
+      "了解更多",
+      "追问：那颐浩寺和普济桥以前真的有关系吗？",
+      "追问：你凭什么这么判断？",
+      "追问：它们后来发生了什么变化？",
+      "追问：那我现在去现场可以看什么？",
+    ],
   },
 ];
 

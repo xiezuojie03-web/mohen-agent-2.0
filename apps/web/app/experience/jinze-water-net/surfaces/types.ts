@@ -71,6 +71,10 @@ export interface SurfaceContext {
   optionalGroupIncluded: boolean;
   visualMode: "normal" | "photo";
   patchActive: boolean;
+  /** TASK-0017：证据检视模式（inspect_evidence）——evidence_reveal 成为主表达，而非开发者式 Inspector */
+  evidenceInspection?: boolean;
+  /** TASK-0017：检视所溯源的关系 key 列表（可解析回 world.relationEvidence） */
+  evidenceInspectionRefs?: string[];
 }
 
 export interface SurfaceComponentProps {
