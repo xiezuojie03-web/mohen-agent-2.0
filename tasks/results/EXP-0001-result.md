@@ -117,8 +117,8 @@
 
 ## 8. 提交与收尾
 
-- Commit：`<填于 commit 后>`（branch `track/experience-exp-0001`，baseline `f74d0be`）
-- Worktree：`clean`（仅本任务 9 文件改动，无遗留 dev server / `.next` 残留）
+- Commit：`5d91b70`（branch `track/experience-exp-0001`，baseline `f74d0be`，11 files / +875 / -6）
+- Worktree：`clean`（仅本任务 9 文件改动，无遗留 dev server / `.next` 残留；captures 为 gitignored 本地证据）
 - `CONTEXT.md`：已追加 EXP-0001 PASS 条目，TASK-0017 降为 Prior
 
 ---
