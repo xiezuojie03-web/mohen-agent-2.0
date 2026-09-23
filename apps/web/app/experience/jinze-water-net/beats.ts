@@ -9,7 +9,7 @@
 // Beat 不是 truth store：它不新增历史事实，不修改证据语义。
 
 import type { BeatDefinition } from "@mohen/experience-engine";
-import type { WorldEvidenceState } from "@mohen/experience-engine";
+import type { WorldEvidenceState, RelationEvidence } from "@mohen/experience-engine";
 import type { SliceShape } from "./surfaces/types";
 import type { ExperienceScript } from "@mohen/experience-engine";
 
@@ -29,10 +29,26 @@ export function buildWorldEvidenceState(
     .filter((a) => a.kind === "provider_current_object_area")
     .map((a) => a.anchor_key);
 
+  const shortKey = (k: string) => k.split("/").pop() ?? k;
+  const relationEvidence: RelationEvidence[] = slice.relations.map((r) => ({
+    subject: shortKey(r.subject_feature_key),
+    object: shortKey(r.object_feature_key),
+    predicate: r.predicate,
+    epistemicClass: (r.epistemic_class ?? "UNKNOWN") as RelationEvidence["epistemicClass"],
+    isCurrentAssociationOnly: r.epistemic_class === "E2" && r.predicate === "temple_bridge_association",
+    basis:
+      r.epistemic_class === "E2" && r.predicate === "temple_bridge_association"
+        ? "现代 provider 复合 POI（寺与桥同属一个 POI 名）+ 同街地址 → 这是今天的关联，不是前现代文献记载的历史功能关系"
+        : r.epistemic_class === "E1"
+        ? "存在 E1 据证历史关系（方志/著录记载）"
+        : "弱空间线索（相对位置），非确认历史关系",
+  }));
+
   return {
     currentExactEntities: currentExact,
     approximateEntities: approximate,
     hasHistoricalRelations: slice.relations.length > 0,
+    relationEvidence,
     hasHistoricalGeometry: false, // 冻结：本切片历史几何 = 0，且 Geometry itself is a Claim
     historicalMapSource: {
       key: "hs/1879/p36",

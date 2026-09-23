@@ -373,7 +373,7 @@ describe("TASK-0014 — text budget & narrative policy (§15-12/13/14)", () => {
 
   it("14. Follow-up 保持 Patch-not-Replace（无 reload / 无 replay / 无 reset）", () => {
     const shell = read(path.join(EXP_DIR, "ExperienceShell.tsx"));
-    expect(shell).toMatch(/TRIGGER_FOLLOWUP/);
+    expect(shell).toMatch(/FOLLOWUP_REPLAN/);
     expect(shell).toMatch(/patchActive/);
     expect(shell).not.toMatch(/window\.location|router\.(push|refresh)|location\.reload/);
     expect(shell).not.toMatch(/createRuntimeState\(\s*script\s*\)[^;]*setState/);

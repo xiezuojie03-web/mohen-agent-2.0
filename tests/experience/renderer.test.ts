@@ -229,7 +229,7 @@ describe("TASK-0013 — canonical follow-up Patch-not-Replace (§17-9/10/11, 核
 
   it("11. Shell 源码层面：follow-up 走 dispatch PATCH，无 route reload / 无 replay / 无 reset", () => {
     const shellSrc = fs.readFileSync(path.join(EXP_DIR, "ExperienceShell.tsx"), "utf8");
-    expect(shellSrc).toContain("TRIGGER_FOLLOWUP");
+    expect(shellSrc).toContain("FOLLOWUP_REPLAN");
     expect(shellSrc).not.toMatch(/router\.(push|replace|refresh)|location\.(href|reload)|window\.location/);
     // RESTART 只能被显式动作触发（followup 路径不调用）
     expect(shellSrc).not.toContain('type: "RESTART"');

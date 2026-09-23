@@ -17,6 +17,16 @@
 // 冻结产物类型（与 data/experience/*.json 对齐的最小类型面）
 // ---------------------------------------------------------------------------
 
+import type { WorldEvidenceState } from "./surface-eligibility";
+import {
+  classifyFollowUp,
+  decideEvidence,
+  planReplan,
+  type FollowUpIntent,
+  type EvidenceDecision,
+  type ReplanPlan,
+} from "./evidence-aware-replan";
+
 export type SpatialMode =
   | "GEOGRAPHIC_EXACT"
   | "GEOGRAPHIC_APPROXIMATE"
@@ -184,6 +194,18 @@ export interface ExperienceRuntimeState {
   /** Patch 触发问（来自冻结 patch JSON，不得在前端硬编码改写） */
   followupQuestion: string | null;
   finished: boolean;
+  /** TASK-0016：用户追问意图（FollowUpIntent），未触发为 null */
+  followUpIntent: FollowUpIntent | null;
+  /** TASK-0016：证据感知决策（EvidenceDecision） */
+  evidenceDecision: EvidenceDecision | null;
+  /** TASK-0016：Replan 计划（surface / 焦点 / 证据焦点 / 不确定可见） */
+  replanPlan: ReplanPlan | null;
+  /**
+   * TASK-0016：Replan 视角是否激活（关系历史 override 只在激活时生效）。
+   * Patch-not-Replace 的「可回 Present」出口：RETURN_TO_PRESENT 只关掉该视角，
+   * 不清空 followUpIntent/evidenceDecision/replanPlan，也不丢 trail。
+   */
+  replanViewActive: boolean;
 }
 
 export type ExperienceRuntimeAction =
@@ -192,6 +214,8 @@ export type ExperienceRuntimeAction =
   | { type: "OPEN_EVIDENCE" }
   | { type: "CLOSE_EVIDENCE" }
   | { type: "TRIGGER_FOLLOWUP"; question?: string }
+  | { type: "FOLLOWUP_REPLAN"; question: string }
+  | { type: "RETURN_TO_PRESENT" }
   | { type: "RESTART" };
 
 export function createRuntimeState(script: ExperienceScript): ExperienceRuntimeState {
@@ -204,6 +228,10 @@ export function createRuntimeState(script: ExperienceScript): ExperienceRuntimeS
     patchId: null,
     followupQuestion: null,
     finished: false,
+    followUpIntent: null,
+    evidenceDecision: null,
+    replanPlan: null,
+    replanViewActive: false,
   };
 }
 
@@ -211,7 +239,8 @@ export function reduceExperience(
   state: ExperienceRuntimeState,
   action: ExperienceRuntimeAction,
   script: ExperienceScript,
-  patch: FollowupPatch | null
+  patch: FollowupPatch | null,
+  world?: WorldEvidenceState
 ): ExperienceRuntimeState {
   const last = state.sceneIndex >= script.scenes.length - 1;
   switch (action.type) {
@@ -234,6 +263,31 @@ export function reduceExperience(
       return { ...state, evidenceOpen: true };
     case "CLOSE_EVIDENCE":
       return { ...state, evidenceOpen: false };
+    case "FOLLOWUP_REPLAN": {
+      // TASK-0016：用户追问 → 意图判定 → 证据决策 → Replan（Patch-not-Replace）
+      if (!world) return state;
+      const intent = classifyFollowUp(action.question);
+      const decision = decideEvidence(intent, world);
+      const plan = planReplan(decision, intent);
+      return {
+        ...state,
+        patchActive: true,
+        patchId: patch?.patch_id ?? "replan/followup-temple-bridge",
+        followupQuestion: action.question,
+        followUpIntent: intent,
+        evidenceDecision: decision,
+        replanPlan: plan,
+        replanViewActive: true,
+        // trail 追加 replan 事件，但不移除任何历史（visited beats / session 完整）
+        trail: [...state.trail, `replan:${intent.kind}:${action.question}`],
+      };
+    }
+    case "RETURN_TO_PRESENT": {
+      // 可回 Present 的出口：只关掉 Replan 视角（世界切回当下），
+      // 判定与补丁痕迹全部保留（Patch-not-Replace），experienceId/sceneIndex 不变。
+      if (!state.replanViewActive) return state;
+      return { ...state, replanViewActive: false, trail: [...state.trail, "return_to_present"] };
+    }
     case "TRIGGER_FOLLOWUP": {
       // Patch-not-Replace：不改 sceneIndex、不清 trail、不重置 evidenceOpen 语义之外任何状态
       if (!patch) return state;

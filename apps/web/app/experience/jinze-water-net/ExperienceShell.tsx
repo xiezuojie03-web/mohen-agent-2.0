@@ -17,6 +17,7 @@ import {
   reduceExperience,
   deriveView,
   resolveComposition,
+  selectReplanSurface,
   beatForScene,
   validateBeatCoverage,
   ACTION_LABELS,
@@ -46,10 +47,6 @@ const CONFLICT_ORDER: Record<string, string> = {
 };
 
 export default function ExperienceShell({ script, patch, slice }: ExperienceShellProps) {
-  const reducer = (s: ReturnType<typeof createRuntimeState>, a: Parameters<typeof reduceExperience>[1]) =>
-    reduceExperience(s, a, script, patch);
-  const [state, dispatch] = useReducer(reducer, undefined, () => createRuntimeState(script));
-
   const [revealed, setRevealed] = useState<string[]>([]);
   const [revealedConflicts, setRevealedConflicts] = useState<string[]>([]);
   const [templeAsked, setTempleAsked] = useState(false);
@@ -59,16 +56,28 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
   const [sourceOpen, setSourceOpen] = useState(false);
   const [nonAnswer, setNonAnswer] = useState<string | null>(null);
 
-  const view = deriveView(state, script);
-  const scene = view.scene;
-  const beat: BeatPresentation = beatForScene(BEATS, scene.scene_id) ?? BEATS[0];
-
-  // —— Evidence-aware：世界证据状态 → eligibility → composition（只从 eligible 选）
+  // —— Evidence-aware：世界证据状态（FOLLOWUP_REPLAN 的 EvidenceDecision 只消费它，不读答案 JSON）
   const world = useMemo(
     () =>
       buildWorldEvidenceState(script, slice, { historicalVisualAssets: 0, historicalMapImageAvailable: false }),
     [script, slice]
   );
+
+  const reducer = (s: ReturnType<typeof createRuntimeState>, a: Parameters<typeof reduceExperience>[1]) =>
+    reduceExperience(s, a, script, patch, world);
+  const [state, dispatch] = useReducer(reducer, undefined, () => createRuntimeState(script));
+
+  // TASK-0016：Replan 期间由 EvidenceDecision 驱动 Surface 选择（证明不是固定 beat 选 surface）
+  const replanSelection = useMemo(
+    () => (state.replanPlan ? selectReplanSurface(state.replanPlan, world) : null),
+    [state.replanPlan, world]
+  );
+
+  const view = deriveView(state, script);
+  const scene = view.scene;
+  const beat: BeatPresentation = beatForScene(BEATS, scene.scene_id) ?? BEATS[0];
+
+  // —— Evidence-aware：世界证据状态 → eligibility → composition（只从 eligible 选）
   const { selection, composition } = useMemo(() => resolveComposition(beat.recipe, world), [beat.recipe, world]);
 
   // 用户显式切换主角（看时间变化 / 看今貌照片）：只在 eligible 时生效，不是许可证
@@ -86,7 +95,13 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
     ...((beat.primaryPreference ?? []) as string[]).map((t) => t as SurfaceType),
     composition.primarySurface,
   ];
-  const primaryType = preferChain.find(isEligible);
+  // TASK-0016：Replan 视角激活时，主角由 EvidenceDecision 驱动的 selectReplanSurface 决定
+  // （relational_space），而非固定 beat 的 preferChain —— 证明 surface 由证据选择。
+  // 该视角是 Patch 出来的「可回 Present」状态：RETURN_TO_PRESENT / 显式返回即切回当下世界。
+  const primaryType: SurfaceType | undefined =
+    state.replanPlan && state.replanViewActive && replanSelection?.selectedPrimary
+      ? replanSelection.selectedPrimary
+      : preferChain.find(isEligible);
 
   const PrimarySurface = resolveSurface(primaryType, selection.eligibleSurfaces) ?? UnknownGapSurface;
 
@@ -114,7 +129,7 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
     focusPlace,
     revealed,
     revealedConflicts,
-    askedMissingRelation: templeAsked,
+    askedMissingRelation: templeAsked || !!state.replanPlan,
     optionalGroupIncluded: templeIncluded,
     visualMode: primaryType === "current_photo" ? "photo" : "normal",
     patchActive: state.patchActive,
@@ -165,7 +180,11 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
     }
     if (a === "看时间变化") return setSurfaceOverride("timeline");
     if (a === "看今貌照片") return setSurfaceOverride("current_photo");
-    if (a.startsWith("追问")) return dispatch({ type: "TRIGGER_FOLLOWUP" });
+    // TASK-0016：追问 → 真正跑 Evidence-Aware Replan Runtime（不读冻结答案 JSON 冒充）
+    if (a.startsWith("追问")) {
+      const question = a.startsWith("追问：") ? a.slice("追问：".length) : script.followup.trigger_question;
+      return dispatch({ type: "FOLLOWUP_REPLAN", question });
+    }
     // 其余为推进型行动（回到它们刚出现的时代 / 看留下的关系 …）
     dispatch({ type: "NEXT" });
   }
@@ -206,7 +225,7 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
         {/* §10 转场必须表达 epistemic change：不只是动画，而是明示「坐标失去作证资格」。
             只要不在「当下」场景（非 GEOGRAPHIC_EXACT），当前坐标就没有历史定位资格；
             回到今天（GEOGRAPHIC_EXACT）时该提示自动消失。 */}
-        {scene.spatial_mode !== "GEOGRAPHIC_EXACT" && (
+        {(scene.spatial_mode !== "GEOGRAPHIC_EXACT" || state.replanViewActive) && (
           <span className="exp-epistemic-shift" data-testid="coordinate-authority-lost">
             当前坐标在此失去历史定位资格
           </span>
@@ -269,7 +288,7 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
         </div>
 
         <nav className="exp-actions">
-          <button className="exp-btn" disabled={view.isFirst} onClick={() => dispatch({ type: "PREV" })}>
+          <button className="exp-btn" disabled={view.isFirst} onClick={() => dispatch({ type: "PREV" })} data-testid="prev-button">
             {ACTION_LABELS.PREV}
           </button>
           <button className="exp-btn exp-btn--primary" disabled={view.isLast} onClick={() => dispatch({ type: "NEXT" })} data-testid="next-button">
@@ -289,8 +308,10 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
         </aside>
       )}
 
-      {/* Patch-not-Replace（保留 TASK-0013 行为） */}
-      {state.patchActive && (
+      {/* Patch-not-Replace（保留 TASK-0013 冻结行为契约）。
+          TASK-0016：canonical follow-up 走真实 runtime 后，由下方 ReplanCard 呈现 runtime 计算结果，
+          冻结的 patch 结果卡在此让位（否则两个右侧 fixed 抽屉重叠，且冻结结果不得冒充 runtime 输出）。 */}
+      {state.patchActive && !state.replanPlan && (
         <aside className="exp-evidence exp-evidence--patch" data-testid="patch-card">
           <div className="exp-evidence__head">
             <h3>Patch 已应用 · 体验未重启</h3>
@@ -317,6 +338,81 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
         <div className="exp-patchpill" data-testid="patch-pill">
           Patch · {patch.base_scene_count} 场全部保留 · Beat {BEATS.indexOf(beat) + 1}/5 未重置
         </div>
+      )}
+
+      {/* TASK-0016 — Evidence-Aware Replan Runtime 真实输出（非冻结答案 JSON 冒充）。
+          渲染全部由 runtime 计算出的 FollowUpIntent / EvidenceDecision / ReplanPlan 值。 */}
+      {state.replanPlan && state.evidenceDecision && state.followUpIntent && (
+        <aside
+          className="exp-evidence exp-evidence--replan"
+          data-testid="replan-card"
+          data-verdict={state.evidenceDecision.verdict}
+          data-epistemic-class={state.evidenceDecision.supportedEpistemicClass}
+          data-current-coords-authority={state.replanPlan.currentCoordsLoseHistoricalAuthority ? "lost" : "kept"}
+          data-intent={state.followUpIntent.kind}
+          data-deterministic={String(state.followUpIntent.deterministic)}
+        >
+          <div className="exp-evidence__head">
+            <h3>墨痕的重新判断（不升级 · 不编造）</h3>
+            <span className="conflict-card__ruling">{state.followUpIntent.kind}</span>
+          </div>
+          <p className="exp-patch__q">你的追问：{state.followupQuestion}</p>
+
+          <div className="exp-evidence__section">
+            <h5>证据判断</h5>
+            <p data-testid="replan-verdict">
+              {state.evidenceDecision.verdict === "insufficient_for_confirmation"
+                ? "现有证据不足以确认"
+                : state.evidenceDecision.verdict === "confirmed"
+                ? "可确认"
+                : "与证据矛盾"}
+              （最高可支持到 <b>{state.evidenceDecision.supportedEpistemicClass}</b>，不把 E2 升为 E1）
+            </p>
+            <p data-testid="replan-current-assoc">
+              现代相邻 ≠ 历史关系：{state.evidenceDecision.currentAssociationNotHistorical ? "是（仅今天共址）" : "否"}
+            </p>
+          </div>
+
+          <div className="exp-patch__cols">
+            <div>
+              <h5>已知（保留）</h5>
+              <ul data-testid="replan-known">{state.evidenceDecision.known.map((k, i) => (<li key={i}>{k}</li>))}</ul>
+            </div>
+            <div>
+              <h5>未知 / 缺失</h5>
+              <ul data-testid="replan-unknown">{state.evidenceDecision.unknown.map((k, i) => (<li key={i}>{k}</li>))}</ul>
+              <ul data-testid="replan-missing">{state.evidenceDecision.missingEvidence.map((k, i) => (<li key={i}>{k}</li>))}</ul>
+            </div>
+          </div>
+
+          <div className="exp-evidence__section">
+            <h5>重新规划（surface / 焦点，由证据选择）</h5>
+            <ul data-testid="replan-plan">
+              <li>主 surface：{state.replanPlan.targetSurface}</li>
+              <li>证据焦点：{state.replanPlan.evidenceFocus}</li>
+              <li>关系 epistemic class 保持：<b>{state.replanPlan.relationEpistemicClass}</b>（不升 E1）</li>
+              <li>当前坐标失去历史权威：{state.replanPlan.currentCoordsLoseHistoricalAuthority ? "是" : "否"}</li>
+            </ul>
+            <h5>下一步（不编造答案）</h5>
+            <ul>
+              {state.replanPlan.nextActions.map((a) => (
+                <li key={a.action}>
+                  {a.action === "return_present" ? (
+                    <button
+                      className="exp-btn exp-btn--context"
+                      onClick={() => dispatch({ type: "RETURN_TO_PRESENT" })}
+                      data-testid="replan-return-present"
+                    >
+                      {a.text}
+                    </button>
+                  ) : (
+                    <><b>{a.action}</b>：{a.text}</>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </aside>
       )}
       {!coverage.ok && <p className="exp-error">Beat coverage error: {coverage.errors.join("; ")}</p>}
     </div>

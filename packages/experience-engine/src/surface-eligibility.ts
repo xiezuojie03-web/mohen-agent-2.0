@@ -37,6 +37,18 @@ export type SurfaceType =
   | "action_dock"
   | "unknown_gap";
 
+/** 对象对之间的关系证据（供证据感知决策消费；不引入任何坐标） */
+export interface RelationEvidence {
+  subject: string;
+  object: string;
+  predicate: string;
+  epistemicClass: "E1" | "E2" | "E3" | "E4";
+  /** 该关系唯一支持来自「今天」的共址/复合 POI，而非前现代文献记载 */
+  isCurrentAssociationOnly: boolean;
+  /** 证据依据（人话，来自既有状态，不编造新事实） */
+  basis: string;
+}
+
 /** 世界证据状态（Renderer/Selection 的输入；不得由组件自行推断） */
 export interface WorldEvidenceState {
   /** 有可靠当前精确坐标的对象 */
@@ -45,6 +57,8 @@ export interface WorldEvidenceState {
   approximateEntities: string[];
   /** 存在历史关系（关系语义成立） */
   hasHistoricalRelations: boolean;
+  /** 对象对关系证据（供证据感知决策消费；可缺省以兼容旧调用方） */
+  relationEvidence?: RelationEvidence[];
   /** 存在可靠历史几何（本切片恒为 false） */
   hasHistoricalGeometry: boolean;
   /** 原始历史地图/史料源（native 文档空间） */
