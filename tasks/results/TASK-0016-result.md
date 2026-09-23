@@ -226,7 +226,7 @@ pageerror = 0
 
 ## 14. Git / 并行施工
 
-- 施工前 HEAD：`ca9e154`；代码/测试/E2E/CONTEXT 提交：`81c3e73`；本报告随其后提交。
+- 施工前 HEAD：`ca9e154`；代码/测试/E2E/CONTEXT 提交：`81c3e73`；结果报告：`0247023`；E2E 场景位置读数（证明未 reset 的补充证据）+ 本清单更新：**本提交**。TASK-0016 系列见 `git log --oneline -4`。
 - 提交内容不含 `.next` / PID / 临时探针（诊断脚本 `scripts/_probe_*.mjs` 已删除，`_session_gate_probe.txt` 已删除）。
 - 截图位于 `data/exports/**`，遵循既有 `.gitignore` 规则不入库。
 - **并行施工 session：无。**

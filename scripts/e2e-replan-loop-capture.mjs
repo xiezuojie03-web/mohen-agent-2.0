@@ -69,6 +69,8 @@ try {
   }
   record("在「回到今天」后追问入口出现（追问按钮可见）", onFollowup);
   record("追问前处于 Present（surface-current-map 可见）", (await cur("surface-current-map").count()) > 0);
+  const progBefore = (await page.locator(".exp-progress").innerText()).replace(/\s+/g, " ");
+  record("追问前场景位置（不重置基线）", true, progBefore);
   // 追问前：ReplanCard 不应存在（证明是点击后才触发 runtime，非预先渲染）
   record("追问前 ReplanCard 不存在", (await page.getByTestId("replan-card").count()) === 0);
   await shot("01-followup-before.png");
@@ -108,6 +110,8 @@ try {
   // R-PERSIST：Patch-not-Replace 保持（无整页 reload、replan 痕迹仍在）
   patchMarker = await page.evaluate(() => window.__patch_marker ?? null);
   record("返回 Present 后体验未重启（无整页重载）", !!patchMarker);
+  const progAfter = (await page.locator(".exp-progress").innerText()).replace(/\s+/g, " ");
+  record("返回后场景位置不变（未 reset Beat/场景）", progAfter === progBefore, `${progBefore} → ${progAfter}`);
   record("返回 Present 后 ReplanCard 仍在（Patch-not-Replace 保留痕迹）",
     (await page.getByTestId("replan-card").count()) > 0);
   await shot("03-replan-return-present.png");
