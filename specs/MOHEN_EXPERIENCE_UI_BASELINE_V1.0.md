@@ -102,7 +102,7 @@ specs/
    │  └─ EXP-DESIGN-02 · Round 2 · Jinze Canonical Reconstruction.png
    └─ evidence/
       └─ M5-HUMAN-01_PreBaseline_Failure/
-         ├─ current-runtime-recording.mp4
+         ├─ current-runtime-recording.mp4.mp4
          └─ README.md
 ```
 
@@ -1281,7 +1281,7 @@ This Baseline consolidates and reconciles stable human-facing principles from:
 4. `墨痕_Agent_2.0_可视化原型_V1.0.pptx`
 5. `specs/experience-ui/canonical/金泽历史关系探索体验板.png` — TASK-0014 Jinze 3-minute / Five-Beat canonical experience design
 6. `specs/experience-ui/canonical/EXP-DESIGN-02 · Round 2 · Jinze Canonical Reconstruction.png` — EXP-DESIGN-02 Round 2 canonical visual composition
-7. `specs/experience-ui/evidence/M5-HUMAN-01_PreBaseline_Failure/current-runtime-recording.mp4` — M5-HUMAN-01 pre-Baseline runtime failure signal
+7. `specs/experience-ui/evidence/M5-HUMAN-01_PreBaseline_Failure/current-runtime-recording.mp4.mp4` — M5-HUMAN-01 pre-Baseline runtime failure signal
 8. Current frozen Agent-native Experience Architecture, Cultural World / Evidence / Composition governance and Present-day Connection Gate
 
 Where an older source conflicts with a later frozen architecture contract, the later frozen contract governs. Historical source files remain preserved for rationale; this Baseline is the current human-facing implementation authority.
@@ -1290,7 +1290,7 @@ Where an older source conflicts with a later frozen architecture contract, the l
 
 - Canonical experience: **Jinze Five-Beat**
 - Canonical visual composition: **EXP-DESIGN-02 Round 2**
-- Current negative evidence sample: **`specs/experience-ui/evidence/M5-HUMAN-01_PreBaseline_Failure/current-runtime-recording.mp4`**
+- Current negative evidence sample: **`specs/experience-ui/evidence/M5-HUMAN-01_PreBaseline_Failure/current-runtime-recording.mp4.mp4`**
 - Figma: **design workbench / inspect-on-demand, not code authority**
 - Human-facing UI construction: **must pass this Baseline before Human Gate**
 - UI freedom: **allowed inside the contract; not allowed to redefine the contract**
