@@ -1,0 +1,24 @@
+{
+  "progress": "Beat 4/5 · 5/8",
+  "beat": "证据与时间变化",
+  "timeState": "着录层（20 世纪末至今的方志与档案）",
+  "spatialMode": "关系历史空间（无坐标）",
+  "primaryTestId": "surface-historical-map-native",
+  "transitionHint": {
+    "present": false
+  },
+  "badges": [],
+  "fragmentGates": [],
+  "openQuestions": [],
+  "conflictStatus": null,
+  "conflictCards": [],
+  "discoveryBadge": null,
+  "discoveryText": null,
+  "discoveryRule": null,
+  "sourceUncertaintyNote": null,
+  "rawGpsPairOnPage": null,
+  "replanCardPresent": false,
+  "intentGuidePresent": false,
+  "chatInputs": 0,
+  "fullText": "墨痕证据与时间变化着录层（20 世纪末至今的方志与档案）关系历史空间（无坐标）Beat 4/5 · 5/8史料原页空间 · 不做现代配准 · 不叠加现代底图 · 不升级为直接历史地图本机无合格史料图像可用 → 原型停在「源已登记」状态源：hs/1879/p36 · HR-MAP-01=PARTIAL_CONFIRM归因：不可归因于本切片任一对象配准：不可靠 → 现代配准表达 ineligibleconfirmed：源已登记（HR-MAP-01=PARTIAL_CONFIRM）unresolved：未归因于本切片任一对象unresolved：未做现代配准unresolved：本机无合格史料图像可用登记的史料源（9）hs/1879/source_record 1879 光绪《青浦县志》图说（上海图书馆藏），TASK-0009 A_ACQUIRED。未归因hs/1879/p36 p36 二里半方图 第三排四號（HR-MAP-01：图幅/网格已确认，三标签 UNRESOLVED）→ **不可归因于本切片任一对象**。未归因hs/1879/grid_group 二里半方图网格全组（第一排一號…第四排五號）——切片对象所在区域所属的图组。未归因hs/1879/county_full 青浦县境全图（p18）—— 县域级语境。未归因hs/1879/sw_waterway 青浦县西南境水道图（p49）—— 水系专项图，属「既有 1879 水系图候选」。未归因当前坐标在此失去历史定位资格墨痕为什么不能确定？也可以让时间成为主角。时间景观 · 时间本身是连续结构 · 只画有着录的变化今天←着录层（20 世纪末至今的方志与档案）12601267134219381992今金泽塘未知 · 不作时间断言普济桥?万安桥???颐浩寺遗址延续变化毁损原址重建未知今为什么在不到一公里的金泽水乡空间里，两座宋桥、一处宋代寺院遗址会如此靠近？这是还没有答案的问题看第一组分歧看第二组分歧看时间变化看史料原页看事实上一步继续史料 / 出处收起史料 / 出处查看 · 按需打开T11-C1 · 普济桥方位叙事只说『跨金泽塘』；北市/南市/中部不作已裁决事实，冲突保留于证据面板（s05-u2）T11-C2 · 万安桥跨水道公开措辞用官方『金泽塘/市河』+出处；上图『秀州塘』在证据展开时保持可见（s05-u1），不删除不静默归一T11-C3 · 1992 开放只说『1992 年在原址重建寺院』+来源限制；『开放为宗教活动场所』不作为事实出现（s06-u4 显式声明）T11-C4 · 《松江府志》引文引用必须写明『被后来官方材料归于〈松江府志〉，原书未取得』（s04-u2）T11-C5 · 金泽塘时间语义本体验中 temporal_assertion=none、temporal_evidence_status=not_applicable；不把 attested_time_evidence_backed 解释为年代已证"
+}

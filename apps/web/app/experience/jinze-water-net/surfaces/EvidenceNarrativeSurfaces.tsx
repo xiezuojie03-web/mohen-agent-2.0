@@ -4,9 +4,18 @@
 "use client";
 
 import { useState } from "react";
-import { LEVEL_LABELS, type NarrativeLevel } from "@mohen/experience-engine";
 import type { SurfaceComponentProps } from "./types";
 import { predicateLabel } from "./SpatialSurfaces";
+import {
+  humanLevelLabel,
+  humanFragmentBadge,
+  humanResolutionStatus,
+  stripInternalPrefix,
+  humanUncertainty,
+  CONFLICT_STATUS_HUMAN,
+  DISCOVERY_FORMULA,
+  DISCOVERY_FORMULA_HUMAN,
+} from "../humanLabels";
 import {
   TEMPORAL,
   temporalStateFromWording,
@@ -17,7 +26,7 @@ import {
 import { VisualLegend } from "../../../../lib/mohen-visual/spatial-canvas";
 import { fragmentGateDisplayItems, presentOpenQuestions } from "../culturalWorldProjection";
 
-const L = (lv: string) => LEVEL_LABELS[lv as NarrativeLevel] ?? lv;
+const dm = (ctx: SurfaceComponentProps["ctx"]) => ctx.devMode ?? false;
 
 // ---------------------------------------------------------------------------
 // Temporal Landscape V3（TASK-0015 §9）
@@ -313,11 +322,15 @@ export function EvidenceRevealSurface({ ctx, onAction }: SurfaceComponentProps) 
                 <strong>
                   {featureLabel(r.subject)} ↔ {featureLabel(r.object)}
                 </strong>
-                <span className={`tag tag--${r.epistemicClass.toLowerCase()}`}>
-                  {r.epistemicClass}（不升 E1）
-                </span>
+                {/* EXP-UI-RECON-01 R2/R5：epistemic class（E1/E2/E3）是内部枚举，
+                    默认 Human UI 不展示；仅 ?inspector=1 透出。 */}
+                {dm(ctx) && (
+                  <span className={`tag tag--${r.epistemicClass.toLowerCase()}`}>
+                    {r.epistemicClass}（不升 E1）
+                  </span>
+                )}
               </header>
-              <p className="evidence-rel__basis">{r.basis}</p>
+              <p className="evidence-rel__basis">{stripInternalPrefix(r.basis, dm(ctx))}</p>
               <ul className="evidence-rel__meta">
                 <li>关系谓词：{predicateLabel(r.predicate)}</li>
                 {r.isCurrentAssociationOnly && (
@@ -336,7 +349,7 @@ export function EvidenceRevealSurface({ ctx, onAction }: SurfaceComponentProps) 
       <div className="evidence-units">
         {units.map((u) => (
           <div key={u.unit_id} className={`unit unit--${u.level}`}>
-            <span className="unit__badge">{L(u.level)}</span>
+            <span className="unit__badge">{humanLevelLabel(u.level, dm(ctx))}</span>
             <span className="unit__text">{u.text}</span>
             {u.evidence_refs.length > 0 && <span className="unit__refs">证据 ×{u.evidence_refs.length}</span>}
           </div>
@@ -357,18 +370,18 @@ export function EvidenceRevealSurface({ ctx, onAction }: SurfaceComponentProps) 
             {gateItems.map((g) =>
               g.kind === "forbidden" ? (
                 <li key={g.fragment_id} className="unit" data-testid="fragment-gate-forbidden" data-span-type={g.span_type} data-has-fact="false">
-                  <span className="unit__badge">禁用片段</span>
-                  <span className="unit__text">{g.forbiddenNote}</span>
+                  <span className="unit__badge">{humanFragmentBadge("forbidden", dm(ctx))}</span>
+                  <span className="unit__text">{stripInternalPrefix(g.forbiddenNote ?? "", dm(ctx))}</span>
                 </li>
               ) : g.kind === "usable" ? (
                 <li key={g.fragment_id} className="unit" data-testid="fragment-gate-usable" data-span-type={g.span_type} data-has-fact="true">
-                  <span className="unit__badge">可用片段</span>
-                  <span className="unit__text">{g.fact}</span>
+                  <span className="unit__badge">{humanFragmentBadge("usable", dm(ctx))}</span>
+                  <span className="unit__text">{stripInternalPrefix(g.fact ?? "", dm(ctx))}</span>
                 </li>
               ) : (
                 <li key={g.fragment_id} className="unit" data-testid="fragment-gate-generic" data-span-type={g.span_type} data-has-fact="false">
-                  <span className="unit__badge">受约束片段</span>
-                  <span className="unit__text">{g.usage_note}</span>
+                  <span className="unit__badge">{humanFragmentBadge("generic", dm(ctx))}</span>
+                  <span className="unit__text">{stripInternalPrefix(g.usage_note ?? "", dm(ctx))}</span>
                 </li>
               )
             )}
@@ -383,9 +396,9 @@ export function EvidenceRevealSurface({ ctx, onAction }: SurfaceComponentProps) 
           <p className="surf__note">今日开放问题 · 只作为问题呈现，不进事实层</p>
           <ul>
             {openQuestions.map((q, i) => (
-              <li key={i} className="unit" data-testid="present-open-question">
-                <span className="unit__badge">开放问题</span>
-                <span className="unit__text">{q}</span>
+                <li key={i} className="unit" data-testid="present-open-question">
+                <span className="unit__badge">{dm(ctx) ? "开放问题" : "待确认"}</span>
+                <span className="unit__text">{stripInternalPrefix(q, dm(ctx))}</span>
               </li>
             ))}
           </ul>
@@ -427,21 +440,29 @@ export function ConflictCompareSurface({ ctx }: SurfaceComponentProps) {
         {/* M4.1：008 双值冲突卡 —— 两值并列 + preserved_open，不为 UI 简化而选一个年份 */}
         {dualConflicts.map((c) => (
           <article key={c.ruling} className="conflict-card" data-testid={`conflict-008-${c.ruling}`} data-dual-value="true" data-resolution={c.resolutionStatus}>
-            <header>
-              <strong>{c.topic}</strong>
-              <span className="conflict-card__ruling">{c.resolutionStatus} · 未裁决</span>
-            </header>
-            <p>
-              两说着录并列保留：<b>{c.primaryValue}</b>（权威着录）↔ <b>{c.conflictedValue}</b>（冲突变体，{c.ruling}）。
-              建造年代保持开放——墨痕不替你选边。
-            </p>
-            <footer>来源：{c.source} · 双值并存 · 静默裁决：ineligible</footer>
+              <header>
+                <strong>{c.topic}</strong>
+                <span className="conflict-card__ruling">{humanResolutionStatus(c.resolutionStatus ?? "", dm(ctx))} · 未裁决</span>
+              </header>
+              <p>
+                两说着录并列保留：<b>{c.primaryValue}</b>（权威着录）↔ <b>{c.conflictedValue}</b>（冲突变体，{c.ruling}）。
+                建造年代保持开放——墨痕不替你选边。
+              </p>
+              <footer>来源：{c.source} · {dm(ctx) ? "双值并存 · 静默裁决：ineligible" : "双值并存"}</footer>
           </article>
         ))}
       </div>
       <div className="conflict-status">
-        <span className="tag tag--unresolved">静默裁决：ineligible</span>
-        <span className="tag tag--confirmed">并列比较：eligible</span>
+        {/* EXP-UI-RECON-01 R3：内部裁决状态标签（ineligible / eligible）仅 ?inspector=1 透出；
+            默认 Human UI 以人话表达冲突本身，不替用户选边。 */}
+        {dm(ctx) ? (
+          <>
+            <span className="tag tag--unresolved">静默裁决：ineligible</span>
+            <span className="tag tag--confirmed">并列比较：eligible</span>
+          </>
+        ) : (
+          <span className="conflict-status__human">{CONFLICT_STATUS_HUMAN}</span>
+        )}
       </div>
     </div>
   );
@@ -463,9 +484,12 @@ export function SourceInspectSurface({ ctx }: SurfaceComponentProps) {
           </li>
         ))}
       </ul>
-      <p className="surf__note">
-        {ctx.scene.uncertainty}
-      </p>
+      {/* EXP-UI-RECON-01 R2：scene.uncertainty 的内部编号在默认 UI 剥离；
+          无法无损人话化的状态码句（ACCEPT_CONFLICT 等）默认隐藏，?inspector=1 显示原文 */}
+      {(() => {
+        const u = humanUncertainty(ctx.scene.uncertainty, dm(ctx));
+        return u ? <p className="surf__note">{u}</p> : null;
+      })()}
     </div>
   );
 }
@@ -494,11 +518,18 @@ export function DiscoverySurface({ ctx }: SurfaceComponentProps) {
     <div className="surf surf-discovery" data-testid="surface-discovery">
       <blockquote className={`exp-discovery ${isInterpretation ? "exp-discovery--interpretation" : ""}`} data-testid="primary-discovery">
         <span className="exp-discovery__badge">{isInterpretation ? "墨痕的解释 / 尚未证实" : "发现"}</span>
-        <p>{d.statement}</p>
-        <footer>未决对点：{d.unresolved_counterpoint}</footer>
+        {/* EXP-UI-RECON-01 R2：冻结发现文本中的内部引用标记（（E1）/（U5）等）仅在默认 UI 剥离，Inspector 显示原文 */}
+        <p>{stripInternalPrefix(d.statement, dm(ctx))}</p>
+        <footer>未决对点：{stripInternalPrefix(d.unresolved_counterpoint, dm(ctx))}</footer>
       </blockquote>
       <div className="discovery-rule">
-        <code>Evidence(A)+Evidence(B)+Evidence(C) ≠ Evidence(A+B+C interpretation)</code>
+        {/* EXP-UI-RECON-01 R3：伪公式仅 ?inspector=1 透出；默认 Human UI 改以人话表达，
+            且不创造新的历史结论。 */}
+        {dm(ctx) ? (
+          <code>{DISCOVERY_FORMULA}</code>
+        ) : (
+          <p className="discovery-rule__human">{DISCOVERY_FORMULA_HUMAN}</p>
+        )}
       </div>
     </div>
   );

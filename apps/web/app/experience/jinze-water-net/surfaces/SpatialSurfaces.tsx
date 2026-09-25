@@ -120,7 +120,9 @@ export function CurrentMapSurface({ ctx, compact }: SurfaceComponentProps) {
         y,
         glyph: "exact",
         label,
-        sub: `${pair.a.toFixed(6)}, ${pair.b.toFixed(6)}`,
+        // EXP-UI-RECON-01 R4：6 位 raw GPS 字面量仅 ?inspector=1（devMode）显示；
+        // 默认 Human UI 不渲染（保留地图点几何 + GCJ-02 诚实坐标系 banner）。
+        sub: ctx.devMode ? `${pair.a.toFixed(6)}, ${pair.b.toFixed(6)}` : undefined,
         className: "map-point",
       });
     } else if (a.kind === "provider_current_object_area") {
@@ -151,7 +153,9 @@ export function CurrentMapSurface({ ctx, compact }: SurfaceComponentProps) {
     x: x0 + ((i + 0.5) * fw) / Math.max(1, offFrame.length),
     y: stripY,
     glyph: "reference",
-    label: `${a.coord_system} · ${a.location_raw}`,
+    // EXP-UI-RECON-01 R4：另一坐标系参考锚的 raw 坐标仅 ?inspector=1 显示；
+    // 默认只标注坐标系名 + 参考锚说明（不并入本图的诚实分离仍保留）。
+    label: `${a.coord_system} · ${ctx.devMode ? a.location_raw : "另一坐标系参考锚"}`,
     sub: "参考锚 · 不并入本图",
     className: "map-ref",
   }));

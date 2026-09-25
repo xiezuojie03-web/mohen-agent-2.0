@@ -1,3 +1,13 @@
+EXP-UI-RECON-01 · Jinze Canonical Experience Humanization Pass（2026-09-25，tasks/EXP_UI_RECON_01_Jinze_Canonical_Experience_Humanization_Pass_Task_Book_V1_0.docx）
+
+- 状态：**DONE / COMMITTED**；Gate = `PASS_TO_M5_HUMAN_ROUND_B`；M5 保持 CURRENT / HOLD，Round B / H1–H10 = NOT RUN（STOP 已执行）
+- 实施：R1–R5 全部完成——默认 Human UI 关闭/人话化全部内部技术词汇（transition-hint、epistemic/闸门徽章、eligible·ineligible 裁决标签、Discovery 伪公式、6 位 raw GPS、AD-/Uxx/HR-xx/E1-E3/谓词键标记）；`?inspector=1` 内部诊断零删除；KEEP（K1–K7）零回归；DEFER 零偷做；3 份冻结 JSON 与 Cultural World 数据逐字节未动
+- 验证：全量 vitest 253/253；Playwright E2E 4/4（新增 experience-recon-01.spec.ts）；tsc 0 error；Runtime 双模式 12 场走查 + drift-recheck 27/27 PASS
+- 交付：`tasks/results/EXP-UI-RECON-01-result.md`、`tasks/results/EXP-UI-RECON-01-evidence/`（50 件）
+- 下一步：Architect Review 后裁决 M5 Human Round B（H1–H10）
+
+---
+
 M5-HUMAN-01 · Canonical Human Experience Validation（2026-09-25，tasks/M5_HUMAN_01_Canonical-Human-Experience-Validation_Task-Book_V1.0.docx）
 
 - M5 状态：CURRENT/HOLD（由 M5-HUMAN-01 启动；Round-A Human Experience FAIL SIGNAL 后进入 HOLD；Human Gate 待 ChatGPT Architect 裁决）

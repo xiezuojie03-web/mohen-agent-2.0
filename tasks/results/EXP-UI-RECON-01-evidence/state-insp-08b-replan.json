@@ -1,0 +1,28 @@
+{
+  "progress": "Beat 5/5 · 8/8",
+  "beat": "回到今天 · 下一个问题",
+  "timeState": "跨时段（发现陈述）",
+  "spatialMode": "关系历史空间（无坐标）",
+  "primaryTestId": "surface-relational-space",
+  "transitionHint": {
+    "present": true,
+    "text": "RETURN_TO_PRESENT · 主角=relational_space",
+    "inViewport": true
+  },
+  "badges": [
+    "未知（缺证据）"
+  ],
+  "fragmentGates": [],
+  "openQuestions": [],
+  "conflictStatus": null,
+  "conflictCards": [],
+  "discoveryBadge": null,
+  "discoveryText": null,
+  "discoveryRule": null,
+  "sourceUncertaintyNote": null,
+  "rawGpsPairOnPage": null,
+  "replanCardPresent": true,
+  "intentGuidePresent": true,
+  "chatInputs": 0,
+  "fullText": "墨痕回到今天 · 下一个问题跨时段（发现陈述）关系历史空间（无坐标）Beat 5/5 · 8/8关系核验你在问：它们历史上有没有关系？现在还不能确定它们历史上有关系。今天相邻，不等于从前相连。继续看证据 / 时间回到今天人文拓扑空间 · 无经纬度 · 不表达距离与走向 —— 水道是骨架，桥是跨越吕颐浩金泽塘 · 关系骨架（非历史几何）同跨一条水道原址即得名于普济桥万安桥还没有一条线在南颐浩寺遗址水系骨架跨越节点文化节点已证候选（未落定）弱线索无线实线＝有据；虚线＝候选；点线＝弱线索；断开＝被问到的连接还没有证据。当前坐标在此失去历史定位资格RETURN_TO_PRESENT · 主角=relational_space墨痕现在，再看一次它们。未知（缺证据）但要说清边界：寺与桥之间是否存在历史上的功能关联，目前没有任何证据支持，也没有证据否证。看今貌照片了解更多追问：那颐浩寺和普济桥以前真的有关系吗？追问：你凭什么这么判断？追问：它们后来发生了什么变化？追问：那我现在去现场可以看什么？看事实上一步继续Patch · 8 场全部保留 · Beat 5/5 未重置墨痕的重新判断（不升级 · 不编造）verify_historical_relation你的追问：那颐浩寺和普济桥以前真的有关系吗？关系核验（verify_historical_relation）当前坐标失去历史定位资格；关系 epistemic class 保持 E2（不升 E1）。证据判断现有证据不足以确认（最高可支持到 E2，不把 E2 升为 E1）现代相邻 ≠ 历史关系：是（仅今天共址）已知（保留）寺与桥今天相邻、同街（现代 provider 复合 POI + 同街地址）寺 1260 年创建、两桥 1260s–1267 建成（时间窗口重叠有据）未知 / 缺失任何前现代文献是否记载寺—桥功能关联明清方志/寺志中的寺桥关系条目1879 县志图说该区域可辨读细节重新规划（surface / 焦点，由证据选择）主 surface：relational_space证据焦点：temple_bridge_association关系 epistemic class 保持：E2（不升 E1）当前坐标失去历史权威：是时空权威：historical_lost时间焦点：none行动状态：judgment下一步（不编造答案）open_evidence：看证据：翻出既有材料里关于寺、桥各自历史与水系关系的条目（不新增主张）timeline：看各自时间变化：让时间成为主角，分别看寺与桥的沿革（不连线成一条历史关系）research_lead：继续调查方向（§10）：把『前现代文献中的寺桥关系』列为 research-lead（康熙/光绪《青浦县志》寺观、津梁卷）——须另行立项，不在本体验内补查回到今天"
+}

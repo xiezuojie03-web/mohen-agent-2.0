@@ -58,7 +58,8 @@ export function buildWorldEvidenceState(
       r.epistemic_class === "E2" && r.predicate === "temple_bridge_association"
         ? "现代 provider 复合 POI（寺与桥同属一个 POI 名）+ 同街地址 → 这是今天的关联，不是前现代文献记载的历史功能关系"
         : r.epistemic_class === "E1"
-        ? "存在 E1 据证历史关系（方志/著录记载）"
+        ? // EXP-UI-RECON-01 R2：basis 是呈现字符串（非闸门逻辑），默认 UI 不出现内部枚举 E1
+          "存在有据的历史关系（方志/著录记载）"
         : "弱空间线索（相对位置），非确认历史关系",
   }));
 

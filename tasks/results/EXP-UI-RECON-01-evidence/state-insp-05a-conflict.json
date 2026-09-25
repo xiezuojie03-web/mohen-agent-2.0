@@ -1,0 +1,30 @@
+{
+  "progress": "Beat 4/5 · 5/8",
+  "beat": "证据与时间变化",
+  "timeState": "着录层（20 世纪末至今的方志与档案）",
+  "spatialMode": "关系历史空间（无坐标）",
+  "primaryTestId": "surface-conflict-compare",
+  "transitionHint": {
+    "present": true,
+    "text": "EVIDENCE_FOCUS · 主角=conflict_compare",
+    "inViewport": false
+  },
+  "badges": [],
+  "fragmentGates": [],
+  "openQuestions": [],
+  "conflictStatus": "静默裁决：ineligible并列比较：eligible",
+  "conflictCards": [
+    "普济桥方位T11-C1 · 未裁决叙事只说『跨金泽塘』；北市/南市/中部不作已裁决事实，冲突保留于证据面板（s05-u2）墨痕不替你选边——两说着录都保留在案。",
+    "万安桥跨水道T11-C2 · 未裁决公开措辞用官方『金泽塘/市河』+出处；上图『秀州塘』在证据展开时保持可见（s05-u1），不删除不静默归一墨痕不替你选边——两说着录都保留在案。",
+    "普济桥建造年代（1265 vs 1267）preserved_open · 未裁决两说着录并列保留：1267（权威着录）↔ 1265（冲突变体，pujiqiao-build-year-1265-1267）。 建造年代保持开放——墨痕不替你选边。来源：008/cultural_conflicts · 双值并存 · 静默裁"
+  ],
+  "discoveryBadge": null,
+  "discoveryText": null,
+  "discoveryRule": null,
+  "sourceUncertaintyNote": null,
+  "rawGpsPairOnPage": null,
+  "replanCardPresent": false,
+  "intentGuidePresent": false,
+  "chatInputs": 0,
+  "fullText": "墨痕证据与时间变化着录层（20 世纪末至今的方志与档案）关系历史空间（无坐标）Beat 4/5 · 5/8着录冲突 · 并列 · 未裁决普济桥方位T11-C1 · 未裁决叙事只说『跨金泽塘』；北市/南市/中部不作已裁决事实，冲突保留于证据面板（s05-u2）墨痕不替你选边——两说着录都保留在案。万安桥跨水道T11-C2 · 未裁决公开措辞用官方『金泽塘/市河』+出处；上图『秀州塘』在证据展开时保持可见（s05-u1），不删除不静默归一墨痕不替你选边——两说着录都保留在案。普济桥建造年代（1265 vs 1267）preserved_open · 未裁决两说着录并列保留：1267（权威着录）↔ 1265（冲突变体，pujiqiao-build-year-1265-1267）。 建造年代保持开放——墨痕不替你选边。来源：008/cultural_conflicts · 双值并存 · 静默裁决：ineligible静默裁决：ineligible并列比较：eligible当前坐标在此失去历史定位资格EVIDENCE_FOCUS · 主角=conflict_compare墨痕为什么不能确定？也可以让时间成为主角。时间景观 · 时间本身是连续结构 · 只画有着录的变化今天←着录层（20 世纪末至今的方志与档案）12601267134219381992今金泽塘未知 · 不作时间断言普济桥?万安桥???颐浩寺遗址延续变化毁损原址重建未知今为什么在不到一公里的金泽水乡空间里，两座宋桥、一处宋代寺院遗址会如此靠近？这是还没有答案的问题看第一组分歧看第二组分歧看时间变化看史料原页看事实上一步继续"
+}

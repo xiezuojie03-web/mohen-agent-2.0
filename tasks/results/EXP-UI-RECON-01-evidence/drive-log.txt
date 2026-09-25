@@ -1,0 +1,74 @@
+== MODE=human → http://127.0.0.1:3000/experience/jinze-water-net
+[human] s01 首屏
+  [shot] human-01-first-screen-viewport.png
+  [state] state-human-01-first-screen.json  progress=Beat 1/5 · 1/8  primary=surface-current-map  hint=false
+[human] s02 时间/空间转换
+  [shot] human-02-time-shift-viewport.png
+  [state] state-human-02-time-shift.json  progress=Beat 2/5 · 2/8  primary=surface-relational-space  hint=false
+[human] s03 关系发现
+  [shot] human-03-relation-viewport.png
+  [state] state-human-03-relation.json  progress=Beat 3/5 · 3/8  primary=surface-relational-space  hint=false
+[human] s04 寺进入
+  [shot] human-04-temple-viewport.png
+  [state] state-human-04-temple.json  progress=Beat 3/5 · 4/8  primary=surface-relational-space  hint=false
+[human] s05a 冲突
+  [shot] human-05a-conflict-viewport.png
+  [state] state-human-05a-conflict.json  progress=Beat 4/5 · 5/8  primary=surface-conflict-compare  hint=false
+[human] s05b 史料原页
+  [shot] human-05b-histmap-viewport.png
+  [state] state-human-05b-histmap.json  progress=Beat 4/5 · 5/8  primary=surface-historical-map-native  hint=false
+[human] s06 时间轴
+  [shot] human-06-timeline-viewport.png
+  [state] state-human-06-timeline.json  progress=Beat 4/5 · 6/8  primary=surface-timeline  hint=false
+[human] s07 回到今天
+  [shot] human-07-return-present-viewport.png
+  [state] state-human-07-return-present.json  progress=Beat 5/5 · 7/8  primary=surface-current-map  hint=false
+[human] s07b 今貌照片
+  [shot] human-07b-photo-viewport.png
+  [state] state-human-07b-photo.json  progress=Beat 5/5 · 7/8  primary=surface-current-photo  hint=false
+[human] s08 发现
+  [shot] human-08-discovery-viewport.png
+  [state] state-human-08-discovery.json  progress=Beat 5/5 · 8/8  primary=surface-discovery  hint=false
+[human] s08b 追问/Replan
+  [shot] human-08b-replan-viewport.png
+  [state] state-human-08b-replan.json  progress=Beat 5/5 · 8/8  primary=surface-relational-space  hint=false
+[human] s08c 回到今天(return)
+  [shot] human-08c-return-viewport.png
+  [state] state-human-08c-return.json  progress=Beat 5/5 · 8/8  primary=surface-discovery  hint=false
+== MODE=inspector → http://127.0.0.1:3000/experience/jinze-water-net?inspector=1
+[insp] s01 首屏
+  [shot] insp-01-first-screen-viewport.png
+  [state] state-insp-01-first-screen.json  progress=Beat 1/5 · 1/8  primary=surface-current-map  hint=true
+[insp] s02 时间/空间转换
+  [shot] insp-02-time-shift-viewport.png
+  [state] state-insp-02-time-shift.json  progress=Beat 2/5 · 2/8  primary=surface-relational-space  hint=true
+[insp] s03 关系发现
+  [shot] insp-03-relation-viewport.png
+  [state] state-insp-03-relation.json  progress=Beat 3/5 · 3/8  primary=surface-relational-space  hint=true
+[insp] s04 寺进入
+  [shot] insp-04-temple-viewport.png
+  [state] state-insp-04-temple.json  progress=Beat 3/5 · 4/8  primary=surface-relational-space  hint=true
+[insp] s05a 冲突
+  [shot] insp-05a-conflict-viewport.png
+  [state] state-insp-05a-conflict.json  progress=Beat 4/5 · 5/8  primary=surface-conflict-compare  hint=true
+[insp] s05b 史料原页
+  [shot] insp-05b-histmap-viewport.png
+  [state] state-insp-05b-histmap.json  progress=Beat 4/5 · 5/8  primary=surface-historical-map-native  hint=true
+[insp] s06 时间轴
+  [shot] insp-06-timeline-viewport.png
+  [state] state-insp-06-timeline.json  progress=Beat 4/5 · 6/8  primary=surface-timeline  hint=true
+[insp] s07 回到今天
+  [shot] insp-07-return-present-viewport.png
+  [state] state-insp-07-return-present.json  progress=Beat 5/5 · 7/8  primary=surface-current-map  hint=true
+[insp] s07b 今貌照片
+  [shot] insp-07b-photo-viewport.png
+  [state] state-insp-07b-photo.json  progress=Beat 5/5 · 7/8  primary=surface-current-photo  hint=true
+[insp] s08 发现
+  [shot] insp-08-discovery-viewport.png
+  [state] state-insp-08-discovery.json  progress=Beat 5/5 · 8/8  primary=surface-discovery  hint=true
+[insp] s08b 追问/Replan
+  [shot] insp-08b-replan-viewport.png
+  [state] state-insp-08b-replan.json  progress=Beat 5/5 · 8/8  primary=surface-relational-space  hint=true
+[insp] s08c 回到今天(return)
+  [shot] insp-08c-return-viewport.png
+  [state] state-insp-08c-return.json  progress=Beat 5/5 · 8/8  primary=surface-discovery  hint=true

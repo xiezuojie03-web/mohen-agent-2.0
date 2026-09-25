@@ -368,7 +368,14 @@ describe("TASK-0014 — text budget & narrative policy (§15-12/13/14)", () => {
     expect(script.discoveries.primary.epistemic_classification).toBe("INTERPRETATION_CANDIDATE");
     const d = fnBody(read(path.join(SURF_DIR, "EvidenceNarrativeSurfaces.tsx")), "DiscoverySurface");
     expect(d).toMatch(/墨痕的解释\s*\/\s*尚未证实/);
-    expect(d).toMatch(/Evidence\(A\)\+Evidence\(B\)\+Evidence\(C\)/); // 合成解释不得自动升为事实
+    // EXP-UI-RECON-01 R3：伪公式从默认 UI 移除（→ 人话），但「合成解释不得自动升为事实」
+    // 的规则本体保留在 humanLabels.ts（DISCOVERY_FORMULA），仅 ?inspector=1（devMode）渲染。
+    expect(d).not.toMatch(/Evidence\(A\)\+Evidence\(B\)\+Evidence\(C\)/);
+    expect(d).toMatch(/dm\(ctx\)\s*\?/);
+    expect(d).toMatch(/DISCOVERY_FORMULA/);
+    const labels = read(path.join(EXP_DIR, "humanLabels.ts"));
+    expect(labels).toMatch(/Evidence\(A\)\+Evidence\(B\)\+Evidence\(C\)/); // 合成解释不得自动升为事实（Inspector 保留）
+    expect(labels).toMatch(/三条证据各自成立/); // 默认 Human UI 的人话表达
   });
 
   it("14. Follow-up 保持 Patch-not-Replace（无 reload / 无 replay / 无 reset）", () => {

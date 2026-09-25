@@ -64,10 +64,11 @@ test("experience composition 2.0 — five beats + surface eligibility", async ({
   await expect(page.getByTestId("primary-discovery")).toContainText("墨痕的解释");
 
   // —— Follow-up：Patch-not-Replace（无 reload、无重放、历史保留）
+  // EXP-UI-RECON-01 测试维护：TASK-0017 起 s08 有 4 个追问按钮（→ .first()）；
+  // TASK-0016 起 canonical follow-up 走真实 Replan Runtime，冻结 patch 结果卡让位
+  // （仅在非 replan 路径渲染；replan-card 仅 ?inspector=1），故断言对齐 patch-pill 契约。
   const beforeUrl = page.url();
-  await page.getByRole("button", { name: /追问/ }).click();
-  await expect(page.getByTestId("patch-card")).toContainText("体验未重启");
-  await expect(page.getByTestId("patch-card")).toContainText("research_lead");
+  await page.getByRole("button", { name: /追问/ }).first().click();
   await expect(page.getByTestId("patch-pill")).toBeVisible();
   expect(page.url()).toBe(beforeUrl);
   await expect(page.locator(".exp-progress")).toContainText("8/8");

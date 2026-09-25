@@ -1,0 +1,26 @@
+{
+  "progress": "Beat 1/5 · 1/8",
+  "beat": "进入现场",
+  "timeState": "2026（当下）",
+  "spatialMode": "现代精确坐标",
+  "primaryTestId": "surface-current-map",
+  "transitionHint": {
+    "present": true,
+    "text": "IMMERSIVE_SPATIAL · 主角=current_map",
+    "inViewport": true
+  },
+  "badges": [],
+  "fragmentGates": [],
+  "openQuestions": [],
+  "conflictStatus": null,
+  "conflictCards": [],
+  "discoveryBadge": null,
+  "discoveryText": null,
+  "discoveryRule": null,
+  "sourceUncertaintyNote": null,
+  "rawGpsPairOnPage": "120.919639, 31.039508",
+  "replanCardPresent": false,
+  "intentGuidePresent": false,
+  "chatInputs": 0,
+  "fullText": "墨痕进入现场2026（当下）现代精确坐标Beat 1/5 · 1/8当前地理空间 · GCJ-02 原值 · 只代表今天31.0395°N31.0339°N50 m（按切片声明跨度估读）N本图坐标系 GCJ-02（原值，零换算）120.9196,31.0395120.9219,31.0395万安桥120.919639, 31.039508颐浩寺遗址近似范围 · 无精确点普济桥120.9196,31.0339120.9219,31.0339120.920423, 31.033940120.9196°E120.9219°E↓ 另一坐标系的记录：分列登记，不并入本图、不做换算WGS-84 · 31.03969,120.91644WGS-84 · 31.03969,120.91644WGS-84 · 31.03969,120.91644参考锚 · 不并入本图参考锚 · 不并入本图参考锚 · 不并入本图当前对象点近似范围参考锚（另一坐标系）这里没有水道 / 道路：本切片没有任何可靠线面几何，宁可抽象，也不画一条编出来的河。IMMERSIVE_SPATIAL · 主角=current_map墨痕两座古桥、一处宋寺遗址，今天为什么离得这么近？两座宋桥、一处宋代寺院，为什么靠得这么近？——这不是一个已经有答案的问题。让我们把时间拨回去。这是还没有答案的问题今日实景 · 不是历史影像（历史视觉资产 = 0）万安桥 · CC BY-SA 3.0来源回到它们刚出现的时代看事实上一步继续"
+}

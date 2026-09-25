@@ -22,7 +22,6 @@ import {
   validateBeatCoverage,
   ACTION_LABELS,
   SPATIAL_MODE_LABELS,
-  LEVEL_LABELS,
   type NarrativeLevel,
   type ExperienceScript,
   type FollowupPatch,
@@ -36,6 +35,7 @@ import type { SliceShape, SurfaceContext } from "./surfaces/types";
 import { projectCulturalWorldState, type CulturalWorldProjectionSource } from "./culturalWorldProjection";
 import IntentGuide from "./IntentGuide";
 import { translateIntentToExperience } from "./intentTranslation";
+import { humanLevelLabel } from "./humanLabels";
 import "./experience.css";
 
 export interface ExperienceShellProps {
@@ -303,13 +303,18 @@ export default function ExperienceShell({ script, patch, slice, culturalSource }
             当前坐标在此失去历史定位资格
           </span>
         )}
-        <span
-          className="exp-transition-hint"
-          data-testid="transition-hint"
-          title={`recipe=${composition.recipe} primary=${primaryType ?? "fallback"}`}
-        >
-          {composition.recipe} · 主角={primaryType ?? composition.fallback ?? "fallback"}
-        </span>
+        {/* EXP-UI-RECON-01 R1：transition-hint（recipe / 主角变量）是内部 runtime 提示，
+            默认 Human UI 不渲染；仅 ?inspector=1（devInspector）透出供诊断。
+            不删除 composition.recipe / primaryType 数据。 */}
+        {devInspector && (
+          <span
+            className="exp-transition-hint"
+            data-testid="transition-hint"
+            title={`recipe=${composition.recipe} primary=${primaryType ?? "fallback"}`}
+          >
+            {composition.recipe} · 主角={primaryType ?? composition.fallback ?? "fallback"}
+          </span>
+        )}
       </main>
 
       {/* 墨痕短发言 + secondary/context（退让）+ 默认可见单元 + 行动 */}
@@ -331,13 +336,13 @@ export default function ExperienceShell({ script, patch, slice, culturalSource }
         <div className="exp-narrative">
           {defaultUnits.map((u) => (
             <p key={u.unit_id} className={`unit unit--${u.level}`} data-testid={`unit-${u.unit_id}`}>
-              <span className="unit__badge">{LEVEL_LABELS[u.level as NarrativeLevel]}</span>
+              <span className="unit__badge">{humanLevelLabel(u.level as NarrativeLevel, devInspector)}</span>
               <span className="unit__text">{u.text}</span>
             </p>
           ))}
           {revealedUnits.map((u) => (
             <p key={u.unit_id} className={`unit unit--${u.level}`}>
-              <span className="unit__badge">{LEVEL_LABELS[u.level as NarrativeLevel]}</span>
+              <span className="unit__badge">{humanLevelLabel(u.level as NarrativeLevel, devInspector)}</span>
               <span className="unit__text">{u.text}</span>
             </p>
           ))}
