@@ -1,8 +1,8 @@
 # CONTEXT
 
-- Phase: II — Canonical Experience Productization · **M4 CURRENT；NEXT = M4 Integration Closure Audit（pending Architect Task Book）**
+- Phase: II — Canonical Experience Productization · **M4 CLOSED（Integration Closure PASS_TO_M5）；NEXT = M5 Human Experience Validation（LOCKED，pending Architect Task Book）**
 - Repository version: 0.1.0
-- Current task: **NONE — NO ACTIVE CONSTRUCTION TASK**。NEXT: M4 Integration Closure Audit — pending Architect Task Book（GOV-SYNC-02 冻结，不得自行创建或执行）。
+- Current task: **M4-CLOSURE-01 · M4 Integration Closure Audit = PASS / CLOSED**（READ-ONLY PRODUCT AUDIT；归档 `tasks/results/M4-CLOSURE-01-result.md`）。核心结论：Canonical Integration Chain 六层全通；**Timeline legacy path = KEEP_COMPATIBILITY_PATH**（slice.changes 与 008 culturalEvents 语义一致、不绕过 Firewall、冲突值由 ConflictCompareSurface preserved_open 呈现）；0 blocker；3 NON-BLOCKING DEBT（culturalEvents/meaningCandidates 未进渲染层、轴 A 未进 decideEvidence、颐浩寺 1288/1295 未上轴）+ 2 FUTURE CANDIDATE（Timeline 数据源统一 / 双投影一致性守卫）。**M5 未启动、未声称 Human Gate PASS**——待 Architect 另行签发 Task Book。
 - Governance SOT（GOV-SYNC-02 冻结）：**L1 = `governance/MoHen_Agent_2.0_Roadmap_V4.9_Governance-Sync.docx`**（内含 Canonical Repository Directory Map，§6.4）；**L2 = `governance/MoHen_Agent_2.0_PHASE-II_Execution-Plan_V1.1.docx`**；**Architecture Candidate Registry = `governance/MoHen_Agent_2.0_Architecture-Candidate-Backlog_V1.0.md`**（正式治理登记处，NOT Architecture SOT / NOT Decision Authority）。Current-only working tree：V4.8 / V4.9（三层计划治理版）/ PHASE-II V1.0 三份被取代 DOCX 已从 working tree 移除（Git history 保留）；Architect-authorized Task Book 一律 tracked。
 - Governance audit: `tasks/results/GOV-DIR-AUDIT-01-result.md` — **PASS / CLOSED**（READ-ONLY 目录与治理 SOT 审计，为 Canonical Repository Directory Map 提供事实底座）。
 - Prior task: `tasks/ENG-GOV-01_Baseline-Regression-Test-Reconciliation_Task-Book_V1.0.docx` — **PASS / CLOSED**（9 failures 全解：5×A/B + 4×fixture EBUSY，0×C/0×D；targeted 76/76、tests/data 107/107、experience 146/146、全量 suite 253/253、`pnpm -r typecheck` 0 error；Gate = **PASS_TO_M4_CLOSURE_AUDIT**；归档 `tasks/results/ENG-GOV-01-result.md` @ `7f786c9`）。
