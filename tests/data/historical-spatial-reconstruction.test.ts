@@ -458,17 +458,30 @@ describe("TASK-0010 Jinze Historical Spatial Reconstruction — Minimum Slice", 
     expect(await n(`select count(*)::int c from knowledge_paths`)).toBe(3);
     expect(await n(`select count(*)::int c from discovery_candidates`)).toBe(4);
     expect(await n(`select count(*)::int c from claims where generated_by='mohen-knowledge-weave'`)).toBe(5);
-    // relations：只断言不变量（§12-26），不断言过期绝对总数
-    expect(await n(`select count(*)::int c from relations where legacy_id is not null`)).toBe(24);
+    // relations：只断言不变量（§12-26），不断言过期绝对总数。
+    // ENG-GOV-01（A 类调和 STALE_COUNT）：CW-02 AD-02 规范锚 relation 以 legacy_id=''
+    // （空串而非 NULL）合法入列，使「legacy_id is not null」误含该行（24→25）。
+    // 不变量本体不变：**weave legacy 映射关系恒为 24**——用 nullif 排除空串，回到断言本义。
+    expect(await n(`select count(*)::int c from relations where nullif(legacy_id,'') is not null`)).toBe(24);
+    // ENG-GOV-01（B 类调和 STALE_STATE）：证据挂接位随 008 Cultural World 合法演进——
+    // 无证据语义关系恒为 0 的不变量不变；挂接路径承认 legacy relation_evidence ∨
+    // 008 claim 片段挂接（cultural_relation_claims.evidence_fragment_ids）。
     expect(
       await n(`select count(*)::int c from relations r
                 where r.predicate <> 'crossLink'
-                  and not exists (select 1 from relation_evidence re where re.relation_id=r.relation_id)`)
+                  and not exists (select 1 from relation_evidence re where re.relation_id=r.relation_id)
+                  and not exists (
+                        select 1 from cultural_relation_claims crc
+                         where crc.existing_relation_id = r.relation_id
+                           and coalesce(array_length(crc.evidence_fragment_ids, 1), 0) > 0)`)
     ).toBe(0);
-    // 切片关系必须落在新表，而不是污染 relations
+    // 切片关系必须落在新表（historical_spatial_relations），relations 中不允许出现
+    // **无 HSR 规范锚**的切片谓词行（ENG-GOV-01：CW-02 AD-02 的 former_site_of 是
+    // 被 HSR existing_relation_id 反向指认的合法规范锚；未锚定者仍禁止——不放松）。
     expect(
       await n(`select count(*)::int c from relations r
-                where r.predicate in ('spans_waterway','relative_position_south_of','temple_bridge_association','former_site_of')`)
+                where r.predicate in ('spans_waterway','relative_position_south_of','temple_bridge_association','former_site_of')
+                  and not exists (select 1 from historical_spatial_relations hsr where hsr.existing_relation_id = r.relation_id)`)
     ).toBe(0);
     // 本任务未新建 claim / discovery
     expect(

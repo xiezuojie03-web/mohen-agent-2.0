@@ -20,7 +20,7 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
+import { pathToFileURL } from "node:url";
 
 import { queryRows } from "../../packages/data-access/src/index.mjs";
 
@@ -199,8 +199,19 @@ describe("TASK-0005 Human Review + S1 Evidence", () => {
 
   // 10. semantic relation 必须有 Evidence linkage
   it("10. semantic relation 必须有 Evidence linkage", async () => {
+    // ENG-GOV-01（B 类调和 STALE_STATE）：证据**挂接位**随 008 Cultural World 合法演进——
+    // CW-02 AD-02 的 former_site_of 规范锚 relation（e0e00e41）证据挂接在
+    // cultural_relation_claims.evidence_fragment_ids（008 claim 层、fragment 级），
+    // 不在 legacy relation_evidence。不变量本体不变：**无任何证据的语义关系必须为 0**，
+    // 新断言承认两条合法挂接路径（legacy relation_evidence ∨ 008 claim 片段挂接）。
     const rows = await db.rows(
-      `select r.relation_id, r.predicate, count(re.evidence_id)::int as ev
+      `select r.relation_id, r.predicate,
+              count(re.evidence_id)::int as ev,
+              exists (
+                select 1 from cultural_relation_claims crc
+                 where crc.existing_relation_id = r.relation_id
+                   and coalesce(array_length(crc.evidence_fragment_ids, 1), 0) > 0
+              ) as has_claim_fragment_evidence
          from relations r
          left join relation_evidence re on re.relation_id = r.relation_id
         group by r.relation_id, r.predicate`
@@ -208,7 +219,12 @@ describe("TASK-0005 Human Review + S1 Evidence", () => {
     const semantic = rows.filter((r) => r.predicate !== "crossLink");
     expect(semantic.length).toBeGreaterThan(0);
     for (const r of semantic) {
-      expect(Number(r.ev), `relation ${r.relation_id} (${r.predicate}) 缺 evidence`).toBeGreaterThan(0);
+      // data-access 层对 exists() 返回字符串 "t"/"f"（兼容 boolean）
+      const claimEvidence = r.has_claim_fragment_evidence === true || r.has_claim_fragment_evidence === "t";
+      expect(
+        Number(r.ev) > 0 || claimEvidence,
+        `relation ${r.relation_id} (${r.predicate}) 既无 relation_evidence 也无 008 claim 片段挂接`
+      ).toBe(true);
     }
   });
 
@@ -221,11 +237,41 @@ describe("TASK-0005 Human Review + S1 Evidence", () => {
     const beforeEx = await db.rows(
       `select count(*)::int as c from visual_assets where eligibility_tags && array['excluded_from_heritage_primary']`
     );
-    execFileSync(process.execPath, ["pipelines/review/persist-human-review.mjs"], {
-      cwd: PROJECT_ROOT,
-      stdio: "pipe",
-      env: { ...process.env },
-    });
+    // ENG-GOV-01（fixture 调和）：本机沙箱禁止 node 自旋 node 子进程（spawnSync EBUSY）——
+    // 改为进程内执行同一管线。persist-human-review 是 fire-and-forget main()（无 TLA），
+    // 其**最后一条语句**是 console.log(结束 summary)：以「捕获到可解析 JSON summary」为
+    // 完成信号（等价于子进程模式「进程退出 = main 完成」），幂等断言零变更。
+    {
+      const logs: string[] = [];
+      const origLog = console.log;
+      console.log = (...args: unknown[]) => {
+        logs.push(args.map(String).join(" "));
+      };
+      try {
+        await import(
+          pathToFileURL(path.join(PROJECT_ROOT, "pipelines/review/persist-human-review.mjs")).href
+        );
+        const deadline = Date.now() + 50_000;
+        let done = false;
+        while (Date.now() < deadline) {
+          const out = logs.join("\n");
+          const i = out.indexOf("{");
+          if (i >= 0) {
+            try {
+              JSON.parse(out.slice(i));
+              done = true;
+              break;
+            } catch {
+              /* summary 未完整，继续等 */
+            }
+          }
+          await new Promise((r) => setTimeout(r, 200));
+        }
+        if (!done) throw new Error("ENG-GOV-01：persist-human-review 未在时限内输出结束 summary");
+      } finally {
+        console.log = origLog;
+      }
+    }
     const after = await db.rows(
       `select count(*)::int as c from human_review_decisions where hr_code ~ '^HR-[1-6]$'`
     );

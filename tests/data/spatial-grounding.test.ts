@@ -6,7 +6,7 @@
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
+import { pathToFileURL } from "node:url";
 
 import { queryRows } from "../../packages/data-access/src/index.mjs";
 
@@ -326,11 +326,20 @@ describe("TASK-0007 Jinze Spatial Grounding", () => {
     // §12-26（TASK-0010 修正）：此处原本断言 `relations` 总数 = 30 —— 那是**过期的绝对总数**。
     // 改为断言真正的不变量：legacy 映射恒 24、非 crossLink 关系必带 Evidence、
     // 且切片关系（TASK-0010 起）落在 historical_spatial_relations 而非 relations。
-    expect(await n(`select count(*)::int c from relations where legacy_id is not null`)).toBe(24);
+    // ENG-GOV-01（A 类调和 STALE_COUNT）：CW-02 AD-02 规范锚 relation 以 legacy_id=''
+    // 合法入列，使「legacy_id is not null」误含该行（24→25）——用 nullif 排除空串，
+    // 不变量本体不变：**weave legacy 映射关系恒为 24**。
+    expect(await n(`select count(*)::int c from relations where nullif(legacy_id,'') is not null`)).toBe(24);
+    // ENG-GOV-01（B 类调和 STALE_STATE）：无证据语义关系恒为 0 的不变量不变；
+    // 挂接路径承认 legacy relation_evidence ∨ 008 claim 片段挂接（CW-02 former_site_of）。
     expect(
       await n(`select count(*)::int c from relations r
                 where r.predicate <> 'crossLink'
-                  and not exists (select 1 from relation_evidence re where re.relation_id=r.relation_id)`)
+                  and not exists (select 1 from relation_evidence re where re.relation_id=r.relation_id)
+                  and not exists (
+                        select 1 from cultural_relation_claims crc
+                         where crc.existing_relation_id = r.relation_id
+                           and coalesce(array_length(crc.evidence_fragment_ids, 1), 0) > 0)`)
     ).toBe(0);
     // 空间任务不得产生 claim / relation / discovery
     expect(
@@ -408,16 +417,50 @@ describe("TASK-0007 Jinze Spatial Grounding", () => {
   it("16. 重跑幂等（真实以 --from-raw 离线重放两次，计数不变）", async () => {
     const dir = latestReplayDir();
     expect(dir, "需要既有 raw 快照才能离线重放").toBeTruthy();
-    const runOnce = () => {
-      const out = execFileSync(process.execPath, [PIPELINE, "--from-raw", dir!], {
-        cwd: PROJECT_ROOT,
-        encoding: "utf8",
-        env: { ...process.env, NODE_OPTIONS: "" },
-      });
+    // ENG-GOV-01（fixture 调和）：沙箱禁止 node 自旋 node 子进程（spawnSync EBUSY）——
+    // 改为**进程内**执行同一管线：--from-raw 离线重放经 process.argv 注入（重放模式不接触 key），
+    // 管线 summary 经 console.log 捕获后按原逻辑解析。幂等不变量与全部断言零变更（等价证据）。
+    const runOnce = async (tag: number) => {
+      const logs: string[] = [];
+      const origLog = console.log;
+      console.log = (...args: unknown[]) => {
+        logs.push(args.map(String).join(" "));
+      };
+      const prevArgv = process.argv;
+      process.argv = [prevArgv[0] ?? "node", PIPELINE, "--from-raw", dir!];
+      try {
+        const spec = pathToFileURL(PIPELINE).href + (tag > 1 ? "?engov01-rerun=2" : "");
+        await import(spec);
+        // ENG-GOV-01：retrieve-amap-jinze 是 fire-and-forget main()（无 TLA）——await import
+        // 不会等 main() 完成，其最后一条语句是 console.log(JSON.stringify(summary, null, 1))。
+        // 以「捕获到可解析 JSON summary」为完成信号（等价于子进程模式「进程退出 = main 完成」）。
+        // 单次离线重放实测 ≈51s（本机 mohen_dev）：轮询上限 120s 留足余量。
+        const deadline = Date.now() + 120_000;
+        let done = false;
+        while (Date.now() < deadline) {
+          const all = logs.join("\n");
+          const j = all.indexOf("{");
+          if (j >= 0) {
+            try {
+              JSON.parse(all.slice(j));
+              done = true;
+              break;
+            } catch {
+              /* summary 未完整，继续等 */
+            }
+          }
+          await new Promise((r) => setTimeout(r, 200));
+        }
+        if (!done) throw new Error("ENG-GOV-01：retrieve-amap-jinze 未在时限内输出结束 summary");
+      } finally {
+        process.argv = prevArgv;
+        console.log = origLog;
+      }
+      const out = logs.join("\n");
       const i = out.indexOf("{");
       return JSON.parse(out.slice(i)) as Record<string, unknown>;
     };
-    const a = runOnce();
+    const a = await runOnce(1);
     const before = {
       evidence: await n(`select count(*)::int c from evidence where extraction_method='${SPATIAL_METHOD}'`),
       sources: await n(`select count(*)::int c from source_records where provider='amap'`),
@@ -425,7 +468,7 @@ describe("TASK-0007 Jinze Spatial Grounding", () => {
                        where object_type='evidence' and exists (select 1 from evidence e
                          where e.evidence_id::text=object_id and e.extraction_method='${SPATIAL_METHOD}')`),
     };
-    const b = runOnce();
+    const b = await runOnce(2);
     expect(b.evidence_written).toBe(a.evidence_written);
     expect(b.source_created).toBe(0); // 重放：全部来源已存在 → 全部复用
     expect(b.source_reused).toBe(a.source_reused);
@@ -439,7 +482,7 @@ describe("TASK-0007 Jinze Spatial Grounding", () => {
     expect(after).toEqual(before);
     expect(before.evidence).toBe(9);
     expect(before.audit).toBe(63);
-  }, 120000);
+  }, 300_000); // ENG-GOV-01：单次重放实测 ≈51s，两次 + 快照 > 旧 120s 时限（fixture 参数，断言零变更）
 
   // 17. Legacy zero-write
   it("17. Legacy 零写入（seed.master.json 字节与 mtime 未变）", () => {

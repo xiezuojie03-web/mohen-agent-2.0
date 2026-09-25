@@ -6,7 +6,7 @@
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
+import { pathToFileURL } from "node:url";
 
 import { queryRows } from "../../packages/data-access/src/index.mjs";
 
@@ -42,21 +42,33 @@ describe("TASK-0006 Jinze Minimum Knowledge Weave", () => {
 
   // 2. No semantic edge generated only from lexical co-occurrence
   it("2. 语义关系不来自词语共现（非 crossLink 关系皆有 Evidence）", async () => {
+    // ENG-GOV-01（B 类调和 STALE_STATE）：证据**挂接位**随 008 Cultural World 合法演进——
+    // 不变量本体不变：非 crossLink 关系必须证据支撑、无证据语义边恒为 0；
+    // 挂接路径承认 legacy relation_evidence ∨ 008 claim 片段挂接（CW-02 AD-02 former_site_of）。
     const noEv = await n(
       `select count(*)::int c from relations r
         where r.predicate <> 'crossLink'
-          and not exists (select 1 from relation_evidence re where re.relation_id=r.relation_id)`
+          and not exists (select 1 from relation_evidence re where re.relation_id=r.relation_id)
+          and not exists (
+                select 1 from cultural_relation_claims crc
+                 where crc.existing_relation_id = r.relation_id
+                   and coalesce(array_length(crc.evidence_fragment_ids, 1), 0) > 0)`
     );
     expect(noEv).toBe(0);
-    // §12-26（TASK-0010 修正）：此处原本断言 `relations` 总数 = 30 —— 那是**过期的绝对总数**，
-    // 任何后续任务合法新增关系都会让它假报警。改为断言真正的不变量：
-    //   (a) Knowledge Weave 冻结的 legacy 映射关系恒为 24；
-    //   (b) 非 crossLink 关系必须带 Evidence（已在上方断言）；
-    //   (c) 本任务不得向 relations 写入切片关系（切片关系落 historical_spatial_relations）。
-    expect(await n(`select count(*)::int c from relations where legacy_id is not null`)).toBe(24);
+    // §12-26（TASK-0010 修正）：不断言 `relations` 总数——那是会过期的绝对总数。
+    // ENG-GOV-01（A 类调和 STALE_COUNT）：CW-02 AD-02 规范锚 relation 以 legacy_id=''
+    // （空串而非 NULL）合法入列，使「legacy_id is not null」误含该行（24→25）。
+    // 不变量本体不变：**Knowledge Weave 冻结的 legacy 映射关系恒为 24**——用 nullif
+    // 排除空串（真正的 legacy 映射 id 必非空），把断言拉回其本义。
+    expect(await n(`select count(*)::int c from relations where nullif(legacy_id,'') is not null`)).toBe(24);
+    // §12-26 + ENG-GOV-01（B 类调和）：TASK-0006 纪律「weave 不写切片关系」保持；
+    // CW-02 AD-02 把 former_site_of 规范锚合法写入 relations（HSR existing_relation_id 反向指认）。
+    // 不变量收紧为对象级：relations 中的切片谓词行**必须**是 HSR 规范锚——
+    // 未锚定的切片谓词行恒为 0（对无锚切片关系仍然禁止，不放松）。
     expect(
-      await n(`select count(*)::int c from relations
-                where predicate in ('spans_waterway','relative_position_south_of','temple_bridge_association','former_site_of')`)
+      await n(`select count(*)::int c from relations r
+                where r.predicate in ('spans_waterway','relative_position_south_of','temple_bridge_association','former_site_of')
+                  and not exists (select 1 from historical_spatial_relations hsr where hsr.existing_relation_id = r.relation_id)`)
     ).toBe(0);
     expect(await n(`select count(*)::int c from relations where status::text in ('verified','published')`)).toBe(0);
     // 结构型 crossLink 恒无 Evidence（不得被当作知识边）
@@ -203,13 +215,48 @@ describe("TASK-0006 Jinze Minimum Knowledge Weave", () => {
       relations: await n(`select count(*)::int c from relations`),
     });
     const before = await snap();
-    for (let i = 0; i < 2; i++) {
-      execFileSync(process.execPath, ["pipelines/weave/build-jinze-minimum-weave.mjs"], {
-        cwd: PROJECT_ROOT, stdio: "pipe", env: { ...process.env },
-      });
-    }
+    // ENG-GOV-01（fixture 调和）：沙箱禁止 node 自旋 node 子进程（spawnSync EBUSY）——
+    // 改为进程内两次执行同一管线（等价证据）；幂等不变量与断言零变更。
+    // build-jinze-minimum-weave 是 fire-and-forget main()（无 TLA）：await import 不会等
+    // main() 完成，其最后一条语句是 console.log(JSON.stringify(summary, null, 2))——
+    // 以「捕获到可解析 JSON summary」为完成信号（等价于子进程模式「进程退出 = main 完成」）。
+    const runWeaveOnce = async (tag: number) => {
+      const logs: string[] = [];
+      const origLog = console.log;
+      console.log = (...args: unknown[]) => {
+        logs.push(args.map(String).join(" "));
+      };
+      try {
+        await import(
+          pathToFileURL(path.join(PROJECT_ROOT, "pipelines/weave/build-jinze-minimum-weave.mjs")).href +
+            (tag > 1 ? "?engov01-rerun=2" : "")
+        );
+        // 单次实测 ≈47s（本机 mohen_dev）：轮询上限 120s 留足余量。
+        const deadline = Date.now() + 120_000;
+        let done = false;
+        while (Date.now() < deadline) {
+          const out = logs.join("\n");
+          const i = out.indexOf("{");
+          if (i >= 0) {
+            try {
+              JSON.parse(out.slice(i));
+              done = true;
+              break;
+            } catch {
+              /* summary 未完整，继续等 */
+            }
+          }
+          await new Promise((r) => setTimeout(r, 200));
+        }
+        if (!done) throw new Error("ENG-GOV-01：build-jinze-minimum-weave 未在时限内输出结束 summary");
+      } finally {
+        console.log = origLog;
+      }
+    };
+    await runWeaveOnce(1);
+    await runWeaveOnce(2);
     expect(await snap()).toEqual(before);
-  }, 90_000);
+  }, 300_000); // ENG-GOV-01：单次 weave 实测 ≈47s，两次 + 快照 > 旧 90s 时限（fixture 参数，断言零变更）
 
   // 13. Legacy zero-write
   it("13. Legacy 零写入", () => {

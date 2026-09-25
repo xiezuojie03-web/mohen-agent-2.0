@@ -18,7 +18,7 @@
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
+import { pathToFileURL } from "node:url";
 
 // @ts-expect-error —— 直接引用 .mjs 实现，vitest 可解析；TS 不做类型检查
 import { evaluateGates, STRUCTURAL_PREDICATES } from "../../pipelines/evidence/gates.mjs";
@@ -137,9 +137,21 @@ describe("TASK-0004 Jinze Evidence Recovery", () => {
   });
 
   it("4. semantic relation candidate 必须至少有 Evidence linkage", async () => {
-    // 数据层：任何非结构型谓词的 relation，都必须有 relation_evidence
+    // 数据层：任何非结构型谓词的 relation，都必须有证据支撑（不变量本体不变）。
+    // ENG-GOV-01（B 类调和 STALE_STATE）：证据**挂接位**随 008 Cultural World 合法演进——
+    // 旧断言只认 relation_evidence（legacy 挂接层）；CW-02 AD-02 的 former_site_of 规范锚
+    // relation 的证据挂接在 cultural_relation_claims.evidence_fragment_ids（008 claim 层、
+    // fragment 级，ADR-002/008 冻结架构）。新断言承认两条合法挂接路径：
+    //   legacy relation_evidence ∨ 008 claim 片段挂接（且片段数 > 0），
+    // 无任何证据的语义关系仍然恒为 0——不放松 Evidence Gate。
     const rows = await db.rows(
-      `select r.predicate, count(re.evidence_id)::int as ev
+      `select r.relation_id, r.predicate,
+              count(re.evidence_id)::int as ev,
+              exists (
+                select 1 from cultural_relation_claims crc
+                 where crc.existing_relation_id = r.relation_id
+                   and coalesce(array_length(crc.evidence_fragment_ids, 1), 0) > 0
+              ) as has_claim_fragment_evidence
          from relations r
          left join relation_evidence re on re.relation_id = r.relation_id
         group by r.relation_id, r.predicate`
@@ -147,7 +159,12 @@ describe("TASK-0004 Jinze Evidence Recovery", () => {
     const semantic = rows.filter((r) => !STRUCTURAL_PREDICATES.has(r.predicate));
     expect(semantic.length).toBeGreaterThan(0); // 本轮确实产出了语义候选
     for (const r of semantic) {
-      expect(Number(r.ev)).toBeGreaterThan(0);
+      // data-access 层对 exists() 返回字符串 "t"/"f"（兼容 boolean）
+      const claimEvidence = r.has_claim_fragment_evidence === true || r.has_claim_fragment_evidence === "t";
+      expect(
+        Number(r.ev) > 0 || claimEvidence,
+        `relation ${r.relation_id} (${r.predicate}) 既无 relation_evidence 也无 008 claim 片段挂接`
+      ).toBe(true);
     }
 
     // 规则层：谓词必须由证据句子推导；无明确语义时兜底为最弱的 mentioned_in
@@ -283,14 +300,16 @@ describe("TASK-0004 Jinze Evidence Recovery", () => {
     };
 
     const before = await countAll();
-    // 真实跑两次（每次约 6s），验证既不重复插入也不重复建关系
-    for (let i = 0; i < 2; i++) {
-      execFileSync(process.execPath, ["pipelines/evidence/recover.mjs"], {
-        cwd: PROJECT_ROOT,
-        stdio: "pipe",
-        env: { ...process.env },
-      });
-    }
+    // 真实跑两次，验证既不重复插入也不重复建关系（幂等不变量本体不变）。
+    // ENG-GOV-01（fixture 调和）：本机沙箱禁止 node 自旋 node 子进程
+    // （spawnSync(process.execPath) 恒 EBUSY，见 CONTEXT.md Local dev note）——
+    // 改为**进程内两次执行**同一管线（与 buildExperience 双调用同一先例），
+    // 等价证明「重跑不重复插入、不重复建关系」；执行方式变更，断言零变更。
+    await import(pathToFileURL(path.join(PROJECT_ROOT, "pipelines/evidence/recover.mjs")).href);
+    await import(
+      pathToFileURL(path.join(PROJECT_ROOT, "pipelines/evidence/recover.mjs")).href +
+        "?engov01-rerun=2"
+    );
     const after = await countAll();
 
     // 两次重跑后，各类证据计数、新增关系数、审计行数全部不变
