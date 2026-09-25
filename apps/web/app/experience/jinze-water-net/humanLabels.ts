@@ -11,6 +11,23 @@
 // primaryType / LEVEL_LABELS / AD-xx Uxx / eligible·ineligible / 伪公式 / 6 位 raw GPS。
 
 import { LEVEL_LABELS, type NarrativeLevel } from "@mohen/experience-engine";
+import type { EpistemicTag } from "@mohen/agent-runtime";
+
+// —— ADR-003：检索材料的认识论档位 → 人话（默认 UI 与既有「不夸大确定性」同一口径）——
+export const HUMAN_EPISTEMIC: Record<EpistemicTag, string> = {
+  FACT_EVIDENCED: "有资料支持",
+  SUPPORTED_CANDIDATE: "较有依据（待定）",
+  CONFLICTED: "两种说法并存",
+  RESEARCH_LEAD: "待查证的方向",
+  UNSUPPORTED: "依据不足",
+  OPEN_QUESTION: "还没有答案",
+  UNKNOWN: "未知（缺证据）",
+};
+
+export function humanEpistemic(tag: EpistemicTag, devMode: boolean): string {
+  // 与既有约定一致：Inspector 透出内部枚举，默认 Human UI 只给人话。
+  return devMode ? tag : (HUMAN_EPISTEMIC[tag] ?? tag);
+}
 
 // —— 叙事单元 level：内部枚举 → 人话（不夸大确定性）——
 export const HUMAN_LEVEL_LABELS: Record<NarrativeLevel, string> = {

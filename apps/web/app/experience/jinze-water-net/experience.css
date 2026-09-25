@@ -1155,3 +1155,74 @@
   .exp-intent-guide__lead { font-size: clamp(17px, 4.6vw, 22px); }
   .exp-intent-guide__actions .exp-btn { flex: 1 1 auto; }
 }
+
+/* ─────────────────────────────────────────────────────────────
+   ADR-003 · 自由追问（AskBar）
+   视觉定位：它是「墨痕在场」的入口，不是搜索框、不是聊天窗。
+   留白优先、单色描边，不与画布争主角。
+   ───────────────────────────────────────────────────────────── */
+.askbar {
+  margin: 14px 0 2px;
+  padding: 12px 14px;
+  border: 1px solid rgba(58, 63, 55, 0.18);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.55);
+}
+.askbar__row { display: flex; gap: 8px; align-items: stretch; }
+.askbar__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 15px;
+  color: #1f231d;
+  background: #fff;
+  border: 1px solid rgba(58, 63, 55, 0.28);
+  border-radius: 8px;
+}
+.askbar__input::placeholder { color: rgba(58, 63, 55, 0.45); }
+.askbar__input:focus { outline: 2px solid rgba(158, 43, 37, 0.35); outline-offset: 1px; }
+.askbar__chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.askbar__chips .exp-btn { font-size: 13px; padding: 5px 10px; }
+
+.askbar__answer { margin-top: 10px; border-top: 1px dashed rgba(58, 63, 55, 0.18); padding-top: 10px; }
+.askbar__line {
+  margin: 0 0 8px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #1f231d;
+}
+.askbar__clarify { margin: 0 0 8px; font-size: 14px; color: var(--cinnabar); }
+.askbar__materials { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.askbar__material {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 8px;
+  padding: 8px 10px;
+  border-left: 3px solid rgba(58, 63, 55, 0.25);
+  background: rgba(245, 240, 232, 0.5);
+  border-radius: 0 6px 6px 0;
+}
+.askbar__badge {
+  grid-column: 1;
+  align-self: start;
+  font-size: 12px;
+  color: #fff;
+  background: var(--stone);
+  border-radius: 999px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+.askbar__snippet { grid-column: 2; font-size: 14px; line-height: 1.65; color: #2c3129; }
+.askbar__source { grid-column: 2; font-size: 12px; color: rgba(58, 63, 55, 0.62); }
+.askbar__dev { grid-column: 2; font-family: ui-monospace, monospace; font-size: 11px; color: rgba(58, 63, 55, 0.5); }
+.askbar__gaps { margin: 8px 0 0; padding-left: 18px; font-size: 13px; color: var(--cinnabar); list-style: "▸ "; }
+.askbar__note { margin: 8px 0 0; font-size: 13px; color: rgba(58, 63, 55, 0.7); }
+
+@media (max-width: 720px) {
+  .askbar__row { flex-direction: column; }
+  .askbar__material { grid-template-columns: 1fr; }
+  .askbar__snippet,
+  .askbar__source,
+  .askbar__dev { grid-column: 1; }
+}

@@ -34,6 +34,8 @@ import { resolveSurface, UnknownGapSurface } from "./surfaceRegistry";
 import type { SliceShape, SurfaceContext } from "./surfaces/types";
 import { projectCulturalWorldState, type CulturalWorldProjectionSource } from "./culturalWorldProjection";
 import IntentGuide from "./IntentGuide";
+import AskBar from "./AskBar";
+import type { AgentDecision } from "@mohen/agent-runtime";
 import { translateIntentToExperience } from "./intentTranslation";
 import { humanLevelLabel } from "./humanLabels";
 import "./experience.css";
@@ -60,6 +62,8 @@ export default function ExperienceShell({ script, patch, slice, culturalSource }
   const [visualMode, setVisualMode] = useState<"normal" | "photo">("normal");
   const [sourceOpen, setSourceOpen] = useState(false);
   const [nonAnswer, setNonAnswer] = useState<string | null>(null);
+  // ADR-003：真正墨痕的裁决结果（理解 → 只读检索 → 选择）。既有 4 个冻结追问按钮保留为降级入口。
+  const [agentDecision, setAgentDecision] = useState<AgentDecision | null>(null);
 
   // —— M4.1：008 cultural_* 只读投影（纯函数、幂等）——真实文化世界进入体验输入
   const projection = useMemo(
@@ -144,12 +148,19 @@ export default function ExperienceShell({ script, patch, slice, culturalSource }
     ...((beat.primaryPreference ?? []) as string[]).map((t) => t as SurfaceType),
     composition.primarySurface,
   ];
+  // ADR-003：真正墨痕选出的主角（第 ④ 层编排）。偏好不是许可证——仍须逐个过 eligibility，
+  // 过滤不到就退回引擎既有选择（证据驱动），再退回 preferChain。
+  const agentPreferred: SurfaceType | undefined =
+    agentDecision && state.replanViewActive && agentDecision.primaryStage !== "unknown_gap"
+      ? (agentDecision.primaryStage as SurfaceType)
+      : undefined;
+
   // TASK-0016：Replan 视角激活时，主角由 EvidenceDecision 驱动的 selectReplanSurface 决定
   // （relational_space），而非固定 beat 的 preferChain —— 证明 surface 由证据选择。
   // 该视角是 Patch 出来的「可回 Present」状态：RETURN_TO_PRESENT / 显式返回即切回当下世界。
   const primaryType: SurfaceType | undefined =
-    state.replanPlan && state.replanViewActive && replanSelection?.selectedPrimary
-      ? replanSelection.selectedPrimary
+    state.replanPlan && state.replanViewActive
+      ? ([agentPreferred, replanSelection?.selectedPrimary] as Array<SurfaceType | undefined>).find(isEligible)
       : preferChain.find(isEligible);
 
   const PrimarySurface = resolveSurface(primaryType, selection.eligibleSurfaces) ?? UnknownGapSurface;
@@ -242,6 +253,15 @@ export default function ExperienceShell({ script, patch, slice, culturalSource }
     }
     // 其余为推进型行动（回到它们刚出现的时代 / 看留下的关系 …）
     dispatch({ type: "NEXT" });
+  }
+
+  // ADR-003：自由追问收口 —— 墨痕理解并检索之后，让**世界**随之改变（Patch-not-Replace）。
+  // 走既有 FOLLOWUP_REPLAN（不建第二套 Replan）；意图未定时只问澄清，不许画面假装听懂了。
+  function handleAgentDecision(decision: AgentDecision, question: string) {
+    setAgentDecision(decision);
+    setNonAnswer(null);
+    if (decision.engineIntent === "unknown") return;
+    dispatch({ type: "FOLLOWUP_REPLAN", question });
   }
 
   const coverage = validateBeatCoverage(BEATS, script.scenes.map((s) => s.scene_id));
@@ -353,6 +373,9 @@ export default function ExperienceShell({ script, patch, slice, culturalSource }
             <ContextSurface ctx={ctx} onAction={onAction} compact />
           </div>
         )}
+
+        {/* ADR-003：自由追问（导演稿 §4 第六步）。既有冻结追问按钮仍在下方 action-dock 作降级入口。 */}
+        <AskBar devMode={devInspector} onDecision={handleAgentDecision} />
 
         <div className="action-dock" data-testid="action-dock">
           {beat.actions.map((a) => (
