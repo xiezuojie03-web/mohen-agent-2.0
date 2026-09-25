@@ -1,0 +1,51 @@
+{
+  "beat": "beat-04-evidence-change",
+  "scene": "jinze-3min/s05-evidence-reveal",
+  "beatLabel": "证据与时间变化",
+  "progress": "Beat 4/5 · 5/8",
+  "spatialMode": "关系历史空间（无坐标）",
+  "transitionHint": {
+    "text": "EVIDENCE_FOCUS · 主角=conflict_compare",
+    "fontSize": "11px",
+    "color": "rgb(139, 145, 137)",
+    "opacity": "1",
+    "inViewport": true,
+    "rect": {
+      "x": 1163,
+      "y": 0,
+      "w": 224,
+      "h": 15
+    }
+  },
+  "epistemicShift": "当前坐标在此失去历史定位资格",
+  "primaryCaption": "着录冲突 · 并列 · 未裁决",
+  "primaryTestId": "surface-conflict-compare",
+  "agentPrompt": [
+    "墨痕为什么不能确定？也可以让时间成为主角。"
+  ],
+  "mohenPrompt": "",
+  "units": [],
+  "actions": [
+    "看第一组分歧",
+    "看第二组分歧",
+    "看时间变化",
+    "看史料原页",
+    "看事实"
+  ],
+  "secondary": "时间景观 · 时间本身是连续结构 · 只画有着录的变化今天←着录层（20 世纪末至今的方志与档案）12601267134219381992今金泽塘未知 · 不作时间断言普济桥?万安桥???颐浩寺遗址延续变化毁损原址重建未知今",
+  "context": "为什么在不到一公里的金泽水乡空间里，两座宋桥、一处宋代寺院遗址会如此靠近？这是还没有答案的问题",
+  "intentGuide": null,
+  "sourceInspectOpen": false,
+  "patchPill": null,
+  "patchCard": null,
+  "canvasText": "着录冲突 · 并列 · 未裁决万安桥跨水道T11-C2 · 未裁决公开措辞用官方『金泽塘/市河』+出处；上图『秀州塘』在证据展开时保持可见（s05-u1），不删除不静默归一墨痕不替你选边——两说着录都保留在案。普济桥建造年代（1265 vs 1267）preserved_open · 未裁决两说着录并列保留：1267（权威着录）↔ 1265（冲突变体，pujiqiao-build-year-1265-1267）。 建造年代保持开放——墨痕不替你选边。来源：008/cultural_conflicts · 双值并存 · 静默裁决：ineligible静默裁决：ineligible并列比较：eligible",
+  "legend": [
+    "延续",
+    "变化",
+    "毁损",
+    "原址重建",
+    "未知",
+    "今"
+  ],
+  "fullText": "墨痕证据与时间变化\n着录层（20 世纪末至今的方志与档案）\n关系历史空间（无坐标）\nBeat 4/5 · 5/8\n\n着录冲突 · 并列 · 未裁决\n\n万安桥跨水道\nT11-C2 · 未裁决\n\n公开措辞用官方『金泽塘/市河』+出处；上图『秀州塘』在证据展开时保持可见（s05-u1），不删除不静默归一\n\n墨痕不替你选边——两说着录都保留在案。\n普济桥建造年代（1265 vs 1267）\npreserved_open · 未裁决\n\n两说着录并列保留：1267（权威着录）↔ 1265（冲突变体，pujiqiao-build-year-1265-1267）。 建造年代保持开放——墨痕不替你选边。\n\n来源：008/cultural_conflicts · 双值并存 · 静默裁决：ineligible\n静默裁决：ineligible并列比较：eligible\n当前坐标在此失去历史定位资格\nEVIDENCE_FOCUS · 主角=conflict_compare\n墨痕\n为什么不能确定？\n也可以让时间成为主角。\n\n时间景观 · 时间本身是连续结构 · 只画有着录的变化\n\n今天\n←\n着录层（20 世纪末至今的方志与档案）\n1260\n1267\n1342\n1938\n1992\n今\n金泽塘\n未知 · 不作时间断言\n普济桥\n?\n万安桥\n?\n?\n?\n颐浩寺遗址\n延续\n变化\n毁损\n原址重建\n未知\n今\n\n为什么在不到一公里的金泽水乡空间里，两座宋桥、一处宋代寺院遗址会如此靠近？\n\n这是还没有答案的问题\n看第一组分歧\n看第二组分歧\n看时间变化\n看史料原页\n看事实\n上一步\n继续"
+}

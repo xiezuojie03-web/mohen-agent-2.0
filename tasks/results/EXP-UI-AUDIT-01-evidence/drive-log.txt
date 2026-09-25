@@ -1,0 +1,27 @@
+[shot] 01-first-screen-viewport.png
+[shot] 01-first-screen-full.png (fullPage)
+[state] 01-first-screen: beat=beat-01-hook scene=jinze-3min/s01-today-hook primary=surface-current-map mode=现代精确坐标
+[shot] 02-time-shift-viewport.png
+[state] 02-time-shift: beat=beat-02-time-space-shift scene=jinze-3min/s02-time-travel primary=surface-relational-space mode=关系历史空间（无坐标）
+[shot] 03-relation-discovery-viewport.png
+[state] 03-relation: beat=beat-03-relationship scene=jinze-3min/s03-two-bridges-water primary=surface-relational-space mode=关系历史空间（无坐标）
+[shot] 04a-temple-enters-viewport.png
+[shot] 04b-temple-bridge-nonanswer-viewport.png
+[state] 04-temple: beat=beat-03-relationship scene=jinze-3min/s03-two-bridges-water primary=surface-relational-space mode=关系历史空间（无坐标）
+[shot] 05a-evidence-conflict-viewport.png
+[shot] 05a-evidence-conflict-full.png (fullPage)
+[state] 05a-conflict: beat=beat-04-evidence-change scene=jinze-3min/s05-evidence-reveal primary=surface-conflict-compare mode=关系历史空间（无坐标）
+[shot] 05b-historical-map-native-viewport.png
+[state] 05b-histmap: beat=beat-04-evidence-change scene=jinze-3min/s05-evidence-reveal primary=surface-historical-map-native mode=关系历史空间（无坐标）
+[shot] 06-timeline-primary-viewport.png
+[state] 06-timeline: beat=beat-04-evidence-change scene=jinze-3min/s05-evidence-reveal primary=surface-timeline mode=关系历史空间（无坐标）
+[shot] 07-return-present-viewport.png
+[state] 07-return: beat=beat-04-evidence-change scene=jinze-3min/s06-change-through-time primary=surface-timeline mode=关系历史空间（无坐标）
+[shot] 08a-next-question-viewport.png
+[shot] 08b-followup-inspect-viewport.png
+[shot] 08b-followup-inspect-full.png (fullPage)
+[state] 08b-inspect: beat=beat-05-return-next scene=jinze-3min/s07-return-today primary=surface-evidence-reveal mode=现代精确坐标
+[shot] 08c-followup-present-viewport.png
+[state] 08c-present: beat=beat-05-return-next scene=jinze-3min/s07-return-today primary=surface-current-map mode=现代精确坐标
+[shot] 08d-return-to-present-viewport.png
+[state] 08d-return: beat=beat-05-return-next scene=jinze-3min/s07-return-today primary=surface-current-map mode=现代精确坐标

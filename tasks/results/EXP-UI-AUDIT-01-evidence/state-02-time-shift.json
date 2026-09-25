@@ -1,0 +1,54 @@
+{
+  "beat": "beat-02-time-space-shift",
+  "scene": "jinze-3min/s02-time-travel",
+  "beatLabel": "时间 / 空间转换",
+  "progress": "Beat 2/5 · 2/8",
+  "spatialMode": "关系历史空间（无坐标）",
+  "transitionHint": {
+    "text": "TIME_SHIFT · 主角=relational_space",
+    "fontSize": "11px",
+    "color": "rgb(139, 145, 137)",
+    "opacity": "1",
+    "inViewport": true,
+    "rect": {
+      "x": 1202,
+      "y": 486,
+      "w": 185,
+      "h": 15
+    }
+  },
+  "epistemicShift": "当前坐标在此失去历史定位资格",
+  "primaryCaption": "人文拓扑空间 · 无经纬度 · 不表达距离与走向 —— 水道是骨架，桥是跨越",
+  "primaryTestId": "surface-relational-space",
+  "agentPrompt": [
+    "墨痕再往前，我不能继续用今天的坐标。但有一种关系留下来了。"
+  ],
+  "mohenPrompt": "",
+  "units": [
+    {
+      "badge": "互动提示",
+      "text": "注意：此刻地图上的现代坐标已经淡出——它们是今天的 POI，不是历史的位置。"
+    }
+  ],
+  "actions": [
+    "看留下的关系",
+    "看事实"
+  ],
+  "secondary": null,
+  "context": "为什么在不到一公里的金泽水乡空间里，两座宋桥、一处宋代寺院遗址会如此靠近？这是还没有答案的问题",
+  "intentGuide": null,
+  "sourceInspectOpen": false,
+  "patchPill": null,
+  "patchCard": null,
+  "canvasText": "人文拓扑空间 · 无经纬度 · 不表达距离与走向 —— 水道是骨架，桥是跨越金泽塘 · 关系骨架（非历史几何）同跨一条水道普济桥万安桥在南水系骨架跨越节点文化节点已证候选（未落定）弱线索无线实线＝有据；虚线＝候选；点线＝弱线索；断开＝被问到的连接还没有证据。",
+  "legend": [
+    "水系骨架",
+    "跨越节点",
+    "文化节点",
+    "已证",
+    "候选（未落定）",
+    "弱线索",
+    "无线"
+  ],
+  "fullText": "墨痕时间 / 空间转换\n南宋景定—咸淳（1260–1267）\n关系历史空间（无坐标）\nBeat 2/5 · 2/8\n\n人文拓扑空间 · 无经纬度 · 不表达距离与走向 —— 水道是骨架，桥是跨越\n\n金泽塘 · 关系骨架（非历史几何）\n同跨一条水道\n普济桥\n万安桥\n在南\n水系骨架\n跨越节点\n文化节点\n已证\n候选（未落定）\n弱线索\n无线\n\n实线＝有据；虚线＝候选；点线＝弱线索；断开＝被问到的连接还没有证据。\n\n当前坐标在此失去历史定位资格\nTIME_SHIFT · 主角=relational_space\n墨痕\n再往前，我不能继续用今天的坐标。\n但有一种关系留下来了。\n\n互动提示\n注意：此刻地图上的现代坐标已经淡出——它们是今天的 POI，不是历史的位置。\n\n为什么在不到一公里的金泽水乡空间里，两座宋桥、一处宋代寺院遗址会如此靠近？\n\n这是还没有答案的问题\n看留下的关系\n看事实\n上一步\n继续"
+}

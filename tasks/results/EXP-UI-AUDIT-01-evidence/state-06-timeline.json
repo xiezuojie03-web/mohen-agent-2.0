@@ -1,0 +1,51 @@
+{
+  "beat": "beat-04-evidence-change",
+  "scene": "jinze-3min/s05-evidence-reveal",
+  "beatLabel": "证据与时间变化",
+  "progress": "Beat 4/5 · 5/8",
+  "spatialMode": "关系历史空间（无坐标）",
+  "transitionHint": {
+    "text": "EVIDENCE_FOCUS · 主角=timeline",
+    "fontSize": "11px",
+    "color": "rgb(139, 145, 137)",
+    "opacity": "1",
+    "inViewport": true,
+    "rect": {
+      "x": 1210,
+      "y": 563,
+      "w": 177,
+      "h": 15
+    }
+  },
+  "epistemicShift": "当前坐标在此失去历史定位资格",
+  "primaryCaption": "时间景观 · 时间本身是连续结构 · 只画有着录的变化",
+  "primaryTestId": "surface-timeline",
+  "agentPrompt": [
+    "墨痕为什么不能确定？也可以让时间成为主角。"
+  ],
+  "mohenPrompt": "",
+  "units": [],
+  "actions": [
+    "看第一组分歧",
+    "看第二组分歧",
+    "看时间变化",
+    "看史料原页",
+    "看事实"
+  ],
+  "secondary": null,
+  "context": "为什么在不到一公里的金泽水乡空间里，两座宋桥、一处宋代寺院遗址会如此靠近？这是还没有答案的问题",
+  "intentGuide": null,
+  "sourceInspectOpen": true,
+  "patchPill": null,
+  "patchCard": null,
+  "canvasText": "时间景观 · 时间本身是连续结构 · 只画有着录的变化今天←着录层（20 世纪末至今的方志与档案）12601267134219381992今金泽塘未知 · 不作时间断言普济桥?万安桥???颐浩寺遗址延续变化毁损原址重建未知今有事件但无年份的，只挂在轴外 —— 不落在时间轴上。",
+  "legend": [
+    "延续",
+    "变化",
+    "毁损",
+    "原址重建",
+    "未知",
+    "今"
+  ],
+  "fullText": "墨痕证据与时间变化\n着录层（20 世纪末至今的方志与档案）\n关系历史空间（无坐标）\nBeat 4/5 · 5/8\n\n时间景观 · 时间本身是连续结构 · 只画有着录的变化\n\n今天\n←\n着录层（20 世纪末至今的方志与档案）\n1260\n1267\n1342\n1938\n1992\n今\n金泽塘\n未知 · 不作时间断言\n普济桥\n?\n万安桥\n?\n?\n?\n颐浩寺遗址\n延续\n变化\n毁损\n原址重建\n未知\n今\n\n有事件但无年份的，只挂在轴外 —— 不落在时间轴上。\n\n当前坐标在此失去历史定位资格\nEVIDENCE_FOCUS · 主角=timeline\n墨痕\n为什么不能确定？\n也可以让时间成为主角。\n\n为什么在不到一公里的金泽水乡空间里，两座宋桥、一处宋代寺院遗址会如此靠近？\n\n这是还没有答案的问题\n看第一组分歧\n看第二组分歧\n看时间变化\n看史料原页\n看事实\n上一步\n继续\n史料 / 出处\n收起\n\n史料 / 出处查看 · 按需打开\n\nT11-C1 · 普济桥方位\n\n叙事只说『跨金泽塘』；北市/南市/中部不作已裁决事实，冲突保留于证据面板（s05-u2）\n\nT11-C2 · 万安桥跨水道\n\n公开措辞用官方『金泽塘/市河』+出处；上图『秀州塘』在证据展开时保持可见（s05-u1），不删除不静默归一\n\nT11-C3 · 1992 开放\n\n只说『1992 年在原址重建寺院』+来源限制；『开放为宗教活动场所』不作为事实出现（s06-u4 显式声明）\n\nT11-C4 · 《松江府志》引文\n\n引用必须写明『被后来官方材料归于〈松江府志〉，原书未取得』（s04-u2）\n\nT11-C5 · 金泽塘时间语义\n\n本体验中 temporal_assertion=none、temporal_evidence_status=not_applicable；不把 attested_time_evidence_backed 解释为年代已证\n\nT11-C1/C2 ACCEPT_CONFLICT（裁定已落实）；HR-MAP-01 维持 PARTIAL_CONFIRM；U6 标签 UNRESOLVED。"
+}
