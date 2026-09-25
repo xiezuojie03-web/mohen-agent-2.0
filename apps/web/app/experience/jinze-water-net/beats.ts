@@ -12,15 +12,24 @@ import type { BeatDefinition } from "@mohen/experience-engine";
 import type { WorldEvidenceState, RelationEvidence } from "@mohen/experience-engine";
 import type { SliceShape } from "./surfaces/types";
 import type { ExperienceScript } from "@mohen/experience-engine";
+import type { CulturalWorldProjection } from "./culturalWorldProjection";
 
 // ---------------------------------------------------------------------------
 // 1) World Evidence State（Selection 的唯一输入）
 // ---------------------------------------------------------------------------
 
+/**
+ * M4.1（EXP-CULTURAL-03）：新增可选第 4 参 `projection`（008 cultural_* 只读投影）。
+ *  - 传入时：WorldEvidenceState 获得 008 派生的文化世界字段（culturalEvents /
+ *    evidenceFragmentGates / meaningCandidates / presentConnections / relationEvidence[].epistemicStatus），
+ *    并把 008 结构化冲突（1265/1267 preserved_open，双值并存）并入 conflicts；
+ *  - 缺省时：行为与 M4.1 之前完全一致（旧调用方/旧测试零回归）。
+ */
 export function buildWorldEvidenceState(
   script: ExperienceScript,
   slice: SliceShape,
-  opts: { historicalVisualAssets: number; historicalMapImageAvailable: boolean }
+  opts: { historicalVisualAssets: number; historicalMapImageAvailable: boolean },
+  projection?: CulturalWorldProjection | null
 ): WorldEvidenceState {
   const currentExact = slice.current_sources
     .filter((a) => a.kind === "provider_current_object_point")
@@ -35,6 +44,13 @@ export function buildWorldEvidenceState(
     object: shortKey(r.object_feature_key),
     predicate: r.predicate,
     epistemicClass: (r.epistemic_class ?? "UNKNOWN") as RelationEvidence["epistemicClass"],
+    // M4.1：轴 A 六值（来自 008 cultural_relation_claims），与轴 B epistemicClass 正交。
+    // 匹配键 = subject|predicate|object（与 projectCulturalWorldState 的 claimEpistemicByKey 同构）。
+    epistemicStatus: projection
+      ? projection.claimEpistemicByKey.get(
+          `${r.subject_feature_key}|${r.predicate}|${r.object_feature_key ?? ""}`
+        )
+      : undefined,
     isCurrentAssociationOnly: r.epistemic_class === "E2" && r.predicate === "temple_bridge_association",
     // 可解析回切片关系行的 key（供证据检视溯源；TASK-0017）
     relationKey: r.relation_key,
@@ -45,6 +61,13 @@ export function buildWorldEvidenceState(
         ? "存在 E1 据证历史关系（方志/著录记载）"
         : "弱空间线索（相对位置），非确认历史关系",
   }));
+
+  // M4.1：008 结构化冲突（preserved_open 双值）追加进世界冲突集（不静默择一）。
+  // script.conflicts（T11-C1/C2）保持原样在前；008 冲突追加在后。
+  const conflicts: WorldEvidenceState["conflicts"] = [
+    ...script.conflicts.map((c) => ({ ruling: c.ruling, topic: c.topic })),
+    ...(projection?.conflicts ?? []),
+  ];
 
   return {
     currentExactEntities: currentExact,
@@ -59,12 +82,18 @@ export function buildWorldEvidenceState(
       attributable: false,
       imageAvailable: opts.historicalMapImageAvailable,
     },
-    conflicts: script.conflicts.map((c) => ({ ruling: c.ruling, topic: c.topic })),
+    conflicts,
     currentPhotosConfirmed: new Set(
       script.scenes.flatMap((s) => s.visual_assets).filter((a) => a.type === "photo").map((a) => a.id)
     ).size,
     historicalVisualAssets: opts.historicalVisualAssets,
     hasEvidencedChanges: slice.changes.some((c) => c.change_epistemic === "evidenced"),
+
+    // —— M4.1：008 cultural_* 只读投影共字段（不建第二事实真源；未传 projection 时为 undefined）——
+    culturalEvents: projection?.culturalEvents,
+    evidenceFragmentGates: projection?.evidenceFragmentGates,
+    meaningCandidates: projection?.meaningCandidates,
+    presentConnections: projection?.presentConnections,
   };
 }
 

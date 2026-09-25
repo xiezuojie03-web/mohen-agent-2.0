@@ -1,0 +1,364 @@
+{
+  "slice_id": "jinze-minimum-slice-001",
+  "generated_note": "READ-ONLY projection replica of 008 cultural_* first cluster (jinze-min-001). Source of truth = 008. Not a fact store.",
+  "events": [
+    {
+      "event_id": "7fb4e9d4-4519-4865-9c51-a8e9660bf676",
+      "canonical_label": "颐浩寺创建",
+      "time_scope_start": "1260",
+      "time_scope_end": "1260",
+      "time_scope_unknown": false,
+      "epistemic_status": "SUPPORTED_CANDIDATE",
+      "evidence_fragment_ids": [
+        "1961f62f-0deb-40d8-99ff-8f039d7d76ea"
+      ]
+    },
+    {
+      "event_id": "bbf95110-250b-42d8-b4da-6b617b28b637",
+      "canonical_label": "颐浩寺建大雄宝殿等",
+      "time_scope_start": "1288",
+      "time_scope_end": "1288",
+      "time_scope_unknown": false,
+      "epistemic_status": "SUPPORTED_CANDIDATE",
+      "evidence_fragment_ids": [
+        "0c61dbdf-b9b1-45bf-992e-9cab9f4d5d35"
+      ]
+    },
+    {
+      "event_id": "200b1b7f-7189-446c-9c13-a6b28d1b727d",
+      "canonical_label": "颐浩寺升院为寺",
+      "time_scope_start": "1295",
+      "time_scope_end": "1295",
+      "time_scope_unknown": false,
+      "epistemic_status": "SUPPORTED_CANDIDATE",
+      "evidence_fragment_ids": [
+        "028ca8bd-97e1-4ee7-8f00-c09ff4da9fba"
+      ]
+    },
+    {
+      "event_id": "44ae4956-aaa7-4a1d-955c-112b81dc9ff0",
+      "canonical_label": "颐浩寺大部分建筑毁于日军轰炸",
+      "time_scope_start": "1938",
+      "time_scope_end": "1938",
+      "time_scope_unknown": false,
+      "epistemic_status": "SUPPORTED_CANDIDATE",
+      "evidence_fragment_ids": [
+        "39de7037-c209-4bdf-9d6c-3062af88f486"
+      ]
+    },
+    {
+      "event_id": "1de2d196-9d67-43b8-9e1c-3e4ae21383b2",
+      "canonical_label": "颐浩寺原址重建寺院",
+      "time_scope_start": "1992",
+      "time_scope_end": "1992",
+      "time_scope_unknown": false,
+      "epistemic_status": "SUPPORTED_CANDIDATE",
+      "evidence_fragment_ids": [
+        "5376a80f-e9b1-445c-9a0c-92e4385f771c"
+      ]
+    },
+    {
+      "event_id": "59ab1ce6-73a5-46bd-a1f7-ead7c46d22de",
+      "canonical_label": "万安桥创建",
+      "time_scope_start": "1260",
+      "time_scope_end": "1264",
+      "time_scope_unknown": false,
+      "epistemic_status": "SUPPORTED_CANDIDATE",
+      "evidence_fragment_ids": [
+        "03265ea1-4e37-4cf2-a145-f640969a44dc"
+      ]
+    },
+    {
+      "event_id": "7c7d8357-9ac4-468c-8885-4d8d28141d71",
+      "canonical_label": "万安桥加建廊亭",
+      "time_scope_start": "1342",
+      "time_scope_end": "1342",
+      "time_scope_unknown": false,
+      "epistemic_status": "SUPPORTED_CANDIDATE",
+      "evidence_fragment_ids": [
+        "b7fe69d2-a27f-4ef7-a07e-7aac048e8fe5"
+      ]
+    },
+    {
+      "event_id": "1232f6e9-27e3-436a-b89f-fdfee989b2df",
+      "canonical_label": "普济桥建（南宋咸淳三年）",
+      "time_scope_start": "1267",
+      "time_scope_end": "1267",
+      "time_scope_unknown": false,
+      "epistemic_status": "SUPPORTED_CANDIDATE",
+      "evidence_fragment_ids": [
+        "84b84ef2-7c49-4101-83f1-1247e8429d1e"
+      ]
+    },
+    {
+      "event_id": "f741022b-2615-41d2-a775-e518fdd043c7",
+      "canonical_label": "普济桥建造年代冲突值（1265）",
+      "time_scope_start": "1265",
+      "time_scope_end": "1265",
+      "time_scope_unknown": false,
+      "epistemic_status": "CONFLICTED",
+      "evidence_fragment_ids": []
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "32752c92-140c-48ab-882c-48fb6bfafa82",
+      "subject_feature_key": "jinze-min-001/feature/yihaosi-site",
+      "predicate": "former_site_of",
+      "object_feature_key": "jinze-min-001/feature/lvyihao",
+      "object_value": null,
+      "epistemic_status": "SUPPORTED_CANDIDATE",
+      "evidence_fragment_ids": [
+        "0174c9d3-96fd-4d1f-8a9a-c8139b97575f"
+      ]
+    },
+    {
+      "claim_id": "406ba707-6094-484b-89ff-bb47285536dd",
+      "subject_feature_key": "jinze-min-001/feature/yihaosi-site",
+      "predicate": "named_after",
+      "object_feature_key": "jinze-min-001/feature/lvyihao",
+      "object_value": null,
+      "epistemic_status": "SUPPORTED_CANDIDATE",
+      "evidence_fragment_ids": [
+        "1961f62f-0deb-40d8-99ff-8f039d7d76ea"
+      ]
+    },
+    {
+      "claim_id": "26025fd2-37e5-43bc-ae6d-91865058df8e",
+      "subject_feature_key": "jinze-min-001/feature/wananqiao",
+      "predicate": "spans_same_waterway",
+      "object_feature_key": "jinze-min-001/feature/pujiqiao",
+      "object_value": null,
+      "epistemic_status": "SUPPORTED_CANDIDATE",
+      "evidence_fragment_ids": [
+        "9e56d1d7-8632-4cc3-8edf-26c71ad68891"
+      ]
+    },
+    {
+      "claim_id": "c9b17c6c-9265-4c22-bcd6-9aa15a9ed49d",
+      "subject_feature_key": "jinze-min-001/feature/pujiqiao",
+      "predicate": "spans_same_waterway",
+      "object_feature_key": "jinze-min-001/feature/wananqiao",
+      "object_value": null,
+      "epistemic_status": "SUPPORTED_CANDIDATE",
+      "evidence_fragment_ids": [
+        "e82e1b8f-c609-4062-a66e-dae87ba23572"
+      ]
+    },
+    {
+      "claim_id": "4626e91a-3b9d-4c68-bcb1-46a09732b869",
+      "subject_feature_key": "jinze-min-001/feature/pujiqiao",
+      "predicate": "relative_position_south_of",
+      "object_feature_key": "jinze-min-001/feature/wananqiao",
+      "object_value": null,
+      "epistemic_status": "SUPPORTED_CANDIDATE",
+      "evidence_fragment_ids": [
+        "a7774c4e-d2dd-4911-9c05-b0f80d24851c"
+      ]
+    },
+    {
+      "claim_id": "2f8e2ab8-af96-4061-90f9-6013145e6f8b",
+      "subject_feature_key": "jinze-min-001/feature/wananqiao",
+      "predicate": "spans_waterway",
+      "object_feature_key": "jinze-min-001/feature/jinzetang",
+      "object_value": null,
+      "epistemic_status": "SUPPORTED_CANDIDATE",
+      "evidence_fragment_ids": [
+        "60fdf9b5-5291-4e25-aae9-77150cb8a7b5"
+      ]
+    },
+    {
+      "claim_id": "187c1291-1a8b-4fc9-980b-53396f4a1fb0",
+      "subject_feature_key": "jinze-min-001/feature/pujiqiao",
+      "predicate": "spans_waterway",
+      "object_feature_key": "jinze-min-001/feature/jinzetang",
+      "object_value": null,
+      "epistemic_status": "SUPPORTED_CANDIDATE",
+      "evidence_fragment_ids": [
+        "02d48445-1f9c-4dc1-8ff3-7b8a88a5cb93"
+      ]
+    },
+    {
+      "claim_id": "031ea707-d494-4b19-bed6-983ef215637f",
+      "subject_feature_key": "jinze-min-001/feature/yihaosi-site",
+      "predicate": "temple_bridge_association",
+      "object_feature_key": "jinze-min-001/feature/pujiqiao",
+      "object_value": null,
+      "epistemic_status": "SUPPORTED_CANDIDATE",
+      "evidence_fragment_ids": [
+        "079d86a4-32c8-4e10-a545-a807e35f2104"
+      ]
+    }
+  ],
+  "meanings": [
+    {
+      "meaning_id": "a1fa6d8b-d89f-4979-b48a-0a571a526654",
+      "subject_feature_key": "jinze-min-001/feature/yihaosi-site",
+      "interpretive_text": "颐浩寺以南宋名相吕颐浩故宅为基、以其人命名，寺与人的绑定是金泽宋韵的一条可感线索",
+      "derived_from_claim_ids": [
+        "32752c92-140c-48ab-882c-48fb6bfafa82",
+        "406ba707-6094-484b-89ff-bb47285536dd"
+      ],
+      "epistemic_status": "SUPPORTED_CANDIDATE"
+    },
+    {
+      "meaning_id": "d8663e7f-b63b-45a3-93bb-03a8cb2f08a3",
+      "subject_feature_key": "jinze-min-001/feature/pujiqiao",
+      "interpretive_text": "万安桥与普济桥一北一南、同跨金泽塘，并称『姐妹桥』，是金泽『古桥博物馆』的双璧",
+      "derived_from_claim_ids": [
+        "26025fd2-37e5-43bc-ae6d-91865058df8e",
+        "4626e91a-3b9d-4c68-bcb1-46a09732b869"
+      ],
+      "epistemic_status": "SUPPORTED_CANDIDATE"
+    }
+  ],
+  "presents": [
+    {
+      "present_id": "bfd045a0-ec89-4b73-b7e1-8e2b98280111",
+      "subject_feature_key": "jinze-min-001/feature/yihaosi-site",
+      "connection_type": "site_vs_rebuilt",
+      "observed_state": "今址金泽镇金溪居委会迎祥街12号；遗址—复建双层：元代遗物（不断云石刻、元碑、古银杏）与1992原址重建殿宇并置",
+      "basis_claim_ids": [
+        "1de2d196-9d67-43b8-9e1c-3e4ae21383b2",
+        "44ae4956-aaa7-4a1d-955c-112b81dc9ff0"
+      ],
+      "open_questions": [
+        "1992年开放为宗教活动场所（U10：仅非权威转载，无官方文号，不进事实层）"
+      ]
+    },
+    {
+      "present_id": "54a091a0-7f46-4f06-8d8e-22c6878f6066",
+      "subject_feature_key": "jinze-min-001/feature/yihaosi-site",
+      "connection_type": "today_location",
+      "observed_state": "现坐落金泽镇金溪居委会迎祥街12号（当前坐标仅为近似对象范围，非历史位置证明）",
+      "basis_claim_ids": [
+        "1de2d196-9d67-43b8-9e1c-3e4ae21383b2"
+      ],
+      "open_questions": []
+    }
+  ],
+  "fragments": [
+    {
+      "fragment_id": "0174c9d3-96fd-4d1f-8a9a-c8139b97575f",
+      "span_type": "hr4_usable",
+      "quote_fragment": "寺址即其故宅",
+      "usable_for_claim": "颐浩寺 former_site_of 吕颐浩（HR-4）",
+      "usage_note": "AD-05 精确放行片段"
+    },
+    {
+      "fragment_id": "1961f62f-0deb-40d8-99ff-8f039d7d76ea",
+      "span_type": "hr4_usable",
+      "quote_fragment": "南宋景定元年（1260）就南宋名相吕颐浩故宅创建，寺名取自其人",
+      "usable_for_claim": "颐浩寺 named_after 吕颐浩（HR-4）",
+      "usage_note": "AD-05 精确放行片段"
+    },
+    {
+      "fragment_id": "9a7ed63b-750a-4caa-bc34-bcc5755f97eb",
+      "span_type": "u10_forbidden",
+      "quote_fragment": "颐浩禅寺（1992年修复开放）",
+      "usable_for_claim": null,
+      "usage_note": "AD-05 U10 禁用：仅非权威转载，无官方文号，不得作为事实"
+    },
+    {
+      "fragment_id": "84b84ef2-7c49-4101-83f1-1247e8429d1e",
+      "span_type": "generic",
+      "quote_fragment": "南宋咸淳三年（1267）建的单孔紫石拱桥",
+      "usable_for_claim": "普济桥 1267 建",
+      "usage_note": "整条可用，无需拆分"
+    },
+    {
+      "fragment_id": "b7fe69d2-a27f-4ef7-a07e-7aac048e8fe5",
+      "span_type": "generic",
+      "quote_fragment": "元至正二年（1342）桥上加建廊亭",
+      "usable_for_claim": "万安桥 1342 加建廊亭",
+      "usage_note": "整条可用"
+    },
+    {
+      "fragment_id": "39de7037-c209-4bdf-9d6c-3062af88f486",
+      "span_type": "generic",
+      "quote_fragment": "民国二十七年（1938）大部分建筑毁于日军轰炸",
+      "usable_for_claim": "颐浩寺 1938 大部分建筑毁",
+      "usage_note": "整条可用"
+    },
+    {
+      "fragment_id": "5376a80f-e9b1-445c-9a0c-92e4385f771c",
+      "span_type": "generic",
+      "quote_fragment": "1992年，在颐浩寺中心原址重建寺院",
+      "usable_for_claim": "颐浩寺 1992 原址重建",
+      "usage_note": "整条可用（仅『原址重建』）"
+    },
+    {
+      "fragment_id": "0c61dbdf-b9b1-45bf-992e-9cab9f4d5d35",
+      "span_type": "generic",
+      "quote_fragment": "元至元二十五年（1288）建大雄宝殿等",
+      "usable_for_claim": "颐浩寺 1288 建大雄宝殿",
+      "usage_note": "整条可用"
+    },
+    {
+      "fragment_id": "028ca8bd-97e1-4ee7-8f00-c09ff4da9fba",
+      "span_type": "generic",
+      "quote_fragment": "元贞元年（1295）奉旨名为颐浩禅寺",
+      "usable_for_claim": "颐浩寺 1295 升院为寺",
+      "usage_note": "整条可用"
+    },
+    {
+      "fragment_id": "03265ea1-4e37-4cf2-a145-f640969a44dc",
+      "span_type": "generic",
+      "quote_fragment": "南宋景定年间建，与普济桥一北一南同跨一河，形制相仿，并称'姐妹桥'",
+      "usable_for_claim": "万安桥 1260 创建",
+      "usage_note": "整条可用"
+    },
+    {
+      "fragment_id": "9e56d1d7-8632-4cc3-8edf-26c71ad68891",
+      "span_type": "generic",
+      "quote_fragment": "与普济桥一北一南同跨一河，形制相仿，并称'姐妹桥'",
+      "usable_for_claim": "万安桥与普济桥同跨一河姐妹桥",
+      "usage_note": "整条可用"
+    },
+    {
+      "fragment_id": "e82e1b8f-c609-4062-a66e-dae87ba23572",
+      "span_type": "generic",
+      "quote_fragment": "与北侧万安桥同跨一河、一南一北，形制相仿、年代相接，并称金泽'姐妹桥'",
+      "usable_for_claim": "普济桥与万安桥同跨一河姐妹桥",
+      "usage_note": "整条可用"
+    },
+    {
+      "fragment_id": "a7774c4e-d2dd-4911-9c05-b0f80d24851c",
+      "span_type": "generic",
+      "quote_fragment": "与普济桥一北一南同跨一河",
+      "usable_for_claim": "普济桥在万安桥之南",
+      "usage_note": "相对位置陈述"
+    },
+    {
+      "fragment_id": "60fdf9b5-5291-4e25-aae9-77150cb8a7b5",
+      "span_type": "generic",
+      "quote_fragment": "位于金泽镇北，横跨金泽塘，为金泽古桥群中最北一座",
+      "usable_for_claim": "万安桥横跨金泽塘",
+      "usage_note": "整条可用"
+    },
+    {
+      "fragment_id": "02d48445-1f9c-4dc1-8ff3-7b8a88a5cb93",
+      "span_type": "generic",
+      "quote_fragment": "普济桥 位于金泽古镇，东西向跨金泽塘",
+      "usable_for_claim": "普济桥横跨金泽塘",
+      "usage_note": "整条可用"
+    },
+    {
+      "fragment_id": "079d86a4-32c8-4e10-a545-a807e35f2104",
+      "span_type": "generic",
+      "quote_fragment": "当前 provider 几何：颐浩寺遗址（迎祥街12号）与普济桥同街相邻——属 E2 当前空间观察，非历史关联证明",
+      "usable_for_claim": "寺桥当前空间相邻（E2）",
+      "usage_note": "E2：仅当前空间相邻"
+    }
+  ],
+  "conflicts": [
+    {
+      "conflict_key": "pujiqiao-build-year-1265-1267",
+      "subject_feature_key": "jinze-min-001/feature/pujiqiao",
+      "primary_value": "1267",
+      "conflicted_value": "1265",
+      "source_of_conflict": "Wikimedia Commons caption（作北宋咸淳元年(1265)，内部朝代自相矛盾）",
+      "resolution_status": "preserved_open"
+    }
+  ]
+}

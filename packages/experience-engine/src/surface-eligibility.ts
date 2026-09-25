@@ -37,18 +37,105 @@ export type SurfaceType =
   | "action_dock"
   | "unknown_gap";
 
+/**
+ * 六值认识论状态（ADR-002 + migration 008 CHECK，唯一权威枚举）。
+ * 与 E1–E4（证据形态学，epistemicClass）正交，互不压缩、互不替代。
+ */
+export type SixValue =
+  | "SUPPORTED"
+  | "SUPPORTED_CANDIDATE"
+  | "CONFLICTED"
+  | "RESEARCH_LEAD"
+  | "UNSUPPORTED"
+  | "OPEN_QUESTION";
+
 /** 对象对之间的关系证据（供证据感知决策消费；不引入任何坐标） */
 export interface RelationEvidence {
   subject: string;
   object: string;
   predicate: string;
+  /** 轴 B：证据形态学（E1–E4），只承载兼容性/形态职责，不承担 claim 真值 */
   epistemicClass: "E1" | "E2" | "E3" | "E4";
+  /**
+   * 轴 A：六值认识论真值（EXP-CULTURAL-03 / M4.1 新增共字段）。
+   * 来自 008 cultural_relation_claims.epistemic_status，与 epistemicClass 正交。
+   * 例：一条关系可同时是 E1（方志据证）+ SUPPORTED_CANDIDATE（尚未升为 SUPPORTED）。
+   */
+  epistemicStatus?: SixValue;
   /** 该关系唯一支持来自「今天」的共址/复合 POI，而非前现代文献记载 */
   isCurrentAssociationOnly: boolean;
   /** 证据依据（人话，来自既有状态，不编造新事实） */
   basis: string;
   /** 可解析回切片关系行的 key（供证据检视溯源，不编造） */
   relationKey?: string;
+}
+
+/**
+ * 008 cultural_events 投影（事实层最小字段，M4.1 新增）。
+ * 不复制成第二事实真源——只读派生自 008。
+ */
+export interface CulturalEventProjection {
+  event_id: string;
+  label: string;
+  /** 时间窗文本，如 "1260" 或 "1260-1264"；未知由 SUPPORTED_CANDIDATE/CONFLICTED 表达，不伪造年代 */
+  time_scope: string;
+  /** 轴 A 六值 */
+  epistemic_status: SixValue;
+  evidence_fragment_ids: string[];
+}
+
+/**
+ * 008 evidence_fragments 投影（AD-05 fragment-level gate，M4.1 新增）。
+ * span_type 决定片段在 Drawer 中的表达边界。
+ */
+export interface EvidenceFragmentGate {
+  fragment_id: string;
+  /** hr4_usable 可显；u10_forbidden 禁正向事实；generic 受 claim/usage 约束 */
+  span_type: "hr4_usable" | "u10_forbidden" | "generic";
+  /** 该片段可支撑的 claim 范围（hr4_usable 必填） */
+  usable_for_claim: string | null;
+  usage_note: string | null;
+}
+
+/**
+ * 008 cultural_meaning_candidates 投影（M4.1 新增）。
+ * tone=INTERPRETIVE 是解释层，与 epistemic_status（六值）正交；Meaning→Fact 禁止。
+ */
+export interface MeaningCandidateProjection {
+  meaning_id: string;
+  subject: string;
+  interpretive_text: string;
+  derived_from_claim_ids: string[];
+  /** 轴 A 六值（本簇 SUPPORTED_CANDIDATE） */
+  epistemic_status: SixValue;
+  /** 强制 INTERPRETIVE tone（解释层，非 status） */
+  tone: "INTERPRETIVE";
+}
+
+/**
+ * 008 cultural_present_connections 投影（M4.1 新增）。
+ * open_questions（U10）为唯一真源——1992 重建 ≠ 1992 开放宗教场所（不混为同一事实）。
+ */
+export interface PresentConnectionProjection {
+  present_id: string;
+  type: string;
+  observed_state: string;
+  basis_claim_ids: string[];
+  open_questions: string[];
+}
+
+/** 世界证据状态中的冲突项（可被 008 结构化冲突扩展为双值并存） */
+export interface WorldConflict {
+  ruling: string;
+  topic: string;
+  /** 008 cultural_conflicts：双值并存（如 1265 vs 1267），不静默择一 */
+  primaryValue?: string;
+  conflictedValue?: string;
+  resolutionStatus?: string;
+  /** true = 来自 008 结构化冲突（preserved_open），需并列呈现两值 */
+  dualValue?: boolean;
+  /** 冲突来源标记（如 "008/cultural_conflicts"），便于溯源 */
+  source?: string;
 }
 
 /** 世界证据状态（Renderer/Selection 的输入；不得由组件自行推断） */
@@ -73,14 +160,24 @@ export interface WorldEvidenceState {
     attributable: boolean;
     imageAvailable: boolean;
   };
-  /** 冲突证据组（如 T11-C1/C2） */
-  conflicts: Array<{ ruling: string; topic: string }>;
+  /** 冲突证据组（如 T11-C1/C2；以及 008 双值 preserved_open 冲突） */
+  conflicts: WorldConflict[];
   /** 已确认的当代照片数量 */
   currentPhotosConfirmed: number;
   /** 可靠历史视觉资产数量（本切片 = 0） */
   historicalVisualAssets: number;
   /** 存在有据的时间变化链 */
   hasEvidencedChanges: boolean;
+
+  // —— M4.1（EXP-CULTURAL-03）新增：008 cultural_* 只读投影共字段（不建第二事实真源）——
+  /** 008 cultural_events 投影：事件事实层（替代 SliceShape.changes 硬编码） */
+  culturalEvents?: CulturalEventProjection[];
+  /** 008 evidence_fragments 投影：fragment-level gate（喂 OPEN_EVIDENCE Drawer） */
+  evidenceFragmentGates?: EvidenceFragmentGate[];
+  /** 008 cultural_meaning_candidates 投影：INTERPRETIVE tone + 六值 status（禁升 Fact） */
+  meaningCandidates?: MeaningCandidateProjection[];
+  /** 008 cultural_present_connections 投影：open_questions(U10) 为唯一真源 */
+  presentConnections?: PresentConnectionProjection[];
 }
 
 export interface SurfaceEligibility {

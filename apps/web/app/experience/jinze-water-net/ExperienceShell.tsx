@@ -33,6 +33,7 @@ import { BEATS, TEMPLE_BRIDGE_NON_ANSWER, type BeatPresentation } from "./beats"
 import { buildWorldEvidenceState } from "./beats";
 import { resolveSurface, UnknownGapSurface } from "./surfaceRegistry";
 import type { SliceShape, SurfaceContext } from "./surfaces/types";
+import { projectCulturalWorldState, type CulturalWorldProjectionSource } from "./culturalWorldProjection";
 import IntentGuide from "./IntentGuide";
 import { translateIntentToExperience } from "./intentTranslation";
 import "./experience.css";
@@ -41,6 +42,8 @@ export interface ExperienceShellProps {
   script: ExperienceScript;
   patch: FollowupPatch;
   slice: SliceShape;
+  /** M4.1（EXP-CULTURAL-03）：008 cultural_* 第一簇只读投影源（jinze-min-001） */
+  culturalSource: CulturalWorldProjectionSource;
 }
 
 const CONFLICT_ORDER: Record<string, string> = {
@@ -48,7 +51,7 @@ const CONFLICT_ORDER: Record<string, string> = {
   "看第二组分歧": "T11-C1",
 };
 
-export default function ExperienceShell({ script, patch, slice }: ExperienceShellProps) {
+export default function ExperienceShell({ script, patch, slice, culturalSource }: ExperienceShellProps) {
   const [revealed, setRevealed] = useState<string[]>([]);
   const [revealedConflicts, setRevealedConflicts] = useState<string[]>([]);
   const [templeAsked, setTempleAsked] = useState(false);
@@ -58,11 +61,22 @@ export default function ExperienceShell({ script, patch, slice }: ExperienceShel
   const [sourceOpen, setSourceOpen] = useState(false);
   const [nonAnswer, setNonAnswer] = useState<string | null>(null);
 
+  // —— M4.1：008 cultural_* 只读投影（纯函数、幂等）——真实文化世界进入体验输入
+  const projection = useMemo(
+    () => projectCulturalWorldState(culturalSource.slice_id, culturalSource),
+    [culturalSource]
+  );
+
   // —— Evidence-aware：世界证据状态（FOLLOWUP_REPLAN 的 EvidenceDecision 只消费它，不读答案 JSON）
   const world = useMemo(
     () =>
-      buildWorldEvidenceState(script, slice, { historicalVisualAssets: 0, historicalMapImageAvailable: false }),
-    [script, slice]
+      buildWorldEvidenceState(
+        script,
+        slice,
+        { historicalVisualAssets: 0, historicalMapImageAvailable: false },
+        projection
+      ),
+    [script, slice, projection]
   );
 
   // EXP-0001 §5：Inspector 降为 DEV/debug。普通模式（默认）隐藏 replan-card 内部 label；

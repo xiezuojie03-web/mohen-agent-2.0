@@ -16,6 +16,7 @@ import {
   type ExperienceScript,
   type FollowupPatch,
 } from "@mohen/experience-engine";
+import type { CulturalWorldProjectionSource } from "./culturalWorldProjection";
 
 const DATA_DIR = path.join(process.cwd(), "data", "experience");
 
@@ -34,6 +35,10 @@ export default function ExperiencePage() {
   const slice = readFrozen("jinze-historical-spatial-slice.json") as React.ComponentProps<
     typeof ExperienceShell
   >["slice"];
+  // M4.1（EXP-CULTURAL-03）：008 cultural_* 第一簇的只读投影副本（真源仍是 008；此为体验端读副本）
+  const culturalSource = readFrozen(
+    "jinze-cultural-world-008.json"
+  ) as CulturalWorldProjectionSource;
 
   // 冻结不变量在服务端入口强制校验：产物被篡改则拒绝进入体验（fail loud）
   const report = checkFrozenInvariants(script, patch);
@@ -42,6 +47,6 @@ export default function ExperiencePage() {
   }
 
   return (
-    <ExperienceShell script={script} patch={patch} slice={slice} />
+    <ExperienceShell script={script} patch={patch} slice={slice} culturalSource={culturalSource} />
   );
 }

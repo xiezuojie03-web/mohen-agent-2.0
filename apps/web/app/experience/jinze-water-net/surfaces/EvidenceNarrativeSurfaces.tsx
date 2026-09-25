@@ -15,6 +15,7 @@ import {
   type TemporalState,
 } from "../../../../lib/mohen-visual/visual-grammar";
 import { VisualLegend } from "../../../../lib/mohen-visual/spatial-canvas";
+import { fragmentGateDisplayItems, presentOpenQuestions } from "../culturalWorldProjection";
 
 const L = (lv: string) => LEVEL_LABELS[lv as NarrativeLevel] ?? lv;
 
@@ -286,6 +287,13 @@ export function EvidenceRevealSurface({ ctx, onAction }: SurfaceComponentProps) 
     : [];
   const showInspection = ctx.evidenceInspection && inspectRels.length > 0;
 
+  // —— M4.1（EXP-CULTURAL-03）：fragment-level gate（唯一来源 = 008 evidence_fragments 投影）——
+  // hr4_usable 可显（受 claim 约束）；u10_forbidden 只作禁用边界标记（fact 恒 null，绝不形成正向事实）；
+  // generic 受 claim/usage 约束。组件不自行推断——只消费 world.evidenceFragmentGates。
+  const gateItems = fragmentGateDisplayItems(ctx.world.evidenceFragmentGates ?? []);
+  // —— M4.1：今日开放问题（唯一真源 = world.presentConnections.open_questions，U10 等）——
+  const openQuestions = presentOpenQuestions(ctx.world);
+
   return (
     <div className="surf surf-evidence-reveal" data-testid="surface-evidence-reveal">
       <p className="surf__caption">证据按需出现 · 不一次铺满</p>
@@ -339,6 +347,50 @@ export function EvidenceRevealSurface({ ctx, onAction }: SurfaceComponentProps) 
           展开这一刻的证据（还有 {hidden.length} 条未显示）
         </button>
       )}
+
+      {/* —— M4.1：证据片段闸门（fragment-level，008 投影）——
+          hr4_usable 可显；u10_forbidden 只以「禁用边界」出现（无任何正向事实文本）；generic 受 claim/usage 约束 */}
+      {gateItems.length > 0 && (
+        <div className="evidence-frag-gates" data-testid="evidence-fragment-gates">
+          <p className="surf__note">证据片段闸门 · 精确到片段的放行/禁用</p>
+          <ul>
+            {gateItems.map((g) =>
+              g.kind === "forbidden" ? (
+                <li key={g.fragment_id} className="unit" data-testid="fragment-gate-forbidden" data-span-type={g.span_type} data-has-fact="false">
+                  <span className="unit__badge">禁用片段</span>
+                  <span className="unit__text">{g.forbiddenNote}</span>
+                </li>
+              ) : g.kind === "usable" ? (
+                <li key={g.fragment_id} className="unit" data-testid="fragment-gate-usable" data-span-type={g.span_type} data-has-fact="true">
+                  <span className="unit__badge">可用片段</span>
+                  <span className="unit__text">{g.fact}</span>
+                </li>
+              ) : (
+                <li key={g.fragment_id} className="unit" data-testid="fragment-gate-generic" data-span-type={g.span_type} data-has-fact="false">
+                  <span className="unit__badge">受约束片段</span>
+                  <span className="unit__text">{g.usage_note}</span>
+                </li>
+              )
+            )}
+          </ul>
+        </div>
+      )}
+
+      {/* —— M4.1：今日开放问题（U10 单一真源 = world.presentConnections.open_questions）——
+          只作为问题呈现，绝不进入事实层 */}
+      {openQuestions.length > 0 && (
+        <div className="evidence-open-questions" data-testid="present-open-questions">
+          <p className="surf__note">今日开放问题 · 只作为问题呈现，不进事实层</p>
+          <ul>
+            {openQuestions.map((q, i) => (
+              <li key={i} className="unit" data-testid="present-open-question">
+                <span className="unit__badge">开放问题</span>
+                <span className="unit__text">{q}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
@@ -351,6 +403,9 @@ export function ConflictCompareSurface({ ctx }: SurfaceComponentProps) {
     (c) => (c as { surfaced_in_scene?: string }).surfaced_in_scene === ctx.scene.scene_id
   );
   const shown = conflicts.filter((c) => ctx.revealedConflicts.includes(c.ruling));
+  // —— M4.1：008 结构化冲突（preserved_open，双值并存，不静默择一）——
+  // 唯一来源 = world.conflicts 中 dualValue 项（008/cultural_conflicts 投影）。
+  const dualConflicts = (ctx.world.conflicts ?? []).filter((c) => c.dualValue);
   return (
     <div className="surf surf-conflict" data-testid="surface-conflict-compare">
       <p className="surf__caption">着录冲突 · 并列 · <b>未裁决</b></p>
@@ -369,6 +424,20 @@ export function ConflictCompareSurface({ ctx }: SurfaceComponentProps) {
             </article>
           );
         })}
+        {/* M4.1：008 双值冲突卡 —— 两值并列 + preserved_open，不为 UI 简化而选一个年份 */}
+        {dualConflicts.map((c) => (
+          <article key={c.ruling} className="conflict-card" data-testid={`conflict-008-${c.ruling}`} data-dual-value="true" data-resolution={c.resolutionStatus}>
+            <header>
+              <strong>{c.topic}</strong>
+              <span className="conflict-card__ruling">{c.resolutionStatus} · 未裁决</span>
+            </header>
+            <p>
+              两说着录并列保留：<b>{c.primaryValue}</b>（权威着录）↔ <b>{c.conflictedValue}</b>（冲突变体，{c.ruling}）。
+              建造年代保持开放——墨痕不替你选边。
+            </p>
+            <footer>来源：{c.source} · 双值并存 · 静默裁决：ineligible</footer>
+          </article>
+        ))}
       </div>
       <div className="conflict-status">
         <span className="tag tag--unresolved">静默裁决：ineligible</span>

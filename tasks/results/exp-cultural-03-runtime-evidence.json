@@ -1,0 +1,473 @@
+{
+  "generated_from": "EXP-CULTURAL-03 M4.1 runtime slice（真实投影驱动，非手写声明）",
+  "slice": "jinze-minimum-slice-001",
+  "world_summary": {
+    "currentExactEntities": [
+      "pujiqiao/current_provider_object_point",
+      "wananqiao/current_provider_object_point"
+    ],
+    "approximateEntities": [
+      "yihaosi-site/current_provider_object_area"
+    ],
+    "hasHistoricalRelations": true,
+    "hasHistoricalGeometry": false,
+    "conflicts": [
+      {
+        "ruling": "T11-C1",
+        "topic": "普济桥方位"
+      },
+      {
+        "ruling": "T11-C2",
+        "topic": "万安桥跨水道"
+      },
+      {
+        "ruling": "pujiqiao-build-year-1265-1267",
+        "topic": "普济桥建造年代（1265 vs 1267）",
+        "primaryValue": "1267",
+        "conflictedValue": "1265",
+        "resolutionStatus": "preserved_open",
+        "dualValue": true,
+        "source": "008/cultural_conflicts"
+      }
+    ],
+    "culturalEvents_count": 9,
+    "evidenceFragmentGates_count": 16,
+    "meaningCandidates_count": 2,
+    "presentConnections_count": 2,
+    "relationEvidence_epistemicStatus_values": [
+      "SUPPORTED_CANDIDATE"
+    ]
+  },
+  "beats": [
+    {
+      "beatId": "beat-01-hook",
+      "label": "进入现场",
+      "recipe": "IMMERSIVE_SPATIAL",
+      "scene_ids": [
+        "jinze-3min/s01-today-hook"
+      ],
+      "scenes": [
+        {
+          "scene_id": "jinze-3min/s01-today-hook",
+          "time_state": "2026（当下）",
+          "spatial_mode": "GEOGRAPHIC_EXACT",
+          "narrative_units": [
+            "s01-u1",
+            "s01-u2",
+            "s01-u3"
+          ]
+        }
+      ],
+      "actions": [
+        "回到它们刚出现的时代"
+      ],
+      "composition": {
+        "primarySurface": "current_map",
+        "secondarySurfaces": [
+          "question",
+          "action_dock"
+        ],
+        "contextSurfaces": [
+          "current_photo",
+          "agent_prompt"
+        ],
+        "fallback": null
+      },
+      "eligiblePrimaryCandidates": [
+        "current_map",
+        "approximate_area",
+        "relational_space",
+        "historical_map_native",
+        "conflict_compare",
+        "current_photo",
+        "timeline",
+        "evidence_reveal",
+        "source_inspect",
+        "question",
+        "discovery",
+        "agent_prompt",
+        "action_dock",
+        "unknown_gap"
+      ],
+      "consumed_world_fields": [],
+      "world_object_ids": [
+        "pujiqiao/current_provider_object_point",
+        "wananqiao/current_provider_object_point"
+      ],
+      "projection_fields": [
+        "culturalEvents(9)"
+      ],
+      "note": "当前精确锚来自 slice.current_sources；008 事件层在场（万安桥 1260–1264 / 普济桥 1267 等）"
+    },
+    {
+      "beatId": "beat-02-time-space-shift",
+      "label": "时间 / 空间转换",
+      "recipe": "TIME_SHIFT",
+      "scene_ids": [
+        "jinze-3min/s02-time-travel"
+      ],
+      "scenes": [
+        {
+          "scene_id": "jinze-3min/s02-time-travel",
+          "time_state": "南宋景定—咸淳（1260–1267）",
+          "spatial_mode": "RELATIONAL_HISTORICAL",
+          "narrative_units": [
+            "s02-u1",
+            "s02-u2",
+            "s02-u3"
+          ]
+        }
+      ],
+      "actions": [
+        "看留下的关系"
+      ],
+      "composition": {
+        "primarySurface": "relational_space",
+        "secondarySurfaces": [
+          "agent_prompt",
+          "action_dock"
+        ],
+        "contextSurfaces": [
+          "question"
+        ],
+        "fallback": null
+      },
+      "eligiblePrimaryCandidates": [
+        "current_map",
+        "approximate_area",
+        "relational_space",
+        "historical_map_native",
+        "conflict_compare",
+        "current_photo",
+        "timeline",
+        "evidence_reveal",
+        "source_inspect",
+        "question",
+        "discovery",
+        "agent_prompt",
+        "action_dock",
+        "unknown_gap"
+      ],
+      "consumed_world_fields": [],
+      "world_object_ids": [
+        "pujiqiao--spans_same_waterway--wananqiao",
+        "pujiqiao--spans_waterway--jinzetang",
+        "wananqiao--spans_same_waterway--pujiqiao",
+        "wananqiao--spans_waterway--jinzetang",
+        "yihaosi-site--former_site_of--lvyihao",
+        "yihaosi-site--named_after--lvyihao",
+        "yihaosi-site--temple_bridge_association--pujiqiao",
+        "pujiqiao--relative_position_south_of--wananqiao"
+      ],
+      "projection_fields": [
+        "relationEvidence[].epistemicStatus(六值轴A)",
+        "relationEvidence[].epistemicClass(E1–E4轴B)",
+        "hasHistoricalRelations=true"
+      ],
+      "epistemic_pairs": [
+        {
+          "key": "pujiqiao--spans_same_waterway--wananqiao",
+          "axisA": "SUPPORTED_CANDIDATE",
+          "axisB": "E1"
+        },
+        {
+          "key": "pujiqiao--spans_waterway--jinzetang",
+          "axisA": "SUPPORTED_CANDIDATE",
+          "axisB": "E1"
+        },
+        {
+          "key": "wananqiao--spans_same_waterway--pujiqiao",
+          "axisA": "SUPPORTED_CANDIDATE",
+          "axisB": "E1"
+        },
+        {
+          "key": "wananqiao--spans_waterway--jinzetang",
+          "axisA": "SUPPORTED_CANDIDATE",
+          "axisB": "E1"
+        },
+        {
+          "key": "yihaosi-site--former_site_of--lvyihao",
+          "axisA": "SUPPORTED_CANDIDATE",
+          "axisB": "E1"
+        },
+        {
+          "key": "yihaosi-site--named_after--lvyihao",
+          "axisA": "SUPPORTED_CANDIDATE",
+          "axisB": "E1"
+        },
+        {
+          "key": "yihaosi-site--temple_bridge_association--pujiqiao",
+          "axisA": "SUPPORTED_CANDIDATE",
+          "axisB": "E2"
+        },
+        {
+          "key": "pujiqiao--relative_position_south_of--wananqiao",
+          "axisA": "SUPPORTED_CANDIDATE",
+          "axisB": "E3"
+        }
+      ],
+      "note": "坐标退出：现代精确锚在场但 hasHistoricalGeometry=false"
+    },
+    {
+      "beatId": "beat-03-relationship",
+      "label": "关系发现",
+      "recipe": "RELATION_DISCOVERY",
+      "scene_ids": [
+        "jinze-3min/s03-two-bridges-water",
+        "jinze-3min/s04-temple-enters"
+      ],
+      "scenes": [
+        {
+          "scene_id": "jinze-3min/s03-two-bridges-water",
+          "time_state": "南宋—元（着录形成的时段）",
+          "spatial_mode": "RELATIONAL_HISTORICAL",
+          "narrative_units": [
+            "s03-u1",
+            "s03-u2",
+            "s03-u3"
+          ]
+        },
+        {
+          "scene_id": "jinze-3min/s04-temple-enters",
+          "time_state": "南宋景定元年（1260）→ 元贞元年（1295）",
+          "spatial_mode": "RELATIONAL_HISTORICAL",
+          "narrative_units": [
+            "s04-u1",
+            "s04-u2",
+            "s04-u3"
+          ]
+        }
+      ],
+      "actions": [
+        "把寺也放进来",
+        "寺与桥有关系吗",
+        "寺的位置有多确定？"
+      ],
+      "composition": {
+        "primarySurface": "relational_space",
+        "secondarySurfaces": [
+          "evidence_reveal",
+          "action_dock"
+        ],
+        "contextSurfaces": [
+          "question",
+          "agent_prompt"
+        ],
+        "fallback": null
+      },
+      "eligiblePrimaryCandidates": [
+        "current_map",
+        "approximate_area",
+        "relational_space",
+        "historical_map_native",
+        "conflict_compare",
+        "current_photo",
+        "timeline",
+        "evidence_reveal",
+        "source_inspect",
+        "question",
+        "discovery",
+        "agent_prompt",
+        "action_dock",
+        "unknown_gap"
+      ],
+      "consumed_world_fields": [],
+      "world_object_ids": [
+        "pujiqiao--spans_same_waterway--wananqiao",
+        "pujiqiao--spans_waterway--jinzetang",
+        "wananqiao--spans_same_waterway--pujiqiao",
+        "wananqiao--spans_waterway--jinzetang",
+        "yihaosi-site--temple_bridge_association--pujiqiao"
+      ],
+      "projection_fields": [
+        "relationEvidence(8)",
+        "claimEpistemicByKey(008 cultural_relation_claims×8)"
+      ],
+      "note": "E2 寺桥当前相邻不升 E1；axisA=SUPPORTED_CANDIDATE 与 axisB=E2 并存"
+    },
+    {
+      "beatId": "beat-04-evidence-change",
+      "label": "证据与时间变化",
+      "recipe": "EVIDENCE_FOCUS",
+      "scene_ids": [
+        "jinze-3min/s05-evidence-reveal",
+        "jinze-3min/s06-change-through-time"
+      ],
+      "scenes": [
+        {
+          "scene_id": "jinze-3min/s05-evidence-reveal",
+          "time_state": "着录层（20 世纪末至今的方志与档案）",
+          "spatial_mode": "RELATIONAL_HISTORICAL",
+          "narrative_units": [
+            "s05-u1",
+            "s05-u2",
+            "s05-u3",
+            "s05-u4"
+          ]
+        },
+        {
+          "scene_id": "jinze-3min/s06-change-through-time",
+          "time_state": "1342 → 1938 → 1992 → 当代",
+          "spatial_mode": "RELATIONAL_HISTORICAL",
+          "narrative_units": [
+            "s06-u1",
+            "s06-u2",
+            "s06-u3",
+            "s06-u4"
+          ]
+        }
+      ],
+      "actions": [
+        "看第一组分歧",
+        "看第二组分歧",
+        "看时间变化",
+        "看史料原页"
+      ],
+      "composition": {
+        "primarySurface": "conflict_compare",
+        "secondarySurfaces": [
+          "timeline"
+        ],
+        "contextSurfaces": [
+          "question"
+        ],
+        "fallback": null
+      },
+      "eligiblePrimaryCandidates": [
+        "current_map",
+        "approximate_area",
+        "relational_space",
+        "historical_map_native",
+        "conflict_compare",
+        "current_photo",
+        "timeline",
+        "evidence_reveal",
+        "source_inspect",
+        "question",
+        "discovery",
+        "agent_prompt",
+        "action_dock",
+        "unknown_gap"
+      ],
+      "consumed_world_fields": [],
+      "world_object_ids": [
+        "T11-C1",
+        "T11-C2",
+        "pujiqiao-build-year-1265-1267"
+      ],
+      "projection_fields": [
+        "conflicts(含 008 pujiqiao-build-year-1265-1267 双值 preserved_open)",
+        "evidenceFragmentGates(16: hr4_usable×2 / u10_forbidden×1 / generic×13)",
+        "presentConnections.open_questions(U10)",
+        "culturalEvents(1938/1992)"
+      ],
+      "conflict_detail": [
+        {
+          "ruling": "pujiqiao-build-year-1265-1267",
+          "topic": "普济桥建造年代（1265 vs 1267）",
+          "primaryValue": "1267",
+          "conflictedValue": "1265",
+          "resolutionStatus": "preserved_open",
+          "dualValue": true,
+          "source": "008/cultural_conflicts"
+        }
+      ],
+      "fragment_gates": {
+        "usable": 2,
+        "forbidden": 1,
+        "generic": 13
+      },
+      "open_questions": [
+        "1992年开放为宗教活动场所（U10：仅非权威转载，无官方文号，不进事实层）"
+      ]
+    },
+    {
+      "beatId": "beat-05-return-next",
+      "label": "回到今天 · 下一个问题",
+      "recipe": "RETURN_TO_PRESENT",
+      "scene_ids": [
+        "jinze-3min/s07-return-today",
+        "jinze-3min/s08-next-question"
+      ],
+      "scenes": [
+        {
+          "scene_id": "jinze-3min/s07-return-today",
+          "time_state": "2026（当下）",
+          "spatial_mode": "GEOGRAPHIC_EXACT",
+          "narrative_units": [
+            "s07-u1",
+            "s07-u2"
+          ]
+        },
+        {
+          "scene_id": "jinze-3min/s08-next-question",
+          "time_state": "跨时段（发现陈述）",
+          "spatial_mode": "RELATIONAL_HISTORICAL",
+          "narrative_units": [
+            "s08-u1",
+            "s08-u1b",
+            "s08-u2",
+            "s08-u3",
+            "s08-u4"
+          ]
+        }
+      ],
+      "actions": [
+        "看今貌照片",
+        "了解更多",
+        "追问：那颐浩寺和普济桥以前真的有关系吗？",
+        "追问：你凭什么这么判断？",
+        "追问：它们后来发生了什么变化？",
+        "追问：那我现在去现场可以看什么？"
+      ],
+      "composition": {
+        "primarySurface": "current_map",
+        "secondarySurfaces": [
+          "action_dock"
+        ],
+        "contextSurfaces": [
+          "agent_prompt"
+        ],
+        "fallback": null
+      },
+      "eligiblePrimaryCandidates": [
+        "current_map",
+        "approximate_area",
+        "relational_space",
+        "historical_map_native",
+        "conflict_compare",
+        "current_photo",
+        "timeline",
+        "evidence_reveal",
+        "source_inspect",
+        "question",
+        "discovery",
+        "agent_prompt",
+        "action_dock",
+        "unknown_gap"
+      ],
+      "consumed_world_fields": [],
+      "world_object_ids": [
+        "pujiqiao/current_provider_object_point",
+        "wananqiao/current_provider_object_point"
+      ],
+      "projection_fields": [
+        "presentConnections(2: site_vs_rebuilt / today_location)",
+        "currentPhotosConfirmed"
+      ],
+      "present": [
+        {
+          "type": "site_vs_rebuilt",
+          "open_questions": [
+            "1992年开放为宗教活动场所（U10：仅非权威转载，无官方文号，不进事实层）"
+          ]
+        },
+        {
+          "type": "today_location",
+          "open_questions": []
+        }
+      ],
+      "note": "recipe=RETURN_TO_PRESENT 是 CompositionRecipe（非 ExperienceAction V0.1）；回到今天由既有 NEXT/scene 状态表达"
+    }
+  ]
+}
