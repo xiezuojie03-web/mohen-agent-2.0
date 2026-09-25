@@ -1,0 +1,272 @@
+{
+  "generated_at": "2026-09-25T01:21:47.209Z",
+  "slice": "jinze-minimum-slice-001",
+  "counts": {
+    "events": 9,
+    "claims": 8,
+    "meanings": 2,
+    "presents": 2,
+    "fragments": 16,
+    "conflicts": "1"
+  },
+  "evidence_trace": {
+    "claims": [
+      {
+        "claim": "relative_position_south_of",
+        "subject": "jinze-min-001/feature/pujiqiao",
+        "epistemic": "SUPPORTED_CANDIDATE",
+        "fragCount": 1,
+        "linkedEvidence": 1,
+        "traceable": true
+      },
+      {
+        "claim": "spans_same_waterway",
+        "subject": "jinze-min-001/feature/pujiqiao",
+        "epistemic": "SUPPORTED_CANDIDATE",
+        "fragCount": 1,
+        "linkedEvidence": 1,
+        "traceable": true
+      },
+      {
+        "claim": "spans_waterway",
+        "subject": "jinze-min-001/feature/pujiqiao",
+        "epistemic": "SUPPORTED_CANDIDATE",
+        "fragCount": 1,
+        "linkedEvidence": 1,
+        "traceable": true
+      },
+      {
+        "claim": "spans_same_waterway",
+        "subject": "jinze-min-001/feature/wananqiao",
+        "epistemic": "SUPPORTED_CANDIDATE",
+        "fragCount": 1,
+        "linkedEvidence": 1,
+        "traceable": true
+      },
+      {
+        "claim": "spans_waterway",
+        "subject": "jinze-min-001/feature/wananqiao",
+        "epistemic": "SUPPORTED_CANDIDATE",
+        "fragCount": 1,
+        "linkedEvidence": 1,
+        "traceable": true
+      },
+      {
+        "claim": "former_site_of",
+        "subject": "jinze-min-001/feature/yihaosi-site",
+        "epistemic": "SUPPORTED_CANDIDATE",
+        "fragCount": 1,
+        "linkedEvidence": 1,
+        "traceable": true
+      },
+      {
+        "claim": "named_after",
+        "subject": "jinze-min-001/feature/yihaosi-site",
+        "epistemic": "SUPPORTED_CANDIDATE",
+        "fragCount": 1,
+        "linkedEvidence": 1,
+        "traceable": true
+      },
+      {
+        "claim": "temple_bridge_association",
+        "subject": "jinze-min-001/feature/yihaosi-site",
+        "epistemic": "SUPPORTED_CANDIDATE",
+        "fragCount": 1,
+        "linkedEvidence": 1,
+        "traceable": true
+      }
+    ],
+    "events": [
+      {
+        "event": "万安桥创建",
+        "fragCount": 1,
+        "linkedEvidence": 1,
+        "exempt": false,
+        "traceable": true
+      },
+      {
+        "event": "颐浩寺创建",
+        "fragCount": 1,
+        "linkedEvidence": 1,
+        "exempt": false,
+        "traceable": true
+      },
+      {
+        "event": "普济桥建造年代冲突值（1265）",
+        "fragCount": 0,
+        "linkedEvidence": 0,
+        "exempt": true,
+        "traceable": true
+      },
+      {
+        "event": "普济桥建（南宋咸淳三年）",
+        "fragCount": 1,
+        "linkedEvidence": 1,
+        "exempt": false,
+        "traceable": true
+      },
+      {
+        "event": "颐浩寺建大雄宝殿等",
+        "fragCount": 1,
+        "linkedEvidence": 1,
+        "exempt": false,
+        "traceable": true
+      },
+      {
+        "event": "颐浩寺升院为寺",
+        "fragCount": 1,
+        "linkedEvidence": 1,
+        "exempt": false,
+        "traceable": true
+      },
+      {
+        "event": "万安桥加建廊亭",
+        "fragCount": 1,
+        "linkedEvidence": 1,
+        "exempt": false,
+        "traceable": true
+      },
+      {
+        "event": "颐浩寺大部分建筑毁于日军轰炸",
+        "fragCount": 1,
+        "linkedEvidence": 1,
+        "exempt": false,
+        "traceable": true
+      },
+      {
+        "event": "颐浩寺原址重建寺院",
+        "fragCount": 1,
+        "linkedEvidence": 1,
+        "exempt": false,
+        "traceable": true
+      }
+    ],
+    "meanings": [
+      {
+        "meaning_subject": "jinze-min-001/feature/yihaosi-site",
+        "derivedCount": 2,
+        "derivesFromClaims": true
+      },
+      {
+        "meaning_subject": "jinze-min-001/feature/pujiqiao",
+        "derivedCount": 2,
+        "derivesFromClaims": true
+      }
+    ],
+    "presents": [
+      {
+        "present": "site_vs_rebuilt",
+        "basisCount": 2,
+        "basisResolves": true
+      },
+      {
+        "present": "today_location",
+        "basisCount": 1,
+        "basisResolves": true
+      }
+    ]
+  },
+  "expression_guard": {
+    "issues": []
+  },
+  "cluster_yihao": {
+    "subject": "jinze-min-001/feature/yihaosi-site",
+    "events": [
+      {
+        "label": "颐浩寺创建",
+        "when": "1260-1260",
+        "epistemic": "SUPPORTED_CANDIDATE",
+        "evidence": 1
+      },
+      {
+        "label": "颐浩寺建大雄宝殿等",
+        "when": "1288-1288",
+        "epistemic": "SUPPORTED_CANDIDATE",
+        "evidence": 1
+      },
+      {
+        "label": "颐浩寺升院为寺",
+        "when": "1295-1295",
+        "epistemic": "SUPPORTED_CANDIDATE",
+        "evidence": 1
+      },
+      {
+        "label": "颐浩寺大部分建筑毁于日军轰炸",
+        "when": "1938-1938",
+        "epistemic": "SUPPORTED_CANDIDATE",
+        "evidence": 1
+      },
+      {
+        "label": "颐浩寺原址重建寺院",
+        "when": "1992-1992",
+        "epistemic": "SUPPORTED_CANDIDATE",
+        "evidence": 1
+      }
+    ],
+    "relations": [
+      {
+        "predicate": "former_site_of",
+        "object": "jinze-min-001/feature/lvyihao",
+        "epistemic": "SUPPORTED_CANDIDATE"
+      },
+      {
+        "predicate": "named_after",
+        "object": "jinze-min-001/feature/lvyihao",
+        "epistemic": "SUPPORTED_CANDIDATE"
+      },
+      {
+        "predicate": "temple_bridge_association",
+        "object": "jinze-min-001/feature/pujiqiao",
+        "epistemic": "SUPPORTED_CANDIDATE"
+      }
+    ],
+    "meanings": [
+      "颐浩寺以南宋名相吕颐浩故宅为基、以其人命名，寺与人的绑定是金泽宋韵的一条可感线索"
+    ],
+    "present": [
+      {
+        "type": "site_vs_rebuilt",
+        "observed": "今址金泽镇金溪居委会迎祥街12号；遗址—复建双层：元代遗物（不断云石刻、元碑、古银杏）与1992原址重建殿宇并置",
+        "open_questions": [
+          "1992年开放为宗教活动场所（U10：仅非权威转载，无官方文号，不进事实层）"
+        ]
+      },
+      {
+        "type": "today_location",
+        "observed": "现坐落金泽镇金溪居委会迎祥街12号（当前坐标仅为近似对象范围，非历史位置证明）",
+        "open_questions": []
+      }
+    ]
+  },
+  "conflict": [
+    {
+      "conflict_id": "5720eb77-7af7-416c-ba08-65697636677f",
+      "conflict_key": "pujiqiao-build-year-1265-1267",
+      "subject_feature_key": "jinze-min-001/feature/pujiqiao",
+      "primary_claim_id": "1232f6e9-27e3-436a-b89f-fdfee989b2df",
+      "conflicted_variant_id": "f741022b-2615-41d2-a775-e518fdd043c7",
+      "primary_value": "1267",
+      "conflicted_value": "1265",
+      "source_of_conflict": "Wikimedia Commons caption（作北宋咸淳元年(1265)，内部朝代自相矛盾）",
+      "resolution_status": "preserved_open",
+      "created_at": "2026-09-25 09:21:40.264594+08"
+    }
+  ],
+  "acceptance_tests": {
+    "AT-02_evidence_trace": true,
+    "AT-05_step5_expression_guard": true,
+    "AT-01_world_object_separation": true,
+    "AT-03_meaning_firewall": true,
+    "AT-04_town_event_firewall": true,
+    "AT-05_conflict_preservation": true,
+    "AT-06_hr4": true,
+    "AT-07_1992_boundary": true,
+    "AT-09_no_scope_creep_db": true,
+    "AT-08_living_cluster_query": true
+  },
+  "acceptance_summary": {
+    "passed": 10,
+    "total": 10,
+    "all_pass": true
+  }
+}
