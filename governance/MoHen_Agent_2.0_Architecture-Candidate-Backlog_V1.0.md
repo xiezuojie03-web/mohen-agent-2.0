@@ -54,6 +54,66 @@
 
 ---
 
+## CAND-ARCH-002 · Timeline Source Unification（M4 Future Candidate C1）
+
+**状态：CANDIDATE ONLY / NO TASK / NO MIGRATION**  
+**来源：M4-CLOSURE-01（M4 Integration Closure Audit，@ aaf6910）Future Candidate C1**
+
+### 问题
+
+Timeline 当前由 legacy `SliceShape.changes` 驱动；008 `culturalEvents` 已入 `WorldEvidenceState` 但未驱动 timeline，轴 A 六值 `epistemicStatus` 已 join 进 `relationEvidence` 但未参与 `decideEvidence` 判定。两数据源语义一致、投影路径分离。
+
+### 当前禁止的过早简化
+
+不得现在统一数据源、不得让 `culturalEvents` 直接驱动 timeline、不得让 `decideEvidence` 立即消费轴 A——除非 Trigger 满足并经 Architect Reconciliation。
+
+### Trigger
+
+M5 Human Experience Validation 暴露时间表达不足（如 P1/P2/P3 因时间叙事不可感而失败），或未来第二 Cultural World cluster 接入，或任一冻结路径发生变更。
+
+### 验证问题
+
+1. 时间表达不足是否确实来自数据源分离而非文案层（O1 文案残余）？  
+2. 统一是否破坏 KEEP_COMPATIBILITY_PATH 裁决与 Evidence Gate？  
+3. 最小统一是否只需新增 Surface consumer 而非改 schema？  
+4. 用户是否真感知到差异？
+
+### 当前裁决
+
+`NO SCHEMA CHANGE / NO TASK / NO MIGRATION`。等待 Trigger（由 M5 真实结果或第二簇接入触发）。本条目仅登记，不授权任何施工。
+
+---
+
+## CAND-ARCH-003 · Dual-Projection Consistency Guard（M4 Future Candidate C2）
+
+**状态：CANDIDATE ONLY / NO TASK / NO MIGRATION**  
+**来源：M4-CLOSURE-01（M4 Integration Closure Audit，@ aaf6910）Future Candidate C2**
+
+### 问题
+
+`slice.changes` 与 008 `culturalEvents` 双冻结投影的值一致性目前靠人工逐值对齐（M4 审计已核验一致）。若未来任一侧 JSON 变更，无自动守卫会重新比对。
+
+### 当前禁止的过早简化
+
+不得现在写一致性守卫脚本、不得因守卫而提前迁移任一冻结数据源——除非 Trigger 满足。
+
+### Trigger
+
+M5 暴露时间表达不足，或未来第二 Cultural World cluster 接入，或 `slice.changes` / 008 events 任一冻结路径发生变更。
+
+### 验证问题
+
+1. 变更是否真发生？  
+2. 守卫应覆盖哪些字段（年 / 事件 / 冲突值）？  
+3. 守卫失败应阻断 CI 还是仅告警？  
+4. 是否破坏 Current-only working tree 纪律？
+
+### 当前裁决
+
+`NO SCHEMA CHANGE / NO TASK / NO MIGRATION`。等待 Trigger。本条目仅登记，不授权任何施工。
+
+---
+
 ## 已晋升出 Backlog 的 2026-09-25 结论
 
 ### Agent-native Experience Architecture
