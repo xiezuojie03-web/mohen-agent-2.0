@@ -1,7 +1,7 @@
 # 墨痕 Agent 2.0
 
 > Greenfield Project with Existing Assets.  
-> 当前阶段：Phase 0 — Foundation & Data Factory。
+> 当前阶段：Phase II — Canonical Experience Productization。
 
 墨痕不是“网站 + 聊天框”。它是一个以证据为边界、以时空人文知识为底座、由 Agent 驱动 Experience Canvas 的探索系统。
 
