@@ -10,7 +10,7 @@
 // 所有映射都不删除任何内部能力：devMode 路径完整保留 composition.recipe /
 // primaryType / LEVEL_LABELS / AD-xx Uxx / eligible·ineligible / 伪公式 / 6 位 raw GPS。
 
-import { LEVEL_LABELS, type NarrativeLevel } from "@mohen/experience-engine";
+import { LEVEL_LABELS, type NarrativeLevel, type SurfaceType } from "@mohen/experience-engine";
 import type { EpistemicTag } from "@mohen/agent-runtime";
 
 // —— ADR-003：检索材料的认识论档位 → 人话（默认 UI 与既有「不夸大确定性」同一口径）——
@@ -128,3 +128,21 @@ export const DISCOVERY_FORMULA_HUMAN = "三条证据各自成立；把它们合�
 export const CONFLICT_STATUS_HUMAN = "两种资料并存，目前不能据此裁定";
 // —— 双值冲突页脚人话（替代「双值并存 · 静默裁决：ineligible」）——
 export const DUAL_CONFLICT_FOOTER_HUMAN = "双值并存";
+
+// —— 中央主角 Surface → 人话身份（v03：中央区明确组件身份，不靠浮层猜测）——
+// 仅展示层；devMode 仍透出内部 primaryType（与既有「不夸大确定性」同一口径）。
+export const SURFACE_HUMAN_LABEL: Record<string, string> = {
+  current_map: "今址三点图",
+  relational_space: "关系空间（桥·水·寺）",
+  timeline: "时间轴",
+  current_photo: "今貌照片",
+  approximate_area: "近似范围（非精确点）",
+  evidence_reveal: "证据揭示",
+  conflict_compare: "著录对照",
+  discovery: "发现",
+  historical_map_native: "史料原页",
+};
+export function surfaceHumanLabel(t?: SurfaceType | string, devMode = false): string {
+  if (devMode) return String(t ?? "unknown");
+  return (t && SURFACE_HUMAN_LABEL[t]) || "当前视图";
+}

@@ -129,20 +129,48 @@ async function main() {
   );
   const ingestRunId = runRow[0].ingest_run_id;
 
-  const srcRow = await queryRows(
-    `insert into source_records(provider,title,source_uri,content_type,checksum,raw_path,metadata_json)
-     values (:'provider',:'title',nullif(:'uri',''),:'ct',:'chk',:'rp',:'m'::jsonb) returning source_id`,
-    {
-      provider: "hushang-jingwei",
-      title: "沪上经纬 seed.master.json — 金泽最小样本",
-      uri: "",
-      ct: "application/json",
-      chk: checksum,
-      rp: subsetPath,
-      m: JSON.stringify({ legacy_commit: legacyCommit, legacy_file: legacyPath }),
+  // 幂等（夜间协议 §7 Idempotent）：同一 (provider, checksum) 的 snapshot 若已登记，
+  // 复用既有 source_id —— 重复运行既不制造重复来源，也不因唯一约束中断整批。
+  const srcParams = {
+    provider: "hushang-jingwei",
+    title: "沪上经纬 seed.master.json — 金泽最小样本",
+    uri: "",
+    ct: "application/json",
+    chk: checksum,
+    rp: subsetPath,
+    m: JSON.stringify({ legacy_commit: legacyCommit, legacy_file: legacyPath }),
+  };
+  // 注意：不要用 INSERT ... RETURNING 取 source_id —— 命中 on conflict 时返回 0 行，
+  // queryRows(--csv) 会把 psql 的 "INSERT 0 0" 命令标签解析成一行伪数据（曾导致 source_id = "INSERT 0 0"）。
+  // 故统一走「先查 → 无则插入 → 再查」，source_id 始终来自 SELECT。
+  const findSource = () =>
+    queryRows(
+      `select source_id from source_records where provider = :'provider' and checksum = :'chk'`,
+      srcParams
+    );
+
+  let sourceReused = false;
+  let sourceId;
+  const before = await findSource();
+  if (before.length) {
+    sourceId = before[0].source_id;
+    sourceReused = true;
+  } else {
+    await dbRun(
+      `insert into source_records(provider,title,source_uri,content_type,checksum,raw_path,metadata_json)
+       values (:'provider',:'title',nullif(:'uri',''),:'ct',:'chk',:'rp',:'m'::jsonb)
+       on conflict (provider, checksum) do nothing`,
+      srcParams
+    );
+    const after = await findSource();
+    if (!after.length) {
+      throw new Error("source_records 幂等失败：插入后仍查不到来源");
     }
-  );
-  const sourceId = srcRow[0].source_id;
+    sourceId = after[0].source_id;
+  }
+  if (!sourceId || sourceId.startsWith("INSERT ")) {
+    throw new Error("source_id 非法（疑似 psql 命令标签）: " + sourceId);
+  }
 
   await dbRun(
     `update ingest_runs set status='completed', finished_at=now(),
@@ -156,7 +184,7 @@ async function main() {
   // 更新状态文件，带上 ingest_run_id / source_id。
   fs.writeFileSync(
     path.join(rawStorePath, "legacy", "jinze", ".last-run.json"),
-    JSON.stringify({ run_id: runId, ingest_run_id: ingestRunId, source_id: sourceId, snapshot_dir: dir }),
+    JSON.stringify({ run_id: runId, ingest_run_id: ingestRunId, source_id: sourceId, source_reused: sourceReused, snapshot_dir: dir }),
     "utf8"
   );
 
@@ -165,6 +193,7 @@ async function main() {
       run_id: runId,
       ingest_run_id: ingestRunId,
       source_id: sourceId,
+      source_reused: sourceReused,
       snapshot_dir: dir,
       input_counts: manifest.input_counts,
       subset_checksum: checksum,

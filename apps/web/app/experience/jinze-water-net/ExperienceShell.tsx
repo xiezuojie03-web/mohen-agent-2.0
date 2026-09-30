@@ -20,7 +20,6 @@ import {
   selectReplanSurface,
   beatForScene,
   validateBeatCoverage,
-  ACTION_LABELS,
   SPATIAL_MODE_LABELS,
   type NarrativeLevel,
   type ExperienceScript,
@@ -31,13 +30,14 @@ import {
 import { BEATS, TEMPLE_BRIDGE_NON_ANSWER, type BeatPresentation } from "./beats";
 import { buildWorldEvidenceState } from "./beats";
 import { resolveSurface, UnknownGapSurface } from "./surfaceRegistry";
-import type { SliceShape, SurfaceContext } from "./surfaces/types";
+import type { SliceShape, SurfaceContext, CuratedPhoto } from "./surfaces/types";
+import { commonsDirectUrl } from "./surfaces/EvidenceNarrativeSurfaces";
 import { projectCulturalWorldState, type CulturalWorldProjectionSource } from "./culturalWorldProjection";
 import IntentGuide from "./IntentGuide";
-import AskBar from "./AskBar";
+import MohenPresence from "./MohenPresence";
 import type { AgentDecision } from "@mohen/agent-runtime";
 import { translateIntentToExperience } from "./intentTranslation";
-import { humanLevelLabel } from "./humanLabels";
+import { humanLevelLabel, surfaceHumanLabel } from "./humanLabels";
 import "./experience.css";
 
 export interface ExperienceShellProps {
@@ -46,6 +46,10 @@ export interface ExperienceShellProps {
   slice: SliceShape;
   /** M4.1（EXP-CULTURAL-03）：008 cultural_* 第一簇只读投影源（jinze-min-001） */
   culturalSource: CulturalWorldProjectionSource;
+  /** Stage 1·2.2：今貌影像策划清单（来自 curated manifest，server 端读取后传入） */
+  presentDayPhotos: CuratedPhoto[];
+  /** Stage 1·2.2：今貌影像主角钩子 */
+  presentDayHeroHook?: string;
 }
 
 const CONFLICT_ORDER: Record<string, string> = {
@@ -53,7 +57,14 @@ const CONFLICT_ORDER: Record<string, string> = {
   "看第二组分歧": "T11-C1",
 };
 
-export default function ExperienceShell({ script, patch, slice, culturalSource }: ExperienceShellProps) {
+export default function ExperienceShell({
+  script,
+  patch,
+  slice,
+  culturalSource,
+  presentDayPhotos,
+  presentDayHeroHook,
+}: ExperienceShellProps) {
   const [revealed, setRevealed] = useState<string[]>([]);
   const [revealedConflicts, setRevealedConflicts] = useState<string[]>([]);
   const [templeAsked, setTempleAsked] = useState(false);
@@ -77,7 +88,11 @@ export default function ExperienceShell({ script, patch, slice, culturalSource }
       buildWorldEvidenceState(
         script,
         slice,
-        { historicalVisualAssets: 0, historicalMapImageAvailable: false },
+        {
+          historicalVisualAssets: 0,
+          historicalMapImageAvailable: false,
+          curatedPhotoCount: presentDayPhotos.length,
+        },
         projection
       ),
     [script, slice, projection]
@@ -165,18 +180,29 @@ export default function ExperienceShell({ script, patch, slice, culturalSource }
 
   const PrimarySurface = resolveSurface(primaryType, selection.eligibleSurfaces) ?? UnknownGapSurface;
 
-  // secondary / context：退让但存在（§13）。action_dock / agent_prompt 由本 Shell 的专属版本渲染，避免重复
-  const BESPOKE: SurfaceType[] = ["action_dock", "agent_prompt"];
-  const SecondarySurface = resolveSurface(
-    composition.secondarySurfaces.find((t) => !BESPOKE.includes(t) && t !== primaryType),
-    selection.eligibleSurfaces
-  );
-  const ContextSurface = resolveSurface(
-    composition.contextSurfaces.find((t) => !BESPOKE.includes(t) && t !== primaryType && t !== composition.secondarySurfaces[0]),
-    selection.eligibleSurfaces
-  );
+  // v0.3：钩子问题 / 墨痕旁白 / 史料抽屉由本 Shell 专属位置渲染，不重复通用 secondary/context 角标
   const AgentPrompt = resolveSurface("agent_prompt", selection.eligibleSurfaces);
   const SourceInspect = resolveSurface("source_inspect", selection.eligibleSurfaces);
+  const QuestionSurfaceComp = resolveSurface("question", selection.eligibleSurfaces);
+
+  // 底部居中配图条：优先取本切片三处遗存（feature_key 对齐），不足则补前 3 张
+  const stripPhotos = useMemo(() => {
+    const all = presentDayPhotos ?? [];
+    const keyOrder = ["wananqiao", "pujiqiao", "yihaosi-site"];
+    const picked = keyOrder
+      .map((k) => all.find((p) => p.feature_key === k))
+      .filter((p): p is (typeof all)[number] => !!p);
+    const rest = all.filter((p) => !keyOrder.includes(p.feature_key));
+    return [...picked, ...rest].slice(0, 3);
+  }, [presentDayPhotos]);
+  const showStrip = stripPhotos.length > 0 && primaryType !== "current_photo";
+
+  // v0.3 右侧交互栏：前进按钮（next-button）用户语言；与 advanceAction 等价时不在动作区重复
+  const advanceAction = beat.advanceAction;
+  const dockActions = beat.actions.filter((a) => a !== advanceAction);
+  const sceneIdx = Math.max(0, script.scenes.findIndex((s) => s.scene_id === scene.scene_id));
+  const totalScenes = script.scenes.length;
+  const unrevealedReveal = beat.revealUnitIds.filter((id) => !revealed.includes(id));
 
   const ctx: SurfaceContext = {
     scene,
@@ -199,6 +225,9 @@ export default function ExperienceShell({ script, patch, slice, culturalSource }
     evidenceInspectionRefs: state.evidenceDecision?.evidenceRefs,
     // EXP-0001：普通模式隐藏内部 runtime label；仅 DEV 模式透出 relationKey 等溯源串
     devMode: devInspector,
+    // Stage 1·2.2：今貌影像策划清单 + 钩子（town-agnostic surface 消费）
+    presentDayPhotos,
+    presentDayHeroHook,
   };
 
   // —— s01→s02 的坐标退出：保留上一画布作为退场层
@@ -268,35 +297,49 @@ export default function ExperienceShell({ script, patch, slice, culturalSource }
   const defaultUnits = scene.narrative.filter((u) => beat.defaultUnitIds.includes(u.unit_id));
   const revealedUnits = scene.narrative.filter((u) => revealed.includes(u.unit_id) && !beat.defaultUnitIds.includes(u.unit_id));
 
+  // Guide 收口层（IntentGuide）：墨痕因问题不同切换判断方式的主要入口；仅 replan 激活时浮现
+  const guideNode =
+    state.replanPlan && state.replanViewActive && translation
+      ? (
+          <IntentGuide
+            translation={translation}
+            onReturn={() => dispatch({ type: "RETURN_TO_PRESENT" })}
+            onExplore={handleReplanExplore}
+          />
+        )
+      : null;
+
   return (
     <div className={`exp exp--c2 recipe-${composition.recipe} intensity-${composition.visualIntensity}`} data-beat={beat.beatId} data-scene={scene.scene_id}>
-      {/* Time Context */}
-      <header className="exp-timebar">
-        <div className="exp-timebar__left">
-          <span className="exp-brand">墨痕</span>
-          <span className="exp-beat">{beat.label}</span>
+      {/* 顶栏：用户语言（金泽 + 此刻所在 + 探索轨迹；模式/进度退让为小字，不抢主角） */}
+      <header className="exp-topbar">
+        <div className="exp-topbar__left">
+          <span className="exp-place">金泽</span>
+          <span className="exp-topwhen" data-testid="top-when">{beat.topWhen}</span>
         </div>
-        <div className="exp-timebar__right">
-          <span className="exp-time">{scene.time_state}</span>
+        <div className="exp-trail" data-testid="exp-trail" aria-label="探索轨迹">
+          {BEATS.map((b, i) => {
+            const idx = BEATS.indexOf(beat);
+            return (
+              <span
+                key={b.beatId}
+                className={`exp-trail__dot ${i === idx ? "exp-trail__dot--current" : ""} ${i < idx ? "exp-trail__dot--done" : ""}`}
+                title={b.label}
+              />
+            );
+          })}
+        </div>
+        <div className="exp-topbar__right">
           <span className={`exp-mode exp-mode--${scene.spatial_mode === "GEOGRAPHIC_EXACT" ? "exact" : "relational"}`} data-testid="spatial-mode-label">
             {SPATIAL_MODE_LABELS[scene.spatial_mode as SpatialMode]}
           </span>
-          <span className="exp-progress">
-            Beat {BEATS.indexOf(beat) + 1}/5 · {state.sceneIndex + 1}/{script.scenes.length}
+          <span className="exp-progress" data-testid="exp-progress">
+            Beat {BEATS.indexOf(beat) + 1}/5 · {sceneIdx + 1}/{totalScenes}
           </span>
         </div>
       </header>
 
-      {/* EXP-0001：人类可感知收口层（墨痕因问题不同切换判断方式的主要入口；替代原 Inspector） */}
-      {state.replanPlan && state.replanViewActive && translation && (
-        <IntentGuide
-          translation={translation}
-          onReturn={() => dispatch({ type: "RETURN_TO_PRESENT" })}
-          onExplore={handleReplanExplore}
-        />
-      )}
-
-      {/* Experience Canvas：一个时刻只有一个主角 */}
+      {/* 画布（不滚动持久框唯一主角）：中央主角 + 上方钩子 + 底部配图条 + 右侧交互栏（墨痕为基线向上长） */}
       <main
         className={`exp-canvas exp-canvas--intent-${translation?.intentKind ?? "none"}`}
         data-testid="experience-canvas"
@@ -308,14 +351,42 @@ export default function ExperienceShell({ script, patch, slice, culturalSource }
           </div>
         )}
         <div className="exp-canvas__current" key={scene.scene_id}>
+          {/* 中央主角身份标签（v03：明确组件身份，不靠浮层猜测） */}
+          <div className="exp-center-label" data-testid="center-label">
+            {surfaceHumanLabel(primaryType)}
+            <span>真实坐标推导 · 非伪造 GIS</span>
+          </div>
           <PrimarySurface ctx={ctx} onAction={onAction} />
         </div>
-        {/* §10 转场必须表达 epistemic change：不只是动画，而是明示「坐标失去作证资格」。
-            只要不在「当下」场景（非 GEOGRAPHIC_EXACT），当前坐标就没有历史定位资格；
-            回到今天（GEOGRAPHIC_EXACT）时该提示自动消失。 */}
-        {/* §10 转场表达 epistemic change：replan 视角激活时，由 replanPlan.currentCoordsLoseHistoricalAuthority
-            决定（D=propose_present_action 回到今天语境，当前坐标不失去历史权威；A/C 失去）。
-            非 replan 时沿用场景级规则：非 GEOGRAPHIC_EXACT 即失去。 */}
+
+        {/* 右侧栏（v0.4 修复）：上半段 .exp-side__flow 是唯一滚动区（钩子问题 / 三张今貌 /
+           坐标失权提示 / 注解 / 上下文动作），下半段 .exp-side-actions 是钉底操作条
+           （前进 + 墨痕）。两段为 flex 分段，版面上互不重叠；右栏内一律不绝对定位。
+           缺陷背景：原 .exp-rail / .mohen-askbtn 为 position:absolute，
+           实测 8/8 场压住配图条（336×275px），是「右栏混乱」的直接原因。 */}
+        <aside className="exp-canvas__side">
+        <div className="exp-side__flow">
+        {/* 钩子问题：补 exp-secondary（该 class 此前从未渲染，却已被两处 e2e 断言引用） */}
+        {QuestionSurfaceComp && (
+          <div className="exp-overlay exp-overlay--secondary exp-secondary exp-hook" data-testid="exp-hook">
+            <QuestionSurfaceComp ctx={ctx} />
+          </div>
+        )}
+
+        {/* 底部居中配图条：本切片三处遗存优先，其余补位 */}
+        {showStrip && (
+          <div className="exp-photostrip" data-testid="photo-strip">
+            {stripPhotos.map((p) => (
+              <figure key={p.feature_key} className="exp-photostrip__item">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={commonsDirectUrl(p.commons_file)} alt={`${p.label} · 当代实景`} loading="lazy" />
+                <figcaption>{p.caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+        )}
+
+        {/* §10 转场表达 epistemic change：坐标失去历史定位资格时明示（回到今天即消失）。 */}
         {(state.replanPlan
           ? state.replanPlan.currentCoordsLoseHistoricalAuthority
           : scene.spatial_mode !== "GEOGRAPHIC_EXACT") && (
@@ -323,9 +394,7 @@ export default function ExperienceShell({ script, patch, slice, culturalSource }
             当前坐标在此失去历史定位资格
           </span>
         )}
-        {/* EXP-UI-RECON-01 R1：transition-hint（recipe / 主角变量）是内部 runtime 提示，
-            默认 Human UI 不渲染；仅 ?inspector=1（devInspector）透出供诊断。
-            不删除 composition.recipe / primaryType 数据。 */}
+        {/* EXP-UI-RECON-01 R1：transition-hint 是内部 runtime 提示，仅 ?inspector=1 透出。 */}
         {devInspector && (
           <span
             className="exp-transition-hint"
@@ -335,68 +404,74 @@ export default function ExperienceShell({ script, patch, slice, culturalSource }
             {composition.recipe} · 主角={primaryType ?? composition.fallback ?? "fallback"}
           </span>
         )}
-      </main>
 
-      {/* 墨痕短发言 + secondary/context（退让）+ 默认可见单元 + 行动 */}
-      <section className="exp-stage">
-        {AgentPrompt && <AgentPrompt ctx={ctx} />}
-        {SecondarySurface && (
-          <div className="exp-secondary" data-testid="secondary-surface">
-            <SecondarySurface ctx={ctx} onAction={onAction} compact />
+        {/* 文本退让为左下注解层（揭示的事实，不含墨痕旁白） */}
+        <div className="exp-annot" data-testid="exp-annot">
+          {nonAnswer && (
+            <p className="unit unit--UNKNOWN" data-testid="temple-bridge-non-answer">
+              <span className="unit__badge">未知（缺证据）</span>
+              <span className="unit__text">{nonAnswer}</span>
+            </p>
+          )}
+          <div className="exp-narrative">
+            {defaultUnits.map((u) => (
+              <p key={u.unit_id} className={`unit unit--${u.level}`} data-testid={`unit-${u.unit_id}`}>
+                <span className="unit__badge">{humanLevelLabel(u.level as NarrativeLevel, devInspector)}</span>
+                <span className="unit__text">{u.text}</span>
+              </p>
+            ))}
+            {revealedUnits.map((u) => (
+              <p key={u.unit_id} className={`unit unit--${u.level}`}>
+                <span className="unit__badge">{humanLevelLabel(u.level as NarrativeLevel, devInspector)}</span>
+                <span className="unit__text">{u.text}</span>
+              </p>
+            ))}
           </div>
-        )}
-
-        {nonAnswer && (
-          <p className="unit unit--UNKNOWN" data-testid="temple-bridge-non-answer">
-            <span className="unit__badge">未知（缺证据）</span>
-            <span className="unit__text">{nonAnswer}</span>
-          </p>
-        )}
-
-        <div className="exp-narrative">
-          {defaultUnits.map((u) => (
-            <p key={u.unit_id} className={`unit unit--${u.level}`} data-testid={`unit-${u.unit_id}`}>
-              <span className="unit__badge">{humanLevelLabel(u.level as NarrativeLevel, devInspector)}</span>
-              <span className="unit__text">{u.text}</span>
-            </p>
-          ))}
-          {revealedUnits.map((u) => (
-            <p key={u.unit_id} className={`unit unit--${u.level}`}>
-              <span className="unit__badge">{humanLevelLabel(u.level as NarrativeLevel, devInspector)}</span>
-              <span className="unit__text">{u.text}</span>
-            </p>
-          ))}
         </div>
 
-        {ContextSurface && (
-          <div className="exp-context" data-testid="context-surface">
-            <ContextSurface ctx={ctx} onAction={onAction} compact />
-          </div>
-        )}
-
-        {/* ADR-003：自由追问（导演稿 §4 第六步）。既有冻结追问按钮仍在下方 action-dock 作降级入口。 */}
-        <AskBar devMode={devInspector} onDecision={handleAgentDecision} />
-
-        <div className="action-dock" data-testid="action-dock">
-          {beat.actions.map((a) => (
-            <button key={a} className={`exp-btn ${a.startsWith("追问") ? "exp-btn--followup" : "exp-btn--context"}`} onClick={() => onAction(a)} data-testid={`action-${a}`}>
-              {a}
-            </button>
-          ))}
-          {scene.narrative.filter((u) => beat.revealUnitIds.includes(u.unit_id) && !revealed.includes(u.unit_id)).length > 0 && (
+        {/* 右栏滚动区末尾：agent-prompt + 上下文动作 + 看事实，随流滚动（e2e AT-10 需始终在流内可见）。
+           前进入口（exp-rail__primary）已移出此流，归入下方钉底操作条，确保进入第一幕即一眼可见。 */}
+        <aside className="exp-rail" data-testid="exp-rail">
+          {AgentPrompt && <AgentPrompt ctx={ctx} />}
+          {dockActions.length > 0 && (
+            <div className="action-dock" data-testid="action-dock">
+              {dockActions.map((a) => (
+                <button key={a} className="exp-btn exp-btn--context" onClick={() => onAction(a)}>
+                  {a}
+                </button>
+              ))}
+            </div>
+          )}
+          {unrevealedReveal.length > 0 && (
             <button className="exp-btn exp-btn--context" onClick={revealNext}>看事实</button>
           )}
-        </div>
+        </aside>
+        </div>   {/* 关闭 .exp-side__flow（唯一滚动区） */}
 
-        <nav className="exp-actions">
-          <button className="exp-btn" disabled={view.isFirst} onClick={() => dispatch({ type: "PREV" })} data-testid="prev-button">
-            {ACTION_LABELS.PREV}
-          </button>
-          <button className="exp-btn exp-btn--primary" disabled={view.isLast} onClick={() => dispatch({ type: "NEXT" })} data-testid="next-button">
-            {ACTION_LABELS.NEXT}
-          </button>
-        </nav>
-      </section>
+        {/* 钉底操作条（flex 分段非浮层）：前进入口 + 墨痕三态在场 */}
+        <div className="exp-side-actions">
+          {/* 前进入口独立成块：全宽 + 强对比 + 呼吸光，确保进入第一幕即一眼可见（修复「无探索入口」） */}
+          <div className="exp-rail__primary">
+            <span className="exp-rail__hint">继续探索 ▸</span>
+            <button
+              className="exp-btn exp-btn--primary exp-advance"
+              data-testid="next-button"
+              disabled={view.isLast}
+              onClick={() => (advanceAction ? onAction(advanceAction) : onAction(beat.advanceLabel))}
+            >
+              {beat.advanceLabel}
+            </button>
+          </div>
+          {/* 墨痕三态在场（PART IV 原型04 + C4 §25）：去左上 Ambient，仅右下常驻 + 变化区 Guide + 问墨痕 Dialogue */}
+          <MohenPresence guide={guideNode} devMode={devInspector} onDecision={handleAgentDecision} />
+        </div>
+        </aside>
+      </main>
+
+      {/* 底栏（不滚动持久框第三行）：此刻含义 一句话（非控件、非工程语言） */}
+      <footer className="exp-bottombar">
+        <p className="exp-meaning" data-testid="meaning-now">{beat.meaningNow}</p>
+      </footer>
 
       {/* Source Inspect（按需）——由 Surface Registry 里的 SourceInspectSurface 渲染 */}
       {sourceOpen && SourceInspect && (

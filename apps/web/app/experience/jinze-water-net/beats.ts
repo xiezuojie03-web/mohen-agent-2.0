@@ -28,7 +28,7 @@ import type { CulturalWorldProjection } from "./culturalWorldProjection";
 export function buildWorldEvidenceState(
   script: ExperienceScript,
   slice: SliceShape,
-  opts: { historicalVisualAssets: number; historicalMapImageAvailable: boolean },
+  opts: { historicalVisualAssets: number; historicalMapImageAvailable: boolean; curatedPhotoCount?: number },
   projection?: CulturalWorldProjection | null
 ): WorldEvidenceState {
   const currentExact = slice.current_sources
@@ -84,9 +84,12 @@ export function buildWorldEvidenceState(
       imageAvailable: opts.historicalMapImageAvailable,
     },
     conflicts,
-    currentPhotosConfirmed: new Set(
-      script.scenes.flatMap((s) => s.visual_assets).filter((a) => a.type === "photo").map((a) => a.id)
-    ).size,
+    // Stage 1·2.2：冻结脚本本身不含照片，但 curated manifest 提供了已确认的当代照片
+    // （经 buildWorldEvidenceState 的 curatedPhotoCount 注入），使 current_photo surface 变为 eligible。
+    currentPhotosConfirmed:
+      new Set(
+        script.scenes.flatMap((s) => s.visual_assets).filter((a) => a.type === "photo").map((a) => a.id)
+      ).size + (opts.curatedPhotoCount ?? 0),
     historicalVisualAssets: opts.historicalVisualAssets,
     hasEvidencedChanges: slice.changes.some((c) => c.change_epistemic === "evidenced"),
 
@@ -118,6 +121,15 @@ export interface BeatPresentation extends BeatDefinition {
   actions: string[];
   /** 该 Beat 的用户可感知任务 */
   intent: string;
+  /** 顶栏用户语言「此刻所在」（无工程标识、无幕名、无坐标系术语） */
+  topWhen: string;
+  /** 底栏用户语言「此刻含义」一句话说明（非控件、非工程） */
+  meaningNow: string;
+  /** 右侧交互栏「前进」按钮的用户语言标签（取代通用「继续」） */
+  advanceLabel: string;
+  /** 与 advance 等价的 beat.action（渲染为前进按钮、不在动作区重复出现）；
+   *  省略则该 Beat 的全部 action 都作为画布内动作渲染，前进按钮单独存在 */
+  advanceAction?: string;
 }
 
 const S = (n: string) => `jinze-3min/${n}`;
@@ -128,8 +140,14 @@ export const BEATS: BeatPresentation[] = [
     label: "进入现场",
     recipe: "IMMERSIVE_SPATIAL",
     sceneIds: [S("s01-today-hook")],
+    // v0.3：第一幕主角 = 真实坐标三点图（current_map surface），大照片下移到底部配图条；
+    // 与 e2e s01 断言 surface-current-map 对齐，且「约 620m 彼此不到一公里」为诚实表述。
     primaryPreference: ["current_map"],
     intent: "先看见今天的三处对象，不急着解释",
+    topWhen: "今天 · 你正站在这里",
+    meaningNow: "三处宋构都还在原址，彼此不到一公里——这是这一站要回答的问题。",
+    advanceLabel: "把时间拨回去 →",
+    advanceAction: "回到它们刚出现的时代",
     mohen: ["两座古桥、一处宋寺遗址，今天为什么离得这么近？"],
     // 问题由 QuestionSurface 承担，不再以文字块重复（避免同句出现两次）；
     // 默认零 narrative block，事实按需揭示
@@ -144,6 +162,10 @@ export const BEATS: BeatPresentation[] = [
     sceneIds: [S("s02-time-travel")],
     primaryPreference: ["relational_space", "timeline"],
     intent: "经历现代坐标失去权威的那一刻",
+    topWhen: "时间正在往回走",
+    meaningNow: "现代坐标在这里失去了作证资格；但有一条关系，留了下来。",
+    advanceLabel: "看留下的关系 →",
+    advanceAction: "看留下的关系",
     mohen: ["再往前，我不能继续用今天的坐标。", "但有一种关系留下来了。"],
     // 坐标退出本身就是内容：这一句必须可见，其余按需
     defaultUnitIds: ["s02-u2"],
@@ -157,6 +179,9 @@ export const BEATS: BeatPresentation[] = [
     sceneIds: [S("s03-two-bridges-water"), S("s04-temple-enters")],
     primaryPreference: ["relational_space"],
     intent: "先看桥—水—桥，再让寺进入（不自动连线）",
+    topWhen: "看它们之间如何相连",
+    meaningNow: "先看桥与水的关系，再问寺是否真的和它们相连。",
+    advanceLabel: "继续 →",
     mohen: ["先看它们和水的关系。", "把寺也放进来。"],
     defaultUnitIds: ["s03-u1"],
     revealUnitIds: ["s03-u2", "s03-u3", "s04-u1", "s04-u2", "s04-u3"],
@@ -170,6 +195,9 @@ export const BEATS: BeatPresentation[] = [
     sceneIds: [S("s05-evidence-reveal"), S("s06-change-through-time")],
     primaryPreference: ["conflict_compare", "evidence_reveal", "timeline"],
     intent: "先问为什么不能确定，再逐层揭示；也让时间成为主角",
+    topWhen: "把证据摊开看",
+    meaningNow: "有些事能确定，有些还不能确定——证据让答案分层。",
+    advanceLabel: "继续 →",
     mohen: ["为什么不能确定？", "也可以让时间成为主角。"],
     // s06 让时间成为主角（timeline 只在 eligible 时才真的当选）
     preferPrimaryByScene: { [S("s06-change-through-time")]: ["timeline"] },
@@ -184,6 +212,9 @@ export const BEATS: BeatPresentation[] = [
     sceneIds: [S("s07-return-today"), S("s08-next-question")],
     primaryPreference: ["current_map", "current_photo", "discovery"],
     intent: "带着问题重新看一次今天，再引出解释与追问",
+    topWhen: "回到今天 · 再往深处",
+    meaningNow: "带着问题再看一次今天；剩下的，留给你的追问。",
+    advanceLabel: "回到今天 · 再看一次 →",
     mohen: ["现在，再看一次它们。"],
     // s07 回到今天（地图/照片）；s08 交给解释框架（Discovery），但必须由 eligibility 裁决
     preferPrimaryByScene: { [S("s08-next-question")]: ["discovery"] },

@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>金泽体验 · 第一幕前进入口修正样稿（beat-01）</title>
+<style>
+  :root{
+    --paper:#f5f0e8; --ink:#1a1a1a; --cinnabar:#9e2b25; --stone:#4a6741;
+    --mist:#8b9189; --line:#c9c2b4;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:"Noto Serif SC",Georgia,"Microsoft YaHei",serif;background:#e7e1d4;color:var(--ink);}
+
+  /* 顶部样稿工具条（不属于 App 本身，仅供你切换对比） */
+  .toolbar{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+    padding:8px 16px;background:#2b2b2b;color:#eee;
+    font-family:"Microsoft YaHei",sans-serif;font-size:13px;
+  }
+  .toolbar b{color:#fff;}
+  .toolbar button{
+    font:inherit;cursor:pointer;border:1px solid #666;background:#3a3a3a;color:#eee;
+    border-radius:6px;padding:6px 14px;
+  }
+  .toolbar button.on{background:var(--cinnabar);border-color:var(--cinnabar);color:#fff;}
+  .toolbar .hint{color:#b9b3a6;}
+
+  /* ===== App 框架：不滚动持久框（height:100vh, 顶/画布/底 三分区） ===== */
+  .exp{
+    height:100vh;display:grid;grid-template-rows:auto 1fr auto;gap:12px;
+    padding:56px clamp(12px,3vw,40px) 14px;
+    background:linear-gradient(160deg,#f7f3ea 0%,#efe9dc 100%);
+    overflow:hidden;
+  }
+
+  /* 顶栏（用户语言） */
+  .exp-topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:10px;}
+  .exp-topbar__left{display:flex;align-items:baseline;gap:12px;min-width:0;}
+  .exp-place{font-weight:700;font-size:22px;letter-spacing:.18em;color:var(--cinnabar);}
+  .exp-topwhen{font-size:16px;color:#3a3f37;font-weight:600;}
+  .exp-trail{display:flex;gap:8px;align-items:center;}
+  .exp-trail__dot{width:9px;height:9px;border-radius:50%;background:var(--line);}
+  .exp-trail__dot--done{background:var(--stone);}
+  .exp-trail__dot--current{background:var(--cinnabar);box-shadow:0 0 0 3px rgba(158,43,37,.18);}
+  .exp-topbar__right{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;font-size:11px;color:var(--mist);}
+
+  /* 画布（唯一主角） */
+  .exp-canvas{position:relative;height:100%;border:1px solid var(--line);border-radius:14px;background:#fffdf7;overflow:hidden;}
+
+  /* 中央地图（current_map surface 简化版：诚实三点 + 620m 示意） */
+  .map-wrap{position:absolute;inset:18px;}
+  .map-wrap svg{width:100%;height:100%;}
+  .coord-grid line{stroke:#d8d2c2;stroke-width:1;stroke-dasharray:3 5;}
+  .waterway{fill:none;stroke:rgba(74,103,65,.45);stroke-width:6;stroke-dasharray:2 7;}
+  .map-point__dot{fill:var(--stone);stroke:#fff;stroke-width:2;}
+  .map-point__halo{fill:none;stroke:var(--stone);opacity:.3;}
+  .map-point--focus .map-point__dot{fill:var(--cinnabar);}
+  .map-point--focus .map-point__halo{stroke:var(--cinnabar);opacity:.4;}
+  .map-label{font-size:15px;font-weight:600;fill:var(--ink);font-family:"Noto Serif SC",serif;}
+  .map-sub{font-size:11px;fill:var(--mist);font-family:"Microsoft YaHei",sans-serif;}
+  .map-scale{font-size:12px;fill:#5c625c;font-family:"Microsoft YaHei",sans-serif;}
+  .map-note{font-size:12px;fill:var(--mist);font-family:"Microsoft YaHei",sans-serif;}
+
+  /* 正上方居中钩子问题 */
+  .exp-hook{
+    position:absolute;left:50%;top:14px;transform:translateX(-50%);
+    max-width:min(680px,82%);text-align:center;
+    background:rgba(255,253,247,.84);border-radius:10px;padding:8px 16px;
+  }
+  .exp-hook .q{margin:0;font-size:clamp(19px,2.6vw,28px);font-weight:500;line-height:1.4;}
+  .exp-hook .qm{font-size:12px;color:var(--mist);font-family:"Microsoft YaHei",sans-serif;}
+
+  /* 底部居中三图配图条 */
+  .exp-photostrip{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:5;display:flex;gap:10px;max-width:min(560px,56%);}
+  .exp-photostrip__item{margin:0;width:min(178px,31%);border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 3px 12px rgba(26,26,26,.08);}
+  .exp-photostrip__item .ph{height:96px;background:linear-gradient(135deg,#cfd8c8,#aeb89f);display:grid;place-items:center;color:#46503c;font-size:12px;font-family:"Microsoft YaHei",sans-serif;}
+  .exp-photostrip__item figcaption{font-size:11px;padding:5px 8px;color:#565d57;font-family:"Microsoft YaHei",sans-serif;}
+
+  /* ===== 右栏交互栏（本次修正焦点） ===== */
+  .exp-rail{
+    position:absolute;right:14px;bottom:70px;z-index:9;
+    width:min(360px,42vw);display:flex;flex-direction:column;align-items:flex-end;gap:10px;
+    max-height:calc(100% - 84px);overflow-y:auto;
+  }
+  .exp-rail__primary{
+    position:sticky;top:0;z-index:1;
+    background:linear-gradient(180deg,rgba(255,253,247,.98) 72%,rgba(255,253,247,0));
+    padding-bottom:6px;display:flex;flex-direction:column;align-items:flex-end;gap:4px;width:100%;
+  }
+  .exp-rail__hint{font-size:11px;letter-spacing:.12em;color:#8a8f88;font-family:"Microsoft YaHei",sans-serif;}
+  .exp-advance{
+    width:100%;font-size:16px;padding:12px 22px;
+    border:1px solid var(--ink);background:var(--ink);color:var(--paper);
+    border-radius:999px;cursor:pointer;font-family:inherit;
+    box-shadow:0 6px 18px rgba(26,26,26,.18);
+    animation:advancePulse 2.4s ease-in-out infinite;
+  }
+  .exp-advance:hover{animation-play-state:paused;}
+  @keyframes advancePulse{
+    0%,100%{box-shadow:0 6px 18px rgba(26,26,26,.18);}
+    50%{box-shadow:0 6px 26px rgba(158,43,37,.5);}
+  }
+  .agent-prompt{
+    display:flex;gap:8px;align-items:baseline;font-size:15px;max-width:340px;
+    background:rgba(255,253,247,.92);border:1px dashed rgba(158,43,37,.35);
+    border-radius:10px;padding:8px 12px;
+  }
+  .agent-prompt__who{flex:none;font-size:11px;letter-spacing:.3em;color:var(--cinnabar);border:1px dashed var(--cinnabar);border-radius:999px;padding:3px 10px;font-family:"Microsoft YaHei",sans-serif;}
+  .exp-btn--context{border:1px solid var(--line);background:#fffdf7;border-radius:999px;padding:8px 18px;font-size:13px;cursor:pointer;font-family:"Microsoft YaHei",sans-serif;color:var(--ink);}
+
+  /* 右下「问墨痕」常驻触发（C4 §25：不是聊天框） */
+  .mohen-askbtn{
+    position:absolute;right:14px;bottom:14px;z-index:8;
+    border:1px solid var(--cinnabar);background:var(--cinnabar);color:#fff;
+    border-radius:999px;padding:8px 18px;font-size:14px;cursor:pointer;font-family:inherit;
+    box-shadow:0 4px 14px rgba(158,43,37,.28);
+  }
+
+  /* 底栏：此刻含义一句话 */
+  .exp-bottombar{display:flex;justify-content:center;align-items:center;border-top:1px solid var(--line);padding-top:10px;}
+  .exp-meaning{margin:0;text-align:center;font-size:clamp(15px,1.9vw,19px);line-height:1.6;color:#2c3129;max-width:920px;}
+
+  /* ===== 旧版按钮（对比用，由工具条切换） ===== */
+  .exp--old .exp-rail__hint{display:none;}
+  .exp--old .exp-rail{z-index:6;}
+  .exp--old .exp-advance{
+    width:auto;font-size:14px;padding:8px 18px;
+    background:#fffdf7;color:var(--ink);border:1px solid var(--line);
+    box-shadow:none;animation:none;
+  }
+  .exp--old .exp-advance:hover{animation:none;}
+</style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <b>样稿：金泽第一幕 · 前进入口修正</b>
+    <button id="toggle">当前：新版（显眼全宽按钮）</button>
+    <span class="hint">点按钮可在「新版 / 旧版」间切换，感受入口是否一眼可见</span>
+  </div>
+
+  <!-- ============ App 本身（v0.3 beat-01） ============ -->
+  <div class="exp" id="app">
+    <header class="exp-topbar">
+      <div class="exp-topbar__left">
+        <span class="exp-place">金泽</span>
+        <span class="exp-topwhen">今天 · 你正站在这里</span>
+      </div>
+      <div class="exp-trail" aria-label="探索轨迹">
+        <span class="exp-trail__dot exp-trail__dot--current"></span>
+        <span class="exp-trail__dot"></span>
+        <span class="exp-trail__dot"></span>
+        <span class="exp-trail__dot"></span>
+        <span class="exp-trail__dot"></span>
+      </div>
+      <div class="exp-topbar__right">
+        <span>现代精确坐标</span>
+        <span>Beat 1/5 · 1/8</span>
+      </div>
+    </header>
+
+    <main class="exp-canvas">
+      <!-- 中央地图：诚实三点 + 620m 示意 -->
+      <div class="map-wrap">
+        <svg viewBox="0 0 600 320" preserveAspectRatio="xMidYMid meet">
+          <g class="coord-grid">
+            <line x1="0" y1="80" x2="600" y2="80"/>
+            <line x1="0" y1="160" x2="600" y2="160"/>
+            <line x1="0" y1="240" x2="600" y2="240"/>
+            <line x1="120" y1="0" x2="120" y2="320"/>
+            <line x1="300" y1="0" x2="300" y2="320"/>
+            <line x1="480" y1="0" x2="480" y2="320"/>
+          </g>
+          <path class="waterway" d="M40,180 C160,150 260,210 360,170 C440,140 520,180 580,160"/>
+          <!-- 万安桥 -->
+          <g class="map-point">
+            <circle class="map-point__halo" cx="120" cy="170" r="18"/>
+            <circle class="map-point__dot" cx="120" cy="170" r="8"/>
+            <text class="map-label" x="120" y="146" text-anchor="middle">万安桥</text>
+            <text class="map-sub" x="120" y="196" text-anchor="middle">1260–1264</text>
+          </g>
+          <!-- 颐浩禅寺遗址 -->
+          <g class="map-point map-point--focus">
+            <circle class="map-point__halo" cx="300" cy="120" r="18"/>
+            <circle class="map-point__dot" cx="300" cy="120" r="8"/>
+            <text class="map-label" x="300" y="96" text-anchor="middle">颐浩禅寺遗址</text>
+            <text class="map-sub" x="300" y="146" text-anchor="middle">宋构 · 原址</text>
+          </g>
+          <!-- 普济桥 -->
+          <g class="map-point">
+            <circle class="map-point__halo" cx="480" cy="176" r="18"/>
+            <circle class="map-point__dot" cx="480" cy="176" r="8"/>
+            <text class="map-label" x="480" y="152" text-anchor="middle">普济桥</text>
+            <text class="map-sub" x="480" y="202" text-anchor="middle">1267</text>
+          </g>
+          <!-- 比例尺 -->
+          <line x1="40" y1="292" x2="150" y2="292" stroke="#5c625c" stroke-width="2"/>
+          <text class="map-scale" x="40" y="308">约 620m（彼此不到一公里）</text>
+          <text class="map-note" x="300" y="300" text-anchor="middle">今天的位置（示意）</text>
+        </svg>
+      </div>
+
+      <!-- 正上方钩子问题 -->
+      <div class="exp-hook">
+        <p class="q">三处宋构都还在原址，彼此不到一公里——为什么这么近？</p>
+        <p class="qm">（进入现场 · 先看见今天，不急着解释）</p>
+      </div>
+
+      <!-- 底部三图配图条 -->
+      <div class="exp-photostrip">
+        <figure class="exp-photostrip__item"><div class="ph">万安桥·今貌</div><figcaption>万安桥 · 当代实景</figcaption></figure>
+        <figure class="exp-photostrip__item"><div class="ph">遗址·今貌</div><figcaption>颐浩禅寺遗址 · 当代实景</figcaption></figure>
+        <figure class="exp-photostrip__item"><div class="ph">普济桥·今貌</div><figcaption>普济桥 · 当代实景</figcaption></figure>
+      </div>
+
+      <!-- 右栏交互栏（修正焦点） -->
+      <aside class="exp-rail" data-testid="exp-rail">
+        <div class="exp-rail__primary">
+          <span class="exp-rail__hint">继续探索 ▸</span>
+          <button class="exp-btn exp-btn--primary exp-advance" data-testid="next-button">把时间拨回去 →</button>
+        </div>
+        <div class="agent-prompt">
+          <span class="agent-prompt__who">墨痕</span>
+          <span>两座古桥、一处宋寺遗址，今天为什么离得这么近？</span>
+        </div>
+        <button class="exp-btn--context">看事实</button>
+      </aside>
+
+      <!-- 右下问墨痕（常驻触发） -->
+      <button class="mohen-askbtn">问墨痕</button>
+    </main>
+
+    <footer class="exp-bottombar">
+      <p class="exp-meaning">三处宋构都还在原址，彼此不到一公里——这是这一站要回答的问题。</p>
+    </footer>
+  </div>
+
+  <script>
+    // 工具条：新/旧按钮对比切换
+    const app = document.getElementById('app');
+    const btn = document.getElementById('toggle');
+    let old = false;
+    btn.addEventListener('click', () => {
+      old = !old;
+      app.classList.toggle('exp--old', old);
+      btn.classList.toggle('on', old);
+      btn.textContent = old ? '当前：旧版（小按钮，易错过）' : '当前：新版（显眼全宽按钮）';
+    });
+  </script>
+</body>
+</html>

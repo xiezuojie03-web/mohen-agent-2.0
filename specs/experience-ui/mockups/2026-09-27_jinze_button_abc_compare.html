@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>金泽 v0.3 前进按钮 A/B/C 对比（响应式）</title>
+<style>
+:root{--paper:#f5f0e8;--ink:#1a1a1a;--cinnabar:#9e2b25;--jade:#4a6741;--line:#d8d0c2;--muted:#8a8f88;--bar:#2a2a28;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;height:100%;}
+body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;color:var(--ink);background:var(--paper);}
+.app{height:100vh;height:100dvh;display:grid;grid-template-rows:auto auto auto 1fr auto;overflow:hidden;background:var(--paper);}
+/* 顶部切换条 */
+.switch{display:flex;gap:4px;padding:6px;background:var(--bar);}
+.switch button{flex:1;min-width:0;font:inherit;font-size:12px;padding:8px 4px;border:1px solid #6a6a66;background:#3a3a36;color:#f5f0e8;border-radius:7px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.switch button.on{background:var(--cinnabar);border-color:var(--cinnabar);font-weight:700;}
+.capbar{background:var(--bar);color:#cfc7b6;font-size:11px;line-height:1.45;padding:0 10px 8px;}
+.capbar b{color:#f0a99f;}
+/* 顶栏 */
+.topbar{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--line);flex-wrap:wrap;}
+.place{font-weight:700;font-size:clamp(15px,2.6vh,20px);letter-spacing:.1em;color:var(--cinnabar);}
+.topwhen{font-size:clamp(11px,1.7vh,13px);color:#3a3f37;font-weight:600;}
+.trail{display:flex;gap:4px;}
+.trail i{width:8px;height:8px;border-radius:50%;background:var(--line);display:inline-block;}
+.trail i.cur{background:var(--cinnabar);}
+.topright{margin-left:auto;font-size:10px;color:var(--muted);text-align:right;line-height:1.35;}
+/* 画布（网格：主区 + 右栏），不叠 */
+.canvas{position:relative;min-height:0;display:grid;grid-template-columns:1fr;}
+.main{display:grid;grid-template-rows:auto 1fr auto auto;min-height:0;gap:6px;padding:8px 10px;}
+.hook{justify-self:center;max-width:92%;background:rgba(255,253,247,.92);border:1px solid var(--line);border-radius:8px;padding:5px 12px;font-size:clamp(12px,2vh,15px);text-align:center;}
+.primary{align-self:center;justify-self:center;width:min(94%,520px);border:1px solid var(--line);border-radius:10px;background:#fffdf7;padding:clamp(10px,2vh,18px);text-align:center;}
+.primary h4{margin:0 0 4px;font-size:clamp(12px,1.8vh,14px);}
+.primary span{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:2px 6px;display:inline-block;}
+.strip{display:flex;gap:6px;justify-content:center;width:100%;max-width:74%;justify-self:center;}
+.strip div{flex:1 1 0;max-width:110px;height:clamp(34px,8.5vh,58px);background:#e7e0d2;border:1px solid var(--line);border-radius:6px;font-size:9px;color:var(--muted);display:flex;align-items:flex-end;justify-content:center;padding-bottom:3px;}
+.bottomcta{display:none;justify-content:center;padding:2px 0 4px;}
+.fwd-btn{font:inherit;background:var(--ink);color:var(--paper);border:none;border-radius:999px;padding:8px 16px;font-size:13px;cursor:pointer;box-shadow:0 4px 12px rgba(26,26,26,.18);white-space:nowrap;}
+.fwd-hint{font-size:10px;letter-spacing:.1em;color:var(--muted);}
+/* 右栏（A/C） */
+.rail{display:none;flex-direction:column;gap:6px;padding:8px 10px;min-height:0;}
+.rail-top{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.rail-bot{margin-top:auto;display:flex;justify-content:flex-end;}
+/* 底栏 */
+.bottombar{border-top:1px solid var(--line);padding:6px 10px;display:flex;flex-direction:column;gap:6px;}
+.dcta{display:none;justify-content:center;gap:8px;}
+.brow{display:flex;align-items:center;gap:8px;}
+.meaning{flex:1;margin:0;text-align:center;font-size:clamp(11px,1.8vh,14px);color:#2c3129;line-height:1.45;}
+.mohen{background:var(--cinnabar);color:#fff;font-size:11px;padding:6px 12px;border-radius:999px;border:none;white-space:nowrap;}
+.mohen-foot{display:none;}
+/* —— 方案差异 —— */
+.frame.t-a .canvas,.frame.t-c .canvas{grid-template-columns:1fr clamp(150px,34%,300px);}
+.frame.t-a .rail,.frame.t-c .rail{display:flex;}
+.frame.t-a .bottomcta,.frame.t-c .bottomcta,.frame.t-d .bottomcta{display:none;}
+.frame.t-b .bottomcta{display:flex;}
+.frame.t-a .dcta,.frame.t-b .dcta,.frame.t-c .dcta{display:none;}
+.frame.t-d .dcta{display:flex;}
+.frame.t-b .mohen-foot,.frame.t-d .mohen-foot{display:inline-block;}
+.frame.t-b .rail,.frame.t-d .rail{display:none;}
+.frame.t-d .fwd-btn{background:#fffdf7;color:var(--ink);border:1px solid var(--line);box-shadow:none;font-size:12px;padding:5px 12px;}
+.frame.t-d .fwd-btn:disabled{opacity:.45;}
+.frame.t-c .fwd-btn{border:1.6px solid var(--cinnabar);box-shadow:0 4px 14px rgba(158,43,37,.3);font-weight:700;}
+/* 窄屏 */
+@media (max-width:560px){
+  .strip{max-width:84%;}
+  .frame.t-a .canvas,.frame.t-c .canvas{grid-template-columns:1fr clamp(128px,40%,220px);}
+}
+/* 矮屏（横屏） */
+@media (max-height:600px){
+  .hook{font-size:12px;padding:4px 10px;}
+  .primary{padding:10px;}
+  .strip div{height:34px;}
+  .topbar{padding:4px 10px;}
+}
+</style>
+</head>
+<body>
+<div class="app frame t-a" id="app">
+  <div class="switch">
+    <button data-t="d" id="bd">修复前 D</button>
+    <button data-t="a" id="ba" class="on">方案 A</button>
+    <button data-t="b" id="bb">方案 B</button>
+    <button data-t="c" id="bc">方案 C</button>
+  </div>
+  <div class="capbar" id="cap"></div>
+  <header class="topbar">
+    <span class="place">金泽</span>
+    <span class="topwhen">今天 · 你正站在这里</span>
+    <span class="trail"><i class="cur"></i><i></i><i></i><i></i><i></i></span>
+    <span class="topright">现代精确坐标<br>Beat 1/5 · 1/8</span>
+  </header>
+  <main class="canvas">
+    <div class="main">
+      <div class="hook">两座古桥、一处宋寺遗址，今天为什么离得这么近？</div>
+      <div class="primary"><h4>主角 Surface：current_map</h4><span>今址三点图（真实应用中渲染）</span></div>
+      <div class="strip"><div>今貌·占位</div><div>今貌·占位</div><div>今貌·占位</div></div>
+      <div class="bottomcta" id="bcta"><button class="fwd-btn">下一幕 →</button></div>
+    </div>
+    <aside class="rail" id="rail">
+      <div class="rail-top"><span class="fwd-hint" id="rhint">继续探索 ▸</span><button class="fwd-btn" id="rbtn">把时间拨回去 →</button></div>
+      <div class="rail-bot"><button class="mohen">问墨痕</button></div>
+    </aside>
+  </main>
+  <footer class="bottombar">
+    <div class="dcta" id="dcta"><button class="fwd-btn" disabled>上一步</button><button class="fwd-btn">继续</button></div>
+    <div class="brow">
+      <p class="meaning">三处宋构都还在原址，彼此不到一公里——这是这一站要回答的问题。</p>
+      <button class="mohen mohen-foot">问墨痕</button>
+    </div>
+  </footer>
+</div>
+<script>
+const CAP={
+  d:'<b>修复前 D</b>：前进按钮在画布下方底部居中，工程标签「继续」+ 小胶囊。这就是你当初觉得"没有入口"的那版。',
+  a:'<b>方案 A（推荐）</b>：右栏顶部紧凑深色胶囊 + 「继续探索 ▸」提示，钉在栏顶不被遮挡，不占画布主区。',
+  b:'<b>方案 B</b>：底部居中常驻小胶囊「下一幕 →」，始终可见，不依赖右栏。',
+  c:'<b>方案 C</b>：首幕（beat-01）右栏用朱砂描边强调胶囊作强引导；后续幕自动收为 A 的紧凑样式。'
+};
+function set(t){
+  document.getElementById('app').className='app frame t-'+t;
+  document.getElementById('rhint').textContent = (t==='c')?'◀ 起点引导':'继续探索 ▸';
+  document.getElementById('cap').innerHTML = CAP[t];
+  ['d','a','b','c'].forEach(x=>document.getElementById('b'+x).classList.toggle('on',x===t));
+}
+document.querySelectorAll('.switch button').forEach(b=>b.onclick=()=>{location.hash=b.dataset.t;set(b.dataset.t);});
+const h=(location.hash||'').replace('#','');
+set(['d','a','b','c'].includes(h)?h:'a');
+</script>
+</body>
+</html>

@@ -110,8 +110,9 @@ test.describe("EXP-UI-RECON-01 · default Human UI", () => {
     await page.addStyleTag({ content: "nextjs-portal{display:none!important}" });
 
     // —— s01 首屏：地图（AT-01 / AT-05 / K7 坐标诚实分离保留）
+    // R4：默认 Human UI 不出现 GCJ-02 字面量（仅 ?inspector=1 透出）；默认显示人话「今天的位置（示意）」
     await expect(cur(page, "surface-current-map")).toBeVisible();
-    await expect(page.locator(".surf-map--v2")).toContainText("本图坐标系 GCJ-02（原值，零换算）");
+    await expect(page.locator(".surf-map--v2")).toContainText("今天的位置（示意）");
     await assertHumanMode(page);
     // K1：五幕以节奏表达（进度条），非五个面板
     await expect(page.locator(".exp-progress")).toContainText("Beat 1/5 · 1/8");

@@ -448,7 +448,10 @@ export function ConflictCompareSurface({ ctx }: SurfaceComponentProps) {
                 两说着录并列保留：<b>{c.primaryValue}</b>（权威着录）↔ <b>{c.conflictedValue}</b>（冲突变体，{c.ruling}）。
                 建造年代保持开放——墨痕不替你选边。
               </p>
-              <footer>来源：{c.source} · {dm(ctx) ? "双值并存 · 静默裁决：ineligible" : "双值并存"}</footer>
+              <footer>
+                {dm(ctx) ? `来源：${c.source}` : "来源：已登记的史料着录"}
+                {dm(ctx) ? " · 双值并存 · 静默裁决：ineligible" : " · 双值并存"}
+              </footer>
           </article>
         ))}
       </div>
@@ -616,7 +619,7 @@ export function BeforeAfterSurface({ ctx }: SurfaceComponentProps) {
   );
 }
 
-function commonsDirectUrl(pageUri: string, width = 900): string {
+export function commonsDirectUrl(pageUri: string, width = 900): string {
   const m = pageUri.match(/File:([^?#]+)/);
   if (!m) return pageUri;
   return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(decodeURIComponent(m[1]))}?width=${width}`;

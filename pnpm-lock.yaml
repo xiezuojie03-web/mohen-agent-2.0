@@ -20,6 +20,12 @@ importers:
 
   apps/web:
     dependencies:
+      '@mohen/agent-runtime':
+        specifier: workspace:*
+        version: link:../../packages/agent-runtime
+      '@mohen/data-access':
+        specifier: workspace:*
+        version: link:../../packages/data-access
       '@mohen/experience-engine':
         specifier: workspace:*
         version: link:../../packages/experience-engine

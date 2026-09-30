@@ -17,6 +17,7 @@ import {
   type FollowupPatch,
 } from "@mohen/experience-engine";
 import type { CulturalWorldProjectionSource } from "./culturalWorldProjection";
+import type { CuratedPhoto } from "./surfaces/types";
 
 const DATA_DIR = path.join(process.cwd(), "data", "experience");
 
@@ -39,6 +40,11 @@ export default function ExperiencePage() {
   const culturalSource = readFrozen(
     "jinze-cultural-world-008.json"
   ) as CulturalWorldProjectionSource;
+  // Stage 1·2.2：今貌影像策划清单（curated manifest；非冻结 JSON，不污染导演稿真源）
+  const presentDayManifest = readFrozen("jinze-present-day-photos.json") as {
+    hero_hook?: string;
+    photos: CuratedPhoto[];
+  };
 
   // 冻结不变量在服务端入口强制校验：产物被篡改则拒绝进入体验（fail loud）
   const report = checkFrozenInvariants(script, patch);
@@ -47,6 +53,13 @@ export default function ExperiencePage() {
   }
 
   return (
-    <ExperienceShell script={script} patch={patch} slice={slice} culturalSource={culturalSource} />
+    <ExperienceShell
+      script={script}
+      patch={patch}
+      slice={slice}
+      culturalSource={culturalSource}
+      presentDayPhotos={presentDayManifest.photos}
+      presentDayHeroHook={presentDayManifest.hero_hook}
+    />
   );
 }

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>墨痕位置对比 · A 右固定 / B 变化区浮现 / C 状态驱动三态</title>
+<style>
+  :root{--paper:#f5f0e8;--ink:#1a1a1a;--cinnabar:#9e2b25;--stone:#4a6741;--mist:#8b9189;--line:#c9c2b4;}
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;overflow:hidden;background:#e9e3d6;
+    font-family:"Noto Serif SC",Georgia,"Microsoft YaHei",serif;color:var(--ink);}
+  .wrap{height:100vh;display:grid;grid-template-rows:auto 1fr auto;gap:10px;
+    padding:14px clamp(12px,3vw,40px) 16px;}
+  .top{display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+    border-bottom:1px solid var(--line);padding-bottom:8px;flex-wrap:wrap;}
+  .brand{font-weight:700;letter-spacing:.3em;color:var(--cinnabar);}
+  .note{font-size:12px;color:var(--mist);font-family:"Microsoft YaHei",sans-serif;}
+
+  /* 场景框（持久、不滚动） */
+  .stage{position:relative;border:1px solid var(--line);border-radius:14px;background:#fffdf7;
+    overflow:hidden;display:grid;transition:grid-template-columns .35s ease;}
+  .stage.v-right{grid-template-columns:1fr 320px;}
+  .stage.v-float,.stage.v-state{grid-template-columns:1fr;}
+  .scene{position:relative;padding:18px;display:grid;grid-template-rows:auto 1fr;gap:12px;min-height:0;}
+  .cap{font-size:13px;color:#5c625c;font-family:"Microsoft YaHei",sans-serif;}
+  .cap b{color:var(--cinnabar);}
+  .hero{display:grid;grid-template-columns:1.5fr .9fr;gap:14px;min-height:0;}
+  .hero img{width:100%;height:100%;max-height:46vh;object-fit:cover;border-radius:12px;background:#e7e2d6;}
+  .side{display:grid;gap:8px;align-content:start;}
+  .relic{display:flex;gap:8px;align-items:center;font-size:13px;}
+  .relic img{width:64px;height:48px;object-fit:cover;border-radius:6px;}
+  .scale{font-size:12px;color:var(--stone);border-left:3px solid var(--stone);padding-left:8px;}
+
+  /* 墨痕通用气泡 */
+  .mohen{font-size:15px;line-height:1.6;}
+  .mohen .who{font-size:11px;letter-spacing:.3em;color:var(--cinnabar);border:1px dashed var(--cinnabar);
+    border-radius:999px;padding:2px 10px;font-family:"Microsoft YaHei",sans-serif;display:inline-block;margin-bottom:6px;}
+
+  /* A 右固定栏 */
+  .rightpanel{display:none;border-left:1px solid var(--line);background:#fbf8f1;
+    padding:18px;flex-direction:column;gap:12px;}
+  .stage.v-right .rightpanel{display:flex;}
+  .rightpanel .pin{font-size:11px;color:var(--mist);font-family:"Microsoft YaHei",sans-serif;}
+
+  /* B 变化区浮现 */
+  .floatbox{display:none;position:absolute;left:18px;top:14px;max-width:min(420px,72%);z-index:6;
+    background:rgba(255,253,247,.95);border:1px dashed var(--cinnabar);border-radius:12px;
+    padding:10px 14px;box-shadow:0 2px 10px rgba(26,26,26,.06);}
+  .stage.v-float .floatbox{display:block;}
+
+  /* C 状态驱动三态 */
+  .ambient{display:none;position:absolute;left:14px;top:12px;z-index:6;align-items:center;gap:6px;
+    font-size:11px;color:var(--stone);font-family:"Microsoft YaHei",sans-serif;}
+  .ambient .dot{width:9px;height:9px;border-radius:50%;background:var(--stone);opacity:.6;}
+  .stage.v-state .ambient{display:flex;}
+  .guide{display:none;position:absolute;right:18px;bottom:18px;max-width:min(360px,60%);z-index:6;
+    background:rgba(255,253,247,.96);border:1px solid var(--cinnabar);border-radius:12px;padding:10px 14px;
+    box-shadow:0 2px 10px rgba(26,26,26,.08);}
+  .stage.v-state .guide{display:block;animation:fade 1s ease both;}
+  @keyframes fade{from{opacity:0;}to{opacity:1;}}
+  .askbtn{display:none;position:absolute;right:18px;top:14px;z-index:6;
+    border:1px solid var(--stone);background:#fff;color:var(--stone);border-radius:999px;
+    padding:6px 14px;font-size:13px;cursor:pointer;font-family:"Microsoft YaHei",sans-serif;}
+  .stage.v-state .askbtn{display:block;}
+  .dialogue{display:none;position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:7;
+    width:min(520px,86%);background:#fffdf7;border:1px solid var(--ink);border-radius:12px;padding:10px 14px;
+    box-shadow:0 4px 16px rgba(26,26,26,.14);}
+  .dialogue input{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit;font-size:14px;}
+
+  /* 底栏 */
+  .bottom{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;}
+  .switcher{display:flex;gap:8px;}
+  .switcher button{border:1px solid var(--line);background:#fffdf7;border-radius:999px;padding:8px 16px;
+    font-size:14px;cursor:pointer;font-family:inherit;}
+  .switcher button.on{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+  .caption{font-size:13px;color:#4a4f48;max-width:760px;line-height:1.7;
+    font-family:"Microsoft YaHei",sans-serif;}
+  .caption b{color:var(--cinnabar);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div><span class="brand">墨痕</span> <span class="note">金泽 · 墨痕位置对比（同一画面，切换看）</span></div>
+    <div class="note">C4 §25 禁「右下角聊天框」；PART IV 原型04 = 三态 Presence</div>
+  </header>
+
+  <main class="stage v-float" id="stage">
+    <div class="scene">
+      <p class="cap"><b>起始</b> · 真实今貌现场，一个问题钩住你</p>
+      <div class="hero">
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Jinze_Fangshengqiao.jpg?width=1000" alt="金泽放生桥今貌"/>
+        <div class="side">
+          <div class="relic"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Wan%27anqiao.jpg?width=400" alt="万安桥"/>万安桥</div>
+          <div class="relic"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Yihaosi_Yizhi.jpg?width=400" alt="颐浩寺遗址"/>颐浩寺遗址</div>
+          <div class="relic"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Pujiqiao_(Jinze).jpg?width=400" alt="普济桥"/>普济桥</div>
+          <div class="scale">三处遗存同在一公里内 · 实地距离 约 <b>620m</b></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- A 右固定栏 -->
+    <aside class="rightpanel">
+      <span class="who" style="font-size:11px;letter-spacing:.3em;color:var(--cinnabar);border:1px dashed var(--cinnabar);border-radius:999px;padding:2px 10px;font-family:'Microsoft YaHei',sans-serif;display:inline-block;">墨痕 · 常驻</span>
+      <div class="mohen">你看，这三处遗存不到一公里，为什么这么近？</div>
+      <div class="pin">固定在右侧 · 始终可见，不遮挡画布</div>
+    </aside>
+
+    <!-- B 变化区浮现 -->
+    <div class="floatbox">
+      <span class="who">墨痕</span>
+      <div class="mohen">你看，这三处遗存不到一公里，为什么这么近？</div>
+    </div>
+
+    <!-- C 状态驱动三态 -->
+    <div class="ambient"><span class="dot"></span>墨痕 · 在场</div>
+    <button class="askbtn" onclick="document.getElementById('dlg').style.display='block'">问墨痕</button>
+    <div class="guide">
+      <span class="who">墨痕 · Guide</span>
+      <div class="mohen">你看，这三处遗存不到一公里，为什么这么近？</div>
+    </div>
+    <div class="dialogue" id="dlg">
+      <input placeholder="向墨痕提问（按需才出现，不是常驻聊天框）" />
+    </div>
+  </main>
+
+  <footer class="bottom">
+    <div class="switcher">
+      <button data-v="v-right">A 右固定</button>
+      <button data-v="v-float" class="on">B 变化区浮现</button>
+      <button data-v="v-state">C 状态驱动三态</button>
+    </div>
+    <div class="caption" id="cap"></div>
+  </footer>
+</div>
+
+<script>
+  const caps = {
+    "v-right": "<b>A 右固定栏（原型做法）</b>：稳定、可预测、不遮挡画布，墨痕始终在。代价：长期固定略显呆板；墨痕与『变化发生处』有距离，对变化区的提醒感弱；右侧栏会长期占用一截宽度。",
+    "v-float": "<b>B 变化区浮现（上一版样稿）</b>：墨痕出现在变化发生处，提醒强、不占固定空间。代价：位置随幕跳动，可能干扰阅读；需克制动效避免晃眼；内容复杂时易遮挡。",
+    "v-state": "<b>C 状态驱动三态（PART IV 原型04）</b>：Ambient 微标记常驻（左上小点，不抢戏）+ Guide 在相关元素旁浮现并自动消退 + Dialogue 仅你点『问墨痕』才出现。兼顾『常在 / 不呆板 / 变化区提醒』。代价：实现最复杂，需定义各态触发与消退时机。"
+  };
+  const stage = document.getElementById('stage');
+  const cap = document.getElementById('cap');
+  const set = (v)=>{
+    stage.className = 'stage '+v;
+    cap.innerHTML = caps[v];
+    document.querySelectorAll('.switcher button').forEach(b=>b.classList.toggle('on', b.dataset.v===v));
+  };
+  document.querySelectorAll('.switcher button').forEach(b=>b.onclick=()=>set(b.dataset.v));
+  set('v-float');
+</script>
+</body>
+</html>

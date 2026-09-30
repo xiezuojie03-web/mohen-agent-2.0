@@ -115,7 +115,9 @@ export function CurrentMapSurface({ ctx, compact }: SurfaceComponentProps) {
     if (a.kind === "provider_current_object_point") {
       exact.push({
         kind: "marker",
-        key: `exact-${shortKey(a.anchor_key)}`,
+        // 用完整 anchor_key 作 key（含 feature 前缀），避免 shortKey 取末段
+        // 「current_provider_object_point」在三个锚点上撞车 → React 重复 key 警告。
+        key: `exact-${a.anchor_key}`,
         x,
         y,
         glyph: "exact",
@@ -128,7 +130,8 @@ export function CurrentMapSurface({ ctx, compact }: SurfaceComponentProps) {
     } else if (a.kind === "provider_current_object_area") {
       approx.push({
         kind: "approximate",
-        key: `area-${shortKey(a.anchor_key)}`,
+        // 同 exact：用完整 anchor_key，避免 area 末段撞车。
+        key: `area-${a.anchor_key}`,
         x,
         y,
         rx: 74,
@@ -155,13 +158,18 @@ export function CurrentMapSurface({ ctx, compact }: SurfaceComponentProps) {
     glyph: "reference",
     // EXP-UI-RECON-01 R4：另一坐标系参考锚的 raw 坐标仅 ?inspector=1 显示；
     // 默认只标注坐标系名 + 参考锚说明（不并入本图的诚实分离仍保留）。
-    label: `${a.coord_system} · ${ctx.devMode ? a.location_raw : "另一坐标系参考锚"}`,
+    label: ctx.devMode ? `${a.coord_system} · ${a.location_raw}` : "另一坐标系的参考锚",
     sub: "参考锚 · 不并入本图",
     className: "map-ref",
   }));
 
+  // EXP-UI-RECON-01 R4（Stage 1·2.1）：坐标系术语 GCJ-02 属内部术语，默认 Human UI 不显示其字面量；
+  // 仅 ?inspector=1（devMode）才透出原术语。默认以人话"今天的位置（示意）"表达诚实位置。
+  const crsLabelText = ctx.devMode
+    ? `本图坐标系 ${FRAME_CRS}（原值，零换算）`
+    : "今天的位置（示意）";
   const labels: LabelRequest[] = [
-    { key: "geo-crs", text: `本图坐标系 ${FRAME_CRS}（原值，零换算）`, x: x0, y: y0 - 26, prefer: "above", size: 11, className: "vg-label vg-label--sub" },
+    { key: "geo-crs", text: crsLabelText, x: x0, y: y0 - 26, prefer: "above", size: 11, className: "vg-label vg-label--sub" },
     { key: "geo-lng0", text: `${bbox.min_lng.toFixed(4)}°E`, x: x0, y: y1 + 18, prefer: "below", size: 10, className: "vg-tick" },
     { key: "geo-lng1", text: `${bbox.max_lng.toFixed(4)}°E`, x: x1, y: y1 + 18, prefer: "below", size: 10, className: "vg-tick" },
     {
@@ -228,7 +236,7 @@ export function CurrentMapSurface({ ctx, compact }: SurfaceComponentProps) {
   return (
     <div className="surf surf-map surf-map--v2" data-testid="surface-current-map">
       <p className="surf__caption">
-        当前地理空间 · {FRAME_CRS} 原值 · 只代表<b>今天</b>
+        当前地理空间 · 只代表<b>今天</b>
       </p>
       <SpatialCanvas
         view={GEO_VIEW}
@@ -246,7 +254,7 @@ export function CurrentMapSurface({ ctx, compact }: SurfaceComponentProps) {
           { token: SPATIAL.approximate_area, text: "参考锚（另一坐标系）", shape: "dot" },
         ]}
       />
-      {!compact && (
+      {!compact && ctx.devMode && (
         <p className="surf__note">
           这里没有水道 / 道路：本切片没有任何可靠线面几何，宁可抽象，也不画一条编出来的河。
         </p>
@@ -470,7 +478,7 @@ export function RelationalSpaceSurface({ ctx, compact }: SurfaceComponentProps) 
           { token: SPATIAL.relation_missing, text: "无线", shape: "line" },
         ]}
       />
-      {!compact && (
+      {!compact && ctx.devMode && (
         <p className="surf__note">
           实线＝有据；虚线＝候选；点线＝弱线索；断开＝被问到的连接还没有证据。
         </p>

@@ -25,6 +25,7 @@ import {
   CurrentPhotoSurface,
   BeforeAfterSurface,
 } from "./surfaces/EvidenceNarrativeSurfaces";
+import { PresentDayPhotoSurface } from "./surfaces/PresentDayPhotoSurface";
 
 /** 「不画 / 未知 / 证据缺口」是合法 Surface Selection 结果（§5A.2 末条） */
 function UnknownGapSurface({ ctx }: SurfaceComponentProps) {
@@ -59,7 +60,7 @@ const REGISTRY: Record<SurfaceType, React.ComponentType<SurfaceComponentProps>> 
   evidence_reveal: EvidenceRevealSurface,
   conflict_compare: ConflictCompareSurface,
   source_inspect: SourceInspectSurface,
-  current_photo: CurrentPhotoSurface,
+  current_photo: PresentDayPhotoSurface,
   question: QuestionSurface,
   discovery: DiscoverySurface,
   agent_prompt: AgentPromptSurface,

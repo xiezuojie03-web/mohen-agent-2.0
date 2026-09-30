@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>金泽 v0.3 · 可点击走查样稿（8 场景 / 5 幕）</title>
+<style>
+:root{
+  --paper:#f5f0e8; --ink:#1a1a1a; --cinnabar:#9e2b25; --jade:#4a6741;
+  --line:#d8d0c2; --muted:#8a8f88;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:#efe9dd;color:var(--ink);}
+.toolbar{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;gap:10px;align-items:center;padding:8px 14px;background:#2a2a28;color:#f5f0e8;font-size:13px;}
+.toolbar button{font:inherit;cursor:pointer;border:1px solid #6a6a66;background:#3a3a36;color:#f5f0e8;padding:6px 12px;border-radius:6px;}
+.toolbar button.on{background:var(--cinnabar);border-color:var(--cinnabar);}
+.toolbar .read{margin-left:auto;font-variant-numeric:tabular-nums;}
+.wrap{padding-top:52px;}
+.exp{display:grid;grid-template-rows:auto 1fr auto;height:calc(100vh - 52px);max-width:1100px;margin:0 auto;background:var(--paper);}
+.exp-topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;border-bottom:1px solid var(--line);}
+.exp-place{font-size:20px;font-weight:700;letter-spacing:.1em;}
+.exp-topwhen{color:var(--jade);font-size:13px;}
+.exp-trail{display:flex;gap:6px;margin-left:8px;}
+.exp-trail__dot{width:10px;height:10px;border-radius:50%;background:#d8d0c2;border:1px solid #c2b8a6;}
+.exp-trail__dot--done{background:var(--jade);}
+.exp-trail__dot--current{background:var(--cinnabar);box-shadow:0 0 0 3px rgba(158,43,37,.2);}
+.exp-topbar__right{margin-left:auto;display:flex;gap:12px;align-items:center;font-size:12px;color:var(--muted);}
+.exp-mode{padding:2px 8px;border:1px solid var(--line);border-radius:999px;}
+.exp-mode--exact{color:var(--jade);border-color:var(--jade);}
+.exp-mode--relational{color:var(--cinnabar);border-color:var(--cinnabar);}
+.exp-canvas{position:relative;overflow:hidden;padding:18px 16px 16px;}
+.exp-canvas__current{min-height:200px;display:flex;align-items:center;justify-content:center;}
+.primary{width:min(560px,80%);border:1px solid var(--line);border-radius:10px;background:#fffdf7;padding:18px;text-align:center;}
+.primary h3{margin:0 0 6px;font-size:15px;}
+.primary .tag{display:inline-block;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:2px 8px;margin-top:8px;}
+.exp-hook{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:rgba(255,253,247,.95);border:1px solid var(--line);border-radius:8px;padding:8px 14px;font-size:14px;color:var(--ink);max-width:70%;text-align:center;}
+.exp-photostrip{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:8px;}
+.exp-photostrip__item{width:120px;height:74px;background:#e7e0d2;border:1px solid var(--line);border-radius:6px;display:flex;align-items:flex-end;justify-content:center;font-size:10px;color:var(--muted);padding-bottom:4px;}
+.exp-epistemic-shift{position:absolute;top:14px;right:16px;background:var(--cinnabar);color:#fff;font-size:11px;padding:4px 10px;border-radius:6px;}
+.exp-annot{position:absolute;left:16px;bottom:96px;max-width:300px;font-size:12px;color:#5a5a52;}
+.unit{margin:4px 0;padding:4px 8px;background:rgba(255,253,247,.9);border-left:3px solid var(--jade);border-radius:4px;}
+.exp-rail{position:absolute;right:14px;bottom:70px;z-index:9;width:min(372px,44vw);display:flex;flex-direction:column;align-items:flex-end;gap:10px;max-height:calc(100% - 84px);overflow-y:auto;}
+.exp-rail__primary{position:sticky;top:0;z-index:1;background:linear-gradient(180deg,rgba(255,253,247,.98) 72%,rgba(255,253,247,0));padding-bottom:6px;display:flex;flex-direction:column;align-items:flex-end;gap:4px;width:100%;}
+.exp-rail__hint{font-size:11px;letter-spacing:.12em;color:var(--muted);}
+.exp-advance{width:100%;font-size:16px;padding:12px 22px;background:var(--ink);color:var(--paper);border:none;border-radius:10px;cursor:pointer;box-shadow:0 6px 18px rgba(26,26,26,.18);animation:advancePulse 2.4s ease-in-out infinite;font-family:inherit;}
+.exp-advance:hover:not(:disabled){animation-play-state:paused;}
+.exp-advance:disabled{background:#bdb6a8;color:#fff;cursor:not-allowed;animation:none;box-shadow:none;}
+@keyframes advancePulse{0%,100%{box-shadow:0 6px 18px rgba(26,26,26,.18);}50%{box-shadow:0 6px 24px rgba(158,43,37,.45);}}
+.action-dock{display:flex;flex-direction:column;gap:6px;width:100%;align-items:flex-end;}
+.exp-btn--context{font:inherit;font-size:13px;padding:7px 12px;background:#fffdf7;border:1px solid var(--line);border-radius:8px;cursor:pointer;color:var(--ink);}
+.exp-btn--context:hover{background:#f0e9da;}
+.agent-prompt{font-size:12px;color:var(--muted);text-align:right;max-width:300px;}
+.exp-bottombar{padding:12px 16px;border-top:1px solid var(--line);}
+.exp-meaning{margin:0;font-size:14px;color:var(--jade);}
+.mohen{position:absolute;right:16px;bottom:16px;z-index:10;background:var(--cinnabar);color:#fff;font-size:12px;padding:8px 14px;border-radius:999px;cursor:pointer;border:none;font-family:inherit;}
+.note{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#2a2a28;color:#f5f0e8;padding:8px 16px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .3s;z-index:60;pointer-events:none;max-width:80%;text-align:center;}
+.note.show{opacity:1;}
+/* OLD mode（修复前）：小按钮、无提示、无脉冲、低层级 —— 复现「找不到前进入口」 */
+.exp--old .exp-advance{width:auto;font-size:14px;padding:8px 14px;box-shadow:none;animation:none;background:#3a3a36;}
+.exp--old .exp-rail__hint{display:none;}
+.exp--old .exp-rail{z-index:6;width:min(280px,34vw);}
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <span>金泽 v0.3 走查样稿</span>
+  <button id="toggle">对比旧版按钮：关</button>
+  <button id="restart">↺ 重新开始</button>
+  <span class="read" id="readout"></span>
+</div>
+<div class="wrap">
+  <div class="exp" id="exp"></div>
+</div>
+<div class="note" id="note"></div>
+<script>
+// —— 真实数据来源：apps/web/app/experience/jinze-water-net/beats.ts（BEATS 5 幕 / 8 场景）——
+const BEATS = [
+  { topWhen:"今天 · 你正站在这里", meaningNow:"三处宋构都还在原址，彼此不到一公里——这是这一站要回答的问题。", advanceLabel:"把时间拨回去 →", label:"进入现场", actions:[] },
+  { topWhen:"时间正在往回走", meaningNow:"现代坐标在这里失去了作证资格；但有一条关系，留了下来。", advanceLabel:"看留下的关系 →", label:"时间/空间转换", actions:[] },
+  { topWhen:"看它们之间如何相连", meaningNow:"先看桥与水的关系，再问寺是否真的和它们相连。", advanceLabel:"继续 →", label:"关系发现", actions:["把寺也放进来","寺与桥有关系吗","寺的位置有多确定？"] },
+  { topWhen:"把证据摊开看", meaningNow:"有些事能确定，有些还不能确定——证据让答案分层。", advanceLabel:"继续 →", label:"证据与时间变化", actions:["看第一组分歧","看第二组分歧","看时间变化","看史料原页"] },
+  { topWhen:"回到今天 · 再往深处", meaningNow:"带着问题再看一次今天；剩下的，留给你的追问。", advanceLabel:"回到今天 · 再看一次 →", label:"回到今天·下一个问题", actions:["看今貌照片","了解更多","追问：那颐浩寺和普济桥以前真的有关系吗？","追问：你凭什么这么判断？","追问：它们后来发生了什么变化？","追问：那我现在去现场可以看什么？"] },
+];
+// beat = 所属幕下标；exact = 是否今址精确坐标（决定「坐标权威」标记是否出现）
+const SCENES = [
+  { beat:0, exact:true,  primary:"current_map（今址三点图）",            hook:"两座古桥、一处宋寺遗址，今天为什么离得这么近？" },
+  { beat:1, exact:false, primary:"relational_space / timeline",         hook:"再往前，我不能继续用今天的坐标。" },
+  { beat:2, exact:false, primary:"relational_space",                    hook:"先看它们和水的关系。" },
+  { beat:2, exact:false, primary:"relational_space",                    hook:"把寺也放进来。" },
+  { beat:3, exact:false, primary:"conflict_compare / evidence_reveal",  hook:"为什么不能确定？" },
+  { beat:3, exact:false, primary:"timeline",                            hook:"也可以让时间成为主角。" },
+  { beat:4, exact:true,  primary:"current_map / current_photo",         hook:"现在，再看一次它们。" },
+  { beat:4, exact:false, primary:"discovery（解释框架）",               hook:"剩下的，留给你的追问。" },
+];
+
+let cur = 0;          // 当前场景下标 0..7
+let oldMode = false;  // 是否对比旧版按钮
+const exp = document.getElementById('exp');
+const readout = document.getElementById('readout');
+const noteEl = document.getElementById('note');
+function note(m){ noteEl.textContent = m; noteEl.classList.add('show'); clearTimeout(noteEl._t); noteEl._t = setTimeout(()=>noteEl.classList.remove('show'), 1800); }
+
+function render(){
+  const s = SCENES[cur];
+  const b = BEATS[s.beat];
+  const isLast = cur === SCENES.length - 1;
+  const trail = BEATS.map((bb,i)=>`<span class="exp-trail__dot ${i===s.beat?'exp-trail__dot--current':''} ${i<s.beat?'exp-trail__dot--done':''}" title="${bb.label}"></span>`).join('');
+  const modeLabel = s.exact ? '今址精确坐标' : '关系坐标（非今址）';
+  const modeCls = s.exact ? 'exact' : 'relational';
+  const coordBadge = s.exact ? '' : `<div class="exp-epistemic-shift">当前坐标在此失去历史定位资格</div>`;
+  const dock = b.actions.length
+    ? `<div class="action-dock">${b.actions.map(a=>`<button class="exp-btn--context" data-act="${a}">${a}</button>`).join('')}</div>`
+    : '';
+  exp.className = 'exp' + (oldMode ? ' exp--old' : '');
+  exp.innerHTML = `
+   <header class="exp-topbar">
+     <span class="exp-place">金泽</span>
+     <span class="exp-topwhen">${b.topWhen}</span>
+     <div class="exp-trail">${trail}</div>
+     <div class="exp-topbar__right">
+       <span class="exp-mode exp-mode--${modeCls}">${modeLabel}</span>
+       <span>Beat ${s.beat+1}/5 · ${cur+1}/8</span>
+     </div>
+   </header>
+   <main class="exp-canvas">
+     <div class="exp-canvas__current">
+       <div class="primary">
+         <h3>主角 Surface：${s.primary}</h3>
+         <span class="tag">真实应用中此处由 Surface 组件渲染（今址地图 / 关系图 / 时间线 / 证据对比 / 解释框架）</span>
+       </div>
+     </div>
+     <div class="exp-hook">${s.hook}</div>
+     ${coordBadge}
+     <div class="exp-photostrip">
+       <div class="exp-photostrip__item">今貌影像·占位</div>
+       <div class="exp-photostrip__item">今貌影像·占位</div>
+       <div class="exp-photostrip__item">今貌影像·占位</div>
+     </div>
+     <div class="exp-annot"><div class="unit">样稿仅演示「推进」逻辑；画布内揭示动作在真实应用中可用</div></div>
+     <aside class="exp-rail">
+       <div class="exp-rail__primary">
+         <span class="exp-rail__hint">继续探索 ▸</span>
+         <button class="exp-advance" id="advance" ${isLast?'disabled':''}>${b.advanceLabel}</button>
+       </div>
+       <div class="agent-prompt">墨痕：${b.label} —— 此样稿中墨痕为静态提示</div>
+       ${dock}
+       <button class="exp-btn--context" id="reveal">看事实</button>
+     </aside>
+     <button class="mohen">问墨痕</button>
+   </main>
+   <footer class="exp-bottombar"><p class="exp-meaning">${b.meaningNow}</p></footer>
+  `;
+  document.getElementById('advance').onclick = () => { if (cur < SCENES.length - 1) { cur++; render(); } };
+  document.getElementById('reveal').onclick = () => note('（样稿）已揭示一条事实；真实应用中逐条展开叙事单元');
+  exp.querySelectorAll('[data-act]').forEach(btn => btn.onclick = () => note('（样稿）画布内动作：' + btn.dataset.act));
+  exp.querySelector('.mohen').onclick = () => note('（样稿）墨痕对话在真实应用中可用');
+  readout.textContent = `当前 Beat ${s.beat+1}/5 · 场景 ${cur+1}/8 · 前进按钮 ${isLast ? '已禁用（末幕）' : '可见可点'}`;
+}
+
+document.getElementById('toggle').onclick = function(){
+  oldMode = !oldMode;
+  this.textContent = '对比旧版按钮：' + (oldMode ? '开' : '关');
+  this.classList.toggle('on', oldMode);
+  render();
+};
+document.getElementById('restart').onclick = () => { cur = 0; render(); };
+render();
+</script>
+</body>
+</html>

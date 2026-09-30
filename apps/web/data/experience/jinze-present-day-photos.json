@@ -1,0 +1,53 @@
+{
+  "hero_hook": "你站在一公里之内的南宋",
+  "photos": [
+    {
+      "feature_key": "fangshengqiao",
+      "label": "放生桥",
+      "commons_file": "https://commons.wikimedia.org/wiki/File:Jinze_Fangshengqiao.jpg",
+      "caption": "金泽现存体量最大、跨度最长的古石拱桥，今貌仍跨于市河之上。"
+    },
+    {
+      "feature_key": "linlaoqiao",
+      "label": "林老桥",
+      "commons_file": "https://commons.wikimedia.org/wiki/File:Linlaoqiao.jpg",
+      "caption": "林老桥：南北跨市河，金泽古桥群中年代较早的一座，今貌犹存。"
+    },
+    {
+      "feature_key": "pujiqiao",
+      "label": "普济桥",
+      "commons_file": "https://commons.wikimedia.org/wiki/File:Pujiqiao_(Jinze).jpg",
+      "caption": "普济桥：与万安桥并称金泽「姐妹桥」，现存为南宋遗构。"
+    },
+    {
+      "feature_key": "ruyiqiao",
+      "label": "如意桥",
+      "commons_file": "https://commons.wikimedia.org/wiki/File:Ruyiqiao.jpg",
+      "caption": "如意桥：金泽古桥之一，今日仍跨于市河之上。"
+    },
+    {
+      "feature_key": "tianhuanggeqiao",
+      "label": "天皇阁桥",
+      "commons_file": "https://commons.wikimedia.org/wiki/File:Tianhuanggeqiao.jpg",
+      "caption": "天皇阁桥：因邻近古天皇阁得名，今貌为石梁桥。"
+    },
+    {
+      "feature_key": "wananqiao",
+      "label": "万安桥",
+      "commons_file": "https://commons.wikimedia.org/wiki/File:Wan%27anqiao.jpg",
+      "caption": "万安桥：与普济桥并称「姐妹桥」，现存为南宋遗构。"
+    },
+    {
+      "feature_key": "yihaosi-site",
+      "label": "颐浩寺遗址",
+      "commons_file": "https://commons.wikimedia.org/wiki/File:Yihaosi_Yizhi.jpg",
+      "caption": "颐浩寺遗址：宋代名刹故址，今日仅存残迹与记忆。"
+    },
+    {
+      "feature_key": "yingxiangqiao",
+      "label": "迎祥桥",
+      "commons_file": "https://commons.wikimedia.org/wiki/File:Yingxiangqiao_.jpg",
+      "caption": "迎祥桥：金泽古桥群之一，今貌仍跨水。"
+    }
+  ]
+}

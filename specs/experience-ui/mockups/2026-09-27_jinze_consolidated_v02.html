@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>金泽 · 第一幕收敛样稿 v0.2</title>
+<style>
+  :root{
+    --paper:#f5f0e8; --ink:#1a1a1a; --cinnabar:#9e2b25; --stone:#4a6741; --mist:#8b9189; --line:#c9c2b4;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{
+    height:100vh; display:grid; grid-template-rows:auto 1fr auto; gap:12px;
+    padding:16px clamp(12px,3vw,40px) 14px; background:linear-gradient(160deg,#f7f3ea,#efe9dc);
+    color:var(--ink); font-family:"Noto Serif SC",Georgia,"Microsoft YaHei",serif; overflow:hidden;
+  }
+  /* 顶栏：去工程语言，只留 地名 + 幕名 + 轨迹 */
+  .top{display:flex; align-items:center; gap:16px; border-bottom:1px solid var(--line); padding-bottom:10px;}
+  .brand{font-weight:700; letter-spacing:.3em; color:var(--cinnabar);}
+  .beat{font-size:13px; color:var(--mist); font-family:"Microsoft YaHei",sans-serif;}
+  .trail{display:flex; gap:8px; margin-left:auto;}
+  .trail i{width:9px;height:9px;border-radius:50%;background:var(--line);display:block;}
+  .trail i.done{background:var(--stone);}
+  .trail i.cur{background:var(--cinnabar); box-shadow:0 0 0 3px rgba(158,43,37,.18);}
+
+  /* 画布：唯一主角，不滚动 */
+  .canvas{position:relative; height:100%; border:1px solid var(--line); border-radius:14px; background:#fffdf7; overflow:hidden; display:grid; grid-template-rows:1fr;}
+  .hero{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:18px;}
+  /* 真实场地底图（Round2 SLOT）：用真实坐标推导的三点 + 620m 比例尺，非伪造 GIS */
+  .sitemap{position:relative; width:min(720px,92%); aspect-ratio:4/3; background:
+     repeating-linear-gradient(45deg,#f3efe6,#f3efe6 12px,#efe9dc 12px,#efe9dc 24px);
+     border:1px solid var(--line); border-radius:12px;}
+  .pt{position:absolute; transform:translate(-50%,-50%);}
+  .pt b{display:block; font-size:12px; color:var(--ink); white-space:nowrap; font-family:"Microsoft YaHei",sans-serif;}
+  .pt .dot{width:14px;height:14px;border-radius:50%; background:var(--stone); border:2px solid #fff; margin:0 auto 3px;}
+  .pt.c .dot{background:var(--cinnabar);}
+  .ln{position:absolute; height:2px; background:var(--stone); opacity:.5; transform-origin:left center;}
+  .scale{position:absolute; left:14px; bottom:12px; font-size:11px; color:#5c625c; font-family:"Microsoft YaHei",sans-serif;}
+  .scale .bar{display:inline-block; width:80px; height:4px; background:var(--ink); vertical-align:middle; margin-right:6px; border-radius:2px;}
+  /* 轻提示：钩子问题，单一处，画面为主 */
+  .hook{position:absolute; left:50%; top:18px; transform:translateX(-50%); max-width:80%; text-align:center;
+    font-size:17px; line-height:1.6; color:#2a2f27; background:rgba(255,253,247,.82); border-radius:10px; padding:8px 14px;}
+  .hook small{display:block; font-size:12px; color:var(--mist); font-family:"Microsoft YaHei",sans-serif; margin-top:2px;}
+  /* 真实今貌照片：细条缩略，按需看大图（不再一上来铺满）；放左下，不与右下墨痕冲突 */
+  .strip{position:absolute; left:14px; bottom:14px; display:flex; gap:8px;}
+  .strip img{width:84px; height:60px; object-fit:cover; border-radius:8px; border:1px solid var(--line); display:block;}
+
+  /* 墨痕：唯一常驻（右下）。常驻态给「下一步」提示；点开才出追问卡 */
+  .mohen{position:absolute; right:14px; bottom:14px; z-index:8; display:flex; align-items:center; gap:10px;}
+  .nudge{font-size:13px; color:var(--ink); background:rgba(255,253,247,.95); border:1px dashed rgba(158,43,37,.4);
+    border-radius:999px; padding:6px 12px; font-family:"Microsoft YaHei",sans-serif;}
+  .nudge b{color:var(--cinnabar);}
+  .ask{width:40px;height:40px;border-radius:50%; border:1px solid var(--cinnabar); background:var(--cinnabar); color:#fff;
+    font-size:13px; cursor:pointer; box-shadow:0 4px 14px rgba(158,43,37,.28);}
+  .dialog{position:absolute; right:14px; bottom:14px; z-index:9; width:min(360px,80%); background:rgba(255,253,247,.98);
+    border:1px solid rgba(58,63,55,.22); border-radius:12px; padding:12px; box-shadow:0 8px 28px rgba(26,26,26,.16); display:none;}
+  .dialog.show{display:block;}
+  .dialog h4{margin:0 0 8px; font-size:12px; letter-spacing:.2em; color:var(--cinnabar); border:1px dashed var(--cinnabar); border-radius:999px; padding:2px 10px; display:flex; align-items:center; gap:8px; font-family:"Microsoft YaHei",sans-serif;}
+  .dialog .x{border:none; background:transparent; color:var(--mist); cursor:pointer; font-size:12px; font-family:"Microsoft YaHei",sans-serif;}
+  .dialog input{width:100%; padding:9px 10px; font:inherit; font-size:14px; border:1px solid rgba(58,63,55,.3); border-radius:8px; margin-bottom:8px;}
+  .dialog .sug{font-size:12px; color:var(--mist); font-family:"Microsoft YaHei",sans-serif; margin-top:6px;}
+  .dialog .sug b{color:var(--stone);}
+
+  /* 底栏：仅语境化前进动作，无 上一步/继续 */
+  .bottom{display:flex; align-items:center; gap:14px; border-top:1px solid var(--line); padding-top:10px;}
+  .next{background:var(--ink); color:var(--paper); border:1px solid var(--ink); border-radius:999px; padding:9px 20px; font-size:14px; cursor:pointer; font-family:inherit;}
+  .hint{font-size:12px; color:var(--mist); font-family:"Microsoft YaHei",sans-serif; margin-left:auto;}
+  .dev{display:none;}
+</style>
+</head>
+<body>
+  <!-- 顶栏：只有 地名 + 幕名 + 轨迹；2026/精确坐标/第X幕 仅 ?inspector=1 才显示（dev 用） -->
+  <div class="top">
+    <span class="brand">金泽</span>
+    <span class="beat">进入现场</span>
+    <div class="trail"><i class="cur"></i><i></i><i></i><i></i><i></i></div>
+  </div>
+
+  <!-- 画布：唯一主角 -->
+  <main class="canvas">
+    <div class="hero">
+      <div class="sitemap" aria-label="真实场地：三处宋构相对位置（由真实坐标推导，非伪造）">
+        <!-- 颐浩寺遗址居中，万安桥与普济桥分列，真实相对位置 -->
+        <div class="pt c" style="left:50%; top:50%;"><span class="dot"></span><b>颐浩寺遗址</b></div>
+        <div class="pt" style="left:24%; top:38%;"><span class="dot"></span><b>万安桥</b></div>
+        <div class="pt" style="left:74%; top:62%;"><span class="dot"></span><b>普济桥</b></div>
+        <div class="ln" style="left:24%; top:38%; width:30%; transform:rotate(28deg);"></div>
+        <div class="ln" style="left:50%; top:50%; width:27%; transform:rotate(34deg);"></div>
+        <div class="scale"><span class="bar"></span>约 620 m（按真实坐标估读）</div>
+      </div>
+    </div>
+
+    <!-- 轻提示：钩子问题，单一处 -->
+    <div class="hook">
+      为什么三处宋构离得这么近？
+      <small>墨痕：这不是一个已有答案的问题——让我们把时间拨回去。</small>
+    </div>
+
+    <!-- 真实今貌照片：缩略条，按需看大图 -->
+    <div class="strip">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Wan'anqiao.jpg?width=300" alt="万安桥"/>
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Pujiqiao_(Jinze).jpg?width=300" alt="普济桥"/>
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Yihaosi_Yizhi.jpg?width=300" alt="颐浩寺遗址"/>
+    </div>
+
+    <!-- 墨痕：唯一常驻（右下）。常驻态只说一句不重复旁白；前进动作只在底栏 -->
+    <div class="mohen">
+      <span class="nudge">墨痕 · 这一问，要往时间里找答案</span>
+      <button class="ask" id="askBtn">墨痕</button>
+    </div>
+    <!-- 点开才出现的追问卡（紧凑，不铺满画布，带收起） -->
+    <div class="dialog" id="dialog">
+      <h4>问墨痕 <button class="x" id="closeBtn">收起</button></h4>
+      <input placeholder="寺和桥真的有关系吗？" />
+      <div class="sug">或先用底部「把时间拨回去 →」继续主线探索</div>
+    </div>
+  </main>
+
+  <!-- 底栏：仅语境化前进动作，无 上一步/继续 -->
+  <footer class="bottom">
+    <button class="next">把时间拨回去 →</button>
+    <span class="hint">画面为主，文字只是轻提示</span>
+  </footer>
+
+  <script>
+    const btn=document.getElementById('askBtn'), dlg=document.getElementById('dialog'), x=document.getElementById('closeBtn');
+    btn.onclick=()=>dlg.classList.add('show');
+    x.onclick=()=>dlg.classList.remove('show');
+  </script>
+</body>
+</html>

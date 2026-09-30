@@ -47,6 +47,19 @@ export interface SliceShape {
 // TASK-0014：Surface Component Contract（§4）
 // Surface 只消费 semantic state/data，不拥有历史真相。
 // ---------------------------------------------------------------------------
+
+/** 今貌影像策划清单（curated manifest，来自 data/experience，非冻结 JSON）。
+ *  Surface 只消费该数组，不硬编码任何镇真相 —— 组件保持 town-agnostic。 */
+export interface CuratedPhoto {
+  /** 与切片 feature_key 对齐的键；非切片对象用描述性 id（如 fangshengqiao） */
+  feature_key: string;
+  /** 人话标签（数据提供，非组件硬编码） */
+  label: string;
+  /** 完整 Commons File 页 URL（复用 commonsDirectUrl 构造器直出图像） */
+  commons_file: string;
+  /** 图注（数据提供，非组件硬编码） */
+  caption: string;
+}
 import type { ExperienceScript, ExperienceScene, WorldEvidenceState, SurfaceSelection } from "@mohen/experience-engine";
 import type { CompositionState2 } from "@mohen/experience-engine";
 import type { BeatPresentation } from "../beats";
@@ -77,6 +90,10 @@ export interface SurfaceContext {
   evidenceInspectionRefs?: string[];
   /** EXP-0001：DEV 模式（?inspector=1）才展示内部 runtime label；普通模式隐藏 relationKey 等噪音 */
   devMode?: boolean;
+  /** Stage 1·2.2：今貌影像策划清单（来自 curated manifest，town-agnostic surface 消费它） */
+  presentDayPhotos?: CuratedPhoto[];
+  /** Stage 1·2.2：今貌影像主角钩子（来自 manifest，非组件硬编码） */
+  presentDayHeroHook?: string;
 }
 
 export interface SurfaceComponentProps {
