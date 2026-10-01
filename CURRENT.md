@@ -176,6 +176,7 @@ H2 的下一出口不是"再完成一批功能"，而是：
 -   **C4**
     `governance/C4_MoHen_Agent-native_Human_Experience_UI_Architecture_V2.1.md`
 -   **Canonical Images** `specs/experience-ui/canonical`
+-   **Dev Verification Artifacts** `verification/`（UI 验证截图等临时产物；不入根目录、默认不入库，见该目录 README）
 
 ------------------------------------------------------------------------
 
@@ -188,7 +189,7 @@ pnpm install
 pnpm dev
 ```
 
-访问 `http://localhost:3000`（首屏只是 Foundation 健康页，非正式产品 UI）。
+访问 `http://localhost:3000`（首屏即产品落地页「金泽」入口；内部健康自检页在 `/foundation`）。
 
 - 数据库：TASK-0002 后接入 PostgreSQL（`mohen_dev`）；TASK-0001 不要求先装 Docker。
 - 当前 `DATABASE_URL` 接本地 PG（5432），云端仅作备份（R6 决断：本地主库 / 云端备份）。

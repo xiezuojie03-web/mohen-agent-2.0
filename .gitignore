@@ -23,3 +23,7 @@ Thumbs.db
 # TASK-0007/0009 期的一次性探测脚本（探针/临时导表/对齐试验）。
 # 不删除（保留取证痕迹），但不入库：从今日起统一收在 _probes/ 下。
 pipelines/**/_probes/
+
+# 开发验证临时产物（截图等）统一收在 verification/，不入根目录；仅 README 约定索引入库。
+verification/*
+!verification/README.md
