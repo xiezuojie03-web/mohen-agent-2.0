@@ -1,0 +1,523 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>墨痕 · 五母题施工审阅 V0.1 · M1 完整实例</title><style>
+:root{--paper:#f7f3e9;--ink:#29473e;--muted:#677b70;--line:#cdd4c6;--accent:#aa6144;--width:30%;--height:34%;font:15px/1.6 system-ui,"Microsoft YaHei",sans-serif;color:var(--ink);background:#eceee6}*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit;color:inherit}button,a,select,input[type=range]{touch-action:manipulation}button{border:1px solid #bfcabc;background:#faf8f1;border-radius:7px;padding:7px 11px;cursor:pointer}button:hover{background:#e4eadd}button:disabled{opacity:.42;cursor:default}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}a{color:var(--ink)}h1,h2,h3,p{margin:0}h1,h2,h3{font-family:Georgia,"Songti SC","SimSun",serif;font-weight:500}button.primary{background:var(--ink);color:#fff;border-color:var(--ink)}small{font-size:11px}.review{background:#f8f8f1;border-bottom:1px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.review strong{margin-right:auto}.review button,.review select{font-size:12px}.review select{max-width:230px;padding:6px;background:var(--paper);border:1px solid var(--line)}.intro{padding:24px 28px 18px;display:flex;gap:28px;justify-content:space-between;align-items:end}.intro h1{font-size:28px}.intro p{font-size:12px;color:var(--muted);max-width:640px}.eyebrow{font-size:10px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:8px}.live{padding:0 24px 24px}.shell{height:max(620px,calc(100dvh - 200px));max-height:1100px;border:1px solid #bbc8b9;border-radius:12px;overflow:hidden;position:relative;background:var(--paper)}.brandbar{height:52px;position:absolute;inset:0 0 auto;z-index:20;background:#f9f6ed;display:flex;gap:16px;align-items:center;padding:0 18px;border-bottom:1px solid var(--line)}.brand{font-family:serif;font-size:23px;letter-spacing:5px}.story{font-size:12px;color:var(--muted)}.hub{display:flex;gap:6px;margin-left:auto}.hub button{font-size:12px;padding:5px 9px}.layout-menu{position:absolute;top:48px;right:12px;width:260px;background:#fcfaf3;border:1px solid #bdcbb9;box-shadow:0 12px 35px #1d372b22;padding:16px;border-radius:9px;z-index:50}.layout-menu strong{font-weight:500}.layout-menu .row{display:flex;gap:7px;margin:10px 0;align-items:center}.layout-menu input{width:100%}.layout-menu p{font-size:11px;color:var(--muted)}[hidden]{display:none!important}.world{position:absolute;inset:52px 0 0;display:grid;grid-template-columns:minmax(0,1fr) var(--width)}.stage{position:relative;overflow:hidden;min-width:0;min-height:0;background:#e4eadd}.art{position:absolute;inset:0;overflow:hidden}.companion{min-height:0;min-width:0;display:flex;flex-direction:column;border-left:1px solid #bfcab7;background:#faf7ee;position:relative;z-index:10}.panel-head{display:flex;align-items:center;padding:11px 18px;border-bottom:1px solid #d8ddcf;gap:10px;min-height:46px}.panel-head strong{font-family:serif;font-size:21px;font-weight:500}.panel-head small{margin-left:auto;color:var(--muted)}.drag{font-size:18px;cursor:grab;touch-action:none;user-select:none}.reading{overflow:auto;min-height:0;flex:1;overscroll-behavior:contain;padding:22px}.reading h2{font-size:clamp(21px,2vw,29px);line-height:1.42;margin-bottom:15px}.reading p{font-size:14px;color:#5e7366;margin-bottom:14px}.reading .small{font-size:11px;color:var(--muted)}.selection{padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:14px 0;font-size:13px}.selection strong{display:block;color:var(--accent);margin-bottom:4px}.actions{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}.actions button{font-size:12px;text-align:left}.advance{width:100%;text-align:left;padding:12px 14px;margin:7px 0}.backrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.backrow button{font-size:12px}.bottom{padding:9px 16px;border-top:1px solid var(--line);display:flex;gap:7px;flex-wrap:wrap}.bottom button{font-size:12px;padding:6px 9px}.question{display:flex;gap:6px;width:100%}.question input{min-width:0;flex:1;border:1px solid var(--line);border-radius:6px;background:white;padding:8px;font-size:12px}.feedback{font-size:12px;color:var(--accent);margin:10px 0}.divider{position:absolute;left:-5px;top:0;bottom:0;width:10px;cursor:col-resize;touch-action:none;z-index:12}.divider:after{content:'';position:absolute;left:4px;top:43%;height:44px;width:2px;background:#a4b29a}.closed .world,.floating .world{display:block}.closed .stage,.floating .stage{height:100%;width:100%}.closed .companion{display:none}.floating .companion{position:absolute;top:16px;right:16px;width:var(--width);min-width:290px;height:74%;max-width:calc(100% - 24px);max-height:calc(100% - 24px);border:1px solid #b8c6b1;border-radius:10px;box-shadow:0 16px 45px #18392d33}.floating .divider{display:none}.corner{display:none;position:absolute;right:0;bottom:0;width:16px;height:16px;border-right:4px solid #9aae8c;border-bottom:4px solid #9aae8c;cursor:nwse-resize;touch-action:none}.floating .corner{display:block}.hint{position:absolute;right:18px;top:70px;z-index:15;width:250px;padding:15px 18px;background:#fffaecee;border-left:3px solid var(--accent);box-shadow:0 8px 28px #30483c22;pointer-events:none}.hint small{color:var(--accent);display:block}.notice{font-size:11px;color:var(--muted);margin-top:10px}.stamp{position:absolute;left:18px;bottom:12px;font-size:10px;background:#f7f3e9db;padding:4px 8px;max-width:calc(100% - 36px);z-index:3;color:#617266}.stage-head{position:absolute;left:5%;top:5%;z-index:2;max-width:84%;pointer-events:none}.stage-head small{font-size:11px;letter-spacing:2px;color:#826b50}.stage-head h2{font-size:clamp(23px,3.4vw,42px);line-height:1.4;margin-top:7px}.stage-head p{font-size:12px;color:var(--muted);margin-top:10px}.scenic{width:100%;height:100%;position:absolute;inset:0}.scenic svg{width:100%;height:100%}.hit{cursor:pointer}.hit:hover .glow,.hit:focus-visible .glow{opacity:1}.hit:focus-visible{outline:none;filter:drop-shadow(0 0 4px #aa6144)}.glow{opacity:0;fill:#e1b46533;stroke:#aa6144;stroke-width:3}.object-label{font:20px system-ui;fill:#314f42}.sub-label{font:14px system-ui;fill:#607769}.scene-caption{position:absolute;left:7%;bottom:13%;font-size:14px;color:#5b7363;max-width:65%}.diagram{position:absolute;inset:27% 6% 13%;display:flex;align-items:center;justify-content:center;gap:10px}.node{position:relative;width:28%;text-align:center;padding:20px 8px;border:1px solid #bbcab6;background:#f7f3e9e8;border-radius:3px;cursor:pointer}.node.selected{border:2px solid var(--accent);box-shadow:0 0 0 5px #aa614414}.node svg{width:100%;height:100px;display:block}.node strong{display:block;font-family:serif;font-size:25px;font-weight:500}.node em{display:block;font-size:13px;font-style:normal;color:var(--accent);margin-top:8px}.node .detail{font-size:11px;color:var(--muted);margin-top:8px}.node.faded{opacity:.38}.link{width:10%;min-width:38px;text-align:center;color:var(--accent);font-size:12px;cursor:pointer}.link .arrow{font-size:27px;line-height:1.2}.plain-gap{width:6%;height:1px}.diagram-note{position:absolute;bottom:7%;left:7%;right:7%;text-align:center;font-size:12px;color:var(--muted)}.record{position:absolute;inset:23% 8% 13%;padding:30px 36px;background:#f8f4e9;border:1px solid #c9c9b4;box-shadow:0 12px 30px #3e534817;display:flex;flex-direction:column;justify-content:center}.record .meta{font-size:11px;color:var(--accent);letter-spacing:1px;border-bottom:1px solid #d6d5c3;padding-bottom:12px}.record .sentence{font-family:serif;font-size:clamp(24px,3.2vw,40px);line-height:1.8;margin:22px 0}.record .word{border-bottom:2px solid #ac7250;cursor:pointer}.record .word:focus-visible{outline:3px solid #aa6144}.record .tail{font-size:12px;color:#718071}.record strong{font-weight:500;color:var(--accent)}.storage{position:absolute;inset:24% 7% 13%;display:flex;align-items:center;justify-content:center;gap:25px}.storage svg{width:72%;height:100%}.storage .role{font-size:14px;writing-mode:vertical-rl;letter-spacing:4px;border-left:1px solid var(--accent);padding-left:18px}.compare{position:absolute;inset:24% 4% 12%;display:grid;grid-template-columns:1fr 1.2fr;gap:16px}.comparison{position:relative;background:#f5f1e6;border:1px solid #c9d0c0;overflow:hidden}.comparison>small{position:absolute;top:15px;left:15px;color:var(--accent)}.comparison .diagram{inset:25% 4% 15%;gap:4px}.comparison .node{padding:12px 4px;width:29%}.comparison .node svg{height:70px}.comparison .node strong{font-size:18px}.comparison .node em{font-size:11px}.comparison .link{min-width:18px;font-size:10px}.comparison .link .arrow{font-size:22px}.comparison .diagram-note{font-size:10px}.periods{position:absolute;inset:27% 9% 13%;display:grid;grid-template-columns:1.5fr 1fr;gap:24px;align-items:center}.period{padding:25px;border-left:3px solid #65806a;background:#f7f3e9}.period h3{font-size:24px}.period p{font-size:14px;color:var(--muted);margin:15px 0}.period.unknown{border-left:2px dashed #a9b39c;background:transparent}.conflicts{position:absolute;inset:26% 8% 16%;display:flex;gap:20px;align-items:stretch}.conflicts .candidate{flex:1;border-top:3px solid #b68c61;background:#f7f3e9;padding:22px;cursor:pointer}.candidate h3{font-size:24px;margin-bottom:15px}.candidate p{font-size:13px;color:#6b7a68}.revocation{position:absolute;inset:30% 10% 16%;border-left:3px solid var(--accent);padding:25px;background:#f7f3e9}.revocation h3{font-size:28px}.revocation p{margin-top:18px;color:var(--muted);font-size:15px}.today-tag{position:absolute;right:7%;bottom:17%;background:#f8f4e9;padding:14px 18px;border-left:2px solid var(--accent);font-size:12px}.handoff{position:absolute;inset:25% 9% 13%;display:flex;flex-direction:column;justify-content:center;gap:15px}.handoff h3{font-size:28px}.handoff .known{font-size:17px}.handoff .pending{font-size:14px;border-top:1px dashed #aab89b;padding-top:18px;color:var(--muted)}.evidence-fields{font-size:12px;border-top:1px solid var(--line);padding:12px 0;margin-top:10px}.evidence-fields dt{color:var(--accent);margin-top:10px}.evidence-fields dd{margin:3px 0}.trail-list{display:flex;flex-direction:column;gap:8px}.trail-list button{text-align:left;font-size:12px}.review-page{display:none;max-width:1440px;margin:auto;padding:28px}.review-page.active{display:block}.review-page>h1{font-size:33px;margin:12px 0}.review-page>p{color:var(--muted);max-width:900px;margin:12px 0 24px}.index-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.motif{padding:25px;border:1px solid #c2ccba;background:#f9f7ef}.motif h2{font-size:25px;margin:10px 0}.motif p{font-size:13px;margin:12px 0}.motif ol{padding-left:24px;font-size:13px;color:var(--muted)}.motif .status{font-size:11px;color:var(--accent)}.atlas-index{display:flex;gap:7px;flex-wrap:wrap;margin:18px 0}.atlas-index a{font-size:12px;background:#faf7ef;border:1px solid var(--line);padding:5px 8px;border-radius:5px;text-decoration:none}.sheet{padding:24px;margin:0 0 32px;background:#fcfaf3;border:1px solid #cbd4c1;scroll-margin-top:15px}.sheet h2{font-size:25px}.sheet-head{border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:20px;display:flex;gap:15px;align-items:baseline;flex-wrap:wrap}.sheet-head small{margin-left:auto;color:var(--muted)}.screens{display:grid;grid-template-columns:minmax(0,1fr) 234px;gap:24px}.desktop-shot{position:relative;width:100%;aspect-ratio:1440/900;overflow:hidden;border:1px solid #b6c3ad}.phone-shot{position:relative;width:234px;height:506.4px;overflow:hidden;border:1px solid #b6c3ad}.screens iframe{position:absolute;left:0;top:0;border:0;transform-origin:top left}.desktop-shot iframe{width:1440px;height:900px}.phone-shot iframe{width:390px;height:844px;transform:scale(.6)}.screen-title{font-size:11px;color:var(--muted);margin-bottom:8px}.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 24px;margin:22px 0}.spec-grid>div{font-size:12px;border-top:1px solid #dde2d5;padding-top:10px}.spec-grid b{display:block;color:var(--accent);font-weight:500;margin-bottom:5px}.sheet>button{font-size:12px}.doc-section{max-width:1000px;margin:30px 0}.doc-section h2{font-size:24px;margin:18px 0}.doc-section p,.doc-section li{font-size:14px;margin:10px 0}.doc-section table{width:100%;border-collapse:collapse;font-size:12px}.doc-section td,.doc-section th{border:1px solid #cdd4c6;padding:12px;text-align:left}.doc-section th{background:#e0e7d8}.embedded .review,.embedded .intro,.embedded .review-page,.embedded .notice{display:none!important}.embedded .live{padding:0}.embedded .shell{height:100dvh;min-height:0;max-height:none;border:0;border-radius:0}.reviewing .live,.reviewing .intro{display:none}.overlay-modal{padding:12px;border:1px solid #bcc7b4;background:var(--paper);max-width:97vw;max-height:97vh}.overlay-modal iframe{display:block;border:0;width:390px;height:844px;max-width:90vw}.overlay-modal>button{margin-bottom:10px}.view-status{color:var(--accent);font-size:12px}
+@media(max-width:760px){.review{padding:10px;gap:6px}.review strong{width:100%}.review select{max-width:175px}.intro{display:block;padding:18px 14px}.intro h1{font-size:25px}.intro p{margin-top:10px}.live{padding:0 8px 16px}.shell{height:844px;max-height:none}.brandbar{height:46px;padding:0 12px;gap:6px}.brand{font-size:20px}.story{display:none}.world{inset:46px 0 0;grid-template-columns:1fr;grid-template-rows:minmax(216px,var(--height)) minmax(0,1fr)}.stage{grid-row:2}.companion{grid-row:1;grid-column:1;border-left:0;border-bottom:1px solid #bfcab7}.panel-head{padding:5px 12px;min-height:33px}.panel-head strong{font-size:17px}.panel-head small{font-size:10px}.reading{padding:11px 14px}.reading h2{font-size:20px;margin-bottom:8px}.reading p{font-size:13px;margin-bottom:9px}.reading .eyebrow{font-size:9px;margin-bottom:4px}.selection{font-size:12px;padding:8px 0;margin:9px 0}.advance{font-size:12px;padding:8px 10px}.actions{margin:8px 0}.actions button,.backrow button{font-size:11px;padding:5px 8px}.bottom{padding:5px 10px;gap:5px}.bottom button{font-size:11px;padding:4px 7px}.question input{padding:5px}.divider{left:0;right:0;bottom:-5px;top:auto;height:10px;width:auto;cursor:row-resize}.divider:after{left:43%;top:4px;width:44px;height:2px}.floating .companion{left:12px;right:auto;top:12px;width:calc(100% - 24px);height:var(--height);min-height:216px;min-width:0;max-width:calc(100% - 24px)}.hint{top:61px;right:12px;width:230px;font-size:13px}.stage-head{top:5%;left:6%;max-width:88%}.stage-head small{font-size:9px;letter-spacing:1px}.stage-head h2{font-size:25px}.stage-head p{font-size:10px;margin-top:6px}.stamp{font-size:9px;left:10px;bottom:8px;max-width:calc(100% - 20px)}.scene-caption{font-size:12px;bottom:14%}.diagram{inset:25% 13% 11%;flex-direction:column;gap:5px}.node{width:100%;display:grid;grid-template-columns:70px 1fr;align-items:center;text-align:left;padding:8px 12px;min-height:75px}.node svg{width:68px;height:53px;grid-row:1/4}.node strong{font-size:19px}.node em{font-size:12px;margin-top:2px}.node .detail{display:none}.link{height:28px;width:auto;display:flex;gap:10px;align-items:center;font-size:11px;min-width:0}.link .arrow{transform:rotate(90deg);font-size:24px}.plain-gap{height:12px;width:1px}.diagram-note{bottom:7%;font-size:10px}.record{inset:25% 7% 13%;padding:20px}.record .sentence{font-size:25px;line-height:1.8;margin:15px 0}.record .meta{font-size:10px}.record .tail{font-size:10px}.storage{inset:25% 5% 12%;gap:10px}.storage svg{width:82%}.storage .role{font-size:12px;padding-left:10px;letter-spacing:2px}.compare{inset:24% 8% 12%;display:block}.comparison{height:100%}.comparison .diagram{inset:17% 10% 14%}.comparison .node{width:100%;padding:7px 10px;min-height:62px;grid-template-columns:55px 1fr}.comparison .node svg{height:45px;width:50px}.comparison .node strong{font-size:17px}.comparison .link{height:22px;font-size:10px}.comparison .diagram-note{font-size:10px;bottom:5%}.periods{inset:26% 8% 13%;grid-template-columns:1fr;gap:13px}.period{padding:13px 18px}.period h3{font-size:21px}.period p{font-size:12px;margin:8px 0}.conflicts{inset:27% 8% 15%;flex-direction:column;gap:14px}.conflicts .candidate{padding:14px}.candidate h3{font-size:20px;margin-bottom:5px}.candidate p{font-size:12px}.revocation{inset:29% 8% 15%;padding:19px}.revocation h3{font-size:25px}.revocation p{font-size:13px}.today-tag{right:7%;bottom:17%;padding:10px;font-size:10px}.handoff{inset:27% 8% 13%;gap:12px}.handoff h3{font-size:25px}.handoff .known{font-size:15px}.handoff .pending{font-size:12px}.review-page{padding:18px 10px}.review-page>h1{font-size:27px}.index-grid{grid-template-columns:1fr}.sheet{padding:14px}.screens{grid-template-columns:1fr}.phone-shot{margin:auto}.spec-grid{grid-template-columns:1fr}.sheet-head small{margin-left:0}.layout-menu{top:43px;right:7px}.evidence-fields{font-size:11px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}@media print{.review,.intro,.live,.sheet>button,.atlas-index{display:none!important}.review-page.active{display:block}.sheet{break-after:page}}
+@media(max-width:760px) and (max-height:720px){.stage-head h2{font-size:21px}.stage-head{top:4%}.diagram{inset:27% 13% 16%;gap:2px}.node{min-height:53px;padding:4px 10px;grid-template-columns:55px 1fr}.node svg{width:50px;height:38px}.node strong{font-size:17px;line-height:1.3}.node em{font-size:11px;line-height:1.3}.link{height:20px;flex-shrink:0}.diagram-note{bottom:8%;font-size:9px}.comparison .diagram{inset:19% 8% 16%;gap:2px}.comparison .node{min-height:44px;padding:3px 8px;grid-template-columns:45px 1fr}.comparison .node svg{height:30px;width:40px}.comparison .node strong{font-size:16px}.comparison .node em{font-size:10px}.comparison .link{height:15px}.comparison .diagram-note{bottom:3%;font-size:8px}.comparison>small{top:8px}.record .sentence{font-size:21px;line-height:1.5}.record{padding:16px}.record .tail{font-size:9px}.record .meta{font-size:9px}.storage .role{font-size:10px;letter-spacing:1px}.periods{gap:8px}.period{padding:9px 13px}.period h3{font-size:18px}.period p{margin:5px 0}.handoff h3,.revocation h3{font-size:22px}}</style></head><body>
+<nav class="review" aria-label="施工审阅工具 不属于用户界面"><strong>墨痕 · 五母题施工审阅 V0.1</strong><button data-review="experience">M1 完整体验</button><button data-review="atlas">逐帧图册 · 25 页</button><button data-review="index">五母题总索引</button><button data-review="spec">施工说明</button><select id="frameSelect" aria-label="审阅帧定位"></select><button id="phonePreview">手机操作</button></nav>
+<header class="intro"><div><div class="eyebrow">M1 / FIRST CONSTRUCTION SET</div><h1>一座仓屋背后的交接生活</h1></div><p>第一批：12 帧主线＋13 张分支与状态页，每页配横竖屏。所有对象与摘要均为假设演练；下方边框内为用户界面。其他四母题本批只有施工索引。</p></header>
+<main class="live"><div class="shell" id="shell"><header class="brandbar"><span class="brand">墨痕</span><span class="story">一座仓屋背后的交接生活</span><div class="hub"><button id="presence" aria-controls="panel" aria-expanded="true">收起墨痕</button><button id="layoutButton" aria-expanded="false" aria-controls="layoutMenu">布局与大小</button></div><section id="layoutMenu" class="layout-menu" hidden><strong>按你的习惯看</strong><div class="row"><button id="split">分区展开</button><button id="float">悬浮展开</button></div><label for="size">墨痕占比 <span id="sizeValue"></span></label><input id="size" type="range" min="24" max="44" step="1"><div class="row"><button id="resetSize">恢复默认大小</button><button id="peekButton">轻提示</button></div><p>内容前进、依据与返回都保留你的选择。悬浮时可拖动墨痕标题，或拖右下角调大小。</p></section></header>
+<div class="world" id="world"><section class="stage" aria-label="视觉舞台"><div id="art" class="art"></div><span class="stamp">假设演练 · 图形非史料，联系非道路</span></section><aside class="companion" id="panel" aria-label="墨痕叙事"><div id="divider" class="divider" role="separator" aria-label="调整墨痕占比" aria-valuemin="24" aria-valuemax="44" aria-valuenow="30" tabindex="0"></div><div class="panel-head"><span class="drag" id="drag" title="悬浮时拖动">⠿</span><strong>墨痕</strong><small id="panelMode">一起看一段日常</small></div><div class="reading" id="reading"></div><footer class="bottom"><button id="contextBack" hidden>返回原问题</button><button id="askButton">接着问</button><button id="trailButton">探索记录</button><form id="ask" class="question" hidden><input id="question" aria-label="继续提问" placeholder="例如：这是实际道路吗？"><button>提问</button></form></footer><div id="corner" class="corner" aria-label="调整悬浮大小"></div></aside></div><div id="hint" class="hint" hidden><small>墨痕 · 发现一个问题</small><span>一座仓屋，曾连接什么？</span></div></div><p class="notice">施工演练可操作：对象、关系、摘要、具体依据、前进回退、探索记录、追问示范、布局及大小。没有真实 Agent、GIS 或可导航路线。</p></main>
+<section id="index" class="review-page"></section><section id="atlas" class="review-page"></section><section id="spec" class="review-page"></section>
+<script>
+const FRAMES=[
+  {
+    "id": "F01",
+    "beat": "P01",
+    "title": "一座仓屋，曾连接什么？",
+    "scene": "scene",
+    "copy": "水边的仓屋，往往先被看成一座建筑。这次，我们顺着一份交接记录，看看它曾参与怎样的一件日常事。",
+    "nextlabel": "先认出这几处地方",
+    "focus": "仓屋为主焦点；河埠与市集退后。",
+    "delta": "故事起点；不预先画联系。",
+    "action": "点仓屋查看对象；墨痕推进至 F02。",
+    "claim": "",
+    "source": "",
+    "fallback": "此处为虚构对象示意，不以外观证明历史用途。",
+    "comp": "单景",
+    "group": "完整主线"
+  },
+  {
+    "id": "F02",
+    "beat": "P01",
+    "title": "先把三个地方认出来",
+    "scene": "objects",
+    "copy": "河埠、仓屋、市集。放在一起，还不能证明彼此有关系。真正把它们连起来的，是一次粮食交接。",
+    "nextlabel": "翻开交接记录",
+    "focus": "三个对象同框，仓屋保留选中。",
+    "delta": "从场景到少量对象，尚无线条。",
+    "action": "可选择三个对象；选择只更新墨痕中的对象说明。",
+    "claim": "",
+    "source": "",
+    "fallback": "对象身份冲突进入 B02，不合并同名对象。",
+    "comp": "单景",
+    "group": "完整主线"
+  },
+  {
+    "id": "F03",
+    "beat": "P02",
+    "title": "一条记录里，出现了三个地方",
+    "scene": "record",
+    "copy": "这份演练摘要记录：粮食由河埠运入仓屋，再向市集交付。我们先只解释它记下的这次交接。",
+    "nextlabel": "看粮食先到了哪里",
+    "focus": "排印摘要与三个名词对应，身份始终写明。",
+    "delta": "由对象切到摘要；不仿造古籍扫描件。",
+    "action": "点击摘要中的对象词定位墨痕说明；查看依据进入 E01。",
+    "claim": "EX1-C01 / EX1-C02",
+    "source": "EX1-S01",
+    "fallback": "若仅能证明对象存在而无活动记录，进入 B01。",
+    "comp": "原件细读的摘要替代",
+    "group": "完整主线"
+  },
+  {
+    "id": "F04",
+    "beat": "P03",
+    "title": "河埠与仓屋，被运粮这件事连接",
+    "scene": "first",
+    "copy": "在记录里的这次交接中，粮食从河埠运入仓屋。这里画的是活动方向，不是人当年走过的道路。",
+    "nextlabel": "为什么还要经过仓屋",
+    "focus": "河埠到仓屋的运入关系；市集暂时退后。",
+    "delta": "第一条有据联系出现，带活动名称及甲期限定。",
+    "action": "点运入联系看它支持什么；依据入口进入 E01。",
+    "claim": "EX1-C01",
+    "source": "EX1-S01",
+    "fallback": "无道路记录仍可作关系示意，不生成路线。",
+    "comp": "关系观察",
+    "group": "完整主线"
+  },
+  {
+    "id": "F05",
+    "beat": "P03",
+    "title": "仓屋让粮食可以先停一停",
+    "scene": "store",
+    "copy": "另一份使用摘要补上了仓屋的作用：临时存放。它在这次交接中不只是一处被经过的建筑，而是可以容纳粮食停留的地方。",
+    "nextlabel": "存放之后，粮食去了哪里",
+    "focus": "仓屋内部的粮袋示意与临时存放角色。",
+    "delta": "由运输联系转到对象用途；不推定具体停放天数。",
+    "action": "点粮袋或仓屋看用途；依据入口进入 E02。",
+    "claim": "EX1-C03",
+    "source": "EX1-S02",
+    "fallback": "缺使用记录时，只说明运入，不显示存放用途。",
+    "comp": "单景",
+    "group": "完整主线"
+  },
+  {
+    "id": "F06",
+    "beat": "P03",
+    "title": "从仓屋，再向市集交付",
+    "scene": "second",
+    "copy": "交接摘要还记下了后半段：仓屋向市集交付。先前的存放与后来的交付，把三个地点组织成了一段活动。",
+    "nextlabel": "把两段交接放在一起",
+    "focus": "仓屋到市集的交付；第一段保持淡色参照。",
+    "delta": "新增第二条独立关系，不扩大到全镇商贸。",
+    "action": "点交付关系核对摘要；与第一段分别绑定判断。",
+    "claim": "EX1-C02",
+    "source": "EX1-S01",
+    "fallback": "没有相应支持时，保留问题并撤去确定性表达。",
+    "comp": "关系观察",
+    "group": "完整主线"
+  },
+  {
+    "id": "F07",
+    "beat": "P04",
+    "title": "三个地方，各自承担一件事",
+    "scene": "network",
+    "copy": "河埠是这条记录中的运入起点，仓屋用于临时存放，市集是后续交付端点。地方之间的联系，来自人在其中所做的事。",
+    "nextlabel": "换一种方式看看它们",
+    "focus": "运入、存放、交付三种作用同时可见。",
+    "delta": "对象名称变为活动角色；不新增没有材料的人物。",
+    "action": "选角色查看对应判断；可打开探索记录返回前段。",
+    "claim": "EX1-C01 / EX1-C02 / EX1-C03",
+    "source": "EX1-S01 / EX1-S02",
+    "fallback": "参与者未记名，不补人物姓名、职业经历或心理。",
+    "comp": "关系观察",
+    "group": "完整主线"
+  },
+  {
+    "id": "F08",
+    "beat": "P04",
+    "title": "眼前是建筑，理解里多了一段生活",
+    "scene": "compare",
+    "copy": "单看三个地方，我们认出了名字；放回交接活动，就看到了它们怎样一起被使用。这个联系，不来自地图上的距离。",
+    "nextlabel": "这段联系能解释到什么时候",
+    "focus": "同一组对象的两种阅读：对象并置与活动组织。",
+    "delta": "横屏并置，竖屏同位切换；切换不改变用户布局。",
+    "action": "墨痕内切换“只看对象／看活动”；选中对象同步。",
+    "claim": "EX1-C01 / EX1-C02 / EX1-C03",
+    "source": "EX1-S01 / EX1-S02",
+    "fallback": "没有相应支持时，保留问题并撤去确定性表达。",
+    "comp": "对照",
+    "group": "完整主线"
+  },
+  {
+    "id": "F09",
+    "beat": "P05",
+    "title": "先把这次交接看清楚",
+    "scene": "scope",
+    "copy": "目前材料只支持示例甲期的这次交接。后来何时停止、是否转移，我们还不知道。我们可以带着已经看清的联系回到今天。",
+    "nextlabel": "回到今天的仓屋",
+    "focus": "甲期活动保持清晰，后来时段留白且不连成消失曲线。",
+    "delta": "收拢范围，跳过无据的关系变迁；不是故事失败。",
+    "action": "可继续回到今天；也可试读“只有对象材料”的分支。",
+    "claim": "EX1-C01 / EX1-C02",
+    "source": "EX1-S01",
+    "fallback": "M1-C03 未有支持，不能绘制关系消失的历史结局。",
+    "comp": "关系观察",
+    "group": "完整主线"
+  },
+  {
+    "id": "F10",
+    "beat": "P06",
+    "title": "今天可辨的是位置，不是全部过去",
+    "scene": "today",
+    "copy": "今日核对摘要只支持仓屋位置仍可辨认。它没有证明眼前全部构件仍是原物，也没有证明粮食交接延续到了今天。",
+    "nextlabel": "再看一次这处仓屋",
+    "focus": "今日仓屋位置与历史活动记忆区分呈现。",
+    "delta": "返回今日，不把历史运粮线继续画成今日事实。",
+    "action": "点位置标记核对今日材料；查看依据进入 E03。",
+    "claim": "EX1-C04",
+    "source": "EX1-S03",
+    "fallback": "无法定位时改为远程观察问题，不生成到访路线。",
+    "comp": "单景",
+    "group": "完整主线"
+  },
+  {
+    "id": "F11",
+    "beat": "P06",
+    "title": "下次遇见仓屋，试着多看一眼",
+    "scene": "observe",
+    "copy": "可以留意：一个存放空间怎样与交接地点发生联系？先看看入口与周围空间，再想想“运入、暂存、交付”这些动作。眼前的形态，是新的观察起点。",
+    "nextlabel": "把这段发现带走",
+    "focus": "一个观察对象及一句具体观察问题。",
+    "delta": "由历史关系转成今天的观看方法；不宣称朝向已经核验。",
+    "action": "墨痕选择“看入口／想交接”；舞台焦点相应改变。",
+    "claim": "EX1-C04",
+    "source": "EX1-S03",
+    "fallback": "本例没有真实地点与开放条件，提供观看方法，不提供导航。",
+    "comp": "单景",
+    "group": "完整主线"
+  },
+  {
+    "id": "F12",
+    "beat": "P06",
+    "title": "从一座仓屋，看到一段交接生活",
+    "scene": "closing",
+    "copy": "这次，我们看清了三个地方如何参与一次粮食交接。再遇到类似建筑，你也许会开始问：它曾让什么东西停留，又让什么生活继续？",
+    "nextlabel": "回看这段联系",
+    "focus": "仓屋与三种活动含义回响；今日问题作为落点。",
+    "delta": "主线完成，允许回看或继续不同方向的提问。",
+    "action": "可转问交接者的处境或今日承接；目标母题未绘制时明确待接续。",
+    "claim": "EX1-C01 / EX1-C02 / EX1-C03 / EX1-C04",
+    "source": "EX1-S01 / EX1-S02 / EX1-S03",
+    "fallback": "不把 M1 的关系解释当作 M3 的处境解释或 M5 的连续性证明。",
+    "comp": "单景",
+    "group": "完整主线"
+  },
+  {
+    "id": "E01",
+    "beat": "P02–P04",
+    "title": "运入与交付，分别凭什么？",
+    "scene": "evidence",
+    "copy": "两项联系都来自交接摘要，但分别记录。它支持活动的起点与终点，不支持具体街道、距离或持续时间。",
+    "nextlabel": "返回原问题",
+    "focus": "摘要第 1 条与 C01、C02 对应；原件未提供。",
+    "delta": "依据在墨痕阅读，舞台放大摘要及对应对象。",
+    "action": "点两条判断可切换高亮；返回恢复来源帧、对象与阅读位置。",
+    "claim": "EX1-C01 / EX1-C02",
+    "source": "EX1-S01",
+    "fallback": "没有相应支持时，保留问题并撤去确定性表达。",
+    "comp": "原件细读的摘要替代",
+    "group": "依据与返回"
+  },
+  {
+    "id": "E02",
+    "beat": "P03",
+    "title": "临时存放，来自用途记录",
+    "scene": "evidence",
+    "copy": "“临时存放”由仓屋使用摘要支持。交接记录里的“运入”，本身不足以推出具体用途、容量或停留天数。",
+    "nextlabel": "返回原问题",
+    "focus": "使用摘要第 1 条与仓屋用途相对应。",
+    "delta": "只显示用途依据，不继续增加关系。",
+    "action": "返回恢复先前选择；改变布局后返回仍采用新布局。",
+    "claim": "EX1-C03",
+    "source": "EX1-S02",
+    "fallback": "没有相应支持时，保留问题并撤去确定性表达。",
+    "comp": "原件细读的摘要替代",
+    "group": "依据与返回"
+  },
+  {
+    "id": "E03",
+    "beat": "P06",
+    "title": "今日材料，只证明了位置可辨",
+    "scene": "evidence",
+    "copy": "今日核对摘要支持仓屋位置对应。原物比例、功能是否连续以及能否入内，都没有提供材料。",
+    "nextlabel": "返回原问题",
+    "focus": "今日观察与过去活动分栏；两种时间不能混用。",
+    "delta": "依据模式承接今日问题。",
+    "action": "返回今日观察焦点，保留最新尺寸与停靠方式。",
+    "claim": "EX1-C04",
+    "source": "EX1-S03",
+    "fallback": "没有相应支持时，保留问题并撤去确定性表达。",
+    "comp": "原件细读的摘要替代",
+    "group": "依据与返回"
+  },
+  {
+    "id": "B01",
+    "beat": "P02",
+    "title": "只知道它们存在，还不能把它们连起来",
+    "scene": "insufficient",
+    "copy": "在这个替代材料条件下，我们只有三个对象的记录，没有交接记载。先看看对象本身，联系暂时保留为问题。",
+    "nextlabel": "返回原材料条件",
+    "focus": "三个对象分离；没有实线或运输箭头。",
+    "delta": "仅在此测试条件下移除活动支持；不改写原 EX1 数据。",
+    "action": "可点对象细读，或退出此分支回原记录。",
+    "claim": "",
+    "source": "TEST-M1-01",
+    "fallback": "分支是独立演练条件；退出恢复原材料包。",
+    "comp": "单景",
+    "group": "条件分支"
+  },
+  {
+    "id": "B02",
+    "beat": "P02",
+    "title": "同名的仓屋，可能不是同一处",
+    "scene": "conflict",
+    "copy": "这组替代条件中，一条摘要指东岸，另一条指西岸。对象身份尚未对齐，涉及仓屋的联系必须暂停。",
+    "nextlabel": "返回原材料条件",
+    "focus": "两个同名候选并置；受影响联系不显示。",
+    "delta": "增加身份冲突，不让系统偷偷选一个答案。",
+    "action": "分别选候选看不同记载；保留冲突并返回。",
+    "claim": "",
+    "source": "TEST-M1-02",
+    "fallback": "来源未核对前，暂停两项涉仓屋判断；不以多数投票合并。",
+    "comp": "对照",
+    "group": "条件分支"
+  },
+  {
+    "id": "B03",
+    "beat": "P03",
+    "title": "这项联系已被更正",
+    "scene": "refuted",
+    "copy": "在本独立测试分支中，核对发现原“仓屋”实指另一处对象。旧联系已撤回。继续回看时，也不能恢复被撤回的连线。",
+    "nextlabel": "回看更新后的问题",
+    "focus": "原联系移除；更正说明与剩余对象保留。",
+    "delta": "反证影响数据版本，历史回退不恢复旧事实。",
+    "action": "回到来源帧仍显示撤回状态；仅明确退出演练才恢复原材料包。",
+    "claim": "",
+    "source": "TEST-M1-03",
+    "fallback": "撤回影响仓屋身份对应及两项联系；所有相关帧统一更新。",
+    "comp": "单景",
+    "group": "条件分支"
+  },
+  {
+    "id": "Q01",
+    "beat": "跨转 M3",
+    "title": "同一段交接，换成交接者会怎样看？",
+    "scene": "handoff",
+    "copy": "原对象、甲期和交接活动可以带过去。但要解释交接者为何这样行动，还需要目的、任务和限制材料。M3 的完整故事将在下一批接续。",
+    "nextlabel": "返回这段联系",
+    "focus": "共用对象仍在；新增“任务与限制待补”标识。",
+    "delta": "问题发生变化，明确当前只完成转入边界。",
+    "action": "保留来自哪一帧；不把三条关系换个旁白当作 M3。",
+    "claim": "",
+    "source": "EX1-S01；新增处境材料待补",
+    "fallback": "本页仅为跨母题交接状态，不代表 M3 已完成。",
+    "comp": "单景",
+    "group": "跨母题入口"
+  },
+  {
+    "id": "Q02",
+    "beat": "跨转 M5",
+    "title": "今天留下的，分别是哪一种过去？",
+    "scene": "handoff",
+    "copy": "位置可辨，是已知的一层。原物、名称、功能或记忆是否承接，需要各自的材料。M5 将从这个问题继续，不能沿用旧交接证明今日延续。",
+    "nextlabel": "返回今天的观察",
+    "focus": "位置已知，其余维度待问；不展示统一真假分数。",
+    "delta": "携带当前仓屋与位置判断，不扩展支持范围。",
+    "action": "返回保留原对象；进入待绘制任务不产生伪完成记录。",
+    "claim": "EX1-C04",
+    "source": "EX1-S03",
+    "fallback": "本页仅为跨母题交接状态，不代表 M5 已完成。",
+    "comp": "单景",
+    "group": "跨母题入口"
+  },
+  {
+    "id": "U01",
+    "beat": "共用状态",
+    "title": "收起后保留当前问题",
+    "scene": "network",
+    "copy": "这张样板用于检查当前内容与用户选择是否分别保存。实际探索中，叙事不会自动把墨痕从分区切到悬浮，也不会替你重设大小。",
+    "nextlabel": "回到关系全貌",
+    "focus": "状态样板以 M1 关系内容为基准。",
+    "delta": "只在独立样板初始化状态，连续探索继承用户选择。",
+    "action": "统一控制区改变显隐、布局与尺寸；轨迹在墨痕内按需出现。",
+    "claim": "EX1-C01 / EX1-C02 / EX1-C03",
+    "source": "EX1-S01 / EX1-S02",
+    "fallback": "没有相应支持时，保留问题并撤去确定性表达。",
+    "comp": "单景",
+    "group": "共用状态"
+  },
+  {
+    "id": "U02",
+    "beat": "共用状态",
+    "title": "轻提示与统一唤醒入口",
+    "scene": "scene",
+    "copy": "这张样板用于检查当前内容与用户选择是否分别保存。实际探索中，叙事不会自动把墨痕从分区切到悬浮，也不会替你重设大小。",
+    "nextlabel": "回到关系全貌",
+    "focus": "状态样板以 M1 关系内容为基准。",
+    "delta": "只在独立样板初始化状态，连续探索继承用户选择。",
+    "action": "统一控制区改变显隐、布局与尺寸；轨迹在墨痕内按需出现。",
+    "claim": "EX1-C01 / EX1-C02 / EX1-C03",
+    "source": "EX1-S01 / EX1-S02",
+    "fallback": "没有相应支持时，保留问题并撤去确定性表达。",
+    "comp": "单景",
+    "group": "共用状态"
+  },
+  {
+    "id": "U03",
+    "beat": "共用状态",
+    "title": "悬浮阅读与舞台视域",
+    "scene": "network",
+    "copy": "这张样板用于检查当前内容与用户选择是否分别保存。实际探索中，叙事不会自动把墨痕从分区切到悬浮，也不会替你重设大小。",
+    "nextlabel": "回到关系全貌",
+    "focus": "状态样板以 M1 关系内容为基准。",
+    "delta": "只在独立样板初始化状态，连续探索继承用户选择。",
+    "action": "统一控制区改变显隐、布局与尺寸；轨迹在墨痕内按需出现。",
+    "claim": "EX1-C01 / EX1-C02 / EX1-C03",
+    "source": "EX1-S01 / EX1-S02",
+    "fallback": "没有相应支持时，保留问题并撤去确定性表达。",
+    "comp": "单景",
+    "group": "共用状态"
+  },
+  {
+    "id": "U04",
+    "beat": "共用状态",
+    "title": "用户调整大小后继续探索",
+    "scene": "network",
+    "copy": "这张样板用于检查当前内容与用户选择是否分别保存。实际探索中，叙事不会自动把墨痕从分区切到悬浮，也不会替你重设大小。",
+    "nextlabel": "回到关系全貌",
+    "focus": "状态样板以 M1 关系内容为基准。",
+    "delta": "只在独立样板初始化状态，连续探索继承用户选择。",
+    "action": "统一控制区改变显隐、布局与尺寸；轨迹在墨痕内按需出现。",
+    "claim": "EX1-C01 / EX1-C02 / EX1-C03",
+    "source": "EX1-S01 / EX1-S02",
+    "fallback": "没有相应支持时，保留问题并撤去确定性表达。",
+    "comp": "单景",
+    "group": "共用状态"
+  },
+  {
+    "id": "U05",
+    "beat": "共用状态",
+    "title": "从探索记录回到曾经的问题",
+    "scene": "trail",
+    "copy": "这张样板用于检查当前内容与用户选择是否分别保存。实际探索中，叙事不会自动把墨痕从分区切到悬浮，也不会替你重设大小。",
+    "nextlabel": "回到关系全貌",
+    "focus": "状态样板以 M1 关系内容为基准。",
+    "delta": "只在独立样板初始化状态，连续探索继承用户选择。",
+    "action": "统一控制区改变显隐、布局与尺寸；轨迹在墨痕内按需出现。",
+    "claim": "EX1-C01 / EX1-C02 / EX1-C03",
+    "source": "EX1-S01 / EX1-S02",
+    "fallback": "没有相应支持时，保留问题并撤去确定性表达。",
+    "comp": "单景",
+    "group": "共用状态"
+  }
+];
+const $=s=>document.querySelector(s),mobile=()=>matchMedia('(max-width:760px)').matches,params=new URLSearchParams(location.search),embedded=params.has('embed'),sample=params.has('sample');
+const records={
+ 'EX1-S01':{name:'交接簿摘要',location:'演练摘要第 1 条',body:'粮食由河埠运入仓屋，再向市集交付。',support:'运入与交付两项活动联系；仅限示例甲期这次交接。',unknown:'真实出处、原件、具体日期、人物姓名和行走路线未提供。'},
+ 'EX1-S02':{name:'仓屋使用摘要',location:'演练摘要第 1 条',body:'这次交接所用仓屋，承担粮食的临时存放。',support:'仓屋在这次活动中的临时存放用途。',unknown:'存放天数、容量、具体空间形制和制度未提供。'},
+ 'EX1-S03':{name:'今日核对摘要',location:'演练摘要第 1 条',body:'与历史仓屋对应的位置，今天仍可辨认。',support:'今日位置与历史仓屋的身份对应；仅作为演练条件。',unknown:'精确坐标、原构件、连续使用情况及实地开放条件未提供。'}};
+const objects={dock:['河埠','交接摘要里的运入起点。图上的位置仅作示意。'],store:['仓屋','交接与使用摘要分别说明运入、临时存放和后续交付。'],market:['市集','记录中的后续交付端点。不据此推断全部销售活动。'],first:['运入联系','EX1-C01：河埠 → 仓屋。它是一项活动判断，不是道路。'],second:['交付联系','EX1-C02：仓屋 → 市集。与前一项联系分开记录。'],grain:['临时存放','EX1-C03：用途判断，由 EX1-S02 支持；停留时长未知。'],east:['东岸仓屋','TEST-M1-02-A 的身份说法；尚未与另一记录对齐。'],west:['西岸仓屋','TEST-M1-02-B 的身份说法；暂不合并。']};
+let pref={presence:'open',mode:'split',wide:30,tall:34,x:null,y:null,fw:null,fh:null};
+try{if(!sample)Object.assign(pref,JSON.parse(localStorage.getItem('mohen-m1-v01-preference')||'{}'))}catch{}
+let state={frame:FRAMES.some(f=>f.id===params.get('frame'))?params.get('frame'):'F01',selected:'',compare:'activity',look:'entrance',scroll:0,revoked:false,reply:''},history=[],visited=[],returns=[];
+if(sample){if(state.frame==='U01')pref.presence='hidden';if(state.frame==='U02')pref.presence='peek';if(state.frame==='U03')pref.mode='floating';if(state.frame==='U04'){pref.wide=39;pref.tall=44}}
+if(state.frame==='B03')state.revoked=true;
+if(params.get('mode'))pref.mode=params.get('mode');if(params.get('presence'))pref.presence=params.get('presence');
+if(embedded)document.body.classList.add('embedded');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const frame=()=>FRAMES.find(f=>f.id===state.frame),snap=()=>({...state,scroll:$('#reading').scrollTop});
+function persist(){if(!sample)try{localStorage.setItem('mohen-m1-v01-preference',JSON.stringify(pref))}catch{}}
+function applyLayout(){const sh=$('#shell');sh.classList.toggle('closed',pref.presence!=='open');sh.classList.toggle('floating',pref.mode==='floating');sh.style.setProperty('--width',pref.wide+'%');sh.style.setProperty('--height',pref.tall+'%');$('#presence').textContent=pref.presence==='open'?'收起墨痕':'展开墨痕';$('#presence').setAttribute('aria-expanded',pref.presence==='open');$('#hint').hidden=pref.presence!=='peek';$('#hint span').textContent=frame().title;const size=mobile()?pref.tall:pref.wide;$('#size').min=mobile()?28:24;$('#size').max=mobile()?48:44;$('#size').value=size;$('#sizeValue').textContent=size+'%';$('#divider').setAttribute('aria-valuenow',size);$('#divider').setAttribute('aria-orientation',mobile()?'horizontal':'vertical');const p=$('#panel');p.style.left=p.style.top=p.style.right=p.style.width=p.style.height='';if(pref.mode==='floating'){if(pref.x!==null){p.style.left=Math.max(8,Math.min(pref.x,$('#world').clientWidth-150))+'px';p.style.right='auto'}if(pref.y!==null)p.style.top=Math.max(8,Math.min(pref.y,$('#world').clientHeight-100))+'px';if(pref.fw)p.style.width=Math.min(pref.fw,$('#world').clientWidth-24)+'px';if(pref.fh)p.style.height=Math.min(pref.fh,$('#world').clientHeight-24)+'px'}$('#drag').style.opacity=pref.mode==='floating'?'1':'.25';}
+function chooseMode(mode){pref.mode=mode;pref.presence='open';pref.x=pref.y=pref.fw=pref.fh=null;applyLayout();persist()}
+function setSize(n){const k=mobile()?'tall':'wide';pref[k]=Math.max(mobile()?28:24,Math.min(mobile()?48:44,n));pref.fw=pref.fh=null;applyLayout();persist()}
+function navigate(id,opt={}){if(!FRAMES.some(f=>f.id===id))return;if(opt.branch)returns.push(snap());history.push(snap());state={...state,frame:id,selected:'',scroll:0,reply:''};if(id==='B03')state.revoked=true;render();}
+function goBack(){if(!history.length){const n=Number(state.frame.slice(1));if(state.frame.startsWith('F')&&n>1)navigate('F'+String(n-1).padStart(2,'0'));return;}const old=history.pop();const revoked=state.revoked;state={...old,revoked:revoked||old.revoked};render();$('#reading').scrollTop=state.scroll}
+function returnBranch(){const old=returns.pop();if(old){const revoked=state.revoked;state={...old,revoked:revoked||old.revoked};render();$('#reading').scrollTop=state.scroll}else{navigate(frame().id==='E02'?'F05':frame().id==='E03'?'F10':'F07')}}
+function exitTest(){const old=returns.pop();state=old?{...old,revoked:false}:{...state,frame:'F07',revoked:false};history=history.filter(s=>!s.frame.startsWith('B'));render();$('#reading').scrollTop=state.scroll||0}
+function actButton(label,action,cls=''){return `<button class="${cls}" data-action="${action}">${label}</button>`}
+function svgWrap(inner,w=1000,h=700){return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="假设对象的施工图形示意">${inner}</svg>`}
+function house(x=0,y=0,s=1){return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-100 0 L0 -53 L107 0 V114 H-100Z" fill="#eee6d0" stroke="#758870" stroke-width="2"/><path d="M-112 1 L0 -65 L118 0 L105 16 L0 -45 L-100 17Z" fill="#526f61"/><path d="M-21 48 H27 V114 H-21Z" fill="#788b75"/><path d="M-17 51 H23 V110 H-17Z" fill="#364f46"/><path d="M-73 48 H-46 V78 H-73Z M54 48 H79 V78 H54Z" fill="#a9b198"/><path d="M-58 48 V78 M67 48 V78" stroke="#5e765f" stroke-width="3"/><path d="M-114 114 H115" stroke="#768570" stroke-width="4"/></g>`}
+function dock(x=0,y=0,s=1){return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-80 4 L65 4 L96 52 H-103Z" fill="#bdb69d"/><path d="M-83 16 H70 M-90 30 H80 M-98 44 H90" stroke="#edf0df" stroke-width="4"/><path d="M-84 90 Q5 140 88 90Z" fill="#647f6d"/><path d="M-64 89 Q5 98 66 89" fill="none" stroke="#384f45" stroke-width="3"/></g>`}
+function market(x=0,y=0,s=1){return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-77 20 L-51 -15 H60 L83 20Z" fill="#bba982"/><path d="M-77 20 H83 V35 H-77Z" fill="#8f9b7a"/><path d="M-61 35 V112 M67 35 V112" stroke="#7e8a71" stroke-width="7"/><path d="M-73 80 H80 V111 H-73Z" fill="#d5c4a0"/><path d="M-55 70 Q-38 37 -20 70 M0 70 Q20 30 41 70" fill="#b39b68"/></g>`}
+function icon(type){return svgWrap((type==='dock'?dock(120,60,.8):type==='market'?market(120,60,.9):house(120,65,.9)),240,190)}
+function objGroup(id,shape){return `<g class="hit" data-obj="${id}" tabindex="0" role="button" aria-label="查看${objects[id][0]}">${shape}</g>`}
+function scenic(kind='scene'){const m=mobile(),w=m?400:1000,c=w*.51,y=m?340:370;let out=`<rect width="${w}" height="700" fill="#e0e8dc"/><path d="M0 270 Q${w*.3} 175 ${w*.6} 253 T${w} 237 V460 H0Z" fill="#c7d4bd"/><path d="M0 350 Q${w*.38} 282 ${w} 350 V480 H0Z" fill="#d9dfc9"/><path d="M0 ${m?492:533} Q${w*.45} ${m?470:510} ${w} ${m?498:540} V700 H0Z" fill="#9ab8ad"/>`;
+ for(let i=0;i<9;i++)out+=`<path d="M${w*.13+i*8} ${490+i*18} q${w*.3} 12 ${w*.65} 0" fill="none" stroke="#dce8d8" opacity=".65"/>`;
+ out+=`<path d="M0 ${m?482:523} Q${w*.45} ${m?460:500} ${w} ${m?488:530}" fill="none" stroke="#e9dfc2" stroke-width="25"/>`;
+ if(kind!=='today'&&kind!=='observe')out+=objGroup('market',market(m?327:800,m?346:349,m?.56:.9));
+ out+=objGroup('store',house(c,y,m?.88:1.2)+`<rect class="glow" x="${c-(m?103:145)}" y="${y-82}" width="${m?205:290}" height="${m?197:230}" rx="7"/>`);
+ if(kind!=='today')out+=objGroup('dock',dock(m?78:237,m?436:452,m?.58:.9));
+ out+=`<text x="${c}" y="${y+148}" text-anchor="middle" class="object-label">${kind==='today'?'仓屋位置可辨':'仓屋'}</text>`;
+ if(kind==='today')out+=`<circle cx="${c}" cy="${y+118}" r="9" fill="#aa6144"/><path d="M${c-110} ${y+117} H${c+110}" stroke="#aa6144" stroke-width="2" stroke-dasharray="7 5"/>`;
+ if(kind==='observe'){out+=state.look==='entrance'?`<circle cx="${c}" cy="${y+73}" r="36" fill="none" stroke="#aa6144" stroke-width="3"/>`:`<path d="M${m?105:260} ${y+110} Q${c-60} ${y+20} ${c} ${y+80}" fill="none" stroke="#aa6144" stroke-width="3" stroke-dasharray="8 7"/>`}
+ out+=`<circle cx="${m?-30:62}" cy="305" r="${m?95:115}" fill="#869d7e"/><circle cx="${m?-27:5}" cy="369" r="${m?78:105}" fill="#728e71"/>`;
+ return `<div class="scenic">${svgWrap(out,w,700)}</div>${kind==='today'?'<div class="today-tag">仅支持位置对应<br>原物与持续使用未证</div>':''}`}
+function node(id,role='',faded=false){return `<div class="node ${state.selected===id?'selected':''} ${faded?'faded':''}" role="button" tabindex="0" data-obj="${id}" aria-label="${objects[id][0]} ${role}">${icon(id)}<strong>${objects[id][0]}</strong>${role?`<em>${role}</em>`:''}<span class="detail">${id==='store'?'使用记载':'活动记载'}</span></div>`}
+function link(id,label){return `<div class="link" data-obj="${id}" tabindex="0" role="button" aria-label="${label}关系"><span>${label}</span><span class="arrow">→</span></div>`}
+function diagram(type='network'){const active=!state.revoked&&!['objects','insufficient'].includes(type);return `<div class="diagram">${node('dock',active?'运入起点':'',type==='second')}${active?link('first','运入'):'<div class="plain-gap"></div>'}${node('store',active?(type==='first'?'交接节点':'临时存放'):'')}${active&&type!=='first'?link('second','交付'):'<div class="plain-gap"></div>'}${node('market',active&&type!=='first'?'交付端点':'',type==='first')}</div><div class="diagram-note">${state.revoked?'仓屋身份已更正 · 受影响联系已撤回':active?'示例甲期 · 仅本次交接 · 箭头是活动方向':'对象并置 · 联系尚未展示'}</div>`}
+function recordStage(id,detail=false){const r=records[id];let body=esc(r.body);for(const [word,key] of [['河埠','dock'],['仓屋','store'],['市集','market']])body=body.replaceAll(word,`<span class="word" data-obj="${key}" tabindex="0" role="button">${word}</span>`);return `<div class="record"><div class="meta">${id} · ${r.name} · ${r.location}</div><div class="sentence">${body}</div><div class="tail">假设材料排印摘要 · 无原件扫描图<br>${detail?r.support:'对象词可点选；具体依据在墨痕内查看。'}</div></div>`}
+function head(kicker,title,sub=''){return `<div class="stage-head"><small>${kicker}</small><h2>${title}</h2>${sub?`<p>${sub}</p>`:''}</div>`}
+function renderArt(){const f=frame();let out='';const t=f.scene;const titles={scene:['从今天的一眼开始','一座仓屋背后'],objects:['先认对象 暂不作结论','三个地方'],record:['示例甲期 一次粮食交接','记录带来第一项发现'],first:['示例甲期 活动方向示意','运入仓屋'],store:['用途来自独立记录','临时存放'],second:['示例甲期 活动方向示意','再向市集交付'],network:['一段活动 组织了三个地方','运入 · 存放 · 交付'],compare:['同一组对象 两种阅读','从地方名字到生活联系'],scope:['解释范围','这一期 · 这一次'],today:['回到今天','位置仍可辨认'],observe:['把理解带回观看','多看一眼入口与周围'],closing:['今天多了一种观看方式','看见地方之间的生活'],evidence:['按具体判断查看依据','材料说到了哪里'],insufficient:['替代材料条件 测试分支','对象已知 联系待查'],conflict:['身份冲突 测试分支','这是不是同一座仓屋？'],refuted:['反证更正 测试分支','不能再沿用这项联系'],handoff:['新的提问方向','从这里继续问'],trail:['回到曾经的问题','这段发现是怎样展开的']};const th=titles[t];out+=head(...th);
+ if(['scene','today','observe','closing'].includes(t))out+=scenic(t==='closing'?'scene':t);
+ else if(['objects','first','second','network','insufficient'].includes(t))out+=diagram(t);
+ else if(t==='record')out+=recordStage('EX1-S01');
+ else if(t==='evidence')out+=recordStage(f.id==='E02'?'EX1-S02':f.id==='E03'?'EX1-S03':'EX1-S01',true);
+ else if(t==='store'){let sacks='';for(let i=0;i<7;i++){let x=190+(i%4)*82,y=260+Math.floor(i/4)*85;sacks+=`<g data-obj="grain" class="hit" tabindex="0" role="button" aria-label="临时存放的粮食示意"><path d="M${x-18} ${y-50} Q${x-65} ${y+2} ${x-34} ${y+33} Q${x} ${y+46} ${x+34} ${y+33} Q${x+65} ${y+2} ${x+18} ${y-50}Z" fill="#c1ad7b" stroke="#8c8766" stroke-width="2"/><path d="M${x-19} ${y-49} H${x+19}" stroke="#6f795f" stroke-width="5"/></g>`}out+=`<div class="storage">${svgWrap(`<path d="M50 100 L310 5 L570 100 V465 H50Z" fill="#e9dfc4" stroke="#809075" stroke-width="3"/><path d="M28 105 L310 -10 L592 105" stroke="#526f61" stroke-width="23" fill="none"/><path d="M110 155 H505 M110 155 V420 M505 155 V420" stroke="#a9aa87" stroke-width="8"/>${sacks}<text x="310" y="440" text-anchor="middle" font-size="20" fill="#5f755f">数量仅为绘图示意</text>`,620,490)}<div class="role">这里不只让粮食经过，也让粮食停留</div></div>`}
+ else if(t==='compare'){out+=`<div class="compare"><div class="comparison" ${mobile()&&state.compare!=='objects'?'hidden':''}><small>只看对象</small>${diagram('objects')}</div><div class="comparison" ${mobile()&&state.compare!=='activity'?'hidden':''}><small>放回活动</small>${diagram('network')}</div></div>`}
+ else if(t==='scope')out+=`<div class="periods"><div class="period"><h3>示例甲期</h3><p>一次交接<br>运入 → 存放 → 交付</p><small>有范围的解释，已经成立</small></div><div class="period unknown"><h3>后来呢？</h3><p>变化材料未提供<br>不画消失或持续的结论</p><small>带着已知回到今天</small></div></div>`;
+ else if(t==='conflict')out+=`<div class="conflicts"><div class="candidate" data-obj="east" tabindex="0" role="button"><h3>东岸 · 仓屋</h3><p>测试摘要 A 的位置说法<br>尚未对齐身份</p></div><div class="candidate" data-obj="west" tabindex="0" role="button"><h3>西岸 · 仓屋</h3><p>测试摘要 B 的位置说法<br>不能自动合并</p></div></div>`;
+ else if(t==='refuted')out+=`<div class="revocation"><small>TEST-M1-03 · 独立演练</small><h3>旧联系已撤回</h3><p>记录所指仓屋不是原先对应的对象。<br>回到旧问题，也须使用更新后的判断。</p><p>保留对象与问题，暂停涉仓屋的两项联系。</p></div>`;
+ else if(t==='handoff')out+=`<div class="handoff"><h3>${f.id==='Q01'?'如果从交接者的位置看':'位置之外，还留下了什么'}</h3><div class="known">带过去：${f.id==='Q01'?'三个对象、甲期、这次交接':'当前仓屋、位置对应判断'}</div><div class="pending">${f.id==='Q01'?'待补：目的、任务与具体限制':'待补：原物、名称、功能或记忆的各自材料'}<br>目标母题完整画面待下一批绘制</div></div>`;
+ else if(t==='trail')out+=`<div class="handoff"><h3>从仓屋出发</h3><div class="known">看见对象 → 找到记录 → 理解作用</div><div class="pending">回到今天，多了一种观看方式<br>从墨痕的探索记录中返回某一步</div></div>`;
+ if(state.revoked&&!['refuted','conflict','insufficient'].includes(t))out+=`<div class="today-tag">测试中的判断已更新<br>旧联系不随回退恢复</div>`;
+ $('#art').innerHTML=out;
+}
+function selectionText(){if(!state.selected||!objects[state.selected])return '';const [name,body]=objects[state.selected];return `<div class="selection"><strong>${name}</strong>${state.revoked?'此测试条件下身份对应已更正，不能继续沿用受影响的活动判断。':state.frame==='B01'?'当前测试只支持对象存在，不支持交接关系或用途。':state.frame==='B02'&&!['east','west'].includes(state.selected)?'当前测试有身份冲突，涉及仓屋的判断暂不采用。':body}</div>`}
+function renderReading(){const f=frame();const branch=!f.id.startsWith('F')&&!f.id.startsWith('U');let out=`<div class="eyebrow">${f.group==='完整主线'?'一座仓屋背后的交接生活':f.group}</div><h2>${f.title}</h2><p>${state.revoked&&/^F0[4-9]$/.test(f.id)?'此测试中的仓屋身份对应已被更正。先前的活动解释暂停；保留原问题和对象，等待重新核对。':f.copy}</p>${selectionText()}`;
+ if(state.revoked&&!f.id.startsWith('B'))out+=`<div class="selection"><strong>此测试中的判断已更新</strong>仓屋身份对应被更正，受影响的关系暂停。回退不会恢复旧联系。${actButton('退出反证演练','exit-test')}</div>`;
+ if(f.id.startsWith('E')){const id=f.id==='E02'?'EX1-S02':f.id==='E03'?'EX1-S03':'EX1-S01',r=records[id];out+=`<dl class="evidence-fields"><dt>材料与定位</dt><dd>${id} · ${r.name}<br>${r.location}</dd><dt>当前判断</dt><dd>${f.claim}</dd><dt>支持范围</dt><dd>${r.support}</dd><dt>没有提供</dt><dd>${r.unknown}</dd><dt>身份与核验</dt><dd>假设材料，非原始史料；无真实档案号。仅在演练设定内检查逻辑。</dd></dl>`;if(f.id==='E01')out+=`<div class="actions">${actButton('运入：C01','select:first')}${actButton('交付：C02','select:second')}</div>`}
+ else if(f.id==='F08')out+=`<div class="actions">${actButton('只看对象','compare:objects',state.compare==='objects'?'primary':'')}${actButton('放回活动','compare:activity',state.compare==='activity'?'primary':'')}</div>`;
+ else if(f.id==='F11')out+=`<div class="actions">${actButton('留意入口','look:entrance',state.look==='entrance'?'primary':'')}${actButton('想想交接空间','look:handover',state.look==='handover'?'primary':'')}</div>`;
+ if(f.id==='F12')out+=`<div class="actions">${actButton('交接者为什么这样行动？','branch:Q01')}${actButton('今天还留下哪些过去？','branch:Q02')}</div>`;
+ if(f.id==='U05'){const list=visited.filter(x=>x.startsWith('F'));const ids=list.length?list:['F01','F03','F05','F07','F10'];out+=`<div class="trail-list">${ids.map(id=>actButton(FRAMES.find(x=>x.id===id).title,'trail:'+id)).join('')}</div>`}
+ if(f.id.startsWith('F')&&['scene','objects','first','second','network','compare'].includes(f.scene))out+=`<details class="small"><summary>选择画面对象</summary><div class="actions">${actButton('河埠','select:dock')}${actButton('仓屋','select:store')}${actButton('市集','select:market')}</div></details>`;
+ if(state.reply)out+=`<div class="feedback" role="status">${esc(state.reply)}</div>`;
+ if(f.id.startsWith('F')){const n=Number(f.id.slice(1));out+=actButton(f.nextlabel+' →','next','primary advance');if(f.source)out+=`<div class="actions">${actButton('看看这项判断的依据','evidence')}</div>`;out+=`<div class="backrow">${n>1?actButton('回到前一个问题','back'):''}${f.id==='F09'?actButton('材料只有对象时怎么办？','branch:B01'):''}</div>`}
+ else if(branch&&!/^[EQ]/.test(f.id))out+=actButton(f.nextlabel+' ↩',f.id==='B03'?'return':f.id.startsWith('B')?'exit-test':'return','primary advance');else if(!/^[EQ]/.test(f.id)&&f.id!=='U05')out+=actButton('看关系全貌 →','goto:F07','primary advance');
+ if(f.id.startsWith('B'))out+=`<p class="small">此页是独立替代材料演练，不改写 EX1 原材料包。</p>`;
+ if(f.id==='B03')out+=actButton('明确退出反证演练','exit-test');
+ $('#contextBack').hidden=!(/^[EQ]/.test(f.id)||f.id==='U05');$('#reading').innerHTML=out;$('#panelMode').textContent=f.id.startsWith('E')?'当前判断的依据':f.id.startsWith('B')?'替代条件演练':f.id.startsWith('Q')?'问题转入 · 待接续':'一起看一段日常';
+}
+function render(){if(!visited.includes(state.frame))visited.push(state.frame);renderArt();renderReading();applyLayout();$('#frameSelect').value=state.frame;$('#reading').scrollTop=state.scroll||0;}
+function evidence(){const f=frame();const id=f.id==='F05'||state.selected==='grain'?'E02':['F10','F11','F12'].includes(f.id)?'E03':'E01';navigate(id,{branch:true})}
+function dispatch(a){if(a==='next'){let n=Number(state.frame.slice(1));navigate(n===12?'F07':'F'+String(n+1).padStart(2,'0'));}else if(a==='back')goBack();else if(a==='evidence')evidence();else if(a==='return')returnBranch();else if(a==='exit-test')exitTest();else if(a.startsWith('branch:'))navigate(a.split(':')[1],{branch:true});else if(a.startsWith('goto:'))navigate(a.split(':')[1]);else if(a.startsWith('select:'))selectObject(a.split(':')[1]);else if(a.startsWith('compare:')){state.compare=a.split(':')[1];state.scroll=$('#reading').scrollTop;renderArt();renderReading();$('#reading').scrollTop=state.scroll}else if(a.startsWith('look:')){state.look=a.split(':')[1];state.scroll=$('#reading').scrollTop;renderArt();renderReading();$('#reading').scrollTop=state.scroll}else if(a.startsWith('trail:')){const id=a.split(':')[1];const previous=[...history].reverse().find(x=>x.frame===id);history.push(snap());state=previous?{...previous,revoked:state.revoked||previous.revoked}:{...state,frame:id,selected:'',scroll:0};render()}}
+function selectObject(id){if(!objects[id])return;state.selected=id;state.scroll=$('#reading').scrollTop;if(pref.presence!=='open'){pref.presence='open';persist()}render();const s=$('#reading .selection');if(s)$('#reading').scrollTop=s.offsetTop-$('#reading').offsetTop-10;}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-action]');if(a)dispatch(a.dataset.action);const o=e.target.closest('[data-obj]');if(o)selectObject(o.dataset.obj)});document.addEventListener('keydown',e=>{const o=e.target.closest('[data-obj]');if(o&&['Enter',' '].includes(e.key)){e.preventDefault();selectObject(o.dataset.obj)}});
+$('#contextBack').onclick=returnBranch;
+$('#presence').onclick=()=>{pref.presence=pref.presence==='open'?'hidden':'open';applyLayout();persist()};$('#layoutButton').onclick=()=>{const m=$('#layoutMenu');m.hidden=!m.hidden;$('#layoutButton').setAttribute('aria-expanded',!m.hidden)};$('#split').onclick=()=>chooseMode('split');$('#float').onclick=()=>chooseMode('floating');$('#peekButton').onclick=()=>{pref.presence='peek';applyLayout();persist();$('#layoutMenu').hidden=true;$('#layoutButton').setAttribute('aria-expanded','false')};$('#size').oninput=e=>setSize(+e.target.value);$('#resetSize').onclick=()=>{pref.wide=30;pref.tall=34;pref.x=pref.y=pref.fw=pref.fh=null;applyLayout();persist()};$('#askButton').onclick=()=>{$('#ask').hidden=!$('#ask').hidden;if(!$('#ask').hidden)$('#question').focus()};$('#trailButton').onclick=()=>navigate('U05',{branch:true});
+$('#ask').onsubmit=e=>{e.preventDefault();const q=$('#question').value.trim();if(!q)return;$('#question').value='';$('#ask').hidden=true;if(/人|谁|限制|任务|为什么这样/.test(q)){navigate('Q01',{branch:true});return}if(/留下|原物|延续|真假/.test(q)){navigate('Q02',{branch:true});return}if(/依据|来源|证据/.test(q)){evidence();return}state.reply=/路|距离|导航/.test(q)?'这不是实际道路。箭头只表示交接方向；材料没有提供可还原路线。':'这个追问已保留在当前问题下。本演练只预置“路线、依据、行动者、今日承接”四类回应，未接入真实 Agent。';renderReading();$('#reading').scrollTop=$('#reading').scrollHeight;};
+function drag(el,handler){el.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();el.setPointerCapture(e.pointerId);const box=$('#panel').getBoundingClientRect(),world=$('#world').getBoundingClientRect();const start={x:e.clientX,y:e.clientY,box,world};const move=v=>handler(v,start);const end=()=>{el.removeEventListener('pointermove',move);el.removeEventListener('pointerup',end);el.removeEventListener('pointercancel',end);persist()};el.addEventListener('pointermove',move);el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end)})}
+drag($('#divider'),(e,s)=>setSize(Math.round(mobile()?(e.clientY-s.world.top)/s.world.height*100:(s.world.right-e.clientX)/s.world.width*100)));$('#divider').onkeydown=e=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();setSize((mobile()?pref.tall:pref.wide)+(['ArrowLeft','ArrowDown'].includes(e.key)?1:-1));persist()}};
+drag($('#drag'),(e,s)=>{if(pref.mode!=='floating')return;pref.x=Math.max(8,Math.min(s.world.width-s.box.width-8,s.box.left-s.world.left+e.clientX-s.x));pref.y=Math.max(8,Math.min(s.world.height-s.box.height-8,s.box.top-s.world.top+e.clientY-s.y));applyLayout()});drag($('#corner'),(e,s)=>{if(pref.mode!=='floating')return;pref.fw=Math.max(mobile()?270:290,Math.min(s.world.right-s.box.left-8,s.box.width+e.clientX-s.x));pref.fh=Math.max(216,Math.min(s.world.bottom-s.box.top-8,s.box.height+e.clientY-s.y));applyLayout()});
+window.addEventListener('resize',()=>{applyLayout();renderArt();scaleSheets()});document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('#layoutMenu').hidden=true;$('#layoutButton').setAttribute('aria-expanded','false')}});
+const MOTIFS=[
+ ['M1','关系世界','一座仓屋背后的交接生活','本批已绘制 · 12 帧主线，13 张分支与状态页',['F01–F02 认出对象，提出联系问题','F03 读交接摘要，找到活动','F04–F06 分清运入、存放与交付','F07–F08 看见对象如何组成生活联系','F09 限定时期，跳过无据变化','F10–F12 回到今天，获得具体观看方法'],'EX1 交接、用途与今日对应记录；E01–E03 分别绑定'],
+ ['M2','地方结构','同样长度的河岸，登岸口为什么不同','下一批待绘制 · 以下为帧编排输入',['P01 从一个登岸口进入分布问题','P02 画范围、长度分母与 6／2 记录','P03 区分条件线索与待检解释','P04 连接卸货需要、新增行动与新增 4 处','P05 说明原有设施与未解释范围','P06 回到一个入口，看到整体组织'],'EX2 假设范围、清单、增设与使用材料；无坐标，不补假点位'],
+ ['M3','生活地图','为何不是直接交付，而要先去验货','下一批待绘制 · 以下为帧编排输入',['P01 明确一次送货任务与行动者范围','P02 两个节点分别承担验货和交付','P03 画出验货凭据对交付的限制','P04 按任务重排重要性，不伪造路线','P05 缺可比行动者时跳过群体对照','P06 把按使用者目的看空间的方法带回今天'],'EX3 次序、要求与实际交付记录；需与 M1 跨转时另核活动身份'],
+ ['M4','生成过程','雨天也能继续交接，是怎样实现的','下一批待绘制 · 以下为帧编排输入',['P01 从能持续交接的状态发问','P02 对照露天中止与有顶继续的记录','P03 区分雨天条件与建设可能性','P04 画建设完成、遮雨条件与继续活动','P05 说明不能解释全地方繁荣','P06 再看设施，理解行动如何改变可能性'],'EX4 前状态、工程完成与雨天使用材料；先后与作用分开'],
+ ['M5','历史延续','桥重修以后，哪些过去仍然留下','下一批待绘制 · 以下为帧编排输入',['P01 从今日桥与具体追问进入','P02 选取所问的承接层面','P03 分开位置、构件、名称与使用证据','P04 画已知更换节点与中间记录空白','P05 修正整体真假印象，不做综合分数','P06 留意修复痕迹，形成细致观看'],'EX5 工程、今日核对与两时点同名记录；不声称中间从未中断']
+];
+function buildIndex(){ $('#index').innerHTML=`<div class="eyebrow">DRAWING REGISTER / FIVE MOTIFS</div><h1>五个方向，同一套双组件</h1><p>总索引说明每个母题需要画出什么。本批仅 M1 有完整画面；M2–M5 的条目是下一批编排输入，不计作已完成施工页。每个节拍可拆成多帧，实际帧数不预先统一。</p><div class="index-grid">${MOTIFS.map(m=>`<article class="motif"><div class="status">${m[0]} · ${m[3]}</div><h2>${m[1]}</h2><p>${m[2]}</p><ol>${m[4].map(x=>`<li>${x}</li>`).join('')}</ol><p>${m[5]}</p>${m[0]==='M1'?'<button data-review="atlas">打开 M1 全部施工页 →</button>':'<span class="view-status">尚无完整画面，不设伪体验入口</span>'}</article>`).join('')}</div>`;}
+function embedURL(id,mode=''){const u=new URL(location.href);u.search='';u.hash='';u.searchParams.set('embed','1');u.searchParams.set('sample','1');u.searchParams.set('frame',id);if(mode)u.searchParams.set('mode',mode);return u.href;}
+function spatial(f){return '不启用历史地图 · '+(f.scene==='record'||f.scene==='evidence'?'材料为排印摘要，无原图可读':'对象与活动关系示意，无配准资格')}
+function specCells(f){return [['① 看见与理解',f.focus],['② 相对变化',f.delta],['③ 操作与反馈',f.action],['④ 依据与数据',`${f.claim||'不输出确定性历史判断'}；${f.source||'对象与场景均为虚构示意'}。`],['⑤ 不足与返回',f.fallback+' 依据与分支返回恢复原问题；用户布局始终使用最新选择。'],['⑥ 本帧验收','横竖屏主焦点可辨；舞台不摆通用按钮；对象角色不靠长旁白独自承担。'+(f.scene==='first'||f.scene==='network'?'隐藏活动名称或时期会误导为地图路线，二者必须保留。':'')],['⑦ 构图与空间',`${f.comp}；${spatial(f)}。`],['⑧ 布局与状态','横屏左舞台右墨痕，默认 70:30；竖屏上墨痕下舞台，默认 34:66（最小 216px）。共享尺寸规则见施工说明。独立样板初态不驱动连续探索。']]}
+let atlasBuilt=false;
+function buildAtlas(){if(atlasBuilt)return;$('#atlas').innerHTML=`<div class="eyebrow">25 SHEETS / 50 VIEWS / M1</div><h1>逐页、逐帧，检查理解怎样发生</h1><p>先审阅 F01–F12 的连续故事，再检查依据、条件分支和共用状态。每页左侧为 1440×900，右侧为 390×844；点击“操作这一帧”进入交互。帧定位与测试条件只属于审阅工具。</p><div class="atlas-index">${FRAMES.map(f=>`<a href="#sheet-${f.id}">${f.id} ${f.title}</a>`).join('')}</div>${FRAMES.map(f=>`<article class="sheet" id="sheet-${f.id}"><header class="sheet-head"><span class="eyebrow">M1-${f.id}</span><h2>${f.title}</h2><small>${f.group} · ${f.beat}</small></header><div class="screens"><div><div class="screen-title">1440×900 · 横屏施工</div><div class="desktop-shot"><iframe loading="lazy" title="${f.id} 横屏" src="${embedURL(f.id)}"></iframe></div></div><div><div class="screen-title">390×844 · 竖屏施工</div><div class="phone-shot"><iframe loading="lazy" title="${f.id} 竖屏" src="${embedURL(f.id)}"></iframe></div></div><div class="spec-grid">${specCells(f).map(([k,v])=>`<div><b>${k}</b>${v}</div>`).join('')}</div><button data-open="${f.id}">操作这一帧 →</button></article>`).join('')}`;atlasBuilt=true;new ResizeObserver(scaleSheets).observe($('#atlas'));requestAnimationFrame(scaleSheets)}
+function scaleSheets(){document.querySelectorAll('.desktop-shot').forEach(c=>{c.firstElementChild.style.transform=`scale(${c.clientWidth/1440})`})}
+function buildSpec(){$('#spec').innerHTML=`<div class="eyebrow">CONSTRUCTION NOTES / V0.1</div><h1>画面、状态和材料怎样对应</h1><p>本批是通用方法的 M1 施工样稿。它沿用 V0.9.1 双组件及交互方向；假设材料不进入真实事实库，固定回应不冒充 Agent。</p><div class="doc-section"><h2>一 已交付与未交付</h2><p>M1：12 帧完整主线、3 页依据、3 页替代材料分支、2 页跨母题转入边界、5 页共用状态，共 25 页 50 个横竖屏视图。M2–M5：仅总索引，完整图稿待下一批。</p><p>画面为自绘 SVG 与排印摘要；不是历史建筑复原，不是古籍扫描，不是现代实测地图。本轮不修改 V0.9.1 与 01/03/06 原型。</p><h2>二 尺寸与行为</h2><table><tr><th>项目</th><th>横屏</th><th>竖屏</th></tr><tr><td>基准尺寸</td><td>1440×900</td><td>390×844；另检查 390×667</td></tr><tr><td>顶部统一控制区</td><td>52px</td><td>46px</td></tr><tr><td>分区</td><td>左舞台、右墨痕；默认 30%，可调 24–44%</td><td>上墨痕、下舞台；默认 34%，可调 28–48%，最小 216px</td></tr><tr><td>墨痕正文</td><td>14px，内边距 22px</td><td>13px，内边距 11×14px；正文与叙事操作一起滚动</td></tr><tr><td>舞台对象名称</td><td>主要关系图 25px</td><td>主要关系图 19px，纵向重排而非缩小全图</td></tr><tr><td>悬浮</td><td>默认右上 16px，宽取用户占比，高 74%</td><td>左上 12px，宽减 24px，高取用户占比；可拖移</td></tr><tr><td>对照</td><td>两种组织同时呈现</td><td>同位切换，操作位于墨痕，保留所选对象</td></tr><tr><td>超长内容</td><td colspan="2">墨痕内部滚动；舞台不随正文变长。依据返回恢复原滚动位置；短屏确保输入与返回可达。</td></tr></table><h2>三 记录与判断</h2><table><tr><th>实例判断</th><th>主稿要求</th><th>材料与范围</th></tr><tr><td>EX1-C01 河埠运入仓屋</td><td>M1-C01 活动联系</td><td>EX1-S01 第1条；只限这次交接</td></tr><tr><td>EX1-C02 仓屋向市集交付</td><td>M1-C01 活动联系</td><td>EX1-S01 第1条；单独记录第二项关系</td></tr><tr><td>EX1-C03 仓屋临时存放</td><td>M1-C02 对象作用</td><td>EX1-S02 第1条；不含停留时长</td></tr><tr><td>EX1-C04 今日位置可辨</td><td>M1-C04 今日对应</td><td>EX1-S03 第1条；不含原物或连续使用</td></tr><tr><td>关系后来改变</td><td>M1-C03 变化</td><td>无材料；F09 限定范围，不虚构变迁</td></tr></table><p>实例编号 EX1-C03 不是主稿编号 M1-C03；前者是本例的用途判断，后者是通用的变化要求。代码中的记录是演练数据，正式实施须映射现有模型，当前未完成该映射。</p><h2>四 状态与返回</h2><p>内容快照保存帧、所选对象、对照侧、观察焦点、滚动及追问。用户显隐、停靠、尺寸与悬浮几何另存；前进、回退、依据和轨迹不覆盖它。独立图册样板可设置初态，但不写入正式偏好。</p><p>反证演练使受影响判断在本次测试中持续撤回，回到旧帧仍应用新判断；只有明确“退出反证演练”才恢复原 EX1 材料包。冲突和不足分支使用独立测试身份，不假装 EX1 真实发生了变化。</p><h2>五 构图与空间覆盖</h2><table><tr><th>能力</th><th>本批对应</th></tr><tr><td>单景</td><td>F01、F05、F10–F12</td></tr><tr><td>对照</td><td>F08、B02；手机同位切换或上下并置</td></tr><tr><td>原件细读</td><td>F03、E01–E03 为摘要替代；真实原件缩放与定位尚未验证</td></tr><tr><td>关系观察</td><td>F04、F06–F09；方向与角色显著</td></tr><tr><td>连续镜头</td><td>本批主线手动换帧，不冒充连续影像；专门能力样板继续参考 V0.9.1 C05</td></tr><tr><td>全局／局部配准</td><td>本例无对应材料，不启用；参考 V0.9.1 S01、S02</td></tr><tr><td>锚点关联</td><td>本例没有两张可对应地图，不启用；参考 V0.9.1 S03</td></tr><tr><td>空间重建</td><td>本例只有关系，没有几何重建资格；参考 V0.9.1 S04</td></tr><tr><td>原图叙事</td><td>本例无原图，不以摘要冒充；参考 V0.9.1 S05</td></tr></table><h2>六 交付检查</h2><p>应逐帧检查是否能看出对象角色、是否误读为道路、是否保留材料身份；测试依据返回、跨题返回、布局保持、对照切换和反证后的旧帧回看。实际测试结果另见配套说明，未作真实史料或首次用户理解验收。</p><p>下一批继续绘制 M2–M5，再据完整需求收拢二三级能力。M1 的三节点图不作为其他母题的统一模板。</p></div>`}
+function showReview(which){document.querySelectorAll('.review-page').forEach(e=>e.classList.remove('active'));document.body.classList.toggle('reviewing',which!=='experience');if(which==='atlas')buildAtlas();if(which!=='experience')$('#'+which).classList.add('active');requestAnimationFrame(scaleSheets);}
+document.addEventListener('click',e=>{const r=e.target.closest('[data-review]');if(r){showReview(r.dataset.review);window.scrollTo(0,0)}const f=e.target.closest('[data-open]');if(f){showReview('experience');navigate(f.dataset.open);window.scrollTo(0,0)}});
+$('#frameSelect').innerHTML=FRAMES.map(f=>`<option value="${f.id}">M1-${f.id} · ${f.title}</option>`).join('');$('#frameSelect').onchange=e=>{showReview('experience');navigate(e.target.value)};$('#phonePreview').onclick=()=>{const d=document.createElement('dialog');d.className='overlay-modal';d.innerHTML=`<button>关闭手机预览</button><iframe title="手机可操作预览" src="${embedURL(state.frame,pref.mode)}"></iframe>`;document.body.append(d);d.querySelector('button').onclick=()=>{d.close();d.remove()};d.showModal()};
+buildIndex();buildSpec();render();if(params.get('view'))showReview(params.get('view'));
+window.MOHEN_TEST={state:()=>JSON.parse(JSON.stringify(state)),preference:()=>JSON.parse(JSON.stringify(pref)),frames:FRAMES.map(f=>f.id),navigate,returnBranch,exitTest,showReview};
+</script></body></html>

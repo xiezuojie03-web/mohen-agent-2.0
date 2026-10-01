@@ -1,0 +1,1896 @@
+﻿# Project Structure Report (file level, clean)
+
+Generated: 2026-10-01 14:43:42
+Scope: real project source/docs/data/config. Build caches (node_modules, .next*, dist, build, *.pack, *.map, *.nft.json, trace) excluded.
+Note: directories fully expanded to file level. Bulk data/asset dirs with more than 500 files are summarized by type.
+
+
+================================================================
+## D:\work Buddy\2026-08-23-23-12-38\mohen-agent-2.0
+## TOTAL (excl. caches): ~561 files (.md=151, .png=101, .mjs=72, .json=67, .ts=47, .docx=32, .csv=20, .tsx=13, .html=11, .cjs=10, .txt=8, .sql=7, .ps1=4, .py=3, .gitkeep=3, .yaml=2, .css=2, .pptx=1, .local=1, .example=1, .gitignore=1, .mp4=1, .rar=1, .mts=1, .gitattributes=1)
+================================================================
+
+[FILE] .env.example
+[FILE] .env.local
+[FILE] .gitattributes
+[FILE] .gitignore
+[FILE] CONTEXT.md
+[FILE] CURRENT.md
+[FILE] HANDOVER_WorkBuddy-to-CodeBuddy_接管基线与授权迁移_V1.0.md
+[FILE] package.json
+[FILE] PACKAGE_MANIFEST.json
+[FILE] playwright.config.ts
+[FILE] pnpm-lock.yaml
+[FILE] pnpm-workspace.yaml
+[FILE] README.md
+[FILE] stack.txt
+[FILE] structure.txt
+[FILE] vitest.config.ts
+[DIR] apps/
+   [DIR] web/
+      [FILE] next.config.mjs
+      [FILE] next-env.d.ts
+      [FILE] package.json
+      [FILE] tsconfig.json
+      [DIR] app/
+         [FILE] layout.tsx
+         [FILE] page.tsx
+         [FILE] styles.css
+         [DIR] api/
+            [DIR] mohen/
+               [DIR] ask/
+                  [FILE] route.ts
+               [DIR] materials/
+                  [FILE] route.ts
+         [DIR] experience/
+            [DIR] jinze-water-net/
+               [FILE] AskBar.tsx
+               [FILE] beats.ts
+               [FILE] culturalWorldProjection.ts
+               [FILE] experience.css
+               [FILE] ExperienceShell.tsx
+               [FILE] humanLabels.ts
+               [FILE] IntentGuide.tsx
+               [FILE] intentTranslation.ts
+               [FILE] MohenPresence.tsx
+               [FILE] page.tsx
+               [FILE] surfaceRegistry.tsx
+               [DIR] surfaces/
+                  [FILE] EvidenceNarrativeSurfaces.tsx
+                  [FILE] PresentDayPhotoSurface.tsx
+                  [FILE] SpatialSurfaces.tsx
+                  [FILE] types.ts
+         [DIR] foundation/
+            [FILE] page.tsx
+      [DIR] data/
+         [DIR] experience/
+            [FILE] jinze-3min-experience-followup-patch.json
+            [FILE] jinze-3min-experience-script.json
+            [FILE] jinze-3min-experience-state-sequence.json
+            [FILE] jinze-cultural-world-008.json
+            [FILE] jinze-historical-spatial-slice.json
+            [FILE] jinze-present-day-photos.json
+      [DIR] lib/
+         [DIR] mohen-agent/
+            [FILE] retrieve.ts
+         [DIR] mohen-visual/
+            [FILE] index.ts
+            [FILE] label-layout.ts
+            [FILE] spatial-canvas.tsx
+            [FILE] visual-grammar.ts
+[DIR] archive/
+   [DIR] analysis-2026-09-26/
+      [FILE] gitlog.txt
+      [FILE] MoHen_DB_Migration_Map_V0.1_2026-09-26.md
+      [FILE] 冻结JSON机制解读_2026-09-26.md
+      [FILE] 人文数据操作系统_实现差距分析_2026-09-26.md
+      [FILE] 数据库架构设计_2026-09-26.md
+      [FILE] 项目文件树与归属图_2026-09-26.md
+[DIR] data/
+   [DIR] exports/
+      [FILE] .gitkeep
+      [FILE] audit-ledger-gap.md
+      [FILE] gov-audit-captures.rar
+      [FILE] jinze-3min-experience-evidence-trace.csv
+      [FILE] jinze-3min-experience-followup-patch.json
+      [FILE] jinze-3min-experience-readiness.md
+      [FILE] jinze-3min-experience-script.json
+      [FILE] jinze-3min-experience-script.md
+      [FILE] jinze-3min-experience-state-sequence.json
+      [FILE] jinze-data-factory-report.md
+      [FILE] jinze-discovery-candidates.md
+      [FILE] jinze-evidence-closure-human-review.csv
+      [FILE] jinze-evidence-closure-matrix.csv
+      [FILE] jinze-evidence-closure-readiness.md
+      [FILE] jinze-evidence-closure-search-log.csv
+      [FILE] jinze-evidence-recovery-report.md
+      [FILE] jinze-experience-composition2-readiness.md
+      [FILE] jinze-experience-renderer-readiness.md
+      [FILE] jinze-historical-change-inventory.csv
+      [FILE] jinze-historical-feature-anchors.csv
+      [FILE] jinze-historical-feature-inventory.csv
+      [FILE] jinze-historical-map-acquisition-report.md
+      [FILE] jinze-historical-map-audit.md
+      [FILE] jinze-historical-map-human-review.csv
+      [FILE] jinze-historical-map-index-1597-1934.csv
+      [FILE] jinze-historical-spatial-human-review.csv
+      [FILE] jinze-historical-spatial-relations.csv
+      [FILE] jinze-historical-spatial-slice.json
+      [FILE] jinze-historical-spatial-slice-readiness.md
+      [FILE] jinze-historical-spatial-source-matrix.csv
+      [FILE] jinze-humanistic-visual-grammar-readiness.md
+      [FILE] jinze-human-review-decision-log.md
+      [FILE] jinze-human-review-pack.csv
+      [FILE] jinze-knowledge-inventory.md
+      [FILE] jinze-knowledge-paths.md
+      [FILE] jinze-manual-acquisition-backlog.csv
+      [FILE] jinze-map-breakthrough-candidates.md
+      [FILE] jinze-map-human-review-decision-log.md
+      [FILE] jinze-object-coordinate-evidence.md
+      [FILE] jinze-research-backlog.csv
+      [FILE] jinze-review-queue.csv
+      [FILE] jinze-s1-evidence-report.md
+      [FILE] jinze-scc-historical-visual-candidates.md
+      [FILE] jinze-scc-legacy-provenance-audit.md
+      [FILE] jinze-scc-visual-crosswalk.csv
+      [FILE] jinze-shl-endpoint-dataset-matrix.csv
+      [FILE] jinze-shl-knowledge-alignment.md
+      [FILE] jinze-spatial-human-review.csv
+      [FILE] jinze-spatial-inventory.md
+      [FILE] jinze-spatial-readiness.md
+      [FILE] jinze-spatial-review-decision-log.md
+      [FILE] jinze-stage-gates.md
+      [FILE] jinze-vertical-slice-readiness.md
+      [FILE] jinze-visual-evidence.md
+      [FILE] jinze-visual-human-review.csv
+      [FILE] jinze-visual-inventory.md
+      [FILE] jinze-visual-linkage.md
+      [FILE] jinze-visual-readiness.md
+      [DIR] correction-map-01/
+         [FILE] 01-home.png
+         [FILE] 09-followup.png
+         [FILE] s01-s01-today-hook.png
+         [FILE] s02-s02-time-travel.png
+         [FILE] s03-s03-two-bridges-water.png
+         [FILE] s04-s04-temple-enters.png
+         [FILE] s05-s05-evidence-reveal.png
+         [FILE] s06-s06-change-through-time.png
+         [FILE] s07-s07-return-today.png
+         [FILE] s08-s08-next-question.png
+         [FILE] walkthrough.json
+      [DIR] gov-audit-captures/
+         [FILE] 01-home.png
+         [FILE] 02-beat1-hook.png
+         [FILE] 03-beat2-timeshift.png
+         [FILE] 04-beat3-relation.png
+         [FILE] 05-beat4-evidence.png
+         [FILE] 06-beat5-return.png
+         [FILE] 08-inspector-mode.png
+         [FILE] 09-s07-return-today.png
+         [FILE] 10-s08-next-question.png
+         [FILE] 11-followup-replan.png
+         [FILE] 12-after-return.png
+         [FILE] beats-text.txt
+         [FILE] full-walkthrough.txt
+         [FILE] full-walkthrough-8scenes.txt
+      [DIR] task-0013-captures/
+         [FILE] 01-s01-modern-exact.png
+         [FILE] 02-s02-coords-fading.png
+         [FILE] 03-s02-relational.png
+         [FILE] 04-s05-evidence-reveal.png
+         [FILE] 05-s08-fact-interpretation-unknown.png
+         [FILE] 06-followup-patch.png
+      [DIR] task-0014-captures/
+         [FILE] 01-beat01-hook-current-space.png
+         [FILE] 02-beat02-time-space-shift.png
+         [FILE] 03-beat03-bridge-water-temple.png
+         [FILE] 04-beat04-conflict-reveal.png
+         [FILE] 05-beat04-temporal-change.png
+         [FILE] 06-beat05-return-discovery.png
+         [FILE] 07-followup-patch.png
+         [FILE] 08-approximate-area.png
+         [FILE] 09-historical-map-native.png
+      [DIR] task-0015-captures/
+         [FILE] 01-current-geographic.png
+         [FILE] 02-current-to-historical-exit.png
+         [FILE] 03-relational-bridge-water.png
+         [FILE] 04-relational-temple-enters-unproven.png
+         [FILE] 05-relational-focus.png
+         [FILE] 06-temporal-landscape.png
+         [FILE] 07-temporal-1938-1992-focus.png
+         [FILE] 08-return-to-present.png
+      [DIR] task-0015-fix-captures/
+         [FILE] 01-clean-runtime-entry.png
+         [FILE] 02-relational-runtime.png
+         [FILE] 03-temporal-runtime.png
+         [FILE] 04-return-runtime.png
+      [DIR] task-0016-captures/
+         [FILE] 01-followup-before.png
+         [FILE] 02-replan-relational.png
+         [FILE] 03-replan-return-present.png
+      [DIR] task-0017-captures/
+         [FILE] 01-verify_historical_relation.png
+         [FILE] 02-inspect_evidence.png
+         [FILE] 03-explore_temporal_change.png
+         [FILE] 04-propose_present_action.png
+   [DIR] fixtures/
+      [FILE] source-providers.json
+   [DIR] raw/
+      [FILE] .gitkeep
+      [FILE] README.md
+   [DIR] staging/
+      [FILE] .gitkeep
+[DIR] decisions/
+   [FILE] ADR-001-greenfield-local-first.md
+   [FILE] ADR-002-cultural-world-claim-epistemic-model.md
+   [FILE] ADR-003-agent-runtime-layered-architecture.md
+[DIR] governance/
+   [FILE] MoHen_Agent_2.0_Architecture-Candidate-Backlog_V1.0.md
+   [FILE] MoHen_Humanistic_Data_OS_and_Dual_Skill_Architecture_V1.0.docx
+   [FILE] MoHen_Humanistic_Data_OS_Database_Architecture_V1.1.docx
+   [FILE] MoHen_Product_Architecture_Evolution_Constitution_V1.0.docx
+   [FILE] MoHen_Project_Constitution_and_Dual_Line_Collaboration_V1.0.docx
+   [FILE] 墨痕_Agent_2.0_PHASE-GATE-01_Phase-I-to-II_Architecture-Gate_V1.0.md
+   [DIR] archive/
+      [FILE] MoHen_Agent_2.0_PHASE-II_Execution-Plan_V1.1.docx
+      [FILE] MoHen_Agent_2.0_Roadmap_V4.9_Governance-Sync.docx
+   [DIR] experience/
+      [FILE] EXP-DESIGN-01-Final-Decision-and-Experience-Transformation-Contract-V1.0.docx
+[DIR] legacy/
+   [DIR] manifests/
+      [FILE] README.md
+[DIR] packages/
+   [DIR] agent-runtime/
+      [FILE] package.json
+      [FILE] tsconfig.json
+      [DIR] src/
+         [FILE] index.ts
+         [FILE] llm.ts
+         [FILE] select.ts
+         [FILE] types.ts
+         [FILE] understand.ts
+   [DIR] data-access/
+      [FILE] package.json
+      [FILE] tsconfig.json
+      [DIR] src/
+         [FILE] index.d.mts
+         [FILE] index.mjs
+         [FILE] index.ts
+   [DIR] domain/
+      [FILE] package.json
+      [FILE] tsconfig.json
+      [DIR] src/
+         [FILE] index.ts
+   [DIR] experience-engine/
+      [FILE] package.json
+      [FILE] tsconfig.json
+      [DIR] src/
+         [FILE] composition-recipes.ts
+         [FILE] evidence-aware-replan.ts
+         [FILE] experience-beats.ts
+         [FILE] experience-runtime.ts
+         [FILE] index.ts
+         [FILE] surface-eligibility.ts
+   [DIR] ui/
+      [FILE] package.json
+      [FILE] tsconfig.json
+      [DIR] src/
+         [FILE] index.ts
+[DIR] pipelines/
+   [DIR] cultural-world/
+      [FILE] seed-cw02-cluster.mjs
+      [FILE] verify-cw02-cluster.mjs
+   [DIR] evidence/
+      [FILE] gates.mjs
+      [FILE] README.md
+      [FILE] recover.mjs
+      [FILE] recovery-rules.mjs
+      [FILE] run.mjs
+   [DIR] experience/
+      [FILE] build-jinze-3min-experience.mjs
+   [DIR] extract/
+      [FILE] README.md
+   [DIR] historical-spatial/
+      [FILE] _align_source_checksums.mjs
+      [FILE] apply-migration.mjs
+      [FILE] build-jinze-historical-spatial-slice.mjs
+      [FILE] export-jinze-historical-spatial-slice.mjs
+      [FILE] persist-evidence-closure.mjs
+      [FILE] persist-hr-map-01.mjs
+      [FILE] probe-align-entities.mjs
+      [FILE] probe-align-extra.mjs
+      [FILE] probe-align-final.mjs
+      [FILE] register.mjs
+      [FILE] register-evidence-closure.mjs
+      [FILE] s1-evidence-closure-sources.mjs
+      [FILE] shl-client.mjs
+      [DIR] _probes/
+         [FILE] _debug-sparql.mjs
+         [FILE] _gaz_ocr_locate.py
+         [FILE] _gaz_scan.py
+         [FILE] _gaz_sheet.py
+         [FILE] _pc-pdflist.mjs
+         [FILE] _probe-one.mjs
+         [FILE] _q-align.mjs
+         [FILE] _q-align2.mjs
+         [FILE] _q-align3.mjs
+         [FILE] _q-gazetteer.mjs
+         [FILE] _schema-dump.mjs
+         [FILE] _schema-dump2.mjs
+         [FILE] _schema-dump3.mjs
+         [FILE] probe-battery2.mjs
+         [FILE] probe-graphs.mjs
+         [FILE] probe-hits.mjs
+         [FILE] probe-pages.mjs
+         [FILE] probe-pdf.mjs
+         [FILE] probe-pdflist-matrix.mjs
+         [FILE] probe-red-building.mjs
+         [FILE] probe-sjfz.mjs
+         [FILE] probe-sparql.mjs
+      [DIR] slice-definitions/
+         [FILE] jinze-minimum-slice-001.mjs
+   [DIR] ingest/
+      [FILE] README.md
+      [FILE] retrieve-amap-jinze.mjs
+      [FILE] retrieve-external.mjs
+      [FILE] retrieve-s1-jinze.mjs
+      [FILE] retrieve-visual-jinze.mjs
+      [FILE] run.mjs
+      [FILE] snapshot.mjs
+   [DIR] normalize/
+      [FILE] README.md
+      [FILE] run.mjs
+   [DIR] review/
+      [FILE] persist-human-review.mjs
+   [DIR] visual/
+      [FILE] build-visual-linkage.mjs
+      [FILE] build-visual-reports.mjs
+      [FILE] check-shr-overlay.mjs
+      [FILE] persist-spatial-review.mjs
+      [FILE] repair-hr5-scope.mjs
+   [DIR] weave/
+      [FILE] build-jinze-minimum-weave.mjs
+      [FILE] README.md
+[DIR] scripts/
+   [FILE] audit-readonly-invariants.mjs
+   [FILE] check-doc-budget.mjs
+   [FILE] check-structure.mjs
+   [FILE] db-apply.ps1
+   [FILE] db-bootstrap.ps1
+   [FILE] db-verify.ps1
+   [FILE] e2e-composition2-capture.mjs
+   [FILE] e2e-exp-0001-human-experience.mjs
+   [FILE] e2e-experience-capture.mjs
+   [FILE] e2e-multi-intent-capture.mjs
+   [FILE] e2e-replan-loop-capture.mjs
+   [FILE] e2e-runtime-recovery.mjs
+   [FILE] e2e-visual-grammar-capture.mjs
+   [FILE] environment-audit.ps1
+[DIR] skills/
+   [DIR] mohen-acceptance/
+      [FILE] SKILL.md
+   [DIR] mohen-data-ingest/
+      [FILE] SKILL.md
+   [DIR] mohen-evidence-gate/
+      [FILE] SKILL.md
+   [DIR] mohen-experience-prototype/
+      [FILE] SKILL.md
+   [DIR] mohen-historical-spatial-reconstruction/
+      [FILE] SKILL.md
+   [DIR] mohen-historical-spatial-source/
+      [FILE] SKILL.md
+   [DIR] mohen-knowledge-weave/
+      [FILE] SKILL.md
+   [DIR] mohen-project-guard/
+      [FILE] SKILL.md
+   [DIR] mohen-vertical-slice/
+      [FILE] SKILL.md
+   [DIR] mohen-visual-asset/
+      [FILE] SKILL.md
+[DIR] specs/
+   [FILE] AGENT_CONTRACT.md
+   [FILE] DATA_CONTRACT.md
+   [FILE] EXPERIENCE_CONTRACT.md
+   [FILE] FOUNDATION.md
+   [FILE] MoHen_Agent-native_Human_Experience_UI_Architecture_V2.0.docx
+   [FILE] OWNERSHIP_MAP.md
+   [FILE] SOURCE_REGISTRY.md
+   [DIR] archive/
+      [FILE] MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md
+   [DIR] experience-ui/
+      [FILE] README.md
+      [FILE] T03_金泽材料盘点_覆盖矩阵.md
+      [FILE] T06_数据生产_NightBatch派工与Gap映射.md
+      [FILE] T07_NightJob_最小Contract与安全施工基线.md
+      [FILE] 墨痕_Agent_2.0_金泽最小体验导演稿_V1.0.docx
+      [FILE] 五母题深化_UI施工图与数据生产需求_V1.1.md
+      [DIR] canonical/
+         [FILE] EXP-DESIGN-02 · Round 2 · Jinze Canonical Reconstruction.png
+         [FILE] 金泽历史关系探索体验板.png
+      [DIR] evidence/
+         [DIR] M5-HUMAN-01_PreBaseline_Failure/
+            [FILE] current-runtime-recording.mp4.mp4
+            [FILE] README.md
+      [DIR] mockups/
+         [FILE] 2026-09-27_jinze_advance_fix_preview.html
+         [FILE] 2026-09-27_jinze_button_abc_compare.html
+         [FILE] 2026-09-27_jinze_consolidated_v02.html
+         [FILE] 2026-09-27_jinze_consolidated_v03.html
+         [FILE] 2026-09-27_jinze_interactive_walkthrough.html
+         [FILE] 2026-09-27_jinze_three-act_persistent-frame.html
+         [FILE] 2026-09-27_mohen-placement-compare.html
+         [FILE] analyze_layout.cjs
+         [FILE] diag_side.cjs
+         [FILE] gen_real_mirror.cjs
+         [FILE] interact_test.cjs
+         [FILE] layout_report.json
+         [FILE] probe_cover.cjs
+         [FILE] verify_layout.cjs
+         [FILE] verify_live.cjs
+         [FILE] verify_real_layout.cjs
+         [FILE] verify_real_layout.html
+         [FILE] verify_v03.cjs
+         [FILE] verify_v04.cjs
+      [DIR] source/
+         [FILE] MoHen_C4_UI_Architecture_V2.1.docx
+         [FILE] MoHen_Narrative_Motif_Framework_V1.3.docx
+         [FILE] 交互原型- 墨痕 V0.9.1.html
+         [FILE] 两个组件_尺寸与母题叙事规范- 墨痕 V0.9.1.md
+         [FILE] 墨痕_Agent_2.0_Agent_Experience_UI_交互设计_V1.0.md
+         [FILE] 墨痕_Agent_2.0_UI_设计规格_V1.0.docx
+         [FILE] 墨痕_Agent_2.0_WorkBuddy_UI改造任务包_V1.0.docx
+         [FILE] 墨痕_Agent_2.0_可视化原型_V1.0.pptx
+         [FILE] 墨痕_UI架构与人文叙事_完整审查及后续任务_V1.1.docx
+         [FILE] 墨痕_UI架构与人文叙事_完整审查及后续任务_V1.2.docx
+         [FILE] 墨痕_附录AB深化路径回看_第六轮存档_V0.1.md
+         [FILE] 墨痕_五母题叙事与生产深化主稿_V0.1.docx
+         [FILE] 墨痕_五母题叙事与生产深化主稿_V0.1.md
+         [DIR] 叙事母题过程5轮论证/
+            [FILE] 墨痕_单元01_03_06_联动审阅_V0.1.html
+            [FILE] 墨痕_理解变化与组件边界_第二轮讨论存档_V0.1.md
+            [FILE] 墨痕_同一材料五母题检验_第四轮讨论存档_V0.1.md
+            [FILE] 墨痕_五母题关系与共同构成_讨论纪要_V0.1.md
+            [FILE] 墨痕_五母题理解变化与边界辨析_第三轮讨论存档_V0.1.md
+            [FILE] 墨痕_最小画面单元_第五轮讨论存档_V0.1.md
+      [DIR] 施工图/
+         [FILE] T05_B1_M1_完整实例.html
+         [FILE] T05_B1_五母题帧索引.md
+[DIR] supabase/
+   [DIR] migrations/
+      [FILE] 008_cultural_world_objects.sql
+      [FILE] 202609210001_foundation.sql
+      [FILE] 202609210002_data_factory.sql
+      [FILE] 202609210003_human_review.sql
+      [FILE] 202609220004_knowledge_weave.sql
+      [FILE] 202609220006_visual_linkage.sql
+      [FILE] 202609220007_historical_spatial_reconstruction.sql
+[DIR] tasks/
+   [FILE] CULTURAL-WORLD-01A_金泽活的文化关系模型_World-Depth-Stress-Test_V1.0.docx
+   [FILE] CULTURAL-WORLD-01B_金泽文化世界扩展候选审计_V1.0.docx
+   [FILE] CULTURAL-WORLD-01C_候选文化关系证据裁决试点_V1.0.docx
+   [FILE] CULTURAL-WORLD-02_Taskbook_V1.0.docx
+   [FILE] CURRENT_TASK.md
+   [FILE] ENG-GOV-01_Baseline-Regression-Test-Reconciliation_Task-Book_V1.0.docx
+   [FILE] EXP_UI_AUDIT_01_Runtime_vs_Canonical_Baseline_Drift_Audit_Task_Book_V1_0.docx
+   [FILE] EXP_UI_GOV_01_Task_Book_V1_0.docx
+   [FILE] EXP_UI_GOV_01A_Correction_Task_Book_V1_0.docx
+   [FILE] EXP_UI_RECON_01_Jinze_Canonical_Experience_Humanization_Pass_Task_Book_V1_0.docx
+   [FILE] EXP-0001-Human-Experience-Translation-Slice-V1.0.md
+   [FILE] EXP-0002-Persistent-Experience-Transformation-Slice-V1.0.docx
+   [FILE] EXP-CULTURAL-01_Living-Cultural-World_to_Canonical-Experience_Mapping-and-Gap-Audit_Task-Book_V1.0.docx
+   [FILE] EXP-CULTURAL-02_M3.3_Experience-Projection-Contract_Task-Book_V1.0.docx
+   [FILE] EXP-CULTURAL-03_M4.1_Cultural-World-to-Experience-Projection-Runtime-Slice_Task-Book_V1.0.docx
+   [FILE] EXP-MAP-01_金泽CanonicalExperience产品化映射_V1.0.docx
+   [FILE] H2_JINZE_CONSTRUCTION_PLAN_V1.0.md
+   [FILE] M4-CLOSURE-01_M4-Integration-Closure-Audit_Task-Book_V1.0.docx
+   [FILE] M5_HUMAN_01_Canonical-Human-Experience-Validation_Task-Book_V1.0.docx
+   [FILE] TASK-0001-initialize-foundation.md
+   [FILE] TASK-0002-establish-local-postgresql.md
+   [FILE] TASK-0003-data-factory-jinze-staging.md
+   [FILE] TASK-0004-jinze-evidence-recovery.md
+   [FILE] TASK-0005-human-review-s1-evidence.md
+   [FILE] TASK-0006-jinze-minimum-knowledge-weave.md
+   [FILE] TASK-0007-jinze-spatial-grounding-sprint.md
+   [FILE] TASK-0008-jinze-visual-evidence-sprint.md
+   [FILE] TASK-0009-jinze-historical-spatial-source-acquisition-V1.1.md
+   [FILE] TASK-0010-jinze-historical-spatial-grounding-reconstruction-minimum-slice.md
+   [FILE] TASK-0011-jinze-minimum-slice-evidence-closure-sprint.md
+   [FILE] TASK-0012-jinze-3min-evidence-grounded-experience-script.md
+   [FILE] TASK-0013-jinze-experience-renderer-first-living-vertical-slice.md
+   [FILE] TASK-0014-experience-composition-2-surface-component-system-V1.1.md
+   [FILE] TASK-0015-humanistic-surface-visual-grammar-spatial-canvas-V1.0.md
+   [FILE] TASK-0016-mohen-evidence-aware-replan-loop-V1.0.md
+   [FILE] TASK-0017-Multi-Intent-Evidence-Aware-Exploration-Loop-V1.0.md
+   [DIR] results/
+      [FILE] CORRECTION-MAP-01-result.md
+      [FILE] CULTURAL-WORLD-01A_金泽活的文化关系模型_StressTest_Report.md
+      [FILE] CULTURAL-WORLD-01B_金泽文化世界扩展候选审计_REPORT.md
+      [FILE] CULTURAL-WORLD-01C_候选文化关系证据裁决试点_REPORT.md
+      [FILE] CULTURAL-WORLD-02-result.md
+      [FILE] cw02-cluster-snapshot.json
+      [FILE] DEVIATION_ANALYSIS_2026-09-26.md
+      [FILE] ENG-GOV-01-result.md
+      [FILE] EXP-0001-result.md
+      [FILE] EXP-CULTURAL-01-result.md
+      [FILE] EXP-CULTURAL-02-result.md
+      [FILE] EXP-CULTURAL-03-result.md
+      [FILE] exp-cultural-03-runtime-evidence.json
+      [FILE] EXP-UI-AUDIT-01-drift-map.md
+      [FILE] EXP-UI-AUDIT-01-result.md
+      [FILE] EXP-UI-GOV-01A-result.md
+      [FILE] EXP-UI-GOV-01-result.md
+      [FILE] EXP-UI-RECON-01-result.md
+      [FILE] foundation.png
+      [FILE] GOV-01_READONLY_INVENTORY_REPORT.md
+      [FILE] GOV-DIR-AUDIT-01-result.md
+      [FILE] GOV-STATUS-AUDIT-01-result.md
+      [FILE] GOV-SYNC-02-result.md
+      [FILE] M4-CLOSURE-01-result.md
+      [FILE] NIGHT-BATCH-001-result.md
+      [FILE] NIGHT-BATCH-002-result.md
+      [FILE] STAGE0-1_ASSET_PROBE_RESULT.md
+      [FILE] STAGE0-1_DESIGN.md
+      [FILE] STAGE0-1_RESULT.md
+      [FILE] TASK-0001-result.md
+      [FILE] TASK-0002-result.md
+      [FILE] TASK-0003-result.md
+      [FILE] TASK-0004-result.md
+      [FILE] TASK-0005-result.md
+      [FILE] TASK-0006-result.md
+      [FILE] TASK-0007-result.md
+      [FILE] TASK-0008-result.md
+      [FILE] TASK-0009-result.md
+      [FILE] TASK-0010-result.md
+      [FILE] TASK-0011-result.md
+      [FILE] TASK-0012-result.md
+      [FILE] TASK-0013-result.md
+      [FILE] TASK-0014-result.md
+      [FILE] TASK-0015-FIX-result.md
+      [FILE] TASK-0015-result.md
+      [FILE] TASK-0016-result.md
+      [FILE] TASK-0017-result.md
+      [DIR] EXP-UI-AUDIT-01-evidence/
+         [FILE] 01-first-screen-full.png
+         [FILE] 01-first-screen-viewport.png
+         [FILE] 02-time-shift-viewport.png
+         [FILE] 03-relation-discovery-viewport.png
+         [FILE] 04a-temple-enters-viewport.png
+         [FILE] 04b-temple-bridge-nonanswer-viewport.png
+         [FILE] 05a-evidence-conflict-full.png
+         [FILE] 05a-evidence-conflict-viewport.png
+         [FILE] 05b-historical-map-native-viewport.png
+         [FILE] 06-timeline-primary-viewport.png
+         [FILE] 07b-present-photo-viewport.png
+         [FILE] 07-return-present-viewport.png
+         [FILE] 08a-next-question-viewport.png
+         [FILE] 08b-followup-inspect-full.png
+         [FILE] 08b-followup-inspect-viewport.png
+         [FILE] 08c-followup-present-viewport.png
+         [FILE] 08d-return-to-present-viewport.png
+         [FILE] 08-s08-discovery-full.png
+         [FILE] 08-s08-discovery-viewport.png
+         [FILE] drive-log.txt
+         [FILE] state-01-first-screen.json
+         [FILE] state-02-time-shift.json
+         [FILE] state-03-relation.json
+         [FILE] state-04-temple.json
+         [FILE] state-05a-conflict.json
+         [FILE] state-05b-histmap.json
+         [FILE] state-06-timeline.json
+         [FILE] state-07b-photo.json
+         [FILE] state-07-return.json
+         [FILE] state-08b-inspect.json
+         [FILE] state-08c-present.json
+         [FILE] state-08d-return.json
+         [FILE] state-08-s08.json
+      [DIR] EXP-UI-RECON-01-evidence/
+         [FILE] drift-recheck.md
+         [FILE] drive-log.txt
+         [FILE] human-01-first-screen-viewport.png
+         [FILE] human-02-time-shift-viewport.png
+         [FILE] human-03-relation-viewport.png
+         [FILE] human-04-temple-viewport.png
+         [FILE] human-05a-conflict-viewport.png
+         [FILE] human-05b-histmap-viewport.png
+         [FILE] human-06-timeline-viewport.png
+         [FILE] human-07b-photo-viewport.png
+         [FILE] human-07-return-present-viewport.png
+         [FILE] human-08b-replan-viewport.png
+         [FILE] human-08c-return-viewport.png
+         [FILE] human-08-discovery-viewport.png
+         [FILE] insp-01-first-screen-viewport.png
+         [FILE] insp-02-time-shift-viewport.png
+         [FILE] insp-03-relation-viewport.png
+         [FILE] insp-04-temple-viewport.png
+         [FILE] insp-05a-conflict-viewport.png
+         [FILE] insp-05b-histmap-viewport.png
+         [FILE] insp-06-timeline-viewport.png
+         [FILE] insp-07b-photo-viewport.png
+         [FILE] insp-07-return-present-viewport.png
+         [FILE] insp-08b-replan-viewport.png
+         [FILE] insp-08c-return-viewport.png
+         [FILE] insp-08-discovery-viewport.png
+         [FILE] state-human-01-first-screen.json
+         [FILE] state-human-02-time-shift.json
+         [FILE] state-human-03-relation.json
+         [FILE] state-human-04-temple.json
+         [FILE] state-human-05a-conflict.json
+         [FILE] state-human-05b-histmap.json
+         [FILE] state-human-06-timeline.json
+         [FILE] state-human-07b-photo.json
+         [FILE] state-human-07-return-present.json
+         [FILE] state-human-08b-replan.json
+         [FILE] state-human-08c-return.json
+         [FILE] state-human-08-discovery.json
+         [FILE] state-insp-01-first-screen.json
+         [FILE] state-insp-02-time-shift.json
+         [FILE] state-insp-03-relation.json
+         [FILE] state-insp-04-temple.json
+         [FILE] state-insp-05a-conflict.json
+         [FILE] state-insp-05b-histmap.json
+         [FILE] state-insp-06-timeline.json
+         [FILE] state-insp-07b-photo.json
+         [FILE] state-insp-07-return-present.json
+         [FILE] state-insp-08b-replan.json
+         [FILE] state-insp-08c-return.json
+         [FILE] state-insp-08-discovery.json
+[DIR] test-results/
+   [FILE] .last-run.json
+[DIR] tests/
+   [DIR] data/
+      [FILE] data-factory.test.ts
+      [FILE] evidence-recovery.test.ts
+      [FILE] experience-script.test.ts
+      [FILE] foundation.test.ts
+      [FILE] historical-spatial-reconstruction.test.ts
+      [FILE] human-review-s1.test.ts
+      [FILE] knowledge-weave.test.ts
+      [FILE] spatial-grounding.test.ts
+   [DIR] e2e/
+      [FILE] experience.spec.ts
+      [FILE] experience-recon-01.spec.ts
+      [FILE] foundation.spec.ts
+   [DIR] experience/
+      [FILE] composition2.test.ts
+      [FILE] contract.test.ts
+      [FILE] cultural-world-projection.test.ts
+      [FILE] exp-0001-intent-translation.test.ts
+      [FILE] multi-intent.test.ts
+      [FILE] renderer.test.ts
+      [FILE] replan-loop.test.ts
+      [FILE] visual-grammar.test.ts
+[DIR] tools/
+   [DIR] night/
+      [FILE] check-evidence-dupes.mjs
+      [FILE] cleanup-dupe-evidence.mjs
+      [FILE] probe-connection.mjs
+      [FILE] probe-schema.mjs
+      [FILE] repair-polluted-runs.mjs
+      [FILE] verify-s1-batch.mjs
+
+================================================================
+## D:\work Buddy\2026-08-23-23-12-38\mohen-agent-2.0-exp
+## TOTAL (excl. caches): ~215 files (.md=66, .mjs=46, .ts=38, .json=21, .png=13, .tsx=9, .sql=6, .ps1=4, .gitkeep=3, .docx=2, .yaml=2, .css=2, .example=1, .gitignore=1, .gitattributes=1)
+================================================================
+
+[FILE] .env.example
+[FILE] .gitattributes
+[FILE] .gitignore
+[FILE] CONTEXT.md
+[FILE] package.json
+[FILE] PACKAGE_MANIFEST.json
+[FILE] playwright.config.ts
+[FILE] pnpm-lock.yaml
+[FILE] pnpm-workspace.yaml
+[FILE] README.md
+[FILE] vitest.config.ts
+[DIR] apps/
+   [DIR] web/
+      [FILE] next.config.mjs
+      [FILE] next-env.d.ts
+      [FILE] package.json
+      [FILE] tsconfig.json
+      [DIR] app/
+         [FILE] layout.tsx
+         [FILE] page.tsx
+         [FILE] styles.css
+         [DIR] experience/
+            [DIR] jinze-water-net/
+               [FILE] beats.ts
+               [FILE] experience.css
+               [FILE] ExperienceShell.tsx
+               [FILE] IntentGuide.tsx
+               [FILE] intentTranslation.ts
+               [FILE] page.tsx
+               [FILE] surfaceRegistry.tsx
+               [DIR] surfaces/
+                  [FILE] EvidenceNarrativeSurfaces.tsx
+                  [FILE] SpatialSurfaces.tsx
+                  [FILE] types.ts
+      [DIR] data/
+         [DIR] experience/
+            [FILE] jinze-3min-experience-followup-patch.json
+            [FILE] jinze-3min-experience-script.json
+            [FILE] jinze-3min-experience-state-sequence.json
+            [FILE] jinze-historical-spatial-slice.json
+      [DIR] lib/
+         [DIR] mohen-visual/
+            [FILE] index.ts
+            [FILE] label-layout.ts
+            [FILE] spatial-canvas.tsx
+            [FILE] visual-grammar.ts
+[DIR] data/
+   [DIR] exports/
+      [FILE] .gitkeep
+      [DIR] exp-0001-captures/
+         [FILE] A-verify_historical_relation.png
+         [FILE] B-inspect_evidence.png
+         [FILE] C-explore_temporal_change.png
+         [FILE] D-propose_present_action.png
+      [DIR] exp-0002-captures/
+         [FILE] A-verify_historical_relation.png
+         [FILE] B-inspect_evidence.png
+         [FILE] C-explore_temporal_change.png
+         [FILE] D-propose_present_action.png
+         [FILE] sequence.json
+      [DIR] task-0017-captures/
+         [FILE] 01-verify_historical_relation.png
+         [FILE] 02-inspect_evidence.png
+         [FILE] 03-explore_temporal_change.png
+         [FILE] 04-propose_present_action.png
+   [DIR] fixtures/
+      [FILE] source-providers.json
+   [DIR] raw/
+      [FILE] .gitkeep
+      [FILE] README.md
+   [DIR] staging/
+      [FILE] .gitkeep
+[DIR] decisions/
+   [FILE] ADR-001-greenfield-local-first.md
+[DIR] governance/
+   [FILE] 墨痕_Agent_2.0_PHASE-GATE-01_Phase-I-to-II_Architecture-Gate_V1.0.md
+   [DIR] experience/
+      [FILE] EXP-DESIGN-01-Final-Decision-and-Experience-Transformation-Contract-V1.0.docx
+[DIR] legacy/
+   [DIR] manifests/
+      [FILE] README.md
+[DIR] packages/
+   [DIR] agent-runtime/
+      [FILE] package.json
+      [FILE] tsconfig.json
+      [DIR] src/
+         [FILE] index.ts
+   [DIR] data-access/
+      [FILE] package.json
+      [FILE] tsconfig.json
+      [DIR] src/
+         [FILE] index.mjs
+         [FILE] index.ts
+   [DIR] domain/
+      [FILE] package.json
+      [FILE] tsconfig.json
+      [DIR] src/
+         [FILE] index.ts
+   [DIR] experience-engine/
+      [FILE] package.json
+      [FILE] tsconfig.json
+      [DIR] src/
+         [FILE] composition-recipes.ts
+         [FILE] evidence-aware-replan.ts
+         [FILE] experience-beats.ts
+         [FILE] experience-runtime.ts
+         [FILE] index.ts
+         [FILE] surface-eligibility.ts
+   [DIR] ui/
+      [FILE] package.json
+      [FILE] tsconfig.json
+      [DIR] src/
+         [FILE] index.ts
+[DIR] pipelines/
+   [DIR] evidence/
+      [FILE] gates.mjs
+      [FILE] README.md
+      [FILE] recover.mjs
+      [FILE] recovery-rules.mjs
+      [FILE] run.mjs
+   [DIR] experience/
+      [FILE] build-jinze-3min-experience.mjs
+   [DIR] extract/
+      [FILE] README.md
+   [DIR] historical-spatial/
+      [FILE] _align_source_checksums.mjs
+      [FILE] apply-migration.mjs
+      [FILE] build-jinze-historical-spatial-slice.mjs
+      [FILE] export-jinze-historical-spatial-slice.mjs
+      [FILE] persist-evidence-closure.mjs
+      [FILE] persist-hr-map-01.mjs
+      [FILE] probe-align-entities.mjs
+      [FILE] probe-align-extra.mjs
+      [FILE] probe-align-final.mjs
+      [FILE] register.mjs
+      [FILE] register-evidence-closure.mjs
+      [FILE] s1-evidence-closure-sources.mjs
+      [FILE] shl-client.mjs
+      [DIR] slice-definitions/
+         [FILE] jinze-minimum-slice-001.mjs
+   [DIR] ingest/
+      [FILE] README.md
+      [FILE] retrieve-amap-jinze.mjs
+      [FILE] retrieve-external.mjs
+      [FILE] retrieve-s1-jinze.mjs
+      [FILE] retrieve-visual-jinze.mjs
+      [FILE] run.mjs
+      [FILE] snapshot.mjs
+   [DIR] normalize/
+      [FILE] README.md
+      [FILE] run.mjs
+   [DIR] review/
+      [FILE] persist-human-review.mjs
+   [DIR] visual/
+      [FILE] build-visual-linkage.mjs
+      [FILE] build-visual-reports.mjs
+      [FILE] check-shr-overlay.mjs
+      [FILE] persist-spatial-review.mjs
+      [FILE] repair-hr5-scope.mjs
+   [DIR] weave/
+      [FILE] build-jinze-minimum-weave.mjs
+      [FILE] README.md
+[DIR] scripts/
+   [FILE] audit-readonly-invariants.mjs
+   [FILE] check-doc-budget.mjs
+   [FILE] check-structure.mjs
+   [FILE] db-apply.ps1
+   [FILE] db-bootstrap.ps1
+   [FILE] db-verify.ps1
+   [FILE] e2e-composition2-capture.mjs
+   [FILE] e2e-exp-0001-human-experience.mjs
+   [FILE] e2e-exp-0002-captures.mjs
+   [FILE] e2e-experience-capture.mjs
+   [FILE] e2e-multi-intent-capture.mjs
+   [FILE] e2e-replan-loop-capture.mjs
+   [FILE] e2e-runtime-recovery.mjs
+   [FILE] e2e-visual-grammar-capture.mjs
+   [FILE] environment-audit.ps1
+[DIR] skills/
+   [DIR] mohen-acceptance/
+      [FILE] SKILL.md
+   [DIR] mohen-data-ingest/
+      [FILE] SKILL.md
+   [DIR] mohen-evidence-gate/
+      [FILE] SKILL.md
+   [DIR] mohen-experience-prototype/
+      [FILE] SKILL.md
+   [DIR] mohen-historical-spatial-reconstruction/
+      [FILE] SKILL.md
+   [DIR] mohen-historical-spatial-source/
+      [FILE] SKILL.md
+   [DIR] mohen-knowledge-weave/
+      [FILE] SKILL.md
+   [DIR] mohen-project-guard/
+      [FILE] SKILL.md
+   [DIR] mohen-vertical-slice/
+      [FILE] SKILL.md
+   [DIR] mohen-visual-asset/
+      [FILE] SKILL.md
+[DIR] specs/
+   [FILE] AGENT_CONTRACT.md
+   [FILE] DATA_CONTRACT.md
+   [FILE] EXPERIENCE_CONTRACT.md
+   [FILE] FOUNDATION.md
+   [FILE] OWNERSHIP_MAP.md
+   [FILE] SOURCE_REGISTRY.md
+[DIR] supabase/
+   [DIR] migrations/
+      [FILE] 202609210001_foundation.sql
+      [FILE] 202609210002_data_factory.sql
+      [FILE] 202609210003_human_review.sql
+      [FILE] 202609220004_knowledge_weave.sql
+      [FILE] 202609220006_visual_linkage.sql
+      [FILE] 202609220007_historical_spatial_reconstruction.sql
+[DIR] tasks/
+   [FILE] CURRENT_TASK.md
+   [FILE] EXP-0001-Human-Experience-Translation-Slice-V1.0.md
+   [FILE] EXP-0002-Persistent-Experience-Transformation-Slice-V1.0.docx
+   [FILE] TASK-0001-initialize-foundation.md
+   [FILE] TASK-0002-establish-local-postgresql.md
+   [FILE] TASK-0003-data-factory-jinze-staging.md
+   [FILE] TASK-0004-jinze-evidence-recovery.md
+   [FILE] TASK-0005-human-review-s1-evidence.md
+   [FILE] TASK-0006-jinze-minimum-knowledge-weave.md
+   [FILE] TASK-0007-jinze-spatial-grounding-sprint.md
+   [FILE] TASK-0008-jinze-visual-evidence-sprint.md
+   [FILE] TASK-0009-jinze-historical-spatial-source-acquisition-V1.1.md
+   [FILE] TASK-0010-jinze-historical-spatial-grounding-reconstruction-minimum-slice.md
+   [FILE] TASK-0011-jinze-minimum-slice-evidence-closure-sprint.md
+   [FILE] TASK-0012-jinze-3min-evidence-grounded-experience-script.md
+   [FILE] TASK-0013-jinze-experience-renderer-first-living-vertical-slice.md
+   [FILE] TASK-0014-experience-composition-2-surface-component-system-V1.1.md
+   [FILE] TASK-0015-humanistic-surface-visual-grammar-spatial-canvas-V1.0.md
+   [FILE] TASK-0016-mohen-evidence-aware-replan-loop-V1.0.md
+   [FILE] TASK-0017-Multi-Intent-Evidence-Aware-Exploration-Loop-V1.0.md
+   [DIR] results/
+      [FILE] EXP-0001-result.md
+      [FILE] EXP-0002-result.md
+      [FILE] foundation.png
+      [FILE] TASK-0001-result.md
+      [FILE] TASK-0002-result.md
+      [FILE] TASK-0003-result.md
+      [FILE] TASK-0004-result.md
+      [FILE] TASK-0005-result.md
+      [FILE] TASK-0006-result.md
+      [FILE] TASK-0007-result.md
+      [FILE] TASK-0008-result.md
+      [FILE] TASK-0009-result.md
+      [FILE] TASK-0010-result.md
+      [FILE] TASK-0011-result.md
+      [FILE] TASK-0012-result.md
+      [FILE] TASK-0013-result.md
+      [FILE] TASK-0014-result.md
+      [FILE] TASK-0015-FIX-result.md
+      [FILE] TASK-0015-result.md
+      [FILE] TASK-0016-result.md
+      [FILE] TASK-0017-result.md
+[DIR] test-results/
+   [FILE] .last-run.json
+[DIR] tests/
+   [DIR] data/
+      [FILE] data-factory.test.ts
+      [FILE] evidence-recovery.test.ts
+      [FILE] experience-script.test.ts
+      [FILE] foundation.test.ts
+      [FILE] historical-spatial-reconstruction.test.ts
+      [FILE] human-review-s1.test.ts
+      [FILE] knowledge-weave.test.ts
+      [FILE] spatial-grounding.test.ts
+   [DIR] e2e/
+      [FILE] exp-0002-persistent-transformation.spec.ts
+      [FILE] experience.spec.ts
+      [FILE] foundation.spec.ts
+   [DIR] experience/
+      [FILE] composition2.test.ts
+      [FILE] contract.test.ts
+      [FILE] exp-0001-intent-translation.test.ts
+      [FILE] exp-0002-persistent-transformation.test.ts
+      [FILE] multi-intent.test.ts
+      [FILE] renderer.test.ts
+      [FILE] replan-loop.test.ts
+      [FILE] visual-grammar.test.ts
+
+================================================================
+## D:\work Buddy\2026-08-23-23-12-38\hushang-jingwei
+## TOTAL (excl. caches): ~8219 files (.pdf=3976, .jpg=1215, .json=1014, .png=712, .py=314, .md=189, .mjs=177, .txt=159, .html=92, .tsx=75, .cjs=64, .log=52, .webp=40, .ts=25, .slide=15, .djvu=15, .js=12, (no-ext)=6, .bak=6, .xls=5, .webm=5, .bak-before-fuzzy=5, .docx=4, .pptx=4, .mp3=3, .zip=3, .ds_store=3, .local=2, .bin=2, .mp4=2, .yaml=2, .bak_luodianmid_20260829_160444=1, .sql=1, .bak-20260829-092807=1, .gitignore=1, .example=1, .db=1, .bak_imgtopup_20260829_155322=1, .bak_imgtopup_20260829_155855=1, .mts=1, .bak_20260829_043319=1, .bak_imgtopup_20260829_160146=1, .old=1, .jsonl=1, .css=1, .vercelignore=1, .pyc=1, .bak_20260829_041750=1, .rar=1, .csv=1, .bak-before-orgfix=1, .7z=1)
+================================================================
+
+[FILE] .env.example
+[FILE] .env.local
+[FILE] .gitignore
+[FILE] .vercelignore
+[FILE] _build_p3.log
+[FILE] _build_p3b.log
+[FILE] _build_p3c.log
+[FILE] _build_p4.log
+[FILE] _build_p5.log
+[FILE] _cleanup_scan.txt
+[FILE] _cleanup_scan2.txt
+[FILE] _cleanup_scan3.txt
+[FILE] _cleanup_scan4.txt
+[FILE] _db_analyze.py
+[FILE] _db_introspect.py
+[FILE] _db_report_data.json
+[FILE] _db_report_html.py
+[FILE] _db_schema.json
+[FILE] _db_schema.txt
+[FILE] _delete_log_20260918.txt
+[FILE] _deploy.log
+[FILE] _deploy_p4.log
+[FILE] _deploy_p5.log
+[FILE] _deploy_prod_now.cjs
+[FILE] _deploy_prod_now.py
+[FILE] _deploy2.log
+[FILE] _diag.txt
+[FILE] _diag_qiao.txt
+[FILE] _diag_stories.mjs
+[FILE] _diag_stories.out.txt
+[FILE] _diag_web.txt
+[FILE] _dom_test.js
+[FILE] _dump_clans.cjs
+[FILE] _dump_towns.cjs
+[FILE] _enum_tmp.txt
+[FILE] _enum2_tmp.txt
+[FILE] _expand_stories.cjs
+[FILE] _f3b.err.txt
+[FILE] _f3b.log
+[FILE] _f3b.out.txt
+[FILE] _f3b.runlog.txt
+[FILE] _f3verify.txt
+[FILE] _f4_material.txt
+[FILE] _f4verify.txt
+[FILE] _fix_anchors.cjs
+[FILE] _gaz_pull.log
+[FILE] _gaz_pull2.log
+[FILE] _jp_check.log
+[FILE] _jp_check2.log
+[FILE] _jp_diag.log
+[FILE] _jp_diag.py
+[FILE] _jp_full.log
+[FILE] _jp_mem.log
+[FILE] _jp_reset.log
+[FILE] _jp_test.log
+[FILE] _jp_test2.log
+[FILE] _jp_test3.log
+[FILE] _jp_test4.log
+[FILE] _jp_test5.log
+[FILE] _jp_verify.log
+[FILE] _live_verify_out.txt
+[FILE] _peek.py
+[FILE] _probe_ps.txt
+[FILE] _probe_py.txt
+[FILE] _report_script.js
+[FILE] _t1.txt
+[FILE] _tiny.py
+[FILE] _tmp_libcheck.txt
+[FILE] _tmp_memstat.txt
+[FILE] _tmp_nlc892.txt
+[FILE] _tmp_nlc892_commons.txt
+[FILE] _tmp_ocr_ls.txt
+[FILE] _tmp_ocr_ls2.txt
+[FILE] _tmp_ocr_val_summary.txt
+[FILE] _tmp_pipinstall.txt
+[FILE] _tmp_rapid_init.txt
+[FILE] _tmp_rapidchk.txt
+[FILE] _tmp_render.txt
+[FILE] _tmp_s1.png
+[FILE] _tmp_s4.png
+[FILE] _tmp_shtong.html
+[FILE] _tmp_shtong.js
+[FILE] _tmp_syspy_rapid.txt
+[FILE] _tmp_textlayer.txt
+[FILE] _tmp_verify_list.txt
+[FILE] _tmp_verify_out.txt
+[FILE] _tmp_verify_result.txt
+[FILE] _towns_out.txt
+[FILE] _tsc2.log
+[FILE] _vercel_install.log
+[FILE] _verify_20260918.txt
+[FILE] _verify_clans_out.txt
+[FILE] _verify_clans2_out.txt
+[FILE] _verify_home_out.txt
+[FILE] _verify_home_stat.cjs
+[FILE] _verify_home2_out.txt
+[FILE] _verify_p4.mjs
+[FILE] _verify_p4.out.txt
+[FILE] _verify_p5.out.txt
+[FILE] _verify_prod_clans.cjs
+[FILE] _verify2_20260918.txt
+[FILE] _verify3_20260918.txt
+[FILE] _viewurls.txt
+[FILE] dev_magazine_3100.log
+[FILE] dev_server.log
+[FILE] dev_server_restart.log
+[FILE] geocode_log.json
+[FILE] hushang-jingwei_墨痕能力与架构_20260917.zip
+[FILE] hushang-jingwei-source.zip
+[FILE] next.config.export.mjs
+[FILE] next.config.mjs
+[FILE] next.config.record.mjs
+[FILE] next-env.d.ts
+[FILE] npm_install.log
+[FILE] package.json
+[FILE] package-lock.json
+[FILE] postcss.config.mjs
+[FILE] tailwind.config.ts
+[FILE] test_mohen.py
+[FILE] tsc.log
+[FILE] tsconfig.json
+[FILE] wikidata_towns.json
+[FILE] 磁盘清理清单_20260918.md
+[FILE] 数据库可视化报告.html
+[DIR] .npmcache/
+[DIR] .tmpchk/
+   [FILE] api_2025.pdf
+   [FILE] api2025_text.txt
+   [FILE] font_debug.mjs
+   [FILE] font_draw.mjs
+   [FILE] font_draw.png
+   [FILE] font_patch_check.mjs
+   [FILE] font_patch_check.png
+   [FILE] my.html
+   [FILE] pg.html
+   [FILE] postcard.png
+   [FILE] proto_draw.png
+   [FILE] raw_img.mjs
+   [FILE] raw_img.png
+   [FILE] shim_draw.png
+   [FILE] t.html
+   [FILE] t.ts
+   [FILE] test_proto.mjs
+   [FILE] test_shim.mjs
+   [FILE] test_url.mjs
+   [FILE] url_draw.png
+   [FILE] w.json
+   [FILE] w2.json
+   [FILE] x.html
+   [FILE] y.html
+   [FILE] z.html
+   [FILE] zhao.json
+   [FILE] zhao2.json
+[DIR] .vercel/
+   [FILE] .env.production.local
+   [FILE] project.json
+   [FILE] README.txt
+   [DIR] builders/
+      [FILE] package.json
+      [FILE] package-lock.json
+   [DIR] output/
+      [FILE] builds.json
+      [FILE] config.json
+[DIR] .workbuddy/
+   [DIR] memory/
+      [FILE] 2026-09-05.md
+      [FILE] 2026-09-06.md
+      [FILE] 2026-09-07.md
+      [FILE] 2026-09-08.md
+      [FILE] 2026-09-09.md
+      [FILE] 2026-09-10.md
+      [FILE] 2026-09-11.md
+      [FILE] 2026-09-12.md
+      [FILE] 2026-09-13.md
+      [FILE] 2026-09-14.md
+      [FILE] 2026-09-15.md
+      [FILE] 2026-09-16.md
+      [FILE] 2026-09-17.md
+      [FILE] 2026-09-18.md
+      [FILE] MEMORY.md
+      [DIR] automations/
+         [DIR] 3cd10a2a-253b-4515-b666-6450f426dfd4/
+            [FILE] memory.md
+[DIR] _audit/
+   [FILE] commons_api_test.mjs
+   [FILE] diag_g2.mjs
+   [FILE] online_accept_retfix.json
+   [FILE] online_accept_retfix.mjs
+   [FILE] online_audit.json
+   [FILE] online_audit.mjs
+   [FILE] online_audit_deep.json
+   [FILE] online_audit_deep.mjs
+   [FILE] online_audit_followup.json
+   [FILE] online_audit_followup.mjs
+   [FILE] online_audit_magazine_final.json
+   [FILE] online_audit_magazine_final.mjs
+   [FILE] online_audit_magazine_fix.json
+   [FILE] online_audit_magazine_fix.mjs
+   [FILE] online_audit_returnlinks.json
+   [FILE] online_audit_returnlinks.mjs
+   [FILE] online_audit_returnlinks2.json
+   [FILE] online_audit_returnlinks2.mjs
+   [FILE] online_audit_returnlinks3.json
+   [FILE] online_audit_returnlinks3_focus.mjs
+   [FILE] online_audit_town_click.json
+   [FILE] online_audit_town_click.mjs
+   [FILE] shtong_capture2.mjs
+   [FILE] shtong_capture3.mjs
+   [FILE] shtong_network_capture.mjs
+   [FILE] shtong_network2.json
+   [FILE] shtong_network2.png
+   [FILE] shtong_network2_dom.json
+   [FILE] shtong_network3.json
+   [FILE] shtong_network3.png
+   [FILE] shtong_network3_dom.json
+   [FILE] wikimedia_fetch_test.mjs
+   [FILE] wikimedia_pdf_test.mjs
+   [FILE] 访问链路深度补测报告.md
+   [FILE] 访问链路体检报告.md
+   [DIR] shots/
+      [FILE] 01_home.png
+      [FILE] 01b_mohen_panel.png
+      [FILE] 02_map.png
+      [FILE] 03_towns.png
+      [FILE] 04_stories.png
+      [FILE] 05_my.png
+      [FILE] 06_town.png
+      [FILE] 07_magazine.png
+      [FILE] 09_story.png
+      [FILE] mz_00_cover.png
+      [FILE] mz_01_toc.png
+      [FILE] mz_02_ch1.png
+      [FILE] mz_04_ch.png
+[DIR] _deprecated/
+   [FILE] -
+   [FILE] =
+   [FILE] ⚠️
+   [FILE] 红线：R1
+   [FILE] 任务：用户「按
+   [DIR] docs_pycache/
+      [FILE] build_pptx_V5.4.cpython-313.pyc
+   [DIR] lib_js_编译产物_20260906/
+      [FILE] data.js
+      [FILE] magazine.js
+      [FILE] slug.js
+      [FILE] types.js
+   [DIR] 旧版报告/
+      [FILE] 数据库体检报告_20260829.md
+      [FILE] 数据库体检报告_20260829_v2.md
+[DIR] _workspace_assets/  -> [SUMMARY] 567 files (.json=528, .txt=12, .html=10, .md=7, .png=6, .py=2, .zip=1, .yaml=1)
+[DIR] app/
+   [FILE] globals.css
+   [FILE] layout.tsx
+   [FILE] page.tsx
+   [DIR] _borrow/
+      [FILE] page.tsx
+   [DIR] api/
+      [DIR] mohen/
+         [FILE] route.ts
+   [DIR] clans/
+      [FILE] page.tsx
+   [DIR] features/
+      [FILE] page.tsx
+      [DIR] [slug]/
+   [DIR] gazetteers/
+      [FILE] page.tsx
+   [DIR] magazine/
+      [FILE] page.tsx
+   [DIR] map/
+      [FILE] page.tsx
+   [DIR] my/
+      [FILE] page.tsx
+   [DIR] nodes/
+      [DIR] [slug]/
+   [DIR] stories/
+      [FILE] page.tsx
+      [DIR] [slug]/
+   [DIR] towns/
+      [FILE] page.tsx
+      [DIR] [slug]/
+   [DIR] yutu/
+      [FILE] page.tsx
+[DIR] components/
+   [FILE] AchievementWatcher.tsx
+   [FILE] AskMohenButton.tsx
+   [FILE] BackToTop.tsx
+   [FILE] Breadcrumb.tsx
+   [FILE] ConfidenceBadge.tsx
+   [FILE] CulturalCanvas.tsx
+   [FILE] EntityImage.tsx
+   [FILE] EntityTimeline.tsx
+   [FILE] EraBar.tsx
+   [FILE] Footer.tsx
+   [FILE] FootprintCard.tsx
+   [FILE] FootprintRecorder.tsx
+   [FILE] InkOverlay.tsx
+   [FILE] InkPlate.tsx
+   [FILE] LensBar.tsx
+   [FILE] LensHookCards.tsx
+   [FILE] LevelSync.tsx
+   [FILE] MagazineSpread.tsx
+   [FILE] MapView.tsx
+   [FILE] MohenFab.tsx
+   [FILE] NarrativeCard.tsx
+   [FILE] NodeCard.tsx
+   [FILE] NodeGallery.tsx
+   [FILE] NodeTimeBar.tsx
+   [FILE] PerspectiveCard.tsx
+   [FILE] PhotoScroll.tsx
+   [FILE] RegisterEntity.tsx
+   [FILE] SafeImage.tsx
+   [FILE] SceneTourButton.tsx
+   [FILE] ThemeSwitcher.tsx
+   [FILE] TimeAxis.tsx
+   [FILE] TopNav.tsx
+   [FILE] TownCard.tsx
+   [FILE] TownEntityTimelines.tsx
+   [FILE] TownEvolution.tsx
+   [FILE] TownExplorer.tsx
+   [FILE] TownExternalMaps.tsx
+   [FILE] TownFigures.tsx
+   [FILE] TownGallery.tsx
+   [FILE] TownLiterature.tsx
+   [FILE] TownModernBoard.tsx
+   [FILE] TownModernCitations.tsx
+   [FILE] TownPoetry.tsx
+   [FILE] TownPressArticles.tsx
+   [FILE] TownTimeline.tsx
+   [FILE] TownUnmapped.tsx
+   [FILE] TownYutu.tsx
+   [FILE] TownZhiyi.tsx
+   [FILE] YutuCatalogList.tsx
+   [FILE] YutuPlaquettes.tsx
+   [DIR] mag/
+      [FILE] ExploreTicket.tsx
+      [FILE] MagazineReader.tsx
+      [FILE] magazineReaderCss.ts
+      [FILE] Masthead.tsx
+      [FILE] MissingPlatePanel.tsx
+      [FILE] PaperPlate.tsx
+      [FILE] PhotoCard.tsx
+      [FILE] PoemPlate.tsx
+      [FILE] SectionHead.tsx
+      [FILE] SoulSentence.tsx
+      [FILE] TownActFrame.tsx
+      [FILE] TownNarrativeHero.tsx
+[DIR] corpus/
+   [DIR] gazetteers/
+      [DIR] 高层通志府州/
+         [FILE] [崇禎]松江府志九十四卷.pdf
+      [DIR] 南翔/
+[DIR] data/  -> [SUMMARY] 4504 files (.pdf=3947, .json=349, .png=113, .txt=28, .djvu=15, .jpg=9, .md=7, .log=6, .bak=6, .bak-before-fuzzy=5, .html=3, .mjs=2, .sql=1, .yaml=1, .bin=1, .bak_luodianmid_20260829_160444=1, .bak-20260829-092807=1, .jsonl=1, .bak_imgtopup_20260829_155322=1, .bak_imgtopup_20260829_160146=1, .bak_20260829_043319=1, .db=1, .bak-before-orgfix=1, .bak_20260829_041750=1, .bak_imgtopup_20260829_155855=1, .7z=1)
+[DIR] docs/
+   [DIR] _assets/
+      [FILE] gj_songjiangfu_vol2_preview.png
+      [FILE] hushang-jingwei-cn-url-qr.png
+      [FILE] hushang-jingwei-qr.png
+      [FILE] hushang-jingwei-qr-二维码.rar
+      [FILE] 沪上经纬_作品介绍.pptx
+      [FILE] 沪上经纬_作品介绍_V5.3.pdf
+      [FILE] 沪上经纬_作品介绍_V5.3.pptx
+      [FILE] 沪上经纬_作品介绍_V5.4.pptx
+      [DIR] demo/
+         [FILE] _browser_probe.png
+         [FILE] _map_probe.png
+         [FILE] _map_probe__map.png
+         [FILE] _map_probe__towns.png
+         [FILE] _tts_test_male.mp3
+         [FILE] _verify_bridge.png
+         [FILE] narration.mp3
+         [FILE] narration_male.mp3
+         [FILE] page@1a351fe354c74fed5d5421e7e6672b5b.webm
+         [FILE] page@bbc7913d55ab32a51c668f04aed6606e.webm
+         [FILE] page@e57104791f9140e1ee5cee1e29d75215.webm
+         [FILE] recording.webm.old
+         [FILE] 沪上经纬_作品演示.mp4
+         [FILE] 沪上经纬_作品演示_男声版.mp4
+         [DIR] .rec/
+            [FILE] page@35319ec96e7cf8239708995a74091f7e.webm
+            [FILE] page@ec363c7e0bd786b34c8b5d2184260691.webm
+         [DIR] _imgcheck/
+            [FILE] fangsheng_bridge_new.jpg
+            [FILE] 放生桥.jpg
+            [FILE] 泰安桥.jpg
+            [FILE] 圆津禅院.jpg
+      [DIR] logo/
+         [FILE] logo_A_mohen_600x600.png
+         [FILE] logo_B_jingwei_600x600.png
+         [FILE] logo_C_bridge_600x600.png
+         [FILE] 极简中式标志设计_方形印章构图_细墨线构成的经纬网格_横竖各_2026-08-25T15-29-59.png
+         [FILE] 极简中式标志设计_圆形构图_一滴浓墨落入静水_墨晕荡开成三四_2026-08-25T15-30-00.png
+         [FILE] 极简中式标志设计_圆形构图_一座三孔江南石拱桥的剪影横贯画面_2026-08-25T15-30-47.png
+      [DIR] ppt-zhufang-er/
+         [FILE] DESIGN.md
+         [FILE] STORY.md
+         [FILE] 沪上经纬_作品介绍_方向二主版.pdf
+         [FILE] 沪上经纬_作品介绍_方向二主版.pptx
+         [DIR]  slides assets/
+         [DIR] .slidep/
+            [FILE] pid
+            [FILE] slidep.log
+            [FILE] state.json
+         [DIR] assets/
+            [FILE] cover_watertown.png
+            [FILE] fangsheng_bridge.png
+            [FILE] market_fire.png
+            [FILE] sec1_street.png
+            [FILE] sec2_data.png
+            [FILE] sec3_mohen.png
+         [DIR] slides/
+            [FILE] 01_cover.slide
+            [FILE] 02_catalog.slide
+            [FILE] 03_sec1.slide
+            [FILE] 04_direction.slide
+            [FILE] 05_pain.slide
+            [FILE] 06_world.slide
+            [FILE] 07_sec2.slide
+            [FILE] 08_data.slide
+            [FILE] 09_dir2.slide
+            [FILE] 10_dir1.slide
+            [FILE] 11_dir3.slide
+            [FILE] 12_sec3.slide
+            [FILE] 13_mohen.slide
+            [FILE] 14_innovation.slide
+            [FILE] 15_ending.slide
+      [DIR] shots/
+         [FILE] 01_home.png
+         [FILE] 02_map.png
+         [FILE] 03_towns.png
+         [FILE] 04_stories.png
+         [FILE] 05_town.png
+         [FILE] 06_node.png
+         [FILE] 07_lens.png
+         [FILE] 08_mohen.png
+   [DIR] _deprecated/
+      [DIR] docs_scripts/
+         [FILE] build_pptx.py
+         [FILE] build_pptx_V5.4.py
+         [FILE] ocr_village_plan_local.py
+   [DIR] _raw/
+      [FILE] api_2026_改_extracted.txt
+      [FILE] raw_api_2026改.txt
+      [FILE] raw_CBDB_zip目录.txt
+      [FILE] raw_复旦大学图书馆_zip目录.txt
+      [FILE] raw_南京图书馆2024_zip目录.txt
+      [FILE] raw_培训02_开放数据资源主题匹配创意挖掘.txt
+      [FILE] raw_培训03_上图开放数据技术接口与应用示例.txt
+      [FILE] raw_培训05_阅读苏州的两种方式.txt
+      [FILE] raw_培训06_为一座城立传.txt
+      [FILE] raw_培训07_用数据写历史.txt
+      [FILE] raw_其他数据获取方式.txt
+      [FILE] raw_全国报刊索引API说明书.txt
+      [FILE] raw_上海历史文化名城保护规划.txt
+      [FILE] raw_上海市特色村落风貌保护传承专项规划.txt
+      [FILE] raw_宋庆龄文献API说明书.txt
+      [FILE] raw_搜韵网知识图谱API.txt
+      [FILE] raw_苏州人物2024_zip目录.txt
+      [FILE] raw_韬奋纪念馆2024.txt
+      [FILE] raw_宣讲08_今秘阁书画智能体.txt
+      [FILE] raw_宣讲09_阅读是思想最古老的prompts.txt
+      [FILE] raw_宣讲10_数字人文3.txt
+      [FILE] raw_宣讲11_看不见的城市.txt
+      [FILE] raw_宣讲14_騊声依旧.txt
+      [FILE] raw_宣讲15_南图中国近代文献图像数据库.txt
+      [FILE] raw_宣讲16_文澜重光.txt
+      [FILE] raw_宣讲18_舌尖上的图书馆.txt
+      [FILE] raw_宣讲22_全国报刊索引近现代资源.txt
+      [FILE] 参赛指引_extracted.txt
+      [FILE] 承诺函_extracted.txt
+      [DIR] nanjing_lib_2024_extract/
+         [FILE] 南京图书馆2024_2024抗日战争历史图库500条.txt
+         [FILE] 南京图书馆2024_2024中国近代文献图像数据库500条.txt
+         [FILE] 南京图书馆2024_URL.txt
+         [FILE] 南京图书馆2024_百年人物图库500.txt
+      [DIR] zip_extract/
+         [DIR] CBDB/
+            [FILE] API.txt
+            [FILE] API_解码_utf-16.txt
+            [DIR] sqlite/
+         [DIR] 复旦大学图书馆/
+            [FILE] 复旦大学图书馆_.DS_Store
+            [FILE] 复旦大学图书馆_南社詩箋——樣例_.DS_Store
+            [FILE] 复旦大学图书馆_南社詩箋——樣例_1、介紹_介紹.docx
+            [FILE] 复旦大学图书馆_南社詩箋——樣例_2、诗笺_.DS_Store
+            [FILE] 复旦大学图书馆_南社詩箋——樣例_2、诗笺_詩箋原文.docx
+            [FILE] 复旦大学图书馆_南社詩箋——樣例_3、作者小傳_作者小传.docx
+            [FILE] 复旦大学图书馆_重要说明.docx
+         [DIR] 苏州人物2024/
+            [FILE] 苏州人物2024_古代人物.xls
+            [FILE] 苏州人物2024_古代状元.xls
+            [FILE] 苏州人物2024_近现代人物.xls
+            [FILE] 苏州人物2024_苏州籍院士.xls
+            [FILE] 苏州人物2024_吴郡名贤.xls
+   [DIR] 00_纲领/
+      [FILE] _STARTUP_原文存档_20260907.md
+      [FILE] STARTUP.md
+      [FILE] 产物清单.md
+      [FILE] 成果水位台账.md
+      [FILE] 沪上经纬_项目内核纲领_20260911_v1.md
+      [FILE] 技能资产沉淀与高效开发手册_20260917.md
+      [FILE] 架构与文档体检报告_整理策略_20260904.md
+      [FILE] 轮次简报.md
+      [FILE] 密钥与凭证.md
+      [FILE] 能力清单.md
+      [FILE] 收敛机制_门禁与体积上限.md
+      [FILE] 数据深挖与数据库建设总体规划_V6.md
+      [FILE] 系统架构与设计文档_20260904.md
+      [FILE] 项目总纲.md
+      [FILE] 协作约定与总规索引.md
+      [FILE] 元纲领_20260910_v0.md
+      [DIR] SUBMISSION/
+         [FILE] PPT内容大纲.md
+         [FILE] 赛道方向与提交策略.md
+         [FILE] 使用数据清单.md
+         [FILE] 视频分镜脚本.md
+         [FILE] 视频旁白脚本.md
+         [FILE] 提交页字段终稿.md
+         [FILE] 提交页字段终稿_V5.4.md
+         [FILE] 外部AI意见对比与策略_V5.4.md
+         [FILE] 作品理念与构思.md
+         [FILE] 作品理念与构思_V5.4.md
+         [FILE] 作品摘要与说明_V5.4.md
+         [FILE] 作品摘要与说明_V5.md
+   [DIR] 01_知识库/
+      [FILE] 2b体检落差与古舆图配准前置_20260908.md
+      [FILE] chatgpt方案_差异比对_20260830.md
+      [FILE] CONFIRM_UNDERSTANDING.md
+      [FILE] coze_agent.txt
+      [FILE] db_design.txt
+      [FILE] execution_plan.md
+      [FILE] UI_TECH_PLAN.md
+      [FILE] 标准古镇数据分类框架_V1_20260829.md
+      [FILE] 策略建议_V5.4深化.md
+      [FILE] 产品定位_从百科到杂志_20260904.md
+      [FILE] 封面策展与像素核验_20260910.md
+      [FILE] 古籍OCR可行性验证_松江府志_20260830.md
+      [FILE] 古籍驱动的数据挖掘与分类框架方案_V1_20260830.md
+      [FILE] 古籍驱动的数据挖掘与分类框架方案_V2_20260830.md
+      [FILE] 古镇历史名称与行政区划映射表_20260830.md
+      [FILE] 江浙跨省源命中率实测_20260830.md
+      [FILE] 阶段0三支探针报告_20260831.md
+      [FILE] 决策文档_层级重构与四维坐标.md
+      [FILE] 可利用数字资源评估报告_20260830.md
+      [FILE] 民国图书原文直取实录_大上海指南_104971.md
+      [FILE] 民国图书镇名命中_mgts_4590_4590.md
+      [FILE] 民国图书镇名命中_大上海指南_104971.md
+      [FILE] 三个真缺口_落地策略方案_20260831.md
+      [FILE] 上图可下载全文资源普查_20260830.md
+      [FILE] 数据内涵定义与收口标准_20260829.md
+      [FILE] 数据深挖过程档案_V6.md
+      [FILE] 苏图130卡核验清单_20260830.md
+      [FILE] 苏图叙事原文候选_20260830.md
+      [FILE] 外部舆图源探测与补图方案_20260831.md
+      [FILE] 文件归位铁律.md
+      [FILE] 线上验收SOP_20260904.md
+      [FILE] 选图错配根因与两道新闸门_20260911.md
+      [FILE] 镇名归一与线上实测先行_20260909.md
+      [FILE] 证据链工作法与杂志叙事语法_20260904.md
+      [FILE] 志源台账_20260830.md
+      [FILE] 资源解读补记_20260831.md
+      [DIR] _历史归档/
+         [FILE] db_audit_20260828.md
+         [FILE] deepdive_shanghai_20260828.md
+         [FILE] raw_api_2026改_端点提取.md
+         [FILE] raw_CBDB_细读.md
+         [FILE] raw_复旦大学图书馆_细读.md
+         [FILE] raw_活动预约数据（2025）_概要.md
+         [FILE] raw_借阅数据（2025）_概要.md
+         [FILE] raw_苏州人物2024_细读.md
+         [FILE] raw_预约数据（202303-202404）_概要.md
+         [FILE] 产物清单_完整版_至20260904.md
+         [FILE] 前端展示优化清单.md
+         [FILE] 任务规则与知识归档.md
+         [FILE] 上图API方法vs权限_20260828.md
+         [FILE] 上图端点实测地图_20260828.md
+         [FILE] 上图开放数据竞赛资源总览_20260828.md
+         [FILE] 数据库盘底与受影响映射.md
+         [FILE] 数据库体检报告_V2_20260828.md
+         [FILE] 数据库体检报告_V3_20260829.md
+         [FILE] 数据库体检报告_V4_20260829.md
+         [FILE] 数据库体检报告_V5_20260829.md
+         [FILE] 数据契约与占位schema.md
+         [FILE] 数据深挖与数据库建设总体规划_V6_完整版_至20260904.md
+         [FILE] 数据挖掘经验总结_V6.md
+         [FILE] 文旅局官方文件解读_20260828.md
+         [FILE] 项目决策与过程记录.md
+   [DIR] 02_轮次档案/
+      [FILE] STARTUP_历史战报_至20260904.md
+      [FILE] 产物清单_轮次追加记录_20260830-20260904.md
+      [FILE] 阶段验收报告_20260825.md
+      [FILE] 阶段验收存档_20260828.md
+      [FILE] 金泽样板闭环_内容草稿_20260830.md
+      [FILE] 决策_专题辑定位与组件评审_20260905.md
+      [FILE] 前端改善执行报告_20260831.md
+      [FILE] 前端改善执行报告_第二轮_主题标签与时间镜头_20260831.md
+      [FILE] 数据再挖行动计划_用户视角_20260831.md
+      [FILE] 执行报告_§6.2数据夯实_20260830.md
+      [FILE] 指令_编织层3镇3专题_20260905.md
+   [DIR] 03_报告/
+      [FILE] _extract_20260912.json
+      [FILE] 11镇轮播封面诊断表_20260910.md
+      [FILE] 2b前端用户体验体检_20260907.md
+      [FILE] 355张候选图视觉核验报告_20260905.md
+      [FILE] A4金泽专项补采调研报告_20260905.md
+      [FILE] F4样稿核对与修订清单_20260911.md
+      [FILE] F5版式核对与C方案两轴四格_20260911.md
+      [FILE] 策略报告_探索趣味性与视觉张力_20260908.md
+      [FILE] 沪上经纬_AB样稿×线上实测对比评估_20260910.md
+      [FILE] 沪上经纬_P0-1全站错配扫查_20260910.md
+      [FILE] 沪上经纬_P2-3叙事覆盖扩面方案_20260910_v1.md
+      [FILE] 沪上经纬_氏族谱系与方志典籍叙事化策略_20260910.md
+      [FILE] 沪上经纬_图片资源盘底与判据机制_20260911_v1.md
+      [FILE] 沪上经纬_图像挂接体检报告_20260917.md
+      [FILE] 沪上经纬_图像与叙事_本窗口唯一存档_20260910.md
+      [FILE] 沪上经纬_叙事逻辑专项梳理_策略报告_20260912.md
+      [FILE] 沪上经纬_叙事逻辑专项梳理_独立核验报告_20260912.md
+      [FILE] 沪上经纬_叙事逻辑专项梳理_最终版_20260912.md
+      [FILE] 沪上经纬_镇页×专刊_S1策略_20260909_v1.md
+      [FILE] 基本渲染验证_20260829.md
+      [FILE] 家谱叙事样本_枫泾陈氏_20260915.md
+      [FILE] 家谱叙事样本_金山黄氏_20260915.md
+      [FILE] 节点详情页四问题诊断_20260904.md
+      [FILE] 墨痕能力清单与项目架构_20260917.md
+      [FILE] 墨痕全局复盘与优化评估报告.md
+      [FILE] 评估策略报告_动线巡检第二版_20260908.md
+      [FILE] 评估策略报告_线上对比第三版_20260908.md
+      [FILE] 前端就绪度评估_20260829.md
+      [FILE] 前端数据库表结构与字段模板_20260829.md
+      [FILE] 前端体验体检报告_数据已入库但未展示_20260831.md
+      [FILE] 前端展示体检报告_20260830.md
+      [FILE] 全景体检报告_20260906.md
+      [FILE] 全身体检报告_20260906_第二轮.md
+      [FILE] 三一级页面价值匹配度评估_20260829.md
+      [FILE] 诗词数据核查与重建报告_20260831.md
+      [FILE] 实体主表类型细分与完整度分析_20260829.md
+      [FILE] 视觉张力_图像证据链策略_20260904.md
+      [FILE] 数据库规模盘点_20260829.csv
+      [FILE] 数据库规模盘点_20260829.md
+      [FILE] 数据库体检报告_20260830.md
+      [FILE] 数据体检报告_前端用户视角_20260902.md
+      [FILE] 数据挖掘工作评分报告_用户视角_20260831.md
+      [FILE] 数据与前端展示匹配度评估_20260829.md
+      [FILE] 体验评估报告与优化策略_5.4复盘.md
+      [FILE] 图背后的故事_逐帧核验验收_20260911.html
+      [FILE] 图片可补量清点_20260905.md
+      [FILE] 图像叙事与杂志化视觉总策略_20260908.md
+      [FILE] 现状全景评估_20260905.md
+      [FILE] 线上功能体验实录_20260909.md
+      [FILE] 项目目录清单_20260917.txt
+      [FILE] 叙事链路与质量专项体检_20260913.md
+      [FILE] 叙事逻辑P0-P3执行与线上验收_20260912.md
+      [FILE] 叙事逻辑看板_20260912.html
+      [FILE] 叙事逻辑看板_最终版_20260912.html
+      [FILE] 舆图专题报告_20260831.md
+      [DIR] audit/
+         [FILE] p1_books_survey.json
+         [FILE] p1_commons_report.json
+         [FILE] p1_download_survey.json
+         [FILE] p1_stream_hits.json
+         [FILE] p2_events_report.json
+         [FILE] pdf_info_sample.json
+         [FILE] repair_log.md
+         [FILE] report.md
+         [DIR] assets/
+            [FILE] fig_gq.jpg
+            [FILE] fig_zc.jpg
+            [FILE] fp_zh.jpg
+            [FILE] vmdb.jpg
+            [FILE] whzk1.jpg
+            [FILE] whzk2.jpg
+   [DIR] 04_设计稿/
+      [FILE] mohen_consciousness_mockup.html
+      [FILE] town_preview_mockup.html
+      [FILE] 标准古镇数据分类框架_20260829.html
+      [FILE] 古籍OCR可行性验证_松江府志_20260830.html
+      [FILE] 古籍驱动的数据挖掘与分类框架方案_20260830.html
+      [FILE] 古籍驱动的数据挖掘与分类框架方案_V2_20260830.html
+      [FILE] 精度古镇评估_20260829.html
+      [FILE] 决策文档_层级重构与四维坐标.html
+      [FILE] 民国图书原文直取实录_大上海指南_104971.html
+      [FILE] 墨痕全局复盘与优化评估报告.html
+      [FILE] 试点镇选型评估_20260829.html
+      [FILE] 数据内涵丰富度可视化解读_20260829.html
+      [FILE] 镇页串联中枢_样稿_20260903.html
+      [DIR] design/
+         [FILE] evidence_chain_puji_20260904.html
+         [FILE] feature_20260905_jinze_bridges.html
+         [FILE] feature_20260905_xinchang_salt.html
+         [FILE] feature_20260905_zhujiajiao_fangshengqiao.html
+         [FILE] feature_magazine_20260904.html
+         [FILE] maps__jinze_puji_amap.jpg
+         [FILE] maps__songjiangfu_1754.jpg
+         [FILE] town_magazine_layout_v1_jinze.html
+      [DIR] html/
+         [FILE] 阶段0三支探针报告_20260831.html
+         [FILE] 前端展示优化清单.html
+         [FILE] 数据库体检报告_V4_20260829.html
+         [FILE] 数据库体检报告_V5_20260829.html
+         [FILE] 数据深挖与数据库建设总体规划_V6.html
+         [FILE] 数据挖掘经验总结_V6.html
+         [FILE] 数据再挖行动计划_用户视角_20260831.html
+      [DIR] preview/
+         [FILE] 使用数据清单.html
+         [FILE] 提交页字段终稿_V5.4.html
+      [DIR] review/
+         [FILE] press_purge_review_20260904.html
+[DIR] generated-images/
+   [FILE] map-explore-page.png
+   [FILE] p0-verify-南翔.png
+   [FILE] p0-verify-朱家角.png
+   [FILE] town-zhujiajiao-map.png
+[DIR] lib/
+   [FILE] clans.ts
+   [FILE] data.ts
+   [FILE] feature-adapter.ts
+   [FILE] features.ts
+   [FILE] footprint.ts
+   [FILE] imagery.ts
+   [FILE] imagery-gate.ts
+   [FILE] magazine.ts
+   [FILE] magazine-provenance.ts
+   [FILE] mag-lens.ts
+   [FILE] photo-provenance.ts
+   [FILE] postcard.ts
+   [FILE] rag.ts
+   [FILE] slug.ts
+   [FILE] srcguard.ts
+   [FILE] store.ts
+   [FILE] store-helpers.ts
+   [FILE] tier.ts
+   [FILE] town-anchors.ts
+   [FILE] types.ts
+[DIR] mockups/
+   [FILE] _f4_blk.png
+   [FILE] _f4_feat.png
+   [FILE] _f4_shot_feat.png
+   [FILE] _f4_shot_mag.png
+   [FILE] 20260903_jinze_magazine.html
+   [FILE] 20260903_jinze_magazine_v2.html
+   [FILE] 20260903_jinze_magazine_v3.html
+   [FILE] 20260903_jinze_magazine_v4.html
+   [FILE] 20260903_jinze_magazine_v5.html
+   [FILE] 20260903_node_genpath_yemengde.html
+   [FILE] 20260903_node_lifescroll_yihaosi.html
+   [FILE] 20260903_node_narrative_yihaosi.html
+   [FILE] 20260903_town_narrative_jinze.html
+   [FILE] 20260903_town_timespine_jinze.html
+   [FILE] 20260903_town_v32_jinze.html
+   [FILE] 20260908_p1_4_tier_mockup.html
+   [FILE] 20260908_s1_journey_A_full.html
+   [FILE] 20260908_s1_journey_A_overlay.html
+   [FILE] 20260908_s1_journey_B_full.html
+   [FILE] 20260908_s1_journey_B_hero.html
+   [FILE] 20260909_journey_A_full.html
+   [FILE] 20260909_journey_A_s1.html
+   [FILE] 20260909_journey_B_full.html
+   [FILE] 20260909_journey_B_s1.html
+   [FILE] 20260910_F_内页自由编排样稿.html
+   [FILE] 20260911_F2_瀑布流_专刊内页×专题辑.html
+   [FILE] 20260911_F3_版式样稿_时序主干×跨镇并置.html
+   [FILE] 20260911_F4_版式样稿_图文块环绕×六章骨架.html
+   [FILE] 20260911_F5_版式样稿_三轴六章×专题辑桥.html
+   [FILE] 20260911_F6A_专刊六内页样稿_金泽.html
+   [FILE] 20260911_F6B_专题辑修订样稿_桥.html
+   [FILE] 20260911_F7_版式样稿_六章逐页×专题辑瀑布流.html
+   [FILE] 20260911_F8_版式样稿_八页独立展示×专题辑翻阅.html
+   [FILE] gallery_caption_mockup.html
+   [FILE] ia_reorg_sample_20260907.html
+   [FILE] node_towncontext_mockup.html
+   [FILE] nodegallery_year_mockup.html
+   [FILE] p6_figure_enhance_mockup.html
+   [FILE] town_modern_board_mockup_20260902.html
+[DIR] public/
+   [FILE] gufeng-bg.png
+   [FILE] logo-mohen.png
+   [DIR] external-maps/
+      [FILE] baoshan-xiantu-1868.jpg
+      [FILE] chuansha-tingtu-1868.jpg
+   [DIR] figures/
+      [FILE] wang_chang.jpg
+      [FILE] zhao_mengfu.jpg
+   [DIR] img/
+      [DIR] hero/
+         [FILE] _credits.json
+         [FILE] chuansha-1280.webp
+         [FILE] chuansha-640.webp
+         [FILE] fengjing-1280.webp
+         [FILE] fengjing-1920.webp
+         [FILE] fengjing-640.webp
+         [FILE] gaoqiao-1280.webp
+         [FILE] gaoqiao-640.webp
+         [FILE] jiading-1280.webp
+         [FILE] jiading-1920.webp
+         [FILE] jiading-640.webp
+         [FILE] jinze-1280.webp
+         [FILE] jinze-1920.webp
+         [FILE] jinze-640.webp
+         [FILE] liantang-1280.webp
+         [FILE] liantang-1920.webp
+         [FILE] liantang-640.webp
+         [FILE] luodian-1280.webp
+         [FILE] luodian-640.webp
+         [FILE] nanxiang-1280.webp
+         [FILE] nanxiang-1920.webp
+         [FILE] nanxiang-640.webp
+         [FILE] xinchang-1280.webp
+         [FILE] xinchang-1920.webp
+         [FILE] xinchang-640.webp
+         [FILE] zhangyan-1280.webp
+         [FILE] zhangyan-1920.webp
+         [FILE] zhangyan-640.webp
+         [FILE] zhujiajiao-1280.webp
+         [FILE] zhujiajiao-1920.webp
+         [FILE] zhujiajiao-640.webp
+      [DIR] jp/
+         [FILE] 枫泾-STJP010068-v1-p16.webp
+         [FILE] 枫泾-STJP010068-v1-p6.webp
+         [FILE] 嘉定-STJP000531-v1-p10.webp
+         [FILE] 嘉定-STJP001072-v1-p8.webp
+         [FILE] 嘉定-STJP006087-v1-p14.webp
+         [FILE] 嘉定-STJP006087-v1-p26.webp
+         [FILE] 嘉定-STJP006087-v1-p5.webp
+         [FILE] 嘉定-STJP007762-v1-p18.webp
+         [FILE] 嘉定-STJP007762-v1-p32.webp
+         [FILE] 嘉定-STJP007762-v1-p6.webp
+   [DIR] maps/
+      [FILE] ext-daqing.jpg
+      [FILE] ext-duhalde-jiading.jpg
+      [FILE] ext-guangyu-1558.jpg
+      [FILE] ext-jesuit.jpg
+      [FILE] ext-jiading-1882.jpg
+      [FILE] ext-jinshan.jpg
+      [FILE] ext-kiangnan.jpg
+      [FILE] ext-nanhui-1879.jpg
+      [FILE] ext-qingpu-1879.jpg
+      [FILE] ext-shanghaicounty.jpg
+      [FILE] ext-songjiang-1754.jpg
+      [FILE] ext-songjiang-1818.jpg
+      [FILE] jinze_puji_amap.jpg
+      [FILE] songjiangfu_1754.jpg
+   [DIR] town-art/
+      [DIR] zzj/
+         [FILE] 中国传统水墨画_江南水乡朱家角古镇全景俯瞰视角_漕港河蜿蜒流_2026-08-25T22-05-13.png
+         [FILE] 中国传统水墨人物画_清代江南文人在水乡书院雅集场景_数位文人_2026-08-25T22-05-12.png
+   [DIR] yutu/
+      [FILE] jinshan_wei_city_1.jpg
+      [FILE] jinshan_wei_city_2.jpg
+      [FILE] shx10_p17.jpg
+      [FILE] shx10_p18.jpg
+      [FILE] shx10_p19.jpg
+      [FILE] shx10_p20.jpg
+      [FILE] shx10_p21.jpg
+      [FILE] shx10_p22.jpg
+      [FILE] shx10_p23.jpg
+      [FILE] shx10_p24.jpg
+      [FILE] sjf32_p05.jpg
+      [FILE] sjf32_p06.jpg
+      [FILE] sjf32_p07.jpg
+      [FILE] sjf32_p08.jpg
+      [FILE] sjf32_p09.jpg
+      [FILE] sjf32_p10.jpg
+      [FILE] sjf58_p36.jpg
+      [FILE] sjf58_p37.jpg
+      [FILE] sjf58_p38.jpg
+      [FILE] sjf58_p39.jpg
+      [FILE] sjf58_p40.jpg
+      [FILE] sjf58_p41.jpg
+      [FILE] sjf58_p42.jpg
+      [FILE] sjf58_p43.jpg
+      [FILE] sjf58_p44.jpg
+      [FILE] sjf58_p45.jpg
+      [FILE] sjf58_p46.jpg
+      [FILE] sjf58_p47.jpg
+      [FILE] sjf58_p48.jpg
+      [FILE] sjf58_p49.jpg
+      [FILE] songjiang_58_p30.jpg
+      [FILE] songjiang_58_p31.jpg
+      [FILE] songjiang_58_p32.jpg
+      [FILE] songjiang_58_p33.jpg
+      [FILE] songjiang_58_p34.jpg
+      [FILE] songjiang_58_p35.jpg
+[DIR] scripts/  -> [SUMMARY] 2355 files (.jpg=1140, .png=529, .py=301, .mjs=145, .json=98, .cjs=57, .txt=30, .pdf=25, .log=14, .js=5, .html=4, .md=3, .tsx=2, .bin=1, .mts=1)
+
+================================================================
+## D:\MoHen
+## TOTAL (excl. caches): ~21994 files ((no-ext)=6164, .py=4994, .json=2177, .html=1467, .sql=1113, .dat=1086, .gz=930, .mo=714, .png=587, .h=496, .txt=278, .doctree=250, .7=185, .pyi=149, .dll=148, .pdf=101, .typed=95, .pyd=77, .3=75, .exe=75, .po=69, .proto=63, .control=62, .pak=58, .jpg=56, .log=55, .1=37, .bin=34, .js=30, .css=28, .md=25, .lib=24, .mako=21, .macros=17, .stop=15, .mjs=14, .cpp=14, .hpp=13, .pm=9, .a=9, .rst=8, .conf=8, .tab=8, .pxd=7, .sgml=7, .ico=6, .bat=5, .pyx=5, .sample=5, .svg=4, .bsd=4, .c=4, .affix=4, .apache=4, .example=4, .pc=4, .whl=4, .dict=3, .init=3, .pot=3, .lng=3, .tsx=3, .jsx=3, .err=3, .macro=3, .pem=3, .zi=2, .opts=2, .dump=2, .rules=2, .pid=2, .asm=2, .xml=2, .yml=2, .obj=2, .cfg=2, .tmpl=2, .patch=2, .mk=2, .yaml=1, .cat=1, .ini=1, .csv=1, .inv=1, .virtualenv=1, .psf=1, .editorconfig=1, .global=1, .unicode=1, .xsh=1, .zip=1, .bundle=1, .cmd=1, .bak=1, .bash=1, .csh=1, .fish=1, ._pth=1, .pickle=1, .nu=1, .markdown-it=1, .asar=1, .buildinfo=1, .ps1=1, .port=1, .alias=1, .sh=1, .shlib=1, .wsgi=1, .bki=1, .zsh=1, .lock=1, .syn=1, .ths=1, .pth=1)
+================================================================
+
+[DIR] backups/  -> [SUMMARY] 1834 files ((no-ext)=1804, .log=24, .conf=4, .pid=1, .opts=1)
+[DIR] data/  -> [SUMMARY] 2769 files ((no-ext)=1804, .json=538, .pdf=101, .png=76, .txt=75, .jpg=56, .bin=32, .py=30, .log=30, .mjs=14, .conf=4, .init=3, .err=3, .pid=1, .bak=1, .opts=1)
+[DIR] installer/
+   [FILE] postgresql-18.6-3-windows-x64.exe
+[DIR] migration/
+   [FILE] mohen_dev_20260930.dump
+   [FILE] mohen_dev_20260930.schema.sql
+   [DIR] DATA-SAFETY-01_20260930/
+      [FILE] DATA-SAFETY-01_RESULT.md
+   [DIR] DB-01_20260930/
+      [FILE] DB-01_RESULT.md
+[DIR] PROJECT_REALITY_AUDIT_2026-09-30_V3/
+   [FILE] 01_PROJECT_INVENTORY_HUSHANG_JINGWEI.md
+   [FILE] 02_PROJECT_INVENTORY_MOHEN_AGENT_2.md
+   [FILE] 03_PROJECT_INVENTORY_MOHEN_AGENT_2_EXP.md
+   [FILE] 04_MOHEN_DATA_AREA_AUDIT.md
+   [FILE] 05_HUSHANG_VS_MOHEN_VS_EXP_EVOLUTION.md
+   [FILE] 06_GIT_WORKTREE_BRANCH_TOPOLOGY.md
+   [FILE] 07_DEPLOYMENT_AND_DATA_TOPOLOGY.md
+   [FILE] 08_PROJECT_REALITY_RISK_REGISTER.md
+   [FILE] 09_AUDIT_EXECUTIVE_SUMMARY.md
+   [FILE] 10_PROJECT_REALITY_MANIFEST.json
+[DIR] SAFETY_BASELINE_2026-09-30/
+   [FILE] B_tracked_files.txt
+   [FILE] EXP_WORKTREE_STATE.txt
+   [FILE] mohen_dev_pre_remote.dump
+   [FILE] MOHEN_GIT_STATE.txt
+   [FILE] mohen-all.bundle
+   [FILE] mohen-B-staged.patch
+   [FILE] mohen-B-status.txt
+   [FILE] mohen-B-untracked-list.txt
+   [FILE] mohen-B-working-tree.patch
+   [FILE] RAW_DATA_MANIFEST.csv
+   [FILE] REMOTE_FOUNDATION_RESULT.md
+   [FILE] VERCEL_B_PREVIEW_RESULT.md
+   [DIR] B_highvalue_untracked/
+      [FILE] jinze-present-day-photos.json
+      [FILE] MohenPresence.tsx
+      [FILE] PresentDayPhotoSurface.tsx
+      [DIR] foundation/
+         [FILE] page.tsx
+[DIR] supabase/
+   [FILE] db_url.txt
+[DIR] tools/  -> [SUMMARY] 17359 files (.py=4964, (no-ext)=2556, .json=1637, .html=1467, .sql=1112, .dat=1086, .gz=930, .mo=714, .png=511, .h=496, .doctree=250, .txt=197, .7=185, .pyi=149, .dll=148, .typed=95, .pyd=77, .3=75, .exe=74, .po=69, .proto=63, .control=62, .pak=58, .1=37, .js=30, .css=28, .lib=24, .mako=21, .macros=17, .stop=15, .cpp=14, .hpp=13, .md=12, .pm=9, .a=9, .tab=8, .rst=8, .pxd=7, .sgml=7, .ico=6, .bat=5, .pyx=5, .sample=5, .example=4, .affix=4, .c=4, .whl=4, .pc=4, .svg=4, .bsd=4, .apache=4, .lng=3, .macro=3, .pem=3, .jsx=3, .pot=3, .dict=3, .rules=2, .mk=2, .asm=2, .zi=2, .bin=2, .xml=2, .cfg=2, .tmpl=2, .yml=2, .obj=2, .ps1=1, .inv=1, .sh=1, .nu=1, .shlib=1, .editorconfig=1, .virtualenv=1, .bki=1, .syn=1, .wsgi=1, .buildinfo=1, .port=1, .psf=1, .yaml=1, .cat=1, .unicode=1, .zip=1, .ini=1, .xsh=1, .global=1, .cmd=1, .log=1, ._pth=1, .zsh=1, .pickle=1, .alias=1, .pth=1, .lock=1, .markdown-it=1, .asar=1, .ths=1, .bash=1, .csh=1, .fish=1)
+

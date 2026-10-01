@@ -115,7 +115,7 @@ test.describe("EXP-UI-RECON-01 · default Human UI", () => {
     await expect(page.locator(".surf-map--v2")).toContainText("今天的位置（示意）");
     await assertHumanMode(page);
     // K1：五幕以节奏表达（进度条），非五个面板
-    await expect(page.locator(".exp-progress")).toContainText("Beat 1/5 · 1/8");
+    await expect(page.locator(".exp-progress")).toContainText("第 1/5 段 · 第 1/8 场");
 
     // —— s02 时间/空间转换：世界重组（K3），不是文字解释
     await clickNext(page);

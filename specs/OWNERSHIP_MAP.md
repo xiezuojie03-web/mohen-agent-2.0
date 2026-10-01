@@ -13,7 +13,7 @@
 | `skills` | AI 可执行 SOP | 保存项目历史 |
 | `governance` | evolving high-level governance documents（GOV-SYNC-02 冻结）：Phase Gates、Domain Governance Contracts、Architecture Candidate / Research Backlog；L1 Architecture Roadmap 与 L2 Phase Execution Plan 已依 C0 归位为 ARCHIVE / LEGACY（见 `governance/archive/`） | 已稳定为 Contract 的内容应下沉 `specs/`；已裁决策应落 `decisions/`；Candidate Backlog 行使 SOT / Decision Authority |
 | `specs` | 当前稳定契约 | 过程记录 |
-| `specs/archive/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md` | Human-facing Experience/UI 参考（依 C4 V2.0 §27 由 Implementation Authority 降为 SOURCE ARCHIVE / TRACE；原 EXP-UI-GOV-01 登记已失效） | 当作当前实现 Authority 直接施工；将其规则视为唯一强制 |
+| `specs/archive/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md` | Human-facing Experience/UI 参考（依 C4 V2.1 §27 由 Implementation Authority 降为 SOURCE ARCHIVE / TRACE；原 EXP-UI-GOV-01 登记已失效） | 当作当前实现 Authority 直接施工；将其规则视为唯一强制 |
 | `specs/experience-ui/{source,canonical,evidence}/` | Baseline 附属归档：source=历史设计意图(trace-only)；canonical=体验语法/视觉构成参考；evidence=验证/失败证据 | 把 source/canonical/evidence 当作当前实现 Authority；重命名/改写/转换资产 |
 | `decisions` | 重大架构变更理由 | 操作 SOP |
 | `tasks` | 当前可验收工作单（Architect-authorized Task Books，一律 tracked） | 长期知识 |
@@ -26,13 +26,13 @@
 
 - `governance/` 中的 Architecture Candidate Backlog 是正式治理登记处，但**不是** Architecture SOT / Decision Authority；Candidate 只有经过 Architect Reconciliation / Plan Reconciliation 才能晋升为 Contract / Plan / Task Book。
 - 治理文档版本纪律：**Current-only working tree + Git preserves history**——治理文档被新版本正式取代后即从 working tree 删除（`git rm`），不创建 `history/` 子目录、不保留 `_superseded` 副本、不改写 Git 历史。
-- **当前架构真源集（SOT Set）= C0–C4 + CURRENT**（由 Architect 于 2026-09-29 明确）：C0 = `governance/MoHen_Project_Constitution_and_Dual_Line_Collaboration_V1.0.docx`；C1 = `governance/MoHen_Product_Architecture_Evolution_Constitution_V1.0.docx`；C2 = `governance/MoHen_Humanistic_Data_OS_and_Dual_Skill_Architecture_V1.0.docx`；C3 = `governance/MoHen_Humanistic_Data_OS_Database_Architecture_V1.1.docx`；C4 = `specs/MoHen_Agent-native_Human_Experience_UI_Architecture_V2.0.docx`；CURRENT = `CURRENT.md`。L1 Roadmap V4.9 与 L2 PHASE-II Plan V1.1 已依 C0 归位 `governance/archive/`（ARCHIVE / LEGACY PHASE RECORD，不再作为当前 SOT）；Candidate Registry = `governance/MoHen_Agent_2.0_Architecture-Candidate-Backlog_V1.0.md`（非 SOT）。
+- **当前架构真源集（SOT Set）= C0–C4 + CURRENT**（由 Architect 于 2026-09-29 明确）：C0 = `governance/C0_MoHen_Project_Constitution_and_Dual_Line_Collaboration_V1.0.md`；C1 = `governance/C1_MoHen_Product_Architecture_Evolution_Constitution_V1.0.md`；C2 = `governance/C2_MoHen_Humanistic_Data_OS_and_Dual_Skill_Architecture_V1.0.md`；C3 = `governance/C3_MoHen_Humanistic_Data_OS_Database_Architecture_V1.1.md`；C4 = `governance/C4_MoHen_Agent-native_Human_Experience_UI_Architecture_V2.1.md`；CURRENT = `CURRENT.md`。L1 Roadmap V4.9 与 L2 PHASE-II Plan V1.1 已依 C0 归位 `governance/archive/`（ARCHIVE / LEGACY PHASE RECORD，不再作为当前 SOT）；Candidate Registry = `governance/MoHen_Agent_2.0_Architecture-Candidate-Backlog_V1.0.md`（非 SOT）。
 
 ---
 
-## Experience/UI Authority（依 C4 V2.0 §27 重新登记，2026-09-29）
+## Experience/UI Authority（依 C4 V2.1 §27 重新登记，2026-09-29）
 
-`specs/archive/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md` 已依 C4 V2.0 §27 由 **Implementation Authority 降为 SOURCE ARCHIVE / TRACE**；原 EXP-UI-GOV-01 的"CURRENT IMPLEMENTATION AUTHORITY"登记已失效。Human-facing Experience/UI 的当前权威以 **C4（`specs/MoHen_Agent-native_Human_Experience_UI_Architecture_V2.0.docx`）** 为唯一真源：
+`specs/archive/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md` 已依 C4 V2.1 §27 由 **Implementation Authority 降为 SOURCE ARCHIVE / TRACE**；原 EXP-UI-GOV-01 的"CURRENT IMPLEMENTATION AUTHORITY"登记已失效。Human-facing Experience/UI 的当前权威以 **C4（`governance/C4_MoHen_Agent-native_Human_Experience_UI_Architecture_V2.1.md`）** 为唯一真源：
 
 - 适用范围：Experience、UI、Surface、Renderer、Map / Timeline / Evidence presentation、Visual Asset、MoHen Presence——以 C4 为准。
 - Baseline 中经 C4 吸收的成熟规则仍为有效参考；未被 C4 吸收或与之冲突者以 C4 为准，Baseline 仅作 trace。

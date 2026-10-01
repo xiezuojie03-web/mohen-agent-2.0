@@ -334,7 +334,7 @@ export default function ExperienceShell({
             {SPATIAL_MODE_LABELS[scene.spatial_mode as SpatialMode]}
           </span>
           <span className="exp-progress" data-testid="exp-progress">
-            Beat {BEATS.indexOf(beat) + 1}/5 · {sceneIdx + 1}/{totalScenes}
+            第 {BEATS.indexOf(beat) + 1}/5 段 · 第 {sceneIdx + 1}/{totalScenes} 场
           </span>
         </div>
       </header>
@@ -354,7 +354,7 @@ export default function ExperienceShell({
           {/* 中央主角身份标签（v03：明确组件身份，不靠浮层猜测） */}
           <div className="exp-center-label" data-testid="center-label">
             {surfaceHumanLabel(primaryType)}
-            <span>真实坐标推导 · 非伪造 GIS</span>
+            <span>位置依真实地理推算（非凭空绘制）</span>
           </div>
           <PrimarySurface ctx={ctx} onAction={onAction} />
         </div>

@@ -157,24 +157,29 @@ export function CurrentMapSurface({ ctx, compact }: SurfaceComponentProps) {
     y: stripY,
     glyph: "reference",
     // EXP-UI-RECON-01 R4：另一坐标系参考锚的 raw 坐标仅 ?inspector=1 显示；
-    // 默认只标注坐标系名 + 参考锚说明（不并入本图的诚实分离仍保留）。
-    label: ctx.devMode ? `${a.coord_system} · ${a.location_raw}` : "另一坐标系的参考锚",
-    sub: "参考锚 · 不并入本图",
+    // 默认只标注参考锚说明（不并入本图的诚实分离仍保留），内部术语「坐标系」默认不出现。
+    label: ctx.devMode ? `${a.coord_system} · ${a.location_raw}` : "另一出处的参考锚",
+    sub: "参考锚 · 不混入本图",
     className: "map-ref",
   }));
 
   // EXP-UI-RECON-01 R4（Stage 1·2.1）：坐标系术语 GCJ-02 属内部术语，默认 Human UI 不显示其字面量；
   // 仅 ?inspector=1（devMode）才透出原术语。默认以人话"今天的位置（示意）"表达诚实位置。
+  // 4 位经纬度刻度 / 角点坐标同样属内部坐标字面量，默认 Human UI 不渲染（与 6 位 GPS 同门控）。
   const crsLabelText = ctx.devMode
     ? `本图坐标系 ${FRAME_CRS}（原值，零换算）`
     : "今天的位置（示意）";
   const labels: LabelRequest[] = [
     { key: "geo-crs", text: crsLabelText, x: x0, y: y0 - 26, prefer: "above", size: 11, className: "vg-label vg-label--sub" },
-    { key: "geo-lng0", text: `${bbox.min_lng.toFixed(4)}°E`, x: x0, y: y1 + 18, prefer: "below", size: 10, className: "vg-tick" },
-    { key: "geo-lng1", text: `${bbox.max_lng.toFixed(4)}°E`, x: x1, y: y1 + 18, prefer: "below", size: 10, className: "vg-tick" },
+    ...(ctx.devMode
+      ? ([
+          { key: "geo-lng0", text: `${bbox.min_lng.toFixed(4)}°E`, x: x0, y: y1 + 18, prefer: "below", size: 10, className: "vg-tick" },
+          { key: "geo-lng1", text: `${bbox.max_lng.toFixed(4)}°E`, x: x1, y: y1 + 18, prefer: "below", size: 10, className: "vg-tick" },
+        ] as LabelRequest[])
+      : []),
     {
       key: "geo-strip",
-      text: "↓ 另一坐标系的记录：分列登记，不并入本图、不做换算",
+      text: "↓ 另有一处来源记录：单独登记，不混入本图、不作换算",
       x: x0,
       y: y1 + 26,
       prefer: "below",
@@ -197,7 +202,9 @@ export function CurrentMapSurface({ ctx, compact }: SurfaceComponentProps) {
           h: fh,
           cols: 4,
           rows: 4,
-          ticks: [`${bbox.max_lat.toFixed(4)}°N`, `${bbox.min_lat.toFixed(4)}°N`],
+          ticks: ctx.devMode
+            ? [`${bbox.max_lat.toFixed(4)}°N`, `${bbox.min_lat.toFixed(4)}°N`]
+            : [],
         },
         {
           kind: "extent",
@@ -206,12 +213,14 @@ export function CurrentMapSurface({ ctx, compact }: SurfaceComponentProps) {
           y: y0,
           w: fw,
           h: fh,
-          corners: [
-            `${bbox.min_lng.toFixed(4)},${bbox.max_lat.toFixed(4)}`,
-            `${bbox.max_lng.toFixed(4)},${bbox.max_lat.toFixed(4)}`,
-            `${bbox.min_lng.toFixed(4)},${bbox.min_lat.toFixed(4)}`,
-            `${bbox.max_lng.toFixed(4)},${bbox.min_lat.toFixed(4)}`,
-          ],
+          corners: ctx.devMode
+            ? [
+                `${bbox.min_lng.toFixed(4)},${bbox.max_lat.toFixed(4)}`,
+                `${bbox.max_lng.toFixed(4)},${bbox.max_lat.toFixed(4)}`,
+                `${bbox.min_lng.toFixed(4)},${bbox.min_lat.toFixed(4)}`,
+                `${bbox.max_lng.toFixed(4)},${bbox.min_lat.toFixed(4)}`,
+              ]
+            : [],
         },
         ...(barPx > 0
           ? [
@@ -251,7 +260,7 @@ export function CurrentMapSurface({ ctx, compact }: SurfaceComponentProps) {
         items={[
           { token: SPATIAL.node, text: "当前对象点", shape: "dot" },
           { token: SPATIAL.approximate_area, text: "近似范围", shape: "dot" },
-          { token: SPATIAL.approximate_area, text: "参考锚（另一坐标系）", shape: "dot" },
+          { token: SPATIAL.approximate_area, text: "参考锚（另一出处）", shape: "dot" },
         ]}
       />
       {!compact && ctx.devMode && (
