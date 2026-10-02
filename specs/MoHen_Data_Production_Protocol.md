@@ -60,6 +60,11 @@
 
 **三种形态，一次生成、同源产出，用途不同：**
 
+> **机器可读落地（2026-10-02 · M1.4）＝`pipelines/legacy/unattended-report.mjs`**：报告先被构造成**一个对象**，
+> 再由这个对象渲染三形态（`report.json` / `report.html` / `result.md`）——因此三者**不可能互相漂移**。
+> `report.json` 的 schema 为 `mohen.unattended-report`，`schema_version = 1`。
+> 执行体 `pipelines/legacy/unattended-runner.mjs` 在收尾时一次写出这三个文件。
+
 | 形态 | 文件 | 给谁用 | 硬要求 |
 |---|---|---|---|
 | **机器可读** | `report.json` | 后续自动化与机器解读（继续开发、回归比对、跨轮聚合） | 稳定 schema + schema 版本号；每个数字附其 SQL 或数据来源；**不得含模板断言** |

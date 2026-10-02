@@ -61,7 +61,10 @@ const CUTOFF = cutoffDate(UNTIL);
 // preflight 的边界：只做**确定性前置检查**（文件在不在 / 结构能不能解析 / 唯一性够不够），
 // 不读业务内容、不做判断、不预测结果质量。
 // ═══════════════════════════════════════════════════════════════════════════════
+// 以下两组 import 分别对应「作业队列 / 生产注册表」与「执行报告三形态」两组机制，
+// 故与各自使用处相邻（ESM 顶层声明会被提升，位置不影响语义）。
 import { buildJobs, matchEntries } from "./unattended-jobs.mjs";
+import { buildReport, renderMarkdown, renderHtml } from "./unattended-report.mjs";
 
 const REGISTRY_PATH = "specs/data-production/production-registry.json";
 let registry;
@@ -304,11 +307,27 @@ async function jobCoords(j) {
 
 const RUNNERS = { source: jobSource, images: jobImages, coords: jobCoords };
 
-// [2026-10-02 · M3] 执行报告的全部事实由查询得出，禁止模板断言。
+// [2026-10-02 · M3 / M1.4] 执行报告的全部事实由查询得出，禁止模板断言；
+// 三种形态（report.json / report.html / result.md）由 ./unattended-report.mjs **同源渲染**——
+// 各写一套必然互相漂移，本项目已付过"文档里写着、代码里没有"的代价。
 // 归因口径：本批时间窗 [progress.started_at, now]。目前尚无 run 级关联（断点 B-03），
 // 故"本批"＝时间窗口径；M2（Gate 数据库层强制）落地后改为 run 级归因。
-// 见 tasks/results/DATA-PRODUCTION-MECHANISM-01-result.md §4 M3。
+const FACTS_ATTRIBUTION = "本批＝时间窗 [started_at, now]（尚无 ingest_run_id 级关联，断点 B-03；M2 落地后改为 run 级归因）。";
+
 async function summaryFacts() {
+  const sql = {
+    gate_rows_in_window: "select count(*) from evidence_gate_audit where created_at >= :started_at",
+    queue_rows_in_window: "select count(*) from review_queue where created_at >= :started_at",
+    va_total: "select count(*) from visual_assets",
+    va_pending_review: "select count(*) from visual_assets where eligibility_tags && array['pending_heritage_review']",
+    va_excluded: "select count(*) from visual_assets where eligibility_tags && array['excluded_from_heritage_primary']",
+    va_no_gate_audit: "select count(*) from visual_assets a where not exists (select 1 from evidence_gate_audit g where g.object_type='visual_asset' and g.object_id=a.asset_id::text)",
+    va_effective: "select count(*) from effective_visual_assets",
+    published_entities: "select count(*) from entities where status='published'",
+    verified_evidence: "select count(*) from evidence where verification_status='verified'",
+    coords_claimed_as_history: "select count(*) from historical_feature_anchors where historical_position_proof",
+    coords_without_crs: "select count(*) from historical_feature_anchors where lat is not null and coord_system is null",
+  };
   const rows = await queryRows(
     `select
        (select count(*) from evidence_gate_audit where created_at >= :'w'::timestamptz) as gate_rows_in_window,
@@ -326,8 +345,47 @@ async function summaryFacts() {
        (select count(*) from historical_feature_anchors where lat is not null and coord_system is null) as coords_without_crs`,
     { w: progress.started_at }
   );
-  return rows[0] || {};
+  return { values: rows[0] || {}, sql };
 }
+
+/** 事实表：每个数字都带上它自己的 SQL 出处（§0.7 要求"可复核"）。 */
+function factsRows(f) {
+  const v = (k) => {
+    const x = f.values ? f.values[k] : undefined;
+    return x === undefined || x === null ? "（未查）" : x;
+  };
+  const s = (k) => (f.sql && f.sql[k]) || "";
+  const row = (k, label) => ({ key: k, label, value: v(k), sql: s(k) });
+  return [
+    row("gate_rows_in_window", "本批时间窗内门禁审计条数"),
+    row("queue_rows_in_window", "本批时间窗内 review_queue 新增"),
+    row("va_total", "图片 总数"),
+    row("va_pending_review", "图片 待审"),
+    row("va_excluded", "图片 已排除（heritage-primary）"),
+    row("va_no_gate_audit", "从未有门禁审计的图片"),
+    row("va_effective", "真正“有效可用”的图片"),
+    row("published_entities", "published 实体（必须为 0）"),
+    row("verified_evidence", "verified 证据（必须为 0）"),
+    row("coords_claimed_as_history", "claim 为历史位置的坐标（必须为 0）"),
+    row("coords_without_crs", "有坐标无 CRS（必须为 0）"),
+  ];
+}
+
+const GUARANTEES = [
+  "**本批是否运行过 Evidence Gate：由报告中“时间窗内门禁审计条数”回答，不由本报告断言。**",
+  "**图片默认不可用**：新增图片以 `eligibility_tags = {pending_heritage_review}` 写入，须经复核方可用于 heritage-primary。",
+  "图片源必须唯一可确定；否则作业在开跑前被 preflight 剔除、不写入（不再取任意 source_record）。",
+  "HTTP 校验 fail-closed：状态未知的链接一律不收。",
+  "坐标诚实由库层 CHECK 强制：`anchor_coord_requires_crs`、`anchor_current_never_proof`。",
+  "Raw append-only：源材料快照保留在 RAW_STORE/legacy/hushang/。",
+  "幂等：按 legacy_id + 规范化 file_path 跳过，可重跑。",
+];
+
+const LIMITS = [
+  "**归因口径**：本批＝时间窗口径（尚无 `ingest_run_id` 级关联，断点 B-03）；M2 落地后改为 run 级归因。",
+  "**有效性未自动成立**：本报告只能列出“声明瞄准的叙事缺口”；是否真的推进/关闭需有人值守核对（协议 §0.6，覆盖矩阵回写未实现）。",
+  "**未声明即不调度**：队列中任何未在生产注册表里唯一声明的作业会让整轮不启动（协议 §12）。",
+];
 
 async function finalize(reason) {
   progress.stop_reason = reason;
@@ -342,89 +400,58 @@ async function finalize(reason) {
   const inserted = jobEntries.reduce((a, [, j]) => a + (Number(j.inserted) || 0), 0);
   const unexecuted = jobs.length - done.length - failed.length;
 
-  let f = {};
+  let f = { values: {}, sql: {} };
+  let factsError = null;
   if (WRITE) {
     try { f = await summaryFacts(); }
-    catch (e) { f = { error: String((e && e.message) || e) }; }
+    catch (e) { factsError = String((e && e.message) || e); }
   }
-  const F = (v) => (v === undefined || v === null ? "（未查）" : v);
+  const fv = f.values || {};
 
-  // 三值结论（项目拥有者 2026-10-02 批准；协议 #8）
+  // 三值结论（项目拥有者 2026-10-02 批准；协议 §8）
   const hardStop = failed.length > 0 || reason === "STOPPED_CONSECUTIVE_FAILURES" || reason === "STOPPED_FATAL";
-  const newHolds = Number(f.queue_rows_in_window || 0);
+  const newHolds = Number(fv.queue_rows_in_window || 0);
   const verdict = hardStop ? "STOPPED" : (newHolds > 0 || unexecuted > 0 ? "PASS WITH HOLD" : "PASS");
   progress.verdict = verdict;
   save();
 
-  // Escalation：只列会阻塞当前金泽体验的，最多 3 条（协议 #8：普通 HOLD 不打扰拥有者）
+  // Escalation：只列会阻塞当前体验的，最多 3 条（协议 §8：普通 HOLD 不打扰拥有者）
   const esc = [];
   if (failed.length) esc.push(`作业失败 ${failed.length} 个：${failed.map(([id]) => id).join(", ")}`);
-  if (Number(f.published_entities || 0) > 0 || Number(f.verified_evidence || 0) > 0)
-    esc.push(`**红线**：库中出现 published/verified（实体 ${f.published_entities}、证据 ${f.verified_evidence}）——无人值守期间不得产生`);
-  if (Number(f.gate_rows_in_window || 0) === 0 && inserted > 0)
+  if (Number(fv.published_entities || 0) > 0 || Number(fv.verified_evidence || 0) > 0)
+    esc.push(`**红线**：库中出现 published/verified（实体 ${fv.published_entities}、证据 ${fv.verified_evidence}）——无人值守期间不得产生`);
+  if (Number(fv.gate_rows_in_window || 0) === 0 && inserted > 0)
     esc.push(`本批写入 ${inserted} 条，但本批时间窗内 evidence_gate_audit **0 条** → 本批未运行 Evidence Gate`);
-  if (Number(f.coords_claimed_as_history || 0) > 0 || Number(f.coords_without_crs || 0) > 0)
-    esc.push(`坐标诚实：historical_position_proof=true ${f.coords_claimed_as_history} 条、有坐标无 CRS ${f.coords_without_crs} 条`);
+  if (Number(fv.coords_claimed_as_history || 0) > 0 || Number(fv.coords_without_crs || 0) > 0)
+    esc.push(`坐标诚实：historical_position_proof=true ${fv.coords_claimed_as_history} 条、有坐标无 CRS ${fv.coords_without_crs} 条`);
   if (unexecuted > 0) esc.push(`未执行 ${unexecuted} 个作业（截止时间到 / 作业耗尽）`);
-  const escBlock = esc.length ? esc.slice(0, 3).map((s, i) => `${i + 1}. ${s}`).join("\n") : "无 —— 本批无需你介入。";
-  // [M1.3] 开跑前被排除的作业：明确列出（不是失败，不计入连续失败）
-  const reg = progress.registry || {};
-  const preExcluded = [
-    ...(reg.forbidden || []).map((x) => `- \`[注册表 forbidden]\` ${x.id} — ${x.reason}`),
-    ...(reg.preflight_excluded || []).map((x) => `- \`[preflight 未就绪]\` ${x.id} — ${x.reason}`),
-  ];
-  const exclBlock = preExcluded.length ? preExcluded.join("\n") : "无。";
 
-  const md = `# ${TAG} · 无人值守执行报告
+  // 注册表条目随报告一并留档，供 buildReport 推导"本批声明瞄准了哪些叙事缺口"
+  const registryForReport = { ...(progress.registry || {}), __entries: REG_ENTRIES };
 
-- 模式：${MODE}（MOHEN_ENV=${ENV}）· 截止时间：${CUTOFF.toISOString()} · 周期：${INTERVAL_MIN} 分钟/作业
-- 开始：${progress.started_at} · 结束：${progress.finished_at}
-- **结论：${verdict}**（停止原因：${reason}）
+  const report = buildReport({
+    tag: TAG, mode: MODE, env: ENV, interval_min: INTERVAL_MIN,
+    cutoff: CUTOFF.toISOString(), started_at: progress.started_at, finished_at: progress.finished_at,
+    verdict, stop_reason: reason,
+    escalation: esc,
+    registry: registryForReport,
+    jobs: progress.jobs,
+    counts: {
+      queued: ALL_JOBS.length, declared: declared.length, runnable: jobs.length,
+      done: done.length, failed: failed.length, unexecuted, inserted,
+    },
+    factsAttribution: FACTS_ATTRIBUTION,
+    factsRows: factsRows(f),
+    factsError,
+    guarantees: GUARANTEES,
+    limits: LIMITS,
+  });
 
-## Escalation —— 你只需要看这里（最多 3 条）
-
-${escBlock}
-
-## 开跑前排除（未执行，不是失败；不计入连续失败）
-
-${exclBlock}
-
-## 计数
-- 作业总数：${jobs.length} · 完成：${done.length} · 失败：${failed.length} · 未执行：${unexecuted}
-- 本批落库新增：${inserted}
-
-## 作业明细
-| 作业 | 结果 | 新增 | 备注 |
-|---|---|---|---|
-${Object.entries(progress.jobs).map(([k, v]) => `| ${k} | ${v.ok === false ? "FAIL" : "OK"} | ${v.inserted || 0} | ${v.note || (v.skipped ? "skipped/missing" : "")} |`).join("\n")}
-
-## 本批事实（**全部由查询得出，不是模板断言**）
-
-| 事实 | 值 | 来源 |
-|---|---|---|
-| 本批时间窗内门禁审计条数 | ${F(f.gate_rows_in_window)} | \`select count(*) from evidence_gate_audit where created_at >= started_at\` |
-| 本批时间窗内 review_queue 新增 | ${F(f.queue_rows_in_window)} | \`select count(*) from review_queue where created_at >= started_at\` |
-| 图片 总数 / 待审 / 已排除 | ${F(f.va_total)} / ${F(f.va_pending_review)} / ${F(f.va_excluded)} | \`visual_assets.eligibility_tags\` |
-| 从未有门禁审计的图片 | ${F(f.va_no_gate_audit)} | \`evidence_gate_audit\` 反连接 |
-| 真正"有效可用"的图片 | ${F(f.va_effective)} | 视图 \`effective_visual_assets\` |
-| published 实体 / verified 证据 | ${F(f.published_entities)} / ${F(f.verified_evidence)} | **必须为 0** |
-| 坐标：claim 为历史位置 / 有坐标无 CRS | ${F(f.coords_claimed_as_history)} / ${F(f.coords_without_crs)} | **必须为 0**（库层 CHECK 强制） |
-${f.error ? `\n> ⚠️ 查询失败，本批事实不可得：${f.error}\n` : ""}
-## 未运行 / 未完成的保证（明确列出，不用断言掩盖）
-
-- **本批是否运行过 Evidence Gate：由上面"时间窗内门禁审计条数"回答，不由本文件断言。**
-- **图片默认不可用**：本批新增图片以 \`eligibility_tags = {pending_heritage_review}\` 写入，须经复核方可用于 heritage-primary。
-- 图片源必须唯一可确定，否则本作业 fail loud、不写入（不再取任意 source_record）。
-- HTTP 校验 fail-closed：状态未知的链接一律不收。
-- 坐标诚实由库层 CHECK 强制：\`anchor_coord_requires_crs\`、\`anchor_current_never_proof\`。
-- Raw append-only：源材料快照存 ${RAW_STORE}/legacy/hushang/
-- 幂等：按 legacy_id + 规范化 file_path 跳过，可重跑。
-
-> 明细见 progress.json 与 runner.log。凭证不在本文件。
-> **归因限制**：本批尚无 \`ingest_run_id\` 关联（断点 B-03），故"本批"＝时间窗口径；M2 落地后改为 run 级归因。
-`;
-  fs.writeFileSync(path.join(OUT_DIR, "result.md"), md, "utf8");
-  log(`FINAL verdict=${verdict} reason=${reason} done=${done.length} failed=${failed.length} inserted=${inserted}`);
+  // 一次生成、同源产出三形态（§0.7）
+  fs.writeFileSync(path.join(OUT_DIR, "report.json"), JSON.stringify(report, null, 2), "utf8");
+  fs.writeFileSync(path.join(OUT_DIR, "result.md"), renderMarkdown(report), "utf8");
+  fs.writeFileSync(path.join(OUT_DIR, "report.html"), renderHtml(report), "utf8");
+  log(`FINAL verdict=${verdict} reason=${reason} done=${done.length} failed=${failed.length} inserted=${inserted} report=json+md+html`);
 }
 
 async function main() {
