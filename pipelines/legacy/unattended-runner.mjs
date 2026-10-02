@@ -193,9 +193,49 @@ for (const x of forbidden) log(`SKIP [注册表 forbidden]  ${x.id} — ${x.reas
 for (const x of preflightExcluded) log(`SKIP [preflight]  ${x.id} — ${x.reason}`);
 log(`source-gate: ${LEGACY_SOURCE} → ${gateInfo.canonical}（${gateInfo.tier}，evidence_allowed=${gateInfo.evidence_allowed}）`);
 log(`registry=${REGISTRY_PATH} entries=${REG_ENTRIES.length} queued=${ALL_JOBS.length} declared=${declared.length} runnable=${jobs.length} forbidden=${forbidden.length} preflight_excluded=${preflightExcluded.length}`);
+
+// ── [M2 第四条 · B-03] 本轮 run 登记（run 级归因）──────────────────────────────
+// 此前"本批"只能按时间窗口径（断点 B-03：727 张图无任何 ingest_runs 行）。
+// 从本轮起：WRITE 模式先登记 ingest_runs，所有分诊行带 ingest_run_id 出生
+// （迁移 202610020009）；DRY_RUN 不写库，故无 run 行（报告归因仍为时间窗口径）。
+let ingestRunId = null;
+if (WRITE) {
+  ingestRunId = await queryValue(
+    `insert into ingest_runs (pipeline_name, source_scope) values ('unattended-runner', :'scope') returning ingest_run_id::text`,
+    { scope: TAG }
+  );
+  progress.ingest_run_id = ingestRunId;
+  log(`ingest_run registered: ${ingestRunId}`);
+}
 save();
 
 // ---- 作业实现 ----
+
+// ── [M2 第四条 · B-02 正解] review_queue 三分（迁移 202610020009）─────────────
+// 「任何写入 Candidate 及以上层的作业，必须同时产生 review_queue 行（AUTO/HOLD/REJECT 三分）」
+// —— 不是回头补旧数据（那是冻结中的 M5），而是让**未来**每次候选写入都带分诊记录出生。
+// 三分语义（协议 #5；库层触发器 guard_review_queue_triage 强制出生形态）：
+//   auto   = 确定性晋级（Tier C 禁止；必记规则 review_note）
+//   hold   = 隔离区（出生 pending，定案权在人）
+//   reject = 自动拒绝（出生 rejected；对象未成为候选也留痕）
+// on conflict do nothing：同 run 同对象幂等（唯一部分索引 uq_review_queue_triage_per_run）。
+const triHold = (ot, oid, rc, sum, tier = "C") =>
+  ({ ot, oid, tier, rc, sum, tri: "hold", st: "pending" });
+const triReject = (ot, oid, rc, sum) =>
+  ({ ot, oid, tier: "C", rc, sum, tri: "reject", st: "rejected",
+     note: "rule: unattended-runner fail-closed（协议 #5 REJECT）" });
+
+async function recordTriage(rows) {
+  if (!WRITE || !ingestRunId || !rows.length) return 0;
+  await runMany(rows.map((t) => ({
+    sql: `insert into review_queue (object_type,object_id,review_tier,reason_code,summary,status,review_note,triage_outcome,ingest_run_id)
+          values (:'ot',:'oid',:'tier',:'rc',:'sum',:'st',:'note',:'tri',:'rid'::uuid)
+          on conflict do nothing`,
+    params: { note: null, ...t, rid: ingestRunId },
+  })));
+  return rows.length;
+}
+
 async function jobSource(j) {
   const p = path.join(FETCHED, j.file);
   if (!fs.existsSync(p)) return { ok: false, skipped: true, note: "file-missing" };
@@ -245,36 +285,41 @@ async function jobImages(j) {
   const existPaths = new Set(exist.map((r) => normUrl(r.file_path)).filter(Boolean));
 
   const items = [];
+  const triage = []; // [M2 第四条] 每个候选层写入必须带 review_queue 三分行出生
   let skipped = 0, badStatus = 0, unverified = 0, notImage = 0;
   for (const im of arr) {
     const url = im.url || im.thumb || im.file_path || im.image || null;
-    if (!url) { skipped++; continue; }
+    if (!url) { skipped++; continue; } // 无 URL＝无法识别对象，无从分诊（只计数）
 
     // [2026-10-02 修复 · 根因 3] 原为 fail-open：`im._http` 缺失或 status 为 0/null 时整条判断短路，
     // 坏链接直接入库（实际后果：23 张 HTTP 非 200 死链入库）。现改为 fail-closed：状态未知一律不收。
     const httpStatus = im._http && im._http.status != null ? Number(im._http.status) : null;
-    if (httpStatus == null) { unverified++; continue; }
-    if (httpStatus !== 200) { badStatus++; continue; }
+    if (httpStatus == null) { unverified++; triage.push(triReject("visual_asset", String(url), "http_status_unknown", "HTTP 状态未知，fail-closed 不收")); continue; }
+    if (httpStatus !== 200) { badStatus++; triage.push(triReject("visual_asset", String(url), "http_status_not_200", `HTTP ${httpStatus}，死链不收`)); continue; }
 
     // [2026-10-02 修复 · 根因 4] 非图片类型不再冒充 asset_type='image'（实测 29 个 .djvu 古籍扫描 + 1 个 .webm 视频）。
     const ext = (String(url).split("?")[0].match(/\.([a-z0-9]+)$/i) || [, ""])[1].toLowerCase();
-    if (!["jpg", "jpeg", "png", "gif", "webp", "tif", "tiff", "bmp", "svg"].includes(ext)) { notImage++; continue; }
+    if (!["jpg", "jpeg", "png", "gif", "webp", "tif", "tiff", "bmp", "svg"].includes(ext)) { notImage++; triage.push(triReject("visual_asset", String(url), "non_image_mime", `非图片扩展名 .${ext}，拒绝冒充 image`)); continue; }
 
     const lid = String(url);
     if (existSet.has(lid) || existPaths.has(normUrl(url))) { skipped++; continue; }
     existSet.add(lid);
     existPaths.add(normUrl(url));
     if (!WRITE) continue;
+    const aid = uuid();
     items.push({
       // [2026-10-02 修复 · 根因 5] 显式写入资格标记，不再依赖列默认 '{}'（"未排除即可用"）。
       // 未过门禁的新增图片一律标 pending_heritage_review，不再被静默视为可用。
       sql: `insert into visual_assets (asset_id,source_id,asset_type,file_path,created_date,depicted_period,rights,checksum,legacy_id,eligibility_tags)
             values (:'aid'::uuid,:'sid'::uuid,'image',:'fp',null,'unknown',:'rt',:'cs',:'lid',array['pending_heritage_review'])`,
-      params: { aid: uuid(), sid: srcId, fp: url, rt: im.license || "上海图书馆/Wikimedia 开放数据（授权待确认）", cs: sha(url), lid },
+      params: { aid, sid: srcId, fp: url, rt: im.license || "上海图书馆/Wikimedia 开放数据（授权待确认）", cs: sha(url), lid },
     });
+    // [M2 第四条] auto_promote_policy=none → 一律 hold（B-02：候选图片必须进 review_queue）
+    triage.push(triHold("visual_asset", aid, "pending_heritage_review", "候选图片：未过门禁（G0–G4 未评估），待人审（HR-5 / 协议 #5）"));
   }
   if (WRITE && items.length) await runMany(items);
-  return { ok: true, total: arr.length, inserted: items.length, skipped, bad_status: badStatus, unverified_status: unverified, not_image: notImage };
+  const triaged = await recordTriage(triage);
+  return { ok: true, total: arr.length, inserted: items.length, triaged, skipped, bad_status: badStatus, unverified_status: unverified, not_image: notImage };
 }
 
 async function jobCoords(j) {
@@ -286,17 +331,24 @@ async function jobCoords(j) {
   const entMap = new Map(entRows.map((r) => [r.legacy_id, r.entity_id]));
   const existA = await queryRows(`select anchor_key from historical_feature_anchors`);
   const existASet = new Set(existA.map((r) => r.anchor_key));
+  const triage = []; // [M2 第四条] 候选层写入必须带 review_queue 三分行出生
   let matched = 0, inserted = 0;
   for (const f of filled) {
     if (!(f.lat != null && f.lng != null)) continue;
     const eid = entMap.get(f.id);
-    if (!eid) continue;
+    if (!eid) {
+      // [M2 第四条] 注册表 hold_reasons: missing_entity_match —— 实体匹配失败必须 HOLD 留痕，不得静默丢弃
+      triage.push(triHold("wikidata_item", "wd:" + f.id, "missing_entity_match",
+        `旧库实体未匹配（Wikidata ${f.qid || f.id}）：${f.name || "(无名)"}`));
+      continue;
+    }
     matched++;
     const akey = "wd:" + f.id;
     if (existASet.has(akey)) continue;
     existASet.add(akey);
     if (!WRITE) continue;
     const fid = uuid();
+    const anchorId = uuid();
     const fkey = "wd-feat:" + f.id;
     await run(`insert into historical_features
       (feature_id,feature_key,slice_id,feature_type,canonical_label,historical_labels,modern_labels,label_variants_note,
@@ -313,10 +365,16 @@ async function jobCoords(j) {
       values (:'aid'::uuid,:'akey',:'fid'::uuid,'provider_current_object_point','official_or_provider_object_point','point',
        'WGS84',null,${Number(f.lat)},${Number(f.lng)},'','Wikidata P625',:'sloc',false,false,'现代坐标(Wikidata)；非历史位置证明')
       on conflict (anchor_key) do nothing`,
-      { aid: uuid(), akey, fid, sloc: "wikidata:" + (f.qid || f.id) });
+      { aid: anchorId, akey, fid, sloc: "wikidata:" + (f.qid || f.id) });
     inserted++;
+    // [M2 第四条] 协议 #5 明令：历史地图锚点/空间重建 → HOLD；auto_promote_policy=none → 全部 hold
+    triage.push(triHold("historical_feature", fid, "historical_spatial_requires_human",
+      "现代坐标候选（SHL-LEGACY-COORDS）：空间内容必须有人值守判断（协议 #5 / #10）"));
+    triage.push(triHold("historical_feature_anchor", anchorId, "historical_spatial_requires_human",
+      "现代坐标锚点（Wikidata P625，WGS84）：非历史位置证明，待人审"));
   }
-  return { ok: true, filled: filled.length, matched, inserted };
+  const triaged = await recordTriage(triage);
+  return { ok: true, filled: filled.length, matched, inserted, triaged };
 }
 
 const RUNNERS = { source: jobSource, images: jobImages, coords: jobCoords };
@@ -326,12 +384,17 @@ const RUNNERS = { source: jobSource, images: jobImages, coords: jobCoords };
 // 各写一套必然互相漂移，本项目已付过"文档里写着、代码里没有"的代价。
 // 归因口径：本批时间窗 [progress.started_at, now]。目前尚无 run 级关联（断点 B-03），
 // 故"本批"＝时间窗口径；M2（Gate 数据库层强制）落地后改为 run 级归因。
-const FACTS_ATTRIBUTION = "本批＝时间窗 [started_at, now]（尚无 ingest_run_id 级关联，断点 B-03；M2 落地后改为 run 级归因）。";
+// [M2 第四条 · 202610020009 落地] 事实行按时间窗查询；写入库的分诊行均带 ingest_run_id
+//（run 级归因已接线，历史行除外）——两口径并存期间，分诊事实以 run_id 为准。
+const FACTS_ATTRIBUTION = "本批＝时间窗 [started_at, now]；自迁移 202610020009 起，本 runner 写入的分诊行均带 ingest_run_id（B-03 run 级归因成立；历史行仍为时间窗口径）。";
 
 async function summaryFacts() {
   const sql = {
     gate_rows_in_window: "select count(*) from evidence_gate_audit where created_at >= :started_at",
     queue_rows_in_window: "select count(*) from review_queue where created_at >= :started_at",
+    queue_triage_auto: "select count(*) from review_queue where triage_outcome='auto' and created_at >= :started_at",
+    queue_triage_hold: "select count(*) from review_queue where triage_outcome='hold' and created_at >= :started_at",
+    queue_triage_reject: "select count(*) from review_queue where triage_outcome='reject' and created_at >= :started_at",
     va_total: "select count(*) from visual_assets",
     va_pending_review: "select count(*) from visual_assets where eligibility_tags && array['pending_heritage_review']",
     va_excluded: "select count(*) from visual_assets where eligibility_tags && array['excluded_from_heritage_primary']",
@@ -347,6 +410,9 @@ async function summaryFacts() {
     `select
        (select count(*) from evidence_gate_audit where created_at >= :'w'::timestamptz) as gate_rows_in_window,
        (select count(*) from review_queue          where created_at >= :'w'::timestamptz) as queue_rows_in_window,
+       (select count(*) from review_queue where triage_outcome='auto'  and created_at >= :'w'::timestamptz) as queue_triage_auto,
+       (select count(*) from review_queue where triage_outcome='hold'  and created_at >= :'w'::timestamptz) as queue_triage_hold,
+       (select count(*) from review_queue where triage_outcome='reject' and created_at >= :'w'::timestamptz) as queue_triage_reject,
        (select count(*) from visual_assets) as va_total,
        (select count(*) from visual_assets where eligibility_tags && array['pending_heritage_review']) as va_pending_review,
        (select count(*) from visual_assets where eligibility_tags && array['excluded_from_heritage_primary']) as va_excluded,
@@ -375,6 +441,9 @@ function factsRows(f) {
   return [
     row("gate_rows_in_window", "本批时间窗内门禁审计条数"),
     row("queue_rows_in_window", "本批时间窗内 review_queue 新增"),
+    row("queue_triage_auto", "其中 AUTO 分诊（确定性晋级）"),
+    row("queue_triage_hold", "其中 HOLD 分诊（隔离区新增）"),
+    row("queue_triage_reject", "其中 REJECT 分诊（自动拒绝）"),
     row("va_total", "图片 总数"),
     row("va_pending_review", "图片 待审"),
     row("va_excluded", "图片 已排除（heritage-primary）"),
@@ -393,6 +462,7 @@ function factsRows(f) {
 
 const GUARANTEES = [
   "**本批是否运行过 Evidence Gate：由报告中“时间窗内门禁审计条数”回答，不由本报告断言。**",
+  "**候选层写入三分（M2 第四条 / 迁移 202610020009）**：每个候选对象出生即在 review_queue 带分诊行（auto/hold/reject）；分诊必带 reason_code，auto 禁 Tier C，分诊结论不可改写，且带 ingest_run_id（run 级归因）。",
   "**图片默认不可用**：新增图片以 `eligibility_tags = {pending_heritage_review}` 写入，须经复核方可用于 heritage-primary。",
   "图片源必须唯一可确定；否则作业在开跑前被 preflight 剔除、不写入（不再取任意 source_record）。",
   "HTTP 校验 fail-closed：状态未知的链接一律不收。",
@@ -402,7 +472,7 @@ const GUARANTEES = [
 ];
 
 const LIMITS = [
-  "**归因口径**：本批＝时间窗口径（尚无 `ingest_run_id` 级关联，断点 B-03）；M2 落地后改为 run 级归因。",
+  "**归因口径**：本批事实按时间窗 [started_at, now] 查询；本 runner 写入的分诊行自 202610020009 起带 `ingest_run_id`（B-03 已接线），历史行仍为时间窗口径。",
   "**有效性未自动成立**：本报告只能列出“声明瞄准的叙事缺口”；是否真的推进/关闭需有人值守核对（协议 §0.6，覆盖矩阵回写未实现）。",
   "**未声明即不调度**：队列中任何未在生产注册表里唯一声明的作业会让整轮不启动（协议 §12）。",
 ];
@@ -437,6 +507,18 @@ async function finalize(reason) {
   const verdict = hardStop ? "STOPPED" : (newHolds > 0 || unexecuted > 0 ? "PASS WITH HOLD" : "PASS");
   progress.verdict = verdict;
   save();
+
+  // [M2 第四条 · B-03] 收口 run：本轮状态与计数落 ingest_runs（run 级归因的锚点；DRY_RUN 无 run 行）
+  if (WRITE && ingestRunId) {
+    await run(
+      `update ingest_runs set finished_at = now(), status = :'st', input_count = :ic, candidate_count = :cc, error_count = :ec, metadata_json = :'mj'::jsonb where ingest_run_id = :'rid'::uuid`,
+      {
+        st: failed.length ? "partial" : "completed", ic: jobs.length, cc: inserted, ec: failed.length,
+        mj: JSON.stringify({ mode: MODE, env: ENV, tag: TAG, forbidden: forbidden.length, preflight_excluded: preflightExcluded.length }),
+        rid: ingestRunId,
+      }
+    );
+  }
 
   // Escalation：只列会阻塞当前体验的，最多 3 条（协议 §8：普通 HOLD 不打扰拥有者）
   const esc = [];
