@@ -1,0 +1,101 @@
+<!doctype html><meta charset="utf-8"><title>图片专项审查 · NIGHT-RUN-20261001</title>
+<style>
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;margin:0;background:#f6f7f9;color:#1a1d21}
+.wrap{max-width:1180px;margin:0 auto;padding:28px}
+h1{font-size:23px;margin:0 0 6px}h2{font-size:17px;margin:30px 0 12px;padding-left:10px;border-left:4px solid #2f6fed}
+.sub{color:#6b7280;font-size:13px;margin-bottom:18px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:16px 0}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px}
+.card .v{font-size:25px;font-weight:700}.card .k{font-size:12px;color:#6b7280;margin-top:2px}
+table{width:100%;border-collapse:collapse;background:#fff;font-size:13px;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:6px}
+th{background:#f1f3f6;text-align:left;padding:9px 10px}td{padding:8px 10px;border-top:1px solid #eef0f3}
+tr:hover td{background:#fafbfc}
+.yes{color:#16a34a;font-weight:600}.no{color:#dc2626;font-weight:600}.warn{color:#b45309;font-weight:600}
+.dim{display:grid;grid-template-columns:210px 1fr 130px;gap:10px;align-items:center;margin:8px 0;font-size:13px}
+.note{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.8;margin-top:10px}
+.bad{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.8;margin-top:10px}
+.ok{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.8;margin-top:10px}
+code{background:#eef0f3;padding:1px 5px;border-radius:4px;font-size:12px}
+.rb{display:grid;grid-template-columns:270px 1fr 60px;gap:10px;align-items:center;font-size:12px;margin:5px 0}
+</style>
+<div class="wrap">
+<h1>图片专项审查 · NIGHT-RUN-20261001</h1>
+<div class="sub">依据：墨痕 C3 §5.3 Visual Asset（身份/时间/内容关联/空间对应/权利）· §9 Media → visual_asset（补 creation_date / depicted_period / rights / provenance）</div>
+
+<div class="cards">
+<div class="card"><div class="v">1288</div><div class="k">图片总量</div></div>
+<div class="card"><div class="v warn">741</div><div class="k">授权待确认</div></div>
+<div class="card"><div class="v warn">756</div><div class="k">拍摄时间缺失</div></div>
+<div class="card"><div class="v warn">15</div><div class="k">重复 URL</div></div>
+<div class="card"><div class="v no">23</div><div class="k">HTTP 非200误入库</div></div>
+<div class="card"><div class="v no">9</div><div class="k">宪法字段缺失</div></div>
+</div>
+
+<h2>一、质量评分（按墨痕标准）</h2>
+<div class="dim"><b>授权明确性</b><div style="background:#eef0f3;border-radius:6px;height:14px;width:100%;overflow:hidden"><div style="width:42%;height:100%;background:#dc2626"></div></div><span style="font-size:12px;color:#6b7280">42% · 741 条授权占位/待确认</span></div><div class="dim"><b>时间语义</b><div style="background:#eef0f3;border-radius:6px;height:14px;width:100%;overflow:hidden"><div style="width:41%;height:100%;background:#dc2626"></div></div><span style="font-size:12px;color:#6b7280">41% · 756 条 creation_date 为空；depicted_period=unknown 727</span></div><div class="dim"><b>去重</b><div style="background:#eef0f3;border-radius:6px;height:14px;width:100%;overflow:hidden"><div style="width:99%;height:100%;background:#16a34a"></div></div><span style="font-size:12px;color:#6b7280">99% · 15 个重复 URL</span></div><div class="dim"><b>溯源</b><div style="background:#eef0f3;border-radius:6px;height:14px;width:100%;overflow:hidden"><div style="width:100%;height:100%;background:#16a34a"></div></div><span style="font-size:12px;color:#6b7280">100% · 0 条无 source_id；checksum 缺失 0</span></div><div class="dim"><b>HTTP 有效性</b><div style="background:#eef0f3;border-radius:6px;height:14px;width:100%;overflow:hidden"><div style="width:98%;height:100%;background:#16a34a"></div></div><span style="font-size:12px;color:#6b7280">98% · 源侧非 200 共 23，误入库 23</span></div><div class="dim"><b>归属关联</b><div style="background:#eef0f3;border-radius:6px;height:14px;width:100%;overflow:hidden"><div style="width:0%;height:100%;background:#dc2626"></div></div><span style="font-size:12px;color:#6b7280">0% · 实体/地点/锚点关联字段缺失，0 条已归属</span></div>
+
+<h2>二、宪法字段合规差距（C3 §5.3 vs 实际表结构）</h2>
+<table><tr><th>字段组</th><th>宪法要求字段</th><th>库中对应列</th><th>状态</th></tr>
+<tr><td>身份</td><td><code>id</code></td><td><code>asset_id</code></td><td class="yes">✓ 已实现</td></tr><tr><td>身份</td><td><code>media_type</code></td><td><code>asset_type</code></td><td class="yes">✓ 已实现</td></tr><tr><td>身份</td><td><code>title</code></td><td><code>title</code></td><td class="no">✗ 缺失</td></tr><tr><td>身份</td><td><code>provider</code></td><td><code>provider</code></td><td class="no">✗ 缺失</td></tr><tr><td>身份</td><td><code>source_id</code></td><td><code>source_id</code></td><td class="yes">✓ 已实现</td></tr><tr><td>时间</td><td><code>creation_date</code></td><td><code>created_date</code></td><td class="yes">✓ 已实现</td></tr><tr><td>时间</td><td><code>depicted_period</code></td><td><code>depicted_period</code></td><td class="yes">✓ 已实现</td></tr><tr><td>内容关联</td><td><code>entity_refs</code></td><td><code>entity_refs</code></td><td class="no">✗ 缺失</td></tr><tr><td>内容关联</td><td><code>event_refs</code></td><td><code>event_refs</code></td><td class="no">✗ 缺失</td></tr><tr><td>内容关联</td><td><code>place_refs</code></td><td><code>place_refs</code></td><td class="no">✗ 缺失</td></tr><tr><td>空间对应</td><td><code>correspondence_type</code></td><td><code>correspondence_type</code></td><td class="no">✗ 缺失</td></tr><tr><td>空间对应</td><td><code>anchor_refs</code></td><td><code>anchor_refs</code></td><td class="no">✗ 缺失</td></tr><tr><td>权利</td><td><code>rights</code></td><td><code>rights</code></td><td class="yes">✓ 已实现</td></tr><tr><td>权利</td><td><code>license</code></td><td><code>license</code></td><td class="no">✗ 缺失</td></tr><tr><td>权利</td><td><code>usage_scope</code></td><td><code>usage_scope</code></td><td class="no">✗ 缺失</td></tr><tr><td>其它</td><td><code>checksum</code></td><td><code>checksum</code></td><td class="yes">✓ 已实现</td></tr><tr><td>其它</td><td><code>quality_score</code></td><td><code>quality_score</code></td><td class="yes">✓ 已实现</td></tr><tr><td>其它</td><td><code>legacy_id</code></td><td><code>legacy_id</code></td><td class="yes">✓ 已实现</td></tr>
+</table>
+<div class="bad">
+<b>结论：缺失 9 项</b> —— <code>title</code>、<code>provider</code>、<code>entity_refs</code>、<code>event_refs</code>、<code>place_refs</code>、<code>correspondence_type</code>、<code>anchor_refs</code>、<code>license</code>、<code>usage_scope</code>。<br>
+     其中最致命的是<b>内容关联</b>（entity/place/event refs）与<b>空间对应</b>（correspondence_type/anchor_refs）整组缺失：
+     这意味着图片即使进了 <code>visual_assets</code>，也<b>无法归属到任何实体、地点或空间锚点</b>，
+     目前是"有资产的孤儿"，不满足 C3 §5.3 的归属要求。
+</div>
+
+<h2>三、归属链路现状（能不能挂到实体/地点/坐标）</h2>
+<table>
+<tr><th>环节</th><th>现状</th><th>判定</th></tr>
+<tr><td>图片本体落位</td><td><code>visual_assets</code> 1288 条（C3 §9 规定的正确位置）</td><td class="yes">✓ 位置正确</td></tr>
+<tr><td>实体关联</td><td>无 <code>entity_refs</code> 字段、无 <code>visual_entity_links</code> 关联表 → 已归属 0 条</td><td class="no">✗ 链路断开</td></tr>
+<tr><td>地点关联</td><td>无 <code>place_refs</code>；源数据有 <code>town_hint</code> 但未落库</td><td class="no">✗ 链路断开</td></tr>
+<tr><td>空间对应</td><td>无 <code>anchor_refs</code>；库内已有 249 个现代坐标锚点可复用，但未与图片建立对应</td><td class="no">✗ 链路断开</td></tr>
+<tr><td>溯源</td><td><code>source_id</code> 指向统一的 legacy 源记录（0 条无源），粒度粗</td><td class="warn">△ 可用但粗</td></tr>
+</table>
+<div class="note">
+<b>可修复性评估（好消息）：</b>源数据里 <code>shanghai_images_census</code> 的 727 条中，
+<b>355 条带 town_hint（镇名提示）</b>，其中 <b>355 条的镇名能直接对上库内实体</b>（嘉定、川沙、朱家角、新场、金泽、南翔、枫泾、练塘、高桥、张堰、罗店）。
+即：<b>约 28% 的图片具备"可归属"的客观条件</b>，只差关联结构（字段或关联表）来承接。
+另有 0 条带 date、53 条带 desc —— 这些元数据目前<b>没有落库</b>，是质量与归属的双重损失。
+</div>
+
+<h2>四、授权分布</h2>
+<div class="rb"><span>上海图书馆/Wikimedia 开放数据（授权待确认）</span><span style="background:#eef0f3;border-radius:6px;height:13px;overflow:hidden"><span style="display:block;width:100%;height:100%;background:#f59e0b"></span></span><b>727</b></div><div class="rb"><span>CC BY-SA 4.0</span><span style="background:#eef0f3;border-radius:6px;height:13px;overflow:hidden"><span style="display:block;width:40%;height:100%;background:#2f6fed"></span></span><b>292</b></div><div class="rb"><span>CC BY-SA 3.0</span><span style="background:#eef0f3;border-radius:6px;height:13px;overflow:hidden"><span style="display:block;width:11%;height:100%;background:#2f6fed"></span></span><b>83</b></div><div class="rb"><span>CC BY 4.0</span><span style="background:#eef0f3;border-radius:6px;height:13px;overflow:hidden"><span style="display:block;width:10%;height:100%;background:#2f6fed"></span></span><b>73</b></div><div class="rb"><span>Public domain</span><span style="background:#eef0f3;border-radius:6px;height:13px;overflow:hidden"><span style="display:block;width:6%;height:100%;background:#2f6fed"></span></span><b>40</b></div><div class="rb"><span>CC0</span><span style="background:#eef0f3;border-radius:6px;height:13px;overflow:hidden"><span style="display:block;width:5%;height:100%;background:#2f6fed"></span></span><b>37</b></div><div class="rb"><span>上海图书馆开放数据（开放授权）</span><span style="background:#eef0f3;border-radius:6px;height:13px;overflow:hidden"><span style="display:block;width:2%;height:100%;background:#f59e0b"></span></span><b>14</b></div><div class="rb"><span>CC BY 3.0</span><span style="background:#eef0f3;border-radius:6px;height:13px;overflow:hidden"><span style="display:block;width:2%;height:100%;background:#2f6fed"></span></span><b>14</b></div><div class="rb"><span>CC BY 2.0</span><span style="background:#eef0f3;border-radius:6px;height:13px;overflow:hidden"><span style="display:block;width:1%;height:100%;background:#2f6fed"></span></span><b>4</b></div><div class="rb"><span>CC BY-SA 2.0</span><span style="background:#eef0f3;border-radius:6px;height:13px;overflow:hidden"><span style="display:block;width:0%;height:100%;background:#2f6fed"></span></span><b>2</b></div><div class="rb"><span>CC BY-SA 2.5</span><span style="background:#eef0f3;border-radius:6px;height:13px;overflow:hidden"><span style="display:block;width:0%;height:100%;background:#2f6fed"></span></span><b>2</b></div>
+<div class="warn" style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px 14px;font-size:13px">
+<b>741 条（58%）授权为占位值</b>（"上海图书馆/Wikimedia 开放数据（授权待确认）"、"上海图书馆开放数据（开放授权）"）。
+按墨痕权利合规要求，<b>授权未明确的图片不得进入体验层/对外使用</b> —— 这批需逐条核实 license，或先行标记为不可用。
+真实 license（CC 系列 / Public domain / CC0）共 547 条，可正常用。
+</div>
+
+<h2>五、时间语义</h2>
+<table><tr><th>depicted_period</th><th>数量</th><th>判定</th></tr>
+<tr><td>unknown</td><td>727</td><td class="warn">△ 时间语义缺失</td></tr><tr><td>现代影像（非历史）</td><td>519</td><td class="yes">✓</td></tr><tr><td></td><td>42</td><td class="yes">✓</td></tr>
+</table>
+<div class="note">C3 §5.3 要求 <b>creation_date 与 depicted_period 分离</b>：一个是"照片拍于何时"，一个是"照片描绘哪个时期"。
+当前 756 条 creation_date 为空、727 条 depicted_period=unknown —— 
+对古镇题材尤其危险：<b>老照片被当成现代影像，是史料级别的误用</b>。源数据有 0 条 date 可用但未落库。</div>
+
+<h2>六、重复与 HTTP 有效性</h2>
+<table><tr><th>检查项</th><th>数量</th><th>判定</th></tr>
+<tr><td>重复 URL（不同 legacy_id 指向同一图）</td><td>15</td><td class="warn">△ 需去重</td></tr>
+<tr><td>源侧 HTTP 非 200 的 URL</td><td>23</td><td>—</td></tr>
+<tr><td>其中被误写入库</td><td>23</td><td class="no">✗ 违规入库</td></tr>
+</table>
+<table><tr><th>重复 URL 样例</th><th>条数</th></tr><tr><td style="word-break:break-all;font-size:11px">https://img.library.sh.cn/whzk/img/53sb34a89o3nfp2l.jpg</td><td>2</td></tr><tr><td style="word-break:break-all;font-size:11px">https://img.library.sh.cn/whzk/img/iqoa88x47x95dyyr.jpg</td><td>2</td></tr><tr><td style="word-break:break-all;font-size:11px">https://img.library.sh.cn/whzk/img/42erje3y528s182r.jpg</td><td>2</td></tr><tr><td style="word-break:break-all;font-size:11px">https://img.library.sh.cn/whzk/img/8jlw63nyhu1q5p34.jpg</td><td>2</td></tr><tr><td style="word-break:break-all;font-size:11px">https://img.library.sh.cn/whzk/img/mqj89mjvff162bxh.jpg</td><td>2</td></tr><tr><td style="word-break:break-all;font-size:11px">https://img.library.sh.cn/whzk/img/kogyl2afr5izd8ei.jpg</td><td>2</td></tr><tr><td style="word-break:break-all;font-size:11px">https://img.library.sh.cn/whzk/img/bmuhtd221kh64yii.jpg</td><td>2</td></tr><tr><td style="word-break:break-all;font-size:11px">https://img.library.sh.cn/whzk/img/5tqcpx0b84dv11qu.jpg</td><td>2</td></tr></table>
+<div class="bad"><b>误入库样例：</b><br><code style="font-size:11px">https://img.library.sh.cn/person/vmdb3kz4gxn8y3it.jpg</code><br><code style="font-size:11px">https://img.library.sh.cn/shmemory/hsly/architecture/img/duaqjgwvpaigq8gg.jpg</code><br><code style="font-size:11px">https://img.library.sh.cn/shmemory/hsly/architecture/img/ugqdlij6rizfai23.jpg</code><br><code style="font-size:11px">https://img.library.sh.cn/shmemory/hsly/architecture/img/yc3lq6w2tr8szxb8.jpg</code><br><code style="font-size:11px">https://img.library.sh.cn/shmemory/hsly/architecture/img/5oqzvi3pyv1p92ht.jpg</code></div>
+
+<h2>七、审查结论与处置建议</h2>
+<div class="note">
+<b>1. 位置对，但归属断。</b>图片落在 <code>visual_assets</code> 符合 C3 §9；但 C3 §5.3 的内容关联/空间对应字段库中未实现，图片无法挂到实体/地点/锚点。<br>
+<b>2. 质量主短板是授权与时间。</b>741 条授权待确认 + 756 条无拍摄时间 + 727 条 depicted_period=unknown。<br>
+<b>3. 元数据没落库。</b>源侧 355 条 town_hint、0 条 date、53 条 desc 均未进入库内，白白丢失归属与断代线索。<br><br>
+<b>建议（按优先级）：</b><br>
+① 补归属结构：为 <code>visual_assets</code> 补齐 <code>entity_refs / place_refs / anchor_refs / correspondence_type / license / usage_scope</code>（或建 <code>visual_entity_links</code> 关联表）—— 需你授权一次 DDL。<br>
+② 回填元数据：把 town_hint / date / desc 从源 JSON 回写，可立即让约 355 条图片具备归属能力。<br>
+③ 授权分级：741 条占位授权的图标记为「不可用」，只留 547 条真实 license 的进体验层。<br>
+④ 去重 15 条重复 URL。<br>
+⑤ 老照片/现代影像必须分开标注 depicted_period，避免史料误用。
+</div>
+</div>

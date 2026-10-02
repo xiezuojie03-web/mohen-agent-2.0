@@ -1,0 +1,80 @@
+<!doctype html><meta charset="utf-8"><title>宪法要求 vs 真实数据库 · 全量对照</title>
+<style>
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;margin:0;background:#f6f7f9;color:#1a1d21}
+.wrap{max-width:1240px;margin:0 auto;padding:26px}
+h1{font-size:22px;margin:0 0 6px}h2{font-size:16px;margin:26px 0 8px;padding-left:10px;border-left:4px solid #2f6fed}
+.sub{color:#6b7280;font-size:13px;margin-bottom:16px;line-height:1.7}
+table{width:100%;border-collapse:collapse;background:#fff;font-size:13px;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden}
+th{background:#f1f3f6;text-align:left;padding:9px 10px}td{padding:8px 10px;border-top:1px solid #eef0f3;vertical-align:top}
+tr:hover td{background:#fafbfc}
+.yes{color:#16a34a;font-weight:600}.no{color:#dc2626;font-weight:600}.warn{color:#b45309;font-weight:600}
+.b{font-size:11px;padding:2px 8px;border-radius:11px;font-weight:600;white-space:nowrap}
+.b.ok{background:#dcfce7;color:#15803d}.b.no{background:#fee2e2;color:#b91c1c}.b.dg{background:#e0e7ff;color:#3730a3}
+.b.sp{background:#fef3c7;color:#92400e}.b.du{background:#fce7f3;color:#9d174d}.b.df{background:#f1f5f9;color:#475569}
+code{background:#eef0f3;padding:1px 5px;border-radius:4px;font-size:12px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:16px 0}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:13px}.card .v{font-size:24px;font-weight:700}.card .k{font-size:12px;color:#6b7280}
+.note{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.8;margin:10px 0}
+.bad{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.8;margin:10px 0}
+.ok{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.8;margin:10px 0}
+</style>
+<div class="wrap">
+<h1>宪法要求 vs 真实数据库 · 全量对照</h1>
+<div class="sub">宪法对象清单：C3 V1.1 §2.1–§2.5（L0–L7 八层）· §5.3（Visual Asset 字段组）· §6.1（schema 分组与「最小核心表 18 张以内」）<br>
+真实侧：<b>本次 live 查询实测</b>（29 表 + 1 视图），并复核 <code>supabase/migrations</code>（8 个迁移）。<b>不依赖 09-26 旧审计的静态结论。</b><br>
+生成：2026-10-02T00:22:22.380Z</div>
+
+<div class="cards">
+<div class="card"><div class="v">29</div><div class="k">真实表总数</div></div>
+<div class="card"><div class="v yes">16</div><div class="k">宪法对象已落表</div></div>
+<div class="card"><div class="v no">4</div><div class="k">真缺口（未建）</div></div>
+<div class="card"><div class="v warn">0</div><div class="k">空表（0 行）</div></div>
+<div class="card"><div class="v">10</div><div class="k">真库独有的工程表</div></div>
+</div>
+
+<h2>L0 Source</h2><table><tr><th>宪法对象</th><th>真实落点（live）</th><th>状态</th><th>说明</th></tr>
+<tr><td><code>source_record</code></td><td><code>source_records</code> <span class="yes">269 行</span></td><td><span class="b ok">已建</span></td><td style="font-size:12px;color:#4b5563">仅复数名差</td></tr><tr><td><code>source_version</code></td><td><span class="no">—</span></td><td><span class="b no">未建</span></td><td style="font-size:12px;color:#4b5563">版本/checksum 维度未建模（低优先）</td></tr><tr><td><code>raw_item</code></td><td><span class="no">—</span></td><td><span class="b dg">设计选择</span></td><td style="font-size:12px;color:#4b5563">有意设计：raw 永留文件系统，靠 source_records.raw_path 指针</td></tr><tr><td><code>ingestion_run</code></td><td><code>ingest_runs</code> <span class="yes">11 行</span></td><td><span class="b ok">已建</span></td><td style="font-size:12px;color:#4b5563">仅复数名差</td></tr>
+</table><h2>L1 Evidence</h2><table><tr><th>宪法对象</th><th>真实落点（live）</th><th>状态</th><th>说明</th></tr>
+<tr><td><code>evidence_fragment</code></td><td><code>evidence_fragments</code> <span class="yes">16 行</span></td><td><span class="b ok">已建</span></td><td style="font-size:12px;color:#4b5563">另 001 evidence 为高层对象</td></tr><tr><td><code>evidence_assessment</code></td><td><code>evidence_gate_audit</code> <span class="yes">2289 行</span></td><td><span class="b sp">拆分</span></td><td style="font-size:12px;color:#4b5563">无独立 assessment 表，语义分散在 audit + status 字段</td></tr><tr><td><code>claim_evidence_link</code></td><td><code>claim_evidence</code> <span class="yes">23 行</span></td><td><span class="b ok">已建</span></td><td style="font-size:12px;color:#4b5563">去 link 后缀</td></tr><tr><td><code>conflict_set</code></td><td><code>cultural_conflicts</code> <span class="yes">1 行</span></td><td><span class="b ok">已建</span></td><td style="font-size:12px;color:#4b5563">加 cultural_ 前缀</td></tr><tr><td><code>human_review</code></td><td><code>human_review_decisions</code> <span class="yes">13 行</span></td><td><span class="b ok">已建</span></td><td style="font-size:12px;color:#4b5563">加 _decisions</td></tr>
+</table><h2>L2 Cultural World</h2><table><tr><th>宪法对象</th><th>真实落点（live）</th><th>状态</th><th>说明</th></tr>
+<tr><td><code>entity</code></td><td><code>entities</code> <span class="yes">3323 行</span></td><td><span class="b ok">已建</span></td><td style="font-size:12px;color:#4b5563">复数</td></tr><tr><td><code>event</code></td><td><code>cultural_events</code> <span class="yes">9 行</span></td><td><span class="b ok">已建</span></td><td style="font-size:12px;color:#4b5563">加 cultural_ 前缀</td></tr><tr><td><code>relation_claim</code></td><td><code>cultural_relation_claims</code> <span class="yes">8 行</span></td><td><span class="b du">双存储</span></td><td style="font-size:12px;color:#4b5563">⚠ 与 relations(001) 双存储并存</td></tr><tr><td><code>change</code></td><td><code>historical_change_records</code> <span class="yes">5 行</span></td><td><span class="b ok">已建</span></td><td style="font-size:12px;color:#4b5563">加 historical_ 前缀</td></tr><tr><td><code>historical_space_claim</code></td><td><code>historical_spatial_slices</code> <span class="yes">2 行</span></td><td><span class="b sp">拆分</span></td><td style="font-size:12px;color:#4b5563">拆为 5 张表（slices/features/anchors/change_records/spatial_relations）</td></tr><tr><td><code>external_node</code></td><td><span class="no">—</span></td><td><span class="b no">未建</span></td><td style="font-size:12px;color:#4b5563">P1：关系扩展时需要</td></tr><tr><td><code>visual_asset</code></td><td><code>visual_assets</code> <span class="yes">1288 行</span></td><td><span class="b ok">已建</span></td><td style="font-size:12px;color:#4b5563">复数</td></tr><tr><td><code>visual_link</code></td><td><code>visual_entity_links</code> <span class="yes">22 行</span></td><td><span class="b ok">已建</span></td><td style="font-size:12px;color:#4b5563">加 _entity_；带 2 个触发器守门</td></tr>
+</table><h2>L3 Meaning</h2><table><tr><th>宪法对象</th><th>真实落点（live）</th><th>状态</th><th>说明</th></tr>
+<tr><td><code>meaning_candidate</code></td><td><code>cultural_meaning_candidates</code> <span class="yes">2 行</span></td><td><span class="b ok">已建</span></td><td style="font-size:12px;color:#4b5563">加 cultural_ 前缀</td></tr><tr><td><code>present_connection</code></td><td><code>cultural_present_connections</code> <span class="yes">2 行</span></td><td><span class="b ok">已建</span></td><td style="font-size:12px;color:#4b5563">加 cultural_ 前缀</td></tr><tr><td><code>open_question</code></td><td><span class="no">—</span></td><td><span class="b no">未建</span></td><td style="font-size:12px;color:#4b5563">P1：发现感关键，建议补</td></tr>
+</table><h2>L4 Discovery</h2><table><tr><th>宪法对象</th><th>真实落点（live）</th><th>状态</th><th>说明</th></tr>
+<tr><td><code>world_projection</code></td><td><span class="no">—</span></td><td><span class="b df">延后</span></td><td style="font-size:12px;color:#4b5563">doc 自认可后建；现由运行时 UNION 充当</td></tr><tr><td><code>discovery_candidate</code></td><td><code>discovery_candidates</code> <span class="yes">4 行</span></td><td><span class="b ok">已建</span></td><td style="font-size:12px;color:#4b5563">复数</td></tr><tr><td><code>story_seed</code></td><td><span class="no">—</span></td><td><span class="b df">延后</span></td><td style="font-size:12px;color:#4b5563">符合「Story 不是事实」</td></tr><tr><td><code>agent_context_view</code></td><td><span class="no">—</span></td><td><span class="b df">延后</span></td><td style="font-size:12px;color:#4b5563">派生/可重算</td></tr>
+</table><h2>L5 Experience</h2><table><tr><th>宪法对象</th><th>真实落点（live）</th><th>状态</th><th>说明</th></tr>
+<tr><td><code>ExperienceState 等</code></td><td><span class="no">—</span></td><td><span class="b df">延后</span></td><td style="font-size:12px;color:#4b5563">冻结 JSON 承载，符合「仅需要持久化时才建」</td></tr>
+</table><h2>L6/L7 LATER</h2><table><tr><th>宪法对象</th><th>真实落点（live）</th><th>状态</th><th>说明</th></tr>
+<tr><td><code>Contribution/Trace/活态文化</code></td><td><span class="no">—</span></td><td><span class="b df">LATER</span></td><td style="font-size:12px;color:#4b5563">doc 标 LATER，不应现在建</td></tr>
+</table>
+
+<h2>C3 §6.1 分组中未单列的对象</h2>
+<table><tr><th>分组</th><th>宪法对象</th><th>真实落点</th><th>状态</th><th>说明</th></tr>
+<tr><td><code>spatial</code></td><td><code>modern_location</code></td><td><span class="no">—</span></td><td><span class="b no">未建</span></td><td style="font-size:12px;color:#4b5563">P1「需要，防止空间混淆」；缺失与「现代坐标≠历史位置」红线冲突</td></tr><tr><td><code>spatial</code></td><td><code>spatial_anchor</code></td><td><code>historical_feature_anchors</code> <span class="yes">249 行</span></td><td><span class="b ok">已建</span></td><td style="font-size:12px;color:#4b5563">以 historical_ 前缀实现</td></tr><tr><td><code>spatial</code></td><td><code>geometry_claim</code></td><td><span class="no">—</span></td><td><span class="b df">延后</span></td><td style="font-size:12px;color:#4b5563">不提前批量生产历史 geometry，符合红线</td></tr><tr><td><code>runtime_read</code></td><td><code>materialized view</code></td><td><code>effective_visual_assets</code> <span class="yes">8 行</span></td><td><span class="b ok">已建</span></td><td style="font-size:12px;color:#4b5563">视图形式，非表</td></tr>
+</table>
+
+<h2>真库有、宪法未列的工程表（10）</h2>
+<table><tr><th>表</th><th>行数</th><th>作用（工程侧）</th></tr>
+<tr><td><code>claims</code></td><td class="yes">20</td><td style="font-size:12px;color:#4b5563">Claim 对象</td></tr><tr><td><code>evidence</code></td><td class="yes">3742</td><td style="font-size:12px;color:#4b5563">高层证据对象（001）</td></tr><tr><td><code>historical_features</code></td><td class="yes">245</td><td style="font-size:12px;color:#4b5563">项目工程表</td></tr><tr><td><code>historical_spatial_relations</code></td><td class="yes">8</td><td style="font-size:12px;color:#4b5563">项目工程表</td></tr><tr><td><code>knowledge_path_steps</code></td><td class="yes">10</td><td style="font-size:12px;color:#4b5563">知识脉络步骤</td></tr><tr><td><code>knowledge_paths</code></td><td class="yes">3</td><td style="font-size:12px;color:#4b5563">知识脉络</td></tr><tr><td><code>legacy_mappings</code></td><td class="yes">3405</td><td style="font-size:12px;color:#4b5563">旧→新 ID 映射（迁移可追溯）</td></tr><tr><td><code>relation_evidence</code></td><td class="yes">340</td><td style="font-size:12px;color:#4b5563">关系↔证据关联</td></tr><tr><td><code>relations</code></td><td class="yes">365</td><td style="font-size:12px;color:#4b5563">早期简化关系（与 cultural_relation_claims 并存 ⚠）</td></tr><tr><td><code>review_queue</code></td><td class="yes">293</td><td style="font-size:12px;color:#4b5563">候选池 / 人工裁决队列</td></tr>
+</table>
+
+<h2>五个结构性差异（按严重度）</h2>
+<div class="bad"><b>1. 命名分叉（最该修）</b>：宪法 PART VI 用<b>单数</b>（<code>source_record / event / relation_claim / visual_asset / evidence_fragment / human_review</code>），
+真库是<b>复数 + 前缀</b>（<code>source_records / cultural_events / cultural_relation_claims / visual_assets / evidence_fragments / human_review_decisions</code>）。
+后果：任何按宪法名写 SQL 或查 schema 的人都会误判表是否存在 —— <b>我前面把已存在的 <code>visual_entity_links</code> 误判为缺失，就是活例</b>。</div>
+<div class="bad"><b>2. 双 relation 存储</b>：<code>relations</code>(001，365 行) 与 <code>cultural_relation_claims</code>(008，8 行) 并存，
+宪法假设单一 <code>relation_claim</code>。Agent 会读到两份不一致的关系。</div>
+<div class="note"><b>3. epistemic 双轴未建模</b>：<code>verification_status</code>（8 值，管道阶段）与 <code>epistemic_status</code>（6 值，认识档位）两条轴并存，宪法只写了后者，读 status 易混淆。</div>
+<div class="note"><b>4. 三个 P1 缺口未建</b>：<code>modern_location</code>（触及「现代坐标≠历史位置」红线）、<code>open_question</code>、<code>external_node</code>。
+其中 <code>modern_location</code> 自 09-26 审计识别后一直停在「待你拍板」。</div>
+<div class="ok"><b>5. raw 不进库（设计选择，非缺陷）</b>：<code>raw_item</code> 无表是有意为之 —— raw 永留文件系统，库只存元数据 + <code>raw_path</code> 指针。
+但宪法未写明此决策，应补一句对齐。</div>
+
+<h2>结论</h2>
+<div class="note">
+<b>概念覆盖率：高。</b>L0–L5 几乎所有宪法对象在真库都有落点，红线由触发器落地（如 <code>vel_confirmed_requires_evidence</code>、<code>review_queue_tier_c_guard</code>、<code>discovery_not_publishable_guard</code>）。<br>
+<b>物理/命名一致性：低。</b>单数 vs 复数+前缀的分叉，是造成「以为缺表」的根源。<br>
+<b>真空缺仅 3 个 P1</b>：<code>modern_location</code>、<code>open_question</code>、<code>external_node</code>；另有 <code>source_version</code> 为低优先主动取舍。<br>
+<b>真实风险不在「表缺」，而在「表建了没填」</b>：如 <code>visual_entity_links</code> 已建但仅 22 行；<code>cultural_conflicts</code> 1 行等。
+</div>
+</div>
