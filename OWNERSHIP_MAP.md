@@ -19,21 +19,24 @@
 │   ├── experience/        体验域治理契约（EXP-DESIGN-01…）｜禁止：与 C4 竞争体验 Authority
 │   └── archive/           【归档】被取代的治理件（旧 Roadmap / Phase Plan / 旧版 C0–C4 docx / 移交稿 / 旧 CURRENT 备份）｜禁止：被活跃文件当 Authority 引用
 │
-├── specs/                 当前稳定契约 ＋ Experience/UI 的唯一归属地｜禁止：过程记录（experience-ui/ 为分级素材区）
+├── specs/                 当前稳定契约 ＋ 域操作件｜禁止：过程记录（experience-ui/ 为分级素材区）
 │   ├── FOUNDATION.md      项目不可轻易改变的原则
 │   ├── DATA_CONTRACT.md   字段级契约（受 C2/C3 统领；层级与状态一律指向 C3）
 │   ├── AGENT_CONTRACT.md  Agent Loop 与 Discovery 契约
 │   ├── EXPERIENCE_CONTRACT.md  ExperienceState / Composition 契约
 │   ├── SOURCE_REGISTRY.md    来源登记
-│   ├── MoHen_Data_Production_Protocol.md  数据生产协议（无人值守 + 有人值守；C2/C3 之下；T06/T07 依赖其 §12）
+│   ├── MoHen_Data_Production_Protocol.md  数据生产协议（无人值守 + 有人值守；C2/C3 之下）
 │   ├── archive/           【归档】被取代的契约与规范（旧 UI Baseline 等）｜禁止：当作当前 Authority
+│   ├── data-production/   数据生产操作件（**契约**在 specs/ 根，**操作件**在本目录）
+│   │   ├── T03_金泽材料盘点_覆盖矩阵.md   叙事缺口清单（当前唯一实例＝金泽）
+│   │   ├── T06_无人值守派工与缺口映射.md   缺口 → 字段 → 批次
+│   │   └── T07_无人值守作业最小Contract.md   作业 13 字段契约与安全基线
 │   └── experience-ui/     Experience/UI 素材与施工图（分级与 Authority 见该目录 README）
 │       ├── 施工图/        当前施工图（第 3 代）：M1 配套规格 + 可操作图册
 │       ├── MoHen_Narrative_Motif_Framework.md   五母题叙事与定向研究方法（V1.3）
 │       ├── 墨痕_UI架构与人文叙事_完整审查及后续任务.md   UI 审查与后续任务记录
 │       ├── 墨痕_Agent_2.0_金泽最小体验导演稿_V1.0.docx  最高体验权威（H2 计划自述）
-│       ├── 五母题深化_UI施工图与数据生产需求_V1.1.md  逐母题施工图与数据生产需求
-│       ├── T03_金泽材料盘点_覆盖矩阵.md  T06_数据生产_NightBatch派工与Gap映射.md  T07_NightJob_最小Contract与安全施工基线.md   材料盘点 / 无人值守派工 / 无人值守作业契约（后两个文件名中的 Night 为历史名）
+│       ├── 五母题深化_UI施工图与数据生产需求_V1.1.md  逐母题施工图与数据生产需求（跨域：含数据生产需求章节）
 │       ├── canonical/     体验基线 2 张 + 原型图谱 8 张（C4 引用）
 │       ├── source/        TRACE：历史设计意图｜禁止：作为当前实现依据
 │       ├── evidence/      失败与验证证据｜禁止：当作未来 UI 模板
@@ -55,7 +58,7 @@
 │   ├── ingest             Raw + Source 登记｜禁止：写 verified knowledge
 │   ├── evidence           Evidence Gate｜禁止：自由叙事
 │   ├── weave              verified → relations/story/discovery candidate｜禁止：绕过 Gate
-│   └── legacy             老库移植与夜跑执行体（night-runner.mjs）｜禁止：把老库内容当已裁决事实
+│   └── legacy             老库移植与无人值守执行体（night-runner.mjs；M1 将更名为 unattended-runner.mjs）｜禁止：把老库内容当已裁决事实
 ├── supabase/migrations    Truth Store 物理定义（schema 唯一来源）｜禁止：被绕过直接改库
 ├── scripts/               结构与文档守卫（check-*.mjs）＋ 报告生成器（gen-*.mjs）｜禁止：承载产品逻辑
 ├── tools/night/           无人值守生产运维脚本（探针 / 修复 / 校验）｜禁止：被当作调度器（调度器在 pipelines/legacy）
