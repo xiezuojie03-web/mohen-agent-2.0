@@ -4,10 +4,10 @@
 **Version:** V1.0
 **Date:** 2026-09-26
 **Owner:** 沙漠绿洲（用户 / 日常验收权）
-**Executor:** WorkBuddy（墨策，施工伙伴）
+**Executor:** 开发总工程师（角色名，工具中立；授权见 `CURRENT.md` §12 R13）
 **Status:** APPROVED（2026-09-26 用户审核通过）
 **Authority context:** 本计划是 H2 金泽 Canonical Human Experience 的唯一施工计划真源。
-授权依据见 `CURRENT.md` §11.1（A–F 六项日常施工授权 + 常态化规则）。本计划全部阶段均
+授权依据见 `CURRENT.md` §12 **R13**（开发授权与权责归一）。本计划全部阶段均
 in-contract，不触碰 C0–C4 核心边界；仅当触碰核心边界才走正式 Architecture Reconciliation。
 
 ---
@@ -142,7 +142,7 @@ Stage 2–5 视 Stage 1 验收结果滚动推进。
 - **VAG-2 Canonical Drift Gate**：对比导演稿 / canonical 参考，回答"同一人类问题是否还在、主角是否
   仍明显、揭示序列是否保留、技术信息是否更突出、是否更 card/page/chat-like"。
 - **VAG-3 Screenshot / Recording Gate**：真实运行态截图；多步体验附录屏。
-- **VAG-4 Architect Visual Review**：由 沙漠绿洲 浏览器验收（授权 A）；里程碑级可请 ChatGPT 复核。
+- **VAG-4 Visual Review**：由**项目拥有者**浏览器验收（R13：终裁权归项目拥有者，**不设第三方复核**）。
 - **VAG-5 Human Gate**：里程碑级真人盲测，不预先灌输内部架构词。
 
 ---

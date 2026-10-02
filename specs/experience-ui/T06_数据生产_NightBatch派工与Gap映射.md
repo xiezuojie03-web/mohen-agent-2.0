@@ -35,7 +35,7 @@ V1.1 §7/§10 专用字段+L0–L4 ──────┤
 ## 2. 结构性前置（必须先解，否则母题数据无法结构化入库）
 
 - `packages/domain` 仅有 `SourceRecord/Evidence/Claim` 占位，**无 `Material/Motif/Judgment/SpatialEntity/Actor`**；PG 中 M1–M5 无表/枚举（T03 §0/§4）。
-- 派工前需 **WorkBuddy / Construction** 定义映射（**非夜间自动**，属协议 §9 人审 Contract）：
+- 派工前需 **开发总工程师** 定义映射（**非夜间自动**，属协议 §9 人审 Contract）：
   - **母题/节拍/判断**：在 `Claim` 或 `cultural_relation_claims` 加 `motif`/`beat` 标签；或新建 `cultural_judgments` 表存 `judgment_id=Mx-C0n`、`claim_ids`、`status`（支持/部分支持/冲突/尚未证实/已被反证）。
   - **Material**：映射 `Material → source_records + evidence + historical_features + cultural_events / cultural_relation_claims / cultural_present_connections`。
   - **Actor**：`entities` 增 `type=person|group` + `relation_to_jinze` 字段（解 HR-1 吕颐浩 unproven 悬停）。

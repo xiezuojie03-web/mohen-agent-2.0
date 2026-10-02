@@ -2,7 +2,7 @@
 
 > 依据：夜间自动化数据生产协议 V1.0 **§12 Night Registry 最小 Contract**、§10 第一阶段批次、§7 失败/重试/回滚、§13 冻结规则；并受 T06（Gap→字段→批次映射）与 T03（真源/门禁）约束。
 > 定位：**这是 Contract，不是待跑的任务。** 所有 job 默认 **DRY_RUN**，未显式开启写入前不碰 Truth Store。
-> 每个 job 必须声明 §12 的 12 个字段，WorkBuddy/CodeBuddy 才把它加入无人值守调度。
+> 每个 job 必须声明 §12 的 12 个字段，开发总工程师才把它加入无人值守调度。
 
 ---
 
@@ -180,7 +180,7 @@ Historical Geometry 重建 · 历史地图配准 · 同景老照片判定 · 历
 ## 9. 晨报与结论判定（协议 §8）
 
 每晚仅一份极短 Morning Summary，结论仅三种：
-**PASS**（无需操作） / **PASS WITH HOLD**（正常，有候选待以后处理） / **STOPPED**（管线异常，需 CodeBuddy 修复）。
+**PASS**（无需操作） / **PASS WITH HOLD**（正常，有候选待以后处理） / **STOPPED**（管线异常，需开发总工程师修复）。
 **有 HOLD 不是失败**；普通 HOLD 可积累，不要求每日人工清空。首轮金泽批次预期 **PASS WITH HOLD**。
 
 ---

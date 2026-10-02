@@ -1,47 +1,51 @@
-# specs/experience-ui — 目录治理说明（EXP-UI-GOV-01 登记）
+# specs/experience-ui — 目录治理说明（EXP-UI-GOV-01 登记；2026-10-01 依 R13 修订）
 
-本目录是 `specs/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md`（Human-facing Experience/UI Implementation Authority）的附属资产归档区。它**不承载当前实现 Authority**，只保存 Authority 所依赖的历史设计意图、Canonical 参考与失败/验证证据。
+本目录是 Human-facing Experience/UI 的**归档附属资产区**：保存 Canonical 参考、历史设计意图与验证 / 失败证据。它**不承载当前实现 Authority**。
 
-> 本目录由用户人工放置，EXP-UI-GOV-01 仅做治理登记与纳入 Git，**不搬运、不重命名、不转换、不重建、不改写**其中任何资产。
+> **Authority 归属（2026-10-01 修订）**：Human-facing Experience/UI 的当前**唯一 Authority 是 C4**（`governance/C4_MoHen_Agent-native_Human_Experience_UI_Architecture_V2.1.md`）。`specs/archive/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md` 已降为 **SOURCE ARCHIVE / TRACE**，其"CURRENT IMPLEMENTATION AUTHORITY"登记失效（见 `specs/OWNERSHIP_MAP.md`）。本文件此前"Baseline 为 CURRENT IMPLEMENTATION AUTHORITY、且位于 `specs/`"的表述与 C4 / OWNERSHIP_MAP 冲突，已一并更正。
 
-## 1. 四层 Authority 权力关系
+> 本目录由项目拥有者人工放置；EXP-UI-GOV-01 仅做治理登记与纳入 Git，**不搬运、不重命名、不转换、不重建、不改写**其中任何资产。
+
+## 1. Authority 关系
 
 | 层 | 路径 | Authority 等级 | 规则 |
 |---|---|---|---|
-| **Baseline** | `specs/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md` | **CURRENT IMPLEMENTATION AUTHORITY** | 所有 Human-facing Experience/UI 实施与验收必须服从；WorkBuddy 无权重新定义其内容（§18.6 / §30）。 |
+| **C4** | `governance/C4_MoHen_Agent-native_Human_Experience_UI_Architecture_V2.1.md` | **CURRENT AUTHORITY（唯一）** | 所有 Human-facing Experience/UI 实施与验收必须服从；开发总工程师无权重新定义其内容。 |
 | **canonical** | `specs/experience-ui/canonical/*` | CANONICAL REFERENCE | 约束体验语法 / 视觉构成；非 pixel-perfect code spec。 |
-| **source** | `specs/experience-ui/source/*` | TRACE / SOURCE ARCHIVE | 保留历史设计意图；不得自行覆盖当前 Baseline。 |
+| **source** | `specs/experience-ui/source/*` | TRACE / SOURCE ARCHIVE | 保留历史设计意图；不得作为当前实现依据。 |
 | **evidence** | `specs/experience-ui/evidence/*` | VALIDATION / FAILURE EVIDENCE | 用于证明体验结果与漂移；不得作为未来 UI 设计模板。 |
+| **archive** | `specs/archive/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md` | SOURCE ARCHIVE / TRACE | 历史参考；已不再是 Implementation Authority。 |
 
 任何 Human-facing Experience/UI 任务的 **Context Gate 顺序**：
-1. 先读 Baseline（Required Read）——`specs/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md`；
+
+1. 先读 **C4**（唯一 Required Read）；
 2. 相关时再读 `canonical`（体验语法 / 视觉构成参考）；
-3. `source` 仅用于追溯历史设计意图，不作为当前实现依据。
+3. `source` 与 `specs/archive/` 仅用于追溯历史设计意图，**不作为当前实现依据**。
 
 ## 2. 当前真实资产清单（实际 Repo 文件名，禁止改名）
 
 ### source/（TRACE / SOURCE ARCHIVE — 原文件名保留）
 - `墨痕_Agent_2.0_Agent_Experience_UI_交互设计_V1.0.md`
 - `墨痕_Agent_2.0_UI_设计规格_V1.0.docx`
-- `墨痕_Agent_2.0_WorkBuddy_UI改造任务包_V1.0.docx`
+- `墨痕_Agent_2.0_WorkBuddy_UI改造任务包_V1.0.docx` —— **文件名中的工具名为历史资产原名，禁止改名**；它不构成任何治理 Authority（见 R13）。
 - `墨痕_Agent_2.0_可视化原型_V1.0.pptx`
 
-> 上述中文原始文件名与既有 Canonical 文件名均为实际 Repo 文件名。**禁止为整齐而重命名为旧示意英文名**；重命名/重组须经 Architect 授权治理任务。
+> 上述中文原始文件名与既有 Canonical 文件名均为实际 Repo 文件名。**禁止为整齐而重命名为旧示意英文名**；重命名 / 重组须经项目拥有者确认的治理任务。
 
 ### canonical/（CANONICAL REFERENCE）
 - `金泽历史关系探索体验板.png` —— **Canonical Experience Grammar Reference**（冻结认知节奏 / 视觉层级 / 提问推进 / 体验转化；非逐像素模板）。
 - `EXP-DESIGN-02 · Round 2 · Jinze Canonical Reconstruction.png` —— **Canonical Visual Composition Reference**（冻结视觉优先级 / 主次 / 留白 / 文本密度逻辑；实现不必复刻精确像素）。
 
 ### evidence/（VALIDATION / FAILURE EVIDENCE）
-- `M5-HUMAN-01_PreBaseline_Failure/current-runtime-recording.mp4.mp4` —— M5-HUMAN-01 Round A 失败证据录像（**注意：实际 Repo 文件名为双扩展名 `.mp4.mp4`**；Baseline 附录与结构图中写作 `current-runtime-recording.mp4`，为示意/内部引用偏差，资产本身以本实际文件名为准，禁止改名匹配）。
-- `M5-HUMAN-01_PreBaseline_Failure/README.md` —— 失败事件治理说明（本任务创建）。
+- `M5-HUMAN-01_PreBaseline_Failure/current-runtime-recording.mp4.mp4` —— M5-HUMAN-01 Round A 失败证据录像（**注意：实际 Repo 文件名为双扩展名 `.mp4.mp4`**；历史 Baseline 附录与结构图中写作 `current-runtime-recording.mp4`，为示意 / 内部引用偏差，资产本身以本实际文件名为准，禁止改名匹配）。
+- `M5-HUMAN-01_PreBaseline_Failure/README.md` —— 失败事件治理说明。
 
 ## 3. 目录结构变更治理
 
-本目录结构由 Baseline §1.3 / §25 冻结。WorkBuddy **无自主权**新增、移动、重命名或重组 `specs/experience-ui/` 及其子目录；任何经 Architect 授权的目录结构变化须在 Task Result 中报告 Directory Structure Change，并在 Governance Sync 中同步 L1 Canonical Repository Directory Map 与 `specs/OWNERSHIP_MAP.md`。
+本目录结构原由历史 Baseline §1.3 / §25 冻结，现由 **C4 §25（开发总工程师的 UI 硬边界）** 承接。开发总工程师**无自主权**新增、移动、重命名或重组 `specs/experience-ui/` 及其子目录；任何目录结构变化须经**项目拥有者确认**，并在 Result 中报告 Directory Structure Change，同步 `specs/OWNERSHIP_MAP.md`。
 
-## 4. 引用关系（来自 Baseline）
+## 4. 引用关系
 
-- Baseline §1.3 给出 V1.0 冻结仓库结构，明确 `specs/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md` + `specs/experience-ui/{README.md, source/, canonical/, evidence/}`。
-- Baseline §25 明确 source 四件资产与 canonical 两件资产为归档对象，且 source 不取代 Baseline、canonical 为参考而非代码权威。
-- Baseline §17 / 附录 A·B 将 `evidence/M5-HUMAN-01_PreBaseline_Failure/current-runtime-recording.mp4` 登记为负面 Canonical 证据样本（实际文件名见 §2，双扩展名）。
+- 历史 Baseline（现 `specs/archive/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md`）§1.3 / §25 给出 V1.0 冻结仓库结构。
+- 历史 Baseline §17 / 附录 A·B 曾将 `evidence/M5-HUMAN-01_PreBaseline_Failure/current-runtime-recording.mp4` 登记为负面 Canonical 证据样本（实际文件名见 §2，双扩展名）。
+- 以上 Baseline 条款现已为 **trace**；当前规则一律以 **C4** 为准。

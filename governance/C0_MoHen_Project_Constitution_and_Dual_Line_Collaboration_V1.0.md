@@ -41,26 +41,17 @@
 
 本宪法中"开发总工程师""开发平台"均为**角色名，不是产品名**。任何开发工具接手本项目，都应认定自己即为"开发总工程师"：既有能力也有责任进行架构思考，按本宪法直接开工，不因自己不是某个特定工具、或不是当初生成架构文件的那个工具，而降低主动性或等待额外授权。
 
+### 第三方裁决方的取消（2026-10-01 · R13）
+
+本项目只有两方：**项目拥有者**与**开发总工程师**。**不设第三方裁决方。**
+
+  - 不设独立架构顾问，也不设由第三方 AI 担任的"架构侧""总架构师"，或 Human Experience Gate 的终裁者。
+  - 历史文档中出现过的 WorkBuddy、CodeBuddy、ChatGPT Architect 等**工具名 / 产品名一律不具治理 Authority**；它们曾经承担的角色，一律由开发总工程师以**角色**身份承接。
+  - 授权与被授权关系只在项目拥有者 ↔ 开发总工程师之间直接发生，不经任何第三方转述、复核或签字。
+  - 具体决断登记见 `CURRENT.md` §12 **R13**；其登记框架与变更机制见本宪法 §11。
+
 ---
 
-
-# 0｜为什么现在要改变工作模式
-
-前一阶段的模式是：由一个 AI 负责架构与任务书，用户把任务书转交另一个 AI 施工，再把结果搬回前者验收。用户在两个工具之间充当信息中转站。它在早期建立工程纪律时有价值，但随着墨痕的架构、数据库、Evidence、Experience 和文化世界越来越复杂，这种链路开始产生明显的信息损耗。
-
-|                                                                                          |
-| ---------------------------------------------------------------------------------------- |
-| 真正的问题不是"哪个 AI 更强"，而是信息被切成了互不连通的上下文：一边知道为什么这样设计，一边知道代码实际上长什么样；用户被迫承担翻译、复制、同步和仲裁。 |
-
-新模式不再追求让多个工具共享全部对话。它只要求所有工具共享同一套长期稳定的"项目宪法"：把频繁的工程判断交给离代码最近的开发总工程师，把架构与方向的决定权完整保留在项目拥有者手中。
-
-| **旧模式**                              | **新模式**                                 |
-| ------------------------------------ | --------------------------------------- |
-| 工具 A → 任务书 → 用户 → 工具 B → 结果 → 用户 → 工具 A   | 项目拥有者（唯一架构设计师）：理念/产品/架构/最终决定        |
-| 用户在两个工具间充当信息中转站                   | 用户 ↔ 开发平台：自然语言开发，架构建议需用户确认      |
-| 用户是信息中转站                             | 用户是项目拥有者 / 唯一架构设计师 / 唯一决策者        |
-| 用户在工具之间传话                          | 用户只作最终决定，不传话、不翻译                  |
-| 开发工具机械执行任务书                         | 开发平台读 Repo、实施方案、并主动提出架构优化建议      |
 
 # 1｜两方角色定义
 
@@ -142,13 +133,9 @@
 
 只要没有触碰宪法边界，开发平台可以连续开发、迭代、调试，不需要每一步等用户签字。
 
-## 2.3 什么时候必须提交项目拥有者确认
+## 2.3 通用治理级提交确认触发器（C0 职责）
 
-  - 开发总工程师建议改变数据库核心对象、Evidence Gate、RelationClaim、Meaning / PresentConnection边界。
-
-  - 准备新增一种长期 Agent 能力，或改变 Agent 与 ExperienceState / CompositionState 的职责。
-
-  - 需要引入 PostGIS、图数据库、向量库、第二套 Truth Store 等基础技术。
+> 以下为**通用治理级**触发器，属 C0 的"角色/治理/开发逻辑"职责。方向/冻结原则级 Reconciliation 触发器见 **C1 §22**；专业域（代码/数据库/UI）触发器仅由 C2/C3/C4 在其域内列示，且不得反向改写 C1。三者分层、互不重复。
 
   - 现有架构反复阻碍用户想要的体验，局部修补已无法解决。
 
@@ -158,30 +145,34 @@
 
   - 任何施工方案需要违背当前 Canonical Experience / Evidence / Spatial Honesty 才能完成。
 
+  - 准备新增一种长期 Agent 能力类别，或改变 Agent 与 ExperienceState / CompositionState 的职责分工。
+
+> 数据库核心对象、Evidence Gate、RelationClaim、Meaning / PresentConnection 边界、基础技术选型等专业域触发器，由 **C2 / C3 / C4** 在其域内列示；本 C0 §2.3 不重复，亦不替代。
+
 # 3｜墨痕最小"项目宪法"文件集：C0–C4 + CURRENT
 
 真正应该在 Repo 一线长期可见的入口控制为 C0–C4 五份长期权威 + CURRENT 一个当前状态入口。C0–C4 的正式母版文件名统一使用版本号，不使用 Final、Reconciled、最新版 等临时后缀；CURRENT.md 保持无版本号。历史 Roadmap、Phase Plan、Task Book、Result 与旧设计稿退居 Archive / Trace。
 
 | **级别** | **文件**                                                                                 | **它只回答一个问题**                        | **开发平台何时读**             |
 | ------ | -------------------------------------------------------------------------------------- | ----------------------------------- | ---------------------------- |
-| C0     | C0_MoHen\_Project\_Constitution\_and\_Dual\_Line\_Collaboration\_V1.0.md                | 协作角色、边界治理、升级机制                      | 每次新会话 / 大任务先读                |
-| C1     | C1_MoHen\_Product\_Architecture\_Evolution\_Constitution\_V1.0.md                       | 为什么存在、系统如何成立、怎样演化、现在在哪              | 触及产品/架构/阶段边界时                |
-| C2     | C2_MoHen\_Humanistic\_Data\_OS\_and\_Dual\_Skill\_Architecture\_V1.0.md                 | 文化世界怎样被生产；Developer/Agent Skill怎样分工 | 数据生产、研究流程、Agent能力相关          |
-| C3     | C3_MoHen\_Humanistic\_Data\_OS\_Database\_Architecture\_V1.1.md                         | 可信文化世界、八层长期数据地图与 Truth Store 如何存在   | 数据库/数据迁移/Participation数据边界相关 |
-| C4     | C4_MoHen\_Agent-native\_Human\_Experience\_UI\_Architecture\_V2.1.md + Canonical images | 人怎样真正进入和经历这个世界；最低体验质量是什么            | 任何 Human-facing 体验改动         |
+| C0     | governance/C0\_MoHen\_Project\_Constitution\_and\_Dual\_Line\_Collaboration\_V1.0.md                | 协作角色、边界治理、升级机制                      | 每次新会话 / 大任务先读                |
+| C1     | governance/C1\_MoHen\_Product\_Architecture\_Evolution\_Constitution\_V1.0.md                       | 为什么存在、系统如何成立、怎样演化、现在在哪              | 触及产品/架构/阶段边界时                |
+| C2     | governance/C2\_MoHen\_Humanistic\_Data\_OS\_and\_Dual\_Skill\_Architecture\_V1.0.md                 | 文化世界怎样被生产；Developer/Agent Skill怎样分工 | 数据生产、研究流程、Agent能力相关          |
+| C3     | governance/C3\_MoHen\_Humanistic\_Data\_OS\_Database\_Architecture\_V1.1.md                         | 可信文化世界、八层长期数据地图与 Truth Store 如何存在   | 数据库/数据迁移/Participation数据边界相关 |
+| C4     | governance/C4\_MoHen\_Agent-native\_Human\_Experience\_UI\_Architecture\_V2.1.md + Canonical images | 人怎样真正进入和经历这个世界；最低体验质量是什么            | 任何 Human-facing 体验改动         |
 | NOW    | CURRENT.md                                                                             | 当前真实问题、当前样板、HOLD 与施工入口              | 每次新会话快速定位                    |
 
 |                                                                        |
 | ---------------------------------------------------------------------- |
 | 原则：宪法文件告诉开发平台'不能把什么做坏'，Repo 和当前代码告诉开发平台'现在实际上是什么样'。二者缺一不可。 |
 
+**层级与仲裁**：AGENTS.md=纯入口路由（不承载宪法/状态）；CURRENT=当前状态（Live SOT）；C0=角色/治理/开发逻辑；C1=方向/冻结原则；C2/C3/C4=各自专业域更高细节 Authority，但**不得反向改写 C1** 的方向与冻结原则。仲裁优先级：**C0（治理）≥ C1（方向）> C2/C3/C4（专业域，域内优先但不越 C1）**。专业分册与总纲边界交叉时，以 C1 的方向/冻结原则为上位，专业分册仅在其域内细化。 |
+
 # 4｜四份长期权威分别管什么
 
 ## 4.1 C1 Product, Architecture & Evolution Constitution：最高产品、总体架构与演化总纲
 
-C1 V1.0 已正式继承并升级 V4.9 的 Living Architecture + Master Plan + Current Product Baseline 职责。它从最终人本 Vision 开篇，统领 Product Promise、Humanistic Data OS、Living Cultural World、Agent-native Experience、Evolution Horizons、Current Baseline、Architecture Reconciliation 与长期冻结原则。
-
-V4.9 现在定位为 C1 的 DIRECT PREDECESSOR / ARCHIVE：其成熟原则与架构记忆已进入 C1；逐 Task 重治理不再拥有当前 Authority。
+C1 从最终人本 Vision 开篇，统领 Product Promise、Humanistic Data OS、Living Cultural World、Agent-native Experience、Evolution Horizons、Current Baseline、Architecture Reconciliation 与长期冻结原则。逐 Task 的重治理不属于 C1，由 C0 的开发模式承载。
 
 ## 4.2 Humanistic Data OS & Dual Skill Architecture：造世界与用世界
 
@@ -209,43 +200,33 @@ V4.9 现在定位为 C1 的 DIRECT PREDECESSOR / ARCHIVE：其成熟原则与架
 
   - 技术上正确但体验无趣 = Human Experience FAIL
 
-# 5｜哪些旧文档退出一线
+# 5｜文档权威分层
 
-退出一线不等于删除。它们仍然是历史证据、设计过程和 Git 追溯材料，但不再让 开发总工程师在施工时自己从几十份文件中判断哪份更权威。
+一线权威只有 C0–C4 + CURRENT。其余文档——历史 Roadmap、Phase Plan、Task Book、Result、旧 UI/DB 设计稿、聊天记录——均为 Archive / Trace：保留供追溯，不拥有日常 Authority，不作为当前规则来源。
 
-| **文档/类型**                        | **新状态**                  | **处理原则**                      |
-| -------------------------------- | ------------------------ | ----------------------------- |
-| 旧版 V1–V4.8 Roadmap               | ARCHIVE / TRACE          | 保留历史，不作为当前规则来源                |
-| Phase II Execution Plan V1.1     | LEGACY PHASE RECORD      | 保留阶段历史；不再作为日常施工调度器            |
-| 大量 Task Book                     | HISTORICAL TASK EVIDENCE | 完成即归档；新模式不要求每个小施工都建 Task Book |
-| Result.md / PASS-PARTIAL-FAIL 流水 | ON-DEMAND EVIDENCE       | 重大架构验证保留；普通开发不强制生成回传文档          |
-| 旧 UI 设计稿 / Figma rounds          | SOURCE / REFERENCE       | 只有 Canonical 标记的视觉基线有实施权威     |
-| 沪上经纬竞赛文档                         | LEGACY PRODUCT SOURCE    | 可复用资料，不再定义墨痕产品目标              |
-| 聊天记录                             | DISCUSSION ONLY          | 可启发，不是 Source of Truth        |
+# 6｜治理方式：边界治理
 
-# 6｜新治理：从"逐任务批准"改为"边界治理"
+## 6.1 默认不逐任务签发
 
-## 6.1 取消默认的逐任务签发
-
-新模式下，Task Book 从"所有施工的必需入口"降级为"复杂、危险、跨模块或需要严格验收时的可选工具"。用户与开发平台可以在宪法边界内直接连续开发。
+Task Book 不是所有开发的必需入口，仅在复杂、危险、跨模块或需要严格验收时作为可选工具。用户与开发平台可以在宪法边界内直接连续开发。
 
 ## 6.2 保留 Architecture Reconciliation
 
 真正需要保留的是架构变更机制。当施工发现现有原则不够用或需要改变长期 Contract 时，暂停该边界上的决定，提交项目拥有者确认。项目拥有者确认、成熟结论进入正式文档后，开发平台再继续。
 
-## 6.3 Result 不再是沟通税
+## 6.3 Result 的定位
 
-普通施工不要求写长 Result.md。重大架构验证、数据迁移、Evidence Gate变化、Agent能力变化、跨镇泛化等仍应形成简短、可复核的结果记录。
+普通开发不要求写长 Result.md。重大架构验证、数据迁移、Evidence Gate 变化、Agent 能力变化、跨镇泛化等，仍应形成简短、可复核的结果记录。
 
-## 6.4 Git 继续保存工程历史
+## 6.4 Git 保存工程历史
 
-减少文档不等于减少工程纪律。代码变化、commit、测试与回滚继续由 Repo / Git承担。正式架构文档解释'为什么不能变'，Git解释'实际上怎么变过'。
+代码变化、commit、测试与回滚由 Repo / Git 承担。正式架构文档解释'为什么不能变'，Git解释'实际上怎么变过'。
 
 # 7｜开发平台的最小开发协议
 
 |                                               |
 | --------------------------------------------- |
-| 每次重要施工只需要五步：读宪法 → 读当前代码 → 用自然语言确认目标 → 在边界内施工 → 越界升级（提交项目拥有者确认）。 |
+| 每次重要开发只需五步：读宪法 → 读当前代码 → 用自然语言确认目标 → 在边界内施工 → 越界升级（提交项目拥有者确认）。 |
 
 | **步骤**       | **开发平台应该做什么**                                              |
 | ------------ | --------------------------------------------------------------- |
@@ -253,87 +234,41 @@ V4.9 现在定位为 C1 的 DIRECT PREDECESSOR / ARCHIVE：其成熟原则与架
 | 2\. Inspect  | 直接检查真实 Repo、运行态和数据，不从旧 Task 猜现状                                 |
 | 3\. Propose  | 用自然语言告诉用户：我看到什么、最小准备怎么改、是否触及宪法边界                                |
 | 4\. Execute  | 用户确认后实施、运行、测试、截图；局部工程问题自主解决                                   |
-| 5\. Escalate | 一旦需要改变 C1-C4 的原则或 Contract，停止该架构决定并请用户提交项目拥有者确认                     |
+| 5\. Escalate | 一旦需要改变 C0–C4（含本宪法 C0）的原则或 Contract，停止该架构决定并请用户提交项目拥有者确认                     |
 
-# 8｜用户不再需要做什么
+# 8｜用户只需要守住两件事
 
-  - 不再把某个工具的架构语言完整复制给另一个工具。
+  - 体验上判断：这是不是墨痕。
 
-  - 不再把每次开发结果完整复制回任何第三方工具。
+  - 遇到跨边界问题时作出决定：架构修改是否采纳。
 
-  - 不再为了让我'知道最新进度'而人工维护大量中间文档。
+用户不必在工具之间传话、不必翻译工程术语、不必人工维护进度文档。
 
-  - 不再要求两个 AI 对所有细节保持同步。
+# 9｜宪法成立的判据
 
-  - 不再把工程术语当成自己必须掌握的沟通语言。
+  - 开发平台新会话不依赖历史聊天，凭 C0–C4 + CURRENT 即可定位。
 
-  - 不再让流程管理本身占据墨痕开发的大量注意力。
+  - 架构议题被开发平台自主发现并明确提出，而非回避或推回用户。
 
-|                                                   |
-| ------------------------------------------------- |
-| 用户只需要守住两件事：第一，体验上判断'这是不是墨痕'；第二，遇到跨边界问题时知道应该回到哪条线。 |
+  - 权威文档少而稳定；历史资料退居 Archive。
 
-# 9｜什么叫"项目宪法真正成立"
+# 10｜Canonical Set 与路由
+项目宪法级 Canonical Set（C0–C4 + CURRENT）的具体文件路径与当前状态以 **`AGENTS.md` §1** 为唯一路由源；其层级与优先级见 **C0 §3**。
 
-| **验收问题**              | **PASS 标准**                  |
-| --------------------- | ---------------------------- |
-| 开发平台新会话能否快速理解墨痕？ | 不依赖历史聊天，6个入口文件即可定位           |
-| 施工是否仍需要用户做人工 API？     | 不需要逐句转述两边上下文                 |
-| 架构是否容易被局部施工冲掉？        | C1-C4 明确边界，越界必须升级            |
-| 架构议题是否被正确识别？                  | 开发平台自主发现、明确提出，而非回避或推回用户      |
-| 用户是否重新回到真正擅长的位置？      | 主要做产品感受、人文判断与方向选择            |
-| 文档是否越来越多？             | 权威文档少而稳定；历史资料退居 Archive      |
-| 自然语言开发是否恢复？           | 开发平台可在 Repo 现场连续理解、实施、提出架构建议与迭代 |
+旧 Roadmap / Phase Plan / Task Book 仅在追溯或复杂施工时按需读取，不拥有高于 C0–C4 的日常 Authority。
 
-# 10｜本 V1.0 的落地顺序
+## 11｜已确认决断登记与变更（C0 治理职责）
 
-这份文档本身不应该再次制造一轮大治理工程。真正落地只需要一次轻量整理。
+项目拥有者在 `CURRENT.md` §12 中确认的工程 / 数据决断（R6 本地主库、R8 漂移以主库为准、R9 遗留证据、R12 重跑 dump、DATABASE_URL 接本地 PG 等）是已生效的治理结论，**不修改 C0–C4 的宪法原则**，仅作工程落地确认。
 
-  - 第一步：把本《项目宪法与开发治理 V1.0》作为 C0 正式母版放入 Repo；如需给开发平台提供极短入口，可由它派生 MOHEN\_PROJECT\_CONSTITUTION.md，但派生稿不得拥有高于 C0 母版的 Authority。
+其中 **R13（开发授权与权责归一，2026-10-01）为治理级决断**：项目拥有者直接授权「开发总工程师」进行后续开发；本项目只有两方（项目拥有者 + 开发总工程师），**不设第三方裁决方**（规则详见 §0）。历史 §11.1–§11.4 日常施工授权链（WorkBuddy → CodeBuddy）自始未定稿，由 R13 取代并失效。R13 **不改变 C0–C4 的原则与边界**——架构决定权仍唯一属于项目拥有者（§2.1 / §7 第 5 步）。
 
-  - 第二步：确定 C1-C4 各自唯一 canonical 文件路径；重复版本移入 archive/source，不删除。
+- **登记**：每条决断带编号（R#）、确认状态、对应宪法 / 架构条款（如 R6 对应 C1 §24 技术基线）、变更条件。
+- **变更**：任何决断的增删改，须经项目拥有者确认并触发 Architecture Reconciliation，回写本登记与 CURRENT §12，禁止开发平台自行改写。
+- **权威归属**：CURRENT §12 保留决断的具体内容（当前状态载体）；本 §12 保留决断的登记框架与变更机制（治理载体）。两者一致，互不重复。
 
-  - 第三步：生成 CURRENT.md，只写当前产品样板、当前真实问题、HOLD事项和几个关键入口链接。
-
-  - 第四步：开发平台之后的新会话先读 Constitution + CURRENT，再按任务类型读对应架构文件。
-
-  - 第五步：从此停止默认 Task Book → Result → Architect Sign-off 流水；只有跨架构边界时恢复正式 Reconciliation。
-
-|                                                                              |
-| ---------------------------------------------------------------------------- |
-| 新的主循环：项目拥有者主导理念与架构 → 宪法文件进入 Repo → 开发平台自然语言开发并主动提出架构优化建议 → 边界变化提交项目拥有者确认 → 确认后更新宪法。 |
-
-# 11｜当前建议的 Canonical Set
-
-| **Canonical ID** | **建议 Repo 文件**                                                                               | **状态**                                    |
-| ---------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------- |
-| C0               | governance/C0_MoHen\_Project\_Constitution\_and\_Dual\_Line\_Collaboration\_V1.0.md           | CURRENT · 协作与治理宪法                         |
-| C1               | governance/C1_MoHen\_Product\_Architecture\_Evolution\_Constitution\_V1.0.md                  | CURRENT · Level-1 Living Architecture SOT |
-| C2               | governance/C2_MoHen\_Humanistic\_Data\_OS\_and\_Dual\_Skill\_Architecture\_V1.0.md            | CURRENT · Professional Constitution       |
-| C3               | governance/C3_MoHen\_Humanistic\_Data\_OS\_Database\_Architecture\_V1.1.md                    | CURRENT · Professional Constitution       |
-| C4               | governance/C4_MoHen\_Agent-native\_Human\_Experience\_UI\_Architecture\_V2.1.md + canonical images | CURRENT · Human Experience Constitution   |
-| NOW              | CURRENT.md                                                                                   | CURRENT · 轻量施工状态入口                        |
-
-注意：本轮 Architecture Reconciliation 后，C1 已由 V4.9 正式重构；C2/C3/C4 也完成横向校准。新的 C0–C4 + CURRENT 构成项目一线 Canonical Set；旧 Roadmap / Phase Plan / Task Book 仅在追溯或复杂施工时按需读取。
-
-# 附录 A｜这份宪法继承了什么
-
-  - 继承并升级 C1 的双层北极星：不变的人本价值是从历史文化中重新发现当下生活的意义、乐趣、文化根源与个人共鸣；时代级长期命题是探索 AI 时代文化如何继续活在人、地方与日常生活之间。
-
-  - 继承 Living Cultural Relation Model：世界深度不以 POI 数量衡量，关系必须有证据并能回到今天。
-
-  - 继承 Agent-native Experience：动态的是受 Contract 约束的体验编排，不是任意 UI 生成。
-
-  - 继承 Human Experience Gate：重新看见今天、感到与我有关、产生继续行动。
-
-  - 继承 Humanistic Data OS：Developer Skills 负责造世界，Agent Skills 负责在世界里行动。
-
-  - 继承数据库架构：Source → Evidence → Cultural World → Meaning/Present → Discovery → Experience，并保持 Fact–Interpretation Firewall。
-
-  - 改变的是协作治理方式：从逐 Task 中央指挥，转为开发与架构分工协作 + 少量项目宪法 + 架构边界升级。
-
-# 附录 B｜一句话记住新工作方式
+# 附录 A｜一句话记住工作方式
 
 |                                                                                        |
 | -------------------------------------------------------------------------------------- |
-| 开发平台和你一起把墨痕造出来，并在过程中主动指出架构哪里需要优化；你不再负责替任何工具传话，而是负责判断：这是不是你真正想要的墨痕。 |
+| 开发平台和你一起把墨痕造出来，并在过程中主动指出架构哪里需要优化；你负责判断：这是不是你真正想要的墨痕。 |

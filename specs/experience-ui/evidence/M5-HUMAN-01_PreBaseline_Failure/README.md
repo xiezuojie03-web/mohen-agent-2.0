@@ -10,7 +10,7 @@
 ## 2. 失败事件
 
 - **M5-HUMAN-01 · Round A · Blind Experience**（Human Tester 自然体验，不预读内部资料）出现重大 **Human Experience FAIL SIGNAL**。
-- 事件后 M5 进入 **HOLD**；M5-HUMAN-01 **不继续 Round B**（H1–H10 Structured Probe 不运行），等待 Architect 完成 Experience/UI Governance 与后续 Drift Audit。
+- 事件后 M5 进入 **HOLD**；M5-HUMAN-01 **不继续 Round B**（H1–H10 Structured Probe 不运行），等待项目拥有者裁决 Experience/UI Governance 与后续 Drift Audit。
 
 ## 3. 失败性质（按已观察现象，不推测心理）
 
@@ -32,11 +32,11 @@
 
 - 不得替 Human Tester 发明评分（如 1–10 / 加权总分 / 自创及格线）。
 - 不得替 Human Tester 编写 H1–H10 回答（Round B 未运行）。
-- 不得声称 Round B 结论或 Human PASS / FAIL（最终 Gate 由 Architect 裁决）。
+- 不得声称 Round B 结论或 Human PASS / FAIL（最终 Gate 由**项目拥有者**裁决；开发总工程师不得自宣布）。
 - 不得把本失败录像当作 Canonical Reference 或未来 UI 设计模板。
 
 ## 6. 关联
 
-- Baseline：`specs/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md` §17（Pre-Baseline Failure Evidence — M5-HUMAN-01）、附录 A·B。
+- Baseline（历史参考，现 `specs/archive/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md`）§17（Pre-Baseline Failure Evidence — M5-HUMAN-01）、附录 A·B。当前 UI Authority 见 C4。
 - 治理任务：EXP-UI-GOV-01（Experience/UI Baseline & Source Archive Governance Integration）。
-- NEXT：Architect-authorized **Current Runtime vs Canonical Experience/UI Baseline Drift Audit**（pending Architect Task Book）。
+- NEXT：由**项目拥有者**授权的 **Current Runtime vs Canonical Experience/UI Baseline Drift Audit**。该审计已执行完毕（EXP-UI-AUDIT-01），见 `tasks/results/EXP-UI-AUDIT-01-result.md`；Human Experience Gate 仍维持 HOLD。

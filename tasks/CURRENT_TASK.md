@@ -1,3 +1,6 @@
+> ⚠️ **历史 Trace（非当前状态入口）**：本文件保留 2026-09-25 前后的任务链记录；自 **2026-10-01 起不再是当前状态 SOT**。当前真实问题、样板、HOLD 与施工入口一律以 **`CURRENT.md`** 为准（C0 §3）。
+> 文中出现过的三层治理 SOT（Roadmap V4.9 / Phase-II Execution Plan V1.1 / Architecture Candidate Backlog）已归位 `governance/archive/`，**不具日常 Authority**；文中出现的工具 / 第三方角色名（WorkBuddy / CodeBuddy / ChatGPT Architect）**不具任何治理 Authority**（见 `CURRENT.md` §12 R13）。
+
 EXP-UI-RECON-01 · Jinze Canonical Experience Humanization Pass（2026-09-25，tasks/EXP_UI_RECON_01_Jinze_Canonical_Experience_Humanization_Pass_Task_Book_V1_0.docx）
 
 - 状态：**DONE / COMMITTED**；Gate = `PASS_TO_M5_HUMAN_ROUND_B`；M5 保持 CURRENT / HOLD，Round B / H1–H10 = NOT RUN（STOP 已执行）
@@ -10,9 +13,9 @@ EXP-UI-RECON-01 · Jinze Canonical Experience Humanization Pass（2026-09-25，t
 
 M5-HUMAN-01 · Canonical Human Experience Validation（2026-09-25，tasks/M5_HUMAN_01_Canonical-Human-Experience-Validation_Task-Book_V1.0.docx）
 
-- M5 状态：CURRENT/HOLD（由 M5-HUMAN-01 启动；Round-A Human Experience FAIL SIGNAL 后进入 HOLD；Human Gate 待 ChatGPT Architect 裁决）
+- M5 状态：CURRENT/HOLD（由 M5-HUMAN-01 启动；Round-A Human Experience FAIL SIGNAL 后进入 HOLD；Human Gate 终裁权归**项目拥有者**，尚未裁决）
 - 前置基线：M4-CLOSURE-01 = PASS / CLOSED @ aaf6910；M4 Integration Closure = PASS；Timeline = KEEP_COMPATIBILITY_PATH；Blocker = 0
-- 角色：WorkBuddy = 环境准备 / 浏览器体验运行 / 截图与交互证据采集 / Human Tester 原话记录 / Result 整理；用户 = Human Tester；ChatGPT Architect = 最终 Human Gate 裁决。WorkBuddy 无权宣布 Human PASS。
+- 角色：开发总工程师 = 环境准备 / 浏览器体验运行 / 截图与交互证据采集 / Human Tester 原话记录 / Result 整理；项目拥有者 = Human Tester 与最终 Human Gate 裁决人。开发总工程师无权宣布 Human PASS。
 - 范围：NO PRODUCT CONSTRUCTION。不修改任何产品实现；M4 D1（culturalEvents / meaningCandidates 未进渲染层）、D3（颐浩寺 1288/1295 未上轴）、O1（时间总结/探索文案偏密集）作为可被真实暴露的观察点保留，不预先修掉。
 - NEXT：因 Round-A Human Experience FAIL SIGNAL，M5-HUMAN-01 不继续 Round B（H1–H10 不运行）；等待 Architect 授权 Current Runtime vs Canonical Experience/UI Baseline Drift Audit（EXP-UI-GOV-01 NEXT）。。
 
