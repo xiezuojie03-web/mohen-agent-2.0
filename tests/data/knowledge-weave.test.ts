@@ -1,7 +1,7 @@
 // tests/data/knowledge-weave.test.ts — TASK-0006 Jinze Minimum Knowledge Weave 验收测试。
 //
 // 覆盖任务书 §6 的 15 项不变量 + §7 audit-ledger 诊断 + §11 PASS 判据。
-// 约定：DB 用例直连本机 mohen_dev（连接串来自 gitignored 的 .env.local，测试内不出现密码）。
+// 约定：DB 用例连「<真库名>_test」测试库（2026-10-02 起：由 pnpm test 自动建库并灌入真库快照，入口护栏见 tests/setup/db-guard.ts）（连接串来自 gitignored 的 .env.local，测试内不出现密码）。
 
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";

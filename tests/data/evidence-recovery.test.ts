@@ -12,7 +12,7 @@
 //   9. Legacy 零写入
 //  10. TASK-0002/0003 既有 invariants 继续通过
 //
-// 约定：DB 用例直接连本机 mohen_dev（连接串来自 gitignored 的 .env.local，测试内不出现密码）。
+// 约定：DB 用例连「<真库名>_test」测试库（2026-10-02 起：由 pnpm test 自动建库并灌入真库快照，入口护栏见 tests/setup/db-guard.ts）（连接串来自 gitignored 的 .env.local，测试内不出现密码）。
 // 破坏性用例一律写在事务里 rollback。
 
 import { describe, it, expect } from "vitest";

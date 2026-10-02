@@ -10,7 +10,7 @@
 //   7. Pipeline 只选金泽，不误迁其他镇
 //   8. Legacy repo 无写入
 //
-// 说明：DB 用例直接连本机 mohen_dev（连接串来自 gitignored 的 .env.local，测试内不出现密码）。
+// 说明：DB 用例连「<真库名>_test」测试库（2026-10-02 起：由 pnpm test 自动建库并灌入真库快照，入口护栏见 tests/setup/db-guard.ts）（连接串来自 gitignored 的 .env.local，测试内不出现密码）。
 // 所有写操作都在事务内回滚；测试结束校验无残留。
 
 import { describe, it, expect } from "vitest";

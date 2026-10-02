@@ -8,7 +8,7 @@
 //   follow-up 是 Patch 不是 reset / 输出确定性 / Legacy 零写 / published 0 / orphan ≤ 63。
 //
 // ★ §12-26：断言不变量与冻结语义，不断言会自然增长的绝对总数。
-// 约定（同 TASK-0010/0011）：DB 用例直连本机 mohen_dev；测试 import 构建器
+// 约定（同 TASK-0010/0011）：DB 用例连「<真库名>_test」测试库（2026-10-02 起：由 pnpm test 自动建库并灌入真库快照，入口护栏见 tests/setup/db-guard.ts）；测试 import 构建器
 // （buildExperience 纯构建、对 DB 只读），不 spawn 子进程（规避本机 EBUSY）。
 
 import { describe, it, expect, beforeAll } from "vitest";

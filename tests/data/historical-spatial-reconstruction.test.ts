@@ -9,7 +9,7 @@
 //   凡「允许增长」的量（relations / evidence / source_records 总量）只断言
 //   **本任务未使其变化**与**非空边必有证据**，不写死数字。
 //
-// 约定（同 TASK-0006/0007/0008）：DB 用例直连本机 mohen_dev，连接串来自 gitignored .env.local。
+// 约定（同 TASK-0006/0007/0008）：DB 用例连「<真库名>_test」测试库（2026-10-02 起：由 pnpm test 自动建库并灌入真库快照，入口护栏见 tests/setup/db-guard.ts），连接串来自 gitignored .env.local。
 
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";

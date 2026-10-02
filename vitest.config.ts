@@ -1,13 +1,19 @@
 import { defineConfig } from "vitest/config";
 import path from "node:path";
 
-// 说明（TASK-0006 补充）：
+// 说明（TASK-0006 补充 · 2026-10-02 更新）：
 // tests/data/** 是「对同一个 PostgreSQL 实例的真实集成测试」，不是纯内存单测。
-// 多个测试文件并行执行时会共享同一个 evidence_gate_audit / claims 状态：
-// 例如 knowledge-weave 的幂等测试会真实执行 weave 管线（重建 claim 与 G0–G6 审计行），
-// 而 evidence-recovery 的幂等测试在同一时刻统计 evidence_gate_audit 总数。
-// 二者并发 → 统计口径互相污染，出现与代码正确性无关的 flaky。
-// 数据库集成测试必须串行文件执行，这是测试夹具层面的确定性修复，不改变任何断言。
+//
+// （1）并发污染（TASK-0006）：多个测试文件并行时会共享同一个 evidence_gate_audit / claims 状态，
+//     统计口径互相污染 → 故 `fileParallelism: false`（串行文件执行）。
+//
+// （2）**写库隔离（2026-10-02 · ESC-05 处置）**：串行只解决并发，不解决**累积**。
+//     实测一次全量测试在 **7 秒内**向真库写入 **9016 行** visual_asset 门禁审计
+//     （另 entity 23261 / evidence 12982…），覆盖全部 1288 张图片，使"1246 张夜跑图片
+//     0 条门禁记录"由当前事实变成历史事实；又因套件不幂等，重复运行让断言计数漂移（15 → 30）。
+//     故：**测试一律连 `<真库名>_test`** —— 由 `pnpm test`（`scripts/test-isolated.mjs`）
+//     自动建库并灌入真库快照，跑完对比证明真库一行未动；
+//     `tests/setup/db-guard.ts` 在**入口**拒绝在非 `_test` 库上执行（挡住直接 `npx vitest`）。
 export default defineConfig({
   resolve: {
     // TASK-0014：根级测试需要直接消费 apps/web 的 presentation 层（beats.ts 等），
@@ -20,5 +26,6 @@ export default defineConfig({
   test: {
     include: ["tests/**/*.test.ts"],
     fileParallelism: false,
+    setupFiles: ["tests/setup/db-guard.ts"],
   },
 });

@@ -15,7 +15,7 @@
 //  12. Legacy 零写
 //  13. 既有 Evidence Gate / Tier C guard invariants 继续通过
 //
-// 约定：DB 用例直接连本机 mohen_dev（连接串来自 gitignored 的 .env.local，测试内不出现密码）。
+// 约定：DB 用例连「<真库名>_test」测试库（2026-10-02 起：由 pnpm test 自动建库并灌入真库快照，入口护栏见 tests/setup/db-guard.ts）（连接串来自 gitignored 的 .env.local，测试内不出现密码）。
 
 import { describe, it, expect, beforeAll } from "vitest";
 import fs from "node:fs";
