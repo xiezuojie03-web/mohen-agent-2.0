@@ -33,7 +33,7 @@
 - `specs/experience-ui/source/交互原型- 墨痕 V0.9.1.html` — 29 页 / 58 视图施工样册（历史参照）
 - `docs/MoHen_Night_Data_Production_Protocol.md` — 夜间自动化数据生产协议（C2/C3 之下；T06/T07 依赖其 §12 Contract）
 - `specs/experience-ui/T07_NightJob_最小Contract与安全施工基线.md` — 夜间自动化数据生产边界
-- `specs/experience-ui/施工图/` — 逐帧施工图（当前仅交付 **T05 批次1 · M1**；五母题其余四支未交付）
+- `prototypes/墨痕_五母题施工审阅_第一批_M1_V0.1.html` + `docs/墨痕_五母题施工审阅_第一批_M1_配套规格_V0.1.md` — **当前施工图**（第 3 代，25 页 / 50 视图 / 12 帧主线；项目拥有者 2026-10-02 确认）。上一代 T05 批次1 已归档 `archive/2026-10-02-superseded/`。**五母题仅交付 M1（1/5），且尚未接入代码。**
 
 ---
 

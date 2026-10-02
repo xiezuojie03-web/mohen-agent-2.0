@@ -1,3 +1,10 @@
+> ⚠️ **本目录是归档区（governance archive）。其中一切内容都是历史件，不代表当前状态，不拥有任何 Authority。**
+> 本目录只放**被取代的治理件**（旧 Roadmap / Phase Plan / 旧版 C0–C4 docx / 移交稿 / 旧 CURRENT 备份 / Candidate Backlog）。
+> 当前宪法 = `governance/C0–C4`；当前状态 = `CURRENT.md`；路径以 `AGENTS.md` §1 为唯一路由源；目录职责与归档规则见 `specs/OWNERSHIP_MAP.md` §1（R14）。
+> 下方内容为**归档时原样保留**的旧项目 README（其描述的入口、目录结构与 `.codebuddy/` 机制均已失效，不再改写正文）。
+
+---
+
 # 墨痕 Agent 2.0
 
 > Greenfield Project with Existing Assets.  

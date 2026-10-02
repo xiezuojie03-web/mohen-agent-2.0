@@ -153,14 +153,16 @@
 
 真正应该在 Repo 一线长期可见的入口控制为 C0–C4 五份长期权威 + CURRENT 一个当前状态入口。C0–C4 的正式母版文件名统一使用版本号，不使用 Final、Reconciled、最新版 等临时后缀；CURRENT.md 保持无版本号。历史 Roadmap、Phase Plan、Task Book、Result 与旧设计稿退居 Archive / Trace。
 
-| **级别** | **文件**                                                                                 | **它只回答一个问题**                        | **开发平台何时读**             |
-| ------ | -------------------------------------------------------------------------------------- | ----------------------------------- | ---------------------------- |
-| C0     | governance/C0\_MoHen\_Project\_Constitution\_and\_Dual\_Line\_Collaboration\_V1.0.md                | 协作角色、边界治理、升级机制                      | 每次新会话 / 大任务先读                |
-| C1     | governance/C1\_MoHen\_Product\_Architecture\_Evolution\_Constitution\_V1.0.md                       | 为什么存在、系统如何成立、怎样演化、现在在哪              | 触及产品/架构/阶段边界时                |
-| C2     | governance/C2\_MoHen\_Humanistic\_Data\_OS\_and\_Dual\_Skill\_Architecture\_V1.0.md                 | 文化世界怎样被生产；Developer/Agent Skill怎样分工 | 数据生产、研究流程、Agent能力相关          |
-| C3     | governance/C3\_MoHen\_Humanistic\_Data\_OS\_Database\_Architecture\_V1.1.md                         | 可信文化世界、八层长期数据地图与 Truth Store 如何存在   | 数据库/数据迁移/Participation数据边界相关 |
-| C4     | governance/C4\_MoHen\_Agent-native\_Human\_Experience\_UI\_Architecture\_V2.1.md + Canonical images | 人怎样真正进入和经历这个世界；最低体验质量是什么            | 任何 Human-facing 体验改动         |
-| NOW    | CURRENT.md                                                                             | 当前真实问题、当前样板、HOLD 与施工入口              | 每次新会话快速定位                    |
+| **级别** | **它只回答一个问题**                        | **开发平台何时读**             |
+| ------ | ----------------------------------- | ---------------------------- |
+| C0     | 协作角色、边界治理、升级机制                      | 每次新会话 / 大任务先读                |
+| C1     | 为什么存在、系统如何成立、怎样演化、现在在哪              | 触及产品/架构/阶段边界时                |
+| C2     | 文化世界怎样被生产；Developer/Agent Skill怎样分工 | 数据生产、研究流程、Agent能力相关          |
+| C3     | 可信文化世界、八层长期数据地图与 Truth Store 如何存在   | 数据库/数据迁移/Participation数据边界相关 |
+| C4     | 人怎样真正进入和经历这个世界；最低体验质量是什么            | 任何 Human-facing 体验改动         |
+| NOW    | 当前真实问题、当前样板、HOLD 与施工入口              | 每次新会话快速定位                    |
+
+> **C0–C4 与 CURRENT 的文件路径不在此重复**：以 **`AGENTS.md` §1** 为唯一路由源；版本源唯一机制见本宪法 §10。目录职责与归档规则见 `specs/OWNERSHIP_MAP.md`。
 
 |                                                                        |
 | ---------------------------------------------------------------------- |
@@ -203,6 +205,8 @@ C4 已经把最高方向落实为人类可见规则（C4 是 Human-facing Experi
 # 5｜文档权威分层
 
 一线权威只有 C0–C4 + CURRENT。其余文档——历史 Roadmap、Phase Plan、Task Book、Result、旧 UI/DB 设计稿、聊天记录——均为 Archive / Trace：保留供追溯，不拥有日常 Authority，不作为当前规则来源。
+
+**归档纪律（R14 · 2026-10-02 项目拥有者裁定）**：被取代、重复或不再必要的文件**一律归档，不删除**。取代即移入归档区（**不再使用 `git rm`**，也不再要求"Current-only working tree"）；归档落点、清单要求与归档件的引用限制见 `specs/OWNERSHIP_MAP.md` §1。归档件不得被活跃文件当作 Authority 引用。
 
 # 6｜治理方式：边界治理
 
@@ -264,6 +268,8 @@ Task Book 不是所有开发的必需入口，仅在复杂、危险、跨模块�
 项目拥有者在 `CURRENT.md` §12 中确认的工程 / 数据决断（R6 本地主库、R8 漂移以主库为准、R9 遗留证据、R12 重跑 dump、DATABASE_URL 接本地 PG 等）是已生效的治理结论，**不修改 C0–C4 的宪法原则**，仅作工程落地确认。
 
 其中 **R13（开发授权与权责归一，2026-10-01）为治理级决断**：项目拥有者直接授权「开发总工程师」进行后续开发；本项目只有两方（项目拥有者 + 开发总工程师），**不设第三方裁决方**（规则详见 §0）。历史 §11.1–§11.4 日常施工授权链（WorkBuddy → CodeBuddy）自始未定稿，由 R13 取代并失效。R13 **不改变 C0–C4 的原则与边界**——架构决定权仍唯一属于项目拥有者（§2.1 / §7 第 5 步）。
+
+其中 **R14（归档规则与目录职责，2026-10-02）亦为治理级决断**：被取代、重复或不再必要的文件**一律归档，不删除**；本条**取代**原「Current-only working tree + `git rm`、不建 `history/` 子目录」纪律。三个归档落点（`archive/` 跨域快照 / `governance/archive/` 被取代治理件 / `specs/archive/` 被取代契约）、归档清单要求，以及**全部目录的职责声明**，统一由 **`specs/OWNERSHIP_MAP.md`** 承载。R14 不改变 C0–C4 的原则与边界。
 
 - **登记**：每条决断带编号（R#）、确认状态、对应宪法 / 架构条款（如 R6 对应 C1 §24 技术基线）、变更条件。
 - **变更**：任何决断的增删改，须经项目拥有者确认并触发 Architecture Reconciliation，回写本登记与 CURRENT §12，禁止开发平台自行改写。

@@ -200,17 +200,10 @@ H2 的下一出口不是"再完成一批功能"，而是：
 
 ## 10. Canonical References
 
--   **C0**
-    `governance/C0_MoHen_Project_Constitution_and_Dual_Line_Collaboration_V1.0.md`
--   **C1**
-    `governance/C1_MoHen_Product_Architecture_Evolution_Constitution_V1.0.md`
--   **C2**
-    `governance/C2_MoHen_Humanistic_Data_OS_and_Dual_Skill_Architecture_V1.0.md`
--   **C3**
-    `governance/C3_MoHen_Humanistic_Data_OS_Database_Architecture_V1.1.md`
--   **C4**
-    `governance/C4_MoHen_Agent-native_Human_Experience_UI_Architecture_V2.1.md`
--   **Canonical Images** `specs/experience-ui/canonical`
+> **C0–C4 的文件路径以 `AGENTS.md` §1 为唯一路由源**（版本源唯一机制见 C0 §10）；本节不再重复路径，仅列与当前状态直接相关的引用。
+
+-   **Canonical Images** `specs/experience-ui/canonical`（两张 Canonical 基线，C4 引用）
+-   **当前施工图** `prototypes/墨痕_五母题施工审阅_第一批_M1_V0.1.html` + `docs/墨痕_五母题施工审阅_第一批_M1_配套规格_V0.1.md`（第 3 代；登记见 `specs/OWNERSHIP_MAP.md` §2.1）
 -   **Dev Verification Artifacts** `verification/`（UI 验证截图等临时产物；不入根目录、默认不入库，见该目录 README）
 
 ------------------------------------------------------------------------
@@ -253,8 +246,16 @@ pnpm dev
    - **验收裁决**：Human Experience Gate 与 Integration Gate 的**验收标准不变**（Gate 定义 `C1` §11、冻结原则 `C1` §21、验收标准 `C1` §25、UI 专业域 Gate 表 `C4` §22；H2 出口见本文件 §2），但**终裁权归项目拥有者**；开发总工程师**不得自宣布 Human PASS**（`C4` §22）。
    - **入口命名**：宪法级入口路由文件为 `AGENTS.md`（工具中立）；原 `CODEBUDDY.md` 已废弃。
    - **命名纪律**：此后治理文本中的执行主体一律使用角色名；更换工具不改变本权责结构。
+9. **R14 归档规则与目录职责（2026-10-02 · 项目拥有者确认）**：
+   - **不删除只归档**：被取代、重复或不再必要的文件一律**移入归档区**，不再使用 `git rm`；本条**取代**原「Current-only working tree」纪律。
+   - **三个归档落点**：`archive/`＝跨域历史快照；`governance/archive/`＝被取代治理件；`specs/archive/`＝被取代契约。
+   - **必须有清单**：每次批量归档产出 `archive/<date>-<topic>/README.md`，逐条写明「原路径 → 归档路径 → 理由 → 取代者」；无清单视为未完成。
+   - **归档件不等于 Authority**：活跃文件引用归档件时必须标注 `ARCHIVE / TRACE`；归档件正文不改写，只加历史横幅。
+   - **目录职责唯一 Authority**＝`specs/OWNERSHIP_MAP.md`（含 23 个根目录逐项声明）。
+   - **命名纪律复核范围含 Office 二进制**：`.docx/.pptx/.xlsx` 须解包检查，不得只 grep 文本文件（此为对 R13 的修正补充）。
+   - **施工图当前版本**：第 3 代——`prototypes/墨痕_五母题施工审阅_第一批_M1_V0.1.html` + `docs/墨痕_五母题施工审阅_第一批_M1_配套规格_V0.1.md`，经项目拥有者 **2026-10-02 确认**；第 2 代 `specs/experience-ui/施工图/T05_B1_*` 已归档。
 
-> 这些决断是对 C0–C4 的工程落地确认，不修改宪法原则；若需变更，提交项目拥有者确认。其中 **R13 为治理级决断**，同时登记于 C0 §11。
+> 这些决断是对 C0–C4 的工程落地确认，不修改宪法原则；若需变更，提交项目拥有者确认。其中 **R13、R14 为治理级决断**，同时登记于 C0 §11。
 
 ------------------------------------------------------------------------
 
