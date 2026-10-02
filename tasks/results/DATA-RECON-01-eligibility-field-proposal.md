@@ -1,90 +1,72 @@
-# DATA-RECON-01 · `visual_assets` 资格模型缺口 — Architecture Reconciliation 提案
+> **提案类型：Architecture Reconciliation**
+> **提案编号**：RECON-01
+> **日期**：2026-10-02
+> **状态**：待裁决
+> **涉及层级**：C3（核心对象 + 写权限语义）
 
-- **性质**：**提案，未施工**。属 C3 核心对象变更，依 C0 §2.1 / §7 第 5 步 / §6.2 须由项目拥有者确认后方可实施。
-- **提出**：开发总工程师 · 2026-10-02
-- **证据**：`tasks/results/` 下的数据库取证（见 `CURRENT.md` §9 ESC-01/02/03 同批）；本提案引用的一切数字均为对 `mohen_dev` 的只读 `SELECT` 实测。
+# RECON-01 · `visual_assets` 资格模型：把「默认可用」翻转为「默认待审」
 
----
+## 改什么
 
-## 1. 问题：图片"可用"由列默认值决定，而不是由门禁决定
+按**方案 A（推荐）**改四处，其余一切不动：
 
-实测（2026-10-02）：
+1. **新增列** `eligibility_status text NOT NULL DEFAULT 'pending_review'`，取值 `pending_review` / `gate_passed` / `gate_failed` / `excluded`。默认值即"未审"——**与现状"默认可用"语义相反**。
+2. **新增触发器**：置 `gate_passed` 必须在 `evidence_gate_audit` 有对应 G0–G6 记录（与既有 `vel_confirmed_requires_evidence` 同构）。
+3. **改视图** `effective_visual_assets`：过滤条件由"未被排除"改为 `eligibility_status = 'gate_passed'`。
+4. **迁移既有 1288 行**：统一置 `pending_review`（**不删除**）；已排除的 68 行置 `excluded`。
+
+**不改什么**（边界声明）：不改 `eligibility_tags` 的既有含义与取值（保留为辅助标记）；不改 `visual_entity_links` 及其触发器；**不删除任何行**、不改任何图片内容字段；不改 G0–G6 的定义本身。
+
+## 为什么
+
+实测（2026-10-02，对 `mohen_dev` 只读 `SELECT`）：
 
 | 事实 | 实测值 |
 |---|---|
-| `visual_assets` 是否有"资格 / 状态"字段 | **没有**。仅有 `eligibility_tags text[] NOT NULL DEFAULT '{}'` |
-| 语义 | **反向排除名单**："未排除 = 可用" |
-| `eligibility_tags = '{}'` 的行 | **1220 / 1288**（另有 68 行已排除） |
-| `quality_score` | **1288 / 1288 全为 NULL**（唯一量化质量字段从未写入） |
-| `visual_assets` 上的触发器 | **0 个**（视觉门禁只挂在关联表 `visual_entity_links` 上） |
+| `visual_assets` 有无"资格/状态"字段 | **没有**。仅有 `eligibility_tags text[] NOT NULL DEFAULT '{}'` |
+| 该列语义 | **反向排除名单**："未排除 = 可用" |
+| `eligibility_tags = '{}'` 的行 | **1220 / 1288** |
+| `quality_score` | **1288 / 1288 全 NULL**（唯一量化质量字段从未写入） |
+| `visual_assets` 上的触发器 | **0 个** |
 | 无任何实体关联的图片 | **1266 / 1288 = 98.29%** |
-| 真正"有效可用"（视图 `effective_visual_assets`） | **8 张（0.62%）** |
-| 夜跑时段（≥22:00）内的门禁审计 | **0 条**；1246 张夜跑图片 **0 条** G0–G6 记录 |
+| 真正"有效可用"（视图） | **8 张（0.62%）** |
+| 夜跑窗口内门禁审计 | **0 条**；1246 张夜跑图片 **0 条** G0–G6 记录 |
 
-**机制**：`visual_assets` 没有正面资格字段 → 唯一表达"不合格"的方式是往 `eligibility_tags` 加排除标记 → 而两条夜跑写入路径（`night-runner.mjs` / `port-photos.mjs`）的 INSERT **都不带该列** → 落入默认 `'{}'` → **无条件"可用"**。
+**机制**：没有正面资格字段 → 唯一表达"不合格"的办法是往 `eligibility_tags` 加排除标记 → 而两条夜跑写入路径的 INSERT **都不带该列** → 落入默认 `'{}'` → **无条件"可用"**。
 
-**已发生的后果**（同一批实测）：
-- **20 条**被人工作废（HR-5 `excluded_from_heritage_primary`）的资产，被夜跑以**同一 URL** 重新入册为"未排除"（其中 19 条是"金泽**火车站**"的 CRH 高铁列车照）。**已于 2026-10-02 逆转**（`cleanup_20261002_hr5_restore`）。
-- **341 / 519**（65.7%）的 BATCH-004 图片在 URL 层面可判读为与金泽无关（他镇桥梁、金山超市、嘉定工业区…）。
-- **30 条根本不是图片**（29 个 `.djvu` 古籍扫描 + 1 个 `.webm` 视频）却标 `asset_type='image'`。**其中 28 条已于 2026-10-02 排除**（`cleanup_20261002_nonimage`）。
-- **727 张**图片的 `source_id` 指向一个标注为"沪上经纬**诗词**"的源记录（provenance 错位）。
-- 23 张 HTTP 非 200 死链入库。
+**已发生的后果**：20 条人工排除（HR-5）被同 URL 重灌洗掉（其中 19 条是"金泽**火车站**"的高铁列车照）；341/519 图片与金泽无关；30 条根本不是图片却标 `image`；727 张 provenance 错位挂到一个"诗词"源；23 张死链入库。
 
----
+**不改的代价**：任何忘记查 `eligibility_tags` 的新代码，都会把未审图片当成可用——**默认值站在错误的一边**。已证明夜跑可静默绕过人工裁决。
 
-## 2. 提案（三选一，请项目拥有者裁决）
+## 影响谁
 
-### 方案 A（推荐）：给 `visual_assets` 增加正面资格字段 + 门禁触发器
+| 受谁影响 | 变化 |
+|---|---|
+| 视图 `effective_visual_assets` | 有效口径由"未排除"变为 `gate_passed`；当前 8 张不变，但**新增图片不再自动进入** |
+| 读该视图的代码 | `scripts/audit-visual-assets.mjs`、`pipelines/visual/build-visual-reports.mjs`、`pipelines/visual/build-visual-linkage.mjs`、执行报告事实表 —— 需逐一确认读的是视图还是表 |
+| `visual_assets` 全部 1288 行 | 由"未排除"变为 `pending_review`（**语义上从可用变待审**；实际可用集合仍为 8，因视图另要求 confirmed 链接） |
+| `evidence_gate_audit` | 成为写入前置条件 → 这是夜跑 `images-*` 作业（现已在生产注册表里标 `forbidden`）**解禁的前提** |
+| 体验层 | **未知且是本提案最大风险**：若有任何代码/页面**直接**从 `visual_assets` 取图（不过视图），改动会让它们少掉 1220 张待审图片 |
 
-1. **新增列** `eligibility_status text NOT NULL DEFAULT 'pending_review'`，取值：
-   `pending_review` / `gate_passed` / `gate_failed` / `excluded`。
-   - 默认值即"未审"，**新数据默认为不可用**——与现状"默认为可用"语义相反。
-   - 保留 `eligibility_tags` 作为**辅助标记**（如 `excluded_from_heritage_primary`、`pending_heritage_review`），但不再由它单独决定可用性。
-2. **新增触发器**：图片写入后必须在 `evidence_gate_audit` 留下 G0–G6 记录，否则 `eligibility_status` 不得为 `gate_passed`（与既有 `vel_confirmed_requires_evidence` 同构）。
-3. **改造下游视图** `effective_visual_assets`：由"未被排除"改为 `eligibility_status = 'gate_passed'`。
-4. **写入路径改造**：`night-runner.mjs` / `port-photos.mjs` 已改为写入 `pending_heritage_review`（2026-10-02），只需把该标记映射到新列的 `pending_review`。
-5. **迁移既有数据**：1288 行统一置 `pending_review`（**不删除**），再按人工复核逐批转 `gate_passed`；已排除的 68 行置 `excluded`。
+## 怎么回滚
 
-**代价**：涉及 C3 核心对象（`visual_assets`）与视图、触发器、迁移，属正式 Reconciliation。
-**收益**：从"默认可用"翻转为"默认不可用"，图片表首次拥有守门人。
+- **可完全回滚**：新列 `DROP COLUMN`、触发器 `DROP TRIGGER`、视图 `CREATE OR REPLACE` 回原定义（原定义在迁移历史中）。
+- **数据可重建**：迁移把 1288 行置 `pending_review` 后，原有状态可由 `eligibility_tags` 推导（`= '{}'` 即原"未排除"），**无需单独备份**。
+- **建议分两步**：① 先只加列 + 触发器（不动视图，行为不变）；② 观察一轮后再改视图过滤条件。第二步才是真正改变可用口径的那一步。
 
-### 方案 B：不新增列，仅把门禁挂到 `visual_assets` 的 `eligibility_tags`
+## 请你回答什么
 
-用既有机制表达：所有新写入图片一律先加 `pending_heritage_review`（2026-10-02 已改为此），并在 C3 写明"未经 G0–G6 的图片不得进入体验层"。
-**代价**：最小，无需迁移。
-**缺陷**：仍是**反向名单**语义，且需要所有下游主动查询该标记；**"默认可用"的根问题未解**。任何忘记查询的新代码仍会把未审图片当成可用。
+1. 采用 **A / B / C** 哪个方案？（推荐 **A**）
+2. 本提案最大未知：**是否有代码/页面绕过 `effective_visual_assets` 视图、直接从 `visual_assets` 取图？** 若有，改动会让它们少掉 1220 张。**是否授权我先把这条查清、再实施？**（选项：先查清 / 直接实施 / 先只做第 1 步）
+3. 是否按上面的"分两步"实施？（选项：分两步 / 一次到位）
+4. 727 张 provenance 纠正（`source_id` 指向"诗词"源）是否授权执行？
+5. 341 张内容可疑图片 —— 授权我按"非金泽 / 现代设施"批量排除，还是你逐批抽看？
+6. 109 个门禁 `fail` 对象 —— 置 `rejected`（不删、保留审计）还是继续留置？
 
-### 方案 C：维持现状，只在 `CURRENT.md` 记为已知风险
-
-不做结构变更，靠人工复核队列（`review_queue`）逐步清理。
-**缺陷**：不解决问题；且已证明夜跑可静默绕过人工裁决。
-
----
-
-## 3. 配套（无论选哪个方案都应做，均属工程问题）
-
-| # | 项 | 状态 |
-|---|---|---|
-| 1 | `night-runner.mjs`：图片源必须唯一可确定，否则 **fail loud**（原为无 `ORDER BY` 任意取值） | **已修（2026-10-02）** |
-| 2 | `night-runner.mjs`：HTTP 校验改 **fail-closed**（原 fail-open，23 张死链入库） | **已修** |
-| 3 | 两脚本：非图片扩展名不再冒充 `asset_type='image'` | **已修** |
-| 4 | 两脚本：跨批幂等改为并集 `legacy_id` + 规范化 `file_path`（原致 14 组重复入库） | **已修** |
-| 5 | 两脚本：新增图片显式写 `pending_heritage_review`，不再依赖默认 `'{}'` | **已修** |
-| 6 | `port-photos.mjs`：不再对全部照片断言 `depicted_period='现代影像（非历史）'` | **已修** |
-| 7 | 晨报"安全"段：删除硬编码断言，改为要求查询（原句曾声称"未绕过 Evidence Gate"） | **已修** |
-| 8 | **727 张图片的 provenance 纠正**：需为其建立专属 image `source_record` 并回写 `source_id`（数据修复，待裁决） | **未做** |
-| 9 | **341 张内容可疑图片的处置**（他镇 / 现代设施）：属**内容判断**，须项目拥有者裁决 | **未做** |
-| 10 | **727 张"无法从库内回答拍的是什么"的图片**：需打开原图或读源 JSON 的 caption 才能判定 | **未做** |
-| 11 | **109 个门禁 `fail` 对象仍驻留库中**：门禁结果对库内容无清退效力 | **未做** |
-| 12 | **`entities.canonical_name` 543 条重名**未做 resolution | **未做** |
-
-> 第 1–7 项已在本轮修复，但**均未运行验证**（无 `MOHEN_WRITE_ENABLED=true` 的实跑环境，且本机 `pwsh` 受限已解除但夜跑需源文件在位）。**建议下一次夜跑前先跑 DRY_RUN 并核对 `inserted / not_image / unverified_status` 三项计数。**
-
----
-
-## 4. 请裁决
-
-1. 采用 **A / B / C** 哪个方案？
-2. 第 8 项（727 张 provenance 纠正）是否授权执行？
-3. 第 9 项（341 张内容可疑图片）—— 授权开发总工程师按"非金泽 / 现代设施"标准批量排除，还是由你逐批抽看？
-4. 第 11 项（109 个门禁 fail 对象）—— 置为 `rejected`（不删除、保留审计）还是继续留置？
+> **方案 B / C 备选**（供比较）：
+> **B**＝不新增列，只用 `eligibility_tags` 表达（已改为显式写 `pending_heritage_review`）。代价最小、无需迁移；**缺陷是仍是反向名单语义，"默认可用"的根问题未解**。
+> **C**＝维持现状，仅在 `CURRENT.md` 记为已知风险。**缺陷是不解决问题**。
+>
+> **决策所需上下文**：本轮已修的 7 处夜跑根因（图片源 fail-loud / HTTP fail-closed / 非图片拒收 / 跨批幂等 / 显式 pending 标记 / 去伪 depicted_period 断言 / 执行报告改真查询）**均未实跑验证**——它们只降低再犯概率，**不改变"默认可用"这一结构缺陷**。
+>
+> **本提案未列入、但同样未决的项**（不在此处展开，避免超一页）：727 张"无法从库内回答拍的是什么"的图片处置、`entities.canonical_name` 543 条重名未做 resolution。二者已登记在 `CURRENT.md` §9。

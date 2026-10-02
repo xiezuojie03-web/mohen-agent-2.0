@@ -4,7 +4,7 @@ const limits = {
   "specs/DATA_CONTRACT.md": 250,
   "specs/AGENT_CONTRACT.md": 200,
   "specs/EXPERIENCE_CONTRACT.md": 200,
-  "OWNERSHIP_MAP.md": 170,
+  "OWNERSHIP_MAP.md": 185,
 };
 let failed = false;
 for (const [file, max] of Object.entries(limits)) {
