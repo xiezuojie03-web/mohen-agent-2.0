@@ -102,6 +102,13 @@
 > 未收敛项见上述列表。复审结论与后续验收协议见
 > `tasks/results/HUMAN-EXPERIENCE-GATE-REVIEW-01-result.md`。
 
+> *2026-10-02 数据层实测补充（开发总工程师）*：真库已由 2026-10-01 老库移植与自动夜跑显著扩充。
+> 只读实测 **29 表 + 1 视图**：entities 3323 / evidence 3742 / visual_assets 1288 / relations 365 /
+> historical_features 245 / anchors 249 / source_records 269 / legacy_mappings 3405；
+> **review_queue 293**（大量候选待人工裁决）。产物见 `tasks/results/NIGHT-RUN-20261001/` 与
+> `tasks/results/SCHEMA-DIFF-20261002.html`（均已入库）。
+> **Gate 不因此改变**：数据量增长不等于 Human Experience PASS（见 §7）。
+
 ------------------------------------------------------------------------
 
 ## 6. NOW
@@ -151,9 +158,30 @@ H2 的下一出口不是"再完成一批功能"，而是：
 
 ## 9. Architecture Escalations
 
-当前：**NONE**
+当前：**3 项待项目拥有者裁决**（详见下）
 
 > **裁决方**：项目拥有者（唯一决策者）。本项目**不设第三方裁决方**——开发总工程师不得把架构问题交由任何第三方工具或第三方 AI 裁定（C0 §0 / §12 R13）。
+
+### ESC-01｜宪法对象命名与真库物理命名分叉（2026-10-02 实测）
+
+- **现象**：宪法用单数名（`source_record` / `event` / `relation_claim` / `visual_asset` / `evidence_fragment` / `human_review`），真库是复数 + 前缀（`source_records` / `cultural_events` / `cultural_relation_claims` / `visual_assets` / `evidence_fragments` / `human_review_decisions`）。
+- **影响**：按宪法名写 SQL 或查 schema 者会误判"表不存在"（`SCHEMA-DIFF-20261002` 记录了一次真实误判）。
+- **待裁决**：以真库为准回写宪法命名，或以宪法为准重命名表（代价高、触及迁移）。开发总工程师**不自行决定**。
+- **证据**：`tasks/results/SCHEMA-DIFF-20261002.html`。
+
+### ESC-02｜双 relation 存储（同源风险）
+
+- **现象**：`relations`（001，365 行）与 `cultural_relation_claims`（008，8 行）并存；宪法假设单一 relation 模型。
+- **影响**：Agent 可能读到两份不一致的关系表述。
+- **待裁决**：收敛为单一 relation 真源，或在 C3 明确两者分工与优先级。**属核心对象模型，须项目拥有者确认。**
+- **证据**：`tasks/results/SCHEMA-DIFF-20261002.html`。
+
+### ESC-03｜`modern_location` 缺口与现代坐标落位方式
+
+- **现象**：`modern_location` 表未建（`open_question` / `external_node` 同样未建）。老库 3308 实体中仅部分带坐标；已落位者走 `historical_feature_anchors`（实测 245 features / 249 anchors）。
+- **冲突点**：该表触及「现代坐标 ≠ 历史位置」红线。仓内两份产物口径不一致——`NIGHT-BATCH-LEGACY-PORT` 主张"无该表、以 anchors 承载反而更合规"，而 `SCHEMA-DIFF-20261002` 仍将其列为 **P1 缺口**（自 09-26 起停在"待拍板"）。
+- **待裁决**：正式确认「以 anchors 承载现代坐标」为终局（则回写 C3 并结案），或立项建表。
+- **证据**：`tasks/results/NIGHT-BATCH-LEGACY-PORT-result.md` §4、`tasks/results/SCHEMA-DIFF-20261002.html`。
 
 出现以下情况时，在这里记录问题，不由开发平台自行改写 C0–C4：
 

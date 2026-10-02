@@ -80,8 +80,41 @@
 
 - 活跃 Authority 文件（`governance/`（排除 `archive/`）、`specs/experience-ui/`（排除 `source/`）、`docs/`、`AGENTS.md`、`CURRENT.md`、`tasks/CURRENT_TASK.md`、`tasks/H2_…md`）已 **grep 复核**：`WorkBuddy|CodeBuddy|CODEBUDDY|ChatGPT` 零残留（除 C0 §0/§11 为**声明取消**而有意点名者）。
 - 宪法边界未放松：Human Experience Gate 定义（C4 §22）、Canonical Non-Regression、Evidence Gate、Geometry is a Claim、Agent 无 Truth Store 写权——**一字未改**。
-- 未运行测试：本任务为治理文本变更，不触碰代码 / DB / schema / 冻结 JSON；`pwsh` 受限（见 §3.4），无法执行 `pnpm test` 与 E2E。**不声称工程回归 PASS**。
-- Commit：见文末回填。
+- 未运行测试：本任务为治理文本变更，不触碰代码 / DB / schema / 冻结 JSON；受限沙箱下 `pwsh` 无法启动（见 §3.4），无法执行 `pnpm test` 与 E2E。**不声称工程回归 PASS**。
+
+### 4.1 数据库只读复核（实测）
+
+为独立验证本次顺带发现的既有产物（此前既未入库、也从未被复核），对本地真源 `mohen_dev` 执行只读计数（`psql`，仅 SELECT）：
+
+| 对象 | 实测 | 与既有产物对账 |
+|---|---|---|
+| 表 / 视图 | **29 / 1** | 与 `SCHEMA-DIFF-20261002`「29 表 + 1 视图」一致 |
+| `entities` | 3323 | = 15（09-25 基线）+ 3308（LEGACY-PORT）**精确吻合** |
+| `evidence` | 3742 | = 185 + 3223 + 334（batch 005 结构化 locator）**精确吻合** |
+| `visual_assets` | 1288 | = 42 + 519 + 727（夜跑 704 + 23）**精确吻合** |
+| `relations` | 365 | = 31 + 334 **精确吻合** |
+| `historical_features` | 245 | = 5 + 238 + 2（夜跑 coords-wikidata）**精确吻合** |
+| `historical_feature_anchors` | 249 | = 9 + 238 + 2 **精确吻合**（与 SCHEMA-DIFF 的 249 一致） |
+| `legacy_mappings` | 3405 | 与 LEGACY-PORT 一致 |
+| `ingest_runs` | 11 | 与 LEGACY-PORT 一致 |
+| `source_records` | 269 | 报告未给出可逐项对账的分解，故不声称吻合 |
+| `review_queue` | **293** | 09-25 为 112；大量候选待人工裁决 |
+| `cultural_relation_claims` | 8 | 印证 SCHEMA-DIFF 的「双 relation 存储」 |
+
+**结论**：`NIGHT-RUN-20261001` 与 `NIGHT-BATCH-LEGACY-PORT` 的记录与真库**逐项吻合**（含夜跑"落库新增 787"的加总 704+23+2+58），其自述的安全约束（零自动晋级 / candidate-only）与 `cultural_relation_claims` 仅 8 行、`relations` 全为 candidate 的观察相容，**可采信**。数据层已显著扩充，但**这不构成任何 Gate 进展**——CURRENT §7 明示不以扩大数据量作为进度指标。
+
+### 4.2 Commit
+
+| commit | 内容 |
+|---|---|
+| `83fb225` | 固化 2026-10-01 未提交宪法工作面（净化 + 逻辑审计 + 老库移植） |
+| `a15a89a` | **R13** 开发授权与权责归一（单线治理）+ 修复 UI 双真源 |
+| `844f6a9` | 固化 2026-10-01 夜跑与 2026-10-02 schema 审计产物（原样收录，未独立复核） |
+| `a43d2cd` | 删除已废弃路由 `CODEBUDDY.md` |
+
+Tag：**`handover-baseline-r13`**（打在 `844f6a9`）。工作树干净。
+
+> 说明：`CODEBUDDY.md` 在删除前的最后一次工作区修改**未曾入库**（该文件相对 `f481c90` 有 16 增 / 11 删的未提交改动，即 CONSTITUTION-LOGIC-AUDIT-01 对 §2 的纯路由化改写）。该改动内容已被完整继承进 **`AGENTS.md`**（本结果记录 §2 第 1 行），故无内容损失；未入库的中间态本身不再保留。
 
 ## 5. 未做 / 明确不做
 
