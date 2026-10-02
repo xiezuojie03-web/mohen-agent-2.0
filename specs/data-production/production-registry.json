@@ -1,0 +1,124 @@
+{
+  "schema": "mohen.production-registry",
+  "schema_version": 1,
+  "updated": "2026-10-02",
+  "authority": "项目拥有者 2026-10-02 批准（M1.2）。机制依据 specs/MoHen_Data_Production_Protocol.md §12。",
+  "purpose": "哪些自动化被允许以无人值守方式运行、允许写哪些表、必须过哪些门。未声明即不调度。",
+  "policies": {
+    "undeclared_job": "refuse（整轮不启动；不做半截）",
+    "ambiguous_match": "refuse（一个作业必须恰好命中一个条目）",
+    "auto_promote_default": false,
+    "forbidden_means": "从队列中确定性剔除；不是失败，不计入连续失败",
+    "why_gates_enforced_by_exists": "防止重蹈 data/fixtures/source-providers.json 的覆辙——那份门禁写着 S1–S4，全仓却无一行代码读它。声明为 allowed 的作业必须说清『门禁靠什么落地』。"
+  },
+  "required_fields": [
+    "id", "kind", "version", "purpose", "inputs", "outputs", "write_scope",
+    "gates", "gates_enforced_by", "auto_promote_policy", "hold_reasons", "stop_conditions",
+    "retry_policy", "tests", "rollback", "summary", "narrative_gaps",
+    "unattended", "unattended_reason"
+  ],
+  "jobs": [
+    {
+      "id": "src-*",
+      "kind": "source",
+      "version": "1.0",
+      "purpose": "把旧库预抓取的 JSON 登记为来源（source_record），并把原始文件快照进 Raw。不做抽取、不产生 Claim。",
+      "inputs": [
+        "hushang-jingwei/data/fetched/<file>（61 个 JSON；清单见 pipelines/legacy/unattended-jobs.mjs 的 SOURCE_FILES）"
+      ],
+      "outputs": [
+        "source_records 新增行（provider = hushang_legacy）",
+        "Raw 快照：<RAW_STORE>/legacy/hushang/<file>"
+      ],
+      "write_scope": ["source_records"],
+      "gates": ["G0"],
+      "gates_enforced_by": "库层唯一约束 (provider, checksum) 防重复 + raw 快照存在性；只写 L0 来源层，无 Claim / World 写入。",
+      "auto_promote_policy": "none（只登记来源；不产生任何 Claim，无晋级可言）",
+      "hold_reasons": ["file_missing", "checksum_conflict"],
+      "stop_conditions": ["连续 3 个作业技术性失败", "截止时间到", "STOP 文件"],
+      "retry_policy": "仅瞬时 IO 失败重试 1 次；文件缺失按 skipped 记录，不重试。",
+      "tests": [
+        "幂等：重复运行不新增 source_records 行",
+        "raw 快照不被覆盖",
+        "写入不越出 write_scope"
+      ],
+      "rollback": "按 checksum 定位本批新增的 source_records 行并删除；Raw 快照按协议 #7 保留不删。",
+      "summary": ["新增来源数", "跳过 / 缺失文件数", "越界写入数（应为 0）"],
+      "narrative_gaps": ["（基础设施：来源登记，服务全部叙事缺口，不直接推进某一格）"],
+      "unattended": "allowed",
+      "unattended_reason": "只写 L0 来源层，门禁由库层约束强制，无判断性内容 → 适合无人值守。"
+    },
+    {
+      "id": "images-*",
+      "kind": "images",
+      "version": "1.0",
+      "purpose": "把旧库照片清单导入为 candidate 视觉资产（visual_assets）与对象关联候选（visual_entity_links）。",
+      "inputs": [
+        "shanghai_images_verified_20260905.json",
+        "shanghai_images_census_20260905.json",
+        "commons_baoshan_chuansha_20260831.json",
+        "commons_external_maps_20260831.json"
+      ],
+      "outputs": [
+        "visual_assets（候选）",
+        "visual_entity_links（link_status ∈ suspected / similar / unconfirmed）"
+      ],
+      "write_scope": ["visual_assets", "visual_entity_links"],
+      "gates": ["G0", "G1", "G3", "G4"],
+      "gates_enforced_by": "**未实现**：实测本作业不写 evidence_gate_audit（1246 张图片 0 条审计记录），visual_assets 也没有正面资格字段。",
+      "auto_promote_policy": "none（只写候选；不得置 confirmed / 可用）",
+      "hold_reasons": [
+        "source_ambiguous",
+        "non_image_mime",
+        "http_not_200",
+        "rights_placeholder",
+        "content_description_missing",
+        "depicted_period_unknown"
+      ],
+      "stop_conditions": [
+        "图片源无法唯一确定（拒绝猜测）",
+        "源文件缺失",
+        "连续 3 个作业技术性失败"
+      ],
+      "retry_policy": "仅瞬时 HTTP / IO 失败重试 1 次；HTTP 非 200 fail-closed，不重试。",
+      "tests": [
+        "幂等：legacy_id 并集 + 规范化 file_path 去重",
+        "非图片扩展名必须拒绝",
+        "HTTP 状态未知必须 fail-closed"
+      ],
+      "rollback": "按本批 legacy_id 前缀定位 visual_assets 行，置排除标记，不物理删除（协议 #7 No destructive cleanup）。",
+      "summary": ["新增候选数", "被拒绝条目数及原因分布", "内容描述缺失数"],
+      "narrative_gaps": ["M2 历史视觉证据（当前 = 0）", "M5 遗址—复建双层的视觉对照"],
+      "unattended": "forbidden",
+      "unattended_reason": "**门禁未实现**：G0–G6 结果不落 evidence_gate_audit，且 visual_assets 无正面资格字段（默认即『未被排除』）→ 实测已造成 1246 张图片在无描述、无门禁记录的情况下被视为可用。补齐门禁写入（M2 迁移）后方可解禁。"
+    },
+    {
+      "id": "coords-wikidata",
+      "kind": "coords",
+      "version": "1.0",
+      "purpose": "把旧库实体的现代坐标写入 historical_features 与 historical_feature_anchors（现代点，非历史位置证明）。",
+      "inputs": ["coords_wikidata.json（Wikidata P625）"],
+      "outputs": [
+        "historical_features（slice_id = SHL-LEGACY-COORDS）",
+        "historical_feature_anchors（provider_current_object_point）"
+      ],
+      "write_scope": ["historical_features", "historical_feature_anchors"],
+      "gates": ["G3"],
+      "gates_enforced_by": "**仅部分**：库层 CHECK（anchor_coord_requires_crs / anchor_current_never_proof）有效；但 confidence 与 evidence_ids 无强制——实测 240 行以 candidate 入库却 confidence = 0、evidence_ids = {}。",
+      "auto_promote_policy": "none",
+      "hold_reasons": ["missing_entity_match", "crs_unknown"],
+      "stop_conditions": ["坐标缺失或 CRS 不明", "连续 3 个作业技术性失败"],
+      "retry_policy": "不重试（确定性写入；重复运行由 feature_key / anchor_key 唯一约束拦截）。",
+      "tests": [
+        "anchor 必须带 CRS",
+        "historical_position_proof 必须为 false",
+        "已存在 anchor_key 不得重复插入"
+      ],
+      "rollback": "按 slice_id + feature_key / anchor_key 定位本批行并删除（本作业产物不在 Raw）。",
+      "summary": ["写入 feature / anchor 数", "实体匹配失败数"],
+      "narrative_gaps": ["M2 历史图籍归因（历史地图定位未决）"],
+      "unattended": "forbidden",
+      "unattended_reason": "协议 #5 明令「历史地图锚点 → HOLD」、#10 明令「历史地图配准暂不作为第一阶段」；且实测 240 行以 candidate 入库却 confidence = 0、evidence_ids = {}。此类判断必须有人值守。"
+    }
+  ]
+}

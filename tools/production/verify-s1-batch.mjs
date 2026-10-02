@@ -1,5 +1,5 @@
 // N00 · 批次核验（只读）
-// 目的：确认 S1 定向取回本轮真实入库的 Source / Evidence，供晨报引用，绝不写入。
+// 目的：确认 S1 定向取回本轮真实入库的 Source / Evidence，供执行报告引用，绝不写入。
 import { queryRows } from "../../packages/data-access/src/index.mjs";
 
 const prov = await queryRows(

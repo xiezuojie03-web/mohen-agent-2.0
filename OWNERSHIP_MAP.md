@@ -28,9 +28,10 @@
 │   ├── MoHen_Data_Production_Protocol.md  数据生产协议（无人值守 + 有人值守；C2/C3 之下）
 │   ├── archive/           【归档】被取代的契约与规范（旧 UI Baseline 等）｜禁止：当作当前 Authority
 │   ├── data-production/   数据生产操作件（**契约**在 specs/ 根，**操作件**在本目录）
+│   │   ├── production-registry.json   **生产注册表**：哪些自动化被允许无人值守运行（机器可读，守卫校验）
 │   │   ├── T03_金泽材料盘点_覆盖矩阵.md   叙事缺口清单（当前唯一实例＝金泽）
 │   │   ├── T06_无人值守派工与缺口映射.md   缺口 → 字段 → 批次
-│   │   └── T07_无人值守作业最小Contract.md   作业 13 字段契约与安全基线
+│   │   └── T07_无人值守作业最小Contract.md   作业字段契约与安全基线
 │   └── experience-ui/     Experience/UI 素材与施工图（分级与 Authority 见该目录 README）
 │       ├── 施工图/        当前施工图（第 3 代）：M1 配套规格 + 可操作图册
 │       ├── MoHen_Narrative_Motif_Framework.md   五母题叙事与定向研究方法（V1.3）

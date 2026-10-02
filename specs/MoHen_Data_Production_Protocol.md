@@ -240,6 +240,22 @@ Agent Skills（S01–S08）不是无人值守数据工厂的主执行器。无�
 
 每个无人值守 Skill / Job 至少声明以下字段，开发总工程师 才能把它加入无人值守调度：
 
+> **机器可读落地（2026-10-02 · M1.2）＝`specs/data-production/production-registry.json`。**
+> 该文件由 `scripts/check-production-registry.mjs` 校验（已纳入 `pnpm guard`），并被执行体
+> `pipelines/legacy/unattended-runner.mjs` 在**启动时读取**：
+> - 队列里任何**未在注册表中唯一声明**的作业 → **整轮不启动**（不做半截）；
+> - 声明为 `unattended: "forbidden"` 的作业 → 从队列**确定性剔除**（不是失败，不计入连续失败），
+>   并在执行报告里列明理由。
+>
+> **为什么设这道闸**：`data/fixtures/source-providers.json` 声称 S1–S4 来源门禁，文档三处写
+> “取回必须遵守”，但**全仓没有一行代码读它**——它什么也没挡住。注册表若不被读、或被读而不校验，
+> 同样只是意图。
+>
+> 在下列字段之外，注册表另加 5 个字段：
+> `kind`（作业类型）· `unattended`（`allowed` / `forbidden`）· `unattended_reason`（forbidden 必须写明理由）·
+> `gates_enforced_by`（allowed 必须写明门禁**靠什么落地**——防止“写着有门、其实没有”）·
+> `narrative_gaps`（本作业瞄准哪个叙事缺口，见 §0.6）。
+
 | **字段**                | **含义**                                           |
 | --------------------- | ------------------------------------------------ |
 | id / version          | 稳定标识与规则版本                                        |

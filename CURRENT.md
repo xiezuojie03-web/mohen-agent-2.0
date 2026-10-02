@@ -187,7 +187,7 @@ H2 的下一出口不是"再完成一批功能"，而是：
 
 - **现象**：图片表**没有任何"资格 / 状态"字段**；唯一语义是 `eligibility_tags` 的**反向排除名单**（默认 `'{}'` = 未排除即可用）；`quality_score` 1288/1288 全 NULL；**表上 0 触发器**；夜跑 INSERT 不写该列 → 新增图片**无条件"可用"**。
 - **已发生后果**：20 条人工排除被同 URL 重灌洗掉（其中 19 条是"金泽**火车站**"高铁列车照）；341/519 图片与金泽无关；30 条非图片（`.djvu` / `.webm`）标为 `image`；727 张 provenance 错位挂到一个"诗词"源；23 张 HTTP 死链入库；1246 张夜跑图片 **0 条门禁记录**。
-- **本轮已做（可逆、只标记不删除）**：恢复 20 条人工排除（tag `cleanup_20261002_hr5_restore`）；排除 28 条非图片（tag `cleanup_20261002_nonimage`，另 2 条含于前 20）；`effective_visual_assets` 仍为 8（无副作用）。夜跑脚本 **7 处根因已修**：图片源 fail-loud、HTTP fail-closed、非图片拒收、跨批幂等（并集 legacy_id + 规范化 file_path）、显式 `pending_heritage_review` 标记、去伪 `现代影像（非历史）` 断言、晨报"安全"段改为要求查询（原为硬编码断言）。
+- **本轮已做（可逆、只标记不删除）**：恢复 20 条人工排除（tag `cleanup_20261002_hr5_restore`）；排除 28 条非图片（tag `cleanup_20261002_nonimage`，另 2 条含于前 20）；`effective_visual_assets` 仍为 8（无副作用）。夜跑脚本 **7 处根因已修**：图片源 fail-loud、HTTP fail-closed、非图片拒收、跨批幂等（并集 legacy_id + 规范化 file_path）、显式 `pending_heritage_review` 标记、去伪 `现代影像（非历史）` 断言、执行报告"安全"段改为要求查询（原为硬编码断言）。
 - **待裁决**：① 是否新增正面资格字段 + 门禁触发器（把"默认可用"翻转为"默认不可用"）；② 727 张 provenance 是否纠正；③ 341 张内容可疑图片的处置标准；④ 109 个门禁 `fail` 对象是否置为 `rejected`。
 - **证据与三个方案**：`tasks/results/DATA-RECON-01-eligibility-field-proposal.md`
 

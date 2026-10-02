@@ -5,7 +5,7 @@
 //   · 三道闸：MOHEN_WRITE_ENABLED!=true → DRY_RUN；MOHEN_ENV∈{dev,staging}
 //   · 停止条件：截止时间 / STOP 文件 / 连续 3 次作业失败 / 写权限异常
 //   · 幂等：按 legacy_id / checksum 跳过；可安全重复运行
-//   · 到点输出：progress.json + runner.log + Morning Summary result.md
+//   · 到点输出：progress.json + runner.log + 执行报告 result.md
 // 用法: node unattended-runner.mjs --until 06:00 [--interval-min 6] [--tag UNATTENDED-<date>]
 
 import fs from "node:fs";
@@ -51,32 +51,50 @@ const progress = { tag: TAG, mode: MODE, env: ENV, cutoff: CUTOFF.toISOString(),
   started_at: new Date().toISOString(), jobs: {}, counters: { jobs_done: 0, jobs_failed: 0, inserted: 0 }, failures: [], verdict: "" };
 const save = () => fs.writeFileSync(PROGRESS, JSON.stringify(progress, null, 2), "utf8");
 
-// ---- 作业队列（按价值排序：照片 → 坐标 → 其它源材料）----
-const jobs = [
-  { id: "images-shanghai-verified", kind: "images", file: "shanghai_images_verified_20260905.json" },
-  { id: "images-shanghai-census", kind: "images", file: "shanghai_images_census_20260905.json" },
-  { id: "images-commons-baoshan", kind: "images", file: "commons_baoshan_chuansha_20260831.json" },
-  { id: "images-commons-maps", kind: "images", file: "commons_external_maps_20260831.json" },
-  { id: "coords-wikidata", kind: "coords", file: "coords_wikidata.json" },
-].concat([
-  "gazetteer_details.json","events_linked.json","hsly_events.json","narrative_assets.json",
-  "cbdb_people.json","clans.json","clan_pdf_index.json","jp_works_all.json","jp_shanghai_works.json",
-  "jp_persons_zhu.json","jp_shanghai_family_persons.json","jp_zhu_deepdive.json","jp_family_town_analysis.json",
-  "geo_placenames_shanghai.json","protection_index.json","sh_protection_index.json",
-  "suzhou_narrative_candidates.json","suzhou_narrative_review.json","suzhou_people_shanghai.json",
-  "yutu_catalog_final_20260831.json","yutu_catalog_checked.json","yutu_plaquettes_checked.json",
-  "yutu_verify_coverage.json","yutu_level3.json","verify_cbdb_20260831.json","verify_souyun_20260831.json",
-  "verify_song_press_20260831.json","resource_probe_20260831.json","resource_probe2_20260831.json",
-  "dmz_zhujiajiao.json","gj_fangzhi.json","gj_works_青浦.json","gj_works_青浦县志.json",
-  "gj_works_朱家角.json","gj_works_朱家角镇志.json","gj_works_珠里小志.json",
-  "mgts_104971_entries.json","mgts_31278_entries.json","mgts_4581_entries.json","mgts_4584_entries.json",
-  "mgts_4590_entries.json","mgts_87274_entries.json","mgts_90096_entries.json","mgts_92309_entries.json",
-  "mgts_31278_town_hits.json","mgts_4581_town_hits.json","mgts_4590_town_hits.json","mgts_104971_town_hits.json",
-  "jinze_evolution_raw_20260830.json","_work_titles.json","mcp_screenshot_ocr.json",
-  "external_mapsource_probe_20260831.json","commons_oldmaps_raw_20260831.json","rumsey_maps_raw_20260831.json",
-  "commons_cats_drill_20260831.json","jp_family_town_sparql_analysis.json","jp_works_sparql.json",
-  "jp_shanghai_persons_count.json","jp_familyname_zhu.json","jp_zhu_persons.json","gj_14373_toc.json",
-].map((f) => ({ id: "src-" + f.replace(/[^\w.-]/g, "_"), kind: "source", file: f })));
+// ---- 作业队列 + 生产注册表（2026-10-02 M1.2）----
+// 队列定义已抽到 ./unattended-jobs.mjs，使守卫（scripts/check-production-registry.mjs）能 import
+// **同一份定义**做精确核对，而不是靠正则去猜 runner 里有哪些作业。
+// import 与本块一起放在此处（ESM 顶层声明会被提升），以保持「队列」与「它的闸门」相邻可读。
+import { buildJobs, matchEntries } from "./unattended-jobs.mjs";
+
+const REGISTRY_PATH = "specs/data-production/production-registry.json";
+let registry;
+try {
+  registry = JSON.parse(fs.readFileSync(REGISTRY_PATH, "utf8"));
+} catch (e) {
+  console.error(`STOP 无法读取生产注册表 ${REGISTRY_PATH}：${(e && e.message) || e}`);
+  console.error("     无人值守作业必须先在注册表里声明（协议 §12 / M1.2）。读不到注册表 = 不调度。");
+  process.exit(3);
+}
+const REG_ENTRIES = Array.isArray(registry.jobs) ? registry.jobs : [];
+
+const ALL_JOBS = buildJobs();
+const RESOLVED = ALL_JOBS.map((j) => ({ job: j, hits: matchEntries(REG_ENTRIES, j.id) }));
+
+// ① 未声明 / 声明不唯一 → 一律不调度（整轮不启动，不做半截）
+const unresolved = RESOLVED.filter((r) => r.hits.length !== 1);
+if (unresolved.length) {
+  console.error(`STOP ${unresolved.length} 个作业未在生产注册表中唯一声明 —— 一律不调度：`);
+  for (const r of unresolved) console.error(`     ${r.job.id}  (kind=${r.job.kind})  命中 ${r.hits.length} 条`);
+  console.error(`     处置：在 ${REGISTRY_PATH} 里声明该作业（required_fields 全填），或从队列中移除。`);
+  process.exit(3);
+}
+
+// ② 声明为 unattended:"forbidden" 的作业 → 确定性剔除（不是失败，不计入连续失败）
+const excluded = [];
+const jobs = RESOLVED.filter((r) => {
+  const e = r.hits[0];
+  if (e.unattended === "forbidden") {
+    excluded.push({ id: r.job.id, reason: e.unattended_reason || "(未写理由)" });
+    return false;
+  }
+  return true;
+}).map((r) => r.job);
+
+progress.registry = { path: REGISTRY_PATH, entries: REG_ENTRIES.length, queued: ALL_JOBS.length, runnable: jobs.length, excluded };
+for (const x of excluded) log(`SKIP unattended=forbidden  ${x.id} — ${x.reason}`);
+log(`registry=${REGISTRY_PATH} entries=${REG_ENTRIES.length} queued=${ALL_JOBS.length} runnable=${jobs.length} excluded=${excluded.length}`);
+save();
 
 // ---- 作业实现 ----
 async function jobSource(j) {
@@ -204,7 +222,7 @@ async function jobCoords(j) {
 
 const RUNNERS = { source: jobSource, images: jobImages, coords: jobCoords };
 
-// [2026-10-02 · M3] 晨报的全部事实由查询得出，禁止模板断言。
+// [2026-10-02 · M3] 执行报告的全部事实由查询得出，禁止模板断言。
 // 归因口径：本批时间窗 [progress.started_at, now]。目前尚无 run 级关联（断点 B-03），
 // 故"本批"＝时间窗口径；M2（Gate 数据库层强制）落地后改为 run 级归因。
 // 见 tasks/results/DATA-PRODUCTION-MECHANISM-01-result.md §4 M3。
@@ -268,7 +286,7 @@ async function finalize(reason) {
   if (unexecuted > 0) esc.push(`未执行 ${unexecuted} 个作业（截止时间到 / 作业耗尽）`);
   const escBlock = esc.length ? esc.slice(0, 3).map((s, i) => `${i + 1}. ${s}`).join("\n") : "无 —— 本批无需你介入。";
 
-  const md = `# ${TAG} · Morning Summary
+  const md = `# ${TAG} · 无人值守执行报告
 
 - 模式：${MODE}（MOHEN_ENV=${ENV}）· 截止时间：${CUTOFF.toISOString()} · 周期：${INTERVAL_MIN} 分钟/作业
 - 开始：${progress.started_at} · 结束：${progress.finished_at}
