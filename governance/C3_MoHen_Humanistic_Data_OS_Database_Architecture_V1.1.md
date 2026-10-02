@@ -2,7 +2,7 @@
 
 数据库与文化世界数据架构 V1.1
 
-从“内容数据库”走向“可信、可发现、可参与、能够持续生长的活态人文世界”
+可信、可发现、可参与、能够持续生长的活态人文世界
 
 |                                                           |
 | --------------------------------------------------------- |
@@ -271,7 +271,7 @@ Developer Skill 的任务不是把材料批量塞进数据库，而是推动对�
 
 ## 5.1 时间不是一个 start\_year/end\_year 就结束
 
-早期数据库用 start\_year/end\_year 足以驱动筛选，但墨痕需要表达约略年代、区间、前后关系、来源中的纪年以及不确定性。建议统一 TemporalScope：precision、start、end、label、calendar/source\_text、confidence。
+时间字段若只用 start\_year/end\_year 足以驱动筛选，但墨痕需要表达约略年代、区间、前后关系、来源中的纪年以及不确定性。建议统一 TemporalScope：precision、start、end、label、calendar/source\_text、confidence。
 
 ## 5.2 Historical Space ≠ Historical Geometry
 
@@ -475,7 +475,7 @@ Agent 不直接“读数据库然后编故事”。它先从受控 World Project
 
 |                                                                                                                                                                                                       |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 施工顺序：C1/C3 架构边界 → 真实现库只读审计 → 明确 DB\_GAP → 最小迁移/清理 → 开发总工程师 直接实施 → 数据 Gate 验收。只有涉及核心对象模型、Evidence/Meaning 边界、写权限、L6/L7 正式 Schema 或基础数据范式变化时，才升级为 Architecture Reconciliation；不再要求 Task Book 作为默认中转。 |
+| 施工顺序：C1/C3 架构边界 → 真实现库只读审计 → 明确 DB\_GAP → 最小迁移/清理 → 开发总工程师 直接实施 → 数据 Gate 验收。只有涉及核心对象模型、Evidence/Meaning 边界、写权限、L6/L7 正式 Schema 或基础数据范式变化时，才升级为 Architecture Reconciliation；默认不经由 Task Book 中转。 |
 
 # 附录 A｜推荐命名规范
 
@@ -487,7 +487,7 @@ Agent 不直接“读数据库然后编故事”。它先从受控 World Project
 
   - 《墨痕 Agent 2.0｜总体架构与改造路线图 V4.8》：Evidence & Provenance、Humanistic World、Historical Space / Geometry、Discovery / Runtime / Experience、Living Cultural Relation Model。
 
-  - C1《MoHen · Product, Architecture & Evolution Constitution V1.0》及其直接前身 V4.9：Cultural World Object Model、Cultural Relation Contract、Fact–Interpretation Firewall、Present Connection、Agent-native Experience、Evolution Horizons 与治理边界。
+  - C1《MoHen · Product, Architecture & Evolution Constitution V1.0》：Cultural World Object Model、Cultural Relation Contract、Fact–Interpretation Firewall、Present Connection、Agent-native Experience、Evolution Horizons 与治理边界。
 
   - C2《MoHen · Humanistic Data OS & Dual Skill Architecture V1.0》：Humanistic Data OS 作为长期数据生产与能力沉淀框架；Developer Skills 与 Agent Skills 分工；L6 Participation / L7 Living Culture 与 C3 的八层长期数据地图保持同义。
 

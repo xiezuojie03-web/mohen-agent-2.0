@@ -2,7 +2,7 @@
 
 版本定位：2026-09-26｜C2 Professional Constitution。继承早期三层架构与 Roadmap 中已被验证的设计，并以 C1 V1.0、C3 V1.1、C4 V2.1 的当前术语和治理边界为准。
 
-文档职责：把过去散落在不同母文档中的“双 Skill”思想重新归位，回答四个问题：人文数据操作系统是什么；Developer Skills 是什么；Agent Skills 是什么；三者怎样形成墨痕的长期能力。
+文档职责：回答四个问题——人文数据操作系统是什么；Developer Skills 是什么；Agent Skills 是什么；三者怎样形成墨痕的长期能力。
 
 > **核心判断：Developer Skills 负责“把可信的人文世界建出来”；Agent Skills 负责“带用户在这个世界里探索”；人文数据操作系统是两者共同依赖、持续生长的文化世界底座。**
 
@@ -39,11 +39,11 @@
 
 Cultural Sources → Evidence → Humanistic Objects → Cultural Relations → Meaning / Present Connection → Discovery / Experience → Participation → Living Culture → New Cultural Traces ↺ Evidence / Cultural World
 
-过去早期架构常在 Evidence 之后直接进入 UI。后续校准后，中间必须保留 Cultural Relation、Meaning / Present Connection 与 Discovery，否则系统会变成“有证据的历史展示器”。长期还必须为 Participation 与 Living Culture 留出治理位置：人的观察、行走、记录与实践可以形成新的文化痕迹，但不能自动晋级为历史事实。
+Evidence 之后不能直连 UI。中间必须保留 Cultural Relation、Meaning / Present Connection 与 Discovery，否则系统会变成“有证据的历史展示器”。长期还必须为 Participation 与 Living Culture 留出治理位置：人的观察、行走、记录与实践可以形成新的文化痕迹，但不能自动晋级为历史事实。
 
 # 2｜双 Skill 系统：两个完全不同的“能力系统”
 
-原架构已经明确：Developer Skill 与 Agent Skill 必须分离。开发脚本、数据修复、诊断工作流不能被当作面向用户的 Agent Skill。这个原则继续保留。
+Developer Skill 与 Agent Skill 必须分离。开发脚本、数据修复、诊断工作流不能被当作面向用户的 Agent Skill。
 
 | **系统**             | **服务对象**                                                    | **核心问题**         | **结果**                      |
 | ------------------ | ----------------------------------------------------------- | ---------------- | --------------------------- |
@@ -91,7 +91,7 @@ Developer Skills 不是用户功能，而是把一人项目的关键施工经验
 
 # 4｜Agent Skills：墨痕带用户探索的能力系统
 
-Agent Skills 是墨痕运行时真正面向用户的能力。原 V2.0 已冻结八类语义 Skill；它们继续有效。它们描述“墨痕会做什么”，不等于八个按钮或八个页面。
+Agent Skills 是墨痕运行时真正面向用户的能力。已冻结八类语义 Skill。它们描述“墨痕会做什么”，不等于八个按钮或八个页面。
 
 | **编号** | **Agent Skill**           | **用户感受到的能力**                         |
 | ------ | ------------------------- | ------------------------------------ |
@@ -106,13 +106,13 @@ Agent Skills 是墨痕运行时真正面向用户的能力。原 V2.0 已冻结�
 
 ## 4.1 第一阶段代码组织
 
-原设计还把第一阶段实际实现收敛为五个高频执行 Skill：spatial-research、relationship-discovery、evidence-chain、spatial-story、experience-orchestration。这个收敛继续保留。八类是长期能力语义；五类是阶段性代码组织，不应混为一谈。
+第一阶段实际实现收敛为五个高频执行 Skill：spatial-research、relationship-discovery、evidence-chain、spatial-story、experience-orchestration。八类是长期能力语义；五类是阶段性代码组织，不应混为一谈。
 
 ## 4.2 Agent Skill 不是“提示词模板”
 
 一个 Agent Skill 应是一套可执行的方法：知道何时使用、需要什么上下文、可调用哪些 Tool、必须经过哪些 Evidence Gate、什么情况下停止、最终产生什么 Experience Action。
 
-原架构的行动层仍然成立：Planner → Skill → Agent Tool → MCP Adapter / API / Local Knowledge。MCP 是外部数据能力，不直接等于 Skill。Tool 是原子动作，Skill 是完成一类探索任务的方法。
+行动层：Planner → Skill → Agent Tool → MCP Adapter / API / Local Knowledge。MCP 是外部数据能力，不直接等于 Skill。Tool 是原子动作，Skill 是完成一类探索任务的方法。
 
 ## 4.3 Agent Loop
 
@@ -251,12 +251,13 @@ Skill 不应该在讨论阶段就变成代码目录。建议继续采用“真�
 
 # 10｜治理：谁有权决定什么
 
-| **角色**                                   | **职责**                                                                                |
-| ---------------------------------------- | ------------------------------------------------------------------------------------- |
-| Human / 项目负责人                            | 决定产品价值、文化判断、体验是否有意义；最终 Human Review。                                                  |
-| 开发平台（架构建议方）          | 维护 C1–C4 架构一致性、主动判断 Skill 成熟度与架构缺口、提出 Architecture Reconciliation 建议；**不得自行落地修改**。 |
-| 开发总工程师                                | 本地施工与事实报告；无权自行改变产品原则、架构边界或把一次脚本晋升为正式 Skill。                                           |
-| 未来其他执行器                                  | 遵守同一 Repo + Contract + Skill + Test + Gate；缺专业能力才增加执行器。                               |
+| **角色**                     | **职责**                                                                                                                        |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| 项目拥有者 / 唯一架构设计师           | 决定产品价值、文化判断、体验是否有意义；最终 Human Review；对架构修改拥有唯一决定权。                                                                          |
+| 开发平台 / 开发总工程师             | **工程实施**：本地施工、事实报告。**架构职责**：维护 C1–C4 架构一致性、主动判断 Skill 成熟度与架构缺口、提出 Architecture Reconciliation 建议。**两者同等，但修改不得自行落地，须提交项目拥有者确认**；亦无权把一次脚本晋升为正式 Skill。 |
+| 未来其他执行器                    | 遵守同一 Repo + Contract + Skill + Test + Gate；缺专业能力才增加执行器。                                                                       |
+
+> **开发平台 = 开发总工程师，是同一个角色的两个名称，不是两个角色。** 工程实施与架构思考同属其职责；两者的区别只在“能否自行落地”——工程改动可自主，架构修改必须经项目拥有者确认。
 
 聊天上下文不是 Source of Truth。长期有效的 Skill 定义、Contract、Evidence、Types、Tests 与架构结论必须进入 Repo 或 C0–C4；Result / Task Evidence 只在确有追溯价值时保存，不再作为每次施工的沟通税。
 
@@ -309,13 +310,3 @@ Agent Skills
 spatial\_exploration / time\_space\_trace / relationship\_discovery / classical\_discovery / evidence\_verification / story\_weaving / experience\_orchestration / modern\_connection
 
 > **最终不是“开发系统 + Agent 系统 + 数据库”三块拼起来，而是一套循环：开发系统持续把文化世界建得更可信、更有关系；Agent 在其中发现、组织和带人探索；用户的新问题又反过来告诉开发系统下一步应该补什么。**
-
-# 附录 A｜原始架构继承关系
-
-| **来源**                     | **本版继承的核心内容**                                                                                                                                                |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 《墨痕 Agent 2.0 三层架构设计 V2.0》 | 三层架构；MCP→Tool→Skill→Experience Action；8 类 Agent Skills；5 个第一阶段执行 Skill；Agent Loop；Evidence/Relation/Discovery/Story Seed/Modern Connection/Experience State。 |
-| 《总体架构与改造路线图 V4.0/V4.1》     | Developer Skills“一人项目开发操作系统”；历史空间三 Skill；Human Experience Gate；Persistent Experience；Canonical Experience Grammar；历史—当下连接；治理与 Short-Session。                 |
-| 后续架构校准                     | Living Cultural Relationship Model；Meaning / Connection 中间层；Agent-native Experience Architecture；Present-day Connection P1/P2/P3；Skill 成熟后再固化，不因新工具而创造工作。    |
-
-说明：本版经本轮 Architecture Reconciliation 后正式作为 C2 Professional Constitution。C1 负责最终 Vision、总体架构、Evolution Horizons 与跨层边界；C2 对 Humanistic Data OS、Developer Skills、Agent Skills 与二者分权拥有更高细节 Authority。旧 L1 Roadmap / Phase Execution Plan / Task Book 不再拥有高于 C0–C4 的当前施工权限。

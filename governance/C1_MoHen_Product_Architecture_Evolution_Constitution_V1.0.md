@@ -8,8 +8,7 @@ Product, Architecture & Evolution Constitution V1.0
 | ------------------------------------------------------------------------------------------------------------------ |
 | C1 的职责不是只写“愿景”，也不是继续维护一份越来越长的施工 Roadmap。它同时回答：墨痕为什么存在、为谁创造什么价值、系统如何成立、怎样从今天长成最终形态、现在真实做到哪里、哪些长期原则与阶段边界不能被局部施工随意改变。 |
 
-V4.9 的 Living Architecture + Master Plan + Current Product Baseline 被保留并升级；逐 Task 的重治理退出 C1。  
-V1.0 · 2026-09-26
+逐 Task 的重治理已退出 C1，由 C0 的开发模式承载。
 
 # 0｜执行摘要：墨痕最终要成为怎样的产品
 
@@ -57,24 +56,6 @@ Authority 原则：C1 规定方向、边界、成熟度与跨层关系；C2/C3/C
 |                                                                                                              |
 | ------------------------------------------------------------------------------------------------------------ |
 | 原则：日常执行只需 C0–C4 + CURRENT 六个入口。历史 Roadmap、Phase Plan、Task Book、Result、旧 UI/DB 文档进入 Archive / Trace；需要追溯时再打开。 |
-
-# 1｜V4.9 遗产审计：什么继承、什么升级、什么退出
-
-C1 V1.0 不是凭空另起炉灶。它以 V4.9 为直接前身，但按今天已经形成的新 Vision、Humanistic Data OS、Living Culture、开发与架构分工协作和 C4 Canonical Experience 重新归位。
-
-| **V4.9 内容**                    | **处理**      | **进入 C1 的方式**                                                                                              |
-| ------------------------------ | ----------- | ---------------------------------------------------------------------------------------------------------- |
-| Part I 产品纲领                    | 升级继承        | 北极星、用户主链、方法论、知识边界保留；把“活态文化传承”提升到开篇最终 Vision                                                                |
-| Part II 系统架构                   | 升级继承        | Sources→Evidence→World→Agent→Experience→Action 扩展为 Participation→Living Culture→Governed Re-entry          |
-| Part III 体验纲领                  | 原样原则 + C4升级 | Persistent Experience、Canonical Grammar、Human Gate 保留；细节由 C4 承担                                            |
-| Part IV 当前产品基线                 | 原样继承并滚动更新   | 继续维护 Proven / Not Proven / HOLD / Current Gap                                                              |
-| Part V Master Plan             | 升级继承        | Phase 级演化地图保留；加入 Living Culture 与 Sustainable MoHen                                                        |
-| Part VI Greenfield/Legacy/技术边界 | 选择性继承       | 长期工程边界保留；角色与逐 Task 治理改由 C0 开发模式                                                                            |
-| Part VI 三层计划治理                 | 正式废止为当前机制   | Architecture Roadmap→Phase Plan→Task Book 不再是默认施工流程，留 Trace                                                |
-| Part VII 验收与演进                 | 升级继承        | Evidence / Runtime / Human / Integration / Generalization Gate 保留，并增加 Participation/Living Culture 未来 Gate |
-| 关键架构里程碑附录                      | 降级到附录但永久保留  | 记录“为什么今天相信这些原则”，具体 Task 编号只做 Trace                                                                         |
-| 冻结术语与决策状态                      | 继承          | 保留核心术语；CURRENT 事实滚动维护                                                                                      |
-| V5.0 HOLD                      | 语义废止        | 不再以“下一大版本”作为产品成熟依据；改为真实用户证据触发长期阶段                                                                          |
 
 # PART I｜WHY：墨痕为什么存在
 
@@ -235,7 +216,7 @@ C4 已冻结金泽《历史关系探索体验板》与 EXP-DESIGN-02 Round 2 为
 
 ## 14｜长期 Evolution Horizons：成熟度地平线，而不是固定排期
 
-以下七层保留 V4.9 的 Master Plan 能力，但不把未来伪装成已经确定的线性路线。H1–H2 是当前已知事实；H3–H4 是高置信方向；H5–H7 是需要真实用户与文化实践证据才能逐步确认的长期假设。后层可以被重排、合并甚至取消，但不得绕过前层 Gate。
+以下七层为长期阶段地平线（H1–H7），不把未来伪装成已经确定的线性路线。H1–H2 是当前已知事实；H3–H4 是高置信方向；H5–H7 是需要真实用户与文化实践证据才能逐步确认的长期假设。后层可以被重排、合并甚至取消，但不得绕过前层 Gate。
 
 | Horizon                                       | **目标**                                                      | **状态/出口**                                                                               |
 | --------------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------- |
@@ -266,13 +247,13 @@ C4 已冻结金泽《历史关系探索体验板》与 EXP-DESIGN-02 Round 2 为
 | 城市 / 区域         | 跨地比较、制度与网络、迁徙、文化传播 | Multi-scale Relation          |
 | 国家 / 世界         | 同时代比较、文明联系、全球流动    | 同一证据与解释边界                     |
 
-# PART IV｜WHERE ARE WE NOW：当前产品基线
+# PART IV｜WHERE ARE WE NOW：当前产品基线（历史基线快照 · 职责归位）
 
-> 本节为冻结基线快照。**当前真实 Proven / Gaps / HOLD 以 `CURRENT.md` §4 / §5 / §8 为准**；开发总工程师直接更新 CURRENT，不回抄本处。
+> **职责归位**：按 C0 层级，C1 = 方向 / 冻结原则，CURRENT = 当前状态（Live SOT）。本节仅作**历史基线快照与长期判定规则**，**不再维护实时状态**；当前真实 Proven / Gaps / HOLD / NOW 一律以 `CURRENT.md` §4 / §5 / §8 为准，开发总工程师直接更新 CURRENT，不回抄本处。
 
 **判定规则：只有已经在真实 Repo / Runtime / 数据 / Human-facing 体验中被验证的能力，才写入“已证明”。设计文档、Figma、架构推演、单次演示和我们主观相信的方向，都不能升级为 Proven。C1 宁可保守，也不把愿望写成事实。**
 
-## 17｜已经被证明的能力
+## 17｜已经被证明的能力（基线快照 · 实时状态见 CURRENT §4）
 
 | **能力**                                                                  | **当前判断**                                           |
 | ----------------------------------------------------------------------- | -------------------------------------------------- |
@@ -286,7 +267,7 @@ C4 已冻结金泽《历史关系探索体验板》与 EXP-DESIGN-02 Round 2 为
 | World → Experience Runtime Slice                                        | PASS：第一关系簇可通过只读 Projection 进入 Five-Beat Experience |
 | Canonical Experience Grammar                                            | 已冻结；金泽五幕 + EXP-DESIGN-02 Round 2 为最低基线             |
 
-## 18｜尚未被证明 / 当前 HOLD
+## 18｜尚未被证明 / 当前 HOLD（基线快照 · 实时状态见 CURRENT §5）
 
 | **能力门槛**                            | **当前判断**             | **说明**                                      |
 | ----------------------------------- | -------------------- | ------------------------------------------- |
@@ -300,7 +281,7 @@ C4 已冻结金泽《历史关系探索体验板》与 EXP-DESIGN-02 Round 2 为
 | Living Culture Schema               | HOLD                 | Vision 已定，物理表与机制等待真实需求                      |
 | Sustainable Commercial Model        | HOLD                 | 核心价值与持续用户先成立                                |
 
-## 19｜当前主要矛盾
+## 19｜当前主要矛盾（基线快照 · 实时状态见 CURRENT）
 
 |                                                                                                                                              |
 | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -308,7 +289,7 @@ C4 已冻结金泽《历史关系探索体验板》与 EXP-DESIGN-02 Round 2 为
 
 因此当前工作应继续围绕真实运行态与 Human Gate，而不是重新开启 Figma 高保真大战、批量迁移所有旧数据、扩第二古镇、建设大而全 GIS、或提前做 Participation / Community。
 
-## 20｜NOW / NEXT / LATER / HOLD
+## 20｜NOW / NEXT / LATER / HOLD（基线快照 · 实时状态见 CURRENT §8）
 
 | **状态** | **工作**                                                                                           | **边界**              |
 | ------ | ------------------------------------------------------------------------------------------------ | ------------------- |
@@ -347,7 +328,9 @@ C4 已冻结金泽《历史关系探索体验板》与 EXP-DESIGN-02 Round 2 为
 
   - 商业化不得反向破坏文化价值、Evidence 与 Human Experience。
 
-## 22｜Architecture Reconciliation 触发器
+## 22｜Architecture Reconciliation 触发器（方向 / 冻结原则级）
+
+> 本表为**方向/冻结原则级** Reconciliation 触发器。通用治理级触发器见 **C0 §2.3**；专业域（代码/数据库/UI）触发器仅由 C2/C3/C4 在其域内列示，且**不得反向改写本表的方向/冻结原则**。三者分层、互不重复。
 
 以下变化不能由 开发总工程师 或一次施工对话自行决定，必须提交项目拥有者确认：
 
@@ -468,7 +451,7 @@ MoHen = Greenfield Project with Existing Assets。旧沪上经纬是 Reference +
 | 技术正确 = Human PASS                         | 已经被真实 Runtime / UI 偏航证明错误               |
 | 先做大而全 GIS / Historical Geometry           | 空间精度必须由证据与体验缺口触发                        |
 | Figma 高保真作为主战场                            | 视觉稿不能替代 Cultural World 与 Agent Judgment |
-| 逐 Task Book → Result → Architect Sign-off | 对当前单人+AI协作成本过高，已改为开发与架构分工边界治理                |
+| 逐 Task Book → Result → Architect Sign-off | 对当前单人+AI协作成本过高，不再作为默认机制（由 C0 边界治理取代）                |
 | 比赛/上海古镇作为长期边界                             | 它们只是起点与实验场，不是墨痕终点                       |
 | Generic Community 提前建设                    | 没有真实参与行为前会把产品带回常规互联网套路                  |
 
@@ -482,29 +465,4 @@ Evidence-aware Spatiotemporal Humanistic World Model；Humanistic Data OS；Evid
 | ------------------------------------------------------------------------------------------------------------------------------ |
 | 墨痕是一套让可信历史文化重新进入今天生活的 Agent-native 人文系统：它以证据建立活的文化关系世界，以 AI 发现并组织值得继续追问的联系，以动态体验让人重新看见地方、时间与自己，并长期探索 AI 时代文化如何继续活在人、地方与日常生活之间。 |
 
-# 附录 A｜V4.9 → C1 V1.0 映射速查
-
-| **V4.9**           | **C1 V1.0**                            |
-| ------------------ | -------------------------------------- |
-| Part I 产品纲领        | Part I WHY + 0 Final Vision            |
-| Part II 系统架构       | Part II WHAT & HOW                     |
-| Part III 体验纲领      | Part II §11 + C4 专业分册                  |
-| Part IV 当前产品基线     | Part IV WHERE ARE WE NOW               |
-| Part V Master Plan | Part III EVOLUTION                     |
-| Part VI 工程与治理      | Part V GOVERNANCE；逐任务治理由 C0 取代         |
-| Part VII 验收与演进     | Part VI ACCEPTANCE                     |
-| 附录里程碑/术语/决策        | Part VII ARCHITECTURE MEMORY + CURRENT |
-
-这不是“把 V4.9 丢掉”。恰恰相反，V4.9 的五项核心职责被完整保留：Why、Value、Architecture、Current Phase、Frozen Boundaries；同时把最近形成的 Living Culture Vision、C2/C3/C4、Canonical Non-Regression 与开发与架构分工治理归入同一 Living Architecture SOT。
-
-# 附录 B｜当前文件治理建议
-
-| **文件**                                                           | **建议状态**                                  |
-| ---------------------------------------------------------------- | ----------------------------------------- |
-| MoHen\_Product\_Architecture\_Evolution\_Constitution\_V1.0.md | CURRENT · Level-1 Living Architecture SOT |
-| V4.9 Governance-Sync                                             | ARCHIVE / DIRECT PREDECESSOR；永久保留追溯       |
-| Phase II Execution Plan V1.1                                     | LEGACY PHASE RECORD；不再作为日常调度 SOT          |
-| Task Books / Results                                             | HISTORICAL CONSTRUCTION EVIDENCE；复杂任务按需使用 |
-| Architecture Candidate Backlog                                   | REGISTRY；候选不自动进入 C1/C3                    |
-| C2 / C3 / C4 正式母版                                                | CURRENT · PROFESSIONAL CONSTITUTIONS      |
-| CURRENT.md                                                       | CURRENT EXECUTION POINTER；保持短小、频繁更新       |
+---
