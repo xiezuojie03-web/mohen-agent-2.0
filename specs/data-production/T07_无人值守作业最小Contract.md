@@ -1,14 +1,14 @@
 # T07 · 无人值守作业（Unattended Job）最小 Contract 与安全施工基线
 
-> 依据：数据生产协议 V1.1 **§12 生产注册表 最小 Contract**、§10 第一阶段批次、§7 失败/重试/回滚、§13 冻结规则；并受 T06（Gap→字段→批次映射）与 T03（真源/门禁）约束。
+> 依据：数据生产协议 V2.0 **#5 生产注册表 Contract**、#12 第一阶段批次白名单、§4.3 失败/重试/回滚、#14 冻结规则；并受 T06（Gap→字段→批次映射）与 T03（真源/门禁）约束。
 > 定位：**这是 Contract，不是待跑的任务。** 所有 job 默认 **DRY_RUN**，未显式开启写入前不碰 Truth Store。
-> 每个 job 必须声明 §12 的 12 个字段，开发总工程师才把它加入无人值守调度。
+> 每个 job 必须声明协议 #5 生产注册表 Contract 的字段（19 字段，V1.x「13 字段」超集），开发总工程师才把它加入无人值守调度。
 
 ---
 
 ## 0. 一句话安全原则
 
-> **默认不写、默认不晋级、默认不猜。** 机器只做确定性转换；歧义、因果、冲突、历史空间重建一律 HOLD；任何写入必须可重复、可停止、可追溯、可回滚（协议 §13）。
+> **默认不写、默认不晋级、默认不猜。** 机器只做确定性转换；歧义、因果、冲突、历史空间重建一律 HOLD；任何写入必须可重复、可停止、可追溯、可回滚（协议 #14 冻结规则）。
 
 ---
 
@@ -29,7 +29,7 @@
 - **最小权限角色**：只读 Source 的抓取角色 / 只写 Raw+Candidate 的采集角色 / 经 Gate 才能写 Runtime World 的 promote 角色，三者分离。
 - 当前状态：**S1/S2 凭证未配置** → 全部 job 只能 DRY_RUN；凭证到位前不安排实跑。
 
-### 1.3 分层写入权限（协议 §6）
+### 1.3 分层写入权限（协议 #1 流水线 / §4 写权限）
 
 | 层 | 无人值守可写？ | 约束 |
 |---|---|---|
@@ -38,9 +38,9 @@
 | **Candidate Reservoir**（Entity/Relation/Visual/Meaning Candidate） | 可 | 仅写候选，与 Verified World 分离 |
 | **Runtime World / L2–L3 事实层** | **仅经 Gate 的受控 promote** | 未声明 `auto_promote_policy` = **不晋级** |
 | **Projection / Agent Read Model** | 可重建 | **单向**，不拥有反向修改 Truth Store 的权限 |
-| **DDL / Schema / 写权限 / 基础设施** | **禁止** | No architecture mutation（协议 §7/§13） |
+| **DDL / Schema / 写权限 / 基础设施** | **禁止** | No architecture mutation（协议 #14 冻结规则） |
 
-### 1.4 失败、重试与停止（协议 §7）
+### 1.4 失败、重试与停止（协议 §4.3）
 
 - **Fail isolated**：单条/单源失败隔离后继续其他 source，不拖垮整批。
 - **Idempotent**：依赖 checksum / natural key / idempotency key；重复运行不制造重复事实。
@@ -53,7 +53,7 @@
 
 `run_id` · 规则版本 · `source_id` / `evidence_ids` · Gate 结果（G0–G6 + reason code）· 操作者 job id · 回滚定位。
 
-### 1.6 门禁（协议 §4）
+### 1.6 门禁（协议 #2 证据门禁 G0–G6）
 
 **G0** 来源完整 → **G1** 对象身份 → **G2** 时间语义 → **G3** 空间诚实 → **G4** 证据支持 → **G5** 冲突 → **G6** 发布资格。
 任一硬 Gate 失败**不得发布**；冲突保留双方 Evidence，**不自动选边**（G5）。
@@ -172,12 +172,12 @@
 
 ## 8. 明确排除（第一阶段绝不无人值守）
 
-Historical Geometry 重建 · 历史地图配准 · 同景老照片判定 · 历史因果自动裁决 · 跨源冲突裁决 · Meaning/PresentConnection 自动发布 · L6/L7 正式入库（协议 §10）。
+Historical Geometry 重建 · 历史地图配准 · 同景老照片判定 · 历史因果自动裁决 · 跨源冲突裁决 · Meaning/PresentConnection 自动发布 · L6/L7 正式入库（协议 #12 第一阶段批次白名单）。
 **结构性迁移（`cultural_judgments` 表、`entities.type/relation_to_jinze`、`Claim` 的 `motif/beat` 标签）不是无人值守 job**——属 Construction 任务，须 up/down 迁移 + dry-run + 测试 + 人审，不进 生产注册表。
 
 ---
 
-## 9. 执行报告与结论判定（协议 §8）
+## 9. 执行报告与结论判定（协议 §0.5 三形态 / #10 验收）
 
 每轮仅一份极短 执行报告，结论仅三种：
 **PASS**（无需操作） / **PASS WITH HOLD**（正常，有候选待以后处理） / **STOPPED**（管线异常，需开发总工程师修复）。
@@ -185,11 +185,11 @@ Historical Geometry 重建 · 历史地图配准 · 同景老照片判定 · 历
 
 ---
 
-## 10. 晋升为正式 Skill 的路径（协议 §11）
+## 10. 晋升为正式 Skill 的路径（协议 #13）
 
 `Candidate` → `Task Pattern`（真实任务重复出现）→ `Draft Skill`（边界稳定、有 Contract/Gate/停止条件/测试、小范围夜跑）→ `Mature Skill`（跨批次稳定，进 生产注册表 默认调度）。
 **不能因为"AI 能做"就创建 Skill。**
 
 ---
 
-*本文件为 T06 的 Contract 落地层；最高依据仍为 C4 V2.1、V0.9.1、五母题主稿 V0.1 与数据生产协议 V1.1。冲突处以最高依据为准并回写本文件。*
+*本文件为 T06 的 Contract 落地层；最高依据仍为 C4 V2.1、V0.9.1、五母题主稿 V0.1 与数据生产协议 V2.0。冲突处以最高依据为准并回写本文件。*

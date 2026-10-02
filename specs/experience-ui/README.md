@@ -33,7 +33,7 @@
 - `墨痕_Agent_2.0_金泽最小体验导演稿_V1.0.docx` — 最高体验权威（H2 计划自述）。
 - **数据生产类文档已移出本目录**（2026-10-02 整合审查）：原 `T03` / `T06` / `T07` 三份迁至 **`specs/data-production/`**（它们是数据生产操作件，不是 UI 资产）。本目录此后只保留 Experience/UI 相关内容。
 - `五母题深化_UI施工图与数据生产需求_V1.1.md` 是**跨域**文件：以 UI 施工图为主，内含数据生产需求章节，故留在本目录。
-- 数据生产协议已迁至 `specs/MoHen_Data_Production_Protocol.md`（无人值守 + 有人值守两种模式；T06/T07 依赖其 §12）。
+- 数据生产协议（V2.0）位于 `specs/data-production/MoHen_Data_Production_Protocol.md`（无人值守 + 有人值守两种模式；T06/T07 依赖其 #5 生产注册表 Contract）。
 
 ### canonical/（CANONICAL REFERENCE）
 **体验基线 2 张**（C4 §1 / §2 引用）：

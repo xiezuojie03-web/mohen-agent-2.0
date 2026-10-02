@@ -2,7 +2,7 @@
   "schema": "mohen.production-registry",
   "schema_version": 1,
   "updated": "2026-10-02",
-  "authority": "项目拥有者 2026-10-02 批准（M1.2）。机制依据 specs/MoHen_Data_Production_Protocol.md §12。",
+  "authority": "项目拥有者 2026-10-02 批准（M1.2）。机制依据 specs/data-production/MoHen_Data_Production_Protocol.md #5（生产注册表 Contract）。",
   "purpose": "哪些自动化被允许以无人值守方式运行、允许写哪些表、必须过哪些门。未声明即不调度。",
   "policies": {
     "undeclared_job": "refuse（整轮不启动；不做半截）",

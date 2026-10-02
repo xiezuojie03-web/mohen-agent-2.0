@@ -2,7 +2,7 @@
   "schema": "mohen.acquisition-intents",
   "schema_version": 1,
   "updated": "2026-10-02",
-  "authority": "项目拥有者 2026-10-02 批准 M4（采集意图声明）。机制依据 specs/MoHen_Data_Production_Protocol.md。",
+  "authority": "项目拥有者 2026-10-02 批准 M4（采集意图声明）。机制依据 specs/data-production/MoHen_Data_Production_Protocol.md #7（采集意图声明）。",
   "policy": {
     "rule": "**抓取 / 导入之前，必须先在 intents[] 里登记一条采集意图。**未声明意图的批次：可以进 Raw（归档诚实），但**不得进入 Candidate**。",
     "why": "实测教训：519 张图片是按**坐标半径地理搜索**抓回来的（源文件字段 `\"source\":\"commons-geosearch-topup-20260829\"`），半径内的枫泾 104 / 川沙 73 / 新场 72 / 高桥 64 / 嘉定 41 全被捞进来——**金泽只占 34 张（6.5%）**。而 437 条数据连「当初为什么抓它」都没有记录。垃圾本身不可怕，**没有标签的垃圾**才可怕：事后无法筛除、无法解释、无法归档。",

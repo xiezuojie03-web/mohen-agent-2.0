@@ -1,5 +1,5 @@
 // pipelines/legacy/unattended-report.mjs
-// 执行报告三形态（2026-10-02 · M1.4）—— 契约见 specs/MoHen_Data_Production_Protocol.md §0.7
+// 执行报告三形态（2026-10-02 · M1.4）—— 契约见 specs/data-production/MoHen_Data_Production_Protocol.md §0.5（协议 V2.0：任务执行结果，非"晨报"）
 //
 // **一次生成、同源产出：**
 //   report.json   机器可读：稳定 schema + schema_version；每个数字附其 SQL 出处；不得含模板断言

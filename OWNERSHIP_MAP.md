@@ -25,12 +25,12 @@
 │   ├── AGENT_CONTRACT.md  Agent Loop 与 Discovery 契约
 │   ├── EXPERIENCE_CONTRACT.md  ExperienceState / Composition 契约
 │   ├── SOURCE_REGISTRY.md    来源登记
-│   ├── MoHen_Data_Production_Protocol.md  数据生产协议（无人值守 + 有人值守；C2/C3 之下）
 │   ├── archive/           【归档】被取代的契约与规范（旧 UI Baseline 等）｜禁止：当作当前 Authority
-│   ├── data-production/   数据生产操作件（**契约**在 specs/ 根，**操作件**在本目录）
-│   │   ├── production-registry.json   **生产注册表**：哪些自动化被允许无人值守运行（机器可读，守卫校验）
-│   │   ├── identifier-registry.json   **标识符登记**：真库里"可以随便写"的标签/代号必须声明出身与定义（§3.1）
-│   │   ├── acquisition-intents.json   **采集意图**：每批数据"当初为什么抓的"必须抓前声明（§3.2）
+│   ├── data-production/   数据生产协议线（**契约 + 操作件 + JSON 注册表同目录**）
+│   │   ├── MoHen_Data_Production_Protocol.md   **数据生产协议 V2.0**：无人值守 + 有人值守的强制契约（§0.2 规则即强制；守卫见 §9）
+│   │   ├── production-registry.json   **生产注册表**：哪些自动化被允许无人值守运行（机器可读，守卫校验；协议 #5）
+│   │   ├── identifier-registry.json   **标识符登记**：真库里"可以随便写"的标签/代号必须声明出身与定义（协议 #7 / §9.1）
+│   │   ├── acquisition-intents.json   **采集意图**：每批数据"当初为什么抓的"必须抓前声明（协议 #7）
 │   │   ├── T03_金泽材料盘点_覆盖矩阵.md   叙事缺口清单（当前唯一实例＝金泽）
 │   │   ├── T06_无人值守派工与缺口映射.md   缺口 → 字段 → 批次
 │   │   └── T07_无人值守作业最小Contract.md   作业字段契约与安全基线

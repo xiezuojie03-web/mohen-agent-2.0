@@ -368,7 +368,7 @@ source_record                                                                   
 **机制线完成度**：M1 ✅ · M2 ✅ · M3 ✅ · M4 ✅。
 **断点**：10 已处置（B-01/02/03/04/05/06/08/09/12 + B-11 脚本侧）· 2 数据处置（B-10、B-11 既有数据）· 1 部分处置（B-07 机制兜底就位）。
 
-**协议已重梳为 V2.0**（`specs/MoHen_Data_Production_Protocol.md`）：以「规则即强制」为铁律，每条机制＝规则 + 强制 + 守卫三位一体；M1–M4、registry / source-gate / triage / promotion / acquisition 守卫、`ingest_runs` 归因已原生写入协议，去除补钉式任务编号。宪法层待协议定稿后，按 A 组裁定再动（见下方对话评估）。
+**协议已重梳为 V2.0**（`specs/data-production/MoHen_Data_Production_Protocol.md`）：以「规则即强制」为铁律，每条机制＝规则 + 强制 + 守卫三位一体；M1–M4、registry / source-gate / triage / promotion / acquisition 守卫、`ingest_runs` 归因已原生写入协议，去除补钉式任务编号。宪法层待协议定稿后，按 A 组裁定再动（见下方对话评估）。
 
 **下一步唯一阻塞**＝ A 组 4 项（§8.2）。`RECON-02` 建议方案 A；C 组解禁（图片/坐标作业）机制已就绪，待拥有者显式拍板 + B-07 子决定（runner 是否显式走 `mohen-visual-asset` Skill 协议）。
 

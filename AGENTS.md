@@ -33,7 +33,7 @@
 - `specs/experience-ui/source/墨痕_五母题叙事与生产深化主稿_V0.1.md` — 母题九项展开与生产填写规则
 - `specs/experience-ui/source/两个组件_尺寸与母题叙事规范- 墨痕 V0.9.1.md` — 双组件 / 构图 / 空间逐帧施工规范
 - `specs/experience-ui/source/交互原型- 墨痕 V0.9.1.html` — 29 页 / 58 视图施工样册
-- `specs/MoHen_Data_Production_Protocol.md` — **数据生产协议（无人值守 + 有人值守）**（C2/C3 之下；T06/T07 依赖其 §12 生产注册表 Contract）
+- `specs/data-production/MoHen_Data_Production_Protocol.md` — **数据生产协议 V2.0（无人值守 + 有人值守）**（C2/C3 之下；T06/T07 依赖其 #5 生产注册表 Contract）
 - `specs/data-production/T07_无人值守作业最小Contract.md` — 无人值守作业的最小契约与安全基线
 - `specs/experience-ui/施工图/墨痕_五母题施工审阅_第一批_M1_配套规格_V0.1.md` + `specs/experience-ui/施工图/墨痕_五母题施工审阅_第一批_M1_V0.1.html` — **当前施工图**（第 3 代，25 页 / 50 视图 / 12 帧主线；项目拥有者 2026-10-02 确认）。上一代 T05 批次1 已归档 `archive/2026-10-02-superseded/`。**五母题仅交付 M1（1/5），且尚未接入代码。**
 

@@ -2,8 +2,8 @@
 -- 目的：M2 第四条（断点 B-02 的正解）—— review_queue 的 AUTO/HOLD/REJECT 三分。
 --
 -- 依据：
---   · 协议 specs/MoHen_Data_Production_Protocol.md #5（三分流：AUTO 晋级 / HOLD 隔离 / REJECT 拒绝）
---     与 #12（auto_promote_policy 未声明 = 不自动晋级）
+--   · 协议 specs/data-production/MoHen_Data_Production_Protocol.md #3（三分流：AUTO 晋级 / HOLD 隔离 / REJECT 拒绝）
+--     与 #5（生产注册表 Contract：auto_promote_policy 未声明 = 不自动晋级）
 --   · 任务结果 §4 M2 第四条：「任何写入 Candidate 及以上层的作业，必须同时产生
 --     review_queue 行（AUTO/HOLD/REJECT 三分）」
 --   · 先例形态照抄 R15（202610020008）：库层强制 + 只读守卫，而非只写在文档里
