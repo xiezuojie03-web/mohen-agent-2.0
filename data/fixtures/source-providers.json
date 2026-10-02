@@ -1,9 +1,20 @@
 {
   "schema": "mohen.source-providers",
-  "schema_version": 2,
+  "schema_version": 3,
   "updated": "2026-10-02",
   "authority": "specs/SOURCE_REGISTRY.md（S1–S4 分级）——本文件是它的**机器可读落地**，不是新宪法。",
-  "why_changed": "v1 只有 6 条、键名为 `provider`，与真库 22 种实际 provider 字符串大面积不一致，且全仓无一行代码读它。v2 补全归一映射、明确门禁语义，并由 packages/data-access/src/source-gate.mjs 真正读取、由 scripts/check-source-gate.mjs 校验。",
+  "why_changed": "v1（6 条、键名 provider、与真库 22 种值不符、无人读取）→ v2（归一映射 + 真读 + 守卫）→ v3（**为每个标识符声明出身与定义处**，并修好两个孤儿名：scc_legacy、shanghai-library-t11-alignment）。",
+  "identifier_policy": {
+    "rule": "**凡我们自己创造的标识符，必须在使用它的同一处声明其出身与定义；禁止「只有名字、没有定义」的标识符进入真库。**",
+    "why": "真库里的名字如果没有绑定定义，就没有任何机制会迫使它被解释——与代码里的名字不同（改代码会引发连锁报错，逼你解释）。实测孤儿例：`scc_legacy` 的定义一直躺在 tasks/TASK-0009 里，却没有任何东西把它与 DB 值连起来。",
+    "origins": {
+      "external": "外部权威或公认名称（如 Wikidata、AMap、上海图书馆）。外部已有定义，无需本仓再定义。",
+      "derived": "由某个具体出处推导/抄录而来 → **必须**给出 `defined_at`（指向该出处）。",
+      "coined": "我们自己起的标签/命名 → **必须**给出 `definition`（一句话说清它指什么）+ `defined_at`（依据所在）。"
+    },
+    "forbidden": "**禁止写「待查」。** 只允许写「已查 <清单>，未找到」。理由：『待查』会把『我没查』包装成『将来会查』，然后永远待下去——`scc_legacy` 就这样挂了 10 天，而答案两分钟就能在仓里搜到。",
+    "enforcement": "scripts/check-source-gate.mjs 检查：每个 provider 必须有 origin；origin=derived/coined 必须有 defined_at 且该路径真实存在；origin=coined 还必须有非空 definition。"
+  },
   "normalization": {
     "rule": "匹配前对 provider 字符串做规范化：trim → 转小写 → 空格/连字符/全角空格 → 下划线 → 连续下划线折叠为一个。",
     "why": "真库存在 Wikimedia Commons / wikimedia-commons、qingpu-government / shanghai-qingpu-gov 等多种写法。靠规范化可自动覆盖大部分变体，比逐个列别名稳。",
@@ -27,21 +38,41 @@
     "historical_gazetteer —— **由 S1 降为 S2**：名称笼统、实际承载很可能是二手地名汇编，须核原始出处。",
     "jiangnan_ancient_bridge_research_association —— **保持 S2**；须核其是否引用一手碑刻/测绘记录。",
     "xinmin_evening_news —— **保持 S4**（保守）；若将来确认某篇为当事人一手记述，个案升级。",
-    "scc_legacy —— **保持 LEGACY**（不可当证据，安全方向）；其具体旧库身份待查（见 open_questions）。"
+    "scc_legacy —— **保持 LEGACY**；其身份已于 2026-10-02 查明（见下），原先的 open_question 关闭。"
+  ],
+  "resolved_open_questions_2026_10_02": [
+    {
+      "id": "scc_legacy",
+      "question": "scc_legacy 的具体身份是什么旧库？",
+      "answer": "**SCC = 上海文化总库**（上海图书馆站点 scc.library.sh.cn）。本 provider 指与上海文化总库相关的旧索引 / 旧库数据。",
+      "defined_at": "tasks/TASK-0009-jinze-historical-spatial-source-acquisition-V1.1.md（§2A.2「SCC / 上海文化总库定向元数据恢复」，L104–107）",
+      "how_found": "在仓内 grep `scc` → 命中该任务书的 SCC 章节。**此前被列为「待查」10 天，实际只需两分钟检索。**"
+    },
+    {
+      "id": "shanghai-library-t11-alignment",
+      "question": "别名里的 t11 指什么？",
+      "answer": "**t11 = TASK-0011**。该别名指「上海图书馆数据中，TASK-0011 批次的人工对齐（alignment）产物」。",
+      "defined_at": "pipelines/historical-spatial/register-evidence-closure.mjs（L148–187，provider 写入处；批次运行目录 t11-closure/）",
+      "how_found": "grep `t11` → 命中 TASK-0011/0012 系列任务书与 `extraction_method='t11_s1a_*'` 等代码常量。"
+    }
   ],
   "providers": [
     {
       "canonical": "shanghai_library",
+      "origin": "external",
       "tier": "S1",
       "evidence_allowed": true,
       "aliases": ["上海图书馆开放数据", "shanghai-library", "shanghai-library-open-data", "shanghai-library-t11-alignment"],
       "access": "HTTP API；凭据仅在 .env.local（服务端脚本），不入库、不入码",
       "license_note": "开放数据许可（逐次取回须记录）",
       "ops_status": "documented",
-      "basis": "SOURCE_REGISTRY S1 明文含「上海图书馆」；4 个别名系历史批次命名差异，同一来源"
+      "basis": "SOURCE_REGISTRY S1 明文含「上海图书馆」；4 个写法属同一来源。其中 `shanghai-library-t11-alignment` 是**我们自己加的分批标签**（t11 = TASK-0011 对齐批次），见 resolved_open_questions_2026_10_02。"
     },
     {
       "canonical": "government_heritage",
+      "origin": "coined",
+      "definition": "SOURCE_REGISTRY 里我们自己设的一类标签：政府 / 文保公开资料（非指某个具体机构）。",
+      "defined_at": "specs/SOURCE_REGISTRY.md",
       "tier": "S1",
       "evidence_allowed": true,
       "aliases": [],
@@ -52,36 +83,40 @@
     },
     {
       "canonical": "qingpu_government",
+      "origin": "external",
       "tier": "S1",
       "evidence_allowed": true,
       "aliases": ["qingpu-government", "shanghai-qingpu-gov", "shanghai-qingpu-gov-news-office", "shanghai-qingpu-civilization-net"],
       "access": "政府公开网页（青浦区）",
       "license_note": "政府公开信息",
       "ops_status": "documented",
-      "basis": "SOURCE_REGISTRY S1 含「政府/文保公开资料」；4 个变体属同一政务体系的不同站点/批次"
+      "basis": "外部实体＝上海市青浦区人民政府及下属站点；SOURCE_REGISTRY S1 含「政府/文保公开资料」"
     },
     {
       "canonical": "shanghai_local_chronicles_office",
+      "origin": "external",
       "tier": "S1",
       "evidence_allowed": true,
       "aliases": [],
       "access": "地方志公开出版物 / 网页",
       "license_note": "待逐条记录",
       "ops_status": "todo",
-      "basis": "SOURCE_REGISTRY S1 含「地方志/古籍原件」"
+      "basis": "外部实体＝上海市地方志办公室；SOURCE_REGISTRY S1 含「地方志/古籍原件」"
     },
     {
       "canonical": "shanghai_qingpu_museum",
+      "origin": "external",
       "tier": "S1",
       "evidence_allowed": true,
       "aliases": [],
       "access": "馆藏公开信息",
       "license_note": "待逐条记录",
       "ops_status": "todo",
-      "basis": "SOURCE_REGISTRY S1 含「馆藏原件」"
+      "basis": "外部实体＝上海青浦博物馆；SOURCE_REGISTRY S1 含「馆藏原件」"
     },
     {
       "canonical": "wikimedia_commons",
+      "origin": "external",
       "tier": "S2",
       "evidence_allowed": true,
       "aliases": ["Wikimedia Commons"],
@@ -92,6 +127,7 @@
     },
     {
       "canonical": "internet_archive",
+      "origin": "external",
       "tier": "S2",
       "evidence_allowed": true,
       "aliases": [],
@@ -102,6 +138,9 @@
     },
     {
       "canonical": "archive_catalog",
+      "origin": "coined",
+      "definition": "我们自己设的通用标签：档案馆目录类来源（非指某个具体档案馆）。",
+      "defined_at": "specs/SOURCE_REGISTRY.md",
       "tier": "S2",
       "evidence_allowed": true,
       "aliases": [],
@@ -112,26 +151,31 @@
     },
     {
       "canonical": "jiangnan_ancient_bridge_research_association",
+      "origin": "external",
       "tier": "S2",
       "evidence_allowed": true,
       "aliases": [],
       "access": "研究机构公开资料",
       "license_note": "待逐条记录",
       "ops_status": "todo",
-      "basis": "**拥有者 2026-10-02 裁定：保持 S2**。附加要求：须核其内容是否引用一手碑刻/测绘记录；若为二次综述，须降为 S4"
+      "basis": "外部实体＝江南古桥文化研究会（英文名为本仓译写）。**拥有者 2026-10-02 裁定：保持 S2**；须核其内容是否引用一手碑刻/测绘记录，若为二次综述须降 S4"
     },
     {
       "canonical": "historical_gazetteer",
+      "origin": "coined",
+      "definition": "我们自己设的通用标签：历史地名志类数据（非指某一具体机构或出版物）。",
+      "defined_at": "specs/SOURCE_REGISTRY.md",
       "tier": "S2",
       "evidence_allowed": true,
       "aliases": [],
       "access": "历史地名志数据",
       "license_note": "待逐条记录",
       "ops_status": "todo",
-      "basis": "**拥有者 2026-10-02 裁定：由 S1 降为 S2**。理由：provider 名称笼统，实际承载很可能是二手地名汇编，按 S2「须核原始出处、对象身份」处理"
+      "basis": "**拥有者 2026-10-02 裁定：由 S1 降为 S2**。理由：标签笼统、实际承载很可能是二手地名汇编，按 S2「须核原始出处、对象身份」处理"
     },
     {
       "canonical": "amap",
+      "origin": "external",
       "tier": "S3",
       "evidence_allowed": "modern_spatial_only",
       "aliases": ["AMap", "高德"],
@@ -142,6 +186,7 @@
     },
     {
       "canonical": "wikidata",
+      "origin": "external",
       "tier": "S3",
       "evidence_allowed": "modern_spatial_only",
       "aliases": [],
@@ -152,16 +197,20 @@
     },
     {
       "canonical": "xinmin_evening_news",
+      "origin": "external",
       "tier": "S4",
       "evidence_allowed": false,
       "aliases": [],
       "access": "报纸报道",
       "license_note": "版权受限",
       "ops_status": "todo",
-      "basis": "**拥有者 2026-10-02 裁定：保持 S4**（保守方向）。若将来确认某篇为当事人一手记述，个案升级，不整体放宽"
+      "basis": "外部实体＝新民晚报。**拥有者 2026-10-02 裁定：保持 S4**（保守方向）。若将来确认某篇为当事人一手记述，个案升级，不整体放宽"
     },
     {
       "canonical": "social_media",
+      "origin": "coined",
+      "definition": "SOURCE_REGISTRY 里我们自己设的一类标签：社交媒体来源（非指某个具体平台）。",
+      "defined_at": "specs/SOURCE_REGISTRY.md",
       "tier": "S4",
       "evidence_allowed": false,
       "aliases": [],
@@ -172,37 +221,43 @@
     },
     {
       "canonical": "hushang_legacy",
+      "origin": "coined",
+      "definition": "旧项目「沪上经纬」（hushang-jingwei）的移植来源；不是外部机构名，是我们给那批旧数据的标签。",
+      "defined_at": "governance/C3_MoHen_Humanistic_Data_OS_Database_Architecture_V1.1.md",
       "tier": "LEGACY",
       "evidence_allowed": false,
       "aliases": ["hushang-jingwei"],
       "access": "本地旧仓 hushang-jingwei/（只读）",
       "license_note": "混合来源，逐条不明",
       "ops_status": "documented",
-      "basis": "C3 §9 旧库迁移：必须重做 identity / provenance，**旧库内容不得直接当证据**。真库中 57 条来自本 provider，是当前最大写入方"
+      "basis": "C3 §9「从『沪上经纬』旧库迁移」：必须重做 identity / provenance，**旧库内容不得直接当证据**。真库中 57 条来自本 provider，是当前最大写入方"
     },
     {
       "canonical": "scc_legacy",
+      "origin": "derived",
+      "definition": "SCC ＝ 上海文化总库（上海图书馆站点 scc.library.sh.cn）；本 provider 指与上海文化总库相关的旧索引 / 旧库数据。",
+      "defined_at": "tasks/TASK-0009-jinze-historical-spatial-source-acquisition-V1.1.md",
       "tier": "LEGACY",
       "evidence_allowed": false,
       "aliases": [],
-      "access": "旧库（scc）",
+      "access": "上海文化总库（scc.library.sh.cn）相关旧索引",
       "license_note": "不明",
       "ops_status": "todo",
-      "basis": "**拥有者 2026-10-02 裁定：保持 LEGACY**（不可当证据，安全方向）。其具体旧库身份待查——见 open_questions"
+      "basis": "**拥有者 2026-10-02 裁定：保持 LEGACY**（不可当证据）。**身份已于同日查明**：出处见 defined_at；此前「待查」10 天系未在仓内检索所致。"
     },
     {
       "canonical": "mohen_pipeline",
+      "origin": "coined",
+      "definition": "本仓管线自产产物（run summary、审计记录等）；不是外部来源。",
+      "defined_at": "pipelines/ingest/retrieve-visual-jinze.mjs",
       "tier": "SELF",
       "evidence_allowed": false,
       "aliases": [],
       "access": "本仓管线自产",
       "license_note": "不适用",
       "ops_status": "documented",
-      "basis": "非外部来源（run summary / 审计记录）；**自产产物不得生成 Evidence**"
+      "basis": "非外部来源；**自产产物不得生成 Evidence**"
     }
-  ],
-  "open_questions": [
-    "scc_legacy 的具体身份是什么旧库？（分级已按 LEGACY 保守处理，不影响安全；仅影响将来能否复用其材料）"
   ],
   "known_gap": "SOURCE_REGISTRY 末行要求每个 provider 额外维护「访问方式 / 限流 / 许可 / 失败经验 / 最后验证日期」。本文件已加 access / license_note / ops_status（documented | todo），但**限流、失败经验、最后验证日期尚未落地**——ops_status=todo 的条目即为待补清单，守卫每次运行都会报出数量。"
 }

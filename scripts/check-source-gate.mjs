@@ -21,7 +21,8 @@ import { PROJECT_ROOT, queryRows } from "../packages/data-access/src/index.mjs";
 import { loadSourceGate, resolveProvider, SOURCE_GATE_PATH } from "../packages/data-access/src/source-gate.mjs";
 
 const TIERS = new Set(["S1", "S2", "S3", "S4", "LEGACY", "SELF"]);
-const REQUIRED = ["canonical", "tier", "evidence_allowed", "basis", "ops_status"];
+const ORIGINS = new Set(["external", "derived", "coined"]);
+const REQUIRED = ["canonical", "origin", "tier", "evidence_allowed", "basis", "ops_status"];
 let failed = false;
 const bad = (m) => { console.error("SOURCE_GATE_ERROR " + m); failed = true; };
 
@@ -48,6 +49,23 @@ for (const p of gate.providers) {
   if (p.tier === "S4" && p.evidence_allowed === true) bad(`${tag}: S4 不得 evidence_allowed=true`);
   if ((p.tier === "LEGACY" || p.tier === "SELF") && p.evidence_allowed === true) {
     bad(`${tag}: ${p.tier} 不得 evidence_allowed=true（旧库需重做 provenance；自产产物不是来源）`);
+  }
+
+  // ---- 标识符出身（identifier_policy）：防止"只有名字、没有定义" ----
+  // 背景：`scc_legacy` 的定义一直躺在 tasks/TASK-0009 里，却没有任何东西把它与 DB 里的值连起来。
+  // 代码里的名字会被测试逼着解释（改它一堆地方报错）；**只进数据的名字没有任何东西逼它** ——
+  // 所以必须由守卫来逼。
+  if (p.origin !== undefined && !ORIGINS.has(p.origin)) {
+    bad(`${tag}: origin "${p.origin}" 不在 ${[...ORIGINS].join(" / ")} 之内`);
+  }
+  if (p.origin === "derived" || p.origin === "coined") {
+    if (!p.defined_at) bad(`${tag}: origin=${p.origin} 必须给出 defined_at（指向定义所在处）`);
+    else if (!fs.existsSync(path.join(PROJECT_ROOT, p.defined_at))) {
+      bad(`${tag}: defined_at "${p.defined_at}" 在仓内不存在 —— 定义指针已失效`);
+    }
+  }
+  if (p.origin === "coined" && (p.definition === undefined || String(p.definition).trim() === "")) {
+    bad(`${tag}: origin=coined 必须给出 definition（一句话说清它指什么）`);
   }
 }
 
