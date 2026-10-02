@@ -1,0 +1,136 @@
+{
+  "schema": "mohen.identifier-registry",
+  "schema_version": 1,
+  "updated": "2026-10-02",
+  "authority": "项目拥有者 2026-10-02 选定**范围 C**：先管「进真库的枚举 / 标签值」，暂不推广到表名字段名。",
+  "scope": {
+    "in_scope": "真库中**可以随便写**的词表型标识符：无 CHECK 约束的 text[] 标签列 + 自由文本的方法代号。这些值没有任何东西逼它们被解释，是孤儿高发区。",
+    "out_of_scope": {
+      "check_constrained_enums": "CHECK 约束的枚举（实测 33 列 / 131 值）——定义**就在** supabase/migrations 里，改 SQL 会有连锁报错（与代码里的名字同理，会被迫解释）。**本表只指向、不复制**：复制＝制造平行真源，值改了本表不会跟着改。",
+      "table_and_field_names": "表名 / 字段名 —— 属 ESC-01（宪法命名分叉），另行裁定。",
+      "reference_arrays": "存 ID / 名称 / 句子的数组列（entities.aliases、review_queue.evidence_ids、cultural_present_connections.open_questions、historical_change_records.legacy_only_parts 等）——那是数据，不是词表。"
+    }
+  },
+  "identifier_policy": {
+    "rule": "**凡我们自己创造的标识符，必须在使用它的同一处声明其出身与定义；禁止「只有名字、没有定义」的标识符进入真库。**",
+    "why": "真库里的名字如果没绑定定义，就没有任何机制会迫使它被解释——与代码里的名字不同（改代码会引发连锁报错，逼你解释）。实测：`scc_legacy` 的定义一直躺在 tasks/TASK-0009 里，却没有任何东西把它与 DB 值连起来，挂了 10 天。",
+    "origins": {
+      "external": "外部权威或公认名称。外部已有定义，本仓无需再定义。",
+      "derived": "由某个具体出处推导 / 抄录而来 → **必须**给出 `defined_at`（指向该出处）。",
+      "coined": "我们自己起的标签 / 命名 → **必须**给出 `definition`（一句话说清它指什么）+ `defined_at`（依据所在）。"
+    },
+    "forbidden": "**禁止写「待查」。** 只允许写「已查 <清单>，未找到」。理由：『待查』把『我没查』包装成『将来会查』，然后永远待下去。",
+    "enforcement": "scripts/check-identifier-registry.mjs 检查：① 每个列条目结构完整；② origin 合法；③ derived/coined 的 defined_at 必须真实存在；④ coined 必须有非空 definition；⑤ **真库实际取值必须被登记表覆盖**（fixed 列 ⊆ 已登记值；pattern 列每个值必须命中某条规则）。"
+  },
+  "columns": [
+    {
+      "column": "visual_assets.eligibility_tags",
+      "kind": "fixed",
+      "why": "该列为 `text[] not null default '{}'`，**没有任何 CHECK 约束** —— 谁都能写任何字符串。且它的语义是「反向排除名单」，空数组＝默认可用，是最危险的一列（ESC-04）。",
+      "values": [
+        {
+          "value": "excluded_from_heritage_primary",
+          "origin": "derived",
+          "definition": "该视觉资产不得进入遗产主视图（heritage-primary）选择。HR-5 评审批次用它，视图 effective_visual_assets 也按它过滤。",
+          "defined_at": "supabase/migrations/202609220006_visual_linkage.sql"
+        },
+        {
+          "value": "pending_heritage_review",
+          "origin": "coined",
+          "definition": "新增视觉资产在通过门禁前的默认标记（＝默认不可用）。2026-10-02 修复夜跑根因时引入，用于取代「空数组＝可用」。",
+          "defined_at": "pipelines/legacy/unattended-runner.mjs",
+          "note": "代码在用；库中当前 0 行（修复后尚无新图片入库）。"
+        },
+        {
+          "value": "cleanup_20261002_nonimage",
+          "origin": "coined",
+          "definition": "2026-10-02 数据止血批次：标记「非图片类型（.djvu/.webm 等）却被当作 image 登记」的资产。",
+          "defined_at": "tasks/results/DATA-TRIAGE-01-result.md"
+        },
+        {
+          "value": "cleanup_20261002_hr5_restore",
+          "origin": "coined",
+          "definition": "2026-10-02 数据止血批次：把被夜跑以同一 URL 重灌、从而洗掉人工排除（HR-5）的资产重新标记回来。",
+          "defined_at": "tasks/results/DATA-TRIAGE-01-result.md"
+        }
+      ]
+    },
+    {
+      "column": "visual_entity_links.eligibility_tags",
+      "kind": "fixed",
+      "why": "同为无约束 `text[]`，由 pipelines/visual/build-visual-linkage.mjs 写入。",
+      "values": [
+        {
+          "value": "claimed_by_source_towns_tag",
+          "origin": "coined",
+          "definition": "该「图→对象」链接的归属判定**依据是源侧的 towns 标签**（如 Commons geosearch 返回的最近镇标签）——属弱依据，不是内容描述。",
+          "defined_at": "pipelines/visual/build-visual-linkage.mjs"
+        },
+        {
+          "value": "identity_unresolved",
+          "origin": "coined",
+          "definition": "权利已知，但题录（caption/title）不足以认定该图的历史身份 → 不可用作历史证据。",
+          "defined_at": "pipelines/visual/build-visual-linkage.mjs"
+        },
+        {
+          "value": "metadata_insufficient",
+          "origin": "coined",
+          "definition": "源侧 metadata 不足以支撑对象身份判定（对应规则码 R5_source_metadata_insufficient_for_object_identity）。",
+          "defined_at": "pipelines/visual/build-visual-linkage.mjs"
+        },
+        {
+          "value": "caption_period_conflict_pending_human_review",
+          "origin": "coined",
+          "definition": "caption 所述时期与其它字段冲突，**待人工复核**（不自动择一）。",
+          "defined_at": "pipelines/visual/build-visual-linkage.mjs"
+        }
+      ]
+    },
+    {
+      "column": "historical_spatial_relations.hr_constraint",
+      "kind": "pattern",
+      "why": "人审评审编号，非固定词表（每次评审产生新编号）。",
+      "patterns": [
+        {
+          "match": "^(HR|SHR)-[0-9]+$",
+          "origin": "derived",
+          "definition": "人审评审编号：HR-n 为题级评审、SHR-nn 为历史空间重建级评审。编号真源与释义在 human_review_decisions。",
+          "defined_at": "pipelines/review/persist-human-review.mjs"
+        }
+      ]
+    },
+    {
+      "column": "cultural_relation_claims.hr_constraint",
+      "kind": "pattern",
+      "why": "同上（同编号体系）。",
+      "patterns": [
+        {
+          "match": "^(HR|SHR)-[0-9]+$",
+          "origin": "derived",
+          "definition": "人审评审编号（HR-n / SHR-nn），真源见 human_review_decisions。",
+          "defined_at": "pipelines/review/persist-human-review.mjs"
+        }
+      ]
+    },
+    {
+      "column": "evidence.extraction_method",
+      "kind": "pattern",
+      "why": "**最大的孤儿农场**：自由文本、无约束，实测 30 个不同值，其中 3307 条用 `coordinate_provenance:wikidata_p625_town_anchor`、3223 条用 `legacy_catalog_locator`。全部是 AI 造的代号，此前无任何定义处。按前缀族登记（而非逐个抄 30 条）：族内可自由新增，但**新族必须登记**。",
+      "patterns": [
+        { "match": "^coordinate_provenance:", "origin": "coined", "definition": "坐标出处记录：说明某坐标是从哪个 provider 的哪个字段得来的。", "defined_at": "pipelines/legacy/port-coords.mjs" },
+        { "match": "^spatial_anchor:", "origin": "coined", "definition": "空间锚点获取：从 provider 取回并接受为「当前对象点」的过程。", "defined_at": "pipelines/ingest/retrieve-amap-jinze.mjs" },
+        { "match": "^identity_resolution:", "origin": "coined", "definition": "身份消解：把源侧记录与仓内对象做身份匹配的方法。", "defined_at": "pipelines/ingest/retrieve-visual-jinze.mjs" },
+        { "match": "^visual_provenance:", "origin": "coined", "definition": "视觉资产出处：从 provider 取回影像元数据（如 Commons imageinfo）。", "defined_at": "pipelines/ingest/retrieve-visual-jinze.mjs" },
+        { "match": "^visual_", "origin": "coined", "definition": "视觉资产相关的判定/规则代号。", "defined_at": "pipelines/visual/build-visual-linkage.mjs" },
+        { "match": "^legacy_", "origin": "coined", "definition": "从旧库（沪上经纬）抽取的代号族：目录定位、交叉链接、描述挖掘、实体来源、JSON 抽取、地图元数据。", "defined_at": "pipelines/legacy" },
+        { "match": "^t11_", "origin": "derived", "definition": "TASK-0011（t11）证据闭合批次的方法代号：分 S1A（一手记录）/ S1C（官方来源）两路。", "defined_at": "tasks/results/TASK-0011-result.md" },
+        { "match": "^shl_", "origin": "coined", "definition": "上海图书馆（SHL）记录类方法代号：地名库、遗产名录、人物记录、玉图著录。", "defined_at": "pipelines/historical-spatial/persist-evidence-closure.mjs" },
+        { "match": "^s1_", "origin": "coined", "definition": "S1 级来源的 API 取回代号族。", "defined_at": "pipelines/ingest/retrieve-s1-jinze.mjs" },
+        { "match": "^official_", "origin": "coined", "definition": "官方来源（政府/文保/方志）转录代号族。", "defined_at": "pipelines/historical-spatial/s1-evidence-closure-sources.mjs" },
+        { "match": "^historical_map_source_acquisition$", "origin": "coined", "definition": "历史地图来源取回（与 amap/spatial 方法刻意区分开）。", "defined_at": "pipelines/historical-spatial/register.mjs" },
+        { "match": "^research_lead_unresolved$", "origin": "coined", "definition": "检索线索未解决：已定位到线索但尚无可入证的材料，留待后续立项。", "defined_at": "pipelines/historical-spatial/register-evidence-closure.mjs" }
+      ]
+    }
+  ],
+  "known_gap": "本表只覆盖「无约束的词表型标识符」。**CHECK 约束的 131 个枚举值刻意不复制**（避免平行真源）；若要它们也受登记，正确做法是让守卫去解析 supabase/migrations，而不是抄进本表。表名 / 字段名的分叉属 ESC-01，另行裁定。"
+}
