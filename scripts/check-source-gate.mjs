@@ -8,6 +8,7 @@
 //
 // 检查项：
 //   ① 结构完整：每个 provider 必须有 canonical / tier / evidence_allowed / basis / ops_status
+//      + 运维表三项（rate_limit / failure_notes / last_verified）——B-08 收口，守卫强制校验存在性
 //   ② 别名不重复归属（同一写法不能既属 A 又属 B）
 //   ③ 真库里出现过的**每一个** provider 字符串都必须能解析 → 否则红
 //      ★ 这一条让**所有写入路径**都受约束，无需逐个改造 20 多个写脚本
@@ -22,7 +23,7 @@ import { loadSourceGate, resolveProvider, SOURCE_GATE_PATH } from "../packages/d
 
 const TIERS = new Set(["S1", "S2", "S3", "S4", "LEGACY", "SELF"]);
 const ORIGINS = new Set(["external", "derived", "coined"]);
-const REQUIRED = ["canonical", "origin", "tier", "evidence_allowed", "basis", "ops_status"];
+const REQUIRED = ["canonical", "origin", "tier", "evidence_allowed", "basis", "ops_status", "rate_limit", "failure_notes", "last_verified"];
 let failed = false;
 const bad = (m) => { console.error("SOURCE_GATE_ERROR " + m); failed = true; };
 
@@ -132,6 +133,7 @@ console.log(
   `open_questions=${openQuestions.length}`
 );
 if (opsTodo.length) console.log(`  ops_status=todo（待补 限流/失败经验/最后验证日期）：${opsTodo.join(", ")}`);
+else console.log("  ops_status: 全部 documented（B-08 运维表三项已落地，守卫强制校验）");
 if (confirmNeeded.length) console.log(`  needs_owner_confirmation（分级待拥有者确认）：${confirmNeeded.join(", ")}`);
 if (openQuestions.length) for (const q of openQuestions) console.log(`  open_question：${q}`);
 process.exit(failed ? 1 : 0);
