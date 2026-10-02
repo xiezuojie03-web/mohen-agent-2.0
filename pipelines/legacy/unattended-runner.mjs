@@ -12,6 +12,7 @@ import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import { run, runMany, queryRows, queryValue } from "../../packages/data-access/src/index.mjs";
+import { resolveProvider } from "../../packages/data-access/src/source-gate.mjs";
 
 const LEGACY_SOURCE = "hushang_legacy";
 const FETCHED = "D:/work Buddy/2026-08-23-23-12-38/hushang-jingwei/data/fetched";
@@ -97,6 +98,17 @@ const declared = RESOLVED.filter((r) => {
   return true;
 }).map((r) => r.job);
 
+// ---- 闸 ③ 来源门禁（2026-10-02 · M4.1）----
+// 本批写库所用的 provider 必须已在 data/fixtures/source-providers.json 登记。
+// **这不是新规则**，是让既有规则（SOURCE_REGISTRY 的 S1–S4 分级）真正生效——
+// 它此前全仓无一行代码读取，因此"文档里写着、代码里没有"，什么也没挡住。
+const gateInfo = resolveProvider(LEGACY_SOURCE);
+if (!gateInfo.known) {
+  console.error(`STOP 来源门禁拒绝：写库用的 provider "${LEGACY_SOURCE}" 未登记 —— 一律不调度。`);
+  console.error("     处置：在 data/fixtures/source-providers.json 为它建 canonical 条目（tier / evidence_allowed / basis 必填）。");
+  process.exit(3);
+}
+
 // ---- 闸 ② preflight ----
 const readArr = (doc, keys) => keys.map((k) => doc[k]).find((a) => Array.isArray(a)) || [];
 
@@ -175,9 +187,11 @@ progress.registry = {
   path: REGISTRY_PATH, entries: REG_ENTRIES.length,
   queued: ALL_JOBS.length, declared: declared.length, runnable: jobs.length,
   forbidden, preflight_excluded: preflightExcluded,
+  source_gate: { provider: LEGACY_SOURCE, canonical: gateInfo.canonical, tier: gateInfo.tier, evidence_allowed: gateInfo.evidence_allowed },
 };
 for (const x of forbidden) log(`SKIP [注册表 forbidden]  ${x.id} — ${x.reason}`);
 for (const x of preflightExcluded) log(`SKIP [preflight]  ${x.id} — ${x.reason}`);
+log(`source-gate: ${LEGACY_SOURCE} → ${gateInfo.canonical}（${gateInfo.tier}，evidence_allowed=${gateInfo.evidence_allowed}）`);
 log(`registry=${REGISTRY_PATH} entries=${REG_ENTRIES.length} queued=${ALL_JOBS.length} declared=${declared.length} runnable=${jobs.length} forbidden=${forbidden.length} preflight_excluded=${preflightExcluded.length}`);
 save();
 

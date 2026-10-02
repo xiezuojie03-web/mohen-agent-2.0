@@ -1,32 +1,210 @@
-[
-  {
-    "provider": "shanghai_library",
-    "tier": "S1",
-    "evidence_allowed": true
+{
+  "schema": "mohen.source-providers",
+  "schema_version": 2,
+  "updated": "2026-10-02",
+  "authority": "specs/SOURCE_REGISTRY.md（S1–S4 分级）——本文件是它的**机器可读落地**，不是新宪法。",
+  "why_changed": "v1 只有 6 条、键名为 `provider`，与真库 22 种实际 provider 字符串大面积不一致，且全仓无一行代码读它。v2 补全归一映射、明确门禁语义，并由 packages/data-access/src/source-gate.mjs 真正读取、由 scripts/check-source-gate.mjs 校验。",
+  "normalization": {
+    "rule": "匹配前对 provider 字符串做规范化：trim → 转小写 → 空格/连字符/全角空格 → 下划线 → 连续下划线折叠为一个。",
+    "why": "真库存在 Wikimedia Commons / wikimedia-commons、qingpu-government / shanghai-qingpu-gov 等多种写法。靠规范化可自动覆盖大部分变体，比逐个列别名稳。",
+    "aliases_still_needed_for": "规范化后仍不相等的写法，例如「上海图书馆开放数据」→ shanghai_library、「hushang-jingwei」→ hushang_legacy、「shanghai-library-open-data」→ shanghai_library。"
   },
-  {
-    "provider": "government_heritage",
-    "tier": "S1",
-    "evidence_allowed": true
+  "tier_definitions": {
+    "S1": "上海图书馆、馆藏原件、地方志/古籍原件、政府/文保公开资料 —— 可直接生成 Evidence（仍须记录具体页/记录 URI）",
+    "S2": "其他图书馆/档案馆、Wikimedia Commons、Internet Archive 等 —— 可生成 Evidence（须核原始出处、对象身份、许可）",
+    "S3": "地图服务、政府 POI、实地 GPS、现场照片 —— 仅现代层；坐标/拍摄时间/来源分开记录",
+    "S4": "视频、社交媒体、博客、旅游文章、新闻报道 —— 不得生成 Evidence，只能生成 Candidate / 检索线索",
+    "LEGACY": "旧库移植来源（hushang_legacy / scc_legacy）—— 依 C3 §9 必须重做 identity / provenance，**旧库内容不得直接当证据**",
+    "SELF": "本仓管线自产产物（run summary / 审计记录）—— 非外部来源，**不得生成 Evidence**"
   },
-  {
-    "provider": "wikimedia_commons",
-    "tier": "S2",
-    "evidence_allowed": true
+  "evidence_allowed_values": {
+    "true": "可生成 Evidence",
+    "modern_spatial_only": "只能生成现代空间类记录，不得生成历史事实 Evidence",
+    "false": "不得生成 Evidence（只能进 Candidate / 检索线索）"
   },
-  {
-    "provider": "internet_archive",
-    "tier": "S2",
-    "evidence_allowed": true
-  },
-  {
-    "provider": "amap",
-    "tier": "S3",
-    "evidence_allowed": "modern_spatial_only"
-  },
-  {
-    "provider": "social_media",
-    "tier": "S4",
-    "evidence_allowed": false
-  }
-]
+  "providers": [
+    {
+      "canonical": "shanghai_library",
+      "tier": "S1",
+      "evidence_allowed": true,
+      "aliases": ["上海图书馆开放数据", "shanghai-library", "shanghai-library-open-data", "shanghai-library-t11-alignment"],
+      "access": "HTTP API；凭据仅在 .env.local（服务端脚本），不入库、不入码",
+      "license_note": "开放数据许可（逐次取回须记录）",
+      "ops_status": "documented",
+      "basis": "SOURCE_REGISTRY S1 明文含「上海图书馆」；4 个别名系历史批次命名差异，同一来源"
+    },
+    {
+      "canonical": "government_heritage",
+      "tier": "S1",
+      "evidence_allowed": true,
+      "aliases": [],
+      "access": "政府/文保公开网页",
+      "license_note": "政府公开信息",
+      "ops_status": "todo",
+      "basis": "SOURCE_REGISTRY S1 明文；v1 已有此键，真库中尚未出现该字符串"
+    },
+    {
+      "canonical": "qingpu_government",
+      "tier": "S1",
+      "evidence_allowed": true,
+      "aliases": ["qingpu-government", "shanghai-qingpu-gov", "shanghai-qingpu-gov-news-office", "shanghai-qingpu-civilization-net"],
+      "access": "政府公开网页（青浦区）",
+      "license_note": "政府公开信息",
+      "ops_status": "documented",
+      "basis": "SOURCE_REGISTRY S1 含「政府/文保公开资料」；4 个变体属同一政务体系的不同站点/批次"
+    },
+    {
+      "canonical": "shanghai_local_chronicles_office",
+      "tier": "S1",
+      "evidence_allowed": true,
+      "aliases": [],
+      "access": "地方志公开出版物 / 网页",
+      "license_note": "待逐条记录",
+      "ops_status": "todo",
+      "basis": "SOURCE_REGISTRY S1 含「地方志/古籍原件」"
+    },
+    {
+      "canonical": "shanghai_qingpu_museum",
+      "tier": "S1",
+      "evidence_allowed": true,
+      "aliases": [],
+      "access": "馆藏公开信息",
+      "license_note": "待逐条记录",
+      "ops_status": "todo",
+      "basis": "SOURCE_REGISTRY S1 含「馆藏原件」"
+    },
+    {
+      "canonical": "wikimedia_commons",
+      "tier": "S2",
+      "evidence_allowed": true,
+      "aliases": ["Wikimedia Commons"],
+      "access": "Commons API（imageinfo / categorymembers / geosearch）",
+      "license_note": "**逐文件不同**（CC0 / CC BY / CC BY-SA …）——必须逐条记录，不得整批套用",
+      "ops_status": "documented",
+      "basis": "SOURCE_REGISTRY S2 明文含 Wikimedia Commons"
+    },
+    {
+      "canonical": "internet_archive",
+      "tier": "S2",
+      "evidence_allowed": true,
+      "aliases": [],
+      "access": "Internet Archive API",
+      "license_note": "逐条目记录",
+      "ops_status": "todo",
+      "basis": "SOURCE_REGISTRY S2 明文；真库中尚未出现该字符串"
+    },
+    {
+      "canonical": "archive_catalog",
+      "tier": "S2",
+      "evidence_allowed": true,
+      "aliases": [],
+      "access": "档案馆目录",
+      "license_note": "待逐条记录",
+      "ops_status": "todo",
+      "basis": "SOURCE_REGISTRY S2 含「其他图书馆/档案馆」"
+    },
+    {
+      "canonical": "jiangnan_ancient_bridge_research_association",
+      "tier": "S2",
+      "evidence_allowed": true,
+      "aliases": [],
+      "access": "研究机构公开资料",
+      "license_note": "待逐条记录",
+      "ops_status": "todo",
+      "needs_owner_confirmation": true,
+      "basis": "按 S2 暂定。**该来源的可证级别请拥有者确认**——若其内容属二次综述而非一手记录，应降为 S4"
+    },
+    {
+      "canonical": "historical_gazetteer",
+      "tier": "S1",
+      "evidence_allowed": true,
+      "aliases": [],
+      "access": "历史地名志数据",
+      "license_note": "待逐条记录",
+      "ops_status": "todo",
+      "needs_owner_confirmation": true,
+      "basis": "按 S1「地方志/古籍原件」暂定。**但该 provider 名称笼统，实际承载可能是二手中文地名库**——请拥有者确认"
+    },
+    {
+      "canonical": "amap",
+      "tier": "S3",
+      "evidence_allowed": "modern_spatial_only",
+      "aliases": ["AMap", "高德"],
+      "access": "HTTP API（凭据在 .env.local）",
+      "license_note": "服务条款限制再分发",
+      "ops_status": "documented",
+      "basis": "SOURCE_REGISTRY S3 明文含「地图服务」"
+    },
+    {
+      "canonical": "wikidata",
+      "tier": "S3",
+      "evidence_allowed": "modern_spatial_only",
+      "aliases": [],
+      "access": "Wikidata API（wbsearchentities / wbgetentities）",
+      "license_note": "CC0（数据）",
+      "ops_status": "documented",
+      "needs_owner_confirmation": true,
+      "basis": "**暂定 S3**：Wikidata 是开放编辑库，其 P625 坐标属现代空间数据（实测该用法即如此）。但 Wikidata 亦被用作**身份锚点**（Q-id），那一用途更接近 S2。**请拥有者确认：身份锚点是否算可证？**"
+    },
+    {
+      "canonical": "xinmin_evening_news",
+      "tier": "S4",
+      "evidence_allowed": false,
+      "aliases": [],
+      "access": "报纸报道",
+      "license_note": "版权受限",
+      "ops_status": "todo",
+      "needs_owner_confirmation": true,
+      "basis": "**暂定 S4**：属「报道」而非原件；S4 原文列的是视频/社媒/博客/旅游文章，报纸未明列。**请拥有者确认**——若某篇为当事人一手记述，可能应个案升级"
+    },
+    {
+      "canonical": "social_media",
+      "tier": "S4",
+      "evidence_allowed": false,
+      "aliases": [],
+      "access": "社交媒体",
+      "license_note": "不可再分发",
+      "ops_status": "todo",
+      "basis": "SOURCE_REGISTRY S4 明文；真库中尚未出现该字符串"
+    },
+    {
+      "canonical": "hushang_legacy",
+      "tier": "LEGACY",
+      "evidence_allowed": false,
+      "aliases": ["hushang-jingwei"],
+      "access": "本地旧仓 hushang-jingwei/（只读）",
+      "license_note": "混合来源，逐条不明",
+      "ops_status": "documented",
+      "basis": "C3 §9 旧库迁移：必须重做 identity / provenance，**旧库内容不得直接当证据**。真库中 57 条来自本 provider，是当前最大写入方"
+    },
+    {
+      "canonical": "scc_legacy",
+      "tier": "LEGACY",
+      "evidence_allowed": false,
+      "aliases": [],
+      "access": "旧库（scc）",
+      "license_note": "不明",
+      "ops_status": "todo",
+      "needs_owner_confirmation": true,
+      "basis": "按名称判定为旧库移植来源 → LEGACY。**该旧库的具体身份请拥有者确认**"
+    },
+    {
+      "canonical": "mohen_pipeline",
+      "tier": "SELF",
+      "evidence_allowed": false,
+      "aliases": [],
+      "access": "本仓管线自产",
+      "license_note": "不适用",
+      "ops_status": "documented",
+      "basis": "非外部来源（run summary / 审计记录）；**自产产物不得生成 Evidence**"
+    }
+  ],
+  "owner_confirmation_needed": [
+    "wikidata —— 身份锚点（Q-id）是否算可证级别？现暂定 S3 仅现代空间",
+    "historical_gazetteer —— 实际承载是否为二手地名库？现暂定 S1",
+    "jiangnan_ancient_bridge_research_association —— 一手记录还是二次综述？现暂定 S2",
+    "xinmin_evening_news —— 报纸报道是否一律不可证？现暂定 S4",
+    "scc_legacy —— 旧库身份确认；现按 LEGACY 处理"
+  ],
+  "known_gap": "SOURCE_REGISTRY 末行要求每个 provider 额外维护「访问方式 / 限流 / 许可 / 失败经验 / 最后验证日期」。本文件已加 access / license_note / ops_status（documented | todo），但**限流、失败经验、最后验证日期尚未落地**——ops_status=todo 的条目即为待补清单，守卫每次运行都会报出数量。"
+}
