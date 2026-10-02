@@ -191,6 +191,22 @@ H2 的下一出口不是"再完成一批功能"，而是：
 - **待裁决**：① 是否新增正面资格字段 + 门禁触发器（把"默认可用"翻转为"默认不可用"）；② 727 张 provenance 是否纠正；③ 341 张内容可疑图片的处置标准；④ 109 个门禁 `fail` 对象是否置为 `rejected`。
 - **证据与三个方案**：`tasks/results/DATA-RECON-01-eligibility-field-proposal.md`
 
+### ESC-05｜`pnpm guard` 全链路暴露 17 个测试失败（2026-10-02 · M1.2 后实测）
+
+- **实测**：`pnpm test` = `Tests 17 failed | 236 passed (253)`、`Test Files 8 failed | 8 passed (16)`。
+  即 2026-09-25 那批会话声称的"253/253 全绿"在**当前运行态不成立**（与 GOV-R13 审计结论一致）。
+- **性质判定**：这 17 条**不是陈旧测试，而是真实性的探测器**——它们断言的库层不变量在当前库中**确实被违反**。
+  **不得通过修改断言让它们变绿**（那是"调整探测器去通过"）。
+- **已定位的三类**：
+  1. `data-factory #7「Pipeline 只选金泽，不误迁其他镇」`：期望 15，实测 **3323** —— 夜跑把上海全域资料灌进库（与 B-12 外镇图同源）。**先于本次会话存在**。
+  2. `human-review-s1 #4「HR-5 视觉资产不能进入 heritage-primary」`：期望 20，实测 **68**。构成：`{excluded_from_heritage_primary}` 20 + `{…, cleanup_20261002_hr5_restore}` 20 + **`{…, cleanup_20261002_nonimage}` 28**。
+     **其中 28 条由本次 DATA-TRIAGE-01 造成**：为排除非图片而**复用了语义专一的 HR-5 标签**（该标签本义＝"不得进入遗产主视图的 HR-5 批次"）。**开发总工程师自认此设计失误。**
+     修法只有一行（把这 28 条的 `excluded_from_heritage_primary` 换成 `non_image`），但**改动对象属于已宣布搁浅的那批资产**，故停在此处等拥有者裁定。
+     另 20 条 `hr5_restore` 与 20 条原始排除为**同 URL 重复行**（夜跑重灌所致），属 M5 范围。
+  3. `human-review-s1 #13「既有 Gate / Tier C 守卫 invariants」`：期望 `object_type='entity' and gate_code='G3' and result='fail'` = 15，实测 **30**（恰为 2 倍）。疑为**工厂测试自身会写 `evidence_gate_audit`，重复运行即累加**——即该套件对库**非幂等**。待核。
+- **影响**：`pnpm guard` 因此为红。守卫链前四道（docs / structure / registry / links）全绿，红的只有测试。
+- **待裁决**：① 是否执行上面那一行标签修正；② 是否把"测试套件对库非幂等"独立立项（否则每次跑测试计数都会漂移）；③ 其余 14 条失败的处置归属（多数指向 M5 与 ESC-04）。
+
 出现以下情况时，在这里记录问题，不由开发平台自行改写 C0–C4：
 
 -   核心 Cultural World 对象 / Relation / Meaning 模型需要改变；
