@@ -158,109 +158,27 @@ H2 的下一出口不是"再完成一批功能"，而是：
 
 ## 9. Architecture Escalations
 
-当前：**5 项升级**（ESC-01…ESC-05）。其中**待拥有者裁决**的是 **ESC-01**（已升级为 `RECON-02`）、**ESC-02**、**ESC-03**，以及 **ESC-05 的 ①③**；**ESC-04** 的机制部分已由 **R15** 解决、数据处置部分经拥有者裁定**暂缓**；**ESC-05 的 ②（测试写库隔离）已完成**。
+> **职责边界（2026-10-02 项目拥有者指定）**：**本节只登记「状态 + 指针」**，不再累积证据、方案与处置进展。
+> 每个任务的全部进展一律维护在**该任务的结果文件**里（见下表「详情」列）；本文件只回答"现在还有哪些没定"。
+> **理由**：本文件是**高频状态文件**，不是任务日志 —— 进展累积在这里会让它无限膨胀，并与任务结果文件职责重叠。
+
+当前：**5 项**（ESC-01…ESC-05）。其中待裁决 **4 项**、冻结 **1 项**。
+
+| ID | 状态 | 一句话 | 详情 |
+|---|---|---|---|
+| ESC-01 | 待裁决（→`RECON-02`） | 宪法名 vs 真库名分叉（实为四件事，只有 3 件是命名差） | `tasks/results/RECON-02-constitution-vs-db-naming.md` |
+| ESC-02 | 待裁决 | `relations`(521 行) 与 `cultural_relation_claims`(8 行) 双存储 | `tasks/results/DATA-PRODUCTION-MECHANISM-01-result.md` |
+| ESC-03 | 待裁决（自 2026-09-26 停在待拍板） | `modern_location` 缺口与现代坐标落位方式 | `tasks/results/DATA-PRODUCTION-MECHANISM-01-result.md` |
+| ESC-04 | **🔒 部分冻结** | 图片资格**机制**已解决（R15）；图片**数据处置**冻结 | `tasks/results/DATA-PRODUCTION-MECHANISM-01-result.md` |
+| ESC-05 | 部分处置（② 已完成；①③ 待裁决） | 测试写库已隔离；标签修正与其余失败项待裁决 | `tasks/results/DATA-PRODUCTION-MECHANISM-01-result.md` |
 
 > **裁决方**：项目拥有者（唯一决策者）。本项目**不设第三方裁决方**——开发总工程师不得把架构问题交由任何第三方工具或第三方 AI 裁定（C0 §0 / 本文件 §12 R13）。
 
-### ESC-01｜宪法对象命名与真库物理命名分叉（2026-10-02 实测）
+> **🔒 冻结（拥有者 2026-10-02）**：现有 1246 张夜跑图片的**数据处置**（727 provenance / 341 可疑图 / 数据清理等）**一律暂不做**，保留在库中。
+> **这不是待办**：只有拥有者主动提出才重新讨论，开发平台**不得主动重提、不得当论据、不得计入"未解决数量"**。
+> **机制类工作不受此限**（如 `review_queue` 三分），因为它改变的是"**未来**写入如何被分诊"，**不触碰任何既有图片**（R15 前后 `effective_visual_assets` 均为 8 行）。
 
-> **状态**：待裁决（已升级为 RECON-02）
-
-- **现象**：宪法用单数名（`source_record` / `event` / `relation_claim` / `visual_asset` / `evidence_fragment` / `human_review`），真库是复数 + 前缀（`source_records` / `cultural_events` / `cultural_relation_claims` / `visual_assets` / `evidence_fragments` / `human_review_decisions`）。
-- **影响**：按宪法名写 SQL 或查 schema 者会误判"表不存在"（`SCHEMA-DIFF-20261002` 记录了一次真实误判）。
-- **待裁决**：以真库为准回写宪法命名，或以宪法为准重命名表（代价高、触及迁移）。开发总工程师**不自行决定**。
-- **2026-10-02 已升级为正式提案 `RECON-02`**（`tasks/results/RECON-02-constitution-vs-db-naming.md`，按 `C0 §6.2` 一页格式）。**新查明三件事**：
-  ① **这不是一个分叉，是四件事** —— 甲纯复数/缩写差（`entity`→`entities`）、乙加领域前缀（`event`→`cultural_events`）、丙改名/去后缀（`human_review`→`human_review_decisions`）**三类是命名差**；**丁类是结构分裂**（`historical_space_claim` 拆成 5 张表；`relation_claim` 双存储＝ESC-02），**改名解决不了**。
-  ② **宪法并未强制过物理名** —— C3 §6.1 自称「当前最小核心表集（**建议** 18 张以内）」，且宪法内部本就不一致（§2.2 用 snake_case 单数，§2.3 用 CamelCase 概念）。故"按宪法重命名"不是恢复宪法，而是**先把建议升格为强制**。
-  ③ **真库有、宪法未逐条列的 8 张**：`claims`、`evidence`、`relations`、`relation_evidence`、`evidence_gate_audit`、`review_queue`、`knowledge_paths`、`knowledge_path_steps`、`legacy_mappings`。
-  真正的病根：宪法与真库之间**没有唯一对照**，唯一对照是**活在脚本里的数组**（`gen-schema-diff.mjs` 的 `G`/`EXTRA`）。
-- **证据**：`tasks/results/SCHEMA-DIFF-20261002.html`。
-
-### ESC-02｜双 relation 存储（同源风险）
-
-> **状态**：待裁决
-
-- **现象**：`relations`（001；旧记 365 行，**2026-10-02 实测 521 行**，计数已过期）与 `cultural_relation_claims`（008，8 行）并存；宪法假设单一 relation 模型。
-- **影响**：Agent 可能读到两份不一致的关系表述。
-- **待裁决**：收敛为单一 relation 真源，或在 C3 明确两者分工与优先级。**属核心对象模型，须项目拥有者确认。**
-- **证据**：`tasks/results/SCHEMA-DIFF-20261002.html`。
-
-### ESC-03｜`modern_location` 缺口与现代坐标落位方式
-
-> **状态**：待裁决（自 2026-09-26 停在待拍板）
-
-- **现象**：`modern_location` 表未建（`open_question` / `external_node` 同样未建）。老库 3308 实体中仅部分带坐标；已落位者走 `historical_feature_anchors`（实测 245 features / 249 anchors）。
-- **冲突点**：该表触及「现代坐标 ≠ 历史位置」红线。仓内两份产物口径不一致——`NIGHT-BATCH-LEGACY-PORT` 主张"无该表、以 anchors 承载反而更合规"，而 `SCHEMA-DIFF-20261002` 仍将其列为 **P1 缺口**（自 09-26 起停在"待拍板"）。
-- **待裁决**：正式确认「以 anchors 承载现代坐标」为终局（则回写 C3 并结案），或立项建表。
-- **证据**：`tasks/results/NIGHT-BATCH-LEGACY-PORT-result.md` §4、`tasks/results/SCHEMA-DIFF-20261002.html`。
-
-### ESC-04｜`visual_assets` 缺正面资格字段（图片污染的根因 · 2026-10-02）
-
-> **状态**：部分冻结（① 已处置＝R15；②③④ 已冻结）
-
-- **现象**：图片表**没有任何"资格 / 状态"字段**；唯一语义是 `eligibility_tags` 的**反向排除名单**（默认 `'{}'` = 未排除即可用）；`quality_score` 1288/1288 全 NULL；**表上 0 触发器**；夜跑 INSERT 不写该列 → 新增图片**无条件"可用"**。
-- **已发生后果**：20 条人工排除被同 URL 重灌洗掉（其中 19 条是"金泽**火车站**"高铁列车照）；341/519 图片与金泽无关；30 条非图片（`.djvu` / `.webm`）标为 `image`；727 张 provenance 错位挂到一个"诗词"源；23 张 HTTP 死链入库；1246 张夜跑图片 **0 条门禁记录**。
-- **本轮已做（可逆、只标记不删除）**：恢复 20 条人工排除（tag `cleanup_20261002_hr5_restore`）；排除 28 条非图片（tag `cleanup_20261002_nonimage`，另 2 条含于前 20）；`effective_visual_assets` 仍为 8（无副作用）。夜跑脚本 **7 处根因已修**：图片源 fail-loud、HTTP fail-closed、非图片拒收、跨批幂等（并集 legacy_id + 规范化 file_path）、显式 `pending_heritage_review` 标记、去伪 `现代影像（非历史）` 断言、执行报告"安全"段改为要求查询（原为硬编码断言）。
-- **待裁决**：① ~~是否新增正面资格字段 + 门禁触发器（把"默认可用"翻转为"默认不可用"）~~ **已于 2026-10-02 裁定并实施（R15）**。**②③④ 已冻结**（见下条）—— **不计入待裁决项，不得再出现在任何盘点、建议或优先级排序里。**
-- **🔒 冻结（拥有者裁定 2026-10-02）**：**②** 727 张 provenance 纠正、**③** 341 张内容可疑图片的处置标准、**④** 门禁 `fail` 对象清退 —— **一律暂不做**（不清理、不排除、不删除；保留在库中）。
-  - **冻结的含义**：这些**不是待办事项**。只有拥有者**主动提出**才重新讨论；开发平台**不得**主动重提、不得拿它们当论据、不得把它们算进"未解决数量"。
-  - **不计入的范围**：整批图片的数据处置（含 727 provenance、341 可疑图、qualities/关联等数据清理）。
-  - **不冻结的范围**：**机制类**工作不受此限 —— 例如 `review_queue` AUTO/HOLD/REJECT 三分（M2 第四条）、晋级闸门通则（R15）。因为它们改变的是"**未来**写入如何被分诊"，**不触碰任何一张既有图片**。**证据**：R15 实施前后 `effective_visual_assets` 都是 **8 行**，一张未动。
-  - ★ 口径备注（仅在冻结解除后才需要处理）：`evidence_gate_audit` 中 `result='fail'` 的**独立对象**实测 **3364**，与旧记"109 个"**口径不同**，届时须先对齐再定处置。
-- **2026-10-02 拥有者裁定（夜跑 1246 张图片）**：**暂不做处置、但保留**（不清理、不排除、不删除）；**先解决机制问题**。→ 上列 ②③④ 随之收束，本轮不做数据处置。
-- **机制问题＝`RECON-01` 问题 1**（图片要不要「默认不能用」）；该提案已按 `C0 §6.2` 的提交格式重写为**可回答的一页**。附带发现：同一提案的原写法若照字面执行，会让有效图片**由 8 归零**——与 `TASK-0008` 记录过的既有事故同一形态，已修正。
-- **2026-10-02 全库核对（拥有者追问「是否所有原始资料都涉及这个问题」）**：逐表核对 28 张表的「能不能用」是怎么表达的 ——
-  **甲组 9 张**（`entities`/`relations`/`claims`/`evidence`/`legacy_mappings`/`cultural_events`/`cultural_meaning_candidates`/`cultural_present_connections`/`cultural_relation_claims`）落库默认 **`candidate`**，本来就不算可用；
-  **乙组 10 列**有状态列但**无默认值**，写入时必须显式声明；
-  **丙组仅 2 张**（`visual_assets`、`visual_entity_links`）用"空排除名单＝可用"，**是全库唯一的"默认可用"形态**；
-  丁组（`review_queue`=`pending`、`cultural_conflicts`=`preserved_open`）默认安全。
-  **全库"晋级闸门"触发器只有 4 个**：`claims_require_evidence`（没有证据不许晋级）、`discovery_not_publishable_guard`、`review_queue_tier_c_guard`、`vel_confirmed_requires_evidence`。
-  → **结论：图片层是唯一例外，它没跟上已有先例**（第 6 个迁移后加，用"标签"而非"状态"）。
-  **但另有三项普遍缺口**：① 状态表达有 **8 种**写法（C3 §4.1 只定义**一套**状态机）；② **没有"通用晋级"闸门**——4 个触发器各管各的；③ `verification_status` 枚举有 **8 个值、实测只用 2 个**（`candidate` 11028 行 / `evidence_linked` 20 行，**`verified` 与 `published` 全库 0 行**），且 `evidence_gate_audit` 只覆盖 7 类对象（`cultural_*` 全部未覆盖）。
-  提案已按此重写为 `RECON-01`（层级从"给图片加列"提升到"晋级闸门"）。
-- **证据与三个方案**：`tasks/results/DATA-RECON-01-eligibility-field-proposal.md`
-
-### ESC-05｜`pnpm guard` 全链路暴露 17 个测试失败（2026-10-02 · M1.2 后实测）
-
-> **状态**：部分处置（② 已完成；①③ 待裁决）
-
-- **实测**：`pnpm test` = `Tests 17 failed | 236 passed (253)`、`Test Files 8 failed | 8 passed (16)`。
-  即 2026-09-25 那批会话声称的"253/253 全绿"在**当前运行态不成立**（与 GOV-R13 审计结论一致）。
-- **性质判定**：这 17 条**不是陈旧测试，而是真实性的探测器**——它们断言的库层不变量在当前库中**确实被违反**。
-  **不得通过修改断言让它们变绿**（那是"调整探测器去通过"）。
-- **已定位的三类**：
-  1. `data-factory #7「Pipeline 只选金泽，不误迁其他镇」`：期望 15，实测 **3323** —— 夜跑把上海全域资料灌进库（与 B-12 外镇图同源）。**先于本次会话存在**。
-  2. `human-review-s1 #4「HR-5 视觉资产不能进入 heritage-primary」`：期望 20，实测 **68**。构成：`{excluded_from_heritage_primary}` 20 + `{…, cleanup_20261002_hr5_restore}` 20 + **`{…, cleanup_20261002_nonimage}` 28**。
-     **其中 28 条由本次 DATA-TRIAGE-01 造成**：为排除非图片而**复用了语义专一的 HR-5 标签**（该标签本义＝"不得进入遗产主视图的 HR-5 批次"）。**开发总工程师自认此设计失误。**
-     修法只有一行（把这 28 条的 `excluded_from_heritage_primary` 换成 `non_image`），但**改动对象属于已宣布搁浅的那批资产**，故停在此处等拥有者裁定。
-     另 20 条 `hr5_restore` 与 20 条原始排除为**同 URL 重复行**（夜跑重灌所致），属 M5 范围。
-  3. `human-review-s1 #13「既有 Gate / Tier C 守卫 invariants」`：期望 `object_type='entity' and gate_code='G3' and result='fail'` = 15，实测 **30**（恰为 2 倍）。**已查明原因（2026-10-02 当日）**：
-     `evidence_gate_audit` 在 `2026-10-02 17:03:58–17:04:05` 的 **7 秒内**被写入 **9016 行 `visual_asset` 审计**
-     （另有 `entity` 23261 行 / 3323 对象、`evidence` 12982 行…），**覆盖全部 1288 张图片**。
-     该时刻正是本会话跑 `pnpm guard` 全链路（含 `pnpm test`）的时刻 ——
-     **即：本仓测试套件会批量写 `evidence_gate_audit`，它不是只读测试，而是在跑管线。**
-     - 后果一：`expected 15` 变 `30` 是**跑了两遍测试**造成的累加 → 该套件对库**非幂等**，每次跑测试都在改库。
-     - 后果二：原先"1246 张夜跑图片 **0 条**门禁记录"由**当前事实**变为**历史事实**（现已被测试写入覆盖）。
-       因此任何"门禁覆盖率"类指标都**必须连时间一起看**——已在执行报告中加入
-       「最近一次图片门禁审计时间」这一事实行，专为防止此类误读。
-     - 待裁决（新增）：④ 测试套件写库是否可接受（若不可接受，需引入只读/事务回滚的测试隔离）；
-- **影响**：`pnpm guard` 因此为红。守卫链前四道（docs / structure / registry / links）全绿，红的只有测试。
-- **待裁决**：① 是否执行上面那一行标签修正；② 是否把"测试套件对库非幂等"独立立项（否则每次跑测试计数都会漂移）；③ 其余 14 条失败的处置归属（多数指向 M5 与 ESC-04）。
-
-出现以下情况时，在这里记录问题，不由开发平台自行改写 C0–C4：
-
--   核心 Cultural World 对象 / Relation / Meaning 模型需要改变；
--   Evidence / Interpretation / Geometry 边界需要改变；
--   Agent 需要 Truth Store 写权限或绕过 Evidence Gate；
--   ExperienceState / CompositionState / Surface Contract
-    无法支撑目标体验；
--   需要引入 PostGIS / Vector DB / Graph DB 等核心基础设施；
--   C4 Canonical Baseline 无法通过现有架构实现；
--   从金泽扩展时发现 World Model / Experience Grammar 无法复用；
--   准备正式启动 Participation / Living Culture Schema；
--   商业目标开始影响 Agent 判断、Evidence 表达或文化内容组织。
-
-------------------------------------------------------------------------
+> **出现以下情况时必须在此登记，不得自行改写 C0–C4**：核心 Cultural World 对象 / Relation / Meaning 模型需变化；Evidence / Interpretation / Geometry 边界需变化；Agent 需 Truth Store 写权限或绕过 Evidence Gate；ExperienceState / CompositionState / Surface Contract 无法支撑目标体验；需引入 PostGIS / Vector DB / Graph DB 等核心基础设施；C4 Canonical Baseline 无法通过现有架构实现；从金泽扩展时发现 World Model / Experience Grammar 无法复用；准备正式启动 Participation / Living Culture Schema；商业目标开始影响 Agent 判断、Evidence 表达或文化内容组织。
 
 ## 10. Canonical References
 
@@ -354,6 +272,16 @@ pnpm dev
 -   长期 Evolution Horizons。
 
 这些变化必须进入 **Architecture Reconciliation**。
+
+**职责边界：状态 vs 任务进展（2026-10-02 项目拥有者指定）**
+
+- **本文件只记「当前工作状态」** —— 执行中就是执行中。**任务进展不在此累积。**
+- **任务进展的唯一载体是该任务的「结果文件」**（`tasks/results/<TASK>-result.md`）。
+  围绕某个任务持续开展工作时，**一律维护那份文件**；本文件只保留**一行指引**（§9 的「详情」列即此形态）。
+- **§9 只登记「状态 + 指针」**：状态（`待裁决` / `部分处置` / `部分冻结` / `已冻结` / `已处置`）+ 一句话摘要 + 详情指向。
+  证据、方案、处置进展一律写在任务结果文件里。
+- **机器校验**：`pnpm guard:escalations` 校验「声明的项数 = 实际项数」、状态取值合法、**「详情」指针指向的文件真实存在**；
+  `pnpm guard:docs` 同时给本文件设**行数预算**，防止无限膨胀。
 
 ------------------------------------------------------------------------
 
