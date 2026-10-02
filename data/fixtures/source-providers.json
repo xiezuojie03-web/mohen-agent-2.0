@@ -22,6 +22,13 @@
     "modern_spatial_only": "只能生成现代空间类记录，不得生成历史事实 Evidence",
     "false": "不得生成 Evidence（只能进 Candidate / 检索线索）"
   },
+  "owner_decisions_2026_10_02": [
+    "wikidata —— **保持 S3（仅现代空间）**；另加规则：其身份锚点（Q-id）**只能作为候选线索，不得单独支撑任何断言**。",
+    "historical_gazetteer —— **由 S1 降为 S2**：名称笼统、实际承载很可能是二手地名汇编，须核原始出处。",
+    "jiangnan_ancient_bridge_research_association —— **保持 S2**；须核其是否引用一手碑刻/测绘记录。",
+    "xinmin_evening_news —— **保持 S4**（保守）；若将来确认某篇为当事人一手记述，个案升级。",
+    "scc_legacy —— **保持 LEGACY**（不可当证据，安全方向）；其具体旧库身份待查（见 open_questions）。"
+  ],
   "providers": [
     {
       "canonical": "shanghai_library",
@@ -111,19 +118,17 @@
       "access": "研究机构公开资料",
       "license_note": "待逐条记录",
       "ops_status": "todo",
-      "needs_owner_confirmation": true,
-      "basis": "按 S2 暂定。**该来源的可证级别请拥有者确认**——若其内容属二次综述而非一手记录，应降为 S4"
+      "basis": "**拥有者 2026-10-02 裁定：保持 S2**。附加要求：须核其内容是否引用一手碑刻/测绘记录；若为二次综述，须降为 S4"
     },
     {
       "canonical": "historical_gazetteer",
-      "tier": "S1",
+      "tier": "S2",
       "evidence_allowed": true,
       "aliases": [],
       "access": "历史地名志数据",
       "license_note": "待逐条记录",
       "ops_status": "todo",
-      "needs_owner_confirmation": true,
-      "basis": "按 S1「地方志/古籍原件」暂定。**但该 provider 名称笼统，实际承载可能是二手中文地名库**——请拥有者确认"
+      "basis": "**拥有者 2026-10-02 裁定：由 S1 降为 S2**。理由：provider 名称笼统，实际承载很可能是二手地名汇编，按 S2「须核原始出处、对象身份」处理"
     },
     {
       "canonical": "amap",
@@ -143,8 +148,7 @@
       "access": "Wikidata API（wbsearchentities / wbgetentities）",
       "license_note": "CC0（数据）",
       "ops_status": "documented",
-      "needs_owner_confirmation": true,
-      "basis": "**暂定 S3**：Wikidata 是开放编辑库，其 P625 坐标属现代空间数据（实测该用法即如此）。但 Wikidata 亦被用作**身份锚点**（Q-id），那一用途更接近 S2。**请拥有者确认：身份锚点是否算可证？**"
+      "basis": "**拥有者 2026-10-02 裁定：保持 S3**（其 P625 坐标属现代空间数据）。**附加规则：其身份锚点（Q-id）只能作为候选线索，不得单独支撑任何断言** —— 因 Wikidata 是开放编辑库，须回到其自身引用的原始出处。"
     },
     {
       "canonical": "xinmin_evening_news",
@@ -154,8 +158,7 @@
       "access": "报纸报道",
       "license_note": "版权受限",
       "ops_status": "todo",
-      "needs_owner_confirmation": true,
-      "basis": "**暂定 S4**：属「报道」而非原件；S4 原文列的是视频/社媒/博客/旅游文章，报纸未明列。**请拥有者确认**——若某篇为当事人一手记述，可能应个案升级"
+      "basis": "**拥有者 2026-10-02 裁定：保持 S4**（保守方向）。若将来确认某篇为当事人一手记述，个案升级，不整体放宽"
     },
     {
       "canonical": "social_media",
@@ -185,8 +188,7 @@
       "access": "旧库（scc）",
       "license_note": "不明",
       "ops_status": "todo",
-      "needs_owner_confirmation": true,
-      "basis": "按名称判定为旧库移植来源 → LEGACY。**该旧库的具体身份请拥有者确认**"
+      "basis": "**拥有者 2026-10-02 裁定：保持 LEGACY**（不可当证据，安全方向）。其具体旧库身份待查——见 open_questions"
     },
     {
       "canonical": "mohen_pipeline",
@@ -199,12 +201,8 @@
       "basis": "非外部来源（run summary / 审计记录）；**自产产物不得生成 Evidence**"
     }
   ],
-  "owner_confirmation_needed": [
-    "wikidata —— 身份锚点（Q-id）是否算可证级别？现暂定 S3 仅现代空间",
-    "historical_gazetteer —— 实际承载是否为二手地名库？现暂定 S1",
-    "jiangnan_ancient_bridge_research_association —— 一手记录还是二次综述？现暂定 S2",
-    "xinmin_evening_news —— 报纸报道是否一律不可证？现暂定 S4",
-    "scc_legacy —— 旧库身份确认；现按 LEGACY 处理"
+  "open_questions": [
+    "scc_legacy 的具体身份是什么旧库？（分级已按 LEGACY 保守处理，不影响安全；仅影响将来能否复用其材料）"
   ],
   "known_gap": "SOURCE_REGISTRY 末行要求每个 provider 额外维护「访问方式 / 限流 / 许可 / 失败经验 / 最后验证日期」。本文件已加 access / license_note / ops_status（documented | todo），但**限流、失败经验、最后验证日期尚未落地**——ops_status=todo 的条目即为待补清单，守卫每次运行都会报出数量。"
 }

@@ -22,4 +22,7 @@
 >   无需逐个改造二十多个写脚本。
 > - **执行**：写入前 `assertProviderRegistered()` 未登记即拒绝（fail loud，不静默接受）。
 > - **未落地部分**：限流、失败经验、最后验证日期尚未逐 provider 补齐；`ops_status=todo` 的条目即为待补清单，
->   守卫每次运行都会报出数量。另有 5 项分级（`needs_owner_confirmation`）待项目拥有者确认。
+>   守卫每次运行都会报出数量。**分级本身已于 2026-10-02 由项目拥有者逐项裁定**（5 项，见该文件
+>   `owner_decisions_2026_10_02`；其中 historical_gazetteer 由 S1 降为 S2，wikidata 另加
+>   「身份锚点只能作候选、不得单独支撑断言」规则）。仍存 1 个待查事项：`scc_legacy` 的具体旧库身份
+>   （分级已按 LEGACY 保守处理，不影响安全），见该文件 `open_questions`。

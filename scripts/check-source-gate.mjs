@@ -104,13 +104,16 @@ if (!importers.length) {
 // ---------- ⑤ 待补 / 待确认（报出，不判红） ----------
 const opsTodo = gate.providers.filter((p) => p.ops_status === "todo").map((p) => p.canonical);
 const confirmNeeded = gate.providers.filter((p) => p.needs_owner_confirmation === true).map((p) => p.canonical);
+const openQuestions = Array.isArray(gate.raw.open_questions) ? gate.raw.open_questions : [];
 
 if (dbNote) console.error(dbNote);
 console.log(
   `SOURCE_GATE providers=${gate.providers.length} aliases=${gate.providers.reduce((a, p) => a + (p.aliases || []).length, 0)} ` +
   `db_providers=${dbRows ? dbRows.length : "n/a"} resolved=${canonicalHit} unknown=${unknown.length} ` +
-  `importers=${importers.length} ops_todo=${opsTodo.length} needs_owner_confirmation=${confirmNeeded.length}`
+  `importers=${importers.length} ops_todo=${opsTodo.length} needs_owner_confirmation=${confirmNeeded.length} ` +
+  `open_questions=${openQuestions.length}`
 );
 if (opsTodo.length) console.log(`  ops_status=todo（待补 限流/失败经验/最后验证日期）：${opsTodo.join(", ")}`);
 if (confirmNeeded.length) console.log(`  needs_owner_confirmation（分级待拥有者确认）：${confirmNeeded.join(", ")}`);
+if (openQuestions.length) for (const q of openQuestions) console.log(`  open_question：${q}`);
 process.exit(failed ? 1 : 0);
