@@ -78,7 +78,8 @@
 
 ## 4. 验证
 
-- 活跃 Authority 文件（`governance/`（排除 `archive/`）、`specs/experience-ui/`（排除 `source/`）、`docs/`、`AGENTS.md`、`CURRENT.md`、`tasks/CURRENT_TASK.md`、`tasks/H2_…md`）已 **grep 复核**：`WorkBuddy|CodeBuddy|CODEBUDDY|ChatGPT` 零残留（除 C0 §0/§11 为**声明取消**而有意点名者）。
+- **【2026-10-02 更正 · 原结论错误】** 本记录上一版声称活跃 Authority 文件已 grep 复核、`WorkBuddy|CodeBuddy|CODEBUDDY|ChatGPT` **零残留**。**该结论不成立**：当时只 grep 了 `*.md`，**未覆盖 Office 二进制**。经复核 28 个 `.docx/.pptx` 后确认仍含旧工具名，其中活跃区至少 4 个——`governance/experience/EXP-DESIGN-01-Final-Decision-and-Experience-Transformation-Contract-V1.0.docx`（2 处，含章节标题 `Engineering Boundary for Next WorkBuddy Task`）、`specs/experience-ui/source/MoHen_C4_UI_Architecture_V2.1.docx`（8 处）、`specs/experience-ui/墨痕_Agent_2.0_金泽最小体验导演稿_V1.0.docx`（1 处）、`specs/experience-ui/source/墨痕_UI架构与人文叙事_完整审查及后续任务_V1.2.docx`（1 处）；其余多分布于 `governance/archive/` 与 `tasks/**`（历史 Trace，不改）。
+  **修正后结论：`*.md` 层零残留；Office 层仍有残留，待处置。** 教训：声称"已复核"前必须声明复核范围与所覆盖的文件类型。
 - 宪法边界未放松：Human Experience Gate 定义（C4 §22）、Canonical Non-Regression、Evidence Gate、Geometry is a Claim、Agent 无 Truth Store 写权——**一字未改**。
 - 未运行测试：本任务为治理文本变更，不触碰代码 / DB / schema / 冻结 JSON；受限沙箱下 `pwsh` 无法启动（见 §3.4），无法执行 `pnpm test` 与 E2E。**不声称工程回归 PASS**。
 

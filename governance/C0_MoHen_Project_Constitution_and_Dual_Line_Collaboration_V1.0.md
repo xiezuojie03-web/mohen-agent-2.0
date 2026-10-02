@@ -182,9 +182,9 @@ C1 从最终人本 Vision 开篇，统领 Product Promise、Humanistic Data OS�
 
 数据库文档负责区分 Source、Evidence、Cultural World、Meaning/Present Connection、Discovery/Read Model 与 Experience Runtime，并坚持 Evidence before Knowledge、Fact–Interpretation Firewall、Geometry is a Claim、Stable Truth / Variable Experience。它不直接授权全库重构。
 
-## 4.4 Experience & UI Baseline：用户真正看见什么
+## 4.4 Experience & UI（C4）：用户真正看见什么
 
-现有 Baseline 已经把最高方向落实为人类可见规则：墨痕 UI 是人文探索空间，不是后台、Evidence Browser、Dashboard 或聊天产品；Agent智能应该通过地方、时间、关系、图像、证据和下一步行动的变化被感知。
+C4 已经把最高方向落实为人类可见规则（C4 是 Human-facing Experience / UI 的**唯一 Authority**；旧 Baseline 已降为 SOURCE ARCHIVE / TRACE）：墨痕 UI 是人文探索空间，不是后台、Evidence Browser、Dashboard 或聊天产品；Agent 智能应该通过地方、时间、关系、图像、证据和下一步行动的变化被感知。
 
   - One Moment, One Focus
 
@@ -253,11 +253,13 @@ Task Book 不是所有开发的必需入口，仅在复杂、危险、跨模块�
   - 权威文档少而稳定；历史资料退居 Archive。
 
 # 10｜Canonical Set 与路由
-项目宪法级 Canonical Set（C0–C4 + CURRENT）的具体文件路径与当前状态以 **`AGENTS.md` §1** 为唯一路由源；其层级与优先级见 **C0 §3**。
+项目宪法级 Canonical Set（C0–C4 + CURRENT）的具体文件路径与当前状态以 **`AGENTS.md` §1** 为唯一路由源；其层级与优先级见 **C0 §3**。本文档与 CURRENT 不再重复路径表。
 
 旧 Roadmap / Phase Plan / Task Book 仅在追溯或复杂施工时按需读取，不拥有高于 C0–C4 的日常 Authority。
 
-## 11｜已确认决断登记与变更（C0 治理职责）
+**版本源唯一**：C0–C4 升版、转正或改名时，由同一次 Architecture Reconciliation 同步更新 `AGENTS.md` §1 与 CURRENT §10 中的全部路径引用；**禁止孤立改名导致路由断链**。
+
+# 11｜已确认决断登记与变更（C0 治理职责）
 
 项目拥有者在 `CURRENT.md` §12 中确认的工程 / 数据决断（R6 本地主库、R8 漂移以主库为准、R9 遗留证据、R12 重跑 dump、DATABASE_URL 接本地 PG 等）是已生效的治理结论，**不修改 C0–C4 的宪法原则**，仅作工程落地确认。
 
@@ -265,7 +267,7 @@ Task Book 不是所有开发的必需入口，仅在复杂、危险、跨模块�
 
 - **登记**：每条决断带编号（R#）、确认状态、对应宪法 / 架构条款（如 R6 对应 C1 §24 技术基线）、变更条件。
 - **变更**：任何决断的增删改，须经项目拥有者确认并触发 Architecture Reconciliation，回写本登记与 CURRENT §12，禁止开发平台自行改写。
-- **权威归属**：CURRENT §12 保留决断的具体内容（当前状态载体）；本 §12 保留决断的登记框架与变更机制（治理载体）。两者一致，互不重复。
+- **权威归属**：CURRENT §12 保留决断的具体内容（当前状态载体）；本 §11 保留决断的登记框架与变更机制（治理载体）。两者一致，互不重复。
 
 # 附录 A｜一句话记住工作方式
 
