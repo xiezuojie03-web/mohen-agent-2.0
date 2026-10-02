@@ -27,7 +27,7 @@ const summary = { mode: MODE, started_at: new Date().toISOString(), counts: {}, 
 
 async function main() {
   // [2026-10-02 修复 · 根因 1] 原为无 ORDER BY / 无过滤的任意取值；且本脚本随后又把"诗词"源写成
-  // provider=hushang_legacy，进一步污染该 provider 的源池（night-runner 因此把 727 张照片挂到诗词源）。
+  // provider=hushang_legacy，进一步污染该 provider 的源池（unattended-runner 因此把 727 张照片挂到诗词源）。
   // 现要求"图片源"唯一可确定，否则 fail loud，绝不猜。
   const srcCandidates = await queryRows(
     `select source_id, title, content_type, metadata_json from source_records where provider=:'p'`,
@@ -48,7 +48,7 @@ async function main() {
   const commons = JSON.parse(fs.readFileSync(COMMONS, "utf8"));
   const images = Array.isArray(commons.images) ? commons.images : [];
   // [2026-10-02 修复 · 根因 2] 跨批幂等：原只按 legacy_id（im.title || sha(url)）去重，
-  // 与 night-runner 的 legacy_id 规则不同 → 同一张图重复入库（实测 14 组）。现并集规范化 file_path。
+  // 与 unattended-runner 的 legacy_id 规则不同 → 同一张图重复入库（实测 14 组）。现并集规范化 file_path。
   const existVA = await queryRows(`select legacy_id, file_path from visual_assets`);
   const normUrl = (u) => String(u || "").split("?")[0].trim();
   const existVASet = new Set(existVA.map((r) => r.legacy_id).filter(Boolean));

@@ -31,7 +31,7 @@ for (const r of bad) {
       m: JSON.stringify({
         repair_note:
           "幂等修复前由本机调试产生的非法 source_record_id 或孤儿 run；标记 failed 保留审计，不删除",
-        repaired_by: "tools/night/repair-polluted-runs.mjs",
+        repaired_by: "tools/production/repair-polluted-runs.mjs",
       }),
     }
   );

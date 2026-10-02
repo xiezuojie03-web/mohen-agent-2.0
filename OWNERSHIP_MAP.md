@@ -58,10 +58,10 @@
 │   ├── ingest             Raw + Source 登记｜禁止：写 verified knowledge
 │   ├── evidence           Evidence Gate｜禁止：自由叙事
 │   ├── weave              verified → relations/story/discovery candidate｜禁止：绕过 Gate
-│   └── legacy             老库移植与无人值守执行体（night-runner.mjs；M1 将更名为 unattended-runner.mjs）｜禁止：把老库内容当已裁决事实
+│   └── legacy             老库移植与无人值守执行体（unattended-runner.mjs）｜禁止：把老库内容当已裁决事实
 ├── supabase/migrations    Truth Store 物理定义（schema 唯一来源）｜禁止：被绕过直接改库
 ├── scripts/               结构与文档守卫（check-*.mjs）＋ 报告生成器（gen-*.mjs）｜禁止：承载产品逻辑
-├── tools/night/           无人值守生产运维脚本（探针 / 修复 / 校验）｜禁止：被当作调度器（调度器在 pipelines/legacy）
+├── tools/production/           无人值守生产运维脚本（探针 / 修复 / 校验）｜禁止：被当作调度器（调度器在 pipelines/legacy）
 ├── skills/                AI 可执行 SOP（每个子目录必须带 SKILL.md）｜禁止：保存项目历史
 ├── data/
 │   ├── raw/               原始资料，append-only 永久保留｜禁止：修改或删除

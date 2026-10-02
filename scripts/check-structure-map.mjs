@@ -64,7 +64,7 @@ const actualRoot = fs
   .sort();
 
 // ---------- ① 顶层覆盖 ----------
-// 顶层项可能写作 `apps/web` / `supabase/migrations` / `tools/night` —— 取第一段作为顶层名
+// 顶层项可能写作 `apps/web` / `supabase/migrations` / `tools/production` —— 取第一段作为顶层名
 const declaredTop = new Set(items.filter((i) => i.depth === 1).map((i) => i.full.split("/")[0]));
 const undeclared = actualRoot.filter((n) => !declaredTop.has(n));
 if (undeclared.length) {

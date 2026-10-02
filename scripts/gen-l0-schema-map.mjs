@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { queryRows, queryValue } from "../packages/data-access/src/index.mjs";
 
+// 默认批次＝ 2026-10-01 历史轮（Trace，目录名不改）；自 2026-10-02 起新批次 TAG 前缀为 UNATTENDED-
 const TAG = process.argv[2] || "NIGHT-RUN-20261001";
 const OUT = path.join("tasks/results", TAG, "l0-schema-map.html");
 const FETCHED = "D:/work Buddy/2026-08-23-23-12-38/hushang-jingwei/data/fetched";

@@ -1,4 +1,4 @@
-// pipelines/legacy/night-runner.mjs
+// pipelines/legacy/unattended-runner.mjs
 // 常驻无人值守生产 runner（**按需触发 + 截止时间**，非定时调度）：
 //   · 用户现在发指令 → 本进程 detached 常驻 → 按 --until 截止时间自动收尾
 //   · 每个周期只处理 1 个作业，job 间 sleep --interval-min 分钟（刻意减速，非秒级冲刺）
@@ -6,7 +6,7 @@
 //   · 停止条件：截止时间 / STOP 文件 / 连续 3 次作业失败 / 写权限异常
 //   · 幂等：按 legacy_id / checksum 跳过；可安全重复运行
 //   · 到点输出：progress.json + runner.log + Morning Summary result.md
-// 用法: node night-runner.mjs --until 06:00 [--interval-min 6] [--tag NIGHT-RUN-20261001]
+// 用法: node unattended-runner.mjs --until 06:00 [--interval-min 6] [--tag UNATTENDED-<date>]
 
 import fs from "node:fs";
 import path from "node:path";
@@ -22,7 +22,7 @@ const args = process.argv.slice(2);
 const arg = (k, d) => { const i = args.indexOf("--" + k); return i >= 0 ? args[i + 1] : d; };
 const UNTIL = arg("until", "06:00");
 const INTERVAL_MIN = Number(arg("interval-min", "6"));
-const TAG = arg("tag", "NIGHT-RUN-" + new Date().toISOString().slice(0, 10).replace(/-/g, ""));
+const TAG = arg("tag", "UNATTENDED-" + new Date().toISOString().slice(0, 10).replace(/-/g, ""));
 const OUT_DIR = path.join("tasks/results", TAG);
 const STOP_FILE = path.join(OUT_DIR, "STOP");
 
