@@ -25,7 +25,6 @@
 │   ├── AGENT_CONTRACT.md  Agent Loop 与 Discovery 契约
 │   ├── EXPERIENCE_CONTRACT.md  ExperienceState / Composition 契约
 │   ├── SOURCE_REGISTRY.md    来源登记
-│   ├── RECONCILIATION.md  Reconciliation 提案格式（五项：改什么/为什么/影响谁/怎么回滚/请你回答什么）
 │   ├── MoHen_Data_Production_Protocol.md  数据生产协议（无人值守 + 有人值守；C2/C3 之下）
 │   ├── archive/           【归档】被取代的契约与规范（旧 UI Baseline 等）｜禁止：当作当前 Authority
 │   ├── data-production/   数据生产操作件（**契约**在 specs/ 根，**操作件**在本目录）
