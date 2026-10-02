@@ -191,6 +191,15 @@ H2 的下一出口不是"再完成一批功能"，而是：
 - **待裁决**：① 是否新增正面资格字段 + 门禁触发器（把"默认可用"翻转为"默认不可用"）；② 727 张 provenance 是否纠正；③ 341 张内容可疑图片的处置标准；④ 109 个门禁 `fail` 对象是否置为 `rejected`。
 - **2026-10-02 拥有者裁定（夜跑 1246 张图片）**：**暂不做处置、但保留**（不清理、不排除、不删除）；**先解决机制问题**。→ 上列 ②③④ 随之收束，本轮不做数据处置。
 - **机制问题＝`RECON-01` 问题 1**（图片要不要「默认不能用」）；该提案已按 `C0 §6.2` 的提交格式重写为**可回答的一页**。附带发现：同一提案的原写法若照字面执行，会让有效图片**由 8 归零**——与 `TASK-0008` 记录过的既有事故同一形态，已修正。
+- **2026-10-02 全库核对（拥有者追问「是否所有原始资料都涉及这个问题」）**：逐表核对 28 张表的「能不能用」是怎么表达的 ——
+  **甲组 9 张**（`entities`/`relations`/`claims`/`evidence`/`legacy_mappings`/`cultural_events`/`cultural_meaning_candidates`/`cultural_present_connections`/`cultural_relation_claims`）落库默认 **`candidate`**，本来就不算可用；
+  **乙组 10 列**有状态列但**无默认值**，写入时必须显式声明；
+  **丙组仅 2 张**（`visual_assets`、`visual_entity_links`）用"空排除名单＝可用"，**是全库唯一的"默认可用"形态**；
+  丁组（`review_queue`=`pending`、`cultural_conflicts`=`preserved_open`）默认安全。
+  **全库"晋级闸门"触发器只有 4 个**：`claims_require_evidence`（没有证据不许晋级）、`discovery_not_publishable_guard`、`review_queue_tier_c_guard`、`vel_confirmed_requires_evidence`。
+  → **结论：图片层是唯一例外，它没跟上已有先例**（第 6 个迁移后加，用"标签"而非"状态"）。
+  **但另有三项普遍缺口**：① 状态表达有 **8 种**写法（C3 §4.1 只定义**一套**状态机）；② **没有"通用晋级"闸门**——4 个触发器各管各的；③ `verification_status` 枚举有 **8 个值、实测只用 2 个**（`candidate` 11028 行 / `evidence_linked` 20 行，**`verified` 与 `published` 全库 0 行**），且 `evidence_gate_audit` 只覆盖 7 类对象（`cultural_*` 全部未覆盖）。
+  提案已按此重写为 `RECON-01`（层级从"给图片加列"提升到"晋级闸门"）。
 - **证据与三个方案**：`tasks/results/DATA-RECON-01-eligibility-field-proposal.md`
 
 ### ESC-05｜`pnpm guard` 全链路暴露 17 个测试失败（2026-10-02 · M1.2 后实测）
