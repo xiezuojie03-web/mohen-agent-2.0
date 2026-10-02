@@ -101,28 +101,63 @@ async function jobImages(j) {
   if (!fs.existsSync(p)) return { ok: false, skipped: true, note: "file-missing" };
   let doc; try { doc = JSON.parse(fs.readFileSync(p, "utf8")); } catch { return { ok: false, note: "bad-json" }; }
   const arr = ["items", "images", "results", "data"].map((k) => doc[k]).find((a) => Array.isArray(a)) || [];
-  const srcId = await queryValue(`select source_id from source_records where provider=:'p'`, { p: LEGACY_SOURCE });
-  const exist = await queryRows(`select legacy_id from visual_assets where legacy_id is not null`);
-  const existSet = new Set(exist.map((r) => r.legacy_id));
+  // [2026-10-02 修复 · 根因 1] 原为无 ORDER BY / 无过滤的 `select source_id ... where provider=:'p'`，取"任意一行"。
+  // 实际后果：727 张照片被挂到名为「沪上经纬诗词-souyun_poems_by_person.json」的源记录上，provenance 完全错位。
+  // 现要求"图片源"唯一可确定；否则 fail loud，绝不猜。
+  const srcCandidates = await queryRows(
+    `select source_id, title, content_type, metadata_json from source_records where provider=:'p'`,
+    { p: LEGACY_SOURCE }
+  );
+  const imageSources = srcCandidates.filter((r) => {
+    const kind = r.metadata_json && r.metadata_json.kind;
+    return kind !== "poem_source" && !/诗词|poem/i.test(r.title || "");
+  });
+  if (imageSources.length !== 1) {
+    throw new Error(
+      `jobImages: 图片源无法唯一确定（hushang_legacy 源 ${srcCandidates.length} 条，其中非诗词 ${imageSources.length} 条）。` +
+      `拒绝猜测——须先为图片批次建立专属 source_record 后重跑。`
+    );
+  }
+  const srcId = imageSources[0].source_id;
+
+  // [2026-10-02 修复 · 根因 2] 跨批幂等：原只按 legacy_id 去重，而各脚本 legacy_id 规则不同
+  // （`https:…` / `File:标题` / `sha(url)` / `hushang-jingwei:shl:…`），导致同一张图被重复入库（实测 14 组）。
+  const exist = await queryRows(`select legacy_id, file_path from visual_assets`);
+  const normUrl = (u) => String(u || "").split("?")[0].trim();
+  const existSet = new Set(exist.map((r) => r.legacy_id).filter(Boolean));
+  const existPaths = new Set(exist.map((r) => normUrl(r.file_path)).filter(Boolean));
+
   const items = [];
-  let skipped = 0, badStatus = 0;
+  let skipped = 0, badStatus = 0, unverified = 0, notImage = 0;
   for (const im of arr) {
     const url = im.url || im.thumb || im.file_path || im.image || null;
     if (!url) { skipped++; continue; }
-    // 只收 HTTP 校验通过的（shanghai_images_* 带 _http.status）
-    if (im._http && im._http.status && im._http.status !== 200) { badStatus++; continue; }
+
+    // [2026-10-02 修复 · 根因 3] 原为 fail-open：`im._http` 缺失或 status 为 0/null 时整条判断短路，
+    // 坏链接直接入库（实际后果：23 张 HTTP 非 200 死链入库）。现改为 fail-closed：状态未知一律不收。
+    const httpStatus = im._http && im._http.status != null ? Number(im._http.status) : null;
+    if (httpStatus == null) { unverified++; continue; }
+    if (httpStatus !== 200) { badStatus++; continue; }
+
+    // [2026-10-02 修复 · 根因 4] 非图片类型不再冒充 asset_type='image'（实测 29 个 .djvu 古籍扫描 + 1 个 .webm 视频）。
+    const ext = (String(url).split("?")[0].match(/\.([a-z0-9]+)$/i) || [, ""])[1].toLowerCase();
+    if (!["jpg", "jpeg", "png", "gif", "webp", "tif", "tiff", "bmp", "svg"].includes(ext)) { notImage++; continue; }
+
     const lid = String(url);
-    if (existSet.has(lid)) { skipped++; continue; }
+    if (existSet.has(lid) || existPaths.has(normUrl(url))) { skipped++; continue; }
     existSet.add(lid);
+    existPaths.add(normUrl(url));
     if (!WRITE) continue;
     items.push({
-      sql: `insert into visual_assets (asset_id,source_id,asset_type,file_path,created_date,depicted_period,rights,checksum,legacy_id)
-            values (:'aid'::uuid,:'sid'::uuid,'image',:'fp',null,'unknown',:'rt',:'cs',:'lid')`,
+      // [2026-10-02 修复 · 根因 5] 显式写入资格标记，不再依赖列默认 '{}'（"未排除即可用"）。
+      // 未过门禁的新增图片一律标 pending_heritage_review，不再被静默视为可用。
+      sql: `insert into visual_assets (asset_id,source_id,asset_type,file_path,created_date,depicted_period,rights,checksum,legacy_id,eligibility_tags)
+            values (:'aid'::uuid,:'sid'::uuid,'image',:'fp',null,'unknown',:'rt',:'cs',:'lid',array['pending_heritage_review'])`,
       params: { aid: uuid(), sid: srcId, fp: url, rt: im.license || "上海图书馆/Wikimedia 开放数据（授权待确认）", cs: sha(url), lid },
     });
   }
   if (WRITE && items.length) await runMany(items);
-  return { ok: true, total: arr.length, inserted: items.length, skipped, bad_status: badStatus };
+  return { ok: true, total: arr.length, inserted: items.length, skipped, bad_status: badStatus, unverified_status: unverified, not_image: notImage };
 }
 
 async function jobCoords(j) {
@@ -192,11 +227,16 @@ async function finalize(verdict) {
 |---|---|---|---|
 ${Object.entries(progress.jobs).map(([k, v]) => `| ${k} | ${v.ok === false ? "FAIL" : "OK"} | ${v.inserted || 0} | ${v.note || (v.skipped ? "skipped/missing" : "")} |`).join("\n")}
 
-## 安全
-- 零自动晋级：照片/坐标均为 candidate；未写 published/verified，未绕过 Evidence Gate
+## 安全（**2026-10-02 修正：原为硬编码断言，已移除不可验证的声明**）
+- **本批次未运行 Evidence Gate。** 照片 / 坐标以 candidate 写入；"未绕过 Evidence Gate" **不是可断言结论**
+  （原句为模板字符串；曾与实际不符——同一批 1246 张图片在 evidence_gate_audit 中 0 条记录）。
+  门禁覆盖情况须**另行查询** evidence_gate_audit 与 visual_assets.eligibility_tags。
+- 图片资格：本批新增图片以 eligibility_tags = pending_heritage_review 写入，**不默认可用**。
+- 图片源：必须唯一可确定；无法确定时本作业 fail loud、不写入（不再取任意 source_record）。
+- HTTP 校验：fail-closed——状态未知的链接一律不收（原为 fail-open，曾导致 23 张死链入库）。
 - 坐标诚实：provider_current_object_point + WGS84 + historical_position_proof=false（库层强制）
 - Raw append-only：源材料快照存 ${RAW_STORE}/legacy/hushang/
-- 幂等：按 legacy_id/checksum 跳过，可重跑
+- 幂等：按 legacy_id + 规范化 file_path 跳过，可重跑
 - 停止原因：${verdict === "STOPPED" ? "见 runner.log" : "截止时间到 / 作业完成"}
 
 > 明细见 progress.json 与 runner.log。凭证不在本文件。

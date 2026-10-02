@@ -26,26 +26,52 @@ const sha = (s) => crypto.createHash("sha256").update(s, "utf8").digest("hex");
 const summary = { mode: MODE, started_at: new Date().toISOString(), counts: {}, verdict: "", errors: [] };
 
 async function main() {
-  const srcId = await queryValue(`select source_id from source_records where provider=:'p'`, { p: LEGACY_SOURCE });
-  if (!srcId) { console.error("STOP: 未找到 hushang_legacy source_record（先跑 batch-003）"); process.exit(2); }
+  // [2026-10-02 修复 · 根因 1] 原为无 ORDER BY / 无过滤的任意取值；且本脚本随后又把"诗词"源写成
+  // provider=hushang_legacy，进一步污染该 provider 的源池（night-runner 因此把 727 张照片挂到诗词源）。
+  // 现要求"图片源"唯一可确定，否则 fail loud，绝不猜。
+  const srcCandidates = await queryRows(
+    `select source_id, title, content_type, metadata_json from source_records where provider=:'p'`,
+    { p: LEGACY_SOURCE }
+  );
+  const imageSources = srcCandidates.filter((r) => {
+    const kind = r.metadata_json && r.metadata_json.kind;
+    return kind !== "poem_source" && !/诗词|poem/i.test(r.title || "");
+  });
+  if (imageSources.length === 0) { console.error("STOP: 未找到可用的 hushang_legacy 图片源（先跑 batch-003）"); process.exit(2); }
+  if (imageSources.length > 1) {
+    console.error(`STOP: 图片源无法唯一确定（${imageSources.length} 条非诗词 hushang_legacy 源）。拒绝猜测。`);
+    process.exit(2);
+  }
+  const srcId = imageSources[0].source_id;
 
   // ---- 照片 ----
   const commons = JSON.parse(fs.readFileSync(COMMONS, "utf8"));
   const images = Array.isArray(commons.images) ? commons.images : [];
-  const existVA = await queryRows(`select legacy_id from visual_assets where legacy_id is not null`);
-  const existVASet = new Set(existVA.map((r) => r.legacy_id));
+  // [2026-10-02 修复 · 根因 2] 跨批幂等：原只按 legacy_id（im.title || sha(url)）去重，
+  // 与 night-runner 的 legacy_id 规则不同 → 同一张图重复入库（实测 14 组）。现并集规范化 file_path。
+  const existVA = await queryRows(`select legacy_id, file_path from visual_assets`);
+  const normUrl = (u) => String(u || "").split("?")[0].trim();
+  const existVASet = new Set(existVA.map((r) => r.legacy_id).filter(Boolean));
+  const existPaths = new Set(existVA.map((r) => normUrl(r.file_path)).filter(Boolean));
   const vaItems = [];
-  let skipped = 0;
+  let skipped = 0, notImage = 0;
   for (const im of images) {
     const lid = im.title || sha(im.url || "");
-    if (!im.url || existVASet.has(lid)) { skipped++; continue; }
+    if (!im.url) { skipped++; continue; }
+    if (existVASet.has(lid) || existPaths.has(normUrl(im.url))) { skipped++; continue; }
+    // [2026-10-02 修复 · 根因 3] 非图片类型不再冒充 asset_type='image'（本批实测 29 个 .djvu + 1 个 .webm）
+    const ext = (String(im.url).split("?")[0].match(/\.([a-z0-9]+)$/i) || [, ""])[1].toLowerCase();
+    if (!["jpg", "jpeg", "png", "gif", "webp", "tif", "tiff", "bmp", "svg"].includes(ext)) { notImage++; continue; }
+    existVASet.add(lid);
+    existPaths.add(normUrl(im.url));
     vaItems.push({
-      sql: `insert into visual_assets (asset_id,source_id,asset_type,file_path,created_date,depicted_period,rights,checksum,legacy_id)
-            values (:'aid'::uuid,:'sid'::uuid,'image',:'fp',:'cd',:'dp',:'rt',:'cs',:'lid')`,
+      // [2026-10-02 修复 · 根因 4] ① 显式写资格标记，不再依赖列默认 '{}'（"未排除即可用"）；
+      //                          ② 不再对全部照片断言"现代影像（非历史）"（老照片被误标为现代影像是史料级误用）。
+      sql: `insert into visual_assets (asset_id,source_id,asset_type,file_path,created_date,depicted_period,rights,checksum,legacy_id,eligibility_tags)
+            values (:'aid'::uuid,:'sid'::uuid,'image',:'fp',:'cd','unknown',:'rt',:'cs',:'lid',array['pending_heritage_review'])`,
       params: {
         aid: uuid(), sid: srcId, fp: im.url,
         cd: im.date ? String(im.date).slice(0, 10) : null,
-        dp: "现代影像（非历史）",
         rt: im.license || (im.artist ? `Author: ${im.artist}` : "Wikimedia Commons 自由授权"),
         cs: sha(im.url),
         lid,
