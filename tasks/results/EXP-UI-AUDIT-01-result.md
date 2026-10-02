@@ -3,7 +3,7 @@
 > 性质：**只诊断，不施工**（Diagnosis Only · No UI Reconstruction · No Product Modification）
 > 前置 Gate：`EXP-UI-GOV-01A = PASS / CLOSED @ ade565e`
 > 当前 Phase：II / M5 CURRENT / HOLD；M5-HUMAN-01：HOLD；Round B / H1–H10 = NOT RUN
-> 最高 Authority：`specs/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md`
+> 最高 Authority（**2026-10-02 更正**）：`governance/C4_MoHen_Agent-native_Human_Experience_UI_Architecture_V2.1.md`（Human-facing Experience / UI 唯一 Authority）。原文所引 `specs/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md` **已移至 `specs/archive/` 并降为 SOURCE ARCHIVE / TRACE**（见 `specs/OWNERSHIP_MAP.md` §2）——本审计当时的对照版本应视为该历史 Baseline，审计结论本身不受影响。
 > 审计方法：实际启动 `/experience/jinze-water-net`（Next 15.5 dev, port 3001）+ Playwright 文本化取证（截图 + `state-*.json`），只读追踪 ExperienceState→Composition→Surface→Renderer。
 
 ---

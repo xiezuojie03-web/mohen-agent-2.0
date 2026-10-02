@@ -1,10 +1,14 @@
 # DATA CONTRACT
 
-## 五层
-L0 Raw Source → L1 Source Record → L2 Evidence → L3 Humanistic Knowledge → L4 Experience。
+> **Authority**：本契约是 `specs/` 下的专业域 Contract，**受 C2 / C3 统领**（仲裁 C0 ≥ C1 > C2/C3/C4）。
+> **层级模型与状态枚举不在此自定义**，一律以 **C3 §2.1–§2.8（八层 L0–L7）** 与 **C3 §4.1（Evidence Gate 与数据晋级）** 为准。
+> 本节此前使用的"五层 L0–L4"与自制状态机已**废止**（2026-10-02），以免与 C2/C3 形成平行真源（原有问题：同一活跃仓内出现五层 / 八层两套模型）。
 
-## 状态
-`RAW → EXTRACTED → CANDIDATE → EVIDENCE_LINKED → VERIFIED | REJECTED | PENDING → PUBLISHED`
+## 层级（见 C3）
+数据分层以 **C3 §2.1–§2.8** 为准：L0 Cultural Sources / L1 Evidence & Provenance / L2 Cultural World / L3 Meaning & Present Connection / L4 Discovery / Agent Read Model / L5 Experience Runtime / L6 Participation / L7 Living Culture。
+
+## 状态（见 C3）
+对象状态机与晋级路径以 **C3 §4.1**（配合 §4.2 Evidence Gate G0–G6 的数据库落点）为准。本契约不再重复枚举。
 
 ## L1 Source Record
 最少字段：`source_id, provider, title, source_uri, content_type, retrieved_at, checksum, raw_path, license_code, metadata_json`。

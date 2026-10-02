@@ -3,7 +3,7 @@
 > 性质：最小 Human-facing Experience Reconstruction / Humanization Pass（只执行 Task Book R1–R5）
 > 前置：EXP-UI-AUDIT-01 = PASS / CLOSED @ `c062a43`；Gate = `PASS_TO_EXPERIENCE_UI_RECONSTRUCTION_PLANNING`
 > 当前 Phase：II / M5 CURRENT / HOLD；M5-HUMAN-01 = HOLD；Round B / H1–H10 = NOT RUN（本任务未触碰）
-> 最高 Authority：`specs/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md`
+> 最高 Authority（**2026-10-02 更正**）：`governance/C4_MoHen_Agent-native_Human_Experience_UI_Architecture_V2.1.md`（Human-facing Experience / UI 唯一 Authority）。原文所引 `specs/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md` **已移至 `specs/archive/` 并降为 SOURCE ARCHIVE / TRACE**；本任务当时的对照版本应视为该历史 Baseline。
 
 ---
 

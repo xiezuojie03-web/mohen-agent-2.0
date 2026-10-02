@@ -3,6 +3,8 @@
 > 本文件为 GOV-STATUS-AUDIT-01 的唯一交付物。本次任务**只审计、不施工**：未修改代码 / 数据库 / schema / migration / seed / UI / 目录结构 / 配置。
 > 所有结论均以**当前 repo 实际状态 + 实际运行观测**为准，不引用既有 Result 的结论作为依据。
 
+> **2026-10-02 更正（不改写原文）**：本文 §6.1 把 `specs/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md` 标为"✅ CURRENT IMPLEMENTATION AUTHORITY"。该文件**已移至 `specs/archive/` 并降为 SOURCE ARCHIVE / TRACE**；Human-facing Experience / UI 的当前唯一 Authority 是 **C4**（见 `specs/OWNERSHIP_MAP.md` §2）。另：本文对 `packages/agent-runtime` 为"空壳"的判断已被其后的 ADR-003 落地取代，阅读时请结合 `decisions/ADR-003-agent-runtime-layered-architecture.md`。其余实测结论（D1–D7 漂移等）仍然有效。
+
 ---
 
 ## 0. 审计元信息

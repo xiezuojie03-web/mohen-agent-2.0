@@ -33,8 +33,14 @@
 > 上述中文原始文件名与既有 Canonical 文件名均为实际 Repo 文件名。**禁止为整齐而重命名为旧示意英文名**；重命名 / 重组须经项目拥有者确认的治理任务。
 
 ### canonical/（CANONICAL REFERENCE）
+
+**体验基线 2 张**（C4 §1 / §2 引用；不可退化的体验与视觉底线）：
 - `金泽历史关系探索体验板.png` —— **Canonical Experience Grammar Reference**（冻结认知节奏 / 视觉层级 / 提问推进 / 体验转化；非逐像素模板）。
 - `EXP-DESIGN-02 · Round 2 · Jinze Canonical Reconstruction.png` —— **Canonical Visual Composition Reference**（冻结视觉优先级 / 主次 / 留白 / 文本密度逻辑；实现不必复刻精确像素）。
+
+**原型图谱 8 张**（C4 PART IV 引用；`image3.png` – `image10.png`）：
+- `image3.png` – `image10.png` —— 原型 00–07（体验闭环 / Persistent Experience Space / 历史地图五模式 / 视觉张力 / Presence / State Patch / 从知道去看 / 历史改造顺序）。
+- **来源与修复记录（2026-10-02）**：这 8 张由 `specs/experience-ui/source/MoHen_C4_UI_Architecture_V2.1.docx` 的内嵌媒体**精确还原**（docx 内文件名与 C4 正文引用名一致）。还原前 C4 PART IV 的 8 条图片链接**全部断链**，现已全部解析通过。
 
 ### evidence/（VALIDATION / FAILURE EVIDENCE）
 - `M5-HUMAN-01_PreBaseline_Failure/current-runtime-recording.mp4.mp4` —— M5-HUMAN-01 Round A 失败证据录像（**注意：实际 Repo 文件名为双扩展名 `.mp4.mp4`**；历史 Baseline 附录与结构图中写作 `current-runtime-recording.mp4`，为示意 / 内部引用偏差，资产本身以本实际文件名为准，禁止改名匹配）。

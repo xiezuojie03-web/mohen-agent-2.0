@@ -69,7 +69,7 @@ Developer Skills 不是用户功能，而是把一人项目的关键施工经验
 | mohen-visual-asset                      | 管理真实视觉材料，而不是“找张好看的图” | 来源、版权、creation date、depicted period、对象/地点关联、用途                 |
 | mohen-experience-prototype              | 把知识和关系转成用户可以经历的体验    | Beat、Primary Focus、Surface、Composition、Transition、真实资源映射       |
 | mohen-acceptance                        | 判断“做完”是否真的成立         | 工程测试 + 真实截图/录屏 + Human Experience Gate + 回滚/Result             |
-| mohen-spatial-grounding                 | 区分今天的位置与历史空间         | 现代坐标、历史关系、精度、不确定性、空间语义                                         |
+| mohen-spatial-grounding                 | 区分今天的位置与历史空间         | **CANDIDATE（尚未施工）**：`skills/` 下暂无对应目录。晋升须按 **本宪法 §9（Skill 的成熟与晋升规则）**；产物范围：现代坐标、历史关系、精度、不确定性、空间语义 |
 | mohen-historical-spatial-source         | 寻找并取得历史空间资料          | 历史地图/图页/空间证据 Find & Acquire                                    |
 | mohen-historical-spatial-reconstruction | 只在证据允许时重建历史空间        | Historical Feature / Reconstruction；Geometry itself is a Claim |
 
