@@ -1,0 +1,409 @@
+{
+  "tag": "UNATTENDED-20261002-DRYRUN",
+  "mode": "DRY_RUN",
+  "env": "dev",
+  "cutoff": "2026-10-02T09:23:00.000Z",
+  "interval_min": 0,
+  "started_at": "2026-10-02T09:22:15.603Z",
+  "jobs": {
+    "src-gazetteer_details.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:gazetteer_details.json",
+      "at": "2026-10-02T09:22:15.616Z"
+    },
+    "src-events_linked.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:events_linked.json",
+      "at": "2026-10-02T09:22:15.628Z"
+    },
+    "src-hsly_events.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:hsly_events.json",
+      "at": "2026-10-02T09:22:15.689Z"
+    },
+    "src-narrative_assets.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:narrative_assets.json",
+      "at": "2026-10-02T09:22:15.705Z"
+    },
+    "src-cbdb_people.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:cbdb_people.json",
+      "at": "2026-10-02T09:22:15.706Z"
+    },
+    "src-clans.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:clans.json",
+      "at": "2026-10-02T09:22:15.719Z"
+    },
+    "src-clan_pdf_index.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:clan_pdf_index.json",
+      "at": "2026-10-02T09:22:15.731Z"
+    },
+    "src-jp_works_all.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:jp_works_all.json",
+      "at": "2026-10-02T09:22:15.750Z"
+    },
+    "src-jp_shanghai_works.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:jp_shanghai_works.json",
+      "at": "2026-10-02T09:22:15.760Z"
+    },
+    "src-jp_persons_zhu.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:jp_persons_zhu.json",
+      "at": "2026-10-02T09:22:15.770Z"
+    },
+    "src-jp_shanghai_family_persons.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:jp_shanghai_family_persons.json",
+      "at": "2026-10-02T09:22:15.804Z"
+    },
+    "src-jp_zhu_deepdive.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:jp_zhu_deepdive.json",
+      "at": "2026-10-02T09:22:15.805Z"
+    },
+    "src-jp_family_town_analysis.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:jp_family_town_analysis.json",
+      "at": "2026-10-02T09:22:15.806Z"
+    },
+    "src-geo_placenames_shanghai.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:geo_placenames_shanghai.json",
+      "at": "2026-10-02T09:22:15.833Z"
+    },
+    "src-protection_index.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:protection_index.json",
+      "at": "2026-10-02T09:22:15.838Z"
+    },
+    "src-sh_protection_index.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:sh_protection_index.json",
+      "at": "2026-10-02T09:22:15.853Z"
+    },
+    "src-suzhou_narrative_candidates.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:suzhou_narrative_candidates.json",
+      "at": "2026-10-02T09:22:15.859Z"
+    },
+    "src-suzhou_narrative_review.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:suzhou_narrative_review.json",
+      "at": "2026-10-02T09:22:15.871Z"
+    },
+    "src-suzhou_people_shanghai.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:suzhou_people_shanghai.json",
+      "at": "2026-10-02T09:22:15.882Z"
+    },
+    "src-yutu_catalog_final_20260831.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:yutu_catalog_final_20260831.json",
+      "at": "2026-10-02T09:22:15.909Z"
+    },
+    "src-yutu_catalog_checked.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:yutu_catalog_checked.json",
+      "at": "2026-10-02T09:22:15.934Z"
+    },
+    "src-yutu_plaquettes_checked.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:yutu_plaquettes_checked.json",
+      "at": "2026-10-02T09:22:15.937Z"
+    },
+    "src-yutu_verify_coverage.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:yutu_verify_coverage.json",
+      "at": "2026-10-02T09:22:15.950Z"
+    },
+    "src-yutu_level3.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:yutu_level3.json",
+      "at": "2026-10-02T09:22:15.967Z"
+    },
+    "src-verify_cbdb_20260831.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:verify_cbdb_20260831.json",
+      "at": "2026-10-02T09:22:15.987Z"
+    },
+    "src-verify_souyun_20260831.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:verify_souyun_20260831.json",
+      "at": "2026-10-02T09:22:16.004Z"
+    },
+    "src-verify_song_press_20260831.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:verify_song_press_20260831.json",
+      "at": "2026-10-02T09:22:16.020Z"
+    },
+    "src-resource_probe_20260831.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:resource_probe_20260831.json",
+      "at": "2026-10-02T09:22:16.021Z"
+    },
+    "src-resource_probe2_20260831.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:resource_probe2_20260831.json",
+      "at": "2026-10-02T09:22:16.061Z"
+    },
+    "src-dmz_zhujiajiao.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:dmz_zhujiajiao.json",
+      "at": "2026-10-02T09:22:16.063Z"
+    },
+    "src-gj_fangzhi.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:gj_fangzhi.json",
+      "at": "2026-10-02T09:22:16.080Z"
+    },
+    "src-gj_works___.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:gj_works_青浦.json",
+      "at": "2026-10-02T09:22:16.099Z"
+    },
+    "src-gj_works_____.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:gj_works_珠里小志.json",
+      "at": "2026-10-02T09:22:16.174Z"
+    },
+    "src-gj_works____.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:gj_works_朱家角.json",
+      "at": "2026-10-02T09:22:16.133Z"
+    },
+    "src-gj_works______.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:gj_works_朱家角镇志.json",
+      "at": "2026-10-02T09:22:16.153Z"
+    },
+    "src-mgts_104971_entries.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:mgts_104971_entries.json",
+      "at": "2026-10-02T09:22:16.193Z"
+    },
+    "src-mgts_31278_entries.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:mgts_31278_entries.json",
+      "at": "2026-10-02T09:22:16.217Z"
+    },
+    "src-mgts_4581_entries.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:mgts_4581_entries.json",
+      "at": "2026-10-02T09:22:16.223Z"
+    },
+    "src-mgts_4584_entries.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:mgts_4584_entries.json",
+      "at": "2026-10-02T09:22:16.243Z"
+    },
+    "src-mgts_4590_entries.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:mgts_4590_entries.json",
+      "at": "2026-10-02T09:22:16.258Z"
+    },
+    "src-mgts_87274_entries.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:mgts_87274_entries.json",
+      "at": "2026-10-02T09:22:16.273Z"
+    },
+    "src-mgts_90096_entries.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:mgts_90096_entries.json",
+      "at": "2026-10-02T09:22:16.288Z"
+    },
+    "src-mgts_92309_entries.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:mgts_92309_entries.json",
+      "at": "2026-10-02T09:22:16.305Z"
+    },
+    "src-mgts_31278_town_hits.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:mgts_31278_town_hits.json",
+      "at": "2026-10-02T09:22:16.322Z"
+    },
+    "src-mgts_4581_town_hits.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:mgts_4581_town_hits.json",
+      "at": "2026-10-02T09:22:16.338Z"
+    },
+    "src-mgts_4590_town_hits.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:mgts_4590_town_hits.json",
+      "at": "2026-10-02T09:22:16.356Z"
+    },
+    "src-mgts_104971_town_hits.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:mgts_104971_town_hits.json",
+      "at": "2026-10-02T09:22:16.372Z"
+    },
+    "src-jinze_evolution_raw_20260830.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:jinze_evolution_raw_20260830.json",
+      "at": "2026-10-02T09:22:16.375Z"
+    },
+    "src-_work_titles.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:_work_titles.json",
+      "at": "2026-10-02T09:22:16.396Z"
+    },
+    "src-mcp_screenshot_ocr.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:mcp_screenshot_ocr.json",
+      "at": "2026-10-02T09:22:16.412Z"
+    },
+    "src-external_mapsource_probe_20260831.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:external_mapsource_probe_20260831.json",
+      "at": "2026-10-02T09:22:16.434Z"
+    },
+    "src-commons_oldmaps_raw_20260831.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:commons_oldmaps_raw_20260831.json",
+      "at": "2026-10-02T09:22:16.481Z"
+    },
+    "src-rumsey_maps_raw_20260831.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:rumsey_maps_raw_20260831.json",
+      "at": "2026-10-02T09:22:16.533Z"
+    },
+    "src-commons_cats_drill_20260831.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:commons_cats_drill_20260831.json",
+      "at": "2026-10-02T09:22:16.564Z"
+    },
+    "src-jp_family_town_sparql_analysis.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:jp_family_town_sparql_analysis.json",
+      "at": "2026-10-02T09:22:16.566Z"
+    },
+    "src-jp_works_sparql.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:jp_works_sparql.json",
+      "at": "2026-10-02T09:22:16.594Z"
+    },
+    "src-jp_shanghai_persons_count.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:jp_shanghai_persons_count.json",
+      "at": "2026-10-02T09:22:16.602Z"
+    },
+    "src-jp_familyname_zhu.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:jp_familyname_zhu.json",
+      "at": "2026-10-02T09:22:16.604Z"
+    },
+    "src-jp_zhu_persons.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:jp_zhu_persons.json",
+      "at": "2026-10-02T09:22:16.619Z"
+    },
+    "src-gj_14373_toc.json": {
+      "ok": true,
+      "would_insert": 1,
+      "note": "source_record:gj_14373_toc.json",
+      "at": "2026-10-02T09:22:16.678Z"
+    }
+  },
+  "counters": {
+    "jobs_done": 61,
+    "jobs_failed": 0,
+    "inserted": 0
+  },
+  "failures": [],
+  "verdict": "PASS WITH HOLD",
+  "registry": {
+    "path": "specs/data-production/production-registry.json",
+    "entries": 3,
+    "queued": 66,
+    "declared": 61,
+    "runnable": 61,
+    "forbidden": [
+      {
+        "id": "images-shanghai-verified",
+        "reason": "**门禁未实现**：G0–G6 结果不落 evidence_gate_audit，且 visual_assets 无正面资格字段（默认即『未被排除』）→ 实测已造成 1246 张图片在无描述、无门禁记录的情况下被视为可用。补齐门禁写入（M2 迁移）后方可解禁。"
+      },
+      {
+        "id": "images-shanghai-census",
+        "reason": "**门禁未实现**：G0–G6 结果不落 evidence_gate_audit，且 visual_assets 无正面资格字段（默认即『未被排除』）→ 实测已造成 1246 张图片在无描述、无门禁记录的情况下被视为可用。补齐门禁写入（M2 迁移）后方可解禁。"
+      },
+      {
+        "id": "images-commons-baoshan",
+        "reason": "**门禁未实现**：G0–G6 结果不落 evidence_gate_audit，且 visual_assets 无正面资格字段（默认即『未被排除』）→ 实测已造成 1246 张图片在无描述、无门禁记录的情况下被视为可用。补齐门禁写入（M2 迁移）后方可解禁。"
+      },
+      {
+        "id": "images-commons-maps",
+        "reason": "**门禁未实现**：G0–G6 结果不落 evidence_gate_audit，且 visual_assets 无正面资格字段（默认即『未被排除』）→ 实测已造成 1246 张图片在无描述、无门禁记录的情况下被视为可用。补齐门禁写入（M2 迁移）后方可解禁。"
+      },
+      {
+        "id": "coords-wikidata",
+        "reason": "协议 #5 明令「历史地图锚点 → HOLD」、#10 明令「历史地图配准暂不作为第一阶段」；且实测 240 行以 candidate 入库却 confidence = 0、evidence_ids = {}。此类判断必须有人值守。"
+      }
+    ],
+    "preflight_excluded": []
+  },
+  "stop_reason": "CUTOFF_REACHED",
+  "finished_at": "2026-10-02T09:23:16.699Z"
+}

@@ -322,6 +322,7 @@ async function summaryFacts() {
     va_pending_review: "select count(*) from visual_assets where eligibility_tags && array['pending_heritage_review']",
     va_excluded: "select count(*) from visual_assets where eligibility_tags && array['excluded_from_heritage_primary']",
     va_no_gate_audit: "select count(*) from visual_assets a where not exists (select 1 from evidence_gate_audit g where g.object_type='visual_asset' and g.object_id=a.asset_id::text)",
+    va_audit_last_at: "select max(created_at)::text from evidence_gate_audit where object_type='visual_asset'",
     va_effective: "select count(*) from effective_visual_assets",
     published_entities: "select count(*) from entities where status='published'",
     verified_evidence: "select count(*) from evidence where verification_status='verified'",
@@ -338,6 +339,7 @@ async function summaryFacts() {
        (select count(*) from visual_assets a where not exists (
             select 1 from evidence_gate_audit g
              where g.object_type = 'visual_asset' and g.object_id = a.asset_id::text)) as va_no_gate_audit,
+       (select max(created_at)::text from evidence_gate_audit where object_type = 'visual_asset') as va_audit_last_at,
        (select count(*) from effective_visual_assets) as va_effective,
        (select count(*) from entities where status = 'published') as published_entities,
        (select count(*) from evidence where verification_status = 'verified') as verified_evidence,
@@ -362,7 +364,11 @@ function factsRows(f) {
     row("va_total", "图片 总数"),
     row("va_pending_review", "图片 待审"),
     row("va_excluded", "图片 已排除（heritage-primary）"),
-    row("va_no_gate_audit", "从未有门禁审计的图片"),
+    row("va_no_gate_audit", "图片缺门禁审计（反连接计数）"),
+    // [2026-10-02] 这一行是为了防止上面那行被误读：实测本仓的**测试套件会批量写 evidence_gate_audit**
+    // （2026-10-02 17:03:58–17:04:05 的 7 秒内写入 9016 行，覆盖全部 1288 张图）。
+    // 因此"缺审计 = 0"既可能来自真实门禁流程，也可能只是刚跑过测试 —— 必须看时间才能判断。
+    row("va_audit_last_at", "最近一次图片门禁审计时间（据此判断覆盖是否来自真实门禁流程）"),
     row("va_effective", "真正“有效可用”的图片"),
     row("published_entities", "published 实体（必须为 0）"),
     row("verified_evidence", "verified 证据（必须为 0）"),
@@ -400,13 +406,16 @@ async function finalize(reason) {
   const inserted = jobEntries.reduce((a, [, j]) => a + (Number(j.inserted) || 0), 0);
   const unexecuted = jobs.length - done.length - failed.length;
 
+  // [M1.4] 事实表**总是查询**（全部是只读 SELECT）：DRY_RUN 也需要让拥有者看到当前库状态。
+  // 窗口类事实（本批时间窗内的门禁审计 / review_queue 新增）在 DRY_RUN 下预期为 0 —— 这本身是有用信息；
+  // 绝对类事实（visual_assets 总数等）仍反映真实库状态。
   let f = { values: {}, sql: {} };
   let factsError = null;
-  if (WRITE) {
-    try { f = await summaryFacts(); }
-    catch (e) { factsError = String((e && e.message) || e); }
-  }
+  try { f = await summaryFacts(); }
+  catch (e) { factsError = String((e && e.message) || e); }
   const fv = f.values || {};
+  const factsAttribution = FACTS_ATTRIBUTION +
+    (MODE === "DRY_RUN" ? " **本轮为 DRY_RUN：窗口类事实（门禁审计条数 / review_queue 新增）预期为 0。**" : "");
 
   // 三值结论（项目拥有者 2026-10-02 批准；协议 §8）
   const hardStop = failed.length > 0 || reason === "STOPPED_CONSECUTIVE_FAILURES" || reason === "STOPPED_FATAL";
@@ -440,7 +449,7 @@ async function finalize(reason) {
       queued: ALL_JOBS.length, declared: declared.length, runnable: jobs.length,
       done: done.length, failed: failed.length, unexecuted, inserted,
     },
-    factsAttribution: FACTS_ATTRIBUTION,
+    factsAttribution,
     factsRows: factsRows(f),
     factsError,
     guarantees: GUARANTEES,
