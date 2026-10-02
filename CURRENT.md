@@ -211,7 +211,7 @@ H2 的下一出口不是"再完成一批功能"，而是：
 > **C0–C4 的文件路径以 `AGENTS.md` §1 为唯一路由源**（版本源唯一机制见 C0 §10）；本节不再重复路径，仅列与当前状态直接相关的引用。
 
 -   **Canonical Images** `specs/experience-ui/canonical`（两张 Canonical 基线，C4 引用）
--   **当前施工图** `prototypes/墨痕_五母题施工审阅_第一批_M1_V0.1.html` + `docs/墨痕_五母题施工审阅_第一批_M1_配套规格_V0.1.md`（第 3 代；登记见 `OWNERSHIP_MAP.md` §2.1）
+-   **当前施工图** `specs/experience-ui/施工图/墨痕_五母题施工审阅_第一批_M1_配套规格_V0.1.md` + `specs/experience-ui/施工图/墨痕_五母题施工审阅_第一批_M1_V0.1.html`（第 3 代；登记见 `OWNERSHIP_MAP.md` §2.1）
 -   **Dev Verification Artifacts** `verification/`（UI 验证截图等临时产物；不入根目录、默认不入库，见该目录 README）
 
 ------------------------------------------------------------------------
@@ -261,7 +261,9 @@ pnpm dev
    - **归档件不等于 Authority**：活跃文件引用归档件时必须标注 `ARCHIVE / TRACE`；归档件正文不改写，只加历史横幅。
    - **目录职责唯一 Authority**＝`OWNERSHIP_MAP.md`（含 23 个根目录逐项声明）。
    - **命名纪律复核范围含 Office 二进制**：`.docx/.pptx/.xlsx` 须解包检查，不得只 grep 文本文件（此为对 R13 的修正补充）。
-   - **施工图当前版本**：第 3 代——`prototypes/墨痕_五母题施工审阅_第一批_M1_V0.1.html` + `docs/墨痕_五母题施工审阅_第一批_M1_配套规格_V0.1.md`，经项目拥有者 **2026-10-02 确认**；第 2 代 `specs/experience-ui/施工图/T05_B1_*` 已归档。
+   - **施工图当前版本**：第 3 代——`specs/experience-ui/施工图/墨痕_五母题施工审阅_第一批_M1_配套规格_V0.1.md` + `specs/experience-ui/施工图/墨痕_五母题施工审阅_第一批_M1_V0.1.html`，经项目拥有者 **2026-10-02 确认**；第 2 代已归档。
+   - **目录变更（2026-10-02）**：docs/ 与 prototypes/ **退役并移除**，其内容（UI 相关 4 份 + 夜间协议 1 份）并入 `specs/`。**此后 Experience/UI 相关内容一律放 `specs/`。** 目录树与守卫契约见 `OWNERSHIP_MAP.md`。
+   - **状态入口唯一**：`tasks/CURRENT_TASK.md` 已改为指向 `CURRENT.md` 的**指针**（其 2026-09-25 的旧状态叙述含与实测不符的验收声明，仅保留于 Git 历史）。**状态只有一个入口：本文件。**
 
 > 这些决断是对 C0–C4 的工程落地确认，不修改宪法原则；若需变更，提交项目拥有者确认。其中 **R13、R14 为治理级决断**，同时登记于 C0 §11。
 

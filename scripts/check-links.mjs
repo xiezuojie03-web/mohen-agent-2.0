@@ -1,17 +1,19 @@
 // scripts/check-links.mjs
-// 校验【活跃文档】里的相对链接 / 图片引用是否解析得到实体。
+// 两趟校验【活跃文档】的引用关系（正向 + 反向索引完整性）：
+//   A. markdown 链接与图片引用 `[](target)` / `![](target)`
+//   B. 反引号包裹的路径引用 `` `path/to/file.md` ``（正文里的"引导/索引"关系多为此形式）
 // 目的：杜绝「被引用的文件被移动或归档后，引用静默失效」这一类反复出现的问题
 //       （实例：C4 PART IV 的 8 张原型图，自 2026-10-01 净化后长期断链，直到 10-02 审计才发现）。
 //
-// 范围（活跃）：根目录 `*.md`、`governance/*.md`、`specs/**/*.md`、`docs/**/*.md`、`decisions/*.md`、`skills/**/SKILL.md`
-// 豁免（Trace）：路径含 `archive` 的目录、`tasks/`、`data/`、`verification/`、`test-results/`
-//                —— 依 OWNERSHIP_MAP §1.2 第 5 条，归档件与历史记录正文不改写，允许保留失效路径。
+// 范围（活跃）：根目录 `*.md`、`governance/*.md`、`specs/**/*.md`、`decisions/*.md`、`skills/**/SKILL.md`
+// 豁免（Trace）：路径含 `archive` 的目录、`tasks/`、`data/`、`legacy/`、`verification/`、`test-results/`
+//                —— 依 OWNERSHIP_MAP §1 规则 5，归档件与历史记录正文不改写，允许保留失效路径。
 import fs from "node:fs";
 import path from "node:path";
 
 const ROOT = process.cwd();
 const SKIP_DIRS = new Set(["node_modules", ".git", ".next", "archive", "tasks", "data", "verification", "test-results", "legacy"]);
-const BASES = ["governance", "specs", "docs", "decisions", "skills"];
+const BASES = ["governance", "specs", "decisions", "skills"];
 
 const files = [];
 function walk(dir) {
@@ -27,30 +29,55 @@ function walk(dir) {
 for (const b of BASES) if (fs.existsSync(b)) walk(b);
 for (const f of fs.readdirSync(".")) if (f.endsWith(".md")) files.push(f);
 
+const exists = (fileDir, target) => {
+  let clean = target;
+  try { clean = decodeURIComponent(clean); } catch { /* 保留原样 */ }
+  const tries = clean.startsWith("/")
+    ? [path.resolve(ROOT, "." + clean)]
+    : [path.resolve(ROOT, fileDir, clean), path.resolve(ROOT, clean)]; // 先按相对本文档解析，再按仓库根解析
+  return tries.some((p) => fs.existsSync(p));
+};
+
 const LINK = /\]\(([^)]+)\)/g;
+const BACKTICK = /`([^`\n]+)`/g;
 const isExternal = (t) => /^(https?:|mailto:|tel:|data:|#)/i.test(t);
-let checked = 0;
+
+let markdownLinks = 0;
+let pathRefs = 0;
 const broken = [];
 
 for (const file of files) {
   const text = fs.readFileSync(file, "utf8");
   const dir = path.dirname(file);
+
+  // ---- A. markdown 链接与图片 ----
   for (const m of text.matchAll(LINK)) {
     let target = m[1].trim();
     if (target.startsWith("<") && target.endsWith(">")) target = target.slice(1, -1);
     target = target.replace(/\s+["'].*$/, "");       // 只去掉 ](path "title") 里带引号的 title；路径本身可含空格
     if (!target || isExternal(target)) continue;
-    let clean = target.split("#")[0];
+    const clean = target.split("#")[0];
     if (!clean) continue;
-    try { clean = decodeURIComponent(clean); } catch { /* 保留原样 */ }
-    checked++;
-    const resolved = clean.startsWith("/")
-      ? path.resolve(ROOT, "." + clean)
-      : path.resolve(ROOT, dir, clean);
-    if (!fs.existsSync(resolved)) broken.push(`${file} -> ${target}`);
+    markdownLinks++;
+    if (!exists(dir, clean)) broken.push(`${file} -> ${target}`);
+  }
+
+  // ---- B. 反引号里的路径引用（只认"像路径"的：含 `/` 且以已知扩展名或 `/` 结尾）----
+  for (const m of text.matchAll(BACKTICK)) {
+    const t = m[1].trim();
+    if (!t.includes("/")) continue;                  // 裸文件名不校验（会与相对路径混淆）
+    if (!/\.(md|html|png|jpe?g|json|mjs|ts|tsx|sql|docx|pptx)$/i.test(t) && !t.endsWith("/")) continue;
+    // 不校验：占位符/描述性写法（… * | < > { }），以及命令行示例（如 `node pipelines/x/y.mjs`）
+    if (/[…*|<>{}]/.test(t)) continue;
+    if (/^(node|pnpm|npx|npm|git|psql|python3?|bash|sh|cd)\s/.test(t)) continue;
+    pathRefs++;
+    if (!exists(dir, t.replace(/\/$/, ""))) broken.push(`${file} -> \`${t}\``);
   }
 }
 
-for (const b of broken) console.error("BROKEN_LINK " + b);
-console.log(`LINKS files=${files.length} checked=${checked} broken=${broken.length} (exempt: archive/ tasks/ data/ legacy/)`);
+for (const b of broken) console.error("BROKEN_REF " + b);
+console.log(
+  `LINKS files=${files.length} md_links=${markdownLinks} path_refs=${pathRefs} broken=${broken.length} ` +
+  `(exempt: archive/ tasks/ data/ legacy/)`
+);
 process.exit(broken.length ? 1 : 0);

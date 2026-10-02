@@ -1,7 +1,7 @@
 # ADR-002 · Cultural World Claim-level Epistemic Model
 
 > 状态：ACCEPTED（Architect Review 2026-09-25，随 CULTURAL-WORLD-02 签发）
-> 关联：V4.8 Architecture Roadmap §3（Cultural Relation Contract V0.2）、`specs/FOUNDATION.md` §6、CULTURAL-WORLD-02 Taskbook §3/§4、`specs/OWNERSHIP_MAP.md` §「禁止平行真源」
+> 关联：V4.8 Architecture Roadmap §3（Cultural Relation Contract V0.2；该 Roadmap 不在本仓，见 `governance/archive/`）、`specs/FOUNDATION.md` §6、CULTURAL-WORLD-02 Taskbook §3/§4、`OWNERSHIP_MAP.md` §「禁止平行真源」
 > 本仓库内既存三套认识论状态词汇，V4.8 引入第四套（Claim-level 六值）。本 ADR 明确四套各自的职责与映射边界，**禁止把它们视为四个平行真源**。
 
 ---
