@@ -30,6 +30,7 @@
 │   ├── data-production/   数据生产操作件（**契约**在 specs/ 根，**操作件**在本目录）
 │   │   ├── production-registry.json   **生产注册表**：哪些自动化被允许无人值守运行（机器可读，守卫校验）
 │   │   ├── identifier-registry.json   **标识符登记**：真库里"可以随便写"的标签/代号必须声明出身与定义（§3.1）
+│   │   ├── acquisition-intents.json   **采集意图**：每批数据"当初为什么抓的"必须抓前声明（§3.2）
 │   │   ├── T03_金泽材料盘点_覆盖矩阵.md   叙事缺口清单（当前唯一实例＝金泽）
 │   │   ├── T06_无人值守派工与缺口映射.md   缺口 → 字段 → 批次
 │   │   └── T07_无人值守作业最小Contract.md   作业字段契约与安全基线
@@ -143,6 +144,10 @@
 3. **禁止写"待查"**：只允许写"**已查 <清单>，未找到**"。理由：「待查」把「我没查」包装成「将来会查」，然后永远待下去。
 4. **范围**：先覆盖**真库中无 CHECK 约束的词表型标识符**（`text[]` 标签列 + 自由文本方法代号）。CHECK 约束的枚举（实测 33 列 / 131 值）定义就在 `supabase/migrations`，登记表**只指向、不复制**（复制＝制造平行真源）；表名 / 字段名的分叉属 **ESC-01**，另行裁定。
 5. **执行**：`specs/data-production/identifier-registry.json` + `scripts/check-identifier-registry.mjs`（`pnpm guard:identifiers`）。**新增任何未登记的标签 / 代号 → 守卫红。**
+
+### 3.2 采集意图声明（2026-10-02 · M4.2）
+
+**抓取 / 导入前必须先登记采集意图**（地点 / 主题 / 来源 / 许可 / 方法 / 检索词或半径）；**未声明意图的批次可进 Raw，但不得进入 Candidate**。落地＝`specs/data-production/acquisition-intents.json` + `scripts/check-acquisition-intents.mjs`（`pnpm guard:acquisition`）：**真库每一行必须恰好命中一个已声明批次**。追溯声明同受 §3.1 约束——**不许写「待查」**。
 
 ## 4. 版本源与 SOT
 

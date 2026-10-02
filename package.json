@@ -16,8 +16,9 @@
     "guard:registry": "node scripts/check-production-registry.mjs",
     "guard:source-gate": "node scripts/check-source-gate.mjs",
     "guard:identifiers": "node scripts/check-identifier-registry.mjs",
+    "guard:acquisition": "node scripts/check-acquisition-intents.mjs",
     "guard:links": "node scripts/check-links.mjs",
-    "guard": "pnpm guard:docs && pnpm guard:structure && pnpm guard:registry && pnpm guard:source-gate && pnpm guard:identifiers && pnpm guard:links && pnpm test"
+    "guard": "pnpm guard:docs && pnpm guard:structure && pnpm guard:registry && pnpm guard:source-gate && pnpm guard:identifiers && pnpm guard:acquisition && pnpm guard:links && pnpm test"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
