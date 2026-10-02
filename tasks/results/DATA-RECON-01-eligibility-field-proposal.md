@@ -1,8 +1,10 @@
 > **提案类型：Architecture Reconciliation**
 > **提案编号**：RECON-01
 > **日期**：2026-10-02
-> **状态**：待裁决
+> **状态**：已裁定
 > **涉及层级**：C3（核心对象 + 晋级规则）
+> **裁定结果**（2026-10-02 项目拥有者）：选定 **「方案 A + 规则」** —— A ＝**只补齐图片层**（照已有先例 `claims_require_evidence`，**非发明新机制**）；规则 ＝把「标为可用必须有门禁记录」写成 **C3 §4.2 通则（R15）** 并配**只读守卫**。
+> **已实施**：`supabase/migrations/202610020008_visual_asset_promotion_gate.sql`（新增 `eligibility_status` 默认 `pending_review`；1288 行按状态重标、**不删除**；视图判定改为按状态）+ `pnpm guard:promotion`（只读、不阻断）。本提案「请你回答什么」中的三选一由此闭合。
 
 # RECON-01 · 晋级闸门：图片层为什么落后于已有先例
 

@@ -18,8 +18,9 @@
     "guard:identifiers": "node scripts/check-identifier-registry.mjs",
     "guard:acquisition": "node scripts/check-acquisition-intents.mjs",
     "guard:reconciliation": "node scripts/check-reconciliation.mjs",
+    "guard:promotion": "node scripts/check-promotion-gate.mjs",
     "guard:links": "node scripts/check-links.mjs",
-    "guard": "pnpm guard:docs && pnpm guard:structure && pnpm guard:registry && pnpm guard:source-gate && pnpm guard:identifiers && pnpm guard:acquisition && pnpm guard:reconciliation && pnpm guard:links && pnpm test"
+    "guard": "pnpm guard:docs && pnpm guard:structure && pnpm guard:registry && pnpm guard:source-gate && pnpm guard:identifiers && pnpm guard:acquisition && pnpm guard:reconciliation && pnpm guard:promotion && pnpm guard:links && pnpm test"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

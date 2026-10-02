@@ -263,6 +263,15 @@ Developer Skill 的任务不是把材料批量塞进数据库，而是推动对�
 | G5 冲突    | 异说是否保留           | conflict\_set                  |
 | G6 发布资格  | 是否允许进入 Runtime   | eligibility/status             |
 
+**晋级闸门通则（2026-10-02 · 项目拥有者确认，R15）**
+
+**任何表要把一行标成"可用 / 已发布"级别，必须能在 `evidence_gate_audit` 找到该对象对应的门禁记录；无记录者不得晋级。**
+
+- **落地形态照 `claims_require_evidence`**：约束触发器（`create constraint trigger`）+ **`deferrable initially deferred`** —— 校验发生在 **COMMIT**，写入者可在**同一事务内**先写对象、再写门禁记录。
+- **已有先例**：`claims_require_evidence`（claims）· `vel_confirmed_requires_evidence`（视觉链接）· `discovery_not_publishable_guard` · `review_queue_tier_c_guard`。
+- **尚未落地的表**由 `pnpm guard:promotion`（**只读、不阻断写入**）逐表报出"被标成可用却无门禁记录"的行数，供分批补强制。
+- **禁止**用"反向排除名单 + 空值默认可用"表达资格。`visual_assets` 曾如此（`eligibility_tags text[] default '{}'`，空＝可用），是 1246 张图片污染与 20 张人工排除被洗掉的根因；已于 `202610020008_visual_asset_promotion_gate.sql` 改为正面资格字段 `eligibility_status`（默认 `pending_review`）。
+
 ## 4.3 Evidence Perspective / Provenance：保留为扩展位
 
 现阶段不建议立即增加一个简单的 perspective 枚举字段。此前架构讨论已经确认：source\_type、作者/编者/出版者、institutional\_position、historical\_actor/observer、narrative\_perspective、later\_interpretation/legend 并不是同一维度。V1.1 只预留 provenance\_extension JSONB 或独立扩展表接口；待真实材料出现“不同来源传统导致 Agent 解释不同”的案例后，再升级正式 Contract。
