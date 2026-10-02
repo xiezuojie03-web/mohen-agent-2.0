@@ -249,12 +249,12 @@ source_record                                                                   
 | 机制 | 完成度 | 证据 / 缺什么 |
 |---|---|---|
 | **M1** Registry 强制入口（B-05） | ✅ **完成** | `11e6fe7`；位置按更名后结构迁至 `specs/data-production/production-registry.json`（**19 字段是 §4 所列 13 字段的超集**）；`4721a95` 更名 night→unattended；`b039621` preflight |
-| **M2** Gate / HOLD 数据库层强制（B-01/B-02） | 🟡 **~75%** | 前三条由 **R15**（`777436a`）完成：`eligibility_status` 默认 `pending_review` + 触发器 + 视图按状态过滤。**第四条 `review_queue` AUTO/HOLD/REJECT 三分未做** |
+| **M2** Gate / HOLD 数据库层强制（B-01/B-02） | ✅ **完成** | 前三条由 **R15**（`777436a`）；**第四条 `review_queue` AUTO/HOLD/REJECT 三分于 `c189e5a` 完成**：迁移 `202610020009` 加 `triage_outcome`+`ingest_run_id`+触发器（auto 禁 Tier C、出生即 approved、必记规则版本；hold 出生 pending；reject 出生 rejected；triage 不可改写）+ 同 run 同对象唯一索引；runner 候选写入同步产三分行；`guard:triage` + 测试（14/14 过 `_test` 库） |
 | **M3** 执行报告改真查询 + 三结论（B-04） | ✅ **完成** | `abf4b67` + `ceeb0c1`（`report.json`/`report.html`/`result.md` 同源）；`71db725` 补「最近一次图片门禁审计时间」 |
-| **M4** 采集意图 + 门禁接线（B-08/B-09/B-12） | 🟡 **~80%** | `ee1b0ad`（M4.1）+ `e191f22`（M4.2）；**缺 B-08 的 provider 运维表**（10 个 `ops_status: todo`） |
+| **M4** 采集意图 + 门禁接线（B-08/B-09/B-12） | ✅ **完成** | `ee1b0ad`（M4.1）+ `e191f22`（M4.2）+ `1ef9823`（B-08 provider 运维表：17 provider 全 `documented`，三项运维字段由 `guard:source-gate` 强制校验） |
 | **M5** 现有 1246 张处置 | 🔒 **搁浅** | 拥有者指定；见 §8.3 |
 
-**结论**：整张地图**只剩两处没做完** —— **M2 第四条**（`review_queue` 三分）与 **M4 的 provider 运维表**。
+**结论**：机制线 **M1–M4 全部落地**、12 条断点中 10 条已处置（仅 B-10/B-11 既有数据属数据处置、B-07 机制兜底就位转 C 组）。剩余工作**均不在机制类**：A 组 4 项待拥有者裁定 + C 组解禁（被 A/B 阻塞）。
 
 ### 8.2 各升级项（ESC）的详细进展
 
@@ -344,15 +344,31 @@ source_record                                                                   
 
 ### 8.5 下一步（按地图，而非按最新问题）
 
-1. **M2 第四条**：`review_queue` AUTO/HOLD/REJECT 三分（＝ B-02 的正解，也是 C 组解禁的最后一块）。
-   **方案已在 §4 M2 写好，无需重新发明。** 注意：它属**机制类**，不在冻结范围。
-2. **M4 收尾**：B-08 的 provider 运维表（10 个 `ops_status: todo`）。
-3. **B-03 / B-07 复核（2026-10-02 完成）**：B-03 已处置（`ingest_runs` 登记全路径落实，见 `c189e5a`）；B-07 仍部分处置——图片作业 `forbidden` + `jobImages` 内联判定就位，Skill 显式接线转 **C 组解禁**裁定。
-4. **A 组 4 项待拥有者裁定**（其中 `RECON-02` 建议方案 A）。
+1. **M2 第四条**（✅ 完成 `c189e5a`）：`review_queue` AUTO/HOLD/REJECT 三分（＝ B-02 正解，C 组解禁机制阻塞解除）。
+2. **M4 收尾**（✅ 完成 `1ef9823`）：B-08 provider 运维表全量落地 + 守卫强制校验。
+3. **B-03 / B-07 复核**（✅ 完成 `4f54f27`）：B-03 已处置；B-07 部分处置转 C 组解禁裁定。
+4. **A 组 4 项待拥有者裁定**（当前唯一待办，见 §8.2 与 §8.7）；其中 `RECON-02` 建议方案 A。
 5. **老数据问题不在此处理** —— 拥有者 2026-10-02 指定：**放到下一步"数据生产"里解决**。
 
 ### 8.6 冻结边界（本任务的边界声明）
 
 **本任务只解决"机制"问题，不解决数据库里老数据的问题。**
 老数据（1246 张及其派生指标、`SHL-LEGACY-COORDS`、重名、审计污染等）**一律留到下一步数据生产**处理。
+
+### 8.7 本轮执行记录（2026-10-02 续 · 数据库机制线）
+
+> 依据 §8.5 地图顺序执行。本次**只做机制类工作**，未触碰任何既有数据；冻结边界（§8.6）不变，`effective_visual_assets` 仍为 8 行。
+
+| 提交 | 机制 | 关键产物 | 测试 / 守卫 |
+|---|---|---|---|
+| `c189e5a` | **M2 第四条**（B-02 正解） | 迁移 `202610020009_review_queue_triage.sql`：`review_queue` 加 `triage_outcome`(auto/hold/reject)+`ingest_run_id`；触发器（auto 禁 Tier C、出生即 approved、必记规则版本；hold 出生 pending；reject 出生 rejected；triage 不可改写）+ 同 run 同对象唯一索引；`unattended-runner` WRITE 模式登记 `ingest_runs`，`jobImages`/`jobCoords`/拒收同步产三分行；新增 `guard:triage` | `guard:triage` + 测试 **14/14** 过 `_test` 库 |
+| `1ef9823` | **M4 收尾**（B-08 闭口） | `source-providers.json` v4：17 provider 全 `documented` + `rate_limit`/`failure_notes`/`last_verified`；守卫扩 `REQUIRED` 强校验 | `guard:source-gate` ops_todo=**0**（22 真库 provider 全解析） |
+| `4f54f27` | **断点复核** | B-03→已处置（`ingest_runs` 全路径）；B-07→部分处置（转 C 组）；B-08→已处置 | — |
+
+**机制线完成度**：M1 ✅ · M2 ✅ · M3 ✅ · M4 ✅。
+**断点**：10 已处置（B-01/02/03/04/05/06/08/09/12 + B-11 脚本侧）· 2 数据处置（B-10、B-11 既有数据）· 1 部分处置（B-07 机制兜底就位）。
+
+**升级评估**（见下方对话）：协议层已可承载 M1–M4 机制，建议把"DB 层强制"与"守卫清单"固化为协议正式章节；宪法层**只**宜提升 2–3 条**边界级**不变量（写权限可审计、Tier C 禁 auto、资格须正面字段），且须经 Architecture Reconciliation（C3 §10.3）+ 拥有者批准。
+
+**下一步唯一阻塞**＝ A 组 4 项（§8.2）。`RECON-02` 建议方案 A；C 组解禁（图片/坐标作业）机制已就绪，待拥有者显式拍板 + B-07 子决定（runner 是否显式走 `mohen-visual-asset` Skill 协议）。
 
