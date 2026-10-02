@@ -42,19 +42,25 @@ function cutoffDate(hhmm) {
   return c;
 }
 const CUTOFF = cutoffDate(UNTIL);
-fs.mkdirSync(OUT_DIR, { recursive: true });
-const LOG = path.join(OUT_DIR, "runner.log");
-const PROGRESS = path.join(OUT_DIR, "progress.json");
-const log = (s) => { const line = `[${new Date().toISOString()}] ${s}\n`; fs.appendFileSync(LOG, line); process.stdout.write(line); };
 
-const progress = { tag: TAG, mode: MODE, env: ENV, cutoff: CUTOFF.toISOString(), interval_min: INTERVAL_MIN,
-  started_at: new Date().toISOString(), jobs: {}, counters: { jobs_done: 0, jobs_failed: 0, inserted: 0 }, failures: [], verdict: "" };
-const save = () => fs.writeFileSync(PROGRESS, JSON.stringify(progress, null, 2), "utf8");
-
-// ---- 作业队列 + 生产注册表（2026-10-02 M1.2）----
-// 队列定义已抽到 ./unattended-jobs.mjs，使守卫（scripts/check-production-registry.mjs）能 import
-// **同一份定义**做精确核对，而不是靠正则去猜 runner 里有哪些作业。
-// import 与本块一起放在此处（ESM 顶层声明会被提升），以保持「队列」与「它的闸门」相邻可读。
+// ═══════════════════════════════════════════════════════════════════════════════
+// 启动决策（2026-10-02 · M1.2 生产注册表 + M1.3 preflight）
+//
+// 顺序刻意如此：**所有拒绝都发生在创建输出目录之前** —— 被拒绝的一轮不留下任何产物。
+//
+// 两道闸：
+//   ① 生产注册表（M1.2）：未声明 / 声明不唯一的作业 → 整轮不启动（exit 3）；
+//      unattended:"forbidden" 的作业 → 确定性剔除（不是失败，不计入连续失败）。
+//   ② preflight（M1.3）：已声明允许、但**此刻前置条件不满足**的作业 → 开跑前剔除并告知。
+//
+// 为什么必须有 ②（本项目已付过的代价）：
+//   图片作业因"源无法唯一确定"抛错 → 连续 3 次失败 → STOPPED_CONSECUTIVE_FAILURES
+//   → **整轮报废**，后面 58 个安全的来源作业一个都跑不到。
+//   「配置不全」与「跑出错」是两件事：前者应当在开跑前用确定性检查挡下，而不是烧掉一整轮。
+//
+// preflight 的边界：只做**确定性前置检查**（文件在不在 / 结构能不能解析 / 唯一性够不够），
+// 不读业务内容、不做判断、不预测结果质量。
+// ═══════════════════════════════════════════════════════════════════════════════
 import { buildJobs, matchEntries } from "./unattended-jobs.mjs";
 
 const REGISTRY_PATH = "specs/data-production/production-registry.json";
@@ -67,11 +73,10 @@ try {
   process.exit(3);
 }
 const REG_ENTRIES = Array.isArray(registry.jobs) ? registry.jobs : [];
-
 const ALL_JOBS = buildJobs();
 const RESOLVED = ALL_JOBS.map((j) => ({ job: j, hits: matchEntries(REG_ENTRIES, j.id) }));
 
-// ① 未声明 / 声明不唯一 → 一律不调度（整轮不启动，不做半截）
+// ---- 闸 ① 生产注册表 ----
 const unresolved = RESOLVED.filter((r) => r.hits.length !== 1);
 if (unresolved.length) {
   console.error(`STOP ${unresolved.length} 个作业未在生产注册表中唯一声明 —— 一律不调度：`);
@@ -79,21 +84,98 @@ if (unresolved.length) {
   console.error(`     处置：在 ${REGISTRY_PATH} 里声明该作业（required_fields 全填），或从队列中移除。`);
   process.exit(3);
 }
-
-// ② 声明为 unattended:"forbidden" 的作业 → 确定性剔除（不是失败，不计入连续失败）
-const excluded = [];
-const jobs = RESOLVED.filter((r) => {
+const forbidden = [];
+const declared = RESOLVED.filter((r) => {
   const e = r.hits[0];
   if (e.unattended === "forbidden") {
-    excluded.push({ id: r.job.id, reason: e.unattended_reason || "(未写理由)" });
+    forbidden.push({ id: r.job.id, reason: e.unattended_reason || "(未写理由)" });
     return false;
   }
   return true;
 }).map((r) => r.job);
 
-progress.registry = { path: REGISTRY_PATH, entries: REG_ENTRIES.length, queued: ALL_JOBS.length, runnable: jobs.length, excluded };
-for (const x of excluded) log(`SKIP unattended=forbidden  ${x.id} — ${x.reason}`);
-log(`registry=${REGISTRY_PATH} entries=${REG_ENTRIES.length} queued=${ALL_JOBS.length} runnable=${jobs.length} excluded=${excluded.length}`);
+// ---- 闸 ② preflight ----
+const readArr = (doc, keys) => keys.map((k) => doc[k]).find((a) => Array.isArray(a)) || [];
+
+/** 图片源必须唯一可确定（否则会像 727 张照片那样整批挂错 provenance）。 */
+async function resolveImageSource() {
+  const rows = await queryRows(
+    `select source_id, title, content_type, metadata_json from source_records where provider=:'p'`,
+    { p: LEGACY_SOURCE }
+  );
+  const candidates = rows.filter((r) => {
+    const kind = r.metadata_json && r.metadata_json.kind;
+    return kind !== "poem_source" && !/诗词|poem/i.test(r.title || "");
+  });
+  return { total: rows.length, candidates };
+}
+
+let _imgSrc = null;
+async function imageSourceCached() { if (!_imgSrc) _imgSrc = await resolveImageSource(); return _imgSrc; }
+
+/** 只回答"这个作业现在能不能开跑"；不回答结果对不对。
+ *  **铁律：检查项必须与作业实际会做的事一致——过严会静默丢掉合法工作。** */
+async function preflight(j) {
+  const p = path.join(FETCHED, j.file);
+  if (!fs.existsSync(p)) return { ok: false, reason: `源文件不存在：${j.file}` };
+
+  // source：本作业只做「登记来源 + Raw 快照」，按字节读取并 hash，**不解析 JSON**。
+  // （早先版本误加了数组结构检查，把 61 个合法作业全部误判为未就绪：实测 runnable 61 → 5。）
+  if (j.kind === "source") return { ok: true, bytes: fs.statSync(p).size };
+
+  if (j.kind === "images") {
+    const r = await imageSourceCached();
+    if (r.candidates.length !== 1) {
+      return { ok: false, reason: `图片源无法唯一确定（hushang_legacy 源 ${r.total} 条，其中非诗词 ${r.candidates.length} 条）—— 须先为图片批次建立专属 source_record` };
+    }
+  }
+
+  let doc;
+  try { doc = JSON.parse(fs.readFileSync(p, "utf8")); } catch { return { ok: false, reason: "JSON 解析失败" }; }
+  const arr = j.kind === "coords"
+    ? readArr(doc, ["filled", "items", "coords", "results", "data"])
+    : readArr(doc, ["items", "images", "results", "data"]);
+  if (!arr.length) return { ok: false, reason: "未识别出条目数组（JSON 结构不符）" };
+  return { ok: true, entries: arr.length };
+}
+
+const preflightExcluded = [];
+const RUNNABLE = [];
+for (const j of declared) {
+  let r;
+  try { r = await preflight(j); }
+  catch (e) { r = { ok: false, reason: "preflight 抛错：" + ((e && e.message) || e) }; }
+  if (r.ok) RUNNABLE.push(j);
+  else preflightExcluded.push({ id: j.id, kind: j.kind, reason: r.reason });
+}
+
+if (!RUNNABLE.length) {
+  console.error("NOTHING_TO_RUN 本轮没有任何作业可跑（全部被注册表或 preflight 排除）：");
+  for (const x of forbidden) console.error(`     [注册表 forbidden] ${x.id} — ${x.reason}`);
+  for (const x of preflightExcluded) console.error(`     [preflight] ${x.id} — ${x.reason}`);
+  console.error("     未创建任何输出目录，也未改动数据库。");
+  process.exit(0);
+}
+
+// ---- 通过两道闸：现在才创建输出目录与日志 ----
+fs.mkdirSync(OUT_DIR, { recursive: true });
+const LOG = path.join(OUT_DIR, "runner.log");
+const PROGRESS = path.join(OUT_DIR, "progress.json");
+const log = (s) => { const line = `[${new Date().toISOString()}] ${s}\n`; fs.appendFileSync(LOG, line); process.stdout.write(line); };
+
+const progress = { tag: TAG, mode: MODE, env: ENV, cutoff: CUTOFF.toISOString(), interval_min: INTERVAL_MIN,
+  started_at: new Date().toISOString(), jobs: {}, counters: { jobs_done: 0, jobs_failed: 0, inserted: 0 }, failures: [], verdict: "" };
+const save = () => fs.writeFileSync(PROGRESS, JSON.stringify(progress, null, 2), "utf8");
+
+const jobs = RUNNABLE;
+progress.registry = {
+  path: REGISTRY_PATH, entries: REG_ENTRIES.length,
+  queued: ALL_JOBS.length, declared: declared.length, runnable: jobs.length,
+  forbidden, preflight_excluded: preflightExcluded,
+};
+for (const x of forbidden) log(`SKIP [注册表 forbidden]  ${x.id} — ${x.reason}`);
+for (const x of preflightExcluded) log(`SKIP [preflight]  ${x.id} — ${x.reason}`);
+log(`registry=${REGISTRY_PATH} entries=${REG_ENTRIES.length} queued=${ALL_JOBS.length} declared=${declared.length} runnable=${jobs.length} forbidden=${forbidden.length} preflight_excluded=${preflightExcluded.length}`);
 save();
 
 // ---- 作业实现 ----
@@ -285,6 +367,13 @@ async function finalize(reason) {
     esc.push(`坐标诚实：historical_position_proof=true ${f.coords_claimed_as_history} 条、有坐标无 CRS ${f.coords_without_crs} 条`);
   if (unexecuted > 0) esc.push(`未执行 ${unexecuted} 个作业（截止时间到 / 作业耗尽）`);
   const escBlock = esc.length ? esc.slice(0, 3).map((s, i) => `${i + 1}. ${s}`).join("\n") : "无 —— 本批无需你介入。";
+  // [M1.3] 开跑前被排除的作业：明确列出（不是失败，不计入连续失败）
+  const reg = progress.registry || {};
+  const preExcluded = [
+    ...(reg.forbidden || []).map((x) => `- \`[注册表 forbidden]\` ${x.id} — ${x.reason}`),
+    ...(reg.preflight_excluded || []).map((x) => `- \`[preflight 未就绪]\` ${x.id} — ${x.reason}`),
+  ];
+  const exclBlock = preExcluded.length ? preExcluded.join("\n") : "无。";
 
   const md = `# ${TAG} · 无人值守执行报告
 
@@ -295,6 +384,10 @@ async function finalize(reason) {
 ## Escalation —— 你只需要看这里（最多 3 条）
 
 ${escBlock}
+
+## 开跑前排除（未执行，不是失败；不计入连续失败）
+
+${exclBlock}
 
 ## 计数
 - 作业总数：${jobs.length} · 完成：${done.length} · 失败：${failed.length} · 未执行：${unexecuted}
