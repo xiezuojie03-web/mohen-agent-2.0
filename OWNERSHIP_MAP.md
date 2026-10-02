@@ -25,7 +25,7 @@
 │   ├── AGENT_CONTRACT.md  Agent Loop 与 Discovery 契约
 │   ├── EXPERIENCE_CONTRACT.md  ExperienceState / Composition 契约
 │   ├── SOURCE_REGISTRY.md    来源登记
-│   ├── MoHen_Night_Data_Production_Protocol.md  夜间自动化数据生产协议（C2/C3 之下；T06/T07 依赖其 §12）
+│   ├── MoHen_Data_Production_Protocol.md  数据生产协议（无人值守 + 有人值守；C2/C3 之下；T06/T07 依赖其 §12）
 │   ├── archive/           【归档】被取代的契约与规范（旧 UI Baseline 等）｜禁止：当作当前 Authority
 │   └── experience-ui/     Experience/UI 素材与施工图（分级与 Authority 见该目录 README）
 │       ├── 施工图/        当前施工图（第 3 代）：M1 配套规格 + 可操作图册
@@ -33,7 +33,7 @@
 │       ├── 墨痕_UI架构与人文叙事_完整审查及后续任务.md   UI 审查与后续任务记录
 │       ├── 墨痕_Agent_2.0_金泽最小体验导演稿_V1.0.docx  最高体验权威（H2 计划自述）
 │       ├── 五母题深化_UI施工图与数据生产需求_V1.1.md  逐母题施工图与数据生产需求
-│       ├── T03_金泽材料盘点_覆盖矩阵.md  T06_数据生产_NightBatch派工与Gap映射.md  T07_NightJob_最小Contract与安全施工基线.md   材料盘点 / 夜跑派工 / 夜跑最小 Contract
+│       ├── T03_金泽材料盘点_覆盖矩阵.md  T06_数据生产_NightBatch派工与Gap映射.md  T07_NightJob_最小Contract与安全施工基线.md   材料盘点 / 无人值守派工 / 无人值守作业契约（后两个文件名中的 Night 为历史名）
 │       ├── canonical/     体验基线 2 张 + 原型图谱 8 张（C4 引用）
 │       ├── source/        TRACE：历史设计意图｜禁止：作为当前实现依据
 │       ├── evidence/      失败与验证证据｜禁止：当作未来 UI 模板
@@ -58,7 +58,7 @@
 │   └── legacy             老库移植与夜跑执行体（night-runner.mjs）｜禁止：把老库内容当已裁决事实
 ├── supabase/migrations    Truth Store 物理定义（schema 唯一来源）｜禁止：被绕过直接改库
 ├── scripts/               结构与文档守卫（check-*.mjs）＋ 报告生成器（gen-*.mjs）｜禁止：承载产品逻辑
-├── tools/night/           夜间生产运维脚本（探针 / 修复 / 校验）｜禁止：被当作调度器（调度器在 pipelines/legacy）
+├── tools/night/           无人值守生产运维脚本（探针 / 修复 / 校验）｜禁止：被当作调度器（调度器在 pipelines/legacy）
 ├── skills/                AI 可执行 SOP（每个子目录必须带 SKILL.md）｜禁止：保存项目历史
 ├── data/
 │   ├── raw/               原始资料，append-only 永久保留｜禁止：修改或删除
@@ -75,7 +75,7 @@
 └── .next/ test-results/ dev.log   构建与运行残留｜禁止：入库（应 gitignore / 清理）
 ```
 
-> **2026-10-02 结构决定（项目拥有者）**：docs/ 与 prototypes/ **已退役**——其全部内容并入 `specs/`（UI 相关进 `specs/experience-ui/`，夜间协议进 `specs/`）。此后 **Experience/UI 相关内容一律放 `specs/`**，不再另设目录。
+> **2026-10-02 结构决定（项目拥有者）**：docs/ 与 prototypes/ **已退役**——其全部内容并入 `specs/`（UI 相关进 `specs/experience-ui/`，数据生产协议进 `specs/`）。此后 **Experience/UI 相关内容一律放 `specs/`**，不再另设目录。
 > 新建文件前必须搜索是否已有同职责 owner。**禁止平行真源。**
 
 ## 1. 归档规则（R14 · 2026-10-02 项目拥有者裁定）

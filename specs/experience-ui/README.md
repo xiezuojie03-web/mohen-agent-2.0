@@ -32,7 +32,7 @@
 - `五母题深化_UI施工图与数据生产需求_V1.1.md` — 逐母题施工图与数据生产需求。
 - `墨痕_Agent_2.0_金泽最小体验导演稿_V1.0.docx` — 最高体验权威（H2 计划自述）。
 - `T03_金泽材料盘点_覆盖矩阵.md`、`T06_数据生产_NightBatch派工与Gap映射.md`、`T07_NightJob_最小Contract与安全施工基线.md`。
-- 夜间生产协议已迁至 `specs/MoHen_Night_Data_Production_Protocol.md`（T06/T07 依赖其 §12）。
+- 数据生产协议已迁至 `specs/MoHen_Data_Production_Protocol.md`（无人值守 + 有人值守两种模式；T06/T07 依赖其 §12）。
 
 ### canonical/（CANONICAL REFERENCE）
 **体验基线 2 张**（C4 §1 / §2 引用）：

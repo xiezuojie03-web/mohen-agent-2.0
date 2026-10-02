@@ -1,7 +1,7 @@
 // pipelines/legacy/hushang-port.mjs
 // 沪上经纬旧库（hushang-jingwei） → 墨痕新库 的 Candidate Reservoir 移植。
 //
-// 宪法依据：C3 §9「从沪上经纬旧库迁移」+ 夜间协议 V1.0 + T07 Night Job Contract §1 安全基线。
+// 宪法依据：C3 §9「从沪上经纬旧库迁移」+ 数据生产协议 V1.0 + T07 无人值守作业 Contract §1 安全基线。
 // 原则：默认不写、默认不晋级、默认不猜；旧数据先作 Candidate Reservoir（status='candidate'），
 //       绝不晋级 verified/published、绝不绕过 Evidence Gate；AI 生成文字不当 Evidence；
 //       Raw 永久 append-only 留存；坐标只作现代位置、不冒充历史。
@@ -310,7 +310,7 @@ function writeResultFile() {
 
 - 批次：night-batch-003 · 启动 ${summary.started_at}
 - 模式：${MODE}（MOHEN_ENV=${ENV}）· 写入开关 MOHEN_WRITE_ENABLED=${WRITE}
-- 依据：C3 §9 旧库迁移 + T07 §1 安全基线 + 夜间协议 V1.0
+- 依据：C3 §9 旧库迁移 + T07 §1 安全基线 + 无人值守协议 V1.0
 - 决断：项目拥有者授权读取并移植老项目（hushang-jingwei）
 
 ## 1. 映射与计数

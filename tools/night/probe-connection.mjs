@@ -1,5 +1,5 @@
 // N00 · 连接探针（只读）
-// 目的：确认 Truth Store（PostgreSQL）可达，并盘点现有表与规模，为夜间批次提供基线。
+// 目的：确认 Truth Store（PostgreSQL）可达，并盘点现有表与规模，为无人值守批次提供基线。
 // 安全：本脚本**只执行 SELECT**，不含任何 INSERT/UPDATE/DDL。
 import { queryRows, queryValue } from "../../packages/data-access/src/index.mjs";
 

@@ -5,7 +5,7 @@
 //     导致 source_id = "INSERT 0 0" 被写入 run 的 metadata_json.source_record_id（2 条）；
 //  2) 首次修复前 ingest 撞唯一约束崩溃，留下 1 条 status='running' 且 finished_at 为空的孤儿 run。
 //
-// 处置原则（夜间协议 §7 No destructive cleanup）：**不删除、不覆盖**，只标记 failed 并附说明，保留审计链。
+// 处置原则（数据生产协议 §7 No destructive cleanup）：**不删除、不覆盖**，只标记 failed 并附说明，保留审计链。
 import { queryRows, run as dbRun } from "../../packages/data-access/src/index.mjs";
 
 const bad = await queryRows(

@@ -129,7 +129,7 @@ async function main() {
   );
   const ingestRunId = runRow[0].ingest_run_id;
 
-  // 幂等（夜间协议 §7 Idempotent）：同一 (provider, checksum) 的 snapshot 若已登记，
+  // 幂等（无人值守协议 §7 Idempotent）：同一 (provider, checksum) 的 snapshot 若已登记，
   // 复用既有 source_id —— 重复运行既不制造重复来源，也不因唯一约束中断整批。
   const srcParams = {
     provider: "hushang-jingwei",

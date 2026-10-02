@@ -1,5 +1,5 @@
 // pipelines/legacy/night-runner.mjs
-// 常驻夜间生产 runner（非定时调度）：
+// 常驻无人值守生产 runner（**按需触发 + 截止时间**，非定时调度）：
 //   · 用户现在发指令 → 本进程 detached 常驻 → 按 --until 截止时间自动收尾
 //   · 每个周期只处理 1 个作业，job 间 sleep --interval-min 分钟（刻意减速，非秒级冲刺）
 //   · 三道闸：MOHEN_WRITE_ENABLED!=true → DRY_RUN；MOHEN_ENV∈{dev,staging}
@@ -260,7 +260,7 @@ async function finalize(reason) {
   const esc = [];
   if (failed.length) esc.push(`作业失败 ${failed.length} 个：${failed.map(([id]) => id).join(", ")}`);
   if (Number(f.published_entities || 0) > 0 || Number(f.verified_evidence || 0) > 0)
-    esc.push(`**红线**：库中出现 published/verified（实体 ${f.published_entities}、证据 ${f.verified_evidence}）——夜间不得产生`);
+    esc.push(`**红线**：库中出现 published/verified（实体 ${f.published_entities}、证据 ${f.verified_evidence}）——无人值守期间不得产生`);
   if (Number(f.gate_rows_in_window || 0) === 0 && inserted > 0)
     esc.push(`本批写入 ${inserted} 条，但本批时间窗内 evidence_gate_audit **0 条** → 本批未运行 Evidence Gate`);
   if (Number(f.coords_claimed_as_history || 0) > 0 || Number(f.coords_without_crs || 0) > 0)

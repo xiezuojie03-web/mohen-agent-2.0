@@ -1,43 +1,75 @@
-**MOHEN · NIGHT DATA FACTORY**
+**MOHEN · DATA PRODUCTION**
 
-**墨痕 · 夜间自动化数据生产协议 V1.0**
+**墨痕 · 数据生产协议 V1.1（无人值守 + 有人值守）**
 
-*Unattended Developer Skills × Evidence Gate × Safe Promotion*
+*Unattended & Attended Developer Skills × Evidence Gate × Safe Promotion*
 
 |                                                                                                           |
 | --------------------------------------------------------------------------------------------------------- |
-| **目标：让机器在你睡觉时持续“造世界”，但只自动做可追溯、可回滚、低判断风险的工作。遇到身份歧义、历史因果、空间重建、来源冲突等问题，不打断夜间施工，也不硬猜——统一 HOLD，第二天只给你一份异常摘要。** |
+| **目标：让系统在你不在场时持续“造世界”，但只自动做可追溯、可回滚、低判断风险的工作。遇到身份歧义、历史因果、空间重建、来源冲突等问题，不打断无人值守施工，也不硬猜——统一 HOLD，到点后只给你一份异常摘要。** |
 
-**定位：**这是 C2/C3 之下的 Developer-Skill 施工协议，不是 C0–C4 的新宪法。它把此前“知识生产循环、Developer Skills、Evidence Gate G0–G6、Human Review”整理成可无人值守运行的 Night Batch 规则。
+**定位：**这是 C2/C3 之下的 Developer-Skill 施工协议，不是 C0–C4 的新宪法。它把此前“知识生产循环、Developer Skills、Evidence Gate G0–G6、Human Review”整理成可无人值守运行的批次规则。
 
-**依据：**C2 Humanistic Data OS & Dual Skill、C3 Database & Cultural World，以及早期 V4.0/V4.1 与 早期开发工具版本 V2 中已形成的数据生产/Evidence Gate/Discovery Pipeline。文中“夜间批次、自动晋级边界、失败隔离、晨报”是本次为无人值守场景补充的执行规则。
+**依据：**C2 Humanistic Data OS & Dual Skill、C3 Database & Cultural World，以及早期 V4.0/V4.1 与 早期开发工具版本 V2 中已形成的数据生产/Evidence Gate/Discovery Pipeline。文中“无人值守批次、自动晋级边界、失败隔离、晨报”是本次为无人值守场景补充的执行规则。
 
 # 0｜一句话原则
 
 |                                                                                                     |
 | --------------------------------------------------------------------------------------------------- |
-| **夜间自动化不是“AI 自动写历史”，而是“机器自动扩大 Candidate / Evidence / 可验证关系的供给；只有确定性足够高的结构化结果才能自动晋级，判断性内容一律 HOLD”。** |
+| **无人值守自动化不是“AI 自动写历史”，而是“机器自动扩大 Candidate / Evidence / 可验证关系的供给；只有确定性足够高的结构化结果才能自动晋级，判断性内容一律 HOLD”。** |
 
-因此夜间系统的成功指标不是“昨晚新增了多少故事”，而是：新增了多少可追溯 Source / Evidence / Candidate；多少确定性记录安全通过 Gate；多少高价值疑难被准确送入 HOLD，而没有污染可信文化世界。
+因此无人值守系统的成功指标不是“上一轮新增了多少故事”，而是：新增了多少可追溯 Source / Evidence / Candidate；多少确定性记录安全通过 Gate；多少高价值疑难被准确送入 HOLD，而没有污染可信文化世界。
 
-# 1｜夜间工厂在 Humanistic Data OS 中的位置
+# 0.5｜两种值守模式（2026-10-02 术语与模式澄清）
 
-| **层**                           | **夜间允许做什么**                                             | **夜间默认不做什么**                |
+数据生产按**谁做判断**分为两种模式。二者**共用同一条流水线、同一套 Gate、同一个生产注册表**，区别只在“谁做判断”。
+
+|  | **无人值守生产**（Unattended） | **有人值守生产**（Attended） |
+|---|---|---|
+| 触发 | 项目拥有者发指令 | 项目拥有者召开值守会话 |
+| 边界 | 给定**范围**与**截止时间**，期间自动运行 | 拥有者在场，逐项处理需要判断的事 |
+| 只做 | **确定性、可回滚、低判断风险**的工作；歧义一律 HOLD | 身份消解、跨源冲突取舍、历史空间判断、Meaning / Present Connection 边界 |
+| 产出 | Candidate / Evidence / 可用记录 + HOLD 队列 | 裁决记录（`human_review_decisions` / `review_queue`）+ 叙事缺口回填 |
+| 拥有者必看 | **晨报一页**：三值结论 + 最多 3 条 Escalation | 值守工作清单（HOLD 队列，按价值排序） |
+| 绝不做 | 不自动判歧义、不自动发布、不扩 Schema / 写权限 / 基础设施 | 不代替证据——人也不能把无据判断写成历史事实 |
+
+**术语更正**：本协议原名“**夜间自动化数据生产协议**”（Night Data Production Protocol）。**“夜间”是误导**：
+
+- 它真正的约束**不是时钟**，而是**判断风险的边界**；
+- 它是**按需触发 + 截止时间**，不是定时调度（执行器本来就支持“跑到某个时刻为止”，随时可发指令）；
+- 无人值守期间不做某些事，不是因为“天黑了”，而是因为**那需要人**。
+
+因此原协议中的“夜间批次 / 夜间作业 / Night Registry”分别改称**无人值守批次 / 无人值守作业 / 生产注册表**（执行层文件名与 `tools/night/` 目录将在 M1 批次一并更名）。
+文件亦已更名：`MoHen_Night_Data_Production_Protocol.md` → **`MoHen_Data_Production_Protocol.md`**（`git mv`，非删除）。
+
+# 0.6｜有效生产：数据生产服务于人文叙事（不可偏移）
+
+**产出的不是数据量，而是“某条叙事从讲不出变成讲得出”。**
+
+- **上游锚点**＝材料盘点覆盖矩阵（`specs/experience-ui/T03_金泽材料盘点_覆盖矩阵.md`）：按母题列出“需要什么材料 / 现在有什么 / 缺什么”。
+- **叙事缺口（Narrative Gap）**＝该矩阵上“缺材料或缺裁决”的格子。**每一批生产都必须声明它瞄准哪个缺口**（与采集意图声明是同一件事）。
+- **有效性判据**：本批是否让某个缺口**推进或关闭**。**只报“落库新增 N 条”不算有效生产。**
+- **分工**：无人值守只做“**补材料**”（素材 / 证据 / 候选）；“**补判断**”（身份、冲突、历史空间、Meaning 边界）**必须有人值守**。
+- 因此**晨报必须回答一句**：“本批推进了哪几个叙事缺口”。答案是“没有”时，这批生产即为无效，应停下来问为什么——而不是继续堆数据。
+
+# 1｜无人值守工厂在 Humanistic Data OS 中的位置
+
+| **层**                           | **无人值守允许做什么**                                             | **无人值守默认不做什么**                |
 | ------------------------------- | ------------------------------------------------------- | --------------------------- |
 | L0 Cultural Sources             | 抓取/导入、Raw append-only、checksum、版本、许可与来源元数据              | 删除/覆盖原始资料                   |
 | L1 Evidence & Provenance        | 切 Fragment、locator/page/quote、确定性 metadata、来源链、冲突标记     | 把 AI 生成文字当 Evidence         |
 | L2 Humanistic Objects           | 候选实体/事件/地点/时间抽取；确定性字段标准化                                | 歧义实体自动合并                    |
 | L3 Cultural Relations           | 生成 Relation Candidate、relation path、证据绑定                | 历史因果/跨源复杂关系直接发布             |
 | L4 Meaning / Present Connection | 生成 MeaningCandidate / PresentConnection Candidate 供后续使用 | 把解释性生成物写成历史事实               |
-| L5 Discovery / Experience       | 可预计算 Discovery Candidate / visual hook 等候选              | 夜间擅自改变 Canonical Experience |
+| L5 Discovery / Experience       | 可预计算 Discovery Candidate / visual hook 等候选              | 无人值守擅自改变 Canonical Experience |
 | L6 Participation                | 当前 HOLD                                                 | 正式用户贡献体系                    |
 | L7 Living Culture               | 当前 HOLD                                                 | 把当代记忆自动晋级为历史真相              |
 
-# 2｜Developer Skills：夜间真正使用哪几类
+# 2｜Developer Skills：无人值守真正使用哪几类
 
-C2 已定义 11 个 Developer Skill 家族；夜间数据生产只启用其中与“造世界”直接相关的部分。为了避免再造一套 Skill 名称，本协议直接复用 C2/C3。
+C2 已定义 11 个 Developer Skill 家族；无人值守数据生产只启用其中与“造世界”直接相关的部分。为了避免再造一套 Skill 名称，本协议直接复用 C2/C3。
 
-| **Skill / 能力**                              | **夜间角色**                                                    | **默认模式**                     |
+| **Skill / 能力**                              | **无人值守角色**                                                    | **默认模式**                     |
 | ------------------------------------------- | ----------------------------------------------------------- | ---------------------------- |
 | mohen-project-guard                         | 开跑前检查 Repo/Secret/Legacy/写入边界；阻止越权任务                        | AUTO                         |
 | mohen-data-ingest / Source Ingest           | 外部资料 → Source Record / Version / Raw Item；Raw 永久保留          | AUTO                         |
@@ -51,9 +83,9 @@ C2 已定义 11 个 Developer Skill 家族；夜间数据生产只启用其中�
 | Projection Builder                          | 仅把已经通过发布条件的 World 构造成 Agent 可读 Projection                   | AUTO，受 Gate 限制               |
 | mohen-acceptance                            | 批次完整性、测试、计数、异常、回滚点、晨报                                       | AUTO                         |
 
-Agent Skills（S01–S08）不是夜间数据工厂的主执行器。夜间可以调用 relationship\_discovery / evidence\_chain 一类能力辅助发现 Candidate，但其产物仍受 Developer-side Gate 管理；不得因为 Agent“觉得有意思”就写入 Truth Store。
+Agent Skills（S01–S08）不是无人值守数据工厂的主执行器。无人值守可以调用 relationship\_discovery / evidence\_chain 一类能力辅助发现 Candidate，但其产物仍受 Developer-side Gate 管理；不得因为 Agent“觉得有意思”就写入 Truth Store。
 
-# 3｜夜间主流水线
+# 3｜无人值守主流水线
 
 |                                                                                                                                                                                                                     |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -73,9 +105,9 @@ Agent Skills（S01–S08）不是夜间数据工厂的主执行器。夜间可�
 | 10 Projection   | 刷新 Agent Read Model                                           | 不得反写 Truth Store       |
 | 11 Acceptance   | run\_id、counts、errors、holds、tests、rollback pointer            | 批次不完整标 PARTIAL         |
 
-# 4｜Evidence Gate G0–G6：夜间裁决规则
+# 4｜Evidence Gate G0–G6：无人值守裁决规则
 
-| **Gate**               | **核心问题**                         | **夜间处理**                                     |
+| **Gate**               | **核心问题**                         | **无人值守处理**                                     |
 | ---------------------- | -------------------------------- | -------------------------------------------- |
 | G0 Source Completeness | 来源身份、URI/标识、时间、许可、checksum 是否完整？ | 缺关键 provenance → HOLD                        |
 | G1 Object Identity     | 对象身份是否可信？                        | 精确 ID / 强一致可继续；同名、别名冲突 → HOLD                |
@@ -87,13 +119,13 @@ Agent Skills（S01–S08）不是夜间数据工厂的主执行器。夜间可�
 
 # 5｜什么可以整夜自动跑，什么绝对不能自动判
 
-| **AUTO：无需你逐条审核**                                                                                                                          | **HOLD：第二天再看，不打断夜间**                                                                                                     | **REJECT：自动拒绝/隔离**                                                               |
+| **AUTO：无需你逐条审核**                                                                                                                          | **HOLD：第二天再看，不打断无人值守**                                                                                                     | **REJECT：自动拒绝/隔离**                                                               |
 | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
 | Raw 抓取与 append-only 保存；checksum/version；确定性字段清洗；精确去重；Evidence Fragment；明确 ID 的实体对齐；候选抽取；无冲突且 Contract 明确的结构化晋级；Projection rebuild；批次测试与统计 | 同名实体；别名无法消歧；历史因果；跨源复杂关系；史料冲突；历史地图锚点；Historical Geometry；老照片同景判断；rights/license 不清；AI 解释性 Meaning；低置信 relation；任何需要“猜”的内容 | Raw 损坏/无法校验；来源明显重复且 checksum 相同（保留去重日志）；违反 schema 的非法记录；缺失不可恢复主键/来源标识；被规则明确禁止的写入 |
 
 这里的关键不是“所有进入 HOLD 的内容都必须由你亲自审核”。HOLD 只是隔离区。第二天系统只应把高价值、会阻塞当前金泽体验或反复出现的疑难汇总给你；普通 HOLD 可以继续积累，等待未来批量规则成熟后再处理。
 
-# 6｜Truth Store 写权限：夜间最重要的防线
+# 6｜Truth Store 写权限：无人值守最重要的防线
 
   - LLM / Agent 不直接写主库事实层。它可以产生 Candidate、建议字段、relation path、reasoning artifact，但写入必须经过受控 Developer Skill / Contract。
 
@@ -114,12 +146,12 @@ Agent Skills（S01–S08）不是夜间数据工厂的主执行器。夜间可�
 | Fail isolated            | 单条/单源失败不能拖垮整夜批次；隔离错误后继续其他 source。                             |
 | Idempotent               | 同一批次重复运行不得制造重复事实；依赖 checksum / natural key / idempotency key。 |
 | Bounded retry            | 网络/限流等瞬时错误可有限重试；语义歧义不得靠重试“碰运气”。                               |
-| No destructive cleanup   | 夜间禁止不可逆批量删除、覆盖 Raw、无审计的大规模 merge。                             |
+| No destructive cleanup   | 无人值守禁止不可逆批量删除、覆盖 Raw、无审计的大规模 merge。                             |
 | Rollback pointer         | 每次批次保留 run\_id、变更集合/事务边界或等价回滚依据。                              |
 | Stop condition           | 出现 schema drift、写权限异常、连续高错误率、来源结构突变时停止相关 pipeline，不扩大影响。      |
-| No architecture mutation | 不得夜间自行新增核心表、改变 Evidence/Meaning 边界、改变写权限或引入新基础设施。             |
+| No architecture mutation | 不得无人值守自行新增核心表、改变 Evidence/Meaning 边界、改变写权限或引入新基础设施。             |
 
-# 8｜夜间批次验收：第二天你只看什么
+# 8｜无人值守批次验收：第二天你只看什么
 
 默认不要求你打开数据库逐条验收。每晚只生成一份极短 Morning Summary；正常批次可以完全不打扰你。
 
@@ -143,14 +175,14 @@ Agent Skills（S01–S08）不是夜间数据工厂的主执行器。夜间可�
 
 # 9｜与开发总工程师的分工
 
-| **角色**                                   | **夜间职责**                                                                                |
+| **角色**                                   | **无人值守职责**                                                                                |
 | ---------------------------------------- | --------------------------------------------------------------------------------------- |
-| 你 / Product Owner                        | 不做夜间数据录入员；只处理真正影响产品方向、文化判断或高价值 Human Review 的少数问题。                                      |
+| 你 / Product Owner                        | 不做无人值守数据录入员；只处理真正影响产品方向、文化判断或高价值 Human Review 的少数问题。                                      |
 | 开发总工程师 / Chief Development Engineer         | 实现、运行、测试、修复 Developer Skills；维护 batch runner、日志、HOLD queue、Morning Summary；不得越权改 C0–C4。 |
-| 开发平台（架构建议方）          | 在夜间运行暴露跨架构问题时主动提示：核心对象模型、Evidence/Meaning 边界、写权限、L6/L7 Schema、核心基础设施等；提交项目拥有者确认后方可修改。 |
+| 开发平台（架构建议方）          | 在无人值守运行暴露跨架构问题时主动提示：核心对象模型、Evidence/Meaning 边界、写权限、L6/L7 Schema、核心基础设施等；提交项目拥有者确认后方可修改。 |
 | Agent Runtime                            | 消费受控 World Projection；可以发现 Candidate，但不拥有 Truth Store 的自由写权。                            |
 
-# 10｜建议的第一阶段 Night Batch
+# 10｜建议的第一阶段 无人值守批次
 
 不要一开始做“全上海自动知识生产”。第一阶段仍服从当前 H2 / Jinze Canonical Experience：只自动生产能补金泽真实体验缺口的数据。
 
@@ -161,27 +193,27 @@ Agent Skills（S01–S08）不是夜间数据工厂的主执行器。夜间可�
 | N03 Candidate Extraction     | 抽 Entity/Time/Place/Relation Candidate       | 只进 Candidate Reservoir，风险可控 |
 | N04 Deterministic Resolution | 有稳定 ID/URI/强规则的实体对齐、精确去重                     | 把机器擅长的确定性劳动自动化              |
 | N05 Relation Candidate Weave | 围绕金泽当前关系簇生成 relation path + evidence binding | 服务当前体验，不追求数据量               |
-| N06 Gate & Projection        | G0–G6、AUTO/HOLD/REJECT、刷新 Agent Read Model   | 形成完整夜间闭环                    |
+| N06 Gate & Projection        | G0–G6、AUTO/HOLD/REJECT、刷新 Agent Read Model   | 形成完整无人值守闭环                    |
 
 暂不作为第一阶段无人值守任务：Historical Geometry reconstruction、历史地图配准、同景老照片判定、历史因果自动裁决、跨来源冲突裁决、Meaning/Present Connection 自动发布、Participation/Living Culture 正式入库。
 
-# 11｜什么时候一种夜间流程才能晋升为正式 Skill
+# 11｜什么时候一种无人值守流程才能晋升为正式 Skill
 
 | **阶段**       | **判定**                                |
 | ------------ | ------------------------------------- |
 | Candidate    | 只是发现一种可能自动化的方法；先记录。                   |
 | Task Pattern | 在真实数据任务中重复出现，开始观察输入/输出/失败模式。          |
 | Draft Skill  | 边界稳定，能写出 Contract、Gate、停止条件、测试；小范围夜跑。 |
-| Mature Skill | 跨批次复用，多次验收稳定，可进入 Night Registry 默认调度。 |
+| Mature Skill | 跨批次复用，多次验收稳定，可进入 生产注册表 默认调度。 |
 | Deprecated   | 被更好机制替代或长期不再需要；停止默认调用但保留迁移说明。         |
 
 |                                                                                            |
 | ------------------------------------------------------------------------------------------ |
-| **晋升公式：真实任务 → 重复方法 → 稳定输入输出 → 明确 Gate → 可回滚测试 → 才进入 Night Registry。不能因为“AI 能做”就创建 Skill。** |
+| **晋升公式：真实任务 → 重复方法 → 稳定输入输出 → 明确 Gate → 可回滚测试 → 才进入 生产注册表。不能因为“AI 能做”就创建 Skill。** |
 
-# 12｜Night Registry 最小 Contract
+# 12｜生产注册表 最小 Contract
 
-每个夜间 Skill / Job 至少声明以下字段，开发总工程师 才能把它加入无人值守调度：
+每个无人值守 Skill / Job 至少声明以下字段，开发总工程师 才能把它加入无人值守调度：
 
 | **字段**                | **含义**                                           |
 | --------------------- | ------------------------------------------------ |
@@ -201,7 +233,7 @@ Agent Skills（S01–S08）不是夜间数据工厂的主执行器。夜间可�
 
 # 13｜最终冻结规则
 
-  - 夜间自动化的目标是扩大可信世界的供给，不是扩大未经裁决的“历史内容”。
+  - 无人值守自动化的目标是扩大可信世界的供给，不是扩大未经裁决的“历史内容”。
 
   - 机器处理确定性转换；歧义、因果、冲突、历史空间重建等进入 HOLD / Human Review。
 
@@ -209,12 +241,12 @@ Agent Skills（S01–S08）不是夜间数据工厂的主执行器。夜间可�
 
   - Raw 永久保留；Evidence 可追溯；Candidate 与 Verified World 分离；AI 生成 ≠ Evidence。
 
-  - 夜间不得改变 C0–C4，不得偷偷扩大 Schema/写权限/基础设施。
+  - 无人值守不得改变 C0–C4，不得偷偷扩大 Schema/写权限/基础设施。
 
-  - 每个 Night Job 必须可重复、可停止、可追溯、可回滚，并有 Morning Summary。
+  - 每个 无人值守作业 必须可重复、可停止、可追溯、可回滚，并有 Morning Summary。
 
   - 当前只服务 Jinze Canonical Experience 的真实数据缺口；不以“昨晚新增多少条”作为成功指标。
 
 |                                                                                             |
 | ------------------------------------------------------------------------------------------- |
-| **最终一句话：白天由你决定“什么值得成为墨痕”；夜间让 Developer Skills 安静地把资料、证据和候选关系准备好。机器负责规模与纪律，人保留文化判断与最终证据裁决。** |
+| **最终一句话：白天由你决定“什么值得成为墨痕”；无人值守让 Developer Skills 安静地把资料、证据和候选关系准备好。机器负责规模与纪律，人保留文化判断与最终证据裁决。** |

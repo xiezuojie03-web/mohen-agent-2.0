@@ -19,6 +19,6 @@
 | 变更 | 说明 |
 |---|---|
 | **`OWNERSHIP_MAP.md` 上移仓库根目录** | 由 `specs/OWNERSHIP_MAP.md` → `/OWNERSHIP_MAP.md`；与 `AGENTS.md`、`CURRENT.md` 构成"根目录三件套"。同时新增机器守卫 `check-structure-map.mjs` / `check-links.mjs`。 |
-| **`docs/` 与 `prototypes/` 退役** | 其 5 个文件全部**迁入 `specs/`**（非归档）：UI 相关 4 份进 `specs/experience-ui/`（其中施工图 2 份进 `specs/experience-ui/施工图/`），夜间协议进 `specs/`。两个目录随后为空并移除。**此后 Experience/UI 内容一律放 `specs/`。**（依项目拥有者 2026-10-02 决定） |
+| **`docs/` 与 `prototypes/` 退役** | 其 5 个文件全部**迁入 `specs/`**（非归档）：UI 相关 4 份进 `specs/experience-ui/`（其中施工图 2 份进 `specs/experience-ui/施工图/`），数据生产协议进 `specs/`。两个目录随后为空并移除。**此后 Experience/UI 内容一律放 `specs/`。**（依项目拥有者 2026-10-02 决定） |
 
 > 注：`docs/` 与 `prototypes/` 的退役属**迁入 specs/**，不是归档——文件仍在活跃区，只是换了归属目录。

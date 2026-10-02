@@ -1,6 +1,6 @@
-# T07 · Night Job 最小 Contract 与安全施工基线
+# T07 · 无人值守作业（Unattended Job）最小 Contract 与安全施工基线
 
-> 依据：夜间自动化数据生产协议 V1.0 **§12 Night Registry 最小 Contract**、§10 第一阶段批次、§7 失败/重试/回滚、§13 冻结规则；并受 T06（Gap→字段→批次映射）与 T03（真源/门禁）约束。
+> 依据：无人值守自动化数据生产协议 V1.0 **§12 生产注册表 最小 Contract**、§10 第一阶段批次、§7 失败/重试/回滚、§13 冻结规则；并受 T06（Gap→字段→批次映射）与 T03（真源/门禁）约束。
 > 定位：**这是 Contract，不是待跑的任务。** 所有 job 默认 **DRY_RUN**，未显式开启写入前不碰 Truth Store。
 > 每个 job 必须声明 §12 的 12 个字段，开发总工程师才把它加入无人值守调度。
 
@@ -31,7 +31,7 @@
 
 ### 1.3 分层写入权限（协议 §6）
 
-| 层 | 夜间可写？ | 约束 |
+| 层 | 无人值守可写？ | 约束 |
 |---|---|---|
 | **Raw / L0**（`source_records`、原始快照） | 可，append-only | **禁止覆盖来源原件或原始 API 响应**；禁止删除 |
 | **L1 Evidence** | 可（受控 skill） | 必须有 locator/page/quote；AI 生成文字**不得**当 Evidence |
@@ -45,7 +45,7 @@
 - **Fail isolated**：单条/单源失败隔离后继续其他 source，不拖垮整批。
 - **Idempotent**：依赖 checksum / natural key / idempotency key；重复运行不制造重复事实。
 - **Bounded retry**：仅网络/限流等**技术性瞬时**错误可有限重试；**语义歧义不得靠重试碰运气**。
-- **No destructive cleanup**：夜间禁止不可逆批量删除、覆盖 Raw、无审计的大规模 merge。
+- **No destructive cleanup**：无人值守禁止不可逆批量删除、覆盖 Raw、无审计的大规模 merge。
 - **Stop conditions**：schema drift、写权限异常、连续高错误率、来源结构突变 → 停止该 pipeline，不扩大影响。
 - **Rollback pointer**：每批保留 `run_id`、变更集合/事务边界或等价回滚依据。
 
@@ -173,7 +173,7 @@
 ## 8. 明确排除（第一阶段绝不无人值守）
 
 Historical Geometry 重建 · 历史地图配准 · 同景老照片判定 · 历史因果自动裁决 · 跨源冲突裁决 · Meaning/PresentConnection 自动发布 · L6/L7 正式入库（协议 §10）。
-**结构性迁移（`cultural_judgments` 表、`entities.type/relation_to_jinze`、`Claim` 的 `motif/beat` 标签）不是夜间 job**——属 Construction 任务，须 up/down 迁移 + dry-run + 测试 + 人审，不进 Night Registry。
+**结构性迁移（`cultural_judgments` 表、`entities.type/relation_to_jinze`、`Claim` 的 `motif/beat` 标签）不是无人值守 job**——属 Construction 任务，须 up/down 迁移 + dry-run + 测试 + 人审，不进 生产注册表。
 
 ---
 
@@ -187,9 +187,9 @@ Historical Geometry 重建 · 历史地图配准 · 同景老照片判定 · 历
 
 ## 10. 晋升为正式 Skill 的路径（协议 §11）
 
-`Candidate` → `Task Pattern`（真实任务重复出现）→ `Draft Skill`（边界稳定、有 Contract/Gate/停止条件/测试、小范围夜跑）→ `Mature Skill`（跨批次稳定，进 Night Registry 默认调度）。
+`Candidate` → `Task Pattern`（真实任务重复出现）→ `Draft Skill`（边界稳定、有 Contract/Gate/停止条件/测试、小范围夜跑）→ `Mature Skill`（跨批次稳定，进 生产注册表 默认调度）。
 **不能因为"AI 能做"就创建 Skill。**
 
 ---
 
-*本文件为 T06 的 Contract 落地层；最高依据仍为 C4 V2.1、V0.9.1、五母题主稿 V0.1 与夜间协议 V1.0。冲突处以最高依据为准并回写本文件。*
+*本文件为 T06 的 Contract 落地层；最高依据仍为 C4 V2.1、V0.9.1、五母题主稿 V0.1 与无人值守协议 V1.0。冲突处以最高依据为准并回写本文件。*
