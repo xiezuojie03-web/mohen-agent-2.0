@@ -12,8 +12,9 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "guard:docs": "node scripts/check-doc-budget.mjs",
-    "guard:structure": "node scripts/check-structure.mjs",
-    "guard": "pnpm guard:docs && pnpm guard:structure && pnpm test"
+    "guard:structure": "node scripts/check-structure.mjs && node scripts/check-structure-map.mjs",
+    "guard:links": "node scripts/check-links.mjs",
+    "guard": "pnpm guard:docs && pnpm guard:structure && pnpm guard:links && pnpm test"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

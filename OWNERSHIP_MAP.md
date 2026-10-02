@@ -1,9 +1,19 @@
 # OWNERSHIP MAP
 
-> 本文件是**目录职责与归档规则的唯一 Authority**（依 C0 §5，R14 登记）。
-> **C0–C4 与 CURRENT 的文件路径以 `AGENTS.md` §1 为唯一路由源**；本文件只声明"每个目录归谁管、放什么、禁止什么"。
+> **本文件是墨痕的「结构 SOT」**：回答"每个目录归谁管、放什么、禁止什么"，以及"被取代的东西去哪"。
+> **权威来源**：`governance/C0_MoHen_Project_Constitution_and_Dual_Line_Collaboration_V1.0.md` §3 / §5 / §11（R14）。本文件是**载体**，不是第六份宪法。
+> **本文件被机器校验**：`pnpm guard:structure` 会检查 ① 仓库根目录的每个条目都已在本文件 §0 声明；② `AGENTS.md` §1 里列出的每条路径真实存在。**新增顶层目录/文件而不登记，或改了路径不更新引用，守卫直接为红。**
+> 文件路径以 `AGENTS.md` §1 为唯一路由源；当前状态以 `CURRENT.md` 为准。
 
 ## 0. 目录职责表
+
+### 0.0 根目录入口文件（三件套）
+
+| 路径 | 唯一职责 | 禁止 |
+|---|---|---|
+| `AGENTS.md` | **纯入口路由**（非 Authority） | 承载宪法 / 状态内容 |
+| `CURRENT.md` | 当前状态（Live SOT），Authority 低于 C0–C4 | 改写 C0–C4 |
+| `OWNERSHIP_MAP.md` | **结构 SOT**：目录职责 + 归档规则（本文件） | 承载领域契约或状态 |
 
 ### 0.1 代码与运行时
 
@@ -15,6 +25,7 @@
 | `packages/experience-engine` | ExperienceState/CompositionState/Action reducer | 数据采集 |
 | `packages/data-access` | 唯一 DB 访问层 | UI 逻辑 |
 | `packages/ui` | 预留包（当前为占位，**未承担产品 UI**；产品 UI 在 `apps/web` 与 C4 辖下） | 被误认为产品 UI 层 |
+| `tests` | 机器验收（vitest / Playwright） | 产品规则解释 |
 
 ### 0.2 数据生产
 
@@ -25,9 +36,9 @@
 | `pipelines/evidence` | Evidence Gate | 自由叙事 |
 | `pipelines/weave` | verified → relations/story/discovery candidate | 绕过 Gate |
 | `pipelines/legacy` | 老项目（hushang-jingwei）移植与夜跑执行体 | 把老库内容当已裁决事实 |
-| `pipelines/{build,cultural-world,experience,extract,historical-spatial,normalize,review,visual}` | 各自数据生产阶段（构建 / 文化世界 / 体验投影 / 抽取 / 历史空间 / 规范化 / 人审 / 视觉） | 跨阶段越权写库 |
+| `pipelines/{build,cultural-world,experience,extract,historical-spatial,normalize,review,visual}` | 各自数据生产阶段 | 跨阶段越权写库 |
 | `skills` | AI 可执行 SOP | 保存项目历史 |
-| `scripts` | **结构与文档守卫 + 报告生成器**（`check-structure.mjs`、`check-doc-budget.mjs`、`gen-*.mjs`） | 承载产品逻辑 |
+| `scripts` | **结构与文档守卫 + 报告生成器**（`check-structure.mjs` / `check-structure-map.mjs` / `check-links.mjs` / `gen-*.mjs`） | 承载产品逻辑 |
 | `tools/night` | 夜间数据生产的运维脚本（探针 / 修复 / 校验） | 被当作调度器（调度器在 `pipelines/legacy/night-runner.mjs`） |
 | `data/raw` | 原始资料，**append-only 永久保留** | 修改或删除 |
 | `data/staging` | 迁移中间产物 | 被当作真源 |
@@ -38,12 +49,10 @@
 
 | 路径 | 唯一职责 | 禁止 |
 |---|---|---|
-| `AGENTS.md` | **纯入口路由**（非 Authority） | 承载宪法 / 状态内容 |
-| `CURRENT.md` | 当前状态（Live SOT），Authority 低于 C0–C4 | 改写 C0–C4 |
 | `governance/` | **C0–C4 宪法** + 域治理契约 | 已稳定为 Contract 的内容应下沉 `specs/`；Candidate Backlog 行使 SOT / Decision Authority |
 | `governance/experience/` | 体验域治理契约（EXP-DESIGN-01 …） | 与 C4 竞争体验 Authority |
 | `governance/archive/` | **被取代的治理件**（见 §1） | 被活跃文件当作 Authority 引用 |
-| `specs/` | 当前稳定契约（`FOUNDATION` / `DATA_CONTRACT` / `AGENT_CONTRACT` / `EXPERIENCE_CONTRACT` / `SOURCE_REGISTRY` / `OWNERSHIP_MAP`） | 过程记录（例外：`specs/experience-ui/` 为分级素材区，见 §2） |
+| `specs/` | 当前稳定契约（`FOUNDATION` / `DATA_CONTRACT` / `AGENT_CONTRACT` / `EXPERIENCE_CONTRACT` / `SOURCE_REGISTRY`） | 过程记录（例外：`specs/experience-ui/` 为分级素材区，见 §2） |
 | `specs/archive/` | **被取代的契约与规范**（见 §1） | 被当作当前 Authority |
 | `specs/experience-ui/` | Experience/UI 附属素材区（分级见该目录 `README.md`） | 重组 / 重命名资产（须拥有者确认） |
 | `decisions/` | 重大架构变更理由（ADR） | 操作 SOP |
@@ -54,7 +63,15 @@
 | `prototypes/` | **当前施工图册（第 3 代）与交互原型**；自绘虚构示意，不证明史实 | 被当作历史证据或产品导航 |
 | `archive/` | **跨域历史快照**（见 §1） | 被当作当前状态 |
 | `legacy/manifests` | 老项目迁移 manifest（只读引用） | 在老工程内安装 / 构建 / 写文件 |
-| `test-results/`、`.next/`、`dev.log` | 构建与运行残留 | 入库（应 gitignore） |
+
+### 0.4 根目录配置与运行残留
+
+| 路径 | 唯一职责 | 禁止 |
+|---|---|---|
+| `package.json` / `pnpm-lock.yaml` / `pnpm-workspace.yaml` / `vitest.config.ts` / `playwright.config.ts` | 工程与工具配置 | 承载规则内容 |
+| `.env` / `.env.local` / `.env.example` | 本地环境与凭证（`.env.local` gitignored） | 入库 |
+| `.gitignore` / `.gitattributes` | Git 行为配置 | — |
+| `.next/` / `test-results/` / `dev.log` | 构建与运行残留 | 入库（**应 gitignore / 清理**） |
 
 新建文件前必须搜索是否已有同职责 owner。**禁止平行真源。**
 
@@ -68,14 +85,14 @@
 |---|---|---|
 | `archive/` | **跨域历史快照**：一次性分析、结构报告、旧工作区状态 | 2026-09-26 分析集、`PROJECT_STRUCTURE_REPORT.md` |
 | `governance/archive/` | **被取代的治理件** | 旧 Roadmap V4.9、PHASE-II Plan V1.1、旧 C0–C4 docx、WorkBuddy→CodeBuddy 移交稿、`CURRENT_before_20261001.md`、Candidate Backlog |
-| `specs/archive/` | **被取代的契约与规范** | 旧 UI Baseline V1.0、旧版设计规格 |
+| `specs/archive/` | **被取代的契约与规范** | 旧 UI Baseline V1.0、旧设计规格 |
 
 ### 1.2 规则
 
 1. **取代 → 移入归档区**（`git mv`），不 `git rm`。可追溯性由归档区 + Git 共同承载。
 2. **重复副本 → 保留被路由引用的一份**，其余移入归档区。
 3. **归档件不得被活跃文件当作 Authority 引用**；引用时必须显式标注 `ARCHIVE / TRACE`。
-4. **每次批量归档必须产出清单**：`archive/<date>-<topic>/README.md`，逐条写明「原路径 → 归档路径 → 归档理由 → 取代者」。**没有清单的归档视为未完成。**
+4. **每次批量归档必须产出清单**：`archive/<date>-<topic>/README.md`，逐条写明「原路径 → 归档路径 → 归档理由 → 取代者 → **被引用于**」。**没有清单的归档视为未完成**（"被引用于"一列用于同步改引用——C4 八张原型图长期断链正是漏了这一步）。
 5. **历史记录不改写**：归档件正文不修改（含其中残留的旧工具名或已失效的 Authority 自述）；只在文件首部加"历史快照，不代表当前状态"横幅。
 6. **`specs/experience-ui/` 结构变更须拥有者确认**（该目录 README §3）；本规则不授予开发总工程师自行重组的权限。
 
@@ -99,6 +116,7 @@
 
 - **五母题交付进度：仅 M1（1/5）**；M2–M5 只有施工索引，无画面。
 - **施工图当前未接入代码**：运行时体验由 `apps/web/data/experience/*.json` 的冻结五幕 canonical 驱动，与五母题帧体系（M1-F01…M5-F40）是两套帧系统；接入点见施工图 §4。
+- **未决（待项目拥有者裁决）**：C4 §11 / §15 称"具体施工结合现行双组件逐帧规范"，而 `specs/experience-ui/README.md` 把 `source/*` 定义为 TRACE"不得作为当前实现依据"——该矛盾已登记于 `CURRENT.md` §9。
 
 ## 3. 执行主体命名纪律（R13）
 
@@ -107,7 +125,19 @@
 
 ## 4. 版本源与 SOT
 
-- **入口路由** `AGENTS.md`（纯路由，非 Authority）。
+- **入口路由** `AGENTS.md`（纯路由，非 Authority）；**当前状态** `CURRENT.md`；**结构 SOT** `OWNERSHIP_MAP.md`（本文件）。
 - **当前架构真源集（SOT Set）= C0–C4 + CURRENT**（项目拥有者 2026-09-29 明确，2026-10-02 复核）。**路径以 `AGENTS.md` §1 为唯一路由源**，本文件不再重复。
 - **版本源唯一机制**见 **C0 §10**。
 - **候选登记处**：`governance/archive/MoHen_Agent_2.0_Architecture-Candidate-Backlog_V1.0.md`（TRACE，非 SOT）；Candidate 须经项目拥有者确认（C0 §6.2）方可晋升为 Contract / Plan / Task Book。
+
+## 5. 本文件如何被校验（守卫契约）
+
+`pnpm guard:structure` = `check-structure.mjs` + `check-structure-map.mjs`；文档链接由 `pnpm guard:links` 校验。与本文件相关的不变量：
+
+| 不变量 | 检查者 | 违反后果 |
+|---|---|---|
+| 根目录每个条目都在本文件 §0 声明 | `check-structure-map.mjs` | 守卫红，提示"请在 OWNERSHIP_MAP.md §0 声明" |
+| `AGENTS.md` §1 列出的每条路径真实存在 | `check-structure-map.mjs` | 守卫红（此类断链曾长期存在：C4 的 8 张原型图、母题框架 md） |
+| 活跃文档的相对链接与图片引用可解析 | `check-links.mjs` | 守卫红 |
+
+**Trace 豁免**：路径含 `archive` 的目录、`tasks/`、`data/`、`legacy/` 不参与链接校验——依 §1.2 第 5 条，归档件与历史记录正文不改写，允许保留失效路径。

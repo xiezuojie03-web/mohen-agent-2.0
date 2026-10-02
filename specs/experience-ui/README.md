@@ -2,7 +2,7 @@
 
 本目录是 Human-facing Experience/UI 的**归档附属资产区**：保存 Canonical 参考、历史设计意图与验证 / 失败证据。它**不承载当前实现 Authority**。
 
-> **Authority 归属（2026-10-01 修订）**：Human-facing Experience/UI 的当前**唯一 Authority 是 C4**（`governance/C4_MoHen_Agent-native_Human_Experience_UI_Architecture_V2.1.md`）。`specs/archive/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md` 已降为 **SOURCE ARCHIVE / TRACE**，其"CURRENT IMPLEMENTATION AUTHORITY"登记失效（见 `specs/OWNERSHIP_MAP.md`）。本文件此前"Baseline 为 CURRENT IMPLEMENTATION AUTHORITY、且位于 `specs/`"的表述与 C4 / OWNERSHIP_MAP 冲突，已一并更正。
+> **Authority 归属（2026-10-01 修订）**：Human-facing Experience/UI 的当前**唯一 Authority 是 C4**（`governance/C4_MoHen_Agent-native_Human_Experience_UI_Architecture_V2.1.md`）。`specs/archive/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md` 已降为 **SOURCE ARCHIVE / TRACE**，其"CURRENT IMPLEMENTATION AUTHORITY"登记失效（见 `OWNERSHIP_MAP.md`）。本文件此前"Baseline 为 CURRENT IMPLEMENTATION AUTHORITY、且位于 `specs/`"的表述与 C4 / OWNERSHIP_MAP 冲突，已一并更正。
 
 > 本目录由项目拥有者人工放置；EXP-UI-GOV-01 仅做治理登记与纳入 Git，**不搬运、不重命名、不转换、不重建、不改写**其中任何资产。
 
@@ -48,7 +48,7 @@
 
 ## 3. 目录结构变更治理
 
-本目录结构原由历史 Baseline §1.3 / §25 冻结，现由 **C4 §25（开发总工程师的 UI 硬边界）** 承接。开发总工程师**无自主权**新增、移动、重命名或重组 `specs/experience-ui/` 及其子目录；任何目录结构变化须经**项目拥有者确认**，并在 Result 中报告 Directory Structure Change，同步 `specs/OWNERSHIP_MAP.md`。
+本目录结构原由历史 Baseline §1.3 / §25 冻结，现由 **C4 §25（开发总工程师的 UI 硬边界）** 承接。开发总工程师**无自主权**新增、移动、重命名或重组 `specs/experience-ui/` 及其子目录；任何目录结构变化须经**项目拥有者确认**，并在 Result 中报告 Directory Structure Change，同步 `OWNERSHIP_MAP.md`。
 
 ## 4. 引用关系
 

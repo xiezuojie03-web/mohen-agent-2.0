@@ -211,7 +211,7 @@ H2 的下一出口不是"再完成一批功能"，而是：
 > **C0–C4 的文件路径以 `AGENTS.md` §1 为唯一路由源**（版本源唯一机制见 C0 §10）；本节不再重复路径，仅列与当前状态直接相关的引用。
 
 -   **Canonical Images** `specs/experience-ui/canonical`（两张 Canonical 基线，C4 引用）
--   **当前施工图** `prototypes/墨痕_五母题施工审阅_第一批_M1_V0.1.html` + `docs/墨痕_五母题施工审阅_第一批_M1_配套规格_V0.1.md`（第 3 代；登记见 `specs/OWNERSHIP_MAP.md` §2.1）
+-   **当前施工图** `prototypes/墨痕_五母题施工审阅_第一批_M1_V0.1.html` + `docs/墨痕_五母题施工审阅_第一批_M1_配套规格_V0.1.md`（第 3 代；登记见 `OWNERSHIP_MAP.md` §2.1）
 -   **Dev Verification Artifacts** `verification/`（UI 验证截图等临时产物；不入根目录、默认不入库，见该目录 README）
 
 ------------------------------------------------------------------------
@@ -259,7 +259,7 @@ pnpm dev
    - **三个归档落点**：`archive/`＝跨域历史快照；`governance/archive/`＝被取代治理件；`specs/archive/`＝被取代契约。
    - **必须有清单**：每次批量归档产出 `archive/<date>-<topic>/README.md`，逐条写明「原路径 → 归档路径 → 理由 → 取代者」；无清单视为未完成。
    - **归档件不等于 Authority**：活跃文件引用归档件时必须标注 `ARCHIVE / TRACE`；归档件正文不改写，只加历史横幅。
-   - **目录职责唯一 Authority**＝`specs/OWNERSHIP_MAP.md`（含 23 个根目录逐项声明）。
+   - **目录职责唯一 Authority**＝`OWNERSHIP_MAP.md`（含 23 个根目录逐项声明）。
    - **命名纪律复核范围含 Office 二进制**：`.docx/.pptx/.xlsx` 须解包检查，不得只 grep 文本文件（此为对 R13 的修正补充）。
    - **施工图当前版本**：第 3 代——`prototypes/墨痕_五母题施工审阅_第一批_M1_V0.1.html` + `docs/墨痕_五母题施工审阅_第一批_M1_配套规格_V0.1.md`，经项目拥有者 **2026-10-02 确认**；第 2 代 `specs/experience-ui/施工图/T05_B1_*` 已归档。
 

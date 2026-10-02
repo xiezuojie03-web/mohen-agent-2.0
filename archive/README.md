@@ -1,7 +1,7 @@
 # archive/ — 跨域历史快照归档区
 
 > **本目录是历史归档区。其中的一切内容都是某一时刻的快照，不代表当前状态，不拥有任何 Authority。**
-> 当前状态以 `CURRENT.md` 为准；宪法以 `governance/C0–C4` 为准；目录职责与归档规则以 `specs/OWNERSHIP_MAP.md` 为准；文件路径以 `AGENTS.md` §1 为唯一路由源。
+> 当前状态以 `CURRENT.md` 为准；宪法以 `governance/C0–C4` 为准；结构（目录职责与归档规则）以根目录 `OWNERSHIP_MAP.md` 为准；文件路径以 `AGENTS.md` §1 为唯一路由源。
 
 ## 本目录只放什么
 
@@ -15,7 +15,7 @@
 | 被取代的**契约与规范**（旧 UI Baseline、旧设计规格） | `specs/archive/` |
 | 被取代 / 重复的**其他活跃文件**（按批次成组归档） | 本目录下 `<date>-<topic>/` |
 
-归档规则、清单要求与引用限制见 [`specs/OWNERSHIP_MAP.md`](../specs/OWNERSHIP_MAP.md) §1（R14）。
+归档规则、清单要求与引用限制见 [`OWNERSHIP_MAP.md`](../OWNERSHIP_MAP.md) §1（R14）。
 
 ## 批次
 
@@ -23,6 +23,6 @@
 |---|---|
 | `analysis-2026-09-26/` | 2026-09-26 的六份分析（文件树与归属图、数据库架构设计、实现差距分析、冻结 JSON 机制解读、DB 迁移映射、git log 摘录） |
 | `PROJECT_STRUCTURE_REPORT.md` | 2026-10-01 的仓库结构快照（其中列出的部分根文件此后已迁入 `governance/archive/`，**该清单已过期**） |
-| `2026-10-02-superseded/` | 2026-10-02 结构整治批次：重复副本与第 2 代施工图（清单见该目录 `README.md`） |
+| `2026-10-02-superseded/` | 2026-10-02 结构整治批次：重复副本、被取代的审查稿与第 2 代施工图（清单见该目录 `README.md`） |
 
 > 本目录中的文件**正文不改写**（含其中残留的旧工具名与已失效的 Authority 自述），只在此处统一声明其非当前状态。

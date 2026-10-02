@@ -7,7 +7,8 @@ Trigger: 任何开发/数据任务开始前
 先执行 `mohen-project-guard`；读取当前 Task。
 
 ## Steps
-1. 读 `CONTEXT.md`、`FOUNDATION.md`、`OWNERSHIP_MAP.md`、当前 Task。
+1. 读根目录三件套 `AGENTS.md`（路由）、`CURRENT.md`（状态）、`OWNERSHIP_MAP.md`（结构 SOT），再读 `specs/FOUNDATION.md` 与当前 Task。
+   （2026-10-02 更正：原写 `CONTEXT.md` 与裸 `FOUNDATION.md`——`CONTEXT.md` 已归档至 `governance/archive/`，`FOUNDATION.md` 实为 `specs/FOUNDATION.md`；`OWNERSHIP_MAP.md` 已上移至仓库根目录。）
 2. 只再读与 Task 直接相关的 Contract/Skill；禁止默认全仓库通读。
 3. 搜索同职责文件；检查 Git 状态与未提交修改。
 4. 输出 Context Brief：目标、允许修改、禁止修改、验收命令、风险。
