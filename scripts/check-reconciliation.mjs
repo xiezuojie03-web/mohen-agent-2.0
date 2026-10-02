@@ -89,6 +89,31 @@ for (const p of proposals) {
       const hasOptions = /选项|A\s*[/／]\s*B|[（(]\s*[A-C]\s*[)）]|^\s*\d+[.、)]/m.test(askText);
       if (!hasQuestion) bad(`${tag}: 「请你回答什么」必须是**可回答的具体问题**（需含 ？）—— 写不出具体问题说明本可自主完成，不应提交`);
       else if (!hasOptions) warn(`${tag}: 「请你回答什么」建议给出可选项（A/B/C），便于拥有者一句话裁定`);
+
+      // ---- 自足性检查（§2.5）：2026-10-02 首个实例六个问题一个也答不上，故机器能拦的必须拦 ----
+      // ① 每条编号问题下面必须紧接一行以 `→` 开头的"后果"
+      for (let j = 0; j < body.length; j++) {
+        if (!/^\s*\d+[.、)]/.test(body[j])) continue;
+        let k = j + 1;
+        while (k < body.length && !body[k].trim()) k++;
+        if (!String(body[k] || "").trim().startsWith("→")) {
+          bad(`${tag}: 问题「${body[j].trim().slice(0, 36)}…」下面缺一行以「→」开头的**后果**说明（§2.5 自足性）`);
+        }
+      }
+      // ② 问句提到「方案 X」→ **问句之前**必须有该方案的**定义块**（另起一行）
+      //    三次迭代才做对，记录在此：
+      //      首版在整篇文件里找 → 被问句自己满足；
+      //      二版改成"问句之前"找 → 仍被正文里的**行内提及**（"我建议 **方案 A**"）满足。
+      //    结论：**字符串匹配区分不了「定义」与「提及」**，故要求定义块**必须另起一行**（^**方案 X**）。
+      //    局限（已知并接受）：守卫只能拦"没定义"与"只在问句里提"，**判断不了定义写得好不好**——最终靠人。
+      const askIdx = lines.findIndex((l) => l.trim() === HEADINGS[4]);
+      const beforeAsk = lines.slice(0, askIdx < 0 ? lines.length : askIdx).join("\n");
+      for (const L of ["A", "B", "C"]) {
+        if (!new RegExp(`方案\\s*${L}`).test(askText)) continue;
+        if (!new RegExp(`^\\*\\*方案\\s*${L}\\*\\*`, "m").test(beforeAsk)) {
+          bad(`${tag}: 问句提到「方案 ${L}」，但**问句之前**没有它的定义块（需另起一行写 \`**方案 ${L}**\`）—— 拥有者不该去别处找记录（§2.5）`);
+        }
+      }
     }
   }
 
