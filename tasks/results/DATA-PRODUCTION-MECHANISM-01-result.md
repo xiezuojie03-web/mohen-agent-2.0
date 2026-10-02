@@ -233,12 +233,12 @@ source_record                                                                   
 |---|---|---|---|
 | B-01 | 阶段 08 Gate 未接线（夜跑窗口内审计 0 条） | **已处置** | `ee1b0ad`（M4.1 门禁接线）+ `777436a`（R15 触发器强制） |
 | B-02 | 三分流未实现（334 关系 + 1246 图片从未进 `review_queue`） | **未处置** | = §4 M2 第四条；见 §8.5 |
-| B-03 | 自动晋级未记 run_id / 规则版本 / Gate 结果 / 回滚点 | **部分处置，待复核** | 生产注册表已强制声明 `gates`/`rollback`（`11e6fe7`）；"自动晋级须记 run_id"是否全路径落实**未复核** |
+| B-03 | 自动晋级未记 run_id / 规则版本 / Gate 结果 / 回滚点 | **已处置** | 生产注册表强制 `gates`/`rollback`（`11e6fe7`）；M2 第四条（迁移 202610020009 + `c189e5a`）后：`unattended-runner` WRITE 模式登记 `ingest_runs`（run 级归因），每个候选写入（图片/坐标/REJECT 拒收）均带 `ingest_run_id` 出生。**未来写入**的 run 级记录闭合；**727 张历史图**仍无 run（冻结数据，按拥有者指定留待数据生产） |
 | B-04 | 执行报告"安全"段是硬编码字符串 | **已处置** | `abf4b67`（改真查询）+ `ceeb0c1`（三形态同源） |
 | B-05 | 作业队列硬编码在 runner 里（65 个） | **已处置** | `11e6fe7`（生产注册表 + `guard:registry`） |
 | B-06 | 跨批 `legacy_id` 规则不同（14 组重复 `file_path`） | **已处置** | `9e76c2d`（并集 `legacy_id` + 规范化 `file_path`） |
-| B-07 | 图片批次由临时脚本执行，绕过 `mohen-visual-asset` 的用途/权利判定 | **部分处置，待复核** | 图片作业已在生产注册表标 `forbidden`；**Skill 接线本身未做** |
-| B-08 | `SOURCE_REGISTRY` 不存在 | **部分处置** | `source-providers.json` 已建（17 个 provider、5 项分级裁定 `6a425e2`）；**运维表 10 个 provider 仍 `ops_status: todo`** |
+| B-07 | 图片批次由临时脚本执行，绕过 `mohen-visual-asset` 的用途/权利判定 | **部分处置** | 图片作业在生产注册表标 `forbidden`（不调度）；`jobImages` 已内联 eligibility gate（R15）+ 三分 HOLD（M2 第四条），用途/权利/分诊判定在代码层落实，但**非显式走 `mohen-visual-asset` Skill 协议**。机制兜底已就位，Skill 显式接线为非阻塞项，与 **C 组解禁**绑定（解禁时再定"runner 显式走 Skill"与否） |
+| B-08 | `SOURCE_REGISTRY` 不存在 | **已处置** | `source-providers.json` 已建（17 个 provider、5 项分级裁定 `6a425e2`）；运维表 10 个 provider 的 `ops_status: todo` 于 `1ef9823` 全部补齐为 `documented`，守卫强制校验三项运维字段（`guard:source-gate` 现 ops_todo=0） |
 | B-09 | `source-providers.json` 无人读，且键与真库对不上 | **已处置** | `ee1b0ad`（`normalizeProvider` + `source-gate.mjs` + `guard:source-gate`） |
 | B-10 | `SHL-LEGACY-COORDS` 240 行零证据零置信 | **未处置** | 属**数据处置**；归入**下一步数据生产**（拥有者 2026-10-02 指定） |
 | B-11 | 519 张写死 `depicted_period='现代影像（非历史）'` | **部分处置** | 脚本已修（`9e76c2d`：显式写 `pending_heritage_review`）；**既有数据未处置** → 冻结 |
@@ -347,7 +347,7 @@ source_record                                                                   
 1. **M2 第四条**：`review_queue` AUTO/HOLD/REJECT 三分（＝ B-02 的正解，也是 C 组解禁的最后一块）。
    **方案已在 §4 M2 写好，无需重新发明。** 注意：它属**机制类**，不在冻结范围。
 2. **M4 收尾**：B-08 的 provider 运维表（10 个 `ops_status: todo`）。
-3. **B-03 / B-07 复核**：两处标"待复核"，需确认"自动晋级须记 run_id"是否全路径落实、Skill 接线是否仍缺。
+3. **B-03 / B-07 复核（2026-10-02 完成）**：B-03 已处置（`ingest_runs` 登记全路径落实，见 `c189e5a`）；B-07 仍部分处置——图片作业 `forbidden` + `jobImages` 内联判定就位，Skill 显式接线转 **C 组解禁**裁定。
 4. **A 组 4 项待拥有者裁定**（其中 `RECON-02` 建议方案 A）。
 5. **老数据问题不在此处理** —— 拥有者 2026-10-02 指定：**放到下一步"数据生产"里解决**。
 
