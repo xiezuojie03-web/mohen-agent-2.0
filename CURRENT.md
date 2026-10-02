@@ -167,6 +167,11 @@ H2 的下一出口不是"再完成一批功能"，而是：
 - **现象**：宪法用单数名（`source_record` / `event` / `relation_claim` / `visual_asset` / `evidence_fragment` / `human_review`），真库是复数 + 前缀（`source_records` / `cultural_events` / `cultural_relation_claims` / `visual_assets` / `evidence_fragments` / `human_review_decisions`）。
 - **影响**：按宪法名写 SQL 或查 schema 者会误判"表不存在"（`SCHEMA-DIFF-20261002` 记录了一次真实误判）。
 - **待裁决**：以真库为准回写宪法命名，或以宪法为准重命名表（代价高、触及迁移）。开发总工程师**不自行决定**。
+- **2026-10-02 已升级为正式提案 `RECON-02`**（`tasks/results/RECON-02-constitution-vs-db-naming.md`，按 `C0 §6.2` 一页格式）。**新查明三件事**：
+  ① **这不是一个分叉，是四件事** —— 甲纯复数/缩写差（`entity`→`entities`）、乙加领域前缀（`event`→`cultural_events`）、丙改名/去后缀（`human_review`→`human_review_decisions`）**三类是命名差**；**丁类是结构分裂**（`historical_space_claim` 拆成 5 张表；`relation_claim` 双存储＝ESC-02），**改名解决不了**。
+  ② **宪法并未强制过物理名** —— C3 §6.1 自称「当前最小核心表集（**建议** 18 张以内）」，且宪法内部本就不一致（§2.2 用 snake_case 单数，§2.3 用 CamelCase 概念）。故"按宪法重命名"不是恢复宪法，而是**先把建议升格为强制**。
+  ③ **真库有、宪法未逐条列的 8 张**：`claims`、`evidence`、`relations`、`relation_evidence`、`evidence_gate_audit`、`review_queue`、`knowledge_paths`、`knowledge_path_steps`、`legacy_mappings`。
+  真正的病根：宪法与真库之间**没有唯一对照**，唯一对照是**活在脚本里的数组**（`gen-schema-diff.mjs` 的 `G`/`EXTRA`）。
 - **证据**：`tasks/results/SCHEMA-DIFF-20261002.html`。
 
 ### ESC-02｜双 relation 存储（同源风险）
