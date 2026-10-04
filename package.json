@@ -21,9 +21,11 @@
     "guard:reconciliation": "node scripts/check-reconciliation.mjs",
     "guard:promotion": "node scripts/check-promotion-gate.mjs",
     "guard:triage": "node scripts/check-review-triage.mjs",
+    "guard:research": "node scripts/check-research.mjs",
+    "guard:naming": "node scripts/check-naming-map.mjs",
     "guard:escalations": "node scripts/check-escalations.mjs",
     "guard:links": "node scripts/check-links.mjs",
-    "guard": "pnpm guard:docs && pnpm guard:structure && pnpm guard:registry && pnpm guard:source-gate && pnpm guard:identifiers && pnpm guard:acquisition && pnpm guard:reconciliation && pnpm guard:promotion && pnpm guard:triage && pnpm guard:escalations && pnpm guard:links && pnpm test"
+    "guard": "pnpm guard:docs && pnpm guard:structure && pnpm guard:registry && pnpm guard:source-gate && pnpm guard:identifiers && pnpm guard:acquisition && pnpm guard:reconciliation && pnpm guard:promotion && pnpm guard:triage && pnpm guard:research && pnpm guard:naming && pnpm guard:escalations && pnpm guard:links && pnpm test"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

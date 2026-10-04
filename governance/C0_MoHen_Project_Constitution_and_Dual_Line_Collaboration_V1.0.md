@@ -48,7 +48,7 @@
   - 不设独立架构顾问，也不设由第三方 AI 担任的"架构侧""总架构师"，或 Human Experience Gate 的终裁者。
   - 历史文档中出现过的 WorkBuddy、CodeBuddy、ChatGPT Architect 等**工具名 / 产品名一律不具治理 Authority**；它们曾经承担的角色，一律由开发总工程师以**角色**身份承接。
   - 授权与被授权关系只在项目拥有者 ↔ 开发总工程师之间直接发生，不经任何第三方转述、复核或签字。
-  - 具体决断登记见 `CURRENT.md` §12 **R13**；其登记框架与变更机制见本宪法 §11。
+  - 具体决断登记见 `C0` §11 **R13**（唯一载体：内容 + 框架 + 变更机制）。
 
 ---
 
@@ -276,16 +276,38 @@ Task Book 不是所有开发的必需入口，仅在复杂、危险、跨模块�
 
 # 11｜已确认决断登记与变更（C0 治理职责）
 
-项目拥有者在 `CURRENT.md` §12 中确认的工程 / 数据决断（R6 本地主库、R8 漂移以主库为准、R9 遗留证据、R12 重跑 dump、DATABASE_URL 接本地 PG 等）是已生效的治理结论，**不修改 C0–C4 的宪法原则**，仅作工程落地确认。
+项目拥有者确认的工程 / 数据 / 治理决断**统一登记于本 §11（唯一载体：内容 + 登记框架 + 变更机制）**；`CURRENT.md` §12 不再逐条复述，仅保留一行指针。决断**不修改 C0–C4 的宪法原则**，仅作工程落地确认。工程 / 数据决断（原 `CURRENT.md` §12 内容）如下：
+
+| ID | 状态 | 一句话 | 详情 |
+|---|---|---|---|
+| R6 | 已确认·持续有效 | 本地 PostgreSQL 主库为唯一真相源；云端仅备份不转正；DATABASE_URL 接本地 PG(5432) | `tasks/results/CURRENT-DECISIONS-R6-R17-result.md#r6` |
+| R8 | 已确认 | Schema 漂移以主库为准，不查漂移原因（主库即真理） | `tasks/results/CURRENT-DECISIONS-R6-R17-result.md#r8` |
+| R9 | 已确认 | 15 Wikidata + 5–6 上图 locator 重复证据暂不处理（老项目文件夹，不影响主库） | `tasks/results/CURRENT-DECISIONS-R6-R17-result.md#r9` |
+| R12 | 已确认 | 重跑本地主库有效 pg_dump 逻辑备份，修复 SAFETY_BASELINE 0 字节 dump | `tasks/results/CURRENT-DECISIONS-R6-R17-result.md#r12` |
+| hushang 导入 | 已确认 | 依叙事反推：先种子导入坐标/镇/桥/宗族，再叙事/诗词/方志证据 | `tasks/results/CURRENT-DECISIONS-R6-R17-result.md#hushang` |
+
+治理级决断（R13–R25）见下方逐条登记：
 
 其中 **R13（开发授权与权责归一，2026-10-01）为治理级决断**：项目拥有者直接授权「开发总工程师」进行后续开发；本项目只有两方（项目拥有者 + 开发总工程师），**不设第三方裁决方**（规则详见 §0）。历史 §11.1–§11.4 日常施工授权链（WorkBuddy → CodeBuddy）自始未定稿，由 R13 取代并失效。R13 **不改变 C0–C4 的原则与边界**——架构决定权仍唯一属于项目拥有者（§2.1 / §7 第 5 步）。
 
 其中 **R14（归档规则与目录职责，2026-10-02）亦为治理级决断**：被取代、重复或不再必要的文件**一律归档，不删除**；本条**取代**原「Current-only working tree + `git rm`、不建 history/ 子目录」纪律。三个归档落点（`archive/` 跨域快照 / `governance/archive/` 被取代治理件 / `specs/archive/` 被取代契约）、归档清单要求，以及**全部目录的职责声明**，统一由 **`OWNERSHIP_MAP.md`** 承载。R14 不改变 C0–C4 的原则与边界。
 
+**R14 例外（2026-10-03 · 项目拥有者裁定）**：R14「一律归档，不删除」**不适用于本轮升版文件**。C2 V1.0 → V1.1、C3 V1.1 → V1.2 属于**同一文件的版本升版**，旧版本**不留历史副本、不进归档区**；可追溯性由 Git 历史承载。本例外**仅限本轮**，不解除 R14 对其余文件的效力。
+
 其中 **R15（晋级闸门通则，2026-10-02）为治理级决断**：**任何表要把一行标成"可用 / 已发布"级别，必须能在 `evidence_gate_audit` 找到该对象的门禁记录**，无记录者不得晋级；**禁止**用"反向排除名单 + 空值默认可用"表达资格（`visual_assets` 曾如此，是 1246 张图片污染的根因）。通则正文在 **C3 §4.2**；落点由 `pnpm guard:promotion`（只读）逐表核对，分批补强制。R15 不改变 C0–C4 的原则与边界。
 
-- **登记**：每条决断带编号（R#）、确认状态、对应宪法 / 架构条款（如 R6 对应 C1 §24 技术基线）、变更条件。- **变更**：任何决断的增删改，须经项目拥有者确认并触发 Architecture Reconciliation，回写本登记与 CURRENT §12，禁止开发平台自行改写。
-- **权威归属**：CURRENT §12 保留决断的具体内容（当前状态载体）；本 §11 保留决断的登记框架与变更机制（治理载体）。两者一致，互不重复。
+其中 **R16（Research Production Reconciliation，2026-10-03）为治理级决断**：确认数据生产链架构修订五项决策 **R-DP-01～R-DP-05 全部通过** —— ① 正式承认 **Discovery Research** 与 **Directed Production** 双模式；② 把 **Research Workspace / Observation Graph** 加入 C2/C3 正式合同，但**暂不冻结大 Schema**；③ Narrative Gap 由"所有生产唯一上游"改为 **Directed 模式上游**，Discovery 改用 **Discovery Intent / Research Scope**（须限地点/时间/来源/规模且机器可校验）；④ Human Review 由"所有 Candidate 分诊"**收窄**到 Selected / Truth-Promotion / Narrative-Critical / Conflict-Critical，研究长尾独立 disposition；⑤ **升级唯一主生产协议**并同步 AGENTS / CURRENT / OWNERSHIP_MAP / T03 / T06 / T07，**不新增平行总协议**。
+
+配套升版（版本源唯一，本宪法 §10）：C2 V1.0 → **V1.1**、C3 V1.1 → **V1.2**、主生产协议 V2.0 → **V3.0**、《宽进与广联》V0.1 → **V1.0**（转正为主协议下属 Discovery Research 细则）。路径已同步 `AGENTS.md` §1 与 `OWNERSHIP_MAP.md`。
+
+R16 **不改变 C0–C4 的原则与边界** —— 不改 C1 的 H2 主 Horizon，不改 C0 治理与 C4 体验 Authority；三条护栏（Legacy-first、Research Scope 机器可校验、收窄只针对研究候选且必须同步改守卫）与裁定同时生效。内容载体为 `C0` §11（本 §11 同时承载框架与内容）；对照与文件清单为 `tasks/results/DATA-PRODUCTION-RECON-20261003-result.md`。
+
+其中 **R17–R25（2026-10-04 项目拥有者八项决断）**：R17 沪上经纬完整挖干解禁；R18 数据优先·体验顺延（C1 H2 子阶段定义）；R19 第二步外部扩展维持"先证明再扩"闸门；R20 第一步长期授权（现有架构内挖老项目 / 不建核心模型 / 不自动转正，改架构须拥有者同意）；R21 RECON-02 选 A（概念名≠物理名 + 映射 + 守卫）；R22 ESC-02 关系单一真源原则（合并设计待拥有者点头）；R23 ESC-03 现代位置独立于历史锚点；R24 ESC-05③ 测试垃圾清理 + 经验沉淀；R25 解除 1246 图冻结并入数据挖掘主线。具体内容见本 §11（R17–R25 已在上文及下方逐条登记，唯一载体）。R17–R25 不改变 C0–C4 的原则与边界（R18/R21/R22/R23 属 C1/C2/C3 域内细化，不反向改写 C1 方向与冻结原则）。
+
+其中 **R26（Skill 实体化与复用铁律 · C2 增补，2026-10-04 项目拥有者授权）为治理级决断**：为根治"每次数据生产重写脚本、攒下一大堆重复脚本"，在 **C2** 增补四条规范性铁律——**§2.1 Skill 实体化判定**（SKILL.md + 固定 entry + 契约化 + 在 `production-registry.json` 登记 `implementation` 才算落地）、**唯一权威实现（canonical entry）**、**复用优先 / 禁止平行重复**（新增脚本前先查复用，重复即收敛并按 R14 归档）、**三向绑定**（技能 ↔ 入口 ↔ 作业可查）；并在 **C2 §9** 补"重复即合并"、**§9.1** 最小合同扩为含 Implementation / Reuse Source / Merge·Deprecate。落地机制（`implementation` 字段、守卫查重、先查复用硬规矩）由 `production-registry.json` 与 `skills/` 实体化承担（见 `tasks/TASK-SKILL-20261004_数据生产Skill能力治理_Task-Book_V1.0.md`）。**版本源唯一**（本宪法 §10）：本次为**内容增补、文件不改名**，故 C2 维持 V1.1（各增补节已标注日期）；若拥有者要求正式升版，另行 Architecture Reconciliation 统一改名并同步 AGENTS §1 / CURRENT §10。R26 不改变 C0–C4 的原则与边界（属 C2 数据生产域内细化，反向支撑 R18–R20 数据底座主线）。
+
+- **登记**：每条决断带编号（R#）、确认状态、对应宪法 / 架构条款（如 R6 对应 C1 §24 技术基线）、变更条件。- **变更**：任何决断的增删改，须经项目拥有者确认并触发 Architecture Reconciliation，回写本登记（C0 §11），禁止开发平台自行改写。
+- **权威归属**：本 §11 为决断的**唯一载体**（内容 + 登记框架 + 变更机制）；`CURRENT.md` §12 仅保留一行指针，不重复内容。
 
 # 附录 A｜一句话记住工作方式
 

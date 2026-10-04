@@ -3,7 +3,7 @@
 > **本文件是墨痕的「结构 SOT」**：用一棵目录树回答"每个目录归谁管、放什么、禁止什么"，以及"被取代的东西去哪"。
 > **权威来源**：`governance/C0_MoHen_Project_Constitution_and_Dual_Line_Collaboration_V1.0.md` §3 / §5 / §11（R14）。本文件是**载体**，不是第六份宪法。
 > **机器校验**：`pnpm guard:structure` 检查 ① 根目录每个实际条目都出现在下面的树里；② 树里出现的路径真实存在；③ `AGENTS.md` §1 的每条路径真实存在。`pnpm guard:links` 检查活跃文档的链接与路径引用。
-> **分工**：**树 = 人类可读的结构图**（宽松，含 `…`、`*` 的写法会被跳过）；**`AGENTS.md` §1 = 权威路径清单**（严格，逐条校验）。改结构要同时更新这两处。
+> **分工**：**树 = 人类可读的结构图**（宽松，含 `…`、`*` 的写法会被跳过）；**`AGENTS.md` 触发表 = 权威路径清单**（严格，逐条校验）。改结构要同时更新这两处。
 > 当前状态以 `CURRENT.md` 为准。
 
 ## 0. 目录树（结构与职责）
@@ -15,7 +15,7 @@
 ├── OWNERSHIP_MAP.md       结构 SOT：目录职责 + 归档规则（本文件，机器校验）
 │
 ├── governance/            宪法与治理
-│   ├── C0…C4_*.md         C0 角色/边界治理 · C1 方向/冻结原则 · C2 数据生产/双 Skill · C3 数据库/Truth Store · C4 体验/UI
+│   ├── C0…C4_*.md         C0 角色/边界治理 · C1 方向/冻结原则 · C2 数据生产/双 Skill（**V1.1**）· C3 数据库/Truth Store（**V1.2**）· C4 体验/UI
 │   ├── experience/        体验域治理契约（EXP-DESIGN-01…）｜禁止：与 C4 竞争体验 Authority
 │   └── archive/           【归档】被取代的治理件（旧 Roadmap / Phase Plan / 旧版 C0–C4 docx / 移交稿 / 旧 CURRENT 备份）｜禁止：被活跃文件当 Authority 引用
 │
@@ -27,13 +27,14 @@
 │   ├── SOURCE_REGISTRY.md    来源登记
 │   ├── archive/           【归档】被取代的契约与规范（旧 UI Baseline 等）｜禁止：当作当前 Authority
 │   ├── data-production/   数据生产协议线（**契约 + 操作件 + JSON 注册表同目录**）
-│   │   ├── MoHen_Data_Production_Protocol.md   **数据生产协议 V2.0**：无人值守 + 有人值守的强制契约（§0.2 规则即强制；守卫见 §9）
-│   │   ├── production-registry.json   **生产注册表**：哪些自动化被允许无人值守运行（机器可读，守卫校验；协议 #5）
-│   │   ├── identifier-registry.json   **标识符登记**：真库里"可以随便写"的标签/代号必须声明出身与定义（协议 #7 / §9.1）
-│   │   ├── acquisition-intents.json   **采集意图**：每批数据"当初为什么抓的"必须抓前声明（协议 #7）
-│   │   ├── T03_金泽材料盘点_覆盖矩阵.md   叙事缺口清单（当前唯一实例＝金泽）
-│   │   ├── T06_无人值守派工与缺口映射.md   缺口 → 字段 → 批次
-│   │   └── T07_无人值守作业最小Contract.md   作业字段契约与安全基线
+│   │   ├── MoHen_Data_Production_Protocol.md   **数据生产协议 V3.0（唯一主协议）**：一套控制面 · 两种生产模式（§0.6）；无人值守 + 有人值守的强制契约（§0.2 规则即强制；守卫见 §9）
+│   │   ├── production-registry.json   **生产注册表**：哪些自动化被允许无人值守运行（机器可读，守卫校验；协议 §5）；**双模式字段** production_mode / truth_write_ceiling（D01–D05 已登记）｜守卫：`guard:registry`（校验模式与 ceiling 一致性）
+│   │   ├── identifier-registry.json   **标识符登记**：真库里"可以随便写"的标签/代号必须声明出身与定义（协议 §7 / §9.1）
+│   │   ├── acquisition-intents.json   **采集意图**：每批数据"当初为什么抓的"必须抓前声明（协议 §7）；**两类**：Narrative Gap ｜ Discovery Research
+│   │   ├── 墨痕_数据生产机制_宽进与广联详细协议_V1.0.md   **主协议下属 Discovery Research 详细操作协议**（载体读取 T01–T14 / Observation Contract / A01–A12 / AVS / 反噪声 / LR-ADS-01）；**不是第二份总协议**
+│   │   ├── T03_金泽材料盘点_覆盖矩阵.md   叙事缺口清单（**金泽·五母题实例**；只服务 Directed Production）
+│   │   ├── T06_无人值守派工与缺口映射.md   **金泽 Directed Production** 缺口 → 字段/判断ID → N01–N06 批次
+│   │   └── T07_无人值守作业最小Contract.md   作业字段契约与安全基线（**双模式**；含 §7A D01–D05 声明模板）
 │   └── experience-ui/     Experience/UI 素材与施工图（分级与 Authority 见该目录 README）
 │       ├── 施工图/        当前施工图（第 3 代）：M1 配套规格 + 可操作图册
 │       ├── MoHen_Narrative_Motif_Framework.md   五母题叙事与定向研究方法（V1.3）
@@ -62,6 +63,7 @@
 │   ├── evidence           Evidence Gate｜禁止：自由叙事
 │   ├── weave              verified → relations/story/discovery candidate｜禁止：绕过 Gate
 │   └── legacy             老库移植与无人值守执行体（unattended-runner.mjs）｜禁止：把老库内容当已裁决事实
+│   ├── research           Discovery Research 执行体（D01–D05）：`SKILL.md` ＋ `research-pipeline.mjs` ＋ `research-runner.mjs`｜禁止：写 Runtime Truth（truth_write_ceiling=0）｜落地（2026-10-03 T7）：目录已建，存储为最小表集 `research_*`（迁移 `202610030010_research_workspace.sql`），物理形态未冻结（C3 §2.9.3）
 ├── supabase/migrations    Truth Store 物理定义（schema 唯一来源）｜禁止：被绕过直接改库
 ├── scripts/               结构与文档守卫（check-*.mjs）＋ 报告生成器（gen-*.mjs）｜禁止：承载产品逻辑
 ├── tools/production/           无人值守生产运维脚本（探针 / 修复 / 校验）｜禁止：被当作调度器（调度器在 pipelines/legacy）
@@ -74,7 +76,6 @@
 ├── tests/                 机器验收（vitest / Playwright）｜禁止：产品规则解释
 ├── legacy/manifests/      老项目迁移 manifest（只读）｜禁止：在老工程内安装 / 构建 / 写文件
 ├── verification/          开发验证产物与长期验收索引（默认不入库）
-│
 ├── package.json pnpm-lock.yaml pnpm-workspace.yaml vitest.config.ts playwright.config.ts   工程与工具配置｜禁止：承载规则内容
 ├── .env .env.local .env.example   本地环境与凭证（.env.local gitignored）｜禁止：入库
 ├── .gitignore .gitattributes      Git 行为配置
@@ -82,7 +83,7 @@
 ```
 
 > **2026-10-02 结构决定（项目拥有者）**：docs/ 与 prototypes/ **已退役**——其全部内容并入 `specs/`（UI 相关进 `specs/experience-ui/`，数据生产协议进 `specs/`）。此后 **Experience/UI 相关内容一律放 `specs/`**，不再另设目录。
-> 新建文件前必须搜索是否已有同职责 owner。**禁止平行真源。**
+> **2026-10-03 结构同步（R-DP-01～05，登记见 `C0` §11 R16）**：本轮**未新建顶层目录**。《宽进与广联》以 **V1.0** `.md` 进入 `specs/data-production/`；`pipelines/research` 由预留登记转为**实际目录**（已同步本树与 `AGENTS.md` §1）。新增 Research Job 一律登记进既有 `production-registry.json`，**不新建第二份注册表**。新建文件前必须搜索是否已有同职责 owner。**禁止平行真源。**
 
 ## 1. 归档规则（R14 · 2026-10-02 项目拥有者裁定）
 
@@ -152,7 +153,7 @@
 ## 4. 版本源与 SOT
 
 - **入口路由** `AGENTS.md`（纯路由，非 Authority）；**当前状态** `CURRENT.md`；**结构 SOT** `OWNERSHIP_MAP.md`（本文件）。
-- **当前架构真源集（SOT Set）= C0–C4 + CURRENT**（项目拥有者 2026-09-29 明确，2026-10-02 复核）。**路径以 `AGENTS.md` §1 为唯一路由源**，本文件不再重复。
+- **当前架构真源集（SOT Set）= C0–C4 + CURRENT**（项目拥有者 2026-09-29 明确，2026-10-02 复核）。**路径以 `AGENTS.md` 触发表为唯一路由源**，本文件不再重复。
 - **版本源唯一机制**见 **C0 §10**。
 - **候选登记处**：`governance/archive/MoHen_Agent_2.0_Architecture-Candidate-Backlog_V1.0.md`（TRACE，非 SOT）；Candidate 须经项目拥有者确认（C0 §6.2）方可晋升为 Contract / Plan / Task Book。
 
@@ -162,7 +163,7 @@
 
 1. **根目录条目覆盖**（`check-structure-map.mjs`）：根目录每个实际条目都必须出现在 §0 的树里 → 否则红，提示"请在 OWNERSHIP_MAP.md §0 声明"。
 2. **树中路径存在性**（`check-structure-map.mjs`）：树里写出的路径必须真实存在 → 否则红（防止退役目录仍留在树里）。
-3. **路由源路径存在性**（`check-structure-map.mjs`）：`AGENTS.md` §1 的每条路径必须存在 → 否则红。
+3. **路由源路径存在性**（`check-structure-map.mjs`）：`AGENTS.md` 触发表的每条路径必须存在 → 否则红。
 4. **链接与文档内路径引用**（`check-links.mjs`）：活跃文档的 markdown 链接、图片引用，以及反引号包裹的路径引用必须可解析 → 否则红。
 
 **Trace 豁免**：路径含 `archive` 的目录、`tasks/`、`data/`、`legacy/` 不参与第 4 项校验——依 §1 规则 5，归档件与历史记录正文不改写，允许保留失效路径。

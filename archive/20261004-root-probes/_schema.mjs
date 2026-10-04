@@ -1,0 +1,11 @@
+import { queryRows } from './packages/data-access/src/index.mjs';
+import { writeFileSync } from 'node:fs';
+const Q = async (sql, p = {}) => await queryRows(sql, p);
+const tables = ['source_records','evidence','entities','relations','claims','claim_evidence','relation_evidence','cultural_relation_claims','cultural_events','cultural_conflicts','evidence_fragments','cultural_meaning_candidates','cultural_present_connections','knowledge_paths','knowledge_path_steps','discovery_candidates','visual_assets','visual_entity_links','evidence_gate_audit','review_queue','ingest_runs','human_review_decisions','legacy_mappings'];
+const inList = tables.map(t => `'${t}'`).join(',');
+const rows = await Q(`select table_name, column_name, data_type, is_nullable from information_schema.columns where table_name in (${inList}) order by table_name, ordinal_position`, {});
+const out = {};
+for (const r of rows) (out[r.table_name] ??= []).push({ c: r.column_name, t: r.data_type, n: r.is_nullable });
+writeFileSync('_schema.json', JSON.stringify(out, null, 1), 'utf8');
+console.log('tables:', Object.keys(out).length, 'total cols:', rows.length);
+console.log(Object.entries(out).map(([k, v]) => `${k}:${v.length}`).join('  '));

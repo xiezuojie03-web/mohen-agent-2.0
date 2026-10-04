@@ -3,6 +3,12 @@
 Purpose: 证据门禁  
 Trigger: Candidate 要晋级知识库
 
+## 实体化档案（C2 §2.1 · C0 §11 R26）
+- **Entry**：`pipelines/legacy/unattended-runner.mjs`
+- **Registry 作业**：`unattended.evidence-fragment`、`unattended.candidate-extraction`、`unattended.deterministic-resolution`
+- **Reuse Source**：证据门禁 / 候选抽取 / 确定性对齐复用本 Entry；不得为同类判定另写脚本。
+- **Merge / Deprecate**：重复实现并入本 Entry；被替代时按 R14 归档并写迁移说明。
+
 ## Preconditions
 先执行 `mohen-project-guard`；读取当前 Task。
 

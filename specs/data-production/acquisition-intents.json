@@ -59,6 +59,21 @@
       "evidence_for_declaration": ["pipelines/legacy/port-photos.mjs", "pipelines/legacy/unattended-runner.mjs"]
     },
     {
+      "batch_id": "hushang-legacy-image-anchor",
+      "retrospective": true,
+      "declared_at": "2026-10-04",
+      "declared_by": "开发总工程师（依 unattended-runner 专属锚点逻辑与写入脚本追溯）",
+      "provider": "hushang_legacy",
+      "match": { "metadata_kind": "image_source" },
+      "place_scope": "上海全域（沪上经纬旧图，以金泽为主）",
+      "theme_scope": "沪上经纬 · 图片批次专用来源锚点：把图片归属锚定到唯一来源，避免误挂到诗词等其他源（2026-10-02 根因 1）",
+      "method": "为图片批次建专属 image_source 锚点来源，图片归属唯一确定",
+      "query_or_radius": "n/a（来源锚点，非检索批次）",
+      "license_scope": "逐图不同（随旧库带入）",
+      "scope_confidence": "confirmed",
+      "evidence_for_declaration": ["pipelines/legacy/unattended-runner.mjs"]
+    },
+    {
       "batch_id": "hushang-jingwei-seed",
       "retrospective": true,
       "declared_at": "2026-10-02",
@@ -396,5 +411,24 @@
       "note": "按来源表裁决：SELF，不得生成 Evidence（自产产物不能自证）。"
     }
   ],
-  "known_gap": "① 本表 25 条**全部为追溯声明**，不是抓取前写的；真正的『先说后做』从下一个批次才开始。② `query_or_radius` 一列对追溯批次多为 n/a 或不可考——**这正是当初缺声明的代价**。③ 未覆盖 `visual_assets`（图片资产）层面：它们挂在 source_records 之下，本表只管来源批次。"
+  "known_gap": "① 本表 25 条**全部为追溯声明**，不是抓取前写的；真正的『先说后做』从下一个批次才开始。② `query_or_radius` 一列对追溯批次多为 n/a 或不可考——**这正是当初缺声明的代价**。③ 未覆盖 `visual_assets`（图片资产）层面：它们挂在 source_records 之下，本表只管来源批次。",
+  "forward_declaration": {
+    "active_from": "next_batch（首个非追溯批次起）",
+    "requirement": "依据协议 §7.1，采集 / 导入之前必须在 intents[] 登记一条 retrospective=false 的意图；未声明意图的批次只可进 Raw，不得进 Candidate（guard:acquisition 判红）。",
+    "template": {
+      "batch_id": "<provider>-<yyyy-mm-dd>-<slug>",
+      "retrospective": false,
+      "declared_at": "<采集开始前 ISO 时间>",
+      "declared_by": "<写入者>",
+      "provider": "<须在 data/fixtures/source-providers.json 已登记>",
+      "place_scope": "<地点>",
+      "theme_scope": "<主题>",
+      "method": "<采集方法>",
+      "query_or_radius": "<检索式或半径>",
+      "license_scope": "<许可>",
+      "scope_confidence": "confirmed",
+      "evidence_for_declaration": ["<采集前已存在的声明依据，如任务书 / 所有者指令>"]
+    },
+    "guard_enforcement": "scripts/check-acquisition-intents.mjs：对 retrospective=false 的意图，强制 declared_at 早于本批写入时间且 evidence_for_declaration 为采集前已存在的依据；否则判红——使 guard:acquisition 从本轮起真正事前拦截，而非仅作追溯命中校验。"
+  }
 }

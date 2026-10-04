@@ -7,32 +7,13 @@
 // 因此本脚本改为**按名称在指定图内发现主语**，再展开全部属性；解析 place 时**同时试两套命名空间**并如实记录哪套命中。
 //
 // 纪律：全串行；保留每条原始行；不臆测同名实体同一性。
-import { call, parseSparqlXml, makeRunDir, saveRaw, nowIso } from "./shl-client.mjs";
+import { makeRunDir, saveRaw, nowIso } from "./shl-client.mjs";
+// 2026-10-04（Skill 治理 R26）：查询 helper 与 subject dump 改为复用唯一权威实现 `shl-probe.mjs`。
+import { sparql, subjectRows } from "./shl-probe.mjs";
 
 const RUN = process.env.T11_RUN_DIR
   ? { dir: process.env.T11_RUN_DIR, runId: process.env.T11_RUN_DIR.split("/").pop() }
   : makeRunDir("t11-shl");
-
-const find = async (graph, query) => {
-  const res = await call(`/sparql?query=${encodeURIComponent(query)}`, {
-    method: "GET",
-    headers: { Accept: "application/sparql-results+json" },
-    retries: 1,
-  });
-  let rows = null;
-  if (res.parsed?.results?.bindings) {
-    rows = res.parsed.results.bindings.map((b) => Object.fromEntries(Object.entries(b).map(([k, v]) => [k, v.value])));
-  } else {
-    rows = parseSparqlXml(res.text);
-  }
-  return { ok: res.ok, status: res.status, rows };
-};
-
-const dumpSubject = async (graph, s) => {
-  const q = `SELECT ?p ?o WHERE { GRAPH <${graph}> { <${s}> ?p ?o } } LIMIT 80`;
-  const r = await find(graph, q);
-  return r.rows || [];
-};
 
 const out = { run_at: nowIso(), name_discovery: [], subject_dumps: [], place_resolution: [] };
 
@@ -49,12 +30,12 @@ const TARGETS = [
 
 for (const t of TARGETS) {
   const q = `SELECT DISTINCT ?s WHERE { GRAPH <${t.g}> { ?s ?p ?o . FILTER(isLiteral(?o) && (CONTAINS(STR(?o),"${t.kw}") || CONTAINS(STR(?o),"${t.kw}")) ) } } LIMIT 40`;
-  const { ok, status, rows } = await find(t.g, q);
+  const { ok, status, rows } = await sparql(q);
   const subs = (rows || []).map((r) => r.s);
   out.name_discovery.push({ ...t, status, ok, n: subs.length, subjects: subs });
   process.stdout.write(`\n### ${t.id}  graph=${t.g}  kw=${t.kw}  n=${subs.length}\n`);
   for (const s of subs) {
-    const props = await dumpSubject(t.g, s);
+    const props = await subjectRows(t.g, s);
     const name = props.find((r) => /(^|\/|\#)name$/.test(r.p))?.o ?? "";
     const addr = props.find((r) => /address$/.test(r.p))?.o ?? "";
     const lvl = props.filter((r) => r.p.endsWith("/type")).map((r) => (r.o.startsWith("http") ? "<" + r.o.split("/").pop() + ">" : r.o)).join(",");
@@ -87,7 +68,7 @@ process.stdout.write("\n=== place/authority resolution ===\n");
 for (const s of PLACES) {
   let found = null;
   for (const g of GRAPHS_ALL) {
-    const props = await dumpSubject(g, s);
+    const props = await subjectRows(g, s);
     if (props.length) { found = { graph: g, props }; break; }
   }
   out.place_resolution.push({ subject: s, resolved_in: found?.graph ?? null, props: found?.props ?? [] });

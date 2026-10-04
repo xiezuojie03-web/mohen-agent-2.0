@@ -13,6 +13,9 @@
 //      同 run 同对象唯一部分索引在真库存在（防迁移未应用）
 //   ② 不变量：分诊行必带 reason_code；hold 行定案必须带 reviewed_at（人审痕迹）
 //   ③ 覆盖：按 triage_outcome 计数（NULL＝出生于该机制之前的历史行，不算违规）
+//   ④ 研究长尾解耦（2026-10-03 新增 · 主协议 §3.3 / R-DP-04）：
+//      只有 Selected / Truth-Promotion / Narrative-Critical / Conflict-Critical 才创建分诊行；
+//      **研究长尾不得 1:1 制造 review_queue** —— 否则等于用新机制重新制造人工债务。
 //   DB 不可达 → WARN 并跳过（离线可跑）。
 //
 // 只读保证：本脚本**只执行 SELECT**，不含任何 INSERT/UPDATE/DDL。
@@ -23,6 +26,7 @@ const bad = (m) => { console.error("REVIEW_TRIAGE_ERROR " + m); failed = true; }
 
 let dbNote = "";
 const byTriage = [];
+let researchNote = "";
 
 try {
   // ① 结构
@@ -66,12 +70,38 @@ try {
        from review_queue group by 1 order by 1`
   );
   for (const r of rows) byTriage.push(`${r.k}=${r.c}`);
+
+  // ④ 研究长尾与 Human Review 解耦
+  const hasResearch = Number(
+    (await queryRows(
+      `select count(*)::int as c from information_schema.tables
+        where table_schema='public' and table_name='research_association_candidate'`
+    ))[0]?.c || 0
+  );
+  if (hasResearch > 0) {
+    const total = Number(await queryValue(`select count(*)::int from research_association_candidate`));
+    const flagged = Number(await queryValue(
+      `select count(*)::int from research_association_candidate
+        where disposition in ('selected','truth_promotion','narrative_critical','conflict_critical')`
+    ));
+    const rq = Number(await queryValue(
+      `select count(*)::int from review_queue where object_type = 'research_association_candidate'`
+    ));
+    researchNote = `研究候选=${total} 精选=${flagged} 分诊行=${rq}`;
+    // 长尾不得制造分诊行：研究候选里的长尾数应当「不产生」对应 review_queue 行。
+    if (rq > flagged) {
+      bad(`研究长尾制造了 ${rq - flagged} 条多余 review_queue 行（只有 Selected / Truth-Promotion / Narrative-Critical / Conflict-Critical 才可分诊）`);
+    }
+  } else {
+    researchNote = "研究表未建（跳过研究长尾核对）";
+  }
 } catch (e) {
   dbNote = "WARN DB 不可达，跳过核对（离线环境可接受）：" + String((e && e.message) || e).slice(0, 140);
 }
 
 if (dbNote) console.error(dbNote);
-console.log(`REVIEW_TRIAGE checked=structure+invariants db_checked=${dbNote ? 0 : 1}`);
+console.log(`REVIEW_TRIAGE checked=structure+invariants+research-longtail db_checked=${dbNote ? 0 : 1}`);
 console.log(`  · 分诊分布：${byTriage.join("  ") || "（库中无行）"}`);
+if (researchNote) console.log(`  · 研究长尾解耦：${researchNote}`);
 console.log("  · 历史行（triage=NULL）不算违规：它们出生于三分机制之前（迁移不回填，冻结不触碰）");
 process.exit(failed ? 1 : 0);

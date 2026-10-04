@@ -13,6 +13,12 @@
 //   ④ allowed 必须写明门禁如何落地（gates_enforced_by）——否则就是「写着有门、其实没有」
 //   ⑤ write_scope 的表名必须真实存在于 supabase/migrations
 //   ⑥ 队列里每个作业必须**恰好**命中一个条目（与 runner 使用同一 matchEntries）
+//   ⑦ 双模式字段（2026-10-03 · 主协议 §5.1 / R-DP-01～02）：
+//      · production_mode ∈ {directed, discovery}、truth_write_ceiling 为数字（必填）；
+//      · discovery 的 truth_write_ceiling 必须为 0（研究执行体不拥有 Runtime Truth 写权限）；
+//      · discovery 缺 research_scope / selection_policy → **整轮不启动**。
+//      ⑥⑦ 两类冲突是「声明本身不自洽」，不是「少写一个字段」——因此以 REGISTRY_FATAL 报出，
+//      语义等价于主协议 §5.2「未声明作业整轮不启动」：不做半截，不带着坏声明开跑。
 import fs from "node:fs";
 import path from "node:path";
 import { buildJobs, matchEntries } from "../pipelines/legacy/unattended-jobs.mjs";
@@ -23,6 +29,9 @@ const SCHEMA = "mohen.production-registry";
 
 let failed = false;
 const bad = (m) => { console.error("REGISTRY_ERROR " + m); failed = true; };
+// 整轮不启动：声明自相矛盾时，任何基于此注册表的作业批次都不得开跑。
+let fatal = false;
+const stop = (m) => { console.error("REGISTRY_FATAL " + m); failed = true; fatal = true; };
 const isVoid = (v) =>
   v === undefined || v === null || v === "" || (Array.isArray(v) && v.length === 0);
 
@@ -55,6 +64,17 @@ if (fs.existsSync(MIG)) {
     }
   }
 }
+// ---------- ⑧ Skill 实体化三向绑定（C2 §2.1 / C0 §11 R26 · 2026-10-04） ----------
+// 已知技能集合 = skills/ 下有 SKILL.md 的目录 ∪ C2 §3.1 声明的 CANDIDATE 技能。
+const C2_CANDIDATE_SKILLS = ["mohen-spatial-grounding", "mohen-research-intake", "mohen-association-discovery", "mohen-humanistic-selection"];
+const knownSkills = new Set(C2_CANDIDATE_SKILLS);
+if (fs.existsSync("skills")) {
+  for (const d of fs.readdirSync("skills")) {
+    if (fs.existsSync(path.join("skills", d, "SKILL.md"))) knownSkills.add(d);
+  }
+}
+const skillEntries = new Map(); // skill -> Set(entry)，用于「每个技能唯一权威 entry」校验
+
 const ids = new Set();
 for (const e of entries) {
   const tag = e && e.id ? e.id : "(无 id)";
@@ -85,6 +105,46 @@ for (const e of entries) {
       bad(`${tag}: write_scope 里的 "${t}" 在 supabase/migrations 中找不到 create table —— 拼错或表不存在`);
     }
   }
+
+  // ---------- ⑦ 双模式字段与冲突 ----------
+  if (!["directed", "discovery"].includes(e.production_mode)) {
+    stop(`${tag}: production_mode 必须是 directed 或 discovery，实际 "${e.production_mode}"`);
+  }
+  if (typeof e.truth_write_ceiling !== "number") {
+    stop(`${tag}: truth_write_ceiling 必须是数字（0 = 无 Runtime Truth 写权限）`);
+  } else if (e.production_mode === "discovery") {
+    if (e.truth_write_ceiling !== 0) {
+      stop(`${tag}: discovery 模式的 truth_write_ceiling = ${e.truth_write_ceiling}，必须为 0 —— 研究执行体不得拥有 Truth 写权限`);
+    }
+    if (isVoid(e.research_scope)) stop(`${tag}: discovery 模式缺 research_scope（范围必须机器可校验）`);
+    if (isVoid(e.selection_policy)) stop(`${tag}: discovery 模式缺 selection_policy`);
+  }
+
+  // ---------- ⑧ implementation 三向绑定（C2 §2.1：技能 ↔ 入口 ↔ 作业） ----------
+  const impl = e.implementation;
+  if (!impl || typeof impl !== "object" || Array.isArray(impl)) {
+    bad(`${tag}: implementation 必须是对象 { skill, entry }（C2 §2.1 实体化判定）`);
+  } else {
+    if (isVoid(impl.skill)) bad(`${tag}: implementation.skill 为空 —— 作业必须归属一个技能`);
+    if (isVoid(impl.entry)) bad(`${tag}: implementation.entry 为空 —— 作业必须绑定唯一权威入口脚本`);
+    if (!isVoid(impl.skill) && !knownSkills.has(impl.skill)) {
+      bad(`${tag}: implementation.skill "${impl.skill}" 不在已知技能集合（skills/ 目录或 C2 §3.1 候选）`);
+    }
+    if (!isVoid(impl.entry) && !fs.existsSync(impl.entry)) {
+      bad(`${tag}: implementation.entry 指向不存在的脚本：${impl.entry}`);
+    }
+    if (!isVoid(impl.skill) && !isVoid(impl.entry)) {
+      if (!skillEntries.has(impl.skill)) skillEntries.set(impl.skill, new Set());
+      skillEntries.get(impl.skill).add(impl.entry);
+    }
+  }
+}
+
+// ---------- ⑧ 续：每个技能唯一权威 entry（C2 §2.1「禁止平行重复实现」） ----------
+for (const [s, set] of skillEntries) {
+  if (set.size > 1) {
+    bad(`技能 "${s}" 声明了多个权威 entry（${[...set].join(" / ")}）—— 违反 C2 §2.1「每个数据生产能力有且只有一个权威实现」`);
+  }
 }
 
 // ---------- ⑥ 队列覆盖 ----------
@@ -108,4 +168,5 @@ console.log(
   `table_refs=${tableNames.size} queued=${jobs.length} runnable=${allowed} excluded=${forbidden} ` +
   `unresolved=${unresolved.length}`
 );
+if (fatal) console.error("REGISTRY_FATAL 声明自相矛盾 → **整轮不启动**（主协议 §5.2：未声明/矛盾声明不做半截）");
 process.exit(failed ? 1 : 0);

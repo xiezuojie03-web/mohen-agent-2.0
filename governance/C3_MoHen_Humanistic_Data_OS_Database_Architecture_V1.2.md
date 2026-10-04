@@ -8,10 +8,17 @@
 | --------------------------------------------------------- |
 | 核心命题：数据库不是为了把历史“装进去”，而是为了让墨痕能够在证据边界内持续发现文化关系，并把过去重新连接到今天。 |
 
-版本：V1.1 · 2026-09-26  
+版本：**V1.2 · 2026-10-03**（继承自 V1.1 · 2026-09-26）  
 定位：长期架构文档 / 数据模型基线 / Developer Skills 与 Agent Skills 的共同数据契约
 
-> **状态入口（Live SOT）：当前数据库相关施工决断（R6 本地主库 / R8 漂移以主库为准 / R12 重跑 dump 等）以 `CURRENT.md` §12 为准；本文件只维护冻结的数据库与数据架构基线，不重复维护当前状态与决断。
+> **状态入口（Live SOT）：当前数据库相关施工决断（R6 本地主库 / R8 漂移以主库为准 / R12 重跑 dump 等）以 `C0` §11 为准（已并入唯一决断登记）；本文件只维护冻结的数据库与数据架构基线，不重复维护当前状态与决断。
+
+> **V1.2 正式升版：2026-10-03 · 已生效**
+> **裁定依据**：项目拥有者 2026-10-03 确认 **R-DP-01～R-DP-05 全部通过**（登记见 `CURRENT.md` §12 **R16**；对照与文件清单见 `tasks/results/DATA-PRODUCTION-RECON-20261003-result.md`）。本节自确认之日起**生效**，不再是候选稿。
+> 依据《墨痕 · 数据生产链架构审查与修订结论 V1.1》§6（C3 应怎样修）。本轮新增：**Research Workspace 逻辑合同（六类逻辑对象）**、**Observation Graph 与 Truth Graph 分离**、**Gate 位置重新解释（入库卫生门 vs Truth Promotion 门）**、**Candidate Reservoir ≠ Human Review Queue**、**两类 Discovery 命名**、**研究态不使用 usable/published 词汇**。
+> **重要边界**：**本轮不新增第九层**。L0–L7 是长期文化世界生命周期；Research Workspace 是**跨 L0/L1/L2 之前与之间的逻辑工作区**，不是新的真相层。
+> **不立即大建物理 Schema**：第一轮只冻结逻辑合同，可先在 `research` / staging 逻辑区或最小表集验证；是否独立 schema 由 LR-ADS-01 结果决定。
+> **版本源唯一（C0 §10）**：本文件由 V1.1 升为 **V1.2**，同一次 Architecture Reconciliation 已同步 `AGENTS.md` §1 与 `CURRENT.md` §10 的全部路径引用；**禁止孤立改名导致路由断链**。
 
 # 0\. 执行摘要
 
@@ -150,6 +157,10 @@ Evidence 不再是 Relation 表里的一段备注，而是独立的一等对象�
 
 这一层不是新的历史真相库，而是为 Agent 提供“可安全读取、可快速发现”的投影。Relation、Discovery Candidate、Story Seed 必须分开：Relation 是被证据支持的关系；Discovery Candidate 是当前目标下值得继续探索的可能路径；Story Seed 是可组织体验的叙事入口。
 
+**单一真源（R22 · 2026-10-04 项目拥有者裁定）**：文化关系的唯一真源为 `relation_claim`（真库 `cultural_relation_claims`）；旧 `relations` 表为遗留重复存储，须并线至 `relation_claim`。具体合并设计（如何迁移 521 行、去重、处理冲突）属改变现有架构设计，须项目拥有者点头（依 R20）后方可实施。
+
+> **命名澄清（2026-10-03）**：本层的 Discovery Candidate 一律指 **Runtime Discovery Candidate**（Agent-side，严证之后）。研究阶段的候选称 **Research Discovery Candidate**，位于 §2.9 Research Workspace，**不得进入本层**。
+
 | **派生对象**             | **用途**                                                   | **是否可直接当事实** |
 | -------------------- | -------------------------------------------------------- | ------------ |
 | world\_projection    | 把 Entity/Event/Claim/Meaning/Present 聚合成可查询世界状态          | 否，引用底层事实     |
@@ -176,6 +187,43 @@ Participation 不是“社区功能”的同义词，而是文化理解重新进
 Living Culture 表示今天仍在发生、仍被人实践和记忆的文化：地方生活方式、空间使用、仪式与习俗、手艺、口述记忆、社区叙事、当代表达，以及由新的探索和参与形成的文化痕迹。它不是“历史资料的尾声”，而是墨痕整个数据世界最终重新回到生活的地方。
 
 L7 与 L0/L1 形成闭环：新的文化痕迹可以成为新的 Source，但只有在来源、语境、权利与证据边界清楚后，才可能成为后续用户可依赖的 Evidence 或 Cultural World 内容。AI 可以帮助发现、组织、比较和连接，但不能把自身生成内容升级为文化证据。
+
+## 2.9 Research Workspace：逻辑工作区，不是新的真相层（2026-10-03 新增）
+
+L0–L7 描述**可信文化世界如何存在**。但世界被生产出来之前，需要一个地方容纳“材料里读到了什么、可能怎样相关”。这个地方叫 **Research Workspace**。
+
+> **它不是一个新层（不是 L0.5 / L1.5 / L8 / 第九层），而是一个跨 L0/L1/L2 之前与之间的逻辑工作区。** 它承载“可能的世界”，与承载“可信的世界”的 Truth Store 逻辑分离。
+
+**四条宪法级约束**：
+
+1. **0 自动 Truth Promotion**：Research Workspace 中的任何对象，都不得自动晋级为 Truth / Cultural World 对象。
+2. **写入上限（truth\_write\_ceiling = 0）**：Research 执行体不拥有 Runtime Truth 写权限。
+3. **允许低确定性，但必须可回放**：每个候选必须能重放其生成方法、支持信号与反对信号。
+4. **不使用“可用资格”词汇**：Research 状态**禁止**使用 `usable` / `published` / `verified` 等词，以免与 R15 的“可用/已发布必须有 `evidence_gate_audit`”混淆。研究态一律使用 `association_readiness = ready / limited / catalog_only / unreadable`，或使用研究态 disposition。
+
+### 2.9.1 六类逻辑对象（语义必须存在，名称可在实现时调整）
+
+| **逻辑对象**                       | **最小语义**                                                                                       | **用途**                          |
+| ------------------------------ | --------------------------------------------------------------------------------------------- | ------------------------------ |
+| `research_observation`         | source + locator/region + modality + raw excerpt/region + normalized observation + uncertainty | **内容级读取的最小可关联单位**。              |
+| `research_mention`             | 人物/地点/机构/作品等提及 + resolution 状态                                                                | 允许 unresolved，**不制造 unknown Entity**。 |
+| `research_source_dependency`   | 转引 / 复制 / 同源关系                                                                                | 防止 5 篇转引被当成 5 个独立来源。            |
+| `research_signal`              | A01–A12 等单一关联信号                                                                               | 只说明“为什么可能有关”。                   |
+| `research_association_candidate` | 多信号组合、支持/反对信号、AVS 分量、`why_interesting`、`missing_evidence`                                    | **开放发现的核心候选对象**。                |
+| `research_task` / `selection`  | 下一步检索、补证、暂停/淘汰/精选状态                                                                           | 把候选送入 Directed Research，而不是直接送 Gate。 |
+
+### 2.9.2 双图分离
+
+| **图**                  | **节点**                                       | **边的含义**                | **可否当事实** |
+| ---------------------- | -------------------------------------------- | ----------------------- | --------- |
+| **Observation Graph**  | Observation、Mention、Action/Event、TimeScope、PlaceScope、Source、MediaRegion | 在某 Observation 中共同出现/参与/描绘/定位 | **否**      |
+| **Truth Graph**        | Entity、Event、Claim、Cultural Relation、Change、HistoricalSpaceClaim | 经证据与 Gate 成立的关系         | 是（受控消费）    |
+
+> **双图原则**：Observation Graph 用来寻找可能的世界；Truth Graph 保存已经证成的世界。**两者不能混为同一张图**，也不得用同一套状态字段。
+
+### 2.9.3 物理形态（不立即大建）
+
+第一轮**不要求一次建成正式大 Schema**。允许先在 `research` / staging 逻辑区或最小表集验证；是否拆分为独立 research schema，由 **LR-ADS-01 · Legacy Association Discovery Stress Test** 的真实结果决定，不在本版冻结。
 
 # PART III｜核心文化世界对象模型
 
@@ -239,6 +287,26 @@ Event 表示“发生了什么”；Change 表示“这个事件使对象/关系
 
 # PART IV｜Evidence Gate 与数据晋级
 
+## 4.0 Gate 的位置：入库卫生门 vs Truth Promotion 门（2026-10-03 新增，冻结）
+
+引入 Research Workspace 后，必须回答一个问题：**G0–G6 究竟守在哪里？** 答案是：**分两类，而不是降低任何一道 Gate。**
+
+| **区域**                     | **门槛**                                                                    | **边界**                       |
+| -------------------------- | ------------------------------------------------------------------------- | ---------------------------- |
+| **Research Workspace**     | Source provenance / locator / rights / extraction method / uncertainty     | 允许低确定性；**禁止进入 Runtime Truth** |
+| **Truth Promotion**        | **G1** identity + **G2** time + **G3** space + **G4** evidence + **G5** conflict + **G6** eligibility | **严格执行；R15 不变**               |
+| **Runtime / Experience**   | expression\_rule + Evidence on Demand + Meaning Firewall                   | 只能消费通过资格的受控世界                 |
+
+具体规则：
+
+• **G0（来源身份、权利、版本、locator 基础）作为入库卫生门**，可在 Source / Observation 入口**提前**执行；它不是“放行成为事实”的许可，而是“这份材料能不能进研究池”的许可。
+
+• **G1–G6 中用于对象身份、证据支撑、冲突与发布资格的强 Gate，在 Selected Discovery 准备晋级 Claim / Relation 时集中执行。**
+
+• **研究候选不因“未过 G4”而被迫 HOLD 成待审事实对象。** 它没有声称事实，因此不需要被当作“事实的候选”来审——它只是研究态对象。
+
+> **Evidence before Runtime Truth，不等于 Evidence before Research。** 研究阶段允许“先有问题、后有证据”；这不让 G0–G6 的严格性降低一分。
+
 ## 4.1 数据不是“导入成功”就进入墨痕世界
 
 Developer Skill 的任务不是把材料批量塞进数据库，而是推动对象沿着明确状态晋级。建议把 Candidate Reservoir 与 Runtime World 分开：旧沪上经纬、开放数据和外部资料首先进入候选池，只有经过证据与身份判断后才成为可运行世界。
@@ -250,6 +318,19 @@ Developer Skill 的任务不是把材料批量塞进数据库，而是推动对�
 | ADJUDICATED       | 通过 Evidence / Human Review 的 Claim | 超出证据边界表达            |
 | RUNTIME\_ELIGIBLE | 满足表达与体验条件                          | 绕过 expression\_rule |
 | PUBLISHED         | 可面向用户稳定使用                          | 失去 provenance 链     |
+
+### 4.1.1 Candidate Reservoir ≠ Human Review Queue（2026-10-03 新增，冻结）
+
+开放发现一次可能产生数千个 Observation / Signal / Association Candidate。**如果它们全部变成 `review_queue` 对象，等于用新机制重新制造人工债务**——这是必须避免的。
+
+规则：
+
+1. **研究候选先有机器 disposition**：`signal / candidate / review-worthy / selected / paused / rejected / promoted_to_research`。
+2. **只有进入 Selected / Truth-Promotion / Narrative-Critical / Conflict-Critical 的对象，才创建 Human Review / `review_queue` 行。**
+3. **研究长尾由机器保留、合并、降级或淘汰**，保留全量可追溯轨迹，但不制造人工待办。
+4. **R15 的“可用/已发布必须有 `evidence_gate_audit`”仅约束 Truth / Runtime 资格**；Research Workspace 不适用，也不得使用 `usable` / `published` 等词。
+
+> 早期实施证据：移植批次已产生 293 条 `review_queue`（大量为低价值候选）。这不是研究能力成立，而是候选分诊口径过宽的信号。
 
 ## 4.2 Evidence Gate G0-G6 的数据库落点
 
@@ -444,6 +525,8 @@ Agent 不直接“读数据库然后编故事”。它先从受控 World Project
 | Town         | Entity(place/settlement) 或 scope    | 不再作为所有内容强制父表                                              |
 | Entity       | world.entity                        | 重新做 identity / provenance                                 |
 | Place        | modern\_location + entity           | 现代坐标不得冒充历史位置                                              |
+
+**落点（R23 · 2026-10-04 项目拥有者裁定）**：`modern_location` 为独立对象，现代坐标只记于此，不得写入 `historical_space_claim` / `historical_feature_anchors` / `spatial_anchor` 等历史位置对象；旧 anchors 不混装现址。ESC-03 据此结案（按本设计建表现址，不重载历史锚点）。
 | TimePeriod   | temporal vocabulary / TemporalScope | 从页面过滤器升级为对象时间语义                                           |
 | Relation     | relation\_claim candidate           | 旧 evidence 文本拆为 Evidence；重新 Gate                          |
 | Story        | story\_seed / experience projection | 不作为历史真相                                                   |
@@ -468,14 +551,16 @@ Agent 不直接“读数据库然后编故事”。它先从受控 World Project
 | Meaning Firewall   | Meaning 是否没有反向污染事实？                |
 | Present Connection | 是否能从过去回到今天，而不是停在说明牌知识？             |
 | Agent Usability    | Agent 是否能在不读 Raw 的情况下安全检索与 Replan？ |
+| Research Separation | 研究态对象是否 0 自动晋级 Truth；Observation Graph 与 Truth Graph 是否未混用同一状态？（2026-10-03 追加）                |
+| Human Debt         | 只有 Selected / Promotion-critical 才进人工队列；研究长尾是否由机器处置？（2026-10-03 追加）                           |
 
 ## 10.2 当前冻结 / HOLD / Later
 
 | 实施状态                 | **内容**                                                                                                                                                                                                                                                                  |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| FROZEN               | Source→Evidence→Cultural World→Meaning/Present→Discovery→Experience→Participation→Living Culture→New Cultural Traces→Evidence/Cultural World 的长期循环；Fact–Interpretation Firewall；Geometry is a Claim；RelationClaim Contract；Contribution ≠ Fact；AI Generation ≠ Evidence |
+| FROZEN               | Source→Evidence→Cultural World→Meaning/Present→Discovery→Experience→Participation→Living Culture→New Cultural Traces→Evidence/Cultural World 的长期循环；Fact–Interpretation Firewall；Geometry is a Claim；RelationClaim Contract；Contribution ≠ Fact；AI Generation ≠ Evidence；**（2026-10-03 追加）Research Workspace 是逻辑工作区不是新层；0 自动 Truth Promotion；Observation Graph 与 Truth Graph 分离；Gate 分入库卫生门与 Truth Promotion 门；Candidate Reservoir ≠ Human Review Queue** |
 | CURRENT              | 以金泽 Living Cultural Relation Cluster 校准 Source / Evidence / World / Meaning / Experience 的当前物理表、迁移与 Read Model                                                                                                                                                          |
-| HOLD                 | Evidence Perspective / Provenance 正式 Schema；大规模 GIS；图数据库；通用社区用户系统                                                                                                                                                                                                       |
+| HOLD                 | Evidence Perspective / Provenance 正式 Schema；大规模 GIS；图数据库；通用社区用户系统；**Research Workspace 的物理 Schema 与是否独立 research schema（2026-10-03 追加）**                                                                                                                                    |
 | LATER IMPLEMENTATION | Participation / Living Culture 的物理表与用户系统，待真实行为出现后再决定；但 L6/L7 已属于正式长期数据地图与目标架构                                                                                                                                                                                           |
 
 ## 10.3 V1.1 后的正确下一步
@@ -498,7 +583,7 @@ Agent 不直接“读数据库然后编故事”。它先从受控 World Project
 
   - C1《MoHen · Product, Architecture & Evolution Constitution V1.0》：Cultural World Object Model、Cultural Relation Contract、Fact–Interpretation Firewall、Present Connection、Agent-native Experience、Evolution Horizons 与治理边界。
 
-  - C2《MoHen · Humanistic Data OS & Dual Skill Architecture V1.0》：Humanistic Data OS 作为长期数据生产与能力沉淀框架；Developer Skills 与 Agent Skills 分工；L6 Participation / L7 Living Culture 与 C3 的八层长期数据地图保持同义。
+  - C2《MoHen · Humanistic Data OS & Dual Skill Architecture **V1.1**》：Humanistic Data OS 作为长期数据生产与能力沉淀框架；Developer Skills 与 Agent Skills 分工；L6 Participation / L7 Living Culture 与 C3 的八层长期数据地图保持同义。
 
 # 附录 C｜一句话记住整个数据库
 

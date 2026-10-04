@@ -1,292 +1,154 @@
 # CURRENT.md
 
-> **MoHen · Current Execution State**\
-> Status: CURRENT\
-> Date: 2026-10-01\
-> Purpose: 这是墨痕 Repo
-> 的当前施工状态入口。它回答"现在正在造什么、已经证明什么、卡在哪里、下一步做什么"。\
-> 本文件为状态入口（非宪法），Authority 低于 C0–C4。\
-> Authority: 本文件不得改写 C0–C4；若与 C0–C4 冲突，以 C0–C4
-> 为准。工程事实应由真实 Repo / Runtime / 数据 / Human-facing Experience
-> 校准。
+> **MoHen · Current Execution State** — 状态入口（非宪法），Authority 低于 C0–C4；Date: 2026-10-04。
+> 回答"现在造什么 / 已证明什么 / 卡在哪 / 下一步"；与 C0–C4 冲突以 C0–C4 为准，工程事实由真实 Repo / Runtime / 数据校准。
 
 ------------------------------------------------------------------------
 
 ## 1. North Star
 
-**从历史文化中重新发现当下生活的意义、乐趣、文化根源与个人共鸣。**
-
-墨痕当前以 Agent-native
-产品形态，探索可信文化世界如何经过关系发现、动态体验与现实行动重新进入今天的生活；长期探索
-**AI 时代文化如何继续"活"在人、地方与日常生活之间。**
+**从历史文化中重新发现当下生活的意义、乐趣、文化根源与个人共鸣。**（长期使命锚点；dev 不得改，详见 C1）
 
 ------------------------------------------------------------------------
 
-## 2. Current Horizon
+## 2. 当前主线条与焦点（Current Horizon & Focus）
 
-**H2 · Canonical Human Experience --- CURRENT**
+**H2 · Canonical Human Experience — CURRENT**（H2 不变；宪法级矛盾见 `C1` §19）
 
-当前主要矛盾不是"数据还不够多"，也不是"UI 还不够复杂"。
+> **根本矛盾（结构性，不随阶段改）**：证据锚定的可信 Cultural World 与 Agent Runtime ↔ 普通用户可真实感知的 Human Experience 之间的转化落差。恒定原则：扩张服从 Evidence / Experience Gate，可信度不得被广度稀释（`C1` §19）。
 
-当前要证明的是：
+**当前执行主线条 = 把数据底座建厚实**（`C0` §11 R18–R20）：数据生产优先、Human Experience Gate 顺延至底座达标；路径 = 先深透老项目（沪上经纬）一手文件/图片，再持续推进外部扩源（先证明老项目价值再规模化扩展，R19）。
 
-> **已经成立的可信 Cultural World 与 Agent
-> Runtime，能否稳定转化为至少达到金泽 Canonical
-> Baseline，并真正让普通用户重新看见今天的 Human Experience。**
-
-**H2 Exit：Human Experience Gate PASS + Integration Gate PASS。**
+**当前焦点**：把本地库 `mohen_dev` 的数据生产能力从"机制就位"走向"能力可复用、不再重复造脚本"，并据此持续产出可信一手数据。
 
 ------------------------------------------------------------------------
 
-## 3. Current Focus
+## 3. 数据生产能力（Skills 视角）
 
-**Canonical Jinze Human Experience**
+> Skill 定义见 `C2` §2 / §3.1 / §9.1（Developer Skills 造世界 / Agent Skills 在世界行动）；实体在 `skills/`。**下一步治理目标：能力实体化 + 消除重复脚本。**
 
-当前唯一主样板：**金泽（Jinze Canonical Experience）**。
+**已成型能力（按 Skill / 机制）**：
+- 双模式 Discovery / Directed（D01–D05 发现 / N01–N06 严证，共用控制面）— `C2` §1.5、主协议 §0.4/§12、`pipelines/research/`
+- Evidence Gate G0–G6（写入必过硬门禁）— `pipelines/evidence/gates.mjs`、T07 §1.6
+- Research Workspace / Observation Graph（8 张 research_* 表）— `scripts/check-research.mjs`
+- N01–N06 桥接（Discovery 精选交回 Directed）— `pipelines/research/bridge-to-directed.mjs`
+- Human Review 三分诊（仅 Selected / Truth / Narrative / Conflict 造 review_queue）— `scripts/check-review-triage.mjs`
+- 视觉资产 / 1246 图处理 — `pipelines/visual/`、`scripts/audit-visual-assets.mjs`
+- 坐标 / 空间锚定（旧库 + Wikidata；新坐标 candidate-only）— `pipelines/legacy/port-coords.mjs`
+- 关系单一真源（`relation_claim`；`relations` 仅投影）— `decisions/ADR-002-cultural-world-claim-epistemic-model.md`
+- 历史空间 / 家谱对齐（SHL SPARQL 双命名空间）— `pipelines/historical-spatial/`
+- 守卫总线（14 条 `pnpm guard:*`，规则即强制）— `package.json`
 
-当前工作应直接面向真实运行态，重点检查：
+**能力实体化缺口（下一步要治的根因）**：`skills/`（10 个纯 Markdown SOP）↔ `pipelines/`+`scripts/`（~110 个 .mjs）↔ `production-registry.json`（19 个 job）**三者无三向索引**——registry 无 `implementation` 字段，Skill 不指向实现脚本，故"每次数据生产重写脚本"。
 
--   用户是否先进入一个真实、连续的人文探索空间，而不是"网站 / Dashboard
-    / Debugger"；
--   Agent
-    的判断是否真正改变地图、时间、图像、关系、证据、叙事或行动状态；
--   追问是否发生在同一个世界中，并通过 Replan / Patch 继续展开；
--   Evidence 是否可信但不过度占据主体验；
--   体验是否达到 C4 Canonical Non-Regression；
--   最终是否通过 Human Experience Gate：**重新看见 / 与我有关 /
-    继续行动**。
+**重复脚本（"重写脚本"现存样本，首批收敛对象）**：
+- 根目录 15 个一次性 `_*.mjs` 探针（与 `tools/production/probe-*.mjs` 重复）
+- `pipelines/historical-spatial/probe-align-{entities,extra,final}.mjs` 三胞胎
+- `scripts/e2e-*-capture.mjs` ×5 共用同一脚手架
+- 去重（查 / 清）双轨、evidence 恢复双轨
 
-------------------------------------------------------------------------
-
-## 4. Proven Baseline
-
-以下能力目前可作为已成立基础继续使用，不应无故重做：
-
--   Greenfield Repo + PostgreSQL Truth Store；
--   Evidence Gate + Human Review 基础；
--   Knowledge Weave / Cultural World 最小模型；
--   Spatial Honesty 基础；
--   ExperienceState / CompositionState / Renderer / Persistent
-    Experience；
--   Evidence-aware Follow-up → Decision → Replan → Patch；
--   Multi-Intent Runtime 基础；
--   第一 Living Cultural Relation Cluster；
--   World → Experience Runtime Slice；
--   金泽 Five-Beat / Canonical Experience Grammar；
--   金泽历史关系探索体验板 + EXP-DESIGN-02 Round 2 作为最低 Human
-    Experience / Visual Baseline。
-
-> 注意：只有真实 Repo / Runtime / 数据 / Human-facing Experience
-> 已验证的能力才能继续保持为
-> Proven。设计文档、架构推演或单次演示本身不构成 Proven。
+**治理落点**：为 `production-registry.json` 每个 job 增 `implementation:{skill,entry}` 三向绑定 + 守卫查重；`skills/` 升级为带 `entry/commands/contract_ref` 的实体；收敛根目录 `_*.mjs` 等重复样本。
 
 ------------------------------------------------------------------------
 
-## 5. Current Gaps / Gates
+## 4. Proven Baseline（已证明 · 数据生产为主）
 
-**Human Experience Gate --- HOLD**
-
-当前最关键的未证明项：
-
--   Human Sensory Quality 尚未 PASS；
--   Canonical Experience Productization 尚未 PASS；
--   Historical / Archival Visual Depth 仍为 PARTIAL；
--   Verified Field Route 仍为 PARTIAL；
--   Historical Geometry 继续保持
-    EVIDENCE-DRIVEN，不为体验完整性制造虚假精确；
--   Second Theme / Town Generalization 尚未启动；
--   Participation Product / Living Culture Schema / Commercial
-    Optimization 均保持 HOLD。
-
-> *2026-10-01 复审*：UI 人话化已达成（拥有者暂 PASS），但决定 **维持 HOLD**；
-> 未收敛项见上述列表。复审结论与后续验收协议见
-> `tasks/results/HUMAN-EXPERIENCE-GATE-REVIEW-01-result.md`。
-
-> *2026-10-02 数据层实测补充（开发总工程师）*：真库已由 2026-10-01 老库移植与自动夜跑显著扩充。
-> 只读实测 **29 表 + 1 视图**：entities 3323 / evidence 3742 / visual_assets 1288 / relations 365 /
-> historical_features 245 / anchors 249 / source_records 269 / legacy_mappings 3405；
-> **review_queue 293**（大量候选待人工裁决）。产物见 `tasks/results/NIGHT-RUN-20261001/` 与
-> `tasks/results/SCHEMA-DIFF-20261002.html`（均已入库）。
-> **Gate 不因此改变**：数据量增长不等于 Human Experience PASS（见 §7）。
+已成立、不应无故重做（须真实 Repo / 数据验证）：
+- **数据生产**：双模式控制面、Evidence Gate G0–G6、Research Workspace、production-registry 19 job、守卫总线、主协议 V3.0 + 宽进广联 V1.0 + T07 最小契约；
+- **底座**：Greenfield Repo + PostgreSQL Truth Store（本地 PG 5432 主库，R6）；Knowledge Weave / Cultural World 最小模型；Spatial Honesty；
+- **体验 / runtime（已建成，暂缓优化）**：ExperienceState / Renderer / Persistent Experience；Evidence-aware Replan / Patch；金泽 Five-Beat / Canonical Experience Grammar（体验板已达最低 Human / Visual Baseline，见 §12）。
 
 ------------------------------------------------------------------------
 
-## 6. NOW
+## 5. Current Gaps / Gates（数据缺口为主）
 
-1.  以真实金泽 Runtime 为对象持续施工，不重新开启抽象 UI 设计大战。
-2.  让 Cultural World、Agent Judgment 与 Experience Composition
-    真正在用户眼前形成连续体验。
-3.  对照 C4 Canonical Baseline 做 Human-facing 调整。
-4.  每次发现问题，先判断属于：
-    -   **工程问题** → 开发平台自主解决；
-    -   **架构问题** → 写入 Architecture
-        Escalations，提出建议与理由，提交项目拥有者确认。
-5.  只根据真实体验缺口补最小 Data / Visual / Spatial / Runtime 能力。
+> 格式同 §9：ID + 状态 + 一句话 + 详情。
+
+| ID | 状态 | 一句话 | 详情 |
+|---|---|---|---|
+| GAP-DATA | OPEN | 一手资料（家谱 / 地方志原文 / 历史图片）仍不足以支撑体验 | `tasks/DB-PRODUCTION-IMPROVEMENT-PLAN.md` |
+| GAP-SKILL | OPEN | Skill 未实体化、无三向索引，脚本重复（见 §3） | `specs/data-production/production-registry.json` |
+| GAP-REL | 待裁决 | `relations`(521) 与 `relation_claim`(8) 双存储（= ESC-02） | `tasks/results/DATA-PRODUCTION-MECHANISM-01-result.md` |
+
+**体验 Gate（下游，顺延）**：GATE-HX HOLD / GATE-VISUAL PARTIAL / GATE-2ND HOLD / GATE-PART HOLD（详见 §12）。
 
 ------------------------------------------------------------------------
 
-## 7. NEXT
+## 6. NOW / NEXT（当前施工纪律与下一步）
 
-当且仅当真实体验暴露明确 Gap 时：
+**NOW（数据纪律）**：
+- 以真实本地库 / 真实数据为对象推进，不空转；
+- 能力先落 Skill + registry 绑定，再写实现，避免新增重复脚本；
+- 架构问题写入 §9，提交拥有者确认（`C0` §11 R13）；
+- 严守 Evidence Gate：未声明 `auto_promote_policy` 不晋级（R15）。
 
-**Experience Gap → Minimal Enrichment → New Capability → Human
-Validation → Generalization**
+**NEXT（顺序）**：深透老项目一手文件/图片 → 证据验收 / 门禁全绿、证明老项目价值（R19 闸门）→ 规模化外部扩源（多来源 / 多类型 / 持续扩展，把底座做厚）→ 底座达标后再启动 Human Experience Gate 验收。
 
-H2 的下一出口不是"再完成一批功能"，而是：
+------------------------------------------------------------------------
 
-> **Human Experience Gate PASS + Integration Gate PASS**
+## 7. 数据生产进度（任务书指针）
 
-在此之前，不以扩大数据量、增加页面、扩第二古镇或增加基础设施作为进度指标。
+> 唯一进展载体见任务书 `tasks/DB-PRODUCTION-IMPROVEMENT-PLAN.md`（本文件只留指针）。Research Production 子线决断见 `C0` §11 R16 / §9 ESC-06；执行细则见主协议 V3.0 §12.2 与 `production-registry.json`。H2 不变：不以数据量 / Published 数为进度指标。
+> **下一步主线 · 能力治理**（把数据生产沉淀成可复用 Skill、消除重复脚本，为外部扩源修机器）：见任务书 `tasks/TASK-SKILL-20261004_数据生产Skill能力治理_Task-Book_V1.0.md`。
 
 ------------------------------------------------------------------------
 
 ## 8. HOLD
 
-除非出现明确 Trigger，否则暂不启动：
-
--   第二古镇 / 第二主题的大规模产品化；
--   全量旧数据库迁移；
--   大而全 Historical GIS / PostGIS 建设；
--   Vector DB / Graph DB 等基础设施扩张；
--   Generic Community / Feed / Like / Follow；
--   Participation 正式产品体系；
--   Living Culture 正式 Schema；
--   商业化优化；
--   新一轮高保真 Figma 主战场。
+除非明确 Trigger，暂不启动：第二古镇 / 第二主题产品化；全量旧库迁移；大而全 Historical GIS / PostGIS；Vector / Graph DB 扩张；Generic Community / Feed / Like / Follow；Participation 正式体系；Living Culture 正式 Schema；商业化优化；新一轮高保真 Figma 主战场；**外部资源自动扩源**（须先证明老项目价值，R19）。
 
 ------------------------------------------------------------------------
 
 ## 9. Architecture Escalations
 
-> **职责边界（2026-10-02 项目拥有者指定）**：**本节只登记「状态 + 指针」**，不再累积证据、方案与处置进展。
-> 每个任务的全部进展一律维护在**该任务的结果文件**里（见下表「详情」列）；本文件只回答"现在还有哪些没定"。
-> **理由**：本文件是**高频状态文件**，不是任务日志 —— 进展累积在这里会让它无限膨胀，并与任务结果文件职责重叠。
+> 本节只登记「状态 + 指针」；证据 / 方案 / 处置进展一律在详情列指向的任务结果文件里。
 
-当前：**5 项**（ESC-01…ESC-05）。其中待裁决 **4 项**、冻结 **1 项**。
+当前：**6 项**（ESC-01…ESC-06）：待裁决 2 · 部分处置 2 · 已处置 2（RECON-02 已处置；1246 图解冻并入挖掘主线）。
 
 | ID | 状态 | 一句话 | 详情 |
 |---|---|---|---|
-| ESC-01 | 待裁决（→`RECON-02`） | 宪法名 vs 真库名分叉（实为四件事，只有 3 件是命名差） | `tasks/results/RECON-02-constitution-vs-db-naming.md` |
-| ESC-02 | 待裁决 | `relations`(521 行) 与 `cultural_relation_claims`(8 行) 双存储 | `tasks/results/DATA-PRODUCTION-MECHANISM-01-result.md` |
-| ESC-03 | 待裁决（自 2026-09-26 停在待拍板） | `modern_location` 缺口与现代坐标落位方式 | `tasks/results/DATA-PRODUCTION-MECHANISM-01-result.md` |
-| ESC-04 | **🔒 部分冻结** | 图片资格**机制**已解决（R15）；图片**数据处置**冻结 | `tasks/results/DATA-PRODUCTION-MECHANISM-01-result.md` |
-| ESC-05 | 部分处置（② 已完成；①③ 待裁决） | 测试写库已隔离；标签修正与其余失败项待裁决 | `tasks/results/DATA-PRODUCTION-MECHANISM-01-result.md` |
+| ESC-01 | 已处置（RECON-02 选 A） | 概念名 ≠ 物理名固定成设计；映射进 `DATA_CONTRACT.md` + `guard:naming` | `tasks/results/RECON-02-constitution-vs-db-naming.md` |
+| ESC-02 | 待裁决 | `relations`(521) 与 `cultural_relation_claims`(8) 双存储；原则见 C3，合并设计待你点头 | `tasks/results/DATA-PRODUCTION-MECHANISM-01-result.md` |
+| ESC-03 | 待裁决 | `modern_location` 缺口与现代坐标落位；原则见 C3，建表现址待你点头 | `tasks/results/DATA-PRODUCTION-MECHANISM-01-result.md` |
+| ESC-04 | 部分处置（解冻·处置中） | 1246 图冻结解除，并入老项目数据挖掘主线 | `tasks/results/DATA-PRODUCTION-MECHANISM-01-result.md` |
+| ESC-05 | 部分处置（② 已完成；①③ 待裁决） | 测试写库已隔离；标签修正与其余失败项待裁决 | `tasks/results/TASK-RECON-20261003-result.md` |
+| ESC-06 | 已处置（R-DP-01～05 全过） | Research Production Reconciliation：双模式 / Research Workspace / 双入口 / review 收窄 / 主协议升级 | `tasks/results/DATA-PRODUCTION-RECON-20261003-result.md` |
 
-> **裁决方**：项目拥有者（唯一决策者）。本项目**不设第三方裁决方**——开发总工程师不得把架构问题交由任何第三方工具或第三方 AI 裁定（C0 §0 / 本文件 §12 R13）。
-
-> **🔒 冻结（拥有者 2026-10-02）**：现有 1246 张夜跑图片的**数据处置**（727 provenance / 341 可疑图 / 数据清理等）**一律暂不做**，保留在库中。
-> **这不是待办**：只有拥有者主动提出才重新讨论，开发平台**不得主动重提、不得当论据、不得计入"未解决数量"**。
-> **机制类工作不受此限**（如 `review_queue` 三分），因为它改变的是"**未来**写入如何被分诊"，**不触碰任何既有图片**（R15 前后 `effective_visual_assets` 均为 8 行）。
-
-> **出现以下情况时必须在此登记，不得自行改写 C0–C4**：核心 Cultural World 对象 / Relation / Meaning 模型需变化；Evidence / Interpretation / Geometry 边界需变化；Agent 需 Truth Store 写权限或绕过 Evidence Gate；ExperienceState / CompositionState / Surface Contract 无法支撑目标体验；需引入 PostGIS / Vector DB / Graph DB 等核心基础设施；C4 Canonical Baseline 无法通过现有架构实现；从金泽扩展时发现 World Model / Experience Grammar 无法复用；准备正式启动 Participation / Living Culture Schema；商业目标开始影响 Agent 判断、Evidence 表达或文化内容组织。
-
-## 10. Canonical References
-
-> **C0–C4 的文件路径以 `AGENTS.md` §1 为唯一路由源**（版本源唯一机制见 C0 §10）；本节不再重复路径，仅列与当前状态直接相关的引用。
-
--   **Canonical Images** `specs/experience-ui/canonical`（两张 Canonical 基线，C4 引用）
--   **当前施工图** `specs/experience-ui/施工图/墨痕_五母题施工审阅_第一批_M1_配套规格_V0.1.md` + `specs/experience-ui/施工图/墨痕_五母题施工审阅_第一批_M1_V0.1.html`（第 3 代；登记见 `OWNERSHIP_MAP.md` §2.1）
--   **Dev Verification Artifacts** `verification/`（UI 验证截图等临时产物；不入根目录、默认不入库，见该目录 README）
+> **冻结已解除（拥有者 2026-10-04）**：原 1246 张夜跑图冻结取消，并入「老项目数据挖掘主线」；机制类工作不受限。
 
 ------------------------------------------------------------------------
 
-## 11. 本地启动（如何把项目跑起来）
+## 10. Canonical References / 指针区
 
-前提：Git、Node.js LTS、pnpm。
-
-```bash
-pnpm install
-pnpm dev
-```
-
-访问 `http://localhost:3000`（首屏即产品落地页「金泽」入口；内部健康自检页在 `/foundation`）。
-
-- 数据库：TASK-0002 后接入 PostgreSQL（`mohen_dev`）；TASK-0001 不要求先装 Docker。
-- 当前 `DATABASE_URL` 接本地 PG（5432），云端仅作备份（R6 决断：本地主库 / 云端备份）。
-- 调试 / 测试 / 协议入口见 `AGENTS.md`；宪法与状态见本文件与各 C0–C4。
+- **数据生产**：主协议 `specs/data-production/MoHen_Data_Production_Protocol.md`（V3.0，唯一主协议）·《宽进与广联》V1.0 · T07 最小契约 · `production-registry.json`
+- **Skill**：`skills/`（Developer / Agent Skills，定义见 `C2`）
+- **Canonical Images / 施工图**（体验侧）：`specs/experience-ui/canonical`、`specs/experience-ui/施工图/`
+- **决断**：R6–R25 统一登记于 `C0` §11（唯一载体）
+- **本地启动**：`pnpm install && pnpm dev` → `http://localhost:3000`（金泽入口；自检 `/foundation`）；DB 接本地 PG(5432)，云端仅备份（R6）
+- **Dev 验证产物**：`verification/`（临时产物，不入根目录、默认不入库）
 
 ------------------------------------------------------------------------
 
-## 12. 决断（用户已确认 · 持续有效）
+## 11. Maintenance Rule
 
-> 本决断依 **C0 §11（已确认决断登记与变更）** 确认，属工程落地确认，不修改 C0–C4 宪法原则；其登记框架与变更机制由 C0 §11 承载。
-
-以下为项目拥有者已确认、持续有效的架构 / 数据决断；开发总工程师直接据此施工，不另行询问：
-
-1. **R6 真相源**：本地 PostgreSQL 主库为唯一真相源；云端（Supabase）仅作备份，不做云端转正。每次结构化数据生产后推云端备份；原始数据体积大、留本地，云端仅留记录。
-2. **云端只读策略**：不补 Supabase RLS SELECT 策略；云端定位为备份，不开放 AI / 应用直读云库（与"本地主库"一致）。
-3. **R12 逻辑备份**：重跑本地主库有效 `pg_dump` 逻辑备份，修复 SAFETY_BASELINE 的 0 字节 dump。
-4. **R8 漂移比对**：Schema 漂移以主库为准，不查漂移原因（主库即真理）。
-5. **R9 遗留证据**：15 条 Wikidata + 5–6 条上图 locator 重复证据暂不处理，位于老项目文件夹，不影响主库。
-6. **hushang 导入**：依叙事反推，避免盲目扩充；先做坐标 / 镇 / 桥 / 宗族种子导入（补 WGS84 CRS），再做叙事 / 诗词 / 方志证据。
-7. **DATABASE_URL**：接本地 PG（5432），非云端。
-8. **R13 开发授权与权责归一（2026-10-01 · 项目拥有者确认）**：
-   - **授权主体**：项目拥有者**直接授权「开发总工程师」**进行后续开发。开发总工程师是**角色**，不是产品名；当前由本会话的 AI 开发平台承担，可被任何具备 AI 能力的开发工具替换（C0 §0）。
-   - **单一执行主体**：本项目**只有两方**——项目拥有者与开发总工程师。**不设第三方裁决方**：不设独立架构顾问，也不设由第三方 AI 担任的"架构侧 / 总架构师"或 Human Experience Gate 终裁者。
-   - **取代旧授权链**：历史 `CURRENT.md` §11.1–§11.4（WorkBuddy → CodeBuddy 日常施工授权迁移）**从未定稿，自本决断起全部失效**，不再作为任何授权依据。相关草案保留于 `governance/archive/` 仅作追溯（C0 §5）。
-   - **权责边界不变**：开发总工程师可在宪法边界内连续实施、运行、测试、修复，并自主决定工程取舍（C0 §2.1 / §2.2）；**架构决定权仍唯一属于项目拥有者**——改变 C0–C4 的原则或 Contract 仍须提交确认（C0 §7 第 5 步）。
-   - **验收裁决**：Human Experience Gate 与 Integration Gate 的**验收标准不变**（Gate 定义 `C1` §11、冻结原则 `C1` §21、验收标准 `C1` §25、UI 专业域 Gate 表 `C4` §22；H2 出口见本文件 §2），但**终裁权归项目拥有者**；开发总工程师**不得自宣布 Human PASS**（`C4` §22）。
-   - **入口命名**：宪法级入口路由文件为 `AGENTS.md`（工具中立）；原 `CODEBUDDY.md` 已废弃。
-   - **命名纪律**：此后治理文本中的执行主体一律使用角色名；更换工具不改变本权责结构。
-9. **R14 归档规则与目录职责（2026-10-02 · 项目拥有者确认）**：
-   - **不删除只归档**：被取代、重复或不再必要的文件一律**移入归档区**，不再使用 `git rm`；本条**取代**原「Current-only working tree」纪律。
-   - **三个归档落点**：`archive/`＝跨域历史快照；`governance/archive/`＝被取代治理件；`specs/archive/`＝被取代契约。
-   - **必须有清单**：每次批量归档产出 `archive/<date>-<topic>/README.md`，逐条写明「原路径 → 归档路径 → 理由 → 取代者」；无清单视为未完成。
-   - **归档件不等于 Authority**：活跃文件引用归档件时必须标注 `ARCHIVE / TRACE`；归档件正文不改写，只加历史横幅。
-   - **目录职责唯一 Authority**＝`OWNERSHIP_MAP.md`（含 23 个根目录逐项声明）。
-   - **命名纪律复核范围含 Office 二进制**：`.docx/.pptx/.xlsx` 须解包检查，不得只 grep 文本文件（此为对 R13 的修正补充）。
-   - **施工图当前版本**：第 3 代——`specs/experience-ui/施工图/墨痕_五母题施工审阅_第一批_M1_配套规格_V0.1.md` + `specs/experience-ui/施工图/墨痕_五母题施工审阅_第一批_M1_V0.1.html`，经项目拥有者 **2026-10-02 确认**；第 2 代已归档。
-   - **目录变更（2026-10-02）**：docs/ 与 prototypes/ **退役并移除**，其内容（UI 相关 4 份 + 数据生产协议 1 份）并入 `specs/`。**此后 Experience/UI 相关内容一律放 `specs/`。** 目录树与守卫契约见 `OWNERSHIP_MAP.md`。
-   - **状态入口唯一**：`tasks/CURRENT_TASK.md` 已改为指向 `CURRENT.md` 的**指针**（其 2026-09-25 的旧状态叙述含与实测不符的验收声明，仅保留于 Git 历史）。**状态只有一个入口：本文件。**
-
-10. **R15 晋级闸门通则（2026-10-02 · 项目拥有者确认）**：
-   - **通则**：任何表要把一行标成"可用 / 已发布"级别，**必须能在 `evidence_gate_audit` 找到该对象的门禁记录**；无记录者不得晋级。正文在 **C3 §4.2**。
-   - **禁止**用"反向排除名单 + 空值默认可用"表达资格。`visual_assets` 曾如此（`eligibility_tags` 默认 `'{}'` ＝ 可用）——实测它是**全库唯一**的"默认可用"形态（28 张表中仅图片 2 张），是 1246 张图片污染与 20 张人工排除被洗掉的根因。
-   - **形态照先例**：约束触发器 + `deferrable initially deferred`（照 `claims_require_evidence`，校验发生在 COMMIT，允许同一事务内先写对象再写门禁记录）。
-   - **落地**：图片层已补齐（`supabase/migrations/202610020008_visual_asset_promotion_gate.sql`：新增 `eligibility_status` 默认 `pending_review`；1288 行按状态重标、**不删除**；视图判定改为按状态）；其余表由 **`pnpm guard:promotion`（只读、不阻断写入）** 逐表报出违规行数，**分批补强制**。
-   - **范围决定**：拥有者 2026-10-02 选定「**方案 A + 规则**」——A＝只补图片层（照已有先例，非发明新机制）；规则＝本通则 + 只读守卫。提议全文与全库核对见 `tasks/results/DATA-RECON-01-eligibility-field-proposal.md`。
-
-> 这些决断是对 C0–C4 的工程落地确认，不修改宪法原则；若需变更，提交项目拥有者确认。其中 **R13、R14、R15 为治理级决断**，同时登记于 C0 §11。
+`CURRENT.md` 是**高频状态文件，不是第六份架构文档**——只记状态 + 指针，任务进展一律进结果文件。
+**开发总工程师可直接更新**：§2 焦点 / §4 Proven / §5 Gaps / §6 NOW·NEXT / §7 进度指针 / §9 Escalations 的状态行。
+**不得自行修改**：North Star、C0–C4 的 Authority 与核心边界、Gate 定义、长期 Evolution Horizons——须进 Architecture Reconciliation。
+**文件落点**：规划 / 任务书 / Task-Book 放 `tasks/` 根目录；结果 / 报告 / 审计放 `tasks/results/`；计划 ≠ 结果，不得混放。
+**§9 登记规则**：只记「状态 + 一句话 + 详情指针」；触发登记（须拥有者裁定、不得自改 C0–C4）：核心 World/Relation/Meaning 模型变化、Evidence/Interpretation/Geometry 边界变化、Agent 需 Truth Store 写权限或绕过 Evidence Gate、Surface Contract 无法支撑目标体验、引入 PostGIS/Vector/Graph DB 等核心基础设施、C4 Baseline 无法现有架构实现、启动 Participation/Living Culture Schema、商业目标影响 Agent 判断。
+**裁决方**：项目拥有者（唯一决策者），不设第三方裁决方（`C0` §11 R13）。
+**机器校验**：`pnpm guard:escalations`（§9 计数 / 状态 / 指针）；`pnpm guard:docs`（本文件 ≤ 180 行）。
 
 ------------------------------------------------------------------------
 
-## 13. Maintenance Rule
+## 12. 下一阶段（Human Experience 侧 · 数据生产达成后）
 
-`CURRENT.md` 是**高频状态文件，不是第六份架构文档**。
-
-开发总工程师 在真实施工后可以直接更新：
-
--   Current Focus
--   Proven Baseline（仅在有真实证据时）
--   Current Gaps / Gates
--   NOW / NEXT
--   Architecture Escalations
-
-不得自行修改：
-
--   North Star；
--   C0–C4 的 Authority；
--   Evidence / Cultural World / Agent / Experience 的核心边界；
--   Canonical Non-Regression；
--   Human Experience Gate 的定义；
--   长期 Evolution Horizons。
-
-这些变化必须进入 **Architecture Reconciliation**。
-
-**职责边界：状态 vs 任务进展（2026-10-02 项目拥有者指定）**
-
-- **本文件只记「当前工作状态」** —— 执行中就是执行中。**任务进展不在此累积。**
-- **任务进展的唯一载体是该任务的「结果文件」**（`tasks/results/<TASK>-result.md`）。
-  围绕某个任务持续开展工作时，**一律维护那份文件**；本文件只保留**一行指引**（§9 的「详情」列即此形态）。
-- **§9 只登记「状态 + 指针」**：状态（`待裁决` / `部分处置` / `部分冻结` / `已冻结` / `已处置`）+ 一句话摘要 + 详情指向。
-  证据、方案、处置进展一律写在任务结果文件里。
-- **机器校验**：`pnpm guard:escalations` 校验「声明的项数 = 实际项数」、状态取值合法、**「详情」指针指向的文件真实存在**；
-  `pnpm guard:docs` 同时给本文件设**行数预算**，防止无限膨胀。
-
-------------------------------------------------------------------------
+> 以下**不丢**，但属数据生产达成后的下一阶段，当前 HOLD / 顺延（决断 R18）：
+- **金泽 Human Experience 样板**：用户进入真实连续的人文探索空间（非网站 / Dashboard / Debugger）；Agent 判断真实改变地图 / 时间 / 图像 / 关系 / 证据 / 叙事 / 行动，追问在同一世界经 Replan / Patch 展开；Human Experience Gate（重新看见 / 与我有关 / 继续行动）验收。
+- **体验侧已有基线**：Canonical Images、五母题施工图、体验板已达最低 Human / Visual Baseline（见 §4）。
+- **H2 Exit**：Human Experience Gate PASS + Integration Gate PASS。
+- **不提前启动**：Figma 高保真主战场、大而全 GIS / PostGIS、参与式体系、扩第二古镇（见 §8）。
 
 **Current one-line status**
 
-> **墨痕现在不缺下一套架构；当前任务是让已经成立的可信文化世界与 Agent
-> Runtime，在真实金泽体验中真正变成人能感受到、愿意继续探索，并重新看见今天的
-> Human Experience。**
+> **当前主线是数据生产，目标是把数据底座建厚实——把数据生产沉淀成可复用、可扩展的能力（先治理技能，不再重复写脚本），第一步深透老项目（沪上经纬），随后持续推进外部扩源，把可信数据的来源与规模做厚做实；底座达标后再做 Human Experience 验收。**

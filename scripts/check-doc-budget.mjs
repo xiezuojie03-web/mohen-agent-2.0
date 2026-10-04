@@ -7,8 +7,8 @@ const limits = {
   "OWNERSHIP_MAP.md": 170,
   // 2026-10-02 项目拥有者指定：CURRENT.md 只记"当前工作状态"，任务进展移到任务结果文件。
   // §9 由 106 行降至 23 行（详情迁往 tasks/results/DATA-PRODUCTION-MECHANISM-01-result.md §8）。
-  // 设预算的目的：让它**不可能**再靠累积膨胀；新进展应写进对应任务结果文件。
-  "CURRENT.md": 300,
+  // 2026-10-04 预算 300 → 180：状态入口须保持可扫描，散文一律进结果文件（见 CURRENT §13）。
+  "CURRENT.md": 180,
 };
 let failed = false;
 for (const [file, max] of Object.entries(limits)) {

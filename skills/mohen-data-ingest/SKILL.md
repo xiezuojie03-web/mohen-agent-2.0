@@ -3,6 +3,12 @@
 Purpose: 数据采集与登记  
 Trigger: 新增 API/PDF/图片/网页/地图原始资料
 
+## 实体化档案（C2 §2.1 · C0 §11 R26）
+- **Entry**：`pipelines/legacy/unattended-runner.mjs`
+- **Registry 作业**：`src-*`、`coords-wikidata`、`unattended.source-refresh`
+- **Reuse Source**：新增来源 / 坐标采集复用本 Entry；动手前先查本档案与生产注册表，不得新建平行脚本。
+- **Merge / Deprecate**：重复实现并入本 Entry；被替代时按 R14 归档并写迁移说明。
+
 ## Preconditions
 先执行 `mohen-project-guard`；读取当前 Task。
 

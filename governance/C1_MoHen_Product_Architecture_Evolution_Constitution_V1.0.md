@@ -221,7 +221,7 @@ C4 已冻结金泽《历史关系探索体验板》与 EXP-DESIGN-02 Round 2 为
 | Horizon                                       | **目标**                                                      | **状态/出口**                                                                               |
 | --------------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | H1｜Trusted World & Agent Runtime              | 建立 Evidence-aware World + Multi-Intent / Persistent Runtime | DONE：基础能力已成立                                                                            |
-| H2｜Canonical Human Experience                 | 把金泽文化世界真正转成普通人可感知、可共鸣的 Agent-native Experience              | CURRENT · Human Experience Gate HOLD；出口 = Human Experience PASS + Integration Gate PASS |
+| H2｜Canonical Human Experience                 | 把金泽文化世界真正转成普通人可感知、可共鸣的 Agent-native Experience              | CURRENT · Human Experience Gate HOLD（数据优先阶段顺延，R18）；出口 = Human Experience PASS + Integration Gate PASS |
 | H3｜Experience-driven World Growth             | 由真实体验缺口补 Data / Visual / Spatial / Research 能力              | NEXT：只补阻塞体验的最小切片                                                                        |
 | H4｜Field Experience & Generalization          | 连接现实行动，并验证第二主题/地域能复用 World Model + Grammar + Gate           | FUTURE：金泽母体稳定后                                                                          |
 | H5｜Human Resonance & Participation Validation | 验证谁持续使用、为什么回来、什么值得收藏/记录/分享/贡献                               | FUTURE：真实复访与参与信号                                                                        |
@@ -281,19 +281,23 @@ C4 已冻结金泽《历史关系探索体验板》与 EXP-DESIGN-02 Round 2 为
 | Living Culture Schema               | HOLD                 | Vision 已定，物理表与机制等待真实需求                      |
 | Sustainable Commercial Model        | HOLD                 | 核心价值与持续用户先成立                                |
 
-## 19｜当前主要矛盾（基线快照 · 实时状态见 CURRENT）
+## 19｜当前主要矛盾（结构性 · 阶段落点见 CURRENT）
 
-|                                                                                                                                              |
-| -------------------------------------------------------------------------------------------------------------------------------------------- |
-| 当前主要矛盾不是“数据还不够多”，也不是“UI 还不够复杂”，而是：已经成立的可信 Cultural World 与 Agent Runtime，能否稳定地转化为至少达到金泽 Canonical Baseline、并真正让普通用户重新看见今天的 Human Experience。 |
+| |
+| --- |
+| 墨痕的根本矛盾，是**证据锚定的可信 Cultural World 与 Agent Runtime** 与 **普通用户可真实感知、可重新看见今天 Human Experience** 之间的转化落差：可信世界已经能在 Agent Runtime 中成立，但它能否稳定地落到真实、可达、可被普通人感知的体验，是项目成立与否的恒定判据。这一矛盾**不由数据量、UI 复杂度或是否另开架构来定义**。 |
 
-因此当前工作应继续围绕真实运行态与 Human Gate，而不是重新开启 Figma 高保真大战、批量迁移所有旧数据、扩第二古镇、建设大而全 GIS、或提前做 Participation / Community。
+这一矛盾是**结构性**的，不随阶段（老项目深挖 / 外部扩源 / Participation）切换而消失。**恒定解决原则**（不因阶段改写）：
+- 扩张（新源 / 新镇 / 新模态 / 社区）永远服从于 Evidence Gate 与 Human Experience Gate，不得用广度稀释可信度；
+- 数据生产与体验呈现是同一矛盾的两端：前者是后者的必要不充分条件，任何扩源都须先证明对「可信世界 → 真实体验」转化的真实贡献；
+- 具体阶段重心、HOLD 项与实时落点一律记在 `CURRENT.md`（状态层），不写进本宪法。
 
 ## 20｜NOW / NEXT / LATER / HOLD（基线快照 · 实时状态见 CURRENT §8）
 
 | **状态** | **工作**                                                                                           | **边界**              |
 | ------ | ------------------------------------------------------------------------------------------------ | ------------------- |
 | NOW    | Canonical Human Experience：把真实 Cultural World + Agent 判断做成用户真正感受到的金泽体验                           | C4 基线不可退化；直接看真实运行态  |
+| NOW    | **老项目数据挖掘主线（R18）**：优先挖干净沪上经纬一手文件/图片；外部扩展先证明再扩（R19）                          | 数据底座优先；不重复造轮子      |
 | NEXT   | Gap-driven Minimal Enrichment：只补阻塞 Human/Integration Gate 的 Data / Visual / Spatial / Runtime 缺口 | 无 Gap 不扩 Track      |
 | NEXT   | H2 Exit：Human Experience PASS + Integration Gate PASS                                            | P1/P2/P3 必须有真实信号    |
 | LATER  | Field Experience + Second Theme / Region                                                         | 先证明母体可复用，不复制页面      |

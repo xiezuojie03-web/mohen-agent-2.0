@@ -3,6 +3,7 @@
   "schema_version": 1,
   "updated": "2026-10-02",
   "authority": "项目拥有者 2026-10-02 选定**范围 C**：先管「进真库的枚举 / 标签值」，暂不推广到表名字段名。",
+  "linkage_to_protocol": "本登记表是数据生产协议 V2.0 §0.2「规则即强制」与 §9.1 `identifiers` 守卫在「真库无约束词表型标识符」上的落地；与 production-registry.json（#5）、acquisition-intents.json（#7）同属「已裁定、已强制」治理族。守卫：scripts/check-identifier-registry.mjs（纳入 pnpm guard）。",
   "scope": {
     "in_scope": "真库中**可以随便写**的词表型标识符：无 CHECK 约束的 text[] 标签列 + 自由文本的方法代号。这些值没有任何东西逼它们被解释，是孤儿高发区。",
     "out_of_scope": {
@@ -128,6 +129,7 @@
         { "match": "^s1_", "origin": "coined", "definition": "S1 级来源的 API 取回代号族。", "defined_at": "pipelines/ingest/retrieve-s1-jinze.mjs" },
         { "match": "^official_", "origin": "coined", "definition": "官方来源（政府/文保/方志）转录代号族。", "defined_at": "pipelines/historical-spatial/s1-evidence-closure-sources.mjs" },
         { "match": "^historical_map_source_acquisition$", "origin": "coined", "definition": "历史地图来源取回（与 amap/spatial 方法刻意区分开）。", "defined_at": "pipelines/historical-spatial/register.mjs" },
+        { "match": "^unattended-", "origin": "coined", "definition": "无人值守批次方法代号：unattended-<N 批号>（N01–N06 严证批次 / 生产作业批次）。", "defined_at": "pipelines/legacy/unattended-runner.mjs" },
         { "match": "^research_lead_unresolved$", "origin": "coined", "definition": "检索线索未解决：已定位到线索但尚无可入证的材料，留待后续立项。", "defined_at": "pipelines/historical-spatial/register-evidence-closure.mjs" }
       ]
     }

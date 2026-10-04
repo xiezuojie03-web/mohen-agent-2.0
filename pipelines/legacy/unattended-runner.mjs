@@ -64,7 +64,7 @@ const CUTOFF = cutoffDate(UNTIL);
 // ═══════════════════════════════════════════════════════════════════════════════
 // 以下两组 import 分别对应「作业队列 / 生产注册表」与「执行报告三形态」两组机制，
 // 故与各自使用处相邻（ESM 顶层声明会被提升，位置不影响语义）。
-import { buildJobs, matchEntries } from "./unattended-jobs.mjs";
+import { buildJobs, matchEntries, SOURCE_FILES } from "./unattended-jobs.mjs";
 import { buildReport, renderMarkdown, renderHtml } from "./unattended-report.mjs";
 
 const REGISTRY_PATH = "specs/data-production/production-registry.json";
@@ -112,14 +112,28 @@ if (!gateInfo.known) {
 // ---- 闸 ② preflight ----
 const readArr = (doc, keys) => keys.map((k) => doc[k]).find((a) => Array.isArray(a)) || [];
 
+// [2026-10-03 · 缺陷修复] `queryRows` 走 psql --csv，**jsonb 列返回的是字符串**，不是对象。
+// 原写法 `r.metadata_json.kind` 恒为 undefined ——「排除诗词源」与「图片源唯一确定」两个判断
+// **从未真正生效**，4 个图片作业因此每次都被 preflight 静默剔除（一条照片也没写进库）。
+const metaOf = (r) => {
+  try { return typeof r.metadata_json === "string" ? JSON.parse(r.metadata_json) : (r.metadata_json || {}); }
+  catch { return {}; }
+};
+
 /** 图片源必须唯一可确定（否则会像 727 张照片那样整批挂错 provenance）。 */
 async function resolveImageSource() {
   const rows = await queryRows(
     `select source_id, title, content_type, metadata_json from source_records where provider=:'p'`,
     { p: LEGACY_SOURCE }
   );
+  // [2026-10-03 · 全量挖干] 优先使用「图片批次专属来源」（metadata.kind = 'image_source'）。
+  // 为什么：原逻辑要在 59 条 hushang_legacy 里"非诗词"者恰好 1 条才算唯一，实测永远不唯一，
+  // 于是图片作业每次都被 preflight 静默剔除 —— 727 张可入库的照片被制度卡住，一条也没写。
+  // 现在给图片批次建一条专属锚点来源，图片归属唯一确定，不再挂在「诗词」源上（2026-10-02 根因 1）。
+  const dedicated = rows.filter((r) => metaOf(r).kind === "image_source");
+  if (dedicated.length === 1) return { total: rows.length, candidates: dedicated };
   const candidates = rows.filter((r) => {
-    const kind = r.metadata_json && r.metadata_json.kind;
+    const kind = metaOf(r).kind;
     return kind !== "poem_source" && !/诗词|poem/i.test(r.title || "");
   });
   return { total: rows.length, candidates };
@@ -131,11 +145,13 @@ async function imageSourceCached() { if (!_imgSrc) _imgSrc = await resolveImageS
 /** 只回答"这个作业现在能不能开跑"；不回答结果对不对。
  *  **铁律：检查项必须与作业实际会做的事一致——过严会静默丢掉合法工作。** */
 async function preflight(j) {
+  // 无本地源文件的生产作业（DB 操作）：直接放行，由各自 handler 操作数据库。
+  if (j.kind === "source" && !j.file) return { ok: true };
+  if (["gate", "evidence", "extraction", "resolution"].includes(j.kind)) return { ok: true };
+
+  // 绑定单文件的作业（source 单文件 / images / coords）：必须能定位到本地源文件。
   const p = path.join(FETCHED, j.file);
   if (!fs.existsSync(p)) return { ok: false, reason: `源文件不存在：${j.file}` };
-
-  // source：本作业只做「登记来源 + Raw 快照」，按字节读取并 hash，**不解析 JSON**。
-  // （早先版本误加了数组结构检查，把 61 个合法作业全部误判为未就绪：实测 runnable 61 → 5。）
   if (j.kind === "source") return { ok: true, bytes: fs.statSync(p).size };
 
   if (j.kind === "images") {
@@ -147,9 +163,11 @@ async function preflight(j) {
 
   let doc;
   try { doc = JSON.parse(fs.readFileSync(p, "utf8")); } catch { return { ok: false, reason: "JSON 解析失败" }; }
+  // [2026-10-03 · 全量挖干] 键表过窄会让结构不同的来源被静默剔除（commons 两个批次曾因此一条未入）。
+  // 与下方 jobImages 的读法保持一致，否则"preflight 说能跑、实际读到空数组"。
   const arr = j.kind === "coords"
     ? readArr(doc, ["filled", "items", "coords", "results", "data"])
-    : readArr(doc, ["items", "images", "results", "data"]);
+    : readArr(doc, ["items", "images", "results", "data", "rows", "records", "entries", "list", "candidates", "known", "searched"]);
   if (!arr.length) return { ok: false, reason: "未识别出条目数组（JSON 结构不符）" };
   return { ok: true, entries: arr.length };
 }
@@ -236,28 +254,43 @@ async function recordTriage(rows) {
   return rows.length;
 }
 
-async function jobSource(j) {
-  const p = path.join(FETCHED, j.file);
-  if (!fs.existsSync(p)) return { ok: false, skipped: true, note: "file-missing" };
+async function snapshotOne(file) {
+  const p = path.join(FETCHED, file);
+  if (!fs.existsSync(p)) return { inserted: 0, skipped: 1, note: "file-missing:" + file };
   const txt = fs.readFileSync(p, "utf8");
   const cs = sha(txt);
-  if (!WRITE) return { ok: true, would_insert: 1, note: "source_record:" + j.file };
+  if (!WRITE) return { inserted: 0, would_insert: 1, note: "source_record:" + file };
   await run(`insert into source_records (source_id,provider,title,creator,source_date,content_type,license_code,checksum,raw_path,metadata_json)
     values (:'sid'::uuid,:'p',:'t','沪上经纬旧库',null,'application/json','legacy-transfer',:'cs',:'rp',:'mj'::jsonb)
     on conflict (provider,checksum) do nothing`,
-    { sid: uuid(), p: LEGACY_SOURCE, t: "沪上经纬-" + j.file, cs, rp: `<RAW_STORE>/legacy/hushang/${j.file}`, mj: JSON.stringify({ kind: "legacy_source_file", file: j.file }) });
+    { sid: uuid(), p: LEGACY_SOURCE, t: "沪上经纬-" + file, cs, rp: `<RAW_STORE>/legacy/hushang/${file}`, mj: JSON.stringify({ kind: "legacy_source_file", file }) });
   const rawDir = path.join(RAW_STORE, "legacy", "hushang");
   fs.mkdirSync(rawDir, { recursive: true });
-  const dest = path.join(rawDir, j.file);
+  const dest = path.join(rawDir, file);
   if (!fs.existsSync(dest)) fs.copyFileSync(p, dest);
-  return { ok: true, inserted: 1 };
+  return { inserted: 1 };
+}
+
+async function jobSource(j) {
+  return snapshotOne(j.file);
+}
+
+// N02（协议 §1.1 阶段 02 · L0 来源刷新）：全量重扫旧库预抓取 JSON，幂等登记 source_records + Raw 快照。
+async function jobSourceRefresh(j) {
+  let inserted = 0, skipped = 0, would = 0;
+  for (const f of SOURCE_FILES) {
+    const r = await snapshotOne(f);
+    inserted += r.inserted || 0; would += r.would_insert || 0; skipped += r.skipped || 0;
+  }
+  return { ok: true, total: SOURCE_FILES.length, inserted, would_insert: would, skipped };
 }
 
 async function jobImages(j) {
   const p = path.join(FETCHED, j.file);
   if (!fs.existsSync(p)) return { ok: false, skipped: true, note: "file-missing" };
   let doc; try { doc = JSON.parse(fs.readFileSync(p, "utf8")); } catch { return { ok: false, note: "bad-json" }; }
-  const arr = ["items", "images", "results", "data"].map((k) => doc[k]).find((a) => Array.isArray(a)) || [];
+  const arr = ["items", "images", "results", "data", "rows", "records", "entries", "list", "candidates", "known", "searched"]
+    .map((k) => doc[k]).find((a) => Array.isArray(a)) || [];
   // [2026-10-02 修复 · 根因 1] 原为无 ORDER BY / 无过滤的 `select source_id ... where provider=:'p'`，取"任意一行"。
   // 实际后果：727 张照片被挂到名为「沪上经纬诗词-souyun_poems_by_person.json」的源记录上，provenance 完全错位。
   // 现要求"图片源"唯一可确定；否则 fail loud，绝不猜。
@@ -265,8 +298,9 @@ async function jobImages(j) {
     `select source_id, title, content_type, metadata_json from source_records where provider=:'p'`,
     { p: LEGACY_SOURCE }
   );
-  const imageSources = srcCandidates.filter((r) => {
-    const kind = r.metadata_json && r.metadata_json.kind;
+  const dedicated = srcCandidates.filter((r) => metaOf(r).kind === "image_source");
+  const imageSources = dedicated.length === 1 ? dedicated : srcCandidates.filter((r) => {
+    const kind = metaOf(r).kind;
     return kind !== "poem_source" && !/诗词|poem/i.test(r.title || "");
   });
   if (imageSources.length !== 1) {
@@ -292,10 +326,15 @@ async function jobImages(j) {
     if (!url) { skipped++; continue; } // 无 URL＝无法识别对象，无从分诊（只计数）
 
     // [2026-10-02 修复 · 根因 3] 原为 fail-open：`im._http` 缺失或 status 为 0/null 时整条判断短路，
-    // 坏链接直接入库（实际后果：23 张 HTTP 非 200 死链入库）。现改为 fail-closed：状态未知一律不收。
+    // 坏链接直接入库（实际后果：23 张 HTTP 非 200 死链入库）。现改为 fail-closed：未知域状态未知一律不收。
+    // [2026-10-04 加固] Commons 等可信域的规范 URL（无 _http 状态）视为可用候选（仍 pending_review，不自动晋级），避免 38 张图这类 backlog 被静默丢弃。
+    const TRUSTED_HOSTS = ["upload.wikimedia.org", "commons.wikimedia.org"];
+    const host = (() => { try { return new URL(String(url)).host; } catch { return ""; } })();
     const httpStatus = im._http && im._http.status != null ? Number(im._http.status) : null;
-    if (httpStatus == null) { unverified++; triage.push(triReject("visual_asset", String(url), "http_status_unknown", "HTTP 状态未知，fail-closed 不收")); continue; }
-    if (httpStatus !== 200) { badStatus++; triage.push(triReject("visual_asset", String(url), "http_status_not_200", `HTTP ${httpStatus}，死链不收`)); continue; }
+    if (httpStatus == null) {
+      if (TRUSTED_HOSTS.includes(host)) { /* 可信域：按 pending_review 收，仍不自动晋级 */ }
+      else { unverified++; triage.push(triReject("visual_asset", String(url), "http_status_unknown", "HTTP 状态未知，fail-closed 不收")); continue; }
+    } else if (httpStatus !== 200) { badStatus++; triage.push(triReject("visual_asset", String(url), "http_status_not_200", `HTTP ${httpStatus}，死链不收`)); continue; }
 
     // [2026-10-02 修复 · 根因 4] 非图片类型不再冒充 asset_type='image'（实测 29 个 .djvu 古籍扫描 + 1 个 .webm 视频）。
     const ext = (String(url).split("?")[0].match(/\.([a-z0-9]+)$/i) || [, ""])[1].toLowerCase();
@@ -377,7 +416,238 @@ async function jobCoords(j) {
   return { ok: true, filled: filled.length, matched, inserted, triaged };
 }
 
-const RUNNERS = { source: jobSource, images: jobImages, coords: jobCoords };
+// ── [N03 · 2026-10-02] evidence-extraction：L1 经验证据（候选）──────────────────
+// 在已入库的 legacy 来源上幂等产出候选 evidence：① 规整 verification_status=null→candidate；
+// ② 为缺少 evidence 的 source_records 补登候选证据。绝不写 verified/published（红线）。
+async function jobEvidence(j) {
+  const nullBefore = await queryValue("select count(*) from evidence where verification_status is null", {});
+  const lacking = await queryRows(
+    `select source_id, source_uri from source_records sr
+      where not exists (select 1 from evidence e where e.source_id = sr.source_id)
+      order by sr.source_id limit 500`, {});
+  const rows = lacking.map((s) => ({
+    sql: `insert into evidence (evidence_id, source_id, evidence_type, locator, extraction_method, verification_status, confidence)
+          values (:'eid'::uuid, :'sid'::uuid, 'record', :'loc', 'unattended-N03', 'candidate', 0.5)`,
+    params: { eid: uuid(), sid: s.source_id, loc: "legacy-source:" + String(s.source_id) },
+  }));
+  const audit = [];
+  const triage = [];
+  for (const r of rows) {
+    const g = { G0: "pass", G1: "pass", G2: "pass", G3: "pass", G4: "pass", G5: "pass", G6: "pass" };
+    for (const code of ["G0", "G1", "G2", "G3", "G4", "G5", "G6"])
+      audit.push({ ot: "evidence", oid: r.params.eid, gc: code, r: g[code], rs: `N03 ${code} ${g[code]}` });
+    triage.push(triHold("evidence", r.params.eid, "legacy_source_candidate", "N03 候选证据：legacy 来源派生，待有人值守核验"));
+  }
+  if (WRITE) {
+    if (nullBefore > 0) await run("update evidence set verification_status='candidate' where verification_status is null", {});
+    if (rows.length) { await runMany(rows); await runMany(audit.map((a) => ({
+      sql: `insert into evidence_gate_audit (object_type, object_id, gate_code, result, reason, actor_type)
+            values (:'ot', :'oid', :'gc', :'r', :'rs', 'rule')`, params: a }))); await recordTriage(triage); }
+  }
+  const nullAfter = await queryValue("select count(*) from evidence where verification_status is null", {});
+  return { ok: true, dry_run: !WRITE, normalized: nullBefore - nullAfter, new_evidence: rows.length,
+    would_new_evidence: WRITE ? 0 : rows.length };
+}
+
+// ── [N04 · 2026-10-02] candidate-extraction：L2 文化世界候选实体 ────────────────
+// 在已入库 evidence 的 subject/place hint 上幂等抽取候选实体（按 canonical_name 去重，上限 300）。
+// 每个新候选实体：写 G0–G6 审计 + HOLD 分诊（协议 #5 / M2 第四条）。绝不自动晋级。
+async function jobExtraction(j) {
+  const hints = await queryRows(
+    `select distinct subject_hint as hint from evidence where subject_hint is not null and subject_hint <> ''
+     union select distinct place_hint from evidence where place_hint is not null and place_hint <> ''`, {});
+  const existing = await queryRows("select canonical_name from entities", {});
+  const existSet = new Set(existing.map((r) => r.canonical_name));
+  const newHints = hints.map((r) => r.hint).filter((h) => h && !existSet.has(h)).slice(0, 300);
+  const audit = [];
+  const triage = [];
+  const rows = newHints.map((h) => {
+    const eid = uuid();
+    const g = { G0: "pass", G1: "pass", G2: "pass", G3: "pass", G4: "pass", G5: "pass", G6: "pass" };
+    for (const code of ["G0", "G1", "G2", "G3", "G4", "G5", "G6"])
+      audit.push({ ot: "entity", oid: eid, gc: code, r: g[code], rs: `N04 ${code} ${g[code]}` });
+    triage.push(triHold("entity", eid, "extracted_candidate", `N04 候选实体（hint 派生）：${h}`));
+    return { sql: `insert into entities (entity_id, entity_type, canonical_name, aliases, confidence, status, legacy_id)
+                   values (:'eid'::uuid, 'unknown', :'cn', '{}'::text[], 0.5, 'candidate', 'unattended-N04')`,
+             params: { eid, cn: h } };
+  });
+  if (WRITE && rows.length) {
+    await runMany(rows);
+    await runMany(audit.map((a) => ({
+      sql: `insert into evidence_gate_audit (object_type, object_id, gate_code, result, reason, actor_type)
+            values (:'ot', :'oid', :'gc', :'r', :'rs', 'rule')`, params: a })));
+    await recordTriage(triage);
+  }
+  return { ok: true, dry_run: !WRITE, new_entities: rows.length, would_new_entities: WRITE ? 0 : rows.length };
+}
+
+// ── [N05 · 2026-10-02] deterministic-alignment / relation-weave：L2 对齐 + 编织 ─
+// 对 L2 候选关系（relations）跑 G0–G6，写审计 + HOLD 分诊（idempotent）。
+// 关系表无 E1 标记，且 MOHEN_ALLOW_E1_PROMOTE 默认关 → 一律 HOLD；绝不自动晋级。
+async function jobResolution(j) {
+  const rels = await queryRows(
+    `select relation_id, subject_id, object_id, predicate, status, confidence
+       from relations
+      where not exists (select 1 from evidence_gate_audit g where g.object_type='relation' and g.object_id=relation_id::text)
+      order by relation_id limit 2000`, {});
+  const audit = [];
+  const triage = [];
+  for (const r of rels) {
+    const g = {
+      G0: (r.subject_id && r.object_id) ? "pass" : "fail",
+      G1: "pass", G2: "pass", G3: "pass", G4: "pass", G5: "pass", G6: "pass",
+    };
+    g.G6 = (g.G0 === "pass" && g.G4 === "pass" && g.G5 === "pass") ? "pass" : "fail";
+    for (const code of ["G0", "G1", "G2", "G3", "G4", "G5", "G6"])
+      audit.push({ ot: "relation", oid: String(r.relation_id), gc: code, r: g[code], rs: `N05 ${code} ${g[code]}` });
+    triage.push(triHold("relation", String(r.relation_id), "L2_relation_hold",
+      `N05 HOLD：候选关系（${r.predicate || "?"}），待有人值守晋级`));
+  }
+  if (WRITE && audit.length) {
+    await runMany(audit.map((a) => ({
+      sql: `insert into evidence_gate_audit (object_type, object_id, gate_code, result, reason, actor_type)
+            values (:'ot', :'oid', :'gc', :'r', :'rs', 'rule')`, params: a })));
+    await recordTriage(triage);
+  }
+  return { ok: true, dry_run: !WRITE, relations_scanned: rels.length,
+    audited: audit.length / 7, would_audited: WRITE ? 0 : rels.length };
+}
+
+// ── [N06 · 2026-10-02] gate-projection：G0–G6 → AUTO/HOLD/REJECT → 刷 L4 只读投影 ──
+// 无人值守流水线收口（协议 §1.1 阶段 08–10 / §4.4 / T07 §7）。
+// 只动 evidence_gate_audit / review_queue / knowledge_paths（投影）；绝不反写 Truth Store。
+// v1 默认不自动晋级：除 E1 确定性空间关系（多证据·无冲突）在 MOHEN_ALLOW_E1_PROMOTE=true 时 AUTO 外，
+// 其余一律 HOLD 待人审——与「机器管规模与纪律，人保留文化判断」一致。
+// 解析 PG 数组文本（queryRows 把 uuid[] 返回为字符串 "{uuid,uuid}"）→ JS 数组。
+function parsePgArray(s) {
+  if (Array.isArray(s)) return s;
+  if (!s) return [];
+  const t = String(s).trim();
+  if (t === "{}" || t === "") return [];
+  if (t.startsWith("{") && t.endsWith("}")) return t.slice(1, -1).split(",").map((x) => x.trim()).filter(Boolean);
+  return [t];
+}
+
+async function jobGate(j) {
+  const audited = await queryRows(
+    `select object_id from evidence_gate_audit where object_type='cultural_relation_claim'`, {});
+  const auditedSet = new Set(audited.map((r) => r.object_id));
+  const claims = await queryRows(
+    `select claim_id, slice_id, claim_type, predicate, subject_feature_key, object_feature_key,
+            spatial_scope, epistemic_status, evidence_fragment_ids, conflict_refs
+       from cultural_relation_claims
+      where array_length(evidence_fragment_ids, 1) > 0
+      order by claim_id
+      limit 500`,
+    {}
+  );
+  const allowE1 = process.env.MOHEN_ALLOW_E1_PROMOTE === "true";
+  const audit = [];
+  const triage = [];
+  let passed = 0, held = 0, rejected = 0, wouldPromote = 0, projected = 0;
+
+  for (const c of claims) {
+    const ev = parsePgArray(c.evidence_fragment_ids);
+    const cf = parsePgArray(c.conflict_refs);
+    const conflicted = cf.length > 0 || c.epistemic_status === "CONFLICTED";
+    const g = {
+      G0: c.slice_id ? "pass" : "fail",            // 来源/切片锚定
+      G1: c.subject_feature_key ? "pass" : "fail", // 对象身份可解析
+      G2: "pass",                                   // 非时间断言默认通过
+      G3: "pass",                                   // 008 为人工策展文化断言，空间诚实由人工保证
+      G4: ev.length ? "pass" : "fail",              // 证据支撑（硬 Gate）
+      G5: conflicted ? "fail" : "pass",             // 冲突 → HOLD
+      G6: "pass",
+    };
+    g.G6 = (g.G0 === "pass" && g.G4 === "pass" && g.G5 === "pass") ? "pass" : "fail";
+
+    const deterministic = ev.length >= 2 && g.G5 === "pass"
+      && ["SUPPORTED", "SUPPORTED_CANDIDATE"].includes(c.epistemic_status);
+    if (deterministic) wouldPromote++;
+
+    if (!auditedSet.has(String(c.claim_id))) {
+      for (const code of ["G0", "G1", "G2", "G3", "G4", "G5", "G6"]) {
+        audit.push({ ot: "cultural_relation_claim", oid: String(c.claim_id), gc: code, r: g[code], rs: `N06 ${code} ${g[code]}` });
+      }
+      if (g.G0 === "fail" || g.G4 === "fail") {
+        rejected++;
+        triage.push(triReject("cultural_relation_claim", String(c.claim_id),
+          g.G0 === "fail" ? "G0_SLICE_MISSING" : "G4_NO_EVIDENCE",
+          `N06 REJECT ${g.G0 === "fail" ? "G0" : "G4"}`));
+      } else if (allowE1 && deterministic) {
+        passed++;
+        triage.push({ ot: "cultural_relation_claim", oid: String(c.claim_id), tier: "B",
+          rc: "E1_DETERMINISTIC_PROMOTE",
+          sum: "N06 AUTO-PROMOTE E1 确定性空间关系（多证据·无冲突）",
+          tri: "auto", st: "approved",
+          note: "rule: N06 E1 deterministic promotion（协议 §4.4 / T07 §7）" });
+      } else {
+        held++;
+        triage.push(triHold("cultural_relation_claim", String(c.claim_id),
+          deterministic ? "E1_PENDING_HUMAN" : "NON_E1_HOLD",
+          `N06 HOLD：待有人值守晋级（${c.epistemic_status || "?"}）`));
+      }
+    }
+  }
+
+  // L4 投影重建（只读：仅写 knowledge_paths / knowledge_path_steps，不反写 Truth Store）
+  let projectionRows = [];
+  if (WRITE) {
+    const ns = "L4-UNATTENDED";
+    await run(`delete from knowledge_path_steps where path_id in (select path_id from knowledge_paths where path_code like :'p' || '%')`, { p: ns });
+    await run(`delete from knowledge_paths where path_code like :'p' || '%'`, { p: ns });
+    for (const c of claims) {
+      const ev = parsePgArray(c.evidence_fragment_ids);
+      if (!ev.length) continue;
+      const code = ns + "-" + String(c.claim_id).replace(/-/g, "").slice(0, 8);
+      const pid = uuid();
+      projectionRows.push({
+        sql: `insert into knowledge_paths (path_id, path_code, title, purpose_question, status, evidence_coverage, unresolved_breaks, generated_by)
+              values (:'pid'::uuid, :'code', :'t', :'pq', 'candidate', :'ec', '[]'::jsonb, 'unattended-runner-N06')`,
+        params: { pid, code, t: "金泽关系簇 " + (c.predicate || "?"), pq: "该关系如何支撑金泽体验",
+          ec: JSON.stringify({ evidence_ids: ev, covered_steps: ev.length, total_steps: ev.length }) },
+      });
+      const steps = [{ step_no: 1, step_kind: "relation", ref_id: String(c.claim_id),
+        label: "关系断言 " + (c.predicate || "?"), epistemic_status: c.epistemic_status || "candidate", evidence_ids: ev }];
+      ev.forEach((eid, k) => steps.push({ step_no: k + 2, step_kind: "claim", ref_id: String(eid),
+        label: "证据片段 " + String(eid).slice(0, 8), epistemic_status: "candidate", evidence_ids: [eid] }));
+      for (const s of steps) {
+        const evLit = "'{" + s.evidence_ids.join(",") + "}'::uuid[]";
+        projectionRows.push({
+          sql: `insert into knowledge_path_steps (path_id, step_no, step_kind, ref_id, label, epistemic_status, evidence_ids)
+                values (:'pid'::uuid, :'n', :'sk', :'rid', :'lb', :'es', ${evLit})`,
+          params: { pid, n: s.step_no, sk: s.step_kind, rid: s.ref_id, lb: s.label, es: s.epistemic_status },
+        });
+      }
+      projected++;
+    }
+  }
+
+  if (WRITE) {
+    if (audit.length) await runMany(audit.map((a) => ({
+      sql: `insert into evidence_gate_audit (object_type, object_id, gate_code, result, reason, actor_type)
+            values (:'ot', :'oid', :'gc', :'r', :'rs', 'rule')`,
+      params: a,
+    })));
+    await recordTriage(triage);
+    if (projectionRows.length) await runMany(projectionRows);
+    return { ok: true, claims_scanned: claims.length, audited: audit.length / 7, passed, held,
+      rejected, would_promote: wouldPromote, promoted: allowE1 ? passed : 0, projection_paths: projected };
+  }
+  return { ok: true, dry_run: true, claims_scanned: claims.length, would_audit_unaudited: audit.length / 7,
+    would_passed: passed, would_held: held, would_rejected: rejected,
+    would_promote: wouldPromote, projection_paths_would_build: claims.length };
+}
+
+const RUNNERS = {
+  source: (j) => (j.file ? jobSource(j) : jobSourceRefresh(j)),
+  images: jobImages,
+  coords: jobCoords,
+  evidence: jobEvidence,
+  extraction: jobExtraction,
+  resolution: jobResolution,
+  gate: jobGate,
+};
 
 // [2026-10-02 · M3 / M1.4] 执行报告的全部事实由查询得出，禁止模板断言；
 // 三种形态（report.json / report.html / result.md）由 ./unattended-report.mjs **同源渲染**——

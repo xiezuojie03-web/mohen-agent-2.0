@@ -12,11 +12,15 @@ Agent 可以：
 
 Agent 不可以：
 - 直接把推断写成 verified/published；
+- **读取或消费 Research Workspace 的研究候选**（Observation / Signal / Association Candidate）作为用户可见内容——它们未经严证，一律不得直接给用户（2026-10-03 追加）；
 - 直接操纵 DOM/React；
 - 编造坐标、来源、原文、历史图像；
 - 因为“故事更好听”覆盖冲突证据。
 
 ## Discovery Policy
+**命名澄清（2026-10-03 · C2 §4.4）**：本文件的 Discovery / DiscoveryCandidate 一律指 **Runtime Discovery Candidate**——**Agent-side、严证之后**、在受控 World Projection 中消费可信世界后产生，且**不反写 Truth**。
+Agent **不得**消费 **Research Discovery Candidate**（Developer-side、严证之前的开放研究候选，位于 Research Workspace）。二者不得共用同一个 Discovery 状态字段。
+
 九维：Unexpectedness、Relevance、HumanMeaning、Transformation、EvidenceStrength、VisualPotential、ModernConnection、Actionability、SessionNovelty。
 
 硬门槛：

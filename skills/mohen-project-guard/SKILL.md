@@ -3,6 +3,12 @@
 Purpose: 任务入口守卫  
 Trigger: 任何开发/数据任务开始前
 
+## 实体化档案（C2 §2.1 · C0 §11 R26）
+- **Entry**：`pipelines/legacy/unattended-runner.mjs`
+- **Registry 作业**：`unattended.gate-projection`
+- **Reuse Source**：门禁投影 / 晋级投影复用本 Entry；不得新建平行投影脚本。
+- **Merge / Deprecate**：重复实现并入本 Entry；被替代时按 R14 归档并写迁移说明。
+
 ## Preconditions
 先执行 `mohen-project-guard`；读取当前 Task。
 

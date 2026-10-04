@@ -35,7 +35,7 @@
 | `specs/experience-ui/T07_…md` | `WorkBuddy/CodeBuddy` → 开发总工程师（2 处）。 |
 | `specs/experience-ui/五母题深化_…V1.1.md` | 红线 11 `WorkBuddy 硬边界`→开发总工程师硬边界（**红线内容一字未改**）；§12 任务转派对象去产品名。 |
 | `docs/MoHen_Narrative_Motif_Framework.md` | §12.4 任务转派对象去产品名。 |
-| `tasks/H2_JINZE_CONSTRUCTION_PLAN_V1.0.md` | `Executor: WorkBuddy（墨策）`→开发总工程师（角色名）；授权依据 `CURRENT §11.1（A–F 六项）`（**已失效**）→ `CURRENT §12 R13`；§VAG-4 去掉"可请 ChatGPT 复核"。 |
+| `tasks/H2_JINZE_CONSTRUCTION_PLAN_V1.0.md` | `Executor: WorkBuddy（墨策）`→开发总工程师（角色名）；授权依据 `CURRENT §11.1（A–F 六项）`（**已失效**）→ `C0 §11 R13`；§VAG-4 去掉"可请 ChatGPT 复核"。 |
 | `tasks/CURRENT_TASK.md` | 顶部加**历史 Trace 横幅**（声明自 2026-10-01 起不再是当前状态 SOT，指向 `CURRENT.md`；旧三层 SOT 与工具名均不具 Authority）；角色行与 M5 状态行去第三方裁决方。 |
 
 **范围外（有意不动）**：`governance/archive/`、`specs/archive/`、`archive/`、`legacy/`、`tasks/TASK-00xx`、`tasks/EXP-000x`、`tasks/results/*`（既有）、`decisions/ADR-*`、`specs/experience-ui/source/*`。依据 C0 §5：这些是 Archive / Trace，**不拥有日常 Authority**，改写历史记录反而破坏可追溯性。

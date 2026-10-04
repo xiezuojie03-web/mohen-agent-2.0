@@ -3,6 +3,12 @@
 Purpose: 视觉资产治理（盘底 → 定向检索 → 视觉—实体链接 → 证据门槛 → 表达就绪度）
 Trigger: 处理图片、舆图、书影、老照片、现代照片；判断「某张图凭什么属于某个对象」；评估「现在能用图做什么表达」
 
+## 实体化档案（C2 §2.1 · C0 §11 R26）
+- **Entry**：`pipelines/legacy/unattended-runner.mjs`
+- **Registry 作业**：`images-*`
+- **Reuse Source**：图片入库 / 资格判定 / 图-实体链接复用本 Entry；不得新建平行图片入库脚本。
+- **Merge / Deprecate**：重复实现并入本 Entry；被替代时按 R14 归档并写迁移说明。
+
 ## Preconditions
 先执行 `mohen-project-guard`；读取当前 Task。**不要把「有量」当「有质」**：图有 N 张，若不挂在具体实体上、没有可辩护的身份，用户点开仍是零图。
 

@@ -36,5 +36,36 @@ for (const d of skillDirs) {
   }
 }
 if (fs.existsSync("data/raw/seed.master.json")) { console.error("Legacy seed must not become Raw truth"); failed = true; }
+
+// ---------- Skill 实体化三向绑定：注册表 ⇄ SKILL.md（C2 §2.1 / C0 §11 R26 · 2026-10-04） ----------
+// 凡在生产注册表里挂了作业的技能，必须「已落地」= 有 SKILL.md，且其声明的 Entry 与注册表 implementation.entry 一致。
+// 目的：防止 SKILL.md 文档与注册表漂移（文档说 A、注册表跑 B），也防止"作业在跑但技能没落地"。
+const REG = "specs/data-production/production-registry.json";
+if (fs.existsSync(REG)) {
+  const reg = JSON.parse(fs.readFileSync(REG, "utf8"));
+  const skillEntry = new Map(); // skill -> entry（注册表侧权威）
+  for (const j of reg.jobs || []) {
+    const s = j.implementation && j.implementation.skill;
+    if (s) skillEntry.set(s, (j.implementation && j.implementation.entry) || "");
+  }
+  for (const [s, entry] of skillEntry) {
+    const skillMd = `skills/${s}/SKILL.md`;
+    if (!fs.existsSync(skillMd)) {
+      console.error(`SKILL_NOT_LANDED ${s}: 生产注册表挂了作业，但缺 ${skillMd}（C2 §2.1 实体化判定）`);
+      failed = true;
+      continue;
+    }
+    const md = fs.readFileSync(skillMd, "utf8");
+    const m = md.match(/\*\*Entry\*\*：`([^`]+)`/);
+    if (!m) {
+      console.error(`SKILL_MD_NO_ENTRY ${s}: ${skillMd} 未声明 **Entry**（无法与注册表核对）`);
+      failed = true;
+    } else if (entry && m[1] !== entry) {
+      console.error(`SKILL_ENTRY_DRIFT ${s}: SKILL.md Entry=${m[1]}，注册表 entry=${entry} —— 文档与注册表漂移`);
+      failed = true;
+    }
+  }
+  console.log(`STRUCTURE_SKILL_BINDING skills_with_jobs=${skillEntry.size}`);
+}
 console.log(`STRUCTURE required=${required.length} skills=${skillCount} (floor ${SKILL_FLOOR}) dirs=${skillDirs.length}`);
 process.exit(failed ? 1 : 0);

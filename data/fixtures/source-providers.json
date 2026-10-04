@@ -269,7 +269,7 @@
       "canonical": "hushang_legacy",
       "origin": "coined",
       "definition": "旧项目「沪上经纬」（hushang-jingwei）的移植来源；不是外部机构名，是我们给那批旧数据的标签。",
-      "defined_at": "governance/C3_MoHen_Humanistic_Data_OS_Database_Architecture_V1.1.md",
+      "defined_at": "governance/C3_MoHen_Humanistic_Data_OS_Database_Architecture_V1.2.md",
       "tier": "LEGACY",
       "evidence_allowed": false,
       "aliases": ["hushang-jingwei"],

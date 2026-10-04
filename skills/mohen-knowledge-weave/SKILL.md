@@ -3,6 +3,12 @@
 Purpose: 人文知识编织  
 Trigger: Verified Evidence 形成关系与发现候选
 
+## 实体化档案（C2 §2.1 · C0 §11 R26）
+- **Entry**：`pipelines/legacy/unattended-runner.mjs`
+- **Registry 作业**：`unattended.relation-weave`
+- **Reuse Source**：关系编织 / 空间关系产出复用本 Entry；不得为同类织入另写脚本。
+- **Merge / Deprecate**：重复实现并入本 Entry；被替代时按 R14 归档并写迁移说明。
+
 ## Preconditions
 先执行 `mohen-project-guard`；读取当前 Task。
 

@@ -1,0 +1,15 @@
+import pg from 'pg';
+import { writeFileSync } from 'node:fs';
+const c = new pg.Client({ connectionString: 'postgresql://postgres:postgres@127.0.0.1:5432/mohen_dev' });
+await c.connect();
+const tables = await c.query(`SELECT table_name FROM information_schema.tables WHERE table_schema='public' ORDER BY table_name`);
+const cols = await c.query(`SELECT table_name, column_name, data_type, is_nullable FROM information_schema.columns WHERE table_schema='public' ORDER BY table_name, ordinal_position`);
+const fks = await c.query(`SELECT tc.table_name AS src, kcu.column_name AS col, ccu.table_name AS tgt FROM information_schema.table_constraints tc JOIN information_schema.key_column_usage kcu ON tc.constraint_name=kcu.constraint_name AND tc.table_schema=kcu.table_schema JOIN information_schema.constraint_column_usage ccu ON ccu.constraint_name=tc.constraint_name AND ccu.table_schema=tc.table_schema WHERE tc.constraint_type='FOREIGN KEY' AND tc.table_schema='public' ORDER BY tc.table_name`);
+const out = { tables: tables.rows.map(r => r.table_name), columns: {}, fks: fks.rows.map(r => ({ src: r.src, col: r.col, tgt: r.tgt })) };
+tables.rows.forEach(t => { out.columns[t.table_name] = []; });
+cols.rows.forEach(r => { if (out.columns[r.table_name]) out.columns[r.table_name].push({ c: r.column_name, t: r.data_type, n: r.is_nullable === 'NO' ? 'NO' : 'YES' }); });
+writeFileSync('_full.json', JSON.stringify(out, null, 1));
+console.log('tables', out.tables.length);
+console.log(out.tables.join(', '));
+console.log('fks', out.fks.length);
+c.end();

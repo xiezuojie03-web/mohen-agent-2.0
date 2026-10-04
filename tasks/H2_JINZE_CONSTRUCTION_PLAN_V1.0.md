@@ -4,7 +4,7 @@
 **Version:** V1.0
 **Date:** 2026-09-26
 **Owner:** 沙漠绿洲（用户 / 日常验收权）
-**Executor:** 开发总工程师（角色名，工具中立；授权见 `CURRENT.md` §12 R13）
+**Executor:** 开发总工程师（角色名，工具中立；授权见 `C0` §11 R13）
 **Status:** APPROVED（2026-09-26 用户审核通过）
 **Authority context:** 本计划是 H2 金泽 Canonical Human Experience 的唯一施工计划真源。
 授权依据见 `CURRENT.md` §12 **R13**（开发授权与权责归一）。本计划全部阶段均
