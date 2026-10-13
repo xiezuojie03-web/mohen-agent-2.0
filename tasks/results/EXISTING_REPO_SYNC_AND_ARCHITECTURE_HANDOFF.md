@@ -1,8 +1,8 @@
 # EXISTING_REPO_SYNC_AND_ARCHITECTURE_HANDOFF
 
 > 一次性「同仓安全同步＋工程承载快照」任务交接记录
-> 生成时间：2026-10-13
-> 最终结论：**SYNC=STOP**（网络无法连接 GitHub，未执行任何 commit / push）
+> 生成时间：2026-10-13（同日完成同步与验证）
+> 最终结论：**SYNC=PASS**（推送成功，远端 SHA 与本地一致，敏感文件未入库，关键文件抽核通过）
 > 本文件为只读记录，未借本任务修改任何代码逻辑。
 
 ---
@@ -11,9 +11,10 @@
 
 | 项 | 值 |
 |---|---|
-| 最终结论 | **SYNC=STOP** |
-| REPO_HANDOFF | **NOT_VERIFIED**（远端不可达，验收条件「同一 GitHub 仓库可读取到同步提交」无法满足） |
-| 核心阻塞（唯一） | **当前环境无法建立到 GitHub 的已认证网络连接**，push 与远端校验均无法执行 |
+| 最终结论 | **SYNC=PASS** |
+| REPO_HANDOFF | **PASS**（远端可读取到同步提交，SHA 与本地一致，抽核通过，无机密泄露） |
+| 同步分支 / 提交 | `handoff/local-b-20260930` @ `c3b990a220c096cd367fd345146755af91fc9d83`（快进推送，非 force） |
+| 部署触发 | 未触发：Vercel 生产部署仅绑定 `main`；本次仅推 `handoff/*` 分支，`main` 保持 `87bb56d` 未动 |
 
 网络诊断证据（2026-10-13 实测）：
 
@@ -26,12 +27,7 @@
 | `api.github.com` (443) | TCP 通（但 git push 走 github.com 域名，无法替代） |
 | 本地代理 | 系统代理 `ProxyEnable=0`；`~/.ssh` 无任何私钥（仅 known_hosts）；无 `~/.git-credentials`；常见代理端口（7890/1080/10808 等）无监听 |
 
-**所需决策（需项目拥有者提供其一）**：
-1. 启用可用代理/VPN 使 `github.com:443` 可达；或
-2. 配置可用的 GitHub SSH 私钥（并确认 22 端口或 ssh.github.com:443 可用）；或
-3. 更换到可直连 GitHub 的网络环境。
-
-网络恢复后，按本文件第 3 节的排除清单与第 5 节的提交范围，执行常规 `git add → commit → push`（**不使用 push --force**），再从远端复核 SHA 并补记本文件第 4 节。
+**【已解决 2026-10-13】** 发现本机 `mgvpn` 进程在 `127.0.0.1:51081` 提供可用 HTTP/SOCKS 代理（实测经其访问 `https://github.com` 返回 200）。全程以 `git -c http.proxy=http://127.0.0.1:51081 …` 临时参数借用该通道，**未修改任何全局配置**。认证复用 Windows 凭据管理器既存的 `git:https://github.com` 凭据（`credential.helper=manager`，系统级配置），验证有效，**未新建 token**。
 
 ---
 
@@ -90,11 +86,11 @@
 
 | 项 | 值 |
 |---|---|
-| 本地 HEAD SHA | `c033954f555d0fa3f1a914ec2ae48e28e2090de8` |
-| 本地 main SHA | `87bb56d` |
-| 实际同步分支 | **NOT_SYNCED**（未执行任何 push） |
-| 远端 HEAD SHA | **NOT_VERIFIED**（网络阻断） |
-| 推送后远端提交 SHA | **NOT_VERIFIED**（未推送） |
+| 同步前本地 HEAD | `c033954f555d0fa3f1a914ec2ae48e28e2090de8` |
+| 本次同步提交 | `c3b990a220c096cd367fd345146755af91fc9d83`（384 文件：M29 / A353 / R2） |
+| 实际同步分支 | `handoff/local-b-20260930`（快进 `c04486f → c3b990a`，未用 force） |
+| 远端回读 SHA | `c3b990a220c096cd367fd345146755af91fc9d83`（`git ls-remote` 实读，与本地一致） |
+| 远端 main | `87bb56d`（未触碰，与远端一致） |
 
 ---
 
@@ -209,12 +205,17 @@ mohen-agent-2.0/
 
 无 NOT_FOUND 项（仅 `CODEBUDDY.md` 路由文件缺失，已在第 7 节单独标注）。
 
+**远端（`origin/handoff/local-b-20260930` @ `c3b990a`）树内抽核（18/18 OK）**：`DATA_PRODUCTION_MAP.md`、两个 `MoHen_Data_Production_System_Map.*`、`OWNERSHIP_MAP.md`、`production-registry.json` / `identifier-registry.json` / `naming-map.json`、`skills/mohen-source-intake/SKILL.md`、`skills/mohen-material-understanding/SKILL.md`、`pipelines/data-production/run.mjs`、`executors/d01-source-intake.mjs`、`executors/d05-read-model-publication.mjs`、`gates/G0-G4_MACHINE_GATE_CONTRACT_V2.0.md`、`scripts/guards/check-runtime-data-boundary.mjs`、`supabase/migrations/202610070100_data_production_v2_baseline.sql`、`tests/data-production/gate-enforcement.test.mjs`、`tests/end-to-end/phase-g-e2e.test.mjs`、本交接文件——全部 OK。
+
+远端树规模：918 文件（skills 18 个 SKILL.md / pipelines 75 / tests 30 / supabase 15 / specs/data-production 35）。
+**敏感文件终检：CLEAN**——`implementation_artifacts/`、`_probe.mjs`、`.env`、`.env.local`、`db_url` 均不在远端树中。
+
 ---
 
-## 11. 未完成 / 需裁决清单
+## 11. 遗留事项
 
-1. **核心阻塞（唯一，需拥有者决策）**：网络无法连接 GitHub（详见第 0 节）。需提供代理/VPN、或 SSH 私钥、或换网络后重跑同步。
-2. 待网络恢复后，按第 3 节排除清单（`implementation_artifacts/` 整体、`_probe.mjs`）执行 `git add`（选择性，勿 `add -A` 带入 dump/环境/探针）→ `commit` → `push`（非 force）。
-3. 推送后需从远端回读提交 SHA 并复核，完成 REPO_HANDOFF=PASS 的最后一环。
+1. 无同步遗留：推送、远端 SHA 回读、关键文件抽核、敏感文件终检全部完成。
+2. 待拥有者后续裁决（非本任务范围）：A–G 旧工程 → D01–D05 字段级映射差异专项审计；ESC-02 `relations(521)` 合并设计。
+3. 工作区仍有 15 个文件**有意排除、未入库**：`_probe.mjs`（1）+ `implementation_artifacts/`（14，含 PG schema dump、环境信息、历史 diff patch）。如需转正入库，须拥有者明确指示后另行处理。
 
-> 本任务未执行任何 Git 写操作（无 add / commit / push），未部署，未改数据库，未做新六阶段迁移，未修改任何代码逻辑。
+> 本任务 Git 写操作范围：选择性 `git add`（含排除 pathspec）→ 主体提交 `c3b990a` → push（fast-forward，非 force）→ 本交接文件更新落档提交。未部署，未改数据库，未做新六阶段迁移，未修改任何代码逻辑。
