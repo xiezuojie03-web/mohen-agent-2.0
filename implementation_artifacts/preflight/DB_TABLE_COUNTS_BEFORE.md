@@ -1,0 +1,41 @@
+# DB Table Row Counts BEFORE (mohen_dev @ PostgreSQL 18.6)
+
+| schema.table | rows |
+|---|---|
+| public.claim_evidence | 3064 |
+| public.claims | 3061 |
+| public.cultural_conflicts | 1 |
+| public.cultural_events | 9 |
+| public.cultural_meaning_candidates | 2 |
+| public.cultural_present_connections | 2 |
+| public.cultural_relation_claims | 8 |
+| public.discovery_candidates | 1142 |
+| public.entities | 6745 |
+| public.evidence | 13053 |
+| public.evidence_fragments | 4828 |
+| public.evidence_gate_audit | 158838 |
+| public.historical_change_records | 5 |
+| public.historical_feature_anchors | 249 |
+| public.historical_features | 245 |
+| public.historical_spatial_relations | 8 |
+| public.historical_spatial_slices | 2 |
+| public.human_review_decisions | 13 |
+| public.ingest_runs | 41 |
+| public.knowledge_path_steps | 15544 |
+| public.knowledge_paths | 2934 |
+| public.legacy_mappings | 13027 |
+| public.relation_evidence | 13091 |
+| public.relations | 3444 |
+| public.research_association_candidate | 3909 |
+| public.research_bridge_draft | 2219 |
+| public.research_mention | 23382 |
+| public.research_observation | 13695 |
+| public.research_run | 3 |
+| public.research_signal | 9589 |
+| public.research_source_dependency | 23 |
+| public.research_source_inventory | 285 |
+| public.research_task | 40 |
+| public.review_queue | 27680 |
+| public.source_records | 317 |
+| public.visual_assets | 1465 |
+| public.visual_entity_links | 1056 |
