@@ -8,6 +8,7 @@ Trigger: Candidate 要晋级知识库
 - **Registry 作业**：`unattended.evidence-fragment`、`unattended.candidate-extraction`、`unattended.deterministic-resolution`
 - **Reuse Source**：证据门禁 / 候选抽取 / 确定性对齐复用本 Entry；不得为同类判定另写脚本。
 - **Merge / Deprecate**：重复实现并入本 Entry；被替代时按 R14 归档并写迁移说明。
+- **C2 运行记录（2026-10-04）**：`unattended.candidate-extraction` 从 C1 证据（`extraction_method='unattended-evidence-fragment'`）抽候选——`entities` +3041（`unattended-ce:*`，place 2178 / building 972）、`relations` +2923 弱共现（`unattended-ce-rel:*`、`co_mentioned_in`）、`discovery_candidates` +1138、`claims` +3041（`candidate_extracted_from` + `claim_evidence`）；`unattended.deterministic-resolution` 按 normalized(name)+同类型精确对齐写 `legacy_mappings` +5、同名异类型 HOLD +11、其余为全新候选（不自动合并）。全量 `review_queue` HOLD +10159、`evidence_gate_audit` +41,748；**零自动晋级**（published/verified=0、auto 分诊=0）。启发式：place_hint/subject_hint + 中文地名后缀正则（1–2 字前缀，过滤虚词首字/数字/四字短语）。`cultural_*` 与 `historical_spatial_relations` 留待 C3。下游转化报告 `tasks/results/TASK-DATA-20261004-C2-impact.html`。
 
 ## Preconditions
 先执行 `mohen-project-guard`；读取当前 Task。

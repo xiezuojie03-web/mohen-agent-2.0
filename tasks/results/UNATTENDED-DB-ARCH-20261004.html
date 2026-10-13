@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>无人值守数据生产 · 数据库架构完善度报告（2026-10-04）</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1e222b; --line:#2a2f3a;
+    --txt:#e8eaf0; --dim:#9aa3b2; --accent:#5b8cff; --accent2:#39d0a5;
+    --warn:#ffb454; --bad:#ff6b6b; --good:#39d0a5; --ws:#c084fc;
+    --l0:#ffd166; --l1:#5b8cff; --l2:#39d0a5; --l3:#ff8fab; --l4:#c084fc;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,sans-serif;line-height:1.6;padding:32px 20px 80px}
+  .wrap{max-width:1080px;margin:0 auto}
+  h1{font-size:26px;font-weight:700;margin-bottom:6px}
+  h2{font-size:20px;margin:38px 0 14px;padding-left:10px;border-left:4px solid var(--accent)}
+  h3{font-size:16px;margin:20px 0 10px;color:var(--accent2)}
+  .sub{color:var(--dim);font-size:14px;margin-bottom:8px}
+  .verdict{background:linear-gradient(135deg,#1b2030,#222838);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:18px 0}
+  .verdict .tag{display:inline-block;background:var(--warn);color:#1a1205;font-weight:700;font-size:12px;padding:2px 10px;border-radius:20px;margin-bottom:10px}
+  .verdict p{font-size:15px;margin:6px 0}
+  .verdict b{color:var(--ws)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin:14px 0}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .stat .n{font-size:24px;font-weight:700}
+  .stat .l{font-size:12px;color:var(--dim);margin-top:2px}
+  .arch{display:flex;flex-direction:column;gap:10px;margin:16px 0}
+  .layer{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;position:relative;overflow:hidden}
+  .layer .head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;z-index:1;position:relative}
+  .layer .name{font-weight:700;font-size:15px}
+  .layer .cnt{font-size:13px;color:var(--dim)}
+  .layer .cnt b{color:var(--txt);font-size:15px}
+  .bar{height:10px;border-radius:6px;background:var(--panel2);overflow:hidden;position:relative;z-index:1}
+  .bar > i{display:block;height:100%;border-radius:6px}
+  .fill-ws > i{background:linear-gradient(90deg,#a855f7,#c084fc)}
+  .fill-l0 > i{background:var(--l0)} .fill-l1 > i{background:var(--l1)}
+  .fill-l2 > i{background:var(--l2)} .fill-l3 > i{background:var(--l3)} .fill-l4 > i{background:var(--l4)}
+  .empty{opacity:.45}
+  .note{font-size:12px;color:var(--dim);margin-top:6px;z-index:1;position:relative}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--dim);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;color:var(--accent)}
+  .pill{display:inline-block;font-size:11px;padding:1px 8px;border-radius:20px;margin:1px 2px}
+  .p-good{background:rgba(57,208,165,.15);color:var(--good)}
+  .p-warn{background:rgba(255,180,84,.15);color:var(--warn)}
+  .p-bad{background:rgba(255,107,107,.15);color:var(--bad)}
+  .p-ws{background:rgba(192,132,252,.15);color:var(--ws)}
+  .map{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin:14px 0}
+  .flow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .box{border-radius:12px;padding:14px 18px;font-weight:700;font-size:14px;text-align:center;min-width:150px}
+  .b-in{background:rgba(91,140,255,.15);border:1px solid var(--accent);color:var(--accent)}
+  .b-ws{background:rgba(192,132,252,.18);border:1px solid var(--ws);color:var(--ws)}
+  .b-out{background:rgba(255,107,107,.12);border:1px dashed var(--bad);color:var(--bad)}
+  .arrow{font-size:22px;color:var(--dim)}
+  .gap{background:#1c1414;border:1px solid #3a2326;border-radius:12px;padding:16px 18px;margin:12px 0}
+  .gap h3{color:var(--bad);margin-top:0}
+  .gap li{margin:6px 0 6px 18px;font-size:14px}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--dim);margin:6px 0}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+  .footer{margin-top:40px;color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-top:14px}
+  code{background:var(--panel2);padding:1px 6px;border-radius:5px;font-size:12px}
+  .hl{color:var(--ws);font-weight:700}
+  .hl-good{color:var(--good);font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>无人值守数据生产 · 数据库架构完善度报告</h1>
+<div class="sub">墨痕 MoHen · 本地主库 <code>mohen_dev</code> · 实测于 2026-10-04 · 视角＝数据库整体架构完善度 × 工作归属 × 真实叙事支撑</div>
+
+<div class="verdict">
+  <span class="tag">诚实结论</span>
+  <p><b>无人值守生产机制已建成并跑通（Discovery 线），但它产出的全部数据落在「Research Workspace 研究工作区」——一个位于 L0 之前的独立暂存层，而不是 L0–L7 真值层。</b></p>
+  <p>本轮共写入 <b>22,916 行</b> 到 8 张 <code>research_*</code> 表；这些候选的 <code>promoted</code> 字段 <b>全部为 false</b>，<b>0 行进入</b> Cultural Sources / Evidence / Cultural World 等任何真值层。</p>
+  <p>因此：<b>L0 · Cultural Sources 没有新增（仍是 304 行）</b>，文化世界规模未变。这不是「沪上经纬老项目数据挖完了」，而是<b>当前机制设计 + 桥接缺失</b>导致的必然结果——Discovery 模式 <code>truth_write_ceiling=0</code>，且 <code>research_task → 严证作业</code> 的出口尚未接通。</p>
+  <p>真正的成绩是：<b>一条能自动发现跨来源关联的无人值守管线已验证可用</b>，并在缓冲区里沉淀出若干<b>真实可叙事</b>的候选（地名演变链、古镇网络）。</p>
+</div>
+
+<div class="cards">
+  <div class="stat"><div class="n" style="color:var(--ws)">22,916</div><div class="l">Research Workspace 新增行（本轮无人值守产出）</div></div>
+  <div class="stat"><div class="n" style="color:var(--bad)">0</div><div class="l">进入 L0–L7 真值层的行数</div></div>
+  <div class="stat"><div class="n" style="color:var(--l0)">304</div><div class="l">L0 Cultural Sources 行（未变）</div></div>
+  <div class="stat"><div class="n" style="color:var(--good)">14,247</div><div class="l">L0–L7 真值层可叙事总行（既有）</div></div>
+  <div class="stat"><div class="n" style="color:var(--accent2)">2,219</div><div class="l">研究关联候选（待人工/严证裁决）</div></div>
+</div>
+
+<h2>一、数据库架构完善度总览</h2>
+<div class="sub">八层数据架构（C3 V1.2 §2.9）+ Research Workspace。条形长度＝该层可叙事行数（审计类已排除）。注意：研究工作区体量已超过全部真值层之和——这正是「机制成立、但尚未晋升」的直观体现。</div>
+
+<div class="legend">
+  <span><i class="dot" style="background:var(--ws)"></i>Research Workspace（暂存，未晋升）</span>
+  <span><i class="dot" style="background:var(--l0)"></i>L0 来源</span>
+  <span><i class="dot" style="background:var(--l1)"></i>L1 证据</span>
+  <span><i class="dot" style="background:var(--l2)"></i>L2 文化世界</span>
+  <span><i class="dot" style="background:var(--l3)"></i>L3 意义·今天</span>
+  <span><i class="dot" style="background:var(--l4)"></i>L4 发现·路径</span>
+  <span><i class="dot" style="background:#444"></i>L5–L7 本阶段不产出</span>
+</div>
+
+<div class="arch" id="arch"></div>
+
+<h2>二、做完的工作成绩 · 归属到架构的位置</h2>
+<div class="map">
+  <div class="sub">无人值守生产（LR-ADS-01，Discovery 模式）的实际数据流向：</div>
+  <div class="flow">
+    <div class="box b-in">沪上经纬 Legacy<br>95 个只读 JSON</div>
+    <div class="arrow">→</div>
+    <div class="box b-ws">Research Workspace<br>22,916 行（8 表）</div>
+    <div class="arrow">→</div>
+    <div class="box b-out">L0–L7 真值层<br>0 行（未接通桥接）</div>
+  </div>
+  <div class="note" style="color:var(--dim);margin-top:10px">
+    工作归属：本轮所有新增行 <span class="hl">100% 落在 Research Workspace</span>（橙色层），不归属于 L0–L7 任何一层。
+    它是「L0/L1 之前与之间的逻辑工作区」，设计上本就不计入真值层，需经严证（N01–N06）与人工裁决后才可能晋升。
+    当前桥接缺失，所以缓冲区只增不减。
+  </div>
+</div>
+
+<h2>三、逐层详解（每层真实表 · 真实行数 · 真实叙事支撑）</h2>
+<div class="sub">以下只列可叙事数据；审计/治理类（evidence_gate_audit 52,441 / review_queue 1,639 / legacy_mappings 3,405 / ingest_runs 15 / human_review_decisions 13）已按需求剔除，不计入完善度。</div>
+
+<div id="layers"></div>
+
+<h2>四、缓冲区里真实可叙事的候选（来自 research_association_candidate）</h2>
+<div class="sub">这些是 Discovery 真正发现的关联。每一条都对应库中真实行（avs_score=100），但 <code>promoted=false</code>，尚未成为可信叙事。下面按「是否真能支撑叙事」分类——这才是你要的「每个数据真实的、支撑叙事的情况」。</div>
+
+<h3 class="hl-good">✅ 真支撑 · 地名演变链（强叙事，对应 M3「过去的人怎样理解空间」）</h3>
+<table>
+  <tr><th>候选对</th><th>共现/来源</th><th>叙事价值</th></tr>
+  <tr><td>朱家村 ↔ 珠街阁 ↔ 朱家角</td><td>5 次 / 4 源</td><td>同一聚落的古今三名演变，可直接做成「地名的时间线」体验</td></tr>
+  <tr><td>白牛市 ↔ 清风泾 ↔ 枫泾</td><td>5 次 / 4 源</td><td>市镇改名链，支撑「一个地方为什么叫这个名字」</td></tr>
+  <tr><td>枫泾 ↔ 清风泾</td><td>5 次 / 4 源</td><td>别名/雅名对照，叙事可用</td></tr>
+</table>
+
+<h3 class="hl-good">✅ 真支撑 · 古镇网络（对应 M1「消失的关系世界」· 金泽样板）</h3>
+<table>
+  <tr><th>候选对</th><th>共现/来源</th><th>叙事价值</th></tr>
+  <tr><td>练塘 ↔ 金泽</td><td>11 次 / 6 源</td><td>金泽与邻镇的真实网络，强支撑</td></tr>
+  <tr><td>朱家角 ↔ 金泽</td><td>7 次 / 3 源</td><td>桥—镇—寺关系网的节点</td></tr>
+  <tr><td>放生桥 ↔ 朱家角</td><td>8 次 / 6 源</td><td>桥与镇的绑定，可做「一座桥如何定义一座镇」</td></tr>
+  <tr><td>金泽 ↔ 颐浩寺</td><td>（首轮精选）</td><td>寺—镇共生关系，金泽核心叙事</td></tr>
+</table>
+
+<h3 style="color:var(--warn)">⚠️ 弱 / 噪声 · 不应进入叙事（对应 §3b 质量短板）</h3>
+<table>
+  <tr><th>候选对</th><th>问题</th><th>处置</th></tr>
+  <tr><td>川沙 ↔ 江苏省 / 嘉定 ↔ 江苏省</td><td>平凡行政包含</td><td><span class="pill p-bad">排除</span></td></tr>
+  <tr><td>江苏省 ↔ person:金山</td><td>类型误判（金山是地名，非人物）</td><td><span class="pill p-bad">排除</span></td></tr>
+  <tr><td>川沙 ↔ 沙县 / 嘉定 ↔ 陆家浜</td><td>跨省/低价值共现</td><td><span class="pill p-warn">待裁</span></td></tr>
+</table>
+
+<h2>五、诚实的差距（为什么「做完」不等于「进了数据库」）</h2>
+<div class="gap">
+  <h3>尚未闭合的环节</h3>
+  <ul>
+    <li><b>晋升通道为 0：</b>所有 2,219 个候选 <code>promoted=false</code>，无任何一行写入 L0–L7。L0 没增长是机制结果，不是数据源挖完。</li>
+    <li><b>桥接缺失：</b><code>research_task</code>（20 条 <code>directed_research</code>）与 N01–N06 严证作业队列之间没有转换机制，精选候选不会自动变成作业。</li>
+    <li><b>Directed 线未跑：</b>「无人值守」严格包含 Discovery（已跑）+ Directed（N01–N06 未实际调用）。真正写 Truth 的那一半尚未启动。</li>
+    <li><b>质量未达标：</b>缓冲区里 45% Observation 为标题级，人物/地名类型混淆仍多，需先收紧再严证。</li>
+    <li><b>数据偏向族谱：</b>L2 实体 3,553 中 family_person 占 2,973，place 仅 37、town 仅 11、event 仅 135——文化世界偏谱系、缺地理与事件骨架。</li>
+  </ul>
+</div>
+
+<h2>六、下一步（让成绩真正进入架构）</h2>
+<table>
+  <tr><th>步</th><th>动作</th><th>效果</th></tr>
+  <tr><td>1</td><td>收紧内容级门槛（标题级 Observation 不进共现池）</td><td>候选噪声降约 40%</td></tr>
+  <tr><td>2</td><td>修人物/地名判定（权威词表，正则兜底不参与打分）</td><td>人物类候选可信</td></tr>
+  <tr><td>3</td><td>建 <code>research_task → N 作业</code> 桥接 + 人工确认闸</td><td><span class="pill p-good">P6 唯一阻塞点解除</span></td></tr>
+  <tr><td>4</td><td>跑 N01–N06 严证，把可用候选晋升进 L0/L1/L2</td><td>L0 首次真实新增、文化世界扩大</td></tr>
+  <tr><td>5</td><td>D02 深度化（方志/寺志/古籍章节抽取）</td><td>打开 M4/M5（信仰/仪式/今天还剩多少）</td></tr>
+</table>
+
+<div class="footer">
+  数据来源：<code>mohen_dev</code> 全表实测（2026-10-04）。架构定义引用 C3 V1.2 §2.9 八层数据地图与 Research Workspace 逻辑合同。
+  审计/治理类表（evidence_gate_audit / review_queue / legacy_mappings / ingest_runs / human_review_decisions）依需求剔除，未计入完善度。
+  本报告只陈述真实库状态，不推断、不包装。
+</div>
+
+</div>
+
+<script>
+const arch = [
+  {name:"Research Workspace（暂存层·本轮产出）", key:"ws",  cnt:22916, cls:"fill-ws", note:"8 张 research_* 表：run1 / inventory95 / observation6913 / mention8610 / signal5041 / candidate2219 / dependency17 / task20。0 行晋升。"},
+  {name:"L0 · Cultural Sources（来源）",        key:"l0", cnt:304,   cls:"fill-l0", note:"source_records=304。本轮未新增。"},
+  {name:"L1 · Evidence（证据）",                key:"l1", cnt:7944,  cls:"fill-l1", note:"evidence7409 / relation_evidence496 / claim_evidence23 / evidence_fragments16。"},
+  {name:"L2 · Cultural World（文化世界）",      key:"l2", cnt:5895,  cls:"fill-l2", note:"entities3553 / visual_assets1288 / historical_features245 / historical_feature_anchors249 / relations521 / 其余。"},
+  {name:"L3 · Meaning·Today（意义·今天）",      key:"l3", cnt:48,    cls:"fill-l3", note:"claims20 / claim_evidence23 / meaning_candidates2 / present_connections2 / conflicts1。极薄。"},
+  {name:"L4 · Discovery·Paths（发现·路径）",    key:"l4", cnt:56,    cls:"fill-l4", note:"knowledge_paths11 / steps26 / spatial_relations8 / change_records5 / spatial_slices2 / discovery_candidates4。"},
+  {name:"L5 · Living Culture（活的文化）",      key:"x",  cnt:0,     cls:"", note:"本阶段不产出。", empty:true},
+  {name:"L6 · Experience（体验）",              key:"x",  cnt:0,     cls:"", note:"本阶段不产出（归 C4 体验层）。", empty:true},
+  {name:"L7 · Action（行动）",                 key:"x",  cnt:0,     cls:"", note:"本阶段不产出。", empty:true},
+];
+const max = Math.max(...arch.map(a=>a.cnt));
+const archEl = document.getElementById('arch');
+arch.forEach(a=>{
+  const w = a.cnt>0 ? Math.max(4, a.cnt/max*100) : 0;
+  const d = document.createElement('div');
+  d.className = 'layer'+(a.empty?' empty':'');
+  d.innerHTML = `<div class="head"><span class="name">${a.name}</span><span class="cnt"><b>${a.cnt.toLocaleString()}</b> 行</span></div>
+    <div class="bar ${a.empty?'':' '+a.cls}"><i style="width:${w}%"></i></div>
+    <div class="note">${a.note}</div>`;
+  archEl.appendChild(d);
+});
+
+const layers = [
+  {t:"L0 · Cultural Sources（来源层）", rows:[["source_records",304,"真实文献/档案/地图来源登记；叙事的「出处」底座。本轮未新增。"]], sum:304},
+  {t:"L1 · Evidence（证据层）", rows:[
+      ["evidence",7409,"record3505 / map3325 / text551 / image28。证据主力，但 image 仅 28 条，图文叙事偏弱。"],
+      ["relation_evidence",496,"关系—证据绑定，支撑关系可信度。"],
+      ["claim_evidence",23,"论断证据，极少。"],
+      ["evidence_fragments",16,"证据碎片。"]], sum:7944},
+  {t:"L2 · Cultural World（文化世界层）", rows:[
+      ["entities",3553,"family_person2973 / event135 / figure67 / building56 / place37 / artifact35 / town11 / gazetteer9。偏族谱，地理骨架薄。"],
+      ["visual_assets",1288,"图像资产；visual_entity_links22 仅少量绑定。"],
+      ["historical_features",245,"历史地物/建筑。"],
+      ["historical_feature_anchors",249,"地物锚点，连接空间。"],
+      ["relations",521,"文化关系；cultural_relation_claims8 为候选关系。"],
+      ["cultural_events",9,"事件极少，M1/M4 事件线几乎空白。"]], sum:5895},
+  {t:"L3 · Meaning·Today（意义·今天层）", rows:[
+      ["claims",20,"论断。"],
+      ["claim_evidence",23,"论断证据。"],
+      ["cultural_meaning_candidates",2,"意义候选，极薄。"],
+      ["cultural_present_connections",2,"今昔连接，极薄。"],
+      ["cultural_conflicts",1,"文化冲突，1 条。"]], sum:48},
+  {t:"L4 · Discovery·Paths（发现·路径层）", rows:[
+      ["knowledge_paths",11,"知识路径。"],
+      ["knowledge_path_steps",26,"路径步骤。"],
+      ["historical_spatial_relations",8,"历史空间关系。"],
+      ["historical_change_records",5,"变迁记录。"],
+      ["historical_spatial_slices",2,"空间切片。"],
+      ["discovery_candidates",4,"发现候选。"]], sum:56},
+  {t:"Research Workspace（暂存层·本轮无人值守产出）", rows:[
+      ["research_observation",6913,"带定位的观察；45% 为标题级（噪声源）。"],
+      ["research_mention",8610,"提及/转引。"],
+      ["research_signal",5041,"信号。"],
+      ["research_association_candidate",2219,"跨来源关联候选；全部 promoted=false。"],
+      ["research_source_inventory",95,"来源盘点（非 L0）。"],
+      ["research_task",20,"directed_research 任务，待桥接严证。"],
+      ["research_source_dependency",17,"来源依赖（实际去重后 19 对→17 行）。"],
+      ["research_run",1,"运行记录 1 条。"]], sum:22916, ws:true},
+];
+const le = document.getElementById('layers');
+layers.forEach(L=>{
+  const h = document.createElement('div');
+  const cls = L.ws ? 'p-ws' : '';
+  let rows = L.rows.map(r=>`<tr><td><code>${r[0]}</code></td><td class="num">${r[1].toLocaleString()}</td><td>${r[2]}</td></tr>`).join('');
+  h.innerHTML = `<h3 class="${L.ws?'hl':''}">${L.t} <span class="pill ${L.ws?'p-ws':'p-good'}">${L.sum.toLocaleString()} 行</span></h3>
+    <table><tr><th>表</th><th>行数</th><th>真实叙事支撑</th></tr>${rows}</table>`;
+  le.appendChild(h);
+});
+</script>
+</body>
+</html>

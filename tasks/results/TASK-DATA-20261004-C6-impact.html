@@ -1,0 +1,95 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C6 · 验收可视化</title>
+<style>
+:root{--line:#e5e7eb;--bg:#f6f7f9}
+*{box-sizing:border-box}
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;margin:0;background:var(--bg);color:#1a1d21;line-height:1.65}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 22px 60px}
+h1{font-size:22px;margin:0 0 4px}
+h2{font-size:16px;margin:30px 0 10px;padding-left:10px;border-left:4px solid #2f6fed}
+.sub{color:#6b7280;font-size:13px;margin-bottom:14px}
+.banner{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:14px 16px;font-size:14px;line-height:1.7}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:12px 0}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;text-align:center}
+.card .v{font-size:23px;font-weight:700}.card .k{font-size:12px;color:#6b7280;margin-top:3px}
+.box{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:10px}
+.okbox{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 14px;font-size:13px}
+.warnbox{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px 14px;font-size:13px}
+.muted{color:#6b7280;font-size:12.5px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+td{padding:6px 8px;border-top:1px solid #eef0f3;vertical-align:top}
+</style>
+<div class="wrap">
+<h1>C6 · 验收与常态化 · 可视化报告</h1>
+<div class="sub">生成 2026-10-05T01:33:50.978Z · 统计窗口 2026-10-03T13:33:50.112Z 起 · 单文件离线可开 · 全部数字由查询得出</div>
+<div class="banner">本批为 <b>C6</b> 验收：B 组把晋级闸门从 2 个装到 <b>10</b> 个 constraint trigger（覆盖 entities/relations/evidence/historical_*/cultural_*），并实测「无审计晋级被拦、同事务带审计放行」；E 组把 <b>383</b> 个重名组的结论全部登记（覆盖 <b>100%</b>，其中机器可定 13、不自选边送审 370）。门禁审计首次覆盖 cultural_meaning_candidate / cultural_present_connection（各 14 行）。红线：published=0、verified=0、auto 分诊=0、effective_visual_assets=<b>8</b>（冻结基线未动）。</div>
+
+<h2>① B 组：晋级闸门覆盖</h2>
+<div class="cards">
+  <div class="card"><div class="v">10</div><div class="k">库层 constraint trigger 总数</div></div>
+  <div class="card"><div class="v">0</div><div class="k">已晋级实体（须 0）</div></div>
+  <div class="card"><div class="v">0</div><div class="k">已晋级证据（须 0）</div></div>
+  <div class="card"><div class="v">0</div><div class="k">已晋级关系（须 0）</div></div>
+</div>
+<div class="box"><div class="muted">闸门形态照抄 202610020008：constraint trigger + deferrable initially deferred → COMMIT 时校验，写入者可在同一事务内先写对象、再写门禁审计。末端状态取值与 guard:promotion 逐字对齐（adjudicated / runtime_eligible / verified / published）。</div></div>
+
+<h2>② E 组：重名 resolution 与来源归一</h2>
+<div class="cards">
+  <div class="card"><div class="v">383</div><div class="k">重名组（canonical_name 重复）</div></div>
+  <div class="card"><div class="v">100%</div><div class="k">结论覆盖率</div></div>
+  <div class="card"><div class="v">13</div><div class="k">机器可定（同一对象重复行）</div></div>
+  <div class="card"><div class="v">370</div><div class="k">不自选边（homonym_open）</div></div>
+  <div class="card"><div class="v">23</div><div class="k">真库 provider 写法数（全部可解析）</div></div>
+</div>
+<div class="box"><div class="muted">只登记结论，不合并 / 不删除 / 不修改任何 entities 行；家谱同名人（352 组）标记为常态、不占人工队列，只有遗产相关类型的重名（17 组）进入人审。</div></div>
+
+<h2>③ 门禁审计覆盖（按 object_type）</h2>
+<div class="box"><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="evidence（53365）">evidence（53365）</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:520px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">53365</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="entity（46158）">entity（46158）</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:450px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">46158</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="relation（44632）">relation（44632）</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:435px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">44632</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="visual_asset（14368）">visual_asset（14368）</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:140px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">14368</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="claim（140）">claim（140）</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:1px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">140</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="cultural_relation_claim（56）">cultural_relation_claim（56）</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:1px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">56</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="historical_spatial_relation（56）">historical_spatial_relation（56）</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:1px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">56</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="historical_feature（35）">historical_feature（35）</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:0px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">35</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="cultural_present_connection（14）">cultural_present_connection（14）</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:0px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">14</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="cultural_meaning_candidate（14）">cultural_meaning_candidate（14）</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:0px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">14</div></div></div>
+
+<h2>④ 状态分布（收敛前的真实存量）</h2>
+<div class="box"><table><tr><td>cultural_meaning_candidates</td><td>candidate</td><td>2</td></tr><tr><td>cultural_present_connections</td><td>candidate</td><td>2</td></tr><tr><td>cultural_relation_claims</td><td>candidate</td><td>8</td></tr><tr><td>entities</td><td>candidate</td><td>6745</td></tr><tr><td>evidence</td><td>candidate</td><td>13033</td></tr><tr><td>evidence</td><td>evidence_linked</td><td>20</td></tr><tr><td>historical_features</td><td>candidate</td><td>243</td></tr><tr><td>historical_features</td><td>human_reviewed</td><td>2</td></tr></table>
+<div class="muted">非规范取值（evidence_linked 20 / human_reviewed 2）如何映射到 C3 §4.1 五档属语义决断，未擅自改，留待拥有者裁定。</div></div>
+
+<h2>⑤ §15.3 五判定与红线</h2>
+<div class="okbox">
+<ul>
+<li>① 守卫总线（15 条 guard:*）全 0 退出码 —— 本轮已跑通（仅 <code>pnpm test</code> 仍有 22 项历史失败，与 C4/C5 基线一致，无新增）</li>
+<li>② <code>node scripts/db-compliance-baseline.mjs</code> 可跑、SELECT 不报错 ✅</li>
+<li>③ runner 默认 DRY_RUN 全队列跑通：<b>done=109 failed=0 inserted=0</b>、注册表 <b>unresolved=0</b> ✅</li>
+<li>④ <code>effective_visual_assets</code> = <b>8</b>（冻结基线 8 未动）✅</li>
+<li>⑤ published 实体 = <b>0</b>、verified 证据 = <b>0</b>、近 1 日 auto 分诊 = <b>0</b>（均须 0）✅</li>
+<li>投影完整性：L4 路径 <b>2931</b> / 步骤 <b>15544</b>（与 C3 基线 2931 / 15544 一致）</li>
+</ul></div>
+<p class="muted">生成口径：analyzeAcceptanceImpact + renderAcceptanceImpactHtml（pipelines/legacy/unattended-report.mjs）。</p>
+</div></html>

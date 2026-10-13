@@ -1,0 +1,273 @@
+{
+  "stats": {
+    "scope": "LR-ADS-01-FULL",
+    "mode": "WRITE",
+    "run_id": "7727c3b5-7972-49f0-9ee1-090124ffc89a",
+    "sources_total": 95,
+    "inventory": 95,
+    "readable": 62,
+    "catalog_only": 33,
+    "unreadable": 0,
+    "observations": 6913,
+    "observations_with_locator": 6913,
+    "mentions": 8610,
+    "mentions_resolved": 4715,
+    "dependencies": 884,
+    "signals": 5041,
+    "signals_total_pairs": 5041,
+    "dropped_signal_only": 2822,
+    "candidates": 2219,
+    "cross_source_candidates": 2219,
+    "buckets": {
+      "priority": 332,
+      "review": 339,
+      "candidate": 427,
+      "signal_only": 1121
+    },
+    "selected": 20,
+    "tasks": 20,
+    "elapsed_s": 4.9
+  },
+  "top": [
+    {
+      "candidate_id": "2d01d2b1-462b-4a5e-bea9-43915e4d0dd9",
+      "subject_ref": "place:南翔",
+      "object_ref": "place:独家村",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place 共现 6 次、跨 6 个来源；样例：此图绘示南翔、独家村、江桥、广福、庄家村、枫林浜各天主堂位置及其间里程"
+    },
+    {
+      "candidate_id": "62417a2e-cad8-4f9e-b2ce-691c19e854da",
+      "subject_ref": "place:南翔",
+      "object_ref": "place:古猗园",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place 共现 14 次、跨 3 个来源，含年代锚点；样例：王一亭与题襟馆书画会同人应赵云舫之邀，游南翔古猗园赏荷"
+    },
+    {
+      "candidate_id": "872416d1-5b4d-4f6e-8a98-2c09481afcec",
+      "subject_ref": "place:练塘",
+      "object_ref": "place:青浦县",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place 共现 5 次、跨 5 个来源，含年代锚点；样例：徐勖（1906～1927）原名润原，字树人，又字勉之，青浦县(今青浦区)莲盛乡田山庄村人，中国共产主义青年团团员。徐勖幼丧父母，家境清贫，小学毕业后考入苏州工专，攻土木工程。1924年进上海东亚同文书院学日文；其间，徐与陈云、吴志喜等接触，投入革命活动，并参加中国共产主义青年团。1926年4月，与陈云、高尔柏等组织“青…"
+    },
+    {
+      "candidate_id": "2646c37d-c702-4458-8a74-6ae7138e859d",
+      "subject_ref": "place:练塘",
+      "object_ref": "place:青浦区",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place 共现 5 次、跨 4 个来源，含年代锚点；样例：徐勖（1906～1927）原名润原，字树人，又字勉之，青浦县(今青浦区)莲盛乡田山庄村人，中国共产主义青年团团员。徐勖幼丧父母，家境清贫，小学毕业后考入苏州工专，攻土木工程。1924年进上海东亚同文书院学日文；其间，徐与陈云、吴志喜等接触，投入革命活动，并参加中国共产主义青年团。1926年4月，与陈云、高尔柏等组织“青…"
+    },
+    {
+      "candidate_id": "3b8e9126-f94a-4d63-bf04-af3fac473b80",
+      "subject_ref": "place:南翔",
+      "object_ref": "place:川沙",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place 共现 17 次、跨 5 个来源，含年代锚点；样例：美术团体涛社创立。由原中国工商业美术家协会的部分会员发起。宗旨是在“孤岛”时期的上海，将爱国的美术家组织起来，运用漫画为主要武器，坚持抗日救国宣传活动。除了在报刊发表漫画，亦刊印漫画形式的宣传画张贴街头。为防备敌人的暗害和破坏，采取小型灵活的方式，以社员分成小组，分批分期开展活动。第一期活动负责人有陈景烈、王扆昌、蒋孝…"
+    },
+    {
+      "candidate_id": "6e97d931-e45b-48e0-a43a-21d9d3bba173",
+      "subject_ref": "place:南翔",
+      "object_ref": "place:白鹤",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place 共现 13 次、跨 5 个来源，含年代锚点；样例：位于南翔镇解放街、人民街交汇处（原白鹤南翔寺山门内），东西对峙，俗称南翔双塔。通高11米，底层直径近1.9米，八面七层攒尖顶，灰砖砌筑；每层设腰檐，檐下施五铺作单抄单昂斗拱，四面壶门、四面直棂窗相间而置，二层以上设平座、栏板，塔顶由相轮、刹杆和宝珠构成铁铸塔刹。全部采用砖制构件，酷似江南木结构楼阁式宝塔，为典型唐宋建筑…"
+    },
+    {
+      "candidate_id": "227205c6-f745-46c6-8139-a3417a946413",
+      "subject_ref": "place:江苏省",
+      "object_ref": "place:黄炎培",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place 共现 17 次、跨 3 个来源，含年代锚点；样例：杨拙夫(1901~1969)，字师曾，江苏嘉定(今上海嘉定)人。早年就读江苏省立第二师范学校，毕业任中小学、师范学校、职业学校教师。1929年任嘉定县教育局长，通俗教育馆馆长，后任中华职业补习学校校长。1933年任中华职业学校训育主任。1937年八·一三事变后，任上海苏民职业学校(该校由南翔迁沪)校长，1938年任第三…"
+    },
+    {
+      "candidate_id": "88bcd474-e5c0-4a3a-8cc7-d3f04ca77f5a",
+      "subject_ref": "place:江苏省",
+      "object_ref": "person:金山",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "person+place 共现 5 次、跨 3 个来源，含年代锚点；样例：1928年起，上海记周边各县纷纷成立民众教育馆，大多数由原通俗教育馆改组改名而成，县属乡镇也有不少成立民众教育馆或农民教育馆。上海县民教馆于1928年在原通俗馆基础上于闵行镇成立。1930年起曾组织成人读书会，举办养老座谈会，开办艺术展览会，会同县、乡民众教育馆和农民教育馆成立民众教育宣传团去各乡镇进行化装演讲和普通演…"
+    },
+    {
+      "candidate_id": "b0006722-551b-49d7-bc69-c3154e33ff0c",
+      "subject_ref": "place:金泽",
+      "object_ref": "place:青浦县",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place 共现 11 次、跨 6 个来源，含年代锚点；样例：青浦县中学创办于1923年，1964年迁至现址青安路11号。建校初，虽设图书室，但图书数量甚少，只供部分教师借阅，没有专职图书管理员。1928年原校长袁蔚文离职前捐赠500册图书后，校图书馆才初具规模，到1937年图书馆已有藏书千余册。日军侵华时，校方把图书转移到金泽地区由私人分散保存，结果还是损失殆尽。抗日战争胜利后…"
+    },
+    {
+      "candidate_id": "96a1d267-3e5d-4865-a101-97d42dd6438d",
+      "subject_ref": "place:练塘",
+      "object_ref": "place:金泽",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place 共现 11 次、跨 6 个来源，含年代锚点；样例：…友会”，以联络感情、互相砥砺、团结青年、改造故乡为宗旨开展革命工作。徐勖奔走于上海、青浦、朱家角、金泽、练塘与小蔡之间，给青浦西乡地区知识界青年以革命启蒙教育。翌年2月，上海工人第二次武…"
+    },
+    {
+      "candidate_id": "103616cf-c4a0-427b-b9be-682d4274fecd",
+      "subject_ref": "place:南翔",
+      "object_ref": "person:江桥",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "person+place 共现 6 次、跨 6 个来源；样例：此图绘示南翔、独家村、江桥、广福、庄家村、枫林浜各天主堂位置及其间里程"
+    },
+    {
+      "candidate_id": "663199c6-0b78-4d93-b242-c20c67167425",
+      "subject_ref": "place:六里桥",
+      "object_ref": "place:嘉定",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place 共现 6 次、跨 3 个来源，含年代锚点；样例：张洪林(1923～1982年) 江苏吴县人，锡剧音乐设计。曾在苏州金阊小学读书，仅读两年即辍学。自幼喜爱文艺，尤喜音乐。十岁即拜师戴寿庭学习苏剧。民国二十三年(19 34年)入武林班，拜名角吴祖修为师学艺，并在江苏溧阳、宜兴及浙江湖州、嘉兴一带演出，后专门从事音乐演奏、设计。民国二十六年(1937)后，曾参加什景歌剧班…"
+    },
+    {
+      "candidate_id": "e6f0d2cb-6291-4f22-b4f2-1d80461cbd2a",
+      "subject_ref": "place:嘉定",
+      "object_ref": "place:江苏省",
+      "avs_score": "100",
+      "disposition": "truth_promotion",
+      "why_interesting": "place 共现 26 次、跨 3 个来源，含年代锚点；样例：黄宣佩（1930～2013），浙江鄞县人。1949年江苏省立水产学校毕业，1952年进上海博物馆。历任考古组长、上海历史研究部副主任、考古部主任、上海博物馆副馆长、研究员、文物管理委员会委员、国家教委华东师大城市与环境考古遥感开放研究实验室学术委员、上海大学文学院兼职教授、中国考古学会理事、上海文物博物馆学会副理事长（…"
+    },
+    {
+      "candidate_id": "a7fb0999-7f05-4f4d-8060-369589f4c5e1",
+      "subject_ref": "place:古猗园",
+      "object_ref": "place:王一亭",
+      "avs_score": "100",
+      "disposition": "truth_promotion",
+      "why_interesting": "place 共现 5 次、跨 3 个来源，含年代锚点；样例：王一亭与题襟馆书画会同人吴昌硕、倪墨耕、黄山寿、哈少孚（夫）、商笙伯、王念慈、夏小谷、沈荷卿、余德屺等及三公子季眉，应赵云舫之邀，游南翔古猗园赏荷。赵云舫题：“乙卯盛夏，余薄具杯茗，邀吴昌硕、倪墨耕、黄山寿、王一亭、哈少孚、商笙伯、王念慈、夏小谷、沈荷卿、王季眉、余德屺，共游南翔古猗园赏荷，欢聚一日，摄影留念，迄今二十…"
+    },
+    {
+      "candidate_id": "905ada01-cb5b-4c73-9383-1bfea5c4daf7",
+      "subject_ref": "place:嘉定",
+      "object_ref": "person:金山",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "person+place 共现 10 次、跨 3 个来源，含年代锚点；样例：1928年起，上海记周边各县纷纷成立民众教育馆，大多数由原通俗教育馆改组改名而成，县属乡镇也有不少成立民众教育馆或农民教育馆。上海县民教馆于1928年在原通俗馆基础上于闵行镇成立。1930年起曾组织成人读书会，举办养老座谈会，开办艺术展览会，会同县、乡民众教育馆和农民教育馆成立民众教育宣传团去各乡镇进行化装演讲和普通演…"
+    },
+    {
+      "candidate_id": "26a5c3d1-df9c-4be7-ba5b-a9484b90e9c0",
+      "subject_ref": "place:嘉定",
+      "object_ref": "work:奉教地图",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place+work 共现 18 次、跨 6 个来源；样例：海门 崇明 通州 太仓 宝山 嘉定 常熟 奉教地图"
+    },
+    {
+      "candidate_id": "ab19a510-66c6-49a1-8dab-1bdbdc2cd89b",
+      "subject_ref": "place:嘉定",
+      "object_ref": "place:罗店",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place 共现 14 次、跨 6 个来源，含年代锚点；样例：练祁塘西引吴淞江东迳吴塘又东过盐铁又东入城中又东抵罗店又东合马路塘又东合月浦又东合采淘港入于海县治西曰西练祁东曰东练祁通徐公浦者曰西小练祁于罗店东北入海者曰东小练祁横沥南引吴淞江北合上槎又北入城迳练祁北抵娄塘又北过双塘又北合公塘入刘家港其东曰小横沥亦曰中心横沥入刘家港西南境干河 青龙江东北通大卢浦西通白鹤江 白鹤江南通…"
+    },
+    {
+      "candidate_id": "b0feac1a-8987-46d4-900a-5780a7fe8500",
+      "subject_ref": "place:嘉善县",
+      "object_ref": "place:练塘",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place 共现 5 次、跨 5 个来源，含年代锚点；样例：徐勖（1906～1927）原名润原，字树人，又字勉之，青浦县(今青浦区)莲盛乡田山庄村人，中国共产主义青年团团员。徐勖幼丧父母，家境清贫，小学毕业后考入苏州工专，攻土木工程。1924年进上海东亚同文书院学日文；其间，徐与陈云、吴志喜等接触，投入革命活动，并参加中国共产主义青年团。1926年4月，与陈云、高尔柏等组织“青…"
+    },
+    {
+      "candidate_id": "e809440d-c165-40a2-8612-efa72d275ebc",
+      "subject_ref": "place:江苏省",
+      "object_ref": "place:罗店",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place 共现 8 次、跨 3 个来源，含年代锚点；样例：陈伯吹出生于江苏省宝山罗店镇（今属上海市）"
+    },
+    {
+      "candidate_id": "37d1a8f6-3166-418e-a62e-63852caa38b0",
+      "subject_ref": "place:金泽",
+      "object_ref": "place:青浦区",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place 共现 26 次、跨 3 个来源，含年代锚点；样例：陈家仓库 青浦区金泽镇下塘街16～17号"
+    },
+    {
+      "candidate_id": "4892c500-d19a-45ba-a328-d9df91b15285",
+      "subject_ref": "place:枫泾",
+      "object_ref": "person:白牛市",
+      "avs_score": "100",
+      "disposition": "truth_promotion",
+      "why_interesting": "person+place 共现 5 次、跨 4 个来源；样例：白牛市 → 清风泾 → 枫泾 · 地名叠影"
+    },
+    {
+      "candidate_id": "7a2bbdc4-b060-4533-9805-1a674ff5eae9",
+      "subject_ref": "place:郎溪县",
+      "object_ref": "place:高桥",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place 共现 9 次、跨 6 个来源；样例：本图为吴县、吴江县、嘉兴县、嘉定县、 上海市、奉贤县、高桥镇、南汇县、宜兴县、长兴县、吴兴县、郎溪县、东坝镇、光福镇、平湖、金山县、前山镇17图连订，其余各幅另有数据"
+    },
+    {
+      "candidate_id": "847138f7-9ce5-463a-b992-5c79d6f7f602",
+      "subject_ref": "place:嘉定",
+      "object_ref": "place:长兴县",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place 共现 10 次、跨 7 个来源；样例：本图为吴县、吴江县、嘉兴县、嘉定县、 上海市、奉贤县、高桥镇、南汇县、宜兴县、长兴县、吴兴县、郎溪县、东坝镇、光福镇、平湖、金山县、前山镇17图连订，其余各幅另有数据"
+    },
+    {
+      "candidate_id": "b40cec23-0031-419a-80e9-db9307700853",
+      "subject_ref": "place:嘉定",
+      "object_ref": "place:黄炎培",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place 共现 8 次、跨 3 个来源，含年代锚点；样例：杨拙夫(1901~1969)，字师曾，江苏嘉定(今上海嘉定)人。早年就读江苏省立第二师范学校，毕业任中小学、师范学校、职业学校教师。1929年任嘉定县教育局长，通俗教育馆馆长，后任中华职业补习学校校长。1933年任中华职业学校训育主任。1937年八·一三事变后，任上海苏民职业学校(该校由南翔迁沪)校长，1938年任第三…"
+    },
+    {
+      "candidate_id": "5ff85845-96dc-41c4-997b-3637955c066e",
+      "subject_ref": "place:嘉定",
+      "object_ref": "place:高桥",
+      "avs_score": "100",
+      "disposition": "long_tail",
+      "why_interesting": "place 共现 9 次、跨 6 个来源；样例：本图为吴县、吴江县、嘉兴县、嘉定县、 上海市、奉贤县、高桥镇、南汇县、宜兴县、长兴县、吴兴县、郎溪县、东坝镇、光福镇、平湖、金山县、前山镇17图连订，其余各幅另有数据"
+    },
+    {
+      "candidate_id": "2a4b2b8f-aba3-4f1b-bbc0-ce79d8fe1778",
+      "subject_ref": "place:嘉定",
+      "object_ref": "place:川沙",
+      "avs_score": "100",
+      "disposition": "truth_promotion",
+      "why_interesting": "place 共现 30 次、跨 5 个来源，含年代锚点；样例：1928年起，上海记周边各县纷纷成立民众教育馆，大多数由原通俗教育馆改组改名而成，县属乡镇也有不少成立民众教育馆或农民教育馆。上海县民教馆于1928年在原通俗馆基础上于闵行镇成立。1930年起曾组织成人读书会，举办养老座谈会，开办艺术展览会，会同县、乡民众教育馆和农民教育馆成立民众教育宣传团去各乡镇进行化装演讲和普通演…"
+    },
+    {
+      "candidate_id": "8fe3aa1d-443c-4e7a-bcb3-c52f7c4932b3",
+      "subject_ref": "place:川沙",
+      "object_ref": "place:浦东新区",
+      "avs_score": "100",
+      "disposition": "truth_promotion",
+      "why_interesting": "place 共现 41 次、跨 4 个来源，含年代锚点；样例：1898年1月2日，浦东唐墓桥露德圣母堂开堂。位于浦东新区唐镇乡，是上海郊县最宏伟壮观的教堂之一。浦东是天主教传入较早、发展较快的地区，因而19世纪中叶，该堂已是这一地区的传教中心。19世纪末20纪初，负责唐墓桥堂区的法国传教士鄂劳将其母亲去世时留下的一笔巨予上海教区，倪怀纶主教即将此款用于建造唐墓桥大堂。光绪二十一年…"
+    },
+    {
+      "candidate_id": "c4631511-fb15-4f4c-ae2d-7f9462157033",
+      "subject_ref": "place:川沙",
+      "object_ref": "place:罗店",
+      "avs_score": "100",
+      "disposition": "truth_promotion",
+      "why_interesting": "place 共现 12 次、跨 3 个来源，含年代锚点；样例：1937年八•一三抗日战争中，日军在小川沙河口登陆后，进攻上海北翼的军事重镇罗店，企图占领罗店，威胁嘉定，切断京沪铁路，堵住上海守军的后路。8月23日，罗店遭空袭，中国空军飞行员苑金函在与敌空战中不幸中弹，机毁人伤于罗店近郊。中国红十字总会上海分会第一救护队副队长苏克己闻讯后，马上率队员抢救。日军追至，苏克己等将伤员安…"
+    },
+    {
+      "candidate_id": "e495f199-3757-4b91-ab26-a807a40eacc3",
+      "subject_ref": "place:川沙",
+      "object_ref": "place:浦东中学",
+      "avs_score": "100",
+      "disposition": "truth_promotion",
+      "why_interesting": "place 共现 12 次、跨 3 个来源，含年代锚点；样例：…1908）于1907年捐资三十万两白银毁家办学的善举，1917年10月，1917年10月，川沙县浦东中学落成一座该校创办人杨斯盛的青铜立像。坐落于北宝兴路方家木桥附近，1927年10月…"
+    },
+    {
+      "candidate_id": "defffb18-442e-4ed2-91d1-05ec50e591b5",
+      "subject_ref": "place:川沙",
+      "object_ref": "place:沙县",
+      "avs_score": "100",
+      "disposition": "truth_promotion",
+      "why_interesting": "place 共现 35 次、跨 5 个来源，含年代锚点；样例：File:1967-05 上海川沙县种植棉花.jpg"
+    }
+  ]
+}

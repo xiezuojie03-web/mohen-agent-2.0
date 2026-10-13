@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>墨痕 · 数据生产全链条地图</title>
+<style>
+  :root{
+    --bg:#0f1419; --panel:#161c24; --panel2:#1c2430; --ink:#e6edf3; --muted:#9fb0c0;
+    --line:#2a3543; --accent:#4ea1ff; --accent2:#36cfa0; --warn:#ffb454; --red:#ff6b6b;
+    --chip:#22303f;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.7;font-size:15px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code{background:var(--chip);padding:1px 6px;border-radius:4px;font-size:13px;color:#ffd479}
+  pre{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:14px 16px;
+    overflow:auto;font-size:13px;line-height:1.55;color:#cfe3ff}
+  pre .c{color:var(--muted)} /* comment */
+  h1{font-size:26px;margin:0 0 6px}
+  h2{font-size:21px;margin:34px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--accent)}
+  h3{font-size:17px;margin:24px 0 8px;color:var(--accent2)}
+  h4{font-size:15px;margin:16px 0 6px;color:var(--warn)}
+  p{margin:8px 0}
+  .sub{color:var(--muted);font-size:14px}
+  /* layout */
+  .wrap{display:flex;min-height:100vh}
+  nav{position:sticky;top:0;align-self:flex-start;width:280px;max-height:100vh;overflow:auto;
+    background:var(--panel);border-right:1px solid var(--line);padding:18px 14px}
+  nav h2{font-size:15px;border:none;margin:6px 0 8px;color:var(--ink)}
+  nav ol{list-style:none;margin:0;padding:0}
+  nav li{margin:2px 0}
+  nav a{display:block;padding:4px 8px;border-radius:6px;color:var(--muted);font-size:13px}
+  nav a:hover{background:var(--panel2);color:var(--ink);text-decoration:none}
+  nav .lvl2{padding-left:14px}
+  nav .lvl3{padding-left:26px;font-size:12px}
+  main{flex:1;padding:30px 42px;max-width:1080px}
+  .toc-top{position:fixed;bottom:20px;right:24px;background:var(--panel);border:1px solid var(--line);
+    border-radius:30px;padding:8px 16px;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+  /* tables */
+  table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13.5px}
+  th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+  th{background:var(--panel2);color:var(--accent2)}
+  tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+  /* callouts */
+  .box{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:8px;padding:12px 16px;margin:14px 0}
+  .box.warn{border-left-color:var(--warn)}
+  .box.red{border-left-color:var(--red)}
+  .box.ok{border-left-color:var(--accent2)}
+  .tag{display:inline-block;background:var(--chip);border:1px solid var(--line);border-radius:4px;
+    padding:1px 7px;font-size:12px;margin:2px 4px 2px 0;color:var(--muted)}
+  .tag.acc{color:var(--accent)} .tag.acc2{color:var(--accent2)} .tag.warn{color:var(--warn)}
+  ul,ol{padding-left:22px} li{margin:4px 0}
+  .kbd{font-family:ui-monospace,monospace}
+  .grid{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+  .file{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:6px 10px;
+    font-size:12.5px;font-family:ui-monospace,monospace;color:#bfe0ff}
+  .legend{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav>
+  <h2>🧭 导航 · 数据生产链条</h2>
+  <ol>
+    <li><a href="#s0">0. 总览：五层 + 两模式</a></li>
+    <li><a href="#s1">1. 核心数据流路径</a></li>
+    <li><a href="#s2">2. ① 宪法层</a></li>
+    <li><a href="#s3">3. ② 协议层</a></li>
+    <li><a href="#s4">4. ③ 技能层（13 Skill）</a></li>
+    <li><a href="#s5">5. ④ 执行体层</a>
+      <ol>
+        <li class="lvl2"><a href="#s5a">5.1 两个主 runner</a></li>
+        <li class="lvl2"><a href="#s5b">5.2 pipelines/ 全目录清单</a></li>
+        <li class="lvl2"><a href="#s5c">5.3 packages/data-access</a></li>
+        <li class="lvl2"><a href="#s5d">5.4 scripts/ 全清单（守卫+工具）</a></li>
+        <li class="lvl2"><a href="#s5e">5.5 pipeline 脚本内部流程（可展开）</a></li>
+      </ol>
+    </li>
+    <li><a href="#s6">6. ⑤ 数据库层</a>
+      <ol>
+        <li class="lvl2"><a href="#s6a">6.1 迁移清单（12 SQL）</a></li>
+        <li class="lvl2"><a href="#s6b">6.2 C3 八层 ↔ 物理表</a></li>
+        <li class="lvl2"><a href="#s6c">6.3 晋升闸门 R15</a></li>
+      </ol>
+    </li>
+    <li><a href="#s7">7. 三向索引示例</a></li>
+    <li><a href="#s8">8. 进度快照 C1–C6</a></li>
+    <li><a href="#s9">9. 按入口导航建议</a></li>
+  </ol>
+</nav>
+
+<main>
+<h1>墨痕 · 数据生产全链条文字地图</h1>
+<p class="sub">目标：把「宪法/协议 → 技能 → 脚本执行体 → 数据库」四侧素材，按数据实际走过的路径串成一张可导航的全链条地图（完全展开版）。<br>
+当前主线（<code>CURRENT.md §2</code>）：<b>数据底座建厚实</b>，先深透老项目（沪上经纬），再扩源；体验 Gate 顺延。<br>
+一句话原则（协议 V3.0 §0.1）：机器负责规模与纪律（守卫），人保留文化判断（Human Review）。</p>
+
+<div class="box"><b>文件归位</b>：本成果依 <code>OWNERSHIP_MAP.md</code> 与 <code>CURRENT.md §11</code> 落在 <code>tasks/results/</code>（结果/报告/审计区）。</div>
+
+<!-- ============================== 0 ============================== -->
+<h2 id="s0">0｜总览：五层 + 两套生产模式</h2>
+<pre>
+<span class="c">┌──────────────────────────────────────────────────────────────────────────────┐</span>
+│ <b>① 宪法层 C0–C4</b>  ← 定义边界、治理、决断（Authority 最高，开发平台不得擅改）          │
+│      C0 治理/决断 · C1 产品架构 · C2 数据OS+双Skill · C3 DB架构 · C4 体验UI          │
+<span class="c">└──────────────────────────────────────────────────────────────────────────────┘</span>
+                                   ↓ 引用/落地
+<span class="c">┌──────────────────────────────────────────────────────────────────────────────┐</span>
+│ <b>② 协议层 specs/data-production/</b>  ← 把宪法写成"可强制"的规则                         │
+│     主协议 V3.0 · 宽进广联 V1.0 · T07 · production-registry.json(机器可读Contract) │
+│     acquisition-intents · identifier-registry · naming-map · source-providers   │
+<span class="c">└──────────────────────────────────────────────────────────────────────────────┘</span>
+                                   ↓ 注册/约束
+<span class="c">┌──────────────────────────────────────────────────────────────────────────────┐</span>
+│ <b>③ 技能层 skills/</b>  ← 能力的"实体化"定义（SKILL.md 声明 入口/契约/Gate）               │
+│     13 个 Skill：data-ingest / evidence-gate / knowledge-weave / visual-asset   │
+│     / research-intake / association-discovery / humanistic-selection / guard … │
+<span class="c">└──────────────────────────────────────────────────────────────────────────────┘</span>
+                                   ↓ 调用
+<span class="c">┌──────────────────────────────────────────────────────────────────────────────┐</span>
+│ <b>④ 执行体层 pipelines/ + scripts/ + packages/data-access</b>                         │
+│     两套执行体：legacy/unattended-runner.mjs (Directed N) · research/research-pipeline.mjs (Discovery D) │
+│     scripts/ = 15 条 pnpm guard:* 校验器 + DB 工具 + 报告/E2E                     │
+<span class="c">└──────────────────────────────────────────────────────────────────────────────┘</span>
+                                   ↓ 读写
+<span class="c">┌──────────────────────────────────────────────────────────────────────────────┐</span>
+│ <b>⑤ 数据库层 supabase/migrations/ + C3 八层模型</b>                                    │
+│     L0 Source → L1 Evidence → L2 Cultural World → L3 Meaning → L4 Read Model    │
+│     + Research Workspace（逻辑工作区，非第九层） + R15 晋升闸门触发器                │
+<span class="c">└──────────────────────────────────────────────────────────────────────────────┘</span>
+</pre>
+
+<!-- ============================== 1 ============================== -->
+<h2 id="s1">1｜核心数据流路径（两条模式汇流成一条可信世界）</h2>
+<pre>
+        <b>【A · Discovery Research 开放发现】</b>            <b>【B · Directed Production 定向补证】</b>
+        入口：Discovery Intent / Research Scope         入口：T03 Narrative Gap / A 的 Selected
+
+  D01 资料盘点 ─→ D02 内容读取 ─→ D03 Mention/Dependency
+        │                │                │
+        │                └─→ D04 关联扫描(信号/关联候选) ─→ D05 人文筛选
+        │                                                  │
+        │                              Long Tail：机器保留/合并/降级（不进人工队列）
+        │                                                  │
+        └────────── Selected Discovery ───────────────────┘
+                                         │ 汇流点
+                                         ▼
+                           N01 源刷新 → N02 证据切片 → N03 候选抽取
+                           → N04 确定性对齐 → N05 关系编织 → N06 门禁&投影
+                                         │
+                          G0–G6 Evidence Gate（R15 强制：标可用必有 evidence_gate_audit）
+                                         │
+                          AUTO-PROMOTE / HOLD / REJECT（零自动晋级是红线）
+                                         │
+                                         ▼
+                          Truth Store（L0–L2 候选→ADJUDICATED→RUNTIME_ELIGIBLE→PUBLISHED）
+                                         │
+                          Projection（L4 只读，不反写 Truth）
+                                         │
+                                         ▼
+                          Agent Skills（S01–S08）消费受控世界 → 用户体验 → 新缺口 ↺
+</pre>
+<div class="box ok"><b>关键不变式</b>
+<ul>
+<li>共用控制面：Source Gate、Raw 保全、production-registry、run 归因、DRY_RUN/WRITE、安全停止、回滚、守卫、执行报告。</li>
+<li>研究态 <code>truth_write_ceiling = 0</code>：<b>0 自动 Truth Promotion</b>；Research 与 Truth 双图分离。</li>
+<li>只有 <code>Selected / Truth-Promotion / Narrative-Critical / Conflict-Critical</code> 才进 <code>review_queue</code>（三分：auto/hold/reject）。</li>
+</ul></div>
+
+<!-- ============================== 2 ============================== -->
+<h2 id="s2">2｜① 宪法层（文件清单 + 角色）</h2>
+<table>
+<thead><tr><th>文件</th><th>角色</th><th>与数据生产的关系</th></tr></thead>
+<tbody>
+<tr><td><code>governance/C0_*_V1.0.md</code></td><td>角色/治理/决断</td><td>R6–R25 唯一决断载体（R18 数据优先、R19 扩源闸门、R20 架构改动须点头、R22 关系单一真源…）</td></tr>
+<tr><td><code>governance/C1_*_V1.0.md</code></td><td>产品/架构/阶段</td><td>H2 主 Horizon；§19「当前主要矛盾」= 数据优先·体验顺延</td></tr>
+<tr><td><code>governance/C2_*_V1.1.md</code></td><td><b>数据生产核心宪法</b></td><td>人文数据 OS + 双 Skill（Developer/Agent）；两模式、四世界分离、七段职责、Skill 晋升</td></tr>
+<tr><td><code>governance/C3_*_V1.2.md</code></td><td><b>数据库架构宪法</b></td><td>八层模型、Research Workspace、G0–G6 落点、R15 晋升闸门、迁移映射</td></tr>
+<tr><td><code>governance/C4_*_V2.1.md</code></td><td>体验 UI 宪法</td><td>体验侧（本轮顺延）</td></tr>
+<tr><td><code>AGENTS.md</code></td><td>入口路由</td><td>按任务类型指向"去读哪个文件"</td></tr>
+<tr><td><code>CURRENT.md</code></td><td>状态入口（非宪法）</td><td>§3 技能视角、§5 Gaps、§7 六阶段进度</td></tr>
+<tr><td><code>OWNERSHIP_MAP.md</code></td><td>文件归属 SOT</td><td>动文件/找文件/归档的唯一答案</td></tr>
+</tbody>
+</table>
+
+<!-- ============================== 3 ============================== -->
+<h2 id="s3">3｜② 协议层（specs/data-production/）</h2>
+<table>
+<thead><tr><th>文件</th><th>作用</th></tr></thead>
+<tbody>
+<tr><td><code>MoHen_Data_Production_Protocol.md</code></td><td><b>唯一主协议 V3.0</b>：一套控制面·两种模式；G0–G6、三分流、registry Contract、守卫体系</td></tr>
+<tr><td><code>墨痕_数据生产机制_宽进与广联详细协议_V1.0.md</code></td><td>操作细则：T01–T14 载体读取、Observation Contract、A01–A12、AVS、G-LINK-1～10</td></tr>
+<tr><td><code>T07_无人值守作业最小Contract.md</code></td><td>作业最小契约（无人值守批次规则）</td></tr>
+<tr><td><code>production-registry.json</code></td><td><b>机器可读 Contract（schema v2）</b>：19 job，每个含 <code>implementation:{skill,entry}</code> 三向绑定</td></tr>
+<tr><td><code>acquisition-intents.json</code></td><td>采集意图声明（<code>guard:acquisition</code> 校验命中）</td></tr>
+<tr><td><code>identifier-registry.json</code></td><td>真库无约束标识符定义来源（<code>guard:identifiers</code>）</td></tr>
+<tr><td><code>naming-map.json</code></td><td>概念名≠物理名映射（RECON-02 选 A，<code>guard:naming</code>）</td></tr>
+<tr><td><code>T03_金泽材料盘点_覆盖矩阵.md</code></td><td>Directed 模式上游锚点实例（金泽·五母题 Narrative Gap Register）</td></tr>
+<tr><td><code>data/fixtures/source-providers.json</code></td><td>S1–S4 来源分级与门禁（由 <code>packages/data-access/src/source-gate.mjs</code> 加载，<code>guard:source-gate</code>）</td></tr>
+</tbody>
+</table>
+
+<!-- ============================== 4 ============================== -->
+<h2 id="s4">4｜③ 技能层（skills/，13 个 SKILL.md）</h2>
+<p>每个 Skill 须满足 C2 §2.1「实体化四铁律」：<code>SKILL.md</code> + 固定 entry + 契约化 I/O + 在 registry 登记 <code>implementation</code>。经核查，13 个 Skill 目录下均仅含 <code>SKILL.md</code>（实现入口为 pipelines/ 下的共享 runner）。</p>
+<table>
+<thead><tr><th>Skill 目录</th><th>模式/家族</th><th>权威入口 entry</th><th>在 registry 绑定的 job</th></tr></thead>
+<tbody>
+<tr><td><code>mohen-data-ingest</code></td><td>Directed·采集</td><td><code>pipelines/legacy/unattended-runner.mjs</code></td><td><code>src-*</code>、<code>unattended.source-refresh</code>、<code>coords-wikidata</code>、<code>unattended.external-identity</code>、<code>unattended.name-resolution</code></td></tr>
+<tr><td><code>mohen-evidence-gate</code></td><td>Directed·证据/抽取</td><td>同上</td><td><code>unattended.evidence-fragment</code>、<code>unattended.candidate-extraction</code>、<code>unattended.deterministic-resolution</code></td></tr>
+<tr><td><code>mohen-knowledge-weave</code></td><td>Directed·编织</td><td>同上</td><td><code>unattended.relation-weave</code></td></tr>
+<tr><td><code>mohen-visual-asset</code></td><td>Directed·视觉</td><td>同上</td><td><code>images-*</code>、<code>unattended.image-link</code>、<code>unattended.external-visual</code></td></tr>
+<tr><td><code>mohen-project-guard</code></td><td>边界/闸门</td><td>同上</td><td><code>unattended.gate-projection</code></td></tr>
+<tr><td><code>mohen-research-intake</code></td><td><b>Discovery</b></td><td><code>pipelines/research/research-pipeline.mjs</code></td><td><code>research.source-inventory</code>(D01)、<code>research.content-observation</code>(D02)</td></tr>
+<tr><td><code>mohen-association-discovery</code></td><td><b>Discovery</b></td><td>同上</td><td><code>research.mention-dependency</code>(D03)、<code>research.association-scan</code>(D04)</td></tr>
+<tr><td><code>mohen-humanistic-selection</code></td><td><b>Discovery</b></td><td>同上</td><td><code>research.humanistic-selection</code>(D05)</td></tr>
+<tr><td><code>mohen-acceptance</code></td><td>体验侧（顺延）</td><td>—</td><td>体验 Gate 阶段</td></tr>
+<tr><td><code>mohen-experience-prototype</code></td><td>体验侧（顺延）</td><td>—</td><td>体验 Gate 阶段</td></tr>
+<tr><td><code>mohen-vertical-slice</code></td><td>切片</td><td>—</td><td>金泽先行验证</td></tr>
+<tr><td><code>mohen-historical-spatial-source</code></td><td>空间（部分 CANDIDATE）</td><td>—</td><td>历史空间线</td></tr>
+<tr><td><code>mohen-historical-spatial-reconstruction</code></td><td>空间（部分 CANDIDATE）</td><td>—</td><td>历史空间线</td></tr>
+</tbody>
+</table>
+<div class="box warn"><b>已知治理缺口（CURRENT.md §3）</b>：skills/(Markdown) ↔ pipelines/+scripts/(~110 mjs) ↔ production-registry(19 job) <b>三者无完整三向索引</b>——registry 已加 <code>implementation</code>，Skill 多未指向实现脚本，故有重复脚本。下一步收敛根目录 <code>_*.mjs</code> 等重复样本。</div>
+
+<!-- ============================== 5 ============================== -->
+<h2 id="s5">5｜④ 执行体层（pipelines/ + scripts/ + packages/）</h2>
+
+<h3 id="s5a">5.1 两个主执行体（runner）</h3>
+<ul>
+<li><b><code>pipelines/legacy/unattended-runner.mjs</code></b> — Directed N 系列执行体
+  <ul>
+    <li>三道闸：<code>MOHEN_WRITE_ENABLED</code>(DRY_RUN/WRITE) · <code>MOHEN_ENV∈{dev,staging}</code> · <code>source-gate</code></li>
+    <li>队列：<code>pipelines/legacy/unattended-jobs.mjs</code>（含 <code>SOURCE_FILES</code> 清单）</li>
+    <li>报告：<code>pipelines/legacy/unattended-report.mjs</code>（report.json/html/result.md 同源）</li>
+    <li>老库迁移：<code>hushang-port.mjs</code> / <code>port-coords.mjs</code> / <code>port-photos.mjs</code> / <code>port-relations.mjs</code></li>
+  </ul>
+</li>
+<li><b><code>pipelines/research/research-pipeline.mjs</code></b> — Discovery D01–D05 执行体（纯逻辑：先算对象再落库，DRY_RUN 与 WRITE 同套计算）
+  <ul>
+    <li>配套：<code>research-runner.mjs</code>、<code>bridge-to-directed.mjs</code>（Selected→N 汇流）、<code>build-content-board*.mjs</code>（内容看板）、<code>d01-d02-offline.mjs</code>、<code>content-observation-run.mjs</code></li>
+  </ul>
+</li>
+</ul>
+
+<h3 id="s5b">5.2 pipelines/ 全目录清单（13 子目录，完全展开）</h3>
+
+<h4>pipelines/build/</h4>
+<div class="grid"><span class="file">README.md</span></div>
+
+<h4>pipelines/cultural-world/</h4>
+<div class="grid"><span class="file">seed-cw02-cluster.mjs</span><span class="file">verify-cw02-cluster.mjs</span></div>
+
+<h4>pipelines/evidence/</h4>
+<div class="grid"><span class="file">gates.mjs</span><span class="file">README.md</span><span class="file">recover.mjs</span><span class="file">recovery-rules.mjs</span><span class="file">run.mjs</span></div>
+
+<h4>pipelines/experience/</h4>
+<div class="grid"><span class="file">build-jinze-3min-experience.mjs</span></div>
+
+<h4>pipelines/extract/</h4>
+<div class="grid"><span class="file">README.md</span></div>
+
+<h4>pipelines/historical-spatial/</h4>
+<p class="legend">顶层脚本（历史空间重建 / 配准 / SHL SPARQL 双命名空间相关）：</p>
+<div class="grid">
+<span class="file">_align_source_checksums.mjs</span><span class="file">apply-migration.mjs</span>
+<span class="file">build-jinze-historical-spatial-slice.mjs</span><span class="file">export-jinze-historical-spatial-slice.mjs</span>
+<span class="file">persist-evidence-closure.mjs</span><span class="file">persist-hr-map-01.mjs</span>
+<span class="file">probe-align-entities.mjs</span><span class="file">probe-align-extra.mjs</span><span class="file">probe-align-final.mjs</span>
+<span class="file">register-evidence-closure.mjs</span><span class="file">register.mjs</span>
+<span class="file">s1-evidence-closure-sources.mjs</span><span class="file">shl-client.mjs</span><span class="file">shl-probe.mjs</span>
+</div>
+<p class="legend">子目录：<code>_probes/</code>（19 个 .mjs + 3 个 .py 探针脚本，含对齐三胞胎 <code>probe-align-{entities,extra,final}.mjs</code> 的复用对象）；<code>slice-definitions/</code>（切片配置）。</p>
+
+<h4>pipelines/ingest/</h4>
+<div class="grid"><span class="file">README.md</span><span class="file">retrieve-amap-jinze.mjs</span><span class="file">retrieve-external.mjs</span><span class="file">retrieve-s1-jinze.mjs</span><span class="file">retrieve-visual-jinze.mjs</span><span class="file">run.mjs</span><span class="file">snapshot.mjs</span></div>
+
+<h4>pipelines/legacy/</h4>
+<div class="grid"><span class="file">hushang-port.mjs</span><span class="file">port-coords.mjs</span><span class="file">port-photos.mjs</span><span class="file">port-relations.mjs</span><span class="file">unattended-jobs.mjs</span><span class="file">unattended-report.mjs</span><span class="file">unattended-runner.mjs</span></div>
+
+<h4>pipelines/normalize/</h4>
+<div class="grid"><span class="file">README.md</span><span class="file">run.mjs</span></div>
+
+<h4>pipelines/research/</h4>
+<div class="grid"><span class="file">bridge-to-directed.mjs</span><span class="file">build-content-board-md.mjs</span><span class="file">build-content-board.mjs</span><span class="file">content-observation-run.mjs</span><span class="file">d01-d02-offline.mjs</span><span class="file">research-pipeline.mjs</span><span class="file">research-runner.mjs</span><span class="file">SKILL.md</span></div>
+
+<h4>pipelines/review/</h4>
+<div class="grid"><span class="file">persist-human-review.mjs</span></div>
+
+<h4>pipelines/visual/</h4>
+<div class="grid"><span class="file">build-visual-linkage.mjs</span><span class="file">build-visual-reports.mjs</span><span class="file">check-shr-overlay.mjs</span><span class="file">persist-spatial-review.mjs</span><span class="file">repair-hr5-scope.mjs</span></div>
+
+<h4>pipelines/weave/</h4>
+<div class="grid"><span class="file">build-jinze-minimum-weave.mjs</span><span class="file">README.md</span></div>
+
+<h3 id="s5c">5.3 packages/data-access（DB 访问层）</h3>
+<div class="grid"><span class="file">src/index.mjs</span><span class="file">src/source-gate.mjs</span></div>
+<ul>
+<li><code>src/index.mjs</code>：导出 <code>runMany</code> / <code>queryRows</code>（runner 直接调用）</li>
+<li><code>src/source-gate.mjs</code>：加载 <code>source-providers.json</code>，取回/入库按 provider 查 tier</li>
+</ul>
+
+<h3 id="s5d">5.4 scripts/ = 守卫总线 + 工具（42 个，完全展开）</h3>
+<p class="legend"><b>守卫校验器（对应 <code>pnpm guard:*</code>）</b>——"规则即强制"的落地：</p>
+<div class="grid">
+<span class="file">check-production-registry.mjs → guard:registry</span>
+<span class="file">check-source-gate.mjs → guard:source-gate</span>
+<span class="file">check-promotion-gate.mjs → guard:promotion（只读报数）</span>
+<span class="file">check-review-triage.mjs → guard:triage</span>
+<span class="file">check-acquisition-intents.mjs → guard:acquisition</span>
+<span class="file">check-identifier-registry.mjs → guard:identifiers</span>
+<span class="file">check-research.mjs → guard:research</span>
+<span class="file">check-name-resolution.mjs → guard:names（2026-10-05 新增）</span>
+<span class="file">check-naming-map.mjs → guard:naming（RECON-02）</span>
+<span class="file">check-structure.mjs</span><span class="file">check-structure-map.mjs</span>
+<span class="file">check-doc-budget.mjs</span><span class="file">check-links.mjs</span>
+<span class="file">check-reconciliation.mjs</span><span class="file">check-escalations.mjs</span>
+</div>
+<p class="legend"><b>DB / 报告 / 验收工具：</b></p>
+<div class="grid">
+<span class="file">db-compliance-baseline.mjs</span><span class="file">db-apply-migration.mjs</span><span class="file">db-apply.ps1</span>
+<span class="file">db-bootstrap.ps1</span><span class="file">db-verify.ps1</span><span class="file">db-dedup-gate-audit.mjs</span>
+<span class="file">db-research-reset.mjs</span><span class="file">test-isolated.mjs（测试写库隔离到 &lt;库&gt;_test）</span>
+<span class="file">audit-readonly-invariants.mjs</span><span class="file">audit-visual-assets.mjs</span>
+<span class="file">gen-acceptance-report.mjs</span><span class="file">gen-image-placement-map.mjs</span>
+<span class="file">gen-l0-batches.mjs</span><span class="file">gen-l0-schema-map.mjs</span><span class="file">gen-schema-diff.mjs</span>
+<span class="file">ingest-backlog-images.mjs</span><span class="file">source-completeness.mjs</span><span class="file">verify-38.mjs</span>
+<span class="file">environment-audit.ps1</span><span class="file">unattended-start.ps1</span>
+</div>
+<p class="legend"><b>体验 E2E 捕获（5 个）：</b></p>
+<div class="grid">
+<span class="file">e2e-composition2-capture.mjs</span><span class="file">e2e-exp-0001-human-experience.mjs</span>
+<span class="file">e2e-experience-capture.mjs</span><span class="file">e2e-multi-intent-capture.mjs</span>
+<span class="file">e2e-replan-loop-capture.mjs</span><span class="file">e2e-runtime-recovery.mjs</span><span class="file">e2e-visual-grammar-capture.mjs</span>
+</div>
+
+<!-- ============================== 5.5 ============================== -->
+<h3 id="s5e">5.5 pipeline 脚本内部流程（可展开子图）</h3>
+<p class="legend">把 5.1「两个主执行体」的真实 step-by-step 内部流程展开。完整文字版见 <code>specs/data-production/pipeline-internal-flows.md</code>。<br>
+左侧 <code>unattended-runner.mjs</code>（Directed·跑 N 系列），右侧 <code>research-pipeline.mjs</code>（Discovery·跑 D01–D05）。两个 <code>&lt;details&gt;</code> 均可点击展开/收起。</p>
+
+<details>
+  <summary style="cursor:pointer;color:var(--accent2);font-size:15px">🔧 展开 · unattended-runner.mjs（Directed N 系列 · 141KB 常驻 runner）</summary>
+  <div style="margin-top:10px">
+
+    <h4>启动期（所有拒绝都发生在创建输出目录之前）</h4>
+<pre>
+进程启动
+ ├─ 解析参数 --until / --interval-min / --tag / --only
+ ├─ 三道 env 闸
+ │   ① MOHEN_WRITE_ENABLED ≠ "true"  → MODE = DRY_RUN（不写库）
+ │   ② MOHEN_ENV ∉ {dev, staging}     → WRITE 被拒（exit 2）
+ │   ③ source-gate: resolveProvider("hushang_legacy")
+ │         → { canonical, tier, evidence_allowed }（外部扩源是否放行）
+ ├─ 闸门1 注册表(M1.2): 未声明/不唯一→整轮不启(exit 3); forbidden 作业确定性剔除
+ └─ 闸门2 preflight(M1.3): 文件在?JSON可解?图片源唯一?数组非空? 不满足→开跑前剔除
+ 无 RUNNABLE → NOTHING_TO_RUN（exit 0，不建目录/不碰库）
+</pre>
+
+    <h4>跑批期（过闸后才建 OUT_DIR / LOG / progress.json）</h4>
+<pre>
+main() 循环每个作业 j：
+  ├─ 查 CUTOFF（到点）/ STOP 文件（手动停）
+  ├─ res = RUNNERS[j.kind](j)            ← 真正执行
+  ├─ 写 progress.jobs[j.id]，累加 counters（jobs_done / inserted / jobs_failed）
+  ├─ 失败 → consecFail++ ；consecFail ≥ 3 → finalize("STOPPED_CONSECUTIVE_FAILURES")
+  └─ sleep INTERVAL_MIN 分钟 → 下一个作业
+作业耗尽或到点 → finalize → 产出 progress.json + runner.log + result.md
+WRITE 专属：进批前先 insert ingest_runs，所有 review_queue 分诊行带 ingest_run_id 出生
+</pre>
+
+    <h4>RUNNERS 映射（kind → 作业函数）</h4>
+    <table>
+    <thead><tr><th>kind</th><th>函数</th><th>含义</th></tr></thead>
+    <tbody>
+      <tr><td><code>source</code></td><td>jobSource / jobSourceRefresh</td><td>N01 · L0 来源刷新</td></tr>
+      <tr><td><code>images</code></td><td>jobImages</td><td>N02 · 视觉资产</td></tr>
+      <tr><td><code>imagelink</code></td><td>jobImageLink</td><td>图↔实体链接</td></tr>
+      <tr><td><code>coords</code></td><td>jobCoords</td><td>空间坐标</td></tr>
+      <tr><td><code>evidence</code></td><td>jobEvidenceFragment</td><td>L1 证据切片</td></tr>
+      <tr><td><code>extraction</code></td><td>jobExtraction</td><td>L2 候选实体/关系抽取</td></tr>
+      <tr><td><code>resolution</code></td><td>jobResolution</td><td>实体对齐/消歧</td></tr>
+      <tr><td><code>weave</code></td><td>jobWeave</td><td>关系编织 + 分诊</td></tr>
+      <tr><td><code>gate</code></td><td>jobGate</td><td>N06 · G0–G6 门禁投影 → L4</td></tr>
+      <tr><td><code>extid</code></td><td>jobExternalIdentity</td><td>C5 外部扩源·身份线</td></tr>
+      <tr><td><code>extvis</code></td><td>jobExternalVisual</td><td>C5 外部扩源·视觉线</td></tr>
+      <tr><td><code>nameres</code></td><td>jobNameResolution</td><td>C6 同名 resolution·只登记结论</td></tr>
+    </tbody>
+    </table>
+    <div class="box warn"><b>铁律</b>：写 Candidate 及以上层的作业必带 <code>review_queue</code>（AUTO / HOLD / REJECT 三分），由库触发器 <code>guard_review_queue_triage</code> 强制出生形态——"零自动晋级"的落地点。</div>
+
+    <h4>代表作业内部流程</h4>
+    <p><b>N01 来源刷新（jobSourceRefresh）</b></p>
+<pre>
+for f in SOURCE_FILES:
+  snapshotOne(f):
+    读本地预抓取 JSON → sha256(内容)
+    DRY_RUN → 返回 would_insert（不写）
+    WRITE   → insert source_records (provider,checksum…) on conflict(checksum) do nothing
+            → 拷贝原始文件到 &lt;RAW_STORE&gt;/legacy/hushang/
+  （幂等：同 checksum 跳过）
+</pre>
+    <p><b>N06 门禁投影（jobGate）</b></p>
+<pre>
+对每个 cultural_relation_claim / relation / cultural 对象：
+  算 G0–G6 闸门（G0=基础校验，G4=冲突/证据校验…）
+    G0 fail / G4 fail        → 记 REJECT 分诊（fail-closed）
+    E1 确定性空间关系(多证据·无冲突) → AUTO-PROMOTE（写入只读 L4 投影）
+    其余                      → HOLD（出生 pending，定案权在人）
+  + 写 gate_projection 审计行（ot / oid / gate_code / result）
+</pre>
+  </div>
+</details>
+
+<details>
+  <summary style="cursor:pointer;color:var(--accent2);font-size:15px">🔬 展开 · research-pipeline.mjs（Discovery D01–D05 · 32KB 纯逻辑模块）</summary>
+  <div style="margin-top:10px">
+
+    <div class="box ok"><b>设计原则</b>：先算内存对象，由调用方决定是否 <code>persist()</code> → <b>DRY_RUN 与 WRITE 同套计算</b>（不会"dry 说 100、真跑变 80"）。<b>只写 <code>research_*</code> 表</b>；碰 Truth 表会撞 <code>guard:research</code> 与库层 CHECK 自爆。来源：沪上经纬 Legacy（只读）。</div>
+
+<pre>
+① loadLexicon()         词表消歧: 地名白名单 + CBDB人物 + SELECT entities(前6000)
+② D01 d01Inventory()    分类载体T01–T14 → 解析 → readability / rights="unclear"
+③ D02 d02Observations() 轮转配额(8轮×每源)覆盖全部来源; extractText(中文≥40且占比≥30%)
+                         → observation{ locator, region, uncertainty }
+④ D03 d03Mentions()     matchBounded(紧邻汉字的匹配丢弃防碎片) 地点/人物/作品/机构
+                         ★ 不造 Entity(resolved_entity_id=NULL); 同文本跨源→dependency(same_origin)
+⑤ D04 d04Association()  配对→信号A01–A12 + AVS可解释分量; 计数器压分(偶然/未解析/同指/行政/单源)
+                         ★ 单来源候选 AVS 强制 ≤34（不进 Review）→ research_signal + candidate
+⑥ D05 d05Selection()    &lt;35 Signal | 35–54 Candidate | 55–69 Review | ≥70 Priority
+                         topK=20 Selected → research_task(directed_research)
+⑦ persist()             WRITE且scope通过 → 分批 BATCH=400 落库
+</pre>
+
+    <h4>各阶段落库目标（调用方 persist 时）</h4>
+    <table>
+    <thead><tr><th>阶段</th><th>产出对象</th><th>落库表</th></tr></thead>
+    <tbody>
+      <tr><td>D01</td><td>来源盘点</td><td><code>research_source_inventory</code></td></tr>
+      <tr><td>D02</td><td>内容级读取</td><td><code>research_observation</code></td></tr>
+      <tr><td>D03</td><td>提及 / 依赖</td><td><code>research_mention</code> / <code>research_source_dependency</code></td></tr>
+      <tr><td>D04</td><td>信号 / 关联候选</td><td><code>research_signal</code> / <code>research_association_candidate</code></td></tr>
+      <tr><td>D05</td><td>人文筛选任务</td><td><code>research_task</code> + Top-K（Selected）</td></tr>
+    </tbody>
+    </table>
+    <div class="box"><b>反噪声要点（D04）</b>：偶然共现 / 双方未解析 / 同指子串 / 平凡行政包含 / 单来源 / 单出现 六类计数器压低 AVS；单来源候选被强制压到 34 以下，确保不进人工 Review 队列。</div>
+  </div>
+</details>
+
+<div class="box"><b>两脚本在链条中的衔接</b>：<code>research-pipeline</code> 是只读研究态（永不碰 Truth）；<code>unattended-runner</code> 是生产态，受 <code>truth_write_ceiling</code> + source-gate 约束，落库必带三分诊。两者经 <code>bridge-to-directed.mjs</code> 在"汇流点"衔接（Selected 转为 N 系列有人值守作业）。</div>
+
+<!-- ============================== 6 ============================== -->
+<h2 id="s6">6｜⑤ 数据库层（supabase/migrations/ + C3 八层）</h2>
+
+<h3 id="s6a">6.1 迁移清单（12 个 SQL，按时间）</h3>
+<pre>
+基础：008_cultural_world_objects.sql
+     202609210001_foundation.sql
+     202609210002_data_factory.sql
+     202609210003_human_review.sql
+     202609220004_knowledge_weave.sql
+     202609220006_visual_linkage.sql
+     202609220007_historical_spatial_reconstruction.sql
+闸门：202610020008_visual_asset_promotion_gate.sql   <span class="c">← R15，visual_assets 正面资格字段</span>
+     202610020009_review_queue_triage.sql            <span class="c">← 三分随生，M2 第四条</span>
+研究：202610030010_research_workspace.sql            <span class="c">← Research Workspace 六类逻辑对象</span>
+     202610040001_research_bridge_queue.sql          <span class="c">← Selected→N 汇流队列</span>
+     202610050011_second_promotion_gate.sql          <span class="c">← C6 晋级闸门装到 10 个 constraint trigger</span>
+</pre>
+
+<h3 id="s6b">6.2 C3 八层模型 ↔ 物理表（schema 分区建议）</h3>
+<table>
+<thead><tr><th>层</th><th>语义</th><th>代表表</th></tr></thead>
+<tbody>
+<tr><td><b>L0</b> Cultural Sources</td><td>材料本身+来源身份（append-only）</td><td><code>source_record</code> · <code>source_version</code> · <code>raw_item</code> · <code>ingestion_run</code></td></tr>
+<tr><td><b>L1</b> Evidence &amp; Provenance</td><td>可定位最小证据单元</td><td><code>evidence_fragment</code> · <code>claim_evidence_link</code> · <code>human_review</code> · <code>conflict_set</code></td></tr>
+<tr><td><b>L2</b> Cultural World</td><td>人/地/事/物/关系/变化</td><td><code>entity</code> · <code>event</code> · <code>relation_claim</code>(=真库 <code>cultural_relation_claims</code>，R22 单一真源) · <code>change</code> · <code>visual_asset</code></td></tr>
+<tr><td><b>L3</b> Meaning &amp; Present</td><td>解释层，与事实隔离</td><td><code>meaning_candidate</code> · <code>present_connection</code> · <code>open_question</code></td></tr>
+<tr><td><b>L4</b> Discovery / Read Model</td><td>派生·可重算·只读投影</td><td><code>discovery_candidate</code> · <code>world_projection</code></td></tr>
+<tr><td><b>L5</b> Experience Runtime</td><td>会话态·逻辑分区</td><td>session / experience_state（仅持久化时）</td></tr>
+<tr><td><b>L6</b> Participation · <b>L7</b> Living Culture</td><td>HOLD（长期目标）</td><td>暂未建物理表</td></tr>
+<tr><td><b>Research Workspace</b></td><td>逻辑工作区（非第九层）</td><td><code>research_observation</code> · <code>research_mention</code> · <code>research_source_dependency</code> · <code>research_signal</code> · <code>research_association_candidate</code> · <code>research_task</code></td></tr>
+</tbody>
+</table>
+
+<h3 id="s6c">6.3 晋升闸门（R15，C3 §4.2）</h3>
+<ul>
+<li><b>通则</b>：任何表把一行标"可用/已发布"，必须在 <code>evidence_gate_audit</code> 有对应记录，否则不得晋级。</li>
+<li><b>形态</b>：<code>create constraint trigger … deferrable initially deferred</code>（校验在 COMMIT）。</li>
+<li><b>已落地</b>：<code>claims_require_evidence</code>(claims) · <code>vel_confirmed_requires_evidence</code>(视觉链接) · <code>discovery_not_publishable_guard</code> · <code>review_queue_tier_c_guard</code> · <code>202610050011</code>(C6 扩到 10 个表)。</li>
+<li><b>状态机（C3 §4.1）</b>：<code>RAW → CANDIDATE → ADJUDICATED → RUNTIME_ELIGIBLE → PUBLISHED</code>（L3 及以下 HOLD/REJECT）。</li>
+</ul>
+
+<!-- ============================== 7 ============================== -->
+<h2 id="s7">7｜三向索引：Skill ↔ 入口 ↔ Job ↔ 表（关键绑定示例）</h2>
+<pre>
+mohen-data-ingest
+   └─ entry: pipelines/legacy/unattended-runner.mjs
+        ├─ job src-*            → 写 source_records (L0)
+        ├─ job unattended.source-refresh → 写 source_records (L0)
+        ├─ job coords-wikidata  → 写 historical_features / anchors (L2 候选, 现代点)
+        ├─ job unattended.external-identity → 写 entities 候选 + legacy_mappings (S3, 0 Evidence)
+        └─ job unattended.name-resolution   → 写 legacy_mappings (E 组, 不改 entities)
+
+mohen-evidence-gate
+   └─ entry: unattended-runner.mjs
+        ├─ job unattended.evidence-fragment      → 写 evidence (L1)
+        ├─ job unattended.candidate-extraction   → 写 entities/claims/...候选 (L2)
+        └─ job unattended.deterministic-resolution → 写 entities 对齐 + legacy_mappings
+
+mohen-knowledge-weave
+   └─ entry: unattended-runner.mjs
+        └─ job unattended.relation-weave → 写 relation 候选 + evidence 绑定 (仅 E1 确定性空间关系可晋级)
+
+mohen-visual-asset
+   └─ entry: unattended-runner.mjs
+        ├─ job images-* / unattended.image-link  → visual_assets + visual_entity_links 候选
+        └─ job unattended.external-visual        → visual_assets + links 候选 (Commons P18 取回)
+
+mohen-research-intake / association-discovery / humanistic-selection
+   └─ entry: pipelines/research/research-pipeline.mjs
+        ├─ research.source-inventory (D01) → research_source_inventory
+        ├─ research.content-observation (D02) → research_observation
+        ├─ research.mention-dependency (D03) → research_mention / source_dependency
+        ├─ research.association-scan (D04) → research_signal / association_candidate
+        └─ research.humanistic-selection (D05) → research_task + Top-K（Selected 转 N 系列）
+</pre>
+<div class="box"><b>绑定规则（C2 §2.1 / §9.1）</b>：每个 job 必在 <code>production-registry.json</code> 声明 <code>implementation:{skill,entry}</code>；新增脚本前先查复用，平行实现按 R14 归档。</div>
+
+<!-- ============================== 8 ============================== -->
+<h2 id="s8">8｜进度快照（CURRENT.md §7，六阶段全完成）</h2>
+<table>
+<thead><tr><th>阶段</th><th>落库要点</th><th>红线遵守</th></tr></thead>
+<tbody>
+<tr><td>C1</td><td><code>evidence_fragment</code> 16→4828</td><td>零自动晋级</td></tr>
+<tr><td>C2</td><td><code>entities</code> +3041 候选、<code>relations</code> +2923、<code>discovery_candidates</code> +1138</td><td>零自动晋级</td></tr>
+<tr><td>C3</td><td><code>relation_evidence</code> +12595、L4 投影 2931 路径</td><td>97 条 E1 达标未开门控</td></tr>
+<tr><td>C4</td><td>1246 图题录证据 +692、图-实体链接 +894（冻结项零改动）</td><td>零自动晋级</td></tr>
+<tr><td>C5</td><td>外部扩源（Wikidata/Commons）身份线+151/视觉线+140</td><td>按 S3 裁决 Evidence=0</td></tr>
+<tr><td>C6</td><td>晋级闸门 10 个 constraint trigger、重名 resolution 383/383 覆盖</td><td>实体行零改动、守卫 15/15 绿</td></tr>
+</tbody>
+</table>
+<div class="box ok"><b>控制面通畅判定（协议 §15.3）</b>：<code>pnpm guard:*</code> 全绿 + runner 默认 DRY_RUN + 库层闸门就位 + 旧项目导入通道已验证；<code>entities.published=0 / evidence.verified=0</code> 是零自动晋级红线。</div>
+
+<!-- ============================== 9 ============================== -->
+<h2 id="s9">9｜按入口导航建议</h2>
+<ul>
+<li>想看"规则怎么强制" → ② 协议层 + 5.4 守卫脚本 + 6.3 闸门迁移</li>
+<li>想看"数据从哪来、怎么被读" → ④ <code>research-pipeline.mjs</code>(D02) + <code>unattended-runner.mjs</code>(src/images) + 6.2 L0/L1 表</li>
+<li>想看"关系怎么织、怎么晋级" → ④ <code>relation-weave</code> + ③ <code>knowledge-weave</code> + 6.3 R15 + 6.2 L2 <code>relation_claim</code></li>
+<li>想看"人和机器怎么分工" → ① C2 §2/§3/§10 + ② 协议 §0.3/§10/§11</li>
+<li>想看"下一步治理" → CURRENT.md §3（三向索引缺口）+ §5（GAP-SKILL）</li>
+</ul>
+
+<div class="box"><b>一句话收束</b>：不是"开发系统 + Agent 系统 + 数据库"三块拼起来，而是一套循环——开发系统持续把文化世界建得更可信、更有关系；Agent 在其中发现、组织和带人探索；用户的新问题又反过来告诉开发系统下一步应该补什么。</div>
+
+</main>
+</div>
+<a class="toc-top" href="#s0">↑ 回到顶部</a>
+</body>
+</html>

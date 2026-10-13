@@ -1,0 +1,139 @@
+{
+  "tag": "C6-NAMERES-WRITE",
+  "mode": "WRITE",
+  "env": "dev",
+  "cutoff": "2026-10-05T15:55:00.000Z",
+  "interval_min": 0,
+  "started_at": "2026-10-05T01:05:13.502Z",
+  "jobs": {
+    "unattended.name-resolution": {
+      "ok": true,
+      "dry_run": false,
+      "ms": 1200,
+      "name_groups_total": 6184,
+      "duplicate_groups": 382,
+      "resolved": 13,
+      "homonym_open": 369,
+      "homonym_open_reviewed": 17,
+      "homonym_open_machine_only": 352,
+      "already_resolved": 0,
+      "mappings_written": 382,
+      "mappings_would": 0,
+      "triaged": 17,
+      "entities_modified": 0,
+      "open_top": [
+        {
+          "name": "川沙县",
+          "c": 2,
+          "types": "place"
+        },
+        {
+          "name": "放生桥",
+          "c": 2,
+          "types": "building"
+        },
+        {
+          "name": "枫泾",
+          "c": 2,
+          "types": "town/place"
+        },
+        {
+          "name": "高桥",
+          "c": 2,
+          "types": "building/town"
+        },
+        {
+          "name": "高山",
+          "c": 2,
+          "types": "place/family_person"
+        },
+        {
+          "name": "鹤槎山",
+          "c": 2,
+          "types": "place/building"
+        },
+        {
+          "name": "金泽",
+          "c": 2,
+          "types": "town/place"
+        },
+        {
+          "name": "金泽镇",
+          "c": 2,
+          "types": "place/unknown"
+        },
+        {
+          "name": "静安寺",
+          "c": 2,
+          "types": "building"
+        },
+        {
+          "name": "练塘",
+          "c": 2,
+          "types": "place/town"
+        },
+        {
+          "name": "罗店镇",
+          "c": 2,
+          "types": "place"
+        },
+        {
+          "name": "普济桥",
+          "c": 3,
+          "types": "building"
+        },
+        {
+          "name": "青浦县",
+          "c": 2,
+          "types": "place/unknown"
+        },
+        {
+          "name": "泰安桥",
+          "c": 2,
+          "types": "building"
+        },
+        {
+          "name": "天恩桥",
+          "c": 2,
+          "types": "building"
+        },
+        {
+          "name": "性觉寺",
+          "c": 2,
+          "types": "building"
+        },
+        {
+          "name": "张堰",
+          "c": 2,
+          "types": "town/place"
+        }
+      ],
+      "at": "2026-10-05T01:05:14.834Z"
+    }
+  },
+  "counters": {
+    "jobs_done": 1,
+    "jobs_failed": 0,
+    "inserted": 0
+  },
+  "failures": [],
+  "verdict": "PASS WITH HOLD",
+  "registry": {
+    "path": "specs/data-production/production-registry.json",
+    "entries": 18,
+    "queued": 110,
+    "declared": 110,
+    "runnable": 1,
+    "forbidden": [],
+    "preflight_excluded": [],
+    "source_gate": {
+      "provider": "hushang_legacy",
+      "canonical": "hushang_legacy",
+      "tier": "LEGACY",
+      "evidence_allowed": false
+    }
+  },
+  "ingest_run_id": "a823ea7c-4171-4ea1-93cf-8f6f5109e14f",
+  "stop_reason": "STOPPED_BY_STOP_FILE",
+  "finished_at": "2026-10-05T01:06:14.856Z"
+}

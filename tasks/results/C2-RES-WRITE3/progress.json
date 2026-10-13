@@ -1,0 +1,47 @@
+{
+  "tag": "C2-RES-WRITE3",
+  "mode": "WRITE",
+  "env": "dev",
+  "cutoff": "2026-10-04T13:20:00.000Z",
+  "interval_min": 6,
+  "started_at": "2026-10-04T13:18:14.973Z",
+  "jobs": {
+    "unattended.deterministic-resolution": {
+      "ok": true,
+      "dry_run": false,
+      "new_entities_seen": 2974,
+      "aligned": 6,
+      "homonym_held": 5,
+      "resolved_new": 2963,
+      "mappings_written": 6,
+      "triaged": 11,
+      "inserted": 6,
+      "at": "2026-10-04T13:18:16.011Z"
+    }
+  },
+  "counters": {
+    "jobs_done": 1,
+    "jobs_failed": 0,
+    "inserted": 6
+  },
+  "failures": [],
+  "verdict": "PASS WITH HOLD",
+  "registry": {
+    "path": "specs/data-production/production-registry.json",
+    "entries": 14,
+    "queued": 106,
+    "declared": 106,
+    "runnable": 1,
+    "forbidden": [],
+    "preflight_excluded": [],
+    "source_gate": {
+      "provider": "hushang_legacy",
+      "canonical": "hushang_legacy",
+      "tier": "LEGACY",
+      "evidence_allowed": false
+    }
+  },
+  "ingest_run_id": "3827fcc2-f70a-4eac-8ae9-8fe1a52eaf0f",
+  "stop_reason": "CUTOFF_REACHED",
+  "finished_at": "2026-10-04T13:20:01.179Z"
+}

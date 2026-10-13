@@ -1,0 +1,967 @@
+[
+  {
+    "source_ref": "clan_pdf_index.json",
+    "decision": "READ",
+    "carrier_type": "clan_genealogy",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文"
+  },
+  {
+    "source_ref": "dmz_zhujiajiao.json",
+    "decision": "READ",
+    "carrier_type": "town_monograph",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 1 处；结构化读出 1 条"
+  },
+  {
+    "source_ref": "events_linked.json",
+    "decision": "READ",
+    "carrier_type": "event_record",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 255 处"
+  },
+  {
+    "source_ref": "gazetteer_details.json",
+    "decision": "READ",
+    "carrier_type": "gazetteer",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 1 处；结构化读出 80 条"
+  },
+  {
+    "source_ref": "genealogy_20260910/scan_by_town.json",
+    "decision": "READ",
+    "carrier_type": "clan_genealogy",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文；结构化读出 22 条"
+  },
+  {
+    "source_ref": "geo_placenames_shanghai.json",
+    "decision": "READ",
+    "carrier_type": "placename_gazetteer",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文"
+  },
+  {
+    "source_ref": "gj_14373_toc.json",
+    "decision": "READ",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 1840 处"
+  },
+  {
+    "source_ref": "gj_14386_entries.json",
+    "decision": "DEFECTIVE(缺口)",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "defective",
+    "note": "缺陷源：empty_entries_stub（不读取，仅登记缺口）"
+  },
+  {
+    "source_ref": "gj_14386_ocr.json",
+    "decision": "READ",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": true,
+    "readability": "readable",
+    "note": "文本片段 44 处"
+  },
+  {
+    "source_ref": "gj_3799_entries.json",
+    "decision": "DEFECTIVE(缺口)",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "defective",
+    "note": "缺陷源：empty_entries_stub（不读取，仅登记缺口）"
+  },
+  {
+    "source_ref": "gj_3799_ocr.json",
+    "decision": "READ",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": true,
+    "readability": "readable",
+    "note": "文本片段 7 处"
+  },
+  {
+    "source_ref": "gj_6922_entries.json",
+    "decision": "DEFECTIVE(缺口)",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "defective",
+    "note": "缺陷源：empty_entries_stub（不读取，仅登记缺口）"
+  },
+  {
+    "source_ref": "gj_6922_ocr.json",
+    "decision": "READ",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": true,
+    "readability": "readable",
+    "note": "文本片段 17 处"
+  },
+  {
+    "source_ref": "gj_fangzhi.json",
+    "decision": "READ",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文；结构化读出 17 条"
+  },
+  {
+    "source_ref": "gj_works_朱家角.json",
+    "decision": "DEFECTIVE(缺口)",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "defective",
+    "note": "缺陷源：http_error_403（不读取，仅登记缺口）"
+  },
+  {
+    "source_ref": "gj_works_朱家角镇志.json",
+    "decision": "DEFECTIVE(缺口)",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "defective",
+    "note": "缺陷源：http_error_403（不读取，仅登记缺口）"
+  },
+  {
+    "source_ref": "gj_works_珠里小志.json",
+    "decision": "DEFECTIVE(缺口)",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "defective",
+    "note": "缺陷源：http_error_403（不读取，仅登记缺口）"
+  },
+  {
+    "source_ref": "gj_works_青浦.json",
+    "decision": "DEFECTIVE(缺口)",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "defective",
+    "note": "缺陷源：http_error_403（不读取，仅登记缺口）"
+  },
+  {
+    "source_ref": "gj_works_青浦县志.json",
+    "decision": "DEFECTIVE(缺口)",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "defective",
+    "note": "缺陷源：http_error_403（不读取，仅登记缺口）"
+  },
+  {
+    "source_ref": "hsly_events.json",
+    "decision": "READ",
+    "carrier_type": "event_record",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 491 处"
+  },
+  {
+    "source_ref": "jinze_evolution_raw_20260830.json",
+    "decision": "READ",
+    "carrier_type": "town_monograph",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 40 处"
+  },
+  {
+    "source_ref": "jp_familyname_zhu.json",
+    "decision": "DEFECTIVE(缺口)",
+    "carrier_type": "poetry_person",
+    "is_ocr": false,
+    "readability": "defective",
+    "note": "缺陷源：empty_body(status200,抓取空)（不读取，仅登记缺口）"
+  },
+  {
+    "source_ref": "jp_family_town_analysis.json",
+    "decision": "READ",
+    "carrier_type": "poetry_person",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文"
+  },
+  {
+    "source_ref": "jp_family_town_sparql_analysis.json",
+    "decision": "READ",
+    "carrier_type": "poetry_person",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文"
+  },
+  {
+    "source_ref": "jp_persons_zhu.json",
+    "decision": "DEFECTIVE(缺口)",
+    "carrier_type": "poetry_person",
+    "is_ocr": false,
+    "readability": "defective",
+    "note": "缺陷源：http_error_403（不读取，仅登记缺口）"
+  },
+  {
+    "source_ref": "jp_shanghai_family_persons.json",
+    "decision": "READ",
+    "carrier_type": "poetry_person",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文；结构化读出 80 条"
+  },
+  {
+    "source_ref": "jp_shanghai_persons_count.json",
+    "decision": "READ",
+    "carrier_type": "poetry_person",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文"
+  },
+  {
+    "source_ref": "jp_shanghai_works.json",
+    "decision": "READ",
+    "carrier_type": "poetry_person",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文；结构化读出 1 条"
+  },
+  {
+    "source_ref": "jp_works_all.json",
+    "decision": "READ",
+    "carrier_type": "poetry_person",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文；结构化读出 2 条"
+  },
+  {
+    "source_ref": "jp_works_sparql.json",
+    "decision": "READ",
+    "carrier_type": "poetry_person",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文"
+  },
+  {
+    "source_ref": "jp_zhu_deepdive.json",
+    "decision": "READ",
+    "carrier_type": "poetry_person",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文"
+  },
+  {
+    "source_ref": "jp_zhu_persons.json",
+    "decision": "READ",
+    "carrier_type": "poetry_person",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文；结构化读出 80 条"
+  },
+  {
+    "source_ref": "mgts_104971_entries.json",
+    "decision": "READ",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "数组 10 条"
+  },
+  {
+    "source_ref": "mgts_104971_town_hits.json",
+    "decision": "READ",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 34 处"
+  },
+  {
+    "source_ref": "mgts_31278_entries.json",
+    "decision": "READ",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "数组 9 条"
+  },
+  {
+    "source_ref": "mgts_31278_town_hits.json",
+    "decision": "READ",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 35 处"
+  },
+  {
+    "source_ref": "mgts_4581_entries.json",
+    "decision": "READ",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "数组 69 条"
+  },
+  {
+    "source_ref": "mgts_4581_town_hits.json",
+    "decision": "READ",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 10 处"
+  },
+  {
+    "source_ref": "mgts_4584_entries.json",
+    "decision": "READ",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "数组 43 条"
+  },
+  {
+    "source_ref": "mgts_4584_town_hits.json",
+    "decision": "READ",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 10 处"
+  },
+  {
+    "source_ref": "mgts_4590_entries.json",
+    "decision": "READ",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "数组 3 条；结构化读出 4 条"
+  },
+  {
+    "source_ref": "mgts_4590_town_hits.json",
+    "decision": "READ",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 1 处；结构化读出 2 条"
+  },
+  {
+    "source_ref": "mgts_87274_entries.json",
+    "decision": "DEFECTIVE(缺口)",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "defective",
+    "note": "缺陷源：empty_entries_stub（不读取，仅登记缺口）"
+  },
+  {
+    "source_ref": "mgts_90096_entries.json",
+    "decision": "DEFECTIVE(缺口)",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "defective",
+    "note": "缺陷源：empty_entries_stub（不读取，仅登记缺口）"
+  },
+  {
+    "source_ref": "mgts_92309_entries.json",
+    "decision": "DEFECTIVE(缺口)",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": false,
+    "readability": "defective",
+    "note": "缺陷源：empty_entries_stub（不读取，仅登记缺口）"
+  },
+  {
+    "source_ref": "mgts_92309_ocr.json",
+    "decision": "READ",
+    "carrier_type": "old_book_fulltext",
+    "is_ocr": true,
+    "readability": "readable",
+    "note": "文本片段 11 处"
+  },
+  {
+    "source_ref": "narrative_assets.json",
+    "decision": "READ",
+    "carrier_type": "narrative_asset",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 227 处"
+  },
+  {
+    "source_ref": "press_all_20260910/张堰.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 46 处"
+  },
+  {
+    "source_ref": "press_all_20260910/练塘.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 29 处"
+  },
+  {
+    "source_ref": "press_filtered_20260902/南翔.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 131 处"
+  },
+  {
+    "source_ref": "press_filtered_20260902/嘉定.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 52 处"
+  },
+  {
+    "source_ref": "press_filtered_20260902/川沙.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 254 处"
+  },
+  {
+    "source_ref": "press_filtered_20260902/张堰.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文"
+  },
+  {
+    "source_ref": "press_filtered_20260902/新场.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 312 处"
+  },
+  {
+    "source_ref": "press_filtered_20260902/朱家角.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 240 处"
+  },
+  {
+    "source_ref": "press_filtered_20260902/枫泾.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 376 处"
+  },
+  {
+    "source_ref": "press_filtered_20260902/练塘.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文"
+  },
+  {
+    "source_ref": "press_filtered_20260902/罗店.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 445 处"
+  },
+  {
+    "source_ref": "press_filtered_20260902/金泽.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 532 处"
+  },
+  {
+    "source_ref": "press_filtered_20260902/高桥.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 45 处"
+  },
+  {
+    "source_ref": "press_raw_20260902/_faulty_archive/张堰_count0_20260910_162006.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文"
+  },
+  {
+    "source_ref": "press_raw_20260902/_faulty_archive/张堰_count0_20260910_162213.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 47 处"
+  },
+  {
+    "source_ref": "press_raw_20260902/_faulty_archive/练塘_count0_20260910_162006.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文"
+  },
+  {
+    "source_ref": "press_raw_20260902/_faulty_archive/练塘_count0_20260910_162213.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 26 处"
+  },
+  {
+    "source_ref": "press_raw_20260902/_summary.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文"
+  },
+  {
+    "source_ref": "press_raw_20260902/南翔.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 111 处"
+  },
+  {
+    "source_ref": "press_raw_20260902/嘉定.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 14 处"
+  },
+  {
+    "source_ref": "press_raw_20260902/川沙.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 254 处"
+  },
+  {
+    "source_ref": "press_raw_20260902/张堰.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文"
+  },
+  {
+    "source_ref": "press_raw_20260902/新场.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 244 处"
+  },
+  {
+    "source_ref": "press_raw_20260902/朱家角.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 209 处"
+  },
+  {
+    "source_ref": "press_raw_20260902/枫泾.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 292 处"
+  },
+  {
+    "source_ref": "press_raw_20260902/练塘.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "catalog_only",
+    "note": "仅结构/目录，无正文"
+  },
+  {
+    "source_ref": "press_raw_20260902/罗店.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 396 处"
+  },
+  {
+    "source_ref": "press_raw_20260902/金泽.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 331 处"
+  },
+  {
+    "source_ref": "press_raw_20260902/高桥.json",
+    "decision": "READ",
+    "carrier_type": "press",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 45 处"
+  },
+  {
+    "source_ref": "protection_index.json",
+    "decision": "READ",
+    "carrier_type": "heritage_protection",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 1 处"
+  },
+  {
+    "source_ref": "sh_protection_index.json",
+    "decision": "READ",
+    "carrier_type": "heritage_protection",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 1 处"
+  },
+  {
+    "source_ref": "souyun_poems_by_person.json",
+    "decision": "READ",
+    "carrier_type": "poetry_corpus",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 340 处"
+  },
+  {
+    "source_ref": "souyun_poems_by_place.json",
+    "decision": "READ",
+    "carrier_type": "poetry_corpus",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 11 处"
+  },
+  {
+    "source_ref": "suzhou_narrative_candidates.json",
+    "decision": "READ",
+    "carrier_type": "narrative_candidate",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 254 处"
+  },
+  {
+    "source_ref": "suzhou_people_shanghai.json",
+    "decision": "READ",
+    "carrier_type": "narrative_candidate",
+    "is_ocr": false,
+    "readability": "readable",
+    "note": "文本片段 56 处"
+  },
+  {
+    "source_ref": "commons_baoshan_chuansha_20260831.json",
+    "decision": "ASSET_PENDING(视觉)",
+    "carrier_type": "image_catalog",
+    "readability": "visual_carrier"
+  },
+  {
+    "source_ref": "commons_cats_drill_20260831.json",
+    "decision": "ASSET_PENDING(视觉)",
+    "carrier_type": "image_catalog",
+    "readability": "visual_carrier"
+  },
+  {
+    "source_ref": "commons_external_maps_20260831.json",
+    "decision": "ASSET_PENDING(视觉)",
+    "carrier_type": "image_catalog",
+    "readability": "visual_carrier"
+  },
+  {
+    "source_ref": "commons_images.json",
+    "decision": "ASSET_PENDING(视觉)",
+    "carrier_type": "image_catalog",
+    "readability": "visual_carrier"
+  },
+  {
+    "source_ref": "commons_oldmaps_raw_20260831.json",
+    "decision": "ASSET_PENDING(视觉)",
+    "carrier_type": "image_catalog",
+    "readability": "visual_carrier"
+  },
+  {
+    "source_ref": "shanghai_images_census_20260905.json",
+    "decision": "ASSET_PENDING(视觉)",
+    "carrier_type": "image_catalog",
+    "readability": "visual_carrier"
+  },
+  {
+    "source_ref": "shanghai_images_verified_20260905.json",
+    "decision": "ASSET_PENDING(视觉)",
+    "carrier_type": "image_catalog",
+    "readability": "visual_carrier"
+  },
+  {
+    "source_ref": "yutu_catalog.json",
+    "decision": "ASSET_PENDING(视觉)",
+    "carrier_type": "historical_map",
+    "readability": "visual_carrier"
+  },
+  {
+    "source_ref": "yutu_catalog_20260831.json",
+    "decision": "ASSET_PENDING(视觉)",
+    "carrier_type": "historical_map",
+    "readability": "visual_carrier"
+  },
+  {
+    "source_ref": "yutu_catalog_checked.json",
+    "decision": "ASSET_PENDING(视觉)",
+    "carrier_type": "historical_map",
+    "readability": "visual_carrier"
+  },
+  {
+    "source_ref": "yutu_catalog_final_20260831.json",
+    "decision": "ASSET_PENDING(视觉)",
+    "carrier_type": "historical_map",
+    "readability": "visual_carrier"
+  },
+  {
+    "source_ref": "yutu_plaquettes.json",
+    "decision": "ASSET_PENDING(视觉)",
+    "carrier_type": "historical_map",
+    "readability": "visual_carrier"
+  },
+  {
+    "source_ref": "yutu_plaquettes_checked.json",
+    "decision": "ASSET_PENDING(视觉)",
+    "carrier_type": "historical_map",
+    "readability": "visual_carrier"
+  },
+  {
+    "source_ref": "yutu_probe/*.pdf",
+    "decision": "ASSET_PENDING(视觉)",
+    "carrier_type": "historical_map",
+    "readability": "visual_carrier",
+    "note": "本地舆图 142 页（需栅格化后读图，本轮 asset_pending）"
+  },
+  {
+    "source_ref": "yutu_probe/*.png",
+    "decision": "ASSET_PENDING(视觉)",
+    "carrier_type": "historical_map",
+    "readability": "visual_carrier",
+    "note": "派生渲染 45 张（asset_pending）"
+  },
+  {
+    "source_ref": "commons_images.json",
+    "decision": "ASSET_PENDING(视觉)",
+    "carrier_type": "image_catalog",
+    "readability": "visual_carrier",
+    "note": "外部图 437 张（asset_pending，不取字节）"
+  },
+  {
+    "source_ref": "cbdb_people.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "人物词表源（仅作 lexicon，非叙事资料）"
+  },
+  {
+    "source_ref": "clans.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "carrier=unknown（未列入可读文本范围）"
+  },
+  {
+    "source_ref": "coords_wikidata.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "external_mapsource_probe_20260831.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "mcp_screenshot_ocr.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "p1a_attach_images_report_20260831_130954.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "carrier=unknown（未列入可读文本范围）"
+  },
+  {
+    "source_ref": "probe_press_pagination_20260902.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "probe_s0_b_bk.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "probe_s0_image_match.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "probe_s0_photos.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "probe_s0_press.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "probe_s0_press_diag.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "probe_s0_press_diag2.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "probe_s0_yutu.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "resource_probe2_20260831.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "resource_probe_20260831.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "rumsey_maps_raw_20260831.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "sources_ledger.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "sources_ledger_volume_probe.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "suzhou_narrative_review.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "verify_cbdb_20260831.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "verify_song_press_20260831.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "verify_souyun_20260831.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "verify_souyun_legacy30_20260831.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "yutu_level3.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "yutu_meta_probe.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "yutu_sparql_schema.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "yutu_triples_cache.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "yutu_verify_coverage.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "derived/probe（决策④排除）"
+  },
+  {
+    "source_ref": "_work_titles.json",
+    "decision": "EXCLUDED",
+    "carrier_type": "—",
+    "readability": "—",
+    "note": "carrier=unknown（未列入可读文本范围）"
+  }
+]

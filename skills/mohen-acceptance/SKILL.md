@@ -1,30 +1,24 @@
 # mohen-acceptance
 
-Purpose: 交付验收  
-Trigger: 任何 Task 声称完成之前
+**Status:** TARGET · Phase C
+**Kind:** cross-cutting/reusable capability
+**Allowed Calling Stages:** D01, D02, D03, D04, D05
 
-## Preconditions
-先执行 `mohen-project-guard`；读取当前 Task。
+## Purpose
+Cross-cutting acceptance capability. It verifies deliverables and Human Review packaging without deciding historical truth.
 
-## Steps
-1. 运行 docs/structure guard。
-2. 运行 typecheck/unit/data tests。
-3. 需要 UI 时运行 Playwright + 截图/状态断言。
-4. 核对 Task Acceptance 一项不少。
-5. 输出 changed files、tests、evidence、risks、rollback。
-6. 未运行的测试必须明确写“未运行”。
+## Contract
+- No independent D01–D05 Stage PASS unless explicitly designated as a Stage Owner (this Skill is not).
+- No final writes across multiple L layers.
+- Caller Stage owns persistence, Gate and downstream handoff.
+- Reuse existing implementation where possible; duplicate canonical entries are not allowed.
+- Exact executable entry is frozen during implementation phase.
 
-## Outputs
-- 结构化结果/报告；
-- changed/created files 清单；
-- 可复现验收命令；
-- unresolved / human-review 项。
+## Inputs / Outputs
+Defined per caller contract. Outputs must be typed capability results, not final cross-stage records.
 
-## Hard Rules
-禁止凭“代码看起来正确”宣布完成；禁止伪造测试结果。
+## Failure / Stop
+Stop when requested action would require this capability to own another Stage's persistence or Gate decision.
 
-## Acceptance
-输出必须能被下一 Skill/Task 直接消费；不能只给自然语言总结。
-
-## Failure / Recovery
-失败时保留 Raw/日志/中间结果，停止晋级；修复后从最近稳定状态重跑，不创建平行真源。
+## Canonical Entry
+`PENDING_PHASE_D`

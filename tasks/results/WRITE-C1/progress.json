@@ -1,0 +1,48 @@
+{
+  "tag": "WRITE-C1",
+  "mode": "WRITE",
+  "env": "dev",
+  "cutoff": "2026-10-04T22:00:00.000Z",
+  "interval_min": 6,
+  "started_at": "2026-10-04T11:04:24.552Z",
+  "jobs": {
+    "unattended.evidence-fragment": {
+      "ok": true,
+      "dry_run": false,
+      "normalized": 0,
+      "scanned_sources": 88,
+      "file_missing": 0,
+      "sources_skipped": 0,
+      "new_evidence": 4812,
+      "new_fragments": 4812,
+      "would_new": 0,
+      "frag_per_source": 200,
+      "at": "2026-10-04T11:04:45.650Z"
+    }
+  },
+  "counters": {
+    "jobs_done": 1,
+    "jobs_failed": 0,
+    "inserted": 0
+  },
+  "failures": [],
+  "verdict": "STOPPED",
+  "registry": {
+    "path": "specs/data-production/production-registry.json",
+    "entries": 14,
+    "queued": 106,
+    "declared": 106,
+    "runnable": 1,
+    "forbidden": [],
+    "preflight_excluded": [],
+    "source_gate": {
+      "provider": "hushang_legacy",
+      "canonical": "hushang_legacy",
+      "tier": "LEGACY",
+      "evidence_allowed": false
+    }
+  },
+  "ingest_run_id": "1cebd3e8-53d4-47c3-9bcb-86c0078c75e6",
+  "stop_reason": "STOPPED_FATAL",
+  "finished_at": "2026-10-04T11:08:06.281Z"
+}

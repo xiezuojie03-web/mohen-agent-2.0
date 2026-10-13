@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MoHen Production Registry V3 Target Schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "jobs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "3.0-target"
+    },
+    "jobs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "job_id",
+          "stage",
+          "data_layer",
+          "exit_gate",
+          "scope",
+          "implementation",
+          "inputs",
+          "outputs",
+          "write_scope",
+          "lineage_requirements",
+          "gates_enforced_by",
+          "execution_policy",
+          "retry",
+          "rollback",
+          "stop_conditions",
+          "tests"
+        ],
+        "properties": {
+          "job_id": {
+            "type": "string"
+          },
+          "stage": {
+            "enum": [
+              "D01",
+              "D02",
+              "D03",
+              "D04",
+              "D05"
+            ]
+          },
+          "data_layer": {
+            "enum": [
+              "L0",
+              "L1",
+              "L2",
+              "L3",
+              "L4"
+            ]
+          },
+          "exit_gate": {
+            "enum": [
+              "G0",
+              "G1",
+              "G2",
+              "G3",
+              "G4"
+            ]
+          },
+          "scope": {
+            "type": "object"
+          },
+          "search_strategy": {
+            "enum": [
+              "broad",
+              "directed",
+              "mixed"
+            ]
+          },
+          "implementation": {
+            "type": "object",
+            "required": [
+              "executor"
+            ],
+            "properties": {
+              "skill": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "executor": {
+                "type": "string"
+              },
+              "adapters": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "outputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "write_scope": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "lineage_requirements": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "gates_enforced_by": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "execution_policy": {
+            "type": "object",
+            "required": [
+              "attended",
+              "unattended"
+            ],
+            "properties": {
+              "attended": {
+                "type": "boolean"
+              },
+              "unattended": {
+                "type": "boolean"
+              },
+              "automation_limit": {
+                "type": "string"
+              }
+            }
+          },
+          "retry": {
+            "type": "object"
+          },
+          "rollback": {
+            "type": "object"
+          },
+          "stop_conditions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tests": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "human_review_view": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,527 @@
+{
+  "scope": "DBGOV-D02-01",
+  "mode": "WRITE",
+  "run_id": "7a525999-ce78-41ee-8694-ac0d4a421ddd",
+  "sources_total": 95,
+  "readable": 55,
+  "text_readable": 41,
+  "visual_carrier_readable": 14,
+  "catalog_only": 40,
+  "unreadable": 0,
+  "text_fragments_total": 4729,
+  "observations": 3389,
+  "coverage_within_quota_pct": 100,
+  "coverage_full_pct": 71.7,
+  "source_level_coverage_pct": 95.1,
+  "text_readable_sources_read": "39/41",
+  "obs_with_locator": 3389,
+  "obs_with_region": 3389,
+  "obs_with_uncertainty": 3389,
+  "modality": {
+    "text": 3389
+  },
+  "association_readiness": {
+    "ready": 3389
+  },
+  "mentions": 9373,
+  "mentions_resolved": 7679,
+  "mentions_unresolved": 1694,
+  "entities_written": 0,
+  "relations_written": 0,
+  "candidates_written": 0,
+  "truth_promotions": 0,
+  "dependencies": 519,
+  "elapsed_s": 4.5,
+  "unread_sources": [
+    {
+      "source": "_work_titles.json",
+      "carrier": "unknown",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "cbdb_people.json",
+      "carrier": "biography_db",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "clan_pdf_index.json",
+      "carrier": "clan_genealogy",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "commons_baoshan_chuansha_20260831.json",
+      "carrier": "image_catalog",
+      "readability": "readable",
+      "why": "visual_carrier（无正文段落，需图读层，本轮不覆盖）",
+      "frags": 0
+    },
+    {
+      "source": "commons_cats_drill_20260831.json",
+      "carrier": "image_catalog",
+      "readability": "readable",
+      "why": "visual_carrier（无正文段落，需图读层，本轮不覆盖）",
+      "frags": 0
+    },
+    {
+      "source": "commons_external_maps_20260831.json",
+      "carrier": "image_catalog",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "commons_images.json",
+      "carrier": "image_catalog",
+      "readability": "readable",
+      "why": "visual_carrier（无正文段落，需图读层，本轮不覆盖）",
+      "frags": 0
+    },
+    {
+      "source": "commons_oldmaps_raw_20260831.json",
+      "carrier": "image_catalog",
+      "readability": "readable",
+      "why": "visual_carrier（无正文段落，需图读层，本轮不覆盖）",
+      "frags": 0
+    },
+    {
+      "source": "coords_wikidata.json",
+      "carrier": "unknown",
+      "readability": "readable",
+      "why": "no_text_content（可读但无正文片段，如纯坐标/ID 数据）",
+      "frags": 0
+    },
+    {
+      "source": "geo_placenames_shanghai.json",
+      "carrier": "placename_gazetteer",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "gj_14386_entries.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "gj_3799_entries.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "gj_6922_entries.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "gj_fangzhi.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "gj_works_朱家角.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "gj_works_朱家角镇志.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "gj_works_珠里小志.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "gj_works_青浦.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "gj_works_青浦县志.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "jp_family_town_analysis.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "jp_family_town_sparql_analysis.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "jp_familyname_zhu.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "jp_persons_zhu.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "jp_shanghai_family_persons.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "jp_shanghai_persons_count.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "jp_shanghai_works.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "jp_works_all.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "jp_works_sparql.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "jp_zhu_deepdive.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "jp_zhu_persons.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "mgts_87274_entries.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "mgts_90096_entries.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "mgts_92309_entries.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "p1a_attach_images_report_20260831_130954.json",
+      "carrier": "unknown",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "probe_press_pagination_20260902.json",
+      "carrier": "unknown",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "probe_s0_b_bk.json",
+      "carrier": "unknown",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "probe_s0_press_diag.json",
+      "carrier": "unknown",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "probe_s0_press_diag2.json",
+      "carrier": "unknown",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "resource_probe_20260831.json",
+      "carrier": "access_probe",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "shanghai_images_census_20260905.json",
+      "carrier": "image_catalog",
+      "readability": "readable",
+      "why": "visual_carrier（无正文段落，需图读层，本轮不覆盖）",
+      "frags": 0
+    },
+    {
+      "source": "shanghai_images_verified_20260905.json",
+      "carrier": "image_catalog",
+      "readability": "readable",
+      "why": "visual_carrier（无正文段落，需图读层，本轮不覆盖）",
+      "frags": 0
+    },
+    {
+      "source": "sources_ledger_volume_probe.json",
+      "carrier": "unknown",
+      "readability": "readable",
+      "why": "no_text_content（可读但无正文片段，如纯坐标/ID 数据）",
+      "frags": 0
+    },
+    {
+      "source": "verify_cbdb_20260831.json",
+      "carrier": "verification_probe",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "verify_song_press_20260831.json",
+      "carrier": "verification_probe",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "verify_souyun_legacy30_20260831.json",
+      "carrier": "verification_probe",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "yutu_catalog.json",
+      "carrier": "historical_map",
+      "readability": "readable",
+      "why": "visual_carrier（无正文段落，需图读层，本轮不覆盖）",
+      "frags": 0
+    },
+    {
+      "source": "yutu_catalog_20260831.json",
+      "carrier": "historical_map",
+      "readability": "readable",
+      "why": "visual_carrier（无正文段落，需图读层，本轮不覆盖）",
+      "frags": 0
+    },
+    {
+      "source": "yutu_catalog_checked.json",
+      "carrier": "historical_map",
+      "readability": "readable",
+      "why": "visual_carrier（无正文段落，需图读层，本轮不覆盖）",
+      "frags": 0
+    },
+    {
+      "source": "yutu_catalog_final_20260831.json",
+      "carrier": "historical_map",
+      "readability": "readable",
+      "why": "visual_carrier（无正文段落，需图读层，本轮不覆盖）",
+      "frags": 0
+    },
+    {
+      "source": "yutu_level3.json",
+      "carrier": "historical_map",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "yutu_meta_probe.json",
+      "carrier": "historical_map",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "yutu_plaquettes.json",
+      "carrier": "historical_map",
+      "readability": "readable",
+      "why": "visual_carrier（无正文段落，需图读层，本轮不覆盖）",
+      "frags": 0
+    },
+    {
+      "source": "yutu_plaquettes_checked.json",
+      "carrier": "historical_map",
+      "readability": "readable",
+      "why": "visual_carrier（无正文段落，需图读层，本轮不覆盖）",
+      "frags": 0
+    },
+    {
+      "source": "yutu_sparql_schema.json",
+      "carrier": "historical_map",
+      "readability": "catalog_only",
+      "why": "catalog_only（仅结构/目录，无正文）",
+      "frags": 0
+    },
+    {
+      "source": "yutu_triples_cache.json",
+      "carrier": "historical_map",
+      "readability": "readable",
+      "why": "visual_carrier（无正文段落，需图读层，本轮不覆盖）",
+      "frags": 0
+    },
+    {
+      "source": "yutu_verify_coverage.json",
+      "carrier": "historical_map",
+      "readability": "readable",
+      "why": "visual_carrier（无正文段落，需图读层，本轮不覆盖）",
+      "frags": 0
+    }
+  ],
+  "carrier_agg": {
+    "unknown": {
+      "sources": 19,
+      "readable": 13,
+      "frags": 984,
+      "obs": 984
+    },
+    "biography_db": {
+      "sources": 1,
+      "readable": 0,
+      "frags": 0,
+      "obs": 0
+    },
+    "clan_genealogy": {
+      "sources": 1,
+      "readable": 0,
+      "frags": 0,
+      "obs": 0
+    },
+    "image_catalog": {
+      "sources": 7,
+      "readable": 6,
+      "frags": 0,
+      "obs": 0
+    },
+    "town_monograph": {
+      "sources": 2,
+      "readable": 2,
+      "frags": 41,
+      "obs": 41
+    },
+    "event_record": {
+      "sources": 2,
+      "readable": 2,
+      "frags": 746,
+      "obs": 746
+    },
+    "gazetteer": {
+      "sources": 1,
+      "readable": 1,
+      "frags": 1,
+      "obs": 1
+    },
+    "placename_gazetteer": {
+      "sources": 1,
+      "readable": 0,
+      "frags": 0,
+      "obs": 0
+    },
+    "old_book_fulltext": {
+      "sources": 27,
+      "readable": 15,
+      "frags": 2138,
+      "obs": 798
+    },
+    "poetry_person": {
+      "sources": 11,
+      "readable": 0,
+      "frags": 0,
+      "obs": 0
+    },
+    "narrative_asset": {
+      "sources": 1,
+      "readable": 1,
+      "frags": 227,
+      "obs": 227
+    },
+    "heritage_protection": {
+      "sources": 2,
+      "readable": 2,
+      "frags": 2,
+      "obs": 2
+    },
+    "access_probe": {
+      "sources": 2,
+      "readable": 1,
+      "frags": 3,
+      "obs": 3
+    },
+    "narrative_candidate": {
+      "sources": 3,
+      "readable": 3,
+      "frags": 564,
+      "obs": 564
+    },
+    "verification_probe": {
+      "sources": 4,
+      "readable": 1,
+      "frags": 23,
+      "obs": 23
+    },
+    "historical_map": {
+      "sources": 11,
+      "readable": 8,
+      "frags": 0,
+      "obs": 0
+    }
+  }
+}

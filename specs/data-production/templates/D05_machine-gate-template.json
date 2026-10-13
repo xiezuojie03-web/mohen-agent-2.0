@@ -1,0 +1,14 @@
+{
+  "run_id": null,
+  "stage": "D05",
+  "data_layer": "L4",
+  "gate": "G4",
+  "result": null,
+  "objects_checked": 0,
+  "checks": {},
+  "reason_codes": [],
+  "hold_items": [],
+  "reject_items": [],
+  "pass_object_ids": [],
+  "machine_evidence_ref": null
+}

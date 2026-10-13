@@ -1,0 +1,81 @@
+{
+  "tag": "UNATTENDED-C4-WRITE2",
+  "mode": "WRITE",
+  "env": "dev",
+  "cutoff": "2026-10-04T16:30:00.000Z",
+  "interval_min": 0,
+  "started_at": "2026-10-04T16:26:04.895Z",
+  "jobs": {
+    "unattended.image-link": {
+      "ok": true,
+      "dry_run": false,
+      "in_scope": 1198,
+      "with_caption": 692,
+      "no_caption": 506,
+      "caption_source_unmatched": 0,
+      "evidence_new": 692,
+      "evidence_would": 0,
+      "links_object": 68,
+      "links_town": 826,
+      "links_object_would": 0,
+      "links_town_would": 0,
+      "homonym_held": 0,
+      "town_unresolved": 372,
+      "dict_objects": 73,
+      "dict_towns": 20,
+      "dict_entities": 113,
+      "determination": {
+        "named_object": 68,
+        "town_scope_only": 758,
+        "identity_unresolved": 372
+      },
+      "by_batch": {
+        "census727": 727,
+        "commons519": 471
+      },
+      "top_towns": {
+        "新场": 92,
+        "嘉定": 136,
+        "练塘": 46,
+        "高桥": 102,
+        "川沙": 126,
+        "南翔": 63,
+        "罗店": 53,
+        "枫泾": 119,
+        "朱家角": 40,
+        "金泽": 14,
+        "张堰": 35
+      },
+      "audit_rows": 9636,
+      "triaged": 2210,
+      "inserted": 1586,
+      "missing_files": [],
+      "at": "2026-10-04T16:26:12.369Z"
+    }
+  },
+  "counters": {
+    "jobs_done": 1,
+    "jobs_failed": 0,
+    "inserted": 1586
+  },
+  "failures": [],
+  "verdict": "PASS WITH HOLD",
+  "registry": {
+    "path": "specs/data-production/production-registry.json",
+    "entries": 15,
+    "queued": 107,
+    "declared": 107,
+    "runnable": 1,
+    "forbidden": [],
+    "preflight_excluded": [],
+    "source_gate": {
+      "provider": "hushang_legacy",
+      "canonical": "hushang_legacy",
+      "tier": "LEGACY",
+      "evidence_allowed": false
+    }
+  },
+  "ingest_run_id": "e40ab0ef-f401-494c-a68b-15c41b122eb7",
+  "stop_reason": "CUTOFF_REACHED",
+  "finished_at": "2026-10-04T16:30:12.431Z"
+}

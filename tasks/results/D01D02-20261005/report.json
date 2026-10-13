@@ -1,0 +1,22 @@
+{
+  "run_id": "7a88c3d3-41ee-43df-966c-002ac4fa4833",
+  "read_sources": 82,
+  "observations": 6828,
+  "mentions": 6104,
+  "dependencies": 2218,
+  "visual_pending": 16,
+  "excluded": 30,
+  "defective": 13,
+  "ocr_sources": [
+    "gj_14386_ocr.json",
+    "gj_3799_ocr.json",
+    "gj_6922_ocr.json",
+    "mgts_92309_ocr.json"
+  ],
+  "ocr_garble": {
+    "gj_14386_ocr.json": 0,
+    "gj_3799_ocr.json": 0,
+    "gj_6922_ocr.json": 0,
+    "mgts_92309_ocr.json": 0
+  }
+}

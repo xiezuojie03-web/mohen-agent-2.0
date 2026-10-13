@@ -1,0 +1,54 @@
+{
+  "tag": "C6-GATE-WRITE",
+  "mode": "WRITE",
+  "env": "dev",
+  "cutoff": "2026-10-05T15:55:00.000Z",
+  "interval_min": 0,
+  "started_at": "2026-10-05T01:13:38.371Z",
+  "jobs": {
+    "unattended.gate-projection": {
+      "ok": true,
+      "claims_scanned": 8,
+      "relations_scanned": 2923,
+      "cultural_audited": 4,
+      "cultural_held": 4,
+      "cultural_rejected": 0,
+      "audited": 4,
+      "passed": 0,
+      "held": 0,
+      "rejected": 0,
+      "rel_passed": 0,
+      "rel_held": 0,
+      "rel_rejected": 0,
+      "would_promote": 97,
+      "promoted": 0,
+      "projection_paths": 2931,
+      "at": "2026-10-05T01:21:13.896Z"
+    }
+  },
+  "counters": {
+    "jobs_done": 1,
+    "jobs_failed": 0,
+    "inserted": 0
+  },
+  "failures": [],
+  "verdict": "PASS WITH HOLD",
+  "registry": {
+    "path": "specs/data-production/production-registry.json",
+    "entries": 18,
+    "queued": 110,
+    "declared": 110,
+    "runnable": 1,
+    "forbidden": [],
+    "preflight_excluded": [],
+    "source_gate": {
+      "provider": "hushang_legacy",
+      "canonical": "hushang_legacy",
+      "tier": "LEGACY",
+      "evidence_allowed": false
+    }
+  },
+  "ingest_run_id": "90e1729a-5b3f-42bf-88ef-217912e085c1",
+  "stop_reason": "STOPPED_BY_STOP_FILE",
+  "finished_at": "2026-10-05T01:21:13.900Z"
+}

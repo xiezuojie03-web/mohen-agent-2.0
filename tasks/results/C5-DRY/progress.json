@@ -1,0 +1,121 @@
+{
+  "tag": "C5-DRY",
+  "mode": "DRY_RUN",
+  "env": "dev",
+  "cutoff": "2026-10-05T15:55:00.000Z",
+  "interval_min": 0,
+  "started_at": "2026-10-04T21:59:12.412Z",
+  "jobs": {
+    "unattended.external-identity": {
+      "ok": true,
+      "dry_run": true,
+      "ms": 22513,
+      "seeds_total": 163,
+      "seeds_used": 163,
+      "backlog_added": 14,
+      "queries": 7,
+      "http_failures": 0,
+      "items_returned": 371,
+      "scope_rejected": 198,
+      "type_rejected": 34,
+      "dup_skipped": 0,
+      "aligned": 10,
+      "new_entities": 121,
+      "homonym_held": 8,
+      "new_entity_types": {
+        "place": 13,
+        "unknown": 103,
+        "building": 5
+      },
+      "admin_top": {
+        "(仅坐标判定)": 121,
+        "嘉定區": 5,
+        "上海市": 5,
+        "朱家角镇": 1,
+        "浦东新区": 1,
+        "青浦区": 1,
+        "金山区": 1,
+        "太仓直隶州": 1,
+        "金泽镇": 1,
+        "宝山区": 1,
+        "滬海道": 1
+      },
+      "files_handed_off": 119,
+      "entities_written": 0,
+      "entities_would": 121,
+      "mappings_written": 0,
+      "mappings_would": 131,
+      "sources_written": 0,
+      "sources_would": 7,
+      "triaged": 0,
+      "evidence_written": 0,
+      "at": "2026-10-04T21:59:34.933Z"
+    },
+    "unattended.external-visual": {
+      "ok": true,
+      "dry_run": true,
+      "ms": 6104,
+      "files_requested": 119,
+      "pages_retrieved": 119,
+      "batches": 5,
+      "http_failures": 0,
+      "assets_new": 0,
+      "assets_would": 117,
+      "links_new": 0,
+      "links_would": 117,
+      "evidence_new": 0,
+      "evidence_would": 117,
+      "sources_new": 0,
+      "sources_would": 5,
+      "audit_rows": 0,
+      "triaged": 0,
+      "skipped_dup": 2,
+      "missing_on_commons": 0,
+      "non_image": 0,
+      "license_unknown": 0,
+      "licenses": {
+        "CC BY-SA 3.0": 66,
+        "CC BY-SA 4.0": 21,
+        "CC BY 4.0": 5,
+        "CC BY 3.0": 5,
+        "Public domain": 6,
+        "CC BY 2.0": 7,
+        "GFDL": 3,
+        "CC BY-SA 2.0": 2,
+        "CC BY 3.0 cn": 1,
+        "CC BY 2.5": 1
+      },
+      "periods": {
+        "current": 111,
+        "historical": 3,
+        "unknown": 3
+      },
+      "confirmed_links": 0,
+      "at": "2026-10-04T21:59:41.040Z"
+    }
+  },
+  "counters": {
+    "jobs_done": 2,
+    "jobs_failed": 0,
+    "inserted": 0
+  },
+  "failures": [],
+  "verdict": "PASS",
+  "registry": {
+    "path": "specs/data-production/production-registry.json",
+    "entries": 17,
+    "queued": 109,
+    "declared": 109,
+    "runnable": 2,
+    "forbidden": [],
+    "preflight_excluded": [],
+    "source_gate": {
+      "provider": "hushang_legacy",
+      "canonical": "hushang_legacy",
+      "tier": "LEGACY",
+      "evidence_allowed": false
+    }
+  },
+  "stop_reason": "STOPPED_BY_STOP_FILE",
+  "finished_at": "2026-10-04T22:01:41.063Z"
+}

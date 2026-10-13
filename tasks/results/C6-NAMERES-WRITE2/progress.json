@@ -1,0 +1,53 @@
+{
+  "tag": "C6-NAMERES-WRITE2",
+  "mode": "WRITE",
+  "env": "dev",
+  "cutoff": "2026-10-05T15:55:00.000Z",
+  "interval_min": 0,
+  "started_at": "2026-10-05T01:08:25.406Z",
+  "jobs": {
+    "unattended.name-resolution": {
+      "ok": true,
+      "dry_run": false,
+      "ms": 670,
+      "name_groups_total": 6185,
+      "duplicate_groups": 383,
+      "resolved": 0,
+      "homonym_open": 1,
+      "homonym_open_reviewed": 0,
+      "homonym_open_machine_only": 1,
+      "already_resolved": 382,
+      "mappings_written": 1,
+      "mappings_would": 0,
+      "triaged": 0,
+      "entities_modified": 0,
+      "open_top": [],
+      "at": "2026-10-05T01:08:26.207Z"
+    }
+  },
+  "counters": {
+    "jobs_done": 1,
+    "jobs_failed": 0,
+    "inserted": 0
+  },
+  "failures": [],
+  "verdict": "PASS",
+  "registry": {
+    "path": "specs/data-production/production-registry.json",
+    "entries": 18,
+    "queued": 110,
+    "declared": 110,
+    "runnable": 1,
+    "forbidden": [],
+    "preflight_excluded": [],
+    "source_gate": {
+      "provider": "hushang_legacy",
+      "canonical": "hushang_legacy",
+      "tier": "LEGACY",
+      "evidence_allowed": false
+    }
+  },
+  "ingest_run_id": "6ecdc519-ad5f-4597-90b7-7c9a7b74abf8",
+  "stop_reason": "STOPPED_BY_STOP_FILE",
+  "finished_at": "2026-10-05T01:09:26.237Z"
+}

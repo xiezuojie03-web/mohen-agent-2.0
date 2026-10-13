@@ -1,0 +1,165 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C4 · 下游转化支撑可视化</title>
+<style>
+:root{--line:#e5e7eb;--bg:#f6f7f9}
+*{box-sizing:border-box}
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;margin:0;background:var(--bg);color:#1a1d21;line-height:1.65}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 22px 60px}
+h1{font-size:22px;margin:0 0 4px}
+h2{font-size:16px;margin:30px 0 10px;padding-left:10px;border-left:4px solid #2f6fed}
+.sub{color:#6b7280;font-size:13px;margin-bottom:14px}
+.banner{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:14px 16px;font-size:14px;line-height:1.7}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:12px 0}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;text-align:center}
+.card .v{font-size:23px;font-weight:700}.card .k{font-size:12px;color:#6b7280;margin-top:3px}
+.row{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.box{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;flex:1;min-width:320px}
+.legend{font-size:12.5px;margin-top:6px}
+.legend span{display:inline-block;margin-right:12px;white-space:nowrap}
+.warnbox{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px 14px;font-size:13px}
+.okbox{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 14px;font-size:13px}
+.muted{color:#6b7280;font-size:12.5px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+td{padding:6px 8px;border-top:1px solid #eef0f3;vertical-align:top}
+code{background:#eef0f3;padding:1px 5px;border-radius:4px;font-size:12px}
+</style>
+<div class="wrap">
+<h1>C4 · 下游转化支撑可视化报告</h1>
+<div class="sub">生成 2026-10-04T17:05:50.783Z · 统计窗口 2026-10-03T05:05:49.974Z 起 · 单文件离线可开 · 全部数字由查询得出</div>
+<div class="banner">本批为 <b>C4</b> 阶段产出：老项目 <b>1246</b> 张图中 R25 解冻的 <b>1198</b> 张（已排除既有 excluded <b>48</b> 张 —— 冻结描述项<b>只测量不处置</b>）已完成题录证据化与图-实体链接：题录证据 <b>692</b> 条、图-实体链接 <b>894</b> 条（对象级 R1 <b>68</b> ／镇域 R3 <b>826</b>）、资格判定审计 <b>4792</b> 行。<b>零自动晋级</b>（confirmed=0），<b>visual_assets 一行未改</b>。</div>
+
+<h2>① 概览（1246 图并入主线）</h2>
+<div class="cards">
+<div class="card"><div class="v">1246</div><div class="k">老项目图总数</div></div>
+<div class="card"><div class="v">1198</div><div class="k">解冻范围（入本批）</div></div>
+<div class="card"><div class="v">692</div><div class="k">题录证据</div></div>
+<div class="card"><div class="v">894</div><div class="k">图-实体链接</div></div>
+<div class="card"><div class="v">826</div><div class="k">已归属图数</div></div>
+<div class="card"><div class="v">4792</div><div class="k">资格判定审计行</div></div>
+</div>
+
+<h2>② 语料类别分布（覆盖哪些一手来源）</h2>
+<div class="row">
+<div class="box"><svg width="190" height="190" viewBox="0 0 190 190"><circle cx="95" cy="95" r="70" fill="none" stroke="#2f6fed" stroke-width="26" stroke-dasharray="111.61 328.22" stroke-dashoffset="0.00" transform="rotate(-90 95 95)"/><circle cx="95" cy="95" r="70" fill="none" stroke="#16a34a" stroke-width="26" stroke-dasharray="142.45 297.38" stroke-dashoffset="-111.61" transform="rotate(-90 95 95)"/><circle cx="95" cy="95" r="70" fill="none" stroke="#b45309" stroke-width="26" stroke-dasharray="185.77 254.05" stroke-dashoffset="-254.05" transform="rotate(-90 95 95)"/>
+    <text x="95" y="91" text-anchor="middle" font-size="22" font-weight="700" fill="#1a1d21">1198</text>
+    <text x="95" y="111" text-anchor="middle" font-size="11" fill="#6b7280">片段总数</text></svg></div>
+<div class="box"><div class="legend"><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#2f6fed;margin-right:4px"></span>上图记忆 census727 304</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#16a34a;margin-right:4px"></span>Wikimedia commons519 388</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#b45309;margin-right:4px"></span>无题录（仅 URL） 506</span></div>
+<div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="上图记忆 census727">上图记忆 census727</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:312px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">304</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="Wikimedia commons519">Wikimedia commons519</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:399px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">388</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="无题录（仅 URL）">无题录（仅 URL）</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:520px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">506</div></div>
+<div class="muted" style="margin-top:8px">题录来自老项目预抓取 JSON（Raw 离线重放，0 网络请求）：<code>shanghai_images_census_20260905.json</code>（727 图，title/place/town_hint）与 <code>commons_images.json</code>（519 图，File 标题/description/date/towns）。</div></div></div>
+
+<h2>③ 可转化信号密度（预估下游可消费量）</h2>
+<div class="box"><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="空间信号（镇域/place 解析）68.9%">空间信号（镇域/place 解析）68.9%</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:520px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">1500</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="时间信号（可判古今的链接）54.9%">时间信号（可判古今的链接）54.9%</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:170px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">491</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="人物信号（本阶段不识别人物）0%">人物信号（本阶段不识别人物）0%</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:0px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">0</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="关系信号（对象+镇域双挂，可成「对象—位于—镇」）5.7%">关系信号（对象+镇域双挂，可成「对象—位于—镇」）5.7%</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:24px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">68</div></div>
+<div class="muted" style="margin-top:8px">信号为规则命中量（非已落库 Truth）：空间＝镇域/place 解析；时间＝题录日期可判古今的链接；<b>人物＝0（本作业不做人物识别，图题录无人物实体字典，不硬猜）</b>；关系＝同一图同时挂对象级与镇域链接，可形成「对象—位于—镇」候选。</div></div>
+<div class="box"><div style="font-size:13px;font-weight:600;margin-bottom:6px">镇域归属分布（R3 弱归属，unconfirmed）</div>
+<div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="嘉定">嘉定</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:520px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">136</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="川沙">川沙</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:482px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">126</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="枫泾">枫泾</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:455px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">119</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="高桥">高桥</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:390px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">102</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="新场">新场</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:352px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">92</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="南翔">南翔</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:241px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">63</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="罗店">罗店</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:203px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">53</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="练塘">练塘</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:176px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">46</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="朱家角">朱家角</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:153px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">40</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="张堰">张堰</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:134px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">35</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="金泽">金泽</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:54px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">14</div></div>
+<div class="muted" style="margin-top:8px">镇域＝题录/结构给出的镇（<code>town_hint</code> / <code>towns[]</code> / <code>place</code>），属弱归属：<b>镇域不等于具体对象</b>，故一律 <code>unconfirmed</code>，不冒充 <code>confirmed</code>。</div></div>
+
+<h2>④ 叙事母题支撑矩阵（M1–M5 · 本批数据能撑起哪些未来叙事）</h2>
+<div class="box"><svg width="500" height="120" viewBox="0 0 500 120" style="max-width:100%"><text x="68" y="20" text-anchor="middle" font-size="11" fill="#374151">M1 关系世界</text><text x="164" y="20" text-anchor="middle" font-size="11" fill="#374151">M2 地方结构</text><text x="260" y="20" text-anchor="middle" font-size="11" fill="#374151">M3 生活地图</text><text x="356" y="20" text-anchor="middle" font-size="11" fill="#374151">M4 生成过程</text><text x="452" y="20" text-anchor="middle" font-size="11" fill="#374151">M5 连续性</text><text x="14" y="49" text-anchor="end" font-size="11" fill="#374151">对象级点名链接 R1</text><rect x="24" y="34" width="88" height="22" rx="4" fill="rgb(231,238,253)" stroke="#e5e7eb"/>
+        <text x="68" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">34</text><rect x="120" y="34" width="88" height="22" rx="4" fill="rgb(223,231,252)" stroke="#e5e7eb"/>
+        <text x="164" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">68</text><rect x="216" y="34" width="88" height="22" rx="4" fill="rgb(223,231,252)" stroke="#e5e7eb"/>
+        <text x="260" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">68</text><rect x="312" y="34" width="88" height="22" rx="4" fill="rgb(231,238,253)" stroke="#e5e7eb"/>
+        <text x="356" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">34</text><rect x="408" y="34" width="88" height="22" rx="4" fill="rgb(223,231,252)" stroke="#e5e7eb"/>
+        <text x="452" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">68</text><text x="14" y="79" text-anchor="end" font-size="11" fill="#374151">镇域归属链接 R3</text><rect x="24" y="64" width="88" height="22" rx="4" fill="rgb(135,162,236)" stroke="#e5e7eb"/>
+        <text x="68" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">413</text><rect x="120" y="64" width="88" height="22" rx="4" fill="rgb(29,78,216)" stroke="#e5e7eb"/>
+        <text x="164" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">826</text><rect x="216" y="64" width="88" height="22" rx="4" fill="rgb(135,162,236)" stroke="#e5e7eb"/>
+        <text x="260" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">413</text><rect x="312" y="64" width="88" height="22" rx="4" fill="rgb(135,162,236)" stroke="#e5e7eb"/>
+        <text x="356" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">413</text><rect x="408" y="64" width="88" height="22" rx="4" fill="rgb(135,162,236)" stroke="#e5e7eb"/>
+        <text x="452" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">413</text><text x="14" y="109" text-anchor="end" font-size="11" fill="#374151">题录证据（可定位）</text><rect x="24" y="94" width="88" height="22" rx="4" fill="rgb(152,175,239)" stroke="#e5e7eb"/>
+        <text x="68" y="109" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">346</text><rect x="120" y="94" width="88" height="22" rx="4" fill="rgb(152,175,239)" stroke="#e5e7eb"/>
+        <text x="164" y="109" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">346</text><rect x="216" y="94" width="88" height="22" rx="4" fill="rgb(152,175,239)" stroke="#e5e7eb"/>
+        <text x="260" y="109" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">346</text><rect x="312" y="94" width="88" height="22" rx="4" fill="rgb(63,105,222)" stroke="#e5e7eb"/>
+        <text x="356" y="109" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">692</text><rect x="408" y="94" width="88" height="22" rx="4" fill="rgb(63,105,222)" stroke="#e5e7eb"/>
+        <text x="452" y="109" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">692</text></svg><div style="margin-top:8px"><div style="margin:3px 0;font-size:12px"><b>M1 关系世界</b>：支撑量 <b>793</b></div><div style="margin:3px 0;font-size:12px"><b>M2 地方结构</b>：支撑量 <b>1240</b></div><div style="margin:3px 0;font-size:12px"><b>M3 生活地图</b>：支撑量 <b>827</b></div><div style="margin:3px 0;font-size:12px"><b>M4 生成过程</b>：支撑量 <b>1139</b></div><div style="margin:3px 0;font-size:12px"><b>M5 连续性</b>：支撑量 <b>1173</b></div></div>
+<div class="muted" style="margin-top:8px">单元格 = 该类别产出量 × 与对应母题的亲和度（0–1）。母题定义见 MoHen_Narrative_Motif_Framework.md。</div></div>
+
+<h2>⑤ 下游候选产出预估（供 C5 扩源 / 后续补实体 / Human Experience 消费）</h2>
+<div class="cards">
+<div class="card"><div class="v">1500</div><div class="k">空间候选信号</div></div>
+<div class="card"><div class="v">491</div><div class="k">时间候选信号</div></div>
+<div class="card"><div class="v">0</div><div class="k">人物候选信号</div></div>
+<div class="card"><div class="v">68</div><div class="k">关系候选信号</div></div>
+</div>
+<div class="warnbox">⚠️ <b>信号命中数 ≠ 已落库候选</b>：以上为启发式/规则命中量，用于预估下游可消费规模；本批实际落库为 <code>visual_entity_links</code> 894 条（全部 candidate/unconfirmed）与 <code>evidence</code> 692 条（verification_status=candidate）。</div>
+<div class="box" style="margin-top:12px"><div style="font-size:13px;font-weight:600;margin-bottom:6px">待补实体清单原料（有题录但库内无对应遗产对象的图：624 张）</div>
+<table><tr><td>罗店镇</td><td style="text-align:right">7</td></tr><tr><td>黄家花园八张</td><td style="text-align:right">6</td></tr><tr><td>高昌庙</td><td style="text-align:right">5</td></tr><tr><td>南翔车站</td><td style="text-align:right">5</td></tr><tr><td>川沙县</td><td style="text-align:right">4</td></tr><tr><td>南翔镇</td><td style="text-align:right">4</td></tr><tr><td>宝山县罗店</td><td style="text-align:right">3</td></tr><tr><td>娄塘</td><td style="text-align:right">3</td></tr><tr><td>枫泾 - panoramio - 杨志宏 —— </td><td style="text-align:right">3</td></tr><tr><td>嘉定县</td><td style="text-align:right">3</td></tr><tr><td>上海川沙县</td><td style="text-align:right">3</td></tr><tr><td>川沙县北蔡</td><td style="text-align:right">3</td></tr><tr><td>嘉定县马陆</td><td style="text-align:right">2</td></tr><tr><td>上海中央造幣厂财政部库</td><td style="text-align:right">2</td></tr><tr><td>高桥码头坍毁情形</td><td style="text-align:right">2</td></tr></table>
+<div class="muted" style="margin-top:8px">这些题录点名的对象名<b>不在现有遗产对象字典</b>（113 个老项目移植实体）内 —— 属真实数据缺口，可作为 C5 扩源 / 后续实体补录的输入，本阶段不自造实体。</div></div>
+
+<h2>⑥ 红线与质量校验</h2>
+<div class="okbox"><ul style="margin:4px 0 0 18px;padding:0">
+<li>locator 完整率：<b>100%</b>（缺 locator 的题录证据 0 条）</li>
+<li>verified 证据：0（<b>0 自动晋级</b>）</li>
+<li>published 实体：0（<b>0 自动晋级</b>）</li>
+<li>近 1 日 auto 分诊：0（<b>0 自动晋级</b>）</li>
+<li>confirmed 链接（本批新增）：<b>0</b>（必须 0；confirmed 需人审 + 门禁）</li>
+<li>冻结项未触：既有 excluded 48 张状态未改、<code>visual_assets</code> 零 UPDATE（pending/excluded 状态表达收敛留 C6）</li>
+<li>门禁审计：visual_asset 4792 行（pass 2784）＋ evidence 4844 行</li>
+<li>review_queue 三分留痕：链接 894 ／题录证据 692 ／身份未决 624（无题录者不进人审，避免长尾人工债务）</li>
+<li>幂等：legacy_mappings 溯源 1198 条，重跑 in_scope=0</li>
+</ul></div>
+
+<h2>⑦ 方法论与限制</h2>
+<div class="box"><ul class="muted" style="margin:0;padding-left:18px;line-height:1.8">
+<li>数据源：<code>visual_assets</code>（provider=hushang_legacy 且非 image_source 锚点源）+ 老项目 Raw JSON + <code>entities</code>（遗产对象字典：113 个老项目移植实体，刻意排除 C2 启发式候选 <code>unattended-ce:*</code>）+ <code>visual_entity_links</code> / <code>evidence</code> / <code>evidence_gate_audit</code> / <code>review_queue</code>。</li>
+<li>链接规则：R1＝题录标题<b>显式点名</b>遗产对象 → <code>suspected</code>；R3＝镇域/place 归属 → <code>unconfirmed</code>；同名多实体不自选边（HOLD）。</li>
+<li>字典限制：只认 113 个已移植遗产对象，故 624 张有题录的图判 <code>identity_unresolved</code> —— 不是"图无关"，而是"库内还没有这个对象"。</li>
+<li>冻结边界：既有 excluded 48 张（含 34 张金泽 Commons 图）未纳入本批、状态未改；金泽在解冻范围内仅 14 张 —— <b>金泽视觉证据的主力仍被冻结</b>，需拥有者裁定后处置。</li>
+<li>本报告与 runner 生成的 report.json/html 同源互补，是协议 §0.5 的下游转化支撑视图。</li>
+</ul></div>
+<p class="muted">生成口径：analyzeImageImpact + renderImageImpactHtml（pipelines/legacy/unattended-report.mjs）。</p>
+</div></html>

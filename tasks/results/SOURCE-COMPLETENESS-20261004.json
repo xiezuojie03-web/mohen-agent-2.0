@@ -1,0 +1,958 @@
+{
+  "rows": [
+    {
+      "ref": "hsly_events.json",
+      "carrier": "event_record",
+      "readability": "readable",
+      "entries": 1816,
+      "totalContent": 2381,
+      "obs": 504,
+      "men": 1214,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "probe_s0_press.json",
+      "carrier": "unknown",
+      "readability": "readable",
+      "entries": 1150,
+      "totalContent": 2090,
+      "obs": 504,
+      "men": 680,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "gj_14373_toc.json",
+      "carrier": "old_book_fulltext",
+      "readability": "readable",
+      "entries": 32,
+      "totalContent": 1843,
+      "obs": 504,
+      "men": 94,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "jp_shanghai_family_persons.json",
+      "carrier": "poetry_person",
+      "readability": "readable",
+      "entries": 1320,
+      "totalContent": 1320,
+      "obs": 500,
+      "men": 0,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "jp_works_sparql.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "entries": 2,
+      "totalContent": 1094,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "narrative_assets.json",
+      "carrier": "narrative_asset",
+      "readability": "readable",
+      "entries": 351,
+      "totalContent": 948,
+      "obs": 504,
+      "men": 1150,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "yutu_triples_cache.json",
+      "carrier": "historical_map",
+      "readability": "readable",
+      "entries": 97,
+      "totalContent": 739,
+      "obs": 225,
+      "men": 423,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "yutu_catalog_final_20260831.json",
+      "carrier": "historical_map",
+      "readability": "readable",
+      "entries": 1133,
+      "totalContent": 668,
+      "obs": 387,
+      "men": 170,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "yutu_catalog_20260831.json",
+      "carrier": "historical_map",
+      "readability": "readable",
+      "entries": 1387,
+      "totalContent": 665,
+      "obs": 343,
+      "men": 229,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "yutu_catalog_checked.json",
+      "carrier": "historical_map",
+      "readability": "readable",
+      "entries": 1131,
+      "totalContent": 640,
+      "obs": 411,
+      "men": 308,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "events_linked.json",
+      "carrier": "event_record",
+      "readability": "readable",
+      "entries": 114,
+      "totalContent": 614,
+      "obs": 383,
+      "men": 859,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "yutu_catalog.json",
+      "carrier": "historical_map",
+      "readability": "readable",
+      "entries": 1133,
+      "totalContent": 583,
+      "obs": 313,
+      "men": 116,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "jp_works_all.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 561,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "sources_ledger.json",
+      "carrier": "unknown",
+      "readability": "readable",
+      "entries": 1125,
+      "totalContent": 418,
+      "obs": 114,
+      "men": 377,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "souyun_poems_by_person.json",
+      "carrier": "unknown",
+      "readability": "readable",
+      "entries": 20,
+      "totalContent": 370,
+      "obs": 369,
+      "men": 57,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "suzhou_narrative_candidates.json",
+      "carrier": "narrative_candidate",
+      "readability": "readable",
+      "entries": 130,
+      "totalContent": 255,
+      "obs": 254,
+      "men": 419,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "suzhou_narrative_review.json",
+      "carrier": "narrative_candidate",
+      "readability": "readable",
+      "entries": 130,
+      "totalContent": 255,
+      "obs": 254,
+      "men": 419,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "clans.json",
+      "carrier": "unknown",
+      "readability": "readable",
+      "entries": 20,
+      "totalContent": 229,
+      "obs": 227,
+      "men": 567,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "commons_oldmaps_raw_20260831.json",
+      "carrier": "image_catalog",
+      "readability": "readable",
+      "entries": 958,
+      "totalContent": 207,
+      "obs": 103,
+      "men": 88,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "commons_cats_drill_20260831.json",
+      "carrier": "image_catalog",
+      "readability": "readable",
+      "entries": 1107,
+      "totalContent": 99,
+      "obs": 68,
+      "men": 93,
+      "verdict": "部分提取"
+    },
+    {
+      "ref": "shanghai_images_census_20260905.json",
+      "carrier": "image_catalog",
+      "readability": "readable",
+      "entries": 727,
+      "totalContent": 89,
+      "obs": 74,
+      "men": 168,
+      "verdict": "部分提取"
+    },
+    {
+      "ref": "shanghai_images_verified_20260905.json",
+      "carrier": "image_catalog",
+      "readability": "readable",
+      "entries": 727,
+      "totalContent": 89,
+      "obs": 74,
+      "men": 168,
+      "verdict": "部分提取"
+    },
+    {
+      "ref": "suzhou_people_shanghai.json",
+      "carrier": "narrative_candidate",
+      "readability": "readable",
+      "entries": 38,
+      "totalContent": 84,
+      "obs": 77,
+      "men": 155,
+      "verdict": "部分提取"
+    },
+    {
+      "ref": "commons_images.json",
+      "carrier": "image_catalog",
+      "readability": "readable",
+      "entries": 519,
+      "totalContent": 80,
+      "obs": 0,
+      "men": 0,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "protection_index.json",
+      "carrier": "heritage_protection",
+      "readability": "readable",
+      "entries": 58,
+      "totalContent": 72,
+      "obs": 60,
+      "men": 0,
+      "verdict": "部分提取"
+    },
+    {
+      "ref": "mgts_4581_entries.json",
+      "carrier": "old_book_fulltext",
+      "readability": "readable",
+      "entries": 69,
+      "totalContent": 67,
+      "obs": 67,
+      "men": 164,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "gazetteer_details.json",
+      "carrier": "gazetteer",
+      "readability": "readable",
+      "entries": 100,
+      "totalContent": 65,
+      "obs": 56,
+      "men": 8,
+      "verdict": "部分提取"
+    },
+    {
+      "ref": "mcp_screenshot_ocr.json",
+      "carrier": "unknown",
+      "readability": "readable",
+      "entries": 70,
+      "totalContent": 50,
+      "obs": 49,
+      "men": 28,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "_work_titles.json",
+      "carrier": "unknown",
+      "readability": "readable",
+      "entries": 43,
+      "totalContent": 49,
+      "obs": 11,
+      "men": 31,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "resource_probe2_20260831.json",
+      "carrier": "access_probe",
+      "readability": "readable",
+      "entries": 842,
+      "totalContent": 46,
+      "obs": 5,
+      "men": 2,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "gj_14386_ocr.json",
+      "carrier": "old_book_fulltext",
+      "readability": "readable",
+      "entries": 10,
+      "totalContent": 45,
+      "obs": 44,
+      "men": 31,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "mgts_4584_entries.json",
+      "carrier": "old_book_fulltext",
+      "readability": "readable",
+      "entries": 43,
+      "totalContent": 42,
+      "obs": 42,
+      "men": 35,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "jinze_evolution_raw_20260830.json",
+      "carrier": "town_monograph",
+      "readability": "readable",
+      "entries": 20,
+      "totalContent": 40,
+      "obs": 40,
+      "men": 52,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "jp_shanghai_works.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "entries": 2,
+      "totalContent": 40,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "probe_s0_photos.json",
+      "carrier": "unknown",
+      "readability": "readable",
+      "entries": 140,
+      "totalContent": 39,
+      "obs": 39,
+      "men": 39,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "mgts_31278_town_hits.json",
+      "carrier": "old_book_fulltext",
+      "readability": "readable",
+      "entries": 13,
+      "totalContent": 35,
+      "obs": 35,
+      "men": 54,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "mgts_104971_town_hits.json",
+      "carrier": "old_book_fulltext",
+      "readability": "readable",
+      "entries": 16,
+      "totalContent": 34,
+      "obs": 34,
+      "men": 42,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "probe_s0_yutu.json",
+      "carrier": "unknown",
+      "readability": "readable",
+      "entries": 60,
+      "totalContent": 33,
+      "obs": 33,
+      "men": 70,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "probe_s0_image_match.json",
+      "carrier": "unknown",
+      "readability": "readable",
+      "entries": 56,
+      "totalContent": 31,
+      "obs": 31,
+      "men": 50,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "verify_souyun_20260831.json",
+      "carrier": "verification_probe",
+      "readability": "readable",
+      "entries": 5,
+      "totalContent": 30,
+      "obs": 30,
+      "men": 22,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "commons_baoshan_chuansha_20260831.json",
+      "carrier": "image_catalog",
+      "readability": "readable",
+      "entries": 26,
+      "totalContent": 21,
+      "obs": 16,
+      "men": 23,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "gj_6922_ocr.json",
+      "carrier": "old_book_fulltext",
+      "readability": "readable",
+      "entries": 11,
+      "totalContent": 18,
+      "obs": 17,
+      "men": 15,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "mgts_92309_ocr.json",
+      "carrier": "old_book_fulltext",
+      "readability": "readable",
+      "entries": 10,
+      "totalContent": 18,
+      "obs": 17,
+      "men": 15,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "souyun_poems_by_place.json",
+      "carrier": "unknown",
+      "readability": "readable",
+      "entries": 26,
+      "totalContent": 13,
+      "obs": 12,
+      "men": 9,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "clan_pdf_index.json",
+      "carrier": "clan_genealogy",
+      "readability": "readable",
+      "entries": 3,
+      "totalContent": 11,
+      "obs": 11,
+      "men": 44,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "mgts_104971_entries.json",
+      "carrier": "old_book_fulltext",
+      "readability": "readable",
+      "entries": 10,
+      "totalContent": 10,
+      "obs": 10,
+      "men": 29,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "mgts_4581_town_hits.json",
+      "carrier": "old_book_fulltext",
+      "readability": "readable",
+      "entries": 5,
+      "totalContent": 10,
+      "obs": 10,
+      "men": 12,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "mgts_4584_town_hits.json",
+      "carrier": "old_book_fulltext",
+      "readability": "readable",
+      "entries": 5,
+      "totalContent": 10,
+      "obs": 10,
+      "men": 16,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "mgts_31278_entries.json",
+      "carrier": "old_book_fulltext",
+      "readability": "readable",
+      "entries": 9,
+      "totalContent": 9,
+      "obs": 9,
+      "men": 15,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "gj_3799_ocr.json",
+      "carrier": "old_book_fulltext",
+      "readability": "readable",
+      "entries": 11,
+      "totalContent": 8,
+      "obs": 7,
+      "men": 18,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "probe_s0_press_diag.json",
+      "carrier": "unknown",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 8,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "sources_ledger_volume_probe.json",
+      "carrier": "unknown",
+      "readability": "readable",
+      "entries": 8,
+      "totalContent": 7,
+      "obs": 1,
+      "men": 0,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "cbdb_people.json",
+      "carrier": "biography_db",
+      "readability": "catalog_only",
+      "entries": 30,
+      "totalContent": 6,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "coords_wikidata.json",
+      "carrier": "unknown",
+      "readability": "readable",
+      "entries": 80,
+      "totalContent": 5,
+      "obs": 5,
+      "men": 11,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "sh_protection_index.json",
+      "carrier": "heritage_protection",
+      "readability": "readable",
+      "entries": 42,
+      "totalContent": 5,
+      "obs": 4,
+      "men": 1,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "yutu_level3.json",
+      "carrier": "historical_map",
+      "readability": "catalog_only",
+      "entries": 18,
+      "totalContent": 5,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "commons_external_maps_20260831.json",
+      "carrier": "image_catalog",
+      "readability": "readable",
+      "entries": 12,
+      "totalContent": 4,
+      "obs": 4,
+      "men": 10,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "external_mapsource_probe_20260831.json",
+      "carrier": "unknown",
+      "readability": "readable",
+      "entries": 5,
+      "totalContent": 4,
+      "obs": 1,
+      "men": 0,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "mgts_4590_entries.json",
+      "carrier": "old_book_fulltext",
+      "readability": "readable",
+      "entries": 3,
+      "totalContent": 2,
+      "obs": 2,
+      "men": 0,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "rumsey_maps_raw_20260831.json",
+      "carrier": "unknown",
+      "readability": "readable",
+      "entries": 125,
+      "totalContent": 2,
+      "obs": 1,
+      "men": 0,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "yutu_meta_probe.json",
+      "carrier": "historical_map",
+      "readability": "readable",
+      "entries": 3,
+      "totalContent": 2,
+      "obs": 2,
+      "men": 0,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "yutu_plaquettes_checked.json",
+      "carrier": "historical_map",
+      "readability": "readable",
+      "entries": 36,
+      "totalContent": 2,
+      "obs": 1,
+      "men": 0,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "dmz_zhujiajiao.json",
+      "carrier": "town_monograph",
+      "readability": "readable",
+      "entries": 1,
+      "totalContent": 1,
+      "obs": 1,
+      "men": 6,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "mgts_4590_town_hits.json",
+      "carrier": "old_book_fulltext",
+      "readability": "readable",
+      "entries": 1,
+      "totalContent": 1,
+      "obs": 1,
+      "men": 1,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "verify_song_press_20260831.json",
+      "carrier": "verification_probe",
+      "readability": "readable",
+      "entries": 3,
+      "totalContent": 1,
+      "obs": 1,
+      "men": 1,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "yutu_plaquettes.json",
+      "carrier": "historical_map",
+      "readability": "readable",
+      "entries": 36,
+      "totalContent": 1,
+      "obs": 0,
+      "men": 0,
+      "verdict": "机制限制·未挖干"
+    },
+    {
+      "ref": "yutu_sparql_schema.json",
+      "carrier": "historical_map",
+      "readability": "readable",
+      "entries": 22,
+      "totalContent": 1,
+      "obs": 1,
+      "men": 0,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "yutu_verify_coverage.json",
+      "carrier": "historical_map",
+      "readability": "readable",
+      "entries": 5,
+      "totalContent": 1,
+      "obs": 1,
+      "men": 2,
+      "verdict": "已挖干/持平"
+    },
+    {
+      "ref": "geo_placenames_shanghai.json",
+      "carrier": "placename_gazetteer",
+      "readability": "catalog_only",
+      "entries": 3810,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "gj_14386_entries.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "gj_3799_entries.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "gj_6922_entries.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "gj_fangzhi.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "entries": 3,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "gj_works_朱家角.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "gj_works_朱家角镇志.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "gj_works_珠里小志.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "gj_works_青浦.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "gj_works_青浦县志.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "jp_family_town_analysis.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "jp_family_town_sparql_analysis.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "jp_familyname_zhu.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "jp_persons_zhu.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "jp_shanghai_persons_count.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "entries": 350,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "jp_zhu_deepdive.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "jp_zhu_persons.json",
+      "carrier": "poetry_person",
+      "readability": "catalog_only",
+      "entries": 100,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "mgts_87274_entries.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "mgts_90096_entries.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "mgts_92309_entries.json",
+      "carrier": "old_book_fulltext",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "p1a_attach_images_report_20260831_130954.json",
+      "carrier": "unknown",
+      "readability": "catalog_only",
+      "entries": 2,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "probe_press_pagination_20260902.json",
+      "carrier": "unknown",
+      "readability": "catalog_only",
+      "entries": 24,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "probe_s0_b_bk.json",
+      "carrier": "unknown",
+      "readability": "catalog_only",
+      "entries": 4,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "probe_s0_press_diag2.json",
+      "carrier": "unknown",
+      "readability": "catalog_only",
+      "entries": 15,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "resource_probe_20260831.json",
+      "carrier": "access_probe",
+      "readability": "catalog_only",
+      "entries": 13,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "verify_cbdb_20260831.json",
+      "carrier": "verification_probe",
+      "readability": "catalog_only",
+      "entries": 12,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    },
+    {
+      "ref": "verify_souyun_legacy30_20260831.json",
+      "carrier": "verification_probe",
+      "readability": "catalog_only",
+      "entries": 0,
+      "totalContent": 0,
+      "obs": 0,
+      "men": 0,
+      "verdict": "未读取(机制排除)"
+    }
+  ],
+  "totalObs": 6913,
+  "totalContent": 17225,
+  "cappedSum": 54,
+  "minedSum": 35
+}

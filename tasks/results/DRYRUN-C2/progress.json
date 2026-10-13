@@ -1,0 +1,50 @@
+{
+  "tag": "DRYRUN-C2",
+  "mode": "DRY_RUN",
+  "env": "dev",
+  "cutoff": "2026-10-04T12:51:00.000Z",
+  "interval_min": 6,
+  "started_at": "2026-10-04T12:50:44.447Z",
+  "jobs": {
+    "unattended.candidate-extraction": {
+      "ok": true,
+      "dry_run": true,
+      "inserted": 10016,
+      "evidence_scanned": 4812,
+      "evidence_processed": 4812,
+      "new_entities": 0,
+      "would_new_entities": 3227,
+      "new_relations": 0,
+      "would_new_relations": 2479,
+      "new_claims": 0,
+      "new_discoveries": 0,
+      "triaged": 0,
+      "audit_rows": 0,
+      "at": "2026-10-04T12:50:45.221Z"
+    }
+  },
+  "counters": {
+    "jobs_done": 1,
+    "jobs_failed": 0,
+    "inserted": 10016
+  },
+  "failures": [],
+  "verdict": "PASS WITH HOLD",
+  "registry": {
+    "path": "specs/data-production/production-registry.json",
+    "entries": 14,
+    "queued": 106,
+    "declared": 106,
+    "runnable": 2,
+    "forbidden": [],
+    "preflight_excluded": [],
+    "source_gate": {
+      "provider": "hushang_legacy",
+      "canonical": "hushang_legacy",
+      "tier": "LEGACY",
+      "evidence_allowed": false
+    }
+  },
+  "stop_reason": "CUTOFF_REACHED",
+  "finished_at": "2026-10-04T12:51:00.230Z"
+}

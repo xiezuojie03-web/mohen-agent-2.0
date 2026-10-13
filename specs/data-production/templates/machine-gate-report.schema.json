@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MoHen Machine Gate Report",
+  "type": "object",
+  "required": [
+    "run_id",
+    "stage",
+    "data_layer",
+    "gate",
+    "result",
+    "checks",
+    "reason_codes"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "stage": {
+      "enum": [
+        "D01",
+        "D02",
+        "D03",
+        "D04",
+        "D05"
+      ]
+    },
+    "data_layer": {
+      "enum": [
+        "L0",
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ]
+    },
+    "gate": {
+      "enum": [
+        "G0",
+        "G1",
+        "G2",
+        "G3",
+        "G4"
+      ]
+    },
+    "result": {
+      "enum": [
+        "PASS",
+        "HOLD",
+        "REJECT"
+      ]
+    },
+    "checks": {
+      "type": "object"
+    },
+    "reason_codes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "missing_requirement": {},
+    "next_action": {},
+    "recheck_condition": {},
+    "objects": {
+      "type": "array"
+    }
+  }
+}

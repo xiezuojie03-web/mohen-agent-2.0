@@ -1,6 +1,6 @@
 # DATA-PRODUCTION-BASELINE-01 · 既有库 vs 协议 V2.0 合规基线（只读）
 
-- **生成时间**：2026-10-02 14:40:11
+- **生成时间**：2026-10-05 01:23:15
 - **目标库**：`mohen_dev`
 - **依据协议**：`specs/data-production/MoHen_Data_Production_Protocol.md` V2.0
 - **性质**：**只读测量**，未执行任何写/DDL；冻结项仅测量不处置。
@@ -11,13 +11,12 @@
 
 ## 1｜守卫运行（guard:* 协议层校验）
 
-**guard:registry** — ❌ FAIL
+**guard:registry** — ✅ PASS
 ```
 > mohen-agent-2.0@0.1.0 guard:registry D:\work Buddy\2026-08-23-23-12-38\mohen-agent-2.0
 > node scripts/check-production-registry.mjs
 
-PRODUCTION_REGISTRY schema=v1 entries=9 table_refs=28 queued=66 runnable=61 excluded=5 unresolved=0
- ELIFECYCLE  Command failed with exit code 1.
+PRODUCTION_REGISTRY schema=v2 entries=18 table_refs=37 queued=110 runnable=110 excluded=0 unresolved=0
 ```
 
 **guard:identifiers** — ✅ PASS
@@ -25,7 +24,7 @@ PRODUCTION_REGISTRY schema=v1 entries=9 table_refs=28 queued=66 runnable=61 excl
 > mohen-agent-2.0@0.1.0 guard:identifiers D:\work Buddy\2026-08-23-23-12-38\mohen-agent-2.0
 > node scripts/check-identifier-registry.mjs
 
-IDENTIFIER_REGISTRY schema=v1 columns=5 fixed_values=8 patterns=14 db_checked_columns=5 covered_values=41 uncovered=0
+IDENTIFIER_REGISTRY schema=v1 columns=5 fixed_values=9 patterns=15 db_checked_columns=5 covered_values=47 uncovered=0
 ```
 
 **guard:acquisition** — ✅ PASS
@@ -33,7 +32,7 @@ IDENTIFIER_REGISTRY schema=v1 columns=5 fixed_values=8 patterns=14 db_checked_co
 > mohen-agent-2.0@0.1.0 guard:acquisition D:\work Buddy\2026-08-23-23-12-38\mohen-agent-2.0
 > node scripts/check-acquisition-intents.mjs
 
-ACQUISITION_INTENTS schema=v1 intents=25 db_rows=269 resolved=269 unresolved=0 retrospective=25 inferred=2
+ACQUISITION_INTENTS schema=v1 intents=28 db_rows=317 resolved=317 unresolved=0 retrospective=26 inferred=2
 ```
 
 **guard:source-gate** — ✅ PASS
@@ -41,7 +40,7 @@ ACQUISITION_INTENTS schema=v1 intents=25 db_rows=269 resolved=269 unresolved=0 r
 > mohen-agent-2.0@0.1.0 guard:source-gate D:\work Buddy\2026-08-23-23-12-38\mohen-agent-2.0
 > node scripts/check-source-gate.mjs
 
-SOURCE_GATE providers=17 aliases=12 db_providers=22 resolved=22 unknown=0 importers=3 ops_todo=0 needs_owner_confirmation=0 open_questions=0
+SOURCE_GATE providers=17 aliases=12 db_providers=23 resolved=23 unknown=0 importers=3 ops_todo=0 needs_owner_confirmation=0 open_questions=0
   ops_status: 全部 documented（B-08 运维表三项已落地，守卫强制校验）
 ```
 
@@ -50,38 +49,38 @@ SOURCE_GATE providers=17 aliases=12 db_providers=22 resolved=22 unknown=0 import
 > mohen-agent-2.0@0.1.0 guard:reconciliation D:\work Buddy\2026-08-23-23-12-38\mohen-agent-2.0
 > node scripts/check-reconciliation.mjs
 
-RECONCILIATION proposals=2 pending=1 decided=1 scanned=130 (marker="提案类型：Architecture Reconciliation")
+RECONCILIATION proposals=2 pending=0 decided=2 scanned=190 (marker="提案类型：Architecture Reconciliation")
   · tasks\results\DATA-RECON-01-eligibility-field-proposal.md
   · tasks\results\RECON-02-constitution-vs-db-naming.md
 ```
 
 **guard:promotion** — ✅ PASS
 ```
-  · relations.status  已标可用=0  门禁审计行=2618
-  · claims.status  已标可用=0  门禁审计行=140
-  · evidence.verification_status  已标可用=0  门禁审计行=12982
-  · visual_assets.eligibility_status  已标可用=8  门禁审计行=9016
+  · visual_assets.eligibility_status  已标可用=8  门禁审计行=14368
   · historical_spatial_relations.status  已标可用=0  门禁审计行=56
   · historical_features.review_status  已标可用=0  门禁审计行=35
+  · cultural_relation_claims.review_status  已标可用=0  门禁审计行=56
+  · cultural_meaning_candidates.review_status  已标可用=0  门禁审计行=14
+  · cultural_present_connections.review_status  已标可用=0  门禁审计行=14
 ```
 
 **guard:triage** — ✅ PASS
 ```
-> mohen-agent-2.0@0.1.0 guard:triage D:\work Buddy\2026-08-23-23-12-38\mohen-agent-2.0
 > node scripts/check-review-triage.mjs
 
-REVIEW_TRIAGE checked=structure+invariants db_checked=1
-  · 分诊分布：(未分诊·历史行)=293
+REVIEW_TRIAGE checked=structure+invariants+research-longtail db_checked=1
+  · 分诊分布：(未分诊·历史行)=293  hold=24434  reject=2953
+  · 研究长尾解耦：研究候选=3909 精选=40 分诊行=0
   · 历史行（triage=NULL）不算违规：它们出生于三分机制之前（迁移不回填，冻结不触碰）
 ```
 
 **guard:escalations** — ✅ PASS
 ```
-     ESC-01  待裁决（→RECON-02）  宪法名 vs 真库名分叉（实为四件事，只有 3 件是命名差）
-     ESC-02  待裁决           `relations`(521 行) 与 `cultural_relation_claims`(8 行) 双存储
-     ESC-03  待裁决（自2026-09-26停在待拍板）  `modern_location` 缺口与现代坐标落位方式
-  🔒 ESC-04  部分冻结          图片资格**机制**已解决（R15）；图片**数据处置**冻结
+     ESC-02  待裁决           `relations`(521) 与 `cultural_relation_claims`(8) 双存储；原则见 C3，合并设计待你点头
+     ESC-03  待裁决           `modern_location` 缺口与现代坐标落位；原则见 C3，建表现址待你点头
+     ESC-04  部分处置（解冻·处置中）  1246 图冻结解除，并入老项目数据挖掘主线
      ESC-05  部分处置（②已完成；①③待裁决）  测试写库已隔离；标签修正与其余失败项待裁决
+     ESC-06  已处置（R-DP-01～05全过）  Research Production Reconciliation：双模式 / Research Workspace / 双入口 / review 收窄 / 主协议升级
   🔒 = 已冻结：**不是待办**，不得主动重提、不得当论据、不得计入"未解决数量"。
 ```
 
@@ -132,10 +131,14 @@ select table_name from information_schema.tables where table_schema='public' and
 | legacy_mappings |
 | relation_evidence |
 | relations |
-| review_queue |
-| source_records |
-| visual_assets |
-| visual_entity_links |
+| research_association_candidate |
+| research_bridge_draft |
+| research_mention |
+| research_observation |
+| research_run |
+| research_signal |
+
+_（仅显示前 30 / 共 37 行）_
 
 > 注：应有 ~28 张
 
@@ -148,7 +151,15 @@ select event_object_table as tbl, count(*) as n from information_schema.triggers
 | tbl | n |
 | --- | --- |
 | claims | 2 |
+| cultural_meaning_candidates | 2 |
+| cultural_present_connections | 2 |
+| cultural_relation_claims | 2 |
 | discovery_candidates | 2 |
+| entities | 2 |
+| evidence | 2 |
+| historical_features | 2 |
+| historical_spatial_relations | 2 |
+| relations | 2 |
 | review_queue | 4 |
 | visual_assets | 2 |
 | visual_entity_links | 4 |
@@ -163,7 +174,7 @@ select count(*) as n from source_records
 ``
 | n |
 | --- |
-| 269 |
+| 317 |
 
 
 ### source_records 去重 provider 分布
@@ -174,14 +185,15 @@ select provider, count(*) as n from source_records group by provider order by n 
 | provider | n |
 | --- | --- |
 | Wikimedia Commons | 98 |
-| hushang_legacy | 57 |
-| wikidata | 24 |
+| hushang_legacy | 92 |
+| wikidata | 31 |
 | wikimedia-commons | 21 |
 | 上海图书馆开放数据 | 14 |
 | amap | 10 |
 | shanghai-library | 9 |
-| mohen-pipeline | 5 |
+| wikimedia_commons | 6 |
 | shanghai-library-open-data | 5 |
+| mohen-pipeline | 5 |
 | qingpu-government | 4 |
 | shanghai-local-chronicles-office | 4 |
 | shanghai-library-t11-alignment | 4 |
@@ -189,12 +201,12 @@ select provider, count(*) as n from source_records group by provider order by n 
 | shanghai-qingpu-gov | 2 |
 | archive-catalog | 2 |
 | shanghai-qingpu-museum | 1 |
-| scc-legacy | 1 |
+| shanghai-qingpu-civilization-net | 1 |
 | shanghai-qingpu-gov-news-office | 1 |
+| scc-legacy | 1 |
 | jiangnan-ancient-bridge-research-association | 1 |
 | hushang-jingwei | 1 |
 | xinmin-evening-news | 1 |
-| shanghai-qingpu-civilization-net | 1 |
 
 > 注：真库 provider 字符串须能被 source-providers.json 归一解析（B-09）
 
@@ -206,7 +218,7 @@ select status, count(*) from entities group by status order by 2 desc
 ``
 | status | count |
 | --- | --- |
-| candidate | 3323 |
+| candidate | 6745 |
 
 > 注：状态表达应收敛到 C3 §4.1 一套（现状 8 种，B组）
 
@@ -218,7 +230,7 @@ select count(*) as dup_groups from (select canonical_name from entities group by
 ``
 | dup_groups |
 | --- |
-| 367 |
+| 383 |
 
 > 注：MECHANISM-01 记 367 组；属 E 组标识符治理（非冻结）
 
@@ -230,7 +242,7 @@ select status, count(*) from claims group by status order by 2 desc
 ``
 | status | count |
 | --- | --- |
-| candidate | 20 |
+| candidate | 3061 |
 
 
 ### evidence.verification_status 取值分布
@@ -240,7 +252,7 @@ select verification_status, count(*) from evidence group by verification_status 
 ``
 | verification_status | count |
 | --- | --- |
-| candidate | 7164 |
+| candidate | 13033 |
 | evidence_linked | 20 |
 
 > 注：MECHANISM-01：8 个值仅用 verified/published
@@ -253,7 +265,7 @@ select count(*) as n from evidence_gate_audit
 ``
 | n |
 | --- |
-| 48108 |
+| 158838 |
 
 
 ### evidence_gate_audit 按 object_type 覆盖
@@ -263,13 +275,16 @@ select object_type, count(*) from evidence_gate_audit group by object_type order
 ``
 | object_type | count |
 | --- | --- |
-| entity | 23261 |
-| evidence | 12982 |
-| visual_asset | 9016 |
-| relation | 2618 |
+| evidence | 53365 |
+| entity | 46158 |
+| relation | 44632 |
+| visual_asset | 14368 |
 | claim | 140 |
+| cultural_relation_claim | 56 |
 | historical_spatial_relation | 56 |
 | historical_feature | 35 |
+| cultural_present_connection | 14 |
+| cultural_meaning_candidate | 14 |
 
 > 注：cultural_* 全未覆盖（B组）
 
@@ -281,7 +296,7 @@ select count(*) as n from review_queue
 ``
 | n |
 | --- |
-| 293 |
+| 27680 |
 
 
 ### review_queue 三分分布
@@ -292,6 +307,8 @@ select coalesce(triage_outcome,'<null>') as triage, status, count(*) from review
 | triage | status | count |
 | --- | --- | --- |
 | <null> | pending | 293 |
+| hold | pending | 24434 |
+| reject | rejected | 2953 |
 
 > 注：AUTO/HOLD/REJECT 三分（M2 第四条）
 
@@ -303,7 +320,7 @@ select count(*) as n from visual_assets
 ``
 | n |
 | --- |
-| 1288 |
+| 1465 |
 
 
 ### visual_assets.eligibility_status 分布 [FROZEN] 🧊FROZEN
@@ -313,7 +330,7 @@ select eligibility_status, count(*) from visual_assets group by 1 order by 2 des
 ``
 | eligibility_status | count |
 | --- | --- |
-| pending_review | 1212 |
+| pending_review | 1389 |
 | excluded | 68 |
 | gate_passed | 8 |
 
@@ -353,7 +370,7 @@ select count(*) as n from ingest_runs
 ``
 | n |
 | --- |
-| 11 |
+| 41 |
 
 > 注：B-03：未来写入的 run 级归因闭合；既有 727 图仍无 run
 
@@ -375,26 +392,3 @@ select count(*) as n from ingest_runs
 | SHL-LEGACY-COORDS 零证据 | 见 §2 legacy_coords 🧊 | FROZEN（B-10） |
 
 *基线完成。后续"完善既有库"应逐项对照本基线，仅对 B 组 / E 组（非冻结）动作，且始终保持只读可回滚。*
-
----
-
-## 4｜基线新发现与下一步建议（非冻结、非 A 组）
-
-### 4.1 协议层（守卫）新发现
-- **guard:registry 已修复（2026-10-02）**：原 N01–N06 条目 `write_scope` 使用描述性中文短语（`raw 存储` / `candidate 表/区` / `alias 表` / `Gate 结果表` / `promotion 记录` / `projection`），`check-production-registry.mjs` 按字面去 `supabase/migrations` 匹配 `create table` 全不匹配 → 9 条 REGISTRY_ERROR。已按方案①将 `write_scope` 改为真实表名（Raw 为文件存储剔除；Gate 结果→`evidence_gate_audit`、promotion→被晋级对象表、projection→`knowledge_paths`/`knowledge_path_steps`、candidate 区→候选库各表、alias→`legacy_mappings`）。现 `guard:registry` 已转绿，`guard:*` 8/8 全通。注：`pnpm guard` 末步 `pnpm test` 仍有 21 failed（ESC-05 已知，属库层不变量违反/测试污染，**不在此修复、不强行改绿**）。
-
-### 4.2 数据库层可处置差距（按可立即动手排序）
-1. **B 组 · R15 第二批 6 表晋级闸门**：目前仅 `claims`/`discovery_candidates`/`review_queue`/`visual_assets`/`visual_entity_links` 5 表有触发器；`entities`/`evidence`/`cultural_*`/`historical_*`/`relations` 等核心表缺晋级强制（仅有只读监控）。→ 补触发器。
-2. **B 组 · cultural_* 门禁审计覆盖**：`evidence_gate_audit` 对 5 张 `cultural_*` 表 **0 行覆盖**（entity/evidence/visual_asset/relation/claim/historical_* 均有）。→ 扩展审计写入。
-3. **B 组 · 状态表达收敛**：跨表存在 `status` / `verification_status` / `eligibility_status` / `triage_outcome` / `review_tier` 共 5+ 种状态列，与 C3 §4.1 单一状态机不符。→ 收敛 + 守卫。
-4. **E 组 · entities.canonical_name 367 组重名**：未做 resolution，与 `identifier-registry.json` 绑定。→ 标识符治理（非冻结）。
-5. **轻微 · review_queue 293 legacy 行 `triage_outcome=NULL`**：M2 前的存量，可按规则回填 auto/hold。
-
-### 4.3 已确认闭合（基线佐证）
-- **B-09 来源门禁已接线**：`guard:source-gate` `db_providers=22 resolved=22 unknown=0`，真库 22 种 provider 全部可解析。
-- **M2 review_queue 三分机制已落地**：`triage_outcome` 列存在、触发器就位（仅存量 293 行未填）。
-- **R15 eligibility 已落地**：`visual_assets` 默认 `pending_review`，`gate_passed=8` = effective_visual_assets。
-
-### 4.4 冻结 / A 组（本基线不处置）
-- 冻结：1246 夜跑图（`va_elig` 中 pending 1212 / excluded 68）、`SHL-LEGACY-COORDS` 240（全零证据）、`visual_assets` `depicted_period` 写死。
-- A 组 BLOCKED：RECON-02 / ESC-02 / ESC-03 / ESC-05①③。

@@ -1,0 +1,150 @@
+{
+  "tag": "WRITE-TEST-20261003",
+  "mode": "DRY_RUN",
+  "env": "dev",
+  "cutoff": "2026-10-03T15:16:00.000Z",
+  "interval_min": 0.05,
+  "started_at": "2026-10-03T15:14:53.838Z",
+  "jobs": {
+    "images-shanghai-verified": {
+      "ok": true,
+      "total": 727,
+      "inserted": 0,
+      "triaged": 0,
+      "skipped": 704,
+      "bad_status": 23,
+      "unverified_status": 0,
+      "not_image": 0,
+      "at": "2026-10-03T15:14:54.059Z"
+    },
+    "images-shanghai-census": {
+      "ok": true,
+      "total": 727,
+      "inserted": 0,
+      "triaged": 0,
+      "skipped": 0,
+      "bad_status": 0,
+      "unverified_status": 727,
+      "not_image": 0,
+      "at": "2026-10-03T15:14:59.260Z"
+    },
+    "coords-wikidata": {
+      "ok": true,
+      "filled": 2,
+      "matched": 2,
+      "inserted": 0,
+      "triaged": 0,
+      "at": "2026-10-03T15:15:04.588Z"
+    },
+    "unattended.source-refresh": {
+      "ok": true,
+      "total": 95,
+      "inserted": 0,
+      "would_insert": 95,
+      "skipped": 0,
+      "at": "2026-10-03T15:15:09.891Z"
+    },
+    "unattended.evidence-fragment": {
+      "ok": true,
+      "dry_run": true,
+      "normalized": 0,
+      "new_evidence": 1,
+      "would_new_evidence": 1,
+      "at": "2026-10-03T15:15:15.160Z"
+    },
+    "unattended.candidate-extraction": {
+      "ok": true,
+      "dry_run": true,
+      "new_entities": 0,
+      "would_new_entities": 0,
+      "at": "2026-10-03T15:15:20.489Z"
+    },
+    "unattended.deterministic-resolution": {
+      "ok": true,
+      "dry_run": true,
+      "relations_scanned": 0,
+      "audited": 0,
+      "would_audited": 0,
+      "at": "2026-10-03T15:15:25.693Z"
+    },
+    "unattended.relation-weave": {
+      "ok": true,
+      "dry_run": true,
+      "relations_scanned": 0,
+      "audited": 0,
+      "would_audited": 0,
+      "at": "2026-10-03T15:15:30.927Z"
+    },
+    "unattended.gate-projection": {
+      "ok": true,
+      "dry_run": true,
+      "claims_scanned": 8,
+      "would_audit_unaudited": 0,
+      "would_passed": 0,
+      "would_held": 0,
+      "would_rejected": 0,
+      "would_promote": 0,
+      "projection_paths_would_build": 8,
+      "at": "2026-10-03T15:15:36.152Z"
+    },
+    "src-_work_titles.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:_work_titles.json",
+      "at": "2026-10-03T15:15:41.159Z"
+    },
+    "src-cbdb_people.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:cbdb_people.json",
+      "at": "2026-10-03T15:15:46.174Z"
+    },
+    "src-clan_pdf_index.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:clan_pdf_index.json",
+      "at": "2026-10-03T15:15:51.182Z"
+    },
+    "src-clans.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:clans.json",
+      "at": "2026-10-03T15:15:56.204Z"
+    }
+  },
+  "counters": {
+    "jobs_done": 13,
+    "jobs_failed": 0,
+    "inserted": 0
+  },
+  "failures": [],
+  "verdict": "PASS WITH HOLD",
+  "registry": {
+    "path": "specs/data-production/production-registry.json",
+    "entries": 14,
+    "queued": 106,
+    "declared": 106,
+    "runnable": 104,
+    "forbidden": [],
+    "preflight_excluded": [
+      {
+        "id": "images-commons-baoshan",
+        "kind": "images",
+        "reason": "未识别出条目数组（JSON 结构不符）"
+      },
+      {
+        "id": "images-commons-maps",
+        "kind": "images",
+        "reason": "未识别出条目数组（JSON 结构不符）"
+      }
+    ],
+    "source_gate": {
+      "provider": "hushang_legacy",
+      "canonical": "hushang_legacy",
+      "tier": "LEGACY",
+      "evidence_allowed": false
+    }
+  },
+  "stop_reason": "CUTOFF_REACHED",
+  "finished_at": "2026-10-03T15:16:01.220Z"
+}

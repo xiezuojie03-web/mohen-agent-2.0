@@ -26,8 +26,18 @@ const PRODUCTION = [
   { id: "unattended.evidence-fragment", kind: "evidence" },
   { id: "unattended.candidate-extraction", kind: "extraction" },
   { id: "unattended.deterministic-resolution", kind: "resolution" },
-  { id: "unattended.relation-weave", kind: "resolution" },
+  { id: "unattended.relation-weave", kind: "weave" },
   { id: "unattended.gate-projection", kind: "gate" },
+  // [C4 · 2026-10-04] 1246 图（R25 解冻部分）并入主线：题录证据 → 图-实体链接 → 资格判定。
+  // 与 kind=images 的「图片入库」刻意分开：本作业不新增图、不改既有图，只做链接与判定。
+  { id: "unattended.image-link", kind: "imagelink" },
+  // [C5 · 2026-10-05] 外部扩源（R19 闸门已开）：身份线（Wikidata 身份锚点 + 上海行政区约束的外
+  // 部对象发现）在前，视觉线（Commons 按 P18 指认取回文件）在后 —— 顺序不可颠倒，
+  // 视觉线的输入来自身份线本批产出。
+  { id: "unattended.external-identity", kind: "extid" },
+  { id: "unattended.external-visual", kind: "extvis" },
+  // [C6 · 2026-10-05] E 组：canonical_name 重名 resolution（只登记结论，不改实体行）。
+  { id: "unattended.name-resolution", kind: "nameres" },
 ];
 
 // 旧库（hushang-jingwei）预抓取 JSON 清单。这些作业只做「登记来源 + Raw 快照」，

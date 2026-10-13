@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MoHen Human Review Stage Report",
+  "type": "object",
+  "required": [
+    "stage",
+    "data_layer",
+    "gate",
+    "scope",
+    "content_stats",
+    "narrative_relevant_records",
+    "gaps_and_counterexamples",
+    "owner_decision"
+  ],
+  "properties": {
+    "stage": {
+      "enum": [
+        "D01",
+        "D02",
+        "D03",
+        "D04",
+        "D05"
+      ]
+    },
+    "data_layer": {
+      "enum": [
+        "L0",
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ]
+    },
+    "gate": {
+      "enum": [
+        "G0",
+        "G1",
+        "G2",
+        "G3",
+        "G4"
+      ]
+    },
+    "scope": {
+      "type": "object"
+    },
+    "content_stats": {
+      "type": "object"
+    },
+    "narrative_relevant_records": {
+      "type": "array"
+    },
+    "gaps_and_counterexamples": {
+      "type": "array"
+    },
+    "owner_decision": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "ACCEPT",
+        "DEEPEN",
+        "DROP",
+        null
+      ]
+    }
+  }
+}

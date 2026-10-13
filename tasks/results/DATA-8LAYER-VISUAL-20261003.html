@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>墨痕 · 八层数据架构可视化报告 · 2026-10-03</title>
+<style>
+  :root{
+    --bg:#0e1116; --panel:#161b22; --panel2:#1c2430; --line:#2a3441;
+    --ink:#e6edf3; --ink2:#9fb0c0; --ink3:#6b7c8c;
+    --l0:#4c8dff; --l1:#37c2d0; --l2:#49c17a; --l3:#c9a227; --l4:#c07de8;
+    --l5:#5a6b7d; --l6:#5a6b7d; --l7:#5a6b7d;
+    --new:#ff8c42; --audit:#4a5568;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Segoe UI","Microsoft YaHei",-apple-system,sans-serif;line-height:1.6}
+  .wrap{max-width:1180px;margin:0 auto;padding:32px 24px 80px}
+  header{border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:28px}
+  h1{font-size:26px;margin:0 0 6px;letter-spacing:.5px}
+  .sub{color:var(--ink2);font-size:13px}
+  .tag{display:inline-block;padding:2px 9px;border-radius:11px;font-size:11px;margin-right:6px;vertical-align:middle}
+  .t-new{background:rgba(255,140,66,.16);color:var(--new);border:1px solid rgba(255,140,66,.4)}
+  .t-audit{background:rgba(74,85,104,.25);color:#9aa8b8;border:1px solid #3a4553}
+  .t-ok{background:rgba(73,193,122,.14);color:var(--l2);border:1px solid rgba(73,193,122,.35)}
+  h2{font-size:19px;margin:44px 0 14px;padding-left:11px;border-left:4px solid var(--l1)}
+  h3{font-size:15px;margin:26px 0 10px;color:var(--ink)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:18px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .card .n{font-size:28px;font-weight:600;letter-spacing:-.5px}
+  .card .l{font-size:12px;color:var(--ink2);margin-top:4px}
+  .card.new{border-color:rgba(255,140,66,.45);background:linear-gradient(180deg,rgba(255,140,66,.07),transparent)}
+  .card.audit{border-color:#39424e;background:#141920}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:14px 0}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--ink3);font-weight:500;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+  tr.isnew td{background:rgba(255,140,66,.06)}
+  code{background:#0b0f14;padding:1px 6px;border-radius:4px;font-size:12px;color:#a8d5ff;
+    font-family:"Cascadia Mono",Consolas,monospace}
+  .bar{height:22px;border-radius:4px;background:var(--panel2);position:relative;overflow:hidden}
+  .bar > i{position:absolute;left:0;top:0;bottom:0;display:block;border-radius:4px}
+  .layer-row{display:grid;grid-template-columns:210px 1fr 150px;gap:12px;align-items:center;margin:9px 0}
+  .layer-name{font-size:13px}
+  .layer-name small{display:block;color:var(--ink3);font-size:11px}
+  .layer-val{font-size:12px;color:var(--ink2);text-align:right;font-variant-numeric:tabular-nums}
+  .quote{border-left:3px solid var(--l1);background:#101720;padding:10px 14px;margin:8px 0;
+    font-size:13px;color:#cfe0ee;border-radius:0 6px 6px 0}
+  .quote .meta{color:var(--ink3);font-size:11.5px;margin-top:5px}
+  .tl{position:relative;margin:18px 0 8px;padding-left:8px}
+  .tl::before{content:"";position:absolute;left:52px;top:6px;bottom:6px;width:2px;background:var(--line)}
+  .tl-item{display:grid;grid-template-columns:70px 1fr;gap:16px;margin:11px 0;position:relative}
+  .tl-year{font-size:12.5px;color:var(--l3);text-align:right;font-variant-numeric:tabular-nums;padding-top:1px}
+  .tl-body{background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:9px 13px;font-size:13px}
+  .tl-body .ty{color:var(--ink3);font-size:11px;margin-right:7px;text-transform:uppercase;letter-spacing:.5px}
+  .conflict{border-color:rgba(201,162,39,.45)}
+  .empty{border:1px dashed #3a4553;border-radius:10px;padding:16px 20px;color:var(--ink3);
+    font-size:13px;background:repeating-linear-gradient(45deg,transparent,transparent 9px,rgba(255,255,255,.012) 9px,rgba(255,255,255,.012) 18px)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:860px){.grid2{grid-template-columns:1fr}.layer-row{grid-template-columns:150px 1fr 110px}}
+  footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);color:var(--ink3);font-size:12px}
+  .note{font-size:12.5px;color:var(--ink2);background:#101720;border:1px solid var(--line);
+    border-radius:8px;padding:12px 14px;margin:10px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>墨痕 · 八层数据架构可视化报告</h1>
+  <div class="sub">
+    数据库 <code>mohen_dev</code>（本地 PostgreSQL 主库，R6 真相源）｜ 实测时间 2026-10-03｜
+    口径：<b>只统计可叙事数据</b>，审计与控制面表单独列示并排除出叙事分析
+  </div>
+  <div style="margin-top:10px">
+    <span class="tag t-new">本轮新增：Research Workspace 8 表 / 10,002 行</span>
+    <span class="tag t-audit">已排除：审计与控制面 4 表 / 53,116 行</span>
+    <span class="tag t-ok">0 自动晋级 · 0 Truth 写入</span>
+  </div>
+</header>
+
+<h2>一、总量概览</h2>
+<div class="cards">
+  <div class="card"><div class="n">36</div><div class="l">public 表总数</div></div>
+  <div class="card"><div class="n">80,681</div><div class="l">全库行数</div></div>
+  <div class="card"><div class="n" style="color:var(--l2)">27,565</div><div class="l">可叙事行数（32 表）</div></div>
+  <div class="card audit"><div class="n" style="color:#9aa8b8">53,116</div><div class="l">审计 / 控制面行数（4 表，不叙事）</div></div>
+  <div class="card new"><div class="n" style="color:var(--new)">10,002</div><div class="l">本轮新增行数（8 表，36.3% 可叙事）</div></div>
+</div>
+<div class="note">
+  可叙事行数 = L0 271 + L1 7,911 + L2 9,336 + L3 4 + L4 41 + Research Workspace 10,002。
+  审计表（<code>evidence_gate_audit</code> 52,210 · <code>review_queue</code> 879 · <code>human_review_decisions</code> 13 · <code>ingest_runs</code> 14）按你的要求**不计入**下述任何叙事分析。
+</div>
+
+<h2>二、八层数据地图（按行数比例）</h2>
+<div class="panel">
+  <div class="layer-row">
+    <div class="layer-name">L0 · Cultural Sources<small>来源与材料本身</small></div>
+    <div class="bar"><i style="width:2.9%;background:var(--l0)"></i></div>
+    <div class="layer-val">1 表 · 271 行</div>
+  </div>
+  <div class="layer-row">
+    <div class="layer-name">L1 · Evidence &amp; Provenance<small>证据与出处（叙事的根）</small></div>
+    <div class="bar"><i style="width:84.7%;background:var(--l1)"></i></div>
+    <div class="layer-val">4 表 · 7,911 行</div>
+  </div>
+  <div class="layer-row">
+    <div class="layer-name">L2 · Cultural World<small>人 / 地 / 物 / 事件 / 关系</small></div>
+    <div class="bar"><i style="width:100%;background:var(--l2)"></i></div>
+    <div class="layer-val">14 表 · 9,336 行</div>
+  </div>
+  <div class="layer-row">
+    <div class="layer-name">L3 · Meaning &amp; Present Connection<small>意义与今天的连接</small></div>
+    <div class="bar"><i style="width:0.6%;background:var(--l3)"></i></div>
+    <div class="layer-val">2 表 · 4 行</div>
+  </div>
+  <div class="layer-row">
+    <div class="layer-name">L4 · Discovery / Agent Read Model<small>可安全读取的投影</small></div>
+    <div class="bar"><i style="width:0.9%;background:var(--l4)"></i></div>
+    <div class="layer-val">3 表 · 41 行</div>
+  </div>
+  <div class="layer-row">
+    <div class="layer-name" style="color:var(--new)">Research Workspace<small>跨 L0/L1 之前的逻辑工作区（本轮新增）</small></div>
+    <div class="bar"><i style="width:107%;background:var(--new)"></i></div>
+    <div class="layer-val" style="color:var(--new)">8 表 · 10,002 行</div>
+  </div>
+  <div class="layer-row">
+    <div class="layer-name" style="color:var(--l5)">L5 · Experience Runtime<small>体验运行时</small></div>
+    <div class="bar"><i style="width:0.6%;background:var(--l5)"></i></div>
+    <div class="layer-val">无表</div>
+  </div>
+  <div class="layer-row">
+    <div class="layer-name" style="color:var(--l6)">L6 · Participation<small>参与与贡献</small></div>
+    <div class="bar"><i style="width:0.6%;background:var(--l6)"></i></div>
+    <div class="layer-val">无表</div>
+  </div>
+  <div class="layer-row">
+    <div class="layer-name" style="color:var(--l7)">L7 · Living Culture<small>活态文化</small></div>
+    <div class="bar"><i style="width:0.6%;background:var(--l7)"></i></div>
+    <div class="layer-val">无表</div>
+  </div>
+  <div class="layer-val" style="text-align:left;color:var(--ink3);margin-top:8px">
+    条宽以 L2（9,336 行）为 100% 线性标定。Research Workspace 不是新层，而是位于 L0/L1 之前与之间的逻辑工作区（C3 §2.9）。
+  </div>
+</div>
+
+<h2>三、逐层明细（可叙事）</h2>
+
+<div class="panel">
+  <h3 style="margin-top:0">L0 · Cultural Sources <span class="tag t-ok">271 行</span></h3>
+  <table><thead><tr><th>表</th><th>行数</th><th>在叙事中的角色</th></tr></thead><tbody>
+    <tr><td><code>source_records</code></td><td class="num">271</td><td>来源主记录：Wikimedia Commons 119 · hushang_legacy 59 · 上海图书馆开放数据 28 · Wikidata 24 · amap 10 · 其他</td></tr>
+  </tbody></table>
+  <div class="note">来源层偏薄：<b>271 条来源对应 7,376 条证据</b>，平均每来源 27 条证据，来源颗粒度较粗（多为整库抓取而非逐份文献）。</div>
+</div>
+
+<div class="panel">
+  <h3 style="margin-top:0">L1 · Evidence &amp; Provenance <span class="tag t-ok">7,911 行 · 叙事的根</span></h3>
+  <table><thead><tr><th>表</th><th>行数</th><th>在叙事中的角色</th></tr></thead><tbody>
+    <tr><td><code>evidence</code></td><td class="num">7,376</td><td><b>可定位的证据片段（含 locator / quote / 时间提示）—— 本库最大的叙事资产</b></td></tr>
+    <tr><td><code>relation_evidence</code></td><td class="num">496</td><td>关系 ↔ 证据绑定</td></tr>
+    <tr><td><code>claim_evidence</code></td><td class="num">23</td><td>Claim ↔ 证据绑定</td></tr>
+    <tr><td><code>evidence_fragments</code></td><td class="num">16</td><td>最小可引用片段（Fragment / Span）</td></tr>
+  </tbody></table>
+  <div class="note"><b>金泽相关证据 3,412 条</b>，占全部证据的 <b>46%</b>——库的重心非常集中，这既是优势（主样板扎实）也是风险（单点依赖）。</div>
+</div>
+
+<div class="panel">
+  <h3 style="margin-top:0">L2 · Cultural World <span class="tag t-ok">9,336 行</span></h3>
+  <table><thead><tr><th>表</th><th>行数</th><th>在叙事中的角色</th></tr></thead><tbody>
+    <tr><td><code>entities</code></td><td class="num">3,553</td><td>人物 2,973 · 未分类 230 · 事件 135 · 人物(figure) 67 · 建筑 56 · 地点 37 · 器物 35 · 镇 11 · 方志 9</td></tr>
+    <tr><td><code>legacy_mappings</code></td><td class="num">3,405</td><td>旧库 ID 映射（技术性，非直接叙事）</td></tr>
+    <tr><td><code>visual_assets</code></td><td class="num">1,288</td><td>图像 1,246 · 照片 42；<b>其中过门禁可用仅 8 张</b></td></tr>
+    <tr><td><code>historical_feature_anchors</code></td><td class="num">249</td><td>空间锚点（含现代点，非历史位置证明）</td></tr>
+    <tr><td><code>historical_features</code></td><td class="num">245</td><td>历史特征：事件 134 · 建筑 37 · 地点 35 · 镇 11 · 器物 11 · 人物 10 · 桥 2</td></tr>
+    <tr><td><code>relations</code></td><td class="num">521</td><td>关系（全部 candidate）</td></tr>
+    <tr><td><code>claims</code></td><td class="num">20</td><td>主张（全部 candidate，tier C）</td></tr>
+    <tr><td><code>cultural_events</code></td><td class="num">9</td><td><b>金泽时间线事件（本库最可直接叙事的一段）</b></td></tr>
+    <tr><td><code>cultural_relation_claims</code></td><td class="num">8</td><td>关系主张（桥—水—寺，人—寺）</td></tr>
+    <tr><td><code>visual_entity_links</code></td><td class="num">22</td><td>视觉资产 ↔ 对象候选关联</td></tr>
+    <tr><td><code>historical_change_records</code></td><td class="num">5</td><td>变化记录（before → after）</td></tr>
+    <tr><td><code>historical_spatial_relations</code></td><td class="num">8</td><td>空间关系主张</td></tr>
+    <tr><td><code>historical_spatial_slices</code></td><td class="num">2</td><td>空间切片</td></tr>
+    <tr><td><code>cultural_conflicts</code></td><td class="num">1</td><td>冲突证据集（普济桥年代）</td></tr>
+  </tbody></table>
+  <div class="note"><b>关键状态</b>：<code>entities</code> 3,553 条、<code>relations</code> 521 条、<code>claims</code> 20 条<b>全部为 candidate，published = 0</b>；<code>visual_assets</code> 1,288 张中 <code>pending_review</code> 1,212、<code>excluded</code> 68、<code>gate_passed</code> 仅 <b>8</b>（视图 <code>effective_visual_assets</code> = 8）。<br>
+  即：<b>可信世界的"骨架"已存在，但按 R15 通则尚未有任何一条被晋级为"可用/已发布"</b>（这需要人审，不是缺陷）。</div>
+</div>
+
+<div class="grid2">
+  <div class="panel">
+    <h3 style="margin-top:0">L3 · Meaning &amp; Present <span class="tag t-ok">4 行</span></h3>
+    <table><thead><tr><th>表</th><th>行数</th></tr></thead><tbody>
+      <tr><td><code>cultural_meaning_candidates</code></td><td class="num">2</td></tr>
+      <tr><td><code>cultural_present_connections</code></td><td class="num">2</td></tr>
+    </tbody></table>
+    <div class="quote">颐浩寺以南宋名相吕颐浩故宅为基、以其人命名——寺与人的绑定是金泽宋韵的一条可感线索。<div class="meta">meaning_candidate · SUPPORTED_CANDIDATE</div></div>
+    <div class="quote">万安桥与普济桥一北一南、同跨金泽塘，并称『姐妹桥』，是金泽『古桥博物馆』的双璧。<div class="meta">meaning_candidate · SUPPORTED_CANDIDATE</div></div>
+    <div class="quote">今址金泽镇金溪居委会迎祥街12号；遗址—复建双层：元代遗物（不断云石刻、元碑、古银杏）与 1992 原址重建殿宇并置。<div class="meta">present_connection · site_vs_rebuilt</div></div>
+  </div>
+  <div class="panel">
+    <h3 style="margin-top:0">L4 · Discovery / Agent Read Model <span class="tag t-ok">41 行</span></h3>
+    <table><thead><tr><th>表</th><th>行数</th></tr></thead><tbody>
+      <tr><td><code>knowledge_path_steps</code></td><td class="num">26</td></tr>
+      <tr><td><code>knowledge_paths</code></td><td class="num">11</td></tr>
+      <tr><td><code>discovery_candidates</code></td><td class="num">4</td></tr>
+    </tbody></table>
+    <div class="quote">金泽地名层积（白苎里 → 金泽）<div class="meta">knowledge_path · 问：金泽之名从何而来？</div></div>
+    <div class="quote">桥乡谱系（金泽 · 古桥群 → 三座宋元古桥）<div class="meta">knowledge_path · 问：金泽为何被称为『桥乡／古桥博物馆』？</div></div>
+    <div class="quote">金泽『古桥博物馆』：宋元清桥群与姐妹桥谱系<div class="meta">discovery_candidate · 人文价值：以一镇之力保存跨宋元清三代的桥型实物序列</div></div>
+    <div class="quote">颐浩寺：寺名与人物记忆的绑定<div class="meta">discovery_candidate · 『人名—地名—寺名』互文的样本</div></div>
+  </div>
+</div>
+
+<div class="panel">
+  <h3 style="margin-top:0">L5 / L6 / L7 · 体验运行时 / 参与 / 活态文化 <span class="tag t-audit">尚无数据</span></h3>
+  <div class="empty">L5 Experience Runtime、L6 Participation、L7 Living Culture 三层<b>当前没有任何表</b>。<br>
+  这与项目阶段一致：H2 主线仍是「让可信世界在真实金泽体验中被感受到」，本轮工作属于其内部的<b>数据能力验证子线</b>，不产出体验态、用户参与或活态文化数据。</div>
+</div>
+
+<h2>四、本轮新增数据的准确位置 <span class="tag t-new">Research Workspace</span></h2>
+<div class="panel">
+  <div class="note" style="border-color:rgba(255,140,66,.35)">
+    <b>落点：<code>public.research_*</code> 八张表</b>（迁移 <code>202610030010_research_workspace.sql</code>），运行 <code>run_id = 09030790-66c6-4dea-877c-ec49bfdcb19a</code>（LR-ADS-01 首轮，WRITE 模式）。<br>
+    <b>它们不属于 L0–L7 任何一层</b>：C3 §2.9 明确 Research Workspace 是「跨 L0/L1 之前与之间的逻辑工作区」，承载"可能的世界"，与承载"可信的世界"的 Truth Store 逻辑分离。
+  </div>
+  <table><thead><tr><th>表</th><th>行数</th><th>对应 D 阶段</th><th>叙事定位</th></tr></thead><tbody>
+    <tr class="isnew"><td><code>research_run</code></td><td class="num">1</td><td>—</td><td>作业归因（三道闸状态、research_scope）</td></tr>
+    <tr class="isnew"><td><code>research_source_inventory</code></td><td class="num">95</td><td>D01 盘点</td><td>95 个 Legacy 来源的载体 / 可读性 / 权利</td></tr>
+    <tr class="isnew"><td><code>research_observation</code></td><td class="num">2,714</td><td>D02 内容读取</td><td>带 locator 的内容级观察（金泽相关 69 条）</td></tr>
+    <tr class="isnew"><td><code>research_mention</code></td><td class="num">3,791</td><td>D03 Mention</td><td>人物/地点/作品/机构提及（resolved 2,149）</td></tr>
+    <tr class="isnew"><td><code>research_source_dependency</code></td><td class="num">19</td><td>D03 转引保护</td><td>同源/转引关系，防止"5 篇转引算 5 个来源"</td></tr>
+    <tr class="isnew"><td><code>research_signal</code></td><td class="num">2,469</td><td>D04 关联信号</td><td>A01–A07 单一信号（可回放）</td></tr>
+    <tr class="isnew"><td><code>research_association_candidate</code></td><td class="num">893</td><td>D04 关联候选</td><td>AVS 打分 + 支持/反对信号 + why_interesting</td></tr>
+    <tr class="isnew"><td><code>research_task</code></td><td class="num">20</td><td>D05 人文精选</td><td>转入 Directed Research 的任务（尚未接上 N 系列队列）</td></tr>
+  </tbody></table>
+  <div class="note">
+    <b>安全状态</b>：0 条写入任何 Truth 表（<code>truth_leak = 0</code>）· 0 个候选自动晋级（库层 CHECK 强制）· 0 条新增 <code>review_queue</code> 行（研究长尾不制造人工债务）· 全部 893 个候选均跨来源。
+  </div>
+</div>
+
+<h2>五、可叙事内容样本（只读展示，均为库中真实行）</h2>
+
+<div class="panel">
+  <h3 style="margin-top:0">L2 · 金泽九-event 时间线（<code>cultural_events</code> 全 9 条）</h3>
+  <div class="tl">
+    <div class="tl-item"><div class="tl-year">1260–1264</div><div class="tl-body"><span class="ty">founded</span>万安桥创建（宋景定年间）</div></div>
+    <div class="tl-item"><div class="tl-year">1260</div><div class="tl-body"><span class="ty">founded</span>颐浩寺创建</div></div>
+    <div class="tl-item"><div class="tl-year">1265</div><div class="tl-body conflict"><span class="ty">conflicted</span>普济桥建造年代冲突值（1265）<span style="color:var(--ink3);font-size:11.5px">— 已登记为 cultural_conflicts，未选边</span></div></div>
+    <div class="tl-item"><div class="tl-year">1267</div><div class="tl-body"><span class="ty">founded</span>普济桥建（南宋咸淳三年）</div></div>
+    <div class="tl-item"><div class="tl-year">1288</div><div class="tl-body"><span class="ty">added_structure</span>颐浩寺建大雄宝殿等</div></div>
+    <div class="tl-item"><div class="tl-year">1295</div><div class="tl-body"><span class="ty">upgraded</span>颐浩寺升院为寺</div></div>
+    <div class="tl-item"><div class="tl-year">1342</div><div class="tl-body"><span class="ty">added_structure</span>万安桥加建廊亭（元至正二年）</div></div>
+    <div class="tl-item"><div class="tl-year">1938</div><div class="tl-body"><span class="ty">destroyed</span>颐浩寺大部分建筑毁于日军轰炸</div></div>
+    <div class="tl-item"><div class="tl-year">1992</div><div class="tl-body"><span class="ty">rebuilt</span>颐浩寺原址重建寺院</div></div>
+  </div>
+  <div class="note">这段 1260 → 1992 的九节点链条是全库<b>唯一一条已具备"变化链"雏形的叙事</b>：创建 → 增建 → 升格 → 毁 → 重建，直接对应母题 M5「今天还剩多少过去」。</div>
+</div>
+
+<div class="grid2">
+  <div class="panel">
+    <h3 style="margin-top:0">L1 · 证据原文（金泽）</h3>
+    <div class="quote">位于金泽镇北市（沪青平公路东300米处），又称万安亭桥，俗称紫石桥，单孔石拱桥，东西向，跨市河。宋景定年间(1260~1264)建，元至正二年(1342)桥上加建廊亭，桥下有佛阁，后废。明嘉靖万历及清乾隆间曾三次重修……<div class="meta">evidence · text · subject_hint=万安桥 · time_hint=1260–1264 / 1342 / 1999</div></div>
+    <div class="quote">步行古桥 · 上海市文物保护单位 · 金泽「古桥博物馆」镇馆之作<div class="meta">evidence · text · subject_hint=普济桥 · time_hint=宋</div></div>
+    <div class="quote">金泽庙会以一年两度的「香汛」为核心：农历三月二十八日东岳神诞赛会（廿八汛）与九月初九重阳赛会（重阳汛）。道光《金泽小志》直载……<div class="meta">entities · artifact ·「金泽庙会 · 廿八汛与重阳汛」</div></div>
+  </div>
+  <div class="panel">
+    <h3 style="margin-top:0">L2 · 水乡风物网络（<code>entities</code> · artifact 抽样）</h3>
+    <div class="quote">田山歌（金泽） · 耘稻人的歌声<div class="meta">artifact · 生产与信仰</div></div>
+    <div class="quote">泖蜘蛛与练塘月饼 · 水乡的两味<div class="meta">artifact · 地方物产</div></div>
+    <div class="quote">珠里兴市 · 摇快船 ／ 张堰老街 · 秦望山下市集 ／ 十三牌坊九环龙 · 小小新场赛苏州<div class="meta">artifact · 集市传统（跨镇网络）</div></div>
+    <div class="quote">金泽锭子谢家车 ／ 金泽状元糕 ／ 嘉定竹刻 ／ 枫泾丁蹄 ／ 高桥松饼<div class="meta">artifact · 手工业与物产</div></div>
+  </div>
+</div>
+
+<h2>六、结论与缺口</h2>
+<div class="panel">
+  <table><thead><tr><th>维度</th><th>现状</th><th>判断</th></tr></thead><tbody>
+    <tr><td>叙事素材厚度</td><td>L1 证据 7,376 条（金泽 3,412）· L2 事件 9 · L3 意义 2 · L4 路径 11</td><td><span class="tag t-ok">够用</span>金泽主样板已有可组织的内容级材料</td></tr>
+    <tr><td>晋级状态</td><td>entities / relations / claims 全为 candidate，published = 0；视觉可用 8 / 1,288</td><td><span class="tag t-audit">待人审</span>R15 要求门禁记录 + 人工裁决，非技术缺陷</td></tr>
+    <tr><td>研究区（本轮新增）</td><td>10,002 行，893 跨来源候选，20 个精选任务</td><td><span class="tag t-new">机制成立</span>但 Top 20 中仅 5 条可用（见结果文件 §9.1）</td></tr>
+    <tr><td>研究 → 严证衔接</td><td><code>research_task</code> 未接入 Directed 作业队列</td><td><span class="tag t-audit">断点</span>P6 唯一阻塞点</td></tr>
+    <tr><td>L3 / L4 厚度</td><td>合计 45 行</td><td><span class="tag t-audit">偏薄</span>意义与发现层远小于证据层，叙事需从这里"长"出来</td></tr>
+    <tr><td>L5 / L6 / L7</td><td>无表</td><td><span class="tag t-audit">阶段内</span>体验态与活态文化尚未进入数据生产范围</td></tr>
+  </tbody></table>
+</div>
+
+<footer>
+  口径说明：行数为 2026-10-03 对 <code>mohen_dev</code> 的直接 <code>count(*)</code> 实测；层级归属依据 <code>C3 V1.2 §2.1–§2.9</code>；
+  视图 <code>effective_visual_assets</code> = 8。审计与控制面（evidence_gate_audit / review_queue / human_review_decisions / ingest_runs）按要求排除出叙事分析。
+  本报告只读，不含任何写操作。生成物：<code>tasks/results/DATA-8LAYER-VISUAL-20261003.html</code>。
+</footer>
+
+</div>
+</body>
+</html>

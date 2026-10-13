@@ -1,0 +1,503 @@
+{
+  "tag": "UNATTENDED-20261003",
+  "mode": "WRITE",
+  "env": "dev",
+  "cutoff": "2026-10-03T22:00:00.000Z",
+  "interval_min": 2,
+  "started_at": "2026-10-03T15:17:04.886Z",
+  "jobs": {
+    "images-shanghai-verified": {
+      "ok": true,
+      "total": 727,
+      "inserted": 0,
+      "triaged": 23,
+      "skipped": 704,
+      "bad_status": 23,
+      "unverified_status": 0,
+      "not_image": 0,
+      "at": "2026-10-03T15:17:05.424Z"
+    },
+    "images-shanghai-census": {
+      "ok": true,
+      "total": 727,
+      "inserted": 0,
+      "triaged": 727,
+      "skipped": 0,
+      "bad_status": 0,
+      "unverified_status": 727,
+      "not_image": 0,
+      "at": "2026-10-03T15:19:06.344Z"
+    },
+    "coords-wikidata": {
+      "ok": true,
+      "filled": 2,
+      "matched": 2,
+      "inserted": 0,
+      "triaged": 0,
+      "at": "2026-10-03T15:21:07.036Z"
+    },
+    "unattended.source-refresh": {
+      "ok": true,
+      "total": 95,
+      "inserted": 95,
+      "would_insert": 0,
+      "skipped": 0,
+      "at": "2026-10-03T15:23:21.626Z"
+    },
+    "unattended.evidence-fragment": {
+      "ok": true,
+      "dry_run": false,
+      "normalized": 0,
+      "new_evidence": 33,
+      "would_new_evidence": 0,
+      "at": "2026-10-03T15:25:22.435Z"
+    },
+    "unattended.candidate-extraction": {
+      "ok": true,
+      "dry_run": false,
+      "new_entities": 0,
+      "would_new_entities": 0,
+      "at": "2026-10-03T15:27:22.882Z"
+    },
+    "unattended.deterministic-resolution": {
+      "ok": true,
+      "dry_run": false,
+      "relations_scanned": 0,
+      "audited": 0,
+      "would_audited": 0,
+      "at": "2026-10-03T15:29:23.133Z"
+    },
+    "unattended.relation-weave": {
+      "ok": true,
+      "dry_run": false,
+      "relations_scanned": 0,
+      "audited": 0,
+      "would_audited": 0,
+      "at": "2026-10-03T15:31:23.340Z"
+    },
+    "unattended.gate-projection": {
+      "ok": true,
+      "claims_scanned": 8,
+      "audited": 0,
+      "passed": 0,
+      "held": 0,
+      "rejected": 0,
+      "would_promote": 0,
+      "promoted": 0,
+      "projection_paths": 8,
+      "at": "2026-10-03T15:33:24.047Z"
+    },
+    "src-_work_titles.json": {
+      "inserted": 1,
+      "at": "2026-10-03T15:35:24.254Z"
+    },
+    "src-cbdb_people.json": {
+      "inserted": 1,
+      "at": "2026-10-03T15:37:24.549Z"
+    },
+    "src-clan_pdf_index.json": {
+      "inserted": 1,
+      "at": "2026-10-03T15:39:24.794Z"
+    },
+    "src-clans.json": {
+      "inserted": 1,
+      "at": "2026-10-03T15:41:25.169Z"
+    },
+    "src-commons_baoshan_chuansha_20260831.json": {
+      "inserted": 1,
+      "at": "2026-10-03T15:43:25.430Z"
+    },
+    "src-commons_cats_drill_20260831.json": {
+      "inserted": 1,
+      "at": "2026-10-03T15:45:25.705Z"
+    },
+    "src-commons_external_maps_20260831.json": {
+      "inserted": 1,
+      "at": "2026-10-03T15:47:25.917Z"
+    },
+    "src-commons_images.json": {
+      "inserted": 1,
+      "at": "2026-10-03T15:49:26.200Z"
+    },
+    "src-commons_oldmaps_raw_20260831.json": {
+      "inserted": 1,
+      "at": "2026-10-03T15:51:26.516Z"
+    },
+    "src-coords_wikidata.json": {
+      "inserted": 1,
+      "at": "2026-10-03T15:53:26.785Z"
+    },
+    "src-dmz_zhujiajiao.json": {
+      "inserted": 1,
+      "at": "2026-10-03T15:55:27.005Z"
+    },
+    "src-events_linked.json": {
+      "inserted": 1,
+      "at": "2026-10-03T15:57:27.216Z"
+    },
+    "src-external_mapsource_probe_20260831.json": {
+      "inserted": 1,
+      "at": "2026-10-03T15:59:27.481Z"
+    },
+    "src-gazetteer_details.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:01:27.696Z"
+    },
+    "src-geo_placenames_shanghai.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:03:27.955Z"
+    },
+    "src-gj_14373_toc.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:05:28.358Z"
+    },
+    "src-gj_14386_entries.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:07:28.635Z"
+    },
+    "src-gj_14386_ocr.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:09:28.865Z"
+    },
+    "src-gj_3799_entries.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:11:29.140Z"
+    },
+    "src-gj_3799_ocr.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:13:29.383Z"
+    },
+    "src-gj_6922_entries.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:15:29.653Z"
+    },
+    "src-gj_6922_ocr.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:17:29.939Z"
+    },
+    "src-gj_fangzhi.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:19:30.187Z"
+    },
+    "src-gj_works____.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:21:30.578Z"
+    },
+    "src-gj_works______.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:23:30.899Z"
+    },
+    "src-gj_works_____.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:29:31.678Z"
+    },
+    "src-gj_works___.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:27:31.394Z"
+    },
+    "src-hsly_events.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:31:31.962Z"
+    },
+    "src-jinze_evolution_raw_20260830.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:33:32.280Z"
+    },
+    "src-jp_family_town_analysis.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:35:32.597Z"
+    },
+    "src-jp_family_town_sparql_analysis.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:37:32.885Z"
+    },
+    "src-jp_familyname_zhu.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:39:33.167Z"
+    },
+    "src-jp_persons_zhu.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:41:33.489Z"
+    },
+    "src-jp_shanghai_family_persons.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:43:33.760Z"
+    },
+    "src-jp_shanghai_persons_count.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:45:34.023Z"
+    },
+    "src-jp_shanghai_works.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:47:34.278Z"
+    },
+    "src-jp_works_all.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:49:34.539Z"
+    },
+    "src-jp_works_sparql.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:51:34.813Z"
+    },
+    "src-jp_zhu_deepdive.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:53:35.251Z"
+    },
+    "src-jp_zhu_persons.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:55:35.522Z"
+    },
+    "src-mcp_screenshot_ocr.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:57:35.816Z"
+    },
+    "src-mgts_104971_entries.json": {
+      "inserted": 1,
+      "at": "2026-10-03T16:59:36.202Z"
+    },
+    "src-mgts_104971_town_hits.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:01:36.486Z"
+    },
+    "src-mgts_31278_entries.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:03:36.902Z"
+    },
+    "src-mgts_31278_town_hits.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:05:37.167Z"
+    },
+    "src-mgts_4581_entries.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:07:37.425Z"
+    },
+    "src-mgts_4581_town_hits.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:09:37.710Z"
+    },
+    "src-mgts_4584_entries.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:11:38.029Z"
+    },
+    "src-mgts_4584_town_hits.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:13:38.264Z"
+    },
+    "src-mgts_4590_entries.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:15:38.510Z"
+    },
+    "src-mgts_4590_town_hits.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:17:39.051Z"
+    },
+    "src-mgts_87274_entries.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:19:39.318Z"
+    },
+    "src-mgts_90096_entries.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:21:39.721Z"
+    },
+    "src-mgts_92309_entries.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:23:40.027Z"
+    },
+    "src-mgts_92309_ocr.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:25:40.302Z"
+    },
+    "src-narrative_assets.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:27:40.720Z"
+    },
+    "src-p1a_attach_images_report_20260831_130954.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:29:41.007Z"
+    },
+    "src-probe_press_pagination_20260902.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:31:41.301Z"
+    },
+    "src-probe_s0_b_bk.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:33:41.571Z"
+    },
+    "src-probe_s0_image_match.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:35:41.844Z"
+    },
+    "src-probe_s0_photos.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:37:42.094Z"
+    },
+    "src-probe_s0_press.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:39:42.388Z"
+    },
+    "src-probe_s0_press_diag.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:41:42.827Z"
+    },
+    "src-probe_s0_press_diag2.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:43:43.103Z"
+    },
+    "src-probe_s0_yutu.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:45:43.498Z"
+    },
+    "src-protection_index.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:47:43.769Z"
+    },
+    "src-resource_probe2_20260831.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:49:44.059Z"
+    },
+    "src-resource_probe_20260831.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:51:44.305Z"
+    },
+    "src-rumsey_maps_raw_20260831.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:53:44.789Z"
+    },
+    "src-sh_protection_index.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:55:45.050Z"
+    },
+    "src-shanghai_images_census_20260905.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:57:45.332Z"
+    },
+    "src-shanghai_images_verified_20260905.json": {
+      "inserted": 1,
+      "at": "2026-10-03T17:59:45.596Z"
+    },
+    "src-sources_ledger.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:01:45.870Z"
+    },
+    "src-sources_ledger_volume_probe.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:03:46.146Z"
+    },
+    "src-souyun_poems_by_person.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:05:46.453Z"
+    },
+    "src-souyun_poems_by_place.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:07:46.734Z"
+    },
+    "src-suzhou_narrative_candidates.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:09:47.032Z"
+    },
+    "src-suzhou_narrative_review.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:11:47.306Z"
+    },
+    "src-suzhou_people_shanghai.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:13:47.591Z"
+    },
+    "src-verify_cbdb_20260831.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:15:47.921Z"
+    },
+    "src-verify_song_press_20260831.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:17:48.160Z"
+    },
+    "src-verify_souyun_20260831.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:19:48.424Z"
+    },
+    "src-verify_souyun_legacy30_20260831.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:21:48.708Z"
+    },
+    "src-yutu_catalog.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:23:49.019Z"
+    },
+    "src-yutu_catalog_20260831.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:25:49.305Z"
+    },
+    "src-yutu_catalog_checked.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:27:49.569Z"
+    },
+    "src-yutu_catalog_final_20260831.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:29:49.999Z"
+    },
+    "src-yutu_level3.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:31:50.338Z"
+    },
+    "src-yutu_meta_probe.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:33:50.610Z"
+    },
+    "src-yutu_plaquettes.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:35:50.962Z"
+    },
+    "src-yutu_plaquettes_checked.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:37:51.259Z"
+    },
+    "src-yutu_sparql_schema.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:39:51.499Z"
+    },
+    "src-yutu_triples_cache.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:41:51.847Z"
+    },
+    "src-yutu_verify_coverage.json": {
+      "inserted": 1,
+      "at": "2026-10-03T18:43:52.110Z"
+    }
+  },
+  "counters": {
+    "jobs_done": 104,
+    "jobs_failed": 0,
+    "inserted": 190
+  },
+  "failures": [],
+  "verdict": "STOPPED",
+  "registry": {
+    "path": "specs/data-production/production-registry.json",
+    "entries": 14,
+    "queued": 106,
+    "declared": 106,
+    "runnable": 104,
+    "forbidden": [],
+    "preflight_excluded": [
+      {
+        "id": "images-commons-baoshan",
+        "kind": "images",
+        "reason": "未识别出条目数组（JSON 结构不符）"
+      },
+      {
+        "id": "images-commons-maps",
+        "kind": "images",
+        "reason": "未识别出条目数组（JSON 结构不符）"
+      }
+    ],
+    "source_gate": {
+      "provider": "hushang_legacy",
+      "canonical": "hushang_legacy",
+      "tier": "LEGACY",
+      "evidence_allowed": false
+    }
+  },
+  "ingest_run_id": "e26f9ed9-08b6-4404-820d-9623a9369eb9",
+  "stop_reason": "STOPPED_FATAL",
+  "finished_at": "2026-10-03T22:00:26.114Z"
+}

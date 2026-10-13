@@ -1,29 +1,24 @@
 # mohen-vertical-slice
 
-Purpose: 纵向切片编排  
-Trigger: 实现完整用户体验链
+**Status:** TARGET · Phase C
+**Kind:** cross-cutting/reusable capability
+**Allowed Calling Stages:** D01, D02, D03, D04, D05
 
-## Preconditions
-先执行 `mohen-project-guard`；读取当前 Task。
+## Purpose
+Validation orchestration capability for end-to-end slices. It may observe multiple stages but owns no cross-layer final writes.
 
-## Steps
-1. 固定“一镇、一问、一主发现、一追问、一路线”。
-2. 列出从 Evidence 到 Experience 的最短依赖链。
-3. 先补最短板，不横向建设整个平台。
-4. 每层只做到足以贯通下一层。
-5. 以 3 分钟连续回放作为最终验收。
+## Contract
+- No independent D01–D05 Stage PASS unless explicitly designated as a Stage Owner (this Skill is not).
+- No final writes across multiple L layers.
+- Caller Stage owns persistence, Gate and downstream handoff.
+- Reuse existing implementation where possible; duplicate canonical entries are not allowed.
+- Exact executable entry is frozen during implementation phase.
 
-## Outputs
-- 结构化结果/报告；
-- changed/created files 清单；
-- 可复现验收命令；
-- unresolved / human-review 项。
+## Inputs / Outputs
+Defined per caller contract. Outputs must be typed capability results, not final cross-stage records.
 
-## Hard Rules
-禁止把纵向切片拆成长期孤立的技术工程。
+## Failure / Stop
+Stop when requested action would require this capability to own another Stage's persistence or Gate decision.
 
-## Acceptance
-输出必须能被下一 Skill/Task 直接消费；不能只给自然语言总结。
-
-## Failure / Recovery
-失败时保留 Raw/日志/中间结果，停止晋级；修复后从最近稳定状态重跑，不创建平行真源。
+## Canonical Entry
+`PENDING_PHASE_D`

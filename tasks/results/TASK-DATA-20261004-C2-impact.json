@@ -1,0 +1,80 @@
+{
+  "stage": "C2",
+  "generated_at": "2026-10-04T13:24:01.641Z",
+  "from": "2026-10-04T13:00:00Z",
+  "total_entities": 3041,
+  "total_relations": 2923,
+  "total_discoveries": 1138,
+  "mappings": 5,
+  "holds": 10157,
+  "entity_types": [
+    {
+      "entity_type": "place",
+      "c": 2052
+    },
+    {
+      "entity_type": "building",
+      "c": 989
+    }
+  ],
+  "signals": {
+    "time": {
+      "n": 0,
+      "pct": 0
+    },
+    "space": {
+      "n": 3041,
+      "pct": 100
+    },
+    "person": {
+      "n": 0,
+      "pct": 0
+    },
+    "relation": {
+      "n": 2923,
+      "pct": 96.1
+    }
+  },
+  "motifMatrix": {
+    "categories": [
+      "place",
+      "building"
+    ],
+    "motifs": [
+      "M1 关系世界",
+      "M2 地方结构",
+      "M3 生活地图",
+      "M4 生成过程",
+      "M5 连续性"
+    ],
+    "cells": {
+      "place": {
+        "M1": 0,
+        "M2": 2052,
+        "M3": 2052,
+        "M4": 1026,
+        "M5": 1026
+      },
+      "building": {
+        "M1": 495,
+        "M2": 989,
+        "M3": 989,
+        "M4": 989,
+        "M5": 989
+      }
+    },
+    "motifTotals": {
+      "M1": 495,
+      "M2": 3041,
+      "M3": 3041,
+      "M4": 2015,
+      "M5": 2015
+    },
+    "gmax": 2052
+  },
+  "redline": {
+    "verified": 0,
+    "published": 0,
+    "auto_1d": 0
+  }
+}

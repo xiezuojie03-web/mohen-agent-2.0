@@ -5,8 +5,9 @@ Trigger: 新增 API/PDF/图片/网页/地图原始资料
 
 ## 实体化档案（C2 §2.1 · C0 §11 R26）
 - **Entry**：`pipelines/legacy/unattended-runner.mjs`
-- **Registry 作业**：`src-*`、`coords-wikidata`、`unattended.source-refresh`
-- **Reuse Source**：新增来源 / 坐标采集复用本 Entry；动手前先查本档案与生产注册表，不得新建平行脚本。
+- **Registry 作业**：`src-*`、`coords-wikidata`、`unattended.source-refresh`、`unattended.external-identity`（C5）
+- **Reuse Source**：新增来源 / 坐标采集 / 外部身份取回复用本 Entry；动手前先查本档案与生产注册表，不得新建平行脚本。
+- **C5 作业要点（2026-10-05 · 外部扩源身份线）**：Wikidata SPARQL 按种子名（`rdfs:label|skos:altLabel` 精确命中）取回 Q-id/P131/P625/P18/P31/P1435；**地域必判**——有 P131 时以 P131 属上海为准（坐标不得翻案，因为矩形必覆盖邻省），无 P131 才用上海外接矩形补漏；同名命中 ≥2 个本地对象时不自选边（HOMONYM_CONFLICT 只留痕）；**按 S3 裁决本作业不写任何 Evidence**，只写 Q-id 线索（`legacy_mappings`）与库外新对象候选（`legacy_id=unattended-ext:wd:<QID>`）。
 - **Merge / Deprecate**：重复实现并入本 Entry；被替代时按 R14 归档并写迁移说明。
 
 ## Preconditions

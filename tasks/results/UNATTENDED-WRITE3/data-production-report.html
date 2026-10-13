@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MoHen 无人值守数据生产 · 层级成果报告</title>
+<style>
+  :root{--bg:#0c1020;--card:#161c33;--card2:#1d2542;--line:#2b3358;--ink:#e9edf8;--mut:#9aa6c8;
+        --ok:#37d39a;--warn:#ffb74d;--l0:#7c8cff;--l1:#37c0d3;--l2:#b06cf0;--l4:#ff7eb6;--gov:#ffd166;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+       background:radial-gradient(1200px 600px at 70% -10%,#1a2348 0%,var(--bg) 55%);color:var(--ink);line-height:1.55}
+  .wrap{max-width:1080px;margin:0 auto;padding:34px 22px 64px}
+  h1{font-size:25px;margin:0 0 4px;letter-spacing:.5px}
+  .sub{color:var(--mut);font-size:13px;margin-bottom:18px}
+  .banner{border-radius:14px;padding:14px 18px;font-weight:600;display:flex;align-items:center;gap:12px;margin-bottom:22px}
+  .banner.safe{background:linear-gradient(90deg,rgba(55,211,154,.18),rgba(55,211,154,.04));border:1px solid rgba(55,211,154,.4)}
+  .dot{width:11px;height:11px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px rgba(55,211,154,.18)}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .kpi .n{font-size:27px;font-weight:700}
+  .kpi .l{color:var(--mut);font-size:12.5px;margin-top:3px}
+  .kpi .t{font-size:11px;color:var(--mut);margin-top:8px;border-top:1px dashed var(--line);padding-top:7px}
+  .flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:6px 0 30px;
+        background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .node{padding:8px 14px;border-radius:10px;font-weight:600;font-size:13.5px;color:#0c1020}
+  .n0{background:var(--l0)}.n1{background:var(--l1)}.n2{background:var(--l2)}.n4{background:var(--l4)}
+  .arrow{color:var(--mut);font-size:18px}
+  .layer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:20px;
+         border-left:5px solid var(--accent,#444)}
+  .layer h2{margin:0 0 2px;font-size:18px;display:flex;align-items:center;gap:10px}
+  .badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--accent);color:#0c1020}
+  .job{color:var(--mut);font-size:12.5px;margin-bottom:14px}
+  .bar-row{display:flex;align-items:center;gap:12px;margin:7px 0}
+  .bar-label{width:170px;color:var(--ink);font-size:13px;text-align:right;flex-shrink:0}
+  .bar-track{flex:1;background:var(--card2);border-radius:8px;overflow:hidden;height:20px}
+  .bar-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--accent),#fff3);min-width:3px}
+  .bar-val{width:96px;font-variant-numeric:tabular-nums;font-size:13px;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px}
+  th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--mut);font-weight:600;font-size:12px}
+  td:last-child,th:last-child{text-align:right}
+  .note{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;color:var(--mut);font-size:13px}
+  .note b{color:var(--ink)}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--mut);font-size:12px;margin-top:8px}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>MoHen · 无人值守数据生产层级成果报告</h1>
+  <div class="sub">运行批次 UNATTENDED-WRITE3 · 协议 N01–N06 全链路 · 生成时间 2026/10/3 12:09:08</div>
+
+  <div class="banner safe"><span class="dot"></span>红线安全：published_entities = <b>0</b> · verified_evidence = <b>0</b> —— 全程零自动晋级，所有产出为 candidate + HOLD 待你审</div>
+
+  <div class="kpis">
+    <div class="kpi" style="--accent:var(--l0)"><div class="n">59</div><div class="l">L0 来源登记</div><div class="t">legacy 旧库来源（N02 幂等）</div></div>
+    <div class="kpi" style="--accent:var(--l1)"><div class="n">+192</div><div class="l">L1 新增证据</div><div class="t">candidate · record（N03）</div></div>
+    <div class="kpi" style="--accent:var(--l2)"><div class="n">+230</div><div class="l">L2 新增实体</div><div class="t">candidate（N04）</div></div>
+    <div class="kpi" style="--accent:var(--l4)"><div class="n">8</div><div class="l">L4 投影路径</div><div class="t">16 步 · Agent 读模型（N06）</div></div>
+  </div>
+
+  <div class="flow">
+    <span class="node n0">L0 来源 59</span><span class="arrow">→</span>
+    <span class="node n1">L1 证据 +192</span><span class="arrow">→</span>
+    <span class="node n2">L2 候选 +230 实体 / 521 关系</span><span class="arrow">→</span>
+    <span class="node n4">L4 投影 8 路径</span>
+  </div>
+
+  <div class="layer" style="--accent:var(--l0)">
+    <h2><span class="badge">L0</span> 来源层 · Source</h2>
+    <div class="job">N02 unattended.source-refresh —— 全量重扫旧库预抓取 JSON，幂等登记 source_records + Raw 快照</div>
+    <div style="--accent:var(--l0)">
+      <div class="bar-row"><div class="bar-label">沪上经纬 legacy 来源</div><div class="bar-track"><div class="bar-fill" style="width:22%"></div></div><div class="bar-val">59 / 271 总计</div></div>
+      <div class="bar-row"><div class="bar-label">本次幂等登记/确保</div><div class="bar-track"><div class="bar-fill" style="width:22%"></div></div><div class="bar-val">59 条</div></div>
+    </div>
+    <div class="legend"><span><i style="background:var(--l0)"></i>L0 为 L1/L2/L4 的数据锚点；已存在则 on conflict do nothing，不重复造数</span></div>
+  </div>
+
+  <div class="layer" style="--accent:var(--l1)">
+    <h2><span class="badge">L1</span> 证据层 · Evidence</h2>
+    <div class="job">N03 unattended.evidence-fragment —— 为缺证据的 source_records 补登候选证据（extraction_method=unattended-N03）</div>
+    <div style="--accent:var(--l1)">
+      <div class="bar-row"><div class="bar-label">本次新增候选证据</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">192 条</div></div>
+    </div>
+    <table><thead><tr><th>verification_status</th><th>数量</th></tr></thead><tbody><tr><td>candidate</td><td>7,356</td></tr><tr><td>evidence_linked</td><td>20</td></tr></tbody></table>
+  </div>
+
+  <div class="layer" style="--accent:var(--l2)">
+    <h2><span class="badge">L2</span> 候选层 · Cultural World（实体 + 关系）</h2>
+    <div class="job">N04 unattended.candidate-extraction —— 由 evidence 的 subject/place hint 幂等抽取候选实体；N05 unattended.deterministic-resolution / relation-weave —— 对 L2 关系跑 G0–G6 门禁</div>
+    <div style="--accent:var(--l2)">
+      <div class="bar-row"><div class="bar-label">新增候选实体 (N04)</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">230 条</div></div>
+      <div class="bar-row"><div class="bar-label">关系已门禁 (N05)</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">156 条 · 1,092 审计行</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:16px">
+      <div><table><thead><tr><th>entities.status</th><th>数量</th></tr></thead><tbody><tr><td>candidate</td><td>3,553</td></tr></tbody></table></div>
+      <div><table><thead><tr><th>relations.status</th><th>数量</th></tr></thead><tbody><tr><td>candidate</td><td>521</td></tr></tbody></table></div>
+    </div>
+  </div>
+
+  <div class="layer" style="--accent:var(--l4)">
+    <h2><span class="badge">L4</span> 投影层 · Read Model（Agent 可消费）</h2>
+    <div class="job">N06 unattended.gate-projection —— G0–G6 评估 8 条文化关系断言，重建 L4-UNATTENDED 命名空间投影（固定命名空间、幂等覆盖）</div>
+    <div style="--accent:var(--l4)">
+      <div class="bar-row"><div class="bar-label">L4 投影路径</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">8 条 / 共 11 路径</div></div>
+      <div class="bar-row"><div class="bar-label">投影步骤 knowledge_path_steps</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">16 步</div></div>
+    </div>
+    <table><thead><tr><th>path_code</th><th>title</th></tr></thead><tbody><tr><td>L4-UNATTENDED-031ea707</td><td>金泽关系簇 temple_bridge_association</td></tr><tr><td>L4-UNATTENDED-187c1291</td><td>金泽关系簇 spans_waterway</td></tr><tr><td>L4-UNATTENDED-26025fd2</td><td>金泽关系簇 spans_same_waterway</td></tr><tr><td>L4-UNATTENDED-2f8e2ab8</td><td>金泽关系簇 spans_waterway</td></tr><tr><td>L4-UNATTENDED-32752c92</td><td>金泽关系簇 former_site_of</td></tr><tr><td>L4-UNATTENDED-406ba707</td><td>金泽关系簇 named_after</td></tr><tr><td>L4-UNATTENDED-4626e91a</td><td>金泽关系簇 relative_position_south_of</td></tr><tr><td>L4-UNATTENDED-c9b17c6c</td><td>金泽关系簇 spans_same_waterway</td></tr></tbody></table>
+    <div class="legend"><span><i style="background:var(--l4)"></i>每条路径 = 1 个关系断言 + 1 条证据片段步骤（共 16 步），构成「金泽关系簇」可发现链路</span></div>
+  </div>
+
+  <div class="layer" style="--accent:var(--gov)">
+    <h2><span class="badge">治理</span> Gate 审计 + 分诊留痕（M2 第四条）</h2>
+    <div class="job">每个候选写入均落 evidence_gate_audit（G0–G6）与 review_queue（HOLD），机器管规模、人保留判断</div>
+    <div style="--accent:var(--gov)">
+      <div class="bar-row"><div class="bar-label">新增审计行 (本次 N0x)</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">4,158 / 52,266 总计</div></div>
+      <div class="bar-row"><div class="bar-label">新增 HOLD 分诊行 (本次 N0x)</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">586 / 879 总计</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:16px">
+      <div><div class="job" style="margin:0 0 4px">审计对象分布（本次新增）</div><table><thead><tr><th>object_type</th><th>审计行</th></tr></thead><tbody><tr><td>entity</td><td>1,610</td></tr><tr><td>evidence</td><td>1,344</td></tr><tr><td>relation</td><td>1,092</td></tr><tr><td>cultural_relation_claim</td><td>112</td></tr></tbody></table></div>
+      <div><div class="job" style="margin:0 0 4px">HOLD 留痕分布（本次新增）</div><table><thead><tr><th>object_type</th><th>HOLD 行</th></tr></thead><tbody><tr><td>entity</td><td>230</td></tr><tr><td>evidence</td><td>192</td></tr><tr><td>relation</td><td>156</td></tr><tr><td>cultural_relation_claim</td><td>8</td></tr></tbody></table></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>说明：</b>
+    <ul style="margin:8px 0 0;padding-left:18px">
+      <li><b>L1/L2 新增为真实新行</b>；L0 为幂等确保（已存在的不重复造数，仅保证登记完整）。</li>
+      <li><b>红线未破</b>：published_entities=0、verified_evidence=0，全程无自动晋级。E1 确定性自动晋级开关（MOHEN_ALLOW_E1_PROMOTE）默认关闭，全部 HOLD 待你裁决。</li>
+      <li><b>images / coords 作业在注册表为 forbidden</b>（协议 §3 老照片同景 HOLD、§12 历史地图配准暂不作为第一阶段）—— 有意冻结，非缺口。</li>
+      <li>文化关系断言输入 <b>8</b> 条（cultural_relation_claims），是 L4 投影的数据源；本次 L4 投影覆盖其中全部有证据者。</li>
+      <li>全部作业幂等，可随时以 WRITE 模式重跑；明细见 tasks/results/UNATTENDED-WRITE3/runner.log 与 report.json。</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

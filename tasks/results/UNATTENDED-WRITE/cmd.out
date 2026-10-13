@@ -1,0 +1,17 @@
+[2026-10-02T16:12:46.214Z] SKIP [注册表 forbidden]  images-shanghai-verified — **机制已齐、解禁待裁定**：R15 + M2 第四条（202610020009）后，资格字段、门禁审计强制、三分留痕均已在库层落地。但既有 1246 张的处置冻结中、ESC-05 未结（测试污染暴露的库层问题），且协议 §3 HOLD 表『老照片同景判断 → HOLD』要求有人值守路径。解禁须项目拥有者裁定（任务结果 §8.4 C 组）。
+[2026-10-02T16:12:46.218Z] SKIP [注册表 forbidden]  images-shanghai-census — **机制已齐、解禁待裁定**：R15 + M2 第四条（202610020009）后，资格字段、门禁审计强制、三分留痕均已在库层落地。但既有 1246 张的处置冻结中、ESC-05 未结（测试污染暴露的库层问题），且协议 §3 HOLD 表『老照片同景判断 → HOLD』要求有人值守路径。解禁须项目拥有者裁定（任务结果 §8.4 C 组）。
+[2026-10-02T16:12:46.219Z] SKIP [注册表 forbidden]  images-commons-baoshan — **机制已齐、解禁待裁定**：R15 + M2 第四条（202610020009）后，资格字段、门禁审计强制、三分留痕均已在库层落地。但既有 1246 张的处置冻结中、ESC-05 未结（测试污染暴露的库层问题），且协议 §3 HOLD 表『老照片同景判断 → HOLD』要求有人值守路径。解禁须项目拥有者裁定（任务结果 §8.4 C 组）。
+[2026-10-02T16:12:46.220Z] SKIP [注册表 forbidden]  images-commons-maps — **机制已齐、解禁待裁定**：R15 + M2 第四条（202610020009）后，资格字段、门禁审计强制、三分留痕均已在库层落地。但既有 1246 张的处置冻结中、ESC-05 未结（测试污染暴露的库层问题），且协议 §3 HOLD 表『老照片同景判断 → HOLD』要求有人值守路径。解禁须项目拥有者裁定（任务结果 §8.4 C 组）。
+[2026-10-02T16:12:46.220Z] SKIP [注册表 forbidden]  coords-wikidata — 协议 §3 HOLD 表明令「历史地图锚点 → HOLD」、§12 明令「历史地图配准暂不作为第一阶段」；且实测 240 行以 candidate 入库却 confidence = 0、evidence_ids = {}。此类判断必须有人值守。
+[2026-10-02T16:12:46.221Z] SKIP [preflight]  unattended.source-refresh — preflight 抛错：The "path" argument must be of type string. Received undefined
+[2026-10-02T16:12:46.221Z] SKIP [preflight]  unattended.evidence-fragment — preflight 抛错：The "path" argument must be of type string. Received undefined
+[2026-10-02T16:12:46.222Z] SKIP [preflight]  unattended.candidate-extraction — preflight 抛错：The "path" argument must be of type string. Received undefined
+[2026-10-02T16:12:46.222Z] SKIP [preflight]  unattended.deterministic-resolution — preflight 抛错：The "path" argument must be of type string. Received undefined
+[2026-10-02T16:12:46.223Z] SKIP [preflight]  unattended.relation-weave — preflight 抛错：The "path" argument must be of type string. Received undefined
+[2026-10-02T16:12:46.223Z] SKIP [preflight]  unattended.gate-projection — preflight 抛错：The "path" argument must be of type string. Received undefined
+[2026-10-02T16:12:46.224Z] source-gate: hushang_legacy → hushang_legacy（LEGACY，evidence_allowed=false）
+[2026-10-02T16:12:46.224Z] registry=specs/data-production/production-registry.json entries=9 queued=72 declared=67 runnable=61 forbidden=5 preflight_excluded=6
+[2026-10-02T16:12:46.382Z] ingest_run registered: a9f7ba2b-e529-4f09-a6a8-e1c970f94539
+[2026-10-02T16:12:46.385Z] START mode=WRITE cutoff=2026-10-02T22:00:00.000Z interval=2min jobs=61
+[2026-10-02T16:12:46.623Z] job=src-gazetteer_details.json ok=true inserted=1 
+[2026-10-02T16:14:47.163Z] job=src-events_linked.json ok=true inserted=1 

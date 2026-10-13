@@ -1,0 +1,129 @@
+{
+  "tag": "UNATTENDED-WRITE2",
+  "mode": "WRITE",
+  "env": "dev",
+  "cutoff": "2026-10-02T22:00:00.000Z",
+  "interval_min": 2,
+  "started_at": "2026-10-02T16:16:51.977Z",
+  "jobs": {
+    "unattended.source-refresh": {
+      "ok": true,
+      "total": 61,
+      "inserted": 61,
+      "would_insert": 0,
+      "skipped": 0,
+      "at": "2026-10-02T16:17:01.240Z"
+    },
+    "unattended.evidence-fragment": {
+      "ok": true,
+      "dry_run": false,
+      "normalized": 0,
+      "new_evidence": 192,
+      "would_new_evidence": 0,
+      "at": "2026-10-02T16:19:02.856Z"
+    },
+    "unattended.candidate-extraction": {
+      "ok": true,
+      "dry_run": false,
+      "new_entities": 230,
+      "would_new_entities": 0,
+      "at": "2026-10-02T16:21:04.540Z"
+    },
+    "unattended.deterministic-resolution": {
+      "ok": true,
+      "dry_run": false,
+      "relations_scanned": 156,
+      "audited": 156,
+      "would_audited": 0,
+      "at": "2026-10-02T16:23:05.509Z"
+    },
+    "unattended.relation-weave": {
+      "ok": true,
+      "dry_run": false,
+      "relations_scanned": 0,
+      "audited": 0,
+      "would_audited": 0,
+      "at": "2026-10-02T16:25:05.794Z"
+    },
+    "unattended.gate-projection": {
+      "ok": true,
+      "claims_scanned": 8,
+      "audited": 16,
+      "passed": 0,
+      "held": 0,
+      "rejected": 8,
+      "would_promote": 0,
+      "promoted": 0,
+      "projection_paths": 0,
+      "at": "2026-10-02T16:27:06.876Z"
+    },
+    "src-gazetteer_details.json": {
+      "inserted": 1,
+      "at": "2026-10-02T16:29:07.295Z"
+    },
+    "src-events_linked.json": {
+      "inserted": 1,
+      "at": "2026-10-02T16:31:07.751Z"
+    },
+    "src-hsly_events.json": {
+      "inserted": 1,
+      "at": "2026-10-02T16:33:08.145Z"
+    },
+    "src-narrative_assets.json": {
+      "inserted": 1,
+      "at": "2026-10-02T16:35:08.521Z"
+    },
+    "src-cbdb_people.json": {
+      "inserted": 1,
+      "at": "2026-10-02T16:37:08.846Z"
+    },
+    "src-clans.json": {
+      "inserted": 1,
+      "at": "2026-10-02T16:39:09.167Z"
+    }
+  },
+  "counters": {
+    "jobs_done": 12,
+    "jobs_failed": 0,
+    "inserted": 67
+  },
+  "failures": [],
+  "verdict": "",
+  "registry": {
+    "path": "specs/data-production/production-registry.json",
+    "entries": 9,
+    "queued": 72,
+    "declared": 67,
+    "runnable": 67,
+    "forbidden": [
+      {
+        "id": "images-shanghai-verified",
+        "reason": "**机制已齐、解禁待裁定**：R15 + M2 第四条（202610020009）后，资格字段、门禁审计强制、三分留痕均已在库层落地。但既有 1246 张的处置冻结中、ESC-05 未结（测试污染暴露的库层问题），且协议 §3 HOLD 表『老照片同景判断 → HOLD』要求有人值守路径。解禁须项目拥有者裁定（任务结果 §8.4 C 组）。"
+      },
+      {
+        "id": "images-shanghai-census",
+        "reason": "**机制已齐、解禁待裁定**：R15 + M2 第四条（202610020009）后，资格字段、门禁审计强制、三分留痕均已在库层落地。但既有 1246 张的处置冻结中、ESC-05 未结（测试污染暴露的库层问题），且协议 §3 HOLD 表『老照片同景判断 → HOLD』要求有人值守路径。解禁须项目拥有者裁定（任务结果 §8.4 C 组）。"
+      },
+      {
+        "id": "images-commons-baoshan",
+        "reason": "**机制已齐、解禁待裁定**：R15 + M2 第四条（202610020009）后，资格字段、门禁审计强制、三分留痕均已在库层落地。但既有 1246 张的处置冻结中、ESC-05 未结（测试污染暴露的库层问题），且协议 §3 HOLD 表『老照片同景判断 → HOLD』要求有人值守路径。解禁须项目拥有者裁定（任务结果 §8.4 C 组）。"
+      },
+      {
+        "id": "images-commons-maps",
+        "reason": "**机制已齐、解禁待裁定**：R15 + M2 第四条（202610020009）后，资格字段、门禁审计强制、三分留痕均已在库层落地。但既有 1246 张的处置冻结中、ESC-05 未结（测试污染暴露的库层问题），且协议 §3 HOLD 表『老照片同景判断 → HOLD』要求有人值守路径。解禁须项目拥有者裁定（任务结果 §8.4 C 组）。"
+      },
+      {
+        "id": "coords-wikidata",
+        "reason": "协议 §3 HOLD 表明令「历史地图锚点 → HOLD」、§12 明令「历史地图配准暂不作为第一阶段」；且实测 240 行以 candidate 入库却 confidence = 0、evidence_ids = {}。此类判断必须有人值守。"
+      }
+    ],
+    "preflight_excluded": [],
+    "source_gate": {
+      "provider": "hushang_legacy",
+      "canonical": "hushang_legacy",
+      "tier": "LEGACY",
+      "evidence_allowed": false
+    }
+  },
+  "ingest_run_id": "e41ded13-e3b4-4742-a407-f43050253553"
+}

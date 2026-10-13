@@ -1,0 +1,82 @@
+[2026-10-02T16:40:55.008Z] SKIP [注册表 forbidden]  images-shanghai-verified — **机制已齐、解禁待裁定**：R15 + M2 第四条（202610020009）后，资格字段、门禁审计强制、三分留痕均已在库层落地。但既有 1246 张的处置冻结中、ESC-05 未结（测试污染暴露的库层问题），且协议 §3 HOLD 表『老照片同景判断 → HOLD』要求有人值守路径。解禁须项目拥有者裁定（任务结果 §8.4 C 组）。
+[2026-10-02T16:40:55.010Z] SKIP [注册表 forbidden]  images-shanghai-census — **机制已齐、解禁待裁定**：R15 + M2 第四条（202610020009）后，资格字段、门禁审计强制、三分留痕均已在库层落地。但既有 1246 张的处置冻结中、ESC-05 未结（测试污染暴露的库层问题），且协议 §3 HOLD 表『老照片同景判断 → HOLD』要求有人值守路径。解禁须项目拥有者裁定（任务结果 §8.4 C 组）。
+[2026-10-02T16:40:55.010Z] SKIP [注册表 forbidden]  images-commons-baoshan — **机制已齐、解禁待裁定**：R15 + M2 第四条（202610020009）后，资格字段、门禁审计强制、三分留痕均已在库层落地。但既有 1246 张的处置冻结中、ESC-05 未结（测试污染暴露的库层问题），且协议 §3 HOLD 表『老照片同景判断 → HOLD』要求有人值守路径。解禁须项目拥有者裁定（任务结果 §8.4 C 组）。
+[2026-10-02T16:40:55.011Z] SKIP [注册表 forbidden]  images-commons-maps — **机制已齐、解禁待裁定**：R15 + M2 第四条（202610020009）后，资格字段、门禁审计强制、三分留痕均已在库层落地。但既有 1246 张的处置冻结中、ESC-05 未结（测试污染暴露的库层问题），且协议 §3 HOLD 表『老照片同景判断 → HOLD』要求有人值守路径。解禁须项目拥有者裁定（任务结果 §8.4 C 组）。
+[2026-10-02T16:40:55.011Z] SKIP [注册表 forbidden]  coords-wikidata — 协议 §3 HOLD 表明令「历史地图锚点 → HOLD」、§12 明令「历史地图配准暂不作为第一阶段」；且实测 240 行以 candidate 入库却 confidence = 0、evidence_ids = {}。此类判断必须有人值守。
+[2026-10-02T16:40:55.011Z] source-gate: hushang_legacy → hushang_legacy（LEGACY，evidence_allowed=false）
+[2026-10-02T16:40:55.012Z] registry=specs/data-production/production-registry.json entries=9 queued=72 declared=67 runnable=67 forbidden=5 preflight_excluded=0
+[2026-10-02T16:40:55.236Z] ingest_run registered: 99d0afe3-55ba-4dc1-8d4c-32fc4b71c1d9
+[2026-10-02T16:40:55.238Z] START mode=WRITE cutoff=2026-10-02T22:00:00.000Z interval=2min jobs=67
+[2026-10-02T16:41:04.217Z] job=unattended.source-refresh ok=true inserted=61 
+[2026-10-02T16:43:04.712Z] job=unattended.evidence-fragment ok=true inserted=0 
+[2026-10-02T16:45:05.194Z] job=unattended.candidate-extraction ok=true inserted=0 
+[2026-10-02T16:47:05.490Z] job=unattended.deterministic-resolution ok=true inserted=0 
+[2026-10-02T16:49:05.800Z] job=unattended.relation-weave ok=true inserted=0 
+[2026-10-02T16:51:06.521Z] job=unattended.gate-projection ok=true inserted=0 
+[2026-10-02T16:53:06.781Z] job=src-gazetteer_details.json ok=true inserted=1 
+[2026-10-02T16:55:07.246Z] job=src-events_linked.json ok=true inserted=1 
+[2026-10-02T16:57:07.661Z] job=src-hsly_events.json ok=true inserted=1 
+[2026-10-02T16:59:07.946Z] job=src-narrative_assets.json ok=true inserted=1 
+[2026-10-02T17:01:08.217Z] job=src-cbdb_people.json ok=true inserted=1 
+[2026-10-02T17:03:08.500Z] job=src-clans.json ok=true inserted=1 
+[2026-10-02T17:05:08.777Z] job=src-clan_pdf_index.json ok=true inserted=1 
+[2026-10-02T17:07:09.060Z] job=src-jp_works_all.json ok=true inserted=1 
+[2026-10-02T17:09:09.399Z] job=src-jp_shanghai_works.json ok=true inserted=1 
+[2026-10-02T17:11:09.717Z] job=src-jp_persons_zhu.json ok=true inserted=1 
+[2026-10-02T17:13:10.132Z] job=src-jp_shanghai_family_persons.json ok=true inserted=1 
+[2026-10-02T17:15:10.443Z] job=src-jp_zhu_deepdive.json ok=true inserted=1 
+[2026-10-02T17:17:10.731Z] job=src-jp_family_town_analysis.json ok=true inserted=1 
+[2026-10-02T17:19:11.155Z] job=src-geo_placenames_shanghai.json ok=true inserted=1 
+[2026-10-02T17:21:11.469Z] job=src-protection_index.json ok=true inserted=1 
+[2026-10-02T17:23:11.806Z] job=src-sh_protection_index.json ok=true inserted=1 
+[2026-10-02T17:25:12.049Z] job=src-suzhou_narrative_candidates.json ok=true inserted=1 
+[2026-10-02T17:27:12.334Z] job=src-suzhou_narrative_review.json ok=true inserted=1 
+[2026-10-02T17:29:12.716Z] job=src-suzhou_people_shanghai.json ok=true inserted=1 
+[2026-10-02T17:31:13.007Z] job=src-yutu_catalog_final_20260831.json ok=true inserted=1 
+[2026-10-02T17:33:13.305Z] job=src-yutu_catalog_checked.json ok=true inserted=1 
+[2026-10-02T17:35:13.619Z] job=src-yutu_plaquettes_checked.json ok=true inserted=1 
+[2026-10-02T17:37:13.870Z] job=src-yutu_verify_coverage.json ok=true inserted=1 
+[2026-10-02T17:39:14.173Z] job=src-yutu_level3.json ok=true inserted=1 
+[2026-10-02T17:41:14.499Z] job=src-verify_cbdb_20260831.json ok=true inserted=1 
+[2026-10-02T17:43:14.760Z] job=src-verify_souyun_20260831.json ok=true inserted=1 
+[2026-10-02T17:45:15.046Z] job=src-verify_song_press_20260831.json ok=true inserted=1 
+[2026-10-02T17:47:15.349Z] job=src-resource_probe_20260831.json ok=true inserted=1 
+[2026-10-02T17:49:15.591Z] job=src-resource_probe2_20260831.json ok=true inserted=1 
+[2026-10-02T17:51:15.846Z] job=src-dmz_zhujiajiao.json ok=true inserted=1 
+[2026-10-02T17:53:16.163Z] job=src-gj_fangzhi.json ok=true inserted=1 
+[2026-10-02T17:55:16.478Z] job=src-gj_works___.json ok=true inserted=1 
+[2026-10-02T17:57:16.893Z] job=src-gj_works_____.json ok=true inserted=1 
+[2026-10-02T17:59:17.313Z] job=src-gj_works____.json ok=true inserted=1 
+[2026-10-02T18:01:17.624Z] job=src-gj_works______.json ok=true inserted=1 
+[2026-10-02T18:03:17.904Z] job=src-gj_works_____.json ok=true inserted=1 
+[2026-10-02T18:05:18.167Z] job=src-mgts_104971_entries.json ok=true inserted=1 
+[2026-10-02T18:07:18.461Z] job=src-mgts_31278_entries.json ok=true inserted=1 
+[2026-10-02T18:09:18.771Z] job=src-mgts_4581_entries.json ok=true inserted=1 
+[2026-10-02T18:11:19.072Z] job=src-mgts_4584_entries.json ok=true inserted=1 
+[2026-10-02T18:13:19.374Z] job=src-mgts_4590_entries.json ok=true inserted=1 
+[2026-10-02T18:15:19.625Z] job=src-mgts_87274_entries.json ok=true inserted=1 
+[2026-10-02T18:17:19.908Z] job=src-mgts_90096_entries.json ok=true inserted=1 
+[2026-10-02T18:19:20.330Z] job=src-mgts_92309_entries.json ok=true inserted=1 
+[2026-10-02T18:21:20.742Z] job=src-mgts_31278_town_hits.json ok=true inserted=1 
+[2026-10-02T18:23:21.078Z] job=src-mgts_4581_town_hits.json ok=true inserted=1 
+[2026-10-02T18:25:21.380Z] job=src-mgts_4590_town_hits.json ok=true inserted=1 
+[2026-10-02T18:27:21.702Z] job=src-mgts_104971_town_hits.json ok=true inserted=1 
+[2026-10-02T18:29:21.990Z] job=src-jinze_evolution_raw_20260830.json ok=true inserted=1 
+[2026-10-02T18:31:22.372Z] job=src-_work_titles.json ok=true inserted=1 
+[2026-10-02T18:33:22.666Z] job=src-mcp_screenshot_ocr.json ok=true inserted=1 
+[2026-10-02T18:35:22.985Z] job=src-external_mapsource_probe_20260831.json ok=true inserted=1 
+[2026-10-02T18:37:23.286Z] job=src-commons_oldmaps_raw_20260831.json ok=true inserted=1 
+[2026-10-02T18:39:23.703Z] job=src-rumsey_maps_raw_20260831.json ok=true inserted=1 
+[2026-10-02T18:41:23.954Z] job=src-commons_cats_drill_20260831.json ok=true inserted=1 
+[2026-10-02T18:43:24.283Z] job=src-jp_family_town_sparql_analysis.json ok=true inserted=1 
+[2026-10-02T18:45:24.612Z] job=src-jp_works_sparql.json ok=true inserted=1 
+[2026-10-02T18:47:24.911Z] job=src-jp_shanghai_persons_count.json ok=true inserted=1 
+[2026-10-02T18:49:25.231Z] job=src-jp_familyname_zhu.json ok=true inserted=1 
+[2026-10-02T18:51:25.507Z] job=src-jp_zhu_persons.json ok=true inserted=1 
+[2026-10-02T18:53:25.797Z] job=src-gj_14373_toc.json ok=true inserted=1 
+[2026-10-02T18:55:26.011Z] jobs exhausted, idling until cutoff
+[2026-10-02T22:00:29.771Z] FATAL Command failed: D:\MoHen\tools\PostgreSQL\18\bin\psql.exe -h 127.0.0.1 -p 5432 -U postgres -d mohen_dev -v ON_ERROR_STOP=1 -f C:\Users\Administrator\AppData\Local\Temp\mohen-a67217f5.sql
+psql:C:/Users/Administrator/AppData/Local/Temp/mohen-a67217f5.sql:1: 错误:  语法错误 在 ":" 或附近的
+LINE 1: ..._at = now(), status = E'completed', input_count = :ic, candi...
+                                                             ^
+

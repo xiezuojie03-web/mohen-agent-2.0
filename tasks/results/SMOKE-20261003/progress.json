@@ -1,0 +1,336 @@
+{
+  "tag": "SMOKE-20261003",
+  "mode": "DRY_RUN",
+  "env": "dev",
+  "cutoff": "2026-10-03T15:13:00.000Z",
+  "interval_min": 0.05,
+  "started_at": "2026-10-03T15:09:13.440Z",
+  "jobs": {
+    "coords-wikidata": {
+      "ok": true,
+      "filled": 2,
+      "matched": 2,
+      "inserted": 0,
+      "triaged": 0,
+      "at": "2026-10-03T15:09:13.789Z"
+    },
+    "unattended.source-refresh": {
+      "ok": true,
+      "total": 95,
+      "inserted": 0,
+      "would_insert": 95,
+      "skipped": 0,
+      "at": "2026-10-03T15:09:19.231Z"
+    },
+    "unattended.evidence-fragment": {
+      "ok": true,
+      "dry_run": true,
+      "normalized": 0,
+      "new_evidence": 1,
+      "would_new_evidence": 1,
+      "at": "2026-10-03T15:09:24.557Z"
+    },
+    "unattended.candidate-extraction": {
+      "ok": true,
+      "dry_run": true,
+      "new_entities": 0,
+      "would_new_entities": 0,
+      "at": "2026-10-03T15:09:29.873Z"
+    },
+    "unattended.deterministic-resolution": {
+      "ok": true,
+      "dry_run": true,
+      "relations_scanned": 0,
+      "audited": 0,
+      "would_audited": 0,
+      "at": "2026-10-03T15:09:35.010Z"
+    },
+    "unattended.relation-weave": {
+      "ok": true,
+      "dry_run": true,
+      "relations_scanned": 0,
+      "audited": 0,
+      "would_audited": 0,
+      "at": "2026-10-03T15:09:40.115Z"
+    },
+    "unattended.gate-projection": {
+      "ok": true,
+      "dry_run": true,
+      "claims_scanned": 8,
+      "would_audit_unaudited": 0,
+      "would_passed": 0,
+      "would_held": 0,
+      "would_rejected": 0,
+      "would_promote": 0,
+      "projection_paths_would_build": 8,
+      "at": "2026-10-03T15:09:45.415Z"
+    },
+    "src-_work_titles.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:_work_titles.json",
+      "at": "2026-10-03T15:09:50.426Z"
+    },
+    "src-cbdb_people.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:cbdb_people.json",
+      "at": "2026-10-03T15:09:55.438Z"
+    },
+    "src-clan_pdf_index.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:clan_pdf_index.json",
+      "at": "2026-10-03T15:10:00.441Z"
+    },
+    "src-clans.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:clans.json",
+      "at": "2026-10-03T15:10:05.445Z"
+    },
+    "src-commons_baoshan_chuansha_20260831.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:commons_baoshan_chuansha_20260831.json",
+      "at": "2026-10-03T15:10:10.447Z"
+    },
+    "src-commons_cats_drill_20260831.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:commons_cats_drill_20260831.json",
+      "at": "2026-10-03T15:10:15.490Z"
+    },
+    "src-commons_external_maps_20260831.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:commons_external_maps_20260831.json",
+      "at": "2026-10-03T15:10:20.500Z"
+    },
+    "src-commons_images.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:commons_images.json",
+      "at": "2026-10-03T15:10:25.528Z"
+    },
+    "src-commons_oldmaps_raw_20260831.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:commons_oldmaps_raw_20260831.json",
+      "at": "2026-10-03T15:10:30.562Z"
+    },
+    "src-coords_wikidata.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:coords_wikidata.json",
+      "at": "2026-10-03T15:10:35.573Z"
+    },
+    "src-dmz_zhujiajiao.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:dmz_zhujiajiao.json",
+      "at": "2026-10-03T15:10:40.575Z"
+    },
+    "src-events_linked.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:events_linked.json",
+      "at": "2026-10-03T15:10:45.597Z"
+    },
+    "src-external_mapsource_probe_20260831.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:external_mapsource_probe_20260831.json",
+      "at": "2026-10-03T15:10:50.606Z"
+    },
+    "src-gazetteer_details.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:gazetteer_details.json",
+      "at": "2026-10-03T15:10:55.614Z"
+    },
+    "src-geo_placenames_shanghai.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:geo_placenames_shanghai.json",
+      "at": "2026-10-03T15:11:00.623Z"
+    },
+    "src-gj_14373_toc.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:gj_14373_toc.json",
+      "at": "2026-10-03T15:11:05.648Z"
+    },
+    "src-gj_14386_entries.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:gj_14386_entries.json",
+      "at": "2026-10-03T15:11:10.664Z"
+    },
+    "src-gj_14386_ocr.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:gj_14386_ocr.json",
+      "at": "2026-10-03T15:11:15.675Z"
+    },
+    "src-gj_3799_entries.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:gj_3799_entries.json",
+      "at": "2026-10-03T15:11:20.686Z"
+    },
+    "src-gj_3799_ocr.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:gj_3799_ocr.json",
+      "at": "2026-10-03T15:11:25.688Z"
+    },
+    "src-gj_6922_entries.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:gj_6922_entries.json",
+      "at": "2026-10-03T15:11:30.699Z"
+    },
+    "src-gj_6922_ocr.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:gj_6922_ocr.json",
+      "at": "2026-10-03T15:11:35.706Z"
+    },
+    "src-gj_fangzhi.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:gj_fangzhi.json",
+      "at": "2026-10-03T15:11:40.709Z"
+    },
+    "src-gj_works____.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:gj_works_朱家角.json",
+      "at": "2026-10-03T15:11:45.712Z"
+    },
+    "src-gj_works______.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:gj_works_朱家角镇志.json",
+      "at": "2026-10-03T15:11:50.715Z"
+    },
+    "src-gj_works_____.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:gj_works_青浦县志.json",
+      "at": "2026-10-03T15:12:05.722Z"
+    },
+    "src-gj_works___.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:gj_works_青浦.json",
+      "at": "2026-10-03T15:12:00.721Z"
+    },
+    "src-hsly_events.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:hsly_events.json",
+      "at": "2026-10-03T15:12:10.868Z"
+    },
+    "src-jinze_evolution_raw_20260830.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:jinze_evolution_raw_20260830.json",
+      "at": "2026-10-03T15:12:15.885Z"
+    },
+    "src-jp_family_town_analysis.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:jp_family_town_analysis.json",
+      "at": "2026-10-03T15:12:20.887Z"
+    },
+    "src-jp_family_town_sparql_analysis.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:jp_family_town_sparql_analysis.json",
+      "at": "2026-10-03T15:12:25.890Z"
+    },
+    "src-jp_familyname_zhu.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:jp_familyname_zhu.json",
+      "at": "2026-10-03T15:12:30.894Z"
+    },
+    "src-jp_persons_zhu.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:jp_persons_zhu.json",
+      "at": "2026-10-03T15:12:35.899Z"
+    },
+    "src-jp_shanghai_family_persons.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:jp_shanghai_family_persons.json",
+      "at": "2026-10-03T15:12:40.911Z"
+    },
+    "src-jp_shanghai_persons_count.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:jp_shanghai_persons_count.json",
+      "at": "2026-10-03T15:12:45.914Z"
+    },
+    "src-jp_shanghai_works.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:jp_shanghai_works.json",
+      "at": "2026-10-03T15:12:50.930Z"
+    },
+    "src-jp_works_all.json": {
+      "inserted": 0,
+      "would_insert": 1,
+      "note": "source_record:jp_works_all.json",
+      "at": "2026-10-03T15:12:55.948Z"
+    }
+  },
+  "counters": {
+    "jobs_done": 45,
+    "jobs_failed": 0,
+    "inserted": 0
+  },
+  "failures": [],
+  "verdict": "PASS WITH HOLD",
+  "registry": {
+    "path": "specs/data-production/production-registry.json",
+    "entries": 14,
+    "queued": 106,
+    "declared": 106,
+    "runnable": 102,
+    "forbidden": [],
+    "preflight_excluded": [
+      {
+        "id": "images-shanghai-verified",
+        "kind": "images",
+        "reason": "图片源无法唯一确定（hushang_legacy 源 60 条，其中非诗词 58 条）—— 须先为图片批次建立专属 source_record"
+      },
+      {
+        "id": "images-shanghai-census",
+        "kind": "images",
+        "reason": "图片源无法唯一确定（hushang_legacy 源 60 条，其中非诗词 58 条）—— 须先为图片批次建立专属 source_record"
+      },
+      {
+        "id": "images-commons-baoshan",
+        "kind": "images",
+        "reason": "图片源无法唯一确定（hushang_legacy 源 60 条，其中非诗词 58 条）—— 须先为图片批次建立专属 source_record"
+      },
+      {
+        "id": "images-commons-maps",
+        "kind": "images",
+        "reason": "图片源无法唯一确定（hushang_legacy 源 60 条，其中非诗词 58 条）—— 须先为图片批次建立专属 source_record"
+      }
+    ],
+    "source_gate": {
+      "provider": "hushang_legacy",
+      "canonical": "hushang_legacy",
+      "tier": "LEGACY",
+      "evidence_allowed": false
+    }
+  },
+  "stop_reason": "CUTOFF_REACHED",
+  "finished_at": "2026-10-03T15:13:00.957Z"
+}

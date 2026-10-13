@@ -1,0 +1,51 @@
+{
+  "tag": "C2-WRITE3",
+  "mode": "WRITE",
+  "env": "dev",
+  "cutoff": "2026-10-04T13:07:00.000Z",
+  "interval_min": 6,
+  "started_at": "2026-10-04T13:04:26.206Z",
+  "jobs": {
+    "unattended.candidate-extraction": {
+      "ok": true,
+      "dry_run": false,
+      "inserted": 10016,
+      "evidence_scanned": 4812,
+      "evidence_processed": 4812,
+      "new_entities": 3227,
+      "would_new_entities": 0,
+      "new_relations": 2479,
+      "would_new_relations": 0,
+      "new_claims": 3227,
+      "new_discoveries": 1083,
+      "triaged": 10016,
+      "audit_rows": 39942,
+      "at": "2026-10-04T13:04:53.320Z"
+    }
+  },
+  "counters": {
+    "jobs_done": 1,
+    "jobs_failed": 0,
+    "inserted": 10016
+  },
+  "failures": [],
+  "verdict": "PASS WITH HOLD",
+  "registry": {
+    "path": "specs/data-production/production-registry.json",
+    "entries": 14,
+    "queued": 106,
+    "declared": 106,
+    "runnable": 2,
+    "forbidden": [],
+    "preflight_excluded": [],
+    "source_gate": {
+      "provider": "hushang_legacy",
+      "canonical": "hushang_legacy",
+      "tier": "LEGACY",
+      "evidence_allowed": false
+    }
+  },
+  "ingest_run_id": "1927f7f3-bb89-4ae9-9fe0-6abe69181f0f",
+  "stop_reason": "CUTOFF_REACHED",
+  "finished_at": "2026-10-04T13:07:03.477Z"
+}

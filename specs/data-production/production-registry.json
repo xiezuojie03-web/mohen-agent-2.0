@@ -1,872 +1,378 @@
 {
   "schema": "mohen.production-registry",
-  "schema_version": 2,
-  "updated": "2026-10-04 (按 C2 §2.1 / C0 §11 R26 增补 implementation 字段：每个作业绑定 skill + 唯一权威 entry；schema_version 1→2)",
-  "authority": "项目拥有者 2026-10-02 批准（M1.2）。机制依据 specs/data-production/MoHen_Data_Production_Protocol.md #5（生产注册表 Contract）。 ｜ 2026-10-03 扩展依据：主生产协议 §5.1 双模式 Contract、§12.2 Research Job Family（C2 §1.5 / C3 §2.9 已定向修订）。",
-  "purpose": "哪些自动化被允许以无人值守方式运行、允许写哪些表、必须过哪些门。未声明即不调度。**两种生产模式共用本注册表**：Directed（N01–N06）与 Discovery（D01–D05）共用同一控制面，差异由 production_mode / truth_write_ceiling / selection_policy 表达。",
-  "policies": {
-    "undeclared_job": "refuse（整轮不启动；不做半截）",
-    "ambiguous_match": "refuse（一个作业必须恰好命中一个条目）",
-    "auto_promote_default": false,
-    "forbidden_means": "从队列中确定性剔除；不是失败，不计入连续失败",
-    "why_gates_enforced_by": "防止重蹈 data/fixtures/source-providers.json 的覆辙——那份门禁写着 S1–S4，全仓却无一行代码读它。声明为 allowed 的作业必须说清『门禁靠什么落地』。",
-    "production_mode": "必填：directed | discovery。决定上游入口、必填字段与验收口径（主协议 §0.4 / §0.6）。",
-    "truth_write_ceiling": "必填。discovery 模式一律 0：Research 执行体不拥有任何 Runtime Truth 写权限（主协议 §4.1）。",
-    "research_completion": "Research Job 不写 Truth 也算完成：以内容级 Observation、可回放候选、Top-K/Long Tail 与 0 自动晋级为判据（T07 §1.8）。",
-    "human_debt": "只有 Selected / Truth-Promotion / Narrative-Critical / Conflict-Critical 才创建 review_queue；研究长尾由机器处置（主协议 §3.3）。"
-  },
-  "required_fields": [
-    "id",
-    "kind",
-    "version",
-    "purpose",
-    "inputs",
-    "outputs",
-    "write_scope",
-    "gates",
-    "gates_enforced_by",
-    "auto_promote_policy",
-    "hold_reasons",
-    "stop_conditions",
-    "retry_policy",
-    "tests",
-    "rollback",
-    "summary",
-    "narrative_gaps",
-    "unattended",
-    "unattended_reason",
-    "production_mode",
-    "truth_write_ceiling",
-    "implementation"
+  "schema_version": "3.0-target",
+  "status": "TARGET_EXECUTION_CONTRACT_PHASE_D",
+  "authority": [
+    "C2 V1.2",
+    "C3 V1.3",
+    "MoHen_Data_Production_Protocol V4.0",
+    "DATA_CONTRACT V2.0"
   ],
   "jobs": [
     {
-      "id": "src-*",
-      "kind": "source",
-      "version": "1.0",
-      "production_mode": "directed",
-      "truth_write_ceiling": 0,
-      "truth_write_ceiling_note": "只登记 L0 来源层（2026-10-03 按主协议 §5.1 补登；directed 模式默认值）",
-      "purpose": "把旧库预抓取的 JSON 登记为来源（source_record），并把原始文件快照进 Raw。不做抽取、不产生 Claim。",
+      "job_id": "d01.source-intake",
+      "stage": "D01",
+      "data_layer": "L0",
+      "exit_gate": "G0",
+      "scope": {
+        "kind": "runtime",
+        "description": "Defined per production run; must satisfy Protocol V4 stage contract."
+      },
+      "search_strategy": "mixed",
+      "implementation": {
+        "skill": "mohen-source-intake",
+        "executor": "pipelines/data-production/executors/d01-source-intake.mjs",
+        "adapters": [
+          "source-discovery",
+          "source-acquisition",
+          "raw-preservation",
+          "provider-resolution"
+        ]
+      },
       "inputs": [
-        "hushang-jingwei/data/fetched/<file>（61 个 JSON；清单见 pipelines/legacy/unattended-jobs.mjs 的 SOURCE_FILES）"
+        "research_intent",
+        "scope",
+        "source_strategy",
+        "query_matrix"
       ],
       "outputs": [
-        "source_records 新增行（provider = hushang_legacy）",
-        "Raw 快照：<RAW_STORE>/legacy/hushang/<file>"
+        "qualified_source"
       ],
       "write_scope": [
-        "source_records"
+        "L0"
       ],
-      "gates": [
-        "G0"
+      "lineage_requirements": [
+        "run_id",
+        "upstream_object_ids",
+        "source_lineage"
       ],
-      "gates_enforced_by": "库层唯一约束 (provider, checksum) 防重复 + raw 快照存在性；只写 L0 来源层，无 Claim / World 写入。",
-      "auto_promote_policy": "none（只登记来源；不产生任何 Claim，无晋级可言）",
-      "hold_reasons": [
-        "file_missing",
-        "checksum_conflict"
+      "gates_enforced_by": [
+        "scripts/guards/G0_SOURCE_GATE"
       ],
+      "execution_policy": {
+        "attended": true,
+        "unattended": false,
+        "automation_limit": "Attended execution allowed after Phase D contract verification; unattended remains disabled until Phase G."
+      },
+      "retry": {
+        "policy": "bounded",
+        "max_attempts": 3
+      },
+      "rollback": {
+        "required": true,
+        "pointer": "run_id"
+      },
       "stop_conditions": [
-        "连续 3 个作业技术性失败",
-        "截止时间到",
-        "STOP 文件"
+        "gate contract cannot be enforced",
+        "write scope would cross primary data layer",
+        "required lineage is missing"
       ],
-      "retry_policy": "仅瞬时 IO 失败重试 1 次；文件缺失按 skipped 记录，不重试。",
       "tests": [
-        "幂等：重复运行不新增 source_records 行",
-        "raw 快照不被覆盖",
-        "写入不越出 write_scope"
+        "registry schema validation",
+        "stage-layer-gate alignment",
+        "write-scope isolation"
       ],
-      "rollback": "按 checksum 定位本批新增的 source_records 行并删除；Raw 快照按协议 #7 保留不删。",
-      "summary": [
-        "新增来源数",
-        "跳过 / 缺失文件数",
-        "越界写入数（应为 0）"
+      "human_review_view": {
+        "required": true,
+        "contract": "Human_Review_Deliverable_Contract.md"
+      },
+      "legacy_jobs": [
+        "src-*",
+        "unattended.source-refresh",
+        "research.source-inventory",
+        "source parts of images/coords/external-*"
       ],
-      "narrative_gaps": [
-        "（基础设施：来源登记，服务全部叙事缺口，不直接推进某一格）"
-      ],
-      "unattended": "allowed",
-      "unattended_reason": "只写 L0 来源层，门禁由库层约束强制，无判断性内容 → 适合无人值守。",
-      "implementation": {
-        "skill": "mohen-data-ingest",
-        "entry": "pipelines/legacy/unattended-runner.mjs"
-      }
+      "purpose": "Source discovery/acquisition/registration/raw preservation"
     },
     {
-      "id": "images-*",
-      "kind": "images",
-      "version": "1.0",
-      "production_mode": "directed",
-      "truth_write_ceiling": 0,
-      "truth_write_ceiling_note": "只写候选视觉资产，不得置 confirmed / 可用（2026-10-03 按主协议 §5.1 补登；directed 模式默认值）",
-      "purpose": "把旧库照片清单导入为 candidate 视觉资产（visual_assets）与对象关联候选（visual_entity_links）。",
+      "job_id": "d02.material-understanding",
+      "stage": "D02",
+      "data_layer": "L1",
+      "exit_gate": "G1",
+      "scope": {
+        "kind": "runtime",
+        "description": "Defined per production run; must satisfy Protocol V4 stage contract."
+      },
+      "search_strategy": "directed",
+      "implementation": {
+        "skill": "mohen-material-understanding",
+        "executor": "pipelines/data-production/executors/d02-material-understanding.mjs",
+        "adapters": [
+          "text-reading",
+          "ocr",
+          "gazetteer-reading",
+          "historical-map-reading",
+          "visual-reading",
+          "structured-data-reading",
+          "source-dependency"
+        ]
+      },
       "inputs": [
-        "shanghai_images_verified_20260905.json",
-        "shanghai_images_census_20260905.json",
-        "commons_baoshan_chuansha_20260831.json",
-        "commons_external_maps_20260831.json"
+        "qualified_source"
       ],
       "outputs": [
-        "visual_assets（候选）",
-        "visual_entity_links（link_status ∈ suspected / similar / unconfirmed）"
+        "qualified_evidence_unit"
       ],
       "write_scope": [
-        "visual_assets",
-        "visual_entity_links"
+        "L1"
       ],
-      "gates": [
-        "G0",
-        "G1",
-        "G3",
-        "G4"
+      "lineage_requirements": [
+        "run_id",
+        "upstream_object_ids",
+        "source_lineage"
       ],
-      "gates_enforced_by": "**机制已落地，数据处置冻结中**：R15（777436a）已给 visual_assets 加 eligibility_status 默认 pending_review + gate_passed 必须有门禁审计的触发器 + 视图按状态过滤；202610020009 起候选写入必须在 review_queue 带三分行出生（M2 第四条）。历史 1246 张的既有数据处置仍冻结（任务结果 §8.3）。",
-      "auto_promote_policy": "none（只写候选；不得置 confirmed / 可用）",
-      "hold_reasons": [
-        "source_ambiguous",
-        "non_image_mime",
-        "http_not_200",
-        "rights_placeholder",
-        "content_description_missing",
-        "depicted_period_unknown"
+      "gates_enforced_by": [
+        "scripts/guards/G1_EVIDENCE_QUALITY_GATE"
       ],
+      "execution_policy": {
+        "attended": true,
+        "unattended": false,
+        "automation_limit": "Attended execution allowed after Phase D contract verification; unattended remains disabled until Phase G."
+      },
+      "retry": {
+        "policy": "bounded",
+        "max_attempts": 3
+      },
+      "rollback": {
+        "required": true,
+        "pointer": "run_id"
+      },
       "stop_conditions": [
-        "图片源无法唯一确定（拒绝猜测）",
-        "源文件缺失",
-        "连续 3 个作业技术性失败"
+        "gate contract cannot be enforced",
+        "write scope would cross primary data layer",
+        "required lineage is missing"
       ],
-      "retry_policy": "仅瞬时 HTTP / IO 失败重试 1 次；HTTP 非 200 fail-closed，不重试。",
       "tests": [
-        "幂等：legacy_id 并集 + 规范化 file_path 去重",
-        "非图片扩展名必须拒绝",
-        "HTTP 状态未知必须 fail-closed"
+        "registry schema validation",
+        "stage-layer-gate alignment",
+        "write-scope isolation"
       ],
-      "rollback": "按本批 legacy_id 前缀定位 visual_assets 行，置排除标记，不物理删除（协议 #7 No destructive cleanup）。",
-      "summary": [
-        "新增候选数",
-        "被拒绝条目数及原因分布",
-        "内容描述缺失数"
+      "human_review_view": {
+        "required": true,
+        "contract": "Human_Review_Deliverable_Contract.md"
+      },
+      "legacy_jobs": [
+        "unattended.evidence-fragment",
+        "research.content-observation",
+        "evidence parts of image-link/external-visual/mention-dependency"
       ],
-      "narrative_gaps": [
-        "M2 历史视觉证据（当前 = 0）",
-        "M5 遗址—复建双层的视觉对照"
-      ],
-      "unattended": "allowed",
-      "unattended_reason": "**2026-10-03 解禁（项目拥有者全权授权：完整挖干沪上经纬老数据）**：原 forbidden 的理由是「既有 1246 张夜跑图的处置冻结 + ESC-05 未结」。本作业只**新增候选行**，**不修改任何既有行**（冻结项仍冻结），且每条候选出生即带 eligibility_status=pending_review 与 review_queue hold 三分行、不自动晋级 —— 因此解禁不触碰冻结范围，也不降低任何 Gate 严格性。",
-      "implementation": {
-        "skill": "mohen-visual-asset",
-        "entry": "pipelines/legacy/unattended-runner.mjs"
-      }
+      "purpose": "Carrier-specific reading and material evidence formation"
     },
     {
-      "id": "coords-wikidata",
-      "kind": "coords",
-      "version": "1.0",
-      "production_mode": "directed",
-      "truth_write_ceiling": 0,
-      "truth_write_ceiling_note": "只写 candidate 锚点，historical_position_proof 恒 false（2026-10-03 按主协议 §5.1 补登；directed 模式默认值）",
-      "purpose": "把旧库实体的现代坐标写入 historical_features 与 historical_feature_anchors（现代点，非历史位置证明）。",
+      "job_id": "d03.world-construction",
+      "stage": "D03",
+      "data_layer": "L2",
+      "exit_gate": "G2",
+      "scope": {
+        "kind": "runtime",
+        "description": "Defined per production run; must satisfy Protocol V4 stage contract."
+      },
+      "search_strategy": "directed",
+      "implementation": {
+        "skill": "mohen-world-construction",
+        "executor": "pipelines/data-production/executors/d03-world-construction.mjs",
+        "adapters": [
+          "entity-resolution",
+          "name-resolution",
+          "relation-claim-build",
+          "spatial-claim",
+          "visual-world-link"
+        ]
+      },
       "inputs": [
-        "coords_wikidata.json（Wikidata P625）"
+        "qualified_evidence_unit"
       ],
       "outputs": [
-        "historical_features（slice_id = SHL-LEGACY-COORDS）",
-        "historical_feature_anchors（provider_current_object_point）"
+        "adjudicated_world_object"
       ],
       "write_scope": [
-        "historical_features",
-        "historical_feature_anchors"
+        "L2"
       ],
-      "gates": [
-        "G3"
+      "lineage_requirements": [
+        "run_id",
+        "upstream_object_ids",
+        "source_lineage"
       ],
-      "gates_enforced_by": "**仅部分**：库层 CHECK（anchor_coord_requires_crs / anchor_current_never_proof）有效；但 confidence 与 evidence_ids 无强制——实测 240 行以 candidate 入库却 confidence = 0、evidence_ids = {}。",
-      "auto_promote_policy": "none",
-      "hold_reasons": [
-        "missing_entity_match",
-        "crs_unknown"
+      "gates_enforced_by": [
+        "scripts/guards/G2_WORLD_INTEGRITY_GATE"
       ],
+      "execution_policy": {
+        "attended": true,
+        "unattended": false,
+        "automation_limit": "Attended execution allowed after Phase D contract verification; unattended remains disabled until Phase G."
+      },
+      "retry": {
+        "policy": "bounded",
+        "max_attempts": 3
+      },
+      "rollback": {
+        "required": true,
+        "pointer": "run_id"
+      },
       "stop_conditions": [
-        "坐标缺失或 CRS 不明",
-        "连续 3 个作业技术性失败"
+        "gate contract cannot be enforced",
+        "write scope would cross primary data layer",
+        "required lineage is missing"
       ],
-      "retry_policy": "不重试（确定性写入；重复运行由 feature_key / anchor_key 唯一约束拦截）。",
       "tests": [
-        "anchor 必须带 CRS",
-        "historical_position_proof 必须为 false",
-        "已存在 anchor_key 不得重复插入"
+        "registry schema validation",
+        "stage-layer-gate alignment",
+        "write-scope isolation"
       ],
-      "rollback": "按 slice_id + feature_key / anchor_key 定位本批行并删除（本作业产物不在 Raw）。",
-      "summary": [
-        "写入 feature / anchor 数",
-        "实体匹配失败数"
+      "human_review_view": {
+        "required": true,
+        "contract": "Human_Review_Deliverable_Contract.md"
+      },
+      "legacy_jobs": [
+        "unattended.deterministic-resolution",
+        "unattended.name-resolution",
+        "world parts of candidate-extraction/relation-weave/coords/image-link/external-*"
       ],
-      "narrative_gaps": [
-        "M2 历史图籍归因（历史地图定位未决）"
-      ],
-      "unattended": "allowed",
-      "unattended_reason": "**2026-10-03 解禁（项目拥有者全权授权：完整挖干沪上经纬老数据）**：原 forbidden 的理由是「既有 1246 张夜跑图的处置冻结 + ESC-05 未结」。本作业只**新增候选行**，**不修改任何既有行**（冻结项仍冻结），且每条候选出生即带 eligibility_status=pending_review 与 review_queue hold 三分行、不自动晋级 —— 因此解禁不触碰冻结范围，也不降低任何 Gate 严格性。 坐标作业只写 candidate，historical_position_proof 恒 false（不做历史位置证明）。",
-      "implementation": {
-        "skill": "mohen-data-ingest",
-        "entry": "pipelines/legacy/unattended-runner.mjs"
-      }
+      "purpose": "Cultural world structuring and factual integrity"
     },
     {
-      "id": "unattended.source-refresh",
-      "kind": "source",
-      "version": "1.0.0",
-      "production_mode": "directed",
-      "truth_write_ceiling": 0,
-      "truth_write_ceiling_note": "只写 L0 来源层（2026-10-03 按主协议 §5.1 补登；directed 模式默认值）",
-      "purpose": "增量抓取已知 S1（上图/方志·寺观卷·津梁卷·寺志）/ S2（Wikimedia/IA）来源，补 T06 缺口 1/3/6。",
+      "job_id": "d04.humanistic-discovery",
+      "stage": "D04",
+      "data_layer": "L3",
+      "exit_gate": "G3",
+      "scope": {
+        "kind": "runtime",
+        "description": "Defined per production run; must satisfy Protocol V4 stage contract."
+      },
+      "search_strategy": "directed",
+      "implementation": {
+        "skill": "mohen-humanistic-discovery",
+        "executor": "pipelines/data-production/executors/d04-humanistic-discovery.mjs",
+        "adapters": [
+          "association-discovery",
+          "A01-A12",
+          "humanistic-selection",
+          "counter-signal",
+          "present-connection"
+        ]
+      },
       "inputs": [
-        "provider ∈ {S1, S2}",
-        "scope = T03 §3 缺口 1/3/6 的目标来源清单",
-        "增量游标 retrieved_at"
+        "adjudicated_world_object",
+        "human_question"
       ],
       "outputs": [
-        "L0 Raw（append-only）",
-        "source_records（L1 元数据）"
+        "qualified_humanistic_finding"
       ],
       "write_scope": [
-        "source_records"
+        "L3"
       ],
-      "gates": [
-        "G0"
+      "lineage_requirements": [
+        "run_id",
+        "upstream_object_ids",
+        "source_lineage"
       ],
-      "gates_enforced_by": "库层唯一约束 (provider, checksum) 防重复 + raw 快照存在性；只写 L0 来源层，无 Claim / World 写入；来源须已在 source-providers.json 登记（guard:source-gate）。",
-      "auto_promote_policy": "仅 Source Record 元数据（checksum/version/license）自动入库；不自动晋级任何 Claim。",
-      "hold_reasons": [
-        "MISSING_LICENSE",
-        "MISSING_CHECKSUM",
-        "PROVIDER_NOT_ALLOWED",
-        "RIGHTS_UNCLEAR"
+      "gates_enforced_by": [
+        "scripts/guards/G3_INTERPRETATION_GATE"
       ],
+      "execution_policy": {
+        "attended": true,
+        "unattended": false,
+        "automation_limit": "Attended execution allowed after Phase D contract verification; unattended remains disabled until Phase G."
+      },
+      "retry": {
+        "policy": "bounded",
+        "max_attempts": 3
+      },
+      "rollback": {
+        "required": true,
+        "pointer": "run_id"
+      },
       "stop_conditions": [
-        "来源结构突变",
-        "连续抓取失败 > 阈值",
-        "写权限异常",
-        "非 dev/staging 环境"
+        "gate contract cannot be enforced",
+        "write scope would cross primary data layer",
+        "required lineage is missing"
       ],
-      "retry_policy": "仅网络/限流，最多 3 次，指数退避",
       "tests": [
-        "完整性（必填字段齐全）",
-        "幂等（同 checksum 不重复建源）",
-        "引用（source_id 可解析）"
+        "registry schema validation",
+        "stage-layer-gate alignment",
+        "write-scope isolation"
       ],
-      "rollback": "按 run_id 标记该批 source_records 为 quarantined，不物理删除 Raw",
-      "summary": [
-        "扫描/成功/失败/去重数",
-        "新增 source_id 列表",
-        "Top HOLD reason"
+      "human_review_view": {
+        "required": true,
+        "contract": "Human_Review_Deliverable_Contract.md"
+      },
+      "legacy_jobs": [
+        "research.association-scan",
+        "research.humanistic-selection",
+        "interpretive parts of candidate-extraction/relation-weave"
       ],
-      "narrative_gaps": [
-        "（基础设施：来源登记，服务全部叙事缺口）"
-      ],
-      "unattended": "allowed",
-      "unattended_reason": "只写 L0 来源层，门禁由库层约束强制，无判断性内容 → 适合无人值守。",
-      "implementation": {
-        "skill": "mohen-data-ingest",
-        "entry": "pipelines/legacy/unattended-runner.mjs"
-      }
+      "purpose": "Association discovery, comparison, change interpretation and humanistic findings"
     },
     {
-      "id": "unattended.evidence-fragment",
-      "kind": "evidence",
-      "version": "1.0.0",
-      "production_mode": "directed",
-      "truth_write_ceiling": 0,
-      "truth_write_ceiling_note": "只写 L1 证据层，不生成 Claim（2026-10-03 按主协议 §5.1 补登；directed 模式默认值）",
-      "purpose": "为 1879《青浦县志》图说 p36、县志寺观/津梁卷、寺志生成可定位 Fragment（page/locator/quote/region）。",
+      "job_id": "d05.read-model-publication",
+      "stage": "D05",
+      "data_layer": "L4",
+      "exit_gate": "G4",
+      "scope": {
+        "kind": "runtime",
+        "description": "Defined per production run; must satisfy Protocol V4 stage contract."
+      },
+      "search_strategy": "directed",
+      "implementation": {
+        "skill": "mohen-read-model-publication",
+        "executor": "pipelines/data-production/executors/d05-read-model-publication.mjs",
+        "adapters": [
+          "world-projection",
+          "agent-context",
+          "story-seed",
+          "map-time-projection",
+          "evidence-pointer"
+        ]
+      },
       "inputs": [
-        "已入库 source_records",
-        "目标 = T06 缺口 2/3/6"
+        "adjudicated_world_object",
+        "qualified_humanistic_finding"
       ],
       "outputs": [
-        "L1 evidence（fragment + locator + quote + source link）"
+        "runtime_eligible_read_model"
       ],
       "write_scope": [
-        "evidence"
+        "L4"
       ],
-      "gates": [
-        "G0",
-        "G4"
+      "lineage_requirements": [
+        "run_id",
+        "upstream_object_ids",
+        "source_lineage"
       ],
-      "gates_enforced_by": "evidence 写入须带 locator/page/quote；来源须已声明采集意图（guard:acquisition）；locator 缺 → G0 HOLD。",
-      "auto_promote_policy": "fragment + locator + quote 齐备且来源 S1/S2 → 入库 L1；不生成 Claim。",
-      "hold_reasons": [
-        "LOCATOR_INCOMPLETE",
-        "QUOTE_UNVERIFIABLE",
-        "SOURCE_NOT_RETRIEVED"
+      "gates_enforced_by": [
+        "scripts/guards/G4_RUNTIME_ELIGIBILITY_GATE"
       ],
+      "execution_policy": {
+        "attended": true,
+        "unattended": false,
+        "automation_limit": "Attended execution allowed after Phase D contract verification; unattended remains disabled until Phase G."
+      },
+      "retry": {
+        "policy": "bounded",
+        "max_attempts": 3
+      },
+      "rollback": {
+        "required": true,
+        "pointer": "run_id"
+      },
       "stop_conditions": [
-        "locator 缺失率超阈值",
-        "来源不可读",
-        "写权限异常"
+        "gate contract cannot be enforced",
+        "write scope would cross primary data layer",
+        "required lineage is missing"
       ],
-      "retry_policy": "仅技术瞬时失败；歧义不重试",
       "tests": [
-        "引用（evidence → source_id 必存在）",
-        "完整性（quote 非空）",
-        "幂等"
-      ],
-      "rollback": "run_id 标记该批 evidence quarantined",
-      "summary": [
-        "新增 Fragment/Evidence 数",
-        "缺 locator 数",
-        "来源覆盖数"
-      ],
-      "narrative_gaps": [
-        "M2 历史地图归因",
-        "M1 寺桥文献",
-        "M3 吕颐浩方志原文"
-      ],
-      "unattended": "allowed",
-      "unattended_reason": "只写 L1 证据层，不要求历史判断；locator 缺 → G0 HOLD，风险可控。",
-      "implementation": {
-        "skill": "mohen-evidence-gate",
-        "entry": "pipelines/legacy/unattended-runner.mjs"
-      }
-    },
-    {
-      "id": "unattended.candidate-extraction",
-      "kind": "extraction",
-      "version": "1.0.0",
-      "production_mode": "directed",
-      "truth_write_ceiling": 0,
-      "truth_write_ceiling_note": "只写 Candidate，不写 Runtime World（2026-10-03 按主协议 §5.1 补登；directed 模式默认值）",
-      "purpose": "从已建 Evidence 抽 Entity / Time / Place / Relation Candidate，供 M1/M2/M3/M5 缺口使用。",
-      "inputs": [
-        "L1 evidence",
-        "抽取规则版本"
-      ],
-      "outputs": [
-        "Candidate Reservoir（仅候选）"
-      ],
-      "write_scope": [
-        "entities",
-        "claims",
-        "cultural_meaning_candidates",
-        "cultural_present_connections",
-        "cultural_relation_claims",
-        "discovery_candidates",
-        "historical_spatial_relations",
-        "relations"
-      ],
-      "gates": [
-        "G4"
-      ],
-      "gates_enforced_by": "候选须能指回 evidence_id；写入须随生 review_queue 三分（guard:triage）。",
-      "auto_promote_policy": "不自动晋级（候选即终点）",
-      "hold_reasons": [
-        "AMBIGUOUS_ENTITY",
-        "NO_EVIDENCE_BACKING",
-        "TEMPORAL_UNCERTAIN"
-      ],
-      "stop_conditions": [
-        "抽取规则异常",
-        "写权限异常",
-        "schema drift"
-      ],
-      "retry_policy": "仅技术瞬时",
-      "tests": [
-        "引用（candidate → evidence_id）",
-        "幂等（natural key）",
-        "完整性"
-      ],
-      "rollback": "run_id 批量标记 candidate discarded（保留日志）",
-      "summary": [
-        "Entity/Relation/Time/Place Candidate 计数",
-        "Top HOLD reason"
-      ],
-      "narrative_gaps": [
-        "M1/M2/M3/M5 缺口候选供给"
-      ],
-      "unattended": "allowed",
-      "unattended_reason": "只写候选层，与 Verified World 分离，风险可控。",
-      "implementation": {
-        "skill": "mohen-evidence-gate",
-        "entry": "pipelines/legacy/unattended-runner.mjs"
-      }
-    },
-    {
-      "id": "unattended.deterministic-resolution",
-      "kind": "resolution",
-      "version": "1.0.0",
-      "production_mode": "directed",
-      "truth_write_ceiling": 0,
-      "truth_write_ceiling_note": "只写 candidate 区与别名，歧义 HOLD（2026-10-03 按主协议 §5.1 补登；directed 模式默认值）",
-      "purpose": "有稳定 ID/URI/强规则的实体对齐与精确去重（吕颐浩 Wikidata ID、双桥 strong ID）。",
-      "inputs": [
-        "Candidate",
-        "权威 ID 源（Wikidata 等）"
-      ],
-      "outputs": [
-        "canonical candidate + alias + confidence + basis"
-      ],
-      "write_scope": [
-        "entities",
-        "relations",
-        "relation_evidence",
-        "legacy_mappings"
-      ],
-      "gates": [
-        "G1"
-      ],
-      "gates_enforced_by": "精确 ID/强一致才可继续；同名、别名冲突 → HOLD（guard:triage 归因完整）。",
-      "auto_promote_policy": "仅精确 ID 强一致的对齐可自动落 canonical；歧义一律 HOLD。",
-      "hold_reasons": [
-        "HOMONYM_CONFLICT",
-        "ALIAS_UNRESOLVED",
-        "RELATION_UNPROVEN"
-      ],
-      "stop_conditions": [
-        "权威 ID 源不可用",
-        "写权限异常"
-      ],
-      "retry_policy": "仅技术瞬时",
-      "tests": [
-        "幂等（同 ID 不重复合并）",
-        "引用",
-        "完整性（basis 必填）"
-      ],
-      "rollback": "run_id 记录合并对，支持解绑还原",
-      "summary": [
-        "对齐成功/去重/歧义 HOLD 数"
-      ],
-      "narrative_gaps": [
-        "M3 吕颐浩身份锚点",
-        "M1/M4 双桥精确对齐"
-      ],
-      "unattended": "allowed",
-      "unattended_reason": "机器擅长的确定性劳动；歧义 G1 HOLD，不自动选边。",
-      "implementation": {
-        "skill": "mohen-evidence-gate",
-        "entry": "pipelines/legacy/unattended-runner.mjs"
-      }
-    },
-    {
-      "id": "unattended.relation-weave",
-      "kind": "weave",
-      "version": "1.0.0",
-      "production_mode": "directed",
-      "truth_write_ceiling": 0,
-      "truth_write_ceiling_note": "只写 candidate 状态的关系；仅 E1 类确定性空间关系可晋级（2026-10-03 按主协议 §5.1 补登；directed 模式默认值）",
-      "purpose": "围绕金泽关系簇（E1 桥—水—桥）+ M1/M3/M5 候选生成 relation path + evidence binding。",
-      "inputs": [
-        "Candidate + evidence",
-        "关系簇定义"
-      ],
-      "outputs": [
-        "Relation Candidate + evidence_ids + relation path（候选层）"
-      ],
-      "write_scope": [
-        "entities",
-        "claims",
-        "cultural_relation_claims",
-        "cultural_present_connections",
-        "cultural_meaning_candidates",
-        "discovery_candidates",
-        "historical_spatial_relations",
-        "relations"
-      ],
-      "gates": [
-        "G4",
-        "G5"
-      ],
-      "gates_enforced_by": "须绑定 evidence（G4）；冲突保留双方不自动选边（G5）；三分随生（guard:triage）。",
-      "auto_promote_policy": "E1 桥—水—桥类确定性空间关系（多证据、无冲突、口径可比）可晋级；其余一律 HOLD。",
-      "hold_reasons": [
-        "HISTORICAL_CAUSALITY",
-        "FUNCTION_RELATION_UNSOURCED",
-        "CROSS_SOURCE_CONFLICT",
-        "LOW_CONFIDENCE"
-      ],
-      "stop_conditions": [
-        "关系簇定义变更",
-        "Gate 大面积失败",
-        "写权限异常"
-      ],
-      "retry_policy": "仅技术瞬时；因果/冲突不重试",
-      "tests": [
-        "引用（relation → evidence_ids）",
-        "幂等",
-        "Gate（G4/G5 断言）"
-      ],
-      "rollback": "run_id 标记该批 claim candidate/quarantined",
-      "summary": [
-        "新增 relation candidate 数",
-        "晋级数（按类型）",
-        "HOLD Top 5"
-      ],
-      "narrative_gaps": [
-        "M1 寺桥关系簇",
-        "M3/M5 候选关系"
-      ],
-      "unattended": "allowed",
-      "unattended_reason": "仅 E1 类确定性关系 AUTO-PROMOTE；历史因果/跨源冲突 G5 HOLD。",
-      "implementation": {
-        "skill": "mohen-knowledge-weave",
-        "entry": "pipelines/legacy/unattended-runner.mjs"
-      }
-    },
-    {
-      "id": "unattended.gate-projection",
-      "kind": "gate",
-      "version": "1.0.0",
-      "production_mode": "directed",
-      "truth_write_ceiling": 1,
-      "truth_write_ceiling_note": "唯一允许 promote 进 Runtime World 的作业；须有 evidence_gate_audit（R15）（2026-10-03 按主协议 §5.1 补登；directed 模式默认值）",
-      "purpose": "执行 G0–G6 → AUTO-PROMOTE / HOLD / REJECT → 刷新 Agent Read Model。",
-      "inputs": [
-        "本批全部产物"
-      ],
-      "outputs": [
-        "Gate 结果 + promotion 记录 + Projection（只读重建）"
-      ],
-      "write_scope": [
-        "evidence_gate_audit",
-        "entities",
-        "claims",
-        "relations",
-        "cultural_relation_claims",
-        "knowledge_paths",
-        "knowledge_path_steps"
-      ],
-      "gates": [
-        "G0",
-        "G1",
-        "G2",
-        "G3",
-        "G4",
-        "G5",
-        "G6"
-      ],
-      "gates_enforced_by": "guard:promotion（已标可用却无门禁记录报数）+ guard:triage（三分+归因）；晋级须有 evidence_gate_audit（C3 §4.2 R15）。",
-      "auto_promote_policy": "仅确定性+无冲突+满足 Contract 进允许层；未声明者一律不晋级。",
-      "hold_reasons": [
-        "GATE_FAIL_G0..G6",
-        "CONTRACT_UNMET"
-      ],
-      "stop_conditions": [
-        "任一硬 Gate 系统性失败",
-        "schema drift",
-        "写权限异常"
-      ],
-      "retry_policy": "仅技术瞬时",
-      "tests": [
-        "schema / integrity / referential / gate 全量 PASS",
-        "Projection 与 Truth Store 一致性"
-      ],
-      "rollback": "run_id + 事务边界；promotion 可整批撤销回 candidate",
-      "summary": [
-        "Promoted（按类型）/ Held（Top5 reason）/ Rejected / Conflicts / Projection 是否刷新 / Tests PASS-FAIL / Escalation（0–3 条）"
-      ],
-      "narrative_gaps": [
-        "全部缺口的晋级判定收口"
-      ],
-      "unattended": "allowed",
-      "unattended_reason": "闭环闸门；Projection 不反写 Truth Store。",
-      "implementation": {
-        "skill": "mohen-project-guard",
-        "entry": "pipelines/legacy/unattended-runner.mjs"
-      }
-    },
-    {
-      "id": "research.source-inventory",
-      "kind": "research",
-      "version": "1.0.0",
-      "production_mode": "discovery",
-      "truth_write_ceiling": 0,
-      "purpose": "D01：按来源性质 / 原始载体 / 可读程度盘点沪上经纬 Legacy Reservoir（T01–T14）；不复制 Truth。",
-      "inputs": [
-        "legacy/manifests（只读）",
-        "旧库文件清单与 raw availability"
-      ],
-      "outputs": [
-        "Source Inventory：T 类型 / 原始载体 / 可读性 / 权利与访问 / 是否 catalog-only"
-      ],
-      "write_scope": [
-        "research_run",
-        "research_source_inventory"
-      ],
-      "gates": [
-        "G0"
-      ],
-      "gates_enforced_by": "只写 research 逻辑区，无 Truth 写入；来源须已在 source-providers.json 登记（guard:source-gate）。Research Workspace 写入上限由 guard:research 校验（truth_write_ceiling=0）。",
-      "auto_promote_policy": "none（0 自动 Truth Promotion）",
-      "selection_policy": "不适用（盘点作业）",
-      "hold_reasons": [
-        "RIGHTS_UNCLEAR",
-        "RAW_MISSING",
-        "PROVIDER_UNCLASSIFIED"
-      ],
-      "stop_conditions": [
-        "清单不可读",
-        "raw 缺失率超阈值",
-        "写权限异常"
-      ],
-      "retry_policy": "仅技术瞬时失败重试 1 次",
-      "tests": [
-        "不写 Truth Store 任一表",
-        "inventory 每条可回源",
-        "幂等"
-      ],
-      "rollback": "按 run_id 标记该批 inventory 作废，保留日志",
-      "summary": [
-        "可读取 / catalog-only / 不可读计数",
-        "载体类型分布"
-      ],
-      "research_scope": "沪上经纬 Legacy Reservoir（第一验证场）；不扩大外部抓取",
-      "narrative_gaps": [
-        "（基础设施：服务后续 Discovery 与全部叙事缺口，不直接推进某一格）"
-      ],
-      "unattended": "allowed",
-      "unattended_reason": "只写 research 逻辑区，truth_write_ceiling=0，无判断性内容 → 适合无人值守。",
-      "implementation": {
-        "skill": "mohen-research-intake",
-        "entry": "pipelines/research/research-pipeline.mjs"
-      }
-    },
-    {
-      "id": "research.content-observation",
-      "kind": "research",
-      "version": "1.0.0",
-      "production_mode": "discovery",
-      "truth_write_ceiling": 0,
-      "purpose": "D02：按 T01–T14 运行 source-specific adapter，产出内容级 Observation（含 locator/region、modality、uncertainty）。",
-      "inputs": [
-        "已盘点且有 raw 的 Source",
-        "adapter 版本与抽取规则版本"
-      ],
-      "outputs": [
-        "research_observation（内容级，非标题级）"
-      ],
-      "write_scope": [
-        "research_run",
-        "research_observation"
-      ],
-      "gates": [
-        "G0"
-      ],
-      "gates_enforced_by": "Observation 必须有 source_id + locator/region + modality；缺 locator 不得进入关联池（《宽进与广联》W1–W7）。guard:research 校验 0 Truth 写入。",
-      "auto_promote_policy": "none",
-      "selection_policy": "不适用（读取作业）",
-      "hold_reasons": [
-        "TITLE_ONLY",
-        "NO_LOCATOR",
-        "OCR_UNRELIABLE",
-        "CATALOG_ONLY"
-      ],
-      "stop_conditions": [
-        "内容读取率过低",
-        "连续批次只产 catalog-only",
-        "写权限异常"
-      ],
-      "retry_policy": "仅技术瞬时；歧义不重试",
-      "tests": [
-        "每条 Observation 可定位回源",
-        "文本有句段 / 地图图片有真实读图",
-        "不写 Truth Store"
-      ],
-      "rollback": "按 run_id 标记该批 observation discarded（保留日志）",
-      "summary": [
-        "Observation Yield",
-        "modality 分布",
-        "缺 locator 数",
-        "catalog-only 数"
-      ],
-      "research_scope": "沪上经纬 Legacy Reservoir；按 T01–T14 载体分批",
-      "narrative_gaps": [
-        "（基础设施：内容读取服务全部叙事缺口）"
-      ],
-      "unattended": "allowed",
-      "unattended_reason": "只写 research 逻辑区、0 Truth Promotion；产出可被验收（内容级而非标题级）。",
-      "implementation": {
-        "skill": "mohen-research-intake",
-        "entry": "pipelines/research/research-pipeline.mjs"
-      }
-    },
-    {
-      "id": "research.mention-dependency",
-      "kind": "research",
-      "version": "1.0.0",
-      "production_mode": "discovery",
-      "truth_write_ceiling": 0,
-      "purpose": "D03：生成 Mention Resolution 候选与 research_source_dependency；不急于 Entity 化，不制造 unknown Entity。",
-      "inputs": [
-        "research_observation",
-        "别名 / 地名沿革 / 人物机构作品词表"
-      ],
-      "outputs": [
-        "research_mention",
-        "research_source_dependency"
-      ],
-      "write_scope": [
-        "research_run",
-        "research_mention",
-        "research_source_dependency"
-      ],
-      "gates": [
-        "G0"
-      ],
-      "gates_enforced_by": "Mention 允许 unresolved；禁止把 unresolved mention 写成 Entity（C3 §2.9.1）。转引/同源必须登记为 dependency，不得计为独立来源（guard:research）。",
-      "auto_promote_policy": "none",
-      "selection_policy": "不适用",
-      "hold_reasons": [
-        "AMBIGUOUS_MENTION",
-        "UNRESOLVED_PLACE"
-      ],
-      "stop_conditions": [
-        "词表不可用",
-        "写权限异常"
-      ],
-      "retry_policy": "仅技术瞬时",
-      "tests": [
-        "unresolved mention 不产生 Entity 行",
-        "dependency 可回放"
-      ],
-      "rollback": "run_id 标记作废",
-      "summary": [
-        "Mention 数",
-        "可解析率",
-        "识别出的转引链数"
-      ],
-      "research_scope": "沪上经纬 Legacy Reservoir",
-      "narrative_gaps": [
-        "M1 寺桥文献",
-        "M3 人物与交接（为后续补证铺路）"
-      ],
-      "unattended": "allowed",
-      "unattended_reason": "只写 research 逻辑区；判定不确定时保持 unresolved，不硬猜。",
-      "implementation": {
-        "skill": "mohen-association-discovery",
-        "entry": "pipelines/research/research-pipeline.mjs"
-      }
-    },
-    {
-      "id": "research.association-scan",
-      "kind": "research",
-      "version": "1.0.0",
-      "production_mode": "discovery",
-      "truth_write_ceiling": 0,
-      "purpose": "D04：在 Observation Graph 上运行 A01–A12（或等价方法），生成可回放 Signal 与 Association Candidate。",
-      "inputs": [
-        "research_observation + mention + dependency",
-        "算法版本与 Config（AVS 参数版本化）"
-      ],
-      "outputs": [
-        "research_signal",
-        "research_association_candidate（含 supporting/counter signals、AVS 分量、why_interesting、missing_evidence、next_search_tasks）"
-      ],
-      "write_scope": [
-        "research_run",
-        "research_signal",
-        "research_association_candidate"
-      ],
-      "gates": [
-        "G0"
-      ],
-      "gates_enforced_by": "G-LINK-1～5（《宽进与广联》§16）：内容基础、非平凡性、可解释生成、独立性、研究价值。near / same_source / mentioned_in / title-only / embedding-only 不得单独形成高优先候选；guard:research 校验 0 Truth 写入。",
-      "auto_promote_policy": "none（**0 个 Association Candidate 自动晋级 Runtime Truth**）",
-      "selection_policy": "不适用（由 D05 执行）",
-      "hold_reasons": [
-        "SAME_SOURCE_ONLY",
-        "NEAR_ONLY",
-        "MENTIONED_IN_ONLY",
-        "EMBEDDING_ONLY",
-        "EXTERNAL_HYPOTHESIS"
-      ],
-      "stop_conditions": [
-        "连续两个扩展批次只出同源重复或低 AVS 候选",
-        "写权限异常",
-        "schema drift"
-      ],
-      "retry_policy": "仅技术瞬时；语义歧义不重试",
-      "tests": [
-        "每个候选可回放生成方法",
-        "候选不得写入 claims / relations / entities",
-        "噪声比例可统计"
-      ],
-      "rollback": "run_id 标记 discarded（保留日志）",
-      "summary": [
-        "Association Yield",
-        "信号族分布",
-        "被反噪声降级的比例"
-      ],
-      "research_scope": "沪上经纬 Legacy Reservoir；首轮不扩大外部抓取",
-      "narrative_gaps": [
-        "（Discovery：产出 Selected Discovery 后转入 N 系列，才对应具体缺口）"
-      ],
-      "unattended": "allowed",
-      "unattended_reason": "0 Truth Promotion、可停止可回滚；产出可验收且不影响可信世界。",
-      "implementation": {
-        "skill": "mohen-association-discovery",
-        "entry": "pipelines/research/research-pipeline.mjs"
-      }
-    },
-    {
-      "id": "research.humanistic-selection",
-      "kind": "research",
-      "version": "1.0.0",
-      "production_mode": "discovery",
-      "truth_write_ceiling": 0,
-      "purpose": "D05：AVS + 反噪声 + 多透镜审查，输出 Top Priority / Long Tail / Directed Research Task；只有 Selected 才创建 review_queue。",
-      "inputs": [
-        "research_association_candidate",
-        "AVS Config 版本",
-        "五母题透镜（后置，不作为硬筛选）"
-      ],
-      "outputs": [
-        "Top-K Review Pack",
-        "Long Tail（机器保留/合并/降级/暂停）",
-        "Directed Research Task（转入 N01–N06）"
-      ],
-      "write_scope": [
-        "research_run",
-        "research_association_candidate",
-        "research_task"
-      ],
-      "gates": [
-        "G0"
-      ],
-      "gates_enforced_by": "G-LINK-6～10：人审效率、新发现率、跨模态质量、人工债务、Truth 隔离。只有 Selected / Truth-Promotion / Narrative-Critical / Conflict-Critical 创建 review_queue（主协议 §3.3，guard:triage 扩展校验）。",
-      "auto_promote_policy": "none",
-      "selection_policy": "AVS 分层：<35 仅保留 Signal；35–54 AssociationCandidate；55–69 可进入 Discovery Review；≥70 Priority Discovery。显式高特异关系可绕过总分进入 Review，但**不得绕过 Evidence Gate**。Long Tail 机器处置，不进人工队列。（阈值属版本化 Config，由 LR-ADS-01 校准）",
-      "hold_reasons": [
-        "LOW_AVS",
-        "NO_WHY_INTERESTING",
-        "NOT_RESEARCHABLE"
-      ],
-      "stop_conditions": [
-        "Top-K 人工有效率低于目标（先调算法，不扩大抓取）",
-        "写权限异常"
-      ],
-      "retry_policy": "仅技术瞬时",
-      "tests": [
-        "Long Tail 未 1:1 制造 review_queue",
-        "Top-K 每条有 why_interesting + missing_evidence + next_search_tasks",
-        "0 自动晋级"
-      ],
-      "rollback": "run_id 回退 selection 结果",
-      "summary": [
-        "Top-K 数",
-        "Novelty（非旧库复述比例）",
-        "Human Selection Precision",
-        "Long Tail 规模"
-      ],
-      "research_scope": "沪上经纬 Legacy Reservoir · LR-ADS-01",
-      "narrative_gaps": [
-        "（汇流点：Selected Discovery 在此转入 Directed N 系列）"
-      ],
-      "unattended": "allowed",
-      "unattended_reason": "只写 research 逻辑区；人工只抽查 Top-K 是否值得继续查，不做全量史实审核。",
-      "implementation": {
-        "skill": "mohen-humanistic-selection",
-        "entry": "pipelines/research/research-pipeline.mjs"
-      }
+        "registry schema validation",
+        "stage-layer-gate alignment",
+        "write-scope isolation"
+      ],
+      "human_review_view": {
+        "required": true,
+        "contract": "Human_Review_Deliverable_Contract.md"
+      },
+      "legacy_jobs": [
+        "projection part of unattended.gate-projection"
+      ],
+      "purpose": "Trusted read-model assembly and runtime eligibility"
     }
   ]
 }

@@ -1,0 +1,116 @@
+{
+  "stage": "C6",
+  "generated_at": "2026-10-05T01:33:50.978Z",
+  "from": "2026-10-03T13:33:50.112Z",
+  "constraint_triggers": 10,
+  "dup_groups": 383,
+  "name_res_rows": 383,
+  "name_resolved": 13,
+  "name_open": 370,
+  "name_coverage_pct": 100,
+  "providers_distinct": 23,
+  "promoted": {
+    "entities": 0,
+    "evidence": 0,
+    "relations": 0,
+    "confirmed_links": 8
+  },
+  "effective_va": 8,
+  "auto_1d": 0,
+  "l4_paths": 2931,
+  "l4_steps": 15544,
+  "audits": [
+    {
+      "object_type": "evidence",
+      "c": 53365,
+      "pass": 44445
+    },
+    {
+      "object_type": "entity",
+      "c": 46158,
+      "pass": 29798
+    },
+    {
+      "object_type": "relation",
+      "c": 44632,
+      "pass": 40298
+    },
+    {
+      "object_type": "visual_asset",
+      "c": 14368,
+      "pass": 6297
+    },
+    {
+      "object_type": "claim",
+      "c": 140,
+      "pass": 80
+    },
+    {
+      "object_type": "cultural_relation_claim",
+      "c": 56,
+      "pass": 40
+    },
+    {
+      "object_type": "historical_spatial_relation",
+      "c": 56,
+      "pass": 32
+    },
+    {
+      "object_type": "historical_feature",
+      "c": 35,
+      "pass": 22
+    },
+    {
+      "object_type": "cultural_present_connection",
+      "c": 14,
+      "pass": 8
+    },
+    {
+      "object_type": "cultural_meaning_candidate",
+      "c": 14,
+      "pass": 8
+    }
+  ],
+  "statuses": [
+    {
+      "tbl": "cultural_meaning_candidates",
+      "v": "candidate",
+      "c": 2
+    },
+    {
+      "tbl": "cultural_present_connections",
+      "v": "candidate",
+      "c": 2
+    },
+    {
+      "tbl": "cultural_relation_claims",
+      "v": "candidate",
+      "c": 8
+    },
+    {
+      "tbl": "entities",
+      "v": "candidate",
+      "c": 6745
+    },
+    {
+      "tbl": "evidence",
+      "v": "candidate",
+      "c": 13033
+    },
+    {
+      "tbl": "evidence",
+      "v": "evidence_linked",
+      "c": 20
+    },
+    {
+      "tbl": "historical_features",
+      "v": "candidate",
+      "c": 243
+    },
+    {
+      "tbl": "historical_features",
+      "v": "human_reviewed",
+      "c": 2
+    }
+  ]
+}

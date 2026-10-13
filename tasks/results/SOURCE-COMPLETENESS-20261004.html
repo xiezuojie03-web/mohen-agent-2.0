@@ -1,0 +1,410 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<title>每来源完整性对照表 · 挖干证伪（2026-10-04）</title>
+<style>body{background:#0f1115;color:#e8eaf0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;padding:28px;line-height:1.6}
+h1{font-size:22px}h2{font-size:17px;margin-top:26px;color:#5b8cff}.sub{color:#9aa3b2;font-size:13px}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:12px}th,td{padding:6px 8px;border-bottom:1px solid #2a2f3a;text-align:left}
+th{color:#9aa3b2}.num{text-align:right;font-variant-numeric:tabular-nums}
+.box{background:#171a21;border:1px solid #2a2f3a;border-radius:12px;padding:16px;margin:12px 0}
+.b{font-size:22px;font-weight:700}.verdict{background:#1b2030;border:1px solid #2a2f3a;border-radius:12px;padding:16px 18px;margin:14px 0}
+code{background:#1e222b;padding:1px 5px;border-radius:4px;font-size:11px}</style></head><body>
+<div class="wrap" style="max-width:1100px;margin:0 auto">
+<h1>每来源完整性对照表 · 「挖干」证伪分析</h1>
+<div class="sub">墨痕 · 沪上经纬 Legacy Reservoir（95 来源）· 实测 2026-10-04 · 对照维度：可提取中文正文串数 vs 库内 research_observation 实际条数</div>
+<div class="box">
+  <div style="display:flex;gap:18px;flex-wrap:wrap">
+    <div><div class="b">95</div><div class="sub">盘点来源数</div></div>
+    <div><div class="b">17,225</div><div class="sub">可提取正文串总数（阈值内）</div></div>
+    <div><div class="b">6,913</div><div class="sub">已存 Observation 总数</div></div>
+    <div><div class="b" style="color:#ffb454">54</div><div class="sub">机制限制/未读取来源</div></div>
+    <div><div class="b" style="color:#39d0a5">35</div><div class="sub">已挖干/持平来源</div></div>
+  </div>
+</div>
+<div class="verdict">
+  <b>结论：沪上经纬老数据<b style="color:#ffb454"> 远未挖干</b>。</b> 可提取中文正文串总数 <b>17,225</b>，已存 Observation <b>6,913</b>——聚合仅提取 <b>40%</b>，<b>剩余约 60% 仍留在来源里</b>。
+  <br>逐来源看：<b>35</b> 个小来源（内容少、未触封顶）已持平挖干；<b>54</b> 个来源受机制限制——其中大来源（古籍/方志/人物库）被<b>每源 500 条封顶（maxPerSource）</b>压成冰山一角，视觉载体（image_catalog / historical_map）按设计不产 Observation。
+  <br>因此「L0 没新增 / 数据量不涨」是<b>机制设计（阈值 + 500 封顶）+ 桥接缺失</b>导致，<b>不是数据源挖完</b>。要真正"挖干"，需放大每源配额并放开视觉载体读取——属下一轮机制升级，不关数据源储量。
+</div>
+<h2>逐来源对照（按可提取正文串数降序）</h2>
+<table><tr><th>来源(source_ref)</th><th>载体</th><th>可读性</th><th>条目数</th><th>可提取正文串</th><th>Observation</th><th>Mention</th><th>判定</th></tr><tr>
+    <td><code>hsly_events.json</code></td><td>event_record</td><td>readable</td>
+    <td class="num">1,816</td><td class="num">2,381</td>
+    <td class="num">504</td><td class="num">1,214</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>probe_s0_press.json</code></td><td>unknown</td><td>readable</td>
+    <td class="num">1,150</td><td class="num">2,090</td>
+    <td class="num">504</td><td class="num">680</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>gj_14373_toc.json</code></td><td>old_book_fulltext</td><td>readable</td>
+    <td class="num">32</td><td class="num">1,843</td>
+    <td class="num">504</td><td class="num">94</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>jp_shanghai_family_persons.json</code></td><td>poetry_person</td><td>readable</td>
+    <td class="num">1,320</td><td class="num">1,320</td>
+    <td class="num">500</td><td class="num">0</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>jp_works_sparql.json</code></td><td>poetry_person</td><td>catalog_only</td>
+    <td class="num">2</td><td class="num">1,094</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>narrative_assets.json</code></td><td>narrative_asset</td><td>readable</td>
+    <td class="num">351</td><td class="num">948</td>
+    <td class="num">504</td><td class="num">1,150</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>yutu_triples_cache.json</code></td><td>historical_map</td><td>readable</td>
+    <td class="num">97</td><td class="num">739</td>
+    <td class="num">225</td><td class="num">423</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>yutu_catalog_final_20260831.json</code></td><td>historical_map</td><td>readable</td>
+    <td class="num">1,133</td><td class="num">668</td>
+    <td class="num">387</td><td class="num">170</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>yutu_catalog_20260831.json</code></td><td>historical_map</td><td>readable</td>
+    <td class="num">1,387</td><td class="num">665</td>
+    <td class="num">343</td><td class="num">229</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>yutu_catalog_checked.json</code></td><td>historical_map</td><td>readable</td>
+    <td class="num">1,131</td><td class="num">640</td>
+    <td class="num">411</td><td class="num">308</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>events_linked.json</code></td><td>event_record</td><td>readable</td>
+    <td class="num">114</td><td class="num">614</td>
+    <td class="num">383</td><td class="num">859</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>yutu_catalog.json</code></td><td>historical_map</td><td>readable</td>
+    <td class="num">1,133</td><td class="num">583</td>
+    <td class="num">313</td><td class="num">116</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>jp_works_all.json</code></td><td>poetry_person</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">561</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>sources_ledger.json</code></td><td>unknown</td><td>readable</td>
+    <td class="num">1,125</td><td class="num">418</td>
+    <td class="num">114</td><td class="num">377</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>souyun_poems_by_person.json</code></td><td>unknown</td><td>readable</td>
+    <td class="num">20</td><td class="num">370</td>
+    <td class="num">369</td><td class="num">57</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>suzhou_narrative_candidates.json</code></td><td>narrative_candidate</td><td>readable</td>
+    <td class="num">130</td><td class="num">255</td>
+    <td class="num">254</td><td class="num">419</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>suzhou_narrative_review.json</code></td><td>narrative_candidate</td><td>readable</td>
+    <td class="num">130</td><td class="num">255</td>
+    <td class="num">254</td><td class="num">419</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>clans.json</code></td><td>unknown</td><td>readable</td>
+    <td class="num">20</td><td class="num">229</td>
+    <td class="num">227</td><td class="num">567</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>commons_oldmaps_raw_20260831.json</code></td><td>image_catalog</td><td>readable</td>
+    <td class="num">958</td><td class="num">207</td>
+    <td class="num">103</td><td class="num">88</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>commons_cats_drill_20260831.json</code></td><td>image_catalog</td><td>readable</td>
+    <td class="num">1,107</td><td class="num">99</td>
+    <td class="num">68</td><td class="num">93</td>
+    <td style="color:#5b8cff">部分提取</td></tr><tr>
+    <td><code>shanghai_images_census_20260905.json</code></td><td>image_catalog</td><td>readable</td>
+    <td class="num">727</td><td class="num">89</td>
+    <td class="num">74</td><td class="num">168</td>
+    <td style="color:#5b8cff">部分提取</td></tr><tr>
+    <td><code>shanghai_images_verified_20260905.json</code></td><td>image_catalog</td><td>readable</td>
+    <td class="num">727</td><td class="num">89</td>
+    <td class="num">74</td><td class="num">168</td>
+    <td style="color:#5b8cff">部分提取</td></tr><tr>
+    <td><code>suzhou_people_shanghai.json</code></td><td>narrative_candidate</td><td>readable</td>
+    <td class="num">38</td><td class="num">84</td>
+    <td class="num">77</td><td class="num">155</td>
+    <td style="color:#5b8cff">部分提取</td></tr><tr>
+    <td><code>commons_images.json</code></td><td>image_catalog</td><td>readable</td>
+    <td class="num">519</td><td class="num">80</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>protection_index.json</code></td><td>heritage_protection</td><td>readable</td>
+    <td class="num">58</td><td class="num">72</td>
+    <td class="num">60</td><td class="num">0</td>
+    <td style="color:#5b8cff">部分提取</td></tr><tr>
+    <td><code>mgts_4581_entries.json</code></td><td>old_book_fulltext</td><td>readable</td>
+    <td class="num">69</td><td class="num">67</td>
+    <td class="num">67</td><td class="num">164</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>gazetteer_details.json</code></td><td>gazetteer</td><td>readable</td>
+    <td class="num">100</td><td class="num">65</td>
+    <td class="num">56</td><td class="num">8</td>
+    <td style="color:#5b8cff">部分提取</td></tr><tr>
+    <td><code>mcp_screenshot_ocr.json</code></td><td>unknown</td><td>readable</td>
+    <td class="num">70</td><td class="num">50</td>
+    <td class="num">49</td><td class="num">28</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>_work_titles.json</code></td><td>unknown</td><td>readable</td>
+    <td class="num">43</td><td class="num">49</td>
+    <td class="num">11</td><td class="num">31</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>resource_probe2_20260831.json</code></td><td>access_probe</td><td>readable</td>
+    <td class="num">842</td><td class="num">46</td>
+    <td class="num">5</td><td class="num">2</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>gj_14386_ocr.json</code></td><td>old_book_fulltext</td><td>readable</td>
+    <td class="num">10</td><td class="num">45</td>
+    <td class="num">44</td><td class="num">31</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>mgts_4584_entries.json</code></td><td>old_book_fulltext</td><td>readable</td>
+    <td class="num">43</td><td class="num">42</td>
+    <td class="num">42</td><td class="num">35</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>jinze_evolution_raw_20260830.json</code></td><td>town_monograph</td><td>readable</td>
+    <td class="num">20</td><td class="num">40</td>
+    <td class="num">40</td><td class="num">52</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>jp_shanghai_works.json</code></td><td>poetry_person</td><td>catalog_only</td>
+    <td class="num">2</td><td class="num">40</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>probe_s0_photos.json</code></td><td>unknown</td><td>readable</td>
+    <td class="num">140</td><td class="num">39</td>
+    <td class="num">39</td><td class="num">39</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>mgts_31278_town_hits.json</code></td><td>old_book_fulltext</td><td>readable</td>
+    <td class="num">13</td><td class="num">35</td>
+    <td class="num">35</td><td class="num">54</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>mgts_104971_town_hits.json</code></td><td>old_book_fulltext</td><td>readable</td>
+    <td class="num">16</td><td class="num">34</td>
+    <td class="num">34</td><td class="num">42</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>probe_s0_yutu.json</code></td><td>unknown</td><td>readable</td>
+    <td class="num">60</td><td class="num">33</td>
+    <td class="num">33</td><td class="num">70</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>probe_s0_image_match.json</code></td><td>unknown</td><td>readable</td>
+    <td class="num">56</td><td class="num">31</td>
+    <td class="num">31</td><td class="num">50</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>verify_souyun_20260831.json</code></td><td>verification_probe</td><td>readable</td>
+    <td class="num">5</td><td class="num">30</td>
+    <td class="num">30</td><td class="num">22</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>commons_baoshan_chuansha_20260831.json</code></td><td>image_catalog</td><td>readable</td>
+    <td class="num">26</td><td class="num">21</td>
+    <td class="num">16</td><td class="num">23</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>gj_6922_ocr.json</code></td><td>old_book_fulltext</td><td>readable</td>
+    <td class="num">11</td><td class="num">18</td>
+    <td class="num">17</td><td class="num">15</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>mgts_92309_ocr.json</code></td><td>old_book_fulltext</td><td>readable</td>
+    <td class="num">10</td><td class="num">18</td>
+    <td class="num">17</td><td class="num">15</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>souyun_poems_by_place.json</code></td><td>unknown</td><td>readable</td>
+    <td class="num">26</td><td class="num">13</td>
+    <td class="num">12</td><td class="num">9</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>clan_pdf_index.json</code></td><td>clan_genealogy</td><td>readable</td>
+    <td class="num">3</td><td class="num">11</td>
+    <td class="num">11</td><td class="num">44</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>mgts_104971_entries.json</code></td><td>old_book_fulltext</td><td>readable</td>
+    <td class="num">10</td><td class="num">10</td>
+    <td class="num">10</td><td class="num">29</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>mgts_4581_town_hits.json</code></td><td>old_book_fulltext</td><td>readable</td>
+    <td class="num">5</td><td class="num">10</td>
+    <td class="num">10</td><td class="num">12</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>mgts_4584_town_hits.json</code></td><td>old_book_fulltext</td><td>readable</td>
+    <td class="num">5</td><td class="num">10</td>
+    <td class="num">10</td><td class="num">16</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>mgts_31278_entries.json</code></td><td>old_book_fulltext</td><td>readable</td>
+    <td class="num">9</td><td class="num">9</td>
+    <td class="num">9</td><td class="num">15</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>gj_3799_ocr.json</code></td><td>old_book_fulltext</td><td>readable</td>
+    <td class="num">11</td><td class="num">8</td>
+    <td class="num">7</td><td class="num">18</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>probe_s0_press_diag.json</code></td><td>unknown</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">8</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>sources_ledger_volume_probe.json</code></td><td>unknown</td><td>readable</td>
+    <td class="num">8</td><td class="num">7</td>
+    <td class="num">1</td><td class="num">0</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>cbdb_people.json</code></td><td>biography_db</td><td>catalog_only</td>
+    <td class="num">30</td><td class="num">6</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>coords_wikidata.json</code></td><td>unknown</td><td>readable</td>
+    <td class="num">80</td><td class="num">5</td>
+    <td class="num">5</td><td class="num">11</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>sh_protection_index.json</code></td><td>heritage_protection</td><td>readable</td>
+    <td class="num">42</td><td class="num">5</td>
+    <td class="num">4</td><td class="num">1</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>yutu_level3.json</code></td><td>historical_map</td><td>catalog_only</td>
+    <td class="num">18</td><td class="num">5</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>commons_external_maps_20260831.json</code></td><td>image_catalog</td><td>readable</td>
+    <td class="num">12</td><td class="num">4</td>
+    <td class="num">4</td><td class="num">10</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>external_mapsource_probe_20260831.json</code></td><td>unknown</td><td>readable</td>
+    <td class="num">5</td><td class="num">4</td>
+    <td class="num">1</td><td class="num">0</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>mgts_4590_entries.json</code></td><td>old_book_fulltext</td><td>readable</td>
+    <td class="num">3</td><td class="num">2</td>
+    <td class="num">2</td><td class="num">0</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>rumsey_maps_raw_20260831.json</code></td><td>unknown</td><td>readable</td>
+    <td class="num">125</td><td class="num">2</td>
+    <td class="num">1</td><td class="num">0</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>yutu_meta_probe.json</code></td><td>historical_map</td><td>readable</td>
+    <td class="num">3</td><td class="num">2</td>
+    <td class="num">2</td><td class="num">0</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>yutu_plaquettes_checked.json</code></td><td>historical_map</td><td>readable</td>
+    <td class="num">36</td><td class="num">2</td>
+    <td class="num">1</td><td class="num">0</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>dmz_zhujiajiao.json</code></td><td>town_monograph</td><td>readable</td>
+    <td class="num">1</td><td class="num">1</td>
+    <td class="num">1</td><td class="num">6</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>mgts_4590_town_hits.json</code></td><td>old_book_fulltext</td><td>readable</td>
+    <td class="num">1</td><td class="num">1</td>
+    <td class="num">1</td><td class="num">1</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>verify_song_press_20260831.json</code></td><td>verification_probe</td><td>readable</td>
+    <td class="num">3</td><td class="num">1</td>
+    <td class="num">1</td><td class="num">1</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>yutu_plaquettes.json</code></td><td>historical_map</td><td>readable</td>
+    <td class="num">36</td><td class="num">1</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#ffb454">机制限制·未挖干</td></tr><tr>
+    <td><code>yutu_sparql_schema.json</code></td><td>historical_map</td><td>readable</td>
+    <td class="num">22</td><td class="num">1</td>
+    <td class="num">1</td><td class="num">0</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>yutu_verify_coverage.json</code></td><td>historical_map</td><td>readable</td>
+    <td class="num">5</td><td class="num">1</td>
+    <td class="num">1</td><td class="num">2</td>
+    <td style="color:#39d0a5">已挖干/持平</td></tr><tr>
+    <td><code>geo_placenames_shanghai.json</code></td><td>placename_gazetteer</td><td>catalog_only</td>
+    <td class="num">3,810</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>gj_14386_entries.json</code></td><td>old_book_fulltext</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>gj_3799_entries.json</code></td><td>old_book_fulltext</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>gj_6922_entries.json</code></td><td>old_book_fulltext</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>gj_fangzhi.json</code></td><td>old_book_fulltext</td><td>catalog_only</td>
+    <td class="num">3</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>gj_works_朱家角.json</code></td><td>old_book_fulltext</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>gj_works_朱家角镇志.json</code></td><td>old_book_fulltext</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>gj_works_珠里小志.json</code></td><td>old_book_fulltext</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>gj_works_青浦.json</code></td><td>old_book_fulltext</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>gj_works_青浦县志.json</code></td><td>old_book_fulltext</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>jp_family_town_analysis.json</code></td><td>poetry_person</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>jp_family_town_sparql_analysis.json</code></td><td>poetry_person</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>jp_familyname_zhu.json</code></td><td>poetry_person</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>jp_persons_zhu.json</code></td><td>poetry_person</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>jp_shanghai_persons_count.json</code></td><td>poetry_person</td><td>catalog_only</td>
+    <td class="num">350</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>jp_zhu_deepdive.json</code></td><td>poetry_person</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>jp_zhu_persons.json</code></td><td>poetry_person</td><td>catalog_only</td>
+    <td class="num">100</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>mgts_87274_entries.json</code></td><td>old_book_fulltext</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>mgts_90096_entries.json</code></td><td>old_book_fulltext</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>mgts_92309_entries.json</code></td><td>old_book_fulltext</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>p1a_attach_images_report_20260831_130954.json</code></td><td>unknown</td><td>catalog_only</td>
+    <td class="num">2</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>probe_press_pagination_20260902.json</code></td><td>unknown</td><td>catalog_only</td>
+    <td class="num">24</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>probe_s0_b_bk.json</code></td><td>unknown</td><td>catalog_only</td>
+    <td class="num">4</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>probe_s0_press_diag2.json</code></td><td>unknown</td><td>catalog_only</td>
+    <td class="num">15</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>resource_probe_20260831.json</code></td><td>access_probe</td><td>catalog_only</td>
+    <td class="num">13</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>verify_cbdb_20260831.json</code></td><td>verification_probe</td><td>catalog_only</td>
+    <td class="num">12</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr><tr>
+    <td><code>verify_souyun_legacy30_20260831.json</code></td><td>verification_probe</td><td>catalog_only</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td class="num">0</td><td class="num">0</td>
+    <td style="color:#9aa3b2">未读取(机制排除)</td></tr></table>
+<div class="sub">说明：「可提取正文串」= 递归遍历 JSON 中所有满足「长度≥20 且中文占比≥30%」的字符串叶节点；「条目数」= 文件中最大顶层数组长度（结构规模估计）。两者均可机读复算。image_catalog / historical_map 等视觉载体按管线设计不产 Observation（机制排除）。</div>
+</div></body></html>

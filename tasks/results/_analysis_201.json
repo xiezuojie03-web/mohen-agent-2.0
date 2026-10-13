@@ -1,0 +1,167 @@
+[
+  {
+    "title": "沪上经纬-commons_oldmaps_raw_20260831.json",
+    "file": "commons_oldmaps_raw_20260831.json",
+    "fileFound": true,
+    "realFrags": 653,
+    "frag": 200,
+    "other": 1,
+    "extracted": 201,
+    "capped": true,
+    "remaining": 453
+  },
+  {
+    "title": "沪上经纬-events_linked.json",
+    "file": "events_linked.json",
+    "fileFound": true,
+    "realFrags": 638,
+    "frag": 200,
+    "other": 1,
+    "extracted": 201,
+    "capped": true,
+    "remaining": 438
+  },
+  {
+    "title": "沪上经纬-gj_14373_toc.json",
+    "file": "gj_14373_toc.json",
+    "fileFound": true,
+    "realFrags": 1843,
+    "frag": 200,
+    "other": 1,
+    "extracted": 201,
+    "capped": true,
+    "remaining": 1643
+  },
+  {
+    "title": "沪上经纬-hsly_events.json",
+    "file": "hsly_events.json",
+    "fileFound": true,
+    "realFrags": 3149,
+    "frag": 200,
+    "other": 1,
+    "extracted": 201,
+    "capped": true,
+    "remaining": 2949
+  },
+  {
+    "title": "沪上经纬-jp_works_sparql.json",
+    "file": "jp_works_sparql.json",
+    "fileFound": true,
+    "realFrags": 352,
+    "frag": 200,
+    "other": 1,
+    "extracted": 201,
+    "capped": true,
+    "remaining": 152
+  },
+  {
+    "title": "沪上经纬-narrative_assets.json",
+    "file": "narrative_assets.json",
+    "fileFound": true,
+    "realFrags": 965,
+    "frag": 200,
+    "other": 1,
+    "extracted": 201,
+    "capped": true,
+    "remaining": 765
+  },
+  {
+    "title": "沪上经纬-probe_s0_press.json",
+    "file": "probe_s0_press.json",
+    "fileFound": true,
+    "realFrags": 1612,
+    "frag": 200,
+    "other": 1,
+    "extracted": 201,
+    "capped": true,
+    "remaining": 1412
+  },
+  {
+    "title": "沪上经纬-resource_probe2_20260831.json",
+    "file": "resource_probe2_20260831.json",
+    "fileFound": true,
+    "realFrags": 968,
+    "frag": 200,
+    "other": 1,
+    "extracted": 201,
+    "capped": true,
+    "remaining": 768
+  },
+  {
+    "title": "沪上经纬-suzhou_narrative_candidates.json",
+    "file": "suzhou_narrative_candidates.json",
+    "fileFound": true,
+    "realFrags": 257,
+    "frag": 200,
+    "other": 1,
+    "extracted": 201,
+    "capped": true,
+    "remaining": 57
+  },
+  {
+    "title": "沪上经纬-suzhou_narrative_review.json",
+    "file": "suzhou_narrative_review.json",
+    "fileFound": true,
+    "realFrags": 387,
+    "frag": 200,
+    "other": 1,
+    "extracted": 201,
+    "capped": true,
+    "remaining": 187
+  },
+  {
+    "title": "沪上经纬-yutu_catalog.json",
+    "file": "yutu_catalog.json",
+    "fileFound": true,
+    "realFrags": 568,
+    "frag": 200,
+    "other": 1,
+    "extracted": 201,
+    "capped": true,
+    "remaining": 368
+  },
+  {
+    "title": "沪上经纬-yutu_catalog_20260831.json",
+    "file": "yutu_catalog_20260831.json",
+    "fileFound": true,
+    "realFrags": 662,
+    "frag": 200,
+    "other": 1,
+    "extracted": 201,
+    "capped": true,
+    "remaining": 462
+  },
+  {
+    "title": "沪上经纬-yutu_catalog_checked.json",
+    "file": "yutu_catalog_checked.json",
+    "fileFound": true,
+    "realFrags": 626,
+    "frag": 200,
+    "other": 1,
+    "extracted": 201,
+    "capped": true,
+    "remaining": 426
+  },
+  {
+    "title": "沪上经纬-yutu_catalog_final_20260831.json",
+    "file": "yutu_catalog_final_20260831.json",
+    "fileFound": true,
+    "realFrags": 667,
+    "frag": 200,
+    "other": 1,
+    "extracted": 201,
+    "capped": true,
+    "remaining": 467
+  },
+  {
+    "title": "沪上经纬-yutu_triples_cache.json",
+    "file": "yutu_triples_cache.json",
+    "fileFound": true,
+    "realFrags": 746,
+    "frag": 200,
+    "other": 1,
+    "extracted": 201,
+    "capped": true,
+    "remaining": 546
+  }
+]

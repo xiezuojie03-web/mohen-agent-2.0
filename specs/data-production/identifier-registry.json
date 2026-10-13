@@ -62,6 +62,12 @@
       "why": "同为无约束 `text[]`，由 pipelines/visual/build-visual-linkage.mjs 写入。",
       "values": [
         {
+          "value": "pending_heritage_review",
+          "origin": "coined",
+          "definition": "新增图-实体链接在通过门禁前的默认标记（＝默认不可用）。C4（unattended.image-link）起，候选链接一律带此标记出生，与 visual_assets 侧同一语义。",
+          "defined_at": "pipelines/legacy/unattended-runner.mjs"
+        },
+        {
           "value": "claimed_by_source_towns_tag",
           "origin": "coined",
           "definition": "该「图→对象」链接的归属判定**依据是源侧的 towns 标签**（如 Commons geosearch 返回的最近镇标签）——属弱依据，不是内容描述。",

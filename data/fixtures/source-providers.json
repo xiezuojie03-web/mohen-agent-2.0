@@ -142,8 +142,8 @@
       "access": "Commons API（imageinfo / categorymembers / geosearch）",
       "rate_limit": "Commons API 匿名调用；官方 api.php 指南要求礼貌串行、勿并发轰击。本仓低频取回，未遇 429",
       "license_note": "**逐文件不同**（CC0 / CC BY / CC BY-SA …）——必须逐条记录，不得整批套用",
-      "failure_notes": "**采集范围教训（B-12，已修）**：commons-geosearch 坐标半径补抓无地点过滤 → 519 张中金泽仅 6.5%（枫泾 104 / 川沙 73 …）；2026-10-02 起采集意图强制登记（M4.2，guard:acquisition）。",
-      "last_verified": "2026-09-22（真库各写法合计 119 行，最近取回日）",
+      "failure_notes": "**采集范围教训（B-12，已修）**：commons-geosearch 坐标半径补抓无地点过滤 → 519 张中金泽仅 6.5%（枫泾 104 / 川沙 73 …）；2026-10-02 起采集意图强制登记（M4.2，guard:acquisition）。**同名异地教训（2026-10-05 实测，未修也要绕开）**：commons 全文/标题检索 `search=金泽` 返回的 Top3 全是**日本石川县金泽市**（Kanazawa Castle Park / Neighborhood in Kanazawa / 金沢人口分布图），与上海青浦金泽无关 —— 结论：Commons 不得作为**发现**手段（只能按文本相似度，无法区分同名异地），只作为**取回**手段（图像须由上游权威身份声明 P18 指认）。",
+      "last_verified": "2026-10-05（C5 · external-commons-visual-scan 首次本仓程序化取回；真库wikimedia_commons 各写法累计 119+ 行）",
       "ops_status": "documented",
       "basis": "SOURCE_REGISTRY S2 明文含 Wikimedia Commons"
     },
@@ -230,8 +230,8 @@
       "access": "Wikidata API（wbsearchentities / wbgetentities）",
       "rate_limit": "Wikidata API 匿名调用；官方对批量请求有礼貌限流要求。本仓低频取回未遇限",
       "license_note": "CC0（数据）",
-      "failure_notes": "**coords 作业教训（B-10）**：240 行现代坐标以 candidate 入库却 confidence=0、evidence_ids={}，且未进 review_queue——协议 #5 明令「历史地图锚点 → HOLD」。机制修复见 202610020009（三分）；数据处置冻结中。",
-      "last_verified": "2026-09-22（真库 24 行）",
+      "failure_notes": "**coords 作业教训（B-10）**：240 行现代坐标以 candidate 入库却 confidence=0、evidence_ids={}，且未进 review_queue——协议 #5 明令「历史地图锚点 → HOLD」。机制修复见 202610020009（三分）；数据处置冻结中。**同名混淆教训（2026-10-05 实测）**：按中文名 `普济桥` 检索，正当同名同名项至少 4 个且分属不同行政区（青浦金泽 Q63139356／苏州 Q11089802／德清 Q102124741／维基消歧义页 Q16072121）——故 C5 身份线一律要求「P131 属上海 16 区 或 坐标落在上海 bbox」双重判定，判不出的一律拒收、不自选边。",
+      "last_verified": "2026-10-05（C5 · external-wikidata-identity-scan 首次本仓 SPARQL 程序化取回；真库 wikidata 累计 24+ 行）",
       "ops_status": "documented",
       "basis": "**拥有者 2026-10-02 裁定：保持 S3**（其 P625 坐标属现代空间数据）。**附加规则：其身份锚点（Q-id）只能作为候选线索，不得单独支撑任何断言** —— 因 Wikidata 是开放编辑库，须回到其自身引用的原始出处。"
     },

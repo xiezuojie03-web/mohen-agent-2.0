@@ -1,0 +1,236 @@
+{
+  "stage": "C5",
+  "generated_at": "2026-10-05T00:44:29.998Z",
+  "from": "2026-10-03T12:44:28.756Z",
+  "ext_entities": 151,
+  "id_maps": 161,
+  "maps_aligned": 10,
+  "maps_external_only": 151,
+  "wd_sources": 7,
+  "cm_sources": 6,
+  "ev_ext": 140,
+  "ev_locator_null": 0,
+  "ev_identity": 0,
+  "assets_ext": 140,
+  "links_ext": 140,
+  "links_confirmed_ours": 0,
+  "links_dated": 136,
+  "audit_ext": 840,
+  "audit_pass": 706,
+  "cm_maps": 140,
+  "entity_types": [
+    {
+      "entity_type": "unknown",
+      "c": 71
+    },
+    {
+      "entity_type": "place",
+      "c": 44
+    },
+    {
+      "entity_type": "building",
+      "c": 36
+    }
+  ],
+  "licenses": [
+    {
+      "lic": "CC BY-SA 3.0",
+      "c": 84
+    },
+    {
+      "lic": "CC BY-SA 4.0",
+      "c": 25
+    },
+    {
+      "lic": "CC BY 2.0",
+      "c": 7
+    },
+    {
+      "lic": "Public domain",
+      "c": 6
+    },
+    {
+      "lic": "CC BY 3.0",
+      "c": 5
+    },
+    {
+      "lic": "CC BY 4.0",
+      "c": 5
+    },
+    {
+      "lic": "GFDL",
+      "c": 4
+    },
+    {
+      "lic": "CC BY-SA 2.0",
+      "c": 2
+    },
+    {
+      "lic": "CC BY 3.0 cn",
+      "c": 1
+    },
+    {
+      "lic": "CC BY 2.5",
+      "c": 1
+    }
+  ],
+  "periods": [
+    {
+      "p": "current",
+      "c": 133
+    },
+    {
+      "p": "unknown",
+      "c": 4
+    },
+    {
+      "p": "historical",
+      "c": 3
+    }
+  ],
+  "samples": [
+    {
+      "n": "八仙桥基督教青年会大楼",
+      "t": "unknown"
+    },
+    {
+      "n": "百老汇大厦",
+      "t": "place"
+    },
+    {
+      "n": "百乐门舞厅",
+      "t": "place"
+    },
+    {
+      "n": "宝山文庙",
+      "t": "building"
+    },
+    {
+      "n": "博文女校",
+      "t": "unknown"
+    },
+    {
+      "n": "沉香阁",
+      "t": "building"
+    },
+    {
+      "n": "崇明学宫",
+      "t": "building"
+    },
+    {
+      "n": "川沙县",
+      "t": "place"
+    },
+    {
+      "n": "大北电报公司大楼",
+      "t": "unknown"
+    },
+    {
+      "n": "大光明电影院 (上海)",
+      "t": "building"
+    },
+    {
+      "n": "大上海电影院",
+      "t": "building"
+    },
+    {
+      "n": "大胜胡同",
+      "t": "place"
+    }
+  ],
+  "categories": [
+    {
+      "cat": "外部身份线索（Q-id 映射）",
+      "c": 161
+    },
+    {
+      "cat": "外部对象候选（库内原本没有）",
+      "c": 151
+    },
+    {
+      "cat": "外部图像证据（Commons）",
+      "c": 140
+    },
+    {
+      "cat": "图-实体链接（P18 指认）",
+      "c": 140
+    }
+  ],
+  "signals": {
+    "space": {
+      "n": 140,
+      "pct": 100
+    },
+    "time": {
+      "n": 136,
+      "pct": 97.1
+    },
+    "person": {
+      "n": 0,
+      "pct": 0
+    },
+    "relation": {
+      "n": 140,
+      "pct": 100
+    }
+  },
+  "motifMatrix": {
+    "categories": [
+      "外部身份线索（Q-id 映射）",
+      "外部对象候选（库内原本没有）",
+      "外部图像证据（Commons）",
+      "图-实体链接（P18 指认）"
+    ],
+    "motifs": [
+      "M1 关系世界",
+      "M2 地方结构",
+      "M3 生活地图",
+      "M4 生成过程",
+      "M5 连续性"
+    ],
+    "cells": {
+      "外部身份线索（Q-id 映射）": {
+        "M1": 161,
+        "M2": 81,
+        "M3": 161,
+        "M4": 81,
+        "M5": 81
+      },
+      "外部对象候选（库内原本没有）": {
+        "M1": 76,
+        "M2": 151,
+        "M3": 76,
+        "M4": 76,
+        "M5": 151
+      },
+      "外部图像证据（Commons）": {
+        "M1": 70,
+        "M2": 140,
+        "M3": 70,
+        "M4": 140,
+        "M5": 140
+      },
+      "图-实体链接（P18 指认）": {
+        "M1": 70,
+        "M2": 140,
+        "M3": 140,
+        "M4": 70,
+        "M5": 140
+      }
+    },
+    "motifTotals": {
+      "M1": 377,
+      "M2": 512,
+      "M3": 447,
+      "M4": 367,
+      "M5": 512
+    },
+    "gmax": 161
+  },
+  "redline": {
+    "verified": 0,
+    "published": 0,
+    "auto_1d": 0,
+    "confirmed_all": 8
+  }
+}

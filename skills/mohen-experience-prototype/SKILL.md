@@ -1,30 +1,24 @@
 # mohen-experience-prototype
 
-Purpose: 体验母版  
-Trigger: Discovery 需要转为用户可见体验
+**Status:** TARGET · Phase C
+**Kind:** experience
+**Allowed Calling Stages:** L5 / C4 only
 
-## Preconditions
-先执行 `mohen-project-guard`；读取当前 Task。
+## Purpose
+Experience-side capability governed by C4/L5. It consumes trusted read models and does not write L0–L4.
 
-## Steps
-1. 定义 Goal 与 ExperienceState。
-2. 每一步指定一个 Primary Surface。
-3. Agent 只输出 ExperienceAction/CompositionState。
-4. 按 聚焦→线索→历史层→视觉证据→关系→故事→行动 渐进揭示。
-5. 重要 Mohen 发言必须指向 Canvas 可见事实/变化。
-6. Follow-up 使用 Patch/Replan，不默认重置。
+## Contract
+- No independent D01–D05 Stage PASS unless explicitly designated as a Stage Owner (this Skill is not).
+- No final writes across multiple L layers.
+- Caller Stage owns persistence, Gate and downstream handoff.
+- Reuse existing implementation where possible; duplicate canonical entries are not allowed.
+- Exact executable entry is frozen during implementation phase.
 
-## Outputs
-- 结构化结果/报告；
-- changed/created files 清单；
-- 可复现验收命令；
-- unresolved / human-review 项。
+## Inputs / Outputs
+Defined per caller contract. Outputs must be typed capability results, not final cross-stage records.
 
-## Hard Rules
-LLM 不直接写 DOM/React；禁止 GIS Dashboard 式堆叠。
+## Failure / Stop
+Stop when requested action would require this capability to own another Stage's persistence or Gate decision.
 
-## Acceptance
-输出必须能被下一 Skill/Task 直接消费；不能只给自然语言总结。
-
-## Failure / Recovery
-失败时保留 Raw/日志/中间结果，停止晋级；修复后从最近稳定状态重跑，不创建平行真源。
+## Canonical Entry
+`PENDING_PHASE_D`

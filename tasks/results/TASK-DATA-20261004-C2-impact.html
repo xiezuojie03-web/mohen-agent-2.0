@@ -1,0 +1,111 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C2 · 下游转化支撑可视化</title>
+<style>
+:root{--line:#e5e7eb;--bg:#f6f7f9}
+*{box-sizing:border-box}
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;margin:0;background:var(--bg);color:#1a1d21;line-height:1.65}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 22px 60px}
+h1{font-size:22px;margin:0 0 4px}
+h2{font-size:16px;margin:30px 0 10px;padding-left:10px;border-left:4px solid #2f6fed}
+.sub{color:#6b7280;font-size:13px;margin-bottom:14px}
+.banner{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:14px 16px;font-size:14px;line-height:1.7}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:12px 0}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;text-align:center}
+.card .v{font-size:23px;font-weight:700}.card .k{font-size:12px;color:#6b7280;margin-top:3px}
+.row{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.box{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;flex:1;min-width:320px}
+.legend{font-size:12.5px;margin-top:6px}
+.legend span{display:inline-block;margin-right:12px;white-space:nowrap}
+.warnbox{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px 14px;font-size:13px}
+.okbox{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 14px;font-size:13px}
+.muted{color:#6b7280;font-size:12.5px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+td{padding:6px 8px;border-top:1px solid #eef0f3;vertical-align:top}
+code{background:#eef0f3;padding:1px 5px;border-radius:4px;font-size:12px}
+</style>
+<div class="wrap">
+<h1>C2 · 下游转化支撑可视化报告</h1>
+<div class="sub">生成 2026-10-04T13:24:01.641Z · 统计窗口 2026-10-04T13:00:00Z 起 · 单文件离线可开 · 全部数字由查询得出</div>
+<div class="banner">本批为 <b>C2</b> 阶段产出：<b>3041</b> 个候选实体、<b>2923</b> 条弱共现关系、<b>1138</b> 条 discovery 候选；确定性对齐写 <b>5</b> 条 legacy_mappings，<b>10157</b> 条 HOLD 留痕。全部 candidate、零自动晋级，供 C3 关系编织消费。</div>
+
+<h2>① 概览</h2>
+<div class="cards">
+<div class="card"><div class="v">3041</div><div class="k">候选实体</div></div>
+<div class="card"><div class="v">2923</div><div class="k">弱共现关系</div></div>
+<div class="card"><div class="v">1138</div><div class="k">discovery 候选</div></div>
+<div class="card"><div class="v">5</div><div class="k">确定性对齐(legacy_mappings)</div></div>
+<div class="card"><div class="v">10157</div><div class="k">HOLD 留痕</div></div>
+</div>
+
+<h2>② 候选实体类型分布（覆盖哪些一手来源维度）</h2>
+<div class="row">
+<div class="box"><svg width="190" height="190" viewBox="0 0 190 190"><circle cx="95" cy="95" r="70" fill="none" stroke="#2f6fed" stroke-width="26" stroke-dasharray="296.78 143.04" stroke-dashoffset="0.00" transform="rotate(-90 95 95)"/><circle cx="95" cy="95" r="70" fill="none" stroke="#16a34a" stroke-width="26" stroke-dasharray="143.04 296.78" stroke-dashoffset="-296.78" transform="rotate(-90 95 95)"/>
+    <text x="95" y="91" text-anchor="middle" font-size="22" font-weight="700" fill="#1a1d21">3041</text>
+    <text x="95" y="111" text-anchor="middle" font-size="11" fill="#6b7280">片段总数</text></svg></div>
+<div class="box"><div class="legend"><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#2f6fed;margin-right:4px"></span>place 2052</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#16a34a;margin-right:4px"></span>building 989</span></div>
+<div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="place">place</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:520px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">2052</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="building">building</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:251px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">989</div></div>
+</div></div>
+
+<h2>③ 可转化信号密度（供 C3 关系编织消费的"真实可用"量）</h2>
+<div class="box"><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="空间信号（地点/建筑） 100%">空间信号（地点/建筑） 100%</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:520px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">3041</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="人物信号 0%">人物信号 0%</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:0px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">0</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="时间信号（事件） 0%">时间信号（事件） 0%</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:0px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">0</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="关系信号（共现候选） 96.1%">关系信号（共现候选） 96.1%</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:500px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">2923</div></div>
+<div class="muted" style="margin-top:8px">空间=地点/建筑类实体；人物=人物/未知类；时间=事件类；关系=弱共现关系候选数。信号为候选层命中，须经 C3 编织与门禁判定才成 Truth。</div></div>
+
+<h2>④ 叙事母题支撑矩阵（M1–M5 · 本批候选能撑起哪些未来叙事）</h2>
+<div class="box"><svg width="500" height="90" viewBox="0 0 500 90" style="max-width:100%"><text x="68" y="20" text-anchor="middle" font-size="11" fill="#374151">M1 关系世界</text><text x="164" y="20" text-anchor="middle" font-size="11" fill="#374151">M2 地方结构</text><text x="260" y="20" text-anchor="middle" font-size="11" fill="#374151">M3 生活地图</text><text x="356" y="20" text-anchor="middle" font-size="11" fill="#374151">M4 生成过程</text><text x="452" y="20" text-anchor="middle" font-size="11" fill="#374151">M5 连续性</text><text x="14" y="49" text-anchor="end" font-size="11" fill="#374151">place</text><rect x="24" y="34" width="88" height="22" rx="4" fill="rgb(240,245,255)" stroke="#e5e7eb"/>
+        <text x="68" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">0</text><rect x="120" y="34" width="88" height="22" rx="4" fill="rgb(29,78,216)" stroke="#e5e7eb"/>
+        <text x="164" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">2052</text><rect x="216" y="34" width="88" height="22" rx="4" fill="rgb(29,78,216)" stroke="#e5e7eb"/>
+        <text x="260" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">2052</text><rect x="312" y="34" width="88" height="22" rx="4" fill="rgb(135,162,236)" stroke="#e5e7eb"/>
+        <text x="356" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">1026</text><rect x="408" y="34" width="88" height="22" rx="4" fill="rgb(135,162,236)" stroke="#e5e7eb"/>
+        <text x="452" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">1026</text><text x="14" y="79" text-anchor="end" font-size="11" fill="#374151">building</text><rect x="24" y="64" width="88" height="22" rx="4" fill="rgb(189,205,246)" stroke="#e5e7eb"/>
+        <text x="68" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">495</text><rect x="120" y="64" width="88" height="22" rx="4" fill="rgb(138,165,236)" stroke="#e5e7eb"/>
+        <text x="164" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">989</text><rect x="216" y="64" width="88" height="22" rx="4" fill="rgb(138,165,236)" stroke="#e5e7eb"/>
+        <text x="260" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">989</text><rect x="312" y="64" width="88" height="22" rx="4" fill="rgb(138,165,236)" stroke="#e5e7eb"/>
+        <text x="356" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">989</text><rect x="408" y="64" width="88" height="22" rx="4" fill="rgb(138,165,236)" stroke="#e5e7eb"/>
+        <text x="452" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">989</text></svg><div style="margin-top:8px"><div style="margin:3px 0;font-size:12px"><b>M1 关系世界</b>：支撑量 <b>495</b></div><div style="margin:3px 0;font-size:12px"><b>M2 地方结构</b>：支撑量 <b>3041</b></div><div style="margin:3px 0;font-size:12px"><b>M3 生活地图</b>：支撑量 <b>3041</b></div><div style="margin:3px 0;font-size:12px"><b>M4 生成过程</b>：支撑量 <b>2015</b></div><div style="margin:3px 0;font-size:12px"><b>M5 连续性</b>：支撑量 <b>2015</b></div></div>
+<div class="muted" style="margin-top:8px">单元格 = 该类型候选实体数 × 与对应母题的亲和度（0–1）。母题定义见 MoHen_Narrative_Motif_Framework.md。</div></div>
+
+<h2>⑤ 下游候选产出预估（供 C3 candidate/relation-weave 消费）</h2>
+<div class="cards">
+<div class="card"><div class="v">3041</div><div class="k">实体候选</div></div>
+<div class="card"><div class="v">2923</div><div class="k">关系候选</div></div>
+<div class="card"><div class="v">1138</div><div class="k">discovery 候选</div></div>
+</div>
+<div class="warnbox">⚠️ 以上为<b>候选命中数</b>，尚未晋级 Truth。须在 C3 经门禁投影（G0–G6）→ AUTO/HOLD/REJECT 后才成为可用关系。</div>
+
+<h2>⑥ 红线与质量校验</h2>
+<div class="okbox"><ul style="margin:4px 0 0 18px;padding:0">
+<li>verified 证据：0（<b>0 自动晋级</b>）</li>
+<li>published 实体：0（<b>0 自动晋级</b>）</li>
+<li>近 1 日 auto 分诊：0（<b>0 自动晋级</b>）</li>
+<li>review_queue HOLD（本批三分留痕）：10157</li>
+<li>确定性对齐 legacy_mappings：5（歧义一律 HOLD，不自选边）</li>
+</ul></div>
+
+<h2>⑦ 方法论与限制</h2>
+<div class="box"><ul class="muted" style="margin:0;padding-left:18px;line-height:1.8">
+<li>数据源：<code>entities</code>（legacy_id like 'unattended-ce:%'）、<code>relations</code>、<code>discovery_candidates</code>、<code>legacy_mappings</code>（mapping_method like 'deterministic-resolution%'），created_at ≥ 2026-10-04T13:00:00Z。</li>
+<li>候选抽取为启发式（place_hint / subject_hint / 中文地名后缀正则），存在漏判/误判，全部 candidate 待人工/门禁判定。</li>
+<li>母题支撑为"类型 × 亲和度"近似，不代表已生成叙事。</li>
+<li>本报告与 runner 生成的 report.json/html 同源互补，是协议 §0.5 的下游转化支撑视图。</li>
+</ul></div>
+<p class="muted">生成口径：analyzeCandidateImpact + renderCandidateImpactHtml（pipelines/legacy/unattended-report.mjs）。</p>
+</div></html>

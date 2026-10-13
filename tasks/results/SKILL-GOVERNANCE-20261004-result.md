@@ -158,7 +158,47 @@
 
 > **结论**：低风险两类（探针三胞胎 / e2e 脚手架）可作为下一步独立小任务立即做；中高风险两类（去重 / 恢复）**必须配套真库回归**、单独一轮执行，不宜仓促。
 
-## 11. 变更清单（受影响文件）
+## 附录 C · 低风险合并（探针三胞胎 → shl-probe.mjs · R26 唯一权威实现落地）
+
+A-2 低风险第 1 类。空间对齐三胞胎 `pipelines/historical-spatial/probe-align-{entities,extra,final}.mjs` 三者**逐字复制** SPARQL 查询 helper（`find`/`run`）与属性打印，违反 C2 §2.1「每个能力唯一权威实现」。
+
+- **做法**：抽唯一权威实现 `pipelines/historical-spatial/shl-probe.mjs`（导出 `sparql` / `subjectRows` / `printProps`）；三脚本改为 `import` 复用，**各自分析逻辑（TASK-0011 三步骤 S1-A4/A5/A6）与输出文件不变**，仅去掉重复 helper。
+- **验证**：4 文件 `node --check` 全过；无残留对已删除函数（`find`/`dumpSubject`/`run`/`call`/`parseSparqlXml`）引用（仅剩 `Array.find` 合法）。
+- **提交**：已并入 c033954。
+
+## 附录 D · 提交（聚焦提交 c033954）
+
+2026-10-04 于分支 `handoff/local-b-20260930` 执行 `git commit`，提交号 **c033954**，83 文件 +6578/-487，**本地未 push、未碰 main**。
+
+- **范围（A1 聚焦）**：内聚单元 = Skill 治理（第 0–4 步）＋ 与之**不可分**的 R-DP 架构层（C2 V1.0→V1.1、C3 V1.1→V1.2 升版、research 执行体与研究表 migration、注册表 D01–D05、主协议/契约/命名映射、新守卫与运维脚本）。
+- **排除**：40+ 数据运行 trace 产物（UNATTENDED / LR-ADS / SMOKE / WRITE-TEST / BRIDGE 等）仍留工作区未提交。
+- **真库未动**；提交后守卫 14 道全绿。
+- **未做的提交**：本结果文件的附录 C/D/E/F 增补、C 任务书与 CURRENT §7 指针更新，属本次"沉淀"动作，未纳入 c033954，仍在工作区（待你后续提交）。
+
+## 附录 E · e2e 脚手架治理暂缓
+
+A-2 低风险第 2 类（e2e 脚手架抽取）经摸底发现：实为 **7 个**脚本（非初判 5 个），结构有差异（部分带 `pageErrors`/console 监听、部分带 `INSPECTOR_QS`、`cur/next/clickBtn` helper 各异），且属 **Human Experience 验收脚本**，须跑 Playwright + dev server 方可验证。盲改 7 个验收脚本风险高、且无法本环境回归。
+
+- **用户 2026-10-04 决定**：暂缓 e2e，先做 B（提交）。e2e 抽取（抽 `scripts/e2e/_harness.mjs` 共享 helper）留待**可跑 Playwright 的环境**再做。
+
+## 附录 F · C-0 数据现状盘点（指向 C 任务书）
+
+- 老项目源 `hushang-jingwei/data/` 共 **2596 文件**（2038 PDF、349 JSON、corpus / fetched / raw_snapshots）。
+- **已落地**：仅 95 个 JSON 完成来源登记 ＋ Raw 快照（N01 搬运子集）。
+- **最大缺口**：2038 PDF ＋ corpus **完全未抽取** → 无 Evidence / Candidate / Relation。此即"数据底座薄"根因。
+- **机器状态**：无人值守执行模式已成立（runner 安全外壳 + 注册表闸 + 三分诊 + fail-closed），但 **N01–N06 六类生产作业尚未写成可运行代码**（差内容实现，非协议有洞）。
+- **下一步**：见任务书 `tasks/TASK-DATA-20261004_数据底座建厚实_Task-Book_V1.0.md`（分 C1–C6 阶段，每阶段独立对话执行；完成提醒新开窗口）。
+
+## 12. 变更清单（受影响文件）
+
+- 宪法/治理：`governance/C2…V1.1.md`（§2.1/§3.1/§9/§9.1）、`governance/C0…V1.0.md`（§11 R26）。
+- 状态/契约：`CURRENT.md`（§7 指针）、`specs/data-production/production-registry.json`（14 作业 ＋ schema v2）。
+- 守卫：`scripts/check-production-registry.mjs`（第 ⑧ 项）、`scripts/check-structure.mjs`（绑定校验）。
+- 技能：`skills/` 5 个补档案 ＋ 3 个新建 `SKILL.md`。
+- 归档：`archive/20261004-root-probes/`（14 脚本 ＋ README 清单）；根目录 14 个 `_*.mjs` 移出。
+- 探针合并：`pipelines/historical-spatial/shl-probe.mjs`（新增）＋ 3 个 `probe-align-*` 复用（附录 C）。
+- 文档：`tasks/TASK-SKILL-20261004_…_Task-Book_V1.0.md`（本任务进展载体）、`tasks/results/SKILL-GOVERNANCE-20261004-result.md`（本结果）。
+- 提交：`c033954`（本地，未 push）。
 
 - 宪法/治理：`governance/C2…V1.1.md`（§2.1/§3.1/§9/§9.1）、`governance/C0…V1.0.md`（§11 R26）。
 - 状态/契约：`CURRENT.md`（§7 指针）、`specs/data-production/production-registry.json`（14 作业 ＋ schema v2）。

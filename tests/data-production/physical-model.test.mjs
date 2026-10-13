@@ -1,0 +1,13 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { assertPersistenceScope } from "../../pipelines/data-production/adapters/persistence-contract.mjs";
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../..");
+const sql=fs.readFileSync(path.join(root,"supabase/migrations/202610070100_data_production_v2_baseline.sql"),"utf8");
+test("semantic schemas",()=>{ for(const s of ["source","evidence","world","meaning","read_model","control"]) assert.match(sql,new RegExp(`create schema if not exists ${s}`)); assert.doesNotMatch(sql,/create schema if not exists d0[1-5]/i); });
+test("raw append-only",()=>{ assert.match(sql,/RAW_APPEND_ONLY/); assert.match(sql,/before update or delete on source\.raw_items/i); });
+test("G0-G4 PASS views",()=>{ for(const v of ["g0_pass_sources","g1_pass_evidence","g2_pass_world_objects","g3_pass_findings","g4_pass_read_models"]) assert.match(sql,new RegExp(v)); });
+test("stage-owned persistence",()=>{ assert.equal(assertPersistenceScope("D01","source.sources"),true); assert.equal(assertPersistenceScope("D03","world.entities"),true); assert.throws(()=>assertPersistenceScope("D03","meaning.findings"),/PERSISTENCE_SCOPE_VIOLATION/); });
+test("no Research Workspace",()=>{ assert.doesNotMatch(sql,/create schema[^;]*research/i); assert.doesNotMatch(sql,/research_workspace/i); });

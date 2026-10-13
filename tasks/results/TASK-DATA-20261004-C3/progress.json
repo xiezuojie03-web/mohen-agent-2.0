@@ -1,0 +1,51 @@
+{
+  "tag": "TASK-DATA-20261004-C3",
+  "mode": "WRITE",
+  "env": "dev",
+  "cutoff": "2026-10-04T15:25:00.000Z",
+  "interval_min": 0,
+  "started_at": "2026-10-04T15:23:03.620Z",
+  "jobs": {
+    "unattended.gate-projection": {
+      "ok": true,
+      "claims_scanned": 8,
+      "relations_scanned": 2923,
+      "audited": 2923,
+      "passed": 0,
+      "held": 0,
+      "rejected": 0,
+      "rel_passed": 0,
+      "rel_held": 2923,
+      "rel_rejected": 0,
+      "would_promote": 97,
+      "promoted": 0,
+      "projection_paths": 2931,
+      "at": "2026-10-04T15:29:04.735Z"
+    }
+  },
+  "counters": {
+    "jobs_done": 1,
+    "jobs_failed": 0,
+    "inserted": 0
+  },
+  "failures": [],
+  "verdict": "PASS WITH HOLD",
+  "registry": {
+    "path": "specs/data-production/production-registry.json",
+    "entries": 14,
+    "queued": 106,
+    "declared": 106,
+    "runnable": 1,
+    "forbidden": [],
+    "preflight_excluded": [],
+    "source_gate": {
+      "provider": "hushang_legacy",
+      "canonical": "hushang_legacy",
+      "tier": "LEGACY",
+      "evidence_allowed": false
+    }
+  },
+  "ingest_run_id": "61d362f2-d7c7-4ab9-bd61-5f23cfa07cf4",
+  "stop_reason": "CUTOFF_REACHED",
+  "finished_at": "2026-10-04T15:29:04.739Z"
+}

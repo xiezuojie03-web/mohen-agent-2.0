@@ -1,0 +1,153 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C1 · 下游转化支撑可视化</title>
+<style>
+:root{--line:#e5e7eb;--bg:#f6f7f9}
+*{box-sizing:border-box}
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;margin:0;background:var(--bg);color:#1a1d21;line-height:1.65}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 22px 60px}
+h1{font-size:22px;margin:0 0 4px}
+h2{font-size:16px;margin:30px 0 10px;padding-left:10px;border-left:4px solid #2f6fed}
+.sub{color:#6b7280;font-size:13px;margin-bottom:14px}
+.banner{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:14px 16px;font-size:14px;line-height:1.7}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:12px 0}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;text-align:center}
+.card .v{font-size:23px;font-weight:700}.card .k{font-size:12px;color:#6b7280;margin-top:3px}
+.row{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.box{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;flex:1;min-width:320px}
+.legend{font-size:12.5px;margin-top:6px}
+.legend span{display:inline-block;margin-right:12px;white-space:nowrap}
+.okbox{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 14px;font-size:13px}
+.warnbox{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px 14px;font-size:13px}
+.muted{color:#6b7280;font-size:12.5px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+td{padding:6px 8px;border-top:1px solid #eef0f3;vertical-align:top}
+code{background:#eef0f3;padding:1px 5px;border-radius:4px;font-size:12px}
+</style>
+<div class="wrap">
+<h1>C1 · 下游转化支撑可视化报告</h1>
+<div class="sub">方法 unattended-evidence-fragment · 生成 2026-10-04T11:35:16.531Z · 单文件离线可开 · 全部数字由查询得出</div>
+<div class="banner">本批为 <b>C1</b> 阶段、方法 <code>unattended-evidence-fragment</code> 产出的 <b>4812</b> 条 corpus 文本片段。覆盖 <b>7</b> 类语料；按信号密度预估，可向下游 C2 候选抽取提供约 <b>1163</b> 条时间、<b>3920</b> 条空间、<b>2171</b> 条人物、<b>2448</b> 条关系候选信号。全部为 candidate、零自动晋级。</div>
+
+<h2>① 概览</h2>
+<div class="cards">
+<div class="card"><div class="v">4812</div><div class="k">文本片段总数</div></div>
+<div class="card"><div class="v">7</div><div class="k">语料类别数</div></div>
+<div class="card"><div class="v">129</div><div class="k">平均片段字数</div></div>
+<div class="card"><div class="v">89.3%</div><div class="k">含≥1可转化信号</div></div>
+<div class="card"><div class="v">65.1%</div><div class="k">含≥2信号(丰富)</div></div>
+<div class="card"><div class="v">100%</div><div class="k">locator 完整率</div></div>
+</div>
+
+<h2>② 语料类别分布（覆盖哪些一手来源）</h2>
+<div class="row">
+<div class="box"><svg width="190" height="190" viewBox="0 0 190 190"><circle cx="95" cy="95" r="70" fill="none" stroke="#2f6fed" stroke-width="26" stroke-dasharray="202.73 237.09" stroke-dashoffset="0.00" transform="rotate(-90 95 95)"/><circle cx="95" cy="95" r="70" fill="none" stroke="#16a34a" stroke-width="26" stroke-dasharray="95.61 344.22" stroke-dashoffset="-202.73" transform="rotate(-90 95 95)"/><circle cx="95" cy="95" r="70" fill="none" stroke="#b45309" stroke-width="26" stroke-dasharray="55.02 384.80" stroke-dashoffset="-298.33" transform="rotate(-90 95 95)"/><circle cx="95" cy="95" r="70" fill="none" stroke="#9333ea" stroke-width="26" stroke-dasharray="36.56 403.26" stroke-dashoffset="-353.36" transform="rotate(-90 95 95)"/><circle cx="95" cy="95" r="70" fill="none" stroke="#0891b2" stroke-width="26" stroke-dasharray="26.87 412.95" stroke-dashoffset="-389.92" transform="rotate(-90 95 95)"/><circle cx="95" cy="95" r="70" fill="none" stroke="#dc2626" stroke-width="26" stroke-dasharray="22.39 417.43" stroke-dashoffset="-416.79" transform="rotate(-90 95 95)"/><circle cx="95" cy="95" r="70" fill="none" stroke="#ca8a04" stroke-width="26" stroke-dasharray="0.64 439.18" stroke-dashoffset="-439.18" transform="rotate(-90 95 95)"/>
+    <text x="95" y="91" text-anchor="middle" font-size="22" font-weight="700" fill="#1a1d21">4812</text>
+    <text x="95" y="111" text-anchor="middle" font-size="11" fill="#6b7280">片段总数</text></svg></div>
+<div class="box"><div class="legend"><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#2f6fed;margin-right:4px"></span>其他 2218 (46.1%)</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#16a34a;margin-right:4px"></span>地名 1046 (21.7%)</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#b45309;margin-right:4px"></span>宗族 602 (12.5%)</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#9333ea;margin-right:4px"></span>事件 400 (8.3%)</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#0891b2;margin-right:4px"></span>方志 294 (6.1%)</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#dc2626;margin-right:4px"></span>文保图像 245 (5.1%)</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#ca8a04;margin-right:4px"></span>人物 7 (0.1%)</span></div>
+<div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="其他">其他</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:520px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">2218</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="地名">地名</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:245px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">1046</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="宗族">宗族</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:141px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">602</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="事件">事件</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:94px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">400</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="方志">方志</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:69px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">294</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="文保图像">文保图像</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:57px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">245</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="人物">人物</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:2px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">7</div></div>
+</div></div>
+
+<h2>③ 可转化信号密度（向下游候选抽取的"真实可用"量）</h2>
+<div class="box"><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="时间信号 24.2%">时间信号 24.2%</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:154px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">1163</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="空间信号 81.5%">空间信号 81.5%</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:520px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">3920</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="人物信号 45.1%">人物信号 45.1%</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:288px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">2171</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="关系信号 50.9%">关系信号 50.9%</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:325px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">2448</div></div>
+<div class="muted" style="margin-top:8px">信号为启发式正则匹配（时间/空间/人物/关系关键词），用于<b>预估</b> C2 候选抽取可消费的原始信号量，非承诺抽取条数。含≥2 类信号的"丰富片段"占 65.1%，是母题叙事的高价值原料。</div></div>
+
+<h2>④ 叙事母题支撑矩阵（M1–M5 · 本批能撑起哪些未来叙事）</h2>
+<div class="box"><svg width="500" height="240" viewBox="0 0 500 240" style="max-width:100%"><text x="68" y="20" text-anchor="middle" font-size="11" fill="#374151">M1 关系世界</text><text x="164" y="20" text-anchor="middle" font-size="11" fill="#374151">M2 地方结构</text><text x="260" y="20" text-anchor="middle" font-size="11" fill="#374151">M3 生活地图</text><text x="356" y="20" text-anchor="middle" font-size="11" fill="#374151">M4 生成过程</text><text x="452" y="20" text-anchor="middle" font-size="11" fill="#374151">M5 连续性</text><text x="14" y="49" text-anchor="end" font-size="11" fill="#374151">其他</text><rect x="24" y="34" width="88" height="22" rx="4" fill="rgb(29,78,216)" stroke="#e5e7eb"/>
+        <text x="68" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">1109</text><rect x="120" y="34" width="88" height="22" rx="4" fill="rgb(29,78,216)" stroke="#e5e7eb"/>
+        <text x="164" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">1109</text><rect x="216" y="34" width="88" height="22" rx="4" fill="rgb(29,78,216)" stroke="#e5e7eb"/>
+        <text x="260" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">1109</text><rect x="312" y="34" width="88" height="22" rx="4" fill="rgb(29,78,216)" stroke="#e5e7eb"/>
+        <text x="356" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">1109</text><rect x="408" y="34" width="88" height="22" rx="4" fill="rgb(29,78,216)" stroke="#e5e7eb"/>
+        <text x="452" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">1109</text><text x="14" y="79" text-anchor="end" font-size="11" fill="#374151">地名</text><rect x="24" y="64" width="88" height="22" rx="4" fill="rgb(240,245,255)" stroke="#e5e7eb"/>
+        <text x="68" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">0</text><rect x="120" y="64" width="88" height="22" rx="4" fill="rgb(41,87,218)" stroke="#e5e7eb"/>
+        <text x="164" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">1046</text><rect x="216" y="64" width="88" height="22" rx="4" fill="rgb(41,87,218)" stroke="#e5e7eb"/>
+        <text x="260" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">1046</text><rect x="312" y="64" width="88" height="22" rx="4" fill="rgb(140,166,237)" stroke="#e5e7eb"/>
+        <text x="356" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">523</text><rect x="408" y="64" width="88" height="22" rx="4" fill="rgb(140,166,237)" stroke="#e5e7eb"/>
+        <text x="452" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">523</text><text x="14" y="109" text-anchor="end" font-size="11" fill="#374151">宗族</text><rect x="24" y="94" width="88" height="22" rx="4" fill="rgb(125,154,234)" stroke="#e5e7eb"/>
+        <text x="68" y="109" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">602</text><rect x="120" y="94" width="88" height="22" rx="4" fill="rgb(125,154,234)" stroke="#e5e7eb"/>
+        <text x="164" y="109" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">602</text><rect x="216" y="94" width="88" height="22" rx="4" fill="rgb(183,200,244)" stroke="#e5e7eb"/>
+        <text x="260" y="109" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">301</text><rect x="312" y="94" width="88" height="22" rx="4" fill="rgb(125,154,234)" stroke="#e5e7eb"/>
+        <text x="356" y="109" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">602</text><rect x="408" y="94" width="88" height="22" rx="4" fill="rgb(125,154,234)" stroke="#e5e7eb"/>
+        <text x="452" y="109" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">602</text><text x="14" y="139" text-anchor="end" font-size="11" fill="#374151">事件</text><rect x="24" y="124" width="88" height="22" rx="4" fill="rgb(164,185,241)" stroke="#e5e7eb"/>
+        <text x="68" y="139" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">400</text><rect x="120" y="124" width="88" height="22" rx="4" fill="rgb(202,215,248)" stroke="#e5e7eb"/>
+        <text x="164" y="139" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">200</text><rect x="216" y="124" width="88" height="22" rx="4" fill="rgb(164,185,241)" stroke="#e5e7eb"/>
+        <text x="260" y="139" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">400</text><rect x="312" y="124" width="88" height="22" rx="4" fill="rgb(164,185,241)" stroke="#e5e7eb"/>
+        <text x="356" y="139" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">400</text><rect x="408" y="124" width="88" height="22" rx="4" fill="rgb(164,185,241)" stroke="#e5e7eb"/>
+        <text x="452" y="139" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">400</text><text x="14" y="169" text-anchor="end" font-size="11" fill="#374151">方志</text><rect x="24" y="154" width="88" height="22" rx="4" fill="rgb(184,201,245)" stroke="#e5e7eb"/>
+        <text x="68" y="169" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">294</text><rect x="120" y="154" width="88" height="22" rx="4" fill="rgb(184,201,245)" stroke="#e5e7eb"/>
+        <text x="164" y="169" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">294</text><rect x="216" y="154" width="88" height="22" rx="4" fill="rgb(184,201,245)" stroke="#e5e7eb"/>
+        <text x="260" y="169" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">294</text><rect x="312" y="154" width="88" height="22" rx="4" fill="rgb(184,201,245)" stroke="#e5e7eb"/>
+        <text x="356" y="169" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">294</text><rect x="408" y="154" width="88" height="22" rx="4" fill="rgb(184,201,245)" stroke="#e5e7eb"/>
+        <text x="452" y="169" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">294</text><text x="14" y="199" text-anchor="end" font-size="11" fill="#374151">文保图像</text><rect x="24" y="184" width="88" height="22" rx="4" fill="rgb(240,245,255)" stroke="#e5e7eb"/>
+        <text x="68" y="199" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">0</text><rect x="120" y="184" width="88" height="22" rx="4" fill="rgb(193,208,246)" stroke="#e5e7eb"/>
+        <text x="164" y="199" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">245</text><rect x="216" y="184" width="88" height="22" rx="4" fill="rgb(217,226,251)" stroke="#e5e7eb"/>
+        <text x="260" y="199" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">123</text><rect x="312" y="184" width="88" height="22" rx="4" fill="rgb(217,226,251)" stroke="#e5e7eb"/>
+        <text x="356" y="199" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">123</text><rect x="408" y="184" width="88" height="22" rx="4" fill="rgb(193,208,246)" stroke="#e5e7eb"/>
+        <text x="452" y="199" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">245</text><text x="14" y="229" text-anchor="end" font-size="11" fill="#374151">人物</text><rect x="24" y="214" width="88" height="22" rx="4" fill="rgb(239,244,255)" stroke="#e5e7eb"/>
+        <text x="68" y="229" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">7</text><rect x="120" y="214" width="88" height="22" rx="4" fill="rgb(239,244,255)" stroke="#e5e7eb"/>
+        <text x="164" y="229" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">4</text><rect x="216" y="214" width="88" height="22" rx="4" fill="rgb(239,244,255)" stroke="#e5e7eb"/>
+        <text x="260" y="229" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">7</text><rect x="312" y="214" width="88" height="22" rx="4" fill="rgb(239,244,255)" stroke="#e5e7eb"/>
+        <text x="356" y="229" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">7</text><rect x="408" y="214" width="88" height="22" rx="4" fill="rgb(239,244,255)" stroke="#e5e7eb"/>
+        <text x="452" y="229" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">7</text></svg><div style="margin-top:8px"><div style="margin:3px 0;font-size:12px"><b>M1 关系世界</b>：支撑量 <b>2412</b></div><div style="margin:3px 0;font-size:12px"><b>M2 地方结构</b>：支撑量 <b>3500</b></div><div style="margin:3px 0;font-size:12px"><b>M3 生活地图</b>：支撑量 <b>3280</b></div><div style="margin:3px 0;font-size:12px"><b>M4 生成过程</b>：支撑量 <b>3058</b></div><div style="margin:3px 0;font-size:12px"><b>M5 连续性</b>：支撑量 <b>3180</b></div></div>
+<div class="muted" style="margin-top:8px">单元格 = 该语料类别片段数 × 与对应母题的亲和度（0–1）；颜色越深支撑越强。母题定义见 specs/experience-ui/MoHen_Narrative_Motif_Framework.md（M1 关系世界 / M2 地方结构 / M3 生活地图 / M4 生成过程 / M5 连续性）。</div></div>
+
+<h2>⑤ 下游候选产出预估（供 C2 candidate-extraction 消费）</h2>
+<div class="cards">
+<div class="card"><div class="v">1163</div><div class="k">时间候选信号</div></div>
+<div class="card"><div class="v">3920</div><div class="k">空间候选信号</div></div>
+<div class="card"><div class="v">2171</div><div class="k">人物候选信号</div></div>
+<div class="card"><div class="v">2448</div><div class="k">关系候选信号</div></div>
+</div>
+<div class="warnbox">⚠️ 以上为<b>信号命中数</b>，不是已落库的候选实体/关系。须在 C2 经确定性抽取 + 歧义 HOLD 后才成为候选；本批仅提供"可被转化的真实原料"体量。</div>
+
+<h2>⑥ 红线与质量校验</h2>
+<div class="okbox"><ul style="margin:4px 0 0 18px;padding:0">
+<li>locator 完整率：0 条缺失</li>
+<li>verified 证据：0（<b>0 自动晋级</b>）</li>
+<li>published 实体：0（<b>0 自动晋级</b>）</li>
+<li>近 1 日 auto 分诊：0（<b>0 自动晋级</b>）</li>
+<li>review_queue HOLD（本批三分留痕）：4812</li>
+</ul></div>
+
+<h2>⑦ 方法论与限制</h2>
+<div class="box"><ul class="muted" style="margin:0;padding-left:18px;line-height:1.8">
+<li>数据源：<code>evidence</code> + <code>source_records</code>（<code>extraction_method='unattended-evidence-fragment'</code>），全部为老项目 corpus 一手文本片段。</li>
+<li>类别由来源文件名正则判定；信号由中文关键词正则启发式匹配，存在漏判/误判，仅用于体量预估。</li>
+<li>母题支撑为"类别 × 亲和度"近似，不代表已生成叙事，仅表明该批数据对哪些母题有原料支撑。</li>
+<li>本报告为协议 §0.5 执行报告的"下游转化支撑"增补视图；与 runner 生成的 report.json/html 同源互补。</li>
+</ul></div>
+<p class="muted">生成口径：analyzeStageImpact + renderImpactHtml（pipelines/legacy/unattended-report.mjs）。</p>
+</div></html>

@@ -22,14 +22,22 @@ import { queryRows, queryValue } from "../packages/data-access/src/index.mjs";
 
 // 「可晋级」表清单：表 → (状态列, object_type, 视为"可用"的取值)
 // 说明：object_type 取值来自 evidence_gate_audit 实际出现过的 7 类对象。
+// [C6 · 2026-10-05] 末端状态取值与 supabase/migrations/202610050011 的 constraint trigger **逐字对齐**：
+// 'verified' / 'published' 是既有口径，'adjudicated' / 'runtime_eligible' 是 C3 §4.1 的档位名。
+// 两者必须同增同减 —— 守卫写着、库里没有（或反过来）正是本仓付过代价的失败模式。
+// claims 不在此列：它的闸门是 `claims_require_evidence`（按 evidence_ids，不是按审计行），故口径保持原样。
+const END_STATES = ["adjudicated", "runtime_eligible", "verified", "published"];
 const GATED = [
-  { table: "entities", col: "status", objectType: "entity", usable: ["verified", "published"] },
-  { table: "relations", col: "status", objectType: "relation", usable: ["verified", "published"] },
+  { table: "entities", col: "status", objectType: "entity", usable: END_STATES },
+  { table: "relations", col: "status", objectType: "relation", usable: END_STATES },
   { table: "claims", col: "status", objectType: "claim", usable: ["verified", "published"] },
-  { table: "evidence", col: "verification_status", objectType: "evidence", usable: ["verified", "published"] },
+  { table: "evidence", col: "verification_status", objectType: "evidence", usable: END_STATES },
   { table: "visual_assets", col: "eligibility_status", objectType: "visual_asset", usable: ["gate_passed"] },
-  { table: "historical_spatial_relations", col: "status", objectType: "historical_spatial_relation", usable: ["verified", "published"] },
-  { table: "historical_features", col: "review_status", objectType: "historical_feature", usable: ["verified", "published"] },
+  { table: "historical_spatial_relations", col: "status", objectType: "historical_spatial_relation", usable: END_STATES },
+  { table: "historical_features", col: "review_status", objectType: "historical_feature", usable: END_STATES },
+  { table: "cultural_relation_claims", col: "review_status", objectType: "cultural_relation_claim", usable: END_STATES },
+  { table: "cultural_meaning_candidates", col: "review_status", objectType: "cultural_meaning_candidate", usable: END_STATES },
+  { table: "cultural_present_connections", col: "review_status", objectType: "cultural_present_connection", usable: END_STATES },
 ];
 
 let failed = false;
@@ -62,16 +70,19 @@ try {
     if (!pk) { bad(`${g.table} 没有主键，无法与门禁审计比对`); continue; }
 
     const list = g.usable.map((v) => `'${v}'`).join(",");
+    // ★ 状态列是枚举时（entities / relations / evidence 用的是 `verification_status`），
+    // 直接 `col in ('adjudicated', …)` 会让 PG 把字面量转成枚举而报错；
+    // 转 text 再比较，非法字面量只是"不命中"（与迁移 202610050011 同一处坑）。
     const n = Number(await queryValue(
       `select count(*)::int from ${g.table} t
-        where t.${g.col} in (${list})
+        where t.${g.col}::text in (${list})
           and not exists (
             select 1 from evidence_gate_audit a
              where a.object_type = :'ot' and a.object_id = t.${pk}::text)`,
       { ot: g.objectType }
     ));
     const marked = Number(await queryValue(
-      `select count(*)::int from ${g.table} where ${g.col} in (${list})`
+      `select count(*)::int from ${g.table} where ${g.col}::text in (${list})`
     ));
     const audited = Number(await queryValue(
       `select count(*)::int from evidence_gate_audit where object_type = :'ot'`, { ot: g.objectType }

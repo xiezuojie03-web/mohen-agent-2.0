@@ -1,0 +1,176 @@
+{
+  "tag": "C6-NAMERES-DRY",
+  "mode": "DRY_RUN",
+  "env": "dev",
+  "cutoff": "2026-10-05T15:55:00.000Z",
+  "interval_min": 0,
+  "started_at": "2026-10-05T01:01:24.668Z",
+  "jobs": {
+    "unattended.name-resolution": {
+      "ok": true,
+      "dry_run": true,
+      "ms": 703,
+      "name_groups_total": 6184,
+      "duplicate_groups": 382,
+      "resolved": 13,
+      "homonym_open": 369,
+      "already_resolved": 0,
+      "mappings_written": 0,
+      "mappings_would": 382,
+      "triaged": 0,
+      "entities_modified": 0,
+      "open_top": [
+        {
+          "name": "安朱",
+          "c": 3,
+          "types": "family_person"
+        },
+        {
+          "name": "蔡子旺",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "曹初芳",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "曹廷一",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "柴璧",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "柴公望",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "柴孟肤",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "柴硕",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "柴廷富",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "陈本隆",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "陈德球",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "陈华美",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "陈华育",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "陈华允",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "陈家栋",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "陈菊亭",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "陈乐闲",
+          "c": 3,
+          "types": "family_person"
+        },
+        {
+          "name": "陈善士",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "陈熙",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "陈禧",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "陈用泽",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "陈瓒",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "程信上",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "程宴",
+          "c": 2,
+          "types": "family_person"
+        },
+        {
+          "name": "仇泰",
+          "c": 2,
+          "types": "family_person"
+        }
+      ],
+      "at": "2026-10-05T01:01:25.382Z"
+    }
+  },
+  "counters": {
+    "jobs_done": 1,
+    "jobs_failed": 0,
+    "inserted": 0
+  },
+  "failures": [],
+  "verdict": "PASS",
+  "registry": {
+    "path": "specs/data-production/production-registry.json",
+    "entries": 18,
+    "queued": 110,
+    "declared": 110,
+    "runnable": 1,
+    "forbidden": [],
+    "preflight_excluded": [],
+    "source_gate": {
+      "provider": "hushang_legacy",
+      "canonical": "hushang_legacy",
+      "tier": "LEGACY",
+      "evidence_allowed": false
+    }
+  },
+  "stop_reason": "STOPPED_BY_STOP_FILE",
+  "finished_at": "2026-10-05T01:02:25.406Z"
+}

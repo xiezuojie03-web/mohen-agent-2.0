@@ -1,0 +1,204 @@
+{
+  "method": "unattended-evidence-fragment",
+  "stage": "C1",
+  "total": 4812,
+  "generated_at": "2026-10-04T11:35:16.531Z",
+  "categories": [
+    {
+      "name": "其他",
+      "count": 2218,
+      "pct": 46.1
+    },
+    {
+      "name": "地名",
+      "count": 1046,
+      "pct": 21.7
+    },
+    {
+      "name": "宗族",
+      "count": 602,
+      "pct": 12.5
+    },
+    {
+      "name": "事件",
+      "count": 400,
+      "pct": 8.3
+    },
+    {
+      "name": "方志",
+      "count": 294,
+      "pct": 6.1
+    },
+    {
+      "name": "文保图像",
+      "count": 245,
+      "pct": 5.1
+    },
+    {
+      "name": "人物",
+      "count": 7,
+      "pct": 0.1
+    }
+  ],
+  "topFiles": [
+    {
+      "file": "events_linked.json",
+      "count": 200
+    },
+    {
+      "file": "resource_probe2_20260831.json",
+      "count": 200
+    },
+    {
+      "file": "jp_works_sparql.json",
+      "count": 200
+    },
+    {
+      "file": "gj_14373_toc.json",
+      "count": 200
+    },
+    {
+      "file": "suzhou_narrative_review.json",
+      "count": 200
+    },
+    {
+      "file": "yutu_catalog.json",
+      "count": 200
+    },
+    {
+      "file": "yutu_catalog_final_20260831.json",
+      "count": 200
+    },
+    {
+      "file": "yutu_catalog_checked.json",
+      "count": 200
+    },
+    {
+      "file": "hsly_events.json",
+      "count": 200
+    },
+    {
+      "file": "narrative_assets.json",
+      "count": 200
+    },
+    {
+      "file": "commons_oldmaps_raw_20260831.json",
+      "count": 200
+    },
+    {
+      "file": "yutu_triples_cache.json",
+      "count": 200
+    }
+  ],
+  "avgLen": 129,
+  "anySignalPct": 89.3,
+  "richPct": 65.1,
+  "signals": {
+    "time": {
+      "n": 1163,
+      "pct": 24.2
+    },
+    "space": {
+      "n": 3920,
+      "pct": 81.5
+    },
+    "person": {
+      "n": 2171,
+      "pct": 45.1
+    },
+    "relation": {
+      "n": 2448,
+      "pct": 50.9
+    }
+  },
+  "motifMatrix": {
+    "categories": [
+      "其他",
+      "地名",
+      "宗族",
+      "事件",
+      "方志",
+      "文保图像",
+      "人物"
+    ],
+    "motifs": [
+      "M1 关系世界",
+      "M2 地方结构",
+      "M3 生活地图",
+      "M4 生成过程",
+      "M5 连续性"
+    ],
+    "cells": {
+      "其他": {
+        "M1": 1109,
+        "M2": 1109,
+        "M3": 1109,
+        "M4": 1109,
+        "M5": 1109
+      },
+      "地名": {
+        "M1": 0,
+        "M2": 1046,
+        "M3": 1046,
+        "M4": 523,
+        "M5": 523
+      },
+      "宗族": {
+        "M1": 602,
+        "M2": 602,
+        "M3": 301,
+        "M4": 602,
+        "M5": 602
+      },
+      "事件": {
+        "M1": 400,
+        "M2": 200,
+        "M3": 400,
+        "M4": 400,
+        "M5": 400
+      },
+      "方志": {
+        "M1": 294,
+        "M2": 294,
+        "M3": 294,
+        "M4": 294,
+        "M5": 294
+      },
+      "文保图像": {
+        "M1": 0,
+        "M2": 245,
+        "M3": 123,
+        "M4": 123,
+        "M5": 245
+      },
+      "人物": {
+        "M1": 7,
+        "M2": 4,
+        "M3": 7,
+        "M4": 7,
+        "M5": 7
+      }
+    },
+    "motifTotals": {
+      "M1": 2412,
+      "M2": 3500,
+      "M3": 3280,
+      "M4": 3058,
+      "M5": 3180
+    },
+    "gmax": 1109
+  },
+  "projections": {
+    "time": 1163,
+    "space": 3920,
+    "person": 2171,
+    "relation": 2448
+  },
+  "quality": {
+    "locator_null": "0",
+    "verified": "0",
+    "published": "0",
+    "auto_1d": "0",
+    "hold_c1": "4812"
+  }
+}

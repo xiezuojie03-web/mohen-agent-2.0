@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据底座建厚实 · 全维度分析可视化报告</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --line:#2a2f3a;
+    --ink:#e8ebf0; --sub:#9aa4b2; --dim:#6b7480;
+    --old:#4f9cf0; --ext:#f0a44f; --pre:#5b6472; --good:#3ecf8e; --warn:#f0c14f; --bad:#f06b6b;
+    --m1:#7aa2f7; --m2:#9ece6a; --m3:#e0af68; --m4:#bb9af7; --m5:#f7768e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;font-size:14px}
+  .wrap{max-width:1180px;margin:0 auto;padding:32px 24px 80px}
+  header{border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:8px}
+  h1{font-size:26px;margin:0 0 6px}
+  .meta{color:var(--sub);font-size:13px}
+  h2{font-size:20px;margin:42px 0 6px;padding-left:10px;border-left:4px solid var(--old)}
+  h3{font-size:15px;color:var(--sub);margin:22px 0 8px;font-weight:600}
+  p.note{color:var(--dim);font-size:12.5px;margin:4px 0 12px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .kpi .v{font-size:23px;font-weight:700}
+  .kpi .l{color:var(--sub);font-size:12px;margin-top:2px}
+  .kpi.ok .v{color:var(--good)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:14px 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr}}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--sub);font-weight:600;background:var(--panel2)}
+  td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+  .tag{display:inline-block;padding:1px 8px;border-radius:20px;font-size:11.5px;font-weight:600}
+  .t-old{background:rgba(79,156,240,.16);color:var(--old)}
+  .t-ext{background:rgba(240,164,79,.16);color:var(--ext)}
+  .t-pre{background:rgba(91,100,114,.22);color:#aab2c0}
+  .t-good{background:rgba(62,207,142,.16);color:var(--good)}
+  .t-bad{background:rgba(240,107,107,.16);color:var(--bad)}
+  .t-warn{background:rgba(240,193,79,.16);color:var(--warn)}
+  .bar{height:26px;border-radius:6px;background:var(--panel2);position:relative;overflow:hidden;margin:4px 0}
+  .bar > span{display:block;height:100%;position:absolute;top:0}
+  .stack{display:flex;height:30px;border-radius:6px;overflow:hidden;background:var(--panel2);margin:3px 0}
+  .stack > span{height:100%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#0c0e12;font-weight:700;white-space:nowrap}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--sub);margin:10px 0}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:middle}
+  .heat{display:grid;gap:4px}
+  .heatcell{border-radius:6px;padding:10px 8px;text-align:center;font-size:13px;font-weight:600;color:#0c0e12}
+  .frac{font-variant-numeric:tabular-nums;color:var(--sub)}
+  ul.tight{margin:6px 0;padding-left:20px}
+  ul.tight li{margin:3px 0}
+  .rule{background:var(--panel2);border-left:3px solid var(--ext);border-radius:0 8px 8px 0;padding:10px 14px;margin:8px 0;font-size:13px}
+  .pill{font-size:12px;color:var(--sub)}
+  .em{color:var(--ink);font-weight:600}
+  .foot{margin-top:48px;color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-top:14px}
+  .gap{color:var(--bad);font-weight:600}
+  .okv{color:var(--good);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>数据底座建厚实 · 全维度分析可视化报告</h1>
+  <div class="meta">任务书 TASK-DATA-20261004 · 阶段 C1–C6（2026-10-04 → 2026-10-05）· 数据来源：进度表引用的 6 份执行结果（C1–C6 result.md）</div>
+</header>
+
+<!-- ============ KPI ============ -->
+<div class="kpis">
+  <div class="kpi"><div class="v">317</div><div class="l">source_records（来源）</div></div>
+  <div class="kpi"><div class="v">6745</div><div class="l">entities（实体候选）</div></div>
+  <div class="kpi"><div class="v">13,053</div><div class="l">evidence（证据）</div></div>
+  <div class="kpi"><div class="v">3444</div><div class="l">relations（关系）</div></div>
+  <div class="kpi"><div class="v">1465</div><div class="l">visual_assets（图）</div></div>
+  <div class="kpi"><div class="v">1056</div><div class="l">visual_entity_links（图-实体链接）</div></div>
+  <div class="kpi"><div class="v">2931</div><div class="l">knowledge_paths（L4 投影）</div></div>
+  <div class="kpi ok"><div class="v">0</div><div class="l">published / verified / auto（零自动晋级）</div></div>
+</div>
+
+<!-- ============ 维度一 ============ -->
+<h2>① 老项目（沪上经纬）数据挖掘程度对比</h2>
+<p class="note">老项目原始体量 vs 实际挖入新项目数据库的量。口径：老项目共 2596 个文件（核心 2038 PDF + corpus 语料）；本任务从语料与图片两条线挖掘，PDF 深文本因缺解析库未抽。</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>老项目原始体量</h3>
+    <table>
+      <tr><th>形态</th><th class="r">数量</th><th>说明</th></tr>
+      <tr><td>文件总数</td><td class="r">2596</td><td>核心 2038 PDF + corpus</td></tr>
+      <tr><td>语料源（corpus）</td><td class="r">92</td><td>88 个带本地文件，4 个为目录/其他</td></tr>
+      <tr><td>图片</td><td class="r">1246</td><td>R25 解冻批次（C4 处理）</td></tr>
+      <tr><td>PDF（深文本）</td><td class="r">~1472+</td><td>fetched 152 + jp_prefaces 1320 + archive/raw_snapshots</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h3>各类材料挖掘覆盖率</h3>
+    <div class="bar" title="语料源 88/92">
+      <span style="left:0;width:95.7%;background:var(--old)"></span>
+    </div>
+    <div class="pill">语料源（可机读 JSON）：<span class="em">88 / 92 = 95.7%</span></div>
+    <div class="bar" style="margin-top:12px">
+      <span style="left:0;width:71.8%;background:var(--old)"></span>
+    </div>
+    <div class="pill">图片建链接：<span class="em">894 / 1246 = 71.8%</span>（入范围 1198/1246=96.1%）</div>
+    <div class="bar" style="margin-top:12px">
+      <span style="left:0;width:2%;background:var(--bad)"></span>
+    </div>
+    <div class="pill">PDF 深文本抽取：<span class="gap">0 / ~1472 = 0%</span>（能力缺口）</div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>实际挖入新项目数据库的老项目数据（C1–C4 贡献）</h3>
+  <table>
+    <tr><th>层 / 表</th><th class="r">本次挖入量</th><th>来源阶段</th></tr>
+    <tr><td>L1 evidence（语料片段）</td><td class="r">4812</td><td>C1 corpus 抽取</td></tr>
+    <tr><td>L1 evidence_fragments</td><td class="r">4812</td><td>C1</td></tr>
+    <tr><td>L2 entities（候选）</td><td class="r">3041</td><td>C2（place 2178 / building 972）</td></tr>
+    <tr><td>L2 relations（候选）</td><td class="r">2923</td><td>C2 + C3 绑定</td></tr>
+    <tr><td>L2 claims</td><td class="r">3041</td><td>C2</td></tr>
+    <tr><td>L4 discovery_candidates</td><td class="r">1138</td><td>C2</td></tr>
+    <tr><td>L1 evidence（图片题录）</td><td class="r">692</td><td>C4</td></tr>
+    <tr><td>L2 visual_entity_links</td><td class="r">894</td><td>C4（对象级 suspected 68 / 镇域 unconfirmed 826）</td></tr>
+    <tr><td>L4 knowledge_paths / steps</td><td class="r">2931 / 15544</td><td>C3 全量关系投影</td></tr>
+    <tr><td>RW legacy_mappings（溯源）</td><td class="r">~4126</td><td>C2 5 + C3 2923 + C4 1198</td></tr>
+    <tr><td>RW review_queue（HOLD）</td><td class="r">~20104</td><td>C1 4812 + C2 10159 + C3 2923 + C4 2210</td></tr>
+  </table>
+  <p class="note">结论：语料文本 ≈96% 源覆盖、图片 ≈72% 建链，是本轮“建厚实”的主力；PDF 深文本是最大未挖缺口（约 1472 个 PDF 一字未进库）。</p>
+</div>
+
+<!-- ============ 维度二 ============ -->
+<h2>② 外部扩源（C5 · R19 闸门后）</h2>
+<p class="note">R19 闸门逻辑：先用 C1–C4 证明老项目已产可信候选（evidence 12913、locator 100%、entities 3041、relations 3444、links 916、零自动晋级）→ 闸门通过 → 才规模化扩源。</p>
+
+<div class="card">
+  <h3>外部资源选择逻辑（三条硬规则，全部来自实测教训）</h3>
+  <div class="rule"><b>1. 地域必判，行政归属优先于坐标。</b>有 P131 以 P131 属上海为准；无 P131 才用上海外接矩形；两者皆无→拒收。坐标不得翻案 P131（防收进“太仓直隶州”类邻省项）。</div>
+  <div class="rule"><b>2. 图像必须由身份指认，不得由文本检索发现。</b>Commons 检索「金泽」Top3 全是日本石川县金泽市；故视觉线只取 Wikidata P18 声明的 File，把 Commons 当取回通道而非发现手段。</div>
+  <div class="rule"><b>3. Q-id 只是候选线索，不写 Evidence。</b>Wikidata 裁决为 S3（仅现代空间）+「Q-id 不得单独支撑断言」，身份线一行 Evidence 都不写。</div>
+</div>
+
+<div class="grid2">
+  <div class="card">
+    <h3>身份线漏斗（Wikidata · 7 批 SPARQL）</h3>
+    <div class="bar"><span style="left:0;width:100%;background:var(--old)"></span></div>
+    <div class="pill">种子（库内字典 149 + C4 待补 14）：<b>163</b></div>
+    <div class="bar" style="margin-top:8px"><span style="left:0;width:100%;background:var(--old)"></span></div>
+    <div class="pill">外部返回候选：<b>366</b></div>
+    <div class="bar" style="margin-top:8px"><span style="left:0;width:53.8%;background:var(--bad)"></span></div>
+    <div class="pill">拒收（地域 163 + 类型噪声 34）：<b>197（54%）</b></div>
+    <div class="bar" style="margin-top:8px"><span style="left:0;width:46.2%;background:var(--good)"></span></div>
+    <div class="pill">入候选：<b>169</b> ＝ 精确对齐 10 ＋ 新建外部对象 151 ＋ 同名多义 HOLD 8</div>
+    <div class="pill" style="margin-top:6px">新建外部对象：place 44 / building 36 / unknown 71</div>
+  </div>
+  <div class="card">
+    <h3>视觉线漏斗（Wikimedia Commons · P18 指认）</h3>
+    <div class="bar"><span style="left:0;width:100%;background:var(--old)"></span></div>
+    <div class="pill">请求文件：<b>142</b>（6 批，HTTP 失败 0）</div>
+    <div class="bar" style="margin-top:8px"><span style="left:0;width:98.6%;background:var(--good)"></span></div>
+    <div class="pill">图像候选：<b>140</b>（2 张 URL 重复跳过）</div>
+    <div class="bar" style="margin-top:8px"><span style="left:0;width:98.6%;background:var(--good)"></span></div>
+    <div class="pill">图-实体链接 / 图像证据：<b>各 140</b>（suspected，必带 link_evidence_id）</div>
+    <div class="pill" style="margin-top:6px">古今判定：current 133 / historical 3 / unknown 4</div>
+    <div class="pill">许可逐文件记录：CC BY-SA 3.0/4.0、CC BY、GFDL、PD 等共 140</div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>外部资源构成与本轮挖入量</h3>
+  <table>
+    <tr><th>外部源</th><th class="r">新增 source_records</th><th>挖入数据</th></tr>
+    <tr><td>Wikidata（身份线 7 批）</td><td class="r">7</td><td>entities +151、legacy_mappings +161、Evidence 0（S3 守）· 地域拒收 163 / 类型拒收 34</td></tr>
+    <tr><td>Wikimedia Commons（视觉线 6 批 P18）</td><td class="r">6</td><td>visual_assets +140、links +140、evidence +140、审计 +840</td></tr>
+  </table>
+  <p class="note">总计：底座来源 +13（Wikidata 7 + Commons 6）；每源可溯源、可回滚（按 legacy_source / legacy_id 前缀定位）。外部对象以上海市域文保为主（外滩/徐汇/黄浦等），对金泽单镇针对性弱于 C1–C4。</p>
+</div>
+
+<!-- ============ 维度三 ============ -->
+<h2>③ 新项目 8 层数据库架构 · 整体数据情况</h2>
+<p class="note">按 C3 V1.2 八层长期数据地图（L0–L7）分层统计；并标注本次任务（C1–C6）新获取量，区分「老项目（沪上经纬）」与「外部扩源（C5）」，其余为任务前既有。Research Workspace 为跨层逻辑工作区（非独立层），单列。</p>
+
+<div class="legend">
+  <span><i style="background:var(--old)"></i>本次新获取·老项目</span>
+  <span><i style="background:var(--ext)"></i>本次新获取·外部扩源</span>
+  <span><i style="background:var(--pre)"></i>任务前既有</span>
+</div>
+
+<div class="card">
+  <div id="layerStacks"></div>
+</div>
+
+<div class="card">
+  <h3>分层明细表（全库规模 / 本次新增拆分）</h3>
+  <table>
+    <tr><th>层</th><th>表</th><th class="r">全库</th><th class="r">本次·老项目</th><th class="r">本次·外部</th><th class="r">任务前既有</th></tr>
+    <tr><td>L0 来源</td><td>source_records</td><td class="r">317</td><td class="r">0</td><td class="r">13</td><td class="r">304</td></tr>
+    <tr><td rowspan="3">L1 证据</td><td>evidence</td><td class="r">13,053</td><td class="r">5,504</td><td class="r">140</td><td class="r">7,409</td></tr>
+    <tr><td>evidence_fragments</td><td class="r">4,828</td><td class="r">4,812</td><td class="r">0</td><td class="r">16</td></tr>
+    <tr><td>evidence_gate_audit</td><td class="r">~106k</td><td class="r">~102k</td><td class="r">840</td><td class="r">少量</td></tr>
+    <tr><td rowspan="7">L2 文化世界</td><td>entities</td><td class="r">6,745</td><td class="r">3,041</td><td class="r">151</td><td class="r">3,553</td></tr>
+    <tr><td>relations</td><td class="r">3,444</td><td class="r">2,923</td><td class="r">0</td><td class="r">521</td></tr>
+    <tr><td>relation_evidence</td><td class="r">13,091</td><td class="r">12,595</td><td class="r">0</td><td class="r">496</td></tr>
+    <tr><td>claims</td><td class="r">3,041</td><td class="r">3,041</td><td class="r">0</td><td class="r">0</td></tr>
+    <tr><td>visual_assets</td><td class="r">1,465</td><td class="r">0</td><td class="r">140</td><td class="r">1,325</td></tr>
+    <tr><td>visual_entity_links</td><td class="r">1,056</td><td class="r">894</td><td class="r">140</td><td class="r">22</td></tr>
+    <tr><td>cultural_relation_claims</td><td class="r">—</td><td class="r">0</td><td class="r">0</td><td class="r">审计 56</td></tr>
+    <tr><td rowspan="3">L3 意义与当下</td><td>cultural_meaning_candidates</td><td class="r">—</td><td class="r">0</td><td class="r">0</td><td class="r">审计 14</td></tr>
+    <tr><td>cultural_present_connections</td><td class="r">—</td><td class="r">0</td><td class="r">0</td><td class="r">审计 14</td></tr>
+    <tr><td>open_question</td><td class="r">—</td><td class="r" colspan="3">基本空</td></tr>
+    <tr><td rowspan="3">L4 发现/读模型</td><td>knowledge_paths</td><td class="r">2,931</td><td class="r">2,931</td><td class="r">0</td><td class="r">0</td></tr>
+    <tr><td>knowledge_path_steps</td><td class="r">15,544</td><td class="r">15,544</td><td class="r">0</td><td class="r">0</td></tr>
+    <tr><td>discovery_candidates</td><td class="r">1,138</td><td class="r">1,138</td><td class="r">0</td><td class="r">0</td></tr>
+    <tr><td>L5–L7</td><td>Experience/Participation/Living</td><td class="r">空</td><td class="r" colspan="3">前端顺延（R18 数据优先），符合预期</td></tr>
+    <tr style="background:var(--panel2)"><td>RW 研究工作区</td><td>review_queue（HOLD / REJECT）</td><td class="r">24,413 / 2,953</td><td class="r">~20,104 / —</td><td class="r">740 / —</td><td class="r">~3,569 / —</td></tr>
+    <tr style="background:var(--panel2)"><td>RW 研究工作区</td><td>legacy_mappings</td><td class="r">~4,427</td><td class="r">~4,126</td><td class="r">301</td><td class="r">~0</td></tr>
+  </table>
+  <p class="note">L5–L7 为空是设计使然（R18 数据挖掘优先、体验顺延）。冻结项全程未触：effective_visual_assets=8、visual_assets 既有行零 UPDATE。零自动晋级全程成立：published=0、verified=0、auto 分诊=0。</p>
+</div>
+
+<!-- ============ 维度四 ============ -->
+<h2>④ 数据对叙事的支撑情况</h2>
+<p class="note">依据五母题框架 M1–M5（消失的关系世界 / 地方为何长这样 / 过去的生活地图 / 地方如何活起来 / 今天还剩多少过去），结合各阶段 impact 报告的母题支撑量与信号密度。</p>
+
+<div class="card">
+  <h3>母题支撑矩阵（各阶段 impact 报告母题支撑量）</h3>
+  <div class="heat" id="motifHeat" style="grid-template-columns:repeat(6,1fr)"></div>
+  <div class="legend">
+    <span><i style="background:var(--m1)"></i>M1 关系世界</span>
+    <span><i style="background:var(--m2)"></i>M2 地方结构</span>
+    <span><i style="background:var(--m3)"></i>M3 生活地图</span>
+    <span><i style="background:var(--m4)"></i>M4 生成过程</span>
+    <span><i style="background:var(--m5)"></i>M5 今天延续</span>
+  </div>
+  <p class="note">C3（关系线）M2 支撑最强（2780），因桥/建筑/地名候选密集；C4（图片线）M2/M5 较高（1240/1173）。两线合计：M2＞M1≈M3≈M5＞M4。</p>
+</div>
+
+<div class="grid2">
+  <div class="card">
+    <h3>可转化信号密度</h3>
+    <table>
+      <tr><th>信号</th><th>C3 关系线</th><th>C4 图片线</th><th>评估</th></tr>
+      <tr><td>空间</td><td>强（地名启发式）</td><td class="r">1500（68.9%）</td><td><span class="t-good">充足</span></td></tr>
+      <tr><td>时间</td><td>弱</td><td class="r">491（54.9% 可判古今）</td><td><span class="t-warn">偏弱</span></td></tr>
+      <tr><td>关系</td><td>2923 候选绑定</td><td class="r">68（5.7%）</td><td><span class="t-warn">待核</span></td></tr>
+      <tr><td>人物</td><td>0</td><td class="r">0</td><td><span class="t-bad">缺失</span></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h3>支撑结论与关键缺口</h3>
+    <ul class="tight">
+      <li><span class="okv">底座已厚</span>：L2 实体 6745、关系 3444、证据 13053，候选供给充分，可追溯（locator 100%）。</li>
+      <li><b>M2（地方为何长这样）</b>支撑最实：桥/寺/建筑/地名密集，适合讲“桥多/水乡结构”。</li>
+      <li><b>M1（关系世界）</b>有 2923 条关系且 64.3% 绑 ≥2 证据，但<span class="gap">全部 HOLD、零晋级</span>——只能呈现“可能的关系”，不能呈现“证成的关系”。</li>
+      <li><span class="gap">人物信号 = 0</span>（C2/C4/C5 均不做人物识别）：M1/M3/M4 依赖“人的活动/群体/行动”，目前无数据支撑，是最大的叙事短板。</li>
+      <li><b>时间信号弱</b>：仅图片线 491 条可判古今；实体/关系大多无时间精度，M4（生成过程）难以成立。</li>
+      <li><b>金泽单镇针对性</b>：外部扩源以上海市域文保为主，金泽/青浦项个位数；本轮增厚主要是“全域底座”而非“金泽深钻”。</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card">
+  <h3>对下一阶段（Human Experience）的启示</h3>
+  <ul class="tight">
+    <li>底座达标（守卫全绿、零自动晋级、来源可溯）已满足 Experience Gate 前置；可进入体验验收。</li>
+    <li>起步切片宜选 <b>M2（地方结构）</b> 或 <b>M1（关系世界·待人审晋级）</b>，二者数据最厚；避免先上 M4（缺时间链）与人物主线（缺人物数据）。</li>
+    <li>待拥有者裁定项会直接影响叙事可信度：ESC-02 双 relation 合并、1246 批内 34 张 excluded 金泽 Commons 图是否恢复、624 张有题录图“待补实体”是否立项、人物识别能力是否补建。</li>
+    <li>所有呈现必须区分 <span class="t-warn">候选/可能性</span> 与 <span class="t-good">已证成</span>：当前全库 published=0、verified=0，叙事只能“提出可证据化的问题”，不能“下确定结论”。</li>
+  </ul>
+</div>
+
+<div class="foot">
+  数据来源：tasks/TASK-DATA-20261004_数据底座建厚实_Task-Book_V1.0.md 进度表 + tasks/results/TASK-DATA-20261004-C1~C6-result.md（真库查询，非模板断言）。<br>
+  八层架构口径：governance/C3 V1.2 §2.1–§2.8。五母题口径：specs/experience-ui/MoHen_Narrative_Motif_Framework.md。<br>
+  本报告为单一可视化视图，供项目拥有者审阅；所有数字均来自已提交的执行结果，零自动晋级红线全程成立。
+</div>
+</div>
+
+<script>
+// ---- 维度三：分层堆叠条 ----
+const layers = [
+  {name:"L0 来源",        old:0,     ext:13,    pre:304},
+  {name:"L1 证据",        old:10316, ext:140,   pre:7425},   // evidence+fragments ≈ 17881
+  {name:"L2 文化世界",    old:24894, ext:280,   pre:3425},   // entities+rel+rel_ev+claims+va+links+cultural
+  {name:"L3 意义/当下",   old:0,     ext:0,     pre:28},     // audit rows only
+  {name:"L4 发现/读模型", old:19613, ext:0,     pre:0},
+  {name:"RW 研究工作区",  old:24130, ext:1041,  pre:3569},   // review_queue+legacy_mappings 行
+];
+const maxV = Math.max(...layers.map(l=>l.old+l.ext+l.pre));
+const el = document.getElementById('layerStacks');
+layers.forEach(l=>{
+  const tot=l.old+l.ext+l.pre;
+  const w=(v)=> (v/tot*100).toFixed(2)+'%';
+  const row=document.createElement('div');
+  row.style.margin='10px 0';
+  row.innerHTML = `<div class="pill" style="margin-bottom:3px"><b>${l.name}</b> · 全库约 ${tot.toLocaleString()} 行</div>
+    <div class="stack">
+      <span style="width:${w(l.old)};background:var(--old)" title="老项目 ${l.old}">${l.old? l.old.toLocaleString():''}</span>
+      <span style="width:${w(l.ext)};background:var(--ext)" title="外部 ${l.ext}">${l.ext? l.ext.toLocaleString():''}</span>
+      <span style="width:${w(l.pre)};background:var(--pre)" title="既有 ${l.pre}"></span>
+    </div>`;
+  el.appendChild(row);
+});
+
+// ---- 维度四：母题支撑热力图 ----
+const motifData = [
+  {stage:"C3 关系线", m:[721,2780,2039,1896,2039]},
+  {stage:"C4 图片线", m:[793,1240,827,1139,1173]},
+];
+const maxM = 2780;
+const heat = document.getElementById('motifHeat');
+// header
+const head=document.createElement('div');
+head.style.fontSize='12px';head.style.color='var(--sub)';
+head.innerHTML=`<div></div><div>M1</div><div>M2</div><div>M3</div><div>M4</div><div>M5</div>`;
+heat.appendChild(head);
+motifData.forEach(s=>{
+  const lab=document.createElement('div');
+  lab.style.fontSize='11.5px';lab.style.color='var(--sub)';lab.style.display='flex';lab.style.alignItems='center';
+  lab.textContent=s.stage;
+  heat.appendChild(lab);
+  s.m.forEach(v=>{
+    const c=document.createElement('div');
+    c.className='heatcell';
+    const a=0.25+0.75*(v/maxM);
+    c.style.background=`rgba(122,162,247,${a.toFixed(2)})`;
+    c.style.color = a>0.55?'#0c0e12':'#cdd6e3';
+    c.textContent=v;
+    heat.appendChild(c);
+  });
+});
+</script>
+</body>
+</html>

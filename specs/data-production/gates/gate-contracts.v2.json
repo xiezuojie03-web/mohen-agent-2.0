@@ -1,0 +1,152 @@
+{
+  "schema": "mohen.machine-gate-contracts",
+  "schema_version": "2.0",
+  "result_enum": [
+    "PASS",
+    "HOLD",
+    "REJECT"
+  ],
+  "gates": {
+    "G0": {
+      "stage": "D01",
+      "layer": "L0",
+      "name": "Source Gate",
+      "mandatory_checks": [
+        "source_identity",
+        "provenance",
+        "version_raw",
+        "locator",
+        "content_availability",
+        "rights_boundary",
+        "source_independence",
+        "scope_fit"
+      ],
+      "reason_codes": [
+        "G0_IDENTITY_MISSING",
+        "G0_PROVENANCE_MISSING",
+        "G0_LOCATOR_MISSING",
+        "G0_CONTENT_UNAVAILABLE",
+        "G0_RIGHTS_UNKNOWN",
+        "G0_DERIVED_SOURCE_UNDISCLOSED",
+        "G0_SCOPE_MISMATCH",
+        "G0_AI_GENERATED_SOURCE"
+      ]
+    },
+    "G1": {
+      "stage": "D02",
+      "layer": "L1",
+      "name": "Evidence Quality Gate",
+      "mandatory_checks": [
+        "source_link",
+        "locator_replayable",
+        "carrier_reading",
+        "literal_reading_fidelity",
+        "source_voice",
+        "proposition_fidelity",
+        "time_scope",
+        "space_scope",
+        "uncertainty",
+        "no_ai_evidence"
+      ],
+      "reason_codes": [
+        "G1_SOURCE_NOT_G0_PASS",
+        "G1_LOCATOR_NOT_REPLAYABLE",
+        "G1_LITERAL_READING_MISSING",
+        "G1_LITERAL_READING_OVERREACH",
+        "G1_SOURCE_VOICE_MISSING",
+        "G1_TIME_SCOPE_UNKNOWN_UNDECLARED",
+        "G1_SPACE_SCOPE_UNKNOWN_UNDECLARED",
+        "G1_UNCERTAINTY_UNDECLARED",
+        "G1_AI_GENERATED_EVIDENCE",
+        "G1_CARRIER_READING_INADEQUATE"
+      ]
+    },
+    "G2": {
+      "stage": "D03",
+      "layer": "L2",
+      "name": "World Integrity Gate",
+      "mandatory_checks": [
+        "identity",
+        "time",
+        "space",
+        "claim_evidence",
+        "source_dependency",
+        "relation_semantics",
+        "conflict",
+        "epistemic_state",
+        "fact_interpretation_boundary",
+        "visual_spatial_honesty"
+      ],
+      "reason_codes": [
+        "G2_IDENTITY_UNRESOLVED",
+        "G2_TIME_CONFLICT",
+        "G2_SPATIAL_OVERCLAIM",
+        "G2_EVIDENCE_MISSING",
+        "G2_SOURCE_DEPENDENCY",
+        "G2_RELATION_NOT_ESTABLISHED",
+        "G2_CONFLICT_SUPPRESSED",
+        "G2_EPISTEMIC_MISMATCH",
+        "G2_FACT_INTERPRETATION_MIXED",
+        "G2_VISUAL_CORRESPONDENCE_OVERCLAIM"
+      ]
+    },
+    "G3": {
+      "stage": "D04",
+      "layer": "L3",
+      "name": "Interpretation Gate",
+      "mandatory_checks": [
+        "g2_basis",
+        "fact_interpretation_firewall",
+        "human_question",
+        "understanding_delta",
+        "causality_discipline",
+        "counter_view",
+        "source_independence",
+        "specificity",
+        "present_connection_basis",
+        "uncertainty",
+        "mohen_value"
+      ],
+      "reason_codes": [
+        "G3_G2_BASIS_MISSING",
+        "G3_FACT_INTERPRETATION_MIXED",
+        "G3_HUMAN_QUESTION_WEAK",
+        "G3_UNDERSTANDING_DELTA_MISSING",
+        "G3_CAUSALITY_OVERCLAIM",
+        "G3_COUNTER_VIEW_MISSING",
+        "G3_SOURCE_DEPENDENCY",
+        "G3_TOO_GENERIC",
+        "G3_PRESENT_BASIS_WEAK",
+        "G3_UNCERTAINTY_HIDDEN",
+        "G3_LOW_HUMANISTIC_VALUE"
+      ]
+    },
+    "G4": {
+      "stage": "D05",
+      "layer": "L4",
+      "name": "Runtime Eligibility Gate",
+      "mandatory_checks": [
+        "lineage_complete",
+        "g2_g3_pass",
+        "read_only_projection",
+        "evidence_on_demand",
+        "conflict_expression",
+        "expression_rule",
+        "projection_consistency",
+        "runtime_scope",
+        "no_reverse_write"
+      ],
+      "reason_codes": [
+        "G4_LINEAGE_INCOMPLETE",
+        "G4_UPSTREAM_GATE_MISSING",
+        "G4_NOT_RECOMPUTABLE",
+        "G4_EVIDENCE_ON_DEMAND_BROKEN",
+        "G4_CONFLICT_HIDDEN",
+        "G4_EXPRESSION_RULE_MISSING",
+        "G4_PROJECTION_INCONSISTENT",
+        "G4_RUNTIME_SCOPE_INVALID",
+        "G4_REVERSE_WRITE_RISK"
+      ]
+    }
+  }
+}

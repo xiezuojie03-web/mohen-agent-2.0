@@ -1,0 +1,121 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C3 · 下游转化支撑可视化</title>
+<style>
+:root{--line:#e5e7eb;--bg:#f6f7f9}
+*{box-sizing:border-box}
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;margin:0;background:var(--bg);color:#1a1d21;line-height:1.65}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 22px 60px}
+h1{font-size:22px;margin:0 0 4px}
+h2{font-size:16px;margin:30px 0 10px;padding-left:10px;border-left:4px solid #2f6fed}
+.sub{color:#6b7280;font-size:13px;margin-bottom:14px}
+.banner{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:14px 16px;font-size:14px;line-height:1.7}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:12px 0}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;text-align:center}
+.card .v{font-size:23px;font-weight:700}.card .k{font-size:12px;color:#6b7280;margin-top:3px}
+.row{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.box{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;flex:1;min-width:320px}
+.legend{font-size:12.5px;margin-top:6px}
+.legend span{display:inline-block;margin-right:12px;white-space:nowrap}
+.warnbox{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px 14px;font-size:13px}
+.okbox{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 14px;font-size:13px}
+.muted{color:#6b7280;font-size:12.5px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+td{padding:6px 8px;border-top:1px solid #eef0f3;vertical-align:top}
+code{background:#eef0f3;padding:1px 5px;border-radius:4px;font-size:12px}
+</style>
+<div class="wrap">
+<h1>C3 · 下游转化支撑可视化报告</h1>
+<div class="sub">生成 2026-10-04T15:32:47.165Z · 统计窗口 2026-10-04T15:00:00.000Z 起 · 单文件离线可开 · 全部数字由查询得出</div>
+<div class="banner">本批为 <b>C3</b> 阶段产出：<b>2923</b> 条候选关系中 <b>2923</b> 条完成 evidence 绑定（共 <b>12595</b> 条 <code>relation_evidence</code>），识别 <b>183</b> 条 E1 桥—水—桥簇；门禁投影 G0–G6 评估 <b>2923</b> 条关系、重建 L4 Agent Read Model <b>2931</b> 条路径 / <b>15544</b> 个步骤。全部 HOLD、<b>零自动晋级</b>（未开 MOHEN_ALLOW_E1_PROMOTE）。</div>
+
+<h2>① 概览</h2>
+<div class="cards">
+<div class="card"><div class="v">2923</div><div class="k">候选关系</div></div>
+<div class="card"><div class="v">12595</div><div class="k">evidence 绑定</div></div>
+<div class="card"><div class="v">183</div><div class="k">E1 桥—水—桥簇</div></div>
+<div class="card"><div class="v">2931</div><div class="k">L4 投影路径</div></div>
+<div class="card"><div class="v">8925</div><div class="k">HOLD 留痕（关系）</div></div>
+</div>
+
+<h2>② 关系构成分布（覆盖哪些叙事簇维度）</h2>
+<div class="row">
+<div class="box"><svg width="190" height="190" viewBox="0 0 190 190"><circle cx="95" cy="95" r="70" fill="none" stroke="#2f6fed" stroke-width="26" stroke-dasharray="266.03 173.79" stroke-dashoffset="0.00" transform="rotate(-90 95 95)"/><circle cx="95" cy="95" r="70" fill="none" stroke="#16a34a" stroke-width="26" stroke-dasharray="130.61 309.22" stroke-dashoffset="-266.03" transform="rotate(-90 95 95)"/><circle cx="95" cy="95" r="70" fill="none" stroke="#b45309" stroke-width="26" stroke-dasharray="43.18 396.64" stroke-dashoffset="-396.64" transform="rotate(-90 95 95)"/>
+    <text x="95" y="91" text-anchor="middle" font-size="22" font-weight="700" fill="#1a1d21">2923</text>
+    <text x="95" y="111" text-anchor="middle" font-size="11" fill="#6b7280">片段总数</text></svg></div>
+<div class="box"><div class="legend"><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#2f6fed;margin-right:4px"></span>地点—地点 1768</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#16a34a;margin-right:4px"></span>建筑—地点/建筑 868</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#b45309;margin-right:4px"></span>E1 桥—水—桥簇 287</span></div>
+<div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="地点—地点">地点—地点</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:520px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">1768</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="建筑—地点/建筑">建筑—地点/建筑</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:255px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">868</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="E1 桥—水—桥簇">E1 桥—水—桥簇</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:84px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">287</div></div>
+</div></div>
+
+<h2>③ 可转化信号密度（真实可用的关系证据支撑量）</h2>
+<div class="box"><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="已绑定证据的关系 100%">已绑定证据的关系 100%</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:121px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">2923</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="≥2 条证据（门禁晋级候选） 64.3%">≥2 条证据（门禁晋级候选） 64.3%</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:78px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">1880</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="E1 桥—水—桥簇 6.3%">E1 桥—水—桥簇 6.3%</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:8px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">183</div></div><div style="display:flex;align-items:center;margin:5px 0;font-size:12.5px">
+      <div style="width:230px;color:#374151;text-align:right;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="证据绑定总条数 430.9%（对关系数）">证据绑定总条数 430.9%（对关系数）</div>
+      <div style="background:#2f6fed;height:16px;border-radius:3px;width:520px"></div>
+      <div style="margin-left:8px;color:#374151;font-weight:600">12595</div></div>
+<div class="muted" style="margin-top:8px">“已绑定证据”＝在 <code>relation_evidence</code> 中有 ≥1 条证据的关系；“≥2 条证据”＝门禁判定为 E1 确定性晋级候选的必要条件之一。信号为候选层命中，须经人审才成 Truth。</div></div>
+
+<h2>④ 叙事母题支撑矩阵（M1–M5 · 本批关系能撑起哪些未来叙事）</h2>
+<div class="box"><svg width="500" height="120" viewBox="0 0 500 120" style="max-width:100%"><text x="68" y="20" text-anchor="middle" font-size="11" fill="#374151">M1 关系世界</text><text x="164" y="20" text-anchor="middle" font-size="11" fill="#374151">M2 地方结构</text><text x="260" y="20" text-anchor="middle" font-size="11" fill="#374151">M3 生活地图</text><text x="356" y="20" text-anchor="middle" font-size="11" fill="#374151">M4 生成过程</text><text x="452" y="20" text-anchor="middle" font-size="11" fill="#374151">M5 连续性</text><text x="14" y="49" text-anchor="end" font-size="11" fill="#374151">地点—地点</text><rect x="24" y="34" width="88" height="22" rx="4" fill="rgb(240,245,255)" stroke="#e5e7eb"/>
+        <text x="68" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">0</text><rect x="120" y="34" width="88" height="22" rx="4" fill="rgb(29,78,216)" stroke="#e5e7eb"/>
+        <text x="164" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">1768</text><rect x="216" y="34" width="88" height="22" rx="4" fill="rgb(135,162,236)" stroke="#e5e7eb"/>
+        <text x="260" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">884</text><rect x="312" y="34" width="88" height="22" rx="4" fill="rgb(135,162,236)" stroke="#e5e7eb"/>
+        <text x="356" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">884</text><rect x="408" y="34" width="88" height="22" rx="4" fill="rgb(135,162,236)" stroke="#e5e7eb"/>
+        <text x="452" y="49" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">884</text><text x="14" y="79" text-anchor="end" font-size="11" fill="#374151">建筑—地点/建筑</text><rect x="24" y="64" width="88" height="22" rx="4" fill="rgb(188,204,245)" stroke="#e5e7eb"/>
+        <text x="68" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">434</text><rect x="120" y="64" width="88" height="22" rx="4" fill="rgb(136,163,236)" stroke="#e5e7eb"/>
+        <text x="164" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">868</text><rect x="216" y="64" width="88" height="22" rx="4" fill="rgb(136,163,236)" stroke="#e5e7eb"/>
+        <text x="260" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">868</text><rect x="312" y="64" width="88" height="22" rx="4" fill="rgb(136,163,236)" stroke="#e5e7eb"/>
+        <text x="356" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">868</text><rect x="408" y="64" width="88" height="22" rx="4" fill="rgb(136,163,236)" stroke="#e5e7eb"/>
+        <text x="452" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">868</text><text x="14" y="109" text-anchor="end" font-size="11" fill="#374151">E1 桥—水—桥簇</text><rect x="24" y="94" width="88" height="22" rx="4" fill="rgb(206,218,249)" stroke="#e5e7eb"/>
+        <text x="68" y="109" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">287</text><rect x="120" y="94" width="88" height="22" rx="4" fill="rgb(223,231,252)" stroke="#e5e7eb"/>
+        <text x="164" y="109" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">144</text><rect x="216" y="94" width="88" height="22" rx="4" fill="rgb(206,218,249)" stroke="#e5e7eb"/>
+        <text x="260" y="109" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">287</text><rect x="312" y="94" width="88" height="22" rx="4" fill="rgb(223,231,252)" stroke="#e5e7eb"/>
+        <text x="356" y="109" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">144</text><rect x="408" y="94" width="88" height="22" rx="4" fill="rgb(206,218,249)" stroke="#e5e7eb"/>
+        <text x="452" y="109" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1d21">287</text></svg><div style="margin-top:8px"><div style="margin:3px 0;font-size:12px"><b>M1 关系世界</b>：支撑量 <b>721</b></div><div style="margin:3px 0;font-size:12px"><b>M2 地方结构</b>：支撑量 <b>2780</b></div><div style="margin:3px 0;font-size:12px"><b>M3 生活地图</b>：支撑量 <b>2039</b></div><div style="margin:3px 0;font-size:12px"><b>M4 生成过程</b>：支撑量 <b>1896</b></div><div style="margin:3px 0;font-size:12px"><b>M5 连续性</b>：支撑量 <b>2039</b></div></div>
+<div class="muted" style="margin-top:8px">单元格 = 该叙事簇关系数 × 与对应母题的亲和度（0–1）。母题定义见 MoHen_Narrative_Motif_Framework.md。</div></div>
+
+<h2>⑤ 下游候选产出预估（供 C4/C5 与 Human Experience 消费）</h2>
+<div class="cards">
+<div class="card"><div class="v">2923</div><div class="k">已绑定证据关系</div></div>
+<div class="card"><div class="v">1880</div><div class="k">≥2 证据（晋级候选）</div></div>
+<div class="card"><div class="v">15544</div><div class="k">投影步骤（可回溯证据）</div></div>
+</div>
+<div class="warnbox">⚠️ 以上为<b>候选绑定数</b>，非已落库 Truth 关系。C3 门禁对关系做了 G0–G6 评估并全部判 HOLD（<code>rel_held=8925</code>），其中 1880 条满足 E1 确定性条件，待拥有者开放 <code>MOHEN_ALLOW_E1_PROMOTE</code> 后按协议晋级。</div>
+
+<h2>⑥ 红线与质量校验</h2>
+<div class="okbox"><ul style="margin:4px 0 0 18px;padding:0">
+<li>verified 证据：0（<b>0 自动晋级</b>）</li>
+<li>published 实体：0（<b>0 自动晋级</b>）</li>
+<li>verified 关系：0（<b>0 自动晋级</b>）</li>
+<li>近 1 日 auto 分诊：0（<b>0 自动晋级</b>）</li>
+<li>门禁审计行（relation，G0–G6）：20461（覆盖 2923 条关系）</li>
+<li>review_queue HOLD（关系三分留痕）：8925</li>
+</ul></div>
+
+<h2>⑦ 方法论与限制</h2>
+<div class="box"><ul class="muted" style="margin:0;padding-left:18px;line-height:1.8">
+<li>数据源：<code>relations</code>（legacy_id like 'unattended-ce-rel:%'）、<code>relation_evidence</code>、<code>evidence_gate_audit</code>（reason like 'N06-relation%'）、<code>knowledge_paths</code>/<code>knowledge_path_steps</code>（L4-*）、<code>review_queue</code>。</li>
+<li>证据绑定为文本共现回溯（<code>quote_text</code> 同时含主体与客体名），属启发式，存在漏绑/误绑，全部 candidate 待人审/门禁判定。</li>
+<li>E1 簇识别依赖桥/水类后缀启发式，非权威水系拓扑，仅作候选标记。</li>
+<li>投影为 L4 只读重建（<code>knowledge_paths</code>），<b>不反写 Truth Store</b>；重跑会整批删除重建（幂等）。</li>
+<li>本报告与 runner 生成的 report.json/html 同源互补，是协议 §0.5 的下游转化支撑视图。</li>
+</ul></div>
+<p class="muted">生成口径：analyzeWeaveImpact + renderWeaveImpactHtml（pipelines/legacy/unattended-report.mjs）。</p>
+</div></html>

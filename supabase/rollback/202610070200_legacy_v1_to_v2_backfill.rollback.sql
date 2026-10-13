@@ -1,0 +1,24 @@
+begin;
+do $$ begin
+  if exists(select 1 from control.gate_audits) then raise exception 'ROLLBACK_BLOCKED_NEW_GATE_AUDITS_EXIST'; end if;
+end $$;
+delete from read_model.evidence_pointers;
+delete from read_model.discovery_paths;
+delete from meaning.present_connections;
+delete from meaning.findings;
+delete from world.claim_evidence_links;
+delete from world.visual_objects;
+delete from world.historical_space_claims;
+delete from world.changes;
+delete from world.events;
+delete from world.relation_claims;
+delete from world.entities;
+delete from evidence.material_evidence;
+delete from source.raw_items;
+delete from source.source_versions;
+delete from source.sources;
+delete from control.legacy_reviews;
+delete from control.legacy_gate_audits;
+delete from control.legacy_runs;
+delete from control.legacy_mappings;
+commit;
