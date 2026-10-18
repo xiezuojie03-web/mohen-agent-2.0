@@ -10,6 +10,7 @@
 
 import { NextResponse } from "next/server";
 import { retrieveMaterials, MAX_LIMIT } from "../../../../lib/mohen-agent/retrieve";
+import { isRateLimited, getCached, setCache, getClientSource } from "../../../../lib/mohen-agent/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -29,6 +30,21 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, degraded: true, materials: [], reason: "bad_request" }, { status: 400 });
   }
 
+  // 防滥用：限流（按来源 IP）
+  const source = getClientSource(req);
+  if (isRateLimited(`materials:${source}`)) {
+    return NextResponse.json({ ok: false, degraded: false, materials: [], reason: "rate_limited" }, { status: 429 });
+  }
+
+  // 防滥用：结果缓存（相同 terms+limit 5 分钟内直接回缓存）
+  const cacheKey = `materials:${terms.join("|")}:${limit}`;
+  const cached = getCached(cacheKey);
+  if (cached !== undefined) {
+    return NextResponse.json(cached);
+  }
+
   const { materials, degraded } = await retrieveMaterials(terms, limit);
-  return NextResponse.json({ ok: !degraded, degraded, materials });
+  const result = { ok: !degraded, degraded, materials };
+  if (!degraded) setCache(cacheKey, result);
+  return NextResponse.json(result);
 }

@@ -14,6 +14,7 @@
 import { NextResponse } from "next/server";
 import { understand, decideStep, type EntityAliases } from "@mohen/agent-runtime";
 import { retrieveMaterials } from "../../../../lib/mohen-agent/retrieve";
+import { isRateLimited, getCached, setCache, getClientSource } from "../../../../lib/mohen-agent/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -56,6 +57,19 @@ export async function POST(req: Request) {
   }
   if (!question) return NextResponse.json({ ok: false, reason: "empty_question" }, { status: 400 });
 
+  // 防滥用：限流（按来源 IP）
+  const source = getClientSource(req);
+  if (isRateLimited(`ask:${source}`)) {
+    return NextResponse.json({ ok: false, degraded: false, reason: "rate_limited" }, { status: 429 });
+  }
+
+  // 防滥用：结果缓存（相同问句 5 分钟内直接回缓存，不打库）
+  const cacheKey = `ask:${question}`;
+  const cached = getCached(cacheKey);
+  if (cached !== undefined) {
+    return NextResponse.json(cached);
+  }
+
   const understanding = await understand(question, JINZE_ALIASES);
 
   // 检索词 = 别名命中（精确实体）+ 问句实词（通名/未知对象）。
@@ -70,10 +84,13 @@ export async function POST(req: Request) {
   const { materials, degraded } = await retrieveMaterials(effectiveTerms, 24, { objectAliases: LABEL_ALIASES });
   const decision = await decideStep(understanding, materials, JINZE_ALIASES);
 
-  return NextResponse.json({
+  const result = {
     ok: true,
     degraded,
     // 库不可用时必须让前端知道：这不是「查到了但没有」，而是「没查到」
     decision: degraded ? { ...decision, gaps: [...decision.gaps, "暂时查不到库里的材料"] } : decision,
-  });
+  };
+  // 只缓存成功、非降级的结果（degraded 不缓存，库恢复后能自愈）
+  if (!degraded) setCache(cacheKey, result);
+  return NextResponse.json(result);
 }
