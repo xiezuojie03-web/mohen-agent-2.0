@@ -14,6 +14,7 @@ import os from "node:os";
 import path from "node:path";
 import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
+import { pgQueryRows, pgQueryValue } from "./node-pg-client.mjs";
 
 const execFileP = promisify(execFile);
 
@@ -145,16 +146,38 @@ export async function runMany(items) {
   return items.length;
 }
 
-// 执行查询并返回对象数组（psql --csv 解析）。
+// 把 :'name' 占位符转 node pg 的 $n 参数化（读路径切 node pg 时使用）。
+// 只匹配带引号的 :'name'，避免与 ::int / ::jsonb 类型转换语法冲突。
+function renderSqlToPg(sql, params) {
+  const pgParams = [];
+  let i = 0;
+  const pgSql = sql.replace(/:'([^']+)'/g, (_m, name) => {
+    pgParams.push(params && name in params ? params[name] : null);
+    i += 1;
+    return `$${i}`;
+  });
+  return { sql: pgSql, params: pgParams };
+}
+
+// 执行查询并返回对象数组。
+// 后端选择（MOHEN_DB_DRIVER 显式优先，否则自动）：
+//   - "psql" 或本机存在 psql 二进制 → psql --csv（生产链 / 本地开发，离线确定性）；
+//   - "pg"  或 psql 不存在（serverless 如 vercel）→ node pg（DATABASE_URL 直连，供消费层）。
 export async function queryRows(sql, params) {
-  const { stdout } = await execSql(sql, params, [
-    "--csv",
-    "-P",
-    "footer=off",
-    "-P",
-    "pager=off",
-  ]);
-  return parseCsv(stdout);
+  const driver = process.env.MOHEN_DB_DRIVER;
+  const usePg = driver === "pg" || (driver !== "psql" && !fs.existsSync(PSQL_PATH));
+  if (!usePg) {
+    const { stdout } = await execSql(sql, params, [
+      "--csv",
+      "-P",
+      "footer=off",
+      "-P",
+      "pager=off",
+    ]);
+    return parseCsv(stdout);
+  }
+  const { sql: pgSql, params: pgParams } = renderSqlToPg(sql, params);
+  return pgQueryRows(pgSql, pgParams);
 }
 
 // 单值查询（首行首列）。
