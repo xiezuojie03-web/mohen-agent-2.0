@@ -25,6 +25,8 @@
 | 生产导航 | `specs/data-production/MoHen_Data_Production_System_Map.md/html`；根`DATA_PRODUCTION_MAP.md`只指向这组入口 |
 | Skill / 执行体 | `skills/<skill>/SKILL.md`；`pipelines/data-production/` |
 | Runtime | `packages/agent-runtime/`、`packages/experience-engine/`、`packages/data-access/` |
+| 部署/连接运维手册 | `tasks/results/DEPLOYMENT-OPERATIONS-RUNBOOK.md`（GitHub 推送 / vercel 部署 / Supabase 连接 / 密钥位置，含全部踩坑固化） |
+| 样板试验全景复盘 | `tasks/results/SAMPLE-TRIAL-16_CLOSURE-ANALYSIS_RESULT.md`（首轮数据生产样板试验全景分析 + 后续指导清单） |
 | 未来迁移任务 | `tasks/implementation/ARCH-MIG-01/` |
 
 # 2｜代际与路由限制
@@ -32,3 +34,7 @@
 表中standards、方法新增合同、六门v3及L5_L8反馈合同等为目标路径，尚无已实现承诺；未交付/未验证不得路由执行。旧G0-G4 v2和L4_L7合同只服务隔离旧代际，切换时归档并登记替代，不与新规则同名混用。目标Gate文档版本V3.0已编制为交付目标，尚未在真实工程生效。
 
 目标链D00/L0/G0→D01/L1/G1→D02/L2/G2→D03/L3/G3→D04/L4/G4→D05/L5/G5→L6→L7→L8→D00。生产唯一入口仍为pipelines/data-production/run.mjs；未完成适配与核验时不准执行新链。Archive、HTML和审查PASS均不发Gate许可。
+
+# 3｜部署与连接注意事项（AI 执行前必读）
+
+涉及 GitHub 推送 / vercel 部署 / Supabase 连接时，先读 `tasks/results/DEPLOYMENT-OPERATIONS-RUNBOOK.md`。三条硬约束：① GitHub HTTPS 直连被墙，须走本地代理 `127.0.0.1:51081`；② Supabase 直连是 IPv6-only，必须用连接池 pooler（IPv4）；③ 密钥一律不写仓库，只从 runbook §4 指明的本机 gitignored 文件读取。数据生产复盘与后续指导见 `tasks/results/SAMPLE-TRIAL-16_CLOSURE-ANALYSIS_RESULT.md`。
