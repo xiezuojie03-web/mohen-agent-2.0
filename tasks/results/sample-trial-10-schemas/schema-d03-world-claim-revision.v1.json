@@ -1,0 +1,141 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "mohen.schema.d03-world-claim-revision.v1",
+  "title": "D03 W01/W02/W05/W09 历史世界建构（L3）",
+  "version": "1.0",
+  "stage": "D03",
+  "layer": "L3",
+  "methods": ["W01", "W02", "W05", "W09"],
+  "output_contract": ["world_claim_revision"],
+  "description": "W01 身份与连续性 / W02 时间与时序 / W05 关系与角色 / W09 冲突与认识状态（W07/W08 佐证）的 L3 输出，对齐 world.claim_revisions / conflicts / identity_decisions / event_participations / provenance_assessments。一次调用产出全部字段，禁止一法一调；不写 G3 PASS、不产解释。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "claim_revisions", "conflicts"],
+  "properties": {
+    "schema_version": { "const": "d03-world-claim-revision.v1" },
+    "claim_revisions": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/claim_revision" }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/conflict" }
+    },
+    "identity_decisions": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/identity_decision" }
+    },
+    "event_participations": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/event_participation" }
+    },
+    "provenance_assessments": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/provenance_assessment" }
+    },
+    "world_decision_events": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/world_decision_event" }
+    }
+  },
+  "definitions": {
+    "claim_revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim_revision_id", "subject_kind", "subject_id", "assertion_payload_json"],
+      "properties": {
+        "claim_revision_id": { "type": "string" },
+        "subject_kind": { "type": "string", "description": "对象类型（entity/event/relation/change/space 等）" },
+        "subject_id": { "type": "string", "description": "对象 ID" },
+        "claim_family_id": { "type": ["string", "null"], "description": "同族主张家族 ID" },
+        "supersedes_revision_id": { "type": ["string", "null"], "description": "上一版主张修订；防自引用" },
+        "evidence_snapshot_id": { "type": ["string", "null"], "description": "G2 输入快照 ID" },
+        "asserted_time_json": { "type": "object", "description": "主张所涉时间（原纪年+上下界+精度+历法）" },
+        "assertion_payload_json": { "type": "object", "description": "主张主体-谓词-客体/值-条件-说话者-断言模态" },
+        "authored_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "conflict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["conflict_id", "conflict_key", "resolution_status", "variant"],
+      "properties": {
+        "conflict_id": { "type": "string" },
+        "conflict_key": { "type": "string", "description": "冲突唯一键" },
+        "object_type": { "type": "string" },
+        "object_id": { "type": "string" },
+        "variant": { "type": "object", "description": "并列的竞争候选（多值，不择一）" },
+        "resolution_status": {
+          "type": "string",
+          "enum": ["open", "resolved", "preserved_open", "rejected"],
+          "description": "冲突状态；并列保留用 preserved_open，不静默覆盖"
+        },
+        "resolution_note": { "type": ["string", "null"] },
+        "created_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "identity_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision_id", "candidate_entity_ids", "decision"],
+      "properties": {
+        "decision_id": { "type": "string" },
+        "candidate_entity_ids": { "type": "array", "items": { "type": "string" } },
+        "decision": { "type": "string", "enum": ["SAME", "DIFFERENT", "UNRESOLVED"] },
+        "temporal_scope": { "type": "object", "description": "适用历史时段" },
+        "decision_version": { "type": "string" },
+        "upstream_g2_snapshot": { "type": "object", "description": "G2 输入快照" },
+        "basis": { "type": "string" },
+        "decided_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "event_participation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["participation_id", "event_id", "role_code"],
+      "properties": {
+        "participation_id": { "type": "string" },
+        "event_id": { "type": "string" },
+        "candidate_entity_id": { "type": "string" },
+        "role_code": { "type": "string", "description": "参与角色是主张，非主事件同年即成立" },
+        "claim_revision_id": { "type": ["string", "null"] },
+        "temporal_scope": { "type": "object" }
+      }
+    },
+    "provenance_assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assessment_id", "claim_revision_id", "independence_state"],
+      "properties": {
+        "assessment_id": { "type": "string" },
+        "claim_revision_id": { "type": "string" },
+        "source_fingerprint": { "type": "string", "description": "来源集合指纹" },
+        "independence_state": {
+          "type": "string",
+          "enum": ["UNKNOWN", "POSSIBLY_SHARED", "INDEPENDENT", "DERIVED"],
+          "description": "来源独立性按主张而非网站判定；同源三书不算法三见证"
+        },
+        "assessment_version": { "type": "string" },
+        "evidence_input_snapshot": { "type": "object" },
+        "basis": { "type": "string" }
+      }
+    },
+    "world_decision_event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["world_decision_event_id", "dependency_type", "producer_method_id"],
+      "properties": {
+        "world_decision_event_id": { "type": "string" },
+        "from_claim_revision_id": { "type": ["string", "null"] },
+        "to_claim_revision_id": { "type": ["string", "null"] },
+        "dependency_type": { "type": "string" },
+        "affected_scope": { "type": "object" },
+        "previous_input_snapshot": { "type": "object" },
+        "change_reason": { "type": "string" },
+        "producer_method_id": { "type": "string", "enum": ["W01", "W02", "W03", "W04", "W05", "W06", "W07", "W08", "W09", "W10"] },
+        "producer_method_version": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

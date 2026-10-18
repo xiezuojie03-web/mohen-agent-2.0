@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "mohen.schema.d05-publication.v1",
+  "title": "D05 P01-P07 可信发布（L5）",
+  "version": "1.0",
+  "stage": "D05",
+  "layer": "L5",
+  "methods": ["P01", "P02", "P03", "P04", "P05", "P06", "P07"],
+  "description": "P01 资格选入 / P02 世界投影 / P03 时空变换 / P04 有界解释组合 / P05 探索关系编排 / P06 证据返还 / P07 消费分面。规则类确定性为主，P04 走轻量 LLM。不补造事实，真实 G5 只来自真实生产。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "selection_manifest"],
+  "properties": {
+    "schema_version": { "const": "d05-publication.v1" },
+    "selection_manifest": {
+      "type": "object",
+      "description": "P01 资格选入",
+      "required": ["selected_items"],
+      "properties": {
+        "selected_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["claim_revision_id", "purpose", "gate_decision"],
+            "properties": {
+              "claim_revision_id": { "type": "string" },
+              "purpose": { "type": "string" },
+              "gate_decision": { "type": "string", "enum": ["PASS", "HOLD", "REJECT"] },
+              "input_fingerprint": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "world_projections": { "type": "array", "items": { "type": "object" }, "description": "P02 世界投影" },
+    "map_timeline_projections": { "type": "array", "items": { "type": "object" }, "description": "P03 时空变换" },
+    "story_seeds": {
+      "type": "array",
+      "description": "P04 有界解释组合（轻量 LLM）",
+      "items": { "$ref": "#/definitions/story_seed" }
+    },
+    "agent_contexts": { "type": "array", "items": { "type": "object" }, "description": "P04 agent_contexts" },
+    "discovery_paths": { "type": "array", "items": { "type": "object" }, "description": "P05 探索关系编排" },
+    "evidence_pointers": { "type": "array", "items": { "type": "object" }, "description": "P06 证据返还" },
+    "consumer_facet": { "type": "object", "description": "P07 消费分面" }
+  },
+  "definitions": {
+    "story_seed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["seed_id", "narrative_level", "text", "evidence_refs"],
+      "properties": {
+        "seed_id": { "type": "string" },
+        "narrative_level": {
+          "type": "string",
+          "enum": ["FACT_EVIDENCED", "FACT_LIMITED", "CONFLICT", "QUESTION", "INTERPRETATION_CANDIDATE", "UNKNOWN", "INTERACTION"],
+          "description": "QUESTION/INTERPRETATION_CANDIDATE 永不静默改写为 FACT_EVIDENCED"
+        },
+        "text": { "type": "string" },
+        "evidence_refs": { "type": "array", "items": { "type": "string" }, "description": "每个 factual unit 必带" }
+      }
+    }
+  }
+}

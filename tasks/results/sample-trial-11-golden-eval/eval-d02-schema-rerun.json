@@ -1,0 +1,47 @@
+{
+  "http": 200,
+  "model_used": "deepseek-flash",
+  "json_parsed": true,
+  "schema_top_keys": [
+    "schema_version",
+    "reading_units",
+    "classification_decisions",
+    "material_mentions",
+    "material_evidence",
+    "reading_unit_dependencies"
+  ],
+  "schema_missing_top": [],
+  "mention_kinds_found": [
+    "place",
+    "person",
+    "thing",
+    "number",
+    "time"
+  ],
+  "mention_kinds_invalid": [],
+  "evidence_count": 3,
+  "bad_assertion_kind_count": 0,
+  "bad_voice_basis_count": 0,
+  "entities_hit": [
+    "万安桥",
+    "普济桥",
+    "迎祥桥",
+    "吕颐浩",
+    "白苎里"
+  ],
+  "relation_hits": [
+    "寺名取自",
+    "故宅"
+  ],
+  "usage": {
+    "prompt_tokens": 739,
+    "completion_tokens": 1816,
+    "total_tokens": 2555,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "prompt_cache_hit_tokens": 0,
+    "prompt_cache_miss_tokens": 739
+  },
+  "content_snippet": "{\n  \"schema_version\": \"d02-material-observation.v1\",\n  \"reading_units\": [\n    {\"reading_unit_id\": \"ru-1\", \"unit_path\": \"片段A\", \"primary_h_type\": \"H05\", \"classification_status\": \"resolved\", \"classification_basis\": \"地方志编纂体例，述地名沿革与得名由来\"},\n    {\"reading_unit_id\": \"ru-2\", \"unit_path\": \"片段B\", \"primary_h_type\": \"H05\", \"classification_status\": \"resolved\", \"classification_basis\": \"地方志编纂体例，记桥梁现存状况与年代\"},\n    {\"reading_unit_id\": \"ru-3\", \"unit_path\": \"片段C\", \"primary_h_type\": \"H05\", \"classification_status\": \"resolved\", \"classification_basis\": \"地方志编纂体例，记寺观创建年代与命名缘由\"}\n  ],\n  \"classification_decisions\": [\n    {\"decision_id\": \"cd-1\", \"reading_unit_id\": \"ru-1\", \"primary_h_type\": \"H05\", \"alternatives\": [\"H04\"], \"status\": \"decided\", \"basis\": \"地名沿革兼历史地理，主类仍为地方志\"},\n    {\"decision_id\": \"cd-2\", \"reading_unit_id\": \"ru-2\", \"primary_h_type\": \"H05\", \"alternatives\": [\"H04\"], \"status\": \"decided\", \"basis\": \"桥梁年代与现存状况属地方"
+}

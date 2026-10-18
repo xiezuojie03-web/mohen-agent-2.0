@@ -1,87 +1,74 @@
 /**
- * Lineage hard-check validator for the MoHen data-production pipeline.
+ * Lineage hard-check validator for the MoHen data-production pipeline (six-stage).
  *
- * Purpose (Gate Hardening, PART A):
- *   - G2 PASS may only depend on G1 PASS evidence.
- *   - G3 PASS may only depend on G2 PASS world objects.
- *   - G4 PASS may only depend on G3 PASS findings + G2 PASS world objects.
- *   - A world object whose identity is in an OPEN conflict cannot be
- *     adjudicated, and a relation claim referencing a conflicted entity
- *     cannot be adjudicated (conflicted != adjudicated).
+ * Six gates: G0 source, G1 carrier reading, G2 material evidence, G3 world,
+ * G4 humanistic finding, G5 read model.
  *
- * This module introduces NO new gate state. It only reads the existing
- * `control.gate_audits` + `world.conflicts` + maturity columns.
+ * Upstream dependencies (fail-closed):
+ *   G1 reading      <- G0 PASS source
+ *   G2 evidence     <- G1 PASS reading unit
+ *   G3 world        <- G2 PASS material evidence
+ *   G4 finding      <- G3 PASS world object
+ *   G5 read model   <- G4 PASS finding
  *
- * Fail-closed: any unmet dependency throws; caller must downgrade to HOLD/REJECT.
+ * Qualification is read from append-only control.gate_audits (current_valid = true);
+ * legacy PASS views are retired. Empty upstream dependency (missing_is_eligible=false)
+ * throws rather than silently passing (F09).
  */
 
-/**
- * Assert every supporting evidence id has a G1 PASS audit.
- * @param {object} db query interface
- * @param {string[]} evidenceIds
- */
-export async function validateG2Lineage(db, evidenceIds = []) {
-  if (!Array.isArray(evidenceIds) || evidenceIds.length === 0) return;
-  const { rows } = await db.query(
-    `select object_id, result from control.gate_audits
-     where gate_code='G1' and object_type='material_evidence' and object_id = any($1::uuid[])`,
-    [evidenceIds]
-  );
-  const passed = new Set(rows.filter((r) => r.result === "PASS").map((r) => r.object_id));
-  const blocked = evidenceIds.filter((id) => !passed.has(id));
-  if (blocked.length) {
-    throw new Error(`G2_LINEAGE_BLOCKED: evidence not G1 PASS -> ${blocked.join(",")}`);
+function assertNonEmptyDependency(gate, ids) {
+  if (!Array.isArray(ids) || ids.length === 0) {
+    throw new Error(`MISSING_DEPENDENCY:${gate}: no upstream reference provided`);
   }
 }
 
-/**
- * Assert every supporting world object id has a G2 PASS audit.
- * @param {object} db query interface
- * @param {string[]} worldObjectIds
- */
-export async function validateG3Lineage(db, worldObjectIds = []) {
-  if (!Array.isArray(worldObjectIds) || worldObjectIds.length === 0) return;
+async function passedIds(db, gate, ids) {
   const { rows } = await db.query(
     `select object_id, result from control.gate_audits
-     where gate_code='G2' and object_id = any($1::uuid[])`,
-    [worldObjectIds]
+     where gate_code = $1 and object_id = any($2::uuid[])
+       and result = 'PASS' and current_valid = true`,
+    [gate, ids]
   );
-  const passed = new Set(rows.filter((r) => r.result === "PASS").map((r) => r.object_id));
-  const blocked = worldObjectIds.filter((id) => !passed.has(id));
+  return new Set(rows.map((r) => r.object_id));
+}
+
+async function assertLineage(db, gate, upstreamGate, ids, label) {
+  assertNonEmptyDependency(gate, ids);
+  const passed = await passedIds(db, upstreamGate, ids);
+  const blocked = ids.filter((id) => !passed.has(id));
   if (blocked.length) {
-    throw new Error(`G3_LINEAGE_BLOCKED: world object not G2 PASS -> ${blocked.join(",")}`);
+    throw new Error(`${gate}_LINEAGE_BLOCKED: ${label} not ${upstreamGate} PASS -> ${blocked.join(",")}`);
   }
 }
 
-/**
- * Assert every G4 PASS read model depends only on G3 PASS findings
- * and G2 PASS world objects.
- * @param {object} db query interface
- * @param {string[]} findingIds
- * @param {string[]} worldObjectIds
- */
-export async function validateG4Lineage(db, findingIds = [], worldObjectIds = []) {
-  if (Array.isArray(findingIds) && findingIds.length) {
-    const { rows } = await db.query(
-      `select object_id, result from control.gate_audits
-       where gate_code='G3' and object_id = any($1::uuid[])`,
-      [findingIds]
-    );
-    const passed = new Set(rows.filter((r) => r.result === "PASS").map((r) => r.object_id));
-    const blocked = findingIds.filter((id) => !passed.has(id));
-    if (blocked.length) {
-      throw new Error(`G4_LINEAGE_BLOCKED: finding not G3 PASS -> ${blocked.join(",")}`);
-    }
-  }
-  if (Array.isArray(worldObjectIds) && worldObjectIds.length) {
-    await validateG3Lineage(db, worldObjectIds);
-  }
+/** G1 reading must depend only on G0 PASS source. */
+export async function validateG1Lineage(db, sourceIds = []) {
+  await assertLineage(db, "G1", "G0", sourceIds, "source");
+}
+
+/** G2 material evidence must depend only on G1 PASS reading units. */
+export async function validateG2Lineage(db, readingIds = []) {
+  await assertLineage(db, "G2", "G1", readingIds, "reading unit");
+}
+
+/** G3 world object must depend only on G2 PASS material evidence. */
+export async function validateG3Lineage(db, evidenceIds = []) {
+  await assertLineage(db, "G3", "G2", evidenceIds, "material evidence");
+}
+
+/** G4 humanistic finding must depend only on G3 PASS world objects. */
+export async function validateG4Lineage(db, worldIds = []) {
+  await assertLineage(db, "G4", "G3", worldIds, "world object");
+}
+
+/** G5 read model must depend only on G4 PASS findings. */
+export async function validateG5Lineage(db, findingIds = []) {
+  await assertLineage(db, "G5", "G4", findingIds, "finding");
 }
 
 /**
  * Assert no OPEN-conflicted entity/relation is marked adjudicated.
  * A conflicted identity must not silently become an adjudicated fact.
- * @param {object} db query interface
  */
 export async function validateNoConflictedAdjudicated(db) {
   const { rows: ent } = await db.query(
@@ -110,10 +97,18 @@ export async function validateNoConflictedAdjudicated(db) {
   }
 }
 
-/** Convenience: full upstream lineage check for a candidate G2/G3/G4 object. */
-export async function assertLegalPassLineage(db, { g2EvidenceIds = [], g3WorldIds = [], g4FindingIds = [], g4WorldIds = [] } = {}) {
-  await validateG2Lineage(db, g2EvidenceIds);
-  await validateG3Lineage(db, g3WorldIds);
-  await validateG4Lineage(db, g4FindingIds, g4WorldIds);
+/** Convenience: full upstream lineage check for candidate G1–G5 objects. */
+export async function assertLegalPassLineage(db, {
+  g1SourceIds = [],
+  g2ReadingIds = [],
+  g3EvidenceIds = [],
+  g4WorldIds = [],
+  g5FindingIds = [],
+} = {}) {
+  await validateG1Lineage(db, g1SourceIds);
+  await validateG2Lineage(db, g2ReadingIds);
+  await validateG3Lineage(db, g3EvidenceIds);
+  await validateG4Lineage(db, g4WorldIds);
+  await validateG5Lineage(db, g5FindingIds);
   await validateNoConflictedAdjudicated(db);
 }

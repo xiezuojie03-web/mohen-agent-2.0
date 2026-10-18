@@ -1,0 +1,35 @@
+{
+  "report_type": "machine_execution",
+  "run_id": "6c604753-1fad-4123-8dc1-c54747c92e44",
+  "execution_mode": "attended",
+  "status": "PASS",
+  "started_at": "2026-10-17T09:59:28.387Z",
+  "finished_at": "2026-10-17T09:59:30.021Z",
+  "stages": [
+    {
+      "stage": "D00",
+      "data_layer": "L0",
+      "gate": "G0",
+      "disposition": "PASS",
+      "gate_evidence": {
+        "stage": "D00",
+        "source_count": 2
+      },
+      "hold": null,
+      "reject": null
+    },
+    {
+      "stage": "D01",
+      "data_layer": "L1",
+      "gate": "G1",
+      "disposition": "PASS",
+      "gate_evidence": {
+        "stage": "D01",
+        "method": "C01",
+        "unit_count": 4
+      },
+      "hold": null,
+      "reject": null
+    }
+  ]
+}

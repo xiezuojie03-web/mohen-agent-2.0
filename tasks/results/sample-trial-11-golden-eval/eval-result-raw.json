@@ -1,0 +1,84 @@
+{
+  "generated_at": "2026-10-17T09:15:33.140Z",
+  "engine": "sample-trial-11",
+  "prompt_version": "sample-trial-10-layer1-v1.0",
+  "schema_version": "sample-trial-10-schemas-v1.0",
+  "model_requested": "deepseek-chat",
+  "note": "model_used 为 API 实际返回模型名；真实评测前不认定具体型号/价格。",
+  "results": [
+    {
+      "sample_id": "1",
+      "name": "地方志实体/关系抽取（D02-H05/H04）",
+      "http": 200,
+      "model_used": "deepseek-flash",
+      "schema_json_parsed": true,
+      "hits": [
+        "entities",
+        "relations",
+        "h_class",
+        "断裂点(金溪未误连)"
+      ],
+      "misses": [],
+      "total": 4,
+      "score": 1,
+      "mustNotViolated": false,
+      "usage": {
+        "prompt_tokens": 419,
+        "completion_tokens": 953,
+        "total_tokens": 1372
+      },
+      "latency_ms": 4062,
+      "content_snippet": "{\"schema\":\"schema-d02-material-observation.v1\",\"material_type\":\"H05\",\"material_type_note\":\"地方志/地名志文本，主类按知识组织目的判为H05；片段A含地名沿革与湖荡泽地地貌，兼H04邻类特征\",\"segments\":[{\"segment_id\":\"A\",\"span\":\"古名白苎里\",\"key_zone\":\"地名沿革\",\"reading_layer\":\"本届纂修者叙述\",\"assertion_kind\":\"record\",\"voice_basis\":\"unknown\"},{\"segment_id\":\"A\",\"span\":\"因地处湖荡泽地\",\"key_zone\":\"地貌/地名理据\",\"reading_layer\":\"本届纂修者叙述\",\"assertion_kind\":\"record\",\"voice_bas",
+      "reasoning_snippet": ""
+    },
+    {
+      "sample_id": "5",
+      "name": "冲突管理·并列不择一（D03-W09）",
+      "http": 200,
+      "model_used": "deepseek-flash",
+      "schema_json_parsed": true,
+      "hits": [
+        "conflict1(两值并列)",
+        "conflict2(两值并列)",
+        "conflict3(两值并列)",
+        "并列不择一"
+      ],
+      "misses": [],
+      "total": 4,
+      "score": 1,
+      "mustNotViolated": false,
+      "usage": {
+        "prompt_tokens": 290,
+        "completion_tokens": 1122,
+        "total_tokens": 1412
+      },
+      "latency_ms": 5734,
+      "content_snippet": "{\"schema\":\"d03-world-claim-revision.v1\",\"conflicts\":[{\"conflict_id\":\"C-D03-JZ-001\",\"topic\":\"赵孟頫生年\",\"entity\":\"赵孟頫\",\"predicate\":\"birth_year\",\"unit\":\"CE年\",\"stage\":\"identity_attribute\",\"time_scope\":\"南宋末至元\",\"space_scope\":\"不适用（人物属性）\",\"claims\":[{\"claim_id\":\"CLM-JZ-001-A\",\"source\":\"Legacy 记载\",\"value\":\"1271\",\"normalized\":{\"birth_year\":1271},\"epistemic_status\":\"material_report\",\"resolution_status\":\"preserve",
+      "reasoning_snippet": ""
+    },
+    {
+      "sample_id": "6",
+      "name": "同名异地/异人消歧（D03-W01/W08）",
+      "http": 200,
+      "model_used": "deepseek-flash",
+      "schema_json_parsed": true,
+      "hits": [
+        "case1(放生桥非同物)",
+        "case2(同名万安桥不合并)",
+        "case3(吕颐浩家谱异人)"
+      ],
+      "misses": [],
+      "total": 3,
+      "score": 1,
+      "mustNotViolated": false,
+      "usage": {
+        "prompt_tokens": 302,
+        "completion_tokens": 752,
+        "total_tokens": 1054
+      },
+      "latency_ms": 4848,
+      "content_snippet": "{\"identity_decisions\":[{\"case_id\":\"case1\",\"label\":\"金泽放生桥（青浦，区级） vs 朱家角放生桥（跨漕港河，市级，约11km外）\",\"decision\":\"DIFFERENT\",\"confidence\":\"high\",\"basis\":[\"名称完全一致不构成同一性；二者分处金泽镇与朱家角镇，直线约11km，跨不同水系（金泽放生桥所在与漕港河不同），空间上互斥。\",\"保护级别与行政归属不同：一为青浦区级、一为市级，登记为两处独立文物点，无明示同一指认。\",\"无连续角色轨迹或跨文献桥接证据表明二者为同一实体；同名系通名（放生桥为常见桥名）导致的近邻同名，非同一对象。\"],\"mutually_exclusive_evidence\":[\"地理位置互斥（约11km，分属两镇）\",\"文物登记为两个独立条目\"],\"notes\":\"属同名异实，应保留为两个实",
+      "reasoning_snippet": ""
+    }
+  ]
+}

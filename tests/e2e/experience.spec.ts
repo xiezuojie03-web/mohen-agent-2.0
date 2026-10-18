@@ -13,8 +13,8 @@ const cur = (page: import("@playwright/test").Page, id: string) =>
 test("experience composition 2.0 — five beats + surface eligibility", async ({ page }) => {
   await page.goto("/experience/jinze-water-net");
 
-  // —— Beat01 Hook / Current Space
-  await expect(cur(page, "surface-current-map")).toBeVisible();
+  // —— Beat01 Hook / 大幅真实照片（D1：先看照片建立现场感）
+  await expect(cur(page, "surface-present-day-photo")).toBeVisible();
   await expect(page.getByTestId("spatial-mode-label")).toContainText("现代精确坐标");
   await expect(page.locator(".exp-secondary").getByTestId("surface-question")).toBeVisible();
 
@@ -24,12 +24,11 @@ test("experience composition 2.0 — five beats + surface eligibility", async ({
   await expect(page.getByTestId("spatial-mode-label")).toContainText("关系历史空间");
   await expect(cur(page, "surface-current-map")).toHaveCount(0);
 
-  // —— Beat03 Relationship Discovery：桥—水—桥，寺进入但不自动连线
+  // —— Beat03 Relationship Discovery：真实产出关系空间（T4）；寺桥无关系 → 答案诚实保留
   await page.getByTestId("next-button").click();
-  await page.getByRole("button", { name: "把寺也放进来" }).click();
+  await expect(cur(page, "surface-relational-space")).toBeVisible();
   await page.getByRole("button", { name: "寺与桥有关系吗" }).click();
   await expect(page.getByTestId("temple-bridge-non-answer")).toContainText("没有找到");
-  await expect(page.locator(".exp-canvas__current").getByTestId("absent-relation")).toHaveCount(1);
 
   // —— Approximate Area：近似区域不得退化成精确点
   await page.getByRole("button", { name: "寺的位置有多确定？" }).click();
@@ -51,10 +50,12 @@ test("experience composition 2.0 — five beats + surface eligibility", async ({
   await expect(cur(page, "surface-historical-map-native")).toContainText("PARTIAL_CONFIRM");
   await page.getByRole("button", { name: "收起" }).click();
 
-  // —— Beat04 temporal focus：时间成为主角，毁损与重建视觉区分
+  // —— Beat04 temporal focus：时间成为主角（V1.4 真实优先：P03 时间投影；
+  //    库不可用时回落冻结时间景观。两分支共用「时间景观」caption，真实内容
+  //    由 SAMPLE-TRIAL-14 自检专项断言，e2e 只保结构契约）
   await page.getByTestId("next-button").click(); // s06
   await expect(cur(page, "surface-timeline")).toBeVisible();
-  await expect(cur(page, "surface-timeline")).toContainText("原址重建");
+  await expect(cur(page, "surface-timeline")).toContainText("时间景观");
 
   // —— Beat05 Return & Next Question：回到今天 → 解释框架（不是事实）
   await page.getByTestId("next-button").click(); // s07

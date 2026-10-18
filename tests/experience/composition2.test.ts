@@ -153,8 +153,8 @@ describe("TASK-0014 — Experience Beats (§15-4/5)", () => {
         resolved[sid] = primary;
       }
     }
-    // 关键节点：进入现场=当前精确；时间变化=时间轴；下一问=解释框架
-    expect(resolved["jinze-3min/s01-today-hook"]).toBe("current_map");
+    // 关键节点：进入现场=大幅真实照片（D1，Owner 决断 2026-10-17）；时间变化=时间轴；下一问=解释框架
+    expect(resolved["jinze-3min/s01-today-hook"]).toBe("current_photo");
     expect(resolved["jinze-3min/s06-change-through-time"]).toBe("timeline");
     expect(resolved["jinze-3min/s08-next-question"]).toBe("discovery");
     expect(resolved["jinze-3min/s07-return-today"]).toBe("current_map");

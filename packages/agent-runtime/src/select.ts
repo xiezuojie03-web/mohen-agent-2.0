@@ -92,18 +92,45 @@ export async function decideStep(
     }))
     .sort((a, b) => b.s - a.s);
 
+  // P0-1 修复：relation 意图先核验「是否有关系材料覆盖所问对象对」。
+  // 所问对象对 = 别名主标签 + 问句切出的实词；一条关系必须同时覆盖它们才算「回答了这条关系」。
+  // 有 → 只讲这一条关系（一刻只讲一件事）；没有 → 退回「提到它们的记录」作为待查证线索。
+  const askedTokens = dedupe([
+    ...understanding.objects.map((o) => aliases[o]?.[0] ?? o),
+    ...understanding.terms,
+  ]);
+
   // 导演稿原则：**一刻只讲一件事**。意图的首选材料类型有货时，就只讲那一类 ——
   // 否则会出现「问今天能看什么，前面两条却是地名志和家谱条目」这种措辞与材料错配。
   const preferred = wanted[0];
-  const preferredPicks = ranked.filter((r) => r.m.kind === preferred).slice(0, 3);
-  const picked = (preferredPicks.length ? preferredPicks : ranked.slice(0, 3)).map((r) => r.m);
+  let picked: Material[];
+  if (understanding.intent === "relation") {
+    const hit = ranked.find((r) => r.m.kind === "relation" && coversRelation(r.m, askedTokens));
+    picked = hit
+      ? [hit.m]
+      : ranked.filter((r) => r.m.kind !== "relation").slice(0, 3).map((r) => r.m);
+  } else {
+    const preferredPicks = ranked.filter((r) => r.m.kind === preferred).slice(0, 3);
+    picked = (preferredPicks.length ? preferredPicks : ranked.slice(0, 3)).map((r) => r.m);
+  }
   const stage = STAGE_BY_INTENT[understanding.intent];
 
   // —— 能否回答：只由材料本身决定 ——
   const hasFact = picked.some((m) => m.epistemic === "FACT_EVIDENCED");
   const hasConflict = picked.some((m) => m.epistemic === "CONFLICTED");
+  // P0-1：relation 意图的「answered」必须有关系材料（不能拿任意 FACT 材料冒充关系结论）
   const verdict: AgentDecision["verdict"] =
-    picked.length === 0 ? "cannot_answer" : hasFact || hasConflict ? "answered" : "partial";
+    understanding.intent === "relation"
+      ? picked.some((m) => m.kind === "relation")
+        ? "answered"
+        : picked.length === 0
+          ? "cannot_answer"
+          : "partial"
+      : picked.length === 0
+        ? "cannot_answer"
+        : hasFact || hasConflict
+          ? "answered"
+          : "partial";
 
   const gaps = buildGaps(picked, understanding.intent);
   const template = buildMohenLine(
@@ -181,12 +208,16 @@ function buildMohenLine(
   const who = objects.length ? objects.slice(0, 2).map(nameOf).join("与") : "它们";
 
   switch (intent) {
-    case "relation":
-      // 红线：**几何本身就是一种主张**。没有 FACT_EVIDENCED 的关系材料时，
-      // 绝不许说「挨得很近 / 相邻 / 同一个系统」——材料里没有，说出口就是编。
-      return first.epistemic === "FACT_EVIDENCED"
-        ? `${who}之间这一条是有据可依的。${first.snippet}`
-        : `已审核材料里还没有登记${who}之间的历史关系。下面这几条是库里提到它们的待查证记录 —— 我只给你看记录，不替它下结论。`;
+    case "relation": {
+      // P0-1：只有选中了「关系材料」才可说有据可依；其余一律是「还没有登记」，
+      // 绝不拿任意 FACT 材料冒充关系结论（红线：几何/相邻本身就是主张，材料里没有就不说）。
+      // 单对象问句（「万安桥跨的是哪条河」）用「关于X」而非「X之间」，避免「万安桥之间」。
+      const whoPhrase = objects.length === 1 ? `关于${nameOf(objects[0])}` : `${who}之间`;
+      const rel = picked.find((m) => m.kind === "relation");
+      return rel
+        ? `${whoPhrase}，这一条是有据可依的：${rel.snippet}`
+        : `已审核材料里还没有登记${whoPhrase}的历史关系。下面这几条是库里提到它们的记录 —— 我只给你看记录，不替它下结论。`;
+    }
     case "evidence":
       return `凭的是这条：${first.snippet}（${first.sourceRef}）。`;
     case "temporal":
@@ -210,4 +241,11 @@ function buildMohenLine(
 
 function dedupe(ids: string[]): string[] {
   return Array.from(new Set(ids));
+}
+
+/** relation 意图：所问对象对（别名主标签 + 切出的实词）是否都被该关系材料覆盖。 */
+function coversRelation(m: Material, askedTokens: string[]): boolean {
+  if (askedTokens.length === 0) return true;
+  const hay = m.snippet;
+  return askedTokens.every((t) => hay.includes(t));
 }

@@ -18,6 +18,7 @@ import {
 } from "@mohen/experience-engine";
 import type { CulturalWorldProjectionSource } from "./culturalWorldProjection";
 import type { CuratedPhoto } from "./surfaces/types";
+import { readProductionRelationSummary } from "../../../lib/read-model-bridge";
 
 const DATA_DIR = path.join(process.cwd(), "data", "experience");
 
@@ -30,7 +31,7 @@ export const metadata = {
   description: "Evidence-grounded experience: 两座宋桥、一处宋代寺院遗址，为什么靠得这么近？",
 };
 
-export default function ExperiencePage() {
+export default async function ExperiencePage() {
   const script = readFrozen("jinze-3min-experience-script.json") as ExperienceScript;
   const patch = readFrozen("jinze-3min-experience-followup-patch.json") as FollowupPatch;
   const slice = readFrozen("jinze-historical-spatial-slice.json") as React.ComponentProps<
@@ -52,6 +53,9 @@ export default function ExperiencePage() {
     throw new Error("Frozen experience artifacts violate invariants: " + report.errors.join("; "));
   }
 
+  // 第二层：读真实数据生产链产出（consumer='visual_stage'）；可用则呈现，否则前端降级冻结 JSON
+  const productionSummary = await readProductionRelationSummary();
+
   return (
     <ExperienceShell
       script={script}
@@ -60,6 +64,7 @@ export default function ExperiencePage() {
       culturalSource={culturalSource}
       presentDayPhotos={presentDayManifest.photos}
       presentDayHeroHook={presentDayManifest.hero_hook}
+      productionSummary={productionSummary}
     />
   );
 }

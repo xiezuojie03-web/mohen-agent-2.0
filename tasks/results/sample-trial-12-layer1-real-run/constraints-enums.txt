@@ -1,0 +1,31 @@
+C|control.gate_audits|gate_audits_gate_code_check|CHECK ((gate_code = ANY (ARRAY['G0'::text, 'G1'::text, 'G2'::text, 'G3'::text, 'G4'::text, 'G5'::text])))
+C|control.gate_audits|gate_audits_stage_check|CHECK ((stage = ANY (ARRAY['D00'::text, 'D01'::text, 'D02'::text, 'D03'::text, 'D04'::text, 'D05'::text])))
+C|control.owner_reviews|owner_reviews_stage_check|CHECK ((stage = ANY (ARRAY['D01'::text, 'D02'::text, 'D03'::text, 'D04'::text, 'D05'::text])))
+C|control.production_runs|production_runs_current_stage_check|CHECK (((current_stage IS NULL) OR (current_stage = ANY (ARRAY['D00'::text, 'D01'::text, 'D02'::text, 'D03'::text, 'D04'::text, 'D05'::text]))))
+C|control.production_runs|production_runs_execution_mode_check|CHECK ((execution_mode = ANY (ARRAY['attended'::text, 'unattended'::text, 'batch'::text, 'interactive'::text])))
+C|control.production_runs|production_runs_status_check|CHECK ((status = ANY (ARRAY['RUNNING'::text, 'PASS'::text, 'HOLD'::text, 'REJECT'::text, 'FAILED'::text])))
+C|evidence.reading_unit_dependencies|reading_unit_dependencies_target_check|CHECK (((to_reading_unit_id IS NOT NULL) OR (external_source_version_id IS NOT NULL)))
+C|meaning.open_questions|open_questions_status_check|CHECK ((status = ANY (ARRAY['open'::text, 'resolved'::text, 'dropped'::text])))
+C|source.raw_items|raw_items_byte_size_check|CHECK (((byte_size IS NULL) OR (byte_size >= 0)))
+C|source.read_units|read_units_method_code_check|CHECK ((method_code = ANY (ARRAY['C01'::text, 'C02'::text, 'C03'::text, 'C04'::text, 'C05'::text, 'C06'::text, 'C07'::text, 'C08'::text])))
+C|source.sources|sources_content_availability_check|CHECK ((content_availability = ANY (ARRAY['full_content'::text, 'image_scan'::text, 'ocr'::text, 'structured_content'::text, 'catalog_only'::text, 'unavailable'::text])))
+C|world.claim_evidence_links|claim_evidence_links_claim_object_type_check|CHECK ((claim_object_type = ANY (ARRAY['event'::text, 'relation_claim'::text, 'change'::text, 'historical_space_claim'::text, 'visual_object'::text])))
+C|world.claim_evidence_links|claim_evidence_links_support_type_check|CHECK ((support_type = ANY (ARRAY['supports'::text, 'contradicts'::text, 'contextualizes'::text])))
+C|world.claim_revisions|claim_revisions_no_self_supersede|CHECK ((claim_revision_id <> supersedes_revision_id))
+C|world.claim_revisions|claim_revisions_object_type_check|CHECK ((subject_kind = ANY (ARRAY['entity'::text, 'event'::text, 'relation_claim'::text, 'change'::text, 'historical_space_claim'::text, 'visual_object'::text])))
+C|world.conflicts|conflicts_resolution_status_check|CHECK ((resolution_status = ANY (ARRAY['open'::text, 'resolved'::text, 'preserved_open'::text, 'rejected'::text])))
+C|world.dependency_edges|dependency_edges_dependency_type_check|CHECK ((dependency_type = ANY (ARRAY['supports'::text, 'derived_from'::text, 'refines'::text, 'conflicts_with'::text])))
+C|world.historical_space_claims|historical_space_claims_check|CHECK (((geometry_claim IS NOT NULL) OR (spatial_relation IS NOT NULL)))
+C|world.identity_decision_evidence|identity_decision_evidence_support_type_check|CHECK ((support_type = ANY (ARRAY['supports'::text, 'undermines'::text, 'neutral'::text])))
+C|world.identity_decisions|identity_decisions_decision_type_check|CHECK ((decision_type = ANY (ARRAY['same_identity'::text, 'distinct_identity'::text, 'merge'::text, 'split'::text])))
+C|world.provenance_assessments|provenance_assessments_assessment_type_check|CHECK ((assessment_type = ANY (ARRAY['independence'::text, 'genealogy'::text])))
+C|world.provenance_assessments|provenance_assessments_independence_state_check|CHECK (((independence_state IS NULL) OR (independence_state = ANY (ARRAY['UNKNOWN'::text, 'POSSIBLY_SHARED'::text, 'INDEPENDENT'::text, 'DERIVED'::text]))))
+C|world.relation_claims|relation_claims_check|CHECK (((object_entity_id IS NOT NULL) OR (object_value IS NOT NULL)))
+E|gate_result|PASS,HOLD,REJECT,REVOKED,UNASSESSED
+E|historical_change_status|survives,rebuilt,relocated,site_only,name_changed,function_changed,surrounding_context_changed,unknown
+E|historical_geometry_type|point,line,area,unknown
+E|historical_relation_class|E1,E2,E3,E4
+E|historical_spatial_status|verified_object_point,official_or_provider_object_point,approximate_object_area,historical_anchor_candidate,historical_relative_position_only,unresolved
+E|maturity_status|candidate,adjudicated,rejected,archived
+E|owner_decision|ACCEPT,DEEPEN,DROP
+E|verification_status|raw,extracted,candidate,evidence_linked,verified,rejected,pending,published

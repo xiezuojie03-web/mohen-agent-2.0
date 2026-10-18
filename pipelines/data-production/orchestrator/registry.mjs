@@ -7,7 +7,7 @@ export function loadRegistry(projectRoot, registryPath = "specs/data-production/
   const registry = JSON.parse(fs.readFileSync(full, "utf8"));
   if (registry.schema !== "mohen.production-registry") throw new Error("REGISTRY_SCHEMA_INVALID");
   const jobs = registry.jobs || [];
-  if (jobs.length !== 5) throw new Error(`REGISTRY_STAGE_OWNER_COUNT:${jobs.length}`);
+  if (jobs.length !== 6) throw new Error(`REGISTRY_STAGE_OWNER_COUNT:${jobs.length}`);
   for (const j of jobs) assertStageAlignment(j);
   const stages = jobs.map(j => j.stage);
   for (const s of STAGE_ORDER) if (!stages.includes(s)) throw new Error(`REGISTRY_STAGE_MISSING:${s}`);

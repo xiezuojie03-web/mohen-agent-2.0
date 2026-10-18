@@ -1,0 +1,438 @@
+control.gate_audits|gate_audit_id|uuid|NO
+control.gate_audits|run_id|uuid|NO
+control.gate_audits|stage|text|NO
+control.gate_audits|gate_code|text|NO
+control.gate_audits|object_type|text|NO
+control.gate_audits|object_id|uuid|NO
+control.gate_audits|result|USER-DEFINED|NO
+control.gate_audits|reason_codes|ARRAY|NO
+control.gate_audits|guard_versions|jsonb|NO
+control.gate_audits|details|jsonb|NO
+control.gate_audits|checked_at|timestamp with time zone|NO
+control.gate_audits|architecture_generation|text|NO
+control.gate_audits|purpose|text|YES
+control.gate_audits|allowed_scope|jsonb|YES
+control.gate_audits|consumer|text|YES
+control.gate_audits|dependency_snapshot|jsonb|YES
+control.gate_audits|effective_time|timestamp with time zone|YES
+control.gate_audits|input_fingerprint|text|YES
+control.gate_audits|output_fingerprint|text|YES
+control.gate_audits|rule_version|text|YES
+control.gate_audits|supersedes_id|uuid|YES
+control.gate_audits|current_valid|boolean|NO
+control.invalidation_events|invalidation_event_id|uuid|NO
+control.invalidation_events|change_event_ref|jsonb|NO
+control.invalidation_events|changed_dependency_ref|jsonb|NO
+control.invalidation_events|affected_publication_revisions|jsonb|NO
+control.invalidation_events|affected_purpose_scope_consumers|jsonb|NO
+control.invalidation_events|dependency_paths|jsonb|NO
+control.invalidation_events|reason|text|YES
+control.invalidation_events|suspension_request|jsonb|YES
+control.invalidation_events|recheck_request|jsonb|YES
+control.invalidation_events|disposition|text|NO
+control.invalidation_events|unknown_dependency|boolean|NO
+control.invalidation_events|producer_method_id|text|NO
+control.invalidation_events|producer_method_version|text|YES
+control.invalidation_events|created_at|timestamp with time zone|NO
+control.meaning_eligibility|object_type|text|YES
+control.meaning_eligibility|object_id|uuid|YES
+control.meaning_eligibility|gate_audit_id|uuid|YES
+control.meaning_eligibility|purpose|text|YES
+control.meaning_eligibility|allowed_scope|jsonb|YES
+control.meaning_eligibility|consumer|text|YES
+control.meaning_eligibility|effective_time|timestamp with time zone|YES
+control.owner_reviews|owner_review_id|uuid|NO
+control.owner_reviews|run_id|uuid|NO
+control.owner_reviews|stage|text|NO
+control.owner_reviews|object_type|text|YES
+control.owner_reviews|object_id|uuid|YES
+control.owner_reviews|decision|USER-DEFINED|NO
+control.owner_reviews|note|text|YES
+control.owner_reviews|reviewed_at|timestamp with time zone|NO
+control.production_runs|run_id|uuid|NO
+control.production_runs|research_intent|text|NO
+control.production_runs|scope|jsonb|NO
+control.production_runs|execution_mode|text|NO
+control.production_runs|status|text|NO
+control.production_runs|current_stage|text|YES
+control.production_runs|started_at|timestamp with time zone|NO
+control.production_runs|finished_at|timestamp with time zone|YES
+control.production_runs|metadata|jsonb|NO
+control.production_runs|architecture_generation|text|NO
+control.world_eligibility|object_type|text|YES
+control.world_eligibility|object_id|uuid|YES
+control.world_eligibility|gate_audit_id|uuid|YES
+control.world_eligibility|purpose|text|YES
+control.world_eligibility|allowed_scope|jsonb|YES
+control.world_eligibility|consumer|text|YES
+control.world_eligibility|effective_time|timestamp with time zone|YES
+evidence.classification_decisions|decision_id|uuid|NO
+evidence.classification_decisions|reading_unit_id|uuid|NO
+evidence.classification_decisions|primary_h_type|text|YES
+evidence.classification_decisions|alternatives|jsonb|NO
+evidence.classification_decisions|basis|text|YES
+evidence.classification_decisions|taxonomy_version|text|YES
+evidence.classification_decisions|status|text|YES
+evidence.classification_decisions|decided_at|timestamp with time zone|NO
+evidence.classification_decisions|supersedes_decision_id|uuid|YES
+evidence.material_evidence|evidence_id|uuid|NO
+evidence.material_evidence|source_id|uuid|NO
+evidence.material_evidence|source_version_id|uuid|YES
+evidence.material_evidence|raw_item_id|uuid|YES
+evidence.material_evidence|locator|jsonb|NO
+evidence.material_evidence|media_region|jsonb|YES
+evidence.material_evidence|modality|text|NO
+evidence.material_evidence|raw_excerpt_or_region|jsonb|YES
+evidence.material_evidence|literal_reading|text|YES
+evidence.material_evidence|normalized_text|text|YES
+evidence.material_evidence|research_proposition|text|YES
+evidence.material_evidence|source_voice|text|NO
+evidence.material_evidence|evidence_type|text|YES
+evidence.material_evidence|temporal_applicability|jsonb|YES
+evidence.material_evidence|spatial_applicability|jsonb|YES
+evidence.material_evidence|uncertainty|jsonb|NO
+evidence.material_evidence|extraction_method|jsonb|NO
+evidence.material_evidence|maturity|USER-DEFINED|NO
+evidence.material_evidence|created_at|timestamp with time zone|NO
+evidence.material_evidence|reading_unit_id|uuid|YES
+evidence.material_evidence|assertion_kind|text|YES
+evidence.material_evidence|voice_basis|text|YES
+evidence.material_evidence|quote_review_status|text|YES
+evidence.material_evidence|quote_review_ref|text|YES
+evidence.material_evidence|evidence_version_no|integer|YES
+evidence.material_evidence|input_fingerprint|text|YES
+evidence.material_evidence|supersedes_evidence_id|uuid|YES
+evidence.material_mentions|mention_id|uuid|NO
+evidence.material_mentions|evidence_id|uuid|NO
+evidence.material_mentions|mention_kind|text|YES
+evidence.material_mentions|literal_text|text|YES
+evidence.material_mentions|span_in_evidence|jsonb|NO
+evidence.material_mentions|precision|jsonb|NO
+evidence.material_mentions|uncertainty|jsonb|NO
+evidence.material_mentions|created_at|timestamp with time zone|NO
+evidence.read_unit_evidence_links|link_id|uuid|NO
+evidence.read_unit_evidence_links|evidence_id|uuid|NO
+evidence.read_unit_evidence_links|read_unit_id|uuid|NO
+evidence.read_unit_evidence_links|read_run_id|uuid|NO
+evidence.read_unit_evidence_links|selected_extent|jsonb|YES
+evidence.read_unit_evidence_links|selection_basis|text|YES
+evidence.read_unit_evidence_links|quote_snapshot_hash|text|YES
+evidence.read_unit_evidence_links|technical_profile_id|text|YES
+evidence.read_unit_evidence_links|g1_decision_id|uuid|YES
+evidence.read_unit_evidence_links|recorded_at|timestamp with time zone|NO
+evidence.read_unit_evidence_links|link_version|text|YES
+evidence.read_unit_evidence_links|supersedes_link_id|uuid|YES
+evidence.read_unit_evidence_links|extent_order|integer|YES
+evidence.read_unit_evidence_links|allowed_purpose|text|YES
+evidence.read_unit_evidence_links|locator_schema_version|text|YES
+evidence.reading_unit_dependencies|dependency_id|uuid|NO
+evidence.reading_unit_dependencies|from_reading_unit_id|uuid|NO
+evidence.reading_unit_dependencies|to_reading_unit_id|uuid|YES
+evidence.reading_unit_dependencies|external_source_version_id|uuid|YES
+evidence.reading_unit_dependencies|relation_kind|text|YES
+evidence.reading_unit_dependencies|certainty|text|YES
+evidence.reading_unit_dependencies|basis|text|YES
+evidence.reading_unit_dependencies|created_at|timestamp with time zone|NO
+evidence.reading_units|reading_unit_id|uuid|NO
+evidence.reading_units|source_version_id|uuid|YES
+evidence.reading_units|raw_item_id|uuid|YES
+evidence.reading_units|parent_unit_id|uuid|YES
+evidence.reading_units|unit_path|text|YES
+evidence.reading_units|unit_kind|text|YES
+evidence.reading_units|primary_h_type|text|YES
+evidence.reading_units|taxonomy_version|text|YES
+evidence.reading_units|classification_status|text|YES
+evidence.reading_units|classification_basis|text|YES
+evidence.reading_units|created_at|timestamp with time zone|NO
+meaning.claim_revisions|claim_revision_id|uuid|NO
+meaning.claim_revisions|finding_id|uuid|NO
+meaning.claim_revisions|revision_no|integer|NO
+meaning.claim_revisions|revision_content|jsonb|NO
+meaning.claim_revisions|producer_method_id|text|NO
+meaning.claim_revisions|producer_method_version|text|YES
+meaning.claim_revisions|supersedes_id|uuid|YES
+meaning.claim_revisions|created_at|timestamp with time zone|NO
+meaning.findings|finding_id|uuid|NO
+meaning.findings|finding_type|text|NO
+meaning.findings|human_question|text|YES
+meaning.findings|interpretive_statement|text|NO
+meaning.findings|understanding_delta|text|YES
+meaning.findings|supporting_world_objects|jsonb|NO
+meaning.findings|counter_view_or_alternative|jsonb|NO
+meaning.findings|missing_evidence|jsonb|NO
+meaning.findings|present_connection_basis|jsonb|YES
+meaning.findings|uncertainty|jsonb|NO
+meaning.findings|expression_rule|jsonb|NO
+meaning.findings|discovery_method|jsonb|NO
+meaning.findings|ranking_components|jsonb|NO
+meaning.findings|maturity|USER-DEFINED|NO
+meaning.findings|created_at|timestamp with time zone|NO
+meaning.open_questions|open_question_id|uuid|NO
+meaning.open_questions|finding_id|uuid|YES
+meaning.open_questions|question|text|NO
+meaning.open_questions|missing_evidence|jsonb|NO
+meaning.open_questions|next_research_action|text|YES
+meaning.open_questions|status|text|NO
+meaning.open_questions|created_at|timestamp with time zone|NO
+meaning.present_connections|present_connection_id|uuid|NO
+meaning.present_connections|finding_id|uuid|YES
+meaning.present_connections|connection_type|text|NO
+meaning.present_connections|observed_state|text|YES
+meaning.present_connections|basis_world_objects|jsonb|NO
+meaning.present_connections|open_questions|jsonb|NO
+meaning.present_connections|expression_rule|jsonb|NO
+meaning.present_connections|created_at|timestamp with time zone|NO
+read_model.agent_contexts|agent_context_id|uuid|NO
+read_model.agent_contexts|context_key|text|NO
+read_model.agent_contexts|payload|jsonb|NO
+read_model.agent_contexts|derived_from_finding_ids|ARRAY|NO
+read_model.agent_contexts|generated_at|timestamp with time zone|NO
+read_model.discovery_paths|discovery_path_id|uuid|NO
+read_model.discovery_paths|path_key|text|NO
+read_model.discovery_paths|steps|jsonb|NO
+read_model.discovery_paths|derived_from_finding_ids|ARRAY|NO
+read_model.discovery_paths|generated_at|timestamp with time zone|NO
+read_model.evidence_pointers|evidence_pointer_id|uuid|NO
+read_model.evidence_pointers|evidence_id|uuid|NO
+read_model.evidence_pointers|source_id|uuid|NO
+read_model.evidence_pointers|display_locator|jsonb|NO
+read_model.evidence_pointers|display_excerpt|text|YES
+read_model.evidence_pointers|generated_at|timestamp with time zone|NO
+read_model.map_timeline_projections|map_timeline_projection_id|uuid|NO
+read_model.map_timeline_projections|projection_key|text|NO
+read_model.map_timeline_projections|payload|jsonb|NO
+read_model.map_timeline_projections|derived_from_world_objects|jsonb|NO
+read_model.map_timeline_projections|generated_at|timestamp with time zone|NO
+read_model.story_seeds|story_seed_id|uuid|NO
+read_model.story_seeds|seed_key|text|NO
+read_model.story_seeds|title|text|YES
+read_model.story_seeds|narrative_question|text|YES
+read_model.story_seeds|payload|jsonb|NO
+read_model.story_seeds|derived_from_finding_ids|ARRAY|NO
+read_model.story_seeds|evidence_pointer_ids|ARRAY|NO
+read_model.story_seeds|generated_at|timestamp with time zone|NO
+read_model.world_projections|projection_id|uuid|NO
+read_model.world_projections|projection_key|text|NO
+read_model.world_projections|payload|jsonb|NO
+read_model.world_projections|derived_from_finding_ids|ARRAY|NO
+read_model.world_projections|expression_rule|jsonb|NO
+read_model.world_projections|generated_at|timestamp with time zone|NO
+source.raw_items|raw_item_id|uuid|NO
+source.raw_items|source_version_id|uuid|NO
+source.raw_items|storage_ref|text|NO
+source.raw_items|media_type|text|YES
+source.raw_items|byte_size|bigint|YES
+source.raw_items|checksum_sha256|text|NO
+source.raw_items|created_at|timestamp with time zone|NO
+source.read_handoffs|handoff_id|uuid|NO
+source.read_handoffs|read_run_id|uuid|NO
+source.read_handoffs|g1_audit_id|uuid|YES
+source.read_handoffs|output_manifest_hash|text|YES
+source.read_handoffs|allowed_extent|jsonb|YES
+source.read_handoffs|gaps|jsonb|YES
+source.read_handoffs|consumer_stage|text|NO
+source.read_handoffs|created_at|timestamp with time zone|NO
+source.read_quality_checks|check_id|uuid|NO
+source.read_quality_checks|read_run_id|uuid|NO
+source.read_quality_checks|metric|text|YES
+source.read_quality_checks|profile_id|text|YES
+source.read_quality_checks|denominator|integer|YES
+source.read_quality_checks|population_n|integer|YES
+source.read_quality_checks|sampled_n|integer|YES
+source.read_quality_checks|error_n|integer|YES
+source.read_quality_checks|sampling_scheme|text|YES
+source.read_quality_checks|actual|jsonb|YES
+source.read_quality_checks|result|text|YES
+source.read_quality_checks|evidence_ref|text|YES
+source.read_quality_checks|created_at|timestamp with time zone|NO
+source.read_runs|read_run_id|uuid|NO
+source.read_runs|production_run_id|uuid|YES
+source.read_runs|raw_item_id|uuid|YES
+source.read_runs|input_sha256|text|NO
+source.read_runs|upstream_g0_decision_id|uuid|YES
+source.read_runs|method_set|jsonb|YES
+source.read_runs|engine|text|YES
+source.read_runs|config|jsonb|YES
+source.read_runs|version|text|YES
+source.read_runs|status|text|NO
+source.read_runs|manifest_hash|text|YES
+source.read_runs|supersedes_id|uuid|YES
+source.read_runs|created_at|timestamp with time zone|NO
+source.read_units|read_unit_id|uuid|NO
+source.read_units|read_run_id|uuid|NO
+source.read_units|parent_id|uuid|YES
+source.read_units|method_code|text|NO
+source.read_units|kind|text|YES
+source.read_units|locator_schema|text|YES
+source.read_units|locator|jsonb|YES
+source.read_units|ordinal|integer|YES
+source.read_units|payload_ref|text|YES
+source.read_units|uncertainty|jsonb|YES
+source.read_units|revision_of|uuid|YES
+source.read_units|locator_hash|text|YES
+source.read_units|created_at|timestamp with time zone|NO
+source.source_versions|source_version_id|uuid|NO
+source.source_versions|source_id|uuid|NO
+source.source_versions|version_label|text|YES
+source.source_versions|retrieved_at|timestamp with time zone|NO
+source.source_versions|checksum_sha256|text|NO
+source.source_versions|metadata|jsonb|NO
+source.sources|source_id|uuid|NO
+source.sources|provider|text|NO
+source.sources|title|text|NO
+source.sources|source_type|text|NO
+source.sources|carrier_type|text|NO
+source.sources|creator|text|YES
+source.sources|publisher_or_institution|text|YES
+source.sources|source_uri_or_catalog_no|text|YES
+source.sources|source_date|jsonb|YES
+source.sources|rights|jsonb|NO
+source.sources|provenance_status|text|NO
+source.sources|content_availability|text|NO
+source.sources|original_locator|jsonb|NO
+source.sources|scope|jsonb|NO
+source.sources|created_at|timestamp with time zone|NO
+world.changes|change_id|uuid|NO
+world.changes|subject_entity_id|uuid|YES
+world.changes|change_type|text|NO
+world.changes|before_state|jsonb|YES
+world.changes|after_state|jsonb|YES
+world.changes|time_scope|jsonb|NO
+world.changes|expression_rule|jsonb|NO
+world.changes|maturity|USER-DEFINED|NO
+world.changes|created_at|timestamp with time zone|NO
+world.claim_evidence_links|claim_evidence_link_id|uuid|NO
+world.claim_evidence_links|claim_object_type|text|NO
+world.claim_evidence_links|claim_object_id|uuid|NO
+world.claim_evidence_links|evidence_id|uuid|NO
+world.claim_evidence_links|support_type|text|NO
+world.claim_evidence_links|note|text|YES
+world.claim_evidence_links|created_at|timestamp with time zone|NO
+world.claim_revisions|claim_revision_id|uuid|NO
+world.claim_revisions|subject_kind|text|NO
+world.claim_revisions|subject_id|uuid|NO
+world.claim_revisions|revision_no|integer|NO
+world.claim_revisions|assertion_payload_json|jsonb|NO
+world.claim_revisions|producer_method_id|text|NO
+world.claim_revisions|producer_method_version|text|YES
+world.claim_revisions|upstream_refs|jsonb|YES
+world.claim_revisions|supersedes_revision_id|uuid|YES
+world.claim_revisions|authored_at|timestamp with time zone|NO
+world.claim_revisions|claim_family_id|uuid|YES
+world.claim_revisions|evidence_snapshot_id|uuid|YES
+world.claim_revisions|asserted_time_json|jsonb|YES
+world.conflicts|conflict_id|uuid|NO
+world.conflicts|conflict_key|text|NO
+world.conflicts|object_type|text|NO
+world.conflicts|object_id|uuid|NO
+world.conflicts|variant|jsonb|NO
+world.conflicts|resolution_status|text|NO
+world.conflicts|resolution_note|text|YES
+world.conflicts|created_at|timestamp with time zone|NO
+world.dependency_edges|dependency_edge_id|uuid|NO
+world.dependency_edges|from_object_type|text|NO
+world.dependency_edges|from_object_id|uuid|NO
+world.dependency_edges|to_object_type|text|NO
+world.dependency_edges|to_object_id|uuid|NO
+world.dependency_edges|dependency_type|text|NO
+world.dependency_edges|producer_method_id|text|NO
+world.dependency_edges|created_at|timestamp with time zone|NO
+world.dependency_edges|from_claim_revision_id|uuid|YES
+world.dependency_edges|to_claim_revision_id|uuid|YES
+world.entities|entity_id|uuid|NO
+world.entities|entity_type|text|NO
+world.entities|canonical_label|text|NO
+world.entities|aliases|ARRAY|NO
+world.entities|temporal_scope|jsonb|YES
+world.entities|spatial_scope|jsonb|YES
+world.entities|attributes|jsonb|NO
+world.entities|maturity|USER-DEFINED|NO
+world.entities|created_at|timestamp with time zone|NO
+world.event_participations|event_participation_id|uuid|NO
+world.event_participations|event_id|uuid|NO
+world.event_participations|candidate_entity_id|uuid|NO
+world.event_participations|role_code|text|NO
+world.event_participations|expression_rule|jsonb|NO
+world.event_participations|created_at|timestamp with time zone|NO
+world.event_participations|claim_revision_id|uuid|YES
+world.event_participations|temporal_scope|jsonb|NO
+world.events|event_id|uuid|NO
+world.events|event_type|text|NO
+world.events|canonical_label|text|NO
+world.events|subject_entity_id|uuid|YES
+world.events|time_scope|jsonb|NO
+world.events|space_scope|jsonb|NO
+world.events|attributes|jsonb|NO
+world.events|maturity|USER-DEFINED|NO
+world.events|created_at|timestamp with time zone|NO
+world.historical_space_claims|historical_space_claim_id|uuid|NO
+world.historical_space_claims|subject_entity_id|uuid|YES
+world.historical_space_claims|claim_type|text|NO
+world.historical_space_claims|geometry_claim|jsonb|YES
+world.historical_space_claims|spatial_relation|jsonb|YES
+world.historical_space_claims|time_scope|jsonb|NO
+world.historical_space_claims|precision|jsonb|NO
+world.historical_space_claims|uncertainty|jsonb|NO
+world.historical_space_claims|expression_rule|jsonb|NO
+world.historical_space_claims|maturity|USER-DEFINED|NO
+world.historical_space_claims|created_at|timestamp with time zone|NO
+world.identity_decision_evidence|identity_decision_evidence_id|uuid|NO
+world.identity_decision_evidence|identity_decision_id|uuid|NO
+world.identity_decision_evidence|evidence_id|uuid|NO
+world.identity_decision_evidence|support_type|text|NO
+world.identity_decision_evidence|created_at|timestamp with time zone|NO
+world.identity_decisions|identity_decision_id|uuid|NO
+world.identity_decisions|entity_id|uuid|NO
+world.identity_decisions|merged_entity_ids|ARRAY|NO
+world.identity_decisions|decision_type|text|NO
+world.identity_decisions|rationale|text|NO
+world.identity_decisions|producer_method_id|text|NO
+world.identity_decisions|created_at|timestamp with time zone|NO
+world.identity_decisions|temporal_scope|jsonb|NO
+world.identity_decisions|decision_version|text|YES
+world.identity_decisions|upstream_g2_snapshot|jsonb|NO
+world.provenance_assessments|provenance_assessment_id|uuid|NO
+world.provenance_assessments|claim_object_type|text|NO
+world.provenance_assessments|claim_object_id|uuid|NO
+world.provenance_assessments|assessment_type|text|NO
+world.provenance_assessments|source_lineage|jsonb|NO
+world.provenance_assessments|is_independent|boolean|NO
+world.provenance_assessments|rationale|text|NO
+world.provenance_assessments|producer_method_id|text|NO
+world.provenance_assessments|created_at|timestamp with time zone|NO
+world.provenance_assessments|claim_revision_id|uuid|YES
+world.provenance_assessments|independence_state|text|YES
+world.provenance_assessments|source_fingerprint|text|YES
+world.provenance_assessments|assessment_version|text|YES
+world.provenance_assessments|evidence_input_snapshot|jsonb|NO
+world.relation_claims|relation_claim_id|uuid|NO
+world.relation_claims|relation_type|text|NO
+world.relation_claims|subject_entity_id|uuid|YES
+world.relation_claims|object_entity_id|uuid|YES
+world.relation_claims|object_value|jsonb|YES
+world.relation_claims|time_scope|jsonb|NO
+world.relation_claims|space_scope|jsonb|NO
+world.relation_claims|expression_rule|jsonb|NO
+world.relation_claims|maturity|USER-DEFINED|NO
+world.relation_claims|created_at|timestamp with time zone|NO
+world.visual_objects|visual_object_id|uuid|NO
+world.visual_objects|source_id|uuid|YES
+world.visual_objects|subject_entity_id|uuid|YES
+world.visual_objects|visual_type|text|NO
+world.visual_objects|asset_ref|text|YES
+world.visual_objects|literal_reading|text|YES
+world.visual_objects|time_scope|jsonb|YES
+world.visual_objects|space_scope|jsonb|YES
+world.visual_objects|correspondence_claim|jsonb|YES
+world.visual_objects|maturity|USER-DEFINED|NO
+world.visual_objects|created_at|timestamp with time zone|NO
+world.world_decision_events|world_decision_event_id|uuid|NO
+world.world_decision_events|from_claim_revision_id|uuid|YES
+world.world_decision_events|to_claim_revision_id|uuid|YES
+world.world_decision_events|dependency_type|text|YES
+world.world_decision_events|affected_scope|jsonb|NO
+world.world_decision_events|previous_input_snapshot|jsonb|NO
+world.world_decision_events|change_reason|text|YES
+world.world_decision_events|producer_method_id|text|YES
+world.world_decision_events|producer_method_version|text|YES
+world.world_decision_events|created_at|timestamp with time zone|NO

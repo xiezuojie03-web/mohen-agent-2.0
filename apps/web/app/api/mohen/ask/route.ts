@@ -22,11 +22,25 @@ function dedupe(xs: string[]): string[] {
   return [...new Set(xs.map((x) => x.trim()).filter(Boolean))];
 }
 
-/** 金泽切片对象别名（与引擎 ENTITY_NAME_ALIASES 一致；后续应由切片/库注入，此处为最小集） */
+/** 金泽切片对象别名（与世界模型当前实体对齐；后续应由切片/库注入，此处为最小集）。
+ *  V1.5：补 迎祥桥/金泽/白苎里/吕颐浩/颐浩寺遗址全称 与临时水道实体及其着录别名
+ *  （金泽塘/秀州塘/市河——T11-C2 登记的三种着录，使「跨的是哪条河」类问句可命中）。 */
 const JINZE_ALIASES: EntityAliases = {
-  "yihaosi-site": ["颐浩寺", "颐浩"],
+  "yihaosi-site": ["颐浩寺", "颐浩", "颐浩寺遗址"],
   pujiqiao: ["普济桥", "普济"],
   wananqiao: ["万安桥", "万安"],
+  yingxiangqiao: ["迎祥桥", "迎祥"],
+  jinze: ["金泽"],
+  baizhuli: ["白苎里", "白苧里"],
+  "lv-yihao": ["吕颐浩"],
+  "waterway-provisional": ["桥所跨水道（名称待定）", "金泽塘", "秀州塘", "市河"],
+};
+
+/** 实体标签 → 着录别名（V1.5：relation 材料 snippet 追加用）。
+ *  只收录「有意义的替代名」（临时水道实体的三种着录名）；不含简称/截断形（万安/普济/迎祥），
+ *  否则答句会混入「（又称：普济）」这类读感糟糕的噪音。 */
+const LABEL_ALIASES: Record<string, string[]> = {
+  "桥所跨水道（名称待定）": ["金泽塘", "秀州塘", "市河"],
 };
 
 /** 未识别到对象时的宽检索词（保证至少与金泽相关，而不是随机材料） */
@@ -53,7 +67,7 @@ export async function POST(req: Request) {
 
   // 取满 24 条再交 select 裁决：SQL 已按 kind 各留前 6 条，
   // 保证 event / claim / present 不会被高权重的 evidence 挤光。
-  const { materials, degraded } = await retrieveMaterials(effectiveTerms, 24);
+  const { materials, degraded } = await retrieveMaterials(effectiveTerms, 24, { objectAliases: LABEL_ALIASES });
   const decision = await decideStep(understanding, materials, JINZE_ALIASES);
 
   return NextResponse.json({

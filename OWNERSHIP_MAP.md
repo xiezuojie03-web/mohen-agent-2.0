@@ -1,6 +1,10 @@
 # OWNERSHIP_MAP.md
 
-> **结构 SOT**：Repo 按文件类别 / 系统职责组织，不按 D01–D05 生产步骤组织。
+> **REVIEW_DRAFT_NOT_APPLIED｜2026-10-15。** 目标根入口稿，基于handoff/local-b-20260930@8966d1bf62d7c2ea199d6568cc1b16bba664bd26；尚未替换工程。原文件与实际运行状态留M0核验。
+
+
+
+> **结构 SOT**：Repo 按文件类别 / 系统职责组织，不按D00—D05生产步骤组织。
 
 # 0｜正式目录树
 
@@ -41,14 +45,17 @@ mohen-agent-2.0/
 - `production-registry.json`
 - `PHYSICAL_DATA_MODEL_V2.md`
 - `PERSISTENCE_BINDING_CONTRACT.md`
-- `L4_L7_CONSUMPTION_FEEDBACK_CONTRACT.md`
+- `L5_L8_CONSUMPTION_FEEDBACK_CONTRACT.md`（目标文件；旧L4_L7版本按代际归档）
 - `MoHen_Data_Production_System_Map.md/html`
+- `standards/d00/`—`d05/`：现行专业标准，逐文件清单见11矩阵§8.4，不复制进多个Skill
+- `relations/`：正式关系登记与设计处置分层，不作为默认Runtime allowlist
+- `schemas/`：机器结构约束；含拟新增`method-route-decisions.schema.json`
 - `gates/`
 - `templates/`
 - machine-readable configs / schemas
 
 ## skills/
-一个目录一个 Skill。Stage Owner 与 reusable capability 都在此定义，但生命周期 Owner 只能有一套。
+一个目录一个Skill。阶段Owner与可复用能力分别登记；每阶段只拥有一个生命周期Owner。保留五个可适配Stage Skill，新增mohen-carrier-reading承接D01/C，material-understanding承接D02/H。新Skill是PLANNED，未实现不称正式能力。
 
 ## pipelines/
 执行体。正式数据生产入口只有：
@@ -84,7 +91,7 @@ E2E / SQL / migration verification。
 
 # 2｜D/L/G 与目录
 
-D01–D05 / L0–L4 / G0–G4 是生产语义，不是 Repo 顶层目录。
+D00—D05 / L0—L5 / G0—G5是目标生产语义，不是 Repo 顶层目录。
 
 # 3｜过程记录
 
@@ -106,3 +113,13 @@ MoHen_Data_Production_Rebuild_Execution_Record_PhaseA-G.md
 - Research Workspace
 - Discovery / Directed 双生产模式
 - N01–N06 主链
+
+# 5｜交付目录与工程归档
+
+Library现行研究树继续用于专业研究与审阅，不因未来包装迁移而搬空或改成源码树。交付包根建议为README.md、DELIVERY_MANIFEST.csv、repo_target/、reference/；这是**未来布局规格，当前未建包**。
+
+`repo_target/`下每项相对路径必须等于其仓库目标相对路径，例如repo_target/governance/<C2新版本文件>→仓库governance/<同文件>。只含获准采用且已适配的目标文件，不嵌套旧工程包、不复制整个资料目录、不整目录覆盖；替换/新建/归档均逐文件登记。reference/只放必要追溯依据及源目录索引，不拥有active Authority。包根操作说明和映射清单不自动复制到仓库根。
+
+当前DESIGN_TARGET_NOT_APPLIED仅是资料目标文件，不可直接覆盖工程。用户本轮已授权ChatGPT补齐协议/Registry/Skill等完整专业目标文件及真实源码改造合同；原11矩阵只描述接口与落点，不能代替这些目标文件，也不能把全部专业适配推给CodeBuddy。
+
+被替代治理放governance/archive/、契约放specs/archive/、跨域快照放archive/，留替代清单；归档不等于允许继续执行。数据放data/，正式Contract不放data/；过去研究任务与审查记录不挤占tasks/未来任务入口。测试规格与实测证据区分。

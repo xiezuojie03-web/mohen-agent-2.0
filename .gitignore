@@ -27,3 +27,7 @@ pipelines/**/_probes/
 # 开发验证临时产物（截图等）统一收在 verification/，不入根目录；仅 README 约定索引入库。
 verification/*
 !verification/README.md
+
+# 工具数据目录（不入库）
+.codebuddy/
+.playwright-cli/

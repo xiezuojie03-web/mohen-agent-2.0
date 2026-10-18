@@ -26,6 +26,8 @@ export function createStageExecutor(stage) {
     if (disposition === "PASS") result.outputs[contract.output] = raw.output;
     if (disposition === "HOLD") result.hold = raw.hold;
     if (disposition === "REJECT") result.reject = raw.reject;
+    // 控制职责输出（如 D05 P08 的失效分析/暂停/重审请求）不属于 L5 内容，透传不回写 Gate。
+    if (raw?.control_outputs) result.control_outputs = raw.control_outputs;
 
     assertHandoff(stage, result);
     return result;

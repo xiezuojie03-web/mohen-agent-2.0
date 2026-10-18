@@ -1,0 +1,180 @@
+{
+  "report_type": "human_review",
+  "run_id": "71901d36-e4bd-4761-bde6-cfc3bc4d4c83",
+  "status": "PASS",
+  "stages": [
+    {
+      "stage": "D00",
+      "data_layer": "L0",
+      "gate": "G0",
+      "disposition": "PASS",
+      "content_stats": {
+        "sources": 2
+      },
+      "narrative_relevant_records": [
+        {
+          "source_id": "de495559-12d9-4e1b-95da-24217784c794",
+          "title": "上海市地名志·金泽条目"
+        },
+        {
+          "source_id": "efeb94ca-266b-4503-8894-65cbf26a6c56",
+          "title": "光绪《青浦县志》·金泽方志记载"
+        }
+      ],
+      "gaps_and_counterexamples": [],
+      "owner_decision": null
+    },
+    {
+      "stage": "D01",
+      "data_layer": "L1",
+      "gate": "G1",
+      "disposition": "PASS",
+      "content_stats": {
+        "reading_units": 4
+      },
+      "narrative_relevant_records": [
+        {
+          "read_unit_id": "72144dbe-8782-427c-81c4-c413e31a8db9",
+          "literal": "古名白苎里。因地处湖荡泽地……古有『穑人获泽如金』之说，故名"
+        },
+        {
+          "read_unit_id": "3cc23ab0-2496-4e38-9257-9080db377f98",
+          "literal": "是上海的『桥乡』，现存古桥 21 座，其中有建于宋代的万安桥"
+        },
+        {
+          "read_unit_id": "397bb988-e05a-4c80-bc92-011928b467d4",
+          "literal": "南宋景定元年（1260）就南宋名相吕颐浩故宅创建，寺名取自其"
+        },
+        {
+          "read_unit_id": "928f932b-cb80-4c7c-8085-7d6098db3eab",
+          "literal": "南宋景定年间建（万安桥），与普济桥一北一南同跨一河，形制相仿"
+        }
+      ],
+      "gaps_and_counterexamples": [],
+      "owner_decision": null
+    },
+    {
+      "stage": "D02",
+      "data_layer": "L2",
+      "gate": "G2",
+      "disposition": "PASS",
+      "content_stats": {
+        "observations": 4,
+        "mentions": 20
+      },
+      "narrative_relevant_records": [
+        {
+          "evidence_id": "1fef4ad9-60eb-4b64-9147-86b172404162",
+          "proposition": "材料记载金泽古名白苎里，因湖荡泽地及『穑人获泽如金』之说而得名金泽"
+        },
+        {
+          "evidence_id": "d7932767-4df0-4c86-97af-9fa1dc7d4a0a",
+          "proposition": "材料记载金泽为上海『桥乡』，现存古桥21座，包括宋代万安桥、普济桥和元代迎祥桥"
+        },
+        {
+          "evidence_id": "d580dcab-554f-4f40-bd19-5945a788d6fd",
+          "proposition": "材料记载该寺于南宋景定元年（1260）在吕颐浩故宅创建，寺名取自吕颐浩其人"
+        },
+        {
+          "evidence_id": "59a1577d-cd6a-437c-8b44-72c965b6514f",
+          "proposition": "材料记载万安桥建于南宋景定年间，与普济桥同跨一河、形制相仿，并称姐妹桥"
+        }
+      ],
+      "gaps_and_counterexamples": [],
+      "owner_decision": null
+    },
+    {
+      "stage": "D03",
+      "data_layer": "L3",
+      "gate": "G3",
+      "disposition": "PASS",
+      "content_stats": {
+        "entities": 7,
+        "relations": 7
+      },
+      "narrative_relevant_records": [
+        {
+          "relation": "金泽-formerly_named-白苎里"
+        },
+        {
+          "relation": "万安桥-located_in-金泽"
+        },
+        {
+          "relation": "普济桥-located_in-金泽"
+        },
+        {
+          "relation": "迎祥桥-located_in-金泽"
+        },
+        {
+          "relation": "颐浩寺遗址-founded_at-吕颐浩"
+        },
+        {
+          "relation": "颐浩寺遗址-named_after-吕颐浩"
+        },
+        {
+          "relation": "万安桥-spans_same_waterway-普济桥"
+        }
+      ],
+      "gaps_and_counterexamples": [],
+      "owner_decision": null
+    },
+    {
+      "stage": "D04",
+      "data_layer": "L4",
+      "gate": "G4",
+      "disposition": "PASS",
+      "content_stats": {
+        "findings": 4
+      },
+      "narrative_relevant_records": [
+        {
+          "finding_id": "f17fddb6-8792-400d-8ea1-082a5a9ccdfe",
+          "statement": "金泽旧名白苎里，而万安桥、普济桥、迎祥桥三座桥均位于金泽，说明这些桥所承载的交通与聚落记忆跨越了地名更替：桥名可能比‘金"
+        },
+        {
+          "finding_id": "c134c4d8-dd16-4fa3-b034-4c87f8ef05c3",
+          "statement": "颐浩寺遗址同时以‘ founded_at ’和‘ named_after ’指向吕颐浩，表明该遗址的建立叙事与命名叙事共"
+        },
+        {
+          "finding_id": "f36ffbbc-bbdf-4c8b-8c57-522d93073a5a",
+          "statement": "万安桥与普济桥‘ spans_same_waterway ’，且二者同属金泽，说明金泽的水路网络至少由两座桥共同跨越同一"
+        },
+        {
+          "finding_id": "ce09a191-7e53-4177-acdc-159774011072",
+          "statement": "万安桥、普济桥、迎祥桥同属金泽，而颐浩寺遗址以吕颐浩为建寺与命名来源，两类关系并置显示金泽地方记忆同时由‘桥—水’的日常"
+        }
+      ],
+      "gaps_and_counterexamples": [],
+      "owner_decision": null
+    },
+    {
+      "stage": "D05",
+      "data_layer": "L5",
+      "gate": "G5",
+      "disposition": "PASS",
+      "content_stats": {
+        "story_seeds": 4
+      },
+      "narrative_relevant_records": [
+        {
+          "story_seed_id": "71c76798-c8df-4405-ad1b-4fdc090bc310",
+          "finding_id": "f17fddb6-8792-400d-8ea1-082a5a9ccdfe"
+        },
+        {
+          "story_seed_id": "e12035b1-c889-40c2-9638-934603ecf1f3",
+          "finding_id": "c134c4d8-dd16-4fa3-b034-4c87f8ef05c3"
+        },
+        {
+          "story_seed_id": "7c8ca872-f588-47ad-be70-1f3b610c4fef",
+          "finding_id": "f36ffbbc-bbdf-4c8b-8c57-522d93073a5a"
+        },
+        {
+          "story_seed_id": "bd0bc75e-605d-4eb4-9bf7-26447272f0db",
+          "finding_id": "ce09a191-7e53-4177-acdc-159774011072"
+        }
+      ],
+      "gaps_and_counterexamples": [],
+      "owner_decision": null
+    }
+  ]
+}

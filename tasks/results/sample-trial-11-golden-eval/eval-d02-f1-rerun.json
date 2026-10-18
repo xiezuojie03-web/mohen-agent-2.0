@@ -1,0 +1,70 @@
+{
+  "http": 200,
+  "model_used": "deepseek-flash",
+  "json_parsed": true,
+  "mention_kinds": [
+    "place",
+    "number",
+    "thing",
+    "time",
+    "person"
+  ],
+  "mention_literals": [
+    "白苎里",
+    "湖荡泽地",
+    "金泽",
+    "上海",
+    "桥乡",
+    "21 座",
+    "古桥",
+    "宋代",
+    "万安桥",
+    "普济桥",
+    "元代",
+    "迎祥桥",
+    "南宋景定元年（1260）",
+    "南宋名相吕颐浩",
+    "故宅",
+    "寺",
+    "南宋景定年间",
+    "万安桥",
+    "普济桥",
+    "一河",
+    "姐妹桥"
+  ],
+  "entities_expected": [
+    "万安桥",
+    "普济桥",
+    "迎祥桥",
+    "颐浩寺",
+    "吕颐浩",
+    "白苎里",
+    "金泽"
+  ],
+  "entities_found": [
+    "万安桥",
+    "普济桥",
+    "迎祥桥",
+    "吕颐浩",
+    "白苎里",
+    "金泽"
+  ],
+  "entity_recall": 0.857,
+  "entity_f1_approx": 0.923,
+  "relations": {
+    "spans_same_waterway_同跨一河": true,
+    "spans_same_waterway_姐妹桥": true,
+    "named_after_寺名取自": true
+  },
+  "usage": {
+    "prompt_tokens": 728,
+    "completion_tokens": 2113,
+    "total_tokens": 2841,
+    "prompt_tokens_details": {
+      "cached_tokens": 256
+    },
+    "prompt_cache_hit_tokens": 256,
+    "prompt_cache_miss_tokens": 472
+  },
+  "content_snippet": "{\n  \"schema_version\": \"d02-material-observation.v1\",\n  \"reading_units\": [\n    {\"reading_unit_id\": \"ru-1\", \"unit_path\": \"片段A\", \"primary_h_type\": \"H05\", \"classification_status\": \"resolved\", \"classification_basis\": \"地方志地名沿革与得名传说，属地方志编纂体例\"},\n    {\"reading_unit_id\": \"ru-2\", \"unit_path\": \"片段B\", \"primary_h_type\": \"H05\", \"classification_status\": \"resolved\", \"classification_basis\": \"地方志记述地方桥梁遗存与数量\"},\n    {\"reading_unit_id\": \"ru-3\", \"unit_path\": \"片段C\", \"primary_h_type\": \"H05\", \"classification_status\": \"resolved\", \"classification_basis\": \"地方志记寺观创建沿革与命名由来\"},\n    {\"reading_unit_id\": \"ru-4\", \"unit_path\": \"片段D\", \"primary_h_type\": \"H05\", \"classification_status\": \"resolved\", \"classification_basis\": \"地方志记桥梁年代、方位与形制关联\"}\n  ],\n  \"classification_decisions\": [\n    {\"decision_id\": \"cd-1\", \"reading_unit_id\": \"ru-1\", \"primary_h_type\": \"H05\", \"alternatives\": [\"H04\"], \"status\": \"decided\", \"basis\": \"地名沿革兼涉历史地理，主类仍为地方志\"},\n    {\"decision_id\": \"cd-2\", \"reading_unit_id\": \"ru-2\", \"primary_h_type\": \"H05\", \"alternatives\": [\"H04\"], \"status\": \"decided\", \"basis\": \"地方桥梁遗存记述，主类为地方志\"},\n    {\"decision_id\": \"cd-3\", \"reading_unit_id\": \"ru-3\", \"primary_h_type\": \"H05\", \"alternatives\": [\"H04\"], \"status\": \"decided\", \"basis\": \"寺观创建沿革，主类为地方志\"},\n    {\"decision_id\": \"cd-4\", \"reading_unit_id\": \"ru-4\", \"primary_h_type\": \"H05\", \"alternatives\": [\"H04\"], \"status\": \"decided\", \"basis\": \"桥梁年代与形制关联记述，主类为地方志\"}\n  ],\n  \"material_mentions\": [\n    {\"mention_id\": \"m-1\", \"evidence_id\": \"e-1\", \"mention_kind\": \"place\", \"literal_text\": \"白苎里\", \"span_in_evidence\": {}, \"precision\": {}, \"uncertainty\": {}},\n    {\"mention_id\": \"m-2\", \"evidence_id\": \""
+}

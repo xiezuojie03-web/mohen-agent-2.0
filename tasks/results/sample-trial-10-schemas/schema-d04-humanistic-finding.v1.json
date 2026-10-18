@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "mohen.schema.d04-humanistic-finding.v1",
+  "title": "D04 A01/A10 人文发现（L4）",
+  "version": "1.0",
+  "stage": "D04",
+  "layer": "L4",
+  "methods": ["A01", "A10"],
+  "output_contract": ["humanistic_finding_revision"],
+  "description": "A01 显式关系解释 / A10 冲突发现（A02 共现仅候选）的 L4 输出。事实与解释分离：legend/research 不升 fact；冲突并列不择一；INTERPRETATION_CANDIDATE 永不静默改写为事实。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "findings"],
+  "properties": {
+    "schema_version": { "const": "d04-humanistic-finding.v1" },
+    "findings": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/finding" }
+    }
+  },
+  "definitions": {
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["finding_id", "finding_kind", "epistemic_classification", "statement", "evidence_refs"],
+      "properties": {
+        "finding_id": { "type": "string" },
+        "finding_kind": {
+          "type": "string",
+          "enum": ["explicit_relation", "conflict_finding", "cooccurrence_clue"],
+          "description": "A01 显式关系解释 / A10 冲突发现 / A02 共现线索（仅候选，不越界成关系）"
+        },
+        "epistemic_classification": {
+          "type": "string",
+          "enum": ["FACT_EVIDENCED", "FACT_LIMITED", "CONFLICT", "QUESTION", "INTERPRETATION_CANDIDATE", "UNKNOWN"],
+          "description": "认知分类；INTERPRETATION_CANDIDATE 永不静默改写为 FACT_EVIDENCED"
+        },
+        "statement": { "type": "string", "description": "非平庸增量陈述；不得复述 B0 事实或换标题" },
+        "derived_from_claim_revision_ids": { "type": "array", "items": { "type": "string" } },
+        "evidence_refs": { "type": "array", "items": { "type": "string" }, "description": "可回 L2 证据 / L3 主张修订" },
+        "unresolved_counterpoint": { "type": ["string", "null"], "description": "保留的反证/竞争解释/开放问题" },
+        "boundary_guard": {
+          "type": "object",
+          "description": "边界守卫：legend/research/candidate 的降级约束是否守住",
+          "properties": {
+            "legend_not_promoted": { "type": "boolean" },
+            "research_not_promoted": { "type": "boolean" },
+            "candidate_kept_qualified": { "type": "boolean" }
+          }
+        },
+        "authored_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

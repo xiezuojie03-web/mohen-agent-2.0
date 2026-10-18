@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "mohen.schema.d01-reading-unit.v1",
+  "title": "D01 C01 数字文本读取单元（L1）",
+  "version": "1.0",
+  "stage": "D01",
+  "layer": "L1",
+  "methods": ["C01"],
+  "output_contract": ["reading_unit"],
+  "description": "C01 数字文本读取的 L1 输出：作品内可引用结构单元（卷/篇/条/图幅）与逐字快照。只读载体，不判史料类别、不抽实体、不建世界。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "read_run_id", "source_version_id", "reading_units"],
+  "properties": {
+    "schema_version": { "const": "d01-reading-unit.v1" },
+    "read_run_id": { "type": "string", "description": "本次技术读取运行 ID（L1 read_run）" },
+    "source_version_id": { "type": "string", "description": "L0 来源版本引用" },
+    "raw_item_id": { "type": ["string", "null"], "description": "L0 原始条目引用" },
+    "reading_units": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/reading_unit" }
+    }
+  },
+  "definitions": {
+    "reading_unit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unit_id", "unit_path", "unit_kind", "literal_reading"],
+      "properties": {
+        "unit_id": { "type": "string" },
+        "parent_unit_id": { "type": ["string", "null"] },
+        "unit_path": { "type": "string", "description": "卷/篇/条层级路径，同一版本内稳定，父子不循环" },
+        "unit_kind": { "type": "string", "description": "单元类型：卷/篇/条/段落/图幅等" },
+        "literal_reading": { "type": "string", "description": "逐字快照；不改写、不补字、不修繁体异体" },
+        "payload_ref": { "type": ["string", "null"], "description": "大文本存对象存储时的引用" },
+        "hash": { "type": "string", "description": "原文内容指纹（缓存键成分）" },
+        "uncertainty": { "type": "object", "description": "技术识读疑点（区分于历史疑点）" },
+        "created_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

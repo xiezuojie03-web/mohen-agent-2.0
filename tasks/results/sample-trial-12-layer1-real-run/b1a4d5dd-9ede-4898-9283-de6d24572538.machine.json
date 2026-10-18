@@ -1,0 +1,22 @@
+{
+  "report_type": "machine_execution",
+  "run_id": "b1a4d5dd-9ede-4898-9283-de6d24572538",
+  "execution_mode": "attended",
+  "status": "PASS",
+  "started_at": "2026-10-17T09:59:12.154Z",
+  "finished_at": "2026-10-17T09:59:13.472Z",
+  "stages": [
+    {
+      "stage": "D00",
+      "data_layer": "L0",
+      "gate": "G0",
+      "disposition": "PASS",
+      "gate_evidence": {
+        "stage": "D00",
+        "source_count": 2
+      },
+      "hold": null,
+      "reject": null
+    }
+  ]
+}

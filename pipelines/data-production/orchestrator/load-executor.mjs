@@ -1,5 +1,6 @@
 const MAP = {
-  D01: () => import("../executors/d01-source-intake.mjs"),
+  D00: () => import("../executors/d00-source-intake.mjs"),
+  D01: () => import("../executors/d01-carrier-reading.mjs"),
   D02: () => import("../executors/d02-material-understanding.mjs"),
   D03: () => import("../executors/d03-world-construction.mjs"),
   D04: () => import("../executors/d04-humanistic-discovery.mjs"),

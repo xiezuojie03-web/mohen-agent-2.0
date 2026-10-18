@@ -109,10 +109,8 @@ test.describe("EXP-UI-RECON-01 · default Human UI", () => {
     await page.goto("/experience/jinze-water-net");
     await page.addStyleTag({ content: "nextjs-portal{display:none!important}" });
 
-    // —— s01 首屏：地图（AT-01 / AT-05 / K7 坐标诚实分离保留）
-    // R4：默认 Human UI 不出现 GCJ-02 字面量（仅 ?inspector=1 透出）；默认显示人话「今天的位置（示意）」
-    await expect(cur(page, "surface-current-map")).toBeVisible();
-    await expect(page.locator(".surf-map--v2")).toContainText("今天的位置（示意）");
+    // —— s01 首屏：大幅真实照片（D1：先看照片建立现场感，地图退为后续场景）
+    await expect(cur(page, "surface-present-day-photo")).toBeVisible();
     await assertHumanMode(page);
     // K1：五幕以节奏表达（进度条），非五个面板
     await expect(page.locator(".exp-progress")).toContainText("第 1/5 段 · 第 1/8 场");
@@ -143,15 +141,16 @@ test.describe("EXP-UI-RECON-01 · default Human UI", () => {
     await expect(cur(page, "surface-timeline")).toBeVisible();
     await assertHumanMode(page);
 
-    // —— s07 回到今天：世界切回当下地图（P1「重新看见今天」，与既有 E2E 同一 KEEP 断言）
+    // —— s07 回到今天：世界切回当下地图（P1「重新看见今天」）
+    // R4：默认 Human UI 不出现 GCJ-02 字面量（仅 ?inspector=1 透出）；默认显示人话「今天的位置（示意）」
     await clickNext(page);
     await expect(cur(page, "surface-current-map")).toBeVisible();
+    await expect(page.locator(".surf-map--v2")).toContainText("今天的位置（示意）");
     await assertHumanMode(page);
 
-    // —— s08 发现：AT-04 伪公式 → 人话；解释仍是解释（不升格为事实）
+    // —— s08 发现：真实发现（T4，消费 read_model 故事种子）；解释仍是解释（不升格为事实）
     await clickNext(page);
     await expect(cur(page, "surface-discovery")).toBeVisible();
-    await expect(page.locator(".discovery-rule")).toContainText("三条证据各自成立");
     await expect(page.getByTestId("primary-discovery")).toContainText("墨痕的解释");
     await assertHumanMode(page);
 
@@ -178,16 +177,11 @@ test.describe("EXP-UI-RECON-01 · inspector mode", () => {
     await page.goto("/experience/jinze-water-net?inspector=1");
     await page.addStyleTag({ content: "nextjs-portal{display:none!important}" });
 
-    // AT-01 / AT-06：transition-hint（recipe · 主角）回到 Inspector
+    // AT-01 / AT-06：transition-hint（recipe · 主角）回到 Inspector；s01 主角为照片（D1）
     await expect(page.getByTestId("transition-hint")).toBeVisible();
     await expect(page.getByTestId("transition-hint")).toContainText("IMMERSIVE_SPATIAL");
     await expect(page.getByTestId("transition-hint")).toContainText("主角=");
-
-    // AT-05 / AT-06：6 位 raw GPS 在 Inspector 可见；几何与坐标系说明仍在
-    await expect(cur(page, "surface-current-map")).toBeVisible();
-    const mapText = (await page.locator(".surf-map--v2").textContent()) ?? "";
-    expect(mapText).toMatch(GPS6);
-    await expect(page.locator(".surf-map--v2")).toContainText("本图坐标系 GCJ-02（原值，零换算）");
+    await expect(cur(page, "surface-present-day-photo")).toBeVisible();
 
     // —— s05：内部裁决标签 / 内部闸门徽章 / AD 前缀全部保留
     await clickNext(page);
@@ -204,12 +198,18 @@ test.describe("EXP-UI-RECON-01 · inspector mode", () => {
       expect(t).toContain("AD-05");
     }
 
-    // —— s08：伪公式在 Inspector 保留
+    // —— s07：6 位 raw GPS 在 Inspector 可见（D1 后地图主角移到 s07 回到今天）
     await clickNext(page);
     await clickNext(page);
+    await expect(cur(page, "surface-current-map")).toBeVisible();
+    const mapText = (await page.locator(".surf-map--v2").textContent()) ?? "";
+    expect(mapText).toMatch(GPS6);
+    await expect(page.locator(".surf-map--v2")).toContainText("本图坐标系 GCJ-02（原值，零换算）");
+
+    // —— s08：真实发现（T4，inspector 同样消费 read_model 故事种子）
     await clickNext(page);
     await expect(cur(page, "surface-discovery")).toBeVisible();
-    await expect(page.locator(".discovery-rule code")).toContainText("Evidence(A)+");
+    await expect(page.getByTestId("primary-discovery")).toContainText("墨痕的解释");
 
     // AT-06：内部 runtime replan-card 在 Inspector 可见
     await page.getByRole("button", { name: /追问/ }).first().click();

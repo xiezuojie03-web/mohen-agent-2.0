@@ -14,6 +14,7 @@
 
 import { useState } from "react";
 import type { SliceShape, SurfaceComponentProps } from "./types";
+import ProductionRelationCanvas from "./ProductionRelationCanvas";
 import { LEVEL_LABELS, type NarrativeLevel } from "@mohen/experience-engine";
 import {
   SpatialCanvas,
@@ -335,6 +336,11 @@ const REL_GEOMETRY = { spineY: 214, bandH: 88, crossingGap: 228, culturalGap: 19
 
 export function RelationalSpaceSurface({ ctx, compact }: SurfaceComponentProps) {
   const [focusKey, setFocusKey] = useState<string | null>(null);
+  // T4：真实产出优先——已发布世界投影可用时，渲染真实关系空间（解决「真实产出只到徽章」的双事实源）；
+  // 不可用时回落冻结切片的关系空间（现状，作降级）。hooks 在前，分支在后（遵守 Rules of Hooks）。
+  if (ctx.productionSummary?.available) {
+    return <ProductionRelationCanvas summary={ctx.productionSummary} />;
+  }
   const W = REL_VIEW.width;
 
   const all = ctx.slice.features.map((f) => ({

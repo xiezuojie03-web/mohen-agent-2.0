@@ -13,8 +13,9 @@ export function createLineageReadRepository(db) {
     async getEvidencePointer(id) {
       const { rows } = await db.query(
         `select p.* from read_model.evidence_pointers p
-         join control.g4_pass_read_models g
-           on g.object_type='evidence_pointer' and g.object_id=p.evidence_pointer_id
+         join control.gate_audits g
+           on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
+          and g.object_type='evidence_pointer' and g.object_id=p.evidence_pointer_id
          where p.evidence_pointer_id=$1`, [id]);
       if (!rows[0]) return null;
       return {

@@ -28,8 +28,23 @@ const ARGS = process.argv.slice(2);
 const NO_RUN = ARGS.includes("--no-run");
 const DROP_AFTER = ARGS.includes("--drop");
 
-// 关键表：用于前后比对
-const KEY_TABLES = ["source_records", "entities", "evidence", "evidence_gate_audit", "visual_assets", "claims", "relations"];
+// 关键表：用于前后比对（V1.4 更新：第一代 public 37 表已随 M2 迁移 DROP，
+// 比对面切换为当前 42 表 schema 的关键落点）
+const KEY_TABLES = [
+  "source.sources",
+  "source.raw_items",
+  "evidence.material_evidence",
+  "world.entities",
+  "world.relation_claims",
+  "world.conflicts",
+  "meaning.findings",
+  "meaning.open_questions",
+  "read_model.world_projections",
+  "read_model.map_timeline_projections",
+  "read_model.discovery_paths",
+  "read_model.story_seeds",
+  "control.gate_audits",
+];
 
 function loadEnvLocal() {
   const p = path.join(ROOT, ".env.local");

@@ -15,7 +15,7 @@ const projectRoot = path.resolve(arg("project-root", process.cwd()));
 const intent = arg("intent");
 const adaptersModule = arg("adapters");
 const executionMode = arg("execution-mode", "attended");
-const fromStage = arg("from", "D01");
+const fromStage = arg("from", "D00");
 const toStage = arg("to", "D05");
 const reportDir = path.resolve(arg("report-dir", path.join(projectRoot, "verification", "data-production-runs")));
 
@@ -34,5 +34,16 @@ const finished = await runProduction({
   context: { adapters: mod.adapters },
 });
 const reports = writeReports({ run: finished, outDir: reportDir });
+// 工程债修复（2026-10-17）：run 终态落库——此前 production_runs.status 永驻 RUNNING，
+// 执行记录不完整（§8.3 第一类验收项）。记账失败不影响 run 结论（try/catch 包容）。
+try {
+  const { run: dbRun } = await import("../../packages/data-access/src/index.mjs");
+  await dbRun(
+    `update control.production_runs set status = :'status', finished_at = now() where run_id = :'run_id'::uuid`,
+    { status: finished.status, run_id: finished.run_id }
+  );
+} catch (e) {
+  console.warn(`[run] production_runs 终态回写失败（不影响 run 结论）：${e instanceof Error ? e.message : String(e)}`);
+}
 console.log(JSON.stringify({ run_id: finished.run_id, status: finished.status, reports }, null, 2));
 process.exit(finished.status === "PASS" ? 0 : finished.status === "HOLD" ? 2 : 1);

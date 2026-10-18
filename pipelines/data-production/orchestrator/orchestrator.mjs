@@ -1,9 +1,9 @@
-import { STAGE_ORDER } from "./contracts.mjs";
+import { STAGE_ORDER, STAGE_CONTRACTS } from "./contracts.mjs";
 import { jobForStage } from "./registry.mjs";
 import { loadExecutor } from "./load-executor.mjs";
 import { finishRun } from "./run-state.mjs";
 
-export async function runProduction({ run, registry, context = {}, from_stage = "D01", to_stage = "D05" }) {
+export async function runProduction({ run, registry, context = {}, from_stage = "D00", to_stage = "D05" }) {
   const start = STAGE_ORDER.indexOf(from_stage);
   const end = STAGE_ORDER.indexOf(to_stage);
   if (start < 0 || end < 0 || start > end) throw new Error("STAGE_RANGE_INVALID");
@@ -22,11 +22,10 @@ export async function runProduction({ run, registry, context = {}, from_stage = 
     const result = await execute({ run: state, job, input, context });
     state.stage_results.push(result);
 
-    if (result.disposition === "HOLD") return finishRun(state, "HOLD");
-    if (result.disposition === "REJECT") return finishRun(state, "REJECT");
+    if (result.disposition !== "PASS") return finishRun(state, result.disposition);
 
-    const outputKey = Object.keys(result.outputs)[0];
-    input = result.outputs[outputKey];
+    // F02 fix: hand off the stage's declared contract output explicitly, never the first key.
+    input = result.outputs[STAGE_CONTRACTS[stage].output];
   }
   return finishRun(state, "PASS");
 }

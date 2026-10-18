@@ -6,6 +6,7 @@
 import { useState } from "react";
 import type { SurfaceComponentProps } from "./types";
 import { predicateLabel } from "./SpatialSurfaces";
+import ProductionDiscovery from "./ProductionDiscovery";
 import {
   humanLevelLabel,
   humanFragmentBadge,
@@ -25,6 +26,7 @@ import {
 } from "../../../../lib/mohen-visual/visual-grammar";
 import { VisualLegend } from "../../../../lib/mohen-visual/spatial-canvas";
 import { fragmentGateDisplayItems, presentOpenQuestions } from "../culturalWorldProjection";
+import ProductionTimeline from "./ProductionTimeline";
 
 const dm = (ctx: SurfaceComponentProps["ctx"]) => ctx.devMode ?? false;
 
@@ -64,6 +66,12 @@ function parseTimeHint(hint: string): TlEvent[] {
 
 export function TimelineSurface({ ctx, compact }: SurfaceComponentProps) {
   const [focusKey, setFocusKey] = useState<string | null>(null);
+
+  // V1.4：真实优先——P03 时间投影已发布时，渲染生产链有着录的年代；
+  // 不可用时回落冻结切片的时间景观（现状，作降级）。hooks 在前，分支在后。
+  if (ctx.productionSummary?.timeline && ctx.productionSummary.timeline.events.length > 0) {
+    return <ProductionTimeline timeline={ctx.productionSummary.timeline} />;
+  }
 
   const rows = ctx.slice.features
     .map((f) => {
@@ -412,6 +420,48 @@ export function EvidenceRevealSurface({ ctx, onAction }: SurfaceComponentProps) 
 // ConflictCompareSurface：并列冲突，不替用户选边（canonical fixture: T11-C1/C2）
 // ---------------------------------------------------------------------------
 export function ConflictCompareSurface({ ctx }: SurfaceComponentProps) {
+  // V1.4：真实优先——W09 着录分歧已发布时，渲染生产链登记的真实冲突（并列、未裁决）；
+  // 不可用时回落冻结/008 冲突内容（现状，作降级）。本组件无 hooks，条件 return 在开头安全。
+  const realConflicts = ctx.productionSummary?.conflicts ?? [];
+  if (realConflicts.length > 0) {
+    const shownReal = realConflicts.filter((c) => ctx.revealedConflicts.includes(c.key));
+    return (
+      <div className="surf surf-conflict" data-testid="surface-conflict-compare">
+        <p className="surf__caption">着录冲突 · 真实产出 · 并列 · <b>未裁决</b></p>
+        {shownReal.length === 0 && <p className="surf__note">先问「为什么不能确定？」，再一组一组看。</p>}
+        <div className="exp-conflicts" data-testid="real-conflicts">
+          {shownReal.map((c) => (
+            <article key={c.key} className="conflict-card" data-testid={`conflict-${c.key}`}>
+              <header>
+                <strong>{c.subject || c.key}</strong>
+                <span className="conflict-card__ruling">{c.key} · 未裁决</span>
+              </header>
+              <ul className="conflict-card__variants">
+                {c.variants.map((v, i) => (
+                  <li key={i}>
+                    <b>{v.value}</b>
+                    {v.source ? <span className="conflict-card__source">—— {v.source}</span> : null}
+                  </li>
+                ))}
+              </ul>
+              <footer>墨痕不替你选边——各说着录都保留在案。</footer>
+            </article>
+          ))}
+        </div>
+        <div className="conflict-status">
+          {/* EXP-UI-RECON-01 R3：内部裁决状态标签仅 ?inspector=1 透出；默认 Human UI 以人话表达 */}
+          {dm(ctx) ? (
+            <>
+              <span className="tag tag--unresolved">静默裁决：ineligible</span>
+              <span className="tag tag--confirmed">并列比较：eligible</span>
+            </>
+          ) : (
+            <span className="conflict-status__human">{CONFLICT_STATUS_HUMAN}</span>
+          )}
+        </div>
+      </div>
+    );
+  }
   const conflicts = ctx.script.conflicts.filter(
     (c) => (c as { surfaced_in_scene?: string }).surfaced_in_scene === ctx.scene.scene_id
   );
@@ -515,6 +565,11 @@ export function QuestionSurface({ ctx }: SurfaceComponentProps) {
 // DiscoverySurface：明确区分 FACT / INTERPRETATION_CANDIDATE / UNKNOWN（TASK-0012A 冻结）
 // ---------------------------------------------------------------------------
 export function DiscoverySurface({ ctx }: SurfaceComponentProps) {
+  // T4：真实产出优先——已发布故事种子可用时，渲染真实发现（解决「真实产出只到徽章」的双事实源）；
+  // 不可用时回落冻结发现（现状，作降级）。本组件无 hooks，条件 return 在开头安全。
+  if (ctx.productionSummary?.available) {
+    return <ProductionDiscovery summary={ctx.productionSummary} />;
+  }
   const d = ctx.script.discoveries.primary;
   const isInterpretation = d.epistemic_classification === "INTERPRETATION_CANDIDATE";
   return (

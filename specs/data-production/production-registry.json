@@ -1,378 +1,492 @@
 {
   "schema": "mohen.production-registry",
-  "schema_version": "3.0-target",
-  "status": "TARGET_EXECUTION_CONTRACT_PHASE_D",
+  "schema_version": "4.0-target",
+  "architecture_generation": "mohen.six-stage.v1",
+  "status": "DESIGN_TARGET_NOT_APPLIED",
+  "activation": {
+    "enabled": true,
+    "reason": "first-layer real loop verified (SAMPLE-TRIAL-12); Owner authorized 2026-10-17"
+  },
   "authority": [
-    "C2 V1.2",
-    "C3 V1.3",
-    "MoHen_Data_Production_Protocol V4.0",
-    "DATA_CONTRACT V2.0"
+    "governance/C2_MoHen_Humanistic_Data_OS_and_Dual_Skill_Architecture_V1.3.md",
+    "governance/C3_MoHen_Humanistic_Data_OS_Database_Architecture_V1.4.md",
+    "specs/data-production/MoHen_Data_Production_Protocol.md",
+    "specs/DATA_CONTRACT.md"
   ],
+  "routing": {
+    "methods": "specs/data-production/method-binding-contract.json",
+    "gates": "specs/data-production/gates/gate-contracts.v3.json",
+    "route_decision_schema": "specs/data-production/schemas/method-route-decisions.schema.json",
+    "never_infer_handoff_from_first_output": true,
+    "partial_resume_requires_current_full_input_refs": true
+  },
   "jobs": [
     {
-      "job_id": "d01.source-intake",
-      "stage": "D01",
+      "job_id": "d00.source-intake",
+      "stage": "D00",
       "data_layer": "L0",
       "exit_gate": "G0",
       "scope": {
-        "kind": "runtime",
-        "description": "Defined per production run; must satisfy Protocol V4 stage contract."
+        "required": true,
+        "kind": "per-run explicit"
       },
-      "search_strategy": "mixed",
       "implementation": {
         "skill": "mohen-source-intake",
-        "executor": "pipelines/data-production/executors/d01-source-intake.mjs",
-        "adapters": [
-          "source-discovery",
-          "source-acquisition",
-          "raw-preservation",
-          "provider-resolution"
-        ]
+        "executor": "pipelines/data-production/executors/d00-source-intake.mjs",
+        "adapter_binding": "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "gate_reviewer_binding": "TO_VERIFY_IN_M0"
       },
       "inputs": [
         "research_intent",
-        "scope",
-        "source_strategy",
-        "query_matrix"
+        "scope"
       ],
       "outputs": [
-        "qualified_source"
+        "source_asset"
+      ],
+      "control_outputs": [
+        "remediation_request"
       ],
       "write_scope": [
         "L0"
       ],
-      "lineage_requirements": [
-        "run_id",
-        "upstream_object_ids",
-        "source_lineage"
-      ],
-      "gates_enforced_by": [
-        "scripts/guards/G0_SOURCE_GATE"
-      ],
+      "qualification_write_owner": "independent-G0",
+      "method_binding": "specs/data-production/method-binding-contract.json",
+      "methods": [],
       "execution_policy": {
-        "attended": true,
+        "enabled": false,
+        "attended": false,
         "unattended": false,
-        "automation_limit": "Attended execution allowed after Phase D contract verification; unattended remains disabled until Phase G."
+        "batch": false,
+        "interactive": false,
+        "enable_requires": [
+          "user_engineering_authorization",
+          "M0_environment_and_bindings_verified",
+          "isolation_and_contract_tests_pass",
+          "no_formal_hold_bypass"
+        ]
       },
       "retry": {
-        "policy": "bounded",
-        "max_attempts": 3
+        "max_attempts": 3,
+        "retry_only": "transient infrastructure failure within identical immutable input snapshot",
+        "semantic_retry": false
       },
       "rollback": {
         "required": true,
-        "pointer": "run_id"
+        "policy": "close new route; only still-eligible old route; otherwise HOLD; never revive revoked cache"
       },
       "stop_conditions": [
-        "gate contract cannot be enforced",
-        "write scope would cross primary data layer",
-        "required lineage is missing"
+        "missing_binding",
+        "invalid_input",
+        "unapproved_profile",
+        "dependency_changed",
+        "qualification_missing",
+        "write_scope_conflict"
       ],
-      "tests": [
-        "registry schema validation",
-        "stage-layer-gate alignment",
-        "write-scope isolation"
-      ],
-      "human_review_view": {
-        "required": true,
-        "contract": "Human_Review_Deliverable_Contract.md"
-      },
-      "legacy_jobs": [
-        "src-*",
-        "unattended.source-refresh",
-        "research.source-inventory",
-        "source parts of images/coords/external-*"
-      ],
-      "purpose": "Source discovery/acquisition/registration/raw preservation"
+      "tests": "verification/arch-mig-prep-01/acceptance/scenario-contracts.csv"
     },
     {
-      "job_id": "d02.material-understanding",
-      "stage": "D02",
+      "job_id": "d01.carrier-reading",
+      "stage": "D01",
       "data_layer": "L1",
       "exit_gate": "G1",
       "scope": {
-        "kind": "runtime",
-        "description": "Defined per production run; must satisfy Protocol V4 stage contract."
+        "required": true,
+        "kind": "per-run explicit"
       },
-      "search_strategy": "directed",
       "implementation": {
-        "skill": "mohen-material-understanding",
-        "executor": "pipelines/data-production/executors/d02-material-understanding.mjs",
-        "adapters": [
-          "text-reading",
-          "ocr",
-          "gazetteer-reading",
-          "historical-map-reading",
-          "visual-reading",
-          "structured-data-reading",
-          "source-dependency"
-        ]
+        "skill": "mohen-carrier-reading",
+        "executor": "pipelines/data-production/executors/d01-carrier-reading.mjs",
+        "adapter_binding": "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "gate_reviewer_binding": "TO_VERIFY_IN_M0"
       },
       "inputs": [
-        "qualified_source"
+        "typed_artifact_refs",
+        "current_qualification_refs",
+        "dependency_snapshot",
+        "purpose",
+        "consumer"
       ],
       "outputs": [
-        "qualified_evidence_unit"
+        "reading_unit"
+      ],
+      "control_outputs": [
+        "remediation_request"
       ],
       "write_scope": [
         "L1"
       ],
-      "lineage_requirements": [
-        "run_id",
-        "upstream_object_ids",
-        "source_lineage"
-      ],
-      "gates_enforced_by": [
-        "scripts/guards/G1_EVIDENCE_QUALITY_GATE"
+      "qualification_write_owner": "independent-G1",
+      "method_binding": "specs/data-production/method-binding-contract.json",
+      "methods": [
+        "C01",
+        "C02",
+        "C03",
+        "C04",
+        "C05",
+        "C06",
+        "C07",
+        "C08"
       ],
       "execution_policy": {
-        "attended": true,
+        "enabled": false,
+        "attended": false,
         "unattended": false,
-        "automation_limit": "Attended execution allowed after Phase D contract verification; unattended remains disabled until Phase G."
+        "batch": false,
+        "interactive": false,
+        "enable_requires": [
+          "user_engineering_authorization",
+          "M0_environment_and_bindings_verified",
+          "isolation_and_contract_tests_pass",
+          "no_formal_hold_bypass"
+        ]
       },
       "retry": {
-        "policy": "bounded",
-        "max_attempts": 3
+        "max_attempts": 3,
+        "retry_only": "transient infrastructure failure within identical immutable input snapshot",
+        "semantic_retry": false
       },
       "rollback": {
         "required": true,
-        "pointer": "run_id"
+        "policy": "close new route; only still-eligible old route; otherwise HOLD; never revive revoked cache"
       },
       "stop_conditions": [
-        "gate contract cannot be enforced",
-        "write scope would cross primary data layer",
-        "required lineage is missing"
+        "missing_binding",
+        "invalid_input",
+        "unapproved_profile",
+        "dependency_changed",
+        "qualification_missing",
+        "write_scope_conflict"
       ],
-      "tests": [
-        "registry schema validation",
-        "stage-layer-gate alignment",
-        "write-scope isolation"
-      ],
-      "human_review_view": {
-        "required": true,
-        "contract": "Human_Review_Deliverable_Contract.md"
-      },
-      "legacy_jobs": [
-        "unattended.evidence-fragment",
-        "research.content-observation",
-        "evidence parts of image-link/external-visual/mention-dependency"
-      ],
-      "purpose": "Carrier-specific reading and material evidence formation"
+      "tests": "verification/arch-mig-prep-01/acceptance/scenario-contracts.csv"
     },
     {
-      "job_id": "d03.world-construction",
-      "stage": "D03",
+      "job_id": "d02.material-understanding",
+      "stage": "D02",
       "data_layer": "L2",
       "exit_gate": "G2",
       "scope": {
-        "kind": "runtime",
-        "description": "Defined per production run; must satisfy Protocol V4 stage contract."
+        "required": true,
+        "kind": "per-run explicit"
       },
-      "search_strategy": "directed",
       "implementation": {
-        "skill": "mohen-world-construction",
-        "executor": "pipelines/data-production/executors/d03-world-construction.mjs",
-        "adapters": [
-          "entity-resolution",
-          "name-resolution",
-          "relation-claim-build",
-          "spatial-claim",
-          "visual-world-link"
-        ]
+        "skill": "mohen-material-understanding",
+        "executor": "pipelines/data-production/executors/d02-material-understanding.mjs",
+        "adapter_binding": "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "gate_reviewer_binding": "TO_VERIFY_IN_M0"
       },
       "inputs": [
-        "qualified_evidence_unit"
+        "typed_artifact_refs",
+        "current_qualification_refs",
+        "dependency_snapshot",
+        "purpose",
+        "consumer"
       ],
       "outputs": [
-        "adjudicated_world_object"
+        "material_observation"
+      ],
+      "control_outputs": [
+        "remediation_request"
       ],
       "write_scope": [
         "L2"
       ],
-      "lineage_requirements": [
-        "run_id",
-        "upstream_object_ids",
-        "source_lineage"
-      ],
-      "gates_enforced_by": [
-        "scripts/guards/G2_WORLD_INTEGRITY_GATE"
+      "qualification_write_owner": "independent-G2",
+      "method_binding": "specs/data-production/method-binding-contract.json",
+      "methods": [
+        "H01",
+        "H02",
+        "H03",
+        "H04",
+        "H05",
+        "H06",
+        "H07",
+        "H08",
+        "H09",
+        "H10",
+        "H11",
+        "H12",
+        "H13",
+        "H14",
+        "H15",
+        "H16",
+        "H17",
+        "H18",
+        "H19",
+        "H20",
+        "H21",
+        "H22",
+        "H23",
+        "H24",
+        "H25"
       ],
       "execution_policy": {
-        "attended": true,
+        "enabled": false,
+        "attended": false,
         "unattended": false,
-        "automation_limit": "Attended execution allowed after Phase D contract verification; unattended remains disabled until Phase G."
+        "batch": false,
+        "interactive": false,
+        "enable_requires": [
+          "user_engineering_authorization",
+          "M0_environment_and_bindings_verified",
+          "isolation_and_contract_tests_pass",
+          "no_formal_hold_bypass"
+        ]
       },
       "retry": {
-        "policy": "bounded",
-        "max_attempts": 3
+        "max_attempts": 3,
+        "retry_only": "transient infrastructure failure within identical immutable input snapshot",
+        "semantic_retry": false
       },
       "rollback": {
         "required": true,
-        "pointer": "run_id"
+        "policy": "close new route; only still-eligible old route; otherwise HOLD; never revive revoked cache"
       },
       "stop_conditions": [
-        "gate contract cannot be enforced",
-        "write scope would cross primary data layer",
-        "required lineage is missing"
+        "missing_binding",
+        "invalid_input",
+        "unapproved_profile",
+        "dependency_changed",
+        "qualification_missing",
+        "write_scope_conflict"
       ],
-      "tests": [
-        "registry schema validation",
-        "stage-layer-gate alignment",
-        "write-scope isolation"
-      ],
-      "human_review_view": {
-        "required": true,
-        "contract": "Human_Review_Deliverable_Contract.md"
-      },
-      "legacy_jobs": [
-        "unattended.deterministic-resolution",
-        "unattended.name-resolution",
-        "world parts of candidate-extraction/relation-weave/coords/image-link/external-*"
-      ],
-      "purpose": "Cultural world structuring and factual integrity"
+      "tests": "verification/arch-mig-prep-01/acceptance/scenario-contracts.csv"
     },
     {
-      "job_id": "d04.humanistic-discovery",
-      "stage": "D04",
+      "job_id": "d03.world-construction",
+      "stage": "D03",
       "data_layer": "L3",
       "exit_gate": "G3",
       "scope": {
-        "kind": "runtime",
-        "description": "Defined per production run; must satisfy Protocol V4 stage contract."
+        "required": true,
+        "kind": "per-run explicit"
       },
-      "search_strategy": "directed",
       "implementation": {
-        "skill": "mohen-humanistic-discovery",
-        "executor": "pipelines/data-production/executors/d04-humanistic-discovery.mjs",
-        "adapters": [
-          "association-discovery",
-          "A01-A12",
-          "humanistic-selection",
-          "counter-signal",
-          "present-connection"
-        ]
+        "skill": "mohen-world-construction",
+        "executor": "pipelines/data-production/executors/d03-world-construction.mjs",
+        "adapter_binding": "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "gate_reviewer_binding": "TO_VERIFY_IN_M0"
       },
       "inputs": [
-        "adjudicated_world_object",
-        "human_question"
+        "typed_artifact_refs",
+        "current_qualification_refs",
+        "dependency_snapshot",
+        "purpose",
+        "consumer"
       ],
       "outputs": [
-        "qualified_humanistic_finding"
+        "world_claim_revision"
+      ],
+      "control_outputs": [
+        "remediation_request"
       ],
       "write_scope": [
         "L3"
       ],
-      "lineage_requirements": [
-        "run_id",
-        "upstream_object_ids",
-        "source_lineage"
-      ],
-      "gates_enforced_by": [
-        "scripts/guards/G3_INTERPRETATION_GATE"
+      "qualification_write_owner": "independent-G3",
+      "method_binding": "specs/data-production/method-binding-contract.json",
+      "methods": [
+        "W01",
+        "W02",
+        "W03",
+        "W04",
+        "W05",
+        "W06",
+        "W07",
+        "W08",
+        "W09",
+        "W10"
       ],
       "execution_policy": {
-        "attended": true,
+        "enabled": false,
+        "attended": false,
         "unattended": false,
-        "automation_limit": "Attended execution allowed after Phase D contract verification; unattended remains disabled until Phase G."
+        "batch": false,
+        "interactive": false,
+        "enable_requires": [
+          "user_engineering_authorization",
+          "M0_environment_and_bindings_verified",
+          "isolation_and_contract_tests_pass",
+          "no_formal_hold_bypass"
+        ]
       },
       "retry": {
-        "policy": "bounded",
-        "max_attempts": 3
+        "max_attempts": 3,
+        "retry_only": "transient infrastructure failure within identical immutable input snapshot",
+        "semantic_retry": false
       },
       "rollback": {
         "required": true,
-        "pointer": "run_id"
+        "policy": "close new route; only still-eligible old route; otherwise HOLD; never revive revoked cache"
       },
       "stop_conditions": [
-        "gate contract cannot be enforced",
-        "write scope would cross primary data layer",
-        "required lineage is missing"
+        "missing_binding",
+        "invalid_input",
+        "unapproved_profile",
+        "dependency_changed",
+        "qualification_missing",
+        "write_scope_conflict"
       ],
-      "tests": [
-        "registry schema validation",
-        "stage-layer-gate alignment",
-        "write-scope isolation"
-      ],
-      "human_review_view": {
-        "required": true,
-        "contract": "Human_Review_Deliverable_Contract.md"
-      },
-      "legacy_jobs": [
-        "research.association-scan",
-        "research.humanistic-selection",
-        "interpretive parts of candidate-extraction/relation-weave"
-      ],
-      "purpose": "Association discovery, comparison, change interpretation and humanistic findings"
+      "tests": "verification/arch-mig-prep-01/acceptance/scenario-contracts.csv"
     },
     {
-      "job_id": "d05.read-model-publication",
-      "stage": "D05",
+      "job_id": "d04.humanistic-discovery",
+      "stage": "D04",
       "data_layer": "L4",
       "exit_gate": "G4",
       "scope": {
-        "kind": "runtime",
-        "description": "Defined per production run; must satisfy Protocol V4 stage contract."
+        "required": true,
+        "kind": "per-run explicit"
       },
-      "search_strategy": "directed",
       "implementation": {
-        "skill": "mohen-read-model-publication",
-        "executor": "pipelines/data-production/executors/d05-read-model-publication.mjs",
-        "adapters": [
-          "world-projection",
-          "agent-context",
-          "story-seed",
-          "map-time-projection",
-          "evidence-pointer"
-        ]
+        "skill": "mohen-humanistic-discovery",
+        "executor": "pipelines/data-production/executors/d04-humanistic-discovery.mjs",
+        "adapter_binding": "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "gate_reviewer_binding": "TO_VERIFY_IN_M0"
       },
       "inputs": [
-        "adjudicated_world_object",
-        "qualified_humanistic_finding"
+        "typed_artifact_refs",
+        "current_qualification_refs",
+        "dependency_snapshot",
+        "purpose",
+        "consumer"
       ],
       "outputs": [
-        "runtime_eligible_read_model"
+        "humanistic_finding_revision"
+      ],
+      "control_outputs": [
+        "remediation_request"
       ],
       "write_scope": [
         "L4"
       ],
-      "lineage_requirements": [
-        "run_id",
-        "upstream_object_ids",
-        "source_lineage"
-      ],
-      "gates_enforced_by": [
-        "scripts/guards/G4_RUNTIME_ELIGIBILITY_GATE"
+      "qualification_write_owner": "independent-G4",
+      "method_binding": "specs/data-production/method-binding-contract.json",
+      "methods": [
+        "A01",
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A07",
+        "A08",
+        "A09",
+        "A10",
+        "A11",
+        "A12"
       ],
       "execution_policy": {
-        "attended": true,
+        "enabled": false,
+        "attended": false,
         "unattended": false,
-        "automation_limit": "Attended execution allowed after Phase D contract verification; unattended remains disabled until Phase G."
+        "batch": false,
+        "interactive": false,
+        "enable_requires": [
+          "user_engineering_authorization",
+          "M0_environment_and_bindings_verified",
+          "isolation_and_contract_tests_pass",
+          "no_formal_hold_bypass"
+        ]
       },
       "retry": {
-        "policy": "bounded",
-        "max_attempts": 3
+        "max_attempts": 3,
+        "retry_only": "transient infrastructure failure within identical immutable input snapshot",
+        "semantic_retry": false
       },
       "rollback": {
         "required": true,
-        "pointer": "run_id"
+        "policy": "close new route; only still-eligible old route; otherwise HOLD; never revive revoked cache"
       },
       "stop_conditions": [
-        "gate contract cannot be enforced",
-        "write scope would cross primary data layer",
-        "required lineage is missing"
+        "missing_binding",
+        "invalid_input",
+        "unapproved_profile",
+        "dependency_changed",
+        "qualification_missing",
+        "write_scope_conflict"
       ],
-      "tests": [
-        "registry schema validation",
-        "stage-layer-gate alignment",
-        "write-scope isolation"
-      ],
-      "human_review_view": {
+      "tests": "verification/arch-mig-prep-01/acceptance/scenario-contracts.csv"
+    },
+    {
+      "job_id": "d05.read-model-publication",
+      "stage": "D05",
+      "data_layer": "L5",
+      "exit_gate": "G5",
+      "scope": {
         "required": true,
-        "contract": "Human_Review_Deliverable_Contract.md"
+        "kind": "per-run explicit"
       },
-      "legacy_jobs": [
-        "projection part of unattended.gate-projection"
+      "implementation": {
+        "skill": "mohen-read-model-publication",
+        "executor": "pipelines/data-production/executors/d05-read-model-publication.mjs",
+        "adapter_binding": "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "gate_reviewer_binding": "TO_VERIFY_IN_M0"
+      },
+      "inputs": [
+        "typed_artifact_refs",
+        "current_qualification_refs",
+        "dependency_snapshot",
+        "purpose",
+        "consumer"
       ],
-      "purpose": "Trusted read-model assembly and runtime eligibility"
+      "outputs": [
+        "world_projections",
+        "agent_contexts",
+        "story_seeds",
+        "discovery_paths",
+        "map_timeline_projections",
+        "evidence_pointers"
+      ],
+      "control_outputs": [
+        "remediation_request",
+        "invalidation_event"
+      ],
+      "write_scope": [
+        "L5"
+      ],
+      "qualification_write_owner": "independent-G5",
+      "method_binding": "specs/data-production/method-binding-contract.json",
+      "methods": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P08"
+      ],
+      "execution_policy": {
+        "enabled": false,
+        "attended": false,
+        "unattended": false,
+        "batch": false,
+        "interactive": false,
+        "enable_requires": [
+          "user_engineering_authorization",
+          "M0_environment_and_bindings_verified",
+          "isolation_and_contract_tests_pass",
+          "no_formal_hold_bypass"
+        ]
+      },
+      "retry": {
+        "max_attempts": 3,
+        "retry_only": "transient infrastructure failure within identical immutable input snapshot",
+        "semantic_retry": false
+      },
+      "rollback": {
+        "required": true,
+        "policy": "close new route; only still-eligible old route; otherwise HOLD; never revive revoked cache"
+      },
+      "stop_conditions": [
+        "missing_binding",
+        "invalid_input",
+        "unapproved_profile",
+        "dependency_changed",
+        "qualification_missing",
+        "write_scope_conflict"
+      ],
+      "tests": "verification/arch-mig-prep-01/acceptance/scenario-contracts.csv"
     }
   ]
 }

@@ -140,9 +140,10 @@ export const BEATS: BeatPresentation[] = [
     label: "进入现场",
     recipe: "IMMERSIVE_SPATIAL",
     sceneIds: [S("s01-today-hook")],
-    // v0.3：第一幕主角 = 真实坐标三点图（current_map surface），大照片下移到底部配图条；
-    // 与 e2e s01 断言 surface-current-map 对齐，且「约 620m 彼此不到一公里」为诚实表述。
-    primaryPreference: ["current_map"],
+    // D1（Owner 决断，2026-10-17）：第一幕主角改为「大幅真实照片」（current_photo）先建立现场感，
+    // 抽象地图退为后续场景（s07 回到今天仍用 current_map）。照片在、则 eligibility 允许照片先行；
+    // 照片清单为空时（current_photo ineligible）自动回落到 current_map，不硬崩。
+    primaryPreference: ["current_photo"],
     intent: "先看见今天的三处对象，不急着解释",
     topWhen: "今天 · 你正站在这里",
     meaningNow: "三处宋构都还在原址，彼此不到一公里——这是这一站要回答的问题。",

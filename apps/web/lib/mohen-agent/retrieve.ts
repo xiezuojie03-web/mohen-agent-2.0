@@ -1,20 +1,18 @@
 // apps/web/lib/mohen-agent/retrieve.ts
 //
-// ADR-003 第 ② 层：运行期检索实现（服务端专用）
+// ADR-003 第 ② 层：运行期检索实现（服务端专用）—— M4 切换到 L5 发布成果。
 //
-// 墨痕第一次在运行期真正读库。纪律：
+// 数据源从第一代 public 表（evidence / source_records / cultural_relation_claims /
+// cultural_events / cultural_conflicts / cultural_present_connections，已 DROP）
+// 切换到 read_model 六类 L5 发布成果，且只读 G5 独立资格 PASS（current_valid=true、
+// consumer='agent'）。这是「发布层接线」：管道与门禁接对；上游数据生产（N01–N06）
+// 尚未实现时，read_model 无候选、G5 无 PASS，本检索诚实返回空，绝不伪造内容。
+//
+// 纪律：
 // - **只读 SELECT**，零写库、零迁移；
 // - 唯一数据通道 @mohen/data-access（psql 二进制，零 npm 依赖，离线可复现）；
-// - 只返回**已审核材料**（evidence / 008 cultural_*）；认识论档位原样映射，只降不升；
+// - 只返回**经 G5 独立资格 PASS** 的发布成果；认识论档位只降不升；
 // - 库不可用 → 返回 degraded，由上层明确告知用户，**绝不静默编造材料**。
-//
-// ★ 排序不是装饰，是可信度的一部分 ★
-//   实测教训：问「万安桥在哪」曾把**新场万安桥**（新场镇）排在**金泽万安桥**前面 ——
-//   两者正文都含「万安桥」，旧算法下完全同分，谁在前全凭运气。对本项目而言
-//   **配错就是底线错误**，比总量少、比排序略差都严重。因此这里显式做两件事：
-//     1. 「材料讲的是谁」（subject_hint 命中）权重远高于「只是提到谁」（正文命中）；
-//     2. 完全不提本镇、却提到别镇的记录，判定不属于本切片并排除。
-//   二者都是**相关性判定**，不是改写事实 —— 不触碰认识论档位，也不新增材料。
 
 import { queryRows, type PgRow } from "@mohen/data-access";
 import type { EpistemicTag, Material } from "@mohen/agent-runtime";
@@ -32,120 +30,141 @@ export const OTHER_TOWNS = [
 ];
 
 /**
- * 五路 UNION：基础证据 + 008 文化层（关系主张 / 事件 / 冲突 / 当下连接）。
- * 统一输出列：subject_txt（材料讲的是谁）/ entity_txt（提到谁）/ hay（归属判定的全文草堆）。
+ * 六路 UNION：read_model 六类 L5 发布成果，各自 join G5 独立资格 PASS
+ * （current_valid=true、consumer='agent'）。object_type 用单数（与 read-model-repository
+ * 的 kind 一致）。发布成果 -> 展示 kind 的接线映射：
+ *   world_projection -> claim；world_projection.relations -> relation（P0-1）；map_timeline_projection -> event；agent_context -> present；
+ *   story_seed -> claim；discovery_path -> fragment；evidence_pointer -> evidence。
  */
 const SQL = `
 with terms as (
   select u.t from unnest(string_to_array(:'terms','|')) as u(t) where length(u.t) > 0
-),
-other_towns as (
-  select u.n from unnest(string_to_array(:'others','|')) as u(n) where length(u.n) > 0
 )
 select id, kind, snippet, source_ref, vstatus, time_hint, conf, entity_txt, match_score, rel_score
 from (
   select
-    z.*,
-    row_number() over (partition by z.kind order by z.rel_score desc, z.match_score desc) as rn
-  from (
-  select
     x.*,
     (select count(*) from terms tt
        where x.snippet     ilike '%' || tt.t || '%'
-          or x.entity_txt  ilike '%' || tt.t || '%'
-          or x.subject_txt ilike '%' || tt.t || '%')::int as match_score,
-    (
-      3.0 * (select count(*) from terms tt where x.subject_txt = tt.t)
-    + 2.0 * (select count(*) from terms tt where x.subject_txt ilike '%' || tt.t || '%')
-    + 1.0 * (select count(*) from terms tt where x.snippet     ilike '%' || tt.t || '%')
-    + 0.5 * (select count(*) from terms tt where x.entity_txt  ilike '%' || tt.t || '%')
-    )::numeric as rel_score
+          or x.entity_txt  ilike '%' || tt.t || '%')::int as match_score,
+    (1.0 * (select count(*) from terms tt where x.snippet    ilike '%' || tt.t || '%')
+     + 0.5 * (select count(*) from terms tt where x.entity_txt ilike '%' || tt.t || '%'))::numeric as rel_score
   from (
     select
-      e.evidence_id::text                                   as id,
-      'evidence'::text                                      as kind,
-      coalesce(e.quote_text, '')                            as snippet,
-      coalesce(s.title, '未标注来源')                          as source_ref,
-      e.verification_status::text                           as vstatus,
-      coalesce(e.time_hint, '')                             as time_hint,
-      e.confidence::text                                    as conf,
-      coalesce(e.subject_hint, '')                          as subject_txt,
-      coalesce(e.subject_hint, '') || ' ' || coalesce(e.place_hint, '') as entity_txt
-    from evidence e
-    left join source_records s on s.source_id = e.source_id
+      p.projection_id::text                                   as id,
+      'claim'::text                                           as kind,
+      coalesce(p.payload->>'title', p.projection_key, '')     as snippet,
+      coalesce(p.payload->>'source_ref', '已发布世界投影')      as source_ref,
+      'SUPPORTED'::text                                       as vstatus,
+      coalesce(p.payload->>'time_hint', '')                   as time_hint,
+      '0.700'::text                                           as conf,
+      coalesce(p.payload->>'entities', p.projection_key, '')  as entity_txt
+    from read_model.world_projections p
+    join control.gate_audits g
+      on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
+     and g.consumer='agent' and g.object_type='world_projection' and g.object_id=p.projection_id
 
     union all
 
     select
-      c.claim_id::text                                      as id,
-      'claim'::text                                         as kind,
-      coalesce(c.predicate, '') || coalesce(' ' || c.object_value, '') as snippet,
-      '金泽切片 · 文化关系主张'                                 as source_ref,
-      c.epistemic_status::text                              as vstatus,
-      coalesce(c.time_scope_start, '')                      as time_hint,
-      '0.500'::text                                         as conf,
-      coalesce(c.subject_feature_key, '')                   as subject_txt,
-      coalesce(c.subject_feature_key, '') || ' ' || coalesce(c.object_feature_key, '') as entity_txt
-    from cultural_relation_claims c
+      m.map_timeline_projection_id::text                      as id,
+      'event'::text                                           as kind,
+      coalesce(m.payload->>'title', m.projection_key, '')     as snippet,
+      coalesce(m.payload->>'source_ref', '已发布时空投影')      as source_ref,
+      'SUPPORTED'::text                                       as vstatus,
+      coalesce(m.payload->>'time_hint', '')                   as time_hint,
+      '0.700'::text                                           as conf,
+      coalesce(m.payload->>'entities', m.projection_key, '')  as entity_txt
+    from read_model.map_timeline_projections m
+    join control.gate_audits g
+      on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
+     and g.consumer='agent' and g.object_type='map_timeline_projection' and g.object_id=m.map_timeline_projection_id
 
     union all
 
     select
-      v.event_id::text                                      as id,
-      'event'::text                                         as kind,
-      coalesce(v.canonical_label, '')                       as snippet,
-      '金泽切片 · 文化事件'                                    as source_ref,
-      v.epistemic_status::text                              as vstatus,
-      coalesce(v.time_scope_start, '')                      as time_hint,
-      '0.500'::text                                         as conf,
-      coalesce(v.subject_feature_key, '')                   as subject_txt,
-      coalesce(v.subject_feature_key, '')                   as entity_txt
-    from cultural_events v
+      a.agent_context_id::text                                as id,
+      'present'::text                                         as kind,
+      coalesce(a.payload->>'summary', a.context_key, '')      as snippet,
+      coalesce(a.payload->>'source_ref', '墨痕知识上下文')      as source_ref,
+      'SUPPORTED_CANDIDATE'::text                             as vstatus,
+      coalesce(a.payload->>'time_hint', '')                   as time_hint,
+      '0.500'::text                                           as conf,
+      coalesce(a.payload->>'entities', a.context_key, '')     as entity_txt
+    from read_model.agent_contexts a
+    join control.gate_audits g
+      on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
+     and g.consumer='agent' and g.object_type='agent_context' and g.object_id=a.agent_context_id
 
     union all
 
     select
-      f.conflict_id::text                                   as id,
-      'conflict'::text                                      as kind,
-      '一种记载是 ' || coalesce(f.primary_value, '?') || '，另一种记载是 ' || coalesce(f.conflicted_value, '?') as snippet,
-      coalesce(f.source_of_conflict, '来源待核')               as source_ref,
-      'CONFLICTED'::text                                    as vstatus,
-      ''::text                                              as time_hint,
-      '0.500'::text                                         as conf,
-      coalesce(f.subject_feature_key, '')                   as subject_txt,
-      coalesce(f.subject_feature_key, '')                   as entity_txt
-    from cultural_conflicts f
+      s.story_seed_id::text                                   as id,
+      'claim'::text                                           as kind,
+      coalesce(s.title, s.narrative_question, s.seed_key, '') as snippet,
+      coalesce(s.payload->>'source_ref', '故事种子')            as source_ref,
+      'SUPPORTED_CANDIDATE'::text                             as vstatus,
+      coalesce(s.payload->>'time_hint', '')                   as time_hint,
+      '0.500'::text                                           as conf,
+      coalesce(s.payload->>'entities', s.seed_key, '')        as entity_txt
+    from read_model.story_seeds s
+    join control.gate_audits g
+      on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
+     and g.consumer='agent' and g.object_type='story_seed' and g.object_id=s.story_seed_id
 
     union all
 
     select
-      p.present_id::text                                    as id,
-      'present'::text                                       as kind,
-      coalesce(p.observed_state, '')                        as snippet,
-      '金泽切片 · 当下连接'                                    as source_ref,
-      'SUPPORTED'::text                                     as vstatus,
-      ''::text                                              as time_hint,
-      '0.500'::text                                         as conf,
-      coalesce(p.subject_feature_key, '')                   as subject_txt,
-      coalesce(p.subject_feature_key, '')                   as entity_txt
-    from cultural_present_connections p
+      d.discovery_path_id::text                               as id,
+      'fragment'::text                                        as kind,
+      coalesce(d.steps->0->>'label', d.path_key, '')          as snippet,
+      coalesce(d.steps->0->>'source_ref', '探索路径')          as source_ref,
+      'SUPPORTED_CANDIDATE'::text                             as vstatus,
+      coalesce(d.steps->0->>'time_hint', '')                  as time_hint,
+      '0.500'::text                                           as conf,
+      coalesce(d.steps->0->>'entities', d.path_key, '')       as entity_txt
+    from read_model.discovery_paths d
+    join control.gate_audits g
+      on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
+     and g.consumer='agent' and g.object_type='discovery_path' and g.object_id=d.discovery_path_id
+
+    union all
+
+    select
+      e.evidence_pointer_id::text                             as id,
+      'evidence'::text                                        as kind,
+      coalesce(e.display_excerpt, '')                         as snippet,
+      coalesce(e.display_locator->>'source_title', '证据指针')  as source_ref,
+      'SUPPORTED'::text                                       as vstatus,
+      coalesce(e.display_locator->>'time_hint', '')           as time_hint,
+      '0.700'::text                                           as conf,
+      coalesce(e.display_locator->>'entities', '')            as entity_txt
+    from read_model.evidence_pointers e
+    join control.gate_audits g
+      on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
+     and g.consumer='agent' and g.object_type='evidence_pointer' and g.object_id=e.evidence_pointer_id
+
+    union all
+
+    -- P0-1 修复：把 world_projection.payload.relations（真实关系三元组）解析为 relation 类材料。
+    -- 三元组形如「万安桥—sister_bridge_with—普济桥」，snippet 先存原文，再由 TS 层人话化 + 拆 entityIds。
+    select
+      (p.projection_id::text || '-rel-' || r.ord::text)       as id,
+      'relation'::text                                        as kind,
+      r.rel_txt                                               as snippet,
+      '已发布世界投影（真实产出）'::text                          as source_ref,
+      'SUPPORTED'::text                                       as vstatus,
+      coalesce(p.payload->>'time_hint', '')                   as time_hint,
+      '0.700'::text                                           as conf,
+      r.rel_txt                                               as entity_txt
+    from read_model.world_projections p
+    join control.gate_audits g
+      on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
+     and g.consumer='agent' and g.object_type='world_projection' and g.object_id=p.projection_id
+    cross join lateral jsonb_array_elements_text(coalesce(p.payload->'relations','[]'::jsonb)) with ordinality as r(rel_txt, ord)
       ) x
-  ) z
 ) y
 where (:'terms' = '' or y.match_score > 0)
-  -- 每类材料各留前 6 条：否则高权重的 evidence 会把 event/claim/present 全部挤出 limit
-  and y.rn <= 6
-  -- 归属排除（防「宣桥万安桥」「新场万安桥」混入「金泽万安桥」）：
-  -- 判据用**通用模式**而非硬编码镇名单（实测：宣桥镇不在任何预设名单里，列不全就会漏）。
-  --   全文不提本镇 且（提到别镇名 或 出现「某镇」字样）→ 判定不属于本切片。
-  and not (
-    (coalesce(y.snippet,'') || ' ' || coalesce(y.entity_txt,'') || ' ' || coalesce(y.subject_txt,'')) not ilike '%' || :'town' || '%'
-    and (
-      (select count(*) from other_towns ot
-         where (coalesce(y.snippet,'') || ' ' || coalesce(y.entity_txt,'') || ' ' || coalesce(y.subject_txt,'')) ilike '%' || ot.n || '%') > 0
-      or (coalesce(y.snippet,'') || ' ' || coalesce(y.entity_txt,'') || ' ' || coalesce(y.subject_txt,'')) like '%镇%'
-    )
-  )
 order by y.rel_score desc, y.match_score desc, y.conf::numeric desc nulls last
 limit __LIMIT__
 `;
@@ -212,10 +231,6 @@ const EPISTEMIC_008 = [
 
 export function toMaterial(r: PgRow): Material {
   const vstatus = r.vstatus ?? "";
-  // ★ 修过一个静默降级 bug ★：原判据是 `startsWith("SUPPORTED_") || [...其余四值]`，
-  //   "SUPPORTED" 两个分支都不进 → 落到 mapVstatus 的 default → UNKNOWN。
-  //   结果：库里明明是「有据可依」的当下连接记录，展示层却显示「档位不明」。
-  //   档位可以降，但**不能因为分派写错而降**。
   const epistemic = EPISTEMIC_008.includes(vstatus)
     ? mapEpistemic(vstatus)
     : mapVstatus(vstatus);
@@ -237,6 +252,49 @@ export function toMaterial(r: PgRow): Material {
   };
 }
 
+/** 关系谓词枚举 → 人话（与展示层同一词汇表，避免把内部谓词键读给用户） */
+const RELATION_PREDICATE_HUMAN: Record<string, string> = {
+  formerly_named: "旧名",
+  founded_on_former_residence_of: "建于其故宅",
+  built_on_site_of: "建于其故宅",
+  named_after: "得名于",
+  sister_bridge_with: "互为姐妹桥",
+  has_bridges: "桥群含",
+  located_in: "位于",
+  spans_same_waterway: "同跨一条水道",
+  spans_waterway: "跨越",
+  same_waterway_as: "同跨一河",
+  similar_form_to: "形制相仿",
+  temple_bridge_association: "关联（未证实）",
+  relative_position_south_of: "在南",
+};
+
+/**
+ * P0-1：把「主—谓—宾」三元组拆成 (subject, predicate, object)，人话化谓词，
+ * 并把 entityIds 收紧为 [subject, object]——relation 材料只归属于它真正连接的两个对象，
+ * 不再用「全 7 实体」冒充（这是 P3-5 召回失真的根因之一）。
+ *
+ * V1.5：objectAliases 传入对象实体的着录别名（如临时水道实体的 金泽塘/秀州塘/市河），
+ * 追加进 snippet——否则「万安桥跨的是哪条河」的检索词「河」无法命中
+ * 「万安桥 · 跨越 · 桥所跨水道（名称待定）」（别名词「市河」含「河」）。
+ * 只追加真实别名，不生成任何新内容。
+ */
+function humanizeRelation(
+  triple: string,
+  objectAliases: Record<string, string[]> = {}
+): { snippet: string; entityIds: string[] } | null {
+  const parts = triple.split("—");
+  if (parts.length < 3) return null;
+  const subject = parts[0].trim();
+  const predicate = parts[1].trim();
+  const object = parts.slice(2).join("—").trim();
+  if (!subject || !object) return null;
+  const predHuman = RELATION_PREDICATE_HUMAN[predicate] ?? predicate;
+  const aliases = (objectAliases[object] ?? []).filter((a) => a && a !== object);
+  const aliasSuffix = aliases.length ? `（又称：${aliases.join(" / ")}）` : "";
+  return { snippet: `${subject} · ${predHuman} · ${object}${aliasSuffix}`, entityIds: [subject, object] };
+}
+
 export interface RetrieveResult {
   materials: Material[];
   /** 库不可用时为 true —— 上层必须明确告知用户，不得假装查到了 */
@@ -248,6 +306,8 @@ export interface RetrieveOptions {
   town?: string;
   /** 归属排除用的其它镇名；传空数组可关闭该机制 */
   excludeTowns?: string[];
+  /** V1.5：实体标签 → 着录别名（relation 材料 snippet 追加，保证通名问句可命中） */
+  objectAliases?: Record<string, string[]>;
 }
 
 export async function retrieveMaterials(
@@ -257,15 +317,24 @@ export async function retrieveMaterials(
 ): Promise<RetrieveResult> {
   const safeTerms = terms.filter((t) => t.trim().length > 0).slice(0, 8);
   const lim = Math.max(1, Math.min(MAX_LIMIT, Math.trunc(limit)));
-  const town = opts.town ?? SLICE_TOWN;
-  const others = (opts.excludeTowns ?? OTHER_TOWNS).join("|");
+  // town/others 保留入参契约；L5 发布成果已由 G5 门禁与上游资格保证归属，不再做镇名排除。
+  void opts.town;
+  void opts.excludeTowns;
   try {
     const rows = await queryRows(SQL.replace("__LIMIT__", String(lim)), {
       terms: safeTerms.join("|"),
-      town,
-      others,
     });
-    const materials = rows.filter((r) => (r.snippet ?? "").trim().length > 0).map(toMaterial);
+    const materials = rows
+      .filter((r) => (r.snippet ?? "").trim().length > 0)
+      .map((r) => {
+        if (r.kind === "relation") {
+          const h = humanizeRelation(r.snippet ?? "", opts.objectAliases ?? {});
+          if (!h) return null;
+          return { ...toMaterial(r), kind: "relation" as const, snippet: h.snippet, entityIds: h.entityIds };
+        }
+        return toMaterial(r);
+      })
+      .filter((m): m is Material => m !== null);
     return { materials, degraded: false };
   } catch (e) {
     // 诊断留痕：库不可用必须有据可查，不许静默降级后假装「查过了」

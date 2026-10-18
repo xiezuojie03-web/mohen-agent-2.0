@@ -1,0 +1,57 @@
+{
+  "report_type": "human_review",
+  "run_id": "6c604753-1fad-4123-8dc1-c54747c92e44",
+  "status": "PASS",
+  "stages": [
+    {
+      "stage": "D00",
+      "data_layer": "L0",
+      "gate": "G0",
+      "disposition": "PASS",
+      "content_stats": {
+        "sources": 2
+      },
+      "narrative_relevant_records": [
+        {
+          "source_id": "de495559-12d9-4e1b-95da-24217784c794",
+          "title": "上海市地名志·金泽条目"
+        },
+        {
+          "source_id": "efeb94ca-266b-4503-8894-65cbf26a6c56",
+          "title": "光绪《青浦县志》·金泽方志记载"
+        }
+      ],
+      "gaps_and_counterexamples": [],
+      "owner_decision": null
+    },
+    {
+      "stage": "D01",
+      "data_layer": "L1",
+      "gate": "G1",
+      "disposition": "PASS",
+      "content_stats": {
+        "reading_units": 4
+      },
+      "narrative_relevant_records": [
+        {
+          "read_unit_id": "bfbd207c-53c6-4aff-ad3f-f7b95ef30507",
+          "literal": "古名白苎里。因地处湖荡泽地……古有『穑人获泽如金』之说，故名"
+        },
+        {
+          "read_unit_id": "d1047230-411a-4564-9d30-fdd9c3e0fd52",
+          "literal": "是上海的『桥乡』，现存古桥 21 座，其中有建于宋代的万安桥"
+        },
+        {
+          "read_unit_id": "25e629ef-9036-41b7-94dd-a5f933274456",
+          "literal": "南宋景定元年（1260）就南宋名相吕颐浩故宅创建，寺名取自其"
+        },
+        {
+          "read_unit_id": "49e4db81-8d49-40cf-a425-9b5cebd21cee",
+          "literal": "南宋景定年间建（万安桥），与普济桥一北一南同跨一河，形制相仿"
+        }
+      ],
+      "gaps_and_counterexamples": [],
+      "owner_decision": null
+    }
+  ]
+}

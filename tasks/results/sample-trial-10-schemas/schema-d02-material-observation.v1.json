@@ -1,0 +1,148 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "mohen.schema.d02-material-observation.v1",
+  "title": "D02 H05/H04 材料观察（L2，证据化观察）",
+  "version": "1.0",
+  "stage": "D02",
+  "layer": "L2",
+  "methods": ["H05", "H04"],
+  "output_contract": ["material_observation"],
+  "description": "H05 地方志 / H04 历史地理著作的材料观察输出，对齐 evidence.reading_units / classification_decisions / material_mentions / material_evidence（含 assertion_kind、voice_basis）。一次调用产出全部字段，禁止一法一调。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "reading_units", "classification_decisions", "material_mentions", "material_evidence"],
+  "properties": {
+    "schema_version": { "const": "d02-material-observation.v1" },
+    "reading_units": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/reading_unit" }
+    },
+    "classification_decisions": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/classification_decision" }
+    },
+    "material_mentions": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/material_mention" }
+    },
+    "material_evidence": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/material_evidence" }
+    },
+    "reading_unit_dependencies": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/reading_unit_dependency" }
+    }
+  },
+  "definitions": {
+    "reading_unit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reading_unit_id", "unit_path", "primary_h_type", "classification_status"],
+      "properties": {
+        "reading_unit_id": { "type": "string", "description": "L2 作品内阅读单元 ID" },
+        "source_version_id": { "type": ["string", "null"] },
+        "raw_item_id": { "type": ["string", "null"] },
+        "parent_unit_id": { "type": ["string", "null"] },
+        "unit_path": { "type": "string" },
+        "unit_kind": { "type": "string" },
+        "primary_h_type": {
+          "type": "string",
+          "description": "主 H 类型；类型不清写 H-UNRESOLVED",
+          "enum": ["H01", "H02", "H03", "H04", "H05", "H06", "H07", "H08", "H09", "H10", "H11", "H12", "H13", "H14", "H15", "H16", "H17", "H18", "H19", "H20", "H21", "H22", "H23", "H24", "H25", "H-UNRESOLVED"]
+        },
+        "taxonomy_version": { "type": "string" },
+        "classification_status": { "type": "string", "enum": ["resolved", "unresolved", "candidate"] },
+        "classification_basis": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "classification_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision_id", "reading_unit_id", "primary_h_type", "status"],
+      "properties": {
+        "decision_id": { "type": "string" },
+        "reading_unit_id": { "type": "string" },
+        "primary_h_type": { "type": "string" },
+        "alternatives": { "type": "array", "items": { "type": "string" }, "description": "最多 3 个有根据的邻类候选" },
+        "basis": { "type": "string", "description": "分类依据，可复核" },
+        "taxonomy_version": { "type": "string" },
+        "status": { "type": "string", "enum": ["decided", "unresolved", "superseded"] },
+        "decided_at": { "type": "string", "format": "date-time" },
+        "supersedes_decision_id": { "type": ["string", "null"] }
+      }
+    },
+    "material_mention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mention_id", "evidence_id", "mention_kind", "literal_text"],
+      "properties": {
+        "mention_id": { "type": "string" },
+        "evidence_id": { "type": "string", "description": "回指 material_evidence" },
+        "mention_kind": {
+          "type": "string",
+          "enum": ["person", "time", "place", "thing", "number"],
+          "description": "字面提及类别：人/时/地/物/数。禁止写 world.entity_id"
+        },
+        "literal_text": { "type": "string", "description": "字面原貌，不归一不合并" },
+        "span_in_evidence": { "type": "object", "description": "在证据内的定位" },
+        "precision": { "type": "object" },
+        "uncertainty": { "type": "object" },
+        "created_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "material_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_id", "source_voice", "assertion_kind", "voice_basis", "evidence_version_no", "input_fingerprint"],
+      "properties": {
+        "evidence_id": { "type": "string" },
+        "source_id": { "type": "string" },
+        "source_version_id": { "type": ["string", "null"] },
+        "raw_item_id": { "type": ["string", "null"] },
+        "reading_unit_id": { "type": ["string", "null"], "description": "指向 evidence.reading_units" },
+        "locator": { "type": "object", "description": "证据选取位置，必须可还原到 L1/L0" },
+        "literal_reading": { "type": "string", "description": "已核验的局部引文快照" },
+        "normalized_text": { "type": ["string", "null"], "description": "阅读性整理文字，标记繁简/异读/编辑干预，不静默替换原文" },
+        "research_proposition": { "type": ["string", "null"], "description": "某材料提出某陈述，非 D03 核准事实" },
+        "source_voice": { "type": "string", "description": "文献作者/转引者/传闻/制度命令等声音" },
+        "voice_basis": {
+          "type": "string",
+          "enum": ["direct_witness", "transcription", "reported", "advert", "hearsay", "unknown"],
+          "description": "声音依据：亲历/转录/转述/广告/传闻/未知；有依据，不统一强置为直接目击"
+        },
+        "assertion_kind": {
+          "type": "string",
+          "enum": ["record", "norm", "wish", "hearsay", "argument", "fiction", "hypothesis"],
+          "description": "陈述性质：记述/规范/愿望/传闻/论辩/虚构/假说；不以类别直接判断真假"
+        },
+        "evidence_type": { "type": ["string", "null"] },
+        "temporal_applicability": { "type": "object" },
+        "spatial_applicability": { "type": "object" },
+        "uncertainty": { "type": "object", "description": "历史读法/文本语义争议" },
+        "quote_review_status": { "type": "string", "enum": ["verified", "unverified", "pending"] },
+        "quote_review_ref": { "type": ["string", "null"] },
+        "evidence_version_no": { "type": "integer", "minimum": 1 },
+        "input_fingerprint": { "type": "string", "description": "输入指纹（缓存键成分）" },
+        "supersedes_evidence_id": { "type": ["string", "null"], "description": "追加新行而非原位覆写" },
+        "created_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "reading_unit_dependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dependency_id", "from_reading_unit_id", "relation_kind"],
+      "properties": {
+        "dependency_id": { "type": "string" },
+        "from_reading_unit_id": { "type": "string" },
+        "to_reading_unit_id": { "type": ["string", "null"] },
+        "external_source_version_id": { "type": ["string", "null"], "description": "目标单元或外部版本至少一项有效" },
+        "relation_kind": { "type": "string", "enum": ["quotes", "recopies", "transcribes", "translates", "edits", "derives"] },
+        "certainty": { "type": "string" },
+        "basis": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

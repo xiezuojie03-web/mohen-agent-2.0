@@ -63,6 +63,7 @@ export interface CuratedPhoto {
 import type { ExperienceScript, ExperienceScene, WorldEvidenceState, SurfaceSelection } from "@mohen/experience-engine";
 import type { CompositionState2 } from "@mohen/experience-engine";
 import type { BeatPresentation } from "../beats";
+import type { ProductionRelationSummary } from "../../../../lib/read-model-bridge";
 
 export interface SurfaceContext {
   scene: ExperienceScene;
@@ -94,6 +95,8 @@ export interface SurfaceContext {
   presentDayPhotos?: CuratedPhoto[];
   /** Stage 1·2.2：今貌影像主角钩子（来自 manifest，非组件硬编码） */
   presentDayHeroHook?: string;
+  /** T4：真实数据产出（read_model · visual_stage）；可用时关系空间/发现优先渲染真实数据 */
+  productionSummary?: ProductionRelationSummary;
 }
 
 export interface SurfaceComponentProps {

@@ -1,0 +1,215 @@
+{
+  "schema": "mohen.machine-gate-contracts",
+  "schema_version": "3.0-target",
+  "architecture_generation": "mohen.six-stage.v1",
+  "status": "DESIGN_TARGET_NOT_APPLIED",
+  "qualification_states": [
+    "PASS",
+    "HOLD",
+    "REJECT",
+    "REVOKED",
+    "UNASSESSED"
+  ],
+  "guard_decisions": [
+    "ELIGIBLE",
+    "BLOCKED"
+  ],
+  "gates": {
+    "G0": {
+      "stage": "D00",
+      "layer": "L0",
+      "name": "来源发现与准备独立资格",
+      "checks": [
+        "identity_version",
+        "raw_provenance",
+        "rights_by_operation",
+        "acquisition_scope",
+        "source_dependency"
+      ],
+      "reviewer_role": "independent-gate-reviewer",
+      "purpose_source": "G0.purpose-profile",
+      "purpose_codes": [],
+      "purpose_rule": "G3/G4 exact namespaces retain original semantics; G0/G1/G2/G5 operations require explicit versioned profile, unknown -> HOLD",
+      "deny_when": [
+        "UNASSESSED",
+        "HOLD",
+        "REJECT",
+        "REVOKED",
+        "expired",
+        "scope_mismatch",
+        "consumer_mismatch",
+        "dependency_changed",
+        "unknown_purpose_mapping"
+      ]
+    },
+    "G1": {
+      "stage": "D01",
+      "layer": "L1",
+      "name": "载体读取独立资格",
+      "checks": [
+        "source_authorization",
+        "carrier_profile_approved",
+        "reading_fidelity",
+        "coverage_and_missing",
+        "locator_replayable"
+      ],
+      "reviewer_role": "independent-gate-reviewer",
+      "purpose_source": "G1.purpose-profile",
+      "purpose_codes": [],
+      "purpose_rule": "G3/G4 exact namespaces retain original semantics; G0/G1/G2/G5 operations require explicit versioned profile, unknown -> HOLD",
+      "deny_when": [
+        "UNASSESSED",
+        "HOLD",
+        "REJECT",
+        "REVOKED",
+        "expired",
+        "scope_mismatch",
+        "consumer_mismatch",
+        "dependency_changed",
+        "unknown_purpose_mapping"
+      ]
+    },
+    "G2": {
+      "stage": "D02",
+      "layer": "L2",
+      "name": "材料理解独立资格",
+      "checks": [
+        "reading_authorization",
+        "material_type_method",
+        "source_voice",
+        "nested_dependency",
+        "evidence_scope",
+        "no_world_assertion"
+      ],
+      "reviewer_role": "independent-gate-reviewer",
+      "purpose_source": "G2.purpose-profile",
+      "purpose_codes": [],
+      "purpose_rule": "G3/G4 exact namespaces retain original semantics; G0/G1/G2/G5 operations require explicit versioned profile, unknown -> HOLD",
+      "deny_when": [
+        "UNASSESSED",
+        "HOLD",
+        "REJECT",
+        "REVOKED",
+        "expired",
+        "scope_mismatch",
+        "consumer_mismatch",
+        "dependency_changed",
+        "unknown_purpose_mapping"
+      ]
+    },
+    "G3": {
+      "stage": "D03",
+      "layer": "L3",
+      "name": "历史世界构建独立资格",
+      "checks": [
+        "evidence_authorization",
+        "identity_time_space",
+        "support_counterevidence",
+        "source_independence",
+        "epistemic_status",
+        "purpose_specific_extent"
+      ],
+      "reviewer_role": "independent-gate-reviewer",
+      "purpose_source": "G3.world.v1",
+      "purpose_codes": [
+        "world.explain_bounded",
+        "world.show_original_region",
+        "world.map_anchor_link",
+        "world.map_registered_overlay",
+        "world.reconstruct_bounded",
+        "world.change_compare",
+        "world.relation_explain"
+      ],
+      "purpose_rule": "G3/G4 exact namespaces retain original semantics; G0/G1/G2/G5 operations require explicit versioned profile, unknown -> HOLD",
+      "deny_when": [
+        "UNASSESSED",
+        "HOLD",
+        "REJECT",
+        "REVOKED",
+        "expired",
+        "scope_mismatch",
+        "consumer_mismatch",
+        "dependency_changed",
+        "unknown_purpose_mapping"
+      ]
+    },
+    "G4": {
+      "stage": "D04",
+      "layer": "L4",
+      "name": "人文发现独立资格",
+      "checks": [
+        "world_authorization",
+        "fact_interpretation_firewall",
+        "understanding_delta",
+        "alternatives_counterview",
+        "present_basis_if_applicable",
+        "purpose_specific_extent"
+      ],
+      "reviewer_role": "independent-gate-reviewer",
+      "purpose_source": "G4.interpretation.v1",
+      "purpose_codes": [
+        "BE",
+        "BC",
+        "RF",
+        "PS",
+        "PL"
+      ],
+      "purpose_rule": "G3/G4 exact namespaces retain original semantics; G0/G1/G2/G5 operations require explicit versioned profile, unknown -> HOLD",
+      "deny_when": [
+        "UNASSESSED",
+        "HOLD",
+        "REJECT",
+        "REVOKED",
+        "expired",
+        "scope_mismatch",
+        "consumer_mismatch",
+        "dependency_changed",
+        "unknown_purpose_mapping"
+      ]
+    },
+    "G5": {
+      "stage": "D05",
+      "layer": "L5",
+      "name": "可信发布独立资格",
+      "checks": [
+        "upstream_authorization_by_action",
+        "revision_dependency_snapshot",
+        "rights_scope_consumer",
+        "purpose_mapping",
+        "lineage_replay",
+        "read_only_recomputable",
+        "time_current_at_consume"
+      ],
+      "reviewer_role": "independent-gate-reviewer",
+      "purpose_source": "G5.purpose-profile",
+      "purpose_codes": [],
+      "purpose_rule": "G3/G4 exact namespaces retain original semantics; G0/G1/G2/G5 operations require explicit versioned profile, unknown -> HOLD",
+      "deny_when": [
+        "UNASSESSED",
+        "HOLD",
+        "REJECT",
+        "REVOKED",
+        "expired",
+        "scope_mismatch",
+        "consumer_mismatch",
+        "dependency_changed",
+        "unknown_purpose_mapping"
+      ]
+    }
+  },
+  "invariants": {
+    "audit_append_only": true,
+    "producer_may_self_qualify": false,
+    "missing_is_eligible": false,
+    "qualification_key": [
+      "artifact_ref",
+      "purpose",
+      "allowed_scope",
+      "consumer",
+      "dependency_snapshot",
+      "effective_time"
+    ],
+    "immediate_invalidation_before_recheck": true,
+    "no_legacy_pass_inheritance": true
+  }
+}

@@ -1,11 +1,12 @@
-export const STAGE_ORDER = ["D01","D02","D03","D04","D05"];
+export const STAGE_ORDER = ["D00","D01","D02","D03","D04","D05"];
 
 export const STAGE_CONTRACTS = Object.freeze({
-  D01: { layer:"L0", gate:"G0", input:"research_intent", output:"qualified_source" },
-  D02: { layer:"L1", gate:"G1", input:"qualified_source", output:"qualified_evidence_unit" },
-  D03: { layer:"L2", gate:"G2", input:"qualified_evidence_unit", output:"adjudicated_world_object" },
-  D04: { layer:"L3", gate:"G3", input:"adjudicated_world_object", output:"qualified_humanistic_finding" },
-  D05: { layer:"L4", gate:"G4", input:"qualified_humanistic_finding", output:"runtime_eligible_read_model" },
+  D00: { layer:"L0", gate:"G0", input:"research_intent", output:"qualified_source" },
+  D01: { layer:"L1", gate:"G1", input:"qualified_source", output:"qualified_reading" },
+  D02: { layer:"L2", gate:"G2", input:"qualified_reading", output:"qualified_material_evidence" },
+  D03: { layer:"L3", gate:"G3", input:"qualified_material_evidence", output:"adjudicated_world_object" },
+  D04: { layer:"L4", gate:"G4", input:"adjudicated_world_object", output:"qualified_humanistic_finding" },
+  D05: { layer:"L5", gate:"G5", input:"qualified_humanistic_finding", output:"runtime_eligible_read_model" },
 });
 
 export function assertStageAlignment(job) {
@@ -21,7 +22,7 @@ export function assertStageAlignment(job) {
 
 export function normalizeDisposition(v) {
   const x = String(v || "").toUpperCase();
-  if (!["PASS","HOLD","REJECT"].includes(x)) throw new Error(`INVALID_DISPOSITION:${v}`);
+  if (!["PASS","HOLD","REJECT","REVOKED","UNASSESSED"].includes(x)) throw new Error(`INVALID_DISPOSITION:${v}`);
   return x;
 }
 

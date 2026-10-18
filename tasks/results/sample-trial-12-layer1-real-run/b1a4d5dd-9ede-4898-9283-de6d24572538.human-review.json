@@ -1,0 +1,28 @@
+{
+  "report_type": "human_review",
+  "run_id": "b1a4d5dd-9ede-4898-9283-de6d24572538",
+  "status": "PASS",
+  "stages": [
+    {
+      "stage": "D00",
+      "data_layer": "L0",
+      "gate": "G0",
+      "disposition": "PASS",
+      "content_stats": {
+        "sources": 2
+      },
+      "narrative_relevant_records": [
+        {
+          "source_id": "de495559-12d9-4e1b-95da-24217784c794",
+          "title": "上海市地名志·金泽条目"
+        },
+        {
+          "source_id": "efeb94ca-266b-4503-8894-65cbf26a6c56",
+          "title": "光绪《青浦县志》·金泽方志记载"
+        }
+      ],
+      "gaps_and_counterexamples": [],
+      "owner_decision": null
+    }
+  ]
+}

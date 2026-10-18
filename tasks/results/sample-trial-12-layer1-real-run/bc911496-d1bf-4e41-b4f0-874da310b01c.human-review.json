@@ -1,0 +1,172 @@
+{
+  "report_type": "human_review",
+  "run_id": "bc911496-d1bf-4e41-b4f0-874da310b01c",
+  "status": "PASS",
+  "stages": [
+    {
+      "stage": "D00",
+      "data_layer": "L0",
+      "gate": "G0",
+      "disposition": "PASS",
+      "content_stats": {
+        "sources": 2
+      },
+      "narrative_relevant_records": [
+        {
+          "source_id": "de495559-12d9-4e1b-95da-24217784c794",
+          "title": "上海市地名志·金泽条目"
+        },
+        {
+          "source_id": "efeb94ca-266b-4503-8894-65cbf26a6c56",
+          "title": "光绪《青浦县志》·金泽方志记载"
+        }
+      ],
+      "gaps_and_counterexamples": [],
+      "owner_decision": null
+    },
+    {
+      "stage": "D01",
+      "data_layer": "L1",
+      "gate": "G1",
+      "disposition": "PASS",
+      "content_stats": {
+        "reading_units": 4
+      },
+      "narrative_relevant_records": [
+        {
+          "read_unit_id": "d0fa2fdc-bdb0-4232-b35c-ddd2769d41fb",
+          "literal": "古名白苎里。因地处湖荡泽地……古有『穑人获泽如金』之说，故名"
+        },
+        {
+          "read_unit_id": "152a43a4-7782-4afc-adbb-02db84e91d3e",
+          "literal": "是上海的『桥乡』，现存古桥 21 座，其中有建于宋代的万安桥"
+        },
+        {
+          "read_unit_id": "7f34fa93-1ba7-4514-bd23-5ee5c63ebb0a",
+          "literal": "南宋景定元年（1260）就南宋名相吕颐浩故宅创建，寺名取自其"
+        },
+        {
+          "read_unit_id": "2181d3a9-c056-4596-9f82-3f4610fc5426",
+          "literal": "南宋景定年间建（万安桥），与普济桥一北一南同跨一河，形制相仿"
+        }
+      ],
+      "gaps_and_counterexamples": [],
+      "owner_decision": null
+    },
+    {
+      "stage": "D02",
+      "data_layer": "L2",
+      "gate": "G2",
+      "disposition": "PASS",
+      "content_stats": {
+        "observations": 4,
+        "mentions": 20
+      },
+      "narrative_relevant_records": [
+        {
+          "evidence_id": "366ff95b-0611-4c3b-8bc3-ad9f8a7a7376",
+          "proposition": "材料记载金泽古名白苎里，因湖荡泽地得名金泽"
+        },
+        {
+          "evidence_id": "e76a8afb-9519-4508-890c-123ac4c72476",
+          "proposition": "材料记载金泽为上海桥乡，现存古桥21座，含宋代万安桥、普济桥及元代迎祥桥"
+        },
+        {
+          "evidence_id": "daf32f4c-849e-4242-bf09-9ad4d06e4d65",
+          "proposition": "材料记载该寺于南宋景定元年就吕颐浩故宅创建，寺名取自吕颐浩"
+        },
+        {
+          "evidence_id": "7e34d7a7-d3db-439a-8d12-e8db1f4bbb98",
+          "proposition": "材料记载万安桥建于南宋景定年间，与普济桥同跨一河，并称姐妹桥"
+        }
+      ],
+      "gaps_and_counterexamples": [],
+      "owner_decision": null
+    },
+    {
+      "stage": "D03",
+      "data_layer": "L3",
+      "gate": "G3",
+      "disposition": "PASS",
+      "content_stats": {
+        "entities": 7,
+        "relations": 7
+      },
+      "narrative_relevant_records": [
+        {
+          "relation": "金泽-located_in-上海"
+        },
+        {
+          "relation": "万安桥-located_in-金泽"
+        },
+        {
+          "relation": "普济桥-located_in-金泽"
+        },
+        {
+          "relation": "迎祥桥-located_in-金泽"
+        },
+        {
+          "relation": "万安桥-spans_same_waterway-普济桥"
+        },
+        {
+          "relation": "该寺-founded_on_site_of-吕颐浩"
+        },
+        {
+          "relation": "该寺-named_after-吕颐浩"
+        }
+      ],
+      "gaps_and_counterexamples": [],
+      "owner_decision": null
+    },
+    {
+      "stage": "D04",
+      "data_layer": "L4",
+      "gate": "G4",
+      "disposition": "PASS",
+      "content_stats": {
+        "findings": 3
+      },
+      "narrative_relevant_records": [
+        {
+          "finding_id": "4724c9de-1fe0-4bfc-bd31-9df7bd1d30eb",
+          "statement": "万安桥与普济桥同处金泽、跨同一水道，构成一组可比较的桥对；但现有关系只给出空间共处与同水道跨越，未给出建造年代、形制或功"
+        },
+        {
+          "finding_id": "a5742dc4-04c8-4310-8732-d68ba27cabff",
+          "statement": "金泽同时容纳万安桥、普济桥、迎祥桥三座桥，且万安桥与普济桥跨同一水道，说明该镇的水道—桥梁关系不是单点地标，而是可形成局"
+        },
+        {
+          "finding_id": "ac5947c4-06a0-4629-8c2c-55e7c4b427bb",
+          "statement": "'该寺'同时以吕颐浩命名并建于其旧址之上，命名与选址指向同一人物，形成人物—场所的双重绑定；但关系未说明该寺与金泽桥群的"
+        }
+      ],
+      "gaps_and_counterexamples": [],
+      "owner_decision": null
+    },
+    {
+      "stage": "D05",
+      "data_layer": "L5",
+      "gate": "G5",
+      "disposition": "PASS",
+      "content_stats": {
+        "story_seeds": 3
+      },
+      "narrative_relevant_records": [
+        {
+          "story_seed_id": "2f50f491-c921-42ca-96b1-562d183ff1e3",
+          "finding_id": "4724c9de-1fe0-4bfc-bd31-9df7bd1d30eb"
+        },
+        {
+          "story_seed_id": "84378a28-e487-490e-96e3-ccfe7bebcaec",
+          "finding_id": "a5742dc4-04c8-4310-8732-d68ba27cabff"
+        },
+        {
+          "story_seed_id": "2c3a96b0-76af-451e-9095-f28229a5ed2c",
+          "finding_id": "ac5947c4-06a0-4629-8c2c-55e7c4b427bb"
+        }
+      ],
+      "gaps_and_counterexamples": [],
+      "owner_decision": null
+    }
+  ]
+}

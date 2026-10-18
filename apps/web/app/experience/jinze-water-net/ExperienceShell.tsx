@@ -33,8 +33,10 @@ import { resolveSurface, UnknownGapSurface } from "./surfaceRegistry";
 import type { SliceShape, SurfaceContext, CuratedPhoto } from "./surfaces/types";
 import { commonsDirectUrl } from "./surfaces/EvidenceNarrativeSurfaces";
 import { projectCulturalWorldState, type CulturalWorldProjectionSource } from "./culturalWorldProjection";
+import type { ProductionRelationSummary } from "../../../lib/read-model-bridge";
 import IntentGuide from "./IntentGuide";
 import MohenPresence from "./MohenPresence";
+import ProductionBoard from "./ProductionBoard";
 import type { AgentDecision } from "@mohen/agent-runtime";
 import { translateIntentToExperience } from "./intentTranslation";
 import { humanLevelLabel, surfaceHumanLabel } from "./humanLabels";
@@ -50,6 +52,8 @@ export interface ExperienceShellProps {
   presentDayPhotos: CuratedPhoto[];
   /** Stage 1·2.2：今貌影像主角钩子 */
   presentDayHeroHook?: string;
+  /** 第二层：真实数据生产链产出（read_model consumer='visual_stage'）；不可用则降级冻结 JSON */
+  productionSummary?: ProductionRelationSummary;
 }
 
 const CONFLICT_ORDER: Record<string, string> = {
@@ -64,6 +68,7 @@ export default function ExperienceShell({
   culturalSource,
   presentDayPhotos,
   presentDayHeroHook,
+  productionSummary,
 }: ExperienceShellProps) {
   const [revealed, setRevealed] = useState<string[]>([]);
   const [revealedConflicts, setRevealedConflicts] = useState<string[]>([]);
@@ -75,6 +80,8 @@ export default function ExperienceShell({
   const [nonAnswer, setNonAnswer] = useState<string | null>(null);
   // ADR-003：真正墨痕的裁决结果（理解 → 只读检索 → 选择）。既有 4 个冻结追问按钮保留为降级入口。
   const [agentDecision, setAgentDecision] = useState<AgentDecision | null>(null);
+  // D2：内容看板（真实产出）按需展开；顶栏徽章点击切换。
+  const [boardOpen, setBoardOpen] = useState(false);
 
   // —— M4.1：008 cultural_* 只读投影（纯函数、幂等）——真实文化世界进入体验输入
   const projection = useMemo(
@@ -228,6 +235,8 @@ export default function ExperienceShell({
     // Stage 1·2.2：今貌影像策划清单 + 钩子（town-agnostic surface 消费）
     presentDayPhotos,
     presentDayHeroHook,
+    // T4：真实产出注入 ctx，关系空间/发现优先渲染真实数据
+    productionSummary,
   };
 
   // —— s01→s02 的坐标退出：保留上一画布作为退场层
@@ -275,10 +284,12 @@ export default function ExperienceShell({
     }
     if (a === "看时间变化") return setSurfaceOverride("timeline");
     if (a === "看今貌照片") return setSurfaceOverride("current_photo");
-    // TASK-0016：追问 → 真正跑 Evidence-Aware Replan Runtime（不读冻结答案 JSON 冒充）
+    // T2：追问 → 与自由输入统一走 ask 链路（真实检索 → 裁决 → 世界变化），
+    // 不再走冻结 classifyFollowUp（两套口径合并）。
     if (a.startsWith("追问")) {
       const question = a.startsWith("追问：") ? a.slice("追问：".length) : script.followup.trigger_question;
-      return dispatch({ type: "FOLLOWUP_REPLAN", question });
+      void askMohen(question);
+      return;
     }
     // 其余为推进型行动（回到它们刚出现的时代 / 看留下的关系 …）
     dispatch({ type: "NEXT" });
@@ -291,6 +302,23 @@ export default function ExperienceShell({
     setNonAnswer(null);
     if (decision.engineIntent === "unknown") return;
     dispatch({ type: "FOLLOWUP_REPLAN", question });
+  }
+
+  // T2：统一追问入口——冻结追问按钮与自由输入都走 /api/mohen/ask（真实检索 → 裁决 → 世界变化），
+  // 消除「冻结按钮走 classifyFollowUp / 自由输入走 understand」两套口径分裂的隐患。
+  // 库/网络不可用时，退回落冻结 FOLLOWUP_REPLAN（不静默装懂，也不中断体验）。
+  async function askMohen(question: string) {
+    try {
+      const res = await fetch("/api/mohen/ask", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ question }),
+      });
+      const json = (await res.json()) as { ok?: boolean; degraded?: boolean; decision?: AgentDecision };
+      if (json.decision) handleAgentDecision(json.decision, question);
+    } catch {
+      dispatch({ type: "FOLLOWUP_REPLAN", question });
+    }
   }
 
   const coverage = validateBeatCoverage(BEATS, script.scenes.map((s) => s.scene_id));
@@ -330,6 +358,17 @@ export default function ExperienceShell({
           })}
         </div>
         <div className="exp-topbar__right">
+          {productionSummary?.available ? (
+            <button
+              type="button"
+              className="exp-live-data exp-live-data--btn"
+              data-testid="live-data"
+              title="点开查看真实产出内容看板（read_model · visual_stage）"
+              onClick={() => setBoardOpen((v) => !v)}
+            >
+              真实产出 · {productionSummary.entities.length} 实体 · {productionSummary.relations.length} 关系
+            </button>
+          ) : null}
           <span className={`exp-mode exp-mode--${scene.spatial_mode === "GEOGRAPHIC_EXACT" ? "exact" : "relational"}`} data-testid="spatial-mode-label">
             {SPATIAL_MODE_LABELS[scene.spatial_mode as SpatialMode]}
           </span>
@@ -411,6 +450,12 @@ export default function ExperienceShell({
             <p className="unit unit--UNKNOWN" data-testid="temple-bridge-non-answer">
               <span className="unit__badge">未知（缺证据）</span>
               <span className="unit__text">{nonAnswer}</span>
+            </p>
+          )}
+          {agentDecision && agentDecision.mohenLine && !nonAnswer && (
+            <p className="unit unit--FACT" data-testid="agent-decision-line">
+              <span className="unit__badge">墨痕</span>
+              <span className="unit__text">{agentDecision.mohenLine}</span>
             </p>
           )}
           <div className="exp-narrative">
@@ -633,6 +678,11 @@ export default function ExperienceShell({
           </div>
         </aside>
       )}
+      {/* D2：内容生产看板（按需，Evidence on Demand）。徽章点击展开，不常驻、不抢占舞台。 */}
+      {productionSummary?.available && boardOpen && (
+        <ProductionBoard summary={productionSummary} onClose={() => setBoardOpen(false)} />
+      )}
+
       {!coverage.ok && <p className="exp-error">Beat coverage error: {coverage.errors.join("; ")}</p>}
     </div>
   );

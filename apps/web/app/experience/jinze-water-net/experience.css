@@ -16,7 +16,8 @@
 .exp {
   height: 100vh;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  /* minmax(0,1fr)：中行允许收缩——否则高内容（如大幅照片）会撑破行高，把右栏操作条挤出视口 */
+  grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 12px;
   padding: 16px clamp(12px, 3vw, 40px) 14px;
   background: linear-gradient(160deg, #f7f3ea 0%, #efe9dc 100%);
@@ -87,12 +88,15 @@
   overflow: hidden;
   display: grid;
   grid-template-columns: 1fr minmax(240px, 30%);
-  grid-template-rows: 1fr;
+  /* minmax(0,1fr)：同上——行可收缩，右栏钉底操作条（前进/问墨痕）永不被挤出画布 */
+  grid-template-rows: minmax(0, 1fr);
 }
 .exp-canvas__current {
   grid-area: 1 / 1;
   animation: exp-enter 0.7s ease both;
   padding: 12px;
+  min-height: 0;
+  overflow: hidden;
 }
 .exp-canvas__fading {
   grid-area: 1 / 1;
@@ -1025,6 +1029,108 @@
 .tl-axis__nowlabel { font-size: 12px; fill: var(--cinnabar); font-weight: 700; }
 .tl-row__hit { fill: transparent; cursor: pointer; }
 .tl-row:hover .tl-row__hit { fill: rgba(74, 103, 65, 0.06); }
+
+/* ---------- V1.4 真实时间投影（P03 · 只画有着录的年代） ---------- */
+.prod-timeline {
+  position: relative;
+  padding: 18px 10px 8px;
+}
+.prod-timeline__axis {
+  position: relative;
+  height: 18px;
+  margin-left: 88px;
+  border-bottom: 1px solid var(--line);
+}
+.prod-timeline__tick {
+  position: absolute;
+  bottom: 2px;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-family: monospace;
+  color: #5c625c;
+}
+.prod-timeline__row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 10px;
+}
+.prod-timeline__label {
+  flex: 0 0 78px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: right;
+}
+.prod-timeline__track {
+  position: relative;
+  flex: 1;
+  min-height: 26px;
+  border-bottom: 1px dashed rgba(74, 103, 65, 0.25);
+}
+.prod-timeline__event {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #3a3f37;
+  background: rgba(255, 253, 247, 0.9);
+  border: 1px solid rgba(97, 120, 106, 0.35);
+  border-radius: 999px;
+  padding: 1px 9px;
+}
+.prod-timeline__event b {
+  color: var(--cinnabar);
+  margin-right: 4px;
+  font-family: monospace;
+}
+
+/* ---------- V1.4 真实冲突卡片变体 / 未决问题 ---------- */
+.conflict-card__variants {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+.conflict-card__variants li {
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: #3a3f37;
+}
+.conflict-card__source {
+  margin-left: 8px;
+  font-size: 12px;
+  color: #88918b;
+}
+.prod-discovery__open {
+  margin-top: 14px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+.prod-discovery__open-h {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #61786a;
+}
+.prod-discovery__open ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.prod-discovery__open li {
+  margin-bottom: 8px;
+}
+.prod-discovery__open-q {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: #3a3f37;
+}
+.prod-discovery__open-missing {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #88918b;
+}
 .tl-row__label { font-size: 15px; font-weight: 600; fill: var(--ink); font-family: "Microsoft YaHei", sans-serif; }
 .tl-lifeline { stroke-linecap: round; }
 .tl-gap { opacity: 0.8; }
@@ -1446,6 +1552,200 @@
 }
 .exp-topbar__right { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
 .exp-topbar__right .exp-progress { font-size: 11px; }
+.exp-live-data {
+  color: #c8a06a;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 9px;
+  border: 1px solid rgba(200, 160, 106, 0.45);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+/* D2：徽章变为可点按钮（打开内容看板） */
+.exp-live-data--btn {
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+.exp-live-data--btn:hover {
+  background: rgba(200, 160, 106, 0.12);
+  box-shadow: 0 0 0 3px rgba(200, 160, 106, 0.12);
+}
+
+/* ---------- D2：内容生产看板（slide-over，与 Evidence 抽屉同构） ---------- */
+.prod-board {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(520px, 94vw);
+  background: #fffdf7;
+  border-left: 1px solid var(--line);
+  box-shadow: -12px 0 32px rgba(26, 26, 26, 0.14);
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 31;
+  animation: slide-in 0.35s ease both;
+}
+.prod-board__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 12px;
+}
+.prod-board__kicker {
+  display: block;
+  font-size: 12px;
+  color: #c8a06a;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.prod-board__title {
+  margin: 4px 0 0;
+  font-size: 18px;
+  color: #17201d;
+}
+.prod-board__section {
+  margin-top: 18px;
+}
+.prod-board__h {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: #17201d;
+}
+.prod-board__count {
+  font-size: 11px;
+  color: #88918b;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.prod-board__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+}
+.prod-board__chip {
+  font-size: 13px;
+  color: #3a3f37;
+  background: #f1ede2;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 11px;
+}
+.prod-board__lines,
+.prod-board__stories,
+.prod-board__excerpts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.prod-board__line {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: #3a3f37;
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.prod-board__excerpt {
+  margin-bottom: 12px;
+}
+.prod-board__excerpt blockquote {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: #17201d;
+  background: #f8f5ec;
+  border-left: 3px solid #c8a06a;
+  border-radius: 0 8px 8px 0;
+  padding: 10px 12px;
+}
+.prod-board__excerpt cite {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #88918b;
+  font-style: normal;
+}
+.prod-board__story {
+  margin-bottom: 12px;
+}
+.prod-board__badge {
+  display: inline-block;
+  font-size: 11px;
+  color: #61786a;
+  border: 1px solid rgba(97, 120, 106, 0.5);
+  border-radius: 999px;
+  padding: 1px 8px;
+  margin-bottom: 6px;
+}
+.prod-board__story p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: #3a3f37;
+}
+.prod-board__empty {
+  font-size: 13px;
+  color: #88918b;
+}
+/* V1.4：着录分歧 / 未决问题看板区 */
+.prod-board__conflicts li,
+.prod-board__questions li {
+  margin-bottom: 10px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: #3a3f37;
+}
+.prod-board__conflicts li b {
+  margin-right: 8px;
+}
+.prod-board__conflicts p {
+  margin: 4px 0 0;
+  color: #61786a;
+}
+.prod-board__missing {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: #88918b;
+}
+/* V1.5：看板今貌影像区 */
+.prod-board__visuals li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+.prod-board__visuals img {
+  width: 96px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex: 0 0 auto;
+  background: #e7e2d6;
+}
+.prod-board__visuals b {
+  display: block;
+  font-size: 13.5px;
+  color: #3a3f37;
+}
+.prod-board__foot {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: #88918b;
+}
 
 /* 中央上方轻提示（钩子问题）：重定位到画布正上方居中（满足 e2e .exp-secondary .surface-question） */
 .exp-overlay--secondary.exp-hook {
@@ -1569,6 +1869,14 @@
    ========================================================================= */
 .exp-canvas__current { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
 .exp-canvas__current > .surf { flex: 1; min-height: 0; width: 100%; }
+
+/* D1 照片主角限高：hero 图不得撑破画布行高（否则右栏钉底操作条被挤出视口、
+   「问墨痕」按钮被 overflow:hidden 裁掉——实测 s01 首幕按钮与底栏重叠的根因）。
+   视觉基准 C4 §18 桌面 1440×900：50vh + contain 保证照片、钩子、缩略图同屏可见。 */
+.surf-present-day .present-day-hero img {
+  max-height: min(50vh, 520px);
+  object-fit: contain;
+}
 
 /* =========================================================================
    v0.4 修复 · 右栏改为「可滚动内容区 + 钉底操作条」（2026-09-27 晚）

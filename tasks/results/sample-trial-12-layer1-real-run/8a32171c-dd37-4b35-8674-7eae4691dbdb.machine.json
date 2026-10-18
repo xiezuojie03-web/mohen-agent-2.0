@@ -1,0 +1,143 @@
+{
+  "report_type": "machine_execution",
+  "run_id": "8a32171c-dd37-4b35-8674-7eae4691dbdb",
+  "execution_mode": "attended",
+  "status": "PASS",
+  "started_at": "2026-10-17T10:39:03.611Z",
+  "finished_at": "2026-10-17T10:39:27.446Z",
+  "stages": [
+    {
+      "stage": "D00",
+      "data_layer": "L0",
+      "gate": "G0",
+      "disposition": "PASS",
+      "gate_evidence": {
+        "stage": "D00",
+        "source_count": 2
+      },
+      "hold": null,
+      "reject": null
+    },
+    {
+      "stage": "D01",
+      "data_layer": "L1",
+      "gate": "G1",
+      "disposition": "PASS",
+      "gate_evidence": {
+        "stage": "D01",
+        "method": "C01",
+        "unit_count": 4
+      },
+      "hold": null,
+      "reject": null
+    },
+    {
+      "stage": "D02",
+      "data_layer": "L2",
+      "gate": "G2",
+      "disposition": "PASS",
+      "gate_evidence": {
+        "stage": "D02",
+        "methods": [
+          "H05",
+          "H04"
+        ],
+        "evidence_count": 4,
+        "mention_count": 17,
+        "model": "deepseek-flash",
+        "tokens": {
+          "prompt_tokens": 583,
+          "completion_tokens": 2116,
+          "total_tokens": 2699,
+          "prompt_tokens_details": {
+            "cached_tokens": 384
+          },
+          "prompt_cache_hit_tokens": 384,
+          "prompt_cache_miss_tokens": 199
+        }
+      },
+      "hold": null,
+      "reject": null
+    },
+    {
+      "stage": "D03",
+      "data_layer": "L3",
+      "gate": "G3",
+      "disposition": "PASS",
+      "gate_evidence": {
+        "stage": "D03",
+        "methods": [
+          "W01",
+          "W02",
+          "W05",
+          "W09"
+        ],
+        "entity_count": 7,
+        "relation_count": 7,
+        "model": "deepseek-flash",
+        "tokens": {
+          "prompt_tokens": 361,
+          "completion_tokens": 587,
+          "total_tokens": 948,
+          "prompt_tokens_details": {
+            "cached_tokens": 128
+          },
+          "prompt_cache_hit_tokens": 128,
+          "prompt_cache_miss_tokens": 233
+        }
+      },
+      "hold": null,
+      "reject": null
+    },
+    {
+      "stage": "D04",
+      "data_layer": "L4",
+      "gate": "G4",
+      "disposition": "PASS",
+      "gate_evidence": {
+        "stage": "D04",
+        "methods": [
+          "A01",
+          "A10"
+        ],
+        "finding_count": 3,
+        "model": "deepseek-flash",
+        "tokens": {
+          "prompt_tokens": 231,
+          "completion_tokens": 430,
+          "total_tokens": 661,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "prompt_cache_hit_tokens": 0,
+          "prompt_cache_miss_tokens": 231
+        }
+      },
+      "hold": null,
+      "reject": null
+    },
+    {
+      "stage": "D05",
+      "data_layer": "L5",
+      "gate": "G5",
+      "disposition": "PASS",
+      "gate_evidence": {
+        "stage": "D05",
+        "methods": [
+          "P01",
+          "P02",
+          "P03",
+          "P04",
+          "P05",
+          "P06",
+          "P07"
+        ],
+        "seed_count": 3,
+        "projection": true,
+        "entity_count": 7
+      },
+      "hold": null,
+      "reject": null
+    }
+  ]
+}

@@ -1,71 +1,9 @@
 {
-  "schema": "mohen.gate-contracts",
-  "schema_version": "1.0",
-  "authority": "MoHen_Data_Production_Protocol V4.0 + DATA_CONTRACT V2.0",
-  "gates": {
-    "G0": {
-      "stage": "D01",
-      "data_layer": "L0",
-      "name": "Source Gate",
-      "checks": [
-        "source_identity",
-        "provenance",
-        "version_raw",
-        "rights_boundary",
-        "locator",
-        "content_availability"
-      ]
-    },
-    "G1": {
-      "stage": "D02",
-      "data_layer": "L1",
-      "name": "Evidence Quality Gate",
-      "checks": [
-        "locator_replayable",
-        "literal_reading_fidelity",
-        "source_voice",
-        "uncertainty",
-        "carrier_reading",
-        "evidence_scope"
-      ]
-    },
-    "G2": {
-      "stage": "D03",
-      "data_layer": "L2",
-      "name": "World Integrity Gate",
-      "checks": [
-        "identity",
-        "time",
-        "space",
-        "claim_evidence",
-        "source_dependency",
-        "conflict",
-        "epistemic_status"
-      ]
-    },
-    "G3": {
-      "stage": "D04",
-      "data_layer": "L3",
-      "name": "Interpretation Gate",
-      "checks": [
-        "fact_interpretation_firewall",
-        "causality_discipline",
-        "counter_view",
-        "understanding_delta",
-        "present_connection_basis"
-      ]
-    },
-    "G4": {
-      "stage": "D05",
-      "data_layer": "L4",
-      "name": "Runtime Eligibility Gate",
-      "checks": [
-        "lineage_complete",
-        "g2_g3_pass",
-        "conflict_expression",
-        "evidence_on_demand",
-        "projection_readonly"
-      ]
-    }
-  }
+  "schema": "mohen.gate-contracts-config",
+  "schema_version": "3.0-target",
+  "architecture_generation": "mohen.six-stage.v1",
+  "authority": "MoHen_Data_Production_Protocol + G0-G5_MACHINE_GATE_CONTRACT_V3.0",
+  "note": "机器规则唯一来源为 specs/data-production/gates/gate-contracts.v3.json；本文件仅作指针，不复制第二套 gate 定义（G0-G5 V3.0 合同约定）。",
+  "machine_rules": "specs/data-production/gates/gate-contracts.v3.json",
+  "contract_doc": "specs/data-production/gates/G0-G5_MACHINE_GATE_CONTRACT_V3.0.md"
 }

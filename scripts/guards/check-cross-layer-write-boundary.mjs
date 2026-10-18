@@ -2,6 +2,7 @@
 import { ALLOWED_SCHEMAS, assertPersistenceScope } from "../../pipelines/data-production/adapters/persistence-contract.mjs";
 
 const expected = {
+  D00:["source","control"],
   D01:["source","control"],
   D02:["evidence","control"],
   D03:["world","control"],
