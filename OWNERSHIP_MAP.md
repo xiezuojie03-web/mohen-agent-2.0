@@ -1,6 +1,6 @@
 # OWNERSHIP_MAP.md
 
-> **REVIEW_DRAFT_NOT_APPLIED｜2026-10-15。** 目标根入口稿，基于handoff/local-b-20260930@8966d1bf62d7c2ea199d6568cc1b16bba664bd26；尚未替换工程。原文件与实际运行状态留M0核验。
+> **SAMPLE-TRIAL-16 收口｜2026-10-18。** 首轮数据生产样板试验已完成（六阶段六门真实闭环、真实 G5、vercel 上线、数据层双后端、云端 42 表迁移）。运行状态见 `CURRENT.md`。原稿基线 handoff@8966d1b。
 
 
 

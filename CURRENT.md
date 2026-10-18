@@ -1,6 +1,6 @@
 # 墨痕｜当前状态
 
-> **REVIEW_DRAFT_NOT_APPLIED｜2026-10-15。** 目标根入口稿，基于handoff/local-b-20260930@8966d1bf62d7c2ea199d6568cc1b16bba664bd26；尚未替换工程。原文件与实际运行状态留M0核验。
+> **SAMPLE-TRIAL-16 收口｜2026-10-18。** 首轮数据生产样板试验已完成：六阶段 D00–D05 + G0–G5 真实闭环跑通（真实 G5 PASS），前端接真实 `read_model` 并上线 vercel，数据层双后端（消费 node pg / 生产 psql）落地，云端 Supabase 42 表已迁移。全景复盘见 `specs/data-production/SAMPLE-TRIAL_CLOSURE_ANALYSIS.md`。原稿基线 handoff@8966d1b，工程运行状态以本表 §2 为准。
 
 # 1｜产品目标
 
@@ -15,10 +15,13 @@
 | GitHub已核验 | handoff@8966d1b；main@87bb56d；前者领先69提交，分支未合并 |
 | 旧样板 | 上位研究记录旧五阶段本地实施/样板曾验证；不能推定新链已运行，原CURRENT的Real Apply=NO不能覆盖后续实施证据 |
 | 工程文件基线 | USER_CONFIRMED_SYNCED_AND_FROZEN；GitHub为CodeBuddy执行后同步、停工待迁移的工程，不再核本地同步差异 |
-| PG/Schema及新架构运行 | TO_VERIFY_IN_M0；不推测端口/DDL应用或新绑定已生效 |
-| 新链运行/真实G5 | NOT_VERIFIED / HOLD |
-| 56正式延期关系 | DESIGN_HOLD；325正式表原字节/状态保持 |
-| MIG-01/CodeBuddy实施 | HOLD；本轮未发令 |
+| PG/Schema及新架构运行 | 已运行：42 表改库（36→42）+ 字段级落点 + 六阶段真实生产 |
+| 新链运行/真实G5 | 已运行：SAMPLE-TRIAL-12/14 真实闭环，G0–G5 全 PASS（真实 G5 已产出） |
+| 56正式延期关系 | 已释放（样板试验逐 ID 复核放行）；325正式表原字节/状态保持 |
+| MIG-01/CodeBuddy实施 | 已完成：样板试验 SAMPLE-TRIAL-01~16 收口 |
+| 前端展示与上线 | 已上线：vercel 生产 Ready（https://mohen-agent-2-0.vercel.app），Agent 读真实 read_model |
+| 数据层 | 双后端已落地：消费 node pg / 生产 psql（见 C3 PART VII） |
+| 云端 Supabase | 42 表已迁移（mohen-cloud），行数与本地一致 |
 | 正式迁移ZIP | PACKAGE_AUTHORIZED；文件链核验通过后制作，最终散列与回执以交付包记录为准；不授工程权限 |
 
 # 3｜权威入口

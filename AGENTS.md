@@ -1,6 +1,6 @@
 # 墨痕 MoHen｜入口路由
 
-> **REVIEW_DRAFT_NOT_APPLIED｜2026-10-15。** 目标根入口稿，基于handoff/local-b-20260930@8966d1bf62d7c2ea199d6568cc1b16bba664bd26；尚未替换工程。原文件与实际运行状态留M0核验。
+> **SAMPLE-TRIAL-16 收口｜2026-10-18。** 首轮数据生产样板试验已完成（六阶段 D00–D05 + G0–G5 真实闭环、真实 G5、vercel 上线）。运行状态见 `CURRENT.md`；部署/连接见 `specs/OPERATIONS_DEPLOYMENT.md`；复盘见 `specs/data-production/SAMPLE-TRIAL_CLOSURE_ANALYSIS.md`。原稿基线 handoff@8966d1b。
 
 入口只负责找Authority，不定义运行状态或提升任务书权限。新会话先读CURRENT→本表→相应Authority/Contract；冲突依C0/C1及专业域仲裁，目录职责依OWNERSHIP_MAP。
 
