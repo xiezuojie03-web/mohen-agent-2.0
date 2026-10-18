@@ -15,6 +15,8 @@
 
 L0 source_asset；L1 reading_unit；L2 material_observation；L3 world_claim_revision；L4 humanistic_finding_revision是逻辑合同类型，不能据名称推定物理表存在。L5固定六类world_projections、agent_contexts、story_seeds、discovery_paths、map_timeline_projections、evidence_pointers；以artifact_ref.type/id/revision唯一引用。selection_manifest是发布选入记录、consumer_facet是六类内容的用途/消费者分面，均不另成第七类L5；invalidation_event属control。
 
+视觉资产（world.visual_objects，属L3事实对象）**不另成第七类L5**：它经G3七用途之一的合法资格 + 当前G5，投影为①`world_projections.payload.visuals`（视觉舞台分面，供V1–V5展示）②`evidence_pointers`（visual_type=today_photo，返证指针）。consumer=visual_stage消费视觉展示权，consumer=agent只消费其文字引用与来源；二者许可按purpose/scope分别核查，图像展示权≠Agent复刻/下载权≠文字引用权。
+
 ## 2｜成果封套
 
 结构约束见`specs/data-production/schemas/artifact-envelope.schema.json`：architecture_generation、artifact_ref、owner_stage、producer_method{id,version}、definition_ref、source_refs、dependency_snapshot、purpose、scope、limitations、created_at。payload按专业对象合同解释；source_refs必须含原资产/版本与定位，不能只给标题。源时间、描绘/发生时间、现代观察时间、资格有效时间不同。

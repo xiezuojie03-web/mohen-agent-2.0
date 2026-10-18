@@ -1,5 +1,7 @@
 "use client";
 
+import type { A001Visual } from "../../../lib/a001-experience-data";
+
 // apps/web/app/experience/lvzhiqiu/GreenHillStage.tsx
 //
 // MH-STRAT-PROD-A001 · 视觉舞台：绿之丘的「体量剖面」。
@@ -38,6 +40,8 @@ export interface StageProps {
   highlight?: string | null;
   activeKey?: StageHotspotKey | null;
   onSelect: (key: StageHotspotKey) => void;
+  /** 视觉资产（V3 今日观察，来自 G5 合法分面；为空则退回体量示意 V4） */
+  visuals?: A001Visual[];
 }
 
 const HOTSPOT_LABEL: Record<StageHotspotKey, string> = {
@@ -105,12 +109,31 @@ function Green({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
   );
 }
 
-export default function GreenHillStage({ mode, highlight, activeKey, onSelect }: StageProps) {
+export default function GreenHillStage({ mode, highlight, activeKey, onSelect, visuals = [] }: StageProps) {
   const isToday = mode === "today";
   const hi = (k: StageHotspotKey) => activeKey === k;
+  const showPhotos = isToday && visuals.length > 0;
 
   return (
     <figure className="gh-stage" data-testid="green-hill-stage" data-mode={mode}>
+      {showPhotos && (
+        <div className="gh-photos" data-testid="stage-photos">
+          {visuals.map((v) => (
+            <figure key={v.id} className="gh-photo">
+              <img src={v.displayUrl} alt={`${v.subject}：${v.literalReading}`} loading="lazy" />
+              <figcaption className="gh-photo__cap">
+                <span className="gh-photo__id">
+                  {v.timeIdentity} · {v.subject}
+                </span>
+                <span className="gh-photo__license">
+                  {v.artist} · {v.license} · Wikimedia Commons
+                </span>
+                {v.literalReading && <span className="gh-photo__desc">{v.literalReading}</span>}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      )}
       <svg
         viewBox="0 0 1000 560"
         className="gh-stage__svg"
@@ -275,16 +298,22 @@ export default function GreenHillStage({ mode, highlight, activeKey, onSelect }:
 
       <figcaption className="gh-stage__caption" data-testid="stage-caption">
         {isToday ? (
-          <>
-            <b>今天</b> · 体量示意：按材料记载的「削去约 50% 体量、拆除第 6 层、面向滨江斜向切削成台地」绘制。
-          </>
+          showPhotos ? (
+            <>
+              <b>今天</b> · 上方为滨江公共空间今日现场照片（V3 今日观察，Wikimedia Commons 开源影像）；下方为绿之丘建筑体量示意（V4 解释标注，按材料文字绘制）。
+            </>
+          ) : (
+            <>
+              <b>今天</b> · 体量示意：按材料记载的「削去约 50% 体量、拆除第 6 层、面向滨江斜向切削成台地」绘制。
+            </>
+          )
         ) : (
           <>
             <b>前身（1995）</b> · 体量示意：按材料记载的「6 层钢筋混凝土厂房」「安浦路曾规划横切」绘制。
           </>
         )}
         <span className="gh-stage__disclaimer">
-          非测绘图 · 无坐标 · 无比例 · 未做历史影像配准（本轮无权利清晰的现状照片与历史图纸）
+          体量示意非测绘 · 无坐标 · 无比例 · 未做历史影像配准；绿之丘建筑本体暂无合法照片
         </span>
       </figcaption>
     </figure>

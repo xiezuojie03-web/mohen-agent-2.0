@@ -534,6 +534,54 @@ async function d02MaterialUnderstanding({ run, job, input, context }) {
   const mentions = Array.isArray(data.material_mentions) ? data.material_mentions : [];
   const evidenceList = Array.isArray(data.material_evidence) ? data.material_evidence : [];
 
+  // ── 修复（A001 第三次）：补写 evidence.reading_units ──
+  // 此前注释声称「写 evidence.reading_units」，实际代码只写了 material_evidence/material_mentions，
+  // 导致 L1 读图断链（reading_units 全表为 0，图像载体从未在证据层登记为可引用结构单元）。
+  // 现在把 D01 传来的文本/图像读取单元正式落库：文本 → unit_kind='paragraph'（H 分类取 LLM 判定，缺省 H05），
+  // 图像 → unit_kind='image'（primary_h_type='H25' 历史摄影与纪实图像材料）。raw_item_id 按可回填，查不到为 NULL。
+  const dataReadingUnits = Array.isArray(data.reading_units) ? data.reading_units : [];
+  const readingUnitRows = [];
+  for (const u of units) {
+    const ruId = randomUUID();
+    const llmRu = dataReadingUnits.find((d) => String(d?.unit_path || "").includes(String(u.literal || "").slice(0, 16)));
+    const rawItemId = await dbQueryValue(
+      `select raw_item_id::text from source.raw_items where source_version_id = :'svid'::uuid order by created_at limit 1`,
+      { svid: u.source_version_id }
+    );
+    await dbRun(
+      `insert into evidence.reading_units
+       (reading_unit_id, source_version_id, raw_item_id, unit_path, unit_kind, primary_h_type, taxonomy_version, classification_status, classification_basis)
+       values (:'ru_id'::uuid, :'svid'::uuid, :'rid'::uuid, :'path', 'paragraph', :'htype', 'mohen-h.v1', :'cstatus', :'cbasis')`,
+      {
+        ru_id: ruId, svid: u.source_version_id, rid: rawItemId || null,
+        path: `片段 ${u.fragment_index ?? ""}`,
+        htype: llmRu?.primary_h_type || "H05",
+        cstatus: llmRu?.classification_status || "resolved",
+        cbasis: llmRu?.classification_basis || "地方志/地名志编纂体例（缺省 H05）",
+      }
+    );
+    readingUnitRows.push({ reading_unit_id: ruId, kind: "paragraph", source_version_id: u.source_version_id, fragment_index: u.fragment_index, literal: u.literal });
+  }
+  for (const u of photoUnits) {
+    const p = u.photo;
+    const ruId = randomUUID();
+    const rawItemId = await dbQueryValue(
+      `select raw_item_id::text from source.raw_items where storage_ref = :'ref' order by created_at limit 1`,
+      { ref: p.asset_path }
+    );
+    await dbRun(
+      `insert into evidence.reading_units
+       (reading_unit_id, source_version_id, raw_item_id, unit_path, unit_kind, primary_h_type, taxonomy_version, classification_status, classification_basis)
+       values (:'ru_id'::uuid, :'svid'::uuid, :'rid'::uuid, :'path', 'image', 'H25', 'mohen-h.v1', 'resolved', :'cbasis')`,
+      {
+        ru_id: ruId, svid: u.source_version_id, rid: rawItemId || null,
+        path: p.commons_title || p.feature_key || "图像图幅",
+        cbasis: "历史摄影与纪实图像材料（C04 技术读取 + Commons 条目自述画面）",
+      }
+    );
+    readingUnitRows.push({ reading_unit_id: ruId, kind: "image", source_version_id: u.source_version_id, feature_key: p.feature_key, photo: p });
+  }
+
   // 每条 material_evidence 建一行，并**按原文片段确定性地归属到真实来源**。
   // 旧实现把全部观察都挂在「第一份 source」上，导致前端返证指向错误来源（D2/U4 不可接受）。
   // 归属规则：把 LLM 给出的 literal_reading 与各 read_unit 原文做去标点/去空白比对，
@@ -1278,6 +1326,22 @@ async function d05ReadModelPublication({ run, job, input, context }) {
             ]),
           ].join(" "),
           open_questions: pc.open_questions ?? [],
+        })),
+        // 视觉资产投影（A001 第三次修复）：world.visual_objects（L3）经 G3 用途 + 本 G5，
+        // 投影为 world_projections.payload.visuals，供 visual_stage 分面消费 V1–V5（此处 today_photo=V3 今日观察）。
+        // 与 evidence_pointers(today_photo) 的返证指针同源；视觉舞台不直读 L3 visual_objects。
+        visuals: visualObjects.map((vo) => ({
+          visual_object_id: vo.visual_object_id ?? null,
+          subject: vo.subject ?? "",
+          visual_type: "today_photo",
+          time_identity: "今日观察",
+          asset_ref: vo.asset_path ?? "",
+          display_url: vo.display_url ?? "",
+          literal_reading: vo.literal_reading ?? "",
+          license: vo.license ?? "license 待核",
+          artist: vo.artist ?? "作者待核",
+          commons_title: vo.commons_title ?? "",
+          evidence_id: vo.evidence_id ?? null,
         })),
         source_ref: `production-run:${runId}`,
       }),

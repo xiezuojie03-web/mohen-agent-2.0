@@ -82,6 +82,8 @@ Canonical 约束认知节奏、视觉层级、连续性、证据诚实和回到�
 
 世界事实投影须有对应L3/G3许可；解释性呈现须有相应L4/G4用途与当前G5发布资格。原图展示、局部放大、地图精度、路线和Agent引用分别受权利/证据/用途约束；同一版本不等于两个消费者获得同样权限。Evidence on Demand沿实际依赖只读返证，不要求纯事实投影伪造解释层。
 
+视觉资产（world.visual_objects，L3事实对象）走 visual_stage 分面：经 G3 七用途之一的合法资格 + 当前 G5，投影进 L5 的 world_projections.payload.visuals 与 evidence_pointers（today_photo），再由视觉舞台消费；V1–V5 五层按 §16 分级约束（原件即证据、历史影像与拍摄年代分开、今日现场标注今日观察、重建不得与史料图同级）。视觉舞台不直读 L3 visual_objects，不靠静态 JSON 清单绕过 G5。
+
 ## 4｜七条核心体验语法
 
 ### One Moment, One Focus

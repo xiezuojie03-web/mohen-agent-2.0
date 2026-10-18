@@ -87,6 +87,19 @@ export interface A001OpenQuestion {
   missingEvidence: string;
 }
 
+/** 视觉资产（world.visual_objects 经 G5 投影到 world_projections.payload.visuals 的 V3 今日观察） */
+export interface A001Visual {
+  id: string;
+  subject: string;
+  visualType: string;
+  timeIdentity: string;
+  displayUrl: string;
+  literalReading: string;
+  license: string;
+  artist: string;
+  commonsTitle: string;
+}
+
 export interface A001ExperienceData {
   available: boolean;
   /** 本次体验所消费的生产 run */
@@ -98,6 +111,8 @@ export interface A001ExperienceData {
   timeline: { title: string; events: A001TimelineEvent[] } | null;
   claims: A001Claim[];
   evidence: A001EvidencePointer[];
+  /** 视觉资产（V3 今日观察，经 G5 合法分面；非冻结 JSON、非体量示意） */
+  visuals: A001Visual[];
   presentConnections: A001PresentConnection[];
   openQuestions: A001OpenQuestion[];
   /** 墨痕在 Agent 侧明确「不认定」的关系（来自已发布 agent_context） */
@@ -172,6 +187,7 @@ function emptyData(reason: string, world: WorldEvidenceState = EMPTY_WORLD): A00
     timeline: null,
     claims: [],
     evidence: [],
+    visuals: [],
     presentConnections: [],
     openQuestions: [],
     refusedRelations: [],
@@ -356,6 +372,26 @@ export async function readA001ExperienceData(): Promise<A001ExperienceData> {
       return { title: asText(tl.title) || "时间投影", events };
     })();
 
+    // 8.5) 视觉资产（world.visual_objects 经 G5 投影到 payload.visuals）：V3 今日观察。
+    //    只认 today_photo；V1/V2（历史原件/影像）本切片无资产，historicalVisualAssets 恒 0。
+    //    这取代上一轮「体量示意」与「currentPhotosConfirmed 硬编码 0」——真实照片才进舞台。
+    const visuals: A001Visual[] = (
+      Array.isArray(payload.visuals) ? (payload.visuals as Record<string, unknown>[]) : []
+    )
+      .filter((v) => asText(v.visual_type) === "today_photo")
+      .map((v) => ({
+        id: asText(v.visual_object_id),
+        subject: asText(v.subject),
+        visualType: asText(v.visual_type) || "today_photo",
+        timeIdentity: asText(v.time_identity) || "今日观察",
+        displayUrl: asText(v.display_url),
+        literalReading: asText(v.literal_reading),
+        license: asText(v.license),
+        artist: asText(v.artist),
+        commonsTitle: asText(v.commons_title),
+      }))
+      .filter((v) => v.displayUrl.length > 0);
+
     // 8) Surface 资格输入（每一条都能在 P3 文档里对上数据来源）：
     //    · 没有任何坐标 → currentExactEntities 为空（不画精确点）
     //    · 只有文字方位/相邻描述 → approximateEntities 有值（可画近似区域）
@@ -375,7 +411,7 @@ export async function readA001ExperienceData(): Promise<A001ExperienceData> {
       })),
       hasHistoricalGeometry: false,
       conflicts: [],
-      currentPhotosConfirmed: 0,
+      currentPhotosConfirmed: visuals.length,
       historicalVisualAssets: 0,
       hasEvidencedChanges: (timeline?.events.length ?? 0) > 0,
       presentConnections: presentConnections.map(
@@ -403,6 +439,7 @@ export async function readA001ExperienceData(): Promise<A001ExperienceData> {
       timeline,
       claims,
       evidence: evidence.filter((e) => e.excerpt.length > 0),
+      visuals,
       presentConnections,
       openQuestions,
       refusedRelations: [...refused],

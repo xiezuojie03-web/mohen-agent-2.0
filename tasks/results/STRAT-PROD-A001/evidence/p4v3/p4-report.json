@@ -1,0 +1,118 @@
+{
+  "shots": [
+    {
+      "name": "01-today",
+      "note": "U1 今天：滨江公共空间真实照片（V3）+ 绿之丘体量示意（V4）",
+      "file": "tasks\\results\\STRAT-PROD-A001\\evidence\\p4v3\\01-today.png"
+    },
+    {
+      "name": "02-evidence-drawer",
+      "note": "U4 点热点即见材料原句 + 出处 + 原页面链接",
+      "file": "tasks\\results\\STRAT-PROD-A001\\evidence\\p4v3\\02-evidence-drawer.png"
+    },
+    {
+      "name": "03-then",
+      "note": "U2 回看：1995 体量示意 + 安浦路规划横切",
+      "file": "tasks\\results\\STRAT-PROD-A001\\evidence\\p4v3\\03-then.png"
+    },
+    {
+      "name": "04-then-anpu-evidence",
+      "note": "U4 安浦路原句",
+      "file": "tasks\\results\\STRAT-PROD-A001\\evidence\\p4v3\\04-then-anpu-evidence.png"
+    },
+    {
+      "name": "05-understand",
+      "note": "U3 理解：可证判断 + 一个还不能认定的问题",
+      "file": "tasks\\results\\STRAT-PROD-A001\\evidence\\p4v3\\05-understand.png"
+    },
+    {
+      "name": "06-claim-evidence",
+      "note": "U4 每条判断的依据原句",
+      "file": "tasks\\results\\STRAT-PROD-A001\\evidence\\p4v3\\06-claim-evidence.png"
+    },
+    {
+      "name": "07-evidence-all",
+      "note": "U4 全部已发布原句按来源分组",
+      "file": "tasks\\results\\STRAT-PROD-A001\\evidence\\p4v3\\07-evidence-all.png"
+    },
+    {
+      "name": "08-ask-negative-identity",
+      "note": "U5 负例：身份同一不认定",
+      "file": "tasks\\results\\STRAT-PROD-A001\\evidence\\p4v3\\08-ask-negative-identity.png"
+    },
+    {
+      "name": "09-ask-positive-access",
+      "note": "U5 正例：今天怎么进入（材料明载）",
+      "file": "tasks\\results\\STRAT-PROD-A001\\evidence\\p4v3\\09-ask-positive-access.png"
+    },
+    {
+      "name": "10-ask-negative-causal",
+      "note": "U5 负例：共现≠因果",
+      "file": "tasks\\results\\STRAT-PROD-A001\\evidence\\p4v3\\10-ask-negative-causal.png"
+    },
+    {
+      "name": "11-return-to-focus",
+      "note": "U5 追问后回到原观察点",
+      "file": "tasks\\results\\STRAT-PROD-A001\\evidence\\p4v3\\11-return-to-focus.png"
+    },
+    {
+      "name": "12-mobile-today",
+      "note": "E5 窄屏：照片 + 舞台在上、墨痕在下",
+      "file": "tasks\\results\\STRAT-PROD-A001\\evidence\\p4v3\\12-mobile-today.png"
+    },
+    {
+      "name": "13-mobile-understand",
+      "note": "E5 窄屏理解步骤",
+      "file": "tasks\\results\\STRAT-PROD-A001\\evidence\\p4v3\\13-mobile-understand.png"
+    }
+  ],
+  "checks": [
+    {
+      "photoCount": 2,
+      "photoCaps": [
+        "Ding Kezhong · CC BY-SA 4.0 · Wikimedia Commons",
+        "Oscar Oiwa · CC BY-SA 4.0 · Wikimedia Commons"
+      ]
+    },
+    {
+      "rampEvidenceCount": 1,
+      "hasSourceLink": 1
+    },
+    {
+      "claimCount": 3,
+      "claims": [
+        "烟草公司机修仓库（1995）经章明团队改造后成为绿之丘，其使用功能从工业仓储转为连通城市与滨江的公共空间，这一转变有设计与空间关系可证",
+        "材料称绿之丘'前身可追溯到1920年怡和冷库'，但1920年怡和冷库与1995年烟草公司机修仓库是否为同一持续原建筑并无证据，身份连续尚不可证",
+        "安浦路原规划穿越烟草公司机修仓库，而绿之丘紧邻滨江公共空间并位于杨树浦路，三者构成'道路穿越—建筑阻隔—滨江可达'的空间张力，改造后建筑成为打通阻隔的节点"
+      ],
+      "negative": "一个还不能认定的问题怡和冷库（1920） ↔ 烟草公司机修仓库 无据，未建立关系材料只说「前身可追溯到 1920 年怡和冷库」。这是软性溯源，不是「同一栋建筑连续存在」的证明。让墨痕正面回答这个错误提法 →"
+    },
+    {
+      "evidenceItemCount": 22
+    },
+    {
+      "negAnswer": "已审核材料里还没有登记烟草公司机修仓库与怡和冷库之间的历史关系。下面这几条是库里提到它们的记录 —— 我只给你看记录，不替它下结论。",
+      "negGaps": [
+        "材料只说「前身可追溯到 1920 年怡和冷库」。这是来源上的软性溯源，不是「同一栋建筑连续存在」的证据，所以不能答成「是同一栋楼」。",
+        "没有登记到这条对象对的历史关系"
+      ]
+    },
+    {
+      "posAnswer": "今天能看的是这几处。至于怎么走、能不能进，我还没核验过，不给你编路线。"
+    },
+    {
+      "causalAnswer": "已审核材料里还没有登记关于滨江公共空间的历史关系。下面这几条是库里提到它们的记录 —— 我只给你看记录，不替它下结论。",
+      "causalGaps": [
+        "同属一片滨江、彼此紧邻，都是空间关系，不是因果。材料没有记载这处改造是由贯通工程直接造成的。",
+        "没有登记到这条对象对的历史关系"
+      ]
+    },
+    {
+      "hasReturnButton": 1
+    },
+    {
+      "mobilePhotoCount": 2
+    }
+  ],
+  "errors": []
+}

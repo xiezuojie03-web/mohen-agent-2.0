@@ -91,8 +91,23 @@ export default {
     },
   ],
 
-  // ── D01 载体读取照片：Commons 无权利清晰的绿之丘影像 → 留空，前端用自制示意（标注示意性）──
-  photoMaterials: [],
+  // ── D01 载体读取照片（A001 第三次重启 · V3 今日观察）──
+  // 复查结论（2026-10-18）：Wikimedia Commons 无「绿之丘建筑（杨树浦路1500号烟草机修仓库改造）」专门条目，
+  // 但有「杨浦滨江公共空间」的合法开源影像（CC BY-SA 4.0，可展示需署名）。
+  // 主对象 = 绿之丘 + 紧邻公共步行空间（任务书 §2），故以下照片作为「滨江公共空间」实体的 V3 今日现场；
+  // 绿之丘建筑本体仍无合法照片，其体量形态按 V4 解释标注（克制线框/热点）呈现，并明确标注示意性。
+  photoMaterials: [
+    {
+      feature_key: "yangpu-riverside-greenway",
+      entity_label: "滨江公共空间",
+      commons_title: "File:DSC00228滨江绿化带夜景.jpg",
+    },
+    {
+      feature_key: "yangpu-riverside-time-shipper",
+      entity_label: "滨江公共空间",
+      commons_title: "File:Time Shipper.jpg",
+    },
+  ],
 
   // ── D02 材料观察：用户提示词主题短语（D02_SYSTEM 本身主题无关，仅此处点题）──
   d02TopicPhrase: "杨浦滨江绿之丘相关政府公开网页",
@@ -156,8 +171,8 @@ export default {
   // A001 无预登记冲突注释（金泽的 T11-C1/C2/U4 不适用）
   conflictNotes: {},
 
-  // ── D03 视觉对应依据字符串（无 Commons 照片，标注自制示意降级）──
-  visualBasis: "A001 无 Commons 权利清晰影像，按任务书 §2 降级：前端以自制有据示意呈现今日空间关系，标注示意性",
+  // ── D03 视觉对应依据字符串（V3 用滨江公共空间开源照片；绿之丘建筑本体无照片，按 V4 解释标注降级）──
+  visualBasis: "杨浦滨江公共空间开源影像（Wikimedia Commons，CC BY-SA 4.0，条目自述）作 V3 今日观察；绿之丘建筑本体无合法照片，其体量形态按 V4 解释标注（克制线框/热点）呈现，明确标注示意性",
 
   // ── D05 投影/种子/指针标题（随主题）──
   d05WorldTitle: "杨浦滨江绿之丘：从工业仓储到公共生活空间",

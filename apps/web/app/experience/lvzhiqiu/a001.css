@@ -136,6 +136,46 @@
 .gh-stage {
   margin: 0;
 }
+/* ── 今日现场照片（V3 · 开源影像，真实优先于体量示意） ── */
+.gh-photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.gh-photo {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fffef9;
+}
+.gh-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 360px;
+  object-fit: cover;
+}
+.gh-photo__cap {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.gh-photo__id {
+  font-size: 13px;
+  font-weight: 600;
+}
+.gh-photo__license {
+  font-size: 11.5px;
+  color: var(--mist);
+}
+.gh-photo__desc {
+  font-size: 12px;
+  color: #4a4a44;
+  line-height: 1.5;
+}
 .gh-stage__svg {
   width: 100%;
   height: auto;

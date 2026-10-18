@@ -285,6 +285,7 @@ export default function A001Experience({ data }: { data: A001ExperienceData }) {
             highlight={state.focusEntity}
             activeKey={state.activeHotspot}
             onSelect={onSelectHotspot}
+            visuals={data.visuals}
           />
 
           {state.refusal && (
@@ -305,12 +306,15 @@ export default function A001Experience({ data }: { data: A001ExperienceData }) {
             <summary data-testid="a001-why">为什么这样画（舞台能画什么的依据）</summary>
             <ul>
               <li>
+                可画：今日现场照片（V3）——{data.visuals.length} 张滨江公共空间开源影像（Wikimedia Commons，CC BY-SA 4.0）。
+              </li>
+              <li>
                 可画：近似区域（文字方位与相邻描述）——{data.world.approximateEntities.length} 个对象有文字方位，无任何坐标。
               </li>
               <li>可画：时间轴——{data.timeline?.events.length ?? 0} 条有据时间变化。</li>
               <li>可画：证据返还、追问、发现——不主张空间或影像事实。</li>
               {surfaceBlocked
-                .filter((b) => ["before_after", "historical_photo", "historical_geometry", "current_photo", "current_map"].includes(b.surfaceType))
+                .filter((b) => ["before_after", "historical_photo", "historical_geometry", "current_map"].includes(b.surfaceType))
                 .map((b) => (
                   <li key={b.surfaceType}>
                     不画：{b.surfaceType}（{b.reasonCode}）
@@ -318,8 +322,8 @@ export default function A001Experience({ data }: { data: A001ExperienceData }) {
                 ))}
             </ul>
             <p className="a001-muted">
-              依据：本轮没有权利清晰的现状照片与历史图纸，也没有测绘图，所以舞台只画「按材料文字的体积示意」，
-              并明确标注非测绘、无坐标、无比例。
+              依据：滨江公共空间有合法开源照片（今日现场）；绿之丘建筑本体暂无合法照片，故其体量形态按 V4
+              解释标注（克制线框/热点）呈现，明确标注非测绘、无坐标、无比例。未取得授权的图像不在此展示。
             </p>
           </details>
         </section>
@@ -503,7 +507,8 @@ export default function A001Experience({ data }: { data: A001ExperienceData }) {
           数据来源：{uniqueSources(data.evidence).join(" · ")}
         </p>
         <p className="a001-muted">
-          本页所有文字与证据来自真实数据生产链（D00—D05 / G0—G5）的已发布成果；舞台图为按材料文字的体量示意，
+          本页所有文字与证据来自真实数据生产链（D00—D05 / G0—G5）的已发布成果。今日现场照片为滨江公共空间开源影像
+          （Wikimedia Commons，CC BY-SA 4.0，作者见图片标注）；绿之丘建筑本体的体量形态为按材料文字的示意（V4 解释标注），
           非测绘、无坐标、无比例。未取得授权的图像不在此展示。
         </p>
       </footer>
