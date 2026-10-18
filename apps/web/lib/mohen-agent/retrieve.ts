@@ -98,10 +98,33 @@ from (
 
     union all
 
+    -- A001 起：世界投影里的「今日联系」（D04 依据材料原句发布的 L4→L5 内容）。
+    -- 它回答的是「今天的人怎么用这处空间」，不是「历史关系」；因此单列为 present，
+    -- 且 source_ref 带标记，供裁决层区分「今日联系」与「知识上下文摘要」。
+    select
+      (p.projection_id::text || '#pc#' || (pc.ord - 1)::text)  as id,
+      'present'::text                                          as kind,
+      coalesce(pc.item->>'observed_state', '')                 as snippet,
+      '今日联系（D04 发布）'::text                               as source_ref,
+      'SUPPORTED_CANDIDATE'::text                              as vstatus,
+      ''::text                                                 as time_hint,
+      '0.600'::text                                            as conf,
+      coalesce(pc.item->>'entities', p.projection_key, '')     as entity_txt
+    from read_model.world_projections p
+    join control.gate_audits g
+      on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
+     and g.consumer='agent' and g.object_type='world_projection' and g.object_id=p.projection_id
+    cross join lateral jsonb_array_elements(coalesce(p.payload->'present_connections','[]'::jsonb))
+      with ordinality as pc(item, ord)
+
+    union all
+
     select
       s.story_seed_id::text                                   as id,
       'claim'::text                                           as kind,
-      coalesce(s.title, s.narrative_question, s.seed_key, '') as snippet,
+      -- 故事种子的 title 是全主题统一标题，真正有信息量的是 payload.statement（解释增量）。
+      -- 这里优先给 statement：材料内容必须能被直接读懂，而不是把标题当内容。
+      coalesce(nullif(s.payload->>'statement',''), s.title, s.narrative_question, s.seed_key, '') as snippet,
       coalesce(s.payload->>'source_ref', '故事种子')            as source_ref,
       'SUPPORTED_CANDIDATE'::text                             as vstatus,
       coalesce(s.payload->>'time_hint', '')                   as time_hint,
@@ -267,6 +290,18 @@ const RELATION_PREDICATE_HUMAN: Record<string, string> = {
   similar_form_to: "形制相仿",
   temple_bridge_association: "关联（未证实）",
   relative_position_south_of: "在南",
+  former_site_of: "原址为",
+  claimed_origin_traceable_to: "前身可追溯到（非同一建筑，待证）",
+  planned_to_cross: "规划横穿",
+  renovated: "改造了",
+  // A001（绿之丘）现行生产关系谓词：同一套人话词汇表，避免把内部键读给用户
+  traces_origin_to: "前身可追溯到（非同一建筑，待证）",
+  crosses: "横切",
+  designed: "由……设计",
+  part_of: "属于",
+  adjacent_to: "紧邻",
+  located_on: "位于",
+  opened: "开放",
 };
 
 /**
@@ -310,6 +345,15 @@ export interface RetrieveOptions {
   objectAliases?: Record<string, string[]>;
 }
 
+/** 取摘要的前若干句（按句界截断，不硬切词）；超长才加省略号 */
+function leadSentences(text: string, max: number): string {
+  const t = text.replace(/\s+/g, " ").trim();
+  if (t.length <= max) return t;
+  const head = t.slice(0, max);
+  const cut = Math.max(head.lastIndexOf("。"), head.lastIndexOf("；"), head.lastIndexOf(";"));
+  return cut > 40 ? `${head.slice(0, cut + 1)}` : `${head}…`;
+}
+
 export async function retrieveMaterials(
   terms: string[],
   limit = 12,
@@ -332,7 +376,12 @@ export async function retrieveMaterials(
           if (!h) return null;
           return { ...toMaterial(r), kind: "relation" as const, snippet: h.snippet, entityIds: h.entityIds };
         }
-        return toMaterial(r);
+        const m = toMaterial(r);
+        // agent_context 的 summary 是「判断摘要 + 拒绝清单 + 待证问题」的机器拼接，
+        // 整段塞进一句人话会变成清单灌水。这里只取摘要前部（按句界截断），
+        // 拒绝与待证由世界投影另行呈现；不改写、不新增任何内容。
+        if (m.kind === "present") return { ...m, snippet: leadSentences(m.snippet, 170) };
+        return m;
       })
       .filter((m): m is Material => m !== null);
     return { materials, degraded: false };

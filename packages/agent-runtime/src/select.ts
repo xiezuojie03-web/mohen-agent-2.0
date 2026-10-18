@@ -111,7 +111,14 @@ export async function decideStep(
       : ranked.filter((r) => r.m.kind !== "relation").slice(0, 3).map((r) => r.m);
   } else {
     const preferredPicks = ranked.filter((r) => r.m.kind === preferred).slice(0, 3);
-    picked = (preferredPicks.length ? preferredPicks : ranked.slice(0, 3)).map((r) => r.m);
+    // 「今日联系」是直接回答「今天怎么用/怎么到达」的那类材料：同类里优先讲它，
+    // 免得被泛泛的知识上下文摘要顶掉，让用户听到「我还没核验过」而不是材料原话。
+    const todayFirst = [...preferredPicks].sort((a, b) => {
+      const sa = a.m.sourceRef.includes("今日联系") ? 1 : 0;
+      const sb = b.m.sourceRef.includes("今日联系") ? 1 : 0;
+      return sb - sa;
+    });
+    picked = (todayFirst.length ? todayFirst : ranked.slice(0, 3)).map((r) => r.m);
   }
   const stage = STAGE_BY_INTENT[understanding.intent];
 
@@ -181,7 +188,10 @@ function buildGaps(picked: Material[], intent: AgentIntentKind): string[] {
   if (intent === "relation" && !picked.some((m) => m.kind === "relation")) {
     gaps.push("没有登记到这条对象对的历史关系");
   }
-  if (intent === "present") {
+  // 已有「今日联系」这类发布内容时，不再一律加「不给路线」的兜底缺口：
+  // 材料确实写了怎么到达，就不该反过来声明不知道；没写才说没核验。
+  const hasTodayConnection = picked.some((m) => m.sourceRef.includes("今日联系"));
+  if (intent === "present" && !hasTodayConnection) {
     gaps.push("实地可达性、开放时间、步行连通性尚未核验（这里不给路线）");
   }
   return gaps;
@@ -212,10 +222,13 @@ function buildMohenLine(
       // P0-1：只有选中了「关系材料」才可说有据可依；其余一律是「还没有登记」，
       // 绝不拿任意 FACT 材料冒充关系结论（红线：几何/相邻本身就是主张，材料里没有就不说）。
       // 单对象问句（「万安桥跨的是哪条河」）用「关于X」而非「X之间」，避免「万安桥之间」。
-      const whoPhrase = objects.length === 1 ? `关于${nameOf(objects[0])}` : `${who}之间`;
+      // 无对象命中时不要说「它们之间」——不替材料编一个它没提到的对象对。
+      const whoPhrase =
+        objects.length === 0 ? "" : objects.length === 1 ? `关于${nameOf(objects[0])}` : `${who}之间`;
       const rel = picked.find((m) => m.kind === "relation");
-      return rel
-        ? `${whoPhrase}，这一条是有据可依的：${rel.snippet}`
+      if (rel) return `${whoPhrase}这一条是有据可依的：${rel.snippet}`;
+      return objects.length === 0
+        ? "材料里还没有登记你问的这条历史关系。下面这几条是可能相关的记录 —— 我只给你看记录，不替它下结论。"
         : `已审核材料里还没有登记${whoPhrase}的历史关系。下面这几条是库里提到它们的记录 —— 我只给你看记录，不替它下结论。`;
     }
     case "evidence":
@@ -227,13 +240,19 @@ function buildMohenLine(
     case "present": {
       // 措辞必须跟**实际选中的材料**对得上：库里若只有史料而没有「当下连接」记录，
       // 说「今天能看的是这几处」就是把过去当成现在 —— 那是错配，不是省略。
+      // A001 起：若选中的是「今日联系」（D04 依据材料原句发布），就直接把那句话交出去，
+      // 不再用「不给你编路线」的兜底话盖住已有记录。
+      if (first.sourceRef.includes("今日联系")) {
+        return `今天是这样用的：${first.snippet}`;
+      }
       const hasPresent = picked.some((m) => m.kind === "present");
       return hasPresent
         ? `今天能看的是这几处。至于怎么走、能不能进，我还没核验过，不给你编路线。`
         : `库里还没有登记「今天能看什么」的实地记录。下面这几条是提到这些地方的史料 —— 那是过去的样子，不是今天的现状。`;
     }
     case "place":
-      return `先看它今天的样子。${first.snippet}`;
+      // 「这是什么样的地方 / 原来是什么」——材料本身就是答案，不再套前缀把它拧成「今天的样子」。
+      return first.snippet;
     default:
       return gaps[0] ?? "我还不能回答这个。";
   }

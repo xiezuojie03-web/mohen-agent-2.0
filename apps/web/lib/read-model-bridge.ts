@@ -100,22 +100,44 @@ export interface ProductionRelationSummary {
   visuals: ProductionVisual[];
 }
 
-export async function readProductionRelationSummary(): Promise<ProductionRelationSummary> {
+/**
+ * 读取真实数据生产链 G5(visual_stage) 的成果，组装为内容生产看板摘要。
+ *
+ * topicKey 用于主题隔离：多个主题（金泽 / 绿之丘…）可同时 current_valid=true，
+ * 必须按投影键前缀锁定目标世界投影，再用其 run_id 圈定同一次生产的所有 L5 发布，
+ * 杜绝跨主题串味（否则金泽看板会混入绿之丘的 story_seeds / evidence）。
+ * 不传 topicKey 时退回「全局最新」旧行为（仅供无主题场景，主题页务必传参）。
+ */
+export async function readProductionRelationSummary(topicKey?: string): Promise<ProductionRelationSummary> {
   try {
+    const prefixFilter = topicKey
+      ? ` and p.projection_key like E'${topicKey.replace(/'/g, "''")}%'`
+      : "";
+    // 1) 定位目标世界投影（按 topic 前缀；无则最新）。G5 visual_stage 当前有效。
     const proj = await queryRows(
-      `select p.payload::text as payload
+      `select p.projection_id::text as pid, p.payload::text as payload, g.run_id::text as run_id
        from read_model.world_projections p
        join control.gate_audits g
          on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
         and g.consumer='visual_stage' and g.object_type='world_projection' and g.object_id=p.projection_id
+       ${prefixFilter}
        order by p.generated_at desc limit 1`
     );
+    if (!proj.length) {
+      return { entities: [], relations: [], storyCount: 0, available: false, evidence: [], stories: [], timeline: null, conflicts: [], openQuestions: [], visuals: [] };
+    }
+    // 2) 用目标 run_id 圈定同一次生产的所有 L5 发布（保证只取本主题，不串味）。
+    const runId = proj[0].run_id;
+    const payload = JSON.parse(proj[0].payload || "{}");
+
     const seeds = await queryRows(
       `select count(*)::text as cnt
        from read_model.story_seeds s
        join control.gate_audits g
          on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-        and g.consumer='visual_stage' and g.object_type='story_seed' and g.object_id=s.story_seed_id`
+        and g.consumer='visual_stage' and g.object_type='story_seed' and g.object_id=s.story_seed_id
+        and g.run_id = :'rid'`,
+      { rid: runId }
     );
     // D2 内容看板：史料原文摘录（evidence_pointers，G5 visual_stage 独立资格）
     const evidence = await queryRows(
@@ -125,7 +147,9 @@ export async function readProductionRelationSummary(): Promise<ProductionRelatio
        join control.gate_audits g
          on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
         and g.consumer='visual_stage' and g.object_type='evidence_pointer' and g.object_id=e.evidence_pointer_id
-       order by e.generated_at asc`
+        and g.run_id = :'rid'
+       order by e.generated_at asc`,
+      { rid: runId }
     );
     // D2 内容看板：可讲的故事（story_seeds，D05 statement）
     const stories = await queryRows(
@@ -135,16 +159,20 @@ export async function readProductionRelationSummary(): Promise<ProductionRelatio
        join control.gate_audits g
          on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
         and g.consumer='visual_stage' and g.object_type='story_seed' and g.object_id=s.story_seed_id
-       order by s.generated_at asc`
+        and g.run_id = :'rid'
+       order by s.generated_at asc`,
+      { rid: runId }
     );
-    // V1.4：P03 时间投影（取最新一条 current_valid visual_stage）
+    // V1.4：P03 时间投影（取同 run 最新一条 current_valid visual_stage）
     const timelineRows = await queryRows(
       `select m.payload::text as payload
        from read_model.map_timeline_projections m
        join control.gate_audits g
          on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
         and g.consumer='visual_stage' and g.object_type='map_timeline_projection' and g.object_id=m.map_timeline_projection_id
-       order by m.generated_at desc limit 1`
+        and g.run_id = :'rid'
+       order by m.generated_at desc limit 1`,
+      { rid: runId }
     );
     // V1.5：今貌照片（P06 视觉证据指针，G5 visual_stage current_valid）
     const visualRows = await queryRows(
@@ -160,13 +188,11 @@ export async function readProductionRelationSummary(): Promise<ProductionRelatio
        join control.gate_audits g
          on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
         and g.consumer='visual_stage' and g.object_type='evidence_pointer' and g.object_id=e.evidence_pointer_id
+        and g.run_id = :'rid'
        where e.display_locator->>'visual_type' = 'today_photo'
-       order by e.generated_at asc`
+       order by e.generated_at asc`,
+      { rid: runId }
     );
-    if (!proj.length) {
-      return { entities: [], relations: [], storyCount: 0, available: false, evidence: [], stories: [], timeline: null, conflicts: [], openQuestions: [], visuals: [] };
-    }
-    const payload = JSON.parse(proj[0].payload || "{}");
     const timeline: ProductionTimeline | null = (() => {
       if (!timelineRows.length) return null;
       try {

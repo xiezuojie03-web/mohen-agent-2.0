@@ -21,6 +21,8 @@ export interface AskBarProps {
   onDecision: (decision: AgentDecision, question: string) => void;
   /** 建议问题（导演稿：可以点墨痕给出的少量建议问题） */
   suggestions?: string[];
+  /** 主题键（金泽默认；绿之丘传 "a001"），驱动 /api/mohen/ask 选用对应别名档案 */
+  topic?: string;
 }
 
 const EXAMPLES = [
@@ -30,7 +32,7 @@ const EXAMPLES = [
   "我现在去现场能看什么？",
 ];
 
-export default function AskBar({ devMode, onDecision, suggestions }: AskBarProps) {
+export default function AskBar({ devMode, onDecision, suggestions, topic }: AskBarProps) {
   const [question, setQuestion] = useState("");
   const [busy, setBusy] = useState(false);
   const [decision, setDecision] = useState<AgentDecision | null>(null);
@@ -46,7 +48,7 @@ export default function AskBar({ devMode, onDecision, suggestions }: AskBarProps
       const res = await fetch("/api/mohen/ask", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ question: text }),
+        body: JSON.stringify(topic ? { question: text, topic } : { question: text }),
       });
       const json = (await res.json()) as { ok?: boolean; degraded?: boolean; decision?: AgentDecision };
       if (!json.decision) {

@@ -1,0 +1,23 @@
+{
+  "rows": [
+    {
+      "run": "fa48dd68-0859-47f7-a11c-206f4b95983f",
+      "status": "PASS",
+      "started": "2026-10-18T06:28:58.046Z",
+      "tokens": 10316
+    },
+    {
+      "run": "4ce19c26-a1de-4ec8-a8bd-3b72e37e7121",
+      "status": "PASS",
+      "started": "2026-10-18T06:43:33.501Z",
+      "tokens": 12934
+    },
+    {
+      "run": "f963e6d1-d939-4e4a-b398-cd1e4c6ef2d9",
+      "status": "PASS",
+      "started": "2026-10-18T06:47:45.684Z",
+      "tokens": 8036
+    }
+  ],
+  "total": 31286
+}

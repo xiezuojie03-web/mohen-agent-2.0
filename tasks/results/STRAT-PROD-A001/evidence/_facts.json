@@ -1,0 +1,358 @@
+{
+  "runs": [
+    {
+      "run": "a9a9bf99-473f-4fe1-a5db-1ec3fcc9de67",
+      "note": "第2轮：来源返证+年代轴+今日联系（已失效，被后续替代）",
+      "status": "PASS",
+      "started": "2026-10-18T08:05:52.111Z",
+      "finished": "2026-10-18T08:07:06.844Z",
+      "stages": [
+        {
+          "stage": "D00",
+          "gate": "G0",
+          "disposition": "PASS",
+          "model": null,
+          "tokens": 0,
+          "stats": {
+            "source_count": 3,
+            "photo_count": 0
+          }
+        },
+        {
+          "stage": "D01",
+          "gate": "G1",
+          "disposition": "PASS",
+          "model": null,
+          "tokens": 0,
+          "stats": {
+            "method": "C01",
+            "unit_count": 20,
+            "image_unit_count": 0
+          }
+        },
+        {
+          "stage": "D02",
+          "gate": "G2",
+          "disposition": "PASS",
+          "model": "deepseek-flash",
+          "tokens": 7020,
+          "stats": {
+            "evidence_count": 20,
+            "mention_count": 47,
+            "image_evidence_count": 0
+          }
+        },
+        {
+          "stage": "D03",
+          "gate": "G3",
+          "disposition": "PASS",
+          "model": "deepseek-flash",
+          "tokens": 3411,
+          "stats": {
+            "entity_count": 7,
+            "relation_count": 6,
+            "change_count": 5,
+            "conflict_count": 0,
+            "refusal_count": 3,
+            "open_question_count": 3
+          }
+        },
+        {
+          "stage": "D04",
+          "gate": "G4",
+          "disposition": "PASS",
+          "model": "deepseek-flash",
+          "tokens": 1776,
+          "stats": {
+            "finding_count": 4,
+            "present_connection_count": 1
+          }
+        },
+        {
+          "stage": "D05",
+          "gate": "G5",
+          "disposition": "PASS",
+          "model": null,
+          "tokens": 0,
+          "stats": {
+            "seed_count": 4,
+            "projection": true,
+            "entity_count": 7,
+            "change_count": 5,
+            "conflict_count": 0,
+            "open_question_count": 6,
+            "dependency_edge_count": 89,
+            "p08_deferred": true
+          }
+        }
+      ]
+    },
+    {
+      "run": "490f5543-b223-4bac-b572-044e57e7cd94",
+      "note": "第3轮：今日联系实体标注修正（已失效）",
+      "status": "PASS",
+      "started": "2026-10-18T08:07:29.599Z",
+      "finished": "2026-10-18T08:08:41.861Z",
+      "stages": [
+        {
+          "stage": "D00",
+          "gate": "G0",
+          "disposition": "PASS",
+          "model": null,
+          "tokens": 0,
+          "stats": {
+            "source_count": 3,
+            "photo_count": 0
+          }
+        },
+        {
+          "stage": "D01",
+          "gate": "G1",
+          "disposition": "PASS",
+          "model": null,
+          "tokens": 0,
+          "stats": {
+            "method": "C01",
+            "unit_count": 20,
+            "image_unit_count": 0
+          }
+        },
+        {
+          "stage": "D02",
+          "gate": "G2",
+          "disposition": "PASS",
+          "model": "deepseek-flash",
+          "tokens": 7275,
+          "stats": {
+            "evidence_count": 20,
+            "mention_count": 51,
+            "image_evidence_count": 0
+          }
+        },
+        {
+          "stage": "D03",
+          "gate": "G3",
+          "disposition": "PASS",
+          "model": "deepseek-flash",
+          "tokens": 3488,
+          "stats": {
+            "entity_count": 7,
+            "relation_count": 6,
+            "change_count": 5,
+            "conflict_count": 0,
+            "refusal_count": 3,
+            "open_question_count": 3
+          }
+        },
+        {
+          "stage": "D04",
+          "gate": "G4",
+          "disposition": "PASS",
+          "model": "deepseek-flash",
+          "tokens": 1691,
+          "stats": {
+            "finding_count": 3,
+            "present_connection_count": 1
+          }
+        },
+        {
+          "stage": "D05",
+          "gate": "G5",
+          "disposition": "PASS",
+          "model": null,
+          "tokens": 0,
+          "stats": {
+            "seed_count": 3,
+            "projection": true,
+            "entity_count": 7,
+            "change_count": 5,
+            "conflict_count": 0,
+            "open_question_count": 6,
+            "dependency_edge_count": 84,
+            "p08_deferred": true
+          }
+        }
+      ]
+    },
+    {
+      "run": "df7e43b4-31c7-46e9-b03d-00cf4e7d766d",
+      "note": "第4轮：摘要去台账化（内容偏薄，已失效）",
+      "status": "PASS",
+      "started": "2026-10-18T08:36:04.980Z",
+      "finished": "2026-10-18T08:36:46.834Z",
+      "stages": [
+        {
+          "stage": "D00",
+          "gate": "G0",
+          "disposition": "PASS",
+          "model": null,
+          "tokens": 0,
+          "stats": {
+            "source_count": 3,
+            "photo_count": 0
+          }
+        },
+        {
+          "stage": "D01",
+          "gate": "G1",
+          "disposition": "PASS",
+          "model": null,
+          "tokens": 0,
+          "stats": {
+            "method": "C01",
+            "unit_count": 20,
+            "image_unit_count": 0
+          }
+        },
+        {
+          "stage": "D02",
+          "gate": "G2",
+          "disposition": "PASS",
+          "model": "deepseek-flash",
+          "tokens": 3958,
+          "stats": {
+            "evidence_count": 1,
+            "mention_count": 36,
+            "image_evidence_count": 0
+          }
+        },
+        {
+          "stage": "D03",
+          "gate": "G3",
+          "disposition": "PASS",
+          "model": "deepseek-flash",
+          "tokens": 2420,
+          "stats": {
+            "entity_count": 7,
+            "relation_count": 4,
+            "change_count": 4,
+            "conflict_count": 0,
+            "refusal_count": 1,
+            "open_question_count": 1
+          }
+        },
+        {
+          "stage": "D04",
+          "gate": "G4",
+          "disposition": "PASS",
+          "model": "deepseek-flash",
+          "tokens": 1376,
+          "stats": {
+            "finding_count": 2,
+            "present_connection_count": 1
+          }
+        },
+        {
+          "stage": "D05",
+          "gate": "G5",
+          "disposition": "PASS",
+          "model": null,
+          "tokens": 0,
+          "stats": {
+            "seed_count": 2,
+            "projection": true,
+            "entity_count": 7,
+            "change_count": 4,
+            "conflict_count": 0,
+            "open_question_count": 2,
+            "dependency_edge_count": 39,
+            "p08_deferred": true
+          }
+        }
+      ]
+    },
+    {
+      "run": "4719c713-22ab-4c0a-8e3b-d94b1af5e9bf",
+      "note": "第5轮：正式成果（当前有效）",
+      "status": "PASS",
+      "started": "2026-10-18T08:37:23.717Z",
+      "finished": "2026-10-18T08:38:50.147Z",
+      "stages": [
+        {
+          "stage": "D00",
+          "gate": "G0",
+          "disposition": "PASS",
+          "model": null,
+          "tokens": 0,
+          "stats": {
+            "source_count": 3,
+            "photo_count": 0
+          }
+        },
+        {
+          "stage": "D01",
+          "gate": "G1",
+          "disposition": "PASS",
+          "model": null,
+          "tokens": 0,
+          "stats": {
+            "method": "C01",
+            "unit_count": 20,
+            "image_unit_count": 0
+          }
+        },
+        {
+          "stage": "D02",
+          "gate": "G2",
+          "disposition": "PASS",
+          "model": "deepseek-flash",
+          "tokens": 7126,
+          "stats": {
+            "evidence_count": 20,
+            "mention_count": 48,
+            "image_evidence_count": 0
+          }
+        },
+        {
+          "stage": "D03",
+          "gate": "G3",
+          "disposition": "PASS",
+          "model": "deepseek-flash",
+          "tokens": 3494,
+          "stats": {
+            "entity_count": 7,
+            "relation_count": 6,
+            "change_count": 5,
+            "conflict_count": 0,
+            "refusal_count": 3,
+            "open_question_count": 3
+          }
+        },
+        {
+          "stage": "D04",
+          "gate": "G4",
+          "disposition": "PASS",
+          "model": "deepseek-flash",
+          "tokens": 1549,
+          "stats": {
+            "finding_count": 3,
+            "present_connection_count": 1
+          }
+        },
+        {
+          "stage": "D05",
+          "gate": "G5",
+          "disposition": "PASS",
+          "model": null,
+          "tokens": 0,
+          "stats": {
+            "seed_count": 3,
+            "projection": true,
+            "entity_count": 7,
+            "change_count": 5,
+            "conflict_count": 0,
+            "open_question_count": 6,
+            "dependency_edge_count": 83,
+            "p08_deferred": true
+          }
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "prompt": 15100,
+    "completion": 29484,
+    "total": 44584,
+    "calls": 12
+  }
+}

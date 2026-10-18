@@ -53,8 +53,9 @@ export default async function ExperiencePage() {
     throw new Error("Frozen experience artifacts violate invariants: " + report.errors.join("; "));
   }
 
-  // 第二层：读真实数据生产链产出（consumer='visual_stage'）；可用则呈现，否则前端降级冻结 JSON
-  const productionSummary = await readProductionRelationSummary();
+  // 第二层：读真实数据生产链产出（consumer='visual_stage'，按主题键锁定金泽，
+  // 避免与同时 current_valid 的其它主题（如绿之丘）串味）；可用则呈现，否则前端降级冻结 JSON
+  const productionSummary = await readProductionRelationSummary("jinze");
 
   return (
     <ExperienceShell

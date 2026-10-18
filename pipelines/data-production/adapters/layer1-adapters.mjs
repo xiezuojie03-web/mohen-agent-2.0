@@ -21,13 +21,28 @@ const DEEPSEEK_MODEL = "deepseek-chat";
 const PROMPT_VERSION = "sample-trial-10-layer1-v1.0";
 
 // ============================================================
+// 主题配置（A001 适配）：默认 金泽；MOHEN_TOPIC_CONFIG 指向 topic-a001.mjs 时切换。
+// 仅参数化材料 / 载体照片 / D02·D03·D04 提示词 / 实体别名 / 投影前缀与标题；
+// 门禁 / 血缘 / 精准失效 machinery 保持不变、主题无关、可复用。
+// ============================================================
+const __TOPIC_RAW = process.env.MOHEN_TOPIC_CONFIG;
+const __TOPIC_URL = __TOPIC_RAW
+  ? (__TOPIC_RAW.startsWith("file:") || __TOPIC_RAW.startsWith("http"))
+    ? __TOPIC_RAW
+    : "file:///" + process.cwd().replace(/\\/g, "/") + "/" + __TOPIC_RAW.replace(/\\/g, "/")
+  : null;
+const __TOPIC = __TOPIC_URL ? await import(__TOPIC_URL).then((m) => m.default ?? m) : null;
+const TOPIC_KEY = __TOPIC?.key ?? "jinze";
+const TOPIC_LABEL = __TOPIC?.label ?? "金泽";
+
+// ============================================================
 // V1.5 视觉维度第一阶：今貌照片（C04 / W03 / P06 视觉发布）
 // 只登记世界模型中已有实体对应的照片（万安桥/普济桥/迎祥桥/颐浩寺遗址）；
 // 照片作为真实来源进生产链：Commons API 读元数据（license/作者/条目自述）→
 // 下载到 web 公共资盘（可显示）→ C04 技术读取 → W03 视觉对应核定 → P06 证据返还。
 // 视觉身份固定为 V3「今日观察」；历史舆图/旧影（V1/V2）无本地史料资产，本批不涉。
 // ============================================================
-const PHOTO_MATERIALS = [
+let PHOTO_MATERIALS = [
   { feature_key: "wananqiao", entity_label: "万安桥", commons_title: "File:Wan'anqiao.jpg" },
   { feature_key: "pujiqiao", entity_label: "普济桥", commons_title: "File:Pujiqiao (Jinze).jpg" },
   { feature_key: "yingxiangqiao", entity_label: "迎祥桥", commons_title: "File:Yingxiangqiao_.jpg" },
@@ -94,7 +109,7 @@ async function downloadPhoto(commonsTitle, outFile) {
 // 携带真实着录分歧（水道名三变体、普济桥方位两说），用于检验
 // 「保留不同说法 / 正确拒绝无依据关联 / 时间有着录才抽取」。不新增转述。
 // ============================================================
-const MATERIALS = [
+let MATERIALS = [
   {
     provider: "shanghai-library",
     title: "上海市地名志·金泽条目",
@@ -241,18 +256,42 @@ async function d00SourceIntake({ run, job, input, context }) {
         `select source_version_id::text from source.source_versions where source_id=:'source_id'::uuid order by retrieved_at desc limit 1`,
         { source_id: sourceId }
       );
+      // 幂等复用时补齐来源元数据（此前批次只登记了标题，导致前端无法回访原件）。
+      // 只填空值，不覆盖既有登记。
+      await dbRun(
+        `update source.sources set
+           publisher_or_institution = coalesce(nullif(publisher_or_institution,''), :'publisher'),
+           source_uri_or_catalog_no = coalesce(nullif(source_uri_or_catalog_no,''), :'uri'),
+           source_date = case when source_date is null or source_date = '{}'::jsonb then :'sdate'::jsonb else source_date end,
+           rights = case when rights is null or rights = '{}'::jsonb then :'rights'::jsonb else rights end
+         where source_id = :'source_id'::uuid`,
+        {
+          source_id: sourceId,
+          publisher: m.publisher ?? "", uri: m.url ?? "",
+          sdate: JSON.stringify(m.source_date ? { text: m.source_date } : {}),
+          rights: JSON.stringify(m.rights ?? {}),
+        }
+      );
     } else {
       sourceId = randomUUID();
       versionId = randomUUID();
+      // A001 返证要求（任务书 U4/D2）：来源必须携带可回访 URL、发布机构、发布日期与权利用途，
+      // 否则前端「点击判断→回到原件」只能给一个无法打开的标题。缺失时如实留空，不编造。
       await dbRun(
         `insert into source.sources
-         (source_id, provider, title, source_type, carrier_type, rights, provenance_status,
+         (source_id, provider, title, source_type, carrier_type, publisher_or_institution,
+          source_uri_or_catalog_no, source_date, rights, provenance_status,
           content_availability, original_locator, scope)
-         values (:'source_id'::uuid, :'provider', :'title', :'source_type', :'carrier_type',
-                 '{}'::jsonb, :'provenance_status', :'content_availability', '{}'::jsonb, '{}'::jsonb)`,
+         values (:'source_id'::uuid, :'provider', :'title', :'source_type', :'carrier_type', :'publisher',
+                 :'uri', :'sdate'::jsonb, :'rights'::jsonb, :'provenance_status',
+                 :'content_availability', '{}'::jsonb, '{}'::jsonb)`,
         {
           source_id: sourceId, provider: m.provider, title: m.title,
           source_type: m.source_type, carrier_type: m.carrier_type,
+          publisher: m.publisher ?? "",
+          uri: m.url ?? "",
+          sdate: JSON.stringify(m.source_date ? { text: m.source_date } : {}),
+          rights: JSON.stringify(m.rights ?? {}),
           provenance_status: m.provenance_status, content_availability: m.content_availability,
         }
       );
@@ -274,7 +313,12 @@ async function d00SourceIntake({ run, job, input, context }) {
       }
     }
     await writeGate(runId, "D00", "G0", "source", sourceId, "PASS", [], { title: m.title });
-    sourceVersions.push({ source_id: sourceId, source_version_id: versionId, title: m.title, fragments: m.fragments });
+    // 来源元数据向下游透传（D02 逐条证据归属 + D05 证据指针返证都用它）
+    sourceVersions.push({
+      source_id: sourceId, source_version_id: versionId, title: m.title, fragments: m.fragments,
+      provider: m.provider ?? "", publisher: m.publisher ?? "", url: m.url ?? "",
+      source_date: m.source_date ?? "", rights: m.rights ?? {},
+    });
   }
 
   // V1.5 视觉批次：今貌照片来源摄取（Commons 元数据 + 下载 + 登记 source/version/raw_items）
@@ -390,7 +434,12 @@ async function d01CarrierReading({ run, job, input, context }) {
           locator_hash: sha256(frag).slice(0, 16),
         }
       );
-      readUnits.push({ read_unit_id: unitId, source_version_id: s.source_version_id, source_id: s.source_id, ordinal: i + 1, literal: frag });
+      readUnits.push({
+        read_unit_id: unitId, source_version_id: s.source_version_id, source_id: s.source_id,
+        ordinal: i + 1, literal: frag, fragment_index: i,
+        source_title: s.title ?? "", publisher: s.publisher ?? "", url: s.url ?? "",
+        source_date: s.source_date ?? "",
+      });
     }
   }
 
@@ -473,7 +522,7 @@ async function d02MaterialUnderstanding({ run, job, input, context }) {
   const text = units.map((u) => u.literal).join("\n");
   let r;
   try {
-    r = await deepseekChat(D02_SYSTEM, `请按上述 schema 处理以下金泽方志/地名志文本片段：\n${text}`);
+    r = await deepseekChat(D02_SYSTEM, `请按上述 schema 处理以下${__TOPIC?.d02TopicPhrase ?? "金泽方志/地名志"}文本片段：\n${text}`);
   } catch (e) {
     return hold("LLM_FAIL", `D02 DeepSeek 调用失败: ${e.message}`, "重试或检查 key", "DeepSeek 返回成功");
   }
@@ -485,27 +534,72 @@ async function d02MaterialUnderstanding({ run, job, input, context }) {
   const mentions = Array.isArray(data.material_mentions) ? data.material_mentions : [];
   const evidenceList = Array.isArray(data.material_evidence) ? data.material_evidence : [];
 
-  // 每条 material_evidence 建一行，link 到第一份 source
-  const src = input?.read_units?.[0]?.source_id || null;
+  // 每条 material_evidence 建一行，并**按原文片段确定性地归属到真实来源**。
+  // 旧实现把全部观察都挂在「第一份 source」上，导致前端返证指向错误来源（D2/U4 不可接受）。
+  // 归属规则：把 LLM 给出的 literal_reading 与各 read_unit 原文做去标点/去空白比对，
+  // 取重叠最长者；完全无法定位时标 attribution=unattributed，绝不用「第一份」冒充。
+  const normForMatch = (x) =>
+    String(x ?? "").replace(/[\s"'“”‘’（）()《》〈〉，,。.、：:；;！!？?—\-·]/g, "");
+  const matchUnits = units.map((u) => ({ u, norm: normForMatch(u.literal) })).filter((x) => x.norm.length > 0);
+  function attributeEvidence(literalReading) {
+    const target = normForMatch(literalReading);
+    if (!target) return null;
+    let best = null;
+    for (const { u, norm } of matchUnits) {
+      if (!norm) continue;
+      if (norm.includes(target) || target.includes(norm)) {
+        const score = Math.min(norm.length, target.length);
+        if (!best || score > best.score) best = { u, score };
+      }
+    }
+    return best?.u ?? null;
+  }
+
   for (const e of evidenceList) {
     const evId = randomUUID();
+    const unit = attributeEvidence(e.literal_reading);
+    // 外键要求必须有真实来源；定不到片段时归到本批材料来源，并如实标注 batch_level，
+    // 前端据此显示「来源未能定位到具体段落」，不会假装精确。
+    const fallbackUnit = unit ?? units[0] ?? null;
+    const src = unit?.source_id || fallbackUnit?.source_id || null;
+    const locator = unit
+      ? {
+          attribution: "exact_fragment_match",
+          source_title: unit.source_title ?? "",
+          source_version_id: unit.source_version_id,
+          fragment_index: unit.fragment_index,
+          publisher: unit.publisher ?? "",
+          source_date: unit.source_date ?? "",
+          url: unit.url ?? "",
+        }
+      : {
+          attribution: "batch_level",
+          note: "未能把该观察定位到具体材料片段，仅归属到本批材料来源；不冒充精确出处",
+          source_title: fallbackUnit?.source_title ?? "",
+          source_version_id: fallbackUnit?.source_version_id ?? null,
+          fragment_index: null,
+          publisher: fallbackUnit?.publisher ?? "",
+          source_date: fallbackUnit?.source_date ?? "",
+          url: fallbackUnit?.url ?? "",
+        };
     await dbRun(
       `insert into evidence.material_evidence
        (evidence_id, source_id, locator, modality, literal_reading, normalized_text, research_proposition,
         source_voice, evidence_type, uncertainty, extraction_method, maturity,
         assertion_kind, voice_basis, quote_review_status, evidence_version_no, input_fingerprint)
-       values (:'ev_id'::uuid, :'source_id'::uuid, '{}'::jsonb, 'digital_text', :'literal', :'normalized', :'proposition',
+       values (:'ev_id'::uuid, :'source_id'::uuid, :'locator'::jsonb, 'digital_text', :'literal', :'normalized', :'proposition',
                :'voice', 'gazetteer_observation', '{}'::jsonb, '{}'::jsonb, 'candidate',
                :'assertion', :'voice_basis', 'unverified', 1, :'fingerprint')`,
       {
         ev_id: evId, source_id: src || "00000000-0000-0000-0000-000000000000",
+        locator: JSON.stringify(locator),
         literal: e.literal_reading || "", normalized: e.normalized_text || "",
         proposition: e.research_proposition || "", voice: e.source_voice || "unknown",
         assertion: e.assertion_kind || "record", voice_basis: e.voice_basis || "unknown",
         fingerprint: sha256((e.literal_reading || "") + PROMPT_VERSION),
       }
     );
-    evidenceRows.push({ ...e, evidence_id: evId, source_id: src });
+    evidenceRows.push({ ...e, evidence_id: evId, source_id: src, locator });
   }
 
   // V1.5 视觉批次：图像材料观察（确定性，无 LLM）——照片的"观察"= Commons 条目自述
@@ -569,7 +663,7 @@ async function d02MaterialUnderstanding({ run, job, input, context }) {
 // ============================================================
 // D03 世界建构（L3/G3）——W01/W02/W05/W09，调 DeepSeek
 // ============================================================
-const D03_SYSTEM = `你是墨痕数据生产的 D03 世界建构器，方法 W01 身份 / W02 时间 / W05 关系 / W09 冲突与边界。
+let D03_SYSTEM = `你是墨痕数据生产的 D03 世界建构器，方法 W01 身份 / W02 时间 / W05 关系 / W09 冲突与边界。
 从 D02 材料观察陈述里建构历史世界：识别实体（桥/寺/人/地/水道）与有据关系，保留 candidate 认识状态，不把"材料记载"升为"已证事实"。
 只输出一个 JSON，不要 markdown、不要额外文字：
 {
@@ -672,7 +766,7 @@ async function d03WorldConstruction({ run, job, input, context }) {
         corr: JSON.stringify({
           asserts_depicts: pe.entity_label,
           visual_identity: "V3_today_observation",
-          basis: "人工策展清单（jinze-present-day-photos.json）+ Commons 条目自述",
+          basis: __TOPIC?.visualBasis ?? "人工策展清单（jinze-present-day-photos.json）+ Commons 条目自述",
           license: pe.license ?? "", artist: pe.artist ?? "", commons_title: pe.commons_title ?? "",
         }),
       }
@@ -710,7 +804,7 @@ async function d03WorldConstruction({ run, job, input, context }) {
 
   // W09：着录分歧登记（并列保留，不裁决）
   // resolution_note 按人工裁决记录编号逐条对应；无法对应的给通用口径。
-  const CONFLICT_NOTES = Object.freeze({
+  let CONFLICT_NOTES = Object.freeze(__TOPIC?.conflictNotes ?? {
     "T11-C1": "人工裁决记录（TASK-0011 T11-C1）：Legacy「北市」说已退休为研究线索，不得作为 active historical assertion；南市/中部两说并列保留，本 run 不代为裁决。",
     "T11-C2": "人工裁决记录（TASK-0011 T11-C2/U13）：「秀州塘＋万安桥」组合另见于金山朱泾镇，疑跨镇误配；「市河」为异称（U13）；本 run 只登记不裁决。",
     "U4": "人工裁决记录（TASK-0011 U4）：年代口径分歧保留，caption 内部朝代自相矛盾项不作为断代依据。",
@@ -871,7 +965,7 @@ async function d03WorldConstruction({ run, job, input, context }) {
 // ============================================================
 // D04 人文发现（L4/G4）——A01/A10，调 DeepSeek
 // ============================================================
-const D04_SYSTEM = `你是墨痕数据生产的 D04 人文发现器，方法 A01 显式关系解释 / A10 冲突发现。
+let D04_SYSTEM = `你是墨痕数据生产的 D04 人文发现器，方法 A01 显式关系解释 / A10 冲突发现。
 从 D03 世界关系、着录分歧与边界拒绝里产出非平庸解释增量；事实与解释分离；candidate 不升 fact；不编造因果；保留反证与开放问题。
 只输出一个 JSON，不要 markdown、不要额外文字：
 {"findings":[
@@ -933,14 +1027,44 @@ async function d04HumanisticDiscovery({ run, job, input, context }) {
     findingRows.push({ finding_id: fid, finding_type: f.finding_type, interpretive_statement: f.interpretive_statement, supporting_world_objects: Array.isArray(f.supporting_world_objects) ? f.supporting_world_objects : [] });
   }
 
-  await writeGate(runId, "D04", "G4", "finding", findingRows[0]?.finding_id || "00000000-0000-0000-0000-000000000000", "PASS", [], { finding_count: findingRows.length, model: r.model });
+  // L4 今日联系（任务书 P2：D04/G4 必须交付「至少一个与当下生活有关的证据支持理解增量」）。
+  // 只接受 LLM 在材料明载范围内给出的今日关系；basis_text 是材料原句，作为返证锚点。
+  // 允许为空：为空表示本批材料说不清「今天的人如何用这处空间」——空是诚实结果，不拿空话填满。
+  const presentConnections = [];
+  const rawConnections = Array.isArray(r.parsed.present_connections) ? r.parsed.present_connections : [];
+  for (const pc of rawConnections) {
+    const linkedIdx = Number.isInteger(pc.linked_finding_index) ? pc.linked_finding_index : -1;
+    const linkedFinding = findingRows[linkedIdx]?.finding_id ?? findingRows[0]?.finding_id ?? null;
+    const pcId = randomUUID();
+    await dbRun(
+      `insert into meaning.present_connections
+       (present_connection_id, finding_id, connection_type, observed_state, basis_world_objects,
+        open_questions, expression_rule)
+       values (:'pc_id'::uuid, :'fid'::uuid, :'ctype', :'state', :'objs'::jsonb, :'oqs'::jsonb, :'expr'::jsonb)`,
+      {
+        pc_id: pcId, fid: linkedFinding, ctype: pc.connection_type || "today_relation",
+        state: pc.observed_state || "",
+        objs: JSON.stringify(Array.isArray(pc.basis_world_objects) ? pc.basis_world_objects : []),
+        oqs: JSON.stringify(Array.isArray(pc.open_questions) ? pc.open_questions.map((q) => ({ text: String(q) })) : []),
+        expr: JSON.stringify({ basis_text: pc.basis_text || "", rule: "只有材料明载的今日使用才可呈现；不得编造人流/票价/活动" }),
+      }
+    );
+    presentConnections.push({
+      present_connection_id: pcId, connection_type: pc.connection_type || "today_relation",
+      observed_state: pc.observed_state || "", basis_world_objects: Array.isArray(pc.basis_world_objects) ? pc.basis_world_objects : [],
+      basis_text: pc.basis_text || "", open_questions: Array.isArray(pc.open_questions) ? pc.open_questions : [],
+      finding_id: linkedFinding,
+    });
+  }
+
+  await writeGate(runId, "D04", "G4", "finding", findingRows[0]?.finding_id || "00000000-0000-0000-0000-000000000000", "PASS", [], { finding_count: findingRows.length, present_connection_count: presentConnections.length, model: r.model });
 
   return {
     disposition: "PASS",
     // world 透传：D05 只投影本 run 的世界对象（追加式重跑不重复投影旧 run 成果）
-    output: { findings: findingRows, count: findingRows.length, world: { entities: input?.entities || [], relations, changes: input?.changes || [], conflicts, refusals, evidences: input?.evidences || [], photo_evidence: input?.photo_evidence || [], visual_objects: input?.visual_objects || [] } },
-    gate_evidence: { stage: "D04", methods: ["A01", "A10"], finding_count: findingRows.length, model: r.model, tokens: r.usage },
-    content_stats: { findings: findingRows.length },
+    output: { findings: findingRows, count: findingRows.length, present_connections: presentConnections, world: { entities: input?.entities || [], relations, changes: input?.changes || [], conflicts, refusals, evidences: input?.evidences || [], photo_evidence: input?.photo_evidence || [], visual_objects: input?.visual_objects || [] } },
+    gate_evidence: { stage: "D04", methods: ["A01", "A10"], finding_count: findingRows.length, present_connection_count: presentConnections.length, model: r.model, tokens: r.usage },
+    content_stats: { findings: findingRows.length, present_connections: presentConnections.length },
     review_records: findingRows.map((f) => ({ finding_id: f.finding_id, statement: (f.interpretive_statement || "").slice(0, 60) })),
   };
 }
@@ -952,7 +1076,7 @@ async function d04HumanisticDiscovery({ run, job, input, context }) {
 // T1（2026-10-17）：按行精确标注实体——每条 story_seed / agent_context / evidence_pointer
 // 只标注其内容文本真正涉及的实体，不再「全 7 实体」冒充（否则 Agent 检索无区分度，谁跟谁都命中）。
 // 原则：宁可少不可多（宁可漏匹配，不可全量冒充）。world_projection 仍是全实体（世界投影本就覆盖全体）。
-const ENTITY_MATCH_ALIASES = Object.freeze({
+let ENTITY_MATCH_ALIASES = Object.freeze({
   "颐浩寺遗址": ["颐浩寺遗址", "颐浩寺"],
   "万安桥": ["万安桥", "万安"],
   "普济桥": ["普济桥", "普济"],
@@ -963,6 +1087,17 @@ const ENTITY_MATCH_ALIASES = Object.freeze({
   // V1.4：W01 临时水道实体（名称争议未定）——只按已着录的三个名称匹配，不泛匹配"水道"
   "桥所跨水道（名称待定）": ["桥所跨水道（名称待定）", "金泽塘", "秀州塘", "市河"],
 });
+
+// ── 主题参数统一覆盖（模块加载时执行一次，位于所有 let 声明之后）──
+// MOHEN_TOPIC_CONFIG 指向 topic-a001.mjs 时，材料/照片/提示词/实体别名全部替换为 A001；
+// 不设环境变量则保持 金泽 默认。d03 局部 CONFLICT_NOTES 见其函数内（按主题默认）。
+if (__TOPIC) {
+  MATERIALS = __TOPIC.materials;
+  PHOTO_MATERIALS = __TOPIC.photoMaterials ?? [];
+  D03_SYSTEM = __TOPIC.d03System;
+  D04_SYSTEM = __TOPIC.d04System;
+  ENTITY_MATCH_ALIASES = Object.freeze(__TOPIC.entityAliases ?? {});
+}
 
 /** 返回文本内容真正涉及到的实体标签（确定性，去重，保持 labels 顺序）。 */
 function entitiesForText(text, labels) {
@@ -979,12 +1114,24 @@ function entitiesForText(text, labels) {
 // L5 发布，因此新 run 发布前，将本切片此前的 current_valid G5 决策（两消费端）
 // 全部置为失效（append-only：旧行保留、可审计，只是不再 current）。
 async function supersedePriorG5(objectType) {
+  // 主题隔离：仅失效与本主题前缀（TOPIC_KEY + "-"）同槽位的先前 G5，
+  // 避免 A001 运行误伤 金泽 既有 G5（保护在线 金泽 体验的实时 read_model 层）。
+  const prefix = `${TOPIC_KEY}-`;
+  const keyed = {
+    world_projection: { table: "read_model.world_projections", id: "projection_id" },
+    map_timeline_projection: { table: "read_model.map_timeline_projections", id: "map_timeline_projection_id" },
+  };
+  const cfg = keyed[objectType];
+  if (!cfg) return; // seed/ctx/oq/ep 按 run 唯一键天然隔离，无需前缀失效
   for (const consumer of ["agent", "visual_stage"]) {
     await dbRun(
-      `update control.gate_audits set current_valid = false
-       where gate_code='G5' and object_type=:'otype' and result='PASS' and current_valid=true
-         and consumer is not distinct from :'consumer'`,
-      { otype: objectType, consumer }
+      `update control.gate_audits g set current_valid = false
+       from ${cfg.table} t
+       where t.${cfg.id} = g.object_id::uuid
+         and g.gate_code='G5' and g.object_type=:'otype' and g.result='PASS' and g.current_valid=true
+         and g.consumer is not distinct from :'consumer'
+         and t.projection_key like :'prefix' || '%'`,
+      { otype: objectType, consumer, prefix }
     );
   }
 }
@@ -1057,6 +1204,7 @@ async function d05ReadModelPublication({ run, job, input, context }) {
 
   const findings = input?.findings || [];
   if (!findings.length) return hold("NO_FINDING", "D05 无 finding 输入", "先完成 D04 人文发现", "findings 非空");
+  const presentConnectionsIn = Array.isArray(input?.present_connections) ? input.present_connections : [];
 
   // V1.4：只投影本 run 的世界对象（追加式重跑不重复投影旧 run 成果——
   // 旧 run 成果由门禁 current_valid 规则自然失效，投影本身不叠加）。
@@ -1096,7 +1244,7 @@ async function d05ReadModelPublication({ run, job, input, context }) {
   // P02 世界投影（视觉舞台 + Agent 消费的核心；payload 含实体/关系/冲突/未决问题）
   // 键按 run 作用域：projection_key 有全局唯一约束，追加式重跑 = 同槽位新修订（append-only），
   // 旧修订行保留、其 G5 决策由 supersession 置失效；读取侧取 newest current_valid，与键无关。
-  const projKey = `jinze-layer3-world@${runId.slice(0, 8)}`;
+  const projKey = `${TOPIC_KEY}-layer3-world@${runId.slice(0, 8)}`;
   const projId = randomUUID();
   await dbRun(
     `insert into read_model.world_projections
@@ -1105,7 +1253,7 @@ async function d05ReadModelPublication({ run, job, input, context }) {
     {
       proj_id: projId, proj_key: projKey,
       payload: JSON.stringify({
-        title: "金泽古桥·寺院·水道（第三层边界验证）",
+        title: __TOPIC?.d05WorldTitle ?? "金泽古桥·寺院·水道（第三层边界验证）",
         entities: entityLabels.join(" "),
         relations: relLines,
         conflicts: conflictLines,
@@ -1116,6 +1264,21 @@ async function d05ReadModelPublication({ run, job, input, context }) {
         })),
         open_questions: openQuestionRows.map((oq) => ({ question: oq.question, missing_evidence: oq.missing_evidence })),
         open_question_count: openQuestionRows.length,
+        // L4 今日联系投影：视觉舞台「今天」这一幕的正面内容（材料明载的到达/使用方式），
+        // 与 findings 的解释增量区分开——这是「现在的人真的能怎么用」而不是「历史解释」。
+        present_connections: presentConnectionsIn.map((pc) => ({
+          type: pc.connection_type,
+          observed_state: pc.observed_state,
+          basis_text: pc.basis_text ?? "",
+          // 实体 = 文本精确命中 ∪ D04 显式声明的依据对象（都是生产链自己的标注，不在这里猜）
+          entities: [
+            ...new Set([
+              ...entitiesForText(`${pc.observed_state ?? ""}${pc.basis_text ?? ""}`, entityLabels),
+              ...(Array.isArray(pc.basis_world_objects) ? pc.basis_world_objects.filter((l) => entityLabels.includes(l)) : []),
+            ]),
+          ].join(" "),
+          open_questions: pc.open_questions ?? [],
+        })),
         source_ref: `production-run:${runId}`,
       }),
       fids: `{${fidArr}}`,
@@ -1138,9 +1301,9 @@ async function d05ReadModelPublication({ run, job, input, context }) {
        (map_timeline_projection_id, projection_key, payload, derived_from_world_objects)
        values (:'tl_id'::uuid, :'tl_key', :'payload'::jsonb, :'objs'::jsonb)`,
       {
-        tl_id: tlId, tl_key: `jinze-layer3-timeline@${runId.slice(0, 8)}`,
+        tl_id: tlId, tl_key: `${TOPIC_KEY}-layer3-timeline@${runId.slice(0, 8)}`,
         payload: JSON.stringify({
-          title: "金泽古桥·寺院·水道（时间投影）",
+          title: __TOPIC?.d05TimelineTitle ?? "金泽古桥·寺院·水道（时间投影）",
           entities: entityLabels.join(" "),
           source_ref: `production-run:${runId}`,
           time_hint: eventLines.map((l) => l.split("｜")[2]).filter((y) => y && y !== "年代不详").join(" "),
@@ -1169,7 +1332,7 @@ async function d05ReadModelPublication({ run, job, input, context }) {
        (story_seed_id, seed_key, title, narrative_question, payload, derived_from_finding_ids, evidence_pointer_ids)
        values (:'seed_id'::uuid, :'key', :'title', :'q', :'payload'::jsonb, :'fids'::uuid[], '{}'::uuid[])`,
       {
-        seed_id: seedId, key: `seed-${f.finding_id.slice(0, 8)}`, title: "金泽古桥·寺院·水道",
+        seed_id: seedId, key: `seed-${f.finding_id.slice(0, 8)}`, title: __TOPIC?.d05SeedTitle ?? "金泽古桥·寺院·水道",
         q: "哪些历史关系能够证实，哪些仍有疑问？",
         payload: JSON.stringify({ statement: f.interpretive_statement, entities: entitiesForText(f.interpretive_statement, entityLabels).join(" ") }),
         fids: `{${f.finding_id}}`,
@@ -1177,7 +1340,10 @@ async function d05ReadModelPublication({ run, job, input, context }) {
     );
     await writeGate(runId, "D05", "G5", "story_seed", seedId, "PASS", [], { kind: "story_seed" }, "agent");
     await writeGate(runId, "D05", "G5", "story_seed", seedId, "PASS", [], { kind: "story_seed" }, "visual_stage");
-    storySeeds.push({ story_seed_id: seedId, finding_id: f.finding_id });
+    storySeeds.push({
+      story_seed_id: seedId, finding_id: f.finding_id,
+      entities: entitiesForText(f.interpretive_statement, entityLabels),
+    });
   }
 
   // P04 agent_contexts（每条 finding，供 Agent 消费；V1.4 增补冲突/拒绝/未决口径，
@@ -1187,8 +1353,19 @@ async function d05ReadModelPublication({ run, job, input, context }) {
     const ctxId = randomUUID();
     const summaryParts = [f.interpretive_statement];
     if (conflictLines.length) summaryParts.push(`着录分歧（未裁决）：${conflictLines.join("；")}`);
-    const refusalLines = refusals.map((rf) => `${rf.subject_label} ↔ ${rf.object_label} 无据，未建立关系`);
-    if (refusalLines.length) summaryParts.push(`已拒绝的无据关系：${refusalLines.join("；")}`);
+    // 拒绝登记分两类：无据对象对（有 subject/object）与 开放问题（无对象对）。
+    // 旧实现统一按对象对拼接，导致 Agent 上下文里出现「undefined ↔ undefined 无据」这类脏行。
+    const refusalLines = refusals
+      .map((rf) =>
+        rf.subject_label && rf.object_label
+          ? `${rf.subject_label} ↔ ${rf.object_label} 无据，未建立关系`
+          : rf.question
+            ? `待证问题：${rf.question}（${rf.missing_evidence || "缺直接证据"}）`
+            : null
+      )
+      .filter(Boolean);
+    // 拒绝/待证不进 summary：summary 是墨痕要读给用户听的那句话，
+    // 把清单灌进去会让一句人话变成台账。它们已在 refused_relations / open_questions 里各自发布。
     await dbRun(
       `insert into read_model.agent_contexts
        (agent_context_id, context_key, payload, derived_from_finding_ids)
@@ -1247,13 +1424,43 @@ async function d05ReadModelPublication({ run, job, input, context }) {
        values (:'ep_id'::uuid, :'ev_id'::uuid, :'src_id'::uuid, :'locator'::jsonb, :'excerpt')`,
       {
         ep_id: epId, ev_id: ev.evidence_id, src_id: ev.source_id,
-        locator: JSON.stringify({ source_title: "第三层边界验证材料观察", entities: entitiesForText(ev.literal_reading ?? "", entityLabels).join(" ") }),
+        // 返证定位（U4/D2）：来源名 + 发布机构 + 发布日期 + 可回访 URL + 片段序号。
+        // 这些值来自 D02 的逐条归属（exact_fragment_match），不是前端临时拼的标签。
+        locator: JSON.stringify({
+          source_title: ev.locator?.source_title || (__TOPIC?.d05SourceTitle ?? "第三层边界验证材料观察"),
+          publisher: ev.locator?.publisher ?? "",
+          source_date: ev.locator?.source_date ?? "",
+          url: ev.locator?.url ?? "",
+          fragment_index: ev.locator?.fragment_index ?? null,
+          attribution: ev.locator?.attribution ?? "unattributed",
+          source_version_id: ev.locator?.source_version_id ?? null,
+          entities: entitiesForText(ev.literal_reading ?? "", entityLabels).join(" "),
+        }),
         excerpt: ev.literal_reading ?? "",
       }
     );
     await writeGate(runId, "D05", "G5", "evidence_pointer", epId, "PASS", [], { kind: "evidence_pointer" }, "agent");
     await writeGate(runId, "D05", "G5", "evidence_pointer", epId, "PASS", [], { kind: "evidence_pointer" }, "visual_stage");
-    evidencePointers.push({ evidence_pointer_id: epId, evidence_id: ev.evidence_id });
+    evidencePointers.push({
+      evidence_pointer_id: epId, evidence_id: ev.evidence_id,
+      entities: entitiesForText(ev.literal_reading ?? "", entityLabels),
+    });
+  }
+
+  // 故事种子 ↔ 证据指针关联（按生产链自身的实体标注做重叠匹配，不在前端猜关系）。
+  // 无重叠时退回本 run 全部文本指针：宁可多给原句，也不让「点开判断看不到依据」。
+  const allTextPointerIds = evidencePointers.map((p) => p.evidence_pointer_id);
+  for (const s of storySeeds) {
+    const overlap = evidencePointers
+      .filter((p) => p.entities.some((e) => s.entities.includes(e)))
+      .map((p) => p.evidence_pointer_id);
+    const linked = overlap.length ? overlap : allTextPointerIds;
+    if (!linked.length) continue;
+    await dbRun(
+      `update read_model.story_seeds set evidence_pointer_ids = :'ids'::uuid[]
+       where story_seed_id = :'sid'::uuid`,
+      { ids: `{${linked.join(",")}}`, sid: s.story_seed_id }
+    );
   }
 
   // V1.5 视觉批次：P06 视觉证据返还——照片作为可消费 L5 证据发布（V3 今日观察）。

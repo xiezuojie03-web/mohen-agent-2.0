@@ -1,0 +1,80 @@
+﻿Pager usage is off.
+=== SOURCES ===
+              source_id               |     provider      |         publisher_or_institution         | d |                              source_uri_or_catalog_no                               |                        title                         |          rights_basis           
+--------------------------------------+-------------------+------------------------------------------+---+-------------------------------------------------------------------------------------+------------------------------------------------------+---------------------------------
+ c44c4d50-0500-4fc2-9e3b-751ea25b0a9a | shanghai-gov      | 上海市人民政府（杨浦区人民政府规划文件） |   | https://www.shanghai.gov.cn/gwk/search/content/c3c86ace-5ef2-4386-aa14-b5781fd2038a | 杨浦区滨江发展“十四五”规划（2021-08-16）             | 政府门户网站公开发布
+ e5f57b49-b548-4696-99e2-20fb1ac9c755 | yangpu-gov        | 上海市杨浦区人民政府（杨浦区融媒体中心） |   | https://www.shyp.gov.cn/shypq/xwzx-bmdt/20231007/438359.html                        | 出片又好玩 看老仓库的华丽蝶变（2023-10-07）          | 政府门户网站公开发布
+ a458041f-6e88-462a-80b4-2830beb559a9 | yangpu-gov        | 上海市杨浦区人民政府（杨浦区融媒体中心） |   | https://www.shyp.gov.cn/shypq/xwzx-bmdt/20210125/373728.html                        | 杨浦滨江“绿之丘”获亚洲建筑师协会建筑奖（2021-01-25） | 政府门户网站公开发布
+ 8de4dab0-3af5-461e-b5c5-0f34e048d531 | wikimedia-commons |                                          |   |                                                                                     | Wikimedia Commons：颐浩寺遗址（今貌照片）            | Commons extmetadata（条目自述）
+ fac5a4f3-7f60-43a7-8a8a-2cee0a9dca28 | wikimedia-commons |                                          |   |                                                                                     | Wikimedia Commons：迎祥桥（今貌照片）                | Commons extmetadata（条目自述）
+(5 rows)
+
+=== RUN GATES (final) ===
+ stage | gate_code |       object_type       |   consumer   | result | current_valid | n  
+-------+-----------+-------------------------+--------------+--------+---------------+----
+ D00   | G0        | source                  |              | PASS   | t             |  3
+ D01   | G1        | read_run                |              | PASS   | t             |  1
+ D02   | G2        | material_evidence       |              | PASS   | t             |  1
+ D03   | G3        | relation_claim          |              | PASS   | t             |  1
+ D04   | G4        | finding                 |              | PASS   | t             |  1
+ D05   | G5        | agent_context           | agent        | PASS   | t             |  3
+ D05   | G5        | discovery_path          | agent        | PASS   | t             |  6
+ D05   | G5        | discovery_path          | visual_stage | PASS   | t             |  6
+ D05   | G5        | evidence_pointer        | agent        | PASS   | t             | 20
+ D05   | G5        | evidence_pointer        | visual_stage | PASS   | t             | 20
+ D05   | G5        | map_timeline_projection | agent        | PASS   | t             |  1
+ D05   | G5        | map_timeline_projection | visual_stage | PASS   | t             |  1
+ D05   | G5        | story_seed              | agent        | PASS   | t             |  3
+ D05   | G5        | story_seed              | visual_stage | PASS   | t             |  3
+ D05   | G5        | world_projection        | agent        | PASS   | t             |  1
+ D05   | G5        | world_projection        | visual_stage | PASS   | t             |  1
+(16 rows)
+
+=== L5 IDS (final run) ===
+        k         |                  id                  |              nm               
+------------------+--------------------------------------+-------------------------------
+ world_projection | e711fcb3-86bf-45e9-903a-3b867b368144 | a001-layer3-world@4719c713
+ world_projection | e711fcb3-86bf-45e9-903a-3b867b368144 | a001-layer3-world@4719c713
+ map_timeline     | 3dda2078-273f-417d-b95a-6fcadc7424fd | a001-layer3-timeline@4719c713
+ map_timeline     | 3dda2078-273f-417d-b95a-6fcadc7424fd | a001-layer3-timeline@4719c713
+ story_seed       | 9bdaaffa-41fd-455c-a1db-d9c137990bc8 | seed-5d4b615a
+ story_seed       | 9611fa42-181c-4791-b450-03d512a679df | seed-a8b16ce9
+ story_seed       | 24d32dc7-b17b-46dd-8edb-cb5fcd70763b | seed-ecd441de
+ agent_context    | 85b27b07-28f9-414a-86da-99e8646b02b9 | ctx-5d4b615a
+ agent_context    | 3493bdca-12d4-48d0-b3f2-3d767ce87507 | ctx-a8b16ce9
+ agent_context    | c5411b50-a249-4f69-a369-c67a1d924cd8 | ctx-ecd441de
+(10 rows)
+
+=== EVIDENCE POINTERS (final, visual_stage) ===
+                  id                  |         attr         | frag |                                               excerpt                                                
+--------------------------------------+----------------------+------+------------------------------------------------------------------------------------------------------
+ 0f640d14-348b-49e4-9933-4d7a42cb5ea3 | exact_fragment_match | 0    | 滨江南段核心区共保留24处、66幢，总建筑面积达26.2万平方米的历史保护建筑及其他大量百年工业遗存
+ e47ab87b-a38a-4e0f-b40a-29de0c25f6c1 | exact_fragment_match | 0    | 绿之丘原为烟草公司机修仓库，始建于1995年，是一座6层钢筋混凝土厂房，其前身可追溯到1920年怡和
+ e5ff00c8-388f-4ba3-8adc-fae71a322961 | exact_fragment_match | 0    | 绿之丘原为烟草公司机修仓库，始建于1995年。它的前身可追溯到1920年由怡和洋行建立的怡和冷库。
+ 09d30b97-4d10-4627-814f-d899dabb73b1 | exact_fragment_match | 1    | 在最初的杨浦滨江公共空间贯通规划中，这座老仓库曾一度面临被拆除的可能。但设计团队同济大学建筑设计研究
+ f5710740-e806-44ff-acfe-0d5d1f71deea | exact_fragment_match | 1    | '十三五'期间，先后完成毛麻仓库、烟草仓库、明华糖仓、上海制皂厂等历史建筑的修缮改造，总面积近5万平
+ e0b4b0b2-13f7-4a86-bf66-86febb9b4de0 | exact_fragment_match | 1    | 由于规划道路安浦路要从此横切过，该建筑面临被拆除的可能。章明团队通过巧妙设计，利用建筑一层层高7米、
+ 11ed5311-4237-4502-b2c7-f7a8981d9cb5 | exact_fragment_match | 2    | 改造后的烟草仓库'绿之丘'，通过垂直划分道路与公共服务设施用地，布置立体绿化等手段，打通了城市与滨江
+ 9c470735-5ba6-4ed4-ac85-5da915a082e9 | exact_fragment_match | 2    | 在城市规划部门和市政建设部门反复协商之后，决定保留该建筑并进行改造，使之成为一个集市政基础设施、公共
+ 7e07ff9f-0940-4393-97e2-ea7c87e82554 | exact_fragment_match | 2    | 2019年9月，杨浦滨江南段5.5公里公共空间全线贯通开放，共建成漫步道约5886米、跑步道约563
+ 90025199-7fe2-42ba-9f01-b7214e570717 | exact_fragment_match | 3    | 同济大学建筑与城市规划学院教授章明领衔设计的'绿之丘——杨浦滨江原烟草公司机修仓库改造项目'获得亚洲
+ 13a22aa2-afee-417d-a1b2-52c202408794 | exact_fragment_match | 3    | 老仓库被设计师大手笔地'削'掉了50%的体量，拆除原有仓库的第6层，面向滨江的一侧被斜向切削，形成台
+ 943f54d6-989b-408c-93bc-6103f6675b54 | exact_fragment_match | 3    | 完成永安栈房修缮改造，实现绿之丘、毛麻仓库等载体功能导入，加快实施慎昌洋行、国棉九厂厂房、船厂白楼等
+ d836da0d-4f55-4c45-8819-a0960ac0073e | exact_fragment_match | 4    | 评委们一致认为，此项目最大程度地优化了滨河空间，还江于民，将既有建筑改造成拥有复合功能的城市综合体，
+ 55649ca2-c625-4e2f-b895-ef4760adaf72 | exact_fragment_match | 4    | 它有着层层叠叠的绿植、螺旋上升的钢结构、离地近20米的270度江景观赏平台以及如同丘陵般自由延展的边
+ ab9b1524-226f-4cd3-8882-170c4cc82c61 | exact_fragment_match | 5    | 建筑的中央建有螺旋式扶梯，连通着各层的展厅，直达楼顶花园。
+ 0dc70dd0-d7ca-4cf2-8402-a105b00ae07c | exact_fragment_match | 5    | 一座'钢铁森林'，内部大有乾坤，中央螺旋式扶梯逐级上升，连通各层的展厅，直达楼顶花园。
+ 13cc6345-ded1-443a-80ed-6e2d81e9e1f2 | exact_fragment_match | 6    | 绿之丘空间简洁却不单调，顶楼有一段U型步道，提供270度观景平台，漫步其间，有一种腾空临江的视觉效果
+ b1bd859b-ae6f-48b3-97a7-ba6137a5ba70 | exact_fragment_match | 6    | 如今的绿之丘已然成为一座集基础设施、公共服务、公园绿地于一身，连通城市与江岸的综合体，成为杨浦新晋打
+ d6d7c835-8b56-47e0-9d84-d26fea1c966f | exact_fragment_match | 7    | 人们可以从杨树浦路的缓坡，上到建筑二层，再漫游至滨江。
+ fa7cbfac-c5a5-434c-806f-f9277feefa3c | exact_fragment_match | 8    | 绿之丘 家门口的好去处 地址：杨树浦路1500号。
+(20 rows)
+
+=== PRESENT CONNECTIONS ===
+        present_connection_id         | connection_type |                                               state                                                
+--------------------------------------+-----------------+----------------------------------------------------------------------------------------------------
+ 5be5cb1c-d568-40a2-806b-bafc4bfe76e3 | today_access    | 今天的人可以从杨树浦路的缓坡上到建筑二层，再继续漫游至滨江——进入方式本身是改造的产物
+ 7e5e6ffe-a297-4e85-a5a5-74c8a5df5578 | today_access    | 今天的人可以从杨树浦路的缓坡上到建筑二层，再继续漫游至滨江；进入方式本身是改造后形成的空间关系。
+ 01ab7bec-7468-40f7-9fd3-3c40e63e5dce | today_access    | 今天的人可以从杨树浦路的缓坡上到建筑二层，再继续漫游至滨江，进入方式本身是改造后形成的公共可达路径
+(3 rows)
+

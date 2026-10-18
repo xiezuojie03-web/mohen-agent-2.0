@@ -17,6 +17,12 @@ export const RELATION_PREDICATE_HUMAN: Record<string, string> = {
   similar_form_to: "形制相仿",
   temple_bridge_association: "关联（未证实）",
   relative_position_south_of: "在南",
+  // A001（绿之丘）谓词：claimed_origin_traceable_to 为身份连续性的「软」关联，
+  // 人话化时显式声明「非同一建筑、待证」，绝不升级为同一栋建筑的身份断言（身份连续性禁区）。
+  former_site_of: "原址为",
+  claimed_origin_traceable_to: "前身可追溯到（非同一建筑，待证）",
+  planned_to_cross: "规划横穿",
+  renovated: "改造了",
 };
 
 export interface ParsedRelation {
