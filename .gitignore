@@ -31,3 +31,5 @@ verification/*
 # 工具数据目录（不入库）
 .codebuddy/
 .playwright-cli/
+
+.vercel

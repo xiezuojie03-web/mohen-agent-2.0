@@ -71,7 +71,7 @@ pipelines/data-production/run.mjs
 复用运行时代码：
 - `agent-runtime/`
 - `experience-engine/`
-- `data-access/`
+- `data-access/`（唯一 DB 访问层，**双后端**：写路径 `run`/`runMany` 走 psql 二进制——本地生产链离线/确定性/零依赖；读路径 `queryRows`/`queryValue` 自动切换 psql 或 node pg——消费层 serverless 部署时经 `DATABASE_URL` 直连，见 `node-pg-client.mjs`。`MOHEN_DB_DRIVER=pg|psql` 可显式指定，默认本机有 psql 用 psql、否则 node pg。）
 
 ## supabase/
 - `migrations/`：版本化物理结构
