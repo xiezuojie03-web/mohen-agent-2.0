@@ -123,6 +123,8 @@ creation_date 与 depicted_period 分离；来源、rights、对象关联、空�
 
 L7参与和L8新痕迹不自动进入历史知识；值得回流者经D00核来源/版本/权利及后续必要阶段。仅重新投影已有合法来源时，按依赖与Owner补算，不无理由重采全部资料。不新增Participation/Living Culture Schema许可。
 
+**消费层数据访问（2026-10-18 样板试验收口确立）**：L6 消费层（Agent/视觉舞台读 L5 分面）经 `packages/data-access` 的 **node pg 只读通道**访问（`DATABASE_URL` 直连，适配 serverless/云端）；D00–D05 生产链写库仍走 **psql 二进制**（本地离线、确定性、零运行时依赖）。生产链与消费层访问方式分离——写路径不引入运行时 npm 依赖，读路径不依赖本地 psql 二进制。云端 Supabase 一律经**连接池 pooler（IPv4）**访问（`aws-0-<region>.pooler.supabase.com`，user=`postgres.<ref>`，SSL），不用直连域名（IPv6-only，IPv4 环境不可达）。
+
 # PART VIII｜逻辑到物理及迁移边界
 
 本版定义逻辑职责，未执行DDL或数据迁移。旧L0保持来源，旧混合读取/理解须区分新L1与L2；旧L1证据→新L2、旧L2世界→新L3、旧L3解释→新L4、旧L4读模型→新L5、旧L5/6/7下游→新L6/7/8。旧D02混合读取/理解能力按C/H拆分，不只是改号。

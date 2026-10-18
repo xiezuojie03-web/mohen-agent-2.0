@@ -38,10 +38,12 @@ mohen-agent-2.0/
 
 ## specs/
 只放当前有效 Contract / Protocol / Registry / stable specification。
+- `OPERATIONS_DEPLOYMENT.md`：部署与连接运维手册（GitHub 推送 / vercel 部署 / Supabase 连接，密钥只记位置不写明文）
 
 ### specs/data-production/
 核心：
 - `MoHen_Data_Production_Protocol.md`
+- `SAMPLE-TRIAL_CLOSURE_ANALYSIS.md`：首轮样板试验全景复盘 + 后续数据生产指导清单
 - `production-registry.json`
 - `PHYSICAL_DATA_MODEL_V2.md`
 - `PERSISTENCE_BINDING_CONTRACT.md`

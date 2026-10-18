@@ -2,7 +2,7 @@
 
 > 性质：对《数据生产作业样板试验_立项任务书》§七 四步 + 三层递进**全部执行结果**的全景复盘，目标是让「架构迭代迁移后的首轮数据生产样板试验」对**后续数据生产**有指导作用、少走弯路。
 > 日期：2026-10-18。前置任务书 V1.5。
-> 关联：`DEPLOYMENT-OPERATIONS-RUNBOOK.md`（部署/连接操作手册）、`SAMPLE-TRIAL-01~15`（分步结果档案）。
+> 关联：`specs/OPERATIONS_DEPLOYMENT.md`（部署/连接操作手册）、`SAMPLE-TRIAL-01~15`（分步结果档案，位于 `tasks/results/`）。
 
 ---
 
@@ -72,7 +72,7 @@
 6. 消费层查询走 node pg、生产链写库走 psql，不要混用。
 
 **部署阶段**：
-7. 部署/连接照 `DEPLOYMENT-OPERATIONS-RUNBOOK.md` 执行（代理、pooler、BOM、noreply 邮箱等坑都已固化）。
+7. 部署/连接照 `specs/OPERATIONS_DEPLOYMENT.md` 执行（代理、pooler、BOM、noreply 邮箱等坑都已固化）。
 8. 云端 Supabase 库要随本地架构迭代同步迁移（本次就因云端停留在第一代而返工）。
 
 **红线（持续有效）**：
