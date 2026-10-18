@@ -1,37 +1,28 @@
 {
-  "version": "2.0-target",
-  "schemas": {
-    "source": "L0 Cultural Sources",
-    "evidence": "L1 Material Evidence",
-    "world": "L2 Cultural World",
-    "meaning": "L3 Meaning / Discovery / Present",
-    "read_model": "L4 Trusted Read Model",
-    "control": "Cross-cutting control"
+  "schema": "mohen.naming-map",
+  "schema_version": "2.0-target",
+  "status": "DESIGN_TARGET_NOT_APPLIED",
+  "source_generation": "old-A-G-five-stage",
+  "target_generation": "mohen.six-stage.v1",
+  "logical_mapping": {
+    "old.D01.source": "D00/L0/G0",
+    "old.D02.carrier_reading": "D01/L1/G1",
+    "old.D02.material_understanding": "D02/L2/G2",
+    "old.L1.evidence": "L2",
+    "old.L2.world": "L3",
+    "old.L3.meaning": "L4",
+    "old.L4.read_model": "L5",
+    "old.L5.runtime": "L6",
+    "old.L6.participation": "L7",
+    "old.L7.living_culture": "L8"
   },
-  "concept_to_physical": {
-    "source_record": "source.sources",
-    "source_version": "source.source_versions",
-    "raw_item": "source.raw_items",
-    "material_evidence": "evidence.material_evidence",
-    "entity": "world.entities",
-    "event": "world.events",
-    "relation_claim": "world.relation_claims",
-    "change": "world.changes",
-    "historical_space_claim": "world.historical_space_claims",
-    "visual_object": "world.visual_objects",
-    "claim_evidence_link": "world.claim_evidence_links",
-    "conflict": "world.conflicts",
-    "humanistic_finding": "meaning.findings",
-    "present_connection": "meaning.present_connections",
-    "open_question": "meaning.open_questions",
-    "world_projection": "read_model.world_projections",
-    "agent_context_view": "read_model.agent_contexts",
-    "story_seed": "read_model.story_seeds",
-    "runtime_discovery_path": "read_model.discovery_paths",
-    "map_timeline_projection": "read_model.map_timeline_projections",
-    "evidence_pointer": "read_model.evidence_pointers",
-    "production_run": "control.production_runs",
-    "gate_audit": "control.gate_audits",
-    "owner_review": "control.owner_reviews"
-  }
+  "old_source_preparation_may_include_reading": "split by responsibility, not blind renumber",
+  "retired_new_generation_entry": "pipelines/data-production/executors/d01-source-intake.mjs",
+  "replacement_entries": [
+    "pipelines/data-production/executors/d00-source-intake.mjs",
+    "pipelines/data-production/executors/d01-carrier-reading.mjs"
+  ],
+  "physical_rename_authorized": false,
+  "physical_objects": "TO_VERIFY_IN_M0",
+  "legacy_pass_inheritance": false
 }

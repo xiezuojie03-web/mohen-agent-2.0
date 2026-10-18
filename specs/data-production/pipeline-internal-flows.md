@@ -1,53 +1,24 @@
-# MoHen Data Production｜Pipeline Internal Flows
+# Pipeline Internal Flows：六阶段与分支
 
-**Status: TARGET CONTRACT · Phase C**  
-**Execution implementation is completed later; this file defines allowed flow, not current runner availability.**
+> DESIGN_TARGET_NOT_APPLIED｜2026-10-15。基于handoff/local-b-20260930@8966d1b和现行P0—P5/BR规范。资料中的专业目标文件，未应用工程；真实Schema/绑定/运行待M0，ZIP未制作，真实G5/MIG-01 HOLD，56正式延期关系DESIGN_HOLD。
 
-## 1. Official lifecycle
+## 1｜入口
 
-```text
-D01 / L0 / G0
-↓
-D02 / L1 / G1
-↓
-D03 / L2 / G2
-↓
-D04 / L3 / G3
-↓
-D05 / L4 / G4
-↓
-L5 Runtime
-```
+run.mjs解析明确scope/intent/mode及resume refs；orchestrator加载经schema与语义核验的Registry、method/gate binding，拒绝未授权启用和旧代际配置。
 
-There is no second official Discovery/Directed lifecycle.
+## 2｜生产
 
-`broad / directed / mixed` may be used as search/research strategies inside a stage.
+request→按问题/载体/用途选择方法→读取精确上游refs并核当前资格→Adapter生成typed drafts→阶段Owner保存候选修订→独立Gate裁决→只激活匹配当前资格的handoff refs→目标消费者选对应角色。数据不经Gate转运；不取首输出键，不混方法完成与发布。
 
-## 2. Stage responsibility
+## 3｜非直线情形
 
-| Stage | Writes | Exit |
-|---|---|---|
-| D01 Source Intake | L0 | G0 |
-| D02 Material Understanding | L1 | G1 |
-| D03 World Construction | L2 | G2 |
-| D04 Humanistic Discovery | L3 | G3 |
-| D05 Read Model Publication | L4 | G4 |
+resume已有合法L1/L2/L3/L4时重核必要上游；事实投影跳过不适用的解释，不省真实证据；多载体按子单元分路；一支失败时按实际依赖阻断该支，其余独立有效支可继续；空发现给明确空结果不是PASS发布。
 
-A registered Job may only own one primary Stage/Data Layer/Gate triple.
+## 4｜失败与变更
 
-## 3. Reusable capability calls
+技术暂时错误有界重试，语义/权利/画像问题HOLD到最小Owner。P08计算闭包，先拒绝失效消费，独立审计随后追加；补证形成新修订/新裁决。重启/缓存命中都重核资格，控制事件幂等；回退不恢复撤权内容。
 
-OCR, map reading, visual reading, name resolution helpers, spatial parsers, source-dependency detection and lineage utilities may be reused across stages.
+## 5｜实际消费入口
 
-Reusable capability rules:
-- no independent Stage PASS;
-- no cross-layer final writes;
-- caller Stage owns persistence and Gate responsibility.
+read-model repository/client接线ask/materials API、网页retrieve、page冻结JSON入口和体验Runtime；每一路相同资格条件。旧切片仅可隔离演示或形成获准版本化L5快照，不能作为新发布失败时的无资格fallback。状态/事件/证据与人类报告见相应合同。
 
-## 4. Feedback loop
-
-```text
-L4 → L5 → L6 Participation → L7 Living Culture → D01
-```
-
-L6/L7 never bypass D01 and never write historical Truth directly.

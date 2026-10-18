@@ -1,0 +1,1278 @@
+{
+  "schema": "mohen.method-bindings",
+  "schema_version": "1.0-target",
+  "architecture_generation": "mohen.six-stage.v1",
+  "status": "DESIGN_TARGET_NOT_APPLIED",
+  "method_count": 63,
+  "stage_d00": "source standards govern source discovery/acquisition; not counted among C/H/W/A/P",
+  "methods": [
+    {
+      "method_id": "C01",
+      "method_version": "source-sha256:52ed78d4b67f75259fcd94df67100ea1e2bf5bf3225fdd56d5dd7f8fe41df185",
+      "stage": "D01",
+      "layer": "L1",
+      "independent_gate": "G1",
+      "definition": {
+        "file": "specs/data-production/standards/d01/规范_P1_C01-C08载体与复合材料专业读取.md",
+        "section_heading": "## C01｜数字文本",
+        "source_library_file_id": "libfile_d047709fbe28819192e0526e1c65f88c",
+        "source_sha256": "52ed78d4b67f75259fcd94df67100ea1e2bf5bf3225fdd56d5dd7f8fe41df185"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "reading_unit"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "C02",
+      "method_version": "source-sha256:52ed78d4b67f75259fcd94df67100ea1e2bf5bf3225fdd56d5dd7f8fe41df185",
+      "stage": "D01",
+      "layer": "L1",
+      "independent_gate": "G1",
+      "definition": {
+        "file": "specs/data-production/standards/d01/规范_P1_C01-C08载体与复合材料专业读取.md",
+        "section_heading": "## C02｜扫描书影与影像PDF",
+        "source_library_file_id": "libfile_d047709fbe28819192e0526e1c65f88c",
+        "source_sha256": "52ed78d4b67f75259fcd94df67100ea1e2bf5bf3225fdd56d5dd7f8fe41df185"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "reading_unit"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "C03",
+      "method_version": "source-sha256:52ed78d4b67f75259fcd94df67100ea1e2bf5bf3225fdd56d5dd7f8fe41df185",
+      "stage": "D01",
+      "layer": "L1",
+      "independent_gate": "G1",
+      "definition": {
+        "file": "specs/data-production/standards/d01/规范_P1_C01-C08载体与复合材料专业读取.md",
+        "section_heading": "## C03｜历史舆图与图形",
+        "source_library_file_id": "libfile_d047709fbe28819192e0526e1c65f88c",
+        "source_sha256": "52ed78d4b67f75259fcd94df67100ea1e2bf5bf3225fdd56d5dd7f8fe41df185"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "reading_unit"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "C04",
+      "method_version": "source-sha256:52ed78d4b67f75259fcd94df67100ea1e2bf5bf3225fdd56d5dd7f8fe41df185",
+      "stage": "D01",
+      "layer": "L1",
+      "independent_gate": "G1",
+      "definition": {
+        "file": "specs/data-production/standards/d01/规范_P1_C01-C08载体与复合材料专业读取.md",
+        "section_heading": "## C04｜照片、版画与插图",
+        "source_library_file_id": "libfile_d047709fbe28819192e0526e1c65f88c",
+        "source_sha256": "52ed78d4b67f75259fcd94df67100ea1e2bf5bf3225fdd56d5dd7f8fe41df185"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "reading_unit"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "C05",
+      "method_version": "source-sha256:52ed78d4b67f75259fcd94df67100ea1e2bf5bf3225fdd56d5dd7f8fe41df185",
+      "stage": "D01",
+      "layer": "L1",
+      "independent_gate": "G1",
+      "definition": {
+        "file": "specs/data-production/standards/d01/规范_P1_C01-C08载体与复合材料专业读取.md",
+        "section_heading": "## C05｜结构化数据",
+        "source_library_file_id": "libfile_d047709fbe28819192e0526e1c65f88c",
+        "source_sha256": "52ed78d4b67f75259fcd94df67100ea1e2bf5bf3225fdd56d5dd7f8fe41df185"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "reading_unit"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "C06",
+      "method_version": "source-sha256:52ed78d4b67f75259fcd94df67100ea1e2bf5bf3225fdd56d5dd7f8fe41df185",
+      "stage": "D01",
+      "layer": "L1",
+      "independent_gate": "G1",
+      "definition": {
+        "file": "specs/data-production/standards/d01/规范_P1_C01-C08载体与复合材料专业读取.md",
+        "section_heading": "## C06｜音频",
+        "source_library_file_id": "libfile_d047709fbe28819192e0526e1c65f88c",
+        "source_sha256": "52ed78d4b67f75259fcd94df67100ea1e2bf5bf3225fdd56d5dd7f8fe41df185"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "reading_unit"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "C07",
+      "method_version": "source-sha256:52ed78d4b67f75259fcd94df67100ea1e2bf5bf3225fdd56d5dd7f8fe41df185",
+      "stage": "D01",
+      "layer": "L1",
+      "independent_gate": "G1",
+      "definition": {
+        "file": "specs/data-production/standards/d01/规范_P1_C01-C08载体与复合材料专业读取.md",
+        "section_heading": "## C07｜视频",
+        "source_library_file_id": "libfile_d047709fbe28819192e0526e1c65f88c",
+        "source_sha256": "52ed78d4b67f75259fcd94df67100ea1e2bf5bf3225fdd56d5dd7f8fe41df185"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "reading_unit"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "C08",
+      "method_version": "source-sha256:52ed78d4b67f75259fcd94df67100ea1e2bf5bf3225fdd56d5dd7f8fe41df185",
+      "stage": "D01",
+      "layer": "L1",
+      "independent_gate": "G1",
+      "definition": {
+        "file": "specs/data-production/standards/d01/规范_P1_C01-C08载体与复合材料专业读取.md",
+        "section_heading": "## C08｜实物与现场采集",
+        "source_library_file_id": "libfile_d047709fbe28819192e0526e1c65f88c",
+        "source_sha256": "52ed78d4b67f75259fcd94df67100ea1e2bf5bf3225fdd56d5dd7f8fe41df185"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "reading_unit"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H01",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H01 通史与断代史",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H02",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H02 编年与专题史",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H03",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H03 制度与政书",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H04",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H04 历史地理著作",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H05",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H05 地方志",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H06",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H06 谱牒与传记",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H07",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H07 行政档案",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H08",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H08 民间文书",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H09",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H09 金石铭刻",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H10",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H10 经学与儒家经典",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H11",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H11 诸子与思想著作",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H12",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H12 宗教与信仰文献",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H13",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H13 文学与私人著述",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H14",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H14 笔记游记与小说",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H15",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H15 农业与生产文献",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H16",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H16 科学医学与技术文献",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H17",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H17 生活礼俗与艺术文献",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H18",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H18 历史舆图与图谱",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H19",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H19 出土与特殊文献",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H20",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H20 目录类书与文献汇编",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H21",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H21 近现代报刊与期刊",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H22",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H22 口述史与访谈记录",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H23",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H23 现代考古与田野调查报告",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H24",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H24 现代学术研究与遗产调查",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "H25",
+      "method_version": "source-sha256:bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57",
+      "stage": "D02",
+      "layer": "L2",
+      "independent_gate": "G2",
+      "definition": {
+        "file": "specs/data-production/standards/d02/规范_P2_H01-H25历史材料专业分类与阅读方法.md",
+        "section_heading": "### H25 历史摄影与纪实图像材料",
+        "source_library_file_id": "libfile_5d51294a001081918153771b6396da0b",
+        "source_sha256": "bdc4a8f1a24fa6f72a88a0b3ff72e2ab3fc762d6fbc410c6b660282762edfa57"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "material_observation"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "W01",
+      "method_version": "source-sha256:a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de",
+      "stage": "D03",
+      "layer": "L3",
+      "independent_gate": "G3",
+      "definition": {
+        "file": "specs/data-production/standards/d03/规范_P3_W01-W10历史世界建构专业方法.md",
+        "section_heading": "### W01｜历史对象身份与连续性判定",
+        "source_library_file_id": "libfile_6df3362afed48191a4a4c077a96954df",
+        "source_sha256": "a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "world_claim_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "W02",
+      "method_version": "source-sha256:a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de",
+      "stage": "D03",
+      "layer": "L3",
+      "independent_gate": "G3",
+      "definition": {
+        "file": "specs/data-production/standards/d03/规范_P3_W01-W10历史世界建构专业方法.md",
+        "section_heading": "### W02｜历史时间与时序约束建构",
+        "source_library_file_id": "libfile_6df3362afed48191a4a4c077a96954df",
+        "source_sha256": "a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "world_claim_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "W03",
+      "method_version": "source-sha256:a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de",
+      "stage": "D03",
+      "layer": "L3",
+      "independent_gate": "G3",
+      "definition": {
+        "file": "specs/data-production/standards/d03/规范_P3_W01-W10历史世界建构专业方法.md",
+        "section_heading": "### W03｜历史空间与视觉对应核定",
+        "source_library_file_id": "libfile_6df3362afed48191a4a4c077a96954df",
+        "source_sha256": "a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "world_claim_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "W04",
+      "method_version": "source-sha256:a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de",
+      "stage": "D03",
+      "layer": "L3",
+      "independent_gate": "G3",
+      "definition": {
+        "file": "specs/data-production/standards/d03/规范_P3_W01-W10历史世界建构专业方法.md",
+        "section_heading": "### W04｜历史事件与行动过程建构",
+        "source_library_file_id": "libfile_6df3362afed48191a4a4c077a96954df",
+        "source_sha256": "a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "world_claim_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "W05",
+      "method_version": "source-sha256:a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de",
+      "stage": "D03",
+      "layer": "L3",
+      "independent_gate": "G3",
+      "definition": {
+        "file": "specs/data-production/standards/d03/规范_P3_W01-W10历史世界建构专业方法.md",
+        "section_heading": "### W05｜历史关系与角色约束建构",
+        "source_library_file_id": "libfile_6df3362afed48191a4a4c077a96954df",
+        "source_sha256": "a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "world_claim_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "W06",
+      "method_version": "source-sha256:a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de",
+      "stage": "D03",
+      "layer": "L3",
+      "independent_gate": "G3",
+      "definition": {
+        "file": "specs/data-production/standards/d03/规范_P3_W01-W10历史世界建构专业方法.md",
+        "section_heading": "### W06｜历史状态变化与连续性建构",
+        "source_library_file_id": "libfile_6df3362afed48191a4a4c077a96954df",
+        "source_sha256": "a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "world_claim_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "W07",
+      "method_version": "source-sha256:a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de",
+      "stage": "D03",
+      "layer": "L3",
+      "independent_gate": "G3",
+      "definition": {
+        "file": "specs/data-production/standards/d03/规范_P3_W01-W10历史世界建构专业方法.md",
+        "section_heading": "### W07｜世界事实主张与证据支持评定",
+        "source_library_file_id": "libfile_6df3362afed48191a4a4c077a96954df",
+        "source_sha256": "a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "world_claim_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "W08",
+      "method_version": "source-sha256:a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de",
+      "stage": "D03",
+      "layer": "L3",
+      "independent_gate": "G3",
+      "definition": {
+        "file": "specs/data-production/standards/d03/规范_P3_W01-W10历史世界建构专业方法.md",
+        "section_heading": "### W08｜来源谱系与独立见证评估",
+        "source_library_file_id": "libfile_6df3362afed48191a4a4c077a96954df",
+        "source_sha256": "a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "world_claim_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "W09",
+      "method_version": "source-sha256:a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de",
+      "stage": "D03",
+      "layer": "L3",
+      "independent_gate": "G3",
+      "definition": {
+        "file": "specs/data-production/standards/d03/规范_P3_W01-W10历史世界建构专业方法.md",
+        "section_heading": "### W09｜世界主张冲突与认识状态管理",
+        "source_library_file_id": "libfile_6df3362afed48191a4a4c077a96954df",
+        "source_sha256": "a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "world_claim_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "W10",
+      "method_version": "source-sha256:a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de",
+      "stage": "D03",
+      "layer": "L3",
+      "independent_gate": "G3",
+      "definition": {
+        "file": "specs/data-production/standards/d03/规范_P3_W01-W10历史世界建构专业方法.md",
+        "section_heading": "### W10｜跨对象世界一致性与变更传播",
+        "source_library_file_id": "libfile_6df3362afed48191a4a4c077a96954df",
+        "source_sha256": "a8c37ff4abd45549aca5400965a5272e57a1627ff763d84aad6c519a4cfa90de"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "world_claim_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "A01",
+      "method_version": "source-sha256:96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef",
+      "stage": "D04",
+      "layer": "L4",
+      "independent_gate": "G4",
+      "definition": {
+        "file": "specs/data-production/standards/d04/主规_P4_A01-A12人文发现机制与专业方法.md",
+        "section_heading": "### A01 · 显式关系｜关系解释",
+        "source_library_file_id": "libfile_a1c7950d12288191a4132d7ddbcc1175",
+        "source_sha256": "96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "humanistic_finding_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "A02",
+      "method_version": "source-sha256:96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef",
+      "stage": "D04",
+      "layer": "L4",
+      "independent_gate": "G4",
+      "definition": {
+        "file": "specs/data-production/standards/d04/主规_P4_A01-A12人文发现机制与专业方法.md",
+        "section_heading": "### A02 · 共现与跨源｜问题线索发现",
+        "source_library_file_id": "libfile_a1c7950d12288191a4132d7ddbcc1175",
+        "source_sha256": "96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "humanistic_finding_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "A03",
+      "method_version": "source-sha256:96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef",
+      "stage": "D04",
+      "layer": "L4",
+      "independent_gate": "G4",
+      "definition": {
+        "file": "specs/data-production/standards/d04/主规_P4_A01-A12人文发现机制与专业方法.md",
+        "section_heading": "### A03 · 时间序列｜节律解释",
+        "source_library_file_id": "libfile_a1c7950d12288191a4132d7ddbcc1175",
+        "source_sha256": "96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "humanistic_finding_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "A04",
+      "method_version": "source-sha256:96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef",
+      "stage": "D04",
+      "layer": "L4",
+      "independent_gate": "G4",
+      "definition": {
+        "file": "specs/data-production/standards/d04/主规_P4_A01-A12人文发现机制与专业方法.md",
+        "section_heading": "### A04 · 空间拓扑｜场所结构解释",
+        "source_library_file_id": "libfile_a1c7950d12288191a4132d7ddbcc1175",
+        "source_sha256": "96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "humanistic_finding_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "A05",
+      "method_version": "source-sha256:96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef",
+      "stage": "D04",
+      "layer": "L4",
+      "independent_gate": "G4",
+      "definition": {
+        "file": "specs/data-production/standards/d04/主规_P4_A01-A12人文发现机制与专业方法.md",
+        "section_heading": "### A05 · 行动链｜行动者处境",
+        "source_library_file_id": "libfile_a1c7950d12288191a4132d7ddbcc1175",
+        "source_sha256": "96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "humanistic_finding_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "A06",
+      "method_version": "source-sha256:96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef",
+      "stage": "D04",
+      "layer": "L4",
+      "independent_gate": "G4",
+      "definition": {
+        "file": "specs/data-production/standards/d04/主规_P4_A01-A12人文发现机制与专业方法.md",
+        "section_heading": "### A06 · 制度机制｜规则执行机制",
+        "source_library_file_id": "libfile_a1c7950d12288191a4132d7ddbcc1175",
+        "source_sha256": "96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "humanistic_finding_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "A07",
+      "method_version": "source-sha256:96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef",
+      "stage": "D04",
+      "layer": "L4",
+      "independent_gate": "G4",
+      "definition": {
+        "file": "specs/data-production/standards/d04/主规_P4_A01-A12人文发现机制与专业方法.md",
+        "section_heading": "### A07 · 跨模态共指｜载体表征差异",
+        "source_library_file_id": "libfile_a1c7950d12288191a4132d7ddbcc1175",
+        "source_sha256": "96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "humanistic_finding_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "A08",
+      "method_version": "source-sha256:96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef",
+      "stage": "D04",
+      "layer": "L4",
+      "independent_gate": "G4",
+      "definition": {
+        "file": "specs/data-production/standards/d04/主规_P4_A01-A12人文发现机制与专业方法.md",
+        "section_heading": "### A08 · 结构聚类｜网络结构解释",
+        "source_library_file_id": "libfile_a1c7950d12288191a4132d7ddbcc1175",
+        "source_sha256": "96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "humanistic_finding_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "A09",
+      "method_version": "source-sha256:96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef",
+      "stage": "D04",
+      "layer": "L4",
+      "independent_gate": "G4",
+      "definition": {
+        "file": "specs/data-production/standards/d04/主规_P4_A01-A12人文发现机制与专业方法.md",
+        "section_heading": "### A09 · 变化链｜历史生成与断裂",
+        "source_library_file_id": "libfile_a1c7950d12288191a4132d7ddbcc1175",
+        "source_sha256": "96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "humanistic_finding_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "A10",
+      "method_version": "source-sha256:96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef",
+      "stage": "D04",
+      "layer": "L4",
+      "independent_gate": "G4",
+      "definition": {
+        "file": "specs/data-production/standards/d04/主规_P4_A01-A12人文发现机制与专业方法.md",
+        "section_heading": "### A10 · 冲突发现｜历史认识与争议模式",
+        "source_library_file_id": "libfile_a1c7950d12288191a4132d7ddbcc1175",
+        "source_sha256": "96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "humanistic_finding_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "A11",
+      "method_version": "source-sha256:96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef",
+      "stage": "D04",
+      "layer": "L4",
+      "independent_gate": "G4",
+      "definition": {
+        "file": "specs/data-production/standards/d04/主规_P4_A01-A12人文发现机制与专业方法.md",
+        "section_heading": "### A11 · 跨时空比较｜跨尺度历史比较",
+        "source_library_file_id": "libfile_a1c7950d12288191a4132d7ddbcc1175",
+        "source_sha256": "96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "humanistic_finding_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "A12",
+      "method_version": "source-sha256:96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef",
+      "stage": "D04",
+      "layer": "L4",
+      "independent_gate": "G4",
+      "definition": {
+        "file": "specs/data-production/standards/d04/主规_P4_A01-A12人文发现机制与专业方法.md",
+        "section_heading": "### A12 · 当下线索｜历史与当下联系",
+        "source_library_file_id": "libfile_a1c7950d12288191a4132d7ddbcc1175",
+        "source_sha256": "96ebb98e9a3afe80465a8a05a696b94509714feaf13aae0e62a16d0de6123aef"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "humanistic_finding_revision"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "P01",
+      "method_version": "source-sha256:79253bfe296e98584b8678237ae059587be798fbfd4c0962b61764f848c3ddfb",
+      "stage": "D05",
+      "layer": "L5",
+      "independent_gate": "G5",
+      "definition": {
+        "file": "specs/data-production/standards/d05/规范_P5_P01-P08可信发布专业方法与双读消费_V0.1.md",
+        "section_heading": "### P01｜资格选入",
+        "source_library_file_id": "libfile_edb20e95a49c81919ba3f7ae260306b1",
+        "source_sha256": "79253bfe296e98584b8678237ae059587be798fbfd4c0962b61764f848c3ddfb"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "selection_manifest"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "P02",
+      "method_version": "source-sha256:79253bfe296e98584b8678237ae059587be798fbfd4c0962b61764f848c3ddfb",
+      "stage": "D05",
+      "layer": "L5",
+      "independent_gate": "G5",
+      "definition": {
+        "file": "specs/data-production/standards/d05/规范_P5_P01-P08可信发布专业方法与双读消费_V0.1.md",
+        "section_heading": "### P02｜世界投影",
+        "source_library_file_id": "libfile_edb20e95a49c81919ba3f7ae260306b1",
+        "source_sha256": "79253bfe296e98584b8678237ae059587be798fbfd4c0962b61764f848c3ddfb"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "world_projections"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "P03",
+      "method_version": "source-sha256:79253bfe296e98584b8678237ae059587be798fbfd4c0962b61764f848c3ddfb",
+      "stage": "D05",
+      "layer": "L5",
+      "independent_gate": "G5",
+      "definition": {
+        "file": "specs/data-production/standards/d05/规范_P5_P01-P08可信发布专业方法与双读消费_V0.1.md",
+        "section_heading": "### P03｜时空变换",
+        "source_library_file_id": "libfile_edb20e95a49c81919ba3f7ae260306b1",
+        "source_sha256": "79253bfe296e98584b8678237ae059587be798fbfd4c0962b61764f848c3ddfb"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "map_timeline_projections"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "P04",
+      "method_version": "source-sha256:79253bfe296e98584b8678237ae059587be798fbfd4c0962b61764f848c3ddfb",
+      "stage": "D05",
+      "layer": "L5",
+      "independent_gate": "G5",
+      "definition": {
+        "file": "specs/data-production/standards/d05/规范_P5_P01-P08可信发布专业方法与双读消费_V0.1.md",
+        "section_heading": "### P04｜有界解释组合",
+        "source_library_file_id": "libfile_edb20e95a49c81919ba3f7ae260306b1",
+        "source_sha256": "79253bfe296e98584b8678237ae059587be798fbfd4c0962b61764f848c3ddfb"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "story_seeds",
+        "agent_contexts"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "P05",
+      "method_version": "source-sha256:79253bfe296e98584b8678237ae059587be798fbfd4c0962b61764f848c3ddfb",
+      "stage": "D05",
+      "layer": "L5",
+      "independent_gate": "G5",
+      "definition": {
+        "file": "specs/data-production/standards/d05/规范_P5_P01-P08可信发布专业方法与双读消费_V0.1.md",
+        "section_heading": "### P05｜探索关系编排",
+        "source_library_file_id": "libfile_edb20e95a49c81919ba3f7ae260306b1",
+        "source_sha256": "79253bfe296e98584b8678237ae059587be798fbfd4c0962b61764f848c3ddfb"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "discovery_paths"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "P06",
+      "method_version": "source-sha256:79253bfe296e98584b8678237ae059587be798fbfd4c0962b61764f848c3ddfb",
+      "stage": "D05",
+      "layer": "L5",
+      "independent_gate": "G5",
+      "definition": {
+        "file": "specs/data-production/standards/d05/规范_P5_P01-P08可信发布专业方法与双读消费_V0.1.md",
+        "section_heading": "### P06｜证据返还",
+        "source_library_file_id": "libfile_edb20e95a49c81919ba3f7ae260306b1",
+        "source_sha256": "79253bfe296e98584b8678237ae059587be798fbfd4c0962b61764f848c3ddfb"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "evidence_pointers"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "P07",
+      "method_version": "source-sha256:79253bfe296e98584b8678237ae059587be798fbfd4c0962b61764f848c3ddfb",
+      "stage": "D05",
+      "layer": "L5",
+      "independent_gate": "G5",
+      "definition": {
+        "file": "specs/data-production/standards/d05/规范_P5_P01-P08可信发布专业方法与双读消费_V0.1.md",
+        "section_heading": "### P07｜消费分面",
+        "source_library_file_id": "libfile_edb20e95a49c81919ba3f7ae260306b1",
+        "source_sha256": "79253bfe296e98584b8678237ae059587be798fbfd4c0962b61764f848c3ddfb"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "consumer_facet"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    },
+    {
+      "method_id": "P08",
+      "method_version": "source-sha256:79253bfe296e98584b8678237ae059587be798fbfd4c0962b61764f848c3ddfb",
+      "stage": "D05",
+      "layer": "L5",
+      "independent_gate": "G5",
+      "definition": {
+        "file": "specs/data-production/standards/d05/规范_P5_P01-P08可信发布专业方法与双读消费_V0.1.md",
+        "section_heading": "### P08｜精准失效",
+        "source_library_file_id": "libfile_edb20e95a49c81919ba3f7ae260306b1",
+        "source_sha256": "79253bfe296e98584b8678237ae059587be798fbfd4c0962b61764f848c3ddfb"
+      },
+      "input_contract": "specs/DATA_CONTRACT.md",
+      "selection_policy": "Match exact carrier/material class and required purpose to the full source section; do not broadcast all methods. Unknown mapping -> HOLD.",
+      "output_contract": [
+        "control.invalidation_event"
+      ],
+      "implementation_binding": "TO_VERIFY_IN_M0",
+      "may_grant_gate": false
+    }
+  ],
+  "formal_br_policy": {
+    "registry": "specs/data-production/relations/BR-M1_V2.1.4_325边正式审定注册表.csv",
+    "deferred_56": "DESIGN_HOLD",
+    "no_implicit_runtime_allowlist": true
+  },
+  "rule_version": "source document hashes and section locators",
+  "validation": "IDs unique; references exist; method version equals source hash; binding to executable adapter must be verified before enable"
+}

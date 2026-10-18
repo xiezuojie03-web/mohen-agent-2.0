@@ -1,0 +1,112 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>墨痕数据生产体系地图 V2.1</title>
+<style>
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;background:#f7f8fa;color:#202124}
+nav{position:fixed;left:0;top:0;bottom:0;width:330px;background:#fff;border-right:1px solid #dfe3e8;padding:18px 14px;overflow:auto}
+nav .title{font-weight:700;font-size:18px;margin-bottom:4px}nav .sub{font-size:12px;color:#666;padding-bottom:12px;margin-bottom:10px;border-bottom:1px solid #eee}
+nav a{display:block;text-decoration:none;color:#30343b;padding:6px 8px;border-radius:6px;font-size:13px}nav a.l2{padding-left:20px;color:#555}nav a:hover{background:#eef2f6}
+main{margin-left:330px;padding:36px 48px 80px;max-width:1450px}h1{font-size:30px;margin-top:0}h2{margin-top:36px;padding-bottom:8px;border-bottom:1px solid #ddd}
+p,.bullet{line-height:1.72}blockquote{margin:14px 0;padding:10px 14px;border-left:4px solid #667085;background:#fff}
+pre{background:#17191d;color:#f5f5f5;padding:14px 16px;border-radius:8px;overflow:auto;line-height:1.55}code{font-family:Consolas,ui-monospace,monospace;background:#eef1f4;padding:2px 4px;border-radius:4px}pre code{background:transparent;padding:0}
+.tablewrap{overflow:auto;margin:12px 0 18px}table{width:100%;border-collapse:collapse;background:#fff;font-size:13px}th,td{border:1px solid #dfe3e8;padding:9px 10px;text-align:left;vertical-align:top;line-height:1.55}th{background:#f0f2f5}
+@media(max-width:900px){nav{position:relative;width:100%;height:auto;border-right:0;border-bottom:1px solid #ddd}main{margin-left:0;padding:24px 18px}}
+</style></head><body><nav><div class="title">墨痕 · 数据生产体系地图</div><div class="sub">V2.1 · A–G完成后的长期导航<br>不含执行过程记录</div><a class="l1" href="#s0">墨痕数据生产体系地图 V2.1</a><a class="l1" href="#s1">0｜一张图</a><a class="l1" href="#s2">1｜总入口</a><a class="l1" href="#s3">2｜D01 · Source Intake</a><a class="l1" href="#s4">3｜D02 · Material Understanding</a><a class="l1" href="#s5">4｜D03 · Cultural World Construction</a><a class="l1" href="#s6">5｜D04 · Humanistic Discovery</a><a class="l1" href="#s7">6｜D05 · Trusted Read Model Assembly</a><a class="l1" href="#s8">7｜G0–G4</a><a class="l1" href="#s9">8｜阶段输出报告</a><a class="l1" href="#s10">9｜L5 · Experience Runtime</a><a class="l1" href="#s11">10｜Evidence on Demand</a><a class="l1" href="#s12">11｜L6 Participation</a><a class="l1" href="#s13">12｜L7 Living Culture</a><a class="l1" href="#s14">13｜物理数据</a><a class="l1" href="#s15">14｜唯一执行入口</a><a class="l1" href="#s16">15｜验证入口</a><a class="l2" href="#s17">D01–D05</a><a class="l2" href="#s18">L5–L7</a><a class="l2" href="#s19">全链 E2E</a><a class="l2" href="#s20">Guards</a><a class="l1" href="#s21">16｜机器最短阅读路径</a><a class="l2" href="#s22">数据生产任务</a><a class="l2" href="#s23">Agent / Experience</a><a class="l2" href="#s24">DB Migration</a><a class="l2" href="#s25">Human Review</a></nav><main><h1 id="s0">墨痕数据生产体系地图 V2.1</h1><p><strong>用途：长期生产体系导航 / 人机共同入口</strong>  </p><p><strong>不包含 Phase A–G 执行过程。</strong></p><h1 id="s1">0｜一张图</h1><pre><code>外部资料 / 新文化线索
+        ↓
+D01 Source Intake
+L0 source.*
+G0 Source Gate
+        ↓
+D02 Material Understanding
+L1 evidence.*
+G1 Evidence Quality Gate
+        ↓
+D03 Cultural World Construction
+L2 world.*
+G2 World Integrity Gate
+        ↓
+D04 Humanistic Discovery
+L3 meaning.*
+G3 Interpretation Gate
+        ↓
+D05 Trusted Read Model Assembly
+L4 read_model.*
+G4 Runtime Eligibility Gate
+        ↓
+L5 Experience Runtime
+        ↓
+L6 Participation
+        ↓
+L7 Living Culture Candidate
+        └────────────→ D01</code></pre><p>Evidence on Demand：</p><pre><code>L5
+→ L4 Read Model
+→ L3 Finding
+→ L2 World Object
+→ L1 Evidence
+→ L0 Source</code></pre><p>核心：</p><pre><code>Dn Gate PASS Output = Dn+1 Legal Entry</code></pre><h1 id="s2">1｜总入口</h1><div class="tablewrap"><table><thead><tr><th>类别</th><th>路径</th></tr></thead><tbody><tr><td>当前状态</td><td><code>CURRENT.md</code></td></tr><tr><td>机器路由</td><td><code>AGENTS.md</code></td></tr><tr><td>目录职责</td><td><code>OWNERSHIP_MAP.md</code></td></tr><tr><td>C0–C4</td><td><code>governance/</code></td></tr><tr><td>主协议</td><td><code>specs/data-production/MoHen_Data_Production_Protocol.md</code></td></tr><tr><td>Data Contract</td><td><code>specs/DATA_CONTRACT.md</code></td></tr><tr><td>Registry</td><td><code>specs/data-production/production-registry.json</code></td></tr><tr><td>G0–G4</td><td><code>specs/data-production/gates/</code></td></tr><tr><td>阶段报告模板</td><td><code>specs/data-production/templates/</code></td></tr><tr><td>物理模型</td><td><code>specs/data-production/PHYSICAL_DATA_MODEL_V2.md</code></td></tr><tr><td>执行体</td><td><code>pipelines/data-production/</code></td></tr><tr><td>Agent Runtime</td><td><code>packages/agent-runtime/</code></td></tr><tr><td>Experience Engine</td><td><code>packages/experience-engine/</code></td></tr><tr><td>Migration</td><td><code>supabase/migrations/</code></td></tr><tr><td>Rollback</td><td><code>supabase/rollback/</code></td></tr><tr><td>Tests</td><td><code>tests/</code></td></tr><tr><td>Verification</td><td><code>verification/</code></td></tr></tbody></table></div><h1 id="s3">2｜D01 · Source Intake</h1><div class="tablewrap"><table><thead><tr><th>项</th><th>路径 / 内容</th></tr></thead><tbody><tr><td>Layer</td><td>L0 / <code>source.*</code></td></tr><tr><td>Gate</td><td>G0</td></tr><tr><td>Skill</td><td><code>skills/mohen-source-intake/SKILL.md</code></td></tr><tr><td>Executor</td><td><code>pipelines/data-production/executors/d01-source-intake.mjs</code></td></tr><tr><td>Gate Contract</td><td><code>specs/data-production/gates/G0-G4_MACHINE_GATE_CONTRACT_V2.0.md</code></td></tr><tr><td>Machine Report</td><td><code>specs/data-production/templates/D01_machine-gate-template.json</code></td></tr><tr><td>Human Review</td><td><code>specs/data-production/templates/D01_human-review-template.md</code></td></tr><tr><td>PASS View</td><td><code>control.g0_pass_sources</code></td></tr></tbody></table></div><p>下游承诺：</p><blockquote>来源身份、溯源、locator、内容可获得性和使用边界明确。</blockquote><h1 id="s4">3｜D02 · Material Understanding</h1><div class="tablewrap"><table><thead><tr><th>项</th><th>路径 / 内容</th></tr></thead><tbody><tr><td>Layer</td><td>L1 / <code>evidence.*</code></td></tr><tr><td>Gate</td><td>G1</td></tr><tr><td>Skill</td><td><code>skills/mohen-material-understanding/SKILL.md</code></td></tr><tr><td>Executor</td><td><code>pipelines/data-production/executors/d02-material-understanding.mjs</code></td></tr><tr><td>Machine Report</td><td><code>specs/data-production/templates/D02_machine-gate-template.json</code></td></tr><tr><td>Human Review</td><td><code>specs/data-production/templates/D02_human-review-template.md</code></td></tr><tr><td>PASS View</td><td><code>control.g1_pass_evidence</code></td></tr></tbody></table></div><p>下游承诺：</p><blockquote>Evidence 可回放、忠实、带 source voice、时空适用范围与 uncertainty。</blockquote><h1 id="s5">4｜D03 · Cultural World Construction</h1><div class="tablewrap"><table><thead><tr><th>项</th><th>路径 / 内容</th></tr></thead><tbody><tr><td>Layer</td><td>L2 / <code>world.*</code></td></tr><tr><td>Gate</td><td>G2</td></tr><tr><td>Skill</td><td><code>skills/mohen-world-construction/SKILL.md</code></td></tr><tr><td>Executor</td><td><code>pipelines/data-production/executors/d03-world-construction.mjs</code></td></tr><tr><td>Machine Report</td><td><code>specs/data-production/templates/D03_machine-gate-template.json</code></td></tr><tr><td>Human Review</td><td><code>specs/data-production/templates/D03_human-review-template.md</code></td></tr><tr><td>PASS View</td><td><code>control.g2_pass_world_objects</code></td></tr></tbody></table></div><p>核心对象：</p><pre><code>Entity
+Event
+RelationClaim
+Change
+HistoricalSpaceClaim
+VisualObject
+Conflict</code></pre><h1 id="s6">5｜D04 · Humanistic Discovery</h1><div class="tablewrap"><table><thead><tr><th>项</th><th>路径 / 内容</th></tr></thead><tbody><tr><td>Layer</td><td>L3 / <code>meaning.*</code></td></tr><tr><td>Gate</td><td>G3</td></tr><tr><td>Skill</td><td><code>skills/mohen-humanistic-discovery/SKILL.md</code></td></tr><tr><td>Executor</td><td><code>pipelines/data-production/executors/d04-humanistic-discovery.mjs</code></td></tr><tr><td>Machine Report</td><td><code>specs/data-production/templates/D04_machine-gate-template.json</code></td></tr><tr><td>Human Review</td><td><code>specs/data-production/templates/D04_human-review-template.md</code></td></tr><tr><td>PASS View</td><td><code>control.g3_pass_findings</code></td></tr></tbody></table></div><p>必须产生：</p><pre><code>human_question
+interpretive_statement
+understanding_delta
+counter_view
+missing_evidence
+present_connection</code></pre><h1 id="s7">6｜D05 · Trusted Read Model Assembly</h1><div class="tablewrap"><table><thead><tr><th>项</th><th>路径 / 内容</th></tr></thead><tbody><tr><td>Layer</td><td>L4 / <code>read_model.*</code></td></tr><tr><td>Gate</td><td>G4</td></tr><tr><td>Skill</td><td><code>skills/mohen-read-model-publication/SKILL.md</code></td></tr><tr><td>Executor</td><td><code>pipelines/data-production/executors/d05-read-model-publication.mjs</code></td></tr><tr><td>Machine Report</td><td><code>specs/data-production/templates/D05_machine-gate-template.json</code></td></tr><tr><td>Human Review</td><td><code>specs/data-production/templates/D05_human-review-template.md</code></td></tr><tr><td>PASS View</td><td><code>control.g4_pass_read_models</code></td></tr></tbody></table></div><p>L4：</p><pre><code>world_projection
+agent_context
+story_seed
+discovery_path
+map_timeline_projection
+evidence_pointer</code></pre><h1 id="s8">7｜G0–G4</h1><p>正式规则：</p><pre><code>specs/data-production/gates/G0-G4_MACHINE_GATE_CONTRACT_V2.0.md</code></pre><p>机器版：</p><pre><code>specs/data-production/gates/gate-contracts.v2.json</code></pre><p>Gate 统一：</p><pre><code>Entry
+Mandatory Checks
+Machine Evidence
+PASS
+HOLD
+REJECT
+Reason Codes
+Downstream Promise
+Negative Examples</code></pre><h1 id="s9">8｜阶段输出报告</h1><p>每阶段固定两份：</p><pre><code>Machine Gate Report
+Human Review Stage Report</code></pre><p>目录：</p><pre><code>specs/data-production/templates/</code></pre><p>Machine Gate 判断：</p><pre><code>能不能过</code></pre><p>Human Review 判断：</p><pre><code>值不值得继续</code></pre><h1 id="s10">9｜L5 · Experience Runtime</h1><p>Authority：</p><pre><code>specs/AGENT_CONTRACT.md
+specs/EXPERIENCE_CONTRACT.md
+specs/data-production/L4_L7_CONSUMPTION_FEEDBACK_CONTRACT.md</code></pre><p>默认边界：</p><pre><code>Agent/UI → G4 PASS L4 → L5</code></pre><p>禁止 Agent/UI 默认直读：</p><pre><code>L0
+L1
+L2
+L3</code></pre><p>Runtime 实现：</p><pre><code>packages/agent-runtime/
+packages/experience-engine/</code></pre><h1 id="s11">10｜Evidence on Demand</h1><p>实现：</p><pre><code>packages/agent-runtime/src/evidence-on-demand.mjs</code></pre><p>合法链：</p><pre><code>L4 evidence pointer
+→ L3 finding
+→ L2 world object
+→ L1 evidence
+→ L0 source</code></pre><p>只读，不改变 Gate / Truth。</p><h1 id="s12">11｜L6 Participation</h1><p>Contract：</p><pre><code>specs/data-production/L4_L7_CONSUMPTION_FEEDBACK_CONTRACT.md</code></pre><p>实现：</p><pre><code>packages/experience-engine/src/participation-feedback.mjs</code></pre><p>普通 telemetry：</p><pre><code>不能自动成为文化资料</code></pre><h1 id="s13">12｜L7 Living Culture</h1><p>仅具有文化观察价值且满足 consent / provenance 的 L6 内容：</p><pre><code>L6
+→ L7 candidate
+→ D01 Source Lead</code></pre><p>禁止：</p><pre><code>L7 → L2
+L7 → L3</code></pre><h1 id="s14">13｜物理数据</h1><div class="tablewrap"><table><thead><tr><th>语义层</th><th>PostgreSQL Schema</th></tr></thead><tbody><tr><td>L0</td><td><code>source</code></td></tr><tr><td>L1</td><td><code>evidence</code></td></tr><tr><td>L2</td><td><code>world</code></td></tr><tr><td>L3</td><td><code>meaning</code></td></tr><tr><td>L4</td><td><code>read_model</code></td></tr><tr><td>Control</td><td><code>control</code></td></tr></tbody></table></div><p>文件：</p><pre><code>specs/data-production/PHYSICAL_DATA_MODEL_V2.md
+specs/data-production/PERSISTENCE_BINDING_CONTRACT.md
+supabase/migrations/
+supabase/rollback/
+verification/sql/</code></pre><h1 id="s15">14｜唯一执行入口</h1><pre><code>pipelines/data-production/run.mjs</code></pre><p>结构：</p><pre><code>run
+→ orchestrator
+→ D01–D05 executors
+→ adapters
+→ reporting</code></pre><h1 id="s16">15｜验证入口</h1><h2 id="s17">D01–D05</h2><pre><code>tests/data-production/</code></pre><h2 id="s18">L5–L7</h2><pre><code>tests/experience/</code></pre><h2 id="s19">全链 E2E</h2><pre><code>tests/end-to-end/phase-g-e2e.test.mjs</code></pre><h2 id="s20">Guards</h2><pre><code>scripts/guards/check-runtime-data-boundary.mjs
+scripts/guards/check-no-legacy-production-entry.mjs
+scripts/guards/check-stage-handoff.mjs
+scripts/guards/check-e2e-contract-completeness.mjs
+scripts/guards/check-cross-layer-write-boundary.mjs</code></pre><h1 id="s21">16｜机器最短阅读路径</h1><h2 id="s22">数据生产任务</h2><pre><code>CURRENT
+→ C2/C3
+→ Protocol
+→ DATA_CONTRACT
+→ Registry
+→ 当前 Stage Skill
+→ 当前 Gate
+→ 当前 Executor</code></pre><h2 id="s23">Agent / Experience</h2><pre><code>CURRENT
+→ C4
+→ AGENT_CONTRACT
+→ EXPERIENCE_CONTRACT
+→ L4_L7_CONSUMPTION_FEEDBACK_CONTRACT</code></pre><h2 id="s24">DB Migration</h2><pre><code>C3
+→ DATA_CONTRACT
+→ PHYSICAL_DATA_MODEL
+→ PERSISTENCE_BINDING
+→ supabase/migrations
+→ verification/sql</code></pre><h2 id="s25">Human Review</h2><pre><code>当前 Stage Human Review Report
+→ 必要时 Evidence on Demand</code></pre></main></body></html>

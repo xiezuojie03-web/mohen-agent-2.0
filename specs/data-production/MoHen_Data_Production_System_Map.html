@@ -1,5 +1,5 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>墨痕数据生产体系地图 V2.1</title>
+<title>墨痕数据生产体系地图 V3.0</title>
 <style>
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;background:#f7f8fa;color:#202124}
 nav{position:fixed;left:0;top:0;bottom:0;width:330px;background:#fff;border-right:1px solid #dfe3e8;padding:18px 14px;overflow:auto}
@@ -10,103 +10,329 @@ p,.bullet{line-height:1.72}blockquote{margin:14px 0;padding:10px 14px;border-lef
 pre{background:#17191d;color:#f5f5f5;padding:14px 16px;border-radius:8px;overflow:auto;line-height:1.55}code{font-family:Consolas,ui-monospace,monospace;background:#eef1f4;padding:2px 4px;border-radius:4px}pre code{background:transparent;padding:0}
 .tablewrap{overflow:auto;margin:12px 0 18px}table{width:100%;border-collapse:collapse;background:#fff;font-size:13px}th,td{border:1px solid #dfe3e8;padding:9px 10px;text-align:left;vertical-align:top;line-height:1.55}th{background:#f0f2f5}
 @media(max-width:900px){nav{position:relative;width:100%;height:auto;border-right:0;border-bottom:1px solid #ddd}main{margin-left:0;padding:24px 18px}}
-</style></head><body><nav><div class="title">墨痕 · 数据生产体系地图</div><div class="sub">V2.1 · A–G完成后的长期导航<br>不含执行过程记录</div><a class="l1" href="#s0">墨痕数据生产体系地图 V2.1</a><a class="l1" href="#s1">0｜一张图</a><a class="l1" href="#s2">1｜总入口</a><a class="l1" href="#s3">2｜D01 · Source Intake</a><a class="l1" href="#s4">3｜D02 · Material Understanding</a><a class="l1" href="#s5">4｜D03 · Cultural World Construction</a><a class="l1" href="#s6">5｜D04 · Humanistic Discovery</a><a class="l1" href="#s7">6｜D05 · Trusted Read Model Assembly</a><a class="l1" href="#s8">7｜G0–G4</a><a class="l1" href="#s9">8｜阶段输出报告</a><a class="l1" href="#s10">9｜L5 · Experience Runtime</a><a class="l1" href="#s11">10｜Evidence on Demand</a><a class="l1" href="#s12">11｜L6 Participation</a><a class="l1" href="#s13">12｜L7 Living Culture</a><a class="l1" href="#s14">13｜物理数据</a><a class="l1" href="#s15">14｜唯一执行入口</a><a class="l1" href="#s16">15｜验证入口</a><a class="l2" href="#s17">D01–D05</a><a class="l2" href="#s18">L5–L7</a><a class="l2" href="#s19">全链 E2E</a><a class="l2" href="#s20">Guards</a><a class="l1" href="#s21">16｜机器最短阅读路径</a><a class="l2" href="#s22">数据生产任务</a><a class="l2" href="#s23">Agent / Experience</a><a class="l2" href="#s24">DB Migration</a><a class="l2" href="#s25">Human Review</a></nav><main><h1 id="s0">墨痕数据生产体系地图 V2.1</h1><p><strong>用途：长期生产体系导航 / 人机共同入口</strong>  </p><p><strong>不包含 Phase A–G 执行过程。</strong></p><h1 id="s1">0｜一张图</h1><pre><code>外部资料 / 新文化线索
+</style></head><body><nav><div class="title">墨痕 · 数据生产体系地图</div><div class="sub">V3.0 · 六阶段 · 到前端 UI 消费端<br>不含执行过程记录</div>
+<a class="l1" href="#s0">墨痕数据生产体系地图 V3.0</a>
+<a class="l1" href="#s1">0｜一张图</a>
+<a class="l1" href="#s2">1｜总入口</a>
+<a class="l1" href="#s3">2｜D00 · 来源准备</a>
+<a class="l1" href="#s4">3｜D01 · 载体读取 C</a>
+<a class="l1" href="#s5">4｜D02 · 材料理解 H</a>
+<a class="l1" href="#s6">5｜D03 · 世界构建 W</a>
+<a class="l1" href="#s7">6｜D04 · 人文发现 A</a>
+<a class="l1" href="#s8">7｜D05 · 可信发布 P</a>
+<a class="l1" href="#s9">8｜六门 G0–G5</a>
+<a class="l1" href="#s10">9｜L5 六类 + 双读分面</a>
+<a class="l1" href="#s11">10｜L6–L8 消费与反馈</a>
+<a class="l1" href="#s12">11｜物理数据</a>
+<a class="l1" href="#s13">12｜唯一执行入口</a>
+<a class="l1" href="#s14">13｜验证入口</a>
+<a class="l1" href="#s15">14｜机器最短阅读路径</a>
+</nav><main>
+<h1 id="s0">墨痕数据生产体系地图 V3.0（六阶段 · 到前端 UI 消费端）</h1>
+<p><strong>用途：长期生产体系导航 / 人机共同入口。不包含执行过程记录。</strong></p>
+
+<h2 id="s1">0｜一张图</h2>
+<pre><code>外部资料 / 新文化线索 / 当代反馈
         ↓
-D01 Source Intake
-L0 source.*
-G0 Source Gate
+D00 来源准备          L0  source.*             G0  Source Gate
         ↓
-D02 Material Understanding
-L1 evidence.*
-G1 Evidence Quality Gate
+D01 载体读取 C        L1  reading_unit         G1  Carrier Quality Gate
         ↓
-D03 Cultural World Construction
-L2 world.*
-G2 World Integrity Gate
+D02 材料理解 H        L2  material_observation G2  Evidence Quality Gate
         ↓
-D04 Humanistic Discovery
-L3 meaning.*
-G3 Interpretation Gate
+D03 世界构建 W        L3  world_claim_revision G3  World Integrity Gate
         ↓
-D05 Trusted Read Model Assembly
-L4 read_model.*
-G4 Runtime Eligibility Gate
+D04 人文发现 A        L4  humanistic_finding   G4  Interpretation Gate
         ↓
-L5 Experience Runtime
+D05 可信发布 P        L5  read_model.*         G5  Runtime Eligibility Gate
         ↓
-L6 Participation
+L6  Experience Runtime  ──→  视觉舞台 + 墨痕 Agent（前端双组件）
         ↓
-L7 Living Culture Candidate
-        └────────────→ D01</code></pre><p>Evidence on Demand：</p><pre><code>L5
-→ L4 Read Model
-→ L3 Finding
-→ L2 World Object
-→ L1 Evidence
-→ L0 Source</code></pre><p>核心：</p><pre><code>Dn Gate PASS Output = Dn+1 Legal Entry</code></pre><h1 id="s2">1｜总入口</h1><div class="tablewrap"><table><thead><tr><th>类别</th><th>路径</th></tr></thead><tbody><tr><td>当前状态</td><td><code>CURRENT.md</code></td></tr><tr><td>机器路由</td><td><code>AGENTS.md</code></td></tr><tr><td>目录职责</td><td><code>OWNERSHIP_MAP.md</code></td></tr><tr><td>C0–C4</td><td><code>governance/</code></td></tr><tr><td>主协议</td><td><code>specs/data-production/MoHen_Data_Production_Protocol.md</code></td></tr><tr><td>Data Contract</td><td><code>specs/DATA_CONTRACT.md</code></td></tr><tr><td>Registry</td><td><code>specs/data-production/production-registry.json</code></td></tr><tr><td>G0–G4</td><td><code>specs/data-production/gates/</code></td></tr><tr><td>阶段报告模板</td><td><code>specs/data-production/templates/</code></td></tr><tr><td>物理模型</td><td><code>specs/data-production/PHYSICAL_DATA_MODEL_V2.md</code></td></tr><tr><td>执行体</td><td><code>pipelines/data-production/</code></td></tr><tr><td>Agent Runtime</td><td><code>packages/agent-runtime/</code></td></tr><tr><td>Experience Engine</td><td><code>packages/experience-engine/</code></td></tr><tr><td>Migration</td><td><code>supabase/migrations/</code></td></tr><tr><td>Rollback</td><td><code>supabase/rollback/</code></td></tr><tr><td>Tests</td><td><code>tests/</code></td></tr><tr><td>Verification</td><td><code>verification/</code></td></tr></tbody></table></div><h1 id="s3">2｜D01 · Source Intake</h1><div class="tablewrap"><table><thead><tr><th>项</th><th>路径 / 内容</th></tr></thead><tbody><tr><td>Layer</td><td>L0 / <code>source.*</code></td></tr><tr><td>Gate</td><td>G0</td></tr><tr><td>Skill</td><td><code>skills/mohen-source-intake/SKILL.md</code></td></tr><tr><td>Executor</td><td><code>pipelines/data-production/executors/d01-source-intake.mjs</code></td></tr><tr><td>Gate Contract</td><td><code>specs/data-production/gates/G0-G4_MACHINE_GATE_CONTRACT_V2.0.md</code></td></tr><tr><td>Machine Report</td><td><code>specs/data-production/templates/D01_machine-gate-template.json</code></td></tr><tr><td>Human Review</td><td><code>specs/data-production/templates/D01_human-review-template.md</code></td></tr><tr><td>PASS View</td><td><code>control.g0_pass_sources</code></td></tr></tbody></table></div><p>下游承诺：</p><blockquote>来源身份、溯源、locator、内容可获得性和使用边界明确。</blockquote><h1 id="s4">3｜D02 · Material Understanding</h1><div class="tablewrap"><table><thead><tr><th>项</th><th>路径 / 内容</th></tr></thead><tbody><tr><td>Layer</td><td>L1 / <code>evidence.*</code></td></tr><tr><td>Gate</td><td>G1</td></tr><tr><td>Skill</td><td><code>skills/mohen-material-understanding/SKILL.md</code></td></tr><tr><td>Executor</td><td><code>pipelines/data-production/executors/d02-material-understanding.mjs</code></td></tr><tr><td>Machine Report</td><td><code>specs/data-production/templates/D02_machine-gate-template.json</code></td></tr><tr><td>Human Review</td><td><code>specs/data-production/templates/D02_human-review-template.md</code></td></tr><tr><td>PASS View</td><td><code>control.g1_pass_evidence</code></td></tr></tbody></table></div><p>下游承诺：</p><blockquote>Evidence 可回放、忠实、带 source voice、时空适用范围与 uncertainty。</blockquote><h1 id="s5">4｜D03 · Cultural World Construction</h1><div class="tablewrap"><table><thead><tr><th>项</th><th>路径 / 内容</th></tr></thead><tbody><tr><td>Layer</td><td>L2 / <code>world.*</code></td></tr><tr><td>Gate</td><td>G2</td></tr><tr><td>Skill</td><td><code>skills/mohen-world-construction/SKILL.md</code></td></tr><tr><td>Executor</td><td><code>pipelines/data-production/executors/d03-world-construction.mjs</code></td></tr><tr><td>Machine Report</td><td><code>specs/data-production/templates/D03_machine-gate-template.json</code></td></tr><tr><td>Human Review</td><td><code>specs/data-production/templates/D03_human-review-template.md</code></td></tr><tr><td>PASS View</td><td><code>control.g2_pass_world_objects</code></td></tr></tbody></table></div><p>核心对象：</p><pre><code>Entity
-Event
-RelationClaim
-Change
-HistoricalSpaceClaim
-VisualObject
-Conflict</code></pre><h1 id="s6">5｜D04 · Humanistic Discovery</h1><div class="tablewrap"><table><thead><tr><th>项</th><th>路径 / 内容</th></tr></thead><tbody><tr><td>Layer</td><td>L3 / <code>meaning.*</code></td></tr><tr><td>Gate</td><td>G3</td></tr><tr><td>Skill</td><td><code>skills/mohen-humanistic-discovery/SKILL.md</code></td></tr><tr><td>Executor</td><td><code>pipelines/data-production/executors/d04-humanistic-discovery.mjs</code></td></tr><tr><td>Machine Report</td><td><code>specs/data-production/templates/D04_machine-gate-template.json</code></td></tr><tr><td>Human Review</td><td><code>specs/data-production/templates/D04_human-review-template.md</code></td></tr><tr><td>PASS View</td><td><code>control.g3_pass_findings</code></td></tr></tbody></table></div><p>必须产生：</p><pre><code>human_question
-interpretive_statement
-understanding_delta
-counter_view
-missing_evidence
-present_connection</code></pre><h1 id="s7">6｜D05 · Trusted Read Model Assembly</h1><div class="tablewrap"><table><thead><tr><th>项</th><th>路径 / 内容</th></tr></thead><tbody><tr><td>Layer</td><td>L4 / <code>read_model.*</code></td></tr><tr><td>Gate</td><td>G4</td></tr><tr><td>Skill</td><td><code>skills/mohen-read-model-publication/SKILL.md</code></td></tr><tr><td>Executor</td><td><code>pipelines/data-production/executors/d05-read-model-publication.mjs</code></td></tr><tr><td>Machine Report</td><td><code>specs/data-production/templates/D05_machine-gate-template.json</code></td></tr><tr><td>Human Review</td><td><code>specs/data-production/templates/D05_human-review-template.md</code></td></tr><tr><td>PASS View</td><td><code>control.g4_pass_read_models</code></td></tr></tbody></table></div><p>L4：</p><pre><code>world_projection
-agent_context
-story_seed
-discovery_path
-map_timeline_projection
-evidence_pointer</code></pre><h1 id="s8">7｜G0–G4</h1><p>正式规则：</p><pre><code>specs/data-production/gates/G0-G4_MACHINE_GATE_CONTRACT_V2.0.md</code></pre><p>机器版：</p><pre><code>specs/data-production/gates/gate-contracts.v2.json</code></pre><p>Gate 统一：</p><pre><code>Entry
-Mandatory Checks
-Machine Evidence
-PASS
-HOLD
-REJECT
-Reason Codes
-Downstream Promise
-Negative Examples</code></pre><h1 id="s9">8｜阶段输出报告</h1><p>每阶段固定两份：</p><pre><code>Machine Gate Report
-Human Review Stage Report</code></pre><p>目录：</p><pre><code>specs/data-production/templates/</code></pre><p>Machine Gate 判断：</p><pre><code>能不能过</code></pre><p>Human Review 判断：</p><pre><code>值不值得继续</code></pre><h1 id="s10">9｜L5 · Experience Runtime</h1><p>Authority：</p><pre><code>specs/AGENT_CONTRACT.md
+L7  Participation（参与/反馈，不自动成文化资料）
+        ↓
+L8  Living Culture New Traces（有 consent/provenance 的文化新痕迹）
+        └────────────────────→ D00（受治理回流）</code></pre>
+<p>Evidence on Demand（按需返证，只读）：</p>
+<pre><code>L5 发布 refs → L4 humanistic_finding（如有解释）→ L3 world_claim → L2 material_observation → L1 reading_unit → L0 source</code></pre>
+<p>核心：</p>
+<pre><code>Dn Gate PASS Output = Dn+1 Legal Entry
+L1读取 ≠ L2证据 ≠ L3事实 ≠ L4解释 ≠ L5可消费表达
+前端只消费 G5 PASS 的 L5 合法分面；禁止直读 L0–L3</code></pre>
+
+<h2 id="s2">1｜总入口</h2>
+<div class="tablewrap"><table><thead><tr><th>类别</th><th>路径</th></tr></thead><tbody>
+<tr><td>当前状态</td><td><code>CURRENT.md</code></td></tr>
+<tr><td>机器路由</td><td><code>AGENTS.md</code></td></tr>
+<tr><td>目录职责</td><td><code>OWNERSHIP_MAP.md</code></td></tr>
+<tr><td>C0–C4</td><td><code>governance/</code></td></tr>
+<tr><td>主协议</td><td><code>specs/data-production/MoHen_Data_Production_Protocol.md</code></td></tr>
+<tr><td>Data Contract</td><td><code>specs/DATA_CONTRACT.md</code></td></tr>
+<tr><td>现行专业原文</td><td><code>specs/data-production/standards/d00/</code>—<code>d05/</code>（逐文件见 <code>verification/arch-mig-prep-01/TARGET_FILE_COVERAGE.csv</code>）</td></tr>
+<tr><td>方法/执行绑定</td><td><code>specs/data-production/production-registry.json</code> + <code>method-binding-contract.json</code></td></tr>
+<tr><td>六门独立合同</td><td><code>specs/data-production/gates/G0-G5_MACHINE_GATE_CONTRACT_V3.0.md</code> + <code>gate-contracts.v3.json</code></td></tr>
+<tr><td>消费/反馈</td><td><code>specs/data-production/L5_L8_CONSUMPTION_FEEDBACK_CONTRACT.md</code></td></tr>
+<tr><td>Agent/体验边界</td><td><code>specs/AGENT_CONTRACT.md</code>、<code>specs/EXPERIENCE_CONTRACT.md</code></td></tr>
+<tr><td>物理模型</td><td><code>specs/data-production/PHYSICAL_DATA_MODEL_V2.md</code>、<code>PERSISTENCE_BINDING_CONTRACT.md</code></td></tr>
+<tr><td>执行体</td><td><code>pipelines/data-production/</code></td></tr>
+<tr><td>Runtime</td><td><code>packages/agent-runtime/</code>、<code>packages/experience-engine/</code>、<code>packages/data-access/</code></td></tr>
+<tr><td>Migration / Rollback</td><td><code>supabase/migrations/</code>、<code>supabase/rollback/</code></td></tr>
+<tr><td>Tests / Verification</td><td><code>tests/</code>、<code>verification/</code></td></tr>
+</tbody></table></div>
+
+<h2 id="s3">2｜D00 · 来源准备（Source Preparation）</h2>
+<div class="tablewrap"><table><thead><tr><th>项</th><th>路径 / 内容</th></tr></thead><tbody>
+<tr><td>Layer</td><td>L0 / <code>source.*</code></td></tr>
+<tr><td>Gate</td><td>G0</td></tr>
+<tr><td>专业标准</td><td><code>standards/d00/</code>（主规 P0 + 规范 P0/P0.1/P0.2 + 契约 P0.3）</td></tr>
+<tr><td>Skill</td><td><code>skills/mohen-source-intake/SKILL.md</code></td></tr>
+<tr><td>Executor</td><td><code>pipelines/data-production/executors/d00-source-intake.mjs</code></td></tr>
+<tr><td>PASS View</td><td><code>control.g0_pass_sources</code></td></tr>
+</tbody></table></div>
+<p>standards/d00 文件：</p>
+<pre><code>主规_P0_D00机制总规_最终版.md
+规范_P0_长期资源与获取方法维护_最终版.md
+规范_P0.1_资源发现与获取方法体系_最终版.md
+规范_P0.2_来源身份版本权利与依赖_最终版.md
+契约_P0.3_新L0_G0与D01交接_最终版.md</code></pre>
+<blockquote>下游承诺：来源身份、溯源、locator、内容可获得性、权利（可研究/可引用/可展示/可下载）与使用边界明确。</blockquote>
+
+<h2 id="s4">3｜D01 · 载体读取 C（Carrier Reading）</h2>
+<div class="tablewrap"><table><thead><tr><th>项</th><th>路径 / 内容</th></tr></thead><tbody>
+<tr><td>Layer</td><td>L1 / <code>reading_unit</code></td></tr>
+<tr><td>Gate</td><td>G1</td></tr>
+<tr><td>专业标准</td><td><code>standards/d01/</code></td></tr>
+<tr><td>方法</td><td>C01–C08（8 个载体读取方法）</td></tr>
+<tr><td>Skill</td><td><code>skills/mohen-carrier-reading/SKILL.md</code></td></tr>
+<tr><td>Executor</td><td><code>pipelines/data-production/executors/d01-carrier-reading.mjs</code></td></tr>
+<tr><td>PASS View</td><td><code>control.g1_pass_reading_units</code></td></tr>
+</tbody></table></div>
+<pre><code>C01 数字文本 · C02 扫描书影与影像PDF · C03 历史舆图与图形 · C04 照片版画与插图
+C05 结构化数据 · C06 音频 · C07 视频 · C08 实物与现场采集</code></pre>
+<p>standards/d01 文件：</p>
+<pre><code>主规_P1_D01统一生命周期与质量画像治理.md
+规范_P1_C01-C08载体与复合材料专业读取.md
+契约_P1_新G1质量门与新旧迁移.md
+契约_P1_新L1持久化与L2字段所有权.md
+契约_P1_D01至D02可信交接.md</code></pre>
+<blockquote>下游承诺：只做技术读取，保留未读区域/错误/校准画像；原资产与读取修订不同身份。不把 OCR/图片标题/AI 补字当历史证据。照片/舆图必须产出 reading_unit + Visual Observation，禁止标题识别替代读图。</blockquote>
+
+<h2 id="s5">4｜D02 · 材料理解 H（Material Understanding）</h2>
+<div class="tablewrap"><table><thead><tr><th>项</th><th>路径 / 内容</th></tr></thead><tbody>
+<tr><td>Layer</td><td>L2 / <code>material_observation</code></td></tr>
+<tr><td>Gate</td><td>G2</td></tr>
+<tr><td>专业标准</td><td><code>standards/d02/</code></td></tr>
+<tr><td>方法</td><td>H01–H25（25 个历史材料分类方法）</td></tr>
+<tr><td>Skill</td><td><code>skills/mohen-material-understanding/SKILL.md</code></td></tr>
+<tr><td>Executor</td><td><code>pipelines/data-production/executors/d02-material-understanding.mjs</code></td></tr>
+<tr><td>PASS View</td><td><code>control.g2_pass_material_observations</code></td></tr>
+</tbody></table></div>
+<pre><code>H01 通史与断代史 · H02 编年与专题史 · H03 制度与政书 · H04 历史地理著作 · H05 地方志
+H06 谱牒与传记 · H07 行政档案 · H08 民间文书 · H09 金石铭刻 · H10 经学与儒家经典
+H11 诸子与思想著作 · H12 宗教与信仰文献 · H13 文学与私人著述 · H14 笔记游记与小说
+H15 农业与生产文献 · H16 科学医学与技术文献 · H17 生活礼俗与艺术文献 · H18 历史舆图与图谱
+H19 出土与特殊文献 · H20 目录类书与文献汇编 · H21 近现代报刊与期刊 · H22 口述史与访谈记录
+H23 现代考古与田野调查报告 · H24 现代学术研究与遗产调查 · H25 历史摄影与纪实图像材料</code></pre>
+<p>standards/d02 文件：</p>
+<pre><code>主规_P2_D02统一文献理解与证据化观察机制.md
+规范_P2_H01-H25历史材料专业分类与阅读方法.md
+规范_P2_复合嵌套文献与转引依赖阅读.md
+契约_P2_新G2独立资格与D02-D03交接.md
+契约_P2_新L2证据化观察与L1关联持久化.md</code></pre>
+<blockquote>下游承诺：材料结构、声音、转引与观察保真；嵌套单元逐个定位；二手解释不伪装一手事实。</blockquote>
+
+<h2 id="s6">5｜D03 · 世界构建 W（World Construction）</h2>
+<div class="tablewrap"><table><thead><tr><th>项</th><th>路径 / 内容</th></tr></thead><tbody>
+<tr><td>Layer</td><td>L3 / <code>world_claim_revision</code>（<code>world.*</code>）</td></tr>
+<tr><td>Gate</td><td>G3</td></tr>
+<tr><td>专业标准</td><td><code>standards/d03/</code></td></tr>
+<tr><td>方法</td><td>W01–W10（10 个世界建构方法）</td></tr>
+<tr><td>Skill</td><td><code>skills/mohen-world-construction/SKILL.md</code></td></tr>
+<tr><td>Executor</td><td><code>pipelines/data-production/executors/d03-world-construction.mjs</code></td></tr>
+<tr><td>Adapter</td><td><code>pipelines/data-production/adapters/d03-world-construction.mjs</code>（<code>context.extractWorldClaim</code>）</td></tr>
+<tr><td>PASS View</td><td><code>control.g3_pass_world_claims</code></td></tr>
+</tbody></table></div>
+<pre><code>W01 历史对象身份与连续性判定 · W02 历史时间与时序约束建构 · W03 历史空间与视觉对应核定
+W04 历史事件与行动过程建构 · W05 历史关系与角色约束建构 · W06 历史状态变化与连续性建构
+W07 世界事实主张与证据支持评定 · W08 来源谱系与独立见证评估 · W09 世界主张冲突与认识状态管理
+W10 跨对象世界一致性与变更传播</code></pre>
+<p>核心对象（<code>world.*</code>）：</p>
+<pre><code>Entity / Event / RelationClaim / Change / HistoricalSpaceClaim / VisualObject / Conflict</code></pre>
+<p>standards/d03 文件：</p>
+<pre><code>主规_P3_D03职责与研究边界.md
+规范_P3_W01-W10历史世界建构专业方法.md
+契约_P3_L3持久化_独立G3与D04交接.md</code></pre>
+
+<h2 id="s7">6｜D04 · 人文发现 A（Humanistic Discovery）</h2>
+<div class="tablewrap"><table><thead><tr><th>项</th><th>路径 / 内容</th></tr></thead><tbody>
+<tr><td>Layer</td><td>L4 / <code>humanistic_finding_revision</code>（<code>meaning.*</code>）</td></tr>
+<tr><td>Gate</td><td>G4</td></tr>
+<tr><td>专业标准</td><td><code>standards/d04/</code></td></tr>
+<tr><td>方法</td><td>A01–A12（12 个人文发现方法）</td></tr>
+<tr><td>Skill</td><td><code>skills/mohen-humanistic-discovery/SKILL.md</code></td></tr>
+<tr><td>Executor</td><td><code>pipelines/data-production/executors/d04-humanistic-discovery.mjs</code></td></tr>
+<tr><td>Adapter</td><td><code>adapters/d04-humanistic-discovery.mjs</code>（<code>context.extractHumanisticFinding</code>）</td></tr>
+<tr><td>PASS View</td><td><code>control.g4_pass_findings</code></td></tr>
+</tbody></table></div>
+<pre><code>A01 显式关系｜关系解释 · A02 共现与跨源｜问题线索发现 · A03 时间序列｜节律解释
+A04 空间拓扑｜场所结构解释 · A05 行动链｜行动者处境 · A06 制度机制｜规则执行机制
+A07 跨模态共指｜载体表征差异 · A08 结构聚类｜网络结构解释 · A09 变化链｜历史生成与断裂
+A10 冲突发现｜历史认识与争议模式 · A11 跨时空比较｜跨尺度历史比较 · A12 当下线索｜历史与当下联系</code></pre>
+<p>必须产生：</p>
+<pre><code>human_question / interpretive_statement / understanding_delta / counter_view / missing_evidence / present_connection</code></pre>
+<p>standards/d04 文件：</p>
+<pre><code>主规_P4_A01-A12人文发现机制与专业方法.md
+契约_P4_L4持久化_独立G4与D05交接.md</code></pre>
+
+<h2 id="s8">7｜D05 · 可信发布 P（Trusted Publication）</h2>
+<div class="tablewrap"><table><thead><tr><th>项</th><th>路径 / 内容</th></tr></thead><tbody>
+<tr><td>Layer</td><td>L5 / <code>read_model.*</code>（六类发布成果）</td></tr>
+<tr><td>Gate</td><td>G5</td></tr>
+<tr><td>专业标准</td><td><code>standards/d05/</code></td></tr>
+<tr><td>方法</td><td>P01–P08（P08 精准失效已完成）</td></tr>
+<tr><td>Skill</td><td><code>skills/mohen-read-model-publication/SKILL.md</code></td></tr>
+<tr><td>Executor</td><td><code>pipelines/data-production/executors/d05-read-model-publication.mjs</code></td></tr>
+<tr><td>Adapter</td><td><code>adapters/d05-read-model-publication.mjs</code>（<code>context.publishReadModels</code>）</td></tr>
+<tr><td>PASS View</td><td><code>control.g5_pass_read_models</code></td></tr>
+</tbody></table></div>
+<pre><code>P01 资格选入 · P02 世界投影 · P03 时空变换 · P04 有界解释组合 · P05 探索关系编排
+P06 证据返还 · P07 消费分面 · P08 精准失效（已完成）</code></pre>
+<p>L5 六类发布成果（固定，不另成第七类）：</p>
+<pre><code>world_projections / agent_contexts / story_seeds / discovery_paths
+map_timeline_projections / evidence_pointers</code></pre>
+<p>standards/d05 文件（V0.1）：</p>
+<pre><code>主规_P5_D05可信发布与双读模型_V0.1.md
+规范_P5_P01-P08可信发布专业方法与双读消费_V0.1.md
+契约_P5_L5持久化_独立G5与双读消费_V0.1.md</code></pre>
+
+<h2 id="s9">8｜六门 G0–G5 独立资格合同</h2>
+<p>正式规则：</p>
+<pre><code>specs/data-production/gates/G0-G5_MACHINE_GATE_CONTRACT_V3.0.md
+specs/data-production/gates/gate-contracts.v3.json        ← 机器规则（唯一）
+specs/data-production/configs/gate-contracts.json         ← 仅指向 v3，不复制第二套</code></pre>
+<p>六门独立核验项：</p>
+<pre><code>G0  identity_version / raw_provenance / rights_by_operation / acquisition_scope / source_dependency
+G1  source_authorization / carrier_profile_approved / reading_fidelity / coverage_and_missing / locator_replayable
+G2  reading_authorization / material_type_method / source_voice / nested_dependency / evidence_scope / no_world_assertion
+G3  evidence_authorization / identity_time_space / support_counterevidence / source_independence / epistemic_status / purpose_specific_extent
+G4  world_authorization / fact_interpretation_firewall / understanding_delta / alternatives_counterview / present_basis_if_applicable / purpose_specific_extent
+G5  upstream_authorization_by_action / revision_dependency_snapshot / rights_scope_consumer / purpose_mapping / lineage_replay / read_only_recomputable / time_current_at_consume</code></pre>
+<p>Gate 统一结构：</p>
+<pre><code>Entry → Mandatory Checks → Machine Evidence → PASS / HOLD / REJECT / REVOKED / UNASSESSED
+→ Reason Codes → Downstream Promise → Negative Examples</code></pre>
+<p>用途不可混同：</p>
+<pre><code>G3 七用途：world.explain_bounded / show_original_region / map_anchor_link / map_registered_overlay
+           / reconstruct_bounded / change_compare / relation_explain
+G4 五用途：BE 有界解释 / BC 有界比较 / RF 有证关系焦点 / PS 有界过程序列 / PL 合格当下联系
+G5 显式引用 upstream_purpose_refs + publication_action；未知映射 HOLD</code></pre>
+
+<h2 id="s10">9｜L5 六类发布成果 + 双读消费分面</h2>
+<h3>9.1 六类物理承载（<code>read_model.*</code> 六表）</h3>
+<pre><code>world_projections        → 世界事实投影（只消费 L3/G3 事实）
+agent_contexts           → Agent 上下文
+story_seeds              → 故事种子
+discovery_paths          → 探索路径
+map_timeline_projections → 时空投影（历史/时间轴）
+evidence_pointers        → 证据指针（返证链）</code></pre>
+<h3>9.2 双读消费分面（G5 consumer）</h3>
+<pre><code>visual_stage 分面  → 视觉舞台消费
+agent 分面         → 墨痕 Agent 消费</code></pre>
+<p>两个消费者共享同一内容身份/修订/事实/证据/限制，但许可按 <code>purpose/scope/consumer</code> 分别检查；图像展示权 ≠ Agent 复刻/下载权 ≠ 文字引用权。</p>
+
+<h2 id="s11">10｜L6–L8 消费与反馈（前端 UI 消费端）</h2>
+<h3>10.1 默认消费链</h3>
+<pre><code>L5 六类发布修订
+   ↓ 按消费者资格
+L6 Experience Runtime  →  视觉舞台 + 墨痕 Agent（前端双组件）
+   ↓
+L7 Participation（普通交互 telemetry 不自动成文化资料）
+   ↓
+L8 Living Culture New Traces（有 consent/provenance 的文化新痕迹）
+   └→ 经 D00 受治理回流</code></pre>
+<p>Authority：</p>
+<pre><code>specs/data-production/L5_L8_CONSUMPTION_FEEDBACK_CONTRACT.md
+specs/AGENT_CONTRACT.md
 specs/EXPERIENCE_CONTRACT.md
-specs/data-production/L4_L7_CONSUMPTION_FEEDBACK_CONTRACT.md</code></pre><p>默认边界：</p><pre><code>Agent/UI → G4 PASS L4 → L5</code></pre><p>禁止 Agent/UI 默认直读：</p><pre><code>L0
-L1
-L2
-L3</code></pre><p>Runtime 实现：</p><pre><code>packages/agent-runtime/
-packages/experience-engine/</code></pre><h1 id="s11">10｜Evidence on Demand</h1><p>实现：</p><pre><code>packages/agent-runtime/src/evidence-on-demand.mjs</code></pre><p>合法链：</p><pre><code>L4 evidence pointer
-→ L3 finding
-→ L2 world object
-→ L1 evidence
-→ L0 source</code></pre><p>只读，不改变 Gate / Truth。</p><h1 id="s12">11｜L6 Participation</h1><p>Contract：</p><pre><code>specs/data-production/L4_L7_CONSUMPTION_FEEDBACK_CONTRACT.md</code></pre><p>实现：</p><pre><code>packages/experience-engine/src/participation-feedback.mjs</code></pre><p>普通 telemetry：</p><pre><code>不能自动成为文化资料</code></pre><h1 id="s13">12｜L7 Living Culture</h1><p>仅具有文化观察价值且满足 consent / provenance 的 L6 内容：</p><pre><code>L6
-→ L7 candidate
-→ D01 Source Lead</code></pre><p>禁止：</p><pre><code>L7 → L2
-L7 → L3</code></pre><h1 id="s14">13｜物理数据</h1><div class="tablewrap"><table><thead><tr><th>语义层</th><th>PostgreSQL Schema</th></tr></thead><tbody><tr><td>L0</td><td><code>source</code></td></tr><tr><td>L1</td><td><code>evidence</code></td></tr><tr><td>L2</td><td><code>world</code></td></tr><tr><td>L3</td><td><code>meaning</code></td></tr><tr><td>L4</td><td><code>read_model</code></td></tr><tr><td>Control</td><td><code>control</code></td></tr></tbody></table></div><p>文件：</p><pre><code>specs/data-production/PHYSICAL_DATA_MODEL_V2.md
+governance/C4_MoHen_Agent-native_Human_Experience_UI_Architecture_V2.2.md（视觉层 V1–V5 + 双组件体验）</code></pre>
+<h3>10.2 视觉层 V1–V5（C4 §16）</h3>
+<pre><code>V1 历史原件（舆图/方志图/绘画/档案）· V2 历史影像（老照片/明信片/旧摄影）
+V3 今日现场（现代摄影）· V4 解释标注（克制线框/热点）· V5 重建想象（AI/人工重建）</code></pre>
+<h3>10.3 前端消费端实现</h3>
+<pre><code>apps/web/app/experience/jinze-water-net/   ← 金泽体验页（视觉舞台 + 墨痕双组件）
+apps/web/app/experience/lvzhiqiu/          ← 绿之丘体验页
+apps/web/app/api/mohen/ask/                ← Agent 追问 API
+apps/web/app/api/mohen/materials/          ← 材料检索 API
+apps/web/lib/mohen-agent/retrieve.ts       ← 统一 L5 读取服务
+apps/web/lib/mohen-visual/                 ← 视觉语法 / 空间画布 / 标签布局
+packages/agent-runtime/src/                ← evidence-on-demand / read-model-client / understand / select
+packages/experience-engine/src/            ← experience-runtime / composition-recipes / surface-eligibility / participation-feedback
+packages/data-access/src/                  ← read-model-repository / node-pg-client（消费 node pg 双后端）/ lineage-read / invalidation</code></pre>
+<p>消费边界：</p>
+<pre><code>Agent/UI → G5 PASS L5 → L6
+禁止 Agent/UI 默认直读 L0/L1/L2/L3
+统一 L5 读取服务接 ask/materials API；禁止一条路径受 G5、另一条靠旧 status/静态 JSON 绕过
+Evidence on Demand 沿真实依赖只读返证：L5 refs → L4(如有解释)/L3 → L2 → L1 → L0</code></pre>
+
+<h2 id="s12">11｜物理数据（42 表）</h2>
+<div class="tablewrap"><table><thead><tr><th>语义层</th><th>PostgreSQL Schema</th></tr></thead><tbody>
+<tr><td>L0</td><td><code>source</code></td></tr>
+<tr><td>L1</td><td><code>evidence</code>（<code>reading_units</code> 等）</td></tr>
+<tr><td>L2</td><td><code>evidence</code>（<code>material_observation</code> 等）</td></tr>
+<tr><td>L3</td><td><code>world</code></td></tr>
+<tr><td>L4</td><td><code>meaning</code></td></tr>
+<tr><td>L5</td><td><code>read_model</code></td></tr>
+<tr><td>Control</td><td><code>control</code></td></tr>
+</tbody></table></div>
+<p>42 表 = 表级迁移 36 表 + 字段级改库补 6 表。</p>
+<pre><code>specs/data-production/PHYSICAL_DATA_MODEL_V2.md
 specs/data-production/PERSISTENCE_BINDING_CONTRACT.md
 supabase/migrations/
 supabase/rollback/
-verification/sql/</code></pre><h1 id="s15">14｜唯一执行入口</h1><pre><code>pipelines/data-production/run.mjs</code></pre><p>结构：</p><pre><code>run
-→ orchestrator
-→ D01–D05 executors
-→ adapters
-→ reporting</code></pre><h1 id="s16">15｜验证入口</h1><h2 id="s17">D01–D05</h2><pre><code>tests/data-production/</code></pre><h2 id="s18">L5–L7</h2><pre><code>tests/experience/</code></pre><h2 id="s19">全链 E2E</h2><pre><code>tests/end-to-end/phase-g-e2e.test.mjs</code></pre><h2 id="s20">Guards</h2><pre><code>scripts/guards/check-runtime-data-boundary.mjs
-scripts/guards/check-no-legacy-production-entry.mjs
-scripts/guards/check-stage-handoff.mjs
-scripts/guards/check-e2e-contract-completeness.mjs
-scripts/guards/check-cross-layer-write-boundary.mjs</code></pre><h1 id="s21">16｜机器最短阅读路径</h1><h2 id="s22">数据生产任务</h2><pre><code>CURRENT
-→ C2/C3
-→ Protocol
-→ DATA_CONTRACT
-→ Registry
-→ 当前 Stage Skill
-→ 当前 Gate
-→ 当前 Executor</code></pre><h2 id="s23">Agent / Experience</h2><pre><code>CURRENT
-→ C4
-→ AGENT_CONTRACT
-→ EXPERIENCE_CONTRACT
-→ L4_L7_CONSUMPTION_FEEDBACK_CONTRACT</code></pre><h2 id="s24">DB Migration</h2><pre><code>C3
-→ DATA_CONTRACT
-→ PHYSICAL_DATA_MODEL
-→ PERSISTENCE_BINDING
-→ supabase/migrations
-→ verification/sql</code></pre><h2 id="s25">Human Review</h2><pre><code>当前 Stage Human Review Report
-→ 必要时 Evidence on Demand</code></pre></main></body></html>
+verification/sql/</code></pre>
+
+<h2 id="s13">12｜唯一执行入口</h2>
+<pre><code>pipelines/data-production/run.mjs</code></pre>
+<p>结构：</p>
+<pre><code>run → orchestrator → D00–D05 executors → adapters → reporting</code></pre>
+<p>六阶段执行器：</p>
+<pre><code>executors/d00-source-intake.mjs
+executors/d01-carrier-reading.mjs
+executors/d02-material-understanding.mjs
+executors/d03-world-construction.mjs
+executors/d04-humanistic-discovery.mjs
+executors/d05-read-model-publication.mjs</code></pre>
+<p>Adapters：</p>
+<pre><code>adapters/adapter-contract.mjs
+adapters/d03-world-construction.mjs
+adapters/d04-humanistic-discovery.mjs
+adapters/d05-read-model-publication.mjs
+adapters/layer1-adapters.mjs
+adapters/persistence-contract.mjs</code></pre>
+
+<h2 id="s14">13｜验证入口</h2>
+<h3>D00–D05</h3>
+<pre><code>tests/data-production/</code></pre>
+<h3>L5–L7</h3>
+<pre><code>tests/experience/</code></pre>
+<h3>全链 E2E</h3>
+<pre><code>tests/end-to-end/</code></pre>
+<h3>Guards</h3>
+<pre><code>scripts/guards/</code></pre>
+<h3>场景验收合同</h3>
+<pre><code>verification/arch-mig-prep-01/acceptance/scenario-contracts.csv</code></pre>
+<h3>真实 run 证据</h3>
+<pre><code>verification/data-production-runs/</code></pre>
+
+<h2 id="s15">14｜机器最短阅读路径</h2>
+<h3>数据生产任务</h3>
+<pre><code>CURRENT → AGENTS → C2/C3 → Protocol → DATA_CONTRACT
+→ standards/d00–d05（63 方法原文）
+→ method-binding-contract.json（方法绑定）
+→ 当前 Gate（gates V3）
+→ 当前 Executor（pipelines）</code></pre>
+<h3>Agent / Experience（前端消费）</h3>
+<pre><code>CURRENT → C4 → AGENT_CONTRACT → EXPERIENCE_CONTRACT
+→ L5_L8_CONSUMPTION_FEEDBACK_CONTRACT
+→ packages/data-access（read-model 双后端）</code></pre>
+<h3>DB Migration</h3>
+<pre><code>C3 → DATA_CONTRACT → PHYSICAL_DATA_MODEL → PERSISTENCE_BINDING → supabase/migrations → verification/sql</code></pre>
+</main></body></html>

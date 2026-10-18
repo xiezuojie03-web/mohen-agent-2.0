@@ -1,0 +1,19 @@
+{
+  "template_only": true,
+  "run_id": "SYNTHETIC_TEMPLATE_NOT_RUNTIME",
+  "architecture_generation": "mohen.six-stage.v1",
+  "stage": "D00",
+  "data_layer": "L0",
+  "gate": "G0",
+  "decision": "UNASSESSED",
+  "artifact_refs": [],
+  "qualification_refs": [],
+  "scope": {},
+  "consumer": "NOT_REQUESTED",
+  "checks": {},
+  "reason_codes": [
+    "NOT_EXECUTED"
+  ],
+  "dependency_snapshot": [],
+  "record_class": "TEMPLATE_ONLY"
+}

@@ -1,9 +1,9 @@
 {
-  "schema": "mohen.gate-contracts-config",
-  "schema_version": "3.0-target",
+  "schema": "mohen.gate-contract-reference",
+  "schema_version": "2.0-target",
   "architecture_generation": "mohen.six-stage.v1",
-  "authority": "MoHen_Data_Production_Protocol + G0-G5_MACHINE_GATE_CONTRACT_V3.0",
-  "note": "机器规则唯一来源为 specs/data-production/gates/gate-contracts.v3.json；本文件仅作指针，不复制第二套 gate 定义（G0-G5 V3.0 合同约定）。",
-  "machine_rules": "specs/data-production/gates/gate-contracts.v3.json",
-  "contract_doc": "specs/data-production/gates/G0-G5_MACHINE_GATE_CONTRACT_V3.0.md"
+  "canonical_rules": "specs/data-production/gates/gate-contracts.v3.json",
+  "contains_independent_rules": false,
+  "status": "DESIGN_TARGET_NOT_APPLIED",
+  "loader_migration": "Old loaders expecting inline gates must be adapted; do not merge two rule copies."
 }
