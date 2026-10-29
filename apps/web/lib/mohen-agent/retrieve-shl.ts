@@ -10,6 +10,12 @@
 // - 响应体不含 key，可安全返回与展示；
 // - 串行请求（并发 > 3 会触发对方限流）；
 // - 结果只作「外部检索线索」（RESEARCH_LEAD），不是 G5 合格知识，必须如实标注。
+//
+// K2（2026-10-29）：分页（pageSize/startIndex）、重试、原始快照、许可/权利字段、content_availability 修正。
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import crypto from "node:crypto";
 
 export interface ShlLead {
   provider: "shanghai-library";
@@ -207,15 +213,22 @@ export interface ShlMaterial {
   source_type: string;
   carrier_type: string;
   provenance_status: string;
-  content_availability: string;
+  /** K2 修正：只有真有正文才是 full_text；书目/题名是 metadata_only，描述/注释是 excerpt。 */
+  content_availability: "full_text" | "excerpt" | "metadata_only";
   url: string;
   publisher: string;
+  /** K2 新增：许可与权利状态（unknown/per_item/clear）。 */
+  license: string;
+  rights_clear: "unknown" | "per_item" | "clear";
+  /** K2 新增：原始响应快照路径（可复核）；写盘失败为 null。 */
+  snapshot_path: string | null;
   fragments: string[];
 }
 
 interface ItemFragments {
   title: string;
   source_type: string;
+  availability: ShlMaterial["content_availability"];
   fragments: string[];
 }
 
@@ -225,11 +238,15 @@ function itemFragments(endpoint: string, item: unknown): ItemFragments | null {
   const frags: string[] = [];
   let title = "";
   let source_type = "bibliography";
+  let availability: ShlMaterial["content_availability"] = "metadata_only";
 
   if (endpoint === "shnh/dmz/webapi/geonames/list") {
     source_type = "gazetteer";
     title = String(it.name || it.placeLabel || "");
-    if (it.description) frags.push(String(it.description));
+    if (it.description) {
+      frags.push(String(it.description));
+      availability = "excerpt";
+    }
     if (it.placeLabel) frags.push(`所属：${String(it.placeLabel)}`);
     if (it.riverLabel) frags.push(`相关水系：${String(it.riverLabel)}`);
   } else if (endpoint === "gj/webapi/instances") {
@@ -253,6 +270,7 @@ function itemFragments(endpoint: string, item: unknown): ItemFragments | null {
       for (const a of it.annoList) {
         if (a && typeof a === "object" && (a as Record<string, unknown>).hasBody) {
           frags.push(String((a as Record<string, unknown>).hasBody));
+          availability = "excerpt";
         }
       }
     }
@@ -262,43 +280,113 @@ function itemFragments(endpoint: string, item: unknown): ItemFragments | null {
   }
 
   if (!frags.length) return null;
-  return { title, source_type, fragments: frags };
+  return { title, source_type, availability, fragments: frags };
 }
 
-/** 自由主题材料检索：返回可作 D00 原料的材料列表（不是线索）。 */
+// K2：原始响应快照（可复核）。仅写本地/受控目录；失败不阻断检索。
+const SNAPSHOT_ROOT =
+  process.env.MOHEN_SNAPSHOT_DIR ||
+  path.join(process.env.MOHEN_RAW_STORE_PATH || path.join(os.tmpdir(), "mohen-raw"), "external", "shl");
+
+function saveSnapshot(endpoint: string, term: string, page: number, parsed: unknown): string | null {
+  try {
+    fs.mkdirSync(SNAPSHOT_ROOT, { recursive: true });
+    const hash = crypto
+      .createHash("sha1")
+      .update(`${endpoint}|${term}|${page}|${Date.now()}`)
+      .digest("hex")
+      .slice(0, 12);
+    const file = path.join(SNAPSHOT_ROOT, `${new Date().toISOString().slice(0, 10)}-${hash}.json`);
+    fs.writeFileSync(
+      file,
+      JSON.stringify(
+        { provider: "shanghai-library", endpoint, term, page, fetched_at: new Date().toISOString(), response: parsed },
+        null,
+        2
+      ),
+      "utf8"
+    );
+    return file;
+  } catch {
+    return null;
+  }
+}
+
+/** K2：429/5xx 重试（最多 2 次，指数退避）。 */
+async function getJsonRetry(url: string): Promise<{ status: number; parsed: unknown }> {
+  let last = { status: 0, parsed: null as unknown };
+  for (let attempt = 0; attempt < 3; attempt++) {
+    last = await getJson(url);
+    if (last.status === 200) return last;
+    if (last.status !== 429 && last.status < 500) return last;
+    await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+  }
+  return last;
+}
+
+/**
+ * 自由主题材料检索：返回可作 D00 原料的材料列表（不是线索）。
+ * K2：pageSize/startIndex 分页、原始快照、去重、许可/权利字段、content_availability 按真实内容标注。
+ */
 export async function searchShanghaiLibraryMaterials(
   terms: string[],
-  max = 12
+  max = 12,
+  opts: { pageSize?: number; maxPagesPerTerm?: number } = {}
 ): Promise<{ materials: ShlMaterial[]; degraded: boolean }> {
   if (!KEY) return { materials: [], degraded: true };
-  const q = terms.map((t) => t.trim()).filter(Boolean).slice(0, 3);
+  const pageSize = Math.min(Math.max(opts.pageSize ?? 10, 1), 50);
+  const maxPages = Math.min(Math.max(opts.maxPagesPerTerm ?? 2, 1), 5);
+  const q = terms.map((t) => t.trim()).filter(Boolean).slice(0, 4);
   if (!q.length) return { materials: [], degraded: false };
 
   const materials: ShlMaterial[] = [];
+  const seen = new Set<string>();
   let okCount = 0;
+
   for (const term of q) {
     for (const ep of buildEndpoints(term)) {
-      const qs = new URLSearchParams({ ...ep.qs, key: KEY });
-      const { status, parsed } = await getJson(`${BASE}/${ep.endpoint}?${qs.toString()}`);
-      if (status !== 200) continue;
-      okCount++;
-      const items = extractItems(parsed).slice(0, 8);
-      for (const it of items) {
-        const m = itemFragments(ep.endpoint, it);
-        if (!m) continue;
-        const uri = itemUri(it);
-        materials.push({
-          provider: "shanghai-library",
-          title: `${ep.label}·${m.title || term}`,
-          source_type: m.source_type,
-          carrier_type: "digital_text",
-          provenance_status: "candidate",
-          content_availability: "full_content",
-          url: uri || "",
-          publisher: "上海图书馆开放数据",
-          fragments: m.fragments,
+      let start = 0;
+      for (let page = 0; page < maxPages; page++) {
+        const qs = new URLSearchParams({
+          ...ep.qs,
+          pageSize: String(pageSize),
+          startIndex: String(start),
+          key: KEY,
         });
-        if (materials.length >= max) return { materials, degraded: false };
+        const { status, parsed } = await getJsonRetry(`${BASE}/${ep.endpoint}?${qs.toString()}`);
+        if (status !== 200) break;
+        okCount++;
+        const snapshot = saveSnapshot(ep.endpoint, term, page, parsed);
+
+        const items = extractItems(parsed);
+        for (const it of items) {
+          const m = itemFragments(ep.endpoint, it);
+          if (!m) continue;
+          const dedupeKey = `${m.source_type}|${m.title || term}`;
+          if (seen.has(dedupeKey)) continue;
+          seen.add(dedupeKey);
+          materials.push({
+            provider: "shanghai-library",
+            title: `${ep.label}·${m.title || term}`,
+            source_type: m.source_type,
+            carrier_type: "digital_text",
+            provenance_status: "candidate",
+            content_availability: m.availability,
+            url: itemUri(it) || "",
+            publisher: "上海图书馆开放数据",
+            license: "上海图书馆开放数据服务条款（需按条款署名）",
+            rights_clear: "unknown",
+            snapshot_path: snapshot,
+            fragments: m.fragments,
+          });
+          if (materials.length >= max) return { materials, degraded: false };
+        }
+
+        const pager = (parsed as { pager?: { rowCount?: number } } | null)?.pager;
+        const rowCount = Number(pager?.rowCount ?? 0);
+        start += pageSize;
+        if (!items.length || !rowCount || start >= rowCount) break;
+        await new Promise((r) => setTimeout(r, 250));
       }
       await new Promise((r) => setTimeout(r, 300));
     }

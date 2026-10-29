@@ -27,6 +27,9 @@ jobs:
       - name: Typecheck
         run: pnpm -r typecheck
 
+      - name: Unit tests (no DB)
+        run: pnpm test:unit
+
       - name: Build
         run: pnpm build
 

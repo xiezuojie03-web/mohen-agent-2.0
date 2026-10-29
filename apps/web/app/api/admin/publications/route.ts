@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { OPERATOR_COOKIE, isOperator } from "../../../../lib/auth";
+import { OPERATOR_COOKIE, getSessionUser, isOperator } from "../../../../lib/auth";
 import { listPublished, processDueSchedules, publishWork } from "../../../../lib/publication";
 
 export const runtime = "nodejs";
@@ -17,7 +17,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  if (!isOperator(req.cookies.get(OPERATOR_COOKIE)?.value)) {
+  const session = getSessionUser(req.cookies.get(OPERATOR_COOKIE)?.value);
+  if (!session || !session.r.includes("operator")) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }
   let work_id: unknown;
@@ -30,6 +31,6 @@ export async function POST(req: NextRequest) {
   if (typeof work_id !== "string") {
     return NextResponse.json({ ok: false, reason: "work_id_required" }, { status: 400 });
   }
-  const done = await publishWork(work_id, "operator");
+  const done = await publishWork(work_id, session.uid);
   return NextResponse.json({ ok: done.ok, reason: done.reason });
 }

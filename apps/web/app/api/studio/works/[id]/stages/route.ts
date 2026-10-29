@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { queryRows } from "@mohen/data-access";
+import { guardRoute } from "../../../../../../lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -7,6 +8,8 @@ export const dynamic = "force-dynamic";
 // GET /api/studio/works/:id/stages —— 选择状态节点看实际产物（对齐 FA-012-02）
 // 返回该作品关联的研究任务 + 导演方案 + 修订的实际回执（四步创作状态轴的实际产物）。
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const denied = await guardRoute(params, "publication.works");
+  if (denied) return denied;
   const { id } = await params;
   const tasks = await queryRows(
     "select task_id::text as task_id, topic, prompt, status, created_at::text as created_at from public.research_tasks where work_id = :'wid' order by created_at asc",

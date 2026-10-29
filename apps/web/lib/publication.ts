@@ -54,14 +54,23 @@ export async function submitWork(workId: string): Promise<boolean> {
 
 /**
  * CR-04：发布前核「知识 G5 独立签核 + 媒体 rights」。
- * Operator 审核 ≠ 独立 Gate 签核；未满足独立 Gate/权利 → 返回 HOLD，绝不发布。
+ * P0-4（2026-10-29）四道门：
+ * 1) 存在 submitted 修订；
+ * 2) 至少一条 provenanceRef（知识可追溯）；
+ * 3) 最新独立 Reviewer 决策 approved，且绑定同一 revision；
+ * 4) 媒体权利：content.media 每项有 license 或 rights_status=cleared；无媒体时必须 rights_acknowledged=true；
+ * 5) Reviewer 不能是发布者本人（除非显式 MOHEN_ALLOW_SELF_REVIEW=1，仅限受控环境）。
  */
-export async function checkPublishEligibility(workId: string): Promise<{ ok: boolean; reason?: string }> {
+export async function checkPublishEligibility(
+  workId: string,
+  publisherId?: string
+): Promise<{ ok: boolean; reason?: string }> {
   const rows = await queryRows(
-    "select content from publication.work_revisions where work_id = :'wid' and status = 'submitted' order by revision_no desc limit 1",
+    "select revision_id::text as revision_id, content from publication.work_revisions where work_id = :'wid' and status = 'submitted' order by revision_no desc limit 1",
     { wid: workId }
   );
   if (!rows.length) return { ok: false, reason: "no_submitted_revision" };
+  const revisionId = String(rows[0].revision_id);
 
   // 从作品内容里取出引用的材料出处（beats.provenanceRefs）。content 经 CSV 读取是字符串，需先解析。
   let content: Record<string, unknown> = {};
@@ -72,21 +81,56 @@ export async function checkPublishEligibility(workId: string): Promise<{ ok: boo
   }
   const beats = Array.isArray(content.beats) ? (content.beats as Array<{ provenanceRefs?: unknown }>) : [];
   const refs = beats.flatMap((b) => (Array.isArray(b.provenanceRefs) ? b.provenanceRefs.map(String) : []));
-
   if (!refs.length) return { ok: false, reason: "no_provenance_refs" };
 
-  // 3. 独立 Reviewer 已签核 approved（CR-04：Operator 不代签知识 Gate；Reviewer 与 Operator 分权）。
-  const dec = await queryValue(
-    "select decision from control.work_publication_decisions where work_id = :'wid' order by reviewed_at desc limit 1",
+  // 3. 独立 Reviewer 已签核 approved，且必须绑定当前 revision。
+  const decRows = await queryRows(
+    "select decision, reviewer, revision_id::text as revision_id " +
+      "from control.work_publication_decisions where work_id = :'wid' order by reviewed_at desc limit 1",
     { wid: workId }
   );
-  if (dec !== "approved") return { ok: false, reason: "reviewer_not_approved" };
+  const dec = decRows[0];
+  if (!dec || String(dec.decision) !== "approved") {
+    return { ok: false, reason: "reviewer_not_approved" };
+  }
+  if (!dec.revision_id || String(dec.revision_id) !== revisionId) {
+    return { ok: false, reason: "reviewer_revision_mismatch" };
+  }
+
+  // 5. 两把钥匙：签核人不能同时是发布人（scheduler 为系统任务，不适用）。
+  if (publisherId && publisherId !== "scheduler") {
+    const publisherEmail = await queryValue(
+      "select email from public.users where user_id = :'id'",
+      { id: publisherId }
+    );
+    const reviewer = String(dec.reviewer ?? "");
+    if (reviewer === publisherId || (publisherEmail && reviewer === String(publisherEmail))) {
+      if (process.env.MOHEN_ALLOW_SELF_REVIEW !== "1") {
+        return { ok: false, reason: "reviewer_is_publisher" };
+      }
+    }
+  }
+
+  // 4. 媒体权利：有媒体逐项核；没媒体必须显式确认"本作不含第三方媒体"。
+  const media = Array.isArray(content.media) ? (content.media as unknown[]) : [];
+  if (media.length) {
+    for (const m of media) {
+      if (!m || typeof m !== "object") return { ok: false, reason: "media_rights_unclear" };
+      const item = m as Record<string, unknown>;
+      const license = String(item.license ?? "").trim();
+      const status = String(item.rights_status ?? "").trim();
+      if (!license && status !== "cleared") return { ok: false, reason: "media_rights_unclear" };
+    }
+  } else if (content.rights_acknowledged !== true) {
+    return { ok: false, reason: "no_rights_ack" };
+  }
+
   return { ok: true };
 }
 
 /** 发布：先核独立 Gate/权利（CR-04），再置 published + 写发布指针（operator 专属，不代签 G）。 */
 export async function publishWork(workId: string, by: string): Promise<{ ok: boolean; reason?: string }> {
-  const elig = await checkPublishEligibility(workId);
+  const elig = await checkPublishEligibility(workId, by);
   if (!elig.ok) return elig;
 
   const rid = await queryValue(

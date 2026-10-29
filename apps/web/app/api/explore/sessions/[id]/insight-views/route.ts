@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { generateInsightView } from "../../../../../../lib/studio-creation";
+import { guardRoute } from "../../../../../../lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // API-X02 POST /api/explore/sessions/:id/insight-views —— 生成图见（关系图候选，可溯源）
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const denied = await guardRoute(params, "public.explore_sessions");
+  if (denied) return denied;
   const { id } = await params;
   let question: unknown;
   try {

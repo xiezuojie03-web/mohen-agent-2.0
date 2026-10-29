@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { getTaskStatus } from "../../../../../../lib/studio-research";
+import { guardRoute } from "../../../../../../lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // GET /api/studio/research-tasks/:id/materials —— 研究筛选素材（对齐 FA-019-01）
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const denied = await guardRoute(params, "public.research_tasks");
+  if (denied) return denied;
   const { id } = await params;
   const task = await getTaskStatus(id);
   if (!task) return NextResponse.json({ ok: false, reason: "not_found" }, { status: 404 });

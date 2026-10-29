@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { retrieveMaterials } from "../../../../lib/mohen-agent/retrieve";
+import { guardRoute } from "../../../../lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // API-015 GET /api/explore/search —— 全库检索（对齐 FA-047-01）
 export async function GET(req: NextRequest) {
+  const denied = await guardRoute(null, null);
+  if (denied) return denied;
   const q = (req.nextUrl.searchParams.get("q") ?? "").trim();
   if (!q) {
     return NextResponse.json({ ok: false, reason: "query_required" }, { status: 400 });

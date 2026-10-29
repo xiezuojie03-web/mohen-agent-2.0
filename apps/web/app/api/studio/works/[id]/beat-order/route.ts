@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { reorderBeats } from "../../../../../../lib/studio-director";
+import { guardRoute } from "../../../../../../lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // POST /api/studio/works/:id/beat-order —— 管理分镜章节顺序（对齐 FA-025-02，重排即新修订 CAS）
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const denied = await guardRoute(params, "publication.works");
+  if (denied) return denied;
   const { id } = await params;
   let expected_revision_no: unknown;
   let order: unknown;

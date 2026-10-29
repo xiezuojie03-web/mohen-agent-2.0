@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { queryRows, queryValue, run } from "@mohen/data-access";
+import { guardRoute } from "../../../../lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -7,6 +8,8 @@ export const dynamic = "force-dynamic";
 // API-081 POST /api/watch/sessions —— 观看进度（时码保存/恢复，对齐 FA-033-01）
 // 轻量：无账号系统，按 work_id 存最近 playhead（本地开发语义，不冒充多用户持久化）。
 export async function POST(req: Request) {
+  const denied = await guardRoute(null, null);
+  if (denied) return denied;
   let work_id: unknown;
   let playhead: unknown;
   try {
@@ -38,6 +41,8 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
+  const denied = await guardRoute(null, null);
+  if (denied) return denied;
   const url = new URL(req.url);
   const work_id = url.searchParams.get("work_id");
   if (!work_id) {

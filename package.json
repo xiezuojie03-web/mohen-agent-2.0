@@ -11,6 +11,8 @@
     "test": "node scripts/test-isolated.mjs",
     "test:watch": "vitest",
     "test:raw": "vitest run",
+    "test:unit": "vitest run --config vitest.unit.config.ts",
+    "test:legacy": "vitest run --config vitest.legacy.config.ts",
     "test:e2e": "playwright test",
     "guard:docs": "node scripts/check-doc-budget.mjs",
     "guard:structure": "node scripts/check-structure.mjs && node scripts/check-structure-map.mjs",

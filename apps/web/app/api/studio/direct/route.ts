@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import { generateBeats } from "../../../../lib/studio-creation";
+import { guardRoute } from "../../../../lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
+  const denied = await guardRoute(null, null);
+  if (denied) return denied;
   let plan: { angle?: string; points?: string[] } | undefined;
   let facts: unknown;
   try {

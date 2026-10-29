@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { reviseBeat } from "../../../../../../../lib/studio-director";
+import { guardRoute } from "../../../../../../../lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,6 +10,8 @@ export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string; rev: string }> }
 ) {
+  const denied = await guardRoute(params, "publication.works");
+  if (denied) return denied;
   const { id, rev } = await params;
   let beat_diff: unknown;
   try {

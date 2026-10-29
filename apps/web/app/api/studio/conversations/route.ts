@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { createConversation, type ConversationMessage } from "../../../../lib/fine-capabilities";
+import { guardRoute } from "../../../../lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // POST /api/studio/conversations —— 创建新对话（对齐 FA-014-01，真实持久化）
 export async function POST(req: Request) {
+  const denied = await guardRoute(null, null);
+  if (denied) return denied;
   let title: unknown;
   let messages: unknown;
   try {

@@ -21,10 +21,15 @@ export default defineConfig({
     // 该包只被 apps/web/node_modules 链接，根级 node_modules 无此链接 → 显式别名到源码。
     alias: {
       "@mohen/experience-engine": path.resolve(__dirname, "packages/experience-engine/src/index.ts"),
+      // 根级测试直接引用 apps/web/lib 时，需要把 workspace 包指到源码（根 node_modules 无该链接）。
+      "@mohen/data-access": path.resolve(__dirname, "packages/data-access/src/index.mjs"),
     },
   },
   test: {
     include: ["tests/**/*.test.ts"],
+    // P0-6（2026-10-29）：旧 v1 套件仍在查 42 表迁移中已 DROP 的表（entities/relations/evidence/review_queue…），
+    // 已移入 tests/legacy/ 保留追溯，不参与日常门禁；修复或重写后再迁回。
+    exclude: ["tests/legacy/**", "**/node_modules/**"],
     fileParallelism: false,
     setupFiles: ["tests/setup/db-guard.ts"],
   },

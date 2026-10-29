@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { queryRows } from "@mohen/data-access";
+import { guardRoute } from "../../../../../lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // API-012 GET /api/explore/entities/:id —— 实体详情（对齐 FA-043-01）
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const denied = await guardRoute(params, null);
+  if (denied) return denied;
   const { id } = await params;
   const rows = await queryRows("select * from world.entities where entity_id = :'id'", { id });
   if (!rows.length) {

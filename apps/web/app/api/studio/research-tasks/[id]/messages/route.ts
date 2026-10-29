@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { appendResearchMessage } from "../../../../../../lib/studio-research";
+import { guardRoute } from "../../../../../../lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // API-068 POST /api/studio/research-tasks/:id/messages —— 追加追问（对齐 FA-013-02）
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const denied = await guardRoute(params, "public.research_tasks");
+  if (denied) return denied;
   const { id } = await params;
   let message: unknown;
   try {

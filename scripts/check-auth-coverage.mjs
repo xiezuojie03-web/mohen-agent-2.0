@@ -32,10 +32,26 @@ const PUBLIC_EXACT = new Set([
 ]);
 const PUBLIC_PREFIX = ["public/", "help/"];
 
-const AUTH_TOKENS = /getSession|isOperator|getSessionUser|hasRole|parseSessionToken|canAccess|isOwnedBy/;
-const OWNER_TOKENS = /canAccess|isOwnedBy|owner_user_id|listWorks\(\s*session\.uid/;
-const ROLE_TOKENS = /isOperator|hasRole\s*\(\s*session|session\.r\.includes\("operator"\)/;
-const CONTENT_PREFIX = /^(studio|works|explore)\//;
+const AUTH_TOKENS = /getSession|isOperator|getSessionUser|hasRole|parseSessionToken|canAccess|isOwnedBy|guardRoute|verifyReviewer/;
+const OWNER_TOKENS = /canAccess|isOwnedBy|owner_user_id|guardRoute\(params,\s*"|listWorks\(\s*session\.uid/;
+const ROLE_TOKENS = /isOperator|hasRole\s*\(\s*session|session\.r\.includes\("operator"\)|verifyReviewer/;
+// 需要逐资源归属校验的私有内容（知识对象/工具结果/会话默认登录即可，见 LOGIN_ONLY）。
+const CONTENT_PREFIX = /^(studio\/works|studio\/research-tasks|studio\/director-plans|explore\/sessions)\//;
+const LOGIN_ONLY = new Set([
+  "studio/conversations",
+  "studio/create",
+  "studio/direct",
+  "studio/tasks",
+  "studio/materials",
+  "studio/attachments",
+  "watch/sessions",
+  "notifications",
+  "explore/search",
+  "explore/spatial",
+  "explore/entities",
+  "explore/events",
+  "explore/relations",
+]);
 
 function walk(dir, rel = "") {
   const out = [];

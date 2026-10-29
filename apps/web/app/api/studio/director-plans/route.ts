@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { createDirectorPlan } from "../../../../lib/studio-director";
+import { guardRoute } from "../../../../lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // API-065 POST /api/studio/director-plans —— 生成 A/B 导演方案（对齐 FA-017-01）
 export async function POST(req: Request) {
+  const denied = await guardRoute(null, null);
+  if (denied) return denied;
   let brief: unknown;
   let topic: unknown;
   try {

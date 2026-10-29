@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { reviseBeat } from "../../../../../../lib/studio-director";
+import { guardRoute } from "../../../../../../lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // POST /api/studio/works/:id/narration —— 编辑某段旁白脚本（对齐 FA-026-01）
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const denied = await guardRoute(params, "publication.works");
+  if (denied) return denied;
   const { id } = await params;
   let expected_revision_no: unknown;
   let beat_index: unknown;

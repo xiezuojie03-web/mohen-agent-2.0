@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { reviseBeat } from "../../../../../../lib/studio-director";
+import { guardRoute } from "../../../../../../lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // POST /api/studio/works/:id/rewrite-beat —— 自然语言局部改稿（对齐 FA-021-01，CAS 校验）
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const denied = await guardRoute(params, "publication.works");
+  if (denied) return denied;
   const { id } = await params;
   let expected_revision_no: unknown;
   let beat_diff: unknown;

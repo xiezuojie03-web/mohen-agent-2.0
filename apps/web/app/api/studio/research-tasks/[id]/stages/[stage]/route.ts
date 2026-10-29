@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getTaskStageEvents } from "../../../../../../../lib/studio-research";
+import { guardRoute } from "../../../../../../../lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,6 +10,8 @@ export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string; stage: string }> }
 ) {
+  const denied = await guardRoute(params, "public.research_tasks");
+  if (denied) return denied;
   const { id, stage } = await params;
   const events = await getTaskStageEvents(id, stage);
   return NextResponse.json({ ok: true, stage, events });

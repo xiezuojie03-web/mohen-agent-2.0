@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readProductionRelationSummary } from "../../../../lib/read-model-bridge";
+import { guardRoute } from "../../../../lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -7,6 +8,8 @@ export const dynamic = "force-dynamic";
 // API-018 GET /api/explore/spatial —— 历史空间投影（对齐 FA-045-01）
 // CR-06/CR-07：不预设单一主题，可选 topic 参数；无作品仍可查合格知识，数据稀疏诚实降级。
 export async function GET(req: NextRequest) {
+  const denied = await guardRoute(null, null);
+  if (denied) return denied;
   const topic = (req.nextUrl.searchParams.get("topic") ?? "").trim();
   const summary = await readProductionRelationSummary(topic || undefined);
   return NextResponse.json({

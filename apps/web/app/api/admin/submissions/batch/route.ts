@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { OPERATOR_COOKIE, isOperator } from "../../../../../lib/auth";
+import { OPERATOR_COOKIE, getSessionUser } from "../../../../../lib/auth";
 import { publishWork, rejectWork } from "../../../../../lib/publication";
 
 export const runtime = "nodejs";
@@ -7,7 +7,8 @@ export const dynamic = "force-dynamic";
 
 // POST /api/admin/submissions/batch —— 批量处理同类别审核（对齐 FA-054-02）
 export async function POST(req: NextRequest) {
-  if (!isOperator(req.cookies.get(OPERATOR_COOKIE)?.value)) {
+  const session = getSessionUser(req.cookies.get(OPERATOR_COOKIE)?.value);
+  if (!session || !session.r.includes("operator")) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }
   let decision: unknown;
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
   const results: Array<{ work_id: string; ok: boolean; reason?: string }> = [];
   for (const wid of work_ids) {
     if (typeof wid !== "string") continue;
-    const r = decision === "approve" ? await publishWork(wid, "operator") : (await rejectWork(wid), { ok: true });
+    const r = decision === "approve" ? await publishWork(wid, session.uid) : (await rejectWork(wid), { ok: true });
     results.push({ work_id: wid, ok: r.ok, reason: r.reason });
   }
   return NextResponse.json({ ok: true, results });
