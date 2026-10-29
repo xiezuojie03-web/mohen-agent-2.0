@@ -14,7 +14,7 @@ import os from "node:os";
 import path from "node:path";
 import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
-import { pgQueryRows, pgQueryValue } from "./node-pg-client.mjs";
+import { pgQueryRows, pgQueryValue, pgRun } from "./node-pg-client.mjs";
 
 const execFileP = promisify(execFile);
 
@@ -130,7 +130,16 @@ async function execSql(sql, params, extra) {
 }
 
 // 执行写/DDL（可含 begin/commit）。
+// 后端选择与 queryRows 一致：本机存在 psql → psql（生产链，离线确定性）；
+// serverless（vercel）无 psql → node pg 直连写（消费层在线写入）。
 export async function run(sql, params) {
+  const driver = process.env.MOHEN_DB_DRIVER;
+  const usePg = driver === "pg" || (driver !== "psql" && !fs.existsSync(PSQL_PATH));
+  if (usePg) {
+    const { sql: pgSql, params: pgParams } = renderSqlToPg(sql, params);
+    await pgRun(pgSql, pgParams);
+    return true;
+  }
   await execSql(sql, params);
   return true;
 }

@@ -50,4 +50,12 @@ export async function pgQueryValue(sql, params = []) {
   return first[k];
 }
 
-export default { getNodePgPool, pgQueryRows, pgQueryValue };
+/** 写/DDL 执行（serverless 消费层写通道：注册、作品、审核等在线写入）。
+ *  与 psql 写路径（index.mjs 的 run）等价；serverless 无 psql 二进制时由 run() 回退到此。
+ *  复用同一连接池与 SSL 策略；参数为 $1..$n（由 index.mjs renderSqlToPg 转换而来）。 */
+export async function pgRun(sql, params = []) {
+  const pool = getNodePgPool();
+  await pool.query(sql, params);
+}
+
+export default { getNodePgPool, pgQueryRows, pgQueryValue, pgRun };
