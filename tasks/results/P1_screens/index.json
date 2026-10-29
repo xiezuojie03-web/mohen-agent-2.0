@@ -1,0 +1,51 @@
+[
+  {
+    "name": "home",
+    "url": "/",
+    "status": 200,
+    "file": "tasks\\results\\P1_screens\\home_1672x941.png",
+    "bytes": 513620
+  },
+  {
+    "name": "studio",
+    "url": "/studio",
+    "status": 200,
+    "file": "tasks\\results\\P1_screens\\studio_1672x941.png",
+    "bytes": 150996
+  },
+  {
+    "name": "desk",
+    "url": "/studio/desk",
+    "status": 200,
+    "file": "tasks\\results\\P1_screens\\desk_1672x941.png",
+    "bytes": 71810
+  },
+  {
+    "name": "watch",
+    "url": "/watch",
+    "status": 200,
+    "file": "tasks\\results\\P1_screens\\watch_1672x941.png",
+    "bytes": 514915
+  },
+  {
+    "name": "explore",
+    "url": "/explore",
+    "status": 200,
+    "file": "tasks\\results\\P1_screens\\explore_1672x941.png",
+    "bytes": 129287
+  },
+  {
+    "name": "admin",
+    "url": "/admin",
+    "status": 200,
+    "file": "tasks\\results\\P1_screens\\admin_1672x941.png",
+    "bytes": 90846
+  },
+  {
+    "name": "admin-sources",
+    "url": "/admin/sources",
+    "status": 200,
+    "file": "tasks\\results\\P1_screens\\admin-sources_1672x941.png",
+    "bytes": 49155
+  }
+]
