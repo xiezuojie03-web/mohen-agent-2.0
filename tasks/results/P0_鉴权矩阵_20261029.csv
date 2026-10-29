@@ -16,6 +16,7 @@
 /api/admin/rights/invalidate,protected,yes,n/a,OK
 /api/admin/session,protected,yes,n/a,OK
 /api/admin/settings,protected,yes,n/a,OK
+/api/admin/sources,protected,yes,n/a,OK
 /api/admin/submissions,protected,yes,n/a,OK
 /api/admin/submissions/[id],protected,yes,n/a,OK
 /api/admin/submissions/[id]/decision,protected,yes,n/a,OK
@@ -67,6 +68,7 @@
 /api/studio/director-plans/[id]/panels,protected,yes,yes,OK
 /api/studio/director-plans/[id]/select,protected,yes,yes,OK
 /api/studio/materials/[id],protected,yes,n/a,OK
+/api/studio/materials/import,protected,yes,n/a,OK
 /api/studio/research-tasks,protected,yes,n/a,OK
 /api/studio/research-tasks/[id]/events,protected,yes,yes,OK
 /api/studio/research-tasks/[id]/materials,protected,yes,yes,OK

@@ -8,6 +8,7 @@ import os from "node:os";
 import path from "node:path";
 import crypto from "node:crypto";
 import { extractExternalEntities, searchShanghaiLibraryMaterials, type ShlMaterial } from "./retrieve-shl";
+import { searchCommonsForTopic } from "./retrieve-commons";
 import { buildQueryPlan, type QueryPlan } from "./query-plan";
 
 export interface PreparedTopic {
@@ -15,13 +16,20 @@ export interface PreparedTopic {
   key: string;
   label: string;
   materialCount: number;
+  photoCount: number;
   plan: QueryPlan;
 }
 
 export type PrepareResult = PreparedTopic | { reason: string };
 
 /** 组装动态主题配置（材料 + 主题短语 + 标题 + 查询计划；不提供 d03/d04 提示词 → 通用模板）。 */
-function buildTopic(intent: string, entities: string[], materials: ShlMaterial[], plan: QueryPlan): PreparedTopic {
+function buildTopic(
+  intent: string,
+  entities: string[],
+  materials: ShlMaterial[],
+  photos: ShlMaterial[],
+  plan: QueryPlan
+): PreparedTopic {
   const key = "free-" + crypto.createHash("sha256").update(intent).digest("hex").slice(0, 12);
   const label = entities[0] || intent.slice(0, 12);
   const phrase = entities.slice(0, 3).join("、") || intent.slice(0, 20);
@@ -30,7 +38,7 @@ function buildTopic(intent: string, entities: string[], materials: ShlMaterial[]
     key,
     label,
     materials,
-    photoMaterials: [],
+    photoMaterials: photos,
     d02TopicPhrase: phrase,
     entityAliases: {},
     d05WorldTitle: label,
@@ -45,7 +53,7 @@ function buildTopic(intent: string, entities: string[], materials: ShlMaterial[]
   const jsonFile = path.join(dir, `${key}.json`);
   fs.writeFileSync(jsonFile, JSON.stringify(topicConfig, null, 2), "utf8");
 
-  return { jsonFile, key, label, materialCount: materials.length, plan };
+  return { jsonFile, key, label, materialCount: materials.length, photoCount: photos.length, plan };
 }
 
 /** 自由主题准备入口。无材料/检索不可用时返回 { reason }，不假装成功。 */
@@ -62,7 +70,10 @@ export async function prepareFreeTopic(intent: string): Promise<PrepareResult> {
     pageSize: 10,
     maxPagesPerTerm: 2,
   });
-  if (materials.length) return buildTopic(intent, plan.entities, materials, plan);
+  if (materials.length) {
+    const photos = await searchCommonsForTopic(plan.entities[0] || intent.slice(0, 20), plan.entities.slice(0, 2), 8);
+    return buildTopic(intent, plan.entities, materials, photos.materials, plan);
+  }
 
   // 4. 回退：只用精确实体再试一次（别名/繁体可能过窄）
   if (plan.entities.length) {
@@ -70,7 +81,10 @@ export async function prepareFreeTopic(intent: string): Promise<PrepareResult> {
       pageSize: 10,
       maxPagesPerTerm: 2,
     });
-    if (retry.materials.length) return buildTopic(intent, plan.entities, retry.materials, plan);
+    if (retry.materials.length) {
+      const photos = await searchCommonsForTopic(plan.entities[0], plan.entities.slice(0, 2), 8);
+      return buildTopic(intent, plan.entities, retry.materials, photos.materials, plan);
+    }
   }
 
   return { reason: degraded ? "shl_unavailable" : "no_material" };

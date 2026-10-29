@@ -213,8 +213,8 @@ export interface ShlMaterial {
   source_type: string;
   carrier_type: string;
   provenance_status: string;
-  /** K2 修正：只有真有正文才是 full_text；书目/题名是 metadata_only，描述/注释是 excerpt。 */
-  content_availability: "full_text" | "excerpt" | "metadata_only";
+  /** K2 修正：只有真有正文才是 full_text；书目/题名是 metadata_only，描述/注释是 excerpt；图像是 image_only。 */
+  content_availability: "full_text" | "excerpt" | "metadata_only" | "image_only";
   url: string;
   publisher: string;
   /** K2 新增：许可与权利状态（unknown/per_item/clear）。 */

@@ -4,6 +4,7 @@ import { getSession } from "../../../lib/session";
 import { buildBaskets } from "../../../lib/mohen-agent/material-score";
 import type { ShlMaterial } from "../../../lib/mohen-agent/retrieve-shl";
 import { V1_SOURCES } from "../../../lib/mohen-agent/sources";
+import ImportForm from "./ImportForm";
 
 export const metadata = { title: "资料台 · 墨痕 Studio" };
 export const dynamic = "force-dynamic";
@@ -96,7 +97,27 @@ export default async function DeskPage() {
 
   const latest = tasks[0];
   const { leads, decisionMaterials } = latest ? parseCheckpoint(latest.checkpoint) : { leads: [], decisionMaterials: [] };
-  const materials = [...leads, ...decisionMaterials].filter(
+
+  const importedRows = (await queryRows(
+    "select material_id::text as material_id, title, text_content, source_url, license from public.imported_materials where owner_user_id = :'owner' order by created_at desc limit 50",
+    { owner: session.uid }
+  )) as Array<{ material_id: string; title: string; text_content: string; source_url: string | null; license: string | null }>;
+  const imported: ShlMaterial[] = importedRows.map((r) => ({
+    provider: "user-upload",
+    title: r.title,
+    source_type: "document",
+    carrier_type: "text",
+    provenance_status: "declared",
+    content_availability: "full_text",
+    url: r.source_url ?? "",
+    publisher: "用户上传",
+    license: r.license ?? "未标注",
+    rights_clear: "clear",
+    snapshot_path: null,
+    fragments: [r.text_content],
+  }));
+
+  const materials = [...leads, ...decisionMaterials, ...imported].filter(
     (m, i, arr) => arr.findIndex((x) => `${x.source_type}|${x.title}` === `${m.source_type}|${m.title}`) === i
   );
   const baskets = buildBaskets(materials, latest?.topic ?? "");
@@ -111,6 +132,8 @@ export default async function DeskPage() {
       <p style={{ color: "#5c6662", fontSize: 13, marginBottom: 18 }}>
         看墨痕找到了什么、能不能用、还缺什么。评分是机器初评，不是事实裁决；A/B 才可进证据链，C 只作线索。
       </p>
+
+      <ImportForm />
 
       {!latest ? (
         <section style={{ padding: 24, border: "1px dashed #c9c2b4", borderRadius: 8 }}>

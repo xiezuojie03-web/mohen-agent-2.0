@@ -23,6 +23,7 @@ describe.skipIf(!KEY)("K2/K5/K7 五主题重跑", () => {
   it("输出每个主题的材料数/证据篮/故事篮/缺口", async () => {
     process.env.SHANGHAI_LIBRARY_KEY = KEY!;
     const shl = await import("../../apps/web/lib/mohen-agent/retrieve-shl");
+    const commons = await import("../../apps/web/lib/mohen-agent/retrieve-commons");
     const qp = await import("../../apps/web/lib/mohen-agent/query-plan");
     const ms = await import("../../apps/web/lib/mohen-agent/material-score");
 
@@ -33,11 +34,13 @@ describe.skipIf(!KEY)("K2/K5/K7 五主题重跑", () => {
         pageSize: 10,
         maxPagesPerTerm: 2,
       });
-      const b = ms.buildBaskets(r.materials, topic);
+      const photos = await commons.searchCommonsMaterials([entities[0], topic], 6);
+      const b = ms.buildBaskets([...r.materials, ...photos.materials], topic);
       rows.push({
         topic,
         terms: plan.terms.slice(0, 4),
-        materials: b.gaps.total,
+        materials: r.materials.length,
+        photos: photos.materials.length,
         evidence: b.gaps.evidenceCount,
         story: b.gaps.storyCount,
         rejected: b.gaps.rejectedCount,

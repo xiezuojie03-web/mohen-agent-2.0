@@ -53,6 +53,7 @@ export function scoreEvidence(m: ShlMaterial): number {
   let s = 0;
   // 一手性（资料类型）
   if (m.source_type === "gazetteer") s += 22;
+  else if (m.source_type === "document") s += 18; // 用户导入的地方文献/口述摘录
   else if (m.source_type === "person") s += 16;
   else s += 10; // bibliography / 其他
   // 权威性（来源）
@@ -69,6 +70,7 @@ export function scoreEvidence(m: ShlMaterial): number {
   // 可用性
   if (m.content_availability === "full_text") s += 16;
   else if (m.content_availability === "excerpt") s += 12;
+  else if (m.content_availability === "image_only") s += 6;
   if (m.rights_clear === "clear") s += 6;
   return Math.min(100, s);
 }
@@ -85,8 +87,15 @@ export function scoreStory(m: ShlMaterial): number {
   if (QUOTE_RE.test(text)) s += 10;
   if (/\d+/.test(text)) s += 6;
   if (m.source_type === "gazetteer") s += 6;
+  if (m.source_type === "image") s += 12;
   if (m.content_availability === "excerpt" || m.content_availability === "full_text") s += 8;
-  if (/\.(jpg|jpeg|png|webp)$/i.test(m.url)) s += 10;
+  if (/\.(jpg|jpeg|png|webp)$/i.test(m.url)) s += 14;
+  // 图像本身就是"可拍的场景"：有 URL + 许可即可作为故事素材（仍需补图注/年代）。
+  if (m.source_type === "image" && m.url) {
+    s += 20;
+    if (m.rights_clear === "per_item" || m.rights_clear === "clear") s += 8;
+    s = Math.max(s, m.rights_clear === "unknown" ? 45 : 58);
+  }
   return Math.min(100, s);
 }
 

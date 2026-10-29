@@ -56,6 +56,17 @@ describe("K7 双评分与双篮", () => {
     expect(b.gaps.nextQueries.some((q) => q.includes("老照片"))).toBe(true);
   });
 
+  it("图像+清晰许可 → 作为故事素材 B 以上", () => {
+    const s = m({
+      source_type: "image",
+      content_availability: "image_only",
+      rights_clear: "per_item",
+      url: "https://upload.wikimedia.org/a.jpg",
+      fragments: ["朱家角放生桥"],
+    });
+    expect(scoreStory(s)).toBeGreaterThanOrEqual(55);
+  });
+
   it("双低材料进入 rejected", () => {
     const b = buildBaskets([
       m({ source_type: "bibliography", content_availability: "metadata_only", fragments: ["书名：某志"], url: "", snapshot_path: null }),
