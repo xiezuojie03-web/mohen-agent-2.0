@@ -64,7 +64,7 @@ export default function ImportForm() {
     <section style={{ border: "1px solid #e2ddd1", borderRadius: 8, padding: 14, marginBottom: 18 }}>
       <h2 style={{ fontSize: 15, margin: "0 0 8px" }}>导入一份资料（地方志/文史/口述摘录）</h2>
       <p style={{ fontSize: 12, color: "#6b746f", margin: "0 0 10px" }}>
-        V1 支持文本粘贴、.txt/.md、PDF 文本抽取；扫描件/图片 OCR 尚未接引擎（会明确拒绝，不冒充成功）。导入后默认仅自己可见。
+        V1 支持文本粘贴、.txt/.md、PDF 文本抽取，以及图片/扫描件的本机 Windows 中文 OCR（仅 Windows 本地可用）。导入后默认仅自己可见。
       </p>
       <div style={{ display: "grid", gap: 8 }}>
         <input
@@ -75,7 +75,7 @@ export default function ImportForm() {
         />
         <input
           type="file"
-          accept=".pdf,.txt,.md,text/plain,application/pdf"
+          accept=".pdf,.txt,.md,.png,.jpg,.jpeg,.webp,text/plain,application/pdf,image/*"
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
           style={{ fontSize: 12 }}
         />

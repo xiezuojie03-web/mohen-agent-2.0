@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import crypto from "node:crypto";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { queryRows, queryValue, run } from "@mohen/data-access";
 import { getSession } from "../../../../../lib/session";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+const execFileP = promisify(execFile);
 const MAX_BYTES = 10 * 1024 * 1024;
 
 // GET /api/studio/materials/import —— 我的导入材料
@@ -25,8 +32,34 @@ type ParsedImport = {
   sourceUrl: string | null;
   license: string | null;
   rightsDeclared: boolean;
-  kind: "text" | "pdf";
+  kind: "text" | "pdf" | "image-ocr";
 };
+
+/**
+ * K4 本地 OCR：Windows 10/11 自带 Windows.Media.Ocr（中文识别器）。
+ * 仅本地/Windows 可用；非 Windows 返回 null，由上层明确 415，不冒充成功。
+ */
+async function ocrImage(file: File): Promise<string | null> {
+  if (process.platform !== "win32") return null;
+  const script = process.env.MOHEN_OCR_SCRIPT || path.join(process.cwd(), "..", "..", "scripts", "ocr-windows.ps1");
+  if (!fs.existsSync(script)) return null;
+
+  const ext = file.type.includes("png") ? "png" : file.type.includes("jpeg") ? "jpg" : "img";
+  const tmp = path.join(os.tmpdir(), `mohen-ocr-${crypto.randomUUID()}.${ext}`);
+  fs.writeFileSync(tmp, Buffer.from(await file.arrayBuffer()));
+  try {
+    const { stdout } = await execFileP(
+      "powershell.exe",
+      ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script, "-Path", tmp],
+      { timeout: 60_000, maxBuffer: 8 * 1024 * 1024, encoding: "utf8", windowsHide: true }
+    );
+    return String(stdout).trim();
+  } catch {
+    return null;
+  } finally {
+    try { fs.unlinkSync(tmp); } catch { /* ignore */ }
+  }
+}
 
 async function parseJson(req: Request): Promise<ParsedImport | NextResponse> {
   let body: Record<string, unknown> = {};
@@ -82,8 +115,19 @@ async function parseMultipart(req: Request): Promise<ParsedImport | NextResponse
   if (isText) {
     return { title, text: (await file.text()).trim(), sourceUrl, license, rightsDeclared, kind: "text" };
   }
-  // 图片/扫描件 OCR：V1 未接 OCR 引擎，明确拒绝，不冒充成功。
-  return NextResponse.json({ ok: false, reason: "ocr_not_enabled" }, { status: 415 });
+  const isImage =
+    file.type.startsWith("image/") || /\.(png|jpe?g|webp|bmp)$/i.test(name);
+  if (isImage) {
+    const text = await ocrImage(file);
+    if (text === null) {
+      return NextResponse.json({ ok: false, reason: "ocr_unavailable_on_platform" }, { status: 415 });
+    }
+    if (text.length < 20) {
+      return NextResponse.json({ ok: false, reason: "ocr_text_too_short" }, { status: 422 });
+    }
+    return { title, text, sourceUrl, license, rightsDeclared, kind: "image-ocr" };
+  }
+  return NextResponse.json({ ok: false, reason: "unsupported_format" }, { status: 415 });
 }
 
 // POST /api/studio/materials/import —— 文本粘贴 / .txt / .md / PDF 文本抽取（K4）
