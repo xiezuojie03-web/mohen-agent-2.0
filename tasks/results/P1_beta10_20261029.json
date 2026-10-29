@@ -1,0 +1,109 @@
+{
+  "generated_at": "2026-10-29T15:50:34.437Z",
+  "base": "http://127.0.0.1:3100",
+  "count": 10,
+  "ok": 10,
+  "note": "自动化邀请用户冒烟，用于权限/多用户回归；不代表真人可用性测试。",
+  "users": [
+    {
+      "email": "beta_1793289006225_0@test.local",
+      "register": 200,
+      "home": 200,
+      "search": 200,
+      "works": 200,
+      "spatial": 200,
+      "session": 200,
+      "desk": 200
+    },
+    {
+      "email": "beta_1793289006225_1@test.local",
+      "register": 200,
+      "home": 200,
+      "search": 200,
+      "works": 200,
+      "spatial": 200,
+      "session": 200,
+      "desk": 200
+    },
+    {
+      "email": "beta_1793289006225_2@test.local",
+      "register": 200,
+      "home": 200,
+      "search": 200,
+      "works": 200,
+      "spatial": 200,
+      "session": 200,
+      "desk": 200
+    },
+    {
+      "email": "beta_1793289006225_3@test.local",
+      "register": 200,
+      "home": 200,
+      "search": 200,
+      "works": 200,
+      "spatial": 200,
+      "session": 200,
+      "desk": 200
+    },
+    {
+      "email": "beta_1793289006225_4@test.local",
+      "register": 200,
+      "home": 200,
+      "search": 200,
+      "works": 200,
+      "spatial": 200,
+      "session": 200,
+      "desk": 200
+    },
+    {
+      "email": "beta_1793289006225_5@test.local",
+      "register": 200,
+      "home": 200,
+      "search": 200,
+      "works": 200,
+      "spatial": 200,
+      "session": 200,
+      "desk": 200
+    },
+    {
+      "email": "beta_1793289006225_6@test.local",
+      "register": 200,
+      "home": 200,
+      "search": 200,
+      "works": 200,
+      "spatial": 200,
+      "session": 200,
+      "desk": 200
+    },
+    {
+      "email": "beta_1793289006225_7@test.local",
+      "register": 200,
+      "home": 200,
+      "search": 200,
+      "works": 200,
+      "spatial": 200,
+      "session": 200,
+      "desk": 200
+    },
+    {
+      "email": "beta_1793289006225_8@test.local",
+      "register": 200,
+      "home": 200,
+      "search": 200,
+      "works": 200,
+      "spatial": 200,
+      "session": 200,
+      "desk": 200
+    },
+    {
+      "email": "beta_1793289006225_9@test.local",
+      "register": 200,
+      "home": 200,
+      "search": 200,
+      "works": 200,
+      "spatial": 200,
+      "session": 200,
+      "desk": 200
+    }
+  ]
+}

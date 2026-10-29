@@ -9,6 +9,7 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { extractExternalEntities, searchShanghaiLibraryMaterials, type ShlMaterial } from "./retrieve-shl";
 import { searchCommonsForTopic } from "./retrieve-commons";
+import { searchLocMaterials } from "./retrieve-loc";
 import { buildQueryPlan, type QueryPlan } from "./query-plan";
 
 export interface PreparedTopic {
@@ -56,6 +57,19 @@ function buildTopic(
   return { jsonFile, key, label, materialCount: materials.length, photoCount: photos.length, plan };
 }
 
+/** 图像双源：Commons 优先；不足 3 张时尝试 LOC（环境 403 时自动降级，不阻塞）。 */
+async function collectPhotos(entities: string[], fallbackTopic: string): Promise<ShlMaterial[]> {
+  const commons = await searchCommonsForTopic(entities[0] || fallbackTopic, entities.slice(0, 2), 8);
+  const photos = [...commons.materials];
+  if (photos.length < 3) {
+    const loc = await searchLocMaterials([entities[0] || fallbackTopic, fallbackTopic], 4);
+    for (const m of loc.materials) {
+      if (!photos.some((p) => p.url === m.url || p.title === m.title)) photos.push(m);
+    }
+  }
+  return photos.slice(0, 10);
+}
+
 /** 自由主题准备入口。无材料/检索不可用时返回 { reason }，不假装成功。 */
 export async function prepareFreeTopic(intent: string): Promise<PrepareResult> {
   // 1. DeepSeek 抽具体实体名（优先）；失败则规则兜底
@@ -71,8 +85,8 @@ export async function prepareFreeTopic(intent: string): Promise<PrepareResult> {
     maxPagesPerTerm: 2,
   });
   if (materials.length) {
-    const photos = await searchCommonsForTopic(plan.entities[0] || intent.slice(0, 20), plan.entities.slice(0, 2), 8);
-    return buildTopic(intent, plan.entities, materials, photos.materials, plan);
+    const photos = await collectPhotos(plan.entities, intent.slice(0, 20));
+    return buildTopic(intent, plan.entities, materials, photos, plan);
   }
 
   // 4. 回退：只用精确实体再试一次（别名/繁体可能过窄）
@@ -82,8 +96,8 @@ export async function prepareFreeTopic(intent: string): Promise<PrepareResult> {
       maxPagesPerTerm: 2,
     });
     if (retry.materials.length) {
-      const photos = await searchCommonsForTopic(plan.entities[0], plan.entities.slice(0, 2), 8);
-      return buildTopic(intent, plan.entities, retry.materials, photos.materials, plan);
+      const photos = await collectPhotos(plan.entities, intent.slice(0, 20));
+      return buildTopic(intent, plan.entities, retry.materials, photos, plan);
     }
   }
 
