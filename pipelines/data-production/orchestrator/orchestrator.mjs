@@ -22,6 +22,9 @@ export async function runProduction({ run, registry, context = {}, from_stage = 
     const result = await execute({ run: state, job, input, context });
     state.stage_results.push(result);
 
+    // 可选阶段进度回调（如 run.mjs 回写 control.production_runs.current_stage），不改变编排语义。
+    if (typeof context.onStage === "function") await context.onStage(stage, result);
+
     if (result.disposition !== "PASS") return finishRun(state, result.disposition);
 
     // F02 fix: hand off the stage's declared contract output explicitly, never the first key.

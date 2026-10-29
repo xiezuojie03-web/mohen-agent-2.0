@@ -31,7 +31,19 @@ const __TOPIC_URL = __TOPIC_RAW
     ? __TOPIC_RAW
     : "file:///" + process.cwd().replace(/\\/g, "/") + "/" + __TOPIC_RAW.replace(/\\/g, "/")
   : null;
-const __TOPIC = __TOPIC_URL ? await import(__TOPIC_URL).then((m) => m.default ?? m) : null;
+// 自由主题（运行时动态生成）：MOHEN_TOPIC_JSON_FILE 指向完整主题配置 JSON 文件（绝对路径）。
+const __TOPIC_JSON_FILE = process.env.MOHEN_TOPIC_JSON_FILE;
+let __TOPIC = null;
+if (__TOPIC_JSON_FILE) {
+  const _fsTopic = await import("node:fs");
+  const _pathTopic = await import("node:path");
+  const _p = _pathTopic.isAbsolute(__TOPIC_JSON_FILE)
+    ? __TOPIC_JSON_FILE
+    : _pathTopic.resolve(process.cwd(), __TOPIC_JSON_FILE);
+  __TOPIC = JSON.parse(_fsTopic.readFileSync(_p, "utf8"));
+} else if (__TOPIC_URL) {
+  __TOPIC = await import(__TOPIC_URL).then((m) => m.default ?? m);
+}
 const TOPIC_KEY = __TOPIC?.key ?? "jinze";
 const TOPIC_LABEL = __TOPIC?.label ?? "金泽";
 
@@ -1136,14 +1148,44 @@ let ENTITY_MATCH_ALIASES = Object.freeze({
   "桥所跨水道（名称待定）": ["桥所跨水道（名称待定）", "金泽塘", "秀州塘", "市河"],
 });
 
+// ── 通用 D03/D04 模板（自由主题：无主题特定提示词时使用；schema 与门禁规则通用）──
+const GENERIC_D03_SYSTEM = `你是墨痕数据生产的 D03 世界建构器，方法 W01 身份 / W02 时间 / W05 关系 / W09 冲突与边界。
+从 D02 材料观察陈述里建构历史世界：识别实体（人/地/物/事/机构/建筑/文本等）与有据关系，保留 candidate 认识状态，不把"材料记载"升为"已证事实"。
+只输出一个 JSON，不要 markdown、不要额外文字：
+{
+  "entities":[{"label":"...","entity_type":"...","time_scope":{"precision":"era"},"spatial_note":"..."}],
+  "relations":[{"subject":"...","predicate":"...","object":"...","basis":"...","epistemic":"candidate"}],
+  "changes":[{"subject":"...","change_type":"...","before_state":"...","after_state":"...","time_scope":{"precision":"era"},"basis":"..."}],
+  "conflicts":[{"conflict_key":"cf-1","object_type":"...","subject_label":"...","variants":[{"value":"...","source":"..."}],"note":"..."}],
+  "refusals":[{"subject_label":"...","object_label":"...","reason":"...","question":"...","missing_evidence":"..."}],
+  "open_questions":[{"question":"...","missing_evidence":"...","next_research_action":"...","entities":[]}]
+}
+规则：
+1. 实体同名不合并；关系仅在有据时建立（共现≠关系）；时间只抽材料明文记载的年代/纪年，保留原纪年不猜精确日（precision 取 exact_year/era/decade/unknown）；认识状态一律 candidate。
+2. 实体名一律使用材料中出现的规范名，不得生造材料未出现的实体名；同一对象在材料中有多个名称时保留材料原称，不擅自合并。
+3. W02 时间：只抽取材料明文记载的年代，登记为 changes；材料未载年代的对象不造 changes；只有纪年无精确日期的按 era/decade 处理，不得猜精确年份。
+4. W09 冲突：同一对象（名称/方位/年代）有两种以上着录且无法判定时，登记 conflicts，variant 逐条带 source，只负责如实并列，绝不得静默择一。
+5. W09 边界：对"看起来可能有关系但材料无据"的对象对，必须进 refusals 明确拒绝并给出理由——正确拒绝错误历史关系与成功发布真实合格知识同等重要。`;
+
+const GENERIC_D04_SYSTEM = `你是墨痕数据生产的 D04 人文发现器，方法 A01 显式关系解释 / A10 冲突发现。
+从 D03 世界关系、着录分歧与边界拒绝里产出非平庸解释增量；事实与解释分离；candidate 不升 fact；不编造因果；保留反证与开放问题。
+只输出一个 JSON，不要 markdown、不要额外文字：
+{"findings":[{"finding_type":"explicit_relation","interpretive_statement":"...","understanding_delta":"...","supporting_world_objects":[],"counter_view_or_alternative":"","missing_evidence":""}]}
+规则：
+1. finding_type 只取 explicit_relation / conflict_discovery / candidate_relation；
+2. interpretive_statement 写人话解释增量，不照抄材料原文，不编造因果；
+3. conflict_discovery 必须如实呈现分歧多方，counter_view_or_alternative 写对立说法，不得择一说事；
+4. 对 refusals 中的无据关系，不得生成"证实关系"类发现——可以生成"为何不能建立"的认识增量。`;
+
 // ── 主题参数统一覆盖（模块加载时执行一次，位于所有 let 声明之后）──
-// MOHEN_TOPIC_CONFIG 指向 topic-a001.mjs 时，材料/照片/提示词/实体别名全部替换为 A001；
-// 不设环境变量则保持 金泽 默认。d03 局部 CONFLICT_NOTES 见其函数内（按主题默认）。
+// MOHEN_TOPIC_CONFIG 指向 topic-a001.mjs（预置主题）或 MOHEN_TOPIC_JSON_FILE（自由主题 JSON）时，
+// 材料/照片/提示词/实体别名全部替换；不设环境变量则保持 金泽 默认。
+// 自由主题 JSON 若未提供 d03System/d04System，用上面通用模板（schema/门禁规则通用）。
 if (__TOPIC) {
-  MATERIALS = __TOPIC.materials;
+  MATERIALS = __TOPIC.materials ?? MATERIALS;
   PHOTO_MATERIALS = __TOPIC.photoMaterials ?? [];
-  D03_SYSTEM = __TOPIC.d03System;
-  D04_SYSTEM = __TOPIC.d04System;
+  D03_SYSTEM = __TOPIC.d03System ?? GENERIC_D03_SYSTEM;
+  D04_SYSTEM = __TOPIC.d04System ?? GENERIC_D04_SYSTEM;
   ENTITY_MATCH_ALIASES = Object.freeze(__TOPIC.entityAliases ?? {});
 }
 

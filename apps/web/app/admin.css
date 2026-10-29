@@ -1,0 +1,308 @@
+/* 运营管理 Admin（对齐 UI_五图前端施工规范 V1.0 · F05） */
+.admin {
+  min-height: 100vh;
+  font-family: var(--mo-font-ui);
+  color: var(--mo-text);
+  background: var(--mo-paper-50);
+}
+.admin__body {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 12px;
+  padding: 12px;
+  min-height: calc(100vh - 64px);
+  align-items: start;
+}
+
+/* 侧栏 */
+.admin__sidebar {
+  background: var(--mo-white);
+  border: 1px solid var(--mo-line);
+  border-radius: 12px;
+  padding: 10px;
+  position: sticky;
+  top: 76px;
+}
+.admin__sidebar-brand {
+  font-size: 12px;
+  color: var(--mo-muted);
+  padding: 8px 10px 12px;
+  border-bottom: 1px solid var(--mo-line);
+  margin-bottom: 8px;
+}
+.admin__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.admin__nav-item {
+  text-align: left;
+  font-size: 14px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--mo-text);
+  cursor: pointer;
+}
+.admin__nav-item:hover {
+  background: var(--mo-paper-100);
+}
+.admin__nav-item.is-active {
+  background: var(--mo-ink-900);
+  color: #fff;
+}
+
+/* 内容区 */
+.admin__content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+.admin__header {
+  background: var(--mo-white);
+  border: 1px solid var(--mo-line);
+  border-radius: 12px;
+  padding: 20px 22px;
+  background-image: radial-gradient(circle at 85% 30%, rgba(117, 97, 154, 0.10), transparent 40%);
+}
+.admin__header h1 {
+  font-family: var(--mo-font-editorial);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--mo-ink-900);
+  margin: 0 0 6px;
+}
+.admin__header p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--mo-muted);
+}
+
+/* KPI */
+.admin__kpis {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+.admin__kpi {
+  background: var(--mo-white);
+  border: 1px solid var(--mo-line);
+  border-radius: 12px;
+  padding: 16px;
+}
+.admin__kpi-label {
+  font-size: 12px;
+  color: var(--mo-muted);
+  margin-bottom: 8px;
+}
+.admin__kpi-value {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--mo-ink-900);
+}
+.admin__kpi-note {
+  font-size: 11px;
+  color: var(--mo-muted);
+  margin-top: 4px;
+}
+
+/* 面板与表格 */
+.admin__panel {
+  background: var(--mo-white);
+  border: 1px solid var(--mo-line);
+  border-radius: 12px;
+  padding: 16px;
+}
+.admin__panel h2 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--mo-ink-900);
+  margin: 0 0 14px;
+}
+.admin__tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.admin__tab {
+  font-size: 13px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--mo-line);
+  background: transparent;
+  color: var(--mo-muted);
+  cursor: pointer;
+}
+.admin__tab.is-active {
+  background: var(--mo-admin);
+  color: #fff;
+  border-color: var(--mo-admin);
+}
+.admin__empty {
+  color: var(--mo-muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 40px 16px;
+  line-height: 1.8;
+}
+.admin__hint {
+  font-size: 12px;
+  color: var(--mo-muted);
+  line-height: 1.7;
+  padding: 12px;
+  background: var(--mo-paper-100);
+  border-radius: 8px;
+}
+
+/* 知识资产真实数据展示 */
+.admin__assets {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.admin__asset {
+  border: 1px solid var(--mo-line);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.admin__asset-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.admin__asset-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mo-ink-900);
+}
+.admin__badge {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(45, 138, 104, 0.12);
+  color: var(--mo-success);
+}
+.admin__badge--muted {
+  background: var(--mo-paper-100);
+  color: var(--mo-muted);
+}
+.admin__asset-text {
+  font-size: 12.5px;
+  color: var(--mo-text);
+  line-height: 1.6;
+  margin: 0;
+}
+.admin__asset-meta {
+  font-size: 11px;
+  color: var(--mo-muted);
+  margin-top: 4px;
+}
+
+/* 登录 */
+.admin__auth {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--mo-line);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.admin__auth-role {
+  font-size: 12px;
+  color: var(--mo-muted);
+}
+.admin__auth-btn {
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--mo-line);
+  background: transparent;
+  color: var(--mo-muted);
+  cursor: pointer;
+}
+.admin__login {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 520px;
+}
+.admin__login-tip {
+  font-size: 13px;
+  color: var(--mo-muted);
+  margin: 0;
+}
+.admin__login-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.admin__login-input {
+  flex: 1;
+  min-width: 140px;
+  border: 1px solid var(--mo-line);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+.admin__login-input:focus {
+  border-color: var(--mo-admin);
+}
+.admin__login-err {
+  font-size: 12px;
+  color: var(--mo-danger);
+  margin: 0;
+}
+.admin__send {
+  border: none;
+  border-radius: 8px;
+  background: var(--mo-ink-900);
+  color: #fff;
+  padding: 9px 18px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.admin__asset-beats {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--mo-line);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.admin__asset-beat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.admin__asset-beat strong {
+  font-size: 13px;
+  color: var(--mo-ink-900);
+}
+.admin__asset-beat span {
+  font-size: 12.5px;
+  color: var(--mo-muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .admin__body {
+    grid-template-columns: 1fr;
+  }
+  .admin__sidebar {
+    position: static;
+  }
+  .admin__nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .admin__kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -1,0 +1,340 @@
+/* 观看 WATCH（对齐 UI_五图前端施工规范 V1.0 · F03） */
+.watch {
+  min-height: 100vh;
+  font-family: var(--mo-font-ui);
+  color: var(--mo-text);
+  background: var(--mo-paper-50);
+}
+.watch__body {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 12px;
+  padding: 12px;
+  min-height: calc(100vh - 64px);
+}
+.watch__hero {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #26363c 0%, #17201d 100%);
+  display: flex;
+  align-items: flex-end;
+  min-height: 440px;
+}
+.watch__overlay {
+  padding: 32px;
+  color: #e8efed;
+}
+.watch__status {
+  display: inline-block;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  letter-spacing: 0.05em;
+  margin-bottom: 14px;
+}
+.watch__title {
+  font-family: var(--mo-font-editorial);
+  font-size: 34px;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+.watch__desc {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #c2d0cd;
+  max-width: 620px;
+  margin: 0;
+}
+.watch__side {
+  background: var(--mo-white);
+  border: 1px solid var(--mo-line);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.watch__tabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--mo-line);
+  padding-bottom: 10px;
+}
+.watch__tab {
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--mo-line);
+  background: transparent;
+  color: var(--mo-muted);
+  cursor: pointer;
+}
+.watch__tab.is-active {
+  background: var(--mo-watch);
+  color: #fff;
+  border-color: var(--mo-watch);
+}
+.watch__info {
+  font-size: 13px;
+  color: var(--mo-muted);
+  line-height: 1.8;
+}
+.watch__info strong {
+  color: var(--mo-text);
+  display: block;
+  margin-bottom: 4px;
+}
+.watch__loading {
+  min-height: 60vh;
+  display: grid;
+  place-items: center;
+  color: var(--mo-muted);
+  font-size: 14px;
+}
+.watch__worklist {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.watch__work {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--mo-line);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+.watch__work.is-active {
+  border-color: var(--mo-watch);
+  background: rgba(47, 112, 148, 0.06);
+}
+.watch__work-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mo-text);
+}
+.watch__work-meta {
+  font-size: 11px;
+  color: var(--mo-muted);
+}
+.watch__main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.watch__beats {
+  background: var(--mo-white);
+  border: 1px solid var(--mo-line);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.watch__beats h2 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--mo-ink-900);
+  margin: 0;
+}
+.watch__beat {
+  border: 1px solid var(--mo-line);
+  border-radius: 10px;
+  padding: 14px;
+}
+.watch__beat-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.watch__beat-no {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--mo-watch);
+  color: #fff;
+  font-size: 12px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.watch__beat-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--mo-ink-900);
+}
+.watch__beat-narration {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--mo-text);
+  margin: 0 0 8px;
+}
+.watch__beat-visual {
+  font-size: 12px;
+  color: var(--mo-muted);
+}
+
+/* 沉浸式纪录片播放器 */
+.watch__stage {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 30%, #2a3a40 0%, #141d1a 100%);
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 90px);
+}
+.watch__stage-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 0;
+}
+.watch__stage-meta .watch__status {
+  margin-bottom: 0;
+}
+.watch__stage-count {
+  font-size: 13px;
+  color: #9fb0ac;
+  letter-spacing: 0.08em;
+}
+.watch__stage-visual {
+  flex: 1;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 20px;
+  padding: 24px;
+  align-items: center;
+}
+.watch__stage-frame {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+  padding: 60px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 220px;
+}
+.watch__stage-frame-label {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: #6f8380;
+  margin-bottom: 16px;
+}
+.watch__stage-frame p {
+  font-family: var(--mo-font-editorial);
+  font-size: 22px;
+  line-height: 1.7;
+  color: #dfe9e6;
+  max-width: 720px;
+  margin: 0;
+}
+.watch__stage-narration {
+  padding: 20px 24px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.28);
+}
+.watch__stage-narration h2 {
+  font-family: var(--mo-font-editorial);
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 10px;
+}
+.watch__stage-narration p {
+  font-size: 16px;
+  line-height: 1.9;
+  color: #d4e0dd;
+  margin: 0;
+}
+.watch__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 24px;
+}
+.watch__ctrl {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 13px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e8efed;
+  cursor: pointer;
+}
+.watch__ctrl:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.watch__ctrl--play {
+  background: var(--mo-watch, #2f7094);
+  border-color: var(--mo-watch, #2f7094);
+  font-weight: 600;
+  min-width: 120px;
+}
+.watch__timeline {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 14px 24px 20px;
+}
+.watch__timeline-progress {
+  position: absolute;
+  left: 24px;
+  top: 0;
+  height: 2px;
+  background: var(--mo-watch, #2f7094);
+  transition: width 0.4s ease;
+  border-radius: 2px;
+}
+.watch__chapter {
+  flex: 0 0 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  text-align: left;
+}
+.watch__chapter.is-active {
+  border-color: var(--mo-watch, #2f7094);
+  background: rgba(47, 112, 148, 0.2);
+}
+.watch__chapter-no {
+  font-size: 11px;
+  color: #7f9290;
+}
+.watch__chapter-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e8efed;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.watch__chapter-time {
+  font-size: 11px;
+  color: #7f9290;
+}
+
+@media (max-width: 900px) {
+  .watch__body--player {
+    grid-template-columns: 1fr;
+  }
+}

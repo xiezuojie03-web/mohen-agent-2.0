@@ -1,0 +1,412 @@
+/* 探索 EXP（对齐 UI_五图前端施工规范 V1.0 · F04） */
+.explore {
+  min-height: 100vh;
+  font-family: var(--mo-font-ui);
+  color: var(--mo-text);
+  background: var(--mo-paper-50);
+  display: flex;
+  flex-direction: column;
+}
+.explore__body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 300px 1fr 380px;
+  gap: 12px;
+  padding: 12px;
+  min-height: 0;
+}
+.explore__col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+/* 左栏 */
+.explore__side {
+  background: var(--mo-white);
+  border: 1px solid var(--mo-line);
+  border-radius: 12px;
+  padding: 14px;
+  overflow-y: auto;
+}
+.explore__side h2 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mo-ink-900);
+  margin: 0 0 10px;
+}
+.explore__status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--mo-paper-100);
+  color: var(--mo-muted);
+  margin-bottom: 14px;
+}
+.explore__status i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--mo-success);
+}
+.explore__status.is-sparse i {
+  background: var(--mo-warning);
+}
+.explore__entity-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.explore__entity {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--mo-paper-100);
+  border: 1px solid var(--mo-line);
+  color: var(--mo-text);
+}
+.explore__note {
+  font-size: 12px;
+  color: var(--mo-muted);
+  line-height: 1.7;
+  margin-top: 14px;
+}
+
+/* 中栏 */
+.explore__main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+.explore__viewbar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.explore__viewtab {
+  font-size: 13px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--mo-line);
+  background: var(--mo-white);
+  color: var(--mo-muted);
+  cursor: pointer;
+}
+.explore__viewtab.is-active {
+  background: var(--mo-exp);
+  color: #fff;
+  border-color: var(--mo-exp);
+}
+.explore__canvas {
+  flex: 1;
+  background: var(--mo-white);
+  border: 1px solid var(--mo-line);
+  border-radius: 12px;
+  overflow: auto;
+  padding: 16px;
+  min-height: 420px;
+}
+.explore__canvas h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--mo-ink-900);
+  margin: 0 0 14px;
+}
+.explore__empty {
+  color: var(--mo-muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 48px 16px;
+  line-height: 1.8;
+}
+
+/* 关系图 */
+.explore__graph {
+  display: flex;
+  justify-content: center;
+}
+.explore__legend {
+  font-size: 12px;
+  color: var(--mo-muted);
+  margin-top: 8px;
+}
+
+/* 时间轴 */
+.explore__timeline {
+  position: relative;
+  padding-left: 20px;
+  border-left: 2px solid var(--mo-line);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.explore__tl-item {
+  position: relative;
+}
+.explore__tl-item::before {
+  content: "";
+  position: absolute;
+  left: -27px;
+  top: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--mo-exp);
+  border: 2px solid #fff;
+}
+.explore__tl-year {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mo-exp);
+}
+.explore__tl-text {
+  font-size: 13px;
+  color: var(--mo-text);
+  margin-top: 2px;
+}
+.explore__tl-meta {
+  font-size: 12px;
+  color: var(--mo-muted);
+  margin-top: 2px;
+}
+
+/* 照片 / 卡片网格 */
+.explore__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+.explore__card {
+  border: 1px solid var(--mo-line);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--mo-white);
+}
+.explore__card img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+.explore__card-body {
+  padding: 10px 12px;
+}
+.explore__card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mo-ink-900);
+  margin: 0 0 4px;
+}
+.explore__card-text {
+  font-size: 12.5px;
+  color: var(--mo-text);
+  line-height: 1.6;
+  margin: 0 0 6px;
+}
+.explore__card-meta {
+  font-size: 11px;
+  color: var(--mo-muted);
+}
+
+/* 故事 / 证据 纵向卡片 */
+.explore__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.explore__item {
+  border: 1px solid var(--mo-line);
+  border-radius: 10px;
+  padding: 14px;
+  background: var(--mo-white);
+}
+.explore__item-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mo-ink-900);
+  margin: 0 0 6px;
+}
+.explore__item-text {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--mo-text);
+  margin: 0 0 6px;
+}
+.explore__item-source {
+  font-size: 11.5px;
+  color: var(--mo-muted);
+}
+
+/* 右栏 */
+.explore__side--right {
+  overflow-y: auto;
+}
+.explore__section {
+  margin-bottom: 16px;
+}
+.explore__section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mo-ink-900);
+  margin: 0 0 10px;
+}
+.explore__conflict {
+  border: 1px solid var(--mo-warning);
+  background: rgba(197, 138, 53, 0.06);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.explore__conflict-subject {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mo-text);
+}
+.explore__conflict-var {
+  font-size: 12.5px;
+  color: var(--mo-text);
+  margin-top: 4px;
+}
+.explore__conflict-src {
+  font-size: 11px;
+  color: var(--mo-muted);
+}
+.explore__question {
+  border: 1px solid var(--mo-line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.explore__question-q {
+  font-size: 13px;
+  color: var(--mo-text);
+  font-weight: 600;
+}
+.explore__question-gap {
+  font-size: 12px;
+  color: var(--mo-muted);
+  margin-top: 4px;
+}
+
+/* 自然语言探索：提问框 + 回答 */
+.explore__ask {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.explore__ask input {
+  flex: 1;
+  border: 1px solid var(--mo-line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  background: var(--mo-white);
+  color: var(--mo-text);
+}
+.explore__ask input:focus {
+  border-color: var(--mo-exp);
+}
+.explore__ask button {
+  border: none;
+  border-radius: 8px;
+  padding: 0 14px;
+  font-size: 13px;
+  background: var(--mo-ink-900);
+  color: #fff;
+  cursor: pointer;
+}
+.explore__ask button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.explore__answer {
+  border: 1px solid var(--mo-line);
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--mo-paper-50);
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.explore__answer-text {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--mo-text);
+}
+.explore__answer-clarify {
+  font-size: 12.5px;
+  color: var(--mo-exp);
+  font-weight: 600;
+}
+.explore__material {
+  border: 1px solid var(--mo-line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: var(--mo-white);
+}
+.explore__material-badge {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--mo-muted);
+  margin-bottom: 4px;
+}
+.explore__material-snippet {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--mo-text);
+}
+.explore__material-source {
+  font-size: 11px;
+  color: var(--mo-muted);
+  margin-top: 4px;
+}
+.explore__gap {
+  font-size: 12px;
+  color: var(--mo-warning, #b8753a);
+  background: rgba(197, 138, 53, 0.08);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+/* AI 动态图见 */
+.explore__insight-btn {
+  border: 1px solid var(--mo-line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  background: var(--mo-white);
+  color: var(--mo-exp, #24786d);
+  cursor: pointer;
+  align-self: flex-start;
+}
+.explore__insight-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.explore__insight-graph {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.explore__insight-src {
+  font-size: 11px;
+  color: var(--mo-muted);
+  line-height: 1.5;
+}
+
+@media (max-width: 1100px) {
+  .explore__body {
+    grid-template-columns: 1fr;
+  }
+  .explore__side--right {
+    order: 3;
+  }
+}
