@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createDirectorPlan } from "../../../../lib/studio-director";
 import { guardRoute } from "../../../../lib/guard";
+import { getSession } from "../../../../lib/session";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,6 +10,8 @@ export const dynamic = "force-dynamic";
 export async function POST(req: Request) {
   const denied = await guardRoute(null, null);
   if (denied) return denied;
+  const session = await getSession();
+  if (!session) return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401 });
   let brief: unknown;
   let topic: unknown;
   try {
@@ -21,7 +24,11 @@ export async function POST(req: Request) {
   if (typeof brief !== "string" || !brief.trim()) {
     return NextResponse.json({ ok: false, reason: "brief_required" }, { status: 400 });
   }
-  const created = await createDirectorPlan(brief.trim(), typeof topic === "string" ? topic : "jinze");
+  const created = await createDirectorPlan(
+    brief.trim(),
+    typeof topic === "string" ? topic : "jinze",
+    session.uid
+  );
   if (!created) {
     return NextResponse.json({ ok: false, reason: "no_material_or_llm" });
   }

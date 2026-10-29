@@ -21,14 +21,18 @@ export interface CreatedPlan {
   finding: H1Finding;
 }
 
-/** 生成 A/B 导演方案（H1→H2）并持久化，返回 plan_id */
-export async function createDirectorPlan(brief: string, topic = "jinze"): Promise<CreatedPlan | null> {
+/** 生成 A/B 导演方案（H1→H2）并持久化，返回 plan_id。P0-1：方案归属创建者。 */
+export async function createDirectorPlan(
+  brief: string,
+  topic = "jinze",
+  ownerUserId: string
+): Promise<CreatedPlan | null> {
   const result = await generateDirectorPlans(brief, topic);
   if (!result) return null;
   const planId = await queryValue("select gen_random_uuid()::text");
   await run(
-    `insert into public.director_plans (plan_id, brief, topic, plan_a, plan_b, facts, finding)
-     values (:'id', :'brief', :'topic', :'a'::jsonb, :'b'::jsonb, :'facts'::jsonb, :'finding'::jsonb)`,
+    `insert into public.director_plans (plan_id, brief, topic, plan_a, plan_b, facts, finding, owner_user_id)
+     values (:'id', :'brief', :'topic', :'a'::jsonb, :'b'::jsonb, :'facts'::jsonb, :'finding'::jsonb, :'owner')`,
     {
       id: planId!,
       brief,
@@ -37,6 +41,7 @@ export async function createDirectorPlan(brief: string, topic = "jinze"): Promis
       b: JSON.stringify(result.planB),
       facts: JSON.stringify(result.facts),
       finding: JSON.stringify(result.finding),
+      owner: ownerUserId,
     }
   );
   return { planId: planId!, planA: result.planA, planB: result.planB, facts: result.facts, finding: result.finding };

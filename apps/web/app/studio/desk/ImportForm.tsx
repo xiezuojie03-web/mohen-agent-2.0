@@ -7,6 +7,7 @@ export default function ImportForm() {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
+  const [file, setFile] = useState<File | null>(null);
   const [sourceUrl, setSourceUrl] = useState("");
   const [license, setLicense] = useState("");
   const [rights, setRights] = useState(false);
@@ -17,24 +18,36 @@ export default function ImportForm() {
     setBusy(true);
     setMsg("");
     try {
-      const res = await fetch("/api/studio/materials/import", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          title,
-          text,
-          source_url: sourceUrl,
-          license,
-          rights_declared: rights,
-        }),
-      });
-      const json = (await res.json()) as { ok: boolean; reason?: string };
+      let res: Response;
+      if (file) {
+        const fd = new FormData();
+        fd.set("file", file);
+        fd.set("title", title || file.name);
+        fd.set("source_url", sourceUrl);
+        fd.set("license", license);
+        fd.set("rights_declared", rights ? "true" : "false");
+        res = await fetch("/api/studio/materials/import", { method: "POST", body: fd });
+      } else {
+        res = await fetch("/api/studio/materials/import", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            title,
+            text,
+            source_url: sourceUrl,
+            license,
+            rights_declared: rights,
+          }),
+        });
+      }
+      const json = (await res.json()) as { ok: boolean; reason?: string; chars?: number; kind?: string };
       if (!res.ok || !json.ok) {
         setMsg(`失败：${json.reason ?? res.status}`);
       } else {
-        setMsg("已导入");
+        setMsg(`已导入（${json.kind ?? "text"}，${json.chars ?? 0} 字）`);
         setTitle("");
         setText("");
+        setFile(null);
         setSourceUrl("");
         setLicense("");
         setRights(false);
@@ -51,7 +64,7 @@ export default function ImportForm() {
     <section style={{ border: "1px solid #e2ddd1", borderRadius: 8, padding: 14, marginBottom: 18 }}>
       <h2 style={{ fontSize: 15, margin: "0 0 8px" }}>导入一份资料（地方志/文史/口述摘录）</h2>
       <p style={{ fontSize: 12, color: "#6b746f", margin: "0 0 10px" }}>
-        V1 支持文本粘贴；PDF/图片 OCR 在 P2 接入。导入后默认仅自己可见，公开前需复核权利。
+        V1 支持文本粘贴、.txt/.md、PDF 文本抽取；扫描件/图片 OCR 尚未接引擎（会明确拒绝，不冒充成功）。导入后默认仅自己可见。
       </p>
       <div style={{ display: "grid", gap: 8 }}>
         <input
@@ -60,10 +73,17 @@ export default function ImportForm() {
           placeholder="标题（如：金泽小志·桥记）"
           style={{ padding: 8, border: "1px solid #cfc8ba", borderRadius: 4, fontSize: 13 }}
         />
+        <input
+          type="file"
+          accept=".pdf,.txt,.md,text/plain,application/pdf"
+          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+          style={{ fontSize: 12 }}
+        />
+        {file && <span style={{ fontSize: 12, color: "#3d6b8f" }}>已选：{file.name}（将优先按文件导入）</span>}
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="粘贴正文（≥20 字）"
+          placeholder="或直接粘贴正文（≥20 字）"
           rows={6}
           style={{ padding: 8, border: "1px solid #cfc8ba", borderRadius: 4, fontSize: 13 }}
         />
