@@ -8,8 +8,10 @@ const REASON_ZH: Record<string, string> = {
   bad_request: "请求格式错误",
   invalid_email: "邮箱格式不正确",
   invalid_username: "用户名至少 2 个字",
-  weak_password: "密码至少 6 位",
+  weak_password: "密码至少 8 位",
   email_taken: "该邮箱已注册，请直接登录",
+  registration_disabled: "注册暂未开放",
+  invalid_invite: "邀请码不正确",
 };
 
 export default function RegisterPage() {
@@ -86,7 +88,7 @@ export default function RegisterPage() {
             autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="至少 6 位"
+            placeholder="至少 8 位"
             required
           />
         </div>

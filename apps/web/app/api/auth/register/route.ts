@@ -78,7 +78,13 @@ export async function POST(req: Request) {
   const inviteOk =
     !!invite && typeof inviteCode === "string" && inviteCode.length > 0 && safeEqual(inviteCode, invite);
 
-  if (!isOwnerSetup && !inviteOk) {
+  // 注册模式（Owner 2026-10-30 裁决）：open=开放注册；invite=邀请制；closed=关闭。
+  // 当前站点未公开，默认 open（Owner 明确不要邀请制）；公开前可改为 invite/closed。
+  const mode = (process.env.MOHEN_REGISTRATION_MODE || "open").replace(/^\uFEFF/, "").trim().toLowerCase();
+  if (mode === "closed") {
+    return NextResponse.json({ ok: false, reason: "registration_disabled" }, { status: 403 });
+  }
+  if (!isOwnerSetup && mode !== "open" && !inviteOk) {
     return NextResponse.json(
       { ok: false, reason: invite ? "invalid_invite" : "registration_disabled" },
       { status: 403 }
