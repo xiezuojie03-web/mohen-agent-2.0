@@ -1,20 +1,32 @@
-// apps/web/lib/auth.ts — 多用户多角色认证（补缺施工第一步：身份地基）。
+// apps/web/lib/auth.ts — 多用户多角色认证。
 //
-// 全员注册 + 四角色分权：member（公众/默认）、creator（创作者）、operator（运营）、
-// reviewer（独立审核者，Owner 兼任）。取代旧"单账号硬编码 + HMAC(operator)"方案。
-//
-// 兼容约定：OPERATOR_COOKIE / isOperator(token) 的签名保持不变，内部升级为
-// 携带 user_id + roles + 过期时间的签名 token，因此既有 30+ 个路由无需改动。
+// 角色：member（默认）、creator、operator、reviewer（独立审核者）。
+// P0 安全止血（2026-10-29）后：
+// - 注册改为邀请制（MOHEN_INVITE_CODE）；Owner 首次开通需 OWNER_EMAIL + OWNER_SETUP_TOKEN；
+// - AUTH_SECRET 不再有默认值；未配置时所有签发/验签直接失败（fail-closed）；
+// - 删除 app 层 admin 环境变量后门（OPS_USERNAME/OPS_PASSWORD）；
+// - 兼容约定 OPERATOR_COOKIE / isOperator(token) 保持不变，既有路由无需改动。
 //
 // 纪律：密码仅存 scrypt 盐+哈希、绝不落明文/不回显；token 仅存 httpOnly cookie。
 import crypto from "node:crypto";
 import { queryRows } from "@mohen/data-access";
 
-const AUTH_SECRET = process.env.AUTH_SECRET || "mohen-local-dev-secret";
 const SESSION_TTL_MS = 24 * 60 * 60 * 1000; // 24 小时
 
-/** 注册时自动授予全部角色（operator+reviewer+creator+member）的 Owner 邮箱白名单。 */
-export const OWNER_EMAIL = process.env.OWNER_EMAIL || "20195689@qq.com";
+/** 是否已配置会话密钥（部署自检与登录接口用）。 */
+export function isAuthConfigured(): boolean {
+  return typeof process.env.AUTH_SECRET === "string" && process.env.AUTH_SECRET.trim().length >= 32;
+}
+
+function authSecret(): string {
+  const s = process.env.AUTH_SECRET;
+  if (!s || s.trim().length < 32) {
+    throw new Error(
+      "AUTH_SECRET 未配置或长度不足 32（拒绝使用默认密钥）。请在各环境注入随机密钥后再启动认证。"
+    );
+  }
+  return s;
+}
 
 export const OPERATOR_COOKIE = "mohen_role";
 
@@ -43,7 +55,7 @@ function fromB64url(s: string): string {
   return Buffer.from(s, "base64url").toString("utf8");
 }
 function sign(data: string): string {
-  return crypto.createHmac("sha256", AUTH_SECRET).update(data).digest("base64url");
+  return crypto.createHmac("sha256", authSecret()).update(data).digest("base64url");
 }
 
 export function signSessionToken(userId: string, roles: string[]): string {
@@ -53,12 +65,17 @@ export function signSessionToken(userId: string, roles: string[]): string {
 
 export function parseSessionToken(token: string | undefined | null): { uid: string; r: string[] } | null {
   if (!token) return null;
+  if (!isAuthConfigured()) return null;
   const dot = token.indexOf(".");
   if (dot < 0) return null;
   const payload = token.slice(0, dot);
   const sig = token.slice(dot + 1);
   if (!payload || !sig) return null;
-  if (sign(payload) !== sig) return null;
+  const expected = sign(payload);
+  // 定长比较，避免时序侧信道
+  const a = Buffer.from(expected);
+  const b = Buffer.from(sig);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
   try {
     const data = JSON.parse(fromB64url(payload)) as SessionPayload;
     if (!data || typeof data.uid !== "string" || !Array.isArray(data.r)) return null;
@@ -131,16 +148,4 @@ export async function findUserById(userId: string): Promise<AuthUser | null> {
     { id: userId }
   );
   return rows.length ? rowToUser(rows[0]) : null;
-}
-
-// ---------- 旧环境变量 admin 兜底（仅本地开发；正式环境应通过真实用户登录） ----------
-export function verifyLogin(username: unknown, password: unknown): boolean {
-  const u = process.env.OPS_USERNAME || "admin";
-  const p = process.env.OPS_PASSWORD || "mohen-ops-2026";
-  return typeof username === "string" && typeof password === "string" && username === u && password === p;
-}
-
-export function signOperatorToken(): string {
-  // 旧无状态 operator token：不再由登录接口签发，仅保留以兼容潜在历史调用。
-  return crypto.createHmac("sha256", AUTH_SECRET).update("operator").digest("hex");
 }

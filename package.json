@@ -36,7 +36,10 @@
     "test:phase-g": "node --test tests/end-to-end/phase-g-e2e.test.mjs",
     "guard:e2e-completeness": "node scripts/guards/check-e2e-contract-completeness.mjs",
     "guard:cross-layer-write": "node scripts/guards/check-cross-layer-write-boundary.mjs",
-    "guard:gate-enforcement": "node scripts/guards/check-gate-enforcement.mjs"
+    "guard:gate-enforcement": "node scripts/guards/check-gate-enforcement.mjs",
+    "guard:auth": "node scripts/check-auth-coverage.mjs",
+    "guard:auth:strict": "node scripts/check-auth-coverage.mjs --strict",
+    "guard:sources": "node scripts/source-health.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

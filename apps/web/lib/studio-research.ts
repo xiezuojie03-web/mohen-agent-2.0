@@ -33,13 +33,14 @@ export interface CreatedTask {
 export async function createResearchTask(
   prompt: string,
   topic: TopicKey,
+  ownerUserId: string,
   workId?: string,
   budgetCeiling?: number
 ): Promise<CreatedTask> {
   const taskId = await queryValue("select gen_random_uuid()::text");
   await run(
-    "insert into public.research_tasks (task_id, work_id, topic, prompt, status) values (:'id', :'work', :'topic', :'prompt', 'running')",
-    { id: taskId!, work: workId ?? null, topic, prompt }
+    "insert into public.research_tasks (task_id, work_id, topic, prompt, status, owner_user_id) values (:'id', :'work', :'topic', :'prompt', 'running', :'owner')",
+    { id: taskId!, work: workId ?? null, topic, prompt, owner: ownerUserId }
   );
   await addEvent(taskId!, "D04", "task_created", { prompt, topic });
 

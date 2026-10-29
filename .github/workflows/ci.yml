@@ -1,0 +1,39 @@
+name: ci
+
+on:
+  push:
+    branches: ["a001/production", "main"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm -r typecheck
+
+      - name: Build
+        run: pnpm build
+
+      # P0-1 回归门：受保护 API 必须有 route 级鉴权/归属（middleware 只是兜底）。
+      # 目前仍有历史缺口，先以报告模式运行；P0-1 收口后改为 `pnpm guard:auth:strict`。
+      - name: Auth coverage report
+        run: pnpm guard:auth
+
+      # 说明：数据库集成测试（pnpm test）需要本机 PostgreSQL 快照，暂不在 CI 跑；
+      # 待 P0-6 把旧套件隔离、新增无库单测后再接入。

@@ -1,0 +1,95 @@
+{
+  "checked_at": "2026-10-29T14:18:17.212Z",
+  "registry_updated_at": "2026-10-29",
+  "rows": [
+    {
+      "id": "shl-open-data",
+      "name": "上海图书馆开放数据",
+      "mode": "api",
+      "status": 200,
+      "ms": 107,
+      "ok": true
+    },
+    {
+      "id": "wikimedia-commons",
+      "name": "Wikimedia Commons",
+      "mode": "api",
+      "status": 200,
+      "ms": 780,
+      "ok": true
+    },
+    {
+      "id": "loc",
+      "name": "美国国会图书馆（Library of Congress）",
+      "mode": "api",
+      "status": 403,
+      "ms": 1730,
+      "ok": false
+    },
+    {
+      "id": "zh-wikisource",
+      "name": "维基文库（中文）",
+      "mode": "api",
+      "status": 0,
+      "ms": 10592,
+      "ok": false,
+      "error": "TypeError"
+    },
+    {
+      "id": "shidianguji",
+      "name": "识典古籍",
+      "mode": "manual",
+      "status": "manual",
+      "ms": null,
+      "ok": true
+    },
+    {
+      "id": "nlc-guji",
+      "name": "国家图书馆·中华古籍资源库",
+      "mode": "manual",
+      "status": "manual",
+      "ms": null,
+      "ok": true
+    },
+    {
+      "id": "user-upload",
+      "name": "用户上传（PDF/扫描件/照片）",
+      "mode": "manual",
+      "status": "manual",
+      "ms": null,
+      "ok": true
+    },
+    {
+      "id": "ctext",
+      "name": "中国哲学书电子化计划（ctext）",
+      "mode": "api",
+      "status": "deferred",
+      "ms": null,
+      "ok": null
+    },
+    {
+      "id": "met-smithsonian-europeana",
+      "name": "博物馆开放 API（Met / Smithsonian / Europeana）",
+      "mode": "api",
+      "status": "deferred",
+      "ms": null,
+      "ok": null
+    },
+    {
+      "id": "chgis",
+      "name": "中国历史地理信息系统（CHGIS）/ 历史地图",
+      "mode": "dataset",
+      "status": "deferred",
+      "ms": null,
+      "ok": null
+    },
+    {
+      "id": "cnki-duxiu",
+      "name": "知网 / 读秀 / 万方",
+      "mode": "paid",
+      "status": "deferred",
+      "ms": null,
+      "ok": null
+    }
+  ]
+}

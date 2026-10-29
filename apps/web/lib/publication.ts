@@ -24,11 +24,16 @@ export interface SubmittedWork {
 }
 
 /** 创建作品 + 初始修订（draft, revision_no=1），返回 work_id；content 存作品内容（章节/旁白等） */
-export async function createWork(title: string, creator: string, content?: unknown): Promise<string> {
+export async function createWork(
+  title: string,
+  creator: string,
+  ownerUserId: string,
+  content?: unknown
+): Promise<string> {
   const wid = await queryValue("select gen_random_uuid()::text");
   await run(
-    "insert into publication.works (work_id, title, creator) values (:'wid', :'title', :'creator')",
-    { wid: wid!, title, creator }
+    "insert into publication.works (work_id, title, creator, owner_user_id) values (:'wid', :'title', :'creator', :'owner')",
+    { wid: wid!, title, creator, owner: ownerUserId }
   );
   const contentJson = content ? JSON.stringify(content) : "{}";
   await run(
@@ -217,8 +222,8 @@ export function getLatestRevision(workId: string) {
   );
 }
 
-/** 列出所有作品（含最新修订号/状态），供 Studio 作品列表。 */
-export function listWorks() {
+/** 列出当前用户的作品（含最新修订号/状态），供 Studio 作品列表。ownerUserId 为空时仅返回无主数据（兼容旧数据）。 */
+export function listWorks(ownerUserId: string) {
   return queryRows(
     `select w.work_id::text as work_id, w.title as title, w.creator as creator,
             coalesce(max(r.revision_no), 0)::text as revision_no,
@@ -226,8 +231,10 @@ export function listWorks() {
               where r2.work_id = w.work_id order by r2.revision_no desc limit 1) as status
      from publication.works w
      left join publication.work_revisions r on r.work_id = w.work_id
+     where w.owner_user_id = :'owner'
      group by w.work_id, w.title, w.creator
-     order by w.created_at desc`
+     order by w.created_at desc`,
+    { owner: ownerUserId }
   );
 }
 
