@@ -20,7 +20,7 @@
 | 152 动作验收账 | **0 PASS / 151 NOT_RUN / 1 UNVERIFIED**（交付包账簿，仍为设计态） | 交付包 `…152动作…V4.csv` |
 | 知识获取 | **3/5 主题双篮达标**（金泽/苏州河/豫园）；K2/K3/K5/K7 已实现；K4 支持文本/PDF/本机 Windows OCR 导入（Linux 需另接 OCR） | `K7K8_资料台与五主题重跑_20261029.md` |
 | P1 金线 | **40/40 PASS（API 级）+ 7 页截图 + 10 位邀请用户自动化冒烟（10/10）**；G1 仍差真人 beta | `P1_证据_20261029.csv`、`P1_beta10_20261029.json` |
-| 部署 | 线上为 `dpl_DetJ1…`（含 /studio/desk 的首版）；本地已继续领先多个提交；按 Owner 要求**暂不推送/部署**，待本地任务全部完成后统一上线 | `K7K8_资料台与五主题重跑_20261029.md` §五 |
+| 部署 | **已统一上线**：`dpl_J5baPp2…` READY，别名 `mohen-agent-2-0.vercel.app`，含 `/studio/desk`、`/admin/sources`、`/api/studio/materials/import`；云端 `imported_materials` 已迁移；本机 DNS 污染无法 HTTP 复核 | Vercel 部署记录 |
 | 数据库 | 本地 59 表（42 核心 + 17 应用）；归属迁移已应用本地；云端 Supabase 未执行新迁移 | `202610292000_content_ownership.sql` |
 | 内容规模 | 1 个用户、5 部作品、4 部已发布、23 个研究任务 | 本地库查询 |
 | 素材权利 | 权利库未建；历史影像/舆图 0 件 | M0 回执 |
