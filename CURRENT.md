@@ -20,7 +20,7 @@
 | 152 动作验收账 | **0 PASS / 151 NOT_RUN / 1 UNVERIFIED**（交付包账簿，仍为设计态） | 交付包 `…152动作…V4.csv` |
 | 知识获取 | **0/5 主题双篮达标**（证据≥5 且故事≥3）；K2/K5/K7 已实现，召回改善（朱家角 1→6、苏州河 2→14），故事篮仍 0–1 | `tasks/results/K0_知识获取基线_20261029.md`、`K7K8_资料台与五主题重跑_20261029.md` |
 | P1 金线 | **0/40**（已建账，状态 NOT_RUN） | `tasks/results/P1_金线40动作验收账_20261029.csv` |
-| 部署 | Vercel 已部署 READY 并别名；`AUTH_SECRET`/`MOHEN_INVITE_CODE` 已配；云端归属迁移已应用；本机 DNS 污染无法 HTTP 复核 | Vercel 部署 `dpl_Ea9QMS2…`；`K7K8_…` §五 |
+| 部署 | Vercel 已部署 READY 并别名（`dpl_DetJ1…`，含 `/studio/desk`）；`AUTH_SECRET`/`MOHEN_INVITE_CODE` 已配；云端归属迁移已应用；本机 DNS 污染无法 HTTP 复核 | `K7K8_资料台与五主题重跑_20261029.md` §五 |
 | 数据库 | 本地 59 表（42 核心 + 17 应用）；归属迁移已应用本地；云端 Supabase 未执行新迁移 | `202610292000_content_ownership.sql` |
 | 内容规模 | 1 个用户、5 部作品、4 部已发布、23 个研究任务 | 本地库查询 |
 | 素材权利 | 权利库未建；历史影像/舆图 0 件 | M0 回执 |
