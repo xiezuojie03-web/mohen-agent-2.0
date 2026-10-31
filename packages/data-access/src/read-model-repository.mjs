@@ -1,70 +1,40 @@
-const TABLE = {
-  world_projection: "read_model.world_projections",
-  agent_context: "read_model.agent_contexts",
-  story_seed: "read_model.story_seeds",
-  discovery_path: "read_model.discovery_paths",
-  map_timeline_projection: "read_model.map_timeline_projections",
-  evidence_pointer: "read_model.evidence_pointers",
-};
-
-const ID = {
-  world_projection: "projection_id",
-  agent_context: "agent_context_id",
-  story_seed: "story_seed_id",
-  discovery_path: "discovery_path_id",
-  map_timeline_projection: "map_timeline_projection_id",
-  evidence_pointer: "evidence_pointer_id",
-};
-
-/**
- * 双读消费者（G5 独立裁决的 consumer 维度）。
- * 视觉舞台与墨痕 Agent 各自审核、分别验权；允许一方撤权而另一方保留独立已批准的消费分面。
- */
-export const CONSUMERS = Object.freeze(["visual_stage", "agent"]);
-
-export function assertConsumer(c) {
-  if (c == null) return true; // 未声明：仅限内部审计全量，消费端必须显式声明 consumer
-  if (!CONSUMERS.includes(c)) throw new Error(`UNKNOWN_CONSUMER:${c}`);
-  return true;
+const MODELS = Object.freeze({
+ world_projection:['read_model.world_projections','projection_id'],
+ agent_context:['read_model.agent_contexts','agent_context_id'],
+ story_seed:['read_model.story_seeds','story_seed_id'],
+ discovery_path:['read_model.discovery_paths','discovery_path_id'],
+ map_timeline_projection:['read_model.map_timeline_projections','map_timeline_projection_id'],
+ evidence_pointer:['read_model.evidence_pointers','evidence_pointer_id'],
+});
+export const CONSUMERS=Object.freeze(['visual_stage','agent']);
+export function assertConsumer(consumer) {
+ if(!CONSUMERS.includes(consumer)) throw new Error('QUALIFICATION_CONTEXT_REQUIRED');
+ return true;
 }
-
+export function assertQualificationContext(options) {
+ assertConsumer(options?.consumer);
+ if(!options.purpose || !['namespace','code','version'].every(k=>typeof options.purpose[k]==='string' && options.purpose[k].length>0)
+   || !options.scope || typeof options.scope!=='object' || Array.isArray(options.scope)) throw new Error('QUALIFICATION_CONTEXT_REQUIRED');
+ return options;
+}
 export function createReadModelRepository(db) {
-  if (!db || typeof db.query !== "function") throw new Error("DB_QUERY_INTERFACE_REQUIRED");
-
-  return {
-    /**
-     * 只返回该 consumer 名下 G5 PASS 且 current_valid=true 的六类 L5 修订。
-     * opts.consumer 未声明时返回全量 G5 PASS（仅内部审计，不用于消费者读取）。
-     */
-    async listRuntimeEligible(kind, opts = {}) {
-      const table = TABLE[kind];
-      if (!table) throw new Error(`UNKNOWN_READ_MODEL_KIND:${kind}`);
-      assertConsumer(opts.consumer);
-      const consumerClause = opts.consumer ? " and g.consumer = $2" : "";
-      const params = opts.consumer ? [kind, opts.consumer] : [kind];
-      const { rows } = await db.query(
-        `select t.* from ${table} t
-         join control.gate_audits g
-           on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-          and g.object_type=$1 and g.object_id=t.${ID[kind]}${consumerClause}`, params
-      );
-      return rows;
-    },
-
-    async getRuntimeEligible(kind, id, opts = {}) {
-      const table = TABLE[kind];
-      if (!table) throw new Error(`UNKNOWN_READ_MODEL_KIND:${kind}`);
-      assertConsumer(opts.consumer);
-      const consumerClause = opts.consumer ? " and g.consumer = $3" : "";
-      const params = opts.consumer ? [kind, id, opts.consumer] : [kind, id];
-      const { rows } = await db.query(
-        `select t.* from ${table} t
-         join control.gate_audits g
-           on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-          and g.object_type=$1 and g.object_id=t.${ID[kind]}${consumerClause}
-         where t.${ID[kind]}=$2 limit 1`, params
-      );
-      return rows[0] ?? null;
-    }
-  };
+ if(!db || typeof db.query!=='function') throw new Error('DB_QUERY_INTERFACE_REQUIRED');
+ async function read(kind,id,options) {
+  const model=MODELS[kind];if(!model)throw new Error(`UNKNOWN_READ_MODEL_KIND:${kind}`);
+  const {consumer,purpose,scope}=assertQualificationContext(options);
+  const [table,key]=model;
+  const params=[kind,consumer,purpose.namespace,purpose.code,purpose.version,JSON.stringify(scope)];
+  if(id!==undefined)params.push(id);
+  // EXISTS returns each physical immutable-content fingerprint once, even with independent facets.
+  const {rows}=await db.query(`select t.* from ${table} t where exists (
+   select 1 from control.qualification_current q join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+   where q.gate_code='G5' and q.object_type=$1 and q.object_id=t.${key}
+    and control.qualification_allows(g.gate_audit_id,$2,$3,$4,$5,$6::jsonb)
+  )${id===undefined?'':` and t.${key}=$7 limit 1`}`,params);
+  return rows;
+ }
+ return {
+  listRuntimeEligible(kind,options) {return read(kind,undefined,options);},
+  async getRuntimeEligible(kind,id,options) {return (await read(kind,id,options))[0]??null;},
+ };
 }

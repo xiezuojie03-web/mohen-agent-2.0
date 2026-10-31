@@ -31,9 +31,9 @@ try {
     insert into control.gate_audits(run_id,stage,gate_code,object_type,object_id,result)
     select '00000000-0000-0000-0000-000000000010','D05','G5','fixture_legacy',md5(n::text)::uuid,'PASS' from generate_series(1,711) n;`);
   const columns = query(database, "select string_agg(quote_ident(attname),',' order by attnum) from pg_attribute where attrelid='control.gate_audits'::regclass and attnum>0 and not attisdropped");
-  const snapshotSql = `select md5(jsonb_agg(to_jsonb(g) order by gate_audit_id)::text) from (select ${columns} from control.gate_audits) g`;
+  const snapshotSql = `select md5(jsonb_agg(to_jsonb(g) order by gate_audit_id)::text) from (select ${columns} from control.gate_audits where object_type='fixture_legacy') g`;
   const before = query(database, snapshotSql);
-  const migrations = ["202610310900_k3_security_boundary.sql", "202610310910_k3_gate_candidates.sql"];
+  const migrations = ["202610310900_k3_security_boundary.sql", "202610310910_k3_gate_candidates.sql", "202611010900_k3_independent_gate_authority.sql"];
   for (const file of migrations) apply(file);
   if (query(database, snapshotSql) !== before) throw new Error("LEGACY_AUDIT_CHANGED");
   if (query(database, "select count(*) from control.gate_audits where decision_origin='legacy_untrusted'") !== "711" ||
@@ -41,7 +41,15 @@ try {
   const result = spawnSync(process.execPath, ["tests/data-production/db-security.integration.mjs"], { cwd: root,
     env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
   if (result.status !== 0) throw new Error("DB_SECURITY_TEST_FAILED");
+  const authorityResult = spawnSync(process.execPath, ["tests/data-production/gate-authority.integration.mjs"], { cwd: root,
+    env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
+  if (authorityResult.status !== 0) throw new Error("GATE_AUTHORITY_TEST_FAILED");
+  const consumptionResult = spawnSync(process.execPath, ["tests/data-production/read-model-qualification.integration.mjs"], { cwd: root,
+    env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
+  if (consumptionResult.status !== 0) throw new Error("QUALIFICATION_CONSUMPTION_TEST_FAILED");
+  const allAuditSnapshot = query(database, "select md5(jsonb_agg(to_jsonb(g) order by gate_audit_id)::text) from control.gate_audits g");
   for (const file of migrations) apply(file);
+  if (query(database, "select md5(jsonb_agg(to_jsonb(g) order by gate_audit_id)::text) from control.gate_audits g") !== allAuditSnapshot) throw new Error("REPEAT_MIGRATION_CHANGED_SIGNED_HISTORY");
   if (query(database, snapshotSql) !== before) throw new Error("REPEAT_MIGRATION_CHANGED_HISTORY");
   const columnInsertBefore = query(database, "select has_any_column_privilege('mohen_producer','control.gate_candidates','INSERT')");
   if (columnInsertBefore !== "t") throw new Error("CANDIDATE_COLUMN_GRANT_FIXTURE_MISSING");
