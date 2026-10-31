@@ -16,7 +16,7 @@
     "test:e2e": "playwright test",
     "guard:docs": "node scripts/check-doc-budget.mjs",
     "guard:structure": "node scripts/check-structure.mjs && node scripts/check-structure-map.mjs",
-    "guard:registry": "node scripts/check-production-registry.mjs",
+    "guard:registry": "node scripts/guards/check-production-registry.mjs",
     "guard:source-gate": "node scripts/check-source-gate.mjs",
     "guard:identifiers": "node scripts/check-identifier-registry.mjs",
     "guard:acquisition": "node scripts/check-acquisition-intents.mjs",
@@ -30,7 +30,9 @@
     "guard:registry:v3": "node scripts/guards/check-production-registry.mjs",
     "guard:no-legacy-production-entry": "node scripts/guards/check-no-legacy-production-entry.mjs",
     "guard:stage-handoff": "node scripts/guards/check-stage-handoff.mjs",
-    "test:data-production": "node --test tests/data-production/*.test.mjs",
+    "test:data-production": "node --test --experimental-test-isolation=none tests/data-production/*.test.mjs",
+    "test:k3-db": "node scripts/test-k3-db.mjs",
+    "guard:k3-traceability": "node scripts/guards/check-k3-traceability.mjs",
     "guard:physical-model": "node scripts/guards/check-physical-data-model.mjs",
     "test:physical-model": "node --test tests/data-production/physical-model.test.mjs",
     "guard:runtime-boundary": "node scripts/guards/check-runtime-data-boundary.mjs",
@@ -47,5 +49,8 @@
     "@playwright/test": "^1.55.0",
     "typescript": "^5.8.0",
     "vitest": "^3.2.0"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1"
   }
 }

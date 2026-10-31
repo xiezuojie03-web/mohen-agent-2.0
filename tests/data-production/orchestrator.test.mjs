@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadRegistry } from "../../pipelines/data-production/orchestrator/registry.mjs";
 import { createRunState } from "../../pipelines/data-production/orchestrator/run-state.mjs";
-import { runProduction } from "../../pipelines/data-production/orchestrator/orchestrator.mjs";
+import { runAuthorizedFixture as runProduction } from "./authorized-fixture.mjs";
 import { buildHumanReviewReport } from "../../pipelines/data-production/reporting/human-review-report.mjs";
 import { adapters as passAdapters } from "./fixture-adapters.mjs";
 

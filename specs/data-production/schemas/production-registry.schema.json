@@ -1,172 +1,589 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "MoHen Production Registry V3 Target Schema",
+  "title": "MoHen Production Registry 4.0 Target — Six-Stage Design Contract",
+  "description": "K3 target candidate. Validation of this data does not authorize production execution, Gate signing or deployment.",
   "type": "object",
   "required": [
+    "schema",
     "schema_version",
+    "architecture_generation",
+    "status",
+    "activation",
+    "authority",
+    "routing",
     "jobs"
   ],
   "properties": {
+    "schema": {
+      "const": "mohen.production-registry"
+    },
     "schema_version": {
-      "const": "3.0-target"
+      "const": "4.0-target"
+    },
+    "architecture_generation": {
+      "const": "mohen.six-stage.v1"
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "activation": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "reason"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "authority": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "routing": {
+      "type": "object",
+      "required": [
+        "methods",
+        "gates",
+        "route_decision_schema"
+      ],
+      "properties": {
+        "methods": {
+          "type": "string",
+          "minLength": 1
+        },
+        "gates": {
+          "type": "string",
+          "minLength": 1
+        },
+        "route_decision_schema": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
     },
     "jobs": {
       "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
       "items": {
-        "type": "object",
-        "required": [
-          "job_id",
-          "stage",
-          "data_layer",
-          "exit_gate",
-          "scope",
-          "implementation",
-          "inputs",
-          "outputs",
-          "write_scope",
-          "lineage_requirements",
-          "gates_enforced_by",
-          "execution_policy",
-          "retry",
-          "rollback",
-          "stop_conditions",
-          "tests"
-        ],
-        "properties": {
-          "job_id": {
+        "$ref": "#/$defs/job"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "stage": {
+                "const": "D00"
+              }
+            },
+            "required": [
+              "stage"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "stage": {
+                "const": "D01"
+              }
+            },
+            "required": [
+              "stage"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "stage": {
+                "const": "D02"
+              }
+            },
+            "required": [
+              "stage"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "stage": {
+                "const": "D03"
+              }
+            },
+            "required": [
+              "stage"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "stage": {
+                "const": "D04"
+              }
+            },
+            "required": [
+              "stage"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "stage": {
+                "const": "D05"
+              }
+            },
+            "required": [
+              "stage"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "job": {
+      "type": "object",
+      "required": [
+        "job_id",
+        "stage",
+        "data_layer",
+        "exit_gate",
+        "scope",
+        "implementation",
+        "inputs",
+        "outputs",
+        "control_outputs",
+        "write_scope",
+        "qualification_write_owner",
+        "method_binding",
+        "methods",
+        "execution_policy",
+        "retry",
+        "rollback",
+        "stop_conditions",
+        "tests"
+      ],
+      "properties": {
+        "job_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stage": {
+          "enum": [
+            "D00",
+            "D01",
+            "D02",
+            "D03",
+            "D04",
+            "D05"
+          ]
+        },
+        "data_layer": {
+          "enum": [
+            "L0",
+            "L1",
+            "L2",
+            "L3",
+            "L4",
+            "L5"
+          ]
+        },
+        "exit_gate": {
+          "enum": [
+            "G0",
+            "G1",
+            "G2",
+            "G3",
+            "G4",
+            "G5"
+          ]
+        },
+        "scope": {
+          "type": "object",
+          "required": [
+            "required",
+            "kind"
+          ],
+          "properties": {
+            "required": {
+              "const": true
+            },
+            "kind": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": true
+        },
+        "implementation": {
+          "type": "object",
+          "required": [
+            "skill",
+            "executor",
+            "adapter_binding",
+            "gate_reviewer_binding"
+          ],
+          "properties": {
+            "skill": {
+              "type": "string",
+              "minLength": 1
+            },
+            "executor": {
+              "type": "string",
+              "minLength": 1
+            },
+            "adapter_binding": {
+              "type": "string",
+              "minLength": 1
+            },
+            "gate_reviewer_binding": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": true
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
             "type": "string"
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "control_outputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "write_scope": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "qualification_write_owner": {
+          "type": "string"
+        },
+        "method_binding": {
+          "type": "string"
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "execution_policy": {
+          "type": "object",
+          "required": [
+            "enabled",
+            "attended",
+            "unattended",
+            "batch",
+            "interactive",
+            "enable_requires"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "attended": {
+              "type": "boolean"
+            },
+            "unattended": {
+              "type": "boolean"
+            },
+            "batch": {
+              "type": "boolean"
+            },
+            "interactive": {
+              "type": "boolean"
+            },
+            "enable_requires": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           },
-          "stage": {
-            "enum": [
-              "D01",
-              "D02",
-              "D03",
-              "D04",
-              "D05"
-            ]
-          },
-          "data_layer": {
-            "enum": [
-              "L0",
-              "L1",
-              "L2",
-              "L3",
-              "L4"
-            ]
-          },
-          "exit_gate": {
-            "enum": [
-              "G0",
-              "G1",
-              "G2",
-              "G3",
-              "G4"
-            ]
-          },
-          "scope": {
-            "type": "object"
-          },
-          "search_strategy": {
-            "enum": [
-              "broad",
-              "directed",
-              "mixed"
-            ]
-          },
-          "implementation": {
-            "type": "object",
-            "required": [
-              "executor"
-            ],
+          "additionalProperties": true
+        },
+        "retry": {
+          "type": "object"
+        },
+        "rollback": {
+          "type": "object"
+        },
+        "stop_conditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tests": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "if": {
             "properties": {
-              "skill": {
-                "type": [
-                  "string",
-                  "null"
+              "stage": {
+                "const": "D00"
+              }
+            },
+            "required": [
+              "stage"
+            ]
+          },
+          "then": {
+            "properties": {
+              "data_layer": {
+                "const": "L0"
+              },
+              "exit_gate": {
+                "const": "G0"
+              },
+              "qualification_write_owner": {
+                "const": "independent-G0"
+              },
+              "write_scope": {
+                "const": [
+                  "L0"
                 ]
-              },
-              "executor": {
-                "type": "string"
-              },
-              "adapters": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
               }
             }
-          },
-          "inputs": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "outputs": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "write_scope": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "lineage_requirements": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "gates_enforced_by": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "execution_policy": {
-            "type": "object",
-            "required": [
-              "attended",
-              "unattended"
-            ],
+          }
+        },
+        {
+          "if": {
             "properties": {
-              "attended": {
-                "type": "boolean"
+              "stage": {
+                "const": "D01"
+              }
+            },
+            "required": [
+              "stage"
+            ]
+          },
+          "then": {
+            "properties": {
+              "data_layer": {
+                "const": "L1"
               },
-              "unattended": {
-                "type": "boolean"
+              "exit_gate": {
+                "const": "G1"
               },
-              "automation_limit": {
-                "type": "string"
+              "qualification_write_owner": {
+                "const": "independent-G1"
+              },
+              "write_scope": {
+                "const": [
+                  "L1"
+                ]
               }
             }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "stage": {
+                "const": "D02"
+              }
+            },
+            "required": [
+              "stage"
+            ]
           },
-          "retry": {
-            "type": "object"
-          },
-          "rollback": {
-            "type": "object"
-          },
-          "stop_conditions": {
-            "type": "array",
-            "items": {
-              "type": "string"
+          "then": {
+            "properties": {
+              "data_layer": {
+                "const": "L2"
+              },
+              "exit_gate": {
+                "const": "G2"
+              },
+              "qualification_write_owner": {
+                "const": "independent-G2"
+              },
+              "write_scope": {
+                "const": [
+                  "L2"
+                ]
+              }
             }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "stage": {
+                "const": "D03"
+              }
+            },
+            "required": [
+              "stage"
+            ]
           },
-          "tests": {
-            "type": "array",
-            "items": {
-              "type": "string"
+          "then": {
+            "properties": {
+              "data_layer": {
+                "const": "L3"
+              },
+              "exit_gate": {
+                "const": "G3"
+              },
+              "qualification_write_owner": {
+                "const": "independent-G3"
+              },
+              "write_scope": {
+                "const": [
+                  "L3"
+                ]
+              }
             }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "stage": {
+                "const": "D04"
+              }
+            },
+            "required": [
+              "stage"
+            ]
           },
-          "human_review_view": {
-            "type": "object"
+          "then": {
+            "properties": {
+              "data_layer": {
+                "const": "L4"
+              },
+              "exit_gate": {
+                "const": "G4"
+              },
+              "qualification_write_owner": {
+                "const": "independent-G4"
+              },
+              "write_scope": {
+                "const": [
+                  "L4"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "stage": {
+                "const": "D05"
+              }
+            },
+            "required": [
+              "stage"
+            ]
+          },
+          "then": {
+            "properties": {
+              "data_layer": {
+                "const": "L5"
+              },
+              "exit_gate": {
+                "const": "G5"
+              },
+              "qualification_write_owner": {
+                "const": "independent-G5"
+              },
+              "write_scope": {
+                "const": [
+                  "L5"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "DESIGN_TARGET_NOT_APPLIED"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "jobs": {
+            "items": {
+              "properties": {
+                "execution_policy": {
+                  "properties": {
+                    "enabled": {
+                      "const": false
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
           }
         }
       }
     }
-  }
+  ]
 }

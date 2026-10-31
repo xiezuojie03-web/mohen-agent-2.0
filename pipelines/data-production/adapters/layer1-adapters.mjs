@@ -7,11 +7,11 @@
 //     的 psql 驱动写 42 表；run.mjs 仍是唯一编排入口（--adapters 指向本模块）。
 //   - D02/D03/D04 调 DeepSeek（复用金样本 SAMPLE-TRIAL-10 分步提示词 + schema）；
 //     D00/D01/D05 规则类为确定性代码，不调 LLM。
-//   - producer_may_self_qualify=false：gate 结果只写 append-only gate_audits，
-//     adapter 不自行授 PASS 资格；此处 PASS 为「提交候选并通过 G 门」的机器判定。
+//   - Producer只提交带完整版本/用途/证据的候选；独立Gate未绑定时停止，不自写资格。
 import { randomUUID } from "node:crypto";
 import { createHash } from "node:crypto";
 import { run as dbRun, queryValue as dbQueryValue, queryRows as dbQueryRows } from "../../../packages/data-access/src/index.mjs";
+import { createDataProductionRepository } from "../../../packages/data-access/src/data-production-repository.mjs";
 import { computePreciseInvalidation } from "../../../packages/data-access/src/invalidation.mjs";
 
 const ARCH = "mohen.six-stage.v1";
@@ -219,25 +219,15 @@ function hold(reason_code, missing_requirement, next_action, recheck_condition) 
 }
 
 async function writeGate(runId, stage, gateCode, objectType, objectId, result, reasonCodes, details, consumer = null) {
-  // append-only + current_valid：先失效同键旧决策，再插入新决策（producer 不自授 PASS，仅登记）
-  await dbRun(
-    `update control.gate_audits set current_valid = false
-     where gate_code = :'gate_code' and object_type = :'object_type' and object_id = :'object_id'::uuid
-       and consumer is not distinct from :'consumer' and current_valid = true`,
-    { gate_code: gateCode, object_type: objectType, object_id: objectId, consumer }
-  );
-  await dbRun(
-    `insert into control.gate_audits
-     (run_id, stage, gate_code, object_type, object_id, result, reason_codes, guard_versions, details,
-      checked_at, architecture_generation, current_valid, consumer)
-     values (:'run_id'::uuid, :'stage', :'gate_code', :'object_type', :'object_id'::uuid, :'result',
-             :'reason_codes'::text[], '{}'::jsonb, :'details'::jsonb, now(), :'arch', true, :'consumer')`,
-    {
-      run_id: runId, stage, gate_code: gateCode, object_type: objectType,
-      object_id: objectId, result, reason_codes: reasonCodes.length ? `{${reasonCodes.join(",")}}` : "{}",
-      details: JSON.stringify(details), arch: ARCH, consumer,
-    }
-  );
+  const metadata = details?.qualification_request;
+  // Never invent object revisions or policy/evidence identity for legacy calls.
+  if (!metadata) throw new Error("GATE_CANDIDATE_METADATA_REQUIRED");
+  const repository = createDataProductionRepository({ query: async (sql, values) => {
+    const params = Object.fromEntries(values.map((v, i) => [`p${i + 1}`, v]));
+    const named = sql.replace(/\$(\d+)/g, (_match, n) => `:'p${n}'`);
+    return { rows: await dbQueryRows(named, params) };
+  } });
+  return repository.recordGate({ ...metadata, runId, stage, gateCode, objectType, objectId, result, consumer });
 }
 
 // ============================================================
@@ -1203,27 +1193,9 @@ function entitiesForText(text, labels) {
 // V1.4：追加式重跑的 supersession 语义——本 adapter 每次 run 全量重产整片切口的
 // L5 发布，因此新 run 发布前，将本切片此前的 current_valid G5 决策（两消费端）
 // 全部置为失效（append-only：旧行保留、可审计，只是不再 current）。
-async function supersedePriorG5(objectType) {
-  // 主题隔离：仅失效与本主题前缀（TOPIC_KEY + "-"）同槽位的先前 G5，
-  // 避免 A001 运行误伤 金泽 既有 G5（保护在线 金泽 体验的实时 read_model 层）。
-  const prefix = `${TOPIC_KEY}-`;
-  const keyed = {
-    world_projection: { table: "read_model.world_projections", id: "projection_id" },
-    map_timeline_projection: { table: "read_model.map_timeline_projections", id: "map_timeline_projection_id" },
-  };
-  const cfg = keyed[objectType];
-  if (!cfg) return; // seed/ctx/oq/ep 按 run 唯一键天然隔离，无需前缀失效
-  for (const consumer of ["agent", "visual_stage"]) {
-    await dbRun(
-      `update control.gate_audits g set current_valid = false
-       from ${cfg.table} t
-       where t.${cfg.id} = g.object_id::uuid
-         and g.gate_code='G5' and g.object_type=:'otype' and g.result='PASS' and g.current_valid=true
-         and g.consumer is not distinct from :'consumer'
-         and t.projection_key like :'prefix' || '%'`,
-      { otype: objectType, consumer, prefix }
-    );
-  }
+async function supersedePriorG5(_objectType) {
+  // Supersession belongs to the independently authorized qualification transaction.
+  throw new Error("INDEPENDENT_GATE_SUPERSESSION_REQUIRED");
 }
 
 async function d05ReadModelPublication({ run, job, input, context }) {

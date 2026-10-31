@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 // API-X04 GET /api/admin/publications —— 已发布列表（运营视角）
 // API-050 POST /api/admin/publications —— 发布作品（对齐 FA-055-01）
 export async function GET(req: NextRequest) {
-  if (!isOperator(req.cookies.get(OPERATOR_COOKIE)?.value)) {
+  if (!(await isOperator(req.cookies.get(OPERATOR_COOKIE)?.value))) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }
   await processDueSchedules(); // 惰性触发到期的定时发布
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const session = getSessionUser(req.cookies.get(OPERATOR_COOKIE)?.value);
+  const session = (await getSessionUser(req.cookies.get(OPERATOR_COOKIE)?.value));
   if (!session || !session.r.includes("operator")) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }

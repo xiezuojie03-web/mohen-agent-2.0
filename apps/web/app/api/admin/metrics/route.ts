@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 // API-004 GET /api/admin/metrics —— 运营指标（基础版：真实计数，对齐 FA-052-01）
 export async function GET(req: NextRequest) {
-  if (!isOperator(req.cookies.get(OPERATOR_COOKIE)?.value)) {
+  if (!(await isOperator(req.cookies.get(OPERATOR_COOKIE)?.value))) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }
   const works = await queryValue("select count(*)::int from publication.works");

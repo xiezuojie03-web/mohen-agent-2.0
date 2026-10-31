@@ -16,7 +16,7 @@ const VALID_ROLES = ["member", "creator", "operator", "reviewer"];
  * - 保留至少一名 active operator / reviewer。
  */
 export async function POST(req: NextRequest) {
-  const session = getSessionUser(req.cookies.get(OPERATOR_COOKIE)?.value);
+  const session = (await getSessionUser(req.cookies.get(OPERATOR_COOKIE)?.value));
   if (!session || (!session.r.includes("operator") && !session.r.includes("reviewer"))) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }

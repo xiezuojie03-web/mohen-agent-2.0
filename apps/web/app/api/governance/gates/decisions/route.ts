@@ -9,10 +9,10 @@ export const dynamic = "force-dynamic";
 // 独立 Reviewer 用登录身份（roles 含 reviewer）签核「知识引用 + 媒体权利」；Operator 不得代签（CR-04）。
 export async function POST(req: NextRequest) {
   const token = req.cookies.get(OPERATOR_COOKIE)?.value;
-  if (!verifyReviewer(token)) {
+  if (!(await verifyReviewer(token))) {
     return NextResponse.json({ ok: false, reason: "reviewer_forbidden" }, { status: 403 });
   }
-  const session = getSessionUser(token);
+  const session = (await getSessionUser(token));
 
   let work_id: unknown;
   let revision_id: unknown;

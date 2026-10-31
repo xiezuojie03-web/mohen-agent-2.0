@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 // API-020 GET /api/governance/gates/requests —— 待审/最近 Gate 请求（对齐 FA-062-01；reviewer 或 operator 可见）
 export async function GET(req: NextRequest) {
   const token = req.cookies.get(OPERATOR_COOKIE)?.value;
-  if (!hasRole(token, "reviewer") && !hasRole(token, "operator")) {
+  if (!(await hasRole(token, "reviewer")) && !(await hasRole(token, "operator"))) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }
   const requests = await queryRows(

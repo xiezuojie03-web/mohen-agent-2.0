@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 // POST /api/admin/settings —— 调整可授权系统设置（对齐 FA-061-02，真实持久化）
 export async function POST(req: NextRequest) {
-  if (!isOperator(req.cookies.get(OPERATOR_COOKIE)?.value)) {
+  if (!(await isOperator(req.cookies.get(OPERATOR_COOKIE)?.value))) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }
   let key: unknown;
@@ -27,7 +27,10 @@ export async function POST(req: NextRequest) {
 }
 
 // GET /api/admin/settings —— 读取系统设置
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!(await isOperator(req.cookies.get(OPERATOR_COOKIE)?.value))) {
+    return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
+  }
   const settings = await getSettings();
   return NextResponse.json({ ok: true, settings });
 }

@@ -5,7 +5,7 @@
 // - 注册改为邀请制（MOHEN_INVITE_CODE）；Owner 首次开通需 OWNER_EMAIL + OWNER_SETUP_TOKEN；
 // - AUTH_SECRET 不再有默认值；未配置时所有签发/验签直接失败（fail-closed）；
 // - 删除 app 层 admin 环境变量后门（OPS_USERNAME/OPS_PASSWORD）；
-// - 兼容约定 OPERATOR_COOKIE / isOperator(token) 保持不变，既有路由无需改动。
+// - 保留 Cookie 和 HTTP 形状；请求授权必须异步读取当前账户，签名角色不作授权。
 //
 // 纪律：密码仅存 scrypt 盐+哈希、绝不落明文/不回显；token 仅存 httpOnly cookie。
 import crypto from "node:crypto";
@@ -78,8 +78,9 @@ export function parseSessionToken(token: string | undefined | null): { uid: stri
   if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
   try {
     const data = JSON.parse(fromB64url(payload)) as SessionPayload;
-    if (!data || typeof data.uid !== "string" || !Array.isArray(data.r)) return null;
-    if (typeof data.exp === "number" && data.exp < Date.now()) return null;
+    if (!data || typeof data.uid !== "string" || !data.uid.trim() ||
+        !Array.isArray(data.r) || !data.r.every(r => typeof r === "string")) return null;
+    if (!Number.isSafeInteger(data.exp) || data.exp <= Date.now()) return null;
     return { uid: data.uid, r: data.r };
   } catch {
     return null;
@@ -87,17 +88,36 @@ export function parseSessionToken(token: string | undefined | null): { uid: stri
 }
 
 // ---------- 兼容旧接口（既有路由零改动） ----------
-export function isOperator(token: string | undefined | null): boolean {
+export async function isOperator(token: string | undefined | null): Promise<boolean> {
   return hasRole(token, "operator");
 }
 
-export function hasRole(token: string | undefined | null, role: string): boolean {
-  const s = parseSessionToken(token);
+export async function hasRole(token: string | undefined | null, role: string): Promise<boolean> {
+  const s = await getSessionUser(token);
   return !!s && s.r.includes(role);
 }
 
-export function getSessionUser(token: string | undefined | null): { uid: string; r: string[] } | null {
-  return parseSessionToken(token);
+export async function getSessionUser(token: string | undefined | null): Promise<{ uid: string; r: string[] } | null> {
+  const resolution = await resolveSession(token);
+  return resolution.state === "authenticated" ? resolution.session : null;
+}
+
+type SessionResolution =
+  | { state: "authenticated"; session: { uid: string; r: string[] } }
+  | { state: "unauthenticated" | "unavailable" };
+
+/** Middleware can report dependency failure distinctly while compatibility callers fail closed. */
+export async function resolveSession(token: string | undefined | null): Promise<SessionResolution> {
+  const signed = parseSessionToken(token);
+  if (!signed) return { state: "unauthenticated" };
+  try {
+    const user = await findUserById(signed.uid);
+    if (!user || user.status !== "active") return { state: "unauthenticated" };
+    return { state: "authenticated", session: { uid: user.user_id, r: user.roles } };
+  } catch {
+    // A dependency failure must never restore the stale signed role list.
+    return { state: "unavailable" };
+  }
 }
 
 // ---------- 用户查询（roles 用 array_to_string 归一化，兼容 psql/node-pg 双通道） ----------

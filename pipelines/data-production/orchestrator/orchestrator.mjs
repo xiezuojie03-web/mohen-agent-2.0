@@ -1,5 +1,5 @@
 import { STAGE_ORDER, STAGE_CONTRACTS } from "./contracts.mjs";
-import { jobForStage } from "./registry.mjs";
+import { jobForStage, assertStageExecutionAuthorized } from "./registry.mjs";
 import { loadExecutor } from "./load-executor.mjs";
 import { finishRun } from "./run-state.mjs";
 
@@ -16,8 +16,13 @@ export async function runProduction({ run, registry, context = {}, from_stage = 
   if (start > 0 && input == null) throw new Error(`RESUME_INPUT_REQUIRED:${from_stage}`);
 
   for (const stage of STAGE_ORDER.slice(start, end + 1)) {
-    state.current_stage = stage;
     const job = jobForStage(registry, stage);
+    await assertStageExecutionAuthorized({ registry, job, run: state, input, context });
+    // CLI adapter modules may execute top-level code: evaluate only after authorization.
+    if (!context.adapters && typeof context.loadAdapters === "function") {
+      context = { ...context, adapters: await context.loadAdapters() };
+    }
+    state.current_stage = stage;
     const execute = await loadExecutor(stage);
     const result = await execute({ run: state, job, input, context });
     state.stage_results.push(result);

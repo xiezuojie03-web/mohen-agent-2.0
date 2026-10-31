@@ -30,13 +30,18 @@ jobs:
       - name: Unit tests (no DB)
         run: pnpm test:unit
 
+      - name: Production boundary regression (no DB)
+        run: pnpm test:data-production
+
+      - name: K3 requirement traceability
+        run: pnpm guard:k3-traceability
+
       - name: Build
         run: pnpm build
 
-      # P0-1 回归门：受保护 API 必须有 route 级鉴权/归属（middleware 只是兜底）。
-      # 目前仍有历史缺口，先以报告模式运行；P0-1 收口后改为 `pnpm guard:auth:strict`。
-      - name: Auth coverage report
-        run: pnpm guard:auth
+      # 静态覆盖不是运行安全证明；完整DB角色/RLS测试仍是独立门。
+      - name: Auth coverage gate
+        run: node scripts/check-auth-coverage.mjs --strict --out /tmp/k3-auth-coverage.csv
 
       # 说明：数据库集成测试（pnpm test）需要本机 PostgreSQL 快照，暂不在 CI 跑；
       # 待 P0-6 把旧套件隔离、新增无库单测后再接入。

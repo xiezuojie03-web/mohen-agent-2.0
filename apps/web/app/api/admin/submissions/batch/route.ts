@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 // POST /api/admin/submissions/batch —— 批量处理同类别审核（对齐 FA-054-02）
 export async function POST(req: NextRequest) {
-  const session = getSessionUser(req.cookies.get(OPERATOR_COOKIE)?.value);
+  const session = (await getSessionUser(req.cookies.get(OPERATOR_COOKIE)?.value));
   if (!session || !session.r.includes("operator")) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }

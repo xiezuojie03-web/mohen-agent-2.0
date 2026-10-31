@@ -3,13 +3,14 @@
 // 约定：表名与列名只来自本文件的常量映射，绝不拼接外部输入。
 import { queryValue } from "@mohen/data-access";
 
-export type OwnedTable = "publication.works" | "public.research_tasks" | "public.explore_sessions" | "public.director_plans";
+export type OwnedTable = "publication.works" | "public.research_tasks" | "public.explore_sessions" | "public.director_plans" | "public.conversations";
 
 const ID_COLUMN: Record<OwnedTable, string> = {
   "publication.works": "work_id",
   "public.research_tasks": "task_id",
   "public.explore_sessions": "session_id",
   "public.director_plans": "plan_id",
+  "public.conversations": "conversation_id",
 };
 
 /** 该行是否属于该用户（owner_user_id 匹配）。 */

@@ -8,6 +8,7 @@
 // - 公开阅读（/api/public/*、已发布作品、帮助、政策、搜索）
 // 其余（studio/works/explore/admin/governance/notifications/mohen）一律要求登录。
 import { NextRequest, NextResponse } from "next/server";
+import { resolveSession } from "./lib/auth";
 
 const COOKIE = "mohen_role";
 
@@ -30,47 +31,6 @@ function isPublic(pathname: string): boolean {
   return PUBLIC_PREFIXES.some((p) => pathname.startsWith(p));
 }
 
-function b64urlToBytes(s: string): ArrayBuffer {
-  const p = s.replace(/-/g, "+").replace(/_/g, "/");
-  const padded = p + "=".repeat((4 - (p.length % 4)) % 4);
-  const bin = atob(padded);
-  const buf = new ArrayBuffer(bin.length);
-  const out = new Uint8Array(buf);
-  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
-  return buf;
-}
-
-type Session = { uid: string; r: string[]; exp?: number };
-
-async function verifyToken(token: string, secret: string): Promise<Session | null> {
-  const dot = token.indexOf(".");
-  if (dot <= 0) return null;
-  const payload = token.slice(0, dot);
-  const sig = token.slice(dot + 1);
-  try {
-    const key = await crypto.subtle.importKey(
-      "raw",
-      new TextEncoder().encode(secret),
-      { name: "HMAC", hash: "SHA-256" },
-      false,
-      ["verify"]
-    );
-    const ok = await crypto.subtle.verify(
-      "HMAC",
-      key,
-      b64urlToBytes(sig),
-      new TextEncoder().encode(payload)
-    );
-    if (!ok) return null;
-    const data = JSON.parse(new TextDecoder().decode(b64urlToBytes(payload))) as Session;
-    if (!data || typeof data.uid !== "string" || !Array.isArray(data.r)) return null;
-    if (typeof data.exp === "number" && data.exp < Date.now()) return null;
-    return data;
-  } catch {
-    return null;
-  }
-}
-
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   if (isPublic(pathname)) return NextResponse.next();
@@ -81,11 +41,15 @@ export async function middleware(req: NextRequest) {
   }
 
   const token = req.cookies.get(COOKIE)?.value;
-  const session = token ? await verifyToken(token, secret) : null;
-  if (!session) {
+  const resolution = await resolveSession(token);
+  if (resolution.state === "unavailable") {
+    return NextResponse.json({ ok: false, reason: "auth_dependency_unavailable" }, { status: 503 });
+  }
+  if (resolution.state !== "authenticated") {
     return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401 });
   }
 
+  const session = resolution.session;
   const headers = new Headers(req.headers);
   headers.set("x-mohen-uid", session.uid);
   headers.set("x-mohen-roles", session.r.join(","));

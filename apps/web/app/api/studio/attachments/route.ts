@@ -14,7 +14,7 @@ const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
 // 补缺施工第二步：真实落盘到 public/uploads 并登记 assets 候选台账；权利核验后续做。
 export async function POST(req: NextRequest) {
   const token = req.cookies.get(OPERATOR_COOKIE)?.value;
-  if (!getSessionUser(token)) {
+  if (!(await getSessionUser(token))) {
     return NextResponse.json({ ok: false, reason: "auth_required" }, { status: 401 });
   }
 

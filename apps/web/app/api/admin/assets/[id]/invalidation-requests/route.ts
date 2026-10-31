@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 // POST /api/admin/assets/:id/invalidation-requests —— 申请撤权（对齐 FA-058-02）
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!isOperator(req.cookies.get(OPERATOR_COOKIE)?.value)) {
+  if (!(await isOperator(req.cookies.get(OPERATOR_COOKIE)?.value))) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }
   const { id } = await params;

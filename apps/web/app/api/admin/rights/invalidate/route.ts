@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 // POST /api/admin/rights/invalidate —— 定向撤权（对齐 FA-059-02，P08 精准失效）
 export async function POST(req: NextRequest) {
-  if (!isOperator(req.cookies.get(OPERATOR_COOKIE)?.value)) {
+  if (!(await isOperator(req.cookies.get(OPERATOR_COOKIE)?.value))) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }
   let object_type: unknown;

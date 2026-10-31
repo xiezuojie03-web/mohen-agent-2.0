@@ -14,7 +14,7 @@ export function isReviewerConfigured(): boolean {
 }
 
 /** 校验 token 是否为独立 Reviewer（roles 含 reviewer）。 */
-export function verifyReviewer(token: string | undefined | null): boolean {
+export async function verifyReviewer(token: string | undefined | null): Promise<boolean> {
   return hasRole(token, "reviewer");
 }
 

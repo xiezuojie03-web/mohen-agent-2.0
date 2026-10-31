@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 // 未登录运营身份时明确拒绝（ROLE_FORBIDDEN 语义），不静默返回空。
 export async function GET(req: NextRequest) {
   const token = req.cookies.get(OPERATOR_COOKIE)?.value;
-  if (!isOperator(token)) {
+  if (!(await isOperator(token))) {
     return NextResponse.json({ authenticated: false, role: null, reason: "forbidden" }, { status: 403 });
   }
   return NextResponse.json({ authenticated: true, role: "operator" });

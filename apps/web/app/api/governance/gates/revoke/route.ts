@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 // API（E1-7 CR-10）POST /api/governance/gates/revoke —— 撤权阻断（P08 精准失效运行时接线）
 export async function POST(req: NextRequest) {
-  if (!isOperator(req.cookies.get(OPERATOR_COOKIE)?.value)) {
+  if (!(await isOperator(req.cookies.get(OPERATOR_COOKIE)?.value))) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }
   let object_type: unknown;

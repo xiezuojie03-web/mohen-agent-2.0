@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 // API-003 GET /api/admin/jobs —— 生产任务（对齐 FA-061-01 异常任务及执行回执）
 export async function GET(req: NextRequest) {
-  if (!isOperator(req.cookies.get(OPERATOR_COOKIE)?.value)) {
+  if (!(await isOperator(req.cookies.get(OPERATOR_COOKIE)?.value))) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }
   const jobs = await queryRows(

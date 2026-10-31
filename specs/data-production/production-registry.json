@@ -4,8 +4,8 @@
   "architecture_generation": "mohen.six-stage.v1",
   "status": "DESIGN_TARGET_NOT_APPLIED",
   "activation": {
-    "enabled": true,
-    "reason": "first-layer real loop verified (SAMPLE-TRIAL-12); Owner authorized 2026-10-17"
+    "enabled": false,
+    "reason": "K3 local migration: independent execution authority and least-privilege DB verification pending; historical sample evidence does not activate this generation."
   },
   "authority": [
     "governance/C2_MoHen_Humanistic_Data_OS_and_Dual_Skill_Architecture_V1.3.md",

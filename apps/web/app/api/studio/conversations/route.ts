@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import { createConversation, type ConversationMessage } from "../../../../lib/fine-capabilities";
-import { guardRoute } from "../../../../lib/guard";
+import { getSession } from "../../../../lib/session";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // POST /api/studio/conversations —— 创建新对话（对齐 FA-014-01，真实持久化）
 export async function POST(req: Request) {
-  const denied = await guardRoute(null, null);
-  if (denied) return denied;
+  const session = await getSession();
+  if (!session) return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401 });
   let title: unknown;
   let messages: unknown;
   try {
@@ -23,6 +23,6 @@ export async function POST(req: Request) {
         .filter((m) => m && typeof m === "object" && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
         .map((m) => ({ role: m.role, content: m.content }))
     : [];
-  const conversationId = await createConversation(typeof title === "string" ? title : "", msgs);
+  const conversationId = await createConversation(typeof title === "string" ? title : "", msgs, session.uid);
   return NextResponse.json({ ok: true, conversation_id: conversationId });
 }

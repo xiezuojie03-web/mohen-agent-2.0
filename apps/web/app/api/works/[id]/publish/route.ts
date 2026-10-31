@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 // 发布：仅 operator；P0-4 起必须通过「独立签核 + 媒体权利 + 两把钥匙」四道门。
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = getSessionUser(req.cookies.get(OPERATOR_COOKIE)?.value);
+  const session = (await getSessionUser(req.cookies.get(OPERATOR_COOKIE)?.value));
   if (!session || !session.r.includes("operator")) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }

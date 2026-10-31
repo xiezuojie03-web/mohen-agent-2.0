@@ -177,6 +177,7 @@ export async function queryRows(sql, params) {
   const usePg = driver === "pg" || (driver !== "psql" && !fs.existsSync(PSQL_PATH));
   if (!usePg) {
     const { stdout } = await execSql(sql, params, [
+      "--quiet",
       "--csv",
       "-P",
       "footer=off",

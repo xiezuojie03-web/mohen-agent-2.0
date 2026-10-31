@@ -14,7 +14,7 @@ const NAV = [
 
 // API-007 GET /api/admin/navigation —— 运营导航（对齐 FA-051-01）
 export async function GET(req: NextRequest) {
-  if (!isOperator(req.cookies.get(OPERATOR_COOKIE)?.value)) {
+  if (!(await isOperator(req.cookies.get(OPERATOR_COOKIE)?.value))) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }
   return NextResponse.json({ ok: true, navigation: NAV });

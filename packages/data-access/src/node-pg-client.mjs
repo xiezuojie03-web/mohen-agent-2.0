@@ -25,11 +25,16 @@ export function getNodePgPool() {
   if (_pool) return _pool;
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL 未设置（serverless 消费层需显式注入）");
+  const local = isLocalHost(url);
+  const connection = new URL(url);
+  // pg connection-string SSL flags can override the Pool ssl object.
+  // Keep configured CA/client certificates, but never allow remote no-verify modes.
+  if (!local) connection.searchParams.set("sslmode", "verify-full");
   _pool = new pg.Pool({
-    connectionString: url,
+    connectionString: connection.toString(),
     max: 5,
     // 远端（Supabase 等）强制 SSL；本机 PG 明文即可
-    ssl: isLocalHost(url) ? false : { rejectUnauthorized: false },
+    ssl: local ? false : { rejectUnauthorized: true },
   });
   return _pool;
 }

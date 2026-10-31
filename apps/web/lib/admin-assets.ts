@@ -1,6 +1,5 @@
 // apps/web/lib/admin-assets.ts — 图片资产台账（E1-4）数据访问
 import { queryRows, queryValue, run } from "@mohen/data-access";
-import { createGovernanceRun, writeGovernanceGate } from "./governance-gate";
 
 export interface AssetCandidate {
   title: string;
@@ -37,7 +36,7 @@ export function listAssets(filter: AssetFilter = {}) {
   );
 }
 
-/** 资产晋级：candidate/demo → verified，写治理 run + G5 门禁记录（R15：无门禁不得晋级）。 */
+/** Promotion requires independent qualification; Operator approval cannot issue G5. */
 export async function promoteAsset(assetId: string, operator: string): Promise<{ ok: boolean; reason?: string }> {
   const row = await queryRows(
     "select asset_id::text as asset_id, title, status from public.assets where asset_id = :'id'",
@@ -46,14 +45,8 @@ export async function promoteAsset(assetId: string, operator: string): Promise<{
   if (!row.length) return { ok: false, reason: "asset_not_found" };
   if (row[0].status === "verified") return { ok: false, reason: "already_verified" };
 
-  const runId = await createGovernanceRun(`资产晋级：${row[0].title}`);
-  await writeGovernanceGate(runId, "asset", assetId, "admin", {
-    title: String(row[0].title ?? ""),
-    operator,
-    promoted_at: new Date().toISOString(),
-  });
-  await run("update public.assets set status = 'verified' where asset_id = :'id'", { id: assetId });
-  return { ok: true };
+  // Promotion waits for a separately authorized professional qualification.
+  return { ok: false, reason: "independent_gate_required" };
 }
 
 export async function addAssetCandidate(input: AssetCandidate): Promise<string> {

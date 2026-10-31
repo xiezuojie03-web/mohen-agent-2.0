@@ -13,6 +13,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { run as dbRun, queryRows } from "@mohen/data-access";
 import { prepareFreeTopic } from "./mohen-agent/prepare-topic";
+import { loadRegistry } from "../../../pipelines/data-production/orchestrator/registry.mjs";
 
 const EXECUTION_MODE = "unattended"; // 后台自驱动生产，非交互
 const ARCH = "mohen.six-stage.v1";
@@ -49,6 +50,21 @@ async function addEvent(taskId: string, stage: string, event: string, payload: u
   }
 }
 
+function productionBlocker(projectRoot: string): string | null {
+  try {
+    const registry = loadRegistry(projectRoot);
+    if (registry.status !== "ACTIVE_AUTHORIZED" || registry.activation.enabled !== true) return "production_registry_not_active";
+    if (registry.jobs.some(job => !job.execution_policy.enabled || !job.execution_policy.unattended)) return "production_job_disabled";
+    // Studio always generates a dynamic material file. Do not prepare/spend/start
+    // until that frozen snapshot has a signed execution-authority binding.
+    return "production_input_binding_required";
+  } catch { return "production_registry_invalid"; }
+}
+
+export async function failProductionRun(runId: string): Promise<void> {
+  await dbRun("update control.production_runs set status='FAILED', finished_at=now() where run_id=:'id'::uuid and status='RUNNING'", { id: runId });
+}
+
 /**
  * 触发一次真实生产（D00–D05）。fire-and-forget：本函数只负责登记 + 启动进程并返回 run_id，
  * 生产进度与终态由 run.mjs 内部回写 control.production_runs。
@@ -61,6 +77,8 @@ export async function triggerProduction(taskId: string, intent: string): Promise
   if (!fs.existsSync(runPath) || !fs.existsSync(adaptersPath)) {
     return { runId: "", started: false, reason: "production_entry_missing" };
   }
+  const blocker = productionBlocker(projectRoot);
+  if (blocker) return { runId: "", started: false, reason: blocker };
 
   // 自由主题准备：检索材料 + 组装动态主题配置（材料是生产前提，同步做；无材料则诚实降级）
   const prepared = await prepareFreeTopic(intent);
@@ -113,10 +131,12 @@ export async function triggerProduction(taskId: string, intent: string): Promise
     let stderrBuf = "";
     child.stderr?.on("data", (d) => { stderrBuf += String(d); });
     child.on("error", (err) => {
+      void failProductionRun(runId).catch(() => console.error("production_failure_persistence_unavailable"));
       console.error(`[studio-production] 生产进程启动失败 run=${runId}:`, err);
       void addEvent(taskId, "D00", "production_process_error", { run_id: runId, error: String(err) });
     });
     child.on("exit", (code) => {
+      if (code !== 0) void failProductionRun(runId).catch(() => console.error("production_failure_persistence_unavailable"));
       void addEvent(taskId, "D05", code === 0 ? "production_finished" : "production_failed", {
         run_id: runId,
         exit_code: code,
@@ -125,6 +145,7 @@ export async function triggerProduction(taskId: string, intent: string): Promise
     });
     child.unref?.(); // 不阻止父进程（Next.js）退出
   } catch (e) {
+    await failProductionRun(runId);
     return { runId, started: false, reason: "production_spawn_failed" };
   }
 

@@ -10,32 +10,31 @@ export interface ConversationMessage {
   created_at?: string;
 }
 
-export async function createConversation(title: string, messages: ConversationMessage[]): Promise<string> {
+export async function createConversation(title: string, messages: ConversationMessage[], ownerUserId: string): Promise<string> {
+  if (!ownerUserId) throw new Error("CONVERSATION_OWNER_REQUIRED");
   const id = await queryValue("select gen_random_uuid()::text");
   await run(
-    "insert into public.conversations (conversation_id, title, messages) values (:'id', :'title', :'msgs'::jsonb)",
-    { id: id!, title, msgs: JSON.stringify(messages) }
+    "insert into public.conversations (conversation_id, title, messages, owner_user_id) values (:'id', :'title', :'msgs'::jsonb, :'owner')",
+    { id: id!, title, msgs: JSON.stringify(messages), owner: ownerUserId }
   );
   return id!;
 }
 
-export async function getConversation(conversationId: string) {
+export async function getConversation(conversationId: string, ownerUserId: string) {
+  if (!ownerUserId) return null;
   const rows = await queryRows(
-    "select conversation_id::text as conversation_id, title, messages, created_at::text as created_at, updated_at::text as updated_at from public.conversations where conversation_id = :'id'",
-    { id: conversationId }
+    "select conversation_id::text as conversation_id, title, messages, created_at::text as created_at, updated_at::text as updated_at from public.conversations where conversation_id = :'id' and owner_user_id = :'owner'",
+    { id: conversationId, owner: ownerUserId }
   );
   return rows.length ? rows[0] : null;
 }
 
-export async function appendConversationMessage(conversationId: string, message: ConversationMessage): Promise<boolean> {
-  const row = await getConversation(conversationId);
+export async function appendConversationMessage(conversationId: string, message: ConversationMessage, ownerUserId: string): Promise<boolean> {
+  const row = await getConversation(conversationId, ownerUserId);
   if (!row) return false;
-  let messages: unknown[] = [];
-  try { messages = JSON.parse(String(row.messages ?? "[]")); } catch { messages = []; }
-  messages.push({ ...message, created_at: message.created_at ?? new Date().toISOString() });
   await run(
-    "update public.conversations set messages = :'msgs'::jsonb, updated_at = now() where conversation_id = :'id'",
-    { id: conversationId, msgs: JSON.stringify(messages) }
+    "update public.conversations set messages = coalesce(messages,'[]'::jsonb) || :'msgs'::jsonb, updated_at = now() where conversation_id = :'id' and owner_user_id = :'owner'",
+    { id: conversationId, owner: ownerUserId, msgs: JSON.stringify([{ ...message, created_at: message.created_at ?? new Date().toISOString() }]) }
   );
   return true;
 }

@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 // API-011 GET /api/admin/users —— 用户列表（对齐 FA-060-01）
 export async function GET(req: NextRequest) {
-  if (!isOperator(req.cookies.get(OPERATOR_COOKIE)?.value)) {
+  if (!(await isOperator(req.cookies.get(OPERATOR_COOKIE)?.value))) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }
   const rows = await queryRows(

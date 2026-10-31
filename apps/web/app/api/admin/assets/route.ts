@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 // API-001 GET /api/admin/assets —— 图片资产台账（对齐 FA-057-01 知识资产资格状态）
 // 支持检索：?kind=&status=&q=（按类别/状态/关键词过滤）
 export async function GET(req: NextRequest) {
-  if (!isOperator(req.cookies.get(OPERATOR_COOKIE)?.value)) {
+  if (!(await isOperator(req.cookies.get(OPERATOR_COOKIE)?.value))) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }
   const kind = req.nextUrl.searchParams.get("kind") || undefined;

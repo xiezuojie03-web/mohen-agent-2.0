@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 // API-055 POST /api/admin/submissions/:id/decision —— 审核通过/拒绝（对齐 FA-054-01）
 // approve = 发布（写入 published_pointers）；reject = 退回（status=rejected）。
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = getSessionUser(req.cookies.get(OPERATOR_COOKIE)?.value);
+  const session = (await getSessionUser(req.cookies.get(OPERATOR_COOKIE)?.value));
   if (!session || !session.r.includes("operator")) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }

@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 // POST /api/admin/publications/schedules —— 安排/取消定时发布（对齐 FA-055-02）
 // body: { work_id, publish_at } 安排；{ schedule_id, cancel: true } 取消。
 export async function POST(req: NextRequest) {
-  if (!isOperator(req.cookies.get(OPERATOR_COOKIE)?.value)) {
+  if (!(await isOperator(req.cookies.get(OPERATOR_COOKIE)?.value))) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }
 
