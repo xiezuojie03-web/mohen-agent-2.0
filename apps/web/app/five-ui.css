@@ -32,7 +32,7 @@ body {
 .mo-nav {
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 20;
   height: 64px;
   display: flex;
   align-items: center;
@@ -234,7 +234,7 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 48px;
   align-items: center;
 }
@@ -364,7 +364,7 @@ body {
 
 .mo-cards {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
 }
 .mo-mode-card {

@@ -96,9 +96,10 @@ export default function GlobalNav() {
   const roles = user?.roles ?? [];
   const isOperator = roles.includes("operator") || roles.includes("reviewer");
   const hasResults = works.length > 0 || knowledge.length > 0;
+  const modeNavigation = pathname === "/" ? [] : NAV_ITEMS;
   const visibleNav = isOperator
-    ? [...NAV_ITEMS, { href: "/admin", label: "运营管理 Admin" }]
-    : NAV_ITEMS;
+    ? [...modeNavigation, { href: "/admin", label: "运营管理 Admin" }]
+    : modeNavigation;
 
   return (
     <div className="mo-nav-wrap" ref={wrapRef}>

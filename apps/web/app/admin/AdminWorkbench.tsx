@@ -317,8 +317,8 @@ export default function AdminWorkbench({ summary }: { summary: ProductionRelatio
               <div className="admin__panel">
                 <h2>运营说明</h2>
                 <div className="admin__hint">
-                  作品审核与发布由运营负责人处理；历史知识的“合格”由数据生产链机器门禁（G0—G5）自动把关。
-                  作品发布前需独立审核者先签核「知识引用 + 媒体权利」。知识资产总量为真实值，其余指标如实显示。
+                  历史知识资格由独立专业Reviewer签发；运营审核与作品发布不能代签G0—G5。
+                  作品发布前还需独立审核知识引用与媒体权利。此处作品签核不等于知识资格签发；知识覆盖只反映当前读取结果。
                 </div>
               </div>
             </>

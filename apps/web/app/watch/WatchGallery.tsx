@@ -14,6 +14,7 @@ function parseBeats(content: string): Beat[] {
 }
 
 function formatTimecode(ms: number): string {
+  if (!Number.isFinite(ms) || ms < 0) return "时码未提供";
   const totalSec = Math.round(ms / 1000);
   const m = Math.floor(totalSec / 60);
   const s = totalSec % 60;
@@ -141,7 +142,8 @@ export default function WatchGallery() {
               </div>
             </div>
 
-            {/* 控制条 */}
+            <p className="watch__reading-notice">图文阅读 · 暂无可播放媒体</p>
+            {/* 图文章节阅读；自动翻页不是媒体播放。 */}
             <div className="watch__controls">
               <button
                 className="watch__ctrl"
@@ -151,8 +153,8 @@ export default function WatchGallery() {
               >
                 ⏮ 上一章
               </button>
-              <button className="watch__ctrl watch__ctrl--play" onClick={togglePlay} aria-label={playing ? "暂停" : "播放"}>
-                {playing ? "⏸ 暂停" : "▶ 播放"}
+              <button className="watch__ctrl watch__ctrl--play" onClick={togglePlay} aria-label={playing ? "停止翻页" : "自动翻页"}>
+                {playing ? "停止翻页" : "自动翻页"}
               </button>
               <button
                 className="watch__ctrl"
@@ -165,7 +167,7 @@ export default function WatchGallery() {
             </div>
 
             {/* 章节轴 */}
-            <div className="watch__timeline">
+            <div className="watch__timeline" aria-label="章节位置">
               <div className="watch__timeline-progress" style={{ width: `${progress}%` }} />
               {beats.map((b, i) => (
                 <button
@@ -175,7 +177,7 @@ export default function WatchGallery() {
                 >
                   <span className="watch__chapter-no">{String(i + 1).padStart(2, "0")}</span>
                   <span className="watch__chapter-title">{b.title}</span>
-                  <span className="watch__chapter-time">{formatTimecode(b.directorTimecodeMs)}</span>
+                  <span className="watch__chapter-time">导演时码 {formatTimecode(b.directorTimecodeMs)}</span>
                 </button>
               ))}
             </div>

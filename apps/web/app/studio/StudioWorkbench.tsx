@@ -63,7 +63,11 @@ export default function StudioWorkbench() {
   const [busy, setBusy] = useState(false);
 
   // 创作流程状态
-  const [plans, setPlans] = useState<{ planId: string; planA: DirectorPlan; planB: DirectorPlan; facts: string[] } | null>(null);
+  const [plans, setPlans] = useState<{ planId: string; planA: DirectorPlan; planB: DirectorPlan; facts: string[]; brief: string } | null>(null);
+  const [previewPlan, setPreviewPlan] = useState<"A" | "B" | null>(null);
+  const [adoptedDefinition, setAdoptedDefinition] = useState<DirectorPlan | null>(null);
+  const [adoptedBrief, setAdoptedBrief] = useState("");
+  const [adoptedPlanId, setAdoptedPlanId] = useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<"A" | "B" | null>(null);
   const [beats, setBeats] = useState<Beat[] | null>(null);
   const [generating, setGenerating] = useState(false);
@@ -106,7 +110,7 @@ export default function StudioWorkbench() {
         task_id?: string;
         production?: { ok?: boolean; run_id?: string; reason?: string } | null;
       };
-      const decision = json.decision;
+      const decision = res.ok && json.ok ? json.decision : undefined;
       if (!decision) {
         setMessages((m) => [...m, { role: "mohen", text: "这一下没接上，可以再问一次。" }]);
         return;
@@ -159,12 +163,10 @@ export default function StudioWorkbench() {
 
   async function generatePlans() {
     const brief = lastUserBrief;
-    if (!brief || generating) return;
+    if (!brief || generating || directing) return;
     setGenerating(true);
     setPlansError(null);
-    setPlans(null);
-    setSelectedPlan(null);
-    setBeats(null);
+    setPreviewPlan(null);
     try {
       const res = await fetch("/api/studio/director-plans", {
         method: "POST",
@@ -179,8 +181,8 @@ export default function StudioWorkbench() {
         planB?: DirectorPlan;
         facts?: string[];
       };
-      if (json.ok && json.planA && json.planB && json.plan_id) {
-        setPlans({ planId: json.plan_id, planA: json.planA, planB: json.planB, facts: json.facts ?? [] });
+      if (res.ok && json.ok && json.planA && json.planB && json.plan_id) {
+        setPlans({ planId: json.plan_id, planA: json.planA, planB: json.planB, facts: json.facts ?? [], brief });
       } else {
         setPlansError(
           json.reason === "no_material_or_llm"
@@ -197,12 +199,9 @@ export default function StudioWorkbench() {
 
   async function choosePlan(which: "A" | "B") {
     const plan = which === "A" ? plans?.planA : plans?.planB;
-    if (!plan || !plans || directing) return;
-    setSelectedPlan(which);
+    if (!plan || !plans || directing || generating) return;
     setDirecting(true);
-    setBeats(null);
-    setPanels(null);
-    setActiveTab(0);
+    setPlansError(null);
     try {
       const res = await fetch(`/api/studio/director-plans/${plans.planId}/select`, {
         method: "POST",
@@ -210,8 +209,15 @@ export default function StudioWorkbench() {
         body: JSON.stringify({ which }),
       });
       const json = (await res.json()) as { ok?: boolean; beats?: Beat[] };
-      if (json.ok && json.beats) {
+      if (res.ok && json.ok && Array.isArray(json.beats) && json.beats.length) {
+        setSelectedPlan(which);
+        setAdoptedPlanId(plans.planId);
+        setAdoptedDefinition(plan);
+        setAdoptedBrief(plans.brief);
         setBeats(json.beats);
+        setPanels(null);
+        setMediaCandidates(null);
+        setActiveTab(0);
         // 拉取画面候选素材（资产台账 verified 素材，供预览区展示）
         void (async () => {
           try {
@@ -232,9 +238,11 @@ export default function StudioWorkbench() {
         } finally {
           setPanelsLoading(false);
         }
+      } else {
+        setPlansError("采纳失败，原作品已保留，可以重试。");
       }
     } catch {
-      /* 忽略，保留原方案 */
+      setPlansError("采纳失败，原作品已保留，可以重试。");
     } finally {
       setDirecting(false);
     }
@@ -260,8 +268,8 @@ export default function StudioWorkbench() {
     setSubmitMsg(null);
     setSubmitErr(false);
     const content = {
-      brief: lastUserBrief ?? "",
-      plan: selectedPlan === "A" ? plans?.planA : selectedPlan === "B" ? plans?.planB : null,
+      brief: adoptedBrief,
+      plan: adoptedDefinition,
       beats: beats ?? [],
     };
     try {
@@ -289,7 +297,7 @@ export default function StudioWorkbench() {
   }
 
   const lastMohen = [...messages].reverse().find((m) => m.role === "mohen");
-  const materials = lastMohen?.materials ?? [];
+  const materials = [...new Map(messages.flatMap((message) => message.materials ?? []).map((material) => [material.id, material])).values()];
 
   return (
     <div className="studio">
@@ -359,7 +367,7 @@ export default function StudioWorkbench() {
                 {production.status === "RUNNING"
                   ? `正在生产（${production.current_stage ?? "启动中"}）…`
                   : production.status === "PASS"
-                    ? "生产完成，成果已入库。"
+                    ? "生产阶段已结束；知识资格需独立核验。"
                     : `生产结束（${production.status}），详情见任务事件。`}
               </div>
             )}
@@ -398,10 +406,11 @@ export default function StudioWorkbench() {
           <ColumnHead no="②" title="研究定方向" desc="墨痕研究，你在这里拍板方案" />
 
           <div className="studio__panel">
-            <h2>研究进度</h2>
-            <div className="studio__pipeline">
+            <h2>研究与作品形成</h2>
+            <p className="studio__empty">{busy ? "正在查询资料，已有内容会保留。" : materials.length ? "已获得材料线索；可以继续研究，也可以比较导演方案。" : "等待你的研究委托。"}</p>
+            <div className="studio__pipeline" aria-label="可能的研究步骤">
               {PIPELINE.map((p, i) => (
-                <div className={`studio__pipe${i === 0 ? " is-on" : ""}`} key={p}>
+                <div className="studio__pipe" key={p}>
                   <span className="studio__pipe-dot" />
                   <span>{p}</span>
                 </div>
@@ -414,14 +423,14 @@ export default function StudioWorkbench() {
               <h2>导演方案 A / B</h2>
               <button
                 className="studio__ghost-btn"
-                disabled={generating || !lastUserBrief}
+                disabled={generating || directing || !lastUserBrief}
                 onClick={() => void generatePlans()}
               >
                 {generating ? "构思中…" : "生成方案"}
               </button>
             </div>
 
-            {plansError && <p className="studio__submit-msg" style={{ color: "#b0413e" }}>{plansError}</p>}
+            {plansError && <p role="alert" className="studio__submit-msg" style={{ color: "#b0413e" }}>{plansError}</p>}
 
             {!plans && !generating && (
               <div className="studio__empty">
@@ -434,8 +443,10 @@ export default function StudioWorkbench() {
             {plans && (
               <div className="studio__ab">
                 <button
-                  className={`studio__plan studio__plan--a studio__plan--select${selectedPlan === "A" ? " is-selected" : ""}`}
-                  onClick={() => void choosePlan("A")}
+                  className={`studio__plan studio__plan--a studio__plan--select${selectedPlan === "A" && adoptedPlanId === plans.planId ? " is-selected" : ""}`}
+                  disabled={generating || directing}
+                  aria-pressed={selectedPlan === "A" && adoptedPlanId === plans.planId}
+                  onClick={() => setPreviewPlan("A")}
                 >
                   <p className="studio__plan-title">方案 A</p>
                   <p className="studio__plan-note">{plans.planA.angle}</p>
@@ -446,8 +457,10 @@ export default function StudioWorkbench() {
                   </ul>
                 </button>
                 <button
-                  className={`studio__plan studio__plan--b studio__plan--select${selectedPlan === "B" ? " is-selected" : ""}`}
-                  onClick={() => void choosePlan("B")}
+                  className={`studio__plan studio__plan--b studio__plan--select${selectedPlan === "B" && adoptedPlanId === plans.planId ? " is-selected" : ""}`}
+                  disabled={generating || directing}
+                  aria-pressed={selectedPlan === "B" && adoptedPlanId === plans.planId}
+                  onClick={() => setPreviewPlan("B")}
                 >
                   <p className="studio__plan-title">方案 B</p>
                   <p className="studio__plan-note">{plans.planB.angle}</p>
@@ -459,13 +472,20 @@ export default function StudioWorkbench() {
                 </button>
               </div>
             )}
+            {previewPlan && plans && <div className="studio__plan-preview" aria-label="方案比较预览">
+              <p>正在比较方案 {previewPlan}：{(previewPlan === "A" ? plans.planA : plans.planB).angle}；原作品未改变。</p>
+              <button className="studio__action" disabled={directing || generating} onClick={() => void choosePlan(previewPlan)}>采纳方案 {previewPlan}</button>
+              <button className="studio__ghost-btn" disabled={directing} onClick={() => setPreviewPlan(null)}>取消比较</button>
+            </div>}
             {directing && <div className="studio__typing">墨痕在写分镜章节…</div>}
           </div>
 
-          <div className="studio__panel">
-            <h2>关键历史素材</h2>
+          <section className="studio__panel" aria-label="研究资料与知识资产">
+            <h2>研究资料与知识资产</h2>
+            <p className="studio__empty">材料与知识候选可独立积累，不需要先发布作品。</p>
+            <h3>资料线索与待验证候选</h3>
             {materials.length === 0 ? (
-              <div className="studio__empty">还没有素材——你在左边向墨痕提问后，它找到的已审核材料会实时列在这里。</div>
+              <div className="studio__empty">尚未获得资料；研究返回的材料将保留其来源与认识标签，不自动成为正式资产。</div>
             ) : (
               <div className="studio__materials">
                 {materials.map((mat) => (
@@ -477,11 +497,13 @@ export default function StudioWorkbench() {
                 ))}
               </div>
             )}
-          </div>
+            <h3>正式合格资产</h3>
+            <p className="studio__empty">尚未接入当前资格，不能确认正式资产；上方资料不代表已获专业资格。</p>
+          </section>
         </section>
 
         {/* 右栏 ③：成稿提交（看分镜 + 提交审核） */}
-        <section className="studio__col studio__col--preview">
+        <section className="studio__col studio__col--preview" aria-label="作品产出">
           <ColumnHead no="③" title="成稿提交" desc="看分镜，起标题，提交审核" />
 
           <div className="studio__preview">
@@ -493,7 +515,7 @@ export default function StudioWorkbench() {
                 <div className="studio__preview-meta">第 1 / {beats.length} 个分镜</div>
               </div>
             ) : (
-              <div className="studio__preview-empty">选定导演方案并生成分镜后，这里显示 16:9 画面预览。</div>
+              <div className="studio__preview-empty">尚未形成作品。研究发现与材料可以独立积累；比较并采纳导演方案后，作品会在这里逐渐形成。</div>
             )}
           </div>
 

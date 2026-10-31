@@ -1,4 +1,3 @@
-import Link from "next/link";
 import ModeEntryCard, { type ModeVariant } from "./components/ModeEntryCard";
 
 export const metadata = {
@@ -34,16 +33,8 @@ const MODES: {
     title: "探索 EXP",
     desc: "独立探索整个合格的历史知识库",
   },
-  {
-    href: "/admin",
-    badge: "运营",
-    variant: "admin",
-    title: "运营管理 Admin",
-    desc: "作品审核、发布与知识资产管理",
-  },
-];
 
-const FLOW = ["委托", "创作", "审核", "观看", "探索"];
+];
 
 export default function Home() {
   return (
@@ -54,29 +45,17 @@ export default function Home() {
             <p className="mo-hero__eyebrow">墨痕 MOHEN</p>
             <h1 className="mo-hero__title">从广阔历史中，发现与今天生活的连接</h1>
             <p className="mo-hero__lead">
-              把史料讲成有人情味的故事。用自然语言委托墨痕做研究、写脚本、出分镜，
-              再沉浸观看作品，自由探索背后的历史知识世界。
+              从一个历史问题出发，发现人与地方、时代与日常生活的联系。
+              可以独立探索知识世界，也可以委托研究与创作，或观看已发布的作品。
             </p>
             <div className="mo-hero__cta">
-              <Link href="/studio" className="mo-btn mo-btn--primary">
-                开始创作
-              </Link>
               <a href="#modes" className="mo-btn mo-btn--ghost">
                 了解墨痕
               </a>
             </div>
           </div>
 
-          <div className="mo-hero__flow">
-            <div className="mo-flow__steps">
-              {FLOW.map((label, i) => (
-                <div className="mo-flow__step" key={label}>
-                  <span className="mo-flow__dot">{i + 1}</span>
-                  <span className="mo-flow__label">{label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+
         </div>
       </section>
 
@@ -94,21 +73,21 @@ export default function Home() {
             <h2 className="mo-panel__title">最近发布作品</h2>
             <div className="mo-empty">
               <span className="mo-empty__mark">—</span>
-              <span>暂无已发布作品，第 2 步接入后显示</span>
+              <span>这里将出现当前可观看的已发布作品</span>
             </div>
           </div>
           <div className="mo-panel">
             <h2 className="mo-panel__title">我的创作任务</h2>
             <div className="mo-empty">
               <span className="mo-empty__mark">—</span>
-              <span>暂无进行中的创作</span>
+              <span>登录后查看你的研究与创作任务</span>
             </div>
           </div>
           <div className="mo-panel">
             <h2 className="mo-panel__title">知识资产概览</h2>
             <div className="mo-empty">
               <span className="mo-empty__mark">—</span>
-              <span>知识库建设中，覆盖情况待接入</span>
+              <span>知识覆盖概览暂未接入</span>
             </div>
           </div>
         </div>

@@ -1,0 +1,3 @@
+repo_path,parent_delta_ids,purpose
+apps/web/app/explore/ExplorePresentation.tsx,UXD7-EXP-01;UXD7-EXP-02,Independent frontend presentation preferences and responsive shell; no semantic Runtime or API fields
+playwright.uxd7.config.ts,UXD7-TEST-01;UXD7-TEST-02;UXD7-TEST-03,Dedicated browser verification without live DB or unrelated server reuse

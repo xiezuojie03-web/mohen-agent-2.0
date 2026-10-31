@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import ExplorePresentation from "./ExplorePresentation";
 import type { ProductionRelationSummary } from "../../lib/read-model-bridge";
 import type { AgentDecision } from "@mohen/agent-runtime";
 import type { InsightGraph } from "../../lib/studio-creation";
 import { humanEpistemic } from "../experience/jinze-water-net/humanLabels";
+
+class ExplorationRequestError extends Error {}
 
 type View = "relation" | "timeline" | "spatial" | "story";
 
@@ -157,7 +160,8 @@ function InsightGraphView({ graph }: { graph: InsightGraph }) {
 }
 
 export default function ExploreWorkbench({ summary }: { summary: ProductionRelationSummary }) {
-  const [view, setView] = useState<View>("relation");
+  const requestVersion = useRef(0);
+  const [surfaces, setSurfaces] = useState<View[]>(["relation"]);
 
   // 自然语言探索
   const [question, setQuestion] = useState("");
@@ -175,12 +179,11 @@ export default function ExploreWorkbench({ summary }: { summary: ProductionRelat
   async function ask() {
     const q = question.trim();
     if (!q || asking) return;
+    const version = ++requestVersion.current;
+    setInsightLoading(false);
     setAsking(true);
     setAskError(null);
-    setAnswer(null);
-    setInsightGraph(null);
     setInsightError(null);
-    setLastQuestion(q);
     try {
       let sid = sessionId;
       if (!sid) {
@@ -189,8 +192,10 @@ export default function ExploreWorkbench({ summary }: { summary: ProductionRelat
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ intent: q }),
         });
+        if (!res.ok) throw new ExplorationRequestError(res.status === 401 ? "请先登录后再探索。" : "暂时无法建立探索会话。");
         const json = (await res.json()) as { session_id?: string };
-        sid = json.session_id ?? null;
+        if (typeof json.session_id !== "string" || !json.session_id) throw new ExplorationRequestError("暂时无法建立探索会话。");
+        sid = json.session_id;
         setSessionId(sid);
       }
       const res = await fetch(`/api/explore/sessions/${sid}/query`, {
@@ -198,37 +203,55 @@ export default function ExploreWorkbench({ summary }: { summary: ProductionRelat
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ question: q }),
       });
+      if (version !== requestVersion.current) return;
+      if (!res.ok) {
+        if ([401, 403, 404, 410, 423].includes(res.status)) { setAnswer(null); setInsightGraph(null); }
+        throw new ExplorationRequestError(res.status === 401 ? "请先登录后再探索。" : [403, 404, 410, 423].includes(res.status) ? "当前内容暂不可访问，请重新验证权限。" : "探索暂时不可用，上一次发现已保留，可以重试。");
+      }
       const json = (await res.json()) as { ok?: boolean; decision?: AgentDecision; degraded?: boolean };
-      if (json.decision) {
+      if (json.ok && json.decision && typeof json.decision.mohenLine === "string") {
         setAnswer(json.decision);
+        setLastQuestion(q);
+        setInsightGraph(null);
       } else {
         setAskError("没有查到相关内容，可以换个问法试试。");
       }
-    } catch {
-      setAskError("探索失败，请重试。");
+    } catch (error) {
+      setAskError(error instanceof ExplorationRequestError ? error.message : "探索暂时不可用，上一次发现已保留，可以重试。");
     } finally {
       setAsking(false);
     }
   }
 
   async function generateGraph() {
-    if (!lastQuestion || !sessionId || insightLoading) return;
+    if (!lastQuestion || !sessionId || insightLoading || asking) return;
+    const version = requestVersion.current;
     setInsightLoading(true);
     setInsightError(null);
-    setInsightGraph(null);
     try {
       const res = await fetch(`/api/explore/sessions/${sessionId}/insight-views`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ question: lastQuestion }),
       });
+      if (version !== requestVersion.current) return;
+      if ([401, 403, 404, 410, 423].includes(res.status)) {
+        requestVersion.current++;
+        setAnswer(null);
+        setInsightGraph(null);
+        setLastQuestion("");
+        setInsightLoading(false);
+        setAskError("当前内容不可访问，请重新验证权限后再探索。");
+        return;
+      }
       const json = (await res.json()) as { ok?: boolean; graph?: InsightGraph };
-      if (json.ok && json.graph) setInsightGraph(json.graph);
+      if (version !== requestVersion.current) return;
+      if (res.ok && json.ok && json.graph) setInsightGraph(json.graph);
       else setInsightError("没有足够材料生成关系图。");
     } catch {
-      setInsightError("生成失败，请重试。");
+      if (version === requestVersion.current) setInsightError("生成失败，请重试。");
     } finally {
-      setInsightLoading(false);
+      if (version === requestVersion.current) setInsightLoading(false);
     }
   }
 
@@ -239,10 +262,7 @@ export default function ExploreWorkbench({ summary }: { summary: ProductionRelat
   });
 
   return (
-    <div className="explore">
-      <div className="explore__body">
-        {/* 左栏：自然语言探索 */}
-        <aside className="explore__col explore__side">
+    <ExplorePresentation narrative={<>
           <div className={`explore__status${summary.available ? "" : " is-sparse"}`}>
             <i />
             {summary.available ? "已连上合格历史知识库" : "知识库暂无已发布成果"}
@@ -264,7 +284,7 @@ export default function ExploreWorkbench({ summary }: { summary: ProductionRelat
             </button>
           </div>
 
-          {askError && <p className="explore__note" style={{ color: "#b0413e" }}>{askError}</p>}
+          {askError && <p role="alert" className="explore__note" style={{ color: "#b0413e" }}>{askError}</p>}
 
           {answer && (
             <div className="explore__answer">
@@ -285,7 +305,7 @@ export default function ExploreWorkbench({ summary }: { summary: ProductionRelat
               <button
                 className="explore__insight-btn"
                 onClick={() => void generateGraph()}
-                disabled={insightLoading}
+                disabled={insightLoading || asking}
               >
                 {insightLoading ? "生成关系图…" : "生成关系图"}
               </button>
@@ -321,26 +341,21 @@ export default function ExploreWorkbench({ summary }: { summary: ProductionRelat
             这里展示的是当前合格历史知识库的真实内容——关系、时间、空间与可讲的故事。
             覆盖不足时会如实说明，不会用作品脚本或虚构内容充数。
           </p>
-        </aside>
-
-        {/* 中栏：四视图 */}
-        <main className="explore__col explore__main">
+        </>} stage={<>
           <div className="explore__viewbar">
             {VIEWS.map((v) => (
-              <button
-                key={v.key}
-                className={`explore__viewtab${view === v.key ? " is-active" : ""}`}
-                onClick={() => setView(v.key)}
-              >
-                {v.label}
-              </button>
+              <label key={v.key} className="explore__viewtab">
+                <input type="checkbox" checked={surfaces.includes(v.key)} onChange={() =>
+                  setSurfaces((current) => current.includes(v.key) ? current.filter((key) => key !== v.key) : [...current, v.key])
+                } /> {v.label}
+              </label>
             ))}
           </div>
 
           <section className="explore__canvas">
-            {view === "relation" && (
+            {surfaces.includes("relation") && (
               <>
-                <h3>关系视图</h3>
+                <h3>关系观察</h3>
                 {summary.relations.length ? (
                   <div className="explore__graph">
                     <RelationGraph relations={summary.relations} />
@@ -351,9 +366,9 @@ export default function ExploreWorkbench({ summary }: { summary: ProductionRelat
               </>
             )}
 
-            {view === "timeline" && (
+            {surfaces.includes("timeline") && (
               <>
-                <h3>时间视图</h3>
+                <h3>时间观察</h3>
                 {timelineEvents.length ? (
                   <div className="explore__timeline">
                     {timelineEvents.map((e, i) => (
@@ -378,9 +393,9 @@ export default function ExploreWorkbench({ summary }: { summary: ProductionRelat
               </>
             )}
 
-            {view === "spatial" && (
+            {surfaces.includes("spatial") && (
               <>
-                <h3>空间视图</h3>
+                <h3>空间观察</h3>
                 {summary.visuals.length ? (
                   <div className="explore__grid">
                     {summary.visuals.map((v, i) => (
@@ -397,14 +412,14 @@ export default function ExploreWorkbench({ summary }: { summary: ProductionRelat
                     ))}
                   </div>
                 ) : (
-                  <div className="explore__empty">没有可展示的今貌影像。</div>
+                  <div className="explore__empty">缺少可用的空间定位或影像；可以继续观察人物、关系与时间，不生成精确地图。</div>
                 )}
               </>
             )}
 
-            {view === "story" && (
+            {surfaces.includes("story") && (
               <>
-                <h3>故事视图</h3>
+                <h3>故事观察</h3>
                 {summary.stories.length ? (
                   <div className="explore__list">
                     {summary.stories.map((s, i) => (
@@ -420,10 +435,7 @@ export default function ExploreWorkbench({ summary }: { summary: ProductionRelat
               </>
             )}
           </section>
-        </main>
-
-        {/* 右栏：证据 */}
-        <aside className="explore__col explore__side explore__side--right">
+        </>} evidence={<>
           <div className="explore__section">
             <h2 className="explore__section-title">史料原文</h2>
             {summary.evidence.length ? (
@@ -472,8 +484,6 @@ export default function ExploreWorkbench({ summary }: { summary: ProductionRelat
               <p className="explore__note">没有登记的未决问题。</p>
             )}
           </div>
-        </aside>
-      </div>
-    </div>
+        </>} />
   );
 }
