@@ -1,5 +1,9 @@
 # 墨痕｜部署与连接运维手册（Runbook）
 
+> **2026-11-01 云端技术增量：** 当前正式目标为GitHub `main`；本文件后文的本地Windows代理、历史分支与数据库实况是历史来源，不能直接作为当前云端执行命令。生产数据库TLS错误已定位为`SELF_SIGNED_CERT_IN_CHAIN`，应使用`MOHEN_DATABASE_CA_CERT`显式提供受信公开CA并保持证书及主机名验证；不得关闭TLS验证。实际部署/验证状态见CURRENT。
+>
+> Supabase公开CA来源由其官方控制台`apps/studio/hooks/custom-content/custom-content.json`的`ssl:certificate_url`追溯；生产证书为`https://supabase-downloads.s3-ap-southeast-1.amazonaws.com/prod/ssl/prod-ca-2021.crt`，本次核验SHA256指纹`80:70:25:AD:50:D4:ED:21:9D:2C:9C:7D:29:9C:00:4F:82:4E:B0:0C:F7:F6:5A:FE:F6:07:D0:7B:72:E6:CA:FA`，有效期至2031-04-26。CA是公开证书，不是数据库密码；轮换时重新核验官方来源、适用环境和有效期，不盲目固定旧文件。pg连接串SSL参数会覆盖Pool的ssl对象，客户端必须保留显式CA/已有客户端证书且拒绝no-verify降级。
+
 > 用途：后续生产/开发再次执行「GitHub 推送 / vercel 部署 / Supabase 连接」时，照此操作即可，避免重踩已踩过的坑。
 > 记录：2026-10-18（SAMPLE-TRIAL-16 收口）。
 > 安全：本文件**只记录密钥「存放位置」与「获取方式」，绝不写入密钥明文**。明文密钥一律留在本机 gitignored 文件内。

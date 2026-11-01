@@ -12,6 +12,7 @@
 // 纪律：本文件不落盘密码、不回显密码、不写库；连接串只来自环境变量 DATABASE_URL。
 
 import pg from "pg";
+import { rootCertificates } from "node:tls";
 
 let _pool = null;
 
@@ -29,12 +30,28 @@ export function getNodePgPool() {
   const connection = new URL(url);
   // pg connection-string SSL flags can override the Pool ssl object.
   // Keep configured CA/client certificates, but never allow remote no-verify modes.
-  if (!local) connection.searchParams.set("sslmode", "verify-full");
+  let ssl = false;
+  let sslnegotiation;
+  if (!local) {
+    connection.searchParams.set("sslmode", "verify-full");
+    // Resolve existing certificate-file options with pg itself before removing
+    // URL SSL flags: pg otherwise overwrites the explicit Pool SSL object.
+    const parsed = new pg.Client({ connectionString: connection.toString() }).connectionParameters;
+    ssl = typeof parsed.ssl === "object" ? parsed.ssl : {};
+    ssl.rejectUnauthorized = true;
+    const ca = process.env.MOHEN_DATABASE_CA_CERT;
+    if (ca) ssl.ca = [...(Array.isArray(ssl.ca) ? ssl.ca : ssl.ca ? [ssl.ca] : rootCertificates), ca];
+    sslnegotiation = parsed.sslnegotiation;
+    for (const key of ["ssl", "sslmode", "sslcert", "sslkey", "sslrootcert", "uselibpqcompat", "sslnegotiation"]) {
+      connection.searchParams.delete(key);
+    }
+  }
   _pool = new pg.Pool({
     connectionString: connection.toString(),
     max: 5,
     // 远端（Supabase 等）强制 SSL；本机 PG 明文即可
-    ssl: local ? false : { rejectUnauthorized: true },
+    ssl,
+    ...(sslnegotiation ? { sslnegotiation } : {}),
   });
   return _pool;
 }
