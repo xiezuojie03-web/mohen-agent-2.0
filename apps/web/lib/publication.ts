@@ -1,3 +1,4 @@
+import { readJsonColumn } from "./db-json";
 // apps/web/lib/publication.ts — 作品出版线数据访问（只经 @mohen/data-access）
 //
 // 作品与知识资产分离：作品走 publication.* 三表；知识资产走 read_model。
@@ -124,10 +125,10 @@ export async function checkPublishEligibility(
   if (!rows.length) return { ok: false, reason: "no_submitted_revision" };
   const revisionId = String(rows[0].revision_id);
 
-  // 从作品内容里取出引用的材料出处（beats.provenanceRefs）。content 经 CSV 读取是字符串，需先解析。
+  // 从作品内容取出处引用，兼容 node-pg 原生 JSONB 与 psql JSON 文本。
   let content: Record<string, unknown> = {};
   try {
-    content = JSON.parse(String(rows[0].content ?? "{}")) as Record<string, unknown>;
+    content = readJsonColumn<Record<string, unknown>>(rows[0].content, {});
   } catch {
     content = {};
   }

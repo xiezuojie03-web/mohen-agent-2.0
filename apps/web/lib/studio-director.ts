@@ -2,6 +2,7 @@
 //
 // 复用 studio-creation 的 LLM 编导能力；持久化 A/B 方案与选定节拍到 director_plans。
 import crypto from "node:crypto";
+import { readJsonColumn } from "./db-json";
 import { queryRows, queryValue, run } from "@mohen/data-access";
 import {
   generateDirectorPlans,
@@ -62,8 +63,8 @@ export async function selectDirectorPlan(
 ): Promise<{ beats: Beat[] } | null> {
   const row = await getDirectorPlan(planId);
   if (!row) return null;
-  const plan = which === "A" ? (JSON.parse(row.plan_a) as DirectorPlan) : (JSON.parse(row.plan_b) as DirectorPlan);
-  const facts = JSON.parse(row.facts) as string[];
+  const plan = which === "A" ? readJsonColumn<DirectorPlan>(row.plan_a, {} as DirectorPlan) : readJsonColumn<DirectorPlan>(row.plan_b, {} as DirectorPlan);
+  const facts = readJsonColumn<string[]>(row.facts, []);
   const beats = await generateBeats(plan, facts);
   if (!beats) return null;
   await run(
@@ -80,9 +81,9 @@ export async function getWorkPanels(planId: string): Promise<WorkPanels | null> 
   const row = await getDirectorPlan(planId);
   if (!row || !row.selected) return null;
   const which = row.selected === "B" ? "B" : "A";
-  const plan = JSON.parse(String(which === "B" ? row.plan_b : row.plan_a)) as DirectorPlan;
-  const facts = JSON.parse(String(row.facts ?? "[]")) as string[];
-  const beats = JSON.parse(String(row.beats ?? "[]")) as Beat[];
+  const plan = readJsonColumn<DirectorPlan>(which === "B" ? row.plan_b : row.plan_a, {} as DirectorPlan);
+  const facts = readJsonColumn<string[]>(row.facts, []);
+  const beats = readJsonColumn<Beat[]>(row.beats, []);
   if (!beats.length) return null;
   return generateWorkPanels(plan, facts, beats);
 }
@@ -95,9 +96,9 @@ export async function commitWorkRevision(
   const row = await getDirectorPlan(planId);
   if (!row || !row.selected) return null;
   const which = row.selected === "B" ? "B" : "A";
-  const plan = JSON.parse(String(which === "B" ? row.plan_b : row.plan_a)) as DirectorPlan;
-  const beats = JSON.parse(String(row.beats ?? "[]")) as Beat[];
-  const finding = JSON.parse(String(row.finding ?? "{}")) as Partial<H1Finding>;
+  const plan = readJsonColumn<DirectorPlan>(which === "B" ? row.plan_b : row.plan_a, {} as DirectorPlan);
+  const beats = readJsonColumn<Beat[]>(row.beats, []);
+  const finding = readJsonColumn<Partial<H1Finding>>(row.finding, {});
 
   const content = {
     motif: finding.motifCodes ?? [],
@@ -163,7 +164,7 @@ export async function reviseBeat(
   const curNo = Number(latest[0].revision_no);
   if (curNo !== expectedRevisionNo) return { revisionId: "", revisionNo: curNo, conflict: true };
 
-  const content = JSON.parse(String(latest[0].content ?? "{}")) as { beats?: Beat[]; [k: string]: unknown };
+  const content = readJsonColumn<{ beats?: Beat[]; [k: string]: unknown }>(latest[0].content, {});
   const beats = [...(content.beats ?? [])];
   for (const d of beatDiff) {
     if (d.index < 0 || d.index >= beats.length) continue;
@@ -202,7 +203,7 @@ export async function reorderBeats(
   const curNo = Number(latest[0].revision_no);
   if (curNo !== expectedRevisionNo) return { revisionId: "", revisionNo: curNo, conflict: true };
 
-  const content = JSON.parse(String(latest[0].content ?? "{}")) as { beats?: Beat[]; [k: string]: unknown };
+  const content = readJsonColumn<{ beats?: Beat[]; [k: string]: unknown }>(latest[0].content, {});
   const beats = content.beats ?? [];
   const valid =
     Array.isArray(order) &&

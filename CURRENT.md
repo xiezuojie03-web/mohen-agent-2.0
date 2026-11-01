@@ -4,10 +4,11 @@
 
 Owner明确当前主任务为创作流程完善可用和研究资产积累；近期先Studio、再合法作品消费、再随知识资产成熟深化EXP。原有探索设计预览保留为后续参考，暂停接入，不删长期产品目标。实施入口：`tasks/implementation/K3/product-uplift/`。
 
-- 正式线上仍为`main@65b26cd`、`dpl_2492RCovuj3saU9cbJqzYLD9YAD4`；下列新代码尚待本轮推送部署核验。
-- 数据库阻断已通过不分配正式域名的只读构建定位为`SELF_SIGNED_CERT_IN_CHAIN`。已追溯并核验Supabase官方公开CA，保存Vercel生产`MOHEN_DATABASE_CA_CERT`；客户端保持证书及主机名验证，尚不以配置保存宣称生产连接已恢复。
+- 正式线上已为`main@1fa6d9f`、`dpl_9ZAT9qfnSADYFBZ8BHLX9WFeTvgS`（READY），正式域名`mohen-agent-2-0.vercel.app`。只读实测作品查询HTTP200并返回4部已发布作品，Studio页面200、匿名管理接口401。
+- 数据库阻断已通过不分配正式域名的只读构建定位为`SELF_SIGNED_CERT_IN_CHAIN`。已追溯并核验Supabase官方公开CA，保存Vercel生产`MOHEN_DATABASE_CA_CERT`；客户端保持证书及主机名验证；已部署并通过正式接口确认数据库读取恢复。
 - 本地完成：WATCH故障/空态分离与重试；Studio确切修订投稿、失败保稿、创建原子性与Owner/内容绑定的幂等重试、等待回执期间防止误交旧稿、旧无正文投稿兼容；新CA接线保留已有客户端证书/密钥。
-- 当前验证：53项单元PASS/4项外部条件SKIP；47项夹具/样板浏览器PASS；隔离PostgreSQL17.11的9项真实创建/投稿SQL PASS；既有K3数据库权限、独立资格、撤权与回滚PASS（22份基线迁移、711条模拟旧行保全）；数据生产71项PASS。隔离证据不等于生产权限/迁移或完整创作验收。
+- 后续本地增量：修复导演方案、面板、分镜保存/局部编辑/重排及审核读取对原生JSONB的兼容。新增15项用例通过；CI单元68 PASS/4外部条件SKIP，Web类型检查通过。完整单元实网运行Commons检索仍失败，不记通过；该增量尚未部署。
+- 前批验证：53项单元PASS/4项外部条件SKIP；47项夹具/样板浏览器PASS；隔离PostgreSQL17.11的9项真实创建/投稿SQL PASS；既有K3数据库权限、独立资格、撤权与回滚PASS（22份基线迁移、711条模拟旧行保全）；数据生产71项PASS。隔离证据不等于生产权限/迁移或完整创作验收。
 - `pnpm test`旧快照包装器实测因缺少根`.env.local`在测试执行前失败，未连接或更改源库，不记PASS。专用隔离SQL入口见`vitest.submission-db.config.ts`，只允 `_test` 库且需实际`codex-k3-isolated`标记。
 - 独立审查发现的保存中改动和回执丢失重复建稿已通过RED→GREEN修复；完整研究材料→H1/H2/H3、项目研究读、局部改稿/保存新版本/跨刷新恢复、真实生产worker及资格投运仍未准出。不得把本批可靠性修复称为系统成熟。
 
