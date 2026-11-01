@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createWork } from "../../../lib/publication";
+import { createWorkDraft } from "../../../lib/publication";
 import { findUserById } from "../../../lib/auth";
 import { getSession } from "../../../lib/session";
 
@@ -15,19 +15,28 @@ export async function POST(req: Request) {
 
   let title: unknown;
   let content: unknown;
+  let creationId: unknown;
   try {
-    const body = (await req.json()) as { title?: unknown; content?: unknown };
+    const body = (await req.json()) as { title?: unknown; content?: unknown; creation_id?: unknown };
     title = body.title;
     content = body.content;
+    creationId = body.creation_id;
   } catch {
     return NextResponse.json({ ok: false, reason: "bad_request" }, { status: 400 });
   }
   if (typeof title !== "string" || !title.trim()) {
     return NextResponse.json({ ok: false, reason: "title_required" }, { status: 400 });
   }
+  if (creationId !== undefined && typeof creationId !== "string") {
+    return NextResponse.json({ ok: false, reason: "creation_id_invalid" }, { status: 400 });
+  }
 
   const user = await findUserById(session.uid);
   const creator = user?.email || session.uid;
-  const workId = await createWork(title.trim().slice(0, 120), creator, session.uid, content);
-  return NextResponse.json({ ok: true, work_id: workId });
+  try {
+    const result = await createWorkDraft(title.trim().slice(0, 120), creator, session.uid, content, creationId as string | undefined);
+    return NextResponse.json(result, { status: result.ok ? 200 : result.reason === "creation_id_invalid" ? 400 : 409 });
+  } catch {
+    return NextResponse.json({ ok: false, reason: "creation_unavailable" }, { status: 503 });
+  }
 }

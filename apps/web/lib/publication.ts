@@ -3,6 +3,9 @@
 // 作品与知识资产分离：作品走 publication.* 三表；知识资产走 read_model。
 import { queryRows, queryValue, run } from "@mohen/data-access";
 import { reflowWorkToAssets } from "./asset-reflow";
+import { randomUUID } from "node:crypto";
+
+const canonicalUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id) ? id.toLowerCase() : null;
 
 export interface PublishedWork {
   work_id: string;
@@ -23,33 +26,82 @@ export interface SubmittedWork {
   content: string;
 }
 
-/** 创建作品 + 初始修订（draft, revision_no=1），返回 work_id；content 存作品内容（章节/旁白等） */
-export async function createWork(
+export type CreationResult =
+  | { ok: true; work_id: string; revision_id: string }
+  | { ok: false; reason: "creation_conflict" | "creation_id_invalid" };
+
+/** Atomic initial revision plus owned, content-bound creation retry. */
+export async function createWorkDraft(
   title: string,
   creator: string,
   ownerUserId: string,
-  content?: unknown
-): Promise<string> {
-  const wid = await queryValue("select gen_random_uuid()::text");
-  await run(
-    "insert into publication.works (work_id, title, creator, owner_user_id) values (:'wid', :'title', :'creator', :'owner')",
-    { wid: wid!, title, creator, owner: ownerUserId }
+  content?: unknown,
+  creationId?: string
+): Promise<CreationResult> {
+  const wid = creationId === undefined ? randomUUID() : canonicalUuid(creationId);
+  if (!wid) return { ok: false, reason: "creation_id_invalid" };
+  const params = { wid, title, creator, owner: ownerUserId, content: content ? JSON.stringify(content) : "{}" };
+  const inserted = await queryRows(
+    `with created_work as (
+       insert into publication.works (work_id,title,creator,owner_user_id)
+       values (:'wid',:'title',:'creator',:'owner') on conflict (work_id) do nothing returning work_id
+     ) insert into publication.work_revisions (work_id,revision_no,title,content)
+       select work_id,1,:'title',:'content'::jsonb from created_work
+       returning work_id::text as work_id,revision_id::text as revision_id`,
+    params
   );
-  const contentJson = content ? JSON.stringify(content) : "{}";
-  await run(
-    "insert into publication.work_revisions (work_id, revision_no, title, content) values (:'wid', 1, :'title', :'content'::jsonb)",
-    { wid: wid!, title, content: contentJson }
+  const acknowledged = inserted.length ? inserted : await queryRows(
+    `select w.work_id::text as work_id,r.revision_id::text as revision_id
+     from publication.works w join publication.work_revisions r on r.work_id=w.work_id
+     where w.work_id=:'wid' and w.owner_user_id=:'owner' and r.revision_no=1
+       and r.title=:'title' and r.content=:'content'::jsonb`,
+    params
   );
-  return wid!;
+  const row = acknowledged[0];
+  if (!row || String(row.work_id) !== wid || typeof row.revision_id !== "string" || !row.revision_id) {
+    return { ok: false, reason: "creation_conflict" };
+  }
+  return { ok: true, work_id: wid, revision_id: row.revision_id };
 }
 
-/** 提交审核：最新 draft → submitted */
-export async function submitWork(workId: string): Promise<boolean> {
-  await run(
-    "update publication.work_revisions set status = 'submitted' where work_id = :'wid' and status = 'draft'",
-    { wid: workId }
+/** Compatibility for callers expecting only the saved work identity. */
+export async function createWork(title: string, creator: string, ownerUserId: string, content?: unknown, creationId?: string): Promise<string> {
+  const result = await createWorkDraft(title, creator, ownerUserId, content, creationId);
+  if (!result.ok) throw new Error(result.reason);
+  return result.work_id;
+}
+
+export type SubmissionResult =
+  | { ok: true; work_id: string; revision_id: string; status: "submitted" }
+  | { ok: false; reason: "revision_required" | "revision_not_submittable" };
+
+/** Submit a specific saved revision; legacy callers resolve the latest revision once. */
+export async function submitWork(workId: string, revisionId?: string): Promise<SubmissionResult> {
+  const wid = workId.toLowerCase();
+  const requested = revisionId === undefined
+    ? await queryValue("select revision_id::text from publication.work_revisions where work_id = :'wid' order by revision_no desc limit 1", { wid: workId })
+    : revisionId;
+  const rid = requested ? canonicalUuid(requested) : null;
+  if (!rid) {
+    return { ok: false, reason: "revision_required" };
+  }
+  const params = { wid, rid };
+  const updated = await queryRows(
+    "update publication.work_revisions set status = 'submitted' " +
+      "where work_id = :'wid' and revision_id = :'rid' and status = 'draft' " +
+      "returning work_id::text as work_id, revision_id::text as revision_id, status",
+    params
   );
-  return true;
+  const acknowledged = updated.length ? updated : await queryRows(
+    "select work_id::text as work_id, revision_id::text as revision_id, status " +
+      "from publication.work_revisions where work_id = :'wid' and revision_id = :'rid' and status = 'submitted'",
+    params
+  );
+  const row = acknowledged[0];
+  if (!row || String(row.work_id) !== wid || String(row.revision_id) !== rid || row.status !== "submitted") {
+    return { ok: false, reason: "revision_not_submittable" };
+  }
+  return { ok: true, work_id: wid, revision_id: rid, status: "submitted" };
 }
 
 /**

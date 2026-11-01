@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { AgentDecision, Material } from "@mohen/agent-runtime";
 import { humanEpistemic } from "../experience/jinze-water-net/humanLabels";
 import type { Beat, DirectorPlan, WorkPanels } from "../../lib/studio-creation";
@@ -84,6 +84,9 @@ export default function StudioWorkbench() {
   const [submitBusy, setSubmitBusy] = useState(false);
   const [submitMsg, setSubmitMsg] = useState<string | null>(null);
   const [submitErr, setSubmitErr] = useState(false);
+  const submitLock = useRef(false);
+  const creationRequests = useRef(new Map<string, string>());
+  const [savedWork, setSavedWork] = useState<{ workId: string; revisionId: string; snapshot: string } | null>(null);
 
   // 生产进度（委托后异步 D00–D05 生产，轮询 control.production_runs）
   const [production, setProduction] = useState<{ status: string; current_stage: string | null } | null>(null);
@@ -93,7 +96,7 @@ export default function StudioWorkbench() {
 
   async function ask(q: string) {
     const text = q.trim();
-    if (!text || busy) return;
+    if (!text || busy || submitLock.current) return;
     setMessages((m) => [...m, { role: "user", text }]);
     setInput("");
     setBusy(true);
@@ -163,7 +166,7 @@ export default function StudioWorkbench() {
 
   async function generatePlans() {
     const brief = lastUserBrief;
-    if (!brief || generating || directing) return;
+    if (!brief || generating || directing || submitLock.current) return;
     setGenerating(true);
     setPlansError(null);
     setPreviewPlan(null);
@@ -199,7 +202,7 @@ export default function StudioWorkbench() {
 
   async function choosePlan(which: "A" | "B") {
     const plan = which === "A" ? plans?.planA : plans?.planB;
-    if (!plan || !plans || directing || generating) return;
+    if (!plan || !plans || directing || generating || submitLock.current) return;
     setDirecting(true);
     setPlansError(null);
     try {
@@ -250,7 +253,7 @@ export default function StudioWorkbench() {
 
   async function submitWork() {
     const title = workTitle.trim();
-    if (submitBusy) return;
+    if (submitLock.current || generating || directing || busy) return;
 
     // 前置校验：未填标题 / 未选定方案并生成分镜时，明确提示，不静默。
     if (!title) {
@@ -264,6 +267,7 @@ export default function StudioWorkbench() {
       return;
     }
 
+    submitLock.current = true;
     setSubmitBusy(true);
     setSubmitMsg(null);
     setSubmitErr(false);
@@ -272,26 +276,48 @@ export default function StudioWorkbench() {
       plan: adoptedDefinition,
       beats: beats ?? [],
     };
+    const snapshot = JSON.stringify({ title, content });
+    let saved = savedWork;
     try {
-      const createRes = await fetch("/api/works", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ title, creator: "访客创作者", content }),
-      });
-      const created = (await createRes.json()) as { ok?: boolean; work_id?: string };
-      if (!created.work_id) {
-        setSubmitMsg("创建作品失败，请重试。");
+      if (saved && saved.snapshot !== snapshot) {
+        setSubmitMsg("内容已更改，请先保存新版本再提交；原作品已保留。");
         setSubmitErr(true);
         return;
       }
-      await fetch(`/api/works/${created.work_id}/submit`, { method: "POST" });
+      if (!saved) {
+        let creationId = creationRequests.current.get(snapshot);
+        if (!creationId) {
+          creationId = crypto.randomUUID();
+          creationRequests.current.set(snapshot, creationId);
+        }
+        const createRes = await fetch("/api/works", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ title, content, creation_id: creationId }),
+        });
+        if (!createRes.ok) throw new Error("creation_unavailable");
+        const created = (await createRes.json()) as { ok?: boolean; work_id?: string; revision_id?: string };
+        if (created.ok !== true || typeof created.work_id !== "string" || !created.work_id ||
+            typeof created.revision_id !== "string" || !created.revision_id) throw new Error("creation_not_acknowledged");
+        saved = { workId: created.work_id, revisionId: created.revision_id, snapshot };
+        setSavedWork(saved);
+      }
+      const res = await fetch(`/api/works/${saved.workId}/submit`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ revision_id: saved.revisionId }),
+      });
+      if (!res.ok) throw new Error("submission_unavailable");
+      const result = await res.json() as { ok?: boolean; work_id?: string; revision_id?: string; status?: string };
+      if (result.ok !== true || result.work_id !== saved.workId ||
+          result.revision_id !== saved.revisionId || result.status !== "submitted") throw new Error("submission_not_acknowledged");
       setSubmitMsg("已提交审核，运营负责人会在后台处理。");
       setSubmitErr(false);
-      setWorkTitle("");
     } catch {
-      setSubmitMsg("提交失败，请重试。");
+      setSubmitMsg(saved ? "投稿暂未成功，已创建的作品已保留，可以重试。" : "创建作品失败，请重试。");
       setSubmitErr(true);
     } finally {
+      submitLock.current = false;
       setSubmitBusy(false);
     }
   }
@@ -378,6 +404,7 @@ export default function StudioWorkbench() {
               value={input}
               placeholder="问墨痕，或描述你想创作的作品…"
               onChange={(e) => setInput(e.target.value)}
+              disabled={submitBusy}
               onKeyDown={(e) => {
                 if (e.key === "Enter") void ask(input);
               }}
@@ -385,7 +412,7 @@ export default function StudioWorkbench() {
             />
             <button
               className="studio__send"
-              disabled={busy || input.trim().length === 0}
+              disabled={submitBusy || busy || input.trim().length === 0}
               onClick={() => void ask(input)}
             >
               {busy ? "查…" : "发送"}
@@ -423,7 +450,7 @@ export default function StudioWorkbench() {
               <h2>导演方案 A / B</h2>
               <button
                 className="studio__ghost-btn"
-                disabled={generating || directing || !lastUserBrief}
+                disabled={submitBusy || generating || directing || !lastUserBrief}
                 onClick={() => void generatePlans()}
               >
                 {generating ? "构思中…" : "生成方案"}
@@ -444,7 +471,7 @@ export default function StudioWorkbench() {
               <div className="studio__ab">
                 <button
                   className={`studio__plan studio__plan--a studio__plan--select${selectedPlan === "A" && adoptedPlanId === plans.planId ? " is-selected" : ""}`}
-                  disabled={generating || directing}
+                  disabled={submitBusy || generating || directing}
                   aria-pressed={selectedPlan === "A" && adoptedPlanId === plans.planId}
                   onClick={() => setPreviewPlan("A")}
                 >
@@ -458,7 +485,7 @@ export default function StudioWorkbench() {
                 </button>
                 <button
                   className={`studio__plan studio__plan--b studio__plan--select${selectedPlan === "B" && adoptedPlanId === plans.planId ? " is-selected" : ""}`}
-                  disabled={generating || directing}
+                  disabled={submitBusy || generating || directing}
                   aria-pressed={selectedPlan === "B" && adoptedPlanId === plans.planId}
                   onClick={() => setPreviewPlan("B")}
                 >
@@ -474,7 +501,7 @@ export default function StudioWorkbench() {
             )}
             {previewPlan && plans && <div className="studio__plan-preview" aria-label="方案比较预览">
               <p>正在比较方案 {previewPlan}：{(previewPlan === "A" ? plans.planA : plans.planB).angle}；原作品未改变。</p>
-              <button className="studio__action" disabled={directing || generating} onClick={() => void choosePlan(previewPlan)}>采纳方案 {previewPlan}</button>
+              <button className="studio__action" disabled={submitBusy || directing || generating} onClick={() => void choosePlan(previewPlan)}>采纳方案 {previewPlan}</button>
               <button className="studio__ghost-btn" disabled={directing} onClick={() => setPreviewPlan(null)}>取消比较</button>
             </div>}
             {directing && <div className="studio__typing">墨痕在写分镜章节…</div>}
@@ -675,12 +702,13 @@ export default function StudioWorkbench() {
             <input
               className="studio__submit-input"
               placeholder="给这部作品起个标题"
+              disabled={submitBusy}
               value={workTitle}
               onChange={(e) => setWorkTitle(e.target.value)}
             />
             <button
               className="studio__action studio__action--primary"
-              disabled={submitBusy}
+              disabled={submitBusy || busy || generating || directing}
               onClick={() => void submitWork()}
             >
               {submitBusy ? "提交中…" : "提交审核"}

@@ -35,6 +35,102 @@ test.describe("WATCH catalogue failures", () => {
   });
 });
 
+async function prepareSubmission(page: import("@playwright/test").Page) {
+  await page.route("**/api/studio/research-tasks", route => route.fulfill({ json: { ok: true, decision: { mohenLine: "测试发现", materials: [], gaps: [] } } }));
+  await page.route("**/api/studio/director-plans", route => route.fulfill({ json: { ok: true, plan_id: "submission-plan", facts: [], planA: { angle: "观察空间变化", points: ["观察地点"] }, planB: { angle: "观察日常生活", points: ["观察生活"] } } }));
+  await page.route("**/api/studio/director-plans/submission-plan/select", route => route.fulfill({ json: { ok: true, beats: [{ title: "首章", visual: "预览画面", narration: "预览旁白", directorTimecodeMs: 0, provenanceRefs: ["test-ref"] }] } }));
+  await page.route("**/api/studio/director-plans/submission-plan/panels", route => route.fulfill({ status: 503, json: { ok: false } }));
+  await page.goto("/studio");
+  await page.getByLabel("向墨痕委托或提问").fill("研究金泽古桥");
+  await page.getByRole("button", { name: "发送", exact: true }).click();
+  await page.getByRole("button", { name: "生成方案", exact: true }).click();
+  await page.getByRole("button", { name: /方案 A/ }).click();
+  await page.getByRole("button", { name: "采纳方案 A", exact: true }).click();
+  await expect(page.locator(".studio__preview-visual")).toHaveText("预览画面");
+  await page.getByPlaceholder("给这部作品起个标题").fill("保存的作品");
+}
+
+test("Studio keeps the created work when submission fails and retries only the saved revision", async ({ page }) => {
+  const work = "9ab37577-1789-4e5a-9d5a-9e629cffdbf7";
+  const revision = "4790013f-43ed-422e-b047-d3f8ddbf22c3";
+  let creations = 0;
+  const submitted: unknown[] = [];
+  await page.route("**/api/works", route => {
+    creations++;
+    return route.fulfill({ json: { ok: true, work_id: work, revision_id: revision } });
+  });
+  await page.route(`**/api/works/${work}/submit`, route => {
+    submitted.push(route.request().postData() ? route.request().postDataJSON() : null);
+    return submitted.length === 1
+      ? route.fulfill({ status: 503, contentType: "text/html", body: "unavailable" })
+      : route.fulfill({ json: { ok: true, work_id: work, revision_id: revision, status: "submitted" } });
+  });
+  await prepareSubmission(page);
+  await page.getByRole("button", { name: "提交审核", exact: true }).click();
+  await expect(page.locator(".studio__submit-msg")).toContainText("已创建的作品已保留");
+  await expect(page.getByPlaceholder("给这部作品起个标题")).toHaveValue("保存的作品");
+  await expect(page.locator(".studio__submit-msg")).not.toContainText("已提交审核");
+  await page.getByRole("button", { name: "提交审核", exact: true }).click();
+  await expect(page.locator(".studio__submit-msg")).toContainText("已提交审核");
+  expect(creations).toBe(1);
+  expect(submitted).toEqual([{ revision_id: revision }, { revision_id: revision }]);
+});
+
+test("Studio does not submit an old snapshot after an edit", async ({ page }) => {
+  let creations = 0;
+  let submissions = 0;
+  await page.route("**/api/works", route => {
+    creations++;
+    return route.fulfill({ json: { ok: true, work_id: "saved-work", revision_id: "saved-revision" } });
+  });
+  await page.route("**/api/works/saved-work/submit", route => {
+    submissions++;
+    return route.fulfill({ status: 503, json: { ok: false } });
+  });
+  await prepareSubmission(page);
+  await page.getByRole("button", { name: "提交审核", exact: true }).click();
+  await expect(page.locator(".studio__submit-msg")).toBeVisible();
+  await page.getByPlaceholder("给这部作品起个标题").fill("修改后的作品");
+  await page.getByRole("button", { name: "提交审核", exact: true }).click();
+  await expect(page.locator(".studio__submit-msg")).toContainText("保存新版本");
+  expect(creations).toBe(1);
+  expect(submissions).toBe(1);
+  await expect(page.getByPlaceholder("给这部作品起个标题")).toHaveValue("修改后的作品");
+});
+
+test("Studio freezes draft changes while a creation acknowledgement is pending", async ({ page }) => {
+  let release!: () => void;
+  const pending = new Promise<void>(resolve => { release = resolve; });
+  await page.route("**/api/works", async route => {
+    await pending;
+    return route.fulfill({ json: { ok: true, work_id: "pending-work", revision_id: "pending-revision" } });
+  });
+  await page.route("**/api/works/pending-work/submit", route => route.fulfill({ json: { ok: true, work_id: "pending-work", revision_id: "pending-revision", status: "submitted" } }));
+  await prepareSubmission(page);
+  await page.getByRole("button", { name: "提交审核", exact: true }).click();
+  try {
+    await expect(page.getByPlaceholder("给这部作品起个标题")).toBeDisabled();
+    await expect(page.getByRole("button", { name: "生成方案", exact: true })).toBeDisabled();
+  } finally { release(); }
+  await expect(page.locator(".studio__submit-msg")).toContainText("已提交审核");
+});
+
+test("Studio keeps a stable creation identity when the creation response is lost", async ({ page }) => {
+  const ids: unknown[] = [];
+  await page.route("**/api/works", route => {
+    ids.push(route.request().postDataJSON().creation_id);
+    return ids.length === 1 ? route.abort("failed") : route.fulfill({ json: { ok: true, work_id: "retry-work", revision_id: "retry-revision" } });
+  });
+  await page.route("**/api/works/retry-work/submit", route => route.fulfill({ json: { ok: true, work_id: "retry-work", revision_id: "retry-revision", status: "submitted" } }));
+  await prepareSubmission(page);
+  await page.getByRole("button", { name: "提交审核", exact: true }).click();
+  await expect(page.locator(".studio__submit-msg")).toContainText("创建作品失败");
+  await page.getByRole("button", { name: "提交审核", exact: true }).click();
+  await expect(page.locator(".studio__submit-msg")).toContainText("已提交审核");
+  expect(typeof ids[0]).toBe("string");
+  expect(ids[0]).toBe(ids[1]);
+});
+
 // E1-8 五页 UI 冒烟验收：加载 F01-F05 五页，验证全局导航 + 各页主组件渲染。
 // 逐项 PASS/FAIL 由运行结果给出；152 动作全量逐交互验收在 UI 组件补齐后另行细化。
 
