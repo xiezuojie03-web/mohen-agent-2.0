@@ -1,5 +1,40 @@
 import { test, expect } from "@playwright/test";
 
+test.describe("WATCH catalogue failures", () => {
+  for (const response of [
+    { status: 503, contentType: "application/json", body: '{"ok":false}' },
+    { status: 500, contentType: "text/html", body: '<html>unavailable</html>' },
+    { status: 200, contentType: "application/json", body: '{"unexpected":[]}' },
+  ]) {
+    test(`WATCH distinguishes failure ${response.status} ${response.contentType} from an empty catalogue`, async ({ page }) => {
+      await page.route("**/api/works/published", route => route.fulfill(response));
+      await page.goto("/watch");
+      await expect(page.locator(".watch").getByRole("alert")).toContainText("作品暂时加载失败");
+      await expect(page.getByRole("button", { name: "重试", exact: true })).toBeVisible();
+      await expect(page.getByText("暂无已发布作品", { exact: true })).toHaveCount(0);
+    });
+  }
+
+  test("WATCH distinguishes a successful empty catalogue from a service error", async ({ page }) => {
+    await page.route("**/api/works/published", route => route.fulfill({ json: { works: [] } }));
+    await page.goto("/watch");
+    await expect(page.getByText("暂无已发布作品", { exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "重试", exact: true })).toHaveCount(0);
+  });
+
+  test("WATCH retries a failed catalogue and restores published chapters", async ({ page }) => {
+    let attempts = 0;
+    await page.route("**/api/works/published", route => ++attempts === 1
+      ? route.fulfill({ status: 503, json: { ok: false } })
+      : route.fulfill({ json: { works: [{ work_id: "watch-retry-work", revision_id: "watch-retry-revision", revision_no: "3", title: "恢复的作品", description: "", published_at: "2026-11-01", content: JSON.stringify({ beats: [{ title: "恢复的第一章", visual: "可靠的画面描述", narration: "可靠的旁白", directorTimecodeMs: 0 }] }) }] } }));
+    await page.goto("/watch");
+    await page.getByRole("button", { name: "重试", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "恢复的第一章", exact: true })).toBeVisible();
+    await expect(page.getByText("已发布 · 版本 3", { exact: true })).toBeVisible();
+    await expect(page.locator(".watch").getByRole("alert")).toHaveCount(0);
+  });
+});
+
 // E1-8 五页 UI 冒烟验收：加载 F01-F05 五页，验证全局导航 + 各页主组件渲染。
 // 逐项 PASS/FAIL 由运行结果给出；152 动作全量逐交互验收在 UI 组件补齐后另行细化。
 

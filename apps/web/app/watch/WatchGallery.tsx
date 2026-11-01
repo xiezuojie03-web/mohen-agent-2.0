@@ -32,25 +32,38 @@ function beatDuration(beats: Beat[], index: number): number {
 export default function WatchGallery() {
   const [works, setWorks] = useState<PublishedWork[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [reload, setReload] = useState(0);
   const [selected, setSelected] = useState<PublishedWork | null>(null);
   const [current, setCurrent] = useState(0);
   const [playing, setPlaying] = useState(false);
   const stageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    setLoadFailed(false);
     (async () => {
       try {
-        const res = await fetch("/api/works/published");
+        const res = await fetch("/api/works/published", { signal: controller.signal });
+        if (!res.ok) throw new Error("catalogue_unavailable");
         const json = (await res.json()) as { works?: PublishedWork[] };
-        setWorks(json.works ?? []);
-        setSelected(json.works?.[0] ?? null);
+        if (!Array.isArray(json?.works) || json.works.some(work => !work ||
+          typeof work.work_id !== "string" || typeof work.revision_id !== "string" ||
+          typeof work.title !== "string" || typeof work.content !== "string")) {
+          throw new Error("catalogue_invalid");
+        }
+        if (controller.signal.aborted) return;
+        setWorks(json.works);
+        setSelected(json.works[0] ?? null);
       } catch {
-        setWorks([]);
+        if (!controller.signal.aborted) setLoadFailed(true);
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     })();
-  }, []);
+    return () => controller.abort();
+  }, [reload]);
 
   const beats = useMemo(() => (selected ? parseBeats(selected.content) : []), [selected]);
 
@@ -87,6 +100,21 @@ export default function WatchGallery() {
     return (
       <main className="watch">
         <div className="watch__loading">加载中…</div>
+      </main>
+    );
+  }
+
+  if (loadFailed) {
+    return (
+      <main className="watch">
+        <div className="watch__body">
+          <section className="watch__hero">
+            <div className="watch__overlay">
+              <p role="alert">作品暂时加载失败，请重试。</p>
+              <button className="watch__ctrl" onClick={() => setReload(value => value + 1)}>重试</button>
+            </div>
+          </section>
+        </div>
       </main>
     );
   }
