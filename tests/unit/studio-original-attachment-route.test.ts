@@ -5,8 +5,6 @@ vi.mock("../../apps/web/lib/auth",()=>({signDatabaseSessionToken:state.token}));
 vi.mock("../../packages/data-access/src/index.mjs",()=>({
  getNodePgPool:()=>({}),createPrivateOriginalRepository:()=>({}),
  createPrivateOriginalWorkflow:()=>({upload:state.upload,download:state.download}),
-}));
-vi.mock("../../packages/data-access/src/private-original-storage.mjs",()=>({
  MAX_ORIGINAL_BYTES:10485760,createPrivateOriginalStorage:()=>state.store,
 }));
 import {GET,POST} from "../../apps/web/app/api/studio/attachments/route";

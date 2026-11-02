@@ -103,3 +103,14 @@ Ruling: 使用单独密码安全变量覆盖旧URI密码，保留连接地址与
 - 迁移文件 \`supabase/migrations/20261102140000_mab_m2_private_originals.sql\` 仅作为待审增量，**尚未应用到任何真实数据库**；需隔离执行、角色权限、备份与异常恢复测试，创建非public私有bucket及必要的对象策略后才可正式开关启用。当前Storage=0桶，原件生产流程不具备条件。
 - 原件保存并不取得正式L/G资格，且不等于媒体展示或外发权限。下一工程环节是数据迁移隔离测试、真实私有Storage样本、跨Owner及竞态/中断/撤权测试；结果不合格保持HOLD。
 - 2026-11-02前一提交\`4e27594\` GitHub Actions单元测试 95 PASS / 1 FAIL / 4 SKIP，失败源于篡改fixture选错GET路径，已在\`8f18f87\`修正；本批测试以新CI为准，尚未声明准出。
+
+## MAB-ENG-01 / CI修复接续（观察基线dae824f）
+
+- 已读取Owner新上传增量交接书V1.0，保持原M0—M8与74目标/20补充/234路径体系。资料库单份受控任务书未直接读取，不虚构。
+- 最新FETCH_HEAD=dae824fa5f47a9a239a0c98285c002f69a79b717；原本地origin/main因旧fetch refspec滞留db21cef，已改为只跟踪main并同步，未回退远端。旧未提交UI与状态补充保存在本地stash `pre-MAB-ENG-01 UI recovery and verified production ledger`，不覆盖其他工具已提交UI修复。
+- GitHub失败run41458964029/job125322787916：Typecheck成功，Unit tests五项失败，Build未运行。读取原始日志并本地重现5 FAIL/2 PASS。原因是路由改从统一入口导入后，测试替身缺MAX_ORIGINAL_BYTES/createPrivateOriginalStorage；只同步测试入口，保留原正反断言，不skip或修改真实业务掩盖失败。
+- changed_paths：tests/unit/studio-original-attachment-route.test.ts及当前账；需求M2_PRIVATE_ORIGINAL_GITHUB_CODE_READY的CI前置。修复后全单测103 PASS/4既有联网SKIP；生产边界73 PASS；六工作区tsc全0；85API/152动作/62模块/5屏追溯及鉴权103路由0缺口。构建完成后追加结论。
+- pnpm11环境包装器递归检查失败；等价执行仓库锁定工具node_modules/vitest、各tsconfig的tsc、Next build，不改锁文件、不引入全局配置；GitHub仍按Node22/pnpm9.15.4精确CI作最终验证。默认pnpm test缺本地.env.local的历史障碍仍NOT_PASS。
+- 回滚：仅回退本批测试替身与账的提交，不回滚原件安全关闭或历史资产。生产DB/Storage未修改，付费模型调用0。
+
+- CI修复批本地Next生产构建成功（完整路由生成），`node apps/web/node_modules/next/dist/bin/next build`于apps/web执行；无生产DB依赖。GitHub新CI待推送后取证，不以本地结果替代。
