@@ -1,7 +1,7 @@
 import { executionDigest } from "./execution-authority.mjs";
 import { STAGE_CONTRACTS } from "./contracts.mjs";
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * Producer output and a signed execution grant are not an independent G Pass.
