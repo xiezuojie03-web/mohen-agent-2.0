@@ -1,0 +1,335 @@
+diff --git a/CURRENT.md b/CURRENT.md
+index 8f99b7c..97f3cec 100644
+--- a/CURRENT.md
++++ b/CURRENT.md
+@@ -23,9 +23,9 @@ Owner已批准MAB更新计划并授权持续施工：最终GitHub仅main，Verce
+ | 真实库安全 | 素材表已启用RLS、移除anon/authenticated直接访问；有同库受保护备份；已接独立短时数据库身份，真实库合法/过期/伪造签名只读断言通过；M1已发布；新资料台浏览器流程在隔离数据库验证，不在生产库生成测试资料 |
+ | 真实知识存储 | 98条原件登记有ref/hash；Storage桶0；两座证据桥0；字节回读尚未证明 |
+ | Gate | 现有代码已具独立资格实现；候选/资格空表已迁移；独立Gate权限迁移及真实策略未启用，HOLD |
+-| Vercel | 现有production READY；M1@88aad0e已发布READY；M2尚未发布，不声明完整三模式通过 |
++| Vercel | 现有production READY；M1@88aad0e已发布READY；M2@c032ec6自动发布READY，线上数据库查询通过，不声明完整三模式通过 |
+ | 产品总体验收 | 三模式、Admin、知识资产、双课题与最终线上验收未完成 |
+-| 凭据 | 七项旧plain配置已转encrypted；网站登录密钥已更新配置，待下一次发布生效；数据库密码获批更换，等待Owner在官方控制台重置并安全填入Vercel；其他已暴露服务凭据仍待轮换；数据库身份另用全新独立密钥 |
++| 凭据 | 七项旧plain配置已转encrypted；网站登录密钥已随新部署生效；数据库密码获批更换，新密码变量已确认Sensitive/Production，网站数据库查询通过；未单独验证旧密码失效；其他已暴露服务凭据仍待轮换；数据库身份另用全新独立密钥 |
+ 
+ ## 权威与保护
+ 
+diff --git a/apps/web/app/components/GlobalNav.tsx b/apps/web/app/components/GlobalNav.tsx
+index fd32b7f..c58d86d 100644
+--- a/apps/web/app/components/GlobalNav.tsx
++++ b/apps/web/app/components/GlobalNav.tsx
+@@ -96,7 +96,7 @@ export default function GlobalNav() {
+   const roles = user?.roles ?? [];
+   const isOperator = roles.includes("operator") || roles.includes("reviewer");
+   const hasResults = works.length > 0 || knowledge.length > 0;
+-  const modeNavigation = pathname === "/" ? [] : NAV_ITEMS;
++  const modeNavigation = NAV_ITEMS;
+   const visibleNav = isOperator
+     ? [...modeNavigation, { href: "/admin", label: "运营管理 Admin" }]
+     : modeNavigation;
+diff --git a/apps/web/app/five-ui.css b/apps/web/app/five-ui.css
+index 2d39d43..ef3a8be 100644
+--- a/apps/web/app/five-ui.css
++++ b/apps/web/app/five-ui.css
+@@ -234,7 +234,7 @@ body {
+   max-width: 1200px;
+   margin: 0 auto;
+   display: grid;
+-  grid-template-columns: minmax(0, 1fr);
++  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+   gap: 48px;
+   align-items: center;
+ }
+@@ -294,6 +294,8 @@ body {
+   flex-direction: column;
+   gap: 12px;
+ }
++.mo-flow__heading { font-family: var(--mo-font-editorial); font-size: 20px; font-weight: 500; color: var(--mo-ink-900); margin: 0 0 20px; }
++.mo-flow__note { font-size: 13px; color: var(--mo-muted); line-height: 1.7; margin: 16px 0 0; }
+ .mo-flow__steps {
+   position: relative;
+   display: flex;
+@@ -535,10 +537,11 @@ body {
+   .mo-nav__brand span { display: none; }
+ }
+ @media (max-width: 767px) {
+-  .mo-nav { gap: 10px; padding: 0 12px; overflow-x: auto; }
+-  .mo-nav__links { margin: 0; }
++  .mo-nav { gap: 8px; padding: 10px 12px; height: auto; flex-wrap: wrap; }
++  .mo-nav__links { margin: 0; order: 3; flex-basis: 100%; min-width: 0; overflow-x: auto; }
+   .mo-nav__link { padding: 8px 12px; font-size: 13px; white-space: nowrap; }
+   .mo-nav__tools { margin-left: auto; }
++  .mo-nav__tools, .mo-nav__brand { flex-shrink: 0; }
+   .mo-cards { grid-template-columns: 1fr; }
+   .mo-home-grid { grid-template-columns: 1fr; }
+   .mo-home-grid .mo-panel:last-child { grid-column: auto; }
+diff --git a/apps/web/app/page.tsx b/apps/web/app/page.tsx
+index 0b0f544..39e644c 100644
+--- a/apps/web/app/page.tsx
++++ b/apps/web/app/page.tsx
+@@ -36,6 +36,8 @@ const MODES: {
+ 
+ ];
+ 
++const CREATION_FLOW = ["委托", "研究", "编导", "预览", "审核"];
++
+ export default function Home() {
+   return (
+     <main className="mo-home">
+@@ -49,13 +51,25 @@ export default function Home() {
+               可以独立探索知识世界，也可以委托研究与创作，或观看已发布的作品。
+             </p>
+             <div className="mo-hero__cta">
++              <a href="/studio" className="mo-btn mo-btn--primary">开始创作</a>
++              <a href="/explore" className="mo-btn mo-btn--ghost">自由探索</a>
+               <a href="#modes" className="mo-btn mo-btn--ghost">
+                 了解墨痕
+               </a>
+             </div>
+           </div>
+-
+-
++          <section className="mo-hero__flow" aria-label="从想法到作品">
++            <h2 className="mo-flow__heading">从一个想法，到一部作品</h2>
++            <div className="mo-flow__steps">
++              {CREATION_FLOW.map((label, index) => (
++                <div className="mo-flow__step" key={label}>
++                  <span className="mo-flow__dot">{index + 1}</span>
++                  <span className="mo-flow__label">{label}</span>
++                </div>
++              ))}
++            </div>
++            <p className="mo-flow__note">也可以直接观看作品，或独立探索历史知识。</p>
++          </section>
+         </div>
+       </section>
+ 
+diff --git a/apps/web/app/studio.css b/apps/web/app/studio.css
+index 97495bd..ecb23b2 100644
+--- a/apps/web/app/studio.css
++++ b/apps/web/app/studio.css
+@@ -9,6 +9,16 @@
+ }
+ 
+ /* ---- 顶部：标题 + 四阶段状态轴 ---- */
++.studio__desk-link {
++  color: var(--mo-teal-700);
++  border: 1px solid var(--mo-line);
++  border-radius: 8px;
++  padding: 9px 16px;
++  font-size: 13px;
++  text-decoration: none;
++  margin-right: auto;
++}
++.studio__desk-link:hover { background: var(--mo-paper-100); }
+ .studio__header {
+   border-bottom: 1px solid var(--mo-line);
+   background: var(--mo-white);
+diff --git a/apps/web/app/studio/StudioWorkbench.tsx b/apps/web/app/studio/StudioWorkbench.tsx
+index 77b7efa..f3a1f4a 100644
+--- a/apps/web/app/studio/StudioWorkbench.tsx
++++ b/apps/web/app/studio/StudioWorkbench.tsx
+@@ -332,6 +332,7 @@ export default function StudioWorkbench() {
+           <h1>创作 Studio</h1>
+           <p>用自然语言委托墨痕研究、编导与创作</p>
+         </div>
++        <a href="/studio/desk" className="studio__desk-link">资料台</a>
+         <div className="studio__stages">
+           {STAGES.map((s, i) => (
+             <div className={`studio__stage${i === 0 ? " is-active" : ""}`} key={s}>
+diff --git a/apps/web/app/studio/page.tsx b/apps/web/app/studio/page.tsx
+index dd5a4b4..1e4e198 100644
+--- a/apps/web/app/studio/page.tsx
++++ b/apps/web/app/studio/page.tsx
+@@ -3,26 +3,5 @@ import StudioWorkbench from "./StudioWorkbench";
+ export const metadata = { title: "创作 Studio · 墨痕" };
+ 
+ export default function StudioPage() {
+-  return (
+-    <>
+-      <a
+-        href="/studio/desk"
+-        style={{
+-          position: "fixed",
+-          right: 18,
+-          top: 10,
+-          zIndex: 60,
+-          background: "#1f3a2d",
+-          color: "#fff",
+-          borderRadius: 4,
+-          padding: "5px 10px",
+-          fontSize: 12,
+-          textDecoration: "none",
+-        }}
+-      >
+-        资料台
+-      </a>
+-      <StudioWorkbench />
+-    </>
+-  );
++  return <StudioWorkbench />;
+ }
+diff --git a/apps/web/app/watch.css b/apps/web/app/watch.css
+index 526e5e9..4d26887 100644
+--- a/apps/web/app/watch.css
++++ b/apps/web/app/watch.css
+@@ -199,7 +199,11 @@
+ }
+ .watch__stage-meta .watch__status {
+   margin-bottom: 0;
++  color: #e8efed;
+ }
++.watch__selected-title { margin: 16px 24px 0; font-size: 24px; line-height: 1.4; color: #fff; }
++.watch__stage-frame .watch__missing-detail { margin-top: 14px; font-family: var(--mo-font-ui); font-size: 14px; color: #b7cac5; }
++.watch__reading-notice { color: #b7cac5; padding: 0 24px; font-size: 13px; }
+ .watch__stage-count {
+   font-size: 13px;
+   color: #9fb0ac;
+diff --git a/apps/web/app/watch/WatchGallery.tsx b/apps/web/app/watch/WatchGallery.tsx
+index a8f1e55..7b79a97 100644
+--- a/apps/web/app/watch/WatchGallery.tsx
++++ b/apps/web/app/watch/WatchGallery.tsx
+@@ -150,24 +150,24 @@ export default function WatchGallery() {
+             <div className="watch__stage-meta">
+               <span className="watch__status">已发布 · 版本 {selected?.revision_no}</span>
+               <span className="watch__stage-count">
+-                {String(current + 1).padStart(2, "0")} / {String(beats.length).padStart(2, "0")}
++                {beats.length ? `${String(current + 1).padStart(2, "0")} / ${String(beats.length).padStart(2, "0")}` : "暂无章节"}
+               </span>
+             </div>
++            <h1 className="watch__selected-title">{selected?.title}</h1>
+ 
+             {/* 视觉舞台：画面（文字化）+ 旁白字幕 */}
+             <div className="watch__stage-visual">
+               <div className="watch__stage-frame">
+-                <span className="watch__stage-frame-label">画面</span>
+-                <p>{beat?.visual || "（本章暂无画面描述）"}</p>
++                <span className="watch__stage-frame-label">{beat ? "画面" : "作品内容"}</span>
++                <p>{beat ? beat.visual || "（本章暂无画面描述）" : "此版本尚无可阅读的章节。"}</p>
++                {!beat && <p className="watch__missing-detail">可以从右侧选择其他作品；当前版本的内容需要创作者补齐。</p>}
+               </div>
+-              <div className="watch__stage-narration">
+-                {beat && (
++              {beat && <div className="watch__stage-narration">
+                   <>
+                     <h2>{beat.title}</h2>
+                     <p>{beat.narration}</p>
+                   </>
+-                )}
+-              </div>
++              </div>}
+             </div>
+ 
+             <p className="watch__reading-notice">图文阅读 · 暂无可播放媒体</p>
+@@ -176,12 +176,12 @@ export default function WatchGallery() {
+               <button
+                 className="watch__ctrl"
+                 onClick={() => goTo(current - 1)}
+-                disabled={current === 0}
++                disabled={!beats.length || current === 0}
+                 aria-label="上一章"
+               >
+                 ⏮ 上一章
+               </button>
+-              <button className="watch__ctrl watch__ctrl--play" onClick={togglePlay} aria-label={playing ? "停止翻页" : "自动翻页"}>
++              <button className="watch__ctrl watch__ctrl--play" disabled={beats.length < 2} onClick={togglePlay} aria-label={playing ? "停止翻页" : "自动翻页"}>
+                 {playing ? "停止翻页" : "自动翻页"}
+               </button>
+               <button
+diff --git a/playwright.mab.config.ts b/playwright.mab.config.ts
+index efa36c6..cc12b11 100644
+--- a/playwright.mab.config.ts
++++ b/playwright.mab.config.ts
+@@ -1,6 +1,6 @@
+ import {defineConfig} from '@playwright/test';
+ export default defineConfig({
+-  testDir:'tests/e2e',testMatch:'mab-notebook.spec.ts',workers:1,fullyParallel:false,timeout:90_000,
++  testDir:'tests/e2e',testMatch:['mab-notebook.spec.ts','ui-recovery.spec.ts'],workers:1,fullyParallel:false,timeout:90_000,
+   outputDir:'test-results/mab-http',reporter:[['list']],
+   use:{baseURL:process.env.MOHEN_E2E_BASE_URL??'http://127.0.0.1:3008',headless:true,
+     launchOptions:process.env.MOHEN_TEST_CHROMIUM?{executablePath:process.env.MOHEN_TEST_CHROMIUM}:undefined,
+diff --git a/tasks/implementation/MAB/UI_RECOVERY.md b/tasks/implementation/MAB/UI_RECOVERY.md
+new file mode 100644
+index 0000000..baf31e8
+--- /dev/null
++++ b/tasks/implementation/MAB/UI_RECOVERY.md
+@@ -0,0 +1,16 @@
++# 首页与基础交互恢复施工补充
++
++Owner于2026-11-02选择A：先恢复原版，再逐步打磨。沿用已授权的本会话持续施工方式。
++
++目标：恢复首页直接入口、完整导航、原版左右比例与现有墨绿纸白风格；修复已复现的入口遮挡和无章节播放误导。三模式仍各自独立，Admin仍按角色展示，无付费服务。
++
++依据：线上1440宽浏览器截图与历史E1截图、a4fe4d4变更对照。该提交删除首页首屏CTA/右侧图；GlobalNav在首页隐藏模式导航。此轮M1/M2未修改首页。
++
++- [x] 浏览器重现资料台遮住用户按钮、无章节01/00及首页缺直接入口。
++- [ ] page.tsx恢复开始创作/自由探索，右侧恢复创作流程图；five-ui.css恢复双列比例，小屏单列。
++- [ ] GlobalNav首页显示已有导航；窄屏不让账户按钮被横向导航挤出屏幕。
++- [ ] Studio资料台入口移至自身标题行，WATCH无章节说明、作品标题与无效控件禁用。
++- [ ] ui-recovery.spec.ts覆盖以上行为和390/320窄屏；真实资料保存浏览器回归、类型/单测/构建验证。
++- [ ] 截图人工检查，提交main发布，正式域名复验。只报本批恢复，不报三模式完工。
++
++不将无原件许可的照片或生成图冒充历史材料；不删除生产库测试作品来美化目录；首页真实作品/任务数据接线后续单独推进。
+diff --git a/tasks/implementation/MAB/progress.md b/tasks/implementation/MAB/progress.md
+index a6f5e4c..23fbb9c 100644
+--- a/tasks/implementation/MAB/progress.md
++++ b/tasks/implementation/MAB/progress.md
+@@ -65,3 +65,7 @@ Ruling: 数据库验签改用独立短时服务端凭证 — 避免持久复制
+ - M2仍欠实际原件对象存储、规范作品绑定及外部代理来源；M3—M8继续施工。没有付费模型调用。
+ 
+ Ruling: 使用单独密码安全变量覆盖旧URI密码，保留连接地址与TLS参数 — 减少手工编辑连接串导致的错误，允许Owner只在官方安全界面输入密码 — 重置动作仍需官方控制台完成，不能把代码就绪写成密码已更换。
++
++## 生产连接恢复验证
++
++Owner新增MOHEN_DATABASE_PASSWORD后，连接器确认Sensitive/Production。误改的MOHEN_DATABASE_SESSION_SECRET已恢复为与数据库配套的独立身份密钥。main@c032ec6已推送，自动部署dpl_BZGGBiCht4crhQUJScjBsLVDFu7D READY。正式域名只读查询不存在的随机账号返回预期401 invalid_credentials，证明新部署数据库查询可用；auth/me 200，未登录资料项目401 login_required。没有新增生产账户或资料、没有付费模型调用。另一个显式部署仍在构建，待READY复查。此检查不代表已完成登录后的生产保存验收，也未验证旧密码失效。
+diff --git a/tests/e2e/ui-recovery.spec.ts b/tests/e2e/ui-recovery.spec.ts
+new file mode 100644
+index 0000000..e562c40
+--- /dev/null
++++ b/tests/e2e/ui-recovery.spec.ts
+@@ -0,0 +1,45 @@
++import {test,expect} from '@playwright/test';
++
++test('Studio keeps the account control clear of the materials shortcut',async({page})=>{
++  await page.route('**/api/session/me',route=>route.fulfill({json:{authenticated:false,user:null}}));
++  await page.goto('/studio');
++  const desk=page.getByRole('link',{name:'资料台',exact:true});
++  const account=page.getByRole('button',{name:'用户',exact:true});
++  const a=await desk.boundingBox(),b=await account.boundingBox();
++  expect(a&&b).toBeTruthy();
++  expect(a!.x>=b!.x+b!.width||b!.x>=a!.x+a!.width||a!.y>=b!.y+b!.height||b!.y>=a!.y+a!.height).toBe(true);
++  await account.click();
++  await expect(page.getByRole('link',{name:'登录',exact:true})).toBeVisible();
++});
++
++test('WATCH explains a revision without chapters and disables playback',async({page})=>{
++  await page.route('**/api/works/published',route=>route.fulfill({json:{works:[{work_id:'synthetic-work',revision_id:'synthetic-revision',title:'缺少章节的合成作品',description:'',revision_no:'1',published_at:'2026-11-02',content:'{}'}]}}));
++  await page.goto('/watch');
++  await expect(page.getByRole('heading',{name:'缺少章节的合成作品',exact:true})).toBeVisible();
++  await expect(page.getByText('此版本尚无可阅读的章节。',{exact:true})).toBeVisible();
++  await expect(page.getByRole('button',{name:'自动翻页',exact:true})).toBeDisabled();
++  await expect(page.getByText('01 / 00',{exact:true})).toHaveCount(0);
++});
++
++test('home restores first-screen mode navigation and direct creation entry',async({page})=>{
++  await page.setViewportSize({width:1440,height:1000});
++  await page.goto('/');
++  await expect(page.getByRole('navigation').getByRole('link',{name:'创作 Studio',exact:true})).toBeVisible();
++  await expect(page.getByRole('link',{name:'开始创作',exact:true})).toBeInViewport();
++  await expect(page.getByRole('link',{name:'自由探索',exact:true})).toBeInViewport();
++  await expect(page.getByRole('region',{name:'从想法到作品'})).toBeVisible();
++  await page.getByRole('link',{name:'开始创作',exact:true}).click();
++  await expect(page).toHaveURL(/\/studio$/);
++});
++
++for (const width of [320,390]) {
++  test(`home keeps account and mode navigation usable at ${width}px`,async({page})=>{
++    await page.setViewportSize({width,height:844});
++    await page.goto('/');
++    await expect(page.getByRole('button',{name:'用户',exact:true})).toBeInViewport();
++    await expect(page.getByRole('navigation').getByRole('link',{name:'探索 EXP',exact:true})).toBeInViewport();
++    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
++    await page.getByRole('button',{name:'用户',exact:true}).click();
++    await expect(page.getByRole('link',{name:'登录',exact:true})).toBeInViewport();
++  });
++}

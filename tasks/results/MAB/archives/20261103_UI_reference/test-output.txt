@@ -1,0 +1,13 @@
+MAB_HTTP_BUILD_SYNTHETIC
+ ✓ Compiled successfully in 9.0s
+ ✓ Generating static pages (13/13)
+MAB_HTTP_BROWSER_SYNTHETIC
+  ✓  1 tests/e2e/mab-notebook.spec.ts:10:5 › private notebook saves, reloads exact revisions, isolates owners and avoids duplicate assets after a lost acknowledgement (2.5s)
+  ✓  2 tests/e2e/ui-recovery.spec.ts:3:5 › Studio keeps the account control clear of the materials shortcut (336ms)
+  ✓  3 tests/e2e/ui-recovery.spec.ts:15:5 › WATCH explains a revision without chapters and disables playback (377ms)
+  ✓  4 tests/e2e/ui-recovery.spec.ts:24:5 › home restores first-screen mode navigation and direct creation entry (403ms)
+  ✓  5 tests/e2e/ui-recovery.spec.ts:36:7 › home keeps account and mode navigation usable at 320px (301ms)
+  ✓  6 tests/e2e/ui-recovery.spec.ts:36:7 › home keeps account and mode navigation usable at 390px (329ms)
+  6 passed (5.1s)
+MAB_HTTP_BROWSER_PASS no-production-data no-paid-provider-calls
+MAB_HTTP_SYNTHETIC_DATABASE_CLEANED

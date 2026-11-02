@@ -163,3 +163,7 @@ Ruling: 使用单独密码安全变量覆盖旧URI密码，保留连接地址与
 - **汇总回执补证**：停滞上传408与不支持文件类型拒绝回归加入后，最新本地单测109 PASS/4既有联网SKIP；源码不变。安全回执与实际输出摘录已保存到tasks/results/MAB/M2_SECURITY_RECEIPT_20261102.md及evidence/，不建立第二套施工账。
 
 - **回执提交与资源清理**：3ed0c8b89fd902e38d977564a455c92a6e45557f保存109项单测回执及安全汇总；对应CI41471113675运行中（最终以该run实际状态为准）。专用官方Storage/HTTPS合成fixture已停止并清除自建测试库；每轮业务测试库与对象已清理，未删除生产原件。远端HEAD仅refs/heads/main。
+
+## 2026-11-03平台切换交接
+
+Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功能。接续索引`PLATFORM_HANDOFF_20261103.md`，原ZIP和增量书完整归档inputs并记录SHA256。全部已实施源码与测试已在main；原UI stash的13文件完整patch及公开页面PNG/历史测试摘录归档results/MAB/archives，未覆盖main合法成果。d3727ab的CI41471354205与3ed0c8b的CI41471113675均SUCCESS；最终归档提交的CI以GitHub实际状态为准。未上传密钥、cookie、DB dump或临时测试数据。生产准备问题仍未收到回复，后续平台须保留此HOLD。
