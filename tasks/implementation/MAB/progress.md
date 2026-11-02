@@ -176,3 +176,14 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **本次最小修复**：API-023改用共享合格读模型仓储；上下文从仅服务器配置 `MOHEN_PUBLIC_EVIDENCE_QUALIFICATION_CONTEXT` 取得，要求固定consumer=visual_stage、含purpose namespace/code/version与scope对象，URL查询不接受资格参数；配置缺失/不合法/DB无实际签发函数全部503失败关闭，未合格404，合法200仅保留原字段；所有回执no-store，敏感SQL不外露。代码与声明原位扩展，添加5条正反/权限单测。
 - **激活边界**：本批**未**配置该生产环境变量、不安装Gate表、不启用旧G5或发布；当前公开证据详情将失败关闭，直至M3独立资格真正可用。上线前需评估对现有WATCH证据按钮的可见降级文案，不能把未审证据重新开放以修UI。
 - **验证**：提交后以GitHub真实CI检查类型、unit、traceability和build，不把源码提交记成PASS。另待M3真实DB按精准purpose/consumer/修订/权利/撤权测试，状态HOLD。
+
+
+## 2026-11-03｜ENG-NEXT-01 M2→M3定向接续（GitHub施工）
+
+- 施工前基线`c5037f532e90f4a6f90f2a2f2e8444a3641c0b07`，其GitHub CI `41544814835` 已实得 `success`（类型、单测、生产边界、Next构建）。既有Codex M2隔离PG/Storage、桥与真实浏览器回执继承，不冒称本批重跑。
+- 生产Supabase只读核查（2026-11-03）：`studio.private_originals`、`control.original_bridge_verification_keys`、`studio.bind_private_read_evidence`都不存在；Storage桶=0；`raw_items=98`，两座桥记录=0；M3两份策略/Reviewer表、独立签发函数、资格有效判断函数均不存在；候选/当前资格=0。真实M2和独立M3仍HOLD。
+- **M2接线组件（候选、非取代）**：新增`pipelines/data-production/workers/private-evidence-stage.mjs`，分别为D01真实UTF8私有原件读取候选、D02读取证据桥、D03准确主张修订证据桥。每个方法在读取原件或写候选前调用现有`assertStageExecutionAuthorized`签名grant及在线Verifier，不容旧memory索引或自造PASS；实际桥接调用复用`createEvidenceBridgeRepository`的字节attestation/owner/RLS。输出固定UNASSESSED；不授任何G。旧`layer1-adapters`不改、不激活；真正生产者输入/来源、数据库注册worker与独立Gate恢复仍需后续接线测试。
+- **M3启用条件检查组件**：新增`packages/data-access/src/m3-gate-preflight.mjs`，只读核`gate_policy_versions`、`gate_reviewer_bindings`、独立签发/有效性函数、角色权限及六门实际启用策略和有效绑定；缺项逐项HOLD，即使齐全也只能给`READ_ONLY_PRECHECK_COMPLETE_NOT_ACTIVATED`，不冒充已签正式G或真实Reviewer身份认证。
+- **正反单测**：私有来源读取必须精确按UTF8字节范围匹配引文和SHA，签署的execution grant不合法时绝不读私有对象或写桥；D02/D03仅产候选并准确绑定修订，不产生Gate PASS。M3结构缺失/无策略/无Reviewer/已配置但未签发逐态校验。
+- **边界**：本提交仅源码、单测和施工账；未在生产安装M2/M3迁移、Bucket、角色、密钥或策略。旧历史98指针不可当完整字节资产；未经M3正式Reviewer的候选不可公开。后续应做合成真PG/Storage的worker端到端及签名grant低权限边界测试，然后在Owner独立批准生产准备后才部署新对象与资格角色。
+- **回执级别**：本批提交后等GitHub CI真实运行结果；未记录完整M2/M3准出。Vercel按前期批准节奏关键集成关验收，不逐提交检查。
