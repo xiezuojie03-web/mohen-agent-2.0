@@ -47,3 +47,26 @@ declare const _default: {
   PROJECT_ROOT: string;
 };
 export default _default;
+
+export interface ImportedMaterialInput {
+  title: string;
+  text: string;
+  sourceUrl: string | null;
+  license: string | null;
+  rightsDeclared: boolean;
+}
+export interface ImportedMaterialView {
+  material_id: string;
+  title: string;
+  source_url: string | null;
+  license: string | null;
+  rights_declared: boolean;
+  excerpt: string;
+  created_at: string;
+}
+export interface ImportedMaterialRepository {
+  list(sessionToken: string | null): Promise<ImportedMaterialView[]>;
+  create(input: ImportedMaterialInput, sessionToken: string | null): Promise<{material_id: string; owner_user_id: string}>;
+}
+export declare function createImportedMaterialRepository(pool: {connect: Function}): ImportedMaterialRepository;
+export declare function getNodePgPool(): {connect: Function};

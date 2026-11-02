@@ -276,3 +276,6 @@ export default {
   PSQL_PATH,
   PROJECT_ROOT,
 };
+
+export { createImportedMaterialRepository } from './imported-material-repository.mjs';
+export { getNodePgPool } from './node-pg-client.mjs';

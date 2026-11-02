@@ -169,3 +169,13 @@ export async function findUserById(userId: string): Promise<AuthUser | null> {
   );
   return rows.length ? rowToUser(rows[0]) : null;
 }
+
+/** Server-only short-lived DB attestation after getSession has authenticated the request.
+ * Its dedicated key is provisioned separately; browser AUTH_SECRET never enters PG.
+ */
+export function signDatabaseSessionToken(session: { uid: string; r: string[] }): string {
+  const key = process.env.MOHEN_DATABASE_SESSION_SECRET;
+  if (!key || key.trim().length < 32) throw new Error("DATABASE_SESSION_KEY_UNAVAILABLE");
+  const payload = b64url(JSON.stringify({ uid: session.uid, r: session.r, exp: Date.now() + 30_000 }));
+  return `${payload}.${crypto.createHmac("sha256", key).update(payload).digest("base64url")}`;
+}

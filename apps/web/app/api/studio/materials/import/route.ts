@@ -5,8 +5,10 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { queryRows, queryValue, run } from "@mohen/data-access";
+import { createImportedMaterialRepository, getNodePgPool } from "@mohen/data-access";
 import { getSession } from "../../../../../lib/session";
+
+import { signDatabaseSessionToken } from "../../../../../lib/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,11 +21,10 @@ export async function GET() {
   const session = await getSession();
   if (!session) return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401 });
 
-  const rows = await queryRows(
-    "select material_id::text as material_id, title, source_url, license, rights_declared, left(text_content, 240) as excerpt, created_at::text as created_at from public.imported_materials where owner_user_id = :'owner' order by created_at desc limit 50",
-    { owner: session.uid }
-  );
-  return NextResponse.json({ ok: true, materials: rows });
+  try {
+    const materials = await createImportedMaterialRepository(getNodePgPool()).list(signDatabaseSessionToken(session));
+    return NextResponse.json({ ok: true, materials });
+  } catch (error) { return materialFailure(error); }
 }
 
 type ParsedImport = {
@@ -64,7 +65,11 @@ async function ocrImage(file: File): Promise<string | null> {
 async function parseJson(req: Request): Promise<ParsedImport | NextResponse> {
   let body: Record<string, unknown> = {};
   try {
-    body = (await req.json()) as Record<string, unknown>;
+    const value: unknown = await req.json();
+    if (value === null || typeof value !== "object" || Array.isArray(value)) {
+      return NextResponse.json({ ok: false, reason: "bad_request" }, { status: 400 });
+    }
+    body = value as Record<string, unknown>;
   } catch {
     return NextResponse.json({ ok: false, reason: "bad_request" }, { status: 400 });
   }
@@ -146,17 +151,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, reason: "rights_declaration_required" }, { status: 400 });
   }
 
-  const id = await queryValue("select gen_random_uuid()::text");
-  await run(
-    "insert into public.imported_materials (material_id, owner_user_id, title, text_content, source_url, license, rights_declared) values (:'id', :'owner', :'title', :'text', :'url', :'license', true)",
-    {
-      id: id!,
-      owner: session.uid,
-      title: parsed.title,
-      text: parsed.text,
-      url: parsed.sourceUrl,
-      license: parsed.license,
-    }
-  );
-  return NextResponse.json({ ok: true, material_id: id, kind: parsed.kind, chars: parsed.text.length });
+  try {
+    const saved = await createImportedMaterialRepository(getNodePgPool()).create(parsed, signDatabaseSessionToken(session));
+    return NextResponse.json({ ok: true, material_id: saved.material_id, kind: parsed.kind, chars: parsed.text.length });
+  } catch (error) { return materialFailure(error); }
+}
+
+function materialFailure(error: unknown) {
+  if (error instanceof Error && error.message === "MATERIAL_IDENTITY_REQUIRED") {
+    return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401 });
+  }
+  // Never return SQL, source text or connection details to the client.
+  return NextResponse.json({ ok: false, reason: "materials_unavailable" }, { status: 503 });
 }

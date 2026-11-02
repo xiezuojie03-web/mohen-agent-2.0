@@ -22,6 +22,10 @@ function apply(name, folder = "migrations") {
 }
 try {
   for (const file of baseline) apply(file);
+  // Match managed PG installations where pgcrypto is installed outside public.
+  if (process.env.MOHEN_TEST_CRYPTO_SCHEMA === "extensions") {
+    query(database, "create schema if not exists extensions; alter extension pgcrypto set schema extensions");
+  }
   query(database, `do $$ begin
     if not exists(select from pg_roles where rolname='anon') then create role anon nologin; end if;
     if not exists(select from pg_roles where rolname='authenticated') then create role authenticated nologin; end if;
@@ -41,6 +45,9 @@ try {
   const result = spawnSync(process.execPath, ["tests/data-production/db-security.integration.mjs"], { cwd: root,
     env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
   if (result.status !== 0) throw new Error("DB_SECURITY_TEST_FAILED");
+  const materialResult = spawnSync(process.execPath, ["tests/data-production/imported-material-repository.integration.mjs"], { cwd: root,
+    env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
+  if (materialResult.status !== 0) throw new Error("IMPORTED_MATERIAL_REPOSITORY_TEST_FAILED");
   const authorityResult = spawnSync(process.execPath, ["tests/data-production/gate-authority.integration.mjs"], { cwd: root,
     env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
   if (authorityResult.status !== 0) throw new Error("GATE_AUTHORITY_TEST_FAILED");

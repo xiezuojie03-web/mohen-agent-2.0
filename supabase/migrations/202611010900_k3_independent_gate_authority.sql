@@ -61,6 +61,18 @@ revoke all on function control.protect_signed_gate_history() from public;
 drop trigger if exists k3_signed_history on control.gate_audits;
 create trigger k3_signed_history before update or delete on control.gate_audits for each row execute function control.protect_signed_gate_history();
 
+-- pgcrypto lives in public on local PG and extensions on managed Supabase.
+-- Bind the actual extension schema without moving it or adding public aliases.
+do $$ declare crypto_schema text; begin
+ select n.nspname into crypto_schema from pg_extension e join pg_namespace n on n.oid=e.extnamespace where e.extname='pgcrypto';
+ if crypto_schema is null then raise exception 'PGCRYPTO_REQUIRED'; end if;
+ execute format('grant usage on schema %I to mohen_gate_authority',crypto_schema);
+ execute format('grant execute on function %I.digest(bytea,text) to mohen_gate_authority',crypto_schema);
+ execute format('create or replace function control.sha256_bytes(p_data bytea) returns bytea language sql immutable strict security invoker set search_path=pg_catalog as $fn$ select %I.digest(p_data,''sha256'') $fn$',crypto_schema);
+end $$;
+revoke all on function control.sha256_bytes(bytea) from public;
+grant execute on function control.sha256_bytes(bytea) to mohen_gate_authority;
+
 -- Derive a version from the actual row; never create a second artifact registry.
 create or replace function control.artifact_revision_for(p_kind text,p_id uuid) returns text
 language plpgsql stable security definer set search_path=pg_catalog set jit=off as $$
@@ -90,7 +102,7 @@ begin
     ('map_timeline_projection','read_model','map_timeline_projections','map_timeline_projection_id'),
     ('evidence_pointer','read_model','evidence_pointers','evidence_pointer_id')) as m(kind,ns,tbl,key_col) where m.kind=p_kind;
  if not found then return null; end if;
- execute format('select encode(public.digest(convert_to(to_jsonb(t)::text,''UTF8''),''sha256''),''hex'') from %I.%I t where %I=$1',ns,tbl,key_col) into revision using p_id;
+ execute format('select encode(control.sha256_bytes(convert_to(to_jsonb(t)::text,''UTF8'')),''hex'') from %I.%I t where %I=$1',ns,tbl,key_col) into revision using p_id;
  return revision;
 end $$;
 alter function control.artifact_revision_for(text,uuid) owner to mohen_gate_authority;
@@ -256,8 +268,8 @@ begin
     jsonb_typeof(p_receipt->'checks'->required) is distinct from 'boolean'
     or (p_result='PASS' and p_receipt->'checks'->required is distinct from 'true'::jsonb))
  then raise exception 'REVIEW_RECEIPT_INVALID'; end if;
- fingerprint:=encode(public.digest(convert_to(jsonb_build_object('candidate',p_candidate,'result',p_result,'rule',p_rule,'until',p_until,
-  'receipt',p_receipt,'expected',p_expected,'reviewer',principal,'db',actor)::text,'UTF8'),'sha256'),'hex');
+ fingerprint:=encode(control.sha256_bytes(convert_to(jsonb_build_object('candidate',p_candidate,'result',p_result,'rule',p_rule,'until',p_until,
+  'receipt',p_receipt,'expected',p_expected,'reviewer',principal,'db',actor)::text,'UTF8')),'hex');
  key_text:=jsonb_build_array('mohen.six-stage.v1',c.gate_code,c.object_type,c.object_id,c.artifact_revision,
   c.purpose_namespace,c.purpose_code,c.purpose_version,c.consumer)::text;
  perform pg_advisory_xact_lock(hashtextextended(key_text,0));
@@ -293,7 +305,7 @@ begin
   insert into control.qualification_current(architecture_generation,gate_code,object_type,object_id,artifact_revision,purpose_namespace,purpose_code,purpose_version,
     consumer,gate_audit_id,valid_from,valid_until,dependency_fingerprint,scope_digest,rule_version,reviewer_user_id)
   values('mohen.six-stage.v1',c.gate_code,c.object_type,c.object_id,c.artifact_revision,c.purpose_namespace,c.purpose_code,c.purpose_version,c.consumer,new_id,now(),p_until,
-   encode(public.digest(convert_to(c.dependency_snapshot::text,'UTF8'),'sha256'),'hex'),encode(public.digest(convert_to(c.allowed_scope::text,'UTF8'),'sha256'),'hex'),p_rule,principal);
+   encode(control.sha256_bytes(convert_to(c.dependency_snapshot::text,'UTF8')),'hex'),encode(control.sha256_bytes(convert_to(c.allowed_scope::text,'UTF8')),'hex'),p_rule,principal);
  end if;
  update control.gate_candidates set candidate_status=case p_result when 'PASS' then 'CONSUMED' when 'HOLD' then 'HOLD' else 'REJECTED' end where candidate_id=p_candidate;
  return new_id;

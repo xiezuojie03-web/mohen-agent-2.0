@@ -43,13 +43,16 @@ create or replace function control.current_app_user_id() returns uuid
 language plpgsql stable security definer set search_path=pg_catalog as $$
 declare
   token text := current_setting('mohen.session_token',true);
-  payload text; signature text; expected text; key_value text; claims jsonb; subject uuid;
+  payload text; signature text; expected text; key_value text; claims jsonb; subject uuid; crypto_schema text;
 begin
   if token is null or token !~ '^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$' or length(token)>8192 then return null; end if;
   select verification_key into key_value from control.session_verification_keys where key_slot=true;
   if key_value is null then return null; end if;
   payload := split_part(token,'.',1); signature := split_part(token,'.',2);
-  expected := rtrim(translate(encode(public.hmac(convert_to(payload,'UTF8'),convert_to(key_value,'UTF8'),'sha256'),'base64'),'+/','-_'),'=');
+  select n.nspname into crypto_schema from pg_extension e join pg_namespace n on n.oid=e.extnamespace where e.extname='pgcrypto';
+  if crypto_schema is null then return null; end if;
+  execute format('select rtrim(translate(encode(%I.hmac($1,$2,''sha256''),''base64''),''+/'',''-_''),''='')',crypto_schema)
+    into expected using convert_to(payload,'UTF8'),convert_to(key_value,'UTF8');
   if signature<>expected then return null; end if;
   claims := convert_from(decode(translate(payload,'-_','+/') || repeat('=',(4-length(payload)%4)%4),'base64'),'UTF8')::jsonb;
   if jsonb_typeof(claims->'exp') is distinct from 'number' or
