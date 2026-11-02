@@ -69,7 +69,7 @@ export interface ImportedMaterialRepository {
   create(input: ImportedMaterialInput, sessionToken: string | null): Promise<{material_id: string; owner_user_id: string}>;
 }
 export declare function createImportedMaterialRepository(pool: {connect: Function}): ImportedMaterialRepository;
-export declare function getNodePgPool(): {connect: Function};
+export declare function getNodePgPool(): {connect: Function; query(sql: string, params?: unknown[]): Promise<{rows: Array<Record<string, unknown>>}>};
 
 export interface StudioStoredRevision {
   revision_id: string;

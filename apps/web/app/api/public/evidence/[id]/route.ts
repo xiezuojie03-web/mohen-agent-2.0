@@ -29,7 +29,7 @@ function publicEvidenceContext() {
   // Exact public visual-stage consumer; agent and private research contexts
   // must never be selectable from query parameters.
   if (value.consumer !== "visual_stage") return null;
-  return { consumer: "visual_stage", purpose: {
+  return { consumer: "visual_stage" as const, purpose: {
     namespace: fields.namespace as string, code: fields.code as string, version: fields.version as string,
   }, scope: scope as Record<string, unknown> };
 }
