@@ -54,3 +54,13 @@ it("does not leak original on revoked or cross-owner DB access",async()=>{
  const r=await GET(new Request("http://test.invalid/api/studio/attachments?original_id="+id));
  expect(r.status).toBe(404);expect(await r.text()).not.toContain("original bytes");
 });
+it("rejects a chunked oversize body before multipart parsing or storage",async()=>{
+ let supplied=0;
+ const stream=new ReadableStream({pull(controller){supplied++;controller.enqueue(new Uint8Array(1024*1024));if(supplied===14)controller.close();}});
+ const r=await POST(new Request('http://test.invalid/api/studio/attachments',{method:'POST',headers:{'content-type':'multipart/form-data; boundary=synthetic'},body:stream,duplex:'half'} as RequestInit));
+ expect(r.status).toBe(413);expect(state.upload).not.toHaveBeenCalled();expect(supplied).toBeLessThan(14);
+});
+it("rejects a browser POST from a different origin before reading bytes",async()=>{
+ const r0=request();const r=new Request(r0,{headers:{...Object.fromEntries(r0.headers),'origin':'https://other.invalid'}});
+ expect((await POST(r)).status).toBe(403);expect(state.upload).not.toHaveBeenCalled();
+});

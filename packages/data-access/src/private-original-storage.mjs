@@ -9,6 +9,30 @@ const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 const KEY = new RegExp("^" + UUID + "/" + UUID + "\\.bin$");
 const HEX256 = /^[a-f0-9]{64}$/;
 
+async function boundedBytes(response, limit) {
+  const declared = Number(response.headers.get('content-length'));
+  if (declared > limit) {
+    void response.body?.cancel().catch(() => {});
+    throw new Error('ORIGINAL_INTEGRITY_FAILED');
+  }
+  if (!response.body) return Buffer.alloc(0);
+  const reader = response.body.getReader(), chunks = [];
+  let length = 0;
+  try {
+    while (true) {
+      const part = await reader.read();
+      if (part.done) break;
+      length += part.value.byteLength;
+      if (length > limit) throw new Error('ORIGINAL_INTEGRITY_FAILED');
+      chunks.push(Buffer.from(part.value));
+    }
+    return Buffer.concat(chunks, length);
+  } catch (error) {
+    void reader.cancel().catch(() => {});
+    throw error;
+  } finally { reader.releaseLock(); }
+}
+
 export function privateOriginalKey(projectId, objectId) {
   const uuid = new RegExp("^" + UUID + "$");
   if (!uuid.test(projectId) || !uuid.test(objectId)) throw new Error("ORIGINAL_INVALID_ID");
@@ -50,7 +74,19 @@ export function createPrivateOriginalStorage(options = {}) {
       cache: "no-store", redirect: "error",
       signal: AbortSignal.timeout(20000),
     });
-    if (!response.ok) throw new Error(method === "GET" && response.status === 404 ? "ORIGINAL_NOT_FOUND" : "ORIGINAL_STORAGE_" + method + "_FAILED");
+    if (!response.ok) {
+      let missing = method === 'GET' && response.status === 404;
+      if (method === 'GET' && response.status === 400) {
+        // Supabase Storage may encode object-not-found as HTTP400/statusCode404.
+        // Do not turn permission failures or missing-bucket configuration into a
+        // successful absence check that permits privileged uploads.
+        try {
+          const error = JSON.parse((await boundedBytes(response, 4096)).toString('utf8'));
+          missing = (String(error.statusCode) === '404' && error.error === 'not_found' && error.message === 'Object not found') || error.code === 'NoSuchKey';
+        } catch { /* retain fail-closed storage error */ }
+      }
+      throw new Error(missing ? 'ORIGINAL_NOT_FOUND' : 'ORIGINAL_STORAGE_' + method + '_FAILED');
+    }
     return response;
   }
   return {
@@ -74,7 +110,7 @@ export function createPrivateOriginalStorage(options = {}) {
     async readVerified(key, expectedSha256, expectedLength) {
       if (!HEX256.test(expectedSha256)) throw new Error("ORIGINAL_HASH_INVALID");
       const response = await request("GET", key);
-      const data = Buffer.from(await response.arrayBuffer());
+      const data = await boundedBytes(response, MAX_ORIGINAL_BYTES);
       if (data.length > MAX_ORIGINAL_BYTES || (expectedLength !== undefined && data.length !== expectedLength) ||
           originalHash(data) !== expectedSha256) throw new Error("ORIGINAL_INTEGRITY_FAILED");
       return data;

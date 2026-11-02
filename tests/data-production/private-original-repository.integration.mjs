@@ -1,0 +1,60 @@
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+import {createHmac,randomUUID} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+import {createStudioAssetRepository,createPrivateOriginalRepository} from '../../packages/data-access/src/index.mjs';
+import {originalHash} from '../../packages/data-access/src/private-original-storage.mjs';
+const {MOHEN_TEST_PSQL:psql,MOHEN_TEST_SOCKET:socket,MOHEN_TEST_DATABASE:database}=process.env;
+if(!psql||!socket?.startsWith('/workspace/')||!/^mohen_k3_[a-z0-9_]*test$/.test(database??''))throw Error('ISOLATED_TEST_DATABASE_REQUIRED');
+const sql=s=>execFileSync(psql,['-X','-q','-h',socket,'-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database,'-At','-v','ON_ERROR_STOP=1'],{input:s,encoding:'utf8',stdio:['pipe','pipe','pipe']}).trim();
+assert.equal(sql("select current_setting('mohen.test_instance',true)"),'codex-k3-isolated');
+const a=randomUUID(),b=randomUUID(),project=randomUUID(),foreign=randomUUID();
+const key='synthetic-original-db-attestation-key-at-least-32';
+sql(`insert into public.users(user_id,email,username,password_hash)values('${a}','original-a@example.invalid','A','synthetic'),('${b}','original-b@example.invalid','B','synthetic');insert into control.session_verification_keys(verification_key)values('${key}')on conflict(key_slot)do update set verification_key=excluded.verification_key`);
+const token=(uid,exp=Date.now()+60000)=>{const p=Buffer.from(JSON.stringify({uid,r:[],exp})).toString('base64url');return p+'.'+createHmac('sha256',key).update(p).digest('base64url');};
+const as=(uid,s)=>sql(`begin;set local role mohen_app_runtime;select set_config('mohen.session_token','${token(uid)}',true);${s};commit`);
+const {Pool}=createRequire(new URL('../../packages/data-access/package.json',import.meta.url))('pg');
+const pool=new Pool({host:socket,port:Number(process.env.MOHEN_TEST_PORT??55432),user:'k3_admin',database,max:3});
+const repo=createPrivateOriginalRepository(pool),assets=createStudioAssetRepository(pool);
+try{
+ await assets.createProject({projectId:project,title:'原件隔离测试A',scope:{}},token(a));
+ await assets.createProject({projectId:foreign,title:'原件隔离测试B',scope:{}},token(b));
+ const bytes=Buffer.from('synthetic isolated original; not historical evidence');
+ const input={projectId:project,originalId:randomUUID(),assetId:randomUUID(),idempotencyKey:'original-isolated-request',sha256:originalHash(bytes),byteSize:bytes.length,fileName:'合成原件.txt',contentType:'text/plain'};
+ await assert.rejects(()=>repo.reserve({...input,projectId:foreign},token(a)),/STUDIO_PROJECT_NOT_FOUND/);
+ await assert.rejects(()=>repo.reserve(input,token(b)),/STUDIO_PROJECT_NOT_FOUND/);
+ await assert.rejects(()=>repo.reserve(input,token(a,Date.now()-1000)),/STUDIO_IDENTITY_REQUIRED/);
+ await assert.rejects(()=>repo.reserve(input,token(a)+'forged'),/STUDIO_IDENTITY_REQUIRED/);
+ const pending=await repo.reserve(input,token(a));assert.equal(pending.state,'PENDING');
+ assert.equal(await repo.getStored(pending.original_id,token(a)),null);
+ assert.equal((await repo.reserve({...input,originalId:randomUUID(),assetId:randomUUID()},token(a))).original_id,pending.original_id);
+ await assert.rejects(()=>repo.reserve({...input,sha256:'b'.repeat(64)},token(a)),/ORIGINAL_IDEMPOTENCY_CONFLICT/);
+ await assert.rejects(()=>repo.finalize(pending.original_id,input.sha256,token(b)),/ORIGINAL_NOT_FOUND/);
+ await assert.rejects(()=>repo.finalize(pending.original_id,'c'.repeat(64),token(a)),/ORIGINAL_INTEGRITY_INVALID/);
+ const stored=await repo.finalize(pending.original_id,input.sha256,token(a));assert.equal(stored.state,'STORED_VERIFIED');
+ assert.equal((await repo.finalize(pending.original_id,input.sha256,token(a))).asset_revision_id,stored.asset_revision_id);
+ assert.equal(await repo.getStored(stored.original_id,token(b)),null);
+ assert.equal(sql(`select count(*) from studio.asset_revisions where asset_id='${input.assetId}'`),'1');
+ assert.equal(sql(`select epistemic_class||':'||access_state||':'||content_state from studio.asset_revisions where revision_id='${stored.asset_revision_id}'`),'original_material:RESTRICTED:WORKING');
+ const secondInput={...input,originalId:randomUUID(),assetId:randomUUID(),idempotencyKey:'second-original-request'};
+ const secondPending=await repo.reserve(secondInput,token(a));
+ assert.throws(()=>as(a,`update studio.private_originals set state='STORED_VERIFIED',asset_revision_id='${stored.asset_revision_id}',verified_at=now() where original_id='${secondPending.original_id}'`),/ORIGINAL_REVISION_BINDING_INVALID|foreign key/,'an original cannot borrow another asset revision');
+ assert.throws(()=>as(a,`update studio.private_originals set asset_revision_id='${stored.asset_revision_id}' where original_id='${secondPending.original_id}'`),/check constraint/,'partial pending finalization is invalid');
+ sql(`create function studio.fixture_original_disable_after_save()returns trigger language plpgsql security definer set search_path=pg_catalog as $$begin if new.original_id='${secondPending.original_id}'::uuid then update public.users set status='disabled' where user_id='${a}';end if;return new;end$$;create trigger fixture_original_disable_after_save after update on studio.private_originals for each row execute function studio.fixture_original_disable_after_save()`);
+ try{
+  await assert.rejects(()=>repo.finalize(secondPending.original_id,input.sha256,token(a)),/ORIGINAL_FINALIZE_FAILED/,'revocation before final readback must abort success and roll back');
+  assert.equal(sql(`select state from studio.private_originals where original_id='${secondPending.original_id}'`),'PENDING');
+  assert.equal(sql(`select count(*) from studio.asset_revisions where asset_id='${secondInput.assetId}'`),'0');
+  assert.equal(sql(`select status from public.users where user_id='${a}'`),'active');
+ }finally{sql('drop trigger fixture_original_disable_after_save on studio.private_originals;drop function studio.fixture_original_disable_after_save()');}
+ assert.throws(()=>as(a,`update studio.private_originals set state='PENDING',asset_revision_id=null,verified_at=null where original_id='${stored.original_id}'`),/ORIGINAL_IMMUTABLE/,'verified original must never return to pending');
+ assert.throws(()=>as(a,`update studio.private_originals set sha256='${'d'.repeat(64)}' where original_id='${stored.original_id}'`),/permission denied/);
+ assert.equal(sql("select has_table_privilege('anon','studio.private_originals','SELECT')"),'f');
+ sql(`update public.users set status='disabled' where user_id='${a}'`);
+ await assert.rejects(()=>repo.getStored(stored.original_id,token(a)),/STUDIO_IDENTITY_REQUIRED/);
+ sql(`update public.users set status='active' where user_id='${a}';update studio.projects set lifecycle_status='ARCHIVED' where project_id='${project}'`);
+ assert.equal(await repo.getStored(stored.original_id,token(a)),null);
+ await assert.rejects(()=>repo.reserve({...input,idempotencyKey:'archived-new-request'},token(a)),/STUDIO_PROJECT_NOT_FOUND/);
+ const client=await pool.connect();try{const row=(await client.query("select current_user as role,coalesce(current_setting('mohen.session_token',true),'') as token")).rows[0];assert.equal(row.role,'k3_admin');assert.equal(row.token,'');}finally{client.release();}
+ console.log('MAB_PRIVATE_ORIGINAL_DB_PASS owner expired forged disabled archive idempotency immutable-receipt exact-revision no-public-read pooled-identity');
+}finally{await pool.end();}

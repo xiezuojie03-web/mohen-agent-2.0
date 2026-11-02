@@ -7,7 +7,7 @@ create table studio.private_originals (
  project_id uuid not null references studio.projects(project_id) on delete restrict,
  owner_user_id uuid not null references public.users(user_id) on delete restrict,
  asset_id uuid not null unique,
- asset_revision_id uuid unique references studio.asset_revisions(revision_id) on delete restrict,
+ asset_revision_id uuid unique,
  idempotency_key text not null check(length(idempotency_key) between 8 and 200),
  storage_bucket text not null default 'mohen-private-originals' check(storage_bucket='mohen-private-originals'),
  storage_key text not null unique,
@@ -20,9 +20,40 @@ create table studio.private_originals (
  verified_at timestamptz,
  created_at timestamptz not null default now(),
  unique(project_id,idempotency_key),
+ foreign key(asset_id,asset_revision_id) references studio.asset_revisions(asset_id,revision_id) on delete restrict,
  check(storage_key=project_id::text||'/'||original_id::text||'.bin'),
- check((state='STORED_VERIFIED')=(asset_revision_id is not null and verified_at is not null))
+ check((state='PENDING' and asset_revision_id is null and verified_at is null)
+    or (state='STORED_VERIFIED' and asset_revision_id is not null and verified_at is not null))
 );
+-- This candidate migration has not been applied to production. A verified
+-- receipt is permanent; neither its object identity nor its revision may drift.
+create function studio.protect_private_original() returns trigger
+language plpgsql set search_path=pg_catalog as $$
+begin
+ if tg_op='DELETE' then raise exception 'ORIGINAL_IMMUTABLE'; end if;
+ if tg_op='INSERT' then
+  if new.state<>'PENDING' or new.asset_revision_id is not null or new.verified_at is not null then
+   raise exception 'ORIGINAL_MUST_START_PENDING';
+  end if;
+ else
+  if old.state='STORED_VERIFIED' or
+     (to_jsonb(old)-array['state','asset_revision_id','verified_at']) is distinct from
+     (to_jsonb(new)-array['state','asset_revision_id','verified_at']) then
+   raise exception 'ORIGINAL_IMMUTABLE';
+  end if;
+ end if;
+ if new.state='STORED_VERIFIED' and not exists(
+  select 1 from studio.asset_revisions r join studio.asset_heads h on h.asset_id=r.asset_id
+  where r.revision_id=new.asset_revision_id and r.asset_id=new.asset_id and h.project_id=new.project_id
+   and h.asset_kind='source_anchor' and r.actor_id=new.owner_user_id
+   and r.content_hash=new.sha256 and r.payload_storage_ref=new.storage_bucket||'/'||new.storage_key
+   and r.provenance->>'private_original_id'=new.original_id::text
+ ) then raise exception 'ORIGINAL_REVISION_BINDING_INVALID'; end if;
+ return new;
+end $$;
+revoke all on function studio.protect_private_original() from public;
+create trigger studio_private_original_immutable before insert or update or delete
+ on studio.private_originals for each row execute function studio.protect_private_original();
 create index studio_private_originals_project on studio.private_originals(project_id,created_at desc);
 alter table studio.private_originals enable row level security;
 revoke all on studio.private_originals from public,anon,authenticated,service_role;

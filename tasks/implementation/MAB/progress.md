@@ -114,3 +114,31 @@ Ruling: 使用单独密码安全变量覆盖旧URI密码，保留连接地址与
 - 回滚：仅回退本批测试替身与账的提交，不回滚原件安全关闭或历史资产。生产DB/Storage未修改，付费模型调用0。
 
 - CI修复批本地Next生产构建成功（完整路由生成），`node apps/web/node_modules/next/dist/bin/next build`于apps/web执行；无生产DB依赖。GitHub新CI待推送后取证，不以本地结果替代。
+
+## M2-ORIGINAL-ISOLATED｜真实原件隔离批（基线7e83f3b）
+
+- **CI前置已闭合**：7e83f3b9f05643c310ee0524808b0f364913efaa，GitHub Actions run41460853487/job125329194614 全部success（含Typecheck、Unit、生产边界、追溯、Build、Auth）。没有人工逐提交Vercel部署/验收。
+- **原需求**：M2_PRIVATE_ORIGINAL_GITHUB_CODE_READY / M2_PRIVATE_ORIGINAL_VERIFIED_ISOLATED；74目标中附件路径及统一访问入口已原位补证，但不把整个路径的CODE_PRESENT升为目标全量PASS。两座证据桥与LIVE准出仍HOLD。
+- **真实生产只读复核**：studio.private_originals未创建、storage.buckets=0、source.raw_items=98、read_unit_evidence_links=0、claim_evidence_links=0。组织当前free套餐；未升级、未创建生产bucket、未改变生产角色/密钥/数据、未开启MOHEN_PRIVATE_ORIGINAL_UPLOAD_ENABLED；未产生付费模型调用。98条历史指针绝不批量标为已存字节。
+- **真实协议而非mock**：在workspace普通用户进程启动官方supabase/storage release v1.43.0（源提交53462ff，package-lock SHA256 4d294cbe67544b8e7c4568ff692e8df67566bf7694a71692f6b99fac3efc4535），官方既有knex patch-package与原生fs-xattr构建后运行；PG17.11+文件后端、私有测试bucket、localhost HTTP及自签测试CA的HTTPS代理。未使用Docker socket，未接入任何生产服务密钥。协议验证版本不冒充当前托管服务版本或LIVE。
+- **发现并修复**：官方对象不存在返回HTTP400、正文statusCode404，旧适配器误判首次上传。真实HTTP失败重现后，仅识别精确Object not found/NoSuchKey，不把鉴权/缺桶误作可上传；下载流有界，拒绝超量声明或实际字节。路由在formData之前流式限量/20秒超时，拒绝异源浏览器POST；成功/失败均no-store，不返回路径/密钥/公有URL。
+- **候选迁移**：20261102140000尚未在生产执行，允许在本批修正。真实PG重现已验证收据可退回PENDING后，增加不可逆/不可改原件元数据trigger、同asset复合revision FK及source_anchor/project/actor/hash/storage_ref精确绑定；PENDING必须两验证字段皆空，STORED_VERIFIED必须皆存在。rollback只撤权限，保留收据/字节/修订，不删表或恢复公有入口。
+- **DB与对象非原子性**：先Owner RLS预约；无覆盖上传并回读；同事务source_anchor+STORED_VERIFIED。实际测上传已落盘而ACK丢失→重新回读恢复、最终DB trigger失败→仅PENDING留存/无半个asset head→同请求恢复；同key不同内容409；并发请求只有一个准确revision。不自动删除PENDING孤儿：按原ID/hash恢复，无法确认则人工隔离，不在请求失败时删可能由并发成功的对象。
+- **正反权限**：匿名、跨Owner、伪项目/原件、disabled、expired/forged、封存项目、读取中撤权拒绝；合法对象hash与长度一致，匿名public路径/认证路径均拒绝，错hash及篡改拒绝；pool身份清理通过。另发现finalize在UPDATE RETURNING后撤权仍可能报成功，已新增真实触发器失败测试并补RLS读取回执后再提交，最终复验另记。
+- **恢复**：同backup_id保留原件bytes/hash、原件及准确revision元数据、完整隔离DB pg_dump；真实pg_restore到新测试库，验证同hash/revision且ARCHIVED保持。恢复库先清除旧session_verification_keys，旧token实际拒绝；对象删除/恢复后仍同revision，恢复字节不恢复已撤的项目访问。原件rollback后读写及列级UPDATE均撤销，收据哈希未改变。备份均合成数据，未导出生产对话/密钥。
+- **类型契约**：新增tests/types/private-original-consumer.mts由Web类型检查覆盖。先重现缺可选MIME及discardUnverified声明，再补统一d.mts；错误bytes/缺hash/伪身份/缺项目的负例@ts-expect-error必须有效。无运行时测试代码进入产品组件。
+- **测试命令与回执**（工作区/workspace/mohen-agent-2.0；与CI锁定工具同等入口）：
+  - `CI=true node node_modules/vitest/vitest.mjs run --config vitest.unit.config.ts`：107 PASS/4既有联网SKIP。
+  - `node --test --experimental-test-isolation=none tests/data-production/*.test.mjs`：73 PASS。
+  - 六个工作区 `node node_modules/typescript/bin/tsc --noEmit -p <tsconfig>`，全部0；Next生产build通过（由隔离HTTP runner执行）。默认pnpm test仍因本地.env.local历史前置NOT_PASS，不混为全套通过。
+  - `MOHEN_TEST_PSQL=... MOHEN_TEST_SOCKET=... node scripts/test-k3-db.mjs`：PG17真角色/RLS/修订/收据/rollback通过；extensions加密布局亦通过，无Storage配置时明确打印STORAGE_HOLD。
+  - `MOHEN_TEST_STORAGE_CONFIG=<合成配置路径> node tests/data-production/private-original-storage.integration.mjs`：官方服务真实HTTP PASS。
+  - 在上述PG命令额外提供MOHEN_TEST_STORAGE_CONFIG：官方HTTP+真实DB故障/恢复/pg_dump/pg_restore PASS，不是fetch模拟。
+  - `MOHEN_TEST_STORAGE_CONFIG=... MOHEN_TEST_PSQL=... MOHEN_TEST_SOCKET=... PLAYWRIGHT_BROWSERS_PATH=... node scripts/test-mab-http.mjs`：真实Next生产构建+Chromium 2 PASS（原记录保存/历史/重试/跨Owner；multipart原件上传/重试/hash下载/跨Owner/声明/内容冲突），清理自己的合成DB和对象。
+  - `node scripts/guards/check-k3-traceability.mjs`：85API/152动作/62模块/5屏；`node scripts/check-auth-coverage.mjs --strict`：103路由0缺口。均为静态门，不当作全动作运行PASS。
+- **可复现Storage环境**：scripts/serve-mab-storage-isolated.mjs要求已标记本地PG和workspace内官方v1.43源码，核锁文件hash/无.env；拒绝覆盖已存在测试库，独立storage测试admin避免改k3_admin search_path，生成仅localhost配置及测试CA。准备源码：官方v1.43.0 tarball→`npm ci --ignore-scripts`→`node node_modules/patch-package/index.js`→`npm rebuild fs-xattr`（缓存/devdir留work）→`node build.js`→`node node_modules/resolve-tspaths/dist/main.js`。运行fixture后将打印的配置路径只用于上述隔离测试，停止fixture清除其自建合成DB。严禁把真实服务key填进测试配置。
+- **审查/UI/剩余**：独立静态审查未发现重要阻断；无首页/Studio/WATCH视觉改动，保留8b3b9e1成果，未套旧包源码。测试不等于Owner体验签收。生产受控原件仍缺服务凭据/实际bucket与批准后的激活验证；Vercel请求体上游限制可能先于10MiB应用门返回413，未声明大文件LIVE可用。下一批在原source/evidence/world实现L0精确绑定及两桥，当前不宣称M2全部准出。
+- **回滚**：停原件开关；执行新增fail-closed rollback（先隔离再授权生产），不删除对象或PENDING收据。代码可回退7e83f3b，旧公有上传不可重新开放。具体提交SHA与新CI待提交后补记。
+
+- **98条旧原件逐条分类回执**：生产只读取ID/source_version/hash及指针类型，记录于tasks/results/MAB/M2_legacy_original_audit_20261102.csv（证据产物，不是第二进度账）。93条为memory://非持久字节指针；5条为仓库public/production-assets文件。五个实际仓库文件224752/260555/228891/319665/198068字节与各登记SHA-256匹配，但未迁移为私有对象，也未据此签权利/G资格；98条byte_size原字段全空，未修改历史行。public.assets共6条，其中/uploads/旧公有附件链接计数0；仓库无public/uploads文件。此范围不足以证明全部历史部署/缓存都不存在公有附件，未删除任何记录或图片。
+- **最终读取回执复验**：新增after-update撤权真实PG失败测试已RED→GREEN；同库PG角色/原件/官方HTTP/恢复与rollback完整PASS，最后Next生产构建+Chromium两流程PASS，测试自己的对象/DB已清理。

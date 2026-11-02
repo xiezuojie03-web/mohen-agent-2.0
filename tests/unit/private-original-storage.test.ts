@@ -79,3 +79,16 @@ describe("private original bytes; M2 not activated until DB ownership and storag
     await expect(s.client.readVerified(key, originalHash(Buffer.from("test")))).rejects.toThrow("ORIGINAL_NOT_FOUND");
   });
 });
+
+it('recognizes the official HTTP400 object-not-found envelope without treating permission errors as missing',async()=>{
+ const missing=createPrivateOriginalStorage({endpoint:storageUrl,token,fetcher:async()=>new Response(JSON.stringify({statusCode:'404',error:'not_found',message:'Object not found'}),{status:400})});
+ await expect(missing.readVerified(key,'a'.repeat(64))).rejects.toThrow('ORIGINAL_NOT_FOUND');
+ const denied=createPrivateOriginalStorage({endpoint:storageUrl,token,fetcher:async()=>new Response(JSON.stringify({statusCode:'403',error:'Unauthorized'}),{status:400})});
+ await expect(denied.readVerified(key,'a'.repeat(64))).rejects.toThrow('ORIGINAL_STORAGE_GET_FAILED');
+});
+it('stops an oversized streaming download before buffering the full response',async()=>{
+ let chunks=0;
+ const client=createPrivateOriginalStorage({endpoint:storageUrl,token,fetcher:async()=>new Response(new ReadableStream({pull(controller){chunks++;controller.enqueue(new Uint8Array(1024*1024));if(chunks===14)controller.close();}}))});
+ await expect(client.readVerified(key,'a'.repeat(64))).rejects.toThrow('ORIGINAL_INTEGRITY_FAILED');
+ expect(chunks).toBeLessThan(14);
+});

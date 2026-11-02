@@ -23,16 +23,46 @@ function workflow(){
  const repository=createPrivateOriginalRepository(getNodePgPool());
  return createPrivateOriginalWorkflow({repository,storage:createPrivateOriginalStorage()});
 }
+async function boundedForm(req:Request):Promise<FormData>{
+ if(!req.body)throw new Error('ORIGINAL_BODY_INVALID');
+ const reader=req.body.getReader(),chunks:Uint8Array[]=[];
+ const deadline=Date.now()+20000;
+ let length=0;
+ try{
+  while(true){
+   let timer:ReturnType<typeof setTimeout>|undefined;
+   const part=await Promise.race([
+    reader.read(),
+    new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(new Error('ORIGINAL_BODY_TIMEOUT')),Math.max(1,deadline-Date.now()));}),
+   ]).finally(()=>clearTimeout(timer));
+   if(part.done)break;
+   length+=part.value.byteLength;
+   if(length>MAX_ORIGINAL_BYTES+4096)throw new Error('ORIGINAL_BODY_TOO_LARGE');
+   chunks.push(part.value);
+  }
+ }catch(e){void reader.cancel().catch(()=>{});throw e;}
+ finally{reader.releaseLock();}
+ const body=new Uint8Array(length);let offset=0;
+ for(const chunk of chunks){body.set(chunk,offset);offset+=chunk.length;}
+ return new Request(req.url,{method:'POST',headers:{'content-type':req.headers.get('content-type')??''},body}).formData();
+}
 // Original bytes are only available to the authenticated owner by a fresh DB
 // RLS transaction. Never mint a public/signed URL or return a storage key.
 export async function POST(req:Request){
  const session=await getSession();
  if(!session)return fail("login_required",401);
  if(!enabled())return fail("private_original_storage_unavailable",503);
+ const origin=req.headers.get('origin');
+ if(origin&&origin!==new URL(req.url).origin)return fail('origin_not_allowed',403);
  const size=Number(req.headers.get("content-length")||0);
+ if(!Number.isSafeInteger(size)||size<0)return fail('bad_request',400);
  if(size>MAX_ORIGINAL_BYTES+4096)return fail("file_too_large",413);
  let form:FormData;
- try{form=await req.formData();}catch{return fail("bad_request",400);}
+ try{form=await boundedForm(req);}catch(e){
+  if(e instanceof Error&&e.message==='ORIGINAL_BODY_TOO_LARGE')return fail('file_too_large',413);
+  if(e instanceof Error&&e.message==='ORIGINAL_BODY_TIMEOUT')return fail('upload_timeout',408);
+  return fail("bad_request",400);
+ }
  const file=form.get("file");
  if(!(file instanceof File))return fail("file_required",400);
  if(file.size===0||file.size>MAX_ORIGINAL_BYTES)return fail("file_size_invalid",413);

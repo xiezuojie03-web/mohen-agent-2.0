@@ -59,7 +59,11 @@ export function createPrivateOriginalRepository(pool){
     const f=await client.query("update studio.private_originals set state='STORED_VERIFIED',asset_revision_id=$2,verified_at=now() where original_id=$1 and state='PENDING' returning *",
       [originalId,revisionId]);
     if(f.rows.length!==1)throw new Error('ORIGINAL_FINALIZE_FAILED');
-    return result(f.rows[0]);
+    // RETURNING alone does not recheck a withdrawal made by a later trigger.
+    // Confirm current visibility before acknowledging the atomic DB commit.
+    const confirmed=await client.query("select * from studio.private_originals where original_id=$1 and state='STORED_VERIFIED' and asset_revision_id=$2",[originalId,revisionId]);
+    if(confirmed.rows.length!==1)throw new Error('ORIGINAL_FINALIZE_FAILED');
+    return result(confirmed.rows[0]);
    });
   },
   async getStored(originalId,token){

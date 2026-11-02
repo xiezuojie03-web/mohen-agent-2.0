@@ -29,6 +29,7 @@ try {
   query(database, `do $$ begin
     if not exists(select from pg_roles where rolname='anon') then create role anon nologin; end if;
     if not exists(select from pg_roles where rolname='authenticated') then create role authenticated nologin; end if;
+    if not exists(select from pg_roles where rolname='service_role') then create role service_role nologin; end if;
   end $$;
   grant select,insert,update on public.imported_materials to anon,authenticated;`);
   query(database, `insert into control.production_runs(run_id,research_intent,execution_mode,status) values('00000000-0000-0000-0000-000000000010','synthetic legacy audit preservation fixture','attended','PASS');
@@ -63,6 +64,15 @@ try {
     const studioRepositoryResult = spawnSync(process.execPath, ["tests/data-production/studio-asset-repository.integration.mjs"], { cwd: root,
       env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
     if (studioRepositoryResult.status !== 0) throw new Error("STUDIO_ASSET_REPOSITORY_TEST_FAILED");
+    apply("20261102140000_mab_m2_private_originals.sql");
+    const originalResult = spawnSync(process.execPath, ["tests/data-production/private-original-repository.integration.mjs"], { cwd: root,
+      env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
+    if (originalResult.status !== 0) throw new Error("PRIVATE_ORIGINAL_REPOSITORY_TEST_FAILED");
+    if (process.env.MOHEN_TEST_STORAGE_CONFIG) {
+      const workflowResult = spawnSync(process.execPath, ["tests/data-production/private-original-workflow.integration.mjs"], { cwd: root,
+        env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
+      if (workflowResult.status !== 0) throw new Error("PRIVATE_ORIGINAL_WORKFLOW_TEST_FAILED");
+    } else console.log("MAB_PRIVATE_ORIGINAL_STORAGE_HOLD no isolated official Storage configuration supplied");
   }
   const allAuditSnapshot = query(database, "select md5(jsonb_agg(to_jsonb(g) order by gate_audit_id)::text) from control.gate_audits g");
   for (const file of migrations) apply(file);
@@ -71,6 +81,11 @@ try {
   const columnInsertBefore = query(database, "select has_any_column_privilege('mohen_producer','control.gate_candidates','INSERT')");
   if (columnInsertBefore !== "t") throw new Error("CANDIDATE_COLUMN_GRANT_FIXTURE_MISSING");
   if (studioMigration) {
+    const originalsBefore = query(database, "select md5(jsonb_agg(to_jsonb(r) order by original_id)::text) from studio.private_originals r");
+    apply("20261102140000_mab_m2_private_originals.rollback.sql", "rollback");
+    if (query(database, "select has_any_column_privilege('mohen_app_runtime','studio.private_originals','UPDATE') or has_table_privilege('mohen_app_runtime','studio.private_originals','SELECT')") !== "f") throw new Error("PRIVATE_ORIGINAL_ROLLBACK_LEFT_ACCESS");
+    if (query(database, "select md5(jsonb_agg(to_jsonb(r) order by original_id)::text) from studio.private_originals r") !== originalsBefore) throw new Error("PRIVATE_ORIGINAL_ROLLBACK_LOST_RECEIPTS");
+    console.log("MAB_PRIVATE_ORIGINAL_ROLLBACK_PASS receipt-hashes-preserved read-write-closed");
     const studioBefore = query(database, "select md5(jsonb_agg(to_jsonb(r) order by revision_id)::text) from studio.asset_revisions r");
     apply(studioMigration.replace(".sql", ".rollback.sql"), "rollback");
     if (query(database, "select has_schema_privilege('mohen_app_runtime','studio','USAGE')") !== "f" ||

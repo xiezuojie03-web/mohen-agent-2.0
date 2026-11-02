@@ -107,8 +107,9 @@ export interface PrivateOriginalRepository {
  getStored(originalId:string,token:string):Promise<(PrivateOriginalRecord & {storage_key:string})|null>;
 }
 export interface PrivateOriginalStorage {
- putVerified(key:string,bytes:Buffer,contentType:string):Promise<{sha256:string;byteSize:number;contentType:string}>;
+ putVerified(key:string,bytes:Buffer,contentType?:string):Promise<{sha256:string;byteSize:number;contentType:string}>;
  readVerified(key:string,hash:string,size?:number):Promise<Buffer>;
+ discardUnverified(key:string):Promise<void>;
 }
 export declare function createPrivateOriginalRepository(pool:{connect:Function}):PrivateOriginalRepository;
 export declare function createPrivateOriginalWorkflow(args:{repository:PrivateOriginalRepository;storage:PrivateOriginalStorage}):{
