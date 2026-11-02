@@ -2,6 +2,7 @@ import { STAGE_ORDER, STAGE_CONTRACTS } from "./contracts.mjs";
 import { jobForStage, assertStageExecutionAuthorized } from "./registry.mjs";
 import { loadExecutor } from "./load-executor.mjs";
 import { finishRun } from "./run-state.mjs";
+import { requireIndependentStageQualification } from "./independent-stage-qualification.mjs";
 
 export async function runProduction({ run, registry, context = {}, from_stage = "D00", to_stage = "D05" }) {
   const start = STAGE_ORDER.indexOf(from_stage);
@@ -25,6 +26,25 @@ export async function runProduction({ run, registry, context = {}, from_stage = 
     state.current_stage = stage;
     const execute = await loadExecutor(stage);
     const result = await execute({ run: state, job, input, context });
+    // A Producer PASS is only a candidate. Do not hand off L(n) to D(n+1)
+    // until an independent current-qualified G(n) receipt binds exact input/output.
+    if (result.disposition === "PASS") {
+      try {
+        const verified = await requireIndependentStageQualification({ context, run: state, stage, job, input, result });
+        result.independent_qualification = verified;
+      } catch (error) {
+        const reason = String(error?.message || "INDEPENDENT_STAGE_QUALIFICATION_UNAVAILABLE");
+        result.disposition = "HOLD";
+        result.outputs = {};
+        result.hold = {
+          reason_code: "INDEPENDENT_GATE_NOT_VERIFIED",
+          missing_requirement: "Current independent Gate PASS for the exact stage, input and output",
+          next_action: "Obtain a qualified Reviewer decision and verify current status using a separate authorization context",
+          recheck_condition: "Matching current independent qualification and unchanged dependencies",
+          verification_error: reason,
+        };
+      }
+    }
     state.stage_results.push(result);
 
     // 可选阶段进度回调（如 run.mjs 回写 control.production_runs.current_stage），不改变编排语义。

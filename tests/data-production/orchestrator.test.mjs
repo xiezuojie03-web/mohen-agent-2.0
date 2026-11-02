@@ -59,3 +59,32 @@ test("REJECT stops downstream stages", async () => {
   assert.equal(done.status, "REJECT");
   assert.deepEqual(done.stage_results.map(x => x.stage), ["D00", "D01", "D02"]);
 });
+
+
+test("independent professional HOLD prevents the next D stage even when Producer claims PASS", async () => {
+  const registry=loadRegistry(root),run=createRunState({research_intent:"synthetic-gate-hold"});
+  const done=await runProduction({
+    run,registry,context:{adapters:passAdapters,verifyStageQualification:async () => null},
+  });
+  assert.equal(done.status,"HOLD");
+  assert.deepEqual(done.stage_results.map(x=>x.stage),["D00"]);
+  assert.equal(done.stage_results[0].hold.reason_code,"INDEPENDENT_GATE_NOT_VERIFIED");
+  assert.deepEqual(done.stage_results[0].outputs,{});
+});
+
+test("stale, forged or mismatched Gate receipt never advances a stage", async () => {
+  const registry=loadRegistry(root),run=createRunState({research_intent:"synthetic-stale-gate"});
+  const done=await runProduction({
+    run,registry,context:{adapters:passAdapters,
+      verifyStageQualification:async ({run,stage,gate,input_digest,output_digest})=>({
+        qualification_current:true,decision_origin:"independent_gate",result:"PASS",
+        gate_audit_id:"11111111-1111-4111-8111-111111111111",
+        artifact_revision:"test",object_type:"synthetic_fixture",object_id:"22222222-2222-4222-8222-222222222222",
+        valid_until:new Date(Date.now()-60000).toISOString(),
+        run_id:run.run_id,stage,gate_code:gate,input_digest,output_digest,
+      })},
+  });
+  assert.equal(done.status,"HOLD");
+  assert.equal(done.stage_results.length,1);
+  assert.equal(done.stage_results[0].hold.reason_code,"INDEPENDENT_GATE_NOT_VERIFIED");
+});

@@ -187,3 +187,11 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **正反单测**：私有来源读取必须精确按UTF8字节范围匹配引文和SHA，签署的execution grant不合法时绝不读私有对象或写桥；D02/D03仅产候选并准确绑定修订，不产生Gate PASS。M3结构缺失/无策略/无Reviewer/已配置但未签发逐态校验。
 - **边界**：本提交仅源码、单测和施工账；未在生产安装M2/M3迁移、Bucket、角色、密钥或策略。旧历史98指针不可当完整字节资产；未经M3正式Reviewer的候选不可公开。后续应做合成真PG/Storage的worker端到端及签名grant低权限边界测试，然后在Owner独立批准生产准备后才部署新对象与资格角色。
 - **回执级别**：本批提交后等GitHub CI真实运行结果；未记录完整M2/M3准出。Vercel按前期批准节奏关键集成关验收，不逐提交检查。
+
+## 2026-11-03｜M3不可自签Gate的编排器强制阻断（接续main@05fc2d2577fed0c9e632efa45f6c16f3a0bfa664)
+
+- **发现**：原`orchestrator.mjs`只依赖stage adapter的`raw.disposition=PASS`推进下一D，未再独立核当下G资格。执行授权grant与专业G审核是两个不同的安全门，不能共用。
+- **原位修复**：新增`independent-stage-qualification.mjs`强制核stage/gate/run、独立decision_origin、准确输入输出digest、artifact_revision、当前资格及未过期的Gate回执。Producer返回PASS但无受信独立核验回执、签名不匹配、Gate过期或核验异常时，改为HOLD且清空待传下游outputs，不能跳至后继阶段。
+- **测试边界**：原`authorized-fixture.mjs`只在合成测试中注入独立Reviewer模拟回执（生产CLI不注入）；新增缺回执及过期反例。真实运行时`run.mjs`无已激活的跨权限Verifier时须保持HOLD，不能因构建绿灯而启用D链。
+- **仍需M3施工**：可信生产回执Verifier需要基于独立DB角色的真实`control.current_qualification_is_valid`/purpose/scope/依赖与准确revision字段校验，并将签发、撤权与运行传播闭合。当前只实现拒绝假PASS的编排门，并无正式Reviewer激活；M2生产迁移/Bucket仍未经独立批准。随后补隔离PG/真实身份测试。
+- **CI**：以本批提交对应的GitHub Actions实际回执为准，尚不能预填PASS。
