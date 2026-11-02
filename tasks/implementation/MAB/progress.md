@@ -118,7 +118,7 @@ Ruling: 使用单独密码安全变量覆盖旧URI密码，保留连接地址与
 ## M2-ORIGINAL-ISOLATED｜真实原件隔离批（基线7e83f3b）
 
 - **CI前置已闭合**：7e83f3b9f05643c310ee0524808b0f364913efaa，GitHub Actions run41460853487/job125329194614 全部success（含Typecheck、Unit、生产边界、追溯、Build、Auth）。没有人工逐提交Vercel部署/验收。
-- **原需求**：M2_PRIVATE_ORIGINAL_GITHUB_CODE_READY / M2_PRIVATE_ORIGINAL_VERIFIED_ISOLATED；74目标中附件路径及统一访问入口已原位补证，但不把整个路径的CODE_PRESENT升为目标全量PASS。两座证据桥与LIVE准出仍HOLD。
+- **原需求**：M2_PRIVATE_ORIGINAL_GITHUB_CODE_READY / M2_PRIVATE_ORIGINAL_VERIFIED_ISOLATED；74目标中的附件路径及20补充责任中的统一访问入口已原位补证，但不把整个路径的CODE_PRESENT升为目标全量PASS。两座证据桥与LIVE准出仍HOLD。
 - **真实生产只读复核**：studio.private_originals未创建、storage.buckets=0、source.raw_items=98、read_unit_evidence_links=0、claim_evidence_links=0。组织当前free套餐；未升级、未创建生产bucket、未改变生产角色/密钥/数据、未开启MOHEN_PRIVATE_ORIGINAL_UPLOAD_ENABLED；未产生付费模型调用。98条历史指针绝不批量标为已存字节。
 - **真实协议而非mock**：在workspace普通用户进程启动官方supabase/storage release v1.43.0（源提交53462ff，package-lock SHA256 4d294cbe67544b8e7c4568ff692e8df67566bf7694a71692f6b99fac3efc4535），官方既有knex patch-package与原生fs-xattr构建后运行；PG17.11+文件后端、私有测试bucket、localhost HTTP及自签测试CA的HTTPS代理。未使用Docker socket，未接入任何生产服务密钥。协议验证版本不冒充当前托管服务版本或LIVE。
 - **发现并修复**：官方对象不存在返回HTTP400、正文statusCode404，旧适配器误判首次上传。真实HTTP失败重现后，仅识别精确Object not found/NoSuchKey，不把鉴权/缺桶误作可上传；下载流有界，拒绝超量声明或实际字节。路由在formData之前流式限量/20秒超时，拒绝异源浏览器POST；成功/失败均no-store，不返回路径/密钥/公有URL。
@@ -161,3 +161,5 @@ Ruling: 使用单独密码安全变量覆盖旧URI密码，保留连接地址与
 - **生产准备待决**：已向Owner提交有界生产准备问题（增量交接书§5.B.7）：两份M2迁移、仅后台私有bucket、独立字节核验密钥；不删历史、不授G、不开放公有访问、不升级免费套餐，开关先关。未收到本项回复前，生产依赖步骤未执行；GitHub及隔离证据不受影响。
 
 - **汇总回执补证**：停滞上传408与不支持文件类型拒绝回归加入后，最新本地单测109 PASS/4既有联网SKIP；源码不变。安全回执与实际输出摘录已保存到tasks/results/MAB/M2_SECURITY_RECEIPT_20261102.md及evidence/，不建立第二套施工账。
+
+- **回执提交与资源清理**：3ed0c8b89fd902e38d977564a455c92a6e45557f保存109项单测回执及安全汇总；对应CI41471113675运行中（最终以该run实际状态为准）。专用官方Storage/HTTPS合成fixture已停止并清除自建测试库；每轮业务测试库与对象已清理，未删除生产原件。远端HEAD仅refs/heads/main。
