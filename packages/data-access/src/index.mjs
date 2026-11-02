@@ -280,3 +280,5 @@ export default {
 export { createImportedMaterialRepository } from './imported-material-repository.mjs';
 export { getNodePgPool } from './node-pg-client.mjs';
 export { createStudioAssetRepository } from './studio-asset-repository.mjs';
+
+export { createPrivateOriginalRepository, createPrivateOriginalWorkflow } from './private-original-repository.mjs';

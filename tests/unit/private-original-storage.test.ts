@@ -58,10 +58,10 @@ describe("private original bytes; M2 not activated until DB ownership and storag
   });
   it("rejects missing, corrupted and incorrect-length object bytes", async () => {
     const s = mockStore();
-    await expect(s.client.readVerified(key, originalHash(Buffer.from("missing")))).rejects.toThrow("ORIGINAL_STORAGE_GET_FAILED");
+    await expect(s.client.readVerified(key, originalHash(Buffer.from("missing")))).rejects.toThrow("ORIGINAL_NOT_FOUND");
     const raw = Buffer.from("original");
     await s.client.putVerified(key, raw);
-    s.stored.set(s.calls[1].path, Buffer.from("tampered"));
+    s.stored.set(s.calls.at(-1)!.path, Buffer.from("tampered"));
     await expect(s.client.readVerified(key, originalHash(raw), raw.length)).rejects.toThrow("ORIGINAL_INTEGRITY_FAILED");
   });
   it("never uploads oversize, empty, invalid names, or header-injection MIME", async () => {
@@ -76,6 +76,6 @@ describe("private original bytes; M2 not activated until DB ownership and storag
     const s = mockStore();
     await s.client.putVerified(key, Buffer.from("test"));
     await s.client.discardUnverified(key);
-    await expect(s.client.readVerified(key, originalHash(Buffer.from("test")))).rejects.toThrow("ORIGINAL_STORAGE_GET_FAILED");
+    await expect(s.client.readVerified(key, originalHash(Buffer.from("test")))).rejects.toThrow("ORIGINAL_NOT_FOUND");
   });
 });

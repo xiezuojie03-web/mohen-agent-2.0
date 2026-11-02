@@ -50,7 +50,7 @@ export function createPrivateOriginalStorage(options = {}) {
       cache: "no-store", redirect: "error",
       signal: AbortSignal.timeout(20000),
     });
-    if (!response.ok) throw new Error("ORIGINAL_STORAGE_" + method + "_FAILED");
+    if (!response.ok) throw new Error(method === "GET" && response.status === 404 ? "ORIGINAL_NOT_FOUND" : "ORIGINAL_STORAGE_" + method + "_FAILED");
     return response;
   }
   return {
