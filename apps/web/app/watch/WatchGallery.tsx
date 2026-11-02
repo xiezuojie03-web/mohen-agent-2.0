@@ -7,7 +7,7 @@ import type { Beat } from "../../lib/studio-creation";
 function parseBeats(content: string): Beat[] {
   try {
     const c = JSON.parse(content || "{}") as { beats?: Beat[] };
-    return Array.isArray(c.beats) ? c.beats : [];
+    return Array.isArray(c.beats) ? c.beats.filter((beat): beat is Beat => Boolean(beat && typeof beat.title === "string" && typeof beat.narration === "string")) : [];
   } catch {
     return [];
   }
@@ -71,7 +71,7 @@ export default function WatchGallery() {
   useEffect(() => {
     setCurrent(0);
     setPlaying(false);
-  }, [selected?.work_id]);
+  }, [selected?.work_id, selected?.revision_id]);
 
   // 自动播放推进
   useEffect(() => {
@@ -150,10 +150,19 @@ export default function WatchGallery() {
             <div className="watch__stage-meta">
               <span className="watch__status">已发布 · 版本 {selected?.revision_no}</span>
               <span className="watch__stage-count">
-                {String(current + 1).padStart(2, "0")} / {String(beats.length).padStart(2, "0")}
+                {beats.length ? `${String(current + 1).padStart(2, "0")} / ${String(beats.length).padStart(2, "0")}` : "暂无章节"}
               </span>
             </div>
 
+            {beats.length === 0 ? (
+              <div className="watch__stage-visual" role="status">
+                <div className="watch__stage-frame">
+                  <strong>该作品暂无可阅读章节</strong>
+                  <p>已发布记录存在，但没有有效的章节内容；无法播放或自动翻页。可在右侧选择其他作品。</p>
+                </div>
+              </div>
+            ) : (
+              <>
             {/* 视觉舞台：画面（文字化）+ 旁白字幕 */}
             <div className="watch__stage-visual">
               <div className="watch__stage-frame">
@@ -209,6 +218,8 @@ export default function WatchGallery() {
                 </button>
               ))}
             </div>
+              </>
+            )}
           </div>
         </div>
 

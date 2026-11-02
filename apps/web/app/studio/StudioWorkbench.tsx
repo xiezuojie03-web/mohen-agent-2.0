@@ -87,6 +87,7 @@ export default function StudioWorkbench() {
   const submitLock = useRef(false);
   const creationRequests = useRef(new Map<string, string>());
   const [savedWork, setSavedWork] = useState<{ workId: string; revisionId: string; snapshot: string } | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
   // 生产进度（委托后异步 D00–D05 生产，轮询 control.production_runs）
   const [production, setProduction] = useState<{ status: string; current_stage: string | null } | null>(null);
@@ -214,6 +215,7 @@ export default function StudioWorkbench() {
       const json = (await res.json()) as { ok?: boolean; beats?: Beat[] };
       if (res.ok && json.ok && Array.isArray(json.beats) && json.beats.length) {
         setSelectedPlan(which);
+        setSubmitted(false);
         setAdoptedPlanId(plans.planId);
         setAdoptedDefinition(plan);
         setAdoptedBrief(plans.brief);
@@ -313,6 +315,7 @@ export default function StudioWorkbench() {
           result.revision_id !== saved.revisionId || result.status !== "submitted") throw new Error("submission_not_acknowledged");
       setSubmitMsg("已提交审核，运营负责人会在后台处理。");
       setSubmitErr(false);
+      setSubmitted(true);
     } catch {
       setSubmitMsg(saved ? "投稿暂未成功，已创建的作品已保留，可以重试。" : "创建作品失败，请重试。");
       setSubmitErr(true);
@@ -321,6 +324,38 @@ export default function StudioWorkbench() {
       setSubmitBusy(false);
     }
   }
+
+  function startNewConversation() {
+    if (busy || generating || directing || submitBusy || submitLock.current || production?.status === "RUNNING") return;
+    const hasLocalContent = messages.length > 0 || Boolean(plans) || Boolean(beats?.length) || Boolean(workTitle.trim());
+    if (hasLocalContent && !window.confirm("开始新对话将清空当前页面的临时对话、方案和未保存分镜。服务器上已保存的研究任务、记录及作品不会被删除。确定继续？")) return;
+    setMessages([]);
+    setInput("");
+    setPlans(null);
+    setPreviewPlan(null);
+    setAdoptedDefinition(null);
+    setAdoptedBrief("");
+    setAdoptedPlanId(null);
+    setSelectedPlan(null);
+    setBeats(null);
+    setGenerating(false);
+    setDirecting(false);
+    setPlansError(null);
+    setActiveTab(0);
+    setPanels(null);
+    setPanelsLoading(false);
+    setWorkTitle("");
+    setSubmitMsg(null);
+    setSubmitErr(false);
+    setSubmitted(false);
+    setSavedWork(null);
+    setProduction(null);
+    setMediaCandidates(null);
+    creationRequests.current.clear();
+  }
+
+  // 真实对话、分镜、确认投稿的页面步骤；高亮不代表知识资格通过。
+  const activeStage = submitted ? 3 : beats?.length ? 2 : messages.length > 0 || busy || plans ? 1 : 0;
 
   const lastMohen = [...messages].reverse().find((m) => m.role === "mohen");
   const materials = [...new Map(messages.flatMap((message) => message.materials ?? []).map((material) => [material.id, material])).values()];
@@ -334,7 +369,7 @@ export default function StudioWorkbench() {
         </div>
         <div className="studio__stages">
           {STAGES.map((s, i) => (
-            <div className={`studio__stage${i === 0 ? " is-active" : ""}`} key={s}>
+            <div className={`studio__stage${i === activeStage ? " is-active" : ""}`} key={s}>
               <span className="studio__stage-no">{String(i + 1).padStart(2, "0")}</span>
               <span>{s}</span>
             </div>
@@ -348,8 +383,8 @@ export default function StudioWorkbench() {
           <ColumnHead no="①" title="对话委托" desc="你在这里说想法、问问题" />
 
           <div className="studio__chat-head">
-            <button className="studio__ghost-btn">新对话</button>
-            <button className="studio__ghost-btn">历史</button>
+            <button type="button" className="studio__ghost-btn" disabled={busy || generating || directing || submitBusy || production?.status === "RUNNING"} onClick={startNewConversation}>新对话</button>
+            <a className="studio__ghost-btn" href="/studio/desk" title="打开已保存的研究项目与记录；此处不是聊天历史">研究记录</a>
             <span className="studio__msg-label" style={{ marginLeft: "auto", alignSelf: "center" }}>
               当前可对话知识：金泽、绿之丘
             </span>

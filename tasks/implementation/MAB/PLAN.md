@@ -568,3 +568,15 @@ A：隋唐大运河及江南水路连接。B：宋代江南运河沿线的城镇
 - 常规技术问题由工程自主解决；产品功能、效果、方向或成本变化，先用白话说明原因、选项、推荐、影响及需Owner决定事项。
 - Owner已授权按更新计划持续施工；已批准范围内的技术实施不重复索取确认。外部平台仍需实际可用的连接权限；新增费用及受限资料外发范围不能由工程自行扩大。
 - 当前M0已发现最新main与包内base一致；两历史分支均是main祖先。真实数据库SEC-P0仍存在，candidate表未建，Storage桶为空。
+
+## ENG-NEXT-01｜受控接续执行补充（2026-11-02，归属MAB-ENG-01）
+
+本节补充原M0—M8，不新立并行计划。上位受控任务书位于Library `04_工程规范与Codex接入/01_MAB工程接续施工_受控子任务/MAB-ENG-01_墨痕新架构工程接续施工与体验保全_受控任务书_V1.0.md`。施工起点`main@c032ec640500e508c6345120d5e18dc804a6dc0f`，此前Vercel Production关联同SHA且READY，仅为部署证据。
+
+- **M0差分**：74条逐项记录文件路径存在/不存在、目标未核；已有53个REVISE路径、21个设计CREATE路径缺席，不能把53项均视作目标实现。20项补充与234路径的字段级目标匹配继续HOLD，下一轮按原ID核销。
+- **M1安全**：2026-11-02只读SQL确认 `public.imported_materials` RLS=true、anon/authenticated无直接表GRANT；MAB五项生产迁移已记录。登录/素材导入、跨Owner拒绝的线上E2E及凭据轮换回执仍待核。不得用旧密码或扩大权限回滚。
+- **M2资产与原件**：只读SQL确认 `source.raw_items=98`、`evidence.reading_units=38`、`evidence.material_evidence=166`、`evidence.read_unit_evidence_links=0`、`world.claim_evidence_links=0`、`storage.buckets=0`、`studio.projects=0`、`studio.asset_revisions=0`。7张Studio表、候选Gate表存在不等于原件字节和证据已闭合；先核合法样本、对象回读/hash、L1→L2→L3定位、跨题授权、同备份ID恢复，再决定最小迁移。
+- **UI-R01/02/04**：恢复首页“开始创作”与创作到发布的非EXP串行流程；Studio新对话以确认保全已保存资料，研究记录走真实资料台，当前步骤随用户动作变化；WATCH零章节显示真实不可阅读状态、无伪播放。须由CI、浏览器和Owner分别验收，不能以源码存在计PASS。
+- **M3/M4/M5依赖**：M2可回读原件→合法读取单元→证据桥→有据主张→独立Gate资格→同root内外AI真实协作→Studio/Admin/WATCH同一WorkRevision。EXP与L6—L8按批准延期保持设计和权限约束。
+
+本批仅修改GitHub代码和施工文档；真实DB无写操作、Gate未启用、没有付费模型调用。CI、部署与在线设备验收在有可核证回执前均记`NOT_RUN`。回退点为`c032ec640500e508c6345120d5e18dc804a6dc0f`，不得撤回既有RLS/资产数据。

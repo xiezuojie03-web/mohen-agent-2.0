@@ -1,9 +1,12 @@
+import Link from "next/link";
 import ModeEntryCard, { type ModeVariant } from "./components/ModeEntryCard";
 
 export const metadata = {
   title: "墨痕 MoHen · 从历史中发现与今天的连接",
   description: "用自然语言创作历史作品，沉浸观看，独立探索历史知识库",
 };
+
+const CREATION_STEPS = ["自然语言委托", "研究与创作", "审核与发布"];
 
 const MODES: {
   href: string;
@@ -49,13 +52,22 @@ export default function Home() {
               可以独立探索知识世界，也可以委托研究与创作，或观看已发布的作品。
             </p>
             <div className="mo-hero__cta">
+              <Link href="/studio" className="mo-btn mo-btn--primary">开始创作</Link>
               <a href="#modes" className="mo-btn mo-btn--ghost">
                 了解墨痕
               </a>
             </div>
           </div>
-
-
+          <div className="mo-hero__flow" aria-label="创作到发布的工作过程；观看与探索也可独立进入">
+            <div className="mo-flow__steps">
+              {CREATION_STEPS.map((step, i) => (
+                <div className="mo-flow__step" key={step}>
+                  <span className="mo-flow__dot">{i + 1}</span>
+                  <span className="mo-flow__label">{step}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
