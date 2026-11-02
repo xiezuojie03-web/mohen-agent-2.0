@@ -64,3 +64,17 @@ it("rejects a browser POST from a different origin before reading bytes",async()
  const r0=request();const r=new Request(r0,{headers:{...Object.fromEntries(r0.headers),'origin':'https://other.invalid'}});
  expect((await POST(r)).status).toBe(403);expect(state.upload).not.toHaveBeenCalled();
 });
+it('times out a stalled upload before metadata or storage writes',async()=>{
+ vi.useFakeTimers();
+ try{
+  const stream=new ReadableStream<Uint8Array>({start(){}});
+  const pending=POST(new Request('http://test.invalid/api/studio/attachments',{method:'POST',headers:{'content-type':'multipart/form-data; boundary=synthetic'},body:stream,duplex:'half'} as RequestInit));
+  await vi.advanceTimersByTimeAsync(20001);
+  const response=await pending;expect(response.status).toBe(408);expect((await response.json()).reason).toBe('upload_timeout');expect(state.upload).not.toHaveBeenCalled();
+ }finally{vi.useRealTimers();}
+});
+it('rejects unsupported file types before invoking the storage workflow',async()=>{
+ const form=await request().formData();form.set('file',new File(['<svg/>'],'test.svg',{type:'image/svg+xml'}));
+ const response=await POST(new Request('http://test.invalid/api/studio/attachments',{method:'POST',body:form}));
+ expect(response.status).toBe(400);expect(state.upload).not.toHaveBeenCalled();
+});

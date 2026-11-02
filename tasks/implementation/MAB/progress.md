@@ -155,3 +155,9 @@ Ruling: 使用单独密码安全变量覆盖旧URI密码，保留连接地址与
 - **不可覆盖与回滚**：被私有桥固定的source_version/read_run/read_unit/material_evidence和准确claim_revision/两条边禁止原位UPDATE/DELETE；错误修正建新版本，账户/项目/资格仍可撤权。低权限并发/重复同链接只得同ID；错quote、UTF8偏移、来源版本、假claim revision、跨Owner、封存项目均拒绝。fail-closed rollback仅撤绑定函数EXECUTE，连接及其hash保持；不会为恢复旧唯一约束而丢弃新版本证据。
 - **已执行证据**：真实PG17+官方Storage完整脚本输出MAB_EVIDENCE_BRIDGE_PASS、MAB_EVIDENCE_BRIDGE_ROLLBACK_PASS；public与extensions两种pgcrypto布局均通过。之前发现的两次RED（缺服务、固定版本可覆盖）与审查直调RED均留实际失败日志，再GREEN。Next生产build通过，Web类型/正反consumer类型通过；现有107单测PASS/4原联网SKIP、73生产边界PASS。最终提交/CI结论另追加，不用这些专项冒充默认全套pnpm test PASS。
 - **当前HOLD**：未把当前Registry/旧layer1-adapters激活；新服务尚未绑到实际D00—D03受授权生产worker。旧adapter的memory原件、batch_level或第一条材料归因不能通过本桥。正式G1/G2/G3、真实Reviewer策略、生产私有桶及独立后台凭据、PDF/图像读取、公众消费者的当前资格/准确revision过滤与Owner验收继续按M2—M8推进。仅孤立来源/材料/主张连接测试通过，不称真实AI研究或整个M2完工。
+
+- **证据桥提交/CI回执**：cf1c3ed61babd92179c886ebbebf36afcc3c159b；GitHub Actions run41469702928 SUCCESS，类型/单测/生产边界/追溯/构建/鉴权全部通过。独立审查的重要SQL绕过问题已用真实低权限直调RED→GREEN及短时签名错范围/过期/缺字段/撤密钥负测闭合。上传停滞408的额外资源回归加入后，本地108 PASS/4既有联网SKIP；此单测与汇总回执的提交CI另观察。
+- **M3生产预检（只读）**：current_qualification_is_valid(uuid)函数、gate_policy_versions、gate_reviewer_bindings均不存在；qualification_current与gate_candidates各0。现有app_runtime/producer/gate_signer均NOLOGIN、非super、无BYPASSRLS。未伪造真实Reviewer或专业PASS；M3投运必须沿原独立权限迁移与真实策略/身份完成。
+- **生产准备待决**：已向Owner提交有界生产准备问题（增量交接书§5.B.7）：两份M2迁移、仅后台私有bucket、独立字节核验密钥；不删历史、不授G、不开放公有访问、不升级免费套餐，开关先关。未收到本项回复前，生产依赖步骤未执行；GitHub及隔离证据不受影响。
+
+- **汇总回执补证**：停滞上传408与不支持文件类型拒绝回归加入后，最新本地单测109 PASS/4既有联网SKIP；源码不变。安全回执与实际输出摘录已保存到tasks/results/MAB/M2_SECURITY_RECEIPT_20261102.md及evidence/，不建立第二套施工账。
