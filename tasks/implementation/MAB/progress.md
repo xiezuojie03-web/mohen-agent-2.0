@@ -142,3 +142,16 @@ Ruling: 使用单独密码安全变量覆盖旧URI密码，保留连接地址与
 
 - **98条旧原件逐条分类回执**：生产只读取ID/source_version/hash及指针类型，记录于tasks/results/MAB/M2_legacy_original_audit_20261102.csv（证据产物，不是第二进度账）。93条为memory://非持久字节指针；5条为仓库public/production-assets文件。五个实际仓库文件224752/260555/228891/319665/198068字节与各登记SHA-256匹配，但未迁移为私有对象，也未据此签权利/G资格；98条byte_size原字段全空，未修改历史行。public.assets共6条，其中/uploads/旧公有附件链接计数0；仓库无public/uploads文件。此范围不足以证明全部历史部署/缓存都不存在公有附件，未删除任何记录或图片。
 - **最终读取回执复验**：新增after-update撤权真实PG失败测试已RED→GREEN；同库PG角色/原件/官方HTTP/恢复与rollback完整PASS，最后Next生产构建+Chromium两流程PASS，测试自己的对象/DB已清理。
+
+## M2-EVIDENCE-BRIDGE｜私有文本证据桥隔离批（基线4b75c7a）
+
+- **前批提交/CI**：4b75c7a2d4911952048c2d8cb3115d107425dcc1；GitHub CI41465083552 SUCCESS。后续批仍只main；不手动逐提交部署Vercel。
+- **需求与范围**：沿M2/C和既有source/evidence/world真源，新增内部createEvidenceBridgeRepository；没有新建知识主表、Runner、Gate或公开API。当前仅text/plain、UTF8字节范围；PDF页码/图片区域/真实OCR仍HOLD，不用猜定位或旧memory指针冒充原件。
+- **真实正向链**：官方私有Storage原件回读→源版本/raw_item全文件hash与字节长→read_run.raw_item/input_sha→read_unit.locator/payload_ref/quote_hash→material_evidence的精确source/version/raw/引文→既有read_unit_evidence_links→claim_evidence_links绑定准确claim_revision。测试用合成中文原件真实UTF8多字节，不是纯mock。quote最多32KiB且不允许截断UTF8字符。
+- **物理补充**：CLI创建候选迁移20261102145410_mab_m2_evidence_bridge.sql，未生产执行。现有world.claim_evidence_links缺准确revision字段，增量补claim_revision_id；旧NULL修订行仍按旧唯一身份，带修订的新行按revision/evidence/support唯一，允许同主张不同版本各自引用同证据；不删除或猜测回填旧行。
+- **权限与内容边界**：绑定函数SECURITY DEFINER固定pg_catalog路径，先显式校验Owner/活跃账户/ACTIVE项目，并锁账户/项目，随后核准确来源元组；函数只授mohen_app_runtime，anon/authenticated/service_role不开放，通用角色没有底层证据表写入权。所有新桥为private_research_candidate、UNASSESSED，g1_decision_id不伪填，绝不写Gate PASS或发布。主张必须在准确revision中显式列出project_id/evidence_ids，禁止按名称、第一条材料或旧引用猜关系。
+- **独立审查的重要问题与修复**：初版仅靠JS核字节，通用runtime可绕过服务直接SQL写“verified”标记。真实低权限直调已RED重现。改为独立的control.original_bridge_verification_keys（运维配置、非知识主表）与服务端MOHEN_ORIGINAL_BRIDGE_SECRET：与浏览器/会话/Storage密钥分离、默认无配置拒绝。服务在真实字节/引文核验后签30秒HMAC，绑定当前DB已认证Actor、项目、原件/hash、证据、读取单元、完整定位、引文及序号；DB独立验签/期限/精确输入，再记录摘要回执。原始密钥和签名不返回浏览器。当前只provision合成隔离密钥，未改生产密钥。
+- **核验权限负测**：无核验凭据的低权限SQL直调拒绝；带真实测试签名但过期、错unit、错quote、缺exp均拒绝；runtime读核验密钥表拒绝；撤销核验key后新读取绑定与主张绑定拒绝。回执密钥版本独立，不以旧恢复密钥/Producer身份代签G。
+- **不可覆盖与回滚**：被私有桥固定的source_version/read_run/read_unit/material_evidence和准确claim_revision/两条边禁止原位UPDATE/DELETE；错误修正建新版本，账户/项目/资格仍可撤权。低权限并发/重复同链接只得同ID；错quote、UTF8偏移、来源版本、假claim revision、跨Owner、封存项目均拒绝。fail-closed rollback仅撤绑定函数EXECUTE，连接及其hash保持；不会为恢复旧唯一约束而丢弃新版本证据。
+- **已执行证据**：真实PG17+官方Storage完整脚本输出MAB_EVIDENCE_BRIDGE_PASS、MAB_EVIDENCE_BRIDGE_ROLLBACK_PASS；public与extensions两种pgcrypto布局均通过。之前发现的两次RED（缺服务、固定版本可覆盖）与审查直调RED均留实际失败日志，再GREEN。Next生产build通过，Web类型/正反consumer类型通过；现有107单测PASS/4原联网SKIP、73生产边界PASS。最终提交/CI结论另追加，不用这些专项冒充默认全套pnpm test PASS。
+- **当前HOLD**：未把当前Registry/旧layer1-adapters激活；新服务尚未绑到实际D00—D03受授权生产worker。旧adapter的memory原件、batch_level或第一条材料归因不能通过本桥。正式G1/G2/G3、真实Reviewer策略、生产私有桶及独立后台凭据、PDF/图像读取、公众消费者的当前资格/准确revision过滤与Owner验收继续按M2—M8推进。仅孤立来源/材料/主张连接测试通过，不称真实AI研究或整个M2完工。

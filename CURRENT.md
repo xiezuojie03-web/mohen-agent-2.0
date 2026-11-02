@@ -43,3 +43,7 @@ Owner已批准MAB更新计划并授权持续施工：最终GitHub仅main，Verce
 ### M2原件隔离验证（生产保持关闭）
 
 私有原件新增真实PG17/官方Supabase Storage v1.43.0 localhost文件后端/HTTPS浏览器接口验证；该版本协议验证不代替当前托管服务的生产验收。已验证精确hash、禁止覆盖、公有URL及跨Owner拒绝、PENDING恢复、并发幂等、下载中撤权；同备份ID对象与DB dump/restore及失败关闭rollback通过。生产只读复核private_originals不存在、Storage桶0、旧raw_items98、两桥0；候选迁移未生产执行，原件开关未开启，不宣称M2已完工。全单测107 PASS/4既有联网SKIP，生产边界73 PASS，浏览器2 PASS，最终提交前复验及独立静态审查见progress。
+
+### M2证据桥增量（仍为隔离/候选）
+
+基线4b75c7a的CI41465083552已全绿。私有text/plain的真实UTF8字节→L1→L2→准确L3 revision已在原有表上隔离验证；原件Owner、错定位/引文/版本、直接SQL绕过、短时核验签名、密钥撤销、固定版本不覆盖与回滚有正反证据。新桥仅待核验候选，不授G。候选迁移20261102145410未生产执行，独立字节核验密钥只设合成环境；现有生产worker/专业Reviewer、PDF与图像区域、生产激活仍HOLD，原M0—M8未完成。

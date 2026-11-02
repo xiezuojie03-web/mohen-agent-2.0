@@ -1,0 +1,15 @@
+K3_DB_SECURITY_PRECHECK_PASS
+MAB_IMPORTED_MATERIAL_REPOSITORY_PASS real-session owner cross-user forged expired disabled rollback pooled-identity
+K3_INDEPENDENT_GATE_PASS identities ACL receipt policy idempotency CAS append-only revocation dependency propagation atomic-failure concurrency
+K3_GATE_REPOSITORY_PASS dedicated-identity single-client-transaction token-cleared rollback
+K3_READ_MODEL_QUALIFICATION_PASS real G0-G5 chain legacy-denied exact-purpose scope consumer revision revocation
+MAB_STUDIO_ASSETS_PASS project-ACL immutable-revisions exact-asset-FK supersedes CAS task-deletion private-default
+MAB_STUDIO_REPOSITORY_PASS saved-payload immutable-revision request-idempotency exact-CAS concurrency cross-owner clean-pool
+MAB_PRIVATE_ORIGINAL_DB_PASS owner expired forged disabled archive idempotency immutable-receipt exact-revision no-public-read pooled-identity
+MAB_PRIVATE_ORIGINAL_WORKFLOW_PASS real-PG official-Storage owner-denied-before-I/O timeout-written recovery DB-rollback PENDING-resume concurrent-idempotency hash backup-object-restore exact-revision revoke-in-flight
+MAB_EVIDENCE_BRIDGE_PASS real-private-bytes exact-UTF8-offsets source-version raw-item read-run L1-L2 L2-L3 exact-claim-revision owner archive quote-rejection idempotency no-Gate-PASS
+MAB_EVIDENCE_BRIDGE_ROLLBACK_PASS functions-denied immutable-lineage-preserved
+MAB_PRIVATE_ORIGINAL_ROLLBACK_PASS receipt-hashes-preserved read-write-closed
+MAB_STUDIO_ROLLBACK_PASS access-closed permanent-revision-hash-unchanged
+ROLLBACK_COLUMN_ACL_PASS column_insert=true_before,false_after on PostgreSQL17 REVOKE ALL
+K3_DB_TEST_PASS baseline_migrations=22 synthetic_legacy_rows=711 unchanged; no automatic qualification; migrations repeatable; rollback fail-closed

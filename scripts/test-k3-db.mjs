@@ -65,6 +65,7 @@ try {
       env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
     if (studioRepositoryResult.status !== 0) throw new Error("STUDIO_ASSET_REPOSITORY_TEST_FAILED");
     apply("20261102140000_mab_m2_private_originals.sql");
+    apply(fs.readdirSync(directory).find(n => n.endsWith('_mab_m2_evidence_bridge.sql')));
     const originalResult = spawnSync(process.execPath, ["tests/data-production/private-original-repository.integration.mjs"], { cwd: root,
       env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
     if (originalResult.status !== 0) throw new Error("PRIVATE_ORIGINAL_REPOSITORY_TEST_FAILED");
@@ -72,6 +73,9 @@ try {
       const workflowResult = spawnSync(process.execPath, ["tests/data-production/private-original-workflow.integration.mjs"], { cwd: root,
         env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
       if (workflowResult.status !== 0) throw new Error("PRIVATE_ORIGINAL_WORKFLOW_TEST_FAILED");
+      const bridgeResult = spawnSync(process.execPath, ["tests/data-production/evidence-bridge.integration.mjs"], { cwd: root,
+        env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
+      if (bridgeResult.status !== 0) throw new Error("EVIDENCE_BRIDGE_TEST_FAILED");
     } else console.log("MAB_PRIVATE_ORIGINAL_STORAGE_HOLD no isolated official Storage configuration supplied");
   }
   const allAuditSnapshot = query(database, "select md5(jsonb_agg(to_jsonb(g) order by gate_audit_id)::text) from control.gate_audits g");
@@ -81,6 +85,11 @@ try {
   const columnInsertBefore = query(database, "select has_any_column_privilege('mohen_producer','control.gate_candidates','INSERT')");
   if (columnInsertBefore !== "t") throw new Error("CANDIDATE_COLUMN_GRANT_FIXTURE_MISSING");
   if (studioMigration) {
+    const bridgeBefore = query(database, "select md5(jsonb_build_object('read_links',(select jsonb_agg(to_jsonb(r) order by link_id) from evidence.read_unit_evidence_links r),'claim_links',(select jsonb_agg(to_jsonb(r) order by claim_evidence_link_id) from world.claim_evidence_links r))::text)");
+    apply(fs.readdirSync(directory).find(n => n.endsWith('_mab_m2_evidence_bridge.sql')).replace('.sql','.rollback.sql'), 'rollback');
+    if (query(database, "select has_function_privilege('mohen_app_runtime','studio.bind_private_read_evidence(uuid,uuid,uuid,jsonb,text,integer,text)','EXECUTE') or has_function_privilege('mohen_app_runtime','studio.bind_private_claim_evidence(uuid,uuid,uuid,text)','EXECUTE')") !== 'f') throw new Error('EVIDENCE_BRIDGE_ROLLBACK_LEFT_ACCESS');
+    if (query(database, "select md5(jsonb_build_object('read_links',(select jsonb_agg(to_jsonb(r) order by link_id) from evidence.read_unit_evidence_links r),'claim_links',(select jsonb_agg(to_jsonb(r) order by claim_evidence_link_id) from world.claim_evidence_links r))::text)") !== bridgeBefore) throw new Error('EVIDENCE_BRIDGE_ROLLBACK_LOST_LINEAGE');
+    console.log('MAB_EVIDENCE_BRIDGE_ROLLBACK_PASS functions-denied immutable-lineage-preserved');
     const originalsBefore = query(database, "select md5(jsonb_agg(to_jsonb(r) order by original_id)::text) from studio.private_originals r");
     apply("20261102140000_mab_m2_private_originals.rollback.sql", "rollback");
     if (query(database, "select has_any_column_privilege('mohen_app_runtime','studio.private_originals','UPDATE') or has_table_privilege('mohen_app_runtime','studio.private_originals','SELECT')") !== "f") throw new Error("PRIVATE_ORIGINAL_ROLLBACK_LEFT_ACCESS");

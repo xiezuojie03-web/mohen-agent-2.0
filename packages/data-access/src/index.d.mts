@@ -120,3 +120,13 @@ export declare function createPrivateOriginalStorage(options?:{
  endpoint?:string;token?:string;fetcher?:typeof fetch;
 }):PrivateOriginalStorage;
 export declare const MAX_ORIGINAL_BYTES:number;
+
+export interface PrivateTextExtent {
+ kind:'utf8_byte_range/v1';source_version_id:string;raw_item_id:string;
+ start_byte:number;end_byte:number;raw_sha256:string;quote_sha256:string;
+}
+export interface EvidenceBridgeRepository {
+ linkReading(input:{originalId:string;evidenceId:string;readUnitId:string;extent:PrivateTextExtent;quote:string;extentOrder?:number},token:string):Promise<{link_id:string;qualification:'UNASSESSED'}>;
+ linkClaim(input:{originalId:string;evidenceId:string;claimRevisionId:string;supportType:'supports'|'contradicts'|'contextualizes'},token:string):Promise<{link_id:string;qualification:'UNASSESSED'}>;
+}
+export declare function createEvidenceBridgeRepository(pool:{connect:Function},options:{readOriginal:(id:string,token:string)=>Promise<{record:PrivateOriginalRecord;bytes:Buffer}>;verificationKey?:string;keyVersion?:string}):EvidenceBridgeRepository;

@@ -1,0 +1,7 @@
+MAB_HTTP_BUILD_SYNTHETIC
+MAB_HTTP_BROWSER_SYNTHETIC
+  ✓  1 tests/e2e/mab-notebook.spec.ts:10:5 › private notebook saves, reloads exact revisions, isolates owners and avoids duplicate assets after a lost acknowledgement (2.6s)
+  ✓  2 tests/e2e/private-original-http.spec.ts:6:5 › authenticated multipart original reaches private Storage and returns identical bytes with owner isolation (845ms)
+  2 passed (4.4s)
+MAB_HTTP_BROWSER_PASS no-production-data no-paid-provider-calls
+MAB_HTTP_SYNTHETIC_DATABASE_CLEANED
