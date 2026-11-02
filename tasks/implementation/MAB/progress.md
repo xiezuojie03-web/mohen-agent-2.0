@@ -95,3 +95,11 @@ Ruling: 使用单独密码安全变量覆盖旧URI密码，保留连接地址与
 - 新增 `tests/unit/private-original-storage.test.ts`：7条含无密钥/不安全URL、非法路径、上传回读hash、覆盖拒绝、篡改、大小及补偿的合成测试。由CI运行并附证；**不能代替真实Supabase隔离Storage回读、对象元数据RLS及浏览器E2E。**
 - 此批不启用旧 `/api/studio/attachments`，不创建生产bucket，不迁移/写入真实数据库，不注入或查询生产Storage密钥。M2还缺项目所有权和`PENDING→STORED_VERIFIED`元数据事务、数据库迁移/回滚、对象与DB统一备份、D01→D02→D03桥接；不能据适配器存在宣布原件能力可用。
 - **部署策略裁决**：以后按GitHub工程批次集中开发和CI，M2/M3集成关集中做Vercel真实页面验收。已有main自动构建机制暂不调整、不人工逐提交触发或检查部署；自动触发的构建不等于Owner验收。
+
+
+## ENG-NEXT-01｜M2原件接线（2026-11-02）
+- GitHub提交：原件仓储新增owner-RLS事务下的PENDING登记、带项目所有权的幂等保留、STORED_VERIFIED原件状态及source_anchor不可变资产修订；真实对象接口使用已有私有Storage适配器，上传前查已存在对象可在超时后恢复，不覆盖已有对象。
+- POST/GET保留原API路径\`/api/studio/attachments\`，重接真实服务端受限能力；**默认\`MOHEN_PRIVATE_ORIGINAL_UPLOAD_ENABLED\`不为true时失败关闭**，不因代码上线自动开放。服务端会话、权益声明、字节大小与内容类型、项目RLS、私有哈希回读、保存确认、下载前后双重身份验证为必需条件。
+- 迁移文件 \`supabase/migrations/20261102140000_mab_m2_private_originals.sql\` 仅作为待审增量，**尚未应用到任何真实数据库**；需隔离执行、角色权限、备份与异常恢复测试，创建非public私有bucket及必要的对象策略后才可正式开关启用。当前Storage=0桶，原件生产流程不具备条件。
+- 原件保存并不取得正式L/G资格，且不等于媒体展示或外发权限。下一工程环节是数据迁移隔离测试、真实私有Storage样本、跨Owner及竞态/中断/撤权测试；结果不合格保持HOLD。
+- 2026-11-02前一提交\`4e27594\` GitHub Actions单元测试 95 PASS / 1 FAIL / 4 SKIP，失败源于篡改fixture选错GET路径，已在\`8f18f87\`修正；本批测试以新CI为准，尚未声明准出。
