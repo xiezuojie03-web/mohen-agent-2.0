@@ -1,48 +1,29 @@
-import { NextRequest, NextResponse } from "next/server";
-import fs from "node:fs";
-import path from "node:path";
-import crypto from "node:crypto";
-import { queryValue, run } from "@mohen/data-access";
-import { OPERATOR_COOKIE, getSessionUser } from "../../../../lib/auth";
+import { NextResponse } from "next/server";
+import { getSession } from "../../../../lib/session";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
-
-// POST /api/studio/attachments —— 上传/关联材料附件（对齐 FA-015-02）
-// 补缺施工第二步：真实落盘到 public/uploads 并登记 assets 候选台账；权利核验后续做。
-export async function POST(req: NextRequest) {
-  const token = req.cookies.get(OPERATOR_COOKIE)?.value;
-  if (!(await getSessionUser(token))) {
-    return NextResponse.json({ ok: false, reason: "auth_required" }, { status: 401 });
+// FA-015-02: legacy attachment endpoint, temporarily failed closed.
+// Historical code wrote uploaded bytes to public/uploads (publicly reachable,
+// not durable on serverless hosts) and then acknowledged a candidate asset.
+// A material pointer must never imply that private original bytes were stored.
+// Restore this endpoint only after private object persistence, owner-scope
+// access, byte readback, SHA-256 and failure-atomic metadata tests pass.
+export async function POST(_req: Request) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json(
+      { ok: false, reason: "login_required" },
+      { status: 401, headers: { "Cache-Control": "no-store" } }
+    );
   }
-
-  let form: FormData;
-  try {
-    form = await req.formData();
-  } catch {
-    return NextResponse.json({ ok: false, reason: "bad_request" }, { status: 400 });
-  }
-  const file = form.get("file");
-  if (!file || typeof file !== "object" || typeof (file as Blob).arrayBuffer !== "function") {
-    return NextResponse.json({ ok: false, reason: "file_required" }, { status: 400 });
-  }
-
-  const name = (file as File).name || "attachment";
-  const buf = Buffer.from(await (file as Blob).arrayBuffer());
-  const ext = path.extname(name) || "";
-  const safeName = crypto.randomUUID() + ext;
-
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-  fs.writeFileSync(path.join(UPLOAD_DIR, safeName), buf);
-
-  const assetId = await queryValue("select gen_random_uuid()::text");
-  await run(
-    "insert into public.assets (asset_id, title, kind, source_url, status) " +
-      "values (:'id', :'title', 'attachment', :'url', 'candidate')",
-    { id: assetId!, title: name, url: `/uploads/${safeName}` }
+  return NextResponse.json(
+    {
+      ok: false,
+      reason: "private_original_storage_unavailable",
+      message: "附件原件尚不能安全持久保存；请使用资料台中受权限保护的文本或PDF阅读导入，原件附件功能将在存储验证后开放。",
+    },
+    { status: 503, headers: { "Cache-Control": "no-store" } }
   );
-
-  return NextResponse.json({ ok: true, asset_id: assetId, url: `/uploads/${safeName}` });
 }
