@@ -2,8 +2,7 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getSession } from "../../../../lib/session";
 import { signDatabaseSessionToken } from "../../../../lib/auth";
-import { getNodePgPool, createPrivateOriginalRepository, createPrivateOriginalWorkflow } from "@mohen/data-access";
-import { createPrivateOriginalStorage, MAX_ORIGINAL_BYTES } from "../../../../../../packages/data-access/src/private-original-storage.mjs";
+import { getNodePgPool, createPrivateOriginalRepository, createPrivateOriginalWorkflow, createPrivateOriginalStorage, MAX_ORIGINAL_BYTES } from "@mohen/data-access";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

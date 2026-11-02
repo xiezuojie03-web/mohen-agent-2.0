@@ -92,3 +92,30 @@ export interface StudioAssetRepository {
   getRevision(revisionId: string, token: string): Promise<StudioStoredRevision | null>;
 }
 export declare function createStudioAssetRepository(pool: {connect: Function}): StudioAssetRepository;
+
+export interface PrivateOriginalRecord {
+ original_id:string;project_id:string;asset_id:string;asset_revision_id:string|null;
+ state:string;sha256:string;byte_size:number;file_name:string;content_type:string;
+}
+export interface PrivateOriginalInput {
+ projectId:string;originalId:string;assetId:string;idempotencyKey:string;
+ bytes:Buffer;fileName:string;contentType:string;
+}
+export interface PrivateOriginalRepository {
+ reserve(input: Omit<PrivateOriginalInput,"bytes"> & {sha256:string;byteSize:number},token:string):Promise<PrivateOriginalRecord & {storage_key:string}>;
+ finalize(originalId:string,sha256:string,token:string):Promise<PrivateOriginalRecord>;
+ getStored(originalId:string,token:string):Promise<(PrivateOriginalRecord & {storage_key:string})|null>;
+}
+export interface PrivateOriginalStorage {
+ putVerified(key:string,bytes:Buffer,contentType:string):Promise<{sha256:string;byteSize:number;contentType:string}>;
+ readVerified(key:string,hash:string,size?:number):Promise<Buffer>;
+}
+export declare function createPrivateOriginalRepository(pool:{connect:Function}):PrivateOriginalRepository;
+export declare function createPrivateOriginalWorkflow(args:{repository:PrivateOriginalRepository;storage:PrivateOriginalStorage}):{
+ upload(input:PrivateOriginalInput,token:string):Promise<PrivateOriginalRecord>;
+ download(originalId:string,token:string):Promise<{record:PrivateOriginalRecord;bytes:Buffer}>;
+};
+export declare function createPrivateOriginalStorage(options?:{
+ endpoint?:string;token?:string;fetcher?:typeof fetch;
+}):PrivateOriginalStorage;
+export declare const MAX_ORIGINAL_BYTES:number;
