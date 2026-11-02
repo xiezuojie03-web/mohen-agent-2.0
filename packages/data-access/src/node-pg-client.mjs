@@ -28,6 +28,12 @@ export function getNodePgPool() {
   if (!url) throw new Error("DATABASE_URL 未设置（serverless 消费层需显式注入）");
   const local = isLocalHost(url);
   const connection = new URL(url);
+  // Allow rotation without manually editing/escaping a connection URI.
+  const passwordOverride = process.env.MOHEN_DATABASE_PASSWORD;
+  if (passwordOverride !== undefined) {
+    if (passwordOverride.length === 0) throw new Error("MOHEN_DATABASE_PASSWORD 不能为空");
+    connection.password = encodeURIComponent(passwordOverride);
+  }
   // pg connection-string SSL flags can override the Pool ssl object.
   // Keep configured CA/client certificates, but never allow remote no-verify modes.
   let ssl = false;

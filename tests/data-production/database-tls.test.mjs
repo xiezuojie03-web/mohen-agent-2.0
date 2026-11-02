@@ -8,6 +8,39 @@ import { join } from "node:path";
 import { generateKeyPairSync } from "node:crypto";
 const { Client } = createRequire(new URL("../../packages/data-access/package.json", import.meta.url))("pg");
 
+test("separate database password overrides stale URI credentials without losing special characters or TLS", async () => {
+  const oldUrl = process.env.DATABASE_URL, oldPassword = process.env.MOHEN_DATABASE_PASSWORD;
+  process.env.DATABASE_URL = "postgresql://fixture:old@db.example.invalid/fixture_test?application_name=rotation";
+  const password = " fixture:@/?#%+密码 ";
+  process.env.MOHEN_DATABASE_PASSWORD = password;
+  let pool;
+  try {
+    const { getNodePgPool } = await import("../../packages/data-access/src/node-pg-client.mjs?password-rotation-test");
+    pool = getNodePgPool();
+    const actual = new Client(pool.options).connectionParameters;
+    assert.ok(actual.password === password, "the new password must arrive intact without logging it");
+    assert.equal(actual.ssl.rejectUnauthorized, true);
+    assert.equal(actual.application_name, "rotation");
+  } finally {
+    if (pool) await pool.end();
+    oldUrl === undefined ? delete process.env.DATABASE_URL : process.env.DATABASE_URL = oldUrl;
+    oldPassword === undefined ? delete process.env.MOHEN_DATABASE_PASSWORD : process.env.MOHEN_DATABASE_PASSWORD = oldPassword;
+  }
+});
+
+test("an explicitly empty password override fails before opening a connection", async () => {
+  const oldUrl = process.env.DATABASE_URL, oldPassword = process.env.MOHEN_DATABASE_PASSWORD;
+  process.env.DATABASE_URL = "postgresql://fixture:old@db.example.invalid/fixture_test";
+  process.env.MOHEN_DATABASE_PASSWORD = "";
+  try {
+    const { getNodePgPool } = await import("../../packages/data-access/src/node-pg-client.mjs?empty-password-test");
+    assert.throws(() => getNodePgPool(), /MOHEN_DATABASE_PASSWORD/);
+  } finally {
+    oldUrl === undefined ? delete process.env.DATABASE_URL : process.env.DATABASE_URL = oldUrl;
+    oldPassword === undefined ? delete process.env.MOHEN_DATABASE_PASSWORD : process.env.MOHEN_DATABASE_PASSWORD = oldPassword;
+  }
+});
+
 test("remote PostgreSQL connections verify server certificates", async () => {
   const old = process.env.DATABASE_URL;
   process.env.DATABASE_URL = "postgresql://fixture:fixture@db.example.invalid/fixture_test";

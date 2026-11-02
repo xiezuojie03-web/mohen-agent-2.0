@@ -5,6 +5,8 @@ import { buildBaskets } from "../../../lib/mohen-agent/material-score";
 import type { ShlMaterial } from "../../../lib/mohen-agent/retrieve-shl";
 import { V1_SOURCES } from "../../../lib/mohen-agent/sources";
 import ImportForm from "./ImportForm";
+import ProjectNotebook from "./ProjectNotebook";
+import { importedResearchMaterial } from "../../../lib/imported-materials";
 
 export const metadata = { title: "资料台 · 墨痕 Studio" };
 export const dynamic = "force-dynamic";
@@ -102,20 +104,7 @@ export default async function DeskPage() {
     "select material_id::text as material_id, title, text_content, source_url, license from public.imported_materials where owner_user_id = :'owner' order by created_at desc limit 50",
     { owner: session.uid }
   )) as Array<{ material_id: string; title: string; text_content: string; source_url: string | null; license: string | null }>;
-  const imported: ShlMaterial[] = importedRows.map((r) => ({
-    provider: "user-upload",
-    title: r.title,
-    source_type: "document",
-    carrier_type: "text",
-    provenance_status: "declared",
-    content_availability: "full_text",
-    url: r.source_url ?? "",
-    publisher: "用户上传",
-    license: r.license ?? "未标注",
-    rights_clear: "clear",
-    snapshot_path: null,
-    fragments: [r.text_content],
-  }));
+  const imported: ShlMaterial[] = importedRows.map(importedResearchMaterial);
 
   const materials = [...leads, ...decisionMaterials, ...imported].filter(
     (m, i, arr) => arr.findIndex((x) => `${x.source_type}|${x.title}` === `${m.source_type}|${m.title}`) === i
@@ -134,6 +123,7 @@ export default async function DeskPage() {
       </p>
 
       <ImportForm />
+      <ProjectNotebook />
 
       {!latest ? (
         <section style={{ padding: 24, border: "1px dashed #c9c2b4", borderRadius: 8 }}>

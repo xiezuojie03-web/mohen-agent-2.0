@@ -70,3 +70,25 @@ export interface ImportedMaterialRepository {
 }
 export declare function createImportedMaterialRepository(pool: {connect: Function}): ImportedMaterialRepository;
 export declare function getNodePgPool(): {connect: Function};
+
+export interface StudioStoredRevision {
+  revision_id: string;
+  asset_id: string;
+  project_id: string;
+  asset_kind: string;
+  revision_no: number;
+  supersedes_revision_id: string | null;
+  payload: unknown;
+  content_hash: string;
+  content_state: string;
+  access_state: string;
+  validation: unknown;
+}
+export interface StudioAssetRepository {
+  listProjects(token: string): Promise<Array<{project_id: string; project_title: string; research_scope: unknown; lifecycle_status: string; created_at: string}>>;
+  listAssets(projectId: string, token: string): Promise<StudioStoredRevision[]>;
+  createProject(input: {projectId: string; title: string; scope?: Record<string, unknown>}, token: string): Promise<{project_id: string; project_title: string; research_scope: unknown}>;
+  saveRevision(input: {projectId: string; assetId: string; kind: string; expectedRevisionId: string | null; idempotencyKey: string; payload: unknown; sourceRefs?: unknown[]; dependencyRefs?: unknown[]}, token: string): Promise<StudioStoredRevision>;
+  getRevision(revisionId: string, token: string): Promise<StudioStoredRevision | null>;
+}
+export declare function createStudioAssetRepository(pool: {connect: Function}): StudioAssetRepository;

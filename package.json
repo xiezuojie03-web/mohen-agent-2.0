@@ -43,7 +43,8 @@
     "guard:gate-enforcement": "node scripts/guards/check-gate-enforcement.mjs",
     "guard:auth": "node scripts/check-auth-coverage.mjs",
     "guard:auth:strict": "node scripts/check-auth-coverage.mjs --strict",
-    "guard:sources": "node scripts/source-health.mjs"
+    "guard:sources": "node scripts/source-health.mjs",
+    "test:mab:http": "node scripts/test-mab-http.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

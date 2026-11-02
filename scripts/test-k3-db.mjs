@@ -54,12 +54,30 @@ try {
   const consumptionResult = spawnSync(process.execPath, ["tests/data-production/read-model-qualification.integration.mjs"], { cwd: root,
     env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
   if (consumptionResult.status !== 0) throw new Error("QUALIFICATION_CONSUMPTION_TEST_FAILED");
+  const studioMigration = fs.readdirSync(directory).find(n => n.endsWith("_mab_studio_assets.sql"));
+  if (studioMigration) {
+    apply(studioMigration);
+    const studioResult = spawnSync(process.execPath, ["tests/data-production/studio-assets.integration.mjs"], { cwd: root,
+      env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
+    if (studioResult.status !== 0) throw new Error("STUDIO_ASSET_TEST_FAILED");
+    const studioRepositoryResult = spawnSync(process.execPath, ["tests/data-production/studio-asset-repository.integration.mjs"], { cwd: root,
+      env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
+    if (studioRepositoryResult.status !== 0) throw new Error("STUDIO_ASSET_REPOSITORY_TEST_FAILED");
+  }
   const allAuditSnapshot = query(database, "select md5(jsonb_agg(to_jsonb(g) order by gate_audit_id)::text) from control.gate_audits g");
   for (const file of migrations) apply(file);
   if (query(database, "select md5(jsonb_agg(to_jsonb(g) order by gate_audit_id)::text) from control.gate_audits g") !== allAuditSnapshot) throw new Error("REPEAT_MIGRATION_CHANGED_SIGNED_HISTORY");
   if (query(database, snapshotSql) !== before) throw new Error("REPEAT_MIGRATION_CHANGED_HISTORY");
   const columnInsertBefore = query(database, "select has_any_column_privilege('mohen_producer','control.gate_candidates','INSERT')");
   if (columnInsertBefore !== "t") throw new Error("CANDIDATE_COLUMN_GRANT_FIXTURE_MISSING");
+  if (studioMigration) {
+    const studioBefore = query(database, "select md5(jsonb_agg(to_jsonb(r) order by revision_id)::text) from studio.asset_revisions r");
+    apply(studioMigration.replace(".sql", ".rollback.sql"), "rollback");
+    if (query(database, "select has_schema_privilege('mohen_app_runtime','studio','USAGE')") !== "f" ||
+        query(database, "select has_any_column_privilege('mohen_app_runtime','studio.asset_heads','UPDATE')") !== "f") throw new Error("STUDIO_ROLLBACK_LEFT_ACCESS");
+    if (query(database, "select md5(jsonb_agg(to_jsonb(r) order by revision_id)::text) from studio.asset_revisions r") !== studioBefore) throw new Error("STUDIO_ROLLBACK_LOST_REVISIONS");
+    console.log("MAB_STUDIO_ROLLBACK_PASS access-closed permanent-revision-hash-unchanged");
+  }
   for (const file of [...migrations].reverse()) apply(file.replace(".sql", ".rollback.sql"), "rollback");
   if (query(database, "select has_table_privilege('mohen_app_runtime','public.imported_materials','SELECT')") !== "f") throw new Error("ROLLBACK_REOPENED_PRIVATE_DATA");
   if (query(database, "select has_any_column_privilege('mohen_producer','control.gate_candidates','INSERT')") !== "f") throw new Error("ROLLBACK_LEFT_CANDIDATE_COLUMN_INSERT");

@@ -37,3 +37,6 @@ verification/*
 # 浏览器自动化(Playwright/agent-browser)生成的 DOM 快照临时产物
 s2e.yaml
 s2e-after.yaml
+
+# Local CLI bootstrap metadata
+supabase/.temp/
