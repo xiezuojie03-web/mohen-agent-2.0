@@ -285,3 +285,4 @@ export { createPrivateOriginalRepository, createPrivateOriginalWorkflow } from '
 
 export { createPrivateOriginalStorage, MAX_ORIGINAL_BYTES } from './private-original-storage.mjs';
 export { createEvidenceBridgeRepository } from './evidence-bridge-repository.mjs';
+export { createReadModelRepository } from './read-model-repository.mjs';

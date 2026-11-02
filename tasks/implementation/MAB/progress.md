@@ -167,3 +167,12 @@ Ruling: 使用单独密码安全变量覆盖旧URI密码，保留连接地址与
 ## 2026-11-03平台切换交接
 
 Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功能。接续索引`PLATFORM_HANDOFF_20261103.md`，原ZIP和增量书完整归档inputs并记录SHA256。全部已实施源码与测试已在main；原UI stash的13文件完整patch及公开页面PNG/历史测试摘录归档results/MAB/archives，未覆盖main合法成果。d3727ab的CI41471354205与3ed0c8b的CI41471113675均SUCCESS；最终归档提交的CI以GitHub实际状态为准。未上传密钥、cookie、DB dump或临时测试数据。生产准备问题仍未收到回复，后续平台须保留此HOLD。
+
+
+## 2026-11-03｜工具交接后接续：API-023公开证据资格隔离（GitHub源码批次）
+
+- **接续基线**：Codex交接 `PLATFORM_HANDOFF_20261103.md`，最新main开始时为 `177501e122e4a046dcc5194ce54c853c3aae6a66`；继承M2真实隔离PG/Storage/证据桥回执，生产迁移/私有桶/核验key及Gate依旧未启动，生产配置本批不更改。
+- **风险**：公开 `/api/public/evidence/:id` 此前直接SELECT `read_model.evidence_pointers`，只依据物理ID，未核实际G5 consumer/purpose/scope/依赖及撤权。代码存在的独立 `createReadModelRepository().getRuntimeEligible` 已具 `control.qualification_allows` 受控SQL；不能另建Gate。
+- **本次最小修复**：API-023改用共享合格读模型仓储；上下文从仅服务器配置 `MOHEN_PUBLIC_EVIDENCE_QUALIFICATION_CONTEXT` 取得，要求固定consumer=visual_stage、含purpose namespace/code/version与scope对象，URL查询不接受资格参数；配置缺失/不合法/DB无实际签发函数全部503失败关闭，未合格404，合法200仅保留原字段；所有回执no-store，敏感SQL不外露。代码与声明原位扩展，添加5条正反/权限单测。
+- **激活边界**：本批**未**配置该生产环境变量、不安装Gate表、不启用旧G5或发布；当前公开证据详情将失败关闭，直至M3独立资格真正可用。上线前需评估对现有WATCH证据按钮的可见降级文案，不能把未审证据重新开放以修UI。
+- **验证**：提交后以GitHub真实CI检查类型、unit、traceability和build，不把源码提交记成PASS。另待M3真实DB按精准purpose/consumer/修订/权利/撤权测试，状态HOLD。

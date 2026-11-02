@@ -130,3 +130,18 @@ export interface EvidenceBridgeRepository {
  linkClaim(input:{originalId:string;evidenceId:string;claimRevisionId:string;supportType:'supports'|'contradicts'|'contextualizes'},token:string):Promise<{link_id:string;qualification:'UNASSESSED'}>;
 }
 export declare function createEvidenceBridgeRepository(pool:{connect:Function},options:{readOriginal:(id:string,token:string)=>Promise<{record:PrivateOriginalRecord;bytes:Buffer}>;verificationKey?:string;keyVersion?:string}):EvidenceBridgeRepository;
+export interface QualificationPurpose {
+  namespace: string;
+  code: string;
+  version: string;
+}
+export interface QualificationReadOptions {
+  consumer: "visual_stage" | "agent";
+  purpose: QualificationPurpose;
+  scope: Record<string, unknown>;
+}
+export interface ReadModelRepository {
+  getRuntimeEligible(kind: string, id: string, options: QualificationReadOptions): Promise<Record<string, unknown> | null>;
+  listRuntimeEligible(kind: string, options: QualificationReadOptions): Promise<Array<Record<string, unknown>>>;
+}
+export declare function createReadModelRepository(db: { query: (sql: string, params: unknown[]) => Promise<{ rows: Array<Record<string, unknown>> }> }): ReadModelRepository;
