@@ -124,6 +124,16 @@ export interface Ledger {
   budget: BudgetState;
 }
 
+/** Provider already ran and may have incurred irreversible cost.
+ * Never silently retry this invocation just because the receipt write failed.
+ */
+export class ToolReceiptPersistenceError extends Error {
+  constructor(public taskId: string, public toolId: string) {
+    super("HOLD_RECEIPT_UNCERTAIN");
+    this.name = "ToolReceiptPersistenceError";
+  }
+}
+
 /**
  * 有预算上下文时，把一次工具调用包进 reserve → 执行 → settle/release → 回执。
  * 无预算上下文（即时问答）时直接执行，不记账。
@@ -138,7 +148,12 @@ export async function useTool<T>(
   // cost/receipt protections can observe an external or production invocation.
   const spec = getTool(toolId);
   if (!spec) throw new Error("TOOL_NOT_REGISTERED");
-  if (!ledger) return fn();
+  if (!ledger) {
+    // A Production Tool is never an immediate-answer convenience call.
+    // It requires an attached task, reservation, durable ledger and authority.
+    if (spec.trustTier === "production") throw new Error("PRODUCTION_LEDGER_REQUIRED");
+    return fn();
+  }
 
   if (!reserve(ledger.budget, toolId)) {
     throw new BudgetHoldError(ledger.taskId, {
@@ -156,13 +171,31 @@ export async function useTool<T>(
     release(ledger.budget, toolId);
     throw error;
   }
+  let out: T;
   try {
-    const out = await fn();
-    settle(ledger.budget, toolId);
-    await writeReceipt({ taskId: ledger.taskId, kind: "tool", stage: "tool", toolId, cost: spec.cost, status: "settled" });
-    return out;
-  } catch (e) {
+    out = await fn();
+  } catch (error) {
     release(ledger.budget, toolId);
-    throw e;
+    // Record a failed attempt without exposing provider error contents or
+    // retroactively claiming it never reached the external system.
+    try {
+      await writeReceipt({ taskId: ledger.taskId, kind: "tool", stage: "tool",
+        toolId, cost: spec.cost, status: "hold",
+        payload: { reason: "tool_execution_failed", retry_requires_reconciliation: true } });
+    } catch {
+      // Original error remains observable; no automatic provider retry here.
+    }
+    throw error;
   }
+  settle(ledger.budget, toolId);
+  try {
+    await writeReceipt({ taskId: ledger.taskId, kind: "tool", stage: "tool",
+      toolId, cost: spec.cost, status: "settled" });
+  } catch {
+    // The actual cost and output are uncertain to durable storage. Keep
+    // in-memory spent unchanged, refuse normal success and require explicit
+    // reconciliation rather than calling fn() again.
+    throw new ToolReceiptPersistenceError(ledger.taskId, toolId);
+  }
+  return out;
 }
