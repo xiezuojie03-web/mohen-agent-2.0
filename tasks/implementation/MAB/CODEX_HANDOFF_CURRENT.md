@@ -1,5 +1,24 @@
 # 墨痕 MAB｜Codex 当前执行交接书（唯一现行入口）
 
+> **最新 Owner 执行权裁决｜2026-11-03 20:23+08:00｜Codex 接手，优先于本文早期 ChatGPT 接力描述**：Owner明确要求再次转回 Codex 工程施工。本文件是当前唯一 Codex 接续入口。聊天模式施工已结束，并已全部推送到远端 `main`；转交时远端代码及施工记录已核对到 `9f4e1485150c02db48425525a435c9527104b390`，对应主 CI [41638572066](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41638572066) **SUCCESS**。此 SHA 是核查时的基准而非锁死的工程版本；Codex 开工须再次 fetch 最新 `origin/main`。执行权转交 ≠ M1—M8 正式准出或生产迁移、付费模型、独立 Reviewer 启用授权。
+
+## 当前正式接续差异：已落 main、无需重做（2026-11-03 20:23+08:00）
+
+| 施工批次 | GitHub 代码 SHA / 验证 | Codex 要继承的成果与限制 |
+|---|---|---|
+| Admin／HP11 | `ea4abd51`、`c949a082`；CI [41628855225](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41628855225) SUCCESS | F05 在当前 Owner 权限内读取 Studio 项目、私有资产、精确修订/使用事件及来源依赖引用；不是跨 Owner 运营授权或专业 G5 |
+| M3 精确 Reviewer 回执 | `f8ae5d0a` → 测试修复 `f5cd2d38`；CI [41628357443](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41628357443) SUCCESS | 回执必须绑定 job、Reviewer、consumer 和精确阶段输入输出；旧合成回执缺字段的 CI 失败已修正，真实认证服务仍未上线 |
+| M3 当前知识资格 | `2352c368`、`faddc2a4`、`10b7a3dd`、`f79dc436`；隔离 PG17 [41637142076](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637142076)、CI [41637141950](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637141950)、M1 HTTP [41637141998](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637141998) 均 SUCCESS | Producer legalInput/passed、G0—G5 lineage 和 read_model 消费统一精确 consumer/purpose/非空scope + `control.qualification_allows`；旧 PASS 不能继承，祖先撤销立即拒绝；生产 Reviewer 仍 HOLD |
+| M2 Runner 续跑 | `64eed3f55d8a6f6d21d1b62c0629f139e5dfe341`；CI [41638126713](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41638126713) SUCCESS | `run.mjs` 受控 `--resume-input-file` 与 `MOHEN_TRUSTED_RESUME_INPUT_DIR`；冻结 JSON、POSIX 权限/容量/符号链接、私有请求字段和选定阶段 Adapter 核查。依旧需要合法 Owner/worker、真实原件字节、注册启用、独立授权及 Gate |
+| 计划与单一记录 | `79beec85`、`9f4e1485150c02db48425525a435c9527104b390`；后者 CI [41638572066](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41638572066) SUCCESS | `PLAN.md`、`progress.md`、`CURRENT.md` 原位更新；完整测试与局限按各批 SHA 追溯，不能旧报告覆盖最新记录 |
+
+**Codex 下一步唯一优先入口**：先核远端 main 最新 SHA、工作树、CI 和现行 `PLAN.md`／`progress.md`；在 M2 已有受控续跑入口上，补接 **合法 Owner 会话 → 私有原件真实字节与精确source-version → 唯一 Runner D01—D03 → L1读取单位／L2证据／L3有据主张 → 独立 G1—G3**；并行把 M3 独立 Reviewer 认证、专用 DB 登录、签发／撤销和当前消费资格服务实现并在隔离环境正反测试。继续完成 M4 真实混合 Agent、M5 Studio/Admin/WATCH 等既定任务，不另建权威任务树，不重新开发已通过的子能力。
+
+**当前硬阻断**：正式 Supabase 私有原件候选迁移/Storage 桶、真实 Owner 到 Runner 的动态输入与私有 worker、独立 Reviewer/Signer 生产服务尚未完成；Studio 实际项目、G5 正式资格与真实作品消费未闭环。历史生产只读证据 `studio.projects=0`、`control.qualification_current=0`、`storage.buckets=0` 是 2026-11-03 11:31 UTC 的现场快照，Codex 应重新只读核验。当前生产 Registry 继续关闭；外部收费调用、受控生产迁移和发布不得因工具切换而默认授权。
+
+**执行纪律**：基于现行 M0—M8／HP01—HP13 持续施工，优先实码、真实隔离测试和修复，逐批回写同一 `progress.md`、必要时更新 `PLAN.md` 与 `target-diff.csv`。只把源码到位、隔离验证、在线验证和准出分别记账；不删除 M1—M8 HOLD、不把跳过项视为通过。技术问题自主修复，只有产品方向、成本、正式环境/隐私外发的授权范围发生变化时请 Owner 决定。
+
+
 **交接日期**：2026-11-03  
 **交接决定**：Owner明确要求从ChatGPT聊天插件施工转回Codex执行后续工程，不再等待此前13个交接前工作包全部由聊天插件完成。  
 **性质**：执行权转移及可继续施工的工程交接，**不是**M0—M8生产准出，不将PLAN §6B.3的技术HANDOFF_READY条件虚构为已经达到。  

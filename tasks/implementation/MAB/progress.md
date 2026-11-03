@@ -724,3 +724,11 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **真实测试**：[main CI 41638126713](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41638126713) **SUCCESS**，确认编译、单测、production boundary、构建与鉴权；测试含有权路径、选定Stage绑定、错模块/重复Stage、目录越界/符号链接/非私有权限/超大文件、错私有Stage/隐形字段/坏JSON。尚未为此批运行真PG17或完整Owner工作器；不能把新CLI参数解释成可以读取原件或执行真实Gate。
 - **剩余P0/后续**：`context.privateEvidenceWorker`、`privateEvidenceOwnerSessionToken`在CLI尚无已批准的运行实例/注入，`Studio`生产触发继续显式HOLD；D01候选无实际真实L1持久写入＋独立G1验收，D02/D03需真实桥与G2/G3。M2正式生产仍HOLD。M3上批资格读链正式SQL与隔离PG通过，但Reviewer服务正式激活HOLD。无生产数据库迁移、无对象桶或真实字节、无收费Provider。
 - **回退**：若新Stage续跑存在隐患，可回退本批Runner参数/Adapter范围支持，保留原全链Registry与执行权、Gate失败关闭；不能通过启用旧全局adapter或legacy PASS来修复。新支持文件属于既有M2执行结构补强，74项目标登记的总分母不变；在后续HP13按合同测试责任追加，不将文件数伪作达标数量。
+
+
+## 2026-11-03 20:23+08:00｜Owner 执行权转回 Codex：GitHub 交接确认（不变更阶段准出）
+
+- Owner明确：“请确保施工写入GitHub，我又要回codex施工了。”本轮 ChatGPT 已推送到`main@9f4e1485150c02db48425525a435c9527104b390`（2026-11-03 20:23+08:00 核查时）；主 CI [41638572066](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41638572066) **SUCCESS**，此前 M2代码`64eed3f5` CI41638126713成功，M3代码`f79dc436` CI41637141950、隔离PG17 41637142076、M1 HTTP 41637141998成功。
+- 全量新增及修改已在远端main，不需传包：Admin私有资产只读组件/测试、M3精确Gate回执与全谱系资格读取、M2有界续跑输入和精确阶段adapter验证、上述CI工作流与全部现行施工记录。
+- `CODEX_HANDOFF_CURRENT.md`开头原位补最新Owner裁决、已提交成果表、精确SHA、CI、M2/M3下一步P0及生产权限边界；`CURRENT.md`明确Codex接手优先。原M0—M8／HP01—HP13和历史归档不删，旧交接不成为第二套入口。
+- 本文档交接提交后会产生新HEAD，Codex需`git fetch origin main`后以实时`origin/main`为准；历史SHAs仅做验收与回滚证据。本次只写GitHub文档，没有生产DB/Storage写入、真实Gate签发、付费模型调用及私有资料外发；M2/M3正式生产HOLD，技术HANDOFF_NOT_READY不因Owner转回Codex而改写。

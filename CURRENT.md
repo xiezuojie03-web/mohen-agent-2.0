@@ -1,5 +1,8 @@
 # 墨痕｜当前真实工程状态
 
+> **2026-11-03 20:23+08:00 Owner 最新指令：转回 Codex 施工（最高时序优先）**：聊天插件本轮源码与计划已全部推送 GitHub `main@9f4e1485150c02db48425525a435c9527104b390`；主 CI [41638572066](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41638572066) SUCCESS。Codex 从远端最新 main 和 `tasks/implementation/MAB/CODEX_HANDOFF_CURRENT.md` 开工；后者开头新增本轮成果差异表、证据和下一 P0。此举只转移执行权，M0—M8原准出与生产权限不变。下方此前“ChatGPT接力/转回Codex”表述均为时间顺序中的历史记录，不作为当前指令。
+
+
 > **2026-11-03 当前最新工程提交（优先）**：本轮ChatGPT接力已把M3当前G0—G5资格/谱系合法读取子能力在[独立PG17 41637142076](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637142076)和[主CI 41637141950](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637141950)验证通过；随后`64eed3f5`补M2唯一Runner有界冻结续跑输入及按阶段Adapter路径绑定，[主CI 41638126713 SUCCESS](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41638126713)。这些是**工程代码/隔离验证子能力**；正式Owner私有原件工作器、Reader持久化、Reviewer部署/签发、生产Registry与真正Studio→Admin→WATCH业务仍HOLD。详见`progress.md`末尾；无本次正式DB/Storage写入或收费Provider调用。
 
 
