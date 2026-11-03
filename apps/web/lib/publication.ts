@@ -117,7 +117,7 @@ export async function submitWork(workId: string, revisionId?: string): Promise<S
 export async function checkPublishEligibility(
   workId: string,
   publisherId?: string
-): Promise<{ ok: boolean; reason?: string }> {
+): Promise<{ ok: boolean; reason?: string; revisionId?: string }> {
   const rows = await queryRows(
     "select revision_id::text as revision_id, content from publication.work_revisions where work_id = :'wid' and status = 'submitted' order by revision_no desc limit 1",
     { wid: workId }
@@ -178,7 +178,7 @@ export async function checkPublishEligibility(
     return { ok: false, reason: "no_rights_ack" };
   }
 
-  return { ok: true };
+  return { ok: true, revisionId };
 }
 
 /** 发布：先核独立 Gate/权利（CR-04），再置 published + 写发布指针（operator 专属，不代签 G）。 */
@@ -186,11 +186,11 @@ export async function publishWork(workId: string, by: string): Promise<{ ok: boo
   const elig = await checkPublishEligibility(workId, by);
   if (!elig.ok) return elig;
 
-  const rid = await queryValue(
-    "select revision_id::text from publication.work_revisions where work_id = :'wid' and status = 'submitted' order by revision_no desc limit 1",
-    { wid: workId }
-  );
-  if (!rid) return { ok: false, reason: "no_submitted_revision" };
+  // Publish exactly the revision checked above. Re-reading the "latest"
+  // submitted revision here creates a TOCTOU gap and can publish a different
+  // revision than the independent Reviewer approved.
+  const rid = elig.revisionId;
+  if (!rid) return { ok: false, reason: "revision_required" };
   // One SQL statement makes the revision transition and public pointer
   // indivisible. If a concurrent rejection/revision changed the submitted
   // status, no pointer is installed and the publisher receives a refusal.
@@ -199,6 +199,17 @@ export async function publishWork(workId: string, by: string): Promise<{ ok: boo
        update publication.work_revisions
           set status = 'published'
         where revision_id = :'rid' and work_id = :'wid' and status = 'submitted'
+          and exists (
+            select 1 from (
+              select d.decision, d.revision_id
+                from control.work_publication_decisions d
+               where d.work_id = :'wid'
+               order by d.reviewed_at desc
+               limit 1
+            ) latest_decision
+            where latest_decision.decision = 'approved'
+              and latest_decision.revision_id = :'rid'
+          )
         returning work_id, revision_id
      )
      insert into publication.published_pointers (work_id, revision_id, published_by)
