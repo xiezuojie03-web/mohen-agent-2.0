@@ -740,8 +740,20 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **M2实码**：run.mjs→精确私有Adapter→惰性runtime，默认关闭；显式独立worker URI/Owner短时session/私有Storage与核验key版本配置；真实登录须低权app-runtime成员，拒绝Producer/Signer/authority/高权及伪装SET ROLE；强制TLS校验、显式密码、无URI参数/共享DATABASE_URL回退。原件权限/字节/来源版本复用现有worker；异常和终态清理Pool。D01仍为候选，未冒称L1持久化。
 - **M3实码**：独立decision handler复用专用Signer仓储；current reader+handler对接原客户端，仅接受带immutable stage_binding的独立PASS，精确run/job/Reviewer/input/output及server-owned purpose/scope，逐请求qualification_allows；错配/歧义/撤权拒绝，无资格缓存。新workflow路径已接。
 - **实际测试**：pnpm9.15.4冻结安装、六workspace typecheck、CI=true单测313 PASS/4既有联网SKIP、生产边界116 PASS/0 SKIP、strict auth105 routes无缺项、Next build PASS；74目标audit零缺路径但仍HANDOFF_NOT_READY。PG17一次性实例标识codex-k3-isolated，专用低权Signer HTTP签发→当前read→Producer→撤权与Reviewer禁用/binding禁用/policy禁用拒绝，专用private worker Owner/来源/跨人/过期/伪造/disabled/归档及admin/Signer身份拒绝；全套迁移/回滚/711历史审计保全均PASS。真实输出见同批回执。
-- **环境失败如实保留**：预装pnpm非9.15.4导致最初安装/脚本失败，后改用/tmp精确版本与PATH shim，锁文件未改；非CI Commons联网失败未伪造通过，CI历史4项SKIP保留。官方Storage未配置，PG脚本明确Storage_HOLD；TLS池配置已测，实际TLS握手/证书拒绝未测。
+- **环境失败如实保留**：预装pnpm非9.15.4导致最初安装/脚本失败，后改用/tmp精确版本与PATH shim，锁文件未改；非CI Commons联网失败未伪造通过，CI历史4项SKIP保留。官方Storage未配置，PG脚本明确Storage_HOLD；TLS池配置已测；其后补一次性PG17实际TLS验证：受信合成CA+专用低权身份成功，pg_stat_ssl加密成立，未信CA拒绝，入口private-worker-tls.integration.mjs。
 - **独立审查**：只读reviewer审查M3及M2、独立跑新协议/worker测试，无Critical/Important；空密码回落环境凭据隐患已RED→GREEN修复。minor deferred：两个新handler尚无body读取时限，正式部署必须补时限或证明宿主限制。
 - **生产只读**：2026-11-03 21:00:00+08:00项目0/当前资格0/桶0、private_originals与签发函数不存在。无生产写入/迁移/私有外发/收费调用；Registry/Studio生产HOLD、M1—M8不提升。
 - **界限与下一P0**：真实独立认证及凭据失效、受审reader最小权限部署、Owner原件实际bytes→唯一Runner→L1持久化/证据/主张→独立G1—G3未闭合；本批CODE_PRESENT+限定VERIFIED_ISOLATED，非VERIFIED_LIVE。沿同任务书继续，不授权开启生产。
 - **证据/回退**：`tasks/results/MAB/CODEX_M2_M3_SERVICES_20261103.md`；关worker并回退本批接线，保全原资产/旧撤权503与所有追加审计，不回滚已合法撤权。commit与远端CI回执在取得真实SHA后追加。
+
+
+### main源码提交的GitHub真实push验证
+
+`b609efa2c5883cd732cc1a1ce2100bb0d96d8265`四流水线均COMPLETED/SUCCESS：
+
+- 主CI [41641917991](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41641917991)：Install、Typecheck、Unit、Production boundary、K3追溯、Next Build、strict Auth、74目标审计及artifact上传均成功。
+- 独立PG17 [41641918045](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41641918045)：真实迁移、专用低权Signer/worker、签发/当前资格读取/撤权及历史/回滚完整套通过。
+- M1 HTTP/Chromium [41641918101](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41641918101)：一次性PG17与真实HTTP/浏览器验收通过。
+- M3协议 [41641918296](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41641918296)：纯合成协议与禁止直接写Gate检查成功。
+
+以上只对精确源码SHA与隔离合同有效；后续TLS测试脚本/本回执提交不冒称四流水线也已在该未来SHA执行。生产迁移、原件Storage整链、真实独立认证和M1—M8阶段HOLD均不变。
