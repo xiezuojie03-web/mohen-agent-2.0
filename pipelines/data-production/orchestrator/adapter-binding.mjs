@@ -18,3 +18,18 @@ export function assertNoUnboundTopicInputs(environment = process.env) {
     throw new Error("EXECUTION_DYNAMIC_INPUT_BINDING_REQUIRED");
   }
 }
+
+
+/** Until a signed, typed D01-D03 private adapter is bound to the one
+ * production Registry, never send private-original requests to legacy
+ * D01/D02/D03 adapters (which process historic public fixture materials).
+ */
+export function assertNoUnboundPrivateEvidenceInput(input) {
+  if (input === null || typeof input !== 'object') return;
+  if (input.schema === 'mohen.private-evidence-stage-request.v1' ||
+      input.private_evidence !== undefined ||
+      input.private_original !== undefined ||
+      input.mab_private_evidence !== undefined) {
+    throw Error('PRIVATE_EVIDENCE_STAGE_BINDING_REQUIRED');
+  }
+}

@@ -1,5 +1,5 @@
 import { createHash, createPublicKey, verify } from "node:crypto";
-import { assertNoUnboundTopicInputs } from "./adapter-binding.mjs";
+import { assertNoUnboundTopicInputs, assertNoUnboundPrivateEvidenceInput } from "./adapter-binding.mjs";
 
 /** Canonical digest shared with the independent authorizer, never a caller-supplied digest. */
 export function executionDigest(value) {
@@ -21,6 +21,7 @@ export async function assertStageExecutionAuthorized({ registry, job, run, input
     throw new Error("REGISTRY_NOT_ACTIVE");
   }
   assertNoUnboundTopicInputs();
+  assertNoUnboundPrivateEvidenceInput(input);
   const policy = job.execution_policy;
   const mode = run.execution_mode;
   if (policy?.enabled !== true || !["attended", "unattended", "batch", "interactive"].includes(mode) || policy[mode] !== true) {

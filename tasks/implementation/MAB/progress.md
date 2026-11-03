@@ -305,3 +305,10 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 代码基线 `main@bcd0715`；真实GitHub隔离PG17运行 `41576958641` **SUCCESS**。新增`MAB_PRIVATE_SOURCE_BINDING_PG_PASS`：Owner正确来源绑定、错误raw/version/hash、跨Owner、失效/伪造/禁用、项目归档；应用账号没有来源表直读权限、外部角色不可调用窄函数。原K3 Gate/私有原件DB/迁移重放与回滚检查成功，原审计合成711条保持不变。
 - 前三次失败分别为临时PG初始化socket、候选SQL源文件截断、重复SQL尾段；均已修正，完整过程和原回执列于`tasks/results/MAB/M2_SOURCE_BINDING_PG17_20261103.md`。最终运行才是数据库级PASS，之前的CI绿灯不重复计数。
 - **仍需收口**：本次未启动官方Storage HTTP夹具，旧官方Storage隔离回执仍单独继承；尚未执行M2生产迁移/私有桶/密钥及D00—D03正式Registry接线。M0审查PASS、M1生产安全HOLD、M2/M3生产HOLD都不改变。
+
+## 2026-11-03｜M3独立Gate只读核验服务接入Runner；M2未绑定输入拒绝
+
+- 在原CLI生产入口\`run.mjs\`接入\`createOptionalIndependentGateClient\`；仅配置**独立、只读**的HTTPS Gate当前资格查询URL与单独只读credential时才向\`runProduction\`提供\`verifyStageQualification\`。网络、服务配置、非JSON、非法/超大响应一律拒绝，原\`requireIndependentStageQualification\`对run/stage/input/output digest/current/expiry逐字段核对保持不变，生产进程不获得Reviewer签发权限、密钥、库表权限。
+- 查询只发送run/job/stage/Gate、摘要及Reviewer绑定引用，绝不发送私有史料全文、完整output或用户传入的证据内容。没有Gate验证服务时依旧停在\`INDEPENDENT_STAGE_QUALIFICATION_REQUIRED\`，**没有隐式PASS**。
+- 新增\`assertNoUnboundPrivateEvidenceInput\`到现有阶段执行授权最前端；明确M2私有原件候选不能在Registry未正式绑定D01—D03适配器时落入旧金泽/历史公共材料适配器。当前M2工作器仍未完成受控正式适配器注册/Owner会话传递，不把此预检记为完整接线PASS。
+- 正反测试覆盖M3只读验证URL/凭据、请求不含敏感正文、不伪造PASS、网络与越权拒绝、响应尺寸上限；M2明确私有请求阻断。只改GitHub代码和单测，未启用Gate服务/生产Storage/SQL迁移，所有阶段准出按既有状态。CI以本批实际回执为准。

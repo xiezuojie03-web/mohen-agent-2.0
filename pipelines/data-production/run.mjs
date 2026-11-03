@@ -5,6 +5,7 @@ import { loadRegistry } from "./orchestrator/registry.mjs";
 import { createRunState } from "./orchestrator/run-state.mjs";
 import { runProduction } from "./orchestrator/orchestrator.mjs";
 import { assertAdapterBinding } from "./orchestrator/adapter-binding.mjs";
+import { createOptionalIndependentGateClient } from "./orchestrator/independent-gate-client.mjs";
 import { persistStageProgress, finalizeRun } from "./orchestrator/run-persistence.mjs";
 
 function arg(name, fallback = null) {
@@ -37,10 +38,15 @@ async function queryRows(...args) {
 const tokens = process.env.MOHEN_EXECUTION_AUTH_TOKENS
   ? JSON.parse(process.env.MOHEN_EXECUTION_AUTH_TOKENS) : undefined;
 
+// This is only a READ-ONLY qualification check. No credentials means the
+// existing independent-Gate guard holds every Producer PASS (never a fallback).
+const gateVerifier = createOptionalIndependentGateClient();
+
 const finished = await runProduction({
   run, registry, from_stage: fromStage, to_stage: toStage,
   context: {
     execution_authority_tokens: tokens,
+    ...(gateVerifier ? {verifyStageQualification: gateVerifier} : {}),
     loadAdapters: async () => {
       assertAdapterBinding(projectRoot, registry, adaptersModule);
       const { assertProducerIdentity } = await import("../../packages/data-access/src/producer-identity.mjs");
