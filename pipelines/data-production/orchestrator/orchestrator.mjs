@@ -25,7 +25,9 @@ export async function runProduction({ run, registry, context = {}, from_stage = 
     }
     state.current_stage = stage;
     const execute = await loadExecutor(stage);
-    const result = await execute({ run: state, job, input, context });
+    // Give the adapter the exact Registry already authorized by this Runner;
+    // caller-supplied context.registry must never decide the security identity.
+    const result = await execute({ run: state, job, input, context: { ...context, registry } });
     // A Producer PASS is only a candidate. Do not hand off L(n) to D(n+1)
     // until an independent current-qualified G(n) receipt binds exact input/output.
     if (result.disposition === "PASS") {
