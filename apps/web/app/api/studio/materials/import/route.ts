@@ -22,11 +22,11 @@ const MATERIAL_UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]
 
 // The existing GET listing stays unchanged without ?material_id=. An explicit
 // material_id reads the full text ONLY through the same RLS-checked DB session.
-export async function GET(req?: Request) {
+export async function GET(req: Request) {
   const session = await getSession();
   if (!session) return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401, headers: PRIVATE_NO_STORE });
 
-  const materialId = req ? new URL(req.url).searchParams.get("material_id") : null;
+  const materialId = new URL(req.url).searchParams.get("material_id");
   if (materialId !== null && !MATERIAL_UUID.test(materialId)) {
     return NextResponse.json({ ok: false, reason: "bad_material_id" }, { status: 400, headers: PRIVATE_NO_STORE });
   }
