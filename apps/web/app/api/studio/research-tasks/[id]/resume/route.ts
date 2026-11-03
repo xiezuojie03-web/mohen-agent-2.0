@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
-import { getTaskStatus, appendResearchMessage } from "../../../../../../lib/studio-research";
+import { getTaskStatus, resumeResearchTask } from "../../../../../../lib/studio-research";
 import { guardRoute } from "../../../../../../lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// API-069 POST /api/studio/research-tasks/:id/resume —— 恢复研究（对齐 FA-029-02 补充材料后续跑）
-export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+// Explicit budget resumption is NOT an invitation to replay charged steps.
+// Unknown provider costs / settlement receipts require reconciliation first.
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const denied = await guardRoute(params, "public.research_tasks");
   if (denied) return denied;
   const { id } = await params;
@@ -14,7 +15,29 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
   if (!task) {
     return NextResponse.json({ ok: false, reason: "task_not_found" }, { status: 404 });
   }
-  const prompt = typeof task.prompt === "string" ? task.prompt : "";
-  await appendResearchMessage(id, prompt || "继续研究");
-  return NextResponse.json({ ok: true });
+  if (task.status !== "hold") {
+    return NextResponse.json({ ok: false, reason: "not_hold" }, { status: 409 });
+  }
+
+  let additionalCeiling: unknown;
+  try {
+    const raw = await req.text();
+    additionalCeiling = raw.trim()
+      ? (JSON.parse(raw) as { additionalCeiling?: unknown }).additionalCeiling
+      : undefined;
+  } catch {
+    return NextResponse.json({ ok: false, reason: "bad_request" }, { status: 400 });
+  }
+  if (typeof additionalCeiling !== "number" || !Number.isFinite(additionalCeiling) ||
+      additionalCeiling <= 0) {
+    return NextResponse.json({ ok: false, reason: "additional_budget_required" }, { status: 400 });
+  }
+  const result = await resumeResearchTask(id, additionalCeiling);
+  if (result.status !== "done") {
+    return NextResponse.json(
+      { ok: false, reason: result.holdReason || "resume_hold" },
+      { status: 409, headers: { "cache-control": "no-store" } }
+    );
+  }
+  return NextResponse.json({ ok: true }, { headers: { "cache-control": "no-store" } });
 }
