@@ -7,6 +7,7 @@
 // 未登记工具不运行；预算超限 HOLD_BUDGET（持久化 checkpoint 后停，恢复需重新授权）。
 
 import { run } from "@mohen/data-access";
+import { randomUUID } from "node:crypto";
 
 export interface ToolSpec {
   toolId: string;
@@ -128,9 +129,19 @@ export interface Ledger {
  * Never silently retry this invocation just because the receipt write failed.
  */
 export class ToolReceiptPersistenceError extends Error {
-  constructor(public taskId: string, public toolId: string) {
+  constructor(public taskId: string, public toolId: string, public invocationId: string) {
     super("HOLD_RECEIPT_UNCERTAIN");
     this.name = "ToolReceiptPersistenceError";
+  }
+}
+
+/** A paid or external call can charge even if the transport reports failure.
+ * The reserved amount must remain blocked pending explicit reconciliation.
+ */
+export class ToolExecutionUncertainError extends Error {
+  constructor(public taskId: string, public toolId: string, public invocationId: string) {
+    super("HOLD_EXECUTION_UNCERTAIN");
+    this.name = "ToolExecutionUncertainError";
   }
 }
 
@@ -163,39 +174,58 @@ export async function useTool<T>(
       ceiling: ledger.budget.ceiling,
     });
   }
-  // Persist the reservation before executing the tool. If the receipt write
-  // fails, release the in-memory reservation and do not invoke any provider.
+
+  // One immutable invocation ID links reservation, settlement and
+  // uncertainty. Never log provider credentials, responses or raw material.
+  const invocationId = randomUUID();
+  const metadata = { invocation_id: invocationId };
   try {
-    await writeReceipt({ taskId: ledger.taskId, kind: "tool", stage: "tool", toolId, cost: spec.cost, status: "reserved" });
+    await writeReceipt({
+      taskId: ledger.taskId, kind: "tool", stage: "tool",
+      toolId, cost: spec.cost, status: "reserved", payload: metadata,
+    });
   } catch (error) {
     release(ledger.budget, toolId);
     throw error;
   }
-  let out: T;
+
+  let output: T;
   try {
-    out = await fn();
+    output = await fn();
   } catch (error) {
-    release(ledger.budget, toolId);
-    // Record a failed attempt without exposing provider error contents or
-    // retroactively claiming it never reached the external system.
+    const mayHaveCharged = spec.trustTier !== "deterministic";
+    if (!mayHaveCharged) release(ledger.budget, toolId);
     try {
-      await writeReceipt({ taskId: ledger.taskId, kind: "tool", stage: "tool",
+      await writeReceipt({
+        taskId: ledger.taskId, kind: "tool", stage: "tool",
         toolId, cost: spec.cost, status: "hold",
-        payload: { reason: "tool_execution_failed", retry_requires_reconciliation: true } });
+        payload: {
+          ...metadata,
+          reason: mayHaveCharged ? "provider_execution_uncertain" : "deterministic_execution_failed",
+          retry_requires_reconciliation: mayHaveCharged,
+        },
+      });
     } catch {
-      // Original error remains observable; no automatic provider retry here.
+      // The reservation remains recorded even if the subsequent HOLD record
+      // fails. Never automatically re-invoke a potentially charged provider.
+    }
+    if (mayHaveCharged) {
+      throw new ToolExecutionUncertainError(ledger.taskId, toolId, invocationId);
     }
     throw error;
   }
+
+  // Charge happened: keep its cost in spent even when the settlement
+  // receipt cannot be committed. The caller must hold/reconcile, not retry.
   settle(ledger.budget, toolId);
   try {
-    await writeReceipt({ taskId: ledger.taskId, kind: "tool", stage: "tool",
-      toolId, cost: spec.cost, status: "settled" });
+    await writeReceipt({
+      taskId: ledger.taskId, kind: "tool", stage: "tool",
+      toolId, cost: spec.cost, status: "settled",
+      payload: metadata,
+    });
   } catch {
-    // The actual cost and output are uncertain to durable storage. Keep
-    // in-memory spent unchanged, refuse normal success and require explicit
-    // reconciliation rather than calling fn() again.
-    throw new ToolReceiptPersistenceError(ledger.taskId, toolId);
+    throw new ToolReceiptPersistenceError(ledger.taskId, toolId, invocationId);
   }
-  return out;
+  return output;
 }
