@@ -1,5 +1,8 @@
 # 墨痕｜当前真实工程状态
 
+> **2026-11-03 最近执行权变更（优先）**：Owner因Codex额度不足再次授权ChatGPT聊天环境使用GitHub插件接力施工。当前执行以GitHub远端main最新HEAD及`tasks/implementation/MAB/PLAN.md`、`progress.md`为准；本次HP11和M3源码批次/CI/生产只读证据见progress末尾。此举不改变已批准设计方向、M0—M8及HP工作包，也不代表生产迁移、私有外发、真实Gate或付费调用已授权。下方“2026-11-03转回Codex”的既有入口是**此前执行工具变更的历史记录**，不再作为本时点工具分配结论。M0仅审查准出，M1—M8运行状态继续HOLD。
+
+
 > **2026-11-03 最新执行入口变更（优先于下方原11月2日历史状态）**：Owner决定现在转回Codex执行，而非等聊天插件先完成所有HP。请从GitHub远端main最新HEAD阅读 `tasks/implementation/MAB/CODEX_HANDOFF_CURRENT.md`（唯一当前执行交接索引）、`PLAN.md §6B`和`progress.md`，继续当前源码、CI与隔离核证。交接是执行权转移，**不代表**M1—M8已准出、技术HANDOFF_READY、生产迁移/专业Gate/资料外发/费用已授权。旧`PLATFORM_HANDOFF_20261103.md`保留历史事实，其“停止施工”的旧窗口状态已被后续HP03/HP08等GitHub施工更新覆盖。下文各时间点的回执应按各自SHA核实，不要误读为最新完整PASS。
 
 

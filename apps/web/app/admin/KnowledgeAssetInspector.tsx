@@ -118,6 +118,14 @@ export default function KnowledgeAssetInspector(){
       <pre style={{whiteSpace:"pre-wrap",overflowWrap:"anywhere",maxHeight:240,overflow:"auto"}}>
         {assetPayloadPreview(selected.payload)}
       </pre>
+      <p className="admin__asset-meta">保存的来源引用（仅原始记录，不代表验证或授权）</p>
+      <pre style={{whiteSpace:"pre-wrap",overflowWrap:"anywhere",maxHeight:150,overflow:"auto"}}>
+        {assetPayloadPreview(selected.source_refs)}
+      </pre>
+      <p className="admin__asset-meta">保存的依赖引用（资格仍须独立核实）</p>
+      <pre style={{whiteSpace:"pre-wrap",overflowWrap:"anywhere",maxHeight:150,overflow:"auto"}}>
+        {assetPayloadPreview(selected.dependency_refs)}
+      </pre>
       <p className="admin__asset-meta">历史版本 {history.length} 条</p>
       {history.map(r=><div className="admin__asset-meta" key={r.revision_id}>
         修订 {r.revision_no??"—"} · {r.revision_id} · {privateAssetStatus(r)}

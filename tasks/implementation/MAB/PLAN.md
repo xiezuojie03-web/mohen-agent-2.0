@@ -751,3 +751,12 @@ HP08同批push核证：94cdb5d的主CI41619741669、PG17 41619741406、M1 HTTP41
 复用已有Studio两表，实现Owner事务仓储、稳定root/snapshot、请求/观察hash、并发幂等和永久HOLD回执；新增Owner只读HTTP查证，保存不等于执行/外发/费用/Gate授权。UNKNOWN费用保持null，ACTUAL核销与候选准入仍拒绝。修复尚未上线Studio候选迁移的共享immutable触发器缺列，隔离验证三表保护与task合法置空。unit308 PASS/4既有SKIP、production98、六工作区类型、Next构建、真实PG和Chromium6 PASS/1Storage缺配置SKIP。见[逐批回执](../../results/MAB/CODEX_HP08_RECEIPTS_20261103.md)。完整任务DAG、正式审批、T1—T7、外部双主体、费用账接线/核销及Runner终态仍HOLD；M4不准出，继续依现HP09与HP10—12顺序补齐。
 
 本批push核证：5645bb2主CI41623523765、PG17 41623523800、HTTP41623523678均SUCCESS；22f4e2c声明修正主CI41623818622与HTTP41623818662均SUCCESS。真实日志及精确SHA机器回执入HP08永久回执evidence，未借此升级M4或整体准出；剩余按progress最新账继续。
+
+### 2026-11-03 ChatGPT GitHub接续｜HP11 + M3精确资格回执（非阶段准出）
+
+Owner因Codex额度不足再次改由ChatGPT＋GitHub插件接力，**工具迁移不改变**M0—M8、HP01—HP13、MHKA、D/L/G和现行设计决策。继续以最新main施工；旧`CODEX_HANDOFF_CURRENT.md`保留既有Codex接续证据，本次实绩只写现行`PLAN.md`/`progress.md`，不建平行进度账。
+
+- **HP11 F05私有资产阅读**：`ea4abd51`新增Admin内仅Owner有权查询的Studio项目／长期研究资产／精确修订／使用事件只读视图，复用既有Studio读API与数据库RLS；工作态、受限资料和已签发G5分面分开。GitHub主CI `41627651710 SUCCESS`、M1隔离HTTP `41627651529 SUCCESS`。后续补展示来源/依赖实际存储引用，但**不授跨Owner访问、不提供跨项目复用写入或正式知识发布**；正式F05全面验收仍HOLD。
+- **M3精确回执合同**：`f8ae5d0a`使独立Gate只读资格回执绑定`run_id/job_id/reviewer_binding_ref/consumer=producer`及既有阶段、G、输入输出摘要、版本与到期时间；首轮CI `41628043957 FAIL`是3项合成编排测试替身缺新增字段，未弱化真实校验；`f5cd2d38`修正原测试替身后，主CI `41628357443 SUCCESS`（含98项生产边界回归）。真实Reviewer签发服务/正式DB角色和G5仍未部署，M3继续HOLD。
+- **2026-11-03 11:31 UTC生产只读复核**：source.raw_items=98，evidence.material_evidence=166，studio.projects=0，studio.asset_revisions=0，control.qualification_current=0，storage.buckets=0；正式原件表、独立Reviewer绑定表与Web会话撤销表仍不存在。统计只是现状证据，不代表生产迁移已经批准。
+- **边界/下轮**：M0审查PASS，M1—M8的既有HOLD不变；继续优先M2真正私有原件／唯一Runner来源绑定与M3独立Reviewer/资格消费，之后M4真混合、M5真正创作/管理/观看。未经单独生产授权，禁止执行候选DDL、创建bucket/签发密钥、支付Provider费用或提前开启正式Gate。相关源测与实际回执详见`progress.md`本批记录。
