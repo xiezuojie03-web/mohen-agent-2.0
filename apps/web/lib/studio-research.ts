@@ -90,7 +90,7 @@ export async function createResearchTask(
       degraded,
     });
 
-    const checkpoint = { prompt, topic, degraded, decision, researchLeads, budgetSpent: budget.spent };
+    const checkpoint = { prompt, topic, degraded, decision, researchLeads, budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling };
     await run(
       "update public.research_tasks set status = 'done', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
       { id: taskId!, cp: JSON.stringify(checkpoint) }
@@ -185,7 +185,7 @@ export async function resumeResearchTask(
       spent > 0 || saved.reserved !== 0 && saved.reserved !== undefined)
     return { taskId, status: "hold", decision: null, degraded: false,
       holdReason: "resume_step_checkpoint_required", researchLeads: [] };
-  if (!Number.isFinite(additionalCeiling) || (additionalCeiling ?? 0) <= 0)
+  if (typeof additionalCeiling !== "number" || !Number.isFinite(additionalCeiling) || additionalCeiling <= 0)
     return { taskId, status: "hold", decision: null, degraded: false,
       holdReason: "additional_budget_required", researchLeads: [] };
   const authorizedCeiling = previousCeiling + additionalCeiling!;
@@ -199,7 +199,7 @@ export async function resumeResearchTask(
   const ledger: Ledger = { taskId, budget };
   try {
     const { decision, degraded, researchLeads } = await runResearch(prompt, topic, ledger);
-    const checkpoint = { prompt, topic, degraded, decision, researchLeads, budgetSpent: budget.spent };
+    const checkpoint = { prompt, topic, degraded, decision, researchLeads, budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling };
     await run(
       "update public.research_tasks set status = 'done', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
       { id: taskId, cp: JSON.stringify(checkpoint) }
