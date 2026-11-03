@@ -591,3 +591,12 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **已有Studio接口增量**：`a611899e`在现有`GET /api/studio/assets`上加`history=1&project_id&asset_id`和`use_events=1&project_id&revision_id`两种显式只读模式；使用已登录用户生成的真实签名数据库session，返回`no-store`，缺参数400，未登录401。原当前资产列表、精确单修订读取及POST接口均保留，不发明冲突的新API ID。
 - **测试源码**：`a46aa20e`在原隔离PG仓储集成测试中追加revision 1/2/3不可变沿革、跨Owner历史为空、合成use_event只对精确revision可见且跨Owner不可见；`75b35b39`新建Studio API正反单测覆盖登录、缺参数、签名会话、no-store及原列表兼容。测试使用fixture rights文字只用于读取/隔离，不构成真实授权或发出跨项目使用行为。
 - **状态**：`HP03_CODE_PRESENT / ISOLATED_TEST_SOURCE_ADDED / CI_UNVERIFIED`。尚未有本批实际PG17和Vitest成功回执；跨项目正式复用写操作、Studio与L0—L5授权核验及真实UseEvent创建服务仍HOLD，需按HP03/HP07/HP11剩余任务执行。没有生产DB修改、没有真实资料/权限变更、没有新费用。CodeBuddy单次交接仍`HANDOFF_NOT_READY`。
+
+
+## 2026-11-03｜Owner批准立即转回Codex执行（唯一当前交接）
+
+- **新Owner决定**：不再要求ChatGPT聊天插件先做满HP01—HP13才可以转移。继续保留13工作包、M0—M8原任务及所有安全准出条件；由Codex直接在真实最新GitHub `main`上继续源码、测试、环境核证、完整产品闭环和后续M6—M8。
+- **唯一当前执行交接文档**：`tasks/implementation/MAB/CODEX_HANDOFF_CURRENT.md`（首次写入`8368d576b4eb8e02c4e837c43fa7f24a7bbc80c3`），包含全部读文件顺序、53 REVISE/19已放置CREATE/2缺失CREATE、M0—M8状态、HP03/HP08最新代码、HP07/HP11/HP12合法消费/审核HOLD、真实Supabase只读快照及不能越过的生产权限门、具体命令和验收清单。原`PLATFORM_HANDOFF_20261103.md`保留历史证据，不是当前施工唯一入口。PLAN已同步更新此Owner执行权转移裁决（`134b34c3`）。
+- **转移定义**：`CODEX_EXECUTION_HANDOFF_ACCEPTED / TECHNICAL_HANDOFF_NOT_VERIFIED`。这是**执行责任移交**，不是原§6B.3技术验收已READY；最近新代码的完整GitHub Actions push-CI、Vitest、PG17、Next构建及真实授权仍有缺口，M1—M8不因换平台而PASS。
+- **权限与成本**：本次没有执行生产DB/Storage迁移、没有正式G签发、没有真实AI收费调用；私有原件上传及独立G5仍关闭。Codex正式执行生产/付费/资料外发前必须沿原Owner审批、角色、rights与费用规程取证，不得从“同意转平台”推断获得批准。
+- **开工后回执**：Codex必须先fetch实时main，按文档逐项核实CI/typecheck/unit/data-production/build和本批HP03/HP08新增测试，记录实际命令、SHA、PASS/FAIL/SKIP、独立PG测试与回滚证据，再按P0真实缺口施工并原位回写三份权威账；历史旧SUCCESS只按原SHA引用。
