@@ -229,3 +229,10 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - GitHub `main@1b3ef31b`前一批私有材料全文读取已获CI `41566616583 SUCCESS`；现实现会话Owner下的单条`imported_materials`合法回读，包含拒绝负例与原有list/post兼容。
 - **本增量**：登录、邀请/公开注册、退出共用`sessionCookieOptions`，继续HttpOnly、SameSite=Lax与全站路径；在`NODE_ENV=production`显式启用Secure，退出清除Cookie与签发保持一致；本地HTTP开发允许不Secure。新增生产/开发/退出属性测试。
 - **边界**：没有重置或读取任何数据库密码，没有改动生产用户或素材数据、生产Storage、Gate，也不触发额外人工Vercel部署验收。最新CI未验收前不标PASS；M1的生产登录、旧凭据失效与实际Owner回归继续HOLD。
+
+## 2026-11-03｜M1私有材料回读与Cookie安全两批完整CI验证结果
+
+- `main@1b3ef31b`：在原`/api/studio/materials/import`的GET添加`material_id`精确查询，受session-token+真实RLS事务控制；单元、已有隔离PG扩展负例和Next build回执：GitHub Actions `41566616583` **SUCCESS**。代码提交 `59fa4ba9` 的首次CI曾因GET参数可选不符合Next Route Handler签名而失败，`1b3ef31b`已更正且最终构建成功。
+- `main@2a8c2b49`：统一登录、注册、退出`sessionCookieOptions`并在production设置Secure，同时保持HttpOnly、SameSite=Lax和开发localhost兼容；GitHub Actions `41566911728` **SUCCESS**。两批均未执行生产DB数据写入/DDL或获取任何密码。
+- **已验证工程范围**：M1的受权限约束文本详情代码及跨Owner/禁用/匿名/畸形ID/故障测试、会话Cookie生产安全属性均通过CI；但**这并不意味着生产环境真实合法导入/读取E2E、旧凭据撤销及恢复证据通过**。
+- **当前正式状态**：`M1_SECURITY_ACCEPTANCE_HOLD`不变；M0仍是`M0_AUDIT_EXIT_PASS`。M1后续待办仅针对真实密码旧连接失效的非敏感凭证、本人合法登录导入、跨账户/撤权与恢复验收。M2私有对象/桥与M3独立Gate继续原计划和独立授权，不因两批UI/API工程CI绿灯提前启用。
