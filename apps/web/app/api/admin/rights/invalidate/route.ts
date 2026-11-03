@@ -29,5 +29,5 @@ export async function POST(req: NextRequest) {
     objectId: object_id,
     reason: typeof reason === "string" ? reason : "",
   });
-  return NextResponse.json({ ok: result.ok, reason: result.reason, invalidatedGates: result.invalidatedGates });
+  return NextResponse.json({ ok: result.ok, reason: result.reason, invalidatedGates: result.invalidatedGates }, { status: result.ok ? 200 : result.reason === "INDEPENDENT_GATE_REVOCATION_REQUIRED" ? 503 : 400, headers: { "cache-control": "no-store" } });
 }
