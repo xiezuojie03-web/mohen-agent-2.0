@@ -1,0 +1,34 @@
+build	Typecheck	2026-11-03T10:57:47.0993596Z packages/data-access typecheck: Done
+build	Typecheck	2026-11-03T10:57:49.1537370Z packages/domain typecheck: Done
+build	Typecheck	2026-11-03T10:57:49.8076835Z packages/experience-engine typecheck: Done
+build	Typecheck	2026-11-03T10:57:49.8104616Z packages/agent-runtime typecheck: Done
+build	Typecheck	2026-11-03T10:57:50.5769896Z packages/ui typecheck: Done
+build	Typecheck	2026-11-03T10:57:56.4745223Z apps/web typecheck: Done
+build	Unit tests (no DB)	2026-11-03T10:58:05.7547514Z  ↓ tests/unit/k7-five-themes.test.ts (1 test | 1 skipped)
+build	Unit tests (no DB)	2026-11-03T10:58:07.8847285Z  ↓ tests/unit/shl-materials.test.ts (1 test | 1 skipped)
+build	Unit tests (no DB)	2026-11-03T10:58:10.5005220Z  ↓ tests/unit/commons-materials.test.ts (1 test | 1 skipped)
+build	Unit tests (no DB)	2026-11-03T10:58:10.9464294Z  ↓ tests/unit/loc-materials.test.ts (1 test | 1 skipped)
+build	Unit tests (no DB)	2026-11-03T10:58:10.9612040Z  Test Files  46 passed | 4 skipped (50)
+build	Unit tests (no DB)	2026-11-03T10:58:10.9632315Z       Tests  308 passed | 4 skipped (312)
+build	Build	2026-11-03T10:58:31.6489788Z  ✓ Compiled successfully in 14.9s
+build	Auth coverage gate	2026-11-03T10:58:53.4702531Z missing_route_auth=0 auth_only_no_owner=0
+build	MAB 74 target handoff audit (informational)	2026-11-03T10:58:53.5338908Z   "status": "HANDOFF_NOT_READY",
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-03T10:58:14.7571196Z MAB_IMPORTED_MATERIAL_REPOSITORY_PASS real-session owner cross-user forged expired disabled rollback pooled-identity
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-03T10:58:23.2546119Z MAB_STUDIO_ASSETS_PASS project-ACL immutable-revisions exact-asset-FK supersedes CAS task-deletion private-default
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-03T10:58:23.6143770Z MAB_STUDIO_REPOSITORY_PASS saved-payload immutable-revision request-idempotency exact-CAS concurrency cross-owner clean-pool
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-03T10:58:23.9655237Z MAB_DELEGATION_REPOSITORY_PASS concurrent-idempotency exact-hashes unknown-cost-HOLD immutable cross-owner disabled-identity permanent-root clean-pool no-provider-calls
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-03T10:58:24.5239266Z MAB_PRIVATE_SOURCE_BINDING_PG_PASS real-pg17 no-source-select exact-origin-version owner expired forged disabled archived
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-03T10:58:25.1125325Z MAB_PRIVATE_ORIGINAL_DB_PASS owner expired forged disabled archive idempotency immutable-receipt exact-revision no-public-read pooled-identity
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-03T10:58:25.1241352Z MAB_PRIVATE_ORIGINAL_STORAGE_HOLD no isolated official Storage configuration supplied
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-03T10:58:25.7932488Z MAB_WEB_SESSION_REVOCATION_PG_PASS owner-RLS cross-owner-denied no-public-grants immutable-runtime-tombstones monotonic-disable-restore-password-cutoff
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-03T10:58:25.9451093Z MAB_WEB_SESSION_ROLLBACK_PASS tombstones-retained runtime-closed migration-repeatable
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-03T10:58:27.0216152Z MAB_RESEARCH_RESUME_PG_PASS client-budget-denied single-CAS-winner crash-review-HOLD no-provider-calls
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-03T10:58:27.4360299Z MAB_EVIDENCE_BRIDGE_ROLLBACK_PASS functions-denied immutable-lineage-preserved
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-03T10:58:27.5479142Z MAB_PRIVATE_ORIGINAL_ROLLBACK_PASS receipt-hashes-preserved read-write-closed
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-03T10:58:27.6885567Z MAB_STUDIO_ROLLBACK_PASS access-closed permanent-revision-hash-unchanged
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-03T10:58:27.8665981Z K3_DB_TEST_PASS baseline_migrations=22 synthetic_legacy_rows=711 unchanged; no automatic qualification; migrations repeatable; rollback fail-closed
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-03T10:58:46.1529226Z  ✓ Compiled successfully in 18.1s
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-03T10:59:28.5872535Z   1 skipped
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-03T10:59:28.5873450Z   6 passed (9.7s)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-03T10:59:28.6069123Z MAB_HTTP_BROWSER_PASS no-production-data no-paid-provider-calls
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-03T10:59:28.7435963Z MAB_HTTP_SYNTHETIC_DATABASE_CLEANED

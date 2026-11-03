@@ -30,3 +30,12 @@ T1—T7逐item证据验证、真实最小包传输/撤委托/lease恢复、正�
 代码审阅：独立代码审阅员只读检查本批diff/新源码，未发现实质问题；未独立重跑测试。此审阅不具有专业Gate/生产Reviewer身份，也不替代正式准出。
 
 声明复核：读取方法按真实Schema声明全部receipt状态与ACTUAL/ESTIMATED/UNKNOWN，不能因本仓储只追加HOLD而把其他合法服务留下的历史记录也静态标成HOLD。appendHeldReceipt返回类型仍限定HOLD/非ACTUAL。仅修正声明，无执行权限或运行行为变化；六工作区typecheck再次通过。
+
+## Push最终核证与清理
+
+- 实现SHA `5645bb2de7cb5590cb4085a6e44e5ba4563b350f`：主CI [41623523765](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41623523765)、PG17 [41623523800](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41623523800)、HTTP [41623523678](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41623523678) 全SUCCESS。已查实际logs，新增仓储PASS及22迁移/711行保持、308单元/98边界/6浏览器与1Storage SKIP均有真实push证据。
+- 声明修正与日志归档SHA `22f4e2cd9cf9c67668e196fe03b8025dccbb2aec`：主CI [41623818622](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41623818622)、HTTP [41623818662](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41623818662) 全SUCCESS。此后无运行代码修改；PG证据限定前一实现SHA，不伪造本次未触发的PG运行。
+- 精确headSha/步骤JSON与日志摘录在同evidence目录；.log受仓库忽略，已用.txt归档真实日志，红证据一并保留。
+- 查询确认合成业务测试库0、随机Signer登录角色0；新HTTP测试库自动清理，一次性PG17容器及数据卷已移除。无生产数据清理。
+
+总状态仍HANDOFF_NOT_READY。上述成功只覆盖本批范围，不替代M4全链、M5业务验收或Owner生产授权。

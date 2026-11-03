@@ -122,3 +122,16 @@ Codex开工后在progress.md追加：
 - 当前批下一步明确施工文件与验收标准。
 
 **本文件是唯一当前Codex执行交接索引；历史PLATFORM_HANDOFF_20261103.md仍保留为历史证据，不与当前任务书形成第二套计划。**
+
+## 9. Codex接续后已落成果索引（2026-11-03）
+
+本文件§1—8保留原交接时点，接续施工后的实际状态以[progress.md](progress.md)最新逐批回执与[PLAN.md](PLAN.md)末尾增量为准，不能重复已验收工作或把本节当作新计划。
+
+- [HP01首轮CI与授权边界修复](../../results/MAB/CODEX_HP01_20261103.md)。
+- [HP02隔离会话撤销与真实退出](../../results/MAB/CODEX_HP02_20261103.md)：生产开关/迁移仍未激活。
+- [M2官方Storage、精确证据桥及HP13两缺席测试适配](../../results/MAB/CODEX_M2_HP13_20261103.md)：原交接的“缺2目标”已补为可运行测试，74路径均存在但全语义未准出。
+- [HP06真实低权Signer登录边界](../../results/MAB/CODEX_HP06_20261103.md)：隔离证据，不是正式Reviewer部署或G激活。
+- [HP08费用授权拒绝、CAS恢复与崩溃HOLD](../../results/MAB/CODEX_HP08_20261103.md)。
+- [HP08永久委托/待核回执与Owner只读HTTP](../../results/MAB/CODEX_HP08_RECEIPTS_20261103.md)：长期身份和费用UNKNOWN保留，仍不授权执行/外发/ACTUAL核销。
+
+后续按既有HP09、HP10—12及未完成P0继续；完整DAG、T1—T7、永久工具账接线、Runner终态核销和真实Studio/Admin/WATCH闭环仍待工程验证。生产迁移、正式Gate及新增费用仍受原授权边界约束；M1—M8与HANDOFF_NOT_READY不变。
