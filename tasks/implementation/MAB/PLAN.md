@@ -737,3 +737,8 @@ HP01同批推送复核：修复代码67b2984，主CI41612672544及M1真实隔离
 ### 2026-11-03 HP06真实登录隔离增量
 
 修复Signer只查current_user可被高权登录SET ROLE伪装的缺口；增加session_user、实际LOGIN与最小权限/互斥成员关系检查，并要求current_user与session_user一致，避免逻辑role遮蔽真实登录。新7单测先红后绿；真实PG以独立低权LOGIN签审/撤权并拒管理员伪装，unit287 PASS/4旧联网SKIP，production98 PASS，类型/构建PASS。精确证据见progress及CODEX_HP06_20261103.md；这不是生产Reviewer/独立托管服务或M3准出。M2/HP13上批8dd2b5e的主CI41617100385、M1 HTTP41617100327均SUCCESS，官方Storage本地证据与GitHub未配Storage的SKIP分别计量。原阶段树及全部生产HOLD保持。
+
+
+### 2026-11-03 HP08费用授权与恢复增量
+
+禁止客户端additionalCeiling直接增额、缺费用字段补0及无CAS恢复；仅原持久额度内可信零花费第一步可原子领取，先保存崩溃不可重放标记。真实PG并发/DB失败3项通过，全unit298 PASS/4原SKIP、production98 PASS、类型/构建PASS。正式新增预算审批、付费步骤精确续跑、永久账与Runner终态结算继续HOLD。5950ccf的主CI41618239611、M1 41618239774、PG17 41618239520全SUCCESS。详见progress及CODEX_HP08_20261103.md；不修改M0—M8结构或生产授权。

@@ -1,0 +1,87 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/mab-hp08-research-resume.test.ts (13 tests | 3 failed) 22ms
+   ✓ HP08 task-level budget and safe restart boundaries > records current ceiling and cumulative spent in a successful new research task 3ms
+   ✓ HP08 task-level budget and safe restart boundaries > persists HOLD on ambiguous execution; never reports study success 1ms
+   ✓ HP08 task-level budget and safe restart boundaries > persists HOLD when provider succeeded but settlement receipt is uncertain 0ms
+   ✓ HP08 task-level budget and safe restart boundaries > never restarts an ambiguous provider charge even if extra budget is offered 1ms
+   ✓ HP08 task-level budget and safe restart boundaries > does not replay already-paid steps from the beginning during budget resume 0ms
+   ✓ HP08 task-level budget and safe restart boundaries > permits explicit new budget only when no charged step needs replay 0ms
+   × HP08 task-level budget and safe restart boundaries > does not accept a client number as authority to increase the saved ceiling 10ms
+     → expected { …(5) } to match object { status: 'hold', …(1) }
+(8 matching properties omitted from actual)
+   × HP08 task-level budget and safe restart boundaries > claims a zero-spend first-step resume using only the saved ceiling 2ms
+     → expected 'hold' to be 'done' // Object.is equality
+   × HP08 task-level budget and safe restart boundaries > does not invoke any tool when another resume already claimed the checkpoint 1ms
+     → expected { …(6) } to match object { status: 'hold', …(1) }
+(4 matching properties omitted from actual)
+   ✓ HP08 task-level budget and safe restart boundaries > prevents budget-less follow-up on legacy tasks, with no model invocation 1ms
+   ✓ HP08 task-level budget and safe restart boundaries > atomically claims a ready task before a follow-up and preserves cumulative cost 1ms
+   ✓ HP08 task-level budget and safe restart boundaries > does not invoke models after a competing task request already claimed running state 0ms
+   ✓ HP08 task-level budget and safe restart boundaries > persists a non-replay HOLD on receipt loss during a follow-up 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/mab-hp08-research-resume.test.ts > HP08 task-level budget and safe restart boundaries > does not accept a client number as authority to increase the saved ceiling
+AssertionError: expected { …(5) } to match object { status: 'hold', …(1) }
+(8 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "holdReason": "additional_budget_requires_authorization",
+-   "status": "hold",
++   "status": "done",
+  }
+
+ ❯ tests/unit/mab-hp08-research-resume.test.ts:113:18
+    111|     queryRows.mockResolvedValueOnce([{prompt:"prior",topic:"generic",c…
+    112|     const task=await resumeResearchTask(taskId,1000);
+    113|     expect(task).toMatchObject({status:"hold",holdReason:"additional_b…
+       |                  ^
+    114|     expect(runResearch).not.toHaveBeenCalled();expect(run).not.toHaveB…
+    115|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/unit/mab-hp08-research-resume.test.ts > HP08 task-level budget and safe restart boundaries > claims a zero-spend first-step resume using only the saved ceiling
+AssertionError: expected 'hold' to be 'done' // Object.is equality
+
+Expected: "done"
+Received: "hold"
+
+ ❯ tests/unit/mab-hp08-research-resume.test.ts:119:25
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/unit/mab-hp08-research-resume.test.ts > HP08 task-level budget and safe restart boundaries > does not invoke any tool when another resume already claimed the checkpoint
+AssertionError: expected { …(6) } to match object { status: 'hold', …(1) }
+(4 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "holdReason": "task_state_conflict",
++   "holdReason": "additional_budget_required",
+    "status": "hold",
+  }
+
+ ❯ tests/unit/mab-hp08-research-resume.test.ts:127:18
+    125|     queryRows.mockResolvedValueOnce([{prompt:"prior",topic:"generic",c…
+    126|     const task=await resumeResearchTask(taskId);
+    127|     expect(task).toMatchObject({status:"hold",holdReason:"task_state_c…
+       |                  ^
+    128|     expect(runResearch).not.toHaveBeenCalled();expect(run).not.toHaveB…
+    129|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 10 passed (13)
+   Start at  10:20:48
+   Duration  332ms (transform 107ms, setup 0ms, collect 121ms, tests 22ms, environment 0ms, prepare 61ms)

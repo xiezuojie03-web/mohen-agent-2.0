@@ -654,3 +654,16 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 原repository集成Pool从k3_admin+role改为真实随机低权LOGIN，仅授Signer并绑定精确Reviewer身份；真实PG17签审/撤权成功、管理登录SET ROLE伪装拒绝、rollback/池身份清理通过。此前SQL角色测试不再被误称独立凭据测试；新连接仍仅为Unix socket合成身份，不冒充真实Reviewer托管服务。
 - 实测unit287 PASS/4原联网SKIP，production98 PASS，六工作区typecheck/Next build PASS，PG17全套含新增角色边界PASS；证据与完整源测对应见[HP06回执](../../results/MAB/CODEX_HP06_20261103.md)。本批未配置Storage，前批官方Storage证据按8dd2b5e独立引用。
 - 无生产角色/Schema/真实Gate/收费Provider变更；本批CODE_PRESENT/VERIFIED_ISOLATED，M3正式身份、stage输入输出映射、实际服务签审/撤权与消费闭环继续HOLD。下一步HP04/06/07合法私有输入与独立资格服务/消费者整链；HP08/09委托恢复及费用终态、HP10—12产品全链继续，不另立架构。
+
+
+### HP06 push实测追加（5950ccf）
+
+5950ccfd4b2ad7d68a4f92954e26f21581e29cb7：主CI41618239611、M1隔离HTTP41618239774、PG17隔离41618239520均SUCCESS，精确headSha一致，机器回执入HP06 evidence。无生产Reviewer/Gate激活。
+
+## 2026-11-03｜Codex HP08：客户端预算不作授权、CAS恢复与崩溃检查点
+
+- 基线main@5950ccf。实际复现resume客户端additionalCeiling直接增额、无CAS并发重入、缺spent/reserved补0。先红后绿：3项授权/CAS反例及2项未知费用反例；API拒未经持久审批的数字增额，只允许原额度下可信零花费起点恢复。
+- 原子hold+checkpoint CAS，领取即保存resume_claim_ref与不可自动重放标记；未知异常写review-required HOLD。已收费步骤、不确定费用和缺字段旧checkpoint仍不重跑。没有审批服务则不增加额度，未用Owner本次技术授权冒充成本批准。
+- 新真实PG17集成3 PASS：请求增额不改变上限；两并发调用仅一个赢家且一条恢复事件；模拟事件DB失败后持久HOLD，后续reconciliation拒绝。真实服务/SQL，模型边界合成替身，无Provider费用。已接原PG17流水线。
+- 全unit298 PASS/4原联网SKIP，production98 PASS，类型/Next build PASS，auth104无缺口、85/152静态追溯PASS。原Gate/资产/来源/回滚隔离链继续通过。本批Storage未配，前批6 PASS/0 SKIP明确分环境引用。
+- [本批回执](../../results/MAB/CODEX_HP08_20261103.md)列文件、真实结果、遗留和回滚。尚缺正式预算审批、已付费步骤恢复、长期费用账与Runner终态结算；M4整体HOLD，M1—M8未准出。无生产写入、模型调用或新成本投入。push运行待提交后追加。

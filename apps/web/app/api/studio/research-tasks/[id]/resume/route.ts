@@ -5,7 +5,7 @@ import { guardRoute } from "../../../../../../lib/guard";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Explicit budget resumption is NOT an invitation to replay charged steps.
+// Resume stays within the persisted ceiling; client numbers cannot grant credit.
 // Unknown provider costs / settlement receipts require reconciliation first.
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const denied = await guardRoute(params, "public.research_tasks");
@@ -22,17 +22,21 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   let additionalCeiling: unknown;
   try {
     const raw = await req.text();
-    additionalCeiling = raw.trim()
-      ? (JSON.parse(raw) as { additionalCeiling?: unknown }).additionalCeiling
-      : undefined;
+    const body: unknown = raw.trim() ? JSON.parse(raw) : {};
+    if (!body || typeof body !== "object" || Array.isArray(body)) throw new Error("BAD_REQUEST");
+    additionalCeiling = (body as {additionalCeiling?: unknown}).additionalCeiling;
   } catch {
     return NextResponse.json({ ok: false, reason: "bad_request" }, { status: 400 });
   }
-  if (typeof additionalCeiling !== "number" || !Number.isFinite(additionalCeiling) ||
-      additionalCeiling <= 0) {
+  if (additionalCeiling !== undefined && (typeof additionalCeiling !== "number" || !Number.isFinite(additionalCeiling) ||
+      additionalCeiling <= 0)) {
     return NextResponse.json({ ok: false, reason: "additional_budget_required" }, { status: 400 });
   }
-  const result = await resumeResearchTask(id, additionalCeiling);
+  if (additionalCeiling !== undefined) {
+    return NextResponse.json({ok:false,reason:"additional_budget_requires_authorization"},
+      {status:409,headers:{"cache-control":"no-store"}});
+  }
+  const result = await resumeResearchTask(id);
   if (result.status !== "done") {
     return NextResponse.json(
       { ok: false, reason: result.holdReason || "resume_hold" },

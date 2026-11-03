@@ -95,18 +95,44 @@ describe("HP08 task-level budget and safe restart boundaries",()=>{
     expect(runResearch).not.toHaveBeenCalled();
   });
 
-  it("permits explicit new budget only when no charged step needs replay",async()=>{
+  it("refuses client-funded increments even when no charged step needs replay",async()=>{
     queryRows.mockResolvedValueOnce([{
       prompt:"prior",topic:"generic",
       checkpoint:JSON.stringify({holdAt:{toolId:"llm-understand"},budgetSpent:0,reserved:0,ceiling:8}),
     }]);
     const task=await resumeResearchTask(taskId,3);
-    expect(task.status).toBe("done");
-    expect(runResearch).toHaveBeenCalledTimes(1);
-    const ledger=runResearch.mock.calls[0][2];
-    expect(ledger.budget.ceiling).toBe(11);
+    expect(task).toMatchObject({status:"hold",holdReason:"additional_budget_requires_authorization"});
+    expect(runResearch).not.toHaveBeenCalled();
   });
 
+  it("does not accept a client number as authority to increase the saved ceiling",async()=>{
+    queryRows.mockResolvedValueOnce([{prompt:"prior",topic:"generic",checkpoint:{holdReason:"budget",holdAt:{toolId:"llm-understand"},budgetSpent:0,reserved:0,ceiling:8}}]);
+    const task=await resumeResearchTask(taskId,1000);
+    expect(task).toMatchObject({status:"hold",holdReason:"additional_budget_requires_authorization"});
+    expect(runResearch).not.toHaveBeenCalled();expect(run).not.toHaveBeenCalled();
+  });
+  it("claims a zero-spend first-step resume using only the saved ceiling",async()=>{
+    queryRows.mockResolvedValueOnce([{prompt:"prior",topic:"generic",checkpoint:{holdReason:"budget",holdAt:{toolId:"llm-understand"},budgetSpent:0,reserved:0,ceiling:8}}]).mockResolvedValueOnce([{task_id:taskId}]);
+    const task=await resumeResearchTask(taskId);
+    expect(task.status).toBe("done");expect(runResearch.mock.calls[0][2].budget.ceiling).toBe(8);
+    expect(queryRows.mock.calls[1][0]).toContain("status = 'hold'");
+    const claimed=JSON.parse(queryRows.mock.calls[1][1].next);
+    expect(claimed.retry_requires_reconciliation).toBe(true);
+  });
+  it("does not invoke any tool when another resume already claimed the checkpoint",async()=>{
+    queryRows.mockResolvedValueOnce([{prompt:"prior",topic:"generic",checkpoint:{holdReason:"budget",holdAt:{toolId:"llm-understand"},budgetSpent:0,reserved:0,ceiling:8}}]).mockResolvedValueOnce([]);
+    const task=await resumeResearchTask(taskId);
+    expect(task).toMatchObject({status:"hold",holdReason:"task_state_conflict"});
+    expect(runResearch).not.toHaveBeenCalled();expect(run).not.toHaveBeenCalled();
+  });
+
+  it.each(["budgetSpent","reserved"])("does not treat missing %s as zero cost on resume",async field=>{
+    const checkpoint:Record<string,unknown>={holdReason:"budget",holdAt:{toolId:"llm-understand"},budgetSpent:0,reserved:0,ceiling:8};
+    delete checkpoint[field];
+    queryRows.mockResolvedValueOnce([{prompt:"prior",topic:"generic",checkpoint}]).mockResolvedValueOnce([{task_id:taskId}]);
+    expect(await resumeResearchTask(taskId)).toMatchObject({status:"hold",holdReason:"resume_step_checkpoint_required"});
+    expect(runResearch).not.toHaveBeenCalled();
+  });
   it("prevents budget-less follow-up on legacy tasks, with no model invocation",async()=>{
     queryRows.mockResolvedValueOnce([{status:"done",topic:"generic",checkpoint:"{}"}]);
     const res=await appendResearchMessage(taskId,"more evidence");

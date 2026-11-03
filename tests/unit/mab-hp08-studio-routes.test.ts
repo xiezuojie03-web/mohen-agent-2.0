@@ -21,22 +21,21 @@ describe("HP08 Studio HTTP explicit budget and anti-replay",()=>{
     guardRoute.mockResolvedValue(null);
     getTaskStatus.mockResolvedValue({status:"hold",prompt:"topic"});
   });
-  it("requires an explicit positive additional budget to resume a held task",async()=>{
+  it("uses only the existing persisted budget on an empty resume request",async()=>{
+    resumeResearchTask.mockResolvedValue({status:"hold",holdReason:"resume_step_checkpoint_required"});
     const res=await resume(post("/api/studio/research-tasks/"+taskId+"/resume",{}) as never,{params});
-    expect(res.status).toBe(400);
-    expect((await res.json()).reason).toBe("additional_budget_required");
-    expect(resumeResearchTask).not.toHaveBeenCalled();
+    expect(res.status).toBe(409);
+    expect((await res.json()).reason).toBe("resume_step_checkpoint_required");
+    expect(resumeResearchTask).toHaveBeenCalledWith(taskId);
   });
   it("does not use appendResearchMessage to replay a budget HOLD",async()=>{
     resumeResearchTask.mockResolvedValue({
       status:"hold",holdReason:"reconciliation_required",
     });
-    const res=await resume(post("/api/studio/research-tasks/"+taskId+"/resume",{
-      additionalCeiling:8,
-    }) as never,{params});
+    const res=await resume(post("/api/studio/research-tasks/"+taskId+"/resume",{}) as never,{params});
     expect(res.status).toBe(409);
     expect((await res.json()).reason).toBe("reconciliation_required");
-    expect(resumeResearchTask).toHaveBeenCalledWith(taskId,8);
+    expect(resumeResearchTask).toHaveBeenCalledWith(taskId);
     expect(appendResearchMessage).not.toHaveBeenCalled();
   });
   it("rejects resume of a non-held task rather than running charged research again",async()=>{
@@ -68,4 +67,22 @@ describe("HP08 Studio HTTP explicit budget and anti-replay",()=>{
     expect(res.status).toBe(403);
     expect(appendResearchMessage).not.toHaveBeenCalled();
   });
+});
+
+it("does not treat positive client credit as an approved funding grant",async()=>{
+ guardRoute.mockResolvedValue(null);getTaskStatus.mockResolvedValue({status:"hold"});resumeResearchTask.mockReset();
+ const response=await resume(post("/api/studio/research-tasks/"+taskId+"/resume",{additionalCeiling:1000}) as never,{params});
+ expect(response.status).toBe(409);expect((await response.json()).reason).toBe("additional_budget_requires_authorization");
+ expect(resumeResearchTask).not.toHaveBeenCalled();
+});
+
+it.each([0,-1,"8",null])("rejects malformed additional funding %s before resumption",async additionalCeiling=>{
+ guardRoute.mockResolvedValue(null);getTaskStatus.mockResolvedValue({status:"hold"});resumeResearchTask.mockReset();
+ const response=await resume(post("/api/studio/research-tasks/"+taskId+"/resume",{additionalCeiling}) as never,{params});
+ expect(response.status).toBe(400);expect(resumeResearchTask).not.toHaveBeenCalled();
+});
+it("rejects a non-object resume body rather than interpreting it as permission",async()=>{
+ guardRoute.mockResolvedValue(null);getTaskStatus.mockResolvedValue({status:"hold"});resumeResearchTask.mockReset();
+ const response=await resume(post("/api/studio/research-tasks/"+taskId+"/resume",[]) as never,{params});
+ expect(response.status).toBe(400);expect(resumeResearchTask).not.toHaveBeenCalled();
 });

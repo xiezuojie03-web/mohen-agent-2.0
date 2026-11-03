@@ -231,7 +231,7 @@ export async function requestProduction(
   return { ok: true, run_id: trig.runId };
 }
 
-/** CR-13：预算恢复 / 重试需显式授权。追加预算后从 checkpoint 续跑。 */
+/** Resume only a verified zero-spend first step within the persisted ceiling. */
 export async function resumeResearchTask(
   taskId: string,
   additionalCeiling?: number
@@ -246,7 +246,11 @@ export async function resumeResearchTask(
 
   const prompt = String(row[0].prompt ?? "");
   const topic = resolveTopic(row[0].topic);
-  const saved = readJsonColumn<Record<string, unknown>>(row[0].checkpoint, {});
+  let saved: Record<string, unknown>;
+  try { saved = readJsonColumn<Record<string, unknown>>(row[0].checkpoint, {}); }
+  catch { return {taskId,status:"hold",decision:null,degraded:false,holdReason:"budget_checkpoint_invalid",researchLeads:[]}; }
+  if (!saved || typeof saved !== "object" || Array.isArray(saved))
+    return {taskId,status:"hold",decision:null,degraded:false,holdReason:"budget_checkpoint_invalid",researchLeads:[]};
   // A tool may have executed and charged without a committed receipt.
   // Such checkpoints cannot be restarted by adding budget.
   if (saved.retry_requires_reconciliation === true ||
@@ -258,24 +262,36 @@ export async function resumeResearchTask(
   // steps that already spent money is unsafe until per-step resume exists.
   const spent = Number(saved.budgetSpent ?? 0);
   const previousCeiling = Number(saved.ceiling ?? 0);
-  if (!Number.isFinite(spent) || spent < 0 ||
-      !Number.isFinite(previousCeiling) || previousCeiling <= 0 ||
-      spent > 0 || saved.reserved !== 0 && saved.reserved !== undefined)
+  if (typeof saved.budgetSpent !== "number" || !Number.isFinite(spent) || spent !== 0 ||
+      typeof saved.ceiling !== "number" || !Number.isFinite(previousCeiling) || previousCeiling <= 0 ||
+      saved.reserved !== 0)
     return { taskId, status: "hold", decision: null, degraded: false,
       holdReason: "resume_step_checkpoint_required", researchLeads: [] };
-  if (typeof additionalCeiling !== "number" || !Number.isFinite(additionalCeiling) || additionalCeiling <= 0)
-    return { taskId, status: "hold", decision: null, degraded: false,
-      holdReason: "additional_budget_required", researchLeads: [] };
-  const authorizedCeiling = previousCeiling + additionalCeiling!;
-  await run(
-    "update public.research_tasks set status = 'running', updated_at = now() where task_id = :'id'",
-    { id: taskId }
+  // A caller-supplied number is not a durable Owner/provider authorization.
+  // Extra funding remains HOLD until a real approval service persists it.
+  if (additionalCeiling !== undefined)
+    return {taskId,status:"hold",decision:null,degraded:false,
+      holdReason:"additional_budget_requires_authorization",researchLeads:[]};
+  const firstStep = saved.holdAt as {toolId?: unknown} | undefined;
+  if (saved.holdReason !== "budget" || firstStep?.toolId !== "llm-understand")
+    return {taskId,status:"hold",decision:null,degraded:false,
+      holdReason:"resume_step_checkpoint_required",researchLeads:[]};
+  // Persist uncertainty before any external invocation. A process crash must
+  // not leave a zero-spend checkpoint which can be reset and replayed blindly.
+  const next = {...saved,holdReason:"resume_claimed",resume_claim_ref:randomUUID(),
+    retry_requires_reconciliation:true};
+  const claimed = await queryRows(
+    "update public.research_tasks set status = 'running', checkpoint = :'next'::jsonb, updated_at = now() " +
+      "where task_id = :'id' and status = 'hold' and checkpoint = :'expected'::jsonb returning task_id",
+    {id:taskId,next:JSON.stringify(next),expected:JSON.stringify(saved)}
   );
-  await addEvent(taskId, "D04", "resumed", { additionalCeiling: additionalCeiling ?? null });
-
-  const budget = createBudget(authorizedCeiling);
+  if (claimed.length !== 1)
+    return {taskId,status:"hold",decision:null,degraded:false,
+      holdReason:"task_state_conflict",researchLeads:[]};
+  const budget = createBudget(previousCeiling);
   const ledger: Ledger = { taskId, budget };
   try {
+    await addEvent(taskId, "D04", "resumed", {ceiling:previousCeiling,resumeClaimRef:next.resume_claim_ref});
     const { decision, degraded, researchLeads } = await runResearch(prompt, topic, ledger);
     const checkpoint = { prompt, topic, degraded, decision, researchLeads, budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling };
     await run(
@@ -297,7 +313,12 @@ export async function resumeResearchTask(
       await writeReceipt({ taskId, kind: "checkpoint", stage: "hold", status: "hold", payload: checkpoint });
       return { taskId, status: "hold", decision: null, degraded: false, holdReason: "budget", researchLeads: [] };
     }
-    throw e;
+    const checkpoint = {prompt,topic,budgetSpent:budget.spent,reserved:budget.reserved,
+      ceiling:budget.ceiling,holdReason:"research_failed_review_required",resume_claim_ref:next.resume_claim_ref,retry_requires_reconciliation:true};
+    await run("update public.research_tasks set status = 'hold', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
+      {id:taskId,cp:JSON.stringify(checkpoint)});
+    return {taskId,status:"hold",decision:null,degraded:false,
+      holdReason:"research_failed_review_required",researchLeads:[]};
   }
 }
 

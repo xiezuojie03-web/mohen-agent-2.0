@@ -91,6 +91,13 @@ try {
   if(query(database,"select md5(jsonb_agg(to_jsonb(r) order by token_hash)::text) from control.web_session_revocations r")!==sessionSnapshot)throw Error("SESSION_ROLLBACK_LOST_REVOCATIONS");
   if(query(database,"select has_table_privilege('mohen_app_runtime','control.web_session_revocations','SELECT') or has_table_privilege('mohen_app_runtime','control.web_session_revocations','INSERT')")!=="f")throw Error("SESSION_ROLLBACK_LEFT_ACCESS");
   console.log("MAB_WEB_SESSION_ROLLBACK_PASS tombstones-retained runtime-closed migration-repeatable");
+  const researchUrl=new URL(`postgresql://k3_admin:synthetic@localhost:${port}/${database}`);
+  researchUrl.searchParams.set('host',socket);
+  const resumeResult=spawnSync(process.execPath,[path.join(root,'node_modules/vitest/vitest.mjs'),'run','--config','vitest.research-db.config.ts'],{
+    cwd:root,env:{...process.env,MOHEN_RESEARCH_RESUME_TEST:'isolated-pg17',MOHEN_TEST_DATABASE:database,
+      DATABASE_URL:researchUrl.toString(),MOHEN_DATABASE_PASSWORD:'synthetic',MOHEN_DB_DRIVER:'pg',DEEPSEEK_API_KEY:'',SHANGHAI_LIBRARY_KEY:''},stdio:'inherit'});
+  if(resumeResult.status!==0)throw Error('RESEARCH_RESUME_POSTGRES_TEST_FAILED');
+  console.log('MAB_RESEARCH_RESUME_PG_PASS client-budget-denied single-CAS-winner crash-review-HOLD no-provider-calls');
   const allAuditSnapshot = query(database, "select md5(jsonb_agg(to_jsonb(g) order by gate_audit_id)::text) from control.gate_audits g");
   for (const file of migrations) apply(file);
   if (query(database, "select md5(jsonb_agg(to_jsonb(g) order by gate_audit_id)::text) from control.gate_audits g") !== allAuditSnapshot) throw new Error("REPEAT_MIGRATION_CHANGED_SIGNED_HISTORY");
