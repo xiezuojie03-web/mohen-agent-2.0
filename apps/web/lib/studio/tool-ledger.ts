@@ -142,7 +142,14 @@ export async function useTool<T>(
       ceiling: ledger.budget.ceiling,
     });
   }
-  await writeReceipt({ taskId: ledger.taskId, kind: "tool", stage: "tool", toolId, cost: spec.cost, status: "reserved" });
+  // Persist the reservation before executing the tool. If the receipt write
+  // fails, release the in-memory reservation and do not invoke any provider.
+  try {
+    await writeReceipt({ taskId: ledger.taskId, kind: "tool", stage: "tool", toolId, cost: spec.cost, status: "reserved" });
+  } catch (error) {
+    release(ledger.budget, toolId);
+    throw error;
+  }
   try {
     const out = await fn();
     settle(ledger.budget, toolId);
