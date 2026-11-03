@@ -1,0 +1,41 @@
+name: MAB M3 independent Gate revocation contract
+
+# Pure Node tests of the isolated Reviewer protocol. This does not deploy a
+# reviewer service, open a database connection, or grant any Gate authority.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/mab-m3-independent-revocation.yml'
+      - 'pipelines/data-production/orchestrator/independent-gate-revocation-client.mjs'
+      - 'pipelines/data-production/orchestrator/independent-gate-revocation-handler.mjs'
+      - 'tests/data-production/independent-gate-revocation-client.test.mjs'
+      - 'tests/data-production/independent-gate-revocation-handler.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  revocation-protocol:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Contract tests (synthetic, no network)
+        run: |
+          node --test \
+            tests/data-production/independent-gate-revocation-client.test.mjs \
+            tests/data-production/independent-gate-revocation-handler.test.mjs
+      - name: Verify no direct Gate writes in protocol clients
+        run: |
+          if grep -nE 'update +control\.gate_audits|delete +from +control\.qualification_current|sign_gate_candidate\(' \
+               pipelines/data-production/orchestrator/independent-gate-revocation-{client,handler}.mjs; then
+            echo 'Independent client/handler attempted to write Gate history' >&2
+            exit 1
+          fi
