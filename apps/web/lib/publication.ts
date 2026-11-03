@@ -191,16 +191,28 @@ export async function publishWork(workId: string, by: string): Promise<{ ok: boo
     { wid: workId }
   );
   if (!rid) return { ok: false, reason: "no_submitted_revision" };
-  await run(
-    "update publication.work_revisions set status = 'published' where revision_id = :'rid'",
-    { rid }
-  );
-  await run(
-    `insert into publication.published_pointers (work_id, revision_id, published_by)
-     values (:'wid', :'rid', :'by')
-     on conflict (work_id) do update set revision_id = excluded.revision_id, published_at = now(), published_by = excluded.published_by`,
+  // One SQL statement makes the revision transition and public pointer
+  // indivisible. If a concurrent rejection/revision changed the submitted
+  // status, no pointer is installed and the publisher receives a refusal.
+  const installed = await queryRows(
+    `with promoted as (
+       update publication.work_revisions
+          set status = 'published'
+        where revision_id = :'rid' and work_id = :'wid' and status = 'submitted'
+        returning work_id, revision_id
+     )
+     insert into publication.published_pointers (work_id, revision_id, published_by)
+     select work_id, revision_id, :'by' from promoted
+     on conflict (work_id) do update
+       set revision_id = excluded.revision_id,
+           published_at = now(),
+           published_by = excluded.published_by
+     returning work_id::text as work_id, revision_id::text as revision_id`,
     { wid: workId, rid, by }
   );
+  if (installed.length !== 1 || String(installed[0].revision_id) !== rid) {
+    return { ok: false, reason: "revision_not_submittable" };
+  }
 
   // 资产回流：发布后把作品叙事回流成 read_model 知识资产（EXP 可消费），失败不阻断发布。
   try {
