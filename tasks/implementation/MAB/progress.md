@@ -573,3 +573,12 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **真实证据**：Vercel连接器确认较早代码`0b34c8fc`部署为READY，并从部署日志查到构建完成；这是该SHA的build-only证明，**不是**本批后续`f604e6f3`/`c5b6d6c1`/`c28ea2bf`/测试的成功证据，也不能代替实际运营安全验收。当前M4`HP08_CODE_PRESENT / CI_UNVERIFIED / LIVE_HOLD`。
 - **下一缺口**：`requestProduction`当前`triggerProduction`可能在记reserved成本回执之前启动异步Runner，缺生产签名输入绑定和原子预算授予；必须在HP08/HP04正反核查之后解决，不能启动生产。研究任务已发生收费后的精确步骤恢复、跨进程长期receipt确认及T1—T7真实Provider授权还缺正式隔离E2E；不得因安全失败关闭就宣布M4真实双主体能力PASS。
 - **费用和回滚**：没有发起任何实际外部模型/Provider调用，没有改变生产Storage/Gate/数据库，无新增费用。回退不得恢复“工具超时自动退款后再试”、无账本研究追问或工作队列并发重做的风险；必要时继续保留HOLD和显式需核销状态。一次性CodeBuddy交接仍`HANDOFF_NOT_READY`。
+
+
+## 2026-11-03｜HP08追加收口：生产Runner启动前原子预算与持久回执（非准出）
+
+- **触发问题**：既有`requestProduction`先调用`triggerProduction`（潜在材料准备及Runner spawn），后落`cost=5`的`reserved`回执。如果实际生产将来启用，费用授权/回执可能晚于真实执行，不符合CR-13及HP08先授权、后执行的边界。当前Registry仍未激活、`production_input_binding_required`依然阻断真实调用；本批仅修正候选代码的危险先后关系。
+- **源码**：`d693aaab`在`apps/web/lib/studio-production.ts`新增只读零成本的`getProductionBlocker`，复用原Registry及签名输入预检，未重开Runner。`4eb6c9cf`在`studio-research.requestProduction`按如下固定顺序执行：核任务必须done→校验注册工具费用与现有已授权预算（调用参数`extraBudget`不等于授权）→零成本签名Registry预检→解析持久spent/reserved/ceiling→拒绝重复productionReservation→CAS绑定同一research_task checkpoint与唯一invocation UUID、原子预占5 credit→**在Runner之前成功持久化reserved回执**→才调用原`triggerProduction`。预算不足、CAS并发冲突、回执保存失败均返回明确HOLD，不调用Runner；Runner启动不确定/失败保留reserved并尽力追加带相同invocationId的HOLD回执，禁止自动归零/重试。`started=true`只证明启动，后续真实执行完成仍须正式结果回执核销，不能被本入口结算。
+- **隔离单测源码**：`3321eadb`新增`tests/unit/mab-hp08-production-reservation.test.ts`，覆盖未启用Registry零启动、精确CAS与reserved回执早于Runner、并发CAS失败零调用、回执失败零调用、任意extraBudget不生效、余额不足、启动失败保留待核预算等正反场景。先前`293d8a52`、`3ce3c296`和`1d8c7a62`的账本、研究任务、HTTP续跑测试保持继承。**本批真实CI/Vitest/PG运行尚无核实SUCCESS回执**，不能标HP08 PASS。
+- **精确后续责任**：Runner实际terminal receipt→settlement/补偿、跨进程幂等和任务步骤级续跑仍缺；没有独立Signer的真实D00—D05材料合法输入不得启动。原先的生产角色、真实Owner和Provider权限仍HOLD。当前改动没有让业务收费，也没有实际数据库写入；隔离mock通过与否尚未核实。
+- **范围对账**：本批变更属于`PLAN.md §6B HP08`的既有文件增量，不在74个目标文件路径的REVISE集合里；在`progress.md`中记录真实文件/commit/测试责任，不擅自向74项目标新增行。CodeBuddy单次交接继续`HANDOFF_NOT_READY`。
