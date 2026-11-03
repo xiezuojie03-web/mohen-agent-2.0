@@ -458,3 +458,5 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **自动测试源码**：`59f392adc9d1dc15729f87a439759f57fc2b0ead`新增`tests/unit/mab-m3-independent-revocation-boundary.test.ts`，检查合法/非法请求均失败关闭、不调用DB写。尚未取得本批实际CI成功回执，状态`CODE_PRESENT/TEST_PENDING`，不得称M3正式撤权实现PASS。
 - **行为兼容重要提示**：此次**有意临时关闭旧的Operator撤权写入口**，避免其在权限/触发器不兼容时返回不可靠结果。它不表示Gate实际已撤权；如果生产有正在依赖旧端点的操作，必须保持相关新发布/新消费受控停用，不能用恢复危险UPDATE/绕过独立Reviewer作为回退。
 - **后续插件施工**：沿现有独立服务合同实现Reviewer当前身份核实、精确audit ID与幂等事件、已撤权/权限拒绝/到期/错scope正反测试，并使M5消费者按用途/consumer/rights每请求校验。未具备正式签发身份和真实环境之前保持M3与M5 HOLD，不把旧work_publication_decisions当专业G5。
+
+- **HTTP回归补齐**：`ab41b4afebfc32789b1d6cb4373eb903903b57f3`新增`tests/unit/mab-m3-revocation-http.test.ts`，覆盖两个真实Route的Operator已登录但服务未就绪返回503/no-store/zero invalidations，以及非Operator仍403。此为测试源码，实际CI运行未核，不提前计PASS。
