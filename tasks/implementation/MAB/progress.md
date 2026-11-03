@@ -291,3 +291,10 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 将`tests/data-production/private-original-source-binding.integration.mjs`加入现有`scripts/test-k3-db.mjs`，在新鲜标记`mohen.test_instance=codex-k3-isolated`的PostgreSQL 17测试库、全部候选迁移后执行。该测试**只使用合成原件登记**验证当前Owner、真实角色、无source表SELECT、正确raw/version/hash、跨Owner、过期/伪造/禁用、项目归档的正反结果；**不宣称测试了外部Storage字节**。
 - 修复`supabase/rollback/20261102145410_mab_m2_evidence_bridge.rollback.sql`，撤销新增`studio.private_source_binding_matches`执行权限；现有隔离回滚例程增加显式残留权限负例。其目标是恢复时不能开放旧来源读取路径且不删除原有不可变证据记录。
 - 如果CI环境不具备隔离PG，GitHub单元PASS**不能**替代该PG脚本实际执行成功；真实隔离PG运行结果单独签收。此批不触碰生产DB、Storage或Gate；M1/M2/M3保持HOLD。
+
+
+## 2026-11-03｜真实隔离PG17 Github Actions运行入口
+
+- 新增受限触发的`.github/workflows/mab-isolated-db.yml`：仅在M2的隔离PG脚本、候选证据桥SQL及回滚文件发生变化时启动，配置一次性Docker PostgreSQL17、本地Unix socket路径、固定合成实例标记`mohen.test_instance=codex-k3-isolated`及新鲜`mohen_k3_*_test`数据库；无公网映射端口、无生产数据库/Storage/secret连接。
+- 复用原`pnpm test:k3-db`完整迁移+身份/RLS/独立Gate+Studio+M2来源核验+回滚链；新来源测试不要求真实Supabase Storage，单测语义与正式原件字节验证严格分开。此workflow本身及其结果必须以GitHub Actions真实运行日志为准，不预写PASS。
+- 外部Storage整链另须在既有隔离官方Storage夹具运行；本CI只做PostgreSQL实体验证，不代替M1生产登录或M2正式Storage启用。

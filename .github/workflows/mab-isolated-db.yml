@@ -1,0 +1,71 @@
+name: MAB isolated PostgreSQL 17 verification
+
+# Synthetic data only. No cloud database, no external Storage, and no
+# production environment variables. Runs only when the M2 isolated test
+# contract changes; standard CI continues to cover everyday app commits.
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/mab-isolated-db.yml"
+      - "tests/data-production/private-original-source-binding.integration.mjs"
+      - "scripts/test-k3-db.mjs"
+      - "supabase/migrations/20261102145410_mab_m2_evidence_bridge.sql"
+      - "supabase/rollback/20261102145410_mab_m2_evidence_bridge.rollback.sql"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-pg:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install repository dependencies
+        run: pnpm install --frozen-lockfile
+      - name: PostgreSQL client and isolated socket directory
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y postgresql-client
+          sudo install -d -m 0777 /workspace/mab-isolated-pg
+          node --check tests/data-production/private-original-source-binding.integration.mjs
+          node --check scripts/test-k3-db.mjs
+      - name: Start disposable PostgreSQL 17 with non-production marker
+        run: |
+          docker run --detach --name mohen-mab-pg17 \
+            --mount type=bind,src=/workspace/mab-isolated-pg,dst=/workspace/mab-isolated-pg \
+            --env POSTGRES_USER=k3_admin \
+            --env POSTGRES_PASSWORD=isolated-fixture-only \
+            --env POSTGRES_DB=postgres \
+            postgres:17 \
+            -c port=55432 \
+            -c unix_socket_directories=/workspace/mab-isolated-pg \
+            -c mohen.test_instance=codex-k3-isolated
+          for i in $(seq 1 60); do
+            if pg_isready -h /workspace/mab-isolated-pg -p 55432 -U k3_admin; then exit 0; fi
+            sleep 2
+          done
+          docker logs mohen-mab-pg17
+          exit 1
+      - name: Execute original K3/M2 database suite in disposable PG17
+        env:
+          MOHEN_TEST_PSQL: /usr/bin/psql
+          MOHEN_TEST_SOCKET: /workspace/mab-isolated-pg
+          MOHEN_TEST_PORT: "55432"
+        run: |
+          test "$(psql -X -At -h "$MOHEN_TEST_SOCKET" -p "$MOHEN_TEST_PORT" -U k3_admin -d postgres -c "select current_setting('mohen.test_instance',true)")" = "codex-k3-isolated"
+          pnpm test:k3-db
+      - name: Cleanup isolated PostgreSQL
+        if: always()
+        run: |
+          docker rm -f mohen-mab-pg17 2>/dev/null || true
+          sudo rm -rf /workspace/mab-isolated-pg
