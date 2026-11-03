@@ -352,3 +352,11 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 测试提交`9d5dfd800de889bfcf7d34de43a73cdc4d7704fd`：新增合成DB拒写时回调不执行/预算归零；正常预占→调用→结算时两份回执及准确预算的正例。测试文件`tests/unit/mab-m4-tool-receipt-failure.test.ts`，使用Vitest DB mock，不触及生产数据。
 - **回执状态**：源码已提交；本环境尚无本批完整GitHub Actions unit/type/build成功证明，`CI_NOT_VERIFIED`，不能签工程验证PASS；业务/生产M4依旧HOLD。M2唯一Runner私有来源正式接线、M3独立Reviewer服务及M1在线合法验收仍是关键路径。施工账只记录实际结果，非阶段准出。
 - **回滚**：仅代码兼容变更；如回退需保持「回执失败不执行Provider」的阻断和未登记工具拒绝，不准以旧回退恢复费用失控路径。DB/Storage/Gate未更改。
+
+
+## 2026-11-03｜M4费用未知不得静默记零
+
+- 源码`ea566c7249b1af04e3c05368cef32a2debf0dada`原位更新`apps/web/lib/studio/tool-ledger.ts`：仅对`kind=tool`的费用回执强制明确有限非负数字，缺失或NaN拒绝`TOOL_RECEIPT_COST_UNKNOWN`；明确已登记免费确定性工具的显式`cost=0`仍合法，非工具checkpoint保留旧行为。不会调用新的付费Provider。
+- 测试`62e044af51556c1063cce9cd0276e17e1ebafe0e`在原`mab-m4-tool-receipt-failure.test.ts`补缺费用与NaN的拒绝、无数据库写入断言。此前同轮`8f55ea31`修复预占回执失败后释放预算，`9d5dfd80`增加失败及正常回执测试。
+- **证据级别**：仅GitHub源码和新增测试代码可确认；CI检查/真实DB/Provider运行均未在本轮核实PASS，继续`NOT_RUN/CI_PENDING_VERIFICATION`，不把M4认作完整混合委托。M0/M1/M2/M3状态保持原裁决。下一工作仍以M2受控Registry/Runner和M3独立签发服务为关键路径。
+- 回退优先停止未定价外部工具，不允许恢复将未知真实费用写0的路径；不涉及生产数据库、模型费用、Gate或部署变更。
