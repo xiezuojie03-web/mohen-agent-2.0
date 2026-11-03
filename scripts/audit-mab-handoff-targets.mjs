@@ -68,8 +68,13 @@ export function inspectHandoffTargets(root) {
   const mismatched=files.filter(x=>x.exists && !x.target_byte_match);
   if(files.some(x=>x.hp13_target_match==='SHA256_BYTES_MATCHED' && !x.target_byte_match))
     errors.push('HANDOFF_DECLARED_SHA256_MISMATCH');
-  const unverified=files.filter(x=>x.target_validation!=='DESIGN_TARGET_SEMANTICS_VERIFIED' &&
-                                          x.target_validation!=='VERIFIED_EQUIVALENT');
+  // M0 is an immutable historical audit. The current HP13 review result
+  // must live in its own append-only column, not overwrite M0's old verdict.
+  // Frozen byte-identical design text alone is not runtime semantic PASS.
+  const unverified=files.filter(x=>![
+    'VERIFIED_SEMANTIC_AND_RUNTIME',
+    'VERIFIED_EQUIVALENT_AND_RUNTIME',
+  ].includes(x.hp13_semantic_scope));
   return {
     schema:'mohen.mab.handoff-target-audit.v1',
     repo_sha:process.env.GITHUB_SHA||null,
@@ -79,6 +84,7 @@ export function inspectHandoffTargets(root) {
     original_action:countBy(files,'action'),
     implementation_status:countBy(files,'implementation_status'),
     target_validation:countBy(files,'target_validation'),
+    hp13_current_semantic:countBy(files,'hp13_semantic_scope'),
     hp_work_packages:hp,
     additional_responsibilities:responsibility,
     missing_target_count:absent.length,
