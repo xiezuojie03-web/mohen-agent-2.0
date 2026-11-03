@@ -67,3 +67,28 @@ test('M2 real Runner sets current stage before single-use private adapter handof
     vars.forEach((k,i)=>saved[i]===undefined?delete process.env[k]:process.env[k]=saved[i]);
   }
 });
+
+
+test('M2 actual Runner must not load private adapter or invoke worker under disabled Registry or missing grant',async()=>{
+  let loads=0,invocations=0;
+  const job={stage:'D01',job_id:'d01.carrier-reading',
+    implementation:{adapter_binding:PRIVATE_EVIDENCE_ADAPTER_PATH,gate_reviewer_binding:'independent-G1'},
+    execution_policy:{enabled:true,attended:true,enable_requires:[]}};
+  const privateInput={schema:'mohen.private-evidence-stage-request.v1',
+    stage:'D01',originalId:randomUUID()};
+  const context={resume_input:privateInput,
+    loadAdapters:async()=>{loads++;return adapters;},
+    privateEvidenceWorker:{draftTextReading:async()=>{invocations++;return {};}},
+    privateEvidenceOwnerSessionToken:'synthetic-session'};
+  const disabled={architecture_generation:'mohen.six-stage.v1',
+    status:'DESIGN_TARGET_NOT_APPLIED',activation:{enabled:false},jobs:[job]};
+  await assert.rejects(()=>runProduction({run:createRunState({research_intent:'synthetic'}),
+    registry:disabled,from_stage:'D01',to_stage:'D01',context}),/REGISTRY_NOT_ACTIVE/);
+  assert.equal(loads,0);
+  assert.equal(invocations,0);
+  const enabled={...disabled,status:'ACTIVE_AUTHORIZED',activation:{enabled:true}};
+  await assert.rejects(()=>runProduction({run:createRunState({research_intent:'synthetic'}),
+    registry:enabled,from_stage:'D01',to_stage:'D01',context}),/EXECUTION_SIGNED_GRANT_MISSING/);
+  assert.equal(loads,0);
+  assert.equal(invocations,0);
+});
