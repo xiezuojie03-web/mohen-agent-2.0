@@ -223,22 +223,90 @@ export async function resumeResearchTask(
   }
 }
 
-/** 追加消息并再跑一次研究（更新 checkpoint） */
-export async function appendResearchMessage(taskId: string, message: string): Promise<boolean> {
-  const row = await queryRows(
-    "select topic from public.research_tasks where task_id = :'id'",
+/** Continue one Studio task with a new question, not a replay of the
+ * previous charged steps. A durable budget and an atomic state claim are
+ * required, so two simultaneous requests cannot both spend the same credit.
+ */
+export async function appendResearchMessage(
+  taskId: string, message: string
+): Promise<{ ok: boolean; reason?: string }> {
+  const rows = await queryRows(
+    "select topic, status, checkpoint from public.research_tasks where task_id = :'id'",
     { id: taskId }
   );
-  if (!row.length) return false;
-  const topic = resolveTopic(row[0].topic);
-  const { decision, degraded, researchLeads } = await runResearch(message, topic);
-  await addEvent(taskId, "D04", "message_appended", { message, degraded });
-  const checkpoint = { prompt: message, topic, degraded, decision, researchLeads };
-  await run(
-    "update public.research_tasks set checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
-    { id: taskId, cp: JSON.stringify(checkpoint) }
+  if (!rows.length) return { ok: false, reason: "task_not_found" };
+  if (rows[0].status !== "done") return { ok: false, reason: "task_not_ready" };
+  let saved: Record<string, unknown>;
+  try { saved = readJsonColumn<Record<string, unknown>>(rows[0].checkpoint, {}); }
+  catch { return { ok: false, reason: "budget_checkpoint_invalid" }; }
+  const spent = Number(saved.budgetSpent);
+  const reserved = Number(saved.reserved ?? 0);
+  const ceiling = Number(saved.ceiling);
+  if (!Number.isFinite(spent) || spent < 0 ||
+      !Number.isFinite(reserved) || reserved !== 0 ||
+      !Number.isFinite(ceiling) || ceiling <= 0 || spent > ceiling) {
+    return { ok: false, reason: "budget_checkpoint_required" };
+  }
+
+  const claimed = await queryRows(
+    "update public.research_tasks set status = 'running', updated_at = now() where task_id = :'id' and status = 'done' returning task_id",
+    { id: taskId }
   );
-  return true;
+  if (!claimed.length) return { ok: false, reason: "task_state_conflict" };
+
+  const topic = resolveTopic(rows[0].topic);
+  const budget: BudgetState = { ceiling, reserved, spent };
+  try {
+    const { decision, degraded, researchLeads } = await runResearch(
+      message, topic, { taskId, budget }
+    );
+    const checkpoint = {
+      prompt: message, topic, degraded, decision, researchLeads,
+      budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling,
+    };
+    await run(
+      "update public.research_tasks set status = 'done', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id' and status = 'running'",
+      { id: taskId, cp: JSON.stringify(checkpoint) }
+    );
+    await addEvent(taskId, "D04", "message_appended", {
+      degraded, budgetSpent: budget.spent,
+    });
+    return { ok: true };
+  } catch (error) {
+    if (error instanceof ToolExecutionUncertainError ||
+        error instanceof ToolReceiptPersistenceError) {
+      const result = await holdUncertainTool(taskId, message, topic, budget, error);
+      return { ok: false, reason: result.holdReason };
+    }
+    if (error instanceof BudgetHoldError) {
+      const checkpoint = {
+        prompt: message, topic, budgetSpent: budget.spent,
+        reserved: budget.reserved, ceiling: budget.ceiling,
+        holdReason: "budget", holdAt: error.checkpoint,
+      };
+      await run(
+        "update public.research_tasks set status = 'hold', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
+        { id: taskId, cp: JSON.stringify(checkpoint) }
+      );
+      await writeReceipt({
+        taskId, kind: "checkpoint", stage: "hold", status: "hold", payload: checkpoint,
+      });
+      return { ok: false, reason: "budget_hold" };
+    }
+    // Unknown research failure may also have reached a remote provider.
+    // Do not auto-resume or silently treat spent as zero.
+    const checkpoint = {
+      prompt: message, topic, budgetSpent: budget.spent,
+      reserved: budget.reserved, ceiling: budget.ceiling,
+      holdReason: "research_failed_review_required",
+      retry_requires_reconciliation: true,
+    };
+    await run(
+      "update public.research_tasks set status = 'hold', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
+      { id: taskId, cp: JSON.stringify(checkpoint) }
+    );
+    return { ok: false, reason: "research_failed_review_required" };
+  }
 }
 
 /** 列出当前用户最近研究任务（供 Studio 任务列表）。P0-1：按 owner 过滤。 */
