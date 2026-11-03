@@ -350,15 +350,34 @@ export function listWorks(ownerUserId: string) {
 
 /** 作品四步创作状态轴：委托→研究→编导→版本（基于 research_tasks / director_plans / work_revisions 的真实存在）。 */
 export async function getWorkStageStatus(workId: string) {
-  const rev = await queryValue(
-    "select count(*) from publication.work_revisions where work_id = :'wid'",
+  // Never turn a missing task or a QUEUED/HOLD research task into DONE.
+  // director_plans has no work_id association in the current schema, so a
+  // detached plan is NOT proof that this particular work was directed.
+  // Directed is evidenced only by this work's persisted plan AND beats in a
+  // revision; no content is synthesized for the status screen.
+  const rows = await queryRows(
+    `select
+       exists(select 1 from public.research_tasks t
+              where t.work_id = :'wid') as delegated,
+       exists(select 1 from public.research_tasks t
+              where t.work_id = :'wid' and t.status = 'done') as researched,
+       exists(select 1 from publication.work_revisions r
+              where r.work_id = :'wid'
+                and jsonb_typeof(r.content->'plan')='object'
+                and jsonb_typeof(r.content->'beats')='array'
+                and jsonb_array_length(r.content->'beats') > 0) as directed,
+       exists(select 1 from publication.work_revisions r
+              where r.work_id = :'wid') as revisioned`,
     { wid: workId }
   );
+  // node-pg returns booleans, and psql wrapper may return strings.
+  const b = (value: unknown) => value === true || value === 't' || value === 'true';
+  const row = rows[0];
   return {
-    delegated: true,
-    researched: true,
-    directed: true,
-    revisioned: Number(rev ?? 0) > 0,
+    delegated: b(row?.delegated),
+    researched: b(row?.researched),
+    directed: b(row?.directed),
+    revisioned: b(row?.revisioned),
   };
 }
 
