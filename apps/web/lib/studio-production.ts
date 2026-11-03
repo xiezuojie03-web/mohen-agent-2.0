@@ -61,6 +61,13 @@ function productionBlocker(projectRoot: string): string | null {
   } catch { return "production_registry_invalid"; }
 }
 
+/** Synchronous no-cost preflight: cannot prepare materials, reserve funds,
+ * or spawn a Runner before the signed production input and registry authorize.
+ */
+export function getProductionBlocker(): string | null {
+  return productionBlocker(resolveProjectRoot());
+}
+
 export async function failProductionRun(runId: string): Promise<void> {
   await dbRun("update control.production_runs set status='FAILED', finished_at=now() where run_id=:'id'::uuid and status='RUNNING'", { id: runId });
 }
