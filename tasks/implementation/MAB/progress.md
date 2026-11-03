@@ -405,3 +405,14 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **既有测试继承**：`mab-notebook.spec.ts`已有合法本人研究项目、不可变修订、跨Owner只读/写入拒绝、丢回执幂等；`private-original-http.spec.ts`需要官方本地Storage配置，当前CI不验证字节导入。原M1生产匿名只读子项`41580710096` attempt2 PASS、隔离PG来源绑定`41576958641` PASS不重复记账。
 - **验证状态**：GitHub源码/CI入口/浏览器正反用例已提交；当前还未获得本批`mab-m1-isolated-http`真实SUCCESS及测试细目回执，状态`M1_ISOLATED_HTTP_CI_PENDING`，禁止把“已接入工作流”写成E2E PASS。下一步以Actions实际运行日志为准修正环境或行为问题；Vercel READY与本专项不等价。
 - **仍需生产签收**：真实Owner登录、合法本人导入及回读、跨Owner和撤权当前生产策略、旧数据库凭据连接失效的非敏感证明、生产适用备份恢复。正式`M1_SECURITY_ACCEPTANCE_HOLD`仍保留；无需让M2生产或M3 Reviewer启用成为M1的准出前置。受控日志中不得写身份Cookie或数据库密钥。
+
+
+## 2026-11-03｜M1—M5关键路径增量施工：M5发布原子性与M1测试触发
+
+- **执行目标与边界**：Owner要求按原受控计划持续推进到M5闭环，保持既有产品方向/成本约束。该目标不代表可跳过M1合法Owner/旧凭据安全验收、M2真实证据链/Registry、M3独立Reviewer及M4真实双主体授权。此回执仅记录本批已实施增量，**不签M5整体PASS**。
+- **M5源码**：`64cdb2e6b011f8e7e75267411632a3beb47be963` 原位修改`apps/web/lib/publication.ts`，将`publishWork`中“更新submitted修订为published”与“insert/upsert publication.published_pointers”由两次独立DB调用收敛为单一SQL `WITH promoted AS (UPDATE ... WHERE status='submitted' RETURNING ... ) INSERT ... SELECT FROM promoted ON CONFLICT ... RETURNING`。若修订已被并发拒绝/变更，则返回`revision_not_submittable`且不触发资产回流；SQL异常传播，不能把指针失败记录成成功。本改动不撤销既有Publisher、Reviewer和媒体权利校验，但它们尚未达到M5目标的精确G5/consumer实时资格要求。
+- **M5测试**：`3eca7df379d4999db4575c64df338f3406f27e23`新增`tests/unit/mab-m5-publication-atomic.test.ts`，以隔离mock检查单条原子操作、并发修订冲突不回流、DB指针写入失败不假报成功。此为单元合同测试，完整真实PG并发/独立G5撤权/媒体许可/两端消费未验收。
+- **M1验收接线**：`e1ed01d7574176a8db253739967faebdc26781f9`补齐原`.github/workflows/mab-m1-isolated-http.yml`对新`mab-m1-session-revocation.spec.ts`的触发路径，使撤权E2E后续更新能够运行原隔离PG17工作流；合成测试不能替代线上身份验收。
+- **本批待核**：新提交的GitHub Actions/Vitest/实际SQL运行尚无可核实SUCCESS回执，均标`CODE_PRESENT / CI_PENDING`；不据Vercel READY写成独立G/真实M5 PASS。不写生产DB、Storage、Gate策略或密钥；未调用外部AI、未新增费用。
+- **剩余关键路径**：M1生产Owner/撤权/旧凭据/恢复；M2官方Storage字节→D01—D03真实Runner+Registry及资格载体；M3独立Reviewer签审与当前资格撤权；M4同root双主体真实委托/可恢复执行账/预算授权；M5 Studio创作同作品rev、F05 Admin知识细目、Operator+精确G5+媒体权利发布门、WATCH逐请求合法消费及撤权、完整E2E。逐项独立证据闭合之后才可宣布M5准出。
+- **回滚**：M5单条原子更新可恢复旧调用接口，但不得恢复写两次成功一半的风险；如兼容冲突，优先临时停止新发布写入而不清除旧合法作品/审计，不能以绕过G5、媒体权利和已撤销许可作为降级。M1 workflow仅测试，不触及生产数据。
