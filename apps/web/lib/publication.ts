@@ -313,7 +313,9 @@ export function listPendingReview() {
      where r.status = 'submitted'
        and not exists (
          select 1 from control.work_publication_decisions d
-         where d.work_id = w.work_id and d.decision = 'approved'
+         where d.work_id = w.work_id
+           and d.revision_id = r.revision_id
+           and d.decision = 'approved'
        )
      order by r.created_at asc`
   );
