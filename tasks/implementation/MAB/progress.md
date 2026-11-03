@@ -416,3 +416,9 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **本批待核**：新提交的GitHub Actions/Vitest/实际SQL运行尚无可核实SUCCESS回执，均标`CODE_PRESENT / CI_PENDING`；不据Vercel READY写成独立G/真实M5 PASS。不写生产DB、Storage、Gate策略或密钥；未调用外部AI、未新增费用。
 - **剩余关键路径**：M1生产Owner/撤权/旧凭据/恢复；M2官方Storage字节→D01—D03真实Runner+Registry及资格载体；M3独立Reviewer签审与当前资格撤权；M4同root双主体真实委托/可恢复执行账/预算授权；M5 Studio创作同作品rev、F05 Admin知识细目、Operator+精确G5+媒体权利发布门、WATCH逐请求合法消费及撤权、完整E2E。逐项独立证据闭合之后才可宣布M5准出。
 - **回滚**：M5单条原子更新可恢复旧调用接口，但不得恢复写两次成功一半的风险；如兼容冲突，优先临时停止新发布写入而不清除旧合法作品/审计，不能以绕过G5、媒体权利和已撤销许可作为降级。M1 workflow仅测试，不触及生产数据。
+
+
+## 2026-11-03｜M5 WATCH旧发布状态的最小读取保护
+
+- `e9bde789f30c1e53c23833a35447eefb2f725e97` 在既有 `publication.listPublished()` 的published pointer与精确work_revision关联查询增加 `where r.status='published'`，避免修订状态已被撤销/更改而旧指针仍在时直接列出。该过滤仅是已发布状态约束，**不能替代独立当前G5、consumer=watch、用途/权利与媒体撤权逐请求认证**。
+- `68b334bf13052a2ed73607a80436ab70e825ed2f`为原`mab-m5-publication-atomic.test.ts`补WATCH列表状态过滤合同测试。新测试提交但尚未核实CI的实际SUCCESS回执；不能标记M5整体运行验收或宣称实时撤权已经实现。
