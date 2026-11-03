@@ -43,5 +43,18 @@ jobs:
       - name: Auth coverage gate
         run: node scripts/check-auth-coverage.mjs --strict --out /tmp/k3-auth-coverage.csv
 
+      # HP13 readiness is informational until every exact target and live Gate
+      # has its own evidence. Presence is NOT semantic equivalence.
+      - name: MAB 74 target handoff audit (informational)
+        run: node scripts/audit-mab-handoff-targets.mjs --out /tmp/mab-target-audit.json
+
+      - name: Upload MAB target audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mab-hp13-target-readiness
+          path: /tmp/mab-target-audit.json
+          if-no-files-found: warn
+
       # 说明：数据库集成测试（pnpm test）需要本机 PostgreSQL 快照，暂不在 CI 跑；
       # 待 P0-6 把旧套件隔离、新增无库单测后再接入。
