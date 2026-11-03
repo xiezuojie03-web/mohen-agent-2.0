@@ -12,10 +12,10 @@ const originalId='11111111-1111-4111-8111-111111111111';
 const extent={kind:'utf8_byte_range/v1',start_byte:0,end_byte:Buffer.byteLength(quote),
  raw_sha256:sha(bytes),quote_sha256:sha(Buffer.from(quote)),
  source_version_id:'22222222-2222-4222-8222-222222222222',raw_item_id:'33333333-3333-4333-8333-333333333333'};
-const readOriginal=vi.fn(),linkReading=vi.fn(),linkClaim=vi.fn();
-const worker=createPrivateEvidenceStageWorker({readOriginal,bridge:{linkReading,linkClaim}});
+const readOriginal=vi.fn(),linkReading=vi.fn(),linkClaim=vi.fn(),verifySourceBinding=vi.fn();
+const worker=createPrivateEvidenceStageWorker({readOriginal,bridge:{linkReading,linkClaim},verifySourceBinding});
 const base=(stage,input)=>({run:{run_id:'r'},job:{stage,job_id:'j'},registry:{status:'ACTIVE_AUTHORIZED'},context:{},input,token:'synthetic-actor-session'});
-beforeEach(()=>{vi.clearAllMocks();auth.check.mockResolvedValue(undefined);
+beforeEach(()=>{vi.clearAllMocks();auth.check.mockResolvedValue(undefined);verifySourceBinding.mockResolvedValue(true);
  readOriginal.mockResolvedValue({record:{state:'STORED_VERIFIED',content_type:'text/plain',sha256:sha(bytes)},bytes});
  linkReading.mockResolvedValue({link_id:'link-1',qualification:'UNASSESSED'});
  linkClaim.mockResolvedValue({link_id:'link-2',qualification:'UNASSESSED'});
@@ -58,4 +58,27 @@ it('stops wrong stages and a failed authorization before touching bridge',async(
 it('fails closed if bridge tries to report PASS rather than an unassessed candidate',async()=>{
  linkReading.mockResolvedValueOnce({link_id:'link-1',qualification:'PASS'});
  await expect(worker.linkReading(base('D02',{originalId}))).rejects.toThrow('PRIVATE_BRIDGE_INVALID_RESULT');
+});
+
+it('refuses fabricated source identities before reading original bytes',async()=>{
+ verifySourceBinding.mockResolvedValueOnce(false);
+ await expect(worker.draftTextReading(base('D01',{originalId,extent,quote})))
+   .rejects.toThrow('PRIVATE_READING_SOURCE_NOT_BOUND');
+ expect(readOriginal).not.toHaveBeenCalled();
+ expect(verifySourceBinding).toHaveBeenCalledWith({
+   originalId,sourceVersionId:extent.source_version_id,
+   rawItemId:extent.raw_item_id,rawSha256:extent.raw_sha256,
+ },'synthetic-actor-session');
+});
+it('refuses syntactically invalid raw/source identities before a DB lookup',async()=>{
+ await expect(worker.draftTextReading(base('D01',{originalId,extent:{...extent,raw_item_id:'not-a-uuid'},quote})))
+  .rejects.toThrow('PRIVATE_READING_LOCATOR_INVALID');
+ expect(verifySourceBinding).not.toHaveBeenCalled();
+ expect(readOriginal).not.toHaveBeenCalled();
+});
+it('forwards source verifier database denial, never falling back to quote-only evidence',async()=>{
+ verifySourceBinding.mockRejectedValueOnce(new Error('permission denied for source.raw_items'));
+ await expect(worker.draftTextReading(base('D01',{originalId,extent,quote})))
+  .rejects.toThrow('permission denied');
+ expect(readOriginal).not.toHaveBeenCalled();
 });

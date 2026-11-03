@@ -1,13 +1,14 @@
 import { beforeEach, expect, it, vi } from 'vitest';
 const deps=vi.hoisted(()=>({
   originalRepository:vi.fn(),originalWorkflow:vi.fn(),
-  evidenceBridge:vi.fn(),download:vi.fn(),linkReading:vi.fn(),linkClaim:vi.fn(),
+  evidenceBridge:vi.fn(),sourceVerifier:vi.fn(),sourceBinding:vi.fn(),download:vi.fn(),linkReading:vi.fn(),linkClaim:vi.fn(),
   authorize:vi.fn(),
 }));
 vi.mock('../../packages/data-access/src/index.mjs',()=>({
   createPrivateOriginalRepository:deps.originalRepository,
   createPrivateOriginalWorkflow:deps.originalWorkflow,
   createEvidenceBridgeRepository:deps.evidenceBridge,
+  createPrivateOriginalSourceVerifier:deps.sourceVerifier,
 }));
 vi.mock('../../pipelines/data-production/orchestrator/execution-authority.mjs',()=>({
   assertStageExecutionAuthorized:deps.authorize,
@@ -39,6 +40,8 @@ beforeEach(()=>{
  deps.linkReading.mockResolvedValue({link_id:'bridge-reading',qualification:'UNASSESSED'});
  deps.linkClaim.mockResolvedValue({link_id:'bridge-claim',qualification:'UNASSESSED'});
  deps.evidenceBridge.mockReturnValue({linkReading:deps.linkReading,linkClaim:deps.linkClaim});
+ deps.sourceBinding.mockResolvedValue(true);
+ deps.sourceVerifier.mockReturnValue(deps.sourceBinding);
 });
 it('requires a server-side repository, verified object store, and verifier key',()=>{
  expect(()=>createBoundPrivateEvidenceStageWorker({storage,verificationKey:key})).toThrow('PRIVATE_STAGE_DATABASE_REQUIRED');
@@ -49,6 +52,7 @@ it('requires a server-side repository, verified object store, and verifier key',
 it('composes one identical RLS-authorized original readback into D01 and the evidence bridge',async()=>{
  const worker=createBoundPrivateEvidenceStageWorker({pool,storage,verificationKey:key,keyVersion:'test-only'});
  expect(deps.originalRepository).toHaveBeenCalledWith(pool);
+ expect(deps.sourceVerifier).toHaveBeenCalledWith(pool);
  const original=deps.originalWorkflow.mock.calls[0][0];
  expect(original.storage).toBe(storage);
  expect(original.repository).toEqual({marker:'scoped-repository'});
@@ -59,6 +63,8 @@ it('composes one identical RLS-authorized original readback into D01 and the evi
  expect(result.qualification).toBe('UNASSESSED');
  const bridgeRead=await options.readOriginal(originalId,'synthetic-user-session');
  expect(bridgeRead.bytes).toEqual(bytes);
+ expect(deps.sourceBinding).toHaveBeenCalledWith({originalId,
+   sourceVersionId:extent.source_version_id,rawItemId:extent.raw_item_id,rawSha256:extent.raw_sha256},'synthetic-user-session');
  expect(deps.download).toHaveBeenCalledWith(originalId,'synthetic-user-session');
  expect(deps.download).toHaveBeenCalledTimes(2);
 });
@@ -77,4 +83,13 @@ it('passes D02 and D03 candidates to the existing evidence bridge, never grants 
  expect((await worker.linkClaim(args('D03',d03))).qualification).toBe('UNASSESSED');
  expect(deps.linkReading).toHaveBeenCalledWith(d02,'synthetic-user-session');
  expect(deps.linkClaim).toHaveBeenCalledWith(d03,'synthetic-user-session');
+});
+
+it('cannot turn a wrong private source binding into a D01 candidate',async()=>{
+ deps.sourceBinding.mockResolvedValueOnce(false);
+ const worker=createBoundPrivateEvidenceStageWorker({pool,storage,verificationKey:key});
+ await expect(worker.draftTextReading(args('D01',input)))
+   .rejects.toThrow('PRIVATE_READING_SOURCE_NOT_BOUND');
+ expect(deps.download).not.toHaveBeenCalled();
+ expect(deps.linkReading).not.toHaveBeenCalled();
 });

@@ -5,6 +5,7 @@ import {
   createPrivateOriginalRepository,
   createPrivateOriginalWorkflow,
   createEvidenceBridgeRepository,
+  createPrivateOriginalSourceVerifier,
 } from '../../../packages/data-access/src/index.mjs';
 import { createPrivateEvidenceStageWorker } from './private-evidence-stage.mjs';
 
@@ -28,5 +29,6 @@ export function createBoundPrivateEvidenceStageWorker({
   const bridge = createEvidenceBridgeRepository(pool, {
     readOriginal, verificationKey, keyVersion,
   });
-  return createPrivateEvidenceStageWorker({ readOriginal, bridge });
+  const verifySourceBinding=createPrivateOriginalSourceVerifier(pool);
+  return createPrivateEvidenceStageWorker({ readOriginal, bridge, verifySourceBinding });
 }

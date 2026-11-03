@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { assertStageExecutionAuthorized } from '../orchestrator/execution-authority.mjs';
 
 const HEX=/^[a-f0-9]{64}$/;
+const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 function requireBoundStage(stage, job) {
   if(job?.stage!==stage)throw Error('PRIVATE_STAGE_MISMATCH');
@@ -11,9 +12,9 @@ function requireBoundStage(stage, job) {
 function requireToken(token) {
   if(typeof token!=='string'||token.length===0)throw Error('PRIVATE_STAGE_SESSION_REQUIRED');
 }
-export function createPrivateEvidenceStageWorker({readOriginal,bridge}={}) {
-  if(typeof readOriginal!=='function'||typeof bridge?.linkReading!=='function'||
-     typeof bridge?.linkClaim!=='function')throw Error('PRIVATE_EVIDENCE_BRIDGE_REQUIRED');
+export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySourceBinding}={}) {
+  if(typeof readOriginal!=='function'||typeof verifySourceBinding!=='function'||
+     typeof bridge?.linkReading!=='function'||typeof bridge?.linkClaim!=='function')throw Error('PRIVATE_EVIDENCE_BRIDGE_REQUIRED');
 
   async function authorized({stage,run,job,registry,context,input,token}) {
     requireBoundStage(stage,job);
@@ -28,10 +29,18 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge}={}) {
     async draftTextReading({run,job,registry,context={},input,token}) {
       await authorized({stage:'D01',run,job,registry,context,input,token});
       const {originalId,extent,quote}=input??{};
-      if(typeof originalId!=='string'||!extent||extent.kind!=='utf8_byte_range/v1'||
+      if(typeof originalId!=='string'||!UUID.test(originalId)||!extent||
+         !UUID.test(extent.source_version_id??'')||!UUID.test(extent.raw_item_id??'')||
+         extent.kind!=='utf8_byte_range/v1'||
          !Number.isSafeInteger(extent.start_byte)||!Number.isSafeInteger(extent.end_byte)||
          extent.start_byte<0||extent.end_byte<=extent.start_byte||
          typeof quote!=='string'||Buffer.byteLength(quote)>32768)throw Error('PRIVATE_READING_LOCATOR_INVALID');
+      // Exact source and version must already be registered against this immutable
+      // original; a matching quote in some unrelated source is not provenance.
+      const bound=await verifySourceBinding({originalId,
+        sourceVersionId:extent.source_version_id,rawItemId:extent.raw_item_id,
+        rawSha256:extent.raw_sha256},token);
+      if(bound!==true)throw Error('PRIVATE_READING_SOURCE_NOT_BOUND');
       const {record,bytes}=await readOriginal(originalId,token);
       if(record?.state!=='STORED_VERIFIED'||record?.content_type!=='text/plain'||
          !HEX.test(record?.sha256??'')||hash(bytes)!==record.sha256||

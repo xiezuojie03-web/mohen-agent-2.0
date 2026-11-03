@@ -258,3 +258,10 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - `main@f3a39e6`：M2新私有证据工作器装配入口（Owner-RLS原件仓储→私有回读→现有字节证据桥→D01-D03待审核候选），新增合成装配/拒绝测试。GitHub Actions `41571059844` **SUCCESS**；该CI不能代替真PG/Storage的新增端到端验收，更不能签发M2生产PASS。
 - **阶段判定**：M0`M0_AUDIT_EXIT_PASS`保持；M1`M1_SECURITY_ACCEPTANCE_HOLD`（旧密钥失效非敏感回执、当前生产合法登录/导入/读取与跨Owner/撤权/恢复验收缺）；M2隔离验证继续可继承但私有生产桶/迁移/密钥未获本批生产启用；M3独立Gate仍未安装正式审核策略/身份与真实Verifier，保持HOLD。
 - **范围纪律**：本批无生产数据库、Storage、角色、Gate、密码写入；不因工具/阶段变化重新研究六份MHKA或重复已通过的低权限隔离测试。M2/M3后续围绕真实执行入口和独立Reviewer资格继续增量推进。
+
+## 2026-11-03｜M2 D01精确来源绑定闭合（GitHub源码及测试）
+
+- **缺口**：以前D01候选只验证私有原件字节和引文hash，却直接信任调用者提供的`source_version_id/raw_item_id`，可能产生“真实引文配错来源ID”的未审候选。D02 SQL已有更严格原件/来源绑定，但应在D01读原件前就失败关闭。
+- **源码**：新增`createPrivateOriginalSourceVerifier`，使用现有`createAppTransaction`短时账号/Owner RLS，在单个只读事务核对`studio.private_originals`、项目Owner/状态、不可变原件修订、`source.raw_items`私有存储ref/hash/size及`source.source_versions`准确source_version/hash；缺任何权限/记录均拒绝，不通过放开来源表RLS修权限。D01要求此Verifier返回true才能读取私有字节并生成`UNASSESSED`候选；拒绝伪造/格式不符ID。M2单一工作器装配入口也引用同一来源绑定。
+- **正反单测**：新增错来源、错误UUID、DB权限拒绝、组合装配来源Verifier等场景。**生产M2私有原件及DB桥仍未启用，未测试真实源表对app_runtime的可读性**；若角色合法查询无权限必须维持HOLD并经隔离迁移补最小SELECT，不得在本批追加生产GRANT。
+- **状态**：本批提交后CI以对应GitHub Actions为准；未授G0—G5、不修改生产库、不改变M1的HOLD或M0审查PASS。
