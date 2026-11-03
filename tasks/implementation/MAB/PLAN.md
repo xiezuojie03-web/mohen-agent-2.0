@@ -183,6 +183,17 @@ MAB-ENG-01批次进展（2026-11-02，详细证据见progress.md）：私有原�
 
 ### M4｜混合Agent与Studio长流程
 
+**2026-11-03 接续准入裁定（按受控任务书§4／§10，非阶段PASS）**：
+
+- **M4代码级并行准入：允许**。在M2私有原件和M3独立Gate仍HOLD期间，可有界施工同root/subtask任务模型、DelegationEnvelope／ExecutionReceipt不可变合同、T1—T7候选校验、权限与预算失败关闭、Studio真实状态及跨会话恢复。上述开发只能以合成/隔离测试判证；不能标记真实外部委托或正式知识增长已运行。
+- **M4真实双主体调用准入：未满足**。需先取得M1合法Owner会话与素材导入/回读及撤权的可核证安全验收；M2 Owner私有原件真实字节→D01读取单元→D02证据→D03主张的Registry/Runner合法接线、隔离PG/Storage正反联调及真实授权范围；M3独立Reviewer服务、当前资格/撤权、用途/消费者/精确修订与编排器的真实验证。外部AI另需Owner已批准的原件外发范围、Provider和预算，不能以旧额度或模拟回执替代。
+- **M5并行边界：允许低依赖实现，不许提前发布**。Studio草稿/版本视图、F05内部知识条目只读检索、WATCH空态和旧UI防退化可以与M4开发并行；依赖独立G5、媒体许可或发布指针的真正公开消费仍须待M3/M4验收。
+- **本轮观察依据**：main最新查询为`acfe2874`；M2来源窄RPC隔离PG17回执`41576958641` SUCCESS；M3只读资格客户端回归`41579537812`、`41579907762`、`41580080729` SUCCESS；M1四项匿名生产HTTP验证`41580710096` attempt 2 SUCCESS。均为限定证据，不能代签M1/M2/M3；生产Registry仍`DESIGN_TARGET_NOT_APPLIED`、全局与六Job disabled。
+- **接续施工顺序**：①M1本人登录/导入/读取及撤权证据独立收口（旧密码先核既有失效回执，不要求默认重置）；②M2合法Owner私有会话与D01—D03 Registry/Runner接线及隔离整链；③M3独立Reviewer服务真实可验的资格/撤权闭环；④并行M4长期委托/回执与T1—T7合成正反测试；⑤仅在合法外发许可、真实Provider与费用界限及前述能力到位后进行M4双主体真实验收。M2/M3生产迁移、Gate激活及外发仍按既有独立授权执行。
+- **回执规则**：本段仅是`M4_CODE_PREPARATION_ALLOWED / M4_LIVE_EXECUTION_HOLD`的依赖归位，不更新`CURRENT.md`，不勾选M4任务复选框。下一代码批次必须另在`progress.md`与`target-diff.csv`登记commit/测试/NOT_RUN及回滚。
+
+
+
 依赖：M2/M3；真实外部调用另受资料范围与预算约束。
 
 - [ ] 复用现research/production/tool-ledger/Agent入口，从授权旧资产检索开始构建Plan DAG，连接原Production Tool。
