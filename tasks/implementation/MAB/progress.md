@@ -476,3 +476,5 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 本批无生产数据库、Storage、Gate正式签名/撤权和外部AI费用。已在`PLAN.md`原位补对应责任，不提前交给CodeBuddy。
 
 - **M5正式消费资格映射补充核查**：现行`control.artifact_revision_for`逐项支持来源、证据、世界、解释与L5发布对象，但**不含`publication.work_revisions` / `work_revision`**；它不能基于作品revision本身生成合格的专业G5。故`WATCH`不得将作品Reviewer批准、发布指针或任意故事种子G5伪装成整部作品的资格。需要逐条映射作品内容所引用的合法source/evidence/L5对象，按实际用途及consumer请求独立`qualification_allows`与权利验证；不能覆盖的分面HOLD，不能先公开再补验。该缺口不要求重建MHKA或另造第七门。
+
+- **客户端精确审核者绑定补正**：`d28ebbb65a54cab32cff92ede8a5a5b6c072dfa0`进一步要求独立服务回执`reviewer_binding_ref`与申请完全相同，不接受其它Reviewer绑定的真形状回执；`f9752f2904a18f3e3da6a72d9f40202fbed9376f`补此负例。仍为合同源码及测试文件，**无独立服务运行回执**。
