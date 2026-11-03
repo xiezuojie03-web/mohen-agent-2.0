@@ -187,6 +187,8 @@ MAB-ENG-01批次进展（2026-11-02，详细证据见progress.md）：私有原�
 
 **2026-11-03 M3只读验Gate客户端接线**：`main@1606ddcc` 为唯一Runner按需注入独立HTTPS资格当前状态读取回调，仅传run/job/stage/Gate/输入与输出摘要、绑定引用，拒绝缺配置、非法应答与超长响应。真实独立Gate服务不在Producer进程中签发，原`requireIndependentStageQualification`仍按当前审计、精确输入输出、失效时间拒绝非法交接；`34d68fec`新增对PASS匹配、撤权、输出变化、过期的组合合同负例。CI `41579537812`、`41579907762`、`41580080729` 均SUCCESS。**仅Runner查询接口代码就绪，不等于独立Verifier服务已经运行、Reviewer资格绑定或生产G签发通过**。Registry维持`DESIGN_TARGET_NOT_APPLIED`、六个Job disabled、Reviewer仍TO_VERIFY；正式M3仍HOLD。
 
+**2026-11-03 旧撤权入口兼容安全修复**：`1dfedaa2`关闭旧Operator对`gate_audits.current_valid`的直接UPDATE路径；`6fe89f5c`、`2eeed56a`使两API明确返回503/不可缓存，不谎报撤权；`59f392ad`补无DB写入的负例单元。此改动临时关闭旧Operator撤权业务，**不**意味着旧作品已撤权或独立Reviewer正式可用。后续须通过已设计的`control.revoke_gate_qualification`由独立身份+精确audit ID+request UUID执行，绑定M5的WATCH逐请求资格拒绝；相关生产/隔离验证仍HOLD。详见`progress.md`本轮回执。
+
 验收：合法独立审签可追溯；生产者自签、旧PASS泛授权、错rev、过期依赖、禁用Job均拒绝。策略的真实启用须有单独明确范围，隔离测试通过不等于正式投运。
 
 回退：暂停新run/候选/资格激活，保留所有审计；不回滚已发生的合法撤权。
