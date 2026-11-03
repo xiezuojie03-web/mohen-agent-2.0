@@ -250,3 +250,11 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 新增`private-evidence-binding.mjs`：以唯一`pool`、私有`storage`、服务端桥核验密钥装配`createPrivateOriginalRepository`→`createPrivateOriginalWorkflow.download`→`createEvidenceBridgeRepository`→`createPrivateEvidenceStageWorker`。D01与D02/D03使用同一个Owner/RLS原件回读；所有D阶段仍先核实签名执行授权，所有结果仍`UNASSESSED`、不可自签G。
 - 新增合成正反测试核缺DB/Storage/核验key、真实装配引用、错误授权前不读取对象、D02/D03仅转交现有桥。**这是工作器的受控组合入口，不是注册到主编排器或生产环境启用**；仍须后续真正的Registry装配/专业资格/隔离PG端到端测试。
 - 本批只提交GitHub源码/测试/施工账；无生产DB、Storage、凭据或Gate写入。当前CI待核。
+
+
+## 2026-11-03｜M1独立收口优先推进、M2/M3继续施工的批次校验
+
+- `main@deed13e1`：M1五项任务“工程证据/生产待验”已在`PLAN.md`逐项登记；M3独立`mohen_gate_authority`角色及继承/NOLOGIN/超权预检修复。GitHub Actions `41570721926` **SUCCESS**。
+- `main@f3a39e6`：M2新私有证据工作器装配入口（Owner-RLS原件仓储→私有回读→现有字节证据桥→D01-D03待审核候选），新增合成装配/拒绝测试。GitHub Actions `41571059844` **SUCCESS**；该CI不能代替真PG/Storage的新增端到端验收，更不能签发M2生产PASS。
+- **阶段判定**：M0`M0_AUDIT_EXIT_PASS`保持；M1`M1_SECURITY_ACCEPTANCE_HOLD`（旧密钥失效非敏感回执、当前生产合法登录/导入/读取与跨Owner/撤权/恢复验收缺）；M2隔离验证继续可继承但私有生产桶/迁移/密钥未获本批生产启用；M3独立Gate仍未安装正式审核策略/身份与真实Verifier，保持HOLD。
+- **范围纪律**：本批无生产数据库、Storage、角色、Gate、密码写入；不因工具/阶段变化重新研究六份MHKA或重复已通过的低权限隔离测试。M2/M3后续围绕真实执行入口和独立Reviewer资格继续增量推进。

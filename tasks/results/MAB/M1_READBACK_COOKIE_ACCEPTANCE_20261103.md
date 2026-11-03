@@ -14,3 +14,10 @@
 - 过期/禁用/跨Owner直接Data API/DB负例及恢复不复活危险权限的真实验收，保留各次有效的隔离测试凭证。
 
 **裁决：M1仍HOLD；上述两批增量CODE_AND_CI_VERIFIED。** 后续真实验收通过才能按任务书对M1独立签发PASS，不连带等待M2/M3激活。
+
+
+## 2026-11-03五项准出责任补证（最新）
+
+M1唯一现行施工计划`tasks/implementation/MAB/PLAN.md`已对五项原任务分别记载已通过的代码/隔离测试证据及生产验收剩余项。当前CI基线：`1b3ef31b` Actions 41566616583 SUCCESS；`2a8c2b49` Actions 41566911728 SUCCESS；`deed13e1` Actions 41570721926 SUCCESS。
+
+这些证据证明私有材料读取、会话Cookie和M3预检的代码质量及既有测试均满足本轮CI要求，**不能代替**本人的线上合法导入/读取与第二账户跨Owner/撤权/失败恢复实际E2E，以及此前可能泄露凭据已失效的非敏感回执。密码轮换很可能已完成，禁止要求默认重复重置。阶段状态仍`M1_SECURITY_ACCEPTANCE_HOLD`，不依赖M2私有Bucket或M3专业Gate正式启动才能完成M1自身验收。
