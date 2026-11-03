@@ -193,6 +193,8 @@ MAB-ENG-01批次进展（2026-11-02，详细证据见progress.md）：私有原�
 
 **2026-11-03 M3独立Reviewer服务处理链候选**：核对现有`packages/data-access/src/gate-authority-repository.mjs`已有`createGateAuthorityRepository.revoke`，可在专用Signer低权限连接、短时Reviewer身份事务中调用唯一`control.revoke_gate_qualification`。据此`2d166d74`新建独立服务的受审请求处理器，要求独立authenticateReviewer实证（不是普通Operator），精确audit/request UUID、理由和绑定，复用已有仓储而非第二套SQL；`328f3bfe`补合成客户端→服务处理器→仓储调用及伪造身份/错绑定/DB失败拒绝。原SQL仅返回blocked_count，没有事件UUID，`7ac30843`修正客户端不要求服务伪造事件ID、以request UUID做现有不可变审计检索键；`d28ebbb6`、`f9752f29`严格匹配Reviewer binding回执。**尚缺独立Reviewer鉴权实现与独立服务实际部署、专用DB登录/数据库RLS实测及当前消费重核**；旧Operator路径仍503。本批属于代码候选及待核CI，M3/M5正式G资格保持HOLD。
 
+**2026-11-03 M3独立撤权服务限额与CI入口**：`6c46a6e1`修正处理器读取完整请求后才检查4096字节的缺陷，改为按块限制、超限413/非法400并确保未写DB；`d93b841c`补异常Content-Length、超大body、畸形JSON/方法负例；`c99d952c`新增`mab-m3-independent-revocation.yml`纯Node22协议测试工作流及禁止直接写Gate静态检查。最新代码与自动测试入口已提交，但需取得实际GitHub Actions SUCCESS才能认隔离合同测试PASS。独立Reviewer、专属PG身份、线上撤权与M5消费实时资格仍HOLD，不能提前启用。
+
 验收：合法独立审签可追溯；生产者自签、旧PASS泛授权、错rev、过期依赖、禁用Job均拒绝。策略的真实启用须有单独明确范围，隔离测试通过不等于正式投运。
 
 回退：暂停新run/候选/资格激活，保留所有审计；不回滚已发生的合法撤权。
