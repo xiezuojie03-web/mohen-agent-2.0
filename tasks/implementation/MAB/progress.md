@@ -460,3 +460,9 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **后续插件施工**：沿现有独立服务合同实现Reviewer当前身份核实、精确audit ID与幂等事件、已撤权/权限拒绝/到期/错scope正反测试，并使M5消费者按用途/consumer/rights每请求校验。未具备正式签发身份和真实环境之前保持M3与M5 HOLD，不把旧work_publication_decisions当专业G5。
 
 - **HTTP回归补齐**：`ab41b4afebfc32789b1d6cb4373eb903903b57f3`新增`tests/unit/mab-m3-revocation-http.test.ts`，覆盖两个真实Route的Operator已登录但服务未就绪返回503/no-store/zero invalidations，以及非Operator仍403。此为测试源码，实际CI运行未核，不提前计PASS。
+
+
+## 2026-11-03｜M5旧版通过不得隐藏新版审核
+
+- `5fb3316bc65329d0ef026da621eb176437915948`原位修复`publication.listPendingReview()`，审核队列NOT EXISTS approved从“同一work有任何旧批准”改为“同一work且**exact work_revision_id**批准”，避免旧版approved导致新版submitted被错误隐藏。这是M5精确修订身份合同的低依赖修复。
+- `db689b256b46652ac102422d6ecafd82a94fed13`新增上述队列查询合同测试。提交后本批真实CI/PG执行回执待核，不称测试PASS。正式审核仍需独立G5资格以及媒体/用途/consumer/撤权测试，不能把作品Reviewer审批当知识资格。
