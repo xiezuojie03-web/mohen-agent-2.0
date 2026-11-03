@@ -770,3 +770,16 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **施工队列**：M1有条件交付已接收→当前唯一M2收口→M3→M4→M5→M6—M8；保全已做M3—M5及全部证据，暂停新增横向功能。M1只因具体变更/可复现缺陷定向重开，普通生产条件未满足不拖住隔离源码施工；同障碍两次无新证据必须改路径/条件准出/BLOCKED，不重复尝试。
 - **M2下一实际工作**：按原七项核对长期资产/私有原件/精确持久关联/恢复的可继承证据；集中补未持久化的L1及候选实体到唯一Runner接线，验证M2交付能被M3审签接收。既有Owner/RLS成果作为固定输入调用，不重新开发。生产Storage及迁移授权单列，不把缺官方Storage测试称PASS。
 - **改动/回退**：仅原位PLAN、progress、CURRENT、当前交接索引、M1核销回执和74差异账的证据/状态范围；无业务源码、SQL或开关变化。撤销本批文档解释可回退此提交；任何最终安全条件和既有撤权不得因此撤回。
+
+
+## 2026-11-03｜M2持久交付闭环→M3实际接收（有限条件准出）
+
+- **基线/范围**：fetch main@331dfc9ffca6cfbcea091daab49a9059c89ca997，工作树干净；继承M1限定工程准出，施工仅M2。最终授权/标准不变，不重新展开M1或横向M4/M5。
+- **第一真实断点已补**：原私有D01仅内存候选。新仓储+CLI生成候选迁移20261103143451把已核验原件字节、精确版本/locator/hash持久到既有source.read_runs/read_units；Owner/项目与run锁、域隔离30秒HMAC、稳定幂等ID、不可变版本、原子失败回滚和最小EXECUTE。app_runtime仍无source schema/表直写，未新增第二资产正文。
+- **下一步接收真实有效**：worker只有取得持久ID和实际row revision才回UNASSESSED；Runner资格未满足仍HOLD，控制输出/落盘机器报告保留无私有引文的refs、run/job/Reviewer绑定和真正input/output digest。现有Producer候选仓储接受同一ref@revision与stage input_fingerprint，原证据桥测试直接使用本次持久L1输出ID连至L2/准确claim revision，不再手工填L1。没有Reviewer PASS或生产Registry启用。
+- **恢复闭环**：该候选与对应原件同backup_id封存DB dump、bytes和manifest，实际对象/PG restore保留同L1 revision及M3输入；恢复库去除旧session key后拒绝旧身份。migration重演/rollback入口关闭且候选/版本钉住不变；原711审计保全。
+- **实际证据**：317单测PASS/4既有联网SKIP，117生产边界PASS/0 SKIP，六workspace类型、Next build、strict auth105路由无缺项；真实PG17.11+官方Storage v1.43.0锁哈希匹配、HTTPS、唯一Runner、M3候选接收、L1-L2-L3精确桥、同身份备份恢复及整套回滚PASS。原始日志已存 `tasks/results/MAB/evidence/CODEX_M2_L1_20261103/`，逐项回执 `tasks/results/MAB/CODEX_M2_L1_20261103.md`。M1浏览器代码未变，直接继承真实旧证据，不以本次PG代替所有生产验收。
+- **审查与真实失败**：独立reviewer指出幂等request_digest不等于Runner input_digest，已RED→GREEN与真实PG跨边界断言修复，M3校验不降级。缺模块/未持久ID/HOLD及机器回执丢refs均先失败后通过。官方fixture首次缺postgres角色、pg_dump wrapper起初未就绪后输出空档等环境根因已定向修复，真实dump/restore最终通过，没skip失败或改安全标准。
+- **原七项核销**：当前物理承接L0—L5与control、L6—L8延后；长期资产最小表/RLS/修订及回执、复合唯一/CAS、永久委托幂等直接继承当前PG实跑；原件状态机、本批精确持久关联与恢复逐项在回执登记，不按文件数伪签所有能力。
+- **裁定及当前施工**：M2_CONDITIONAL_EXIT，支持范围仅已证UTF8待审候选和长期资产最小持久层；M3已实际接收，当前唯一阶段转M3。M2-C01正式环境/Storage/迁移，C02非UTF8读取，C03正式复用写服务固定责任/验收/截止点已写回同一PLAN；不将尚无授权的use_event字符串当实际复用，不将表存在当业务闭环，不勾完整验收PASS。M8最终不带未关闭必交条件，M1-C01—C04继续生效。
+- **生产/回退**：无生产数据库/桶/账号/角色/key操作、私有原文外发或收费Provider；rollback关闭新入口保留不可变候选/资产/审计，回退代码不得恢复memory假落库或已撤权限。源码提交与GitHub CI真实回执取得后追加。

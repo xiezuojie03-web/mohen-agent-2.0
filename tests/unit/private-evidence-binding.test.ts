@@ -2,13 +2,14 @@ import { beforeEach, expect, it, vi } from 'vitest';
 const deps=vi.hoisted(()=>({
   originalRepository:vi.fn(),originalWorkflow:vi.fn(),
   evidenceBridge:vi.fn(),sourceVerifier:vi.fn(),sourceBinding:vi.fn(),download:vi.fn(),linkReading:vi.fn(),linkClaim:vi.fn(),
-  authorize:vi.fn(),handoff:vi.fn(),
+  authorize:vi.fn(),handoff:vi.fn(),readingRepository:vi.fn(),persistReading:vi.fn(),
 }));
 vi.mock('../../packages/data-access/src/index.mjs',()=>({
   createPrivateOriginalRepository:deps.originalRepository,
   createPrivateOriginalWorkflow:deps.originalWorkflow,
   createEvidenceBridgeRepository:deps.evidenceBridge,
   createPrivateOriginalSourceVerifier:deps.sourceVerifier,
+  createPrivateTextReadingRepository:deps.readingRepository,
 }));
 vi.mock('../../pipelines/data-production/orchestrator/execution-authority.mjs',()=>({
   assertStageExecutionAuthorized:deps.authorize,
@@ -44,6 +45,9 @@ beforeEach(()=>{
  deps.evidenceBridge.mockReturnValue({linkReading:deps.linkReading,linkClaim:deps.linkClaim});
  deps.sourceBinding.mockResolvedValue(true);
  deps.sourceVerifier.mockReturnValue(deps.sourceBinding);
+ deps.persistReading.mockResolvedValue({read_run_id:originalId,read_unit_id:originalId,
+   artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64),qualification:'UNASSESSED'});
+ deps.readingRepository.mockReturnValue({save:deps.persistReading});
 });
 it('requires a server-side repository, verified object store, and verifier key',()=>{
  expect(()=>createBoundPrivateEvidenceStageWorker({storage,verificationKey:key})).toThrow('PRIVATE_STAGE_DATABASE_REQUIRED');
@@ -61,6 +65,7 @@ it('composes one identical RLS-authorized original readback into D01 and the evi
  const options=deps.evidenceBridge.mock.calls[0][1];
  expect(options).toMatchObject({verificationKey:key,keyVersion:'test-only'});
  expect(typeof options.readOriginal).toBe('function');
+ expect(deps.readingRepository).toHaveBeenCalledWith(pool,{verificationKey:key,keyVersion:'test-only'});
  const result=await worker.draftTextReading(args('D01',input));
  expect(result.qualification).toBe('UNASSESSED');
  const bridgeRead=await options.readOriginal(originalId,'synthetic-user-session');

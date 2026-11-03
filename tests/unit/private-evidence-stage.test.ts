@@ -13,13 +13,14 @@ const originalId='11111111-1111-4111-8111-111111111111';
 const extent={kind:'utf8_byte_range/v1',start_byte:0,end_byte:Buffer.byteLength(quote),
  raw_sha256:sha(bytes),quote_sha256:sha(Buffer.from(quote)),
  source_version_id:'22222222-2222-4222-8222-222222222222',raw_item_id:'33333333-3333-4333-8333-333333333333'};
-const readOriginal=vi.fn(),linkReading=vi.fn(),linkClaim=vi.fn(),verifySourceBinding=vi.fn();
-const worker=createPrivateEvidenceStageWorker({readOriginal,bridge:{linkReading,linkClaim},verifySourceBinding});
+const readOriginal=vi.fn(),linkReading=vi.fn(),linkClaim=vi.fn(),verifySourceBinding=vi.fn(),persistReading=vi.fn();
+const worker=createPrivateEvidenceStageWorker({readOriginal,bridge:{linkReading,linkClaim},verifySourceBinding,persistReading});
 const base=(stage,input)=>({run:{run_id:'r'},job:{stage,job_id:'j'},registry:{status:'ACTIVE_AUTHORIZED'},context:{},input,token:'synthetic-actor-session'});
 beforeEach(()=>{vi.clearAllMocks();auth.handoff.mockReset().mockReturnValue(false);auth.check.mockImplementation(async()=>{auth.handoff.mockReturnValueOnce(true);});verifySourceBinding.mockResolvedValue(true);
  readOriginal.mockResolvedValue({record:{state:'STORED_VERIFIED',content_type:'text/plain',sha256:sha(bytes)},bytes});
  linkReading.mockResolvedValue({link_id:'link-1',qualification:'UNASSESSED'});
  linkClaim.mockResolvedValue({link_id:'link-2',qualification:'UNASSESSED'});
+ persistReading.mockResolvedValue({read_run_id:originalId,read_unit_id:originalId,artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64),qualification:'UNASSESSED'});
 });
 it('requires an independent stage grant before any private original read',async()=>{
  auth.check.mockRejectedValueOnce(new Error('EXECUTION_SIGNED_GRANT_MISSING'));
@@ -29,7 +30,15 @@ it('requires an independent stage grant before any private original read',async(
 it('binds a D01 candidate to exact UTF8 bytes, never signs G1',async()=>{
  const result=await worker.draftTextReading(base('D01',{originalId,extent,quote}));
  expect(result).toMatchObject({gate_code:'G1',qualification:'UNASSESSED',original_id:originalId,extent,raw_sha256:sha(bytes)});
+ expect(result.read_unit_id).toBe(originalId);
+ expect(persistReading).toHaveBeenCalledWith(expect.objectContaining({runId:'r',originalId,extent,quote,bytes}),'synthetic-actor-session');
  expect(auth.check).toHaveBeenCalledWith(expect.objectContaining({input:{originalId,extent,quote}}));
+});
+it('cannot acknowledge D01 without durable L1 persistence or with a self-qualified persistence result',async()=>{
+ const unbound=createPrivateEvidenceStageWorker({readOriginal,bridge:{linkReading,linkClaim},verifySourceBinding});
+ await expect(unbound.draftTextReading(base('D01',{originalId,extent,quote}))).rejects.toThrow('PRIVATE_READING_PERSISTENCE_REQUIRED');
+ persistReading.mockResolvedValueOnce({qualification:'PASS'});
+ await expect(worker.draftTextReading(base('D01',{originalId,extent,quote}))).rejects.toThrow('PRIVATE_READING_NOT_PERSISTED');
 });
 it('refuses mutated quotes, mid-character offsets, fake hash and wrong original state',async()=>{
  await expect(worker.draftTextReading(base('D01',{originalId,extent:{...extent,start_byte:1},quote}))).rejects.toThrow('PRIVATE_READING_QUOTE_MISMATCH');

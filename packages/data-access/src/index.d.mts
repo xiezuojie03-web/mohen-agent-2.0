@@ -196,3 +196,10 @@ export declare function createStudioDelegationRepository(pool:{connect:Function}
  getDelegation(delegationId:string,token:string):Promise<StudioDelegationRecord|null>;
  listReceipts(delegationId:string,token:string):Promise<StudioExecutionReceiptRecord[]>;
 };
+
+/** Byte-attested private L1 candidate write, never a Gate decision. */
+export declare function createPrivateTextReadingRepository(pool:{connect:Function},options:{verificationKey:string;keyVersion:string}):{
+ save(input:{runId:string;originalId:string;extent:PrivateTextExtent;quote:string;
+   record:PrivateOriginalRecord;bytes:Buffer},token:string):Promise<{
+     read_run_id:string;read_unit_id:string;artifact_revision:string;request_digest:string;qualification:'UNASSESSED'}>;
+};

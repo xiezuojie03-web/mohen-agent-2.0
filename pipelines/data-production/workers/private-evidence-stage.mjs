@@ -12,7 +12,7 @@ function requireBoundStage(stage, job) {
 function requireToken(token) {
   if(typeof token!=='string'||token.length===0)throw Error('PRIVATE_STAGE_SESSION_REQUIRED');
 }
-export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySourceBinding}={}) {
+export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySourceBinding,persistReading}={}) {
   if(typeof readOriginal!=='function'||typeof verifySourceBinding!=='function'||
      typeof bridge?.linkReading!=='function'||typeof bridge?.linkClaim!=='function')throw Error('PRIVATE_EVIDENCE_BRIDGE_REQUIRED');
 
@@ -37,6 +37,7 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
   return {
     async draftTextReading({run,job,registry,context={},input,token}) {
       await authorized({stage:'D01',run,job,registry,context,input,token});
+      if(typeof persistReading!=='function')throw Error('PRIVATE_READING_PERSISTENCE_REQUIRED');
       const {originalId,extent,quote}=input??{};
       if(typeof originalId!=='string'||!UUID.test(originalId)||!extent||
          !UUID.test(extent.source_version_id??'')||!UUID.test(extent.raw_item_id??'')||
@@ -60,11 +61,16 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
          !Buffer.from(selected.toString('utf8'),'utf8').equals(selected)||
          extent.quote_sha256!==hash(selected))
         throw Error('PRIVATE_READING_QUOTE_MISMATCH');
-      // This is a verified L1 *candidate* for existing source.read_runs/read_units;
-      // persistence, D01 professional G1, and D02 evidence linking are separate.
+      const saved=await persistReading({runId:run.run_id,originalId,extent,quote,record,bytes},token);
+      if(saved?.qualification!=='UNASSESSED'||!UUID.test(saved?.read_run_id??'')||
+        !UUID.test(saved?.read_unit_id??'')||!HEX.test(saved?.artifact_revision??'')||!HEX.test(saved?.request_digest??''))
+        throw Error('PRIVATE_READING_NOT_PERSISTED');
+      // Durable L1 candidate; professional qualification remains independent.
       return {stage:'D01',candidate_kind:'private_text_reading',
         original_id:originalId,source_version_id:extent.source_version_id,
         raw_item_id:extent.raw_item_id,raw_sha256:record.sha256,
+        read_run_id:saved.read_run_id,read_unit_id:saved.read_unit_id,
+        artifact_revision:saved.artifact_revision,request_digest:saved.request_digest,
         extent,quote,qualification:'UNASSESSED',gate_code:'G1'};
     },
 

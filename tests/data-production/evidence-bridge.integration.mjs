@@ -23,7 +23,8 @@ const verifierKey='synthetic-byte-verifier-separate-from-session-at-least-32',ke
 sql(`insert into control.original_bridge_verification_keys(key_version,verification_key)values('${keyVersion}','${verifierKey}')`);
 const bridge=access.createEvidenceBridgeRepository(pool,{readOriginal:originals.download,verificationKey:verifierKey,keyVersion});
 const bytes=Buffer.from('桥边有市。\n合成样本，仅验证字节定位，不是历史材料。'),quote='桥边有市。';
-const originalId=randomUUID(),assetId=randomUUID(),source=randomUUID(),version=randomUUID(),raw=randomUUID(),run=randomUUID(),unit=randomUUID(),evidence=randomUUID();
+const originalId=randomUUID(),assetId=randomUUID(),source=randomUUID(),version=randomUUID(),raw=randomUUID(),productionRun=randomUUID(),evidence=randomUUID();
+let run,unit;
 const rawRef='mohen-private-originals/'+project+'/'+originalId+'.bin',hash=originalHash(bytes),quoteHash=originalHash(Buffer.from(quote));
 const extent={kind:'utf8_byte_range/v1',source_version_id:version,raw_item_id:raw,start_byte:0,end_byte:Buffer.byteLength(quote),raw_sha256:hash,quote_sha256:quoteHash};
 const literal=x=>"'"+JSON.stringify(x).replaceAll("'","''")+"'::jsonb";
@@ -33,9 +34,12 @@ try{
  sql(`insert into source.sources(source_id,provider,title,source_type,carrier_type,content_availability)values('${source}','ISOLATED_TEST_ONLY','合成字节定位样本','synthetic','digital_text','full_content');
  insert into source.source_versions(source_version_id,source_id,checksum_sha256)values('${version}','${source}','${hash}');
  insert into source.raw_items(raw_item_id,source_version_id,storage_ref,checksum_sha256,byte_size)values('${raw}','${version}','${rawRef}','${hash}',${bytes.length});
- insert into source.read_runs(read_run_id,raw_item_id,input_sha256,status)values('${run}','${raw}','${hash}','done');
- insert into source.read_units(read_unit_id,read_run_id,method_code,kind,locator_schema,locator,ordinal,payload_ref,locator_hash)values('${unit}','${run}','C01','paragraph','utf8_byte_range/v1',${literal(extent)},1,'${rawRef}','${quoteHash}');
+ insert into control.production_runs(run_id,research_intent,scope,execution_mode,status)values('${productionRun}','synthetic bridge reading',${literal({project_id:project})},'attended','RUNNING');
  insert into evidence.material_evidence(evidence_id,source_id,source_version_id,raw_item_id,locator,modality,literal_reading,source_voice)values('${evidence}','${source}','${version}','${raw}',${literal(extent)},'digital_text','${quote}','synthetic-source-voice')`);
+ const verified=await originals.download(originalId,token(a));
+ const reading=await access.createPrivateTextReadingRepository(pool,{verificationKey:verifierKey,keyVersion}).save({
+  runId:productionRun,originalId,extent,quote,record:verified.record,bytes:verified.bytes},token(a));
+ run=reading.read_run_id;unit=reading.read_unit_id;
  const verifySource=access.createPrivateOriginalSourceVerifier(pool);
  const bound={originalId,sourceVersionId:version,rawItemId:raw,rawSha256:hash};
  assert.equal(sql("select has_schema_privilege('mohen_app_runtime','source','USAGE')"),'f');
@@ -89,5 +93,5 @@ try{
  sql(`update control.original_bridge_verification_keys set is_active=true where key_version='${keyVersion}'`);
  sql(`update studio.projects set lifecycle_status='ARCHIVED' where project_id='${project}'`);
  await assert.rejects(()=>bridge.linkReading(input,token(a)),/ORIGINAL_NOT_FOUND/);
- console.log('MAB_EVIDENCE_BRIDGE_PASS real-private-bytes exact-UTF8-offsets source-version raw-item read-run L1-L2 L2-L3 exact-claim-revision owner archive quote-rejection idempotency no-Gate-PASS');
+ console.log('MAB_EVIDENCE_BRIDGE_PASS real-private-bytes persisted-L1-output-consumed exact-UTF8-offsets source-version raw-item read-run L1-L2 L2-L3 exact-claim-revision owner archive quote-rejection idempotency no-Gate-PASS');
 }finally{try{await storage.discardUnverified(project+'/'+originalId+'.bin');}finally{await pool.end();}}

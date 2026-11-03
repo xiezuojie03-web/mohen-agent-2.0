@@ -6,11 +6,12 @@ import {
   createPrivateOriginalWorkflow,
   createEvidenceBridgeRepository,
   createPrivateOriginalSourceVerifier,
+  createPrivateTextReadingRepository,
 } from '../../../packages/data-access/src/index.mjs';
 import { createPrivateEvidenceStageWorker } from './private-evidence-stage.mjs';
 
 export function createBoundPrivateEvidenceStageWorker({
-  pool, storage, verificationKey, keyVersion,
+  pool, storage, verificationKey, keyVersion='mab-original-bridge-v1',
 } = {}) {
   if (!pool || typeof pool.connect !== 'function') {
     throw new Error('PRIVATE_STAGE_DATABASE_REQUIRED');
@@ -30,5 +31,6 @@ export function createBoundPrivateEvidenceStageWorker({
     readOriginal, verificationKey, keyVersion,
   });
   const verifySourceBinding=createPrivateOriginalSourceVerifier(pool);
-  return createPrivateEvidenceStageWorker({ readOriginal, bridge, verifySourceBinding });
+  const readings=createPrivateTextReadingRepository(pool,{verificationKey,keyVersion});
+  return createPrivateEvidenceStageWorker({ readOriginal, bridge, verifySourceBinding,persistReading:readings.save });
 }

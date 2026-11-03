@@ -69,6 +69,10 @@ try {
     if (delegationResult.status !== 0) throw new Error("STUDIO_DELEGATION_REPOSITORY_TEST_FAILED");
     apply("20261102140000_mab_m2_private_originals.sql");
     apply(fs.readdirSync(directory).find(n => n.endsWith('_mab_m2_evidence_bridge.sql')));
+    apply('20261103143451_mab_m2_private_text_reading.sql');
+    const readingResult=spawnSync(process.execPath,['tests/data-production/private-text-reading.integration.mjs'],{
+      cwd:root,env:{...process.env,MOHEN_TEST_DATABASE:database},stdio:'inherit'});
+    if(readingResult.status!==0)throw Error('PRIVATE_TEXT_READING_TEST_FAILED');
     const provenanceResult = spawnSync(process.execPath, ["tests/data-production/private-original-source-binding.integration.mjs"], { cwd: root,
       env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
     if (provenanceResult.status !== 0) throw new Error("PRIVATE_SOURCE_BINDING_TEST_FAILED");
@@ -108,6 +112,12 @@ try {
   const columnInsertBefore = query(database, "select has_any_column_privilege('mohen_producer','control.gate_candidates','INSERT')");
   if (columnInsertBefore !== "t") throw new Error("CANDIDATE_COLUMN_GRANT_FIXTURE_MISSING");
   if (studioMigration) {
+    const privateReadingBefore=query(database,"select md5(jsonb_build_object('runs',(select jsonb_agg(to_jsonb(r) order by read_run_id) from source.read_runs r where r.config->>'schema'='mab.private-text-reading.v1'),'units',(select jsonb_agg(to_jsonb(u) order by read_unit_id) from source.read_units u join source.read_runs r using(read_run_id) where r.config->>'schema'='mab.private-text-reading.v1'))::text)");
+    apply('20261103143451_mab_m2_private_text_reading.sql');
+    apply('20261103143451_mab_m2_private_text_reading.rollback.sql','rollback');
+    if(query(database,"select has_function_privilege('mohen_app_runtime','studio.persist_private_text_reading(uuid,uuid,uuid,text,uuid,jsonb,text,text)','EXECUTE')")!=='f')throw Error('PRIVATE_READING_ROLLBACK_LEFT_ACCESS');
+    if(query(database,"select md5(jsonb_build_object('runs',(select jsonb_agg(to_jsonb(r) order by read_run_id) from source.read_runs r where r.config->>'schema'='mab.private-text-reading.v1'),'units',(select jsonb_agg(to_jsonb(u) order by read_unit_id) from source.read_units u join source.read_runs r using(read_run_id) where r.config->>'schema'='mab.private-text-reading.v1'))::text)")!==privateReadingBefore)throw Error('PRIVATE_READING_ROLLBACK_CHANGED_CANDIDATES');
+    console.log('MAB_PRIVATE_READING_ROLLBACK_PASS repeatable entry-denied immutable-candidates-preserved');
     const bridgeBefore = query(database, "select md5(jsonb_build_object('read_links',(select jsonb_agg(to_jsonb(r) order by link_id) from evidence.read_unit_evidence_links r),'claim_links',(select jsonb_agg(to_jsonb(r) order by claim_evidence_link_id) from world.claim_evidence_links r))::text)");
     apply(fs.readdirSync(directory).find(n => n.endsWith('_mab_m2_evidence_bridge.sql')).replace('.sql','.rollback.sql'), 'rollback');
     if (query(database, "select has_function_privilege('mohen_app_runtime','studio.bind_private_read_evidence(uuid,uuid,uuid,jsonb,text,integer,text)','EXECUTE') or has_function_privilege('mohen_app_runtime','studio.bind_private_claim_evidence(uuid,uuid,uuid,text)','EXECUTE')") !== 'f') throw new Error('EVIDENCE_BRIDGE_ROLLBACK_LEFT_ACCESS');

@@ -56,7 +56,8 @@ test('M2 real Runner sets current stage before single-use private adapter handof
           assert.equal(actualRegistry,registry);
           assert.equal(consumeAuthorizedStageHandoff({run:actual,job:actualJob,
             input:actualInput,registry:actualRegistry}),true);
-          return {stage:'D01',qualification:'UNASSESSED',gate_code:'G1',candidate_kind:'synthetic'};
+          return {stage:'D01',qualification:'UNASSESSED',gate_code:'G1',candidate_kind:'synthetic',
+            read_run_id:input.originalId,read_unit_id:input.originalId,artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64)};
           }}};
         }}});
     assert.equal(finished.current_stage,'D01');

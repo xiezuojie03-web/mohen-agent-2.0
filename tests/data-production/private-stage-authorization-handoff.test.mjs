@@ -56,6 +56,7 @@ test('M2 private worker consumes the Runner grant once; no duplicate nonce or un
   };
   try {
     const worker=createPrivateEvidenceStageWorker({
+      persistReading:async()=>({read_run_id:id(),read_unit_id:id(),artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64),qualification:'UNASSESSED'}),
       verifySourceBinding:async()=>{bindings++;return true;},
       readOriginal:async()=>{reads++;return {record:{state:'STORED_VERIFIED',content_type:'text/plain',sha256:sha},bytes};},
       bridge:{linkReading:async()=>({link_id:id(),qualification:'UNASSESSED'}),
