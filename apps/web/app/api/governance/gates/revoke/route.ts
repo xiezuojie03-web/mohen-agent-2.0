@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     reason: typeof reason === "string" ? reason : "",
   });
   if (!result.ok) {
-    return NextResponse.json({ ok: false, reason: result.reason }, { status: 400 });
+    return NextResponse.json({ ok: false, reason: result.reason, invalidatedGates: 0 }, { status: result.reason === "INDEPENDENT_GATE_REVOCATION_REQUIRED" ? 503 : 400, headers: { "cache-control": "no-store" } });
   }
   return NextResponse.json({
     ok: true,
