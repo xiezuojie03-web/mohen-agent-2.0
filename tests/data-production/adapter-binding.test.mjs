@@ -44,3 +44,14 @@ test("a nested typed private source cannot bypass the unbound D01-D03 registry",
     qualified_source:{source_refs:[{schema:"mohen.public-source.v1",raw_item_id:"ordinary"}]}
   });
 });
+
+test("M2 selected private D01 adapter can bind without globally changing D00-D05",()=>{
+  const registry=structuredClone(loadRegistry(root));
+  const privatePath="pipelines/data-production/adapters/private-evidence-adapters.mjs";
+  registry.jobs.find(j=>j.stage==="D01").implementation.adapter_binding=privatePath;
+  assertAdapterBinding(root,registry,privatePath,["D01"]);
+  assert.throws(()=>assertAdapterBinding(root,registry,privatePath),/ADAPTER_BINDING_MISMATCH/);
+  assert.throws(()=>assertAdapterBinding(root,registry,privatePath,["D00","D01"]),/ADAPTER_BINDING_MISMATCH/);
+  assert.throws(()=>assertAdapterBinding(root,registry,privatePath,["D01","D01"]),/ADAPTER_BINDING_MISMATCH/);
+  assert.throws(()=>assertAdapterBinding(root,registry,privatePath,["D99"]),/ADAPTER_BINDING_MISMATCH/);
+});

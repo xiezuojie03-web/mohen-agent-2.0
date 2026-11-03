@@ -1,14 +1,27 @@
 import fs from "node:fs";
 import path from "node:path";
 
-export function assertAdapterBinding(projectRoot, registry, adapterPath) {
-  const root = fs.realpathSync(projectRoot);
-  const selected = fs.realpathSync(path.resolve(root, adapterPath));
-  if (!selected.startsWith(root + path.sep) || registry.jobs.some(job => {
-    const binding = job.implementation?.adapter_binding;
-    return typeof binding !== "string" || path.isAbsolute(binding) || binding.split(/[\\/]/).includes("..") ||
-      fs.realpathSync(path.resolve(root, binding)) !== selected;
-  })) throw new Error("ADAPTER_BINDING_MISMATCH");
+export function assertAdapterBinding(projectRoot,registry,adapterPath,selectedStages) {
+  const root=fs.realpathSync(projectRoot);
+  let selected;
+  try{selected=fs.realpathSync(path.resolve(root,adapterPath));}
+  catch{throw Error('ADAPTER_BINDING_MISMATCH');}
+  if(!selected.startsWith(root+path.sep))throw Error('ADAPTER_BINDING_MISMATCH');
+  // Whole-run CLI remains strict by default; a resumed range only needs
+  // its own reviewed stage modules, not a global Registry override.
+  const stages=selectedStages===undefined?registry.jobs.map(j=>j.stage):selectedStages;
+  if(!Array.isArray(stages)||stages.length===0||new Set(stages).size!==stages.length)
+    throw Error('ADAPTER_BINDING_MISMATCH');
+  for(const stage of stages){
+    const job=registry.jobs.find(j=>j.stage===stage);
+    const bound=job?.implementation?.adapter_binding;
+    if(typeof bound!=='string'||path.isAbsolute(bound)||
+        bound.split(/[\\/]/).includes('..'))throw Error('ADAPTER_BINDING_MISMATCH');
+    let canonical;
+    try{canonical=fs.realpathSync(path.resolve(root,bound));}
+    catch{throw Error('ADAPTER_BINDING_MISMATCH');}
+    if(canonical!==selected)throw Error('ADAPTER_BINDING_MISMATCH');
+  }
 }
 
 export function assertNoUnboundTopicInputs(environment = process.env) {

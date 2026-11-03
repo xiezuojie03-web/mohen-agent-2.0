@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import path from "node:path";
+import {STAGE_ORDER} from "./orchestrator/contracts.mjs";
+import {loadTrustedResumeInput} from "./orchestrator/resume-input.mjs";
 import { pathToFileURL } from "node:url";
 import { loadRegistry } from "./orchestrator/registry.mjs";
 import { createRunState } from "./orchestrator/run-state.mjs";
@@ -20,6 +22,7 @@ const executionMode = arg("execution-mode", "attended");
 const runId = arg("run-id");
 const fromStage = arg("from", "D00");
 const toStage = arg("to", "D05");
+const resumeInputFile = arg("resume-input-file");
 const reportDir = path.resolve(arg("report-dir", path.join(projectRoot, "verification", "data-production-runs")));
 
 if (!intent) throw new Error("--intent is required");
@@ -28,6 +31,15 @@ if (!adaptersModule) {
 }
 
 const registry = loadRegistry(projectRoot);
+const start=STAGE_ORDER.indexOf(fromStage),end=STAGE_ORDER.indexOf(toStage);
+if(start<0||end<0||start>end)throw Error("STAGE_RANGE_INVALID");
+if(start>0&&(registry.status!=="ACTIVE_AUTHORIZED"||registry.activation?.enabled!==true))
+  throw Error("REGISTRY_NOT_ACTIVE");
+const resumeInput=loadTrustedResumeInput({
+  stage:fromStage,filePath:resumeInputFile,
+  trustedDirectory:process.env.MOHEN_TRUSTED_RESUME_INPUT_DIR,
+});
+const selectedStages=STAGE_ORDER.slice(start,end+1);
 const run = createRunState({ research_intent: intent, execution_mode: executionMode, run_id: runId || undefined });
 
 // Lazy data access: no adapter or database side effect before execution authorization.
@@ -46,9 +58,10 @@ const finished = await runProduction({
   run, registry, from_stage: fromStage, to_stage: toStage,
   context: {
     execution_authority_tokens: tokens,
+    ...(resumeInput!==undefined?{resume_input:resumeInput}:{}),
     ...(gateVerifier ? {verifyStageQualification: gateVerifier} : {}),
     loadAdapters: async () => {
-      assertAdapterBinding(projectRoot, registry, adaptersModule);
+      assertAdapterBinding(projectRoot, registry, adaptersModule, selectedStages);
       const { assertProducerIdentity } = await import("../../packages/data-access/src/producer-identity.mjs");
       const db = await import("../../packages/data-access/src/index.mjs");
       await assertProducerIdentity(db.queryRows);
