@@ -4,6 +4,7 @@ import { readJsonColumn } from "./db-json";
 // 作品与知识资产分离：作品走 publication.* 三表；知识资产走 read_model。
 import { queryRows, queryValue, run } from "@mohen/data-access";
 import { reflowWorkToAssets } from "./asset-reflow";
+import { requireIndependentWorkPublicationG5 } from "./work-publish-qualification";
 import { randomUUID } from "node:crypto";
 
 const canonicalUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id) ? id.toLowerCase() : null;
@@ -178,6 +179,12 @@ export async function checkPublishEligibility(
     return { ok: false, reason: "no_rights_ack" };
   }
 
+  // Only a signed, current *professional* G5 qualification may open a new
+  // public release. The work Reviewer decision and provenance strings above
+  // cannot confer that qualification. Absent the precise L5 facet mapping,
+  // remain HOLD without changing a submitted revision or publication pointer.
+  const professionalGate = await requireIndependentWorkPublicationG5(workId, revisionId, content);
+  if (!professionalGate.ok) return professionalGate;
   return { ok: true, revisionId };
 }
 
