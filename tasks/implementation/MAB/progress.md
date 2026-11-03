@@ -209,3 +209,10 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 
 - 已完成`main@80442a64` M0审查，CI `41563075520 SUCCESS`。M1生产本轮只读：Supabase Security Advisor提示58项无Policy的RLS INFO（不能自动当漏洞，更不能为消除提示扩大权限）、16项函数search_path WARN。16项均是SECURITY INVOKER的触发器函数，其中15项旧public.guard_*未挂现行触发器，source.forbid_raw_mutation已挂1项；未激活的旧守卫不能据名称视为业务保护。专业Gate/状态提升守卫由M3/M5分责验证，M1仍必须保持凭据/会话与素材合法拒绝验收。
 - 原位详细证据：`tasks/results/MAB/M1_SECURITY_ACCEPTANCE_HOLD_20261103.md`。此前已批准的数据库凭据轮换需要官方实际操作及旧连接失效验证，环境变量标记Sensitive与生产READY不是失效凭据的证明；M1未准出。未读取任何真实secret值，数据库全程SELECT，无SQL DDL或权限操作。
+
+
+## 2026-11-03｜Owner反馈：M1数据库密码轮换很可能已经完成，纠正待办措辞
+
+- 现有Codex平台交接文件明确记录：Owner 新增 Vercel Production `MOHEN_DATABASE_PASSWORD` 后，网站数据库只读查询成功；实际生产Sensitive变量已更新，后续新部署已存在。Owner本轮明确反馈Supabase数据库密码轮换**应该已经完成**。因此轮换操作改记为 `LIKELY_COMPLETED_EVIDENCE_RECONCILIATION_REQUIRED`，**不再默认要求Owner重复重置**。
+- 这些信息尚不等于已核旧口令失效，也不能证明此前意外回显的其它凭据全部撤销。优先复用现有官方非敏感运维记录；不得读取、复用、粘贴或回放旧明文秘密做验证。
+- `M1_SECURITY_ACCEPTANCE_HOLD` 暂不改变，必要余项为合法登录/素材导入、匿名和跨Owner/过期/撤权拒绝、回滚恢复及凭据失效的非敏感证据。不可把新密码是否轮换当作所有剩余M1测试停止的理由。详细见本目录M1安全回执。
