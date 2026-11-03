@@ -360,3 +360,10 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 测试`62e044af51556c1063cce9cd0276e17e1ebafe0e`在原`mab-m4-tool-receipt-failure.test.ts`补缺费用与NaN的拒绝、无数据库写入断言。此前同轮`8f55ea31`修复预占回执失败后释放预算，`9d5dfd80`增加失败及正常回执测试。
 - **证据级别**：仅GitHub源码和新增测试代码可确认；CI检查/真实DB/Provider运行均未在本轮核实PASS，继续`NOT_RUN/CI_PENDING_VERIFICATION`，不把M4认作完整混合委托。M0/M1/M2/M3状态保持原裁决。下一工作仍以M2受控Registry/Runner和M3独立签发服务为关键路径。
 - 回退优先停止未定价外部工具，不允许恢复将未知真实费用写0的路径；不涉及生产数据库、模型费用、Gate或部署变更。
+
+
+## 2026-11-03｜本轮Vercel准确部署状态核销
+
+- 先前GitHub combined status对`9a892009`呈failure，进一步用Vercel部署记录查明`dpl_AUf2dApzYyKubU62mSWM1wDhdq5u`真实状态为`CANCELED`，并非有具体构建错误日志支撑的`BUILD_FAILED`。不凭GitHub聚合failure擅自认定测试失败。
+- 最新`main@56506bf427e92b46bda6cf4f3c209286908898ef`对应生产Vercel部署`dpl_4ifBsyNBYj6uLNioYkwnsoBW2iWL`经官方部署查询为`READY`；包含本轮M4工具注册拒绝、预占回执失败释放及未知费用拒零的源码/测试文件提交。**READY仅证明部署构建，不证明本轮Vitest单元或真实模型调用、正式运行验收**。
+- 本轮没有真实模型费用、生产数据库/Storage/正式Gate状态变更，M1/M2/M3/M4阶段HOLD维持；待GitHub Actions单元/类型等独立回执明确后再归档各个验证项，不从部署READY推导`OWNER_ACCEPTED`。
