@@ -582,3 +582,12 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **隔离单测源码**：`3321eadb`新增`tests/unit/mab-hp08-production-reservation.test.ts`，覆盖未启用Registry零启动、精确CAS与reserved回执早于Runner、并发CAS失败零调用、回执失败零调用、任意extraBudget不生效、余额不足、启动失败保留待核预算等正反场景。先前`293d8a52`、`3ce3c296`和`1d8c7a62`的账本、研究任务、HTTP续跑测试保持继承。**本批真实CI/Vitest/PG运行尚无核实SUCCESS回执**，不能标HP08 PASS。
 - **精确后续责任**：Runner实际terminal receipt→settlement/补偿、跨进程幂等和任务步骤级续跑仍缺；没有独立Signer的真实D00—D05材料合法输入不得启动。原先的生产角色、真实Owner和Provider权限仍HOLD。当前改动没有让业务收费，也没有实际数据库写入；隔离mock通过与否尚未核实。
 - **范围对账**：本批变更属于`PLAN.md §6B HP08`的既有文件增量，不在74个目标文件路径的REVISE集合里；在`progress.md`中记录真实文件/commit/测试责任，不擅自向74项目标新增行。CodeBuddy单次交接继续`HANDOFF_NOT_READY`。
+
+
+## 2026-11-03｜HP03精确资产历史与实际使用记录的私有可读能力
+
+- **继承合同与必要性**：沿现行`specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md §19.1`，长期资产单一`studio.asset_heads+asset_revisions`已具备不可变revision、head CAS、幂等key和跨Owner RLS，原`studio-asset-repository.integration.mjs`历史隔离测试有正反案例。本批**不新建第二套知识正文**、不把工作资产当正式L5、也不将`use_events`中任意字符串当成合法Gate授权。
+- **仓储实现**：`3ee30107`在`packages/data-access/src/studio-asset-repository.mjs`复用`createAppTransaction`和现有精确属主RLS，新增`listAssetRevisions(projectId,assetId,sessionToken)`读取同项目同资产按revision_no倒序的不可变历史，及`listRevisionUseEvents(projectId,revisionId,sessionToken)`读取同项目同修订的真实持久化使用回执。两个方法只读、UUID先验证、返回上限100，跨Owner拒绝由数据库真实session身份/RLS保护。
+- **已有Studio接口增量**：`a611899e`在现有`GET /api/studio/assets`上加`history=1&project_id&asset_id`和`use_events=1&project_id&revision_id`两种显式只读模式；使用已登录用户生成的真实签名数据库session，返回`no-store`，缺参数400，未登录401。原当前资产列表、精确单修订读取及POST接口均保留，不发明冲突的新API ID。
+- **测试源码**：`a46aa20e`在原隔离PG仓储集成测试中追加revision 1/2/3不可变沿革、跨Owner历史为空、合成use_event只对精确revision可见且跨Owner不可见；`75b35b39`新建Studio API正反单测覆盖登录、缺参数、签名会话、no-store及原列表兼容。测试使用fixture rights文字只用于读取/隔离，不构成真实授权或发出跨项目使用行为。
+- **状态**：`HP03_CODE_PRESENT / ISOLATED_TEST_SOURCE_ADDED / CI_UNVERIFIED`。尚未有本批实际PG17和Vitest成功回执；跨项目正式复用写操作、Studio与L0—L5授权核验及真实UseEvent创建服务仍HOLD，需按HP03/HP07/HP11剩余任务执行。没有生产DB修改、没有真实资料/权限变更、没有新费用。CodeBuddy单次交接仍`HANDOFF_NOT_READY`。
