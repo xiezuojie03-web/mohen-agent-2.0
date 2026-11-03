@@ -195,3 +195,11 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **测试边界**：原`authorized-fixture.mjs`只在合成测试中注入独立Reviewer模拟回执（生产CLI不注入）；新增缺回执及过期反例。真实运行时`run.mjs`无已激活的跨权限Verifier时须保持HOLD，不能因构建绿灯而启用D链。
 - **仍需M3施工**：可信生产回执Verifier需要基于独立DB角色的真实`control.current_qualification_is_valid`/purpose/scope/依赖与准确revision字段校验，并将签发、撤权与运行传播闭合。当前只实现拒绝假PASS的编排门，并无正式Reviewer激活；M2生产迁移/Bucket仍未经独立批准。随后补隔离PG/真实身份测试。
 - **CI**：以本批提交对应的GitHub Actions实际回执为准，尚不能预填PASS。
+
+## 2026-11-03｜M0独立基线审查收口；M1安全准出证据核对
+
+- **M0_AUDIT_EXIT_PASS（仅审查）**：以 `main@ff4577afacd9031d91695d706eea597102f2ca56`、Library正式234索引/74目标manifest/20新增清单与最新完整GitHub tree交叉核对。234行=KEEP154、REVISE53、CREATE21、授权归档5、迁移占位符1；KEEP/REVISE/归档路径无意外缺失。18个原路径blob与初始设计baseline不同；74正式目标53个REVISE路径存在/21个CREATE缺席，20新增为18实体路径及2模式/占位符，逐ID均有后续责任。详证 `tasks/results/MAB/M0_AUDIT_EXIT_20261103.md`、`M0_234_BIDIRECTIONAL_RECONCILIATION.csv`、`M0_KAD6_20_RECONCILIATION.csv` 与原位 `target-diff.csv`。此审查准出不代表74目标、M2/M3或Owner验收PASS。
+- **现场核验**：GitHub Actions `41549216459` SUCCESS，Vercel生产已READY@`ff4577af`；生产Supabase迁移仍为五个20261102版本，Storage桶0，正式两桥0，私有原件表及独立Gate策略尚未启动；现有五个关键业务表RLS开启，`imported_materials`匿名/普通认证直接写入拒绝，三运行角色均无SUPER/BYPASSRLS。只读检查，不修改数据库。
+- **M1_SECURITY_ACCEPTANCE_HOLD**：Vercel正式环境中`AUTH_SECRET`、`MOHEN_DATABASE_PASSWORD`、`MOHEN_DATABASE_SESSION_SECRET`均为Sensitive类型；存在更新时间及更新后的生产部署。上述**不能证明旧泄露凭据已经被轮换并失效**。已有隔离身份/RLS/禁用与跨账户、原件私有化测试继承。剩余：在官方安全控制台核实旧DB密码及此前泄露的其它凭据已轮换；保留可信完成回执（不含值），完成真实会话合法登录/导入、匿名和跨Owner拒绝、过期/撤权及直接Data API/DB负例、合法恢复与安全回退。仍然不能签M1准出；这些不是M2私有桶或M3Gate激活要求。
+- **Owner仅在必要时操作**：已批准轮换，不重复征求授权；若Supabase当前连接工具不提供数据库密码重置功能，由Owner在官方控制台执行并只传“操作成功”的非秘密凭证/状态，施工方再完成旧凭据失效与合法新连接验证。不得在聊天、施工账、GitHub或日志公开任何密钥值。
+- **状态纪律**：本批应在完成CI后把`PLAN.md` M0六项勾选并注明限定准出；M1复选项保持未勾，直到真实生产安全证据完整。没有修改`CURRENT.md`的生产业务准出结论，也没有为追求M0绿灯启用M2/M3。
