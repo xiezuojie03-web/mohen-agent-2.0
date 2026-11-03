@@ -78,3 +78,17 @@ it('rejects unsupported file types before invoking the storage workflow',async()
  const response=await POST(new Request('http://test.invalid/api/studio/attachments',{method:'POST',body:form}));
  expect(response.status).toBe(400);expect(state.upload).not.toHaveBeenCalled();
 });
+
+it('accepts the browser Origin matching the incoming Host when Next normalizes its internal URL',async()=>{
+ const req=request();
+ const headers=new Headers(req.headers);
+ headers.set('origin','http://127.0.0.1:3000');headers.set('host','127.0.0.1:3000');
+ const response=await POST(new Request('http://localhost:3000/api/studio/attachments',{method:'POST',headers,body:await req.arrayBuffer()}));
+ expect(response.status).toBe(201);
+});
+it('does not trust a client-supplied forwarded host to authorize a foreign Origin',async()=>{
+ const req=request();const headers=new Headers(req.headers);
+ headers.set('origin','http://evil.invalid');headers.set('host','test.invalid');headers.set('x-forwarded-host','evil.invalid');
+ expect((await POST(new Request(req.url,{method:'POST',headers,body:await req.arrayBuffer()}))).status).toBe(403);
+ expect(state.upload).not.toHaveBeenCalled();
+});

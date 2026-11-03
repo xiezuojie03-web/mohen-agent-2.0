@@ -1,0 +1,10 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ✓ tests/unit/kad1-policy.test.mjs (10 tests) 6ms
+ ✓ tests/unit/kad1-route.test.mjs (10 tests) 12ms
+
+ Test Files  2 passed (2)
+      Tests  20 passed (20)
+   Start at  10:08:05
+   Duration  498ms (transform 72ms, setup 0ms, collect 117ms, tests 18ms, environment 0ms, prepare 123ms)

@@ -53,7 +53,18 @@ export async function POST(req:Request){
  if(!session)return fail("login_required",401);
  if(!enabled())return fail("private_original_storage_unavailable",503);
  const origin=req.headers.get('origin');
- if(origin&&origin!==new URL(req.url).origin)return fail('origin_not_allowed',403);
+ if(origin){
+  // Next may normalize req.url to localhost while preserving the actual Host.
+  // Browser Origin must match that incoming authority; never trust x-forwarded-host.
+  const requestUrl=new URL(req.url),host=req.headers.get('host');
+  let expectedOrigin=requestUrl.origin;
+  if(host){
+   if(/[\s/\\?#@]/.test(host))return fail('origin_not_allowed',403);
+   try{expectedOrigin=new URL(requestUrl.protocol+'//'+host).origin;}
+   catch{return fail('origin_not_allowed',403);}
+  }
+  if(origin!==expectedOrigin)return fail('origin_not_allowed',403);
+ }
  const size=Number(req.headers.get("content-length")||0);
  if(!Number.isSafeInteger(size)||size<0)return fail('bad_request',400);
  if(size>MAX_ORIGINAL_BYTES+4096)return fail("file_too_large",413);

@@ -727,3 +727,8 @@ HP01同批推送复核：修复代码67b2984，主CI41612672544及M1真实隔离
 ### 2026-11-03 Codex HP02会话安全增量（M1整体仍HOLD）
 
 补旧Cookie复制重放、禁用恢复复活及退出UI假成功缺口；候选撤销迁移与默认关闭开关已实现，隔离PG17/Next/Chromium通过，未应用生产。单测258 PASS/4原联网SKIP，生产边界98 PASS，HTTP5 PASS/1官方StorageSKIP。参见[HP02回执](../../results/MAB/CODEX_HP02_20261103.md)。生产激活须独立批准；启用后不可关闭校验或恢复旧auth绕过撤销，备份恢复还须保全撤销/受控密钥失效。M1生产Owner/旧数据库凭据/恢复等正式准出仍HOLD；继续HP03—07原件证据及独立资格链，不改变原M0—M8、HP结构。
+
+
+### 2026-11-03 HP03—05/HP13后续实绩（不改变M0—M8准出）
+
+最新隔离PG17+官方Storage v1.43.0原件、备份恢复及精确L1→L2→L3证据桥实测PASS；Next+Chromium完整6 PASS/0 SKIP，unit280 PASS/4原SKIP，production98 PASS。发现并修复真实Origin/Host误拒问题，仍拒跨站和伪造转发Host。HP13两缺席KAD1目标已按当前合同适配并执行，原74完整语义仍待核；未激活MHKA。HP02代码2ecde5e对应主CI41615477077、M1浏览器41615477096、PG17 41615477219全SUCCESS。生产只读确认候选会话/原件迁移仍未应用、桶与当前资格仍0；M1—M5正式HOLD不取消。回执及下一步见progress与CODEX_M2_HP13_20261103.md。

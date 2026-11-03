@@ -628,3 +628,17 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 真实验证：12项新增单测含最初6 FAIL→GREEN及false ACK反例；全单测258 PASS/4原SKIP，六工作区typecheck/Next build PASS，production98 PASS，strict auth104无缺口，85/152静态追溯PASS；真实PG17权限/失效/重复迁移/rollback PASS；真实HTTP浏览器5 PASS/1 Storage SKIP，退出UI先红后绿。所有测试均合成标记隔离库，无生产/付费Provider。
 - 本批CODE_PRESENT/VERIFIED_ISOLATED，正式M1仍HOLD。生产需既有独立授权、最低角色与时钟验证；恢复不能丢失后续撤销记录。原默认pnpm test缺.env.local继续DEFERRED_ENV。push CI精确SHA/运行ID后续追加。
 - 下一主线：HP03—05官方隔离Storage与D01—D03证据链补最新实测，HP06—07独立资格与消费者；HP08预算终态与HP10—12业务闭环继续。无产品方向和新增成本变化，未请求微步骤确认。
+
+
+### HP02 push实测追加（2ecde5e）
+
+代码SHA `2ecde5e516eae3885e7d8d2492a8556aebfdfdc2`：主CI41615477077 SUCCESS、M1隔离HTTP41615477096 SUCCESS、PG17隔离41615477219 SUCCESS；三项精确headSha一致，机器步骤JSON已写HP02 evidence。成功范围是候选源码及隔离，不是生产会话撤销已激活。
+
+## 2026-11-03｜Codex HP03—05官方Storage整链复核及HP13两缺席测试适配
+
+- 从最新main@2ecde5e接续；复现官方Storage v1.43.0锁定源码、PG17.11及真实HTTPS代理，补此前本轮Storage缺口。实际ENOSPC和供应商测试角色前置失败已查因解决，仅改一次性标记测试环境，不改生产。
+- 实际产品失败：Secure Cookie客户端修正后，真实Chromium暴露原件接口以Next内部req.url判断Origin误拒403；单测先红后绿修复为实际Host同源判断，伪造x-forwarded-host不获放行。multipart和二进制helper保持真实浏览器，不通过关闭Secure/权限检查跑通。
+- 真实结果：官方Storage私有上传/读回/匿名拒绝/篡改PASS；PG17+官方Storage原件PENDING/并发/ACK丢失/DB回滚/对象与DB备份恢复、精确source/raw/read_unit/evidence/claim_revision桥PASS；完整Next+Chromium6 PASS/0 SKIP；unit280 PASS/4原联网SKIP，production98 PASS。精确输入授权/唯一Runner与独立Reviewer整链仍未签运行PASS。
+- HP13两缺席目标测试现已适配，20项通过且已接Vitest；冻结原测试中提前MHKA切换/旧文本断言未照搬，差异账记录ADAPTED与限定单位验证，不假称字节相同或74语义完成。原M8不激活。
+- 生产只读现场：mohen-cloud ACTIVE_HEALTHY；会话撤销表/失效字段、private_originals仍缺，bucket=0、qualification_current=0；三内部角色非super/无bypassrls；publication_schedules无RLS但anon/authenticated无SELECT。Advisor INFO/WARN逐类记录，未据此盲改生产。详见[本批回执](../../results/MAB/CODEX_M2_HP13_20261103.md)。
+- 全部数据为合成隔离数据；无生产DDL/桶/账号/正式G/模型费用/真实资料外发。生产准出及旧凭据/生产恢复依然HOLD。最新push SHA/CI待提交后追加。

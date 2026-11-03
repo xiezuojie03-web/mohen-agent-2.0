@@ -1,0 +1,45 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/studio-original-attachment-route.test.ts (13 tests | 1 failed) 45ms
+   ✓ refuses anonymous upload and download 8ms
+   ✓ fails closed before feature activation 2ms
+   ✓ acknowledges only verified persisted original, no object key or public URL 12ms
+   ✓ does not report success for aborted verification or DB rollback 2ms
+   ✓ rejects missing declaration and invalid project before storage 2ms
+   ✓ downloads only when repo verifies ownership twice and bytes are intact 1ms
+   ✓ does not leak original on revoked or cross-owner DB access 1ms
+   ✓ rejects a chunked oversize body before multipart parsing or storage 3ms
+   ✓ rejects a browser POST from a different origin before reading bytes 3ms
+   ✓ times out a stalled upload before metadata or storage writes 3ms
+   ✓ rejects unsupported file types before invoking the storage workflow 2ms
+   × accepts the browser Origin matching the incoming Host when Next normalizes its internal URL 4ms
+     → expected 403 to be 201 // Object.is equality
+   ✓ does not trust a client-supplied forwarded host to authorize a foreign Origin 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/studio-original-attachment-route.test.ts > accepts the browser Origin matching the incoming Host when Next normalizes its internal URL
+AssertionError: expected 403 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 403
+
+ ❯ tests/unit/studio-original-attachment-route.test.ts:87:26
+     85|  headers.set('origin','http://127.0.0.1:3000');headers.set('host','127…
+     86|  const response=await POST(new Request('http://localhost:3000/api/stud…
+     87|  expect(response.status).toBe(201);
+       |                          ^
+     88| });
+     89| it('does not trust a client-supplied forwarded host to authorize a for…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 12 passed (13)
+   Start at  10:06:36
+   Duration  385ms (transform 90ms, setup 0ms, collect 119ms, tests 45ms, environment 0ms, prepare 82ms)

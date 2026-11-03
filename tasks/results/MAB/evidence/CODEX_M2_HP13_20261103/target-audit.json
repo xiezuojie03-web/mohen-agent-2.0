@@ -1,0 +1,363 @@
+{
+  "schema": "mohen.mab.handoff-target-audit.v1",
+  "repo_sha": null,
+  "generated_at": "2026-11-03T10:10:16.270Z",
+  "status": "HANDOFF_NOT_READY",
+  "count": 74,
+  "original_action": {
+    "REVISE": 53,
+    "CREATE": 21
+  },
+  "implementation_status": {
+    "CODE_PRESENT": 74
+  },
+  "target_validation": {
+    "DESIGN_TARGET_SEMANTICS_NOT_VERIFIED": 74
+  },
+  "hp13_current_semantic": {
+    "UNVERIFIED": 53,
+    "DESIGN_TEXT_IDENTICAL_RUNTIME_NOT_VERIFIED": 19,
+    "VERIFIED_ISOLATED_UNIT_ONLY_FULL_CONTRACT_PENDING": 2
+  },
+  "hp_work_packages": [
+    "HP01",
+    "HP02",
+    "HP03",
+    "HP04",
+    "HP05",
+    "HP06",
+    "HP07",
+    "HP08",
+    "HP09",
+    "HP10",
+    "HP11",
+    "HP12",
+    "HP13"
+  ],
+  "additional_responsibilities": [
+    "A01",
+    "A02",
+    "A03",
+    "A04",
+    "A05",
+    "A06",
+    "A07",
+    "A08",
+    "A09",
+    "A10",
+    "A11",
+    "A12",
+    "A13",
+    "A14",
+    "A15",
+    "A16",
+    "A17",
+    "A18",
+    "A19",
+    "A20"
+  ],
+  "missing_target_count": 0,
+  "hp13_byte_exact_target_count": 19,
+  "hp13_byte_exact_paths": [
+    "apps/web/app/api/studio/works/[id]/revisions/[rev]/panels/[panel]/route.ts",
+    "governance/mhka/MHKA-00_Governance_Charter.md",
+    "governance/mhka/MHKA-01_Value_and_Strategy.md",
+    "governance/mhka/MHKA-02_Humanistic_Product_and_Experience.md",
+    "governance/mhka/MHKA-03_Knowledge_World_and_Data_Architecture.md",
+    "governance/mhka/MHKA-04_Agent_and_Professional_Capabilities.md",
+    "governance/mhka/MHKA-05_Software_Engineering_and_Operations.md",
+    "specs/SYSTEM_RUNTIME_ARCHITECTURE.md",
+    "specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md",
+    "specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md",
+    "specs/experience-ui/H1_H2_H3_AND_COMPONENTS_CONTRACT.md",
+    "apps/web/lib/kad1-policy.d.mts",
+    "apps/web/lib/kad1-policy.mjs",
+    "supabase/migrations/202611020900_kad1_watch_revision_isolation.sql",
+    "supabase/migrations/202611020910_kad1_consumption_blocks.sql",
+    "supabase/migrations/202611020920_kad1_account_transactions.sql",
+    "supabase/rollback/202611020900_kad1_watch_revision_isolation.rollback.sql",
+    "supabase/rollback/202611020910_kad1_consumption_blocks.rollback.sql",
+    "supabase/rollback/202611020920_kad1_account_transactions.rollback.sql"
+  ],
+  "existing_target_byte_diff_count": 55,
+  "existing_target_byte_diffs": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "actual_sha256": "2f61e8449c4600378b47574491566feb2b5ef4f09a5694604404f20a803524a1",
+      "target_sha256": "8929efac9a2a343446f322ccd8a593adf854eb6ef59acc1e0c06a3d42129c020"
+    },
+    {
+      "path": "AGENTS.md",
+      "actual_sha256": "d701136d94d5a96eb4dcfe06e14c05db1b54e2395e05c87de140421a953d845d",
+      "target_sha256": "3ed0f5d00452c1ca9234617635ca3c38773a919928a6ebdec3dc7040305c9775"
+    },
+    {
+      "path": "OWNERSHIP_MAP.md",
+      "actual_sha256": "70eab17e47e4b3aef8b0b5ad50a4b787f84a2209d3cd67c407a55611c0942a9c",
+      "target_sha256": "cdbbbbe884a24712e1c0728a78ff570d9000e3f34b7a44d0cbebe64722ae4e41"
+    },
+    {
+      "path": "apps/web/app/api/admin/acl/route.ts",
+      "actual_sha256": "a473acd02baae839c788e097aa957de2079d0fd6268b22fe7ee3ef73224cf30d",
+      "target_sha256": "9073375171a67606409fe4c971c8977b8903173d1d15e6ce89a180ecbc8cd2f3"
+    },
+    {
+      "path": "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
+      "actual_sha256": "fd2d0def847cdb8af411a22f3a8b00cc7fb4e0a87bc68f2312ac8e4a7e6cfbe2",
+      "target_sha256": "dae20cfaa3cba6fa6e5058a0f27b6e31b2e96dee2e595802c61285ffa1c55224"
+    },
+    {
+      "path": "apps/web/app/api/admin/publications/route.ts",
+      "actual_sha256": "9b56b515b6dba6c97bd66fd6da779c2fe96e18c3c369e4940b51bf6005a58d4f",
+      "target_sha256": "eba82468b39f8b6786b38f666f4e07d185fd07bf821ed630424a15eca299b4e7"
+    },
+    {
+      "path": "apps/web/app/api/admin/rights/invalidate/route.ts",
+      "actual_sha256": "6a3b803aa5d2da6ef5db11fcd622b8beb91b5da0e9f7e46b9eb06f441cc5090a",
+      "target_sha256": "402a55c3b9b959a3d6cc51ecdfc4a1431ae8a9144f2f9118f14992cf48fef58d"
+    },
+    {
+      "path": "apps/web/app/api/admin/users/[id]/status/route.ts",
+      "actual_sha256": "8b89f135e937f3fa4ad1965c32d0d58c6dc152df3b6fb23727a16165ceb422e9",
+      "target_sha256": "3dcb8680053b26a5ed46718cc51c432d4606992d23bddb7e9f25e5cdb8632aa0"
+    },
+    {
+      "path": "apps/web/app/api/explore/entities/[id]/route.ts",
+      "actual_sha256": "fd0d99e1da845f76da78b2261be6873c8e9106d5c6d984ae68b63db23e5fe575",
+      "target_sha256": "2dd1df70dc6305f5773d634454addee55b03bd7edf072c8ee09f07dea9d9e268"
+    },
+    {
+      "path": "apps/web/app/api/explore/events/[id]/route.ts",
+      "actual_sha256": "4432eb8cd02256a0d0de13540690afb6237db70051d20bc1cabdeac965e2ddea",
+      "target_sha256": "2dd1df70dc6305f5773d634454addee55b03bd7edf072c8ee09f07dea9d9e268"
+    },
+    {
+      "path": "apps/web/app/api/explore/relations/[id]/route.ts",
+      "actual_sha256": "7916c08ae7b89ccdbed58f0a4670386089827af896d896a553a699cc5687da82",
+      "target_sha256": "2dd1df70dc6305f5773d634454addee55b03bd7edf072c8ee09f07dea9d9e268"
+    },
+    {
+      "path": "apps/web/app/api/governance/gates/revoke/route.ts",
+      "actual_sha256": "d6620f53ed7ba8eaed360ee09c08cb59a212059a77284a2d9c84b2a34d9f303b",
+      "target_sha256": "c9c2d199b6b58e5a5534d65b76a743327fa1acd6e0081a8170d3c2f6111ec6e9"
+    },
+    {
+      "path": "apps/web/app/api/public/evidence/[id]/route.ts",
+      "actual_sha256": "47e691e48fbab05f3106ee08da3a41aca42b65cb7e9eb32cf09ad9fac5296617",
+      "target_sha256": "0a743129172cbe8b26612cefc91aaa2c89baab406325cafeb9469c08802611bc"
+    },
+    {
+      "path": "apps/web/app/api/studio/attachments/route.ts",
+      "actual_sha256": "a9ded206e6d16529fabdb6eb9a136a8a1f8318d80618244cd815abca375eb962",
+      "target_sha256": "61c8c18a9cc1d56557911191766ec95c46582f5fa2e5ddd7f91219693a8af6e0"
+    },
+    {
+      "path": "apps/web/app/api/studio/works/[id]/revisions/[rev]/route.ts",
+      "actual_sha256": "1d27673f73fa8ee8722dcd974914e98d5501a92e6fa848f7141cc8550f2b9427",
+      "target_sha256": "11a2527377dafb595af670c85020631c118fff25e607eac1a04f83526b730a4e"
+    },
+    {
+      "path": "apps/web/app/api/studio/works/[id]/revisions/route.ts",
+      "actual_sha256": "d8eeb1743f6601d13700e695fd525bceef39dd72f400f92c941efc1fdc372413",
+      "target_sha256": "80f3c1ebbffb2251e35b6f5c19f37a333ad016407bdfa837f4d9d5788b0e3cab"
+    },
+    {
+      "path": "apps/web/app/api/watch/sessions/route.ts",
+      "actual_sha256": "321000048b53c9a871f9157a2b77d7623892e739dda0028dd06b10709a673576",
+      "target_sha256": "2e347c98421724cff753fcc81c31bf94a3bc398e0716e635be634a7138d0ee05"
+    },
+    {
+      "path": "apps/web/lib/gate-review.ts",
+      "actual_sha256": "4f2aed75b569df255c8b85d0d7bbd0ef773ca410c4993cd87863b77522b78737",
+      "target_sha256": "555f7af929b641988eb4d9633a87d9e63e6d617deb98e92488c44af7eaf56272"
+    },
+    {
+      "path": "apps/web/lib/gate-revoke.ts",
+      "actual_sha256": "b21d459943ae44db903539d60acce267e0bd71698ea6ba3845f1e1f5d751cf42",
+      "target_sha256": "9be091ddd41f953b5f3aa96904cdbe70396480ca7cbbd72eff372ed8a824564d"
+    },
+    {
+      "path": "apps/web/lib/mohen-agent/retrieve.ts",
+      "actual_sha256": "2e7aae12d41b32fb2bf19b6b2602b0c68269ce6df20169d58287eea53b9c992c",
+      "target_sha256": "bb411ec65fe84a5794c91612f7ec728c6b35ad7483ae6cc8696bbba9ec3f6311"
+    },
+    {
+      "path": "apps/web/lib/publication.ts",
+      "actual_sha256": "4f27800bdb1ca4282d62be6496910f959107436a1ee3ad1dbf6dca44ac0c1c96",
+      "target_sha256": "06fbf7b66383b05e9d7dd9da185eb3cf65df25fb04b2a8ad92c2e38432ddea54"
+    },
+    {
+      "path": "apps/web/lib/read-model-bridge.ts",
+      "actual_sha256": "c29aa1d951fa6db0a3e478d1879a6a0af47eac7afbecde33a444572c30a93426",
+      "target_sha256": "16daf96b20aa111381d74ce34d2b3ec1de86113961e35017aba1e84acde325a5"
+    },
+    {
+      "path": "apps/web/lib/studio-director.ts",
+      "actual_sha256": "e2fbd190945d371e5ce6c226d3fae2596cba81a3cb544ff31db8a9f729818cee",
+      "target_sha256": "7911882277f62a2c930118fcf45d202d14e864776687fd7a13c4f21998bac1c6"
+    },
+    {
+      "path": "skills/README_DATA_PRODUCTION_SKILLS.md",
+      "actual_sha256": "37306a0ab7a4383921e84a739df4df650bb2dd8f95f28314bdb27e0d4a6fc1d7",
+      "target_sha256": "e04bc89e3df2a4f0f58b72c0437a64073e9ce2295c33f793728c70c2ae3c6ef1"
+    },
+    {
+      "path": "skills/mohen-carrier-reading/SKILL.md",
+      "actual_sha256": "4fe3088db08e5449874511af349d647652c61eac5bdf9cf86c8ad68b6b20e3e6",
+      "target_sha256": "16a2704d02732bfeb4d120eff6bc497c68f36aaa55ea06ecced182a470f393b7"
+    },
+    {
+      "path": "skills/mohen-humanistic-discovery/SKILL.md",
+      "actual_sha256": "0fbba18a93f57ec9458112a0e29c2f5ce7393c2dd2c0f1504e8f5b4b97c35eeb",
+      "target_sha256": "fe6370a7725e85f56218a3c2ba339d4c5e2e76e596e1368183e46259dcf2ddfb"
+    },
+    {
+      "path": "skills/mohen-material-understanding/SKILL.md",
+      "actual_sha256": "1fbe834396a7a7f73cb4f0afca52d993c470ca43048375fae8e45833451c720c",
+      "target_sha256": "aab4dd10c9791d90018911ae179753801ecaf7224f340930d6212258984f167c"
+    },
+    {
+      "path": "skills/mohen-read-model-publication/SKILL.md",
+      "actual_sha256": "b56bdf57cbf541a6263b96321a0051fe5a9cbb583ce126e11bfb13331be77891",
+      "target_sha256": "7bd1d0aa22ddd2af141d9c7967ed2f8a82391baf03150138de132041acae5bc0"
+    },
+    {
+      "path": "skills/mohen-source-intake/SKILL.md",
+      "actual_sha256": "b5d19ac9548abaf58468bd5d3d7d84ed7e860211e1fcd387d9293bb519ef79de",
+      "target_sha256": "9935cb39fa1665357f52875a0297f7c083db50db28f6e72f526e91edad546dee"
+    },
+    {
+      "path": "skills/mohen-world-construction/SKILL.md",
+      "actual_sha256": "4b039d07c0014837a847744d74afb34b2c050e2dc61fa288f3a31b5ee5942633",
+      "target_sha256": "79205999af044e3754060c3136e2284e86dc7100ebed39ee2e653655675022c4"
+    },
+    {
+      "path": "specs/AGENT_CONTRACT.md",
+      "actual_sha256": "88e7e08a8c79bda493964ba46ada61ecb4a680d3cc353a9f13df286d545e0a7f",
+      "target_sha256": "2f2e5b32e211dc440e1cd89cc6cee27f18a3b725146203dd38acfb455136ecc3"
+    },
+    {
+      "path": "specs/API_TOOL_CONTRACT.md",
+      "actual_sha256": "fa090c972e7a224aa7bee1fa7a28821eae9fdba78b6f372f2d70ca35ef2e8967",
+      "target_sha256": "0b5481886d2d6185690f58452023347e76fadb275ab6e7a92c37f4e937880012"
+    },
+    {
+      "path": "specs/DATA_CONTRACT.md",
+      "actual_sha256": "a92ff9d06a98b0ec89a5e3c01edfdd7426b9652f38142b80ff210cf123047628",
+      "target_sha256": "db92892ca5b5c4813e436e7935c55042a0f006105df41bb4604b8c24749dcc27"
+    },
+    {
+      "path": "specs/EXPERIENCE_CONTRACT.md",
+      "actual_sha256": "16f9bd92f5318f6c7593f3e9cf99400b715c164e796832000a9dcf936ef89f9e",
+      "target_sha256": "a697cfb4642e8bb1baef20ec0077c00af0d878d13cc0290a710ac279b4a90177"
+    },
+    {
+      "path": "specs/FOUNDATION.md",
+      "actual_sha256": "d2bf28bfd6ca9b3e49fc2f09b8aea53de492731c46390e81cb885ef632973570",
+      "target_sha256": "4f01461c659bcbdccae059903a3782c8165c18a4b3a2637bccfb11915996aaf6"
+    },
+    {
+      "path": "specs/OPERATIONS_DEPLOYMENT.md",
+      "actual_sha256": "0cb8ff21ec6b27d586145c2339a5c902d1898b56426f905c0f3b5ca31f8a691e",
+      "target_sha256": "711bb7aa77bc46b08519d99fdacd4873fddef2e38f46e63d8b6ae782009e1dda"
+    },
+    {
+      "path": "specs/SECURITY_ACCESS_CONTRACT.md",
+      "actual_sha256": "6c32d5fd7775e93df3456ab29b14e0712bb365cd78df70f05c620ec5e8c83843",
+      "target_sha256": "6c1a3fb8b67232314f2304419f291d1314754df3bf4964f777182f8663ba5f1a"
+    },
+    {
+      "path": "specs/data-production/MoHen_Data_Production_Protocol.md",
+      "actual_sha256": "d8c834a70dd6118986218effa0d1cff4f2dd979ab481664e8da5ce462bfb154f",
+      "target_sha256": "d3f1846e361f959df8742358c17e4ea0b60e8da1d0c547bfcdd65291589e4d16"
+    },
+    {
+      "path": "specs/data-production/PERSISTENCE_BINDING_CONTRACT.md",
+      "actual_sha256": "aeeafae674561e5e28971a63c006266b2fa7969af80b300c9d810e338410570f",
+      "target_sha256": "b781ad6cea0831be4eb18f377b4324332671005089fa660f4a7572546ab02e0a"
+    },
+    {
+      "path": "specs/data-production/contracts/ENGINEERING_HANDOFF_CONTRACT.md",
+      "actual_sha256": "c9ea7ba38b89de5fd5ac092a9bb702fb54c91472da06a1ab268e17496f300307",
+      "target_sha256": "98e8de0bd2ae562d8927dac76378da5017c0e62ab0963b37b75fdf6b3b553286"
+    },
+    {
+      "path": "specs/data-production/gates/G0-G5_MACHINE_GATE_CONTRACT_V3.0.md",
+      "actual_sha256": "7d25bdab468e0b4454e1330e609333f085d38b536d24a4e9c98199bc201b3198",
+      "target_sha256": "fafff9fc2034194c4837fd3d85072e3b47fcb0650fbafda7eec70a38f9d45307"
+    },
+    {
+      "path": "specs/data-production/method-binding-contract.json",
+      "actual_sha256": "f71bdd229a2530a2b484d696701f39f0f37e6820aa49adf36d1e0a7bdf93c46c",
+      "target_sha256": "fd801731dd2e457e8feaeb28272e4c12cbcede12db13d8b9b8df20e9e6a8abb2"
+    },
+    {
+      "path": "specs/data-production/production-registry.json",
+      "actual_sha256": "3da27f9a802100edbc26a2d1de2c6ca1fbd7ebe9e43c5fbc79ed789143a96f81",
+      "target_sha256": "6a2f1441f2ddd086f29c18a24986d715d1fe40a21cc1aba90766147d0d18aa91"
+    },
+    {
+      "path": "specs/requirements/TRACEABILITY_INDEX.md",
+      "actual_sha256": "85e33de850cdca34d873d83c030bd8159a284c75c7ee8c062027f965002a9aa5",
+      "target_sha256": "5ec7f9156202c964bde0f781e197f0c96084ec11d4e38a68f054676352adef28"
+    },
+    {
+      "path": "specs/requirements/api-route-contracts.csv",
+      "actual_sha256": "1f9dfbe2e5997a65874c5a37be4317bbd777f5dc2546ebb041da94d6e9c48c65",
+      "target_sha256": "6e1d6e81d774430fe26d24ec855145215aa14facda76a1a6df88134cc98022a2"
+    },
+    {
+      "path": "specs/requirements/u07-action-contracts.csv",
+      "actual_sha256": "01b7d22ca661031845633aec87f52a5815f767e1bd9cba91ceb01f154a33242e",
+      "target_sha256": "953e916df7847022a7b6a246de6f4e6bebd10fc9b9cc525241366b4f1b0dc65f"
+    },
+    {
+      "path": "skills/mohen-acceptance/SKILL.md",
+      "actual_sha256": "274280a3a48b71066fc2c8cb6baee14771b2362af17abc92030eb72adf28dc32",
+      "target_sha256": "544679097e4a87a7da43ebcb4053c15672a56366bcf2f269281667bf80348277"
+    },
+    {
+      "path": "skills/mohen-project-guard/SKILL.md",
+      "actual_sha256": "ca1697b91dd377f1a506856f5143a1b7f851bcccf833f2e9eff49da6376a9b02",
+      "target_sha256": "4f44261d0dce46cc097c94f15e0956adceddd5aa265b56e8e4cb763ef516eaeb"
+    },
+    {
+      "path": "skills/mohen-vertical-slice/SKILL.md",
+      "actual_sha256": "40452381f260e497e465198aec64d2d661fd9ad4f5e7d65046bcc7c3c49bd7b8",
+      "target_sha256": "ca8a58f7b928fe2fbf1f5470b7cf549d8f728fefc8ccde9ae6947afa175adcd3"
+    },
+    {
+      "path": "skills/mohen-historical-spatial-source/SKILL.md",
+      "actual_sha256": "2daeddb60e94dcca23ec3dd04ea0b26be0b69930a390681cb468b302ab96539a",
+      "target_sha256": "d419a42fb28b8576f75b0be823a687cef838016c98d1f6adb31152c3c80dc3f9"
+    },
+    {
+      "path": "skills/mohen-historical-spatial-reconstruction/SKILL.md",
+      "actual_sha256": "b33d1cec56b3c99d33cc603bb9b46fb6d6f118c27a24a8d9d51908ed54411d5a",
+      "target_sha256": "7e8c6f6282a048cdecd83cff14f2521717ee440d6b16d5d2f55f148f75229125"
+    },
+    {
+      "path": "skills/mohen-visual-asset/SKILL.md",
+      "actual_sha256": "0d19e6c3ce077d1b24fa77e4c164a8c51001ea2bd5fb3112924f576f2b1588b8",
+      "target_sha256": "69888f09eba0b0fb0612501914f8cec68533e94c1d3637a3779b02ad6f6a97ca"
+    },
+    {
+      "path": "skills/mohen-experience-prototype/SKILL.md",
+      "actual_sha256": "7c9fa47db2d6e9557cce3081c20eaaf282676055478ea1533e6de800630708bd",
+      "target_sha256": "368f3e39ec17b64e69ddfe73325a1600e9031d8251987a270b86782dddfc32c8"
+    },
+    {
+      "path": "tests/unit/kad1-policy.test.mjs",
+      "actual_sha256": "5d105421ecd7acf416a9db533231cc5d3d29758b6f32dbfa83e11e8278e31ae3",
+      "target_sha256": "d98025fd54c179cb658f19e45ed0a739217420e5a11d738245de3b117eb259f9"
+    },
+    {
+      "path": "tests/unit/kad1-route.test.mjs",
+      "actual_sha256": "3d65486e6f268e68b11a57ee65357376c97ac5a54049a6e7cabca43493ff28d5",
+      "target_sha256": "abc75cfe0012e70b4d3aeffd3a707eabe07f53ab0347db542ea141cd5b7ce789"
+    }
+  ],
+  "missing_targets": [],
+  "unverified_semantics_count": 74,
+  "errors": []
+}

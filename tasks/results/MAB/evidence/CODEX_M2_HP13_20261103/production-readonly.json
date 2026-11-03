@@ -1,0 +1,35 @@
+{
+  "project": "mohen-cloud",
+  "project_id": "fwrhxddcpkibsnmddcfl",
+  "observed_date": "2026-11-03",
+  "mode": "READ_ONLY",
+  "web_session_revocations": null,
+  "session_not_before_present": false,
+  "private_originals": null,
+  "storage_buckets": 0,
+  "current_qualifications": 0,
+  "internal_roles": {
+    "mohen_app_runtime": {
+      "superuser": false,
+      "bypassrls": false
+    },
+    "mohen_producer": {
+      "superuser": false,
+      "bypassrls": false
+    },
+    "mohen_gate_signer": {
+      "superuser": false,
+      "bypassrls": false
+    }
+  },
+  "publication_schedules": {
+    "rls": false,
+    "anon_select": false,
+    "authenticated_select": false
+  },
+  "advisors": {
+    "rls_enabled_no_policy_info": 58,
+    "mutable_search_path_warn": 16
+  },
+  "production_changes": false
+}
