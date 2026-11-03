@@ -1,0 +1,68 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/mab-hp06-signer-connection.test.ts (6 tests | 5 failed) 11ms
+   × rejects a privileged shared login disguised by SET ROLE to gate_signer 7ms
+     → promise resolved "+0" instead of rejecting
+   × rejects a signer login that also inherits producer_login 1ms
+     → promise resolved "+0" instead of rejecting
+   × rejects a signer login that also inherits web_login 1ms
+     → promise resolved "+0" instead of rejecting
+   × rejects a signer login that also inherits authority_login 0ms
+     → promise resolved "+0" instead of rejecting
+   × rejects a signer login that also inherits login_privileged_membership 1ms
+     → promise resolved "+0" instead of rejecting
+   ✓ permits an actual independent low privilege signer login 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/mab-hp06-signer-connection.test.ts > rejects a privileged shared login disguised by SET ROLE to gate_signer
+AssertionError: promise resolved "+0" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+0
+
+ ❯ tests/unit/mab-hp06-signer-connection.test.ts:15:62
+     13| it('rejects a privileged shared login disguised by SET ROLE to gate_si…
+     14|  const {repo,query,release}=fixture({db_identity:'mohen_gate_signer',l…
+     15|  await expect(repo.revoke(input,'synthetic-reviewer-session')).rejects…
+       |                                                              ^
+     16|  expect(query.mock.calls.some(([sql])=>sql.includes('revoke_gate_quali…
+     17|  expect(query.mock.calls.some(([sql])=>sql==='rollback')).toBe(true);e…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/unit/mab-hp06-signer-connection.test.ts > rejects a signer login that also inherits producer_login
+ FAIL  tests/unit/mab-hp06-signer-connection.test.ts > rejects a signer login that also inherits web_login
+ FAIL  tests/unit/mab-hp06-signer-connection.test.ts > rejects a signer login that also inherits authority_login
+ FAIL  tests/unit/mab-hp06-signer-connection.test.ts > rejects a signer login that also inherits login_privileged_membership
+AssertionError: promise resolved "+0" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+0
+
+ ❯ tests/unit/mab-hp06-signer-connection.test.ts:21:62
+     19| it.each(['producer_login','web_login','authority_login','login_privile…
+     20|  const {repo,query}=fixture({[field]:true});
+     21|  await expect(repo.revoke(input,'synthetic-reviewer-session')).rejects…
+       |                                                              ^
+     22|  expect(query.mock.calls.some(([sql])=>sql.includes('revoke_gate_quali…
+     23| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 1 passed (6)
+   Start at  10:12:36
+   Duration  232ms (transform 39ms, setup 0ms, collect 36ms, tests 11ms, environment 0ms, prepare 61ms)

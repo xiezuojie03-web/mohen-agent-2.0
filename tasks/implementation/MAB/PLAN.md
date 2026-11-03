@@ -732,3 +732,8 @@ HP01同批推送复核：修复代码67b2984，主CI41612672544及M1真实隔离
 ### 2026-11-03 HP03—05/HP13后续实绩（不改变M0—M8准出）
 
 最新隔离PG17+官方Storage v1.43.0原件、备份恢复及精确L1→L2→L3证据桥实测PASS；Next+Chromium完整6 PASS/0 SKIP，unit280 PASS/4原SKIP，production98 PASS。发现并修复真实Origin/Host误拒问题，仍拒跨站和伪造转发Host。HP13两缺席KAD1目标已按当前合同适配并执行，原74完整语义仍待核；未激活MHKA。HP02代码2ecde5e对应主CI41615477077、M1浏览器41615477096、PG17 41615477219全SUCCESS。生产只读确认候选会话/原件迁移仍未应用、桶与当前资格仍0；M1—M5正式HOLD不取消。回执及下一步见progress与CODEX_M2_HP13_20261103.md。
+
+
+### 2026-11-03 HP06真实登录隔离增量
+
+修复Signer只查current_user可被高权登录SET ROLE伪装的缺口；增加session_user、实际LOGIN与最小权限/互斥成员关系检查，并要求current_user与session_user一致，避免逻辑role遮蔽真实登录。新7单测先红后绿；真实PG以独立低权LOGIN签审/撤权并拒管理员伪装，unit287 PASS/4旧联网SKIP，production98 PASS，类型/构建PASS。精确证据见progress及CODEX_HP06_20261103.md；这不是生产Reviewer/独立托管服务或M3准出。M2/HP13上批8dd2b5e的主CI41617100385、M1 HTTP41617100327均SUCCESS，官方Storage本地证据与GitHub未配Storage的SKIP分别计量。原阶段树及全部生产HOLD保持。

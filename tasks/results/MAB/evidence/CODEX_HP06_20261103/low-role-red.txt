@@ -1,0 +1,41 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/mab-hp06-signer-connection.test.ts (7 tests | 1 failed) 14ms
+   ✓ rejects a privileged shared login disguised by SET ROLE to gate_signer 4ms
+   ✓ rejects a signer login that also inherits producer_login 0ms
+   ✓ rejects a signer login that also inherits web_login 0ms
+   ✓ rejects a signer login that also inherits authority_login 0ms
+   ✓ rejects a signer login that also inherits login_privileged_membership 1ms
+   ✓ permits an actual independent low privilege signer login 0ms
+   × requires the effective signer identity to remain the actual login identity 7ms
+     → promise resolved "+0" instead of rejecting
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/mab-hp06-signer-connection.test.ts > requires the effective signer identity to remain the actual login identity
+AssertionError: promise resolved "+0" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+0
+
+ ❯ tests/unit/mab-hp06-signer-connection.test.ts:29:62
+     27| it('requires the effective signer identity to remain the actual login …
+     28|  const {repo,query}=fixture({db_identity:'mohen_gate_signer'});
+     29|  await expect(repo.revoke(input,'synthetic-reviewer-session')).rejects…
+       |                                                              ^
+     30|  expect(query.mock.calls.some(([sql])=>sql.includes('revoke_gate_quali…
+     31| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  10:17:33
+   Duration  293ms (transform 53ms, setup 0ms, collect 52ms, tests 14ms, environment 0ms, prepare 69ms)

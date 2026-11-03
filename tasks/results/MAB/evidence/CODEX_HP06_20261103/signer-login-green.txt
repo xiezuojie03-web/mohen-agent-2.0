@@ -1,0 +1,9 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ✓ tests/unit/mab-hp06-signer-connection.test.ts (6 tests) 10ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  10:13:12
+   Duration  245ms (transform 43ms, setup 0ms, collect 44ms, tests 10ms, environment 0ms, prepare 63ms)

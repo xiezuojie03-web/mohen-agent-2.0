@@ -1,0 +1,13 @@
+Scope: 6 of 7 workspace projects
+packages/agent-runtime typecheck$ tsc --noEmit -p tsconfig.json
+packages/data-access typecheck$ tsc --noEmit -p tsconfig.json
+packages/domain typecheck$ tsc --noEmit -p tsconfig.json
+packages/experience-engine typecheck$ tsc --noEmit -p tsconfig.json
+packages/data-access typecheck: Done
+packages/ui typecheck$ tsc --noEmit -p tsconfig.json
+packages/domain typecheck: Done
+packages/experience-engine typecheck: Done
+packages/agent-runtime typecheck: Done
+packages/ui typecheck: Done
+apps/web typecheck$ tsc --noEmit
+apps/web typecheck: Done

@@ -10,6 +10,8 @@ on:
       - ".github/workflows/mab-isolated-db.yml"
       - "tests/data-production/private-original-source-binding.integration.mjs"
       - "scripts/test-k3-db.mjs"
+      - "packages/data-access/src/gate-authority-repository.mjs"
+      - "tests/data-production/gate-authority.integration.mjs"
       - "tests/data-production/web-session-revocation.integration.mjs"
       - "supabase/migrations/*_mab_web_session_revocation.sql"
       - "supabase/rollback/*_mab_web_session_revocation.rollback.sql"

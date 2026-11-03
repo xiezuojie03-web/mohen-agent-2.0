@@ -642,3 +642,15 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - HP13两缺席目标测试现已适配，20项通过且已接Vitest；冻结原测试中提前MHKA切换/旧文本断言未照搬，差异账记录ADAPTED与限定单位验证，不假称字节相同或74语义完成。原M8不激活。
 - 生产只读现场：mohen-cloud ACTIVE_HEALTHY；会话撤销表/失效字段、private_originals仍缺，bucket=0、qualification_current=0；三内部角色非super/无bypassrls；publication_schedules无RLS但anon/authenticated无SELECT。Advisor INFO/WARN逐类记录，未据此盲改生产。详见[本批回执](../../results/MAB/CODEX_M2_HP13_20261103.md)。
 - 全部数据为合成隔离数据；无生产DDL/桶/账号/正式G/模型费用/真实资料外发。生产准出及旧凭据/生产恢复依然HOLD。最新push SHA/CI待提交后追加。
+
+
+### M2/HP13 push复核（8dd2b5e）
+
+源码8dd2b5e7cffe9189cf73875ec5cb46424edb37c8的主CI41617100385及M1隔离HTTP41617100327均SUCCESS，机器JSON入M2 evidence。GitHub浏览器没有官方Storage配置，仍以其实际SKIP为准；本地完整官方Storage6 PASS/0 SKIP为另一明确环境证据，不混写。74目标当前路径缺席0，但74项完整语义仍未签完，HANDOFF_NOT_READY。
+
+## 2026-11-03｜Codex HP06：Signer session_user独立登录边界
+
+- 基线main@8dd2b5e。实际发现GateAuthorityRepository只检查current_user，管理员/共享Web登录先SET ROLE即可伪装；首轮6项新测试先5 FAIL/1 PASS，另补低权登录SET ROLE隐藏身份反例先FAIL后GREEN（总7项）。现同时检查session_user真实登录、Signer成员关系及低权限，拒Producer/Web/authority兼任与高权继承，检查先于Reviewer会话和变更。
+- 原repository集成Pool从k3_admin+role改为真实随机低权LOGIN，仅授Signer并绑定精确Reviewer身份；真实PG17签审/撤权成功、管理登录SET ROLE伪装拒绝、rollback/池身份清理通过。此前SQL角色测试不再被误称独立凭据测试；新连接仍仅为Unix socket合成身份，不冒充真实Reviewer托管服务。
+- 实测unit287 PASS/4原联网SKIP，production98 PASS，六工作区typecheck/Next build PASS，PG17全套含新增角色边界PASS；证据与完整源测对应见[HP06回执](../../results/MAB/CODEX_HP06_20261103.md)。本批未配置Storage，前批官方Storage证据按8dd2b5e独立引用。
+- 无生产角色/Schema/真实Gate/收费Provider变更；本批CODE_PRESENT/VERIFIED_ISOLATED，M3正式身份、stage输入输出映射、实际服务签审/撤权与消费闭环继续HOLD。下一步HP04/06/07合法私有输入与独立资格服务/消费者整链；HP08/09委托恢复及费用终态、HP10—12产品全链继续，不另立架构。

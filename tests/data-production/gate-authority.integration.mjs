@@ -101,19 +101,29 @@ const { createGateAuthorityRepository } = await import('../../packages/data-acce
 const { createRequire } = await import('node:module');
 const requirePg=createRequire(new URL('../../packages/data-access/package.json',import.meta.url));
 const { Pool }=requirePg('pg');
-const signerPool=new Pool({host:socket,port:Number(process.env.MOHEN_TEST_PORT??55432),user:'k3_admin',database,max:1,options:'-c role=mohen_gate_signer'});
+const signerLogin='hp06_signer_'+randomUUID().replaceAll('-','');
+sql(`create role ${signerLogin} login nosuperuser nobypassrls nocreatedb nocreaterole noreplication;
+ grant mohen_gate_signer to ${signerLogin};
+ insert into control.gate_reviewer_bindings(reviewer_user_id,db_identity,gate_code,purpose_namespace,purpose_code,purpose_version,consumer,allowed_scope,valid_until,source_ref)
+ values('${reviewer}','${signerLogin}','G0','G0','fixture','1','producer','{"project":"fixture"}',now()+interval '1 day','TEST_ONLY:independent-login');`);
+const signerPool=new Pool({host:socket,port:Number(process.env.MOHEN_TEST_PORT??55432),user:signerLogin,database,max:1});
 try {
  const repo=createGateAuthorityRepository(signerPool);
  const repoCandidate=candidate({revision:'repository'});
  const id=await repo.decide({candidateId:repoCandidate,requestId:randomUUID(),result:'PASS',ruleVersion:'fixture-rule',validUntil:until,receipt:JSON.parse(receipt),expectedAuditId:null},token);
  assert.match(id,/^[a-f0-9-]{36}$/);
+ const switchedLowPool=new Pool({host:socket,port:Number(process.env.MOHEN_TEST_PORT??55432),user:signerLogin,database,max:1,options:'-c role=mohen_gate_signer'});
+ try {await assert.rejects(()=>createGateAuthorityRepository(switchedLowPool).revoke({auditId:id,requestId:randomUUID(),reason:'hidden login identity'},token),/INDEPENDENT_SIGNER_CONNECTION_REQUIRED/);}finally{await switchedLowPool.end();}
+
  assert.equal((await signerPool.query("select coalesce(current_setting('mohen.session_token',true),'')='' as cleared")).rows[0].cleared,true,'transaction-scoped identity must not leak into a reused pool client');
  await assert.rejects(()=>repo.decide({candidateId:candidate({revision:'bad-token'}),requestId:randomUUID(),result:'PASS',ruleVersion:'fixture-rule',validUntil:until,receipt:JSON.parse(receipt)},'invalid'),/REVIEWER_IDENTITY_REQUIRED/);
  assert.equal((await signerPool.query("select coalesce(current_setting('mohen.session_token',true),'')='' as cleared")).rows[0].cleared,true,'failed transaction must clear its identity too');
  sql(`update source.sources set title='TEST_ONLY changed after signing' where source_id=(select object_id from control.gate_audits where gate_audit_id='${id}')`);
  assert.equal(sql(`select control.current_qualification_is_valid('${id}')`),'f','actual artifact mutation invalidates its old qualification immediately');
  assert.equal(await repo.revoke({auditId:id,requestId:randomUUID(),reason:'fixture repository revoke'},token),1);
-} finally { await signerPool.end(); }
+} finally { await signerPool.end();sql(`drop role ${signerLogin}`); }
 const highPool=new Pool({host:socket,port:Number(process.env.MOHEN_TEST_PORT??55432),user:'k3_admin',database,max:1});
 try {await assert.rejects(()=>createGateAuthorityRepository(highPool).revoke({auditId:next,requestId:randomUUID(),reason:'bad DB identity'},token),/INDEPENDENT_SIGNER_CONNECTION_REQUIRED/);}finally{await highPool.end();}
-console.log('K3_GATE_REPOSITORY_PASS dedicated-identity single-client-transaction token-cleared rollback');
+const disguisedPool=new Pool({host:socket,port:Number(process.env.MOHEN_TEST_PORT??55432),user:'k3_admin',database,max:1,options:'-c role=mohen_gate_signer'});
+try {await assert.rejects(()=>createGateAuthorityRepository(disguisedPool).revoke({auditId:next,requestId:randomUUID(),reason:'disguised admin'},token),/INDEPENDENT_SIGNER_CONNECTION_REQUIRED/);}finally{await disguisedPool.end();}
+console.log('K3_GATE_REPOSITORY_PASS actual-low-privilege-login shared-admin-SET-ROLE-denied single-client-transaction token-cleared rollback');
