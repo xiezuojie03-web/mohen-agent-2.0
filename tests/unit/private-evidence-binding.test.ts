@@ -2,7 +2,7 @@ import { beforeEach, expect, it, vi } from 'vitest';
 const deps=vi.hoisted(()=>({
   originalRepository:vi.fn(),originalWorkflow:vi.fn(),
   evidenceBridge:vi.fn(),sourceVerifier:vi.fn(),sourceBinding:vi.fn(),download:vi.fn(),linkReading:vi.fn(),linkClaim:vi.fn(),
-  authorize:vi.fn(),
+  authorize:vi.fn(),handoff:vi.fn(),
 }));
 vi.mock('../../packages/data-access/src/index.mjs',()=>({
   createPrivateOriginalRepository:deps.originalRepository,
@@ -12,6 +12,7 @@ vi.mock('../../packages/data-access/src/index.mjs',()=>({
 }));
 vi.mock('../../pipelines/data-production/orchestrator/execution-authority.mjs',()=>({
   assertStageExecutionAuthorized:deps.authorize,
+  consumeAuthorizedStageHandoff:deps.handoff,
 }));
 import { createHash } from 'node:crypto';
 import { createBoundPrivateEvidenceStageWorker } from '../../pipelines/data-production/workers/private-evidence-binding.mjs';
@@ -33,7 +34,8 @@ function args(stage:string,content:unknown){
 }
 beforeEach(()=>{
  vi.clearAllMocks();
- deps.authorize.mockResolvedValue(undefined);
+ deps.handoff.mockReset().mockReturnValue(false);
+ deps.authorize.mockImplementation(async()=>{deps.handoff.mockReturnValueOnce(true);});
  deps.originalRepository.mockReturnValue({marker:'scoped-repository'});
  deps.download.mockResolvedValue({record:{state:'STORED_VERIFIED',content_type:'text/plain',sha256:hash(bytes)},bytes});
  deps.originalWorkflow.mockReturnValue({download:deps.download});

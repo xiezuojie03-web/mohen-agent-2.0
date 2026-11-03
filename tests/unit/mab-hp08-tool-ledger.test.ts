@@ -111,3 +111,10 @@ describe("HP08 durable reservation and uncertain provider costs",()=>{
     expect(run).not.toHaveBeenCalled();
   });
 });
+
+// Paid callbacks without a durable task must never reach a provider.
+it.each(["llm-understand", "llm-polish", "retrieve-shl"])("refuses %s without a ledger", async toolId => {
+  const fn = vi.fn(async () => 42);
+  await expect(useTool(undefined, toolId, fn)).rejects.toThrow("TOOL_LEDGER_REQUIRED");
+  expect(fn).not.toHaveBeenCalled();
+});

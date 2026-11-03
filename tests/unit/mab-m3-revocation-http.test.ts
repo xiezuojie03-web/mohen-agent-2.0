@@ -1,4 +1,5 @@
 import {beforeEach,describe,expect,it,vi} from 'vitest';
+import {NextRequest} from 'next/server';
 
 const {isOperator}=vi.hoisted(()=>({isOperator:vi.fn()}));
 vi.mock('../../apps/web/lib/auth',()=>({
@@ -9,13 +10,13 @@ import {POST as rightsInvalidate} from '../../apps/web/app/api/admin/rights/inva
 
 const object={object_type:'story_seed',object_id:'123e4567-e89b-42d3-a456-426614174002',reason:'synthetic'};
 function post(url:string,payload:object) {
-  return new Request('http://localhost'+url,{
+  return new NextRequest('http://localhost'+url,{
     method:'POST',headers:{'content-type':'application/json'},
     body:JSON.stringify(payload),
   });
 }
 describe('M3 legacy revoke HTTP may not report success without independent Reviewer service',()=>{
-  beforeEach(()=>isOperator.mockReset());
+  beforeEach(()=>{isOperator.mockReset();});
   it.each([
     ['/api/governance/gates/revoke',governanceRevoke],
     ['/api/admin/rights/invalidate',rightsInvalidate],

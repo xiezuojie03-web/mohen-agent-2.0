@@ -1,5 +1,6 @@
 import {test,expect} from '@playwright/test';
 import {randomUUID} from 'node:crypto';
+import {browserRequests} from './mab-browser-request';
 
 test.skip(process.env.MOHEN_E2E_ISOLATED!=='1','Run through the marked isolated test-mab-http runner.');
 test.beforeAll(()=>{
@@ -38,14 +39,27 @@ test('private notebook saves, reloads exact revisions, isolates owners and avoid
   await page.getByRole('button',{name:'返回最新版',exact:true}).click();
   await expect(page.getByLabel('记录内容',{exact:true})).toHaveValue('第二版补充了研究问题，仍是私人待核笔记。');
 
+  const history=await page.evaluate(async ({projectId,assetId})=>{
+    const response=await fetch('/api/studio/assets?history=1&project_id='+projectId+'&asset_id='+assetId);
+    return {status:response.status,body:await response.json(),cache:response.headers.get('cache-control')};
+  },{projectId:project.project_id,assetId:first.asset_id});
+  expect(history.status).toBe(200);expect(history.cache).toBe('no-store');
+  expect(history.body.revisions.map((r:{revision_id:string})=>r.revision_id)).toEqual([second.revision_id,first.revision_id]);
+
   const other=await browser.newContext({baseURL:process.env.MOHEN_E2E_BASE_URL});
   try {
-    const registeredB=await other.request.post('/api/auth/register',{data:{email:`mab-${randomUUID()}@example.invalid`,username:'隔离研究者B',password:randomUUID()}});
+    const otherPage=await other.newPage();
+    const otherRequest=await browserRequests(otherPage);
+    const registeredB=await otherRequest.post('/api/auth/register',{data:{email:`mab-${randomUUID()}@example.invalid`,username:'隔离研究者B',password:randomUUID()}});
     expect(registeredB.status()).toBe(200);
-    const projects=await other.request.get('/api/studio/projects');expect((await projects.json()).projects).toEqual([]);
-    const foreignList=await other.request.get('/api/studio/assets',{params:{project_id:project.project_id}});expect((await foreignList.json()).assets).toEqual([]);
-    const foreignRead=await other.request.get('/api/studio/assets',{params:{asset_id:first.asset_id,revision_id:first.revision_id}});expect(foreignRead.status()).toBe(404);
-    const foreignSave=await other.request.post('/api/studio/assets',{data:{project_id:project.project_id,asset_id:randomUUID(),asset_kind:'research_brief',expected_revision_id:null,idempotency_key:randomUUID(),payload:{text:'forged'}}});expect(foreignSave.status()).toBe(404);
+    const projects=await otherRequest.get('/api/studio/projects');expect((await projects.json()).projects).toEqual([]);
+    const foreignList=await otherRequest.get('/api/studio/assets',{params:{project_id:project.project_id}});expect((await foreignList.json()).assets).toEqual([]);
+    const foreignRead=await otherRequest.get('/api/studio/assets',{params:{asset_id:first.asset_id,revision_id:first.revision_id}});expect(foreignRead.status()).toBe(404);
+    const foreignHistory=await otherRequest.get('/api/studio/assets',{params:{history:'1',project_id:project.project_id,asset_id:first.asset_id}});
+    expect(foreignHistory.status()).toBe(200);expect((await foreignHistory.json()).revisions).toEqual([]);
+    const foreignUses=await otherRequest.get('/api/studio/assets',{params:{use_events:'1',project_id:project.project_id,revision_id:first.revision_id}});
+    expect(foreignUses.status()).toBe(200);expect((await foreignUses.json()).events).toEqual([]);
+    const foreignSave=await otherRequest.post('/api/studio/assets',{data:{project_id:project.project_id,asset_id:randomUUID(),asset_kind:'research_brief',expected_revision_id:null,idempotency_key:randomUUID(),payload:{text:'forged'}}});expect(foreignSave.status()).toBe(404);
   }finally{await other.close();}
 
   await page.getByRole('button',{name:'新建记录',exact:true}).click();
@@ -65,6 +79,10 @@ test('private notebook saves, reloads exact revisions, isolates owners and avoid
   await page.getByRole('button',{name:'保存记录',exact:true}).click();
   expect((await retry).status()).toBe(409);
   await expect(page.getByLabel('记录内容',{exact:true})).toHaveValue('修改后的未保存输入，应保留而不是生成第二份同一记录。');
-  const finalList=await page.request.get('/api/studio/assets',{params:{project_id:project.project_id}});
-  expect((await finalList.json()).assets).toHaveLength(2);
+  const finalList=await page.evaluate(async projectId=>{
+    const response=await fetch('/api/studio/assets?project_id='+projectId);
+    return {status:response.status,body:await response.json()};
+  },project.project_id);
+  expect(finalList.status).toBe(200);
+  expect(finalList.body.assets).toHaveLength(2);
 });

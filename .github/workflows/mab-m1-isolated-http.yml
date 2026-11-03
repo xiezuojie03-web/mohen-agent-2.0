@@ -11,6 +11,7 @@ on:
       - "scripts/test-mab-http.mjs"
       - "playwright.mab.config.ts"
       - "tests/e2e/mab-notebook.spec.ts"
+      - "tests/e2e/mab-browser-request.ts"
       - "tests/e2e/private-original-http.spec.ts"
       - "tests/e2e/mab-m1-session-revocation.spec.ts"
       - "apps/web/app/api/auth/**"

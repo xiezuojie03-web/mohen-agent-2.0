@@ -6,7 +6,7 @@ import {
 } from "../../apps/web/lib/studio/tool-ledger";
 
 describe("HP08 tool execution receipt / cost reconciliation",()=>{
- beforeEach(()=>run.mockReset());
+ beforeEach(()=>{run.mockReset();});
  it("cannot invoke a production stage without a persistent task budget",async()=>{
    const fn=vi.fn(async()=>({ok:true}));
    await expect(useTool(undefined,"production-run",fn))
@@ -33,13 +33,13 @@ describe("HP08 tool execution receipt / cost reconciliation",()=>{
    expect(run).toHaveBeenCalledTimes(2);
    expect(budget).toEqual({ceiling:8,reserved:0,spent:1});
  });
- it("records provider execution failure as hold and releases reserved cost",async()=>{
+ it("records uncertain provider execution as hold and retains reserved cost",async()=>{
    run.mockResolvedValue(undefined);
    const fn=vi.fn(async()=>{throw new Error("PROVIDER_FAILED");});
    const budget=createBudget(8);
    await expect(useTool({taskId:"synthetic",budget},"retrieve-shl",fn))
-     .rejects.toThrow("PROVIDER_FAILED");
-   expect(budget).toEqual({ceiling:8,reserved:0,spent:0});
+     .rejects.toThrow("HOLD_EXECUTION_UNCERTAIN");
+   expect(budget).toEqual({ceiling:8,reserved:1,spent:0});
    expect(run).toHaveBeenCalledTimes(2);
    expect(run.mock.calls[1][1].status).toBe("hold");
  });

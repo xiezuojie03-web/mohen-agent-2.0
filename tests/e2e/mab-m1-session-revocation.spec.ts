@@ -1,6 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {execFileSync} from 'node:child_process';
 import {randomUUID} from 'node:crypto';
+import {browserRequests} from './mab-browser-request';
 
 test.skip(process.env.MOHEN_E2E_ISOLATED!=='1','Only on the disposable isolated M1 HTTP runner.');
 
@@ -9,7 +10,7 @@ function isolatedSql(statement: string) {
   const database=process.env.MOHEN_TEST_DATABASE;
   const psql=process.env.MOHEN_TEST_PSQL;
   if(!socket?.startsWith('/workspace/') || !/^mohen_k3_http_[a-f0-9]+_test$/.test(database??'') ||
-      psql!=='/usr/bin/psql')throw Error('M1_ISOLATED_DATABASE_REQUIRED');
+      (!psql || !(psql==='/usr/bin/psql' || /^\/workspace\/work\/[a-zA-Z0-9_/-]+$/.test(psql))))throw Error('M1_ISOLATED_DATABASE_REQUIRED');
   const args=['-X','-q','-At','-v','ON_ERROR_STOP=1','-h',socket,
     '-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database!];
   const marker=execFileSync(psql,args,{input:"select current_setting('mohen.test_instance',true)",encoding:'utf8'}).trim();
@@ -17,7 +18,8 @@ function isolatedSql(statement: string) {
   return execFileSync(psql,args,{input:statement,encoding:'utf8'}).trim();
 }
 
-test('M1 session immediately loses private-project access after account is disabled',async({request})=>{
+test('M1 session immediately loses private-project access after account is disabled',async({page})=>{
+  const request=await browserRequests(page);
   const email=`m1-revocation-${randomUUID()}@example.invalid`;
   const password='SyntheticTest-'+randomUUID();
   const registration=await request.post('/api/auth/register',{
@@ -49,7 +51,8 @@ test('M1 session immediately loses private-project access after account is disab
   expect(login.status()).toBe(403);
 });
 
-test('M1 logout invalidates cookie for subsequent private HTTP access',async({request})=>{
+test('M1 logout invalidates cookie for subsequent private HTTP access',async({page})=>{
+  const request=await browserRequests(page);
   const registration=await request.post('/api/auth/register',{data:{
     email:`m1-logout-${randomUUID()}@example.invalid`,
     username:'隔离退出用户',password:'SyntheticTest-'+randomUUID(),

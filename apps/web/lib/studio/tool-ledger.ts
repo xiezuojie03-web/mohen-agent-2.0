@@ -147,14 +147,14 @@ export class ToolExecutionUncertainError extends Error {
 
 /**
  * 有预算上下文时，把一次工具调用包进 reserve → 执行 → settle/release → 回执。
- * 无预算上下文（即时问答）时直接执行，不记账。
+ * 无预算上下文时只允许确定性本地工具；收费或外部工具必须有持久账本。
  */
 export async function useTool<T>(
   ledger: Ledger | undefined,
   toolId: string,
   fn: () => Promise<T>
 ): Promise<T> {
-  // A missing ledger is permitted for registered immediate-answer tools only.
+  // A missing ledger is permitted for registered deterministic local tools only.
   // Never execute an unregistered callback: otherwise neither routing nor
   // cost/receipt protections can observe an external or production invocation.
   const spec = getTool(toolId);
@@ -163,6 +163,7 @@ export async function useTool<T>(
     // A Production Tool is never an immediate-answer convenience call.
     // It requires an attached task, reservation, durable ledger and authority.
     if (spec.trustTier === "production") throw new Error("PRODUCTION_LEDGER_REQUIRED");
+    if (spec.trustTier !== "deterministic") throw new Error("TOOL_LEDGER_REQUIRED");
     return fn();
   }
 

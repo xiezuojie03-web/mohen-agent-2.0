@@ -1,0 +1,17 @@
+✔ M3 isolated Reviewer transport binds exact audit, idempotent request and bounded response (39.825379ms)
+✔ M3 client cannot be invoked for object-only revoke or invalid request; sends zero network calls (0.912717ms)
+✔ M3 client refuses guessed, stale, forged, oversized, malformed and denied receipts (4.050193ms)
+✔ M3 Reviewer handler and client use existing independent repository: exact request, no forged event UUID (32.926628ms)
+✔ M3 handler rejects fake bearer, wrong binding, malformed IDs and DB failures without fake success (3.998656ms)
+✔ M3 Reviewer handler accepts a valid numeric Content-Length below cap (0.834229ms)
+✔ M3 Reviewer handler rejects oversized payloads before any DB write (0.950565ms)
+✔ M3 Reviewer handler fails closed on malformed JSON and rejects unsupported methods (0.887639ms)
+✔ M3 Reviewer handler cannot boot without independent authenticator and repository (0.567757ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 215.682281

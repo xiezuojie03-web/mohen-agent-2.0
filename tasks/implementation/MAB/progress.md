@@ -600,3 +600,14 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **转移定义**：`CODEX_EXECUTION_HANDOFF_ACCEPTED / TECHNICAL_HANDOFF_NOT_VERIFIED`。这是**执行责任移交**，不是原§6B.3技术验收已READY；最近新代码的完整GitHub Actions push-CI、Vitest、PG17、Next构建及真实授权仍有缺口，M1—M8不因换平台而PASS。
 - **权限与成本**：本次没有执行生产DB/Storage迁移、没有正式G签发、没有真实AI收费调用；私有原件上传及独立G5仍关闭。Codex正式执行生产/付费/资料外发前必须沿原Owner审批、角色、rights与费用规程取证，不得从“同意转平台”推断获得批准。
 - **开工后回执**：Codex必须先fetch实时main，按文档逐项核实CI/typecheck/unit/data-production/build和本批HP03/HP08新增测试，记录实际命令、SHA、PASS/FAIL/SKIP、独立PG测试与回滚证据，再按P0真实缺口施工并原位回写三份权威账；历史旧SUCCESS只按原SHA引用。
+
+
+## 2026-11-03｜Codex HP01 首轮接续：真实 CI 失败修复及隔离复核
+
+- **实际 main 基线**：`3618a630c94a683d727be59939d916c5544694fd`。起始本地759dbbd工作树干净，仅快进；已完整读取CODEX_HANDOFF_CURRENT并按PLAN §5/6A/6B、最新进度/74差异与专业合同核对本批范围，不重开M0架构。
+- **首个P0根因**：push CI `41610775902`与本地TS2339一致，HP03既有历史方法缺声明；已补类型。原Runner授权失败推进current_stage也已修复；无ledger的LLM/external可绕预算回执，三项先红后绿反例后补失败关闭。
+- **真实结果**：冻结安装pnpm9.15.4 PASS；六工作区typecheck PASS；单测246 PASS/4原联网SKIP；production98 PASS；auth strict 104路由缺口0；85/152静态追溯PASS；Next build PASS；真实PG17身份/RLS/独立Gate/精确用途消费者/撤权/资产CAS历史/来源绑定/rollback重跑PASS；真实Next+Chromium+PG17浏览器3 PASS/1官方Storage SKIP；独立撤权协议9 PASS。初次失败和环境修正均保留于[本批回执](../../results/MAB/CODEX_HP01_20261103.md)及相邻evidence，不引用历史READY。
+- **CI事实**：主push基线确实FAIL，已读日志；M1最近`41609441324` FAIL；M3历史`41597387094` SUCCESS@7215b842；隔离PG历史`41576958641` SUCCESS@bcd0715b。历史仅对应各自SHA；本批推送后主CI与M1运行待核，不提前填SUCCESS。
+- **安全边界**：M1客户端退出清Cookie通过不等于复制旧Cookie重放失效，当前无服务端撤销，独立记HOLD；官方Storage未配，生产身份/旧凭据/恢复未验；M2生产候选迁移/M3正式Gate/M4真实外发及收费均未执行。M1—M8、HANDOFF_READY不提升。
+- **下一轮**：HP02旧Cookie重放与禁用恢复会话；HP03项目授权use_event及当前历史只读证据；HP04—07官方Storage/唯一Runner/独立Reviewer授权整链；HP08跨进程预算与终态结算；HP12精确G5/rights映射；HP13剩2个KAD1测试及53份语义核销。生产依赖继续独立HOLD。
+- **回滚**：只revert本批应用/类型/测试变更，不恢复无账本收费或旧Gate旁路；测试随机库已清理，生产无变化。修复代码SHA与push运行将在本节后追加。

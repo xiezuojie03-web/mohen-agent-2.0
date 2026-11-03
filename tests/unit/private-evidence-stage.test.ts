@@ -1,7 +1,8 @@
 import {beforeEach,expect,it,vi} from 'vitest';
-const auth=vi.hoisted(()=>({check:vi.fn()}));
+const auth=vi.hoisted(()=>({check:vi.fn(),handoff:vi.fn()}));
 vi.mock('../../pipelines/data-production/orchestrator/execution-authority.mjs',()=>({
  assertStageExecutionAuthorized:auth.check,
+  consumeAuthorizedStageHandoff:auth.handoff,
 }));
 import {createHash} from 'node:crypto';
 import {createPrivateEvidenceStageWorker} from '../../pipelines/data-production/workers/private-evidence-stage.mjs';
@@ -15,7 +16,7 @@ const extent={kind:'utf8_byte_range/v1',start_byte:0,end_byte:Buffer.byteLength(
 const readOriginal=vi.fn(),linkReading=vi.fn(),linkClaim=vi.fn(),verifySourceBinding=vi.fn();
 const worker=createPrivateEvidenceStageWorker({readOriginal,bridge:{linkReading,linkClaim},verifySourceBinding});
 const base=(stage,input)=>({run:{run_id:'r'},job:{stage,job_id:'j'},registry:{status:'ACTIVE_AUTHORIZED'},context:{},input,token:'synthetic-actor-session'});
-beforeEach(()=>{vi.clearAllMocks();auth.check.mockResolvedValue(undefined);verifySourceBinding.mockResolvedValue(true);
+beforeEach(()=>{vi.clearAllMocks();auth.handoff.mockReset().mockReturnValue(false);auth.check.mockImplementation(async()=>{auth.handoff.mockReturnValueOnce(true);});verifySourceBinding.mockResolvedValue(true);
  readOriginal.mockResolvedValue({record:{state:'STORED_VERIFIED',content_type:'text/plain',sha256:sha(bytes)},bytes});
  linkReading.mockResolvedValue({link_id:'link-1',qualification:'UNASSESSED'});
  linkClaim.mockResolvedValue({link_id:'link-2',qualification:'UNASSESSED'});

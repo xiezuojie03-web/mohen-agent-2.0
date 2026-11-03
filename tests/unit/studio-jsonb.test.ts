@@ -56,10 +56,10 @@ for (const encoding of ["native", "psql"] as const) {
     expect(await reorderBeats("work", 1, [1, 0])).toMatchObject({ conflict: false, revisionNo: 2 });
     expect(JSON.parse(db.run.mock.calls[0][1].content).beats).toEqual([otherBeat, beat]);
   });
-  it(`${encoding} JSON columns retain publication checks instead of dropping existing provenance`, async () => {
+  it(`${encoding} JSON columns retain provenance checks but require independent G5 before publication`, async () => {
     db.queryRows.mockResolvedValueOnce([{ revision_id: revision, content: encode({ beats: [beat], rights_acknowledged: true }) }])
       .mockResolvedValueOnce([{ decision: "approved", reviewer: "separate-reviewer", revision_id: revision }]);
-    expect(await checkPublishEligibility("work")).toEqual({ ok: true });
+    expect(await checkPublishEligibility("work")).toEqual({ ok: false, reason: "independent_g5_required" });
   });
 }
 

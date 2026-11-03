@@ -97,6 +97,11 @@ export interface StudioStoredRevision {
 export interface StudioAssetRepository {
   listProjects(token: string): Promise<Array<{project_id: string; project_title: string; research_scope: unknown; lifecycle_status: string; created_at: string}>>;
   listAssets(projectId: string, token: string): Promise<StudioStoredRevision[]>;
+  listAssetRevisions(projectId: string, assetId: string, token: string): Promise<StudioStoredRevision[]>;
+  listRevisionUseEvents(projectId: string, revisionId: string, token: string): Promise<Array<{
+    use_event_id: string; asset_revision_id: string; consumer: string; purpose: string;
+    requested_action: string; rights_decision_ref: string; created_at: string;
+  }>>;
   createProject(input: {projectId: string; title: string; scope?: Record<string, unknown>}, token: string): Promise<{project_id: string; project_title: string; research_scope: unknown}>;
   saveRevision(input: {projectId: string; assetId: string; kind: string; expectedRevisionId: string | null; idempotencyKey: string; payload: unknown; sourceRefs?: unknown[]; dependencyRefs?: unknown[]}, token: string): Promise<StudioStoredRevision>;
   getRevision(revisionId: string, token: string): Promise<StudioStoredRevision | null>;

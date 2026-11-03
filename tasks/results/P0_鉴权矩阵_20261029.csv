@@ -58,6 +58,7 @@
 /api/public/works/[id]/share,public,no,n/a,OK_PUBLIC
 /api/search,public,no,n/a,OK_PUBLIC
 /api/session/me,public,yes,n/a,OK_PUBLIC
+/api/studio/assets,protected,yes,n/a,OK
 /api/studio/attachments,protected,yes,n/a,OK
 /api/studio/conversations,protected,yes,n/a,OK
 /api/studio/conversations/[id],protected,yes,n/a,OK
@@ -69,6 +70,7 @@
 /api/studio/director-plans/[id]/select,protected,yes,yes,OK
 /api/studio/materials/[id],protected,yes,n/a,OK
 /api/studio/materials/import,protected,yes,n/a,OK
+/api/studio/projects,protected,yes,n/a,OK
 /api/studio/research-tasks,protected,yes,n/a,OK
 /api/studio/research-tasks/[id]/events,protected,yes,yes,OK
 /api/studio/research-tasks/[id]/materials,protected,yes,yes,OK
@@ -89,6 +91,7 @@
 /api/studio/works/[id]/restore,protected,yes,yes,OK
 /api/studio/works/[id]/revisions,protected,yes,yes,OK
 /api/studio/works/[id]/revisions/[rev],protected,yes,yes,OK
+/api/studio/works/[id]/revisions/[rev]/panels/[panel],protected,yes,yes,OK
 /api/studio/works/[id]/rewrite-beat,protected,yes,yes,OK
 /api/studio/works/[id]/rewrite-decisions,protected,yes,yes,OK
 /api/studio/works/[id]/stages,protected,yes,yes,OK

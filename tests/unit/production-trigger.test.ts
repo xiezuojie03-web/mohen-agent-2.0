@@ -8,7 +8,7 @@ import { requestProduction } from "../../apps/web/lib/studio-research";
 
 it("a disabled registry does not prepare, register, spawn, announce or reserve production", async () => {
   effects.prepare.mockResolvedValue({ jsonFile: "/not-loaded.json" });
-  effects.queryRows.mockResolvedValue([{ prompt: "fixture intent" }]);
+  effects.queryRows.mockResolvedValue([{ prompt: "fixture intent", status: "done", checkpoint: {budgetSpent: 0, reserved: 0, ceiling: 8} }]);
   const result = await triggerProduction("fixture-task", "fixture intent");
   expect(result).toMatchObject({ started: false, reason: "production_registry_not_active" });
   expect(await requestProduction("fixture-task")).toMatchObject({ ok: false, reason: "production_registry_not_active" });

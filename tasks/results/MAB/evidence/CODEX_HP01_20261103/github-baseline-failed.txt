@@ -1,0 +1,25 @@
+build	Typecheck	﻿2026-11-03T09:24:56.7390051Z ##[group]Run pnpm -r typecheck
+build	Typecheck	2026-11-03T09:24:56.7390255Z [36;1mpnpm -r typecheck[0m
+build	Typecheck	2026-11-03T09:24:56.7414720Z shell: /usr/bin/bash -e {0}
+build	Typecheck	2026-11-03T09:24:56.7414861Z env:
+build	Typecheck	2026-11-03T09:24:56.7415005Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+build	Typecheck	2026-11-03T09:24:56.7415182Z ##[endgroup]
+build	Typecheck	2026-11-03T09:24:57.0372657Z Scope: 6 of 7 workspace projects
+build	Typecheck	2026-11-03T09:24:57.0390531Z packages/agent-runtime typecheck$ tsc --noEmit -p tsconfig.json
+build	Typecheck	2026-11-03T09:24:57.0395624Z packages/data-access typecheck$ tsc --noEmit -p tsconfig.json
+build	Typecheck	2026-11-03T09:24:57.0416083Z packages/domain typecheck$ tsc --noEmit -p tsconfig.json
+build	Typecheck	2026-11-03T09:24:57.0416905Z packages/experience-engine typecheck$ tsc --noEmit -p tsconfig.json
+build	Typecheck	2026-11-03T09:24:59.1582720Z packages/data-access typecheck: Done
+build	Typecheck	2026-11-03T09:24:59.1649319Z packages/ui typecheck$ tsc --noEmit -p tsconfig.json
+build	Typecheck	2026-11-03T09:25:01.5187188Z packages/domain typecheck: Done
+build	Typecheck	2026-11-03T09:25:01.6741172Z packages/experience-engine typecheck: Done
+build	Typecheck	2026-11-03T09:25:01.7877341Z packages/agent-runtime typecheck: Done
+build	Typecheck	2026-11-03T09:25:02.4130910Z packages/ui typecheck: Done
+build	Typecheck	2026-11-03T09:25:02.4135310Z apps/web typecheck$ tsc --noEmit
+build	Typecheck	2026-11-03T09:25:08.4821233Z ##[error]apps/web typecheck: app/api/studio/assets/route.ts(21,35): error TS2339: Property 'listAssetRevisions' does not exist on type 'StudioAssetRepository'.
+build	Typecheck	2026-11-03T09:25:08.4829433Z ##[error]apps/web typecheck: app/api/studio/assets/route.ts(28,32): error TS2339: Property 'listRevisionUseEvents' does not exist on type 'StudioAssetRepository'.
+build	Typecheck	2026-11-03T09:25:08.5176728Z apps/web typecheck: Failed
+build	Typecheck	2026-11-03T09:25:08.5196448Z /home/runner/work/mohen-agent-2.0/mohen-agent-2.0/apps/web:
+build	Typecheck	2026-11-03T09:25:08.5197758Z  ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @mohen/web@0.1.0 typecheck: `tsc --noEmit`
+build	Typecheck	2026-11-03T09:25:08.5198021Z Exit status 2
+build	Typecheck	2026-11-03T09:25:08.5503388Z ##[error]Process completed with exit code 2.
