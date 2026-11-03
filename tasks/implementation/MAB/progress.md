@@ -395,3 +395,13 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **测试已提交**：`e71d04b917502bf5bc5b2df5b19a1d895338c433` 新增 `tests/data-production/private-runner-stage-handoff.test.mjs`：从真实`runProduction` D01 resumed入口出发，合成Ed25519 + verifier，通过专用private adapter验证当前stage、相同registry/job/input、一次性handoff、无G1则最终HOLD且不得交给D02。`a9464fa267531bad79cc5769369cb8cb029653b8` 补禁用Registry和缺授权时拒绝且绝不加载adapter/调用私有工作器的负例。
 - **确认边界**：使用纯合成输入与假Verifier测试代码；本批未在真实PostgreSQL、Storage、独立Reviewer及Owner生产身份环境完成整链测试，GitHub Actions正式成功回执尚待核实。标`CODE_PRESENT / TEST_PENDING`，不得把测试文件存在称为测试PASS。当前`production-registry.json`保持全局/各Job禁用；D00/D04/D05专用候选模块仍强制HOLD，M1/M2/M3及M4真实生产运行准出状态不变。
 - **接续顺序**：验证本批真实CI→可信Runner侧Owner短时会话与受控Storage/DB工作器装配→合法来源D00→D01→D02→D03阶段载体及独立G0—G3资格映射→隔离DB+官方Storage+独立Reviewer正反联调；不得为模拟通关放开legacy私有输入或写入伪造的合格候选。无新产品功能、费用或生产迁移。
+
+
+## 2026-11-03｜M1独立收口：隔离真实HTTP/Chromium验收接入CI及撤权E2E
+
+- **独立目标**：从既有M1五项缺口出发，优先关闭不需生产身份的合法本人/跨Owner/会话撤权HTTP证据。不重置已轮换数据库密码、不启动真实外部AI、不变更产品UI和原M2/M3施工顺序；与生产Owner验收严格分层。
+- **已完成代码提交**：`172a1dd5`新建`.github/workflows/mab-m1-isolated-http.yml`，每批创建带 `mohen.test_instance=codex-k3-isolated` 标记的本机一次性PostgreSQL17，运行现有 `pnpm test:mab:http` 的真实Next.js与Playwright合成用户测试；`7c9902c7`改用官方Playwright安装Chromium，避免Ubuntu Chromium snap依赖。不会注入生产DB/Storage或密钥；真实Storage导入测试因无隔离官方Storage而仍为SKIPPED，不记PASS。
+- `4d4fb2e6`让该隔离HTTP测试入口仅传一次性测试库名；`e8251d5d`新建 `tests/e2e/mab-m1-session-revocation.spec.ts`：已登录并拥有私人项目的合成账号在该次隔离PG被禁用后，原Cookie访问项目GET/POST均应401、`auth/me`未登录、再次登录403；第二例验证logout清Cookie后私有API继续401。每个写入先检查Unix socket路径、专用合成库名与PG实例标记，拒绝接触未标记数据库。`ff0c9503`加入Playwright测试名单。
+- **既有测试继承**：`mab-notebook.spec.ts`已有合法本人研究项目、不可变修订、跨Owner只读/写入拒绝、丢回执幂等；`private-original-http.spec.ts`需要官方本地Storage配置，当前CI不验证字节导入。原M1生产匿名只读子项`41580710096` attempt2 PASS、隔离PG来源绑定`41576958641` PASS不重复记账。
+- **验证状态**：GitHub源码/CI入口/浏览器正反用例已提交；当前还未获得本批`mab-m1-isolated-http`真实SUCCESS及测试细目回执，状态`M1_ISOLATED_HTTP_CI_PENDING`，禁止把“已接入工作流”写成E2E PASS。下一步以Actions实际运行日志为准修正环境或行为问题；Vercel READY与本专项不等价。
+- **仍需生产签收**：真实Owner登录、合法本人导入及回读、跨Owner和撤权当前生产策略、旧数据库凭据连接失效的非敏感证明、生产适用备份恢复。正式`M1_SECURITY_ACCEPTANCE_HOLD`仍保留；无需让M2生产或M3 Reviewer启用成为M1的准出前置。受控日志中不得写身份Cookie或数据库密钥。
