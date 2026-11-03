@@ -278,3 +278,10 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **GitHub候选迁移内修复**：尚未部署的`20261102145410_mab_m2_evidence_bridge.sql`新增`studio.private_source_binding_matches`，固定`pg_catalog`search_path和逐表显式schema，只返回boolean；借用现有受控`studio.private_bridge_original`内已确认的Owner、有效会话、项目ACTIVE与原件STORED_VERIFIED身份，严格对应raw/version/hash/bytes/不可变资产修订。EXECUTE仅授`mohen_app_runtime`，明确撤销anon/authenticated/service_role/producer/signer/public；未开放来源数据表。
 - Node来源验证器改为现有短时身份事务下的参数化最小RPC调用；错误/缺失RPC均失败关闭。更新unit断言禁止直接源码表SELECT；原`evidence-bridge.integration.mjs`增加真隔离PG/本地官方Storage条件下的本人、跨Owner、错raw/version/hash、过期身份及函数权限负例。
 - **测试界限**：提交后以GitHub CI为准；上述真实隔离PG整链脚本目前属于`NOT_RUN_IN_THIS_BATCH`，不能冒充通过。候选迁移没有在生产应用，M1、M2、M3专业资格继续HOLD。须在受控隔离PG环境重跑完整整链后，才可考虑最小生产迁移激活。
+
+## 2026-11-03｜M2来源窄RPC及CI最终回执（对应实测权限缺口）
+
+- `main@1183ca63`候选迁移新增固定范围的Owner校验函数及Node受限调用，测试脚本增加真实隔离PG的Owner/跨Owner/错误来源/错hash/无全表GRANT反例；`main@1dcc13cf`修正PG返回boolean在Node验证中应判`===true`，不能按数字1判断。
+- GitHub Actions `41574164960` **SUCCESS**，包含Typecheck、单元测试、生产边界回归和Next构建。此CI不执行新的M2隔离PG集成脚本；其状态仍`NOT_RUN`。真实PG来源窄函数执行、跨Owner、RLS及迁移顺序需在专用隔离数据库实际验收，避免把CI绿色冒充已合法运行。
+- Production SQL权限事实仍是`mohen_app_runtime`无`source` schema USAGE/原件与版本表SELECT，原直接JOIN确认不可行；本批生产数据库0写入，原候选迁移尚未生产启用。M0审查PASS；M1/M2/M3独立HOLD继续。
+- Library唯一MAB-ENG-01受控任务书§10已要求同步本轮代码、CI与真实低权限尚未验收的区分；不另开治理任务书。
