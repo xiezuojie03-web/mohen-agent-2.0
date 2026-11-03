@@ -312,3 +312,10 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 查询只发送run/job/stage/Gate、摘要及Reviewer绑定引用，绝不发送私有史料全文、完整output或用户传入的证据内容。没有Gate验证服务时依旧停在\`INDEPENDENT_STAGE_QUALIFICATION_REQUIRED\`，**没有隐式PASS**。
 - 新增\`assertNoUnboundPrivateEvidenceInput\`到现有阶段执行授权最前端；明确M2私有原件候选不能在Registry未正式绑定D01—D03适配器时落入旧金泽/历史公共材料适配器。当前M2工作器仍未完成受控正式适配器注册/Owner会话传递，不把此预检记为完整接线PASS。
 - 正反测试覆盖M3只读验证URL/凭据、请求不含敏感正文、不伪造PASS、网络与越权拒绝、响应尺寸上限；M2明确私有请求阻断。只改GitHub代码和单测，未启用Gate服务/生产Storage/SQL迁移，所有阶段准出按既有状态。CI以本批实际回执为准。
+
+## 2026-11-03｜M3独立Gate读服务客户端与M2私有输入拒绝：CI验收结果
+
+- `1606ddcc`：原Runner增加按需只读HTTPS独立Gate当前资格客户端，仅发送候选及阶段输入/输出SHA-256摘要，不发送私人史料/完整产出；URL、只读凭据、JSON上限及网络失败全部拒绝；CI `41579537812 SUCCESS`。
+- `34d68fec`：`independent-gate-client.test.mjs`将只读服务响应与已有`requireIndependentStageQualification`真实交接合同衔接，验证同run/stage/摘要/current/有效期为PASS，撤权/摘要变化/过期拒绝；CI `41579907762 SUCCESS`。
+- `12240628`：M2未绑定的私有原件输入在执行授权早期拦截，包括嵌套于`qualified_source`等对象内部时不允许旧D01—D03 legacy适配器误执行；CI `41580080729 SUCCESS`。
+- **保留阶段HOLD**：Registry仍`DESIGN_TARGET_NOT_APPLIED`，六Job disabled，Reviewer绑定TO_VERIFY_IN_M0；M3没有真实独立只读验证服务、Reviewer身份/签发/撤销端到端；M2尚未正式注册Private Evidence Worker与Owner会话接线，生产私有桶和迁移仍未启用；M1仍缺生产登录/撤权及历史凭据失效验收。本轮没有对生产SQL、Storage、Gate或凭据做更改。Library唯一受控任务书须与此结论同步。

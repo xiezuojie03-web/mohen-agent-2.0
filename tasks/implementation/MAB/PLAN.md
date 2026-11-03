@@ -156,6 +156,8 @@ MAB-ENG-01批次进展（2026-11-02，详细证据见progress.md）：私有原�
 **2026-11-03 M2定向隔离PG验收**：`main@bcd0715` / GitHub Actions `41576958641 SUCCESS` 已以真实PostgreSQL17完成精确来源绑定窄函数、无整表GRANT的Owner查询、跨Owner/禁用/过期/错误版本与回滚的正反测试，回执见 `tasks/results/MAB/M2_SOURCE_BINDING_PG17_20261103.md`。这仅完成**数据库来源核验子能力**，未启动本批官方Storage、生产迁移、D00—D03正式Registry或Reviewer；M2七项总任务不得据此整项勾PASS。
 
 
+**2026-11-03 M2防误接保护**：新提交 `1606ddcc`、`12240628` 在现行执行授权层拒绝尚未正式注册的私有原件/证据请求，包含`qualified_source`等嵌套承载，禁止它们被既有legacy公共资料适配器误处理。GitHub Actions `41579537812`、`41580080729` 均SUCCESS。这只是**接线前置安全防护**；Owner短时私有会话、D01—D03合法候选读写、正式Registry绑定与真实Gate正反测试仍未完结，M2生产准出HOLD。
+
 验收：原件可回读且hash匹配；指针有而对象缺失被拒；删除/归档task不丢资产与回执；跨Owner拒绝；并发CAS仅一个成功；恢复后不自动公开或激活Gate。
 
 回退：停新资产写入，保留已存修订和回执；不以删表或级联删除作为常规回滚。
@@ -170,6 +172,8 @@ MAB-ENG-01批次进展（2026-11-02，详细证据见progress.md）：私有原�
 - [ ] 区分Stage完成、候选已存、WAITING_GATE与合格交接；无Reviewer启用就保持HOLD。
 - [ ] 打通P08依赖失效与消费者即时阻断，不要求等下一次G5 PASS才停止非法消费。
 - [ ] 验证Producer、Agent、Operator、共享高权限连接均不能绕过服务边界签G；恢复重核当前许可与策略。
+
+**2026-11-03 M3只读验Gate客户端接线**：`main@1606ddcc` 为唯一Runner按需注入独立HTTPS资格当前状态读取回调，仅传run/job/stage/Gate/输入与输出摘要、绑定引用，拒绝缺配置、非法应答与超长响应。真实独立Gate服务不在Producer进程中签发，原`requireIndependentStageQualification`仍按当前审计、精确输入输出、失效时间拒绝非法交接；`34d68fec`新增对PASS匹配、撤权、输出变化、过期的组合合同负例。CI `41579537812`、`41579907762`、`41580080729` 均SUCCESS。**仅Runner查询接口代码就绪，不等于独立Verifier服务已经运行、Reviewer资格绑定或生产G签发通过**。Registry维持`DESIGN_TARGET_NOT_APPLIED`、六个Job disabled、Reviewer仍TO_VERIFY；正式M3仍HOLD。
 
 验收：合法独立审签可追溯；生产者自签、旧PASS泛授权、错rev、过期依赖、禁用Job均拒绝。策略的真实启用须有单独明确范围，隔离测试通过不等于正式投运。
 
