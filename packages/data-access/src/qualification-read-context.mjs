@@ -12,6 +12,12 @@ export function requireQualifiedReadContext(context) {
   }
   let encoded;
   try {encoded=JSON.stringify(scope);}catch {throw Error('QUALIFICATION_CONTEXT_REQUIRED');}
+  // JSON drops undefined properties: {project:undefined} must never become
+  // the unrestricted '{}' scope of a current-qualification lookup.
   if(typeof encoded!=='string'||encoded.length>4096)throw Error('QUALIFICATION_CONTEXT_REQUIRED');
+  let persistedScope;
+  try {persistedScope=JSON.parse(encoded);}catch {throw Error('QUALIFICATION_CONTEXT_REQUIRED');}
+  if(!persistedScope||typeof persistedScope!=='object'||Array.isArray(persistedScope)||
+      Object.keys(persistedScope).length===0)throw Error('QUALIFICATION_CONTEXT_REQUIRED');
   return [context.consumer,purpose.namespace,purpose.code,purpose.version,encoded];
 }

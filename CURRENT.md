@@ -1,5 +1,8 @@
 # 墨痕｜当前真实工程状态
 
+> **2026-11-03 M3实际施工新证据（优先）**：本轮ChatGPT接力把Producer上游`passed/legalInput`与谱系校验从旧`PASS/current_valid`升级至精确`consumer + purpose + scope + control.qualification_allows`；独立PG17 G0→G5、撤上游G0和旧PASS拒绝 [41636244060 SUCCESS](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41636244060)，主CI [41636244069 SUCCESS](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41636244069)。后续read_model同类空scope防护见`progress.md`末尾，最终SHA核证以Actions为准。**M3正式Reviewer/生产Gate及M2原件链仍HOLD，不把隔离测试算系统可运行。**
+
+
 > **2026-11-03 最近执行权变更（优先）**：Owner因Codex额度不足再次授权ChatGPT聊天环境使用GitHub插件接力施工。当前执行以GitHub远端main最新HEAD及`tasks/implementation/MAB/PLAN.md`、`progress.md`为准；本次HP11和M3源码批次/CI/生产只读证据见progress末尾。此举不改变已批准设计方向、M0—M8及HP工作包，也不代表生产迁移、私有外发、真实Gate或付费调用已授权。下方“2026-11-03转回Codex”的既有入口是**此前执行工具变更的历史记录**，不再作为本时点工具分配结论。M0仅审查准出，M1—M8运行状态继续HOLD。
 
 

@@ -760,3 +760,12 @@ Owner因Codex额度不足再次改由ChatGPT＋GitHub插件接力，**工具迁�
 - **M3精确回执合同**：`f8ae5d0a`使独立Gate只读资格回执绑定`run_id/job_id/reviewer_binding_ref/consumer=producer`及既有阶段、G、输入输出摘要、版本与到期时间；首轮CI `41628043957 FAIL`是3项合成编排测试替身缺新增字段，未弱化真实校验；`f5cd2d38`修正原测试替身后，主CI `41628357443 SUCCESS`（含98项生产边界回归）。真实Reviewer签发服务/正式DB角色和G5仍未部署，M3继续HOLD。
 - **2026-11-03 11:31 UTC生产只读复核**：source.raw_items=98，evidence.material_evidence=166，studio.projects=0，studio.asset_revisions=0，control.qualification_current=0，storage.buckets=0；正式原件表、独立Reviewer绑定表与Web会话撤销表仍不存在。统计只是现状证据，不代表生产迁移已经批准。
 - **边界/下轮**：M0审查PASS，M1—M8的既有HOLD不变；继续优先M2真正私有原件／唯一Runner来源绑定与M3独立Reviewer/资格消费，之后M4真混合、M5真正创作/管理/观看。未经单独生产授权，禁止执行候选DDL、创建bucket/签发密钥、支付Provider费用或提前开启正式Gate。相关源测与实际回执详见`progress.md`本批记录。
+
+### 2026-11-03｜M3真实资格读取消除旧PASS继承（ChatGPT GitHub接续，P0候选实施）
+
+**保持M0—M8和HP01—HP13原任务结构**：已确认`packages/data-access/src/data-production-repository.mjs`与`lineage-validator.mjs`此前把`control.gate_audits.current_valid=true`和`result='PASS'`当成独立资格读取，这是与K3/MHKA专业当前资格相冲突的旧代际残留。按已有合同原位修补，而不新增Gate/知识库/治理体系。
+
+- `2352c368`：新建`qualification-read-context.mjs`统一强制`consumer/purpose(namespace,code,version)/非空scope`；Producer`passed/ legalInput`和G0—G5谱系校验改读`control.qualification_allows(gate_audit_id,...)`，只读`decision_origin='independent_gate'`且现行签审依赖有效的资格。不再凭旧audit PASS或`current_valid`单独准入；缺上下文、错scope、错consumer、过期或撤权均拒绝。旧无上下文调用不再兼容，属于合法性收紧，禁止恢复隐式泛权限。
+- `faddc2a4`：将上述实现与`read-model-qualification.integration.mjs`纳入既有隔离PG17的push触发；[CI 41636244069](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41636244069)及[隔离PG17 41636244060](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41636244060)均SUCCESS。PG17真实G0—G5、禁用legacy PASS、跨消费者/用途拒绝、G0撤权后G4/G5即时拒绝和历史回滚保全已实测；基线711条synthetic legacy未改变。隔离环境的真实SQL PASS≠正式生产Reviewer签发。
+- `10b7a3dd`：`read-model-repository.mjs`也复用统一资格上下文守卫，拒绝`scope={}`，保留visual_stage/agent原消费者合法枚举；增加缺范围/版本的真实PG负例、更新隔离PG触发范围。正式G5/public/Evidence on Demand仍须专门按工作修订、媒体rights和消费用途对位验收。
+- 继续P0：正式M2原件私有存储、Owner会话/Runner合法接线及M3独立Reviewer服务、当前签审/撤权/业务消费者服务均未投运。M4真实双主体/付费、M5发布/WATCH真实闭环、M6—M8仍按原依赖HOLD。现行`control.qualification_allows`服务和候选SQL以独立PG证据为准，不将其解释成可直接激活正式环境的授权。

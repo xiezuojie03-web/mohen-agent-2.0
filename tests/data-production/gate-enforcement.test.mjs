@@ -149,6 +149,10 @@ test("M3 legacy PASS and bare current_valid are never legal upstream inputs",asy
   await assert.rejects(()=>validateG2Lineage(db,['R_PASS'],qualifiedContext),/G2_LINEAGE_BLOCKED/);
   await assert.rejects(()=>repo.legalInput('D02'),/QUALIFICATION_CONTEXT_REQUIRED/);
   await assert.rejects(()=>repo.passed('D05',{...qualifiedContext,scope:{}}),/QUALIFICATION_CONTEXT_REQUIRED/);
+  await assert.rejects(()=>repo.passed('D05',{...qualifiedContext,scope:{project:undefined}}),
+    /QUALIFICATION_CONTEXT_REQUIRED/);
+  await assert.rejects(()=>repo.legalInput('D02',{...qualifiedContext,scope:{ignored:BigInt(1)}}),
+    /QUALIFICATION_CONTEXT_REQUIRED/);
   await assert.rejects(()=>validateG2Lineage(db,['R_PASS'],{...qualifiedContext,consumer:'unknown'}),
     /QUALIFICATION_CONTEXT_REQUIRED/);
 });
