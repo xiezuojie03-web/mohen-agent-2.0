@@ -23,3 +23,27 @@ it("does not make the public homepage and help API depend on the account databas
   expect((await middleware(request("/api/help/articles"))).status).toBe(200);
   expect(db.queryRows).not.toHaveBeenCalled();
 });
+
+it("anonymous private endpoints refuse access without a cacheable response",async()=>{
+  const response=await middleware(new NextRequest("https://test.invalid/api/studio/materials/import"));
+  expect(response.status).toBe(401);
+  expect(await response.json()).toMatchObject({reason:"login_required"});
+  expect(response.headers.get("cache-control")).toContain("no-store");
+  expect(response.headers.get("pragma")).toBe("no-cache");
+});
+it("disabled and unavailable accounts cannot leave cacheable login errors",async()=>{
+  db.queryRows.mockResolvedValueOnce([{user_id:uid,status:"disabled",roles:"operator"}]);
+  const denied=await middleware(request());
+  expect(denied.status).toBe(401);
+  expect(denied.headers.get("cache-control")).toContain("no-store");
+  db.queryRows.mockRejectedValueOnce(new Error("synthetic offline DB"));
+  const offline=await middleware(request());
+  expect(offline.status).toBe(503);
+  expect(offline.headers.get("cache-control")).toContain("no-store");
+});
+it("missing production auth secret fails closed and is not cached",async()=>{
+  vi.stubEnv("AUTH_SECRET","");
+  const response=await middleware(new NextRequest("https://test.invalid/api/studio/projects"));
+  expect(response.status).toBe(503);
+  expect(response.headers.get("cache-control")).toContain("no-store");
+});

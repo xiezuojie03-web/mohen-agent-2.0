@@ -11,6 +11,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { resolveSession } from "./lib/auth";
 
 const COOKIE = "mohen_role";
+// Fail-closed auth responses must not be cached by the browser or Vercel edge.
+const DENIED_HEADERS = { "Cache-Control": "private, no-store, max-age=0", "Pragma": "no-cache" };
 
 const PUBLIC_PREFIXES = ["/api/public/", "/api/help/"];
 const PUBLIC_EXACT = new Set([
@@ -37,16 +39,16 @@ export async function middleware(req: NextRequest) {
 
   const secret = process.env.AUTH_SECRET;
   if (!secret || secret.trim().length < 32) {
-    return NextResponse.json({ ok: false, reason: "auth_not_configured" }, { status: 503 });
+    return NextResponse.json({ ok: false, reason: "auth_not_configured" }, { status: 503, headers: DENIED_HEADERS });
   }
 
   const token = req.cookies.get(COOKIE)?.value;
   const resolution = await resolveSession(token);
   if (resolution.state === "unavailable") {
-    return NextResponse.json({ ok: false, reason: "auth_dependency_unavailable" }, { status: 503 });
+    return NextResponse.json({ ok: false, reason: "auth_dependency_unavailable" }, { status: 503, headers: DENIED_HEADERS });
   }
   if (resolution.state !== "authenticated") {
-    return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401 });
+    return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401, headers: DENIED_HEADERS });
   }
 
   const session = resolution.session;
