@@ -1,17 +1,18 @@
 import {beforeEach, describe, expect, it, vi} from "vitest";
 
-const {queryRows, queryValue, run, reflowWorkToAssets, requireIndependentWorkPublicationG5} = vi.hoisted(() => ({
+const {queryRows, queryValue, run, reflowWorkToAssets, requireIndependentWorkPublicationG5, requireCurrentWorkConsumerQualification} = vi.hoisted(() => ({
   queryRows: vi.fn(),
   queryValue: vi.fn(),
   run: vi.fn(),
   reflowWorkToAssets: vi.fn(),
   requireIndependentWorkPublicationG5: vi.fn(),
+  requireCurrentWorkConsumerQualification: vi.fn(),
 }));
 vi.mock("@mohen/data-access", () => ({queryRows,queryValue,run}));
 vi.mock("../../apps/web/lib/asset-reflow", () => ({reflowWorkToAssets}));
-vi.mock("../../apps/web/lib/work-publish-qualification", () => ({requireIndependentWorkPublicationG5}));
+vi.mock("../../apps/web/lib/work-publish-qualification", () => ({requireIndependentWorkPublicationG5, requireCurrentWorkConsumerQualification}));
 
-import {publishWork,listPublished,listPendingReview,getWorkStageStatus} from "../../apps/web/lib/publication";
+import {publishWork,listPublished,listPendingReview,listWatchEligible,getWorkStageStatus} from "../../apps/web/lib/publication";
 
 const wid="123e4567-e89b-42d3-a456-426614174001";
 const rid="123e4567-e89b-42d3-a456-426614174002";
@@ -39,6 +40,7 @@ describe("MAB M5 publish revision/pointer atomic transition", () => {
     queryRows.mockReset(); queryValue.mockReset(); run.mockReset();
     reflowWorkToAssets.mockReset();
     requireIndependentWorkPublicationG5.mockReset();
+    requireCurrentWorkConsumerQualification.mockReset();
   });
   it("uses one atomic submitted-state CAS and pointer insertion, not two separate writes", async () => {
     passReview();
@@ -140,6 +142,27 @@ describe("MAB M5 publish revision/pointer atomic transition", () => {
     expect(sql).toContain("d.revision_id = r.revision_id");
     expect(sql).toContain("d.decision = 'approved'");
     expect(sql).toContain("r.status = 'submitted'");
+  });
+  it("WATCH never reuses the internal Admin published list as authorization",async()=>{
+    const second="123e4567-e89b-42d3-a456-426614174099";
+    queryRows.mockResolvedValue([
+      {work_id:wid,revision_id:rid,content:JSON.stringify({beats:[]})},
+      {work_id:second,revision_id:rid,content:JSON.stringify({beats:[]})},
+    ]);
+    requireCurrentWorkConsumerQualification.mockImplementation(async (workId:string)=>({
+      ok:workId===wid,reason:workId===wid?undefined:"independent_g5_required",
+    }));
+    const eligible=await listWatchEligible();
+    expect(eligible).toHaveLength(1);
+    expect(eligible[0].work_id).toBe(wid);
+    expect(requireCurrentWorkConsumerQualification).toHaveBeenCalledTimes(2);
+    expect(requireCurrentWorkConsumerQualification.mock.calls[0][2]).toBe("watch");
+    expect(queryRows).toHaveBeenCalledTimes(1);
+  });
+  it("WATCH fails closed on an unavailable or invalid professional Gate verifier",async()=>{
+    queryRows.mockResolvedValue([{work_id:wid,revision_id:rid,content:"{}"}]);
+    requireCurrentWorkConsumerQualification.mockRejectedValue(new Error("GATE_OFFLINE"));
+    await expect(listWatchEligible()).resolves.toEqual([]);
   });
   it("WATCH publication listing excludes pointers whose revision was revoked or no longer published", async () => {
     queryRows.mockResolvedValue([]);
