@@ -431,3 +431,5 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **本批单测**：`8765fc978f9895e4a404fe80c0af43f0d3603b9b`扩展`mab-m5-publication-atomic.test.ts`：空数据四项false、委托存在但研究未done不报完成、四项有真实存储依据才为true。此为mock单元测试源码，尚未有本批真实CI SUCCESS回执，严禁写`VERIFIED_ISOLATED`。
 - **待继续的最大化施工**：现M5仍需同作品精确修订/并发授权、Admin内读详细知识与来源缺口、按消费者/用途的独立当前G5和媒体撤权、WATCH动态重验与完整E2E；M1合法生产身份/失效凭据/恢复，M2私有原件/Runner+Storage整链，M3独立审核签发与撤权，M4受控同root混合委托的真实身份/费用/回执均仍按原约束分别HOLD。优先推进能够通过插件直接修正的代码，不假报阶段闭环。
 - **安全/费用**：本批没有对生产PG、Storage、Reviewer或Provider写入，也没有实际外部模型调用；所有现行启用HOLD维持。回退时不得恢复硬编码Studio已完成状态，必要时宁显示未完成/待确认。
+
+- **兼容修正**：`223ade795d92a965cb144f70cb657104cce3d9fe`对历史作品修订`beats`非数组载荷使用SQL CASE防守，避免仅凭AND短路假设调用`jsonb_array_length`导致整个作品状态读取异常。最新提交的Vercel初查QUEUED，GitHub Actions完整成功回执仍未获得。本修正也不改变M5整体HOLD。
