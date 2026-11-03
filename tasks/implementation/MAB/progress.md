@@ -487,3 +487,13 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - `328f3bfe000c820dc85e6d9dba6037c5b77d6200`新增`independent-gate-revocation-handler.test.mjs`，合成客户端→处理器→仓储调用成功，伪造Bearer/错Reviewer绑定/错误UUID/DB拒写时失败关闭。`7ac30843`将旧客户端要求事件UUID的合同改为**可选**：真实K3 SQL仅返回`blocked_count`，`request_id`已是失效审计事件的受控索引，不能要求服务造假事件ID；`d28ebbb6`和`f9752f29`补回执Reviewer绑定一致性及负测。
 - **证据与使用边界**：本批仅提交源码/合成测试/PLAN责任，不曾启动实际独立HTTPS服务、合法Reviewer认证、专用Signer生产连接或真实撤权。旧Operator入口仍统一503；服务处理器无生产注册入口，不能被普通Web/Producer调用；正式服务仍须独立身份部署、专用DB和签发者绑定、隔离PG+真实HTTP及WATCH当前资格逐请求反例。在未取得CI实际SUCCESS回执前标`CODE_PRESENT/CI_PENDING`，M3和M5正式HOLD。
 - 本批未使用生产数据库、Storage、Gate凭据和外部付费模型。最终CodeBuddy单次交接策略不变：聊天插件仍继续可实施的软件和隔离验证，待确定无法完成的环境任务才集中交接。
+
+
+## 2026-11-03｜M3独立撤权服务输入限额与独立CI验收入口
+
+- **具体问题**：原独立Reviewer撤权处理器先调用`request.text()`把任意长度的HTTP body整体读入内存，再检查4096字节。这不符合服务层流式限制的安全边界。
+- **已提交源码**：`6c46a6e101b94327585761a7bfb2b2a5d424a95d`将`independent-gate-revocation-handler.mjs`改为通过ReadableStream逐块读取并累计字节；提前拒绝无效/超4096声明长度，流中超过4096立即中断，JSON畸形报400，超限报413。异常和超限均发生在调用`authorityRepository.revoke`之前；不改变独立Reviewer鉴权与最小数据库身份。
+- **正反测试**：`d93b841c4d7c982e42ef32a50896e48e1aca1d53`补超大实际body、伪造超大Content-Length、畸形JSON、非POST的拒绝测试，验证不会触发数据库撤权。保留现有审核身份/错绑定/非法UUID/数据库拒绝测试。
+- **CI核销入口**：`c99d952c141ce25ca26101727a1e6f448e517e90`新增`.github/workflows/mab-m3-independent-revocation.yml`，在main相关文件变化及手动触发时使用Node22运行两份纯合成测试，并保护客户端/处理器不直写专业Gate审计表。不接入生产数据库或真实签名凭据。
+- **证据边界**：本批源码、测试和CI入口均已提交，但尚未取得该新工作流真实`SUCCESS`回执；保持`CODE_PRESENT / CI_PENDING`，不能冒称`VERIFIED_ISOLATED`。正式Reviewer独立认证、实际低权限数据库连接、真实撤权/资格撤销后M5各消费者即时拒绝仍HOLD；旧Operator撤权API保持503。
+- **恢复与费用**：全部属于纯代码/CI调整，没有运行付费模型、执行生产SQL、迁移Storage、启用Gate或变更用户凭据。若CI出现不兼容，优先修复流式限额与测试，严禁退回无限制读取。
