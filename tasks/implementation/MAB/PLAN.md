@@ -189,6 +189,8 @@ MAB-ENG-01批次进展（2026-11-02，详细证据见progress.md）：私有原�
 
 **2026-11-03 旧撤权入口兼容安全修复**：`1dfedaa2`关闭旧Operator对`gate_audits.current_valid`的直接UPDATE路径；`6fe89f5c`、`2eeed56a`使两API明确返回503/不可缓存，不谎报撤权；`59f392ad`补无DB写入的负例单元。此改动临时关闭旧Operator撤权业务，**不**意味着旧作品已撤权或独立Reviewer正式可用。后续须通过已设计的`control.revoke_gate_qualification`由独立身份+精确audit ID+request UUID执行，绑定M5的WATCH逐请求资格拒绝；相关生产/隔离验证仍HOLD。详见`progress.md`本轮回执。
 
+**2026-11-03 M3独立撤权服务协议客户端施工**：`89cda1db`在唯一Runner现有M3独立资格读取模块旁增加`independent-gate-revocation-client.mjs`：精确audit UUID、幂等request UUID、reason和Reviewer binding引用才可发往HTTPS独立撤权服务；严格拒绝URL凭据/查询、过大或错身份回执、未授权和非JSON。返回只作为服务回执，消费时仍须查询当前合法资格。旧Operator HTTP接口保持503，**不连接该客户端**，防止Operator借传输模块成为Reviewer。`c3ef1095`补合成正反node:test。此项仅为候选客户端与合同测试（`CODE_PRESENT/CI_PENDING`），没有真实独立服务、Reviewer登录、签发、撤权或生产Gate激活；后续服务端必须在独立身份下调用现行`control.revoke_gate_qualification`，并核验端到端即时消费拒绝。
+
 验收：合法独立审签可追溯；生产者自签、旧PASS泛授权、错rev、过期依赖、禁用Job均拒绝。策略的真实启用须有单独明确范围，隔离测试通过不等于正式投运。
 
 回退：暂停新run/候选/资格激活，保留所有审计；不回滚已发生的合法撤权。
