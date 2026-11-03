@@ -343,3 +343,12 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **正反测试**：`tests/unit/mab-m4-tool-registration.test.ts`增加无Ledger未知外部工具拒绝、有Ledger未知生产工具拒绝且预算不变、已登记无Ledger检索兼容三例。提交时GitHub Actions CI未获确认回执，标`NOT_RUN_OR_PENDING`，禁止自报PASS。最新提交`9a892009`Vercel检查初始为pending，仅部署检查，不能代表实际测试。
 - **残余风险**：`useTool`不带Ledger的已登记工具可保持历史即时问答兼容，不代表M4已获得外发或费用授权；已登记工具的动态成本、长期ExecutionReceipt、同root委托、T1—T7及真实跨会话恢复尚未施工。正式M4双主体运行仍HOLD。下一批应优先补M2唯一Registry/Runner的签名私有请求装配，保持旧legacy适配器拒绝私有输入；M3独立Reviewer服务继续按授权接续。
 - **回滚**：还原`tool-ledger.ts`原blob`9d303d63609e6b8099130110c8b484a92c336db3`仅用于必要兼容回退；原行为存在未登记调用安全缺口，实际回退时应优先停用不明调用入口，不能把漏洞当正常降级路径。本批不涉及生产DB回滚。阶段`M0审查PASS/M1 HOLD/M2部分/M3 HOLD/M4真实运行HOLD`不变。
+
+
+## 2026-11-03｜M4工具预算预占／回执原子失败关闭补强
+
+- 继承原MAB-ENG-01及前批工具注册修复；本轮`main@92ff324d`后发现`useTool`先`reserve`再写`reserved`回执，若数据库写失败，旧代码会直接抛出而遗留内存预占。该失败路径可能导致后续误判预算不足，并破坏M4委托可恢复语义。
+- 源码提交`8f55ea316b7a28b8b15ef4da8a78b538c5f9eed4`：预占回执写入失败时释放预算并阻断回调，且保持此前未登记工具失败关闭。无费用调整、无真实Provider调用、无新业务方向。
+- 测试提交`9d5dfd800de889bfcf7d34de43a73cdc4d7704fd`：新增合成DB拒写时回调不执行/预算归零；正常预占→调用→结算时两份回执及准确预算的正例。测试文件`tests/unit/mab-m4-tool-receipt-failure.test.ts`，使用Vitest DB mock，不触及生产数据。
+- **回执状态**：源码已提交；本环境尚无本批完整GitHub Actions unit/type/build成功证明，`CI_NOT_VERIFIED`，不能签工程验证PASS；业务/生产M4依旧HOLD。M2唯一Runner私有来源正式接线、M3独立Reviewer服务及M1在线合法验收仍是关键路径。施工账只记录实际结果，非阶段准出。
+- **回滚**：仅代码兼容变更；如回退需保持「回执失败不执行Provider」的阻断和未登记工具拒绝，不准以旧回退恢复费用失控路径。DB/Storage/Gate未更改。
