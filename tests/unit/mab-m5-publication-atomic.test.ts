@@ -9,7 +9,7 @@ const {queryRows, queryValue, run, reflowWorkToAssets} = vi.hoisted(() => ({
 vi.mock("@mohen/data-access", () => ({queryRows,queryValue,run}));
 vi.mock("../../apps/web/lib/asset-reflow", () => ({reflowWorkToAssets}));
 
-import {publishWork,listPublished} from "../../apps/web/lib/publication";
+import {publishWork,listPublished,getWorkStageStatus} from "../../apps/web/lib/publication";
 
 const wid="123e4567-e89b-42d3-a456-426614174001";
 const rid="123e4567-e89b-42d3-a456-426614174002";
@@ -72,6 +72,35 @@ describe("MAB M5 publish revision/pointer atomic transition", () => {
     expect(run).not.toHaveBeenCalled();
   });
 
+  it("does not claim delegated, researched or directed when no persisted work exists",async()=>{
+    queryRows.mockResolvedValue([{
+      delegated:false,researched:false,directed:false,revisioned:false,
+    }]);
+    const status=await getWorkStageStatus(wid);
+    expect(status).toEqual({
+      delegated:false,researched:false,directed:false,revisioned:false,
+    });
+    const sql=String(queryRows.mock.calls[0]?.[0]);
+    expect(sql).toContain("public.research_tasks");
+    expect(sql).toContain("t.status = 'done'");
+    expect(sql).toContain("jsonb_typeof(r.content->'plan')");
+  });
+  it("only marks persisted research done and rejects running/HOLD progress as completed",async()=>{
+    queryRows.mockResolvedValue([{
+      delegated:'t',researched:'f',directed:'f',revisioned:'t',
+    }]);
+    await expect(getWorkStageStatus(wid)).resolves.toEqual({
+      delegated:true,researched:false,directed:false,revisioned:true,
+    });
+  });
+  it("renders all four stages true only with explicit true evidence",async()=>{
+    queryRows.mockResolvedValue([{
+      delegated:true,researched:true,directed:true,revisioned:true,
+    }]);
+    await expect(getWorkStageStatus(wid)).resolves.toEqual({
+      delegated:true,researched:true,directed:true,revisioned:true,
+    });
+  });
   it("WATCH publication listing excludes pointers whose revision was revoked or no longer published", async () => {
     queryRows.mockResolvedValue([]);
     await listPublished();
