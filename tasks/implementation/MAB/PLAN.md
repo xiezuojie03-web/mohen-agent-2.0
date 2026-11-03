@@ -153,6 +153,9 @@ EXP完整功能、L6—L8运行启用遵循包内“延后激活”边界：本�
 
 MAB-ENG-01批次进展（2026-11-02，详细证据见progress.md）：私有原件状态机、Owner/禁用/过期/撤权、不可变修订、真实官方Storage HTTP、超时与DB回滚恢复、同备份ID字节及DB dump/restore均已隔离验证。生产迁移/桶/服务凭据与正式启用尚未执行，不将上列总范围复选框整项勾PASS。98条历史指针已只读逐条分类（93 memory、5仓库字节hash匹配但非私有对象）；私有文本两桥已隔离验证并补准确claim revision/防SQL绕过核验。剩余为生产激活、D00—D03实际接线、PDF/图像读取及正式资格，再按M3—M8推进。
 
+**2026-11-03 M2定向隔离PG验收**：`main@bcd0715` / GitHub Actions `41576958641 SUCCESS` 已以真实PostgreSQL17完成精确来源绑定窄函数、无整表GRANT的Owner查询、跨Owner/禁用/过期/错误版本与回滚的正反测试，回执见 `tasks/results/MAB/M2_SOURCE_BINDING_PG17_20261103.md`。这仅完成**数据库来源核验子能力**，未启动本批官方Storage、生产迁移、D00—D03正式Registry或Reviewer；M2七项总任务不得据此整项勾PASS。
+
+
 验收：原件可回读且hash匹配；指针有而对象缺失被拒；删除/归档task不丢资产与回执；跨Owner拒绝；并发CAS仅一个成功；恢复后不自动公开或激活Gate。
 
 回退：停新资产写入，保留已存修订和回执；不以删表或级联删除作为常规回滚。

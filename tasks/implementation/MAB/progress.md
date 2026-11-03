@@ -298,3 +298,10 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 新增受限触发的`.github/workflows/mab-isolated-db.yml`：仅在M2的隔离PG脚本、候选证据桥SQL及回滚文件发生变化时启动，配置一次性Docker PostgreSQL17、本地Unix socket路径、固定合成实例标记`mohen.test_instance=codex-k3-isolated`及新鲜`mohen_k3_*_test`数据库；无公网映射端口、无生产数据库/Storage/secret连接。
 - 复用原`pnpm test:k3-db`完整迁移+身份/RLS/独立Gate+Studio+M2来源核验+回滚链；新来源测试不要求真实Supabase Storage，单测语义与正式原件字节验证严格分开。此workflow本身及其结果必须以GitHub Actions真实运行日志为准，不预写PASS。
 - 外部Storage整链另须在既有隔离官方Storage夹具运行；本CI只做PostgreSQL实体验证，不代替M1生产登录或M2正式Storage启用。
+
+
+## 2026-11-03｜M2原件来源受限函数真实PG17验收成功
+
+- 代码基线 `main@bcd0715`；真实GitHub隔离PG17运行 `41576958641` **SUCCESS**。新增`MAB_PRIVATE_SOURCE_BINDING_PG_PASS`：Owner正确来源绑定、错误raw/version/hash、跨Owner、失效/伪造/禁用、项目归档；应用账号没有来源表直读权限、外部角色不可调用窄函数。原K3 Gate/私有原件DB/迁移重放与回滚检查成功，原审计合成711条保持不变。
+- 前三次失败分别为临时PG初始化socket、候选SQL源文件截断、重复SQL尾段；均已修正，完整过程和原回执列于`tasks/results/MAB/M2_SOURCE_BINDING_PG17_20261103.md`。最终运行才是数据库级PASS，之前的CI绿灯不重复计数。
+- **仍需收口**：本次未启动官方Storage HTTP夹具，旧官方Storage隔离回执仍单独继承；尚未执行M2生产迁移/私有桶/密钥及D00—D03正式Registry接线。M0审查PASS、M1生产安全HOLD、M2/M3生产HOLD都不改变。
