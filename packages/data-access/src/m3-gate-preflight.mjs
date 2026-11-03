@@ -17,14 +17,17 @@ export async function inspectIndependentGateReadiness(query) {
  let roles=[],perGate=empty();
  if(issues.length===0){
   try {
-   const r=await query("select rolname,rolcanlogin,rolsuper,rolbypassrls from pg_roles where rolname in ('mohen_gate_signer','mohen_producer','mohen_app_runtime')");
+   const r=await query("select rolname,rolcanlogin,rolsuper,rolbypassrls from pg_roles where rolname in ('mohen_gate_authority','mohen_gate_signer','mohen_producer','mohen_app_runtime')");
    roles=r.rows??[];
    const names=new Set(roles.map(row=>row.rolname));
-   for(const role of ['mohen_gate_signer','mohen_producer','mohen_app_runtime']){
+   for(const role of ['mohen_gate_authority','mohen_gate_signer','mohen_producer','mohen_app_runtime']){
     if(!names.has(role))issues.push('M3_ROLE_MISSING_'+role.toUpperCase());
    }
    if(roles.some(x=>yes(x.rolsuper)||yes(x.rolbypassrls)))issues.push('M3_UNSAFE_PRIVILEGED_ROLE');
-   if(roles.some(x=>x.rolname==='mohen_gate_signer'&&yes(x.rolcanlogin)))issues.push('M3_SIGNER_ROLE_MUST_NOT_LOGIN');
+   if(roles.some(x=>['mohen_gate_authority','mohen_gate_signer','mohen_producer','mohen_app_runtime'].includes(x.rolname)&&yes(x.rolcanlogin)))
+     issues.push('M3_INTERNAL_ROLE_MUST_NOT_LOGIN');
+   const grants=await query("select (pg_has_role('mohen_producer','mohen_gate_authority','member') or pg_has_role('mohen_app_runtime','mohen_gate_authority','member') or pg_has_role('mohen_gate_signer','mohen_gate_authority','member')) as unsafe_membership");
+   if(yes(grants.rows?.[0]?.unsafe_membership))issues.push('M3_GATE_AUTHORITY_ROLE_INHERITED');
    const p=await query("select gate_code,count(*)::int as n from control.gate_policy_versions where enabled=true group by gate_code");
    const b=await query("select gate_code,count(*)::int as n from control.gate_reviewer_bindings where active=true and valid_from<=now() and valid_until>now() group by gate_code");
    for(const row of p.rows??[])if(perGate[row.gate_code])perGate[row.gate_code].policy_versions=count(row.n);

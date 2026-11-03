@@ -236,3 +236,9 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - `main@2a8c2b49`：统一登录、注册、退出`sessionCookieOptions`并在production设置Secure，同时保持HttpOnly、SameSite=Lax和开发localhost兼容；GitHub Actions `41566911728` **SUCCESS**。两批均未执行生产DB数据写入/DDL或获取任何密码。
 - **已验证工程范围**：M1的受权限约束文本详情代码及跨Owner/禁用/匿名/畸形ID/故障测试、会话Cookie生产安全属性均通过CI；但**这并不意味着生产环境真实合法导入/读取E2E、旧凭据撤销及恢复证据通过**。
 - **当前正式状态**：`M1_SECURITY_ACCEPTANCE_HOLD`不变；M0仍是`M0_AUDIT_EXIT_PASS`。M1后续待办仅针对真实密码旧连接失效的非敏感凭证、本人合法登录导入、跨账户/撤权与恢复验收。M2私有对象/桥与M3独立Gate继续原计划和独立授权，不因两批UI/API工程CI绿灯提前启用。
+
+## 2026-11-03｜M1五项证据核销；M3独立Authority角色安全补缺
+
+- 在现有`PLAN.md`按五个M1任务逐条整理已验证证据与未完成的生产安全验收，不移动M1状态。旧凭据轮换很可能已完成但仍待非敏感失效凭证，不再默认要求Owner重复重置。M1尚未PASS。
+- 对照K3 Gate迁移发现只读就绪检查漏核实际创建的`mohen_gate_authority`独立事务角色。现补四内部角色存在、NOLOGIN、非SUPER/无BYPASSRLS，额外只读检查Producer/App Runtime/Signer不得继承Authority，增加正反测试。这是现有K3专业权限体系补缺，仍不启用真实Gate，不代表Reviewer签发通过。
+- 本批仅GitHub源码、单测及原位施工账；未改生产数据库、Storage、Gate或凭据。CI以实际GitHub回执为准。
