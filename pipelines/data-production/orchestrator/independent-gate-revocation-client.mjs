@@ -68,6 +68,7 @@ export function createIndependentGateRevocationClient({endpoint,credential,fetch
        receipt.gate_audit_id!==payload.gate_audit_id ||
        receipt.request_id!==payload.request_id ||
        receipt.revoked!==true ||
+       receipt.reviewer_binding_ref!==payload.reviewer_binding_ref ||
        !Number.isSafeInteger(receipt.blocked_count) || receipt.blocked_count<0 ||
        typeof receipt.invalidation_event_id!=='string' ||
        !UUID.test(receipt.invalidation_event_id) ||
