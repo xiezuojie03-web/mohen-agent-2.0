@@ -561,3 +561,15 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **HP13机器核查补缺**：`3dead082`在只读目标审计脚本增加对74路径当前实际文件SHA256和冻结目标SHA256逐项字节比较并列出全部53 REVISE偏差；`110b1c6e`/`740d66db`补合成哈希与CSV转义测试；`68fef380`让当前HP13语义核销读取独立后续审查字段，不覆盖M0历史列。脚本CI已接，但最新GitHub实际运行成功证据未得。
 - **HP11细化补正**：`d12a322b`修正旧Reviewer已拒绝某精确rev却仍在待审队列的问题；`2bc27dce`补待审核只保留尚无approved/rejected决定的精确rev测试。修订重投仍须保存新的不可变rev。暂无实际CI与PG回执。
 - **准出结论**：`HP01/HANDOFF_NOT_READY`；未启用生产Gate、原件上传、外部模型或平台授权切换。所有用户可见产品功能改变需实际浏览器验证；GitHub源提交不等于部署有效。回退不能重开旧匿名素材/旧自签Gate。
+
+
+## 2026-11-03｜HP08工具调用收费不确定、累计预算与Studio追问/恢复安全收口批
+
+- **继承与目标**：依据Owner批准的`PLAN.md §6B HP08/HP09`，本批从上一轮`d9b38a76`的“工具成功但settled回执存储失败不得退费/重试”继续，解决“收费服务执行超时但可能已扣款仍释放预占”与Studio追问/恢复绕开账本的问题。不增加收费Provider调用、不修改生产数据库或现有Agent能力方向。
+- **HP08账本源码**：`96328bdf`修改`apps/web/lib/studio/tool-ledger.ts`，为每次登记的工具调用生成唯一invocation UUID，reserved/settled/hold回执共用此ID。普通确定性本地工具失败可释放预算；LLM、external、production等可能收费工具执行抛错则**保留reserved**，存`provider_execution_uncertain`与`retry_requires_reconciliation`，抛`ToolExecutionUncertainError`；成功但settled写入失败则spent仍保留，抛带invocationId的`ToolReceiptPersistenceError`，不得将远端已运行当未执行。无账本的production工具继续拒绝。
+- **HP08研究任务恢复**：`0b34c8fc`及`93750d59`修改`apps/web/lib/studio-research.ts`：创建研究任务遇收费/回执不确定时持久化status=hold、预算spent/reserved/ceiling、精确invocationId和工具标识；正常完成保存累计预算上限和费用。恢复时读取旧checkpoint：凡是`retry_requires_reconciliation`、收费已发生或缺逐工具位置的HOLD均**不重跑首步**；仅在尚无收费步骤、追加预算明确且checkpoint有效时允许受控重试。原`runResearch`暂无精确per-step continuation，故真实已付费任务复跑继续HOLD。
+- **HP08 Studio追问入口**：`f604e6f3`把`appendResearchMessage`从无账本直接调用模型改为：先校验已完成任务的累计预算checkpoint，使用数据库`status=done→running` CAS抢占，传入同一task ledger且保存更新spent/ceiling；无可信预算、并发争抢、预算不足和收费回执不确定均明确拒绝/HOLD，不重置费用。`c5b6d6c1`同步修正研究消息API返回409/404及no-store。`c28ea2bf`使resume HTTP必须授权明确additionalCeiling，改走`resumeResearchTask`，不再调用无预算`appendResearchMessage`直接重做收费工具。
+- **HP08新增测试**：`293d8a52`新增工具reserve→settle成功、预占写库失败零Provider调用、外部工具超时待核、HOLD写失败、确定性失败、settled写失败保留实际spent、无ledger production拒绝等单测；`3ce3c296`覆盖研究任务uncertain HOLD、累计费用与无精确步骤不得恢复、追问CAS；`1d8c7a62`覆盖Studio HTTP恢复追加预算、no automatic replay及追问待核409。所有均为新提交的测试源码，**本批尚无实际Vitest PASS及最新Next构建回执**；不能按测试数量签准出。
+- **真实证据**：Vercel连接器确认较早代码`0b34c8fc`部署为READY，并从部署日志查到构建完成；这是该SHA的build-only证明，**不是**本批后续`f604e6f3`/`c5b6d6c1`/`c28ea2bf`/测试的成功证据，也不能代替实际运营安全验收。当前M4`HP08_CODE_PRESENT / CI_UNVERIFIED / LIVE_HOLD`。
+- **下一缺口**：`requestProduction`当前`triggerProduction`可能在记reserved成本回执之前启动异步Runner，缺生产签名输入绑定和原子预算授予；必须在HP08/HP04正反核查之后解决，不能启动生产。研究任务已发生收费后的精确步骤恢复、跨进程长期receipt确认及T1—T7真实Provider授权还缺正式隔离E2E；不得因安全失败关闭就宣布M4真实双主体能力PASS。
+- **费用和回滚**：没有发起任何实际外部模型/Provider调用，没有改变生产Storage/Gate/数据库，无新增费用。回退不得恢复“工具超时自动退款后再试”、无账本研究追问或工作队列并发重做的风险；必要时继续保留HOLD和显式需核销状态。一次性CodeBuddy交接仍`HANDOFF_NOT_READY`。
