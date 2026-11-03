@@ -386,3 +386,12 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **验证状态**：文件已提交`main`；截至本回执`fd758bb5` GitHub聚合Vercel pending、未取得GitHub Actions完整成功日志。状态`CODE_PRESENT / TEST_PENDING`，不可写成`VERIFIED_ISOLATED`。本次没有生产DB/Storage/Reviewer、真实原件、用户会话或付费模型调用。
 - **未闭合责任**：受控Owner短时会话与私有worker在可信CLI运行端注入，D00合格来源→D01正式输入及D01→D02→D03合法候选/资格载体转换（禁止把UNASSESSED作为qualified层交给下一阶段），同一条真实隔离PG+官方Storage+独立Reviewer的正反验证；而后再经过M1现场安全验收才具备正式激活资格。专项新增路径是原Runner专用模块，不另建Runner、知识真值库或第二Gate。
 - **回退**：退回受控适配器模块及守卫放行的限定修改即可恢复“全部私有请求HOLD”的安全状态，不恢复旧legacy读取，不触碰生产数据和历史审计。
+
+
+## 2026-11-03｜M2唯一Runner真实阶段授权顺序修复与入口级回归
+
+- **发现的集成冲突**：现行 `runProduction` 先执行含可信nonce的 `assertStageExecutionAuthorized`，再更新 `state.current_stage`；而已批准的一次性交接凭证要求当前stage与job.stage一致。因此早前工作器直调的合成测试虽然可PASS，但实际Runner在进入D01私有工作器时可能失败。不能用直调测试替代真实编排。
+- **源码已提交**：`a726b26a4c907d402efb9bf6dd2cbfd87d671169` 原位调整唯一Runner，在签名授权及nonce消耗之前设置当前stage；不改变原Registry校验、阶段Executor、独立G(n)资格核验、生产开关或Stage结果合同。
+- **测试已提交**：`e71d04b917502bf5bc5b2df5b19a1d895338c433` 新增 `tests/data-production/private-runner-stage-handoff.test.mjs`：从真实`runProduction` D01 resumed入口出发，合成Ed25519 + verifier，通过专用private adapter验证当前stage、相同registry/job/input、一次性handoff、无G1则最终HOLD且不得交给D02。`a9464fa267531bad79cc5769369cb8cb029653b8` 补禁用Registry和缺授权时拒绝且绝不加载adapter/调用私有工作器的负例。
+- **确认边界**：使用纯合成输入与假Verifier测试代码；本批未在真实PostgreSQL、Storage、独立Reviewer及Owner生产身份环境完成整链测试，GitHub Actions正式成功回执尚待核实。标`CODE_PRESENT / TEST_PENDING`，不得把测试文件存在称为测试PASS。当前`production-registry.json`保持全局/各Job禁用；D00/D04/D05专用候选模块仍强制HOLD，M1/M2/M3及M4真实生产运行准出状态不变。
+- **接续顺序**：验证本批真实CI→可信Runner侧Owner短时会话与受控Storage/DB工作器装配→合法来源D00→D01→D02→D03阶段载体及独立G0—G3资格映射→隔离DB+官方Storage+独立Reviewer正反联调；不得为模拟通关放开legacy私有输入或写入伪造的合格候选。无新产品功能、费用或生产迁移。
