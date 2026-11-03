@@ -70,8 +70,9 @@ export function createIndependentGateRevocationClient({endpoint,credential,fetch
        receipt.revoked!==true ||
        receipt.reviewer_binding_ref!==payload.reviewer_binding_ref ||
        !Number.isSafeInteger(receipt.blocked_count) || receipt.blocked_count<0 ||
-       typeof receipt.invalidation_event_id!=='string' ||
-       !UUID.test(receipt.invalidation_event_id) ||
+       (receipt.invalidation_event_id!==undefined &&
+        (typeof receipt.invalidation_event_id!=='string' ||
+         !UUID.test(receipt.invalidation_event_id))) ||
        typeof receipt.reviewer_identity_ref!=='string' ||
        !receipt.reviewer_identity_ref.trim())
       throw Error('INDEPENDENT_REVOKE_RESPONSE_INVALID');
