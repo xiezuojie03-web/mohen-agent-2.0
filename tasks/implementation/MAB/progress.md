@@ -449,3 +449,12 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 现`publication.listPublished()`仅基于发布指针+revision状态，仍未有作品rev与独立G5真实资格/媒资许可证的正式消费映射。后续须依据KAD/MHKA现有专业合同确定**作品发布指针、精确WorkRevision与各知识/媒体分面的合法对象映射**，再以独立只读资格Verifier或数据库受审窄RPC逐次执行，包含错consumer、旧rev、过期/撤权/媒体失效负例。不得简单JOIN到另一个无关G5记录构造PASS。
 - M3受审迁移已含独立`control.revoke_gate_qualification`函数，它在独立Reviewer绑定下删除`qualification_current`并追加事件、历史签名不可变；旧`apps/web/lib/gate-revoke.ts`仍直接试图UPDATE `gate_audits.current_valid`，与签名不可变触发器以及最小角色权限冲突。正式M3/M5接线不得复用旧应用账号直接UPDATE路径，必须经独立撤权服务/身份且以实际隔离测试取证。
 - 此项为**权威合同核查得到的具体工程缺口**，不是新架构研究；本轮不启动生产G5或撤权、不假写当前资格。M5完整消费验收维持HOLD；源代码可并行施工。
+
+
+## 2026-11-03｜M3/M5旧Operator撤权入口安全失败关闭
+
+- **合同冲突核实**：现`control.revoke_gate_qualification(uuid,uuid,text)`属于K3独立Gate权威：需精确`gate_audit_id`、幂等请求ID、理由、独立Reviewer身份及专用DB角色绑定；经`qualification_current`删除当前资格与追加不可变失效事件。旧`apps/web/lib/gate-revoke.ts`由Operator API调用，直接UPDATE`control.gate_audits.current_valid`，与独立签名历史不可变触发器以及最小权限矛盾，不能冒充专业Gate撤权。
+- **已修改源码**：`1dfedaa21e136504545f55993335d1338eaff463`原位关闭旧Operator应用层直接撤权，无论是否传objectType/id都不能写Gate表；合法legacy输入返回`ok:false,reason:INDEPENDENT_GATE_REVOCATION_REQUIRED,invalidatedGates:0`，缺对象则返回`object_required`。两真实API `/api/governance/gates/revoke` 和 `/api/admin/rights/invalidate` 分别由`6fe89f5c`、`2eeed56a`返回显式HTTP 503及`no-store`，不再把未执行撤权的响应误作200。
+- **自动测试源码**：`59f392adc9d1dc15729f87a439759f57fc2b0ead`新增`tests/unit/mab-m3-independent-revocation-boundary.test.ts`，检查合法/非法请求均失败关闭、不调用DB写。尚未取得本批实际CI成功回执，状态`CODE_PRESENT/TEST_PENDING`，不得称M3正式撤权实现PASS。
+- **行为兼容重要提示**：此次**有意临时关闭旧的Operator撤权写入口**，避免其在权限/触发器不兼容时返回不可靠结果。它不表示Gate实际已撤权；如果生产有正在依赖旧端点的操作，必须保持相关新发布/新消费受控停用，不能用恢复危险UPDATE/绕过独立Reviewer作为回退。
+- **后续插件施工**：沿现有独立服务合同实现Reviewer当前身份核实、精确audit ID与幂等事件、已撤权/权限拒绝/到期/错scope正反测试，并使M5消费者按用途/consumer/rights每请求校验。未具备正式签发身份和真实环境之前保持M3与M5 HOLD，不把旧work_publication_decisions当专业G5。
