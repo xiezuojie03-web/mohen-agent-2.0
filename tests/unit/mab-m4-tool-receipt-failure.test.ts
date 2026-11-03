@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const { databaseRun } = vi.hoisted(() => ({ databaseRun: vi.fn() }));
 vi.mock("@mohen/data-access", () => ({ run: databaseRun }));
 
-import { createBudget, useTool } from "../../apps/web/lib/studio/tool-ledger";
+import { createBudget, useTool, writeReceipt } from "../../apps/web/lib/studio/tool-ledger";
 
 describe("MAB M4 tool reservation persistence", () => {
   beforeEach(() => { databaseRun.mockReset(); });
@@ -18,6 +18,15 @@ describe("MAB M4 tool reservation persistence", () => {
     expect(invoke).not.toHaveBeenCalled();
     expect(databaseRun).toHaveBeenCalledTimes(1);
     expect(budget).toEqual({ceiling:8,reserved:0,spent:0});
+  });
+
+  it("rejects unknown external tool cost rather than silently recording zero", async () => {
+    await expect(writeReceipt({taskId:"synthetic-task",kind:"tool",stage:"tool",
+      toolId:"llm-understand",status:"reserved"})).rejects.toThrow("TOOL_RECEIPT_COST_UNKNOWN");
+    await expect(writeReceipt({taskId:"synthetic-task",kind:"tool",stage:"tool",
+      toolId:"llm-understand",cost:Number.NaN,status:"reserved"}))
+      .rejects.toThrow("TOOL_RECEIPT_COST_UNKNOWN");
+    expect(databaseRun).not.toHaveBeenCalled();
   });
 
   it("continues reserve, execute and settle for registered tools when receipts persist", async () => {
