@@ -722,3 +722,8 @@ Owner决定优先按任务书连续完成GitHub开发，构建/测试按批次�
 
 
 HP01同批推送复核：修复代码67b2984，主CI41612672544及M1真实隔离HTTP41612672479均SUCCESS；仅签本批限定验证，不签M1整体。默认pnpm test因缺.env.local实际失败，另列DEFERRED_ENV；详细证据与未覆盖的服务端Cookie重放见progress及本批回执。
+
+
+### 2026-11-03 Codex HP02会话安全增量（M1整体仍HOLD）
+
+补旧Cookie复制重放、禁用恢复复活及退出UI假成功缺口；候选撤销迁移与默认关闭开关已实现，隔离PG17/Next/Chromium通过，未应用生产。单测258 PASS/4原联网SKIP，生产边界98 PASS，HTTP5 PASS/1官方StorageSKIP。参见[HP02回执](../../results/MAB/CODEX_HP02_20261103.md)。生产激活须独立批准；启用后不可关闭校验或恢复旧auth绕过撤销，备份恢复还须保全撤销/受控密钥失效。M1生产Owner/旧数据库凭据/恢复等正式准出仍HOLD；继续HP03—07原件证据及独立资格链，不改变原M0—M8、HP结构。

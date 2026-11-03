@@ -20,6 +20,10 @@ on:
       - "apps/web/lib/studio/**"
       - "apps/web/lib/studio-research.ts"
       - "packages/data-access/src/**"
+      - "apps/web/lib/auth.ts"
+      - "apps/web/app/components/GlobalNav.tsx"
+      - "apps/web/app/admin/AdminWorkbench.tsx"
+      - "supabase/migrations/*_mab_web_session_revocation.sql"
   workflow_dispatch:
 
 permissions:
@@ -30,6 +34,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     env:
+      MOHEN_REVOCABLE_SESSIONS_ENABLED: "true"
       MOHEN_TEST_PSQL: /usr/bin/psql
       MOHEN_TEST_SOCKET: /workspace/mab-m1-http-pg
       MOHEN_TEST_PORT: "55432"

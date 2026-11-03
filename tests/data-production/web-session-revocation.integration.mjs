@@ -1,0 +1,36 @@
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+import {createHmac,randomUUID} from 'node:crypto';
+const {MOHEN_TEST_PSQL:psql,MOHEN_TEST_SOCKET:socket,MOHEN_TEST_DATABASE:database}=process.env;
+if(!psql||!socket?.startsWith('/workspace/')||!/^mohen_k3_[a-z0-9_]*test$/.test(database??''))throw Error('ISOLATED_TEST_DATABASE_REQUIRED');
+const base=['-X','-q','-At','-v','ON_ERROR_STOP=1','-h',socket,'-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database];
+const sql=s=>execFileSync(psql,base,{input:s,encoding:'utf8',stdio:['pipe','pipe','pipe']}).trim();
+assert.equal(sql("select current_setting('mohen.test_instance',true)"),'codex-k3-isolated');
+const a=randomUUID(),b=randomUUID(),hash='a'.repeat(64),otherHash='b'.repeat(64);
+const key='synthetic-hp02-database-session-key-at-least-32';
+sql(`insert into public.users(user_id,email,username,password_hash) values('${a}','${a}@example.invalid','A','synthetic'),('${b}','${b}@example.invalid','B','synthetic');
+insert into control.session_verification_keys(verification_key) values('${key}') on conflict(key_slot) do update set verification_key=excluded.verification_key;`);
+function scoped(uid,statement){
+ const payload=Buffer.from(JSON.stringify({uid,r:[],exp:Date.now()+30000})).toString('base64url');
+ const token=payload+'.'+createHmac('sha256',key).update(payload).digest('base64url');
+ return sql(`begin;set local role mohen_app_runtime;select set_config('mohen.session_token','${token}',true);${statement};commit`).split('\n').slice(1).join('\n');
+}
+scoped(a,`insert into control.web_session_revocations(token_hash,user_id,expires_at)values('${hash}','${a}',now()+interval '1 day')`);
+assert.equal(scoped(a,'select count(*) from control.web_session_revocations'),'1');
+assert.equal(scoped(b,'select count(*) from control.web_session_revocations'),'0');
+assert.throws(()=>scoped(b,`insert into control.web_session_revocations(token_hash,user_id,expires_at) values('${otherHash}','${a}',now()+interval '1 day')`),/row-level security/);
+assert.throws(()=>scoped(a,'delete from control.web_session_revocations'),/permission denied/);
+assert.throws(()=>scoped(a,`update control.web_session_revocations set token_hash='${otherHash}'`),/permission denied/);
+for(const role of ['anon','authenticated','mohen_producer','mohen_gate_signer'])assert.equal(sql(`select has_table_privilege('${role}','control.web_session_revocations','SELECT') or has_table_privilege('${role}','control.web_session_revocations','INSERT')`),'f');
+const before=Number(sql(`select session_not_before from public.users where user_id='${a}'`));
+sql(`update public.users set status='disabled' where user_id='${a}'`);
+const disabled=Number(sql(`select session_not_before from public.users where user_id='${a}'`));
+assert.ok(disabled>before);
+sql(`update public.users set status='active' where user_id='${a}'`);
+const restored=Number(sql(`select session_not_before from public.users where user_id='${a}'`));
+assert.ok(restored>disabled);
+sql(`update public.users set session_not_before=0,username='renamed' where user_id='${a}'`);
+assert.equal(Number(sql(`select session_not_before from public.users where user_id='${a}'`)),restored,'cannot rewind cutoff');
+sql(`update public.users set password_hash='new synthetic hash' where user_id='${a}'`);
+assert.ok(Number(sql(`select session_not_before from public.users where user_id='${a}'`))>restored);
+console.log('MAB_WEB_SESSION_REVOCATION_PG_PASS owner-RLS cross-owner-denied no-public-grants immutable-runtime-tombstones monotonic-disable-restore-password-cutoff');

@@ -1,0 +1,142 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/mab-hp02-session-revocation.test.ts (6 tests | 6 failed) 24ms
+   × rejects a copied signed token after durable revocation 8ms
+     → expected { …(2) } to be null
+   × rejects pre-disable sessions after the account becomes active again 2ms
+     → expected { …(2) } to be null
+   × requires the revocation schema result, never silently falls back 3ms
+     → expected { state: 'authenticated', …(1) } to deeply equal { state: 'unavailable' }
+   × writes a hash-only revocation before reporting logout success 7ms
+     → expected "spy" to be called 1 times, but got 0 times
+   × does not acknowledge server logout if the revocation write fails 2ms
+     → expected 200 to be 503 // Object.is equality
+   × signs distinct sessions even for two logins in the same millisecond 1ms
+     → expected 'eyJ1aWQiOiIxMTExMTExMS0xMTExLTQxMTEtO…' not to be 'eyJ1aWQiOiIxMTExMTExMS0xMTExLTQxMTEtO…' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/mab-hp02-session-revocation.test.ts > rejects a copied signed token after durable revocation
+AssertionError: expected { …(2) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "r": [
+    "member",
+  ],
+  "uid": "11111111-1111-4111-8111-111111111111",
+}
+
+ ❯ tests/unit/mab-hp02-session-revocation.test.ts:18:38
+     16|  const token=signSessionToken(uid,['member']);
+     17|  db.queryRows.mockResolvedValue([{...active,session_revoked:true}]);
+     18|  expect(await getSessionUser(token)).toBeNull();
+       |                                      ^
+     19| });
+     20| it('rejects pre-disable sessions after the account becomes active agai…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  tests/unit/mab-hp02-session-revocation.test.ts > rejects pre-disable sessions after the account becomes active again
+AssertionError: expected { …(2) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "r": [
+    "member",
+  ],
+  "uid": "11111111-1111-4111-8111-111111111111",
+}
+
+ ❯ tests/unit/mab-hp02-session-revocation.test.ts:24:38
+     22|  const token=signSessionToken(uid,['member']);
+     23|  db.queryRows.mockResolvedValue([{...active,session_not_before:Date.no…
+     24|  expect(await getSessionUser(token)).toBeNull();
+       |                                      ^
+     25| });
+     26| it('requires the revocation schema result, never silently falls back',…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  tests/unit/mab-hp02-session-revocation.test.ts > requires the revocation schema result, never silently falls back
+AssertionError: expected { state: 'authenticated', …(1) } to deeply equal { state: 'unavailable' }
+
+- Expected
++ Received
+
+  {
+-   "state": "unavailable",
++   "session": {
++     "r": [
++       "member",
++     ],
++     "uid": "11111111-1111-4111-8111-111111111111",
++   },
++   "state": "authenticated",
+  }
+
+ ❯ tests/unit/mab-hp02-session-revocation.test.ts:29:65
+     27|  const {session_not_before,...withoutSchema}=active;
+     28|  db.queryRows.mockResolvedValue([withoutSchema]);
+     29|  expect(await resolveSession(signSessionToken(uid,['member']))).toEqua…
+       |                                                                 ^
+     30| });
+     31| it('writes a hash-only revocation before reporting logout success',asy…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  tests/unit/mab-hp02-session-revocation.test.ts > writes a hash-only revocation before reporting logout success
+AssertionError: expected "spy" to be called 1 times, but got 0 times
+ ❯ tests/unit/mab-hp02-session-revocation.test.ts:35:17
+     33|  const response=await logout(new NextRequest('https://localhost/api/au…
+     34|  expect(response.status).toBe(200);
+     35|  expect(db.run).toHaveBeenCalledTimes(1);
+       |                 ^
+     36|  const values=JSON.stringify(db.run.mock.calls[0][1]);
+     37|  expect(values).not.toContain(token);expect(values).toContain(uid);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  tests/unit/mab-hp02-session-revocation.test.ts > does not acknowledge server logout if the revocation write fails
+AssertionError: expected 200 to be 503 // Object.is equality
+
+- Expected
++ Received
+
+- 503
++ 200
+
+ ❯ tests/unit/mab-hp02-session-revocation.test.ts:44:26
+     42|  const token=signSessionToken(uid,['member']);
+     43|  const response=await logout(new NextRequest('https://localhost/api/au…
+     44|  expect(response.status).toBe(503);
+       |                          ^
+     45|  expect(await response.json()).toMatchObject({ok:false,reason:'session…
+     46| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  tests/unit/mab-hp02-session-revocation.test.ts > signs distinct sessions even for two logins in the same millisecond
+AssertionError: expected 'eyJ1aWQiOiIxMTExMTExMS0xMTExLTQxMTEtO…' not to be 'eyJ1aWQiOiIxMTExMTExMS0xMTExLTQxMTEtO…' // Object.is equality
+ ❯ tests/unit/mab-hp02-session-revocation.test.ts:49:47
+     47| it('signs distinct sessions even for two logins in the same millisecon…
+     48|  vi.useFakeTimers();vi.setSystemTime(1800000000000);
+     49|  expect(signSessionToken(uid,['member'])).not.toBe(signSessionToken(ui…
+       |                                               ^
+     50| });
+     51|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed (6)
+   Start at  09:48:28
+   Duration  319ms (transform 70ms, setup 0ms, collect 95ms, tests 24ms, environment 0ms, prepare 69ms)

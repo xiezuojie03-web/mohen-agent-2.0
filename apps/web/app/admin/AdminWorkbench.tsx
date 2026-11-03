@@ -176,7 +176,15 @@ export default function AdminWorkbench({ summary }: { summary: ProductionRelatio
   }
 
   async function logout() {
-    await fetch("/api/auth/logout", { method: "POST" });
+    setFeedback(null);
+    try {
+      const response = await fetch("/api/auth/logout", { method: "POST" });
+      const result = await response.json();
+      if (!response.ok || result.ok !== true) throw new Error("LOGOUT_NOT_ACKNOWLEDGED");
+    } catch {
+      setFeedback({ok:false,text:"退出未完成，请重试。"});
+      return;
+    }
     setUser(null);
     setSubmitted([]);
     setPending([]);

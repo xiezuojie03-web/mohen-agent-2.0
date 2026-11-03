@@ -1,0 +1,4 @@
+=== P0 鉴权矩阵 ===
+routes=104 public=18 protected=86
+missing_route_auth=0 auth_only_no_owner=0
+matrix=work/ci-20261103/hp02-auth.csv

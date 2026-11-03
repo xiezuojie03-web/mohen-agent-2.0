@@ -81,6 +81,16 @@ try {
       if (bridgeResult.status !== 0) throw new Error("EVIDENCE_BRIDGE_TEST_FAILED");
     } else console.log("MAB_PRIVATE_ORIGINAL_STORAGE_HOLD no isolated official Storage configuration supplied");
   }
+  apply("20261103095024_mab_web_session_revocation.sql");
+  const sessionResult = spawnSync(process.execPath, ["tests/data-production/web-session-revocation.integration.mjs"], {
+    cwd:root,env:{...process.env,MOHEN_TEST_DATABASE:database},stdio:"inherit"});
+  if(sessionResult.status!==0)throw Error("WEB_SESSION_REVOCATION_TEST_FAILED");
+  const sessionSnapshot=query(database,"select md5(jsonb_agg(to_jsonb(r) order by token_hash)::text) from control.web_session_revocations r");
+  apply("20261103095024_mab_web_session_revocation.sql");
+  apply("20261103095024_mab_web_session_revocation.rollback.sql","rollback");
+  if(query(database,"select md5(jsonb_agg(to_jsonb(r) order by token_hash)::text) from control.web_session_revocations r")!==sessionSnapshot)throw Error("SESSION_ROLLBACK_LOST_REVOCATIONS");
+  if(query(database,"select has_table_privilege('mohen_app_runtime','control.web_session_revocations','SELECT') or has_table_privilege('mohen_app_runtime','control.web_session_revocations','INSERT')")!=="f")throw Error("SESSION_ROLLBACK_LEFT_ACCESS");
+  console.log("MAB_WEB_SESSION_ROLLBACK_PASS tombstones-retained runtime-closed migration-repeatable");
   const allAuditSnapshot = query(database, "select md5(jsonb_agg(to_jsonb(g) order by gate_audit_id)::text) from control.gate_audits g");
   for (const file of migrations) apply(file);
   if (query(database, "select md5(jsonb_agg(to_jsonb(g) order by gate_audit_id)::text) from control.gate_audits g") !== allAuditSnapshot) throw new Error("REPEAT_MIGRATION_CHANGED_SIGNED_HISTORY");

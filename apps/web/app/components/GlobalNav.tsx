@@ -27,6 +27,7 @@ export default function GlobalNav() {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<SessionUser | null>(null);
+  const [logoutError, setLogoutError] = useState(false);
   const [openMenu, setOpenMenu] = useState<"" | "search" | "notify" | "user">("");
   const [searchQ, setSearchQ] = useState("");
   const [works, setWorks] = useState<SearchWorks>([]);
@@ -82,10 +83,14 @@ export default function GlobalNav() {
   }
 
   async function logout() {
+    setLogoutError(false);
     try {
-      await fetch("/api/auth/logout", { method: "POST" });
+      const response = await fetch("/api/auth/logout", { method: "POST" });
+      const result = await response.json();
+      if (!response.ok || result.ok !== true) throw new Error("LOGOUT_NOT_ACKNOWLEDGED");
     } catch {
-      /* 忽略 */
+      setLogoutError(true);
+      return;
     }
     setUser(null);
     setOpenMenu("");
@@ -218,6 +223,7 @@ export default function GlobalNav() {
                   进入运营后台
                 </Link>
               )}
+              {logoutError && <p role="alert">退出未完成，请重试。</p>}
               <button className="mo-nav__user-action mo-nav__user-logout" onClick={() => void logout()}>
                 退出登录
               </button>

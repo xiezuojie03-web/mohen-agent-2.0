@@ -9,7 +9,7 @@
 //
 // 纪律：密码仅存 scrypt 盐+哈希、绝不落明文/不回显；token 仅存 httpOnly cookie。
 import crypto from "node:crypto";
-import { queryRows } from "@mohen/data-access";
+import { queryRows, run } from "@mohen/data-access";
 
 const SESSION_TTL_MS = 24 * 60 * 60 * 1000; // 24 小时
 
@@ -59,7 +59,9 @@ export function verifyPassword(password: string, stored: string): boolean {
 }
 
 // ---------- 签名 session token：base64url(payload) + "." + HMAC ----------
-type SessionPayload = { uid: string; r: string[]; exp: number };
+type SessionPayload = { uid: string; r: string[]; exp: number; iat?: number; jti?: string };
+
+export const revocableSessionsEnabled = () => process.env.MOHEN_REVOCABLE_SESSIONS_ENABLED === "true";
 
 function b64url(s: string): string {
   return Buffer.from(s, "utf8").toString("base64url");
@@ -72,11 +74,12 @@ function sign(data: string): string {
 }
 
 export function signSessionToken(userId: string, roles: string[]): string {
-  const payload = b64url(JSON.stringify({ uid: userId, r: roles, exp: Date.now() + SESSION_TTL_MS }));
+  const now = Date.now();
+  const payload = b64url(JSON.stringify({ uid: userId, r: roles, iat: now, jti: crypto.randomUUID(), exp: now + SESSION_TTL_MS }));
   return `${payload}.${sign(payload)}`;
 }
 
-export function parseSessionToken(token: string | undefined | null): { uid: string; r: string[] } | null {
+function verifiedSessionPayload(token: string | undefined | null): SessionPayload | null {
   if (!token) return null;
   if (!isAuthConfigured()) return null;
   const dot = token.indexOf(".");
@@ -94,10 +97,27 @@ export function parseSessionToken(token: string | undefined | null): { uid: stri
     if (!data || typeof data.uid !== "string" || !data.uid.trim() ||
         !Array.isArray(data.r) || !data.r.every(r => typeof r === "string")) return null;
     if (!Number.isSafeInteger(data.exp) || data.exp <= Date.now()) return null;
-    return { uid: data.uid, r: data.r };
+    return data;
   } catch {
     return null;
   }
+}
+
+export function parseSessionToken(token: string | undefined | null): {uid: string; r: string[]} | null {
+  const data = verifiedSessionPayload(token);
+  return data ? {uid: data.uid, r: data.r} : null;
+}
+
+/** Persist only a digest. Raw cookies and signing keys must never enter SQL/logs. */
+export async function revokeSessionToken(token: string | undefined): Promise<void> {
+  const signed = verifiedSessionPayload(token);
+  if (!signed) return;
+  const persisted = await run(`insert into control.web_session_revocations(token_hash,user_id,expires_at)
+    values(:'hash',:'uid',to_timestamp(:'exp'::numeric/1000))
+    on conflict(token_hash) do nothing`, {
+    hash: crypto.createHash('sha256').update(token!).digest('hex'), uid: signed.uid, exp: signed.exp,
+  });
+  if (persisted !== true) throw new Error('SESSION_REVOCATION_NOT_ACKNOWLEDGED');
 }
 
 // ---------- 兼容旧接口（既有路由零改动） ----------
@@ -121,10 +141,34 @@ type SessionResolution =
 
 /** Middleware can report dependency failure distinctly while compatibility callers fail closed. */
 export async function resolveSession(token: string | undefined | null): Promise<SessionResolution> {
-  const signed = parseSessionToken(token);
+  const signed = verifiedSessionPayload(token);
   if (!signed) return { state: "unauthenticated" };
   try {
-    const user = await findUserById(signed.uid);
+    let user: AuthUser | null;
+    if (revocableSessionsEnabled()) {
+      // Existing cookies without issuance identity cannot cross the cutover.
+      if (!Number.isSafeInteger(signed.iat) || !signed.jti || signed.iat! > Date.now() || signed.iat! >= signed.exp) {
+        return {state: "unauthenticated"};
+      }
+      const rows = await queryRows(`select u.user_id::text as user_id,u.email,u.username,
+        array_to_string(u.roles, ',') as roles,u.status,u.session_not_before,
+        exists(select 1 from control.web_session_revocations s
+          where s.token_hash=:'hash' and s.user_id=u.user_id) as session_revoked
+        from public.users u where u.user_id=:'id'`, {
+        id: signed.uid, hash: crypto.createHash('sha256').update(token!).digest('hex'),
+      });
+      if (!rows.length) return {state: "unauthenticated"};
+      const row: Record<string, unknown> = rows[0];
+      const floor = Number(row.session_not_before);
+      if (row.session_not_before == null || !Number.isSafeInteger(floor) || floor < 0 ||
+          (row.session_revoked !== true && row.session_revoked !== false && row.session_revoked !== 't' && row.session_revoked !== 'f')) return {state: "unavailable"};
+      if (row.session_revoked === true || row.session_revoked === 't' || signed.iat! <= floor) {
+        return {state: "unauthenticated"};
+      }
+      user = rowToUser(row);
+    } else {
+      user = await findUserById(signed.uid);
+    }
     if (!user || user.status !== "active") return { state: "unauthenticated" };
     return { state: "authenticated", session: { uid: user.user_id, r: user.roles } };
   } catch {

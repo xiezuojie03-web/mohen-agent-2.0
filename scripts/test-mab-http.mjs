@@ -23,6 +23,8 @@ try {
   const names=['202610070100_data_production_v2_baseline.sql',...fs.readdirSync(migrations).filter(n=>n>='202610160300'&&n<='202610292100_imported_materials.sql'&&!n.startsWith('202610160400')),
     '202610310900_k3_security_boundary.sql',fs.readdirSync(migrations).find(n=>n.endsWith('_mab_studio_assets.sql'))];
   for(const name of names)execFileSync(psql,[...base,'-d',database,'-f',path.join(migrations,name)],{stdio:['ignore','pipe','pipe']});
+  if(process.env.MOHEN_REVOCABLE_SESSIONS_ENABLED==='true')
+    execFileSync(psql,[...base,'-d',database,'-f',path.join(migrations,'20261103095024_mab_web_session_revocation.sql')],{stdio:['ignore','pipe','pipe']});
   if(process.env.MOHEN_TEST_STORAGE_CONFIG){
     storageConfig=JSON.parse(fs.readFileSync(process.env.MOHEN_TEST_STORAGE_CONFIG,'utf8'));
     const httpsOrigin=new URL(storageConfig.httpsOrigin),httpOrigin=new URL(storageConfig.origin);

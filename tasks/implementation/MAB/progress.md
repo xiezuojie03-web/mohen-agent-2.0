@@ -619,3 +619,12 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **新push证据**：主CI [41612672544](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41612672544) SUCCESS；M1隔离HTTP [41612672479](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41612672479) SUCCESS，日志明确3 PASS/1官方Storage SKIP及测试库清理。两者headSha均精确为67b2984，不引用旧代际PASS。机器步骤JSON已写入本批evidence。
 - **默认测试入口补测**：`pnpm test`实际FAIL（缺本地.env.local，尚未连接DB），状态DEFERRED_ENV；真实PG17、专用production/unit/HTTP的成功分别记账，不宣称默认全套PASS。独立临时PG容器已移除。
 - **裁定**：本批HP01验证/失败修复完成到限定隔离证据；M1会话重放/生产恢复、M2官方Storage、M3正式Reviewer与Gate、M4真实授权费用与M5合法发布继续HOLD，M0—M8无新增准出。下一P0仍为HP02服务端旧会话失效及禁用恢复不复活，后续施工不得把本批客户端退出验收当作这一能力。
+
+
+## 2026-11-03｜Codex HP02：服务端会话撤销与退出真实反馈
+
+- 基线main@6b24f7f，承接既有M1/HP02，不覆盖既有代码。明确复现旧logout仅清Cookie、disabled→active复活旧会话；新增iat/jti、摘要撤销与安全字段变化的单调失效时间。logout先持久ACK，503/false ACK不报成功；GlobalNav/Admin同样保留失败时登录态。
+- 候选迁移20261103095024由CLI生成；RLS owner、无公开GRANT、运行角色不可改删；rollback保留失效事实。默认开关false，生产未迁移未启用，不能称生产重放问题已解决。精确文件/原因/恢复风险见[HP02批次回执](../../results/MAB/CODEX_HP02_20261103.md)。
+- 真实验证：12项新增单测含最初6 FAIL→GREEN及false ACK反例；全单测258 PASS/4原SKIP，六工作区typecheck/Next build PASS，production98 PASS，strict auth104无缺口，85/152静态追溯PASS；真实PG17权限/失效/重复迁移/rollback PASS；真实HTTP浏览器5 PASS/1 Storage SKIP，退出UI先红后绿。所有测试均合成标记隔离库，无生产/付费Provider。
+- 本批CODE_PRESENT/VERIFIED_ISOLATED，正式M1仍HOLD。生产需既有独立授权、最低角色与时钟验证；恢复不能丢失后续撤销记录。原默认pnpm test缺.env.local继续DEFERRED_ENV。push CI精确SHA/运行ID后续追加。
+- 下一主线：HP03—05官方隔离Storage与D01—D03证据链补最新实测，HP06—07独立资格与消费者；HP08预算终态与HP10—12业务闭环继续。无产品方向和新增成本变化，未请求微步骤确认。

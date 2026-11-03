@@ -49,6 +49,12 @@ test('M1 session immediately loses private-project access after account is disab
   expect((await identity.json()).authenticated).toBe(false);
   const login=await request.post('/api/auth/login',{data:{email,password}});
   expect(login.status()).toBe(403);
+  if(process.env.MOHEN_REVOCABLE_SESSIONS_ENABLED==='true') {
+    isolatedSql(`update public.users set status='active' where user_id='${user.user_id}'`);
+    expect((await request.get('/api/studio/projects')).status()).toBe(401);
+    expect((await request.post('/api/auth/login',{data:{email,password}})).status()).toBe(200);
+    expect((await request.get('/api/studio/projects')).status()).toBe(200);
+  }
 });
 
 test('M1 logout invalidates cookie for subsequent private HTTP access',async({page})=>{
@@ -64,4 +70,46 @@ test('M1 logout invalidates cookie for subsequent private HTTP access',async({pa
   expect((await request.get('/api/studio/projects')).status()).toBe(401);
   const identity=await request.get('/api/auth/me');
   expect((await identity.json()).authenticated).toBe(false);
+});
+
+
+test('HP02 copied cookie cannot replay logout; another independent session remains usable',async({page,browser})=>{
+  test.skip(process.env.MOHEN_REVOCABLE_SESSIONS_ENABLED!=='true','Requires candidate migration in marked test DB.');
+  const request=await browserRequests(page);
+  const email=`m1-replay-${randomUUID()}@example.invalid`,password='Synthetic-'+randomUUID();
+  expect((await request.post('/api/auth/register',{data:{email,username:'隔离重放用户',password}})).status()).toBe(200);
+  const oldCookies=await page.context().cookies();
+  const other=await browser.newContext({baseURL:process.env.MOHEN_E2E_BASE_URL});
+  const replay=await browser.newContext({baseURL:process.env.MOHEN_E2E_BASE_URL});
+  try {
+    const otherRequest=await browserRequests(await other.newPage());
+    expect((await otherRequest.post('/api/auth/login',{data:{email,password}})).status()).toBe(200);
+    await replay.addCookies(oldCookies);
+    const replayRequest=await browserRequests(await replay.newPage());
+    expect((await replayRequest.get('/api/studio/projects')).status()).toBe(200);
+    const results=await Promise.all([request.post('/api/auth/logout'),request.post('/api/auth/logout')]);
+    expect(results.map(r=>r.status())).toEqual([200,200]);
+    expect((await replayRequest.get('/api/studio/projects')).status()).toBe(401);
+    expect((await otherRequest.get('/api/studio/projects')).status()).toBe(200);
+    expect((await replayRequest.post('/api/auth/logout')).status()).toBe(200);
+    expect((await replayRequest.get('/api/studio/projects')).status()).toBe(401);
+  } finally {await replay.close();await other.close();}
+});
+
+test('HP02 logout UI preserves signed-in state when server revocation fails',async({page})=>{
+  const request=await browserRequests(page);
+  expect((await request.post('/api/auth/register',{data:{email:`m1-ui-${randomUUID()}@example.invalid`,username:'退出故障验收',password:'Synthetic-'+randomUUID()}})).status()).toBe(200);
+  await page.goto('/studio/desk');
+  await page.route('**/api/auth/logout',route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({ok:false,reason:'session_revocation_unavailable'})}));
+  await expect(page.getByRole('button',{name:'用户',exact:true})).toHaveAttribute('title','退出故障验收');
+  await page.getByRole('button',{name:'用户',exact:true}).click();
+  await page.getByRole('button',{name:'退出登录',exact:true}).click();
+  await expect(page.getByText('退出未完成，请重试。',{exact:true})).toBeVisible({timeout:3000});
+  await expect(page.getByRole('button',{name:'用户',exact:true})).toHaveAttribute('title','退出故障验收');
+  expect((await request.get('/api/studio/projects')).status()).toBe(200);
+  await page.goto('/admin');
+  await expect(page.locator('.admin__auth-btn')).toBeVisible();
+  await page.locator('.admin__auth-btn').click();
+  await expect(page.getByText('退出未完成，请重试。',{exact:true})).toBeVisible({timeout:3000});
+  await expect(page.locator('.admin__auth-btn')).toBeVisible();
 });
