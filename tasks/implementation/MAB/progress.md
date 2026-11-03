@@ -326,3 +326,11 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 首轮匿名只读检查（Actions 41580710096）发现私有导入API虽然正确返回401，但Middleware未设置no-store。已提交fb92550修复；常规CI 41580885849 SUCCESS，Vercel对应生产部署READY。
 - 原匿名GET工作流在修复部署后重跑（Actions 41580710096，attempt 2，job 125735525879），四条匿名请求全部PASS：身份返回未登录，项目和史料列表/按ID读取拒绝且私有史料响应禁止缓存。
 - 裁决仅M1_ANONYMOUS_READ_ONLY_HTTP_PASS；合法登录、跨账户权限、失效会话、历史凭据及恢复仍待最终验收。M1_SECURITY_ACCEPTANCE_HOLD保留。全过程未使用用户身份或写入生产数据。
+
+
+## 2026-11-03｜M4分层准入与后续施工边界归位（仅计划施工）
+
+- 基线 `main@acfe2874`；原位修改 `tasks/implementation/MAB/PLAN.md`，提交 `98e3a372d89fb55347f6ee5414d14e1920eae96c`。审阅两份MAB受控任务书及本轮真实main：M0审查PASS、M1安全HOLD、M2隔离PG来源验证子项PASS但生产HOLD、M3独立Gate客户端代码/测试已通过但正式签发HOLD。
+- 明确 `M4_CODE_PREPARATION_ALLOWED` 与 `M4_LIVE_EXECUTION_HOLD`：允许先编写同root委托、不可变receipt、T1—T7及Studio恢复/负例测试，不得把合成数据、CI、旧预算或Producer候选写成真实双主体贡献、G资格与知识增长。
+- 下轮实际源码关键路径：M2 Owner短时会话→私有原件读取→D01—D03→唯一Registry/Runner；M3只读Gate资格验证→独立Reviewer签发/撤权服务；M1生产登录/导入/拒绝及凭据失效非敏感凭证独立收口。M4软件开发可与上述并行，首次真实Provider传输需要独立授权、资料使用权与费用边界。
+- 本回执是受控计划/责任更新，未改业务源码、DB、Storage、Gate、凭据、公开权限与部署；测试`NOT_RUN`（文档变更），M1/M2/M3/M4阶段状态不变。回退可用上次 `PLAN.md` blob `4ca7686649b5e722425bf8256cb3102d3eb7fd47` 恢复本段，不能据此反转生产权限。
