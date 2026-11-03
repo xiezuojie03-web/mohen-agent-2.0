@@ -286,6 +286,7 @@ export function listPublished(): Promise<PublishedWork[]> {
      from publication.published_pointers p
      join publication.works w on w.work_id = p.work_id
      join publication.work_revisions r on r.revision_id = p.revision_id
+     where r.status = 'published'
      order by p.published_at desc`
   ) as unknown as Promise<PublishedWork[]>;
 }
