@@ -142,15 +142,36 @@ end $$;
 revoke all on function studio.bind_private_claim_evidence(uuid,uuid,uuid,text) from public,anon,authenticated,service_role;
 grant execute on function studio.bind_private_claim_evidence(uuid,uuid,uuid,text) to mohen_app_runtime;
 
--- Minimal private source provenance check; a signed Owner session is required.
--- app_runtime must not gain direct source table USAGE/SELECT.
+-- Minimal private source provenance check. A signed Owner session is mandatory.
+-- app_runtime must not gain direct source-table USAGE or SELECT.
 create function studio.private_source_binding_matches(
  p_original uuid,p_version uuid,p_raw uuid,p_sha text)
-returns boolean language plpgsql security definer set search_path=pg_catalog as $
+returns boolean language plpgsql security definer set search_path=pg_catalog as $mab_source$
 declare original studio.private_originals;
 begin
  if p_original is null or p_version is null or p_raw is null or p_sha is null
-  or p_sha !~ '^[a-f0-9]{64}
+  or p_sha !~ '^[a-f0-9]{64}$' then return false;end if;
+ original:=studio.private_bridge_original(p_original);
+ if original.sha256 is distinct from p_sha or original.state is distinct from 'STORED_VERIFIED'
+  then return false;end if;
+ return exists(
+  select 1 from source.raw_items raw
+  join source.source_versions v on v.source_version_id=raw.source_version_id
+  join studio.asset_revisions a on a.revision_id=original.asset_revision_id
+    and a.asset_id=original.asset_id and a.content_hash=original.sha256
+    and a.payload_storage_ref=original.storage_bucket||'/'||original.storage_key
+  where raw.raw_item_id=p_raw and raw.source_version_id=p_version
+   and raw.storage_ref=original.storage_bucket||'/'||original.storage_key
+   and raw.checksum_sha256=original.sha256 and raw.byte_size=original.byte_size
+   and v.checksum_sha256=original.sha256
+ );
+end $mab_source$;
+revoke all on function studio.private_source_binding_matches(uuid,uuid,uuid,text)
+ from public,anon,authenticated,service_role,mohen_producer,mohen_gate_signer;
+grant execute on function studio.private_source_binding_matches(uuid,uuid,uuid,text)
+ to mohen_app_runtime;
+
+-- Once a private bridge pins a version, changes require a new version; rights
 -- withdrawal remains possible through users/projects/qualification, not history edits.
 create function studio.protect_private_bridge_endpoint()returns trigger
 language plpgsql security definer set search_path=pg_catalog as $$
