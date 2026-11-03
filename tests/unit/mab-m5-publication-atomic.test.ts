@@ -9,7 +9,7 @@ const {queryRows, queryValue, run, reflowWorkToAssets} = vi.hoisted(() => ({
 vi.mock("@mohen/data-access", () => ({queryRows,queryValue,run}));
 vi.mock("../../apps/web/lib/asset-reflow", () => ({reflowWorkToAssets}));
 
-import {publishWork,listPublished,getWorkStageStatus} from "../../apps/web/lib/publication";
+import {publishWork,listPublished,listPendingReview,getWorkStageStatus} from "../../apps/web/lib/publication";
 
 const wid="123e4567-e89b-42d3-a456-426614174001";
 const rid="123e4567-e89b-42d3-a456-426614174002";
@@ -116,6 +116,14 @@ describe("MAB M5 publish revision/pointer atomic transition", () => {
     await expect(getWorkStageStatus(wid)).resolves.toEqual({
       delegated:true,researched:true,directed:true,revisioned:true,
     });
+  });
+  it("pending review query checks approval for the exact revision, not merely its work",async()=>{
+    queryRows.mockResolvedValue([]);
+    await listPendingReview();
+    const sql=String(queryRows.mock.calls[0]?.[0]);
+    expect(sql).toContain("d.revision_id = r.revision_id");
+    expect(sql).toContain("d.decision = 'approved'");
+    expect(sql).toContain("r.status = 'submitted'");
   });
   it("WATCH publication listing excludes pointers whose revision was revoked or no longer published", async () => {
     queryRows.mockResolvedValue([]);
