@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { listPublished } from "../../../../lib/publication";
+import { listWatchEligible } from "../../../../lib/publication";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const works = await listPublished();
-  return NextResponse.json({ works });
+  const works = await listWatchEligible();
+  return NextResponse.json({ works }, { headers: { "cache-control": "no-store" } });
 }
