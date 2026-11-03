@@ -32,3 +32,15 @@ test("unbound M2 private original requests cannot fall through to the old D01-D0
   assertNoUnboundPrivateEvidenceInput({qualified_source:{id:"legacy-public"},source_version_id:"ordinary-source"});
   assertNoUnboundPrivateEvidenceInput(null);
 });
+
+test("a nested typed private source cannot bypass the unbound D01-D03 registry",()=>{
+  assert.throws(()=>assertNoUnboundPrivateEvidenceInput({
+    qualified_source:{source_refs:[{schema:"mohen.private-evidence-stage-request.v1",originalId:"private"}]}
+  }),/PRIVATE_EVIDENCE_STAGE_BINDING_REQUIRED/);
+  assert.throws(()=>assertNoUnboundPrivateEvidenceInput({
+    qualified_reading:{provenance:{private_original:{id:"private"}}}
+  }),/PRIVATE_EVIDENCE_STAGE_BINDING_REQUIRED/);
+  assertNoUnboundPrivateEvidenceInput({
+    qualified_source:{source_refs:[{schema:"mohen.public-source.v1",raw_item_id:"ordinary"}]}
+  });
+});

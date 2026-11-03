@@ -25,11 +25,20 @@ export function assertNoUnboundTopicInputs(environment = process.env) {
  * D01/D02/D03 adapters (which process historic public fixture materials).
  */
 export function assertNoUnboundPrivateEvidenceInput(input) {
-  if (input === null || typeof input !== 'object') return;
-  if (input.schema === 'mohen.private-evidence-stage-request.v1' ||
-      input.private_evidence !== undefined ||
-      input.private_original !== undefined ||
-      input.mab_private_evidence !== undefined) {
-    throw Error('PRIVATE_EVIDENCE_STAGE_BINDING_REQUIRED');
+  // A stage input can be a nested typed artifact. Scanning only top-level
+  // fields would let a private original ride through qualified_source and
+  // silently fall back to the public legacy adapter. Stop before live grants.
+  const visited=new WeakSet();
+  function scan(value){
+    if(value===null||typeof value!=='object')return;
+    if(visited.has(value))return;
+    visited.add(value);
+    if(value.schema==='mohen.private-evidence-stage-request.v1' ||
+       value.private_evidence!==undefined || value.private_original!==undefined ||
+       value.mab_private_evidence!==undefined) {
+      throw Error('PRIVATE_EVIDENCE_STAGE_BINDING_REQUIRED');
+    }
+    for(const child of Object.values(value))scan(child);
   }
+  scan(input);
 }
