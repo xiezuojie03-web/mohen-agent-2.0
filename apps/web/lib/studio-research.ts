@@ -3,9 +3,10 @@
 // 只读/只写经 @mohen/data-access；研究核心复用 lib/mohen-agent/research.runResearch（不产生事实）。
 import { queryRows, queryValue, run } from "@mohen/data-access";
 import { runResearch, resolveTopic, type TopicKey } from "./mohen-agent/research";
-import { triggerProduction } from "./studio-production";
+import { triggerProduction, getProductionBlocker } from "./studio-production";
 import type { AgentDecision, Material } from "@mohen/agent-runtime";
 import { readJsonColumn } from "./db-json";
+import { randomUUID } from "node:crypto";
 import {
   createBudget,
   writeReceipt,
@@ -125,31 +126,108 @@ export async function requestProduction(
   terms?: string[],
   extraBudget?: number
 ): Promise<{ ok: boolean; reason?: string; run_id?: string }> {
-  const row = await queryRows(
-    "select prompt from public.research_tasks where task_id = :'id'",
+  const rows = await queryRows(
+    "select prompt, status, checkpoint from public.research_tasks where task_id = :'id'",
     { id: taskId }
   );
-  if (!row.length) return { ok: false, reason: "task_not_found" };
-
-  const intent = String(row[0].prompt ?? "");
-  if (!intent.trim()) return { ok: false, reason: "intent_missing" };
+  if (!rows.length) return { ok: false, reason: "task_not_found" };
+  if (rows[0].status !== "done") return { ok: false, reason: "task_not_ready" };
 
   const spec = getTool("production-run");
-  if (!spec) return { ok: false, reason: "no_route" };
+  if (!spec || !Number.isFinite(spec.cost) || spec.cost <= 0)
+    return { ok: false, reason: "production_tool_unpriced" };
 
-  // 真实生产触发（异步 spawn run.mjs），不再只落回执。
-  const trig = await triggerProduction(taskId, intent.trim());
-  if (!trig.started) return { ok: false, reason: trig.reason, run_id: trig.runId };
+  // A budget parameter from a caller is NOT a signed authorization to add
+  // credits. Budget changes must first be approved and persisted on the task.
+  if (extraBudget !== undefined)
+    return { ok: false, reason: "additional_budget_requires_authorization" };
 
-  await writeReceipt({
-    taskId,
-    kind: "d_stage",
-    stage: "D00",
-    toolId: "production-run",
-    cost: spec.cost,
-    status: "reserved",
-    payload: { terms: terms ?? [], extraBudget: extraBudget ?? null, run_id: trig.runId, note: "production_triggered" },
-  });
+  // The registry and signed input contract are checked at zero cost.
+  // The current production registry is not activated; this must remain HOLD.
+  const blocker = getProductionBlocker();
+  if (blocker) return { ok: false, reason: blocker };
+
+  const intent = String(rows[0].prompt ?? "").trim();
+  if (!intent) return { ok: false, reason: "intent_missing" };
+  let saved: Record<string, unknown>;
+  try { saved = readJsonColumn<Record<string, unknown>>(rows[0].checkpoint, {}); }
+  catch { return { ok: false, reason: "budget_checkpoint_invalid" }; }
+  if (!saved || Array.isArray(saved) || typeof saved !== "object")
+    return { ok: false, reason: "budget_checkpoint_invalid" };
+
+  const spent = Number(saved.budgetSpent);
+  const reserved = Number(saved.reserved ?? 0);
+  const ceiling = Number(saved.ceiling);
+  if (!Number.isFinite(spent) || spent < 0 ||
+      !Number.isFinite(reserved) || reserved < 0 ||
+      !Number.isFinite(ceiling) || ceiling <= 0 ||
+      spent + reserved > ceiling)
+    return { ok: false, reason: "budget_checkpoint_required" };
+  if (saved.productionReservation)
+    return { ok: false, reason: "production_reservation_reconciliation_required" };
+  if (ceiling - spent - reserved < spec.cost)
+    return { ok: false, reason: "budget_hold" };
+
+  const invocationId = randomUUID();
+  const nextCheckpoint = {
+    ...saved,
+    reserved: reserved + spec.cost,
+    productionReservation: {
+      invocation_id: invocationId, tool_id: "production-run",
+      cost: spec.cost, status: "reserved", requires_receipt_reconciliation: true,
+    },
+  };
+  // Exactly one caller can claim a budget from this checkpoint. This CAS
+  // occurs BEFORE any paid preparation or spawn in triggerProduction().
+  const claimed = await queryRows(
+    `update public.research_tasks
+        set checkpoint = :'next'::jsonb, updated_at = now()
+      where task_id = :'id' and status = 'done'
+        and checkpoint = :'previous'::jsonb
+      returning task_id`,
+    {
+      id: taskId, previous: JSON.stringify(saved),
+      next: JSON.stringify(nextCheckpoint),
+    }
+  );
+  if (!claimed.length) return { ok: false, reason: "production_reservation_conflict" };
+
+  try {
+    await writeReceipt({
+      taskId, kind: "tool", stage: "D00",
+      toolId: "production-run", cost: spec.cost, status: "reserved",
+      payload: { invocation_id: invocationId, terms: terms ?? [] },
+    });
+  } catch {
+    // The checkpoint already holds the reservation. Never call the Runner
+    // or optimistically restore the budget if DB receipt status is unknown.
+    return { ok: false, reason: "production_reservation_receipt_uncertain" };
+  }
+
+  let trig: { runId: string; started: boolean; reason?: string };
+  try { trig = await triggerProduction(taskId, intent); }
+  catch {
+    trig = { runId: "", started: false, reason: "production_start_uncertain" };
+  }
+  if (!trig.started) {
+    try {
+      await writeReceipt({
+        taskId, kind: "tool", stage: "D00",
+        toolId: "production-run", cost: spec.cost, status: "hold",
+        payload: {
+          invocation_id: invocationId, run_id: trig.runId || null,
+          reason: trig.reason || "production_not_started",
+          retry_requires_reconciliation: true,
+        },
+      });
+    } catch {
+      // Preserve the existing reservation even if HOLD write also fails.
+    }
+    return { ok: false, reason: trig.reason || "production_start_uncertain", run_id: trig.runId };
+  }
+
+  // The cost remains reserved until the real Runner result is reconciled.
+  // "started" does not mean a charged operation is safely settled.
   return { ok: true, run_id: trig.runId };
 }
 
