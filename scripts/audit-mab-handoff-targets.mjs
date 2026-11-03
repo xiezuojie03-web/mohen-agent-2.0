@@ -45,6 +45,9 @@ export function inspectHandoffTargets(root) {
       path:r.path,action:r.original_action,exists,
       implementation_status:r.implementation_status,
       target_validation:r.m0_target_validation,
+      hp13_target_match:r.hp13_target_match||'UNVERIFIED',
+      hp13_semantic_scope:r.hp13_semantic_scope||'UNVERIFIED',
+      hp13_activation:r.hp13_activation||'UNVERIFIED',
       responsible_batch:r.m0_primary_followup_batch||'UNASSIGNED',
     };
   });
@@ -56,6 +59,9 @@ export function inspectHandoffTargets(root) {
   if(responsibility.length!==20||new Set(responsibility).size!==20)errors.push('HANDOFF_A01_A20_TRACE_INCOMPLETE');
   if(files.length!==74)errors.push('HANDOFF_74_TARGET_BASELINE_MISMATCH');
   const absent=files.filter(x=>!x.exists);
+  const exactBytes=files.filter(x=>x.exists && x.hp13_target_match==='SHA256_BYTES_MATCHED');
+  if(files.some(x=>!x.exists && x.hp13_target_match==='SHA256_BYTES_MATCHED'))
+    errors.push('HANDOFF_TARGET_ASSERTED_MATCH_BUT_ABSENT');
   const unverified=files.filter(x=>x.target_validation!=='DESIGN_TARGET_SEMANTICS_VERIFIED' &&
                                           x.target_validation!=='VERIFIED_EQUIVALENT');
   return {
@@ -70,6 +76,8 @@ export function inspectHandoffTargets(root) {
     hp_work_packages:hp,
     additional_responsibilities:responsibility,
     missing_target_count:absent.length,
+    hp13_byte_exact_target_count:exactBytes.length,
+    hp13_byte_exact_paths:exactBytes.map(x=>x.path),
     missing_targets:absent.map(f=>f.path),
     unverified_semantics_count:unverified.length,
     errors,
