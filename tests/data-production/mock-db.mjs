@@ -16,22 +16,34 @@ export function createMockDb(fixture = {}) {
   const conflicts = fixture.conflicts ?? [];
 
   function answer(sql, params = []) {
-    // Lineage validator: gate_code = $1 ... object_id = any($2) ... current_valid
-    if (sql.includes("object_id = any")) {
+    // This is a synthetic *independent* current-qualified record, not a mock
+    // of a boolean current_valid granting PASS. Real RLS/SQL is exercised in PG17.
+    function allows(a, start) {
+      if(a.decision_origin!=='independent_gate'||a.current_qualification!==true||
+         a.current_valid===false||a.result!=='PASS')return false;
+      const [consumer,namespace,code,version,rawScope]=params.slice(start,start+5);
+      if(a.consumer!==consumer||a.purpose_namespace!==namespace||
+         a.purpose_code!==code||a.purpose_version!==version)return false;
+      let scope;
+      try{scope=JSON.parse(rawScope)}catch{return false}
+      if(!scope||typeof scope!=='object'||Array.isArray(scope))return false;
+      return Object.entries(scope).every(([k,v])=>JSON.stringify(a.allowed_scope?.[k])===JSON.stringify(v));
+    }
+    // Lineage validator: exact IDs and professional current qualification.
+    if (sql.includes("object_id=any")) {
       const gate = params[0];
       const want = new Set(params[1] ?? []);
       return {
         rows: gateAudits
-          .filter((a) => a.gate_code === gate && want.has(a.object_id) && a.result === "PASS" && a.current_valid !== false)
+          .filter((a) => a.gate_code === gate && want.has(a.object_id) && allows(a,2))
           .map((a) => ({ object_id: a.object_id, result: a.result })),
       };
     }
-    // Repository passed/legalInput: gate_code = $1 and result='PASS' and current_valid=true
-    if (sql.includes("result = 'PASS'") && sql.includes("current_valid = true")) {
-      const gate = params[0];
-      return {
-        rows: gateAudits.filter((a) => a.gate_code === gate && a.result === "PASS" && a.current_valid !== false),
-      };
+    // Repository formal current qualification: never pass legacy audits.
+    if (sql.includes("control.qualification_allows") &&
+        sql.includes("from control.gate_audits")) {
+      const gate=params[0];
+      return {rows:gateAudits.filter(a=>a.gate_code===gate&&allows(a,1))};
     }
     // Conflict -> adjudicated entity check
     if (sql.includes("world.conflicts") && sql.includes("world.entities")) {

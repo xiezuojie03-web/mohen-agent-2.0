@@ -3,6 +3,8 @@ import {execFileSync} from 'node:child_process';
 import {createHmac,randomUUID} from 'node:crypto';
 import {createRequire} from 'node:module';
 import {createReadModelRepository} from '../../packages/data-access/src/read-model-repository.mjs';
+import {createDataProductionRepository} from '../../packages/data-access/src/data-production-repository.mjs';
+import {validateG5Lineage} from '../../packages/data-access/src/lineage-validator.mjs';
 const {MOHEN_TEST_PSQL:psql,MOHEN_TEST_SOCKET:socket,MOHEN_TEST_DATABASE:database}=process.env;
 if(!socket?.startsWith('/workspace/')||!/^mohen_k3_[a-z0-9_]*test$/.test(database??''))throw new Error('ISOLATED_TEST_DATABASE_REQUIRED');
 const sql=text=>execFileSync(psql,['-X','-q','-h',socket,'-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database,'-At','-v','ON_ERROR_STOP=1'],{input:text,encoding:'utf8',stdio:['pipe','pipe','pipe']}).trim();
@@ -52,7 +54,24 @@ try {
  assert.equal(await repo.getRuntimeEligible('story_seed',story,{...context,purpose:{...context.purpose,code:'foreign'}}),null);
  assert.equal(await repo.getRuntimeEligible('story_seed',story,{...context,scope:{project:'foreign'}}),null);
  assert.equal((await repo.listRuntimeEligible('story_seed',context)).length,1,'one current facet, no duplicate history and no legacy promotion');
+ const production=createDataProductionRepository(pool);
+ const g5Context={consumer:'visual_stage',purpose:{namespace:'G5',code:'fixture',version:'1'},scope:{project:'fixture'}};
+ const g4Context={consumer:'visual_stage',purpose:{namespace:'G4',code:'fixture',version:'1'},scope:{project:'fixture'}};
+ assert.ok((await production.passed('D05',g5Context)).some(row=>row.object_id===story),
+  'real PG independent current-qualified G5 must pass');
+ assert.ok((await production.legalInput('D05',g4Context)).some(row=>row.object_id===finding),
+  'real PG D05 must accept only G4 current-qualified scope');
+ await validateG5Lineage(pool,[finding],g4Context);
+ assert.equal((await production.passed('D05',{...g5Context,consumer:'producer'})).length,0,
+  'wrong producer consumer must not inherit visual_stage G5');
+ assert.equal((await production.passed('D05',{...g5Context,purpose:{...g5Context.purpose,code:'forged'}})).length,0);
+ assert.equal((await production.legalInput('D05',{...g4Context,scope:{project:'another'}})).length,0);
+ await assert.rejects(()=>production.legalInput('D05'),/QUALIFICATION_CONTEXT_REQUIRED/);
+
  sql(`begin;set local role mohen_gate_signer;set local mohen.session_token='${token}';select control.revoke_gate_qualification('${root.gate_audit_id}','${randomUUID()}','TEST_ONLY root rights withdrawn');commit;`);
  assert.equal(await repo.getRuntimeEligible('story_seed',story,context),null,'even a previously read/cached ID must recheck the entire current dependency chain');
+ assert.equal((await production.passed('D05',g5Context)).length,0,'revoked G0 invalidates G5 independent consumer');
+ assert.equal((await production.legalInput('D05',g4Context)).length,0,'revoked ancestor forbids G4 being consumed by D05');
+ await assert.rejects(()=>validateG5Lineage(pool,[finding],g4Context),/G5_LINEAGE_BLOCKED/);
  console.log('K3_READ_MODEL_QUALIFICATION_PASS real G0-G5 chain legacy-denied exact-purpose scope consumer revision revocation');
 }finally{await pool.end();}

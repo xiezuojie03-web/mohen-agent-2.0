@@ -1,3 +1,4 @@
+import { requireQualifiedReadContext } from './qualification-read-context.mjs';
 /**
  * Lineage hard-check validator for the MoHen data-production pipeline (six-stage).
  *
@@ -11,9 +12,9 @@
  *   G4 finding      <- G3 PASS world object
  *   G5 read model   <- G4 PASS finding
  *
- * Qualification is read from append-only control.gate_audits (current_valid = true);
- * legacy PASS views are retired. Empty upstream dependency (missing_is_eligible=false)
- * throws rather than silently passing (F09).
+ * Every upstream use requires the independent current-qualification RPC, exact
+ * consumer/purpose/scope and the right Gate; legacy PASS/current_valid cannot
+ * substitute for a professional Gate. Missing dependencies fail closed (F09).
  */
 
 function assertNonEmptyDependency(gate, ids) {
@@ -22,19 +23,21 @@ function assertNonEmptyDependency(gate, ids) {
   }
 }
 
-async function passedIds(db, gate, ids) {
-  const { rows } = await db.query(
-    `select object_id, result from control.gate_audits
-     where gate_code = $1 and object_id = any($2::uuid[])
-       and result = 'PASS' and current_valid = true`,
-    [gate, ids]
+async function passedIds(db, gate, ids, qualificationContext) {
+  const bound=requireQualifiedReadContext(qualificationContext);
+  const {rows}=await db.query(
+    `select a.object_id from control.gate_audits a
+     where a.gate_code=$1 and a.object_id=any($2::uuid[])
+       and a.result='PASS' and a.decision_origin='independent_gate'
+       and control.qualification_allows(a.gate_audit_id,$3,$4,$5,$6,$7::jsonb)`,
+    [gate,ids,...bound]
   );
-  return new Set(rows.map((r) => r.object_id));
+  return new Set(rows.map(r=>r.object_id));
 }
 
-async function assertLineage(db, gate, upstreamGate, ids, label) {
+async function assertLineage(db, gate, upstreamGate, ids, label, qualificationContext) {
   assertNonEmptyDependency(gate, ids);
-  const passed = await passedIds(db, upstreamGate, ids);
+  const passed = await passedIds(db, upstreamGate, ids, qualificationContext);
   const blocked = ids.filter((id) => !passed.has(id));
   if (blocked.length) {
     throw new Error(`${gate}_LINEAGE_BLOCKED: ${label} not ${upstreamGate} PASS -> ${blocked.join(",")}`);
@@ -42,28 +45,28 @@ async function assertLineage(db, gate, upstreamGate, ids, label) {
 }
 
 /** G1 reading must depend only on G0 PASS source. */
-export async function validateG1Lineage(db, sourceIds = []) {
-  await assertLineage(db, "G1", "G0", sourceIds, "source");
+export async function validateG1Lineage(db, sourceIds = [], qualificationContext) {
+  await assertLineage(db, "G1", "G0", sourceIds, "source", qualificationContext);
 }
 
 /** G2 material evidence must depend only on G1 PASS reading units. */
-export async function validateG2Lineage(db, readingIds = []) {
-  await assertLineage(db, "G2", "G1", readingIds, "reading unit");
+export async function validateG2Lineage(db, readingIds = [], qualificationContext) {
+  await assertLineage(db, "G2", "G1", readingIds, "reading unit", qualificationContext);
 }
 
 /** G3 world object must depend only on G2 PASS material evidence. */
-export async function validateG3Lineage(db, evidenceIds = []) {
-  await assertLineage(db, "G3", "G2", evidenceIds, "material evidence");
+export async function validateG3Lineage(db, evidenceIds = [], qualificationContext) {
+  await assertLineage(db, "G3", "G2", evidenceIds, "material evidence", qualificationContext);
 }
 
 /** G4 humanistic finding must depend only on G3 PASS world objects. */
-export async function validateG4Lineage(db, worldIds = []) {
-  await assertLineage(db, "G4", "G3", worldIds, "world object");
+export async function validateG4Lineage(db, worldIds = [], qualificationContext) {
+  await assertLineage(db, "G4", "G3", worldIds, "world object", qualificationContext);
 }
 
 /** G5 read model must depend only on G4 PASS findings. */
-export async function validateG5Lineage(db, findingIds = []) {
-  await assertLineage(db, "G5", "G4", findingIds, "finding");
+export async function validateG5Lineage(db, findingIds = [], qualificationContext) {
+  await assertLineage(db, "G5", "G4", findingIds, "finding", qualificationContext);
 }
 
 /**
@@ -104,11 +107,12 @@ export async function assertLegalPassLineage(db, {
   g3EvidenceIds = [],
   g4WorldIds = [],
   g5FindingIds = [],
+  qualificationContexts = {},
 } = {}) {
-  await validateG1Lineage(db, g1SourceIds);
-  await validateG2Lineage(db, g2ReadingIds);
-  await validateG3Lineage(db, g3EvidenceIds);
-  await validateG4Lineage(db, g4WorldIds);
-  await validateG5Lineage(db, g5FindingIds);
+  await validateG1Lineage(db, g1SourceIds, qualificationContexts.G0);
+  await validateG2Lineage(db, g2ReadingIds, qualificationContexts.G1);
+  await validateG3Lineage(db, g3EvidenceIds, qualificationContexts.G2);
+  await validateG4Lineage(db, g4WorldIds, qualificationContexts.G3);
+  await validateG5Lineage(db, g5FindingIds, qualificationContexts.G4);
   await validateNoConflictedAdjudicated(db);
 }

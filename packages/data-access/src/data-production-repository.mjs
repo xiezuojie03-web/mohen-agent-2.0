@@ -1,10 +1,11 @@
+import { requireQualifiedReadContext } from './qualification-read-context.mjs';
 const GATE_BY_STAGE = Object.freeze({
   D00: "G0", D01: "G1", D02: "G2", D03: "G3", D04: "G4", D05: "G5",
 });
 
-// Stage n consumes G(n-1) PASS rows. Qualification is read directly from the
-// append-only control.gate_audits (current_valid = true); legacy PASS views are
-// retired and must never be referenced (no_legacy_pass_inheritance).
+// A stage may consume only currently qualified, independently signed and
+// purpose/consumer/scope-authorized G(n-1) objects. Legacy current_valid
+// on the audit row is NOT an authorization and must never be used alone.
 const UPSTREAM_GATE = Object.freeze({
   D01: "G0", D02: "G1", D03: "G2", D04: "G3", D05: "G4",
 });
@@ -49,26 +50,26 @@ export function createDataProductionRepository(db) {
       return rows[0].candidate_id;
     },
 
-    /** Current-valid PASS rows for a stage's own exit gate. */
-    async passed(stage) {
-      const gate = GATE_BY_STAGE[stage];
-      if (!gate) throw new Error(`UNKNOWN_STAGE:${stage}`);
-      return (await db.query(
-        `select * from control.gate_audits
-         where gate_code = $1 and result = 'PASS' and current_valid = true`,
-        [gate]
-      )).rows;
+    /** Read formal current qualification for the gate of this stage only. */
+    async passed(stage, qualificationContext) {
+      const gate=GATE_BY_STAGE[stage];
+      if(!gate)throw Error(`UNKNOWN_STAGE:${stage}`);
+      const bound=requireQualifiedReadContext(qualificationContext);
+      const {rows}=await db.query(`select a.* from control.gate_audits a
+        where a.gate_code=$1 and a.result='PASS' and a.decision_origin='independent_gate'
+          and control.qualification_allows(a.gate_audit_id,$2,$3,$4,$5,$6::jsonb)`,[gate,...bound]);
+      return rows;
     },
 
-    /** Legal input for a stage: G(n-1) PASS rows (D00 has no upstream gate). */
-    async legalInput(stage) {
-      const gate = UPSTREAM_GATE[stage];
-      if (!gate) throw new Error(`LEGAL_INPUT_NOT_APPLICABLE:${stage}`);
-      return (await db.query(
-        `select * from control.gate_audits
-         where gate_code = $1 and result = 'PASS' and current_valid = true`,
-        [gate]
-      )).rows;
+    /** D(n) consumes only current independent G(n-1), never old PASS rows. */
+    async legalInput(stage, qualificationContext) {
+      const gate=UPSTREAM_GATE[stage];
+      if(!gate)throw Error(`LEGAL_INPUT_NOT_APPLICABLE:${stage}`);
+      const bound=requireQualifiedReadContext(qualificationContext);
+      const {rows}=await db.query(`select a.* from control.gate_audits a
+        where a.gate_code=$1 and a.result='PASS' and a.decision_origin='independent_gate'
+          and control.qualification_allows(a.gate_audit_id,$2,$3,$4,$5,$6::jsonb)`,[gate,...bound]);
+      return rows;
     },
   };
 }
