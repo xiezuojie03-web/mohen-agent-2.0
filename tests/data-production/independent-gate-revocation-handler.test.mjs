@@ -65,6 +65,47 @@ test('M3 handler rejects fake bearer, wrong binding, malformed IDs and DB failur
   assert.equal(response.status,503);
   assert.equal((await response.json()).ok,false);
 });
+test('M3 Reviewer handler rejects oversized payloads before any DB write',async()=>{
+  let writes=0;
+  const handler=createIndependentGateRevocationHandler({
+    authorityRepository:{revoke:async()=>{writes++;return 1;}},
+    authenticateReviewer:async()=>actor,
+  });
+  const oversized={...body,unused:'x'.repeat(7000)};
+  const payload=JSON.stringify(oversized);
+  const response=await handler(new Request('https://independent-reviewer.example.invalid/revoke',{
+    method:'POST',
+    headers:{'content-type':'application/json',authorization:'Bearer '+secret},
+    body:payload,
+  }));
+  assert.equal(response.status,413);
+  assert.equal((await response.json()).reason,'request_too_large');
+  // A declared oversized length must also be refused before parsing.
+  const declared=await handler(new Request('https://independent-reviewer.example.invalid/revoke',{
+    method:'POST',
+    headers:{'content-type':'application/json',authorization:'Bearer '+secret,
+      'content-length':'99999999'},
+    body:JSON.stringify(body),
+  }));
+  assert.equal(declared.status,413);
+  assert.equal(writes,0);
+});
+test('M3 Reviewer handler fails closed on malformed JSON and rejects unsupported methods',async()=>{
+  let writes=0;
+  const handler=createIndependentGateRevocationHandler({
+    authorityRepository:{revoke:async()=>{writes++;return 1;}},
+    authenticateReviewer:async()=>actor,
+  });
+  const bad=await handler(new Request('https://independent-reviewer.example.invalid/revoke',{
+    method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+secret},
+    body:'{bad-json',
+  }));
+  assert.equal(bad.status,400);
+  assert.equal((await bad.json()).ok,false);
+  const get=await handler(new Request('https://independent-reviewer.example.invalid/revoke'));
+  assert.equal(get.status,405);
+  assert.equal(writes,0);
+});
 test('M3 Reviewer handler cannot boot without independent authenticator and repository',()=>{
   assert.throws(()=>createIndependentGateRevocationHandler({
     authorityRepository:{revoke:async()=>0},
