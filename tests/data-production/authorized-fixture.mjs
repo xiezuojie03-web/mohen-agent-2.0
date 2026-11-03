@@ -69,13 +69,15 @@ export async function runAuthorizedFixture(options) {
       ...options.context, adapters, execution_authority_tokens: tokens,
       // Test-only synthetic Reviewer receipt. Production CLI DOES NOT install this callback.
       verifyStageQualification: options.context.verifyStageQualification ?? (async ({
-        run,stage,gate,input_digest,output_digest,
+        run,job,stage,gate,input_digest,output_digest,
       }) => ({
         qualification_current:true, decision_origin:"independent_gate", result:"PASS",
         gate_audit_id:randomUUID(),artifact_revision:"synthetic-immutable-revision",
         object_type:"synthetic_fixture",object_id:randomUUID(),
         valid_until:new Date(Date.now()+60000).toISOString(),
-        run_id:run.run_id,stage,gate_code:gate,input_digest,output_digest,
+        run_id:run.run_id,job_id:job.job_id,
+        reviewer_binding_ref:job.implementation.gate_reviewer_binding,consumer:'producer',
+        stage,gate_code:gate,input_digest,output_digest,
       })),
     } });
   });
