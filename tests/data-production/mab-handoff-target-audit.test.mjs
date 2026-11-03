@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {createHash} from 'node:crypto';
 import {parseCsv,inspectHandoffTargets} from '../../scripts/audit-mab-handoff-targets.mjs';
 
 test('HP13 target-diff CSV parser handles quoted commas and accurate column count',()=>{
@@ -28,8 +29,14 @@ test('HP13 handoff report refuses to declare READY when a target path exists but
     fs.writeFileSync(path.join(root,'tasks/implementation/MAB/target-diff.csv'),
       'path,original_action,m0_target_validation,implementation_status\n'+
       'apps/web/example.ts,REVISE,DESIGN_TARGET_SEMANTICS_NOT_VERIFIED,CODE_PRESENT\n');
+    const digest=createHash('sha256').update(fs.readFileSync(path.join(root,'apps/web/example.ts'))).digest('hex');
+    fs.writeFileSync(path.join(root,'tasks/implementation/MAB/target-diff.csv'),
+      'path,original_action,m0_target_validation,implementation_status,target_sha256\\n'+
+      'apps/web/example.ts,REVISE,DESIGN_TARGET_SEMANTICS_NOT_VERIFIED,CODE_PRESENT,'+digest+'\\n');
     const report=inspectHandoffTargets(root);
     assert.equal(report.missing_target_count,0);
+    assert.equal(report.hp13_byte_exact_target_count,1);
+    assert.equal(report.existing_target_byte_diff_count,0);
     assert.equal(report.unverified_semantics_count,1);
     assert.equal(report.status,'INVALID_BASELINE');
     assert.ok(report.errors.includes('HANDOFF_74_TARGET_BASELINE_MISMATCH'));
