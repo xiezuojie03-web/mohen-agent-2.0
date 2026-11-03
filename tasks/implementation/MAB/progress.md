@@ -376,3 +376,13 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **测试**：`419f85c7b5a364cd2695a53307e111e8df06830a` 增加 `tests/data-production/private-stage-authorization-handoff.test.mjs`，使用本地合成Ed25519签名、假的可信Verifier响应、受控私有文本字节；断言一份Runner授权只发一次Verifier调用、一次工作器候选读取、重复调用不能再读取、结果仅 `UNASSESSED/G1`；没有真实DB或Provider。
 - **证据边界**：这批源码/测试已推送main；当前未取得完整GitHub Actions test:data-production成功回执，状态`CODE_PRESENT / TEST_PENDING`，不能签`VERIFIED_ISOLATED`。该交接机制仍须在正式的唯一Registry D01—D03适配器接线后以隔离PG+官方Storage和真实独立身份重测。全局Registry目前仍处`DESIGN_TARGET_NOT_APPLIED`且Job disabled，Reviewer仍未激活；本次绝未开启新D/G运行或正式知识资格。
 - **恢复**：可关闭尚未激活的私有适配器调用路径并回退两个增量；必须保留授权nonce只可使用一次和无原件就失败关闭的不变量。无生产DDL、Storage、凭据、费用或产品UI变化。M0审查PASS、M1安全HOLD、M2/M3正式生产HOLD、M4真实混合运行HOLD不变。
+
+
+## 2026-11-03｜M2唯一Runner受控私有D01—D03专用适配器候选接线
+
+- **边界**：仍按原M0—M8施工；产品目标/体验/付费路由不变，Registry保持`DESIGN_TARGET_NOT_APPLIED`、六Job禁用、Gate Reviewer未启用。本批**只完成候选级软件接口**，不代表真实生产链准出。
+- **核心改动**：`33589ef5`在`adapter-binding.mjs`加入唯一专用适配器的精确受审路径`pipelines/data-production/adapters/private-evidence-adapters.mjs`，限定仅stage D01—D03且最外层`mohen.private-evidence-stage-request.v1`/精确stage/original UUID；旧legacy路径、嵌套载荷、错stage及未知标记继续`PRIVATE_EVIDENCE_STAGE_BINDING_REQUIRED`失败关闭。`1836f831`改授权守卫读取实际job登记，不再无差别拦截未来已受控绑定的专用请求。生产授权签名、nonce、registry digest、job enable及独立Gate校验原逻辑不变。
+- **接口与执行**：`5a08bf94`新增候选型`private-evidence-adapters.mjs`：按D01文本reading、D02 reading→evidence bridge、D03 claim revision bridge分别转发至已有受控`privateEvidenceWorker`；仅从可信上下文获取Owner短时会话和真实Registry，缺失即HOLD，候选必须`UNASSESSED`，D00/D04/D05在本模块强制HOLD。`39cb1c96`让唯一Runner传入**自己已核定的Registry对象**而非信任外部`context.registry`。`fd758bb5`新增测试，包含legacy/错阶段/嵌套拒绝、缺Owner上下文HOLD、D01—D03候选及禁止伪造自签PASS。
+- **验证状态**：文件已提交`main`；截至本回执`fd758bb5` GitHub聚合Vercel pending、未取得GitHub Actions完整成功日志。状态`CODE_PRESENT / TEST_PENDING`，不可写成`VERIFIED_ISOLATED`。本次没有生产DB/Storage/Reviewer、真实原件、用户会话或付费模型调用。
+- **未闭合责任**：受控Owner短时会话与私有worker在可信CLI运行端注入，D00合格来源→D01正式输入及D01→D02→D03合法候选/资格载体转换（禁止把UNASSESSED作为qualified层交给下一阶段），同一条真实隔离PG+官方Storage+独立Reviewer的正反验证；而后再经过M1现场安全验收才具备正式激活资格。专项新增路径是原Runner专用模块，不另建Runner、知识真值库或第二Gate。
+- **回退**：退回受控适配器模块及守卫放行的限定修改即可恢复“全部私有请求HOLD”的安全状态，不恢复旧legacy读取，不触碰生产数据和历史审计。
