@@ -1,7 +1,7 @@
 // MAB-ENG-01: private D01-D03 candidate bridge to the existing six-stage chain.
 // Not a second producer, not a Gate signer, and not a replacement for source L0/L1 rows.
 import { createHash } from 'node:crypto';
-import { assertStageExecutionAuthorized } from '../orchestrator/execution-authority.mjs';
+import { assertStageExecutionAuthorized, consumeAuthorizedStageHandoff } from '../orchestrator/execution-authority.mjs';
 
 const HEX=/^[a-f0-9]{64}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
@@ -22,7 +22,16 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
     // The existing independent execution-authority check verifies stage, job,
     // registry hash, exact input hash, nonce and revocation at the trusted verifier.
     // This is before any DB mutation or privileged original read.
-    await assertStageExecutionAuthorized({run,job,registry,context,input});
+    // Runner already performed one-time signed grant and nonce verification.
+    // Re-verifying here would consume the same nonce a second time and break
+    // legitimate private work. Direct isolated worker calls still require the
+    // original live authorization path and immediately consume its handoff.
+    if (!consumeAuthorizedStageHandoff({run,job,registry,input})) {
+      await assertStageExecutionAuthorized({run,job,registry,context,input});
+      if (!consumeAuthorizedStageHandoff({run,job,registry,input})) {
+        throw Error('PRIVATE_STAGE_AUTHORIZATION_HANDOFF_INVALID');
+      }
+    }
   }
 
   return {
