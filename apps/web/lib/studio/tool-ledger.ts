@@ -89,6 +89,12 @@ export interface ReceiptInput {
 
 /** 写一条资产回执（StudyAssetReceipt）。 */
 export async function writeReceipt(r: ReceiptInput): Promise<void> {
+  // A missing tool price is unknown, not a free invocation. Deterministic
+  // registered tools may explicitly record cost=0; checkpoints are not charged.
+  if (r.kind === "tool" &&
+      (typeof r.cost !== "number" || !Number.isFinite(r.cost) || r.cost < 0)) {
+    throw new Error("TOOL_RECEIPT_COST_UNKNOWN");
+  }
   await run(
     `insert into public.study_asset_receipts (task_id, kind, stage, tool_id, cost, output_locator, status, payload)
      values (:'task', :'kind', :'stage', :'tool', :'cost', :'loc', :'status', :'payload'::jsonb)`,
