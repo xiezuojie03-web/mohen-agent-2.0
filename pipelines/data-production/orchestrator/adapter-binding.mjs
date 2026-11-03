@@ -20,25 +20,45 @@ export function assertNoUnboundTopicInputs(environment = process.env) {
 }
 
 
-/** Until a signed, typed D01-D03 private adapter is bound to the one
- * production Registry, never send private-original requests to legacy
- * D01/D02/D03 adapters (which process historic public fixture materials).
+/** The only private evidence adapter module eligible for D01–D03.
+ * A Registry document cannot enable private inputs merely by inventing a
+ * binding name; binding must resolve to this exact reviewed module.
  */
-export function assertNoUnboundPrivateEvidenceInput(input) {
-  // A stage input can be a nested typed artifact. Scanning only top-level
-  // fields would let a private original ride through qualified_source and
-  // silently fall back to the public legacy adapter. Stop before live grants.
-  const visited=new WeakSet();
-  function scan(value){
-    if(value===null||typeof value!=='object')return;
-    if(visited.has(value))return;
-    visited.add(value);
-    if(value.schema==='mohen.private-evidence-stage-request.v1' ||
-       value.private_evidence!==undefined || value.private_original!==undefined ||
-       value.mab_private_evidence!==undefined) {
-      throw Error('PRIVATE_EVIDENCE_STAGE_BINDING_REQUIRED');
-    }
-    for(const child of Object.values(value))scan(child);
+export const PRIVATE_EVIDENCE_ADAPTER_PATH =
+  "pipelines/data-production/adapters/private-evidence-adapters.mjs";
+
+const PRIVATE_REQUEST_SCHEMA = "mohen.private-evidence-stage-request.v1";
+
+function containsPrivateRequest(input) {
+  const seen = new WeakSet();
+  function visit(value) {
+    if (!value || typeof value !== "object") return false;
+    if (seen.has(value)) return false;
+    seen.add(value);
+    if (value.schema === PRIVATE_REQUEST_SCHEMA ||
+      value.private_evidence !== undefined ||
+      value.private_original !== undefined ||
+      value.mab_private_evidence !== undefined) return true;
+    return Object.values(value).some(visit);
   }
-  scan(input);
+  return visit(input);
+}
+
+/**
+ * Private inputs cannot reach a legacy adapter. Only the exact reviewed
+ * private module may handle a stage-specific, top-level typed request after
+ * the Registry has been activated and stage policy authorized independently.
+ * This check never authorizes execution by itself.
+ */
+export function assertNoUnboundPrivateEvidenceInput(input, { job } = {}) {
+  if (!containsPrivateRequest(input)) return;
+  if (!job || !["D01","D02","D03"].includes(job.stage) ||
+      job.implementation?.adapter_binding !== PRIVATE_EVIDENCE_ADAPTER_PATH ||
+      input?.schema !== PRIVATE_REQUEST_SCHEMA ||
+      input?.stage !== job.stage ||
+      typeof input?.originalId !== "string" ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input.originalId) ||
+      ["private_evidence","private_original","mab_private_evidence"].some(k=>input[k]!==undefined)) {
+    throw Error("PRIVATE_EVIDENCE_STAGE_BINDING_REQUIRED");
+  }
 }
