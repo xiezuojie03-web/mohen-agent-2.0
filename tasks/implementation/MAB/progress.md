@@ -265,3 +265,9 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **源码**：新增`createPrivateOriginalSourceVerifier`，使用现有`createAppTransaction`短时账号/Owner RLS，在单个只读事务核对`studio.private_originals`、项目Owner/状态、不可变原件修订、`source.raw_items`私有存储ref/hash/size及`source.source_versions`准确source_version/hash；缺任何权限/记录均拒绝，不通过放开来源表RLS修权限。D01要求此Verifier返回true才能读取私有字节并生成`UNASSESSED`候选；拒绝伪造/格式不符ID。M2单一工作器装配入口也引用同一来源绑定。
 - **正反单测**：新增错来源、错误UUID、DB权限拒绝、组合装配来源Verifier等场景。**生产M2私有原件及DB桥仍未启用，未测试真实源表对app_runtime的可读性**；若角色合法查询无权限必须维持HOLD并经隔离迁移补最小SELECT，不得在本批追加生产GRANT。
 - **状态**：本批提交后CI以对应GitHub Actions为准；未授G0—G5、不修改生产库、不改变M1的HOLD或M0审查PASS。
+
+## 2026-11-03｜M2来源记录与私有原件身份的最小权限事务负例测试
+
+- 上一批 `863310c5` CI `41572394306` 已完整SUCCESS（Typecheck、unit、生产边界与build），D01准确来源事务检查已入库；本批增加 `private-original-source-binding.test.ts` 独立验证事务级当前Owner/session、全来源路径SQL关联、确切五参数、缺源返回false、非法ID拒绝、低权限SQL拒绝时rollback与身份撤权阻断。
+- 这里的事务模拟是GitHub单测，不冒充隔离PG对`source.raw_items`真实最低SELECT的证明；需在专用隔离PG逐项验证`mohen_app_runtime`合法读路径。没有权限时本功能应HOLD，不在真实生产DB开放全表权限。
+- 原受控任务书§10已原位补录M0/M1/M2/M3最近成果、成功CI、下游HOLD和 `863310c5` 结果；此批新测试仍以其自身CI为准，尚未正式准出M1/M2/M3。
