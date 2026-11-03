@@ -65,6 +65,22 @@ test('M3 handler rejects fake bearer, wrong binding, malformed IDs and DB failur
   assert.equal(response.status,503);
   assert.equal((await response.json()).ok,false);
 });
+test('M3 Reviewer handler accepts a valid numeric Content-Length below cap',async()=>{
+  let writes=0;
+  const handler=createIndependentGateRevocationHandler({
+    authorityRepository:{revoke:async()=>{writes++;return 1;}},
+    authenticateReviewer:async()=>actor,
+  });
+  const data=JSON.stringify(body);
+  const res=await handler(new Request('https://independent-reviewer.example.invalid/revoke',{
+    method:'POST',
+    headers:{'content-type':'application/json',authorization:'Bearer '+secret,
+      'content-length':String(Buffer.byteLength(data,'utf8'))},
+    body:data,
+  }));
+  assert.equal(res.status,200);
+  assert.equal(writes,1);
+});
 test('M3 Reviewer handler rejects oversized payloads before any DB write',async()=>{
   let writes=0;
   const handler=createIndependentGateRevocationHandler({
