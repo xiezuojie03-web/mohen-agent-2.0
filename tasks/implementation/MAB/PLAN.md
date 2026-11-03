@@ -780,3 +780,10 @@ Owner因Codex额度不足再次改由ChatGPT＋GitHub插件接力，**工具迁�
 [GitHub主CI41638126713](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41638126713) **SUCCESS**，包含新`resume-input.test.mjs`、`adapter-binding.test.mjs`的信任边界负例以及既有类型/单测/98生产边界/构建/权限覆盖。未单独证明有Owner实际原件字节、真实G1或Studio受控派工，亦未在此批触发真实PG/Storage联调；因此M2只更新“续跑输入+Stage adapter selection”**子能力CODE_PRESENT / CI_PASS / LIVE_HOLD**。
 
 下一个P0并非重新规划：需要将合法Owner短时会话、只读私有原件工作器与已合格L0精确来源绑定至唯一Runner；输出形成可持久的L1读取单位、真实证据桥与G1—G3独立签审。Studio动态主题仍因缺合法冻结输入及费用账授权而被`production_input_binding_required`阻断；不得绕过。正式Registry保持全局和Job关闭，代码不得被误认为生产激活。
+
+
+### 2026-11-03｜HP04—HP07 私有 worker 与独立 Gate 服务接线（Codex）
+
+继承远端 main@02eecd6e，现有唯一 Runner 增加默认关闭、执行授权后惰性装配的专用低权私有 worker；Owner短时会话、原件RLS/真实字节与精确来源绑定仍由既有仓储执行。新增独立签发与当前资格HTTP处理器，复用专用Signer SQL和资格校验，精确绑定run/job/Reviewer/输入输出摘要及server-owned用途/非空scope。无共享高权连接回退、无第二Runner/Gate。
+
+真实隔离PG17已验证专用Signer签发→当前资格读取→旧Producer客户端→撤权即时拒绝，及专用private worker登录下Owner/错版本/跨人/失效/禁用/归档正反核验；源码与隔离子能力见 `tasks/results/MAB/CODEX_M2_M3_SERVICES_20261103.md`。生产独立认证、reader最小权限部署、官方Storage原件字节→L1持久化→G1—G3整链仍未验证；M1—M8及HANDOFF_NOT_READY不变。两个新HTTP handler读取超时是正式部署前须处理的minor；不以源码/PG fixture当生产准出。

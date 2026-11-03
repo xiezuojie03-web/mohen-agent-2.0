@@ -6,6 +6,7 @@ import {createRequire} from 'node:module';
 import {createHmac,randomUUID} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {createStudioAssetRepository,createPrivateOriginalRepository,createPrivateOriginalSourceVerifier} from '../../packages/data-access/src/index.mjs';
+import {assertPrivateWorkerIdentity} from '../../packages/data-access/src/private-worker-pool.mjs';
 const {MOHEN_TEST_PSQL:psql,MOHEN_TEST_SOCKET:socket,MOHEN_TEST_DATABASE:database}=process.env;
 if(!psql||!socket?.startsWith('/workspace/')||!/^mohen_k3_[a-z0-9_]*test$/.test(database??''))
  throw Error('ISOLATED_TEST_DATABASE_REQUIRED');
@@ -21,6 +22,7 @@ const token=(user,exp=Date.now()+60000)=>{
 };
 const {Pool}=createRequire(new URL('../../packages/data-access/package.json',import.meta.url))('pg');
 const pool=new Pool({host:socket,port:Number(process.env.MOHEN_TEST_PORT??55432),user:'k3_admin',database,max:2});
+let workerPool,workerLogin;
 const as=(user,stmt)=>sql(`begin;set local role mohen_app_runtime;select set_config('mohen.session_token','${token(user)}',true);${stmt};rollback;`);
 try{
  sql(`insert into public.users(user_id,email,username,password_hash)values
@@ -51,7 +53,18 @@ try{
   assert.equal(sql(`select has_function_privilege('${r}','studio.private_source_binding_matches(uuid,uuid,uuid,text)','EXECUTE')`),'f',r+' must not execute');
  assert.throws(()=>as(a,'select count(*) from source.raw_items'),/permission denied/,
   'runtime must not obtain whole source table SELECT');
- const verify=createPrivateOriginalSourceVerifier(pool),exact={originalId,sourceVersionId:version,rawItemId:raw,rawSha256:sha};
+ await assert.rejects(()=>assertPrivateWorkerIdentity(pool),/PRIVATE_WORKER_DATABASE_IDENTITY_UNSAFE/);
+ workerLogin='private_worker_'+randomUUID().replaceAll('-','');
+ sql(`create role ${workerLogin} login nosuperuser nobypassrls nocreatedb nocreaterole noreplication;
+   grant mohen_app_runtime to ${workerLogin}`);
+ workerPool=new Pool({host:socket,port:Number(process.env.MOHEN_TEST_PORT??55432),user:workerLogin,database,max:1});
+ await assertPrivateWorkerIdentity(workerPool);
+ sql(`grant mohen_gate_signer to ${workerLogin}`);
+ await assert.rejects(()=>assertPrivateWorkerIdentity(workerPool),/PRIVATE_WORKER_DATABASE_IDENTITY_UNSAFE/);
+ sql(`revoke mohen_gate_signer from ${workerLogin}`);
+ const disguised=new Pool({host:socket,port:Number(process.env.MOHEN_TEST_PORT??55432),user:'k3_admin',database,max:1,options:'-c role=mohen_app_runtime'});
+ try {await assert.rejects(()=>assertPrivateWorkerIdentity(disguised),/PRIVATE_WORKER_DATABASE_IDENTITY_UNSAFE/);}finally{await disguised.end();}
+ const verify=createPrivateOriginalSourceVerifier(workerPool),exact={originalId,sourceVersionId:version,rawItemId:raw,rawSha256:sha};
  assert.equal(await verify(exact,token(a)),true,'owner + exact raw/version/hash passes');
  assert.equal(await verify({...exact,rawItemId:uuid()},token(a)),false,'forged raw ID');
  assert.equal(await verify({...exact,sourceVersionId:uuid()},token(a)),false,'forged source version');
@@ -64,5 +77,9 @@ try{
  sql(`update public.users set status='active' where user_id='${a}';
  update studio.projects set lifecycle_status='ARCHIVED' where project_id='${project}'`);
  await assert.rejects(()=>verify(exact,token(a)),/ORIGINAL_NOT_FOUND/,'archived project');
- console.log('MAB_PRIVATE_SOURCE_BINDING_PG_PASS real-pg17 no-source-select exact-origin-version owner expired forged disabled archived');
-} finally {await pool.end();}
+ console.log('MAB_PRIVATE_SOURCE_BINDING_PG_PASS real-pg17 dedicated-worker-login admin-and-signer-denied no-source-select exact-origin-version owner expired forged disabled archived');
+} finally {
+ if(workerPool)await workerPool.end();
+ if(workerLogin)sql(`drop role ${workerLogin}`);
+ await pool.end();
+}

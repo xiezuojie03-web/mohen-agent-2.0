@@ -40,3 +40,6 @@ s2e-after.yaml
 
 # Local CLI bootstrap metadata
 supabase/.temp/
+
+# Local construction logs, tool bootstrap and disposable test helpers.
+/work/

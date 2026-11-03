@@ -63,6 +63,7 @@
 /api/studio/conversations,protected,yes,n/a,OK
 /api/studio/conversations/[id],protected,yes,n/a,OK
 /api/studio/create,protected,yes,n/a,OK
+/api/studio/delegations/[id],protected,yes,n/a,OK
 /api/studio/direct,protected,yes,n/a,OK
 /api/studio/director-plans,protected,yes,n/a,OK
 /api/studio/director-plans/[id],protected,yes,yes,OK

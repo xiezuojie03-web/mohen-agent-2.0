@@ -45,8 +45,10 @@ test('M2 real Runner sets current stage before single-use private adapter handof
     const finished=await runProduction({run,registry,from_stage:'D01',to_stage:'D01',
       context:{resume_input:input,execution_authority_token:header+'.'+payload+'.'+signature,
         loadAdapters:async()=>{loaded++;return adapters;},
-        privateEvidenceOwnerSessionToken:'synthetic-owner-session',
-        privateEvidenceWorker:{draftTextReading:async({run:actual,job:actualJob,input:actualInput,registry:actualRegistry})=>{
+        loadPrivateEvidenceRuntime:async()=>{
+          assert.equal(verifyCalls,1,'runtime must initialize only after signed grant nonce verification');
+          return {privateEvidenceOwnerSessionToken:'synthetic-owner-session',
+          privateEvidenceWorker:{draftTextReading:async({run:actual,job:actualJob,input:actualInput,registry:actualRegistry})=>{
           workerCalls++;
           assert.equal(actual.current_stage,'D01');
           assert.equal(actualJob,job);
@@ -55,7 +57,8 @@ test('M2 real Runner sets current stage before single-use private adapter handof
           assert.equal(consumeAuthorizedStageHandoff({run:actual,job:actualJob,
             input:actualInput,registry:actualRegistry}),true);
           return {stage:'D01',qualification:'UNASSESSED',gate_code:'G1',candidate_kind:'synthetic'};
-        }}}});
+          }}};
+        }}});
     assert.equal(finished.current_stage,'D01');
     assert.equal(finished.status,'HOLD','candidate must not bypass independent Gate');
     assert.equal(finished.stage_results[0].hold.reason_code,'INDEPENDENT_GATE_NOT_VERIFIED');

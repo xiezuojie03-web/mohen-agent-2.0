@@ -64,3 +64,22 @@ test('mismatched stage or self-qualified worker candidate never enters handoff',
     privateEvidenceWorker:{linkReading:async()=>({stage:'D02',qualification:'PASS',gate_code:'G2'})},
   }}),/PRIVATE_STAGE_CANDIDATE_INVALID/);
 });
+
+test('private adapter lazily binds the configured runtime only for an exact Registry/Stage request',async()=>{
+  let loads=0,calls=0;
+  const loadPrivateEvidenceRuntime=async()=>{
+    loads++;return {privateEvidenceOwnerSessionToken:'synthetic-owner-session',
+      privateEvidenceWorker:{draftTextReading:async args=>{
+        calls++;assert.equal(args.token,'synthetic-owner-session');
+        return {stage:'D01',gate_code:'G1',qualification:'UNASSESSED'};
+      }}};
+  };
+  const input=request('D01'),j=job('D01');
+  const context={registry:{},loadPrivateEvidenceRuntime};
+  assert.equal((await adapters.D01({run:{},job:j,input,context})).disposition,'PASS');
+  assert.equal(loads,1);assert.equal(calls,1);
+  assert.equal((await adapters.D02({run:{},job:j,input,context})).disposition,'HOLD');
+  assert.equal(loads,1,'wrong Stage must never initialize privileged runtime');
+  assert.equal((await adapters.D01({run:{},job:j,input,context:{loadPrivateEvidenceRuntime}})).disposition,'HOLD');
+  assert.equal(loads,1,'missing authorized Registry must not initialize runtime');
+});

@@ -17,6 +17,11 @@ on:
       - "tests/integration/research-resume.integration.ts"
       - "vitest.research-db.config.ts"
       - "packages/data-access/src/gate-authority-repository.mjs"
+      - "packages/data-access/src/gate-stage-qualification.mjs"
+      - "packages/data-access/src/private-worker-pool.mjs"
+      - "pipelines/data-production/workers/private-evidence-runtime.mjs"
+      - "pipelines/data-production/orchestrator/independent-gate-current-handler.mjs"
+      - "pipelines/data-production/orchestrator/independent-gate-decision-handler.mjs"
       - "tests/data-production/gate-authority.integration.mjs"
       # M3 producer legal-input and lineage reads use live G0-G5 scope
       # qualification; only disposable PG17 can prove recursive invalidation.

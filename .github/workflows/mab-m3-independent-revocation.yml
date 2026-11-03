@@ -9,6 +9,11 @@ on:
       - '.github/workflows/mab-m3-independent-revocation.yml'
       - 'pipelines/data-production/orchestrator/independent-gate-revocation-client.mjs'
       - 'pipelines/data-production/orchestrator/independent-gate-revocation-handler.mjs'
+      - 'pipelines/data-production/orchestrator/independent-gate-current-handler.mjs'
+      - 'pipelines/data-production/orchestrator/independent-gate-decision-handler.mjs'
+      - 'packages/data-access/src/gate-stage-qualification.mjs'
+      - 'tests/data-production/gate-stage-qualification.test.mjs'
+      - 'tests/data-production/independent-gate-decision-handler.test.mjs'
       - 'tests/data-production/independent-gate-revocation-client.test.mjs'
       - 'tests/data-production/independent-gate-revocation-handler.test.mjs'
   workflow_dispatch:
@@ -30,6 +35,8 @@ jobs:
       - name: Contract tests (synthetic, no network)
         run: |
           node --test \
+            tests/data-production/gate-stage-qualification.test.mjs \
+            tests/data-production/independent-gate-decision-handler.test.mjs \
             tests/data-production/independent-gate-revocation-client.test.mjs \
             tests/data-production/independent-gate-revocation-handler.test.mjs
       - name: Verify no direct Gate writes in protocol clients

@@ -112,6 +112,80 @@ try {
  const repoCandidate=candidate({revision:'repository'});
  const id=await repo.decide({candidateId:repoCandidate,requestId:randomUUID(),result:'PASS',ruleVersion:'fixture-rule',validUntil:until,receipt:JSON.parse(receipt),expectedAuditId:null},token);
  assert.match(id,/^[a-f0-9-]{36}$/);
+ // Real low-privilege signer -> immutable stage receipt -> read-only protocol
+ // -> existing Producer client. Synthetic authenticator is NOT production auth.
+ const {createIndependentGateDecisionHandler}=await import('../../pipelines/data-production/orchestrator/independent-gate-decision-handler.mjs');
+ const {createGateStageQualificationReader}=await import('../../packages/data-access/src/gate-stage-qualification.mjs');
+ const {createIndependentGateCurrentHandler}=await import('../../pipelines/data-production/orchestrator/independent-gate-current-handler.mjs');
+ const {createIndependentGateClient}=await import('../../pipelines/data-production/orchestrator/independent-gate-client.mjs');
+ const {createIndependentGateRevocationHandler}=await import('../../pipelines/data-production/orchestrator/independent-gate-revocation-handler.mjs');
+ const binding={job_id:'d00.source-acquisition',reviewer_binding_ref:'fixture-independent-G0',
+   consumer:'producer',input_digest:'a'.repeat(64),output_digest:'b'.repeat(64)};
+ const actor={allowed:true,sessionToken:token,reviewerIdentityRef:reviewer,
+   reviewerBindingRef:binding.reviewer_binding_ref,jobId:binding.job_id};
+ const bearer='synthetic-reviewer-service-credential-at-least-32';
+ const auth=async credential=>credential===bearer?actor:null;
+ const decision=createIndependentGateDecisionHandler({authorityRepository:repo,authenticateReviewer:auth});
+ const stageCandidate=candidate({revision:'stage-service'});
+ const review={...JSON.parse(receipt),stage_binding:binding};
+ const body={schema:'mohen.independent-gate-decision-request.v1',candidate_id:stageCandidate,
+   request_id:randomUUID(),result:'PASS',rule_version:'fixture-rule',valid_until:until,expected_audit_id:null,receipt:review};
+ const post=(value)=>new Request('https://fixture.invalid/gate',{method:'POST',
+   headers:{'content-type':'application/json',authorization:'Bearer '+bearer},body:JSON.stringify(value)});
+ const decided=await decision(post(body));assert.equal(decided.status,200);
+ const decidedAudit=(await decided.json()).gate_audit_id;
+ const replay=await decision(post(body));assert.equal((await replay.json()).gate_audit_id,decidedAudit);
+ // Actual service read uses an explicitly granted disposable, non-signing login.
+ // No deployment grants or production role are created by this test.
+ const readLogin='stage_reader_'+randomUUID().replaceAll('-','');
+ sql(`create role ${readLogin} login nosuperuser nobypassrls nocreatedb nocreaterole noreplication;
+   grant usage on schema control to ${readLogin};
+   grant select on control.gate_audits to ${readLogin};
+   grant execute on function control.qualification_allows(uuid,text,text,text,text,jsonb) to ${readLogin};
+   create policy fixture_stage_reader on control.gate_audits for select to ${readLogin} using(true);`);
+ const readPool=new Pool({host:socket,port:Number(process.env.MOHEN_TEST_PORT??55432),user:readLogin,database,max:1});
+ try {
+   const read=createGateStageQualificationReader(readPool);
+   const scoped={consumer:'producer',purpose:{namespace:'G0',code:'fixture',version:'1'},scope:{project:'fixture'}};
+   const check={schema:'mohen.independent-gate-current-check.v1',run_id:'00000000-0000-0000-0000-000000000010',
+     stage:'D00',gate_code:'G0',...binding};
+   const current=createIndependentGateCurrentHandler({readQualification:read,
+     authenticateConsumer:async credential=>credential===bearer?{...actor,readContext:scoped}:null});
+   const producer=createIndependentGateClient({endpoint:'https://fixture.invalid/current',credential:bearer,
+     fetcher:async(url,options)=>current(new Request(url,options))});
+   const query={run:{run_id:check.run_id},job:{stage:'D00',job_id:binding.job_id,
+     implementation:{gate_reviewer_binding:binding.reviewer_binding_ref}},stage:'D00',gate:'G0',
+     input_digest:binding.input_digest,output_digest:binding.output_digest};
+   assert.equal((await producer(query)).gate_audit_id,decidedAudit);
+   for(const altered of [{...check,output_digest:'c'.repeat(64)},{...check,input_digest:'c'.repeat(64)},
+     {...check,job_id:'foreign'},{...check,reviewer_binding_ref:'foreign'},{...check,run_id:randomUUID()}])
+     assert.equal(await read(altered,scoped),null);
+   assert.equal(await read(check,{...scoped,scope:{project:'foreign'}}),null);
+   assert.equal(await read(check,{...scoped,purpose:{...scoped.purpose,code:'foreign'}}),null);
+   assert.equal(await read({...check,output_digest:'d'.repeat(64)},scoped),null,'old object PASS has no exact stage output');
+   // Current credentials are rechecked by SQL, not trusted from HTTP actor alone.
+   sql(`update public.users set status='disabled' where user_id='${reviewer}'`);
+   assert.equal(await read(check,scoped),null);
+   assert.equal((await decision(post({...body,request_id:randomUUID()}))).status,503);
+   sql(`update public.users set status='active' where user_id='${reviewer}'`);
+   assert.equal((await producer(query)).gate_audit_id,decidedAudit);
+   sql(`update control.gate_reviewer_bindings set active=false where db_identity='${signerLogin}'`);
+   await assert.rejects(()=>producer(query),/INDEPENDENT_GATE_VERIFY_DENIED/);
+   sql(`update control.gate_reviewer_bindings set active=true where db_identity='${signerLogin}';
+     update control.gate_policy_versions set enabled=false where gate_code='G0' and rule_version='fixture-rule'`);
+   await assert.rejects(()=>producer(query),/INDEPENDENT_GATE_VERIFY_DENIED/);
+   sql("update control.gate_policy_versions set enabled=true where gate_code='G0' and rule_version='fixture-rule'");
+   const revoke=createIndependentGateRevocationHandler({authorityRepository:repo,authenticateReviewer:auth});
+   assert.equal((await revoke(post({schema:'mohen.independent-gate-revocation-request.v1',
+     gate_audit_id:decidedAudit,request_id:randomUUID(),reason:'fixture rights withdrawn',
+     reviewer_binding_ref:binding.reviewer_binding_ref}))).status,200);
+   assert.equal(await read(check,scoped),null,'no cached PASS after revocation');
+   await assert.rejects(()=>producer(query),/INDEPENDENT_GATE_VERIFY_DENIED/);
+   await assert.rejects(()=>readPool.query('delete from control.gate_audits'),/permission denied/);
+ }finally{
+   await readPool.end();sql(`drop policy fixture_stage_reader on control.gate_audits; drop owned by ${readLogin}; drop role ${readLogin}`);
+ }
+ console.log('K3_STAGE_SERVICE_PASS real-signer HTTP-decide exact-stage-current-read scoped-consumer disabled-reviewer revoke no-cached-PASS');
  const switchedLowPool=new Pool({host:socket,port:Number(process.env.MOHEN_TEST_PORT??55432),user:signerLogin,database,max:1,options:'-c role=mohen_gate_signer'});
  try {await assert.rejects(()=>createGateAuthorityRepository(switchedLowPool).revoke({auditId:id,requestId:randomUUID(),reason:'hidden login identity'},token),/INDEPENDENT_SIGNER_CONNECTION_REQUIRED/);}finally{await switchedLowPool.end();}
 

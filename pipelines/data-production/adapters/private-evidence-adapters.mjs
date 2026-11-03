@@ -31,8 +31,13 @@ function privateCandidateAdapter(stage) {
     if(job.implementation?.adapter_binding!==PRIVATE_EVIDENCE_ADAPTER_PATH) {
       throw Error('PRIVATE_STAGE_ADAPTER_NOT_BOUND');
     }
-    const worker=context.privateEvidenceWorker;
-    const token=context.privateEvidenceOwnerSessionToken;
+    let runtime=context;
+    if(context.registry&&(!context.privateEvidenceWorker||!context.privateEvidenceOwnerSessionToken)&&
+      typeof context.loadPrivateEvidenceRuntime==='function') {
+      runtime=await context.loadPrivateEvidenceRuntime()??{};
+    }
+    const worker=runtime.privateEvidenceWorker;
+    const token=runtime.privateEvidenceOwnerSessionToken;
     if(!context.registry || typeof worker?.[ACTIONS[stage]]!=='function' ||
         typeof token!=='string' || !token) {
       return hold('PRIVATE_STAGE_RUNTIME_NOT_BOUND','Bind a trusted Owner-scoped private worker and short-lived session');

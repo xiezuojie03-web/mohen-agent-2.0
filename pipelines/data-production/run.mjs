@@ -9,6 +9,7 @@ import { runProduction } from "./orchestrator/orchestrator.mjs";
 import { assertAdapterBinding } from "./orchestrator/adapter-binding.mjs";
 import { createOptionalIndependentGateClient } from "./orchestrator/independent-gate-client.mjs";
 import { persistStageProgress, finalizeRun } from "./orchestrator/run-persistence.mjs";
+import {createPrivateEvidenceRuntimeLoader} from "./workers/private-evidence-runtime.mjs";
 
 function arg(name, fallback = null) {
   const i = process.argv.indexOf(`--${name}`);
@@ -54,10 +55,14 @@ const tokens = process.env.MOHEN_EXECUTION_AUTH_TOKENS
 // existing independent-Gate guard holds every Producer PASS (never a fallback).
 const gateVerifier = createOptionalIndependentGateClient();
 
-const finished = await runProduction({
+const privateRuntime=createPrivateEvidenceRuntimeLoader();
+let finished,reports;
+try {
+finished = await runProduction({
   run, registry, from_stage: fromStage, to_stage: toStage,
   context: {
     execution_authority_tokens: tokens,
+    loadPrivateEvidenceRuntime:()=>privateRuntime.load(),
     ...(resumeInput!==undefined?{resume_input:resumeInput}:{}),
     ...(gateVerifier ? {verifyStageQualification: gateVerifier} : {}),
     loadAdapters: async () => {
@@ -74,6 +79,7 @@ const finished = await runProduction({
     },
   },
 });
-const reports = await finalizeRun({ run: finished, db: { queryRows }, outDir: reportDir });
+reports = await finalizeRun({ run: finished, db: { queryRows }, outDir: reportDir });
+}finally{await privateRuntime.close();}
 console.log(JSON.stringify({ run_id: finished.run_id, status: finished.status, reports }, null, 2));
 process.exit(finished.status === "PASS" ? 0 : finished.status === "HOLD" ? 2 : 1);
