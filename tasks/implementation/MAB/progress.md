@@ -242,3 +242,11 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 在现有`PLAN.md`按五个M1任务逐条整理已验证证据与未完成的生产安全验收，不移动M1状态。旧凭据轮换很可能已完成但仍待非敏感失效凭证，不再默认要求Owner重复重置。M1尚未PASS。
 - 对照K3 Gate迁移发现只读就绪检查漏核实际创建的`mohen_gate_authority`独立事务角色。现补四内部角色存在、NOLOGIN、非SUPER/无BYPASSRLS，额外只读检查Producer/App Runtime/Signer不得继承Authority，增加正反测试。这是现有K3专业权限体系补缺，仍不启用真实Gate，不代表Reviewer签发通过。
 - 本批仅GitHub源码、单测及原位施工账；未改生产数据库、Storage、Gate或凭据。CI以实际GitHub回执为准。
+
+
+## 2026-11-03｜M2受控原件工作器装配入口
+
+- GitHub M3预检/ M1任务证据补正提交`deed13e1` CI `41570721926 SUCCESS`，继承此前隔离PG/Storage真实正反回执，M1仍HOLD；M0仅基线审查已PASS。
+- 新增`private-evidence-binding.mjs`：以唯一`pool`、私有`storage`、服务端桥核验密钥装配`createPrivateOriginalRepository`→`createPrivateOriginalWorkflow.download`→`createEvidenceBridgeRepository`→`createPrivateEvidenceStageWorker`。D01与D02/D03使用同一个Owner/RLS原件回读；所有D阶段仍先核实签名执行授权，所有结果仍`UNASSESSED`、不可自签G。
+- 新增合成正反测试核缺DB/Storage/核验key、真实装配引用、错误授权前不读取对象、D02/D03仅转交现有桥。**这是工作器的受控组合入口，不是注册到主编排器或生产环境启用**；仍须后续真正的Registry装配/专业资格/隔离PG端到端测试。
+- 本批只提交GitHub源码/测试/施工账；无生产DB、Storage、凭据或Gate写入。当前CI待核。
