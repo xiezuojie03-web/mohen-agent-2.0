@@ -549,3 +549,15 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 本批`HP01`只有机器报告入口，**未取得最新main的真实GitHub Actions成功回执**：GitHub连接器的commit workflow runs仅返回PR触发结果，push记录缺口不能据0条判断未运行。Vercel READY仅对应旧SHA，不代替本批验证。不得提前签`HANDOFF_READY`。
 - `HP02—HP06`、`HP08—HP09`依原计划继续M1身份/恢复、M2私有原件→D00—D03 Runner、M3独立签发/撤权、M4同root委托与T1—T7；HP10—12继续完成专业Gate映射、Admin完整知识条目、WATCH与媒资撤权。HP13剩余2个目标测试及53份REVISE语义责任需核销。最终CodeBuddy只接受当前插件确实无法安全完成的受控环境任务。
 - 所有新增SQL均未执行，外部付费AI、生产Storage/Gate与真实私有原件仍未启用。**HANDOFF_NOT_READY**。回退时只可关闭受影响消费/发布或恢复受审代码，不可恢复旧公开未授权资格、旧Operator自签或已撤销权利。
+
+
+## 2026-11-03｜HP01/HP02/HP06/HP11生产只读再核：真实迁移、最小角色与RLS（本批无生产修改）
+
+- **来源**：连接的Supabase项目`mohen-cloud`，2026-11-03现场调用`list_projects`/`list_migrations`/`list_tables`/`get_advisors(security)`与受限SELECT元数据查询。没有读取真实用户明文、密钥、史料或其他业务行，**没有DDL/DML/生产写入**。
+- **部署事实**：PG17.11/ACTIVE_HEALTHY；迁移历史仅五项20261102 M1安全/运行身份及Studio候选、Gate candidates；`studio.private_originals`不存在，`storage.buckets=0`、`storage.objects=0`；`control.gate_reviewer_bindings`、`control.gate_policy_versions`、`control.consumption_blocks`以及`control.revoke_gate_qualification(uuid,uuid,text)`均不存在；`control.qualification_current`存在但0行，`control.gate_audits`711行均不能以旧历史证明当前专业资格。**据此M2/M3正式生产激活明确HOLD**。本次已冻结在GitHub的KAD1三个SQL候选及K3专业Signer迁移绝未自动投运。
+- **权限核查**：`mohen_app_runtime`在当下对`control.work_publication_decisions`、`publication.work_revisions`、`publication.published_pointers`及`public.users`均无直接SELECT/INSERT/UPDATE表权限；`control.work_publication_decisions`当前RLS打开但无策略。现有`@mohen/data-access`实际连接池身份可能不同，不能只据此断言全部Web调用失败，但**HP11合法Reviewer审批接口需要真实运行身份与最小权限事务E2E**，不可假设普通应用role能写。Producer/Signer对`control.gate_audits`直接表授权均缺失符合候选自签禁止，正式专业Service尚待独立角色/受控函数迁移。
+- **Supabase安全Advisor**：`publication.publication_schedules`目前RLS=false且无策略，`list_tables`返回风险；进一步只读`has_schema_privilege`/`has_table_privilege`核实：anon/publication schema USAGE=false；anon和authenticated对该表SELECT/INSERT/UPDATE均false，当前不能据Advisor泛化为已公开。此项仍需在**后续有界受控迁移**设计最小授权+RLS（贸然开启可能阻断合法调度），本轮不执行。Security advisors额外显示58项RLS开启无policy（多属受限内部schema，不能视为自动开放）及16项mutable search_path warning，需按实际暴露/权限分级；不机械新增全表策略。
+- **下一验收**：M1合法Owner/失效旧凭据及跨会话真实验收；M2两份私有Storage/桥迁移和独立身份供给；M3独立Reviewer角色、策略、候选签发/撤权；HP11审批写/拒绝真实PG/HTTP；HP12专业G5和消费者权益。以上分别保持`DEFERRED_ENV/HOLD`，不进入全局自动迁移。对已取得实际隔离PASS的旧批次只按原SHA引用。
+- **HP13机器核查补缺**：`3dead082`在只读目标审计脚本增加对74路径当前实际文件SHA256和冻结目标SHA256逐项字节比较并列出全部53 REVISE偏差；`110b1c6e`/`740d66db`补合成哈希与CSV转义测试；`68fef380`让当前HP13语义核销读取独立后续审查字段，不覆盖M0历史列。脚本CI已接，但最新GitHub实际运行成功证据未得。
+- **HP11细化补正**：`d12a322b`修正旧Reviewer已拒绝某精确rev却仍在待审队列的问题；`2bc27dce`补待审核只保留尚无approved/rejected决定的精确rev测试。修订重投仍须保存新的不可变rev。暂无实际CI与PG回执。
+- **准出结论**：`HP01/HANDOFF_NOT_READY`；未启用生产Gate、原件上传、外部模型或平台授权切换。所有用户可见产品功能改变需实际浏览器验证；GitHub源提交不等于部署有效。回退不能重开旧匿名素材/旧自签Gate。
