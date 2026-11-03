@@ -285,3 +285,9 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - GitHub Actions `41574164960` **SUCCESS**，包含Typecheck、单元测试、生产边界回归和Next构建。此CI不执行新的M2隔离PG集成脚本；其状态仍`NOT_RUN`。真实PG来源窄函数执行、跨Owner、RLS及迁移顺序需在专用隔离数据库实际验收，避免把CI绿色冒充已合法运行。
 - Production SQL权限事实仍是`mohen_app_runtime`无`source` schema USAGE/原件与版本表SELECT，原直接JOIN确认不可行；本批生产数据库0写入，原候选迁移尚未生产启用。M0审查PASS；M1/M2/M3独立HOLD继续。
 - Library唯一MAB-ENG-01受控任务书§10已要求同步本轮代码、CI与真实低权限尚未验收的区分；不另开治理任务书。
+
+## 2026-11-03｜M2来源窄RPC真实隔离PG准出测试接线与回滚保护
+
+- 将`tests/data-production/private-original-source-binding.integration.mjs`加入现有`scripts/test-k3-db.mjs`，在新鲜标记`mohen.test_instance=codex-k3-isolated`的PostgreSQL 17测试库、全部候选迁移后执行。该测试**只使用合成原件登记**验证当前Owner、真实角色、无source表SELECT、正确raw/version/hash、跨Owner、过期/伪造/禁用、项目归档的正反结果；**不宣称测试了外部Storage字节**。
+- 修复`supabase/rollback/20261102145410_mab_m2_evidence_bridge.rollback.sql`，撤销新增`studio.private_source_binding_matches`执行权限；现有隔离回滚例程增加显式残留权限负例。其目标是恢复时不能开放旧来源读取路径且不删除原有不可变证据记录。
+- 如果CI环境不具备隔离PG，GitHub单元PASS**不能**替代该PG脚本实际执行成功；真实隔离PG运行结果单独签收。此批不触碰生产DB、Storage或Gate；M1/M2/M3保持HOLD。

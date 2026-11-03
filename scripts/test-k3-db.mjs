@@ -66,6 +66,9 @@ try {
     if (studioRepositoryResult.status !== 0) throw new Error("STUDIO_ASSET_REPOSITORY_TEST_FAILED");
     apply("20261102140000_mab_m2_private_originals.sql");
     apply(fs.readdirSync(directory).find(n => n.endsWith('_mab_m2_evidence_bridge.sql')));
+    const provenanceResult = spawnSync(process.execPath, ["tests/data-production/private-original-source-binding.integration.mjs"], { cwd: root,
+      env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
+    if (provenanceResult.status !== 0) throw new Error("PRIVATE_SOURCE_BINDING_TEST_FAILED");
     const originalResult = spawnSync(process.execPath, ["tests/data-production/private-original-repository.integration.mjs"], { cwd: root,
       env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
     if (originalResult.status !== 0) throw new Error("PRIVATE_ORIGINAL_REPOSITORY_TEST_FAILED");
@@ -88,6 +91,7 @@ try {
     const bridgeBefore = query(database, "select md5(jsonb_build_object('read_links',(select jsonb_agg(to_jsonb(r) order by link_id) from evidence.read_unit_evidence_links r),'claim_links',(select jsonb_agg(to_jsonb(r) order by claim_evidence_link_id) from world.claim_evidence_links r))::text)");
     apply(fs.readdirSync(directory).find(n => n.endsWith('_mab_m2_evidence_bridge.sql')).replace('.sql','.rollback.sql'), 'rollback');
     if (query(database, "select has_function_privilege('mohen_app_runtime','studio.bind_private_read_evidence(uuid,uuid,uuid,jsonb,text,integer,text)','EXECUTE') or has_function_privilege('mohen_app_runtime','studio.bind_private_claim_evidence(uuid,uuid,uuid,text)','EXECUTE')") !== 'f') throw new Error('EVIDENCE_BRIDGE_ROLLBACK_LEFT_ACCESS');
+    if (query(database, "select has_function_privilege('mohen_app_runtime','studio.private_source_binding_matches(uuid,uuid,uuid,text)','EXECUTE')") !== 'f') throw new Error('PRIVATE_SOURCE_BINDING_ROLLBACK_LEFT_ACCESS');
     if (query(database, "select md5(jsonb_build_object('read_links',(select jsonb_agg(to_jsonb(r) order by link_id) from evidence.read_unit_evidence_links r),'claim_links',(select jsonb_agg(to_jsonb(r) order by claim_evidence_link_id) from world.claim_evidence_links r))::text)") !== bridgeBefore) throw new Error('EVIDENCE_BRIDGE_ROLLBACK_LOST_LINEAGE');
     console.log('MAB_EVIDENCE_BRIDGE_ROLLBACK_PASS functions-denied immutable-lineage-preserved');
     const originalsBefore = query(database, "select md5(jsonb_agg(to_jsonb(r) order by original_id)::text) from studio.private_originals r");
