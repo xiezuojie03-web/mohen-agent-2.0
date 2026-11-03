@@ -18,12 +18,15 @@ export async function runProduction({ run, registry, context = {}, from_stage = 
 
   for (const stage of STAGE_ORDER.slice(start, end + 1)) {
     const job = jobForStage(registry, stage);
+    // The one-use authorization handoff binds the active stage. Establish it
+    // before the trusted verifier consumes its nonce; a resumed run may still
+    // carry the previous stage's current_stage value.
+    state.current_stage = stage;
     await assertStageExecutionAuthorized({ registry, job, run: state, input, context });
     // CLI adapter modules may execute top-level code: evaluate only after authorization.
     if (!context.adapters && typeof context.loadAdapters === "function") {
       context = { ...context, adapters: await context.loadAdapters() };
     }
-    state.current_stage = stage;
     const execute = await loadExecutor(stage);
     // Give the adapter the exact Registry already authorized by this Runner;
     // caller-supplied context.registry must never decide the security identity.
