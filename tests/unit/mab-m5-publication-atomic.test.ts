@@ -1,13 +1,15 @@
 import {beforeEach, describe, expect, it, vi} from "vitest";
 
-const {queryRows, queryValue, run, reflowWorkToAssets} = vi.hoisted(() => ({
+const {queryRows, queryValue, run, reflowWorkToAssets, requireIndependentWorkPublicationG5} = vi.hoisted(() => ({
   queryRows: vi.fn(),
   queryValue: vi.fn(),
   run: vi.fn(),
   reflowWorkToAssets: vi.fn(),
+  requireIndependentWorkPublicationG5: vi.fn(),
 }));
 vi.mock("@mohen/data-access", () => ({queryRows,queryValue,run}));
 vi.mock("../../apps/web/lib/asset-reflow", () => ({reflowWorkToAssets}));
+vi.mock("../../apps/web/lib/work-publish-qualification", () => ({requireIndependentWorkPublicationG5}));
 
 import {publishWork,listPublished,listPendingReview,getWorkStageStatus} from "../../apps/web/lib/publication";
 
@@ -29,12 +31,14 @@ function passReview() {
   });
   queryValue.mockResolvedValue(rid);
   reflowWorkToAssets.mockResolvedValue(undefined);
+  requireIndependentWorkPublicationG5.mockResolvedValue({ok:true});
 }
 
 describe("MAB M5 publish revision/pointer atomic transition", () => {
   beforeEach(() => {
     queryRows.mockReset(); queryValue.mockReset(); run.mockReset();
     reflowWorkToAssets.mockReset();
+    requireIndependentWorkPublicationG5.mockReset();
   });
   it("uses one atomic submitted-state CAS and pointer insertion, not two separate writes", async () => {
     passReview();
@@ -50,6 +54,18 @@ describe("MAB M5 publish revision/pointer atomic transition", () => {
     expect(queryValue).not.toHaveBeenCalled(); // no second latest revision read
     expect(queryRows.mock.calls.filter(([sql]:[string])=>sql.includes("from publication.work_revisions where work_id"))).toHaveLength(1);
     expect(reflowWorkToAssets).toHaveBeenCalledWith(wid,rid);
+  });
+  it("does not promote or change the public pointer when professional G5 is missing", async () => {
+    passReview();
+    requireIndependentWorkPublicationG5.mockResolvedValue({
+      ok:false,reason:"independent_g5_required",
+    });
+    await expect(publishWork(wid,"scheduler")).resolves.toEqual({
+      ok:false,reason:"independent_g5_required",
+    });
+    expect(queryRows.mock.calls.some(([sql]:[string])=>sql.includes("with promoted as"))).toBe(false);
+    expect(reflowWorkToAssets).not.toHaveBeenCalled();
+    expect(run).not.toHaveBeenCalled();
   });
   it("does not report publication success or run asset reflow when concurrent state change prevents promotion", async () => {
     passReview();
