@@ -1,5 +1,7 @@
 # 墨痕｜当前真实工程状态
 
+> **2026-11-03 Owner批准M施工顺序与有条件准出（最新执行裁定）**：M1核销为 **M1_CONDITIONAL_EXIT，仅供M2代码/标记隔离环境施工**；完整生产验收仍HOLD，固定M1-C01—C04及最迟完成点已写入PLAN。当前唯一收口阶段为 **M2**，M3—M5既有成果保全，暂停新增横向功能。M2交付可持久追溯的私有待审资产给M3，不再循环等待M3先完成生产审签。最终安全/权限/费用/专业资格及M8标准不降低；生产启用仍须原授权。M1无变化的历史有效验收继承，只对具体缺陷/受影响变更重开。详见PLAN“M阶段有条件准出与顺序收口”与progress末尾。
+
 > **2026-11-03 Codex接续实码增量（最新）**：基于远端main@02eecd6e，补默认关闭的Owner私有worker惰性装配与独立Gate签发/当前资格HTTP读取，复用唯一Runner、专用低权Signer和现有资格SQL。313单测PASS/4既有SKIP、116生产边界PASS、类型/构建通过；一次性PG17验证真实低权身份/精确资格/撤权。源码`b609efa2`主CI41641917991、PG1741641918045、M1 HTTP41641918101、M3协议41641918296均SUCCESS；另补真实隔离PG17 TLS受信CA成功/未信证书拒绝。详见 `tasks/results/MAB/CODEX_M2_M3_SERVICES_20261103.md` 及progress末尾。生产21:00+08只读仍项目0/资格0/桶0、私有原件及签发函数未部署；官方Storage字节→L1/G1—G3、生产独立认证和业务全链仍HOLD，M1—M8及HANDOFF_NOT_READY不变。
 
 > **2026-11-03 20:23+08:00 Owner 最新指令：转回 Codex 施工（最高时序优先）**：聊天插件本轮源码与计划已全部推送 GitHub `main@9f4e1485150c02db48425525a435c9527104b390`；主 CI [41638572066](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41638572066) SUCCESS。Codex 从远端最新 main 和 `tasks/implementation/MAB/CODEX_HANDOFF_CURRENT.md` 开工；后者开头新增本轮成果差异表、证据和下一 P0。此举只转移执行权，M0—M8原准出与生产权限不变。下方此前“ChatGPT接力/转回Codex”表述均为时间顺序中的历史记录，不作为当前指令。
