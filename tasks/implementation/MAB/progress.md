@@ -271,3 +271,10 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 上一批 `863310c5` CI `41572394306` 已完整SUCCESS（Typecheck、unit、生产边界与build），D01准确来源事务检查已入库；本批增加 `private-original-source-binding.test.ts` 独立验证事务级当前Owner/session、全来源路径SQL关联、确切五参数、缺源返回false、非法ID拒绝、低权限SQL拒绝时rollback与身份撤权阻断。
 - 这里的事务模拟是GitHub单测，不冒充隔离PG对`source.raw_items`真实最低SELECT的证明；需在专用隔离PG逐项验证`mohen_app_runtime`合法读路径。没有权限时本功能应HOLD，不在真实生产DB开放全表权限。
 - 原受控任务书§10已原位补录M0/M1/M2/M3最近成果、成功CI、下游HOLD和 `863310c5` 结果；此批新测试仍以其自身CI为准，尚未正式准出M1/M2/M3。
+
+## 2026-11-03｜M2真实来源表权限缺口与窄接口候选修复
+
+- 生产只读`has_schema_privilege/has_table_privilege`实测：`mohen_app_runtime`对`source.raw_items`/`source.source_versions`无schema USAGE及SELECT（`false`）；而Studio受限表可读。此前`863310c5`的D01直接join来源表在真实低权限DB会失败，单元测试并不能证明可用。该缺口不能通过放开原始史料表GRANT修复。
+- **GitHub候选迁移内修复**：尚未部署的`20261102145410_mab_m2_evidence_bridge.sql`新增`studio.private_source_binding_matches`，固定`pg_catalog`search_path和逐表显式schema，只返回boolean；借用现有受控`studio.private_bridge_original`内已确认的Owner、有效会话、项目ACTIVE与原件STORED_VERIFIED身份，严格对应raw/version/hash/bytes/不可变资产修订。EXECUTE仅授`mohen_app_runtime`，明确撤销anon/authenticated/service_role/producer/signer/public；未开放来源数据表。
+- Node来源验证器改为现有短时身份事务下的参数化最小RPC调用；错误/缺失RPC均失败关闭。更新unit断言禁止直接源码表SELECT；原`evidence-bridge.integration.mjs`增加真隔离PG/本地官方Storage条件下的本人、跨Owner、错raw/version/hash、过期身份及函数权限负例。
+- **测试界限**：提交后以GitHub CI为准；上述真实隔离PG整链脚本目前属于`NOT_RUN_IN_THIS_BATCH`，不能冒充通过。候选迁移没有在生产应用，M1、M2、M3专业资格继续HOLD。须在受控隔离PG环境重跑完整整链后，才可考虑最小生产迁移激活。

@@ -14,7 +14,7 @@ beforeEach(()=>{
  connect.mockResolvedValue({query,release});
  query.mockImplementation(async(sql:string)=>{
    if(sql.includes("current_app_user_id()"))return {rows:[{user_id:actor}]};
-   if(sql.includes("select 1 as bound"))return {rows:[{bound:1}]};
+   if(sql.includes("private_source_binding_matches"))return {rows:[{bound:true}]};
    return {rows:[]};
  });
 });
@@ -25,14 +25,12 @@ it("binds all source IDs to the same verified private original using one Owner t
    "begin","set local role mohen_app_runtime","select set_config('mohen.session_token',$1,true)",
    "select control.current_app_user_id()::text as user_id","commit",
  ]));
- const found=query.mock.calls.find(args=>args[0].includes("select 1 as bound"));
+ const found=query.mock.calls.find(args=>args[0].includes("private_source_binding_matches"));
  expect(found).toBeDefined();
- expect(found[1]).toEqual([originalId,rawItemId,sourceVersionId,actor,sha]);
- expect(found[0]).toContain("studio.private_originals");
- expect(found[0]).toContain("studio.asset_revisions");
- expect(found[0]).toContain("source.raw_items");
- expect(found[0]).toContain("source.source_versions");
- expect(found[0]).toContain("o.state='STORED_VERIFIED'");
+ expect(found[1]).toEqual([originalId,sourceVersionId,rawItemId,sha]);
+ expect(found[0]).toBe("select studio.private_source_binding_matches($1,$2,$3,$4) as bound");
+ expect(query.mock.calls.some(([sql])=>sql.includes("source.raw_items"))).toBe(false,
+  "runtime must not query the source tables directly");
  expect(release).toHaveBeenCalledWith(false);
 });
 it("returns false when foreign or obsolete source/reading identity is not linked",async()=>{
@@ -52,7 +50,7 @@ it("rejects malformed identities and hashes before opening any DB connection",as
 it("fails closed and rolls back if low privilege SELECT is denied",async()=>{
  query.mockImplementation(async(sql:string)=>{
    if(sql.includes("current_app_user_id()"))return {rows:[{user_id:actor}]};
-   if(sql.includes("select 1 as bound"))throw new Error("permission denied for source.raw_items");
+   if(sql.includes("private_source_binding_matches"))throw new Error("permission denied for studio.private_source_binding_matches");
    return {rows:[]};
  });
  await expect(createPrivateOriginalSourceVerifier(pool)(binding,token)).rejects.toThrow("permission denied");
@@ -66,6 +64,6 @@ it("rejects missing or revoked session identity without reading any source rows"
    return {rows:[]};
  });
  await expect(createPrivateOriginalSourceVerifier(pool)(binding,token)).rejects.toThrow("STUDIO_IDENTITY_REQUIRED");
- expect(query.mock.calls.some(args=>args[0].includes("select 1 as bound"))).toBe(false);
+ expect(query.mock.calls.some(args=>args[0].includes("private_source_binding_matches"))).toBe(false);
  expect(query.mock.calls.map(args=>args[0])).toContain("rollback");
 });
