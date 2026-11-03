@@ -433,3 +433,11 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **安全/费用**：本批没有对生产PG、Storage、Reviewer或Provider写入，也没有实际外部模型调用；所有现行启用HOLD维持。回退时不得恢复硬编码Studio已完成状态，必要时宁显示未完成/待确认。
 
 - **兼容修正**：`223ade795d92a965cb144f70cb657104cce3d9fe`对历史作品修订`beats`非数组载荷使用SQL CASE防守，避免仅凭AND短路假设调用`jsonb_array_length`导致整个作品状态读取异常。最新提交的Vercel初查QUEUED，GitHub Actions完整成功回执仍未获得。本修正也不改变M5整体HOLD。
+
+
+## 2026-11-03｜M5精确作品修订与最新Reviewer竞态防护
+
+- **真实源码**：`c0fa6c04b226f4bdac1bb960f62bec5f8cc7151d`修复`publication.publishWork`的先审A修订再独立查询最新submitted而可能改发B修订的TOCTOU。现在`checkPublishEligibility`在成功时返回所查的精确`revisionId`，发布沿用同一ID；单条原子SQL写入时额外再次确认当前最新`control.work_publication_decisions`依然是该rev的`approved`，否则不改变状态/不落指针/不回流并返回`revision_not_submittable`。旧代码已先保留作品来源引用、媒体权利、审核身份/本人不自签的原先检查。
+- **测试**：`afa2f590b1b3e0a25aefc4fd9cfdcc79536fbada`补M5发布合同回归，断言只有一次取待审rev、原子SQL重核最新Reviewer决定与精确rev、撤审竞态无发布及不触发资产回流。这是mock检查，**不等于真实PostgreSQL竞态验证**。
+- **准确资格范围**：`work_publication_decisions`是作品发布Reviewer审核表，**不可等同于独立专业知识G5资格**。当前`publishWork`尚未接入对当前独立G5、用途/consumer/rights的正式确认；WATCH列表亦仍缺精确逐次G5与媒资失效核查。因此M5完整发布资格及正式上线仍HOLD，不能借本批审核加强冒称已达M5出版门。正式M3独立Reviewer启用、M2证据链及M1安全验收均不跳过。
+- **实测状态**：提交已推GitHub main，但本批尚未拿到完整CI/真实PG SUCCESS回执，状态`CODE_PRESENT / TEST_PENDING`。本批无生产DB/Storage/模型、G签名/角色/费用写入。
