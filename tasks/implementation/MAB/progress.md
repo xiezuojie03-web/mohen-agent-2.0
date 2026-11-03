@@ -474,3 +474,5 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - `c3ef1095e396e20e935eec491ae20895f561a198`添加`tests/data-production/independent-gate-revocation-client.test.mjs`，覆盖精确协议请求、非法ID/理由时零网络、服务拒绝和伪造回执。不具备服务端Reviewer身份时不可调用现行`control.revoke_gate_qualification`；旧Operator两个HTTP撤权入口仍503，绝不间接调用该传输客户端。
 - **证据边界**：客户端本身不签署、撤销或查询最终资格，返回的服务回执**不等于当前资格已失效**；真实消费者每次必须重查`qualification_current`/现行`qualification_allows`。正式独立Reviewer服务端/受控数据库角色/身份绑定及跨消费者撤权E2E依旧HOLD。GitHub CI和真实PG服务端回执本批尚未核实，标`CODE_PRESENT/CI_PENDING`，绝不冒称M3或M5准出。
 - 本批无生产数据库、Storage、Gate正式签名/撤权和外部AI费用。已在`PLAN.md`原位补对应责任，不提前交给CodeBuddy。
+
+- **M5正式消费资格映射补充核查**：现行`control.artifact_revision_for`逐项支持来源、证据、世界、解释与L5发布对象，但**不含`publication.work_revisions` / `work_revision`**；它不能基于作品revision本身生成合格的专业G5。故`WATCH`不得将作品Reviewer批准、发布指针或任意故事种子G5伪装成整部作品的资格。需要逐条映射作品内容所引用的合法source/evidence/L5对象，按实际用途及consumer请求独立`qualification_allows`与权利验证；不能覆盖的分面HOLD，不能先公开再补验。该缺口不要求重建MHKA或另造第七门。
