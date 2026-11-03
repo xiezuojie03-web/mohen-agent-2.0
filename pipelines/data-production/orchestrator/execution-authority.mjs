@@ -34,7 +34,7 @@ export async function assertStageExecutionAuthorized({ registry, job, run, input
     throw new Error("REGISTRY_NOT_ACTIVE");
   }
   assertNoUnboundTopicInputs();
-  assertNoUnboundPrivateEvidenceInput(input);
+  assertNoUnboundPrivateEvidenceInput(input, { job });
   const policy = job.execution_policy;
   const mode = run.execution_mode;
   if (policy?.enabled !== true || !["attended", "unattended", "batch", "interactive"].includes(mode) || policy[mode] !== true) {
