@@ -667,3 +667,12 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 新真实PG17集成3 PASS：请求增额不改变上限；两并发调用仅一个赢家且一条恢复事件；模拟事件DB失败后持久HOLD，后续reconciliation拒绝。真实服务/SQL，模型边界合成替身，无Provider费用。已接原PG17流水线。
 - 全unit298 PASS/4原联网SKIP，production98 PASS，类型/Next build PASS，auth104无缺口、85/152静态追溯PASS。原Gate/资产/来源/回滚隔离链继续通过。本批Storage未配，前批6 PASS/0 SKIP明确分环境引用。
 - [本批回执](../../results/MAB/CODEX_HP08_20261103.md)列文件、真实结果、遗留和回滚。尚缺正式预算审批、已付费步骤恢复、长期费用账与Runner终态结算；M4整体HOLD，M1—M8未准出。无生产写入、模型调用或新成本投入。push运行待提交后追加。
+
+
+### HP08最终push及本轮四批汇总
+
+- 最新修复代码SHA `94cdb5db5f111edd484ea9dafe59789d870669ff`：主CI41619741669、PG17隔离41619741406、M1隔离HTTP41619741435均SUCCESS，机器JSON入HP08 evidence；最终代码类型/构建与新PG CAS测试均实际核证。
+- 本轮连续施工：HP02会话撤销/退出真实状态；HP03—05官方Storage、原件恢复与精确证据桥及Origin误拒修复；HP13两缺席KAD1测试适配；HP06真实Signer登录边界；HP08增额授权拒绝、原子恢复及崩溃HOLD。每批命令/源测/正反失败/回滚已原位入账，未重启架构。
+- 最终unit298 PASS/4原联网SKIP、production98 PASS、PG恢复新集成3 PASS；六工作区类型/构建PASS。前批本地官方Storage浏览器6 PASS/0 SKIP按8dd2b5e限定引用，GitHub无Storage配置的SKIP不混写。
+- 合成业务/Storage库与随机Signer登录角色均0，Storage fixture已清理，一次性PG容器及数据卷已移除。无生产迁移/桶/正式Gate/收费Provider/私有资料外发/新产品方向变更。
+- 余项保持：M1生产会话开关/Owner/旧DB凭据/恢复；M2受控生产原件/核验密钥及唯一Runner完整授权；M3真实独立Reviewer/Signer服务与精确资格映射及即时撤权；M4持久预算审批、永久委托/费用账、T1—T7、付费步骤恢复与Runner终态核销；M5 Studio/Admin/WATCH完整合法业务与媒体权利；M6全量真实85API/152动作、M7真实A/B复用、M8原子投运。74路径缺席0不等于74语义通过，整体HANDOFF_NOT_READY与各阶段HOLD不取消。

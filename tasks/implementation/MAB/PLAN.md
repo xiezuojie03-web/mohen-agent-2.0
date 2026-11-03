@@ -742,3 +742,6 @@ HP01同批推送复核：修复代码67b2984，主CI41612672544及M1真实隔离
 ### 2026-11-03 HP08费用授权与恢复增量
 
 禁止客户端additionalCeiling直接增额、缺费用字段补0及无CAS恢复；仅原持久额度内可信零花费第一步可原子领取，先保存崩溃不可重放标记。真实PG并发/DB失败3项通过，全unit298 PASS/4原SKIP、production98 PASS、类型/构建PASS。正式新增预算审批、付费步骤精确续跑、永久账与Runner终态结算继续HOLD。5950ccf的主CI41618239611、M1 41618239774、PG17 41618239520全SUCCESS。详见progress及CODEX_HP08_20261103.md；不修改M0—M8结构或生产授权。
+
+
+HP08同批push核证：94cdb5d的主CI41619741669、PG17 41619741406、M1 HTTP41619741435均SUCCESS；最新代码unit298 PASS/4既有联网SKIP、production98 PASS、真实PG恢复3项PASS、类型/构建PASS。该证据不等于完整M4或生产准出；四批累计结果、环境清理及M1—M8逐项剩余见progress最新汇总。
