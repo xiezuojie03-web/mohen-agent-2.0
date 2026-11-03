@@ -203,3 +203,9 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **M1_SECURITY_ACCEPTANCE_HOLD**：Vercel正式环境中`AUTH_SECRET`、`MOHEN_DATABASE_PASSWORD`、`MOHEN_DATABASE_SESSION_SECRET`均为Sensitive类型；存在更新时间及更新后的生产部署。上述**不能证明旧泄露凭据已经被轮换并失效**。已有隔离身份/RLS/禁用与跨账户、原件私有化测试继承。剩余：在官方安全控制台核实旧DB密码及此前泄露的其它凭据已轮换；保留可信完成回执（不含值），完成真实会话合法登录/导入、匿名和跨Owner拒绝、过期/撤权及直接Data API/DB负例、合法恢复与安全回退。仍然不能签M1准出；这些不是M2私有桶或M3Gate激活要求。
 - **Owner仅在必要时操作**：已批准轮换，不重复征求授权；若Supabase当前连接工具不提供数据库密码重置功能，由Owner在官方控制台执行并只传“操作成功”的非秘密凭证/状态，施工方再完成旧凭据失效与合法新连接验证。不得在聊天、施工账、GitHub或日志公开任何密钥值。
 - **状态纪律**：本批应在完成CI后把`PLAN.md` M0六项勾选并注明限定准出；M1复选项保持未勾，直到真实生产安全证据完整。没有修改`CURRENT.md`的生产业务准出结论，也没有为追求M0绿灯启用M2/M3。
+
+
+## 2026-11-03｜M1 Security Advisor补查及严格HOLD
+
+- 已完成`main@80442a64` M0审查，CI `41563075520 SUCCESS`。M1生产本轮只读：Supabase Security Advisor提示58项无Policy的RLS INFO（不能自动当漏洞，更不能为消除提示扩大权限）、16项函数search_path WARN。16项均是SECURITY INVOKER的触发器函数，其中15项旧public.guard_*未挂现行触发器，source.forbid_raw_mutation已挂1项；未激活的旧守卫不能据名称视为业务保护。专业Gate/状态提升守卫由M3/M5分责验证，M1仍必须保持凭据/会话与素材合法拒绝验收。
+- 原位详细证据：`tasks/results/MAB/M1_SECURITY_ACCEPTANCE_HOLD_20261103.md`。此前已批准的数据库凭据轮换需要官方实际操作及旧连接失效验证，环境变量标记Sensitive与生产READY不是失效凭据的证明；M1未准出。未读取任何真实secret值，数据库全程SELECT，无SQL DDL或权限操作。
