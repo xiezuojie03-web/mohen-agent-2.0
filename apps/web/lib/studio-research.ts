@@ -5,11 +5,15 @@ import { queryRows, queryValue, run } from "@mohen/data-access";
 import { runResearch, resolveTopic, type TopicKey } from "./mohen-agent/research";
 import { triggerProduction } from "./studio-production";
 import type { AgentDecision, Material } from "@mohen/agent-runtime";
+import { readJsonColumn } from "./db-json";
 import {
   createBudget,
   writeReceipt,
   getTool,
   BudgetHoldError,
+  ToolExecutionUncertainError,
+  ToolReceiptPersistenceError,
+  type BudgetState,
   type Ledger,
 } from "./studio/tool-ledger";
 
@@ -27,6 +31,37 @@ export interface CreatedTask {
   degraded: boolean;
   holdReason?: "budget" | string;
   researchLeads: Material[];
+}
+
+/** External tool output/cost is uncertain, so preserve the reserved
+ * amount and persist a non-retryable checkpoint. Never repeat this provider
+ * call from a generic "resume" action.
+ */
+async function holdUncertainTool(
+  taskId: string, prompt: string, topic: TopicKey, budget: BudgetState,
+  error: ToolExecutionUncertainError | ToolReceiptPersistenceError
+): Promise<CreatedTask> {
+  const holdReason = error instanceof ToolReceiptPersistenceError
+    ? "receipt_uncertain" : "execution_uncertain";
+  const checkpoint = {
+    prompt, topic, holdReason, budgetSpent: budget.spent,
+    reserved: budget.reserved, ceiling: budget.ceiling,
+    toolId: error.toolId, invocationId: error.invocationId,
+    retry_requires_reconciliation: true,
+  };
+  await run(
+    "update public.research_tasks set status = 'hold', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
+    { id: taskId, cp: JSON.stringify(checkpoint) }
+  );
+  await writeReceipt({
+    taskId, kind: "checkpoint", stage: "hold", status: "hold", payload: checkpoint,
+  });
+  await addEvent(taskId, "D04", holdReason, {
+    toolId: error.toolId, invocationId: error.invocationId,
+    budgetSpent: budget.spent, reserved: budget.reserved,
+  });
+  return { taskId, status: "hold", decision: null, degraded: false,
+    holdReason, researchLeads: [] };
 }
 
 /** 创建研究任务并同步运行一次研究（预算工具路由）。返回 task_id + 研究结果，或预算 HOLD。 */
@@ -64,9 +99,11 @@ export async function createResearchTask(
     await addEvent(taskId!, "D04", "research_done", { verdict: decision.verdict });
     return { taskId: taskId!, status: "done", decision, degraded, researchLeads };
   } catch (e) {
+    if (e instanceof ToolExecutionUncertainError || e instanceof ToolReceiptPersistenceError)
+      return holdUncertainTool(taskId!, prompt, topic, budget, e);
     if (e instanceof BudgetHoldError) {
       // CR-13：预算超限 → 持久化 checkpoint 并停；恢复需重新授权（resumeResearchTask）。
-      const checkpoint = { prompt, topic, budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling, holdAt: e.checkpoint };
+      const checkpoint = { prompt, topic, budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling, holdReason: "budget", holdAt: e.checkpoint };
       await run(
         "update public.research_tasks set status = 'hold', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
         { id: taskId!, cp: JSON.stringify(checkpoint) }
@@ -122,7 +159,7 @@ export async function resumeResearchTask(
   additionalCeiling?: number
 ): Promise<CreatedTask> {
   const row = await queryRows(
-    "select prompt, topic from public.research_tasks where task_id = :'id' and status = 'hold'",
+    "select prompt, topic, checkpoint from public.research_tasks where task_id = :'id' and status = 'hold'",
     { id: taskId }
   );
   if (!row.length) {
@@ -131,13 +168,34 @@ export async function resumeResearchTask(
 
   const prompt = String(row[0].prompt ?? "");
   const topic = resolveTopic(row[0].topic);
+  const saved = readJsonColumn<Record<string, unknown>>(row[0].checkpoint, {});
+  // A tool may have executed and charged without a committed receipt.
+  // Such checkpoints cannot be restarted by adding budget.
+  if (saved.retry_requires_reconciliation === true ||
+      saved.holdReason === "execution_uncertain" ||
+      saved.holdReason === "receipt_uncertain")
+    return { taskId, status: "hold", decision: null, degraded: false,
+      holdReason: "reconciliation_required", researchLeads: [] };
+  // This implementation starts runResearch at its first tool; replaying
+  // steps that already spent money is unsafe until per-step resume exists.
+  const spent = Number(saved.budgetSpent ?? 0);
+  const previousCeiling = Number(saved.ceiling ?? 0);
+  if (!Number.isFinite(spent) || spent < 0 ||
+      !Number.isFinite(previousCeiling) || previousCeiling <= 0 ||
+      spent > 0 || saved.reserved !== 0 && saved.reserved !== undefined)
+    return { taskId, status: "hold", decision: null, degraded: false,
+      holdReason: "resume_step_checkpoint_required", researchLeads: [] };
+  if (!Number.isFinite(additionalCeiling) || (additionalCeiling ?? 0) <= 0)
+    return { taskId, status: "hold", decision: null, degraded: false,
+      holdReason: "additional_budget_required", researchLeads: [] };
+  const authorizedCeiling = previousCeiling + additionalCeiling!;
   await run(
     "update public.research_tasks set status = 'running', updated_at = now() where task_id = :'id'",
     { id: taskId }
   );
   await addEvent(taskId, "D04", "resumed", { additionalCeiling: additionalCeiling ?? null });
 
-  const budget = createBudget(additionalCeiling);
+  const budget = createBudget(authorizedCeiling);
   const ledger: Ledger = { taskId, budget };
   try {
     const { decision, degraded, researchLeads } = await runResearch(prompt, topic, ledger);
@@ -150,8 +208,10 @@ export async function resumeResearchTask(
     await addEvent(taskId, "D04", "research_done", { verdict: decision.verdict });
     return { taskId, status: "done", decision, degraded, researchLeads };
   } catch (e) {
+    if (e instanceof ToolExecutionUncertainError || e instanceof ToolReceiptPersistenceError)
+      return holdUncertainTool(taskId!, prompt, topic, budget, e);
     if (e instanceof BudgetHoldError) {
-      const checkpoint = { prompt, topic, budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling, holdAt: e.checkpoint };
+      const checkpoint = { prompt, topic, budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling, holdReason: "budget", holdAt: e.checkpoint };
       await run(
         "update public.research_tasks set status = 'hold', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
         { id: taskId, cp: JSON.stringify(checkpoint) }
