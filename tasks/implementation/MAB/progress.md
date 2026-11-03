@@ -441,3 +441,11 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **测试**：`afa2f590b1b3e0a25aefc4fd9cfdcc79536fbada`补M5发布合同回归，断言只有一次取待审rev、原子SQL重核最新Reviewer决定与精确rev、撤审竞态无发布及不触发资产回流。这是mock检查，**不等于真实PostgreSQL竞态验证**。
 - **准确资格范围**：`work_publication_decisions`是作品发布Reviewer审核表，**不可等同于独立专业知识G5资格**。当前`publishWork`尚未接入对当前独立G5、用途/consumer/rights的正式确认；WATCH列表亦仍缺精确逐次G5与媒资失效核查。因此M5完整发布资格及正式上线仍HOLD，不能借本批审核加强冒称已达M5出版门。正式M3独立Reviewer启用、M2证据链及M1安全验收均不跳过。
 - **实测状态**：提交已推GitHub main，但本批尚未拿到完整CI/真实PG SUCCESS回执，状态`CODE_PRESENT / TEST_PENDING`。本批无生产DB/Storage/模型、G签名/角色/费用写入。
+
+
+## 2026-11-03｜M5 WATCH资格消费与M3专业Gate合同核对（不伪造接线）
+
+- 本轮核对`supabase/migrations/202611010900_k3_independent_gate_authority.sql`与`202610310910_k3_gate_candidates.sql`：已有`control.qualification_current`的正式键由architecture_generation、G、object_type/id、artifact_revision、purpose_namespace/code/version、consumer共同构成；`control.qualification_allows`还要求当前依赖/策略、角色/Reviewer及允许scope。不能把旧`control.work_publication_decisions`中的作品Reviewer的approved直接映射成专业G5，也不能把专属agent/visual_stage资格直接给WATCH复用。
+- 现`publication.listPublished()`仅基于发布指针+revision状态，仍未有作品rev与独立G5真实资格/媒资许可证的正式消费映射。后续须依据KAD/MHKA现有专业合同确定**作品发布指针、精确WorkRevision与各知识/媒体分面的合法对象映射**，再以独立只读资格Verifier或数据库受审窄RPC逐次执行，包含错consumer、旧rev、过期/撤权/媒体失效负例。不得简单JOIN到另一个无关G5记录构造PASS。
+- M3受审迁移已含独立`control.revoke_gate_qualification`函数，它在独立Reviewer绑定下删除`qualification_current`并追加事件、历史签名不可变；旧`apps/web/lib/gate-revoke.ts`仍直接试图UPDATE `gate_audits.current_valid`，与签名不可变触发器以及最小角色权限冲突。正式M3/M5接线不得复用旧应用账号直接UPDATE路径，必须经独立撤权服务/身份且以实际隔离测试取证。
+- 此项为**权威合同核查得到的具体工程缺口**，不是新架构研究；本轮不启动生产G5或撤权、不假写当前资格。M5完整消费验收维持HOLD；源代码可并行施工。
