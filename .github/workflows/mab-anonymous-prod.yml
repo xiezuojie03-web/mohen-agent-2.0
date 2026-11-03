@@ -1,0 +1,26 @@
+name: MAB M1 anonymous production read-only checks
+
+# A limited, one-off live M1 HTTP negative test. No credentials, cookies,
+# test accounts, private data, POST, production configuration or migration.
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/mab-anonymous-prod.yml"
+      - "scripts/test-mab-anonymous-prod.mjs"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  anonymous-readonly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify anonymous reads are denied by deployed app
+        run: node scripts/test-mab-anonymous-prod.mjs
