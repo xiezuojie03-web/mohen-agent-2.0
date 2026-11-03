@@ -127,9 +127,12 @@ export async function useTool<T>(
   toolId: string,
   fn: () => Promise<T>
 ): Promise<T> {
-  if (!ledger) return fn();
+  // A missing ledger is permitted for registered immediate-answer tools only.
+  // Never execute an unregistered callback: otherwise neither routing nor
+  // cost/receipt protections can observe an external or production invocation.
   const spec = getTool(toolId);
-  if (!spec) return fn(); // 未登记工具不运行：这里直接拒绝运行，等价于 no-route
+  if (!spec) throw new Error("TOOL_NOT_REGISTERED");
+  if (!ledger) return fn();
 
   if (!reserve(ledger.budget, toolId)) {
     throw new BudgetHoldError(ledger.taskId, {
