@@ -367,3 +367,12 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 先前GitHub combined status对`9a892009`呈failure，进一步用Vercel部署记录查明`dpl_AUf2dApzYyKubU62mSWM1wDhdq5u`真实状态为`CANCELED`，并非有具体构建错误日志支撑的`BUILD_FAILED`。不凭GitHub聚合failure擅自认定测试失败。
 - 最新`main@56506bf427e92b46bda6cf4f3c209286908898ef`对应生产Vercel部署`dpl_4ifBsyNBYj6uLNioYkwnsoBW2iWL`经官方部署查询为`READY`；包含本轮M4工具注册拒绝、预占回执失败释放及未知费用拒零的源码/测试文件提交。**READY仅证明部署构建，不证明本轮Vitest单元或真实模型调用、正式运行验收**。
 - 本轮没有真实模型费用、生产数据库/Storage/正式Gate状态变更，M1/M2/M3/M4阶段HOLD维持；待GitHub Actions单元/类型等独立回执明确后再归档各个验证项，不从部署READY推导`OWNER_ACCEPTED`。
+
+
+## 2026-11-03｜M2 Runner→私有工作器一次性执行授权交接补缺
+
+- **问题与责任**：现行唯一Runner在 `runProduction` 进入阶段前调用 `assertStageExecutionAuthorized`，可信Verifier会消耗一次性 `jti`；既有 `private-evidence-stage.mjs` 内部又调用相同验权函数。若直接接入，合法工作器会重放同一nonce，既有正向原件读取被拒。这属于M2/M3真实接线的集成P1，不是设计合同或额外Gate。
+- **源码**：`b69baa5f3596eb259609e8ef49d2851795be6ab6` 在唯一 `execution-authority.mjs` 新增私有WeakMap一次性交接记录，只在独立Verifier成功确认nonce/精确digest后登记，不对Producer暴露生成接口；`2f94998fcf8f9196eaecc435c974c5ac8f10bb92` 让私有工作器消费同一run/job/registry/input身份、当前stage及输入digest的**一次性**凭证，已消费/错绑定不得复用。脱离Runner的直接独立工作器调用仍须完成原签名授权并立即消费交接。
+- **测试**：`419f85c7b5a364cd2695a53307e111e8df06830a` 增加 `tests/data-production/private-stage-authorization-handoff.test.mjs`，使用本地合成Ed25519签名、假的可信Verifier响应、受控私有文本字节；断言一份Runner授权只发一次Verifier调用、一次工作器候选读取、重复调用不能再读取、结果仅 `UNASSESSED/G1`；没有真实DB或Provider。
+- **证据边界**：这批源码/测试已推送main；当前未取得完整GitHub Actions test:data-production成功回执，状态`CODE_PRESENT / TEST_PENDING`，不能签`VERIFIED_ISOLATED`。该交接机制仍须在正式的唯一Registry D01—D03适配器接线后以隔离PG+官方Storage和真实独立身份重测。全局Registry目前仍处`DESIGN_TARGET_NOT_APPLIED`且Job disabled，Reviewer仍未激活；本次绝未开启新D/G运行或正式知识资格。
+- **恢复**：可关闭尚未激活的私有适配器调用路径并回退两个增量；必须保留授权nonce只可使用一次和无原件就失败关闭的不变量。无生产DDL、Storage、凭据、费用或产品UI变化。M0审查PASS、M1安全HOLD、M2/M3正式生产HOLD、M4真实混合运行HOLD不变。
