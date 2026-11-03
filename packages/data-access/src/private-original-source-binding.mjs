@@ -20,7 +20,7 @@ export function createPrivateOriginalSourceVerifier(pool) {
         "select studio.private_source_binding_matches($1,$2,$3,$4) as bound",
         [originalId,sourceVersionId,rawItemId,rawSha256]
       );
-      return r.rows.length===1&&r.rows[0].bound===1;
+      return r.rows.length===1&&r.rows[0].bound===true;
     });
   };
 }
