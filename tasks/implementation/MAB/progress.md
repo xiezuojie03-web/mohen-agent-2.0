@@ -783,3 +783,10 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **原七项核销**：当前物理承接L0—L5与control、L6—L8延后；长期资产最小表/RLS/修订及回执、复合唯一/CAS、永久委托幂等直接继承当前PG实跑；原件状态机、本批精确持久关联与恢复逐项在回执登记，不按文件数伪签所有能力。
 - **裁定及当前施工**：M2_CONDITIONAL_EXIT，支持范围仅已证UTF8待审候选和长期资产最小持久层；M3已实际接收，当前唯一阶段转M3。M2-C01正式环境/Storage/迁移，C02非UTF8读取，C03正式复用写服务固定责任/验收/截止点已写回同一PLAN；不将尚无授权的use_event字符串当实际复用，不将表存在当业务闭环，不勾完整验收PASS。M8最终不带未关闭必交条件，M1-C01—C04继续生效。
 - **生产/回退**：无生产数据库/桶/账号/角色/key操作、私有原文外发或收费Provider；rollback关闭新入口保留不可变候选/资产/审计，回退代码不得恢复memory假落库或已撤权限。源码提交与GitHub CI真实回执取得后追加。
+
+
+### M2源码提交后的GitHub实际回执
+
+源代码 `c923b5bd91013fc1320d2998179af9223197a18d` 已推main；当前三条push流水线全部SUCCESS：主CI [41660282238](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41660282238)、隔离PG17 [41660282267](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41660282267)、M1真实HTTP/Chromium [41660282246](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41660282246)。PG远端日志包含新L1持久化/接收与rollback标记。远端默认PG未配置官方Storage，新增用例明确输出byte-buffer-only/no-Storage；官方Storage HTTPS/真实Runner/机器回执/精确桥及同备份恢复的完整证据来自本批本地标记PG17+官方fixture日志，不混用两类范围。
+
+M2_CONDITIONAL_EXIT的条件和最终标准不变；此后仅回执补记不冒称新的业务源码测试。工作树和远端SHA提交后再次核对，不强推、不覆盖远端成果。
