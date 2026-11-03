@@ -56,6 +56,11 @@ assert.equal(sql(`select count(*) from studio.execution_receipts where delegatio
 assert.throws(()=>as(a,envelope.replaceAll(rootTask,"c0000000-0000-4000-8000-000000000099").replace("'c0000000-0000-4000-8000-000000000099'",'null').replaceAll(delegation,'c0000000-0000-4000-8000-000000000032')),/unique constraint/,'root deletion must not destroy stable idempotency');
 as(a,`insert into studio.use_events(project_id,asset_revision_id,actor_id,consumer,purpose,requested_action,rights_decision_ref)values('${project}','${r1}','${a}','studio','research','read','TEST_ONLY')`);
 assert.throws(()=>as(b,`insert into studio.use_events(project_id,asset_revision_id,actor_id,consumer,purpose,requested_action,rights_decision_ref)values('${foreign}','${r1}','${b}','studio','research','read','TEST_ONLY')`),/row-level security/);
+// All three row types share one guard; a missing-column error is not its contract.
+assert.throws(()=>sql(`update studio.use_events set purpose='changed' where project_id='${project}'`),/PERMANENT_RECEIPT_IMMUTABLE/);
+assert.throws(()=>sql(`delete from studio.use_events where project_id='${project}'`),/PERMANENT_RECEIPT_IMMUTABLE/);
+assert.throws(()=>sql(`update studio.execution_receipts set error_code='changed' where delegation_id='${delegation}'`),/PERMANENT_RECEIPT_IMMUTABLE/);
+assert.throws(()=>sql(`delete from studio.execution_receipts where delegation_id='${delegation}'`),/PERMANENT_RECEIPT_IMMUTABLE/);
 // FK existence does not prove visibility: referenced-table RLS is bypassed by FK checks.
 const foreignDelegation='c0000000-0000-4000-8000-000000000041',foreignReceipt='c0000000-0000-4000-8000-000000000042';
 as(b,envelope.replaceAll(delegation,foreignDelegation).replaceAll(project,foreign).replaceAll("'"+a+"'","'"+b+"'").replace("'"+rootTask+"'",'null'));

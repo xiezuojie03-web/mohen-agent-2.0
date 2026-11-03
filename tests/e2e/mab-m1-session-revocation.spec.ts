@@ -113,3 +113,26 @@ test('HP02 logout UI preserves signed-in state when server revocation fails',asy
   await expect(page.getByText('退出未完成，请重试。',{exact:true})).toBeVisible({timeout:3000});
   await expect(page.locator('.admin__auth-btn')).toBeVisible();
 });
+
+test('HP08 permanent HOLD receipts are visible only to the project owner through real HTTP',async({page,browser})=>{
+ const request=await browserRequests(page);
+ const registered=await request.post('/api/auth/register',{data:{email:`delegation-${randomUUID()}@example.invalid`,username:'隔离回执用户',password:randomUUID()}});
+ expect(registered.status()).toBe(200);
+ const user=(await registered.json()).user;expect(user.user_id).toMatch(/^[a-f0-9-]{36}$/);
+ const projectId=randomUUID(),delegationId=randomUUID();
+ expect((await request.post('/api/studio/projects',{data:{project_id:projectId,title:'合成回执项目',scope:{}}})).status()).toBe(200);
+ isolatedSql(`insert into studio.delegations(delegation_id,project_id,root_task_ref,subtask_ref,delegation_series_id,delegation_revision_no,requester,executor,provider,engine_version,input_manifest,allowed_actions,transfer_rights_decision,policy_version,expires_at,budget_limit,currency,request_hash,idempotency_key,output_schema)
+ values('${delegationId}','${projectId}','synthetic-root','synthetic-subtask','${randomUUID()}',1,'${user.user_id}','fixture','synthetic-fixture','fixture-v1','{}',array['prepare_candidate'],'{"status":"UNVERIFIED"}','fixture-v1',now()+interval '1 hour',0,'CNY',repeat('a',64),'fixture','fixture-v1');
+ insert into studio.execution_receipts(delegation_id,attempt_no,request_hash,result_manifest,acceptance_state,actual_provider,actual_engine_version,cost_confidence,error_code)
+ values('${delegationId}',1,repeat('a',64),'{}','HOLD','synthetic-fixture','fixture-v1','UNKNOWN','NOT_EXECUTED')`);
+ const response=await request.get('/api/studio/delegations/'+delegationId);
+ expect(response.status()).toBe(200);expect(response.headers()['cache-control']).toBe('no-store');
+ expect(await response.json()).toMatchObject({execution_authorized:false,delegation:{delegation_id:delegationId},receipts:[{acceptance_state:'HOLD',cost:null,cost_confidence:'UNKNOWN'}]});
+ const other=await browser.newContext({baseURL:process.env.MOHEN_E2E_BASE_URL});
+ try{
+  const otherRequest=await browserRequests(await other.newPage());
+  expect((await otherRequest.get('/api/studio/delegations/'+delegationId)).status()).toBe(401);
+  expect((await otherRequest.post('/api/auth/register',{data:{email:`delegation-foreign-${randomUUID()}@example.invalid`,username:'另一隔离用户',password:randomUUID()}})).status()).toBe(200);
+  expect((await otherRequest.get('/api/studio/delegations/'+delegationId)).status()).toBe(404);
+ }finally{await other.close();}
+});

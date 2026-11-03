@@ -148,8 +148,14 @@ revoke all on function studio.protect_asset_revision() from public;
 create trigger studio_asset_revision_immutable before update or delete on studio.asset_revisions for each row execute function studio.protect_asset_revision();
 create function studio.protect_permanent_receipt() returns trigger language plpgsql set search_path=pg_catalog as $$
 begin
- if tg_table_name='delegations' and tg_op='UPDATE' and old.root_task_id is not null and new.root_task_id is null
-  and (to_jsonb(old)-'root_task_id')=(to_jsonb(new)-'root_task_id') then return new; end if;
+ -- PL/pgSQL resolves record fields before SQL boolean short-circuiting.
+ -- Only the delegation row type has root_task_id.
+ if tg_table_name='delegations' then
+  if tg_op='UPDATE' then
+   if old.root_task_id is not null and new.root_task_id is null
+    and (to_jsonb(old)-'root_task_id')=(to_jsonb(new)-'root_task_id') then return new; end if;
+  end if;
+ end if;
  raise exception 'PERMANENT_RECEIPT_IMMUTABLE';
 end $$;
 revoke all on function studio.protect_permanent_receipt() from public;

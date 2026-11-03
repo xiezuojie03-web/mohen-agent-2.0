@@ -64,6 +64,9 @@ try {
     const studioRepositoryResult = spawnSync(process.execPath, ["tests/data-production/studio-asset-repository.integration.mjs"], { cwd: root,
       env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
     if (studioRepositoryResult.status !== 0) throw new Error("STUDIO_ASSET_REPOSITORY_TEST_FAILED");
+    const delegationResult = spawnSync(process.execPath, ["tests/data-production/studio-delegation.integration.mjs"], { cwd: root,
+      env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
+    if (delegationResult.status !== 0) throw new Error("STUDIO_DELEGATION_REPOSITORY_TEST_FAILED");
     apply("20261102140000_mab_m2_private_originals.sql");
     apply(fs.readdirSync(directory).find(n => n.endsWith('_mab_m2_evidence_bridge.sql')));
     const provenanceResult = spawnSync(process.execPath, ["tests/data-production/private-original-source-binding.integration.mjs"], { cwd: root,

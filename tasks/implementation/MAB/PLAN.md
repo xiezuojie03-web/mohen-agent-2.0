@@ -745,3 +745,7 @@ HP01同批推送复核：修复代码67b2984，主CI41612672544及M1真实隔离
 
 
 HP08同批push核证：94cdb5d的主CI41619741669、PG17 41619741406、M1 HTTP41619741435均SUCCESS；最新代码unit298 PASS/4既有联网SKIP、production98 PASS、真实PG恢复3项PASS、类型/构建PASS。该证据不等于完整M4或生产准出；四批累计结果、环境清理及M1—M8逐项剩余见progress最新汇总。
+
+### 2026-11-03 HP08永久委托/待核回执增量
+
+复用已有Studio两表，实现Owner事务仓储、稳定root/snapshot、请求/观察hash、并发幂等和永久HOLD回执；新增Owner只读HTTP查证，保存不等于执行/外发/费用/Gate授权。UNKNOWN费用保持null，ACTUAL核销与候选准入仍拒绝。修复尚未上线Studio候选迁移的共享immutable触发器缺列，隔离验证三表保护与task合法置空。unit308 PASS/4既有SKIP、production98、六工作区类型、Next构建、真实PG和Chromium6 PASS/1Storage缺配置SKIP。见[逐批回执](../../results/MAB/CODEX_HP08_RECEIPTS_20261103.md)。完整任务DAG、正式审批、T1—T7、外部双主体、费用账接线/核销及Runner终态仍HOLD；M4不准出，继续依现HP09与HP10—12顺序补齐。

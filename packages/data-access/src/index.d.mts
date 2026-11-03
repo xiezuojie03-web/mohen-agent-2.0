@@ -165,3 +165,30 @@ export declare function createPrivateOriginalSourceVerifier(pool:{connect:Functi
   binding:{originalId:string;sourceVersionId:string;rawItemId:string;rawSha256:string},
   token:string
 )=>Promise<boolean>;
+
+/** Persistence of unverified envelopes and HOLD observations, never execution permission. */
+export interface StudioDelegationInput {
+ projectId:string;rootTaskRef:string;rootTaskSnapshot:Record<string,unknown>;subtaskRef:string;
+ seriesId:string;revisionNo:number;executor:string;provider:string;engineVersion:string;
+ inputManifest:Record<string,unknown>;allowedActions:string[];transferRightsDecision:Record<string,unknown>;
+ policyVersion:string;expiresAt:string;budgetLimit:string;currency:string;idempotencyKey:string;outputSchema:string;
+}
+export interface StudioDelegationRecord {
+ delegation_id:string;project_id:string;root_task_ref:string;root_task_id:string|null;requester:string;
+ request_hash:string;budget_limit:string;[key:string]:unknown;
+}
+export interface StudioHeldReceiptInput {
+ delegationId:string;attemptNo:number;requestHash:string;resultManifest:Record<string,unknown>;candidateRefs:unknown[];
+ acceptanceState?:'HOLD';actualProvider:string;actualEngineVersion:string;
+ startedAt:string;finishedAt:string;cost:string|null;currency:string|null;costConfidence:'UNKNOWN'|'ESTIMATED';errorCode:string;
+}
+export interface StudioHeldReceiptRecord {
+ receipt_id:string;delegation_id:string;attempt_no:number;request_hash:string;result_hash:string;
+ acceptance_state:'HOLD';cost:string|null;cost_confidence:'UNKNOWN'|'ESTIMATED';[key:string]:unknown;
+}
+export declare function createStudioDelegationRepository(pool:{connect:Function}):{
+ saveDelegation(input:StudioDelegationInput,token:string):Promise<StudioDelegationRecord>;
+ appendHeldReceipt(input:StudioHeldReceiptInput,token:string):Promise<StudioHeldReceiptRecord>;
+ getDelegation(delegationId:string,token:string):Promise<StudioDelegationRecord|null>;
+ listReceipts(delegationId:string,token:string):Promise<StudioHeldReceiptRecord[]>;
+};

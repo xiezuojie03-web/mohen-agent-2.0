@@ -287,3 +287,4 @@ export { createPrivateOriginalStorage, MAX_ORIGINAL_BYTES } from './private-orig
 export { createEvidenceBridgeRepository } from './evidence-bridge-repository.mjs';
 export { createReadModelRepository } from './read-model-repository.mjs';
 export { createPrivateOriginalSourceVerifier } from './private-original-source-binding.mjs';
+export { createStudioDelegationRepository } from './studio-delegation-repository.mjs';

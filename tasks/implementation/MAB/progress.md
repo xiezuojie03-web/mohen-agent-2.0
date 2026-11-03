@@ -676,3 +676,14 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 最终unit298 PASS/4原联网SKIP、production98 PASS、PG恢复新集成3 PASS；六工作区类型/构建PASS。前批本地官方Storage浏览器6 PASS/0 SKIP按8dd2b5e限定引用，GitHub无Storage配置的SKIP不混写。
 - 合成业务/Storage库与随机Signer登录角色均0，Storage fixture已清理，一次性PG容器及数据卷已移除。无生产迁移/桶/正式Gate/收费Provider/私有资料外发/新产品方向变更。
 - 余项保持：M1生产会话开关/Owner/旧DB凭据/恢复；M2受控生产原件/核验密钥及唯一Runner完整授权；M3真实独立Reviewer/Signer服务与精确资格映射及即时撤权；M4持久预算审批、永久委托/费用账、T1—T7、付费步骤恢复与Runner终态核销；M5 Studio/Admin/WATCH完整合法业务与媒体权利；M6全量真实85API/152动作、M7真实A/B复用、M8原子投运。74路径缺席0不等于74语义通过，整体HANDOFF_NOT_READY与各阶段HOLD不取消。
+
+## 2026-11-03｜Codex HP08：永久委托与待核回执
+
+- 基线main@1ae44a4，继承前批全部成果。新增Owner事务仓储/类型、并发幂等、稳定root与snapshot、精确请求/观察hash、HOLD-only永久回执；Owner只读HTTP可跨会话查询，明确execution_authorized=false。
+- 新委托过期拒绝；缺任务归属绑定拒绝FK；UNKNOWN费用不补0，ACTUAL需独立核销而拒绝，超过预算的已观察估计费用保留HOLD证据。原权利/预算字段是待核记录，不授予执行或外发许可。
+- 真PG发现共享immutable函数在非delegation表访问root_task_id；保留失败日志，修正未激活候选的嵌套分支。三表immutable、task置空与长期身份保留、跨Owner、禁用身份、并发与池清理PASS。首次fixture与actual_provider NOT NULL不符，按真实Schema改为显式合成provider/version，无真实Provider调用。
+- unit308 PASS/4既有联网SKIP，production98、六工作区类型、Next build PASS；全真实PG/回滚PASS；Chromium6 PASS/1官方Storage未配置SKIP，新增Owner读200/匿名401/跨Owner404。auth105缺口0；85/152仅静态，74语义仍HOLD。默认pnpm test继续DEFERRED_ENV。
+- [本批回执](../../results/MAB/CODEX_HP08_RECEIPTS_20261103.md)与机器日志已落盘。T1—T7、永久账与工具账原子接线、正式预算审批、Provider核销/lease/重试/真实混合与Runner终态仍HOLD；M4不升级，其他阶段未准出。
+- Ruling: 保留原Studio物理合同，只保存未验证封套及HOLD观察，不把字段完备误作可执行许可 — 当前没有受控Provider/权利/费用核验与lease — 若误接执行入口会造成越权或费用，故无dispatch/写HTTP接口且只读返回禁止执行。
+- Ruling: 修订尚未生产激活的Studio迁移候选中的真实触发器缺列，而不另建同义表或执行生产DDL — 隔离PG直接复现且原Studio生产尚未激活 — 后续部署必须使用修正候选并重新核验，不能引用旧文件hash准出。
+- 代码审阅：独立只读审阅未发现实质问题，未独立重跑测试；这是工程代码审阅，不是正式Gate或生产Reviewer签发。精确push CI待提交后追加。
