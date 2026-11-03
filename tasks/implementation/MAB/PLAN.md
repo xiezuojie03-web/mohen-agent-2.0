@@ -374,6 +374,8 @@ A：隋唐大运河及江南水路连接。B：宋代江南运河沿线的城镇
 
 **2026-11-03 HP施工实绩（状态不替代Gate）**：HP13已按冻结来源落仓19/21个原缺席CREATE目标，并在差异账附本批blob/冻结文本匹配/启用HOLD；剩余2个KAD1目标测试需与尚未完整接线的运行合同正反核对。HP07视觉舞台六处从旧PASS改为当前独立G5+用途/consumer校验；HP11精确WorkRevision审核前端/路由/原子写入接线；HP12新发布与WATCH未取得专业G5时拒绝，并保留后台合法草稿及审查记录。源码、测试和机器目标审查已提交；**本批最新主CI、隔离PG和合法Owner的实际回执未核，现状`HANDOFF_NOT_READY`，不得勾M1—M8**。执行细节、实际SHA、正反缺口与回退见`progress.md`最新“HP01—HP13实际施工第一收口批”。
 
+**2026-11-03 HP08专项收口增量（非阶段PASS）**：已将工具调用的预约/结算/待核回执绑定精确invocation ID；外部/LLM执行超时不得自行释放可能已收费的reserved；结算落库失败不得把已发生费用退回。Studio研究完成检查点保存累计spent/ceiling，追问通过done→running CAS和已有预算执行，恢复API不得绕过账本重跑收费步骤；`requestProduction`新增零成本注册表/签名输入预检、现有预算CAS预占与reserved回执先于Runner启动的硬顺序，禁止调用参数任意增额。实际源码提交与测试范围详见`progress.md`最新两条HP08记录；当前Registry依旧`production_input_binding_required` HOLD，已付费流程的逐步骤恢复、Runner执行终态结算和真实Provider授权/费用需后续独立验收。**新提交Vitest、真实PG和最新main构建尚无SUCCESS证据，HP08=CODE_PRESENT/CI_UNVERIFIED/LIVE_HOLD；交接=HANDOFF_NOT_READY。**
+
 ## 7. 质量、验收和准出规则
 
 ### 7.1 不能混用的证明层
