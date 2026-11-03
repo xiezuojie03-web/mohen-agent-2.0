@@ -10,7 +10,8 @@ test('independent Gate read response must bind to current stage exact output and
   const input={source:'synthetic'},output={material:'synthetic candidate'};
   const valid={
     qualification_current:true,decision_origin:'independent_gate',result:'PASS',
-    run_id:run.run_id,stage:'D02',gate_code:'G2',
+    run_id:run.run_id,job_id:job.job_id,reviewer_binding_ref:job.implementation.gate_reviewer_binding,
+    consumer:'producer',stage:'D02',gate_code:'G2',
     input_digest:executionDigest(input),output_digest:executionDigest(output),
     gate_audit_id:'123e4567-e89b-42d3-a456-426614174012',
     artifact_revision:'v1',object_type:'material_evidence',
@@ -32,4 +33,8 @@ test('independent Gate read response must bind to current stage exact output and
   await assert.rejects(check({...valid,qualification_current:false}),/INDEPENDENT_STAGE_QUALIFICATION_INVALID/);
   await assert.rejects(check({...valid,output_digest:'f'.repeat(64)}),/INDEPENDENT_STAGE_QUALIFICATION_INVALID/);
   await assert.rejects(check({...valid,valid_until:new Date(Date.now()-1000).toISOString()}),/INDEPENDENT_STAGE_QUALIFICATION_INVALID/);
+  await assert.rejects(check({...valid,job_id:'other-job'}),/INDEPENDENT_STAGE_QUALIFICATION_INVALID/);
+  await assert.rejects(check({...valid,reviewer_binding_ref:'another-reviewer'}),/INDEPENDENT_STAGE_QUALIFICATION_INVALID/);
+  await assert.rejects(check({...valid,consumer:'watch'}),/INDEPENDENT_STAGE_QUALIFICATION_INVALID/);
+  await assert.rejects(check({...valid,job_id:undefined}),/INDEPENDENT_STAGE_QUALIFICATION_INVALID/);
 });

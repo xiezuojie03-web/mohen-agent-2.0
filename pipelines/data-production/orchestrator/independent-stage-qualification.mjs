@@ -19,7 +19,12 @@ export async function requireIndependentStageQualification({context,run,stage,jo
     output,output_digest:outputDigest,input_digest:inputDigest});
   if(!receipt||receipt.qualification_current!==true||
       receipt.decision_origin!=='independent_gate'||receipt.result!=='PASS'||
+      // The read-only authority must never let a receipt for another job,
+      // Reviewer binding or consumer authorize this producer's handoff.
       receipt.run_id!==run.run_id||receipt.stage!==stage||
+      receipt.job_id!==job.job_id||
+      receipt.reviewer_binding_ref!==job.implementation?.gate_reviewer_binding||
+      receipt.consumer!=='producer'||
       receipt.gate_code!==contract.gate||receipt.input_digest!==inputDigest||
       receipt.output_digest!==outputDigest||
       typeof receipt.gate_audit_id!=='string'||!UUID.test(receipt.gate_audit_id)||
