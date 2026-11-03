@@ -515,3 +515,37 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
   - HP13 74目标/20责任语义审查与唯一交接冻结：`NOT_STARTED / HANDOFF_NOT_READY`。
 - **首轮P0审阅结论**：`publication.checkPublishEligibility`验证旧作品Reviewer批准、来源引用及媒体许可文本，但未验证独立专业G5；`listPublished()`仅检查pointer和published status，`/api/public/works/[id]/eligibility`仅查列表即称eligible，尚未达到WATCH合法消费门。不得仅因作品状态published或作品Reviewer批准允许新增公开作品。必须在HP12安排受控失败关闭/精确资产资格路径及正反测试。
 - **版本与阶段纪律**：此条仅准入、证据状态及执行责任；最新main SHA应在各具体改动后记录。实际CI/PG/权限证明完成之前不勾M1—M8；未激活Registry或收费模型，无生产DB/Storage/Reviewer写操作，交接标`HANDOFF_NOT_READY`。
+
+
+## 2026-11-03｜HP01—HP13实际施工第一收口批（仍非HANDOFF_READY）
+
+**Owner裁决已写入权威任务书**：`PLAN.md §6B`（`c91a430b`）；13项为交接前工作包，保持M0—M8与独立G、Owner生产授权。此批已实施代码与文件如下，不把源码提交误判为真实生产PASS。
+
+### HP12｜独立G5未就绪时的新发布及WATCH失败关闭
+
+- `d05d8f97`、`c99a075c`新增`apps/web/lib/work-publish-qualification.ts`，显式区分作品Reviewer批准、知识专业G5和WATCH/visual_stage/agent/evidence_on_demand各消费者资格。**当前WorkRevision未建立精确L5资产资格映射，服务默认HOLD**，严禁旧PASS/出处字符串或作品审核借专业G资格。
+- `097d3db7`在`publication.checkPublishEligibility`内要求专业G5，否则拒绝新发布；`35391251`拆分后台运营`listPublished`与公众`listWatchEligible`，后者每次读逐WorkRevision核WATCH独立资格。公开`/api/works/published`（`a51dfbbc`）和`/api/public/works/[id]/eligibility`（`c3a66c6f`）接失败关闭及no-store。重要行为影响：**在正式专业G5映射前，新发布拒绝、WATCH公众作品列表为空**，但原合法草稿和后台审核记录仍保留。不是完整可运行发布功能；不允许为恢复显示而使用旧作品指针冒充资格。
+- `9853699c`、`e3638a81`修订原M5发布mock测试，补资格不存在时不得进入原子SQL与按work逐条WATCH过滤；`a076403d`新建默认拒绝/跨消费者拒绝测试。源码`CODE_PRESENT`，本批仍`CI_UNVERIFIED/ISOLATED_PENDING`，不标HP12 PASS。
+
+### HP13｜74目标差异追踪及冻结工程镜像候选（不生效）
+
+- `827495c9`创建`scripts/audit-mab-handoff-targets.mjs`读取当前仓库PLAN、74目标差异账和A01—A20责任，输出客观`HANDOFF_NOT_READY`/缺文件/语义未核销机器报告；`4361a6f8`补CSV/语义负例；`beb703d7`将只读报告纳入通用CI的证据上传，**不因缺席21个目标而中断其它代码构建**；`04bbda4e`区分冻结字节目标与运行/语义验收。
+- 只通过ChatGPT资料库`/墨痕/产品知识体系与工程治理重建_专项/04_工程规范与Codex接入/repo_target/`的既有设计镜像查源，并与当前目标SHA256逐件确认。已把原21个CREATE中**19个精确目标文件**按冻结字节提交：六份MHKA-00—05（`3c3f14a7,6dba87ae,650b71b5,8a4db6ac,28fcfe3f,a0535abc`）；四份系统、知识资产、Agent能力、H1/H2/H3规范（`5d273705,5d0d41f9,b02acab0,c76bf4b7`）；KAD1纯策略mjs/类型（`cad13815,0e86b055`）；六份受控KAD1 migration/rollback设计候选（`ea0bb728,d73a68c7,9f7475e9,77715b58,9ae16b05,c5d534dc`）；精确属主和修订快照的Studio局部panels只读路由（`937fd438`）。**没有执行任何生产或隔离迁移**，没有切换`AGENTS.md`权威生效路由。11项治理/专业合同仅设计文本已按目标落仓，不代表工程语义、运行资格已准出。
+- `target-diff.csv`新增`hp13_*`六字段记录源目标哈希/现行Git blob/提交及激活HOLD，**保留所有历史M0列与74目标**（`daf8830d,416dc5eb,88521aca,e2af3694`）。仍缺2份正式KAD1目标测试（`tests/unit/kad1-policy.test.mjs`、`tests/unit/kad1-route.test.mjs`）；完整镜像测试含AGENTS/M8切换、Reviewer不自签、消费G5、定时发布/旧权限等未来合同，不得盲复制后标PASS。原53 REVISE仍须逐项语义双向审查；缺席目标降至**2/21**不等于HP13全量完成。
+
+### HP07｜视觉舞台当前专业资格
+
+- `c711dc9a`修改`apps/web/lib/read-model-bridge.ts`的六处读模型查询：从legacy `gate_audits.current_valid`直接读改为`control.qualification_current`和`control.qualification_allows`，必须明确当前`MOHEN_G5_CONTEXTS.visual_stage`中的purpose/scope；缺配置则返回`available=false`。topicKey改有界参数化LIKE并转义通配符，照片必须`rights_status=cleared`且license非空才进入输出。不得混用Agent、WATCH资格；真实读取仍须隔离PG当前资格负例。
+- `fca16447`新增前述六类读取、参数、防旧PASS、无许可媒体及DB失败的单测源码。最新CI/真实PG未核，不称HP07 PASS。
+
+### HP10/HP11｜Studio修订快照与Admin精确Reviewer审批
+
+- Studio每个局部panel GET（`937fd438`）复用正式KAD1冻结设计：必须登录、Owner精确work_id、正整数revision_no、取已经保存的panel值；无快照返回404而不是重生导演内容。尚需HTTP+DB运行验证。
+- Admin旧代码对某个待审WorkRevision仅提交`work_id`，导致批准可能不绑定真实版本。`e963fdfb`将两审核按钮改传`revision_id`；`e444da35`在API要求合法work/revision UUID及真实Reviewer身份；`bd563cbf`将`gate-review.ts`的审批插入改为单条`INSERT ... SELECT`仅在准确work+revision仍submitted时写入，取消null、跨作品/旧rev签核，并修正过时“注册邮箱自动提Reviewer”的注释。作品Reviewer与专业G5继续分责。
+- `d878a04c`和`0bf6587d`新增仓储及HTTP路由正反单测，分别核精确revision、错work/旧版/未登录/非Reviewer不得写决定。**源码与测试文件已推main，但真实CI/PG/HTTP结果未核**。注意现有后台审核与专业G5仍均HOLD，不能把作品审批当新发布准出。
+
+### 状态、下轮主线、回滚
+
+- 本批`HP01`只有机器报告入口，**未取得最新main的真实GitHub Actions成功回执**：GitHub连接器的commit workflow runs仅返回PR触发结果，push记录缺口不能据0条判断未运行。Vercel READY仅对应旧SHA，不代替本批验证。不得提前签`HANDOFF_READY`。
+- `HP02—HP06`、`HP08—HP09`依原计划继续M1身份/恢复、M2私有原件→D00—D03 Runner、M3独立签发/撤权、M4同root委托与T1—T7；HP10—12继续完成专业Gate映射、Admin完整知识条目、WATCH与媒资撤权。HP13剩余2个目标测试及53份REVISE语义责任需核销。最终CodeBuddy只接受当前插件确实无法安全完成的受控环境任务。
+- 所有新增SQL均未执行，外部付费AI、生产Storage/Gate与真实私有原件仍未启用。**HANDOFF_NOT_READY**。回退时只可关闭受影响消费/发布或恢复受审代码，不可恢复旧公开未授权资格、旧Operator自签或已撤销权利。
