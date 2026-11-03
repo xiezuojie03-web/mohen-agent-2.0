@@ -33,7 +33,7 @@ try {
   query(database,"insert into control.session_verification_keys(verification_key) values('synthetic-mab-http-database-key-at-least-32')");
   const url=new URL(`postgresql://k3_admin:synthetic@localhost:${dbPort}/${database}`);url.searchParams.set('host',socket);
   const env={...process.env,DATABASE_URL:url.toString(),MOHEN_DB_DRIVER:'pg',AUTH_SECRET:'synthetic-mab-http-browser-key-at-least-32',
-    MOHEN_DATABASE_SESSION_SECRET:'synthetic-mab-http-database-key-at-least-32',MOHEN_REGISTRATION_MODE:'open',OWNER_EMAIL:'',OWNER_SETUP_TOKEN:'',
+    MOHEN_DATABASE_SESSION_SECRET:'synthetic-mab-http-database-key-at-least-32',MOHEN_REGISTRATION_MODE:'open',OWNER_EMAIL:'',OWNER_SETUP_TOKEN:'',MOHEN_TEST_DATABASE:database,
     DEEPSEEK_API_KEY:'',SHANGHAI_LIBRARY_KEY:'',NEXT_TELEMETRY_DISABLED:'1',MOHEN_E2E_ISOLATED:'1',
     MOHEN_PRIVATE_ORIGINAL_UPLOAD_ENABLED:storageConfig?'true':'false',MOHEN_PRIVATE_STORAGE_SERVICE_KEY:storageConfig?.serviceKey??'',
     SUPABASE_URL:storageConfig?.httpsOrigin??'',NODE_EXTRA_CA_CERTS:storageConfig?.caCert??process.env.NODE_EXTRA_CA_CERTS};
