@@ -141,6 +141,10 @@ EXP完整功能、L6—L8运行启用遵循包内“延后激活”边界：本�
 
 **2026-11-03 M1生产匿名访问子项实测**：`fb92550`修复Middleware拒绝响应缺少no-store，常规CI `41580885849 SUCCESS`；Vercel相同SHA生产READY后，Actions `41580710096` attempt 2四项匿名GET全部PASS。仅签`M1_ANONYMOUS_READ_ONLY_HTTP_PASS`；合法本人操作、跨Owner/撤权、旧凭据失效及恢复仍待最终验收，M1整体HOLD。
 
+**2026-11-03 M1独立收口施工增量**：已将现成`scripts/test-mab-http.mjs`的真实Next.js＋Playwright测试接入一次性PG17 GitHub Actions（`172a1dd5`，Chromium安装补正`7c9902c7`），包含原有本人Studio研究/修订、跨Owner拒绝与新增账户禁用、退出后旧Cookie失效HTTP测试（`4d4fb2e6`、`e8251d5d`、`ff0c9503`）。所有用户与数据库均为标记隔离合成数据，正式Storage浏览器导入用例因缺受控官方Storage配置会被跳过，不记成功。
+
+**证据状态**：当前此批工作流真实运行回执尚待核实，标`M1_ISOLATED_HTTP_CI_PENDING`，不能称已验收PASS。M1仍需生产合法Owner/回读、真实撤权及跨Owner、旧凭据失效非敏感回执、安全恢复验收；不要求默认重轮换密码，也不将M2/M3正式激活当作M1前置。详见`progress.md`最新M1条目。依赖生产身份的事项独立HOLD，M2/M3原计划并行不变。
+
 ### M2｜私有原件、九层映射与长期资产
 
 依赖：M1。候选表先去重，采用先扩展兼容、后切读写的顺序。
