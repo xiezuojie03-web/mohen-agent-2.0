@@ -12,6 +12,22 @@ export async function GET(request: Request) {
   const query=new URL(request.url).searchParams;
   try {
     const store=studioAssetStore(),token=signDatabaseSessionToken(session);
+    // Private F05/Studio inspection only. All reads are joined through exact
+    // project+asset and the caller's transaction-scoped owner RLS.
+    if (query.get('history')==='1') {
+      const projectId=query.get('project_id'),assetId=query.get('asset_id');
+      if (!projectId || !assetId)
+        return NextResponse.json({ok:false,reason:'project_and_asset_required'},{status:400});
+      const revisions=await store.listAssetRevisions(projectId,assetId,token);
+      return NextResponse.json({ok:true,revisions},{headers:{'cache-control':'no-store'}});
+    }
+    if (query.get('use_events')==='1') {
+      const projectId=query.get('project_id'),revisionId=query.get('revision_id');
+      if (!projectId || !revisionId)
+        return NextResponse.json({ok:false,reason:'project_and_revision_required'},{status:400});
+      const events=await store.listRevisionUseEvents(projectId,revisionId,token);
+      return NextResponse.json({ok:true,events},{headers:{'cache-control':'no-store'}});
+    }
     if (query.has('revision_id')) {
       if (!query.get('asset_id')) return NextResponse.json({ok:false,reason:'asset_id_required'},{status:400});
       const asset=await store.getRevision(query.get('revision_id')!,token);
