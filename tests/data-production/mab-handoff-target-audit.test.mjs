@@ -31,8 +31,8 @@ test('HP13 handoff report refuses to declare READY when a target path exists but
       'apps/web/example.ts,REVISE,DESIGN_TARGET_SEMANTICS_NOT_VERIFIED,CODE_PRESENT\n');
     const digest=createHash('sha256').update(fs.readFileSync(path.join(root,'apps/web/example.ts'))).digest('hex');
     fs.writeFileSync(path.join(root,'tasks/implementation/MAB/target-diff.csv'),
-      'path,original_action,m0_target_validation,implementation_status,target_sha256\\n'+
-      'apps/web/example.ts,REVISE,DESIGN_TARGET_SEMANTICS_NOT_VERIFIED,CODE_PRESENT,'+digest+'\\n');
+      'path,original_action,m0_target_validation,implementation_status,target_sha256\n'+
+      'apps/web/example.ts,REVISE,DESIGN_TARGET_SEMANTICS_NOT_VERIFIED,CODE_PRESENT,'+digest+'\n');
     const report=inspectHandoffTargets(root);
     assert.equal(report.missing_target_count,0);
     assert.equal(report.hp13_byte_exact_target_count,1);
