@@ -36,17 +36,26 @@ export async function POST(req: NextRequest) {
   if (typeof work_id !== "string") {
     return NextResponse.json({ ok: false, reason: "work_id_required" }, { status: 400 });
   }
+  const validUuid = (id: unknown) =>
+    typeof id === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+  if (!validUuid(work_id)) {
+    return NextResponse.json({ ok: false, reason: "invalid_work_id" }, { status: 400 });
+  }
+  if (!validUuid(revision_id)) {
+    return NextResponse.json({ ok: false, reason: "revision_id_required" }, { status: 400 });
+  }
   if (decision !== "approved" && decision !== "rejected") {
     return NextResponse.json({ ok: false, reason: "invalid_decision" }, { status: 400 });
   }
 
   // 记录真实 reviewer 标识（邮箱优先，退化到 user_id）。
   const reviewerUser = session ? await findUserById(session.uid) : null;
-  const reviewer = reviewerUser?.email || session?.uid || "unknown-reviewer";
+  const reviewer = reviewerUser?.email || session?.uid;
+  if (!reviewer) return NextResponse.json({ ok: false, reason: "reviewer_identity_required" }, { status: 403 });
 
   const result = await signWorkPublication(
     work_id,
-    typeof revision_id === "string" ? revision_id : null,
+    revision_id as string,
     decision,
     reviewer,
     typeof note === "string" ? note : undefined
@@ -54,5 +63,5 @@ export async function POST(req: NextRequest) {
   if (!result.ok) {
     return NextResponse.json({ ok: false, reason: result.reason }, { status: 400 });
   }
-  return NextResponse.json({ ok: true, decision, reviewer });
+  return NextResponse.json({ ok: true, decision, reviewer }, { headers: { "cache-control": "no-store" } });
 }
