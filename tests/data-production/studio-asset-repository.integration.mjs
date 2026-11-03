@@ -43,6 +43,23 @@ try {
  assert.equal(sql(`select count(*) from studio.asset_revisions where asset_id='${asset}'`),'3');
  // A revocation between write and readback must roll back, never return an empty success.
  const current=concurrent.find(r=>r.status==='fulfilled').value;
+ const lineage=await repo.listAssetRevisions(project,asset,token(a));
+ assert.equal(lineage.length,3,'owner sees all exact immutable revisions');
+ assert.deepEqual(lineage.map(x=>x.revision_no),[3,2,1],
+   'lineage orders newest to oldest and preserves old versions');
+ assert.equal((await repo.listAssetRevisions(project,asset,token(b))).length,0,
+   'another owner sees no revision history');
+ const useRevision=lineage[0].revision_id;
+ sql(`insert into studio.use_events(project_id,asset_revision_id,actor_id,consumer,purpose,requested_action,rights_decision_ref)
+   values('${project}','${useRevision}','${a}','studio','fixture_research','read','fixture_only_no_actual_rights')`);
+ const uses=await repo.listRevisionUseEvents(project,useRevision,token(a));
+ assert.equal(uses.length,1,'owner can trace a stored use-event');
+ assert.equal(uses[0].rights_decision_ref,'fixture_only_no_actual_rights');
+ assert.equal((await repo.listRevisionUseEvents(project,useRevision,token(b))).length,0,
+   'cross-owner cannot infer use-event history');
+ assert.equal((await repo.listRevisionUseEvents(project,first.revision_id,token(a))).length,0,
+   'use-event belongs to exact revision, not a different one');
+
  sql(`create function studio.fixture_disable_after_save()returns trigger language plpgsql security definer set search_path=pg_catalog as $$begin if new.asset_id='${asset}'::uuid then update public.users set status='disabled' where user_id='${a}';end if;return new;end$$;create trigger fixture_disable_after_save after update on studio.asset_heads for each row execute function studio.fixture_disable_after_save()`);
  try {
   await assert.rejects(()=>repo.saveRevision({...next,idempotencyKey:'revoked-during-save',expectedRevisionId:current.revision_id},token(a)),/STUDIO_REVISION_NOT_PERSISTED/);
