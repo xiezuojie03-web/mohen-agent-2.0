@@ -378,6 +378,8 @@ A：隋唐大运河及江南水路连接。B：宋代江南运河沿线的城镇
 
 **2026-11-03 HP03资产历史可读能力增量（非准出）**：依托既有单一`studio.asset_heads/asset_revisions/use_events`和低权限Owner事务，新增同项目精确资产全修订历史、同项目精确revision的长期使用记录只读能力，并通过原`GET /api/studio/assets`私有模式访问；保留旧API合同和正式Gate/rights判断边界。源码`3ee30107`、`a611899e`，隔离PG及HTTP合同测试`a46aa20e`、`75b35b39`，本批真实CI/PG回执尚缺，不得将其等于跨项目合法复用/UseEvent签发完成；详见`progress.md`最新HP03记录。
 
+**2026-11-03 Owner执行权转移裁决（最新，优先于§6B“先由聊天插件做满”的原执行安排）**：Owner明确要求现在返回Codex续建，**不再以13个HP必须先由聊天插件全部施工完成作为转移执行权的前置条件**；HP01—HP13原任务、顺序、验收和独立HOLD均保留，由Codex从远端main最新HEAD接手。唯一现行执行交接文件：`tasks/implementation/MAB/CODEX_HANDOFF_CURRENT.md`；旧`PLATFORM_HANDOFF_20261103.md`与ZIP只是历史输入。转移执行权**不等于**§6B.3技术HANDOFF_READY或任何M1—M8正式PASS，也不等于Owner批准生产迁移、私有资料外发、正式Gate签名或额外付费调用。接续优先运行真实CI/typecheck/unit/build/隔离PG、补53项REVISE语义核销及剩2项CREATE测试，按真实回执继续工程闭环。当前状态标识：`CODEX_EXECUTION_HANDOFF_ACCEPTED / TECHNICAL_HANDOFF_NOT_VERIFIED`，详细风险/命令/权限见该交接书及进度账。
+
 ## 7. 质量、验收和准出规则
 
 ### 7.1 不能混用的证明层
