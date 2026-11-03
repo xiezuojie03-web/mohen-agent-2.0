@@ -10,7 +10,7 @@ const json=(status,body)=>new Response(JSON.stringify(body),{
 const MAX_REQUEST_BYTES=4096;
 async function boundedRequestJson(request) {
   const declared=request.headers.get('content-length');
-  if(declared!==null && (!/^\\d+$/.test(declared)||Number(declared)>MAX_REQUEST_BYTES))
+  if(declared!==null && (!/^\d+$/.test(declared)||Number(declared)>MAX_REQUEST_BYTES))
     throw Error('REQUEST_TOO_LARGE');
   if(!request.body?.getReader) throw Error('REQUEST_BODY_REQUIRED');
   const reader=request.body.getReader();
