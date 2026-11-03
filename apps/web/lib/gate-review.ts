@@ -3,9 +3,9 @@
 // 独立 Reviewer 是独立于 Operator / Producer 的签核身份：只有它签署「知识引用 + 媒体权利」
 // 通过后，Operator 才能发布作品（CR-04：Operator 不得代签知识 Gate）。
 //
-// 补缺施工第四步：Reviewer 身份从「静态 REVIEWER_KEY 密钥」升级为「登录用户中 roles 含 reviewer 的账号」
-// （Owner 兼任，20195689@qq.com 注册即获 reviewer 角色）。签核记录真实 reviewer 邮箱。
-import { queryRows, queryValue, run } from "@mohen/data-access";
+// 作品发布 Reviewer 使用当前有效的登录角色身份，绝不因为注册邮箱匹配而自动提权。
+// 作品发布审核不是独立专业知识 G5 签发，任何 approval 都不能替代当前知识资格。
+import { queryRows, queryValue } from "@mohen/data-access";
 import { hasRole } from "./auth";
 
 export function isReviewerConfigured(): boolean {
@@ -26,17 +26,34 @@ export async function signWorkPublication(
   reviewer: string,
   note?: string
 ): Promise<{ ok: boolean; reason?: string }> {
-  const work = await queryValue(
-    "select work_id::text from publication.works where work_id = :'id'",
-    { id: workId }
-  );
-  if (!work) return { ok: false, reason: "work_not_found" };
+  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuid.test(workId)) return { ok: false, reason: "invalid_work_id" };
+  if (!revisionId || !uuid.test(revisionId)) return { ok: false, reason: "revision_id_required" };
+  if (decision !== "approved" && decision !== "rejected")
+    return { ok: false, reason: "invalid_decision" };
+  if (!reviewer || reviewer === "unknown-reviewer")
+    return { ok: false, reason: "reviewer_identity_required" };
 
-  await run(
-    `insert into control.work_publication_decisions (work_id, revision_id, decision, reviewer, note)
-     values (:'wid', :'rid', :'dec', :'reviewer', :'note')`,
-    { wid: workId, rid: revisionId ?? null, dec: decision, reviewer, note: note ?? null }
+  // Atomic INSERT ... SELECT pins the decision to a currently submitted
+  // revision owned by THIS work. Never store a null or unrelated revision.
+  // This is a work-level Reviewer decision, NOT professional independent G5.
+  const decisionRows = await queryRows(
+    `insert into control.work_publication_decisions
+       (work_id, revision_id, decision, reviewer, note)
+     select r.work_id, r.revision_id, :'dec', :'reviewer', :'note'
+       from publication.work_revisions r
+      where r.work_id = :'wid' and r.revision_id = :'rid'
+        and r.status = 'submitted'
+     returning revision_id::text as revision_id`,
+    { wid: workId, rid: revisionId, dec: decision, reviewer, note: note ?? null }
   );
+  if (!decisionRows.length) {
+    const existing = await queryValue(
+      "select work_id::text from publication.works where work_id = :'wid'",
+      { wid: workId }
+    );
+    return { ok: false, reason: existing ? "revision_not_submitted" : "work_not_found" };
+  }
   return { ok: true };
 }
 
