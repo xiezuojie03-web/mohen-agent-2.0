@@ -334,3 +334,12 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 明确 `M4_CODE_PREPARATION_ALLOWED` 与 `M4_LIVE_EXECUTION_HOLD`：允许先编写同root委托、不可变receipt、T1—T7及Studio恢复/负例测试，不得把合成数据、CI、旧预算或Producer候选写成真实双主体贡献、G资格与知识增长。
 - 下轮实际源码关键路径：M2 Owner短时会话→私有原件读取→D01—D03→唯一Registry/Runner；M3只读Gate资格验证→独立Reviewer签发/撤权服务；M1生产登录/导入/拒绝及凭据失效非敏感凭证独立收口。M4软件开发可与上述并行，首次真实Provider传输需要独立授权、资料使用权与费用边界。
 - 本回执是受控计划/责任更新，未改业务源码、DB、Storage、Gate、凭据、公开权限与部署；测试`NOT_RUN`（文档变更），M1/M2/M3/M4阶段状态不变。回退可用上次 `PLAN.md` blob `4ca7686649b5e722425bf8256cb3102d3eb7fd47` 恢复本段，不能据此反转生产权限。
+
+
+## 2026-11-03｜M4工具注册失败关闭：第一批可并行施工源码
+
+- **范围与基线**：继承`M4_CODE_PREPARATION_ALLOWED / M4_LIVE_EXECUTION_HOLD`；基线`main@d289f4c`，业务源码提交`f71578b835d66bb5f3576940c93017e0460acb81`、单测提交`9a892009b9654aa8fbf7ac05edf03000de483d8a`。没有改六阶段Registry、旧D/L/G、生产数据库、Storage、权限或模型Provider。
+- **发现与修复**：`apps/web/lib/studio/tool-ledger.ts`的`useTool`在有/无Ledger两条路径上把未知工具ID直接`fn()`执行，与工具注册及预算/回执保护合同矛盾。现在先查询唯一工具注册表，对未登记ID直接`TOOL_NOT_REGISTERED`拒绝；无Ledger的已登记即时问答调用沿用原行为，不扩大受控外部委托权限。
+- **正反测试**：`tests/unit/mab-m4-tool-registration.test.ts`增加无Ledger未知外部工具拒绝、有Ledger未知生产工具拒绝且预算不变、已登记无Ledger检索兼容三例。提交时GitHub Actions CI未获确认回执，标`NOT_RUN_OR_PENDING`，禁止自报PASS。最新提交`9a892009`Vercel检查初始为pending，仅部署检查，不能代表实际测试。
+- **残余风险**：`useTool`不带Ledger的已登记工具可保持历史即时问答兼容，不代表M4已获得外发或费用授权；已登记工具的动态成本、长期ExecutionReceipt、同root委托、T1—T7及真实跨会话恢复尚未施工。正式M4双主体运行仍HOLD。下一批应优先补M2唯一Registry/Runner的签名私有请求装配，保持旧legacy适配器拒绝私有输入；M3独立Reviewer服务继续按授权接续。
+- **回滚**：还原`tool-ledger.ts`原blob`9d303d63609e6b8099130110c8b484a92c336db3`仅用于必要兼容回退；原行为存在未登记调用安全缺口，实际回退时应优先停用不明调用入口，不能把漏洞当正常降级路径。本批不涉及生产DB回滚。阶段`M0审查PASS/M1 HOLD/M2部分/M3 HOLD/M4真实运行HOLD`不变。
