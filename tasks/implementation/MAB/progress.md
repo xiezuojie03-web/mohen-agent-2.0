@@ -422,3 +422,12 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 
 - `e9bde789f30c1e53c23833a35447eefb2f725e97` 在既有 `publication.listPublished()` 的published pointer与精确work_revision关联查询增加 `where r.status='published'`，避免修订状态已被撤销/更改而旧指针仍在时直接列出。该过滤仅是已发布状态约束，**不能替代独立当前G5、consumer=watch、用途/权利与媒体撤权逐请求认证**。
 - `68b334bf13052a2ed73607a80436ab70e825ed2f`为原`mab-m5-publication-atomic.test.ts`补WATCH列表状态过滤合同测试。新测试提交但尚未核实CI的实际SUCCESS回执；不能标记M5整体运行验收或宣称实时撤权已经实现。
+
+
+## 2026-11-03｜Owner最终CodeBuddy单次交接策略与M5 Studio真实进度修复
+
+- **执行策略裁决**：按Owner明确意见，以聊天模式已连接GitHub等插件承担尽可能多的源码施工、合同对照、正反测试和可安全自动化的验收，直至取得实际CI/隔离证据；只有真正依赖本地/受控生产身份与权限/独立Reviewer/真实Provider许可或Owner体验签收的剩余工作，才一次性交给CodeBuddy。不能因待移交就停止其余M1—M5施工，不生成提前交付包，不重新研究架构。具体准则已原位写入`PLAN.md §6A`（commit `a97e340417979440410e6e68987e4fbe8dc9eb3c`）。
+- **本批M5源码**：`d96a658e155fa7754645be317a86c3f9952d5880`修复`publication.getWorkStageStatus`将委托/研究/编导硬编码为true的错误。现在按工作绑定的`research_tasks`真实存在与`status='done'`区分已委托与已研究；旧`director_plans`当前没有work_id直接关联，故仅在该作品精确修订存有plan对象+非空beats数组时才表示编导证据，不能把其它作品计划当成该作品已完成；修订根据work_revisions实际存在判断。node-pg布尔及psql字符串均明确转换，不推断未知记录为成功。
+- **本批单测**：`8765fc978f9895e4a404fe80c0af43f0d3603b9b`扩展`mab-m5-publication-atomic.test.ts`：空数据四项false、委托存在但研究未done不报完成、四项有真实存储依据才为true。此为mock单元测试源码，尚未有本批真实CI SUCCESS回执，严禁写`VERIFIED_ISOLATED`。
+- **待继续的最大化施工**：现M5仍需同作品精确修订/并发授权、Admin内读详细知识与来源缺口、按消费者/用途的独立当前G5和媒体撤权、WATCH动态重验与完整E2E；M1合法生产身份/失效凭据/恢复，M2私有原件/Runner+Storage整链，M3独立审核签发与撤权，M4受控同root混合委托的真实身份/费用/回执均仍按原约束分别HOLD。优先推进能够通过插件直接修正的代码，不假报阶段闭环。
+- **安全/费用**：本批没有对生产PG、Storage、Reviewer或Provider写入，也没有实际外部模型调用；所有现行启用HOLD维持。回退时不得恢复硬编码Studio已完成状态，必要时宁显示未完成/待确认。
