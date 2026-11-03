@@ -5,7 +5,7 @@ vi.mock("../../packages/data-access/src/index.mjs", () => db);
 vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => ({ value: cookie }) }) }));
 let cookie: string | undefined;
 
-import { getSessionUser, hasRole, isOperator, parseSessionToken, signSessionToken } from "../../apps/web/lib/auth";
+import { getSessionUser, hasRole, isOperator, parseSessionToken, signSessionToken, sessionCookieOptions } from "../../apps/web/lib/auth";
 import { getSession } from "../../apps/web/lib/session";
 
 const active = { user_id: "9ab37577-1789-4e5a-9d5a-9e629cffdbf7", email: "test@example.invalid", username: "tester", roles: "member", status: "active" };
@@ -59,5 +59,24 @@ describe("current account authorization", () => {
     const payload = Buffer.from(JSON.stringify({ uid: active.user_id, r: ["operator"] })).toString("base64url");
     const signature = crypto.createHmac("sha256", process.env.AUTH_SECRET!).update(payload).digest("base64url");
     expect(parseSessionToken(`${payload}.${signature}`)).toBeNull();
+  });
+});
+
+describe("cookie flags shared by login registration and logout",()=>{
+  it("always uses HttpOnly Lax and a root path",()=>{
+    expect(sessionCookieOptions(86400)).toMatchObject({
+      httpOnly:true,sameSite:"lax",path:"/",maxAge:86400,
+    });
+    expect(sessionCookieOptions(0)).toMatchObject({
+      httpOnly:true,sameSite:"lax",path:"/",maxAge:0,
+    });
+  });
+  it("uses Secure cookies on production HTTPS, not on localhost HTTP development",()=>{
+    vi.stubEnv("NODE_ENV","production");
+    expect(sessionCookieOptions(86400).secure).toBe(true);
+    expect(sessionCookieOptions(0).secure).toBe(true);
+    vi.stubEnv("NODE_ENV","development");
+    expect(sessionCookieOptions(86400).secure).toBe(false);
+    vi.unstubAllEnvs();
   });
 });

@@ -30,6 +30,19 @@ function authSecret(): string {
 
 export const OPERATOR_COOKIE = "mohen_role";
 
+/** Cookie policy: HTTPS-only in deployed production, usable on HTTP localhost.
+ * All login/register/logout handlers must share identical flags and path.
+ */
+export function sessionCookieOptions(maxAge: number) {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    path: "/",
+    maxAge,
+  };
+}
+
 // ---------- 密码哈希（scrypt，随机盐） ----------
 export function hashPassword(password: string): string {
   const salt = crypto.randomBytes(16).toString("hex");

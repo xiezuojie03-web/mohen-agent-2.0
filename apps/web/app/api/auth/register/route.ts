@@ -7,6 +7,7 @@ import {
   hashPassword,
   isAuthConfigured,
   signSessionToken,
+  sessionCookieOptions,
 } from "../../../../lib/auth";
 
 export const runtime = "nodejs";
@@ -110,10 +111,7 @@ export async function POST(req: Request) {
 
   const res = NextResponse.json({ ok: true, user: { user_id: userId, email: e, username: u, roles } });
   res.cookies.set(OPERATOR_COOKIE, signSessionToken(userId!, roles), {
-    httpOnly: true,
-    path: "/",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24,
+    ...sessionCookieOptions(60 * 60 * 24),
   });
   return res;
 }

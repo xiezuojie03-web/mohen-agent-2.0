@@ -4,6 +4,7 @@ import {
   findUserCredentials,
   isAuthConfigured,
   signSessionToken,
+  sessionCookieOptions,
   verifyPassword,
 } from "../../../../lib/auth";
 
@@ -45,10 +46,7 @@ export async function POST(req: Request) {
     user: { user_id: cred.user_id, email: cred.email, username: cred.username, roles: cred.roles },
   });
   res.cookies.set(OPERATOR_COOKIE, signSessionToken(cred.user_id, cred.roles), {
-    httpOnly: true,
-    path: "/",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24,
+    ...sessionCookieOptions(60 * 60 * 24),
   });
   return res;
 }

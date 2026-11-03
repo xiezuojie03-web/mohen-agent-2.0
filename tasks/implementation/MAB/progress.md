@@ -223,3 +223,9 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **M1受控补齐**：`GET /api/studio/materials/import?material_id=<uuid>`在原有列表接口内新增可选详情，不改变原GET列表与POST入库wire。使用`createImportedMaterialRepository.get`、30秒已签数据库会话、事务内当前用户及表RLS，实体不存在/跨Owner均404；禁止通用DB超级用户直读。读出的全文含`Cache-Control: private, no-store`。不改变M2未来私有PDF/图像对象存储规则。
 - **正反验证**：新增unit合法详情、未知/跨Owner、非法ID、禁用/撤权、数据库故障、匿名，扩展现有隔离PG集成验证私有文本本人可读、另一用户读不到、过期/伪造/禁用会话被拒及无数据写入。
 - 生产库本批仍无数据写入/迁移；测试状态以本批对应CI为准，单元/隔离通过不代替在线真实Owner登录、旧密码失效的非敏感回执，M1仍`M1_SECURITY_ACCEPTANCE_HOLD`。
+
+## 2026-11-03｜M1会话Cookie安全属性统一
+
+- GitHub `main@1b3ef31b`前一批私有材料全文读取已获CI `41566616583 SUCCESS`；现实现会话Owner下的单条`imported_materials`合法回读，包含拒绝负例与原有list/post兼容。
+- **本增量**：登录、邀请/公开注册、退出共用`sessionCookieOptions`，继续HttpOnly、SameSite=Lax与全站路径；在`NODE_ENV=production`显式启用Secure，退出清除Cookie与签发保持一致；本地HTTP开发允许不Secure。新增生产/开发/退出属性测试。
+- **边界**：没有重置或读取任何数据库密码，没有改动生产用户或素材数据、生产Storage、Gate，也不触发额外人工Vercel部署验收。最新CI未验收前不标PASS；M1的生产登录、旧凭据失效与实际Owner回归继续HOLD。
