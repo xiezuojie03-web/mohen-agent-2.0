@@ -7,6 +7,27 @@ const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const json=(status,body)=>new Response(JSON.stringify(body),{
   status,headers:{'content-type':'application/json','cache-control':'no-store'},
 });
+const MAX_REQUEST_BYTES=4096;
+async function boundedRequestJson(request) {
+  const declared=request.headers.get('content-length');
+  if(declared!==null && (!/^\\d+$/.test(declared)||Number(declared)>MAX_REQUEST_BYTES))
+    throw Error('REQUEST_TOO_LARGE');
+  if(!request.body?.getReader) throw Error('REQUEST_BODY_REQUIRED');
+  const reader=request.body.getReader();
+  const chunks=[];
+  let size=0;
+  try {
+    while(true) {
+      const {done,value}=await reader.read();
+      if(done) break;
+      size+=value.byteLength;
+      if(size>MAX_REQUEST_BYTES) throw Error('REQUEST_TOO_LARGE');
+      chunks.push(Buffer.from(value));
+    }
+  } finally {await reader.cancel().catch(()=>{});reader.releaseLock();}
+  try {return JSON.parse(Buffer.concat(chunks,size).toString('utf8'));}
+  catch {throw Error('BAD_REQUEST_JSON');}
+}
 export function createIndependentGateRevocationHandler({authorityRepository,authenticateReviewer}={}) {
   if(typeof authorityRepository?.revoke!=='function'||typeof authenticateReviewer!=='function')
     throw Error('INDEPENDENT_REVOKE_SERVICE_CONFIG_REQUIRED');
@@ -28,11 +49,12 @@ export function createIndependentGateRevocationHandler({authorityRepository,auth
        typeof actor.reviewerIdentityRef!=='string'||!actor.reviewerIdentityRef)
        return json(403,{ok:false,reason:'independent_reviewer_denied'});
     let body;
-    try {
-      const text=await request.text();
-      if(Buffer.byteLength(text,'utf8')>4096) return json(413,{ok:false,reason:'request_too_large'});
-      body=JSON.parse(text);
-    } catch {return json(400,{ok:false,reason:'bad_request'});}
+    try {body=await boundedRequestJson(request);}
+    catch(error) {
+      return error?.message==='REQUEST_TOO_LARGE'
+        ? json(413,{ok:false,reason:'request_too_large'})
+        : json(400,{ok:false,reason:'bad_request'});
+    }
     if(!body || typeof body!=='object'||Array.isArray(body) ||
        body.schema!=='mohen.independent-gate-revocation-request.v1'||
        !UUID.test(body.gate_audit_id??'') || !UUID.test(body.request_id??'') ||
