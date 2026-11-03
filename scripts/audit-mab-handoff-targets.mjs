@@ -4,6 +4,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
 
 export function parseCsv(data) {
   const lines=[];let row=[],field='',quoted=false;
@@ -41,8 +42,12 @@ export function inspectHandoffTargets(root) {
       throw Error('HANDOFF_UNSAFE_PATH');
     const full=path.join(root,r.path);
     const exists=fs.existsSync(full) && fs.statSync(full).isFile();
+    const actual_sha256=exists?createHash('sha256').update(fs.readFileSync(full)).digest('hex'):null;
+    const target_sha256=r.target_sha256||null;
+    const target_byte_match=exists&&target_sha256!==null&&actual_sha256===target_sha256;
     return {
       path:r.path,action:r.original_action,exists,
+      actual_sha256,target_sha256,target_byte_match,
       implementation_status:r.implementation_status,
       target_validation:r.m0_target_validation,
       hp13_target_match:r.hp13_target_match||'UNVERIFIED',
@@ -59,9 +64,10 @@ export function inspectHandoffTargets(root) {
   if(responsibility.length!==20||new Set(responsibility).size!==20)errors.push('HANDOFF_A01_A20_TRACE_INCOMPLETE');
   if(files.length!==74)errors.push('HANDOFF_74_TARGET_BASELINE_MISMATCH');
   const absent=files.filter(x=>!x.exists);
-  const exactBytes=files.filter(x=>x.exists && x.hp13_target_match==='SHA256_BYTES_MATCHED');
-  if(files.some(x=>!x.exists && x.hp13_target_match==='SHA256_BYTES_MATCHED'))
-    errors.push('HANDOFF_TARGET_ASSERTED_MATCH_BUT_ABSENT');
+  const exactBytes=files.filter(x=>x.target_byte_match);
+  const mismatched=files.filter(x=>x.exists && !x.target_byte_match);
+  if(files.some(x=>x.hp13_target_match==='SHA256_BYTES_MATCHED' && !x.target_byte_match))
+    errors.push('HANDOFF_DECLARED_SHA256_MISMATCH');
   const unverified=files.filter(x=>x.target_validation!=='DESIGN_TARGET_SEMANTICS_VERIFIED' &&
                                           x.target_validation!=='VERIFIED_EQUIVALENT');
   return {
@@ -78,6 +84,10 @@ export function inspectHandoffTargets(root) {
     missing_target_count:absent.length,
     hp13_byte_exact_target_count:exactBytes.length,
     hp13_byte_exact_paths:exactBytes.map(x=>x.path),
+    existing_target_byte_diff_count:mismatched.length,
+    existing_target_byte_diffs:mismatched.map(x=>({
+      path:x.path,actual_sha256:x.actual_sha256,target_sha256:x.target_sha256,
+    })),
     missing_targets:absent.map(f=>f.path),
     unverified_semantics_count:unverified.length,
     errors,
