@@ -611,3 +611,11 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **安全边界**：M1客户端退出清Cookie通过不等于复制旧Cookie重放失效，当前无服务端撤销，独立记HOLD；官方Storage未配，生产身份/旧凭据/恢复未验；M2生产候选迁移/M3正式Gate/M4真实外发及收费均未执行。M1—M8、HANDOFF_READY不提升。
 - **下一轮**：HP02旧Cookie重放与禁用恢复会话；HP03项目授权use_event及当前历史只读证据；HP04—07官方Storage/唯一Runner/独立Reviewer授权整链；HP08跨进程预算与终态结算；HP12精确G5/rights映射；HP13剩2个KAD1测试及53份语义核销。生产依赖继续独立HOLD。
 - **回滚**：只revert本批应用/类型/测试变更，不恢复无账本收费或旧Gate旁路；测试随机库已清理，生产无变化。修复代码SHA与push运行将在本节后追加。
+
+
+### Codex HP01推送后复核（同批追加）
+
+- **已提交修复SHA**：`67b2984ef8b7f0b4ab97edcb725d1048074f2e1d`，已推远端main；使用GitHub隐私noreply身份后推送成功，没有更改账户隐私设置。
+- **新push证据**：主CI [41612672544](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41612672544) SUCCESS；M1隔离HTTP [41612672479](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41612672479) SUCCESS，日志明确3 PASS/1官方Storage SKIP及测试库清理。两者headSha均精确为67b2984，不引用旧代际PASS。机器步骤JSON已写入本批evidence。
+- **默认测试入口补测**：`pnpm test`实际FAIL（缺本地.env.local，尚未连接DB），状态DEFERRED_ENV；真实PG17、专用production/unit/HTTP的成功分别记账，不宣称默认全套PASS。独立临时PG容器已移除。
+- **裁定**：本批HP01验证/失败修复完成到限定隔离证据；M1会话重放/生产恢复、M2官方Storage、M3正式Reviewer与Gate、M4真实授权费用与M5合法发布继续HOLD，M0—M8无新增准出。下一P0仍为HP02服务端旧会话失效及禁用恢复不复活，后续施工不得把本批客户端退出验收当作这一能力。

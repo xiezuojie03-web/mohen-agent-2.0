@@ -719,3 +719,6 @@ Owner决定优先按任务书连续完成GitHub开发，构建/测试按批次�
 ### 2026-11-03 Codex HP01首轮真实验证增量（原M0—M8/HP结构不变）
 
 基线main@3618a630；修复HP03缺类型、Runner拒绝授权仍改current_stage、HP08无ledger收费/外部调用及过时测试。六工作区类型/Next构建、246单测（4既有联网SKIP）、98生产边界、真实隔离PG17与Chromium3项通过，官方Storage浏览器1项SKIP。对应[本批回执](../../results/MAB/CODEX_HP01_20261103.md)及progress逐批账。主push基线CI41610775902的FAIL已经真实核对；本批push结果另记，不借历史成功代验。M1复制旧Cookie注销后重放尚无服务端失效机制，列HP02下一P0；M2官方Storage/生产、M3实际Reviewer、M4费用终态/真实混合、M5精确G5/rights及HP13剩余目标继续HOLD；M1—M8复选框不提前勾选。
+
+
+HP01同批推送复核：修复代码67b2984，主CI41612672544及M1真实隔离HTTP41612672479均SUCCESS；仅签本批限定验证，不签M1整体。默认pnpm test因缺.env.local实际失败，另列DEFERRED_ENV；详细证据与未覆盖的服务端Cookie重放见progress及本批回执。
