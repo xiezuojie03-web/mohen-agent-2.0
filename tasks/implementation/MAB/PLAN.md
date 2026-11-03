@@ -139,6 +139,8 @@ EXP完整功能、L6—L8运行启用遵循包内“延后激活”边界：本�
 
 **严格状态**：M0独立审查PASS，M1仍`M1_SECURITY_ACCEPTANCE_HOLD`。旧数据库密码轮换按`LIKELY_COMPLETED_EVIDENCE_RECONCILIATION_REQUIRED`处理，不要求默认重复重置。M2原件Storage和M3独立Gate的生产启用不作为M1准出前置，但M1必须完成自身真实安全门。
 
+**2026-11-03 M1生产匿名访问子项实测**：`fb92550`修复Middleware拒绝响应缺少no-store，常规CI `41580885849 SUCCESS`；Vercel相同SHA生产READY后，Actions `41580710096` attempt 2四项匿名GET全部PASS。仅签`M1_ANONYMOUS_READ_ONLY_HTTP_PASS`；合法本人操作、跨Owner/撤权、旧凭据失效及恢复仍待最终验收，M1整体HOLD。
+
 ### M2｜私有原件、九层映射与长期资产
 
 依赖：M1。候选表先去重，采用先扩展兼容、后切读写的顺序。

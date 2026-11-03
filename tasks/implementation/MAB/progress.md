@@ -319,3 +319,10 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - `34d68fec`：`independent-gate-client.test.mjs`将只读服务响应与已有`requireIndependentStageQualification`真实交接合同衔接，验证同run/stage/摘要/current/有效期为PASS，撤权/摘要变化/过期拒绝；CI `41579907762 SUCCESS`。
 - `12240628`：M2未绑定的私有原件输入在执行授权早期拦截，包括嵌套于`qualified_source`等对象内部时不允许旧D01—D03 legacy适配器误执行；CI `41580080729 SUCCESS`。
 - **保留阶段HOLD**：Registry仍`DESIGN_TARGET_NOT_APPLIED`，六Job disabled，Reviewer绑定TO_VERIFY_IN_M0；M3没有真实独立只读验证服务、Reviewer身份/签发/撤销端到端；M2尚未正式注册Private Evidence Worker与Owner会话接线，生产私有桶和迁移仍未启用；M1仍缺生产登录/撤权及历史凭据失效验收。本轮没有对生产SQL、Storage、Gate或凭据做更改。Library唯一受控任务书须与此结论同步。
+
+
+## 2026-11-03｜M1匿名生产HTTP子项通过
+
+- 首轮匿名只读检查（Actions 41580710096）发现私有导入API虽然正确返回401，但Middleware未设置no-store。已提交fb92550修复；常规CI 41580885849 SUCCESS，Vercel对应生产部署READY。
+- 原匿名GET工作流在修复部署后重跑（Actions 41580710096，attempt 2，job 125735525879），四条匿名请求全部PASS：身份返回未登录，项目和史料列表/按ID读取拒绝且私有史料响应禁止缓存。
+- 裁决仅M1_ANONYMOUS_READ_ONLY_HTTP_PASS；合法登录、跨账户权限、失效会话、历史凭据及恢复仍待最终验收。M1_SECURITY_ACCEPTANCE_HOLD保留。全过程未使用用户身份或写入生产数据。
