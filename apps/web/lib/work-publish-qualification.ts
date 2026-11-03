@@ -23,3 +23,18 @@ export async function requireIndependentWorkPublicationG5(
 ): Promise<WorkPublicationG5Result> {
   return { ok: false, reason: "independent_g5_required" };
 }
+
+/**
+ * Public consumers require their OWN current qualification; an approval for
+ * work publication, producer, visual_stage or agent never transfers to watch.
+ * No lawful WorkRevision -> per-facet L5 current G5 mapping exists yet, so
+ * do not disclose any public content while this exact verification is absent.
+ */
+export async function requireCurrentWorkConsumerQualification(
+  _workId: string,
+  _revisionId: string,
+  _consumer: "watch" | "visual_stage" | "agent" | "evidence_on_demand",
+  _content: Record<string, unknown>,
+): Promise<WorkPublicationG5Result> {
+  return { ok: false, reason: "independent_g5_required" };
+}
