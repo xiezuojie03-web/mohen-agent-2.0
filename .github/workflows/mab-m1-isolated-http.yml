@@ -12,6 +12,7 @@ on:
       - "playwright.mab.config.ts"
       - "tests/e2e/mab-notebook.spec.ts"
       - "tests/e2e/private-original-http.spec.ts"
+      - "tests/e2e/mab-m1-session-revocation.spec.ts"
       - "apps/web/app/api/auth/**"
       - "apps/web/app/api/studio/**"
       - "apps/web/lib/auth/**"
