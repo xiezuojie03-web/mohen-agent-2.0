@@ -182,12 +182,12 @@ export default function AdminWorkbench({ summary }: { summary: ProductionRelatio
     setPending([]);
   }
 
-  async function decide(workId: string, decision: "approved" | "rejected") {
+  async function decide(workId: string, revisionId: string, decision: "approved" | "rejected") {
     setFeedback(null);
     const res = await fetch("/api/governance/gates/decisions", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ work_id: workId, decision }),
+      body: JSON.stringify({ work_id: workId, revision_id: revisionId, decision }),
     });
     const json = (await res.json()) as { ok?: boolean; reason?: string };
     if (res.ok && json.ok) {
@@ -349,10 +349,10 @@ export default function AdminWorkbench({ summary }: { summary: ProductionRelatio
                       <div className="admin__asset-head">
                         <span className="admin__asset-title">{w.title}</span>
                         <span style={{ display: "flex", gap: 6 }}>
-                          <button className="admin__send" onClick={() => void decide(w.work_id, "approved")}>
+                          <button className="admin__send" onClick={() => void decide(w.work_id, w.revision_id, "approved")}>
                             签核通过
                           </button>
-                          <button className="admin__send" onClick={() => void decide(w.work_id, "rejected")}>
+                          <button className="admin__send" onClick={() => void decide(w.work_id, w.revision_id, "rejected")}>
                             拒绝
                           </button>
                         </span>
