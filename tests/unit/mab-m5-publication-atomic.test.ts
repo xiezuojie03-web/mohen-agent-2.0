@@ -45,6 +45,10 @@ describe("MAB M5 publish revision/pointer atomic transition", () => {
     expect(stmt).toContain("status = 'submitted'");
     expect(stmt).toContain("insert into publication.published_pointers");
     expect(stmt).toContain("select work_id, revision_id, :'by' from promoted");
+    expect(stmt).toContain("latest_decision.decision = 'approved'");
+    expect(stmt).toContain("latest_decision.revision_id = :'rid'");
+    expect(queryValue).not.toHaveBeenCalled(); // no second latest revision read
+    expect(queryRows.mock.calls.filter(([sql]:[string])=>sql.includes("from publication.work_revisions where work_id"))).toHaveLength(1);
     expect(reflowWorkToAssets).toHaveBeenCalledWith(wid,rid);
   });
   it("does not report publication success or run asset reflow when concurrent state change prevents promotion", async () => {
@@ -60,6 +64,18 @@ describe("MAB M5 publish revision/pointer atomic transition", () => {
     expect(reflowWorkToAssets).not.toHaveBeenCalled();
     expect(run).not.toHaveBeenCalled();
   });
+  it("refuses publication if latest reviewer revocation races the atomic write", async () => {
+    passReview();
+    const original=queryRows.getMockImplementation()!;
+    queryRows.mockImplementation(async (...args:unknown[]) => {
+      if(String(args[0]).includes("with promoted as")) return [];
+      return original(...args);
+    });
+    const result=await publishWork(wid,"scheduler");
+    expect(result).toEqual({ok:false,reason:"revision_not_submittable"});
+    expect(reflowWorkToAssets).not.toHaveBeenCalled();
+  });
+
   it("propagates pointer write failure rather than reporting success", async () => {
     passReview();
     const original=queryRows.getMockImplementation()!;
