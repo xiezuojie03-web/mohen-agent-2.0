@@ -334,7 +334,7 @@ export async function listWatchEligible(): Promise<PublishedWork[]> {
   return allowed;
 }
 
-/** 读待独立 Reviewer 签核的作品：submitted 且尚无 approved 决策（资格把关队列）。 */
+/** 读待作品 Reviewer 审核的submitted修订；已作approved/rejected决定的精确修订不得重复在待审队列展示。 */
 export function listPendingReview() {
   return queryRows(
     `select w.work_id::text as work_id, r.revision_id::text as revision_id,
@@ -347,7 +347,7 @@ export function listPendingReview() {
          select 1 from control.work_publication_decisions d
          where d.work_id = w.work_id
            and d.revision_id = r.revision_id
-           and d.decision = 'approved'
+           and d.decision in ('approved','rejected')
        )
      order by r.created_at asc`
   );
