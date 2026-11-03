@@ -135,3 +135,13 @@ Codex开工后在progress.md追加：
 - [HP08永久委托/待核回执与Owner只读HTTP](../../results/MAB/CODEX_HP08_RECEIPTS_20261103.md)：长期身份和费用UNKNOWN保留，仍不授权执行/外发/ACTUAL核销。
 
 后续按既有HP09、HP10—12及未完成P0继续；完整DAG、T1—T7、永久工具账接线、Runner终态核销和真实Studio/Admin/WATCH闭环仍待工程验证。生产迁移、正式Gate及新增费用仍受原授权边界约束；M1—M8与HANDOFF_NOT_READY不变。
+
+## 10. ChatGPT接续工程事实索引（2026-11-03，供下一次工程执行者避免重复）
+
+Codex额度不足后的ChatGPT/GitHub工具施工仍延续同一`PLAN.md`/`progress.md`，不是第二任务书。本节只更新真实继承状态，后续执行工具以Owner最新指令为准：
+
+- `ea4abd51` F05 Admin增加**本人有权访问**的Studio私有知识条目/修订/使用史只读入口；`c949a082`补来源依赖展示并原位归档；主CI41628855225成功。无跨Owner管理或正式知识资格承诺。
+- `f5cd2d38` 加强独立Gate回执的job/Reviewer/consumer绑定且首批失败已修，主CI41628357443成功。
+- `2352c368`、`faddc2a4`、`10b7a3dd`、`f79dc436` 完成旧PASS继承的Producer/lineage/read_model当前资格读取收紧（非空scope、精确用途消费者、上游撤权），最后主CI41637141950、独立PG1741637142076、M1 HTTP41637141998均成功；PG17为合成业务数据真实数据库隔离，不是生产Gate签发。
+- `64eed3f55d8a6f6d21d1b62c0629f139e5dfe341` M2 Runner增加受控冻结stage输入文件与部分阶段Adapter一致性核查，主CI41638126713成功；Owner worker/真实原件/Stage Gate未接入，Registry维持关闭。
+- 最新M1—M8与HANDOFF_NOT_READY不变：下一步优先在有合法权限的环境完成M2真实Owner+原件bytes/版本绑定→L1和证据桥→独立G；M3专有Reviewer/签发服务、当前G5消费者即时撤权；其后M4实际混合与预算、M5作品业务及M6—M8真实验收。不得因代码路径/CI存在而宣布系统可运行。

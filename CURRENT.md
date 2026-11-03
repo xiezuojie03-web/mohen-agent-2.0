@@ -1,5 +1,8 @@
 # 墨痕｜当前真实工程状态
 
+> **2026-11-03 当前最新工程提交（优先）**：本轮ChatGPT接力已把M3当前G0—G5资格/谱系合法读取子能力在[独立PG17 41637142076](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637142076)和[主CI 41637141950](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637141950)验证通过；随后`64eed3f5`补M2唯一Runner有界冻结续跑输入及按阶段Adapter路径绑定，[主CI 41638126713 SUCCESS](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41638126713)。这些是**工程代码/隔离验证子能力**；正式Owner私有原件工作器、Reader持久化、Reviewer部署/签发、生产Registry与真正Studio→Admin→WATCH业务仍HOLD。详见`progress.md`末尾；无本次正式DB/Storage写入或收费Provider调用。
+
+
 > **2026-11-03 M3最新真实代码／隔离测试收口（优先）**：远端`main`源码到`f79dc436`；已修正Producer上游谱系与read_model使用资格不可只凭旧PASS/`current_valid`，统一精确消费者／用途／范围＋当前独立Gate验证，拦截序列化后空scope。最终源码主[CI41637141950](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637141950)、独立[PG17 41637142076](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637142076)、[M1隔离HTTP41637141998](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637141998)全部SUCCESS。**这里只能签本批P0代码及隔离验收；正式M2原件生产链、M3 Reviewer部署/资格签发及M4—M8仍HOLD**；具体日志、变更与风险见`progress.md`末尾。
 
 

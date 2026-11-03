@@ -716,3 +716,11 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 最终代码SHA`f79dc436723679c70d8c32e7cde18fe125da8504`：主[CI41637141950](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637141950) **SUCCESS**，隔离[PG17 41637142076](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637142076) **SUCCESS**，[M1 HTTP 41637141998](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637141998) **SUCCESS**；前一代码批次`10b7a3dd`的同类三流水线41636848862/41636848766/41636848777也均SUCCESS。
 - 真实SQL正反验收包含G0→G5、Reviewer资格／策略时效／递归依赖、legacy PASS拒绝、目的及消费者不匹配、上游G0撤权后G4/G5立即拒绝、711条旧audit保全、控制表DDL重演与回滚权限拒绝。mock与isolated PG真实验收分开计证；DB/Storage生产迁移NOT_RUN、真实Gate签发NOT_RUN、真实业务E2E NOT_RUN。
 - **结果裁定**：本批M3 scoped-producer-read和read-model-consumer-read源码＋隔离真实PG正反测试**子能力验证通过**；不能把本子能力通过升级为M3阶段准出、M2真实数据生产完工或全系统可运行。现行总体仍HANDOFF_NOT_READY，继续M2私有原件→唯一Runner、M3专用Reviewer服务与权限/撤权生产验收，再按计划推进M4/M5/M6/M7/M8。
+
+## 2026-11-03｜M2唯一Runner续跑输入与单阶段Adapter绑定（本轮代码候选，CI准）
+
+- **真实缺口**：唯一CLI`pipelines/data-production/run.mjs`允许`--from D01`但未给`context.resume_input`赋值，实际报`RESUME_INPUT_REQUIRED`；同时`assertAdapterBinding`要求所有六阶段Adapter路径一致，无法只将D01—D03合法私有阅读绑定到候选Adapter。原生产`Registry`仍关闭，故这些是受控待实现缺口，不说明曾发生私人生产。
+- **源码SHA**：`64eed3f55d8a6f6d21d1b62c0629f139e5dfe341`更新`run.mjs`、`adapter-binding.mjs`；新建`resume-input.mjs`和`resume-input.test.mjs`，扩`adapter-binding.test.mjs`。Runner可显式接收`--resume-input-file`，唯以`MOHEN_TRUSTED_RESUME_INPUT_DIR`信任路径限定、POSIX目录0700/文件0600、符号链接拒绝、128KiB上限、JSON对象、私有阶段字段白名单，不自动接受动态主题文件；加载前检查阶段范围与Registry active。Stage范围选定后只核该范围Job的实际Adapter路径，整链默认仍查全部。独立授权仍核精确输入digest/run/job/Registry/nonce，未增加旁路。
+- **真实测试**：[main CI 41638126713](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41638126713) **SUCCESS**，确认编译、单测、production boundary、构建与鉴权；测试含有权路径、选定Stage绑定、错模块/重复Stage、目录越界/符号链接/非私有权限/超大文件、错私有Stage/隐形字段/坏JSON。尚未为此批运行真PG17或完整Owner工作器；不能把新CLI参数解释成可以读取原件或执行真实Gate。
+- **剩余P0/后续**：`context.privateEvidenceWorker`、`privateEvidenceOwnerSessionToken`在CLI尚无已批准的运行实例/注入，`Studio`生产触发继续显式HOLD；D01候选无实际真实L1持久写入＋独立G1验收，D02/D03需真实桥与G2/G3。M2正式生产仍HOLD。M3上批资格读链正式SQL与隔离PG通过，但Reviewer服务正式激活HOLD。无生产数据库迁移、无对象桶或真实字节、无收费Provider。
+- **回退**：若新Stage续跑存在隐患，可回退本批Runner参数/Adapter范围支持，保留原全链Registry与执行权、Gate失败关闭；不能通过启用旧全局adapter或legacy PASS来修复。新支持文件属于既有M2执行结构补强，74项目标登记的总分母不变；在后续HP13按合同测试责任追加，不将文件数伪作达标数量。

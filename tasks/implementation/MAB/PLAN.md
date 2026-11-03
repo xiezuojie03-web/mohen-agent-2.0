@@ -772,3 +772,11 @@ Owner因Codex额度不足再次改由ChatGPT＋GitHub插件接力，**工具迁�
 
 
 **本批推送／真实测试收口**：`10b7a3dda43106241bfe2fb08191d2e53d0a5ecc`的主CI 41636848862、隔离PG17 41636848766、M1隔离HTTP 41636848777全SUCCESS。最终源码提交`f79dc436723679c70d8c32e7cde18fe125da8504`：非空JSON权限scope校验进一步拒绝`{project:undefined}`序列化成为`{}`以及不可序列化范围；并将此次P0源改、真实PG17证据及M1—M8 HOLD状态原位记入计划/进度/CURRENT。最终源码提交的[主CI 41637141950](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637141950)、[隔离PG17 41637142076](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637142076)、[M1 HTTP 41637141998](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637141998)均为**SUCCESS**。隔离PG日志为`K3_READ_MODEL_QUALIFICATION_PASS`和`K3_DB_TEST_PASS`，无真实生产库写入。此批M3合法读取子项完成源测收口，**正式M3 Gate Reviewer服务部署/真实G签发/生产资格消费仍HOLD**。
+
+### 2026-11-03｜M2唯一Runner有界续跑及适配器范围补齐（GitHub ChatGPT接续）
+
+`64eed3f55d8a6f6d21d1b62c0629f139e5dfe341`已对现有`pipelines/data-production/run.mjs`和`orchestrator/adapter-binding.mjs`补齐**D01—D05阶段续跑的受控冻结输入**：只从运行者显式指定、0600文件/0700目录且无symlink越界的信任目录读取有限长度JSON；D01—D03私有类型拒绝错阶段/额外隐形字段；精确JSON由现有独立执行授权的`executionDigest(input)`和一次性nonce绑定。取消了“一个Adapter必须同时覆盖D00—D05全部Job”的不必要限制——仅单/多阶段续跑时按该次选定阶段逐Job匹配Registry模块路径；默认整链仍全阶段严格核验，禁止路由外模块。新的模块`orchestrator/resume-input.mjs`不是第二Runner、不是私有原件服务，也不是正式Gate。
+
+[GitHub主CI41638126713](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41638126713) **SUCCESS**，包含新`resume-input.test.mjs`、`adapter-binding.test.mjs`的信任边界负例以及既有类型/单测/98生产边界/构建/权限覆盖。未单独证明有Owner实际原件字节、真实G1或Studio受控派工，亦未在此批触发真实PG/Storage联调；因此M2只更新“续跑输入+Stage adapter selection”**子能力CODE_PRESENT / CI_PASS / LIVE_HOLD**。
+
+下一个P0并非重新规划：需要将合法Owner短时会话、只读私有原件工作器与已合格L0精确来源绑定至唯一Runner；输出形成可持久的L1读取单位、真实证据桥与G1—G3独立签审。Studio动态主题仍因缺合法冻结输入及费用账授权而被`production_input_binding_required`阻断；不得绕过。正式Registry保持全局和Job关闭，代码不得被误认为生产激活。
