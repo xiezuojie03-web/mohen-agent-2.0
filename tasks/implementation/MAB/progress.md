@@ -709,3 +709,10 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 3. **PG隔离CI纳管SHA**：`faddc2a48c2771c8e2afdcb0d5d41498c82db559`扩展现有`.github/workflows/mab-isolated-db.yml`的文件变更触发：资格上下文、数据生产仓储、谱系校验、read-model资格实测。没有创建新工作流或使用正式Supabase数据库。主[41636244069](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41636244069) **SUCCESS**；隔离PG17 [41636244060](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41636244060) **SUCCESS**，日志含`K3_READ_MODEL_QUALIFICATION_PASS`与`K3_DB_TEST_PASS`。隔离实测独立G0→G5合法用途/精确scope消费，生产仓储G4→D05谱系交接，撤上游G0后G4/G5拒绝，711条旧审计不升格，权限回退保全、迁移重放。不是生产真Reviewer登陆或实际授权。
 4. **read_model一致性补强SHA**：`10b7a3dda43106241bfe2fb08191d2e53d0a5ecc`将`read-model-repository`统一为拒绝空scope和缺用途；新增PG负例，隔离工作流对本文件变更自动验收。最终有无最新CI/PG PASS，需以本次SHA的Actions实际结果核定，不能借前批替代。
 5. **本批交付保真与回退**：只修改源代码/测试/CI触发/施工权威账。无生产数据库/Storage写入、真实Reviewer/Signer、私有字节外发、付费Provider请求、Runtime Registry激活。M2真实原件来源/字节回读/唯一Runner、M3独立Reviewer服务和业务消费者权限仍HOLD；`CONTROL current_qualification`正式仍0的最近一次现场只读证据见上批记录。本批修复仅需按SHA回退代码，但任何后续已正式吊销的证据不得凭代码回退复活。
+
+### M3当前代码批次最终GitHub回执（2026-11-03）
+
+- `2352c368`消除Producer与谱系读取旧PASS继承；`faddc2a4`纳入真实PG17；`10b7a3dd`拒绝未限定范围的read_model消费者；`f79dc436`补JSON擦除范围边界与回归测试。代码不需要再次重建六章MHKA或D/L/G。
+- 最终代码SHA`f79dc436723679c70d8c32e7cde18fe125da8504`：主[CI41637141950](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637141950) **SUCCESS**，隔离[PG17 41637142076](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637142076) **SUCCESS**，[M1 HTTP 41637141998](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41637141998) **SUCCESS**；前一代码批次`10b7a3dd`的同类三流水线41636848862/41636848766/41636848777也均SUCCESS。
+- 真实SQL正反验收包含G0→G5、Reviewer资格／策略时效／递归依赖、legacy PASS拒绝、目的及消费者不匹配、上游G0撤权后G4/G5立即拒绝、711条旧audit保全、控制表DDL重演与回滚权限拒绝。mock与isolated PG真实验收分开计证；DB/Storage生产迁移NOT_RUN、真实Gate签发NOT_RUN、真实业务E2E NOT_RUN。
+- **结果裁定**：本批M3 scoped-producer-read和read-model-consumer-read源码＋隔离真实PG正反测试**子能力验证通过**；不能把本子能力通过升级为M3阶段准出、M2真实数据生产完工或全系统可运行。现行总体仍HANDOFF_NOT_READY，继续M2私有原件→唯一Runner、M3专用Reviewer服务与权限/撤权生产验收，再按计划推进M4/M5/M6/M7/M8。
