@@ -182,13 +182,17 @@ export interface StudioHeldReceiptInput {
  acceptanceState?:'HOLD';actualProvider:string;actualEngineVersion:string;
  startedAt:string;finishedAt:string;cost:string|null;currency:string|null;costConfidence:'UNKNOWN'|'ESTIMATED';errorCode:string;
 }
-export interface StudioHeldReceiptRecord {
- receipt_id:string;delegation_id:string;attempt_no:number;request_hash:string;result_hash:string;
- acceptance_state:'HOLD';cost:string|null;cost_confidence:'UNKNOWN'|'ESTIMATED';[key:string]:unknown;
+export interface StudioExecutionReceiptRecord {
+ receipt_id:string;delegation_id:string;attempt_no:number;request_hash:string;result_hash:string|null;
+ acceptance_state:'ACCEPT_AS_CANDIDATE'|'QUARANTINE'|'REJECT'|'REQUEST_D_STAGE'|'WAITING_GATE'|'HOLD';
+ cost:string|null;cost_confidence:'UNKNOWN'|'ESTIMATED'|'ACTUAL';[key:string]:unknown;
+}
+export interface StudioHeldReceiptRecord extends StudioExecutionReceiptRecord {
+ result_hash:string;acceptance_state:'HOLD';cost_confidence:'UNKNOWN'|'ESTIMATED';
 }
 export declare function createStudioDelegationRepository(pool:{connect:Function}):{
  saveDelegation(input:StudioDelegationInput,token:string):Promise<StudioDelegationRecord>;
  appendHeldReceipt(input:StudioHeldReceiptInput,token:string):Promise<StudioHeldReceiptRecord>;
  getDelegation(delegationId:string,token:string):Promise<StudioDelegationRecord|null>;
- listReceipts(delegationId:string,token:string):Promise<StudioHeldReceiptRecord[]>;
+ listReceipts(delegationId:string,token:string):Promise<StudioExecutionReceiptRecord[]>;
 };

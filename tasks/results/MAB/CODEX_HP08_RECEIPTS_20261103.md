@@ -28,3 +28,5 @@
 T1—T7逐item证据验证、真实最小包传输/撤委托/lease恢复、正式追加预算审批、ACTUAL费用核销、短期tool-ledger到永久回执原子接线、已付费步骤恢复和Runner终态结算仍HOLD。新只读接口/仓储可停用；永久行和历史观察不得删除，不能回退到客户端数字增额或未知费用补0。M1—M8与整体HANDOFF_NOT_READY不升级；未执行生产迁移、Gate激活、真实资料外发或收费模型调用。push后精确CI证据另附。
 
 代码审阅：独立代码审阅员只读检查本批diff/新源码，未发现实质问题；未独立重跑测试。此审阅不具有专业Gate/生产Reviewer身份，也不替代正式准出。
+
+声明复核：读取方法按真实Schema声明全部receipt状态与ACTUAL/ESTIMATED/UNKNOWN，不能因本仓储只追加HOLD而把其他合法服务留下的历史记录也静态标成HOLD。appendHeldReceipt返回类型仍限定HOLD/非ACTUAL。仅修正声明，无执行权限或运行行为变化；六工作区typecheck再次通过。

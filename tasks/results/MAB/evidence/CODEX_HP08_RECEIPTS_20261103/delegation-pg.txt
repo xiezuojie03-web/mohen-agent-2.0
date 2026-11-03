@@ -1,0 +1,49 @@
+K3_DB_SECURITY_PRECHECK_PASS
+MAB_IMPORTED_MATERIAL_REPOSITORY_PASS real-session owner cross-user forged expired disabled rollback pooled-identity
+K3_INDEPENDENT_GATE_PASS identities ACL receipt policy idempotency CAS append-only revocation dependency propagation atomic-failure concurrency
+K3_GATE_REPOSITORY_PASS actual-low-privilege-login shared-admin-SET-ROLE-denied single-client-transaction token-cleared rollback
+K3_READ_MODEL_QUALIFICATION_PASS real G0-G5 chain legacy-denied exact-purpose scope consumer revision revocation
+MAB_STUDIO_ASSETS_PASS project-ACL immutable-revisions exact-asset-FK supersedes CAS task-deletion private-default
+MAB_STUDIO_REPOSITORY_PASS saved-payload immutable-revision request-idempotency exact-CAS concurrency cross-owner clean-pool
+/workspace/mohen-agent-2.0/node_modules/.pnpm/pg@8.23.1/node_modules/pg/lib/client.js:694
+          Error.captureStackTrace(err)
+                ^
+
+error: null value in column "actual_provider" of relation "execution_receipts" violates not-null constraint
+    at /workspace/mohen-agent-2.0/node_modules/.pnpm/pg@8.23.1/node_modules/pg/lib/client.js:694:17
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///workspace/mohen-agent-2.0/packages/data-access/src/studio-delegation-repository.mjs:76:5
+    at async transaction (file:///workspace/mohen-agent-2.0/packages/data-access/src/app-transaction.mjs:15:22)
+    at async Promise.all (index 0)
+    at async file:///workspace/mohen-agent-2.0/tests/data-production/studio-delegation.integration.mjs:35:17 {
+  length: 208,
+  severity: 'ERROR',
+  code: '23502',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'studio',
+  table: 'execution_receipts',
+  column: 'actual_provider',
+  dataType: undefined,
+  constraint: undefined,
+  file: 'execMain.c',
+  line: '2022',
+  routine: 'ExecConstraints'
+}
+
+Node.js v24.19.0
+file:///workspace/mohen-agent-2.0/scripts/test-k3-db.mjs:69
+    if (delegationResult.status !== 0) throw new Error("STUDIO_DELEGATION_REPOSITORY_TEST_FAILED");
+                                             ^
+
+Error: STUDIO_DELEGATION_REPOSITORY_TEST_FAILED
+    at file:///workspace/mohen-agent-2.0/scripts/test-k3-db.mjs:69:46
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.19.0

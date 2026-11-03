@@ -1,0 +1,27 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/studio-delegation-route.test.ts [ tests/unit/studio-delegation-route.test.ts ]
+Error: Cannot find module '../../apps/web/app/api/studio/delegations/[id]/route' imported from '/workspace/mohen-agent-2.0/tests/unit/studio-delegation-route.test.ts'
+ ❯ tests/unit/studio-delegation-route.test.ts:6:1
+      4| vi.mock('../../apps/web/lib/auth',()=>({signDatabaseSessionToken:state…
+      5| vi.mock('@mohen/data-access',()=>({getNodePgPool:vi.fn(),createStudioD…
+      6| import {GET} from '../../apps/web/app/api/studio/delegations/[id]/rout…
+       | ^
+      7| const id='123e4567-e89b-42d3-a456-426614174001';
+      8| const call=(value=id)=>GET(new Request('https://test.invalid'),{params…
+
+Caused by: Error: Failed to load url ../../apps/web/app/api/studio/delegations/[id]/route (resolved id: ../../apps/web/app/api/studio/delegations/[id]/route) in /workspace/mohen-agent-2.0/tests/unit/studio-delegation-route.test.ts. Does the file exist?
+ ❯ loadAndTransform node_modules/.pnpm/vite@7.3.6_@types+node@22.20.4/node_modules/vite/dist/node/chunks/config.js:22739:33
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  10:54:05
+   Duration  244ms (transform 42ms, setup 0ms, collect 0ms, tests 0ms, environment 0ms, prepare 64ms)
+

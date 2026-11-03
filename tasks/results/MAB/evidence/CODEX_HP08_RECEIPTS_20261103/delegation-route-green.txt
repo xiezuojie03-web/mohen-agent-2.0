@@ -1,0 +1,10 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ✓ tests/unit/studio-delegation-route.test.ts (5 tests) 10ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  10:54:14
+   Duration  288ms (transform 53ms, setup 0ms, collect 78ms, tests 10ms, environment 0ms, prepare 57ms)
+

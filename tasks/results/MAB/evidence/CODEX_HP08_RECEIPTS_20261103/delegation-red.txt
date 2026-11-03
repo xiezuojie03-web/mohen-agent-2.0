@@ -1,0 +1,82 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/studio-delegation.test.mjs (5 tests | 5 failed) 13ms
+   × requires a transactional pool 9ms
+     → expected undefined to be type of 'function'
+   × rejects malformed delegation before opening a connection 1ms
+     → expected undefined to be type of 'function'
+   × does not accept a claimed successful or Gate-qualified receipt 1ms
+     → expected undefined to be type of 'function'
+   × does not turn unverified provider cost into ACTUAL accounting 1ms
+     → expected undefined to be type of 'function'
+   × rejects a missing identity without using the pool 1ms
+     → expected undefined to be type of 'function'
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/studio-delegation.test.mjs > requires a transactional pool
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ tests/unit/studio-delegation.test.mjs:4:89
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/unit/studio-delegation.test.mjs > rejects malformed delegation before opening a connection
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ factory tests/unit/studio-delegation.test.mjs:3:68
+
+ ❯ tests/unit/studio-delegation.test.mjs:5:86
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/unit/studio-delegation.test.mjs > does not accept a claimed successful or Gate-qualified receipt
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ factory tests/unit/studio-delegation.test.mjs:3:68
+
+ ❯ tests/unit/studio-delegation.test.mjs:6:92
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/unit/studio-delegation.test.mjs > does not turn unverified provider cost into ACTUAL accounting
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ factory tests/unit/studio-delegation.test.mjs:3:68
+
+ ❯ tests/unit/studio-delegation.test.mjs:7:91
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  tests/unit/studio-delegation.test.mjs > rejects a missing identity without using the pool
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ factory tests/unit/studio-delegation.test.mjs:3:68
+
+ ❯ tests/unit/studio-delegation.test.mjs:8:79
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed (5)
+   Start at  10:51:29
+   Duration  356ms (transform 70ms, setup 0ms, collect 118ms, tests 13ms, environment 0ms, prepare 71ms)
+

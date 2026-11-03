@@ -1,0 +1,10 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ✓ tests/unit/studio-delegation.test.mjs (5 tests) 5ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  10:52:02
+   Duration  320ms (transform 69ms, setup 0ms, collect 109ms, tests 5ms, environment 0ms, prepare 64ms)
+
