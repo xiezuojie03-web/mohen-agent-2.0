@@ -1,6 +1,19 @@
 import { createHash, createPublicKey, verify } from "node:crypto";
 import { assertNoUnboundTopicInputs, assertNoUnboundPrivateEvidenceInput } from "./adapter-binding.mjs";
 
+// One-use handoff from the already authorized Runner to the private stage
+// worker. Only this module can issue a handoff, after live nonce verification;
+// a Producer cannot manufacture one through context or a public setter.
+const authorizedHandoffs = new WeakMap();
+export function consumeAuthorizedStageHandoff({registry,job,run,input}) {
+  const proof = run && typeof run === "object" ? authorizedHandoffs.get(run) : null;
+  if (!proof) return false;
+  authorizedHandoffs.delete(run); // one use even on a mismatched attempt
+  return proof.registry === registry && proof.job === job &&
+    proof.input === input && run.current_stage === job.stage &&
+    proof.inputDigest === executionDigest(input);
+}
+
 /** Canonical digest shared with the independent authorizer, never a caller-supplied digest. */
 export function executionDigest(value) {
   function canonical(x) {
@@ -82,4 +95,5 @@ export async function assertStageExecutionAuthorized({ registry, job, run, input
       attestation.job_id !== job.job_id || attestation.mode !== mode ||
       attestation.hold_epoch !== claims.hold_epoch || attestation.registry_digest !== claims.registry_digest ||
       attestation.input_digest !== claims.input_digest) throw new Error("EXECUTION_LIVE_AUTHORITY_NOT_CONFIRMED");
+  authorizedHandoffs.set(run, {registry,job,input,inputDigest:claims.input_digest});
 }
