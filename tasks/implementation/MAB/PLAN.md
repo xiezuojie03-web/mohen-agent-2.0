@@ -223,6 +223,8 @@ MAB-ENG-01批次进展（2026-11-02，详细证据见progress.md）：私有原�
 
 
 
+**2026-11-03 M5精确修订审核竞态增量**：`c0fa6c04`使发布始终使用同一次资格检查的精确WorkRevision，并在同一原子SQL中复核最新作品Reviewer决定仍approved且绑定该修订；`afa2f590`补相应竞态拒绝单元合同。此Reviewer审核**不是**原D/L/G链的独立知识G5，真正正式发布和WATCH逐请求合法消费仍必须另核当前独立G5、精确revision、用途、consumer、rights及撤权。提交与测试证据限于源码及待核CI，M5`CODE_PRESENT / TEST_PENDING`而非准出。
+
 依赖：M2—M4。
 
 - [ ] H1/H2/H3与19组件绑定真实研究来源、导演、创作、修改与保存；同一作品母本，不复制第二正文。
