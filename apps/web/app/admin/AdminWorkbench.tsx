@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { ProductionRelationSummary } from "../../lib/read-model-bridge";
 import type { SubmittedWork } from "../../lib/publication";
 import type { Beat } from "../../lib/studio-creation";
+import KnowledgeAssetInspector from "./KnowledgeAssetInspector";
 
 function parseBeats(content: string): Beat[] {
   try {
@@ -309,7 +310,7 @@ export default function AdminWorkbench({ summary }: { summary: ProductionRelatio
                   <div className="admin__kpi-note">{isReviewer ? "待资格审核" : "审核身份可见"}</div>
                 </div>
                 <div className="admin__kpi">
-                  <div className="admin__kpi-label">知识资产总量</div>
+                  <div className="admin__kpi-label">当前可见知识投影</div>
                   <div className="admin__kpi-value">{knowledgeCount}</div>
                   <div className="admin__kpi-note">
                     对象 {summary.entities.length} · 故事 {summary.stories.length}
@@ -496,7 +497,10 @@ export default function AdminWorkbench({ summary }: { summary: ProductionRelatio
           {/* 知识资产 */}
           {active === 4 && (
             <div className="admin__panel">
-              <h2>知识资产（真实数据 · G5 已发布）</h2>
+              <h2>知识资产</h2>
+              <p className="admin__hint">私有研究资产与正式G5发布分面分别展示，不能互相替代；运营权限不自动赋予跨用户资料读取权。</p>
+              {isOperator && <KnowledgeAssetInspector />}
+              <h3>合格公开知识投影（只读）</h3>
               {summary.available ? (
                 <div className="admin__assets">
                   <div className="admin__asset">
