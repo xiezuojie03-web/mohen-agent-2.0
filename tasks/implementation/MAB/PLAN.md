@@ -376,6 +376,8 @@ A：隋唐大运河及江南水路连接。B：宋代江南运河沿线的城镇
 
 **2026-11-03 HP08专项收口增量（非阶段PASS）**：已将工具调用的预约/结算/待核回执绑定精确invocation ID；外部/LLM执行超时不得自行释放可能已收费的reserved；结算落库失败不得把已发生费用退回。Studio研究完成检查点保存累计spent/ceiling，追问通过done→running CAS和已有预算执行，恢复API不得绕过账本重跑收费步骤；`requestProduction`新增零成本注册表/签名输入预检、现有预算CAS预占与reserved回执先于Runner启动的硬顺序，禁止调用参数任意增额。实际源码提交与测试范围详见`progress.md`最新两条HP08记录；当前Registry依旧`production_input_binding_required` HOLD，已付费流程的逐步骤恢复、Runner执行终态结算和真实Provider授权/费用需后续独立验收。**新提交Vitest、真实PG和最新main构建尚无SUCCESS证据，HP08=CODE_PRESENT/CI_UNVERIFIED/LIVE_HOLD；交接=HANDOFF_NOT_READY。**
 
+**2026-11-03 HP03资产历史可读能力增量（非准出）**：依托既有单一`studio.asset_heads/asset_revisions/use_events`和低权限Owner事务，新增同项目精确资产全修订历史、同项目精确revision的长期使用记录只读能力，并通过原`GET /api/studio/assets`私有模式访问；保留旧API合同和正式Gate/rights判断边界。源码`3ee30107`、`a611899e`，隔离PG及HTTP合同测试`a46aa20e`、`75b35b39`，本批真实CI/PG回执尚缺，不得将其等于跨项目合法复用/UseEvent签发完成；详见`progress.md`最新HP03记录。
+
 ## 7. 质量、验收和准出规则
 
 ### 7.1 不能混用的证明层
