@@ -4,7 +4,7 @@ import { readJsonColumn } from "./db-json";
 // 作品与知识资产分离：作品走 publication.* 三表；知识资产走 read_model。
 import { queryRows, queryValue, run } from "@mohen/data-access";
 import { reflowWorkToAssets } from "./asset-reflow";
-import { requireIndependentWorkPublicationG5 } from "./work-publish-qualification";
+import { requireIndependentWorkPublicationG5, requireCurrentWorkConsumerQualification } from "./work-publish-qualification";
 import { randomUUID } from "node:crypto";
 
 const canonicalUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id) ? id.toLowerCase() : null;
@@ -307,6 +307,31 @@ export function listPublished(): Promise<PublishedWork[]> {
      where r.status = 'published'
      order by p.published_at desc`
   ) as unknown as Promise<PublishedWork[]>;
+}
+
+/**
+ * WATCH public read facade. The Admin publication list retains raw editorial
+ * status for authorized inspection; public WATCH must not reuse that list as
+ * authorization. Every response rechecks each exact work revision and its
+ * own consumer qualification. A failed/absent G5 only removes that work.
+ */
+export async function listWatchEligible(): Promise<PublishedWork[]> {
+  const published = await listPublished();
+  const allowed: PublishedWork[] = [];
+  for (const work of published) {
+    let content: Record<string, unknown> = {};
+    try { content = readJsonColumn<Record<string, unknown>>(work.content, {}); }
+    catch { continue; }
+    try {
+      const check = await requireCurrentWorkConsumerQualification(
+        work.work_id, work.revision_id, "watch", content
+      );
+      if (check.ok) allowed.push(work);
+    } catch {
+      // Unknown current qualification is a refusal, not eligibility.
+    }
+  }
+  return allowed;
 }
 
 /** 读待独立 Reviewer 签核的作品：submitted 且尚无 approved 决策（资格把关队列）。 */
