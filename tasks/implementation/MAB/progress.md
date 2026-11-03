@@ -499,3 +499,19 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **恢复与费用**：全部属于纯代码/CI调整，没有运行付费模型、执行生产SQL、迁移Storage、启用Gate或变更用户凭据。若CI出现不兼容，优先修复流式限额与测试，严禁退回无限制读取。
 
 - **本批自查补正**：首次流式限额代码含多转义的Content-Length数字正则，会把正常长度值误判。已以`f14d081cd1efd71a228e1d8feed7ea284d7a4f60`修正为`/^\\d+$/`的正确代码表达；`7215b842bcb778381138a63e6d089fc682869d8e`补显式合法长度请求必须HTTP 200且仅一次独立仓储调用的正例。新CI实际回执尚待核验，不把本次自查等同测试通过。
+
+
+## 2026-11-03｜HP01—HP13交接收口工作包准入基线（Owner批准，非HANDOFF_READY）
+
+- **权威裁决**：Owner批准把本次“13交接前工作包”落入原M0—M8任务书并立即按其执行，尽可能在聊天插件完成工程与测试后一次性交接CodeBuddy。已原位增加`PLAN.md §6B`（`c91a430b973f54bf150f4076c36a15511a2c1464`）；不另起新独立阶段或架构，不提前制作交接包。工程安全仍受§6A及原M0—M8独立Gate约束。
+- **清单起点**：M0—M8原53任务，M0已核准6，M1—M8 47项正式未勾选，不等于47项必须在交接前全部完成；74正式目标为53 REVISE路径存在、21 CREATE目标路径缺席，74项`DESIGN_TARGET_SEMANTICS_NOT_VERIFIED`；20增量责任A01—A18为18存在路径、A19迁移模式、A20测试集合，均不能仅凭存在算语义达标。资料与主线以本次审查main和真实验收报表为准。
+- **启动状态（工作包≠阶段PASS）**：
+  - HP01 CI/类型/隔离核销：`IN_PROGRESS / CI_UNVERIFIED`。主CI是push触发，而现有GitHub connector的`fetch_commit_workflow_runs`只查询PR触发项，不能从0条误判为未运行；已知最近Vercel独立状态包含failure，但不能直接断定主CI失败。需寻找真实runID/日志与可复现命令。
+  - HP02 M1自动化安全：`PARTIAL`。隔离测试与匿名生产HTTP部分有历史PASS；完整Owner旧凭据失效/恢复和最新撤权E2E回执未准出。
+  - HP03 M2持久资产合同：`PARTIAL`；HP04 M2字节→D00—D03真实Runner：`PARTIAL/HOLD`；HP05 M2隔离备份恢复：`HISTORICAL_ISOLATED_PASS / LATEST_NOT_VERIFIED`。
+  - HP06 M3独立Reviewer：`CODE_PRESENT / LIVE_HOLD`；HP07资格与撤权即时消费：`PARTIAL/HOLD`。不把旧Operator审批等于专业G5。
+  - HP08 M4同root持久委托：`PARTIAL`；HP09 M4 T1—T7/外发安全：`PARTIAL/LIVE_HOLD`。
+  - HP10 M5 Studio创作：`PARTIAL`；HP11 F05知识条目：`PARTIAL`；HP12 M5合法发布与WATCH：`P0_HOLD`（已做原子指针和Reviewer精确rev修复，但未核正式G5/媒体/当前consumer，`asset-reflow.ts`仅返回`reflowed:0`）。
+  - HP13 74目标/20责任语义审查与唯一交接冻结：`NOT_STARTED / HANDOFF_NOT_READY`。
+- **首轮P0审阅结论**：`publication.checkPublishEligibility`验证旧作品Reviewer批准、来源引用及媒体许可文本，但未验证独立专业G5；`listPublished()`仅检查pointer和published status，`/api/public/works/[id]/eligibility`仅查列表即称eligible，尚未达到WATCH合法消费门。不得仅因作品状态published或作品Reviewer批准允许新增公开作品。必须在HP12安排受控失败关闭/精确资产资格路径及正反测试。
+- **版本与阶段纪律**：此条仅准入、证据状态及执行责任；最新main SHA应在各具体改动后记录。实际CI/PG/权限证明完成之前不勾M1—M8；未激活Registry或收费模型，无生产DB/Storage/Reviewer写操作，交接标`HANDOFF_NOT_READY`。
