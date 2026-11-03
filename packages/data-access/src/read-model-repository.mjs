@@ -1,3 +1,4 @@
+import {requireQualifiedReadContext} from './qualification-read-context.mjs';
 const MODELS = Object.freeze({
  world_projection:['read_model.world_projections','projection_id'],
  agent_context:['read_model.agent_contexts','agent_context_id'],
@@ -13,8 +14,9 @@ export function assertConsumer(consumer) {
 }
 export function assertQualificationContext(options) {
  assertConsumer(options?.consumer);
- if(!options.purpose || !['namespace','code','version'].every(k=>typeof options.purpose[k]==='string' && options.purpose[k].length>0)
-   || !options.scope || typeof options.scope!=='object' || Array.isArray(options.scope)) throw new Error('QUALIFICATION_CONTEXT_REQUIRED');
+ // A missing or {} scope is not a restriction. Refuse global reads whose
+ // caller has not specified an actual qualification context.
+ requireQualifiedReadContext(options);
  return options;
 }
 export function createReadModelRepository(db) {

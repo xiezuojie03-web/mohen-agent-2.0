@@ -2,10 +2,12 @@
  * In-memory mock of the MoHen production DB query interface (six-stage).
  * Used by gate-enforcement regression tests + the guard. It does NOT touch any
  * real database; it only answers the exact queries the repository and
- * lineage-validator issue, so the PASS-only contract is provable offline.
+ * lineage-validator issue, so scope rejection and legacy isolation can be tested offline; physical
+ * signing, immutable revisions and RLS require separate PG17 integration.
  *
  * Fixture shape:
- *   gateAudits:    [{ object_type, object_id, gate_code, result, current_valid? }]
+ *   gateAudits:    [{ object_type, object_id, gate_code, result, decision_origin,
+ *                     current_qualification, consumer, purpose_*, allowed_scope }]
  *   worldObjects:  [{ id, kind, maturity?, subject_entity_id?, object_entity_id? }]
  *   conflicts:     [{ object_type, object_id, resolution_status }]
  */

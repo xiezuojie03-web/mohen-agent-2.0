@@ -19,6 +19,9 @@ try {
  const context={consumer:'visual_stage',purpose:{namespace:'G5',code:'fixture',version:'1'},scope:{project:'fixture'}};
  assert.equal(await repo.getRuntimeEligible('story_seed',id,context),null,'Legacy PASS without current independent qualification must not be returned');
  await assert.rejects(()=>repo.listRuntimeEligible('story_seed'),/QUALIFICATION_CONTEXT_REQUIRED/);
+ await assert.rejects(()=>repo.listRuntimeEligible('story_seed',{...context,scope:{}}),/QUALIFICATION_CONTEXT_REQUIRED/);
+ await assert.rejects(()=>repo.listRuntimeEligible('story_seed',{...context,scope:[]}),/QUALIFICATION_CONTEXT_REQUIRED/);
+ await assert.rejects(()=>repo.listRuntimeEligible('story_seed',{...context,purpose:{...context.purpose,version:''}}),/QUALIFICATION_CONTEXT_REQUIRED/);
  // Full physical G0 -> G1 -> G2 -> G3 -> G4 -> G5 fixture, no mocked DB grants.
  const user='11111111-1111-4111-8111-111111111111';
  const secret='isolated-authority-fixture-session-secret-at-least-32';

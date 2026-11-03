@@ -22,6 +22,7 @@ on:
       # qualification; only disposable PG17 can prove recursive invalidation.
       - "packages/data-access/src/qualification-read-context.mjs"
       - "packages/data-access/src/data-production-repository.mjs"
+      - "packages/data-access/src/read-model-repository.mjs"
       - "packages/data-access/src/lineage-validator.mjs"
       - "tests/data-production/read-model-qualification.integration.mjs"
       - "tests/data-production/web-session-revocation.integration.mjs"
