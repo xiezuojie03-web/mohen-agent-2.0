@@ -20,9 +20,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (typeof message !== "string" || !message.trim()) {
     return NextResponse.json({ ok: false, reason: "message_required" }, { status: 400 });
   }
-  const ok = await appendResearchMessage(id, message.trim());
-  if (!ok) {
-    return NextResponse.json({ ok: false, reason: "task_not_found" }, { status: 404 });
+  const result = await appendResearchMessage(id, message.trim());
+  if (!result.ok) {
+    return NextResponse.json(
+      { ok: false, reason: result.reason },
+      { status: result.reason === "task_not_found" ? 404 : 409, headers: { "cache-control": "no-store" } }
+    );
   }
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true }, { headers: { "cache-control": "no-store" } });
 }
