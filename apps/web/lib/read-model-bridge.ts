@@ -11,6 +11,7 @@
 // 纪律：只读 SELECT，零写库；唯一通道 @mohen/data-access。
 
 import { queryRows } from "@mohen/data-access";
+import { consumerContext, contextParams } from "./kad1-policy.mjs";
 
 export interface ProductionEvidenceExcerpt {
   /** 史料原文摘录（display_excerpt，不改写） */
@@ -110,18 +111,28 @@ export interface ProductionRelationSummary {
  */
 export async function readProductionRelationSummary(topicKey?: string): Promise<ProductionRelationSummary> {
   try {
-    const prefixFilter = topicKey
-      ? ` and p.projection_key like E'${topicKey.replace(/'/g, "''")}%'`
-      : "";
+    const qualification = consumerContext('visual_stage');
+    if (!qualification || (topicKey && topicKey.length > 128))
+      return { entities: [], relations: [], storyCount: 0, available: false, evidence: [], stories: [], timeline: null, conflicts: [], openQuestions: [], visuals: [] };
+    const qualificationParams = contextParams(qualification);
+    const topicPattern = topicKey
+      ? topicKey.replace(/#/g, '##').replace(/%/g, '#%').replace(/_/g, '#_') + '%'
+      : null;
+    const prefixFilter = topicPattern ? " and p.projection_key like :'topic_pattern' escape '#'" : '';
+    const topicParams = topicPattern ? { ...qualificationParams, topic_pattern: topicPattern } : qualificationParams;
     // 1) 定位目标世界投影（按 topic 前缀；无则最新）。G5 visual_stage 当前有效。
     const proj = await queryRows(
       `select p.projection_id::text as pid, p.payload::text as payload, g.run_id::text as run_id
        from read_model.world_projections p
-       join control.gate_audits g
-         on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-        and g.consumer='visual_stage' and g.object_type='world_projection' and g.object_id=p.projection_id
+       join control.qualification_current q
+         on q.gate_code='G5' and q.consumer='visual_stage'
+        and q.object_type='world_projection' and q.object_id=p.projection_id
+       join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+        and control.qualification_allows(q.gate_audit_id,'visual_stage',
+            :'purpose_namespace',:'purpose_code',:'purpose_version',:'allowed_scope'::jsonb)
        ${prefixFilter}
-       order by p.generated_at desc limit 1`
+       order by p.generated_at desc limit 1`,
+      topicParams
     );
     if (!proj.length) {
       return { entities: [], relations: [], storyCount: 0, available: false, evidence: [], stories: [], timeline: null, conflicts: [], openQuestions: [], visuals: [] };
@@ -133,65 +144,81 @@ export async function readProductionRelationSummary(topicKey?: string): Promise<
     const seeds = await queryRows(
       `select count(*)::text as cnt
        from read_model.story_seeds s
-       join control.gate_audits g
-         on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-        and g.consumer='visual_stage' and g.object_type='story_seed' and g.object_id=s.story_seed_id
+       join control.qualification_current q
+         on q.gate_code='G5' and q.consumer='visual_stage'
+        and q.object_type='story_seed' and q.object_id=s.story_seed_id
+       join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+        and control.qualification_allows(q.gate_audit_id,'visual_stage',
+            :'purpose_namespace',:'purpose_code',:'purpose_version',:'allowed_scope'::jsonb)
         and g.run_id = :'rid'`,
-      { rid: runId }
+      { ...qualificationParams, rid: runId }
     );
     // D2 内容看板：史料原文摘录（evidence_pointers，G5 visual_stage 独立资格）
     const evidence = await queryRows(
       `select e.display_excerpt as excerpt,
               coalesce(e.display_locator->>'source_title', '史料原文') as source_title
        from read_model.evidence_pointers e
-       join control.gate_audits g
-         on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-        and g.consumer='visual_stage' and g.object_type='evidence_pointer' and g.object_id=e.evidence_pointer_id
+       join control.qualification_current q
+         on q.gate_code='G5' and q.consumer='visual_stage'
+        and q.object_type='evidence_pointer' and q.object_id=e.evidence_pointer_id
+       join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+        and control.qualification_allows(q.gate_audit_id,'visual_stage',
+            :'purpose_namespace',:'purpose_code',:'purpose_version',:'allowed_scope'::jsonb)
         and g.run_id = :'rid'
        order by e.generated_at asc`,
-      { rid: runId }
+      { ...qualificationParams, rid: runId }
     );
     // D2 内容看板：可讲的故事（story_seeds，D05 statement）
     const stories = await queryRows(
       `select s.title as title,
               coalesce(s.payload->>'statement', s.title, '') as statement
        from read_model.story_seeds s
-       join control.gate_audits g
-         on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-        and g.consumer='visual_stage' and g.object_type='story_seed' and g.object_id=s.story_seed_id
+       join control.qualification_current q
+         on q.gate_code='G5' and q.consumer='visual_stage'
+        and q.object_type='story_seed' and q.object_id=s.story_seed_id
+       join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+        and control.qualification_allows(q.gate_audit_id,'visual_stage',
+            :'purpose_namespace',:'purpose_code',:'purpose_version',:'allowed_scope'::jsonb)
         and g.run_id = :'rid'
        order by s.generated_at asc`,
-      { rid: runId }
+      { ...qualificationParams, rid: runId }
     );
     // V1.4：P03 时间投影（取同 run 最新一条 current_valid visual_stage）
     const timelineRows = await queryRows(
       `select m.payload::text as payload
        from read_model.map_timeline_projections m
-       join control.gate_audits g
-         on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-        and g.consumer='visual_stage' and g.object_type='map_timeline_projection' and g.object_id=m.map_timeline_projection_id
+       join control.qualification_current q
+         on q.gate_code='G5' and q.consumer='visual_stage'
+        and q.object_type='map_timeline_projection' and q.object_id=m.map_timeline_projection_id
+       join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+        and control.qualification_allows(q.gate_audit_id,'visual_stage',
+            :'purpose_namespace',:'purpose_code',:'purpose_version',:'allowed_scope'::jsonb)
         and g.run_id = :'rid'
        order by m.generated_at desc limit 1`,
-      { rid: runId }
+      { ...qualificationParams, rid: runId }
     );
     // V1.5：今貌照片（P06 视觉证据指针，G5 visual_stage current_valid）
     const visualRows = await queryRows(
       `select e.display_excerpt as excerpt,
               coalesce(e.display_locator->>'source_title', '史料影像') as source_title,
               coalesce(e.display_locator->>'display_url', '') as display_url,
-              coalesce(e.display_locator->>'license', 'license 待核') as license,
+              coalesce(e.display_locator->>'license', '') as license,
               coalesce(e.display_locator->>'artist', '作者待核') as artist,
               coalesce(e.display_locator->>'time_identity', '今日观察') as time_identity,
               coalesce(e.display_locator->>'entities', '') as entities,
               coalesce(e.display_locator->>'commons_title', '') as commons_title
        from read_model.evidence_pointers e
-       join control.gate_audits g
-         on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-        and g.consumer='visual_stage' and g.object_type='evidence_pointer' and g.object_id=e.evidence_pointer_id
+       join control.qualification_current q
+         on q.gate_code='G5' and q.consumer='visual_stage'
+        and q.object_type='evidence_pointer' and q.object_id=e.evidence_pointer_id
+       join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+        and control.qualification_allows(q.gate_audit_id,'visual_stage',
+            :'purpose_namespace',:'purpose_code',:'purpose_version',:'allowed_scope'::jsonb)
         and g.run_id = :'rid'
        where e.display_locator->>'visual_type' = 'today_photo'
+         and e.display_locator->>'rights_status' = 'cleared'
        order by e.generated_at asc`,
-      { rid: runId }
+      { ...qualificationParams, rid: runId }
     );
     const timeline: ProductionTimeline | null = (() => {
       if (!timelineRows.length) return null;
@@ -264,7 +291,7 @@ export async function readProductionRelationSummary(topicKey?: string): Promise<
           timeIdentity: String(r.time_identity ?? "今日观察").trim(),
           commonsTitle: String(r.commons_title ?? "").trim(),
         }))
-        .filter((v) => v.displayUrl.length > 0),
+        .filter((v) => v.displayUrl.length > 0 && v.license.length > 0),
     };
   } catch (e) {
     console.warn("[read-model-bridge] 读取真实发布成果失败：", e instanceof Error ? e.message : String(e));
