@@ -42,13 +42,12 @@ jobs:
       - name: Start disposable PostgreSQL 17 with non-production marker
         run: |
           docker run --detach --name mohen-mab-pg17 \
-            --mount type=bind,src=/workspace/mab-isolated-pg,dst=/workspace/mab-isolated-pg \
+            --mount type=bind,src=/workspace/mab-isolated-pg,dst=/var/run/postgresql \
             --env POSTGRES_USER=k3_admin \
             --env POSTGRES_PASSWORD=isolated-fixture-only \
             --env POSTGRES_DB=postgres \
             postgres:17 \
             -c port=55432 \
-            -c unix_socket_directories=/workspace/mab-isolated-pg \
             -c mohen.test_instance=codex-k3-isolated
           for i in $(seq 1 60); do
             if pg_isready -h /workspace/mab-isolated-pg -p 55432 -U k3_admin; then exit 0; fi
