@@ -478,3 +478,12 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - **M5正式消费资格映射补充核查**：现行`control.artifact_revision_for`逐项支持来源、证据、世界、解释与L5发布对象，但**不含`publication.work_revisions` / `work_revision`**；它不能基于作品revision本身生成合格的专业G5。故`WATCH`不得将作品Reviewer批准、发布指针或任意故事种子G5伪装成整部作品的资格。需要逐条映射作品内容所引用的合法source/evidence/L5对象，按实际用途及consumer请求独立`qualification_allows`与权利验证；不能覆盖的分面HOLD，不能先公开再补验。该缺口不要求重建MHKA或另造第七门。
 
 - **客户端精确审核者绑定补正**：`d28ebbb65a54cab32cff92ede8a5a5b6c072dfa0`进一步要求独立服务回执`reviewer_binding_ref`与申请完全相同，不接受其它Reviewer绑定的真形状回执；`f9752f2904a18f3e3da6a72d9f40202fbed9376f`补此负例。仍为合同源码及测试文件，**无独立服务运行回执**。
+
+
+## 2026-11-03｜M3独立Reviewer受控撤权服务候选与原仓储联调
+
+- 发现原仓库已有`packages/data-access/src/gate-authority-repository.mjs`的`createGateAuthorityRepository.revoke`：专用DB signer身份、不可超权/Producer、短时session token在事务内设置并清理、现有`control.revoke_gate_qualification`原子执行、幂等请求和追加审计。**不另建撤权SQL或第二套Gate**。
+- 源码`2d166d74be093a9e1b5e895f91051853efac4e04`增加`independent-gate-revocation-handler.mjs`候选受控服务处理器：只接受POST+JSON、独立authenticateReviewer回调返回有效Reviewer短时会话和精确绑定、匹配audit/request UUID/理由、请求限制4096 bytes，委托已有authorityRepository.revoke；鉴权失败403/无token401，DB拒绝或失效503/no-store，不回显会话token/私有史料。
+- `328f3bfe000c820dc85e6d9dba6037c5b77d6200`新增`independent-gate-revocation-handler.test.mjs`，合成客户端→处理器→仓储调用成功，伪造Bearer/错Reviewer绑定/错误UUID/DB拒写时失败关闭。`7ac30843`将旧客户端要求事件UUID的合同改为**可选**：真实K3 SQL仅返回`blocked_count`，`request_id`已是失效审计事件的受控索引，不能要求服务造假事件ID；`d28ebbb6`和`f9752f29`补回执Reviewer绑定一致性及负测。
+- **证据与使用边界**：本批仅提交源码/合成测试/PLAN责任，不曾启动实际独立HTTPS服务、合法Reviewer认证、专用Signer生产连接或真实撤权。旧Operator入口仍统一503；服务处理器无生产注册入口，不能被普通Web/Producer调用；正式服务仍须独立身份部署、专用DB和签发者绑定、隔离PG+真实HTTP及WATCH当前资格逐请求反例。在未取得CI实际SUCCESS回执前标`CODE_PRESENT/CI_PENDING`，M3和M5正式HOLD。
+- 本批未使用生产数据库、Storage、Gate凭据和外部付费模型。最终CodeBuddy单次交接策略不变：聊天插件仍继续可实施的软件和隔离验证，待确定无法完成的环境任务才集中交接。
