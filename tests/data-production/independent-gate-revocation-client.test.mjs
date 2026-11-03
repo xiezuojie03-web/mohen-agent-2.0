@@ -11,7 +11,8 @@ const args={gateAuditId:audit,requestId:request,reason:'synthetic rights change'
   reviewerBindingRef:'independent-reviewer-G5'};
 const valid={schema:'mohen.independent-gate-revocation-receipt.v1',
   gate_audit_id:audit,request_id:request,revoked:true,blocked_count:1,
-  invalidation_event_id:event,reviewer_identity_ref:'independent-reviewer-01'};
+  invalidation_event_id:event,reviewer_identity_ref:'independent-reviewer-01',
+  reviewer_binding_ref:'independent-reviewer-G5'};
 const response=(body,options={})=>new Response(JSON.stringify(body),{
   headers:{'content-type':'application/json'},...options,
 });
@@ -59,6 +60,7 @@ test('M3 client refuses guessed, stale, forged, oversized, malformed and denied 
     [{...valid,gate_audit_id:request},{}],
     [{...valid,request_id:audit},{}],
     [{...valid,revoked:false},{}],
+    [{...valid,reviewer_binding_ref:'another-reviewer'},{}],
     [{...valid,blocked_count:-1},{}],
     [{...valid,invalidation_event_id:'bad'},{}],
     [{...valid,reviewer_identity_ref:''},{}],
