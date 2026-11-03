@@ -42,6 +42,34 @@ export function createStudioAssetRepository(pool) {
       return transaction(sessionToken, async client => (await client.query(revisionSelect+
         ' where h.project_id=$1 and h.current_revision_id=r.revision_id order by r.created_at desc,r.revision_id limit 100',[projectId])).rows);
     },
+    /** Full immutable revision lineage for one owner's exact asset.
+     * This is private history, never G5 publication or reuse authorization.
+     */
+    listAssetRevisions(projectId, assetId, sessionToken) {
+      requireId(projectId); requireId(assetId);
+      return transaction(sessionToken, async client => (await client.query(
+        revisionSelect + ` where h.project_id=$1 and h.asset_id=$2
+          order by r.revision_no desc,r.revision_id limit 100`,
+        [projectId,assetId]
+      )).rows);
+    },
+    /** Private trace of actual recorded uses. An empty result cannot be
+     * interpreted as permission to reuse the asset or as a missing Gate.
+     */
+    listRevisionUseEvents(projectId, revisionId, sessionToken) {
+      requireId(projectId); requireId(revisionId);
+      return transaction(sessionToken, async client => (await client.query(
+        `select e.use_event_id,e.asset_revision_id,e.consumer,e.purpose,
+           e.requested_action,e.rights_decision_ref,e.created_at::text as created_at
+         from studio.use_events e
+         join studio.asset_revisions r on r.revision_id=e.asset_revision_id
+         join studio.asset_heads h on h.asset_id=r.asset_id
+         where e.project_id=$1 and h.project_id=$1
+           and e.asset_revision_id=$2
+         order by e.created_at desc,e.use_event_id limit 100`,
+        [projectId,revisionId]
+      )).rows);
+    },
     async createProject({projectId,title,scope={}}, sessionToken) {
       requireId(projectId);
       if (typeof title !== 'string' || !title.trim() || title.trim().length > 200) throw new Error('STUDIO_PROJECT_TITLE_INVALID');
