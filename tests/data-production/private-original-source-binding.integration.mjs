@@ -21,13 +21,13 @@ const token=(user,exp=Date.now()+60000)=>{
 };
 const {Pool}=createRequire(new URL('../../packages/data-access/package.json',import.meta.url))('pg');
 const pool=new Pool({host:socket,port:Number(process.env.MOHEN_TEST_PORT??55432),user:'k3_admin',database,max:2});
-const as=(user,stmt)=>sql(\`begin;set local role mohen_app_runtime;select set_config('mohen.session_token','\${token(user)}',true);\${stmt};rollback;\`);
+const as=(user,stmt)=>sql(`begin;set local role mohen_app_runtime;select set_config('mohen.session_token','${token(user)}',true);${stmt};rollback;`);
 try{
- sql(\`insert into public.users(user_id,email,username,password_hash)values
-  ('\${a}','source-binding-a@example.invalid','A','synthetic'),
-  ('\${b}','source-binding-b@example.invalid','B','synthetic');
- insert into control.session_verification_keys(verification_key)values('\${secret}')
-  on conflict(key_slot)do update set verification_key=excluded.verification_key;\`);
+ sql(`insert into public.users(user_id,email,username,password_hash)values
+  ('${a}','source-binding-a@example.invalid','A','synthetic'),
+  ('${b}','source-binding-b@example.invalid','B','synthetic');
+ insert into control.session_verification_keys(verification_key)values('${secret}')
+  on conflict(key_slot)do update set verification_key=excluded.verification_key;`);
  const assets=createStudioAssetRepository(pool),originals=createPrivateOriginalRepository(pool);
  await assets.createProject({projectId:project,title:'Synthetic M2 source verification',scope:{}},token(a));
  const receipt=await originals.reserve({projectId:project,originalId,assetId,
@@ -38,17 +38,17 @@ try{
  const stored=await originals.finalize(originalId,sha,token(a));
  assert.equal(stored.state,'STORED_VERIFIED');
  const ref='mohen-private-originals/'+project+'/'+originalId+'.bin';
- sql(\`insert into source.sources(source_id,provider,title,source_type,carrier_type,content_availability)
- values('\${source}','TEST_ONLY','Synthetic private source','synthetic','digital_text','full_content');
+ sql(`insert into source.sources(source_id,provider,title,source_type,carrier_type,content_availability)
+ values('${source}','TEST_ONLY','Synthetic private source','synthetic','digital_text','full_content');
  insert into source.source_versions(source_version_id,source_id,checksum_sha256)
- values('\${version}','\${source}','\${sha}');
+ values('${version}','${source}','${sha}');
  insert into source.raw_items(raw_item_id,source_version_id,storage_ref,checksum_sha256,byte_size)
- values('\${raw}','\${version}','\${ref}','\${sha}',\${size});\`);
+ values('${raw}','${version}','${ref}','${sha}',${size});`);
  assert.equal(sql("select has_schema_privilege('mohen_app_runtime','source','USAGE')"),'f');
  assert.equal(sql("select has_table_privilege('mohen_app_runtime','source.raw_items','SELECT')"),'f');
  assert.equal(sql("select has_function_privilege('mohen_app_runtime','studio.private_source_binding_matches(uuid,uuid,uuid,text)','EXECUTE')"),'t');
  for(const r of ['anon','authenticated','service_role','mohen_producer','mohen_gate_signer'])
-  assert.equal(sql(\`select has_function_privilege('\${r}','studio.private_source_binding_matches(uuid,uuid,uuid,text)','EXECUTE')\`),'f',r+' must not execute');
+  assert.equal(sql(`select has_function_privilege('${r}','studio.private_source_binding_matches(uuid,uuid,uuid,text)','EXECUTE')`),'f',r+' must not execute');
  assert.throws(()=>as(a,'select count(*) from source.raw_items'),/permission denied/,
   'runtime must not obtain whole source table SELECT');
  const verify=createPrivateOriginalSourceVerifier(pool),exact={originalId,sourceVersionId:version,rawItemId:raw,rawSha256:sha};
@@ -59,10 +59,10 @@ try{
  await assert.rejects(()=>verify(exact,token(b)),/ORIGINAL_NOT_FOUND/,'foreign owner');
  await assert.rejects(()=>verify(exact,token(a,Date.now()-1000)),/STUDIO_IDENTITY_REQUIRED/,'expired');
  await assert.rejects(()=>verify(exact,token(a)+'forged'),/STUDIO_IDENTITY_REQUIRED/,'forged token');
- sql(\`update public.users set status='disabled' where user_id='\${a}'\`);
+ sql(`update public.users set status='disabled' where user_id='${a}'`);
  await assert.rejects(()=>verify(exact,token(a)),/STUDIO_IDENTITY_REQUIRED/,'disabled user');
- sql(\`update public.users set status='active' where user_id='\${a}';
- update studio.projects set lifecycle_status='ARCHIVED' where project_id='\${project}'\`);
+ sql(`update public.users set status='active' where user_id='${a}';
+ update studio.projects set lifecycle_status='ARCHIVED' where project_id='${project}'`);
  await assert.rejects(()=>verify(exact,token(a)),/ORIGINAL_NOT_FOUND/,'archived project');
  console.log('MAB_PRIVATE_SOURCE_BINDING_PG_PASS real-pg17 no-source-select exact-origin-version owner expired forged disabled archived');
 } finally {await pool.end();}
