@@ -9,7 +9,7 @@ const {queryRows, queryValue, run, reflowWorkToAssets} = vi.hoisted(() => ({
 vi.mock("@mohen/data-access", () => ({queryRows,queryValue,run}));
 vi.mock("../../apps/web/lib/asset-reflow", () => ({reflowWorkToAssets}));
 
-import {publishWork} from "../../apps/web/lib/publication";
+import {publishWork,listPublished} from "../../apps/web/lib/publication";
 
 const wid="123e4567-e89b-42d3-a456-426614174001";
 const rid="123e4567-e89b-42d3-a456-426614174002";
@@ -70,5 +70,14 @@ describe("MAB M5 publish revision/pointer atomic transition", () => {
     await expect(publishWork(wid,"scheduler")).rejects.toThrow("DB_POINTER_WRITE_FAILED");
     expect(reflowWorkToAssets).not.toHaveBeenCalled();
     expect(run).not.toHaveBeenCalled();
+  });
+
+  it("WATCH publication listing excludes pointers whose revision was revoked or no longer published", async () => {
+    queryRows.mockResolvedValue([]);
+    await listPublished();
+    expect(queryRows).toHaveBeenCalledTimes(1);
+    const statement=String(queryRows.mock.calls[0][0]);
+    expect(statement).toContain("join publication.work_revisions r on r.revision_id = p.revision_id");
+    expect(statement).toContain("where r.status = 'published'");
   });
 });
