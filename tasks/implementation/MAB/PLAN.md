@@ -160,6 +160,8 @@ MAB-ENG-01批次进展（2026-11-02，详细证据见progress.md）：私有原�
 
 **2026-11-03 M2防误接保护**：新提交 `1606ddcc`、`12240628` 在现行执行授权层拒绝尚未正式注册的私有原件/证据请求，包含`qualified_source`等嵌套承载，禁止它们被既有legacy公共资料适配器误处理。GitHub Actions `41579537812`、`41580080729` 均SUCCESS。这只是**接线前置安全防护**；Owner短时私有会话、D01—D03合法候选读写、正式Registry绑定与真实Gate正反测试仍未完结，M2生产准出HOLD。
 
+**2026-11-03 Runner真实执行路径补缺**：`a726b26a`修复一次性授权nonce核验与`current_stage`更新先后冲突，使真实Runner在授权完成后可把严格绑定的一次性授权交给受控私有D01—D03工作器；`e71d04b9`、`a9464fa2`新增完整Runner入口正例（仍因独立Gate未启用而HOLD）与Registry未启用/无签名授权前置拒绝负例。此批暂`CODE_PRESENT / CI_PENDING`，Owner短时身份注入、受审Registry真实绑定、Storage+PG+独立Gate全链仍未验收，不改变阶段HOLD。验收与运行事实见`progress.md`。
+
 **2026-11-03 M2专用候选适配器接线增量**：`33589ef5`/`1836f831`把私有证据输入的安全守卫由“一律拒绝”收窄为只接受唯一Reviewed Adapter路径与D01—D03阶段顶层typed request，其它含私有输入的legacy路径继续HOLD；`5a08bf94`新增仅候选的D01/D02/D03适配器模块，`39cb1c96`由唯一Runner传入真实Registry，`fd758bb5`补正反单测。此时仍无可信运行端Owner会话注入、正式Registry激活、来源→阅读→证据→主张有Gate资格的完整交接，也没有实际PG/Storage/Reviewer整链PASS；本批只记`CODE_PRESENT / TEST_PENDING`。详见progress.md。
 
 **2026-11-03 M2执行授权交接增量**：`b69baa5f`/`2f94998f` 为现有一次性签名授权添加Runner→私有工作器同run/job/registry/input、digest、stage严格绑定的单次交接；`419f85c7`补合成Ed25519与Verifier负例测试。消除合法Runner已消费nonce时工作器再次验证的接线冲突。阶段仍`CODE_PRESENT / TEST_PENDING`，当前Registry未启用、私有Stage尚未正式绑定、PG/Storage/独立Gate整链未在本批实测。下一批优先完成真实独立授权的唯一Registry适配器装配和跨身份正反联调，且不得放开旧legacy输入路径。详情以`progress.md`为准。
