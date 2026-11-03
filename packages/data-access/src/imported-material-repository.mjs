@@ -14,6 +14,17 @@ export function createImportedMaterialRepository(pool) {
         return rows;
       });
     },
+    get(materialId, sessionToken) {
+      if (typeof materialId !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(materialId)) {
+        return Promise.reject(new Error('MATERIAL_ID_INVALID'));
+      }
+      return transaction(sessionToken, async client => {
+        const { rows } = await client.query(`select material_id::text as material_id,title,text_content as text,
+          source_url,license,rights_declared,created_at::text as created_at
+          from public.imported_materials where material_id=$1 limit 1`, [materialId]);
+        return rows[0] ?? null;
+      });
+    },
     create({title,text,sourceUrl,license,rightsDeclared},sessionToken) {
       if (rightsDeclared !== true) return Promise.reject(new Error('RIGHTS_DECLARATION_REQUIRED'));
       return transaction(sessionToken, async (client, owner) => {

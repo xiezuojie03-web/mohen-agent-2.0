@@ -26,6 +26,12 @@ try {
  assert.equal(created.owner_user_id,a);
  assert.equal((await repository.list(token(a))).some(row=>row.material_id===created.material_id),true);
  assert.equal((await repository.list(token(b))).some(row=>row.material_id===created.material_id),false);
+ const detail=await repository.get(created.material_id,token(a));
+ assert.equal(detail.material_id,created.material_id);
+ assert.equal(detail.text,draft.text,'RLS owner reads actual original text not a synthetic cursor');
+ assert.equal(await repository.get(created.material_id,token(b)),null,'cross-owner detail is invisible');
+ assert.equal(await repository.get('00000000-0000-0000-0000-000000000099',token(a)),null);
+ await assert.rejects(()=>repository.get('../not-an-id',token(a)),/MATERIAL_ID_INVALID/);
  const other=await repository.create({...draft,title:'B private',owner_user_id:a},token(b));
  assert.equal(other.owner_user_id,b,'owner is derived from verified DB session, not caller input');
  const [ra,rb]=await Promise.all([repository.list(token(a)),repository.list(token(b))]);
@@ -33,11 +39,13 @@ try {
  assert.equal(rb.some(row=>row.material_id===created.material_id),false);
  for(const bad of ['',"unsigned.claim",token(a,1),token('b3333333-3333-4333-8333-333333333333')]) {
   await assert.rejects(()=>repository.list(bad),/MATERIAL_IDENTITY_REQUIRED/);
+  await assert.rejects(()=>repository.get(created.material_id,bad),/MATERIAL_IDENTITY_REQUIRED/);
  }
  await assert.rejects(()=>repository.create({...draft,rightsDeclared:false},token(a)),/RIGHTS_DECLARATION_REQUIRED/);
  const before=sql('select count(*) from public.imported_materials');
  sql(`update public.users set status='disabled' where user_id='${a}'`);
  await assert.rejects(()=>repository.create(draft,token(a)),/MATERIAL_IDENTITY_REQUIRED/);
+ await assert.rejects(()=>repository.get(created.material_id,token(a)),/MATERIAL_IDENTITY_REQUIRED/);
  assert.equal(sql('select count(*) from public.imported_materials'),before,'denied requests do not write');
  sql(`update public.users set status='active' where user_id='${a}'`);
  // Deliberate SQL failure proves ROLLBACK and clean pool reuse, not just happy-path cleanup.

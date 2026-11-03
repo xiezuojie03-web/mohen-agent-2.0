@@ -216,3 +216,10 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 - 现有Codex平台交接文件明确记录：Owner 新增 Vercel Production `MOHEN_DATABASE_PASSWORD` 后，网站数据库只读查询成功；实际生产Sensitive变量已更新，后续新部署已存在。Owner本轮明确反馈Supabase数据库密码轮换**应该已经完成**。因此轮换操作改记为 `LIKELY_COMPLETED_EVIDENCE_RECONCILIATION_REQUIRED`，**不再默认要求Owner重复重置**。
 - 这些信息尚不等于已核旧口令失效，也不能证明此前意外回显的其它凭据全部撤销。优先复用现有官方非敏感运维记录；不得读取、复用、粘贴或回放旧明文秘密做验证。
 - `M1_SECURITY_ACCEPTANCE_HOLD` 暂不改变，必要余项为合法登录/素材导入、匿名和跨Owner/过期/撤权拒绝、回滚恢复及凭据失效的非敏感证据。不可把新密码是否轮换当作所有剩余M1测试停止的理由。详细见本目录M1安全回执。
+
+## 2026-11-03｜M1私有素材真实回读闭环（GitHub增量）
+
+- 基线 `main@8cdee833`；M0审查已准出，M1仍HOLD。确认现有`/api/studio/materials/:id`读取的是`public.assets`媒资元数据，并不是`public.imported_materials`私有导入全文；因此不能把它误认成私有原件的Owner安全回读。
+- **M1受控补齐**：`GET /api/studio/materials/import?material_id=<uuid>`在原有列表接口内新增可选详情，不改变原GET列表与POST入库wire。使用`createImportedMaterialRepository.get`、30秒已签数据库会话、事务内当前用户及表RLS，实体不存在/跨Owner均404；禁止通用DB超级用户直读。读出的全文含`Cache-Control: private, no-store`。不改变M2未来私有PDF/图像对象存储规则。
+- **正反验证**：新增unit合法详情、未知/跨Owner、非法ID、禁用/撤权、数据库故障、匿名，扩展现有隔离PG集成验证私有文本本人可读、另一用户读不到、过期/伪造/禁用会话被拒及无数据写入。
+- 生产库本批仍无数据写入/迁移；测试状态以本批对应CI为准，单元/隔离通过不代替在线真实Owner登录、旧密码失效的非敏感回执，M1仍`M1_SECURITY_ACCEPTANCE_HOLD`。

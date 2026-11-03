@@ -17,13 +17,29 @@ const execFileP = promisify(execFile);
 const MAX_BYTES = 10 * 1024 * 1024;
 
 // GET /api/studio/materials/import —— 我的导入材料
-export async function GET() {
-  const session = await getSession();
-  if (!session) return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401 });
+const PRIVATE_NO_STORE = { "Cache-Control": "private, no-store, max-age=0" };
+const MATERIAL_UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 
+// The existing GET listing stays unchanged without ?material_id=. An explicit
+// material_id reads the full text ONLY through the same RLS-checked DB session.
+export async function GET(req?: Request) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401, headers: PRIVATE_NO_STORE });
+
+  const materialId = req ? new URL(req.url).searchParams.get("material_id") : null;
+  if (materialId !== null && !MATERIAL_UUID.test(materialId)) {
+    return NextResponse.json({ ok: false, reason: "bad_material_id" }, { status: 400, headers: PRIVATE_NO_STORE });
+  }
   try {
-    const materials = await createImportedMaterialRepository(getNodePgPool()).list(signDatabaseSessionToken(session));
-    return NextResponse.json({ ok: true, materials });
+    const repository = createImportedMaterialRepository(getNodePgPool());
+    const token = signDatabaseSessionToken(session);
+    if (materialId !== null) {
+      const material = await repository.get(materialId, token);
+      if (!material) return NextResponse.json({ ok: false, reason: "not_found" }, { status: 404, headers: PRIVATE_NO_STORE });
+      return NextResponse.json({ ok: true, material }, { headers: PRIVATE_NO_STORE });
+    }
+    const materials = await repository.list(token);
+    return NextResponse.json({ ok: true, materials }, { headers: PRIVATE_NO_STORE });
   } catch (error) { return materialFailure(error); }
 }
 
@@ -153,14 +169,14 @@ export async function POST(req: Request) {
 
   try {
     const saved = await createImportedMaterialRepository(getNodePgPool()).create(parsed, signDatabaseSessionToken(session));
-    return NextResponse.json({ ok: true, material_id: saved.material_id, kind: parsed.kind, chars: parsed.text.length });
+    return NextResponse.json({ ok: true, material_id: saved.material_id, kind: parsed.kind, chars: parsed.text.length }, { headers: PRIVATE_NO_STORE });
   } catch (error) { return materialFailure(error); }
 }
 
 function materialFailure(error: unknown) {
   if (error instanceof Error && error.message === "MATERIAL_IDENTITY_REQUIRED") {
-    return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401 });
+    return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401, headers: PRIVATE_NO_STORE });
   }
   // Never return SQL, source text or connection details to the client.
-  return NextResponse.json({ ok: false, reason: "materials_unavailable" }, { status: 503 });
+  return NextResponse.json({ ok: false, reason: "materials_unavailable" }, { status: 503, headers: PRIVATE_NO_STORE });
 }

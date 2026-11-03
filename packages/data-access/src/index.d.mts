@@ -64,7 +64,17 @@ export interface ImportedMaterialView {
   excerpt: string;
   created_at: string;
 }
+export interface ImportedMaterialDetail {
+  material_id: string;
+  title: string;
+  text: string;
+  source_url: string | null;
+  license: string | null;
+  rights_declared: boolean;
+  created_at: string;
+}
 export interface ImportedMaterialRepository {
+  get(materialId: string, sessionToken: string | null): Promise<ImportedMaterialDetail | null>;
   list(sessionToken: string | null): Promise<ImportedMaterialView[]>;
   create(input: ImportedMaterialInput, sessionToken: string | null): Promise<{material_id: string; owner_user_id: string}>;
 }
