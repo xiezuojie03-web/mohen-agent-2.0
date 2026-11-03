@@ -466,3 +466,11 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 
 - `5fb3316bc65329d0ef026da621eb176437915948`原位修复`publication.listPendingReview()`，审核队列NOT EXISTS approved从“同一work有任何旧批准”改为“同一work且**exact work_revision_id**批准”，避免旧版approved导致新版submitted被错误隐藏。这是M5精确修订身份合同的低依赖修复。
 - `db689b256b46652ac102422d6ecafd82a94fed13`新增上述队列查询合同测试。提交后本批真实CI/PG执行回执待核，不称测试PASS。正式审核仍需独立G5资格以及媒体/用途/consumer/撤权测试，不能把作品Reviewer审批当知识资格。
+
+
+## 2026-11-03｜M3独立Reviewer撤权传输协议客户端（仅受控候选）
+
+- 已在原M3独立资格只读接口旁新增`pipelines/data-production/orchestrator/independent-gate-revocation-client.mjs`（`89cda1db86f49d693d578b9afcb0b0ebb9cebeec`），只以HTTPS POST提交精确`gate_audit_id`、幂等`request_id`、理由和Reviewer绑定引用；URL不得带凭据、查询或片段，请求不含原始史料/候选正文，响应限制8192 bytes、核对schema/对象/请求ID/撤权状态/事件UUID/身份引用，拒绝401/403/非JSON/错绑定或过大响应。
+- `c3ef1095e396e20e935eec491ae20895f561a198`添加`tests/data-production/independent-gate-revocation-client.test.mjs`，覆盖精确协议请求、非法ID/理由时零网络、服务拒绝和伪造回执。不具备服务端Reviewer身份时不可调用现行`control.revoke_gate_qualification`；旧Operator两个HTTP撤权入口仍503，绝不间接调用该传输客户端。
+- **证据边界**：客户端本身不签署、撤销或查询最终资格，返回的服务回执**不等于当前资格已失效**；真实消费者每次必须重查`qualification_current`/现行`qualification_allows`。正式独立Reviewer服务端/受控数据库角色/身份绑定及跨消费者撤权E2E依旧HOLD。GitHub CI和真实PG服务端回执本批尚未核实，标`CODE_PRESENT/CI_PENDING`，绝不冒称M3或M5准出。
+- 本批无生产数据库、Storage、Gate正式签名/撤权和外部AI费用。已在`PLAN.md`原位补对应责任，不提前交给CodeBuddy。
