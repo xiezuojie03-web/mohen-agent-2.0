@@ -364,8 +364,9 @@ export async function getWorkStageStatus(workId: string) {
        exists(select 1 from publication.work_revisions r
               where r.work_id = :'wid'
                 and jsonb_typeof(r.content->'plan')='object'
-                and jsonb_typeof(r.content->'beats')='array'
-                and jsonb_array_length(r.content->'beats') > 0) as directed,
+                and case when jsonb_typeof(r.content->'beats')='array'
+                         then jsonb_array_length(r.content->'beats') > 0
+                         else false end) as directed,
        exists(select 1 from publication.work_revisions r
               where r.work_id = :'wid') as revisioned`,
     { wid: workId }
