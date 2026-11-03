@@ -135,12 +135,12 @@ describe("MAB M5 publish revision/pointer atomic transition", () => {
       delegated:true,researched:true,directed:true,revisioned:true,
     });
   });
-  it("pending review query checks approval for the exact revision, not merely its work",async()=>{
+  it("pending review query hides approved and rejected exact revisions but not a newer work revision",async()=>{
     queryRows.mockResolvedValue([]);
     await listPendingReview();
     const sql=String(queryRows.mock.calls[0]?.[0]);
     expect(sql).toContain("d.revision_id = r.revision_id");
-    expect(sql).toContain("d.decision = 'approved'");
+    expect(sql).toContain("d.decision in ('approved','rejected')");
     expect(sql).toContain("r.status = 'submitted'");
   });
   it("WATCH never reuses the internal Admin published list as authorization",async()=>{
