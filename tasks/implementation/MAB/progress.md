@@ -882,3 +882,19 @@ Ruling: 当前M4允许完成可运行隔离链，真实第三方/生产验证仍
 源码eb9ee3ed8b3957e85495e73937ca39a71cfe12e9已普通快进推main：主CI41824906758 SUCCESS，实际PG17/HTTP/Chromium41824906796/job126557036216 SUCCESS；下载实际日志确认8 passed/1 skipped、MAB_HTTP_BROWSER_PASS及一次性数据库清除。未触发独立PG全套，不冒充已重跑；本次HTTP确有新旧pointer无G5负例通过。已核本地临时HTTP数据库0残留，并移除本次合成PG容器；无生产/费用操作。证据SHA256清单、实际run JSON与日志摘录入同evidence。
 
 本次收尾仅文档/机器回执，不把未来文档SHA称已跑本轮HTTP；对应业务源码始终指eb9ee3e。当前M5继续/HANDOFF_NOT_READY，下一P0及未覆盖在本批回执，M1—M4固定条件保持。保留本地旧work分支，不reset、不强推、不覆盖远端成果。
+
+
+## 2026-11-04｜M5共享检索当前资格与缓存收口开工
+
+- fetch main=247bee074ba07317afe25f09543ac53c45efc40b，HEAD一致，开工工作树干净。继承M4闭合与M5首批，不重建上游。
+- 根因：retrieve八分支只读gate_audits PASS/current_valid/agent，不调用现行qualification_allows；所有现有调用缺服务端purpose/scope；mohen/materials另有5分钟材料缓存。
+- 新单测旧代码实跑7 FAIL/1 PASS，缓存撤权负例FAIL；真实标记PG新入口先RED（缺context竟返回degraded=false）。HTTP旧agent PASS泄露负例正在实跑；测试仅纯合成一次性库，不读写生产。
+- Ruling: 复用read-model现行非空context守卫及qualification_allows；上下文仅来自可信服务器配置，API不接受body/query自授用途/范围。公共搜索/现有Agent缺合法映射时degraded=true/空，不默认全局agent许可 — 原HP07/HP12失败关闭合同 — 代价是相关分面暂不可用，不能为了恢复旧可见性绕过资格。
+- 先补共享资格/去缓存与真实祖先撤销正反验证，再按原M5修私有preview/CAS；无新生产/专业/外发/费用授权。
+
+
+### M5共享检索本地实绩与源码提交
+
+八分支改用qualification_current/qualification_allows及现有非空context守卫；公共输入不授资格，缺合法映射degraded。materials/ask材料衍生缓存移除，no-store，explore同样禁缓存。先RED：7项context/SQL失败、materials与ask缓存各失败、真实PG缺context失败、真实HTTP旧agent PASS泄露；后GREEN：405 unit/4旧SKIP、133boundary/0SKIP、六workspace类型、全PG17exit0、Next+HTTP9PASS/1Storage缺配置SKIP。新增实际TS检索在同一G0—G5真实SQL链前后运行，精确consumer/purpose/scope与祖先撤销断言通过。
+
+独立review无重要问题并重跑10项通过；真实PG正例仅story_seed，其它分支结构覆盖，不泛签所有专业对象。缺正式scope/purpose映射的公共/Agent仍HOLD。ask正式启用必须有既有ledger/预算，移除缓存不授权更多费用；本批无Provider或生产操作。报告CODEX_M5_RETRIEVE_20261104.md及原始evidence。回退关闭入口不恢复旧PASS/缓存。下一原M5：私有preview正文与改稿CAS；源码push与实际CI另补。

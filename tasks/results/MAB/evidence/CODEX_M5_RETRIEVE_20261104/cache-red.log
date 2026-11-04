@@ -1,0 +1,43 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/mab-m5-material-cache.test.ts (1 test | 1 failed) 12ms
+   × does not reuse material payload cached before a qualification was withdrawn 11ms
+     → expected { ok: true, materials: [ { …(1) } ] } to deeply equal { ok: false, degraded: true, …(1) }
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/mab-m5-material-cache.test.ts > does not reuse material payload cached before a qualification was withdrawn
+AssertionError: expected { ok: true, materials: [ { …(1) } ] } to deeply equal { ok: false, degraded: true, …(1) }
+
+- Expected
++ Received
+
+  {
+-   "degraded": true,
+-   "materials": [],
+-   "ok": false,
++   "materials": [
++     {
++       "snippet": "withdrawn secret",
++     },
++   ],
++   "ok": true,
+  }
+
+ ❯ tests/unit/mab-m5-material-cache.test.ts:9:32
+      7| it('does not reuse material payload cached before a qualification was …
+      8|  const response=await POST(new Request('http://localhost/api/mohen/mat…
+      9|  expect(await response.json()).toEqual({ok:false,degraded:true,materia…
+       |                                ^
+     10|  expect(mocks.getCached).not.toHaveBeenCalled();expect(mocks.setCache)…
+     11|  expect(response.headers.get('cache-control')).toContain('no-store');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  12:04:17
+   Duration  221ms (transform 32ms, setup 0ms, collect 55ms, tests 12ms, environment 0ms, prepare 48ms)
+

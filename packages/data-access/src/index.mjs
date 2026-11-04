@@ -285,7 +285,7 @@ export { createPrivateOriginalRepository, createPrivateOriginalWorkflow } from '
 
 export { createPrivateOriginalStorage, MAX_ORIGINAL_BYTES } from './private-original-storage.mjs';
 export { createEvidenceBridgeRepository } from './evidence-bridge-repository.mjs';
-export { createReadModelRepository } from './read-model-repository.mjs';
+export { createReadModelRepository, assertQualificationContext } from './read-model-repository.mjs';
 export { createPrivateOriginalSourceVerifier } from './private-original-source-binding.mjs';
 export { createPrivateTextReadingRepository } from './private-text-reading-repository.mjs';
 export { createStudioDelegationRepository } from './studio-delegation-repository.mjs';

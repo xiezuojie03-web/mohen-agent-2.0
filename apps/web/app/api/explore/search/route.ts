@@ -14,5 +14,5 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: false, reason: "query_required" }, { status: 400 });
   }
   const { materials, degraded } = await retrieveMaterials(q.split(/\s+/).filter(Boolean).slice(0, 8), 20);
-  return NextResponse.json({ ok: true, materials, degraded });
+  return NextResponse.json({ ok: true, materials, degraded }, { headers: { "cache-control": "no-store" } });
 }

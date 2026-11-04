@@ -1,0 +1,15 @@
+# M5共享检索当前资格与缓存定向修复
+
+基线main/HEAD=`247bee074ba07317afe25f09543ac53c45efc40b`，开工干净。继承上批M4远端闭合与M5公开作品边界。
+
+根因：八条L5读取分支只读旧audit PASS/current_valid/agent，公众搜索可获得无独立当前资格的legacy内容；materials还缓存材料五分钟，ask缓存材料衍生回答。新单测与真实HTTP均先失败，旧agent PASS合成条目在搜索中泄露；真实PG也复现缺context未报不可用。
+
+复用现有`assertQualificationContext`和`control.qualification_allows`，每个分支绑定精确consumer/purpose/非空scope，逐请求核当前revision及祖先撤销；lateral limit1避免多独立facet重复正文。服务端可信上下文可显式传入，公众请求中的qualification忽略。现有公共/Agent调用尚无正式用途映射，返回空/degraded，不默认赋全局agent用途。没有新增Gate或替代知识库。
+
+materials/ask不再缓存材料或衍生回答，数据响应no-store；explore搜索也no-store。保留限流、原wire和费用守卫；去缓存不授Provider预算或生产启用许可。
+
+验证：新增10项单测通过；全unit405 PASS/4既有实网SKIP，boundary133 PASS/0 SKIP；真实PG17全套exit0，新增实际TS检索读取有资格story_seed、错consumer/purpose/scope、legacy拒绝、G0撤销后同对象立即不可读；HTTP生产构建+Chromium9 PASS/1官方Storage缺配置SKIP。六workspace类型检查通过。独立review无重要问题并复跑10项。
+
+范围：真实PG正例覆盖story_seed，其他七分支由SQL结构测试覆盖，不能称所有专业类别正例已齐；合成Gate不代正式专业审核。缺生产purpose/scope映射仍HOLD；正式媒体/rights、原件外发和费用条件保持。ask仍走既有研究费用守卫，正式启用前必须有合法ledger/预算与重复调用核证。无真实Provider调用或生产操作。
+
+原始RED/GREEN、PG/HTTP/类型日志在`evidence/CODEX_M5_RETRIEVE_20261104/`。源码GitHub结果取得后另补，不能借历史SUCCESS代验。下一步仅原M5私有preview正文与改稿CAS，不重开M1—M4。回退关闭受影响检索入口，不能恢复旧PASS或旧缓存旁路。

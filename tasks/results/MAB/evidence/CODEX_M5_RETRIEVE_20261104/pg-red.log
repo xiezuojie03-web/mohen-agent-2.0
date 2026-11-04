@@ -1,0 +1,73 @@
+K3_DB_SECURITY_PRECHECK_PASS
+MAB_IMPORTED_MATERIAL_REPOSITORY_PASS real-session owner cross-user forged expired disabled rollback pooled-identity
+K3_INDEPENDENT_GATE_PASS identities ACL receipt policy idempotency CAS append-only revocation dependency propagation atomic-failure concurrency
+K3_STAGE_SERVICE_PASS real-signer HTTP-decide exact-stage-current-read scoped-consumer disabled-reviewer revoke no-cached-PASS
+K3_GATE_REPOSITORY_PASS actual-low-privilege-login shared-admin-SET-ROLE-denied single-client-transaction token-cleared rollback
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/integration/qualified-retrieve.integration.ts (1 test | 1 failed) 102ms
+   × marked PG proves exact current G5 retrieval and recursive revocation without mock grants 100ms
+     → expected { materials: [], degraded: false } to deeply equal { materials: [], degraded: true }
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/qualified-retrieve.integration.ts > marked PG proves exact current G5 retrieval and recursive revocation without mock grants
+AssertionError: expected { materials: [], degraded: false } to deeply equal { materials: [], degraded: true }
+
+- Expected
++ Received
+
+  {
+-   "degraded": true,
++   "degraded": false,
+    "materials": [],
+  }
+
+ ❯ tests/integration/qualified-retrieve.integration.ts:10:41
+      8| it('marked PG proves exact current G5 retrieval and recursive revocati…
+      9|  expect(sql("select current_setting('mohen.test_instance',true)")).toB…
+     10|  expect(await retrieveMaterials([],12)).toEqual({materials:[],degraded…
+       |                                         ^
+     11|  const result=await retrieveMaterials([],24,{qualification:context} as…
+     12|  expect(result.degraded).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  12:04:49
+   Duration  387ms (transform 84ms, setup 0ms, collect 135ms, tests 102ms, environment 0ms, prepare 48ms)
+
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: WEB_CURRENT_QUALIFICATION_RETRIEVAL_current
+
+1 !== 0
+
+    at checkWebRetrieval (file:///workspace/mohen-agent-2.0/tests/data-production/read-model-qualification.integration.mjs:64:10)
+    at file:///workspace/mohen-agent-2.0/tests/data-production/read-model-qualification.integration.mjs:66:2
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+file:///workspace/mohen-agent-2.0/scripts/test-k3-db.mjs:57
+  if (consumptionResult.status !== 0) throw new Error("QUALIFICATION_CONSUMPTION_TEST_FAILED");
+                                            ^
+
+Error: QUALIFICATION_CONSUMPTION_TEST_FAILED
+    at file:///workspace/mohen-agent-2.0/scripts/test-k3-db.mjs:57:45
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.19.0

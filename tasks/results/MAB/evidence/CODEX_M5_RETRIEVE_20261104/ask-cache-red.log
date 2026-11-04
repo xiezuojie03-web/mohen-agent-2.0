@@ -1,0 +1,44 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/mab-m5-material-cache.test.ts (2 tests | 1 failed) 12ms
+   ✓ does not reuse material payload cached before a qualification was withdrawn 5ms
+   × does not disclose an answer cached from withdrawn materials 7ms
+     → expected { ok: true, materials: [ { …(1) } ] } to deeply equal { ok: true, degraded: true, …(1) }
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/mab-m5-material-cache.test.ts > does not disclose an answer cached from withdrawn materials
+AssertionError: expected { ok: true, materials: [ { …(1) } ] } to deeply equal { ok: true, degraded: true, …(1) }
+
+- Expected
++ Received
+
+  {
+-   "decision": {
+-     "state": "HOLD",
++   "materials": [
++     {
++       "snippet": "withdrawn secret",
+      },
+-   "degraded": true,
++   ],
+    "ok": true,
+  }
+
+ ❯ tests/unit/mab-m5-material-cache.test.ts:18:32
+     16|  mocks.research.mockResolvedValue({decision:{state:'HOLD'},degraded:tr…
+     17|  const response=await ask(new Request('http://localhost/api/mohen/ask'…
+     18|  expect(await response.json()).toEqual({ok:true,degraded:true,decision…
+       |                                ^
+     19|  expect(mocks.getCached).not.toHaveBeenCalled();expect(mocks.setCache)…
+     20|  expect(response.headers.get('cache-control')).toContain('no-store');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  12:07:04
+   Duration  230ms (transform 46ms, setup 0ms, collect 69ms, tests 12ms, environment 0ms, prepare 49ms)
+

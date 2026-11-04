@@ -5,6 +5,27 @@ import {browserRequests} from './mab-browser-request';
 
 test.skip(process.env.MOHEN_E2E_ISOLATED!=='1','Marked disposable HTTP database only.');
 
+test('legacy agent PASS cannot leak through public knowledge search or cached material endpoint',async({request})=>{
+ const socket=process.env.MOHEN_TEST_SOCKET,database=process.env.MOHEN_TEST_DATABASE,psql=process.env.MOHEN_TEST_PSQL;
+ if(!socket?.startsWith('/workspace/')||!/^mohen_k3_http_[a-f0-9]+_test$/.test(database??'')||
+  !psql||!(psql==='/usr/bin/psql'||/^\/workspace\/work\/[a-zA-Z0-9_/-]+$/.test(psql)))throw Error('M5_ISOLATED_DATABASE_REQUIRED');
+ const args=['-X','-q','-At','-v','ON_ERROR_STOP=1','-h',socket,'-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database!];
+ const sql=(input:string)=>execFileSync(psql,args,{input,encoding:'utf8'}).trim();
+ if(sql("select current_setting('mohen.test_instance',true)")!=='codex-k3-isolated')throw Error('M5_UNMARKED_DATABASE_REFUSED');
+ const run=randomUUID(),id=randomUUID(),secret='legacy-knowledge-'+randomUUID();
+ sql(`insert into control.production_runs(run_id,research_intent,execution_mode,status) values('${run}','synthetic-only','attended','PASS');
+ insert into read_model.story_seeds(story_seed_id,seed_key,title,payload) values('${id}','${secret}','${secret}','{}');
+ insert into control.gate_audits(run_id,stage,gate_code,object_type,object_id,result,consumer) values('${run}','D05','G5','story_seed','${id}','PASS','agent');`);
+ const found=await request.get('/api/search?q='+secret);
+ expect(found.status()).toBe(200);expect((await found.json()).knowledge).toEqual([]);
+ expect(found.headers()['cache-control']).toContain('no-store');
+ for(let attempt=0;attempt<2;attempt++){
+  const response=await request.post('/api/mohen/materials',{data:{terms:[secret],qualification:{consumer:'agent',purpose:{namespace:'G5',code:'fixture',version:'1'},scope:{project:'fixture'}}}});
+  expect(response.status()).toBe(200);expect(await response.json()).toEqual({ok:false,degraded:true,materials:[]});
+  expect(response.headers()['cache-control']).toContain('no-store');
+ }
+});
+
 test('legacy published pointer without current G5 discloses no work through public consumers',async({page})=>{
  const request=await browserRequests(page);
  expect((await request.post('/api/auth/register',{data:{email:`m5-${randomUUID()}@example.invalid`,username:'隔离作者',password:randomUUID()}})).status()).toBe(200);

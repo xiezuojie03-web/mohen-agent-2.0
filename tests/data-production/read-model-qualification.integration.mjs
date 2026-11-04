@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {execFileSync} from 'node:child_process';
+import {execFileSync,spawnSync} from 'node:child_process';
 import {createHmac,randomUUID} from 'node:crypto';
 import {createRequire} from 'node:module';
 import {createReadModelRepository} from '../../packages/data-access/src/read-model-repository.mjs';
@@ -57,6 +57,13 @@ try {
  assert.equal(await repo.getRuntimeEligible('story_seed',story,{...context,purpose:{...context.purpose,code:'foreign'}}),null);
  assert.equal(await repo.getRuntimeEligible('story_seed',story,{...context,scope:{project:'foreign'}}),null);
  assert.equal((await repo.listRuntimeEligible('story_seed',context)).length,1,'one current facet, no duplicate history and no legacy promotion');
+ const checkWebRetrieval=phase=>{
+  const url=new URL(`postgresql://k3_admin:synthetic@localhost:${process.env.MOHEN_TEST_PORT??55432}/${database}`);url.searchParams.set('host',socket);
+  const result=spawnSync(process.execPath,['node_modules/vitest/vitest.mjs','run','--config','vitest.qualified-retrieve-db.config.ts'],{
+   env:{...process.env,DATABASE_URL:url.toString(),MOHEN_DATABASE_PASSWORD:'synthetic',MOHEN_DB_DRIVER:'pg',MOHEN_RETRIEVE_STORY:story,MOHEN_RETRIEVE_PHASE:phase},stdio:'inherit'});
+  assert.equal(result.status,0,'WEB_CURRENT_QUALIFICATION_RETRIEVAL_'+phase);
+ };
+ checkWebRetrieval('current');
  const production=createDataProductionRepository(pool);
  const g5Context={consumer:'visual_stage',purpose:{namespace:'G5',code:'fixture',version:'1'},scope:{project:'fixture'}};
  const g4Context={consumer:'visual_stage',purpose:{namespace:'G4',code:'fixture',version:'1'},scope:{project:'fixture'}};
@@ -73,6 +80,7 @@ try {
 
  sql(`begin;set local role mohen_gate_signer;set local mohen.session_token='${token}';select control.revoke_gate_qualification('${root.gate_audit_id}','${randomUUID()}','TEST_ONLY root rights withdrawn');commit;`);
  assert.equal(await repo.getRuntimeEligible('story_seed',story,context),null,'even a previously read/cached ID must recheck the entire current dependency chain');
+ checkWebRetrieval('revoked');
  assert.equal((await production.passed('D05',g5Context)).length,0,'revoked G0 invalidates G5 independent consumer');
  assert.equal((await production.legalInput('D05',g4Context)).length,0,'revoked ancestor forbids G4 being consumed by D05');
  await assert.rejects(()=>validateG5Lineage(pool,[finding],g4Context),/G5_LINEAGE_BLOCKED/);

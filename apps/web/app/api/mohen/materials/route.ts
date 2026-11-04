@@ -10,7 +10,7 @@
 
 import { NextResponse } from "next/server";
 import { retrieveMaterials, MAX_LIMIT } from "../../../../lib/mohen-agent/retrieve";
-import { isRateLimited, getCached, setCache, getClientSource } from "../../../../lib/mohen-agent/guard";
+import { isRateLimited, getClientSource } from "../../../../lib/mohen-agent/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -36,15 +36,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, degraded: false, materials: [], reason: "rate_limited" }, { status: 429 });
   }
 
-  // 防滥用：结果缓存（相同 terms+limit 5 分钟内直接回缓存）
-  const cacheKey = `materials:${terms.join("|")}:${limit}`;
-  const cached = getCached(cacheKey);
-  if (cached !== undefined) {
-    return NextResponse.json(cached);
-  }
-
+  // Current qualification must be checked on every request. A cached material
+  // payload can outlive an ancestor's rights or Reviewer revocation.
   const { materials, degraded } = await retrieveMaterials(terms, limit);
   const result = { ok: !degraded, degraded, materials };
-  if (!degraded) setCache(cacheKey, result);
-  return NextResponse.json(result);
+  return NextResponse.json(result, { headers: { "cache-control": "no-store" } });
 }

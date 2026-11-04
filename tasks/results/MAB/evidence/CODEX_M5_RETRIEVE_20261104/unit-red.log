@@ -1,0 +1,127 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+stderr | tests/unit/mab-m5-qualified-retrieve.test.ts > returns no materials when current qualification database is unavailable
+[mohen/retrieve] 检索失败： synthetic database unavailable
+
+ ❯ tests/unit/mab-m5-qualified-retrieve.test.ts (8 tests | 7 failed) 27ms
+   × missing server qualification context refuses even legacy PASS rows before querying 10ms
+     → expected { materials: [ { …(9) } ], …(1) } to deeply equal { materials: [], degraded: true }
+   × invalid context refuses before querying: {} 2ms
+     → expected { materials: [ { …(9) } ], …(1) } to deeply equal { materials: [], degraded: true }
+   × invalid context refuses before querying: {"consumer":"agent","purpose":{"namespace":"G5","code":"fixture","version":"1"},"scope":{}} 2ms
+     → expected { materials: [ { …(9) } ], …(1) } to deeply equal { materials: [], degraded: true }
+   × invalid context refuses before querying: {"consumer":"agent","purpose":{"namespace":"G5","code":"fixture","version":"1"},"scope":{}} 2ms
+     → expected { materials: [ { …(9) } ], …(1) } to deeply equal { materials: [], degraded: true }
+   × invalid context refuses before querying: {"consumer":"watch","purpose":{"namespace":"G5","code":"fixture","version":"1"},"scope":{"project":"fixture"}} 2ms
+     → expected { materials: [ { …(9) } ], …(1) } to deeply equal { materials: [], degraded: true }
+   × invalid context refuses before querying: {"consumer":"agent","purpose":{"namespace":"G5","code":"fixture","version":""},"scope":{"project":"fixture"}} 2ms
+     → expected { materials: [ { …(9) } ], …(1) } to deeply equal { materials: [], degraded: true }
+   × uses exact purpose/scope/consumer and current independent qualification on every branch 4ms
+     → expected { terms: '桥市' } to match object { consumer: 'agent', …(4) }
+(1 matching property omitted from actual)
+   ✓ returns no materials when current qualification database is unavailable 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/mab-m5-qualified-retrieve.test.ts > missing server qualification context refuses even legacy PASS rows before querying
+AssertionError: expected { materials: [ { …(9) } ], …(1) } to deeply equal { materials: [], degraded: true }
+
+- Expected
++ Received
+
+  {
+-   "degraded": true,
+-   "materials": [],
++   "degraded": false,
++   "materials": [
++     {
++       "entityIds": [],
++       "epistemic": "FACT_EVIDENCED",
++       "id": "legacy",
++       "kind": "claim",
++       "matchScore": 0,
++       "score": 0.7,
++       "snippet": "unqualified legacy secret",
++       "sourceRef": "",
++       "year": null,
++     },
++   ],
+  }
+
+ ❯ tests/unit/mab-m5-qualified-retrieve.test.ts:8:46
+      6| beforeEach(()=>{vi.resetAllMocks();db.queryRows.mockResolvedValue([{id…
+      7| it('missing server qualification context refuses even legacy PASS rows…
+      8|  expect(await retrieveMaterials(['secret'])).toEqual({materials:[],deg…
+       |                                              ^
+      9|  expect(db.queryRows).not.toHaveBeenCalled();
+     10| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  tests/unit/mab-m5-qualified-retrieve.test.ts > invalid context refuses before querying: {}
+ FAIL  tests/unit/mab-m5-qualified-retrieve.test.ts > invalid context refuses before querying: {"consumer":"agent","purpose":{"namespace":"G5","code":"fixture","version":"1"},"scope":{}}
+ FAIL  tests/unit/mab-m5-qualified-retrieve.test.ts > invalid context refuses before querying: {"consumer":"agent","purpose":{"namespace":"G5","code":"fixture","version":"1"},"scope":{}}
+ FAIL  tests/unit/mab-m5-qualified-retrieve.test.ts > invalid context refuses before querying: {"consumer":"watch","purpose":{"namespace":"G5","code":"fixture","version":"1"},"scope":{"project":"fixture"}}
+ FAIL  tests/unit/mab-m5-qualified-retrieve.test.ts > invalid context refuses before querying: {"consumer":"agent","purpose":{"namespace":"G5","code":"fixture","version":""},"scope":{"project":"fixture"}}
+AssertionError: expected { materials: [ { …(9) } ], …(1) } to deeply equal { materials: [], degraded: true }
+
+- Expected
++ Received
+
+  {
+-   "degraded": true,
+-   "materials": [],
++   "degraded": false,
++   "materials": [
++     {
++       "entityIds": [],
++       "epistemic": "FACT_EVIDENCED",
++       "id": "legacy",
++       "kind": "claim",
++       "matchScore": 0,
++       "score": 0.7,
++       "snippet": "unqualified legacy secret",
++       "sourceRef": "",
++       "year": null,
++     },
++   ],
+  }
+
+ ❯ tests/unit/mab-m5-qualified-retrieve.test.ts:13:17
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  tests/unit/mab-m5-qualified-retrieve.test.ts > uses exact purpose/scope/consumer and current independent qualification on every branch
+AssertionError: expected { terms: '桥市' } to match object { consumer: 'agent', …(4) }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "consumer": "agent",
+-   "purpose_code": "fixture",
+-   "purpose_namespace": "G5",
+-   "purpose_version": "1",
+-   "scope": "{\"project\":\"fixture\"}",
++   "terms": "桥市",
+  }
+
+ ❯ tests/unit/mab-m5-qualified-retrieve.test.ts:18:17
+     16|  await retrieveMaterials(['桥市'],12,{qualification} as never);
+     17|  const [sql,params]=db.queryRows.mock.calls[0];
+     18|  expect(params).toMatchObject({consumer:'agent',purpose_namespace:'G5'…
+       |                 ^
+     19|  expect(sql.match(/control\.qualification_allows\(/g)).toHaveLength(8);
+     20|  expect(sql).not.toContain('g.current_valid=true');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 1 passed (8)
+   Start at  12:03:44
+   Duration  457ms (transform 131ms, setup 0ms, collect 213ms, tests 27ms, environment 0ms, prepare 61ms)
+

@@ -4,9 +4,9 @@
 //
 // 数据源从第一代 public 表（evidence / source_records / cultural_relation_claims /
 // cultural_events / cultural_conflicts / cultural_present_connections，已 DROP）
-// 切换到 read_model 六类 L5 发布成果，且只读 G5 独立资格 PASS（current_valid=true、
-// consumer='agent'）。这是「发布层接线」：管道与门禁接对；上游数据生产（N01–N06）
-// 尚未实现时，read_model 无候选、G5 无 PASS，本检索诚实返回空，绝不伪造内容。
+// 读取 read_model 六类 L5 成果，复用现行独立资格验证：精确消费者/用途/非空范围、
+// 当前artifact revision与祖先撤销逐请求检查。缺可信服务端上下文即不可用，
+// 不以旧audit PASS或默认agent许可公开材料。
 //
 // 纪律：
 // - **只读 SELECT**，零写库、零迁移；
@@ -14,7 +14,7 @@
 // - 只返回**经 G5 独立资格 PASS** 的发布成果；认识论档位只降不升；
 // - 库不可用 → 返回 degraded，由上层明确告知用户，**绝不静默编造材料**。
 
-import { queryRows, type PgRow } from "@mohen/data-access";
+import { queryRows, assertQualificationContext, type PgRow, type QualificationReadOptions } from "@mohen/data-access";
 import type { EpistemicTag, Material } from "@mohen/agent-runtime";
 
 export const MAX_LIMIT = 24;
@@ -30,8 +30,8 @@ export const OTHER_TOWNS = [
 ];
 
 /**
- * 六路 UNION：read_model 六类 L5 发布成果，各自 join G5 独立资格 PASS
- * （current_valid=true、consumer='agent'）。object_type 用单数（与 read-model-repository
+ * 六类L5与派生分面的八分支读取，均核当前独立G5；lateral limit 1避免多资格重复。
+ * object_type 用单数（与 read-model-repository
  * 的 kind 一致）。发布成果 -> 展示 kind 的接线映射：
  *   world_projection -> claim；world_projection.relations -> relation（P0-1）；map_timeline_projection -> event；agent_context -> present；
  *   story_seed -> claim；discovery_path -> fragment；evidence_pointer -> evidence。
@@ -60,9 +60,13 @@ from (
       '0.700'::text                                           as conf,
       coalesce(p.payload->>'entities', p.projection_key, '')  as entity_txt
     from read_model.world_projections p
-    join control.gate_audits g
-      on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-     and g.consumer='agent' and g.object_type='world_projection' and g.object_id=p.projection_id
+    join lateral (
+      select 1 from control.qualification_current q
+      join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+      where q.gate_code='G5' and q.object_type='world_projection' and q.object_id=p.projection_id
+        and control.qualification_allows(g.gate_audit_id,:'consumer',:'purpose_namespace',:'purpose_code',:'purpose_version',:'scope'::jsonb)
+      limit 1
+    ) qualified on true
 
     union all
 
@@ -76,9 +80,13 @@ from (
       '0.700'::text                                           as conf,
       coalesce(m.payload->>'entities', m.projection_key, '')  as entity_txt
     from read_model.map_timeline_projections m
-    join control.gate_audits g
-      on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-     and g.consumer='agent' and g.object_type='map_timeline_projection' and g.object_id=m.map_timeline_projection_id
+    join lateral (
+      select 1 from control.qualification_current q
+      join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+      where q.gate_code='G5' and q.object_type='map_timeline_projection' and q.object_id=m.map_timeline_projection_id
+        and control.qualification_allows(g.gate_audit_id,:'consumer',:'purpose_namespace',:'purpose_code',:'purpose_version',:'scope'::jsonb)
+      limit 1
+    ) qualified on true
 
     union all
 
@@ -92,9 +100,13 @@ from (
       '0.500'::text                                           as conf,
       coalesce(a.payload->>'entities', a.context_key, '')     as entity_txt
     from read_model.agent_contexts a
-    join control.gate_audits g
-      on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-     and g.consumer='agent' and g.object_type='agent_context' and g.object_id=a.agent_context_id
+    join lateral (
+      select 1 from control.qualification_current q
+      join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+      where q.gate_code='G5' and q.object_type='agent_context' and q.object_id=a.agent_context_id
+        and control.qualification_allows(g.gate_audit_id,:'consumer',:'purpose_namespace',:'purpose_code',:'purpose_version',:'scope'::jsonb)
+      limit 1
+    ) qualified on true
 
     union all
 
@@ -111,9 +123,13 @@ from (
       '0.600'::text                                            as conf,
       coalesce(pc.item->>'entities', p.projection_key, '')     as entity_txt
     from read_model.world_projections p
-    join control.gate_audits g
-      on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-     and g.consumer='agent' and g.object_type='world_projection' and g.object_id=p.projection_id
+    join lateral (
+      select 1 from control.qualification_current q
+      join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+      where q.gate_code='G5' and q.object_type='world_projection' and q.object_id=p.projection_id
+        and control.qualification_allows(g.gate_audit_id,:'consumer',:'purpose_namespace',:'purpose_code',:'purpose_version',:'scope'::jsonb)
+      limit 1
+    ) qualified on true
     cross join lateral jsonb_array_elements(coalesce(p.payload->'present_connections','[]'::jsonb))
       with ordinality as pc(item, ord)
 
@@ -131,9 +147,13 @@ from (
       '0.500'::text                                           as conf,
       coalesce(s.payload->>'entities', s.seed_key, '')        as entity_txt
     from read_model.story_seeds s
-    join control.gate_audits g
-      on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-     and g.consumer='agent' and g.object_type='story_seed' and g.object_id=s.story_seed_id
+    join lateral (
+      select 1 from control.qualification_current q
+      join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+      where q.gate_code='G5' and q.object_type='story_seed' and q.object_id=s.story_seed_id
+        and control.qualification_allows(g.gate_audit_id,:'consumer',:'purpose_namespace',:'purpose_code',:'purpose_version',:'scope'::jsonb)
+      limit 1
+    ) qualified on true
 
     union all
 
@@ -147,9 +167,13 @@ from (
       '0.500'::text                                           as conf,
       coalesce(d.steps->0->>'entities', d.path_key, '')       as entity_txt
     from read_model.discovery_paths d
-    join control.gate_audits g
-      on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-     and g.consumer='agent' and g.object_type='discovery_path' and g.object_id=d.discovery_path_id
+    join lateral (
+      select 1 from control.qualification_current q
+      join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+      where q.gate_code='G5' and q.object_type='discovery_path' and q.object_id=d.discovery_path_id
+        and control.qualification_allows(g.gate_audit_id,:'consumer',:'purpose_namespace',:'purpose_code',:'purpose_version',:'scope'::jsonb)
+      limit 1
+    ) qualified on true
 
     union all
 
@@ -163,9 +187,13 @@ from (
       '0.700'::text                                           as conf,
       coalesce(e.display_locator->>'entities', '')            as entity_txt
     from read_model.evidence_pointers e
-    join control.gate_audits g
-      on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-     and g.consumer='agent' and g.object_type='evidence_pointer' and g.object_id=e.evidence_pointer_id
+    join lateral (
+      select 1 from control.qualification_current q
+      join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+      where q.gate_code='G5' and q.object_type='evidence_pointer' and q.object_id=e.evidence_pointer_id
+        and control.qualification_allows(g.gate_audit_id,:'consumer',:'purpose_namespace',:'purpose_code',:'purpose_version',:'scope'::jsonb)
+      limit 1
+    ) qualified on true
 
     union all
 
@@ -181,9 +209,13 @@ from (
       '0.700'::text                                           as conf,
       r.rel_txt                                               as entity_txt
     from read_model.world_projections p
-    join control.gate_audits g
-      on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-     and g.consumer='agent' and g.object_type='world_projection' and g.object_id=p.projection_id
+    join lateral (
+      select 1 from control.qualification_current q
+      join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+      where q.gate_code='G5' and q.object_type='world_projection' and q.object_id=p.projection_id
+        and control.qualification_allows(g.gate_audit_id,:'consumer',:'purpose_namespace',:'purpose_code',:'purpose_version',:'scope'::jsonb)
+      limit 1
+    ) qualified on true
     cross join lateral jsonb_array_elements_text(coalesce(p.payload->'relations','[]'::jsonb)) with ordinality as r(rel_txt, ord)
       ) x
 ) y
@@ -337,6 +369,8 @@ export interface RetrieveResult {
 }
 
 export interface RetrieveOptions {
+  /** Trusted server-owned consumer/purpose/scope; never populated from a public request. */
+  qualification?: QualificationReadOptions;
   /** 切片镇名，默认金泽 */
   town?: string;
   /** 归属排除用的其它镇名；传空数组可关闭该机制 */
@@ -365,8 +399,11 @@ export async function retrieveMaterials(
   void opts.town;
   void opts.excludeTowns;
   try {
+    const {consumer,purpose,scope}=assertQualificationContext(opts.qualification);
     const rows = await queryRows(SQL.replace("__LIMIT__", String(lim)), {
       terms: safeTerms.join("|"),
+      consumer,purpose_namespace:purpose.namespace,purpose_code:purpose.code,purpose_version:purpose.version,
+      scope:JSON.stringify(scope),
     });
     const materials = rows
       .filter((r) => (r.snippet ?? "").trim().length > 0)

@@ -160,6 +160,7 @@ export interface ReadModelRepository {
   getRuntimeEligible(kind: string, id: string, options: QualificationReadOptions): Promise<Record<string, unknown> | null>;
   listRuntimeEligible(kind: string, options: QualificationReadOptions): Promise<Array<Record<string, unknown>>>;
 }
+export declare function assertQualificationContext(options: unknown): QualificationReadOptions;
 export declare function createReadModelRepository(db: { query: (sql: string, params: unknown[]) => Promise<{ rows: Array<Record<string, unknown>> }> }): ReadModelRepository;
 /** A verified D01 source binding; returns false for mismatch, throws on denied DB access. */
 export declare function createPrivateOriginalSourceVerifier(pool:{connect:Function}):(
