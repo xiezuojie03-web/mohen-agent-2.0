@@ -876,3 +876,6 @@ M5首批核证：源码eb9ee3e主CI41824906758、实际HTTP41824906796全部SUCC
 私有preview漏正文/JSONB和局部改稿/重排的分离读写CAS已补，真实八并发1成功7冲突、同rev提交及重排通过；旧247bee0文档CI的共享时限2callback失败已取得日志并用确定性墙钟/timer负例修复，T7与最终accept也共享耗尽标记。417单测/133边界、类型、真实PG和HTTP11PASS/1StorageSKIP，实际源码push回执另补。报告见CODEX_M5_REVISIONS_20261104.md；本计划原M5完整复选框不勾。
 
 下一轮仍原M5/HP10—12：导演方案初始保存及fork/restore等版本写入口的并发/幂等与来源归属、同一WorkRevision链；继而精确G5/rights合法消费映射、九动作/13类型逐业务核验。不能把局部改稿CAS当所有写入口通过，不新开架构，不激活生产/付费。
+
+
+M5本批源码最终核证：e5a3a5b主CI41828369677、隔离PG41828369318、实际HTTP41828369462均SUCCESS，实际11PASS/1StorageSKIP。局部预览/改稿/重排/共享deadline子项完成，M5整体不准出；后续按上节其它版本写入口→同WorkRevision/G5/rights及业务全验收继续，原准出和生产条件不变。

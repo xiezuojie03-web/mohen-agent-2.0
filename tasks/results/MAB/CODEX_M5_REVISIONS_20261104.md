@@ -21,3 +21,7 @@
 最终单测417 PASS/4既有实网SKIP，生产边界133 PASS/0 SKIP，六workspace类型和107路由权限检查通过；独立审查无剩余重要问题。真实HTTP11PASS/1官方Storage缺配置SKIP，PG17全套与新资格检索/撤权、恢复回滚均实跑。原始日志在`evidence/CODEX_M5_REVISIONS_20261104/`。首个构建PgRow参数类型失败与修正、审查补例失败均保留。
 
 本批只覆盖局部改稿/重排；导演方案初始提交、fork/restore等其它写入口的并发/幂等仍待核，不能泛签所有版本保存。正式G5/rights映射、九动作/13类型业务全验收仍HOLD，M5未准出。无生产写入/角色/开关/真实模型费用。回退可关闭相关入口，不允许恢复假成功、旧PASS或过期候选accept，保留已有合法版本与审计。GitHub精确源码结果取得后补记。
+
+## GitHub最终源码核证
+
+[e5a3a5b035833e70f07d928695401920ebaadee3](https://github.com/xiezuojie03-web/mohen-agent-2.0/commit/e5a3a5b035833e70f07d928695401920ebaadee3)：主CI41828369677、PG1741828369318、HTTP41828369462均SUCCESS；实际job126568860354含11PASS/1StorageSKIP、MAB_HTTP_BROWSER_PASS及清库标记。旧247bee0的失败日志作为历史证据保留，不能把新成功改记到旧SHA。最终本地合成测试库0残留，容器已移除；无生产操作或费用。

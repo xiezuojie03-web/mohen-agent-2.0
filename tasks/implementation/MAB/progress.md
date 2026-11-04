@@ -915,3 +915,12 @@ Ruling: 当前M4允许完成可运行隔离链，真实第三方/生产验证仍
 
 
 最终本地集成回执：同一最终源码417单测PASS/4旧SKIP、133边界PASS、六workspace类型/107路由auth通过；完整PG17exit0，真实Next+HTTP11PASS/1StorageSKIP。最后PG/HTTP已在deadline审查修复后重跑，非复用修复前日志。源码push前diff检查通过；正式生产和M阶段整体状态保持上述边界。
+
+
+### M5私有修订/共享时限源码实际GitHub核证
+
+源码e5a3a5b035833e70f07d928695401920ebaadee3：主CI41828369677、独立PG1741828369318、真实HTTP41828369462全部SUCCESS；实际job126568860354日志11PASS/1StorageSKIP，MAB_HTTP_BROWSER_PASS与数据库清除标记存在。最后fetch核HEAD=origin/main=e5a3a5b，树干净。旧247bee0的CI失败保留并由本批确定性deadline回归修复，不改写成旧SHA成功。
+
+本地最后两条集成脚本已清理全部mohen_k3_*_test数据库（查询0），本批合成PG容器已移除。源码之外此次只补文档/回执；未来文档SHA不冒称运行过上述HTTP。证据清单按Git暂存blob字节计算SHA256（避免日志CRLF入库规范化造成本地字节hash与仓库不同），各批机器回执与真实失败/成功日志均保留。
+
+下一步严格原M5：导演方案初始保存及fork/restore等其它版本写入口的幂等/CAS/来源归属，同WorkRevision链及专业G5/rights映射与ST九动作/13类型；本批未签这些未覆盖能力。M5/HANDOFF_NOT_READY与上游所有固定生产条件保持，无生产数据/开关操作，无私人外发/费用。
