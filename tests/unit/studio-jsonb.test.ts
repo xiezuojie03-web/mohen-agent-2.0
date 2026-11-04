@@ -39,10 +39,14 @@ for (const encoding of ["native", "psql"] as const) {
     expect(result?.voiceover.full).toBe("有来源的陈述");
   });
   it(`${encoding} JSON columns preserve content and provenance when saved as a revision`, async () => {
-    db.queryRows.mockResolvedValueOnce([row()]);
-    db.queryValue.mockResolvedValueOnce("2").mockResolvedValueOnce(revision);
+    db.queryRows.mockResolvedValueOnce([row()])
+      .mockResolvedValueOnce([{ revision_id: "previous-revision", revision_no: 1, content: {} }])
+      .mockResolvedValueOnce([{ revision_id: revision }]);
     expect(await commitWorkRevision("work", "plan")).toMatchObject({ revisionId: revision, revisionNo: 2 });
-    const saved = JSON.parse(db.run.mock.calls[0][1].content);
+    const insert = db.queryRows.mock.calls.find(([sql]) => String(sql).includes("insert into publication.work_revisions"));
+    expect(insert).toBeDefined();
+    expect(String(insert![0])).toContain("on conflict (work_id,revision_no) do nothing");
+    const saved = JSON.parse(insert![1].content);
     expect(saved.beats).toEqual([beat]);
     expect(saved.historicalQuestion).toBe("怎样理解变化？");
   });

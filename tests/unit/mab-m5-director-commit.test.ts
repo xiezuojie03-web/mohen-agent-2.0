@@ -47,10 +47,10 @@ it("propagates a failed database write instead of pretending the revision was sa
 it("idempotent retries acknowledge the already saved exact director source/content",async()=>{
  let savedContent:unknown;
  db.queryRows.mockImplementation(async (sql:string,args:any)=>{
+   if(sql.includes("insert into publication.work_revisions")){savedContent=args.content;return [{revision_id:rid}];}
    if(sql.includes("from public.director_plans d")&&sql.includes("join publication.works w"))return [source];
    if(sql.includes("order by revision_no desc"))return savedContent
      ? [{revision_id:rid,revision_no:2,content:JSON.parse(String(savedContent))}] : [base];
-   if(sql.includes("insert into publication.work_revisions")){savedContent=args.content;return [{revision_id:rid}];}
    throw Error("UNEXPECTED_SQL");
  });
  await expect(commitWorkRevision(wid,pid,1)).resolves.toMatchObject({revisionNo:2});
