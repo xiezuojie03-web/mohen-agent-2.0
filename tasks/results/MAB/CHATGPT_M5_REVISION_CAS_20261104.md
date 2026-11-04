@@ -24,3 +24,11 @@
 - **本批M5导演提交和fork/restore为 CODE_PRESENT＋CI_SUCCESS，正式PG并发/E2E、Owner作品体验以及精确G5/rights/consumer仍HOLD。** 不以已有隔离HTTP全绿代签新版本写入的正式生产资格。
 - 回滚受影响新写入口到前一合法版本或暂时禁用；已写的不可变修订/历史审计须保留，不以重开旧非CAS写入作为回退；不得开放缺独立Gate的公共发布。
 - 下一步依现行PLAN原M5/HP10—12：增加实际隔离PG fork/restore并发及幂等E2E，继续同WorkRevision的其它写入口、精确G5/rights用途消费映射与ST九动作/13类型正反业务验收。M1—M4生产固定HOLD由原负责条件按原到点关闭；不用改变施工计划。
+
+
+## 4. 新增真实隔离PostgreSQL / Chromium 专项E2E（08fa04e）
+
+- 后续精准补齐上文所列的真实PG fork/restore并发负例，提交 `08fa04e7778481c0e0ac88cd0053fa7b1dd01aad`，仅更新现有`tests/e2e/mab-m5-private-revisions.spec.ts`，未另建Runner或更改MAB设计。
+- 真正一次性PG17／Next／Chromium运行：<https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41838116408> **SUCCESS**。job `126602232916` 原始日志明确包含`real PG: concurrent forks have one CAS winner, retries are idempotent, historical restore preserves source` **PASS**；全套`12 passed / 1 skipped`、`MAB_HTTP_BROWSER_PASS`、`MAB_HTTP_SYNTHETIC_DATABASE_CLEANED`。该1项SKIP仍为官方Storage缺配置，不能充作原件正式对象验证。
+- 同SHA主CI <https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41838116485> **SUCCESS**。覆盖不等于正式Provider/独立G5或生产Owner/Storage全链。
+- 据此把 **M5 fork/restore 的源码＋隔离PG并发/幂等/精确历史来源子项** 由先前`PG_E2E_HOLD`提升为`VERIFIED_ISOLATED`；仍无生产业务回执与Owner体验签收，M5整体`HOLD`、M1—M4全部原固定生产与专业条件不变。下一步进入同WorkRevision的专业G5/rights和ST九动作/13类合同核对，不重复此已证子项。
