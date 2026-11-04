@@ -975,3 +975,12 @@ Ruling: 当前M4允许完成可运行隔离链，真实第三方/生产验证仍
 ### 本轮原M5独立补证继续（不是新阶段）
 
 沿原HP07/HP12继续补齐六类L5×四消费者真实PG绑定/物理fingerprint变化拒绝/祖先撤销、签审整稿媒体clear/license/expiry正反、实际应用wrapper真实PG（不是同名测试替身）和出版WATCH资格；最终全PG17exit0，HTTP因共享fixture变化已重新15PASS/1StorageSKIP。生产reader/Gate/策略无新增修改。原review的六类PG覆盖minor关闭；其它三消费者各自HTTP、13类专业业务/同意撤回/合法复用/canonical媒资、ST01—04/19组件和生产条件保留。回执§6及新原始日志为准。审计差异账修正与新测试将随同提交，实际新SHA/Actions另补，first-source主CI失败不抹掉。
+
+- 补证与差异账修正已推main@3929d9df7496fc883c684304f19c1908977b7982；三条精确运行：主CI41933637116、PG41933636834、HTTP41933636716，当前SUCCESS_VERIFIED_3929D9D。六L5/媒体/真实应用wrapper最终本地PG全套及HTTP15PASS/1StorageSKIP证据已提交，原711 legacy未变，临时库计数0并已清容器。原first-source CI失败保留，最终远端结果取得后本条追加关闭状态；M5整体与原生产条件不变。
+
+### 2026-11-05 本轮最高时序：GitHub核证完成，仍原M5
+
+- 业务源码ff5283ea8a719f69d37eee4ff4e8a1d4c5e4738e；补证/差异账修正3929d9df7496fc883c684304f19c1908977b7982普通快进落main。**3929d9d主CI41933637116、PG17 41933636834、HTTP41933636716全部SUCCESS**；实际下载日志确认六L5/四消费者应用wrapper/媒体正反、ST08/ST09、WATCH祖先撤销与Admin精确历史。HTTP15PASS/1Storage缺配置SKIP；unit432/4既有SKIP、boundary133、六workspace类型/构建/auth107/85API与152动作追溯通过。
+- 只关闭first-source CI41932575992的旧byte-equal声明审计失败与本批具名隔离子项；旧main41929766191超时失败由sticky timer RED→GREEN修复。两旧失败保留，不拿后续成功改写它们。74目标M0冻结列与53REVISE+21CREATE分母保留、最终语义74仍未全核销。
+- 六类L5PG覆盖minor已追加实测关闭；其它三消费者各自产品HTTP仍未验。10+3不是13类专业业务/同意撤回/合法解引用复用/canonical媒资PASS；ST01—04/H1/H2/H3/19组件及真实混合未全验。M1-C01—C04/M2-C01—C03/M3-C01—C03/M4-C01—C04及生产/外发/费用/专业Reviewer全部原条件继续，**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY**。
+- 本地标记测试库0且已删除本会话合成PG容器；无生产/正式Gate/context启用。回执CODEX_M5_BINDING_ASSETS_20261105.md §6.2和同evidence保存精确SHA/成功与失败Actions/PG/HTTP/原始日志hash；回滚为关闭context/恢复资格拒绝并保全审计，不恢复legacy旁路。

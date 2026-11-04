@@ -1,0 +1,1738 @@
+build	Set up job	﻿2026-11-04T23:25:51.2461550Z Current runner version: '2.338.2'
+build	Set up job	2026-11-04T23:25:51.2497159Z ##[group]Runner Image Provisioner
+build	Set up job	2026-11-04T23:25:51.2498375Z Hosted Compute Agent
+build	Set up job	2026-11-04T23:25:51.2499381Z Version: 20261028.624
+build	Set up job	2026-11-04T23:25:51.2500241Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+build	Set up job	2026-11-04T23:25:51.2501301Z Build Date: 2026-10-28T21:51:42Z
+build	Set up job	2026-11-04T23:25:51.2502223Z Worker ID: {3a22adff-d7f5-4fbe-a582-c6c465470029}
+build	Set up job	2026-11-04T23:25:51.2503191Z Region: centralus
+build	Set up job	2026-11-04T23:25:51.2504143Z Cloud: Azure
+build	Set up job	2026-11-04T23:25:51.2504909Z ##[endgroup]
+build	Set up job	2026-11-04T23:25:51.2507293Z ##[group]Operating System
+build	Set up job	2026-11-04T23:25:51.2508196Z Ubuntu
+build	Set up job	2026-11-04T23:25:51.2508950Z 26.04.1
+build	Set up job	2026-11-04T23:25:51.2509684Z LTS
+build	Set up job	2026-11-04T23:25:51.2510366Z ##[endgroup]
+build	Set up job	2026-11-04T23:25:51.2511157Z ##[group]Runner Image
+build	Set up job	2026-11-04T23:25:51.2511970Z Image: ubuntu-26.04
+build	Set up job	2026-11-04T23:25:51.2512756Z Version: 20261101.186.1
+build	Set up job	2026-11-04T23:25:51.2514722Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261101.186/images/ubuntu/Ubuntu2604-Readme.md
+build	Set up job	2026-11-04T23:25:51.2517312Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261101.186
+build	Set up job	2026-11-04T23:25:51.2518624Z ##[endgroup]
+build	Set up job	2026-11-04T23:25:51.2520230Z ##[group]GITHUB_TOKEN Permissions
+build	Set up job	2026-11-04T23:25:51.2523364Z Contents: read
+build	Set up job	2026-11-04T23:25:51.2524197Z Metadata: read
+build	Set up job	2026-11-04T23:25:51.2525021Z Packages: read
+build	Set up job	2026-11-04T23:25:51.2526047Z ##[endgroup]
+build	Set up job	2026-11-04T23:25:51.2528735Z Secret source: Actions
+build	Set up job	2026-11-04T23:25:51.2530150Z Cache mode: write
+build	Set up job	2026-11-04T23:25:51.2531487Z Prepare workflow directory
+build	Set up job	2026-11-04T23:25:51.2883211Z Prepare all required actions
+build	Set up job	2026-11-04T23:25:51.2955135Z Getting action download info
+build	Set up job	2026-11-04T23:25:51.5629384Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+build	Set up job	2026-11-04T23:25:51.7110036Z Download action repository 'pnpm/action-setup@v4' (SHA:b906affcce14559ad1aafd4ab0e942779e9f58b1)
+build	Set up job	2026-11-04T23:25:52.2333221Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+build	Set up job	2026-11-04T23:25:52.3156562Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+build	Set up job	2026-11-04T23:25:52.6029801Z Complete job name: build
+build	Run actions/checkout@v4	﻿2026-11-04T23:25:52.6868828Z ##[group]Run actions/checkout@v4
+build	Run actions/checkout@v4	2026-11-04T23:25:52.6869735Z with:
+build	Run actions/checkout@v4	2026-11-04T23:25:52.6870296Z   repository: xiezuojie03-web/mohen-agent-2.0
+build	Run actions/checkout@v4	2026-11-04T23:25:52.6874465Z   token: ***
+build	Run actions/checkout@v4	2026-11-04T23:25:52.6874956Z   ssh-strict: true
+build	Run actions/checkout@v4	2026-11-04T23:25:52.6875712Z   ssh-user: git
+build	Run actions/checkout@v4	2026-11-04T23:25:52.6876375Z   persist-credentials: true
+build	Run actions/checkout@v4	2026-11-04T23:25:52.6876926Z   clean: true
+build	Run actions/checkout@v4	2026-11-04T23:25:52.6877492Z   sparse-checkout-cone-mode: true
+build	Run actions/checkout@v4	2026-11-04T23:25:52.6878074Z   fetch-depth: 1
+build	Run actions/checkout@v4	2026-11-04T23:25:52.6878565Z   fetch-tags: false
+build	Run actions/checkout@v4	2026-11-04T23:25:52.6879106Z   show-progress: true
+build	Run actions/checkout@v4	2026-11-04T23:25:52.6879879Z   lfs: false
+build	Run actions/checkout@v4	2026-11-04T23:25:52.6880383Z   submodules: false
+build	Run actions/checkout@v4	2026-11-04T23:25:52.6880935Z   set-safe-directory: true
+build	Run actions/checkout@v4	2026-11-04T23:25:52.6881538Z   allow-unsafe-pr-checkout: false
+build	Run actions/checkout@v4	2026-11-04T23:25:52.6882837Z ##[endgroup]
+build	Run actions/checkout@v4	2026-11-04T23:25:52.9753271Z Syncing repository: xiezuojie03-web/mohen-agent-2.0
+build	Run actions/checkout@v4	2026-11-04T23:25:52.9757108Z ##[group]Getting Git version info
+build	Run actions/checkout@v4	2026-11-04T23:25:52.9758533Z Working directory is '/home/runner/work/mohen-agent-2.0/mohen-agent-2.0'
+build	Run actions/checkout@v4	2026-11-04T23:25:52.9777357Z [command]/usr/bin/git version
+build	Run actions/checkout@v4	2026-11-04T23:25:52.9897156Z git version 2.56.0
+build	Run actions/checkout@v4	2026-11-04T23:25:52.9957413Z ##[endgroup]
+build	Run actions/checkout@v4	2026-11-04T23:25:52.9977290Z Temporarily overriding HOME='/home/runner/work/_temp/5cb905be-972f-488e-9daf-ad646bdc5c1a' before making global git config changes
+build	Run actions/checkout@v4	2026-11-04T23:25:52.9980317Z Adding repository directory to the temporary git global config as a safe directory
+build	Run actions/checkout@v4	2026-11-04T23:25:52.9982963Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/mohen-agent-2.0/mohen-agent-2.0
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0056003Z Deleting the contents of '/home/runner/work/mohen-agent-2.0/mohen-agent-2.0'
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0059132Z ##[group]Initializing the repository
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0060656Z [command]/usr/bin/git init /home/runner/work/mohen-agent-2.0/mohen-agent-2.0
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0201408Z hint: Using 'master' as the name for the initial branch. This default branch name
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0211833Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0215198Z hint: to use in all of your new repositories, which will suppress this warning,
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0217904Z hint: call:
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0218931Z hint:
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0221005Z hint: 	git config --global init.defaultBranch <name>
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0222528Z hint:
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0224281Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0226354Z hint: 'development'. The just-created branch can be renamed via this command:
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0248808Z hint:
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0256997Z hint: 	git branch -m <name>
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0276647Z hint:
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0288442Z hint: Disable this message with "git config set advice.defaultBranchName false"
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0291981Z Initialized empty Git repository in /home/runner/work/mohen-agent-2.0/mohen-agent-2.0/.git/
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0297392Z [command]/usr/bin/git remote add origin https://github.com/xiezuojie03-web/mohen-agent-2.0
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0343041Z ##[endgroup]
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0344635Z ##[group]Disabling automatic garbage collection
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0346604Z [command]/usr/bin/git config --local gc.auto 0
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0414350Z ##[endgroup]
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0416263Z ##[group]Setting up auth
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0417752Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+build	Run actions/checkout@v4	2026-11-04T23:25:53.0472996Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+build	Run actions/checkout@v4	2026-11-04T23:25:53.1077573Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+build	Run actions/checkout@v4	2026-11-04T23:25:53.1111358Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+build	Run actions/checkout@v4	2026-11-04T23:25:53.1352139Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+build	Run actions/checkout@v4	2026-11-04T23:25:53.1393613Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+build	Run actions/checkout@v4	2026-11-04T23:25:53.1621160Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+build	Run actions/checkout@v4	2026-11-04T23:25:53.1667280Z ##[endgroup]
+build	Run actions/checkout@v4	2026-11-04T23:25:53.1669504Z ##[group]Fetching the repository
+build	Run actions/checkout@v4	2026-11-04T23:25:53.1678872Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +3929d9df7496fc883c684304f19c1908977b7982:refs/remotes/origin/main
+build	Run actions/checkout@v4	2026-11-04T23:25:55.9822997Z From https://github.com/xiezuojie03-web/mohen-agent-2.0
+build	Run actions/checkout@v4	2026-11-04T23:25:55.9824673Z  * [new ref]         3929d9df7496fc883c684304f19c1908977b7982 -> origin/main
+build	Run actions/checkout@v4	2026-11-04T23:25:55.9828437Z ##[endgroup]
+build	Run actions/checkout@v4	2026-11-04T23:25:55.9829731Z ##[group]Determining the checkout info
+build	Run actions/checkout@v4	2026-11-04T23:25:55.9831254Z ##[endgroup]
+build	Run actions/checkout@v4	2026-11-04T23:25:55.9839708Z [command]/usr/bin/git sparse-checkout disable
+build	Run actions/checkout@v4	2026-11-04T23:25:55.9896080Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+build	Run actions/checkout@v4	2026-11-04T23:25:55.9930982Z ##[group]Checking out the ref
+build	Run actions/checkout@v4	2026-11-04T23:25:55.9935095Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+build	Run actions/checkout@v4	2026-11-04T23:25:56.4862771Z Switched to a new branch 'main'
+build	Run actions/checkout@v4	2026-11-04T23:25:56.4887590Z branch 'main' set up to track 'origin/main'.
+build	Run actions/checkout@v4	2026-11-04T23:25:56.4915249Z ##[endgroup]
+build	Run actions/checkout@v4	2026-11-04T23:25:56.4997762Z [command]/usr/bin/git log -1 --format=%H
+build	Run actions/checkout@v4	2026-11-04T23:25:56.5016544Z 3929d9df7496fc883c684304f19c1908977b7982
+build	Run pnpm/action-setup@v4	﻿2026-11-04T23:25:56.5283879Z ##[group]Run pnpm/action-setup@v4
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:56.5284577Z with:
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:56.5284877Z   version: 9.15.4
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:56.5285197Z   dest: ~/setup-pnpm
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:56.5285834Z   run_install: null
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:56.5286298Z   cache: false
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:56.5286627Z   cache_dependency_path: pnpm-lock.yaml
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:56.5287031Z   package_json_file: package.json
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:56.5287423Z   standalone: false
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:56.5287731Z ##[endgroup]
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:56.6843914Z ##[group]Running self-installer...
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:57.2276476Z (node:2185) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:57.2279430Z (Use `node --trace-deprecation ...` to show where the warning was created)
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:57.4479065Z Progress: resolved 1, reused 0, downloaded 0, added 0
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:57.4589508Z Packages: +1
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:57.4590941Z +
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:57.8027411Z Progress: resolved 1, reused 0, downloaded 1, added 1, done
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:57.9033688Z 
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:57.9035305Z dependencies:
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:57.9037000Z + pnpm 9.15.4 (12.16.1 is available)
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:57.9041739Z 
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:57.9096640Z Done in 950ms
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:57.9230356Z ##[endgroup]
+build	Run pnpm/action-setup@v4	2026-11-04T23:25:57.9264677Z Installation Completed!
+build	Run actions/setup-node@v4	﻿2026-11-04T23:25:57.9422803Z ##[group]Run actions/setup-node@v4
+build	Run actions/setup-node@v4	2026-11-04T23:25:57.9423330Z with:
+build	Run actions/setup-node@v4	2026-11-04T23:25:57.9423674Z   node-version: 22
+build	Run actions/setup-node@v4	2026-11-04T23:25:57.9424002Z   cache: pnpm
+build	Run actions/setup-node@v4	2026-11-04T23:25:57.9424301Z   always-auth: false
+build	Run actions/setup-node@v4	2026-11-04T23:25:57.9424680Z   check-latest: false
+build	Run actions/setup-node@v4	2026-11-04T23:25:57.9427724Z   token: ***
+build	Run actions/setup-node@v4	2026-11-04T23:25:57.9428019Z env:
+build	Run actions/setup-node@v4	2026-11-04T23:25:57.9428394Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+build	Run actions/setup-node@v4	2026-11-04T23:25:57.9428783Z ##[endgroup]
+build	Run actions/setup-node@v4	2026-11-04T23:25:58.0977056Z (node:2198) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+build	Run actions/setup-node@v4	2026-11-04T23:25:58.0979271Z (Use `node --trace-deprecation ...` to show where the warning was created)
+build	Run actions/setup-node@v4	2026-11-04T23:25:58.0982641Z Found in cache @ /opt/hostedtoolcache/node/22.23.4/x64
+build	Run actions/setup-node@v4	2026-11-04T23:25:58.0985040Z ##[group]Environment details
+build	Run actions/setup-node@v4	2026-11-04T23:25:58.6729031Z node: v22.23.4
+build	Run actions/setup-node@v4	2026-11-04T23:25:58.6730314Z npm: 10.9.9
+build	Run actions/setup-node@v4	2026-11-04T23:25:58.6766526Z yarn: 1.22.22
+build	Run actions/setup-node@v4	2026-11-04T23:25:58.6768485Z ##[endgroup]
+build	Run actions/setup-node@v4	2026-11-04T23:25:58.6808463Z [command]/home/runner/setup-pnpm/node_modules/.bin/pnpm store path --silent
+build	Run actions/setup-node@v4	2026-11-04T23:25:59.0655835Z /home/runner/setup-pnpm/node_modules/.bin/store/v3
+build	Run actions/setup-node@v4	2026-11-04T23:25:59.2637040Z Cache hit for: node-cache-Linux-x64-pnpm-53f83b0a1a7f909344bfe900808d1cc79e05074d63adaa7461c0b6e325787eb5
+build	Run actions/setup-node@v4	2026-11-04T23:25:59.2741621Z (node:2198) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+build	Run actions/setup-node@v4	2026-11-04T23:26:00.3967062Z Received 134217728 of 169821689 (79.0%), 127.6 MBs/sec
+build	Run actions/setup-node@v4	2026-11-04T23:26:00.6287161Z Received 169821689 of 169821689 (100.0%), 130.8 MBs/sec
+build	Run actions/setup-node@v4	2026-11-04T23:26:00.6325738Z Cache Size: ~162 MB (169821689 B)
+build	Run actions/setup-node@v4	2026-11-04T23:26:00.6327441Z [command]/usr/bin/tar -xf /home/runner/work/_temp/c42ab22c-c6f6-433a-bfff-249cc569d027/cache.tzst -P -C /home/runner/work/mohen-agent-2.0/mohen-agent-2.0 --use-compress-program unzstd
+build	Run actions/setup-node@v4	2026-11-04T23:26:01.6893427Z Cache restored successfully
+build	Run actions/setup-node@v4	2026-11-04T23:26:01.6955936Z Cache restored from key: node-cache-Linux-x64-pnpm-53f83b0a1a7f909344bfe900808d1cc79e05074d63adaa7461c0b6e325787eb5
+build	Install	﻿2026-11-04T23:26:01.8603434Z ##[group]Run pnpm install --frozen-lockfile
+build	Install	2026-11-04T23:26:01.8604040Z [36;1mpnpm install --frozen-lockfile[0m
+build	Install	2026-11-04T23:26:01.9427697Z shell: /usr/bin/bash -e {0}
+build	Install	2026-11-04T23:26:01.9428234Z env:
+build	Install	2026-11-04T23:26:01.9428612Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+build	Install	2026-11-04T23:26:01.9429068Z ##[endgroup]
+build	Install	2026-11-04T23:26:02.4694442Z Scope: all 7 workspace projects
+build	Install	2026-11-04T23:26:02.5073896Z Lockfile is up to date, resolution step is skipped
+build	Install	2026-11-04T23:26:02.5337414Z Progress: resolved 1, reused 0, downloaded 0, added 0
+build	Install	2026-11-04T23:26:02.5748208Z Packages: +104
+build	Install	2026-11-04T23:26:02.5766857Z ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+build	Install	2026-11-04T23:26:03.1599126Z Progress: resolved 104, reused 104, downloaded 0, added 104, done
+build	Install	2026-11-04T23:26:03.6266435Z 
+build	Install	2026-11-04T23:26:03.6267605Z dependencies:
+build	Install	2026-11-04T23:26:03.6272872Z + ajv 8.20.0
+build	Install	2026-11-04T23:26:03.6274649Z 
+build	Install	2026-11-04T23:26:03.6275681Z devDependencies:
+build	Install	2026-11-04T23:26:03.6276646Z + @playwright/test 1.63.0
+build	Install	2026-11-04T23:26:03.6277396Z + typescript 5.9.3
+build	Install	2026-11-04T23:26:03.6278061Z + vitest 3.2.7
+build	Install	2026-11-04T23:26:03.6278386Z 
+build	Install	2026-11-04T23:26:03.6469477Z Done in 1.6s
+build	Typecheck	﻿2026-11-04T23:26:03.6690401Z ##[group]Run pnpm -r typecheck
+build	Typecheck	2026-11-04T23:26:03.6690838Z [36;1mpnpm -r typecheck[0m
+build	Typecheck	2026-11-04T23:26:03.6723559Z shell: /usr/bin/bash -e {0}
+build	Typecheck	2026-11-04T23:26:03.6724092Z env:
+build	Typecheck	2026-11-04T23:26:03.6724465Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+build	Typecheck	2026-11-04T23:26:03.6725313Z ##[endgroup]
+build	Typecheck	2026-11-04T23:26:04.1138297Z Scope: 6 of 7 workspace projects
+build	Typecheck	2026-11-04T23:26:04.1158962Z packages/agent-runtime typecheck$ tsc --noEmit -p tsconfig.json
+build	Typecheck	2026-11-04T23:26:04.1166416Z packages/data-access typecheck$ tsc --noEmit -p tsconfig.json
+build	Typecheck	2026-11-04T23:26:04.1185759Z packages/domain typecheck$ tsc --noEmit -p tsconfig.json
+build	Typecheck	2026-11-04T23:26:04.1189450Z packages/experience-engine typecheck$ tsc --noEmit -p tsconfig.json
+build	Typecheck	2026-11-04T23:26:07.9957279Z packages/data-access typecheck: Done
+build	Typecheck	2026-11-04T23:26:07.9996986Z packages/ui typecheck$ tsc --noEmit -p tsconfig.json
+build	Typecheck	2026-11-04T23:26:11.1427282Z packages/experience-engine typecheck: Done
+build	Typecheck	2026-11-04T23:26:11.1887135Z packages/domain typecheck: Done
+build	Typecheck	2026-11-04T23:26:11.8881691Z packages/agent-runtime typecheck: Done
+build	Typecheck	2026-11-04T23:26:12.4059032Z packages/ui typecheck: Done
+build	Typecheck	2026-11-04T23:26:12.4066308Z apps/web typecheck$ tsc --noEmit
+build	Typecheck	2026-11-04T23:26:21.9707167Z apps/web typecheck: Done
+build	Unit tests (no DB)	﻿2026-11-04T23:26:21.9902051Z ##[group]Run pnpm test:unit
+build	Unit tests (no DB)	2026-11-04T23:26:21.9902607Z [36;1mpnpm test:unit[0m
+build	Unit tests (no DB)	2026-11-04T23:26:21.9948775Z shell: /usr/bin/bash -e {0}
+build	Unit tests (no DB)	2026-11-04T23:26:21.9949484Z env:
+build	Unit tests (no DB)	2026-11-04T23:26:21.9950024Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+build	Unit tests (no DB)	2026-11-04T23:26:21.9950664Z ##[endgroup]
+build	Unit tests (no DB)	2026-11-04T23:26:22.4023564Z 
+build	Unit tests (no DB)	2026-11-04T23:26:22.4026758Z > mohen-agent-2.0@0.1.0 test:unit /home/runner/work/mohen-agent-2.0/mohen-agent-2.0
+build	Unit tests (no DB)	2026-11-04T23:26:22.4027826Z > vitest run --config vitest.unit.config.ts
+build	Unit tests (no DB)	2026-11-04T23:26:22.4028244Z 
+build	Unit tests (no DB)	2026-11-04T23:26:22.8131065Z 
+build	Unit tests (no DB)	2026-11-04T23:26:22.8370502Z [1m[46m RUN [49m[22m [36mv3.2.7 [39m[90m/home/runner/work/mohen-agent-2.0/mohen-agent-2.0[39m
+build	Unit tests (no DB)	2026-11-04T23:26:22.8396132Z 
+build	Unit tests (no DB)	2026-11-04T23:26:23.3053130Z  [32m✓[39m tests/unit/studio-receive-candidate.test.mjs [2m([22m[2m17 tests[22m[2m)[22m[32m 126[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:24.3997452Z  [32m✓[39m tests/unit/private-original-storage.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 786[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:24.4000328Z    [33m[2m✓[22m[39m bounds persistent GET 5xx attempts and never treats upstream failure as absence or uploads [33m 301[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:24.7357911Z  [32m✓[39m tests/unit/studio-plan.test.mjs [2m([22m[2m13 tests[22m[2m)[22m[32m 49[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:25.1268901Z  [32m✓[39m tests/unit/mab-hp08-research-resume.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:25.4734512Z  [32m✓[39m tests/unit/mab-m5-publication-atomic.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:25.8468041Z  [32m✓[39m tests/unit/studio-plans-route.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:26.1646880Z  [32m✓[39m tests/unit/private-evidence-stage.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:26.4719454Z  [32m✓[39m tests/unit/private-evidence-binding.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:26.8383129Z  [32m✓[39m tests/unit/studio-original-attachment-route.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:27.1697651Z  [32m✓[39m tests/unit/studio-jsonb.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:27.4716174Z  [32m✓[39m tests/unit/studio-candidate-assessment.test.mjs [2m([22m[2m7 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:27.7678433Z  [32m✓[39m tests/unit/mab-hp08-tool-ledger.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:28.0627942Z  [32m✓[39m tests/unit/mab-hp08-production-reservation.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:28.4297970Z  [32m✓[39m tests/unit/imported-material-route.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:28.7652880Z  [32m✓[39m tests/unit/mab-hp08-studio-routes.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:29.1074375Z  [32m✓[39m tests/unit/mab-m5-fork-restore.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:29.4379783Z  [32m✓[39m tests/unit/mab-hp02-session-revocation.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:29.7344842Z  [32m✓[39m tests/unit/independent-gate-client.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:30.0836447Z  [32m✓[39m tests/unit/submission-routes.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:30.4637752Z  [32m✓[39m tests/unit/mab-m5-director-commit.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:30.7409176Z  [32m✓[39m tests/unit/m3-gate-preflight.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:31.0179469Z [90mstderr[2m | tests/unit/mab-hp07-visual-current-g5.test.ts[2m > [22m[2mHP07 visual stage exact current G5 and safe topic filtering[2m > [22m[2mfails closed rather than displaying old legacy PASS data when the DB qualifier fails
+build	Unit tests (no DB)	2026-11-04T23:26:31.0247302Z [22m[39m[read-model-bridge] 读取真实发布成果失败： CURRENT_G5_UNAVAILABLE
+build	Unit tests (no DB)	2026-11-04T23:26:31.0249054Z  [32m✓[39m tests/unit/mab-hp07-visual-current-g5.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:31.0303156Z 
+build	Unit tests (no DB)	2026-11-04T23:26:31.3357709Z  [32m✓[39m tests/unit/studio-plan-service.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:31.6208395Z  [32m✓[39m tests/unit/private-original-source-binding.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:31.8987935Z  [32m✓[39m tests/unit/auth-session.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:32.1998001Z  [32m✓[39m tests/unit/private-text-reading-repository.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:32.5560457Z  [32m✓[39m tests/unit/mab-m5-public-consumers.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:32.8977895Z  [32m✓[39m tests/unit/studio-asset-routes.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:33.2895952Z  [32m✓[39m tests/unit/public-evidence-qualification.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:33.5467532Z  [32m✓[39m tests/unit/kad1-policy.test.mjs [2m([22m[2m10 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:33.8694196Z  [32m✓[39m tests/unit/mab-hp03-asset-history-route.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:34.2001746Z  [32m✓[39m tests/unit/studio-delegation-route.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:34.4872255Z  [32m✓[39m tests/unit/material-score.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:34.8121595Z  [32m✓[39m tests/unit/mab-hp11-review-route.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:35.1513778Z  [32m✓[39m tests/unit/middleware-authorization.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:35.4599906Z  [32m✓[39m tests/unit/publication-submission.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:35.7678434Z  [32m✓[39m tests/unit/mab-hp11-review-revision.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:36.1076263Z  [32m✓[39m tests/unit/kad1-route.test.mjs [2m([22m[2m10 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:36.4490064Z  [32m✓[39m tests/unit/studio-execution-route.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:36.7362817Z  [32m✓[39m tests/unit/mab-hp08-ledger-reconciliation.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:37.0307437Z  [32m✓[39m tests/unit/mab-hp06-signer-connection.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:37.2968167Z  [2m[90m↓[39m[22m tests/unit/k7-five-themes.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+build	Unit tests (no DB)	2026-11-04T23:26:37.6414487Z  [32m✓[39m tests/unit/admin-authorization.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:37.9538876Z  [32m✓[39m tests/unit/studio-delegation.test.mjs [2m([22m[2m8 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:38.2217782Z  [32m✓[39m tests/unit/studio-execution.test.mjs [2m([22m[2m7 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:38.5444977Z [90mstderr[2m | tests/unit/mab-m5-qualified-retrieve.test.ts[2m > [22m[2mmissing server qualification context refuses even legacy PASS rows before querying
+build	Unit tests (no DB)	2026-11-04T23:26:38.5447550Z [22m[39m[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+build	Unit tests (no DB)	2026-11-04T23:26:38.5448338Z 
+build	Unit tests (no DB)	2026-11-04T23:26:38.5461578Z [90mstderr[2m | tests/unit/mab-m5-qualified-retrieve.test.ts[2m > [22m[2minvalid context refuses before querying: {}
+build	Unit tests (no DB)	2026-11-04T23:26:38.5464701Z [22m[39m[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+build	Unit tests (no DB)	2026-11-04T23:26:38.5465713Z 
+build	Unit tests (no DB)	2026-11-04T23:26:38.5468618Z [90mstderr[2m | tests/unit/mab-m5-qualified-retrieve.test.ts[2m > [22m[2minvalid context refuses before querying: {"consumer":"agent","purpose":{"namespace":"G5","code":"fixture","version":"1"},"scope":{}}
+build	Unit tests (no DB)	2026-11-04T23:26:38.5470688Z [22m[39m[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+build	Unit tests (no DB)	2026-11-04T23:26:38.5471372Z 
+build	Unit tests (no DB)	2026-11-04T23:26:38.5476262Z [90mstderr[2m | tests/unit/mab-m5-qualified-retrieve.test.ts[2m > [22m[2minvalid context refuses before querying: {"consumer":"agent","purpose":{"namespace":"G5","code":"fixture","version":"1"},"scope":{}}
+build	Unit tests (no DB)	2026-11-04T23:26:38.5478626Z [22m[39m[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+build	Unit tests (no DB)	2026-11-04T23:26:38.5479336Z 
+build	Unit tests (no DB)	2026-11-04T23:26:38.5484299Z [90mstderr[2m | tests/unit/mab-m5-qualified-retrieve.test.ts[2m > [22m[2minvalid context refuses before querying: {"consumer":"watch","purpose":{"namespace":"G5","code":"fixture","version":"1"},"scope":{"project":"fixture"}}
+build	Unit tests (no DB)	2026-11-04T23:26:38.5486679Z [22m[39m[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+build	Unit tests (no DB)	2026-11-04T23:26:38.5487517Z 
+build	Unit tests (no DB)	2026-11-04T23:26:38.5492387Z [90mstderr[2m | tests/unit/mab-m5-qualified-retrieve.test.ts[2m > [22m[2minvalid context refuses before querying: {"consumer":"agent","purpose":{"namespace":"G5","code":"fixture","version":""},"scope":{"project":"fixture"}}
+build	Unit tests (no DB)	2026-11-04T23:26:38.5494371Z [22m[39m[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+build	Unit tests (no DB)	2026-11-04T23:26:38.5495018Z 
+build	Unit tests (no DB)	2026-11-04T23:26:38.5521822Z [90mstderr[2m | tests/unit/mab-m5-qualified-retrieve.test.ts[2m > [22m[2mreturns no materials when current qualification database is unavailable
+build	Unit tests (no DB)	2026-11-04T23:26:38.5524930Z [22m[39m[mohen/retrieve] 检索失败： synthetic database unavailable
+build	Unit tests (no DB)	2026-11-04T23:26:38.5525903Z 
+build	Unit tests (no DB)	2026-11-04T23:26:38.5538077Z  [32m✓[39m tests/unit/mab-m5-qualified-retrieve.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:38.8403239Z  [32m✓[39m tests/unit/mab-m4-tool-receipt-failure.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:39.1217995Z  [32m✓[39m tests/unit/mab-hp11-knowledge-inspector-contract.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:39.4721165Z  [32m✓[39m tests/unit/mab-m5-material-cache.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:39.8038537Z  [32m✓[39m tests/unit/mab-m3-revocation-http.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:40.3982232Z  [32m✓[39m tests/unit/k3-traceability.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 337[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:40.7586411Z  [32m✓[39m tests/unit/studio-attachment-storage.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:41.0168276Z  [2m[90m↓[39m[22m tests/unit/shl-materials.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+build	Unit tests (no DB)	2026-11-04T23:26:41.3018294Z  [32m✓[39m tests/unit/query-plan.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:41.6240965Z  [32m✓[39m tests/unit/mab-m5-preview.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:41.9200626Z  [32m✓[39m tests/unit/private-worker-pool.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:42.2254668Z  [32m✓[39m tests/unit/governance-boundary.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:42.7248459Z  [32m✓[39m tests/unit/production-trigger.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 148[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:43.0574342Z  [32m✓[39m tests/unit/database-session.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:43.3772051Z  [32m✓[39m tests/unit/mab-m4-tool-registration.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:43.6787756Z  [32m✓[39m tests/unit/mab-m5-revision-cas.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:43.9531045Z  [32m✓[39m tests/unit/mab-m3-independent-revocation-boundary.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:44.2329808Z  [32m✓[39m tests/unit/conversation-ownership.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:44.5604458Z  [32m✓[39m tests/unit/mab-hp12-g5-hold.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:44.8231472Z  [2m[90m↓[39m[22m tests/unit/commons-materials.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+build	Unit tests (no DB)	2026-11-04T23:26:45.0906994Z  [32m✓[39m tests/unit/imported-material-rights.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:45.3371187Z  [2m[90m↓[39m[22m tests/unit/loc-materials.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+build	Unit tests (no DB)	2026-11-04T23:26:45.6636127Z  [32m✓[39m tests/unit/mab-m5-work-binding.test.mjs [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T23:26:45.6777333Z 
+build	Unit tests (no DB)	2026-11-04T23:26:45.6779168Z [2m Test Files [22m [1m[32m64 passed[39m[22m[2m | [22m[33m4 skipped[39m[90m (68)[39m
+build	Unit tests (no DB)	2026-11-04T23:26:45.6809441Z [2m      Tests [22m [1m[32m432 passed[39m[22m[2m | [22m[33m4 skipped[39m[90m (436)[39m
+build	Unit tests (no DB)	2026-11-04T23:26:45.6814756Z [2m   Start at [22m 23:26:22
+build	Unit tests (no DB)	2026-11-04T23:26:45.6816339Z [2m   Duration [22m 22.89s[2m (transform 1.48s, setup 0ms, collect 3.87s, tests 2.15s, environment 26ms, prepare 7.33s)[22m
+build	Unit tests (no DB)	2026-11-04T23:26:45.6822763Z 
+build	Production boundary regression (no DB)	﻿2026-11-04T23:26:45.8242491Z ##[group]Run pnpm test:data-production
+build	Production boundary regression (no DB)	2026-11-04T23:26:45.8243194Z [36;1mpnpm test:data-production[0m
+build	Production boundary regression (no DB)	2026-11-04T23:26:45.8289046Z shell: /usr/bin/bash -e {0}
+build	Production boundary regression (no DB)	2026-11-04T23:26:45.8289674Z env:
+build	Production boundary regression (no DB)	2026-11-04T23:26:45.8290180Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+build	Production boundary regression (no DB)	2026-11-04T23:26:45.8290890Z ##[endgroup]
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.2189724Z 
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.2191332Z > mohen-agent-2.0@0.1.0 test:data-production /home/runner/work/mohen-agent-2.0/mohen-agent-2.0
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.2192977Z > node --test --experimental-test-isolation=none tests/data-production/*.test.mjs
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.2193714Z 
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6341393Z TAP version 13
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6400024Z # Subtest: CLI adapter choice must match the signed registry binding
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6426631Z ok 1 - CLI adapter choice must match the signed registry binding
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6445981Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6446614Z   duration_ms: 86.653363
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6461404Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6462004Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6463044Z # Subtest: dynamic topic bytes and executable topic configuration require a bound snapshot protocol
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6464340Z ok 2 - dynamic topic bytes and executable topic configuration require a bound snapshot protocol
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6465120Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6465692Z   duration_ms: 1.908976
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6466155Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6466598Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6467280Z # Subtest: unbound M2 private original requests cannot fall through to the old D01-D03 adapters
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6468198Z ok 3 - unbound M2 private original requests cannot fall through to the old D01-D03 adapters
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6469148Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6469559Z   duration_ms: 0.543213
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6470011Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6470429Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6471120Z # Subtest: a nested typed private source cannot bypass the unbound D01-D03 registry
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6472095Z ok 4 - a nested typed private source cannot bypass the unbound D01-D03 registry
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6473063Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6473881Z   duration_ms: 0.366845
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6474711Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6475741Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6476982Z # Subtest: M2 selected private D01 adapter can bind without globally changing D00-D05
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6478377Z ok 5 - M2 selected private D01 adapter can bind without globally changing D00-D05
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6479500Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6480266Z   duration_ms: 56.133205
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6480808Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6481268Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6666910Z # Subtest: whole body deadline returns even when cancellation never settles and releases lock
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6706693Z ok 6 - whole body deadline returns even when cancellation never settles and releases lock
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6726034Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6746180Z   duration_ms: 54.01111
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6769414Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.6786018Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7164296Z # Subtest: deadline spans all chunks rather than restarting for each chunk
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7166011Z ok 7 - deadline spans all chunks rather than restarting for each chunk
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7166762Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7167310Z   duration_ms: 30.737941
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7167944Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7168485Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7169357Z # Subtest: bounds declared and streamed bytes and accepts numeric Content-Length
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7170538Z ok 8 - bounds declared and streamed bytes and accepts numeric Content-Length
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7171363Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7171929Z   duration_ms: 9.301119
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7172475Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7172973Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7173728Z # Subtest: bad JSON, missing body, and invalid bounds fail closed
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7174687Z ok 9 - bad JSON, missing body, and invalid bounds fail closed
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7175531Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7176005Z   duration_ms: 6.108619
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7177138Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7177652Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7359335Z # Subtest: decision authenticated stalled chunked request returns generic 408 and no-store
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7363472Z ok 10 - decision authenticated stalled chunked request returns generic 408 and no-store
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7364465Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7365158Z   duration_ms: 23.0387
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7366032Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7366584Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7576668Z # Subtest: current authenticated stalled chunked request returns generic 408 and no-store
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7580636Z ok 11 - current authenticated stalled chunked request returns generic 408 and no-store
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7581523Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7582033Z   duration_ms: 21.884173
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7582755Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:46.7583228Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4427183Z # Subtest: revocation authenticated stalled chunked request returns generic 408 and no-store
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4429041Z ok 12 - revocation authenticated stalled chunked request returns generic 408 and no-store
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4430186Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4430757Z   duration_ms: 21.757466
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4431342Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4431832Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4432648Z # Subtest: D05 no publish injection -> HOLD (honest, no fake PASS)
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4433700Z ok 13 - D05 no publish injection -> HOLD (honest, no fake PASS)
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4434445Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4434941Z   duration_ms: 2.958044
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4435640Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4436182Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4437068Z # Subtest: D05 injected publish returns six L5 candidates -> PASS + gate_evidence
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4438301Z ok 14 - D05 injected publish returns six L5 candidates -> PASS + gate_evidence
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4439132Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4439621Z   duration_ms: 0.377528
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4440176Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4440691Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4441275Z # Subtest: D05 unknown method -> HOLD
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4442043Z ok 15 - D05 unknown method -> HOLD
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4442623Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4443128Z   duration_ms: 0.152087
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4443697Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4444182Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4444755Z # Subtest: D05 no method -> HOLD
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4445542Z ok 16 - D05 no method -> HOLD
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4446160Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4446720Z   duration_ms: 0.116955
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4447322Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4447794Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4448566Z # Subtest: D05 P08 mixed with P01 -> HOLD (single responsibility)
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4449562Z ok 17 - D05 P08 mixed with P01 -> HOLD (single responsibility)
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4450206Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4450680Z   duration_ms: 0.13682
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4451239Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4451712Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4452576Z # Subtest: D05 P08 invalidation computes closure (control duty, no L5 candidate)
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4453781Z ok 18 - D05 P08 invalidation computes closure (control duty, no L5 candidate)
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4454654Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4455169Z   duration_ms: 0.442251
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4455871Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4456375Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4457488Z # Subtest: separate database password overrides stale URI credentials without losing special characters or TLS
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4459106Z ok 19 - separate database password overrides stale URI credentials without losing special characters or TLS
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4460097Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4460592Z   duration_ms: 3.991411
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4461134Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4461619Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4462509Z # Subtest: an explicitly empty password override fails before opening a connection
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4463734Z ok 20 - an explicitly empty password override fails before opening a connection
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4464557Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4465049Z   duration_ms: 1.003194
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4466242Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4466732Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4467691Z # Subtest: remote PostgreSQL connections verify server certificates
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4468764Z ok 21 - remote PostgreSQL connections verify server certificates
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4469486Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4470001Z   duration_ms: 1.088037
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4470546Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4471014Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4471954Z # Subtest: explicit client certificate key and CA are retained when enforcing remote TLS
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4473241Z ok 22 - explicit client certificate key and CA are retained when enforcing remote TLS
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4474079Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4474562Z   duration_ms: 3.340734
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4475097Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4475822Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4477010Z # Subtest: configured database CA reaches the actual pg client despite connection-string SSL flags
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4478471Z ok 23 - configured database CA reaches the actual pg client despite connection-string SSL flags
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4479369Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4479853Z   duration_ms: 1.474297
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4480381Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4480872Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4481722Z # Subtest: a disabled registry rejects before adapter calls or run-state mutation
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4482918Z ok 24 - a disabled registry rejects before adapter calls or run-state mutation
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4483740Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4484215Z   duration_ms: 55.316195
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4484773Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4485269Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4486182Z # Subtest: an enabled registry cannot authorize itself without an independent signed grant
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4487285Z ok 25 - an enabled registry cannot authorize itself without an independent signed grant
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4488029Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4488436Z   duration_ms: 63.920265
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4488899Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4489310Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4490095Z # Subtest: registry loader enforces the versioned schema, including execution policy types
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4491198Z ok 26 - registry loader enforces the versioned schema, including execution policy types
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4491986Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4492439Z   duration_ms: 26.839487
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4492972Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4493449Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4494332Z # Subtest: CLI cannot evaluate an adapter module before checking execution authorization
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4495757Z ok 27 - CLI cannot evaluate an adapter module before checking execution authorization
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4496612Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4497101Z   duration_ms: 169.196546
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4497652Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4498118Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4498907Z # Subtest: a matching signed grant requires a live one-use authorization
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4499960Z ok 28 - a matching signed grant requires a live one-use authorization
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4500714Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4501188Z   duration_ms: 39.048406
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4501757Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4502237Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4502842Z # Subtest: rejects signed grant with wrong run
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4503632Z ok 29 - rejects signed grant with wrong run
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4504223Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4504691Z   duration_ms: 22.603604
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4505219Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4505846Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4506468Z # Subtest: rejects signed grant with wrong stage
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4507265Z ok 30 - rejects signed grant with wrong stage
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4507878Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4508344Z   duration_ms: 22.063014
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4508871Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4509345Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4509914Z # Subtest: rejects signed grant with expired
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4510652Z ok 31 - rejects signed grant with expired
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4511263Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4511712Z   duration_ms: 21.244329
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4512621Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4513058Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4513797Z # Subtest: rejects signed grant with excessive lifetime
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4514543Z ok 32 - rejects signed grant with excessive lifetime
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4515127Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4515816Z   duration_ms: 25.375438
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4516317Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4516768Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4517382Z # Subtest: rejects signed grant with wrong snapshot
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4518148Z ok 33 - rejects signed grant with wrong snapshot
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4519434Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4520132Z   duration_ms: 23.16048
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4520656Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4521123Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4521703Z # Subtest: rejects signed grant with wrong input
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4522487Z ok 34 - rejects signed grant with wrong input
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4523089Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4523538Z   duration_ms: 35.255777
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4524037Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4524863Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4525819Z # Subtest: rejects signed grant with missing conditions
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4527149Z ok 35 - rejects signed grant with missing conditions
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4532339Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4533018Z   duration_ms: 34.913685
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4537535Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4538267Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4539371Z # Subtest: a different actual input cannot reuse the caller supplied digest
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4540575Z ok 36 - a different actual input cannot reuse the caller supplied digest
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4541382Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4542109Z   duration_ms: 36.660266
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4542728Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4543409Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4544243Z # Subtest: a live response for a different job cannot authorize this job
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4545578Z ok 37 - a live response for a different job cannot authorize this job
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4546502Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4547200Z   duration_ms: 35.128617
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4547910Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4548497Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4549415Z # Subtest: Producer submits a candidate and cannot write a formal audit decision
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4550606Z ok 38 - Producer submits a candidate and cannot write a formal audit decision
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4551358Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4551951Z   duration_ms: 0.439532
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4552548Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4553179Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4554053Z # Subtest: incomplete qualification metadata is rejected before any database write
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4555217Z ok 39 - incomplete qualification metadata is rejected before any database write
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4556317Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4556840Z   duration_ms: 0.133482
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4557509Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4558031Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4558719Z # Subtest: T1 G1 HOLD reading cannot enter D02
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4559545Z ok 40 - T1 G1 HOLD reading cannot enter D02
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4560239Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4560815Z   duration_ms: 0.537983
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4561443Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4562040Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4562655Z # Subtest: T2 G2 HOLD evidence cannot enter D03
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4563460Z ok 41 - T2 G2 HOLD evidence cannot enter D03
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4564120Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4564641Z   duration_ms: 0.201954
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4565312Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4566022Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4566728Z # Subtest: T3 G3 HOLD world object cannot enter D04
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4567616Z ok 42 - T3 G3 HOLD world object cannot enter D04
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4568315Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4568855Z   duration_ms: 0.163359
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4569428Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4569961Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4570586Z # Subtest: T4 G4 HOLD finding cannot enter D05
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4571492Z ok 43 - T4 G4 HOLD finding cannot enter D05
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4572204Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4572829Z   duration_ms: 0.138665
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4574024Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4577560Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4578555Z # Subtest: T5 conflicted identity cannot masquerade as adjudicated
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4579574Z ok 44 - T5 conflicted identity cannot masquerade as adjudicated
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4580424Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4581024Z   duration_ms: 0.221442
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4581698Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4582253Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4582954Z # Subtest: T6 Runtime only consumes G5 PASS read models
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4583925Z ok 45 - T6 Runtime only consumes G5 PASS read models
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4584597Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4585213Z   duration_ms: 0.129551
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4586167Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4586753Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4587512Z # Subtest: T7 empty upstream dependency is blocked
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4588409Z ok 46 - T7 empty upstream dependency is blocked
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4589176Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4589728Z   duration_ms: 0.137161
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4590464Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4591014Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4591712Z # Subtest: positive full PASS lineage is accepted
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4592697Z ok 47 - positive full PASS lineage is accepted
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4593392Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4594060Z   duration_ms: 0.380033
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4594642Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4595236Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4596438Z # Subtest: M3 legacy PASS and bare current_valid are never legal upstream inputs
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4597750Z ok 48 - M3 legacy PASS and bare current_valid are never legal upstream inputs
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4598770Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4599415Z   duration_ms: 0.415933
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4600065Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4600630Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4601638Z # Subtest: M3 wrong purpose, consumer or scope cannot inherit a qualifying fixture
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4602897Z ok 49 - M3 wrong purpose, consumer or scope cannot inherit a qualifying fixture
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4603777Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4604393Z   duration_ms: 0.252006
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4605013Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4605834Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4607027Z # Subtest: current stage read binds digests/job/Reviewer and scoped SQL, returns only qualification metadata
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4608550Z ok 50 - current stage read binds digests/job/Reviewer and scoped SQL, returns only qualification metadata
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4609492Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4609955Z   duration_ms: 0.534275
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4610460Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4610886Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4611796Z # Subtest: reader denies missing/malformed scope, mismatched stage and ambiguous/expired results
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4613106Z ok 51 - reader denies missing/malformed scope, mismatched stage and ambiguous/expired results
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4613937Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4614381Z   duration_ms: 0.527393
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4614887Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4615296Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4616619Z # Subtest: existing Producer client reaches current handler with server-side scope and no private payload
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4618024Z ok 52 - existing Producer client reaches current handler with server-side scope and no private payload
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4618958Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4619434Z   duration_ms: 2.384142
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4619944Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4620404Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4621479Z # Subtest: current handler fails closed on revocation, unavailable DB, oversized stream and missing authentication
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4623039Z ok 53 - current handler fails closed on revocation, unavailable DB, oversized stream and missing authentication
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4623959Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4624442Z   duration_ms: 1.529849
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4624959Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4625593Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4626508Z # Subtest: independent Gate read response must bind to current stage exact output and expiry
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4627738Z ok 54 - independent Gate read response must bind to current stage exact output and expiry
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4629378Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4629838Z   duration_ms: 2.080879
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4630430Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4630889Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4632015Z # Subtest: independent decision handler passes exact receipt, CAS and Reviewer session to existing signer repository
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4633484Z ok 55 - independent decision handler passes exact receipt, CAS and Reviewer session to existing signer repository
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4634431Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4634855Z   duration_ms: 0.876489
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4635596Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4636114Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4637085Z # Subtest: decision handler denies unbound/forged requests and malformed or oversized bodies before signing
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4638403Z ok 56 - decision handler denies unbound/forged requests and malformed or oversized bodies before signing
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4639336Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4639825Z   duration_ms: 2.558652
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4640330Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4640800Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4641808Z # Subtest: HOLD/REJECT remain independent decisions, DB failure and bad returned audit never fabricate success
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4643256Z ok 57 - HOLD/REJECT remain independent decisions, DB failure and bad returned audit never fabricate success
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4644168Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4644622Z   duration_ms: 1.044586
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4645119Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4645859Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4646824Z # Subtest: M3 isolated Reviewer transport binds exact audit, idempotent request and bounded response
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4648199Z ok 58 - M3 isolated Reviewer transport binds exact audit, idempotent request and bounded response
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4649050Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4649461Z   duration_ms: 1.676294
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4649967Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4650396Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4651363Z # Subtest: M3 client cannot be invoked for object-only revoke or invalid request; sends zero network calls
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4652731Z ok 59 - M3 client cannot be invoked for object-only revoke or invalid request; sends zero network calls
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4653569Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4653982Z   duration_ms: 0.36261
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4654457Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4654902Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4655879Z # Subtest: M3 client refuses guessed, stale, forged, oversized, malformed and denied receipts
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4657067Z ok 60 - M3 client refuses guessed, stale, forged, oversized, malformed and denied receipts
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4657789Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4658192Z   duration_ms: 1.703187
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4658666Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4659084Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4660032Z # Subtest: M3 Reviewer handler and client use existing independent repository: exact request, no forged event UUID
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4661410Z ok 61 - M3 Reviewer handler and client use existing independent repository: exact request, no forged event UUID
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4662297Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4662734Z   duration_ms: 0.82048
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4663232Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4663675Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4664591Z # Subtest: M3 handler rejects fake bearer, wrong binding, malformed IDs and DB failures without fake success
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4666222Z ok 62 - M3 handler rejects fake bearer, wrong binding, malformed IDs and DB failures without fake success
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4667109Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4667540Z   duration_ms: 1.719195
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4667961Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4668387Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4669156Z # Subtest: M3 Reviewer handler accepts a valid numeric Content-Length below cap
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4670216Z ok 63 - M3 Reviewer handler accepts a valid numeric Content-Length below cap
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4670914Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4671367Z   duration_ms: 0.52535
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4671807Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4672545Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4673289Z # Subtest: M3 Reviewer handler rejects oversized payloads before any DB write
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4674382Z ok 64 - M3 Reviewer handler rejects oversized payloads before any DB write
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4675057Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4675715Z   duration_ms: 0.836947
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4676213Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4676638Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4677496Z # Subtest: M3 Reviewer handler fails closed on malformed JSON and rejects unsupported methods
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4678705Z ok 65 - M3 Reviewer handler fails closed on malformed JSON and rejects unsupported methods
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4679469Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4680121Z   duration_ms: 0.568694
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4680642Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4681055Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4681774Z # Subtest: M3 Reviewer handler cannot boot without independent authenticator and repository
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4682903Z ok 66 - M3 Reviewer handler cannot boot without independent authenticator and repository
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4683685Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4684117Z   duration_ms: 0.123901
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4684595Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4685018Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4686147Z # Subtest: HTTPS runtime is OFF by default and requires explicit independent pools, session key, and TLS
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4687434Z ok 67 - HTTPS runtime is OFF by default and requires explicit independent pools, session key, and TLS
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4688255Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4688674Z   duration_ms: 0.461776
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4689143Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4689562Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4922370Z # Subtest: real HTTPS adapter preserves preflight status and no-store without opening pools
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4923809Z ok 68 - real HTTPS adapter preserves preflight status and no-store without opening pools
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4924673Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4925114Z   duration_ms: 59.603585
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4925819Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.4926283Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.6309385Z # Subtest: stalled chunked HTTPS input returns 408 despite stopping body reads
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.6310940Z ok 69 - stalled chunked HTTPS input returns 408 despite stopping body reads
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.6311605Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.6312004Z   duration_ms: 36.852736
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.6312468Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.6312817Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.6313590Z # Subtest: runnable entry stays OFF without opt-in and refuses enabled incomplete configuration
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.6314660Z ok 70 - runnable entry stays OFF without opt-in and refuses enabled incomplete configuration
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.6316138Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.6316504Z   duration_ms: 101.480851
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.6316964Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.6317311Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8314593Z # Subtest: HTTPS current route reads only through explicit reader pool and preserves numeric Content-Length
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8316474Z ok 71 - HTTPS current route reads only through explicit reader pool and preserves numeric Content-Length
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8317404Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8317844Z   duration_ms: 9.88956
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8318312Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8318726Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8319596Z # Subtest: database pool configuration enforces verified TLS and bounded statement/lock waits
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8320834Z ok 72 - database pool configuration enforces verified TLS and bounded statement/lock waits
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8321634Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8322059Z   duration_ms: 0.531923
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8322535Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8322957Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8323899Z # Subtest: service authenticates through real repository boundary and commits before acknowledging decision
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8325322Z ok 73 - service authenticates through real repository boundary and commits before acknowledging decision
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8326350Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8326769Z   duration_ms: 1.448386
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8327558Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8327994Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8329140Z # Subtest: invalid/unsafe/expired credentials and denied target never sign; commit failure never reports success
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8330595Z ok 74 - invalid/unsafe/expired credentials and denied target never sign; commit failure never reports success
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8331492Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8331954Z   duration_ms: 1.902158
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8332448Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8332877Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8333639Z # Subtest: body/auth/path preflight is bounded before opening privileged connections
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8334787Z ok 75 - body/auth/path preflight is bounded before opening privileged connections
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8335757Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8336184Z   duration_ms: 0.677522
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8336662Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8337079Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8337627Z # Subtest: depKey renders type:id[@version]
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8338307Z ok 76 - depKey renders type:id[@version]
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8338851Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8339275Z   duration_ms: 0.118129
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8339736Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8340147Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8340909Z # Subtest: buildReverseDependencyIndex maps dependency ref -> publication faces
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8342105Z ok 77 - buildReverseDependencyIndex maps dependency ref -> publication faces
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8342919Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8343342Z   duration_ms: 0.167423
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8343829Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8344267Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8345119Z # Subtest: computePreciseInvalidation returns affected revisions + suspension + recheck
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8346534Z ok 78 - computePreciseInvalidation returns affected revisions + suspension + recheck
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8347341Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8347770Z   duration_ms: 0.136975
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8348265Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8348694Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8349595Z # Subtest: computePreciseInvalidation unknown dependency -> fail closed (not global clear)
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8358851Z ok 79 - computePreciseInvalidation unknown dependency -> fail closed (not global clear)
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8359805Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8360278Z   duration_ms: 0.08257
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8360766Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8361211Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8361972Z # Subtest: computePreciseInvalidation missing dep key -> fail closed
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8363095Z ok 80 - computePreciseInvalidation missing dep key -> fail closed
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8363776Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8364237Z   duration_ms: 0.049634
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8399207Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8399759Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8414507Z # Subtest: HP13 target-diff CSV parser handles quoted commas and accurate column count
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8420842Z ok 81 - HP13 target-diff CSV parser handles quoted commas and accurate column count
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8421748Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8422194Z   duration_ms: 0.349471
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8422703Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8423112Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8424009Z # Subtest: HP13 handoff report refuses to declare READY when a target path exists but semantics are unverified
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8430149Z ok 82 - HP13 handoff report refuses to declare READY when a target path exists but semantics are unverified
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8431050Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8431472Z   duration_ms: 2.097052
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8431930Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8432331Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8432921Z # Subtest: HP13 target audit rejects traversal paths
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8433630Z ok 83 - HP13 target audit rejects traversal paths
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8434190Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8434616Z   duration_ms: 0.67384
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8435074Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8435656Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8436193Z # Subtest: registry has one owner per D/L/G
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8436815Z ok 84 - registry has one owner per D/L/G
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8437341Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8438112Z   duration_ms: 20.972271
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8438717Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8439135Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8440108Z # Subtest: full PASS flows D00→D05 and produces human review data
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8440975Z ok 85 - full PASS flows D00→D05 and produces human review data
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8441635Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8442079Z   duration_ms: 42.693698
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8442505Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8442881Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8443342Z # Subtest: HOLD stops downstream stages
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8466379Z ok 86 - HOLD stops downstream stages
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8466974Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8467389Z   duration_ms: 29.57247
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8467814Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8468181Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8468652Z # Subtest: REJECT stops downstream stages
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8469249Z ok 87 - REJECT stops downstream stages
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8469706Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8470064Z   duration_ms: 26.6889
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8470518Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8470877Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8471707Z # Subtest: independent professional HOLD prevents the next D stage even when Producer claims PASS
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8472928Z ok 88 - independent professional HOLD prevents the next D stage even when Producer claims PASS
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8473690Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8474078Z   duration_ms: 20.790214
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8474503Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8474872Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8475712Z # Subtest: stale, forged or mismatched Gate receipt never advances a stage
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8476694Z ok 89 - stale, forged or mismatched Gate receipt never advances a stage
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8477304Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8477691Z   duration_ms: 25.718561
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8478131Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8478513Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8478973Z # Subtest: semantic schemas only
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8479488Z ok 90 - semantic schemas only
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8479916Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8480312Z   duration_ms: 0.245071
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8480719Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8481081Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8481584Z # Subtest: candidate incompleteness is allowed
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8482201Z ok 91 - candidate incompleteness is allowed
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8482672Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8483049Z   duration_ms: 0.077455
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8483450Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8483819Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8484293Z # Subtest: legacy audits are quarantined
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8484892Z ok 92 - legacy audits are quarantined
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8485497Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8485935Z   duration_ms: 0.149829
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8486351Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8486718Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8487199Z # Subtest: research workspace is not recreated
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8487822Z ok 93 - research workspace is not recreated
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8488312Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8488693Z   duration_ms: 0.166995
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8489115Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8489513Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8489961Z # Subtest: raw items are append only
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8490538Z ok 94 - raw items are append only
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8490982Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8491335Z   duration_ms: 0.043943
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8491745Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8492116Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8492522Z # Subtest: semantic schemas
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8492995Z ok 95 - semantic schemas
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8493408Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8493784Z   duration_ms: 0.078986
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8494196Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8494562Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8495026Z # Subtest: raw append-only
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8495653Z ok 96 - raw append-only
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8496081Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8496448Z   duration_ms: 0.094184
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8496867Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8497241Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8497845Z # Subtest: six-stage migration retires legacy G0-G4 PASS views
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8498667Z ok 97 - six-stage migration retires legacy G0-G4 PASS views
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8499562Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8500101Z   duration_ms: 0.195735
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8500524Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8500902Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8502571Z # Subtest: six-stage gate_audits uses G0-G5 gates and append-only columns
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8503400Z ok 98 - six-stage gate_audits uses G0-G5 gates and append-only columns
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8503934Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8504282Z   duration_ms: 0.065628
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8504643Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8504973Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8505579Z # Subtest: legacy v1 public tables are dropped
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8506186Z ok 99 - legacy v1 public tables are dropped
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8506654Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8507010Z   duration_ms: 0.105872
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8507461Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8507843Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8508262Z # Subtest: stage-owned persistence
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8508856Z ok 100 - stage-owned persistence
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8509305Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8509654Z   duration_ms: 0.127399
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8510069Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8510442Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8510898Z # Subtest: no Research Workspace
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8511459Z ok 101 - no Research Workspace
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8511925Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8512303Z   duration_ms: 0.090845
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8512707Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8513090Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8513927Z # Subtest: private inputs require the exact reviewed stage binding; legacy and nested requests always reject
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8515221Z ok 102 - private inputs require the exact reviewed stage binding; legacy and nested requests always reject
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8516216Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8516583Z   duration_ms: 0.350984
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8517003Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8517361Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8518069Z # Subtest: private adapter fails closed without trusted Owner worker, session and Registry
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8519099Z ok 103 - private adapter fails closed without trusted Owner worker, session and Registry
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8519796Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8520164Z   duration_ms: 0.29381
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8520574Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8520930Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8521619Z # Subtest: private D01/D02/D03 adapters only return unassessed producer candidates
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8522532Z ok 104 - private D01/D02/D03 adapters only return unassessed producer candidates
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8523061Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8523383Z   duration_ms: 0.36479
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8523743Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8524060Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8524674Z # Subtest: mismatched stage or self-qualified worker candidate never enters handoff
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8525765Z ok 105 - mismatched stage or self-qualified worker candidate never enters handoff
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8526479Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8526881Z   duration_ms: 0.1646
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8527242Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8527586Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8528301Z # Subtest: private adapter lazily binds the configured runtime only for an exact Registry/Stage request
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8529445Z ok 106 - private adapter lazily binds the configured runtime only for an exact Registry/Stage request
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8530144Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8530499Z   duration_ms: 0.253935
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8530853Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8531208Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8532392Z # Subtest: D01 exposes only durable candidate refs outside qualified outputs and refuses an in-memory-only candidate
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8534258Z ok 107 - D01 exposes only durable candidate refs outside qualified outputs and refuses an in-memory-only candidate
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8535288Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8535882Z   duration_ms: 0.323651
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8536334Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8536716Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8537565Z # Subtest: private runtime defaults closed, never falls back to shared DATABASE_URL or Owner cookie
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8538998Z ok 108 - private runtime defaults closed, never falls back to shared DATABASE_URL or Owner cookie
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8539810Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8540161Z   duration_ms: 0.559177
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8540551Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8540896Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8541878Z # Subtest: lazy private runtime checks independent low-privilege identity before composing Owner-scoped worker, once
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8543221Z ok 109 - lazy private runtime checks independent low-privilege identity before composing Owner-scoped worker, once
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8544014Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8544353Z   duration_ms: 0.980255
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8544739Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8545086Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8546175Z # Subtest: unsafe connection fails before Storage or worker creation and closes the pool without exposing credentials
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8547408Z ok 110 - unsafe connection fails before Storage or worker creation and closes the pool without exposing credentials
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8548145Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8548563Z   duration_ms: 0.240043
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8549041Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8549392Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8550075Z # Subtest: runtime cleanup waits for in-flight initialization and closes construction failures exactly once
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8551252Z ok 111 - runtime cleanup waits for in-flight initialization and closes construction failures exactly once
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8552064Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8552514Z   duration_ms: 0.503969
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8552975Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8553401Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8554412Z # Subtest: M2 real Runner sets current stage before single-use private adapter handoff, and still holds without independent Gate
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8556080Z ok 112 - M2 real Runner sets current stage before single-use private adapter handoff, and still holds without independent Gate
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8557103Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8557510Z   duration_ms: 1.7934
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8558019Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8558436Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8559413Z # Subtest: M2 actual Runner must not load private adapter or invoke worker under disabled Registry or missing grant
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8560820Z ok 113 - M2 actual Runner must not load private adapter or invoke worker under disabled Registry or missing grant
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8561664Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8562078Z   duration_ms: 0.343766
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8562554Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8563079Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8563924Z # Subtest: M2 private worker consumes the Runner grant once; no duplicate nonce or unverified read
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8565138Z ok 114 - M2 private worker consumes the Runner grant once; no duplicate nonce or unverified read
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8566031Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8566446Z   duration_ms: 2.068474
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8566926Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8567338Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8568202Z # Subtest: M2 handoff rejects mutated input and wrong stage without issuing a reusable authorization
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8569483Z ok 115 - M2 handoff rejects mutated input and wrong stage without issuing a reusable authorization
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8570271Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8570698Z   duration_ms: 0.089048
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8571174Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8571596Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8572561Z # Subtest: rejects unsafe Producer identity {"role":"postgres","is_superuser":true,"bypass_rls":true,"can_sign":true}
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8573951Z ok 116 - rejects unsafe Producer identity {"role":"postgres","is_superuser":true,"bypass_rls":true,"can_sign":true}
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8574817Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8575160Z   duration_ms: 0.141214
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8575851Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8576300Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8577275Z # Subtest: rejects unsafe Producer identity {"role":"mohen_producer","is_superuser":false,"bypass_rls":true,"can_sign":false}
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8578815Z ok 117 - rejects unsafe Producer identity {"role":"mohen_producer","is_superuser":false,"bypass_rls":true,"can_sign":false}
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8580120Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8580576Z   duration_ms: 0.060184
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8581066Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8581545Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8582558Z # Subtest: rejects unsafe Producer identity {"role":"mohen_producer","is_superuser":false,"bypass_rls":false,"can_sign":true}
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8584108Z ok 118 - rejects unsafe Producer identity {"role":"mohen_producer","is_superuser":false,"bypass_rls":false,"can_sign":true}
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8585022Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8585574Z   duration_ms: 0.040783
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8586158Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8586600Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8587311Z # Subtest: accepts only the dedicated low-privilege producer identity
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8588276Z ok 119 - accepts only the dedicated low-privilege producer identity
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8588970Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8589417Z   duration_ms: 0.062505
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8589908Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8590365Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8590989Z # Subtest: unknown role inspection cannot be accepted as safe
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8591812Z ok 120 - unknown role inspection cannot be accepted as safe
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8592450Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8592888Z   duration_ms: 0.084737
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8593368Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8593821Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8594567Z # Subtest: M2 trusted frozen stage input parses without signing or enabling a Gate
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8595686Z ok 121 - M2 trusted frozen stage input parses without signing or enabling a Gate
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8596439Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8596853Z   duration_ms: 0.834134
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8597332Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8597769Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8598535Z # Subtest: M2 rejects absent, outside, symlinked, group-readable, oversized snapshots
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8599599Z ok 122 - M2 rejects absent, outside, symlinked, group-readable, oversized snapshots
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8600386Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8600810Z   duration_ms: 1.772183
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8601294Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8601753Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8602459Z # Subtest: M2 rejects wrong private stage and extra hidden payloads
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8603363Z ok 123 - M2 rejects wrong private stage and extra hidden payloads
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8604066Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8604489Z   duration_ms: 2.842005
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8604985Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8605665Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8606333Z # Subtest: a missing terminal run row cannot publish PASS reports
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8607186Z ok 124 - a missing terminal run row cannot publish PASS reports
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8607842Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8608290Z   duration_ms: 0.420809
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8608764Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8609216Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8609927Z # Subtest: persistence must acknowledge exactly the intended run
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8610836Z ok 125 - persistence must acknowledge exactly the intended run
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8611480Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8611922Z   duration_ms: 0.109947
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8612401Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8612821Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8613495Z # Subtest: an acknowledged terminal row publishes the matching run reports
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8614471Z ok 126 - an acknowledged terminal row publishes the matching run reports
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8615137Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8615631Z   duration_ms: 0.507708
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8616011Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8616331Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8616845Z # Subtest: D03 no extract injection -> HOLD (honest, no fake PASS)
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8617722Z ok 127 - D03 no extract injection -> HOLD (honest, no fake PASS)
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8618318Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8618726Z   duration_ms: 0.224471
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8619179Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8619619Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8620314Z # Subtest: D03 injected extract returns candidates -> PASS + gate_evidence
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8621796Z ok 128 - D03 injected extract returns candidates -> PASS + gate_evidence
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8626813Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8627245Z   duration_ms: 0.136574
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8627655Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8627984Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8628397Z # Subtest: D03 unknown method -> HOLD
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8628870Z ok 129 - D03 unknown method -> HOLD
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8629251Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8629600Z   duration_ms: 0.061029
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8629989Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8630460Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8645301Z # Subtest: D03 no method -> HOLD
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8656547Z ok 130 - D03 no method -> HOLD
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8657037Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8657433Z   duration_ms: 0.149811
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8657833Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8658178Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8658645Z # Subtest: D04 injected extract returns candidates -> PASS
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8659337Z ok 131 - D04 injected extract returns candidates -> PASS
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8659859Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8660251Z   duration_ms: 0.187625
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8660630Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8660972Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8661346Z # Subtest: D04 unknown method -> HOLD
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8661836Z ok 132 - D04 unknown method -> HOLD
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8662215Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8662554Z   duration_ms: 0.076653
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8662920Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8663359Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8663760Z # Subtest: D04 no extract injection -> HOLD
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8664305Z ok 133 - D04 no extract injection -> HOLD
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8664792Z   ---
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8665136Z   duration_ms: 0.084185
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8665643Z   type: 'test'
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8666091Z   ...
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8666400Z 1..133
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8666736Z # tests 133
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8668481Z # suites 0
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8668833Z # pass 133
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8669152Z # fail 0
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8669511Z # cancelled 0
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8669857Z # skipped 0
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8670193Z # todo 0
+build	Production boundary regression (no DB)	2026-11-04T23:26:47.8670520Z # duration_ms 1598.703199
+build	K3 requirement traceability	﻿2026-11-04T23:26:47.8813798Z ##[group]Run pnpm guard:k3-traceability
+build	K3 requirement traceability	2026-11-04T23:26:47.8814328Z [36;1mpnpm guard:k3-traceability[0m
+build	K3 requirement traceability	2026-11-04T23:26:47.8859886Z shell: /usr/bin/bash -e {0}
+build	K3 requirement traceability	2026-11-04T23:26:47.8860336Z env:
+build	K3 requirement traceability	2026-11-04T23:26:47.8860751Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+build	K3 requirement traceability	2026-11-04T23:26:47.8861239Z ##[endgroup]
+build	K3 requirement traceability	2026-11-04T23:26:48.2699367Z 
+build	K3 requirement traceability	2026-11-04T23:26:48.2700705Z > mohen-agent-2.0@0.1.0 guard:k3-traceability /home/runner/work/mohen-agent-2.0/mohen-agent-2.0
+build	K3 requirement traceability	2026-11-04T23:26:48.2701788Z > node scripts/guards/check-k3-traceability.mjs
+build	K3 requirement traceability	2026-11-04T23:26:48.2702193Z 
+build	K3 requirement traceability	2026-11-04T23:26:48.4121741Z K3_TRACEABILITY_OK {"apis":85,"actions":152,"modules":62,"screens":5}
+build	Build	﻿2026-11-04T23:26:48.4354108Z ##[group]Run pnpm build
+build	Build	2026-11-04T23:26:48.4354555Z [36;1mpnpm build[0m
+build	Build	2026-11-04T23:26:48.4387065Z shell: /usr/bin/bash -e {0}
+build	Build	2026-11-04T23:26:48.4387365Z env:
+build	Build	2026-11-04T23:26:48.4387653Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+build	Build	2026-11-04T23:26:48.4387966Z ##[endgroup]
+build	Build	2026-11-04T23:26:48.8340102Z 
+build	Build	2026-11-04T23:26:48.8341353Z > mohen-agent-2.0@0.1.0 build /home/runner/work/mohen-agent-2.0/mohen-agent-2.0
+build	Build	2026-11-04T23:26:48.8342322Z > pnpm --filter @mohen/web build
+build	Build	2026-11-04T23:26:48.8342728Z 
+build	Build	2026-11-04T23:26:49.2659934Z 
+build	Build	2026-11-04T23:26:49.2663549Z > @mohen/web@0.1.0 build /home/runner/work/mohen-agent-2.0/mohen-agent-2.0/apps/web
+build	Build	2026-11-04T23:26:49.2664386Z > next build
+build	Build	2026-11-04T23:26:49.2664746Z 
+build	Build	2026-11-04T23:26:49.7748434Z ⚠ No build cache found. Please configure build caching for faster rebuilds. Read more: https://nextjs.org/docs/messages/no-cache
+build	Build	2026-11-04T23:26:49.7991200Z Attention: Next.js now collects completely anonymous telemetry regarding usage.
+build	Build	2026-11-04T23:26:49.7993396Z This information is used to shape Next.js' roadmap and prioritize features.
+build	Build	2026-11-04T23:26:49.7995306Z You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+build	Build	2026-11-04T23:26:49.7997749Z https://nextjs.org/telemetry
+build	Build	2026-11-04T23:26:49.7998454Z 
+build	Build	2026-11-04T23:26:49.9136829Z    ▲ Next.js 15.5.28
+build	Build	2026-11-04T23:26:49.9148057Z 
+build	Build	2026-11-04T23:26:50.0413305Z    Creating an optimized production build ...
+build	Build	2026-11-04T23:27:09.7683492Z  ✓ Compiled successfully in 16.9s
+build	Build	2026-11-04T23:27:09.7739813Z    Linting and checking validity of types ...
+build	Build	2026-11-04T23:27:18.8102098Z    Collecting page data ...
+build	Build	2026-11-04T23:27:22.0779997Z    Generating static pages (0/13) ...
+build	Build	2026-11-04T23:27:23.1412792Z    Generating static pages (3/13) 
+build	Build	2026-11-04T23:27:23.1413725Z    Generating static pages (6/13) 
+build	Build	2026-11-04T23:27:23.1414563Z    Generating static pages (9/13) 
+build	Build	2026-11-04T23:27:23.1415713Z  ✓ Generating static pages (13/13)
+build	Build	2026-11-04T23:27:23.9954549Z    Finalizing page optimization ...
+build	Build	2026-11-04T23:27:23.9955772Z    Collecting build traces ...
+build	Build	2026-11-04T23:27:36.9517847Z 
+build	Build	2026-11-04T23:27:36.9572492Z Route (app)                                                   Size  First Load JS
+build	Build	2026-11-04T23:27:36.9573871Z ┌ ○ /                                                        165 B         106 kB
+build	Build	2026-11-04T23:27:36.9574801Z ├ ○ /_not-found                                              990 B         104 kB
+build	Build	2026-11-04T23:27:36.9575883Z ├ ○ /admin                                                 6.47 kB         109 kB
+build	Build	2026-11-04T23:27:36.9576739Z ├ ○ /admin/sources                                         1.31 kB         104 kB
+build	Build	2026-11-04T23:27:36.9578114Z ├ ƒ /api/admin/acl                                           385 B         103 kB
+build	Build	2026-11-04T23:27:36.9579054Z ├ ƒ /api/admin/assets                                        385 B         103 kB
+build	Build	2026-11-04T23:27:36.9579836Z ├ ƒ /api/admin/assets/[id]/invalidation-requests             385 B         103 kB
+build	Build	2026-11-04T23:27:36.9580662Z ├ ƒ /api/admin/assets/[id]/promote                           385 B         103 kB
+build	Build	2026-11-04T23:27:36.9581391Z ├ ƒ /api/admin/assets/candidates                             385 B         103 kB
+build	Build	2026-11-04T23:27:36.9582701Z ├ ƒ /api/admin/gates/audits                                  385 B         103 kB
+build	Build	2026-11-04T23:27:36.9585154Z ├ ƒ /api/admin/jobs                                          385 B         103 kB
+build	Build	2026-11-04T23:27:36.9586200Z ├ ƒ /api/admin/metrics                                       385 B         103 kB
+build	Build	2026-11-04T23:27:36.9590303Z ├ ƒ /api/admin/metrics/[id]                                  385 B         103 kB
+build	Build	2026-11-04T23:27:36.9591331Z ├ ƒ /api/admin/metrics/engagement                            385 B         103 kB
+build	Build	2026-11-04T23:27:36.9592657Z ├ ƒ /api/admin/navigation                                    385 B         103 kB
+build	Build	2026-11-04T23:27:36.9601568Z ├ ƒ /api/admin/publications                                  385 B         103 kB
+build	Build	2026-11-04T23:27:36.9603209Z ├ ƒ /api/admin/publications/[id]/unpublish                   385 B         103 kB
+build	Build	2026-11-04T23:27:36.9604229Z ├ ƒ /api/admin/publications/schedules                        385 B         103 kB
+build	Build	2026-11-04T23:27:36.9605237Z ├ ƒ /api/admin/rights/invalidate                             385 B         103 kB
+build	Build	2026-11-04T23:27:36.9606368Z ├ ƒ /api/admin/session                                       385 B         103 kB
+build	Build	2026-11-04T23:27:36.9607300Z ├ ƒ /api/admin/settings                                      385 B         103 kB
+build	Build	2026-11-04T23:27:36.9608215Z ├ ƒ /api/admin/sources                                       385 B         103 kB
+build	Build	2026-11-04T23:27:36.9609142Z ├ ƒ /api/admin/submissions                                   385 B         103 kB
+build	Build	2026-11-04T23:27:36.9610080Z ├ ƒ /api/admin/submissions/[id]                              385 B         103 kB
+build	Build	2026-11-04T23:27:36.9610988Z ├ ƒ /api/admin/submissions/[id]/decision                     385 B         103 kB
+build	Build	2026-11-04T23:27:36.9611893Z ├ ƒ /api/admin/submissions/batch                             385 B         103 kB
+build	Build	2026-11-04T23:27:36.9612779Z ├ ƒ /api/admin/users                                         385 B         103 kB
+build	Build	2026-11-04T23:27:36.9613880Z ├ ƒ /api/admin/users/[id]/status                             385 B         103 kB
+build	Build	2026-11-04T23:27:36.9614908Z ├ ƒ /api/auth/login                                          385 B         103 kB
+build	Build	2026-11-04T23:27:36.9616297Z ├ ƒ /api/auth/logout                                         385 B         103 kB
+build	Build	2026-11-04T23:27:36.9617159Z ├ ƒ /api/auth/me                                             385 B         103 kB
+build	Build	2026-11-04T23:27:36.9618155Z ├ ƒ /api/auth/register                                       385 B         103 kB
+build	Build	2026-11-04T23:27:36.9646839Z ├ ƒ /api/explore/entities/[id]                               385 B         103 kB
+build	Build	2026-11-04T23:27:36.9667404Z ├ ƒ /api/explore/events/[id]                                 385 B         103 kB
+build	Build	2026-11-04T23:27:36.9686562Z ├ ƒ /api/explore/relations/[id]                              385 B         103 kB
+build	Build	2026-11-04T23:27:36.9696543Z ├ ƒ /api/explore/search                                      385 B         103 kB
+build	Build	2026-11-04T23:27:36.9697647Z ├ ƒ /api/explore/sessions                                    385 B         103 kB
+build	Build	2026-11-04T23:27:36.9698610Z ├ ƒ /api/explore/sessions/[id]                               385 B         103 kB
+build	Build	2026-11-04T23:27:36.9699609Z ├ ƒ /api/explore/sessions/[id]/insight-views                 385 B         103 kB
+build	Build	2026-11-04T23:27:36.9700616Z ├ ƒ /api/explore/sessions/[id]/query                         385 B         103 kB
+build	Build	2026-11-04T23:27:36.9701589Z ├ ƒ /api/explore/sessions/[id]/return                        385 B         103 kB
+build	Build	2026-11-04T23:27:36.9702573Z ├ ƒ /api/explore/sessions/[id]/share                         385 B         103 kB
+build	Build	2026-11-04T23:27:36.9703485Z ├ ƒ /api/explore/sessions/[id]/surfaces                      385 B         103 kB
+build	Build	2026-11-04T23:27:36.9704331Z ├ ƒ /api/explore/spatial                                     385 B         103 kB
+build	Build	2026-11-04T23:27:36.9705271Z ├ ƒ /api/explore/spatial/compare                             385 B         103 kB
+build	Build	2026-11-04T23:27:36.9706543Z ├ ƒ /api/governance/gates/decisions                          385 B         103 kB
+build	Build	2026-11-04T23:27:36.9707560Z ├ ƒ /api/governance/gates/pending                            385 B         103 kB
+build	Build	2026-11-04T23:27:36.9708727Z ├ ƒ /api/governance/gates/requests                           385 B         103 kB
+build	Build	2026-11-04T23:27:36.9709725Z ├ ƒ /api/governance/gates/revoke                             385 B         103 kB
+build	Build	2026-11-04T23:27:36.9710696Z ├ ƒ /api/help/articles/[id]                                  385 B         103 kB
+build	Build	2026-11-04T23:27:36.9711589Z ├ ƒ /api/mohen/ask                                           385 B         103 kB
+build	Build	2026-11-04T23:27:36.9712484Z ├ ƒ /api/mohen/materials                                     385 B         103 kB
+build	Build	2026-11-04T23:27:36.9713433Z ├ ƒ /api/notifications                                       385 B         103 kB
+build	Build	2026-11-04T23:27:36.9714636Z ├ ƒ /api/public/evidence/[id]                                385 B         103 kB
+build	Build	2026-11-04T23:27:36.9715676Z ├ ƒ /api/public/policies                                     385 B         103 kB
+build	Build	2026-11-04T23:27:36.9716634Z ├ ƒ /api/public/works                                        385 B         103 kB
+build	Build	2026-11-04T23:27:36.9717431Z ├ ƒ /api/public/works/[id]                                   385 B         103 kB
+build	Build	2026-11-04T23:27:36.9718303Z ├ ƒ /api/public/works/[id]/eligibility                       385 B         103 kB
+build	Build	2026-11-04T23:27:36.9719154Z ├ ƒ /api/public/works/[id]/program                           385 B         103 kB
+build	Build	2026-11-04T23:27:36.9719996Z ├ ƒ /api/public/works/[id]/related                           385 B         103 kB
+build	Build	2026-11-04T23:27:36.9720861Z ├ ƒ /api/public/works/[id]/share                             385 B         103 kB
+build	Build	2026-11-04T23:27:36.9721646Z ├ ƒ /api/search                                              385 B         103 kB
+build	Build	2026-11-04T23:27:36.9722420Z ├ ƒ /api/session/me                                          385 B         103 kB
+build	Build	2026-11-04T23:27:36.9723253Z ├ ƒ /api/studio/assets                                       385 B         103 kB
+build	Build	2026-11-04T23:27:36.9724238Z ├ ƒ /api/studio/attachments                                  385 B         103 kB
+build	Build	2026-11-04T23:27:36.9725104Z ├ ƒ /api/studio/conversations                                385 B         103 kB
+build	Build	2026-11-04T23:27:36.9726072Z ├ ƒ /api/studio/conversations/[id]                           385 B         103 kB
+build	Build	2026-11-04T23:27:36.9726930Z ├ ƒ /api/studio/create                                       385 B         103 kB
+build	Build	2026-11-04T23:27:36.9727775Z ├ ƒ /api/studio/delegations/[id]                             385 B         103 kB
+build	Build	2026-11-04T23:27:36.9728687Z ├ ƒ /api/studio/delegations/[id]/controls                    385 B         103 kB
+build	Build	2026-11-04T23:27:36.9729624Z ├ ƒ /api/studio/direct                                       385 B         103 kB
+build	Build	2026-11-04T23:27:36.9730615Z ├ ƒ /api/studio/director-plans                               385 B         103 kB
+build	Build	2026-11-04T23:27:36.9731491Z ├ ƒ /api/studio/director-plans/[id]                          385 B         103 kB
+build	Build	2026-11-04T23:27:36.9732572Z ├ ƒ /api/studio/director-plans/[id]/panels                   385 B         103 kB
+build	Build	2026-11-04T23:27:36.9733546Z ├ ƒ /api/studio/director-plans/[id]/select                   385 B         103 kB
+build	Build	2026-11-04T23:27:36.9734437Z ├ ƒ /api/studio/materials/[id]                               385 B         103 kB
+build	Build	2026-11-04T23:27:36.9735266Z ├ ƒ /api/studio/materials/import                             385 B         103 kB
+build	Build	2026-11-04T23:27:36.9736204Z ├ ƒ /api/studio/plans                                        385 B         103 kB
+build	Build	2026-11-04T23:27:36.9737093Z ├ ƒ /api/studio/projects                                     385 B         103 kB
+build	Build	2026-11-04T23:27:36.9738002Z ├ ƒ /api/studio/research-tasks                               385 B         103 kB
+build	Build	2026-11-04T23:27:36.9738989Z ├ ƒ /api/studio/research-tasks/[id]/events                   385 B         103 kB
+build	Build	2026-11-04T23:27:36.9739949Z ├ ƒ /api/studio/research-tasks/[id]/materials                385 B         103 kB
+build	Build	2026-11-04T23:27:36.9740939Z ├ ƒ /api/studio/research-tasks/[id]/messages                 385 B         103 kB
+build	Build	2026-11-04T23:27:36.9741914Z ├ ƒ /api/studio/research-tasks/[id]/production               385 B         103 kB
+build	Build	2026-11-04T23:27:36.9742893Z ├ ƒ /api/studio/research-tasks/[id]/resume                   385 B         103 kB
+build	Build	2026-11-04T23:27:36.9743808Z ├ ƒ /api/studio/research-tasks/[id]/stages/[stage]           385 B         103 kB
+build	Build	2026-11-04T23:27:36.9744861Z ├ ƒ /api/studio/research-tasks/[id]/status                   385 B         103 kB
+build	Build	2026-11-04T23:27:36.9745932Z ├ ƒ /api/studio/tasks                                        385 B         103 kB
+build	Build	2026-11-04T23:27:36.9746787Z ├ ƒ /api/studio/works                                        385 B         103 kB
+build	Build	2026-11-04T23:27:36.9747626Z ├ ƒ /api/studio/works/[id]/beat-order                        385 B         103 kB
+build	Build	2026-11-04T23:27:36.9748736Z ├ ƒ /api/studio/works/[id]/fork                              385 B         103 kB
+build	Build	2026-11-04T23:27:36.9749659Z ├ ƒ /api/studio/works/[id]/media-candidates                  385 B         103 kB
+build	Build	2026-11-04T23:27:36.9750569Z ├ ƒ /api/studio/works/[id]/media-selection                   385 B         103 kB
+build	Build	2026-11-04T23:27:36.9751426Z ├ ƒ /api/studio/works/[id]/narration                         385 B         103 kB
+build	Build	2026-11-04T23:27:36.9752294Z ├ ƒ /api/studio/works/[id]/narration-suggestions             385 B         103 kB
+build	Build	2026-11-04T23:27:36.9753272Z ├ ƒ /api/studio/works/[id]/preview                           385 B         103 kB
+build	Build	2026-11-04T23:27:36.9754105Z ├ ƒ /api/studio/works/[id]/restore                           385 B         103 kB
+build	Build	2026-11-04T23:27:36.9754955Z ├ ƒ /api/studio/works/[id]/revisions                         385 B         103 kB
+build	Build	2026-11-04T23:27:36.9755952Z ├ ƒ /api/studio/works/[id]/revisions/[rev]                   385 B         103 kB
+build	Build	2026-11-04T23:27:36.9756902Z ├ ƒ /api/studio/works/[id]/revisions/[rev]/panels/[panel]    385 B         103 kB
+build	Build	2026-11-04T23:27:36.9757791Z ├ ƒ /api/studio/works/[id]/rewrite-beat                      385 B         103 kB
+build	Build	2026-11-04T23:27:36.9758792Z ├ ƒ /api/studio/works/[id]/rewrite-decisions                 385 B         103 kB
+build	Build	2026-11-04T23:27:36.9759695Z ├ ƒ /api/studio/works/[id]/stages                            385 B         103 kB
+build	Build	2026-11-04T23:27:36.9760524Z ├ ƒ /api/studio/works/[id]/status                            385 B         103 kB
+build	Build	2026-11-04T23:27:36.9761379Z ├ ƒ /api/studio/works/[id]/submissions                       385 B         103 kB
+build	Build	2026-11-04T23:27:36.9762396Z ├ ƒ /api/watch/sessions                                      385 B         103 kB
+build	Build	2026-11-04T23:27:36.9763262Z ├ ƒ /api/works                                               385 B         103 kB
+build	Build	2026-11-04T23:27:36.9764121Z ├ ƒ /api/works/[id]/publish                                  385 B         103 kB
+build	Build	2026-11-04T23:27:36.9765007Z ├ ƒ /api/works/[id]/submit                                   385 B         103 kB
+build	Build	2026-11-04T23:27:36.9766052Z ├ ƒ /api/works/published                                     385 B         103 kB
+build	Build	2026-11-04T23:27:36.9766954Z ├ ƒ /api/works/submitted                                     385 B         103 kB
+build	Build	2026-11-04T23:27:36.9767882Z ├ ○ /experience/jinze-water-net                            29.6 kB         139 kB
+build	Build	2026-11-04T23:27:36.9768814Z ├ ƒ /experience/lvzhiqiu                                   9.48 kB         112 kB
+build	Build	2026-11-04T23:27:36.9769717Z ├ ○ /explore                                               5.62 kB         115 kB
+build	Build	2026-11-04T23:27:36.9770576Z ├ ○ /foundation                                              385 B         103 kB
+build	Build	2026-11-04T23:27:36.9771410Z ├ ○ /login                                                 1.19 kB         107 kB
+build	Build	2026-11-04T23:27:36.9772253Z ├ ○ /register                                               1.3 kB         107 kB
+build	Build	2026-11-04T23:27:36.9773080Z ├ ○ /studio                                                 6.4 kB         116 kB
+build	Build	2026-11-04T23:27:36.9773939Z ├ ƒ /studio/desk                                           6.52 kB         109 kB
+build	Build	2026-11-04T23:27:36.9774784Z └ ○ /watch                                                 2.45 kB         105 kB
+build	Build	2026-11-04T23:27:36.9775672Z + First Load JS shared by all                               103 kB
+build	Build	2026-11-04T23:27:36.9776534Z   ├ chunks/2261-c75fbc820b437d5c.js                        46.4 kB
+build	Build	2026-11-04T23:27:36.9777340Z   ├ chunks/91a23b3f-712a30abddb1ae63.js                    54.2 kB
+build	Build	2026-11-04T23:27:36.9778106Z   └ other shared chunks (total)                            1.95 kB
+build	Build	2026-11-04T23:27:36.9778501Z 
+build	Build	2026-11-04T23:27:36.9778571Z 
+build	Build	2026-11-04T23:27:36.9778906Z ○  (Static)   prerendered as static content
+build	Build	2026-11-04T23:27:36.9779494Z ƒ  (Dynamic)  server-rendered on demand
+build	Build	2026-11-04T23:27:36.9779816Z 
+build	Auth coverage gate	﻿2026-11-04T23:27:37.0219468Z ##[group]Run node scripts/check-auth-coverage.mjs --strict --out /tmp/k3-auth-coverage.csv
+build	Auth coverage gate	2026-11-04T23:27:37.0220510Z [36;1mnode scripts/check-auth-coverage.mjs --strict --out /tmp/k3-auth-coverage.csv[0m
+build	Auth coverage gate	2026-11-04T23:27:37.0263165Z shell: /usr/bin/bash -e {0}
+build	Auth coverage gate	2026-11-04T23:27:37.0263529Z env:
+build	Auth coverage gate	2026-11-04T23:27:37.0263841Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+build	Auth coverage gate	2026-11-04T23:27:37.0264219Z ##[endgroup]
+build	Auth coverage gate	2026-11-04T23:27:37.0786981Z === P0 鉴权矩阵 ===
+build	Auth coverage gate	2026-11-04T23:27:37.0795545Z routes=107 public=18 protected=89
+build	Auth coverage gate	2026-11-04T23:27:37.0797459Z missing_route_auth=0 auth_only_no_owner=0
+build	Auth coverage gate	2026-11-04T23:27:37.0806129Z matrix=../../../../../tmp/k3-auth-coverage.csv
+build	MAB 74 target handoff audit (informational)	﻿2026-11-04T23:27:37.0861448Z ##[group]Run node scripts/audit-mab-handoff-targets.mjs --out /tmp/mab-target-audit.json
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.0862360Z [36;1mnode scripts/audit-mab-handoff-targets.mjs --out /tmp/mab-target-audit.json[0m
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.0908275Z shell: /usr/bin/bash -e {0}
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.0908690Z env:
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.0909086Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.0909582Z ##[endgroup]
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1446508Z {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1447332Z   "schema": "mohen.mab.handoff-target-audit.v1",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1447937Z   "repo_sha": "3929d9df7496fc883c684304f19c1908977b7982",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1448762Z   "generated_at": "2026-11-04T23:27:37.141Z",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1449193Z   "status": "HANDOFF_NOT_READY",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1449540Z   "count": 74,
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1449837Z   "original_action": {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1450121Z     "REVISE": 53,
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1450442Z     "CREATE": 21
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1450744Z   },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1451057Z   "implementation_status": {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1451496Z     "CODE_PRESENT": 74
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1451815Z   },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1452147Z   "target_validation": {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1452589Z     "DESIGN_TARGET_SEMANTICS_NOT_VERIFIED": 74
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1452998Z   },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1453299Z   "hp13_current_semantic": {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1453662Z     "UNVERIFIED": 53,
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1454099Z     "DESIGN_TEXT_IDENTICAL_RUNTIME_NOT_VERIFIED": 18,
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1454799Z     "CONSUMER_CONTEXT_EXPANDED_FOR_EXACT_WORK_G5_BRIDGE__FULL_TARGET_HOLD": 1,
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1455676Z     "VERIFIED_ISOLATED_UNIT_ONLY_FULL_CONTRACT_PENDING": 2
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1456222Z   },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1456449Z   "hp_work_packages": [
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1456693Z     "HP01",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1456901Z     "HP02",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1457098Z     "HP03",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1457298Z     "HP04",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1457489Z     "HP05",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1457682Z     "HP06",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1457878Z     "HP07",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1458077Z     "HP08",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1458271Z     "HP09",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1458460Z     "HP10",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1458655Z     "HP11",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1458843Z     "HP12",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1459031Z     "HP13"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1459231Z   ],
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1459465Z   "additional_responsibilities": [
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1459729Z     "A01",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1459924Z     "A02",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1460120Z     "A03",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1460309Z     "A04",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1460495Z     "A05",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1460688Z     "A06",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1460880Z     "A07",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1461065Z     "A08",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1461250Z     "A09",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1461444Z     "A10",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1461631Z     "A11",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1461814Z     "A12",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1462008Z     "A13",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1462195Z     "A14",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1462383Z     "A15",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1462569Z     "A16",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1462764Z     "A17",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1462956Z     "A18",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1463139Z     "A19",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1463335Z     "A20"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1463523Z   ],
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1463724Z   "missing_target_count": 0,
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1464013Z   "hp13_byte_exact_target_count": 18,
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1464290Z   "hp13_byte_exact_paths": [
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1464707Z     "apps/web/app/api/studio/works/[id]/revisions/[rev]/panels/[panel]/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1465168Z     "governance/mhka/MHKA-00_Governance_Charter.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1466258Z     "governance/mhka/MHKA-01_Value_and_Strategy.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1466966Z     "governance/mhka/MHKA-02_Humanistic_Product_and_Experience.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1467699Z     "governance/mhka/MHKA-03_Knowledge_World_and_Data_Architecture.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1468486Z     "governance/mhka/MHKA-04_Agent_and_Professional_Capabilities.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1469198Z     "governance/mhka/MHKA-05_Software_Engineering_and_Operations.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1470242Z     "specs/SYSTEM_RUNTIME_ARCHITECTURE.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1470767Z     "specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1471340Z     "specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1471965Z     "specs/experience-ui/H1_H2_H3_AND_COMPONENTS_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1472533Z     "apps/web/lib/kad1-policy.d.mts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1473147Z     "supabase/migrations/202611020900_kad1_watch_revision_isolation.sql",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1473847Z     "supabase/migrations/202611020910_kad1_consumption_blocks.sql",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1474755Z     "supabase/migrations/202611020920_kad1_account_transactions.sql",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1475709Z     "supabase/rollback/202611020900_kad1_watch_revision_isolation.rollback.sql",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1476557Z     "supabase/rollback/202611020910_kad1_consumption_blocks.rollback.sql",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1477370Z     "supabase/rollback/202611020920_kad1_account_transactions.rollback.sql"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1477953Z   ],
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1478318Z   "existing_target_byte_diff_count": 56,
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1478795Z   "existing_target_byte_diffs": [
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1479184Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1479511Z       "path": ".github/workflows/ci.yml",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1480132Z       "actual_sha256": "2f61e8449c4600378b47574491566feb2b5ef4f09a5694604404f20a803524a1",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1480997Z       "target_sha256": "8929efac9a2a343446f322ccd8a593adf854eb6ef59acc1e0c06a3d42129c020"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1481554Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1481885Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1482291Z       "path": "AGENTS.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1482911Z       "actual_sha256": "d701136d94d5a96eb4dcfe06e14c05db1b54e2395e05c87de140421a953d845d",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1483690Z       "target_sha256": "3ed0f5d00452c1ca9234617635ca3c38773a919928a6ebdec3dc7040305c9775"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1484251Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1484512Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1484796Z       "path": "OWNERSHIP_MAP.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1485700Z       "actual_sha256": "70eab17e47e4b3aef8b0b5ad50a4b787f84a2209d3cd67c407a55611c0942a9c",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1486712Z       "target_sha256": "cdbbbbe884a24712e1c0728a78ff570d9000e3f34b7a44d0cbebe64722ae4e41"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1487378Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1487690Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1488135Z       "path": "apps/web/app/api/admin/acl/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1488910Z       "actual_sha256": "a473acd02baae839c788e097aa957de2079d0fd6268b22fe7ee3ef73224cf30d",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1489872Z       "target_sha256": "9073375171a67606409fe4c971c8977b8903173d1d15e6ce89a180ecbc8cd2f3"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1490556Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1490875Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1491529Z       "path": "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1492597Z       "actual_sha256": "fd2d0def847cdb8af411a22f3a8b00cc7fb4e0a87bc68f2312ac8e4a7e6cfbe2",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1493629Z       "target_sha256": "dae20cfaa3cba6fa6e5058a0f27b6e31b2e96dee2e595802c61285ffa1c55224"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1494485Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1494808Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1495295Z       "path": "apps/web/app/api/admin/publications/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1496381Z       "actual_sha256": "9b56b515b6dba6c97bd66fd6da779c2fe96e18c3c369e4940b51bf6005a58d4f",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1497401Z       "target_sha256": "eba82468b39f8b6786b38f666f4e07d185fd07bf821ed630424a15eca299b4e7"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1497894Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1498126Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1498510Z       "path": "apps/web/app/api/admin/rights/invalidate/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1499203Z       "actual_sha256": "6a3b803aa5d2da6ef5db11fcd622b8beb91b5da0e9f7e46b9eb06f441cc5090a",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1499973Z       "target_sha256": "402a55c3b9b959a3d6cc51ecdfc4a1431ae8a9144f2f9118f14992cf48fef58d"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1500466Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1500692Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1501070Z       "path": "apps/web/app/api/admin/users/[id]/status/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1501690Z       "actual_sha256": "8b89f135e937f3fa4ad1965c32d0d58c6dc152df3b6fb23727a16165ceb422e9",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1502819Z       "target_sha256": "3dcb8680053b26a5ed46718cc51c432d4606992d23bddb7e9f25e5cdb8632aa0"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1503420Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1503686Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1504147Z       "path": "apps/web/app/api/explore/entities/[id]/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1504947Z       "actual_sha256": "fd0d99e1da845f76da78b2261be6873c8e9106d5c6d984ae68b63db23e5fe575",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1505984Z       "target_sha256": "2dd1df70dc6305f5773d634454addee55b03bd7edf072c8ee09f07dea9d9e268"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1506738Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1507022Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1507445Z       "path": "apps/web/app/api/explore/events/[id]/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1508135Z       "actual_sha256": "4432eb8cd02256a0d0de13540690afb6237db70051d20bc1cabdeac965e2ddea",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1508980Z       "target_sha256": "2dd1df70dc6305f5773d634454addee55b03bd7edf072c8ee09f07dea9d9e268"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1509513Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1509788Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1510227Z       "path": "apps/web/app/api/explore/relations/[id]/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1510775Z       "actual_sha256": "7916c08ae7b89ccdbed58f0a4670386089827af896d896a553a699cc5687da82",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1511351Z       "target_sha256": "2dd1df70dc6305f5773d634454addee55b03bd7edf072c8ee09f07dea9d9e268"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1511748Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1511935Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1512228Z       "path": "apps/web/app/api/governance/gates/revoke/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1512738Z       "actual_sha256": "d6620f53ed7ba8eaed360ee09c08cb59a212059a77284a2d9c84b2a34d9f303b",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1513329Z       "target_sha256": "c9c2d199b6b58e5a5534d65b76a743327fa1acd6e0081a8170d3c2f6111ec6e9"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1513712Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1513904Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1514192Z       "path": "apps/web/app/api/public/evidence/[id]/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1514702Z       "actual_sha256": "47e691e48fbab05f3106ee08da3a41aca42b65cb7e9eb32cf09ad9fac5296617",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1515295Z       "target_sha256": "0a743129172cbe8b26612cefc91aaa2c89baab406325cafeb9469c08802611bc"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1516981Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1517228Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1517537Z       "path": "apps/web/app/api/studio/attachments/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1518062Z       "actual_sha256": "a9ded206e6d16529fabdb6eb9a136a8a1f8318d80618244cd815abca375eb962",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1518642Z       "target_sha256": "61c8c18a9cc1d56557911191766ec95c46582f5fa2e5ddd7f91219693a8af6e0"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1519025Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1519230Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1519558Z       "path": "apps/web/app/api/studio/works/[id]/revisions/[rev]/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1520098Z       "actual_sha256": "1d27673f73fa8ee8722dcd974914e98d5501a92e6fa848f7141cc8550f2b9427",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1520673Z       "target_sha256": "11a2527377dafb595af670c85020631c118fff25e607eac1a04f83526b730a4e"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1521062Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1521256Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1521565Z       "path": "apps/web/app/api/studio/works/[id]/revisions/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1522073Z       "actual_sha256": "051c450c6520aacbe19ee36761b1098f04967f6d310acc720ed5f7da18ff7f9e",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1522666Z       "target_sha256": "80f3c1ebbffb2251e35b6f5c19f37a333ad016407bdfa837f4d9d5788b0e3cab"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1523064Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1523250Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1523520Z       "path": "apps/web/app/api/watch/sessions/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1523998Z       "actual_sha256": "321000048b53c9a871f9157a2b77d7623892e739dda0028dd06b10709a673576",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1524568Z       "target_sha256": "2e347c98421724cff753fcc81c31bf94a3bc398e0716e635be634a7138d0ee05"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1524959Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1525154Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1526076Z       "path": "apps/web/lib/gate-review.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1526817Z       "actual_sha256": "4f2aed75b569df255c8b85d0d7bbd0ef773ca410c4993cd87863b77522b78737",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1528054Z       "target_sha256": "555f7af929b641988eb4d9633a87d9e63e6d617deb98e92488c44af7eaf56272"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1528670Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1528935Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1529306Z       "path": "apps/web/lib/gate-revoke.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1530033Z       "actual_sha256": "b21d459943ae44db903539d60acce267e0bd71698ea6ba3845f1e1f5d751cf42",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1530940Z       "target_sha256": "9be091ddd41f953b5f3aa96904cdbe70396480ca7cbbd72eff372ed8a824564d"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1531529Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1531777Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1532267Z       "path": "apps/web/lib/mohen-agent/retrieve.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1532958Z       "actual_sha256": "4c8476c96426e1234b5fc818e2120c9b68b21f74d8bf3114e97b9a64ec1e7c4a",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1533824Z       "target_sha256": "bb411ec65fe84a5794c91612f7ec728c6b35ad7483ae6cc8696bbba9ec3f6311"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1534349Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1534610Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1534933Z       "path": "apps/web/lib/publication.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1535761Z       "actual_sha256": "1f37ba754f4e04a789e4dd6e3ee4249d4be565c977be2ddf8153e35993389039",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1536616Z       "target_sha256": "06fbf7b66383b05e9d7dd9da185eb3cf65df25fb04b2a8ad92c2e38432ddea54"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1537178Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1537413Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1537759Z       "path": "apps/web/lib/read-model-bridge.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1538457Z       "actual_sha256": "c29aa1d951fa6db0a3e478d1879a6a0af47eac7afbecde33a444572c30a93426",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1539276Z       "target_sha256": "16daf96b20aa111381d74ce34d2b3ec1de86113961e35017aba1e84acde325a5"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1539836Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1540070Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1540401Z       "path": "apps/web/lib/studio-director.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1541062Z       "actual_sha256": "f0ba1665b5ac48752f1a207afacc2143482258bb9b1067276381c96a3edc9e93",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1541915Z       "target_sha256": "7911882277f62a2c930118fcf45d202d14e864776687fd7a13c4f21998bac1c6"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1542486Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1542728Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1543106Z       "path": "skills/README_DATA_PRODUCTION_SKILLS.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1543806Z       "actual_sha256": "37306a0ab7a4383921e84a739df4df650bb2dd8f95f28314bdb27e0d4a6fc1d7",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1544674Z       "target_sha256": "e04bc89e3df2a4f0f58b72c0437a64073e9ce2295c33f793728c70c2ae3c6ef1"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1545313Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1545740Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1546098Z       "path": "skills/mohen-carrier-reading/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1546813Z       "actual_sha256": "4fe3088db08e5449874511af349d647652c61eac5bdf9cf86c8ad68b6b20e3e6",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1547738Z       "target_sha256": "16a2704d02732bfeb4d120eff6bc497c68f36aaa55ea06ecced182a470f393b7"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1548275Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1548509Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1548893Z       "path": "skills/mohen-humanistic-discovery/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1549638Z       "actual_sha256": "0fbba18a93f57ec9458112a0e29c2f5ce7393c2dd2c0f1504e8f5b4b97c35eeb",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1550625Z       "target_sha256": "fe6370a7725e85f56218a3c2ba339d4c5e2e76e596e1368183e46259dcf2ddfb"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1551250Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1551506Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1551936Z       "path": "skills/mohen-material-understanding/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1552664Z       "actual_sha256": "1fbe834396a7a7f73cb4f0afca52d993c470ca43048375fae8e45833451c720c",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1553409Z       "target_sha256": "aab4dd10c9791d90018911ae179753801ecaf7224f340930d6212258984f167c"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1553921Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1554155Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1554553Z       "path": "skills/mohen-read-model-publication/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1555271Z       "actual_sha256": "b56bdf57cbf541a6263b96321a0051fe5a9cbb583ce126e11bfb13331be77891",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1557392Z       "target_sha256": "7bd1d0aa22ddd2af141d9c7967ed2f8a82391baf03150138de132041acae5bc0"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1557803Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1558137Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1558406Z       "path": "skills/mohen-source-intake/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1558893Z       "actual_sha256": "b5d19ac9548abaf58468bd5d3d7d84ed7e860211e1fcd387d9293bb519ef79de",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1559479Z       "target_sha256": "9935cb39fa1665357f52875a0297f7c083db50db28f6e72f526e91edad546dee"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1559866Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1560051Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1560339Z       "path": "skills/mohen-world-construction/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1560815Z       "actual_sha256": "4b039d07c0014837a847744d74afb34b2c050e2dc61fa288f3a31b5ee5942633",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1561471Z       "target_sha256": "79205999af044e3754060c3136e2284e86dc7100ebed39ee2e653655675022c4"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1561859Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1562045Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1562281Z       "path": "specs/AGENT_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1562900Z       "actual_sha256": "88e7e08a8c79bda493964ba46ada61ecb4a680d3cc353a9f13df286d545e0a7f",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1563529Z       "target_sha256": "2f2e5b32e211dc440e1cd89cc6cee27f18a3b725146203dd38acfb455136ecc3"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1563945Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1564173Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1564433Z       "path": "specs/API_TOOL_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1564957Z       "actual_sha256": "fa090c972e7a224aa7bee1fa7a28821eae9fdba78b6f372f2d70ca35ef2e8967",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1567013Z       "target_sha256": "0b5481886d2d6185690f58452023347e76fadb275ab6e7a92c37f4e937880012"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1567440Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1567656Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1567918Z       "path": "specs/DATA_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1568421Z       "actual_sha256": "a92ff9d06a98b0ec89a5e3c01edfdd7426b9652f38142b80ff210cf123047628",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1569034Z       "target_sha256": "db92892ca5b5c4813e436e7935c55042a0f006105df41bb4604b8c24749dcc27"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1569453Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1569664Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1569976Z       "path": "specs/EXPERIENCE_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1570485Z       "actual_sha256": "16f9bd92f5318f6c7593f3e9cf99400b715c164e796832000a9dcf936ef89f9e",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1571090Z       "target_sha256": "a697cfb4642e8bb1baef20ec0077c00af0d878d13cc0290a710ac279b4a90177"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1571504Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1571711Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1571977Z       "path": "specs/FOUNDATION.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1572455Z       "actual_sha256": "d2bf28bfd6ca9b3e49fc2f09b8aea53de492731c46390e81cb885ef632973570",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1573089Z       "target_sha256": "4f01461c659bcbdccae059903a3782c8165c18a4b3a2637bccfb11915996aaf6"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1573492Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1573682Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1573939Z       "path": "specs/OPERATIONS_DEPLOYMENT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1574421Z       "actual_sha256": "0cb8ff21ec6b27d586145c2339a5c902d1898b56426f905c0f3b5ca31f8a691e",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1574999Z       "target_sha256": "711bb7aa77bc46b08519d99fdacd4873fddef2e38f46e63d8b6ae782009e1dda"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1575557Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1575829Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1576088Z       "path": "specs/SECURITY_ACCESS_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1576572Z       "actual_sha256": "6c32d5fd7775e93df3456ab29b14e0712bb365cd78df70f05c620ec5e8c83843",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1577150Z       "target_sha256": "6c1a3fb8b67232314f2304419f291d1314754df3bf4964f777182f8663ba5f1a"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1577527Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1577709Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1578036Z       "path": "specs/data-production/MoHen_Data_Production_Protocol.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1578573Z       "actual_sha256": "d8c834a70dd6118986218effa0d1cff4f2dd979ab481664e8da5ce462bfb154f",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1579154Z       "target_sha256": "d3f1846e361f959df8742358c17e4ea0b60e8da1d0c547bfcdd65291589e4d16"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1579546Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1579734Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1580052Z       "path": "specs/data-production/PERSISTENCE_BINDING_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1580591Z       "actual_sha256": "aeeafae674561e5e28971a63c006266b2fa7969af80b300c9d810e338410570f",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1581290Z       "target_sha256": "b781ad6cea0831be4eb18f377b4324332671005089fa660f4a7572546ab02e0a"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1581680Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1581877Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1582221Z       "path": "specs/data-production/contracts/ENGINEERING_HANDOFF_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1582779Z       "actual_sha256": "c9ea7ba38b89de5fd5ac092a9bb702fb54c91472da06a1ab268e17496f300307",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1583381Z       "target_sha256": "98e8de0bd2ae562d8927dac76378da5017c0e62ab0963b37b75fdf6b3b553286"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1583819Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1584086Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1584566Z       "path": "specs/data-production/gates/G0-G5_MACHINE_GATE_CONTRACT_V3.0.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1585145Z       "actual_sha256": "7d25bdab468e0b4454e1330e609333f085d38b536d24a4e9c98199bc201b3198",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1586428Z       "target_sha256": "fafff9fc2034194c4837fd3d85072e3b47fcb0650fbafda7eec70a38f9d45307"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1586855Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1587055Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1587371Z       "path": "specs/data-production/method-binding-contract.json",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1587901Z       "actual_sha256": "f71bdd229a2530a2b484d696701f39f0f37e6820aa49adf36d1e0a7bdf93c46c",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1588490Z       "target_sha256": "fd801731dd2e457e8feaeb28272e4c12cbcede12db13d8b9b8df20e9e6a8abb2"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1588895Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1589089Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1589385Z       "path": "specs/data-production/production-registry.json",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1589907Z       "actual_sha256": "3da27f9a802100edbc26a2d1de2c6ca1fbd7ebe9e43c5fbc79ed789143a96f81",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1590503Z       "target_sha256": "6a2f1441f2ddd086f29c18a24986d715d1fe40a21cc1aba90766147d0d18aa91"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1590891Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1591076Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1591357Z       "path": "specs/requirements/TRACEABILITY_INDEX.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1591833Z       "actual_sha256": "85e33de850cdca34d873d83c030bd8159a284c75c7ee8c062027f965002a9aa5",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1592405Z       "target_sha256": "5ec7f9156202c964bde0f781e197f0c96084ec11d4e38a68f054676352adef28"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1592790Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1592976Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1593274Z       "path": "specs/requirements/api-route-contracts.csv",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1593770Z       "actual_sha256": "1f9dfbe2e5997a65874c5a37be4317bbd777f5dc2546ebb041da94d6e9c48c65",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1594351Z       "target_sha256": "6e1d6e81d774430fe26d24ec855145215aa14facda76a1a6df88134cc98022a2"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1594732Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1594924Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1595208Z       "path": "specs/requirements/u07-action-contracts.csv",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1595913Z       "actual_sha256": "01b7d22ca661031845633aec87f52a5815f767e1bd9cba91ceb01f154a33242e",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1596493Z       "target_sha256": "953e916df7847022a7b6a246de6f4e6bebd10fc9b9cc525241366b4f1b0dc65f"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1596890Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1597076Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1597337Z       "path": "skills/mohen-acceptance/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1597818Z       "actual_sha256": "274280a3a48b71066fc2c8cb6baee14771b2362af17abc92030eb72adf28dc32",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1598384Z       "target_sha256": "544679097e4a87a7da43ebcb4053c15672a56366bcf2f269281667bf80348277"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1598762Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1598955Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1599219Z       "path": "skills/mohen-project-guard/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1599695Z       "actual_sha256": "ca1697b91dd377f1a506856f5143a1b7f851bcccf833f2e9eff49da6376a9b02",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1600289Z       "target_sha256": "4f44261d0dce46cc097c94f15e0956adceddd5aa265b56e8e4cb763ef516eaeb"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1600680Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1600868Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1601140Z       "path": "skills/mohen-vertical-slice/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1601609Z       "actual_sha256": "40452381f260e497e465198aec64d2d661fd9ad4f5e7d65046bcc7c3c49bd7b8",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1602193Z       "target_sha256": "ca8a58f7b928fe2fbf1f5470b7cf549d8f728fefc8ccde9ae6947afa175adcd3"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1602715Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1602903Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1603205Z       "path": "skills/mohen-historical-spatial-source/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1603739Z       "actual_sha256": "2daeddb60e94dcca23ec3dd04ea0b26be0b69930a390681cb468b302ab96539a",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1604319Z       "target_sha256": "d419a42fb28b8576f75b0be823a687cef838016c98d1f6adb31152c3c80dc3f9"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1604701Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1604893Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1605224Z       "path": "skills/mohen-historical-spatial-reconstruction/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1606072Z       "actual_sha256": "b33d1cec56b3c99d33cc603bb9b46fb6d6f118c27a24a8d9d51908ed54411d5a",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1606681Z       "target_sha256": "7e8c6f6282a048cdecd83cff14f2521717ee440d6b16d5d2f55f148f75229125"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1607074Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1607264Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1607536Z       "path": "skills/mohen-visual-asset/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1608025Z       "actual_sha256": "0d19e6c3ce077d1b24fa77e4c164a8c51001ea2bd5fb3112924f576f2b1588b8",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1608753Z       "target_sha256": "69888f09eba0b0fb0612501914f8cec68533e94c1d3637a3779b02ad6f6a97ca"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1609158Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1609348Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1609637Z       "path": "skills/mohen-experience-prototype/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1610150Z       "actual_sha256": "7c9fa47db2d6e9557cce3081c20eaaf282676055478ea1533e6de800630708bd",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1610725Z       "target_sha256": "368f3e39ec17b64e69ddfe73325a1600e9031d8251987a270b86782dddfc32c8"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1611119Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1611313Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1611561Z       "path": "apps/web/lib/kad1-policy.mjs",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1612035Z       "actual_sha256": "b01a5b2ae5a12b4cbc9de51e8d3b03b8709e39bfed300c92c2e61c86a2984e72",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1612640Z       "target_sha256": "50a4ffbaded23ac179afdc3f4a5547b8f2f5e93f3098698aedb6465c6cd5fae8"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1613040Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1613226Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1613479Z       "path": "tests/unit/kad1-policy.test.mjs",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1613966Z       "actual_sha256": "5d105421ecd7acf416a9db533231cc5d3d29758b6f32dbfa83e11e8278e31ae3",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1614538Z       "target_sha256": "d98025fd54c179cb658f19e45ed0a739217420e5a11d738245de3b117eb259f9"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1614925Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1615106Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1615521Z       "path": "tests/unit/kad1-route.test.mjs",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1616225Z       "actual_sha256": "3d65486e6f268e68b11a57ee65357376c97ac5a54049a6e7cabca43493ff28d5",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1616831Z       "target_sha256": "abc75cfe0012e70b4d3aeffd3a707eabe07f53ab0347db542ea141cd5b7ce789"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1617230Z     }
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1617415Z   ],
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1617636Z   "missing_targets": [],
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1617914Z   "unverified_semantics_count": 74,
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1618180Z   "errors": []
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:27:37.1618402Z }
+build	Upload MAB target audit evidence	﻿2026-11-04T23:27:37.1669396Z ##[group]Run actions/upload-artifact@v4
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.1669718Z with:
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.1670003Z   name: mab-hp13-target-readiness
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.1670305Z   path: /tmp/mab-target-audit.json
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.1670592Z   if-no-files-found: warn
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.1670844Z   compression-level: 6
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.1671114Z   overwrite: false
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.1671366Z   include-hidden-files: false
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.1671625Z env:
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.1671881Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.1672204Z ##[endgroup]
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.3437168Z (node:4477) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.3438563Z (Use `node --trace-deprecation ...` to show where the warning was created)
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.3528380Z With the provided path, there will be 1 file uploaded
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.3557492Z Artifact name is valid!
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.3576659Z Root directory input is valid!
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.6604773Z Beginning upload of artifact content to blob storage
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.6843057Z (node:4477) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.8532761Z Uploaded bytes 6462
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.8998395Z Finished uploading artifact content to blob storage!
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.8999870Z SHA256 digest of uploaded artifact zip is 9486c35654eb033a9de380b6afbbd4dc312e1ca3a3d25afbe9676c760a8fce8c
+build	Upload MAB target audit evidence	2026-11-04T23:27:37.9001367Z Finalizing artifact upload
+build	Upload MAB target audit evidence	2026-11-04T23:27:38.3755877Z Artifact mab-hp13-target-readiness.zip successfully finalized. Artifact ID 13373610416
+build	Upload MAB target audit evidence	2026-11-04T23:27:38.3758830Z Artifact mab-hp13-target-readiness has been successfully uploaded! Final size is 6462 bytes. Artifact ID is 13373610416
+build	Upload MAB target audit evidence	2026-11-04T23:27:38.3763886Z Artifact download URL: https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41933637116/artifacts/13373610416
+build	Post Run actions/setup-node@v4	﻿2026-11-04T23:27:38.3943849Z Post job cleanup.
+build	Post Run actions/setup-node@v4	2026-11-04T23:27:38.5212967Z (node:4489) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+build	Post Run actions/setup-node@v4	2026-11-04T23:27:38.5214409Z (Use `node --trace-deprecation ...` to show where the warning was created)
+build	Post Run actions/setup-node@v4	2026-11-04T23:27:38.5217075Z Cache hit occurred on the primary key node-cache-Linux-x64-pnpm-53f83b0a1a7f909344bfe900808d1cc79e05074d63adaa7461c0b6e325787eb5, not saving cache.
+build	Post Run pnpm/action-setup@v4	﻿2026-11-04T23:27:38.5331168Z Post job cleanup.
+build	Post Run pnpm/action-setup@v4	2026-11-04T23:27:38.7056775Z Pruning is unnecessary.
+build	Post Run actions/checkout@v4	﻿2026-11-04T23:27:38.7396826Z Post job cleanup.
+build	Post Run actions/checkout@v4	2026-11-04T23:27:38.8676975Z [command]/usr/bin/git version
+build	Post Run actions/checkout@v4	2026-11-04T23:27:38.8726798Z git version 2.56.0
+build	Post Run actions/checkout@v4	2026-11-04T23:27:38.8804211Z Temporarily overriding HOME='/home/runner/work/_temp/63fce89d-405c-4a3b-bccf-2c6e42323566' before making global git config changes
+build	Post Run actions/checkout@v4	2026-11-04T23:27:38.8826903Z Adding repository directory to the temporary git global config as a safe directory
+build	Post Run actions/checkout@v4	2026-11-04T23:27:38.8852785Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/mohen-agent-2.0/mohen-agent-2.0
+build	Post Run actions/checkout@v4	2026-11-04T23:27:38.8938354Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+build	Post Run actions/checkout@v4	2026-11-04T23:27:38.9024305Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+build	Post Run actions/checkout@v4	2026-11-04T23:27:38.9492510Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+build	Post Run actions/checkout@v4	2026-11-04T23:27:38.9526759Z http.https://github.com/.extraheader
+build	Post Run actions/checkout@v4	2026-11-04T23:27:38.9558471Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+build	Post Run actions/checkout@v4	2026-11-04T23:27:38.9656234Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+build	Post Run actions/checkout@v4	2026-11-04T23:27:39.0040413Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+build	Post Run actions/checkout@v4	2026-11-04T23:27:39.0078476Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+build	Complete job	﻿2026-11-04T23:27:39.0460329Z Cleaning up orphan processes
+build	Complete job	2026-11-04T23:27:39.0741245Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4, pnpm/action-setup@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

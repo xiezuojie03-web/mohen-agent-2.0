@@ -100,3 +100,29 @@ GitHub源码push及三条Actions结果取得后续记，不能用本地成功冒
 原review两个minor中，六L5的逐类PG范围已通过本节补证关闭；三个消费者各自HTTP保留。13类完整专业语义、反馈同意撤回、合法解引用与跨题复用、canonical媒资、ST01—04与完整19组件、全部生产最小身份/Reviewer及M6—M8仍未关闭。本节不能作为这些条件的替代证据。
 
 六类测试文件/fixture/配置均加入现有PG/HTTP workflow路径触发，沿用相同隔离标记、唯一Runner/资格服务。最终GitHub补证源码SHA和Actions取得后追加；first-source失败不改写。
+
+### 6.1 补证提交与当前远端核证
+
+补证源码/测试/差异账修正：`3929d9df7496fc883c684304f19c1908977b7982`，已普通快进推main，未force。正式reader/Gate业务代码继续为`ff5283e`，本提交增加六类/媒体/真实应用wrapper测试、workflow触发及原位账证；不把文档源码行数当新产品能力。
+
+- 主CI：41933637116（SUCCESS_VERIFIED_3929D9D）。
+- 隔离PG17：41933636834（SUCCESS_VERIFIED_3929D9D）。
+- 真实HTTP/Chromium：41933636716（SUCCESS_VERIFIED_3929D9D）。
+
+本地最终PG包含六个`MAB_WORK_L5_FACET_PASS`、`MAB_WORK_MEDIA_RIGHTS_PASS`、`MAB_WORK_APPLICATION_WRAPPER_PG_PASS`及完整K3_DB_TEST_PASS。HTTP共享fixture复验仍15PASS/1StorageSKIP。只读确认本地标记实例的`mohen_k3_*_test`数据库为0后，已移除本会话创建的mohen-m5-pg17；未触及生产。原始日志按Git暂存blob字节生成SHA256SUMS，避免日志CRLF规范化导致证据hash不符；raw日志保留空白/终端控制字节，不以去空格改变原始测试记录。
+
+### 6.2 最终GitHub核证（本件最高时序）
+
+精确补证提交 **`3929d9df7496fc883c684304f19c1908977b7982`**：
+
+| 实际运行 | 结果与原始证明 |
+|---|---|
+| [主CI 41933637116](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41933637116) | **SUCCESS**；类型、432单测/4原SKIP、133边界、构建、鉴权及74目标审计通过。此前first-source audit旧声明失败由本提交原位ADAPTED修正闭合，旧失败记录不删除 |
+| [真实隔离PG17 41933636834](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41933636834) | **SUCCESS**；下载日志逐一确认六类MAB_WORK_L5_FACET_PASS、真实应用wrapper PG、媒体正反、K3_DB_TEST_PASS、迁移/rollback与711 legacy保全 |
+| [实际Next/HTTP/Chromium 41933636716](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41933636716) | **SUCCESS**；15 PASS/1Storage缺配置SKIP，ST08/ST09、WATCH资格/祖先撤销、Admin精确历史及MAB_HTTP_BROWSER_PASS/数据库清除标记全部存在 |
+
+**核销仅为VERIFIED_ISOLATED**：精确WorkRevision与六类真实L5/current独立G5的签审整稿/用途/范围/权利只读桥；四消费者PG/实际应用wrapper；WATCH HTTP；13类10+3私有持久与规范边界；Admin本人具体条目历史和使用史；ST08/ST09隔离业务。没有正式Reviewer/真实专业生产PASS、真实版权确认或M5整体准出。
+
+**固定未关闭**：其它三消费者各自产品HTTP；13类完整专业语义、合法来源解引用与跨题复用、consented_feedback同意/撤回完整机制、canonical媒资运营；ST01—04/完整H1/H2/H3/19组件；正式PG/Storage/专用最小身份/Reviewer/恢复/生产context、真实Provider外发费用及双课题/M6—M8。原责任和最迟完成点继续依PLAN及M1—M4条件，不因本轮成功自动延期/关闭。
+
+回滚依据：`a38190a`为本轮起点，`ff5283e`为业务桥源码，`3929d9d`为补证和账证修正；生产未迁移。关闭consumer context或恢复原资格拒绝即可扣留新消费；保留作品/修订/候选/审计和撤销，不恢复旧published/legacy PASS旁路。全部GitHub成功/失败run JSON、原始PG/HTTP日志与Git blob SHA256清单在同名evidence目录。后续仅文档证据提交不冒称新增源测或正式Gate许可。

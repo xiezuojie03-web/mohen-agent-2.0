@@ -1,5 +1,9 @@
 # 墨痕｜当前真实工程状态
 
+> **2026-11-05｜本轮最终核证（最高时序）**：业务源码`ff5283e`、补证`3929d9df7496fc883c684304f19c1908977b7982`已推main；精确主CI[41933637116](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41933637116)、PG[41933636834](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41933636834)、HTTP[41933636716](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41933636716)全SUCCESS，HTTP15PASS/1StorageSKIP。六L5×四消费者PG/实际应用wrapper/整稿媒体权利、WATCH真实HTTP撤权、13类10+3持久、Admin精确历史/事件与ST08/ST09仅核销VERIFIED_ISOLATED；原两次CI失败保留并定向闭合。其它三消费者产品HTTP、13类完整专业/同意撤回/合法复用/canonical媒资、ST01—04/19组件及全部生产专业外发费用条件继续HOLD。**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY**，下一步沿原M5剩余项，不重复已验导演CAS/fork/restore/本批能力；精确证据与回滚见`tasks/results/MAB/CODEX_M5_BINDING_ASSETS_20261105.md`§6.2。下方本轮PENDING和仅story_seed表述为历史。
+
+> **2026-11-05｜最新已推补证SHA**：`main@3929d9df7496fc883c684304f19c1908977b7982`（生产只读桥源码ff5283e）。六L5/媒体/实际应用wrapper PG及HTTP15PASS/1StorageSKIP已本地复验；精确主CI41933637116、PG41933636834、HTTP41933636716为SUCCESS_VERIFIED_3929D9D，实际结果见本批回执§6.1/6.2与progress最新核证。M5整体/上游固定条件、其它三产品HTTP和完整专业业务继续HOLD，原失败CI保留。
+
 > **2026-11-05｜同轮最新补证**：六类L5×四消费者真实PG绑定、物理修订变化拒绝、祖先撤销及整稿媒体权利正反已完成，实际应用wrapper PG也通过；共享fixture参数化后完整PG17与HTTP15PASS/1StorageSKIP复验通过。取代下方首批“仅story_seed/其它五类未验”的PG局限；其它三消费者各自产品HTTP、13类完整专业语义/反馈同意撤回/合法复用/canonical媒资、ST01—04/19组件仍未验。first-source ff5283e的PG41932575876/HTTP41932576000 SUCCESS，主CI41932575992因差异账字节等同旧声明FAIL，已原位改ADAPTED待新CI核证，不掩盖失败。最新补证SHA/CI见本批CODEX_M5_BINDING_ASSETS_20261105回执；M5整体/全部生产专业外发费用条件HOLD不变。
 
 > **2026-11-05｜M5本轮实码续建（CI核证中，非整体准出）**：已接只读精确WorkRevision→真实L5/current独立G5签审整稿及动作权利桥，并补13类10+3持久矩阵、Admin历史精确版本/使用史、WATCH与ST08/ST09隔离业务；实际源码SHA/PG/HTTP/Actions以`tasks/results/MAB/CODEX_M5_BINDING_ASSETS_20261105.md`和progress最新条目为准，未核结果不作PASS。此前只读审查仍仅是审查，本批源码另行记账。三其它消费者各自HTTP、其余五L5及13类专业/同意撤回/合法复用与九动作整体未验，**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY**，全部上游生产/专业/外发/费用HOLD不变，无正式Gate或context激活。

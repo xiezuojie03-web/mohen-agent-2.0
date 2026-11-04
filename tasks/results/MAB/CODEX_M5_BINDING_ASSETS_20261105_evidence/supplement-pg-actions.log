@@ -1,0 +1,487 @@
+isolated-pg	Set up job	﻿2026-11-04T23:25:50.9900286Z Current runner version: '2.338.2'
+isolated-pg	Set up job	2026-11-04T23:25:50.9927097Z ##[group]Runner Image Provisioner
+isolated-pg	Set up job	2026-11-04T23:25:50.9928001Z Hosted Compute Agent
+isolated-pg	Set up job	2026-11-04T23:25:50.9928680Z Version: 20261028.624
+isolated-pg	Set up job	2026-11-04T23:25:50.9929274Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+isolated-pg	Set up job	2026-11-04T23:25:50.9929965Z Build Date: 2026-10-28T21:51:42Z
+isolated-pg	Set up job	2026-11-04T23:25:50.9930569Z Worker ID: {38c6eb84-8328-496e-981f-8e1b7dcade89}
+isolated-pg	Set up job	2026-11-04T23:25:50.9931271Z Region: westus3
+isolated-pg	Set up job	2026-11-04T23:25:50.9931749Z Cloud: Azure
+isolated-pg	Set up job	2026-11-04T23:25:50.9932254Z ##[endgroup]
+isolated-pg	Set up job	2026-11-04T23:25:50.9933645Z ##[group]Operating System
+isolated-pg	Set up job	2026-11-04T23:25:50.9934364Z Ubuntu
+isolated-pg	Set up job	2026-11-04T23:25:50.9934876Z 24.04.5
+isolated-pg	Set up job	2026-11-04T23:25:50.9935313Z LTS
+isolated-pg	Set up job	2026-11-04T23:25:50.9935739Z ##[endgroup]
+isolated-pg	Set up job	2026-11-04T23:25:50.9936338Z ##[group]Runner Image
+isolated-pg	Set up job	2026-11-04T23:25:50.9936864Z Image: ubuntu-24.04
+isolated-pg	Set up job	2026-11-04T23:25:50.9937472Z Version: 20261101.360.1
+isolated-pg	Set up job	2026-11-04T23:25:50.9938649Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+isolated-pg	Set up job	2026-11-04T23:25:50.9940350Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+isolated-pg	Set up job	2026-11-04T23:25:50.9941232Z ##[endgroup]
+isolated-pg	Set up job	2026-11-04T23:25:50.9942720Z ##[group]GITHUB_TOKEN Permissions
+isolated-pg	Set up job	2026-11-04T23:25:50.9944810Z Contents: read
+isolated-pg	Set up job	2026-11-04T23:25:50.9945452Z Metadata: read
+isolated-pg	Set up job	2026-11-04T23:25:50.9945937Z ##[endgroup]
+isolated-pg	Set up job	2026-11-04T23:25:50.9947932Z Secret source: Actions
+isolated-pg	Set up job	2026-11-04T23:25:50.9949211Z Cache mode: write
+isolated-pg	Set up job	2026-11-04T23:25:50.9949912Z Prepare workflow directory
+isolated-pg	Set up job	2026-11-04T23:25:51.0280982Z Prepare all required actions
+isolated-pg	Set up job	2026-11-04T23:25:51.0327625Z Getting action download info
+isolated-pg	Set up job	2026-11-04T23:25:51.3377205Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+isolated-pg	Set up job	2026-11-04T23:25:51.4270293Z Download action repository 'pnpm/action-setup@v4' (SHA:b906affcce14559ad1aafd4ab0e942779e9f58b1)
+isolated-pg	Set up job	2026-11-04T23:25:52.0855848Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+isolated-pg	Set up job	2026-11-04T23:25:52.3204891Z Complete job name: isolated-pg
+isolated-pg	Run actions/checkout@v4	﻿2026-11-04T23:25:52.3724421Z ##[group]Run actions/checkout@v4
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.3724887Z with:
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.3725151Z   repository: xiezuojie03-web/mohen-agent-2.0
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.3727141Z   token: ***
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.3727370Z   ssh-strict: true
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.3727601Z   ssh-user: git
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.3727840Z   persist-credentials: true
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.3728230Z   clean: true
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.3728470Z   sparse-checkout-cone-mode: true
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.3728747Z   fetch-depth: 1
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.3728976Z   fetch-tags: false
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.3729214Z   show-progress: true
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.3729461Z   lfs: false
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.3729700Z   submodules: false
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.3729943Z   set-safe-directory: true
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.3730221Z   allow-unsafe-pr-checkout: false
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.3730583Z ##[endgroup]
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6077056Z Syncing repository: xiezuojie03-web/mohen-agent-2.0
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6078752Z ##[group]Getting Git version info
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6079416Z Working directory is '/home/runner/work/mohen-agent-2.0/mohen-agent-2.0'
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6080410Z [command]/usr/bin/git version
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6211415Z git version 2.56.0
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6275095Z ##[endgroup]
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6309795Z Temporarily overriding HOME='/home/runner/work/_temp/806c87ff-bfa6-4976-b052-55a00ac16a02' before making global git config changes
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6311324Z Adding repository directory to the temporary git global config as a safe directory
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6312522Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/mohen-agent-2.0/mohen-agent-2.0
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6314533Z Deleting the contents of '/home/runner/work/mohen-agent-2.0/mohen-agent-2.0'
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6315701Z ##[group]Initializing the repository
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6316544Z [command]/usr/bin/git init /home/runner/work/mohen-agent-2.0/mohen-agent-2.0
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6429212Z hint: Using 'master' as the name for the initial branch. This default branch name
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6432741Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6433804Z hint: to use in all of your new repositories, which will suppress this warning,
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6434641Z hint: call:
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6435139Z hint:
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6436024Z hint: 	git config --global init.defaultBranch <name>
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6436725Z hint:
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6437382Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6438539Z hint: 'development'. The just-created branch can be renamed via this command:
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6439697Z hint:
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6440188Z hint: 	git branch -m <name>
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6440729Z hint:
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6441418Z hint: Disable this message with "git config set advice.defaultBranchName false"
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6464431Z Initialized empty Git repository in /home/runner/work/mohen-agent-2.0/mohen-agent-2.0/.git/
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6466834Z [command]/usr/bin/git remote add origin https://github.com/xiezuojie03-web/mohen-agent-2.0
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6558542Z ##[endgroup]
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6559558Z ##[group]Disabling automatic garbage collection
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6560272Z [command]/usr/bin/git config --local gc.auto 0
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6685112Z ##[endgroup]
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6686284Z ##[group]Setting up auth
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6731532Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.6751660Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.7099652Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.7137007Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.7337134Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.7377999Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.7589795Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.7632228Z ##[endgroup]
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.7632885Z ##[group]Fetching the repository
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:52.7651254Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +3929d9df7496fc883c684304f19c1908977b7982:refs/remotes/origin/main
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:55.4123857Z From https://github.com/xiezuojie03-web/mohen-agent-2.0
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:55.4125171Z  * [new ref]         3929d9df7496fc883c684304f19c1908977b7982 -> origin/main
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:55.4152964Z ##[endgroup]
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:55.4154310Z ##[group]Determining the checkout info
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:55.4169410Z ##[endgroup]
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:55.4169943Z [command]/usr/bin/git sparse-checkout disable
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:55.4221458Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:55.4303863Z ##[group]Checking out the ref
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:55.4304624Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:55.7682085Z Switched to a new branch 'main'
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:55.7720737Z branch 'main' set up to track 'origin/main'.
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:55.7740746Z ##[endgroup]
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:55.7841351Z [command]/usr/bin/git log -1 --format=%H
+isolated-pg	Run actions/checkout@v4	2026-11-04T23:25:55.7850889Z 3929d9df7496fc883c684304f19c1908977b7982
+isolated-pg	Run pnpm/action-setup@v4	﻿2026-11-04T23:25:55.8042125Z ##[group]Run pnpm/action-setup@v4
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:55.8042313Z with:
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:55.8042420Z   version: 9.15.4
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:55.8042534Z   dest: ~/setup-pnpm
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:55.8042827Z   run_install: null
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:55.8042951Z   cache: false
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:55.8043069Z   cache_dependency_path: pnpm-lock.yaml
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:55.8043229Z   package_json_file: package.json
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:55.8043361Z   standalone: false
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:55.8043478Z ##[endgroup]
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:55.9071584Z ##[group]Running self-installer...
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:56.1982182Z (node:2044) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:56.1983145Z (Use `node --trace-deprecation ...` to show where the warning was created)
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:56.3769101Z Progress: resolved 1, reused 0, downloaded 0, added 0
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:56.3829499Z Packages: +1
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:56.3835626Z +
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:56.6460617Z Progress: resolved 1, reused 0, downloaded 1, added 1, done
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:56.7341289Z 
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:56.7342268Z dependencies:
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:56.7342967Z + pnpm 9.15.4 (12.16.1 is available)
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:56.7343268Z 
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:56.7364110Z Done in 685ms
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:56.7535999Z ##[endgroup]
+isolated-pg	Run pnpm/action-setup@v4	2026-11-04T23:25:56.7536673Z Installation Completed!
+isolated-pg	Run actions/setup-node@v4	﻿2026-11-04T23:25:56.7684058Z ##[group]Run actions/setup-node@v4
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:56.7684217Z with:
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:56.7684324Z   node-version: 22
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:56.7684434Z   cache: pnpm
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:56.7684540Z   always-auth: false
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:56.7684656Z   check-latest: false
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:56.7685908Z   token: ***
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:56.7686011Z env:
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:56.7686150Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:56.7686319Z ##[endgroup]
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:56.8663222Z (node:2057) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:56.8664259Z (Use `node --trace-deprecation ...` to show where the warning was created)
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:56.8664807Z Found in cache @ /opt/hostedtoolcache/node/22.23.4/x64
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:56.8665470Z ##[group]Environment details
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:57.2352329Z node: v22.23.4
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:57.2353067Z npm: 10.9.9
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:57.2353424Z yarn: 1.22.22
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:57.2354483Z ##[endgroup]
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:57.2375622Z [command]/home/runner/setup-pnpm/node_modules/.bin/pnpm store path --silent
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:57.4927345Z /home/runner/setup-pnpm/node_modules/.bin/store/v3
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:57.7180887Z Cache hit for: node-cache-Linux-x64-pnpm-53f83b0a1a7f909344bfe900808d1cc79e05074d63adaa7461c0b6e325787eb5
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:57.7279853Z (node:2057) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:58.9989442Z Received 50331648 of 169821689 (29.6%), 47.8 MBs/sec
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:59.7769245Z Received 169821689 of 169821689 (100.0%), 91.2 MBs/sec
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:59.7780004Z Cache Size: ~162 MB (169821689 B)
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:25:59.7859209Z [command]/usr/bin/tar -xf /home/runner/work/_temp/4f1d4c8c-5bff-4346-86f8-6684a6125fdd/cache.tzst -P -C /home/runner/work/mohen-agent-2.0/mohen-agent-2.0 --use-compress-program unzstd
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:26:00.8275149Z Cache restored successfully
+isolated-pg	Run actions/setup-node@v4	2026-11-04T23:26:00.8359355Z Cache restored from key: node-cache-Linux-x64-pnpm-53f83b0a1a7f909344bfe900808d1cc79e05074d63adaa7461c0b6e325787eb5
+isolated-pg	Install repository dependencies	﻿2026-11-04T23:26:00.8893761Z ##[group]Run pnpm install --frozen-lockfile
+isolated-pg	Install repository dependencies	2026-11-04T23:26:00.8894138Z [36;1mpnpm install --frozen-lockfile[0m
+isolated-pg	Install repository dependencies	2026-11-04T23:26:00.8936269Z shell: /usr/bin/bash -e {0}
+isolated-pg	Install repository dependencies	2026-11-04T23:26:00.8936434Z env:
+isolated-pg	Install repository dependencies	2026-11-04T23:26:00.8936587Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+isolated-pg	Install repository dependencies	2026-11-04T23:26:00.8936759Z ##[endgroup]
+isolated-pg	Install repository dependencies	2026-11-04T23:26:01.3433273Z Scope: all 7 workspace projects
+isolated-pg	Install repository dependencies	2026-11-04T23:26:01.3845521Z Lockfile is up to date, resolution step is skipped
+isolated-pg	Install repository dependencies	2026-11-04T23:26:01.3960723Z Progress: resolved 1, reused 0, downloaded 0, added 0
+isolated-pg	Install repository dependencies	2026-11-04T23:26:01.4104942Z Packages: +104
+isolated-pg	Install repository dependencies	2026-11-04T23:26:01.4116081Z ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+isolated-pg	Install repository dependencies	2026-11-04T23:26:01.9151953Z Progress: resolved 104, reused 104, downloaded 0, added 104, done
+isolated-pg	Install repository dependencies	2026-11-04T23:26:02.2616753Z 
+isolated-pg	Install repository dependencies	2026-11-04T23:26:02.2622902Z dependencies:
+isolated-pg	Install repository dependencies	2026-11-04T23:26:02.2623490Z + ajv 8.20.0
+isolated-pg	Install repository dependencies	2026-11-04T23:26:02.2625680Z 
+isolated-pg	Install repository dependencies	2026-11-04T23:26:02.2625808Z devDependencies:
+isolated-pg	Install repository dependencies	2026-11-04T23:26:02.2626173Z + @playwright/test 1.63.0
+isolated-pg	Install repository dependencies	2026-11-04T23:26:02.2626426Z + typescript 5.9.3
+isolated-pg	Install repository dependencies	2026-11-04T23:26:02.2626630Z + vitest 3.2.7
+isolated-pg	Install repository dependencies	2026-11-04T23:26:02.2626730Z 
+isolated-pg	Install repository dependencies	2026-11-04T23:26:02.2758621Z Done in 1.2s
+isolated-pg	PostgreSQL client and isolated socket directory	﻿2026-11-04T23:26:02.3020063Z ##[group]Run sudo apt-get update -qq
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:02.3020295Z [36;1msudo apt-get update -qq[0m
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:02.3020475Z [36;1msudo apt-get install -y postgresql-client[0m
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:02.3020690Z [36;1msudo install -d -m 0777 /workspace/mab-isolated-pg[0m
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:02.3020990Z [36;1mnode --check tests/data-production/private-original-source-binding.integration.mjs[0m
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:02.3021258Z [36;1mnode --check scripts/test-k3-db.mjs[0m
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:02.3037967Z shell: /usr/bin/bash -e {0}
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:02.3038495Z env:
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:02.3038639Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:02.3038817Z ##[endgroup]
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:07.0903092Z Reading package lists...
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:07.2790947Z Building dependency tree...
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:07.2809089Z Reading state information...
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:07.4319453Z The following NEW packages will be installed:
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:07.4319965Z   postgresql-client
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:07.4475396Z 0 upgraded, 1 newly installed, 0 to remove and 23 not upgraded.
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:07.4476139Z Need to get 11.6 kB of archives.
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:07.4476823Z After this operation, 17.4 kB of additional disk space will be used.
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:07.4477394Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:07.5771274Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 postgresql-client all 16+257build1.1 [11.6 kB]
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:07.8313637Z Fetched 11.6 kB in 0s (78.2 kB/s)
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:07.9578799Z Selecting previously unselected package postgresql-client.
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:08.0283554Z (Reading database ... 
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:08.0284042Z (Reading database ... 5%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:08.0284263Z (Reading database ... 10%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:08.0284628Z (Reading database ... 15%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:08.0303200Z (Reading database ... 20%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:08.0303712Z (Reading database ... 25%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:08.0303938Z (Reading database ... 30%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:08.0304152Z (Reading database ... 35%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:08.0304400Z (Reading database ... 40%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:08.0304679Z (Reading database ... 45%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:08.0304898Z (Reading database ... 50%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:08.0373093Z (Reading database ... 55%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:08.3083709Z (Reading database ... 60%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:08.4566671Z (Reading database ... 65%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:08.6677991Z (Reading database ... 70%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:08.8355612Z (Reading database ... 75%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:09.0082332Z (Reading database ... 80%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:09.2560219Z (Reading database ... 85%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:09.4256136Z (Reading database ... 90%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:09.6149557Z (Reading database ... 95%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:09.6150134Z (Reading database ... 100%
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:09.6150575Z (Reading database ... 215960 files and directories currently installed.)
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:09.6188271Z Preparing to unpack .../postgresql-client_16+257build1.1_all.deb ...
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:09.6386746Z Unpacking postgresql-client (16+257build1.1) ...
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:09.6754985Z Setting up postgresql-client (16+257build1.1) ...
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:10.1758881Z 
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:10.1759939Z Running kernel seems to be up-to-date.
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:10.1760365Z 
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:10.1760915Z No services need to be restarted.
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:10.1761211Z 
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:10.1761843Z No containers need to be restarted.
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:10.1762144Z 
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:10.1762448Z No user sessions are running outdated binaries.
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:10.1762773Z 
+isolated-pg	PostgreSQL client and isolated socket directory	2026-11-04T23:26:10.1763163Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	﻿2026-11-04T23:26:11.0936713Z ##[group]Run docker run --detach --name mohen-mab-pg17 \
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.0937146Z [36;1mdocker run --detach --name mohen-mab-pg17 \[0m
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.0937531Z [36;1m  --mount type=bind,src=/workspace/mab-isolated-pg,dst=/var/run/postgresql \[0m
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.0937901Z [36;1m  --env POSTGRES_USER=k3_admin \[0m
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.0938346Z [36;1m  --env POSTGRES_PASSWORD=isolated-fixture-only \[0m
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.0938637Z [36;1m  --env POSTGRES_DB=postgres \[0m
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.0938877Z [36;1m  postgres:17 \[0m
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.0939088Z [36;1m  -c port=55432 \[0m
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.0939330Z [36;1m  -c mohen.test_instance=codex-k3-isolated[0m
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.0939618Z [36;1mfor i in $(seq 1 60); do[0m
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.0939972Z [36;1m  if pg_isready -h /workspace/mab-isolated-pg -p 55432 -U k3_admin; then exit 0; fi[0m
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.0940335Z [36;1m  sleep 2[0m
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.0940519Z [36;1mdone[0m
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.0940710Z [36;1mdocker logs mohen-mab-pg17[0m
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.0940982Z [36;1mexit 1[0m
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.0964312Z shell: /usr/bin/bash -e {0}
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.0964561Z env:
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.0964793Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.0965066Z ##[endgroup]
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:11.1761559Z Unable to find image 'postgres:17' locally
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.0966958Z 17: Pulling from library/postgres
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3237315Z 6fc242d221a6: Pulling fs layer
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3246108Z e6095e4c4fdd: Pulling fs layer
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3246559Z bad9dce990ef: Pulling fs layer
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3246900Z 904defe665c0: Pulling fs layer
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3247147Z 455e5ed72fb1: Pulling fs layer
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3247417Z 55f036305357: Pulling fs layer
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3247656Z db07174d12aa: Pulling fs layer
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3247909Z 03f2ecc50d4c: Pulling fs layer
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3248367Z ff7cbe54dfda: Pulling fs layer
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3248622Z 0a26f79bdef8: Pulling fs layer
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3248890Z 1f1fbc5e4aa5: Pulling fs layer
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3249133Z 7f824adc2669: Pulling fs layer
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3249375Z 3cecd013db3b: Pulling fs layer
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3249617Z 7f0980702fb2: Pulling fs layer
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3249848Z 03f2ecc50d4c: Waiting
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3250062Z ff7cbe54dfda: Waiting
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3250269Z 0a26f79bdef8: Waiting
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3250468Z 1f1fbc5e4aa5: Waiting
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3250665Z 7f824adc2669: Waiting
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3250862Z 3cecd013db3b: Waiting
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3251065Z 7f0980702fb2: Waiting
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3251266Z 455e5ed72fb1: Waiting
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3251465Z 55f036305357: Waiting
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3251666Z db07174d12aa: Waiting
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.3251864Z 904defe665c0: Waiting
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.5236189Z e6095e4c4fdd: Verifying Checksum
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.5245051Z e6095e4c4fdd: Download complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.5417128Z bad9dce990ef: Verifying Checksum
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.5418579Z bad9dce990ef: Download complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.6167832Z 6fc242d221a6: Verifying Checksum
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.6173736Z 6fc242d221a6: Download complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.7277883Z 904defe665c0: Verifying Checksum
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.7278526Z 904defe665c0: Download complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.7721241Z 455e5ed72fb1: Verifying Checksum
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.7722267Z 455e5ed72fb1: Download complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.8427087Z 55f036305357: Verifying Checksum
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.8427565Z 55f036305357: Download complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.9229719Z db07174d12aa: Verifying Checksum
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.9230131Z db07174d12aa: Download complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.9582234Z 03f2ecc50d4c: Verifying Checksum
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:12.9583093Z 03f2ecc50d4c: Download complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:13.1356023Z 0a26f79bdef8: Verifying Checksum
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:13.1364674Z 0a26f79bdef8: Download complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:13.1656015Z 1f1fbc5e4aa5: Verifying Checksum
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:13.1656544Z 1f1fbc5e4aa5: Download complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:13.3242214Z ff7cbe54dfda: Verifying Checksum
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:13.3243059Z ff7cbe54dfda: Download complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:13.3613704Z 7f824adc2669: Verifying Checksum
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:13.3613983Z 7f824adc2669: Download complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:13.3882120Z 3cecd013db3b: Verifying Checksum
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:13.3888345Z 3cecd013db3b: Download complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:13.5119488Z 7f0980702fb2: Verifying Checksum
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:13.5120380Z 7f0980702fb2: Download complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:13.7233635Z 6fc242d221a6: Pull complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:21.3741471Z e6095e4c4fdd: Pull complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:21.6928797Z bad9dce990ef: Pull complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:21.7692101Z 904defe665c0: Pull complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:22.2819386Z 455e5ed72fb1: Pull complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:22.3723101Z 55f036305357: Pull complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:22.3833747Z db07174d12aa: Pull complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:22.4016066Z 03f2ecc50d4c: Pull complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:28.0215215Z ff7cbe54dfda: Pull complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:28.0338848Z 0a26f79bdef8: Pull complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:28.0511469Z 1f1fbc5e4aa5: Pull complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:28.0620130Z 7f824adc2669: Pull complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:28.0714878Z 3cecd013db3b: Pull complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:28.0812668Z 7f0980702fb2: Pull complete
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:28.0845536Z Digest: sha256:3b0cda93be7c8dba2ed484d19393d93845dc3dafb88973e248ba8e6d99d784e1
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:28.0856448Z Status: Downloaded newer image for postgres:17
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:28.0997395Z 6fbe97d4f88878047210b4c538fd2c27dc71e2575d2e7200b03b0643042addbd
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:28.3538511Z /workspace/mab-isolated-pg:55432 - no response
+isolated-pg	Start disposable PostgreSQL 17 with non-production marker	2026-11-04T23:26:30.3796990Z /workspace/mab-isolated-pg:55432 - accepting connections
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	﻿2026-11-04T23:26:30.3833865Z ##[group]Run test "$(psql -X -At -h "$MOHEN_TEST_SOCKET" -p "$MOHEN_TEST_PORT" -U k3_admin -d postgres -c "select current_setting('mohen.test_instance',true)")" = "codex-k3-isolated"
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:30.3834488Z [36;1mtest "$(psql -X -At -h "$MOHEN_TEST_SOCKET" -p "$MOHEN_TEST_PORT" -U k3_admin -d postgres -c "select current_setting('mohen.test_instance',true)")" = "codex-k3-isolated"[0m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:30.3834844Z [36;1mpnpm test:k3-db[0m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:30.3850740Z shell: /usr/bin/bash -e {0}
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:30.3850879Z env:
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:30.3851022Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:30.3851207Z   MOHEN_TEST_PSQL: /usr/bin/psql
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:30.3851377Z   MOHEN_TEST_SOCKET: /workspace/mab-isolated-pg
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:30.3851540Z   MOHEN_TEST_PORT: 55432
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:30.3851666Z ##[endgroup]
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:30.7447018Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:30.7448323Z > mohen-agent-2.0@0.1.0 test:k3-db /home/runner/work/mohen-agent-2.0/mohen-agent-2.0
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:30.7449340Z > node scripts/test-k3-db.mjs
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:30.7449711Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:32.5755254Z K3_DB_SECURITY_PRECHECK_PASS
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:32.8028875Z MAB_IMPORTED_MATERIAL_REPOSITORY_PASS real-session owner cross-user forged expired disabled rollback pooled-identity
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:35.0690230Z K3_INDEPENDENT_GATE_PASS identities ACL receipt policy idempotency CAS append-only revocation dependency propagation atomic-failure concurrency
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:35.7790827Z K3_STAGE_SERVICE_PASS real-signer HTTP-decide exact-stage-current-read scoped-consumer disabled-reviewer revoke no-cached-PASS
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:35.9455800Z K3_GATE_REPOSITORY_PASS actual-low-privilege-login shared-admin-SET-ROLE-denied single-client-transaction token-cleared rollback
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:38.4108736Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:38.4136006Z [1m[46m RUN [49m[22m [36mv3.2.7 [39m[90m/home/runner/work/mohen-agent-2.0/mohen-agent-2.0[39m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:38.4153840Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:38.8310414Z [90mstderr[2m | tests/integration/qualified-retrieve.integration.ts[2m > [22m[2mmarked PG proves exact current G5 retrieval and recursive revocation without mock grants
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:38.8312177Z [22m[39m[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:38.8328755Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:38.9645029Z [90mstdout[2m | tests/integration/qualified-retrieve.integration.ts[2m > [22m[2mmarked PG proves exact current G5 retrieval and recursive revocation without mock grants
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:38.9648580Z [22m[39mMAB_M5_RETRIEVE_CURRENT_PASS real-PG exact-consumer-purpose-scope legacy-denied
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:38.9650714Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:38.9664477Z  [32m✓[39m tests/integration/qualified-retrieve.integration.ts [2m([22m[2m1 test[22m[2m)[22m[32m 164[2mms[22m[39m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:38.9828752Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:38.9829849Z [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:38.9841133Z [2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:38.9851556Z [2m   Start at [22m 23:26:38
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:38.9852560Z [2m   Duration [22m 570ms[2m (transform 141ms, setup 0ms, collect 214ms, tests 164ms, environment 0ms, prepare 55ms)[22m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:38.9853176Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:51.6358925Z MAB_WORK_G5_BINDING_POS_NEG_PASS four-consumers persisted-work exact-L5 signed-rights current-dependencies
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:51.7007023Z MAB_WORK_G5_BINDING_REVOKED_PASS four-consumers
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:51.9751850Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:51.9782066Z [1m[46m RUN [49m[22m [36mv3.2.7 [39m[90m/home/runner/work/mohen-agent-2.0/mohen-agent-2.0[39m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:51.9798563Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:52.3858886Z [90mstderr[2m | tests/integration/qualified-retrieve.integration.ts[2m > [22m[2mmarked PG proves exact current G5 retrieval and recursive revocation without mock grants
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:52.3862361Z [22m[39m[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:52.3863040Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:52.5578881Z [90mstdout[2m | tests/integration/qualified-retrieve.integration.ts[2m > [22m[2mmarked PG proves exact current G5 retrieval and recursive revocation without mock grants
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:52.5580473Z [22m[39mMAB_M5_RETRIEVE_REVOKED_PASS real-PG exact-consumer-purpose-scope legacy-denied
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:52.5580740Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:52.5595957Z  [32m✓[39m tests/integration/qualified-retrieve.integration.ts [2m([22m[2m1 test[22m[2m)[22m[32m 200[2mms[22m[39m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:52.5759310Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:52.5760872Z [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:52.5779230Z [2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:52.5785373Z [2m   Start at [22m 23:26:51
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:52.5789257Z [2m   Duration [22m 600ms[2m (transform 147ms, setup 0ms, collect 217ms, tests 200ms, environment 0ms, prepare 51ms)[22m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:52.5789826Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:52.7344901Z K3_READ_MODEL_QUALIFICATION_PASS real G0-G5 chain legacy-denied exact-purpose scope consumer revision revocation
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:26:56.8189953Z MAB_WORK_L5_FACET_PASS world_projection four-consumers POS exact-revision NEG fingerprint-change ancestor-revoke
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:00.9076429Z MAB_WORK_L5_FACET_PASS agent_context four-consumers POS exact-revision NEG fingerprint-change ancestor-revoke
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:05.2162755Z MAB_WORK_L5_FACET_PASS story_seed four-consumers POS exact-revision NEG fingerprint-change ancestor-revoke
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:09.4549815Z MAB_WORK_L5_FACET_PASS discovery_path four-consumers POS exact-revision NEG fingerprint-change ancestor-revoke
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:13.8349737Z MAB_WORK_L5_FACET_PASS map_timeline_projection four-consumers POS exact-revision NEG fingerprint-change ancestor-revoke
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:18.3126106Z MAB_WORK_L5_FACET_PASS evidence_pointer four-consumers POS exact-revision NEG fingerprint-change ancestor-revoke
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:37.3248755Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:37.3269819Z [1m[46m RUN [49m[22m [36mv3.2.7 [39m[90m/home/runner/work/mohen-agent-2.0/mohen-agent-2.0[39m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:37.3300552Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:37.7087426Z [90mstdout[2m | tests/integration/work-g5-binding.integration.ts[2m > [22m[2mactual application wrapper checks each independently bound consumer and refuses missing or wrong server context
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:37.7105990Z [22m[39mMAB_WORK_APPLICATION_WRAPPER_PG_PASS four-consumers exact-work wrong-context tamper no-config publication-watch
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:37.7108625Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:37.7109494Z  [32m✓[39m tests/integration/work-g5-binding.integration.ts [2m([22m[2m1 test[22m[2m)[22m[32m 40[2mms[22m[39m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:37.7238595Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:37.7255096Z [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:37.7256751Z [2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:37.7258595Z [2m   Start at [22m 23:27:37
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:37.7269230Z [2m   Duration [22m 397ms[2m (transform 127ms, setup 0ms, collect 198ms, tests 40ms, environment 2ms, prepare 46ms)[22m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:37.7269775Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:37.8154425Z MAB_WORK_MEDIA_RIGHTS_PASS signed-whole-work four-consumers cleared license expiry POS_NEG
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:39.0566935Z MAB_STUDIO_ASSETS_PASS project-ACL immutable-revisions exact-asset-FK supersedes CAS task-deletion private-default
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:39.3017928Z MAB_ASSET_KIND_PRIVATE_PASS research_brief POS revision/history/source/dependency NEG cross-owner/no-G5/unknown-rights
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:39.3462931Z MAB_ASSET_KIND_PRIVATE_PASS source_anchor POS revision/history/source/dependency NEG cross-owner/no-G5/unknown-rights
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:39.3903006Z MAB_ASSET_KIND_PRIVATE_PASS reading_note POS revision/history/source/dependency NEG cross-owner/no-G5/unknown-rights
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:39.4320957Z MAB_ASSET_KIND_PRIVATE_PASS evidence_note POS revision/history/source/dependency NEG cross-owner/no-G5/unknown-rights
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:39.4781740Z MAB_ASSET_KIND_PRIVATE_PASS spacetime_candidate POS revision/history/source/dependency NEG cross-owner/no-G5/unknown-rights
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:39.5212346Z MAB_ASSET_KIND_PRIVATE_PASS relation_hypothesis POS revision/history/source/dependency NEG cross-owner/no-G5/unknown-rights
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:39.5648711Z MAB_ASSET_KIND_PRIVATE_PASS humanistic_insight POS revision/history/source/dependency NEG cross-owner/no-G5/unknown-rights
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:39.6125862Z MAB_ASSET_KIND_PRIVATE_PASS research_collection POS revision/history/source/dependency NEG cross-owner/no-G5/unknown-rights
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:39.6548237Z MAB_ASSET_KIND_PRIVATE_PASS citation_snapshot POS revision/history/source/dependency NEG cross-owner/no-G5/unknown-rights
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:39.6984549Z MAB_ASSET_KIND_PRIVATE_PASS consented_feedback POS revision/history/source/dependency NEG cross-owner/no-G5/unknown-rights
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:39.6985655Z MAB_ASSET_KIND_CANONICAL_DENY_PASS director_plan
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:39.6986187Z MAB_ASSET_KIND_CANONICAL_DENY_PASS media_selection
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:39.6986716Z MAB_ASSET_KIND_CANONICAL_DENY_PASS work_revision
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:39.7900898Z MAB_STUDIO_REPOSITORY_PASS saved-payload immutable-revision request-idempotency exact-CAS concurrency cross-owner clean-pool
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:40.0665899Z MAB_DELEGATION_REPOSITORY_PASS concurrent-idempotency exact-hashes unknown-cost-HOLD immutable cross-owner disabled-identity permanent-root clean-pool no-provider-calls
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:42.4879480Z MAB_EXECUTION_CONTROLS_PASS actual-low-privilege-LOGIN no-authority-switch same-lease-retry-denied atomic-CAS parallel-claim stale-lease current-Owner active-project expiry immutable-revoke sticky-unknown no-spend-grants rollback-audit-preserved
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:44.5489156Z MAB_M4_RECEIVE_SEVEN_PASS actual-Owner-source-binding verified-private-bytes UTF8-locator current-internal-rights same-source-family literal-only-independent-G1 candidate-not-knowledge no-provider
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:44.6056505Z MAB_M4_RECEIPT_T7_PASS actual-Owner-permanent-receipt exact-M3-L1 current-qualification ancestor-revocation same-attempt-idempotency UNKNOWN-cost HOLD-not-accept no-external-provider
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:44.6058788Z MAB_PRIVATE_READING_M3_SERVICE_PASS actual-durable-L1 Producer-candidate dedicated-LOGIN hashed-credentials synthetic-G1 current-consume revoke-denied no-professional-PASS-claim
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:44.6970507Z MAB_PRIVATE_TEXT_READING_PASS real-PG17 byte-buffer-only no-Storage immutable-L1 precise-source owner idempotency concurrent atomic-failure no-direct-source-grant M3-candidate-intake synthetic-service-receipt no-professional-Gate-PASS
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:45.2349807Z MAB_PRIVATE_SOURCE_BINDING_PG_PASS real-pg17 dedicated-worker-login admin-and-signer-denied no-source-select exact-origin-version owner expired forged disabled archived
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:45.7490611Z MAB_PRIVATE_ORIGINAL_DB_PASS owner expired forged disabled archive idempotency immutable-receipt exact-revision no-public-read pooled-identity
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:45.7587189Z MAB_PRIVATE_ORIGINAL_STORAGE_HOLD no isolated official Storage configuration supplied
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:46.5563251Z MAB_GATE_SERVICE_PASS actual-dedicated-LOGIN hashed-capability scoped-decide current-consume idempotency identity-disable binding-disable revoke replay-denied immutable-tombstone no-table-access
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:47.0960240Z MAB_WEB_SESSION_REVOCATION_PG_PASS owner-RLS cross-owner-denied no-public-grants immutable-runtime-tombstones monotonic-disable-restore-password-cutoff
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:47.2120152Z MAB_WEB_SESSION_ROLLBACK_PASS tombstones-retained runtime-closed migration-repeatable
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:47.4458775Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:47.4472597Z [1m[46m RUN [49m[22m [36mv3.2.7 [39m[90m/home/runner/work/mohen-agent-2.0/mohen-agent-2.0[39m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:47.4485328Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:47.9393894Z [90mstdout[2m | tests/integration/studio-plan.integration.ts[2m > [22m[2mpersists a real frozen plan and envelope, reopens across repositories, survives task deletion and revokes permanently
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:47.9395894Z [22m[39mMAB_M4_PLAN_PERSISTENCE_PASS actual-low-privilege-LOGIN frozen-DAG Owner-idempotency changed-content-conflict cross-owner-denied task-deletion-stable-root permanent-revoke no-provider
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:47.9397227Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:48.1247347Z [90mstdout[2m | tests/integration/studio-plan.integration.ts[2m > [22m[2mkeeps same-root envelopes distinct and retrieves plans beyond the first page without mixing notes
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:48.1280721Z [22m[39mMAB_M4_PLAN_RECOVERY_PASS same-root-distinct-envelopes correct-revoke-target bounded-plan-pagination oldest-plan-recoverable
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:48.1281529Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:48.1520912Z  [32m✓[39m tests/integration/studio-plan.integration.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 332[2mms[22m[39m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:48.5507054Z  [32m✓[39m tests/integration/research-resume.integration.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:48.5638744Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:48.5639839Z [2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:48.5650075Z [2m      Tests [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:48.5651756Z [2m   Start at [22m 23:27:47
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:48.5655534Z [2m   Duration [22m 1.12s[2m (transform 233ms, setup 0ms, collect 416ms, tests 389ms, environment 0ms, prepare 95ms)[22m
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:48.5664815Z 
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:48.6549199Z MAB_RESEARCH_RESUME_PG_PASS client-budget-denied single-CAS-winner crash-review-HOLD no-provider-calls
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:49.0134850Z MAB_GATE_SERVICE_ROLLBACK_PASS repeatable closed-entry credential-tombstones-and-audits-preserved
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:49.1500118Z MAB_PRIVATE_READING_ROLLBACK_PASS repeatable entry-denied immutable-candidates-preserved
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:49.2632626Z MAB_EVIDENCE_BRIDGE_ROLLBACK_PASS functions-denied immutable-lineage-preserved
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:49.3545908Z MAB_PRIVATE_ORIGINAL_ROLLBACK_PASS receipt-hashes-preserved read-write-closed
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:49.4900033Z MAB_STUDIO_ROLLBACK_PASS access-closed permanent-revision-hash-unchanged
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:49.5990008Z ROLLBACK_COLUMN_ACL_PASS column_insert=true_before,false_after on PostgreSQL17 REVOKE ALL
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T23:27:49.6321343Z K3_DB_TEST_PASS baseline_migrations=22 synthetic_legacy_rows=711 unchanged; no automatic qualification; migrations repeatable; rollback fail-closed
+isolated-pg	Cleanup isolated PostgreSQL	﻿2026-11-04T23:27:49.9123271Z ##[group]Run docker rm -f mohen-mab-pg17 2>/dev/null || true
+isolated-pg	Cleanup isolated PostgreSQL	2026-11-04T23:27:49.9123555Z [36;1mdocker rm -f mohen-mab-pg17 2>/dev/null || true[0m
+isolated-pg	Cleanup isolated PostgreSQL	2026-11-04T23:27:49.9123754Z [36;1msudo rm -rf /workspace/mab-isolated-pg[0m
+isolated-pg	Cleanup isolated PostgreSQL	2026-11-04T23:27:49.9140559Z shell: /usr/bin/bash -e {0}
+isolated-pg	Cleanup isolated PostgreSQL	2026-11-04T23:27:49.9140698Z env:
+isolated-pg	Cleanup isolated PostgreSQL	2026-11-04T23:27:49.9140838Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+isolated-pg	Cleanup isolated PostgreSQL	2026-11-04T23:27:49.9141012Z ##[endgroup]
+isolated-pg	Cleanup isolated PostgreSQL	2026-11-04T23:27:50.0373764Z mohen-mab-pg17
+isolated-pg	Post Run actions/setup-node@v4	﻿2026-11-04T23:27:50.0516853Z Post job cleanup.
+isolated-pg	Post Run actions/setup-node@v4	2026-11-04T23:27:50.1421501Z (node:5533) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+isolated-pg	Post Run actions/setup-node@v4	2026-11-04T23:27:50.1422506Z (Use `node --trace-deprecation ...` to show where the warning was created)
+isolated-pg	Post Run actions/setup-node@v4	2026-11-04T23:27:50.1423935Z Cache hit occurred on the primary key node-cache-Linux-x64-pnpm-53f83b0a1a7f909344bfe900808d1cc79e05074d63adaa7461c0b6e325787eb5, not saving cache.
+isolated-pg	Post Run pnpm/action-setup@v4	﻿2026-11-04T23:27:50.1514099Z Post job cleanup.
+isolated-pg	Post Run pnpm/action-setup@v4	2026-11-04T23:27:50.2501978Z Pruning is unnecessary.
+isolated-pg	Post Run actions/checkout@v4	﻿2026-11-04T23:27:50.2699371Z Post job cleanup.
+isolated-pg	Post Run actions/checkout@v4	2026-11-04T23:27:50.3487989Z [command]/usr/bin/git version
+isolated-pg	Post Run actions/checkout@v4	2026-11-04T23:27:50.3599975Z git version 2.56.0
+isolated-pg	Post Run actions/checkout@v4	2026-11-04T23:27:50.3719431Z Temporarily overriding HOME='/home/runner/work/_temp/da85cb9a-9c13-47b4-8c12-b51cf7b1a0a0' before making global git config changes
+isolated-pg	Post Run actions/checkout@v4	2026-11-04T23:27:50.3759206Z Adding repository directory to the temporary git global config as a safe directory
+isolated-pg	Post Run actions/checkout@v4	2026-11-04T23:27:50.3760333Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/mohen-agent-2.0/mohen-agent-2.0
+isolated-pg	Post Run actions/checkout@v4	2026-11-04T23:27:50.3899262Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+isolated-pg	Post Run actions/checkout@v4	2026-11-04T23:27:50.3960625Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+isolated-pg	Post Run actions/checkout@v4	2026-11-04T23:27:50.4491697Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+isolated-pg	Post Run actions/checkout@v4	2026-11-04T23:27:50.4580324Z http.https://github.com/.extraheader
+isolated-pg	Post Run actions/checkout@v4	2026-11-04T23:27:50.4629167Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+isolated-pg	Post Run actions/checkout@v4	2026-11-04T23:27:50.4680966Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+isolated-pg	Post Run actions/checkout@v4	2026-11-04T23:27:50.5012560Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+isolated-pg	Post Run actions/checkout@v4	2026-11-04T23:27:50.5056739Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+isolated-pg	Complete job	﻿2026-11-04T23:27:50.5420199Z Cleaning up orphan processes
+isolated-pg	Complete job	2026-11-04T23:27:50.5654109Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, pnpm/action-setup@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

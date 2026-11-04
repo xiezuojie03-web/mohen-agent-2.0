@@ -900,3 +900,7 @@ Owner要求把ChatGPT上一轮M5/HP07/HP11/HP12只读审查写回仓库并交Cod
 本批源码`ff5283ea8a719f69d37eee4ff4e8a1d4c5e4738e`最终本地：432单测/4原SKIP、133边界、六工作区类型、PG全套、Next/Chromium15PASS/1Storage缺配置SKIP。仅本批隔离工程子项；GitHub实际三流水线结果待核后追加，原M5复选框和全部具名HOLD不改。
 
 同轮按原M5继续补证：六类L5×四消费者已逐类真实PG正例/物理换版拒绝/祖先撤销，签审整稿媒体权利正反与实际应用wrapper PG也PASS；完整PG17exit0、共享fixture参数化后HTTP仍15PASS/1StorageSKIP。首批仅story_seed的PG覆盖缺口关闭；其它三产品HTTP、13类专业语义/反馈撤回/合法复用/canonical媒资及ST01—04/19组件和全部生产条件保持原HOLD。实际精确SHA/CI依本批回执§5—6核证，不改变阶段准出分母。
+
+补证源码/测试及账证`3929d9df7496fc883c684304f19c1908977b7982`已推main；实际主CI41933637116/PG41933636834/HTTP41933636716目前SUCCESS_VERIFIED_3929D9D，本批回执§6.1取得结果后核销。74差异账M0冻结列逐行确认未改，当前policy适配声明如实修正；不降验收标准或取消未关闭条件。
+
+**本轮最终实际核证（2026-11-05）**：业务桥ff5283e、补证及差异账修正3929d9df7496fc883c684304f19c1908977b7982已推main；后者主CI41933637116/PG17 41933636834/HTTP41933636716均SUCCESS，实际HTTP15PASS/1Storage缺配置SKIP。六L5×四消费者PG/真实应用wrapper/媒体正反、WATCH当前资格与祖先撤销、Admin历史精确使用史、13类10+3持久和ST08/ST09隔离业务按本批回执§6.2核销；first-source audit失败已如实ADAPTED修正，M0冻结列与原分母不变。其它三产品HTTP、13类完整专业语义/同意撤回/合法复用/canonical媒资、ST01—04/19组件及所有生产固定条件仍具名HOLD；本阶段完整复选框不勾，M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY，原MHKA/KAD6/M0—M8/最终标准不变。
