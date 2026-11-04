@@ -54,6 +54,7 @@ it("idempotent retries acknowledge the already saved exact director source/conte
    throw Error("UNEXPECTED_SQL");
  });
  await expect(commitWorkRevision(wid,pid,1)).resolves.toMatchObject({revisionNo:2});
- await expect(commitWorkRevision(wid,pid,2)).resolves.toMatchObject({revisionId:rid,revisionNo:2});
+ // Retry after the successful DB insert with the original expected head.
+ await expect(commitWorkRevision(wid,pid,1)).resolves.toMatchObject({revisionId:rid,revisionNo:2});
  expect(db.queryRows.mock.calls.filter(c=>String(c[0]).includes("insert into publication.work_revisions"))).toHaveLength(1);
 });

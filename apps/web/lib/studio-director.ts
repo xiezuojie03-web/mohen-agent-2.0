@@ -139,10 +139,13 @@ export async function commitWorkRevision(
     } catch { return false; }
   };
   const conflict = (no: number) => ({ revisionId: "", revisionNo: no, contentHash, conflict: true as const });
-  if (expectedRevisionNo !== undefined && expectedRevisionNo !== currentNo) return conflict(currentNo);
+  // A lost HTTP acknowledgement must be safe to retry with the *original*
+  // expected head: the exact same saved source/content is an acknowledged
+  // idempotent result. A genuinely different saved revision still conflicts.
   if (sameRevision(latest[0])) {
     return { revisionId: String(latest[0].revision_id), revisionNo: currentNo, contentHash };
   }
+  if (expectedRevisionNo !== undefined && expectedRevisionNo !== currentNo) return conflict(currentNo);
 
   const revisionId = await queryValue("select gen_random_uuid()::text");
   // The one INSERT is the arbiter: a concurrent editor, foreign plan, or
