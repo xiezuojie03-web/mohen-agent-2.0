@@ -1,5 +1,7 @@
 # 墨痕｜当前真实工程状态
 
+> **2026-11-04 新窗口最新接续状态（优先于下方历史M5表述）**：源码已推main@`64c2402929ff229d32b232cabf4ca8cdbf6d0b89`，工作树核对干净。主CI [41790309817](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41790309817) SUCCESS、隔离PG17 [41790310006](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41790310006) SUCCESS；远端HTTP/Chromium [41790309838](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41790309838) **FAILURE**，失败job `126441897574` 的步骤为 `Assert synthetic instance marker and run actual HTTP/browser suite`。当前唯一优先任务是 **M4远端HTTP回归收口**，暂不正式进入M5。M4本地389单测/133边界/PG/浏览器7PASS+1StorageSKIP证据保留，但不能覆盖这次远端FAIL；M4有条件准出提案待此具体回归闭合。新窗口先fetch，读本入口→PLAN→progress→target-diff→CURRENT→本批回执；保全全部M4源码，定位该job日志、定向修复并核实GitHub成功后，再按既有固定条件转M5。不重做M1—M3或总体架构，不绕过Gate/权限/费用。当前gh日志命令返回空正文，失败根因**尚未确认**，不能猜成已定位或已修复。后续仅文档CI成功不得代验此HTTP回归。
+
 > **2026-11-04 M4工程最新收口／当前M5**：M4按Owner已批准规则有限条件准出（仅代码/标记隔离的冻结计划、UTF8候选收包及持久协调/恢复），真实Owner计划/永久回执→M2真实字节与M3当前合成G1→逐项核验→撤权拒绝、同lease不确定重试阻断、旧计划分页/登记恢复均已实测。389单测/4旧实网SKIP、133边界、真实PG17、类型及Next构建/浏览器7PASS/1StorageSKIP。`MIXED_NOT_VERIFIED`与M4-C01—C04、所有M1/M2/M3条件保留，不签正式M4 PASS。下一唯一施工阶段M5，接收真实可查询的私有计划/候选/精确修订与撤销恢复接口；见 `tasks/results/MAB/CODEX_M4_CLOSURE_20261104.md`。下方此前“当前M4”只保留历史语境。
 
 > **2026-11-04 M4当前实码进展**：已有M3持久L1/G1资格实际进入Owner永久回执并逐项只读核验；撤权后不缓存旧成功。Owner可选定回执查看缺口；Web不持Producer凭据，整体仍HOLD、T2—T6未验、UNKNOWN费用保留。unit332 PASS/4既有SKIP、边界133、实际PG17、类型/构建通过；源码`98118c0`的主CI41748751918、PG1741748751920、HTTP41748751905均SUCCESS，见 `tasks/results/MAB/CODEX_M4_RECEIPTS_20261104.md`。M4仍当前唯一施工阶段，尚未整体准出，所有生产/外发/费用条件保留。

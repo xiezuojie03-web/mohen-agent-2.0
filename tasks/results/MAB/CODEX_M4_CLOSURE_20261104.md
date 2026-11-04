@@ -1,5 +1,7 @@
 # M4 调度、收包及持久恢复工程收口｜2026-11-04（北京时间）
 
+> **2026-11-04 新窗口最新接续状态（优先于下方历史M5表述）**：源码已推main@`64c2402929ff229d32b232cabf4ca8cdbf6d0b89`，工作树核对干净。主CI [41790309817](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41790309817) SUCCESS、隔离PG17 [41790310006](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41790310006) SUCCESS；远端HTTP/Chromium [41790309838](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41790309838) **FAILURE**，失败job `126441897574` 的步骤为 `Assert synthetic instance marker and run actual HTTP/browser suite`。当前唯一优先任务是 **M4远端HTTP回归收口**，暂不正式进入M5。M4本地389单测/133边界/PG/浏览器7PASS+1StorageSKIP证据保留，但不能覆盖这次远端FAIL；M4有条件准出提案待此具体回归闭合。新窗口先fetch，读本入口→PLAN→progress→target-diff→CURRENT→本批回执；保全全部M4源码，定位该job日志、定向修复并核实GitHub成功后，再按既有固定条件转M5。不重做M1—M3或总体架构，不绕过Gate/权限/费用。当前gh日志命令返回空正文，失败根因**尚未确认**，不能猜成已定位或已修复。后续仅文档CI成功不得代验此HTTP回归。
+
 BASE：远端main `f8a32c72f1029df2e670937f3b41f0800f27fdcf`；先fetch核对HEAD及工作树。额度中断后保全全部未提交文件并接续，没有reset/覆盖新成果。继承M1/M2/M3已有源码与固定条件，不重新研究架构。
 
 ## 本批实际交付
@@ -56,3 +58,7 @@ M1-C01—C04、M2-C01—C03、M3-C01—C03全部继承；未改生产、外发�
 - Ruling: CRD只表示既有工具内部信用单位；计划0预算不代表外部模型免费，未知费用仍UNKNOWN。若价格不明，保持HOLD且不调用Provider。
 - Ruling: T1—T7的accept只接纳私有候选；缺真实专业/权利权威仍HOLD，不能把Producer资格转换为Agent许可。代价是暂不可消费，不会放松最终资格。
 - Ruling: 九动作/13类专业业务核销以M4-C04具名交M5，真实派工/双主体/费用恢复以C01—C03分别固定；原完整M4验收未获PASS，M8最终不得带条件。此分工避免重复重建调度底座，代价是受影响真实业务必须继续被阻断直至对应证据关闭。
+
+## GitHub最终源码核证（接续时仍有失败）
+
+源码 `64c2402929ff229d32b232cabf4ca8cdbf6d0b89` 已推main。主CI41790309817 SUCCESS、隔离PG1741790310006 SUCCESS；HTTP41790309838 FAILURE。准确机器回执见evidence/github-runs.json。M4本地工程证据有效，但远端HTTP失败未闭合，当前M4_REMOTE_HTTP_RECONCILIATION_HOLD；正式转M5暂缓。失败日志正文尚未取得，未确认根因，不作已修复声明。

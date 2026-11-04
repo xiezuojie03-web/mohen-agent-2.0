@@ -838,3 +838,12 @@ Ruling: 当前M4允许完成可运行隔离链，真实第三方/生产验证仍
 - Ruling: 未执行节点不伪造output hash；input hash是冻结请求，不代实际Runner grant。CRD是内部信用单位，计划0预算不代表外部模型免费；UNKNOWN费用不补零。候选accept不是知识许可，缺专业/权利权威就HOLD。误判只能造成暂时不可消费，不能放行或产生费用。
 - Ruling: M4_CONDITIONAL_EXIT仅上述代码/隔离工程范围；M4-C01正式派工、C02真实混合/外发预算、C03正式恢复/费用核证、C04九动作/13类业务验证固定入PLAN与回执，原完整验收不勾。M5可继续相应私有Studio/Admin/WATCH失败关闭施工；生产/专业许可/费用最终标准不降，M8不得带未关闭条件准出。
 - 逐任务核销、失败/修复记录、授权边界见 `tasks/results/MAB/CODEX_M4_CLOSURE_20261104.md` 和同名evidence。真实外部双主体未跑，仍MIXED_NOT_VERIFIED，无生产DDL/角色/开关/Provider调用或私人外发。GitHub源码与实际CI取得后追加，不预写成功。
+
+
+### 2026-11-04 新窗口前最后实际核对（最高时序）
+
+- git fetch后HEAD=origin/main=64c2402929ff229d32b232cabf4ca8cdbf6d0b89，源码工作树干净；本次仅原位同步接续状态。
+- 真实远端：主CI41790309817 SUCCESS，PG1741790310006 SUCCESS；HTTP41790309838 FAILURE（job126441897574，Assert synthetic instance marker and run actual HTTP/browser suite步骤）。不得把本地389/133/PG/Chromium7PASS当远端HTTP通过，也不得用本次文档提交CI代验。
+- CLI gh run view --log-failed及--log当前返回空正文；根因尚未定位，不预写角色/权限或业务故障原因。新窗口先获取job日志、定向修复并真实核证该回归。
+- 当前M4_REMOTE_HTTP_RECONCILIATION_HOLD，M4受限工程准出提案待远端回归闭合，M5暂不正式进入；其余已验成果/固定生产条件均保留，不回到M1—M3重建。
+- 新窗口唯一先读tasks/implementation/MAB/CODEX_HANDOFF_CURRENT.md，再依索引读取PLAN/progress/target-diff/CURRENT和CODEX_M4_CLOSURE_20261104.md。

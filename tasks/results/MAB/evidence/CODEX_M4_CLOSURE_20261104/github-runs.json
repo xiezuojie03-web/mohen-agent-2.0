@@ -1,0 +1,26 @@
+[
+  {
+    "conclusion": "failure",
+    "databaseId": 41790309838,
+    "headSha": "64c2402929ff229d32b232cabf4ca8cdbf6d0b89",
+    "name": "MAB M1 isolated authenticated HTTP acceptance",
+    "status": "completed",
+    "url": "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41790309838"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 41790309817,
+    "headSha": "64c2402929ff229d32b232cabf4ca8cdbf6d0b89",
+    "name": "ci",
+    "status": "completed",
+    "url": "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41790309817"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 41790310006,
+    "headSha": "64c2402929ff229d32b232cabf4ca8cdbf6d0b89",
+    "name": "MAB isolated PostgreSQL 17 verification",
+    "status": "completed",
+    "url": "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41790310006"
+  }
+]

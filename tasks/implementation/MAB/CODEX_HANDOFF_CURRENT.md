@@ -1,5 +1,7 @@
 # 墨痕 MAB｜Codex 当前执行交接书（唯一现行入口）
 
+> **2026-11-04 新窗口最新接续状态（优先于下方历史M5表述）**：源码已推main@`64c2402929ff229d32b232cabf4ca8cdbf6d0b89`，工作树核对干净。主CI [41790309817](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41790309817) SUCCESS、隔离PG17 [41790310006](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41790310006) SUCCESS；远端HTTP/Chromium [41790309838](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41790309838) **FAILURE**，失败job `126441897574` 的步骤为 `Assert synthetic instance marker and run actual HTTP/browser suite`。当前唯一优先任务是 **M4远端HTTP回归收口**，暂不正式进入M5。M4本地389单测/133边界/PG/浏览器7PASS+1StorageSKIP证据保留，但不能覆盖这次远端FAIL；M4有条件准出提案待此具体回归闭合。新窗口先fetch，读本入口→PLAN→progress→target-diff→CURRENT→本批回执；保全全部M4源码，定位该job日志、定向修复并核实GitHub成功后，再按既有固定条件转M5。不重做M1—M3或总体架构，不绕过Gate/权限/费用。当前gh日志命令返回空正文，失败根因**尚未确认**，不能猜成已定位或已修复。后续仅文档CI成功不得代验此HTTP回归。
+
 > **2026-11-04 最新接续点：M5**：M4受限工程有条件准出，完整任务核销/实测/固定M4-C01—C04见 `tasks/results/MAB/CODEX_M4_CLOSURE_20261104.md`。DAG、逐项候选、Owner计划、撤销/lease/CAS及恢复已施工，不重做；真实双主体/生产/费用和ST九动作/13类专业业务条件继续HOLD。按PLAN进入M5，接续既有Studio/Admin/WATCH，不公开未合格内容，不把条件消失成PASS。额度中断前后工作已原位保全并实测；下方早期当前M4条目为历史。
 
 > **2026-11-04 M4最新已施工**：Owner永久回执逐item只读T7核验已接M3精确资格及祖先撤销，既有Owner GET支持选定回执查看缺口，Web无Producer凭据。见 `tasks/results/MAB/CODEX_M4_RECEIPTS_20261104.md`；不要重复实现此接线。M4仍当前施工，完整DAG/T1—T6/真实混合/费用与恢复未整体准出，所有上游固定条件保留。
