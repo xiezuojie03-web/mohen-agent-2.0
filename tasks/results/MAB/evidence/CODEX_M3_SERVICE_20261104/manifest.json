@@ -1,0 +1,51 @@
+{
+  "baseline": "af85d9ddc01ac1e0739531c0eb1072cfce8e91d4",
+  "scope": "local synthetic isolated PG17 and official Storage; no production or provider calls",
+  "files": [
+    {
+      "file": "postgres17-official-storage.log",
+      "sha256": "6776154eb17f5bf1f52195258ab5b306c81222443ef506b090a9ebaeaef50133",
+      "bytes": 3900
+    },
+    {
+      "file": "unit.log",
+      "sha256": "67eb645c01e89bca458e64861d3443522cf77ea8d045289e30205d819d33f2b8",
+      "bytes": 4043
+    },
+    {
+      "file": "production-boundaries.log",
+      "sha256": "bdce4fc36f34d8fd5039c1ea6d2dd2ba12bd39f16719676db6845ff627bcdcac",
+      "bytes": 11491
+    },
+    {
+      "file": "typecheck.log",
+      "sha256": "690b41c8771a76cac3f5b0ae25531ceec84dce5daf696981c3e2436920cf8495",
+      "bytes": 657
+    },
+    {
+      "file": "build.log",
+      "sha256": "7722fbc611934efd7aff9ec4e2015cf7b3b9ecdcccedc3ef86c3db025c4abc4b",
+      "bytes": 11085
+    },
+    {
+      "file": "runtime-db-tls.log",
+      "sha256": "d0da16194010dd1e3a74268fa3d66a48b6f6d6ace214ddb8ca023bf5915725b4",
+      "bytes": 137
+    },
+    {
+      "file": "auth-coverage.log",
+      "sha256": "e451949f9aed85f04aff99550e75d27bb8176db75abf1db3b6078053728d5816",
+      "bytes": 124
+    },
+    {
+      "file": "auth-coverage.csv",
+      "sha256": "5e5e4a7042d1d62ec556623b9185e130645791629b1f9182d129da3367b8b259",
+      "bytes": 5242
+    },
+    {
+      "file": "traceability.log",
+      "sha256": "789a505aaa088474cb1af15f547c59aa95cf6c3d4eb3a56ccf33ead6cd9846b1",
+      "bytes": 70
+    }
+  ]
+}

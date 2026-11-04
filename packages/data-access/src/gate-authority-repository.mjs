@@ -45,19 +45,27 @@ export function createGateAuthorityRepository(pool) {
   }
   return {
     decide({candidateId,requestId,result,ruleVersion,validUntil,receipt,expectedAuditId=null},sessionToken) {
-      return transaction(sessionToken,async client=>{
-        const response=await client.query('select control.sign_gate_candidate($1,$2,$3,$4,$5,$6::jsonb,$7) as gate_audit_id',
-          [candidateId,requestId,result,ruleVersion,validUntil,JSON.stringify(receipt),expectedAuditId]);
-        if(response.rows.length!==1 || !response.rows[0].gate_audit_id) throw new Error('GATE_DECISION_NOT_PERSISTED');
-        return response.rows[0].gate_audit_id;
-      });
+      return transaction(sessionToken,client=>createGateAuthorityOperations(client).decide({candidateId,requestId,result,ruleVersion,validUntil,receipt,expectedAuditId}));
     },
     revoke({auditId,requestId,reason},sessionToken) {
-      return transaction(sessionToken,async client=>{
-        const response=await client.query('select control.revoke_gate_qualification($1,$2,$3) as blocked_count',[auditId,requestId,reason]);
-        if(response.rows.length!==1 || response.rows[0].blocked_count==null) throw new Error('GATE_REVOCATION_NOT_PERSISTED');
-        return Number(response.rows[0].blocked_count);
-      });
+      return transaction(sessionToken,client=>createGateAuthorityOperations(client).revoke({auditId,requestId,reason}));
+    },
+  };
+}
+
+/** Same authority calls inside an already verified, request-scoped transaction. */
+export function createGateAuthorityOperations(client) {
+  return {
+    async decide({candidateId,requestId,result,ruleVersion,validUntil,receipt,expectedAuditId=null}) {
+      const response=await client.query('select control.sign_gate_candidate($1,$2,$3,$4,$5,$6::jsonb,$7) as gate_audit_id',
+        [candidateId,requestId,result,ruleVersion,validUntil,JSON.stringify(receipt),expectedAuditId]);
+      if(response.rows.length!==1||!response.rows[0].gate_audit_id)throw Error('GATE_DECISION_NOT_PERSISTED');
+      return response.rows[0].gate_audit_id;
+    },
+    async revoke({auditId,requestId,reason}) {
+      const response=await client.query('select control.revoke_gate_qualification($1,$2,$3) as blocked_count',[auditId,requestId,reason]);
+      if(response.rows.length!==1||response.rows[0].blocked_count==null)throw Error('GATE_REVOCATION_NOT_PERSISTED');
+      return Number(response.rows[0].blocked_count);
     },
   };
 }

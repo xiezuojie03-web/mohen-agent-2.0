@@ -70,6 +70,7 @@ try {
     apply("20261102140000_mab_m2_private_originals.sql");
     apply(fs.readdirSync(directory).find(n => n.endsWith('_mab_m2_evidence_bridge.sql')));
     apply('20261103143451_mab_m2_private_text_reading.sql');
+    apply('20261103234154_mab_m3_gate_service_auth.sql');
     const readingResult=spawnSync(process.execPath,['tests/data-production/private-text-reading.integration.mjs'],{
       cwd:root,env:{...process.env,MOHEN_TEST_DATABASE:database},stdio:'inherit'});
     if(readingResult.status!==0)throw Error('PRIVATE_TEXT_READING_TEST_FAILED');
@@ -88,6 +89,9 @@ try {
       if (bridgeResult.status !== 0) throw new Error("EVIDENCE_BRIDGE_TEST_FAILED");
     } else console.log("MAB_PRIVATE_ORIGINAL_STORAGE_HOLD no isolated official Storage configuration supplied");
   }
+  const gateServiceResult=spawnSync(process.execPath,['tests/data-production/gate-service.integration.mjs'],{
+    cwd:root,env:{...process.env,MOHEN_TEST_DATABASE:database},stdio:'inherit'});
+  if(gateServiceResult.status!==0)throw Error('GATE_SERVICE_TEST_FAILED');
   apply("20261103095024_mab_web_session_revocation.sql");
   const sessionResult = spawnSync(process.execPath, ["tests/data-production/web-session-revocation.integration.mjs"], {
     cwd:root,env:{...process.env,MOHEN_TEST_DATABASE:database},stdio:"inherit"});
@@ -109,6 +113,13 @@ try {
   for (const file of migrations) apply(file);
   if (query(database, "select md5(jsonb_agg(to_jsonb(g) order by gate_audit_id)::text) from control.gate_audits g") !== allAuditSnapshot) throw new Error("REPEAT_MIGRATION_CHANGED_SIGNED_HISTORY");
   if (query(database, snapshotSql) !== before) throw new Error("REPEAT_MIGRATION_CHANGED_HISTORY");
+  const credentialSnapshot=query(database,"select md5(jsonb_agg(to_jsonb(c) order by credential_id)::text) from control.gate_service_credentials c");
+  apply('20261103234154_mab_m3_gate_service_auth.sql');
+  apply('20261103234154_mab_m3_gate_service_auth.rollback.sql','rollback');
+  if(query(database,"select md5(jsonb_agg(to_jsonb(c) order by credential_id)::text) from control.gate_service_credentials c")!==credentialSnapshot)throw Error('GATE_CREDENTIAL_ROLLBACK_LOST_TOMBSTONES');
+  if(query(database,"select has_function_privilege('mohen_gate_signer','control.authenticate_gate_service(text,text)','EXECUTE') or has_function_privilege('mohen_gate_reader','control.read_gate_stage_qualification(text,jsonb)','EXECUTE') or has_function_privilege('mohen_gate_signer','control.gate_service_target_allows(text,text,uuid,jsonb)','EXECUTE')")!=='f')throw Error('GATE_SERVICE_ROLLBACK_LEFT_ACCESS');
+  if(query(database,"select md5(jsonb_agg(to_jsonb(g) order by gate_audit_id)::text) from control.gate_audits g")!==allAuditSnapshot)throw Error('GATE_SERVICE_ROLLBACK_CHANGED_HISTORY');
+  console.log('MAB_GATE_SERVICE_ROLLBACK_PASS repeatable closed-entry credential-tombstones-and-audits-preserved');
   const columnInsertBefore = query(database, "select has_any_column_privilege('mohen_producer','control.gate_candidates','INSERT')");
   if (columnInsertBefore !== "t") throw new Error("CANDIDATE_COLUMN_GRANT_FIXTURE_MISSING");
   if (studioMigration) {

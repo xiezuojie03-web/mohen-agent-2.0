@@ -1,0 +1,1 @@
+MAB_GATE_RUNTIME_DB_TLS_PASS actual-PG17 runtime-pool-options trusted-CA-encrypted untrusted-certificate-denied no-production-connection

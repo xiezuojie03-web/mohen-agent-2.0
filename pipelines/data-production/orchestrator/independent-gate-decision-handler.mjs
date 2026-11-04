@@ -1,3 +1,4 @@
+import {readBoundedGateJson} from './bounded-gate-request.mjs';
 // Independent Reviewer service only. The supplied repository must use the
 // dedicated low-privilege signer login; no shared Web/Producer pool fallback.
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
@@ -7,20 +8,7 @@ const object=x=>x&&typeof x==='object'&&!Array.isArray(x);
 const json=(status,body)=>Response.json(body,{status,headers:{'cache-control':'no-store'}});
 const FIELDS=new Set(['schema','candidate_id','request_id','result','rule_version',
   'valid_until','expected_audit_id','receipt']);
-async function boundedJson(request) {
-  const limit=16384,declared=request.headers.get('content-length');
-  if(declared!==null&&(!/^\d+$/.test(declared)||Number(declared)>limit))throw Error('TOO_LARGE');
-  if(!request.body?.getReader)throw Error('BAD_REQUEST');
-  const reader=request.body.getReader(),chunks=[];
-  let size=0;
-  try {
-    while(true){
-      const {done,value}=await reader.read();if(done)break;
-      size+=value.byteLength;if(size>limit)throw Error('TOO_LARGE');chunks.push(Buffer.from(value));
-    }
-  }finally{await reader.cancel().catch(()=>{});reader.releaseLock();}
-  return JSON.parse(Buffer.concat(chunks,size).toString('utf8'));
-}
+
 function valid(body,actor) {
   const receipt=body?.receipt,binding=receipt?.stage_binding;
   return object(body)&&Object.keys(body).every(k=>FIELDS.has(k))&&
@@ -39,7 +27,7 @@ function valid(body,actor) {
     binding.job_id===actor.jobId&&binding.reviewer_binding_ref===actor.reviewerBindingRef&&
     binding.consumer==='producer'&&SHA.test(binding.input_digest??'')&&SHA.test(binding.output_digest??'');
 }
-export function createIndependentGateDecisionHandler({authorityRepository,authenticateReviewer}={}) {
+export function createIndependentGateDecisionHandler({authorityRepository,authenticateReviewer,bodyReadTimeoutMs=5000}={}) {
   if(typeof authorityRepository?.decide!=='function'||typeof authenticateReviewer!=='function')
     throw Error('INDEPENDENT_DECISION_SERVICE_CONFIG_REQUIRED');
   return async request=>{
@@ -55,8 +43,8 @@ export function createIndependentGateDecisionHandler({authorityRepository,authen
         !field(actor.jobId)||typeof actor.sessionToken!=='string'||!actor.sessionToken)throw Error();
     }catch{return json(403,{ok:false,reason:'independent_reviewer_denied'});}
     let body;
-    try {body=await boundedJson(request);if(!valid(body,actor))throw Error();}
-    catch(error){return json(error?.message==='TOO_LARGE'?413:400,{ok:false,reason:'decision_request_invalid'});}
+    try {body=await readBoundedGateJson(request,{maxBytes:16384,timeoutMs:bodyReadTimeoutMs});if(!valid(body,actor))throw Error();}
+    catch(error){if(error?.message==='REQUEST_BODY_TIMEOUT')return json(408,{ok:false,reason:'body_read_timeout'});return json(error?.message==='REQUEST_TOO_LARGE'?413:400,{ok:false,reason:'decision_request_invalid'});}
     try {
       // SQL remains the authority for current Reviewer identity, policy, scope,
       // exact candidate revision/evidence, dependencies, max validity and CAS.

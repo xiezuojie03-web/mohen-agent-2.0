@@ -790,3 +790,13 @@ Owner因额度不足要求全部施工推送GitHub并换平台；暂停新增功
 源代码 `c923b5bd91013fc1320d2998179af9223197a18d` 已推main；当前三条push流水线全部SUCCESS：主CI [41660282238](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41660282238)、隔离PG17 [41660282267](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41660282267)、M1真实HTTP/Chromium [41660282246](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41660282246)。PG远端日志包含新L1持久化/接收与rollback标记。远端默认PG未配置官方Storage，新增用例明确输出byte-buffer-only/no-Storage；官方Storage HTTPS/真实Runner/机器回执/精确桥及同备份恢复的完整证据来自本批本地标记PG17+官方fixture日志，不混用两类范围。
 
 M2_CONDITIONAL_EXIT的条件和最终标准不变；此后仅回执补记不冒称新的业务源码测试。工作树和远端SHA提交后再次核对，不强推、不覆盖远端成果。
+
+## 2026-11-04｜M3独立认证服务工程闭环／有条件准出 → M4
+
+- **基线与范围**：先fetch核对 `main@af85d9ddc01ac1e0739531c0eb1072cfce8e91d4`，HEAD一致、初始工作树干净；按现行交接/PLAN接续，不覆盖已有成果，不重做总体架构或M1/M2。
+- **实码**：新增默认OFF的独立HTTPS runtime、专用Signer/Reader LOGIN检查、只存SHA256的有期限/范围/任务/Reviewer/capability凭据、当前用户/binding核查；同事务锁凭据并调用原唯一签审/撤权SQL，确认COMMIT后成功；reader只能执行窄函数、无审计表SELECT。请求正文、SQL、锁、TLS证书均有边界；禁止Web凭据/高权连接回退。候选迁移/回滚 `20261103234154_mab_m3_gate_service_auth` 未用于生产。
+- **有效输入接收**：官方Storage真实合成字节→唯一Runner→原不可变L1及候选；独立服务签合成G0后由Producer提交依赖精确G0的G1新候选；签发/当前资格交真实Runner validator，原件/输入输出摘要精确；撤销G0立即拒绝G1和同一Runner输出。原无G0依赖候选保持SUBMITTED，不能补写伪依赖。
+- **定向修复**：审查发现跨任务撤权未校验目标stage_binding，已补目标job/ref/consumer正反测试。实际官方Storage并发upload回读出现暂态5xx，新增GET最多3次、共用20s期限与精确hash校验；403/404不重试、5xx不转absence、不POST/覆盖。新7项测试先RED后GREEN，独立审查无important/critical；完整PG/Storage并发回归已PASS。仅该有失败证据的M2接口定向修复，不重开整个M2。
+- **验证**：unit324 PASS/4既有实网SKIP；生产边界133 PASS；六工作区类型、Next构建、85 API/152动作追溯、105路由权限覆盖通过。一次性PG17+官方Storage全套exit0（真实L1、G0→G1、专用身份/凭据、HTTPS、旧/禁用/过期/跨job拒绝、祖先撤权、备份恢复及回滚保留）；独立运行runtime实际PG TLS受信CA连接成功/未信证书拒绝。测试失败/配置修正和验证边界均见 `tasks/results/MAB/CODEX_M3_SERVICE_20261104.md`，不借历史PASS盖过本轮失败。
+- **M阶段裁定**：`M3_CONDITIONAL_EXIT`仅代码/标记隔离环境独立服务工程闭环；M3-C01生产部署、C02真实专业审核、C03正式恢复/业务消费条件已固定到PLAN和回执，原完整复选框不提前勾选。M1/M2条件继承，最终标准不降低。当前唯一下一施工阶段为M4：复用既有服务/客户端和精确待审输入推进DAG、T1—T7、费用与恢复，不重复建设上游。
+- **未做**：无生产DB/Storage/角色/凭据/开关写入或发布；无私人资料外发、无Provider收费调用；合成审核PASS不是真实专业资格。GitHub源码提交与实际CI回执待push后追加，不预写成功。

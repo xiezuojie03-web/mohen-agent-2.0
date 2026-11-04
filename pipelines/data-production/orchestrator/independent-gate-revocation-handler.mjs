@@ -1,3 +1,4 @@
+import {readBoundedGateJson} from './bounded-gate-request.mjs';
 // MAB M3 candidate service-side route handler, NOT an app/Operator endpoint.
 // Deploy ONLY in an independently authenticated Reviewer process with a
 // separate dedicated signer pool and a real authenticateReviewer callback.
@@ -8,27 +9,8 @@ const json=(status,body)=>new Response(JSON.stringify(body),{
   status,headers:{'content-type':'application/json','cache-control':'no-store'},
 });
 const MAX_REQUEST_BYTES=4096;
-async function boundedRequestJson(request) {
-  const declared=request.headers.get('content-length');
-  if(declared!==null && (!/^\d+$/.test(declared)||Number(declared)>MAX_REQUEST_BYTES))
-    throw Error('REQUEST_TOO_LARGE');
-  if(!request.body?.getReader) throw Error('REQUEST_BODY_REQUIRED');
-  const reader=request.body.getReader();
-  const chunks=[];
-  let size=0;
-  try {
-    while(true) {
-      const {done,value}=await reader.read();
-      if(done) break;
-      size+=value.byteLength;
-      if(size>MAX_REQUEST_BYTES) throw Error('REQUEST_TOO_LARGE');
-      chunks.push(Buffer.from(value));
-    }
-  } finally {await reader.cancel().catch(()=>{});reader.releaseLock();}
-  try {return JSON.parse(Buffer.concat(chunks,size).toString('utf8'));}
-  catch {throw Error('BAD_REQUEST_JSON');}
-}
-export function createIndependentGateRevocationHandler({authorityRepository,authenticateReviewer}={}) {
+
+export function createIndependentGateRevocationHandler({authorityRepository,authenticateReviewer,bodyReadTimeoutMs=5000}={}) {
   if(typeof authorityRepository?.revoke!=='function'||typeof authenticateReviewer!=='function')
     throw Error('INDEPENDENT_REVOKE_SERVICE_CONFIG_REQUIRED');
   return async function handle(request) {
@@ -49,8 +31,9 @@ export function createIndependentGateRevocationHandler({authorityRepository,auth
        typeof actor.reviewerIdentityRef!=='string'||!actor.reviewerIdentityRef)
        return json(403,{ok:false,reason:'independent_reviewer_denied'});
     let body;
-    try {body=await boundedRequestJson(request);}
+    try {body=await readBoundedGateJson(request,{maxBytes:MAX_REQUEST_BYTES,timeoutMs:bodyReadTimeoutMs});}
     catch(error) {
+      if(error?.message==='REQUEST_BODY_TIMEOUT')return json(408,{ok:false,reason:'body_read_timeout'});
       return error?.message==='REQUEST_TOO_LARGE'
         ? json(413,{ok:false,reason:'request_too_large'})
         : json(400,{ok:false,reason:'bad_request'});

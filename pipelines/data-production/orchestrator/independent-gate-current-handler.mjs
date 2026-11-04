@@ -1,3 +1,4 @@
+import {readBoundedGateJson} from './bounded-gate-request.mjs';
 // Candidate independent read service; not a Web Operator route or Gate signer.
 // authenticateConsumer must resolve current credentials to a SERVER-owned job,
 // Reviewer binding and read scope. Request data cannot widen that authority.
@@ -5,22 +6,8 @@ import {assertStageQualificationRequest} from '../../../packages/data-access/src
 import {requireQualifiedReadContext} from '../../../packages/data-access/src/qualification-read-context.mjs';
 
 const json=(status,body)=>Response.json(body,{status,headers:{'cache-control':'no-store'}});
-async function boundedJson(request) {
-  const limit=4096,declared=request.headers.get('content-length');
-  if(declared!==null&&(!/^\d+$/.test(declared)||Number(declared)>limit))throw Error('TOO_LARGE');
-  if(!request.body?.getReader)throw Error('BAD_REQUEST');
-  const reader=request.body.getReader(),chunks=[];
-  let size=0;
-  try {
-    while(true){
-      const {done,value}=await reader.read();if(done)break;
-      size+=value.byteLength;if(size>limit)throw Error('TOO_LARGE');
-      chunks.push(Buffer.from(value));
-    }
-  }finally{await reader.cancel().catch(()=>{});reader.releaseLock();}
-  return JSON.parse(Buffer.concat(chunks,size).toString('utf8'));
-}
-export function createIndependentGateCurrentHandler({readQualification,authenticateConsumer}={}) {
+
+export function createIndependentGateCurrentHandler({readQualification,authenticateConsumer,bodyReadTimeoutMs=5000}={}) {
   if(typeof readQualification!=='function'||typeof authenticateConsumer!=='function')
     throw Error('INDEPENDENT_CURRENT_SERVICE_CONFIG_REQUIRED');
   return async request=>{
@@ -36,8 +23,8 @@ export function createIndependentGateCurrentHandler({readQualification,authentic
       requireQualifiedReadContext(actor.readContext);
     }catch{return json(403,{ok:false,reason:'consumer_denied'});}
     let body;
-    try {body=await boundedJson(request);assertStageQualificationRequest(body);}
-    catch(error){return json(error?.message==='TOO_LARGE'?413:400,{ok:false,reason:'invalid_current_request'});}
+    try {body=await readBoundedGateJson(request,{maxBytes:4096,timeoutMs:bodyReadTimeoutMs});assertStageQualificationRequest(body);}
+    catch(error){if(error?.message==='REQUEST_BODY_TIMEOUT')return json(408,{ok:false,reason:'body_read_timeout'});return json(error?.message==='REQUEST_TOO_LARGE'?413:400,{ok:false,reason:'invalid_current_request'});}
     if(body.job_id!==actor.jobId||body.reviewer_binding_ref!==actor.reviewerBindingRef)
       return json(403,{ok:false,reason:'consumer_binding_denied'});
     try {

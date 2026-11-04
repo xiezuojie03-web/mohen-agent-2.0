@@ -1,7 +1,8 @@
 name: MAB M3 independent Gate revocation contract
 
 # Pure Node tests of the isolated Reviewer protocol. This does not deploy a
-# reviewer service, open a database connection, or grant any Gate authority.
+# production service, open a database connection, or grant any Gate authority.
+# Runtime tests listen only on ephemeral localhost HTTPS with synthetic pools.
 on:
   push:
     branches: [main]
@@ -11,6 +12,11 @@ on:
       - 'pipelines/data-production/orchestrator/independent-gate-revocation-handler.mjs'
       - 'pipelines/data-production/orchestrator/independent-gate-current-handler.mjs'
       - 'pipelines/data-production/orchestrator/independent-gate-decision-handler.mjs'
+      - 'pipelines/data-production/orchestrator/bounded-gate-request.mjs'
+      - 'pipelines/data-production/orchestrator/independent-gate-service*.mjs'
+      - 'packages/data-access/src/gate-service-connection.mjs'
+      - 'tests/data-production/bounded-gate-request.test.mjs'
+      - 'tests/data-production/independent-gate-service*.test.mjs'
       - 'packages/data-access/src/gate-stage-qualification.mjs'
       - 'tests/data-production/gate-stage-qualification.test.mjs'
       - 'tests/data-production/independent-gate-decision-handler.test.mjs'
@@ -32,9 +38,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Contract tests (synthetic, no network)
+      - name: Contract tests (synthetic, no external network)
         run: |
           node --test \
+            tests/data-production/bounded-gate-request.test.mjs \
+            tests/data-production/independent-gate-service.test.mjs \
+            tests/data-production/independent-gate-service-runtime.test.mjs \
             tests/data-production/gate-stage-qualification.test.mjs \
             tests/data-production/independent-gate-decision-handler.test.mjs \
             tests/data-production/independent-gate-revocation-client.test.mjs \

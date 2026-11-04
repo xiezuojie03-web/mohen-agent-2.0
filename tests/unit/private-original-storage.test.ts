@@ -92,3 +92,66 @@ it('stops an oversized streaming download before buffering the full response',as
  await expect(client.readVerified(key,'a'.repeat(64))).rejects.toThrow('ORIGINAL_INTEGRITY_FAILED');
  expect(chunks).toBeLessThan(14);
 });
+
+it('retries a transient GET 500 and verifies exact bytes without creating or overwriting an object',async()=>{
+ const raw=Buffer.from('synthetic retry specimen');
+ const fetcher=vi.fn().mockResolvedValueOnce(new Response('temporary',{status:500})).mockResolvedValueOnce(new Response(raw));
+ const client=createPrivateOriginalStorage({endpoint:storageUrl,token,fetcher});
+ await expect(client.readVerified(key,originalHash(raw),raw.length)).resolves.toEqual(raw);
+ expect(fetcher.mock.calls.map(call=>call[1].method)).toEqual(['GET','GET']);
+ expect(fetcher.mock.calls[0][1].signal).toBe(fetcher.mock.calls[1][1].signal);
+});
+it('bounds persistent GET 5xx attempts and never treats upstream failure as absence or uploads',async()=>{
+ const fetcher=vi.fn(async(_url: string,_options: RequestInit)=>new Response('temporary',{status:500}));
+ const client=createPrivateOriginalStorage({endpoint:storageUrl,token,fetcher});
+ await expect(client.readVerified(key,'a'.repeat(64))).rejects.toThrow('ORIGINAL_STORAGE_GET_FAILED');
+ expect(fetcher).toHaveBeenCalledTimes(3);
+ expect(fetcher.mock.calls.every(call=>call[1].method==='GET')).toBe(true);
+});
+it.each([403,404])('does not retry GET %s or upload after that response',async status=>{
+ const fetcher=vi.fn(async(_url: string,_options: RequestInit)=>new Response('',{status}));
+ const client=createPrivateOriginalStorage({endpoint:storageUrl,token,fetcher});
+ await expect(client.readVerified(key,'a'.repeat(64))).rejects.toThrow(status===404?'ORIGINAL_NOT_FOUND':'ORIGINAL_STORAGE_GET_FAILED');
+ expect(fetcher).toHaveBeenCalledTimes(1);
+ expect(fetcher.mock.calls[0][1].method).toBe('GET');
+});
+it('retries post-upload GET visibility without repeating POST and still rejects incorrect bytes',async()=>{
+ const raw=Buffer.from('original'),fetcher=vi.fn()
+  .mockResolvedValueOnce(new Response('{}'))
+  .mockResolvedValueOnce(new Response('temporary',{status:503}))
+  .mockResolvedValueOnce(new Response(Buffer.from('tampered')));
+ const client=createPrivateOriginalStorage({endpoint:storageUrl,token,fetcher});
+ await expect(client.putVerified(key,raw)).rejects.toThrow('ORIGINAL_INTEGRITY_FAILED');
+ expect(fetcher.mock.calls.map(call=>call[1].method)).toEqual(['POST','GET','GET']);
+ expect(fetcher.mock.calls[0][1].headers['x-upsert']).toBe('false');
+});
+it('keeps retry backoff inside the original read deadline rather than renewing it',async()=>{
+ const controller=new AbortController();
+ const timeout=vi.spyOn(AbortSignal,'timeout').mockReturnValue(controller.signal);
+ let timer: ReturnType<typeof setTimeout> | undefined;
+ const fetcher=vi.fn(async(_url: string,_options: RequestInit)=>{
+  if(fetcher.mock.calls.length===2)timer=setTimeout(()=>controller.abort(new Error('fixture original deadline')),10);
+  return new Response('temporary',{status:500});
+ });
+ const client=createPrivateOriginalStorage({endpoint:storageUrl,token,fetcher});
+ try {
+  await expect(client.readVerified(key,'a'.repeat(64))).rejects.toThrow();
+  expect(timeout).toHaveBeenCalledTimes(1);expect(timeout).toHaveBeenCalledWith(20000);
+  expect(fetcher).toHaveBeenCalledTimes(2);
+ }finally {clearTimeout(timer);timeout.mockRestore();}
+});
+it('bounds a successful response body that stalls after a retried GET',async()=>{
+ const controller=new AbortController();
+ const timeout=vi.spyOn(AbortSignal,'timeout').mockReturnValue(controller.signal);
+ let timer: ReturnType<typeof setTimeout> | undefined;
+ const fetcher=vi.fn().mockResolvedValueOnce(new Response('temporary',{status:500}))
+  .mockImplementationOnce(async()=>new Response(new ReadableStream({
+   pull(){timer=setTimeout(()=>controller.abort(),10);},
+   cancel(){return new Promise(()=>{});},
+  })));
+ const client=createPrivateOriginalStorage({endpoint:storageUrl,token,fetcher});
+ try {
+  await expect(client.readVerified(key,'a'.repeat(64))).rejects.toThrow('ORIGINAL_STORAGE_GET_FAILED');
+  expect(fetcher).toHaveBeenCalledTimes(2);expect(timeout).toHaveBeenCalledTimes(1);
+ }finally {clearTimeout(timer);timeout.mockRestore();}
+});

@@ -2,6 +2,7 @@
 // Never expose its service credential or object path to public clients.
 // Database ownership/RLS checks remain a separate mandatory gate.
 import { createHash } from "node:crypto";
+import { setTimeout as delay } from "node:timers/promises";
 
 export const PRIVATE_ORIGINAL_BUCKET = "mohen-private-originals";
 export const MAX_ORIGINAL_BYTES = 10 * 1024 * 1024;
@@ -9,7 +10,18 @@ const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 const KEY = new RegExp("^" + UUID + "/" + UUID + "\\.bin$");
 const HEX256 = /^[a-f0-9]{64}$/;
 
-async function boundedBytes(response, limit) {
+async function withinReadDeadline(operation, signal) {
+  signal.throwIfAborted();
+  let onAbort;
+  const aborted = new Promise((_, reject) => {
+    onAbort = () => reject(new Error('ORIGINAL_STORAGE_GET_FAILED'));
+    signal.addEventListener('abort', onAbort, { once: true });
+  });
+  try { return await Promise.race([operation(), aborted]); }
+  finally { signal.removeEventListener('abort', onAbort); }
+}
+
+async function boundedBytes(response, limit, signal) {
   const declared = Number(response.headers.get('content-length'));
   if (declared > limit) {
     void response.body?.cancel().catch(() => {});
@@ -20,7 +32,7 @@ async function boundedBytes(response, limit) {
   let length = 0;
   try {
     while (true) {
-      const part = await reader.read();
+      const part = signal ? await withinReadDeadline(() => reader.read(), signal) : await reader.read();
       if (part.done) break;
       length += part.value.byteLength;
       if (length > limit) throw new Error('ORIGINAL_INTEGRITY_FAILED');
@@ -66,14 +78,23 @@ export function createPrivateOriginalStorage(options = {}) {
     apikey: token,
     Authorization: "Bearer " + token,
   };
-  async function request(method, key, bytes, mime) {
+  async function request(method, key, bytes, mime, signal) {
     const url = api(key);
-    const response = await fetcher(url.replace("/object/" + PRIVATE_ORIGINAL_BUCKET + "/", "/object/authenticated/" + PRIVATE_ORIGINAL_BUCKET + "/"), {
-      method, headers: { ...headers, ...(method === "POST" ? { "Content-Type": mime, "x-upsert": "false" } : {}) },
-      ...(method === "POST" ? { body: bytes } : {}),
-      cache: "no-store", redirect: "error",
-      signal: AbortSignal.timeout(20000),
-    });
+    let response;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      response = await withinReadDeadline(() => fetcher(url.replace("/object/" + PRIVATE_ORIGINAL_BUCKET + "/", "/object/authenticated/" + PRIVATE_ORIGINAL_BUCKET + "/"), {
+        method, headers: { ...headers, ...(method === "POST" ? { "Content-Type": mime, "x-upsert": "false" } : {}) },
+        ...(method === "POST" ? { body: bytes } : {}),
+        cache: "no-store", redirect: "error",
+        signal,
+      }), signal);
+      if (method !== 'GET' || response.status < 500 || response.status > 599) break;
+      // A temporary server failure is never proof of absence. Discard its
+      // body without awaiting source cancellation and retry only the GET.
+      void response.body?.cancel().catch(() => {});
+      if (attempt === 2) break;
+      await delay(100 * (attempt + 1), undefined, { signal });
+    }
     if (!response.ok) {
       let missing = method === 'GET' && response.status === 404;
       if (method === 'GET' && response.status === 400) {
@@ -81,7 +102,7 @@ export function createPrivateOriginalStorage(options = {}) {
         // Do not turn permission failures or missing-bucket configuration into a
         // successful absence check that permits privileged uploads.
         try {
-          const error = JSON.parse((await boundedBytes(response, 4096)).toString('utf8'));
+          const error = JSON.parse((await boundedBytes(response, 4096, signal)).toString('utf8'));
           missing = (String(error.statusCode) === '404' && error.error === 'not_found' && error.message === 'Object not found') || error.code === 'NoSuchKey';
         } catch { /* retain fail-closed storage error */ }
       }
@@ -109,8 +130,10 @@ export function createPrivateOriginalStorage(options = {}) {
     },
     async readVerified(key, expectedSha256, expectedLength) {
       if (!HEX256.test(expectedSha256)) throw new Error("ORIGINAL_HASH_INVALID");
-      const response = await request("GET", key);
-      const data = await boundedBytes(response, MAX_ORIGINAL_BYTES);
+      // One deadline covers every attempt, backoff and final response body.
+      const signal = AbortSignal.timeout(20000);
+      const response = await request("GET", key, undefined, undefined, signal);
+      const data = await boundedBytes(response, MAX_ORIGINAL_BYTES, signal);
       if (data.length > MAX_ORIGINAL_BYTES || (expectedLength !== undefined && data.length !== expectedLength) ||
           originalHash(data) !== expectedSha256) throw new Error("ORIGINAL_INTEGRITY_FAILED");
       return data;

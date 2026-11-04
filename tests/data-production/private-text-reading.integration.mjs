@@ -1,12 +1,13 @@
 // M2: durable L1 candidate, then actual Producer candidate intake for M3.
 // Uses official Storage when explicitly configured; otherwise DB/byte-buffer
-// assertions only. No Reviewer PASS, paid model or production connection.
+// assertions only. Synthetic service decisions are authorization specimens;
+// no professional Reviewer PASS, paid model or production connection.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {createRequire} from 'node:module';
 import {execFileSync} from 'node:child_process';
-import {createHmac,randomUUID} from 'node:crypto';
+import {createHmac,createHash,randomBytes,randomUUID} from 'node:crypto';
 import * as access from '../../packages/data-access/src/index.mjs';
 import {createDataProductionRepository} from '../../packages/data-access/src/data-production-repository.mjs';
 import {createPrivateTextReadingRepository} from '../../packages/data-access/src/private-text-reading-repository.mjs';
@@ -19,6 +20,9 @@ import {createRunState} from '../../pipelines/data-production/orchestrator/run-s
 import {adapters} from '../../pipelines/data-production/adapters/private-evidence-adapters.mjs';
 import {PRIVATE_EVIDENCE_ADAPTER_PATH} from '../../pipelines/data-production/orchestrator/adapter-binding.mjs';
 import {executionDigest} from '../../pipelines/data-production/orchestrator/execution-authority.mjs';
+import {createIndependentGateClient} from '../../pipelines/data-production/orchestrator/independent-gate-client.mjs';
+import {requireIndependentStageQualification} from '../../pipelines/data-production/orchestrator/independent-stage-qualification.mjs';
+import {createIndependentGateService} from '../../pipelines/data-production/orchestrator/independent-gate-service.mjs';
 import {writeReports} from '../../pipelines/data-production/reporting/write-reports.mjs';
 const {MOHEN_TEST_PSQL:psql,MOHEN_TEST_SOCKET:socket,MOHEN_TEST_DATABASE:database}=process.env;
 if(!psql||!socket?.startsWith('/workspace/')||!/^mohen_k3_[a-z0-9_]*test$/.test(database??''))throw Error('ISOLATED_TEST_DATABASE_REQUIRED');
@@ -36,7 +40,9 @@ const bytes=Buffer.from('桥边有市。\n合成阅读持久化样本，不是�
 const extent={kind:'utf8_byte_range/v1',source_version_id:version,raw_item_id:raw,start_byte:0,end_byte:Buffer.byteLength(quote),raw_sha256:hash,quote_sha256:originalHash(Buffer.from(quote))};
 const stageRequest={schema:'mohen.private-evidence-stage-request.v1',stage:'D01',originalId,extent,quote};
 const json=x=>"'"+JSON.stringify(x).replaceAll("'","''")+"'::jsonb";
-let workerPool,producerPool,storage;
+const signerLogin='reading_signer_'+randomUUID().replaceAll('-',''),readerLogin='reading_reader_'+randomUUID().replaceAll('-','');
+let workerPool,producerPool,signerPool,readerPool,storage;
+let intakeOutputDigest,intakeOutput;
 try {
  sql(`create role ${workerLogin} login nosuperuser nobypassrls nocreatedb nocreaterole noreplication;grant mohen_app_runtime to ${workerLogin};
   create role ${producerLogin} login nosuperuser nobypassrls nocreatedb nocreaterole noreplication;grant mohen_producer to ${producerLogin};
@@ -130,7 +136,7 @@ try {
    const registry={architecture_generation:'mohen.six-stage.v1',status:'ACTIVE_AUTHORIZED',activation:{enabled:true},jobs:[job]};
    const run=createRunState({run_id:runId,research_intent:'synthetic reading',execution_mode:'attended'});
    let actualOutput;
-   const observed={...adapters,D01:async args=>{const result=await adapters.D01(args);actualOutput=result.output;return result;}};
+   const observed={...adapters,D01:async args=>{const result=await adapters.D01(args);actualOutput=result.output;intakeOutput=actualOutput;intakeOutputDigest=executionDigest(actualOutput);return result;}};
    const result=await runProduction({run,registry,from_stage:'D01',to_stage:'D01',context:{resume_input:stageInput,
     execution_authority_token:grant(registry,job,run,stageInput),adapters:observed,
     privateEvidenceWorker:worker,privateEvidenceOwnerSessionToken:token(a)}});
@@ -186,15 +192,99 @@ try {
   }
   console.log('MAB_PRIVATE_READING_BACKUP_PASS same-backup-id actual-PG-dump-restore exact-original-bytes L1-revision-and-M3-input-preserved no-session-or-qualification-revival');
  }
+ // Receive this exact durable L1 candidate through the actual independent
+ // service. PASS below is a synthetic authorization specimen, not professional
+ // acceptance of this quote, source or any production artifact.
+ const reviewToken=randomBytes(32).toString('base64url'),consumeToken=randomBytes(32).toString('base64url');
+ const credentialHash=value=>createHash('sha256').update(value).digest('hex');
+ const rule='reading-service-'+randomUUID(),reviewerRef='synthetic-reading-G1',jobId='d01.carrier-reading';
+ sql(`create role ${signerLogin} login nosuperuser nobypassrls nocreatedb nocreaterole noreplication;grant mohen_gate_signer to ${signerLogin};
+  create role ${readerLogin} login nosuperuser nobypassrls nocreatedb nocreaterole noreplication;grant mohen_gate_reader to ${readerLogin};
+  insert into control.gate_policy_versions(gate_code,rule_version,required_checks,max_validity,source_ref,enabled)
+  values('G1','${rule}',array['synthetic_exact_l1'],interval '1 hour','TEST_ONLY synthetic M2-to-M3 receipt',true)`);
+ const bindingId=sql(`insert into control.gate_reviewer_bindings(reviewer_user_id,db_identity,gate_code,purpose_namespace,purpose_code,purpose_version,consumer,allowed_scope,valid_until,source_ref)
+  values('${b}','${signerLogin}','G1','G1','private-reading-fixture','1','producer',${json({project_id:project})},now()+interval '1 day','TEST_ONLY')returning binding_id`);
+ for(const [capability,login,credential] of [['review',signerLogin,reviewToken],['consume',readerLogin,consumeToken]])
+  sql(`insert into control.gate_service_credentials(token_hash,capability,principal_user_id,db_identity,reviewer_binding_id,job_id,reviewer_binding_ref,gate_code,purpose_namespace,purpose_code,purpose_version,consumer,allowed_scope,valid_until,source_ref)
+   values('${credentialHash(credential)}','${capability}','${b}','${login}','${bindingId}','${jobId}','${reviewerRef}','G1','G1','private-reading-fixture','1','producer',${json({project_id:project})},now()+interval '1 hour','TEST_ONLY')`);
+ signerPool=new Pool({...connection,user:signerLogin});readerPool=new Pool({...connection,user:readerLogin});
+ const service=createIndependentGateService({signerPool,readerPool,databaseSessionKey:sessionKey});
+ const post=(route,body,credential)=>service(new Request('https://fixture.invalid'+route,{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+credential},body:JSON.stringify(body)}));
+ // G1 must depend on a current independent G0. Keep the earlier immutable
+ // no-authority candidate intact, then submit a new candidate with that lineage.
+ const g0ReviewToken=randomBytes(32).toString('base64url'),g0Ref='synthetic-reading-G0',g0Job='d00.source-acquisition';
+ sql(`insert into control.gate_policy_versions(gate_code,rule_version,required_checks,max_validity,source_ref,enabled)
+  values('G0','${rule}',array['synthetic_exact_source'],interval '1 hour','TEST_ONLY',true)`);
+ const g0BindingId=sql(`insert into control.gate_reviewer_bindings(reviewer_user_id,db_identity,gate_code,purpose_namespace,purpose_code,purpose_version,consumer,allowed_scope,valid_until,source_ref)
+  values('${b}','${signerLogin}','G0','G0','private-reading-fixture','1','producer',${json({project_id:project})},now()+interval '1 day','TEST_ONLY')returning binding_id`);
+ sql(`insert into control.gate_service_credentials(token_hash,capability,principal_user_id,db_identity,reviewer_binding_id,job_id,reviewer_binding_ref,gate_code,purpose_namespace,purpose_code,purpose_version,consumer,allowed_scope,valid_until,source_ref)
+  values('${credentialHash(g0ReviewToken)}','review','${b}','${signerLogin}','${g0BindingId}','${g0Job}','${g0Ref}','G0','G0','private-reading-fixture','1','producer',${json({project_id:project})},now()+interval '1 hour','TEST_ONLY')`);
+ const g0Revision=sql(`select control.artifact_revision_for('source_version','${version}')`);
+ const g0Evidence=[{source_version_id:version,raw_item_id:raw}];
+ const g0Candidate=await producer.recordGate({runId,stage:'D00',gateCode:'G0',objectType:'source_version',objectId:version,
+  artifactRevision:g0Revision,purpose:{namespace:'G0',code:'private-reading-fixture',version:'1'},allowedScope:{project_id:project},consumer:'producer',
+  dependencySnapshot:[],evidenceRefs:g0Evidence,inputFingerprint:hash});
+ const g0Response=await post('/decide',{schema:'mohen.independent-gate-decision-request.v1',candidate_id:g0Candidate,request_id:randomUUID(),result:'PASS',rule_version:rule,
+  valid_until:new Date(Date.now()+1200000).toISOString(),expected_audit_id:null,
+  receipt:{checks:{synthetic_exact_source:true},rationale:'TEST_ONLY synthetic G0 dependency for exact private source version',evidence_refs:g0Evidence,
+   stage_binding:{job_id:g0Job,reviewer_binding_ref:g0Ref,consumer:'producer',input_digest:hash,output_digest:g0Revision}}},g0ReviewToken);
+ assert.equal(g0Response.status,200,await g0Response.clone().text());
+ const g0AuditId=(await g0Response.json()).gate_audit_id;
+ const g0Digest=sql(`select qualification_digest from control.gate_audits where gate_audit_id='${g0AuditId}'`);
+ const qualifiedCandidate=await producer.recordGate({runId,stage:'D01',gateCode:'G1',objectType:'read_unit',objectId:saved.read_unit_id,
+  artifactRevision:saved.artifact_revision,purpose:{namespace:'G1',code:'private-reading-fixture',version:'1'},allowedScope:{project_id:project},consumer:'producer',
+  dependencySnapshot:[{gate_audit_id:g0AuditId,qualification_digest:g0Digest,artifact_revision:g0Revision}],
+  evidenceRefs:[{original_id:originalId,source_version_id:version,read_unit_id:saved.read_unit_id}],inputFingerprint:executionDigest(stageRequest)});
+ assert.notEqual(qualifiedCandidate,candidate);
+ assert.equal(sql(`select candidate_status from control.gate_candidates where candidate_id='${candidate}'`),'SUBMITTED');
+ const stageBinding={job_id:jobId,reviewer_binding_ref:reviewerRef,consumer:'producer',input_digest:executionDigest(stageRequest),output_digest:intakeOutputDigest??executionDigest(saved)};
+ const decision={schema:'mohen.independent-gate-decision-request.v1',candidate_id:qualifiedCandidate,request_id:randomUUID(),result:'PASS',rule_version:rule,
+  valid_until:new Date(Date.now()+1200000).toISOString(),expected_audit_id:null,
+  receipt:{checks:{synthetic_exact_l1:true},rationale:'TEST_ONLY exact durable L1 reception; no professional qualification claim',
+   evidence_refs:[{original_id:originalId,source_version_id:version,read_unit_id:saved.read_unit_id}],stage_binding:stageBinding}};
+ const accepted=await post('/decide',decision,reviewToken);assert.equal(accepted.status,200,await accepted.clone().text());
+ const auditId=(await accepted.json()).gate_audit_id;
+ assert.equal(sql(`select object_id from control.gate_audits where gate_audit_id='${auditId}'`),saved.read_unit_id);
+ const currentRequest={schema:'mohen.independent-gate-current-check.v1',run_id:runId,stage:'D01',gate_code:'G1',...stageBinding};
+ const current=await post('/current',currentRequest,consumeToken);assert.equal(current.status,200,await current.clone().text());
+ assert.match((await current.json()).qualification_digest,/^[a-f0-9]{64}$/);
+ // Exercise the Runner's actual qualification validator with the exact output
+ // captured from the real D01 adapter, rather than rebuilding its payload.
+ // fetcher dispatches to the actual service handler in process; this is not a
+ // network transport assertion.
+ let receiveQualification;
+ if(intakeOutput){
+  assert.equal(executionDigest(intakeOutput),stageBinding.output_digest);
+  const verifyStageQualification=createIndependentGateClient({endpoint:'https://fixture.invalid/current',credential:consumeToken,
+   fetcher:(url,options)=>service(new Request(url,options))});
+  receiveQualification=()=>requireIndependentStageQualification({context:{verifyStageQualification},
+   stage:'D01',run:{run_id:runId},job:{stage:'D01',job_id:jobId,implementation:{gate_reviewer_binding:reviewerRef}},
+   input:stageRequest,result:{disposition:'PASS',outputs:{qualified_reading:intakeOutput}}});
+  const received=await receiveQualification();
+  assert.equal(received.gate_audit_id,auditId);
+  assert.equal(received.object_id,saved.read_unit_id);
+  assert.equal(received.artifact_revision,saved.artifact_revision);
+  assert.equal(received.input_digest,stageBinding.input_digest);
+  assert.equal(received.output_digest,stageBinding.output_digest);
+ }
+
+ assert.notEqual((await post('/current',{...currentRequest,input_digest:'f'.repeat(64)},consumeToken)).status,200,'a different M2 input cannot consume this receipt');
+ const revoked=await post('/revoke',{schema:'mohen.independent-gate-revocation-request.v1',gate_audit_id:g0AuditId,request_id:randomUUID(),reason:'TEST_ONLY synthetic upstream G0 withdrawal',reviewer_binding_ref:g0Ref},g0ReviewToken);
+ assert.equal(revoked.status,200,await revoked.clone().text());
+ assert.equal((await post('/current',currentRequest,consumeToken)).status,409,'ancestor-revoked exact L1 receipt cannot be consumed');
+ if(receiveQualification)await assert.rejects(receiveQualification,/INDEPENDENT_GATE_VERIFY_DENIED/,'Runner rechecks authority and rejects the same output after revocation');
+ assert.equal(sql(`select control.current_qualification_is_valid('${auditId}')`),'f');
+ console.log('MAB_PRIVATE_READING_M3_SERVICE_PASS actual-durable-L1 Producer-candidate dedicated-LOGIN hashed-credentials synthetic-G1 current-consume revoke-denied no-professional-PASS-claim');
  sql(`update control.original_bridge_verification_keys set is_active=false where key_version='${kid}'`);
  await assert.rejects(()=>repo.save(input,token(a)),/PRIVATE_READING_BYTE_ATTESTATION_REQUIRED/);
  sql(`update control.original_bridge_verification_keys set is_active=true where key_version='${kid}';update public.users set status='disabled' where user_id='${a}'`);
  await assert.rejects(()=>repo.save(input,token(a)),/STUDIO_IDENTITY_REQUIRED/);
  sql(`update public.users set status='active' where user_id='${a}';update studio.projects set lifecycle_status='ARCHIVED' where project_id='${project}'`);
  await assert.rejects(()=>repo.save(input,token(a)),/ORIGINAL_NOT_FOUND/);
- console.log('MAB_PRIVATE_TEXT_READING_PASS real-PG17 '+(storage?'official-Storage HTTPS real-Runner HOLD-with-durable-refs':'byte-buffer-only no-Storage')+' immutable-L1 precise-source owner idempotency concurrent atomic-failure no-direct-source-grant M3-candidate-intake no-Gate-PASS');
+ console.log('MAB_PRIVATE_TEXT_READING_PASS real-PG17 '+(storage?'official-Storage HTTPS real-Runner HOLD-with-durable-refs':'byte-buffer-only no-Storage')+' immutable-L1 precise-source owner idempotency concurrent atomic-failure no-direct-source-grant M3-candidate-intake synthetic-service-receipt no-professional-Gate-PASS');
 }finally{
  if(storage)await storage.discardUnverified(`${project}/${originalId}.bin`);
- if(workerPool)await workerPool.end();if(producerPool)await producerPool.end();await admin.end();
+ if(workerPool)await workerPool.end();if(producerPool)await producerPool.end();if(signerPool)await signerPool.end();if(readerPool)await readerPool.end();await admin.end();
+ if(signerPool)sql(`drop owned by ${signerLogin};drop role ${signerLogin}`);if(readerPool)sql(`drop owned by ${readerLogin};drop role ${readerLogin}`);
  sql(`drop role ${workerLogin};drop role ${producerLogin}`);
 }
