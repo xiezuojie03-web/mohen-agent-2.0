@@ -51,6 +51,8 @@ on:
       - "packages/data-access/src/qualification-read-context.mjs"
       - "packages/data-access/src/data-production-repository.mjs"
       - "packages/data-access/src/read-model-repository.mjs"
+      - "packages/data-access/src/work-qualification-reader.mjs"
+      - "tests/data-production/studio-asset-repository.integration.mjs"
       - "packages/data-access/src/lineage-validator.mjs"
       - "tests/data-production/read-model-qualification.integration.mjs"
       - "apps/web/lib/mohen-agent/retrieve.ts"

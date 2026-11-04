@@ -1,6 +1,8 @@
 import {test,expect} from '@playwright/test';
 import {execFileSync} from 'node:child_process';
 import {randomUUID} from 'node:crypto';
+import {createRequire} from 'node:module';
+import path from 'node:path';
 import {browserRequests} from './mab-browser-request';
 
 test.skip(process.env.MOHEN_E2E_ISOLATED!=='1','Marked disposable HTTP database only.');
@@ -61,4 +63,71 @@ test('legacy published pointer without current G5 discloses no work through publ
   expect((await request.get('/api/studio/works/'+workId+'/status')).status()).toBe(200);
   expect(sql(`select count(*) from publication.work_revisions where revision_id='${revisionId}'`)).toBe('1');
  }finally{await anonymous.close();}
+});
+
+test('current independent G0-G5 permits only the bound work and WATCH loses it immediately on ancestor withdrawal',async({request,page,browser})=>{
+ const socket=process.env.MOHEN_TEST_SOCKET,database=process.env.MOHEN_TEST_DATABASE,psql=process.env.MOHEN_TEST_PSQL;
+ if(!socket?.startsWith('/workspace/')||!/^mohen_k3_http_[a-f0-9]+_test$/.test(database??'')||!psql)throw Error('ISOLATED_DATABASE_REQUIRED');
+ const sql=(input:string)=>execFileSync(psql!,['-X','-q','-At','-v','ON_ERROR_STOP=1','-h',socket!,'-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database!],{input,encoding:'utf8'}).trim();
+ const {seedWorkG5}=await import('../fixtures/mab-work-g5.mjs');
+ const fixture=seedWorkG5(sql);
+ // Four consumers exercise the core PG reader, not four HTTP endpoints.
+ // WATCH additionally traverses the actual application wrapper over Next HTTP.
+ const {createWorkQualificationReader}=await import('../../packages/data-access/src/work-qualification-reader.mjs');
+ const {Pool}=createRequire(path.join(process.cwd(),'packages/data-access/package.json'))('pg');
+ const pool=new Pool({host:socket,port:Number(process.env.MOHEN_TEST_PORT??55432),user:'k3_admin',database});
+ const reader=createWorkQualificationReader(pool);
+ const checkReader=async(work:string,revision:string,consumer:string,content:Record<string,unknown>)=>({ok:await reader.check(work,revision,{consumer,purpose:{namespace:'G5',code:'m5-http',version:'1'},scope:{project:'m5-http'}},content)});
+ try {
+ for(const consumer of ['watch','visual_stage','agent','evidence_on_demand'] as const){
+  expect(await checkReader(fixture.work,fixture.revision,consumer,fixture.content)).toEqual({ok:true});
+  expect((await checkReader(fixture.work,randomUUID(),consumer,fixture.content)).ok).toBe(false);
+ }
+ for(const suffix of ['', '/program','/share']){
+  const response=await request.get('/api/public/works/'+fixture.work+suffix);
+  expect(response.status()).toBe(200);expect(response.headers()['cache-control']).toContain('no-store');
+ }
+ expect((await (await request.get('/api/public/works')).text())).toContain(fixture.work);
+
+ // ST-08/ST-09: use the real submit -> separate editorial Reviewer ->
+ // Operator publish/withdraw endpoints; fixture G5 remains a distinct actor.
+ const operator=await browserRequests(page),email=`st09-${randomUUID()}@example.invalid`,password=randomUUID();
+ const registration=await operator.post('/api/auth/register',{data:{email,username:'合成运营',password}});
+ expect(registration.status()).toBe(200);const operatorId=(await registration.json()).user.user_id;
+ sql(`delete from publication.published_pointers where work_id='${fixture.work}';
+  update publication.work_revisions set status='draft' where revision_id='${fixture.revision}';
+  update publication.works set owner_user_id='${operatorId}' where work_id='${fixture.work}';
+  update public.users set roles=array['member','creator','operator'] where user_id='${operatorId}'`);
+ expect((await operator.post('/api/auth/login',{data:{email,password}})).status()).toBe(200);
+ expect((await operator.post(`/api/studio/works/${fixture.work}/submissions`,{data:{revision_id:fixture.revision}})).status()).toBe(200);
+ expect((await (await operator.post(`/api/works/${fixture.work}/publish`)).json()).reason).toBe('reviewer_not_approved');
+ expect((await operator.post('/api/governance/gates/decisions',{data:{work_id:fixture.work,revision_id:fixture.revision,decision:'approved'}})).status()).toBe(403);
+ const reviewContext=await browser.newContext({baseURL:process.env.MOHEN_E2E_BASE_URL});
+ try{
+  const reviewer=await browserRequests(await reviewContext.newPage());
+  const reviewerEmail=`editor-${randomUUID()}@example.invalid`,reviewerPassword=randomUUID();
+  const registered=await reviewer.post('/api/auth/register',{data:{email:reviewerEmail,username:'合成作品审核者',password:reviewerPassword}});
+  const reviewerId=(await registered.json()).user.user_id;
+  sql(`update public.users set roles=array['member','reviewer'] where user_id='${reviewerId}'`);
+  expect((await reviewer.post('/api/auth/login',{data:{email:reviewerEmail,password:reviewerPassword}})).status()).toBe(200);
+  const wrong=await reviewer.post('/api/governance/gates/decisions',{data:{work_id:fixture.work,revision_id:randomUUID(),decision:'approved'}});
+  expect(wrong.status()).toBe(400);
+  expect((await reviewer.post('/api/governance/gates/decisions',{data:{work_id:fixture.work,revision_id:fixture.revision,decision:'approved'}})).status()).toBe(200);
+  expect((await (await operator.post(`/api/works/${fixture.work}/publish`)).json()).ok).toBe(true);
+  expect(sql(`select revision_id from publication.published_pointers where work_id='${fixture.work}'`)).toBe(fixture.revision);
+  expect((await request.get('/api/public/works/'+fixture.work)).status()).toBe(200);
+ }finally{await reviewContext.close();}
+ fixture.revoke();
+ for(const consumer of ['watch','visual_stage','agent','evidence_on_demand'] as const)
+  expect((await checkReader(fixture.work,fixture.revision,consumer,fixture.content)).ok).toBe(false);
+ for(const suffix of ['', '/program','/share']){
+  const response=await request.get('/api/public/works/'+fixture.work+suffix);expect(response.status()).toBe(404);
+ }
+ expect(await (await request.get('/api/public/works')).text()).not.toContain(fixture.work);
+ expect((await (await operator.post(`/api/admin/publications/${fixture.work}/unpublish`)).json()).ok).toBe(true);
+ expect(sql(`select count(*) from publication.published_pointers where work_id='${fixture.work}'`)).toBe('0');
+ expect(sql(`select count(*) from publication.work_revisions where revision_id='${fixture.revision}'`)).toBe('1');
+ console.log('MAB_ST08_ST09_HTTP_PASS exact-submit separate-editor operator-publish ancestor-recheck withdraw');
+ console.log('MAB_WORK_G5_HTTP_PASS WATCH POS/NEG/current-ancestor-revoke four-consumer-real-PG-service');
+ }finally{await pool.end();}
 });

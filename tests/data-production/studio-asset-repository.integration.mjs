@@ -60,6 +60,38 @@ try {
  assert.equal((await repo.listRevisionUseEvents(project,first.revision_id,token(a))).length,0,
    'use-event belongs to exact revision, not a different one');
 
+
+ // All 13 kinds: real private persistence for ten; three canonical bodies must
+ // stay in their existing stores. Saved source/dependency hints confer no G5.
+ const privateKinds=['research_brief','source_anchor','reading_note','evidence_note','spacetime_candidate','relation_hypothesis','humanistic_insight','research_collection','citation_snapshot','consented_feedback'];
+ for(const kind of privateKinds){
+  const item={...input,assetId:randomUUID(),kind,idempotencyKey:'matrix-first',payload:{kind,text:'TEST_ONLY '+kind},
+   sourceRefs:[{type:'source_version',id:randomUUID(),revision:'UNVERIFIED',locator:{page:1}}],
+   dependencyRefs:[{type:'reading_note',id:asset,revision:first.revision_id}]};
+  const one=await repo.saveRevision(item,token(a));
+  const two=await repo.saveRevision({...item,expectedRevisionId:one.revision_id,idempotencyKey:'matrix-second',payload:{kind,text:'TEST_ONLY changed'}},token(a));
+  assert.equal(two.revision_no,2);assert.equal(two.supersedes_revision_id,one.revision_id);
+  assert.deepEqual((await repo.getRevision(one.revision_id,token(a))).payload,item.payload);
+  assert.deepEqual(two.source_refs,item.sourceRefs);assert.deepEqual(two.dependency_refs,item.dependencyRefs);
+  assert.equal(two.content_state,'WORKING');assert.equal(two.access_state,'RESTRICTED');
+  assert.equal(two.freshness_state,'UNKNOWN_DEPENDENCY');assert.equal(two.validation.status,'UNASSESSED');
+  assert.ok(Object.values(two.rights_by_action).every(x=>x==='unknown'));
+  assert.deepEqual(two.formal_l_refs,[]);
+  assert.equal((await repo.listAssetRevisions(project,item.assetId,token(a))).length,2);
+  assert.equal((await repo.listAssetRevisions(project,item.assetId,token(b))).length,0);
+  assert.equal(await repo.getRevision(one.revision_id,token(b)),null);
+  await assert.rejects(()=>repo.saveRevision({...item,idempotencyKey:'foreign'},token(b)),/STUDIO_PROJECT_NOT_FOUND/);
+  sql(`insert into studio.use_events(project_id,asset_revision_id,actor_id,consumer,purpose,requested_action,rights_decision_ref)
+   values('${project}','${two.revision_id}','${a}','studio','TEST_ONLY','read','TEST_ONLY not a rights grant')`);
+  assert.equal((await repo.listRevisionUseEvents(project,two.revision_id,token(a))).length,1);
+  assert.equal((await repo.listRevisionUseEvents(project,one.revision_id,token(a))).length,0);
+  assert.equal((await repo.listRevisionUseEvents(project,two.revision_id,token(b))).length,0);
+  console.log('MAB_ASSET_KIND_PRIVATE_PASS '+kind+' POS revision/history/source/dependency NEG cross-owner/no-G5/unknown-rights');
+ }
+ for(const kind of ['director_plan','media_selection','work_revision']){
+  await assert.rejects(()=>repo.saveRevision({...input,assetId:randomUUID(),kind},token(a)),/STUDIO_CANONICAL_BINDING_REQUIRED/);
+  console.log('MAB_ASSET_KIND_CANONICAL_DENY_PASS '+kind);
+ }
  sql(`create function studio.fixture_disable_after_save()returns trigger language plpgsql security definer set search_path=pg_catalog as $$begin if new.asset_id='${asset}'::uuid then update public.users set status='disabled' where user_id='${a}';end if;return new;end$$;create trigger fixture_disable_after_save after update on studio.asset_heads for each row execute function studio.fixture_disable_after_save()`);
  try {
   await assert.rejects(()=>repo.saveRevision({...next,idempotencyKey:'revoked-during-save',expectedRevisionId:current.revision_id},token(a)),/STUDIO_REVISION_NOT_PERSISTED/);

@@ -4,7 +4,7 @@ const KINDS=new Set(['world_projection','agent_context','story_seed','discovery_
 const object=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
 const purpose=x=>object(x)&&['namespace','code','version'].every(k=>typeof x[k]==='string'&&x[k].length>0);
 export function consumerContext(consumer,raw=process.env.MOHEN_G5_CONTEXTS){
- if(!['visual_stage','agent'].includes(consumer)||!raw)return null;
+ if(!['watch','visual_stage','agent','evidence_on_demand'].includes(consumer)||!raw)return null;
  try{const x=JSON.parse(raw)[consumer];return object(x)&&purpose(x.purpose)&&object(x.scope)&&Object.keys(x.scope).length?{purpose:x.purpose,scope:x.scope}:null;}catch{return null;}
 }
 export function qualificationRefs(content,context,consumer){

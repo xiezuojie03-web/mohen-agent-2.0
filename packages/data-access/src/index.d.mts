@@ -219,3 +219,9 @@ export declare function assessStudioReceiptCandidates(input:{
 export {createStudioExecutionRepository} from './studio-execution-repository.mjs';
 export type {StudioExecutionState,StudioExecutionRepository} from './studio-execution-repository.mjs';
 export {createStudioCandidateReceiver} from './studio-receive-candidate.mjs';
+
+/** Read-only exact WorkRevision/current independent G5 binding. */
+export declare function workContentDigest(content: Record<string, unknown>): string;
+export declare function createWorkQualificationReader(db: {query: Function}): {
+ check(workId: string,revisionId: string,context: {consumer: string;purpose: {namespace:string;code:string;version:string};scope: Record<string,unknown>},content: Record<string,unknown>): Promise<boolean>;
+};

@@ -1,5 +1,6 @@
 import {test,expect} from '@playwright/test';
 import {randomUUID} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import {browserRequests} from './mab-browser-request';
 
 test.skip(process.env.MOHEN_E2E_ISOLATED!=='1','Run through the marked isolated test-mab-http runner.');
@@ -85,4 +86,78 @@ test('private notebook saves, reloads exact revisions, isolates owners and avoid
   },project.project_id);
   expect(finalList.status).toBe(200);
   expect(finalList.body.assets).toHaveLength(2);
+});
+
+test('all thirteen asset kinds keep exact private revisions and canonical write boundaries over real HTTP',async({page,browser})=>{
+ const api=await browserRequests(page),email=`matrix-${randomUUID()}@example.invalid`,password=randomUUID();
+ const registered=await api.post('/api/auth/register',{data:{email,username:'逐类合成验收',password}});
+ expect(registered.status()).toBe(200);const owner=(await registered.json()).user.user_id;
+ let inspected:{asset_id:string;first:string;second:string}|undefined;
+ const project=(await (await api.post('/api/studio/projects',{data:{project_id:randomUUID(),title:'13类隔离矩阵',scope:{period:'TEST_ONLY'}}})).json()).project;
+ const other=await browser.newContext({baseURL:process.env.MOHEN_E2E_BASE_URL});
+ try{
+  const foreign=await browserRequests(await other.newPage());
+  expect((await foreign.post('/api/auth/register',{data:{email:`matrix-other-${randomUUID()}@example.invalid`,username:'另一个Owner',password:randomUUID()}})).status()).toBe(200);
+  const payloads:Record<string,unknown>={
+   research_brief:{question:'TEST_ONLY 运河',scope:'合成',purpose:'research',budget:0},
+   source_anchor:{source_version:'TEST_ONLY_UNVERIFIED',locator:{page:1},rights:'unknown'},
+   reading_note:{read_unit:'TEST_ONLY_UNVERIFIED',method:'C01',uncertainty:['待核']},
+   evidence_note:{source_voice:'TEST_ONLY',counterevidence:'待核',locator:{page:1}},
+   spacetime_candidate:{period_original:'合成时期',precision:'unknown',alternative_locations:[]},
+   relation_hypothesis:{subject:'合成甲',predicate:'待核',object:'合成乙',direction:'unknown',counterevidence:[]},
+   humanistic_insight:{comparison_basis:'TEST_ONLY',present_connection:'合成生活',competing_explanations:['待核']},
+   research_collection:{references:[]},citation_snapshot:{qualification_snapshot:'UNVERIFIED',recheck_required:true},
+   consented_feedback:{consent:true,withdrawal_allowed:true,text:'TEST_ONLY feedback'}
+  };
+  for(const [kind,payload] of Object.entries(payloads)){
+   const data={project_id:project.project_id,asset_id:randomUUID(),asset_kind:kind,expected_revision_id:null as string|null,idempotency_key:randomUUID(),payload,
+    source_refs:[{id:'TEST_ONLY_UNVERIFIED',revision:'1',locator:{page:1}}],dependency_refs:[]};
+   const created=await api.post('/api/studio/assets',{data});expect(created.status(),kind).toBe(200);
+   const first=(await created.json()).asset;
+   const secondResponse=await api.post('/api/studio/assets',{data:{...data,expected_revision_id:first.revision_id,idempotency_key:randomUUID(),payload:{...payload as object,changed:true}}});
+   expect(secondResponse.status(),kind).toBe(200);const second=(await secondResponse.json()).asset;
+   if(kind==='research_brief')inspected={asset_id:data.asset_id,first:first.revision_id,second:second.revision_id};
+   expect(second.revision_no).toBe(2);expect(second.supersedes_revision_id).toBe(first.revision_id);
+   expect(second.access_state).toBe('RESTRICTED');expect(second.content_state).toBe('WORKING');
+   expect(second.validation.status).toBe('UNASSESSED');expect(second.formal_l_refs).toEqual([]);
+   expect(Object.values(second.rights_by_action).every(x=>x==='unknown')).toBe(true);
+   const history=await api.get('/api/studio/assets',{params:{history:'1',project_id:project.project_id,asset_id:data.asset_id}});
+   expect((await history.json()).revisions.map((r:{revision_id:string})=>r.revision_id)).toEqual([second.revision_id,first.revision_id]);
+   const old=await api.get('/api/studio/assets',{params:{asset_id:data.asset_id,revision_id:first.revision_id}});
+   expect((await old.json()).asset.payload).toEqual(payload);
+   expect((await foreign.get('/api/studio/assets',{params:{asset_id:data.asset_id,revision_id:first.revision_id}})).status()).toBe(404);
+   const foreignHistory=await foreign.get('/api/studio/assets',{params:{history:'1',project_id:project.project_id,asset_id:data.asset_id}});
+   expect((await foreignHistory.json()).revisions).toEqual([]);
+   expect((await foreign.post('/api/studio/assets',{data:{...data,idempotency_key:randomUUID()}})).status()).toBe(404);
+   console.log('MAB_HTTP_ASSET_KIND_PASS '+kind);
+  }
+  for(const asset_kind of ['director_plan','media_selection','work_revision']){
+   const response=await api.post('/api/studio/assets',{data:{project_id:project.project_id,asset_id:randomUUID(),asset_kind,expected_revision_id:null,idempotency_key:randomUUID(),payload:{text:'do not duplicate canonical body'}}});
+   expect(response.status()).toBe(409);expect((await response.json()).reason).toBe('STUDIO_CANONICAL_BINDING_REQUIRED');
+   console.log('MAB_HTTP_CANONICAL_KIND_DENIED '+asset_kind);
+  }
+  // Elevate only this synthetic account through the marked test administrator;
+  // re-login exercises the real session role lookup, never a forged cookie.
+  const socket=process.env.MOHEN_TEST_SOCKET,database=process.env.MOHEN_TEST_DATABASE,psql=process.env.MOHEN_TEST_PSQL;
+  if(!socket?.startsWith('/workspace/')||!/^mohen_k3_http_[a-f0-9]+_test$/.test(database??'')||!psql||!inspected)throw Error('MARKED_ADMIN_TEST_REQUIRED');
+  const sql=(input:string)=>execFileSync(psql!,['-X','-q','-At','-v','ON_ERROR_STOP=1','-h',socket!,'-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database!],{input,encoding:'utf8'}).trim();
+  expect(sql("select current_setting('mohen.test_instance',true)")).toBe('codex-k3-isolated');
+  sql(`update public.users set roles=array['member','operator'] where user_id='${owner}';
+   insert into studio.use_events(project_id,asset_revision_id,actor_id,consumer,purpose,requested_action,rights_decision_ref)
+   values('${project.project_id}','${inspected.second}','${owner}','studio','TEST_ONLY','read','TEST_ONLY no-public-grant')`);
+  await api.post('/api/auth/logout');expect((await api.post('/api/auth/login',{data:{email,password}})).status()).toBe(200);
+  await page.goto('/admin');await page.getByRole('button',{name:'知识资产',exact:true}).click();
+  const panel=page.getByRole('region',{name:'本人有权访问的受限知识资产'});
+  await expect(panel.getByText('13类隔离矩阵',{exact:true})).toBeVisible();
+  const card=panel.getByText('research_brief · 修订 2',{exact:true}).locator('..');
+  await card.getByRole('button',{name:'查看来源与历史',exact:true}).click();
+  await expect(panel.getByText('选定版本使用事件 1 条',{exact:true})).toBeVisible();
+  await panel.getByRole('button',{name:'查看修订 1',exact:true}).click();
+  await expect(panel.getByText('选定版本使用事件 0 条',{exact:true})).toBeVisible();
+  await expect(panel.getByText('资产 '+inspected.asset_id+' · 修订 '+inspected.first,{exact:true})).toBeVisible();
+  await expect(panel.getByText('read: unknown',{exact:false})).toBeVisible();
+  await panel.getByRole('button',{name:'查看修订 2',exact:true}).click();
+  await expect(panel.getByText('选定版本使用事件 1 条',{exact:true})).toBeVisible();
+  console.log('MAB_ADMIN_EXACT_REVISION_HTTP_PASS own-item history rights exact-use-event');
+ }finally{await other.close();}
 });

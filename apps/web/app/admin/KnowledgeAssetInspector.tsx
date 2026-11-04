@@ -1,12 +1,12 @@
 "use client";
 
 import {useEffect,useState} from "react";
-import {countStoredRefs,privateAssetStatus,assetPayloadPreview} from "./knowledge-asset-view";
+import {countStoredRefs,privateAssetStatus,assetPayloadPreview,selectInspectedRevision,assetRightsSummary} from "./knowledge-asset-view";
 
 type Project={project_id:string;project_title?:string};
 type Asset={asset_id:string;revision_id:string;revision_no?:number;asset_kind?:string;
   epistemic_class?:string;content_state?:string;access_state?:string;
-  source_refs?:unknown;dependency_refs?:unknown;payload?:unknown};
+  source_refs?:unknown;dependency_refs?:unknown;payload?:unknown;rights_by_action?:unknown;freshness_state?:string;validation?:unknown};
 type UseEvent={use_event_id?:string;consumer?:string;requested_action?:string;rights_decision_ref?:string|null};
 
 async function getPrivate(url:string,signal:AbortSignal):Promise<Record<string,unknown>>{
@@ -25,6 +25,7 @@ export default function KnowledgeAssetInspector(){
   const [assets,setAssets]=useState<Asset[]>([]);
   const [assetId,setAssetId]=useState("");
   const [history,setHistory]=useState<Asset[]>([]);
+  const [revisionId,setRevisionId]=useState("");
   const [uses,setUses]=useState<UseEvent[]>([]);
   const [loading,setLoading]=useState("projects");
   const [error,setError]=useState("");
@@ -47,7 +48,7 @@ export default function KnowledgeAssetInspector(){
 
   useEffect(()=>{
     const c=new AbortController();
-    setAssets([]);setAssetId("");setHistory([]);setUses([]);
+    setAssets([]);setAssetId("");setRevisionId("");setHistory([]);setUses([]);
     if(!projectId)return ()=>c.abort();
     setError("");setLoading("assets");
     void (async()=>{
@@ -73,7 +74,7 @@ export default function KnowledgeAssetInspector(){
       try{
         const [h,u]=await Promise.all([
           getPrivate(q({history:"1",project_id:projectId,asset_id:assetId}),c.signal),
-          getPrivate(q({use_events:"1",project_id:projectId,revision_id:selected.revision_id}),c.signal)
+          getPrivate(q({use_events:"1",project_id:projectId,revision_id:revisionId||selected.revision_id}),c.signal)
         ]);
         if(!Array.isArray(h.revisions)||!Array.isArray(u.events))throw Error("版本/使用记录格式无效");
         if(!c.signal.aborted){setHistory(h.revisions as Asset[]);setUses(u.events as UseEvent[]);}
@@ -81,9 +82,9 @@ export default function KnowledgeAssetInspector(){
       finally{if(!c.signal.aborted)setLoading("");}
     })();
     return ()=>c.abort();
-  },[assetId,projectId,assets]);
+  },[assetId,projectId,assets,revisionId]);
 
-  const selected=assets.find(a=>a.asset_id===assetId);
+  const selected=selectInspectedRevision(assets.find(a=>a.asset_id===assetId),history,revisionId);
   return <section className="admin__assets" aria-label="本人有权访问的受限知识资产">
     <div className="admin__asset">
       <div className="admin__asset-head">
@@ -105,7 +106,7 @@ export default function KnowledgeAssetInspector(){
         <div className="admin__asset-head">
           <strong className="admin__asset-title">{a.asset_kind||"未分类"} · 修订 {a.revision_no??"—"}</strong>
           <button className="admin__send" type="button" aria-pressed={assetId===a.asset_id}
-            onClick={()=>setAssetId(a.asset_id)}>查看来源与历史</button>
+            onClick={()=>{setRevisionId("");setAssetId(a.asset_id);}}>查看来源与历史</button>
         </div>
         <p className="admin__asset-meta">{privateAssetStatus(a)}</p>
         <p className="admin__asset-meta">来源 {countStoredRefs(a.source_refs)??"未知"} 条 · 依赖 {countStoredRefs(a.dependency_refs)??"未知"} 条</p>
@@ -126,11 +127,15 @@ export default function KnowledgeAssetInspector(){
       <pre style={{whiteSpace:"pre-wrap",overflowWrap:"anywhere",maxHeight:150,overflow:"auto"}}>
         {assetPayloadPreview(selected.dependency_refs)}
       </pre>
+      <p className="admin__asset-meta">{assetRightsSummary(selected.rights_by_action)}</p>
+      <p className="admin__asset-meta">来源依赖状态：{selected.freshness_state||"未知"} · 当前独立资格与复用权利须另行核验</p>
       <p className="admin__asset-meta">历史版本 {history.length} 条</p>
       {history.map(r=><div className="admin__asset-meta" key={r.revision_id}>
-        修订 {r.revision_no??"—"} · {r.revision_id} · {privateAssetStatus(r)}
+        <button type="button" aria-pressed={selected.revision_id===r.revision_id}
+          onClick={()=>setRevisionId(r.revision_id)}>查看修订 {r.revision_no??"—"}</button>
+        {r.revision_id} · {privateAssetStatus(r)}
       </div>)}
-      <p className="admin__asset-meta">当前版本使用事件 {uses.length} 条</p>
+      <p className="admin__asset-meta">选定版本使用事件 {uses.length} 条</p>
       {uses.map((u,i)=><div className="admin__asset-meta" key={u.use_event_id??i}>
         {u.consumer||"未知使用者"} · {u.requested_action||"未知动作"} · 权利决定 {u.rights_decision_ref||"未提供"}
       </div>)}

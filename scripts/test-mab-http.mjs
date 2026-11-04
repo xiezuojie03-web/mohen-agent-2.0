@@ -29,7 +29,7 @@ try {
   end $$`);
   const migrations=path.join(root,'supabase/migrations');
   const names=['202610070100_data_production_v2_baseline.sql',...fs.readdirSync(migrations).filter(n=>n>='202610160300'&&n<='202610292100_imported_materials.sql'&&!n.startsWith('202610160400')),
-    '202610310900_k3_security_boundary.sql',fs.readdirSync(migrations).find(n=>n.endsWith('_mab_studio_assets.sql')),'20261104013351_mab_m4_execution_controls.sql'];
+    '202610310900_k3_security_boundary.sql','202610310910_k3_gate_candidates.sql','202611010900_k3_independent_gate_authority.sql',fs.readdirSync(migrations).find(n=>n.endsWith('_mab_studio_assets.sql')),'20261104013351_mab_m4_execution_controls.sql'];
   for(const name of names)execFileSync(psql,[...base,'-d',database,'-f',path.join(migrations,name)],{stdio:['ignore','pipe','pipe']});
   if(process.env.MOHEN_REVOCABLE_SESSIONS_ENABLED==='true')
     execFileSync(psql,[...base,'-d',database,'-f',path.join(migrations,'20261103095024_mab_web_session_revocation.sql')],{stdio:['ignore','pipe','pipe']});
@@ -45,6 +45,7 @@ try {
   const env={...process.env,DATABASE_URL:url.toString(),MOHEN_DB_DRIVER:'pg',AUTH_SECRET:'synthetic-mab-http-browser-key-at-least-32',
     MOHEN_DATABASE_SESSION_SECRET:'synthetic-mab-http-database-key-at-least-32',MOHEN_REGISTRATION_MODE:'open',OWNER_EMAIL:'',OWNER_SETUP_TOKEN:'',MOHEN_TEST_DATABASE:database,
     DEEPSEEK_API_KEY:'',SHANGHAI_LIBRARY_KEY:'',NEXT_TELEMETRY_DISABLED:'1',MOHEN_E2E_ISOLATED:'1',
+    MOHEN_G5_CONTEXTS:JSON.stringify(Object.fromEntries(['watch','visual_stage','agent','evidence_on_demand'].map(consumer=>[consumer,{purpose:{namespace:'G5',code:'m5-http',version:'1'},scope:{project:'m5-http'}}]))),
     MOHEN_PRIVATE_ORIGINAL_UPLOAD_ENABLED:storageConfig?'true':'false',MOHEN_PRIVATE_STORAGE_SERVICE_KEY:storageConfig?.serviceKey??'',
     SUPABASE_URL:storageConfig?.httpsOrigin??'',NODE_EXTRA_CA_CERTS:storageConfig?.caCert??process.env.NODE_EXTRA_CA_CERTS};
   console.log('MAB_HTTP_BUILD_SYNTHETIC');

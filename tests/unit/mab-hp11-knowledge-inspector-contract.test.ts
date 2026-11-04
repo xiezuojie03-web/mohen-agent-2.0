@@ -22,3 +22,13 @@ describe("HP11 private knowledge asset display contract",()=>{
     expect(assetPayloadPreview(undefined)).toBe("未提供可预览内容");
   });
 });
+
+it('selects only the requested immutable revision within the selected asset history',async()=>{
+ const {selectInspectedRevision,assetRightsSummary}=await import('../../apps/web/app/admin/knowledge-asset-view');
+ const current={asset_id:'a',revision_id:'new',rights_by_action:{display:'unknown'}};
+ const old={asset_id:'a',revision_id:'old',payload:{text:'old'},rights_by_action:{display:'denied'}};
+ expect(selectInspectedRevision(current,[old],'old')).toEqual(old);
+ expect(selectInspectedRevision(current,[{...old,asset_id:'foreign'}],'old')).toBeNull();
+ expect(assetRightsSummary(old.rights_by_action)).toContain('denied');
+ expect(assetRightsSummary(undefined)).toContain('未知');
+});

@@ -1,40 +1,21 @@
-/**
- * MAB HP12: professional knowledge qualification is NOT work-publication
- * Reviewer approval. An exact L5 artifact, its current G5, scope, purpose,
- * consumer and rights must be resolved for every public-facing facet.
- *
- * The current WorkRevision content has only narrative provenanceRefs; it has
- * no authoritative typed mapping to an independently signed G5 projection.
- * Do not reinterpret arbitrary strings, published pointers, legacy PASS or
- * approval records as a professional knowledge qualification.
- *
- * Until the formal KAD/MHKA mapping and independent per-consumer verifier are
- * implemented and proved, the new-publication gate MUST fail closed.
- * This is intentional; existing legal drafts and review records are retained.
- */
+import {createWorkQualificationReader,getNodePgPool} from '@mohen/data-access';
+import {consumerContext} from './kad1-policy.mjs';
 export type WorkPublicationG5Result =
-  | { ok: true }
-  | { ok: false; reason: "independent_g5_required" };
-
-export async function requireIndependentWorkPublicationG5(
-  _workId: string,
-  _revisionId: string,
-  _content: Record<string, unknown>,
-): Promise<WorkPublicationG5Result> {
-  return { ok: false, reason: "independent_g5_required" };
-}
-
-/**
- * Public consumers require their OWN current qualification; an approval for
- * work publication, producer, visual_stage or agent never transfers to watch.
- * No lawful WorkRevision -> per-facet L5 current G5 mapping exists yet, so
- * do not disclose any public content while this exact verification is absent.
+ | {ok:true}
+ | {ok:false;reason:'independent_g5_required'};
+type Consumer='watch'|'visual_stage'|'agent'|'evidence_on_demand';
+/** Publication requires WATCH's own current display qualification in addition
+ * to the separate editorial review. No default purpose/scope, legacy fallback
+ * or automatic Gate signing. Production configuration stays independently HOLD.
  */
-export async function requireCurrentWorkConsumerQualification(
-  _workId: string,
-  _revisionId: string,
-  _consumer: "watch" | "visual_stage" | "agent" | "evidence_on_demand",
-  _content: Record<string, unknown>,
-): Promise<WorkPublicationG5Result> {
-  return { ok: false, reason: "independent_g5_required" };
+export async function requireIndependentWorkPublicationG5(workId:string,revisionId:string,content:Record<string,unknown>):Promise<WorkPublicationG5Result>{
+ return requireCurrentWorkConsumerQualification(workId,revisionId,'watch',content);
+}
+export async function requireCurrentWorkConsumerQualification(workId:string,revisionId:string,consumer:Consumer,content:Record<string,unknown>):Promise<WorkPublicationG5Result>{
+ const context=consumerContext(consumer);
+ if(!context)return {ok:false,reason:'independent_g5_required'};
+ try {
+ const ok=await createWorkQualificationReader(getNodePgPool()).check(workId,revisionId,{...context,consumer},content);
+ return ok?{ok:true}:{ok:false,reason:'independent_g5_required'};
+ }catch{return {ok:false,reason:'independent_g5_required'};}
 }

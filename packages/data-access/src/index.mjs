@@ -293,3 +293,4 @@ export {assessStudioReceiptCandidates} from './studio-candidate-assessment.mjs';
 
 export {createStudioExecutionRepository} from './studio-execution-repository.mjs';
 export {createStudioCandidateReceiver} from './studio-receive-candidate.mjs';
+export {createWorkQualificationReader,workContentDigest} from './work-qualification-reader.mjs';

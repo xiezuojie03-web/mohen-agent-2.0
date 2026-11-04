@@ -20,3 +20,15 @@ export function assetPayloadPreview(payload:unknown):string {
     return typeof text==="string"?text.slice(0,2000):"未提供可预览内容";
   }catch{return "内容暂不可预览";}
 }
+
+export function selectInspectedRevision<T extends {asset_id:string;revision_id:string}>(current:T|undefined,history:T[],revisionId:string):T|null {
+ if(!current)return null;
+ if(!revisionId||revisionId===current.revision_id)return current;
+ return history.find(r=>r.asset_id===current.asset_id&&r.revision_id===revisionId)??null;
+}
+export function assetRightsSummary(rights:unknown):string {
+ if(!rights||typeof rights!=='object'||Array.isArray(rights))return '动作权利未知';
+ const value=rights as Record<string,unknown>;
+ return ['read','quote','display','download','adapt','external_processing'].map(action=>
+  `${action}: ${['allowed','denied','unknown','restricted'].includes(String(value[action]))?value[action]:'unknown'}`).join(' · ');
+}

@@ -10,6 +10,7 @@ function validCandidate(c){return c?.schema==='mohen.studio-stage-candidate-ref.
 export async function assessStudioReceiptCandidates({delegation,receipt,verifyCurrent,timeoutMs=5000}={}){
  if(!Number.isInteger(timeoutMs)||timeoutMs<1||timeoutMs>10000)throw Error('STUDIO_ASSESSMENT_TIMEOUT_INVALID');
  const deadline=Date.now()+timeoutMs;
+ let timedOut=false;
  if(!delegation||!receipt||!Array.isArray(receipt.candidate_refs))throw Error('STUDIO_RECEIPT_INVALID');
  // Snapshot before awaiting the authority; untrusted callers cannot swap refs.
  const refs=structuredClone(receipt.candidate_refs);
@@ -22,13 +23,13 @@ export async function assessStudioReceiptCandidates({delegation,receipt,verifyCu
  for(let index=0;index<refs.length;index++){
   const c=refs[index],checks={T1:bound&&validCandidate(c)?'BINDING_MATCHED':'BINDING_NOT_VERIFIED',
    T2:'NOT_VERIFIED',T3:'NOT_VERIFIED',T4:'NOT_VERIFIED',T5:'NOT_VERIFIED',T6:'NOT_VERIFIED',T7:typeof verifyCurrent==='function'?'GATE_NOT_VALID':'NOT_VERIFIED'};
-  if(checks.T1==='BINDING_MATCHED'&&typeof verifyCurrent==='function'&&Date.now()<deadline){
+  if(checks.T1==='BINDING_MATCHED'&&typeof verifyCurrent==='function'&&!timedOut&&Date.now()<deadline){
    let timer;
    try{
     const request={run:{run_id:c.run_id},job:{job_id:c.job_id,stage:c.stage,
      implementation:{gate_reviewer_binding:c.reviewer_binding_ref}},stage:c.stage,gate:'G'+c.stage.slice(-1),
      input_digest:c.input_digest,output_digest:c.output_digest};
-    const p=await Promise.race([Promise.resolve().then(()=>verifyCurrent(request)),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('ASSESSMENT_TIMEOUT')),Math.max(1,deadline-Date.now()));})]);
+    const p=await Promise.race([Promise.resolve().then(()=>verifyCurrent(request)),new Promise((_,reject)=>{timer=setTimeout(()=>{timedOut=true;reject(Error('ASSESSMENT_TIMEOUT'));},Math.max(1,deadline-Date.now()));})]);
     if(p?.schema==='mohen.independent-gate-current-receipt.v1'&&p.qualification_current===true&&
      p.decision_origin==='independent_gate'&&p.result==='PASS'&&UUID.test(p.gate_audit_id??'')&&
      p.gate_code==='G'+c.stage.slice(-1)&&exact.every(k=>p[k]===c[k])&&

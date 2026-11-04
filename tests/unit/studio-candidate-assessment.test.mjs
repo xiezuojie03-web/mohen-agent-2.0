@@ -47,3 +47,16 @@ it('reports an absent verifier as not checked rather than falsely declaring the 
  const result=await assessStudioReceiptCandidates({delegation:delegation(),receipt:receipt()});
  expect(result.items[0].checks.T7).toBe('NOT_VERIFIED');expect(result.state).toBe('HOLD');
 });
+
+it('never starts another authority call after a timer expires even when wall clock is frozen',async()=>{
+ vi.useFakeTimers();vi.setSystemTime(new Date('2026-11-05T00:00:00Z'));
+ const now=vi.spyOn(Date,'now').mockReturnValue(Date.now());
+ try {
+  const verify=vi.fn(()=>new Promise(()=>{}));
+  const pending=assessStudioReceiptCandidates({delegation:delegation(),receipt:{...receipt(),candidate_refs:[candidate,candidate]},verifyCurrent:verify,timeoutMs:25});
+  await vi.advanceTimersByTimeAsync(100);
+  const result=await pending;
+  expect(verify).toHaveBeenCalledTimes(1);
+  expect(result.items.every(x=>x.checks.T7==='GATE_NOT_VALID')).toBe(true);
+ }finally{now.mockRestore();vi.useRealTimers();}
+});
