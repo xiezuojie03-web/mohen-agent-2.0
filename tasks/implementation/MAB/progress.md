@@ -924,3 +924,12 @@ Ruling: 当前M4允许完成可运行隔离链，真实第三方/生产验证仍
 本地最后两条集成脚本已清理全部mohen_k3_*_test数据库（查询0），本批合成PG容器已移除。源码之外此次只补文档/回执；未来文档SHA不冒称运行过上述HTTP。证据清单按Git暂存blob字节计算SHA256（避免日志CRLF入库规范化造成本地字节hash与仓库不同），各批机器回执与真实失败/成功日志均保留。
 
 下一步严格原M5：导演方案初始保存及fork/restore等其它版本写入口的幂等/CAS/来源归属，同WorkRevision链及专业G5/rights映射与ST九动作/13类型；本批未签这些未覆盖能力。M5/HANDOFF_NOT_READY与上游所有固定生产条件保持，无生产数据/开关操作，无私人外发/费用。
+
+
+## 2026-11-04｜M5导演修订CAS与fork/restore来源归属施工（ChatGPT GitHub接续）
+
+- **既定计划不变**：仅实施M5/HP10—12局部风险修复；不调整M0—M8或MHKA/KAD6的任务、语义、Gate准出标准，延续已签M1—M4的受限工程成果。
+- 源码及测试提交：`19ff534c`导演选定方案同Owner/快照/不可变CAS/显式冲突与内容幂等；`4d5c05e`校正新旧测试桩（首个`19ff534c`的主CI41836288891确实FAIL）；`c8379b0` fork/restore历史精确来源、native JSONB序列化、单SQL CAS和可选operation_id幂等。完整差异与回滚见`tasks/results/MAB/CHATGPT_M5_REVISION_CAS_20261104.md`。
+- GitHub真实回执：`4d5c05e` CI41836604791 **SUCCESS**；`c8379b0` CI41837221858 **SUCCESS**、隔离HTTP41837221734 **SUCCESS**。新fork/restore的真实PG竞态专项用例未覆盖，不泛签完全E2E或M5准出。
+- 同日只读实际生产检查：仍只有5条MAB已登记迁移，Storage桶0、私有原件表0、正式Gate LOGIN角色0、当前资格0、Studio项目0、会话撤销字段0。全部M1-C01—C04、M2-C01—C03及M3/M4生产/专业/外发/费用条件继续按原计划保留；本批无生产写入/迁移/费用。
+- 下一任务：M5其余版本写入口真正PG并发与请求重放E2E、同WorkRevision与专业G5/rights逐消费者映射、ST-01—09/13类业务；再按M6—M8完整验证。**状态 M5_CODE_AND_CI_PARTIAL_PASS / M5_LIVE_HOLD / HANDOFF_NOT_READY**。
