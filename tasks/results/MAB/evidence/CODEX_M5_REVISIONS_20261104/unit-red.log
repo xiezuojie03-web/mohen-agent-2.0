@@ -1,0 +1,71 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/mab-m5-revision-cas.test.ts (4 tests | 4 failed) 13ms
+   × narration reports conflict if another writer inserts the next revision after the read 8ms
+     → expected { Object (revisionId, revisionNo, ...) } to deeply equal { revisionId: '', revisionNo: 2, …(1) }
+   × narration does not confirm a save when the actual insert fails 3ms
+     → promise resolved "{ revisionId: '2', revisionNo: 2, …(1) }" instead of rejecting
+   × order reports conflict if another writer inserts the next revision after the read 1ms
+     → expected { Object (revisionId, revisionNo, ...) } to deeply equal { revisionId: '', revisionNo: 2, …(1) }
+   × order does not confirm a save when the actual insert fails 1ms
+     → promise resolved "{ revisionId: '2', revisionNo: 2, …(1) }" instead of rejecting
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/mab-m5-revision-cas.test.ts > narration reports conflict if another writer inserts the next revision after the read
+ FAIL  tests/unit/mab-m5-revision-cas.test.ts > order reports conflict if another writer inserts the next revision after the read
+AssertionError: expected { Object (revisionId, revisionNo, ...) } to deeply equal { revisionId: '', revisionNo: 2, …(1) }
+
+- Expected
++ Received
+
+  {
+-   "conflict": true,
+-   "revisionId": "",
++   "conflict": false,
++   "revisionId": "2",
+    "revisionNo": 2,
+  }
+
+ ❯ tests/unit/mab-m5-revision-cas.test.ts:9:26
+      7| for(const [name,invoke] of [['narration',()=>reviseBeat('work',1,[{ind…
+      8|  it(`${name} reports conflict if another writer inserts the next revis…
+      9|   expect(await invoke()).toEqual({revisionId:'',revisionNo:2,conflict:…
+       |                          ^
+     10|   expect(db.run).not.toHaveBeenCalled();
+     11|  });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/unit/mab-m5-revision-cas.test.ts > narration does not confirm a save when the actual insert fails
+ FAIL  tests/unit/mab-m5-revision-cas.test.ts > order does not confirm a save when the actual insert fails
+AssertionError: promise resolved "{ revisionId: '2', revisionNo: 2, …(1) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "conflict": false,
++   "revisionId": "2",
++   "revisionNo": 2,
+  }
+
+ ❯ tests/unit/mab-m5-revision-cas.test.ts:14:24
+     12|  it(`${name} does not confirm a save when the actual insert fails`,asy…
+     13|   db.queryRows.mockReset().mockResolvedValueOnce([latest]).mockRejecte…
+     14|   await expect(invoke()).rejects.toThrow('storage unavailable');
+       |                        ^
+     15|  });
+     16| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  12:10:04
+   Duration  398ms (transform 164ms, setup 0ms, collect 191ms, tests 13ms, environment 0ms, prepare 64ms)
+

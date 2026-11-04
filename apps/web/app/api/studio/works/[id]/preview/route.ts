@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getLatestRevision } from "../../../../../../lib/publication";
 import { guardRoute } from "../../../../../../lib/guard";
+import { readJsonColumn } from "../../../../../../lib/db-json";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,6 +14,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
   const rev = await getLatestRevision(id);
   if (!rev.length) return NextResponse.json({ ok: false, reason: "no_revision" }, { status: 404 });
   let content: unknown = {};
-  try { content = JSON.parse(String(rev[0].content ?? "{}")); } catch { content = {}; }
+  try { content = readJsonColumn(rev[0].content, {}); }
+  catch { return NextResponse.json({ ok: false, reason: "preview_unavailable" }, { status: 503 }); }
   return NextResponse.json({ ok: true, preview: content });
 }

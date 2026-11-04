@@ -1,0 +1,31 @@
+MAB_HTTP_BUILD_SYNTHETIC
+   ▲ Next.js 15.5.28
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 4.0s
+   Linting and checking validity of types ...
+Failed to compile.
+
+./lib/studio-director.ts:202:46
+Type error: Argument of type 'PgRow' is not assignable to parameter of type '{ title: unknown; description: unknown; }'.
+  Type 'PgRow' is missing the following properties from type '{ title: unknown; description: unknown; }': title, description
+
+[0m [90m 200 |[39m   }
+ [90m 201 |[39m   [36mconst[39m newContent [33m=[39m { [33m...[39mcontent[33m,[39m beats }[33m;[39m
+[31m[1m>[22m[39m[90m 202 |[39m   [36mreturn[39m appendEditedRevision(workId[33m,[39m curNo[33m,[39m latest[[35m0[39m][33m,[39m newContent)[33m;[39m
+ [90m     |[39m                                              [31m[1m^[22m[39m
+ [90m 203 |[39m }
+ [90m 204 |[39m
+ [90m 205 |[39m [90m/** 分镜重排：按 order（新顺序对应的原始下标全排列）重排 beats，生成新修订（CAS）。 */[39m[0m
+Next.js build worker exited with code: 1 and signal: null
+MAB_HTTP_SYNTHETIC_DATABASE_CLEANED
+file:///workspace/mohen-agent-2.0/scripts/test-mab-http.mjs:19
+const command=async(args,env,cwd=root)=>{const child=spawn(process.execPath,args,{cwd,env,stdio:'inherit'});const code=await childExit(child);if(code!==0)throw Error('HTTP_TEST_COMMAND_FAILED:'+code);};
+                                                                                                                                                                ^
+
+Error: HTTP_TEST_COMMAND_FAILED:1
+    at command (file:///workspace/mohen-agent-2.0/scripts/test-mab-http.mjs:19:161)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///workspace/mohen-agent-2.0/scripts/test-mab-http.mjs:51:3
+
+Node.js v24.19.0

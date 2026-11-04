@@ -898,3 +898,20 @@ Ruling: 当前M4允许完成可运行隔离链，真实第三方/生产验证仍
 八分支改用qualification_current/qualification_allows及现有非空context守卫；公共输入不授资格，缺合法映射degraded。materials/ask材料衍生缓存移除，no-store，explore同样禁缓存。先RED：7项context/SQL失败、materials与ask缓存各失败、真实PG缺context失败、真实HTTP旧agent PASS泄露；后GREEN：405 unit/4旧SKIP、133boundary/0SKIP、六workspace类型、全PG17exit0、Next+HTTP9PASS/1Storage缺配置SKIP。新增实际TS检索在同一G0—G5真实SQL链前后运行，精确consumer/purpose/scope与祖先撤销断言通过。
 
 独立review无重要问题并重跑10项通过；真实PG正例仅story_seed，其它分支结构覆盖，不泛签所有专业对象。缺正式scope/purpose映射的公共/Agent仍HOLD。ask正式启用必须有既有ledger/预算，移除缓存不授权更多费用；本批无Provider或生产操作。报告CODEX_M5_RETRIEVE_20261104.md及原始evidence。回退关闭入口不恢复旧PASS/缓存。下一原M5：私有preview正文与改稿CAS；源码push与实际CI另补。
+
+
+### M5共享检索GitHub核证
+
+精确源码4f57421608d763b6e412a85cf1625294525f0e15已推main，主CI41826797550、隔离PG1741826797881、HTTP41826797505全部SUCCESS。实际HTTP日志9PASS/1Storage缺配置SKIP，PG全套包含新增当前资格检索/祖先撤销。原始run JSON/HTTP摘录入同evidence。
+
+## 2026-11-04｜M5私有预览/改稿CAS与实际CI时限失败收口
+
+- BASE=4f57421，已继承上述GitHub三成功；先用真实HTTP复现preview空正文、八并发叙述改稿1成功/3冲突/4个500唯一键异常，新4单测也先RED。getLatestRevision漏content，预览String(native-jsonb)也错误；改稿read-check-plain-insert并非原子CAS。
+- 修改只补原位：查真实content并用统一JSON解码；损坏JSON报503不造空成功；reviseBeat/reorderBeats共享INSERT expected-head谓词+唯一(work_id,revision_no)冲突仲裁，RETURNING才确认成功，竞争失败返回当前revision冲突；不覆盖原修订，不改wire/Owner守卫，无新正文库或生产DDL。
+- 实测私有Next/PG/Chromium已11PASS/1StorageSKIP，含私有正文、跨Owner拒绝、八并发1成功7冲突、同rev重复提交与重排；首个构建发现PgRow辅助函数参数类型不匹配，已修为Record<string,unknown>且后续真实构建通过，保留失败日志。
+- 发现旧文档SHA247bee0的CI41825365579/job126558624358实际失败：共享deadline测试预期1callback实际2，不能借更早SUCCESS掩盖。新冻结Date.now但推进定时器的确定性负例真实复现；sticky timedOut统一全批停止，T7也进入共享定时器，final sweep撤回已过期accept。review补出先前accept和T7/最大10000ms的两个路径，均先RED后GREEN，最终17目标测试通过。不是放宽时间/去掉断言。
+- 最终全unit417PASS/4旧实网SKIP、boundary133/0SKIP、六workspace类型及auth107路由无缺口；独立review对CAS/预览无问题，deadline后续修复复跑17项通过。最后PG/HTTP整批复验与源码push实际CI取得后追加。
+- 所有生产/专业G5/外发/费用HOLD不变；无Provider调用。回退可关闭相应写/读入口，不能恢复假保存或过期候选accept；原作品/审计保留。M5未准出，导演计划初始保存及fork/restore等其它版本写入口的幂等/并发、精确G5/rights和九动作/13类型全验收仍待续建，不能以本批改稿CAS泛签所有写入口。
+
+
+最终本地集成回执：同一最终源码417单测PASS/4旧SKIP、133边界PASS、六workspace类型/107路由auth通过；完整PG17exit0，真实Next+HTTP11PASS/1StorageSKIP。最后PG/HTTP已在deadline审查修复后重跑，非复用修复前日志。源码push前diff检查通过；正式生产和M阶段整体状态保持上述边界。

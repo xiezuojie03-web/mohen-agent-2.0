@@ -1,0 +1,5 @@
+sha=247bee074ba07317afe25f09543ac53c45efc40b run=41825365579 job=126558624358
+Unit tests (no DB) FAILURE
+studio-receive-candidate: does not leak raw callback errors and holds a stalled callback within one shared deadline
+AssertionError: expected spy to be called 1 times, but got 2 times
+Determininistic regression and fix: deadline-red.log, deadline-review-red.log, deadline-max-red.log, deadline-final-pass.log

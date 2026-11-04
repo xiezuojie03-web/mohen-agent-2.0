@@ -14,6 +14,7 @@ const finding = { motifCodes: ["M5"], historicalQuestion: "怎样理解变化？
 beforeEach(() => {
   vi.resetAllMocks();
   db.queryValue.mockResolvedValue(revision);
+  db.queryRows.mockResolvedValue([{ revision_id: revision }]);
   llm.generateBeats.mockImplementation(async (p, facts) => [{ ...beat, title: p.angle, narration: facts[0] }]);
   llm.generateWorkPanels.mockImplementation(async (p, facts, beats) => ({
     storyStructure: beats.map((b: typeof beat) => ({ title: b.title, timecode: "00:00", visual: b.visual })),
@@ -48,13 +49,13 @@ for (const encoding of ["native", "psql"] as const) {
   it(`${encoding} JSON columns allow a local narration edit without losing other beats`, async () => {
     db.queryRows.mockResolvedValueOnce([{ revision_no: 1, title: "作品", description: "", content: encode({ beats: [beat, otherBeat] }) }]);
     expect(await reviseBeat("work", 1, [{ index: 0, patch: { narration: "修改后的表达" } }])).toMatchObject({ conflict: false, revisionNo: 2 });
-    const saved = JSON.parse(db.run.mock.calls[0][1].content);
+    const saved = JSON.parse(db.queryRows.mock.calls.find(([sql]) => sql.includes("insert into publication.work_revisions"))![1].content);
     expect(saved.beats).toEqual([{ ...beat, narration: "修改后的表达" }, otherBeat]);
   });
   it(`${encoding} JSON columns can reorder beats without changing their references`, async () => {
     db.queryRows.mockResolvedValueOnce([{ revision_no: 1, title: "作品", description: "", content: encode({ beats: [beat, otherBeat] }) }]);
     expect(await reorderBeats("work", 1, [1, 0])).toMatchObject({ conflict: false, revisionNo: 2 });
-    expect(JSON.parse(db.run.mock.calls[0][1].content).beats).toEqual([otherBeat, beat]);
+    expect(JSON.parse(db.queryRows.mock.calls.find(([sql]) => sql.includes("insert into publication.work_revisions"))![1].content).beats).toEqual([otherBeat, beat]);
   });
   it(`${encoding} JSON columns retain provenance checks but require independent G5 before publication`, async () => {
     db.queryRows.mockResolvedValueOnce([{ revision_id: revision, content: encode({ beats: [beat], rights_acknowledged: true }) }])

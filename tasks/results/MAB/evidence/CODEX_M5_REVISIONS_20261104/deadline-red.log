@@ -1,0 +1,40 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/studio-receive-candidate.test.mjs (14 tests | 1 failed) 62ms
+   ✓ exports the bounded candidate receiver factory 1ms
+   ✓ accepts only as private producer candidate after actual UTF8 bytes and all current checks 4ms
+   ✓ rejects envelope identity/provider/version, source revision and foreign consumer mismatches without reading bytes 4ms
+   ✓ quarantines tampered bytes, hash, quote, split UTF8 locator and voice collision 2ms
+   ✓ does not accept unverified booleans or trust the envelope transfer decision 2ms
+   ✓ requires explicit trusted thirdparty transfer permission separately from internal candidate read 1ms
+   ✓ holds absent or unsupported semantics and expires or changes exact trusted evidence 5ms
+   ✓ uses unchanged T7 for changed refs, revocation, foreign consumer proof and per-item request_stage 3ms
+   ✓ counts duplicate source families once and one bad item never changes package HOLD 1ms
+   ✓ does not leak raw callback errors and holds a stalled callback within one shared deadline 26ms
+   ✓ bounds the batch and timeout before invoking dependencies 2ms
+   × does not start another callback after the shared timer fires before the wall clock deadline 7ms
+     → expected "spy" to be called 1 times, but got 2 times
+   ✓ does not count conflicting family labels for the same source as independent witnesses 1ms
+   ✓ rechecks earlier T7 qualification expiry when a later item completes 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/studio-receive-candidate.test.mjs > does not start another callback after the shared timer fires before the wall clock deadline
+AssertionError: expected "spy" to be called 1 times, but got 2 times
+ ❯ tests/unit/studio-receive-candidate.test.mjs:112:39
+    110|   const pending=f.receive();await vi.runAllTimersAsync();const result=…
+    111|   expect(result.items.every(i=>i.state==='hold')).toBe(true);
+    112|   expect(f.dependencies.readOriginal).toHaveBeenCalledTimes(1);
+       |                                       ^
+    113|  }finally{clock.mockRestore();vi.useRealTimers();}
+    114| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 13 passed (14)
+   Start at  12:11:53
+   Duration  290ms (transform 47ms, setup 0ms, collect 51ms, tests 62ms, environment 0ms, prepare 56ms)
+

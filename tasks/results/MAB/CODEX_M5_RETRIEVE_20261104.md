@@ -13,3 +13,7 @@ materials/ask不再缓存材料或衍生回答，数据响应no-store；explore�
 范围：真实PG正例覆盖story_seed，其他七分支由SQL结构测试覆盖，不能称所有专业类别正例已齐；合成Gate不代正式专业审核。缺生产purpose/scope映射仍HOLD；正式媒体/rights、原件外发和费用条件保持。ask仍走既有研究费用守卫，正式启用前必须有合法ledger/预算与重复调用核证。无真实Provider调用或生产操作。
 
 原始RED/GREEN、PG/HTTP/类型日志在`evidence/CODEX_M5_RETRIEVE_20261104/`。源码GitHub结果取得后另补，不能借历史SUCCESS代验。下一步仅原M5私有preview正文与改稿CAS，不重开M1—M4。回退关闭受影响检索入口，不能恢复旧PASS或旧缓存旁路。
+
+## GitHub源码核证
+
+4f57421608d763b6e412a85cf1625294525f0e15主CI41826797550、隔离PG1741826797881、实际HTTP41826797505均SUCCESS；实际HTTP9PASS/1StorageSKIP，资格检索真实SQL/撤权在PG全套通过。未改生产条件。

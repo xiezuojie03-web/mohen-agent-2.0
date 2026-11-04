@@ -40,11 +40,11 @@ export function createStudioCandidateReceiver(dependencies={}){
   const safe=contextSnapshot(context),callbackContext=frozen({...safe,...(context?.token!==undefined?{token:context.token}:{})});
   const inputFingerprint=digest({delegation,receipt,items});
   const requestFingerprint=digest({input_fingerprint:inputFingerprint,context:safe});
-  const output=[],expiries=[],lineages=new Map();
+  const output=[],expiries=[],lineages=new Map();let timedOut=false;
   async function call(fn,...args){
-   if(typeof fn!=='function'||Date.now()>=deadline)return null;
+   if(typeof fn!=='function'||timedOut||Date.now()>=deadline)return null;
    let timer;
-   try{return await Promise.race([Promise.resolve().then(()=>fn(...args)),new Promise(resolve=>{timer=setTimeout(()=>resolve(null),Math.max(1,deadline-Date.now()));})]);}
+   try{return await Promise.race([Promise.resolve().then(()=>fn(...args)),new Promise(resolve=>{timer=setTimeout(()=>{timedOut=true;resolve(null);},Math.max(1,deadline-Date.now()));})]);}
    catch{return null;}finally{clearTimeout(timer);}
   }
   for(let index=0;index<items.length;index++){
@@ -52,7 +52,7 @@ export function createStudioCandidateReceiver(dependencies={}){
    const row={index,state:'hold',acceptance:null,knowledge_use_authorized:false,checks,evidence_refs:{},item_fingerprint:digest(item)};
    output.push(row);
    const fail=(state,code)=>{row.state=state;row.code=code;};
-   if(Date.now()>=deadline){fail('hold','RECEIVE_DEADLINE');continue;}
+   if(timedOut||Date.now()>=deadline){fail('hold','RECEIVE_DEADLINE');continue;}
    const source=item?.source,sourceRefs=delegation.input_manifest?.source_refs;
    const bound=safe&&UUID.test(receipt.receipt_id??'')&&delegation.requester===safe.actor_id&&delegation.project_id===safe.project_id&&
     delegation.policy_version===safe.policy_version&&future(delegation.expires_at)&&field(delegation.provider)&&field(delegation.engine_version)&&
@@ -130,9 +130,16 @@ export function createStudioCandidateReceiver(dependencies={}){
    checks.T6='SEMANTICS_VERIFIED';
    if(Date.now()>=deadline){fail('hold','RECEIVE_DEADLINE');continue;}
    let qualification;
-   const assessment=await assessStudioReceiptCandidates({delegation,receipt:{...receipt,candidate_refs:[item.candidate_ref]},
-    verifyCurrent:typeof verifyCurrent==='function'?async request=>{qualification=snapshot(await verifyCurrent(request,callbackContext));return qualification;}:undefined,
-    timeoutMs:Math.max(1,deadline-Date.now())});
+   const assessment=await call(()=>assessStudioReceiptCandidates({delegation,receipt:{...receipt,candidate_refs:[item.candidate_ref]},
+    verifyCurrent:typeof verifyCurrent==='function'?async request=>{
+     const proof=await call(verifyCurrent,request,callbackContext);
+     if(proof===null)return null;
+     qualification=snapshot(proof);return qualification;
+    }:undefined,
+    // Authority I/O is bounded by the shared call() timer. Keep the inner
+    // validator timer longer so it cannot expire without exhausting the batch.
+    timeoutMs:10000}));
+   if(!assessment||timedOut){fail('hold','RECEIVE_DEADLINE');continue;}
    checks.T7=assessment.items[0].checks.T7;
    if(checks.T7!=='VERIFIED_CURRENT'){fail(checks.T7==='NOT_VERIFIED'?'hold':'request_stage',checks.T7==='NOT_VERIFIED'?'QUALIFICATION_UNVERIFIED':'WAITING_GATE');continue;}
    row.evidence_refs.T7={gate_audit_id:qualification.gate_audit_id,valid_until:qualification.valid_until};
@@ -141,7 +148,7 @@ export function createStudioCandidateReceiver(dependencies={}){
   }
   // A long later item must not leave an already-expired earlier proof accepted.
   for(const row of output){
-   if(row.state==='accept'&&(!future(delegation.expires_at)||Date.now()>=deadline||expiries.some(e=>e.row===row&&!future(e.until)))){
+   if(row.state==='accept'&&(timedOut||!future(delegation.expires_at)||Date.now()>=deadline||expiries.some(e=>e.row===row&&!future(e.until)))){
     row.state='hold';row.acceptance=null;row.code='CURRENT_EVIDENCE_EXPIRED';
    }
   }

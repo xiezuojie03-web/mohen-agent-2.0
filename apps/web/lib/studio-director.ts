@@ -150,6 +150,34 @@ export async function selectMediaCandidates(): Promise<{
   };
 }
 
+/** The unique (work_id, revision_no) constraint arbitrates concurrent edits.
+ * A preliminary read is not CAS: only an acknowledged INSERT may report success. */
+async function appendEditedRevision(
+  workId: string,
+  currentNo: number,
+  latest: Record<string, unknown>,
+  content: Record<string, unknown>
+): Promise<{ revisionId: string; revisionNo: number; conflict: boolean }> {
+  const contentHash = crypto.createHash("sha256").update(JSON.stringify(content)).digest("hex");
+  const saved = await queryRows(
+    `insert into publication.work_revisions (work_id, revision_no, title, description, content, status)
+     select :'wid', :'no', :'title', :'desc', :'content'::jsonb, 'draft'
+     where (select coalesce(max(revision_no),0) from publication.work_revisions where work_id=:'wid')=:'expected'
+     on conflict (work_id,revision_no) do nothing
+     returning revision_id::text as revision_id`,
+    { wid: workId, no: currentNo + 1, expected: currentNo,
+      title: String(latest.title ?? "未命名作品"), desc: String(latest.description ?? ""),
+      content: JSON.stringify({ ...content, content_hash: contentHash }) }
+  );
+  if (saved.length === 1 && saved[0].revision_id) {
+    return { revisionId: String(saved[0].revision_id), revisionNo: currentNo + 1, conflict: false };
+  }
+  const observed = Number(await queryValue(
+    "select coalesce(max(revision_no),0) from publication.work_revisions where work_id=:'wid'", { wid: workId }
+  ));
+  return { revisionId: "", revisionNo: Math.max(currentNo, observed), conflict: true };
+}
+
 /** 局部改稿：CAS 校验 expected_revision_no，改动即新不可变修订；版本冲突如实返回。 */
 export async function reviseBeat(
   workId: string,
@@ -171,22 +199,7 @@ export async function reviseBeat(
     beats[d.index] = { ...beats[d.index], ...d.patch };
   }
   const newContent = { ...content, beats };
-  const contentHash = crypto.createHash("sha256").update(JSON.stringify(newContent)).digest("hex");
-
-  const revisionId = await queryValue("select gen_random_uuid()::text");
-  await run(
-    `insert into publication.work_revisions (revision_id, work_id, revision_no, title, description, content, status)
-     values (:'rid', :'wid', :'no', :'title', :'desc', :'content'::jsonb, 'draft')`,
-    {
-      rid: revisionId!,
-      wid: workId,
-      no: curNo + 1,
-      title: String(latest[0].title ?? "未命名作品"),
-      desc: String(latest[0].description ?? ""),
-      content: JSON.stringify({ ...newContent, content_hash: contentHash }),
-    }
-  );
-  return { revisionId: revisionId!, revisionNo: curNo + 1, conflict: false };
+  return appendEditedRevision(workId, curNo, latest[0], newContent);
 }
 
 /** 分镜重排：按 order（新顺序对应的原始下标全排列）重排 beats，生成新修订（CAS）。 */
@@ -213,18 +226,5 @@ export async function reorderBeats(
   if (!valid) return null;
 
   const newContent = { ...content, beats: order.map((i) => beats[i]) };
-  const contentHash = crypto.createHash("sha256").update(JSON.stringify(newContent)).digest("hex");
-
-  const revisionId = await queryValue("select gen_random_uuid()::text");
-  await run(
-    `insert into publication.work_revisions (revision_id, work_id, revision_no, title, description, content, status)
-     values (:'rid', :'wid', :'no', :'title', :'desc', :'content'::jsonb, 'draft')`,
-    {
-      rid: revisionId!, wid: workId, no: curNo + 1,
-      title: String(latest[0].title ?? "未命名作品"),
-      desc: String(latest[0].description ?? ""),
-      content: JSON.stringify({ ...newContent, content_hash: contentHash }),
-    }
-  );
-  return { revisionId: revisionId!, revisionNo: curNo + 1, conflict: false };
+  return appendEditedRevision(workId, curNo, latest[0], newContent);
 }

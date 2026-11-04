@@ -1,0 +1,69 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/studio-receive-candidate.test.mjs (16 tests | 2 failed) 70ms
+   ✓ exports the bounded candidate receiver factory 1ms
+   ✓ accepts only as private producer candidate after actual UTF8 bytes and all current checks 4ms
+   ✓ rejects envelope identity/provider/version, source revision and foreign consumer mismatches without reading bytes 4ms
+   ✓ quarantines tampered bytes, hash, quote, split UTF8 locator and voice collision 3ms
+   ✓ does not accept unverified booleans or trust the envelope transfer decision 2ms
+   ✓ requires explicit trusted thirdparty transfer permission separately from internal candidate read 1ms
+   ✓ holds absent or unsupported semantics and expires or changes exact trusted evidence 5ms
+   ✓ uses unchanged T7 for changed refs, revocation, foreign consumer proof and per-item request_stage 4ms
+   ✓ counts duplicate source families once and one bad item never changes package HOLD 2ms
+   ✓ does not leak raw callback errors and holds a stalled callback within one shared deadline 26ms
+   ✓ bounds the batch and timeout before invoking dependencies 1ms
+   ✓ does not start another callback after the shared timer fires before the wall clock deadline 3ms
+   × withdraws earlier acceptance if a later item exhausts the shared timer with a steady wall clock 9ms
+     → expected false to be true // Object.is equality
+   × T7 timeout also exhausts the shared budget before another item reads bytes 2ms
+     → expected false to be true // Object.is equality
+   ✓ does not count conflicting family labels for the same source as independent witnesses 1ms
+   ✓ rechecks earlier T7 qualification expiry when a later item completes 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/studio-receive-candidate.test.mjs > withdraws earlier acceptance if a later item exhausts the shared timer with a steady wall clock
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/studio-receive-candidate.test.mjs:122:51
+    120|   f.request.items.push(item());f.request.receipt.candidate_refs.push({…
+    121|   const pending=f.receive();await vi.runAllTimersAsync();const result=…
+    122|   expect(result.items.every(i=>i.state==='hold')).toBe(true);expect(re…
+       |                                                   ^
+    123|  }finally{clock.mockRestore();vi.useRealTimers();}
+    124| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/unit/studio-receive-candidate.test.mjs > T7 timeout also exhausts the shared budget before another item reads bytes
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/studio-receive-candidate.test.mjs:132:51
+    130|   f.request.items.push(item());f.request.receipt.candidate_refs.push({…
+    131|   const pending=f.receive();await vi.runAllTimersAsync();const result=…
+    132|   expect(result.items.every(i=>i.state==='hold')).toBe(true);
+       |                                                   ^
+    133|   expect(f.dependencies.readOriginal).toHaveBeenCalledTimes(1);expect(…
+    134|  }finally{clock.mockRestore();vi.useRealTimers();}
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 14 passed (16)
+   Start at  12:15:10
+   Duration  293ms (transform 42ms, setup 0ms, collect 53ms, tests 70ms, environment 0ms, prepare 53ms)
+

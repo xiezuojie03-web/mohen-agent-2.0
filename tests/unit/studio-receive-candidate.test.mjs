@@ -101,6 +101,38 @@ it('bounds the batch and timeout before invoking dependencies',async()=>{
  await expect(f.receive()).rejects.toThrow('STUDIO_RECEIVE_LIMIT');
  expect(()=>receiverModule.createStudioCandidateReceiver({timeoutMs:10001})).toThrow('STUDIO_RECEIVE_TIMEOUT_INVALID');
 });
+it('does not start another callback after the shared timer fires before the wall clock deadline',async()=>{
+ vi.useFakeTimers();
+ const now=Date.now();const clock=vi.spyOn(Date,'now').mockReturnValue(now);
+ try{
+  const f=fixture({readOriginal:vi.fn(()=>new Promise(()=>{})),timeoutMs:25});
+  f.request.items.push(item());f.request.receipt.candidate_refs.push({...candidate});
+  const pending=f.receive();await vi.runAllTimersAsync();const result=await pending;
+  expect(result.items.every(i=>i.state==='hold')).toBe(true);
+  expect(f.dependencies.readOriginal).toHaveBeenCalledTimes(1);
+ }finally{clock.mockRestore();vi.useRealTimers();}
+});
+it('withdraws earlier acceptance if a later item exhausts the shared timer with a steady wall clock',async()=>{
+ vi.useFakeTimers();const clock=vi.spyOn(Date,'now').mockReturnValue(Date.now());
+ try{
+  const f=fixture({timeoutMs:25}),read=f.dependencies.readOriginal;
+  f.dependencies.readOriginal=vi.fn().mockImplementationOnce(read).mockImplementation(()=>new Promise(()=>{}));
+  f.request.items.push(item());f.request.receipt.candidate_refs.push({...candidate});
+  const pending=f.receive();await vi.runAllTimersAsync();const result=await pending;
+  expect(result.items.every(i=>i.state==='hold')).toBe(true);expect(result.independent_family_count).toBe(0);
+ }finally{clock.mockRestore();vi.useRealTimers();}
+});
+it.each([25,10000])('T7 timeout %s also exhausts the shared budget before another item reads bytes',async timeoutMs=>{
+ vi.useFakeTimers();const clock=vi.spyOn(Date,'now').mockReturnValue(Date.now());
+ try{
+  const f=fixture({verifyCurrent:vi.fn(()=>new Promise(()=>{})),timeoutMs});
+  f.dependencies.readOriginal=vi.fn(f.dependencies.readOriginal);
+  f.request.items.push(item());f.request.receipt.candidate_refs.push({...candidate});
+  const pending=f.receive();await vi.runAllTimersAsync();const result=await pending;
+  expect(result.items.every(i=>i.state==='hold')).toBe(true);
+  expect(f.dependencies.readOriginal).toHaveBeenCalledTimes(1);expect(f.dependencies.verifyCurrent).toHaveBeenCalledTimes(1);
+ }finally{clock.mockRestore();vi.useRealTimers();}
+});
 it('does not count conflicting family labels for the same source as independent witnesses',async()=>{
  const f=fixture(),resolve=f.dependencies.resolveLineage;let call=0;
  f.dependencies.resolveLineage=async r=>({...await resolve(r),family_id:'family-'+(++call)});

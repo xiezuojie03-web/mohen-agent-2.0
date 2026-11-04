@@ -369,7 +369,7 @@ export function listSubmitted(): Promise<SubmittedWork[]> {
 /** 读某作品最新修订（用于审核详情） */
 export function getLatestRevision(workId: string) {
   return queryRows(
-    `select revision_id::text as revision_id, title, description, status,
+    `select revision_id::text as revision_id, title, description, status, content,
             revision_no::text as revision_no, created_at::text as created_at
      from publication.work_revisions where work_id = :'wid'
      order by revision_no desc limit 1`,
