@@ -1,0 +1,306 @@
+MAB_HTTP_BUILD_SYNTHETIC
+   ▲ Next.js 15.5.28
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 8.8s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/13) ...
+   Generating static pages (3/13) 
+   Generating static pages (6/13) 
+   Generating static pages (9/13) 
+ ✓ Generating static pages (13/13)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                                   Size  First Load JS
+┌ ○ /                                                        165 B         106 kB
+├ ○ /_not-found                                              994 B         104 kB
+├ ○ /admin                                                 6.47 kB         109 kB
+├ ○ /admin/sources                                         1.32 kB         104 kB
+├ ƒ /api/admin/acl                                           385 B         103 kB
+├ ƒ /api/admin/assets                                        385 B         103 kB
+├ ƒ /api/admin/assets/[id]/invalidation-requests             385 B         103 kB
+├ ƒ /api/admin/assets/[id]/promote                           385 B         103 kB
+├ ƒ /api/admin/assets/candidates                             385 B         103 kB
+├ ƒ /api/admin/gates/audits                                  385 B         103 kB
+├ ƒ /api/admin/jobs                                          385 B         103 kB
+├ ƒ /api/admin/metrics                                       385 B         103 kB
+├ ƒ /api/admin/metrics/[id]                                  385 B         103 kB
+├ ƒ /api/admin/metrics/engagement                            385 B         103 kB
+├ ƒ /api/admin/navigation                                    385 B         103 kB
+├ ƒ /api/admin/publications                                  385 B         103 kB
+├ ƒ /api/admin/publications/[id]/unpublish                   385 B         103 kB
+├ ƒ /api/admin/publications/schedules                        385 B         103 kB
+├ ƒ /api/admin/rights/invalidate                             385 B         103 kB
+├ ƒ /api/admin/session                                       385 B         103 kB
+├ ƒ /api/admin/settings                                      385 B         103 kB
+├ ƒ /api/admin/sources                                       385 B         103 kB
+├ ƒ /api/admin/submissions                                   385 B         103 kB
+├ ƒ /api/admin/submissions/[id]                              385 B         103 kB
+├ ƒ /api/admin/submissions/[id]/decision                     385 B         103 kB
+├ ƒ /api/admin/submissions/batch                             385 B         103 kB
+├ ƒ /api/admin/users                                         385 B         103 kB
+├ ƒ /api/admin/users/[id]/status                             385 B         103 kB
+├ ƒ /api/auth/login                                          385 B         103 kB
+├ ƒ /api/auth/logout                                         385 B         103 kB
+├ ƒ /api/auth/me                                             385 B         103 kB
+├ ƒ /api/auth/register                                       385 B         103 kB
+├ ƒ /api/explore/entities/[id]                               385 B         103 kB
+├ ƒ /api/explore/events/[id]                                 385 B         103 kB
+├ ƒ /api/explore/relations/[id]                              385 B         103 kB
+├ ƒ /api/explore/search                                      385 B         103 kB
+├ ƒ /api/explore/sessions                                    385 B         103 kB
+├ ƒ /api/explore/sessions/[id]                               385 B         103 kB
+├ ƒ /api/explore/sessions/[id]/insight-views                 385 B         103 kB
+├ ƒ /api/explore/sessions/[id]/query                         385 B         103 kB
+├ ƒ /api/explore/sessions/[id]/return                        385 B         103 kB
+├ ƒ /api/explore/sessions/[id]/share                         385 B         103 kB
+├ ƒ /api/explore/sessions/[id]/surfaces                      385 B         103 kB
+├ ƒ /api/explore/spatial                                     385 B         103 kB
+├ ƒ /api/explore/spatial/compare                             385 B         103 kB
+├ ƒ /api/governance/gates/decisions                          385 B         103 kB
+├ ƒ /api/governance/gates/pending                            385 B         103 kB
+├ ƒ /api/governance/gates/requests                           385 B         103 kB
+├ ƒ /api/governance/gates/revoke                             385 B         103 kB
+├ ƒ /api/help/articles/[id]                                  385 B         103 kB
+├ ƒ /api/mohen/ask                                           385 B         103 kB
+├ ƒ /api/mohen/materials                                     385 B         103 kB
+├ ƒ /api/notifications                                       385 B         103 kB
+├ ƒ /api/public/evidence/[id]                                385 B         103 kB
+├ ƒ /api/public/policies                                     385 B         103 kB
+├ ƒ /api/public/works                                        385 B         103 kB
+├ ƒ /api/public/works/[id]                                   385 B         103 kB
+├ ƒ /api/public/works/[id]/eligibility                       385 B         103 kB
+├ ƒ /api/public/works/[id]/program                           385 B         103 kB
+├ ƒ /api/public/works/[id]/related                           385 B         103 kB
+├ ƒ /api/public/works/[id]/share                             385 B         103 kB
+├ ƒ /api/search                                              385 B         103 kB
+├ ƒ /api/session/me                                          385 B         103 kB
+├ ƒ /api/studio/assets                                       385 B         103 kB
+├ ƒ /api/studio/attachments                                  385 B         103 kB
+├ ƒ /api/studio/conversations                                385 B         103 kB
+├ ƒ /api/studio/conversations/[id]                           385 B         103 kB
+├ ƒ /api/studio/create                                       385 B         103 kB
+├ ƒ /api/studio/delegations/[id]                             385 B         103 kB
+├ ƒ /api/studio/delegations/[id]/controls                    385 B         103 kB
+├ ƒ /api/studio/direct                                       385 B         103 kB
+├ ƒ /api/studio/director-plans                               385 B         103 kB
+├ ƒ /api/studio/director-plans/[id]                          385 B         103 kB
+├ ƒ /api/studio/director-plans/[id]/panels                   385 B         103 kB
+├ ƒ /api/studio/director-plans/[id]/select                   385 B         103 kB
+├ ƒ /api/studio/materials/[id]                               385 B         103 kB
+├ ƒ /api/studio/materials/import                             385 B         103 kB
+├ ƒ /api/studio/plans                                        385 B         103 kB
+├ ƒ /api/studio/projects                                     385 B         103 kB
+├ ƒ /api/studio/research-tasks                               385 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/events                   385 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/materials                385 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/messages                 385 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/production               385 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/resume                   385 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/stages/[stage]           385 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/status                   385 B         103 kB
+├ ƒ /api/studio/tasks                                        385 B         103 kB
+├ ƒ /api/studio/works                                        385 B         103 kB
+├ ƒ /api/studio/works/[id]/beat-order                        385 B         103 kB
+├ ƒ /api/studio/works/[id]/fork                              385 B         103 kB
+├ ƒ /api/studio/works/[id]/media-candidates                  385 B         103 kB
+├ ƒ /api/studio/works/[id]/media-selection                   385 B         103 kB
+├ ƒ /api/studio/works/[id]/narration                         385 B         103 kB
+├ ƒ /api/studio/works/[id]/narration-suggestions             385 B         103 kB
+├ ƒ /api/studio/works/[id]/preview                           385 B         103 kB
+├ ƒ /api/studio/works/[id]/restore                           385 B         103 kB
+├ ƒ /api/studio/works/[id]/revisions                         385 B         103 kB
+├ ƒ /api/studio/works/[id]/revisions/[rev]                   385 B         103 kB
+├ ƒ /api/studio/works/[id]/revisions/[rev]/panels/[panel]    385 B         103 kB
+├ ƒ /api/studio/works/[id]/rewrite-beat                      385 B         103 kB
+├ ƒ /api/studio/works/[id]/rewrite-decisions                 385 B         103 kB
+├ ƒ /api/studio/works/[id]/stages                            385 B         103 kB
+├ ƒ /api/studio/works/[id]/status                            385 B         103 kB
+├ ƒ /api/studio/works/[id]/submissions                       385 B         103 kB
+├ ƒ /api/watch/sessions                                      385 B         103 kB
+├ ƒ /api/works                                               385 B         103 kB
+├ ƒ /api/works/[id]/publish                                  385 B         103 kB
+├ ƒ /api/works/[id]/submit                                   385 B         103 kB
+├ ƒ /api/works/published                                     385 B         103 kB
+├ ƒ /api/works/submitted                                     385 B         103 kB
+├ ○ /experience/jinze-water-net                            29.6 kB         139 kB
+├ ƒ /experience/lvzhiqiu                                   9.48 kB         112 kB
+├ ○ /explore                                               5.62 kB         115 kB
+├ ○ /foundation                                              385 B         103 kB
+├ ○ /login                                                 1.19 kB         107 kB
+├ ○ /register                                               1.3 kB         107 kB
+├ ○ /studio                                                 6.4 kB         116 kB
+├ ƒ /studio/desk                                           6.52 kB         109 kB
+└ ○ /watch                                                 2.45 kB         105 kB
++ First Load JS shared by all                               103 kB
+  ├ chunks/2261-c75fbc820b437d5c.js                        46.4 kB
+  ├ chunks/91a23b3f-712a30abddb1ae63.js                    54.2 kB
+  └ other shared chunks (total)                            1.95 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+MAB_HTTP_BROWSER_SYNTHETIC
+
+Running 15 tests using 1 worker
+
+(node:7042) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   1 tests/e2e/mab-m1-session-revocation.spec.ts:21:5 › M1 session immediately loses private-project access after account is disabled (1.0s)
+(node:7175) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 tests/e2e/mab-m1-session-revocation.spec.ts:60:5 › M1 logout invalidates cookie for subsequent private HTTP access (817ms)
+  ✓   3 tests/e2e/mab-m1-session-revocation.spec.ts:76:5 › HP02 copied cookie cannot replay logout; another independent session remains usable (2.1s)
+  ✓   4 tests/e2e/mab-m1-session-revocation.spec.ts:99:5 › HP02 logout UI preserves signed-in state when server revocation fails (1.0s)
+  ✘   5 tests/e2e/mab-m1-session-revocation.spec.ts:117:5 › HP08 permanent HOLD receipts are visible only to the project owner through real HTTP (722ms)
+(node:7499) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   6 tests/e2e/mab-m4-plan.spec.ts:6:5 › M4 Owner plan persists after lost acknowledgement and reload; revoke is durable and foreign Owner denied (5.4s)
+  ✓   7 tests/e2e/mab-m5-private-revisions.spec.ts:18:5 › private preview returns the saved body and does not disclose it to another Owner (1.5s)
+  ✓   8 tests/e2e/mab-m5-private-revisions.spec.ts:28:5 › parallel narration edits have one immutable revision winner and explicit version conflicts (816ms)
+  ✓   9 tests/e2e/mab-m5-private-revisions.spec.ts:44:5 › real PG: concurrent forks have one CAS winner, retries are idempotent, historical restore preserves source (1.4s)
+  ✘  10 tests/e2e/mab-m5-private-revisions.spec.ts:121:5 › real PG: director commit binds Owner and exact plan, races safely and acknowledges a lost response (655ms)
+(node:7923) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  11 tests/e2e/mab-m5-public-consumers.spec.ts:8:5 › legacy agent PASS cannot leak through public knowledge search or cached material endpoint (8ms)
+(node:7936) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  12 tests/e2e/mab-m5-public-consumers.spec.ts:29:5 › legacy published pointer without current G5 discloses no work through public consumers (773ms)
+(node:8076) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  13 tests/e2e/mab-notebook.spec.ts:11:5 › private notebook saves, reloads exact revisions, isolates owners and avoids duplicate assets after a lost acknowledgement (3.2s)
+MAB_HTTP_ASSET_KIND_PASS research_brief
+MAB_HTTP_ASSET_KIND_PASS source_anchor
+MAB_HTTP_ASSET_KIND_PASS reading_note
+MAB_HTTP_ASSET_KIND_PASS evidence_note
+MAB_HTTP_ASSET_KIND_PASS spacetime_candidate
+MAB_HTTP_ASSET_KIND_PASS relation_hypothesis
+MAB_HTTP_ASSET_KIND_PASS humanistic_insight
+MAB_HTTP_ASSET_KIND_PASS research_collection
+MAB_HTTP_ASSET_KIND_PASS citation_snapshot
+MAB_HTTP_ASSET_KIND_PASS consented_feedback
+MAB_HTTP_CANONICAL_KIND_DENIED director_plan
+MAB_HTTP_CANONICAL_KIND_DENIED media_selection
+MAB_HTTP_CANONICAL_KIND_DENIED work_revision
+  ✓  14 tests/e2e/mab-notebook.spec.ts:90:5 › all thirteen asset kinds keep exact private revisions and canonical write boundaries over real HTTP (2.2s)
+  -  15 tests/e2e/private-original-http.spec.ts:7:5 › authenticated multipart original reaches private Storage and returns identical bytes with owner isolation
+
+
+  1) tests/e2e/mab-m1-session-revocation.spec.ts:21:5 › M1 session immediately loses private-project access after account is disabled 
+
+    Error: M1_ISOLATED_DATABASE_REQUIRED
+
+      11 |   const psql=process.env.MOHEN_TEST_PSQL;
+      12 |   if(!socket?.startsWith('/workspace/') || !/^mohen_k3_http_[a-f0-9]+_test$/.test(database??'') ||
+    > 13 |       (!psql || !(psql==='/usr/bin/psql' || /^\/workspace\/work\/[a-zA-Z0-9_/-]+$/.test(psql))))throw Error('M1_ISOLATED_DATABASE_REQUIRED');
+         |                                                                                                       ^
+      14 |   const args=['-X','-q','-At','-v','ON_ERROR_STOP=1','-h',socket,
+      15 |     '-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database!];
+      16 |   const marker=execFileSync(psql,args,{input:"select current_setting('mohen.test_instance',true)",encoding:'utf8'}).trim();
+        at isolatedSql (/workspace/mohen-agent-2.0/tests/e2e/mab-m1-session-revocation.spec.ts:13:103)
+        at /workspace/mohen-agent-2.0/tests/e2e/mab-m1-session-revocation.spec.ts:40:17
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/mab-http/mab-m1-session-revocation--8eccb-s-after-account-is-disabled/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/mab-http/mab-m1-session-revocation--8eccb-s-after-account-is-disabled/error-context.md
+
+  2) tests/e2e/mab-m1-session-revocation.spec.ts:117:5 › HP08 permanent HOLD receipts are visible only to the project owner through real HTTP 
+
+    Error: M1_ISOLATED_DATABASE_REQUIRED
+
+      11 |   const psql=process.env.MOHEN_TEST_PSQL;
+      12 |   if(!socket?.startsWith('/workspace/') || !/^mohen_k3_http_[a-f0-9]+_test$/.test(database??'') ||
+    > 13 |       (!psql || !(psql==='/usr/bin/psql' || /^\/workspace\/work\/[a-zA-Z0-9_/-]+$/.test(psql))))throw Error('M1_ISOLATED_DATABASE_REQUIRED');
+         |                                                                                                       ^
+      14 |   const args=['-X','-q','-At','-v','ON_ERROR_STOP=1','-h',socket,
+      15 |     '-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database!];
+      16 |   const marker=execFileSync(psql,args,{input:"select current_setting('mohen.test_instance',true)",encoding:'utf8'}).trim();
+        at isolatedSql (/workspace/mohen-agent-2.0/tests/e2e/mab-m1-session-revocation.spec.ts:13:103)
+        at /workspace/mohen-agent-2.0/tests/e2e/mab-m1-session-revocation.spec.ts:124:2
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/mab-http/mab-m1-session-revocation--a43fa-ect-owner-through-real-HTTP/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/mab-http/mab-m1-session-revocation--a43fa-ect-owner-through-real-HTTP/error-context.md
+
+  3) tests/e2e/mab-m5-private-revisions.spec.ts:121:5 › real PG: director commit binds Owner and exact plan, races safely and acknowledges a lost response 
+
+    Error: M5_DIRECTOR_DISPOSABLE_PG_REQUIRED
+
+      100 |     !/^mohen_k3_http_[a-f0-9]{32}_test$/.test(database??'')||
+      101 |     !psql||!(psql==='/usr/bin/psql'||/^\/workspace\/work\/[a-zA-Z0-9_/-]+$/.test(psql)))
+    > 102 |   throw Error('M5_DIRECTOR_DISPOSABLE_PG_REQUIRED');
+          |         ^
+      103 |  const args=['-X','-q','-At','-v','ON_ERROR_STOP=1','-h',socket,'-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database!];
+      104 |  const exec=(sql:string)=>execFileSync(psql,args,{input:sql,encoding:'utf8'}).trim();
+      105 |  if(exec("select current_setting('mohen.test_instance',true)")!=='codex-k3-isolated')throw Error('M5_DIRECTOR_UNMARKED_PG_REFUSED');
+        at isolatedSql (/workspace/mohen-agent-2.0/tests/e2e/mab-m5-private-revisions.spec.ts:102:9)
+        at seedSyntheticDirectorPlan (/workspace/mohen-agent-2.0/tests/e2e/mab-m5-private-revisions.spec.ts:115:2)
+        at map (/workspace/mohen-agent-2.0/tests/e2e/mab-m5-private-revisions.spec.ts:124:34)
+        at /workspace/mohen-agent-2.0/tests/e2e/mab-m5-private-revisions.spec.ts:124:22
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/mab-http/mab-m5-private-revisions-r-28a83-cknowledges-a-lost-response/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/mab-http/mab-m5-private-revisions-r-28a83-cknowledges-a-lost-response/error-context.md
+
+  4) tests/e2e/mab-m5-public-consumers.spec.ts:8:5 › legacy agent PASS cannot leak through public knowledge search or cached material endpoint 
+
+    Error: M5_ISOLATED_DATABASE_REQUIRED
+
+       9 |  const socket=process.env.MOHEN_TEST_SOCKET,database=process.env.MOHEN_TEST_DATABASE,psql=process.env.MOHEN_TEST_PSQL;
+      10 |  if(!socket?.startsWith('/workspace/')||!/^mohen_k3_http_[a-f0-9]+_test$/.test(database??'')||
+    > 11 |   !psql||!(psql==='/usr/bin/psql'||/^\/workspace\/work\/[a-zA-Z0-9_/-]+$/.test(psql)))throw Error('M5_ISOLATED_DATABASE_REQUIRED');
+         |                                                                                             ^
+      12 |  const args=['-X','-q','-At','-v','ON_ERROR_STOP=1','-h',socket,'-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database!];
+      13 |  const sql=(input:string)=>execFileSync(psql,args,{input,encoding:'utf8'}).trim();
+      14 |  if(sql("select current_setting('mohen.test_instance',true)")!=='codex-k3-isolated')throw Error('M5_UNMARKED_DATABASE_REFUSED');
+        at /workspace/mohen-agent-2.0/tests/e2e/mab-m5-public-consumers.spec.ts:11:93
+
+    Error Context: test-results/mab-http/mab-m5-public-consumers-le-6291e-or-cached-material-endpoint/error-context.md
+
+  5) tests/e2e/mab-m5-public-consumers.spec.ts:29:5 › legacy published pointer without current G5 discloses no work through public consumers 
+
+    Error: M5_ISOLATED_DATABASE_REQUIRED
+
+      36 |  const socket=process.env.MOHEN_TEST_SOCKET,database=process.env.MOHEN_TEST_DATABASE,psql=process.env.MOHEN_TEST_PSQL;
+      37 |  if(!socket?.startsWith('/workspace/')||!/^mohen_k3_http_[a-f0-9]+_test$/.test(database??'')||
+    > 38 |   !psql||!(psql==='/usr/bin/psql'||/^\/workspace\/work\/[a-zA-Z0-9_/-]+$/.test(psql)))throw Error('M5_ISOLATED_DATABASE_REQUIRED');
+         |                                                                                             ^
+      39 |  const args=['-X','-q','-At','-v','ON_ERROR_STOP=1','-h',socket,'-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database!];
+      40 |  const sql=(input:string)=>execFileSync(psql,args,{input,encoding:'utf8'}).trim();
+      41 |  if(sql("select current_setting('mohen.test_instance',true)")!=='codex-k3-isolated')throw Error('M5_UNMARKED_DATABASE_REFUSED');
+        at /workspace/mohen-agent-2.0/tests/e2e/mab-m5-public-consumers.spec.ts:38:93
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/mab-http/mab-m5-public-consumers-le-e7190-rk-through-public-consumers/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/mab-http/mab-m5-public-consumers-le-e7190-rk-through-public-consumers/error-context.md
+
+  5 failed
+    tests/e2e/mab-m1-session-revocation.spec.ts:21:5 › M1 session immediately loses private-project access after account is disabled 
+    tests/e2e/mab-m1-session-revocation.spec.ts:117:5 › HP08 permanent HOLD receipts are visible only to the project owner through real HTTP 
+    tests/e2e/mab-m5-private-revisions.spec.ts:121:5 › real PG: director commit binds Owner and exact plan, races safely and acknowledges a lost response 
+    tests/e2e/mab-m5-public-consumers.spec.ts:8:5 › legacy agent PASS cannot leak through public knowledge search or cached material endpoint 
+    tests/e2e/mab-m5-public-consumers.spec.ts:29:5 › legacy published pointer without current G5 discloses no work through public consumers 
+  1 skipped
+  9 passed (25.9s)
+MAB_HTTP_SYNTHETIC_DATABASE_CLEANED
+file:///workspace/mohen-agent-2.0/scripts/test-mab-http.mjs:19
+const command=async(args,env,cwd=root)=>{const child=spawn(process.execPath,args,{cwd,env,stdio:'inherit'});const code=await childExit(child);if(code!==0)throw Error('HTTP_TEST_COMMAND_FAILED:'+code);};
+                                                                                                                                                                ^
+
+Error: HTTP_TEST_COMMAND_FAILED:1
+    at command (file:///workspace/mohen-agent-2.0/scripts/test-mab-http.mjs:19:161)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///workspace/mohen-agent-2.0/scripts/test-mab-http.mjs:64:3
+
+Node.js v24.19.0

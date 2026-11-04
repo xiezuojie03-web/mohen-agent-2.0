@@ -1,0 +1,376 @@
+build	MAB 74 target handoff audit (informational)	﻿2026-11-04T23:19:53.9413149Z ##[group]Run node scripts/audit-mab-handoff-targets.mjs --out /tmp/mab-target-audit.json
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:53.9414797Z [36;1mnode scripts/audit-mab-handoff-targets.mjs --out /tmp/mab-target-audit.json[0m
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:53.9486615Z shell: /usr/bin/bash -e {0}
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:53.9487117Z env:
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:53.9487635Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:53.9488315Z ##[endgroup]
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0104840Z {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0105633Z   "schema": "mohen.mab.handoff-target-audit.v1",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0107372Z   "repo_sha": "ff5283ea8a719f69d37eee4ff4e8a1d4c5e4738e",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0113279Z   "generated_at": "2026-11-04T23:19:54.007Z",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0114434Z   "status": "INVALID_BASELINE",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0115130Z   "count": 74,
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0115777Z   "original_action": {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0116468Z     "REVISE": 53,
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0117106Z     "CREATE": 21
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0117709Z   },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0118310Z   "implementation_status": {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0122398Z     "CODE_PRESENT": 74
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0123166Z   },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0123896Z   "target_validation": {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0124891Z     "DESIGN_TARGET_SEMANTICS_NOT_VERIFIED": 74
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0134705Z   },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0143417Z   "hp13_current_semantic": {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0154922Z     "UNVERIFIED": 53,
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0157930Z     "DESIGN_TEXT_IDENTICAL_RUNTIME_NOT_VERIFIED": 19,
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0165674Z     "VERIFIED_ISOLATED_UNIT_ONLY_FULL_CONTRACT_PENDING": 2
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0166704Z   },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0167438Z   "hp_work_packages": [
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0168127Z     "HP01",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0168678Z     "HP02",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0169256Z     "HP03",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0169840Z     "HP04",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0170433Z     "HP05",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0171025Z     "HP06",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0171638Z     "HP07",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0172228Z     "HP08",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0172819Z     "HP09",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0173412Z     "HP10",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0173972Z     "HP11",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0174805Z     "HP12",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0175277Z     "HP13"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0175740Z   ],
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0176304Z   "additional_responsibilities": [
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0176931Z     "A01",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0177410Z     "A02",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0177883Z     "A03",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0178339Z     "A04",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0178781Z     "A05",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0179236Z     "A06",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0179676Z     "A07",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0180127Z     "A08",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0180568Z     "A09",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0181008Z     "A10",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0181442Z     "A11",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0181894Z     "A12",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0182344Z     "A13",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0182787Z     "A14",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0183237Z     "A15",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0183678Z     "A16",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0184671Z     "A17",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0185172Z     "A18",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0185672Z     "A19",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0186111Z     "A20"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0186575Z   ],
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0187051Z   "missing_target_count": 0,
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0187706Z   "hp13_byte_exact_target_count": 18,
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0188348Z   "hp13_byte_exact_paths": [
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0189233Z     "apps/web/app/api/studio/works/[id]/revisions/[rev]/panels/[panel]/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0190213Z     "governance/mhka/MHKA-00_Governance_Charter.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0191012Z     "governance/mhka/MHKA-01_Value_and_Strategy.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0191919Z     "governance/mhka/MHKA-02_Humanistic_Product_and_Experience.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0192947Z     "governance/mhka/MHKA-03_Knowledge_World_and_Data_Architecture.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0193976Z     "governance/mhka/MHKA-04_Agent_and_Professional_Capabilities.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0195221Z     "governance/mhka/MHKA-05_Software_Engineering_and_Operations.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0196251Z     "specs/SYSTEM_RUNTIME_ARCHITECTURE.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0197135Z     "specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0198534Z     "specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0199654Z     "specs/experience-ui/H1_H2_H3_AND_COMPONENTS_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0200703Z     "apps/web/lib/kad1-policy.d.mts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0201938Z     "supabase/migrations/202611020900_kad1_watch_revision_isolation.sql",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0203289Z     "supabase/migrations/202611020910_kad1_consumption_blocks.sql",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0204789Z     "supabase/migrations/202611020920_kad1_account_transactions.sql",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0206502Z     "supabase/rollback/202611020900_kad1_watch_revision_isolation.rollback.sql",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0207728Z     "supabase/rollback/202611020910_kad1_consumption_blocks.rollback.sql",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0208890Z     "supabase/rollback/202611020920_kad1_account_transactions.rollback.sql"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0209670Z   ],
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0210196Z   "existing_target_byte_diff_count": 56,
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0210890Z   "existing_target_byte_diffs": [
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0211667Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0212194Z       "path": ".github/workflows/ci.yml",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0213161Z       "actual_sha256": "2f61e8449c4600378b47574491566feb2b5ef4f09a5694604404f20a803524a1",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0215078Z       "target_sha256": "8929efac9a2a343446f322ccd8a593adf854eb6ef59acc1e0c06a3d42129c020"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0216215Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0216752Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0217306Z       "path": "AGENTS.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0218413Z       "actual_sha256": "d701136d94d5a96eb4dcfe06e14c05db1b54e2395e05c87de140421a953d845d",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0219954Z       "target_sha256": "3ed0f5d00452c1ca9234617635ca3c38773a919928a6ebdec3dc7040305c9775"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0220966Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0221490Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0222132Z       "path": "OWNERSHIP_MAP.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0223593Z       "actual_sha256": "70eab17e47e4b3aef8b0b5ad50a4b787f84a2209d3cd67c407a55611c0942a9c",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0225284Z       "target_sha256": "cdbbbbe884a24712e1c0728a78ff570d9000e3f34b7a44d0cbebe64722ae4e41"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0226331Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0226796Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0227402Z       "path": "apps/web/app/api/admin/acl/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0228505Z       "actual_sha256": "a473acd02baae839c788e097aa957de2079d0fd6268b22fe7ee3ef73224cf30d",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0230106Z       "target_sha256": "9073375171a67606409fe4c971c8977b8903173d1d15e6ce89a180ecbc8cd2f3"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0231219Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0231766Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0232669Z       "path": "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0234416Z       "actual_sha256": "fd2d0def847cdb8af411a22f3a8b00cc7fb4e0a87bc68f2312ac8e4a7e6cfbe2",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0240006Z       "target_sha256": "dae20cfaa3cba6fa6e5058a0f27b6e31b2e96dee2e595802c61285ffa1c55224"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0241263Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0241816Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0242553Z       "path": "apps/web/app/api/admin/publications/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0243813Z       "actual_sha256": "9b56b515b6dba6c97bd66fd6da779c2fe96e18c3c369e4940b51bf6005a58d4f",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0245623Z       "target_sha256": "eba82468b39f8b6786b38f666f4e07d185fd07bf821ed630424a15eca299b4e7"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0246717Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0247296Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0248107Z       "path": "apps/web/app/api/admin/rights/invalidate/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0249518Z       "actual_sha256": "6a3b803aa5d2da6ef5db11fcd622b8beb91b5da0e9f7e46b9eb06f441cc5090a",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0251097Z       "target_sha256": "402a55c3b9b959a3d6cc51ecdfc4a1431ae8a9144f2f9118f14992cf48fef58d"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0252222Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0252826Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0253741Z       "path": "apps/web/app/api/admin/users/[id]/status/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0255327Z       "actual_sha256": "8b89f135e937f3fa4ad1965c32d0d58c6dc152df3b6fb23727a16165ceb422e9",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0256752Z       "target_sha256": "3dcb8680053b26a5ed46718cc51c432d4606992d23bddb7e9f25e5cdb8632aa0"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0258009Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0258341Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0258890Z       "path": "apps/web/app/api/explore/entities/[id]/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0259913Z       "actual_sha256": "fd0d99e1da845f76da78b2261be6873c8e9106d5c6d984ae68b63db23e5fe575",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0261116Z       "target_sha256": "2dd1df70dc6305f5773d634454addee55b03bd7edf072c8ee09f07dea9d9e268"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0261882Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0262403Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0262925Z       "path": "apps/web/app/api/explore/events/[id]/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0263906Z       "actual_sha256": "4432eb8cd02256a0d0de13540690afb6237db70051d20bc1cabdeac965e2ddea",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0265262Z       "target_sha256": "2dd1df70dc6305f5773d634454addee55b03bd7edf072c8ee09f07dea9d9e268"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0265735Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0265934Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0266274Z       "path": "apps/web/app/api/explore/relations/[id]/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0266906Z       "actual_sha256": "7916c08ae7b89ccdbed58f0a4670386089827af896d896a553a699cc5687da82",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0267622Z       "target_sha256": "2dd1df70dc6305f5773d634454addee55b03bd7edf072c8ee09f07dea9d9e268"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0268099Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0268287Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0268615Z       "path": "apps/web/app/api/governance/gates/revoke/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0269241Z       "actual_sha256": "d6620f53ed7ba8eaed360ee09c08cb59a212059a77284a2d9c84b2a34d9f303b",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0269951Z       "target_sha256": "c9c2d199b6b58e5a5534d65b76a743327fa1acd6e0081a8170d3c2f6111ec6e9"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0270412Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0270614Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0270935Z       "path": "apps/web/app/api/public/evidence/[id]/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0271536Z       "actual_sha256": "47e691e48fbab05f3106ee08da3a41aca42b65cb7e9eb32cf09ad9fac5296617",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0272241Z       "target_sha256": "0a743129172cbe8b26612cefc91aaa2c89baab406325cafeb9469c08802611bc"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0272707Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0272897Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0273209Z       "path": "apps/web/app/api/studio/attachments/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0273791Z       "actual_sha256": "a9ded206e6d16529fabdb6eb9a136a8a1f8318d80618244cd815abca375eb962",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0275155Z       "target_sha256": "61c8c18a9cc1d56557911191766ec95c46582f5fa2e5ddd7f91219693a8af6e0"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0275642Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0275845Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0276209Z       "path": "apps/web/app/api/studio/works/[id]/revisions/[rev]/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0276849Z       "actual_sha256": "1d27673f73fa8ee8722dcd974914e98d5501a92e6fa848f7141cc8550f2b9427",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0277537Z       "target_sha256": "11a2527377dafb595af670c85020631c118fff25e607eac1a04f83526b730a4e"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0277991Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0278188Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0278515Z       "path": "apps/web/app/api/studio/works/[id]/revisions/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0279126Z       "actual_sha256": "051c450c6520aacbe19ee36761b1098f04967f6d310acc720ed5f7da18ff7f9e",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0279836Z       "target_sha256": "80f3c1ebbffb2251e35b6f5c19f37a333ad016407bdfa837f4d9d5788b0e3cab"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0280294Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0280481Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0280775Z       "path": "apps/web/app/api/watch/sessions/route.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0281319Z       "actual_sha256": "321000048b53c9a871f9157a2b77d7623892e739dda0028dd06b10709a673576",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0281989Z       "target_sha256": "2e347c98421724cff753fcc81c31bf94a3bc398e0716e635be634a7138d0ee05"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0282442Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0282625Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0282873Z       "path": "apps/web/lib/gate-review.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0283408Z       "actual_sha256": "4f2aed75b569df255c8b85d0d7bbd0ef773ca410c4993cd87863b77522b78737",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0284409Z       "target_sha256": "555f7af929b641988eb4d9633a87d9e63e6d617deb98e92488c44af7eaf56272"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0285091Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0285288Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0285546Z       "path": "apps/web/lib/gate-revoke.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0286093Z       "actual_sha256": "b21d459943ae44db903539d60acce267e0bd71698ea6ba3845f1e1f5d751cf42",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0286801Z       "target_sha256": "9be091ddd41f953b5f3aa96904cdbe70396480ca7cbbd72eff372ed8a824564d"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0298273Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0298646Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0299115Z       "path": "apps/web/lib/mohen-agent/retrieve.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0300026Z       "actual_sha256": "4c8476c96426e1234b5fc818e2120c9b68b21f74d8bf3114e97b9a64ec1e7c4a",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0300825Z       "target_sha256": "bb411ec65fe84a5794c91612f7ec728c6b35ad7483ae6cc8696bbba9ec3f6311"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0301336Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0301551Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0301828Z       "path": "apps/web/lib/publication.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0302404Z       "actual_sha256": "1f37ba754f4e04a789e4dd6e3ee4249d4be565c977be2ddf8153e35993389039",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0303155Z       "target_sha256": "06fbf7b66383b05e9d7dd9da185eb3cf65df25fb04b2a8ad92c2e38432ddea54"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0303646Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0303846Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0304349Z       "path": "apps/web/lib/read-model-bridge.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0304970Z       "actual_sha256": "c29aa1d951fa6db0a3e478d1879a6a0af47eac7afbecde33a444572c30a93426",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0305711Z       "target_sha256": "16daf96b20aa111381d74ce34d2b3ec1de86113961e35017aba1e84acde325a5"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0306201Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0306401Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0306677Z       "path": "apps/web/lib/studio-director.ts",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0307258Z       "actual_sha256": "f0ba1665b5ac48752f1a207afacc2143482258bb9b1067276381c96a3edc9e93",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0307962Z       "target_sha256": "7911882277f62a2c930118fcf45d202d14e864776687fd7a13c4f21998bac1c6"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0308423Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0308629Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0308928Z       "path": "skills/README_DATA_PRODUCTION_SKILLS.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0309525Z       "actual_sha256": "37306a0ab7a4383921e84a739df4df650bb2dd8f95f28314bdb27e0d4a6fc1d7",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0310256Z       "target_sha256": "e04bc89e3df2a4f0f58b72c0437a64073e9ce2295c33f793728c70c2ae3c6ef1"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0310733Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0310930Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0311237Z       "path": "skills/mohen-carrier-reading/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0311831Z       "actual_sha256": "4fe3088db08e5449874511af349d647652c61eac5bdf9cf86c8ad68b6b20e3e6",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0312560Z       "target_sha256": "16a2704d02732bfeb4d120eff6bc497c68f36aaa55ea06ecced182a470f393b7"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0313049Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0313245Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0313562Z       "path": "skills/mohen-humanistic-discovery/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0314418Z       "actual_sha256": "0fbba18a93f57ec9458112a0e29c2f5ce7393c2dd2c0f1504e8f5b4b97c35eeb",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0315184Z       "target_sha256": "fe6370a7725e85f56218a3c2ba339d4c5e2e76e596e1368183e46259dcf2ddfb"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0315667Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0315871Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0316208Z       "path": "skills/mohen-material-understanding/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0316825Z       "actual_sha256": "1fbe834396a7a7f73cb4f0afca52d993c470ca43048375fae8e45833451c720c",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0317545Z       "target_sha256": "aab4dd10c9791d90018911ae179753801ecaf7224f340930d6212258984f167c"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0318035Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0318240Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0318576Z       "path": "skills/mohen-read-model-publication/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0319206Z       "actual_sha256": "b56bdf57cbf541a6263b96321a0051fe5a9cbb583ce126e11bfb13331be77891",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0319944Z       "target_sha256": "7bd1d0aa22ddd2af141d9c7967ed2f8a82391baf03150138de132041acae5bc0"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0320423Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0320636Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0320918Z       "path": "skills/mohen-source-intake/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0321658Z       "actual_sha256": "b5d19ac9548abaf58468bd5d3d7d84ed7e860211e1fcd387d9293bb519ef79de",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0322385Z       "target_sha256": "9935cb39fa1665357f52875a0297f7c083db50db28f6e72f526e91edad546dee"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0322861Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0323055Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0323361Z       "path": "skills/mohen-world-construction/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0323949Z       "actual_sha256": "4b039d07c0014837a847744d74afb34b2c050e2dc61fa288f3a31b5ee5942633",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0325096Z       "target_sha256": "79205999af044e3754060c3136e2284e86dc7100ebed39ee2e653655675022c4"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0325575Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0325775Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0326031Z       "path": "specs/AGENT_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0326597Z       "actual_sha256": "88e7e08a8c79bda493964ba46ada61ecb4a680d3cc353a9f13df286d545e0a7f",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0327326Z       "target_sha256": "2f2e5b32e211dc440e1cd89cc6cee27f18a3b725146203dd38acfb455136ecc3"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0327813Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0328019Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0328276Z       "path": "specs/API_TOOL_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0328837Z       "actual_sha256": "fa090c972e7a224aa7bee1fa7a28821eae9fdba78b6f372f2d70ca35ef2e8967",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0329562Z       "target_sha256": "0b5481886d2d6185690f58452023347e76fadb275ab6e7a92c37f4e937880012"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0330027Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0330223Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0330478Z       "path": "specs/DATA_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0331028Z       "actual_sha256": "a92ff9d06a98b0ec89a5e3c01edfdd7426b9652f38142b80ff210cf123047628",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0331752Z       "target_sha256": "db92892ca5b5c4813e436e7935c55042a0f006105df41bb4604b8c24749dcc27"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0332233Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0332430Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0332696Z       "path": "specs/EXPERIENCE_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0333258Z       "actual_sha256": "16f9bd92f5318f6c7593f3e9cf99400b715c164e796832000a9dcf936ef89f9e",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0333991Z       "target_sha256": "a697cfb4642e8bb1baef20ec0077c00af0d878d13cc0290a710ac279b4a90177"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0334732Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0334932Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0335188Z       "path": "specs/FOUNDATION.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0335735Z       "actual_sha256": "d2bf28bfd6ca9b3e49fc2f09b8aea53de492731c46390e81cb885ef632973570",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0336461Z       "target_sha256": "4f01461c659bcbdccae059903a3782c8165c18a4b3a2637bccfb11915996aaf6"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0336949Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0337146Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0337414Z       "path": "specs/OPERATIONS_DEPLOYMENT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0337984Z       "actual_sha256": "0cb8ff21ec6b27d586145c2339a5c902d1898b56426f905c0f3b5ca31f8a691e",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0338708Z       "target_sha256": "711bb7aa77bc46b08519d99fdacd4873fddef2e38f46e63d8b6ae782009e1dda"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0339189Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0339389Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0339666Z       "path": "specs/SECURITY_ACCESS_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0340238Z       "actual_sha256": "6c32d5fd7775e93df3456ab29b14e0712bb365cd78df70f05c620ec5e8c83843",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0340954Z       "target_sha256": "6c1a3fb8b67232314f2304419f291d1314754df3bf4964f777182f8663ba5f1a"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0341420Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0341618Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0341996Z       "path": "specs/data-production/MoHen_Data_Production_Protocol.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0342657Z       "actual_sha256": "d8c834a70dd6118986218effa0d1cff4f2dd979ab481664e8da5ce462bfb154f",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0343382Z       "target_sha256": "d3f1846e361f959df8742358c17e4ea0b60e8da1d0c547bfcdd65291589e4d16"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0343863Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0344063Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0344644Z       "path": "specs/data-production/PERSISTENCE_BINDING_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0345307Z       "actual_sha256": "aeeafae674561e5e28971a63c006266b2fa7969af80b300c9d810e338410570f",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0346027Z       "target_sha256": "b781ad6cea0831be4eb18f377b4324332671005089fa660f4a7572546ab02e0a"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0346661Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0346870Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0347273Z       "path": "specs/data-production/contracts/ENGINEERING_HANDOFF_CONTRACT.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0347971Z       "actual_sha256": "c9ea7ba38b89de5fd5ac092a9bb702fb54c91472da06a1ab268e17496f300307",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0348712Z       "target_sha256": "98e8de0bd2ae562d8927dac76378da5017c0e62ab0963b37b75fdf6b3b553286"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0349192Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0349529Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0349928Z       "path": "specs/data-production/gates/G0-G5_MACHINE_GATE_CONTRACT_V3.0.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0350603Z       "actual_sha256": "7d25bdab468e0b4454e1330e609333f085d38b536d24a4e9c98199bc201b3198",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0351323Z       "target_sha256": "fafff9fc2034194c4837fd3d85072e3b47fcb0650fbafda7eec70a38f9d45307"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0351818Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0352034Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0352392Z       "path": "specs/data-production/method-binding-contract.json",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0353047Z       "actual_sha256": "f71bdd229a2530a2b484d696701f39f0f37e6820aa49adf36d1e0a7bdf93c46c",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0353777Z       "target_sha256": "fd801731dd2e457e8feaeb28272e4c12cbcede12db13d8b9b8df20e9e6a8abb2"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0354464Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0354690Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0355046Z       "path": "specs/data-production/production-registry.json",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0355704Z       "actual_sha256": "3da27f9a802100edbc26a2d1de2c6ca1fbd7ebe9e43c5fbc79ed789143a96f81",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0356456Z       "target_sha256": "6a2f1441f2ddd086f29c18a24986d715d1fe40a21cc1aba90766147d0d18aa91"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0356933Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0357128Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0357435Z       "path": "specs/requirements/TRACEABILITY_INDEX.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0358026Z       "actual_sha256": "85e33de850cdca34d873d83c030bd8159a284c75c7ee8c062027f965002a9aa5",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0358736Z       "target_sha256": "5ec7f9156202c964bde0f781e197f0c96084ec11d4e38a68f054676352adef28"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0359216Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0359412Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0359738Z       "path": "specs/requirements/api-route-contracts.csv",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0360361Z       "actual_sha256": "1f9dfbe2e5997a65874c5a37be4317bbd777f5dc2546ebb041da94d6e9c48c65",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0361089Z       "target_sha256": "6e1d6e81d774430fe26d24ec855145215aa14facda76a1a6df88134cc98022a2"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0361565Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0361765Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0362086Z       "path": "specs/requirements/u07-action-contracts.csv",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0362688Z       "actual_sha256": "01b7d22ca661031845633aec87f52a5815f767e1bd9cba91ceb01f154a33242e",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0363408Z       "target_sha256": "953e916df7847022a7b6a246de6f4e6bebd10fc9b9cc525241366b4f1b0dc65f"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0363880Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0364078Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0364635Z       "path": "skills/mohen-acceptance/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0365217Z       "actual_sha256": "274280a3a48b71066fc2c8cb6baee14771b2362af17abc92030eb72adf28dc32",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0366609Z       "target_sha256": "544679097e4a87a7da43ebcb4053c15672a56366bcf2f269281667bf80348277"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0367392Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0367700Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0368131Z       "path": "skills/mohen-project-guard/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0369025Z       "actual_sha256": "ca1697b91dd377f1a506856f5143a1b7f851bcccf833f2e9eff49da6376a9b02",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0370330Z       "target_sha256": "4f44261d0dce46cc097c94f15e0956adceddd5aa265b56e8e4cb763ef516eaeb"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0371196Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0371602Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0372189Z       "path": "skills/mohen-vertical-slice/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0373292Z       "actual_sha256": "40452381f260e497e465198aec64d2d661fd9ad4f5e7d65046bcc7c3c49bd7b8",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0374841Z       "target_sha256": "ca8a58f7b928fe2fbf1f5470b7cf549d8f728fefc8ccde9ae6947afa175adcd3"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0375771Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0376359Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0376993Z       "path": "skills/mohen-historical-spatial-source/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0378224Z       "actual_sha256": "2daeddb60e94dcca23ec3dd04ea0b26be0b69930a390681cb468b302ab96539a",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0379420Z       "target_sha256": "d419a42fb28b8576f75b0be823a687cef838016c98d1f6adb31152c3c80dc3f9"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0380177Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0380502Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0381112Z       "path": "skills/mohen-historical-spatial-reconstruction/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0382097Z       "actual_sha256": "b33d1cec56b3c99d33cc603bb9b46fb6d6f118c27a24a8d9d51908ed54411d5a",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0382803Z       "target_sha256": "7e8c6f6282a048cdecd83cff14f2521717ee440d6b16d5d2f55f148f75229125"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0383254Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0383445Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0383729Z       "path": "skills/mohen-visual-asset/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0384515Z       "actual_sha256": "0d19e6c3ce077d1b24fa77e4c164a8c51001ea2bd5fb3112924f576f2b1588b8",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0385225Z       "target_sha256": "69888f09eba0b0fb0612501914f8cec68533e94c1d3637a3779b02ad6f6a97ca"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0385683Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0385875Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0386185Z       "path": "skills/mohen-experience-prototype/SKILL.md",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0386763Z       "actual_sha256": "7c9fa47db2d6e9557cce3081c20eaaf282676055478ea1533e6de800630708bd",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0387448Z       "target_sha256": "368f3e39ec17b64e69ddfe73325a1600e9031d8251987a270b86782dddfc32c8"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0387922Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0388114Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0388378Z       "path": "apps/web/lib/kad1-policy.mjs",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0388918Z       "actual_sha256": "b01a5b2ae5a12b4cbc9de51e8d3b03b8709e39bfed300c92c2e61c86a2984e72",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0389717Z       "target_sha256": "50a4ffbaded23ac179afdc3f4a5547b8f2f5e93f3098698aedb6465c6cd5fae8"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0390225Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0390412Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0390672Z       "path": "tests/unit/kad1-policy.test.mjs",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0391221Z       "actual_sha256": "5d105421ecd7acf416a9db533231cc5d3d29758b6f32dbfa83e11e8278e31ae3",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0391892Z       "target_sha256": "d98025fd54c179cb658f19e45ed0a739217420e5a11d738245de3b117eb259f9"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0392331Z     },
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0392520Z     {
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0392777Z       "path": "tests/unit/kad1-route.test.mjs",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0393316Z       "actual_sha256": "3d65486e6f268e68b11a57ee65357376c97ac5a54049a6e7cabca43493ff28d5",
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0394010Z       "target_sha256": "abc75cfe0012e70b4d3aeffd3a707eabe07f53ab0347db542ea141cd5b7ce789"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0394857Z     }
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0395055Z   ],
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0395267Z   "missing_targets": [],
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0395559Z   "unverified_semantics_count": 74,
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0395834Z   "errors": [
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0396088Z     "HANDOFF_DECLARED_SHA256_MISMATCH"
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0396357Z   ]
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0396552Z }
+build	MAB 74 target handoff audit (informational)	2026-11-04T23:19:54.0405846Z ##[error]Process completed with exit code 1.

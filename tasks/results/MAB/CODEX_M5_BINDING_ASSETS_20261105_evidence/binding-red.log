@@ -1,0 +1,26 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/mab-m5-work-binding.test.mjs (1 test | 1 failed) 6ms
+   × requires a current independent signed whole-work binding rather than author supplied qualification refs 6ms
+     → expected 'undefined' to be 'function' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/mab-m5-work-binding.test.mjs > requires a current independent signed whole-work binding rather than author supplied qualification refs
+AssertionError: expected 'undefined' to be 'function' // Object.is equality
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ tests/unit/mab-m5-work-binding.test.mjs:4:54
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  23:01:47
+   Duration  233ms (transform 53ms, setup 0ms, collect 86ms, tests 6ms, environment 0ms, prepare 46ms)
+

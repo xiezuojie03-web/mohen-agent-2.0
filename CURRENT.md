@@ -1,5 +1,9 @@
 # 墨痕｜当前真实工程状态
 
+> **2026-11-05｜同轮最新补证**：六类L5×四消费者真实PG绑定、物理修订变化拒绝、祖先撤销及整稿媒体权利正反已完成，实际应用wrapper PG也通过；共享fixture参数化后完整PG17与HTTP15PASS/1StorageSKIP复验通过。取代下方首批“仅story_seed/其它五类未验”的PG局限；其它三消费者各自产品HTTP、13类完整专业语义/反馈同意撤回/合法复用/canonical媒资、ST01—04/19组件仍未验。first-source ff5283e的PG41932575876/HTTP41932576000 SUCCESS，主CI41932575992因差异账字节等同旧声明FAIL，已原位改ADAPTED待新CI核证，不掩盖失败。最新补证SHA/CI见本批CODEX_M5_BINDING_ASSETS_20261105回执；M5整体/全部生产专业外发费用条件HOLD不变。
+
+> **2026-11-05｜M5本轮实码续建（CI核证中，非整体准出）**：已接只读精确WorkRevision→真实L5/current独立G5签审整稿及动作权利桥，并补13类10+3持久矩阵、Admin历史精确版本/使用史、WATCH与ST08/ST09隔离业务；实际源码SHA/PG/HTTP/Actions以`tasks/results/MAB/CODEX_M5_BINDING_ASSETS_20261105.md`和progress最新条目为准，未核结果不作PASS。此前只读审查仍仅是审查，本批源码另行记账。三其它消费者各自HTTP、其余五L5及13类专业/同意撤回/合法复用与九动作整体未验，**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY**，全部上游生产/专业/外发/费用HOLD不变，无正式Gate或context激活。
+
 > **2026-11-05｜Codex接续的最新工程说明**：已将上轮M5/HP07/HP11/HP12只读审查写入`tasks/results/MAB/M5_HP07_HP11_HP12_READONLY_AUDIT_20261104.md`，并置顶`tasks/implementation/MAB/CODEX_HANDOFF_CURRENT.md`。请先读取两者和原PLAN/progress/target-diff。此前`608ff72f`导演提交及`08fa04e`fork/restore真实隔离PG/Chromium子项已PASS；本轮只读审查的WorkRevision→精确L5→独立G5/4消费者映射与13类资产10+3PG验证**未实施新源码、未新验收**；现有合法公开消费继续失败关闭。当前交接是执行权转交，**M5、全部正式生产Gate及M6—M8仍HOLD**，不改变MHKA/KAD6或M0—M8计划。最新可核证状态见上述回执，Codex必须fetch实时main而非从历史SHA重置。
 
 > **2026-11-04 M5导演版本真实隔离验收新增**：源码`608ff72f`修复初始导演提交回执丢失重试；[主CI41841366673](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41841366673)、[PG/Chromium41841366704](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41841366704)均SUCCESS，真实隔离测试新增导演8方案竞争、原expected请求幂等、Owner/来源绑定，13PASS/1StorageSKIP。**只签M5导演提交子项VERIFIED_ISOLATED；M5整体与正式L5/G5映射、M1—M4生产安全/外发/费用HOLD不变**。本轮未做生产DB/Storage操作；见M5唯一回执第5节。
@@ -95,3 +99,5 @@ Owner已批准MAB更新计划并授权持续施工：最终GitHub仅main，Verce
 
 ### 2026-11-03｜接续API-023安全边界（待CI复核）
 公开证据单项接口此前未经独立G5资格校验；已准备改为限定server-side资格上下文与现有合格读模型仓储，生产配置和独立Gate均不激活，缺条件统一503失败关闭。源级变更不等于M3运行准出，CI/真实资格/撤权及WATCH体验另验；施工账见`tasks/implementation/MAB/progress.md`。
+
+本批M5源码`ff5283ea8a719f69d37eee4ff4e8a1d4c5e4738e`：本地432单测/4旧SKIP、133边界、六工作区类型、PG17全套及真实HTTP15PASS/1Storage缺配置SKIP；GitHub结果以本批回执最新记录为准，不能因源码提交而提前宣称远端成功或M5准出。

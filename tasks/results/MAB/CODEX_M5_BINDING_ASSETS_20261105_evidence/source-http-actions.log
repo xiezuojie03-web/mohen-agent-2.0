@@ -1,0 +1,786 @@
+isolated-m1-http	Set up job	﻿2026-11-04T23:17:53.9936149Z Current runner version: '2.338.2'
+isolated-m1-http	Set up job	2026-11-04T23:17:53.9965267Z ##[group]Runner Image Provisioner
+isolated-m1-http	Set up job	2026-11-04T23:17:53.9966278Z Hosted Compute Agent
+isolated-m1-http	Set up job	2026-11-04T23:17:53.9967074Z Version: 20261028.624
+isolated-m1-http	Set up job	2026-11-04T23:17:53.9968011Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+isolated-m1-http	Set up job	2026-11-04T23:17:53.9968899Z Build Date: 2026-10-28T21:51:42Z
+isolated-m1-http	Set up job	2026-11-04T23:17:53.9969791Z Worker ID: {9bdee865-3854-43d7-b1a8-78ee742a4966}
+isolated-m1-http	Set up job	2026-11-04T23:17:53.9970668Z Region: eastus
+isolated-m1-http	Set up job	2026-11-04T23:17:53.9971405Z Cloud: Azure
+isolated-m1-http	Set up job	2026-11-04T23:17:53.9972073Z ##[endgroup]
+isolated-m1-http	Set up job	2026-11-04T23:17:53.9973754Z ##[group]Operating System
+isolated-m1-http	Set up job	2026-11-04T23:17:53.9974604Z Ubuntu
+isolated-m1-http	Set up job	2026-11-04T23:17:53.9975291Z 24.04.5
+isolated-m1-http	Set up job	2026-11-04T23:17:53.9975989Z LTS
+isolated-m1-http	Set up job	2026-11-04T23:17:53.9976627Z ##[endgroup]
+isolated-m1-http	Set up job	2026-11-04T23:17:53.9977305Z ##[group]Runner Image
+isolated-m1-http	Set up job	2026-11-04T23:17:54.0032252Z Image: ubuntu-24.04
+isolated-m1-http	Set up job	2026-11-04T23:17:54.0033223Z Version: 20261101.360.1
+isolated-m1-http	Set up job	2026-11-04T23:17:54.0034622Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+isolated-m1-http	Set up job	2026-11-04T23:17:54.0036894Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+isolated-m1-http	Set up job	2026-11-04T23:17:54.0038424Z ##[endgroup]
+isolated-m1-http	Set up job	2026-11-04T23:17:54.0039817Z ##[group]GITHUB_TOKEN Permissions
+isolated-m1-http	Set up job	2026-11-04T23:17:54.0042291Z Contents: read
+isolated-m1-http	Set up job	2026-11-04T23:17:54.0043046Z Metadata: read
+isolated-m1-http	Set up job	2026-11-04T23:17:54.0043743Z ##[endgroup]
+isolated-m1-http	Set up job	2026-11-04T23:17:54.0046338Z Secret source: Actions
+isolated-m1-http	Set up job	2026-11-04T23:17:54.0047503Z Cache mode: write
+isolated-m1-http	Set up job	2026-11-04T23:17:54.0068969Z Prepare workflow directory
+isolated-m1-http	Set up job	2026-11-04T23:17:54.0954109Z Prepare all required actions
+isolated-m1-http	Set up job	2026-11-04T23:17:54.1071546Z Getting action download info
+isolated-m1-http	Set up job	2026-11-04T23:17:54.3038172Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+isolated-m1-http	Set up job	2026-11-04T23:17:54.4479934Z Download action repository 'pnpm/action-setup@v4' (SHA:b906affcce14559ad1aafd4ab0e942779e9f58b1)
+isolated-m1-http	Set up job	2026-11-04T23:17:54.7201780Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+isolated-m1-http	Set up job	2026-11-04T23:17:55.0211202Z Complete job name: isolated-m1-http
+isolated-m1-http	Run actions/checkout@v4	﻿2026-11-04T23:17:55.1053333Z ##[group]Run actions/checkout@v4
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1054536Z with:
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1055297Z   persist-credentials: false
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1056266Z   repository: xiezuojie03-web/mohen-agent-2.0
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1064174Z   token: ***
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1064920Z   ssh-strict: true
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1065690Z   ssh-user: git
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1066430Z   clean: true
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1067207Z   sparse-checkout-cone-mode: true
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1068198Z   fetch-depth: 1
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1068956Z   fetch-tags: false
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1069733Z   show-progress: true
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1070514Z   lfs: false
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1071237Z   submodules: false
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1072042Z   set-safe-directory: true
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1072950Z   allow-unsafe-pr-checkout: false
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1074013Z env:
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1074783Z   MOHEN_REVOCABLE_SESSIONS_ENABLED: true
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1075815Z   MOHEN_TEST_PSQL: /usr/bin/psql
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1076790Z   MOHEN_TEST_SOCKET: /workspace/mab-m1-http-pg
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1078037Z   MOHEN_TEST_PORT: 55432
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.1078846Z ##[endgroup]
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.3728565Z Syncing repository: xiezuojie03-web/mohen-agent-2.0
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.3732743Z ##[group]Getting Git version info
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.3733621Z Working directory is '/home/runner/work/mohen-agent-2.0/mohen-agent-2.0'
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.3768412Z [command]/usr/bin/git version
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.3903693Z git version 2.56.0
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.3954329Z ##[endgroup]
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.3973394Z Temporarily overriding HOME='/home/runner/work/_temp/027a763b-dd2f-49ce-9eb2-f399c2d6b5b9' before making global git config changes
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.3974870Z Adding repository directory to the temporary git global config as a safe directory
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.3982261Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/mohen-agent-2.0/mohen-agent-2.0
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4056720Z Deleting the contents of '/home/runner/work/mohen-agent-2.0/mohen-agent-2.0'
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4059286Z ##[group]Initializing the repository
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4070291Z [command]/usr/bin/git init /home/runner/work/mohen-agent-2.0/mohen-agent-2.0
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4167436Z hint: Using 'master' as the name for the initial branch. This default branch name
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4169661Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4171000Z hint: to use in all of your new repositories, which will suppress this warning,
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4183871Z hint: call:
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4185351Z hint:
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4185918Z hint: 	git config --global init.defaultBranch <name>
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4186481Z hint:
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4187017Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4187945Z hint: 'development'. The just-created branch can be renamed via this command:
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4188700Z hint:
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4189131Z hint: 	git branch -m <name>
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4189616Z hint:
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4190341Z hint: Disable this message with "git config set advice.defaultBranchName false"
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4208089Z Initialized empty Git repository in /home/runner/work/mohen-agent-2.0/mohen-agent-2.0/.git/
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4220193Z [command]/usr/bin/git remote add origin https://github.com/xiezuojie03-web/mohen-agent-2.0
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4431624Z ##[endgroup]
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4433323Z ##[group]Disabling automatic garbage collection
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4434005Z [command]/usr/bin/git config --local gc.auto 0
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4495002Z ##[endgroup]
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4495705Z ##[group]Setting up auth
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4496426Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.4566784Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.5061463Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.5099348Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.5324086Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.5364654Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.5583146Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.5627004Z ##[endgroup]
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.5628306Z ##[group]Fetching the repository
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:55.5637556Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +ff5283ea8a719f69d37eee4ff4e8a1d4c5e4738e:refs/remotes/origin/main
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:57.8091812Z From https://github.com/xiezuojie03-web/mohen-agent-2.0
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:57.8106810Z  * [new ref]         ff5283ea8a719f69d37eee4ff4e8a1d4c5e4738e -> origin/main
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:57.8119141Z ##[endgroup]
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:57.8119984Z ##[group]Determining the checkout info
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:57.8120783Z ##[endgroup]
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:57.8121559Z [command]/usr/bin/git sparse-checkout disable
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:57.8166016Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:57.8202273Z ##[group]Checking out the ref
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:57.8219745Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:58.2020013Z Switched to a new branch 'main'
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:58.2055141Z branch 'main' set up to track 'origin/main'.
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:58.2100505Z ##[endgroup]
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:58.2142161Z [command]/usr/bin/git log -1 --format=%H
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:58.2173474Z ff5283ea8a719f69d37eee4ff4e8a1d4c5e4738e
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:58.2181005Z ##[group]Removing auth
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:58.2184478Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:58.2220730Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:58.2435677Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:58.2468390Z http.https://github.com/.extraheader
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:58.2474943Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:58.2512363Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:58.2724783Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:58.2760885Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+isolated-m1-http	Run actions/checkout@v4	2026-11-04T23:17:58.2973248Z ##[endgroup]
+isolated-m1-http	Run pnpm/action-setup@v4	﻿2026-11-04T23:17:58.3173775Z ##[group]Run pnpm/action-setup@v4
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:58.3174039Z with:
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:58.3174210Z   version: 9.15.4
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:58.3174390Z   dest: ~/setup-pnpm
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:58.3174566Z   run_install: null
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:58.3174753Z   cache: false
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:58.3240225Z   cache_dependency_path: pnpm-lock.yaml
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:58.3240656Z   package_json_file: package.json
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:58.3240959Z   standalone: false
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:58.3241260Z env:
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:58.3241544Z   MOHEN_REVOCABLE_SESSIONS_ENABLED: true
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:58.3241947Z   MOHEN_TEST_PSQL: /usr/bin/psql
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:58.3242338Z   MOHEN_TEST_SOCKET: /workspace/mab-m1-http-pg
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:58.3242751Z   MOHEN_TEST_PORT: 55432
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:58.3243022Z ##[endgroup]
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:58.5131431Z ##[group]Running self-installer...
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:58.9929352Z (node:2113) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:58.9943819Z (Use `node --trace-deprecation ...` to show where the warning was created)
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:59.1356052Z Progress: resolved 1, reused 0, downloaded 0, added 0
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:59.1459507Z Packages: +1
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:59.1462877Z +
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:59.4976017Z Progress: resolved 1, reused 0, downloaded 1, added 1, done
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:59.5989401Z 
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:59.5989899Z dependencies:
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:59.5990269Z + pnpm 9.15.4 (12.16.1 is available)
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:59.5990556Z 
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:59.6011222Z Done in 827ms
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:59.6195382Z ##[endgroup]
+isolated-m1-http	Run pnpm/action-setup@v4	2026-11-04T23:17:59.6196420Z Installation Completed!
+isolated-m1-http	Run actions/setup-node@v4	﻿2026-11-04T23:17:59.6354370Z ##[group]Run actions/setup-node@v4
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:17:59.6354589Z with:
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:17:59.6354752Z   node-version: 22
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:17:59.6354920Z   cache: pnpm
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:17:59.6355083Z   always-auth: false
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:17:59.6355270Z   check-latest: false
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:17:59.6357442Z   token: ***
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:17:59.6357597Z env:
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:17:59.6358057Z   MOHEN_REVOCABLE_SESSIONS_ENABLED: true
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:17:59.6358291Z   MOHEN_TEST_PSQL: /usr/bin/psql
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:17:59.6358514Z   MOHEN_TEST_SOCKET: /workspace/mab-m1-http-pg
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:17:59.6358754Z   MOHEN_TEST_PORT: 55432
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:17:59.6358973Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:17:59.6359218Z ##[endgroup]
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:17:59.7555132Z (node:2131) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:17:59.7556620Z (Use `node --trace-deprecation ...` to show where the warning was created)
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:17:59.7557468Z Found in cache @ /opt/hostedtoolcache/node/22.23.4/x64
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:17:59.7558760Z ##[group]Environment details
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:18:00.1416983Z node: v22.23.4
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:18:00.1419099Z npm: 10.9.9
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:18:00.1419743Z yarn: 1.22.22
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:18:00.1420660Z ##[endgroup]
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:18:00.1436900Z [command]/home/runner/setup-pnpm/node_modules/.bin/pnpm store path --silent
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:18:00.4813483Z /home/runner/setup-pnpm/node_modules/.bin/store/v3
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:18:00.5571374Z Cache hit for: node-cache-Linux-x64-pnpm-53f83b0a1a7f909344bfe900808d1cc79e05074d63adaa7461c0b6e325787eb5
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:18:00.5658015Z (node:2131) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:18:01.4768192Z Received 169821689 of 169821689 (100.0%), 182.8 MBs/sec
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:18:01.4788703Z Cache Size: ~162 MB (169821689 B)
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:18:01.4939301Z [command]/usr/bin/tar -xf /home/runner/work/_temp/d6fd19d9-22df-4942-94c3-cb3786977029/cache.tzst -P -C /home/runner/work/mohen-agent-2.0/mohen-agent-2.0 --use-compress-program unzstd
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:18:02.7783051Z Cache restored successfully
+isolated-m1-http	Run actions/setup-node@v4	2026-11-04T23:18:02.7858675Z Cache restored from key: node-cache-Linux-x64-pnpm-53f83b0a1a7f909344bfe900808d1cc79e05074d63adaa7461c0b6e325787eb5
+isolated-m1-http	Install dependencies and local browser	﻿2026-11-04T23:18:02.9898097Z ##[group]Run pnpm install --frozen-lockfile
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:02.9898498Z [36;1mpnpm install --frozen-lockfile[0m
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:02.9898750Z [36;1msudo apt-get update -qq[0m
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:02.9899016Z [36;1msudo apt-get install -y postgresql-client[0m
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:02.9899336Z [36;1mpnpm exec playwright install --with-deps chromium[0m
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:02.9899642Z [36;1msudo install -d -m 0777 "$MOHEN_TEST_SOCKET"[0m
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:03.0439943Z shell: /usr/bin/bash -e {0}
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:03.0440219Z env:
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:03.0440434Z   MOHEN_REVOCABLE_SESSIONS_ENABLED: true
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:03.0440676Z   MOHEN_TEST_PSQL: /usr/bin/psql
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:03.0440923Z   MOHEN_TEST_SOCKET: /workspace/mab-m1-http-pg
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:03.0441173Z   MOHEN_TEST_PORT: 55432
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:03.0441408Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:03.0441659Z ##[endgroup]
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:03.5720784Z Scope: all 7 workspace projects
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:03.6198645Z Lockfile is up to date, resolution step is skipped
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:03.6357813Z Progress: resolved 1, reused 0, downloaded 0, added 0
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:03.6528699Z Packages: +104
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:03.6529386Z ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:04.4353274Z Progress: resolved 104, reused 104, downloaded 0, added 104, done
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:04.8678563Z 
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:04.8679449Z dependencies:
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:04.8680077Z + ajv 8.20.0
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:04.8680511Z 
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:04.8683235Z devDependencies:
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:04.8683743Z + @playwright/test 1.63.0
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:04.8684315Z + typescript 5.9.3
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:04.8684696Z + vitest 3.2.7
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:04.8684990Z 
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:04.8867027Z Done in 1.6s
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:10.3941480Z Reading package lists...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:10.5974319Z Building dependency tree...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:10.5981850Z Reading state information...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:10.7447051Z The following NEW packages will be installed:
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:10.7448079Z   postgresql-client
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:10.7619612Z 0 upgraded, 1 newly installed, 0 to remove and 23 not upgraded.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:10.7620363Z Need to get 11.6 kB of archives.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:10.7621128Z After this operation, 17.4 kB of additional disk space will be used.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:10.7622073Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:10.7929247Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 postgresql-client all 16+257build1.1 [11.6 kB]
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:11.0467347Z Fetched 11.6 kB in 0s (276 kB/s)
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:11.0851348Z Selecting previously unselected package postgresql-client.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:11.1047453Z (Reading database ... 
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:11.1048502Z (Reading database ... 5%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:11.1048982Z (Reading database ... 10%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:11.1049522Z (Reading database ... 15%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:11.1051005Z (Reading database ... 20%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:11.1051426Z (Reading database ... 25%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:11.1051865Z (Reading database ... 30%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:11.1052363Z (Reading database ... 35%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:11.1053695Z (Reading database ... 40%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:11.1054372Z (Reading database ... 45%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:11.1075842Z (Reading database ... 50%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:11.1103587Z (Reading database ... 55%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:11.3109006Z (Reading database ... 60%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:11.5496848Z (Reading database ... 65%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:11.7995606Z (Reading database ... 70%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:11.9650381Z (Reading database ... 75%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:12.1473010Z (Reading database ... 80%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:12.3536905Z (Reading database ... 85%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:12.5199432Z (Reading database ... 90%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:12.6649376Z (Reading database ... 95%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:12.6650047Z (Reading database ... 100%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:12.6650940Z (Reading database ... 215960 files and directories currently installed.)
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:12.6692987Z Preparing to unpack .../postgresql-client_16+257build1.1_all.deb ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:12.6887038Z Unpacking postgresql-client (16+257build1.1) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:12.7380823Z Setting up postgresql-client (16+257build1.1) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:13.5886523Z 
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:13.5887423Z Running kernel seems to be up-to-date.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:13.5887974Z 
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:13.5888245Z No services need to be restarted.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:13.5888582Z 
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:13.5888843Z No containers need to be restarted.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:13.5889156Z 
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:13.5889444Z No user sessions are running outdated binaries.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:13.5889812Z 
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:13.5890242Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:15.2778961Z Installing dependencies...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:15.2831624Z Switching to root user to install dependencies...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:15.3959487Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:15.4724902Z Hit:4 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:15.4839368Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:15.4841592Z Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:15.4898623Z Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:15.4928526Z Hit:6 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:16.7521559Z Reading package lists...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:16.7783233Z Reading package lists...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:16.9870260Z Building dependency tree...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:16.9888182Z Reading state information...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1198014Z libasound2t64 is already the newest version (1.2.11-1ubuntu0.3).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1199080Z libasound2t64 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1200074Z libatk-bridge2.0-0t64 is already the newest version (2.52.0-1build1).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1200855Z libatk-bridge2.0-0t64 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1201565Z libatk1.0-0t64 is already the newest version (2.52.0-1build1).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1202187Z libatk1.0-0t64 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1202792Z libatspi2.0-0t64 is already the newest version (2.52.0-1build1).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1203410Z libatspi2.0-0t64 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1204068Z libcairo2 is already the newest version (1.18.0-3build1).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1204656Z libcairo2 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1205324Z libcups2t64 is already the newest version (2.4.7-1.2ubuntu7.14).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1205965Z libcups2t64 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1207059Z libdbus-1-3 is already the newest version (1.14.10-4ubuntu4.1).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1207892Z libdbus-1-3 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1208685Z libdrm2 is already the newest version (2.4.125-1ubuntu0.1~24.04.2).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1209373Z libdrm2 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1210018Z libgbm1 is already the newest version (25.2.8-0ubuntu0.24.04.4).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1210654Z libgbm1 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1211340Z libglib2.0-0t64 is already the newest version (2.80.0-6ubuntu3.10).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1212010Z libglib2.0-0t64 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1212649Z libnspr4 is already the newest version (2:4.35-1.1build1).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1213271Z libnspr4 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1214086Z libnss3 is already the newest version (2:3.98-1ubuntu0.3).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1223036Z libnss3 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1223775Z libpango-1.0-0 is already the newest version (1.52.1+ds-1build1).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1224475Z libpango-1.0-0 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1225178Z libx11-6 is already the newest version (2:1.8.7-1ubuntu0.1).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1225806Z libx11-6 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1226413Z libxcb1 is already the newest version (1.15-1ubuntu2).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1227026Z libxcb1 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1227871Z libxcomposite1 is already the newest version (1:0.4.5-1build3).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1228906Z libxcomposite1 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1229662Z libxdamage1 is already the newest version (1:1.1.6-1build1).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1230309Z libxdamage1 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1230939Z libxext6 is already the newest version (2:1.3.4-1build2).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1231555Z libxext6 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1232188Z libxfixes3 is already the newest version (1:6.0.0-2build1).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1232812Z libxfixes3 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1233495Z libxkbcommon0 is already the newest version (1.6.0-1build1).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1234147Z libxkbcommon0 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1234799Z libxrandr2 is already the newest version (2:1.5.2-2build1).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1235444Z libxrandr2 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1236092Z xvfb is already the newest version (2:21.1.12-1ubuntu1.9).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1236912Z fonts-noto-color-emoji is already the newest version (2.047-0ubuntu0.24.04.1).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1237968Z libfontconfig1 is already the newest version (2.15.0-1.1ubuntu2).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1238750Z libfontconfig1 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1239473Z libfreetype6 is already the newest version (2.13.2+dfsg-1ubuntu0.2).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1240144Z libfreetype6 set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1240804Z fonts-liberation is already the newest version (1:2.1.5-3).
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1241470Z fonts-liberation set to manually installed.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1242120Z The following additional packages will be installed:
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1242707Z   xfonts-encodings xfonts-utils
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1243250Z Recommended packages:
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1243729Z   fonts-ipafont-mincho fonts-tlwg-loma
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1363876Z The following NEW packages will be installed:
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1364931Z   fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1369193Z   fonts-wqy-zenhei xfonts-cyrillic xfonts-encodings xfonts-scalable
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1369931Z   xfonts-utils
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1545697Z 0 upgraded, 9 newly installed, 0 to remove and 23 not upgraded.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1551346Z Need to get 21.1 MB of archives.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1552112Z After this operation, 79.5 MB of additional disk space will be used.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1552887Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.1868939Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-ipafont-gothic all 00303-21ubuntu1 [3513 kB]
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.2847246Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 fonts-freefont-ttf all 20211204+svn4273-2 [5641 kB]
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.3268811Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-tlwg-loma-otf all 1:0.7.3-1 [107 kB]
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.3406946Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-unifont all 1:15.1.01-1build1 [2993 kB]
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.3709256Z Get:6 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-wqy-zenhei all 0.9.45-8 [7472 kB]
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.4250104Z Get:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-encodings all 1:1.0.5-0ubuntu2 [578 kB]
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.4913709Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-utils amd64 1:7.7+6build3 [94.4 kB]
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.5062148Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 xfonts-cyrillic all 1:1.0.5+nmu1 [384 kB]
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.5230304Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3 [304 kB]
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.7499346Z Fetched 21.1 MB in 0s (55.3 MB/s)
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.7792650Z Selecting previously unselected package fonts-ipafont-gothic.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.7837513Z (Reading database ... 
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.7838159Z (Reading database ... 5%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.7838755Z (Reading database ... 10%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.7839375Z (Reading database ... 15%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.7840395Z (Reading database ... 20%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.7858501Z (Reading database ... 25%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.7878317Z (Reading database ... 30%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.7878695Z (Reading database ... 35%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.7879520Z (Reading database ... 40%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.7879993Z (Reading database ... 45%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.7880535Z (Reading database ... 50%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.7880981Z (Reading database ... 55%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.7905245Z (Reading database ... 60%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.7948497Z (Reading database ... 65%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.7965279Z (Reading database ... 70%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.7987498Z (Reading database ... 75%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.8089635Z (Reading database ... 80%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.8125764Z (Reading database ... 85%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.8301052Z (Reading database ... 90%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.8529744Z (Reading database ... 95%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.8530765Z (Reading database ... 100%
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.8531509Z (Reading database ... 215963 files and directories currently installed.)
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.8573350Z Preparing to unpack .../0-fonts-ipafont-gothic_00303-21ubuntu1_all.deb ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:17.8911170Z Unpacking fonts-ipafont-gothic (00303-21ubuntu1) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:18.2585216Z Selecting previously unselected package fonts-freefont-ttf.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:18.2711577Z Preparing to unpack .../1-fonts-freefont-ttf_20211204+svn4273-2_all.deb ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:18.2976018Z Unpacking fonts-freefont-ttf (20211204+svn4273-2) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:18.4789094Z Selecting previously unselected package fonts-tlwg-loma-otf.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:18.4904331Z Preparing to unpack .../2-fonts-tlwg-loma-otf_1%3a0.7.3-1_all.deb ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:18.4911447Z Unpacking fonts-tlwg-loma-otf (1:0.7.3-1) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:18.5245036Z Selecting previously unselected package fonts-unifont.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:18.5367477Z Preparing to unpack .../3-fonts-unifont_1%3a15.1.01-1build1_all.deb ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:18.5378326Z Unpacking fonts-unifont (1:15.1.01-1build1) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:18.9028962Z Selecting previously unselected package fonts-wqy-zenhei.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:18.9156419Z Preparing to unpack .../4-fonts-wqy-zenhei_0.9.45-8_all.deb ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:18.9287910Z Unpacking fonts-wqy-zenhei (0.9.45-8) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:19.4838992Z Selecting previously unselected package xfonts-encodings.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:19.4945992Z Preparing to unpack .../5-xfonts-encodings_1%3a1.0.5-0ubuntu2_all.deb ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:19.5048507Z Unpacking xfonts-encodings (1:1.0.5-0ubuntu2) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:19.6441492Z Selecting previously unselected package xfonts-utils.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:19.6568425Z Preparing to unpack .../6-xfonts-utils_1%3a7.7+6build3_amd64.deb ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:19.6610533Z Unpacking xfonts-utils (1:7.7+6build3) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:19.8439685Z Selecting previously unselected package xfonts-cyrillic.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:19.8613532Z Preparing to unpack .../7-xfonts-cyrillic_1%3a1.0.5+nmu1_all.deb ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:19.8635047Z Unpacking xfonts-cyrillic (1:1.0.5+nmu1) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:20.1341706Z Selecting previously unselected package xfonts-scalable.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:20.1471169Z Preparing to unpack .../8-xfonts-scalable_1%3a1.0.3-1.3_all.deb ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:20.1477826Z Unpacking xfonts-scalable (1:1.0.3-1.3) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:20.2104002Z Setting up fonts-wqy-zenhei (0.9.45-8) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:20.2465863Z Setting up fonts-freefont-ttf (20211204+svn4273-2) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:20.2905210Z Setting up fonts-tlwg-loma-otf (1:0.7.3-1) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:20.2925282Z Setting up xfonts-encodings (1:1.0.5-0ubuntu2) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:20.2953884Z Setting up fonts-ipafont-gothic (00303-21ubuntu1) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:20.3029894Z update-alternatives: using /usr/share/fonts/opentype/ipafont-gothic/ipag.ttf to provide /usr/share/fonts/truetype/fonts-japanese-gothic.ttf (fonts-japanese-gothic.ttf) in auto mode
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:20.3044765Z Setting up fonts-unifont (1:15.1.01-1build1) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:20.3074052Z Setting up xfonts-utils (1:7.7+6build3) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:20.3744773Z Setting up xfonts-cyrillic (1:1.0.5+nmu1) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:20.5097387Z Setting up xfonts-scalable (1:1.0.3-1.3) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:20.5961737Z Processing triggers for man-db (2.12.0-4build2) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:20.5985416Z Not building database; man-db/auto-update is not 'true'.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:20.5997027Z Processing triggers for fontconfig (2.15.0-1.1ubuntu2) ...
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:21.1527193Z 
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:21.1528182Z Running kernel seems to be up-to-date.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:21.1528666Z 
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:21.1528979Z No services need to be restarted.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:21.1529364Z 
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:21.1529665Z No containers need to be restarted.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:21.1529996Z 
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:21.1530341Z No user sessions are running outdated binaries.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:21.1530727Z 
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:21.1531183Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:22.0773886Z Downloading Chrome for Testing 153.0.8010.12 (playwright chromium v1243) from https://cdn.playwright.dev/builds/cft/153.0.8010.12/linux64/chrome-linux64.zip
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:22.4470987Z |                                                                                |   0% of 186.8 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:22.6131993Z |■■■■■■■■                                                                        |  10% of 186.8 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:22.7279679Z |■■■■■■■■■■■■■■■■                                                                |  20% of 186.8 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:22.8108696Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 186.8 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:22.8853962Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 186.8 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:22.9562183Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 186.8 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:23.0268135Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 186.8 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:23.0928313Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 186.8 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:23.1619452Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 186.8 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:23.2262715Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 186.8 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:23.2864217Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 186.8 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:25.5369580Z Chrome for Testing 153.0.8010.12 (playwright chromium v1243) downloaded to /home/runner/.cache/ms-playwright/chromium-1243
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:25.5372335Z Downloading FFmpeg (playwright ffmpeg v1011) from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-linux.zip
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:25.8665155Z |                                                                                |   0% of 2.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:25.8709171Z |■■■■■■■■                                                                        |  10% of 2.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:25.8745884Z |■■■■■■■■■■■■■■■■                                                                |  20% of 2.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:25.8759841Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 2.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:25.8798664Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 2.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:25.8812846Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 2.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:25.8834729Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 2.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:25.8868611Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 2.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:25.8896560Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 2.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:25.8933110Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 2.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:25.8955085Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 2.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:25.9603401Z FFmpeg (playwright ffmpeg v1011) downloaded to /home/runner/.cache/ms-playwright/ffmpeg-1011
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:25.9609331Z Downloading Chrome Headless Shell 153.0.8010.12 (playwright chromium-headless-shell v1243) from https://cdn.playwright.dev/builds/cft/153.0.8010.12/linux64/chrome-headless-shell-linux64.zip
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:26.2970052Z |                                                                                |   0% of 114.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:26.4309008Z |■■■■■■■■                                                                        |  10% of 114.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:26.4943412Z |■■■■■■■■■■■■■■■■                                                                |  20% of 114.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:26.5526887Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 114.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:26.6053697Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 114.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:26.6472870Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 114.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:26.6920152Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 114.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:26.7290512Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 114.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:26.7703549Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 114.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:26.8172333Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 114.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:26.8546803Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 114.3 MiB
+isolated-m1-http	Install dependencies and local browser	2026-11-04T23:18:28.4096873Z Chrome Headless Shell 153.0.8010.12 (playwright chromium-headless-shell v1243) downloaded to /home/runner/.cache/ms-playwright/chromium_headless_shell-1243
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	﻿2026-11-04T23:18:28.5724277Z ##[group]Run docker run --detach --name mohen-m1-http-pg17 \
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5724698Z [36;1mdocker run --detach --name mohen-m1-http-pg17 \[0m
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5725067Z [36;1m  --mount type=bind,src="$MOHEN_TEST_SOCKET",dst=/var/run/postgresql \[0m
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5725391Z [36;1m  --env POSTGRES_USER=k3_admin \[0m
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5725671Z [36;1m  --env POSTGRES_PASSWORD=synthetic-fixture-only \[0m
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5725965Z [36;1m  --env POSTGRES_DB=postgres \[0m
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5726263Z [36;1m  postgres:17 -c port=55432 -c mohen.test_instance=codex-k3-isolated[0m
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5726561Z [36;1mfor i in $(seq 1 60); do[0m
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5726904Z [36;1m  if pg_isready -h "$MOHEN_TEST_SOCKET" -p "$MOHEN_TEST_PORT" -U k3_admin; then exit 0; fi[0m
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5727256Z [36;1m  sleep 2[0m
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5727434Z [36;1mdone[0m
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5727621Z [36;1mdocker logs mohen-m1-http-pg17[0m
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5728106Z [36;1mexit 1[0m
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5746418Z shell: /usr/bin/bash -e {0}
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5746638Z env:
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5746829Z   MOHEN_REVOCABLE_SESSIONS_ENABLED: true
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5747069Z   MOHEN_TEST_PSQL: /usr/bin/psql
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5747307Z   MOHEN_TEST_SOCKET: /workspace/mab-m1-http-pg
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5747554Z   MOHEN_TEST_PORT: 55432
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5747963Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.5748223Z ##[endgroup]
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:28.6525442Z Unable to find image 'postgres:17' locally
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.5666111Z 17: Pulling from library/postgres
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6438880Z 6fc242d221a6: Pulling fs layer
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6439535Z e6095e4c4fdd: Pulling fs layer
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6439913Z bad9dce990ef: Pulling fs layer
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6440270Z 904defe665c0: Pulling fs layer
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6440626Z 455e5ed72fb1: Pulling fs layer
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6440970Z 55f036305357: Pulling fs layer
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6441322Z db07174d12aa: Pulling fs layer
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6444041Z 03f2ecc50d4c: Pulling fs layer
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6444838Z ff7cbe54dfda: Pulling fs layer
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6445427Z 0a26f79bdef8: Pulling fs layer
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6446025Z 1f1fbc5e4aa5: Pulling fs layer
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6446591Z 7f824adc2669: Pulling fs layer
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6447132Z 3cecd013db3b: Pulling fs layer
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6447773Z 7f0980702fb2: Pulling fs layer
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6448364Z ff7cbe54dfda: Waiting
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6449075Z 0a26f79bdef8: Waiting
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6449398Z 1f1fbc5e4aa5: Waiting
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6449711Z 7f824adc2669: Waiting
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6450017Z 904defe665c0: Waiting
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6450326Z 3cecd013db3b: Waiting
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6450635Z 7f0980702fb2: Waiting
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6450936Z db07174d12aa: Waiting
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6451245Z 03f2ecc50d4c: Waiting
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6451559Z 55f036305357: Waiting
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6734292Z e6095e4c4fdd: Verifying Checksum
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6735275Z e6095e4c4fdd: Download complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6940559Z bad9dce990ef: Verifying Checksum
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.6949267Z bad9dce990ef: Download complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.7256510Z 904defe665c0: Verifying Checksum
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.7263252Z 904defe665c0: Download complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.7570871Z 6fc242d221a6: Verifying Checksum
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.7585135Z 6fc242d221a6: Download complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.7829385Z 455e5ed72fb1: Verifying Checksum
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.7831381Z 455e5ed72fb1: Download complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.7889966Z 55f036305357: Verifying Checksum
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.7890491Z 55f036305357: Download complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.7961059Z db07174d12aa: Verifying Checksum
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.7961665Z db07174d12aa: Download complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.8067153Z 03f2ecc50d4c: Verifying Checksum
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.8068363Z 03f2ecc50d4c: Download complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.8208602Z 0a26f79bdef8: Verifying Checksum
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.8209963Z 0a26f79bdef8: Download complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.8333133Z 1f1fbc5e4aa5: Verifying Checksum
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.8333788Z 1f1fbc5e4aa5: Download complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.8508988Z 7f824adc2669: Verifying Checksum
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.8509443Z 7f824adc2669: Download complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.8585284Z 3cecd013db3b: Verifying Checksum
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.8585856Z 3cecd013db3b: Download complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.8811869Z 7f0980702fb2: Verifying Checksum
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:29.8813084Z 7f0980702fb2: Download complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:30.2169580Z ff7cbe54dfda: Verifying Checksum
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:30.2179007Z ff7cbe54dfda: Download complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:31.7620158Z 6fc242d221a6: Pull complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:34.0655025Z e6095e4c4fdd: Pull complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:39.2460450Z bad9dce990ef: Pull complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:39.3385568Z 904defe665c0: Pull complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:39.9226622Z 455e5ed72fb1: Pull complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:40.0309877Z 55f036305357: Pull complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:40.0400157Z db07174d12aa: Pull complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:40.0491011Z 03f2ecc50d4c: Pull complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:46.0150051Z ff7cbe54dfda: Pull complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:46.0307120Z 0a26f79bdef8: Pull complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:46.0484136Z 1f1fbc5e4aa5: Pull complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:46.0630806Z 7f824adc2669: Pull complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:46.0714560Z 3cecd013db3b: Pull complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:46.0804214Z 7f0980702fb2: Pull complete
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:46.0836191Z Digest: sha256:3b0cda93be7c8dba2ed484d19393d93845dc3dafb88973e248ba8e6d99d784e1
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:46.0846895Z Status: Downloaded newer image for postgres:17
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:46.0981020Z 0bb3a7bdd9a8960d3305bc64612a769e74ff546093b52fedeac4cc8ebae00299
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:46.2875930Z /workspace/mab-m1-http-pg:55432 - no response
+isolated-m1-http	Start disposable locally isolated PostgreSQL 17	2026-11-04T23:18:48.3150102Z /workspace/mab-m1-http-pg:55432 - accepting connections
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	﻿2026-11-04T23:18:48.3192127Z ##[group]Run test "$(psql -X -At -h "$MOHEN_TEST_SOCKET" -p "$MOHEN_TEST_PORT" -U k3_admin -d postgres -c "select current_setting('mohen.test_instance',true)")" = "codex-k3-isolated"
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:48.3193638Z [36;1mtest "$(psql -X -At -h "$MOHEN_TEST_SOCKET" -p "$MOHEN_TEST_PORT" -U k3_admin -d postgres -c "select current_setting('mohen.test_instance',true)")" = "codex-k3-isolated"[0m
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:48.3194509Z [36;1munset MOHEN_TEST_STORAGE_CONFIG[0m
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:48.3194865Z [36;1munset DATABASE_URL[0m
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:48.3195184Z [36;1munset DEEPSEEK_API_KEY[0m
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:48.3195531Z [36;1munset SHANGHAI_LIBRARY_KEY[0m
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:48.3196204Z [36;1mpnpm test:mab:http[0m
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:48.3216858Z shell: /usr/bin/bash -e {0}
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:48.3217081Z env:
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:48.3217264Z   MOHEN_REVOCABLE_SESSIONS_ENABLED: true
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:48.3217508Z   MOHEN_TEST_PSQL: /usr/bin/psql
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:48.3217997Z   MOHEN_TEST_SOCKET: /workspace/mab-m1-http-pg
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:48.3218291Z   MOHEN_TEST_PORT: 55432
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:48.3218524Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:48.3218771Z ##[endgroup]
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:48.6711320Z 
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:48.6712704Z > mohen-agent-2.0@0.1.0 test:mab:http /home/runner/work/mohen-agent-2.0/mohen-agent-2.0
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:48.6713583Z > node scripts/test-mab-http.mjs
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:48.6713939Z 
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:49.8060614Z MAB_HTTP_BUILD_SYNTHETIC
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:50.2415528Z ⚠ No build cache found. Please configure build caching for faster rebuilds. Read more: https://nextjs.org/docs/messages/no-cache
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:50.3291375Z    ▲ Next.js 15.5.28
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:50.3304007Z 
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:18:50.3794156Z    Creating an optimized production build ...
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:06.2751344Z  ✓ Compiled successfully in 13.6s
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:06.2786390Z    Linting and checking validity of types ...
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:14.7536692Z    Collecting page data ...
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:17.9661257Z    Generating static pages (0/13) ...
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:18.8754475Z    Generating static pages (3/13) 
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:18.8769008Z    Generating static pages (6/13) 
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:18.8773420Z    Generating static pages (9/13) 
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:18.8774379Z  ✓ Generating static pages (13/13)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:19.7630393Z    Finalizing page optimization ...
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:19.7631278Z    Collecting build traces ...
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.2942342Z 
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.2985555Z Route (app)                                                   Size  First Load JS
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.2986728Z ┌ ○ /                                                        165 B         106 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.2987852Z ├ ○ /_not-found                                              990 B         104 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.2988618Z ├ ○ /admin                                                 6.47 kB         109 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.2989420Z ├ ○ /admin/sources                                         1.31 kB         104 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.2990189Z ├ ƒ /api/admin/acl                                           385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.2990926Z ├ ƒ /api/admin/assets                                        385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.2991690Z ├ ƒ /api/admin/assets/[id]/invalidation-requests             385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.2992409Z ├ ƒ /api/admin/assets/[id]/promote                           385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.2993108Z ├ ƒ /api/admin/assets/candidates                             385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.2993905Z ├ ƒ /api/admin/gates/audits                                  385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.2994874Z ├ ƒ /api/admin/jobs                                          385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.2996676Z ├ ƒ /api/admin/metrics                                       385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3028192Z ├ ƒ /api/admin/metrics/[id]                                  385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3029563Z ├ ƒ /api/admin/metrics/engagement                            385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3030872Z ├ ƒ /api/admin/navigation                                    385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3031772Z ├ ƒ /api/admin/publications                                  385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3032594Z ├ ƒ /api/admin/publications/[id]/unpublish                   385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3033442Z ├ ƒ /api/admin/publications/schedules                        385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3034259Z ├ ƒ /api/admin/rights/invalidate                             385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3035044Z ├ ƒ /api/admin/session                                       385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3036043Z ├ ƒ /api/admin/settings                                      385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3036793Z ├ ƒ /api/admin/sources                                       385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3037566Z ├ ƒ /api/admin/submissions                                   385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3038534Z ├ ƒ /api/admin/submissions/[id]                              385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3039337Z ├ ƒ /api/admin/submissions/[id]/decision                     385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3040157Z ├ ƒ /api/admin/submissions/batch                             385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3040925Z ├ ƒ /api/admin/users                                         385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3041742Z ├ ƒ /api/admin/users/[id]/status                             385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3042513Z ├ ƒ /api/auth/login                                          385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3043237Z ├ ƒ /api/auth/logout                                         385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3043972Z ├ ƒ /api/auth/me                                             385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3044692Z ├ ƒ /api/auth/register                                       385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3045481Z ├ ƒ /api/explore/entities/[id]                               385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3046278Z ├ ƒ /api/explore/events/[id]                                 385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3047041Z ├ ƒ /api/explore/relations/[id]                              385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3047991Z ├ ƒ /api/explore/search                                      385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3048715Z ├ ƒ /api/explore/sessions                                    385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3049443Z ├ ƒ /api/explore/sessions/[id]                               385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3050277Z ├ ƒ /api/explore/sessions/[id]/insight-views                 385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3051059Z ├ ƒ /api/explore/sessions/[id]/query                         385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3051839Z ├ ƒ /api/explore/sessions/[id]/return                        385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3052618Z ├ ƒ /api/explore/sessions/[id]/share                         385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3053377Z ├ ƒ /api/explore/sessions/[id]/surfaces                      385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3054142Z ├ ƒ /api/explore/spatial                                     385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3054925Z ├ ƒ /api/explore/spatial/compare                             385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3055725Z ├ ƒ /api/governance/gates/decisions                          385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3056543Z ├ ƒ /api/governance/gates/pending                            385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3057627Z ├ ƒ /api/governance/gates/requests                           385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3059352Z ├ ƒ /api/governance/gates/revoke                             385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3060231Z ├ ƒ /api/help/articles/[id]                                  385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3061070Z ├ ƒ /api/mohen/ask                                           385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3062215Z ├ ƒ /api/mohen/materials                                     385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3063159Z ├ ƒ /api/notifications                                       385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3063847Z ├ ƒ /api/public/evidence/[id]                                385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3064544Z ├ ƒ /api/public/policies                                     385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3065259Z ├ ƒ /api/public/works                                        385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3066177Z ├ ƒ /api/public/works/[id]                                   385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3066972Z ├ ƒ /api/public/works/[id]/eligibility                       385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3067948Z ├ ƒ /api/public/works/[id]/program                           385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3068759Z ├ ƒ /api/public/works/[id]/related                           385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3069578Z ├ ƒ /api/public/works/[id]/share                             385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3070317Z ├ ƒ /api/search                                              385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3071051Z ├ ƒ /api/session/me                                          385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3071809Z ├ ƒ /api/studio/assets                                       385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3072715Z ├ ƒ /api/studio/attachments                                  385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3073535Z ├ ƒ /api/studio/conversations                                385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3074353Z ├ ƒ /api/studio/conversations/[id]                           385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3075111Z ├ ƒ /api/studio/create                                       385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3075857Z ├ ƒ /api/studio/delegations/[id]                             385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3076661Z ├ ƒ /api/studio/delegations/[id]/controls                    385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3077471Z ├ ƒ /api/studio/direct                                       385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3078407Z ├ ƒ /api/studio/director-plans                               385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3079350Z ├ ƒ /api/studio/director-plans/[id]                          385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3080220Z ├ ƒ /api/studio/director-plans/[id]/panels                   385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3081052Z ├ ƒ /api/studio/director-plans/[id]/select                   385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3081882Z ├ ƒ /api/studio/materials/[id]                               385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3082712Z ├ ƒ /api/studio/materials/import                             385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3083527Z ├ ƒ /api/studio/plans                                        385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3084333Z ├ ƒ /api/studio/projects                                     385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3085247Z ├ ƒ /api/studio/research-tasks                               385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3086146Z ├ ƒ /api/studio/research-tasks/[id]/events                   385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3087042Z ├ ƒ /api/studio/research-tasks/[id]/materials                385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3088121Z ├ ƒ /api/studio/research-tasks/[id]/messages                 385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3089018Z ├ ƒ /api/studio/research-tasks/[id]/production               385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3089916Z ├ ƒ /api/studio/research-tasks/[id]/resume                   385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3090788Z ├ ƒ /api/studio/research-tasks/[id]/stages/[stage]           385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3091659Z ├ ƒ /api/studio/research-tasks/[id]/status                   385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3092470Z ├ ƒ /api/studio/tasks                                        385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3093416Z ├ ƒ /api/studio/works                                        385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3094222Z ├ ƒ /api/studio/works/[id]/beat-order                        385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3095038Z ├ ƒ /api/studio/works/[id]/fork                              385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3095876Z ├ ƒ /api/studio/works/[id]/media-candidates                  385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3096779Z ├ ƒ /api/studio/works/[id]/media-selection                   385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3097949Z ├ ƒ /api/studio/works/[id]/narration                         385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3098826Z ├ ƒ /api/studio/works/[id]/narration-suggestions             385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3099659Z ├ ƒ /api/studio/works/[id]/preview                           385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3100508Z ├ ƒ /api/studio/works/[id]/restore                           385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3101345Z ├ ƒ /api/studio/works/[id]/revisions                         385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3102259Z ├ ƒ /api/studio/works/[id]/revisions/[rev]                   385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3103155Z ├ ƒ /api/studio/works/[id]/revisions/[rev]/panels/[panel]    385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3104030Z ├ ƒ /api/studio/works/[id]/rewrite-beat                      385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3104898Z ├ ƒ /api/studio/works/[id]/rewrite-decisions                 385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3105746Z ├ ƒ /api/studio/works/[id]/stages                            385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3106611Z ├ ƒ /api/studio/works/[id]/status                            385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3107474Z ├ ƒ /api/studio/works/[id]/submissions                       385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3108386Z ├ ƒ /api/watch/sessions                                      385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3109157Z ├ ƒ /api/works                                               385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3109916Z ├ ƒ /api/works/[id]/publish                                  385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3110743Z ├ ƒ /api/works/[id]/submit                                   385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3111564Z ├ ƒ /api/works/published                                     385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3112382Z ├ ƒ /api/works/submitted                                     385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3113247Z ├ ○ /experience/jinze-water-net                            29.6 kB         139 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3114116Z ├ ƒ /experience/lvzhiqiu                                   9.48 kB         112 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3114922Z ├ ○ /explore                                               5.62 kB         115 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3115681Z ├ ○ /foundation                                              385 B         103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3116438Z ├ ○ /login                                                 1.19 kB         107 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3117213Z ├ ○ /register                                               1.3 kB         107 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3118361Z ├ ○ /studio                                                 6.4 kB         116 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3119125Z ├ ƒ /studio/desk                                           6.52 kB         109 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3119869Z └ ○ /watch                                                 2.45 kB         105 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3120531Z + First Load JS shared by all                               103 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3121255Z   ├ chunks/2261-c75fbc820b437d5c.js                        46.4 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3121947Z   ├ chunks/91a23b3f-712a30abddb1ae63.js                    54.2 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3122624Z   └ other shared chunks (total)                            1.95 kB
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3123009Z 
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3123090Z 
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3123429Z ○  (Static)   prerendered as static content
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3124157Z ƒ  (Dynamic)  server-rendered on demand
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.3124474Z 
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:31.8992560Z MAB_HTTP_BROWSER_SYNTHETIC
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:33.0045874Z 
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:33.0046823Z Running 16 tests using 1 worker
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:33.0047622Z 
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:35.7554370Z   ✓   1 tests/e2e/mab-m1-session-revocation.spec.ts:21:5 › M1 session immediately loses private-project access after account is disabled (1.2s)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:36.1995752Z   ✓   2 tests/e2e/mab-m1-session-revocation.spec.ts:60:5 › M1 logout invalidates cookie for subsequent private HTTP access (424ms)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:37.4022303Z   ✓   3 tests/e2e/mab-m1-session-revocation.spec.ts:76:5 › HP02 copied cookie cannot replay logout; another independent session remains usable (1.2s)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:38.2349838Z   ✓   4 tests/e2e/mab-m1-session-revocation.spec.ts:99:5 › HP02 logout UI preserves signed-in state when server revocation fails (821ms)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:39.9162953Z   ✓   5 tests/e2e/mab-m1-session-revocation.spec.ts:117:5 › HP08 permanent HOLD receipts are visible only to the project owner through real HTTP (1.7s)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:44.6659648Z   ✓   6 tests/e2e/mab-m4-plan.spec.ts:6:5 › M4 Owner plan persists after lost acknowledgement and reload; revoke is durable and foreign Owner denied (4.7s)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:45.5469818Z   ✓   7 tests/e2e/mab-m5-private-revisions.spec.ts:18:5 › private preview returns the saved body and does not disclose it to another Owner (858ms)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:46.2674850Z   ✓   8 tests/e2e/mab-m5-private-revisions.spec.ts:28:5 › parallel narration edits have one immutable revision winner and explicit version conflicts (707ms)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:47.2078830Z   ✓   9 tests/e2e/mab-m5-private-revisions.spec.ts:44:5 › real PG: concurrent forks have one CAS winner, retries are idempotent, historical restore preserves source (928ms)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:48.5135815Z   ✓  10 tests/e2e/mab-m5-private-revisions.spec.ts:121:5 › real PG: director commit binds Owner and exact plan, races safely and acknowledges a lost response (1.3s)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:48.6038535Z   ✓  11 tests/e2e/mab-m5-public-consumers.spec.ts:10:5 › legacy agent PASS cannot leak through public knowledge search or cached material endpoint (77ms)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:49.2144051Z   ✓  12 tests/e2e/mab-m5-public-consumers.spec.ts:31:5 › legacy published pointer without current G5 discloses no work through public consumers (600ms)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:52.1089421Z MAB_ST08_ST09_HTTP_PASS exact-submit separate-editor operator-publish ancestor-recheck withdraw
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:52.1100103Z MAB_WORK_G5_HTTP_PASS WATCH POS/NEG/current-ancestor-revoke four-consumer-real-PG-service
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:52.2693217Z   ✓  13 tests/e2e/mab-m5-public-consumers.spec.ts:68:5 › current independent G0-G5 permits only the bound work and WATCH loses it immediately on ancestor withdrawal (3.0s)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:54.8414911Z   ✓  14 tests/e2e/mab-notebook.spec.ts:12:5 › private notebook saves, reloads exact revisions, isolates owners and avoids duplicate assets after a lost acknowledgement (2.5s)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:55.4175738Z MAB_HTTP_ASSET_KIND_PASS research_brief
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:55.5124934Z MAB_HTTP_ASSET_KIND_PASS source_anchor
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:55.6001103Z MAB_HTTP_ASSET_KIND_PASS reading_note
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:55.6904895Z MAB_HTTP_ASSET_KIND_PASS evidence_note
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:55.7799812Z MAB_HTTP_ASSET_KIND_PASS spacetime_candidate
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:55.8683377Z MAB_HTTP_ASSET_KIND_PASS relation_hypothesis
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:55.9581916Z MAB_HTTP_ASSET_KIND_PASS humanistic_insight
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:56.0421670Z MAB_HTTP_ASSET_KIND_PASS research_collection
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:56.1346241Z MAB_HTTP_ASSET_KIND_PASS citation_snapshot
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:56.2240288Z MAB_HTTP_ASSET_KIND_PASS consented_feedback
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:56.2319157Z MAB_HTTP_CANONICAL_KIND_DENIED director_plan
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:56.2388263Z MAB_HTTP_CANONICAL_KIND_DENIED media_selection
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:56.2455583Z MAB_HTTP_CANONICAL_KIND_DENIED work_revision
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:56.8254355Z MAB_ADMIN_EXACT_REVISION_HTTP_PASS own-item history rights exact-use-event
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:57.0279998Z   ✓  15 tests/e2e/mab-notebook.spec.ts:91:5 › all thirteen asset kinds keep exact private revisions and canonical write boundaries over real HTTP (2.2s)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:57.0309252Z   -  16 tests/e2e/private-original-http.spec.ts:7:5 › authenticated multipart original reaches private Storage and returns identical bytes with owner isolation
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:57.0816910Z 
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:57.0820969Z   1 skipped
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:57.0821602Z   15 passed (24.5s)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:57.0964542Z MAB_HTTP_BROWSER_PASS no-production-data no-paid-provider-calls
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T23:19:57.4183715Z MAB_HTTP_SYNTHETIC_DATABASE_CLEANED
+isolated-m1-http	Remove disposable database	﻿2026-11-04T23:19:57.4402041Z ##[group]Run docker rm -f mohen-m1-http-pg17 2>/dev/null || true
+isolated-m1-http	Remove disposable database	2026-11-04T23:19:57.4402438Z [36;1mdocker rm -f mohen-m1-http-pg17 2>/dev/null || true[0m
+isolated-m1-http	Remove disposable database	2026-11-04T23:19:57.4402729Z [36;1msudo rm -rf "$MOHEN_TEST_SOCKET"[0m
+isolated-m1-http	Remove disposable database	2026-11-04T23:19:57.4420477Z shell: /usr/bin/bash -e {0}
+isolated-m1-http	Remove disposable database	2026-11-04T23:19:57.4420693Z env:
+isolated-m1-http	Remove disposable database	2026-11-04T23:19:57.4420884Z   MOHEN_REVOCABLE_SESSIONS_ENABLED: true
+isolated-m1-http	Remove disposable database	2026-11-04T23:19:57.4421131Z   MOHEN_TEST_PSQL: /usr/bin/psql
+isolated-m1-http	Remove disposable database	2026-11-04T23:19:57.4421378Z   MOHEN_TEST_SOCKET: /workspace/mab-m1-http-pg
+isolated-m1-http	Remove disposable database	2026-11-04T23:19:57.4421624Z   MOHEN_TEST_PORT: 55432
+isolated-m1-http	Remove disposable database	2026-11-04T23:19:57.4421864Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+isolated-m1-http	Remove disposable database	2026-11-04T23:19:57.4422113Z ##[endgroup]
+isolated-m1-http	Remove disposable database	2026-11-04T23:19:57.5870843Z mohen-m1-http-pg17
+isolated-m1-http	Post Run actions/setup-node@v4	﻿2026-11-04T23:19:57.6030708Z Post job cleanup.
+isolated-m1-http	Post Run actions/setup-node@v4	2026-11-04T23:19:57.7131743Z (node:4273) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+isolated-m1-http	Post Run actions/setup-node@v4	2026-11-04T23:19:57.7133223Z (Use `node --trace-deprecation ...` to show where the warning was created)
+isolated-m1-http	Post Run actions/setup-node@v4	2026-11-04T23:19:57.7134865Z Cache hit occurred on the primary key node-cache-Linux-x64-pnpm-53f83b0a1a7f909344bfe900808d1cc79e05074d63adaa7461c0b6e325787eb5, not saving cache.
+isolated-m1-http	Post Run pnpm/action-setup@v4	﻿2026-11-04T23:19:57.7249243Z Post job cleanup.
+isolated-m1-http	Post Run pnpm/action-setup@v4	2026-11-04T23:19:57.8822106Z Pruning is unnecessary.
+isolated-m1-http	Post Run actions/checkout@v4	﻿2026-11-04T23:19:57.9039797Z Post job cleanup.
+isolated-m1-http	Post Run actions/checkout@v4	2026-11-04T23:19:57.9925549Z [command]/usr/bin/git version
+isolated-m1-http	Post Run actions/checkout@v4	2026-11-04T23:19:57.9988319Z git version 2.56.0
+isolated-m1-http	Post Run actions/checkout@v4	2026-11-04T23:19:58.0032909Z Temporarily overriding HOME='/home/runner/work/_temp/98051f20-f244-4426-829d-fcbf24ca8584' before making global git config changes
+isolated-m1-http	Post Run actions/checkout@v4	2026-11-04T23:19:58.0039227Z Adding repository directory to the temporary git global config as a safe directory
+isolated-m1-http	Post Run actions/checkout@v4	2026-11-04T23:19:58.0049922Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/mohen-agent-2.0/mohen-agent-2.0
+isolated-m1-http	Post Run actions/checkout@v4	2026-11-04T23:19:58.0099019Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+isolated-m1-http	Post Run actions/checkout@v4	2026-11-04T23:19:58.0251093Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+isolated-m1-http	Post Run actions/checkout@v4	2026-11-04T23:19:58.0492134Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+isolated-m1-http	Post Run actions/checkout@v4	2026-11-04T23:19:58.0575241Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+isolated-m1-http	Post Run actions/checkout@v4	2026-11-04T23:19:58.1082894Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+isolated-m1-http	Post Run actions/checkout@v4	2026-11-04T23:19:58.1104120Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+isolated-m1-http	Complete job	﻿2026-11-04T23:19:58.1479430Z Cleaning up orphan processes
+isolated-m1-http	Complete job	2026-11-04T23:19:58.1763751Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, pnpm/action-setup@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

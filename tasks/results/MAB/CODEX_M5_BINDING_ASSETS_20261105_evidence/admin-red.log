@@ -1,0 +1,30 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/mab-hp11-knowledge-inspector-contract.test.ts (4 tests | 1 failed) 6ms
+   ✓ HP11 private knowledge asset display contract > cannot turn candidate fields into a signed G5 statement 1ms
+   ✓ HP11 private knowledge asset display contract > counts only actual stored arrays and refuses to fabricate missing provenance 0ms
+   ✓ HP11 private knowledge asset display contract > limits displayed private text and treats markup as text 1ms
+   × selects only the requested immutable revision within the selected asset history 3ms
+     → selectInspectedRevision is not a function
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/mab-hp11-knowledge-inspector-contract.test.ts > selects only the requested immutable revision within the selected asset history
+TypeError: selectInspectedRevision is not a function
+ ❯ tests/unit/mab-hp11-knowledge-inspector-contract.test.ts:30:9
+     28|  const current={asset_id:'a',revision_id:'new',rights_by_action:{displ…
+     29|  const old={asset_id:'a',revision_id:'old',payload:{text:'old'},rights…
+     30|  expect(selectInspectedRevision(current,[old],'old')).toEqual(old);
+       |         ^
+     31|  expect(selectInspectedRevision(current,[{...old,asset_id:'foreign'}],…
+     32|  expect(assetRightsSummary(old.rights_by_action)).toContain('denied');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  23:06:14
+   Duration  182ms (transform 33ms, setup 0ms, collect 31ms, tests 6ms, environment 0ms, prepare 47ms)
+

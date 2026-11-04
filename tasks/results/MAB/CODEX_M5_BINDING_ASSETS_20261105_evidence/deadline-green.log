@@ -1,0 +1,10 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ✓ tests/unit/studio-candidate-assessment.test.mjs (7 tests) 37ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  23:01:33
+   Duration  229ms (transform 33ms, setup 0ms, collect 29ms, tests 37ms, environment 0ms, prepare 55ms)
+

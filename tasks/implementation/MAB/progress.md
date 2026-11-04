@@ -958,3 +958,20 @@ Ruling: 当前M4允许完成可运行隔离链，真实第三方/生产验证仍
 - **实查不足**：作品→六类L5不可变修订→独立G5当前资格→精确consumer/purpose/scope/rights缺可信权威映射；`work-publish-qualification.ts`按原规则正确拒绝；10类通用私有候选和3类规范正文的源码分流已有，13种真实PG矩阵没有完成；`public.assets`图片台账仍非完整13类历史知识管理。安全写入检查曾阻断上一轮源码/测试提交，该部分`NOT_COMMITTED/NOT_RUN`，不能写PASS。
 - **Codex下一施工顺序**：从最新`origin/main`核CI/工作树→在现行独立G5与M3验证器上接合法WorkRevision/L5精确映射及WATCH、visual_stage、agent、evidence_on_demand四消费者逐请求验证→实际一次性PG/HTTP覆盖13类资产10私有+3规范拒绝和ST-01—09→Admin来源、版本、权利、使用事件可核查的具体知识条目后台→原M6—M8。每项真实源码SHA/正反证据与回滚继续写入`progress.md`和`target-diff.csv`。
 - **判定**：`M5_OVERALL_HOLD / M1_M4_PRODUCTION_CONDITIONS_HOLD / TECHNICAL_HANDOFF_NOT_READY`。这是Owner授权Codex继续执行，不意味着全部M1—M8正式准出；未获授权不做生产迁移、Gate签发、原件外发或外部付费。
+
+## 2026-11-05｜M5精确作品G5桥／13类持久矩阵／Admin历史／ST08—09（本批在核证）
+
+- BASE实时origin/main=a38190ac5526beea154b2b85edcc2b8a61bb0a25；本地旧work@759dbbd干净且保留，默认fetch旧refspec失败后显式fetch main成功，从最新main施工，无覆盖新成果。
+- 最新主CI41929766191 FAILURE实际为assessment定时器到期仍可能第二次查询。冻结墙钟RED→sticky timedOut GREEN，未重做既有导演CAS/fork/restore；集成套件沿用它们。
+- 只读WorkRevision→真实L5/current G5桥：既有独立签审receipt绑定完整持久content SHA256、work/rev、title/description、用途/消费者/精确scope、动作/期限；原policy必须要求整稿与权利checks，作者ref和作品审核不授G。无新表/正文/Gate/Signer或生产context配置。
+- 13类真实PG/HTTP私有持久矩阵（十类修订/来源依赖/Owner/rights unknown，三类规范对象通用拒写）、Admin选定历史版本及对应use_events、WATCH真实HTTP和ST08/ST09业务新增。完整结果与实际源码SHA/Actions取得后追加；未完成项不提前PASS。详见tasks/results/MAB/CODEX_M5_BINDING_ASSETS_20261105.md。
+- Ruling：复用原独立G5审计的被签收receipt作为可信整稿绑定，不让作者自报ref授资格，也不形成未来audit UUID循环摘要；缺专业/当前权利时继续HOLD，代价为暂不公开，无额外外发/费用。
+- 独立review无Critical/Important；minor保留三个其它消费者真实HTTP、其余五种L5逐类绑定。10+3为持久矩阵，非13类专业业务PASS；反馈同意撤回、合法解引用/跨题复用、canonical媒资、ST01—04与完整19组件仍须业务实证。M4-C04和全部上游生产/专业/外发/费用条件不变，M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY。
+
+- 本批源码已提交`ff5283ea8a719f69d37eee4ff4e8a1d4c5e4738e`；最终本地432单测PASS/4原SKIP、133边界、六工作区类型、PG17全套exit0、Next构建/Chromium15PASS/1官方Storage缺配置SKIP；ST08/ST09和Admin选定历史0/1事件已真实HTTP通过。完整证据见本批回执§5.1；远端Actions结果尚待追加，M5整体HOLD不变。
+
+- 第一源码`ff5283e`远端PG41932575876、HTTP41932576000 SUCCESS（15PASS/1StorageSKIP）；主CI41932575992 FAILURE只在74目标审计。根因是本批policy已适配而旧差异账仍SHA256_BYTES_MATCHED，分开提交造成声明滞后；本地已原位改ADAPTED，不改冻结目标/guard，errors=[]。失败保留，待新提交CI关闭；继续独立六L5/媒体/应用wrapper实测，不把既有PG/story_seed成功扩大。
+
+### 本轮原M5独立补证继续（不是新阶段）
+
+沿原HP07/HP12继续补齐六类L5×四消费者真实PG绑定/物理fingerprint变化拒绝/祖先撤销、签审整稿媒体clear/license/expiry正反、实际应用wrapper真实PG（不是同名测试替身）和出版WATCH资格；最终全PG17exit0，HTTP因共享fixture变化已重新15PASS/1StorageSKIP。生产reader/Gate/策略无新增修改。原review的六类PG覆盖minor关闭；其它三消费者各自HTTP、13类专业业务/同意撤回/合法复用/canonical媒资、ST01—04/19组件和生产条件保留。回执§6及新原始日志为准。审计差异账修正与新测试将随同提交，实际新SHA/Actions另补，first-source主CI失败不抹掉。

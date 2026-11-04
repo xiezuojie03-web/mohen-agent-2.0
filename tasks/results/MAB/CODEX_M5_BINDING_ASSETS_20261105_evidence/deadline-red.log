@@ -1,0 +1,33 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/studio-candidate-assessment.test.mjs (7 tests | 1 failed) 40ms
+   ✓ checks each exact candidate but keeps the immutable receipt and whole package HOLD 4ms
+   ✓ does not borrow producer qualification for agent consumption or foreign provider/identity 1ms
+   ✓ rejects altered object, revision, stage bindings, expired proofs and denied authority per item 1ms
+   ✓ does not cache success; bounds item count and denies expired delegation without calling authority 1ms
+   ✓ bounds stalled authority and does not continue querying after the assessment deadline 26ms
+   ✓ reports an absent verifier as not checked rather than falsely declaring the Gate invalid 0ms
+   × never starts another authority call after a timer expires even when wall clock is frozen 6ms
+     → expected "spy" to be called 1 times, but got 2 times
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/studio-candidate-assessment.test.mjs > never starts another authority call after a timer expires even when wall clock is frozen
+AssertionError: expected "spy" to be called 1 times, but got 2 times
+ ❯ tests/unit/studio-candidate-assessment.test.mjs:59:18
+     57|   await vi.advanceTimersByTimeAsync(100);
+     58|   const result=await pending;
+     59|   expect(verify).toHaveBeenCalledTimes(1);
+       |                  ^
+     60|   expect(result.items.every(x=>x.checks.T7==='GATE_NOT_VALID')).toBe(t…
+     61|  }finally{now.mockRestore();vi.useRealTimers();}
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  23:01:26
+   Duration  225ms (transform 30ms, setup 0ms, collect 26ms, tests 40ms, environment 0ms, prepare 55ms)
+

@@ -1,5 +1,11 @@
 # 墨痕 MAB｜Codex 当前执行交接书（唯一现行入口）
 
+> **2026-11-05｜同轮最新补证**：六类L5×四消费者真实PG绑定、物理修订变化拒绝、祖先撤销及整稿媒体权利正反已完成，实际应用wrapper PG也通过；共享fixture参数化后完整PG17与HTTP15PASS/1StorageSKIP复验通过。取代下方首批“仅story_seed/其它五类未验”的PG局限；其它三消费者各自产品HTTP、13类完整专业语义/反馈同意撤回/合法复用/canonical媒资、ST01—04/19组件仍未验。first-source ff5283e的PG41932575876/HTTP41932576000 SUCCESS，主CI41932575992因差异账字节等同旧声明FAIL，已原位改ADAPTED待新CI核证，不掩盖失败。最新补证SHA/CI见本批CODEX_M5_BINDING_ASSETS_20261105回执；M5整体/全部生产专业外发费用条件HOLD不变。
+
+> **2026-11-05｜最新实码接续（优先于以下历史入口）**：本批源码`ff5283ea8a719f69d37eee4ff4e8a1d4c5e4738e`新增只读精确WorkRevision→当前独立G5签审整稿/动作权利桥、10+3资产PG/HTTP持久矩阵、Admin历史精确版本/使用事件、ST08/ST09实际业务测试；本地432单测/133边界/六workspace类型/PG全套/Next+Chromium15PASS+1StorageSKIP，GitHub三流水线结果以`tasks/results/MAB/CODEX_M5_BINDING_ASSETS_20261105.md`最新核证为准。最新旧main CI41929766191的assessment超时2callback已稳定RED→GREEN修复。不要重做本批或此前导演CAS/fork/restore。
+>
+> **下一未闭合范围仍原M5/HP07/HP11/HP12**：四消费者中仅WATCH走真实Next HTTP，其余三个当前仅PG reader；绑定正例仅story_seed，其余五L5待逐类。10+3是持久/权限矩阵，不等于13类完整专业语义；真实来源合法解引用/跨题复用、反馈同意撤回、canonical媒资、ST01—04与完整H1/H2/H3/19组件及生产最小身份/Reviewer均未全验。M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY及M1—M4全部原固定条件保留；签审策略/生产context/正式Gate、外发与费用无新授权。原PLAN/progress/target-diff/CURRENT已原位记账，精确SHA/CI/证据与回退见本批回执。
+
 > **2026-11-05｜Owner要求Codex接续的最新交接入口（优先于本文以下历史“下一步”描述）**
 >
 > - 最新已核实源业务提交 `608ff72fe9d2c141b1ca5a4bc49c804e5c8a6b74`：导演方案提交CAS＋丢失HTTP成功回执的原expected版本幂等。主CI [41841366673](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41841366673) SUCCESS、真实隔离PG/Chromium [41841366704](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41841366704) SUCCESS（13PASS／1StorageSKIP）。此前`08fa04e`的fork／restore真实隔离PG已PASS。上述仅是M5局部`VERIFIED_ISOLATED`，不要重复，不是发布G5/完整产品PASS。

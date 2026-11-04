@@ -1,0 +1,140 @@
+build	Unit tests (no DB)	﻿2026-11-04T22:58:15.1831374Z ##[group]Run pnpm test:unit
+build	Unit tests (no DB)	2026-11-04T22:58:15.1831680Z [36;1mpnpm test:unit[0m
+build	Unit tests (no DB)	2026-11-04T22:58:15.1865333Z shell: /usr/bin/bash -e {0}
+build	Unit tests (no DB)	2026-11-04T22:58:15.1865576Z env:
+build	Unit tests (no DB)	2026-11-04T22:58:15.1865811Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+build	Unit tests (no DB)	2026-11-04T22:58:15.1866101Z ##[endgroup]
+build	Unit tests (no DB)	2026-11-04T22:58:15.4359334Z 
+build	Unit tests (no DB)	2026-11-04T22:58:15.4360743Z > mohen-agent-2.0@0.1.0 test:unit /home/runner/work/mohen-agent-2.0/mohen-agent-2.0
+build	Unit tests (no DB)	2026-11-04T22:58:15.4361577Z > vitest run --config vitest.unit.config.ts
+build	Unit tests (no DB)	2026-11-04T22:58:15.4378632Z 
+build	Unit tests (no DB)	2026-11-04T22:58:15.6802427Z 
+build	Unit tests (no DB)	2026-11-04T22:58:15.6814744Z [1m[46m RUN [49m[22m [36mv3.2.7 [39m[90m/home/runner/work/mohen-agent-2.0/mohen-agent-2.0[39m
+build	Unit tests (no DB)	2026-11-04T22:58:15.6827941Z 
+build	Unit tests (no DB)	2026-11-04T22:58:16.0518947Z  [32m✓[39m tests/unit/studio-receive-candidate.test.mjs [2m([22m[2m17 tests[22m[2m)[22m[32m 86[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:17.0182564Z  [32m✓[39m tests/unit/private-original-storage.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 756[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:17.0183830Z    [33m[2m✓[22m[39m bounds persistent GET 5xx attempts and never treats upstream failure as absence or uploads [33m 301[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:17.2331131Z  [32m✓[39m tests/unit/studio-plan.test.mjs [2m([22m[2m13 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:17.4904192Z  [32m✓[39m tests/unit/mab-hp08-research-resume.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:17.7122134Z  [32m✓[39m tests/unit/mab-m5-publication-atomic.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:17.9570698Z  [32m✓[39m tests/unit/studio-plans-route.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:18.1586820Z  [32m✓[39m tests/unit/private-evidence-stage.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:18.3621156Z  [32m✓[39m tests/unit/private-evidence-binding.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:18.6229653Z  [32m✓[39m tests/unit/studio-original-attachment-route.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:18.8318443Z  [32m✓[39m tests/unit/studio-jsonb.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:19.0324308Z  [32m✓[39m tests/unit/mab-hp08-tool-ledger.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:19.2177483Z  [32m✓[39m tests/unit/mab-hp08-production-reservation.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:19.4699289Z  [32m✓[39m tests/unit/imported-material-route.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:19.6782799Z  [31m❯[39m tests/unit/studio-candidate-assessment.test.mjs [2m([22m[2m6 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 36[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:19.6784211Z    [32m✓[39m checks each exact candidate but keeps the immutable receipt and whole package HOLD[32m 3[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:19.6786481Z    [32m✓[39m does not borrow producer qualification for agent consumption or foreign provider/identity[32m 1[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:19.6787421Z    [32m✓[39m rejects altered object, revision, stage bindings, expired proofs and denied authority per item[32m 1[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:19.6788300Z    [32m✓[39m does not cache success; bounds item count and denies expired delegation without calling authority[32m 1[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:19.6789228Z [31m   [31m×[31m bounds stalled authority and does not continue querying after the assessment deadline[39m[32m 29[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:19.6789924Z [31m     → expected "spy" to be called 1 times, but got 2 times[39m
+build	Unit tests (no DB)	2026-11-04T22:58:19.6790593Z    [32m✓[39m reports an absent verifier as not checked rather than falsely declaring the Gate invalid[32m 0[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:19.9037478Z  [32m✓[39m tests/unit/mab-hp08-studio-routes.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:20.1284667Z  [32m✓[39m tests/unit/mab-m5-fork-restore.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:20.3418080Z  [32m✓[39m tests/unit/mab-hp02-session-revocation.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:20.5268391Z  [32m✓[39m tests/unit/independent-gate-client.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:20.7542114Z  [32m✓[39m tests/unit/submission-routes.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:20.9992536Z  [32m✓[39m tests/unit/mab-m5-director-commit.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:21.1815486Z  [32m✓[39m tests/unit/m3-gate-preflight.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:21.3668282Z [90mstderr[2m | tests/unit/mab-hp07-visual-current-g5.test.ts[2m > [22m[2mHP07 visual stage exact current G5 and safe topic filtering[2m > [22m[2mfails closed rather than displaying old legacy PASS data when the DB qualifier fails
+build	Unit tests (no DB)	2026-11-04T22:58:21.3683619Z [22m[39m[read-model-bridge] 读取真实发布成果失败： CURRENT_G5_UNAVAILABLE
+build	Unit tests (no DB)	2026-11-04T22:58:21.3710452Z 
+build	Unit tests (no DB)	2026-11-04T22:58:21.3711104Z  [32m✓[39m tests/unit/mab-hp07-visual-current-g5.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:21.5657107Z  [32m✓[39m tests/unit/studio-plan-service.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:21.7592293Z  [32m✓[39m tests/unit/private-original-source-binding.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:21.9617262Z  [32m✓[39m tests/unit/auth-session.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:22.1517616Z  [32m✓[39m tests/unit/private-text-reading-repository.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:22.3835472Z  [32m✓[39m tests/unit/mab-m5-public-consumers.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:22.6030920Z  [32m✓[39m tests/unit/studio-asset-routes.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:22.8628433Z  [32m✓[39m tests/unit/public-evidence-qualification.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:23.0580961Z  [32m✓[39m tests/unit/kad1-policy.test.mjs [2m([22m[2m10 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:23.2767042Z  [32m✓[39m tests/unit/mab-hp03-asset-history-route.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:23.4879868Z  [32m✓[39m tests/unit/studio-delegation-route.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:23.6796560Z  [32m✓[39m tests/unit/material-score.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:23.8928336Z  [32m✓[39m tests/unit/mab-hp11-review-route.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:24.1018438Z  [32m✓[39m tests/unit/middleware-authorization.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:24.2884744Z  [32m✓[39m tests/unit/publication-submission.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:24.4751079Z  [32m✓[39m tests/unit/mab-hp11-review-revision.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:24.6853416Z  [32m✓[39m tests/unit/kad1-route.test.mjs [2m([22m[2m10 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:24.8961447Z  [32m✓[39m tests/unit/studio-execution-route.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:25.1217253Z  [32m✓[39m tests/unit/mab-hp08-ledger-reconciliation.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:25.3066510Z  [32m✓[39m tests/unit/mab-hp06-signer-connection.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:25.4723825Z  [2m[90m↓[39m[22m tests/unit/k7-five-themes.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+build	Unit tests (no DB)	2026-11-04T22:58:25.6919807Z  [32m✓[39m tests/unit/admin-authorization.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:25.9004048Z  [32m✓[39m tests/unit/studio-delegation.test.mjs [2m([22m[2m8 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:26.0829554Z  [32m✓[39m tests/unit/studio-execution.test.mjs [2m([22m[2m7 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:26.2852620Z [90mstderr[2m | tests/unit/mab-m5-qualified-retrieve.test.ts[2m > [22m[2mmissing server qualification context refuses even legacy PASS rows before querying
+build	Unit tests (no DB)	2026-11-04T22:58:26.2857089Z [22m[39m[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+build	Unit tests (no DB)	2026-11-04T22:58:26.2857465Z 
+build	Unit tests (no DB)	2026-11-04T22:58:26.2863043Z [90mstderr[2m | tests/unit/mab-m5-qualified-retrieve.test.ts[2m > [22m[2minvalid context refuses before querying: {}
+build	Unit tests (no DB)	2026-11-04T22:58:26.2864022Z [22m[39m[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+build	Unit tests (no DB)	2026-11-04T22:58:26.2864496Z 
+build	Unit tests (no DB)	2026-11-04T22:58:26.2867693Z [90mstderr[2m | tests/unit/mab-m5-qualified-retrieve.test.ts[2m > [22m[2minvalid context refuses before querying: {"consumer":"agent","purpose":{"namespace":"G5","code":"fixture","version":"1"},"scope":{}}
+build	Unit tests (no DB)	2026-11-04T22:58:26.2868776Z [22m[39m[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+build	Unit tests (no DB)	2026-11-04T22:58:26.2869189Z 
+build	Unit tests (no DB)	2026-11-04T22:58:26.2871748Z [90mstderr[2m | tests/unit/mab-m5-qualified-retrieve.test.ts[2m > [22m[2minvalid context refuses before querying: {"consumer":"agent","purpose":{"namespace":"G5","code":"fixture","version":"1"},"scope":{}}
+build	Unit tests (no DB)	2026-11-04T22:58:26.2873269Z [22m[39m[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+build	Unit tests (no DB)	2026-11-04T22:58:26.2873682Z 
+build	Unit tests (no DB)	2026-11-04T22:58:26.2876346Z [90mstderr[2m | tests/unit/mab-m5-qualified-retrieve.test.ts[2m > [22m[2minvalid context refuses before querying: {"consumer":"watch","purpose":{"namespace":"G5","code":"fixture","version":"1"},"scope":{"project":"fixture"}}
+build	Unit tests (no DB)	2026-11-04T22:58:26.2877457Z [22m[39m[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+build	Unit tests (no DB)	2026-11-04T22:58:26.2877865Z 
+build	Unit tests (no DB)	2026-11-04T22:58:26.2880771Z [90mstderr[2m | tests/unit/mab-m5-qualified-retrieve.test.ts[2m > [22m[2minvalid context refuses before querying: {"consumer":"agent","purpose":{"namespace":"G5","code":"fixture","version":""},"scope":{"project":"fixture"}}
+build	Unit tests (no DB)	2026-11-04T22:58:26.2881829Z [22m[39m[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+build	Unit tests (no DB)	2026-11-04T22:58:26.2882258Z 
+build	Unit tests (no DB)	2026-11-04T22:58:26.2898157Z [90mstderr[2m | tests/unit/mab-m5-qualified-retrieve.test.ts[2m > [22m[2mreturns no materials when current qualification database is unavailable
+build	Unit tests (no DB)	2026-11-04T22:58:26.2899520Z [22m[39m[mohen/retrieve] 检索失败： synthetic database unavailable
+build	Unit tests (no DB)	2026-11-04T22:58:26.2899981Z 
+build	Unit tests (no DB)	2026-11-04T22:58:26.2908447Z  [32m✓[39m tests/unit/mab-m5-qualified-retrieve.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:26.4727134Z  [32m✓[39m tests/unit/mab-m4-tool-receipt-failure.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:26.6821444Z  [32m✓[39m tests/unit/mab-m5-material-cache.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:26.9031440Z  [32m✓[39m tests/unit/mab-m3-revocation-http.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:27.2885499Z  [32m✓[39m tests/unit/k3-traceability.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 194[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:27.5154953Z  [32m✓[39m tests/unit/studio-attachment-storage.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:27.6836953Z  [2m[90m↓[39m[22m tests/unit/shl-materials.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+build	Unit tests (no DB)	2026-11-04T22:58:27.8731955Z  [32m✓[39m tests/unit/query-plan.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:28.0768095Z  [32m✓[39m tests/unit/mab-m5-preview.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:28.2761853Z  [32m✓[39m tests/unit/private-worker-pool.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:28.4673046Z  [32m✓[39m tests/unit/governance-boundary.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:28.7825560Z  [32m✓[39m tests/unit/production-trigger.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 88[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:28.9949770Z  [32m✓[39m tests/unit/database-session.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:29.1720609Z  [32m✓[39m tests/unit/mab-hp11-knowledge-inspector-contract.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:29.3765020Z  [32m✓[39m tests/unit/mab-m4-tool-registration.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:29.5672506Z  [32m✓[39m tests/unit/mab-m5-revision-cas.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:29.7486235Z  [32m✓[39m tests/unit/mab-m3-independent-revocation-boundary.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:29.9132396Z  [32m✓[39m tests/unit/conversation-ownership.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:30.1017653Z  [32m✓[39m tests/unit/mab-hp12-g5-hold.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:30.3217540Z  [2m[90m↓[39m[22m tests/unit/commons-materials.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+build	Unit tests (no DB)	2026-11-04T22:58:30.5038056Z  [32m✓[39m tests/unit/imported-material-rights.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:30.6744737Z  [2m[90m↓[39m[22m tests/unit/loc-materials.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+build	Unit tests (no DB)	2026-11-04T22:58:30.6896261Z 
+build	Unit tests (no DB)	2026-11-04T22:58:30.6914281Z [31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+build	Unit tests (no DB)	2026-11-04T22:58:30.6933083Z 
+build	Unit tests (no DB)	2026-11-04T22:58:30.6944433Z [41m[1m FAIL [22m[49m tests/unit/studio-candidate-assessment.test.mjs[2m > [22mbounds stalled authority and does not continue querying after the assessment deadline
+build	Unit tests (no DB)	2026-11-04T22:58:30.6967188Z [31m[1mAssertionError[22m: expected "spy" to be called 1 times, but got 2 times[39m
+build	Unit tests (no DB)	2026-11-04T22:58:30.6967557Z 
+build	Unit tests (no DB)	2026-11-04T22:58:30.6968269Z [36m [2m❯[22m tests/unit/studio-candidate-assessment.test.mjs:[2m44:135[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:30.6969070Z [2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m62 passed[39m[22m[2m | [22m[33m4 skipped[39m[90m (67)[39m
+build	Unit tests (no DB)	2026-11-04T22:58:30.7021472Z     [90m 42| [39m [35mconst[39m verify[33m=[39mvi[33m.[39m[34mfn[39m(()[33m=>[39m[35mnew[39m [33mPromise[39m(()[33m=>[39m{}))[33m,[39mstarted[33m=[39m[33mDate[39m[33m.[39m[34mnow[39m()[33m;[39m
+build	Unit tests (no DB)	2026-11-04T22:58:30.7022617Z [2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m428 passed[39m[22m[2m | [22m[33m4 skipped[39m[90m (433)[39m
+build	Unit tests (no DB)	2026-11-04T22:58:30.7036685Z     [90m 43| [39m const result=await assessStudioReceiptCandidates({delegation:delegati…
+build	Unit tests (no DB)	2026-11-04T22:58:30.7037222Z [2m   Start at [22m 22:58:15
+build	Unit tests (no DB)	2026-11-04T22:58:30.7037736Z     [90m 44| [39m expect(Date.now()-started).toBeLessThan(500);expect(result.items.ever…
+build	Unit tests (no DB)	2026-11-04T22:58:30.7038515Z [2m   Duration [22m 15.01s[2m (transform 1.03s, setup 0ms, collect 2.46s, tests 1.60s, environment 16ms, prepare 4.43s)[22m
+build	Unit tests (no DB)	2026-11-04T22:58:30.7042400Z     [90m   | [39m                                                                                                                                      [31m^[39m
+build	Unit tests (no DB)	2026-11-04T22:58:30.7048582Z 
+build	Unit tests (no DB)	2026-11-04T22:58:30.7049052Z 
+build	Unit tests (no DB)	2026-11-04T22:58:30.7101880Z ##[error]AssertionError: expected "spy" to be called 1 times, but got 2 times
+build	Unit tests (no DB)	 ❯ tests/unit/studio-candidate-assessment.test.mjs:44:135
+build	Unit tests (no DB)	
+build	Unit tests (no DB)	
+build	Unit tests (no DB)	2026-11-04T22:58:30.7110012Z     [90m 45| [39m})[33m;[39m
+build	Unit tests (no DB)	2026-11-04T22:58:30.7110526Z     [90m 46| [39mit('reports an absent verifier as not checked rather than falsely decl…
+build	Unit tests (no DB)	2026-11-04T22:58:30.7110827Z 
+build	Unit tests (no DB)	2026-11-04T22:58:30.7111077Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+build	Unit tests (no DB)	2026-11-04T22:58:30.7111270Z 
+build	Unit tests (no DB)	2026-11-04T22:58:30.7985572Z  ELIFECYCLE  Command failed with exit code 1.
+build	Unit tests (no DB)	2026-11-04T22:58:30.8311520Z ##[error]Process completed with exit code 1.

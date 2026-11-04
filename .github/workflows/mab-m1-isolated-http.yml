@@ -9,6 +9,7 @@ on:
     paths:
       - ".github/workflows/mab-m1-isolated-http.yml"
       - "scripts/test-mab-http.mjs"
+      - "tests/fixtures/mab-work-g5.mjs"
       - "apps/web/app/studio/desk/ResearchPlan.tsx"
       - "apps/web/app/studio/desk/ProjectNotebook.tsx"
       - "apps/web/lib/studio-plans.ts"

@@ -55,6 +55,9 @@ try {
   const consumptionResult = spawnSync(process.execPath, ["tests/data-production/read-model-qualification.integration.mjs"], { cwd: root,
     env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
   if (consumptionResult.status !== 0) throw new Error("QUALIFICATION_CONSUMPTION_TEST_FAILED");
+  const workFacetsResult=spawnSync(process.execPath,['tests/data-production/work-g5-facets.integration.mjs'],{
+    cwd:root,env:{...process.env,MOHEN_TEST_DATABASE:database},stdio:'inherit'});
+  if(workFacetsResult.status!==0)throw Error('WORK_G5_FACETS_TEST_FAILED');
   const studioMigration = fs.readdirSync(directory).find(n => n.endsWith("_mab_studio_assets.sql"));
   if (studioMigration) {
     apply(studioMigration);

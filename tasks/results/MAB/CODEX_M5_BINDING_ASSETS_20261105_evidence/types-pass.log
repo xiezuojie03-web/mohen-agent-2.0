@@ -1,0 +1,6 @@
+TYPECHECK_PASS apps/web
+TYPECHECK_PASS packages/agent-runtime
+TYPECHECK_PASS packages/data-access
+TYPECHECK_PASS packages/domain
+TYPECHECK_PASS packages/experience-engine
+TYPECHECK_PASS packages/ui

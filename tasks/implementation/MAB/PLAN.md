@@ -890,3 +890,13 @@ M5本批源码最终核证：e5a3a5b主CI41828369677、隔离PG41828369318、实
 ### 2026-11-05｜M5只读差异确认与Codex执行权接续（非计划变更）
 
 Owner要求把ChatGPT上一轮M5/HP07/HP11/HP12只读审查写回仓库并交Codex继续执行。已归档`tasks/results/MAB/M5_HP07_HP11_HP12_READONLY_AUDIT_20261104.md`并更新唯一交接入口`tasks/implementation/MAB/CODEX_HANDOFF_CURRENT.md`。此前`608ff72f`导演提交/回执幂等与`08fa04e`fork/restore已具真实隔离PG/Chromium正反证据；**此轮只读审查不含新源码或新增测试PASS**，对目标差异账不新增`CODE_PRESENT`。核实仍缺WorkRevision→L5精确不可变修订→当前独立G5→每consumer/purpose/scope/rights的权威映射、13类资产10+3真实PG矩阵与Admin具体条目业务核销。按原M5/HP07/HP11/HP12及M4-C04继续，原M0—M8/HP01—HP13结构、MHKA/KAD6、生产固定条件、独立Gate与费用/外发边界均不改变；Codex工作以实时origin/main接续，技术准出及M5整体保持HOLD。
+
+### 2026-11-05｜原M5/HP07/HP11/HP12源码续建（不改阶段与准出标准）
+
+已沿现行顺序补只读WorkRevision→真实L5 fingerprint/current独立G5→精确purpose/scope/consumer及签审整稿动作权利桥；原G5 policy/receipt必须明确核整稿与权利，否则继续失败关闭。同步补10+3类私有持久PG/HTTP矩阵、Admin具体条目历史修订与use_events、WATCH及ST08/ST09隔离业务证据；取得源码SHA/Actions后在本节与progress核证，不把当前源码/合成审签称专业PASS。最新main的assessment超时CI失败已定向RED→GREEN，既有导演CAS/fork/restore继承。明细tasks/results/MAB/CODEX_M5_BINDING_ASSETS_20261105.md。
+
+**原复选框不勾、M5_OVERALL_HOLD不变**：三其它消费者各自HTTP、其余五L5绑定、13类完整专业业务/同意撤回/来源合法复用/canonical媒资、ST01—04与H1/H2/H3/19组件、真实Reviewer及所有M1—M4固定生产条件仍保留。仅测试环境配置consumer contexts，不执行生产迁移/激活/私人资料外发或收费调用。回滚为关闭新context或资格桥恢复原拒绝，保留全部作品/历史/审计，不恢复legacy旁路。
+
+本批源码`ff5283ea8a719f69d37eee4ff4e8a1d4c5e4738e`最终本地：432单测/4原SKIP、133边界、六工作区类型、PG全套、Next/Chromium15PASS/1Storage缺配置SKIP。仅本批隔离工程子项；GitHub实际三流水线结果待核后追加，原M5复选框和全部具名HOLD不改。
+
+同轮按原M5继续补证：六类L5×四消费者已逐类真实PG正例/物理换版拒绝/祖先撤销，签审整稿媒体权利正反与实际应用wrapper PG也PASS；完整PG17exit0、共享fixture参数化后HTTP仍15PASS/1StorageSKIP。首批仅story_seed的PG覆盖缺口关闭；其它三产品HTTP、13类专业语义/反馈撤回/合法复用/canonical媒资及ST01—04/19组件和全部生产条件保持原HOLD。实际精确SHA/CI依本批回执§5—6核证，不改变阶段准出分母。
