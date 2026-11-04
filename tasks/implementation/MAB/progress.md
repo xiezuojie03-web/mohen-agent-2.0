@@ -948,3 +948,13 @@ Ruling: 当前M4允许完成可运行隔离链，真实第三方/生产验证仍
 - [主CI41841366673](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41841366673) **SUCCESS**；[隔离PG17/Chromium41841366704](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41841366704) **SUCCESS**。Job126613506876明确新增导演并发/跨Owner/回执重试用例 PASS，整体13PASS/1StorageSKIP、合成数据库清理完成。8个不同方案一个200、七个409；相同方案原expected头重试返回相同revision。
 - 专项`M5_DIRECTOR_REVISION_VERIFIED_ISOLATED`；现有fork/restore已验证结果继承。真实史料/独立G5/正式发布/Owner体验/上游M1—M4生产条件均未因此通过，M5整体仍HOLD、HANDOFF_NOT_READY。详细回执沿用`tasks/results/MAB/CHATGPT_M5_REVISION_CAS_20261104.md`第5节，目标差异账按行补充。
 - 下一优先仍是原M5/HP07/HP10—12：`work_revision↔L5@revision↔current G5↔purpose/consumer/rights`具名合法映射与授权消费者逐请求核查；ST-01—09及13类资产实际业务正反验收。若专业映射仍无可核实权威类型/Review部署，维持HOLD、不自授资格，不重做已过隔离PG子项。
+
+
+## 2026-11-05｜M5 HP07/HP11/HP12 GitHub归档与Owner转Codex接续（仅只读审查，不是代码准出）
+
+- **Owner指令**：将ChatGPT上一轮审查成果原位写入GitHub并交给Codex持续施工。承接既有MAB M0—M8和MHKA/KAD6，不修改施工顺序或发布标准，不新设任务树。
+- **已写入成果**：`tasks/results/MAB/M5_HP07_HP11_HP12_READONLY_AUDIT_20261104.md`；`tasks/implementation/MAB/CODEX_HANDOFF_CURRENT.md`置顶最新接续点。只读审查源仓库为`main@edce77451fba459b9027192923d9a8faa5e38a29`；该源HEAD的[CI41842068185](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41842068185) SUCCESS。写入这些文件仅是文档归档，不增加程序功能。
+- **应继承、不要重复**：`608ff72f`导演CAS/同Owner/回执重试主CI[41841366673](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41841366673)及隔离PG/Chromium[41841366704](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41841366704) SUCCESS（13PASS/1StorageSKIP）；此前`08fa04e` fork/restore隔离PG/Chromium[41838116408](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41838116408) SUCCESS。以上均局部`VERIFIED_ISOLATED`，不能伪称正式专业G5、13类资产或M5整体PASS。
+- **实查不足**：作品→六类L5不可变修订→独立G5当前资格→精确consumer/purpose/scope/rights缺可信权威映射；`work-publish-qualification.ts`按原规则正确拒绝；10类通用私有候选和3类规范正文的源码分流已有，13种真实PG矩阵没有完成；`public.assets`图片台账仍非完整13类历史知识管理。安全写入检查曾阻断上一轮源码/测试提交，该部分`NOT_COMMITTED/NOT_RUN`，不能写PASS。
+- **Codex下一施工顺序**：从最新`origin/main`核CI/工作树→在现行独立G5与M3验证器上接合法WorkRevision/L5精确映射及WATCH、visual_stage、agent、evidence_on_demand四消费者逐请求验证→实际一次性PG/HTTP覆盖13类资产10私有+3规范拒绝和ST-01—09→Admin来源、版本、权利、使用事件可核查的具体知识条目后台→原M6—M8。每项真实源码SHA/正反证据与回滚继续写入`progress.md`和`target-diff.csv`。
+- **判定**：`M5_OVERALL_HOLD / M1_M4_PRODUCTION_CONDITIONS_HOLD / TECHNICAL_HANDOFF_NOT_READY`。这是Owner授权Codex继续执行，不意味着全部M1—M8正式准出；未获授权不做生产迁移、Gate签发、原件外发或外部付费。
