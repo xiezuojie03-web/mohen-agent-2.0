@@ -1,0 +1,76 @@
+{
+  "baseline": "f8a32c72f1029df2e670937f3b41f0800f27fdcf",
+  "scope": "synthetic isolated PG17/Next/Chromium; no external Provider or production; Storage not configured",
+  "files": [
+    {
+      "file": "unit.log",
+      "sha256": "e17f91ea08a07bc6ab099d935e793d6e961c8d9467d8a1ec43447c2feb664e50",
+      "bytes": 4735
+    },
+    {
+      "file": "next-build-chromium.log",
+      "sha256": "b82e162c7fd2966c9c7eef1020cd7698534c61238cc1526fcc6e46e4a5b39eab",
+      "bytes": 12692
+    },
+    {
+      "file": "postgres17.log",
+      "sha256": "87002103d06e37635890b83fc5f9926cdac025e02f09c8df2b480c2836f7c2c6",
+      "bytes": 4808
+    },
+    {
+      "file": "typecheck.log",
+      "sha256": "d847d8fb5e11d8e314ad268fa1e95b84752937c00ee655dc982faec8cddbea8a",
+      "bytes": 657
+    },
+    {
+      "file": "production-boundaries.log",
+      "sha256": "5e4eb8d48bac8018d7e54cf0ae1e6a21dbec95848e841caa49f39be548995500",
+      "bytes": 11498
+    },
+    {
+      "file": "auth.log",
+      "sha256": "3c59e599d6a9ef642e52a7d751c8f0c34b4c39c0321ccca7685a1a05a4351c26",
+      "bytes": 132
+    },
+    {
+      "file": "auth.csv",
+      "sha256": "f7e6228158b2592ecdd32f7f1acb8b5060c1861d164e0f9b4c41b9f71bc3dbd0",
+      "bytes": 5340
+    },
+    {
+      "file": "traceability.log",
+      "sha256": "789a505aaa088474cb1af15f547c59aa95cf6c3d4eb3a56ccf33ead6cd9846b1",
+      "bytes": 70
+    },
+    {
+      "file": "same-lease-red.log",
+      "sha256": "22854778043fc6dd24d00e010cb1ceb4c6cc963ec17a02efeee15792bd36d864",
+      "bytes": 1067
+    },
+    {
+      "file": "same-lease-green.log",
+      "sha256": "9e729dfac1020aa7f13fd1fd92066f262188712950eaca4c203d9a9b849c5686",
+      "bytes": 1176
+    },
+    {
+      "file": "plan-recovery-red.log",
+      "sha256": "409b9248d94120b0ac2a811d01b62b94e8458fffa12a031ea66e8cc77cfb8ab4",
+      "bytes": 9301
+    },
+    {
+      "file": "plan-recovery-green.log",
+      "sha256": "1debb1d8b19758ccae7106e82f29329f0f27a0de079df884ee084a0dc2cd73c0",
+      "bytes": 401
+    },
+    {
+      "file": "recovery-binding-red.log",
+      "sha256": "4e5b02d2d3172efa41dc69e87e8343669f27e4aee0646aeb342e3c056fc23a9c",
+      "bytes": 1729
+    },
+    {
+      "file": "recovery-binding-green.log",
+      "sha256": "f5e20575bfca92228afad268fcb87431bd85459ae641ad352b617b0ab2a64ae5",
+      "bytes": 284
+    }
+  ]
+}

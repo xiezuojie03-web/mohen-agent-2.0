@@ -20,6 +20,9 @@ export interface ToolSpec {
 
 /** 工具注册表：未登记的 tool_id 一律不运行。 */
 export const TOOL_REGISTRY: Record<string, ToolSpec> = {
+  // Local processing reads existing byte/rights/qualification evidence only.
+  // This does not price or dispatch an external model/Reviewer generation.
+  "receive-candidate": {toolId:"receive-candidate",capability:"候选只读七项核验",cost:0,trustTier:"deterministic",idempotent:true},
   "llm-understand": { toolId: "llm-understand", capability: "意图理解", cost: 1, trustTier: "llm", idempotent: true },
   "retrieve-local": { toolId: "retrieve-local", capability: "本地合格知识检索", cost: 0, trustTier: "deterministic", idempotent: true },
   "retrieve-shl": { toolId: "retrieve-shl", capability: "上海图书馆开放数据检索", cost: 1, trustTier: "external", idempotent: true },

@@ -272,6 +272,42 @@ try {
  assert.equal(assessment.state,'HOLD');assert.equal(assessment.knowledge_use_authorized,false);
  assert.equal(assessment.cost,null);assert.equal(assessment.cost_confidence,'UNKNOWN');
 
+ // Complete bounded UTF8 ReceiveCandidate uses the original M2 byte/source
+ // authorities plus the actual current independent G1. These are synthetic
+ // professional decisions; no provider was invoked or historical fact approved.
+ const receiveSource={original_id:originalId,source_version_id:version,raw_item_id:raw,raw_sha256:hash};
+ const receiveEnvelope=await delegations.saveDelegation({...envelope,seriesId:randomUUID(),idempotencyKey:'m4-seven-checks',
+  inputManifest:{source_refs:[receiveSource]},allowedActions:['internal_candidate_read'],policyVersion:'fixture-1'},token(a));
+ const receiveRecord=await delegations.appendHeldReceipt({...observedReceipt,delegationId:receiveEnvelope.delegation_id,requestHash:receiveEnvelope.request_hash},token(a));
+ const receiveItem={schema:'mohen.studio-receive-item.v1',candidate_ref:candidateRef,source:receiveSource,
+  provenance:{kind:'tool_candidate',provider:'synthetic-internal',engine_version:'1'},
+  extent:{kind:extent.kind,start_byte:extent.start_byte,end_byte:extent.end_byte,quote_sha256:extent.quote_sha256},
+  original_quote:quote,transcription_candidate:null,interpretation:null,operation:'internal_candidate_read'};
+ const receiveContext={actor_id:a,project_id:project,consumer:'producer',purpose:{namespace:'G1',code:'private-reading-fixture',version:'1'},
+  scope:{project_id:project},policy_version:'fixture-1',profile_version:'utf8-literal/v1',token:token(a)};
+ const sourceVerifier=access.createPrivateOriginalSourceVerifier(workerPool);
+ const sourceIsCurrent=(r,c)=>sourceVerifier({originalId:r.source.original_id,sourceVersionId:r.source.source_version_id,rawItemId:r.source.raw_item_id,rawSha256:r.source.raw_sha256},c.token);
+ const evidence=(schema,r,extra={})=>({schema,request_fingerprint:r.request_fingerprint,decision_id:auditId,current:true,valid_until:new Date(Date.now()+30000).toISOString(),...extra});
+ const receiver=access.createStudioCandidateReceiver({
+  readOriginal:async(id,c)=>storage?access.createPrivateOriginalWorkflow({repository:originals,storage}).download(id,c.token):{record:await originals.getStored(id,c.token),bytes:Buffer.from(bytes)},
+  verifySource:async(r,c)=>await sourceIsCurrent(r,c)?evidence('mohen.studio-source-current.v1',r,{matches:true}):null,
+  checkRights:async(r,c)=>r.operation==='internal_candidate_read'&&await sourceIsCurrent(r,c)&&await originals.getStored(r.source.original_id,c.token)
+   ?evidence('mohen.studio-rights-current.v1',r,{decision:'ALLOW',explicit_transfer:false}):null,
+  resolveLineage:async(r,c)=>await sourceIsCurrent(r,c)?evidence('mohen.studio-lineage-current.v1',r,{family_id:version,lineage_refs:[receiveSource]}):null,
+  verifySemantics:async(r)=>{
+   // Bounded literal transcription only. Interpretation, other profiles, or a
+   // changed exact payload need their own professional check, never a model vote.
+   if(r.profile_version!=='utf8-literal/v1'||r.item_fingerprint!==executionDigest(receiveItem)||receiveItem.interpretation!==null)return null;
+   const proof=await m4Verifier({run:{run_id:runId},job:{job_id:jobId,stage:'D01',implementation:{gate_reviewer_binding:reviewerRef}},stage:'D01',gate:'G1',input_digest:stageBinding.input_digest,output_digest:stageBinding.output_digest});
+   return proof.gate_audit_id===auditId?evidence('mohen.studio-semantic-current.v1',r,{result:'PASS'}):null;
+  },verifyCurrent:m4Verifier});
+ const receiveSeven=()=>receiver.receive({delegation:receiveEnvelope,receipt:receiveRecord,items:[receiveItem]},{...receiveContext,token:token(a)});
+ const seven=await receiveSeven();assert.equal(seven.items[0].state,'accept');assert.equal(seven.state,'HOLD');assert.equal(seven.knowledge_use_authorized,false);
+ assert.doesNotMatch(JSON.stringify(seven),/桥边|synthetic-reading-owner-session/);
+ const retainedSeven=await delegations.appendHeldReceipt({...observedReceipt,delegationId:receiveEnvelope.delegation_id,requestHash:receiveEnvelope.request_hash,attemptNo:2,resultManifest:seven},token(a));
+ assert.equal(retainedSeven.acceptance_state,'HOLD');assert.equal(retainedSeven.cost_confidence,'UNKNOWN');
+ console.log('MAB_M4_RECEIVE_SEVEN_PASS actual-Owner-source-binding verified-private-bytes UTF8-locator current-internal-rights same-source-family literal-only-independent-G1 candidate-not-knowledge no-provider');
+
  // Exercise the Runner's actual qualification validator with the exact output
  // captured from the real D01 adapter, rather than rebuilding its payload.
  // fetcher dispatches to the actual service handler in process; this is not a
@@ -299,6 +335,7 @@ try {
  if(receiveQualification)await assert.rejects(receiveQualification,/INDEPENDENT_GATE_VERIFY_DENIED/,'Runner rechecks authority and rejects the same output after revocation');
  assert.equal(sql(`select control.current_qualification_is_valid('${auditId}')`),'f');
  assert.equal((await assess()).items[0].checks.T7,'GATE_NOT_VALID','M4 never caches the earlier T7 result');
+ assert.notEqual((await receiveSeven()).items[0].state,'accept','revoked professional qualification cannot be reused by ReceiveCandidate');
  const retained=(await delegations.listReceipts(delegation.delegation_id,token(a)))[0];
  assert.equal(retained.receipt_id,heldReceipt.receipt_id);assert.equal(retained.acceptance_state,'HOLD');
  assert.equal(retained.cost_confidence,'UNKNOWN');assert.equal(retained.cost,null);

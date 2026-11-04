@@ -9,8 +9,13 @@ on:
     paths:
       - ".github/workflows/mab-m1-isolated-http.yml"
       - "scripts/test-mab-http.mjs"
+      - "apps/web/app/studio/desk/ResearchPlan.tsx"
+      - "apps/web/app/studio/desk/ProjectNotebook.tsx"
+      - "apps/web/lib/studio-plans.ts"
       - "playwright.mab.config.ts"
       - "tests/e2e/mab-notebook.spec.ts"
+      - "tests/e2e/mab-m4-plan.spec.ts"
+      - "supabase/migrations/*_mab_m4_execution_controls.sql"
       - "tests/e2e/mab-browser-request.ts"
       - "tests/e2e/private-original-http.spec.ts"
       - "tests/e2e/mab-m1-session-revocation.spec.ts"

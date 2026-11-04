@@ -1,0 +1,7 @@
+export type StudioPlanCategory='reuse_asset'|'existing_production'|'receive_candidate'|'external_delegate';
+export interface StudioPlanNode {node_id:string;tool_id:string;category:StudioPlanCategory;dependencies:readonly string[];input_schema:Record<string,unknown>;output_schema:Record<string,unknown>;input_hash:string;output_hash?:string|null}
+export interface StudioPlan {schema_version:1;root_task_id:string;project_id:string;actor_id:string;policy_ref:{ref:string;revision:string};registry_ref:{ref:string;revision:string};source_refs:readonly {ref:string;revision:string}[];budget:{amount:string;currency:string};nodes:readonly StudioPlanNode[];plan_hash:string}
+export declare function createStudioPlan(input:unknown):Readonly<StudioPlan>;
+export declare function inspectStudioPlan(plan:unknown):Readonly<{schema_version:1;plan_hash:string;root_task_id:string;project_id:string;actor_id:string;node_count:number;nodes:readonly Pick<StudioPlanNode,'node_id'|'tool_id'|'category'|'dependencies'>[]}>;
+export declare function createStudioPlanCheckpoint(plan:unknown,serverOwnedContext:Record<string,unknown>,attempts?:Record<string,unknown>):Readonly<Record<string,unknown>>;
+export declare function nextStudioPlanNodes(plan:unknown,checkpoint:unknown,serverOwnedContext:Record<string,unknown>):Readonly<{status:'HOLD'|'READY'|'COMPLETE';reason:string|null;ready_nodes:readonly string[];nodes:readonly {node_id:string;status:string;reason?:string}[]}>;

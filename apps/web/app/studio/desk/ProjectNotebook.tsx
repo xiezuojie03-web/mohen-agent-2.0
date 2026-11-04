@@ -1,6 +1,7 @@
 'use client';
 
 import {useEffect,useRef,useState,type FormEvent} from 'react';
+import ResearchPlan from './ResearchPlan';
 
 type Project={project_id:string;project_title:string};
 type Asset={asset_id:string;revision_id:string;asset_kind:string;revision_no:number;supersedes_revision_id:string|null;payload:unknown};
@@ -56,7 +57,7 @@ export default function ProjectNotebook() {
     const controller=new AbortController();
     setLoading(true);setAssets([]);setOpened(null);setDraft(emptyDraft);setSavedDraft(emptyDraft);attempt.current=null;
     fetch('/api/studio/assets?'+new URLSearchParams({project_id:projectId}),{signal:controller.signal,cache:'no-store'})
-      .then(responseBody).then(body=>setAssets(body.assets)).catch(error=>{if(!controller.signal.aborted)setMessage(error instanceof Error?error.message:'暂时无法读取记录。');})
+      .then(responseBody).then(body=>setAssets(body.assets.filter((a:Asset)=>!(a.payload&&typeof a.payload==='object'&&(a.payload as Record<string,unknown>).schema==='mohen.studio-research-plan.v1')))).catch(error=>{if(!controller.signal.aborted)setMessage(error instanceof Error?error.message:'暂时无法读取记录。');})
       .finally(()=>{if(!controller.signal.aborted)setLoading(false);});
     return()=>controller.abort();
   },[projectId]);
@@ -139,6 +140,7 @@ export default function ProjectNotebook() {
         {dirty?<p style={{fontSize:12,color:'#755421'}}>有未保存的修改。保存后再切换项目或记录。</p>:null}
       </form>
     </div>:null}
+    {projectId?<ResearchPlan key={projectId} projectId={projectId} sources={assets}/>:null}
     <p role="status" aria-live="polite" style={{fontSize:13,color:'#375b49',minHeight:18,marginBottom:0}}>{message}</p>
   </section>;
 }

@@ -1,0 +1,10 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ✓ tests/unit/studio-plans-route.test.ts (11 tests) 34ms
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  06:54:35
+   Duration  360ms (transform 81ms, setup 0ms, collect 124ms, tests 34ms, environment 0ms, prepare 67ms)
+

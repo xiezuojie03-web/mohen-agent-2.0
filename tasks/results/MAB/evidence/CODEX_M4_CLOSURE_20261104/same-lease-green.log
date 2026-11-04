@@ -1,0 +1,11 @@
+MAB_EXECUTION_CONTROLS_PASS actual-low-privilege-LOGIN no-authority-switch same-lease-retry-denied atomic-CAS parallel-claim stale-lease current-Owner active-project expiry immutable-revoke sticky-unknown no-spend-grants rollback-audit-preserved
+MAB_PRIVATE_ORIGINAL_STORAGE_HOLD no isolated official Storage configuration supplied
+MAB_WEB_SESSION_ROLLBACK_PASS tombstones-retained runtime-closed migration-repeatable
+MAB_RESEARCH_RESUME_PG_PASS client-budget-denied single-CAS-winner crash-review-HOLD no-provider-calls
+MAB_GATE_SERVICE_ROLLBACK_PASS repeatable closed-entry credential-tombstones-and-audits-preserved
+MAB_PRIVATE_READING_ROLLBACK_PASS repeatable entry-denied immutable-candidates-preserved
+MAB_EVIDENCE_BRIDGE_ROLLBACK_PASS functions-denied immutable-lineage-preserved
+MAB_PRIVATE_ORIGINAL_ROLLBACK_PASS receipt-hashes-preserved read-write-closed
+MAB_STUDIO_ROLLBACK_PASS access-closed permanent-revision-hash-unchanged
+ROLLBACK_COLUMN_ACL_PASS column_insert=true_before,false_after on PostgreSQL17 REVOKE ALL
+K3_DB_TEST_PASS baseline_migrations=22 synthetic_legacy_rows=711 unchanged; no automatic qualification; migrations repeatable; rollback fail-closed

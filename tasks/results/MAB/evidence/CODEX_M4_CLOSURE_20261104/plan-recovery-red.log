@@ -1,0 +1,237 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/studio-plans-route.test.ts (8 tests | 4 failed) 27ms
+   ✓ requires Owner authentication before persistence or body handling 5ms
+   ✓ binds signed server identity, keeps planning HOLD and never dispatches a provider 8ms
+   ✓ maps permission/validation/conflict failures without raw SQL disclosure 3ms
+   ✓ rejects oversized/non-object bodies before persistence 1ms
+   × lists only saved plan drafts for the selected Owner project 3ms
+     → expected 503 to be 200 // Object.is equality
+   × reloads exact plan delegation and current revocation state rather than inventing execution success 1ms
+     → expected 503 to be 200 // Object.is equality
+   × binds two same-root/hash plans to their own immutable request and asset identities 1ms
+     → Cannot read properties of undefined (reading 'map')
+   × returns a continuation cursor for older plans and validates cursor before reading 2ms
+     → Target cannot be null or undefined.
+ ❯ tests/unit/studio-plan-service.test.ts (4 tests | 1 failed) 21ms
+   ✓ stores a frozen Owner plan and permanent envelope without executing or inventing future outputs 5ms
+   ✓ refuses foreign source and client budget/policy/actor overrides before saving 2ms
+   ✓ retry uses the same identity/hash/snapshot and never treats partial persistence as execution success 2ms
+   × binds durable envelope to exact asset/request even when the logical DAG hash is shared 10ms
+     → expected { …(6) } to match object { …(2) }
+(16 matching properties omitted from actual)
+ ❯ tests/unit/studio-delegation.test.mjs (7 tests | 1 failed) 7ms
+   ✓ requires a transactional pool 2ms
+   ✓ rejects malformed delegation before opening a connection 1ms
+   ✓ does not accept a claimed successful or Gate-qualified receipt 0ms
+   ✓ does not turn unverified provider cost into ACTUAL accounting 0ms
+   ✓ rejects a missing identity without using the pool 0ms
+   ✓ requires identity for project delegation listing without using a connection 0ms
+   × validates plan pagination cursor before database access 3ms
+     → r.listPlanAssets is not a function
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/studio-delegation.test.mjs > validates plan pagination cursor before database access
+TypeError: r.listPlanAssets is not a function
+ ❯ tests/unit/studio-delegation.test.mjs:11:273
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  tests/unit/studio-plan-service.test.ts > binds durable envelope to exact asset/request even when the logical DAG hash is shared
+AssertionError: expected { …(6) } to match object { …(2) }
+(16 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "delegation_series_id": "22222222-2222-4222-8222-222222222222",
+-   "request_id": "22222222-2222-4222-8222-222222222222",
++   "execution_authorized": false,
++   "plan": {
++     "actor_id": "33333333-3333-4333-8333-333333333333",
++     "budget": {
++       "amount": "0",
++       "currency": "CRD",
++     },
++     "nodes": [
++       {
++         "category": "reuse_asset",
++         "dependencies": [],
++         "input_hash": "c9504d2df3cd8039ab690298721fc5736db43e4e7f49bd849b7c5478940809ee",
++         "input_schema": {
++           "type": "object",
++           "version": "m4.1",
++         },
++         "node_id": "reuse",
++         "output_schema": {
++           "type": "object",
++           "version": "m4.1",
++         },
++         "tool_id": "retrieve-local",
++       },
++       {
++         "category": "external_delegate",
++         "dependencies": [
++           "reuse",
++         ],
++         "input_hash": "d054ae21418201407591d3d6e46e5ae26ac9768c1246e57bc8c3ab26b9bb8d96",
++         "input_schema": {
++           "type": "object",
++           "version": "m4.1",
++         },
++         "node_id": "delegate",
++         "output_schema": {
++           "type": "object",
++           "version": "m4.1",
++         },
++         "tool_id": "llm-extract-entities",
++       },
++       {
++         "category": "receive_candidate",
++         "dependencies": [
++           "delegate",
++         ],
++         "input_hash": "00d0b3d54e64eb2f0d101c712ffbc8582f4dd67d50be59ba9405607ca60bbd78",
++         "input_schema": {
++           "type": "object",
++           "version": "m4.1",
++         },
++         "node_id": "receive-delegate",
++         "output_schema": {
++           "type": "object",
++           "version": "m4.1",
++         },
++         "tool_id": "receive-candidate",
++       },
++       {
++         "category": "existing_production",
++         "dependencies": [
++           "receive-delegate",
++         ],
++         "input_hash": "159ed8c3d4ade47a67dc21410d662d68c3f6f5270429054fcc3b7d9c5aff2635",
++         "input_schema": {
++           "type": "object",
++           "version": "m4.1",
++         },
++         "node_id": "production",
++         "output_schema": {
++           "type": "object",
++           "version": "m4.1",
++         },
++         "tool_id": "production-run",
++       },
++       {
++         "category": "receive_candidate",
++         "dependencies": [
++           "production",
++         ],
++         "input_hash": "fbd6c13eeb52eec5de191fc64114a0b35711f64dc9204baacc9fe682f2ab020d",
++         "input_schema": {
++           "type": "object",
++           "version": "m4.1",
++         },
++         "node_id": "receive-production",
++         "output_schema": {
++           "type": "object",
++           "version": "m4.1",
++         },
++         "tool_id": "receive-candidate",
++       },
++     ],
++     "plan_hash": "74b3de348b96cf7b2d1c3e4767d0055d2022dd0ec82b2c5ff6a6f3d1ca65a452",
++     "policy_ref": {
++       "ref": "mohen.studio-plan",
++       "revision": "m4.1",
++     },
++     "project_id": "11111111-1111-4111-8111-111111111111",
++     "registry_ref": {
++       "ref": "production-registry",
++       "revision": "b1df9ad1c3ca177cb50aef4e0041ada5683f6d393f4ed6dfda4d88a860751d3d",
++     },
++     "root_task_id": "22222222-2222-4222-8222-222222222222",
++     "schema_version": 1,
++     "source_refs": [
++       {
++         "ref": "22222222-2222-4222-8222-222222222222",
++         "revision": "22222222-2222-4222-8222-222222222222",
++       },
++     ],
++   },
++   "schema": "mohen.studio-research-plan.v1",
++   "source_binding": "OWNER_DRAFT_ONLY",
++   "text": "检验桥边市场来源",
++   "title": "检验桥边市场来源",
+  }
+
+ ❯ tests/unit/studio-plan-service.test.ts:31:57
+     29| it('binds durable envelope to exact asset/request even when the logica…
+     30|  const s=stores(),v=input();await saveStudioResearchPlan(s,v,{actorId:…
+     31|  expect(s.assets.saveRevision.mock.calls[0][0].payload).toMatchObject(…
+       |                                                         ^
+     32|  expect(s.delegations.saveDelegation.mock.calls[0][0].rootTaskSnapshot…
+     33| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  tests/unit/studio-plans-route.test.ts > lists only saved plan drafts for the selected Owner project
+AssertionError: expected 503 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 503
+
+ ❯ tests/unit/studio-plans-route.test.ts:14:316
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  tests/unit/studio-plans-route.test.ts > reloads exact plan delegation and current revocation state rather than inventing execution success
+AssertionError: expected 503 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 503
+
+ ❯ tests/unit/studio-plans-route.test.ts:20:19
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  tests/unit/studio-plans-route.test.ts > binds two same-root/hash plans to their own immutable request and asset identities
+TypeError: Cannot read properties of undefined (reading 'map')
+ ❯ tests/unit/studio-plans-route.test.ts:28:32
+     26|  d.state.mockImplementation(async id=>({state:id==='delegate-A'?'REVOK…
+     27|  const r=await GET(new Request('https://test.invalid?project_id=111111…
+     28|  expect((await r.json()).plans.map((p:any)=>[p.delegation_id,p.control…
+       |                                ^
+     29| });
+     30| it('returns a continuation cursor for older plans and validates cursor…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  tests/unit/studio-plans-route.test.ts > returns a continuation cursor for older plans and validates cursor before reading
+AssertionError: Target cannot be null or undefined.
+ ❯ tests/unit/studio-plans-route.test.ts:33:18
+     31|  d.list.mockResolvedValue(Array.from({length:21},(_,i)=>({asset_id:'id…
+     32|  const r=await GET(new Request('https://test.invalid?project_id=111111…
+     33|  expect(b.plans).toHaveLength(20);expect(b.next_cursor).toBe('id-19');
+       |                  ^
+     34|  const bad=await GET(new Request('https://test.invalid?project_id=1111…
+     35| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  6 failed | 13 passed (19)
+   Start at  06:33:46
+   Duration  826ms (transform 146ms, setup 0ms, collect 243ms, tests 55ms, environment 0ms, prepare 172ms)
+

@@ -814,3 +814,27 @@ M2_CONDITIONAL_EXIT的条件和最终标准不变；此后仅回执补记不冒�
 - Final fixed: 新增RED→GREEN证明无验证器时T7标NOT_VERIFIED，不误报Gate失效；本地目标13/13、完整unit332/4旧SKIP通过。保留前述类型细化minor，无权限放宽。
 
 - GitHub实际核证：源码98118c05f4dfadccc22a7c503498c3b98a9ecd24已推main；主CI41748751918、PG1741748751920、HTTP41748751905全部SUCCESS。PG包含新MAB_M4_RECEIPT_T7_PASS；HTTP6PASS/1Storage配置缺失SKIP。机器回执与日志摘录已入同evidence。M4仍当前施工，无整体准出或生产启用。
+
+## 2026-11-04｜M4完整收口续建开工
+
+BASE=f8a32c72f1029df2e670937f3b41f0800f27fdcf；fetch后HEAD一致且工作树干净。沿用既有批准任务书，采用subagent-driven-development并行隔离文件施工，原施工账不另建权威树。
+
+| 接口交叉检查 | 生产者→消费者 | 裁定 |
+|---|---|---|
+| DAG→Studio | 冻结plan/hash/节点和checkpoint准入→现有Studio资产/Production Tool | 只请求既有Tool，不另建Runner；source/digest/当前政策变化必须拒绝恢复 |
+| M2/M3→ReceiveCandidate | Owner真实字节/精确定位及独立当前资格→逐item T1—T7 | 服务端权利/专业证明缺失仍HOLD；结构通过不代历史事实 |
+| 委托控制→执行接线 | Owner权限、单向撤销、lease/CAS→Studio操作 | 永久回执不改；UNKNOWN费用/不确定执行不得通过恢复清零 |
+| 各任务自身范围 | 新独立模块/测试；root统一export/API/PG脚本 | 不共享修改文件，集成顺序在依赖完成后推进 |
+
+Ruling: 当前M4允许完成可运行隔离链，真实第三方/生产验证仍须原明确授权；缺生产授权不反复重做已验M1—M3，也不以模拟双主体宣称M4正式PASS。
+
+
+### 2026-11-04｜M4完整工程批次实绩与受限条件准出
+
+- 保全额度中断时全部未提交文件，fetch再次核远端main@f8a32c72f1029df2e670937f3b41f0800f27fdcf；续建旧文件，不reset/覆盖。完成DAG/声明、Owner计划服务/API/真实UI、真实T1—T7字节收包、新候选控制迁移/Owner租约/CAS/永久撤销及rollback，复用唯一Runner/Tool和M3资格；无新Dispatcher/Gate。
+- 精确计划-委托request/series/asset绑定；按计划过滤的数据库游标分页；半存后从Owner最新私有快照恢复登记，不复活撤销、不覆盖预算/Actor/目标项目。真实HTTP验证丢回执/重开/同root不同委托、恢复、跨Owner拒绝；未知费用和受限资产仍保持原HOLD。
+- Task review修复：同lease IN_FLIGHT→HOLD→IN_FLIGHT漏洞，真实PG先RED后GREEN；改用实际专用低权LOGIN验证不能切authority/Producer/Signer。Whole-branch review修复：同root/hash错误委托和旧计划丢入口，补unit/真实PG/HTTP回归。补登记恢复与撤销状态回读；Root客户端无worker lease/checkpoint/Producer凭据。原minor类型细化留账；新Tool注册与UI CI追踪为本批必需接线已补齐。
+- 最终本地：unit389 PASS/4既有实网SKIP；boundary133 PASS；六工作区typecheck；真实PG17全套exit0（DAG永久存储/分页恢复、同root精确委托、实际Owner/source/bytes→合成G1→七关、并发/撤权/未知费用/rollback）；真实Next build+Chromium7PASS/1Storage缺配置SKIP。107路由auth无缺口、85API/152动作静态追溯通过。本批无Storage配置，旧官方Storage成功证据继承，不借本批buffer用例冒充新Storage联调。
+- Ruling: 未执行节点不伪造output hash；input hash是冻结请求，不代实际Runner grant。CRD是内部信用单位，计划0预算不代表外部模型免费；UNKNOWN费用不补零。候选accept不是知识许可，缺专业/权利权威就HOLD。误判只能造成暂时不可消费，不能放行或产生费用。
+- Ruling: M4_CONDITIONAL_EXIT仅上述代码/隔离工程范围；M4-C01正式派工、C02真实混合/外发预算、C03正式恢复/费用核证、C04九动作/13类业务验证固定入PLAN与回执，原完整验收不勾。M5可继续相应私有Studio/Admin/WATCH失败关闭施工；生产/专业许可/费用最终标准不降，M8不得带未关闭条件准出。
+- 逐任务核销、失败/修复记录、授权边界见 `tasks/results/MAB/CODEX_M4_CLOSURE_20261104.md` 和同名evidence。真实外部双主体未跑，仍MIXED_NOT_VERIFIED，无生产DDL/角色/开关/Provider调用或私人外发。GitHub源码与实际CI取得后追加，不预写成功。

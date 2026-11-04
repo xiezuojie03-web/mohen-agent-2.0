@@ -1,0 +1,46 @@
+K3_DB_SECURITY_PRECHECK_PASS
+MAB_IMPORTED_MATERIAL_REPOSITORY_PASS real-session owner cross-user forged expired disabled rollback pooled-identity
+K3_INDEPENDENT_GATE_PASS identities ACL receipt policy idempotency CAS append-only revocation dependency propagation atomic-failure concurrency
+K3_STAGE_SERVICE_PASS real-signer HTTP-decide exact-stage-current-read scoped-consumer disabled-reviewer revoke no-cached-PASS
+K3_GATE_REPOSITORY_PASS actual-low-privilege-login shared-admin-SET-ROLE-denied single-client-transaction token-cleared rollback
+K3_READ_MODEL_QUALIFICATION_PASS real G0-G5 chain legacy-denied exact-purpose scope consumer revision revocation
+MAB_STUDIO_ASSETS_PASS project-ACL immutable-revisions exact-asset-FK supersedes CAS task-deletion private-default
+MAB_STUDIO_REPOSITORY_PASS saved-payload immutable-revision request-idempotency exact-CAS concurrency cross-owner clean-pool
+MAB_DELEGATION_REPOSITORY_PASS concurrent-idempotency exact-hashes unknown-cost-HOLD immutable cross-owner disabled-identity permanent-root clean-pool no-provider-calls
+MAB_EXECUTION_CONTROLS_PASS actual-low-privilege-LOGIN no-authority-switch same-lease-retry-denied atomic-CAS parallel-claim stale-lease current-Owner active-project expiry immutable-revoke sticky-unknown no-spend-grants rollback-audit-preserved
+MAB_M4_RECEIVE_SEVEN_PASS actual-Owner-source-binding verified-private-bytes UTF8-locator current-internal-rights same-source-family literal-only-independent-G1 candidate-not-knowledge no-provider
+MAB_M4_RECEIPT_T7_PASS actual-Owner-permanent-receipt exact-M3-L1 current-qualification ancestor-revocation same-attempt-idempotency UNKNOWN-cost HOLD-not-accept no-external-provider
+MAB_PRIVATE_READING_M3_SERVICE_PASS actual-durable-L1 Producer-candidate dedicated-LOGIN hashed-credentials synthetic-G1 current-consume revoke-denied no-professional-PASS-claim
+MAB_PRIVATE_TEXT_READING_PASS real-PG17 byte-buffer-only no-Storage immutable-L1 precise-source owner idempotency concurrent atomic-failure no-direct-source-grant M3-candidate-intake synthetic-service-receipt no-professional-Gate-PASS
+MAB_PRIVATE_SOURCE_BINDING_PG_PASS real-pg17 dedicated-worker-login admin-and-signer-denied no-source-select exact-origin-version owner expired forged disabled archived
+MAB_PRIVATE_ORIGINAL_DB_PASS owner expired forged disabled archive idempotency immutable-receipt exact-revision no-public-read pooled-identity
+MAB_PRIVATE_ORIGINAL_STORAGE_HOLD no isolated official Storage configuration supplied
+MAB_GATE_SERVICE_PASS actual-dedicated-LOGIN hashed-capability scoped-decide current-consume idempotency identity-disable binding-disable revoke replay-denied immutable-tombstone no-table-access
+MAB_WEB_SESSION_REVOCATION_PG_PASS owner-RLS cross-owner-denied no-public-grants immutable-runtime-tombstones monotonic-disable-restore-password-cutoff
+MAB_WEB_SESSION_ROLLBACK_PASS tombstones-retained runtime-closed migration-repeatable
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+stdout | tests/integration/studio-plan.integration.ts > persists a real frozen plan and envelope, reopens across repositories, survives task deletion and revokes permanently
+MAB_M4_PLAN_PERSISTENCE_PASS actual-low-privilege-LOGIN frozen-DAG Owner-idempotency changed-content-conflict cross-owner-denied task-deletion-stable-root permanent-revoke no-provider
+
+stdout | tests/integration/studio-plan.integration.ts > keeps same-root envelopes distinct and retrieves plans beyond the first page without mixing notes
+MAB_M4_PLAN_RECOVERY_PASS same-root-distinct-envelopes correct-revoke-target bounded-plan-pagination oldest-plan-recoverable
+
+ ✓ tests/integration/studio-plan.integration.ts (2 tests) 830ms
+   ✓ keeps same-root envelopes distinct and retrieves plans beyond the first page without mixing notes  315ms
+ ✓ tests/integration/research-resume.integration.ts (3 tests) 74ms
+
+ Test Files  2 passed (2)
+      Tests  5 passed (5)
+   Start at  06:58:22
+   Duration  1.83s (transform 239ms, setup 0ms, collect 474ms, tests 904ms, environment 0ms, prepare 132ms)
+
+MAB_RESEARCH_RESUME_PG_PASS client-budget-denied single-CAS-winner crash-review-HOLD no-provider-calls
+MAB_GATE_SERVICE_ROLLBACK_PASS repeatable closed-entry credential-tombstones-and-audits-preserved
+MAB_PRIVATE_READING_ROLLBACK_PASS repeatable entry-denied immutable-candidates-preserved
+MAB_EVIDENCE_BRIDGE_ROLLBACK_PASS functions-denied immutable-lineage-preserved
+MAB_PRIVATE_ORIGINAL_ROLLBACK_PASS receipt-hashes-preserved read-write-closed
+MAB_STUDIO_ROLLBACK_PASS access-closed permanent-revision-hash-unchanged
+ROLLBACK_COLUMN_ACL_PASS column_insert=true_before,false_after on PostgreSQL17 REVOKE ALL
+K3_DB_TEST_PASS baseline_migrations=22 synthetic_legacy_rows=711 unchanged; no automatic qualification; migrations repeatable; rollback fail-closed

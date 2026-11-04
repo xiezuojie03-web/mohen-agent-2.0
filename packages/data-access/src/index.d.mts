@@ -96,6 +96,7 @@ export interface StudioStoredRevision {
 }
 export interface StudioAssetRepository {
   listProjects(token: string): Promise<Array<{project_id: string; project_title: string; research_scope: unknown; lifecycle_status: string; created_at: string}>>;
+  listPlanAssets(projectId:string,token:string,cursor?:string|null):Promise<StudioStoredRevision[]>;
   listAssets(projectId: string, token: string): Promise<StudioStoredRevision[]>;
   listAssetRevisions(projectId: string, assetId: string, token: string): Promise<StudioStoredRevision[]>;
   listRevisionUseEvents(projectId: string, revisionId: string, token: string): Promise<Array<{
@@ -193,6 +194,8 @@ export interface StudioHeldReceiptRecord extends StudioExecutionReceiptRecord {
 export declare function createStudioDelegationRepository(pool:{connect:Function}):{
  saveDelegation(input:StudioDelegationInput,token:string):Promise<StudioDelegationRecord>;
  appendHeldReceipt(input:StudioHeldReceiptInput,token:string):Promise<StudioHeldReceiptRecord>;
+ getDelegationForPlan(projectId:string,rootTaskRef:string,idempotencyKey:string,token:string):Promise<StudioDelegationRecord|null>;
+ listDelegations(projectId:string,token:string):Promise<StudioDelegationRecord[]>;
  getDelegation(delegationId:string,token:string):Promise<StudioDelegationRecord|null>;
  listReceipts(delegationId:string,token:string):Promise<StudioExecutionReceiptRecord[]>;
 };
@@ -211,3 +214,7 @@ export declare function assessStudioReceiptCandidates(input:{
 }):Promise<{schema:string;receipt_id:string;state:'HOLD';execution_authorized:false;
  knowledge_use_authorized:false;cost:string|null;cost_confidence:string;
  items:{index:number;state:'hold';checks:Record<string,string>}[]}>;
+
+export {createStudioExecutionRepository} from './studio-execution-repository.mjs';
+export type {StudioExecutionState,StudioExecutionRepository} from './studio-execution-repository.mjs';
+export {createStudioCandidateReceiver} from './studio-receive-candidate.mjs';

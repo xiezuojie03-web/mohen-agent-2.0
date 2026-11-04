@@ -84,6 +84,8 @@ export function createStudioDelegationRepository(pool){
     return saved.rows[0];
    });
   },
+  getDelegationForPlan(projectId,rootTaskRef,idempotencyKey,token){id(projectId);if(!text(rootTaskRef)||!text(idempotencyKey))throw Error('STUDIO_DELEGATION_INVALID');return tx(token,async client=>(await client.query('select * from studio.delegations where project_id=$1 and root_task_ref=$2 and idempotency_key=$3',[projectId,rootTaskRef,idempotencyKey])).rows[0]??null);},
+  listDelegations(projectId,token){id(projectId);return tx(token,async client=>(await client.query('select * from studio.delegations where project_id=$1 order by created_at desc,delegation_id limit 100',[projectId])).rows);},
   getDelegation(delegationId,token){id(delegationId);return tx(token,async client=>(await client.query('select * from studio.delegations where delegation_id=$1',[delegationId])).rows[0]??null);},
   listReceipts(delegationId,token){id(delegationId);return tx(token,async client=>(await client.query('select * from studio.execution_receipts where delegation_id=$1 order by attempt_no desc limit 100',[delegationId])).rows);},
  };

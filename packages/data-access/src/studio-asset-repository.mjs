@@ -37,6 +37,16 @@ export function createStudioAssetRepository(pool) {
       return transaction(sessionToken, async client => (await client.query(`select project_id,project_title,research_scope,lifecycle_status,
         created_at::text as created_at from studio.projects order by created_at desc,project_id limit 100`)).rows);
     },
+    async listPlanAssets(projectId, sessionToken, cursor=null) {
+      requireId(projectId);if(cursor!==null)requireId(cursor);
+      return transaction(sessionToken,async client=>(await client.query(revisionSelect+`
+        where h.project_id=$1 and h.current_revision_id=r.revision_id
+          and r.payload->>'schema'='mohen.studio-research-plan.v1'
+          and ($2::uuid is null or (h.created_at,h.asset_id)<(
+            select c.created_at,c.asset_id from studio.asset_heads c
+            where c.project_id=$1 and c.asset_id=$2::uuid))
+        order by h.created_at desc,h.asset_id desc limit 21`,[projectId,cursor])).rows);
+    },
     listAssets(projectId, sessionToken) {
       requireId(projectId);
       return transaction(sessionToken, async client => (await client.query(revisionSelect+

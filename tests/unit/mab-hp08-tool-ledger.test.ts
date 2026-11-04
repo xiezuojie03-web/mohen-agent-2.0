@@ -4,7 +4,7 @@ const {run}=vi.hoisted(()=>({run:vi.fn()}));
 vi.mock("@mohen/data-access",()=>({run}));
 
 import {
-  createBudget,remainingBudget,useTool,writeReceipt,
+  createBudget,remainingBudget,useTool,writeReceipt,getTool,
   BudgetHoldError,ToolReceiptPersistenceError,ToolExecutionUncertainError,
 } from "../../apps/web/lib/studio/tool-ledger";
 
@@ -117,4 +117,8 @@ it.each(["llm-understand", "llm-polish", "retrieve-shl"])("refuses %s without a 
   const fn = vi.fn(async () => 42);
   await expect(useTool(undefined, toolId, fn)).rejects.toThrow("TOOL_LEDGER_REQUIRED");
   expect(fn).not.toHaveBeenCalled();
+});
+
+it('registers read-only candidate intake as a deterministic zero-credit local tool',()=>{
+ const spec=getTool('receive-candidate');expect(spec).toMatchObject({cost:0,trustTier:'deterministic',idempotent:true});
 });

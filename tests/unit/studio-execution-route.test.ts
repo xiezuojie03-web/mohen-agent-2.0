@@ -1,0 +1,12 @@
+import {beforeEach,it,expect,vi} from 'vitest';
+const d=vi.hoisted(()=>({session:vi.fn(),sign:vi.fn(),get:vi.fn(),revoke:vi.fn()}));
+vi.mock('../../apps/web/lib/session',()=>({getSession:d.session}));vi.mock('../../apps/web/lib/auth',()=>({signDatabaseSessionToken:d.sign}));
+vi.mock('@mohen/data-access',()=>({getNodePgPool:()=>({}),createStudioExecutionRepository:()=>({getState:d.get,revoke:d.revoke})}));
+import {GET,POST} from '../../apps/web/app/api/studio/delegations/[id]/controls/route';
+const id='11111111-1111-4111-8111-111111111111',ctx={params:Promise.resolve({id})};
+const req=(value:unknown)=>new Request('https://test.invalid',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(value)});
+beforeEach(()=>{vi.resetAllMocks();d.session.mockResolvedValue({uid:id});d.sign.mockReturnValue('signed-owner');d.get.mockResolvedValue({state:'READY'});d.revoke.mockResolvedValue({state:'REVOKED'});});
+it('rejects anonymous controls before persistence and never exposes claims/checkpoint mutation',async()=>{d.session.mockResolvedValue(null);expect((await POST(req({}),ctx)).status).toBe(401);expect(d.revoke).not.toHaveBeenCalled();d.session.mockResolvedValue({uid:id});expect((await POST(req({action:'claim',ownerRef:'forged'}),ctx)).status).toBe(400);expect(d.revoke).not.toHaveBeenCalled();});
+it('revokes exact delegation with signed current identity and acknowledged DB state',async()=>{const r=await POST(req({action:'revoke',request_id:id,reason:'Owner cancelled'}),ctx);expect(r.status).toBe(200);expect(r.headers.get('cache-control')).toBe('no-store');expect(await r.json()).toMatchObject({ok:true,execution_authorized:false,control:{state:'REVOKED'}});expect(d.revoke).toHaveBeenCalledWith({delegationId:id,requestId:id,reason:'Owner cancelled'},'signed-owner');});
+it('does not report revoke success when DB persistence fails or owner scope is invisible',async()=>{for(const [code,status]of [['STUDIO_EXECUTION_NOT_FOUND',404],['SQL private error',503]]as const){d.revoke.mockRejectedValueOnce(Error(code));const r=await POST(req({action:'revoke',request_id:id,reason:'cancel'}),ctx);expect(r.status).toBe(status);expect(await r.text()).not.toContain('SQL private error');}});
+it('returns current state without granting execution permission',async()=>{const r=await GET(new Request('https://test.invalid'),ctx);expect(r.status).toBe(200);expect(await r.json()).toMatchObject({execution_authorized:false,control:{state:'READY'}});expect(d.get).toHaveBeenCalledWith(id,'signed-owner');});

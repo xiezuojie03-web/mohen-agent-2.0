@@ -290,3 +290,6 @@ export { createPrivateOriginalSourceVerifier } from './private-original-source-b
 export { createPrivateTextReadingRepository } from './private-text-reading-repository.mjs';
 export { createStudioDelegationRepository } from './studio-delegation-repository.mjs';
 export {assessStudioReceiptCandidates} from './studio-candidate-assessment.mjs';
+
+export {createStudioExecutionRepository} from './studio-execution-repository.mjs';
+export {createStudioCandidateReceiver} from './studio-receive-candidate.mjs';
