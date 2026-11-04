@@ -1,5 +1,7 @@
 # 墨痕｜当前真实工程状态
 
+> **2026-11-05｜Codex接续的最新工程说明**：已将上轮M5/HP07/HP11/HP12只读审查写入`tasks/results/MAB/M5_HP07_HP11_HP12_READONLY_AUDIT_20261104.md`，并置顶`tasks/implementation/MAB/CODEX_HANDOFF_CURRENT.md`。请先读取两者和原PLAN/progress/target-diff。此前`608ff72f`导演提交及`08fa04e`fork/restore真实隔离PG/Chromium子项已PASS；本轮只读审查的WorkRevision→精确L5→独立G5/4消费者映射与13类资产10+3PG验证**未实施新源码、未新验收**；现有合法公开消费继续失败关闭。当前交接是执行权转交，**M5、全部正式生产Gate及M6—M8仍HOLD**，不改变MHKA/KAD6或M0—M8计划。最新可核证状态见上述回执，Codex必须fetch实时main而非从历史SHA重置。
+
 > **2026-11-04 M5导演版本真实隔离验收新增**：源码`608ff72f`修复初始导演提交回执丢失重试；[主CI41841366673](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41841366673)、[PG/Chromium41841366704](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41841366704)均SUCCESS，真实隔离测试新增导演8方案竞争、原expected请求幂等、Owner/来源绑定，13PASS/1StorageSKIP。**只签M5导演提交子项VERIFIED_ISOLATED；M5整体与正式L5/G5映射、M1—M4生产安全/外发/费用HOLD不变**。本轮未做生产DB/Storage操作；见M5唯一回执第5节。
 
 > **2026-11-04 当前施工更新｜M5定向源码与CI**：`c8379b0`已推GitHub main，修复导演方案同Owner与不可变CAS，以及fork/restore精确来源、操作ID幂等和原生JSONB处理；本批CI [41837221858](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41837221858)、隔离HTTP [41837221734](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41837221734)均SUCCESS。后续`08fa04e`专项PG/Chromium [41838116408](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41838116408)已验证真实并发/幂等/历史来源（12PASS/1Storage SKIP）；仍不能签M5完整PASS。生产只读：Storage桶0、私有原件新表0、正式Gate LOGIN 0、资格0、会话撤销字段0；M1—M4生产与专业/外发/费用HOLD不变。本轮未改生产环境、MHKA与PLAN，详细见`tasks/results/MAB/CHATGPT_M5_REVISION_CAS_20261104.md`及progress末尾。
