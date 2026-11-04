@@ -5,7 +5,7 @@ import { readJsonColumn } from "./db-json";
 import { queryRows, queryValue, run } from "@mohen/data-access";
 import { reflowWorkToAssets } from "./asset-reflow";
 import { requireIndependentWorkPublicationG5, requireCurrentWorkConsumerQualification } from "./work-publish-qualification";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 
 const canonicalUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id) ? id.toLowerCase() : null;
 
@@ -427,24 +427,99 @@ export async function getWorkStageStatus(workId: string) {
   };
 }
 
-/** 从某作品的当前修订 fork 一份新草稿（新 revision_no + draft）。 */
-export async function forkWorkRevision(workId: string): Promise<string | null> {
-  const row = await queryRows(
-    "select revision_id::text as rid, title, description, content, revision_no from publication.work_revisions where work_id = :'wid' order by revision_no desc limit 1",
-    { wid: workId }
-  );
-  if (!row.length) return null;
-  const nextNo = Number(row[0].revision_no) + 1;
-  const newId = await queryValue("select gen_random_uuid()::text");
-  await run(
-    `insert into publication.work_revisions (revision_id, work_id, revision_no, title, description, content, status)
-     values (:'rid', :'wid', :'no', :'title', :'desc', :'content'::jsonb, 'draft')`,
+/** A fork/restore creates a new private draft. It never reuses the source's
+ * publication qualification or mutates the historical revision. The optional
+ * operation_id is a stable retry key, not a second knowledge identity. */
+export type ForkRevisionResult =
+  | { ok: true; revisionId: string; revisionNo: number }
+  | { ok: false; reason: "no_revision" | "invalid_source" | "version_conflict" | "idempotency_conflict" | "source_unavailable"; revisionNo?: number };
+
+export async function forkWorkRevision(
+  workId: string,
+  options: { sourceRevisionId?: string; expectedRevisionNo?: number; operationId?: string } = {}
+): Promise<ForkRevisionResult> {
+  const { sourceRevisionId, expectedRevisionNo, operationId } = options;
+  if (sourceRevisionId && !canonicalUuid(sourceRevisionId)) return { ok: false, reason: "invalid_source" };
+  if (operationId && !canonicalUuid(operationId)) return { ok: false, reason: "invalid_source" };
+  if (expectedRevisionNo !== undefined && (!Number.isInteger(expectedRevisionNo) || expectedRevisionNo < 0)) {
+    return { ok: false, reason: "invalid_source" };
+  }
+  const sourceSql = sourceRevisionId
+    ? `select revision_id::text as revision_id, revision_no, title, description, content
+         from publication.work_revisions where work_id=:'wid' and revision_id=:'src'`
+    : `select revision_id::text as revision_id, revision_no, title, description, content
+         from publication.work_revisions where work_id=:'wid' order by revision_no desc limit 1`;
+  const sourceRows = await queryRows(sourceSql, sourceRevisionId ? { wid: workId, src: sourceRevisionId } : { wid: workId });
+  const source = sourceRows[0];
+  if (!source) return { ok: false, reason: "no_revision" };
+  const headRows = sourceRevisionId
+    ? await queryRows("select revision_no from publication.work_revisions where work_id=:'wid' order by revision_no desc limit 1", { wid: workId })
+    : sourceRows;
+  const currentNo = headRows.length ? Number(headRows[0].revision_no) : 0;
+  let content: Record<string, unknown>;
+  try { content = readJsonColumn<Record<string, unknown>>(source.content, {}); }
+  catch { return { ok: false, reason: "source_unavailable" }; }
+  // Never carry a previous content hash as if it identifies the new draft.
+  const nextContent = { ...content };
+  delete nextContent.content_hash;
+  nextContent.fork_source = { work_id: workId, revision_id: String(source.revision_id), revision_no: Number(source.revision_no) };
+  const hash = createHash("sha256").update(JSON.stringify(nextContent)).digest("hex");
+  const savedContent = { ...nextContent, content_hash: hash };
+  const isSame = (row: Record<string, unknown> | undefined) => {
+    if (!row) return false;
+    try {
+      const prior = readJsonColumn<Record<string, unknown>>(row.content, {});
+      const bound = prior.fork_source as {revision_id?: string;work_id?:string}|undefined;
+      return prior.content_hash === hash && bound?.revision_id === String(source.revision_id) && bound?.work_id === workId;
+    } catch { return false; }
+  };
+
+  // A retry can return its own previously committed immutable revision, even
+  // when later independent edits have advanced the current head.
+  if (operationId) {
+    const old = await queryRows(
+      "select revision_id::text as revision_id, revision_no, content from publication.work_revisions where work_id=:'wid' and revision_id=:'rid'",
+      { wid: workId, rid: operationId }
+    );
+    if (old.length) {
+      return isSame(old[0])
+        ? { ok: true, revisionId: String(old[0].revision_id), revisionNo: Number(old[0].revision_no) }
+        : { ok: false, reason: "idempotency_conflict" };
+    }
+  }
+  if (expectedRevisionNo !== undefined && expectedRevisionNo !== currentNo) {
+    return { ok: false, reason: "version_conflict", revisionNo: currentNo };
+  }
+  const revisionId = operationId || randomUUID();
+  const added = await queryRows(
+    `insert into publication.work_revisions
+        (revision_id, work_id, revision_no, title, description, content, status)
+     select :'rid', :'wid', :'no', :'title', :'desc', :'content'::jsonb, 'draft'
+      where exists (select 1 from publication.work_revisions
+                     where work_id=:'wid' and revision_id=:'src')
+        and (select coalesce(max(revision_no),0) from publication.work_revisions
+             where work_id=:'wid')=:'expected'
+     on conflict do nothing returning revision_id::text as revision_id`,
     {
-      rid: newId!, wid: workId, no: nextNo,
-      title: String(row[0].title ?? ""),
-      desc: String(row[0].description ?? ""),
-      content: String(row[0].content ?? "{}"),
+      rid: revisionId, wid: workId, no: currentNo + 1, expected: currentNo,
+      src: String(source.revision_id), title: String(source.title ?? ""), desc: String(source.description ?? ""),
+      content: JSON.stringify(savedContent),
     }
   );
-  return newId!;
+  if (added.length === 1 && added[0].revision_id) {
+    return { ok: true, revisionId: String(added[0].revision_id), revisionNo: currentNo + 1 };
+  }
+  // No acknowledged insertion: distinguish a verified retry from a competing
+  // writer. Never report success based on a preliminary read.
+  if (operationId) {
+    const retry = await queryRows(
+      "select revision_id::text as revision_id, revision_no, content from publication.work_revisions where work_id=:'wid' and revision_id=:'rid'",
+      { wid: workId, rid: operationId }
+    );
+    if (retry.length) return isSame(retry[0])
+      ? { ok: true, revisionId: String(retry[0].revision_id), revisionNo: Number(retry[0].revision_no) }
+      : { ok: false, reason: "idempotency_conflict" };
+  }
+  const now = await queryValue("select coalesce(max(revision_no),0) from publication.work_revisions where work_id=:'wid'", { wid: workId });
+  return { ok: false, reason: "version_conflict", revisionNo: Number(now ?? currentNo) };
 }
