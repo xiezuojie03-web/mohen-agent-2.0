@@ -1,0 +1,9 @@
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:42:53.7965704Z MAB_M4_RECEIPT_T7_PASS actual-Owner-permanent-receipt exact-M3-L1 current-qualification ancestor-revocation same-attempt-idempotency UNKNOWN-cost HOLD-not-accept no-external-provider
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:42:53.7969205Z MAB_PRIVATE_READING_M3_SERVICE_PASS actual-durable-L1 Producer-candidate dedicated-LOGIN hashed-credentials synthetic-G1 current-consume revoke-denied no-professional-PASS-claim
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:42:55.5190777Z MAB_PRIVATE_ORIGINAL_STORAGE_HOLD no isolated official Storage configuration supplied
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:42:59.2353076Z  Test Files  1 passed (1)
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:42:59.2355272Z       Tests  3 passed (3)
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:43:00.8356781Z K3_DB_TEST_PASS baseline_migrations=22 synthetic_legacy_rows=711 unchanged; no automatic qualification; migrations repeatable; rollback fail-closed
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T00:43:35.4036168Z   1 skipped
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T00:43:35.4036464Z   6 passed (7.1s)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T00:43:35.4199935Z MAB_HTTP_BROWSER_PASS no-production-data no-paid-provider-calls

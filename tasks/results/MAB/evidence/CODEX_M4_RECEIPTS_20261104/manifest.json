@@ -61,6 +61,16 @@
       "file": "no-verifier-red.log",
       "sha256": "ac61235723c25330942d27fca63e5ed19ffb6cb2bd8ae67f811813b295ea0fa7",
       "bytes": 1803
+    },
+    {
+      "file": "github-runs.json",
+      "sha256": "b841c5193ab931cc59926dce2ab5985e87c1ff115344e406ce5ac44646aeee0d",
+      "bytes": 869
+    },
+    {
+      "file": "github-verified-markers.log",
+      "sha256": "b76fb68048f4f99a5082900177d07e71eba763fc18647e0b456d57f04bee881d",
+      "bytes": 1668
     }
   ]
 }

@@ -1,6 +1,6 @@
 # 墨痕｜当前真实工程状态
 
-> **2026-11-04 M4当前实码进展**：已有M3持久L1/G1资格实际进入Owner永久回执并逐项只读核验；撤权后不缓存旧成功。Owner可选定回执查看缺口；Web不持Producer凭据，整体仍HOLD、T2—T6未验、UNKNOWN费用保留。unit332 PASS/4既有SKIP、边界133、实际PG17、类型/构建通过，见 `tasks/results/MAB/CODEX_M4_RECEIPTS_20261104.md`。M4仍当前唯一施工阶段，尚未整体准出，所有生产/外发/费用条件保留。
+> **2026-11-04 M4当前实码进展**：已有M3持久L1/G1资格实际进入Owner永久回执并逐项只读核验；撤权后不缓存旧成功。Owner可选定回执查看缺口；Web不持Producer凭据，整体仍HOLD、T2—T6未验、UNKNOWN费用保留。unit332 PASS/4既有SKIP、边界133、实际PG17、类型/构建通过；源码`98118c0`的主CI41748751918、PG1741748751920、HTTP41748751905均SUCCESS，见 `tasks/results/MAB/CODEX_M4_RECEIPTS_20261104.md`。M4仍当前唯一施工阶段，尚未整体准出，所有生产/外发/费用条件保留。
 
 > **2026-11-04 M3最新顺序裁定**：`M3_CONDITIONAL_EXIT`，范围仅代码/标记隔离环境的独立服务工程闭环；**当前唯一收口阶段为M4**。真实HTTPS+专用Signer/Reader LOGIN+hash凭据认证，M2持久L1经G0依赖→合成G1→Runner精确资格接收，祖先撤销即时拒绝；默认OFF，生产迁移/凭据/专业Reviewer/发布均未激活。固定M3-C01—C03及既有M1/M2条件继续有效，原完整M验收和M8最终标准不降低。源码`2082dd8`/证据归一化`e0aab7c`已推main；精确e0aab7c的主CI41744442502、PG1741744442477、HTTP41744442467、M3协议41744442389全部SUCCESS（HTTP6PASS/1StorageSKIP；本地官方Storage完整PASS）。测试、已修定向缺陷及证据见 `tasks/results/MAB/CODEX_M3_SERVICE_20261104.md`；旧条目保留历史，不再把M3写成当前待重建阶段。
 

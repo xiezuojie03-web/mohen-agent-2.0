@@ -27,3 +27,9 @@
 Ruling: 本批仅做Producer工具链回执的只读核验，不扩展为Agent消费许可或Web签审 — 当前M3服务只支持Producer且其范围由独立凭据决定 — 若判断不适配，结果仍HOLD，代价仅是不能提前消费，不会误放行。
 
 Final fixed: 以新增RED→GREEN测试明确无验证器时为NOT_VERIFIED，避免把未检查误报成资格已失效；整体HOLD与任何授权不变。独立审查12项目标已过，新增该项后本地目标13项及完整unit332通过。
+
+## GitHub源码实际回执
+
+源码 `98118c05f4dfadccc22a7c503498c3b98a9ecd24` 已推远端main，三组检查均 **SUCCESS**：主CI [41748751918](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41748751918)、隔离PG17 [41748751920](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41748751920)、M1 HTTP/Chromium [41748751905](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41748751905)。远端PG日志已核到 `MAB_M4_RECEIPT_T7_PASS` 和 `K3_DB_TEST_PASS`；HTTP 6 PASS/1 Storage缺配置SKIP。不把Storage SKIP当成功；原M3官方Storage证明原样继承。本地合成PG已停止，无新生产资源/Provider调用。
+
+精确SHA/URL/conclusion及日志摘录入同evidence目录；后续回执补记仅改文档，不改变已验源码或M4未准出状态。

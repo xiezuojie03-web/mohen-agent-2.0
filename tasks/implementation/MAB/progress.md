@@ -812,3 +812,5 @@ M2_CONDITIONAL_EXIT的条件和最终标准不变；此后仅回执补记不冒�
 - 回执 `tasks/results/MAB/CODEX_M4_RECEIPTS_20261104.md` 与同名evidence；源码push及实际CI结果取得后追加。无生产写入/私人外发/Provider费用。
 
 - Final fixed: 新增RED→GREEN证明无验证器时T7标NOT_VERIFIED，不误报Gate失效；本地目标13/13、完整unit332/4旧SKIP通过。保留前述类型细化minor，无权限放宽。
+
+- GitHub实际核证：源码98118c05f4dfadccc22a7c503498c3b98a9ecd24已推main；主CI41748751918、PG1741748751920、HTTP41748751905全部SUCCESS。PG包含新MAB_M4_RECEIPT_T7_PASS；HTTP6PASS/1Storage配置缺失SKIP。机器回执与日志摘录已入同evidence。M4仍当前施工，无整体准出或生产启用。
