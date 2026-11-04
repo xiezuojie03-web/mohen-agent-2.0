@@ -23,3 +23,7 @@ M5仍在施工：精确G5及媒体rights服务、实际资格撤销整链、私�
 特别留账：`/api/search`的knowledge分面及共享`mohen-agent/retrieve.ts`仍沿用旧audit PASS/current_valid/agent读取，不是本批作品分面；需下一P0按consumer/purpose/scope/祖先撤权复现并接现行资格。不得把本批称全搜索/全部公众知识已安全准出。
 
 本批无生产DB/Storage/账户/权限/开关操作，无私人外发或Provider费用。M1—M4固定条件全部继承。回退仅可关闭公开入口，不能恢复原始运营列表公开旁路；保全私有草稿、版本、撤销和审计。
+
+## GitHub精确源码核证
+
+`eb9ee3ed8b3957e85495e73937ca39a71cfe12e9`主CI [41824906758](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41824906758)、实际HTTP [41824906796](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41824906796)均SUCCESS；job126557036216实际日志8PASS/1StorageSKIP和MAB_HTTP_BROWSER_PASS。本地合成DB已清空、容器已移除。本次未触发独立PG全套，不能混称全部PG新实跑。M5整体/生产/专业资格HOLD不变。

@@ -875,3 +875,10 @@ Ruling: 当前M4允许完成可运行隔离链，真实第三方/生产验证仍
 - Ruling: 仅复用现有WATCH失败关闭资格入口，绝不为通过正例伪造真实G5 — 当前缺精确L5/rights映射 — 代价是相应历史公开作品被扣留，私有稿件和审计保留。受控单测的allowed/撤权变化不代真实专业链；真实HTTP只证明无G5旧pointer拒绝。
 - 下一P0：search的knowledge分面/共享retrieve仍旧audit PASS/current_valid/agent资格，需按现行consumer/purpose/scope与祖先撤权另做真实回归；私有preview未取正文及改稿CAS分离读写也待修。M5整体/九动作/13类及真实G5/rights仍HOLD。
 - 所有M1—M4固定条件/生产/外发/费用HOLD继承；无生产写入或模型调用。回退关闭新公开入口，不得恢复运营pointer公开旁路。源码SHA及GitHub实际结果取得后追加。
+
+
+### M5首批源码GitHub实际核证与清理
+
+源码eb9ee3ed8b3957e85495e73937ca39a71cfe12e9已普通快进推main：主CI41824906758 SUCCESS，实际PG17/HTTP/Chromium41824906796/job126557036216 SUCCESS；下载实际日志确认8 passed/1 skipped、MAB_HTTP_BROWSER_PASS及一次性数据库清除。未触发独立PG全套，不冒充已重跑；本次HTTP确有新旧pointer无G5负例通过。已核本地临时HTTP数据库0残留，并移除本次合成PG容器；无生产/费用操作。证据SHA256清单、实际run JSON与日志摘录入同evidence。
+
+本次收尾仅文档/机器回执，不把未来文档SHA称已跑本轮HTTP；对应业务源码始终指eb9ee3e。当前M5继续/HANDOFF_NOT_READY，下一P0及未覆盖在本批回执，M1—M4固定条件保持。保留本地旧work分支，不reset、不强推、不覆盖远端成果。

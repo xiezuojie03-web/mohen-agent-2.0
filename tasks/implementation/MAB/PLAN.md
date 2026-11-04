@@ -864,3 +864,6 @@ Ruling: M4准出只覆盖可运行的调度数据/收包/协调恢复工程，�
 源码df4eeb8的主CI41823975350、HTTP41823975358均SUCCESS（实际7PASS/1StorageSKIP），旧41790309838的anon缺角色初始化失败已用全新PG17复现并定向修复。M4_REMOTE_HTTP_RECONCILIATION_HOLD仅此项关闭，M4_CONDITIONAL_EXIT按原隔离范围接收；全部生产/专业/费用条件保留，旧失败历史不删除。证据见CODEX_M4_HTTP_20261104.md。
 
 M5本批优先P0：公开作品目录/详情/节目单/分享/相关/搜索曾绕过listWatchEligible直接使用Admin原始发布列表；补逐请求WATCH资格与no-store，增加旧published指针无当前G5的真实PG/HTTP拒绝测试。现行精确G5映射未实现仍HOLD，不伪造资格以打开公开消费。私有preview/CAS缺口已只读识别，随后按真实回归推进，不借本批宣称M5整体完成。
+
+
+M5首批核证：源码eb9ee3e主CI41824906758、实际HTTP41824906796全部SUCCESS（8PASS/1StorageSKIP）。公开作品旁路修复完成，M5整体与专业G5/rights仍HOLD。下一个P0先处理共享retrieve/search知识分面的旧audit资格；后续私有preview正文及改稿CAS竞态，仍按原M5/HP07/HP10/HP12施工，不开新计划。详细边界与失败记录见CODEX_M5_PUBLIC_CONSUMERS_20261104.md。
