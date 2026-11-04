@@ -91,16 +91,30 @@ export async function getWorkPanels(planId: string): Promise<WorkPanels | null> 
 /** E1-3 WorkRevision：把选定方案 + H3 节拍存为不可变修订（content hash = CAS）。 */
 export async function commitWorkRevision(
   workId: string,
-  planId: string
-): Promise<{ revisionId: string; revisionNo: number; contentHash: string } | null> {
-  const row = await getDirectorPlan(planId);
-  if (!row || !row.selected) return null;
-  const which = row.selected === "B" ? "B" : "A";
+  planId: string,
+  expectedRevisionNo?: number
+): Promise<{ revisionId: string; revisionNo: number; contentHash: string; conflict?: boolean } | null> {
+  // The plan is a private Owner source, not a free-standing authorization to
+  // append to an arbitrary work. Check both owners in the same read.
+  const rows = await queryRows(
+    `select d.plan_a, d.plan_b, d.beats, d.finding, d.selected
+       from public.director_plans d
+       join publication.works w on w.owner_user_id = d.owner_user_id
+      where d.plan_id = :'pid' and w.work_id = :'wid'`,
+    { pid: planId, wid: workId }
+  );
+  const row = rows[0];
+  if (!row || (row.selected !== "A" && row.selected !== "B")) return null;
+  const which: "A" | "B" = row.selected;
   const plan = readJsonColumn<DirectorPlan>(which === "B" ? row.plan_b : row.plan_a, {} as DirectorPlan);
   const beats = readJsonColumn<Beat[]>(row.beats, []);
   const finding = readJsonColumn<Partial<H1Finding>>(row.finding, {});
+  if (!plan || !Array.isArray(beats) || !beats.length) return null;
 
+  // Bind the exact source plan and selected side to the immutable work revision.
+  // An unchanged retry must not create a second revision.
   const content = {
+    director_source: { plan_id: planId, selected: which },
     motif: finding.motifCodes ?? [],
     historicalQuestion: finding.historicalQuestion ?? "",
     understandingDelta: finding.understandingDelta ?? "",
@@ -108,27 +122,67 @@ export async function commitWorkRevision(
     beats,
   };
   const contentHash = crypto.createHash("sha256").update(JSON.stringify(content)).digest("hex");
-
-  const nextNo = Number(
-    (await queryValue(
-      "select coalesce(max(revision_no), 0) + 1 from publication.work_revisions where work_id = :'id'",
-      { id: workId }
-    )) ?? 1
+  const latest = await queryRows(
+    `select revision_id::text as revision_id, revision_no, content
+       from publication.work_revisions where work_id = :'wid'
+      order by revision_no desc limit 1`,
+    { wid: workId }
   );
+  const currentNo = latest.length ? Number(latest[0].revision_no) : 0;
+  const sameRevision = (r: Record<string, unknown> | undefined) => {
+    if (!r) return false;
+    try {
+      const c = readJsonColumn<Record<string, unknown>>(r.content, {});
+      return c.content_hash === contentHash &&
+        (c.director_source as {plan_id?: string; selected?: string} | undefined)?.plan_id === planId &&
+        (c.director_source as {plan_id?: string; selected?: string} | undefined)?.selected === which;
+    } catch { return false; }
+  };
+  const conflict = (no: number) => ({ revisionId: "", revisionNo: no, contentHash, conflict: true as const });
+  if (expectedRevisionNo !== undefined && expectedRevisionNo !== currentNo) return conflict(currentNo);
+  if (sameRevision(latest[0])) {
+    return { revisionId: String(latest[0].revision_id), revisionNo: currentNo, contentHash };
+  }
+
   const revisionId = await queryValue("select gen_random_uuid()::text");
-  await run(
-    `insert into publication.work_revisions (revision_id, work_id, revision_no, title, description, content, status)
-     values (:'rid', :'wid', :'no', :'title', :'desc', :'content'::jsonb, 'draft')`,
+  // The one INSERT is the arbiter: a concurrent editor, foreign plan, or
+  // changed selected plan/beat snapshot cannot win by racing a prior read.
+  const saved = await queryRows(
+    `insert into publication.work_revisions
+       (revision_id, work_id, revision_no, title, description, content, status)
+     select :'rid', :'wid', :'no', :'title', :'desc', :'content'::jsonb, 'draft'
+      where (select coalesce(max(revision_no),0) from publication.work_revisions where work_id=:'wid')=:'expected'
+        and exists (
+          select 1 from public.director_plans d
+          join publication.works w on w.owner_user_id=d.owner_user_id
+          where d.plan_id=:'pid' and w.work_id=:'wid' and d.selected=:'which'
+            and d.beats=:'beats'::jsonb and d.finding=:'finding'::jsonb
+            and (case when d.selected='B' then d.plan_b else d.plan_a end)=:'plan'::jsonb
+        )
+     on conflict (work_id,revision_no) do nothing
+     returning revision_id::text as revision_id`,
     {
-      rid: revisionId!,
-      wid: workId,
-      no: nextNo,
+      rid: revisionId!, wid: workId, no: currentNo + 1, expected: currentNo,
       title: (plan.angle ?? "").slice(0, 80) || "未命名作品",
-      desc: finding.understandingDelta ?? "",
-      content: JSON.stringify({ ...content, content_hash: contentHash }),
+      desc: finding.understandingDelta ?? "", content: JSON.stringify({ ...content, content_hash: contentHash }),
+      pid: planId, which, beats: JSON.stringify(beats), finding: JSON.stringify(finding), plan: JSON.stringify(plan),
     }
   );
-  return { revisionId: revisionId!, revisionNo: nextNo, contentHash };
+  if (saved.length === 1 && saved[0].revision_id) {
+    return { revisionId: String(saved[0].revision_id), revisionNo: currentNo + 1, contentHash };
+  }
+  // Distinguish a byte-identical retry from a real concurrent edit. Do not
+  // report success for an unacknowledged INSERT.
+  const observed = await queryRows(
+    `select revision_id::text as revision_id, revision_no, content
+       from publication.work_revisions where work_id=:'wid'
+      order by revision_no desc limit 1`,
+    { wid: workId }
+  );
+  if (sameRevision(observed[0])) {
+    return { revisionId: String(observed[0].revision_id), revisionNo: Number(observed[0].revision_no), contentHash };
+  }
+  return conflict(observed.length ? Number(observed[0].revision_no) : currentNo);
 }
 
 /** 媒体候选：从资产台账选已登记素材；缺的槽位如实说明，不伪造。 */
