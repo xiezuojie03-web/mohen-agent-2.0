@@ -1,0 +1,11 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ✓ tests/unit/studio-candidate-assessment.test.mjs (6 tests) 41ms
+ ✓ tests/unit/studio-delegation-route.test.ts (7 tests) 17ms
+
+ Test Files  2 passed (2)
+      Tests  13 passed (13)
+   Start at  00:41:07
+   Duration  663ms (transform 92ms, setup 0ms, collect 135ms, tests 58ms, environment 2ms, prepare 146ms)
+

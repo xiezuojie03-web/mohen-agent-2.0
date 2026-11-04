@@ -1,0 +1,33 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/studio-candidate-assessment.test.mjs (5 tests | 1 failed) 5016ms
+   ✓ checks each exact candidate but keeps the immutable receipt and whole package HOLD 5ms
+   ✓ does not borrow producer qualification for agent consumption or foreign provider/identity 1ms
+   ✓ rejects altered object, revision, stage bindings, expired proofs and denied authority per item 1ms
+   ✓ does not cache success; bounds item count and denies expired delegation without calling authority 2ms
+   × bounds stalled authority and does not continue querying after the assessment deadline 5006ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/studio-candidate-assessment.test.mjs > bounds stalled authority and does not continue querying after the assessment deadline
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/unit/studio-candidate-assessment.test.mjs:41:3
+     39|  expect(verify).not.toHaveBeenCalled();
+     40| });
+     41| it('bounds stalled authority and does not continue querying after the …
+       |   ^
+     42|  const verify=vi.fn(()=>new Promise(()=>{})),started=Date.now();
+     43|  const result=await assessStudioReceiptCandidates({delegation:delegati…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  00:35:03
+   Duration  5.23s (transform 32ms, setup 0ms, collect 31ms, tests 5.02s, environment 0ms, prepare 56ms)
+

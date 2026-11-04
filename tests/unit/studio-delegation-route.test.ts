@@ -1,8 +1,8 @@
 import {beforeEach,expect,it,vi} from 'vitest';
-const state=vi.hoisted(()=>({session:vi.fn(),sign:vi.fn(),get:vi.fn(),list:vi.fn()}));
+const state=vi.hoisted(()=>({session:vi.fn(),sign:vi.fn(),get:vi.fn(),list:vi.fn(),assess:vi.fn()}));
 vi.mock('../../apps/web/lib/session',()=>({getSession:state.session}));
 vi.mock('../../apps/web/lib/auth',()=>({signDatabaseSessionToken:state.sign}));
-vi.mock('@mohen/data-access',()=>({getNodePgPool:vi.fn(),createStudioDelegationRepository:()=>({getDelegation:state.get,listReceipts:state.list})}));
+vi.mock('@mohen/data-access',()=>({getNodePgPool:vi.fn(),assessStudioReceiptCandidates:state.assess,createStudioDelegationRepository:()=>({getDelegation:state.get,listReceipts:state.list})}));
 import {GET} from '../../apps/web/app/api/studio/delegations/[id]/route';
 const id='123e4567-e89b-42d3-a456-426614174001';
 const call=(value=id)=>GET(new Request('https://test.invalid'),{params:Promise.resolve({id:value})});
@@ -12,3 +12,16 @@ it('returns 404 without fetching receipts for an invisible delegation',async()=>
 it('uses signed owner identity and preserves HOLD and unknown cost with no-store',async()=>{const r=await call();expect(r.status).toBe(200);expect(r.headers.get('cache-control')).toBe('no-store');expect(await r.json()).toMatchObject({ok:true,receipts:[{acceptance_state:'HOLD',cost:null}],execution_authorized:false});expect(state.get).toHaveBeenCalledWith(id,'signed-identity');expect(state.list).toHaveBeenCalledWith(id,'signed-identity');});
 it('reports unavailable storage without leaking SQL errors',async()=>{state.list.mockRejectedValue(Error('secret SQL detail'));const r=await call();expect(r.status).toBe(503);expect(await r.json()).toEqual({ok:false,reason:'studio_storage_unavailable'});});
 it('rejects malformed IDs before database access',async()=>{expect((await call('bad')).status).toBe(400);expect(state.get).not.toHaveBeenCalled();});
+
+it('assesses only a selected stored receipt after owner RLS and never supplies a Web Gate credential',async()=>{
+ state.list.mockResolvedValue([{receipt_id:id,candidate_refs:[],acceptance_state:'HOLD'}]);
+ state.assess.mockResolvedValue({state:'HOLD',execution_authorized:false,items:[]});
+ const r=await GET(new Request('https://test.invalid?assess_receipt='+id),{params:Promise.resolve({id})});
+ expect(r.status).toBe(200);expect((await r.json()).assessment.state).toBe('HOLD');
+ expect(state.assess).toHaveBeenCalledWith({delegation:{delegation_id:id},receipt:expect.objectContaining({receipt_id:id})});
+});
+it('does not assess an invisible receipt or delegation',async()=>{
+ state.list.mockResolvedValue([]);
+ expect((await GET(new Request('https://test.invalid?assess_receipt='+id),{params:Promise.resolve({id})})).status).toBe(404);
+ expect(state.assess).not.toHaveBeenCalled();
+});

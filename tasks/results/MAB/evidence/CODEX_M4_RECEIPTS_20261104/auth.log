@@ -1,0 +1,4 @@
+=== P0 鉴权矩阵 ===
+routes=105 public=18 protected=87
+missing_route_auth=0 auth_only_no_owner=0
+matrix=work/m4-auth.csv

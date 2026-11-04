@@ -1,0 +1,36 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/studio-candidate-assessment.test.mjs (6 tests | 1 failed) 45ms
+   ✓ checks each exact candidate but keeps the immutable receipt and whole package HOLD 5ms
+   ✓ does not borrow producer qualification for agent consumption or foreign provider/identity 1ms
+   ✓ rejects altered object, revision, stage bindings, expired proofs and denied authority per item 2ms
+   ✓ does not cache success; bounds item count and denies expired delegation without calling authority 2ms
+   ✓ bounds stalled authority and does not continue querying after the assessment deadline 26ms
+   × reports an absent verifier as not checked rather than falsely declaring the Gate invalid 6ms
+     → expected 'GATE_NOT_VALID' to be 'NOT_VERIFIED' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/studio-candidate-assessment.test.mjs > reports an absent verifier as not checked rather than falsely declaring the Gate invalid
+AssertionError: expected 'GATE_NOT_VALID' to be 'NOT_VERIFIED' // Object.is equality
+
+Expected: "NOT_VERIFIED"
+Received: "GATE_NOT_VALID"
+
+ ❯ tests/unit/studio-candidate-assessment.test.mjs:48:36
+     46| it('reports an absent verifier as not checked rather than falsely decl…
+     47|  const result=await assessStudioReceiptCandidates({delegation:delegati…
+     48|  expect(result.items[0].checks.T7).toBe('NOT_VERIFIED');expect(result.…
+       |                                    ^
+     49| });
+     50| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  00:40:34
+   Duration  280ms (transform 36ms, setup 0ms, collect 33ms, tests 45ms, environment 0ms, prepare 70ms)
+

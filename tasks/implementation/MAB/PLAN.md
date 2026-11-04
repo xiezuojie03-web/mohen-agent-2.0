@@ -245,6 +245,8 @@ MAB-ENG-01批次进展（2026-11-02，详细证据见progress.md）：私有原�
 
 ### M4｜混合Agent与Studio长流程
 
+**2026-11-04 当前施工增量**：M3有效L1/G1输出已接入Owner永久委托回执的逐项T7只读检查，祖先撤权后同回执立即拒绝；选定回执可经既有Owner GET查看缺口，Web无Producer凭据。unit332/4既有SKIP、边界133、实际PG17、类型/构建通过，见 `tasks/results/MAB/CODEX_M4_RECEIPTS_20261104.md`。此批只闭合第2/4/5项之间的接线，T2—T6未验、整体HOLD、UNKNOWN费用不补零；**M4继续当前施工且未整体准出**。
+
 **2026-11-03 接续准入裁定（按受控任务书§4／§10，非阶段PASS）**：
 
 - **M4代码级并行准入：允许**。在M2私有原件和M3独立Gate仍HOLD期间，可有界施工同root/subtask任务模型、DelegationEnvelope／ExecutionReceipt不可变合同、T1—T7候选校验、权限与预算失败关闭、Studio真实状态及跨会话恢复。上述开发只能以合成/隔离测试判证；不能标记真实外部委托或正式知识增长已运行。

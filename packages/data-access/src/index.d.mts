@@ -203,3 +203,11 @@ export declare function createPrivateTextReadingRepository(pool:{connect:Functio
    record:PrivateOriginalRecord;bytes:Buffer},token:string):Promise<{
      read_run_id:string;read_unit_id:string;artifact_revision:string;request_digest:string;qualification:'UNASSESSED'}>;
 };
+
+/** Owner-scoped immutable receipt inspection. Never grants execution/knowledge use. */
+export declare function assessStudioReceiptCandidates(input:{
+ delegation:StudioDelegationRecord;receipt:StudioExecutionReceiptRecord;
+ verifyCurrent?:(request:Record<string,unknown>)=>Promise<unknown>;timeoutMs?:number;
+}):Promise<{schema:string;receipt_id:string;state:'HOLD';execution_authorized:false;
+ knowledge_use_authorized:false;cost:string|null;cost_confidence:string;
+ items:{index:number;state:'hold';checks:Record<string,string>}[]}>;

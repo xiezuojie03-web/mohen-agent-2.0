@@ -800,3 +800,15 @@ M2_CONDITIONAL_EXIT的条件和最终标准不变；此后仅回执补记不冒�
 - **验证**：unit324 PASS/4既有实网SKIP；生产边界133 PASS；六工作区类型、Next构建、85 API/152动作追溯、105路由权限覆盖通过。一次性PG17+官方Storage全套exit0（真实L1、G0→G1、专用身份/凭据、HTTPS、旧/禁用/过期/跨job拒绝、祖先撤权、备份恢复及回滚保留）；独立运行runtime实际PG TLS受信CA连接成功/未信证书拒绝。测试失败/配置修正和验证边界均见 `tasks/results/MAB/CODEX_M3_SERVICE_20261104.md`，不借历史PASS盖过本轮失败。
 - **M阶段裁定**：`M3_CONDITIONAL_EXIT`仅代码/标记隔离环境独立服务工程闭环；M3-C01生产部署、C02真实专业审核、C03正式恢复/业务消费条件已固定到PLAN和回执，原完整复选框不提前勾选。M1/M2条件继承，最终标准不降低。当前唯一下一施工阶段为M4：复用既有服务/客户端和精确待审输入推进DAG、T1—T7、费用与恢复，不重复建设上游。
 - **未做**：无生产DB/Storage/角色/凭据/开关写入或发布；无私人资料外发、无Provider收费调用；合成审核PASS不是真实专业资格。源码2082dd8及证据归一化e0aab7c已推main；精确e0aab7c主CI41744442502、PG1741744442477、HTTP41744442467、M3协议41744442389全部SUCCESS。HTTP6 PASS/1 Storage缺配置SKIP；CI PG无Storage，本地官方Storage已真实PASS，分开计量。实际JSON/日志标记入同evidence，未改变任何生产HOLD。
+
+
+## 2026-11-04｜M4永久回执逐候选T7接线（阶段继续）
+
+- BASE main@a7c18dde0bd423b21cad2261cf0ffb146f82f025，fetch/HEAD一致、开工工作树干净。继承M3现成接口，未重做上游。
+- 完成只读逐item精确资格核验、总期限/项数限制、错误隔离、Owner选定永久回执缺口查看。Web无Producer凭据，原回执不改，T2—T6 NOT_VERIFIED、整体HOLD及UNKNOWN费用不变。
+- 实际PG证明永久Owner回执→M3 scoped current client→精确持久L1/G1→祖先撤权拒绝；同attempt幂等、跨Owner不可见。新路由/期限先RED后GREEN；目标13/13，unit332/4既有实网SKIP，boundary133，types/build/auth/trace PASS，完整PG17 exit0。本批无Storage配置，不冒充官方Storage新实跑；原M3证据继承。
+- Ruling: 只核Producer工具链回执，不转换成Agent许可或把Web接到签审服务 — M3现有consumer限制及专业合同约束 — 如不适配仅持续HOLD，不会误放行或收费。
+- Fresh review无Critical/Important；minor(deferred)：新接口schema/cost_confidence/checks类型仍可收窄，运行时已严格验证。M4第2/4/5项仅部分接线，完整DAG/T1—T6/混合执行/对账/动作与恢复继续，不签M4准出。
+- 回执 `tasks/results/MAB/CODEX_M4_RECEIPTS_20261104.md` 与同名evidence；源码push及实际CI结果取得后追加。无生产写入/私人外发/Provider费用。
+
+- Final fixed: 新增RED→GREEN证明无验证器时T7标NOT_VERIFIED，不误报Gate失效；本地目标13/13、完整unit332/4旧SKIP通过。保留前述类型细化minor，无权限放宽。

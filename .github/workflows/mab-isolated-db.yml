@@ -17,6 +17,7 @@ on:
       - "supabase/migrations/*_mab_m3_gate_service_auth.sql"
       - "supabase/rollback/*_mab_m3_gate_service_auth.rollback.sql"
       - "packages/data-access/src/studio-delegation-repository.mjs"
+      - "packages/data-access/src/studio-candidate-assessment.mjs"
       - "tests/data-production/studio-delegation.integration.mjs"
       - "supabase/migrations/20261102105810_mab_studio_assets.sql"
       - "apps/web/lib/studio-research.ts"

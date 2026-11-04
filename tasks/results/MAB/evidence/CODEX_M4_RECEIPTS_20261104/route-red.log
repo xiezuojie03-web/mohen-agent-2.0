@@ -1,0 +1,53 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/studio-delegation-route.test.ts (7 tests | 2 failed) 19ms
+   ✓ rejects anonymous reads before accessing persistence 5ms
+   ✓ returns 404 without fetching receipts for an invisible delegation 1ms
+   ✓ uses signed owner identity and preserves HOLD and unknown cost with no-store 3ms
+   ✓ reports unavailable storage without leaking SQL errors 1ms
+   ✓ rejects malformed IDs before database access 1ms
+   × assesses only a selected stored receipt after owner RLS and never supplies a Web Gate credential 4ms
+     → Cannot read properties of undefined (reading 'state')
+   × does not assess an invisible receipt or delegation 3ms
+     → expected 200 to be 404 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/studio-delegation-route.test.ts > assesses only a selected stored receipt after owner RLS and never supplies a Web Gate credential
+TypeError: Cannot read properties of undefined (reading 'state')
+ ❯ tests/unit/studio-delegation-route.test.ts:20:64
+     18|  state.assess.mockResolvedValue({state:'HOLD',execution_authorized:fal…
+     19|  const r=await GET(new Request('https://test.invalid?assess_receipt='+…
+     20|  expect(r.status).toBe(200);expect((await r.json()).assessment.state).…
+       |                                                                ^
+     21|  expect(state.assess).toHaveBeenCalledWith({delegation:{delegation_id:…
+     22| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/unit/studio-delegation-route.test.ts > does not assess an invisible receipt or delegation
+AssertionError: expected 200 to be 404 // Object.is equality
+
+- Expected
++ Received
+
+- 404
++ 200
+
+ ❯ tests/unit/studio-delegation-route.test.ts:25:116
+     23| it('does not assess an invisible receipt or delegation',async()=>{
+     24|  state.list.mockResolvedValue([]);
+     25|  expect((await GET(new Request('https://test.invalid?assess_receipt='+…
+       |                                                                                                                    ^
+     26|  expect(state.assess).not.toHaveBeenCalled();
+     27| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 5 passed (7)
+   Start at  00:35:15
+   Duration  322ms (transform 79ms, setup 0ms, collect 114ms, tests 19ms, environment 0ms, prepare 65ms)
+

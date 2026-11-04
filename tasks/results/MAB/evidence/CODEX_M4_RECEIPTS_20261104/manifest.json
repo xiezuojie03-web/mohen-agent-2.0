@@ -1,0 +1,66 @@
+{
+  "baseline": "a7c18dde0bd423b21cad2261cf0ffb146f82f025",
+  "scope": "synthetic isolated PG17; no official Storage configured this batch; no production/external provider/fees",
+  "files": [
+    {
+      "file": "production-boundaries.log",
+      "sha256": "602a1b46d9bf2967e2cd92017c54e50cda78122b14c44a87b07d9b19cf694247",
+      "bytes": 11495
+    },
+    {
+      "file": "postgres17.log",
+      "sha256": "6643fa551d8618f9b87fcdd0b46ae72810be0bd51f99491d98781c89bc9e965d",
+      "bytes": 3546
+    },
+    {
+      "file": "typecheck.log",
+      "sha256": "324964c84b96f8b8f5cad2bd5f2da701fd52fd6305a8bb73b031866bd186f252",
+      "bytes": 657
+    },
+    {
+      "file": "build.log",
+      "sha256": "6c3ea541261749fe164455a96abfe9420d4985a1d7b0203bb6ece20dd6f90ac0",
+      "bytes": 11082
+    },
+    {
+      "file": "auth.log",
+      "sha256": "c8bea09474304f69cb60d9d03d1da04ee7b8d0ad51a23292b1bd0b09db976ac8",
+      "bytes": 124
+    },
+    {
+      "file": "auth.csv",
+      "sha256": "5e5e4a7042d1d62ec556623b9185e130645791629b1f9182d129da3367b8b259",
+      "bytes": 5242
+    },
+    {
+      "file": "traceability.log",
+      "sha256": "789a505aaa088474cb1af15f547c59aa95cf6c3d4eb3a56ccf33ead6cd9846b1",
+      "bytes": 70
+    },
+    {
+      "file": "route-red.log",
+      "sha256": "deeab2e3fe4ca84dde2844679f25d84a98377c70e8fa353691a59bcc9ec13b2e",
+      "bytes": 2511
+    },
+    {
+      "file": "deadline-red.log",
+      "sha256": "bbaff74f9c07bc4000895d7b343369e303a02b56c530fecd54a464b9553f1e9a",
+      "bytes": 1790
+    },
+    {
+      "file": "unit.log",
+      "sha256": "1218743dca476570d15ff70fe40a7d48d1d2048098e583a1ff2febabbc5fe739",
+      "bytes": 4110
+    },
+    {
+      "file": "targeted-green.log",
+      "sha256": "141234fd8f4b73f27d8a1a6d5d2a5b63d3c50df871024b9386f1cad1cd530030",
+      "bytes": 357
+    },
+    {
+      "file": "no-verifier-red.log",
+      "sha256": "ac61235723c25330942d27fca63e5ed19ffb6cb2bd8ae67f811813b295ea0fa7",
+      "bytes": 1803
+    }
+  ]
+}

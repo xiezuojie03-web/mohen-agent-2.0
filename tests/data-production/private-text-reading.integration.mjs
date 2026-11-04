@@ -248,6 +248,30 @@ try {
  const currentRequest={schema:'mohen.independent-gate-current-check.v1',run_id:runId,stage:'D01',gate_code:'G1',...stageBinding};
  const current=await post('/current',currentRequest,consumeToken);assert.equal(current.status,200,await current.clone().text());
  assert.match((await current.json()).qualification_digest,/^[a-f0-9]{64}$/);
+ // M4 receives the exact M3 output through permanent, Owner-scoped records.
+ // This is a synthetic internal receipt, not an external provider invocation.
+ const delegations=access.createStudioDelegationRepository(workerPool);
+ const envelope={projectId:project,seriesId:randomUUID(),revisionNo:1,rootTaskRef:runId,
+  rootTaskSnapshot:{run_id:runId,state:'HOLD'},subtaskRef:'inspect-private-L1',executor:'synthetic-internal',
+  provider:'synthetic-internal',engineVersion:'1',inputManifest:{source_refs:[{object_id:saved.read_unit_id,artifact_revision:saved.artifact_revision}]},
+  allowedActions:['prepare_candidate'],transferRightsDecision:{external_processing:'DENIED'},policyVersion:'fixture-1',
+  expiresAt:new Date(Date.now()+60000).toISOString(),budgetLimit:'0',currency:'CNY',idempotencyKey:'m4-receive',outputSchema:'mohen.studio-stage-candidate-ref.v1'};
+ const delegation=await delegations.saveDelegation(envelope,token(a));
+ const candidateRef={schema:'mohen.studio-stage-candidate-ref.v1',run_id:runId,stage:'D01',...stageBinding,
+  object_type:'read_unit',object_id:saved.read_unit_id,artifact_revision:saved.artifact_revision};
+ const observedReceipt={delegationId:delegation.delegation_id,attemptNo:1,requestHash:delegation.request_hash,
+  resultManifest:{state:'HOLD'},candidateRefs:[candidateRef],actualProvider:'synthetic-internal',actualEngineVersion:'1',
+  startedAt:new Date().toISOString(),finishedAt:new Date().toISOString(),cost:null,currency:null,costConfidence:'UNKNOWN',errorCode:'MIXED_NOT_VERIFIED'};
+ const heldReceipt=await delegations.appendHeldReceipt(observedReceipt,token(a));
+ assert.equal((await delegations.appendHeldReceipt(observedReceipt,token(a))).receipt_id,heldReceipt.receipt_id);
+ assert.equal(await delegations.getDelegation(delegation.delegation_id,token(b)),null);
+ const m4Verifier=createIndependentGateClient({endpoint:'https://fixture.invalid/current',credential:consumeToken,
+  fetcher:(url,options)=>service(new Request(url,options))});
+ const assess=()=>access.assessStudioReceiptCandidates({delegation,receipt:heldReceipt,verifyCurrent:m4Verifier});
+ const assessment=await assess();assert.equal(assessment.items[0].checks.T7,'VERIFIED_CURRENT');
+ assert.equal(assessment.state,'HOLD');assert.equal(assessment.knowledge_use_authorized,false);
+ assert.equal(assessment.cost,null);assert.equal(assessment.cost_confidence,'UNKNOWN');
+
  // Exercise the Runner's actual qualification validator with the exact output
  // captured from the real D01 adapter, rather than rebuilding its payload.
  // fetcher dispatches to the actual service handler in process; this is not a
@@ -274,6 +298,12 @@ try {
  assert.equal((await post('/current',currentRequest,consumeToken)).status,409,'ancestor-revoked exact L1 receipt cannot be consumed');
  if(receiveQualification)await assert.rejects(receiveQualification,/INDEPENDENT_GATE_VERIFY_DENIED/,'Runner rechecks authority and rejects the same output after revocation');
  assert.equal(sql(`select control.current_qualification_is_valid('${auditId}')`),'f');
+ assert.equal((await assess()).items[0].checks.T7,'GATE_NOT_VALID','M4 never caches the earlier T7 result');
+ const retained=(await delegations.listReceipts(delegation.delegation_id,token(a)))[0];
+ assert.equal(retained.receipt_id,heldReceipt.receipt_id);assert.equal(retained.acceptance_state,'HOLD');
+ assert.equal(retained.cost_confidence,'UNKNOWN');assert.equal(retained.cost,null);
+ console.log('MAB_M4_RECEIPT_T7_PASS actual-Owner-permanent-receipt exact-M3-L1 current-qualification ancestor-revocation same-attempt-idempotency UNKNOWN-cost HOLD-not-accept no-external-provider');
+
  console.log('MAB_PRIVATE_READING_M3_SERVICE_PASS actual-durable-L1 Producer-candidate dedicated-LOGIN hashed-credentials synthetic-G1 current-consume revoke-denied no-professional-PASS-claim');
  sql(`update control.original_bridge_verification_keys set is_active=false where key_version='${kid}'`);
  await assert.rejects(()=>repo.save(input,token(a)),/PRIVATE_READING_BYTE_ATTESTATION_REQUIRED/);
