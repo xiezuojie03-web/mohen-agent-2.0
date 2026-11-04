@@ -879,3 +879,7 @@ M5首批核证：源码eb9ee3e主CI41824906758、实际HTTP41824906796全部SUCC
 
 
 M5本批源码最终核证：e5a3a5b主CI41828369677、隔离PG41828369318、实际HTTP41828369462均SUCCESS，实际11PASS/1StorageSKIP。局部预览/改稿/重排/共享deadline子项完成，M5整体不准出；后续按上节其它版本写入口→同WorkRevision/G5/rights及业务全验收继续，原准出和生产条件不变。
+
+
+**2026-11-04 M5原顺序接续与定向验收（仅状态回写，不改阶段/标准）**：沿上节既定“其它版本写入口→同WorkRevision/G5/rights→九动作/13类型”施工。`19ff534c`与`4d5c05e`完成导演选定方案与作品同Owner/快照/不可变CAS及测试修正，CI41836604791 SUCCESS；`c8379b0`完成fork/restore历史精确来源、CAS与operation_id幂等，CI41837221858及隔离HTTP41837221734 SUCCESS；`08fa04e`增加既有Playwright真实PG并发/重复请求/历史恢复负例，CI41838116485和HTTP41838116408均SUCCESS（12PASS/1Storage SKIP）。这些是M5局部`VERIFIED_ISOLATED`，尚未进行导演提交整条正式PG/生产E2E，**M5整体及精确G5/rights/STA九动作/13类验收仍HOLD**。下一步只做同WorkRevision与合法专业资格/消费者/权利及未覆盖业务，不重复已证的fork并发子项。M1—M4原条件、生产安全与M8标准不变；回执`tasks/results/MAB/CHATGPT_M5_REVISION_CAS_20261104.md`，progress与target-diff原位核销。
+
