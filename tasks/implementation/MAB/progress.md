@@ -799,4 +799,4 @@ M2_CONDITIONAL_EXIT的条件和最终标准不变；此后仅回执补记不冒�
 - **定向修复**：审查发现跨任务撤权未校验目标stage_binding，已补目标job/ref/consumer正反测试。实际官方Storage并发upload回读出现暂态5xx，新增GET最多3次、共用20s期限与精确hash校验；403/404不重试、5xx不转absence、不POST/覆盖。新7项测试先RED后GREEN，独立审查无important/critical；完整PG/Storage并发回归已PASS。仅该有失败证据的M2接口定向修复，不重开整个M2。
 - **验证**：unit324 PASS/4既有实网SKIP；生产边界133 PASS；六工作区类型、Next构建、85 API/152动作追溯、105路由权限覆盖通过。一次性PG17+官方Storage全套exit0（真实L1、G0→G1、专用身份/凭据、HTTPS、旧/禁用/过期/跨job拒绝、祖先撤权、备份恢复及回滚保留）；独立运行runtime实际PG TLS受信CA连接成功/未信证书拒绝。测试失败/配置修正和验证边界均见 `tasks/results/MAB/CODEX_M3_SERVICE_20261104.md`，不借历史PASS盖过本轮失败。
 - **M阶段裁定**：`M3_CONDITIONAL_EXIT`仅代码/标记隔离环境独立服务工程闭环；M3-C01生产部署、C02真实专业审核、C03正式恢复/业务消费条件已固定到PLAN和回执，原完整复选框不提前勾选。M1/M2条件继承，最终标准不降低。当前唯一下一施工阶段为M4：复用既有服务/客户端和精确待审输入推进DAG、T1—T7、费用与恢复，不重复建设上游。
-- **未做**：无生产DB/Storage/角色/凭据/开关写入或发布；无私人资料外发、无Provider收费调用；合成审核PASS不是真实专业资格。GitHub源码提交与实际CI回执待push后追加，不预写成功。
+- **未做**：无生产DB/Storage/角色/凭据/开关写入或发布；无私人资料外发、无Provider收费调用；合成审核PASS不是真实专业资格。源码2082dd8及证据归一化e0aab7c已推main；精确e0aab7c主CI41744442502、PG1741744442477、HTTP41744442467、M3协议41744442389全部SUCCESS。HTTP6 PASS/1 Storage缺配置SKIP；CI PG无Storage，本地官方Storage已真实PASS，分开计量。实际JSON/日志标记入同evidence，未改变任何生产HOLD。

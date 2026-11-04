@@ -46,6 +46,16 @@
       "file": "traceability.log",
       "sha256": "789a505aaa088474cb1af15f547c59aa95cf6c3d4eb3a56ccf33ead6cd9846b1",
       "bytes": 70
+    },
+    {
+      "file": "github-runs.json",
+      "sha256": "ea41ad601a6bb59cf0d8f2c215e0940fa6ef861a3735b5aec01cab14ce834458",
+      "bytes": 1172
+    },
+    {
+      "file": "github-verified-markers.log",
+      "sha256": "10e8d49d3f08e9db171ac3925820e0390f33c5d78cae53fa5290a2c8b0116407",
+      "bytes": 6045
     }
   ]
 }

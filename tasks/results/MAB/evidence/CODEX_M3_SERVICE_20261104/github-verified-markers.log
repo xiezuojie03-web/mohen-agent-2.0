@@ -1,0 +1,35 @@
+build	Unit tests (no DB)	2026-11-04T00:08:26.1390909Z  Test Files  49 passed | 4 skipped (53)
+build	Unit tests (no DB)	2026-11-04T00:08:26.1392861Z       Tests  324 passed | 4 skipped (328)
+build	Production boundary regression (no DB)	2026-11-04T00:08:28.4226712Z # tests 133
+build	Production boundary regression (no DB)	2026-11-04T00:08:28.4227364Z # pass 133
+build	Production boundary regression (no DB)	2026-11-04T00:08:28.4227715Z # fail 0
+build	Production boundary regression (no DB)	2026-11-04T00:08:28.4228416Z # skipped 0
+build	K3 requirement traceability	2026-11-04T00:08:29.0221635Z K3_TRACEABILITY_OK {"apis":85,"actions":152,"modules":62,"screens":5}
+build	Auth coverage gate	2026-11-04T00:09:21.0084753Z missing_route_auth=0 auth_only_no_owner=0
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:10.3483465Z MAB_IMPORTED_MATERIAL_REPOSITORY_PASS real-session owner cross-user forged expired disabled rollback pooled-identity
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:19.9790849Z MAB_STUDIO_ASSETS_PASS project-ACL immutable-revisions exact-asset-FK supersedes CAS task-deletion private-default
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:20.3665077Z MAB_STUDIO_REPOSITORY_PASS saved-payload immutable-revision request-idempotency exact-CAS concurrency cross-owner clean-pool
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:20.7251782Z MAB_DELEGATION_REPOSITORY_PASS concurrent-idempotency exact-hashes unknown-cost-HOLD immutable cross-owner disabled-identity permanent-root clean-pool no-provider-calls
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:23.2751553Z MAB_PRIVATE_READING_M3_SERVICE_PASS actual-durable-L1 Producer-candidate dedicated-LOGIN hashed-credentials synthetic-G1 current-consume revoke-denied no-professional-PASS-claim
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:23.3700760Z MAB_PRIVATE_TEXT_READING_PASS real-PG17 byte-buffer-only no-Storage immutable-L1 precise-source owner idempotency concurrent atomic-failure no-direct-source-grant M3-candidate-intake synthetic-service-receipt no-professional-Gate-PASS
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:24.0738189Z MAB_PRIVATE_SOURCE_BINDING_PG_PASS real-pg17 dedicated-worker-login admin-and-signer-denied no-source-select exact-origin-version owner expired forged disabled archived
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:24.7133539Z MAB_PRIVATE_ORIGINAL_DB_PASS owner expired forged disabled archive idempotency immutable-receipt exact-revision no-public-read pooled-identity
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:24.7217805Z MAB_PRIVATE_ORIGINAL_STORAGE_HOLD no isolated official Storage configuration supplied
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:25.8286451Z MAB_GATE_SERVICE_PASS actual-dedicated-LOGIN hashed-capability scoped-decide current-consume idempotency identity-disable binding-disable revoke replay-denied immutable-tombstone no-table-access
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:26.5540841Z MAB_WEB_SESSION_REVOCATION_PG_PASS owner-RLS cross-owner-denied no-public-grants immutable-runtime-tombstones monotonic-disable-restore-password-cutoff
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:26.7067170Z MAB_WEB_SESSION_ROLLBACK_PASS tombstones-retained runtime-closed migration-repeatable
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:27.8335520Z  Test Files  1 passed (1)
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:27.8351322Z       Tests  3 passed (3)
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:27.9564475Z MAB_RESEARCH_RESUME_PG_PASS client-budget-denied single-CAS-winner crash-review-HOLD no-provider-calls
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:28.4050904Z MAB_GATE_SERVICE_ROLLBACK_PASS repeatable closed-entry credential-tombstones-and-audits-preserved
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:28.5785942Z MAB_PRIVATE_READING_ROLLBACK_PASS repeatable entry-denied immutable-candidates-preserved
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:28.7198652Z MAB_EVIDENCE_BRIDGE_ROLLBACK_PASS functions-denied immutable-lineage-preserved
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:28.8348813Z MAB_PRIVATE_ORIGINAL_ROLLBACK_PASS receipt-hashes-preserved read-write-closed
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:28.9762393Z MAB_STUDIO_ROLLBACK_PASS access-closed permanent-revision-hash-unchanged
+isolated-pg	Execute original K3/M2 database suite in disposable PG17	2026-11-04T00:08:29.1607381Z K3_DB_TEST_PASS baseline_migrations=22 synthetic_legacy_rows=711 unchanged; no automatic qualification; migrations repeatable; rollback fail-closed
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T00:10:16.7318394Z   6 passed (9.5s)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-04T00:10:16.7501421Z MAB_HTTP_BROWSER_PASS no-production-data no-paid-provider-calls
+revocation-protocol	Contract tests (synthetic, no external network)	2026-11-04T00:07:41.7902015Z # tests 32
+revocation-protocol	Contract tests (synthetic, no external network)	2026-11-04T00:07:41.7926282Z # pass 32
+revocation-protocol	Contract tests (synthetic, no external network)	2026-11-04T00:07:41.7926718Z # fail 0
+revocation-protocol	Contract tests (synthetic, no external network)	2026-11-04T00:07:41.7927934Z # skipped 0

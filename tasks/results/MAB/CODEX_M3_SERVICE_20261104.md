@@ -57,3 +57,16 @@
 - runtime实际PG17 TLS：受信CA成功、未信证书拒绝；HTTP侧使用一次性自签CA并校验SAN，未关闭证书校验。PG+HTTPS的服务用例注入真实socket连接池；runtime池选项的数据库TLS单独验证，未声称正式生产入口已部署。
 
 测试环境定向修正：官方Storage最初与应用安全测试共用cluster，既有service_role无BYPASSRLS导致bucket创建403；改用独立第二PG17实例承载Storage，不改变应用角色。首次Storage HTTPS遗漏新临时CA，被正确拒绝；只添加该合成CA的信任引用后通过。完整并发上传回归一度因上游短暂5xx失败，已按上文有界GET重试修复并全套重跑成功。无环境失败改写成PASS，无权限/证书/费用约束放宽。
+
+## GitHub实际核证
+
+源码提交 `2082dd8`；证据换行/清单归一化提交 `e0aab7c80d04fe6f677468cd6c97d3665553f9aa` 已推远端main。该精确SHA的四组检查均为 **SUCCESS**：
+
+| 检查 | 实际run | 边界 |
+|---|---|---|
+| 主CI | [41744442502](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41744442502) | 324单测/4既有实网SKIP、133边界、类型、构建、鉴权/追溯 |
+| 隔离PG17 | [41744442477](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41744442477) | 真实LOGIN/服务hash凭据、L1/G0→G1、当前资格/祖先撤销、回滚；CI无Storage配置，不能替代本地官方Storage成功日志 |
+| M1 HTTP/Chromium | [41744442467](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41744442467) | 6 PASS / 1 Storage配置缺失SKIP |
+| M3协议/HTTPS | [41744442389](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41744442389) | 合成协议、实际localhost TLS、慢正文期限；无生产签发 |
+
+实际机器回执和日志标记见同evidence目录 `github-runs.json`、`github-verified-markers.log`。本地合成服务已停，Storage独立测试容器/DB已清理，主测试PG已停止；正式环境未改。后续仅文档回执提交不改变已验源码。

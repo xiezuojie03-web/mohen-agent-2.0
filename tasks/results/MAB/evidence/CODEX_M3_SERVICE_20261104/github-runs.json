@@ -1,0 +1,34 @@
+[
+  {
+    "conclusion": "success",
+    "databaseId": 41744442389,
+    "headSha": "e0aab7c80d04fe6f677468cd6c97d3665553f9aa",
+    "name": "MAB M3 independent Gate revocation contract",
+    "status": "completed",
+    "url": "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41744442389"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 41744442477,
+    "headSha": "e0aab7c80d04fe6f677468cd6c97d3665553f9aa",
+    "name": "MAB isolated PostgreSQL 17 verification",
+    "status": "completed",
+    "url": "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41744442477"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 41744442502,
+    "headSha": "e0aab7c80d04fe6f677468cd6c97d3665553f9aa",
+    "name": "ci",
+    "status": "completed",
+    "url": "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41744442502"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 41744442467,
+    "headSha": "e0aab7c80d04fe6f677468cd6c97d3665553f9aa",
+    "name": "MAB M1 isolated authenticated HTTP acceptance",
+    "status": "completed",
+    "url": "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41744442467"
+  }
+]
