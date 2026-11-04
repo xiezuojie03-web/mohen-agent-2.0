@@ -19,6 +19,14 @@ const childExit=child=>new Promise((resolve,reject)=>{child.on('error',reject);c
 const command=async(args,env,cwd=root)=>{const child=spawn(process.execPath,args,{cwd,env,stdio:'inherit'});const code=await childExit(child);if(code!==0)throw Error('HTTP_TEST_COMMAND_FAILED:'+code);};
 try {
   query('postgres',`create database ${database}`);
+  // A fresh postgres:17 cluster has no Supabase API roles. Prepare the same
+  // NOLOGIN test principals as test-k3-db before migrations revoke their grants.
+  // This runs only after the local instance marker check, never on production.
+  query(database, `do $$ begin
+    if not exists(select from pg_roles where rolname='anon') then create role anon nologin; end if;
+    if not exists(select from pg_roles where rolname='authenticated') then create role authenticated nologin; end if;
+    if not exists(select from pg_roles where rolname='service_role') then create role service_role nologin; end if;
+  end $$`);
   const migrations=path.join(root,'supabase/migrations');
   const names=['202610070100_data_production_v2_baseline.sql',...fs.readdirSync(migrations).filter(n=>n>='202610160300'&&n<='202610292100_imported_materials.sql'&&!n.startsWith('202610160400')),
     '202610310900_k3_security_boundary.sql',fs.readdirSync(migrations).find(n=>n.endsWith('_mab_studio_assets.sql')),'20261104013351_mab_m4_execution_controls.sql'];

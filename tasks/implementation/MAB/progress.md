@@ -847,3 +847,13 @@ Ruling: 当前M4允许完成可运行隔离链，真实第三方/生产验证仍
 - CLI gh run view --log-failed及--log当前返回空正文；根因尚未定位，不预写角色/权限或业务故障原因。新窗口先获取job日志、定向修复并真实核证该回归。
 - 当前M4_REMOTE_HTTP_RECONCILIATION_HOLD，M4受限工程准出提案待远端回归闭合，M5暂不正式进入；其余已验成果/固定生产条件均保留，不回到M1—M3重建。
 - 新窗口唯一先读tasks/implementation/MAB/CODEX_HANDOFF_CURRENT.md，再依索引读取PLAN/progress/target-diff/CURRENT和CODEX_M4_CLOSURE_20261104.md。
+
+
+## 2026-11-04｜M4远端HTTP失败定向修复（等待本次push核证）
+
+- 开工HEAD=759dbbd0c206c4acfe2ebdc3e94aa556528b330c，work树干净；显式fetch main后origin/main=256ba6c。原fetch refspec只追踪a001/production，故使用refs/heads/main:refs/remotes/origin/main，不改远端配置、不覆盖旧work分支；在codex/m4-http-reconciliation接续最新main。
+- 初次网络调用受命令沙箱阻断；使用受支持network权限重试fetch成功，并通过GitHub插件取得job126441897574完整日志。具体根因：HTTP独立新PG17没有anon/authenticated/service_role；M4迁移第54行REVOKE报role anon does not exist，应用/浏览器尚未执行。不是业务Gate失败，也不是已经通过的PG套件可代验。
+- 本地一次性PG17.11先证明三角色不存在、运行旧脚本复现同一迁移/同一错误；修改仅scripts/test-mab-http.mjs，在本地socket及实例标记校验后、迁移前补同test-k3-db的NOLOGIN角色初始化。不改生产DDL/权限、不删除REVOKE、不放宽Cookie/Owner/Gate守卫。
+- 实测：CI=true pnpm test:unit为389 PASS/4既有实网SKIP；pnpm test:data-production为133 PASS/0 SKIP；全新PG17真实Next build+HTTP/Chromium为7 PASS/1Storage缺配置SKIP，结束清除一次性数据库。独立review无问题，node语法/diff检查通过。官方Storage本批未配置，不能代称其联调PASS。
+- 环境准备实况：默认pnpm11因home写权限失败，改workspace缓存corepack pnpm9.15.4 frozen install；PG容器首次init临时socket路径不一致，重启已初始化的纯合成实例后进入测试，未触碰生产或注入角色掩盖RED。源码实测均记录原始日志。
+- Ruling: 此八行测试bootstrap修补不重开M1—M3；M4_REMOTE_HTTP_RECONCILIATION_HOLD保持到本次源码push的HTTP真实成功。M5暂不施工；原M1—M4固定条件/生产/专业/外发/费用HOLD不变。回退本批脚本只恢复测试缺口，不允许回退已有安全REVOKE。

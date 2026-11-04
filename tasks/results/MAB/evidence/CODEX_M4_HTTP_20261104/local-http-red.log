@@ -1,0 +1,51 @@
+MAB_HTTP_SYNTHETIC_DATABASE_CLEANED
+node:internal/errors:985
+  const err = new Error(message);
+              ^
+
+Error: Command failed: /workspace/work/m4-http/psql -X -q -h /workspace/work/m4-http/socket -p 55432 -U k3_admin -At -v ON_ERROR_STOP=1 -d mohen_k3_http_476492332cf94e4383ca201a0782e5ab_test -f /workspace/mohen-agent-2.0/supabase/migrations/20261104013351_mab_m4_execution_controls.sql
+psql:/workspace/mohen-agent-2.0/supabase/migrations/20261104013351_mab_m4_execution_controls.sql:54: ERROR:  role "anon" does not exist
+
+    at genericNodeError (node:internal/errors:985:15)
+    at wrappedFn (node:internal/errors:539:14)
+    at checkExecSyncError (node:child_process:942:11)
+    at execFileSync (node:child_process:978:15)
+    at file:///workspace/mohen-agent-2.0/scripts/test-mab-http.mjs:25:27
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  status: 3,
+  signal: null,
+  output: [
+    null,
+    Buffer(0) [Uint8Array] [],
+    Buffer(136) [Uint8Array] [
+      112, 115, 113, 108,  58,  47, 119, 111, 114, 107, 115, 112,
+       97,  99, 101,  47, 109, 111, 104, 101, 110,  45,  97, 103,
+      101, 110, 116,  45,  50,  46,  48,  47, 115, 117, 112,  97,
+       98,  97, 115, 101,  47, 109, 105, 103, 114,  97, 116, 105,
+      111, 110, 115,  47,  50,  48,  50,  54,  49,  49,  48,  52,
+       48,  49,  51,  51,  53,  49,  95, 109,  97,  98,  95, 109,
+       52,  95, 101, 120, 101,  99, 117, 116, 105, 111, 110,  95,
+       99, 111, 110, 116, 114, 111, 108, 115,  46, 115, 113, 108,
+       58,  53,  52,  58,
+      ... 36 more items
+    ]
+  ],
+  pid: 2509,
+  stdout: Buffer(0) [Uint8Array] [],
+  stderr: Buffer(136) [Uint8Array] [
+    112, 115, 113, 108,  58,  47, 119, 111, 114, 107, 115, 112,
+     97,  99, 101,  47, 109, 111, 104, 101, 110,  45,  97, 103,
+    101, 110, 116,  45,  50,  46,  48,  47, 115, 117, 112,  97,
+     98,  97, 115, 101,  47, 109, 105, 103, 114,  97, 116, 105,
+    111, 110, 115,  47,  50,  48,  50,  54,  49,  49,  48,  52,
+     48,  49,  51,  51,  53,  49,  95, 109,  97,  98,  95, 109,
+     52,  95, 101, 120, 101,  99, 117, 116, 105, 111, 110,  95,
+     99, 111, 110, 116, 114, 111, 108, 115,  46, 115, 113, 108,
+     58,  53,  52,  58,
+    ... 36 more items
+  ]
+}
+
+Node.js v24.19.0
