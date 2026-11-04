@@ -885,3 +885,8 @@ M5本批源码最终核证：e5a3a5b主CI41828369677、隔离PG41828369318、实
 
 
 **2026-11-04 M5导演提交隔离PG专项补充核销（不改变原计划）**：上条此前“导演提交未进行正式PG/E2E”的阶段性说明，现由`608ff72f`实际隔离PG17/Chromium补证。`CI41841366673`、`HTTP41841366704`均SUCCESS，原expected-head丢回执重试、8个不同导演方案版本争用、来源与跨Owner正反验证PASS（13PASS/1StorageSKIP）。本项仅`M5_DIRECTOR_REVISION_VERIFIED_ISOLATED`；生产Owner、历史专业原件/独立G5、正式发表、九动作/13类型及M6—M8仍按原条件HOLD。见原M5回执`tasks/results/MAB/CHATGPT_M5_REVISION_CAS_20261104.md`第5节。下一步不再重复该成功测试，优先处理合法WorkRevision→L5/G5与逐消费者rights/purpose/scope映射，再做原专业业务验收。
+
+
+### 2026-11-05｜M5只读差异确认与Codex执行权接续（非计划变更）
+
+Owner要求把ChatGPT上一轮M5/HP07/HP11/HP12只读审查写回仓库并交Codex继续执行。已归档`tasks/results/MAB/M5_HP07_HP11_HP12_READONLY_AUDIT_20261104.md`并更新唯一交接入口`tasks/implementation/MAB/CODEX_HANDOFF_CURRENT.md`。此前`608ff72f`导演提交/回执幂等与`08fa04e`fork/restore已具真实隔离PG/Chromium正反证据；**此轮只读审查不含新源码或新增测试PASS**，对目标差异账不新增`CODE_PRESENT`。核实仍缺WorkRevision→L5精确不可变修订→当前独立G5→每consumer/purpose/scope/rights的权威映射、13类资产10+3真实PG矩阵与Admin具体条目业务核销。按原M5/HP07/HP11/HP12及M4-C04继续，原M0—M8/HP01—HP13结构、MHKA/KAD6、生产固定条件、独立Gate与费用/外发边界均不改变；Codex工作以实时origin/main接续，技术准出及M5整体保持HOLD。
