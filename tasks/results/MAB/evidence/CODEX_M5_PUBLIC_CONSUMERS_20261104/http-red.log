@@ -1,0 +1,201 @@
+MAB_HTTP_BUILD_SYNTHETIC
+   ▲ Next.js 15.5.28
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 3.9s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/13) ...
+   Generating static pages (3/13) 
+   Generating static pages (6/13) 
+   Generating static pages (9/13) 
+ ✓ Generating static pages (13/13)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                                   Size  First Load JS
+┌ ○ /                                                        165 B         106 kB
+├ ○ /_not-found                                              994 B         104 kB
+├ ○ /admin                                                 6.19 kB         109 kB
+├ ○ /admin/sources                                         1.32 kB         104 kB
+├ ƒ /api/admin/acl                                           385 B         103 kB
+├ ƒ /api/admin/assets                                        385 B         103 kB
+├ ƒ /api/admin/assets/[id]/invalidation-requests             385 B         103 kB
+├ ƒ /api/admin/assets/[id]/promote                           385 B         103 kB
+├ ƒ /api/admin/assets/candidates                             385 B         103 kB
+├ ƒ /api/admin/gates/audits                                  385 B         103 kB
+├ ƒ /api/admin/jobs                                          385 B         103 kB
+├ ƒ /api/admin/metrics                                       385 B         103 kB
+├ ƒ /api/admin/metrics/[id]                                  385 B         103 kB
+├ ƒ /api/admin/metrics/engagement                            385 B         103 kB
+├ ƒ /api/admin/navigation                                    385 B         103 kB
+├ ƒ /api/admin/publications                                  385 B         103 kB
+├ ƒ /api/admin/publications/[id]/unpublish                   385 B         103 kB
+├ ƒ /api/admin/publications/schedules                        385 B         103 kB
+├ ƒ /api/admin/rights/invalidate                             385 B         103 kB
+├ ƒ /api/admin/session                                       385 B         103 kB
+├ ƒ /api/admin/settings                                      385 B         103 kB
+├ ƒ /api/admin/sources                                       385 B         103 kB
+├ ƒ /api/admin/submissions                                   385 B         103 kB
+├ ƒ /api/admin/submissions/[id]                              385 B         103 kB
+├ ƒ /api/admin/submissions/[id]/decision                     385 B         103 kB
+├ ƒ /api/admin/submissions/batch                             385 B         103 kB
+├ ƒ /api/admin/users                                         385 B         103 kB
+├ ƒ /api/admin/users/[id]/status                             385 B         103 kB
+├ ƒ /api/auth/login                                          385 B         103 kB
+├ ƒ /api/auth/logout                                         385 B         103 kB
+├ ƒ /api/auth/me                                             385 B         103 kB
+├ ƒ /api/auth/register                                       385 B         103 kB
+├ ƒ /api/explore/entities/[id]                               385 B         103 kB
+├ ƒ /api/explore/events/[id]                                 385 B         103 kB
+├ ƒ /api/explore/relations/[id]                              385 B         103 kB
+├ ƒ /api/explore/search                                      385 B         103 kB
+├ ƒ /api/explore/sessions                                    385 B         103 kB
+├ ƒ /api/explore/sessions/[id]                               385 B         103 kB
+├ ƒ /api/explore/sessions/[id]/insight-views                 385 B         103 kB
+├ ƒ /api/explore/sessions/[id]/query                         385 B         103 kB
+├ ƒ /api/explore/sessions/[id]/return                        385 B         103 kB
+├ ƒ /api/explore/sessions/[id]/share                         385 B         103 kB
+├ ƒ /api/explore/sessions/[id]/surfaces                      385 B         103 kB
+├ ƒ /api/explore/spatial                                     385 B         103 kB
+├ ƒ /api/explore/spatial/compare                             385 B         103 kB
+├ ƒ /api/governance/gates/decisions                          385 B         103 kB
+├ ƒ /api/governance/gates/pending                            385 B         103 kB
+├ ƒ /api/governance/gates/requests                           385 B         103 kB
+├ ƒ /api/governance/gates/revoke                             385 B         103 kB
+├ ƒ /api/help/articles/[id]                                  385 B         103 kB
+├ ƒ /api/mohen/ask                                           385 B         103 kB
+├ ƒ /api/mohen/materials                                     385 B         103 kB
+├ ƒ /api/notifications                                       385 B         103 kB
+├ ƒ /api/public/evidence/[id]                                385 B         103 kB
+├ ƒ /api/public/policies                                     385 B         103 kB
+├ ƒ /api/public/works                                        385 B         103 kB
+├ ƒ /api/public/works/[id]                                   385 B         103 kB
+├ ƒ /api/public/works/[id]/eligibility                       385 B         103 kB
+├ ƒ /api/public/works/[id]/program                           385 B         103 kB
+├ ƒ /api/public/works/[id]/related                           385 B         103 kB
+├ ƒ /api/public/works/[id]/share                             385 B         103 kB
+├ ƒ /api/search                                              385 B         103 kB
+├ ƒ /api/session/me                                          385 B         103 kB
+├ ƒ /api/studio/assets                                       385 B         103 kB
+├ ƒ /api/studio/attachments                                  385 B         103 kB
+├ ƒ /api/studio/conversations                                385 B         103 kB
+├ ƒ /api/studio/conversations/[id]                           385 B         103 kB
+├ ƒ /api/studio/create                                       385 B         103 kB
+├ ƒ /api/studio/delegations/[id]                             385 B         103 kB
+├ ƒ /api/studio/delegations/[id]/controls                    385 B         103 kB
+├ ƒ /api/studio/direct                                       385 B         103 kB
+├ ƒ /api/studio/director-plans                               385 B         103 kB
+├ ƒ /api/studio/director-plans/[id]                          385 B         103 kB
+├ ƒ /api/studio/director-plans/[id]/panels                   385 B         103 kB
+├ ƒ /api/studio/director-plans/[id]/select                   385 B         103 kB
+├ ƒ /api/studio/materials/[id]                               385 B         103 kB
+├ ƒ /api/studio/materials/import                             385 B         103 kB
+├ ƒ /api/studio/plans                                        385 B         103 kB
+├ ƒ /api/studio/projects                                     385 B         103 kB
+├ ƒ /api/studio/research-tasks                               385 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/events                   385 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/materials                385 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/messages                 385 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/production               385 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/resume                   385 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/stages/[stage]           385 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/status                   385 B         103 kB
+├ ƒ /api/studio/tasks                                        385 B         103 kB
+├ ƒ /api/studio/works                                        385 B         103 kB
+├ ƒ /api/studio/works/[id]/beat-order                        385 B         103 kB
+├ ƒ /api/studio/works/[id]/fork                              385 B         103 kB
+├ ƒ /api/studio/works/[id]/media-candidates                  385 B         103 kB
+├ ƒ /api/studio/works/[id]/media-selection                   385 B         103 kB
+├ ƒ /api/studio/works/[id]/narration                         385 B         103 kB
+├ ƒ /api/studio/works/[id]/narration-suggestions             385 B         103 kB
+├ ƒ /api/studio/works/[id]/preview                           385 B         103 kB
+├ ƒ /api/studio/works/[id]/restore                           385 B         103 kB
+├ ƒ /api/studio/works/[id]/revisions                         385 B         103 kB
+├ ƒ /api/studio/works/[id]/revisions/[rev]                   385 B         103 kB
+├ ƒ /api/studio/works/[id]/revisions/[rev]/panels/[panel]    385 B         103 kB
+├ ƒ /api/studio/works/[id]/rewrite-beat                      385 B         103 kB
+├ ƒ /api/studio/works/[id]/rewrite-decisions                 385 B         103 kB
+├ ƒ /api/studio/works/[id]/stages                            385 B         103 kB
+├ ƒ /api/studio/works/[id]/status                            385 B         103 kB
+├ ƒ /api/studio/works/[id]/submissions                       385 B         103 kB
+├ ƒ /api/watch/sessions                                      385 B         103 kB
+├ ƒ /api/works                                               385 B         103 kB
+├ ƒ /api/works/[id]/publish                                  385 B         103 kB
+├ ƒ /api/works/[id]/submit                                   385 B         103 kB
+├ ƒ /api/works/published                                     385 B         103 kB
+├ ƒ /api/works/submitted                                     385 B         103 kB
+├ ○ /experience/jinze-water-net                            29.6 kB         139 kB
+├ ƒ /experience/lvzhiqiu                                   9.48 kB         112 kB
+├ ○ /explore                                               5.62 kB         115 kB
+├ ○ /foundation                                              385 B         103 kB
+├ ○ /login                                                 1.19 kB         107 kB
+├ ○ /register                                               1.3 kB         107 kB
+├ ○ /studio                                                 6.4 kB         116 kB
+├ ƒ /studio/desk                                           6.52 kB         109 kB
+└ ○ /watch                                                 2.45 kB         105 kB
++ First Load JS shared by all                               103 kB
+  ├ chunks/2261-c75fbc820b437d5c.js                        46.4 kB
+  ├ chunks/91a23b3f-712a30abddb1ae63.js                    54.2 kB
+  └ other shared chunks (total)                            1.95 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+MAB_HTTP_BROWSER_SYNTHETIC
+
+Running 9 tests using 1 worker
+
+(node:7337) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/e2e/mab-m1-session-revocation.spec.ts:21:5 › M1 session immediately loses private-project access after account is disabled (929ms)
+  ✓  2 tests/e2e/mab-m1-session-revocation.spec.ts:60:5 › M1 logout invalidates cookie for subsequent private HTTP access (399ms)
+  ✓  3 tests/e2e/mab-m1-session-revocation.spec.ts:76:5 › HP02 copied cookie cannot replay logout; another independent session remains usable (1.0s)
+  ✓  4 tests/e2e/mab-m1-session-revocation.spec.ts:99:5 › HP02 logout UI preserves signed-in state when server revocation fails (674ms)
+  ✓  5 tests/e2e/mab-m1-session-revocation.spec.ts:117:5 › HP08 permanent HOLD receipts are visible only to the project owner through real HTTP (908ms)
+  ✓  6 tests/e2e/mab-m4-plan.spec.ts:6:5 › M4 Owner plan persists after lost acknowledgement and reload; revoke is durable and foreign Owner denied (4.5s)
+  ✘  7 tests/e2e/mab-m5-public-consumers.spec.ts:8:5 › legacy published pointer without current G5 discloses no work through public consumers (647ms)
+(node:7799) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  8 tests/e2e/mab-notebook.spec.ts:11:5 › private notebook saves, reloads exact revisions, isolates owners and avoids duplicate assets after a lost acknowledgement (2.5s)
+  -  9 tests/e2e/private-original-http.spec.ts:7:5 › authenticated multipart original reaches private Storage and returns identical bytes with owner isolation
+
+
+  1) tests/e2e/mab-m5-public-consumers.spec.ts:8:5 › legacy published pointer without current G5 discloses no work through public consumers 
+
+    Error: expect(received).not.toContain(expected) // indexOf
+
+    Expected substring: not "b86816f9-ee06-4409-8e54-53d1f41c63ea"
+    Received string:        "{\"ok\":true,\"works\":[{\"work_id\":\"b86816f9-ee06-4409-8e54-53d1f41c63ea\",\"revision_id\":\"b22a6203-964a-4820-a5ea-4164622634fd\",\"title\":\"M5-private-b91c5f10-3853-4053-bab6-5655d7d43837\",\"description\":\"\",\"revision_no\":\"1\",\"content\":\"{\\\"beats\\\": [{\\\"narration\\\": \\\"unqualified-private-35f94824-0ccb-422a-8ff7-b59b1f166e55\\\"}]}\",\"published_at\":\"2026-11-04 11:53:11.383235+00\"}]}"
+
+      28 |   for(const url of ['/api/public/works','/api/works/published','/api/public/works/'+workId+'/related','/api/search?q='+encodeURIComponent(title)]){
+      29 |    const response=await client.get(url);expect(response.status()).toBe(200);
+    > 30 |    const body=await response.text();expect(body).not.toContain(workId);expect(body).not.toContain(secret);
+         |                                                      ^
+      31 |    expect(response.headers()['cache-control']).toContain('no-store');
+      32 |   }
+      33 |   for(const suffix of ['', '/program','/share']){
+        at /workspace/mohen-agent-2.0/tests/e2e/mab-m5-public-consumers.spec.ts:30:54
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/mab-http/mab-m5-public-consumers-le-e7190-rk-through-public-consumers/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/mab-http/mab-m5-public-consumers-le-e7190-rk-through-public-consumers/error-context.md
+
+  1 failed
+    tests/e2e/mab-m5-public-consumers.spec.ts:8:5 › legacy published pointer without current G5 discloses no work through public consumers 
+  1 skipped
+  7 passed (13.0s)
+MAB_HTTP_SYNTHETIC_DATABASE_CLEANED
+file:///workspace/mohen-agent-2.0/scripts/test-mab-http.mjs:19
+const command=async(args,env,cwd=root)=>{const child=spawn(process.execPath,args,{cwd,env,stdio:'inherit'});const code=await childExit(child);if(code!==0)throw Error('HTTP_TEST_COMMAND_FAILED:'+code);};
+                                                                                                                                                                ^
+
+Error: HTTP_TEST_COMMAND_FAILED:1
+    at command (file:///workspace/mohen-agent-2.0/scripts/test-mab-http.mjs:19:161)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///workspace/mohen-agent-2.0/scripts/test-mab-http.mjs:64:3
+
+Node.js v24.19.0

@@ -857,3 +857,21 @@ Ruling: 当前M4允许完成可运行隔离链，真实第三方/生产验证仍
 - 实测：CI=true pnpm test:unit为389 PASS/4既有实网SKIP；pnpm test:data-production为133 PASS/0 SKIP；全新PG17真实Next build+HTTP/Chromium为7 PASS/1Storage缺配置SKIP，结束清除一次性数据库。独立review无问题，node语法/diff检查通过。官方Storage本批未配置，不能代称其联调PASS。
 - 环境准备实况：默认pnpm11因home写权限失败，改workspace缓存corepack pnpm9.15.4 frozen install；PG容器首次init临时socket路径不一致，重启已初始化的纯合成实例后进入测试，未触碰生产或注入角色掩盖RED。源码实测均记录原始日志。
 - Ruling: 此八行测试bootstrap修补不重开M1—M3；M4_REMOTE_HTTP_RECONCILIATION_HOLD保持到本次源码push的HTTP真实成功。M5暂不施工；原M1—M4固定条件/生产/专业/外发/费用HOLD不变。回退本批脚本只恢复测试缺口，不允许回退已有安全REVOKE。
+
+
+### M4源码本次GitHub核证与M5开工
+
+- 源码df4eeb885680e0caefd25b8429beadafbcc9cacd：主CI41823975350 SUCCESS、实际HTTP41823975358/job126553881524 SUCCESS，下载实际job日志含7 passed/1 skipped和MAB_HTTP_BROWSER_PASS。显式fetch核HEAD=origin/main=df4eeb8，树干净后启动M5。
+- 初次push被GitHub GH007邮箱隐私保护拒绝；未改账号隐私，使用该账号既有GitHub noreply身份重新记录尚未发布的本地提交后普通快进push成功，无force。
+- Ruling: 关闭的只是M4远端回归阻断；M4-C01—C04和所有上游条件不变，MIXED_NOT_VERIFIED仍保留。PG流水线本次路径未触发，继承64c2402的成功，不假称df4eeb8重跑PG。
+- M5首个P0已实证于源码：公开目录/详情/program/share/related/search直接读listPublished，只是运营列表，不是当前资格。六项新路由单测先RED（6/6 FAIL）；准备旧发布pointer无G5真实HTTP负例。本批只补公开消费失败关闭，不启动生产或付费，不另造资格签发权威。
+
+
+## 2026-11-04｜M5公开作品旁路定向修复（源码push前回执）
+
+- BASE=df4eeb8；M4远端HTTP已真实闭合后推进本计划M5，不重做M1—M4。六公开作品入口直接用listPublished造成未合格正文泄露；新6单测先RED，实际匿名PG/HTTP目录也返回合成秘密正文，失败日志保留。
+- 改动：五个/api/public/works路由和/api/search的works分面使用现有listWatchEligible逐请求核同work/revision/consumer；成功/404均no-store。保留原wire及Admin原始运营查询。playwright与HTTP workflow触发范围补新spec/public/search/qualification路径。
+- 实测：目标6/6、全unit395 PASS/4既有实网SKIP、boundary133 PASS/0 SKIP，六workspace类型检查通过；Next真实生产构建+PG17/Chromium8 PASS/1官方Storage缺配置SKIP；107路由auth无缺口。独立review无重要问题并独立重跑6单测通过。报告CODEX_M5_PUBLIC_CONSUMERS_20261104.md，RED/GREEN原始日志同名evidence。
+- Ruling: 仅复用现有WATCH失败关闭资格入口，绝不为通过正例伪造真实G5 — 当前缺精确L5/rights映射 — 代价是相应历史公开作品被扣留，私有稿件和审计保留。受控单测的allowed/撤权变化不代真实专业链；真实HTTP只证明无G5旧pointer拒绝。
+- 下一P0：search的knowledge分面/共享retrieve仍旧audit PASS/current_valid/agent资格，需按现行consumer/purpose/scope与祖先撤权另做真实回归；私有preview未取正文及改稿CAS分离读写也待修。M5整体/九动作/13类及真实G5/rights仍HOLD。
+- 所有M1—M4固定条件/生产/外发/费用HOLD继承；无生产写入或模型调用。回退关闭新公开入口，不得恢复运营pointer公开旁路。源码SHA及GitHub实际结果取得后追加。

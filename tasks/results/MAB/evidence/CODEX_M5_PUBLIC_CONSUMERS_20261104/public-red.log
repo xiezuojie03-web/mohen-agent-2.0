@@ -1,0 +1,121 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/mab-m5-public-consumers.test.ts (6 tests | 6 failed) 18ms
+   × catalog and search never use an editorial pointer as public authorization 11ms
+     → expected [ { work_id: 'withheld', …(4) }, …(1) ] to deeply equal []
+   × detail refuses withheld content and metadata with no cache 1ms
+     → expected 200 to be 404 // Object.is equality
+   × program refuses withheld content and metadata with no cache 1ms
+     → expected 200 to be 404 // Object.is equality
+   × share refuses withheld content and metadata with no cache 1ms
+     → expected 200 to be 404 // Object.is equality
+   × related works filters withheld revisions and metadata 1ms
+     → expected [ { work_id: 'withheld', …(2) }, …(1) ] to deeply equal [ { work_id: 'allowed', …(2) } ]
+   × each response rechecks current qualification; a previously allowed revision can be withheld 3ms
+     → the given combination of arguments (null and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/mab-m5-public-consumers.test.ts > catalog and search never use an editorial pointer as public authorization
+AssertionError: expected [ { work_id: 'withheld', …(4) }, …(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "content": "PRIVATE_BODY",
++     "revision_id": "old-revision",
++     "revision_no": "1",
++     "title": "桥市秘密",
++     "work_id": "withheld",
++   },
++   {
++     "content": "qualified-body",
++     "revision_id": "current-revision",
++     "revision_no": "2",
++     "title": "桥市",
++     "work_id": "allowed",
++   },
++ ]
+
+ ❯ tests/unit/mab-m5-public-consumers.test.ts:20:68
+     18| 
+     19| it('catalog and search never use an editorial pointer as public author…
+     20|   const listed=await catalog();expect((await listed.json()).works).toE…
+       |                                                                    ^
+     21|   const found=await search(new NextRequest('http://localhost/api/searc…
+     22|   expect((await found.json()).works).toEqual([]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  tests/unit/mab-m5-public-consumers.test.ts > detail refuses withheld content and metadata with no cache
+ FAIL  tests/unit/mab-m5-public-consumers.test.ts > program refuses withheld content and metadata with no cache
+ FAIL  tests/unit/mab-m5-public-consumers.test.ts > share refuses withheld content and metadata with no cache
+AssertionError: expected 200 to be 404 // Object.is equality
+
+- Expected
++ Received
+
+- 404
++ 200
+
+ ❯ tests/unit/mab-m5-public-consumers.test.ts:30:27
+     28|  it(`${name} refuses withheld content and metadata with no cache`,asyn…
+     29|   const response=await handler(request,{params:Promise.resolve({id:'wi…
+     30|   expect(response.status).toBe(404);expect(JSON.stringify(await respon…
+       |                           ^
+     31|   expect(raw).not.toHaveBeenCalled();expect(eligible).toHaveBeenCalled…
+     32|   expect(response.headers.get('cache-control')).toContain('no-store');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  tests/unit/mab-m5-public-consumers.test.ts > related works filters withheld revisions and metadata
+AssertionError: expected [ { work_id: 'withheld', …(2) }, …(1) ] to deeply equal [ { work_id: 'allowed', …(2) } ]
+
+- Expected
++ Received
+
+  [
+    {
++     "revision_no": "1",
++     "title": "桥市秘密",
++     "work_id": "withheld",
++   },
++   {
+      "revision_no": "2",
+      "title": "桥市",
+      "work_id": "allowed",
+    },
+  ]
+
+ ❯ tests/unit/mab-m5-public-consumers.test.ts:38:42
+     36|  eligible.mockResolvedValue([allowed]);
+     37|  const response=await related(request,{params:Promise.resolve({id:'oth…
+     38|  expect((await response.json()).related).toEqual([{work_id:'allowed',t…
+       |                                          ^
+     39|  expect(raw).not.toHaveBeenCalled();expect(response.headers.get('cache…
+     40| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  tests/unit/mab-m5-public-consumers.test.ts > each response rechecks current qualification; a previously allowed revision can be withheld
+AssertionError: the given combination of arguments (null and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+ ❯ tests/unit/mab-m5-public-consumers.test.ts:45:45
+     43|  const context={params:Promise.resolve({id:'allowed'})};
+     44|  const first=await detail(request,context);expect((await first.json())…
+     45|  expect(first.headers.get('cache-control')).toContain('no-store');
+       |                                             ^
+     46|  const second=await detail(request,context);expect(second.status).toBe…
+     47|  expect(eligible).toHaveBeenCalledTimes(2);expect(raw).not.toHaveBeenC…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed (6)
+   Start at  11:51:54
+   Duration  354ms (transform 78ms, setup 0ms, collect 121ms, tests 18ms, environment 0ms, prepare 63ms)
+

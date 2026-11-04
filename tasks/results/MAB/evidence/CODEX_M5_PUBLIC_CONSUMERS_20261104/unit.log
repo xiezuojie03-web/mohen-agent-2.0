@@ -1,0 +1,78 @@
+
+> mohen-agent-2.0@0.1.0 test:unit /workspace/mohen-agent-2.0
+> vitest run --config vitest.unit.config.ts
+
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ✓ tests/unit/private-original-storage.test.ts (16 tests) 771ms
+   ✓ bounds persistent GET 5xx attempts and never treats upstream failure as absence or uploads  301ms
+ ✓ tests/unit/k3-traceability.test.ts (5 tests) 224ms
+ ✓ tests/unit/production-trigger.test.ts (1 test) 96ms
+ ✓ tests/unit/studio-receive-candidate.test.mjs (13 tests) 64ms
+ ✓ tests/unit/studio-original-attachment-route.test.ts (13 tests) 36ms
+ ✓ tests/unit/studio-plan-service.test.ts (5 tests) 14ms
+ ✓ tests/unit/studio-execution-route.test.ts (4 tests) 16ms
+ ✓ tests/unit/mab-hp03-asset-history-route.test.ts (4 tests) 10ms
+ ✓ tests/unit/studio-plans-route.test.ts (11 tests) 22ms
+ ✓ tests/unit/studio-candidate-assessment.test.mjs (6 tests) 34ms
+ ✓ tests/unit/mab-hp08-studio-routes.test.ts (11 tests) 12ms
+ ✓ tests/unit/mab-hp08-research-resume.test.ts (15 tests) 32ms
+ ✓ tests/unit/studio-plan.test.mjs (13 tests) 54ms
+ ✓ tests/unit/independent-gate-client.test.ts (6 tests) 46ms
+ ✓ tests/unit/mab-hp08-tool-ledger.test.ts (12 tests) 14ms
+ ✓ tests/unit/middleware-authorization.test.ts (6 tests) 47ms
+ ✓ tests/unit/kad1-route.test.mjs (10 tests) 19ms
+ ✓ tests/unit/private-worker-pool.test.ts (2 tests) 5ms
+ ✓ tests/unit/imported-material-route.test.ts (13 tests) 17ms
+ ✓ tests/unit/mab-hp02-session-revocation.test.ts (12 tests) 16ms
+ ✓ tests/unit/submission-routes.test.ts (12 tests) 14ms
+ ✓ tests/unit/studio-delegation-route.test.ts (7 tests) 33ms
+ ✓ tests/unit/mab-hp11-review-route.test.ts (8 tests) 12ms
+ ✓ tests/unit/mab-hp08-production-reservation.test.ts (7 tests) 6ms
+ ✓ tests/unit/auth-session.test.ts (10 tests) 9ms
+ ✓ tests/unit/admin-authorization.test.ts (3 tests) 8ms
+ ✓ tests/unit/studio-attachment-storage.test.ts (3 tests) 8ms
+ ✓ tests/unit/studio-asset-routes.test.ts (7 tests) 16ms
+ ✓ tests/unit/private-evidence-stage.test.ts (11 tests) 12ms
+ ✓ tests/unit/mab-m5-public-consumers.test.ts (6 tests) 18ms
+ ✓ tests/unit/mab-m3-revocation-http.test.ts (4 tests) 11ms
+ ✓ tests/unit/private-evidence-binding.test.ts (5 tests) 8ms
+ ✓ tests/unit/public-evidence-qualification.test.ts (5 tests) 10ms
+ ✓ tests/unit/mab-m5-publication-atomic.test.ts (12 tests) 8ms
+ ✓ tests/unit/private-text-reading-repository.test.ts (3 tests) 8ms
+ ✓ tests/unit/studio-jsonb.test.ts (15 tests) 8ms
+ ✓ tests/unit/studio-execution.test.mjs (7 tests) 5ms
+ ✓ tests/unit/studio-delegation.test.mjs (8 tests) 5ms
+ ✓ tests/unit/publication-submission.test.ts (6 tests) 7ms
+stderr | tests/unit/mab-hp07-visual-current-g5.test.ts > HP07 visual stage exact current G5 and safe topic filtering > fails closed rather than displaying old legacy PASS data when the DB qualifier fails
+[read-model-bridge] 读取真实发布成果失败： CURRENT_G5_UNAVAILABLE
+
+ ✓ tests/unit/mab-hp07-visual-current-g5.test.ts (5 tests) 7ms
+ ✓ tests/unit/private-original-source-binding.test.ts (5 tests) 25ms
+ ✓ tests/unit/mab-hp08-ledger-reconciliation.test.ts (5 tests) 7ms
+ ✓ tests/unit/mab-hp06-signer-connection.test.ts (7 tests) 7ms
+ ✓ tests/unit/mab-m4-tool-registration.test.ts (3 tests) 5ms
+ ✓ tests/unit/m3-gate-preflight.test.ts (6 tests) 5ms
+ ✓ tests/unit/kad1-policy.test.mjs (10 tests) 6ms
+ ✓ tests/unit/database-session.test.ts (2 tests) 4ms
+ ✓ tests/unit/mab-m4-tool-receipt-failure.test.ts (3 tests) 5ms
+ ✓ tests/unit/mab-hp11-review-revision.test.ts (5 tests) 5ms
+ ✓ tests/unit/governance-boundary.test.ts (3 tests) 4ms
+ ✓ tests/unit/query-plan.test.ts (4 tests) 4ms
+ ✓ tests/unit/imported-material-rights.test.ts (2 tests) 2ms
+ ✓ tests/unit/material-score.test.ts (6 tests) 3ms
+ ✓ tests/unit/mab-m3-independent-revocation-boundary.test.ts (2 tests) 3ms
+ ✓ tests/unit/mab-hp11-knowledge-inspector-contract.test.ts (3 tests) 3ms
+ ✓ tests/unit/mab-hp12-g5-hold.test.ts (5 tests) 3ms
+ ✓ tests/unit/conversation-ownership.test.ts (2 tests) 3ms
+ ↓ tests/unit/commons-materials.test.ts (1 test | 1 skipped)
+ ↓ tests/unit/k7-five-themes.test.ts (1 test | 1 skipped)
+ ↓ tests/unit/loc-materials.test.ts (1 test | 1 skipped)
+ ↓ tests/unit/shl-materials.test.ts (1 test | 1 skipped)
+
+ Test Files  57 passed | 4 skipped (61)
+      Tests  395 passed | 4 skipped (399)
+   Start at  11:54:25
+   Duration  15.14s (transform 947ms, setup 0ms, collect 2.66s, tests 1.86s, environment 8ms, prepare 3.22s)
+

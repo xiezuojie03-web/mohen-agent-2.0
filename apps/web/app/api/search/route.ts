@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { retrieveMaterials } from "../../../lib/mohen-agent/retrieve";
-import { listPublished } from "../../../lib/publication";
+import { listWatchEligible } from "../../../lib/publication";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,8 +14,8 @@ export async function GET(req: NextRequest) {
   const terms = q.split(/\s+/).filter(Boolean).slice(0, 8);
   const [{ materials, degraded }, published] = await Promise.all([
     retrieveMaterials(terms, 12),
-    listPublished(),
+    listWatchEligible(),
   ]);
   const works = published.filter((w) => w.title.includes(q)).slice(0, 12);
-  return NextResponse.json({ ok: true, query: q, works, knowledge: materials, degraded });
+  return NextResponse.json({ ok: true, query: q, works, knowledge: materials, degraded }, { headers: { "cache-control": "no-store" } });
 }

@@ -161,7 +161,7 @@ Owner本轮明确允许“该有条件准出的，也可以采取有条件准出
 | M2 | **M2_CONDITIONAL_EXIT，仅已验证UTF8待审候选及长期资产最小持久层**；七项逐项核销见 `tasks/results/MAB/CODEX_M2_L1_20261103.md`，生产/非文本/正式复用条件M2-C01—C03不得隐去 | M3须实际接收M2持久candidate/ref@revision、Owner/rights/provenance、输入输出hash与执行回执；可读取、幂等重试、无权限拒绝。缺文件字节/持久实体/精确修订/所需接线属于M2阻断，不可用mock或延后到M3掩盖 | M2工程准出不签专业资格，不放行待审候选的正式跨阶段生产/公众消费；生产Storage授权单列 |
 | M3 | **M3_CONDITIONAL_EXIT，仅代码/标记隔离环境独立服务工程闭环**；凭据认证、专用Signer/Reader LOGIN、实际HTTPS、G0→持久L1/G1→Runner精确消费→祖先撤销拒绝及回滚保留；见 `tasks/results/MAB/CODEX_M3_SERVICE_20261104.md` | M4接收默认关闭但可独立启动的服务、窄读取、签审/撤权客户端与既有Runner资格校验；M3-C01—C03生产条件固定保留 | 不得以合成专业检查代真实审核；生产迁移/凭据/服务激活、真实模型外发与费用仍需原授权 |
 | M4 | **M4_CONDITIONAL_EXIT，仅代码/标记隔离的计划、UTF8候选收包和持久协调/恢复**；六项逐项范围及M4-C01—C04见 `tasks/results/MAB/CODEX_M4_CLOSURE_20261104.md` | M5实际接收Owner计划@rev、精确委托/永久回执、逐项候选审查、撤销/恢复及已有13类型仓储；九动作/类型业务验证由M4-C04具名交M5，不重做已验调度 | 真实混合仍MIXED_NOT_VERIFIED，生产/实际费用/专业权威条件不关闭；原完整验收不勾 |
-| M5 | **后续待接续；须先闭合M4远端HTTP回归**；继承Studio/Admin/WATCH合法已有源码，接收M4工程输出 | 先完整实现并验证私有创作/运营流程、精确WorkRevision、权利/用途/当前资格、合法WATCH；缺专业G5不公开消费 | 不以Owner草稿或运营审核代专业Gate；生产和公开发布仍须具名条件及原授权 |
+| M5 | **当前施工；M4远端HTTP已由df4eeb8/41823975358闭合**；继承Studio/Admin/WATCH合法已有源码，接收M4工程输出 | 先完整实现并验证私有创作/运营流程、精确WorkRevision、权利/用途/当前资格、合法WATCH；缺专业G5不公开消费 | 不以Owner草稿或运营审核代专业Gate；生产和公开发布仍须具名条件及原授权 |
 
 **M1证据基准**：源代码`b609efa2c5883cd732cc1a1ce2100bb0d96d8265`，M1 HTTP/Chromium [41641918101](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41641918101)为6 PASS/1 Storage SKIP（跳过属M2官方Storage，不冒充M1私有文本导入浏览器已实跑）；隔离PG17 [41641918045](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41641918045)含本人/跨Owner/失效签名、低权角色、会话撤销、回滚保留及重演。`982c5ae6`相对该SHA仅文档/差异账与独立TLS测试脚本变化，M1身份实现未改，最新主CI [41642390511](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41642390511) SUCCESS；本轮读取真实日志核销，不重跑无变化M1全套。
 
@@ -857,3 +857,10 @@ Ruling: M4准出只覆盖可运行的调度数据/收包/协调恢复工程，�
 ### 2026-11-04 新窗口接续核证｜M4远端HTTP仍须闭合（最新优先）
 
 源码64c2402929ff229d32b232cabf4ca8cdbf6d0b89已落远端main。主CI41790309817、PG1741790310006 SUCCESS；HTTP41790309838 FAILURE，job126441897574的实际HTTP/browser执行步骤失败。**当前M4_REMOTE_HTTP_RECONCILIATION_HOLD，暂不正式转M5**；前述M4有限工程准出与M5接续是待该回归闭合的提案，不可借本地成功或后续文档CI覆盖FAIL。新窗口首要事项是获取失败job日志、定位本地与GitHub差异并定向修复/复验，不重新拆解总体方案或重做M1—M3。gh日志读取当前空正文，根因未确认。精确回执入同批结果/evidence，全部生产/专业/外发/费用固定条件不变。
+
+
+### 2026-11-04｜M4远端HTTP定向闭合 → M5合法消费接续
+
+源码df4eeb8的主CI41823975350、HTTP41823975358均SUCCESS（实际7PASS/1StorageSKIP），旧41790309838的anon缺角色初始化失败已用全新PG17复现并定向修复。M4_REMOTE_HTTP_RECONCILIATION_HOLD仅此项关闭，M4_CONDITIONAL_EXIT按原隔离范围接收；全部生产/专业/费用条件保留，旧失败历史不删除。证据见CODEX_M4_HTTP_20261104.md。
+
+M5本批优先P0：公开作品目录/详情/节目单/分享/相关/搜索曾绕过listWatchEligible直接使用Admin原始发布列表；补逐请求WATCH资格与no-store，增加旧published指针无当前G5的真实PG/HTTP拒绝测试。现行精确G5映射未实现仍HOLD，不伪造资格以打开公开消费。私有preview/CAS缺口已只读识别，随后按真实回归推进，不借本批宣称M5整体完成。
