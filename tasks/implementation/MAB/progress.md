@@ -940,3 +940,11 @@ Ruling: 当前M4允许完成可运行隔离链，真实第三方/生产验证仍
 - 在`c8379b0`的源码/单测成功后，提交`08fa04e7778481c0e0ac88cd0053fa7b1dd01aad`，于**现有**Playwright MAB suite新增一次性真实PG fork/restore并发8请求仅一个200、其它409、同operation_id重试不重复、历史revision精确来源恢复、错source和跨Owner拒绝。
 - SHA精确主CI [41838116485](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41838116485) **SUCCESS**，隔离HTTP [41838116408](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41838116408) **SUCCESS**；job 126602232916原始日志`12 passed / 1 skipped`、新`real PG: concurrent forks...` PASS、合成数据库已清除。Storage配置缺失的SKIP照旧保留。
 - 裁定：本项`M5_FORK_RESTORE_VERIFIED_ISOLATED`；不签M5阶段EXIT_PASS，不新增权限或生产正式写入。原M1—M4生产与Gate/外发/费用固定条件全保留。详见`tasks/results/MAB/CHATGPT_M5_REVISION_CAS_20261104.md`第4节。
+
+
+### 2026-11-04｜M5导演首次保存真实PG验收——既有PLAN局部子项核销
+
+- GitHub main源码`608ff72fe9d2c141b1ca5a4bc49c804e5c8a6b74`修复回执丢失时的导演提交幂等，保留精确Owner／方案来源及唯一revision竞争；未改变产品方向、MHKA／KAD6／MAB阶段顺序。
+- [主CI41841366673](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41841366673) **SUCCESS**；[隔离PG17/Chromium41841366704](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41841366704) **SUCCESS**。Job126613506876明确新增导演并发/跨Owner/回执重试用例 PASS，整体13PASS/1StorageSKIP、合成数据库清理完成。8个不同方案一个200、七个409；相同方案原expected头重试返回相同revision。
+- 专项`M5_DIRECTOR_REVISION_VERIFIED_ISOLATED`；现有fork/restore已验证结果继承。真实史料/独立G5/正式发布/Owner体验/上游M1—M4生产条件均未因此通过，M5整体仍HOLD、HANDOFF_NOT_READY。详细回执沿用`tasks/results/MAB/CHATGPT_M5_REVISION_CAS_20261104.md`第5节，目标差异账按行补充。
+- 下一优先仍是原M5/HP07/HP10—12：`work_revision↔L5@revision↔current G5↔purpose/consumer/rights`具名合法映射与授权消费者逐请求核查；ST-01—09及13类资产实际业务正反验收。若专业映射仍无可核实权威类型/Review部署，维持HOLD、不自授资格，不重做已过隔离PG子项。

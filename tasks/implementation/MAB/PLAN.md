@@ -883,3 +883,5 @@ M5本批源码最终核证：e5a3a5b主CI41828369677、隔离PG41828369318、实
 
 **2026-11-04 M5原顺序接续与定向验收（仅状态回写，不改阶段/标准）**：沿上节既定“其它版本写入口→同WorkRevision/G5/rights→九动作/13类型”施工。`19ff534c`与`4d5c05e`完成导演选定方案与作品同Owner/快照/不可变CAS及测试修正，CI41836604791 SUCCESS；`c8379b0`完成fork/restore历史精确来源、CAS与operation_id幂等，CI41837221858及隔离HTTP41837221734 SUCCESS；`08fa04e`增加既有Playwright真实PG并发/重复请求/历史恢复负例，CI41838116485和HTTP41838116408均SUCCESS（12PASS/1Storage SKIP）。这些是M5局部`VERIFIED_ISOLATED`，尚未进行导演提交整条正式PG/生产E2E，**M5整体及精确G5/rights/STA九动作/13类验收仍HOLD**。下一步只做同WorkRevision与合法专业资格/消费者/权利及未覆盖业务，不重复已证的fork并发子项。M1—M4原条件、生产安全与M8标准不变；回执`tasks/results/MAB/CHATGPT_M5_REVISION_CAS_20261104.md`，progress与target-diff原位核销。
 
+
+**2026-11-04 M5导演提交隔离PG专项补充核销（不改变原计划）**：上条此前“导演提交未进行正式PG/E2E”的阶段性说明，现由`608ff72f`实际隔离PG17/Chromium补证。`CI41841366673`、`HTTP41841366704`均SUCCESS，原expected-head丢回执重试、8个不同导演方案版本争用、来源与跨Owner正反验证PASS（13PASS/1StorageSKIP）。本项仅`M5_DIRECTOR_REVISION_VERIFIED_ISOLATED`；生产Owner、历史专业原件/独立G5、正式发表、九动作/13类型及M6—M8仍按原条件HOLD。见原M5回执`tasks/results/MAB/CHATGPT_M5_REVISION_CAS_20261104.md`第5节。下一步不再重复该成功测试，优先处理合法WorkRevision→L5/G5与逐消费者rights/purpose/scope映射，再做原专业业务验收。

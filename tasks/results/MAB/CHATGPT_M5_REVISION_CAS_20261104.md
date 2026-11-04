@@ -32,3 +32,13 @@
 - 真正一次性PG17／Next／Chromium运行：<https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41838116408> **SUCCESS**。job `126602232916` 原始日志明确包含`real PG: concurrent forks have one CAS winner, retries are idempotent, historical restore preserves source` **PASS**；全套`12 passed / 1 skipped`、`MAB_HTTP_BROWSER_PASS`、`MAB_HTTP_SYNTHETIC_DATABASE_CLEANED`。该1项SKIP仍为官方Storage缺配置，不能充作原件正式对象验证。
 - 同SHA主CI <https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41838116485> **SUCCESS**。覆盖不等于正式Provider/独立G5或生产Owner/Storage全链。
 - 据此把 **M5 fork/restore 的源码＋隔离PG并发/幂等/精确历史来源子项** 由先前`PG_E2E_HOLD`提升为`VERIFIED_ISOLATED`；仍无生产业务回执与Owner体验签收，M5整体`HOLD`、M1—M4全部原固定生产与专业条件不变。下一步进入同WorkRevision的专业G5/rights和ST九动作/13类合同核对，不重复此已证子项。
+
+
+## 5. 导演方案首次提交的真实隔离PG/Chromium闭环（608ff72f）
+
+- 技术缺口：初始导演提交已保存但HTTP回执丢失后，以原`expected_revision_no`重试会先返回409而非核实同一精确修订；真实PG上尚未验证多个不同导演方案争同一作品下一版本的并发竞争。
+- 源码`608ff72fe9d2c141b1ca5a4bc49c804e5c8a6b74`仅将`commitWorkRevision`的内容及`director_source`精确匹配幂等检查移到expected-head冲突判断之前；不同方案/内容仍旧409，保留Owner联合查询、同SQL快照再验、现行`work_revisions(work_id,revision_no)`唯一写入约束，不新增Schema或授权机制。
+- `tests/unit/mab-m5-director-commit.test.ts`增强为原expected-head重试仍返回原revision；`tests/e2e/mab-m5-private-revisions.spec.ts`使用`MOHEN_E2E_ISOLATED=1`、严格路径与一次性数据库标识检查后，直接插入**合成、明确非历史证据**的Owner私有导演计划供HTTP端点测试，不借外部LLM或生产数据。
+- 真实Actions`CI [41841366673](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41841366673)` **SUCCESS**；`PG17/Chromium [41841366704](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41841366704)` **SUCCESS**，job `126613506876`日志确认新增 `real PG: director commit binds Owner and exact plan, races safely and acknowledges a lost response` PASS、全套 `13 passed / 1 skipped`、`MAB_HTTP_BROWSER_PASS`与`MAB_HTTP_SYNTHETIC_DATABASE_CLEANED`。
+- 验证点：8不同方案竞争同一work@head=1只有一个保存新修订，其余409；原方案使用原expected head的请求重试返回**相同**revision；精确`director_source.plan_id/selected`与beats在私有preview一致；Owner B的独立作品不能借Owner A方案，Owner B也不能写Owner A作品。正式Storage配置缺少的一项SKIP仍保持SKIP。
+- **裁定：M5初始导演提交／Owner归属／精确来源／并发与回执幂等子项为`VERIFIED_ISOLATED`**。这不是D/L/G真史料或合格L5的业务证据，不是正式作品发布/观看准出，原M5／M6—M8与M1—M4全部固定条件不变。`work-publish-qualification.ts`因缺正式WorkRevision→L5@revision与独立G5消费者purpose/scope/rights映射继续严格失败关闭；不能把文本provenanceRefs或作品审核决定作为G5。
