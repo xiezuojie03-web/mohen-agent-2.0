@@ -1011,3 +1011,10 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 ### 2026-11-05｜M5/HP11追加真实Chromium私有资产缓存验证
 
 在原已实测主CI/PG子项基础上，定向补非对象JSON 400应no-store的实际漏口（`b063876a`）、相应单测（`3ae28f18`）及现有`mab-notebook.spec.ts`真实双Owner HTTP正反断言（`9f3af8b1`）。测试沿用现有一次性隔离PG17+Chromium，不新造权限/Gate/存储/任务书。源码`9f3af8b1`已触发主CI41945997957与HTTP41945997916，待核结果前本子项标CI_PENDING；精确测试及回滚见`tasks/results/MAB/CHATGPT_M5_RESUME_CACHE_20261105.md`§4。原M5/所有正式条件HOLD不变。
+
+
+### 2026-11-05｜M5/HP01、HP10、HP11定向闭环：真实PG17、HTTP和测试语法早防
+
+- 新HTTP回归`9f3af8b1`旧run41945997916 **FAILURE**（Playwright解析测试文件76行少右括号，非接口失败）；`af074521`精确补括号，**主CI41946337981 SUCCESS、真实隔离PG17+Chromium41946337974 SUCCESS**。HTTP job126979363687：17PASS/1官方Storage无配置SKIP，`MAB_HTTP_BROWSER_PASS`，合成数据库清理；包含Studio本人保存/列表/历史与跨Owner拒绝操作的显式no-store真实HTTP断言，13类资产和Admin隔离业务既有标记无回退。
+- HP01在`abff4e4d`向原主CI加入无DB/浏览器的Playwright HTTP规格`--list`语法预检；新主CI41946517684 **SUCCESS**，job126979974001：6测试文件18用例可收集、445单测PASS/4旧联网SKIP、133边界PASS、Next Build和目标审计errors=[]。该关仅防测试文件语法漏，不计作HTTP验收。
+- 之前`935a1e1e`研究恢复PG1741945060135 SUCCESS、`9d7b1c4c`私有资产主CI41945285925 SUCCESS保留。精确源码、失败历史、PASS/NEG/回退在`tasks/results/MAB/CHATGPT_M5_RESUME_CACHE_20261105.md`§1—5。本轮仅M5/HP01、HP10、HP11的**VERIFIED_ISOLATED子项**，不签M5整体或专业/生产/外发/收费/13类业务、真实跨题复用与M6—M8。原M1—M4固定条件、当前真实Gate与原件Storage仍HOLD。
