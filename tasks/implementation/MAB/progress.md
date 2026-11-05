@@ -1208,3 +1208,7 @@ Data API范围：pg_db_role_setting未见pgrst.db_schemas/db_extra_search_path�
 本批仅三组有界操作：①继承与双线/EXP准备现行状态纠偏；②四层环境只读核实及ST02分类/重入；③独立安全只读审计与提案/测试矩阵。只更新原PLAN、progress、CURRENT和现行handoff四文件，无新权威/源码/Registry/迁移，无生产DDL、Bucket、上传、密钥或权限改变。定向检查与最终精确提交/一次完整CI在下方收尾追加；历史PASS按精确SHA继承，实际原件PG/HTTP及安全回归均NOT_RUN/HOLD。回退本批仅撤销这四份文档差异，保留所有历史回执和数据；原work现场不动，不复活撤权内容。
 
 定向收尾：文档预算PASS(CURRENT 134/180)、git diff --check PASS；最终正常执行权限下static两守卫PASS，74目标审计errors=[]且HANDOFF_NOT_READY。审计在普通沙箱曾repo_sha=null、Skill守卫EPERM；正常执行补证记录在本次命令轨迹，不将受限结果抹掉。仅四文档差异复核，无凭据值/数据正文，无新产品实现或生产改动。完整CI由本次提交后main push触发一次，结果另核。
+
+**最终远端核证（本批闭合，不是ST02准出）**：`6cd2fa9a07ae7d089ba00f0beff5b7d16d8b6079`已非强制推main；完整CI [42002088920](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/42002088920) / job127159555541 SUCCESS，逐步骤及完整日志已核：Node22/pnpm9.15.4/Ubuntu、468单测PASS/4既有SKIP、133边界PASS、11 Skill PASS、20 Playwright规格收集(非实际HTTP)、六workspace类型/Build/鉴权守卫SUCCESS、74目标errors=[]且HANDOFF_NOT_READY。本次未新跑真实PG/HTTP、未重复原候选验收；ST02真实字节=DEFERRED_DATA，隔离配置=DEFERRED_ENV，安全业务矩阵=NOT_RUN，M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY。
+
+本次唯一完整CI已完成；收尾仅将精确结果回写CURRENT/progress/handoff，使用`[skip ci]`文档提交，不能把核证补记提交称为另一次完整CI通过。回滚：对6cd2fa9及其文档核证后继提交做非强制revert，或只撤回其四文件差异，保留旧历史；无DB/Storage/产品源码需回滚。两个工作区收尾clean，旧work保留。**下一步仍是先确认合法真实原件位置与隔离授权，按§3重入ST02；不启动ST03、不等待CodeBuddy验收、不重做已验能力。**
