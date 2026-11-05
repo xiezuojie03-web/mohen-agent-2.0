@@ -115,6 +115,21 @@ try {
  assert.deepEqual((await repo.listAssets(fullProject,token(a),{excludeGeneratedReadingNotes:true})).map(r=>r.revision_id),before);
  assert.equal((await repo.listAssets(fullProject,token(b),{excludeGeneratedReadingNotes:true})).length,0);
  console.log('MAB_ST02_PRELIMIT_REPLAY_PASS 100-candidates generated-note owner-only');
+ // Explicit Admin browsing must reach all 101 assets without changing ST02's default query.
+ const browsed=[];let browseCursor=null;
+ do {
+  const rows=await repo.listAssets(fullProject,token(a),{browse:true,limit:20,cursor:browseCursor});
+  browsed.push(...rows.slice(0,20).map(r=>r.revision_id));
+  browseCursor=rows.length>20?rows[19].revision_id:null;
+ }while(browseCursor);
+ assert.equal(browsed.length,101);assert.equal(new Set(browsed).size,101);
+ const found=await repo.listAssets(fullProject,token(a),{browse:true,q:'synthetic candidate 0',kind:'reading_note',limit:20});
+ assert.equal(found.length,1);assert.equal(found[0].payload.literal_reading,'synthetic candidate 0');
+ assert.equal((await repo.listAssets(fullProject,token(b),{browse:true,limit:20})).length,0);
+ assert.equal((await repo.listAssets(fullProject,token(a),{browse:true,cursor:current.revision_id,limit:20})).length,0,'foreign-project cursor grants no traversal');
+ assert.throws(()=>repo.listAssets(fullProject,token(a),{browse:true,limit:101}),/STUDIO_BROWSE_INVALID/);
+ console.log('MAB_ADMIN_ASSET_BROWSE_PASS 101-assets exact-search stable-pages cross-owner foreign-project-cursor');
+
  for(let i=0;i<2;i++){const c=await pool.connect();const state=(await c.query("select current_user as role,coalesce(current_setting('mohen.session_token',true),'')as token")).rows[0];assert.equal(state.role,'k3_admin');assert.equal(state.token,'');c.release();}
  console.log('MAB_STUDIO_REPOSITORY_PASS saved-payload immutable-revision request-idempotency exact-CAS concurrency cross-owner clean-pool');
 }finally{await pool.end();}

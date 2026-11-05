@@ -32,3 +32,13 @@ it('selects only the requested immutable revision within the selected asset hist
  expect(assetRightsSummary(old.rights_by_action)).toContain('denied');
  expect(assetRightsSummary(undefined)).toContain('未知');
 });
+
+it('reports stored validation and use context without inventing Gate qualification',async()=>{
+ const {assetValidationSummary,assetPermissionSummary,assetUseSummary}=await import('../../apps/web/app/admin/knowledge-asset-view');
+ expect(assetValidationSummary({status:'CHECKED',rule_version:'r1',findings:['missing L1']})).toContain('missing L1');
+ expect(assetValidationSummary(undefined)).toContain('未评估');
+ expect(assetPermissionSummary({purposes:['research']})).toContain('research');
+ expect(assetPermissionSummary(undefined)).toContain('未记录');
+ expect(assetUseSummary({purpose:'research',created_at:'2026-01-01',asset_revision_id:'old'})).toContain('old');
+ expect(assetUseSummary({})).toContain('未记录');
+});

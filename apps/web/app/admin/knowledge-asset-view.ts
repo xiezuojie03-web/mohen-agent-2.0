@@ -32,3 +32,17 @@ export function assetRightsSummary(rights:unknown):string {
  return ['read','quote','display','download','adapt','external_processing'].map(action=>
   `${action}: ${['allowed','denied','unknown','restricted'].includes(String(value[action]))?value[action]:'unknown'}`).join(' · ');
 }
+
+export function assetValidationSummary(validation:unknown):string {
+ if(!validation||typeof validation!=='object'||Array.isArray(validation))return '存储验证：未评估；独立G资格仍须核验';
+ return '存储验证（不是独立G资格）：'+assetPayloadPreview(validation);
+}
+export function assetPermissionSummary(scope:unknown):string {
+ return scope&&typeof scope==='object'&&!Array.isArray(scope)?'存储授权范围：'+assetPayloadPreview(scope):'授权范围未记录';
+}
+export function assetUseSummary(event:{purpose?:unknown;created_at?:unknown;asset_revision_id?:unknown;use_event_id?:unknown}):string {
+ return ['用途：'+(event.purpose===undefined?'未记录':assetPayloadPreview(event.purpose)),
+  '时间：'+(typeof event.created_at==='string'?event.created_at:'未记录'),
+  '修订：'+(typeof event.asset_revision_id==='string'?event.asset_revision_id:'未记录'),
+  '事件：'+(typeof event.use_event_id==='string'?event.use_event_id:'未记录')].join(' · ');
+}

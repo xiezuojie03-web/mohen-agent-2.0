@@ -45,6 +45,13 @@ export async function GET(request: Request) {
       return privateJson({ok:true,asset});
     }
     if (!query.get('project_id')) return privateJson({ok:false,reason:'project_id_required'},400);
+    if(query.get('browse')==='1'){
+      const limit=Number(query.get('limit')??20),q=query.get('q')??'',kind=query.get('kind')??'',cursor=query.get('cursor');
+      if(!Number.isInteger(limit)||limit<1||limit>100||q.length>200||(kind&&!['research_brief','source_anchor','reading_note','evidence_note','spacetime_candidate','relation_hypothesis','humanistic_insight','research_collection','director_plan','media_selection','work_revision','citation_snapshot','consented_feedback'].includes(kind)))return privateJson({ok:false,reason:'invalid_browse_options'},400);
+      const rows=await store.listAssets(query.get('project_id')!,token,{browse:true,q,kind,cursor,limit});
+      const assets=rows.slice(0,limit);
+      return privateJson({ok:true,assets,next_cursor:rows.length>limit?assets[assets.length-1].revision_id:null});
+    }
     return privateJson({ok:true,assets:await store.listAssets(query.get('project_id')!,token)});
   } catch(error) { return privateFailure(error); }
 }

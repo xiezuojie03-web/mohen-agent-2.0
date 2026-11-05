@@ -68,3 +68,16 @@ it('rejects self-claimed feedback consent when the repository refuses it',async(
  expect((await r.json()).reason).toBe('STUDIO_FEEDBACK_CONSENT_REQUIRED');
  expect(r.headers.get('cache-control')).toBe('no-store');
 });
+
+it('opts into bounded private asset browsing without changing ordinary listings',async()=>{
+ deps.assets.mockResolvedValue(Array.from({length:3},(_,i)=>({revision_id:'rev-'+i})));
+ const r=await assets(request('/assets?project_id=project&browse=1&q=note&kind=reading_note&limit=2&cursor=old'));
+ expect(r.status).toBe(200);expect(r.headers.get('cache-control')).toBe('no-store');
+ expect(deps.assets.mock.calls[0][2]).toEqual({browse:true,q:'note',kind:'reading_note',limit:2,cursor:'old'});
+ expect(await r.json()).toEqual({ok:true,assets:[{revision_id:'rev-0'},{revision_id:'rev-1'}],next_cursor:'rev-1'});
+});
+it('rejects invalid browsing limits before repository access',async()=>{
+ for(const limit of ['0','101','NaN','2.5'])expect((await assets(request('/assets?project_id=p&browse=1&limit='+limit))).status).toBe(400);
+ expect((await assets(request('/assets?project_id=p&browse=1&kind=pretend-g5'))).status).toBe(400);
+ expect(deps.assets).not.toHaveBeenCalled();
+});

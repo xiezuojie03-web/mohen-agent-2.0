@@ -65,7 +65,20 @@ export function createStudioAssetRepository(pool) {
             where c.project_id=$1 and c.asset_id=$2::uuid))
         order by h.created_at desc,h.asset_id desc limit 21`,[projectId,cursor])).rows);
     },
-    listAssets(projectId, sessionToken, {excludeGeneratedReadingNotes=false}={}) {
+    listAssets(projectId, sessionToken, {excludeGeneratedReadingNotes=false,browse=false,q='',kind='',cursor=null,limit=20}={}) {
+      if(browse){
+        requireId(projectId);if(cursor!==null)requireId(cursor);
+        if(!Number.isInteger(limit)||limit<1||limit>100||typeof q!=='string'||q.length>200||typeof kind!=='string'||(kind&&!kinds.has(kind)))throw new Error('STUDIO_BROWSE_INVALID');
+        return transaction(sessionToken,async client=>(await client.query(revisionSelect+`
+          where h.project_id=$1 and h.current_revision_id=r.revision_id
+            and ($2::text='' or position(lower($2) in lower(r.payload::text||' '||h.asset_kind||' '||h.asset_id::text))>0)
+            and ($3::text='' or h.asset_kind=$3)
+            and ($4::uuid is null or (r.created_at,r.revision_id)<(
+              select c.created_at,c.revision_id from studio.asset_revisions c
+              join studio.asset_heads ch on ch.asset_id=c.asset_id
+              where ch.project_id=$1 and c.revision_id=$4::uuid))
+          order by r.created_at desc,r.revision_id desc limit $5`,[projectId,q,kind,cursor,limit+1])).rows);
+      }
       requireId(projectId);
       return transaction(sessionToken, async client => (await client.query(revisionSelect+
         " where h.project_id=$1 and h.current_revision_id=r.revision_id"+
