@@ -1054,3 +1054,11 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - 首次 CI `41963481911` **FAILURE**，Typecheck先因现有 `apps/web/lib/studio-research-read.ts` 三处TypeScript错误失败，路由守卫未运行；不伪称绿灯。
 - 定向补证提交 `fceaea201fd86571284ae4cb537ab95df63123c4` 把 MHKA 路由守卫移至 Typecheck 前；GitHub Actions `41963756191` 的 **MHKA engineering authority routing guard = SUCCESS**；Typecheck仍 **FAILURE**（TS2353: `Material` 不含 `title`；TS2451: `privateMaterialIds` 重复声明两处）。不将无关M5代码修复混入本次规范入口治理补丁。
 - 判定：**工程权威路由纠偏 VERIFIED_CI_STEP**；**FULL_CI_HOLD**；M5 及正式运行 Gate/生产/收费/外发 HOLD 均不变。后续 M5 施工须按新 MHKA 入口解决上述源码类型缺陷，按独立 SHA 重验完整主 CI。
+
+## 2026-11-05｜双 Skill 原有理念继承与开发工具 Skill 提效任务入账（仅计划，未施工）
+
+- **Owner 决策**：继续保留“开发 Skill／产品 Skill”两条长期能力建设线，工程开发工具跨平台复用的原始目标有效；依据现行 MHKA-04 §3 的四执行上下文进行重塑，不恢复 C2 旧术语的生产/开发混用，不重开新架构研究。
+- **唯一任务归属**：已在 `tasks/implementation/MAB/PLAN.md §6B.4` 原位补充 DS-01—DS-04 的工程提效任务、BUILD/MAINTAIN 生命周期、跨工具适配、费用/权限/停机边界和实际验收。不新增 M9、HP14、独立任务书、产品 Skill Registry 或新的治理层。当前 M5/ST-02 主施工和所有 HOLD、现行 74 目标及 HP01—HP13 验收要求不变。
+- **顺序**：先核工具环境与 canonical 方法源 → 建 `mohen-dev-continuation`（含验证/交接内核）→ 在真实 M5 相邻任务中验证连续执行与跨工具接力 → 后续按证据拆出维护/验证技能。首期只优化真实施工，不以 `SKILL.md` 文件存在、空演示或自动状态文字宣称开发 Skill 已可用。
+- **当前状态**：`DESIGN_DECISION_RECORDED / DS-01—DS-04 NOT_STARTED`。开发 Skill 源文件、加载器、Codex/CodeBuddy 真实调用及 CI 验收均未在本次实现；后续实施逐批回写同一 progress，确实需要生产授权、受限外发、付费或产品方向决策时由 Owner 裁决。
+
