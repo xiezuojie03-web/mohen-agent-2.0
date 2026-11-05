@@ -27,3 +27,12 @@
 下一轮仍沿原M5，重点是 `ST01—ST04` 真正来源→有据材料→委托/候选→Studio导演作品、13类资产字段语义/跨项目有权复用、`consented_feedback` 同意撤回及canonical媒资；保留现有六类L5×四消费者、13类10+3隔离PG和导演CAS等成功证据，拒绝重复施工。真实专业G、原件Storage、私人外发、费用与生产迁移仍受M1-C01—C04、M2-C01—C03、M3-C01—C03及M4-C01—C04的已签条件约束。**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；M6—M8未准出**。
 
 本批不作Owner体验或产品可运行整体签收。
+
+## 4. 继续闭合：私有资产真实Chromium HTTP回归（同一M5缺口）
+
+在同一批次的单测/PG成功后，核查既有 `tests/e2e/mab-notebook.spec.ts` 已覆盖实际Studio本人项目、13类型和跨Owner读取，直接复用现行 `scripts/test-mab-http.mjs`、`.github/workflows/mab-m1-isolated-http.yml`。不新建测试框架或另起阶段。
+
+- `b063876aeb08af06977988b3e690847be877aa86` 修复一个真实漏口：私有POST提交非对象JSON时，`studioObjectBody` 产生的提前400响应原未经过 `privateFailure`，补原地no-store。
+- `3ae28f18b71ed3ffba14985d6fd1d5faf3b378a4` 追加400非对象输入三分支禁缓存单测。
+- `9f3af8b12475ac72c5e99e03d919b102d92bfa50` 在原 `mab-notebook.spec.ts` 补Chromium真实HTTP禁缓存断言：首次及二次保存200、本人GET列表200、历史200、跨Owner修订404、跨Owner历史和use_events受限空结果、跨Owner写入404。沿已有合成双账号与独立PG，不涉及生产。
+- 最新该源码SHA自动触发主CI `41945997957` 与隔离PG17+Chromium `41945997916`；**本节初写时尚在运行，未取得结论不记PASS**。待真实日志核证，如失败先修复再更新此节。原M5/HP11完整业务与缓存撤权LIVE验收仍HOLD。
