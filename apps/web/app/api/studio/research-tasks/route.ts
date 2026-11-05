@@ -1,5 +1,5 @@
 import {NextResponse} from "next/server";
-import {createResearchTask,requestProduction} from "../../../../lib/studio-research";
+import {createResearchTask} from "../../../../lib/studio-research";
 import {resolveTopic} from "../../../../lib/mohen-agent/research";
 import {canAccess} from "../../../../lib/ownership";
 import {getSession,isOperatorSession} from "../../../../lib/session";
@@ -58,15 +58,12 @@ export async function POST(req:Request){
     throw error;
   }
 
-  // Only the first successful research execution can request formal production.
-  // Replays return the existing task/brief and never trigger a second production side effect.
-  let production:{ok:boolean;reason?:string;run_id?:string}|null=null;
-  if(created.taskId&&created.status!=="hold"&&!created.replayed)
-    production=await requestProduction(created.taskId);
+  // ST-01 only creates/reuses the research task and its private brief.
+  // ST-04 formal production is a separate explicit Creator decision; never auto-dispatch here.
   return privateJson({
     ok:true,status:created.status,hold_reason:created.holdReason??null,
     missing_requirements:created.missingRequirements??[],task_id:created.taskId,
     brief_asset_ref:created.briefAssetRef??null,replayed:created.replayed===true,
-    degraded:created.degraded,decision:created.decision,research_leads:created.researchLeads,production,
+    degraded:created.degraded,decision:created.decision,research_leads:created.researchLeads,production:null,
   });
 }
