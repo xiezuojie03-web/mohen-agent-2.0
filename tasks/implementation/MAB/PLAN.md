@@ -274,6 +274,9 @@ MAB-ENG-01批次进展（2026-11-02，详细证据见progress.md）：私有原�
 
 ### M5｜创作、Admin、发布与WATCH合法消费
 
+**2026-11-05 M5/HP11局部实码核销（不改本阶段勾选状态）**：现有私有`studio.asset_heads/asset_revisions`增加`consented_feedback`明确同意声明检查、Owner不可变撤回修订/并发幂等/历史正文API脱敏，Admin现行条目两步撤回；源码`17b9863e`→`eaf1515f`／HTTP测试`000327ca`。主CI[41950478739](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41950478739)、隔离真实HTTP[41950478723](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41950478723)均SUCCESS（447单测、133边界、Chromium18PASS/1StorageSKIP）；详见`tasks/results/MAB/CHATGPT_M5_FEEDBACK_CONSENT_20261105.md`。仅私人候选声明/撤回`VERIFIED_ISOLATED`，不代表真实数据主体同意凭证、物理删除、外部传播撤回、正式G5或全13类专业完成；**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY**，原M1—M4所有生产固定条件不变。
+
+
 **2026-11-03 M5并行施工实际增量（非准出）**：按既有允许低依赖实施的边界，`64cdb2e6`将已提交修订→发布指针改为同一条SQL原子操作，并对并发状态变化返回明确拒绝；`3eca7df3`新增原子发布与写失败单元测试。`e9bde789`补WATCH旧指针修订非published时的过滤，`68b334bf`补对应合同测试。现为`CODE_PRESENT / CI_PENDING`，不等于完整Editor→Admin→G5→WATCH实时撤权闭环。仍须精确G5/consumer/rights验收、媒体许可与当前资格逐请求核验、真实PG事务及完整作品E2E；M1—M4独立门槛保留。实际执行回执见`progress.md`。
 
 
