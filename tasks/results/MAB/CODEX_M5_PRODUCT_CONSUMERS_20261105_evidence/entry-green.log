@@ -1,0 +1,15 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+stderr | tests/unit/mab-hp07-visual-current-g5.test.ts > HP07 visual stage exact current G5 and safe topic filtering > fails closed rather than displaying old legacy PASS data when the DB qualifier fails
+[read-model-bridge] 读取真实发布成果失败： CURRENT_G5_UNAVAILABLE
+
+ ✓ tests/unit/mab-hp07-visual-current-g5.test.ts (6 tests) 9ms
+ ✓ tests/unit/mab-m5-material-cache.test.ts (4 tests) 15ms
+ ✓ tests/unit/public-evidence-qualification.test.ts (8 tests) 18ms
+
+ Test Files  3 passed (3)
+      Tests  18 passed (18)
+   Start at  00:14:57
+   Duration  1.04s (transform 227ms, setup 0ms, collect 410ms, tests 42ms, environment 1ms, prepare 173ms)
+

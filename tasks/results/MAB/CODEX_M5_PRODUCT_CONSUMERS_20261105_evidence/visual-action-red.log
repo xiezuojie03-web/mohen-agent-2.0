@@ -1,0 +1,92 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+stderr | tests/unit/mab-hp07-visual-current-g5.test.ts > HP07 visual stage exact current G5 and safe topic filtering > refuses a visual context without display rights before reading
+[read-model-bridge] 读取真实发布成果失败： Cannot read properties of undefined (reading 'length')
+
+stderr | tests/unit/mab-hp07-visual-current-g5.test.ts > HP07 visual stage exact current G5 and safe topic filtering > fails closed rather than displaying old legacy PASS data when the DB qualifier fails
+[read-model-bridge] 读取真实发布成果失败： CURRENT_G5_UNAVAILABLE
+
+ ❯ tests/unit/mab-hp07-visual-current-g5.test.ts (6 tests | 1 failed) 68ms
+   ✓ HP07 visual stage exact current G5 and safe topic filtering > fails closed without explicitly scoped visual-stage context 8ms
+   × HP07 visual stage exact current G5 and safe topic filtering > refuses a visual context without display rights before reading 49ms
+     → expected "spy" to not be called at all, but actually been called 1 times
+
+Received: 
+
+  1st spy call:
+
+    Array [
+      "select p.projection_id::text as pid, p.payload::text as payload, g.run_id::text as run_id
+           from read_model.world_projections p
+           join control.qualification_current q
+             on q.gate_code='G5' and q.consumer='visual_stage'
+            and q.object_type='world_projection' and q.object_id=p.projection_id
+           join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+            and control.qualification_allows(q.gate_audit_id,'visual_stage',
+                :'purpose_namespace',:'purpose_code',:'purpose_version',:'allowed_scope'::jsonb)
+           
+           order by p.generated_at desc limit 1",
+      Object {
+        "allowed_scope": "{"project":"synthetic","requested_action":"read"}",
+        "purpose_code": "visual-display",
+        "purpose_namespace": "test",
+        "purpose_version": "1",
+      },
+    ]
+
+
+Number of calls: 1
+
+   ✓ HP07 visual stage exact current G5 and safe topic filtering > escapes wildcard and quote input through a bound parameter 1ms
+   ✓ HP07 visual stage exact current G5 and safe topic filtering > uses separate current G5 check for every L5 visual facet in the same run 6ms
+   ✓ HP07 visual stage exact current G5 and safe topic filtering > does not expose unlicensed media even if a broken row reached the presentation adapter 1ms
+   ✓ HP07 visual stage exact current G5 and safe topic filtering > fails closed rather than displaying old legacy PASS data when the DB qualifier fails 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/mab-hp07-visual-current-g5.test.ts > HP07 visual stage exact current G5 and safe topic filtering > refuses a visual context without display rights before reading
+AssertionError: expected "spy" to not be called at all, but actually been called 1 times
+
+Received: 
+
+  1st spy call:
+
+    Array [
+      "select p.projection_id::text as pid, p.payload::text as payload, g.run_id::text as run_id
+           from read_model.world_projections p
+           join control.qualification_current q
+             on q.gate_code='G5' and q.consumer='visual_stage'
+            and q.object_type='world_projection' and q.object_id=p.projection_id
+           join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+            and control.qualification_allows(q.gate_audit_id,'visual_stage',
+                :'purpose_namespace',:'purpose_code',:'purpose_version',:'allowed_scope'::jsonb)
+           
+           order by p.generated_at desc limit 1",
+      Object {
+        "allowed_scope": "{"project":"synthetic","requested_action":"read"}",
+        "purpose_code": "visual-display",
+        "purpose_namespace": "test",
+        "purpose_version": "1",
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ tests/unit/mab-hp07-visual-current-g5.test.ts:25:27
+     23|     process.env.MOHEN_G5_CONTEXTS=JSON.stringify({visual_stage:{...ctx…
+     24|     expect((await readProductionRelationSummary()).available).toBe(fal…
+     25|     expect(queryRows).not.toHaveBeenCalled();
+       |                           ^
+     26|   });
+     27|   it("escapes wildcard and quote input through a bound parameter",asyn…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  00:14:45
+   Duration  620ms (transform 161ms, setup 0ms, collect 176ms, tests 68ms, environment 0ms, prepare 115ms)
+

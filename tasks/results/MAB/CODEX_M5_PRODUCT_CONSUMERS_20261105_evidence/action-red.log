@@ -1,0 +1,121 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/public-evidence-qualification.test.ts (8 tests | 2 failed) 30ms
+   ✓ refuses to read unconfigured or malformed public evidence qualification 9ms
+   ✓ rejects invalid evidence identity before DB access 1ms
+   ✓ does not disclose an unqualified pointer even if it physically exists 1ms
+   ✓ preserves the successful response shape but only after qualification query accepts 2ms
+   ✓ fails closed on a missing G5 table, failed policy, or database connection 1ms
+   ✓ refuses a context without the Evidence quote operation: {} 0ms
+   × refuses a context without the Evidence quote operation: {"requested_action":"read"} 7ms
+     → expected 404 to be 503 // Object.is equality
+   × refuses a context without the Evidence quote operation: {"requested_action":"download"} 1ms
+     → expected 404 to be 503 // Object.is equality
+ ❯ tests/unit/mab-m5-material-cache.test.ts (4 tests | 1 failed) 34ms
+   ✓ does not reuse material payload cached before a qualification was withdrawn 15ms
+   ✓ does not disclose an answer cached from withdrawn materials 1ms
+   ✓ materials uses only the server Agent context and ignores caller self-grants 2ms
+   × does not use a server context for another rights operation 14ms
+     → expected "spy" to be called with arguments: [ [ '桥市' ], 12, { …(1) } ]
+
+Received: 
+
+  1st spy call:
+
+@@ -2,8 +2,19 @@
+    [
+      "桥市",
+    ],
+    12,
+    {
+-     "qualification": undefined,
++     "qualification": {
++       "consumer": "agent",
++       "purpose": {
++         "code": "x",
++         "namespace": "G5",
++         "version": "1",
++       },
++       "scope": {
++         "project": "p",
++         "requested_action": "download",
++       },
++     },
+    },
+  ]
+
+
+Number of calls: 1
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/mab-m5-material-cache.test.ts > does not use a server context for another rights operation
+AssertionError: expected "spy" to be called with arguments: [ [ '桥市' ], 12, { …(1) } ]
+
+Received: 
+
+  1st spy call:
+
+@@ -2,8 +2,19 @@
+    [
+      "桥市",
+    ],
+    12,
+    {
+-     "qualification": undefined,
++     "qualification": {
++       "consumer": "agent",
++       "purpose": {
++         "code": "x",
++         "namespace": "G5",
++         "version": "1",
++       },
++       "scope": {
++         "project": "p",
++         "requested_action": "download",
++       },
++     },
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ tests/unit/mab-m5-material-cache.test.ts:32:25
+     30|  vi.stubEnv('MOHEN_G5_CONTEXTS',JSON.stringify({agent:{purpose:{namesp…
+     31|  await POST(new Request('http://localhost/api/mohen/materials',{method…
+     32|  expect(mocks.retrieve).toHaveBeenCalledWith(['桥市'],12,{qualification:…
+       |                         ^
+     33|  vi.unstubAllEnvs();
+     34| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/unit/public-evidence-qualification.test.ts > refuses a context without the Evidence quote operation: {"requested_action":"read"}
+ FAIL  tests/unit/public-evidence-qualification.test.ts > refuses a context without the Evidence quote operation: {"requested_action":"download"}
+AssertionError: expected 404 to be 503 // Object.is equality
+
+- Expected
++ Received
+
+- 503
++ 404
+
+ ❯ tests/unit/public-evidence-qualification.test.ts:66:32
+     64| it.each([{}, {requested_action:'read'}, {requested_action:'download'}]…
+     65|  vi.stubEnv('MOHEN_PUBLIC_EVIDENCE_QUALIFICATION_CONTEXT',JSON.stringi…
+     66|  expect((await call()).status).toBe(503);
+       |                                ^
+     67|  expect(mocks.pool).not.toHaveBeenCalled();
+     68| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 9 passed (12)
+   Start at  00:14:28
+   Duration  1.53s (transform 449ms, setup 0ms, collect 761ms, tests 64ms, environment 1ms, prepare 215ms)
+

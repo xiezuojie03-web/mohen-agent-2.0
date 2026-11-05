@@ -1,0 +1,58 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/public-evidence-qualification.test.ts (5 tests | 2 failed) 14ms
+   ✓ refuses to read unconfigured or malformed public evidence qualification 5ms
+   ✓ rejects invalid evidence identity before DB access 1ms
+   × does not disclose an unqualified pointer even if it physically exists 6ms
+     → expected 503 to be 404 // Object.is equality
+   × preserves the successful response shape but only after qualification query accepts 1ms
+     → expected 503 to be 200 // Object.is equality
+   ✓ fails closed on a missing G5 table, failed policy, or database connection 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/public-evidence-qualification.test.ts > does not disclose an unqualified pointer even if it physically exists
+AssertionError: expected 503 to be 404 // Object.is equality
+
+- Expected
++ Received
+
+- 404
++ 503
+
+ ❯ tests/unit/public-evidence-qualification.test.ts:39:27
+     37| it("does not disclose an unqualified pointer even if it physically exi…
+     38|   const response = await call();
+     39|   expect(response.status).toBe(404);
+       |                           ^
+     40|   expect(response.headers.get("cache-control")).toBe("no-store");
+     41|   expect(mocks.query).toHaveBeenCalledOnce();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/unit/public-evidence-qualification.test.ts > preserves the successful response shape but only after qualification query accepts
+AssertionError: expected 503 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 503
+
+ ❯ tests/unit/public-evidence-qualification.test.ts:53:27
+     51|     display_excerpt:"synthetic private-free sample",unrelated_secret:"…
+     52|   const response = await call();
+     53|   expect(response.status).toBe(200);
+       |                           ^
+     54|   expect(await response.json()).toEqual({ok:true,evidence:{id,display_…
+     55|     display_excerpt:"synthetic private-free sample"}});
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 3 passed (5)
+   Start at  00:10:41
+   Duration  465ms (transform 126ms, setup 0ms, collect 222ms, tests 14ms, environment 0ms, prepare 83ms)
+

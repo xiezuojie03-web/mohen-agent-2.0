@@ -1,0 +1,87 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/mab-m5-material-cache.test.ts (3 tests | 1 failed) 16ms
+   ✓ does not reuse material payload cached before a qualification was withdrawn 6ms
+   ✓ does not disclose an answer cached from withdrawn materials 1ms
+   × materials uses only the server Agent context and ignores caller self-grants 9ms
+     → expected "spy" to be called with arguments: [ [ '桥市' ], 12, { …(1) } ]
+
+Received: 
+
+  1st spy call:
+
+  [
+    [
+      "桥市",
+    ],
+    12,
+-   {
+-     "qualification": {
+-       "consumer": "agent",
+-       "purpose": {
+-         "code": "server-only",
+-         "namespace": "G5",
+-         "version": "1",
+-       },
+-       "scope": {
+-         "project": "server-project",
+-         "requested_action": "read",
+-       },
+-     },
+-   },
+  ]
+
+
+Number of calls: 1
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/mab-m5-material-cache.test.ts > materials uses only the server Agent context and ignores caller self-grants
+AssertionError: expected "spy" to be called with arguments: [ [ '桥市' ], 12, { …(1) } ]
+
+Received: 
+
+  1st spy call:
+
+  [
+    [
+      "桥市",
+    ],
+    12,
+-   {
+-     "qualification": {
+-       "consumer": "agent",
+-       "purpose": {
+-         "code": "server-only",
+-         "namespace": "G5",
+-         "version": "1",
+-       },
+-       "scope": {
+-         "project": "server-project",
+-         "requested_action": "read",
+-       },
+-     },
+-   },
+  ]
+
+
+Number of calls: 1
+
+ ❯ tests/unit/mab-m5-material-cache.test.ts:26:25
+     24|  vi.stubEnv('MOHEN_G5_CONTEXTS',JSON.stringify({agent:context}));
+     25|  await POST(new Request('http://localhost/api/mohen/materials',{method…
+     26|  expect(mocks.retrieve).toHaveBeenCalledWith(['桥市'],12,{qualification:…
+       |                         ^
+     27|  vi.unstubAllEnvs();
+     28| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  00:12:50
+   Duration  433ms (transform 127ms, setup 0ms, collect 156ms, tests 16ms, environment 0ms, prepare 113ms)
+
