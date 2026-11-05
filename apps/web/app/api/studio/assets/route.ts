@@ -52,7 +52,10 @@ export async function POST(request: Request) {
   const session=await getSession();
   if (!session) return privateJson({ok:false,reason:'login_required'},401);
   const body=await studioObjectBody(request);
-  if (body instanceof NextResponse) return body;
+  if (body instanceof NextResponse) {
+    body.headers.set('cache-control','no-store');
+    return body;
+  }
   try {
     if (body.origin_kind!==undefined && body.origin_kind!=='human') throw new Error('STUDIO_ORIGIN_BINDING_REQUIRED');
     const asset=await studioAssetStore().saveRevision({projectId:body.project_id as string,assetId:body.asset_id as string,
