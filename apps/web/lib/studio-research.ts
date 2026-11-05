@@ -377,6 +377,8 @@ export async function resumeResearchTask(
   catch { return {taskId,status:"hold",decision:null,degraded:false,holdReason:"budget_checkpoint_invalid",researchLeads:[]}; }
   if (!saved || typeof saved !== "object" || Array.isArray(saved))
     return {taskId,status:"hold",decision:null,degraded:false,holdReason:"budget_checkpoint_invalid",researchLeads:[]};
+  const studioContext=saved.studio&&typeof saved.studio==='object'&&!Array.isArray(saved.studio)
+    ?saved.studio as Record<string,unknown>:{};
   // A tool may have executed and charged without a committed receipt.
   // Such checkpoints cannot be restarted by adding budget.
   if (saved.retry_requires_reconciliation === true ||
@@ -420,7 +422,7 @@ export async function resumeResearchTask(
     await addEvent(taskId, "D04", "resumed", {ceiling:previousCeiling,resumeClaimRef:next.resume_claim_ref});
     const { decision, degraded, researchLeads } = await runResearch(prompt, topic, ledger);
     if (degraded) throw new ResearchPrerequisiteHold(['SOURCE_OR_QUALIFICATION_UNAVAILABLE'],{decision,degraded,researchLeads});
-    const checkpoint = { prompt, topic, degraded, decision, researchLeads, budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling };
+    const checkpoint = { prompt, topic, degraded, decision, researchLeads, budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling, studio:studioContext };
     await run(
       "update public.research_tasks set status = 'done', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
       { id: taskId, cp: JSON.stringify(checkpoint) }
@@ -430,11 +432,11 @@ export async function resumeResearchTask(
     return { taskId, status: "done", decision, degraded, researchLeads };
   } catch (e) {
     if (e instanceof ResearchPrerequisiteHold)
-      return holdResearchPrerequisites(taskId,prompt,topic,budget,e);
+      return holdResearchPrerequisites(taskId,prompt,topic,budget,e,studioContext);
     if (e instanceof ToolExecutionUncertainError || e instanceof ToolReceiptPersistenceError)
-      return holdUncertainTool(taskId!, prompt, topic, budget, e);
+      return holdUncertainTool(taskId!, prompt, topic, budget, e,studioContext);
     if (e instanceof BudgetHoldError) {
-      const checkpoint = { prompt, topic, budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling, holdReason: "budget", holdAt: e.checkpoint };
+      const checkpoint = { prompt, topic, budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling, holdReason: "budget", holdAt: e.checkpoint, studio:studioContext };
       await run(
         "update public.research_tasks set status = 'hold', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
         { id: taskId, cp: JSON.stringify(checkpoint) }
@@ -443,7 +445,7 @@ export async function resumeResearchTask(
       return { taskId, status: "hold", decision: null, degraded: false, holdReason: "budget", researchLeads: [] };
     }
     const checkpoint = {prompt,topic,budgetSpent:budget.spent,reserved:budget.reserved,
-      ceiling:budget.ceiling,holdReason:"research_failed_review_required",resume_claim_ref:next.resume_claim_ref,retry_requires_reconciliation:true};
+      ceiling:budget.ceiling,holdReason:"research_failed_review_required",resume_claim_ref:next.resume_claim_ref,retry_requires_reconciliation:true,studio:studioContext};
     await run("update public.research_tasks set status = 'hold', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
       {id:taskId,cp:JSON.stringify(checkpoint)});
     return {taskId,status:"hold",decision:null,degraded:false,
