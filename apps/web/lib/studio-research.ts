@@ -469,6 +469,8 @@ export async function appendResearchMessage(
   let saved: Record<string, unknown>;
   try { saved = readJsonColumn<Record<string, unknown>>(rows[0].checkpoint, {}); }
   catch { return { ok: false, reason: "budget_checkpoint_invalid" }; }
+  const studioContext=saved.studio&&typeof saved.studio==='object'&&!Array.isArray(saved.studio)
+    ?saved.studio as Record<string,unknown>:{};
   const spent = Number(saved.budgetSpent);
   const reserved = Number(saved.reserved ?? 0);
   const ceiling = Number(saved.ceiling);
@@ -493,7 +495,7 @@ export async function appendResearchMessage(
     if (degraded) throw new ResearchPrerequisiteHold(['SOURCE_OR_QUALIFICATION_UNAVAILABLE'],{decision,degraded,researchLeads});
     const checkpoint = {
       prompt: message, topic, degraded, decision, researchLeads,
-      budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling,
+      budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling, studio:studioContext,
     };
     await run(
       "update public.research_tasks set status = 'done', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id' and status = 'running'",
@@ -505,19 +507,19 @@ export async function appendResearchMessage(
     return { ok: true };
   } catch (error) {
     if (error instanceof ResearchPrerequisiteHold) {
-      const result=await holdResearchPrerequisites(taskId,message,topic,budget,error);
+      const result=await holdResearchPrerequisites(taskId,message,topic,budget,error,studioContext);
       return {ok:false,reason:result.holdReason};
     }
     if (error instanceof ToolExecutionUncertainError ||
         error instanceof ToolReceiptPersistenceError) {
-      const result = await holdUncertainTool(taskId, message, topic, budget, error);
+      const result = await holdUncertainTool(taskId, message, topic, budget, error,studioContext);
       return { ok: false, reason: result.holdReason };
     }
     if (error instanceof BudgetHoldError) {
       const checkpoint = {
         prompt: message, topic, budgetSpent: budget.spent,
         reserved: budget.reserved, ceiling: budget.ceiling,
-        holdReason: "budget", holdAt: error.checkpoint,
+        holdReason: "budget", holdAt: error.checkpoint, studio:studioContext,
       };
       await run(
         "update public.research_tasks set status = 'hold', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
@@ -534,7 +536,7 @@ export async function appendResearchMessage(
       prompt: message, topic, budgetSpent: budget.spent,
       reserved: budget.reserved, ceiling: budget.ceiling,
       holdReason: "research_failed_review_required",
-      retry_requires_reconciliation: true,
+      retry_requires_reconciliation: true, studio:studioContext,
     };
     await run(
       "update public.research_tasks set status = 'hold', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
