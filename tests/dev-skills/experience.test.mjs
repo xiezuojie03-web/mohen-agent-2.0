@@ -37,3 +37,32 @@ test('stable output preserves actual host and exact SHA, not inferred host telem
  assert.deepEqual(x,analyzeExperience([receipt('a'),receipt('b')]));
  assert.equal(x.host_telemetry_available,false);assert.equal(x.candidates[0].permission,'NO_EXECUTION_AUTHORITY');
 });
+
+test('work triage keeps independent READY tasks after data and repeated-failure blockers',async()=>{
+ const {triageWork}=await import('../../scripts/dev-skills/experience.mjs');
+ const task=(id,changes={})=>({id,depends_on:[],completed:false,classification:'READY',signature:id,evidence_revision:'a'.repeat(40),attempts:[],...changes});
+ const result=triageWork([
+  task('ST02',{classification:'DATA_BLOCKED'}),task('ST03',{depends_on:['ST02']}),
+  task('admin'),task('consumer',{attempts:[{outcome:'FAIL',evidence_revision:'a'.repeat(40)},{outcome:'FAIL',evidence_revision:'a'.repeat(40)}]}),
+  task('dev-skill'),task('done',{completed:true}),
+ ]);
+ assert.deepEqual(result.ready,['admin','dev-skill']);
+ assert.equal(result.tasks.find(t=>t.id==='ST03').effective_classification,'DATA_BLOCKED');
+ assert.equal(result.tasks.find(t=>t.id==='consumer').execution,'STOP_REPEATED_FAILURE');
+ assert.equal(result.complete,false);assert.equal(result.auto_execute,false);
+});
+test('work triage retries only with new evidence and orders dependencies without inventing authorization',async()=>{
+ const {triageWork}=await import('../../scripts/dev-skills/experience.mjs');
+ const task=(id,changes={})=>({id,depends_on:[],completed:false,classification:'READY',signature:id,evidence_revision:'b'.repeat(40),attempts:[],...changes});
+ const r=triageWork([task('second',{depends_on:['first']}),task('first',{attempts:[{outcome:'FAIL',evidence_revision:'a'.repeat(40)},{outcome:'FAIL',evidence_revision:'a'.repeat(40)}]}),task('publish',{classification:'GATE_BLOCKED'}),task('production',{classification:'OWNER_BLOCKED'})]);
+ assert.deepEqual(r.ready,['first','second']);
+ assert.equal(r.tasks.find(t=>t.id==='publish').effective_classification,'GATE_BLOCKED');
+ assert.equal(r.tasks.find(t=>t.id==='production').effective_classification,'OWNER_BLOCKED');
+ assert.equal(r.permission,'NO_EXECUTION_AUTHORITY');
+});
+test('work triage rejects missing dependencies, cycles and raw execution metadata',async()=>{
+ const {triageWork}=await import('../../scripts/dev-skills/experience.mjs');
+ const t={id:'a',depends_on:[],completed:false,classification:'READY',signature:'x',evidence_revision:'a'.repeat(40),attempts:[]};
+ for(const input of [[{...t,depends_on:['missing']}],[{...t,depends_on:['a']}],[t,t],[{...t,command:'secret'}],[{...t,evidence_revision:['a'.repeat(40)]}],[{...t,attempts:[{outcome:'FAIL',evidence_revision:'unknown'}]}]])
+  assert.throws(()=>triageWork(input),/WORKLIST_INVALID/);
+});

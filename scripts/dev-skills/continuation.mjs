@@ -25,7 +25,7 @@ const pnpmCmd = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
 
 function usage() {
   process.stdout.write([
-    'mohen-dev-continuation v0.2.0 (CTX-ENG only)',
+    'mohen-dev-continuation v0.2.1 (CTX-ENG only)',
     'node scripts/dev-skills/continuation.mjs doctor --host codex|codebuddy|chatgpt|unknown --json',
     'node scripts/dev-skills/continuation.mjs verify --profile static|typecheck|unit [--dry-run] [--host ...] --json',
     'No DB, deploy, external paid calls, arbitrary commands or shell invocation.'
@@ -74,7 +74,7 @@ try {
   const args=parse(process.argv.slice(2));
   if (args.cmd==='help') {usage();process.exit(0);}
   const map=JSON.parse(fs.readFileSync(mapFile,'utf8'));
-  if (map.schema!=='mohen-dev-tool-map/v1' || map.skillVersion!=='0.2.0') throw new Error('MATRIX_VERSION_MISMATCH');
+  if (map.schema!=='mohen-dev-tool-map/v1' || map.skillVersion!=='0.2.1') throw new Error('MATRIX_VERSION_MISMATCH');
   for (const [profile, steps] of Object.entries(profiles)) {
     if (JSON.stringify(map.localProfiles[profile])!==JSON.stringify(steps)) throw new Error('MATRIX_EXECUTION_DRIFT:' + profile);
   }

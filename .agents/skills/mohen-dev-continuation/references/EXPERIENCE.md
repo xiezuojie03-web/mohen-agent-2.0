@@ -28,3 +28,21 @@ reuse_target由施工回执显式提供，四路建议是确定性规则，不�
 运行：`node scripts/dev-skills/experience.mjs --input <本地脱敏回执.json>`，JSON仅输出stdout，
 调用者显式保存到原成果目录。拒绝时退出64，只输出固定错误，不回显输入或路径。
 单测：`node --test tests/dev-skills/experience.test.mjs`。分析失败只登记，不影响主M5。
+
+
+## v0.2.1 有界剩余任务调度（离线建议）
+
+既有脚本增加`--worklist <JSON>`，不增加Registry/执行器。输入最多1000项：
+`id,depends_on,completed,classification,signature,evidence_revision,attempts`，仅这些字段。
+id/signature及依赖为短安全标识，evidence_revision为40位Git或环境证据SHA；
+classification只接受READY/DATA_BLOCKED/GATE_BLOCKED/OWNER_BLOCKED；completed为boolean。
+attempts按时间顺序只含`outcome:PASS|FAIL|DEFERRED_ENV,evidence_revision`；不收日志/命令/密钥。
+依赖须存在且无环；重复ID、未知字段拒绝。READY依赖按拓扑排序；外部阻塞逐依赖继承，
+同证据修订连续两次失败/环境失败STOP_REPEATED_FAILURE，其后依赖暂停，独立READY继续。
+新证据修订才可重试。输出auto_execute=false/NO_EXECUTION_AUTHORITY，不会运行候选或修改文件。
+输入者须先核实环境/数据/权限；declared READY不等于已实际具备条件。
+所有完成状态均须引用原MAB真实测试/CI，本模块不自行签完成或正式Gate。
+
+评价/演化：v0.2.0的显式回执与精确签名逻辑保持兼容，三种阻塞与恢复正反由Node测试验证；
+本次版本升级为Owner已授权的工程方法完善，不代表自动候选准入机制已完成。错误时回退
+同一canonical/loader/map/CLI/guard版本及脚本差异，保留原回执与待评价草案，不清除生产数据。

@@ -10,7 +10,7 @@ const jsonfile=path.join(root,'.agents/skills/mohen-dev-continuation/references/
 function run(args) { return spawnSync(process.execPath,[cli,...args],{cwd:root,encoding:'utf8',timeout:30000}); }
 test('matrix is versioned and does not grant production execution profile',()=>{
  const x=JSON.parse(fs.readFileSync(jsonfile,'utf8'));
- assert.equal(x.skillVersion,'0.2.0');
+ assert.equal(x.skillVersion,'0.2.1');
  assert.deepEqual(Object.keys(x.localProfiles).sort(),['static','typecheck','unit']);
  assert.equal(x.taskToolEnvironmentVerification.find(t=>t.id==='database').cliProfile,null);
  assert.equal(x.taskToolEnvironmentVerification.find(t=>t.id==='deploy').cliProfile,null);

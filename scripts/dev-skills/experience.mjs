@@ -45,10 +45,50 @@ export function analyzeExperience(receipts){
     rollback:'Discard draft; retain source receipts; never change canonical or product routes automatically.'};
   })};
 }
+// Explicit work receipts only: classify/schedule, never execute or grant access.
+export function triageWork(tasks){
+ const keys=['id','depends_on','completed','classification','signature','evidence_revision','attempts'].sort();
+ const classes=new Set(['READY','DATA_BLOCKED','GATE_BLOCKED','OWNER_BLOCKED']);
+ const invalid=()=>{throw Error('WORKLIST_INVALID');};
+ if(!Array.isArray(tasks)||tasks.length>1000)invalid();
+ const byId=new Map();
+ for(const t of tasks){
+  if(!t||typeof t!=='object'||Array.isArray(t)||JSON.stringify(Object.keys(t).sort())!==JSON.stringify(keys)||
+   ![t.id,t.signature].every(v=>typeof v==='string'&&id.test(v))||byId.has(t.id)||
+   typeof t.completed!=='boolean'||!classes.has(t.classification)||typeof t.evidence_revision!=='string'||!sha.test(t.evidence_revision)||
+   !Array.isArray(t.depends_on)||!t.depends_on.every(v=>typeof v==='string'&&id.test(v))||
+   !Array.isArray(t.attempts)||t.attempts.length>1000)invalid();
+  for(const a of t.attempts)if(!a||JSON.stringify(Object.keys(a).sort())!==JSON.stringify(['evidence_revision','outcome'])||
+   !['PASS','FAIL','DEFERRED_ENV'].includes(a.outcome)||typeof a.evidence_revision!=='string'||!sha.test(a.evidence_revision))invalid();
+  byId.set(t.id,t);
+ }
+ const rows=new Map(),visiting=new Set(),order=[];
+ function visit(t){
+  if(rows.has(t.id))return rows.get(t.id);
+  if(visiting.has(t.id))invalid();visiting.add(t.id);
+  const deps=[...new Set(t.depends_on)].map(d=>{if(!byId.has(d))invalid();return visit(byId.get(d));});
+  const inherited=deps.filter(d=>!d.completed&&d.effective_classification!=='READY').map(d=>d.effective_classification);
+  const classification=t.classification!=='READY'?t.classification:(inherited[0]??'READY');
+  let repeats=0;
+  for(const a of [...t.attempts].reverse()){
+   if(a.evidence_revision!==t.evidence_revision||a.outcome==='PASS')break;
+   repeats++;
+  }
+  const execution=t.completed?'COMPLETE':classification!=='READY'?'EXTERNAL_BLOCKED':repeats>=2?'STOP_REPEATED_FAILURE':
+   deps.some(d=>!d.completed&&d.execution!=='READY')?'DEPENDENCY_BLOCKED':'READY';
+  const row={id:t.id,completed:t.completed,declared_classification:t.classification,effective_classification:classification,
+   execution,waiting_for:deps.filter(d=>!d.completed).map(d=>d.id),evidence_revision:t.evidence_revision};
+  rows.set(t.id,row);order.push(row);visiting.delete(t.id);return row;
+ }
+ for(const t of tasks)visit(t);
+ return {schema:'mohen.dev-work-triage.v1',auto_execute:false,permission:'NO_EXECUTION_AUTHORITY',
+  observation:'EXPLICIT_WORKLIST_NOT_ENVIRONMENT_OR_AUTHORIZATION_PROOF',
+  ready:order.filter(t=>t.execution==='READY').map(t=>t.id),tasks:order,complete:order.every(t=>t.completed)};
+}
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
  try{
-  if(process.argv.length!==4||process.argv[2]!=='--input')throw Error('EXPERIENCE_INVALID_ARGUMENTS');
+  if(process.argv.length!==4||!['--input','--worklist'].includes(process.argv[2]))throw Error('EXPERIENCE_INVALID_ARGUMENTS');
   const data=fs.readFileSync(process.argv[3],'utf8');if(Buffer.byteLength(data)>1048576)throw Error('EXPERIENCE_INVALID_SIZE');
-  process.stdout.write(JSON.stringify(analyzeExperience(JSON.parse(data)),null,2)+'\n');
+  process.stdout.write(JSON.stringify(process.argv[2]==='--worklist'?triageWork(JSON.parse(data)):analyzeExperience(JSON.parse(data)),null,2)+'\n');
  }catch{process.stderr.write('EXPERIENCE_ANALYSIS_REJECTED\n');process.exitCode=64;}
 }

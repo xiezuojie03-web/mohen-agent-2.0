@@ -1,7 +1,7 @@
 {
   "schema": "mohen-dev-tool-map/v1",
   "skill": "mohen-dev-continuation",
-  "skillVersion": "0.2.0",
+  "skillVersion": "0.2.1",
   "authority": [
     "AGENTS.md",
     "governance/mhka/MHKA-04_Agent_and_Professional_Capabilities.md",
