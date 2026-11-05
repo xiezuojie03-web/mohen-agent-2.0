@@ -1,5 +1,7 @@
 # 墨痕｜当前真实工程状态
 
+> **2026-11-05｜ChatGPT接续最新已核证M5定向批次（优先于下方旧语句）**：研究恢复PG失败已修正，`935a1e1e`的PG1741945060135、主CI41945060178均SUCCESS；Studio私有资产no-store、非对象400保护和真实双Owner浏览器正反回归源码到`af074521`，真实HTTP41946337974 **17PASS/1官方Storage SKIP**、主CI41946337981 SUCCESS；原CI新增Playwright规格无DB/浏览器`--list`语法关`abff4e4d`，主CI41946517684 SUCCESS，收集6文件18用例、445单测PASS/4旧SKIP、133边界PASS、Build/74目标审计errors=[]。首次HTTP41945997916因新测试语法错误FAILURE的原始记录保留并定向修复。完整回执及精确SHA/回滚见`tasks/results/MAB/CHATGPT_M5_RESUME_CACHE_20261105.md`§1—5和`tasks/implementation/MAB/progress.md`末尾。**仅M5/HP01、HP10、HP11局部VERIFIED_ISOLATED；M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY**及M1—M4生产固定条件、正式G5、原件Storage、外发/费用、13类专业/同意撤回/跨项目复用、ST01—04与19组件、M6—M8均未准出。
+
 > **2026-11-05｜M5最新远端核证（优先于下方旧状态）**：研究恢复PG用例不兼容新降级HOLD已定向修正，`935a1e1e`主CI41945060178、PG1741945060135均SUCCESS（PG研究恢复4PASS、K3_DB_TEST_PASS）；Studio私有知识资产禁缓存`243ac2ab`/`9d7b1c4c`主CI41945285925 SUCCESS（445单测PASS/4旧SKIP、133边界、Build/目标审计通过）。精确源码与回退见`tasks/results/MAB/CHATGPT_M5_RESUME_CACHE_20261105.md`及progress末尾。只准出受测隔离子项；**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY**及真实研究、专业G5、Storage、外发/费用、正式M8条件全部保持。
 
 > 2026-11-05 M5接续源码`1cd8544`：三个L5实际产品HTTP本地16PASS/1StorageSKIP，完整PG/单测438/边界133/类型通过；非M5整体准出，远端本批待核，下一ST01—04与13类专业业务。详见`tasks/results/MAB/CODEX_M5_PRODUCT_CONSUMERS_20261105.md`。
