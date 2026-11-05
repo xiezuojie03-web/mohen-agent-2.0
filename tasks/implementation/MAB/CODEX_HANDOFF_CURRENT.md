@@ -1,5 +1,8 @@
 # 墨痕 MAB｜Codex 当前执行交接书（唯一现行入口）
 
+> **2026-11-05｜DS-02 同一开发 Skill 受控工具执行增强**：在 `.agents/skills/mohen-dev-continuation/SKILL.md` 继续深化唯一能力方法源（v0.2.0），新增 `.agents/skills/mohen-dev-continuation/references/task-tool-environment-map.json`、`scripts/dev-skills/continuation.mjs` 及测试 `tests/dev-skills/continuation.test.mjs`；只许可 doctor、static/typecheck/unit 三种本地受控 profile，不可调用 DB/发布/收费工具。不同平台分别按 `.agents/skills/mohen-dev-continuation/references/HOST_ACCEPTANCE.md` 验收宿主真实加载；GitHub CI 静态成功 ≠ Codex 已加载 ≠ CodeBuddy 已加载。M5/ST-02 Typecheck 是下一次真实故障验证候选，尚未因本次 DS-02 修复；原 MHKA、MAB、生产 Gate 和 HOLD 不变。
+
+
 > **2026-11-05｜DS-01 新增远端核证（优先于下方同日准备阶段文字）**：canonical 开发 Skill / CodeBuddy loader `4497cf10` 已入 main，GitHub Actions [41975584235](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41975584235) 的 MHKA 路由守卫与 `DS_DEV_SKILL_LAYOUT_PASS` 均 SUCCESS；同轮完整 CI 因既有 M5 `apps/web/lib/studio-research-read.ts` 的 TS2353 和两处 TS2451 失败，后续测试/构建 SKIP。**DS01_STATIC_VERIFIED / DS02_CODE_PRESENT / HOST_NOT_RUN / DS03_NOT_RUN**；下次先按实际 main 继续修 Typecheck/ST-02，再分别实测 Codex 与 CodeBuddy 加载，不冒称跨会话自动运行。
 
 

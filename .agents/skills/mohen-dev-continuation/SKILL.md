@@ -2,7 +2,7 @@
 name: mohen-dev-continuation
 description: Continue engineering or maintenance of MoHen from the latest GitHub main using MHKA, the existing MAB plan, real CI evidence, bounded implementation and safe handoff. Use when the owner asks to resume work, diagnose failures or change MoHen code; do not use as a product research/production Skill.
 ---
-# MoHen developer continuation | canonical v0.1.0
+# MoHen developer continuation | canonical v0.2.0
 
 This is a **developer-tool workflow** for authorized `CTX-ENG` tasks. It does not enter the product `skills/` Registry, operate the product Agent, or sign a professional Gate. Apply project `AGENTS.md` and the six MHKA documents first; if this Skill conflicts with them, follow those authorities and record the conflict.
 
@@ -23,3 +23,19 @@ This is a **developer-tool workflow** for authorized `CTX-ENG` tasks. It does no
 - Keep distinct `CODE_PRESENT`, `VERIFIED_ISOLATED`, `VERIFIED_LIVE`, `HOLD` and `DEFERRED_ENV`. A passing static guard/CI does not certify product Gate, Owner experience, private data rights, or M8 production activation.
 - If tools cannot perform a step (web-only GitHub access, Codex cloud constraints, CodeBuddy local limitations), persist a concrete tested handoff with file path, command, environment/permission prerequisite, expected negative tests, and return criteria. Do not assume one host can invoke another host's Skill.
 - End with: **baseline SHA → task → changes/commit → tests with exact outcomes → blockers → next MAB operation**. Do not output or store credentials.
+
+## Task → tool → environment → verification (DS-02)
+
+The single authoritative, machine-readable execution map is `references/task-tool-environment-map.json` in this same Skill directory. Read the map when selecting a tool or verification path; its `hostLabels` are **claims/entry hints**, never proof that Codex or CodeBuddy loaded a Skill. See `references/HOST_ACCEPTANCE.md` for **separate** host acceptance.
+
+A shared, versioned and non-destructive Node.js executable exists in the repository at `scripts/dev-skills/continuation.mjs`:
+- `node scripts/dev-skills/continuation.mjs doctor --host codex --json` (use `codebuddy` only in CodeBuddy, `unknown` elsewhere): observe git/Node/pnpm availability and checkout SHA, without reading secrets.
+- `node scripts/dev-skills/continuation.mjs verify --profile static --dry-run --json`: display exact allowlisted guard commands, perform **no** checks.
+- `node scripts/dev-skills/continuation.mjs verify --profile static --json`: execute both existing MHKA and developer Skill static guards and record their real status.
+- `node scripts/dev-skills/continuation.mjs verify --profile typecheck --json`: if dependencies and authority permit, run `pnpm -r typecheck`; an existing M5 TS error is **FAIL**, not acceptable as a Skill failure-free result.
+- `node scripts/dev-skills/continuation.mjs verify --profile unit --json`: if dependencies permit, run existing DB-free `pnpm test:unit`.
+- There is **no** `production`, `database`, `deploy`, arbitrary shell, paid model, publication or permission-escalation profile. Such steps require the original MAB/MHKA contracts and owner-authorized host tools; do not extend this launcher to bypass them.
+
+Run in a real checkout with Node.js and Git. The CLI operates against the repository root; `--host` only labels an observation, and output always marks `hostSkillLoaded:false`, because a standalone CLI cannot prove its AI host loaded the Skill. Treat `PASS` as the particular command's test evidence at the recorded SHA, not a complete M5/production qualification. The CLI cannot operate in a web-only ChatGPT/GitHub connector session; use connector reads and GitHub Actions results as separate evidence instead.
+
+For Codex and CodeBuddy, perform **H-01—H-05** independently; use the same map and checks, compare differences in tools and permissions, and preserve distinct `HOST_NOT_RUN`, `DEFERRED_ENV`, `STATIC_VERIFIED` and `HOST_VERIFIED` outcomes. Continue to follow the bounded-work-group and stop rules above.

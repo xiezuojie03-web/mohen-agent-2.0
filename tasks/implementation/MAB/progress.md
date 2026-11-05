@@ -1088,3 +1088,11 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - 代码 SHA `4497cf10b95b0ea0e57aa1ae41f3d67b1431d968`，Actions [41975584235](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41975584235)：MHKA guard 和 Developer Skill packaging guard **SUCCESS**，后者日志 `DS_DEV_SKILL_LAYOUT_PASS`；**完整 CI FAILURE**，原 M5 `apps/web/lib/studio-research-read.ts` TS2353（46行 `Material.title`）＋两处 TS2451（84/180行 `privateMaterialIds` 复声明）。没有把跳过的 Unit/Build 记 PASS。
 - DS-01 仓库方法源和平台适配 **STATIC_VERIFIED**；DS-02 方法首版 **CODE_PRESENT**；Codex/CodeBuddy 实际宿主触发 **NOT_RUN**；DS-03 真实 M5 连续施工 **NOT_RUN**；DS-04 后续维护 **NOT_STARTED**。详细见 `tasks/results/MAB/DS01_DEV_SKILL_ENVIRONMENT_20261105.md §5`；主 M5/ST-02 与原所有 HOLD 不变。
 
+## 2026-11-05｜DS-02 开发工具能力映射与安全执行入口（待本批 GitHub CI 核证）
+
+- 用户确认继续沿 **一个 `mohen-dev-continuation`** 深化真实开发能力，绝不机械新增多个 Skill，也不改变 MHKA、既有 MAB 主计划或产品 `skills/`、D/L/G Registry。
+- 基于实际 `main@a8caa3da92f30d1f908d624ea1aa4ffd76500304`：canonical `.agents/skills/mohen-dev-continuation/SKILL.md` 和 CodeBuddy loader 均已入仓，DS-01 静态守卫此前成功；工具映射、实际 doctor/验证入口和跨宿主验收仍缺。
+- 本批补 `.agents/skills/mohen-dev-continuation/references/task-tool-environment-map.json` 八类任务—工具—环境—验收映射；`scripts/dev-skills/continuation.mjs` 只允许 `doctor` 和 `verify --profile static|typecheck|unit`，无任意 Shell、生产DB、部署或付费模型调用；`tests/dev-skills/continuation.test.mjs` 含白名单、dry-run/实际静态、环境状态和非法 production profile 拒绝的正反测试；同一 canonical 升级 v0.2.0，CodeBuddy 仅轻量适配，`.agents/skills/mohen-dev-continuation/references/HOST_ACCEPTANCE.md` 给两平台独立加载验收。
+- CI 在 Typecheck 前增加独立 Node.js 离线测试（使本轮测试证据不因既有 M5 TS 错误而跳过），旧 M5/ST-02 三处类型错误仍需独立修复和复测，不由 DS-02 代替。真实远端结果、宿主加载和运行权限待本批精确 SHA/CI 证据；用户需在 Codex、CodeBuddy 各自会话实测，不能把文件入仓记为 HOST_VERIFIED。
+- 状态候选：`DS02_CODE_PRESENT / MAP_CLI_TEST_PENDING_CI / CODEX_HOST_NOT_RUN / CODEBUDDY_HOST_NOT_RUN / DS03_NOT_RUN / M5_OVERALL_HOLD`；原任务书真实权威与准出门槛不变。详细 `tasks/results/MAB/DS02_EXECUTABLE_TOOL_MAPPING_20261105.md`。
+

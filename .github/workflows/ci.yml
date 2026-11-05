@@ -30,6 +30,9 @@ jobs:
       - name: Developer Skill packaging guard (static only)
         run: node scripts/guards/check-dev-skill-layout.mjs
 
+      - name: Developer Skill executable checks (no DB or remote provider)
+        run: node --test tests/dev-skills/continuation.test.mjs
+
       - name: Typecheck
         run: pnpm -r typecheck
 

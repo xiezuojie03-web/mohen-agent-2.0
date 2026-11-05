@@ -460,6 +460,8 @@ A：隋唐大运河及江南水路连接。B：宋代江南运河沿线的城镇
 - 效率及安全：减少人工重复“请继续”、重复 M0 盘点、无新证据的重复失败；设置重试和任务范围上限，不能为了连续运行跳过 Gate、覆盖别人最新 main、合并旧 PASS、绕过凭据/资料权利及成本审批。
 - **状态纪律（2026-11-05 初始决策记录）**：本段最初为 `DESIGN_DECISION_RECORDED / DS-01..04 NOT_STARTED`；实际文件、触发、工具兼容、测试及正式可用性必须以每批真实 GitHub 回执登记在现行 `progress.md`，不能充作 M5 工程准出或修改现行 HP/74 目标的真假状态。
 
+**2026-11-05 DS-02 工具能力映射与受控执行深化（Owner 同意；不改 DS 阶段与 M5 准出）**：在已落仓的同一个 `mohen-dev-continuation` 内补 v0.2.0 的 `references/task-tool-environment-map.json`（八类任务映射；仅 static/typecheck/unit 三个本地白名单执行 profile），新增 `scripts/dev-skills/continuation.mjs` 的 `doctor` 环境探测与 `verify` 受控真实执行/干跑、`tests/dev-skills/continuation.test.mjs` 正反测试和 `.agents/skills/mohen-dev-continuation/references/HOST_ACCEPTANCE.md` Codex/CodeBuddy 独立宿主验收。CI 在业务 Typecheck 前单独执行 dev Skill 测试。DS-02 的文件/测试就位不等于宿主已经加载；需要 CI 实际回执和两端实机会话分别核验。命令不接生产DB、不执行任意shell、不外发资料、不调用付费模型；缺数据库/浏览器/真实部署在原 MAB 专业授权线继续 `HOLD/DEFERRED_ENV`。原 M5/ST-02 主任务、Gate 和 74目标保持不变。实施与验收回执 `tasks/results/MAB/DS02_EXECUTABLE_TOOL_MAPPING_20261105.md`。
+
 **2026-11-05 DS-01 实施接续（受控增量）**：已按第1项核查 Codex/CodeBuddy/ChatGPT 环境，选 `.agents/skills/mohen-dev-continuation/SKILL.md` 唯一方法正文、`.codebuddy/skills/mohen-dev-continuation/SKILL.md` 轻量适配器，补静态机器守卫及 CI 检查；DS-01 仓库准备进入 CODE_PRESENT，实际 CI、平台原生加载仍须独立验证。DS-02 首个 `mohen-dev-continuation` v0.1.0 方法正文已实体化，尚无 Codex/CodeBuddy 真实加载与连续 M5 施工回执；DS-03、DS-04 未开始。原 M5/ST-02 优先级、HP任务、74目标、Gate和风险权限不变；精确方案与剩余验收见 `tasks/results/MAB/DS01_DEV_SKILL_ENVIRONMENT_20261105.md`。
 
 ## 7. 质量、验收和准出规则

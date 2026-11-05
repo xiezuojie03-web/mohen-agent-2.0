@@ -1,0 +1,142 @@
+{
+  "schema": "mohen-dev-tool-map/v1",
+  "skill": "mohen-dev-continuation",
+  "skillVersion": "0.2.0",
+  "authority": [
+    "AGENTS.md",
+    "governance/mhka/MHKA-04_Agent_and_Professional_Capabilities.md",
+    "governance/mhka/MHKA-05_Software_Engineering_and_Operations.md",
+    "tasks/implementation/MAB/PLAN.md"
+  ],
+  "hostLabels": {
+    "codex": {
+      "skillEntry": ".agents/skills/mohen-dev-continuation/SKILL.md",
+      "acceptance": "host-run-required",
+      "hints": [
+        "Verify current working directory is repo root",
+        "Use $mohen-dev-continuation or the host Skill selector",
+        "Record actual command-tool permissions and evidence"
+      ]
+    },
+    "codebuddy": {
+      "skillEntry": ".codebuddy/skills/mohen-dev-continuation/SKILL.md",
+      "acceptance": "host-run-required",
+      "hints": [
+        "Use /skills to confirm the project Skill was discovered",
+        "Confirm adapter reads the canonical file",
+        "Record permissions and actual command execution"
+      ]
+    },
+    "chatgpt": {
+      "skillEntry": "manual GitHub connector read only; no native repo Skill auto-load claim",
+      "acceptance": "connector-scope-only",
+      "hints": [
+        "Read canonical Skill from GitHub at the exact main SHA",
+        "Do not assert shell or local database support",
+        "Remote CI logs are separate from local tool execution"
+      ]
+    },
+    "unknown": {
+      "skillEntry": "explicit method read if authorized",
+      "acceptance": "not-verified",
+      "hints": [
+        "Never assume automatic invocation"
+      ]
+    }
+  },
+  "taskToolEnvironmentVerification": [
+    {
+      "id": "resume",
+      "task": "Read exact main and authorized design, select MAB next eligible work",
+      "tool": "git and available GitHub connector/API",
+      "environment": "Repository checkout OR authorized connector; do not infer write permission",
+      "verification": "record actual git HEAD/remote HEAD and current MAB task; compare to evidence",
+      "cliProfile": "doctor",
+      "authority": "CTX-ENG"
+    },
+    {
+      "id": "static-check",
+      "task": "Check MHKA routing and developer Skill packaging, without DB",
+      "tool": "node and git",
+      "environment": "repository checkout, Node.js >=22, git",
+      "verification": "guard exit codes and DS_DEV_SKILL_LAYOUT_PASS; NOT_HOST_ACTIVATED",
+      "cliProfile": "static",
+      "authority": "CTX-ENG"
+    },
+    {
+      "id": "typecheck",
+      "task": "Diagnose current M5 TypeScript failure without DB",
+      "tool": "pnpm -r typecheck",
+      "environment": "repository checkout, pnpm 9.15.4, dependencies installed",
+      "verification": "exit code, exact TS diagnostics, CI job SHA; fail remains FAIL",
+      "cliProfile": "typecheck",
+      "authority": "CTX-ENG"
+    },
+    {
+      "id": "unit",
+      "task": "Run existing DB-free unit tests",
+      "tool": "pnpm test:unit",
+      "environment": "repository checkout, pnpm dependencies, no provider needed",
+      "verification": "unit exit code and assertions at exact commit SHA; not a Gate",
+      "cliProfile": "unit",
+      "authority": "CTX-ENG"
+    },
+    {
+      "id": "database",
+      "task": "Run isolated PostgreSQL/RLS/ACL tests",
+      "tool": "existing scoped scripts and authorized isolation env",
+      "environment": "separate approved isolated DB and credentials; no production secrets",
+      "verification": "actual positive/negative revocation and access logs, cleanup and rollback",
+      "cliProfile": null,
+      "authority": "AUTHORIZED_ENV_ONLY"
+    },
+    {
+      "id": "browser",
+      "task": "Run private HTTP/Playwright tests",
+      "tool": "existing Playwright/MAB HTTP scripts",
+      "environment": "app browser service/isolated DB/storage permissions",
+      "verification": "actual browser + server assertions, explicit skipped tests",
+      "cliProfile": null,
+      "authority": "AUTHORIZED_ENV_ONLY"
+    },
+    {
+      "id": "commit",
+      "task": "Commit safe change and update existing progress/plan",
+      "tool": "git and GitHub with user-granted write permissions",
+      "environment": "known branch, clean diff, no secrets, re-read remote main and compare-and-swap",
+      "verification": "real commit SHA, updated task record, precise CI run",
+      "cliProfile": null,
+      "authority": "WRITE_PERMISSION_REQUIRED"
+    },
+    {
+      "id": "deploy",
+      "task": "Migrate or publish a production change",
+      "tool": "Vercel/Supabase/provider tools",
+      "environment": "explicit Owner approval, credentials and rights review",
+      "verification": "real environment-specific safety/Gate/rollback evidence",
+      "cliProfile": null,
+      "authority": "OWNER_APPROVAL_REQUIRED"
+    }
+  ],
+  "localProfiles": {
+    "static": [
+      "mhka-route",
+      "dev-skill-layout"
+    ],
+    "typecheck": [
+      "typescript-check"
+    ],
+    "unit": [
+      "unit-suite"
+    ]
+  },
+  "limits": {
+    "noShell": true,
+    "noArbitraryCommandArgs": true,
+    "noProductionDatabase": true,
+    "noAutomatedPublish": true,
+    "noNewPaidUsage": true,
+    "noHostLoadedClaimFromStaticCheck": true,
+    "maxOneProfilePerInvocation": true
+  }
+}
