@@ -904,3 +904,10 @@ Owner要求把ChatGPT上一轮M5/HP07/HP11/HP12只读审查写回仓库并交Cod
 补证源码/测试及账证`3929d9df7496fc883c684304f19c1908977b7982`已推main；实际主CI41933637116/PG41933636834/HTTP41933636716目前SUCCESS_VERIFIED_3929D9D，本批回执§6.1取得结果后核销。74差异账M0冻结列逐行确认未改，当前policy适配声明如实修正；不降验收标准或取消未关闭条件。
 
 **本轮最终实际核证（2026-11-05）**：业务桥ff5283e、补证及差异账修正3929d9df7496fc883c684304f19c1908977b7982已推main；后者主CI41933637116/PG17 41933636834/HTTP41933636716均SUCCESS，实际HTTP15PASS/1Storage缺配置SKIP。六L5×四消费者PG/真实应用wrapper/媒体正反、WATCH当前资格与祖先撤销、Admin历史精确使用史、13类10+3持久和ST08/ST09隔离业务按本批回执§6.2核销；first-source audit失败已如实ADAPTED修正，M0冻结列与原分母不变。其它三产品HTTP、13类完整专业语义/同意撤回/合法复用/canonical媒资、ST01—04/19组件及所有生产固定条件仍具名HOLD；本阶段完整复选框不勾，M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY，原MHKA/KAD6/M0—M8/最终标准不变。
+
+
+## 2026-11-05｜M5三个实际L5产品HTTP入口接续（源码6696ab1）
+
+已fetch核main@ca0a790并继承四条指定成功CI；本批修Evidence消费者错配、Agent服务端read上下文与visual display/no-store，唯一qualification_allows及既有整稿桥不变。最终本地438单测/4旧SKIP、133边界、六workspace类型、完整PG17/711旧审计/回滚通过，Next+Chromium16PASS/1StorageSKIP；三消费者逐实际入口purpose/scope/consumer/action/expiry/revision/ancestor/cache/service恢复正反通过。失败原始日志保留，独立review无重要问题。仅VERIFIED_ISOLATED；action scope不代独立版权回执撤回，原整稿四消费者PG不扩写为新整稿HTTP。详见tasks/results/MAB/CODEX_M5_PRODUCT_CONSUMERS_20261105.md与同名evidence，远端CI待追加。
+
+M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类专业/同意撤回/合法复用/canonical媒资/H1-H3与19组件。云端可施工项继续由Codex做；本次环境已可运行PG/HTTP，不将网络Docker问题登记DEFERRED_ENV。正式生产/专业/外发/费用及M7/M8原条件不变。

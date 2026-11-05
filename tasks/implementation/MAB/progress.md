@@ -984,3 +984,10 @@ Ruling: 当前M4允许完成可运行隔离链，真实第三方/生产验证仍
 - 只关闭first-source CI41932575992的旧byte-equal声明审计失败与本批具名隔离子项；旧main41929766191超时失败由sticky timer RED→GREEN修复。两旧失败保留，不拿后续成功改写它们。74目标M0冻结列与53REVISE+21CREATE分母保留、最终语义74仍未全核销。
 - 六类L5PG覆盖minor已追加实测关闭；其它三消费者各自产品HTTP仍未验。10+3不是13类专业业务/同意撤回/合法解引用复用/canonical媒资PASS；ST01—04/H1/H2/H3/19组件及真实混合未全验。M1-C01—C04/M2-C01—C03/M3-C01—C03/M4-C01—C04及生产/外发/费用/专业Reviewer全部原条件继续，**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY**。
 - 本地标记测试库0且已删除本会话合成PG容器；无生产/正式Gate/context启用。回执CODEX_M5_BINDING_ASSETS_20261105.md §6.2和同evidence保存精确SHA/成功与失败Actions/PG/HTTP/原始日志hash；回滚为关闭context/恢复资格拒绝并保全审计，不恢复legacy旁路。
+
+
+## 2026-11-05｜M5三个实际L5产品HTTP入口接续（源码6696ab1）
+
+已fetch核main@ca0a790并继承四条指定成功CI；本批修Evidence消费者错配、Agent服务端read上下文与visual display/no-store，唯一qualification_allows及既有整稿桥不变。最终本地438单测/4旧SKIP、133边界、六workspace类型、完整PG17/711旧审计/回滚通过，Next+Chromium16PASS/1StorageSKIP；三消费者逐实际入口purpose/scope/consumer/action/expiry/revision/ancestor/cache/service恢复正反通过。失败原始日志保留，独立review无重要问题。仅VERIFIED_ISOLATED；action scope不代独立版权回执撤回，原整稿四消费者PG不扩写为新整稿HTTP。详见tasks/results/MAB/CODEX_M5_PRODUCT_CONSUMERS_20261105.md与同名evidence，远端CI待追加。
+
+M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类专业/同意撤回/合法复用/canonical媒资/H1-H3与19组件。云端可施工项继续由Codex做；本次环境已可运行PG/HTTP，不将网络Docker问题登记DEFERRED_ENV。正式生产/专业/外发/费用及M7/M8原条件不变。
