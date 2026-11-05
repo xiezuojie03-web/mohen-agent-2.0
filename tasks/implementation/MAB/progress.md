@@ -1108,3 +1108,10 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - **旧治理物理归档**：起始 main `dfc3aef9a2a3e5b6dcca1a3aaa1eed0a4a04b2c9` 下 `governance/C0—C4` 最后版本确实仍在根目录；全部五件按原 Git Blob 逐项移到 `governance/archive/`，归档清单 `governance/archive/C0_C4_TO_MHKA_ARCHIVAL_20261105.md` 记录旧路径/新路径/精确 Blob SHA 和 MHKA 语义承接。原 `governance/archive/README.md` 误写旧 C 为当前宪章的说明已定向修正，MHKA-00 §8、OWNERSHIP_MAP、MAB M8 的文档归位与运行切换职责分开。
 - **验收与风险**：机器 MHKA 路由守卫增加根 C 文件不得重现、归档五件须存在并保持原 Blob 内容的检查；本次仅修改治理文档位置/说明和静态检查，不触碰 M5/ST-02 源码、产品 `skills/`、D/L/G Registry、数据库、部署、独立 Gate 或生产迁移。CI 结果须按此批远端 SHA 另核，不以旧历史归档当作旧运行兼容退役。若旧实现存在原路径引用，应有界适配，不恢复旧规范为活跃。
 
+### 旧 C0—C4 根目录归档的实际提交、CI 与 Library 同步核证（2026-11-05）
+
+- **归档源码 SHA**：`2c188becddef138d5b7e55c6bb7387f546df9a4b`。五份 C0—C4 最后版本以 Git 树原 Blob SHA 原样移动到 `governance/archive/`，源路径已删除；精确旧新路径、各 Blob SHA、语义承接见 `governance/archive/C0_C4_TO_MHKA_ARCHIVAL_20261105.md`。归档 README 旧“当前宪法=C0—C4”表述修复；MHKA-00 §8/OWNERSHIP/MAB M8 已区分文档归档与旧运行代际退役。
+- **真实 CI**：[41980554210](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41980554210)（job 127089414921）：`MHKA_AUTHORITY_ROUTE_PASS`、开发 Skill 包装守卫 SUCCESS，DS-02 新增 Node CLI **5PASS/0FAIL**；完整 CI 因 **已有** `apps/web/lib/studio-research-read.ts` TS2353（46行）和 TS2451（84/180行）失败、Build SKIP。**不能把这一静态归档 PASS 推为 M5 CI PASS**。
+- **ChatGPT 资料库宪章一致性**：现行研究 `03_权威知识体系重建/MHKA-00` 与 `04_工程规范与Codex接入/repo_target/governance/mhka/MHKA-00` 两处均原位覆盖、重新取回计算 Git Blob SHA `d318d9b6bcfdd51cb49acd322269f0809bcb4aaa`，与 GitHub 现行 MHKA-00 完全一致；另外 MHKA-01—05 未在本轮归档中修改。
+- **下一步及边界**：Codex 优先从实时 main 加载 `mohen-dev-continuation`，独立验证宿主 H-01—H-05，并沿现行 M5/ST-02 有界修复 Typecheck；CodeBuddy 实机验收待未来切换时再做，不阻断 M5。M8 生产/权限/运行代际退役、全部 Gate/HOLD 均未因此准出。
+

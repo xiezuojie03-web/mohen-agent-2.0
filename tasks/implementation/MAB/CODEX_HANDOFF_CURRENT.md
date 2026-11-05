@@ -1,5 +1,8 @@
 # 墨痕 MAB｜Codex 当前执行交接书（唯一现行入口）
 
+> **2026-11-05｜旧宪法归档与 CI 核证（新于下方待验文字）**：C0—C4 最后版文档已在 `main@2c188bec` 完整归档并移除原根路径，原 Git Blob 未更改，档案 `governance/archive/C0_C4_TO_MHKA_ARCHIVAL_20261105.md`；MHKA-00 修改同步到 ChatGPT 资料库两处现行副本并哈希核准。Actions [41980554210](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41980554210) MHKA 和开发 Skill 静态守卫 SUCCESS、DS-02 CLI 5PASS/0FAIL，但原 M5 Typecheck 三错误未修、整体 CI FAILURE。**Codex 先验 Skill 并继续 M5；CodeBuddy 仅未来换工具时验，非当前阻断。** 文档归档不代表 M8 旧运行代际退役或生产权限准出。
+
+
 > **2026-11-05｜Owner 确认 Codex 优先验 Skill；旧 C 治理文件归档（新于以下 DS-02 交接）**：马上在 Codex 继续 M5，并按 `.agents/skills/mohen-dev-continuation/references/HOST_ACCEPTANCE.md` 验证宿主加载及真实代码验证闭环。**CodeBuddy 直到未来工具切换才单独验收**；当前 `HOST_NOT_RUN/DEFERRED_TO_CODEBUDDY_HANDOFF` 不阻断 Codex/M5。原 `governance/C0—C4` 最后版本已原 Git Blob 保全到 `governance/archive/`，索引 `governance/archive/C0_C4_TO_MHKA_ARCHIVAL_20261105.md`；根 `AGENTS.md` → MHKA-00—05 仍唯一工程设计入口，不得恢复旧 C 作为现行规范。M8 旧运行代际/生产许可退役仍未完成，M5 既有 Typecheck 和全部其他 HOLD 保留。
 
 
