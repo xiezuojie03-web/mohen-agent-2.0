@@ -31,5 +31,12 @@ it('returns only acknowledged saved identities and revision',async()=>{deps.save
 it('reports concurrent revision conflicts without claiming a successful save',async()=>{deps.save.mockRejectedValue(new Error('STUDIO_REVISION_CONFLICT'));const r=await save(request('/assets',{payload:{text:'note'}}));expect(r.status).toBe(409);expect(await r.json()).toEqual({ok:false,reason:'STUDIO_REVISION_CONFLICT'});});
 it('returns retryable failure for missing storage instead of an empty successful list',async()=>{deps.projects.mockRejectedValue(new Error('relation unavailable'));const r=await projects();expect(r.status).toBe(503);expect(await r.json()).toEqual({ok:false,reason:'studio_storage_unavailable'});});
 it('hides missing or inaccessible exact revisions',async()=>{expect((await assets(request('/assets?asset_id=a&revision_id=r'))).status).toBe(404);deps.revision.mockResolvedValue({asset_id:'different-asset',revision_id:'r'});expect((await assets(request('/assets?asset_id=a&revision_id=r'))).status).toBe(404);});
-it('rejects non-object requests',async()=>{for(const body of [null,[],3])expect((await project(request('/projects',body))).status).toBe(400);});
+it('rejects non-object requests',async()=>{
+ for(const body of [null,[],3]){
+  expect((await project(request('/projects',body))).status).toBe(400);
+  const response=await save(request('/assets',body));
+  expect(response.status).toBe(400);
+  expect(response.headers.get('cache-control')).toBe('no-store');
+ }
+});
 it('does not accept client-claimed external provenance',async()=>{const r=await save(request('/assets',{origin_kind:'external_delegate',payload:{text:'candidate'}}));expect(r.status).toBe(409);});
