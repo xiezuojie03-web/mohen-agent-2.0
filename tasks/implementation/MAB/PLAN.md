@@ -1003,3 +1003,8 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 ## 2026-11-06｜Owner意见后的ST-02执行补充（不改变原阶段与准出）
 
 上海图书馆 Provider 已由 ChatGPT 在受控服务端使用现有 SHANGHAI_LIBRARY_KEY 完成真实只读目录API调用，检索《金泽小志》并返回7条版本/载体记录；状态仅为 VERIFIED_LIVE_METADATA_READ，不代表原件字节取得。道光抄本馆藏条目 accessLevel=9；1962年铅印本条目 accessLevel=1，含索书号与DOI。instancesDisplayInfo 对作品URI与馆藏item URI均返回空数据，未取得PDF/扫描件或页级locator。下一步按progress 2026-11-06记录核对官方PDF接口文档和访问级别规则，再进行单条、只读、隔离的真实字节验证。不得将API Key等同于版权/下载授权，不得向生产Supabase迁移或上传；ST-02仍DATA_BLOCKED，ST03仍依赖ST02。受控导演、媒体权利绑定、独立G5与真实作品验收等其余HOLD不变。双Skill继续按本计划§6B.4并行建设。
+
+
+### 2026-11-06｜上图PDF开放下载资格核验增量（ST-02仍HOLD）
+
+官方2025 API说明书已确认PDF开放下载为list→info→stream三步POST JSON流程，API Key放body；资源类型仅jp/gj/mgts。对本轮发现的《金泽小志》两个DOI（STGJ073678、STGJ073677）、索书号線普553957及题名四种list检索均返回state=0但total=0/data=[]，未调用stream，未下载字节。故该书目真实可检索，但本次核验的具体馆藏条目未进入PDF开放下载目录；accessLevel=1不能替代下载资格。下一步只测试明确命中list的另一条合格`gj`原件，或转用另一个已授权来源；不重复查询上述参数。详细调用证据、边界和sandbox清理记录见progress 2026-11-06追加记录。ST-02仍DATA_BLOCKED，ST03仍依赖ST02，原M5准出不变。
