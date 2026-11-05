@@ -12,11 +12,24 @@ function canonical(value){
   return JSON.stringify(value);
 }
 export function createPrivateTextReadingRepository(pool,{verificationKey,keyVersion}={}) {
-  if(typeof verificationKey!=='string'||verificationKey.length<32||
-    typeof keyVersion!=='string'||!keyVersion.trim()||keyVersion.length>128)throw Error('BRIDGE_BYTE_VERIFIER_NOT_CONFIGURED');
+  const verifierConfigured=typeof verificationKey==='string'&&verificationKey.length>=32&&
+    typeof keyVersion==='string'&&!!keyVersion.trim()&&keyVersion.length<=128;
   const transaction=createAppTransaction(pool,'STUDIO_IDENTITY_REQUIRED');
   return {
+    async listByOriginal(originalId,token) {
+      if(typeof originalId!=='string'||!UUID.test(originalId))throw Error('ORIGINAL_ID_INVALID');
+      return transaction(token,async client=>{
+        const {rows}=await client.query('select studio.read_private_text_reading($1) as context',[originalId]);
+        const context=rows[0]?.context;
+        if(!context||context.original_id!==originalId||!Array.isArray(context.readings))
+          throw Error('PRIVATE_READING_CONTEXT_INVALID');
+        if(context.direct_storage_reference_exposed!==false)
+          throw Error('PRIVATE_READING_CONTEXT_INVALID');
+        return context;
+      });
+    },
     async save({runId,originalId,extent:requested,quote,record,bytes:originalBytes},token) {
+      if(!verifierConfigured)throw Error('BRIDGE_BYTE_VERIFIER_NOT_CONFIGURED');
       let extent;
       try{extent=JSON.parse(JSON.stringify(requested));}catch{throw Error('PRIVATE_READING_LOCATOR_INVALID');}
       if(![runId,originalId,record?.project_id].every(x=>typeof x==='string'&&UUID.test(x))||
