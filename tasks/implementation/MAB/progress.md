@@ -1102,3 +1102,9 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - **完整 CI FAILURE，独立于本次 DS-02**：既有 M5 `studio-research-read.ts` 的 TS2353 `Material.title` 和两处 TS2451 `privateMaterialIds`；因此后续 Unit/Build **SKIPPED**，不得写为准出。
 - 状态 **`DS02_LOCAL_CLI_STATIC_VERIFIED`**；**`CODEX_HOST_NOT_RUN`、`CODEBUDDY_HOST_NOT_RUN`，跨工具成功待分别验收**；`DS03_NOT_RUN`、`DS04_NOT_STARTED`，M5/ST-02、所有生产/专业/费用/外发 HOLD 不变。详细回执 `tasks/results/MAB/DS02_EXECUTABLE_TOOL_MAPPING_20261105.md §5`，验收动作 `.agents/skills/mohen-dev-continuation/references/HOST_ACCEPTANCE.md`。
 
+## 2026-11-05｜Owner 交接先后序与 C0—C4 最后版本历史归档
+
+- **工具顺序**：先在 Codex 真实 M5 施工中验证 `mohen-dev-continuation` 加载和任务/工具/环境/测试闭环。CodeBuddy 只在未来实际转移时独立验证，现状态 `CODEBUDDY_HOST_NOT_RUN / DEFERRED_TO_CODEBUDDY_HANDOFF`，不是 M5 P0 阻断项。原 DS-02 CI 5/5 通过、原 M5 Typecheck FAIL、Codex HOST_NOT_RUN 以及全部专业/生产 HOLD 不受本次文档归档影响。
+- **旧治理物理归档**：起始 main `dfc3aef9a2a3e5b6dcca1a3aaa1eed0a4a04b2c9` 下 `governance/C0—C4` 最后版本确实仍在根目录；全部五件按原 Git Blob 逐项移到 `governance/archive/`，归档清单 `governance/archive/C0_C4_TO_MHKA_ARCHIVAL_20261105.md` 记录旧路径/新路径/精确 Blob SHA 和 MHKA 语义承接。原 `governance/archive/README.md` 误写旧 C 为当前宪章的说明已定向修正，MHKA-00 §8、OWNERSHIP_MAP、MAB M8 的文档归位与运行切换职责分开。
+- **验收与风险**：机器 MHKA 路由守卫增加根 C 文件不得重现、归档五件须存在并保持原 Blob 内容的检查；本次仅修改治理文档位置/说明和静态检查，不触碰 M5/ST-02 源码、产品 `skills/`、D/L/G Registry、数据库、部署、独立 Gate 或生产迁移。CI 结果须按此批远端 SHA 另核，不以旧历史归档当作旧运行兼容退役。若旧实现存在原路径引用，应有界适配，不恢复旧规范为活跃。
+

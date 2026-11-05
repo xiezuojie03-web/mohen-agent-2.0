@@ -1,5 +1,8 @@
 # 墨痕｜当前真实工程状态
 
+> **2026-11-05｜C0—C4 最后版本治理文档归档与开发 Skill 验收顺序**：五件原 `governance/C0—C4` 最后版依原 Git Blob 完整归位 `governance/archive/`，索引 `governance/archive/C0_C4_TO_MHKA_ARCHIVAL_20261105.md`。现行设计路由仍唯一为根 `AGENTS.md` → MHKA-00—05；**文档归档不代表旧运行代际退役或 M8 正式运行许可通过**。Codex 先结合 M5 施工验证开发 Skill；CodeBuddy 的宿主测试留到实际切换，`HOST_NOT_RUN` 不阻塞 M5。原 M5/ST-02 编译故障与所有专业/生产/费用 HOLD 不变。
+
+
 > **2026-11-05｜DS-01 新增远端核证（优先于下方同日准备阶段文字）**：canonical 开发 Skill / CodeBuddy loader `4497cf10` 已入 main，GitHub Actions [41975584235](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41975584235) 的 MHKA 路由守卫与 `DS_DEV_SKILL_LAYOUT_PASS` 均 SUCCESS；同轮完整 CI 因既有 M5 `apps/web/lib/studio-research-read.ts` 的 TS2353 和两处 TS2451 失败，后续测试/构建 SKIP。**DS01_STATIC_VERIFIED / DS02_CODE_PRESENT / HOST_NOT_RUN / DS03_NOT_RUN**；下次先按实际 main 继续修 Typecheck/ST-02，再分别实测 Codex 与 CodeBuddy 加载，不冒称跨会话自动运行。
 
 

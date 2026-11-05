@@ -37,8 +37,8 @@ mohen-agent-2.0/
 
 ## governance/
 - `governance/mhka/`：MHKA-00—05 是本轮工程设计的唯一上位权威，专业领域按各自语义 Owner 分工。
-- `governance/` 中尚未物理归档的 C0—C4：仅历史来源及合法旧代码兼容参考，**不再为新工程下达规范指令**。旧运行代际正式退役/归档仍保留到 M8。
-- `governance/archive/`：历史证据和替代关系；不能因文档存在而自动成为 active Authority。
+- C0—C4 的最后版本现已与更早版本一并归入 `governance/archive/`，保持原 Git Blob 与历史替代索引，**不再为新工程下达规范指令**。旧运行代际正式退役、权限/数据切换及最终交接仍保留到 M8。
+- `governance/archive/`：历史证据和替代关系；迁移清单为 `governance/archive/C0_C4_TO_MHKA_ARCHIVAL_20261105.md`，不能因文档存在而自动成为 active Authority。
 
 ## specs/
 只放当前有效 Contract / Protocol / Registry / stable specification。

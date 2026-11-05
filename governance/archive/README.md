@@ -1,6 +1,6 @@
 > ⚠️ **本目录是归档区（governance archive）。其中一切内容都是历史件，不代表当前状态，不拥有任何 Authority。**
-> 本目录只放**被取代的治理件**（旧 Roadmap / Phase Plan / 旧版 C0–C4 docx / 移交稿 / 旧 CURRENT 备份 / Candidate Backlog）。
-> 当前宪法 = `governance/C0–C4`；当前状态 = `CURRENT.md`；路径以 `AGENTS.md` §1 为唯一路由源；目录职责与归档规则见 `specs/OWNERSHIP_MAP.md` §1（R14）。
+> 本目录只放**被取代的治理件**（含 C0—C4 各版本及最后版本、旧 Roadmap / Phase Plan / 旧版 docx、移交稿、旧 CURRENT 备份、Candidate Backlog），不授予执行权。
+> **当前唯一工程设计宪章：`governance/mhka/MHKA-00—05`**；当前实际状态：根 `CURRENT.md`；唯一入口：根 `AGENTS.md`，目录职责：根 `OWNERSHIP_MAP.md`。C0—C4 最后版本原件索引及 Blob 校验见 [归档与承接凭证](C0_C4_TO_MHKA_ARCHIVAL_20261105.md)。正式旧运行代际退役仍由 M8 实测验收。
 > 下方内容为**归档时原样保留**的旧项目 README（其描述的入口、目录结构与 `.codebuddy/` 机制均已失效，不再改写正文）。
 
 ---

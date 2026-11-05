@@ -1,7 +1,7 @@
 import fs from "node:fs";
 // [2026-10-02 修复] 原 required 列表已过期：`CONTEXT.md` 早已移入 governance/archive/（该断言长期为红，
 // 却无人跑守卫），`tasks/CURRENT_TASK.md` 已声明为历史 Trace。改为断言"当前真正的根目录入口 + 领域契约"。
-// C0–C4 的路径不在此重复（避免又造一个路径源）——它们由 check-structure-map.mjs 从 `AGENTS.md` §1 解析校验。
+// 现行六份 MHKA 的路径不在此重复（避免又造一套路径源）——它们由 check-structure-map.mjs 从 `AGENTS.md` §1 解析；归档 C0—C4 则由 check-authority-routing 的无现行旧件检查监督。
 const required = [
   "AGENTS.md",            // 纯入口路由
   "CURRENT.md",           // 当前状态（Live SOT）

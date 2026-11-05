@@ -1,5 +1,8 @@
 # 墨痕 MAB｜Codex 当前执行交接书（唯一现行入口）
 
+> **2026-11-05｜Owner 确认 Codex 优先验 Skill；旧 C 治理文件归档（新于以下 DS-02 交接）**：马上在 Codex 继续 M5，并按 `.agents/skills/mohen-dev-continuation/references/HOST_ACCEPTANCE.md` 验证宿主加载及真实代码验证闭环。**CodeBuddy 直到未来工具切换才单独验收**；当前 `HOST_NOT_RUN/DEFERRED_TO_CODEBUDDY_HANDOFF` 不阻断 Codex/M5。原 `governance/C0—C4` 最后版本已原 Git Blob 保全到 `governance/archive/`，索引 `governance/archive/C0_C4_TO_MHKA_ARCHIVAL_20261105.md`；根 `AGENTS.md` → MHKA-00—05 仍唯一工程设计入口，不得恢复旧 C 作为现行规范。M8 旧运行代际/生产许可退役仍未完成，M5 既有 Typecheck 和全部其他 HOLD 保留。
+
+
 > **2026-11-05｜DS-02 精确 CI 结果（优先于下方刚实施描述）**：`main@20e89cdb` 的 Actions [41978849756](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41978849756)：MHKA/Skill 两项静态守卫 SUCCESS，新增实际 CLI 正反 **5PASS/0FAIL**；但原 M5 `studio-research-read.ts` TS2353＋2×TS2451 使整体 CI FAILURE，后续 Unit/Build SKIP。**DS02_LOCAL_CLI_STATIC_VERIFIED / CODEX_HOST_NOT_RUN / CODEBUDDY_HOST_NOT_RUN / CROSS_TOOL_PENDING**。下一可在 Codex 按 `.agents/skills/mohen-dev-continuation/references/HOST_ACCEPTANCE.md` 显式加载并运行 doctor/static，并在原 M5 范围定向修类型错误；CodeBuddy 须另行验收，不能以 Codex 通过代替。生产/专业 Gate/费用/外发/Owner HOLD 均不变。
 
 
