@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { PublishedWork } from "../../lib/publication";
 import type { Beat } from "../../lib/studio-creation";
 
@@ -38,40 +38,70 @@ export default function WatchGallery() {
   const [current, setCurrent] = useState(0);
   const [playing, setPlaying] = useState(false);
   const stageRef = useRef<HTMLDivElement>(null);
+  const [sidePanel, setSidePanel] = useState<"overview" | "references">("overview");
+
+  const selectedRef = useRef(selected);
+  selectedRef.current = selected;
+  const requestVersion = useRef(0);
+
+  // Recheck current server eligibility before further consumption. Polling bounds
+  // detection to 15s plus request time; it cannot erase bytes already delivered.
+  const revalidate = useCallback(async (target?: PublishedWork) => {
+    const version = ++requestVersion.current;
+    try {
+      const response = await fetch("/api/works/published", { cache: "no-store", signal: AbortSignal.timeout(10_000) });
+      if (!response.ok) throw new Error("catalogue_unavailable");
+      const json = await response.json() as { works?: PublishedWork[] };
+      if (!Array.isArray(json.works) || json.works.some(work => !work ||
+        typeof work.work_id !== "string" || typeof work.revision_id !== "string" ||
+        typeof work.title !== "string" || typeof work.content !== "string")) throw new Error("catalogue_invalid");
+      if (version !== requestVersion.current) return null;
+      const previous = target ?? selectedRef.current;
+      const next = previous ? json.works.find(work => work.work_id === previous.work_id && work.revision_id === previous.revision_id) ?? null : json.works[0] ?? null;
+      setWorks(json.works);
+      setSelected(next);
+      selectedRef.current = next;
+      setLoadFailed(false);
+      if (!next) { setPlaying(false); setCurrent(0); }
+      return next;
+    } catch {
+      if (version === requestVersion.current) {
+        setWorks([]); setSelected(null); selectedRef.current = null;
+        setPlaying(false); setCurrent(0); setLoadFailed(true);
+      }
+      return null;
+    } finally {
+      if (version === requestVersion.current) setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const controller = new AbortController();
     setLoading(true);
-    setLoadFailed(false);
-    (async () => {
-      try {
-        const res = await fetch("/api/works/published", { signal: controller.signal });
-        if (!res.ok) throw new Error("catalogue_unavailable");
-        const json = (await res.json()) as { works?: PublishedWork[] };
-        if (!Array.isArray(json?.works) || json.works.some(work => !work ||
-          typeof work.work_id !== "string" || typeof work.revision_id !== "string" ||
-          typeof work.title !== "string" || typeof work.content !== "string")) {
-          throw new Error("catalogue_invalid");
-        }
-        if (controller.signal.aborted) return;
-        setWorks(json.works);
-        setSelected(json.works[0] ?? null);
-      } catch {
-        if (!controller.signal.aborted) setLoadFailed(true);
-      } finally {
-        if (!controller.signal.aborted) setLoading(false);
-      }
-    })();
-    return () => controller.abort();
-  }, [reload]);
+    void revalidate();
+    const timer = window.setInterval(() => { if (!document.hidden) void revalidate(); }, 15_000);
+    const resume = () => { if (!document.hidden) void revalidate(); };
+    window.addEventListener("focus", resume);
+    window.addEventListener("pageshow", resume);
+    document.addEventListener("visibilitychange", resume);
+    return () => {
+      ++requestVersion.current;
+      window.clearInterval(timer);
+      window.removeEventListener("focus", resume);
+      window.removeEventListener("pageshow", resume);
+      document.removeEventListener("visibilitychange", resume);
+    };
+  }, [reload, revalidate]);
 
-  const beats = useMemo(() => (selected ? parseBeats(selected.content) : []), [selected]);
+  const selectedContent = selected?.content;
+  const beats = useMemo(() => selectedContent ? parseBeats(selectedContent) : [], [selectedContent]);
 
   // 切换作品时重置进度
   useEffect(() => {
     setCurrent(0);
     setPlaying(false);
   }, [selected?.work_id, selected?.revision_id]);
+
+  useEffect(() => { setSidePanel("overview"); }, [selected?.work_id, selected?.revision_id, current]);
 
   // 自动播放推进
   useEffect(() => {
@@ -80,20 +110,30 @@ export default function WatchGallery() {
       setPlaying(false);
       return;
     }
-    const timer = setTimeout(() => setCurrent((c) => c + 1), beatDuration(beats, current));
+    const timer = setTimeout(async () => {
+      if (await revalidate()) setCurrent((c) => c + 1);
+    }, beatDuration(beats, current));
     return () => clearTimeout(timer);
-  }, [playing, current, beats]);
+  }, [playing, current, beats, revalidate]);
 
-  function selectWork(w: PublishedWork) {
-    setSelected(w);
+  async function selectWork(w: PublishedWork) {
+    setPlaying(false);
+    await revalidate(w);
   }
-  function goTo(i: number) {
-    if (i >= 0 && i < beats.length) setCurrent(i);
+  async function goTo(i: number) {
+    setPlaying(false);
+    if (i >= 0 && i < beats.length && await revalidate()) setCurrent(i);
   }
-  function togglePlay() {
-    if (beats.length === 0) return;
+  async function togglePlay() {
+    if (playing) { setPlaying(false); return; }
+    if (beats.length === 0 || !await revalidate()) return;
     if (current >= beats.length - 1 && !playing) setCurrent(0);
     setPlaying((p) => !p);
+  }
+
+  async function openReferences() {
+    setPlaying(false);
+    if (await revalidate()) setSidePanel("references");
   }
 
   if (loading) {
@@ -139,6 +179,8 @@ export default function WatchGallery() {
   }
 
   const beat = beats[current] ?? null;
+  const provenance = Array.isArray(beat?.provenanceRefs)
+    ? [...new Set(beat.provenanceRefs.filter((ref): ref is string => typeof ref === "string" && ref.trim().length > 0))] : [];
   const progress = beats.length ? ((current + 1) / beats.length) * 100 : 0;
 
   return (
@@ -226,10 +268,21 @@ export default function WatchGallery() {
         {/* 侧栏：作品列表 */}
         <aside className="watch__side">
           <div className="watch__tabs">
-            <button className="watch__tab is-active">作品简介</button>
-            <button className="watch__tab">相关探索</button>
-            <button className="watch__tab">参考资料</button>
+            <button className={`watch__tab${sidePanel === "overview" ? " is-active" : ""}`} onClick={() => setSidePanel("overview")}>作品简介</button>
+            <button className="watch__tab" disabled aria-describedby="watch-explore-gap">相关探索</button>
+            <button className={`watch__tab${sidePanel === "references" ? " is-active" : ""}`} disabled={!provenance.length} onClick={openReferences} aria-describedby={!provenance.length ? "watch-reference-gap" : undefined}>参考资料</button>
           </div>
+
+          <p id="watch-explore-gap" className="watch__info">相关探索尚未提供可用入口。</p>
+          {!provenance.length && <p id="watch-reference-gap" className="watch__info">本章未提供可读出处。</p>}
+          {sidePanel === "references" && provenance.length > 0 ? (
+            <section className="watch__info" aria-label="当前章节出处">
+              <strong>{selected?.title} · 版本 {selected?.revision_no} · {beat?.title}</strong>
+              <p>以下为本章记录的出处文字；原件详情尚未开放。</p>
+              <ul>{provenance.map(ref => <li key={ref}>{ref}</li>)}</ul>
+              <button className="watch__ctrl" onClick={() => setSidePanel("overview")}>返回当前章节</button>
+            </section>
+          ) : <div className="watch__info"><strong>{selected?.title}</strong>{selected?.description || "该作品暂未提供简介。"}</div>}
 
           <div className="watch__worklist">
             {works.map((w) => (

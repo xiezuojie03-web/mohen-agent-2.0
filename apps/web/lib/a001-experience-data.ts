@@ -8,12 +8,13 @@
 // 让「能不能画」由引擎裁决，而不是由页面好不好看决定。
 //
 // 纪律：
-// - 只读 read_model + control.gate_audits（G5 PASS · current_valid · 对应 consumer）；零写库；
+// - 只读 read_model，复用当前资格守卫核验 visual_stage 展示权、用途、范围及依赖；零写库；
 // - 主题隔离：按 projection_key 前缀 a001 锁定世界投影，再用其 run_id 圈定同一次生产；
 // - 不读 world/meaning/evidence/source 等物理下层表（架构守卫禁止 runtime 直读下层）；
 // - 认识论只降不升：材料说了什么就说什么，缺证据处显式登记为缺口。
 
 import { queryRows } from "@mohen/data-access";
+import { consumerContext, contextParams, mediaRightsPermitted } from "./kad1-policy.mjs";
 import {
   selectSurfaces,
   type PresentConnectionProjection,
@@ -203,16 +204,21 @@ function emptyData(reason: string, world: WorldEvidenceState = EMPTY_WORLD): A00
  */
 export async function readA001ExperienceData(): Promise<A001ExperienceData> {
   try {
+    const qualification = consumerContext('visual_stage');
+    if (!qualification || qualification.scope.requested_action !== 'display') return emptyData("NO_VALID_G5");
+    const qualificationParams = contextParams(qualification);
     // 1) 定位本主题当前有效的世界投影（visual_stage 消费端）
     const proj = await queryRows(
       `select p.projection_id::text as pid, p.payload::text as payload, g.run_id::text as run_id
        from read_model.world_projections p
-       join control.gate_audits g
-         on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-        and g.consumer='visual_stage' and g.object_type='world_projection' and g.object_id=p.projection_id
+       join control.qualification_current q
+         on q.gate_code='G5' and q.consumer='visual_stage'
+       join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+        and control.qualification_allows(q.gate_audit_id,'visual_stage',
+            :'purpose_namespace',:'purpose_code',:'purpose_version',:'allowed_scope'::jsonb) and g.object_type='world_projection' and g.object_id=p.projection_id
        where p.projection_key like :'prefix'
        order by p.generated_at desc limit 1`,
-      { prefix: `${A001_TOPIC}-%` }
+      { ...qualificationParams, prefix: `${A001_TOPIC}-%` }
     );
     if (!proj.length) return emptyData("NO_VALID_G5");
 
@@ -223,12 +229,14 @@ export async function readA001ExperienceData(): Promise<A001ExperienceData> {
     const timelineRows = await queryRows(
       `select m.payload::text as payload
        from read_model.map_timeline_projections m
-       join control.gate_audits g
-         on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-        and g.consumer='visual_stage' and g.object_type='map_timeline_projection'
+       join control.qualification_current q
+         on q.gate_code='G5' and q.consumer='visual_stage'
+       join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+        and control.qualification_allows(q.gate_audit_id,'visual_stage',
+            :'purpose_namespace',:'purpose_code',:'purpose_version',:'allowed_scope'::jsonb) and g.object_type='map_timeline_projection'
         and g.object_id=m.map_timeline_projection_id and g.run_id = :'rid'
        order by m.generated_at desc limit 1`,
-      { rid: runId }
+      { ...qualificationParams, rid: runId }
     );
 
     // 3) 证据指针（P06）
@@ -243,12 +251,14 @@ export async function readA001ExperienceData(): Promise<A001ExperienceData> {
               coalesce(e.display_locator->>'attribution','') as attribution,
               coalesce(e.display_locator->>'entities','') as entities
        from read_model.evidence_pointers e
-       join control.gate_audits g
-         on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-        and g.consumer='visual_stage' and g.object_type='evidence_pointer'
+       join control.qualification_current q
+         on q.gate_code='G5' and q.consumer='visual_stage'
+       join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+        and control.qualification_allows(q.gate_audit_id,'visual_stage',
+            :'purpose_namespace',:'purpose_code',:'purpose_version',:'allowed_scope'::jsonb) and g.object_type='evidence_pointer'
         and g.object_id=e.evidence_pointer_id and g.run_id = :'rid'
        order by e.generated_at asc`,
-      { rid: runId }
+      { ...qualificationParams, rid: runId }
     );
 
     // 4) 故事种子（P04）——把 finding 与其证据指针连起来
@@ -259,24 +269,28 @@ export async function readA001ExperienceData(): Promise<A001ExperienceData> {
               coalesce(array_to_string(s.derived_from_finding_ids, ','),'') as finding_ids,
               coalesce(array_to_string(s.evidence_pointer_ids, ','),'') as evidence_ids
        from read_model.story_seeds s
-       join control.gate_audits g
-         on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-        and g.consumer='visual_stage' and g.object_type='story_seed'
+       join control.qualification_current q
+         on q.gate_code='G5' and q.consumer='visual_stage'
+       join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+        and control.qualification_allows(q.gate_audit_id,'visual_stage',
+            :'purpose_namespace',:'purpose_code',:'purpose_version',:'allowed_scope'::jsonb) and g.object_type='story_seed'
         and g.object_id=s.story_seed_id and g.run_id = :'rid'
        order by s.generated_at asc`,
-      { rid: runId }
+      { ...qualificationParams, rid: runId }
     );
 
-    // 5) 墨痕侧「明确不认定」的关系（已发布 agent_context）
+    // 5) 墨痕侧「明确不认定」的关系；Agent 内容展示仍须自己的 visual_stage 展示资格。
     const ctxRows = await queryRows(
       `select coalesce(a.payload->>'refused_relations','') as refused
        from read_model.agent_contexts a
-       join control.gate_audits g
-         on g.gate_code='G5' and g.result='PASS' and g.current_valid=true
-        and g.consumer='agent' and g.object_type='agent_context'
+       join control.qualification_current q
+         on q.gate_code='G5' and q.consumer='visual_stage'
+       join control.gate_audits g on g.gate_audit_id=q.gate_audit_id
+        and control.qualification_allows(q.gate_audit_id,'visual_stage',
+            :'purpose_namespace',:'purpose_code',:'purpose_version',:'allowed_scope'::jsonb) and g.object_type='agent_context'
         and g.object_id=a.agent_context_id and g.run_id = :'rid'
        limit 5`,
-      { rid: runId }
+      { ...qualificationParams, rid: runId }
     );
 
     const evidence: A001EvidencePointer[] = evidenceRows.map((r) => ({
@@ -378,7 +392,7 @@ export async function readA001ExperienceData(): Promise<A001ExperienceData> {
     const visuals: A001Visual[] = (
       Array.isArray(payload.visuals) ? (payload.visuals as Record<string, unknown>[]) : []
     )
-      .filter((v) => asText(v.visual_type) === "today_photo")
+      .filter((v) => mediaRightsPermitted(v) && asText(v.visual_type) === "today_photo")
       .map((v) => ({
         id: asText(v.visual_object_id),
         subject: asText(v.subject),

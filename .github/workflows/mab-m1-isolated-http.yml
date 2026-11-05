@@ -17,6 +17,7 @@ on:
       - "tests/e2e/mab-notebook.spec.ts"
       - "tests/e2e/mab-m4-plan.spec.ts"
       - "tests/e2e/mab-m5-public-consumers.spec.ts"
+      - "tests/e2e/mab-m5-watch-revalidation.spec.ts"
       - "tests/e2e/mab-m5-private-revisions.spec.ts"
       - "apps/web/lib/studio-director.ts"
       - "apps/web/app/api/public/works/**"

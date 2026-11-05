@@ -16,12 +16,15 @@ export function qualificationRefs(content,context,consumer){
  }
  return refs;
 }
+export function mediaRightsPermitted(media,now=Date.now()){
+ return object(media)&&typeof media.license==='string'&&!!media.license.trim()&&media.rights_status==='cleared'
+  &&(media.valid_until===undefined||(Number.isFinite(Date.parse(media.valid_until))&&Date.parse(media.valid_until)>now));
+}
 export function mediaPermitted(content,refs,now=Date.now()){
  if(!object(content))return false;const media=content.media??[];if(!Array.isArray(media))return false;
  if(!media.length)return content.rights_acknowledged===true;
- return media.every(m=>object(m)&&typeof m.license==='string'&&!!m.license.trim()&&m.rights_status==='cleared'&&object(m.artifact_ref)
-  &&refs.some(r=>['type','id','revision'].every(k=>r.artifact_ref[k]===m.artifact_ref[k]))
-  &&(m.valid_until===undefined||(Number.isFinite(Date.parse(m.valid_until))&&Date.parse(m.valid_until)>now)));
+ return media.every(m=>mediaRightsPermitted(m,now)&&object(m.artifact_ref)
+  &&refs.some(r=>['type','id','revision'].every(k=>r.artifact_ref[k]===m.artifact_ref[k])));
 }
 export function savedPanel(content,panel){
  if(!['storyStructure','visualStyle','voiceover','soundtrack'].includes(panel))return null;
