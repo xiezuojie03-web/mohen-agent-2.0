@@ -27,6 +27,12 @@ jobs:
       - name: Typecheck
         run: pnpm -r typecheck
 
+      # Collect actual HTTP/Chromium test specifications without connecting to
+      # PostgreSQL or launching a browser. Reject syntax/registration failures
+      # early; this does NOT count as HTTP or browser acceptance.
+      - name: Playwright isolated specifications parse (no DB/browser)
+        run: pnpm exec playwright test --config=playwright.mab.config.ts --list
+
       - name: Unit tests (no DB)
         run: pnpm test:unit
 
