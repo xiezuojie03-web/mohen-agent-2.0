@@ -43,6 +43,26 @@ export interface Beat {
   provenanceRefs: string[];
 }
 
+// Structural validation only: this does not attest historical meaning or G qualification.
+const nonempty = (value: unknown): value is string => typeof value === "string" && value.trim().length > 0;
+const strings = (value: unknown): value is string[] => Array.isArray(value) && value.every(nonempty);
+function validPlan(value: unknown): value is DirectorPlan {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const p = value as Partial<DirectorPlan>;
+  return nonempty(p.angle) && strings(p.points) && p.points.length > 0 && nonempty(p.cover)
+    && (p.motif === undefined || (typeof p.motif === "string" && Object.hasOwn(MOTIFS, p.motif)))
+    && (p.directorDecisions === undefined || strings(p.directorDecisions));
+}
+
+/** No current director adapter verifies per-source external_processing rights,
+ * provider/purpose/input binding and authorized spend. Display/research read,
+ * a client boolean, an API key or engineering permission cannot admit a call.
+ * Keep legacy signatures but fail closed until the existing controlled
+ * delegation/authorization service can supply and revalidate that context. */
+export function directorExternalProcessingBlocker(): string | null {
+  return "external_processing_not_authorized";
+}
+
 function llmConfig() {
   return {
     baseUrl: (process.env.MOHEN_LLM_BASE_URL || "https://api.deepseek.com").replace(/\/$/, ""),
@@ -52,6 +72,7 @@ function llmConfig() {
 }
 
 async function callLlm(system: string, user: string, temperature: number): Promise<string | null> {
+  if (directorExternalProcessingBlocker()) return null;
   const { baseUrl, apiKey, model } = llmConfig();
   if (!apiKey) return null;
   const ctrl = new AbortController();
@@ -108,19 +129,12 @@ export interface DirectorPlansResult {
   finding: H1Finding;
 }
 
-/** H1：从真实材料识别适用母题 + 认识增量（母题是追问方向，不是答案；材料不足如实收窄） */
-export async function identifyMotifs(facts: string[], brief: string): Promise<H1Finding | null> {
-  const system = `你是墨痕的 H1 历史叙事方法。基于真实材料识别适用母题（M1-M5），形成认识增量。
-铁律：1. 母题是追问方向，不是答案；材料不足就收窄问题、保留未知；2. 禁止新增任何年份、地名、人物、关系、事件；3. 认识增量必须基于材料里能查证的内容。
-母题定义：
-${Object.values(MOTIFS).map((m) => `${m.code} ${m.name}：${m.question}`).join("\n")}
-只输出 JSON：{"motifCodes":["M1"],"historicalQuestion":"...","understandingDelta":"...","supportScope":"...","limitations":["..."]}。`;
-
-  const user = `真实材料：\n${facts.map((f) => "- " + f).join("\n")}\n\n委托：${brief}`;
-  const text = await callLlm(system, user, 0.3);
-  if (!text) return null;
-  const parsed = parseJson(text) as Partial<H1Finding> | null;
-  if (!parsed || !Array.isArray(parsed.motifCodes) || !parsed.motifCodes.length) return null;
+export function parseH1Candidate(value: unknown): H1Finding | null {
+  const parsed = value as Partial<H1Finding> | null;
+  if (!parsed || !strings(parsed.motifCodes) || !parsed.motifCodes.length
+    || !parsed.motifCodes.every(c => Object.hasOwn(MOTIFS, c))
+    || !nonempty(parsed.historicalQuestion) || !nonempty(parsed.understandingDelta)
+    || !nonempty(parsed.supportScope) || !strings(parsed.limitations)) return null;
   return {
     motifCodes: parsed.motifCodes.filter((c) => typeof c === "string" && c in MOTIFS).slice(0, 3),
     historicalQuestion: String(parsed.historicalQuestion ?? ""),
@@ -130,11 +144,33 @@ ${Object.values(MOTIFS).map((m) => `${m.code} ${m.name}：${m.question}`).join("
   };
 }
 
+/** H1：从真实材料识别适用母题 + 认识增量（母题是追问方向，不是答案；材料不足如实收窄） */
+export async function identifyMotifs(facts: string[], brief: string): Promise<H1Finding | null> {
+  if (directorExternalProcessingBlocker()) return null;
+  const system = `你是墨痕的 H1 历史叙事方法。基于真实材料识别适用母题（M1-M5），形成认识增量。
+铁律：1. 母题是追问方向，不是答案；材料不足就收窄问题、保留未知；2. 禁止新增任何年份、地名、人物、关系、事件；3. 认识增量必须基于材料里能查证的内容。
+母题定义：
+${Object.values(MOTIFS).map((m) => `${m.code} ${m.name}：${m.question}`).join("\n")}
+只输出 JSON：{"motifCodes":["M1"],"historicalQuestion":"...","understandingDelta":"...","supportScope":"...","limitations":["..."]}。`;
+
+  const user = `真实材料：\n${facts.map((f) => "- " + f).join("\n")}\n\n委托：${brief}`;
+  const text = await callLlm(system, user, 0.3);
+  if (!text) return null;
+  return parseH1Candidate(parseJson(text));
+}
+
+export function parseDirectorCandidates(value: unknown): {planA: DirectorPlan; planB: DirectorPlan} | null {
+  const parsed = value as {planA?: unknown; planB?: unknown} | null;
+  if (!validPlan(parsed?.planA) || !validPlan(parsed?.planB)) return null;
+  return {planA: parsed.planA, planB: parsed.planB};
+}
+
 /** H1→H2：先识别母题（H1），再生成 A/B 导演方案（H2，D1-D7 导演取舍） */
 export async function generateDirectorPlans(
   brief: string,
   topic = "jinze"
 ): Promise<DirectorPlansResult | null> {
+  if (directorExternalProcessingBlocker()) return null;
   const facts = await collectFacts(topic);
   if (!facts.length) return null;
 
@@ -148,40 +184,41 @@ export async function generateDirectorPlans(
   const user = `真实材料：\n${facts.map((f) => "- " + f).join("\n")}\n\n${motifLine}\n\n委托：${brief}`;
   const text = await callLlm(system, user, 0.7);
   if (!text) return null;
-  const parsed = parseJson(text) as { planA?: DirectorPlan; planB?: DirectorPlan } | null;
-  if (!parsed?.planA || !parsed?.planB) return null;
-  return { planA: parsed.planA, planB: parsed.planB, facts, finding };
+  const candidates = parseDirectorCandidates(parseJson(text));
+  return candidates ? { ...candidates, facts, finding } : null;
+}
+
+export function parseBeatCandidates(value: unknown, facts: string[]): Beat[] | null {
+  const parsed = value as { beats?: Array<Partial<Beat>> } | null;
+  if (!Array.isArray(parsed?.beats) || !parsed.beats.length) return null;
+  const allowed = new Set(facts);
+  let previous = -1;
+  for (const beat of parsed.beats) {
+    if (!beat || !nonempty(beat.title) || !nonempty(beat.narration) || !nonempty(beat.visual)
+      || !Number.isSafeInteger(beat.directorTimecodeMs) || beat.directorTimecodeMs! < 0
+      || beat.directorTimecodeMs! <= previous || !strings(beat.provenanceRefs)
+      || !beat.provenanceRefs.length || !beat.provenanceRefs.every(ref => allowed.has(ref))) return null;
+    previous = beat.directorTimecodeMs!;
+  }
+  return parsed.beats as Beat[];
 }
 
 /** H3：生成章节 + 旁白（基于选定方案 + 真实材料），带导演时码与溯源 */
 export async function generateBeats(plan: DirectorPlan, facts: string[]): Promise<Beat[] | null> {
+  if (directorExternalProcessingBlocker()) return null;
+  if (!validPlan(plan) || !strings(facts) || !facts.length) return null;
   const system = `你是墨痕的创作编导。基于给定的真实历史材料和一个选定的讲故事方案，生成这部短作品的分镜章节。
-铁律：1. 只能使用材料里的事实，禁止新增任何年份、地名、人物、关系、事件；2. 每章给出 title（标题）、narration（旁白，2-3句话，纪录片口吻，只讲有据内容）、visual（画面建议，1句，基于材料里的对象）、directorTimecodeMs（导演时码，毫秒，从0递增，各章间隔约5000-15000）、provenanceRefs（这一章引用的材料对象/出处，只能从材料里取）；3. 共 3-5 章；时码是播放时间，不是历史年代。4. 只输出 JSON：{"beats":[{"title":"...","narration":"...","visual":"...","directorTimecodeMs":0,"provenanceRefs":["..."]}]}，不要多余文字。`;
+铁律：1. 只能使用材料里的事实，禁止新增任何年份、地名、人物、关系、事件；2. 每章给出 title（标题）、narration（旁白，2-3句话，纪录片口吻，只讲有据内容）、visual（画面建议，1句，基于材料里的对象）、directorTimecodeMs（导演时码，毫秒，从0递增，各章间隔约5000-15000）、provenanceRefs（逐项原样引用输入真实材料列表中的完整字符串，不得自编标识符）；3. 共 3-5 章；时码是播放时间，不是历史年代。4. 只输出 JSON：{"beats":[{"title":"...","narration":"...","visual":"...","directorTimecodeMs":0,"provenanceRefs":["..."]}]}，不要多余文字。`;
 
   const user = `真实材料：\n${facts.map((f) => "- " + f).join("\n")}\n\n选定方案：${plan.angle}\n结构要点：${plan.points.join("；")}`;
   const text = await callLlm(system, user, 0.7);
   if (!text) return null;
-  const parsed = parseJson(text) as { beats?: Array<Partial<Beat>> } | null;
-  if (!parsed?.beats?.length) return null;
-  // 时码/溯源缺省时补默认，绝不编造：时码按顺序递增，provenanceRefs 缺省为空。
-  let acc = 0;
-  return parsed.beats
-    .map((b) => {
-      const t = typeof b.directorTimecodeMs === "number" ? b.directorTimecodeMs : acc;
-      acc = t + 10000;
-      return {
-        title: String(b.title ?? ""),
-        narration: String(b.narration ?? ""),
-        visual: String(b.visual ?? ""),
-        directorTimecodeMs: t,
-        provenanceRefs: Array.isArray(b.provenanceRefs) ? b.provenanceRefs.map(String) : [],
-      };
-    })
-    .filter((b) => b.title || b.narration);
+  return parseBeatCandidates(parseJson(text), facts);
 }
 
 /** 旁白 AI 优化：只润色措辞/口吻/节奏，绝不新增或篡改事实（复用 DeepSeek + 事实护栏）。 */
 export async function suggestNarration(narration: string): Promise<string | null> {
+  if (directorExternalProcessingBlocker()) return null;
   const system = `你是墨痕的旁白润色助手。只润色措辞、语气、节奏，使旁白更像纪录片口吻。
 铁律：1. 绝不新增任何年份、地名、人名、关系、事件、数字；2. 绝不删改或替换既有事实表述；3. 只调整语序、用词、标点与口吻。4. 只输出润色后的旁白文本，不要任何解释或引号。`;
   const text = await callLlm(system, `原始旁白：${narration}`, 0.4);
@@ -217,6 +254,7 @@ export async function generateWorkPanels(
   facts: string[],
   beats: Beat[]
 ): Promise<WorkPanels | null> {
+  if (directorExternalProcessingBlocker()) return null;
   const storyStructure = beats.map((b) => ({
     title: b.title,
     timecode: formatTimecode(b.directorTimecodeMs),
@@ -274,6 +312,7 @@ export interface InsightGraph {
 
 /** 基于检索到的真实材料，用 LLM 提取实体与关系，生成可溯源的关系图（不新增事实）。 */
 export async function generateInsightView(question: string): Promise<InsightGraph | null> {
+  if (directorExternalProcessingBlocker()) return null;
   const { decision } = await runResearch(question);
   const materials = decision.materials ?? [];
   if (!materials.length) return null;

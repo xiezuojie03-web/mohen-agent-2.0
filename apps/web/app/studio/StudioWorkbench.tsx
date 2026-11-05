@@ -140,6 +140,22 @@ export default function StudioWorkbench() {
   // 画面候选素材（从资产台账取的 verified 素材，预览阶段展示）
   const [mediaCandidates, setMediaCandidates] = useState<Array<{ title: string; license: string; author: string; intendedUse: string }> | null>(null);
 
+  const [mediaError, setMediaError] = useState<string | null>(null);
+  useEffect(() => {
+    if (!savedWork) { setMediaCandidates(null); setMediaError(null); return; }
+    const controller = new AbortController();
+    setMediaCandidates(null); setMediaError(null);
+    void (async () => {
+      try {
+        const response = await fetch(`/api/studio/works/${savedWork.workId}/media-candidates`, {cache:"no-store",signal:controller.signal});
+        const body = await response.json();
+        if (!response.ok || body.ok !== true || !Array.isArray(body.assets)) throw new Error();
+        if (!controller.signal.aborted) setMediaCandidates(body.assets);
+      } catch { if (!controller.signal.aborted) setMediaError("素材目录暂不可读；未选择或替换任何素材。"); }
+    })();
+    return () => controller.abort();
+  }, [savedWork?.workId]);
+
   async function ask(q: string) {
     const text = q.trim();
     if (!text || busy || submitLock.current) return;
@@ -242,7 +258,7 @@ export default function StudioWorkbench() {
       const res = await fetch("/api/studio/director-plans", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ brief, topic: "generic" }),
+        body: JSON.stringify({ brief, topic: "generic", project_id: projectId }),
       });
       const json = (await res.json()) as {
         ok?: boolean;
@@ -256,7 +272,9 @@ export default function StudioWorkbench() {
         setPlans({ planId: json.plan_id, planA: json.planA, planB: json.planB, facts: json.facts ?? [], brief });
       } else {
         setPlansError(
-          json.reason === "no_material_or_llm"
+          json.reason === "external_processing_not_authorized"
+            ? "材料仍限项目内研究；资料外发权、执行服务及费用授权未齐，导演生成尚未执行。"
+            : json.reason === "no_material_or_llm"
             ? "没有可用的真实材料或模型，暂时生成不了方案。"
             : "生成方案失败，请重试。"
         );
@@ -290,16 +308,6 @@ export default function StudioWorkbench() {
         setPanels(null);
         setMediaCandidates(null);
         setActiveTab(0);
-        // 拉取画面候选素材（资产台账 verified 素材，供预览区展示）
-        void (async () => {
-          try {
-            const mres = await fetch("/api/studio/works/preview/media-candidates");
-            const mjson = (await mres.json()) as { ok?: boolean; assets?: Array<{ title: string; license: string; author: string; intendedUse: string }> };
-            if (mjson.ok && mjson.assets) setMediaCandidates(mjson.assets);
-          } catch {
-            /* 素材拉取失败不影响分镜 */
-          }
-        })();
         setPanelsLoading(true);
         try {
           const pres = await fetch(`/api/studio/director-plans/${plans.planId}/panels`, { method: "POST" });
@@ -502,6 +510,7 @@ export default function StudioWorkbench() {
                     <div className="studio__material-source">{mat.sourceRef}</div>
                   </div>
                 ))}
+                {Boolean(m.gaps?.length) && <div className="studio__gap">缺口已识别，尚未提交正式生产；可继续补充研究材料。</div>}
                 {m.gaps?.map((g) => (
                   <div className="studio__gap" key={g}>还缺：{g}</div>
                 ))}
@@ -691,7 +700,7 @@ export default function StudioWorkbench() {
                   <div className="studio__empty">
                     {selectedPlan
                       ? "墨痕正在生成分镜…"
-                      : "在「② 研究定方向」选定导演方案后，墨痕会在这里生成分镜章节与旁白。"}
+                      : "在「② 研究定方向」保存作品后可查询登记素材候选（登记不等于有权选用）；选定导演方案后，墨痕会在这里生成分镜章节与旁白。"}
                   </div>
                 ) : (
                   <div className="studio__beats">
@@ -716,7 +725,7 @@ export default function StudioWorkbench() {
                 <h2>故事结构</h2>
                 {!panels ? (
                   <div className="studio__empty">
-                    {panelsLoading ? "墨痕在梳理故事结构…" : "选定导演方案后，这里展示分镜的章节结构。"}
+                    {panelsLoading ? "墨痕在梳理故事结构…" : "保存作品后可查询登记素材候选（登记不等于有权选用）；选定导演方案后，这里展示分镜的章节结构。"}
                   </div>
                 ) : (
                   <div className="studio__beats">
@@ -740,7 +749,7 @@ export default function StudioWorkbench() {
                 <h2>画面风格</h2>
                 {!panels ? (
                   <div className="studio__empty">
-                    {panelsLoading ? "墨痕在设计画面风格…" : "选定导演方案后，这里展示画面风格方案。"}
+                    {panelsLoading ? "墨痕在设计画面风格…" : "保存作品后可查询登记素材候选（登记不等于有权选用）；选定导演方案后，这里展示画面风格方案。"}
                   </div>
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -767,7 +776,7 @@ export default function StudioWorkbench() {
                 <h2>配音旁白</h2>
                 {!panels ? (
                   <div className="studio__empty">
-                    {panelsLoading ? "墨痕在整理旁白…" : "选定导演方案后，这里展示完整旁白。"}
+                    {panelsLoading ? "墨痕在整理旁白…" : "保存作品后可查询登记素材候选（登记不等于有权选用）；选定导演方案后，这里展示完整旁白。"}
                   </div>
                 ) : (
                   <div className="studio__beat">
@@ -786,7 +795,7 @@ export default function StudioWorkbench() {
                 <h2>背景音乐</h2>
                 {!panels ? (
                   <div className="studio__empty">
-                    {panelsLoading ? "墨痕在设计音乐方案…" : "选定导演方案后，这里展示音乐方案。"}
+                    {panelsLoading ? "墨痕在设计音乐方案…" : "保存作品后可查询登记素材候选（登记不等于有权选用）；选定导演方案后，这里展示音乐方案。"}
                   </div>
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -806,8 +815,9 @@ export default function StudioWorkbench() {
 
           <div className="studio__panel">
             <h2>画面候选素材</h2>
+            {mediaError && <p role="alert">{mediaError}</p>}
             {mediaCandidates === null ? (
-              <div className="studio__empty">选定导演方案后，这里列出可用的已登记画面素材。</div>
+              <div className="studio__empty">保存作品后可查询登记素材候选（登记不等于有权选用）；选定导演方案后，这里列出可用的已登记画面素材。</div>
             ) : mediaCandidates.length === 0 ? (
               <div className="studio__empty">暂无可用画面素材（资产台账为空）。</div>
             ) : (

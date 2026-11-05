@@ -2,6 +2,7 @@
 //
 // 复用 studio-creation 的 LLM 编导能力；持久化 A/B 方案与选定节拍到 director_plans。
 import crypto from "node:crypto";
+import { readStudioResearchProject } from "./studio-research-read";
 import { readJsonColumn } from "./db-json";
 import { queryRows, queryValue, run } from "@mohen/data-access";
 import {
@@ -13,6 +14,32 @@ import {
   type H1Finding,
   type WorkPanels,
 } from "./studio-creation";
+
+/** Read-only ST02 binding for a private director candidate. No new asset,
+ * production, model execution or external transfer is authorized here. */
+export async function prepareProjectDirectorInput(projectId: string, sessionToken: string) {
+  const result = await readStudioResearchProject(projectId, sessionToken, {persistReadingNotes: false});
+  const snapshot = result.snapshot;
+  const ids = result.materials.map(material => material.id);
+  if (snapshot.project_id !== projectId || typeof snapshot.snapshot_hash !== "string"
+    || !snapshot.snapshot_hash || !Array.isArray(snapshot.private_material_ids)
+    || JSON.stringify(snapshot.private_material_ids) !== JSON.stringify(ids))
+    throw new Error("STUDIO_RESEARCH_READ_BINDING_INVALID");
+  const materialSnapshots = result.materials.map(material => ({
+    ref: material.id, epistemic: material.epistemic,
+    content_sha256: crypto.createHash("sha256").update(JSON.stringify({
+      id: material.id, snippet: material.snippet, sourceRef: material.sourceRef,
+      epistemic: material.epistemic,
+    })).digest("hex"),
+  }));
+  return {
+    state: "HOLD" as const, reason: "external_processing_not_authorized",
+    execution_authorized: false as const, project_id: projectId,
+    source_snapshot: snapshot, source_refs: ids, material_snapshots: materialSnapshots,
+    missing_requirements: ["CURRENT_EXTERNAL_PROCESSING_RIGHTS", "CONTROLLED_PROVIDER_PURPOSE_INPUT_CONTEXT", "AUTHORIZED_SPEND"],
+    gaps: result.gaps,
+  };
+}
 
 export interface CreatedPlan {
   planId: string;
@@ -115,6 +142,7 @@ export async function commitWorkRevision(
   // An unchanged retry must not create a second revision.
   const content = {
     director_source: { plan_id: planId, selected: which },
+    h1Finding: finding,
     motif: finding.motifCodes ?? [],
     historicalQuestion: finding.historicalQuestion ?? "",
     understandingDelta: finding.understandingDelta ?? "",
@@ -251,10 +279,23 @@ export async function reviseBeat(
 
   const content = readJsonColumn<{ beats?: Beat[]; [k: string]: unknown }>(latest[0].content, {});
   const beats = [...(content.beats ?? [])];
+  if (!Array.isArray(beatDiff) || !beatDiff.length || new Set(beatDiff.map(d => d?.index)).size !== beatDiff.length)
+    throw new Error("invalid_beat_diff");
   for (const d of beatDiff) {
-    if (d.index < 0 || d.index >= beats.length) continue;
+    if (!d || !Number.isSafeInteger(d.index) || d.index < 0 || d.index >= beats.length
+      || !d.patch || typeof d.patch !== "object" || Array.isArray(d.patch)
+      || !Object.keys(d.patch).length || Object.keys(d.patch).some(key =>
+        !["title", "narration", "visual", "directorTimecodeMs"].includes(key))) throw new Error("invalid_beat_diff");
+    for (const [key, value] of Object.entries(d.patch)) {
+      if (key === "directorTimecodeMs" ? !Number.isSafeInteger(value) || Number(value) < 0
+        : typeof value !== "string" || !value.trim()) throw new Error("invalid_beat_diff");
+    }
     beats[d.index] = { ...beats[d.index], ...d.patch };
   }
+  if (beatDiff.some(d => Object.hasOwn(d.patch, "directorTimecodeMs")) && beats.some((beat, i) =>
+    !Number.isSafeInteger(beat.directorTimecodeMs) || beat.directorTimecodeMs < 0
+    || (i > 0 && beat.directorTimecodeMs <= beats[i - 1].directorTimecodeMs))) throw new Error("invalid_beat_diff");
+  // A saved private edit is not an automatic H1 historical review.
   const newContent = { ...content, beats };
   return appendEditedRevision(workId, curNo, latest[0], newContent);
 }

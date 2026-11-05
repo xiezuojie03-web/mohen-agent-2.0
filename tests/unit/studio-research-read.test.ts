@@ -126,3 +126,9 @@ it("replays the same original and L1 context without duplicating generated notes
  expect(replay.materials).toEqual(first.materials);
  expect(replay.snapshot.reading_note_refs).toEqual(first.snapshot.reading_note_refs);
 });
+it('revalidates existing material for a task GET without persisting generated notes',async()=>{
+ const result=await readStudioResearchProject(projectId,token,{persistReadingNotes:false});
+ expect(saveRevision).not.toHaveBeenCalled();
+ expect(result.materials.some(m=>m.id==='private-evidence:'+evidenceId)).toBe(true);
+ expect(listByOriginal).toHaveBeenCalledWith(originalId,token);
+});

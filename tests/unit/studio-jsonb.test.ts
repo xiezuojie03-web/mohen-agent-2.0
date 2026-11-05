@@ -84,3 +84,17 @@ it("corrupt publication JSON fails closed before reviewer approval", async () =>
   expect(await checkPublishEligibility("work")).toEqual({ ok: false, reason: "no_provenance_refs" });
   expect(db.queryRows).toHaveBeenCalledTimes(1);
 });
+
+for (const diff of [[], [null], [{index:0.5,patch:{narration:'x'}}], [{index:2,patch:{narration:'x'}}], [{index:0,patch:{provenanceRefs:['invented']}}], [{index:0,patch:{narration:3}}], [{index:0,patch:{directorTimecodeMs:-1}}], [{index:0,patch:{unknown:'x'}}], [{index:0,patch:{directorTimecodeMs:8000}}], [{index:0,patch:{narration:'a'}},{index:0,patch:{narration:'b'}}]]) {
+  it(`rejects malformed local edits without inserting ${JSON.stringify(diff)}`, async()=>{
+    db.queryRows.mockResolvedValueOnce([{revision_no:1,content:{beats:[beat,otherBeat]}}]);
+    await expect(reviseBeat('work',1,diff as never)).rejects.toThrow('invalid_beat_diff');
+    expect(db.queryRows.mock.calls.some(([sql])=>String(sql).includes('insert into'))).toBe(false);
+  });
+}
+it('retains the complete H1 finding in an immutable saved revision',async()=>{
+  db.queryRows.mockResolvedValueOnce([{plan_a:plan,selected:'A',finding,beats:[beat]}]).mockResolvedValueOnce([]).mockResolvedValueOnce([{revision_id:revision}]);
+  await commitWorkRevision('work','plan',0);
+  const saved=JSON.parse(db.queryRows.mock.calls.find(([sql])=>String(sql).includes('insert into publication.work_revisions'))![1].content);
+  expect(saved.h1Finding).toEqual(finding);
+});

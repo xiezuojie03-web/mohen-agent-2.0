@@ -36,6 +36,7 @@ export interface CreatedTask {
   missingRequirements?: string[];
   researchLeads: Material[];
   replayed?: boolean;
+  materialRead?: {state:string;reason?:string};
   briefAssetRef?: {asset_id:string;revision_id:string;revision_no:number};
 }
 
@@ -63,7 +64,9 @@ function briefRef(studio:unknown):CreatedTask['briefAssetRef'] {
   return {asset_id:v.asset_id,revision_id:v.revision_id,revision_no:v.revision_no};
 }
 
-function taskResult(taskId:string,status:string,checkpoint:Record<string,unknown>,replayed=true):CreatedTask {
+async function taskResult(taskId:string,status:string,saved:Record<string,unknown>,replayed=true,sessionToken?:string):Promise<CreatedTask> {
+  const {currentTaskCheckpoint}=await import("./studio-task-material-read");
+  const checkpoint=await currentTaskCheckpoint(saved,sessionToken);
   const normalized=status==='done'?'done':'hold';
   return {
     taskId,status:normalized,decision:normalized==='done'?(checkpoint.decision as AgentDecision??null):null,
@@ -73,6 +76,7 @@ function taskResult(taskId:string,status:string,checkpoint:Record<string,unknown
     missingRequirements:Array.isArray(checkpoint.missingRequirements)?checkpoint.missingRequirements.map(String):[],
     researchLeads:Array.isArray(checkpoint.researchLeads)?checkpoint.researchLeads as Material[]:[],
     replayed,briefAssetRef:briefRef(checkpoint.studio),
+    materialRead:checkpoint.materialRead as CreatedTask["materialRead"],
   };
 }
 
@@ -145,7 +149,7 @@ export async function createResearchTask(
     if(studio.request_hash!==requestHash||studio.project_id!==binding.projectId)
       throw new Error('STUDIO_RESEARCH_TASK_IDEMPOTENCY_CONFLICT');
     const pending=existing[0].status==='hold'&&studio.state==='BRIEF_PENDING';
-    if(!pending)return taskResult(taskId,String(existing[0].status),saved,true);
+    if(!pending)return taskResult(taskId,String(existing[0].status),saved,true,binding.sessionToken);
   } else {
     const inserted=await queryRows(
       "insert into public.research_tasks(task_id,work_id,topic,prompt,status,owner_user_id,checkpoint) " +
@@ -163,7 +167,7 @@ export async function createResearchTask(
       if(studio.request_hash!==requestHash||studio.project_id!==binding.projectId)
         throw new Error('STUDIO_RESEARCH_TASK_IDEMPOTENCY_CONFLICT');
       if(!(existing[0].status==='hold'&&studio.state==='BRIEF_PENDING'))
-        return taskResult(taskId,String(existing[0].status),saved,true);
+        return taskResult(taskId,String(existing[0].status),saved,true,binding.sessionToken);
     }
   }
 
@@ -207,7 +211,7 @@ export async function createResearchTask(
       {id:taskId,owner:ownerUserId});
     if(!current.length)throw new Error('STUDIO_RESEARCH_TASK_NOT_FOUND');
     const cp=readJsonColumn<Record<string,unknown>>(current[0].checkpoint,{});
-    return taskResult(taskId,String(current[0].status),cp,true);
+    return taskResult(taskId,String(current[0].status),cp,true,binding.sessionToken);
   }
   await addEvent(taskId,'studio','brief_asset_saved',studioContext.brief_asset_ref as Record<string,unknown>);
   await addEvent(taskId,'D04','research_started',{project_id:binding.projectId,brief_asset_ref:studioContext.brief_asset_ref});
@@ -554,12 +558,16 @@ export function listResearchTasks(ownerUserId: string) {
   );
 }
 
-export async function getTaskStatus(taskId: string) {
+export async function getTaskStatus(taskId: string, sessionToken?: string):Promise<Record<string,unknown>|null> {
   const rows = await queryRows(
     "select task_id::text as task_id, topic, prompt, status, checkpoint, created_at::text as created_at, updated_at::text as updated_at from public.research_tasks where task_id = :'id'",
     { id: taskId }
   );
-  return rows[0] ?? null;
+  const task=rows[0];
+  if(!task)return null;
+  const {currentTaskCheckpoint}=await import('./studio-task-material-read');
+  const checkpoint=await currentTaskCheckpoint(readJsonColumn<Record<string,unknown>>(task.checkpoint,{}),sessionToken);
+  return {...task,checkpoint:typeof task.checkpoint==='string'?JSON.stringify(checkpoint):checkpoint};
 }
 
 export async function getTaskEvents(taskId: string) {

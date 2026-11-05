@@ -61,7 +61,7 @@ export interface StudioResearchReadResult {
  * plus private Studio L3/L4 candidates. Formal L5 remains on the existing qualified
  * read-model path. This service never selects raw source tables or exposes storage keys.
  */
-export async function readStudioResearchProject(projectId:string,sessionToken:string):Promise<StudioResearchReadResult> {
+export async function readStudioResearchProject(projectId:string,sessionToken:string,options:{persistReadingNotes?:boolean}={}):Promise<StudioResearchReadResult> {
   const store=studioAssetStore();
   const projects=await store.listProjects(sessionToken);
   const project=projects.find(p=>p.project_id===projectId&&p.lifecycle_status==="ACTIVE");
@@ -138,7 +138,7 @@ export async function readStudioResearchProject(projectId:string,sessionToken:st
           link_version:e.link_version,key_version:e.key_version,qualification:"UNASSESSED"})),
         interpretation:"not_performed",qualification:"UNASSESSED",
       };
-      const note=await store.saveRevision({
+      const note=options.persistReadingNotes===false?null:await store.saveRevision({
         projectId,assetId:uuidFrom("mohen.studio.reading-note.v1:"+readUnitId),
         kind:"reading_note",expectedRevisionId:null,idempotencyKey:"st02:reading-note:"+readUnitId,
         payload,sourceRefs:[
@@ -150,7 +150,7 @@ export async function readStudioResearchProject(projectId:string,sessionToken:st
           {type:"raw_item",id:rawItemId,revision:text(reading.raw_checksum_sha256,128)},
         ],
       },sessionToken);
-      readingNoteRefs.push({asset_id:note.asset_id,revision_id:note.revision_id,read_unit_id:readUnitId});
+      if(note)readingNoteRefs.push({asset_id:note.asset_id,revision_id:note.revision_id,read_unit_id:readUnitId});
       readUnitRefs.push({read_unit_id:readUnitId,read_run_id:readRunId,source_version_id:sourceVersionId,
         raw_item_id:rawItemId,locator_hash:text(reading.locator_hash,128)});
       readUnitCount++;

@@ -17,3 +17,9 @@ it('does not query private content when ownership guard refuses',async()=>{
  mocks.guard.mockResolvedValue(new Response(null,{status:403}));
  expect((await POST(request,context)).status).toBe(403);expect(mocks.queryRows).not.toHaveBeenCalled();
 });
+it.each([200,401,403,404,503])('private preview marks %s no-store',async status=>{
+ if(status===401||status===403)mocks.guard.mockResolvedValue(new Response(null,{status}));
+ else mocks.queryRows.mockResolvedValue(status===404?[]:[{content:status===503?'{broken':{beats:[]}}]);
+ const response=await POST(request,context);
+ expect(response.status).toBe(status);expect(response.headers.get('cache-control')).toBe('no-store');
+});

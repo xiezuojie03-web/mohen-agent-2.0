@@ -224,3 +224,21 @@ describe("HP08 task-level budget and safe restart boundaries",()=>{
     });
   });
 });
+
+describe('persisted research idempotency read safety',()=>{
+ it('withholds old material on replay without spending or altering persisted task state',async()=>{
+   queryRows.mockReset();run.mockReset();runResearch.mockReset();saveRevision.mockReset();
+   const oldDecision={...decision,materials:[{id:'studio:old@revision',kind:'evidence',snippet:'REVOKED_REPLAY_SECRET',sourceRef:'private'}]};
+   runResearch.mockResolvedValue({decision:oldDecision,degraded:false,researchLeads:[]});
+   await createBoundTask('replay safety');
+   const cp=JSON.parse(checkpointWrites().at(-1)![1].cp);
+   queryRows.mockReset();run.mockClear();runResearch.mockClear();
+   queryRows.mockResolvedValue([{owner_user_id:owner,status:'done',checkpoint:cp}]);
+   const replay=await createResearchTask('replay safety','generic',owner,undefined,undefined,{
+     projectId,projectScope:{period:'TEST_ONLY'},sessionToken:'synthetic-signed-session',idempotencyKey:taskId,
+   });
+   expect(JSON.stringify(replay)).not.toContain('REVOKED_REPLAY_SECRET');
+   expect(replay).toMatchObject({status:'done',replayed:true,decision:null});
+   expect(runResearch).not.toHaveBeenCalled();expect(run).not.toHaveBeenCalled();
+ });
+});
