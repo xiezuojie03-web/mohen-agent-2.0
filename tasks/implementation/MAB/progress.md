@@ -1018,3 +1018,13 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - 新HTTP回归`9f3af8b1`旧run41945997916 **FAILURE**（Playwright解析测试文件76行少右括号，非接口失败）；`af074521`精确补括号，**主CI41946337981 SUCCESS、真实隔离PG17+Chromium41946337974 SUCCESS**。HTTP job126979363687：17PASS/1官方Storage无配置SKIP，`MAB_HTTP_BROWSER_PASS`，合成数据库清理；包含Studio本人保存/列表/历史与跨Owner拒绝操作的显式no-store真实HTTP断言，13类资产和Admin隔离业务既有标记无回退。
 - HP01在`abff4e4d`向原主CI加入无DB/浏览器的Playwright HTTP规格`--list`语法预检；新主CI41946517684 **SUCCESS**，job126979974001：6测试文件18用例可收集、445单测PASS/4旧联网SKIP、133边界PASS、Next Build和目标审计errors=[]。该关仅防测试文件语法漏，不计作HTTP验收。
 - 之前`935a1e1e`研究恢复PG1741945060135 SUCCESS、`9d7b1c4c`私有资产主CI41945285925 SUCCESS保留。精确源码、失败历史、PASS/NEG/回退在`tasks/results/MAB/CHATGPT_M5_RESUME_CACHE_20261105.md`§1—5。本轮仅M5/HP01、HP10、HP11的**VERIFIED_ISOLATED子项**，不签M5整体或专业/生产/外发/收费/13类业务、真实跨题复用与M6—M8。原M1—M4固定条件、当前真实Gate与原件Storage仍HOLD。
+
+
+## 2026-11-05｜M5/HP11反馈同意与撤回实际业务准出（限私有候选、隔离环境）
+
+- 最新基线`main@094125b3`，继续原M5/HP11，不更改M0—M8、13资产语义或现行MHKA/Gate的准出门槛。核查发现`consented_feedback`虽有10+3基础持久PG/HTTP，原通用保存却不校验显式同意、无Owner撤回操作/私有历史脱敏链。
+- 原位修改`packages/data-access/src/studio-asset-repository.mjs`（`17b9863e`）和类型`97fc01f5`：入库强制自声明同意true、允许撤回true、有效文本；Owner专用`withdrawFeedback`写`REVOKED/ARCHIVED/STALE`不可变终止修订，锁head/精确CAS、同key幂等和跨Owner RLS；在本人普通getRevision拒读旧正文，listAssetRevisions仅保留脱敏审计元数据、拒绝恢复旧同意。原记录数据库未物理删除，正式权益不得据此赋予。未建新资产表/新Gate或生产迁移。
+- `322a5e76`加`POST /api/studio/assets/withdraw`，`bf16d6da`补400/409错误映射；`17aa3cf0`单测、`059f6b8a`隔离PG+HTTP正反、`d348ea01`纳入原Chromium suite。**`d348ea01`主CI41949822824 SUCCESS（447单测/4旧SKIP、133边界），HTTP41949822877 SUCCESS（18PASS/1官方Storage缺配置SKIP）**：未同意拒存、并发6次1成功5冲突、幂等、跨Owner拒绝、历史脱敏、旧正文不可再读、不可重新激活，`MAB_FEEDBACK_WITHDRAW_HTTP_PASS`。
+- `eaf1515f`补既有F05 Admin知识条目二步确认撤回，服务端成功回执才刷新；`000327ca`补真实Admin UI操作、撤回后新修订及旧正文拒读E2E。**主CI41950478739 SUCCESS（447单测/4旧SKIP、133边界、7文件19用例可收集、Next Build与审计errors=[]）；真实Chromium/隔离PG HTTP41950478723 SUCCESS（18PASS/1StorageSKIP，`MAB_ADMIN_FEEDBACK_WITHDRAW_HTTP_PASS`，合成数据库清理）**。所有回执的job IDs与限制写在`tasks/results/MAB/CHATGPT_M5_FEEDBACK_CONSENT_20261105.md`，避免将测试脚本存在视为通过。
+- 裁定：仅`M5_HP11_FEEDBACK_WITHDRAW_VERIFIED_ISOLATED`；仍缺真实反馈提供者身份/独立同意凭证、实际下游调用点全渠道撤回、物理删除策略、已外发副本/离线缓存清理，以及13种资产其它类型的专业字段、源定位、合法跨项目复用/canonical媒资、ST01—04及完整H1/H2/H3/19组件。**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；M1—M4生产、专业Gate/Storage/费用/外发与M6—M8原固定条件不变**。无真实隐私资料/费用/生产写入。
+- 回滚：即使撤回此批前端或API，也不得恢复已撤回内容的使用；终止修订、旧数据与审计不可删除或重授资格。74目标冻结主表未增加新的目标路径，本批是原M5/HP11实施增量，语义差异余项继续原账核销。
