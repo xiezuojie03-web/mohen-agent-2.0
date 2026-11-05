@@ -66,6 +66,13 @@ export function createPrivateOriginalRepository(pool){
     return result(confirmed.rows[0]);
    });
   },
+  async listForProject(projectId,token){
+   id(projectId);
+   return tx(token,async(client)=>{
+    const q=await client.query("select * from studio.private_originals where project_id=$1 and state='STORED_VERIFIED' order by created_at desc,original_id limit 20",[projectId]);
+    return q.rows.map(result);
+   });
+  },
   async getStored(originalId,token){
    id(originalId);
    return tx(token,async(client)=>{
