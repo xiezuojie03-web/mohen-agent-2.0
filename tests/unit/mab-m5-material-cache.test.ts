@@ -19,3 +19,16 @@ it('does not disclose an answer cached from withdrawn materials',async()=>{
  expect(mocks.getCached).not.toHaveBeenCalled();expect(mocks.setCache).not.toHaveBeenCalled();expect(mocks.research).toHaveBeenCalledOnce();
  expect(response.headers.get('cache-control')).toContain('no-store');
 });
+it('materials uses only the server Agent context and ignores caller self-grants',async()=>{
+ const context={purpose:{namespace:'G5',code:'server-only',version:'1'},scope:{project:'server-project',requested_action:'read'}};
+ vi.stubEnv('MOHEN_G5_CONTEXTS',JSON.stringify({agent:context}));
+ await POST(new Request('http://localhost/api/mohen/materials',{method:'POST',body:JSON.stringify({terms:['桥市'],qualification:{consumer:'agent',scope:{project:'attacker'}}})}));
+ expect(mocks.retrieve).toHaveBeenCalledWith(['桥市'],12,{qualification:{consumer:'agent',...context}});
+ vi.unstubAllEnvs();
+});
+it('does not use a server context for another rights operation',async()=>{
+ vi.stubEnv('MOHEN_G5_CONTEXTS',JSON.stringify({agent:{purpose:{namespace:'G5',code:'x',version:'1'},scope:{project:'p',requested_action:'download'}}}));
+ await POST(new Request('http://localhost/api/mohen/materials',{method:'POST',body:JSON.stringify({terms:['桥市']})}));
+ expect(mocks.retrieve).toHaveBeenCalledWith(['桥市'],12,{qualification:undefined});
+ vi.unstubAllEnvs();
+});

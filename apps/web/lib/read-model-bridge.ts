@@ -112,7 +112,7 @@ export interface ProductionRelationSummary {
 export async function readProductionRelationSummary(topicKey?: string): Promise<ProductionRelationSummary> {
   try {
     const qualification = consumerContext('visual_stage');
-    if (!qualification || (topicKey && topicKey.length > 128))
+    if (!qualification || qualification.scope.requested_action !== 'display' || (topicKey && topicKey.length > 128))
       return { entities: [], relations: [], storyCount: 0, available: false, evidence: [], stories: [], timeline: null, conflicts: [], openQuestions: [], visuals: [] };
     const qualificationParams = contextParams(qualification);
     const topicPattern = topicKey

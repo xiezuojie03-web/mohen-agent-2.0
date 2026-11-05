@@ -5,7 +5,7 @@ vi.mock("@mohen/data-access",()=>({queryRows}));
 import {readProductionRelationSummary} from "../../apps/web/lib/read-model-bridge";
 
 const oldContext=process.env.MOHEN_G5_CONTEXTS;
-const ctx={purpose:{namespace:"test",code:"visual-display",version:"1"},scope:{project:"synthetic"}};
+const ctx={purpose:{namespace:"test",code:"visual-display",version:"1"},scope:{project:"synthetic",requested_action:'display'}};
 describe("HP07 visual stage exact current G5 and safe topic filtering",()=>{
   beforeEach(()=>{
     queryRows.mockReset();
@@ -17,6 +17,11 @@ describe("HP07 visual stage exact current G5 and safe topic filtering",()=>{
     delete process.env.MOHEN_G5_CONTEXTS;
     const data=await readProductionRelationSummary("topic");
     expect(data.available).toBe(false);
+    expect(queryRows).not.toHaveBeenCalled();
+  });
+  it('refuses a visual context without display rights before reading',async()=>{
+    process.env.MOHEN_G5_CONTEXTS=JSON.stringify({visual_stage:{...ctx,scope:{project:'synthetic',requested_action:'read'}}});
+    expect((await readProductionRelationSummary()).available).toBe(false);
     expect(queryRows).not.toHaveBeenCalled();
   });
   it("escapes wildcard and quote input through a bound parameter",async()=>{

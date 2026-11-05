@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createReadModelRepository, getNodePgPool } from "@mohen/data-access";
+import { assertQualificationContext, createReadModelRepository, getNodePgPool } from "@mohen/data-access";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,14 +24,16 @@ function publicEvidenceContext() {
   if (!purpose || typeof purpose !== "object" || Array.isArray(purpose) ||
       !scope || typeof scope !== "object" || Array.isArray(scope)) return null;
   const fields = purpose as Record<string, unknown>;
+  if ((scope as Record<string, unknown>).requested_action !== 'quote') return null;
   if (!["namespace", "code", "version"].every(k =>
       typeof fields[k] === "string" && (fields[k] as string).length > 0 && (fields[k] as string).length <= 128)) return null;
-  // Exact public visual-stage consumer; agent and private research contexts
+  // Evidence on Demand has its own independent consumer; visual-stage and private research contexts
   // must never be selectable from query parameters.
-  if (value.consumer !== "visual_stage") return null;
-  return { consumer: "visual_stage" as const, purpose: {
+  if (value.consumer !== "evidence_on_demand") return null;
+  const context = { consumer: "evidence_on_demand" as const, purpose: {
     namespace: fields.namespace as string, code: fields.code as string, version: fields.version as string,
   }, scope: scope as Record<string, unknown> };
+  try { return assertQualificationContext(context); } catch { return null; }
 }
 
 // API-023: output wire remains {ok:true,evidence:{id,display_locator,display_excerpt}}.

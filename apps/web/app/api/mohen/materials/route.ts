@@ -11,6 +11,7 @@
 import { NextResponse } from "next/server";
 import { retrieveMaterials, MAX_LIMIT } from "../../../../lib/mohen-agent/retrieve";
 import { isRateLimited, getClientSource } from "../../../../lib/mohen-agent/guard";
+import { consumerContext } from "../../../../lib/kad1-policy.mjs";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -38,7 +39,10 @@ export async function POST(req: Request) {
 
   // Current qualification must be checked on every request. A cached material
   // payload can outlive an ancestor's rights or Reviewer revocation.
-  const { materials, degraded } = await retrieveMaterials(terms, limit);
+  const context = consumerContext('agent');
+  const { materials, degraded } = await retrieveMaterials(terms, limit, {
+    qualification: context?.scope.requested_action === 'read' ? { consumer: 'agent', ...context } : undefined,
+  });
   const result = { ok: !degraded, degraded, materials };
   return NextResponse.json(result, { headers: { "cache-control": "no-store" } });
 }

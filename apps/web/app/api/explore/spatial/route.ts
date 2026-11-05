@@ -28,5 +28,5 @@ export async function GET(req: NextRequest) {
     timeline: summary.timeline,
     relations: summary.relations,
     visuals: summary.visuals,
-  });
+  }, { headers: { 'Cache-Control': 'no-store' } });
 }

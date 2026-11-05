@@ -8,9 +8,9 @@ import { GET } from "../../apps/web/app/api/public/evidence/[id]/route";
 
 const id = "11111111-1111-4111-8111-111111111111";
 const config = JSON.stringify({
-  consumer: "visual_stage",
+  consumer: "evidence_on_demand",
   purpose: { namespace: "test-only", code: "public-evidence", version: "test-v1" },
-  scope: { requested_action: "display" },
+  scope: { requested_action: "quote" },
 });
 const call = (value = id) => GET(new Request("http://test.invalid/api/public/evidence/" + value),
   { params: Promise.resolve({ id: value }) });
@@ -42,8 +42,8 @@ it("does not disclose an unqualified pointer even if it physically exists", asyn
   const [sql, params] = mocks.query.mock.calls[0];
   expect(sql).toContain("control.qualification_allows(");
   expect(sql).toContain("q.gate_code='G5'");
-  expect(params).toEqual(["evidence_pointer","visual_stage","test-only","public-evidence","test-v1",
-    JSON.stringify({requested_action:"display"}),id]);
+  expect(params).toEqual(["evidence_pointer","evidence_on_demand","test-only","public-evidence","test-v1",
+    JSON.stringify({requested_action:"quote"}),id]);
   expect(sql).not.toContain("public.imported_materials");
 });
 it("preserves the successful response shape but only after qualification query accepts", async () => {
@@ -60,4 +60,9 @@ it("fails closed on a missing G5 table, failed policy, or database connection", 
   const response = await call();
   expect(response.status).toBe(503);
   expect(JSON.stringify(await response.json())).not.toContain("internal SQL");
+});
+it.each([{}, {requested_action:'read'}, {requested_action:'download'}])('refuses a context without the Evidence quote operation: %j',async scope=>{
+ vi.stubEnv('MOHEN_PUBLIC_EVIDENCE_QUALIFICATION_CONTEXT',JSON.stringify({...JSON.parse(config),scope}));
+ expect((await call()).status).toBe(503);
+ expect(mocks.pool).not.toHaveBeenCalled();
 });

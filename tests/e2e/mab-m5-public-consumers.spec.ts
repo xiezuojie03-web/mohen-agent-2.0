@@ -23,8 +23,58 @@ test('legacy agent PASS cannot leak through public knowledge search or cached ma
  expect(found.headers()['cache-control']).toContain('no-store');
  for(let attempt=0;attempt<2;attempt++){
   const response=await request.post('/api/mohen/materials',{data:{terms:[secret],qualification:{consumer:'agent',purpose:{namespace:'G5',code:'fixture',version:'1'},scope:{project:'fixture'}}}});
-  expect(response.status()).toBe(200);expect(await response.json()).toEqual({ok:false,degraded:true,materials:[]});
+  expect(response.status()).toBe(200);expect(await response.json()).toEqual({ok:true,degraded:false,materials:[]});
   expect(response.headers()['cache-control']).toContain('no-store');
+ }
+});
+
+test('visual stage, Agent materials and Evidence on Demand enforce their own live G5 over real product HTTP',async({page,request})=>{
+ const socket=process.env.MOHEN_TEST_SOCKET,database=process.env.MOHEN_TEST_DATABASE,psql=process.env.MOHEN_TEST_PSQL;
+ if(!socket?.startsWith('/workspace/')||!/^mohen_k3_http_[a-f0-9]+_test$/.test(database??'')||!psql)throw Error('ISOLATED_DATABASE_REQUIRED');
+ const sql=(input:string)=>execFileSync(psql!,['-X','-q','-At','-v','ON_ERROR_STOP=1','-h',socket!,'-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database!],{input,encoding:'utf8'}).trim();
+ const {seedWorkG5}=await import('../fixtures/mab-work-g5.mjs');
+ const owner=await browserRequests(page);
+ expect((await owner.post('/api/auth/register',{data:{email:`consumer-${randomUUID()}@example.invalid`,username:'隔离消费者',password:randomUUID()}})).status()).toBe(200);
+ for(const consumer of ['visual_stage','agent','evidence_on_demand'] as const){
+  const kind=consumer==='visual_stage'?'world_projection':consumer==='agent'?'story_seed':'evidence_pointer';
+  const read=async(fixture:ReturnType<typeof seedWorkG5>)=>{
+   const response=consumer==='visual_stage'?await owner.get('/api/explore/spatial?topic=TEST_ONLY:'+fixture.story):
+    consumer==='agent'?await request.post('/api/mohen/materials',{data:{terms:[fixture.story],qualification:{consumer,purpose:{namespace:'G5',code:'m5-http',version:'1'},scope:{project:'m5-http'}}}}):
+    await request.get('/api/public/evidence/'+fixture.story+'?consumer=visual_stage');
+   expect(response.headers()['cache-control']).toContain('no-store');
+   const body=await response.json();
+   return {status:response.status(),body,found:consumer==='visual_stage'?body.entities?.includes(fixture.story):
+    consumer==='agent'?body.materials?.some((m:{id:string})=>m.id===fixture.story):body.ok===true};
+  };
+  const valid=seedWorkG5(sql,{kind,consumers:[consumer]});
+  expect((await read(valid)).found,consumer+' positive actual entry').toBe(true);
+  for(const [reason,options] of [
+   ['purpose',{purposeCode:'other-purpose'}],['scope',{scope:{project:'other-project'}}],
+   ['consumer',{consumers:['watch']}],['rights',{actionOverrides:{[consumer]:'download'}}],
+  ] as const){
+   const fixture=seedWorkG5(sql,{kind,consumers:[consumer],...options});
+   expect((await read(fixture)).found,consumer+' denies wrong '+reason).toBe(false);
+  }
+  const expired=seedWorkG5(sql,{kind,consumers:[consumer],g5Validity:'100 milliseconds'});
+  sql('select pg_sleep(0.15)');
+  expect((await read(expired)).found,consumer+' expiry').toBe(false);
+  const stale=seedWorkG5(sql,{kind,consumers:[consumer]});
+  sql(`update read_model.${stale.table} set ${kind==='evidence_pointer'?"display_excerpt='TEST_ONLY changed revision'":kind==='story_seed'?"title='TEST_ONLY changed revision'":"payload='{}'"} where ${stale.key}='${stale.story}'`);
+  expect((await read(stale)).found,consumer+' stale physical revision').toBe(false);
+  valid.revoke();
+  // Repeat exactly the successful request: a cached response must not survive.
+  expect((await read(valid)).found,consumer+' ancestor revoked/cache invalidated').toBe(false);
+  const available=seedWorkG5(sql,{kind,consumers:[consumer]});
+  expect((await read(available)).found).toBe(true);
+  sql('alter table control.qualification_current rename to qualification_current_test_unavailable');
+  try{
+   const unavailable=await read(available);
+   expect(unavailable.found).toBe(false);
+   if(consumer==='evidence_on_demand')expect(unavailable.status).toBe(503);
+   if(consumer==='agent')expect(unavailable.body.degraded).toBe(true);
+  }finally{sql('alter table control.qualification_current_test_unavailable rename to qualification_current');}
+  expect((await read(available)).found,consumer+' recovery must revalidate').toBe(true);
+  console.log('MAB_PRODUCT_CONSUMER_HTTP_PASS',consumer,'POS purpose/scope/consumer/action/expiry/revision/ancestor/cache/service-recovery NEG');
  }
 });
 

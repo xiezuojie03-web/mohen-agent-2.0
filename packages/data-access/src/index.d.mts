@@ -152,7 +152,7 @@ export interface QualificationPurpose {
   version: string;
 }
 export interface QualificationReadOptions {
-  consumer: "visual_stage" | "agent";
+  consumer: "visual_stage" | "agent" | "evidence_on_demand";
   purpose: QualificationPurpose;
   scope: Record<string, unknown>;
 }

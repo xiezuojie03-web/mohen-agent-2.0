@@ -7,7 +7,7 @@ const MODELS = Object.freeze({
  map_timeline_projection:['read_model.map_timeline_projections','map_timeline_projection_id'],
  evidence_pointer:['read_model.evidence_pointers','evidence_pointer_id'],
 });
-export const CONSUMERS=Object.freeze(['visual_stage','agent']);
+export const CONSUMERS=Object.freeze(['visual_stage','agent','evidence_on_demand']);
 export function assertConsumer(consumer) {
  if(!CONSUMERS.includes(consumer)) throw new Error('QUALIFICATION_CONTEXT_REQUIRED');
  return true;
