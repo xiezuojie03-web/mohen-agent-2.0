@@ -23,7 +23,9 @@ test('private notebook saves, reloads exact revisions, isolates owners and avoid
   await page.getByLabel('记录内容',{exact:true}).fill('第一版合成研究提纲，不是正式历史结论。');
   const firstResponse=page.waitForResponse(r=>r.url().endsWith('/api/studio/assets')&&r.request().method()==='POST');
   await page.getByRole('button',{name:'保存记录',exact:true}).click();
-  const first=(await (await firstResponse).json()).asset;
+  const firstSaved=await firstResponse;
+  expect(firstSaved.headers()['cache-control']).toBe('no-store');
+  const first=(await firstSaved.json()).asset;
   expect(first.revision_no).toBe(1);
   await expect(page.getByRole('status')).toContainText('已保存第1版');
   await page.reload();
@@ -32,7 +34,9 @@ test('private notebook saves, reloads exact revisions, isolates owners and avoid
   await page.getByLabel('记录内容',{exact:true}).fill('第二版补充了研究问题，仍是私人待核笔记。');
   const secondResponse=page.waitForResponse(r=>r.url().endsWith('/api/studio/assets')&&r.request().method()==='POST');
   await page.getByRole('button',{name:'保存记录',exact:true}).click();
-  const second=(await (await secondResponse).json()).asset;
+  const secondSaved=await secondResponse;
+  expect(secondSaved.headers()['cache-control']).toBe('no-store');
+  const second=(await secondSaved.json()).asset;
   expect(second.asset_id).toBe(first.asset_id);expect(second.revision_no).toBe(2);expect(second.revision_id).not.toBe(first.revision_id);
   await page.getByRole('button',{name:'查看上一版',exact:true}).click();
   await expect(page.getByLabel('记录内容',{exact:true})).toHaveValue('第一版合成研究提纲，不是正式历史结论。');
@@ -45,6 +49,11 @@ test('private notebook saves, reloads exact revisions, isolates owners and avoid
     return {status:response.status,body:await response.json(),cache:response.headers.get('cache-control')};
   },{projectId:project.project_id,assetId:first.asset_id});
   expect(history.status).toBe(200);expect(history.cache).toBe('no-store');
+  const ownList=await page.evaluate(async projectId=>{
+    const response=await fetch('/api/studio/assets?project_id='+projectId);
+    return {status:response.status,cache:response.headers.get('cache-control')};
+  },project.project_id);
+  expect(ownList.status).toBe(200);expect(ownList.cache).toBe('no-store');
   expect(history.body.revisions.map((r:{revision_id:string})=>r.revision_id)).toEqual([second.revision_id,first.revision_id]);
 
   const other=await browser.newContext({baseURL:process.env.MOHEN_E2E_BASE_URL});
@@ -55,12 +64,18 @@ test('private notebook saves, reloads exact revisions, isolates owners and avoid
     expect(registeredB.status()).toBe(200);
     const projects=await otherRequest.get('/api/studio/projects');expect((await projects.json()).projects).toEqual([]);
     const foreignList=await otherRequest.get('/api/studio/assets',{params:{project_id:project.project_id}});expect((await foreignList.json()).assets).toEqual([]);
-    const foreignRead=await otherRequest.get('/api/studio/assets',{params:{asset_id:first.asset_id,revision_id:first.revision_id}});expect(foreignRead.status()).toBe(404);
+    const foreignRead=await otherRequest.get('/api/studio/assets',{params:{asset_id:first.asset_id,revision_id:first.revision_id}});
+    expect(foreignRead.status()).toBe(404);
+    expect(foreignRead.headers()['cache-control']).toBe('no-store');
     const foreignHistory=await otherRequest.get('/api/studio/assets',{params:{history:'1',project_id:project.project_id,asset_id:first.asset_id}});
     expect(foreignHistory.status()).toBe(200);expect((await foreignHistory.json()).revisions).toEqual([]);
+    expect(foreignHistory.headers()['cache-control']).toBe('no-store');
     const foreignUses=await otherRequest.get('/api/studio/assets',{params:{use_events:'1',project_id:project.project_id,revision_id:first.revision_id}});
     expect(foreignUses.status()).toBe(200);expect((await foreignUses.json()).events).toEqual([]);
-    const foreignSave=await otherRequest.post('/api/studio/assets',{data:{project_id:project.project_id,asset_id:randomUUID(),asset_kind:'research_brief',expected_revision_id:null,idempotency_key:randomUUID(),payload:{text:'forged'}}});expect(foreignSave.status()).toBe(404);
+    expect(foreignUses.headers()['cache-control']).toBe('no-store');
+    const foreignSave=await otherRequest.post('/api/studio/assets',{data:{project_id:project.project_id,asset_id:randomUUID(),asset_kind:'research_brief',expected_revision_id:null,idempotency_key:randomUUID(),payload:{text:'forged'}});
+    expect(foreignSave.status()).toBe(404);
+    expect(foreignSave.headers()['cache-control']).toBe('no-store');
   }finally{await other.close();}
 
   await page.getByRole('button',{name:'新建记录',exact:true}).click();
