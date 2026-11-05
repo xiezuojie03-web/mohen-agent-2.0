@@ -134,6 +134,251 @@ export async function createResearchTask(
   }
 }
 
+// apps/web/lib/studio-research.ts — Studio 受托研究任务（E1-2）数据访问与编排
+//
+// 研究意图先绑定项目与不可变 research_brief，再进入工具路由；runResearch 不产生事实。
+import { queryRows, queryValue, run } from "@mohen/data-access";
+import { runResearch, resolveTopic, type TopicKey } from "./mohen-agent/research";
+import { triggerProduction, getProductionBlocker } from "./studio-production";
+import type { AgentDecision, Material } from "@mohen/agent-runtime";
+import { readJsonColumn } from "./db-json";
+import { createHash, randomUUID } from "node:crypto";
+import { studioAssetStore } from "./studio-assets";
+import {ResearchPrerequisiteHold} from './mohen-agent/research-prerequisites';
+import {
+  createBudget,
+  writeReceipt,
+  getTool,
+  BudgetHoldError,
+  ToolExecutionUncertainError,
+  ToolReceiptPersistenceError,
+  type BudgetState,
+  type Ledger,
+} from "./studio/tool-ledger";
+
+async function addEvent(taskId: string, stage: string, event: string, payload: unknown) {
+  await run(
+    "insert into public.research_events (task_id, stage, event, payload) values (:'id', :'stage', :'event', :'payload'::jsonb)",
+    { id: taskId, stage, event, payload: JSON.stringify(payload ?? {}) }
+  );
+}
+
+export interface CreatedTask {
+  taskId: string;
+  status: "done" | "hold";
+  decision: AgentDecision | null;
+  degraded: boolean;
+  holdReason?: "budget" | string;
+  missingRequirements?: string[];
+  researchLeads: Material[];
+  replayed?: boolean;
+  briefAssetRef?: {asset_id:string;revision_id:string;revision_no:number};
+}
+
+type StudioBriefBinding = {
+  projectId: string;
+  projectScope: Record<string,unknown>;
+  sessionToken: string;
+  idempotencyKey: string;
+};
+
+function deterministicUuid(seed:string):string {
+  const chars=createHash('sha256').update(seed).digest('hex').slice(0,32).split('');
+  chars[12]='5';
+  chars[16]=((parseInt(chars[16],16)&3)|8).toString(16);
+  const hex=chars.join('');
+  return hex.slice(0,8)+'-'+hex.slice(8,12)+'-'+hex.slice(12,16)+'-'+hex.slice(16,20)+'-'+hex.slice(20);
+}
+
+function briefRef(studio:unknown):CreatedTask['briefAssetRef'] {
+  if(!studio||typeof studio!=='object'||Array.isArray(studio))return undefined;
+  const ref=(studio as Record<string,unknown>).brief_asset_ref;
+  if(!ref||typeof ref!=='object'||Array.isArray(ref))return undefined;
+  const v=ref as Record<string,unknown>;
+  if(typeof v.asset_id!=='string'||typeof v.revision_id!=='string'||typeof v.revision_no!=='number')return undefined;
+  return {asset_id:v.asset_id,revision_id:v.revision_id,revision_no:v.revision_no};
+}
+
+function taskResult(taskId:string,status:string,checkpoint:Record<string,unknown>,replayed=true):CreatedTask {
+  const normalized=status==='done'?'done':'hold';
+  return {
+    taskId,status:normalized,decision:normalized==='done'?(checkpoint.decision as AgentDecision??null):null,
+    degraded:checkpoint.degraded===true,
+    holdReason:typeof checkpoint.holdReason==='string'?checkpoint.holdReason:
+      (status==='running'?'task_in_progress':undefined),
+    missingRequirements:Array.isArray(checkpoint.missingRequirements)?checkpoint.missingRequirements.map(String):[],
+    researchLeads:Array.isArray(checkpoint.researchLeads)?checkpoint.researchLeads as Material[]:[],
+    replayed,briefAssetRef:briefRef(checkpoint.studio),
+  };
+}
+
+async function holdResearchPrerequisites(
+  taskId:string,prompt:string,topic:TopicKey,budget:BudgetState,error:ResearchPrerequisiteHold,
+  studioContext:Record<string,unknown>={}
+):Promise<CreatedTask> {
+  const checkpoint={prompt,topic,holdReason:'research_prerequisites',missingRequirements:error.missingRequirements,
+    partial_result:error.partialResult,budgetSpent:budget.spent,reserved:budget.reserved,ceiling:budget.ceiling,
+    holdAt:{toolId:'llm-understand'},retry_requires_reconciliation:false,studio:studioContext};
+  await run("update public.research_tasks set status = 'hold', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
+    {id:taskId,cp:JSON.stringify(checkpoint)});
+  await writeReceipt({taskId,kind:'checkpoint',stage:'hold',status:'hold',payload:checkpoint});
+  await addEvent(taskId,'research','prerequisites_hold',{missingRequirements:error.missingRequirements,budgetSpent:budget.spent,reserved:budget.reserved});
+  return {taskId,status:'hold',decision:null,degraded:true,holdReason:'research_prerequisites',
+    missingRequirements:error.missingRequirements,researchLeads:[],briefAssetRef:briefRef(studioContext)};
+}
+
+/** External tool output/cost is uncertain; preserve reservation and never blindly replay. */
+async function holdUncertainTool(
+  taskId:string,prompt:string,topic:TopicKey,budget:BudgetState,
+  error:ToolExecutionUncertainError|ToolReceiptPersistenceError,studioContext:Record<string,unknown>={}
+):Promise<CreatedTask> {
+  const holdReason=error instanceof ToolReceiptPersistenceError?'receipt_uncertain':'execution_uncertain';
+  const checkpoint={prompt,topic,holdReason,budgetSpent:budget.spent,reserved:budget.reserved,ceiling:budget.ceiling,
+    toolId:error.toolId,invocationId:error.invocationId,retry_requires_reconciliation:true,studio:studioContext};
+  await run("update public.research_tasks set status='hold',checkpoint=:'cp'::jsonb,updated_at=now() where task_id=:'id'",
+    {id:taskId,cp:JSON.stringify(checkpoint)});
+  await writeReceipt({taskId,kind:'checkpoint',stage:'hold',status:'hold',payload:checkpoint});
+  await addEvent(taskId,'D04',holdReason,{toolId:error.toolId,invocationId:error.invocationId,
+    budgetSpent:budget.spent,reserved:budget.reserved});
+  return {taskId,status:'hold',decision:null,degraded:false,holdReason,researchLeads:[],
+    briefAssetRef:briefRef(studioContext)};
+}
+
+/** ST-01: persist one immutable project-scoped brief before any research/provider call.
+ * The request UUID is also the task ID, so an acknowledgement retry resolves the same task.
+ */
+export async function createResearchTask(
+  prompt:string,topic:TopicKey,ownerUserId:string,workId?:string,budgetCeiling?:number,
+  binding?:StudioBriefBinding
+):Promise<CreatedTask> {
+  if(!binding||typeof binding.sessionToken!=='string'||!binding.sessionToken||
+    !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(binding.projectId)||
+    !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(binding.idempotencyKey))
+    throw new Error('STUDIO_PROJECT_REQUIRED');
+  const taskId=binding.idempotencyKey;
+  const requestHash=createHash('sha256').update(JSON.stringify({
+    ownerUserId,projectId:binding.projectId,prompt,topic,workId:workId??null,
+    projectScope:binding.projectScope,
+  })).digest('hex');
+  const briefAssetId=deterministicUuid('mohen.studio.research_brief.v1:'+taskId);
+  const budget=createBudget(budgetCeiling);
+  const initialStudio={
+    schema:'mohen.studio-workflow-request.v1',request_id:taskId,request_hash:requestHash,
+    project_id:binding.projectId,brief_asset_id:briefAssetId,brief_asset_ref:null,state:'BRIEF_PENDING',
+  };
+  const initialCheckpoint={prompt,topic,work_id:workId??null,holdReason:'brief_asset_pending',
+    budgetSpent:budget.spent,reserved:budget.reserved,ceiling:budget.ceiling,studio:initialStudio};
+
+  let existing=await queryRows(
+    "select task_id::text as task_id,owner_user_id::text as owner_user_id,status,checkpoint from public.research_tasks where task_id=:'id'",
+    {id:taskId});
+  if(existing.length) {
+    if(existing[0].owner_user_id!==ownerUserId)throw new Error('STUDIO_RESEARCH_TASK_NOT_FOUND');
+    let saved:Record<string,unknown>;
+    try{saved=readJsonColumn<Record<string,unknown>>(existing[0].checkpoint,{});}catch{throw new Error('STUDIO_RESEARCH_TASK_IDEMPOTENCY_CONFLICT');}
+    const studio=saved.studio&&typeof saved.studio==='object'&&!Array.isArray(saved.studio)
+      ?saved.studio as Record<string,unknown>:{};
+    if(studio.request_hash!==requestHash||studio.project_id!==binding.projectId)
+      throw new Error('STUDIO_RESEARCH_TASK_IDEMPOTENCY_CONFLICT');
+    const pending=existing[0].status==='hold'&&studio.state==='BRIEF_PENDING';
+    if(!pending)return taskResult(taskId,String(existing[0].status),saved,true);
+  } else {
+    const inserted=await queryRows(
+      "insert into public.research_tasks(task_id,work_id,topic,prompt,status,owner_user_id,checkpoint) " +
+      "values(:'id',:'work',:'topic',:'prompt','hold',:'owner',:'cp'::jsonb) on conflict(task_id) do nothing returning task_id::text as task_id",
+      {id:taskId,work:workId??null,topic,prompt,owner:ownerUserId,cp:JSON.stringify(initialCheckpoint)});
+    if(inserted.length)await addEvent(taskId,'studio','task_created',{prompt,topic,project_id:binding.projectId,request_hash:requestHash});
+    else {
+      existing=await queryRows(
+        "select task_id::text as task_id,owner_user_id::text as owner_user_id,status,checkpoint from public.research_tasks where task_id=:'id'",
+        {id:taskId});
+      if(!existing.length||existing[0].owner_user_id!==ownerUserId)throw new Error('STUDIO_RESEARCH_TASK_NOT_FOUND');
+      const saved=readJsonColumn<Record<string,unknown>>(existing[0].checkpoint,{});
+      const studio=saved.studio&&typeof saved.studio==='object'&&!Array.isArray(saved.studio)
+        ?saved.studio as Record<string,unknown>:{};
+      if(studio.request_hash!==requestHash||studio.project_id!==binding.projectId)
+        throw new Error('STUDIO_RESEARCH_TASK_IDEMPOTENCY_CONFLICT');
+      if(!(existing[0].status==='hold'&&studio.state==='BRIEF_PENDING'))
+        return taskResult(taskId,String(existing[0].status),saved,true);
+    }
+  }
+
+  // Replaying the same request reuses both the task UUID and brief asset UUID/key.
+  const briefPayload={
+    schema:'mohen.studio-research-brief.v1',question:prompt,topic,purpose:'research_and_creation',
+    audience:null,audience_state:'not_specified',project_scope:binding.projectScope,work_id:workId??null,
+  };
+  const taskSnapshot={schema:'mohen.studio-task-snapshot.v1',task_id:taskId,owner_user_id:ownerUserId,
+    project_id:binding.projectId,request_hash:requestHash,prompt,topic,work_id:workId??null};
+  let brief;
+  try {
+    brief=await studioAssetStore().saveRevision({
+      projectId:binding.projectId,assetId:briefAssetId,kind:'research_brief',expectedRevisionId:null,
+      idempotencyKey:'st01:brief:'+taskId,payload:briefPayload,sourceRefs:[],dependencyRefs:[],
+      originTaskId:taskId,originTaskSnapshot:taskSnapshot,
+    },binding.sessionToken);
+  } catch(error) {
+    const failureCheckpoint={...initialCheckpoint,holdReason:'brief_asset_persistence_failed',
+      failureCode:error instanceof Error&&/^STUDIO_[A-Z0-9_]+$/.test(error.message)?error.message:'ASSET_PERSISTENCE_UNAVAILABLE'};
+    await run("update public.research_tasks set status='hold',checkpoint=:'cp'::jsonb,updated_at=now() where task_id=:'id' and status='hold'",
+      {id:taskId,cp:JSON.stringify(failureCheckpoint)});
+    await addEvent(taskId,'studio','brief_asset_persistence_hold',{failureCode:failureCheckpoint.failureCode});
+    return {taskId,status:'hold',decision:null,degraded:false,holdReason:'brief_asset_persistence_failed',
+      missingRequirements:['RESEARCH_BRIEF_ASSET_PERSISTENCE_FAILED'],researchLeads:[]};
+  }
+
+  const studioContext={...initialStudio,state:'BRIEF_SAVED',brief_asset_ref:{
+    asset_id:brief.asset_id,revision_id:brief.revision_id,revision_no:brief.revision_no,
+  }};
+  const runningCheckpoint={...initialCheckpoint,holdReason:'research_running',studio:studioContext};
+  const claimed=await queryRows(
+    "update public.research_tasks set status='running',checkpoint=:'cp'::jsonb,updated_at=now() " +
+    "where task_id=:'id' and owner_user_id=:'owner' and status='hold' " +
+    "and checkpoint->'studio'->>'request_hash'=:'hash' and checkpoint->'studio'->>'state'='BRIEF_PENDING' " +
+    "returning task_id::text as task_id",
+    {id:taskId,owner:ownerUserId,hash:requestHash,cp:JSON.stringify(runningCheckpoint)});
+  if(!claimed.length) {
+    const current=await queryRows(
+      "select status,checkpoint from public.research_tasks where task_id=:'id' and owner_user_id=:'owner'",
+      {id:taskId,owner:ownerUserId});
+    if(!current.length)throw new Error('STUDIO_RESEARCH_TASK_NOT_FOUND');
+    const cp=readJsonColumn<Record<string,unknown>>(current[0].checkpoint,{});
+    return taskResult(taskId,String(current[0].status),cp,true);
+  }
+  await addEvent(taskId,'studio','brief_asset_saved',studioContext.brief_asset_ref as Record<string,unknown>);
+  await addEvent(taskId,'D04','research_started',{project_id:binding.projectId,brief_asset_ref:studioContext.brief_asset_ref});
+
+  const ledger:Ledger={taskId,budget};
+  try {
+    const {decision,degraded,researchLeads}=await runResearch(prompt,topic,ledger);
+    if(degraded)throw new ResearchPrerequisiteHold(['SOURCE_OR_QUALIFICATION_UNAVAILABLE'],{decision,degraded,researchLeads});
+    await addEvent(taskId,'D04','retrieved',{materials:decision.materials.length,externalLeads:researchLeads.length,degraded});
+    const checkpoint={prompt,topic,degraded,decision,researchLeads,budgetSpent:budget.spent,
+      reserved:budget.reserved,ceiling:budget.ceiling,studio:studioContext};
+    await run("update public.research_tasks set status='done',checkpoint=:'cp'::jsonb,updated_at=now() where task_id=:'id'",
+      {id:taskId,cp:JSON.stringify(checkpoint)});
+    await writeReceipt({taskId,kind:'checkpoint',stage:'D04',status:'settled',
+      payload:{budgetSpent:budget.spent,externalLeads:researchLeads.length}});
+    await addEvent(taskId,'D04','research_done',{verdict:decision.verdict});
+    return {taskId,status:'done',decision,degraded,researchLeads,briefAssetRef:briefRef(studioContext)};
+  } catch(error) {
+    if(error instanceof ResearchPrerequisiteHold)
+      return holdResearchPrerequisites(taskId,prompt,topic,budget,error,studioContext);
+    if(error instanceof ToolExecutionUncertainError||error instanceof ToolReceiptPersistenceError)
+      return holdUncertainTool(taskId,prompt,topic,budget,error,studioContext);
+    if(error instanceof BudgetHoldError) {
+      const checkpoint={prompt,topic,budgetSpent:budget.spent,reserved:budget.reserved,ceiling:budget.ceiling,
+        holdReason:'budget',holdAt:error.checkpoint,studio:studioContext};
+      await run("update public.research_tasks set status='hold',checkpoint=:'cp'::jsonb,updated_at=now() where task_id=:'id'",
+        {id:taskId,cp:JSON.stringify(checkpoint)});
+      await writeReceipt({taskId,kind:'checkpoint',stage:'hold',status:'hold',payload:checkpoint});
+      await addEvent(taskId,'D04','budget_hold',checkpoint);
+      return {taskId,status:'hold',decision:null,degraded:false,holdReason:'budget',researchLeads:[],
+        briefAssetRef:briefRef(studioContext)};
+    }
+    throw error;
+  }
+}
 /**
  * D 阶段触发（governed interface，CR-16）：从 Studio 经受控接口发起生产，不逐主题改代码。
  * 真实触发：child_process spawn `run.mjs`（唯一生产入口），异步跑 D00–D05；run_id 关联 research_task。
