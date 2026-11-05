@@ -18,7 +18,7 @@ beforeAll(async()=>{
 beforeEach(async()=>{
  model.run.mockReset().mockImplementation(async()=>{
   await new Promise(resolve=>setTimeout(resolve,30));
-  return {decision:{verdict:'partial',materials:[],gaps:['synthetic'],confidence:0.5},degraded:true,researchLeads:[]};
+  return {decision:{verdict:'partial',materials:[],gaps:['synthetic'],confidence:0.5},degraded:false,researchLeads:[]};
  });
  taskId=randomUUID();
  await run("insert into public.research_tasks(task_id,owner_user_id,topic,prompt,status,checkpoint)values(:'id',:'owner','generic','synthetic','hold',:'cp'::jsonb)",{id:taskId,owner,cp:JSON.stringify(checkpoint)});
@@ -36,6 +36,22 @@ it('allows one atomic resume winner across independent PostgreSQL connections',a
  expect(results.filter(r=>r.status==='hold')).toHaveLength(1);expect(model.run).toHaveBeenCalledTimes(1);
  expect(model.run.mock.calls[0][2].budget.ceiling).toBe(8);
  expect(Number(await queryValue("select count(*) from public.research_events where task_id=:'id' and event='resumed'",{id:taskId}))).toBe(1);
+});
+it('preserves a durable prerequisite HOLD when a resumed research result is degraded',async()=>{
+ model.run.mockImplementationOnce(async()=>({
+  decision:{verdict:'partial',materials:[],gaps:['synthetic source unavailable'],confidence:0.5},
+  degraded:true,researchLeads:[]
+ }));
+ const result=await resumeResearchTask(taskId);
+ expect(result).toMatchObject({status:'hold',holdReason:'research_prerequisites',
+  missingRequirements:['SOURCE_OR_QUALIFICATION_UNAVAILABLE']});
+ const [row]=await queryRows("select status,checkpoint from public.research_tasks where task_id=:'id'",{id:taskId});
+ expect(row.status).toBe('hold');
+ expect((row.checkpoint as {holdReason:string;budgetSpent:number;reserved:number}).holdReason).toBe('research_prerequisites');
+ expect((row.checkpoint as {budgetSpent:number}).budgetSpent).toBe(0);
+ expect((row.checkpoint as {reserved:number}).reserved).toBe(0);
+ expect(Number(await queryValue("select count(*) from public.research_events where task_id=:'id' and event='research_done'",{id:taskId}))).toBe(0);
+ expect(model.run).toHaveBeenCalledTimes(1);
 });
 it('leaves a non-replayable durable HOLD if the claimed task fails before tool execution',async()=>{
  await run(`create function control.test_resume_event_reject() returns trigger language plpgsql set search_path=pg_catalog as $$begin
