@@ -1,6 +1,6 @@
 # M5 / HP07 / HP12：三个消费者实际产品HTTP接续
 
-日期：2026-11-05（北京时间）。BASE `ca0a7909556369faebcdd10eae3e43addd334b72`；本批源码 `6696ab1a42597da46a929d63dcacbcb800a0e8ab`。仅 VERIFIED_ISOLATED，M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY。
+日期：2026-11-05（北京时间）。BASE `ca0a7909556369faebcdd10eae3e43addd334b72`；本批源码 `1cd854408a54e4ac98aed80b0cd317e287893f05`。仅 VERIFIED_ISOLATED，M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY。
 
 ## 实际完成与边界
 
@@ -26,3 +26,5 @@ M5继续：ST01—04实际自然语言研究/长期资产/导演链；13类字�
 本地资料准备/OCR/GIS/原件哈希与受控上传/本地备份演练等只有实际证实依赖本地时按原progress登记DEFERRED_ENV；本批Docker/网络已恢复，不列DEFERRED_ENV。正式PG/Storage迁移、独立Reviewer/Gate/policy、私人原件外发、收费Provider及M8部署恢复切换继续原固定条件与独立授权。
 
 回滚：关闭对应服务端context或回退本批接线，维持失败关闭；保留全部作品、资产修订及撤销审计，不恢复旧PASS/缓存或错误consumer旁路。本批无生产写入、私人原件、收费调用。GitHub精确源码CI/PG/HTTP取得后追加，不把本地实测冒称远端成功。
+
+推送前GitHub GH007保护拒绝私人提交邮箱；仅重写尚未发布的本批提交为noreply身份，源码字节不变、未重写远端。报告已同步新源码SHA。证据清单按Git规范化blob字节计算，保留原CRLF日志差异说明。

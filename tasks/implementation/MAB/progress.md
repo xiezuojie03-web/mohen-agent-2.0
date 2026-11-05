@@ -986,7 +986,7 @@ Ruling: 当前M4允许完成可运行隔离链，真实第三方/生产验证仍
 - 本地标记测试库0且已删除本会话合成PG容器；无生产/正式Gate/context启用。回执CODEX_M5_BINDING_ASSETS_20261105.md §6.2和同evidence保存精确SHA/成功与失败Actions/PG/HTTP/原始日志hash；回滚为关闭context/恢复资格拒绝并保全审计，不恢复legacy旁路。
 
 
-## 2026-11-05｜M5三个实际L5产品HTTP入口接续（源码6696ab1）
+## 2026-11-05｜M5三个实际L5产品HTTP入口接续（源码1cd8544）
 
 已fetch核main@ca0a790并继承四条指定成功CI；本批修Evidence消费者错配、Agent服务端read上下文与visual display/no-store，唯一qualification_allows及既有整稿桥不变。最终本地438单测/4旧SKIP、133边界、六workspace类型、完整PG17/711旧审计/回滚通过，Next+Chromium16PASS/1StorageSKIP；三消费者逐实际入口purpose/scope/consumer/action/expiry/revision/ancestor/cache/service恢复正反通过。失败原始日志保留，独立review无重要问题。仅VERIFIED_ISOLATED；action scope不代独立版权回执撤回，原整稿四消费者PG不扩写为新整稿HTTP。详见tasks/results/MAB/CODEX_M5_PRODUCT_CONSUMERS_20261105.md与同名evidence，远端CI待追加。
 
