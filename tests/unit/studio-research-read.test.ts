@@ -56,7 +56,7 @@ beforeEach(()=>{
 it("composes Owner project L0-L2 and candidate L3/L4 context, persists an idempotent reading_note and marks all private materials as leads",async()=>{
  const result=await readStudioResearchProject(projectId,token);
  expect(listProjects).toHaveBeenCalledWith(token);
- expect(listAssets).toHaveBeenCalledWith(projectId,token);
+ expect(listAssets).toHaveBeenCalledWith(projectId,token,{excludeGeneratedReadingNotes:true});
  expect(listForProject).toHaveBeenCalledWith(projectId,token);
  expect(listByOriginal).toHaveBeenCalledWith(originalId,token);
  expect(saveRevision).toHaveBeenCalledOnce();
@@ -88,10 +88,41 @@ it("fails closed when the project is not owned or active",async()=>{
  expect(listAssets).not.toHaveBeenCalled();expect(listForProject).not.toHaveBeenCalled();
 });
 
+it("rejects an archived project before reading or persisting its materials",async()=>{
+ listProjects.mockResolvedValue([{project_id:projectId,lifecycle_status:"ARCHIVED"}]);
+ await expect(readStudioResearchProject(projectId,token)).rejects.toThrow("STUDIO_PROJECT_NOT_FOUND");
+ expect(listAssets).not.toHaveBeenCalled();expect(saveRevision).not.toHaveBeenCalled();
+});
+
+it("does not exceed the project-wide reading or returned material budget",async()=>{
+ const context=await listByOriginal();
+ context.readings=Array.from({length:51},(_,i)=>({...context.readings[0],read_unit_id:
+  i.toString(16).padStart(8,'0')+'-3333-4333-8333-333333333333'}));
+ listByOriginal.mockResolvedValue(context);
+ const result=await readStudioResearchProject(projectId,token);
+ expect(saveRevision).toHaveBeenCalledTimes(50);
+ expect(result.materials).toHaveLength(24);
+ expect(result.snapshot.private_material_ids).toEqual(result.materials.map(m=>m.id));
+ expect(result.snapshot.readings_truncated).toBe(true);expect(result.snapshot.materials_truncated).toBe(true);
+ expect(result.materials.every(m=>Array.isArray(m.entityIds))).toBe(true);
+});
+
 it("fails closed if a private reading snapshot no longer matches its original revision",async()=>{
  listByOriginal.mockResolvedValueOnce({original_id:originalId,project_id:projectId,
   asset_revision_id:"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",sha256:"a".repeat(64),
   readings:[],direct_storage_reference_exposed:false});
  await expect(readStudioResearchProject(projectId,token)).rejects.toThrow("STUDIO_RESEARCH_READ_BINDING_INVALID");
  expect(saveRevision).not.toHaveBeenCalled();
+});
+
+it("replays the same original and L1 context without duplicating generated notes in the snapshot",async()=>{
+ const first=await readStudioResearchProject(projectId,token);
+ const saved=saveRevision.mock.calls[0][0],assets=await listAssets();
+ listAssets.mockResolvedValue([...assets,{asset_id:saved.assetId,revision_id:revisionId,asset_kind:'reading_note',
+  revision_no:1,content_state:'WORKING',access_state:'RESTRICTED',payload:saved.payload}]);
+ const replay=await readStudioResearchProject(projectId,token);
+ expect(replay.snapshot.snapshot_hash).toBe(first.snapshot.snapshot_hash);
+ expect(replay.snapshot.asset_refs).toEqual(first.snapshot.asset_refs);
+ expect(replay.materials).toEqual(first.materials);
+ expect(replay.snapshot.reading_note_refs).toEqual(first.snapshot.reading_note_refs);
 });

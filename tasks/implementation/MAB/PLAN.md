@@ -967,3 +967,7 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 原位修复缺Provider/来源/资格/账本时的首工具前HOLD、任务持久化、零费恢复CAS、Studio可见原因；来源运行降级保留有限结果但不得research_done。公开Agent改专门server context，不借内部研究context。最终444单测/4旧SKIP、类型通过，真实Next/Chromium17PASS/1StorageSKIP，含自然语言输入→API→持久HOLD→可见暂停→Owner恢复/跨人拒绝；无生产或外部调用。详见tasks/results/MAB/CODEX_M5_RESEARCH_HOLD_20261105.md。仅ST01负/恢复分支VERIFIED_ISOLATED，不签ST01—04全链或混合研究完成。
 
 前批3873256主CI41940583300、PG41940583316、HTTP41940583384全SUCCESS，实际HTTP16PASS/1StorageSKIP已核。当前M5继续13类专业/consented_feedback及真正研究创作链，M6未全量准出，M7/M8与所有原固定生产/专业/外发/费用条件不变。
+
+## 2026-11-05｜Codex V1.2恢复接续：ST02类型根因、私有入口、DS03离线经验基础
+
+基线5efd0085；旧work@759dbbd干净、无stash或独有提交，落后369。完整bundle已保全，原工作区未覆盖；未找回中断时未提交现场，不声称已恢复。历史9cc25f65/9838abb3/3edfb0e6均已在main。实际加载mohen-dev-continuation、工具映射及宿主规范，独立副本三项有界操作：修复Material合同/重复声明；接ST02私有POST、ACTIVE/no-store/Owner边界和首次重放生成note排重（LIMIT前过滤）；DS03脱敏显式回执按签名分组、四路不可执行草案，非自动遥测/准入。源码/最终测试/精确CI后续按单一回执§4核准：tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md。M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY。CodeBuddy延后；下一唯一优先ST02真实原件L0-L2自动note的PG/HTTP回放及撤权，之后才ST03。

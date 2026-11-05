@@ -39,3 +39,12 @@ A shared, versioned and non-destructive Node.js executable exists in the reposit
 Run in a real checkout with Node.js and Git. The CLI operates against the repository root; `--host` only labels an observation, and output always marks `hostSkillLoaded:false`, because a standalone CLI cannot prove its AI host loaded the Skill. Treat `PASS` as the particular command's test evidence at the recorded SHA, not a complete M5/production qualification. The CLI cannot operate in a web-only ChatGPT/GitHub connector session; use connector reads and GitHub Actions results as separate evidence instead.
 
 For Codex and CodeBuddy, perform **H-01—H-05** independently; use the same map and checks, compare differences in tools and permissions, and preserve distinct `HOST_NOT_RUN`, `DEFERRED_ENV`, `STATIC_VERIFIED` and `HOST_VERIFIED` outcomes. Continue to follow the bounded-work-group and stop rules above.
+
+## DS-03 offline experience drafts (schema v1)
+
+Within MAB §6B.4, use `node scripts/dev-skills/experience.mjs --input <redacted-receipts.json>`
+to validate explicit engineering receipts and print inert candidate suggestions. See
+`references/EXPERIENCE.md` for the strict input and evaluation contract. This is
+exact-signature grouping of supplied evidence, not automatic host-telemetry capture
+or semantic discovery. It cannot execute proposed checks, activate Skills, or modify
+this canonical file/product Registry. Analysis failure does not block authorized M5.

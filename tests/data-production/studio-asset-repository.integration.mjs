@@ -99,6 +99,19 @@ try {
   assert.equal(sql(`select status from public.users where user_id='${a}'`),'active','failed save rolls back test-only concurrent revoke too');
  }finally{sql(`drop trigger fixture_disable_after_save on studio.asset_heads;drop function studio.fixture_disable_after_save();update public.users set status='active' where user_id='${a}'`);}
 
+ // ST-02 must filter generated notes before LIMIT, so their creation does not
+ // displace the oldest research candidate on a full-page replay.
+ const fullProject=randomUUID();await repo.createProject({projectId:fullProject,title:'ST02 limit fixture',scope:{}},token(a));
+ for(let i=0;i<100;i++)await repo.saveRevision({projectId:fullProject,assetId:randomUUID(),kind:'reading_note',
+  expectedRevisionId:null,idempotencyKey:'st02-limit-'+i,payload:{literal_reading:'synthetic candidate '+i}},token(a));
+ const before=(await repo.listAssets(fullProject,token(a),{excludeGeneratedReadingNotes:true})).map(r=>r.revision_id);
+ const generated=await repo.saveRevision({projectId:fullProject,assetId:randomUUID(),kind:'reading_note',expectedRevisionId:null,
+  idempotencyKey:'st02-generated',payload:{schema:'mohen.studio-reading-note.v1'}},token(a));
+ assert.equal(before.length,100);
+ assert((await repo.listAssets(fullProject,token(a))).some(r=>r.revision_id===generated.revision_id),'normal notebook retains generated notes');
+ assert.deepEqual((await repo.listAssets(fullProject,token(a),{excludeGeneratedReadingNotes:true})).map(r=>r.revision_id),before);
+ assert.equal((await repo.listAssets(fullProject,token(b),{excludeGeneratedReadingNotes:true})).length,0);
+ console.log('MAB_ST02_PRELIMIT_REPLAY_PASS 100-candidates generated-note owner-only');
  for(let i=0;i<2;i++){const c=await pool.connect();const state=(await c.query("select current_user as role,coalesce(current_setting('mohen.session_token',true),'')as token")).rows[0];assert.equal(state.role,'k3_admin');assert.equal(state.token,'');c.release();}
  console.log('MAB_STUDIO_REPOSITORY_PASS saved-payload immutable-revision request-idempotency exact-CAS concurrency cross-owner clean-pool');
 }finally{await pool.end();}

@@ -43,7 +43,7 @@ function assetSnippet(kind:string,payload:Obj):string {
   return parts.join("；").slice(0,1200)||"项目候选资产仅提供结构与引用，尚未独立验证。";
 }
 function candidateMaterial(id:string,kind:string,title:string,snippet:string,sourceRef:string):Material {
-  return {id,kind:kindForAsset(kind),title,snippet,sourceRef,year:null,score:0.45,
+  return {id,kind:kindForAsset(kind),entityIds:[],snippet,sourceRef:title+" · "+sourceRef,year:null,score:0.45,
     matchScore:0,epistemic:"RESEARCH_LEAD"};
 }
 function safeRef(value:unknown):string {
@@ -64,10 +64,10 @@ export interface StudioResearchReadResult {
 export async function readStudioResearchProject(projectId:string,sessionToken:string):Promise<StudioResearchReadResult> {
   const store=studioAssetStore();
   const projects=await store.listProjects(sessionToken);
-  const project=projects.find(p=>p.project_id===projectId);
+  const project=projects.find(p=>p.project_id===projectId&&p.lifecycle_status==="ACTIVE");
   if(!project)throw new Error("STUDIO_PROJECT_NOT_FOUND");
   const [assets,originals]=await Promise.all([
-    store.listAssets(projectId,sessionToken),
+    store.listAssets(projectId,sessionToken,{excludeGeneratedReadingNotes:true}),
     createPrivateOriginalRepository(getNodePgPool()).listForProject(projectId,sessionToken),
   ]);
   const readingRepository=createPrivateTextReadingRepository(getNodePgPool());
@@ -81,17 +81,20 @@ export async function readStudioResearchProject(projectId:string,sessionToken:st
   const readingNoteRefs:Obj[]=[];
   const readUnitRefs:Obj[]=[];
   const evidenceRefs:Obj[]=[];
-  const privateMaterialIds:string[]=[];
   let readUnitCount=0,evidenceCount=0;
 
   for(const asset of assets as unknown as Obj[]) {
     const assetId=safeRef(asset.asset_id),revisionId=safeRef(asset.revision_id);
     const kind=text(asset.asset_kind,80),access=text(asset.access_state,40),state=text(asset.content_state,40);
     if(!assetId||!revisionId||!ALLOWED_KINDS.has(kind)||access==="REVOKED"||state==="ARCHIVED")continue;
+    const payload=object(asset.payload);
+    // Generated L1 notes are represented by the currently revalidated reading
+    // context below. Re-reading them as independent assets would duplicate
+    // material on replay and could revive a stale source after withdrawal.
+    if(kind==="reading_note"&&payload.schema==="mohen.studio-reading-note.v1")continue;
     assetRefs.push({asset_id:assetId,revision_id:revisionId,asset_kind:kind,
       revision_no:Number(asset.revision_no)||null,epistemic_class:text(asset.epistemic_class,60),
       content_state:state,access_state:access,validation_status:text(object(asset.validation).status,60)});
-    const payload=object(asset.payload);
     const snippet=assetSnippet(kind,payload);
     const title=text(payload.title,180)||text(payload.file_name,180)||kind;
     const material=candidateMaterial("studio:"+assetId+"@"+revisionId,kind,title,snippet,

@@ -1,5 +1,7 @@
 # 墨痕 MAB｜Codex 当前执行交接书（唯一现行入口）
 
+> **2026-11-05｜Codex V1.2真实接续**：基线5efd0085，旧work保全且无独有未推送成果；ST02三类型错误已本地修复，新增私有项目读取入口和DS03离线脱敏经验草案。三项操作完成后形成检查点；正式源码/最终CI与PG/HTTP只按 `tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md §4` 核准，以下旧FAIL/NOT_RUN是历史。下一唯一优先仍ST02真实原件L0-L2自动note的PG/HTTP回放和撤权，不重做ST01、不冒称ST03/M5准出。**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY**；CodeBuddy未来切换时验。
+
 > **2026-11-05｜自生长宪章双位置同步和 CI 回执**：设计修订 `c1e95b20` 已纳入 MHKA-04/05、MAB §6B.4；两章分别同步到 ChatGPT 资料库研究目录和 `repo_target` 镜像，4/4 Git Blob SHA 匹配。Actions [41984181833](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41984181833) MHKA、开发 Skill 包装、CLI 5/5 SUCCESS，但 M5 原 Typecheck 三错令全 CI FAILURE。自动发现/候选生成尚无实现回执，不冒称 Skill 自生长已运行。先继续 Codex M5，CodeBuddy 验证延后。
 
 

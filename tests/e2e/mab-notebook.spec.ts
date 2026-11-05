@@ -9,6 +9,34 @@ test.beforeAll(()=>{
   if(!['127.0.0.1','localhost'].includes(url.hostname)||url.protocol!=='http:')throw new Error('LOCAL_SYNTHETIC_HTTP_REQUIRED');
 });
 
+test('ST-02 reads current project candidates over real authenticated HTTP and rejects other owners',async({page,browser})=>{
+ const owner=await browserRequests(page);
+ expect((await owner.post('/api/auth/register',{data:{email:`st02-${randomUUID()}@example.invalid`,username:'ST02研究者',password:randomUUID()}})).status()).toBe(200);
+ const projectId=randomUUID(),assetId=randomUUID();
+ expect((await owner.post('/api/studio/projects',{data:{project_id:projectId,title:'ST02合成项目',scope:{}}})).status()).toBe(200);
+ const saved=await owner.post('/api/studio/assets',{data:{project_id:projectId,asset_id:assetId,
+  asset_kind:'reading_note',expected_revision_id:null,idempotency_key:randomUUID(),payload:{literal_reading:'合成材料，仅待核候选'}}});
+ expect(saved.status()).toBe(200);const revision=(await saved.json()).asset.revision_id;
+ const read=await owner.post('/api/studio/research-read',{data:{project_id:projectId}});
+ expect(read.status()).toBe(200);expect(read.headers()['cache-control']).toBe('no-store');
+ const result=await read.json();expect(result.externalProcessingAllowed).toBe(false);
+ expect(result.materials).toHaveLength(1);expect(result.materials[0]).toMatchObject({id:`studio:${assetId}@${revision}`,epistemic:'RESEARCH_LEAD',entityIds:[]});
+ expect(result.snapshot.original_refs).toEqual([]);expect(result.snapshot.storage_key_exposed).toBe(false);
+ const replay=await owner.post('/api/studio/research-read',{data:{project_id:projectId}});
+ expect(replay.status()).toBe(200);expect((await replay.json()).snapshot.snapshot_hash).toBe(result.snapshot.snapshot_hash);
+ const other=await browser.newContext({baseURL:process.env.MOHEN_E2E_BASE_URL});
+ try{
+  const client=await browserRequests(await other.newPage());
+  const anonymous=await client.post('/api/studio/research-read',{data:{project_id:projectId}});
+  expect(anonymous.status()).toBe(401);
+  expect((await client.post('/api/auth/register',{data:{email:`st02-other-${randomUUID()}@example.invalid`,username:'ST02另一研究者',password:randomUUID()}})).status()).toBe(200);
+  const forbidden=await client.post('/api/studio/research-read',{data:{project_id:projectId}});
+  expect(forbidden.status()).toBe(404);expect(forbidden.headers()['cache-control']).toBe('no-store');
+  expect(JSON.stringify(await forbidden.json())).not.toContain('合成材料');
+ }finally{await other.close();}
+ console.log('MAB_ST02_CANDIDATE_HTTP_PASS current-revision owner-only no-store no-provider no-formal-G');
+});
+
 test('private notebook saves, reloads exact revisions, isolates owners and avoids duplicate assets after a lost acknowledgement',async({page,browser})=>{
   const registered=await page.request.post('/api/auth/register',{data:{email:`mab-${randomUUID()}@example.invalid`,username:'隔离研究者A',password:randomUUID()}});
   expect(registered.status()).toBe(200);

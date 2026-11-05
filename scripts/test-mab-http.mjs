@@ -31,6 +31,9 @@ try {
   const names=['202610070100_data_production_v2_baseline.sql',...fs.readdirSync(migrations).filter(n=>n>='202610160300'&&n<='202610292100_imported_materials.sql'&&!n.startsWith('202610160400')),
     '202610310900_k3_security_boundary.sql','202610310910_k3_gate_candidates.sql','202611010900_k3_independent_gate_authority.sql',fs.readdirSync(migrations).find(n=>n.endsWith('_mab_studio_assets.sql')),'20261104013351_mab_m4_execution_controls.sql'];
   for(const name of names)execFileSync(psql,[...base,'-d',database,'-f',path.join(migrations,name)],{stdio:['ignore','pipe','pipe']});
+  // ST-02 needs the existing private-original metadata table even when no
+  // Storage service is configured. This migration does not create buckets.
+  execFileSync(psql,[...base,'-d',database,'-f',path.join(migrations,'20261102140000_mab_m2_private_originals.sql')],{stdio:['ignore','pipe','pipe']});
   if(process.env.MOHEN_REVOCABLE_SESSIONS_ENABLED==='true')
     execFileSync(psql,[...base,'-d',database,'-f',path.join(migrations,'20261103095024_mab_web_session_revocation.sql')],{stdio:['ignore','pipe','pipe']});
   if(process.env.MOHEN_TEST_STORAGE_CONFIG){
@@ -38,7 +41,6 @@ try {
     const httpsOrigin=new URL(storageConfig.httpsOrigin),httpOrigin=new URL(storageConfig.origin);
     if(httpsOrigin.hostname!=='127.0.0.1'||httpsOrigin.protocol!=='https:'||httpOrigin.hostname!=='127.0.0.1'||httpOrigin.protocol!=='http:'||storageConfig.database!=='mohen_storage_official_test'||!storageConfig.caCert?.startsWith('/workspace/work/'))throw Error('OFFICIAL_LOCAL_SYNTHETIC_STORAGE_REQUIRED');
     query(database,"do $$begin if not exists(select from pg_roles where rolname='service_role')then create role service_role nologin;end if;end$$");
-    execFileSync(psql,[...base,'-d',database,'-f',path.join(migrations,'20261102140000_mab_m2_private_originals.sql')],{stdio:['ignore','pipe','pipe']});
   }
   query(database,"insert into control.session_verification_keys(verification_key) values('synthetic-mab-http-database-key-at-least-32')");
   const url=new URL(`postgresql://k3_admin:synthetic@localhost:${dbPort}/${database}`);url.searchParams.set('host',socket);

@@ -65,10 +65,12 @@ export function createStudioAssetRepository(pool) {
             where c.project_id=$1 and c.asset_id=$2::uuid))
         order by h.created_at desc,h.asset_id desc limit 21`,[projectId,cursor])).rows);
     },
-    listAssets(projectId, sessionToken) {
+    listAssets(projectId, sessionToken, {excludeGeneratedReadingNotes=false}={}) {
       requireId(projectId);
       return transaction(sessionToken, async client => (await client.query(revisionSelect+
-        ' where h.project_id=$1 and h.current_revision_id=r.revision_id order by r.created_at desc,r.revision_id limit 100',[projectId])).rows);
+        " where h.project_id=$1 and h.current_revision_id=r.revision_id"+
+        " and (not $2::boolean or h.asset_kind<>'reading_note' or r.payload->>'schema' is distinct from 'mohen.studio-reading-note.v1')"+
+        ' order by r.created_at desc,r.revision_id limit 100',[projectId,excludeGeneratedReadingNotes===true])).rows);
     },
     /** Full immutable revision lineage for one owner's exact asset.
      * This is private history, never G5 publication or reuse authorization.

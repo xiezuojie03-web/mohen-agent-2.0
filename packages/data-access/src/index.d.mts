@@ -97,7 +97,7 @@ export interface StudioStoredRevision {
 export interface StudioAssetRepository {
   listProjects(token: string): Promise<Array<{project_id: string; project_title: string; research_scope: unknown; lifecycle_status: string; created_at: string}>>;
   listPlanAssets(projectId:string,token:string,cursor?:string|null):Promise<StudioStoredRevision[]>;
-  listAssets(projectId: string, token: string): Promise<StudioStoredRevision[]>;
+  listAssets(projectId: string, token: string, options?: {excludeGeneratedReadingNotes?: boolean}): Promise<StudioStoredRevision[]>;
   listAssetRevisions(projectId: string, assetId: string, token: string): Promise<StudioStoredRevision[]>;
   listRevisionUseEvents(projectId: string, revisionId: string, token: string): Promise<Array<{
     use_event_id: string; asset_revision_id: string; consumer: string; purpose: string;

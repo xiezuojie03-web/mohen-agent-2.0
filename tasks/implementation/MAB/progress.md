@@ -1134,3 +1134,7 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - 本提交 GitHub Actions [41984181833](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41984181833)：MHKA 路由 **SUCCESS**，开发 Skill 包装 **SUCCESS**，DS-02 Node CLI **5PASS/0FAIL**；完整 CI **FAILURE**，仍因 M5 `apps/web/lib/studio-research-read.ts` 第46行 TS2353 和第84/180行 TS2451（原问题未在本次改动），后续构建 SKIPPED。
 - 状态 `SELF_GROWTH_POLICY_RECORDED / DESIGN_AND_IMPLEMENTATION_PENDING`；Codex 先验 Skill 与 M5 实战、CodeBuddy 待实际转入时再验；M5 与所有生产/专业 Gate/HOLD 不变。
 
+
+## 2026-11-05｜Codex V1.2恢复接续：ST02类型根因、私有入口、DS03离线经验基础
+
+基线5efd0085；旧work@759dbbd干净、无stash或独有提交，落后369。完整bundle已保全，原工作区未覆盖；未找回中断时未提交现场，不声称已恢复。历史9cc25f65/9838abb3/3edfb0e6均已在main。实际加载mohen-dev-continuation、工具映射及宿主规范，独立副本三项有界操作：修复Material合同/重复声明；接ST02私有POST、ACTIVE/no-store/Owner边界和首次重放生成note排重（LIMIT前过滤）；DS03脱敏显式回执按签名分组、四路不可执行草案，非自动遥测/准入。源码/最终测试/精确CI后续按单一回执§4核准：tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md。M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY。CodeBuddy延后；下一唯一优先ST02真实原件L0-L2自动note的PG/HTTP回放及撤权，之后才ST03。

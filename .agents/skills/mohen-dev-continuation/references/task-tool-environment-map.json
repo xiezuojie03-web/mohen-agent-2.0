@@ -116,6 +116,15 @@
       "verification": "real environment-specific safety/Gate/rollback evidence",
       "cliProfile": null,
       "authority": "OWNER_APPROVAL_REQUIRED"
+    },
+    {
+      "id": "experience-analysis",
+      "task": "Validate redacted engineering receipts; group exact signatures; generate inert suggestions",
+      "tool": "node scripts/dev-skills/experience.mjs --input <redacted-receipts.json>",
+      "environment": "Offline CTX-ENG checkout; explicit safe receipt input; no telemetry or provider",
+      "verification": "Node positive/negative tests; source receipt SHA/evidence; DRAFT_PENDING_EVALUATION only",
+      "cliProfile": null,
+      "authority": "CTX-ENG_NO_EXECUTION_AUTHORITY"
     }
   ],
   "localProfiles": {
