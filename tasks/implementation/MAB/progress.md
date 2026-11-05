@@ -1241,3 +1241,12 @@ Data API范围：pg_db_role_setting未见pgrst.db_schemas/db_extra_search_path�
 - **隔离执行尝试**：创建仅允许访问 data1.library.sh.cn 的短时Vercel sandbox用于PDF只读端点试验；sandbox在命令提交前已自动停止，未执行任何命令、未发起PDF下载。随后已确认并删除命名sandbox（状态stopped，persistent=false）；无生产环境变更。
 - **后续唯一动作**：先逐页核对官方 api_2025.pdf 的 pdf/list → pdf/info → pdf/stream 请求字段、响应字段、accessLevel含义和适用资源类型；确认馆方允许的读取方式后，再使用临时隔离执行环境验证一个明确允许下载的条目。不得重试已停止sandbox或改用生产部署探针。取得真实字节后，才进入既有M2私有Storage隔离验证、L0/L1/L2首次读取/回放/撤权测试；ST03仍不得提前启动。
 - **其他阻塞不变**：DeepSeek凭据仅确认Vercel已配置，尚未做受控模型调用；受控导演适配、费用授权契约、canonical媒资权利与绑定、独立G5、真实作品及Owner体验均未因此准出。开发Skill/产品Skill双线按原MAB §6B.4并行，未改变Registry或施工优先级。
+
+
+### 2026-11-06｜上图官方PDF接口文档与单条下载资格实测（仍未取得原件）
+
+- 官方《上海图书馆开放数据应用开发竞赛（2025）API说明书》（2025-04-15，https://data.library.sh.cn/res/doc/api_2025.pdf）已读取。PDF开放下载流程明确为：POST `/service_pdf_race/race/pdf/list`（dbname、DOI/索书号/题名、分页、apiKey）→ POST `/info`（dbname、value、apiKey）→ POST `/stream`（dbname、itemId、pageNo、apiKey）；apiKey须放JSON body。该流程明确限定资源类型`jp/gj/mgts`，stream按页返回PDF。官方说明未在已读取段落解释古籍目录接口的accessLevel字段含义。
+- 使用现有SHANGHAI_LIBRARY_KEY，在短时、网络仅允许`data1.library.sh.cn`的Vercel隔离sandbox内，按官方body认证方式只读调用PDF list：对 DOI `STGJ073678`、DOI `STGJ073677`、索书号`線普553957`及题名“金泽小志”四种查询，均HTTP 200、state=0但total=0、data=[]。因此这两条目录馆藏记录**不在该PDF开放下载列表的当前命中结果中**；未调用stream、未下载任何文件。此结论限于本次四种精确检索参数，不推断全部上图原件均不可获取。
+- sandbox在本次执行后已删除；生产部署、生产数据库、Vercel环境变量、Supabase Storage均未改变。密钥未输出或写入文件。
+- **ST-02判断更新**：上图Provider真实目录检索已`VERIFIED_LIVE_METADATA_READ`；已证明目标《金泽小志》所查两个DOI/一个索书号不命中本次官方PDF开放下载目录，故不能用该PDF开放下载通道取得这几条记录的扫描件。ST-02真实原件仍`DATA_BLOCKED`，但阻塞已从“来源未连通/不知道怎么调用”收敛为“目标馆藏条目未进入PDF开放下载目录，需寻找馆方另行授权的数字原件访问路径或选择确实列入开放下载目录的另一条合格原件”。不得以访问级别1推定有PDF下载权。
+- **下一步**：在上图官方开放数据目录中按同一主题/区域另选明确命中PDF list的`gj`条目，并通过info确认isDownload、册ID、页数和目录；若存在可下载候选，再仅取一页stream验证字节、MIME、哈希和许可条件。若没有适合的金泽原件，则使用另一条已登记合法来源或Owner已有授权原件；不再重复对上述三项做相同请求。随后才执行M2隔离私有Storage与ST-02 L0/L1/L2首次/回放/撤权。ST03不提前启动。
