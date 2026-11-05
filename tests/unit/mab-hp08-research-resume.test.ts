@@ -1,13 +1,14 @@
 import {beforeEach,describe,expect,it,vi} from "vitest";
 
-const {queryRows,queryValue,run,runResearch}=vi.hoisted(()=>({
-  queryRows:vi.fn(),queryValue:vi.fn(),run:vi.fn(),runResearch:vi.fn(),
+const {queryRows,queryValue,run,runResearch,saveRevision}=vi.hoisted(()=>({
+  queryRows:vi.fn(),queryValue:vi.fn(),run:vi.fn(),runResearch:vi.fn(),saveRevision:vi.fn(),
 }));
 vi.mock("@mohen/data-access",()=>({queryRows,queryValue,run}));
 vi.mock("../../apps/web/lib/mohen-agent/research",()=>({
   runResearch,resolveTopic:(topic:unknown)=>topic==="jinze"?"jinze":"generic",
 }));
 vi.mock("../../apps/web/lib/studio-production",()=>({triggerProduction:vi.fn()}));
+vi.mock("../../apps/web/lib/studio-assets",()=>({studioAssetStore:()=>({saveRevision})}));
 import {
   appendResearchMessage,createResearchTask,resumeResearchTask,
 } from "../../apps/web/lib/studio-research";
@@ -18,6 +19,19 @@ import {ResearchPrerequisiteHold} from '../../apps/web/lib/mohen-agent/research-
 
 const taskId="123e4567-e89b-42d3-a456-426614174001";
 const owner="123e4567-e89b-42d3-a456-426614174002";
+const projectId="123e4567-e89b-42d3-a456-426614174003";
+function prepareBoundTask(){
+  queryRows.mockResolvedValueOnce([]).mockResolvedValueOnce([{task_id:taskId}]).mockResolvedValueOnce([{task_id:taskId}]);
+  saveRevision.mockResolvedValue({asset_id:"123e4567-e89b-42d3-a456-426614174004",
+    revision_id:"123e4567-e89b-42d3-a456-426614174005",revision_no:1});
+}
+function createBoundTask(prompt:string,ceiling?:number){
+  prepareBoundTask();
+  return createResearchTask(prompt,"generic",owner,undefined,ceiling,{
+    projectId,projectScope:{period:"TEST_ONLY"},sessionToken:"synthetic-signed-session",
+    idempotencyKey:taskId,
+  });
+}
 const decision={
   verdict:"partial",materials:[],gaps:["synthetic"],confidence:0.5,
 };
@@ -32,19 +46,21 @@ describe("HP08 task-level budget and safe restart boundaries",()=>{
   beforeEach(()=>{
     queryRows.mockReset();queryValue.mockReset();run.mockReset();runResearch.mockReset();
     queryValue.mockResolvedValue(taskId);
+    queryRows.mockResolvedValue([]);
+    saveRevision.mockReset();
     run.mockResolvedValue(undefined);
     runResearch.mockResolvedValue(result);
   });
 
   it("records current ceiling and cumulative spent in a successful new research task",async()=>{
-    const task=await createResearchTask("historical topic","generic",owner,undefined,8);
+    const task=await createBoundTask("historical topic",8);
     expect(task.status).toBe("done");
     const saved=JSON.parse(checkpointWrites().at(-1)![1].cp);
     expect(saved).toMatchObject({ceiling:8,budgetSpent:0,reserved:0});
   });
   it('persists missing research prerequisites as HOLD without a fake completed decision',async()=>{
     runResearch.mockRejectedValue(new ResearchPrerequisiteHold(['REAL_PROVIDER_UNAVAILABLE']));
-    const task=await createResearchTask('自然语言研究委托','generic',owner);
+    const task=await createBoundTask('自然语言研究委托');
     expect(task).toMatchObject({taskId,status:'hold',decision:null,degraded:true,holdReason:'research_prerequisites',missingRequirements:['REAL_PROVIDER_UNAVAILABLE']});
     const saved=JSON.parse(checkpointWrites().at(-1)![1].cp);
     expect(saved).toMatchObject({budgetSpent:0,reserved:0,holdReason:'research_prerequisites',retry_requires_reconciliation:false});
@@ -60,7 +76,7 @@ describe("HP08 task-level budget and safe restart boundaries",()=>{
   });
   it('preserves partial results but never marks degraded research as completed',async()=>{
     runResearch.mockResolvedValue({...result,degraded:true});
-    const task=await createResearchTask('来源服务失败时保存有限结果','generic',owner);
+    const task=await createBoundTask('来源服务失败时保存有限结果');
     expect(task).toMatchObject({status:'hold',holdReason:'research_prerequisites'});
     expect(JSON.parse(checkpointWrites().at(-1)![1].cp)).toMatchObject({partial_result:{decision,degraded:true,researchLeads:[]}});
     expect(run.mock.calls.some(([sql,params]:[string,{event?:string}])=>sql.includes('research_events')&&params.event==='research_done')).toBe(false);
@@ -71,7 +87,7 @@ describe("HP08 task-level budget and safe restart boundaries",()=>{
       ledger.budget.reserved=1;
       throw new ToolExecutionUncertainError(taskId,"retrieve-shl","synthetic-invocation-id");
     });
-    const task=await createResearchTask("historical topic","generic",owner,undefined,8);
+    const task=await createBoundTask("historical topic",8);
     expect(task).toMatchObject({status:"hold",holdReason:"execution_uncertain"});
     const saved=JSON.parse(checkpointWrites().at(-1)![1].cp);
     expect(saved).toMatchObject({
@@ -87,7 +103,7 @@ describe("HP08 task-level budget and safe restart boundaries",()=>{
       ledger.budget.spent=1;
       throw new ToolReceiptPersistenceError(taskId,"llm-understand","inv-123");
     });
-    const task=await createResearchTask("historical topic","generic",owner);
+    const task=await createBoundTask("historical topic");
     expect(task.holdReason).toBe("receipt_uncertain");
     expect(JSON.parse(checkpointWrites().at(-1)![1].cp)).toMatchObject({
       budgetSpent:1,holdReason:"receipt_uncertain",reserved:0,
