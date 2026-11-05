@@ -1,0 +1,56 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/mab-hp08-research-resume.test.ts (18 tests | 1 failed) 28ms
+   ✓ HP08 task-level budget and safe restart boundaries > records current ceiling and cumulative spent in a successful new research task 6ms
+   ✓ HP08 task-level budget and safe restart boundaries > persists missing research prerequisites as HOLD without a fake completed decision 2ms
+   ✓ HP08 task-level budget and safe restart boundaries > rechecks zero-spend prerequisite HOLD through the existing CAS without inventing funding 1ms
+   × HP08 task-level budget and safe restart boundaries > preserves partial results but never marks degraded research as completed 13ms
+     → expected { …(5) } to match object { status: 'hold', …(1) }
+(8 matching properties omitted from actual)
+   ✓ HP08 task-level budget and safe restart boundaries > persists HOLD on ambiguous execution; never reports study success 1ms
+   ✓ HP08 task-level budget and safe restart boundaries > persists HOLD when provider succeeded but settlement receipt is uncertain 0ms
+   ✓ HP08 task-level budget and safe restart boundaries > never restarts an ambiguous provider charge even if extra budget is offered 1ms
+   ✓ HP08 task-level budget and safe restart boundaries > does not replay already-paid steps from the beginning during budget resume 0ms
+   ✓ HP08 task-level budget and safe restart boundaries > refuses client-funded increments even when no charged step needs replay 0ms
+   ✓ HP08 task-level budget and safe restart boundaries > does not accept a client number as authority to increase the saved ceiling 0ms
+   ✓ HP08 task-level budget and safe restart boundaries > claims a zero-spend first-step resume using only the saved ceiling 1ms
+   ✓ HP08 task-level budget and safe restart boundaries > does not invoke any tool when another resume already claimed the checkpoint 0ms
+   ✓ HP08 task-level budget and safe restart boundaries > does not treat missing budgetSpent as zero cost on resume 0ms
+   ✓ HP08 task-level budget and safe restart boundaries > does not treat missing reserved as zero cost on resume 0ms
+   ✓ HP08 task-level budget and safe restart boundaries > prevents budget-less follow-up on legacy tasks, with no model invocation 0ms
+   ✓ HP08 task-level budget and safe restart boundaries > atomically claims a ready task before a follow-up and preserves cumulative cost 0ms
+   ✓ HP08 task-level budget and safe restart boundaries > does not invoke models after a competing task request already claimed running state 0ms
+   ✓ HP08 task-level budget and safe restart boundaries > persists a non-replay HOLD on receipt loss during a follow-up 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/mab-hp08-research-resume.test.ts > HP08 task-level budget and safe restart boundaries > preserves partial results but never marks degraded research as completed
+AssertionError: expected { …(5) } to match object { status: 'hold', …(1) }
+(8 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "holdReason": "research_prerequisites",
+-   "status": "hold",
++   "status": "done",
+  }
+
+ ❯ tests/unit/mab-hp08-research-resume.test.ts:64:18
+     62|     runResearch.mockResolvedValue({...result,degraded:true});
+     63|     const task=await createResearchTask('来源服务失败时保存有限结果','generic',owne…
+     64|     expect(task).toMatchObject({status:'hold',holdReason:'research_pre…
+       |                  ^
+     65|     expect(JSON.parse(checkpointWrites().at(-1)![1].cp)).toMatchObject…
+     66|     expect(run.mock.calls.some(([sql,params]:[string,{event?:string}])…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 17 passed (18)
+   Start at  00:26:42
+   Duration  541ms (transform 203ms, setup 0ms, collect 247ms, tests 28ms, environment 0ms, prepare 81ms)
+

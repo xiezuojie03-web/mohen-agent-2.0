@@ -28,3 +28,5 @@ M5继续：ST01—04实际自然语言研究/长期资产/导演链；13类字�
 回滚：关闭对应服务端context或回退本批接线，维持失败关闭；保留全部作品、资产修订及撤销审计，不恢复旧PASS/缓存或错误consumer旁路。本批无生产写入、私人原件、收费调用。GitHub精确源码CI/PG/HTTP取得后追加，不把本地实测冒称远端成功。
 
 推送前GitHub GH007保护拒绝私人提交邮箱；仅重写尚未发布的本批提交为noreply身份，源码字节不变、未重写远端。报告已同步新源码SHA。证据清单按Git规范化blob字节计算，保留原CRLF日志差异说明。
+
+GitHub核证：推送HEAD3873256b39c3a93fb19337db7a19f6fa6a26dcea主CI41940583300/PG41940583316/HTTP41940583384全SUCCESS；真实HTTP job126960047011日志已确认三消费者标记、16PASS/1StorageSKIP及数据库清除。后续公开Agentcontext单独映射以CODEX_M5_RESEARCH_HOLD_20261105为准。

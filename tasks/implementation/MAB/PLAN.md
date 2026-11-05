@@ -911,3 +911,10 @@ Owner要求把ChatGPT上一轮M5/HP07/HP11/HP12只读审查写回仓库并交Cod
 已fetch核main@ca0a790并继承四条指定成功CI；本批修Evidence消费者错配、Agent服务端read上下文与visual display/no-store，唯一qualification_allows及既有整稿桥不变。最终本地438单测/4旧SKIP、133边界、六workspace类型、完整PG17/711旧审计/回滚通过，Next+Chromium16PASS/1StorageSKIP；三消费者逐实际入口purpose/scope/consumer/action/expiry/revision/ancestor/cache/service恢复正反通过。失败原始日志保留，独立review无重要问题。仅VERIFIED_ISOLATED；action scope不代独立版权回执撤回，原整稿四消费者PG不扩写为新整稿HTTP。详见tasks/results/MAB/CODEX_M5_PRODUCT_CONSUMERS_20261105.md与同名evidence，远端CI待追加。
 
 M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类专业/同意撤回/合法复用/canonical媒资/H1-H3与19组件。云端可施工项继续由Codex做；本次环境已可运行PG/HTTP，不将网络Docker问题登记DEFERRED_ENV。正式生产/专业/外发/费用及M7/M8原条件不变。
+
+
+## 2026-11-05｜M5 ST01自然语言委托HOLD业务（源码876ff39）
+
+原位修复缺Provider/来源/资格/账本时的首工具前HOLD、任务持久化、零费恢复CAS、Studio可见原因；来源运行降级保留有限结果但不得research_done。公开Agent改专门server context，不借内部研究context。最终444单测/4旧SKIP、类型通过，真实Next/Chromium17PASS/1StorageSKIP，含自然语言输入→API→持久HOLD→可见暂停→Owner恢复/跨人拒绝；无生产或外部调用。详见tasks/results/MAB/CODEX_M5_RESEARCH_HOLD_20261105.md。仅ST01负/恢复分支VERIFIED_ISOLATED，不签ST01—04全链或混合研究完成。
+
+前批3873256主CI41940583300、PG41940583316、HTTP41940583384全SUCCESS，实际HTTP16PASS/1StorageSKIP已核。当前M5继续13类专业/consented_feedback及真正研究创作链，M6未全量准出，M7/M8与所有原固定生产/专业/外发/费用条件不变。

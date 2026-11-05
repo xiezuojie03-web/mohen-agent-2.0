@@ -1,0 +1,31 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/mab-m5-material-cache.test.ts (5 tests | 1 failed) 14ms
+   ✓ does not reuse material payload cached before a qualification was withdrawn 6ms
+   ✓ does not disclose an answer cached from withdrawn materials 1ms
+   ✓ materials uses only the server Agent context and ignores caller self-grants 2ms
+   ✓ does not use a server context for another rights operation 1ms
+   × immediate ask returns an explicit HOLD when no durable research execution can run 4ms
+     → RESEARCH_PREREQUISITES_HOLD
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/mab-m5-material-cache.test.ts > immediate ask returns an explicit HOLD when no durable research execution can run
+ResearchPrerequisiteHold: RESEARCH_PREREQUISITES_HOLD
+ ❯ tests/unit/mab-m5-material-cache.test.ts:37:35
+     35| });
+     36| it('immediate ask returns an explicit HOLD when no durable research ex…
+     37|  mocks.research.mockRejectedValue(new ResearchPrerequisiteHold(['PERSI…
+       |                                   ^
+     38|  const response=await ask(new Request('http://localhost/api/mohen/ask'…
+     39|  expect(response.status).toBe(409);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  00:21:49
+   Duration  310ms (transform 73ms, setup 0ms, collect 114ms, tests 14ms, environment 0ms, prepare 63ms)
+

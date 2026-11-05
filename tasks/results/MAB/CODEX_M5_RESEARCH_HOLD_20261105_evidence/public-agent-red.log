@@ -1,0 +1,165 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/mab-m5-material-cache.test.ts (6 tests | 2 failed) 28ms
+   ✓ does not reuse material payload cached before a qualification was withdrawn 9ms
+   ✓ does not disclose an answer cached from withdrawn materials 1ms
+   × materials uses only the server Agent context and ignores caller self-grants 10ms
+     → expected "spy" to be called with arguments: [ [ '桥市' ], 12, { …(1) } ]
+
+Received: 
+
+  1st spy call:
+
+@@ -2,19 +2,8 @@
+    [
+      "桥市",
+    ],
+    12,
+    {
+-     "qualification": {
+-       "consumer": "agent",
+-       "purpose": {
+-         "code": "server-only",
+-         "namespace": "G5",
+-         "version": "1",
+-       },
+-       "scope": {
+-         "project": "server-project",
+-         "requested_action": "read",
+-       },
+-     },
++     "qualification": undefined,
+    },
+  ]
+
+
+Number of calls: 1
+
+   ✓ does not use a server context for another rights operation 3ms
+   × an internal Agent context cannot enable the anonymous materials endpoint 2ms
+     → expected "spy" to be called with arguments: [ [ '桥市' ], 12, { …(1) } ]
+
+Received: 
+
+  1st spy call:
+
+@@ -2,8 +2,19 @@
+    [
+      "桥市",
+    ],
+    12,
+    {
+-     "qualification": undefined,
++     "qualification": {
++       "consumer": "agent",
++       "purpose": {
++         "code": "internal-research",
++         "namespace": "G5",
++         "version": "1",
++       },
++       "scope": {
++         "project": "private-project",
++         "requested_action": "read",
++       },
++     },
+    },
+  ]
+
+
+Number of calls: 1
+
+   ✓ immediate ask returns an explicit HOLD when no durable research execution can run 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/mab-m5-material-cache.test.ts > materials uses only the server Agent context and ignores caller self-grants
+AssertionError: expected "spy" to be called with arguments: [ [ '桥市' ], 12, { …(1) } ]
+
+Received: 
+
+  1st spy call:
+
+@@ -2,19 +2,8 @@
+    [
+      "桥市",
+    ],
+    12,
+    {
+-     "qualification": {
+-       "consumer": "agent",
+-       "purpose": {
+-         "code": "server-only",
+-         "namespace": "G5",
+-         "version": "1",
+-       },
+-       "scope": {
+-         "project": "server-project",
+-         "requested_action": "read",
+-       },
+-     },
++     "qualification": undefined,
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ tests/unit/mab-m5-material-cache.test.ts:27:25
+     25|  vi.stubEnv('MOHEN_PUBLIC_AGENT_QUALIFICATION_CONTEXT',JSON.stringify(…
+     26|  await POST(new Request('http://localhost/api/mohen/materials',{method…
+     27|  expect(mocks.retrieve).toHaveBeenCalledWith(['桥市'],12,{qualification:…
+       |                         ^
+     28|  vi.unstubAllEnvs();
+     29| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/unit/mab-m5-material-cache.test.ts > an internal Agent context cannot enable the anonymous materials endpoint
+AssertionError: expected "spy" to be called with arguments: [ [ '桥市' ], 12, { …(1) } ]
+
+Received: 
+
+  1st spy call:
+
+@@ -2,8 +2,19 @@
+    [
+      "桥市",
+    ],
+    12,
+    {
+-     "qualification": undefined,
++     "qualification": {
++       "consumer": "agent",
++       "purpose": {
++         "code": "internal-research",
++         "namespace": "G5",
++         "version": "1",
++       },
++       "scope": {
++         "project": "private-project",
++         "requested_action": "read",
++       },
++     },
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ tests/unit/mab-m5-material-cache.test.ts:39:25
+     37|  vi.stubEnv('MOHEN_G5_CONTEXTS',JSON.stringify({agent:{purpose:{namesp…
+     38|  await POST(new Request('http://localhost/api/mohen/materials',{method…
+     39|  expect(mocks.retrieve).toHaveBeenCalledWith(['桥市'],12,{qualification:…
+       |                         ^
+     40|  vi.unstubAllEnvs();
+     41| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 4 passed (6)
+   Start at  00:23:52
+   Duration  414ms (transform 104ms, setup 0ms, collect 160ms, tests 28ms, environment 0ms, prepare 70ms)
+

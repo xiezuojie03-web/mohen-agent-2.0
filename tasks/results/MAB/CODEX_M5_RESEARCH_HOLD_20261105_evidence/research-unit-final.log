@@ -1,0 +1,103 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ✓ tests/unit/private-original-storage.test.ts (16 tests) 842ms
+   ✓ bounds persistent GET 5xx attempts and never treats upstream failure as absence or uploads  306ms
+ ✓ tests/unit/k3-traceability.test.ts (5 tests) 506ms
+ ✓ tests/unit/production-trigger.test.ts (1 test) 230ms
+ ✓ tests/unit/studio-receive-candidate.test.mjs (17 tests) 96ms
+ ✓ tests/unit/studio-plans-route.test.ts (11 tests) 104ms
+ ✓ tests/unit/public-evidence-qualification.test.ts (8 tests) 18ms
+ ✓ tests/unit/studio-plan.test.mjs (13 tests) 46ms
+ ✓ tests/unit/studio-delegation-route.test.ts (7 tests) 28ms
+ ✓ tests/unit/studio-original-attachment-route.test.ts (13 tests) 45ms
+ ✓ tests/unit/studio-candidate-assessment.test.mjs (7 tests) 46ms
+ ✓ tests/unit/studio-asset-routes.test.ts (7 tests) 17ms
+ ✓ tests/unit/mab-hp08-studio-routes.test.ts (11 tests) 18ms
+ ✓ tests/unit/imported-material-route.test.ts (13 tests) 26ms
+ ✓ tests/unit/independent-gate-client.test.ts (6 tests) 35ms
+ ✓ tests/unit/mab-hp02-session-revocation.test.ts (12 tests) 29ms
+ ✓ tests/unit/mab-m5-fork-restore.test.ts (6 tests) 52ms
+ ✓ tests/unit/middleware-authorization.test.ts (6 tests) 25ms
+ ✓ tests/unit/private-text-reading-repository.test.ts (3 tests) 26ms
+ ✓ tests/unit/submission-routes.test.ts (12 tests) 30ms
+ ✓ tests/unit/studio-plan-service.test.ts (5 tests) 20ms
+ ✓ tests/unit/mab-hp11-review-route.test.ts (8 tests) 29ms
+ ✓ tests/unit/mab-m5-revision-cas.test.ts (4 tests) 6ms
+ ✓ tests/unit/mab-m5-director-commit.test.ts (6 tests) 14ms
+ ✓ tests/unit/auth-session.test.ts (10 tests) 17ms
+ ✓ tests/unit/mab-hp03-asset-history-route.test.ts (4 tests) 25ms
+ ✓ tests/unit/kad1-policy.test.mjs (10 tests) 18ms
+ ✓ tests/unit/studio-execution-route.test.ts (4 tests) 42ms
+stderr | tests/unit/mab-m5-qualified-retrieve.test.ts > missing server qualification context refuses even legacy PASS rows before querying
+[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+
+stderr | tests/unit/mab-m5-qualified-retrieve.test.ts > invalid context refuses before querying: {}
+[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+
+stderr | tests/unit/mab-m5-qualified-retrieve.test.ts > invalid context refuses before querying: {"consumer":"agent","purpose":{"namespace":"G5","code":"fixture","version":"1"},"scope":{}}
+[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+
+stderr | tests/unit/mab-m5-qualified-retrieve.test.ts > invalid context refuses before querying: {"consumer":"agent","purpose":{"namespace":"G5","code":"fixture","version":"1"},"scope":{}}
+[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+
+stderr | tests/unit/mab-m5-qualified-retrieve.test.ts > invalid context refuses before querying: {"consumer":"watch","purpose":{"namespace":"G5","code":"fixture","version":"1"},"scope":{"project":"fixture"}}
+[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+
+stderr | tests/unit/mab-m5-qualified-retrieve.test.ts > invalid context refuses before querying: {"consumer":"agent","purpose":{"namespace":"G5","code":"fixture","version":""},"scope":{"project":"fixture"}}
+[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+
+stderr | tests/unit/mab-m5-qualified-retrieve.test.ts > returns no materials when current qualification database is unavailable
+[mohen/retrieve] 检索失败： synthetic database unavailable
+
+ ✓ tests/unit/mab-m5-qualified-retrieve.test.ts (8 tests) 29ms
+ ✓ tests/unit/mab-m5-public-consumers.test.ts (6 tests) 16ms
+ ✓ tests/unit/kad1-route.test.mjs (10 tests) 20ms
+ ✓ tests/unit/private-evidence-stage.test.ts (11 tests) 18ms
+ ✓ tests/unit/mab-hp08-research-resume.test.ts (18 tests) 13ms
+ ✓ tests/unit/private-evidence-binding.test.ts (5 tests) 33ms
+ ✓ tests/unit/mab-m5-material-cache.test.ts (6 tests) 15ms
+ ✓ tests/unit/mab-hp08-ledger-reconciliation.test.ts (5 tests) 10ms
+ ✓ tests/unit/mab-m3-revocation-http.test.ts (4 tests) 47ms
+ ✓ tests/unit/governance-boundary.test.ts (3 tests) 7ms
+ ✓ tests/unit/private-original-source-binding.test.ts (5 tests) 17ms
+ ✓ tests/unit/studio-attachment-storage.test.ts (3 tests) 12ms
+ ✓ tests/unit/studio-jsonb.test.ts (15 tests) 11ms
+ ✓ tests/unit/admin-authorization.test.ts (3 tests) 14ms
+ ✓ tests/unit/mab-hp06-signer-connection.test.ts (7 tests) 7ms
+ ✓ tests/unit/mab-m5-publication-atomic.test.ts (12 tests) 12ms
+ ✓ tests/unit/studio-delegation.test.mjs (8 tests) 8ms
+ ✓ tests/unit/material-score.test.ts (6 tests) 9ms
+ ✓ tests/unit/mab-hp08-tool-ledger.test.ts (12 tests) 14ms
+stderr | tests/unit/mab-hp07-visual-current-g5.test.ts > HP07 visual stage exact current G5 and safe topic filtering > fails closed rather than displaying old legacy PASS data when the DB qualifier fails
+[read-model-bridge] 读取真实发布成果失败： CURRENT_G5_UNAVAILABLE
+
+ ✓ tests/unit/mab-hp07-visual-current-g5.test.ts (6 tests) 9ms
+ ✓ tests/unit/mab-m5-preview.test.ts (4 tests) 7ms
+ ✓ tests/unit/mab-hp08-production-reservation.test.ts (7 tests) 10ms
+ ✓ tests/unit/query-plan.test.ts (4 tests) 5ms
+ ✓ tests/unit/mab-m4-tool-registration.test.ts (3 tests) 6ms
+ ✓ tests/unit/m3-gate-preflight.test.ts (6 tests) 7ms
+ ✓ tests/unit/private-worker-pool.test.ts (2 tests) 6ms
+ ✓ tests/unit/imported-material-rights.test.ts (2 tests) 3ms
+ ✓ tests/unit/mab-m4-tool-receipt-failure.test.ts (3 tests) 6ms
+ ✓ tests/unit/mab-hp11-review-revision.test.ts (5 tests) 6ms
+ ✓ tests/unit/publication-submission.test.ts (6 tests) 7ms
+ ✓ tests/unit/studio-execution.test.mjs (7 tests) 8ms
+ ✓ tests/unit/mab-m5-work-binding.test.mjs (1 test) 3ms
+ ✓ tests/unit/mab-hp11-knowledge-inspector-contract.test.ts (4 tests) 9ms
+ ✓ tests/unit/database-session.test.ts (2 tests) 6ms
+ ✓ tests/unit/mab-m5-research-prerequisites.test.ts (1 test) 4ms
+ ✓ tests/unit/mab-m3-independent-revocation-boundary.test.ts (2 tests) 3ms
+ ✓ tests/unit/conversation-ownership.test.ts (2 tests) 3ms
+ ✓ tests/unit/mab-hp12-g5-hold.test.ts (5 tests) 7ms
+ ↓ tests/unit/commons-materials.test.ts (1 test | 1 skipped)
+ ↓ tests/unit/k7-five-themes.test.ts (1 test | 1 skipped)
+ ↓ tests/unit/loc-materials.test.ts (1 test | 1 skipped)
+ ↓ tests/unit/shl-materials.test.ts (1 test | 1 skipped)
+
+ Test Files  65 passed | 4 skipped (69)
+      Tests  444 passed | 4 skipped (448)
+   Start at  00:27:59
+   Duration  33.56s (transform 2.89s, setup 0ms, collect 7.27s, tests 2.82s, environment 17ms, prepare 7.47s)
+
