@@ -71,8 +71,11 @@ export async function readStudioResearchProject(projectId:string,sessionToken:st
     createPrivateOriginalRepository(getNodePgPool()).listForProject(projectId,sessionToken),
   ]);
   const readingRepository=createPrivateTextReadingRepository(getNodePgPool());
-  const materials:Material[]=[];
+  const assetMaterials:Material[]=[];
+  const readingMaterials:Material[]=[];
   const gaps:string[]=[];
+  let remainingReadUnits=50;
+  let readingsTruncated=false;
   const assetRefs:Obj[]=[];
   const originalRefs:Obj[]=[];
   const readingNoteRefs:Obj[]=[];
@@ -93,7 +96,7 @@ export async function readStudioResearchProject(projectId:string,sessionToken:st
     const title=text(payload.title,180)||text(payload.file_name,180)||kind;
     const material=candidateMaterial("studio:"+assetId+"@"+revisionId,kind,title,snippet,
       "Studio project asset "+assetId+"@"+revisionId+" ("+kind+")");
-    materials.push(material);privateMaterialIds.push(material.id);
+    assetMaterials.push(material);
   }
 
   for(const original of originals) {
@@ -106,8 +109,11 @@ export async function readStudioResearchProject(projectId:string,sessionToken:st
     if(context.project_id!==projectId||context.asset_revision_id!==original.asset_revision_id||
       context.sha256!==original.sha256||context.direct_storage_reference_exposed!==false)
       throw new Error("STUDIO_RESEARCH_READ_BINDING_INVALID");
-    const readings=Array.isArray(context.readings)?context.readings:[];
+    const allReadings=Array.isArray(context.readings)?context.readings:[];
+    if(allReadings.length>remainingReadUnits)readingsTruncated=true;
+    const readings=allReadings.slice(0,remainingReadUnits);
     for(const readingValue of readings) {
+      remainingReadUnits--;
       const reading=object(readingValue);
       const readUnitId=safeRef(reading.read_unit_id),readRunId=safeRef(reading.read_run_id);
       const sourceVersionId=safeRef(reading.source_version_id),rawItemId=safeRef(reading.raw_item_id);
@@ -154,7 +160,7 @@ export async function readStudioResearchProject(projectId:string,sessionToken:st
           const material=candidateMaterial("private-evidence:"+evidenceId,"evidence",
             "私有原件证据候选 · "+original.file_name,literal,
             "Private original "+originalId+" / read unit "+readUnitId+" / evidence "+evidenceId);
-          materials.push(material);privateMaterialIds.push(material.id);
+          readingMaterials.push(material);
           evidenceRefs.push({evidence_id:evidenceId,link_id:linkId,read_unit_id:readUnitId,
             source_version_id:sourceVersionId,qualification:"UNASSESSED"});
           evidenceCount++;
@@ -165,11 +171,14 @@ export async function readStudioResearchProject(projectId:string,sessionToken:st
           "已绑定原件的L1定位记录："+JSON.stringify(locator).slice(0,900)+
             "；尚无经验证的L2逐字证据链接，不能据此形成事实判断。",
           "Private original "+originalId+"@"+original.asset_revision_id+" / read unit "+readUnitId);
-        materials.push(material);privateMaterialIds.push(material.id);
+        readingMaterials.push(material);
       }
     }
   }
 
+  const materials=[...readingMaterials,...assetMaterials].slice(0,24);
+  const privateMaterialIds=materials.map(m=>m.id);
+  const materialsTruncated=readingMaterials.length+assetMaterials.length>materials.length;
   const candidateL3=assetRefs.filter(a=>["spacetime_candidate","relation_hypothesis"].includes(String(a.asset_kind))).length;
   const candidateL4=assetRefs.filter(a=>a.asset_kind==="humanistic_insight").length;
   if(originalRefs.length===0)gaps.push("当前项目没有已核验私有原件；不能把原件元数据缺席解释为史料不存在。");
@@ -197,7 +206,8 @@ export async function readStudioResearchProject(projectId:string,sessionToken:st
   const snapshotHash=createHash("sha256").update(JSON.stringify(stableSnapshot)).digest("hex");
   return {
     snapshot:{...stableSnapshot,snapshot_hash:snapshotHash,captured_at:new Date().toISOString(),
-      assets_truncated:assets.length>=100,originals_truncated:originals.length>=20},
+      assets_truncated:assets.length>=100,originals_truncated:originals.length>=20,
+      readings_truncated:readingsTruncated,materials_truncated:materialsTruncated},
     materials,gaps,externalProcessingAllowed:false,
   };
 }
