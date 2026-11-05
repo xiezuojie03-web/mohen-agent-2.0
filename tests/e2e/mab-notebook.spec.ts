@@ -73,7 +73,7 @@ test('private notebook saves, reloads exact revisions, isolates owners and avoid
     const foreignUses=await otherRequest.get('/api/studio/assets',{params:{use_events:'1',project_id:project.project_id,revision_id:first.revision_id}});
     expect(foreignUses.status()).toBe(200);expect((await foreignUses.json()).events).toEqual([]);
     expect(foreignUses.headers()['cache-control']).toBe('no-store');
-    const foreignSave=await otherRequest.post('/api/studio/assets',{data:{project_id:project.project_id,asset_id:randomUUID(),asset_kind:'research_brief',expected_revision_id:null,idempotency_key:randomUUID(),payload:{text:'forged'}});
+    const foreignSave=await otherRequest.post('/api/studio/assets',{data:{project_id:project.project_id,asset_id:randomUUID(),asset_kind:'research_brief',expected_revision_id:null,idempotency_key:randomUUID(),payload:{text:'forged'}}});
     expect(foreignSave.status()).toBe(404);
     expect(foreignSave.headers()['cache-control']).toBe('no-store');
   }finally{await other.close();}
