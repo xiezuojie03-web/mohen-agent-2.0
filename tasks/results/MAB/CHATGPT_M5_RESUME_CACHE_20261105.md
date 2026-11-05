@@ -42,3 +42,19 @@
 
 - `9f3af8b1` 主CI `41945997957` SUCCESS，但隔离HTTP `41945997916` **FAILURE**，真实job `126978221845` 日志指出 `mab-notebook.spec.ts:76` 外部Owner合成保存fixture的JS对象右括号缺失，Playwright在测试收集前报`SyntaxError: Unexpected token`；不是已通过HTTP验收，也不能据此推断应用路由失败。
 - `af074521ad6bfddfcdbe295c4844130f9b04a5ca` 修复精确一处语法闭合，不改业务接口与断言。重跑主CI `41946337981` 与隔离HTTP `41946337974`，结果需查询真实GitHub Actions之后再签；失败原始日志保留。
+
+
+## 5. 最终GitHub核证与本批定向准出
+
+**两次实际失败如实保留**：先前研究恢复PG `41941909920` FAILURE源于旧成功fixture错误；首次本批浏览器 `41945997916` FAILURE源于新增测试行76语法漏括号。两者分别通过定向回归及原有完整测试修复，不改安全守卫或数据库生产权限。
+
+| 准确源码/配置 SHA | GitHub Actions | 现场原始日志与子项结论 |
+|---|---|---|
+| `935a1e1e` | 主CI `41945060178` SUCCESS；PG17 `41945060135` SUCCESS | Job `126975088981`：研究恢复4/4，`MAB_RESEARCH_RESUME_PG_PASS`；全PG `K3_DB_TEST_PASS`，711旧合成记录保全 |
+| `9d7b1c4c` | 主CI `41945285925` SUCCESS | 单测445 PASS/4预存联网SKIP、生产边界133 PASS、Build与74目标审计通过 |
+| `af074521ad6bfddfcdbe295c4844130f9b04a5ca` | 主CI `41946337981` SUCCESS；隔离HTTP `41946337974` SUCCESS | Job `126979363687`：Chromium **17PASS/1官方Storage无配置SKIP**，`MAB_HTTP_BROWSER_PASS`、`MAB_HTTP_SYNTHETIC_DATABASE_CLEANED`；覆盖本批真实私人资产no-store正反断言；13类资产原隔离矩阵和Admin精确历史未回退 |
+| `abff4e4d2f473e0ec453916a238bade6c58c4c1a` | 主CI `41946517684` SUCCESS | Job `126979974001`：新增不启动浏览器/DB的Playwright语法收集 **6文件18用例** 成功；445单测PASS/4旧SKIP、133边界PASS、Next编译成功、目标差异审计errors=[] |
+
+**签发边界**：研究恢复、私有资产HTTP缓存保护、HTTP规格预解析防漏，且仅上述各自SHA对应的**VERIFIED_ISOLATED**子项可核销；新增HTTP回归不是当前正式Vercel/生产实例的撤权缓存验收，不是13类专业同意撤回、跨项目合法复用、H1/H2/H3/19组件或独立G5完整准出。M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY，M6—M8、M1—M4既有生产固定条件、外发/费用仍HOLD。
+
+**最终改动**：在现行`.github/workflows/ci.yml`加无数据库/浏览器的Playwright `--list` 收集关卡（`abff4e4d`），阻断未来无效测试语法耗费完整PG启动，但该静态关卡不替代真正Chromium。测试、业务API和合同均未建立平行实现。生产数据/Storage/真实Provider未写入、未调用。
