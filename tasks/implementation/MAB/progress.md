@@ -1047,3 +1047,10 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - **防回退**：新增 `scripts/guards/check-authority-routing.mjs` 并接入主 CI，检查六 MHKA 的路径、旧权威误指、计划和交接一致性。此为静态入口测试，不能代替专业 Gate、数据库、真实来源、产品或生产验收。
 - **边界**：未修改六份 MHKA 正文、数据库、Storage、正式独立 G 权限、外部提供者配置和费用权限；M0—M8 阶段不变，M5 与所有 M1—M8 正式生产 HOLD 原样保留，历史 C 文档不删除，旧系统退役仍属 M8。
 - **证据**：`tasks/results/MAB/AUTHORITY_ROUTING_CORRECTION_20261105.md`；具体提交及 CI 以 GitHub 本次实际结果核证，不预记 PASS。
+
+### 2026-11-05｜MHKA 工程入口纠偏远端验证
+
+- 权威入口原子提交：`44282505a1dcc1f2db5183aaca792b5dbd421863`，10路径变更，旧 `AGENTS.md` 历史blob `54b041fdb2702f62eef1d4d635d9cdea70da160e`；GitHub main 指向该提交的远端验证完成。
+- 首次 CI `41963481911` **FAILURE**，Typecheck先因现有 `apps/web/lib/studio-research-read.ts` 三处TypeScript错误失败，路由守卫未运行；不伪称绿灯。
+- 定向补证提交 `fceaea201fd86571284ae4cb537ab95df63123c4` 把 MHKA 路由守卫移至 Typecheck 前；GitHub Actions `41963756191` 的 **MHKA engineering authority routing guard = SUCCESS**；Typecheck仍 **FAILURE**（TS2353: `Material` 不含 `title`；TS2451: `privateMaterialIds` 重复声明两处）。不将无关M5代码修复混入本次规范入口治理补丁。
+- 判定：**工程权威路由纠偏 VERIFIED_CI_STEP**；**FULL_CI_HOLD**；M5 及正式运行 Gate/生产/收费/外发 HOLD 均不变。后续 M5 施工须按新 MHKA 入口解决上述源码类型缺陷，按独立 SHA 重验完整主 CI。
