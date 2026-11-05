@@ -1003,6 +1003,6 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 ## 2026-11-05｜M5 ChatGPT接续：PG恢复回归与私有资产禁缓存
 
 - 现场源 `main@1bef80b7`：主CI41941909931 SUCCESS、HTTP41941909867 SUCCESS，但PG1741941909920 FAILURE，实际失败为research-resume.integration.ts并发恢复测试仍返回mock `degraded:true`，与新业务“降级只能HOLD”相冲突。原失败保留。
-- 定向修复 `935a1e1e`：成功路径夹具改非降级，并新增真实PG测试的降级HOLD、零费、不得research_done负例；**不调整runResearch/恢复制程、Gate或费用标准**。该提交主CI41945060178 SUCCESS，隔离PG1741945060135等待最终回执。
-- M5/HP11补充 `243ac2ab` 与 `9d7b1c4c`：Studio私有资产/修订/历史读取及保存返回显式no-store，新增401/404/503与成功路径单测；单测CI41945285925待最终结果。仅原位API/单测，不触及生产数据/DDL/Storage/专业资格。
-- 逐文件记录、失败根因与回滚：`tasks/results/MAB/CHATGPT_M5_RESUME_CACHE_20261105.md`。本批是M5/HP10与HP11的定向缺口，并非新M阶段；保留74目标原差异账和全部旧证据。真实成功前不签隔离PG PASS；M5整体、ST01—04完整正链、13类专业语义/反馈撤回/合法复用/canonical媒资及所有M1—M4生产固定条件继续HOLD。无生产环境写入、模型调用或费用。
+- 定向修复 `935a1e1e`：成功路径夹具改非降级，并新增真实PG测试的降级HOLD、零费、不得research_done负例；**不调整runResearch/恢复制程、Gate或费用标准**。该提交主CI41945060178 SUCCESS，隔离PG1741945060135 SUCCESS，job126975088981证实research-resume 4/4、MAB_RESEARCH_RESUME_PG_PASS、K3_DB_TEST_PASS及711旧合成记录不变。
+- M5/HP11补充 `243ac2ab` 与 `9d7b1c4c`：Studio私有资产/修订/历史读取及保存返回显式no-store，新增401/404/503与成功路径单测；主CI41945285925 SUCCESS，job126975860823证实445单测PASS/4既有联网SKIP、133生产边界PASS、Next Build和74目标审计errors=[]。仅原位API/单测，不触及生产数据/DDL/Storage/专业资格。
+- 逐文件记录、失败根因与回滚：`tasks/results/MAB/CHATGPT_M5_RESUME_CACHE_20261105.md`。本批是M5/HP10与HP11的定向缺口，并非新M阶段；保留74目标原差异账和全部旧证据。以上PG/主CI仅为对应定向子项VERIFIED_ISOLATED，非生产网站实测；M5整体、ST01—04完整正链、13类专业语义/反馈撤回/合法复用/canonical媒资及所有M1—M4生产固定条件继续HOLD。无生产环境写入、模型调用或费用。
