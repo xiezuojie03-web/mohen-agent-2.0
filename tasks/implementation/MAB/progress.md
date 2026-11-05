@@ -1039,3 +1039,11 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - CI：旧HP08 unit fixtures曾按无project binding旧签名调用，导致41955486156—41956024833主CI重复失败；不放宽新合同，0956cf73更新测试fixture提供合成项目/签名session/资产仓储。最新主CI41956280247 SUCCESS：65 files/447单测PASS/4既有SKIP、133边界PASS、Next Build、74目标审计errors=[]。原失败回执保留，详见tasks/results/MAB/CHATGPT_M5_ST01_BRIEF_20261105.md。
 - 核销：ST01 Brief项目绑定/不可变持久/幂等回放=VERIFIED_ISOLATED；ST01 Agent资料可得性/问题收敛因Provider/来源/资格服务不可用仍HOLD。ST02 StudioResearchRead、ST03 AnalyzeAndSaveCandidates、ST04 RequestFormalProduction未准出。下一项按§6.2顺序进入ST02，先做真实L层存储/项目授权/引用精确性/资格复核盘点，复用既有读模型/谱系服务，不建知识副本。M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；M1—M4生产/安全/Storage/费用/外发/专业Gate与M6—M8固定条件不变。
 - 回滚：可回滚UI/route/task orchestrator，不删除已保存的私有Brief、origin snapshot和审计；禁止恢复无项目绑定的旧ST01写入旁路。无生产迁移。
+
+## 2026-11-05｜Owner 工程权威入口纠偏：新架构施工不等 M8
+
+- **根因**：M0 审查仅登记了 AGENTS/OWNERSHIP 的差异与后续责任，错误地将新 MHKA 施工入口延期至 M8；旧 C0—C4 因此仍为 AI 默认规范，存在长期施工偏离风险。
+- **修复**：根 `AGENTS.md` 唯一路由六 MHKA；`OWNERSHIP_MAP.md` 明确目录权威；`PLAN.md` 调整原 M0 历史解释、§3、§6B 与 M8；`CODEX_HANDOFF_CURRENT.md` 改新会话优先读 MHKA；`CURRENT.md` 分开设计规范和真实运行状态；原 `target-diff.csv` 增现时路由证据字段，不覆盖历史 M0 判定。
+- **防回退**：新增 `scripts/guards/check-authority-routing.mjs` 并接入主 CI，检查六 MHKA 的路径、旧权威误指、计划和交接一致性。此为静态入口测试，不能代替专业 Gate、数据库、真实来源、产品或生产验收。
+- **边界**：未修改六份 MHKA 正文、数据库、Storage、正式独立 G 权限、外部提供者配置和费用权限；M0—M8 阶段不变，M5 与所有 M1—M8 正式生产 HOLD 原样保留，历史 C 文档不删除，旧系统退役仍属 M8。
+- **证据**：`tasks/results/MAB/AUTHORITY_ROUTING_CORRECTION_20261105.md`；具体提交及 CI 以 GitHub 本次实际结果核证，不预记 PASS。

@@ -1,6 +1,6 @@
 # OWNERSHIP_MAP.md
 
-> **SAMPLE-TRIAL-16 收口｜2026-10-18。** 首轮数据生产样板试验已完成（六阶段六门真实闭环、真实 G5、vercel 上线、数据层双后端、云端 42 表迁移）。运行状态见 `CURRENT.md`。原稿基线 handoff@8966d1b。
+> **2026-11-05 Owner 工程入口纠偏**：现行新架构施工以 `AGENTS.md` 指向的六份 MHKA 为唯一设计规范。原2026-10-18样板试验作为历史证据保留；实时运行状态只看 `CURRENT.md`，不把旧代码或文档当作新架构裁决依据。
 
 
 
@@ -34,7 +34,9 @@ mohen-agent-2.0/
 # 1｜目录职责
 
 ## governance/
-只放 C0–C4 与治理域长期 Authority。
+- `governance/mhka/`：MHKA-00—05 是本轮工程设计的唯一上位权威，专业领域按各自语义 Owner 分工。
+- `governance/` 中尚未物理归档的 C0—C4：仅历史来源及合法旧代码兼容参考，**不再为新工程下达规范指令**。旧运行代际正式退役/归档仍保留到 M8。
+- `governance/archive/`：历史证据和替代关系；不能因文档存在而自动成为 active Authority。
 
 ## specs/
 只放当前有效 Contract / Protocol / Registry / stable specification。
@@ -122,6 +124,6 @@ Library现行研究树继续用于专业研究与审阅，不因未来包装迁�
 
 `repo_target/`下每项相对路径必须等于其仓库目标相对路径，例如repo_target/governance/<C2新版本文件>→仓库governance/<同文件>。只含获准采用且已适配的目标文件，不嵌套旧工程包、不复制整个资料目录、不整目录覆盖；替换/新建/归档均逐文件登记。reference/只放必要追溯依据及源目录索引，不拥有active Authority。包根操作说明和映射清单不自动复制到仓库根。
 
-当前DESIGN_TARGET_NOT_APPLIED仅是资料目标文件，不可直接覆盖工程。用户本轮已授权ChatGPT补齐协议/Registry/Skill等完整专业目标文件及真实源码改造合同；原11矩阵只描述接口与落点，不能代替这些目标文件，也不能把全部专业适配推给CodeBuddy。
+历史 DESIGN_TARGET_NOT_APPLIED 说明旧时点的运行能力未落地，不等于本轮 MHKA 不指导施工；任何目标代码不得直接覆盖最新 main。M8 只负责运行激活与旧代际退役，不再推迟工程设计入口。
 
 被替代治理放governance/archive/、契约放specs/archive/、跨域快照放archive/，留替代清单；归档不等于允许继续执行。数据放data/，正式Contract不放data/；过去研究任务与审查记录不挤占tasks/未来任务入口。测试规格与实测证据区分。

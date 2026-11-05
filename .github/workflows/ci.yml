@@ -27,6 +27,9 @@ jobs:
       - name: Typecheck
         run: pnpm -r typecheck
 
+      - name: MHKA engineering authority routing guard
+        run: node scripts/guards/check-authority-routing.mjs
+
       # Collect actual HTTP/Chromium test specifications without connecting to
       # PostgreSQL or launching a browser. Reject syntax/registration failures
       # early; this does NOT count as HTTP or browser acceptance.

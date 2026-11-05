@@ -1,34 +1,50 @@
-# 墨痕 MoHen｜入口路由
+# 墨痕 MoHen｜AI 工程入口与新架构权威路由
 
-> **SAMPLE-TRIAL-16 收口｜2026-10-18。** 首轮数据生产样板试验已完成（六阶段 D00–D05 + G0–G5 真实闭环、真实 G5、vercel 上线）。运行状态见 `CURRENT.md`；部署/连接见 `specs/OPERATIONS_DEPLOYMENT.md`；复盘见 `specs/data-production/SAMPLE-TRIAL_CLOSURE_ANALYSIS.md`。原稿基线 handoff@8966d1b。
+> **2026-11-05 Owner 纠偏：新架构从施工开始即为工程设计依据，不得等到 M8。** 本入口只指向 Authority 和执行资料；它不授权生产上线、付费、真实数据变更或独立 Gate 签发，也不证明尚未验收的功能已实现。
 
-入口只负责找Authority，不定义运行状态或提升任务书权限。新会话先读CURRENT→本表→相应Authority/Contract；冲突依C0/C1及专业域仲裁，目录职责依OWNERSHIP_MAP。
+## 0｜强制设计权威与事实边界
 
-# 1｜唯一版本路径表
+**本轮所有 ChatGPT、Codex、CodeBuddy 工程设计、开发、审查、修复、测试和交接，必须以已批准的 MHKA-00—05 新架构及其授权的现行专业合同为唯一上位依据。** 旧 C0—C4 只保留作历史来源与旧实现的兼容参照，不是新架构工程的默认裁决依据。不得以旧规范、旧代码或过去任务记录否决新的 Owner 决策。
 
-| 任务 | 目标工程文件 |
+权威顺序：Owner 已批准裁决 → MHKA-00 治理及相应 MHKA 专业语义 Owner → 授权的现行专业合同 → MAB 受控任务书。旧实现可以在安全和合规前提下继续运行、被复用及逐步适配，但不得由此反向改变目标架构。
+
+实现与许可另行判定：`CURRENT.md`、真实源码、CI/隔离测试、数据库和部署证据说明何者已实现、验证、准出或 HOLD。设计正确不等于运行生效，发现安全问题须按 MHKA 失败关闭。**M8 仍负责生产启用、旧运行系统受控退役和正式交接，不是新 MHKA 开始指导施工的时间。**
+
+## 1｜新架构唯一索引
+
+| 领域 | 本轮上位工程设计与施工依据 |
 |---|---|
-| C0宪法 | `governance/C0_MoHen_Project_Constitution_and_Dual_Line_Collaboration_V1.1.md` |
-| C1宪法 | `governance/C1_MoHen_Product_Architecture_Evolution_Constitution_V1.1.md` |
-| C2宪法 | `governance/C2_MoHen_Humanistic_Data_OS_and_Dual_Skill_Architecture_V1.3.md` |
-| C3宪法 | `governance/C3_MoHen_Humanistic_Data_OS_Database_Architecture_V1.4.md` |
-| C4宪法 | `governance/C4_MoHen_Agent-native_Human_Experience_UI_Architecture_V2.2.md` |
-| 当前设计/运行与HOLD | `CURRENT.md` |
-| 目录职责 | `OWNERSHIP_MAP.md` |
-| 唯一生产总协议 | `specs/data-production/MoHen_Data_Production_Protocol.md` |
-| 现行专业原文 | `specs/data-production/standards/d00/`—`d05/`，逐文件见`verification/arch-mig-prep-01/TARGET_FILE_COVERAGE.csv` |
-| 数据字段/物理承载 | `specs/DATA_CONTRACT.md`、`specs/data-production/PHYSICAL_DATA_MODEL_V2.md`、`PERSISTENCE_BINDING_CONTRACT.md` |
-| 方法/执行绑定 | `specs/data-production/production-registry.json`及其schemas、method-binding-contract.json |
-| 六门独立合同（拟迁移） | `specs/data-production/gates/G0-G5_MACHINE_GATE_CONTRACT_V3.0.md`及同目录`gate-contracts.v3.json` |
-| 消费/反馈（拟迁移） | `specs/data-production/L5_L8_CONSUMPTION_FEEDBACK_CONTRACT.md` |
-| Agent/体验边界 | `specs/AGENT_CONTRACT.md`、`specs/EXPERIENCE_CONTRACT.md` |
-| 生产导航 | `specs/data-production/MoHen_Data_Production_System_Map.md/html`；根`DATA_PRODUCTION_MAP.md`只指向这组入口 |
-| Skill / 执行体 | `skills/<skill>/SKILL.md`；`pipelines/data-production/` |
-| Runtime | `packages/agent-runtime/`、`packages/experience-engine/`、`packages/data-access/` |
-| 未来迁移任务 | `tasks/implementation/ARCH-MIG-01/` |
+| 项目治理、Owner 裁决与迁移 | `governance/mhka/MHKA-00_Governance_Charter.md` |
+| 核心价值与战略方向 | `governance/mhka/MHKA-01_Value_and_Strategy.md` |
+| 人文产品、Studio/WATCH/EXP 体验 | `governance/mhka/MHKA-02_Humanistic_Product_and_Experience.md` |
+| 知识世界、数据、资产和 D/L/G | `governance/mhka/MHKA-03_Knowledge_World_and_Data_Architecture.md` |
+| Agent、专业方法、Skill、混合协作 | `governance/mhka/MHKA-04_Agent_and_Professional_Capabilities.md` |
+| 软件工程、权限、发布和运维 | `governance/mhka/MHKA-05_Software_Engineering_and_Operations.md` |
+| 知识资产专业生命周期 | `specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md` |
+| Agent 专业合同 | `specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md` |
+| 运行技术合同 | `specs/SYSTEM_RUNTIME_ARCHITECTURE.md` |
+| 人文体验与组件合同 | `specs/experience-ui/H1_H2_H3_AND_COMPONENTS_CONTRACT.md` |
+| 数据生产协议与方法 Registry | `specs/data-production/MoHen_Data_Production_Protocol.md`；`specs/data-production/production-registry.json` |
+| 唯一施工计划 | `tasks/implementation/MAB/PLAN.md` |
+| 当前真实状态 | `CURRENT.md` |
+| 唯一执行进度与目标差异账 | `tasks/implementation/MAB/progress.md`；`tasks/implementation/MAB/target-diff.csv` |
+| Codex 接续书 | `tasks/implementation/MAB/CODEX_HANDOFF_CURRENT.md` |
+| 目录与源码职责 | `OWNERSHIP_MAP.md` |
+| 现有数据生产执行入口 | `pipelines/data-production/run.mjs` |
 
-# 2｜代际与路由限制
+## 2｜所有 AI 开发工具必须遵循的施工顺序
 
-表中standards、方法新增合同、六门v3及L5_L8反馈合同等为目标路径，尚无已实现承诺；未交付/未验证不得路由执行。旧G0-G4 v2和L4_L7合同只服务隔离旧代际，切换时归档并登记替代，不与新规则同名混用。目标Gate文档版本V3.0已编制为交付目标，尚未在真实工程生效。
+1. 从远端 `main` 最新 HEAD 起读本入口，按任务领域读取六 MHKA 及所需现行专业合同。
+2. 读取 MAB 的计划、进度、差异账与 `CURRENT.md`；以源代码、精确 CI、测试及环境证据核实真实状态，不能让历史 SHA 和旧 C0—C4 覆盖新目标。
+3. 根据原有 M0—M8 依赖与 Owner 决策继续施工，复用已验证的合法能力；发现旧实现不符新架构时，按新架构做最小必要适配，不再造第二 Runner、第二 Gate 或第二套知识真值。
+4. 执行对应正反、权限/撤权、版本和恢复验证；按 `CODE_PRESENT`、`VERIFIED_ISOLATED`、`VERIFIED_LIVE`、`HOLD`、`DEFERRED_ENV` 如实记账。没有独立资格不能自签 G0—G5；CI 通过不等于生产/Owner 准出。
+5. 每批完成后回写唯一计划、进度、目标差异账和证据。当前任务可继续则继续，不因工具切换或旧入口反复重新审查。
+6. 只有产品方向、额外费用、生产启用、资料权利/外发或超出既有授权的事项才请求 Owner 决定。阻塞时记录精确原因、受影响对象、恢复条件，保持相关功能 HOLD。
 
-目标链D00/L0/G0→D01/L1/G1→D02/L2/G2→D03/L3/G3→D04/L4/G4→D05/L5/G5→L6→L7→L8→D00。生产唯一入口仍为pipelines/data-production/run.mjs；未完成适配与核验时不准执行新链。Archive、HTML和审查PASS均不发Gate许可。
+## 3｜施工依据与运行切换不可混同
+
+**已纠正：工程设计与施工入口现在指向 MHKA。** 历史 C0—C4 文本保留证据身份，不得继续充当工程规范。
+
+**仍未准出：生产 Gate、真实原件/数据、外部模型费用、发布授权及 M8 运行切换。** 所有原 HOLD、验证/回滚义务与用户体验验收不变。
+
+本文件不是第七份宪章，不修改 MHKA 正文，不以旧代码现状或 `CURRENT.md` 的事实记录覆盖新架构的规范。

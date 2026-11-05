@@ -1,5 +1,7 @@
 # 墨痕｜当前真实工程状态
 
+> **2026-11-05｜Owner 新架构工程入口纠偏（不等于运行准出）**：根 `AGENTS.md` 已转为六份 `governance/mhka/` MHKA 唯一工程设计/施工入口；C0—C4 只作为历史来源与旧实现兼容参考。旧“等 M8 才切换工程入口”的安排作废；M8 仍管正式生产运行启用/旧代际退役。M5 及全部现有 HOLD、Gate、数据和费用授权不变。静态路由守卫接入主CI，远端结果以 GitHub Actions 核证为准。
+
 > **2026-11-05｜M5/ST-01最新真实施工（优先于下方HP11记录）**：按AGENT能力合同§6.2，Studio主入口增加Owner项目选择/创建；ST01必须提供project_id+幂等UUID，服务端取项目scope；先保存不可变research_brief@rev并绑定origin_task_id/snapshot，再允许进入研究。相同请求重放同task/rev，不同输入409；resume/follow-up保留Brief血缘。ST01不再自动调用ST04正式生产（旧行为违反Creator explicit decision），现有production路由只有GET状态，ST04显式POST仍未实现。关键源码82c78ce6/94ac574d/cdb330af/1636be11/c0f3c3f0/33491000/7bab9bf6，E2E 465d3862；隔离PG17+Chromium [41956024859](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41956024859) SUCCESS（18PASS/1官方StorageSKIP，MAB_ST01_BRIEF_HTTP_PASS、合成DB清理），最新主CI [41956280247](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41956280247) SUCCESS（447单测/4旧SKIP、133边界、Build、74目标审计errors=[]）。详见tasks/results/MAB/CHATGPT_M5_ST01_BRIEF_20261105.md、原PLAN M5和progress末尾。只核销ST01 Brief项目绑定/持久/幂等VERIFIED_ISOLATED；Agent资料可得性/问题收敛仍因Provider/来源/资格HOLD；ST02—04未准出。**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY**，M1—M4生产固定条件与MHKA/KAD设计目标不变。
 
 > **2026-11-05｜M5/HP11最新继续施工（优先于下方旧条目）**：在现有Studio私有资产修订体系上补`consented_feedback`明确同意声明守卫、不可变撤回终止修订、Owner/CAS/幂等、历史正文脱敏，现行Admin知识资产加入二步确认撤回。主CI [41950478739](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41950478739) SUCCESS（447单测PASS/4旧联网SKIP、133边界、Next Build），隔离PG17+真实Chromium [41950478723](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41950478723) SUCCESS（18PASS/1官方Storage缺配置SKIP），实际`MAB_FEEDBACK_WITHDRAW_HTTP_PASS`、`MAB_ADMIN_FEEDBACK_WITHDRAW_HTTP_PASS`、合成数据库清理。任务书/逐项证据见`tasks/implementation/MAB/PLAN.md`原M5、`progress.md`最新和`tasks/results/MAB/CHATGPT_M5_FEEDBACK_CONSENT_20261105.md`。**只核销私有候选反馈声明/撤回VERIFIED_ISOLATED，真实数据主体同意凭证/物理删除/下游复制撤回及全13类专业业务尚未准出。M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY及所有M1—M4生产固定条件保留。**
@@ -87,7 +89,7 @@ Owner已批准MAB更新计划并授权持续施工：最终GitHub仅main，Verce
 
 ## 权威与保护
 
-实际AGENTS仍指向旧代际；新MHKA为已批准施工目标，待合同/守卫/运行验证齐全后原子切换，不提前宣称双活或激活。保留已有合法成果、原件、作品与审计；恢复不复活已撤权限。平台确认窗口过期的变更保持未执行，不绕过。
+**历史状态纠偏**：当时 AGENTS 旧代际路由属实；2026-11-05 Owner 已要求把工程设计入口转为新 MHKA。运行资格切换仍需要合同/守卫/验证/授权，不因文档改动提前激活。保留已有合法成果、原件、作品与审计；恢复不复活已撤权限。平台确认窗口过期的变更保持未执行，不绕过。
 
 ## M2本批实现边界
 

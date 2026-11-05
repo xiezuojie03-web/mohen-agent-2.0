@@ -74,7 +74,7 @@
 ## 1. Codex开工要求：先接续，不重做
 
 1. 拉取远端main，确认默认分支及实际HEAD、未提交变更；如果本地分支与main分叉，先保全再对比，严禁强制覆盖受控变更或现有业务数据。
-2. 按顺序阅读：本交接书 → tasks/implementation/MAB/PLAN.md（重点§5原M0—M8、§6A A01—A20、§6B HP01—HP13）→ progress.md → target-diff.csv → CURRENT.md → AGENTS.md → 权威专业合同、源码与测试。现有PLATFORM_HANDOFF_20261103.md是**较早的阶段性切换记录**，其历史SUCCESS、批准状态和此前SHA不可替代本文件新施工状态。
+2. **2026-11-05 Owner 纠偏后的读取顺序**：先 `AGENTS.md` → `governance/mhka/` 六 MHKA 与相关专业合同 → 本交接书 → PLAN.md §5/§6A/§6B → progress.md → target-diff.csv → CURRENT.md → 源码/测试与精确CI。从实时 main 开始，旧 C0—C4 仅用于历史兼容。现有PLATFORM_HANDOFF_20261103.md是**较早的阶段性切换记录**，其历史SUCCESS、批准状态和此前SHA不可替代本文件新施工状态。
 3. 这是**既有架构上的工程续建**。保留MHKA既定设计方向、D00—D05/L0—L5/G0—G5唯一可信生产链、现有Studio/Agent/体验与数据库成果。不要重做总体架构，不另造平行Gate、不新增第二套长期资产正文、不以改文档代替工程实现。
 4. 目标是建设真正能研究、积累资产和创作作品的墨痕：**通史骨架＋局部深挖＋可复用知识资产**；从首个真实生产任务就坚持内部Agent与受控外部AI协作的混合路线。产品实施优先Studio与Admin知识资产运营，WATCH合法消费，EXP体验深化暂缓；历史文化与当下生活的**乐趣和意义**都要保留。
 5. 施工中逐批更新原位PLAN.md、progress.md及target-diff.csv，保留原M0—M8和6B工作包结构；每项区分CODE_PRESENT、VERIFIED_ISOLATED、VERIFIED_LIVE、HOLD、DEFERRED_ENV，不得把源码存在、Vercel READY、旧代际PASS、mock测试PASS冒称当前正式G5或产品准出。无必要的阶段确认可自行判断、测试、修复，只有用户应决定的成本、权限、生产/产品重大变更再请求确认。
@@ -88,7 +88,7 @@
 - 历史隔离有效证据：tasks/results/MAB/M2_SECURITY_RECEIPT_20261102.md及相邻evidence；只对当时提交与环境有效。
 - 早期设计及来源：tasks/implementation/MAB/inputs/及其中的原交付ZIP/增量交接指引。不得直接将repo_target旧工程镜像覆盖现在的main。
 - 旧UI参考：tasks/results/MAB/archives/20261103_UI_RECOVERY_UNAPPLIED.patch，**未经差异审查不得直接git apply**。
-- 工程入口：AGENTS.md现在仍指向旧C0—C4现行路由；六份governance/mhka/MHKA-00—05虽然已按目标文本放入main，但设计就位**不等于M8权威入口已切换**；必须满足受控M8原子切换条件。
+- **新工程权威入口（2026-11-05 Owner 纠偏）**：`AGENTS.md` 已指向六份 `governance/mhka/` MHKA 作为施工唯一设计权威；C0—C4 只作历史来源与合法旧代码兼容依据。M8 仅处理正式运行启用、受控退役及交接，不再延误新工程规范入口。
 - 正式专业合同：specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md、specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md、specs/SYSTEM_RUNTIME_ARCHITECTURE.md、specs/experience-ui/H1_H2_H3_AND_COMPONENTS_CONTRACT.md及D/L/G现行规范。
 
 ## 3. 实际完成与未验收的状态
@@ -165,7 +165,7 @@
 9. HP08/09补唯一root任务DAG、DelegationEnvelope/ExecutionReceipt、T1—T7收包、模型/工具最小外发与预算终态核销；外部AI/内生Agent从第一真实任务即混合协作，但未获授权不调用收费服务。
 10. HP10/11完成Studio真实自然语言研究与作品导演/修订持久闭环、F05 Admin可视化精确知识条目/来源/Gate/使用史/缺口管理；WATCH保持简单合法消费；EXP不抢占当前优先级。
 11. HP13按74目标及A01—A20、85 API、152 UI动作逐项建立当前路径、设计/实现差异、真实权限/正反测试、结果及回滚；剩2个KAD1目标测试需按**真实合同与可运行预期**接入，不能直接照搬旧镜像造成虚假PASS。仅在可合法签署时标相应阶段准出。
-12. M6全量闭环后，以现行KAD5唯一双题A“隋唐大运河及江南水路连接”→B“宋代江南运河沿线的城镇与日常生活”验证真实A资产@revision被B有权引用并产生新知识，而不是重复摘要；完成运营/Owner体验与M8有备份的MHKA路由原子切换。不可提前执行。
+12. M6全量闭环后，以现行KAD5唯一双题A“隋唐大运河及江南水路连接”→B“宋代江南运河沿线的城镇与日常生活”验证真实A资产@revision被B有权引用并产生新知识，而不是重复摘要；完成运营/Owner体验与M8有备份的**生产运行代际激活/旧系统退役**；不再推迟 MHKA 工程设计入口。生产动作仍不可提前执行。
 
 ## 7. 施工质量、成本和交付报告
 

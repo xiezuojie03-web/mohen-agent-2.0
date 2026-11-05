@@ -62,7 +62,7 @@
 
 | 工作域 | 施工目标 | 主要规范/工程入口 | 完成证明 |
 |---|---|---|---|
-| 治理代际 | 新旧规范路由一致，切换可回退 | AGENTS、六MHKA、OWNERSHIP、FOUNDATION | 唯一路由检查、差异与切换回执 |
+| 治理代际 | 六 MHKA 从工程开始即为唯一设计规范，旧 C 留历史与兼容；运行切换在 M8 | AGENTS、六MHKA、OWNERSHIP、FOUNDATION | 工程路由守卫、运行授权与历史差异分别核证 |
 | 生产能力 | 原六阶段、63方法及19 Skill绑定可追溯 | Protocol、Registry、method-binding、原Runner/Executor | 绑定校验、受控执行、真实交接 |
 | 独立资格 | Producer仅候选；Reviewer独立签发 | Gate合同、candidate/audit仓储及DB角色 | 角色隔离、策略身份、正反实测 |
 | 九层主数据 | L0—L8实体责任明确，正式Truth不重复 | DATA、Persistence、既有六schema | 映射、依赖、生命周期与分层测试 |
@@ -99,7 +99,7 @@ EXP完整功能、L6—L8运行启用遵循包内“延后激活”边界：本�
 
 ### M0｜现场盘点与三方差分
 
-前置：取得实际仓库与必要只读环境入口；读取真实AGENTS和CURRENT，不提前套用包内目标路由。
+前置（2026-11-02 历史盘点方法）：取得实际仓库与必要只读环境入口；读取当时真实AGENTS和CURRENT，不把目标包误作已运行事实。2026-11-05 Owner 明确：此历史审查方法不意味着继续让旧 C0—C4 指导新工程。
 
 - [x] 记录分支、HEAD、工作树、部署SHA、数据库迁移历史、运行版本及连接身份。
 - [x] 以包内base、最新main、本包target做逐路径三方比较；原CREATE若已等价实现改KEEP/ADAPT，原KEEP若受20项增量影响仍需修补。
@@ -327,13 +327,15 @@ A：隋唐大运河及江南水路连接。B：宋代江南运河沿线的城镇
 
 跨题复用记录至少含：`A_project_id,A_asset_id,A_revision_id,B_project_id,B_reuse_event_id,requested_action,rights_decision_ref,actual_source_locator,B_new_asset_revision_ref,knowledge_delta_type,qualification_state,work_revision_id,used_at`。
 
-### M8｜授权切换、发布与交接
+### M8｜生产授权切换、发布与交接
+
+> **2026-11-05 Owner 纠偏**：六 MHKA 已是本轮全部工程施工的唯一设计权威，根 AGENTS 不得继续以旧 C0—C4 为默认入口。**M8 所等待的是正式生产激活、旧代际运行退役及交接，不是 MHKA 开始指导开发的时间。** 所有未准出项仍 HOLD，M0—M8 施工阶段不变。
 
 依赖：M6/M7结果及具体投运范围审定；若仍有延期项，交接明确为核心范围阶段交付。
 
 - [ ] 形成可审阅发布包：准确commit、构建/测试报告、Schema差分、备份ID、恢复实测、权限/策略清单、风险与回退触发条件。
 - [ ] 对权威入口切换、真实DB/Storage变更、Gate启用、远端推送/合并及生产部署分别记录既有或新增授权范围。
-- [ ] 经授权原子切换AGENTS/六MHKA/专业合同路由；旧C0—C4只读归档，不双活。
+- [ ] 核实已纠正的 AGENTS→MHKA 工程设计路由；正式生产运行资格、旧 C0—C4 运行代际退役及只读归档继续按 M8 受控切换与回退，不双活。
 - [ ] 先在隔离/预发验证兼容，再按窗口执行生产迁移、切换及部署；记录各步骤SHA、操作者和结果。
 - [ ] 运行冒烟覆盖本人导入、跨用户拒绝、候选待G、合法发布/消费、撤权及恢复检查；新旧合法能力回归。
 - [ ] 更新CURRENT真实状态，交Owner做人文体验和业务签收；未完成项逐项HOLD并给下一批计划。
@@ -413,7 +415,7 @@ A：隋唐大运河及江南水路连接。B：宋代江南运河沿线的城镇
 
 1. **HP01先行、持续复核**：每批核最新main的实际CI工作流；历史SUCCESS只引用对应SHA，最新异常先定根因，源码与任务条目均可追溯。若连接器不支持push工作流查询，应明确说明这个能力缺口、尝试授权可用的其他核证方式，**不得因此无限期只做小补丁而忽略其他HP**。
 2. **主线贯通而非零散修补**：M1身份边界（HP02）→M2原件/资产/Runner（HP03—05）→M3独立Gate+消费（HP06—07）→M4同root双主体（HP08—09）→M5 Studio/Admin/WATCH（HP10—12）；依赖清楚时可并行代码工作，必须以真实端到端正反证据收口。
-3. **74正式目标与20责任**：现行`target-diff.csv`不得只写`CODE_PRESENT`；逐文件出示实际当前文件、源设计差异、功能/协议影响、正反测试、真实运行证据、回滚和最终`EQUIVALENT/IMPLEMENTED/DEFERRED_ENV/HOLD`。对于21项CREATE不机械创建空文件；若已有等价目标须给出精确源码路径与验证。不得在尚未准出时改变`AGENTS.md`旧权威路由或激活MHKA新一代。
+3. **74正式目标与20责任**：现行`target-diff.csv`不得只写`CODE_PRESENT`；逐文件出示实际当前文件、源设计差异、功能/协议影响、正反测试、真实运行证据、回滚和最终`EQUIVALENT/IMPLEMENTED/DEFERRED_ENV/HOLD`。对于21项CREATE不机械创建空文件；若已有等价目标须给出精确源码路径与验证。2026-11-05 Owner 已撤销“旧 AGENTS 施工路由等到 M8”的安排：开发工具立即遵循 MHKA 新架构，旧 C0—C4 仅供历史和兼容核查。正式生产许可、独立 G 签发与 M8 运行激活仍按原合同 HOLD。
 4. **正式生产与交接边界**：M1生产Owner/旧密码失效，M2生产Storage/正式迁移，M3合法Reviewer/专业Gate，M4真实外部模型（资料权利及费用），M5合法正式公开与Owner体验，M6全量合同、M7真实双题、M8原子切换，只有确属当前插件不可实施且已给出精确指令与负例的项目才归最终CodeBuddy。
 5. **禁止虚假收口**：定义`CODE_PRESENT`、`VERIFIED_ISOLATED`、`VERIFIED_LIVE`、`HOLD`、`DEFERRED_ENV`。仅一个`HOLD`或`CI_UNVERIFIED`未说明就不能宣布可交接；可以在受控环境任务明确分配且当前插件已达能力边界时交接，但绝不能称M0—M8生产全部PASS。
 
