@@ -1223,3 +1223,9 @@ Data API范围：pg_db_role_setting未见pgrst.db_schemas/db_extra_search_path�
 开发Skill同源v0.2.1增离线四类阻塞/依赖调度与两次失败停止，阶段检查点不再替代整轮完成；产品生产/创作/观看/探索合同保持，EXP S01—S08未删。最终SHA/CI待下方精确核证，不把本地检查记为远端SUCCESS。
 
 本轮Skill源码c55da7c，v0.2.1静态两守卫与14Node正反PASS；9条脱敏回执/7待评价草案（历史5/3保留，追加4）。目标账kad1-policy.d.mts同步ADAPTED，74审计errors=[]且HANDOFF_NOT_READY。最后CI将在本批最终推送HEAD上运行一次，精确结果后补。
+
+### M5本轮最终远端核证（eec13b2）
+
+全部源码/测试与原账已非强制推送：源22b8c1c主CI42035692765、PG42035692988、HTTP42035692756均SUCCESS；状态一致性补丁eec13b2373ac74101f497be40f928d2b89d40690主CI42037766176 SUCCESS（571PASS/4旧联网SKIP、133边界、14Skill、类型/Build/严格鉴权、errors=[]/HANDOFF_NOT_READY）、HTTP42037766124 SUCCESS（24PASS/1官方StorageSKIP，清理成功）。补丁未改DB，PG继承22b8c1c的真实合成PG17证据。完整原始失败/恢复与分母、回滚及下一步见既有回执§7.4。文档核证后继[skip ci]不代表再跑主CI。
+
+原work/所有合法成果保留，独立副本clean；本轮自建测试服务和合成PG已清理，无生产改动。当前可独立修复的Admin/研究撤权/Owner/改稿/消费/状态/虚假成功与开发Skill任务已受测；但真实ST02、两个未完成执行适配和正式G5/真实作品/Owner体验仍不能核销。机器worklist ready=[]/complete=false只是依赖记录，不反推工程全量完成；授权来源问题仍待答，不能自授。**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY**。

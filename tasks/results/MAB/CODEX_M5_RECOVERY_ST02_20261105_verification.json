@@ -106,5 +106,348 @@
       "MAB_STUDIO_REPOSITORY_PASS",
       "K3_DB_TEST_PASS"
     ]
+  },
+  "m5_remaining_sweep": {
+    "source_sha": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa",
+    "skill_version": "0.2.1",
+    "worklist_input": [
+      {
+        "id": "ADMIN-BROWSE",
+        "signature": "ADMIN-BROWSE",
+        "classification": "READY",
+        "depends_on": [],
+        "completed": true,
+        "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa",
+        "attempts": []
+      },
+      {
+        "id": "PRIVATE-REVISION-SAFETY",
+        "signature": "PRIVATE-REVISION-SAFETY",
+        "classification": "READY",
+        "depends_on": [],
+        "completed": true,
+        "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa",
+        "attempts": []
+      },
+      {
+        "id": "CURRENT-MATERIAL-READ",
+        "signature": "CURRENT-MATERIAL-READ",
+        "classification": "READY",
+        "depends_on": [],
+        "completed": true,
+        "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa",
+        "attempts": []
+      },
+      {
+        "id": "WATCH-CURRENT-CONSUMPTION",
+        "signature": "WATCH-CURRENT-CONSUMPTION",
+        "classification": "READY",
+        "depends_on": [],
+        "completed": true,
+        "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa",
+        "attempts": []
+      },
+      {
+        "id": "DEV-SKILL-TRIAGE",
+        "signature": "DEV-SKILL-TRIAGE",
+        "classification": "READY",
+        "depends_on": [],
+        "completed": true,
+        "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa",
+        "attempts": []
+      },
+      {
+        "id": "ST02-REAL-ORIGINAL",
+        "signature": "ST02-REAL-ORIGINAL",
+        "classification": "DATA_BLOCKED",
+        "depends_on": [],
+        "completed": false,
+        "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa",
+        "attempts": []
+      },
+      {
+        "id": "ST03",
+        "signature": "ST03",
+        "classification": "READY",
+        "depends_on": [
+          "ST02-REAL-ORIGINAL"
+        ],
+        "completed": false,
+        "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa",
+        "attempts": []
+      },
+      {
+        "id": "ST04",
+        "signature": "ST04",
+        "classification": "READY",
+        "depends_on": [
+          "ST03"
+        ],
+        "completed": false,
+        "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa",
+        "attempts": []
+      },
+      {
+        "id": "TRUSTED-TRANSFER-SPEND-AUTHORITY",
+        "signature": "TRUSTED-TRANSFER-SPEND-AUTHORITY",
+        "classification": "OWNER_BLOCKED",
+        "depends_on": [],
+        "completed": false,
+        "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa",
+        "attempts": []
+      },
+      {
+        "id": "DIRECTOR-EXECUTION-ADAPTER",
+        "signature": "DIRECTOR-EXECUTION-ADAPTER",
+        "classification": "READY",
+        "depends_on": [
+          "TRUSTED-TRANSFER-SPEND-AUTHORITY"
+        ],
+        "completed": false,
+        "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa",
+        "attempts": []
+      },
+      {
+        "id": "CURRENT-MEDIA-RIGHTS-REVISION",
+        "signature": "CURRENT-MEDIA-RIGHTS-REVISION",
+        "classification": "GATE_BLOCKED",
+        "depends_on": [],
+        "completed": false,
+        "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa",
+        "attempts": []
+      },
+      {
+        "id": "CANONICAL-MEDIA-SELECTION-ADAPTER",
+        "signature": "CANONICAL-MEDIA-SELECTION-ADAPTER",
+        "classification": "READY",
+        "depends_on": [
+          "CURRENT-MEDIA-RIGHTS-REVISION"
+        ],
+        "completed": false,
+        "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa",
+        "attempts": []
+      },
+      {
+        "id": "LIVE-INDEPENDENT-G5",
+        "signature": "LIVE-INDEPENDENT-G5",
+        "classification": "GATE_BLOCKED",
+        "depends_on": [],
+        "completed": false,
+        "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa",
+        "attempts": []
+      },
+      {
+        "id": "H3-REAL-OWNER-EXPERIENCE",
+        "signature": "H3-REAL-OWNER-EXPERIENCE",
+        "classification": "OWNER_BLOCKED",
+        "depends_on": [
+          "ST02-REAL-ORIGINAL",
+          "DIRECTOR-EXECUTION-ADAPTER",
+          "LIVE-INDEPENDENT-G5"
+        ],
+        "completed": false,
+        "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa",
+        "attempts": []
+      }
+    ],
+    "triage": {
+      "schema": "mohen.dev-work-triage.v1",
+      "auto_execute": false,
+      "permission": "NO_EXECUTION_AUTHORITY",
+      "observation": "EXPLICIT_WORKLIST_NOT_ENVIRONMENT_OR_AUTHORIZATION_PROOF",
+      "ready": [],
+      "tasks": [
+        {
+          "id": "ADMIN-BROWSE",
+          "completed": true,
+          "declared_classification": "READY",
+          "effective_classification": "READY",
+          "execution": "COMPLETE",
+          "waiting_for": [],
+          "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa"
+        },
+        {
+          "id": "PRIVATE-REVISION-SAFETY",
+          "completed": true,
+          "declared_classification": "READY",
+          "effective_classification": "READY",
+          "execution": "COMPLETE",
+          "waiting_for": [],
+          "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa"
+        },
+        {
+          "id": "CURRENT-MATERIAL-READ",
+          "completed": true,
+          "declared_classification": "READY",
+          "effective_classification": "READY",
+          "execution": "COMPLETE",
+          "waiting_for": [],
+          "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa"
+        },
+        {
+          "id": "WATCH-CURRENT-CONSUMPTION",
+          "completed": true,
+          "declared_classification": "READY",
+          "effective_classification": "READY",
+          "execution": "COMPLETE",
+          "waiting_for": [],
+          "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa"
+        },
+        {
+          "id": "DEV-SKILL-TRIAGE",
+          "completed": true,
+          "declared_classification": "READY",
+          "effective_classification": "READY",
+          "execution": "COMPLETE",
+          "waiting_for": [],
+          "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa"
+        },
+        {
+          "id": "ST02-REAL-ORIGINAL",
+          "completed": false,
+          "declared_classification": "DATA_BLOCKED",
+          "effective_classification": "DATA_BLOCKED",
+          "execution": "EXTERNAL_BLOCKED",
+          "waiting_for": [],
+          "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa"
+        },
+        {
+          "id": "ST03",
+          "completed": false,
+          "declared_classification": "READY",
+          "effective_classification": "DATA_BLOCKED",
+          "execution": "EXTERNAL_BLOCKED",
+          "waiting_for": [
+            "ST02-REAL-ORIGINAL"
+          ],
+          "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa"
+        },
+        {
+          "id": "ST04",
+          "completed": false,
+          "declared_classification": "READY",
+          "effective_classification": "DATA_BLOCKED",
+          "execution": "EXTERNAL_BLOCKED",
+          "waiting_for": [
+            "ST03"
+          ],
+          "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa"
+        },
+        {
+          "id": "TRUSTED-TRANSFER-SPEND-AUTHORITY",
+          "completed": false,
+          "declared_classification": "OWNER_BLOCKED",
+          "effective_classification": "OWNER_BLOCKED",
+          "execution": "EXTERNAL_BLOCKED",
+          "waiting_for": [],
+          "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa"
+        },
+        {
+          "id": "DIRECTOR-EXECUTION-ADAPTER",
+          "completed": false,
+          "declared_classification": "READY",
+          "effective_classification": "OWNER_BLOCKED",
+          "execution": "EXTERNAL_BLOCKED",
+          "waiting_for": [
+            "TRUSTED-TRANSFER-SPEND-AUTHORITY"
+          ],
+          "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa"
+        },
+        {
+          "id": "CURRENT-MEDIA-RIGHTS-REVISION",
+          "completed": false,
+          "declared_classification": "GATE_BLOCKED",
+          "effective_classification": "GATE_BLOCKED",
+          "execution": "EXTERNAL_BLOCKED",
+          "waiting_for": [],
+          "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa"
+        },
+        {
+          "id": "CANONICAL-MEDIA-SELECTION-ADAPTER",
+          "completed": false,
+          "declared_classification": "READY",
+          "effective_classification": "GATE_BLOCKED",
+          "execution": "EXTERNAL_BLOCKED",
+          "waiting_for": [
+            "CURRENT-MEDIA-RIGHTS-REVISION"
+          ],
+          "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa"
+        },
+        {
+          "id": "LIVE-INDEPENDENT-G5",
+          "completed": false,
+          "declared_classification": "GATE_BLOCKED",
+          "effective_classification": "GATE_BLOCKED",
+          "execution": "EXTERNAL_BLOCKED",
+          "waiting_for": [],
+          "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa"
+        },
+        {
+          "id": "H3-REAL-OWNER-EXPERIENCE",
+          "completed": false,
+          "declared_classification": "OWNER_BLOCKED",
+          "effective_classification": "OWNER_BLOCKED",
+          "execution": "EXTERNAL_BLOCKED",
+          "waiting_for": [
+            "ST02-REAL-ORIGINAL",
+            "DIRECTOR-EXECUTION-ADAPTER",
+            "LIVE-INDEPENDENT-G5"
+          ],
+          "evidence_revision": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa"
+        }
+      ],
+      "complete": false
+    },
+    "unimplemented_engineering": [
+      "DIRECTOR-EXECUTION-ADAPTER",
+      "CANONICAL-MEDIA-SELECTION-ADAPTER"
+    ],
+    "qualification": "THIS_IS_EXPLICIT_DEPENDENCY_BOOKKEEPING_NOT_COMPLETION_OR_LIVE_AUTHORITY",
+    "tests": {
+      "unit": {
+        "pass": 567,
+        "skip": 4
+      },
+      "boundary": {
+        "pass": 133
+      },
+      "skill": {
+        "pass": 14
+      },
+      "chromium": {
+        "pass": 5
+      },
+      "postgres": "LOCAL_SYNTHETIC_K3_DB_TEST_PASS_STORAGE_HOLD",
+      "typecheck": "PASS"
+    },
+    "remote_runs": {
+      "ci": 42035692765,
+      "postgres": 42035692988,
+      "http": 42035692756
+    },
+    "final_source_sha": "eec13b2373ac74101f497be40f928d2b89d40690",
+    "final_remote": {
+      "ci": {
+        "run_id": 42037766176,
+        "status": "SUCCESS",
+        "unit_pass": 571,
+        "unit_skip": 4,
+        "boundary_pass": 133,
+        "skill_pass": 14
+      },
+      "http": {
+        "run_id": 42037766124,
+        "job_id": 127280273773,
+        "status": "SUCCESS",
+        "pass": 24,
+        "skip": 1
+      },
+      "postgres_inherited": {
+        "source_sha": "22b8c1ca0de991306114206b73cc19d4a9f7c0aa",
+        "run_id": 42035692988,
+        "status": "SUCCESS",
+        "real_original_storage": "HOLD"
+      }
+    }
   }
 }

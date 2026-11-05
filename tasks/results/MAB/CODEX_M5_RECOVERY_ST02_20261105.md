@@ -120,3 +120,14 @@
 最终提交/精确CI见本节收尾。M5整体HOLD；ST02真实数据依赖和ST05受控执行适配（工程未完成＋有权输入/支出契约缺席）分别记账，不混成“均已完成只等生产”。这是一份完整可追溯工程检查点，**不是原M5全部准出或全部READY完成的声明**。
 
 本轮Skill提交c55da7c（v0.2.1）；原5回执/3草案历史条目保留，追加4条真实脱敏工程经验，现9回执/7份不可执行待评价草案。分析器实跑成功，未自动准入。目标差异账仅将实际已变kad1-policy.d.mts原“字节相同”改ADAPTED；审计由HANDOFF_DECLARED_SHA256_MISMATCH定向修正后errors=[]/HANDOFF_NOT_READY。25条HTTP规格收集通过（不是25条实际HTTP PASS）。
+
+### 7.4 最终精确远端核证与补丁
+
+- 源批`22b8c1ca0de991306114206b73cc19d4a9f7c0aa`：主CI [42035692765](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/42035692765) SUCCESS（567单测/4旧SKIP、133边界、14Skill、类型/Build/严格鉴权）；PG17 [42035692988](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/42035692988) SUCCESS（新增101资产分页与原仓储/撤权/迁移回放/回滚，711旧行不变，K3_DB_TEST_PASS）；HTTP [42035692756](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/42035692756) SUCCESS（24PASS/1官方StorageSKIP，合成DB清理成功）。
+- 最终相邻检查发现`works/:id/status`仍用旧done布尔值，与本批`stages`当前材料/回执不一致；4项RED→11项定向GREEN，将status改为同一Owner/当前材料/真实回执的状态投影，保留显式guard/no-store和原revision元数据wire。补丁`eec13b2373ac74101f497be40f928d2b89d40690`已非强制推main。
+- **最终源码主CI [42037766176](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/42037766176) SUCCESS**：571单测PASS/4旧联网SKIP、133边界PASS、14 Skill PASS、六workspace类型/Next Build、25规格收集、严格鉴权0缺口/0无Owner、74目标errors=[]且HANDOFF_NOT_READY。
+- **最终源码HTTP [42037766124](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/42037766124) / job127280273773 SUCCESS**：24PASS/1官方Storage缺配置SKIP，MAB_HTTP_BROWSER_PASS、MAB_HTTP_SYNTHETIC_DATABASE_CLEANED。补丁未改DB代码，PG按前一精确22b8c1c证据继承，不假称本补丁另跑PG。
+- 本地localhost Next测试服务及本轮三个合成PG容器/卷已清理；原work@759dbbd干净，独立源码副本收尾clean。运行中日志一次只读下载被存储端拒绝，未重复或绕过；最终完成日志正常核实。未执行生产SQL/Storage/权限/Key/正式Gate/外发或付费调用。
+- 最后仅证据/状态补记使用`[skip ci]`，不能称其又跑过完整CI；实际代码/测试精确源为eec13b2。核证JSON在原文件追加本轮worklist及triage，ready=[]但complete=false；其中DIRECTOR-EXECUTION-ADAPTER与CANONICAL-MEDIA-SELECTION-ADAPTER明确为未完成工程，依赖未落实的有权外发/费用来源及当前媒资权利/修订绑定，不能用机器分类掩盖代码缺失。其他独立修补已实码/受测，仍不签M5全量完成或降低原HOLD。尚待Owner回答现有可信外发/费用授权来源；该答案未到前不凭客户端声明/API key接通模型。
+
+**下一步**：先落实现行业务可信授权源/契约，再接通受控导演执行与规范选材写入（保留原Registry/Tool/预算/权限体系，不造平行许可）；合法真实原件与隔离身份齐备后完成ST02首次/回放/撤权，再依ST03→ST04顺序。原六项完整验收、19组件/13资产专业语义/真实Owner体验及全部生产条件仍未全部达到，M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY。不可将本次完整GitHub检查点称为M5全部任务准出。
