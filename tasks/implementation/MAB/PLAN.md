@@ -436,7 +436,7 @@ A：隋唐大运河及江南水路连接。B：宋代江南运河沿线的城镇
 
 ### 6B.4｜双 Skill 理念继承与跨工具开发 Skill 提效（2026-11-05 Owner 确认；工程并行任务）
 
-**身份、归属、优先级。** 本项是 MAB 现行工程计划的有界提效任务，服务正在执行的 M5/ST-02 及后续 M0—M8 施工和长期运维，**不是** M9、第十四个 HP、独立产品专项、另一套 Skill/Registry 权威，也不改变既定功能目标、工程主线、合同、Gate 或 M5 准出门槛。设计依据：MHKA-04 §3（特别是 CTX-ENG/PROD/STUDIO/EXPLORE、Skill/Tool/Dispatcher 区分）、MHKA-05 工程职责；历史依据仅供继承：C2 V1.1/V1.2/V1.3 双 Skill 理念。技术侧由 CTX-ENG 执行，原 MAB/PLAN 与 progress 为唯一任务和进度归属；Owner 只审需要授权或产品/成本变化的内容。
+**身份、归属、优先级。** 本项是 MAB 现行工程计划的有界提效任务，服务正在执行的 M5/ST-02 及后续 M0—M8 施工和长期运维，**不是** M9、第十四个 HP、独立产品专项、另一套 Skill/Registry 权威，也不改变既定功能目标、工程主线、合同、Gate 或 M5 准出门槛。设计依据：MHKA-04 §3.6（双 Skill 长期理念与 CTX-ENG/PROD/STUDIO/EXPLORE 不变的职责）、MHKA-05 §10（跨工具开发 Skill 工程实现与长期运维）；历史依据仅供继承：C2 V1.1/V1.2/V1.3 双 Skill 理念。技术侧由 CTX-ENG 执行，原 MAB/PLAN 与 progress 为唯一任务和进度归属；Owner 只审需要授权或产品/成本变化的内容。
 
 **继承裁决。** “双 Skill”保留为**两条长期能力建设线**而非两套物理 Skill 平台或替代 MHKA-04 四执行上下文的权威分类：
 - **开发 Skill（面向建造与维护墨痕的 AI 开发工具）：** 在 CTX-ENG 下学习并执行工程接续、诊断、修改、测试、发布准备、变更影响与维护方法；原则上可被 Codex、CodeBuddy、ChatGPT 等支持的开发环境复用。

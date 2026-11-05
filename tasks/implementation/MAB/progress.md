@@ -1062,3 +1062,8 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - **顺序**：先核工具环境与 canonical 方法源 → 建 `mohen-dev-continuation`（含验证/交接内核）→ 在真实 M5 相邻任务中验证连续执行与跨工具接力 → 后续按证据拆出维护/验证技能。首期只优化真实施工，不以 `SKILL.md` 文件存在、空演示或自动状态文字宣称开发 Skill 已可用。
 - **当前状态**：`DESIGN_DECISION_RECORDED / DS-01—DS-04 NOT_STARTED`。开发 Skill 源文件、加载器、Codex/CodeBuddy 真实调用及 CI 验收均未在本次实现；后续实施逐批回写同一 progress，确实需要生产授权、受限外发、付费或产品方向决策时由 Owner 裁决。
 
+## 2026-11-05｜双 Skill 长期理念回写 MHKA 宪章（仅架构职责明确，DS 未实施）
+
+- **依据与根因**：Owner 认可原 C2 双 Skill 长期积累、跨开发工具复用的核心理念。MHKA-04 §3.2 已有 `CTX-ENG`，但未明确持续建设工程开发 Skill、跨工具接续/验证及 BUILD/MAINTAIN 长期能力的强制责任；专业生产 Skill 深化与 MAB 功能施工中缺乏该项独立实施约束，导致架构到工程的责任传递不完整。
+- **原位补充**：MHKA-04 新增 §3.6，仅明确两条能力建设线及四执行上下文不变、开发/生产权限隔离和可移植长期方法；MHKA-05 §10 增加跨工具实现与可核验维护责任；MAB `PLAN.md §6B.4` 原位指向这两条唯一上位规范。没有新增宪章、重写 C2 旧版、调整产品需求、生产 Skill Registry、现行 Gate、74目标或 M0—M8/HP01—HP13。
+- **状态**：`MHKA_SKILL_INHERITANCE_DESIGN_CLARIFIED`；开发 Skill `DS-01—DS-04 NOT_STARTED`，无技能加载/命令执行/跨工具成功证明；原 M5/ST-02 与所有现行安全、费用、外发、生产和独立G HOLD 不变。源码及 CI/执行结果须后续按精确 main SHA 独立验收。
