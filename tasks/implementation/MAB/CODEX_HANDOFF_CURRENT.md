@@ -1,5 +1,8 @@
 # 墨痕 MAB｜Codex 当前执行交接书（唯一现行入口）
 
+> **2026-11-05｜DS-01 新增远端核证（优先于下方同日准备阶段文字）**：canonical 开发 Skill / CodeBuddy loader `4497cf10` 已入 main，GitHub Actions [41975584235](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41975584235) 的 MHKA 路由守卫与 `DS_DEV_SKILL_LAYOUT_PASS` 均 SUCCESS；同轮完整 CI 因既有 M5 `apps/web/lib/studio-research-read.ts` 的 TS2353 和两处 TS2451 失败，后续测试/构建 SKIP。**DS01_STATIC_VERIFIED / DS02_CODE_PRESENT / HOST_NOT_RUN / DS03_NOT_RUN**；下次先按实际 main 继续修 Typecheck/ST-02，再分别实测 Codex 与 CodeBuddy 加载，不冒称跨会话自动运行。
+
+
 > **2026-11-05｜DS-01 工具 Skill 仓库准备（新于下方历史提示）**：基于 main@a2fb10c2fbf973b450a360775745a67de6bb37c7 的审查，在原 §6B.4 内新增 canonical `.agents/skills/mohen-dev-continuation/SKILL.md`、CodeBuddy 轻量加载适配器 `.codebuddy/skills/mohen-dev-continuation/SKILL.md`、机器防漂移守卫 `scripts/guards/check-dev-skill-layout.mjs` 及单份回执 `tasks/results/MAB/DS01_DEV_SKILL_ENVIRONMENT_20261105.md`。此为 CTX-ENG 工程提效，不能变更 MHKA、原 M5/ST-02、产品生产 Skill/Registry、专业 Gate 或任何 HOLD。**静态 CI、Codex/CodeBuddy 实机加载与 DS-03 连续工作均待分别验收**。执行时先核最新 main 和 CI，再选择现有 MAB 下一任务；不要把 Skill 文件存在当自动加载或后台连续执行的证明。
 
 > **2026-11-05｜开发 Skill 提效任务已纳入原施工计划（尚未实现）**：Owner 确认继承 C2 双 Skill 长期能力积累理念，按 MHKA-04 四执行上下文区分 CTX-ENG 工具开发与产品 PROD/STUDIO/EXPLORE；唯一新增执行要求见 `tasks/implementation/MAB/PLAN.md §6B.4`（DS-01—DS-04）。先让跨工具 `mohen-dev-continuation` 服务当前 M5 持续施工，公共方法兼顾未来维护；不修改现行 M0—M8、HP01—HP13、ST-02 下一优先任务及任何正式 HOLD。**本批仅记录决策，未创建 Skill 或获得自动运行证明。**

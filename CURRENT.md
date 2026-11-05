@@ -1,5 +1,8 @@
 # 墨痕｜当前真实工程状态
 
+> **2026-11-05｜DS-01 新增远端核证（优先于下方同日准备阶段文字）**：canonical 开发 Skill / CodeBuddy loader `4497cf10` 已入 main，GitHub Actions [41975584235](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41975584235) 的 MHKA 路由守卫与 `DS_DEV_SKILL_LAYOUT_PASS` 均 SUCCESS；同轮完整 CI 因既有 M5 `apps/web/lib/studio-research-read.ts` 的 TS2353 和两处 TS2451 失败，后续测试/构建 SKIP。**DS01_STATIC_VERIFIED / DS02_CODE_PRESENT / HOST_NOT_RUN / DS03_NOT_RUN**；下次先按实际 main 继续修 Typecheck/ST-02，再分别实测 Codex 与 CodeBuddy 加载，不冒称跨会话自动运行。
+
+
 > **2026-11-05｜DS-01 开发工具 Skill 初版入仓（非产品功能准出）**：CTX-ENG 跨工具 `mohen-dev-continuation` 的 canonical 方法源（`.agents/skills/mohen-dev-continuation/SKILL.md`）、CodeBuddy 轻适配器、CI 静态包装守卫和 MAB 原账接续已准备；需分别核实远端精确 SHA 的 guard/整体 CI、Codex 与 CodeBuddy 的宿主实际加载及 DS-03 真实 M5 连续施工。方法文件存在 ≠ 原生自动触发或后台持续运行。报告 `tasks/results/MAB/DS01_DEV_SKILL_ENVIRONMENT_20261105.md`；原 M5/ST-02、所有产品/知识 Gate、费用/外发与生产 HOLD 不变。
 
 > **2026-11-05｜Owner 新架构工程入口纠偏（不等于运行准出）**：根 `AGENTS.md` 已转为六份 `governance/mhka/` MHKA 唯一工程设计/施工入口；C0—C4 只作为历史来源与旧实现兼容参考。旧“等 M8 才切换工程入口”的安排作废；M8 仍管正式生产运行启用/旧代际退役。M5 及全部现有 HOLD、Gate、数据和费用授权不变。静态路由守卫在本轮精确 main@fceaea2 的 Actions 41963756191 **SUCCESS（独立步骤）**；该次完整 CI **FAILURE**，原因是未在本轮改动的 `apps/web/lib/studio-research-read.ts` 存在 TS2353 和两处 TS2451，M5 代码需单独修复。不得把路由守卫通过说成完整CI或M5通过。

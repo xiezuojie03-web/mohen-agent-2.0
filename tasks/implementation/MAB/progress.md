@@ -1083,3 +1083,8 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - **DS-02 首个方法文件 CODE_PRESENT 候选**：v0.1.0 已具备真实可读 SKILL.md 元数据与工作流，但 Codex/CodeBuddy 的宿主发现、触发、权限和真实执行未验证，不标为 `HOST_VERIFIED`。静态守卫 `scripts/guards/check-dev-skill-layout.mjs` 接入 CI 的 Typecheck 前；CI 需要核实该步骤 SUCCESS 才认定静态包装 PASS，M5 Typecheck 仍独立 HOLD。
 - **后续**：核本次真实 SHA/CI guard；在 Codex/CodeBuddy 实机验证加载及规范路由；DS-03 必须以现行 ST-02 或 M5 真实故障任务出连续施工回执；DS-04 后续按证据补维护策略。报告 `tasks/results/MAB/DS01_DEV_SKILL_ENVIRONMENT_20261105.md`。不得因 Skill 准备而改变 M5 与所有现行专业/生产/费用/外发 HOLD。
 
+### DS-01 精确远端静态 CI 回执（2026-11-05）
+
+- 代码 SHA `4497cf10b95b0ea0e57aa1ae41f3d67b1431d968`，Actions [41975584235](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41975584235)：MHKA guard 和 Developer Skill packaging guard **SUCCESS**，后者日志 `DS_DEV_SKILL_LAYOUT_PASS`；**完整 CI FAILURE**，原 M5 `apps/web/lib/studio-research-read.ts` TS2353（46行 `Material.title`）＋两处 TS2451（84/180行 `privateMaterialIds` 复声明）。没有把跳过的 Unit/Build 记 PASS。
+- DS-01 仓库方法源和平台适配 **STATIC_VERIFIED**；DS-02 方法首版 **CODE_PRESENT**；Codex/CodeBuddy 实际宿主触发 **NOT_RUN**；DS-03 真实 M5 连续施工 **NOT_RUN**；DS-04 后续维护 **NOT_STARTED**。详细见 `tasks/results/MAB/DS01_DEV_SKILL_ENVIRONMENT_20261105.md §5`；主 M5/ST-02 与原所有 HOLD 不变。
+

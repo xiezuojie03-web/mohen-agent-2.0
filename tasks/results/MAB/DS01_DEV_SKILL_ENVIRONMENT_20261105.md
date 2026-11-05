@@ -37,3 +37,11 @@
 5. DS-03：用 M5 真实 Typecheck 或 ST-02 工作证明“接续→诊断→改码→复测→提交→恢复”连续闭环；不得拿本报告代替实际工程实现或 Gate。
 
 **状态规则**：DS-01 仓库方案/适配结构 `CODE_PRESENT`（远端提交确认后）；静态 CI 与 Codex/CodeBuddy 宿主加载必须分别验证。DS-02 方法首版仅 `CODE_PRESENT`，正式效果 DS-03 `NOT_RUN`；DS-04 维护专用扩展 `NOT_STARTED`。本次不修改产品六阶段 Registry 或任何生产鉴权。
+
+## 5. 远端精确静态验证回执（2026-11-05）
+
+- **Skill 文件与机器守卫源码提交**：`4497cf10b95b0ea0e57aa1ae41f3d67b1431d968`，GitHub Actions 主 CI [41975584235](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41975584235)，job `127073535980`。
+- **MHKA engineering authority routing guard：SUCCESS；Developer Skill packaging guard (static only)：SUCCESS**，日志存在 `DS_DEV_SKILL_LAYOUT_PASS ... v0.1.0; NOT_HOST_ACTIVATED`。代码与 GitHub 路径真实落仓、CodeBuddy 适配器未被 .gitignore 忽略。
+- **FULL_CI = FAILURE（非 Skill 包装失败）**：后续 `pnpm -r typecheck` 在 `apps/web/lib/studio-research-read.ts` 失败：第46行 TS2353 `Material` 类型不接受 `title`；第84与第180行 TS2451 `privateMaterialIds` 重复声明。Playwright/unit/build 随主 CI 跳过，不能写为 PASS。与此前 main@a2fb10c 的 TypeScript 阻断一致；本 DS-01 未触碰该业务文件。
+- **裁定**：`DS01_STATIC_VERIFIED / DS02_CODE_PRESENT / CODEX_HOST_NOT_RUN / CODEBUDDY_HOST_NOT_RUN / DS03_NOT_RUN / M5_FULL_CI_HOLD`。接下来可以用这三个 TypeScript 错误作为 DS-03 的第一个真实故障任务，须由获授权工具按 canonical 步骤修复、复测并核验最新 main；不能以本次静态 PASS 替代实际连续开发能力或宿主自动加载。
+
