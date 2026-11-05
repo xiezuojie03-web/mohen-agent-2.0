@@ -65,11 +65,14 @@ try {
  // stay in their existing stores. Saved source/dependency hints confer no G5.
  const privateKinds=['research_brief','source_anchor','reading_note','evidence_note','spacetime_candidate','relation_hypothesis','humanistic_insight','research_collection','citation_snapshot','consented_feedback'];
  for(const kind of privateKinds){
-  const item={...input,assetId:randomUUID(),kind,idempotencyKey:'matrix-first',payload:{kind,text:'TEST_ONLY '+kind},
+  const consent=kind==='consented_feedback'?{consent:true,withdrawal_allowed:true}:{};
+  const item={...input,assetId:randomUUID(),kind,idempotencyKey:'matrix-first',payload:{kind,text:'TEST_ONLY '+kind,...consent},
    sourceRefs:[{type:'source_version',id:randomUUID(),revision:'UNVERIFIED',locator:{page:1}}],
    dependencyRefs:[{type:'reading_note',id:asset,revision:first.revision_id}]};
+  if(kind==='consented_feedback')
+   await assert.rejects(()=>repo.saveRevision({...item,payload:{kind,text:'TEST_ONLY no consent'}},token(a)),/STUDIO_FEEDBACK_CONSENT_REQUIRED/);
   const one=await repo.saveRevision(item,token(a));
-  const two=await repo.saveRevision({...item,expectedRevisionId:one.revision_id,idempotencyKey:'matrix-second',payload:{kind,text:'TEST_ONLY changed'}},token(a));
+  const two=await repo.saveRevision({...item,expectedRevisionId:one.revision_id,idempotencyKey:'matrix-second',payload:{...item.payload,text:'TEST_ONLY changed'}},token(a));
   assert.equal(two.revision_no,2);assert.equal(two.supersedes_revision_id,one.revision_id);
   assert.deepEqual((await repo.getRevision(one.revision_id,token(a))).payload,item.payload);
   assert.deepEqual(two.source_refs,item.sourceRefs);assert.deepEqual(two.dependency_refs,item.dependencyRefs);
