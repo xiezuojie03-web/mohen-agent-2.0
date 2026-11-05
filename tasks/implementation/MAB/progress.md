@@ -1127,3 +1127,10 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - **施工次序**：完整设计与受控基础建设同步，自 DS-03 首次 Codex/M5 真实任务开始采集、发现并生成隔离候选，再按真实回执逐步验收；**不再把先有局部 PASS 当作自动发现机制建设前置门**。CodeBuddy 仍延后至未来实际切换，不能阻断 M5。
 - **当前仅为设计/计划变更**：没有在本批创建自生长执行器、自动候选发布者、新 Skill 或真实环境运行回执；既有 DS-02 CLI 静态成功与 Codex/CodeBuddy 宿主 `NOT_RUN`、M5/ST-02 及全部 Gate、生产权限、外发和费用 HOLD 仍按精确真实 CI 证据。
 
+### 2026-11-05｜自生长方法论的 GitHub 与 ChatGPT 资料库同步核证
+
+- 基于 `main@ecf63715a2349f7febdd2d6552fe95071c94831b` 的有界设计修订已提交 `c1e95b2097d92cc4b1e21acfda11ea1815f926f5`，仅涉及 MHKA-04 §3.6、MHKA-05 §10、MAB §6B.4、progress 与现行 Codex handoff；没有新自生长运行器/产品 Registry/生产数据库变更。
+- MHKA-04 Git Blob `1adfc849a2643deea5bf4bbf6c76464808df9a83`；MHKA-05 Git Blob `1c2d1c685ffcd308417423114e391c60f96e1138`。ChatGPT Library 的 `03_权威知识体系重建` 与 `04_工程规范与Codex接入/repo_target/governance/mhka` 各两份原位更新，重新 materialize 后 **4/4 SHA 完全一致**。
+- 本提交 GitHub Actions [41984181833](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41984181833)：MHKA 路由 **SUCCESS**，开发 Skill 包装 **SUCCESS**，DS-02 Node CLI **5PASS/0FAIL**；完整 CI **FAILURE**，仍因 M5 `apps/web/lib/studio-research-read.ts` 第46行 TS2353 和第84/180行 TS2451（原问题未在本次改动），后续构建 SKIPPED。
+- 状态 `SELF_GROWTH_POLICY_RECORDED / DESIGN_AND_IMPLEMENTATION_PENDING`；Codex 先验 Skill 与 M5 实战、CodeBuddy 待实际转入时再验；M5 与所有生产/专业 Gate/HOLD 不变。
+

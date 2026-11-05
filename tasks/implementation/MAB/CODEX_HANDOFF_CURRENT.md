@@ -1,5 +1,8 @@
 # 墨痕 MAB｜Codex 当前执行交接书（唯一现行入口）
 
+> **2026-11-05｜自生长宪章双位置同步和 CI 回执**：设计修订 `c1e95b20` 已纳入 MHKA-04/05、MAB §6B.4；两章分别同步到 ChatGPT 资料库研究目录和 `repo_target` 镜像，4/4 Git Blob SHA 匹配。Actions [41984181833](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41984181833) MHKA、开发 Skill 包装、CLI 5/5 SUCCESS，但 M5 原 Typecheck 三错令全 CI FAILURE。自动发现/候选生成尚无实现回执，不冒称 Skill 自生长已运行。先继续 Codex M5，CodeBuddy 验证延后。
+
+
 > **2026-11-05｜开发 Skill 自生长长期方法已纳入宪章/MAB（新增方向，不冒充实现）**：按 MHKA-04 §3.6、MHKA-05 §10 与 MAB §6B.4，同步设计和建设经验采集→重复发现→四路分流→候选生成→隔离评价→受控准入→版本淘汰；真实 Codex M5 施工逐步检验，不以先做局部验证作为自动发现设计的前置条件。当前只有受控方法及计划，**自动自生长执行器未因此变成 CODE_PRESENT**。Codex 先验证 `mohen-dev-continuation` 并接续原 M5；CodeBuddy 待未来切换时验证、不阻断主线；维持全部权限和 Gate/HOLD。
 
 
