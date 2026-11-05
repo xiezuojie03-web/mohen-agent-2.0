@@ -1006,3 +1006,8 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - 定向修复 `935a1e1e`：成功路径夹具改非降级，并新增真实PG测试的降级HOLD、零费、不得research_done负例；**不调整runResearch/恢复制程、Gate或费用标准**。该提交主CI41945060178 SUCCESS，隔离PG1741945060135 SUCCESS，job126975088981证实research-resume 4/4、MAB_RESEARCH_RESUME_PG_PASS、K3_DB_TEST_PASS及711旧合成记录不变。
 - M5/HP11补充 `243ac2ab` 与 `9d7b1c4c`：Studio私有资产/修订/历史读取及保存返回显式no-store，新增401/404/503与成功路径单测；主CI41945285925 SUCCESS，job126975860823证实445单测PASS/4既有联网SKIP、133生产边界PASS、Next Build和74目标审计errors=[]。仅原位API/单测，不触及生产数据/DDL/Storage/专业资格。
 - 逐文件记录、失败根因与回滚：`tasks/results/MAB/CHATGPT_M5_RESUME_CACHE_20261105.md`。本批是M5/HP10与HP11的定向缺口，并非新M阶段；保留74目标原差异账和全部旧证据。以上PG/主CI仅为对应定向子项VERIFIED_ISOLATED，非生产网站实测；M5整体、ST01—04完整正链、13类专业语义/反馈撤回/合法复用/canonical媒资及所有M1—M4生产固定条件继续HOLD。无生产环境写入、模型调用或费用。
+
+
+### 2026-11-05｜M5/HP11追加真实Chromium私有资产缓存验证
+
+在原已实测主CI/PG子项基础上，定向补非对象JSON 400应no-store的实际漏口（`b063876a`）、相应单测（`3ae28f18`）及现有`mab-notebook.spec.ts`真实双Owner HTTP正反断言（`9f3af8b1`）。测试沿用现有一次性隔离PG17+Chromium，不新造权限/Gate/存储/任务书。源码`9f3af8b1`已触发主CI41945997957与HTTP41945997916，待核结果前本子项标CI_PENDING；精确测试及回滚见`tasks/results/MAB/CHATGPT_M5_RESUME_CACHE_20261105.md`§4。原M5/所有正式条件HOLD不变。
