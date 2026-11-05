@@ -121,6 +121,7 @@ export interface PrivateOriginalInput {
 export interface PrivateOriginalRepository {
  reserve(input: Omit<PrivateOriginalInput,"bytes"> & {sha256:string;byteSize:number},token:string):Promise<PrivateOriginalRecord & {storage_key:string}>;
  finalize(originalId:string,sha256:string,token:string):Promise<PrivateOriginalRecord>;
+ listForProject(projectId:string,token:string):Promise<PrivateOriginalRecord[]>;
  getStored(originalId:string,token:string):Promise<(PrivateOriginalRecord & {storage_key:string})|null>;
 }
 export interface PrivateOriginalStorage {
@@ -202,8 +203,16 @@ export declare function createStudioDelegationRepository(pool:{connect:Function}
  listReceipts(delegationId:string,token:string):Promise<StudioExecutionReceiptRecord[]>;
 };
 
+/** Owner-scoped read-only private L1/L2 snapshot; never returns storage_key or payload_ref. */
+export interface PrivateTextReadingContext {
+ schema:'mohen.private-reading-context.v1';original_id:string;project_id:string;
+ asset_id:string;asset_revision_id:string;file_name:string;content_type:string;
+ byte_size:number;sha256:string;original_state:'STORED_VERIFIED';
+ readings:Array<Record<string,unknown>>;readings_limit:number;direct_storage_reference_exposed:false;
+}
 /** Byte-attested private L1 candidate write, never a Gate decision. */
-export declare function createPrivateTextReadingRepository(pool:{connect:Function},options:{verificationKey:string;keyVersion:string}):{
+export declare function createPrivateTextReadingRepository(pool:{connect:Function},options?:{verificationKey?:string;keyVersion?:string}):{
+ listByOriginal(originalId:string,token:string):Promise<PrivateTextReadingContext>;
  save(input:{runId:string;originalId:string;extent:PrivateTextExtent;quote:string;
    record:PrivateOriginalRecord;bytes:Buffer},token:string):Promise<{
      read_run_id:string;read_unit_id:string;artifact_revision:string;request_digest:string;qualification:'UNASSESSED'}>;
