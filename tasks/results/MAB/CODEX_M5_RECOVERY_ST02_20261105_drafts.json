@@ -1,9 +1,157 @@
 {
   "schema": "mohen.dev-experience-analysis.v1",
   "host_telemetry_available": false,
-  "receipt_count": 5,
+  "receipt_count": 9,
   "discovery": "EXACT_SIGNATURE_GROUPING_ON_EXPLICIT_REDACTED_RECEIPTS",
   "candidates": [
+    {
+      "signature": "active-client-revalidates-with-bounded-delay",
+      "route": "UPGRADE_EXISTING",
+      "state": "DRAFT_PENDING_EVALUATION",
+      "auto_activate": false,
+      "permission": "NO_EXECUTION_AUTHORITY",
+      "sample_count": 1,
+      "success_count": 1,
+      "failure_count": 0,
+      "source_receipts": [
+        "m5-watch-revalidation"
+      ],
+      "evidence": [
+        {
+          "receipt_id": "m5-watch-revalidation",
+          "task": "M5-REMAINING",
+          "host": "codex",
+          "baseline_sha": "7246ec0eb0ed8f45e1e64610e790b99b4b6f18fa",
+          "result_sha": "c55da7c7bac13addc6f40814666664a17d7b91a7",
+          "evidence_refs": [
+            "tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md"
+          ]
+        }
+      ],
+      "proposed_checks": [
+        "http",
+        "unit"
+      ],
+      "required_evaluation": [
+        "positive-and-negative-tests",
+        "reuse-value",
+        "host-specific-permissions",
+        "version-and-rollback",
+        "authorized-admission"
+      ],
+      "rollback": "Discard draft; retain source receipts; never change canonical or product routes automatically."
+    },
+    {
+      "signature": "blocked-work-must-not-stop-independent-ready",
+      "route": "UPGRADE_EXISTING",
+      "state": "DRAFT_PENDING_EVALUATION",
+      "auto_activate": false,
+      "permission": "NO_EXECUTION_AUTHORITY",
+      "sample_count": 1,
+      "success_count": 1,
+      "failure_count": 0,
+      "source_receipts": [
+        "m5-work-triage"
+      ],
+      "evidence": [
+        {
+          "receipt_id": "m5-work-triage",
+          "task": "M5-REMAINING",
+          "host": "codex",
+          "baseline_sha": "7246ec0eb0ed8f45e1e64610e790b99b4b6f18fa",
+          "result_sha": "c55da7c7bac13addc6f40814666664a17d7b91a7",
+          "evidence_refs": [
+            "tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md"
+          ]
+        }
+      ],
+      "proposed_checks": [
+        "profile-negative",
+        "unit"
+      ],
+      "required_evaluation": [
+        "positive-and-negative-tests",
+        "reuse-value",
+        "host-specific-permissions",
+        "version-and-rollback",
+        "authorized-admission"
+      ],
+      "rollback": "Discard draft; retain source receipts; never change canonical or product routes automatically."
+    },
+    {
+      "signature": "bounded-owner-browse-preserves-default",
+      "route": "SHARED_SCRIPT",
+      "state": "DRAFT_PENDING_EVALUATION",
+      "auto_activate": false,
+      "permission": "NO_EXECUTION_AUTHORITY",
+      "sample_count": 1,
+      "success_count": 1,
+      "failure_count": 0,
+      "source_receipts": [
+        "m5-admin-browse"
+      ],
+      "evidence": [
+        {
+          "receipt_id": "m5-admin-browse",
+          "task": "M5-REMAINING",
+          "host": "codex",
+          "baseline_sha": "7246ec0eb0ed8f45e1e64610e790b99b4b6f18fa",
+          "result_sha": "c55da7c7bac13addc6f40814666664a17d7b91a7",
+          "evidence_refs": [
+            "tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md"
+          ]
+        }
+      ],
+      "proposed_checks": [
+        "permission-negative",
+        "unit"
+      ],
+      "required_evaluation": [
+        "positive-and-negative-tests",
+        "reuse-value",
+        "host-specific-permissions",
+        "version-and-rollback",
+        "authorized-admission"
+      ],
+      "rollback": "Discard draft; retain source receipts; never change canonical or product routes automatically."
+    },
+    {
+      "signature": "checkpoint-is-not-current-read-permission",
+      "route": "UPGRADE_EXISTING",
+      "state": "DRAFT_PENDING_EVALUATION",
+      "auto_activate": false,
+      "permission": "NO_EXECUTION_AUTHORITY",
+      "sample_count": 1,
+      "success_count": 1,
+      "failure_count": 0,
+      "source_receipts": [
+        "m5-current-materials"
+      ],
+      "evidence": [
+        {
+          "receipt_id": "m5-current-materials",
+          "task": "M5-REMAINING",
+          "host": "codex",
+          "baseline_sha": "7246ec0eb0ed8f45e1e64610e790b99b4b6f18fa",
+          "result_sha": "c55da7c7bac13addc6f40814666664a17d7b91a7",
+          "evidence_refs": [
+            "tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md"
+          ]
+        }
+      ],
+      "proposed_checks": [
+        "permission-negative",
+        "unit"
+      ],
+      "required_evaluation": [
+        "positive-and-negative-tests",
+        "reuse-value",
+        "host-specific-permissions",
+        "version-and-rollback",
+        "authorized-admission"
+      ],
+      "rollback": "Discard draft; retain source receipts; never change canonical or product routes automatically."
+    },
     {
       "signature": "fixture-contract-drift",
       "route": "UPGRADE_EXISTING",

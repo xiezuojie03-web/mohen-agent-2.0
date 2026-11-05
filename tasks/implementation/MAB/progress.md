@@ -1212,3 +1212,14 @@ Data API范围：pg_db_role_setting未见pgrst.db_schemas/db_extra_search_path�
 **最终远端核证（本批闭合，不是ST02准出）**：`6cd2fa9a07ae7d089ba00f0beff5b7d16d8b6079`已非强制推main；完整CI [42002088920](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/42002088920) / job127159555541 SUCCESS，逐步骤及完整日志已核：Node22/pnpm9.15.4/Ubuntu、468单测PASS/4既有SKIP、133边界PASS、11 Skill PASS、20 Playwright规格收集(非实际HTTP)、六workspace类型/Build/鉴权守卫SUCCESS、74目标errors=[]且HANDOFF_NOT_READY。本次未新跑真实PG/HTTP、未重复原候选验收；ST02真实字节=DEFERRED_DATA，隔离配置=DEFERRED_ENV，安全业务矩阵=NOT_RUN，M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY。
 
 本次唯一完整CI已完成；收尾仅将精确结果回写CURRENT/progress/handoff，使用`[skip ci]`文档提交，不能把核证补记提交称为另一次完整CI通过。回滚：对6cd2fa9及其文档核证后继提交做非强制revert，或只撤回其四文件差异，保留旧历史；无DB/Storage/产品源码需回滚。两个工作区收尾clean，旧work保留。**下一步仍是先确认合法真实原件位置与隔离授权，按§3重入ST02；不启动ST03、不等待CodeBuddy验收、不重做已验能力。**
+
+
+## 2026-11-05｜M5全量剩余清单施工（7246ec0接续，非仅环境核查）
+
+按原PLAN M5六分母复核并已原位记录每项代码/测试/READY及真实DATA/GATE/OWNER依赖。源码批51f1234（Admin检索/用途/撤权拒绝）、82afee6（旧G5消费/WATCH重核/出处/媒体）、14b4d2c（Studio输入/Owner/材料快照/精确修订与安全HOLD）均本地受测。567单测PASS/4联网SKIP、133边界、六workspace类型、实际合成PG17完整runner与Admin101分页RLS断言PASS、Chromium5PASS；无真实原件新增验证。详细独立施工回执、19组件分母、首失败/恢复、回滚及未完成工程见既有CODEX_M5_RECOVERY_ST02_20261105.md§7，未新建权威或阶段。
+
+**不冒称全量完成**：独立复审指出directorExternalProcessingBlocker恒HOLD只关闭了无授权外发；现有计划/委托仓储不授调用/支出权，ST05模型受控适配尚未完成，需现行业务权威提供source/provider/purpose/input及预算授权契约后接通，不能用API key/客户端字段/合成正例替代。canonical媒体选用写入绑定同样未接通，已拒绝假成功。真实ST02=DATA_BLOCKED，正式G5/生产操作=GATE/OWNER_BLOCKED，完整H1/H2/H3/19组件/13资产专业与Owner体验不因单测通过而准出。M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；ST03/04未提前启动。
+
+开发Skill同源v0.2.1增离线四类阻塞/依赖调度与两次失败停止，阶段检查点不再替代整轮完成；产品生产/创作/观看/探索合同保持，EXP S01—S08未删。最终SHA/CI待下方精确核证，不把本地检查记为远端SUCCESS。
+
+本轮Skill源码c55da7c，v0.2.1静态两守卫与14Node正反PASS；9条脱敏回执/7待评价草案（历史5/3保留，追加4）。目标账kad1-policy.d.mts同步ADAPTED，74审计errors=[]且HANDOFF_NOT_READY。最后CI将在本批最终推送HEAD上运行一次，精确结果后补。

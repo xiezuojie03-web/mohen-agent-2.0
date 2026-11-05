@@ -106,5 +106,93 @@
     "evidence_refs": [
       "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41993463958"
     ]
+  },
+  {
+    "id": "m5-current-materials",
+    "task": "M5-REMAINING",
+    "signature": "checkpoint-is-not-current-read-permission",
+    "host": "codex",
+    "baseline_sha": "7246ec0eb0ed8f45e1e64610e790b99b4b6f18fa",
+    "result_sha": "c55da7c7bac13addc6f40814666664a17d7b91a7",
+    "outcome": "PASS",
+    "reuse_target": "existing_method",
+    "checks": [
+      "unit",
+      "permission-negative"
+    ],
+    "evidence_refs": [
+      "tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md"
+    ],
+    "redacted": true,
+    "context": "CTX-ENG",
+    "production": false,
+    "paid": false,
+    "restricted_data": false
+  },
+  {
+    "id": "m5-admin-browse",
+    "task": "M5-REMAINING",
+    "signature": "bounded-owner-browse-preserves-default",
+    "host": "codex",
+    "baseline_sha": "7246ec0eb0ed8f45e1e64610e790b99b4b6f18fa",
+    "result_sha": "c55da7c7bac13addc6f40814666664a17d7b91a7",
+    "outcome": "PASS",
+    "reuse_target": "shared_tool",
+    "checks": [
+      "unit",
+      "permission-negative"
+    ],
+    "evidence_refs": [
+      "tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md"
+    ],
+    "redacted": true,
+    "context": "CTX-ENG",
+    "production": false,
+    "paid": false,
+    "restricted_data": false
+  },
+  {
+    "id": "m5-watch-revalidation",
+    "task": "M5-REMAINING",
+    "signature": "active-client-revalidates-with-bounded-delay",
+    "host": "codex",
+    "baseline_sha": "7246ec0eb0ed8f45e1e64610e790b99b4b6f18fa",
+    "result_sha": "c55da7c7bac13addc6f40814666664a17d7b91a7",
+    "outcome": "PASS",
+    "reuse_target": "existing_method",
+    "checks": [
+      "http",
+      "unit"
+    ],
+    "evidence_refs": [
+      "tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md"
+    ],
+    "redacted": true,
+    "context": "CTX-ENG",
+    "production": false,
+    "paid": false,
+    "restricted_data": false
+  },
+  {
+    "id": "m5-work-triage",
+    "task": "M5-REMAINING",
+    "signature": "blocked-work-must-not-stop-independent-ready",
+    "host": "codex",
+    "baseline_sha": "7246ec0eb0ed8f45e1e64610e790b99b4b6f18fa",
+    "result_sha": "c55da7c7bac13addc6f40814666664a17d7b91a7",
+    "outcome": "PASS",
+    "reuse_target": "existing_method",
+    "checks": [
+      "unit",
+      "profile-negative"
+    ],
+    "evidence_refs": [
+      "tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md"
+    ],
+    "redacted": true,
+    "context": "CTX-ENG",
+    "production": false,
+    "paid": false,
+    "restricted_data": false
   }
 ]

@@ -75,3 +75,48 @@
 本批三项操作完成，含必要的测试失败修复，不再启动新功能。业务b8e139c、夹具补证d12f20d均已入main；精确CI/PG/HTTP分别核证如§4，最终验收回写仅文档/脱敏证据。工作树收尾须clean，HEAD与origin/main相同；旧work@759dbbd保留，无独有未推送源码。
 
 接续指令：从最新main读取本回执§4和原MAB最新进度；直接继续ST02真实原件L0→L1→L2→自动reading_note首次/回放/撤权PG与HTTP验证。继承已通过候选HTTP和LIMIT100仓储断言，不重做ST01，不提前签ST03；其后才接材料选择与AnalyzeAndSaveCandidates。按同一开发Skill最多三项操作形成下一检查点，无需Owner重发任务书。
+
+
+## 7. 2026-11-05｜M5全量剩余项复核与施工回执（续接7246ec0，非全量准出）
+
+本轮按原PLAN M5六分母逐项复核，不以检查点替代完成；具体剩余依赖及分类见PLAN置顶本轮核销表。跨额度中断只继承已落盘改动和日志，不覆盖旧work；中断前未终态单测不作PASS。三批源码51f1234/82afee6/14b4d2c未改生产Schema、Bucket、权限、Key、Gate或Registry。新helper/test是实际源码，不是重复权威文件。
+
+### 7.1 实际验证与失败保留
+
+- Node24.19.0/Git2.52.0，固定corepack pnpm9.15.4 frozen安装，锁文件不变；六工作区Typecheck PASS。
+- 新逻辑先RED后GREEN：Admin4FAIL→定向26PASS；a0014FAIL及媒体7FAIL→GREEN；改稿/Provider结构19FAIL、preview5FAIL→GREEN；真实getTaskStatus对象/字符串CP与幂等旧正文泄漏3FAIL→GREEN；stages错误关联4FAIL→7PASS；media-selection与候选接口3FAIL→4PASS；开发triage新增3FAIL→9PASS（全Skill14PASS）。所有单测均为工程隔离，不是原件资格。
+- 最终完整无联网单测`CI=true pnpm test:unit`：567PASS/4既有联网SKIP；边界133PASS；类型PASS。第一次完整本地默认CI未设，Commons真实联网降级FAIL，另3条media新RED施工中FAIL（550PASS/2SKIP）；没有把实网失败改PASS，最后按现有CI隔离模式4联网SKIP。额度中断的一次检查无终态，不算通过。
+- 实际本地PG17.11一次性合成实例标记codex-k3-isolated：原`test-k3-db`完整PASS，新增Admin101资产分页/搜索/Owner/游标边界实际执行；K3_DB_TEST_PASS，711旧行不变，迁移重放/回滚失败关闭、研究恢复/当前资格撤权均有原runner断言。Storage配置缺失仍MAB_PRIVATE_ORIGINAL_STORAGE_HOLD，**无真实原件新增验证**。
+- PG首两次初始化失败分别因官方entrypoint初始化仍用默认socket，保留日志；未复用失败实例，查因后改工作流相同/var/run/postgresql映射，第三个合成实例成功。无生产容器或数据库受影响。
+- 最终Chromium `/usr/bin/chromium` localhost真浏览器5PASS：撤权、服务失败/重试、focus与轮询、长章计时、当前出处面板/关闭返回。HTTP目录由测试显式合成拦截，不代验真实G5/原件；新spec纳入原MAB HTTP runner和workflow路径。Watch旧码最初RED受环境影响未执行；后补相关探索假tab enabled断言实际RED。自动审批拒绝过一次覆盖活动Watch文件以回跑旧码的可选操作，理由保护未提交现场；未执行、未覆盖，不把它声称RED证据。
+- 独立复审未发现新增材料重验/Owner join/Admin游标确定安全bug，但明确指出导演外发恒HOLD是**未完成的受控执行适配**，不能归为全量工程已完成或仅外部数据缺失。本轮保留该未完成事实；正式外发/支出授权来源没有在仓库取得（现有plan/delegation仓储声明不授执行权），已向Owner询问该现有业务权威来源，不能自行建立新许可或假造授权正例。
+
+### 7.2 产品能力/19组件责任，不吞掉分母
+
+| UI项 | 本轮实际/继承 | 未达条件 |
+|---|---|---|
+| W01/W02/W08/W11 | 同已发布WorkRevision的轻量图文/章导航/播放语义，失败关闭和重核；不造第二正文 | 真实作品/G5/媒体+完整人文体验仍待验 |
+| W03 | 作品时码与历史时间分开；未伪造历史变化轴 | 合法历史时间资产/变化证据及完整组件未验 |
+| W04/W06/W07 | 既有合格读/低覆盖退路保留，媒体现行权利收紧 | 真实空间/可比口径/关系证据及专业表达未准出；不是已实现全组件 |
+| W05 | 继承私有原件工程接口；本轮不造书影 | 真实合法原件+精确定位+展示权DATA/GATE_BLOCKED |
+| W09 | 未接模型就不伪装对话成功 | 外发/支出/受控执行适配未接通 |
+| W10 | 当前已发布章的出处字符串可打开/关闭、无出处禁用，保留章位 | 不冒称可返原件/逐字locator；真实Evidence详情资格独立 |
+| X01/X02 | EXP暂停但长期入口/OriginSnapshot/返回版本合同及S01—S08保持 | 不启动完整EXP/UXD-01；不算本轮组件运行PASS |
+| C01 | 私有Admin/资产API可检索分页，素材目录基于真实savedWork，失败可见 | canonical媒资选用仍需精确修订/动作权绑定，POST只安全拒绝 |
+| C02 | 方案比较/支持边界保存和结构验证；项目快照/ref绑定 | 正向模型执行受控适配未完成，不能用恒HOLD充作READY |
+| C03 | 局部字段/索引/类型/时码/CAS/引用保护和其它节拍保存 | 真实历史含义改变须回H1/D/G，技术校验不代审 |
+| C04 | 继承不可变保存/fork/restore/CAS；preview no-store | 主工作台完整恢复/对比体验未全验，不能用API存在签体验完成 |
+| C05 | 投稿同rev、审核/G5/rights不同谓词；旧假选材已拒绝 | 正式导出/发布须许可，不伪造导出服务成功 |
+| F01 | 缺口明确“已识别、尚未提交”，不造工厂进度 | 正式请求/回流依赖ST02→ST03→ST04，仍按序不提前启动 |
+
+生产D00—D05、L0—L5、G0—G5、63方法与现有产品Skill/Registry保持；本轮是实际产品执行器安全/状态/交互适配，不新增产品Skill。Studio工作资产候选及WATCH合法消费与CTX-ENG方法严格分离；EXP S01—S08、跨域比较/连续追问/证据缺口长期准备未删除。
+
+### 7.3 开发Skill、恢复与下一步
+
+同一canonical升级v0.2.1，loader/map/CLI/guard/tests同步。新增显式worklist的四类阻塞/依赖传播、连续两次同证据失败暂停及替代READY拓扑顺序（不执行）。本次Owner全量授权下，3操作限制为每批检查点，不再错误当整轮停止。原回执分析与5样本/3草案保留，本轮真实脱敏经验追加并生成新的不可执行草案；不声称自动宿主采集/语义发现/自动评价准入。CodeBuddy仍HOST_NOT_RUN不阻断。
+
+回滚：非强制revert上述源批及Skill批/文档后继（或按文件受控撤回），不得回滚出已发现越权泄露、假成功或撤权复活；如无法保留安全修复则关闭受影响入口。PG仅合成数据，由runner清理；源/回执/合法资产保留。无需生产SQL/Key/Bucket回滚。
+
+最终提交/精确CI见本节收尾。M5整体HOLD；ST02真实数据依赖和ST05受控执行适配（工程未完成＋有权输入/支出契约缺席）分别记账，不混成“均已完成只等生产”。这是一份完整可追溯工程检查点，**不是原M5全部准出或全部READY完成的声明**。
+
+本轮Skill提交c55da7c（v0.2.1）；原5回执/3草案历史条目保留，追加4条真实脱敏工程经验，现9回执/7份不可执行待评价草案。分析器实跑成功，未自动准入。目标差异账仅将实际已变kad1-policy.d.mts原“字节相同”改ADAPTED；审计由HANDOFF_DECLARED_SHA256_MISMATCH定向修正后errors=[]/HANDOFF_NOT_READY。25条HTTP规格收集通过（不是25条实际HTTP PASS）。

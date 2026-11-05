@@ -274,6 +274,21 @@ MAB-ENG-01批次进展（2026-11-02，详细证据见progress.md）：私有原�
 
 ### M5｜创作、Admin、发布与WATCH合法消费
 
+### 2026-11-05｜M5全量清单复核与独立READY施工（本条为本轮现行核销，不改变原准出）
+
+基线main `7246ec0eb0ed8f45e1e64610e790b99b4b6f18fa`；不重复M0—M4/云端无原件调查。原work@759dbbd与已有成果保留；本轮原独立副本连续批次、无强推/生产改动。以下按M5六项原分母核销，checkbox仅在完整准出时才勾选。
+
+| 原M5项/依赖 | 本轮已施工及实际证据 | 剩余分类、真实条件及代码完整度 |
+|---|---|---|
+| 1 H1/H2/H3、19组件、真实研究到创作 | 修复H1有效母题/必填边界、H2/H3结构/时码/引用校验；WorkRevision保全完整H1；项目只读snapshot+精确ref/content SHA接入导演请求；WATCH出处/缺口交互；相关单测及Chromium通过 | ST02真实L0/L1/L2/首读/回放/撤权=DATA_BLOCKED，非新PASS。ST03/04严格依赖未启动。ST05受控模型执行适配**工程未完成**，并缺真实每源外发权、provider/purpose/input绑定及支出授权：不得把它包装成仅数据阻塞；已集中失败关闭，只有获得可信授权源/契约后才能接通，不允许API key自授。H1专业45项/H2七判断/H3真实作品与异材料=DATA/GATE/OWNER_BLOCKED，不能由结构测试代签。 |
+| 2 创建/提交/修订/CAS/幂等/失败语义 | 继承已验创建/提交/导演CAS/fork/restore；局部patch严格字段/类型/索引/时码、禁止改引用，全部改稿入口400/no-store；修复stages全库导演笛卡尔泄露，精确work_revision.director_source.plan_id及Owner关联；不再以task.done推定research完成 | 隔离工程正反已验；真实全链作品及Owner体验仍DATA/GATE/OWNER_BLOCKED。私有保存不等于历史语义通过。 |
+| 3 F05条目/修订/来源/用途/使用史/缺口 | Admin展示实际validation/findings/permission_scope/use purpose/time/revision，缺值明确；显式browse搜索/稳定游标，默认ST02行为不变；真实PG101资产无遗漏/重复、精确搜索、跨Owner/跨项目游标拒绝通过 | 13类10+3已有矩阵继承，未补造全专业语义。合法跨项目复用、真实来源解引用/数据主体同意证据=DATA/GATE/OWNER_BLOCKED。Operator跨项目业务授权未核，不能自扩权限。 |
+| 4 Operator+精确rev+G5/rights+事务 | 继承独立审核/发布资格桥与原子指针；遗漏旧撤权申请改503/no-store而非假成功；media-selection原POST只返候选假成功改明确HOLD/零写；主Studio去掉preview假work ID并显式目录失败/候选身份 | 正式Reviewer/G5、生产身份/权限、真实媒体动作级权利=GATE/OWNER/DATA_BLOCKED。canonical选材动作当前只具拒绝路径，真正写入绑定/权利适配尚未完成，不以status=verified授选材权。调度表风险仍独立跟踪，不执行RLS/GRANT。 |
+| 5 WATCH/Evidence/visual_stage/Agent逐请求 | a001五个活动读取改qualification_current+既有qualification_allows，按用途/scope/display，agent许可不借舞台；共享媒体rights判定拒绝未清权/过期；研究材料/status/幂等重放重验当前私有/qualified资料，旧CP不是许可；GET重验不生成note | 公开Evidence等已验Guard继承。真实G5消费正链=GATE/DATA_BLOCKED；不得用合成授权代生产。当前章出处仅发布版本文本，不伪造原件URL/精确locator或Evidence详情成功。 |
+| 6 撤权/缓存/即时原件 | WATCH切作品/章/自动翻页/focus/可见性及15秒周期重核，错误清空停播，旧响应不覆盖，长章节计时保持；5条真实Chromium正反PASS；私有preview、材料/status/stages/改稿均no-store | 浏览器周期重核为15秒+请求耗时(10秒超时)，不是严格瞬时撤权或擦除已交付字节。原件逐请求代理已有M2工程证据继承，真实原件即时拒绝=DATA/GATE_BLOCKED。 |
+
+**READY工程成果提交**：Admin `51f1234`；合格消费/WATCH `82afee6`；Studio/当前材料/作品边界 `14b4d2c`。本轮完整检查结果与最终精确CI在原progress/回执收尾，不由本表冒称生产准出。**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY**；仍有以上已明示工程适配未完成，不能将本次检查点叫“M5全量完成”。
+
 **2026-11-05 环境核实后的 ST-02 执行分支（不改变 M5 顺序/准出）**：Supabase `mohen-cloud` 只读实测 bucket=0/object=0、private_originals不存在、98来源记录/93 memory。云端真实原件链为 `DEFERRED_DATA`；现有M2本地合成Storage工程证据继续继承，不能代替云端历史原件。VM缺应用DB/私有Storage配置及已配置隔离实例；Owner本机原件未核，5个仓库JPEG路径不等于项目授权隔离原件。后续只在来源位置/原字节/权利/Owner项目/隔离DB与Storage授权齐备时转 `READY_FOR_ISOLATED_REAL_BYTES`；数据存在但缺配置转 `NEEDS_OWNER_CONFIGURATION`；仅本机有原件转 `LOCAL_ONLY` 并由CodeBuddy读取本机授权文件，数据库权限另配。不得把现有synthetic-only HTTP runner接到真实数据或生产库。无真实原件时保留SKIP/HOLD，不重复试错；ST03仍不启动。具体重入条件与回归断言见progress最新检查点。
 
 **双线持续继承**：CTX-ENG的工程诊断/施工/测试/接续/经验与产品Skill并行；现有v0.2.0及受控CLI不重写。DS03已有5回执/3草案，仅显式脱敏输入和精确签名分组，自动采集、语义发现、自动评价准入/版本演化未完整实现。产品保留生产D00—D05/L0—L5/G0—G5、Studio研究导演编排创作、WATCH合法作品消费、EXP开放探索与连续认知；按MHKA-02/04和既有Registry/合同，不复制平台。EXP保留S01空间入口/S02时空追踪/S03关系/S04典籍材料/S05返证/S06叙事/S07编排/S08当下联系，跨域比较、连续追问、版本化返回和证据缺口列入原准备/延期责任；不要求完整知识库先行，也不启动暂停的UXD-01/完整EXP。产品经验供开发Skill吸收，开发Skill未完备不阻塞合法M5工作。
