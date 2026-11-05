@@ -1,7 +1,7 @@
 # MHKA-02｜墨痕人文产品与体验架构章程
 
-**身份**：`K2_DESIGN_REVIEW_PASS_NOT_APPLIED` · 设计稿 V0.1 · 2026-10-30  
-**批准的未来工程身份**：`governance/mhka/MHKA-02_Humanistic_Product_and_Experience.md`（仅目标路径，本轮没有写入 GitHub）  
+**当前身份**：`ENGINEERING_DESIGN_AUTHORITY_ACTIVE / RUNTIME_NOT_ATTESTED` · 原 K2 设计稿 V0.1（2026-10-30），经 Owner 2026-11-05 施工权威裁决采用并受控补充  
+**工程路径**：`governance/mhka/MHKA-02_Humanistic_Product_and_Experience.md`（已纳入 GitHub main 新架构施工入口；2026-11-02 KAD6/MAB 交付包仍作为冻结的设计来源快照，不自动扩大运行资格）  
 **唯一职责**：墨痕让使用者**做什么**、如何连续地理解与操作历史文化世界、各模式应呈现怎样的效果、什么结果才是体验合格。  
 **不定义**：知识真假/资格及版权许可的内部专业条件（03）、Agent/专业方法算法和工具选择（04）、数据库/API/组件框架具体实现（05）。本章是五图产品需求的规范性承接，而非 U07 V4 工程实现证明。
 

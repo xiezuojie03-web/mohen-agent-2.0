@@ -1,7 +1,7 @@
 # MHKA-03｜墨痕知识世界与数据语义架构章程
 
-**身份**：`K2_DESIGN_REVIEW_PASS_NOT_APPLIED` · 设计稿 V0.1 · 2026-10-30  
-**批准的未来工程身份**：`governance/mhka/MHKA-03_Knowledge_World_and_Data_Architecture.md`（仅目标路径，本轮没有写入 GitHub）  
+**当前身份**：`ENGINEERING_DESIGN_AUTHORITY_ACTIVE / RUNTIME_NOT_ATTESTED` · 原 K2 设计稿 V0.1（2026-10-30），经 Owner 2026-11-05 施工权威裁决采用并受控补充  
+**工程路径**：`governance/mhka/MHKA-03_Knowledge_World_and_Data_Architecture.md`（已纳入 GitHub main 新架构施工入口；2026-11-02 KAD6/MAB 交付包仍作为冻结的设计来源快照，不自动扩大运行资格）  
 **唯一职责**：文化世界的对象及其关系是什么、哪些知识有怎样的证据基础与认识状态、资产身份如何保持、怎样理解 L 层与 G 资格、如何按依赖和用途合法消费或撤权。  
 **不定义**：D 方法执行算法（04）、UI 功能（02）、SQL 表名/Schema/API/资格审核服务的机器实现（05）；细粒度事实判断由已获授权的专业主规/契约承载。
 

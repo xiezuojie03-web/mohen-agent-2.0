@@ -1,7 +1,7 @@
 # MHKA-04｜墨痕 Agent 与专业能力架构章程
 
-**身份**：`K2_DESIGN_REVIEW_PASS_NOT_APPLIED` · 设计稿 V0.1 · 2026-10-30  
-**批准的未来工程身份**：`governance/mhka/MHKA-04_Agent_and_Professional_Capabilities.md`（仅目标路径，本轮没有写入 GitHub）  
+**当前身份**：`ENGINEERING_DESIGN_AUTHORITY_ACTIVE / RUNTIME_NOT_ATTESTED` · 原 K2 设计稿 V0.1（2026-10-30），经 Owner 2026-11-05 施工权威裁决采用并受控补充  
+**工程路径**：`governance/mhka/MHKA-04_Agent_and_Professional_Capabilities.md`（已纳入 GitHub main 新架构施工入口；2026-11-02 KAD6/MAB 交付包仍作为冻结的设计来源快照，不自动扩大运行资格）  
 **唯一职责**：用什么专业方法、Agent 能力、工具和协同机制，将用户自然语言意图变成可复核研究、知识生产、导演创作、解释与合法消费能力；如何在预算、权利和资格下可靠执行。  
 **不定义**：前台到底提供什么用户行为（02）、知识对象或资格状态本身（03）、具体数据库/接口/执行器实现（05）。方法的详尽算法留在授权的专业规范中，本章只拥有其专业责任结构。
 

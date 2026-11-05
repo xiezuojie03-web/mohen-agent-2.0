@@ -1,9 +1,9 @@
 # MHKA-05｜墨痕工程实现与运行架构章程
 
-**身份**：`K2_DESIGN_REVIEW_PASS_NOT_APPLIED` · 设计稿 V0.1 · 2026-10-30  
-**批准的未来工程身份**：`governance/mhka/MHKA-05_Software_Engineering_and_Operations.md`（仅目标路径，本轮没有写入 GitHub）  
+**当前身份**：`ENGINEERING_DESIGN_AUTHORITY_ACTIVE / RUNTIME_NOT_ATTESTED` · 原 K2 设计稿 V0.1（2026-10-30），经 Owner 2026-11-05 施工权威裁决采用并受控补充  
+**工程路径**：`governance/mhka/MHKA-05_Software_Engineering_and_Operations.md`（已纳入 GitHub main 新架构施工入口；2026-11-02 KAD6/MAB 交付包仍作为冻结的设计来源快照，不自动扩大运行资格）  
 **唯一职责**：如何把 MHKA-01—04 的价值、产品、知识和 Agent 专业能力转成可靠的软件结构、持久化、权限、API、测试、部署、运行、安全与长期维护机制。  
-**不定义**：用户产品行为的意义、历史事实及 G 资格本义、专业方法算法、Owner 架构决策权。具体 SQL/API/Schema/Registry 机器字段将在 K3 的受权合同中定义，本章不是工程实施的现成命令清单。
+**不定义**：用户产品行为的意义、历史事实及 G 资格本义、专业方法算法、Owner 架构决策权。具体 SQL/API/Schema/Registry 机器字段由 K3 已授权的现行专业合同及后续受控修订承担，本章不是工程实施的现成命令清单。
 
 ## 1｜工程服务产品：可观察、可追溯、可替换
 
@@ -149,7 +149,7 @@ U07 V4 的 442 条基线与 75 条新增设计用例、41 条跨体系断言提�
 
 **K1 来源**：`R1_能力分类与职责合同_V0.1.md` §1—§4/§8（POL-01—04）、`R3_能力关系与研究优先级映射_V0.1.md` §2/§3/§4、`LEGACY_ENGINEERING_CONTRACTS_AND_ROUTES`、`BR_M2_32_ENGINEERING_FILE_CHANGE_DECISIONS`、`U07_V4_85_API_CANDIDATES`、`U07_V4_152_ACTION_CONTRACT`、`U07_V4_442_BASE_TEST_SPECS`、`U07_V4_75_NEW_ACCEPTANCE_SPECS`、`U07_V4_41_CROSS_SYSTEM_ASSERTIONS`、`RUNTIME_SECURITY_FACT`、`RUNTIME_BINDING_CONFLICT`、K0-G 审查与 GitHub `a001/production@759dbbd0...` 时间点事实，以及旧 C3 物理界限和 C4 运行合同的归属矩阵。
 
-**设计终验**：任何从产品功能/知识资产/Agent 能力出发的施工需求都能定位一个技术消费者、真实权限/版本规则、合规失败路径和测试责任；同时不在 05 重写产品、史实、专业算法。只有经过 K3/K4/K5 及后续独立工程授权，目标工程规范才可能生效。
+**设计终验**：任何从产品功能/知识资产/Agent 能力出发的施工需求都能定位一个技术消费者、真实权限/版本规则、合规失败路径和测试责任；同时不在 05 重写产品、史实、专业算法。现行工程设计规范已依据 Owner 2026-11-05 裁决进入施工权威；K3/K4/K5 的设计交付与工程执行/真实测试/生产启用是不同门槛，尚未满足的数据库、Gate、产品、部署等正式运行资格仍必须按工程授权与独立证据准出。
 
 ## 12｜完整设计基线自检、Codex工程自主权与双门准出（KAD6）
 

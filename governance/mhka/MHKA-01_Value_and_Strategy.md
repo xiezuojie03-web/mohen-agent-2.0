@@ -1,9 +1,9 @@
 # MHKA-01｜墨痕价值战略与演化方向章程
 
-**身份**：`K2_DESIGN_REVIEW_PASS_NOT_APPLIED` · 设计稿 V0.1 · 2026-10-30  
-**批准的未来工程身份**：`governance/mhka/MHKA-01_Value_and_Strategy.md`（仅目标路径，本轮没有写入 GitHub）  
+**当前身份**：`ENGINEERING_DESIGN_AUTHORITY_ACTIVE / RUNTIME_NOT_ATTESTED` · 原 K2 设计稿 V0.1（2026-10-30），经 Owner 2026-11-05 施工权威裁决采用并受控补充  
+**工程路径**：`governance/mhka/MHKA-01_Value_and_Strategy.md`（已纳入 GitHub main 新架构施工入口；2026-11-02 KAD6/MAB 交付包仍作为冻结的设计来源快照，不自动扩大运行资格）  
 **唯一职责**：墨痕为什么存在、帮助谁、产生何种人文价值、何种发展选择可以长期被允许。  
-**非职责**：不定义页面布局、知识 Schema、方法/Skill 算法、真实 API 和工程进度；后者按唯一 Owner 层负责。本稿不属于运行生效的产品战略文件。
+**非职责**：不定义页面布局、知识 Schema、方法/Skill 算法、真实 API 和工程进度；后者按唯一 Owner 层负责。本章已经是现行工程设计与施工的战略约束，但不证明尚未验收的产品功能或公开服务已经正式投运。
 
 ## 1｜使命与不可收缩的价值
 
