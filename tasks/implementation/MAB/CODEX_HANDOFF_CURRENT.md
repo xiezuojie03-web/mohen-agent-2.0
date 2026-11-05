@@ -1,5 +1,7 @@
 # 墨痕 MAB｜Codex 当前执行交接书（唯一现行入口）
 
+> **2026-11-05｜ChatGPT最新接续与CI阻断闭合（优先于下方历史接续点）**：基于`main@1bef80b7`实查PG17 [41941909920](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41941909920)失败，根因是研究恢复测试把`degraded:true`误作成功完成。已用`935a1e1e`修复非降级并发夹具、增加降级持久HOLD负例；主CI[41945060178](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41945060178)和PG[41945060135](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41945060135)均SUCCESS，实际research-resume 4PASS及`K3_DB_TEST_PASS`。同时`243ac2ab`/`9d7b1c4c`为Studio私有资产GET/POST加no-store与正反断言；主CI[41945285925](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41945285925) SUCCESS（445单测PASS/4旧联网SKIP、133边界PASS、Build/目标审计通过）。详细源码、回退与证据见`tasks/results/MAB/CHATGPT_M5_RESUME_CACHE_20261105.md`，以及`progress.md`末尾。**这是M5/HP10、HP11定向VERIFIED_ISOLATED，不是ST01—04正例、专业G5、13类业务或M5整体准出**。下一仍原M5：有据来源→真实研究/导演与资产链、13类专业语义/同意撤回/跨项目合法复用/canonical媒资；不得重复导演CAS/既有六L5四消费者隔离通过项。M1—M4原所有生产固定条件及外发/费用HOLD保留。
+
 > **最新M5接续**：前批3873256三条Actions全SUCCESS（41940583300/41940583316/41940583384）；本批研究HOLD源码`876ff39`本地444单测/类型、HTTP17PASS/1StorageSKIP，任务与原因真实持久、零费恢复/跨Owner负验。不签ST01—04完整正例；仍M5/HANDOFF_NOT_READY，继续consented_feedback/13类专业与实际研究链。报告`tasks/results/MAB/CODEX_M5_RESEARCH_HOLD_20261105.md`。
 
 > **2026-11-05最新批次**：产品入口源码`1cd8544`，三个实际L5产品HTTP正反本地通过（16PASS/1StorageSKIP）；Evidence独立consumer/quote、Agent服务端read、visual display/no-store。PG全套、438单测/133边界/类型通过；GitHub本批结果待核，不冒称整稿三消费者HTTP或M5准出。报告`tasks/results/MAB/CODEX_M5_PRODUCT_CONSUMERS_20261105.md`；下一继续ST01—04/13类专业闭环，生产/专业/外发/费用条件及M5_OVERALL_HOLD保持。
