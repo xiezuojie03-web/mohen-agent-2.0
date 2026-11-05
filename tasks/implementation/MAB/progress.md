@@ -1076,3 +1076,10 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - **Library现行基线总索引**：`04_工程规范与Codex接入/00_总览/MAB_墨痕新架构设计基线_总索引与准出控制_现行.md`新增§12，记录上述双向身份、原冻结包不可改写和工程镜像现行六章不同于旧manifest的事实。现行Library`repo_target/AGENTS.md`及`OWNERSHIP_MAP.md`属于2026-11-02设计目标原件，仍含旧切换条件，**不得用来覆盖/指挥最新GitHub main**；开发工具始终读取Github根AGENTS的现行路由。
 - **状态裁定**：`SIX_MHKA_GITHUB_AND_LIBRARY_SYNSCED / HISTORICAL_PACKAGE_PRESERVED`（仅文档继承/精确文件同步）。尚未执行的DS-01—04和当前M5/ST-02、MAB全部生产/专业Gate/Storage/外发/费用/Owner验收HOLD一律不变；GitHub main完整CI仍以本次真实远端运行结果核实，不借文档同步签出M5。
 
+## 2026-11-05｜DS-01 开发 Skill 仓库实施：canonical 与跨工具加载适配（待远端证据核验）
+
+- 从远端 `main@a2fb10c2fbf973b450a360775745a67de6bb37c7` 实查：原 `skills/` 为墨痕内部产品生产/探索 Skill；仓库没有 `.agents/skills/`、`.codebuddy/skills/` 项目级开发技能；`.gitignore` 原样会排除 CodeBuddy 全目录。最新主 CI `41974535042` 失败属已有工程阻断，不冒称已恢复。
+- **DS-01 CODE_PRESENT 候选**：按现行 MHKA-04 §3.6/MHKA-05 §10 和 MAB §6B.4，新增 `.agents/skills/mohen-dev-continuation/SKILL.md` 唯一方法源和 `.codebuddy/skills/mohen-dev-continuation/SKILL.md` CodeBuddy 轻适配器，精确 .gitignore 例外，并登记 AGENTS/OWNERSHIP。共用 BUILD/MAINTAIN 核心方法、一次有界持续施工、错误诊断、验证、提交/回写与停止/移交边界；不改变 `skills/` 产品 Registry。
+- **DS-02 首个方法文件 CODE_PRESENT 候选**：v0.1.0 已具备真实可读 SKILL.md 元数据与工作流，但 Codex/CodeBuddy 的宿主发现、触发、权限和真实执行未验证，不标为 `HOST_VERIFIED`。静态守卫 `scripts/guards/check-dev-skill-layout.mjs` 接入 CI 的 Typecheck 前；CI 需要核实该步骤 SUCCESS 才认定静态包装 PASS，M5 Typecheck 仍独立 HOLD。
+- **后续**：核本次真实 SHA/CI guard；在 Codex/CodeBuddy 实机验证加载及规范路由；DS-03 必须以现行 ST-02 或 M5 真实故障任务出连续施工回执；DS-04 后续按证据补维护策略。报告 `tasks/results/MAB/DS01_DEV_SKILL_ENVIRONMENT_20261105.md`。不得因 Skill 准备而改变 M5 与所有现行专业/生产/费用/外发 HOLD。
+

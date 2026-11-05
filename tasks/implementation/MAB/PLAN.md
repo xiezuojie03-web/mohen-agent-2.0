@@ -458,7 +458,9 @@ A：隋唐大运河及江南水路连接。B：宋代江南运河沿线的城镇
 - 实际有效：真实 M5 有界工作组实现至少两项相邻允许的工程步骤（或一项故障诊断＋验证＋接续），有代码/日志/SHA、正反测试和状态回写；未取得环境许可时诚实 STOP/HOLD 而非空循环。
 - 长期性：同一方法文件必须具备 BUILD/MAINTAIN 可扩展入口、版本策略和回退，不在本阶段要求完整维护场景生产验收。
 - 效率及安全：减少人工重复“请继续”、重复 M0 盘点、无新证据的重复失败；设置重试和任务范围上限，不能为了连续运行跳过 Gate、覆盖别人最新 main、合并旧 PASS、绕过凭据/资料权利及成本审批。
-- **状态纪律：** 本次只是 `DESIGN_DECISION_RECORDED / DS-01..04 NOT_STARTED`；实际文件、触发、工具兼容、测试及正式可用性以后逐项以真实 GitHub 回执登记在现行 `progress.md`。此任务不能充作 M5 工程准出或修改任何现行 HP/74 目标的真假状态。
+- **状态纪律（2026-11-05 初始决策记录）**：本段最初为 `DESIGN_DECISION_RECORDED / DS-01..04 NOT_STARTED`；实际文件、触发、工具兼容、测试及正式可用性必须以每批真实 GitHub 回执登记在现行 `progress.md`，不能充作 M5 工程准出或修改现行 HP/74 目标的真假状态。
+
+**2026-11-05 DS-01 实施接续（受控增量）**：已按第1项核查 Codex/CodeBuddy/ChatGPT 环境，选 `.agents/skills/mohen-dev-continuation/SKILL.md` 唯一方法正文、`.codebuddy/skills/mohen-dev-continuation/SKILL.md` 轻量适配器，补静态机器守卫及 CI 检查；DS-01 仓库准备进入 CODE_PRESENT，实际 CI、平台原生加载仍须独立验证。DS-02 首个 `mohen-dev-continuation` v0.1.0 方法正文已实体化，尚无 Codex/CodeBuddy 真实加载与连续 M5 施工回执；DS-03、DS-04 未开始。原 M5/ST-02 优先级、HP任务、74目标、Gate和风险权限不变；精确方案与剩余验收见 `tasks/results/MAB/DS01_DEV_SKILL_ENVIRONMENT_20261105.md`。
 
 ## 7. 质量、验收和准出规则
 

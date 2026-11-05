@@ -15,6 +15,7 @@
     "test:legacy": "vitest run --config vitest.legacy.config.ts",
     "test:e2e": "playwright test",
     "guard:docs": "node scripts/check-doc-budget.mjs",
+    "guard:dev-skill": "node scripts/guards/check-dev-skill-layout.mjs",
     "guard:structure": "node scripts/check-structure.mjs && node scripts/check-structure-map.mjs",
     "guard:registry": "node scripts/guards/check-production-registry.mjs",
     "guard:source-gate": "node scripts/check-source-gate.mjs",

@@ -27,6 +27,9 @@ jobs:
       - name: MHKA engineering authority routing guard
         run: node scripts/guards/check-authority-routing.mjs
 
+      - name: Developer Skill packaging guard (static only)
+        run: node scripts/guards/check-dev-skill-layout.mjs
+
       - name: Typecheck
         run: pnpm -r typecheck
 

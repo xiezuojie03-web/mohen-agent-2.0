@@ -16,7 +16,9 @@ mohen-agent-2.0/
 ├── DATA_PRODUCTION_MAP.md
 ├── governance/                 # 宪法与治理
 ├── specs/                      # 当前有效协议 / Contract / Registry / Config
-├── skills/                     # Skill定义
+├── .agents/                    # CTX-ENG 开发工具 canonical Skill（不入产品 Registry）
+├── .codebuddy/                 # 仅有允许入库的 CodeBuddy Skill 适配器
+├── skills/                     # 产品内部专业生产/体验 Skill 定义
 ├── pipelines/                  # 执行体
 ├── scripts/                    # Guard / Report / Maintenance
 ├── packages/                   # 可复用运行时代码包
@@ -57,6 +59,11 @@ mohen-agent-2.0/
 - `gates/`
 - `templates/`
 - machine-readable configs / schemas
+
+## .agents/ 与 .codebuddy/（CTX-ENG）
+- `.agents/skills/mohen-dev-continuation/SKILL.md` 是跨开发工具开发方法的唯一 canonical 正文；仅供获授权的工程建设与后续维护，不是产品 Agent Skill。
+- `.codebuddy/skills/mohen-dev-continuation/SKILL.md` 只负责 CodeBuddy 识别并加载 canonical 正文，不独立维护方法。CodeBuddy 的本地凭据、日志、运行状态等目录继续被 .gitignore 排除。
+- 加载、静态检查和实际工具使用属于不同证明级别，不能以文件存在推定 Codex/CodeBuddy 宿主已加载、可后台运行或 M5 产品验收已通过。跨工具打包检查见 `scripts/guards/check-dev-skill-layout.mjs`。
 
 ## skills/
 一个目录一个Skill。阶段Owner与可复用能力分别登记；每阶段只拥有一个生命周期Owner。保留五个可适配Stage Skill，新增mohen-carrier-reading承接D01/C，material-understanding承接D02/H。新Skill是PLANNED，未实现不称正式能力。

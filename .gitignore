@@ -28,8 +28,13 @@ pipelines/**/_probes/
 verification/*
 !verification/README.md
 
-# 工具数据目录（不入库）
-.codebuddy/
+# 工具数据目录（只允许受控项目级 Skill 适配器入库，其余不入库）
+.codebuddy/*
+!.codebuddy/skills/
+.codebuddy/skills/*
+!.codebuddy/skills/mohen-dev-continuation/
+.codebuddy/skills/mohen-dev-continuation/*
+!.codebuddy/skills/mohen-dev-continuation/SKILL.md
 .playwright-cli/
 
 .vercel

@@ -1,0 +1,25 @@
+---
+name: mohen-dev-continuation
+description: Continue engineering or maintenance of MoHen from the latest GitHub main using MHKA, the existing MAB plan, real CI evidence, bounded implementation and safe handoff. Use when the owner asks to resume work, diagnose failures or change MoHen code; do not use as a product research/production Skill.
+---
+# MoHen developer continuation | canonical v0.1.0
+
+This is a **developer-tool workflow** for authorized `CTX-ENG` tasks. It does not enter the product `skills/` Registry, operate the product Agent, or sign a professional Gate. Apply project `AGENTS.md` and the six MHKA documents first; if this Skill conflicts with them, follow those authorities and record the conflict.
+
+## Enter and choose the task
+1. Record the actual remote `main` SHA, current worktree/branch, permissions, available execution environment and corresponding CI/job results. Never presume a previous conversation's SHA or success remains current. Re-fetch after another tool writes to main.
+2. Read `AGENTS.md`, relevant MHKA chapters and professional contracts, `tasks/implementation/MAB/PLAN.md`, `progress.md`, `target-diff.csv`, `CURRENT.md`, and the latest handoff notes. Read only the contract slices relevant to this task; do not start an unbounded architecture audit.
+3. Select the next *eligible* existing task in MAB dependency order, reusing existing source/tests and previously verified evidence. Current BUILD priority is M5 ST-02 after ST-01, subject to actual main/CI inspection; unrelated pre-existing errors may require a bounded prerequisite fix. Do not reopen completed work without new evidence.
+4. Identify whether the goal is BUILD (implement approved MAB work) or MAINTAIN (later authorized fault fix, compatibility, security, dependency or version change). Both use the same source-of-truth, test and handoff discipline; MAINTAIN must not invent product requirements.
+
+## Execute one bounded work group
+5. State change scope, expected failure/positive/negative tests, permissions and rollback before editing. Implement the minimum change consistent with MHKA and live code. Never create parallel D00–D05 Runner, Gate, permanent Truth store or unauthorised public consumer.
+6. Verify with available real tools: inspect diff, run relevant typecheck/unit/guard/build and permission/version/withdrawal negative tests, and inspect exact CI SHA/job outcome. An unavailable CLI, DB, browser, credentials or provider is `NOT_RUN/DEFERRED_ENV`, not PASS.
+7. Commit and push only when permitted; verify the new remote SHA and CI. Record actual modifications, tests, known failure logs, HOLD and next eligible task in *existing* MAB `progress.md` plus affected plan/target-diff/CURRENT/handoff where genuinely needed. Do not multiply status-only records or copy all older history.
+8. Continue to the next eligible operation within the same authorized work group when evidence and permissions permit. **Stop after at most 3 coherent implementation operations per invocation**, or sooner on a real safety, environment, budget or approval blocker; do not silently create an unattended background process. On repeated identical failure without new evidence, stop after 2 attempts and write a precise blocker/recovery action.
+
+## Stop and hand off safely
+- **Stop for Owner authorization** before changing product direction, incurring extra paid model usage, exposing restricted source data, modifying production DB/Storage or secrets, activating independent professional Gate/Reviewer, or formally publishing/deploying a production feature beyond the present authorization.
+- Keep distinct `CODE_PRESENT`, `VERIFIED_ISOLATED`, `VERIFIED_LIVE`, `HOLD` and `DEFERRED_ENV`. A passing static guard/CI does not certify product Gate, Owner experience, private data rights, or M8 production activation.
+- If tools cannot perform a step (web-only GitHub access, Codex cloud constraints, CodeBuddy local limitations), persist a concrete tested handoff with file path, command, environment/permission prerequisite, expected negative tests, and return criteria. Do not assume one host can invoke another host's Skill.
+- End with: **baseline SHA → task → changes/commit → tests with exact outcomes → blockers → next MAB operation**. Do not output or store credentials.
