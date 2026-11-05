@@ -1,0 +1,29 @@
+# MAB M5｜研究恢复PG回归与Studio私有资产缓存守卫
+
+日期：2026-11-05（北京时间）。执行工具：ChatGPT GitHub连接。现行依据：`tasks/implementation/MAB/PLAN.md` M0—M8/HP01—HP13、`progress.md`、`CURRENT.md`，继承 Codex 的 `1bef80b7` 及既有SHA/真实隔离验收；不调整MHKA/KAD6、架构或验收分母。
+
+## 1. 触发缺陷与实际定位
+
+最新业务源 `876ff39b` 在缺Provider/来源/资格时正确生成持久 `research_prerequisites` HOLD；`main@1bef80b7` 主 CI `41941909931` 与隔离HTTP `41941909867` 成功，但独立PG17 `41941909920` **FAILURE**。读取失败job `126964552203` 原日志：`tests/integration/research-resume.integration.ts:35` 的“并发恢复唯一获胜者”断言预期1次done实际0次。检查测试替身确认：默认mock标记 `degraded:true`，而现行恢复函数按正确业务规则将其持久化为HOLD；这是旧成功夹具与新降级语义冲突，不能通过放宽生产 `degraded` 守卫修复。
+
+### 源码与测试批次
+
+- `935a1e1e9fb7ef47a551db1198baf2e94c02cf59`：仅改 `tests/integration/research-resume.integration.ts`。成功路径改用明确非降级的合成研究返回，保留“两条独立PG连接竞争仅一完成、另一HOLD、仅一次模型替身调用、预算8与事件数”的原断言；增加降级后仍持久HOLD、无research_done、费用0的负例。不修改真实 `studio-research.ts` 安全逻辑。
+- `243ac2ab845a4e91a684e4f3191ddeec51b862aa`：`apps/web/app/api/studio/assets/route.ts` 对私有项目资产/精确修订/历史/使用事件GET、POST成功、认证拒绝/404/存储故障统一显式 `Cache-Control: no-store`，保持Owner RLS、JSON wire、版本及原API不变；不扩大公众读取。
+- `9d7b1c4c680833c3d09722bc2fa3fad005abc91f`：`tests/unit/studio-asset-routes.test.ts` 增加列表、精确私有修订、404、503、POST成功和401的no-store正反断言；不改原其他正反例。
+
+## 2. 验收证据及严格边界
+
+- 旧失败：PG17 `41941909920` FAILURE，原失败历史必须保留，不覆盖。
+- `935a1e1e` 主CI `41945060178` **SUCCESS**；独立PG17 `41945060135` 启动后待最终查询，未取得SUCCESS前保持 `PENDING`。
+- `9d7b1c4c` 主CI `41945285925` 已触发，待最终查询，未取得SUCCESS前保持 `PENDING`。
+- 此批GitHub插件环境未自建PG、本地容器或浏览器，不把远端RUNNING冒称已完成；没有运行真实Provider/外发、正式存储迁移、生产访问或付费。
+- 74冻结目标/20责任行/234历史路径账保持原分母；本批两类文件是M5/HP10、HP11的补充回归子项，并非独立M阶段，不修改`target-diff.csv`的冻结语义；后续以实际SHA/CI补证。源码/单测仍属于 `CODE_PRESENT`，隔离验收仅按对应真正成功的CI/PG判定。
+
+## 3. 受影响范围、回滚与后续
+
+回滚边界：问题测试可以定向回退 `935a1e1e` 的夹具/新增断言，不能使 `degraded` 真正转done；Studio端可关闭私有资产入口或定向回退 `243ac2ab`，不得允许缓存恢复已经撤销的资格。资产历史、旧项目、修订、研究暂停与使用审计必须保留。
+
+下一轮仍沿原M5，重点是 `ST01—ST04` 真正来源→有据材料→委托/候选→Studio导演作品、13类资产字段语义/跨项目有权复用、`consented_feedback` 同意撤回及canonical媒资；保留现有六类L5×四消费者、13类10+3隔离PG和导演CAS等成功证据，拒绝重复施工。真实专业G、原件Storage、私人外发、费用与生产迁移仍受M1-C01—C04、M2-C01—C03、M3-C01—C03及M4-C01—C04的已签条件约束。**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；M6—M8未准出**。
+
+本批不作Owner体验或产品可运行整体签收。
