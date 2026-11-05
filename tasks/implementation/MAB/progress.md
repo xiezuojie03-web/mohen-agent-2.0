@@ -1028,3 +1028,14 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - `eaf1515f`补既有F05 Admin知识条目二步确认撤回，服务端成功回执才刷新；`000327ca`补真实Admin UI操作、撤回后新修订及旧正文拒读E2E。**主CI41950478739 SUCCESS（447单测/4旧SKIP、133边界、7文件19用例可收集、Next Build与审计errors=[]）；真实Chromium/隔离PG HTTP41950478723 SUCCESS（18PASS/1StorageSKIP，`MAB_ADMIN_FEEDBACK_WITHDRAW_HTTP_PASS`，合成数据库清理）**。所有回执的job IDs与限制写在`tasks/results/MAB/CHATGPT_M5_FEEDBACK_CONSENT_20261105.md`，避免将测试脚本存在视为通过。
 - 裁定：仅`M5_HP11_FEEDBACK_WITHDRAW_VERIFIED_ISOLATED`；仍缺真实反馈提供者身份/独立同意凭证、实际下游调用点全渠道撤回、物理删除策略、已外发副本/离线缓存清理，以及13种资产其它类型的专业字段、源定位、合法跨项目复用/canonical媒资、ST01—04及完整H1/H2/H3/19组件。**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；M1—M4生产、专业Gate/Storage/费用/外发与M6—M8原固定条件不变**。无真实隐私资料/费用/生产写入。
 - 回滚：即使撤回此批前端或API，也不得恢复已撤回内容的使用；终止修订、旧数据与审计不可删除或重授资格。74目标冻结主表未增加新的目标路径，本批是原M5/HP11实施增量，语义差异余项继续原账核销。
+
+
+## 2026-11-05｜M5/ST-01项目绑定Brief正向子项（不签ST01—04全链）
+
+- 对照AGENT专业能力合同§6.2：ST-01必须产生research_brief@rev；ST-02才是StudioResearchRead；ST-04是创作者决定后构造受控ProductionRequest。发现此前ST01只保存public.research_tasks checkpoint，Studio入口无项目绑定，未形成长期Brief资产。
+- UI：82c78ce6在Studio增加Owner项目读取、选择/创建；自然语言请求带project_id和idempotency_key。API：94ac574d要求项目与幂等UUID，项目scope由Owner服务端列表解析；不同Owner项目404。任务服务：1636be11/c0f3c3f0先保存Brief再研究，幂等UUID作为task ID、Brief asset ID确定性生成；同key同输入复用原任务/原Brief，不同输入hash冲突；资产保存中断保持BRIEF_PENDING，resume/follow-up保留studio.brief_asset_ref。数据仓储：在既有studio.asset_revisions写origin_task_id/origin_task_snapshot并纳入content hash，未新建表/DDL。UI和API不信任客户端project scope，Brief为editorial/WORKING/RESTRICTED/UNASSESSED、rights unknown、formal L refs空，不是史实证据。
+- ST04分离：检查到ST01旧路由在research done后自动调用requestProduction，与AGENT合同ST04 Creator explicit decision冲突。cdb330af移除ST01自动生产派发，返回production:null。现有/id/production为GET状态查询，尚无ST04 POST显式请求动作；不得将关闭自动派发视为ST04完成。无生产/费用副作用。
+- E2E：465d3862在现有一次性PG17+Chromium测试中增加ST01项目创建→委托→Brief资产→HOLD→同key幂等回放→输入冲突409→跨Owner拒绝→零工具费用/无自动生产；日志MAB_ST01_BRIEF_HTTP_PASS。HTTP41956024859 SUCCESS，18PASS/1官方Storage配置缺失SKIP，合成数据库清理。
+- CI：旧HP08 unit fixtures曾按无project binding旧签名调用，导致41955486156—41956024833主CI重复失败；不放宽新合同，0956cf73更新测试fixture提供合成项目/签名session/资产仓储。最新主CI41956280247 SUCCESS：65 files/447单测PASS/4既有SKIP、133边界PASS、Next Build、74目标审计errors=[]。原失败回执保留，详见tasks/results/MAB/CHATGPT_M5_ST01_BRIEF_20261105.md。
+- 核销：ST01 Brief项目绑定/不可变持久/幂等回放=VERIFIED_ISOLATED；ST01 Agent资料可得性/问题收敛因Provider/来源/资格服务不可用仍HOLD。ST02 StudioResearchRead、ST03 AnalyzeAndSaveCandidates、ST04 RequestFormalProduction未准出。下一项按§6.2顺序进入ST02，先做真实L层存储/项目授权/引用精确性/资格复核盘点，复用既有读模型/谱系服务，不建知识副本。M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；M1—M4生产/安全/Storage/费用/外发/专业Gate与M6—M8固定条件不变。
+- 回滚：可回滚UI/route/task orchestrator，不删除已保存的私有Brief、origin snapshot和审计；禁止恢复无项目绑定的旧ST01写入旁路。无生产迁移。
