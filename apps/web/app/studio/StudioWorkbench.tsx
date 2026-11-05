@@ -1,9 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { AgentDecision, Material } from "@mohen/agent-runtime";
 import { humanEpistemic } from "../experience/jinze-water-net/humanLabels";
 import type { Beat, DirectorPlan, WorkPanels } from "../../lib/studio-creation";
+
+type StudioProject = {project_id:string;project_title:string;research_scope?:unknown};
 
 type Message = {
   role: "user" | "mohen";
@@ -59,9 +61,51 @@ function ColumnHead({ no, title, desc }: { no: string; title: string; desc: stri
 }
 
 export default function StudioWorkbench() {
+  const [projects,setProjects]=useState<StudioProject[]>([]);
+  const [projectId,setProjectId]=useState("");
+  const [projectTitle,setProjectTitle]=useState("");
+  const [projectLoading,setProjectLoading]=useState(true);
+  const [projectBusy,setProjectBusy]=useState(false);
+  const [projectError,setProjectError]=useState<string|null>(null);
+  const [createProjectOpen,setCreateProjectOpen]=useState(false);
+  const projectAttempt=useRef<{title:string;id:string}|null>(null);
+  const requestAttempt=useRef<{fingerprint:string;id:string}|null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+
+  useEffect(()=>{
+    const controller=new AbortController();
+    void (async()=>{
+      try{
+        const response=await fetch("/api/studio/projects",{cache:"no-store",signal:controller.signal});
+        const body=await response.json();
+        if(!response.ok||body.ok!==true||!Array.isArray(body.projects))throw new Error("研究项目读取失败");
+        const items=(body.projects as StudioProject[]).filter(p=>p&&typeof p.project_id==="string"&&typeof p.project_title==="string");
+        if(controller.signal.aborted)return;
+        setProjects(items);
+        setProjectId(old=>items.some(p=>p.project_id===old)?old:items[0]?.project_id??"");
+      }catch(error){if(!controller.signal.aborted)setProjectError(error instanceof Error?error.message:"研究项目读取失败");}
+      finally{if(!controller.signal.aborted)setProjectLoading(false);}
+    })();
+    return ()=>controller.abort();
+  },[]);
+
+  async function createResearchProject(){
+    const title=projectTitle.trim();
+    if(!title||projectBusy)return;
+    if(projectAttempt.current?.title!==title)projectAttempt.current={title,id:crypto.randomUUID()};
+    setProjectBusy(true);setProjectError(null);
+    try{
+      const response=await fetch("/api/studio/projects",{method:"POST",headers:{"content-type":"application/json"},
+        body:JSON.stringify({project_id:projectAttempt.current.id,title,scope:{}})});
+      const body=await response.json();
+      if(!response.ok||body.ok!==true||!body.project?.project_id)throw new Error("研究项目未保存，请重试；项目名称仍保留。");
+      setProjects(current=>[body.project,...current.filter(p=>p.project_id!==body.project.project_id)]);
+      setProjectId(body.project.project_id);setProjectTitle("");setCreateProjectOpen(false);projectAttempt.current=null;
+    }catch(error){setProjectError(error instanceof Error?error.message:"研究项目未保存，请重试。");}
+    finally{setProjectBusy(false);}
+  }
 
   // 创作流程状态
   const [plans, setPlans] = useState<{ planId: string; planA: DirectorPlan; planB: DirectorPlan; facts: string[]; brief: string } | null>(null);
@@ -99,6 +143,10 @@ export default function StudioWorkbench() {
   async function ask(q: string) {
     const text = q.trim();
     if (!text || busy || submitLock.current) return;
+    if(projectLoading||!projectId){setProjectError("请先创建或选择研究项目，再提交研究委托。");return;}
+    const fingerprint=JSON.stringify({projectId,prompt:text,topic:"generic"});
+    if(requestAttempt.current?.fingerprint!==fingerprint)
+      requestAttempt.current={fingerprint,id:crypto.randomUUID()};
     setMessages((m) => [...m, { role: "user", text }]);
     setInput("");
     setBusy(true);
@@ -106,7 +154,7 @@ export default function StudioWorkbench() {
       const res = await fetch("/api/studio/research-tasks", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ prompt: text, topic: "generic" }),
+        body: JSON.stringify({ prompt: text, topic: "generic", project_id: projectId, idempotency_key: requestAttempt.current.id }),
       });
       const json = (await res.json()) as {
         ok?: boolean;
@@ -118,6 +166,7 @@ export default function StudioWorkbench() {
         missing_requirements?: string[];
         production?: { ok?: boolean; run_id?: string; reason?: string } | null;
       };
+      if(res.ok&&json.ok)requestAttempt.current=null;
       if (res.ok && json.ok && json.status === 'hold') {
         const missing:Record<string,string>={
           REAL_PROVIDER_UNAVAILABLE:'研究模型尚未接通',
@@ -348,6 +397,7 @@ export default function StudioWorkbench() {
     const hasLocalContent = messages.length > 0 || Boolean(plans) || Boolean(beats?.length) || Boolean(workTitle.trim());
     if (hasLocalContent && !window.confirm("开始新对话将清空当前页面的临时对话、方案和未保存分镜。服务器上已保存的研究任务、记录及作品不会被删除。确定继续？")) return;
     setMessages([]);
+    requestAttempt.current=null;
     setInput("");
     setPlans(null);
     setPreviewPlan(null);
@@ -407,6 +457,26 @@ export default function StudioWorkbench() {
               当前可对话知识：金泽、绿之丘
             </span>
           </div>
+          <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",margin:"0 0 10px"}}>
+            <label htmlFor="studio-project-select" style={{fontSize:12,color:"#5c6662"}}>当前研究项目</label>
+            {projectLoading?<span role="status" style={{fontSize:12}}>正在读取项目…</span>:
+              projects.length>0?<select id="studio-project-select" aria-label="当前研究项目" value={projectId}
+                disabled={busy||projectBusy} onChange={e=>setProjectId(e.target.value)}
+                style={{maxWidth:"min(100%,280px)",padding:"6px 8px",border:"1px solid #c9c2b4",borderRadius:4}}>
+                {projects.map(p=><option key={p.project_id} value={p.project_id}>{p.project_title}</option>)}
+              </select>:<span style={{fontSize:12,color:"#8a3b3b"}}>尚未创建研究项目</span>}
+            <button type="button" className="studio__ghost-btn" disabled={projectBusy||projectLoading}
+              onClick={()=>setCreateProjectOpen(v=>!v)}>新建项目</button>
+            <a href="/studio/desk" className="studio__ghost-btn">项目管理</a>
+          </div>
+          {(createProjectOpen||(!projectLoading&&projects.length===0))&&<div style={{display:"flex",gap:6,marginBottom:8}}>
+            <input aria-label="新研究项目名称" value={projectTitle} maxLength={200}
+              onChange={e=>setProjectTitle(e.target.value)} placeholder="例如：隋唐大运河与江南水路"
+              disabled={projectBusy} style={{flex:1,minWidth:0,padding:"7px 9px",border:"1px solid #c9c2b4",borderRadius:4}}/>
+            <button type="button" className="studio__send" disabled={projectBusy||!projectTitle.trim()}
+              onClick={()=>void createResearchProject()}>{projectBusy?"保存中…":"创建研究项目"}</button>
+          </div>}
+          {projectError&&<p role="alert" style={{fontSize:12,color:"#b0413e",margin:"0 0 8px"}}>{projectError}</p>}
 
           <div className="studio__thread">
             {messages.length === 0 && (
@@ -466,7 +536,7 @@ export default function StudioWorkbench() {
             />
             <button
               className="studio__send"
-              disabled={submitBusy || busy || input.trim().length === 0}
+              disabled={submitBusy || busy || projectLoading || !projectId || input.trim().length === 0}
               onClick={() => void ask(input)}
             >
               {busy ? "查…" : "发送"}
