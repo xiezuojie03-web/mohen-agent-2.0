@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect,useState} from "react";
+import {useEffect,useRef,useState} from "react";
 import {countStoredRefs,privateAssetStatus,assetPayloadPreview,selectInspectedRevision,assetRightsSummary} from "./knowledge-asset-view";
 
 type Project={project_id:string;project_title?:string};
@@ -29,6 +29,10 @@ export default function KnowledgeAssetInspector(){
   const [uses,setUses]=useState<UseEvent[]>([]);
   const [loading,setLoading]=useState("projects");
   const [error,setError]=useState("");
+  const [notice,setNotice]=useState("");
+  const [withdrawConfirm,setWithdrawConfirm]=useState(false);
+  const [withdrawBusy,setWithdrawBusy]=useState(false);
+  const withdrawalAttempt=useRef<{assetId:string;revisionId:string;key:string}|null>(null);
 
   useEffect(()=>{
     const c=new AbortController();setError("");setLoading("projects");
@@ -84,7 +88,35 @@ export default function KnowledgeAssetInspector(){
     return ()=>c.abort();
   },[assetId,projectId,assets,revisionId]);
 
-  const selected=selectInspectedRevision(assets.find(a=>a.asset_id===assetId),history,revisionId);
+  const currentAsset=assets.find(a=>a.asset_id===assetId);
+  const selected=selectInspectedRevision(currentAsset,history,revisionId);
+  const canWithdraw=Boolean(currentAsset?.asset_kind==='consented_feedback'&&currentAsset.access_state!=='REVOKED');
+  async function withdrawConsent(){
+    if(!canWithdraw||!currentAsset||withdrawBusy||!projectId||!withdrawConfirm)return;
+    const current=withdrawalAttempt.current;
+    if(!current||current.assetId!==currentAsset.asset_id||current.revisionId!==currentAsset.revision_id)
+      withdrawalAttempt.current={assetId:currentAsset.asset_id,revisionId:currentAsset.revision_id,key:crypto.randomUUID()};
+    setWithdrawBusy(true);setError("");setNotice("");
+    try{
+      const response=await fetch("/api/studio/assets/withdraw",{
+        method:"POST",credentials:"same-origin",cache:"no-store",
+        headers:{"content-type":"application/json"},
+        body:JSON.stringify({project_id:projectId,asset_id:currentAsset.asset_id,
+          expected_revision_id:currentAsset.revision_id,idempotency_key:withdrawalAttempt.current!.key}),
+      });
+      const body:unknown=await response.json();
+      if(!response.ok||!body||typeof body!=="object"||Array.isArray(body)||
+        (body as Record<string,unknown>).ok!==true)throw Error("撤回未确认完成，请核查当前资产版本后重试。");
+      const asset=(body as {asset?:Asset}).asset;
+      if(!asset||asset.asset_id!==currentAsset.asset_id||asset.access_state!=='REVOKED')
+        throw Error("撤回回执不完整，不能报告成功。");
+      setWithdrawConfirm(false);withdrawalAttempt.current=null;
+      setRevisionId("");setAssets(prev=>prev.map(a=>a.asset_id===asset.asset_id?asset:a));
+      setNotice("反馈撤回已保存：旧版本不再可通过普通资产查询读取或复用。");
+      setRefresh(v=>v+1);
+    }catch(e){setError(e instanceof Error?e.message:"撤回失败，请重新核对");}
+    finally{setWithdrawBusy(false);}
+  }
   return <section className="admin__assets" aria-label="本人有权访问的受限知识资产">
     <div className="admin__asset">
       <div className="admin__asset-head">
@@ -98,6 +130,7 @@ export default function KnowledgeAssetInspector(){
       {projects.length===0&&loading!=="projects"&&!error&&<p>当前账号暂无可访问的研究项目。</p>}
     </div>
     {error&&<p role="alert">{error}</p>}
+    {notice&&<p role="status">{notice}</p>}
     {loading&&<p role="status">正在读取{loading==="projects"?"项目":loading==="assets"?"资产":"修订与使用记录"}…</p>}
     {projectId&&loading!=="projects"&&<div className="admin__asset">
       <strong className="admin__asset-title">项目内资产条目（最多100条）</strong>
@@ -106,7 +139,7 @@ export default function KnowledgeAssetInspector(){
         <div className="admin__asset-head">
           <strong className="admin__asset-title">{a.asset_kind||"未分类"} · 修订 {a.revision_no??"—"}</strong>
           <button className="admin__send" type="button" aria-pressed={assetId===a.asset_id}
-            onClick={()=>{setRevisionId("");setAssetId(a.asset_id);}}>查看来源与历史</button>
+            onClick={()=>{setRevisionId("");setWithdrawConfirm(false);setNotice("");withdrawalAttempt.current=null;setAssetId(a.asset_id);}}>查看来源与历史</button>
         </div>
         <p className="admin__asset-meta">{privateAssetStatus(a)}</p>
         <p className="admin__asset-meta">来源 {countStoredRefs(a.source_refs)??"未知"} 条 · 依赖 {countStoredRefs(a.dependency_refs)??"未知"} 条</p>
@@ -129,6 +162,17 @@ export default function KnowledgeAssetInspector(){
       </pre>
       <p className="admin__asset-meta">{assetRightsSummary(selected.rights_by_action)}</p>
       <p className="admin__asset-meta">来源依赖状态：{selected.freshness_state||"未知"} · 当前独立资格与复用权利须另行核验</p>
+      {currentAsset?.asset_kind==='consented_feedback'&&<div className="admin__asset-meta">
+        {currentAsset.access_state==='REVOKED'?<p role="status">此反馈已撤回。历史修订仅显示受限审计元数据，不提供撤回前正文。</p>:
+         !withdrawConfirm?<button type="button" disabled={withdrawBusy} onClick={()=>setWithdrawConfirm(true)}>撤回反馈</button>:
+         <div>
+           <p>确认撤回此反馈？这会写入不可变撤回修订，并阻止旧正文通过普通资产接口重新使用。</p>
+           <button type="button" disabled={withdrawBusy} onClick={()=>void withdrawConsent()}>
+             {withdrawBusy?"正在撤回…":"确认撤回反馈"}
+           </button>
+           <button type="button" disabled={withdrawBusy} onClick={()=>setWithdrawConfirm(false)}>取消</button>
+         </div>}
+      </div>}
       <p className="admin__asset-meta">历史版本 {history.length} 条</p>
       {history.map(r=><div className="admin__asset-meta" key={r.revision_id}>
         <button type="button" aria-pressed={selected.revision_id===r.revision_id}
