@@ -52,3 +52,31 @@ it('does not report candidate persistence without the actual immutable row revis
  await expect(repository.save(input,'signed-owner')).rejects.toThrow('PRIVATE_READING_NOT_PERSISTED');
  expect(client.query.mock.calls.at(-1)?.[0]).toBe('rollback');
 });
+
+
+it('reads an Owner-scoped L1/L2 context through the narrow database function without verifier keys or storage references',async()=>{
+ const context={schema:'mohen.private-reading-context.v1',original_id:id,project_id:project,
+  asset_id:id,asset_revision_id:project,file_name:'synthetic.txt',content_type:'text/plain',
+  byte_size:bytes.length,sha256:sha(bytes),original_state:'STORED_VERIFIED',
+  readings:[{layer:'L1',qualification:'UNASSESSED',read_unit_id:project,locator:extent,
+    evidence:[{layer:'L2',qualification:'UNASSESSED',literal_reading:quote}]}],
+  readings_limit:50,direct_storage_reference_exposed:false};
+ const client={query:vi.fn(async(sql:string,args:any[])=>{
+   if(sql.includes('current_app_user_id'))return {rows:[{user_id:id}]};
+   if(sql.includes('read_private_text_reading')){expect(args).toEqual([id]);return {rows:[{context}]};}
+   return {rows:[]};
+ }),release:vi.fn()};
+ const pool={connect:vi.fn(async()=>client)};
+ const repository=createPrivateTextReadingRepository(pool);
+ await expect(repository.listByOriginal(id,'signed-owner')).resolves.toEqual(context);
+ expect(client.query.mock.calls.some(([sql])=>sql.includes('source.read_units')||sql.includes('payload_ref'))).toBe(false);
+ expect(pool.connect).toHaveBeenCalledOnce();
+});
+it('allows metadata reads without the write attestation key but refuses candidate writes',async()=>{
+ const client={query:vi.fn(async(sql:string)=>sql.includes('current_app_user_id')?{rows:[{user_id:id}]}:
+   sql.includes('read_private_text_reading')?{rows:[{context:{original_id:id,readings:[],direct_storage_reference_exposed:false}}]}:{rows:[]}),release:vi.fn()};
+ const pool={connect:vi.fn(async()=>client)};
+ const repository=createPrivateTextReadingRepository(pool);
+ await expect(repository.save(input,'signed-owner')).rejects.toThrow('BRIDGE_BYTE_VERIFIER_NOT_CONFIGURED');
+ expect(pool.connect).not.toHaveBeenCalled();
+});
