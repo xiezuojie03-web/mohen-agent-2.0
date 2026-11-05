@@ -15,10 +15,10 @@
 ## 2. 验收证据及严格边界
 
 - 旧失败：PG17 `41941909920` FAILURE，原失败历史必须保留，不覆盖。
-- `935a1e1e` 主CI `41945060178` **SUCCESS**；独立PG17 `41945060135` 启动后待最终查询，未取得SUCCESS前保持 `PENDING`。
-- `9d7b1c4c` 主CI `41945285925` 已触发，待最终查询，未取得SUCCESS前保持 `PENDING`。
-- 此批GitHub插件环境未自建PG、本地容器或浏览器，不把远端RUNNING冒称已完成；没有运行真实Provider/外发、正式存储迁移、生产访问或付费。
-- 74冻结目标/20责任行/234历史路径账保持原分母；本批两类文件是M5/HP10、HP11的补充回归子项，并非独立M阶段，不修改`target-diff.csv`的冻结语义；后续以实际SHA/CI补证。源码/单测仍属于 `CODE_PRESENT`，隔离验收仅按对应真正成功的CI/PG判定。
+- `935a1e1e` 主CI [41945060178](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41945060178) **SUCCESS**；隔离PG17 [41945060135](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41945060135) **SUCCESS**。原始job 126975088981显示 `research-resume.integration.ts` 4/4及相关联6/6 PASS，`MAB_RESEARCH_RESUME_PG_PASS`、`K3_DB_TEST_PASS`、711旧合成审计记录保持不变及回滚失败关闭。只核销PG恢复定向回归。
+- `9d7b1c4c` 主CI [41945285925](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41945285925) **SUCCESS**。原始job 126975860823显示单测445 PASS/4既有联网SKIP、生产边界133 PASS、Next生产build/目标审计errors=[]，新`studio-asset-routes`禁缓存断言随该SHA入账；这不是生产网站的实际撤权浏览器验收。
+- 本批GitHub插件环境未自建PG、本地容器或浏览器；PG与主CI均为GitHub Actions按对应源码SHA运行的真实日志。没有运行真实Provider/外发、正式存储迁移、生产访问或付费。
+- 74冻结目标/20责任行/234历史路径账保持原分母；本批两类文件是M5/HP10、HP11的补充回归子项，并非独立M阶段，不修改`target-diff.csv`的冻结语义。**研究恢复PG子项及私有资产禁缓存主CI子项 `VERIFIED_ISOLATED`，不升级为M5整体PASS或任何生产验证**。
 
 ## 3. 受影响范围、回滚与后续
 
