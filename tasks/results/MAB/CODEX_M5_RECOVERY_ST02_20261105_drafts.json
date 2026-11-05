@@ -1,0 +1,141 @@
+{
+  "schema": "mohen.dev-experience-analysis.v1",
+  "host_telemetry_available": false,
+  "receipt_count": 5,
+  "discovery": "EXACT_SIGNATURE_GROUPING_ON_EXPLICIT_REDACTED_RECEIPTS",
+  "candidates": [
+    {
+      "signature": "fixture-contract-drift",
+      "route": "UPGRADE_EXISTING",
+      "state": "DRAFT_PENDING_EVALUATION",
+      "auto_activate": false,
+      "permission": "NO_EXECUTION_AUTHORITY",
+      "sample_count": 2,
+      "success_count": 1,
+      "failure_count": 1,
+      "source_receipts": [
+        "pg-feedback-fixture-green",
+        "pg-feedback-fixture-red"
+      ],
+      "evidence": [
+        {
+          "receipt_id": "pg-feedback-fixture-green",
+          "task": "M5-ST02",
+          "host": "codex",
+          "baseline_sha": "5efd0085edc979f99dec51df159a68f88fa8eee4",
+          "result_sha": "d12f20da2cc876df41191b655e24dfff9a6ba025",
+          "evidence_refs": [
+            "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41993463958"
+          ]
+        },
+        {
+          "receipt_id": "pg-feedback-fixture-red",
+          "task": "M5-ST02",
+          "host": "codex",
+          "baseline_sha": "5efd0085edc979f99dec51df159a68f88fa8eee4",
+          "result_sha": "b8e139c93d860c5cfdb997c9b9e25b208f944d43",
+          "evidence_refs": [
+            "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41992897220"
+          ]
+        }
+      ],
+      "proposed_checks": [
+        "boundary",
+        "permission-negative"
+      ],
+      "required_evaluation": [
+        "positive-and-negative-tests",
+        "reuse-value",
+        "host-specific-permissions",
+        "version-and-rollback",
+        "authorized-admission"
+      ],
+      "rollback": "Discard draft; retain source receipts; never change canonical or product routes automatically."
+    },
+    {
+      "signature": "material-contract-typecheck",
+      "route": "UPGRADE_EXISTING",
+      "state": "DRAFT_PENDING_EVALUATION",
+      "auto_activate": false,
+      "permission": "NO_EXECUTION_AUTHORITY",
+      "sample_count": 2,
+      "success_count": 1,
+      "failure_count": 1,
+      "source_receipts": [
+        "st02-baseline-ci",
+        "st02-fixed-typecheck"
+      ],
+      "evidence": [
+        {
+          "receipt_id": "st02-baseline-ci",
+          "task": "M5-ST02",
+          "host": "codex",
+          "baseline_sha": "5efd0085edc979f99dec51df159a68f88fa8eee4",
+          "result_sha": "5efd0085edc979f99dec51df159a68f88fa8eee4",
+          "evidence_refs": [
+            "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41984534921"
+          ]
+        },
+        {
+          "receipt_id": "st02-fixed-typecheck",
+          "task": "M5-ST02",
+          "host": "codex",
+          "baseline_sha": "5efd0085edc979f99dec51df159a68f88fa8eee4",
+          "result_sha": "b8e139c93d860c5cfdb997c9b9e25b208f944d43",
+          "evidence_refs": [
+            "tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md"
+          ]
+        }
+      ],
+      "proposed_checks": [
+        "typecheck",
+        "unit"
+      ],
+      "required_evaluation": [
+        "positive-and-negative-tests",
+        "reuse-value",
+        "host-specific-permissions",
+        "version-and-rollback",
+        "authorized-admission"
+      ],
+      "rollback": "Discard draft; retain source receipts; never change canonical or product routes automatically."
+    },
+    {
+      "signature": "project-context-replay-safety",
+      "route": "UPGRADE_EXISTING",
+      "state": "DRAFT_PENDING_EVALUATION",
+      "auto_activate": false,
+      "permission": "NO_EXECUTION_AUTHORITY",
+      "sample_count": 1,
+      "success_count": 1,
+      "failure_count": 0,
+      "source_receipts": [
+        "st02-private-context"
+      ],
+      "evidence": [
+        {
+          "receipt_id": "st02-private-context",
+          "task": "M5-ST02",
+          "host": "codex",
+          "baseline_sha": "5efd0085edc979f99dec51df159a68f88fa8eee4",
+          "result_sha": "b8e139c93d860c5cfdb997c9b9e25b208f944d43",
+          "evidence_refs": [
+            "tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md"
+          ]
+        }
+      ],
+      "proposed_checks": [
+        "permission-negative",
+        "unit"
+      ],
+      "required_evaluation": [
+        "positive-and-negative-tests",
+        "reuse-value",
+        "host-specific-permissions",
+        "version-and-rollback",
+        "authorized-admission"
+      ],
+      "rollback": "Discard draft; retain source receipts; never change canonical or product routes automatically."
+    }
+  ]
+}

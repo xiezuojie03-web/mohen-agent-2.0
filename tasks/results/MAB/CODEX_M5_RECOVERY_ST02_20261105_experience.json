@@ -1,0 +1,110 @@
+[
+  {
+    "task": "M5-ST02",
+    "host": "codex",
+    "baseline_sha": "5efd0085edc979f99dec51df159a68f88fa8eee4",
+    "result_sha": "5efd0085edc979f99dec51df159a68f88fa8eee4",
+    "reuse_target": "existing_method",
+    "redacted": true,
+    "context": "CTX-ENG",
+    "production": false,
+    "paid": false,
+    "restricted_data": false,
+    "id": "st02-baseline-ci",
+    "signature": "material-contract-typecheck",
+    "outcome": "FAIL",
+    "checks": [
+      "typecheck"
+    ],
+    "evidence_refs": [
+      "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41984534921"
+    ]
+  },
+  {
+    "task": "M5-ST02",
+    "host": "codex",
+    "baseline_sha": "5efd0085edc979f99dec51df159a68f88fa8eee4",
+    "result_sha": "b8e139c93d860c5cfdb997c9b9e25b208f944d43",
+    "reuse_target": "existing_method",
+    "redacted": true,
+    "context": "CTX-ENG",
+    "production": false,
+    "paid": false,
+    "restricted_data": false,
+    "id": "st02-fixed-typecheck",
+    "signature": "material-contract-typecheck",
+    "outcome": "PASS",
+    "checks": [
+      "typecheck",
+      "unit"
+    ],
+    "evidence_refs": [
+      "tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md"
+    ]
+  },
+  {
+    "task": "M5-ST02",
+    "host": "codex",
+    "baseline_sha": "5efd0085edc979f99dec51df159a68f88fa8eee4",
+    "result_sha": "b8e139c93d860c5cfdb997c9b9e25b208f944d43",
+    "reuse_target": "existing_method",
+    "redacted": true,
+    "context": "CTX-ENG",
+    "production": false,
+    "paid": false,
+    "restricted_data": false,
+    "id": "st02-private-context",
+    "signature": "project-context-replay-safety",
+    "outcome": "PASS",
+    "checks": [
+      "unit",
+      "permission-negative"
+    ],
+    "evidence_refs": [
+      "tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md"
+    ]
+  },
+  {
+    "task": "M5-ST02",
+    "host": "codex",
+    "baseline_sha": "5efd0085edc979f99dec51df159a68f88fa8eee4",
+    "result_sha": "b8e139c93d860c5cfdb997c9b9e25b208f944d43",
+    "reuse_target": "existing_method",
+    "redacted": true,
+    "context": "CTX-ENG",
+    "production": false,
+    "paid": false,
+    "restricted_data": false,
+    "id": "pg-feedback-fixture-red",
+    "signature": "fixture-contract-drift",
+    "outcome": "FAIL",
+    "checks": [
+      "permission-negative"
+    ],
+    "evidence_refs": [
+      "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41992897220"
+    ]
+  },
+  {
+    "task": "M5-ST02",
+    "host": "codex",
+    "baseline_sha": "5efd0085edc979f99dec51df159a68f88fa8eee4",
+    "result_sha": "d12f20da2cc876df41191b655e24dfff9a6ba025",
+    "reuse_target": "existing_method",
+    "redacted": true,
+    "context": "CTX-ENG",
+    "production": false,
+    "paid": false,
+    "restricted_data": false,
+    "id": "pg-feedback-fixture-green",
+    "signature": "fixture-contract-drift",
+    "outcome": "PASS",
+    "checks": [
+      "boundary",
+      "permission-negative"
+    ],
+    "evidence_refs": [
+      "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41993463958"
+    ]
+  }
+]

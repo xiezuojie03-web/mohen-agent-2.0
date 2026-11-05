@@ -1,5 +1,7 @@
 # 墨痕｜当前真实工程状态
 
+> **2026-11-05｜V1.2最终核证（优先于下方历史PENDING）**：源码b8e139c主CI41992897348和HTTP41992896865 SUCCESS（468单测/4旧SKIP、133边界、19HTTP/1官方StorageSKIP）；首PG反馈夹具失败已由d12f20d定向修正，CI41993463899/PG41993463958 SUCCESS，100候选预LIMIT回放和K3_DB_TEST_PASS已实测。DS03仅显式脱敏回执→精确签名分组→3份待评价草案，未实现自动采集/准入。已达三项操作检查点；下一唯一优先ST02真实原件L0-L2自动note首次/回放/撤权PG及HTTP，之后ST03。完整证据/Blob/回退见CODEX_M5_RECOVERY_ST02_20261105回执；**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY**及CodeBuddy延后与全部原HOLD保持。
+
 > **2026-11-05｜Codex V1.2真实接续**：基线5efd0085，旧work保全且无独有未推送成果；ST02三类型错误已本地修复，新增私有项目读取入口和DS03离线脱敏经验草案。三项操作完成后形成检查点；正式源码/最终CI与PG/HTTP只按 `tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md §4` 核准，以下旧FAIL/NOT_RUN是历史。下一唯一优先仍ST02真实原件L0-L2自动note的PG/HTTP回放和撤权，不重做ST01、不冒称ST03/M5准出。**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY**；CodeBuddy未来切换时验。
 
 > **2026-11-05｜C0—C4 最后版本治理文档归档与开发 Skill 验收顺序**：五件原 `governance/C0—C4` 最后版依原 Git Blob 完整归位 `governance/archive/`，索引 `governance/archive/C0_C4_TO_MHKA_ARCHIVAL_20261105.md`。现行设计路由仍唯一为根 `AGENTS.md` → MHKA-00—05；**文档归档不代表旧运行代际退役或 M8 正式运行许可通过**。Codex 先结合 M5 施工验证开发 Skill；CodeBuddy 的宿主测试留到实际切换，`HOST_NOT_RUN` 不阻塞 M5。原 M5/ST-02 编译故障与所有专业/生产/费用 HOLD 不变。

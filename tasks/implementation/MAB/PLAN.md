@@ -971,3 +971,7 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 ## 2026-11-05｜Codex V1.2恢复接续：ST02类型根因、私有入口、DS03离线经验基础
 
 基线5efd0085；旧work@759dbbd干净、无stash或独有提交，落后369。完整bundle已保全，原工作区未覆盖；未找回中断时未提交现场，不声称已恢复。历史9cc25f65/9838abb3/3edfb0e6均已在main。实际加载mohen-dev-continuation、工具映射及宿主规范，独立副本三项有界操作：修复Material合同/重复声明；接ST02私有POST、ACTIVE/no-store/Owner边界和首次重放生成note排重（LIMIT前过滤）；DS03脱敏显式回执按签名分组、四路不可执行草案，非自动遥测/准入。源码/最终测试/精确CI后续按单一回执§4核准：tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md。M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY。CodeBuddy延后；下一唯一优先ST02真实原件L0-L2自动note的PG/HTTP回放及撤权，之后才ST03。
+
+### 2026-11-05 V1.2本批精确远端验收与检查点
+
+业务源码b8e139c93d860c5cfdb997c9b9e25b208f944d43：CI41992897348 SUCCESS（468PASS/4既有SKIP、133边界、Skill11项、Build、审计errors=[]），HTTP41992896865 SUCCESS（19PASS/1官方StorageSKIP，ST02候选精确版本/Owner隔离/no-store/重放）。首PG41992897220因旧反馈矩阵缺consent字段FAIL；定向夹具d12f20da2cc876df41191b655e24dfff9a6ba025保留明确同意并加缺同意拒绝，CI41993463899与PG41993463958 SUCCESS，真实MAB_ST02_PRELIMIT_REPLAY_PASS（100候选不被自动note挤出）、K3_DB_TEST_PASS。原始失败不删。5条脱敏经验真实运行离线分析生成3个不可自动执行的待评价草案；无宿主自动采集/自动准入。Codex显式读Skill并完成受控修复/验证/提交/原账回写，CodeBuddy仍HOST_NOT_RUN且不阻断。单一回执tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md及同目录experience/drafts/verification JSON保留SHA/接口/回退/读取Blob。达到三项操作边界；M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY、全部生产/专业/费用/外发HOLD不变。**唯一下一优先：ST02真实原件L0-L2自动note首次/回放/撤权PG与HTTP**；现有候选HTTP和满页仓储断言不重做，之后才ST03。

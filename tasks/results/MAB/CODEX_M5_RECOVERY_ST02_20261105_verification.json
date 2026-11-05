@@ -1,0 +1,110 @@
+{
+  "skill-typecheck-committed": {
+    "schema": "mohen-dev-verification/v1",
+    "skill": "mohen-dev-continuation",
+    "version": "0.2.0",
+    "claimedHost": "codex",
+    "hostSkillLoaded": false,
+    "checkoutHead": "b8e139c93d860c5cfdb997c9b9e25b208f944d43",
+    "mode": "verify",
+    "profile": "typecheck",
+    "dryRun": false,
+    "steps": [
+      {
+        "id": "typescript-check",
+        "command": "pnpm -r typecheck",
+        "status": "PASS",
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 7792,
+        "errorCode": null
+      }
+    ],
+    "status": "PASS",
+    "scope": "LOCAL_CHECK_ONLY_NOT_M5_GATE_OR_HOST_ACTIVATION"
+  },
+  "skill-unit-committed": {
+    "schema": "mohen-dev-verification/v1",
+    "skill": "mohen-dev-continuation",
+    "version": "0.2.0",
+    "claimedHost": "codex",
+    "hostSkillLoaded": false,
+    "checkoutHead": "b8e139c93d860c5cfdb997c9b9e25b208f944d43",
+    "mode": "verify",
+    "profile": "unit",
+    "dryRun": false,
+    "steps": [
+      {
+        "id": "unit-suite",
+        "command": "pnpm test:unit",
+        "status": "PASS",
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 18692,
+        "errorCode": null
+      }
+    ],
+    "status": "PASS",
+    "scope": "LOCAL_CHECK_ONLY_NOT_M5_GATE_OR_HOST_ACTIVATION"
+  },
+  "skill-static-committed": {
+    "schema": "mohen-dev-verification/v1",
+    "skill": "mohen-dev-continuation",
+    "version": "0.2.0",
+    "claimedHost": "codex",
+    "hostSkillLoaded": false,
+    "checkoutHead": "b8e139c93d860c5cfdb997c9b9e25b208f944d43",
+    "mode": "verify",
+    "profile": "static",
+    "dryRun": false,
+    "steps": [
+      {
+        "id": "mhka-route",
+        "command": "node scripts/guards/check-authority-routing.mjs",
+        "status": "PASS",
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 34,
+        "errorCode": null
+      },
+      {
+        "id": "dev-skill-layout",
+        "command": "node scripts/guards/check-dev-skill-layout.mjs",
+        "status": "PASS",
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 36,
+        "errorCode": null
+      }
+    ],
+    "status": "PASS",
+    "scope": "LOCAL_CHECK_ONLY_NOT_M5_GATE_OR_HOST_ACTIVATION"
+  },
+  "scope": "EXACT_COMMIT_LOCAL_CHECKS_NOT_PRODUCT_GATE",
+  "remote_source_ci": {
+    "sha": "b8e139c93d860c5cfdb997c9b9e25b208f944d43",
+    "ci": 41992897348,
+    "ci_result": "SUCCESS",
+    "unit_pass": 468,
+    "unit_skipped": 4,
+    "boundary_pass": 133,
+    "dev_skill_pass": 11,
+    "http": 41992896865,
+    "http_result": "SUCCESS",
+    "http_pass": 19,
+    "http_skipped": 1,
+    "pg": 41992897220,
+    "pg_result": "FAILURE",
+    "pg_reason": "existing consented_feedback fixture missing explicit consent before ST02 boundary assertion",
+    "supplement_sha": "d12f20da2cc876df41191b655e24dfff9a6ba025",
+    "supplement_ci": 41993463899,
+    "supplement_ci_result": "SUCCESS",
+    "supplement_pg": 41993463958,
+    "supplement_pg_result": "SUCCESS",
+    "supplement_pg_markers": [
+      "MAB_ST02_PRELIMIT_REPLAY_PASS 100-candidates generated-note owner-only",
+      "MAB_STUDIO_REPOSITORY_PASS",
+      "K3_DB_TEST_PASS"
+    ]
+  }
+}
