@@ -17,6 +17,24 @@ function jsonCopy(value, code) {
     return JSON.parse(text);
   } catch { throw new Error(code); }
 }
+const deniedActions = Object.freeze({read:'denied',quote:'denied',display:'denied',
+  download:'denied',adapt:'denied',external_processing:'denied'});
+
+function requireConsentedFeedback(payload) {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload) ||
+      payload.consent !== true || payload.withdrawal_allowed !== true ||
+      typeof payload.text !== 'string' || !payload.text.trim() ||
+      payload.text.length > 10000) throw new Error('STUDIO_FEEDBACK_CONSENT_REQUIRED');
+}
+
+// Immutable historic rows remain for restricted audit, but a withdrawn
+// feedback body must never be returned by the normal Owner asset-history API.
+function redactWithdrawnFeedback(row) {
+  return {...row,payload:{consent:false,withdrawn:true},
+    source_refs:[],dependency_refs:[],permission_scope:{},
+    access_state:'REVOKED',rights_by_action:{...deniedActions}};
+}
+
 const revisionSelect = `select r.*,h.project_id,h.asset_kind from studio.asset_revisions r
   join studio.asset_heads h on h.asset_id=r.asset_id`;
 
@@ -57,11 +75,13 @@ export function createStudioAssetRepository(pool) {
      */
     listAssetRevisions(projectId, assetId, sessionToken) {
       requireId(projectId); requireId(assetId);
-      return transaction(sessionToken, async client => (await client.query(
-        revisionSelect + ` where h.project_id=$1 and h.asset_id=$2
-          order by r.revision_no desc,r.revision_id limit 100`,
-        [projectId,assetId]
-      )).rows);
+      return transaction(sessionToken, async client => {
+        const {rows} = await client.query(revisionSelect + ` where h.project_id=$1 and h.asset_id=$2
+          order by r.revision_no desc,r.revision_id limit 100`,[projectId,assetId]);
+        if (rows[0]?.asset_kind === 'consented_feedback' && rows[0].access_state === 'REVOKED')
+          return rows.map(redactWithdrawnFeedback);
+        return rows;
+      });
     },
     /** Private trace of actual recorded uses. An empty result cannot be
      * interpreted as permission to reuse the asset or as a missing Gate.
@@ -104,6 +124,7 @@ export function createStudioAssetRepository(pool) {
       if (typeof idempotencyKey !== 'string' || !idempotencyKey.trim() || idempotencyKey.length > 200) throw new Error('STUDIO_IDEMPOTENCY_KEY_INVALID');
       if (payload === undefined || payload === null) throw new Error('STUDIO_PAYLOAD_REQUIRED');
       const content = jsonCopy(payload,'STUDIO_PAYLOAD_INVALID');
+      if (kind === 'consented_feedback') requireConsentedFeedback(content);
       const sources = jsonCopy(sourceRefs,'STUDIO_REFERENCES_INVALID');
       const dependencies = jsonCopy(dependencyRefs,'STUDIO_REFERENCES_INVALID');
       if (!Array.isArray(sources) || !Array.isArray(dependencies)) throw new Error('STUDIO_REFERENCES_INVALID');
@@ -117,6 +138,11 @@ export function createStudioAssetRepository(pool) {
         const headResult = await client.query('select project_id,asset_kind,current_revision_id from studio.asset_heads where asset_id=$1 for update',[assetId]);
         const head = headResult.rows[0];
         if (!head || head.project_id !== projectId || head.asset_kind !== kind) throw new Error('STUDIO_ASSET_NOT_FOUND');
+        if (kind === 'consented_feedback' && head.current_revision_id) {
+          const {rows} = await client.query(
+            'select access_state from studio.asset_revisions where revision_id=$1',[head.current_revision_id]);
+          if (rows[0]?.access_state === 'REVOKED') throw new Error('STUDIO_FEEDBACK_WITHDRAWN');
+        }
         const hash = createHash('sha256').update(canonical({projectId,assetId,kind,actor,expectedRevisionId,
           payload:content,sourceRefs:sources,dependencyRefs:dependencies,origin:'human',epistemicClass:'editorial',
           contentState:'WORKING',accessState:'RESTRICTED',freshnessState:'UNKNOWN_DEPENDENCY',validation:'UNASSESSED'})).digest('hex');
@@ -143,9 +169,78 @@ export function createStudioAssetRepository(pool) {
         return savedRevision(client, revisionId);
       });
     },
+    /** A withdrawn feedback creates an immutable, body-free terminal revision.
+     * Replays use the same idempotency key; only one current-head CAS may win.
+     * No independent G or permission to republish is granted by this mutation.
+     */
+    async withdrawFeedback({projectId,assetId,expectedRevisionId,idempotencyKey},sessionToken) {
+      requireId(projectId);requireId(assetId);requireId(expectedRevisionId);
+      if (typeof idempotencyKey !== 'string' || !idempotencyKey.trim() || idempotencyKey.length > 200)
+        throw new Error('STUDIO_IDEMPOTENCY_KEY_INVALID');
+      return transaction(sessionToken, async (client,actor) => {
+        const {rows:projects} = await client.query(
+          "select project_id from studio.projects where project_id=$1 and lifecycle_status='ACTIVE'",[projectId]);
+        if (projects.length !== 1) throw new Error('STUDIO_PROJECT_NOT_FOUND');
+        const {rows:heads} = await client.query(
+          'select project_id,asset_kind,current_revision_id from studio.asset_heads where asset_id=$1 for update',[assetId]);
+        const head=heads[0];
+        if(!head || head.project_id!==projectId || head.asset_kind!=='consented_feedback')
+          throw new Error('STUDIO_ASSET_NOT_FOUND');
+        const {rows:previous} = await client.query(
+          'select revision_id,supersedes_revision_id,access_state from studio.asset_revisions where asset_id=$1 and idempotency_key=$2',
+          [assetId,idempotencyKey]);
+        if(previous.length) {
+          if(previous[0].access_state!=='REVOKED' ||
+              previous[0].supersedes_revision_id!==expectedRevisionId)
+            throw new Error('STUDIO_IDEMPOTENCY_CONFLICT');
+          return savedRevision(client,previous[0].revision_id);
+        }
+        if(head.current_revision_id!==expectedRevisionId) throw new Error('STUDIO_REVISION_CONFLICT');
+        const {rows:current}=await client.query(
+          'select revision_no,access_state from studio.asset_revisions where asset_id=$1 and revision_id=$2',
+          [assetId,expectedRevisionId]);
+        if(current.length!==1) throw new Error('STUDIO_REVISION_CONFLICT');
+        if(current[0].access_state==='REVOKED') throw new Error('STUDIO_FEEDBACK_WITHDRAWN');
+        const payload={consent:false,withdrawn:true,withdrawal_of_revision_id:expectedRevisionId};
+        const contentHash=createHash('sha256').update(canonical({projectId,assetId,
+          kind:'consented_feedback',actor,expectedRevisionId,payload,
+          withdrawal:true,rightsByAction:deniedActions,accessState:'REVOKED'})).digest('hex');
+        const revisionId=randomUUID();
+        await client.query(`insert into studio.asset_revisions
+          (revision_id,asset_id,revision_no,supersedes_revision_id,actor_id,workspace_id,
+           origin_kind,epistemic_class,payload,content_hash,source_refs,dependency_refs,
+           rights_by_action,permission_scope,content_state,access_state,freshness_state,
+           validation,idempotency_key,correlation_id)
+           values($1,$2,$3,$4,$5,'studio','human','editorial',$6::jsonb,$7,'[]'::jsonb,
+           '[]'::jsonb,$8::jsonb,'{}'::jsonb,'ARCHIVED','REVOKED','STALE',
+           '{"status":"HOLD","rule_version":null,"findings":["CONSENT_WITHDRAWN"]}'::jsonb,$9,$10)`,
+          [revisionId,assetId,current[0].revision_no+1,expectedRevisionId,actor,JSON.stringify(payload),
+           contentHash,JSON.stringify(deniedActions),idempotencyKey,randomUUID()]);
+        const {rows:changed}=await client.query(`update studio.asset_heads set current_revision_id=$1
+          where asset_id=$2 and current_revision_id=$3 returning asset_id`,
+          [revisionId,assetId,expectedRevisionId]);
+        if(changed.length!==1) throw new Error('STUDIO_REVISION_CONFLICT');
+        return savedRevision(client,revisionId);
+      });
+    },
     getRevision(revisionId, sessionToken) {
       requireId(revisionId);
-      return transaction(sessionToken, async client => (await client.query(revisionSelect+' where r.revision_id=$1',[revisionId])).rows[0] ?? null);
+      return transaction(sessionToken, async client => {
+        const {rows}=await client.query(revisionSelect+' where r.revision_id=$1',[revisionId]);
+        const result=rows[0];
+        if(!result) return null;
+        if(result.asset_kind==='consented_feedback') {
+          const {rows:heads}=await client.query(`select current.access_state from studio.asset_heads h
+            join studio.asset_revisions current on current.revision_id=h.current_revision_id
+            where h.asset_id=$1`,[result.asset_id]);
+          if(heads[0]?.access_state==='REVOKED') {
+            // Historical identity/hash is obtainable from Owner-only revision
+            // history, but the withdrawn original body is not a live asset.
+            return result.access_state==='REVOKED'?redactWithdrawnFeedback(result):null;
+          }
+        }
+        return result;
+      });
     },
   };
 }
