@@ -43,3 +43,12 @@ node --test tests/dev-skills/continuation.test.mjs
 - 隔离回滚仅回退本次 `mohen-dev-continuation` v0.2.0 方法/JSON/CLI/tests/CI 小范围提交；不能回滚六份 MHKA、原 MAB 权威与 D/L/G 权限。
 - 任何新执行功能不得新增 `production`/任意 shell profile。CI 断言仅证明本次静态包装与 CLI 工具逻辑，在两个开发宿主实测之前只能标 `HOST_NOT_RUN`。
 - 后续严格沿 DS-03，以真实 `apps/web/lib/studio-research-read.ts` 类型错误与 ST-02 读权限任务进行开发循环：选工具→运行诊断→最小修复→复验→回写 SHA/CI/任务账；M5整体仍 `HOLD`。
+
+## 5｜远端机器验证回执（CI 已核实，2026-11-05）
+
+- DS-02 实施 SHA `20e89cdb681a66ee549335c73403634271ab37d5`，GitHub Actions [41978849756](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41978849756)，job `127083985503`。
+- `MHKA engineering authority routing guard` **SUCCESS**；`Developer Skill packaging guard (static only)` **SUCCESS**，原始日志 `DS_DEV_SKILL_LAYOUT_PASS ... v0.2.0; NOT_HOST_ACTIVATED`。
+- `Developer Skill executable checks (no DB or remote provider)` **SUCCESS**，Node 内置测试 **5 tests / 5 PASS / 0 FAIL**：JSON 矩阵白名单、doctor/host 标签不当作加载证据、dry-run 确保不执行、禁止 production profile、真实 static profile 跑过两项原始 guard。
+- 该次完整主 CI **FAILURE**，原因仍是既有 M5 `apps/web/lib/studio-research-read.ts` 第46行 TS2353（`Material.title` 不存在）与第84/180行两处 TS2451（`privateMaterialIds` 重复声明）；CI 后续 Unit/Build **SKIPPED**。本批未改动该业务文件，故不能将已知问题掩盖为 DS-02 成功或称 M5 已通过。
+- 本次结论：**`DS02_LOCAL_CLI_STATIC_VERIFIED / CODEX_HOST_NOT_RUN / CODEBUDDY_HOST_NOT_RUN / CROSS_TOOL_HOST_VERIFICATION_PENDING / DS03_NOT_RUN / M5_OVERALL_HOLD`**。开发 Skill 已具备可执行环境检查与离线白名单验证，**但两端 AI 宿主是否真的发现并应用同一份 Skill，仍须分别在真实 Codex/CodeBuddy 工作区提交 H-01—H-05 回执**。不应以 GitHub 的 Node CI 代替宿主识别能力。
+

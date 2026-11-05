@@ -1,5 +1,8 @@
 # 墨痕 MAB｜Codex 当前执行交接书（唯一现行入口）
 
+> **2026-11-05｜DS-02 精确 CI 结果（优先于下方刚实施描述）**：`main@20e89cdb` 的 Actions [41978849756](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41978849756)：MHKA/Skill 两项静态守卫 SUCCESS，新增实际 CLI 正反 **5PASS/0FAIL**；但原 M5 `studio-research-read.ts` TS2353＋2×TS2451 使整体 CI FAILURE，后续 Unit/Build SKIP。**DS02_LOCAL_CLI_STATIC_VERIFIED / CODEX_HOST_NOT_RUN / CODEBUDDY_HOST_NOT_RUN / CROSS_TOOL_PENDING**。下一可在 Codex 按 `.agents/skills/mohen-dev-continuation/references/HOST_ACCEPTANCE.md` 显式加载并运行 doctor/static，并在原 M5 范围定向修类型错误；CodeBuddy 须另行验收，不能以 Codex 通过代替。生产/专业 Gate/费用/外发/Owner HOLD 均不变。
+
+
 > **2026-11-05｜DS-02 同一开发 Skill 受控工具执行增强**：在 `.agents/skills/mohen-dev-continuation/SKILL.md` 继续深化唯一能力方法源（v0.2.0），新增 `.agents/skills/mohen-dev-continuation/references/task-tool-environment-map.json`、`scripts/dev-skills/continuation.mjs` 及测试 `tests/dev-skills/continuation.test.mjs`；只许可 doctor、static/typecheck/unit 三种本地受控 profile，不可调用 DB/发布/收费工具。不同平台分别按 `.agents/skills/mohen-dev-continuation/references/HOST_ACCEPTANCE.md` 验收宿主真实加载；GitHub CI 静态成功 ≠ Codex 已加载 ≠ CodeBuddy 已加载。M5/ST-02 Typecheck 是下一次真实故障验证候选，尚未因本次 DS-02 修复；原 MHKA、MAB、生产 Gate 和 HOLD 不变。
 
 

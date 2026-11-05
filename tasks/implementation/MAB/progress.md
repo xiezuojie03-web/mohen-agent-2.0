@@ -1096,3 +1096,9 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - CI 在 Typecheck 前增加独立 Node.js 离线测试（使本轮测试证据不因既有 M5 TS 错误而跳过），旧 M5/ST-02 三处类型错误仍需独立修复和复测，不由 DS-02 代替。真实远端结果、宿主加载和运行权限待本批精确 SHA/CI 证据；用户需在 Codex、CodeBuddy 各自会话实测，不能把文件入仓记为 HOST_VERIFIED。
 - 状态候选：`DS02_CODE_PRESENT / MAP_CLI_TEST_PENDING_CI / CODEX_HOST_NOT_RUN / CODEBUDDY_HOST_NOT_RUN / DS03_NOT_RUN / M5_OVERALL_HOLD`；原任务书真实权威与准出门槛不变。详细 `tasks/results/MAB/DS02_EXECUTABLE_TOOL_MAPPING_20261105.md`。
 
+### DS-02 远端 CI 独立回执（2026-11-05）
+
+- 精确源码 SHA `20e89cdb681a66ee549335c73403634271ab37d5`，GitHub Actions [41978849756](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41978849756)：权威路由守卫 **SUCCESS**，Skill 包装守卫 **SUCCESS**，本次新增 Node CLI 单元正反 **5PASS/0FAIL**（含实际静态执行与无授权 production profile 拒绝）。
+- **完整 CI FAILURE，独立于本次 DS-02**：既有 M5 `studio-research-read.ts` 的 TS2353 `Material.title` 和两处 TS2451 `privateMaterialIds`；因此后续 Unit/Build **SKIPPED**，不得写为准出。
+- 状态 **`DS02_LOCAL_CLI_STATIC_VERIFIED`**；**`CODEX_HOST_NOT_RUN`、`CODEBUDDY_HOST_NOT_RUN`，跨工具成功待分别验收**；`DS03_NOT_RUN`、`DS04_NOT_STARTED`，M5/ST-02、所有生产/专业/费用/外发 HOLD 不变。详细回执 `tasks/results/MAB/DS02_EXECUTABLE_TOOL_MAPPING_20261105.md §5`，验收动作 `.agents/skills/mohen-dev-continuation/references/HOST_ACCEPTANCE.md`。
+
