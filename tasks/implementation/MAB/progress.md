@@ -1115,3 +1115,8 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - **ChatGPT 资料库宪章一致性**：现行研究 `03_权威知识体系重建/MHKA-00` 与 `04_工程规范与Codex接入/repo_target/governance/mhka/MHKA-00` 两处均原位覆盖、重新取回计算 Git Blob SHA `d318d9b6bcfdd51cb49acd322269f0809bcb4aaa`，与 GitHub 现行 MHKA-00 完全一致；另外 MHKA-01—05 未在本轮归档中修改。
 - **下一步及边界**：Codex 优先从实时 main 加载 `mohen-dev-continuation`，独立验证宿主 H-01—H-05，并沿现行 M5/ST-02 有界修复 Typecheck；CodeBuddy 实机验收待未来切换时再做，不阻断 M5。M8 生产/权限/运行代际退役、全部 Gate/HOLD 均未因此准出。
 
+## 2026-11-05｜M5/ST02 来源能力缺口候选登记（仅资料与计划回写）
+
+- **Owner决定与归属**：OpenSH-mcp 登记为外部技术情报 `RAD-014`，资料库平行目录 `/墨痕外部技术情报/` 的现行索引/JSON是唯一技术情报台账；此处仅在原 MAB §M5/ST02 记来源能力候选，不新立 MAB 工作包、Skill、来源 Registry 或工程分支，也不覆盖 Codex 当前施工。
+- **已有能力核查**：`sources/registry.json` 既有 `shl-open-data`、`specs/data-production/source-providers.json` 既有 `shanghai_library`；新增候选预期只通过现有 Provider/Tool/Adapter 扩展史料发现，不另建 D/L/G 或知识库。上游 https://github.com/FreyaBit/OpenSH-mcp 与 Owner Fork https://github.com/xiezuojie03-web/OpenSH-mcp 核查时 main 同为 `707f4fbb464d1748b3a0da5b7ab0d70d256243ea`，12工具/99登记API、MIT代码许可已源码检查；真实资料/每接口可用性、上图Key/数据使用权、HTTP鉴权与PDF原件定位未测。
+- **当前阶段与验收影响**：`E2_SOURCE_READ / CANDIDATE_ONLY / NO_LIVE_PROVIDER_TEST / NO_MOHEN_INTEGRATION`。M5 ST02 资料可得性、合法Provider/证据定位仍按原HOLD；原ST02及M5所有施工优先级、类型检查阻断、生产/专业Gate/外发/费用HOLD、M6/M7/M8条件均不变。后续如出现合法真实来源需求，可按原授权少量只读隔离验证；M6合同/安全适配，M7双课题真实验收另行核证。本次无接口调用、密钥配置、部署或生产写入。
