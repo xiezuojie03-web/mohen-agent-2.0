@@ -1142,3 +1142,69 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 ### 2026-11-05 V1.2本批精确远端验收与检查点
 
 业务源码b8e139c93d860c5cfdb997c9b9e25b208f944d43：CI41992897348 SUCCESS（468PASS/4既有SKIP、133边界、Skill11项、Build、审计errors=[]），HTTP41992896865 SUCCESS（19PASS/1官方StorageSKIP，ST02候选精确版本/Owner隔离/no-store/重放）。首PG41992897220因旧反馈矩阵缺consent字段FAIL；定向夹具d12f20da2cc876df41191b655e24dfff9a6ba025保留明确同意并加缺同意拒绝，CI41993463899与PG41993463958 SUCCESS，真实MAB_ST02_PRELIMIT_REPLAY_PASS（100候选不被自动note挤出）、K3_DB_TEST_PASS。原始失败不删。5条脱敏经验真实运行离线分析生成3个不可自动执行的待评价草案；无宿主自动采集/自动准入。Codex显式读Skill并完成受控修复/验证/提交/原账回写，CodeBuddy仍HOST_NOT_RUN且不阻断。单一回执tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md及同目录experience/drafts/verification JSON保留SHA/接口/回退/读取Blob。达到三项操作边界；M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY、全部生产/专业/费用/外发HOLD不变。**唯一下一优先：ST02真实原件L0-L2自动note首次/回放/撤权PG与HTTP**；现有候选HTTP和满页仓储断言不重做，之后才ST03。
+
+
+## 2026-11-05｜环境核实与双线检查点（ST-02 DEFERRED_DATA，独立安全跟踪）
+
+### 1. 基线、保护与继承
+
+- 本轮远端 `main=77d854e95f46f659a944e6e063c1f5dab468d296`：GitHub connector先核、后显式`git fetch origin refs/heads/main:refs/remotes/origin/main`成功。原仓库`/workspace/mohen-agent-2.0`保持work@759dbbd、干净、stash空、fsck无不可达输出、work相对main无独有提交；当前仅一个登记worktree。可访问/workspace工作目录未发现旧未继承bundle/patch；无法证明不存在于未挂载Owner本机。历史中断现场调查/保全按原RECOVERY回执继承，不重造恢复结论。独立非硬链接clone `/workspace/work/m5-environment/repo`，分支`m5/environment-st02`；原现场不reset/clean/stash/drop、不强推。
+- 首次普通fetch代理8080拒连；授权执行后默认fetch因旧refspec只指已不存在a001/production失败，显式main ref成功。未改原remote配置或删除旧分支。接续应使用显式main ref，不把这个配置问题误报成GitHub不可用。
+- 已读最新AGENTS、CURRENT、六MHKA相关条款、原PLAN/progress/target-diff、现行交接、RECOVERY回执§1—6、canonical v0.2.0/映射/HOST_ACCEPTANCE及专业合同S01—S08。MHKA/KAD6/D/L/G、原Registry与权限不变。
+- 只读GitHub实核：main `41994159578` CI SUCCESS；b8e139c主CI41992897348/HTTP41992896865 SUCCESS，d12f20d主CI41993463899/PG41993463958 SUCCESS；源码首PG41992897220 FAILURE历史保留。继承468单测/4旧SKIP、133边界、19HTTP/1官方StorageSKIP、100候选预LIMIT与K3_DB_TEST_PASS，不能代验真实原件或正式Gate。本轮无业务源码变化，不重跑ST01/M0—M4或已验候选测试。
+
+### 2. 双线与本次 Codex H-01—H-05
+
+| 项 | 本次实测/继承与限制 |
+|---|---|
+| H-01 | Codex会话显式读取canonical v0.2.0、工具JSON和宿主手册；不是原生自动发现/跨会话触发证明。CLI的hostSkillLoaded:false只说明CLI无法证明宿主加载；宿主版本unknown。 |
+| H-02 | exact baseline 77d854e：doctor真实执行；static dry-run两项NOT_RUN_DRY_RUN；实际static两守卫PASS。普通沙箱spawnSync EPERM导致首次FAIL，授权正常执行同命令PASS，不删失败。 |
+| H-03 | VM Node24.19.0/Git2.52.0/gh2.46.0；pnpm路径存在但doctor未取得版本，不冒称pnpm9可运行。应用数据库/Storage凭据和隔离配置缺失；Supabase connector只读成功不证明应用运行身份。 |
+| H-04 | `verify --profile production --json`真实退出64/PROFILE_NOT_ALLOWED，无生产执行；仍无任意shell/DB/deploy profile。 |
+| H-05 | 继承b8e139c/d12f20d已核受控开发闭环；本次为真实环境诊断→定向验证→原账修订→GitHub提交/精确CI核验，提交/CI按下方收尾记录；不声称本次新开发真实原件能力。 |
+
+本次定向`node --test tests/dev-skills/*.test.mjs`授权正常执行11PASS/0FAIL；普通沙箱首次continuation测试文件FAIL、experience文件PASS，保留为环境限制，不与最终结果混淆。CodeBuddy仍`HOST_NOT_RUN / DEFERRED_TO_CODEBUDDY_HANDOFF`，未来本机/skills发现→loader→canonical→doctor/static独立验证，不阻断M5。
+
+DS03已有5条脱敏回执生成3份`DRAFT_PENDING_EVALUATION`，继承原JSON和精确签名分析器，不重复生成/发布；自动宿主采集、语义模式发现、自动评价准入、持续版本演化尚未完整实现。后续依原§6B.4在真实任务中吸收失败/恢复、环境能力与候选适用条件；建议不能提权，不另设Registry。
+
+产品四类能力持续保留：生产(CTX-PROD)、Studio创作(CTX-STUDIO)、WATCH与EXP消费(CTX-EXPLORE)，不与CTX-ENG混同。EXP准备沿MHKA-02§5、04§3.4及能力合同§3.3：S01入口识别/空间、S02时空追踪、S03关系、S04材料发现、S05返证/缺口、S06可追问叙事、S07连续编排、S08当下连接；跨域比较须带来源/时间精度，连续追问与返回保留语义/布局/版本，缺证据显示未知而不补造。此为继承和未来验收责任，非八个已运行Skill，不启动完整EXP/UXD-01，也不把完整知识库设为准备前置。两线相互供给经验，均不替代另一条。
+
+### 3. 四层环境和真实原件决策
+
+| 层次 | 本次可证事实 | 不能推导的能力 |
+|---|---|---|
+| 执行 | Codex Cloud Linux VM可读仓库、运行Node/Git/工具；CodeBuddy本机未连接/未实测 | 不能读取未挂载本机文件，不能代签CodeBuddy宿主 |
+| 数据 | Supabase mohen-cloud ACTIVE_HEALTHY/PG17.11；Storage桶0/对象0；private_originals=null；source.raw_items98，其中memory93，其余5条仓库JPEG路径；这些JPEG在checkout存在 | 登记/图片存在不等于Owner项目隔离原件、权利/完整性/可定位L1/L2已具备；M2合成本地Storage不等于云端历史字节 |
+| 网络/身份 | 显式main fetch、GitHub gh读CI、Supabase connector只读SQL成功；VM策略HTTP unrestricted/VPN=false/TCP域名清单空 | 不等于应用DB直连、Storage运行凭据、云端写入授权；CodeBuddy本地读权不等于云DB权 |
+| 专业工具 | pdftotext25.03可启动；Tesseract5可列语言，仅eng/osd；GDAL3.10.3、ImageMagick7.1.1-43可启动；Docker CLI存在但普通沙箱daemon访问拒绝；psql未在PATH | PDF实际版式读取、中文OCR、多模态Provider/GIS具体操作与真实图像处理未验；不以二进制存在当完整链PASS，不新建容器伪证真实数据 |
+
+仅报告变量存在性：本VM进程`DATABASE_URL/MOHEN_DATABASE_PASSWORD/SUPABASE_URL/MOHEN_SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY/SUPABASE_ANON_KEY/NEXT_PUBLIC_SUPABASE_URL/MOHEN_PRIVATE_STORAGE_SERVICE_KEY/MOHEN_PRIVATE_ORIGINAL_UPLOAD_ENABLED/MOHEN_TEST_STORAGE_CONFIG/MOHEN_TEST_PSQL/MOHEN_TEST_SOCKET`均ABSENT；独立副本.env/.env.local均ABSENT。未读/输出凭据值，未请求/配置生产密钥。MOHEN_TEST_STORAGE_CONFIG才是现有HTTP runner的真实配置名，不能用理论变量名替代。
+
+**当前分类：云端 `DEFERRED_DATA`；VM隔离执行 `DEFERRED_ENV`。** 未发现已提供的真实隔离原件及其授权清单；Owner本机是否有原件尚未知，不标LOCAL_ONLY、不标NEEDS_OWNER_CONFIGURATION或READY。原件在云端且配置/授权齐可由Codex执行；仅在本地时CodeBuddy可读取获授权文件，云DB仍独立配置；原件不存在则任何宿主不能真实验证。5个公开仓库JPEG不擅自升级为历史L0，且当前文本读取链不能将JPEG当UTF8原件。
+
+**唯一ST02重入条件/交接（不要求先改生产）**：
+1. 在既有任务/资产体系记录真实来源位置、Owner项目、原件修订/hash/媒体型、取得权与研究读权；明确能访问该位置的宿主及授权范围。数据存在但缺独立隔离endpoint/DB身份/Storage授权/会话/必要依赖时记NEEDS_OWNER_CONFIGURATION并停止；本地独占记LOCAL_ONLY，CodeBuddy先只读确认本机字节与权利，不上传私人原件。
+2. 真实隔离DB、私有Storage和最小身份齐备才记READY_FOR_ISOLATED_REAL_BYTES；沿现有M2 L0→L1→L2仓储/字节核验及Studio POST /api/studio/research-read验证。逐项记录首次source_anchor/reading_note与精确L1/L2引用、相同请求回放同note/rev/无重复、源或会话撤权后拒读及旧note不复活、跨Owner/匿名拒绝、no-store/hash/定位不符拒绝，保留日志/清理/回退。
+3. 现有`node scripts/test-mab-http.mjs`明确synthetic-only、限制localhost/标记DB/固定合成Storage并会清理对象和drop测试库；**禁止向它传真实Owner数据或云生产连接**。已验合成夹具只作继承证据。真实数据需在同一MAB批准的独立可保全验证流程中执行上述断言，未就绪不运行、不以合成元数据补位；原件SKIP不改PASS。ST02未达原准出不启动ST03。
+
+### 4. 独立安全事项：publication.publication_schedules
+
+只读SQL聚合实测：表存在、0行、RLS=false/FORCE=false、0policy；schema/table owner=postgres，nspacl/relacl均NULL（默认ACL，不等于所有角色无有效权限）。anon/authenticated/service_role/authenticator均schema USAGE=false，SELECT/INSERT/UPDATE/DELETE=false；service_role虽BYPASSRLS仍缺GRANT。authenticator成员为anon/authenticated/service_role。全角色有效权限复核还发现pg_read_all_data、pg_write_all_data、supabase_admin、supabase_etl_admin、supabase_read_only_user等管理/全库角色分别具有相应读写，故纠正“只发现postgres=仅postgres有权”的不当推断。未发现依赖view或函数正文直接引用该表（本次catalog检查范围，不保证不存在动态SQL/外部服务）。
+
+Data API范围：pg_db_role_setting未见pgrst.db_schemas/db_extra_search_path设置，当前SQL会话current_setting(pgrst.db_schemas,true)=NULL；这些NULL **不能证明publication不暴露**，PostgREST可由服务配置注入。当前Supabase connector没有返回实时Data API schema配置，本VM无API调用配置，未使用/输出key、未伪造JWT或试写生产。Dashboard实时暴露清单、平台管理角色成员/运行身份及外部API负例仍待Owner环境核实。
+
+实际源码路径：
+- `POST /api/admin/publications/schedules`→isOperator→schedulePublish/cancelSchedule→既有@mohen/data-access→publication表；schedulePublish只核work存在，cancel只按schedule_id/pending。源码没有逐项目/作品所有者授权；应先确认Operator是否正式具备全局调度权限，不能擅自设计owner策略。
+- `GET /api/admin/publications`→isOperator→processDueSchedules惰性处理→publishWork(work_id,'scheduler')→G5/rights核验→更新done或保留pending；现有GET有调度写副作用，应登记业务复核，不凭本轮表审计擅改行为。实际部署使用的DB角色未在本次证实，源码可用psql/node-pg连接不证明运行权限。
+
+**风险判断**：当前证据未显示anon/authenticated经表直接访问能力，不能报告“已公开泄露”；RLS缺失仍是防御缺口，未来GRANT/暴露变更或高权限后端绕过会放大风险，业务项目边界与运行身份未核，保持`OPEN / ACCESS_MODEL_AND_API_EXPOSURE_UNVERIFIED`，不签安全PASS。该项独立沿HP02/HP12责任跟踪，不改变M5顺序/HOLD。
+
+**条件化最小修复提案（本轮未执行生产SQL）**：先取得实时exposed schemas与合法Operator/调度DB角色/项目范围；若表只供后端，保持不向anon/authenticated授USAGE/DML、不新增暴露，确认其它表需求后才考虑更窄REVOKE。隔离验证RLS开启并只对已确认最小后端角色提供必要SELECT/INSERT/UPDATE，DELETE非业务必需不授；若Operator为项目范围则用现有work→project授权关系校验，不从请求信任owner；不要默认auth.uid()，当前应用会话未证等同Supabase Auth。若现用postgres/BYPASSRLS，单启RLS不会约束它，须单独评估收窄运行身份；不盲目FORCE、不使用新的SECURITY DEFINER绕过。所有生产变更须业务权限核定与Owner另授权。
+
+**回归与恢复矩阵（待隔离执行，NOT_RUN，不冒称PASS）**：匿名/普通登录/跨Owner非Operator安排与取消403且无写；合法授权Operator安排→取消成功、越项目拒绝或按已核全局职责；未到期不执行、到期只发布合格精确revision、无G5/媒体撤权保持pending且不公开；新低权限DB身份所需DML成功、anon/authenticated直接SQL及REST拒绝、service_role无grant不放行、暴露schema变化仍拒绝；重复/并发调度不误报done、角色撤销后即时拒绝。隔离正反完成后提交候选迁移/回滚，再申请生产窗口。回滚恢复原GRANT/策略/角色调用兼容，保留调度/审计记录和旧撤权，不扩大公众权限。
+
+### 5. 本批边界、验证与回退
+
+本批仅三组有界操作：①继承与双线/EXP准备现行状态纠偏；②四层环境只读核实及ST02分类/重入；③独立安全只读审计与提案/测试矩阵。只更新原PLAN、progress、CURRENT和现行handoff四文件，无新权威/源码/Registry/迁移，无生产DDL、Bucket、上传、密钥或权限改变。定向检查与最终精确提交/一次完整CI在下方收尾追加；历史PASS按精确SHA继承，实际原件PG/HTTP及安全回归均NOT_RUN/HOLD。回退本批仅撤销这四份文档差异，保留所有历史回执和数据；原work现场不动，不复活撤权内容。
+
+定向收尾：文档预算PASS(CURRENT 134/180)、git diff --check PASS；最终正常执行权限下static两守卫PASS，74目标审计errors=[]且HANDOFF_NOT_READY。审计在普通沙箱曾repo_sha=null、Skill守卫EPERM；正常执行补证记录在本次命令轨迹，不将受限结果抹掉。仅四文档差异复核，无凭据值/数据正文，无新产品实现或生产改动。完整CI由本次提交后main push触发一次，结果另核。

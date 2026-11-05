@@ -1,5 +1,7 @@
 # 墨痕｜当前真实工程状态
 
+> **2026-11-05｜ST-02 环境与双线接续检查点（本条优先于下方历史状态）**：最新远端基线 `77d854e95f46f659a944e6e063c1f5dab468d296`，主 CI `41994159578` SUCCESS；旧 work@759dbbd 保留且无独有提交。云端只读复核 bucket=0/object=0、`studio.private_originals` 不存在、raw_items=98/memory=93，因此云端真实字节验证为 **DEFERRED_DATA**，不是 PASS；可访问 VM 未发现已配置的隔离 Storage/DB，Owner 本机原件位置与权限尚未核实，不能宣称 LOCAL_ONLY 或 READY。已继承 ST01、ST02 候选 HTTP/满页 PG 与 M0—M4 有界成果，不重复施工、不启动 ST03。开发 Skill v0.2.0 继续使用；DS03 已有5条脱敏回执→3份待评价草案，自动采集/语义发现/自动准入未完整实现；CodeBuddy仍待本地宿主实测。产品生产/创作/观看/探索四类能力及 S01—S08 保留，EXP仅准备、不启动完整工程。调度表独立安全项已记原PLAN/progress：API角色当前无schema/table权限，但有效权限不只postgres；Data API实时暴露及部署运行身份仍待核，不执行生产修复。**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY**。详细证据、四层环境、恢复条件、最小修复及回归矩阵见 `tasks/implementation/MAB/progress.md` 最新“环境核实与双线检查点”。
+
 > **2026-11-05｜V1.2最终核证（优先于下方历史PENDING）**：源码b8e139c主CI41992897348和HTTP41992896865 SUCCESS（468单测/4旧SKIP、133边界、19HTTP/1官方StorageSKIP）；首PG反馈夹具失败已由d12f20d定向修正，CI41993463899/PG41993463958 SUCCESS，100候选预LIMIT回放和K3_DB_TEST_PASS已实测。DS03仅显式脱敏回执→精确签名分组→3份待评价草案，未实现自动采集/准入。已达三项操作检查点；下一唯一优先ST02真实原件L0-L2自动note首次/回放/撤权PG及HTTP，之后ST03。完整证据/Blob/回退见CODEX_M5_RECOVERY_ST02_20261105回执；**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY**及CodeBuddy延后与全部原HOLD保持。
 
 > **2026-11-05｜Codex V1.2真实接续**：基线5efd0085，旧work保全且无独有未推送成果；ST02三类型错误已本地修复，新增私有项目读取入口和DS03离线脱敏经验草案。三项操作完成后形成检查点；正式源码/最终CI与PG/HTTP只按 `tasks/results/MAB/CODEX_M5_RECOVERY_ST02_20261105.md §4` 核准，以下旧FAIL/NOT_RUN是历史。下一唯一优先仍ST02真实原件L0-L2自动note的PG/HTTP回放和撤权，不重做ST01、不冒称ST03/M5准出。**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY**；CodeBuddy未来切换时验。
