@@ -24,11 +24,11 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
-      - name: Typecheck
-        run: pnpm -r typecheck
-
       - name: MHKA engineering authority routing guard
         run: node scripts/guards/check-authority-routing.mjs
+
+      - name: Typecheck
+        run: pnpm -r typecheck
 
       # Collect actual HTTP/Chromium test specifications without connecting to
       # PostgreSQL or launching a browser. Reject syntax/registration failures
