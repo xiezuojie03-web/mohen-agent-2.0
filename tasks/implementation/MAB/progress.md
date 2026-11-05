@@ -1120,3 +1120,10 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - **Owner决定与归属**：OpenSH-mcp 登记为外部技术情报 `RAD-014`，资料库平行目录 `/墨痕外部技术情报/` 的现行索引/JSON是唯一技术情报台账；此处仅在原 MAB §M5/ST02 记来源能力候选，不新立 MAB 工作包、Skill、来源 Registry 或工程分支，也不覆盖 Codex 当前施工。
 - **已有能力核查**：`sources/registry.json` 既有 `shl-open-data`、`specs/data-production/source-providers.json` 既有 `shanghai_library`；新增候选预期只通过现有 Provider/Tool/Adapter 扩展史料发现，不另建 D/L/G 或知识库。上游 https://github.com/FreyaBit/OpenSH-mcp 与 Owner Fork https://github.com/xiezuojie03-web/OpenSH-mcp 核查时 main 同为 `707f4fbb464d1748b3a0da5b7ab0d70d256243ea`，12工具/99登记API、MIT代码许可已源码检查；真实资料/每接口可用性、上图Key/数据使用权、HTTP鉴权与PDF原件定位未测。
 - **当前阶段与验收影响**：`E2_SOURCE_READ / CANDIDATE_ONLY / NO_LIVE_PROVIDER_TEST / NO_MOHEN_INTEGRATION`。M5 ST02 资料可得性、合法Provider/证据定位仍按原HOLD；原ST02及M5所有施工优先级、类型检查阻断、生产/专业Gate/外发/费用HOLD、M6/M7/M8条件均不变。后续如出现合法真实来源需求，可按原授权少量只读隔离验证；M6合同/安全适配，M7双课题真实验收另行核证。本次无接口调用、密钥配置、部署或生产写入。
+
+## 2026-11-05｜开发 Skill 自生长长期方法论裁决（只确认设计责任，不冒认代码已实现）
+
+- **长期依据**：MHKA-04 §3.6 定义经验积累、自生长、候选分流与可信准入的能力原则；MHKA-05 §10 定义脱敏回执、发现/候选/隔离评价/版本演化的工程实现与权限边界；唯一施工任务与验收由现行 MAB `PLAN.md` §6B.4 承接，不新设宪章/注册表/阶段。
+- **施工次序**：完整设计与受控基础建设同步，自 DS-03 首次 Codex/M5 真实任务开始采集、发现并生成隔离候选，再按真实回执逐步验收；**不再把先有局部 PASS 当作自动发现机制建设前置门**。CodeBuddy 仍延后至未来实际切换，不能阻断 M5。
+- **当前仅为设计/计划变更**：没有在本批创建自生长执行器、自动候选发布者、新 Skill 或真实环境运行回执；既有 DS-02 CLI 静态成功与 Codex/CodeBuddy 宿主 `NOT_RUN`、M5/ST-02 及全部 Gate、生产权限、外发和费用 HOLD 仍按精确真实 CI 证据。
+
