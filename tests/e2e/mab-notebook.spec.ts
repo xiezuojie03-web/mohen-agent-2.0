@@ -108,6 +108,7 @@ test('all thirteen asset kinds keep exact private revisions and canonical write 
  const registered=await api.post('/api/auth/register',{data:{email,username:'逐类合成验收',password}});
  expect(registered.status()).toBe(200);const owner=(await registered.json()).user.user_id;
  let inspected:{asset_id:string;first:string;second:string}|undefined;
+ let inspectedFeedback:{asset_id:string;first:string;second:string}|undefined;
  const project=(await (await api.post('/api/studio/projects',{data:{project_id:randomUUID(),title:'13类隔离矩阵',scope:{period:'TEST_ONLY'}}})).json()).project;
  const other=await browser.newContext({baseURL:process.env.MOHEN_E2E_BASE_URL});
  try{
@@ -132,6 +133,7 @@ test('all thirteen asset kinds keep exact private revisions and canonical write 
    const secondResponse=await api.post('/api/studio/assets',{data:{...data,expected_revision_id:first.revision_id,idempotency_key:randomUUID(),payload:{...payload as object,changed:true}}});
    expect(secondResponse.status(),kind).toBe(200);const second=(await secondResponse.json()).asset;
    if(kind==='research_brief')inspected={asset_id:data.asset_id,first:first.revision_id,second:second.revision_id};
+   if(kind==='consented_feedback')inspectedFeedback={asset_id:data.asset_id,first:first.revision_id,second:second.revision_id};
    expect(second.revision_no).toBe(2);expect(second.supersedes_revision_id).toBe(first.revision_id);
    expect(second.access_state).toBe('RESTRICTED');expect(second.content_state).toBe('WORKING');
    expect(second.validation.status).toBe('UNASSESSED');expect(second.formal_l_refs).toEqual([]);
@@ -174,5 +176,23 @@ test('all thirteen asset kinds keep exact private revisions and canonical write 
   await panel.getByRole('button',{name:'查看修订 2',exact:true}).click();
   await expect(panel.getByText('选定版本使用事件 1 条',{exact:true})).toBeVisible();
   console.log('MAB_ADMIN_EXACT_REVISION_HTTP_PASS own-item history rights exact-use-event');
+  // Same Owner now operates consent withdrawal from the existing Admin panel,
+  // never as a public/Gate permission. No form of client-side revocation alone.
+  expect(inspectedFeedback).toBeDefined();
+  const feedbackCard=panel.getByText('consented_feedback · 修订 2',{exact:true}).locator('..');
+  await feedbackCard.getByRole('button',{name:'查看来源与历史',exact:true}).click();
+  await panel.getByRole('button',{name:'撤回反馈',exact:true}).click();
+  await expect(panel.getByRole('button',{name:'确认撤回反馈',exact:true})).toBeVisible();
+  await panel.getByRole('button',{name:'确认撤回反馈',exact:true}).click();
+  const revokedCard=panel.getByText('consented_feedback · 修订 3',{exact:true}).locator('..');
+  await expect(revokedCard).toBeVisible();
+  await revokedCard.getByRole('button',{name:'查看来源与历史',exact:true}).click();
+  await expect(panel.getByText(/此反馈已撤回/)).toBeVisible();
+  const oldBody=await api.get('/api/studio/assets',{params:{
+    asset_id:inspectedFeedback!.asset_id,revision_id:inspectedFeedback!.first
+  }});
+  expect(oldBody.status()).toBe(404);
+  console.log('MAB_ADMIN_FEEDBACK_WITHDRAW_HTTP_PASS two-step-confirmation exact-Owner revoked-head no-old-body');
+
  }finally{await other.close();}
 });
