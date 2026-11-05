@@ -36,3 +36,9 @@
 - `3ae28f18b71ed3ffba14985d6fd1d5faf3b378a4` 追加400非对象输入三分支禁缓存单测。
 - `9f3af8b12475ac72c5e99e03d919b102d92bfa50` 在原 `mab-notebook.spec.ts` 补Chromium真实HTTP禁缓存断言：首次及二次保存200、本人GET列表200、历史200、跨Owner修订404、跨Owner历史和use_events受限空结果、跨Owner写入404。沿已有合成双账号与独立PG，不涉及生产。
 - 最新该源码SHA自动触发主CI `41945997957` 与隔离PG17+Chromium `41945997916`；**本节初写时尚在运行，未取得结论不记PASS**。待真实日志核证，如失败先修复再更新此节。原M5/HP11完整业务与缓存撤权LIVE验收仍HOLD。
+
+
+### HTTP初次失败及定向修复（不能遮盖）
+
+- `9f3af8b1` 主CI `41945997957` SUCCESS，但隔离HTTP `41945997916` **FAILURE**，真实job `126978221845` 日志指出 `mab-notebook.spec.ts:76` 外部Owner合成保存fixture的JS对象右括号缺失，Playwright在测试收集前报`SyntaxError: Unexpected token`；不是已通过HTTP验收，也不能据此推断应用路由失败。
+- `af074521ad6bfddfcdbe295c4844130f9b04a5ca` 修复精确一处语法闭合，不改业务接口与断言。重跑主CI `41946337981` 与隔离HTTP `41946337974`，结果需查询真实GitHub Actions之后再签；失败原始日志保留。
