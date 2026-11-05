@@ -105,6 +105,7 @@ export interface StudioAssetRepository {
   }>>;
   createProject(input: {projectId: string; title: string; scope?: Record<string, unknown>}, token: string): Promise<{project_id: string; project_title: string; research_scope: unknown}>;
   saveRevision(input: {projectId: string; assetId: string; kind: string; expectedRevisionId: string | null; idempotencyKey: string; payload: unknown; sourceRefs?: unknown[]; dependencyRefs?: unknown[]}, token: string): Promise<StudioStoredRevision>;
+  withdrawFeedback(input: {projectId: string; assetId: string; expectedRevisionId: string; idempotencyKey: string},token:string):Promise<StudioStoredRevision>;
   getRevision(revisionId: string, token: string): Promise<StudioStoredRevision | null>;
 }
 export declare function createStudioAssetRepository(pool: {connect: Function}): StudioAssetRepository;
