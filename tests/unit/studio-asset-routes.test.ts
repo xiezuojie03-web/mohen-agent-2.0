@@ -1,9 +1,10 @@
 import {beforeEach,expect,it,vi} from 'vitest';
-const deps=vi.hoisted(()=>({session:vi.fn(),projects:vi.fn(),project:vi.fn(),assets:vi.fn(),revision:vi.fn(),save:vi.fn()}));
+const deps=vi.hoisted(()=>({session:vi.fn(),projects:vi.fn(),project:vi.fn(),assets:vi.fn(),revision:vi.fn(),save:vi.fn(),withdraw:vi.fn()}));
 vi.mock('../../apps/web/lib/session',()=>({getSession:deps.session}));
-vi.mock('../../packages/data-access/src/index.mjs',()=>({getNodePgPool:()=>({}),createStudioAssetRepository:()=>({listProjects:deps.projects,createProject:deps.project,listAssets:deps.assets,getRevision:deps.revision,saveRevision:deps.save})}));
+vi.mock('../../packages/data-access/src/index.mjs',()=>({getNodePgPool:()=>({}),createStudioAssetRepository:()=>({listProjects:deps.projects,createProject:deps.project,listAssets:deps.assets,getRevision:deps.revision,saveRevision:deps.save,withdrawFeedback:deps.withdraw})}));
 import {GET as projects,POST as project} from '../../apps/web/app/api/studio/projects/route';
 import {GET as assets,POST as save} from '../../apps/web/app/api/studio/assets/route';
+import {POST as withdraw} from '../../apps/web/app/api/studio/assets/withdraw/route';
 const request=(path:string,body?:unknown)=>new Request('http://test.invalid'+path,body===undefined?{}:{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
 beforeEach(()=>{vi.clearAllMocks();vi.stubEnv('MOHEN_DATABASE_SESSION_SECRET','synthetic-route-db-attestation-key-at-least-32');deps.session.mockResolvedValue({uid:'owner',r:[]});deps.projects.mockResolvedValue([]);deps.assets.mockResolvedValue([]);deps.revision.mockResolvedValue(null);});
 it('requires authentication for every private asset/project operation',async()=>{deps.session.mockResolvedValue(null);expect((await projects()).status).toBe(401);expect((await project(request('/projects',{}))).status).toBe(401);expect((await assets(request('/assets?project_id=x'))).status).toBe(401);expect((await save(request('/assets',{}))).status).toBe(401);});
@@ -40,3 +41,30 @@ it('rejects non-object requests',async()=>{
  }
 });
 it('does not accept client-claimed external provenance',async()=>{const r=await save(request('/assets',{origin_kind:'external_delegate',payload:{text:'candidate'}}));expect(r.status).toBe(409);});
+
+it('requires Owner authentication and never caches feedback withdrawal responses',async()=>{
+ deps.session.mockResolvedValue(null);
+ let r=await withdraw(request('/assets/withdraw',{project_id:'synthetic'}));
+ expect(r.status).toBe(401);expect(r.headers.get('cache-control')).toBe('no-store');
+ deps.session.mockResolvedValue({uid:'owner',r:[]});
+ r=await withdraw(request('/assets/withdraw',null));
+ expect(r.status).toBe(400);expect(r.headers.get('cache-control')).toBe('no-store');
+ deps.withdraw.mockResolvedValue({revision_id:'tombstone',revision_no:2,access_state:'REVOKED'});
+ r=await withdraw(request('/assets/withdraw',{project_id:'project',asset_id:'feedback',
+  expected_revision_id:'original',idempotency_key:'revoke'}));
+ expect(r.status).toBe(200);expect(r.headers.get('cache-control')).toBe('no-store');
+ expect((await r.json()).asset.access_state).toBe('REVOKED');
+ expect(deps.withdraw).toHaveBeenCalledOnce();
+ deps.withdraw.mockRejectedValueOnce(new Error('STUDIO_REVISION_CONFLICT'));
+ r=await withdraw(request('/assets/withdraw',{project_id:'project',asset_id:'feedback',
+  expected_revision_id:'original',idempotency_key:'revoke-else'}));
+ expect(r.status).toBe(409);expect(r.headers.get('cache-control')).toBe('no-store');
+});
+it('rejects self-claimed feedback consent when the repository refuses it',async()=>{
+ deps.save.mockRejectedValue(new Error('STUDIO_FEEDBACK_CONSENT_REQUIRED'));
+ const r=await save(request('/assets',{project_id:'project',asset_id:'feedback',asset_kind:'consented_feedback',
+  expected_revision_id:null,idempotency_key:'no-consent',payload:{text:'not authorized'}}));
+ expect(r.status).toBe(400);
+ expect((await r.json()).reason).toBe('STUDIO_FEEDBACK_CONSENT_REQUIRED');
+ expect(r.headers.get('cache-control')).toBe('no-store');
+});
