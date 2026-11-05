@@ -1229,3 +1229,15 @@ Data API范围：pg_db_role_setting未见pgrst.db_schemas/db_extra_search_path�
 全部源码/测试与原账已非强制推送：源22b8c1c主CI42035692765、PG42035692988、HTTP42035692756均SUCCESS；状态一致性补丁eec13b2373ac74101f497be40f928d2b89d40690主CI42037766176 SUCCESS（571PASS/4旧联网SKIP、133边界、14Skill、类型/Build/严格鉴权、errors=[]/HANDOFF_NOT_READY）、HTTP42037766124 SUCCESS（24PASS/1官方StorageSKIP，清理成功）。补丁未改DB，PG继承22b8c1c的真实合成PG17证据。完整原始失败/恢复与分母、回滚及下一步见既有回执§7.4。文档核证后继[skip ci]不代表再跑主CI。
 
 原work/所有合法成果保留，独立副本clean；本轮自建测试服务和合成PG已清理，无生产改动。当前可独立修复的Admin/研究撤权/Owner/改稿/消费/状态/虚假成功与开发Skill任务已受测；但真实ST02、两个未完成执行适配和正式G5/真实作品/Owner体验仍不能核销。机器worklist ready=[]/complete=false只是依赖记录，不反推工程全量完成；授权来源问题仍待答，不能自授。**M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY**。
+
+
+## 2026-11-06｜ChatGPT接续：上海图书馆真实Provider只读连通与ST-02原件定位（未准出）
+
+- **基线**：以本轮读取的 GitHub main 为准；本次仅使用现有 Vercel 项目环境变量 SHANGHAI_LIBRARY_KEY 在受控服务端进行只读调用。未将密钥写入仓库、查询字符串日志、任务文档或对话；未修改 Vercel 环境变量、Supabase 生产库、Storage、权限或产品部署。
+- **Provider 连通**：对上海图书馆古籍循证 works 接口按题名查询“金泽”成功返回 result=0，命中《金澤史氏家譜》《金澤小志》。随后 instances 按“金泽小志”返回7条版本/载体记录；workInfo、instanceInfo、items 详情调用均成功返回真实目录数据。故 shanghai_library 从“仅已配置/未验证”更新为 **VERIFIED_LIVE_METADATA_READ**（仅本次接口与查询范围）。
+- **具体原件候选**：道光十一年续纂抄本《[道光]金澤小志六卷首一卷》，馆藏条目 accessLevel=9；另有1962年铅印本《金泽小志六卷》，索书号“線普553957”、DOI STGJ073678，馆藏条目 accessLevel=1。另一个1962年铅印本条目索书号“線普長388354”、DOI STGJ073677。以上均为目录返回值；accessLevel准确含义及其与数字原件可下载权的关系仍须以官方接口文档/馆方规则解释，不能自行把1等同于可公开下载。
+- **原件字节状态**：items 返回了馆藏 item URI；对 instancesDisplayInfo 进行只读调用，已测试作品 URI 与馆藏 item URI，均返回 result=1,data=[]。因此本轮**未取得PDF/扫描件字节、页级locator或授权证明**，ST-02真实原件仍 DATA_BLOCKED，不得将目录元数据记作原件读取。
+- **官方MCP候选核对**：Owner Fork OpenSH-mcp README明确其99个API工具需要 SLC_API_KEY，环境变量/工具参数读取；当前Vercel变量名为 SHANGHAI_LIBRARY_KEY，仅可在服务端做显式映射，不得把key作为工具参数回显。其通用API把key放在query中；必须进一步核官方PDF接口文档与数据条款，不能直接把MCP的PDF工具等同于所有古籍原件的合法下载能力。
+- **隔离执行尝试**：创建仅允许访问 data1.library.sh.cn 的短时Vercel sandbox用于PDF只读端点试验；sandbox在命令提交前已自动停止，未执行任何命令、未发起PDF下载。随后已确认并删除命名sandbox（状态stopped，persistent=false）；无生产环境变更。
+- **后续唯一动作**：先逐页核对官方 api_2025.pdf 的 pdf/list → pdf/info → pdf/stream 请求字段、响应字段、accessLevel含义和适用资源类型；确认馆方允许的读取方式后，再使用临时隔离执行环境验证一个明确允许下载的条目。不得重试已停止sandbox或改用生产部署探针。取得真实字节后，才进入既有M2私有Storage隔离验证、L0/L1/L2首次读取/回放/撤权测试；ST03仍不得提前启动。
+- **其他阻塞不变**：DeepSeek凭据仅确认Vercel已配置，尚未做受控模型调用；受控导演适配、费用授权契约、canonical媒资权利与绑定、独立G5、真实作品及Owner体验均未因此准出。开发Skill/产品Skill双线按原MAB §6B.4并行，未改变Registry或施工优先级。
