@@ -1067,3 +1067,12 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - **依据与根因**：Owner 认可原 C2 双 Skill 长期积累、跨开发工具复用的核心理念。MHKA-04 §3.2 已有 `CTX-ENG`，但未明确持续建设工程开发 Skill、跨工具接续/验证及 BUILD/MAINTAIN 长期能力的强制责任；专业生产 Skill 深化与 MAB 功能施工中缺乏该项独立实施约束，导致架构到工程的责任传递不完整。
 - **原位补充**：MHKA-04 新增 §3.6，仅明确两条能力建设线及四执行上下文不变、开发/生产权限隔离和可移植长期方法；MHKA-05 §10 增加跨工具实现与可核验维护责任；MAB `PLAN.md §6B.4` 原位指向这两条唯一上位规范。没有新增宪章、重写 C2 旧版、调整产品需求、生产 Skill Registry、现行 Gate、74目标或 M0—M8/HP01—HP13。
 - **状态**：`MHKA_SKILL_INHERITANCE_DESIGN_CLARIFIED`；开发 Skill `DS-01—DS-04 NOT_STARTED`，无技能加载/命令执行/跨工具成功证明；原 M5/ST-02 与所有现行安全、费用、外发、生产和独立G HOLD 不变。源码及 CI/执行结果须后续按精确 main SHA 独立验收。
+
+## 2026-11-05｜六份MHKA与KAD6冻结包对照、Library双位置同步核验
+
+- **源设计继承核查**：直接读取2026-11-02冻结版`MoHen_MAB_完整设计交付包_20261102.zip`（SHA256 `23ab4fe6cab68917b6a42463ea3b1ec9cc224824399325331cd9e685b3683dfd`）中六份`repo_target/governance/mhka/MHKA-00—05`。修订前GitHub六章字节与该冻结包完全一致（04/05另含2026-11-05 Owner双Skill受控增量），核心KAD6的02—05增补继续保留；没有重新覆盖或重签冻结ZIP、manifest、KAD6的设计静态验收。
+- **最新章程修正**：`08b3f702bb5a27d75ddccf021bd17c9acfcab601`定向修订六章首页旧`K2_DESIGN_REVIEW_PASS_NOT_APPLIED`、`尚未写入GitHub`的过时身份；MHKA-00 §5与旧C0—C4治理描述已明确GitHub AGENTS当前工程设计权威生效、M8正式运行资格未激活。MHKA-01/05旧“将来”“未生效”表述定向修正。原MHKA-04 §3.6双Skill与MHKA-05 §10开发Skill条款保留，其他KAD6专业目标和D/L/G/产品功能未重构。
+- **Library执行结果**：`/墨痕/产品知识体系与工程治理重建_专项/03_权威知识体系重建/`与`04_工程规范与Codex接入/repo_target/governance/mhka/`的六份MHKA共**12路径全部更新成功**；按实际GitHub六文件Git Blob SHA逐文件重建待同步字节，上传后在资料库重新读取了现行主要文件并与相应本地SHA对照通过。当前GitHub六章SHA：00 `3e05a3c03f58cfa2a4da1ff3ed021f993b6842e5`；01 `2fe9641cdfb0d354300c2cc464e893ebddf21b74`；02 `92caa84b3622cfb1d8f6bc61baab649bc27c340a`；03 `33444c93f6e95106a091fd07748a31c4ab36cada`；04 `3abe0bb0431c606304f9ffec5c897bc84fc048ba`；05 `f4acedca5675cefddf843e5c4fa2d1f2af76ec86`。
+- **Library现行基线总索引**：`04_工程规范与Codex接入/00_总览/MAB_墨痕新架构设计基线_总索引与准出控制_现行.md`新增§12，记录上述双向身份、原冻结包不可改写和工程镜像现行六章不同于旧manifest的事实。现行Library`repo_target/AGENTS.md`及`OWNERSHIP_MAP.md`属于2026-11-02设计目标原件，仍含旧切换条件，**不得用来覆盖/指挥最新GitHub main**；开发工具始终读取Github根AGENTS的现行路由。
+- **状态裁定**：`SIX_MHKA_GITHUB_AND_LIBRARY_SYNSCED / HISTORICAL_PACKAGE_PRESERVED`（仅文档继承/精确文件同步）。尚未执行的DS-01—04和当前M5/ST-02、MAB全部生产/专业Gate/Storage/外发/费用/Owner验收HOLD一律不变；GitHub main完整CI仍以本次真实远端运行结果核实，不借文档同步签出M5。
+
