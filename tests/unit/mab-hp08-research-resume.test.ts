@@ -14,6 +14,7 @@ import {
 import {
   ToolExecutionUncertainError,ToolReceiptPersistenceError,
 } from "../../apps/web/lib/studio/tool-ledger";
+import {ResearchPrerequisiteHold} from '../../apps/web/lib/mohen-agent/research-prerequisites';
 
 const taskId="123e4567-e89b-42d3-a456-426614174001";
 const owner="123e4567-e89b-42d3-a456-426614174002";
@@ -40,6 +41,29 @@ describe("HP08 task-level budget and safe restart boundaries",()=>{
     expect(task.status).toBe("done");
     const saved=JSON.parse(checkpointWrites().at(-1)![1].cp);
     expect(saved).toMatchObject({ceiling:8,budgetSpent:0,reserved:0});
+  });
+  it('persists missing research prerequisites as HOLD without a fake completed decision',async()=>{
+    runResearch.mockRejectedValue(new ResearchPrerequisiteHold(['REAL_PROVIDER_UNAVAILABLE']));
+    const task=await createResearchTask('自然语言研究委托','generic',owner);
+    expect(task).toMatchObject({taskId,status:'hold',decision:null,degraded:true,holdReason:'research_prerequisites',missingRequirements:['REAL_PROVIDER_UNAVAILABLE']});
+    const saved=JSON.parse(checkpointWrites().at(-1)![1].cp);
+    expect(saved).toMatchObject({budgetSpent:0,reserved:0,holdReason:'research_prerequisites',retry_requires_reconciliation:false});
+    expect(run.mock.calls.some(([sql,params]:[string,{event?:string}])=>sql.includes('research_events')&&params.event==='research_done')).toBe(false);
+  });
+  it('rechecks zero-spend prerequisite HOLD through the existing CAS without inventing funding',async()=>{
+    queryRows.mockResolvedValueOnce([{prompt:'original commission',topic:'generic',checkpoint:{holdReason:'research_prerequisites',holdAt:{toolId:'llm-understand'},budgetSpent:0,reserved:0,ceiling:8}}]).mockResolvedValueOnce([{task_id:taskId}]);
+    runResearch.mockRejectedValue(new ResearchPrerequisiteHold(['REAL_PROVIDER_UNAVAILABLE']));
+    expect(await resumeResearchTask(taskId)).toMatchObject({taskId,status:'hold',holdReason:'research_prerequisites'});
+    expect(runResearch).toHaveBeenCalledOnce();
+    expect(queryRows.mock.calls[1][0]).toContain("status = 'hold'");
+    expect(JSON.parse(checkpointWrites().at(-1)![1].cp).budgetSpent).toBe(0);
+  });
+  it('preserves partial results but never marks degraded research as completed',async()=>{
+    runResearch.mockResolvedValue({...result,degraded:true});
+    const task=await createResearchTask('来源服务失败时保存有限结果','generic',owner);
+    expect(task).toMatchObject({status:'hold',holdReason:'research_prerequisites'});
+    expect(JSON.parse(checkpointWrites().at(-1)![1].cp)).toMatchObject({partial_result:{decision,degraded:true,researchLeads:[]}});
+    expect(run.mock.calls.some(([sql,params]:[string,{event?:string}])=>sql.includes('research_events')&&params.event==='research_done')).toBe(false);
   });
 
   it("persists HOLD on ambiguous execution; never reports study success",async()=>{

@@ -54,10 +54,13 @@ export async function POST(req: Request) {
   }
   return NextResponse.json({
     ok: true,
+    status: created.status,
+    hold_reason: created.holdReason ?? null,
+    missing_requirements: created.missingRequirements ?? [],
     task_id: created.taskId,
     degraded: created.degraded,
     decision: created.decision,
     research_leads: created.researchLeads,
     production,
-  });
+  }, {headers:{'cache-control':'no-store'}});
 }

@@ -5,6 +5,7 @@
 import { NextResponse } from "next/server";
 import { runResearch, resolveTopic, type TopicKey } from "../../../../lib/mohen-agent/research";
 import { isRateLimited, getClientSource } from "../../../../lib/mohen-agent/guard";
+import {ResearchPrerequisiteHold} from '../../../../lib/mohen-agent/research-prerequisites';
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -27,7 +28,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, degraded: false, reason: "rate_limited" }, { status: 429 });
   }
 
-  const { decision, degraded } = await runResearch(question, topic);
-  const result = { ok: true, degraded, decision };
-  return NextResponse.json(result, { headers: { "cache-control": "no-store" } });
+  try {
+    const { decision, degraded } = await runResearch(question, topic);
+    return NextResponse.json({ ok: true, degraded, decision }, { headers: { "cache-control": "no-store" } });
+  } catch (error) {
+    if (error instanceof ResearchPrerequisiteHold)
+      return NextResponse.json({ok:false,status:'hold',reason:'research_prerequisites',missing_requirements:error.missingRequirements},
+        {status:409,headers:{'cache-control':'no-store'}});
+    throw error;
+  }
 }

@@ -13,6 +13,7 @@ import {
 import { retrieveMaterials } from "./retrieve";
 import { searchShanghaiLibrary, extractExternalEntities, type ShlLead } from "./retrieve-shl";
 import { useTool, type Ledger } from "../studio/tool-ledger";
+import {requireResearchPrerequisites, ResearchPrerequisiteHold} from './research-prerequisites';
 
 function dedupe(xs: string[]): string[] {
   return [...new Set(xs.map((x) => x.trim()).filter(Boolean))];
@@ -126,8 +127,11 @@ export async function runResearch(
   topic: TopicKey = "generic",
   ledger?: Ledger
 ): Promise<ResearchResult> {
+  const qualification = requireResearchPrerequisites(ledger);
   const profile = TOPIC_PROFILES[topic];
   const understanding = await useTool(ledger, "llm-understand", () => understand(question, profile.aliases));
+  if (understanding.source === 'deterministic')
+    throw new ResearchPrerequisiteHold(['PROVIDER_UNDERSTANDING_NOT_VERIFIED']);
   const aliasTerms = understanding.objects.flatMap((id) => profile.aliases[id] ?? []);
   const terms = dedupe([...aliasTerms, ...understanding.terms]);
   const anchoredTerms =
@@ -135,10 +139,11 @@ export async function runResearch(
   const effectiveTerms = anchoredTerms.length ? anchoredTerms : profile.fallback;
 
   let { materials, degraded } = await retrieveMaterials(effectiveTerms, 24, {
+    qualification,
     objectAliases: profile.labelAliases,
   });
   if (!materials.length && !degraded) {
-    const retry = await retrieveMaterials(profile.fallback, 24, { objectAliases: profile.labelAliases });
+    const retry = await retrieveMaterials(profile.fallback, 24, { qualification, objectAliases: profile.labelAliases });
     materials = retry.materials;
     degraded = retry.degraded;
   }
@@ -167,5 +172,5 @@ export async function runResearch(
   const finalGaps = [...decision.gaps];
   if (degraded) finalGaps.push("暂时查不到库里的材料");
   if (externalDegraded) finalGaps.push("外部资料检索（上海图书馆）当前不可用");
-  return { decision: { ...decision, gaps: finalGaps }, degraded, researchLeads: externalMaterials };
+  return { decision: { ...decision, gaps: finalGaps }, degraded: degraded || externalDegraded, researchLeads: externalMaterials };
 }

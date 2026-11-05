@@ -7,6 +7,7 @@ import { triggerProduction, getProductionBlocker } from "./studio-production";
 import type { AgentDecision, Material } from "@mohen/agent-runtime";
 import { readJsonColumn } from "./db-json";
 import { randomUUID } from "node:crypto";
+import {ResearchPrerequisiteHold} from './mohen-agent/research-prerequisites';
 import {
   createBudget,
   writeReceipt,
@@ -31,7 +32,20 @@ export interface CreatedTask {
   decision: AgentDecision | null;
   degraded: boolean;
   holdReason?: "budget" | string;
+  missingRequirements?: string[];
   researchLeads: Material[];
+}
+
+async function holdResearchPrerequisites(taskId:string,prompt:string,topic:TopicKey,budget:BudgetState,error:ResearchPrerequisiteHold):Promise<CreatedTask> {
+  const checkpoint={prompt,topic,holdReason:'research_prerequisites',missingRequirements:error.missingRequirements,
+    partial_result:error.partialResult,
+    budgetSpent:budget.spent,reserved:budget.reserved,ceiling:budget.ceiling,
+    holdAt:{toolId:'llm-understand'},retry_requires_reconciliation:false};
+  await run("update public.research_tasks set status = 'hold', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
+    {id:taskId,cp:JSON.stringify(checkpoint)});
+  await writeReceipt({taskId,kind:'checkpoint',stage:'hold',status:'hold',payload:checkpoint});
+  await addEvent(taskId,'research','prerequisites_hold',{missingRequirements:error.missingRequirements,budgetSpent:budget.spent,reserved:budget.reserved});
+  return {taskId,status:'hold',decision:null,degraded:true,holdReason:'research_prerequisites',missingRequirements:error.missingRequirements,researchLeads:[]};
 }
 
 /** External tool output/cost is uncertain, so preserve the reserved
@@ -85,6 +99,7 @@ export async function createResearchTask(
 
   try {
     const { decision, degraded, researchLeads } = await runResearch(prompt, topic, ledger);
+    if (degraded) throw new ResearchPrerequisiteHold(['SOURCE_OR_QUALIFICATION_UNAVAILABLE'],{decision,degraded,researchLeads});
     await addEvent(taskId!, "D04", "retrieved", {
       materials: decision.materials.length,
       externalLeads: researchLeads.length,
@@ -100,6 +115,8 @@ export async function createResearchTask(
     await addEvent(taskId!, "D04", "research_done", { verdict: decision.verdict });
     return { taskId: taskId!, status: "done", decision, degraded, researchLeads };
   } catch (e) {
+    if (e instanceof ResearchPrerequisiteHold)
+      return holdResearchPrerequisites(taskId!,prompt,topic,budget,e);
     if (e instanceof ToolExecutionUncertainError || e instanceof ToolReceiptPersistenceError)
       return holdUncertainTool(taskId!, prompt, topic, budget, e);
     if (e instanceof BudgetHoldError) {
@@ -273,7 +290,7 @@ export async function resumeResearchTask(
     return {taskId,status:"hold",decision:null,degraded:false,
       holdReason:"additional_budget_requires_authorization",researchLeads:[]};
   const firstStep = saved.holdAt as {toolId?: unknown} | undefined;
-  if (saved.holdReason !== "budget" || firstStep?.toolId !== "llm-understand")
+  if (!["budget","research_prerequisites"].includes(String(saved.holdReason)) || firstStep?.toolId !== "llm-understand")
     return {taskId,status:"hold",decision:null,degraded:false,
       holdReason:"resume_step_checkpoint_required",researchLeads:[]};
   // Persist uncertainty before any external invocation. A process crash must
@@ -293,6 +310,7 @@ export async function resumeResearchTask(
   try {
     await addEvent(taskId, "D04", "resumed", {ceiling:previousCeiling,resumeClaimRef:next.resume_claim_ref});
     const { decision, degraded, researchLeads } = await runResearch(prompt, topic, ledger);
+    if (degraded) throw new ResearchPrerequisiteHold(['SOURCE_OR_QUALIFICATION_UNAVAILABLE'],{decision,degraded,researchLeads});
     const checkpoint = { prompt, topic, degraded, decision, researchLeads, budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling };
     await run(
       "update public.research_tasks set status = 'done', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
@@ -302,6 +320,8 @@ export async function resumeResearchTask(
     await addEvent(taskId, "D04", "research_done", { verdict: decision.verdict });
     return { taskId, status: "done", decision, degraded, researchLeads };
   } catch (e) {
+    if (e instanceof ResearchPrerequisiteHold)
+      return holdResearchPrerequisites(taskId,prompt,topic,budget,e);
     if (e instanceof ToolExecutionUncertainError || e instanceof ToolReceiptPersistenceError)
       return holdUncertainTool(taskId!, prompt, topic, budget, e);
     if (e instanceof BudgetHoldError) {
@@ -359,6 +379,7 @@ export async function appendResearchMessage(
     const { decision, degraded, researchLeads } = await runResearch(
       message, topic, { taskId, budget }
     );
+    if (degraded) throw new ResearchPrerequisiteHold(['SOURCE_OR_QUALIFICATION_UNAVAILABLE'],{decision,degraded,researchLeads});
     const checkpoint = {
       prompt: message, topic, degraded, decision, researchLeads,
       budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling,
@@ -372,6 +393,10 @@ export async function appendResearchMessage(
     });
     return { ok: true };
   } catch (error) {
+    if (error instanceof ResearchPrerequisiteHold) {
+      const result=await holdResearchPrerequisites(taskId,message,topic,budget,error);
+      return {ok:false,reason:result.holdReason};
+    }
     if (error instanceof ToolExecutionUncertainError ||
         error instanceof ToolReceiptPersistenceError) {
       const result = await holdUncertainTool(taskId, message, topic, budget, error);

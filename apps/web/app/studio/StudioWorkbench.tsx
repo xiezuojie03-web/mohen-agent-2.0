@@ -12,6 +12,7 @@ type Message = {
   gaps?: string[];
   clarify?: string | null;
   degraded?: boolean;
+  taskRef?: string;
 };
 
 const STAGES = ["对话与构思", "受托研究与编导", "预览与修改", "审核与发布"];
@@ -112,8 +113,25 @@ export default function StudioWorkbench() {
         degraded?: boolean;
         decision?: AgentDecision;
         task_id?: string;
+        status?: 'done'|'hold';
+        hold_reason?: string;
+        missing_requirements?: string[];
         production?: { ok?: boolean; run_id?: string; reason?: string } | null;
       };
+      if (res.ok && json.ok && json.status === 'hold') {
+        const missing:Record<string,string>={
+          REAL_PROVIDER_UNAVAILABLE:'研究模型尚未接通',
+          SOURCE_ACQUISITION_UNAVAILABLE:'合法来源获取服务尚未接通',
+          AGENT_QUALIFICATION_CONTEXT_REQUIRED:'当前研究用途的知识读取资格尚未配置',
+          PERSISTENT_TOOL_LEDGER_REQUIRED:'需要持久研究委托与预算核准',
+          PROVIDER_UNDERSTANDING_NOT_VERIFIED:'研究模型未返回可核实的理解结果',
+          SOURCE_OR_QUALIFICATION_UNAVAILABLE:'来源获取或当前知识资格服务暂时不可用，有限结果已保留',
+        };
+        setMessages(m=>[...m,{role:'mohen',text:'委托已保存，研究暂停，尚未完成。',taskRef:json.task_id,
+          gaps:json.missing_requirements?.length?json.missing_requirements.map(code=>missing[code]??'相关执行前提尚未满足'):
+            [json.hold_reason==='budget'?'需要核准足够的研究预算':'需要核对执行条件或尚未确认的回执，不能直接重试研究']}]);
+        return;
+      }
       const decision = res.ok && json.ok ? json.decision : undefined;
       if (!decision) {
         setMessages((m) => [...m, { role: "mohen", text: "这一下没接上，可以再问一次。" }]);
@@ -405,6 +423,7 @@ export default function StudioWorkbench() {
               <div key={i} className={`studio__msg studio__msg--${m.role}`}>
                 {m.role === "mohen" && <div className="studio__msg-label">墨痕</div>}
                 <div>{m.text}</div>
+                {m.taskRef && <div className="studio__msg-label">任务编号：{m.taskRef}</div>}
                 {m.clarify && <div className="studio__clarify">{m.clarify}</div>}
                 {m.materials?.map((mat) => (
                   <div className="studio__material" key={mat.id}>
