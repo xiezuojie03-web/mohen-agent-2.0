@@ -116,7 +116,7 @@ export function createStudioAssetRepository(pool) {
       });
     },
     async saveRevision(input, sessionToken) {
-      const {projectId,assetId,kind,expectedRevisionId=null,idempotencyKey,payload,sourceRefs=[],dependencyRefs=[]} = input;
+      const {projectId,assetId,kind,expectedRevisionId=null,idempotencyKey,payload,sourceRefs=[],dependencyRefs=[],originTaskId=null,originTaskSnapshot={}} = input;
       requireId(projectId); requireId(assetId); if (expectedRevisionId !== null) requireId(expectedRevisionId);
       if (!kinds.has(kind)) throw new Error('STUDIO_ASSET_KIND_INVALID');
       if (['director_plan','media_selection','work_revision'].includes(kind)) throw new Error('STUDIO_CANONICAL_BINDING_REQUIRED');
@@ -125,6 +125,11 @@ export function createStudioAssetRepository(pool) {
       if (payload === undefined || payload === null) throw new Error('STUDIO_PAYLOAD_REQUIRED');
       const content = jsonCopy(payload,'STUDIO_PAYLOAD_INVALID');
       if (kind === 'consented_feedback') requireConsentedFeedback(content);
+      if (originTaskId !== null) requireId(originTaskId);
+      const taskSnapshot = jsonCopy(originTaskSnapshot,'STUDIO_ORIGIN_SNAPSHOT_INVALID');
+      if (taskSnapshot === null || Array.isArray(taskSnapshot) || typeof taskSnapshot !== 'object' ||
+          (originTaskId === null && Object.keys(taskSnapshot).length > 0))
+        throw new Error('STUDIO_ORIGIN_SNAPSHOT_INVALID');
       const sources = jsonCopy(sourceRefs,'STUDIO_REFERENCES_INVALID');
       const dependencies = jsonCopy(dependencyRefs,'STUDIO_REFERENCES_INVALID');
       if (!Array.isArray(sources) || !Array.isArray(dependencies)) throw new Error('STUDIO_REFERENCES_INVALID');
@@ -144,8 +149,9 @@ export function createStudioAssetRepository(pool) {
           if (rows[0]?.access_state === 'REVOKED') throw new Error('STUDIO_FEEDBACK_WITHDRAWN');
         }
         const hash = createHash('sha256').update(canonical({projectId,assetId,kind,actor,expectedRevisionId,
-          payload:content,sourceRefs:sources,dependencyRefs:dependencies,origin:'human',epistemicClass:'editorial',
-          contentState:'WORKING',accessState:'RESTRICTED',freshnessState:'UNKNOWN_DEPENDENCY',validation:'UNASSESSED'})).digest('hex');
+          payload:content,sourceRefs:sources,dependencyRefs:dependencies,originTaskId,originTaskSnapshot:taskSnapshot,
+          origin:'human',epistemicClass:'editorial',contentState:'WORKING',accessState:'RESTRICTED',
+          freshnessState:'UNKNOWN_DEPENDENCY',validation:'UNASSESSED'})).digest('hex');
         const previous = await client.query('select revision_id,content_hash from studio.asset_revisions where asset_id=$1 and idempotency_key=$2',[assetId,idempotencyKey]);
         if (previous.rows.length) {
           if (previous.rows[0].content_hash !== hash) throw new Error('STUDIO_IDEMPOTENCY_CONFLICT');
@@ -160,9 +166,11 @@ export function createStudioAssetRepository(pool) {
         }
         const revisionId = randomUUID();
         await client.query(`insert into studio.asset_revisions(revision_id,asset_id,revision_no,supersedes_revision_id,actor_id,workspace_id,
-          origin_kind,epistemic_class,payload,content_hash,source_refs,dependency_refs,idempotency_key,correlation_id)
-          values($1,$2,$3,$4,$5,'studio','human','editorial',$6::jsonb,$7,$8::jsonb,$9::jsonb,$10,$11)`,
-          [revisionId,assetId,revisionNo,expectedRevisionId,actor,JSON.stringify(content),hash,JSON.stringify(sources),JSON.stringify(dependencies),idempotencyKey,randomUUID()]);
+          origin_kind,epistemic_class,payload,content_hash,source_refs,dependency_refs,idempotency_key,correlation_id,
+          origin_task_id,origin_task_snapshot)
+          values($1,$2,$3,$4,$5,'studio','human','editorial',$6::jsonb,$7,$8::jsonb,$9::jsonb,$10,$11,$12,$13::jsonb)`,
+          [revisionId,assetId,revisionNo,expectedRevisionId,actor,JSON.stringify(content),hash,JSON.stringify(sources),
+            JSON.stringify(dependencies),idempotencyKey,randomUUID(),originTaskId,JSON.stringify(taskSnapshot)]);
         const changed = await client.query(`update studio.asset_heads set current_revision_id=$1
           where asset_id=$2 and current_revision_id is not distinct from $3::uuid returning asset_id`,[revisionId,assetId,expectedRevisionId]);
         if (changed.rows.length !== 1) throw new Error('STUDIO_REVISION_CONFLICT');
