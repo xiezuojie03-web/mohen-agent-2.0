@@ -333,6 +333,10 @@ MAB-ENG-01批次进展（2026-11-02，详细证据见progress.md）：私有原�
 
 **执行要求**：采用两条可并行的工程线，避免等待循环：A线补真实原件/私有Storage及ST02 L0→L1→L2首次/回放/撤权；B线在既有M4委托/Tool Registry/预算/回执/权限体系内完成ST05受控Provider执行器，并先以合成输入完成代码/PG/HTTP正反测试与真实费用核销。B线代码施工不等待A线原件，但A线来源/权利及M1—M3真实前置未就绪前，不得向真实材料发起外部模型调用。A/B就绪后按ST03→ST04完成真实候选分析与Creator正式请求；继而完成13类专业语义、H1/H2/H3/19组件、Admin、独立G5/媒资权利、精确修订发布及WATCH撤权。所有关键路径代码、接线、权限/数据、PG/HTTP正反及真实输入就绪后，才进行一次真实作品全链实验。此裁决不勾选未完成项，不改变M0—M8阶段顺序或既有安全/Gate/生产条件；M5仍HOLD直至原验收全部满足。
 
+### 2026-11-06｜M0—M4条件准出与M5全链准出复盘索引（不改变原状态）
+
+完整审查见[`tasks/results/MAB/M5_M0_M4_GATE_RETROSPECTIVE_20261106.md`](https://github.com/xiezuojie03-web/mohen-agent-2.0/blob/main/tasks/results/MAB/M5_M0_M4_GATE_RETROSPECTIVE_20261106.md)。审查确认：M0为审查级PASS；M1—M4仅在明确限定范围内CONDITIONAL_EXIT，相关M1-C/M2-C/M3-C/M4-C条件未全部关闭；M4真实混合仍MIXED_NOT_VERIFIED。MAB-ENG-01原任务书已包含M4混合和M5产品汇合的高层目标，但原M5六项清单未将八个环节编成同一真实作品的完整E2E准出矩阵，也未汇总上游固定条件为单一真实实验准入门。此处仅登记复盘证据，不改原复选框、条件和阶段状态；正式增加验收矩阵须按Owner裁决执行。
+
 ### M6｜全量合同回归与延期能力闭环
 
 依赖：M1—M5。
