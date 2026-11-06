@@ -152,7 +152,10 @@ L7/L8参与/新痕迹要回流则经D00；当下贡献不直接写历史Truth。
 
 ### 2.4 G0前置与D01交接
 
-L0候选最小字段语义：`source_id,source_revision,work_identity,edition_or_version,carrier_copy_id,carrier_hash,source_locator,acquisition_status,acquired_extent,access_rights,citation_rights,display_rights,download_rights,adaptation_rights,rights_evidence,dependency_refs,provenance,project_scope,created_at`。缺值标`unknown/restricted/not_applicable`，不填乐观默认。G0按来源身份、版本、取得范围、权利和用途分别裁决；G0 PASS只表示指定来源动作/范围可进入下一阶段，不表示材料内容为真。
+L0候选最小字段语义：`source_id,source_revision,work_identity,edition_or_version,carrier_copy_id,carrier_hash,source_locator,acquisition_status,acquired_extent,access_rights,citation_rights,display_rights,download_rights,adaptation_rights,retain_rights,machine_read_rights,redistribute_rights,rights_evidence,dependency_refs,provenance,project_scope,created_at`。缺值标`unknown/restricted/not_applicable`，不填乐观默认。G0按来源身份、版本、取得范围、权利和用途分别裁决；G0 PASS只表示指定来源动作/范围可进入下一阶段，不表示材料内容为真。
+
+
+**P0.2原权利矩阵的逐动作继承（设计纠偏，非新数据库字段）：** 原正式P0.2§3把`access/view`、`download`、`retain`、`machine_read`、`redistribute`、`public_display`列为六个独立操作；它们不能被一个`access_rights`、`rights_clear`或`license_note`替代。上列`*_rights`只是目标语义占位，并非承诺数据库已有同名列；实现可使用带`action/status/evidence/version/validity/scope`的`rights_by_action`结构。D01载体读取必须分别核查`machine_read`与实际处理所需的`retain`，若调用外部模型、OCR或第三方处理服务，还须单独核查适用的`external_processing`与数据传输限制；浏览/下载权不推导机器处理权，原作品公版不自动解除数字副本使用限制。上述必要操作任一为`unknown/denied`或缺证时，G0对该次D01用途只能HOLD/阻断，不得签PASS。`quote/citation`、`adapt`、`redistribute`和`public_display`另按使用情景独立校验，不可自动相互转换。
 
 **D00准入D01的交接包**：来源作品+具体版本+数字载体副本hash+页/卷/图幅/记录定位+取得范围+权利动作+依赖/转引+G0决策ref+已知缺口。没有可读取正文时保留L0线索，不进入D01读取任务。
 
@@ -167,6 +170,9 @@ L0候选最小字段语义：`source_id,source_revision,work_identity,edition_or
 3. **不可覆盖的获取尝试日志（Acquisition Attempt Log）**：每次实际尝试以独立`attempt_id`追加；必须绑定当次`resource_id`、`method_id/version`、执行环境、脱敏请求/分页、时间、实际响应、失败原因的`CONFIRMED/HYPOTHESIS`确定程度、证据、取得范围、字节数/`asset_sha256`（若确已取得）、替代来源和恢复条件。失败和成功均保留；更正使用新的更正记录，不覆盖历史尝试。
 
 **单向权威与物理落点**：原P0阶段的唯一人工主库是`06_资源资产/资产_P0_资源与获取方法主库.xlsx`三个工作表；CSV仅为带版本/哈希的派生物，不能平行编辑。未来数据库成为唯一权威源，必须经过字段级迁移、同步/停写与可回滚验收，Excel随即降为只读/受控界面。逻辑对象不直接推出三张数据库表；优先复用`source.sources/source_versions/raw_items`与现行Provider Registry、Acquisition Intent、`control.*`，只有在证明事件不可变性/生命周期和现有表不足时，才提出必要DDL设计。D00不能直接写独立G0审计。
+
+
+**已存在Provider和采集意图的继承边界（EX01设计裁决）：** `source-providers.json`/`data/fixtures/source-providers.json`管理平台身份、分级、运维与历史来源标签；`acquisition-intents.json`管理抓取批次的意图、地域/主题、声明证据与追溯。两者是D00可复用的辅助登记，**不等于**可持续扩展的单件`Resource Catalog`、按`method_id + method_version`维护的获取路径目录、每次独立`attempt_id`的追加日志。平台`S1/S2`或`evidence_allowed=true`是进入相应候选/证据处理机制的来源分级策略，不得直接产生D00/G0机器读取资格，更不得代签G2/G3史实；`retrospective=true`的历史采集意图仅是附证回溯，不能伪装为当次抓取前的批准。**现有目录和辅助守卫优先复用，补缺不新造第二套Provider或意图主库。**
 
 **获取及交接约束**：源作品、馆藏件与数字副本不可仅凭同名合并；资源目录状态、方法状态、尝试结果、真实原件存储状态、独立G0资格是五种不同事实。真正取得须有合法文件/等价可验证资产、版本、字节/哈希、完整性与按动作权利；仅浏览、书目/PDF list命中或临时sandbox取得不自动成为`STORED_VERIFIED`。正式进入D01前必须以具体`L0 asset@revision × D01 intended action/scope × rights × current dependencies`由独立G0裁决PASS，目录或历史尝试不能绕过G0。授权变化、版本变更或资产哈希不匹配时，停止受影响消费并记录反向依赖，不静默删除旧日志。
 
