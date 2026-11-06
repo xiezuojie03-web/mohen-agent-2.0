@@ -412,3 +412,56 @@ S01全局配准、S02局部配准、S03锚点关联、S04空间重建、S05原�
 3. **D02**的原文、作者/叙述人、语境、转引谱系、同源、反证、不确定性和H01—H25必须逐证据记录；D03经`world.claim_evidence_links`实际绑定L2证据与主张，不能仅凭对话总结写L3。D04合法产生解释/当下连接，D05仍只生成六类L5派生消费分面并需独立G5。
 4. `StudioAsset@rev`与受控外部AI回包可申请`ProductionRequest`，但Agent/Creator/Operator或Stage一概不得自签专业G；`control.gate_candidates`仅为生产者签发申请候选而非审计决定。前序Gate/HOLD、权利、版本、依赖、目的范围及消费者在每个stage和消费时重核；复用旧L@rev需新项目权限和现行资格。
 5. D00—D05不因KAD5双题被缩减为“试验流水线”；A隋唐运河、B宋代江南运河城镇的真实研究属于对完整架构的工程验收合同。回执需实际来源/页位/模型、G reviewer、资产修订、作品及增量，重复摘要和只有书目不得算知识增长。所有SQL/Gate/私有原件真跑继续`NOT_RUN`，KAD6为设计验收，不授运行资格。
+
+## 13｜KAD1-A六阶段设计继承最终接口裁决（2026-11-06，EX01—EX06）
+
+> **裁决性质：DESIGN_CONTRACT_READY / ENGINEERING_HOLD。** 本章是§0—12的执行形状收口，不新建七阶段、不复活最早D01—D05五阶段。C0—C4下获认可的D00—D05/L0—L5/G0—G5是唯一继承对象；MHKA-03定义知识/资格语义，MHKA-04负责方法和Agent专业选择，MHKA-05负责系统实现与安全，MHKA-00拥有有权签发治理。原P0—P5详细原件可追溯，不是运行前的第二权威。以下规则一经设计准出仍**不**表示Registry、G、原件、代码、数据库已投运。
+
+### 13.1｜EX01：D00三长期资产到现有来源身份链的唯一合同
+
+| 不变的专业对象 | 唯一逻辑ID/关联 | 已有机制的可复用归属 | 工程最小映射与拒绝条件 |
+|---|---|---|---|
+| Resource Catalog资源目录 | `resource_id`；`provider→collection→catalog_record→work→version→holding→digital_asset`（允许真实缺失且标unknown） | 当前Provider注册/分级是**平台字典**，`source.sources/source_versions/raw_items`为可复用L0主体 | 单件/集合/作品各自稳定身份、版本与权利；不能将Provider记录自动当作已取得的Source/Raw；只有目录命中仍留候选 |
+| Acquisition Method Register获取方法 | `method_id + method_version + resource_scope`，与`resource_id`有适用范围关系 | Provider运维`access/rate_limit/failure_notes`可引用；采集意图保留当前研究批次目的 | 保存前置、逐步方法、工具/版本、授权、失败及替代、上次验证；历史成功不能替代本次资源/端点版本验证 |
+| Acquisition Attempt Log获取尝试 | 不可覆盖`attempt_id`，外键`resource_id / method_id+version / intent_id` | 既有Acquisition Intent仅负责批次声明，不当尝试日志；当前run日志可按实际能力适配 | 每次尝试新增快照，含环境、脱敏参数、分页/响应、时间、真实字节/hash/失败确定性、重试、成本与恢复；事后追溯声明不得冒充事前批准 |
+| L0受控原件及资格 | `source_id/version_id/raw_item_id@revision + asset_sha256 + rights_by_action`，独立G0资格键 | 唯一`source.*`主表+私有Storage+专业G0签发服务（尚须工程核实） | `PENDING→STORED_VERIFIED`需要服务端回读实际字节/hash；`memory://`、网页URL、书目与临时路径不满足真实Storage；G0 PASS仅授权明确D01机器读取动作 |
+
+设计层**不预先指定必须新增三张SQL表**：若现有`source.* / control.*`和受控目录不能维持版本/追加日志及去重，再由MHKA-05按最小物理差分提出迁移和回滚。原三工作表主库在获授权、验证完整迁移前仍是历史/受控目录权威，不准并列写两个活动主库。D00的P0.1/P0.2/P0.3不计入C/H/W/A/P 63项。Provider分级、获取意图、实际尝试、取得范围、原件状态、G0资格是**六种独立事实**；S1/S2、`evidence_allowed`、`retrospective=true`都不能代替G0。
+
+P0.2权利至少按`access_view/download/retain/machine_read/redistribute/public_display`逐动作保存`allowed/denied/unknown`、证据、对象版本、用途、范围、时间；外部模型处理另核`external_processing`。**D01读取必须有当次`machine_read`和若涉及保存时`retain`的合法权限及当前G0**。目录候选可长期保存，但无可读文件或动作权限时不能向D01递交虚构全文。
+
+### 13.2｜EX02：63方法不是广播列表，必须有唯一选择/执行回执
+
+每次实际调用使用`MethodInvocation`最小封套：`run_id,stage,method_id,method_version,source_definition_ref/source_sha256,engineering_definition_ref/sha,skill_id,adapter_binding,tool_or_model_version,requested_input_roles_and_refs@revision,carrier_or_material_profile,scope,purpose,consumer,rights_check_ref,budget,max_retries,output_contract,selection_reason`。调用后产生`MethodReceipt`：`input_fingerprint,selected_method_id/version,actual_adapter_tool_version,typed_output_refs@revision,source_locators,uncertainty,provenance,evidence_refs,resource_cost,failed_or_held_reason,attempt_log_ref`。没有真实调用回执时标`NOT_IMPLEMENTED/HOLD`，不得填PASS。
+
+- 既有`method-binding-contract.json`63项是专业**定义登记**，`source_sha256`保留原C/H/W/A/P原件身份；工程文件sha和运行方法/Tool sha须独立保存，不能用工程修改覆盖原来源SHA。
+- D01按载体C01—C08多方法；D02按材料/复合层次H01—H25；D03的W01—W10循环选用（W10作收口判断）；D04的A01—A12按有据人文问题选用；D05的P01—P07按读模型分面选用，P08只能走独立控制入口。63项**不要求每个任务全部运行**，但每个方法应有可选路前置、唯一Owner、typed输入输出、合法拒绝与未来正反测试。
+- 固定样板prompt、某个含方法编号的Gate evidence、Fixture、只登记Skill不等于对应方法实际执行。未来M2—M4接线必须逐项证明选择条件→唯一绑定→真实回执；保留已验证样板能力，废止未使用的平行旧生产Runner。
+
+### 13.3｜EX03：Producer候选、Reviewer签发和下游Guard严格分责
+
+`ProducerCandidate`的完整语义为`run_id,stage,gate_code,artifact_type/id/revision,method_id/version,input_fingerprint,output_hash,evidence_refs,source_refs,dependency_snapshot,purpose(namespace/code/version),allowed_scope,consumer,rights_by_action,policy_version,requester_identity,idempotency_key`。Producer仅产生候选与申请；独立Reviewer凭已批准策略在`control.gate_audits/qualification_current`相关唯一权威中签发有界决定；Guard在每次读取和Stage交接时以`artifact@revision × gate × purpose × scope × consumer × dependencies × rights × effective_time`重新校验。无候选/无Reviewer绑定/旧PASS/跨用途/权利变更→HOLD。候选表不是正式Gate审计表。
+
+当前选中`layer1-adapters.mjs`的D00—D05调用遗漏`qualification_request`，会抛`GATE_CANDIDATE_METADATA_REQUIRED`，属于**M2/M3确定性工程接线断点**，不是缺乏本章专业设计。禁止让生产者补权限直接签G。签发政策版本、自动审查范围和身份由原有权D/G治理方批准，KAD1不代签。
+
+### 13.4｜EX04：持久化唯一写入Owner与一致性边界
+
+**规范性职责裁决**：Stage Executor/Orchestrator拥有**事务和流程协调权**（输入合法性、资格、幂等和阶段结果）；专业Adapter负责**纯专业转换和候选提议**，不得直接拥有最终G签发能力；受控Data Repository/Storage服务为**正式数据/对象写入Owner**；独立Gate服务为**资格审计/投影写入Owner**。历史样板Adapter内直接写多表是需要M2/M3适配的现有实现，不是可以反过来修改该设计原则的先例。数据库物理每张表或操作按MAB既有权限矩阵唯一归属，不能因共享`control` schema给予Producer修改`gate_audits`的权限。
+
+L0`source.*`→L1`source.read_runs/read_units`→L2`evidence.reading_units/material_evidence/links`→L3`world.entities/events/claims/relations`→L4`meaning.findings`→L5六类`read_model.*`构成权威主数据链；L3事实型L5可不生成L4，不能为了表格完整强制虚构L4。大型原件先`PENDING`，私有对象不可变上传、服务端回读SHA校验、再`STORED_VERIFIED`；写库与对象存储不同事务，必须有失败补偿/幂等/孤儿回收，版本/ACL/撤权/备份与DB+对象恢复同步保留。L1读取单位独立与原件字节有稳定locator，不以`memory://`或`apps/web/public`冒真实私有证据。**优先ADAPT已施工表**，新DDL仅在真实Schema差分和最小权限/回滚有据时由M2/M3执行。
+
+### 13.5｜EX05：D05事实/解释分支与P08独立控制的唯一选路合同
+
+- **事实分支**：输入`L3_fact_ref@revision + valid_G3_for_purpose + dependency_snapshot + rights/consumer/scope`，合法形成事实型`world_projections/map_timeline_projections/evidence_pointers`等P02/P03/P06读模型；未要求G4时不生成L4、不调用无关D04。仍须G5针对具体消费者/分面签发。
+- **解释分支**：输入`L4_finding_ref@revision + valid_G4 + supporting_G3_refs + dependency_snapshot + rights/consumer/scope`，方可生成`agent_contexts/story_seeds`等P04解释类分面。缺G4不得以G3替换；上游证据和用途不得扩大。
+- **P08控制**：属于**D05 Owner下独立控制请求**而不是第七Stage、不是新的L5真值对象，也不是与P01—P07混合发布的同一Job。触发于来源/版权/依赖/资格/版本变化，按受影响`revision×purpose×scope×consumer`先由Guard拒消费，再作失效闭包与追加审计；恢复只凭新修订及独立G5新资格。被选中样板Adapter在混用时只`p08Deferred`，不算完成；未绑定Adapter在混用时HOLD，不证明当前运行。**Library目标Registry**中D05 `methods=P01—P07`, `control_methods=P08`, `input_routes=fact_only/interpretive`, activation仍false；由M4实施Validator、Loader、Router和正反测试，不将目标JSON直接覆盖已施工机器配置。
+
+### 13.6｜EX06：旧五阶段退出和测试证据分级
+
+保留的只有被认可的六阶段生产权威。原无D00五阶段`pipelines/research`及Discovery/Directed/N桥、旧G1证据/G2世界/G3解释/G4运行错号文档一律**不再是现行规范或回退入口**。工程清理按文件逐项裁决：`DELETE_AFTER_NO_DEPENDENCY`（无CLI/CI/test/import/DB/回滚有效依赖）；`REWIRE_THEN_DELETE`（先在六阶段路径复用必要功能并验证）；`KEEP_AS_MIGRATION_EVIDENCE_ONLY`（真实旧库移植、历史审计、可验证回滚证据）；不得误删`pipelines/legacy`真实迁移脚本或老数据库历史记录。Git记录保留历史可追溯性不构成继续运行授权。
+
+测试证据五级：`STATIC_CONTRACT`、`FIXTURE_UNIT`、`ACTUAL_SELECTED_ADAPTER_ISOLATED`、`REAL_DB_STORAGE_GATE_ISOLATED`、`END_TO_END_AUTHORIZED`。每个未来测试记录测试文件、Registry和Adapter/Tool版本、有效输入及预期输出、负例、环境、数据库/对象回执、commit、失败与回滚；CI success只证明其覆盖的级别，绝不跨级签PASS。至少覆盖P0目录误称原件、缺machine_read/retain、G候选缺字段、Producer越权签Gate、63方法路由、不必要G4、P08混绑/撤权、跨用户读取、旧五阶段入口、存储恢复失败。
+
+### 13.7｜研究设计准出与工程施工分界
+
+本章关闭的是**专业设计应当如何正确施工**的歧义，而非声称相关工程已完成。EX01—EX06只要原专业规则→MHKA唯一Owner→本协议/独立Gate/持久化/Registry目标→MAB具名源码路径与正反验收可双向追溯，即可记`DESIGN_CLOSED / ENGINEERING_HOLD`。被保护的GitHub现行Skill/Registry/Adapter/SQL/测试仍有明确未通过问题，保留P0工程阻断，不得消除或降低。KAD6仅可对**本次受影响的规范与追溯**签`DATA_PRODUCTION_DELTA_DESIGN_PASS`；需要Owner另行批准才能恢复M0—M5施工。恢复并不自动激活Gate、DB、Studio或WATCH消费者，仍按MAB既有门逐项准出。
