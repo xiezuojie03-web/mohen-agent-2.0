@@ -1,6 +1,6 @@
 # Persistence Binding Contract V2.0（目标）
 
-> DESIGN_TARGET_NOT_APPLIED｜2026-10-15。基于handoff/local-b-20260930@8966d1b和现行P0—P5/BR规范。资料中的专业目标文件，未应用工程；真实Schema/绑定/运行待M0，ZIP未制作，真实G5/MIG-01 HOLD，56正式延期关系DESIGN_HOLD。
+> **2026-11-06 数据生产继承补核／工程设计规范现行、运行资格HOLD。** 本文件在MHKA现行工程设计权威下约束候选、Gate、存储和权利；2026-10-15与旧工程文件仅作为历史设计来源。新架构设计现已指导工程，不等于数据库DDL/Storage/Reviewer已实装；M5施工按Owner暂停。第1—5节原有实现保护约束继续有效；具体数据库物理差异仍须按最新main与真实Schema核定，禁止把旧设计快照当当前实库事实。
 
 ## 1｜唯一写入责任
 
@@ -41,3 +41,12 @@ M0必须逐对象给真实限定名、列类型/空值、PK/FK/唯一键/索引/
 
 Stage Executor只控制本成果写入与资格请求，不拥有独立Gate。完整实现由CodeBuddy获准后按tasks/implementation/ARCH-MIG-01合同进行。未运行前标NOT_VERIFIED_RUNTIME。
 
+## KAD1-A/P0长期资源维护的物理合同与执行状态区分（2026-11-06，设计限定）
+
+原P0长期资源维护（资源总目录、获取方法目录、不可覆盖的尝试日志）与L0原件资产是**相互关联但不同生命周期**的逻辑对象。以`resource_id`、`method_id+method_version`、`attempt_id`及实际`source/raw_item@revision+asset_sha256`建立明确关联；目录可以有DISCOVERED/HISTORICAL_UNVERIFIED项目，方法可以有TESTED_FAILURE或历史成功记录，但只有合法取得且通过具体用途G0审查的L0资产才可向D01消费。
+
+原唯一P0人工主库：`/墨痕/数据生产体系_现行/02_P0_D00最终成果/06_资源资产/资产_P0_资源与获取方法主库.xlsx`，三工作表分别为资源、方法、尝试。其逻辑权威及CSV只读派生在正式数据库受控迁移前保持；迁移后数据库成为唯一权威源，Excel只读或受控界面。禁止另造平行Provider Registry、资源总目录或第二套Acquisition Intent。
+
+物理字段映射必须先做已施工仓库与真实Schema只读盘点：优先复用`source.sources`、`source.source_versions`、`source.raw_items`、现有Provider Registry及`acquisition-intents`；审查是否能够保持获取方法多版本、尝试日志追加不覆盖、错误`CONFIRMED/HYPOTHESIS`、请求脱敏、文件真实存储、SHA/范围、权利证据和下游G0资格失效。只有证明现有表不能承载某项生命周期，才提出最小字段/事件表的未来迁移候选，并记录唯一Owner、DDL、ACL、旧数据回填、回滚和正反测试；不得由三个Excel工作表自动推导三个新SQL表。
+
+**当前运行状态与历史设计快照必须分离**：本合同旧章的2026-10-31只读数据库调查、`control.gate_candidates`当时是否部署、KAD4的12张候选表，以及Storage空桶/旧权限状态，都不代表2026-11-06当前实库事实。真实可用性只能凭最新main源码及有权限的当前数据库/Storage/CI回执判定；已施工实现一律只读保护。本节不授权执行DDL、修改Role/RLS、激活Gate或恢复M5。
