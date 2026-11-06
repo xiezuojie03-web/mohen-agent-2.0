@@ -30,6 +30,7 @@ read-model repository/client接线ask/materials API、网页retrieve、page冻�
 
 - `pipelines/data-production/run.mjs`→`orchestrator/registry.mjs`必须选择唯一六Job；`production-registry.json`、方法选路、`load-executor.mjs`和每个Skill的Stage/L/G身份逐项一致。每阶段执行入口可存在，但`DESIGN_TARGET_NOT_APPLIED`、全部Job禁用或Reviewer绑定待核时不得宣称生产已激活。
 - 不能仅凭`method-binding-contract.json`中63项C/H/W/A/P定义视为63项实际已可调用；每项`implementation_binding=TO_VERIFY_IN_M0`在获得执行证据、真实模块、预算/授权、来源快照与隔离测试前仍是HOLD。D00的P0.1/P0.2/P0.3属于单独来源标准，不机械塞入63个方法计数。
+- **双指纹不可混同（原件比对已核）**：63项方法引用的五组`definition.source_sha256`逐一匹配Library P1—P5原始正式方法文件。GitHub对应标准均另加受控迁移说明前缀；剥离该说明后C/H/W/P正文与原件相同，D04另有两处阶段状态和来源索引文句更新。故GitHub整文件Hash不同是正常工程镜像现象，不得将原`source_sha256`改成GitHub Blob或整文件SHA256。必要时在执行时分别验证历史来源指纹、工程文件/章节版本与实际Tool/Adapter版本；这项来源核对不证明实际方法可执行。
 - D00须从合法来源检索/资源目录与方法版本选路到真实原件取得、字节与Hash、身份/版权、不可覆盖尝试日志、L0修订及独立G0特定用途资格。固定`MATERIALS`/照片清单与历史样本成功不能冒充通用来源获取。
 - 各D Stage只产生自身L层候选；Producer声明PASS不代表G通过。`independent-stage-qualification.mjs`按当前审计、对象修订、输入输出指纹、Reviewer绑定和时效阻断失效消费；真实专业签发、DB最小权限和撤权须用实际测试证明，不以静态合同代替。
 
