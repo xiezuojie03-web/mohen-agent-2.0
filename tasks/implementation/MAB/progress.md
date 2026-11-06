@@ -1250,3 +1250,16 @@ Data API范围：pg_db_role_setting未见pgrst.db_schemas/db_extra_search_path�
 - sandbox在本次执行后已删除；生产部署、生产数据库、Vercel环境变量、Supabase Storage均未改变。密钥未输出或写入文件。
 - **ST-02判断更新**：上图Provider真实目录检索已`VERIFIED_LIVE_METADATA_READ`；已证明目标《金泽小志》所查两个DOI/一个索书号不命中本次官方PDF开放下载目录，故不能用该PDF开放下载通道取得这几条记录的扫描件。ST-02真实原件仍`DATA_BLOCKED`，但阻塞已从“来源未连通/不知道怎么调用”收敛为“目标馆藏条目未进入PDF开放下载目录，需寻找馆方另行授权的数字原件访问路径或选择确实列入开放下载目录的另一条合格原件”。不得以访问级别1推定有PDF下载权。
 - **下一步**：在上图官方开放数据目录中按同一主题/区域另选明确命中PDF list的`gj`条目，并通过info确认isDownload、册ID、页数和目录；若存在可下载候选，再仅取一页stream验证字节、MIME、哈希和许可条件。若没有适合的金泽原件，则使用另一条已登记合法来源或Owner已有授权原件；不再重复对上述三项做相同请求。随后才执行M2隔离私有Storage与ST-02 L0/L1/L2首次/回放/撤权。ST03不提前启动。
+
+
+## 2026-11-06｜Owner继续接续：国立公文书馆原件、二次利用权、Supabase容量与DeepSeek凭据核实（未签ST-02准出）
+
+- **原件来源已选定**：国立公文书馆数字档案《松江府志７》，item URI `https://www.digital.archives.go.jp/item/4252790`，请款/册号 `292-0017-0007`，所属全书《松江府志》（54卷、图1卷；24册，清康熙刊本；作者郭廷弼等）。官方IIIF manifest `https://www.digital.archives.go.jp/api/iiif/4252790/manifest.json` 实际解析出73个canvas，每页标称6300×4400像素。第3页canvas `C101041975100` 的IIIF 1800px派生JPEG曾在短时Vercel sandbox中HTTP 200取得（399,600 bytes）；只在临时sandbox，未进入持久存储，故状态为 `FETCHED_EPHEMERAL`，绝不记作 `STORED_VERIFIED`。随后上图对连续访问返回官方短时访问限制403；已停止重复请求，待后续降低频率再取。
+- **权利已核实**：国立公文书馆《データの二次利用》明确其数字内容及目录信息可商业/非商业自由复制、修改、再分发，无需申请；公开使用建议标注“国立公文书馆所藏”、题名、请款号、URI，并说明加工；仍须排除其他第三方权利/隐私等问题。AI生成/加工由使用者承担准确性责任。来源规则：`https://www.digital.archives.go.jp/secondary-use`。因此本书影像具备进入研究与作品加工链的官方再利用依据，来源权利不再是本条阻塞；每个具体动作仍保留出处和加工记录。
+- **文本辅助材料**：识典古籍《松江府志（重修松江府志）》“水利”章可作定位/OCR交叉核对，页面 `https://www.shidianguji.com/zh/book/HY0126/chapter/1k4exrf1qnz8a`。该网页文本存在缺字/OCR疑误，只能作为辅助转录，不能替代国立公文书馆原件；卷十五“水利上”、卷十六“水利下”的目录信息另有目录网页支持。当前尚未将其断言为本册第7册的精确页码映射，须从原件题签/卷首/正文核实后再绑定。
+- **Supabase真实容量**：项目 `mohen-cloud`（`fwrhxddcpkibsnmddcfl`）状态 `ACTIVE_HEALTHY`，组织Free。只读SQL：数据库18,364,083 bytes（约18 MB）；`storage.buckets=0`、`storage.objects=0`、对象总字节0。官方Free配额为Storage 1 GB、数据库计费配额500 MB；Free单文件全局最大限制50 MB。现有M2应用合同/代码更严格：`private_originals.byte_size<=10 MiB`、`MAX_ORIGINAL_BYTES=10 MiB`。因此首件/选页在容量上可行，不需升级；但目前没有桶，M2候选迁移明确要求独立验证和Owner授权，**本轮未创建生产桶、未应用迁移、未改生产数据**。
+- **DeepSeek凭据只读核实**：Vercel项目环境中存在加密变量 `DEEPSEEK_API_KEY`，目标为production/preview/development；只在临时sandbox中对 `GET https://api.deepseek.com/models` 做无推理、无模型计费的认证检查，HTTP 200，返回 `deepseek-flash` 与 `deepseek-v4-pro`；`deepseek-flash`输入模态为text+image。密钥未输出、未写入GitHub、未进入Codex指令；测试sandbox已删除。DeepSeek官方Vision说明 `deepseek-flash` 支持图像输入，官方价格页按token计费。**未进行任何推理调用**，不声称OCR已完成。
+- **云端/本地凭据边界**：上述DeepSeek key仅确认存在于Vercel项目运行环境，不会自动注入Codex Cloud；不能因Vercel已配置就假定Codex可读。Codex若要直接调用，须使用其宿主明确支持的Secret配置；不得写入仓库/任务书/提示词。另一条安全路径是由Vercel服务端持有密钥并提供受控后端调用，但须先有费用/动作授权合同。CodeBuddy本地环境也须单独验证，不能把Vercel配置等同于本地环境。
+- **当前准确状态**：`SOURCE_SELECTED / RIGHTS_VERIFIED / IIIF_MANIFEST_VERIFIED / PAGE_FETCHED_EPHEMERAL / SUPABASE_CAPACITY_SUFFICIENT / DEEPSEEK_KEY_AUTH_VALID / DEEPSEEK_INFERENCE_NOT_AUTHORIZED / STORAGE_BUCKET_NOT_PROVISIONED`。ST-02仍未完成，因为尚未把真实原件字节持久化到M2私有Storage，也未跑L0→L1→L2、自动笔记首次/回放/撤权PG+HTTP。未进入ST-03。
+- **Owner待确认的唯一即时权限**：是否允许使用现有Vercel `DEEPSEEK_API_KEY`，以 `deepseek-flash` 对上述一张公开、官方允许再利用的《松江府志》原件页做**单次OCR/版面识读试验**，`max_tokens=1000`，不重试、不批量、不上传其它资料；按官方当前最高峰时价估算仍低于USD $0.01。此授权只覆盖这一笔单次模型调用，不授权Codex长期付费调用或M4外发预算。等待Owner明确同意后才调用。
+- **下一步**：在不重复评估的前提下，取得/恢复一张可用原件页→单次受控OCR→对照识典古籍转录及原件人工复核→确定精确卷次/页码/引用locator→生成source manifest与研究brief。之后沿现有M2候选方案完成隔离Storage正反测试；只有隔离测试、备份/回滚、Owner授权齐备，才申请一次生产私有桶/迁移授权。所有结果继续回写本文件及原PLAN。
