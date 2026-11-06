@@ -1333,3 +1333,5 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 - **继承原则**：已通过且源码/合同未变化的测试直接继承；只对真实缺口和受影响路径定向施工，不重复全量盘点或重开已通过任务。M1—M4生产固定条件仍保留，不以M5隔离PASS销账。
 - **编号澄清**：R4.5正式ST-05为AssembleDirectorPlan；历史progress中“ST05受控模型执行”实际指M4 Provider执行器，后续统一用“M4受控Provider执行器”，不再混用ST-05编号。
 - **状态**：M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY不变；本条为施工方向裁决，不是阶段PASS或生产授权。
+
+- **计划版本核验**：唯一施工计划已更新为[`PLAN.md V1.2`](https://github.com/xiezuojie03-web/mohen-agent-2.0/blob/main/tasks/implementation/MAB/PLAN.md)，最终计划提交 `3b6f62b3a9b828964e5015b603b45f821e13bc44`。本次只修改既有计划/进度/交接文件，没有新增第二份执行标准；无源码、数据库、Storage、Gate或部署变更。
