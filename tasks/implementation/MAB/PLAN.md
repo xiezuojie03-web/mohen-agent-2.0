@@ -1016,3 +1016,8 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - Supabase mohen-cloud Free项目真实只读核验：DB约18MB，Storage桶/对象均0；官方1GB Storage配额足够；M2应用层单件10MiB限制优先。未创建生产桶、未应用候选迁移。生产激活仍须完成隔离Storage/PG正反验证、备份回滚与Owner单独授权。
 - Vercel环境已配置并通过只读认证检查的 `DEEPSEEK_API_KEY` 可用；官方 `deepseek-flash` 支持图像输入。此key仅属于Vercel运行环境，不自动属于Codex Cloud或CodeBuddy本地。尚未进行任何模型推理；单页OCR调用需Owner明确批准（单次、max_tokens=1000、不重试/不批量、预算上限USD $0.01），不得扩展为长期付费/外发授权。
 - 详细来源、rights、manifest、辅助转录、容量SQL、凭据边界及后续顺序见 `progress.md` 2026-11-06记录。ST-02仍HOLD；取得原件并完成L0/L1/L2首次/回放/撤权PG+HTTP前不启动ST-03。双Skill与其它M5任务继续按原计划，不因本次外部来源核验改写职责或门槛。
+
+
+### 2026-11-06｜卷次定位与原件分册策略补充
+
+NAJ 1663年《松江府志》正式source original仍为 `NAJDA-292-0017 松江府志7.pdf` / item4252790（73页、21.67MB、公共领域，馆方二次利用规则允许复制/修改/再分发）。Harvard-Yenching同版v.7明确覆盖卷十四—十六，可帮助定位卷十五/十六水利内容，但属于另一馆藏副本，分页不等同；其单文件权利尚未独立核实，暂仅作卷次定位参考。识典古籍“水利”章仅辅助转录。NLC 1818版卷十五是“建置志·古署”，不是本次1663版水利卷，排除。正式链路须以NAJ原件页建立locator；选定页/页组按M2单件10MiB限制持久化，不上传整册PDF。详细哈希、页数、证据见progress 2026-11-06卷次定位补证。OCR仍等待Owner单次授权；ST-02未准出，ST03不启动。
