@@ -285,7 +285,7 @@ MAB-ENG-01批次进展（2026-11-02，详细证据见progress.md）：私有原�
 
 | 原M5项/依赖 | 本轮已施工及实际证据 | 剩余分类、真实条件及代码完整度 |
 |---|---|---|
-| 1 H1/H2/H3、19组件、真实研究到创作 | 修复H1有效母题/必填边界、H2/H3结构/时码/引用校验；WorkRevision保全完整H1；项目只读snapshot+精确ref/content SHA接入导演请求；WATCH出处/缺口交互；相关单测及Chromium通过 | ST02真实L0/L1/L2/首读/回放/撤权=DATA_BLOCKED，非新PASS。ST03/04严格依赖未启动。ST05受控模型执行适配**工程未完成**，并缺真实每源外发权、provider/purpose/input绑定及支出授权：不得把它包装成仅数据阻塞；已集中失败关闭，只有获得可信授权源/契约后才能接通，不允许API key自授。H1专业45项/H2七判断/H3真实作品与异材料=DATA/GATE/OWNER_BLOCKED，不能由结构测试代签。 |
+| 1 H1/H2/H3、19组件、真实研究到创作 | 修复H1有效母题/必填边界、H2/H3结构/时码/引用校验；WorkRevision保全完整H1；项目只读snapshot+精确ref/content SHA接入导演请求；WATCH出处/缺口交互；相关单测及Chromium通过 | ST02真实L0/L1/L2/首读/回放/撤权=DATA_BLOCKED，非新PASS。ST03/04严格依赖未启动。M4受控Provider执行器适配**工程未完成**，并缺真实每源外发权、provider/purpose/input绑定及支出授权：不得把它包装成仅数据阻塞；已集中失败关闭，只有获得可信授权源/契约后才能接通，不允许API key自授。H1专业45项/H2七判断/H3真实作品与异材料=DATA/GATE/OWNER_BLOCKED，不能由结构测试代签。 |
 | 2 创建/提交/修订/CAS/幂等/失败语义 | 继承已验创建/提交/导演CAS/fork/restore；局部patch严格字段/类型/索引/时码、禁止改引用，全部改稿入口400/no-store；修复stages全库导演笛卡尔泄露，精确work_revision.director_source.plan_id及Owner关联；不再以task.done推定research完成 | 隔离工程正反已验；真实全链作品及Owner体验仍DATA/GATE/OWNER_BLOCKED。私有保存不等于历史语义通过。 |
 | 3 F05条目/修订/来源/用途/使用史/缺口 | Admin展示实际validation/findings/permission_scope/use purpose/time/revision，缺值明确；显式browse搜索/稳定游标，默认ST02行为不变；真实PG101资产无遗漏/重复、精确搜索、跨Owner/跨项目游标拒绝通过 | 13类10+3已有矩阵继承，未补造全专业语义。合法跨项目复用、真实来源解引用/数据主体同意证据=DATA/GATE/OWNER_BLOCKED。Operator跨项目业务授权未核，不能自扩权限。 |
 | 4 Operator+精确rev+G5/rights+事务 | 继承独立审核/发布资格桥与原子指针；遗漏旧撤权申请改503/no-store而非假成功；media-selection原POST只返候选假成功改明确HOLD/零写；主Studio去掉preview假work ID并显式目录失败/候选身份 | 正式Reviewer/G5、生产身份/权限、真实媒体动作级权利=GATE/OWNER/DATA_BLOCKED。canonical选材动作当前只具拒绝路径，真正写入绑定/权利适配尚未完成，不以status=verified授选材权。调度表风险仍独立跟踪，不执行RLS/GRANT。 |
@@ -332,9 +332,9 @@ MAB-ENG-01批次进展（2026-11-02，详细证据见progress.md）：私有原�
 
 **Owner API授权**：Owner授权M5必要开发、隔离测试及受控真实研究使用现有已配置API密钥/Provider凭据，包括大模型调用；已配置Provider在M5范围内的必要低成本调用不再逐次重复请示。若需要新的专业模型、Provider账号/密钥、订阅/额度/充值或明显扩大费用/批量调用，及时向Owner说明具体能力缺口、候选、权限和费用。密钥只在受控服务端Secret使用，不写入仓库/提示词/日志/聊天或客户端；调用须绑定来源权利、purpose、provider、input manifest、预算/实际费用和持久回执。Owner授权取代此前单次DeepSeek OCR等待，但不替代第三方来源权利/数据主体同意/Provider条款，也不授权生产DB/Storage迁移、正式Reviewer/G5启用或生产发布。
 
-**全链实验硬门槛**：不得在关键组件仅有结构/静态代码、恒HOLD、stub/mock、关键HTTP/PG未运行或关键Storage SKIP时启动真实全链实验。当前ST01 Brief项目绑定已VERIFIED_ISOLATED；ST02真实原件字节未持久化、L0/L1/L2未验；ST03/04未准出；ST05受控模型执行适配尚未实现（directorExternalProcessingBlocker恒HOLD，M4委托仓储仅持久化、不派发Provider；现有Tool Ledger以credit计价，尚非真实Provider成本）；H1/H2/H3与19组件只有结构/部分交互证据；13类10+3矩阵不等于完整专业语义；正式G5/Reviewer和canonical媒资动作仍HOLD；M4真实双主体仍受M1—M3真实Owner/原件/独立Reviewer条件约束。详细逐项状态及执行顺序见progress.md本裁决记录。
+**全链实验硬门槛**：不得在关键组件仅有结构/静态代码、恒HOLD、stub/mock、关键HTTP/PG未运行或关键Storage SKIP时启动真实全链实验。当前ST01 Brief项目绑定已VERIFIED_ISOLATED；ST02真实原件字节未持久化、L0/L1/L2未验；ST03/04未准出；M4受控Provider执行器适配尚未实现（directorExternalProcessingBlocker恒HOLD，M4委托仓储仅持久化、不派发Provider；现有Tool Ledger以credit计价，尚非真实Provider成本）；H1/H2/H3与19组件只有结构/部分交互证据；13类10+3矩阵不等于完整专业语义；正式G5/Reviewer和canonical媒资动作仍HOLD；M4真实双主体仍受M1—M3真实Owner/原件/独立Reviewer条件约束。详细逐项状态及执行顺序见progress.md本裁决记录。
 
-**执行要求**：采用两条可并行的工程线，避免等待循环：A线补真实原件/私有Storage及ST02 L0→L1→L2首次/回放/撤权；B线在既有M4委托/Tool Registry/预算/回执/权限体系内完成ST05受控Provider执行器，并先以合成输入完成代码/PG/HTTP正反测试与真实费用核销。B线代码施工不等待A线原件，但A线来源/权利及M1—M3真实前置未就绪前，不得向真实材料发起外部模型调用。A/B就绪后按ST03→ST04完成真实候选分析与Creator正式请求；继而完成13类专业语义、H1/H2/H3/19组件、Admin、独立G5/媒资权利、精确修订发布及WATCH撤权。所有关键路径代码、接线、权限/数据、PG/HTTP正反及真实输入就绪后，才进行一次真实作品全链实验。此裁决不勾选未完成项，不改变M0—M8阶段顺序或既有安全/Gate/生产条件；M5仍HOLD直至原验收全部满足。
+**执行要求**：采用两条可并行的工程线，避免等待循环：A线补真实原件/私有Storage及ST02 L0→L1→L2首次/回放/撤权；B线在既有M4委托/Tool Registry/预算/回执/权限体系内完成M4受控Provider执行器，并先以合成输入完成代码/PG/HTTP正反测试与真实费用核销。B线代码施工不等待A线原件，但A线来源/权利及M1—M3真实前置未就绪前，不得向真实材料发起外部模型调用。A/B就绪后按ST03→ST04完成真实候选分析与Creator正式请求；继而完成13类专业语义、H1/H2/H3/19组件、Admin、独立G5/媒资权利、精确修订发布及WATCH撤权。所有关键路径代码、接线、权限/数据、PG/HTTP正反及真实输入就绪后，才进行一次真实作品全链实验。此裁决不勾选未完成项，不改变M0—M8阶段顺序或既有安全/Gate/生产条件；M5仍HOLD直至原验收全部满足。
 
 ### 2026-11-06 Owner裁决｜以M5真实作品验收反推M0—M4缺口并逐项补齐（本计划唯一执行标准）
 
