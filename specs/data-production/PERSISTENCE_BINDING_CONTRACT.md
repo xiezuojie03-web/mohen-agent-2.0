@@ -50,3 +50,18 @@ Stage Executor只控制本成果写入与资格请求，不拥有独立Gate。�
 物理字段映射必须先做已施工仓库与真实Schema只读盘点：优先复用`source.sources`、`source.source_versions`、`source.raw_items`、现有Provider Registry及`acquisition-intents`；审查是否能够保持获取方法多版本、尝试日志追加不覆盖、错误`CONFIRMED/HYPOTHESIS`、请求脱敏、文件真实存储、SHA/范围、权利证据和下游G0资格失效。只有证明现有表不能承载某项生命周期，才提出最小字段/事件表的未来迁移候选，并记录唯一Owner、DDL、ACL、旧数据回填、回滚和正反测试；不得由三个Excel工作表自动推导三个新SQL表。
 
 **当前运行状态与历史设计快照必须分离**：本合同旧章的2026-10-31只读数据库调查、`control.gate_candidates`当时是否部署、KAD4的12张候选表，以及Storage空桶/旧权限状态，都不代表2026-11-06当前实库事实。真实可用性只能凭最新main源码及有权限的当前数据库/Storage/CI回执判定；已施工实现一律只读保护。本节不授权执行DDL、修改Role/RLS、激活Gate或恢复M5。
+
+## KAD1六阶段唯一持久化Owner与L0—L5字段归属裁决（2026-11-06，DESIGN_ONLY）
+
+**唯一系统写入权：** MHKA-05定义的受控Repository/Storage服务负责正式业务表/对象持久化；Stage Executor/Orchestrator协调输入合法性、事务/幂等/交接；Adapter提出`typed candidate+method receipt+evidence/lineage`，不自签Gate，不自行获得写正式资格表的权限；独立G服务才拥有正式Gate决定/当前投影写入权。当前`layer1-adapters.mjs`内直接写表是复工后M2/M3需要收束的事实，不能因代码历史行为反向更改设计原则。`control.production_runs`进度记录与`control.gate_audits`正式签发权限必须按表和操作区分，而非schema白名单。
+
+| L层 | 唯一逻辑实体与物理复用起点 | 必须保持的断言 | 未来验证Owner |
+|---|---|---|---|
+| L0 | `source.sources/source_versions/raw_items`+私有原件对象 | Provider/Work/Version/Holding/Digital Asset独立身份；byte/hash回读；P0资源/方法/尝试三逻辑资产有唯一主库及追加历史；每动作rights；G0资格 | M2/M3 |
+| L1 | `source.read_runs/read_units` | G0作用域下按carrier/C法读取，结构化locator、不可变版本、精确G1，能从L1回放L0原字节 | M2/M3 |
+| L2 | `evidence.reading_units/material_evidence/read_unit_evidence_links` | D02与D01读单元分别有Owner，同源/转引/材料声音保留L1/G1依赖，唯一G2 | M2/M3 |
+| L3 | `world.entities/events/relation_claims/claim_revisions/claim_evidence_links` | W01—W10、对象身份/时空精度/冲突、L2→L0反查；不可覆盖主张，G3七种用途独立 | M3/M4 |
+| L4 | `meaning.findings/claim_revisions/present_connections/open_questions` | A01—A12解释不能回写L3真值；反例和上下游依赖；G4独立签发 | M3/M4 |
+| L5 | 既有六类`read_model.*` | G3事实/ G4解释可合法分路，G5按消费者/动作/版本签发；P08只写失效控制记录，不造第七L5 | M4/M5 |
+
+DB与对象存储不共享事务：先元数据`PENDING`→上传不可变对象→服务端回读比对SHA及许可→`STORED_VERIFIED`→提交合法候选；失败留补偿、不可变尝试、孤儿回收与审计，不能让`memory://`或公开照片目录充当私有原件。备份恢复同时恢复数据库快照、对象清单/字节、政策与权限版本；恢复后默认不开G或公众读取。已施工Schema/权限/私有Storage真相必须以Owner授权后的当前DB只读回执和隔离正反测试判定；本节不新增无证据的SQL表、不执行迁移、不覆盖2026-11真实工程。
