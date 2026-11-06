@@ -1318,3 +1318,8 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 接续施工采用两条可并行的工程线，避免等待循环：A线补齐M1/M2/M3既有边界内的合法Owner会话、真实原件字节与私有Storage/PG隔离链，完成ST02 L0→L1→L2首次/回放/撤权；B线在既有M4委托/Tool Registry/预算/回执/权限体系内实现ST05受控Provider执行器，并以合成输入完成代码/PG/HTTP正反测试（DeepSeek文本/图像及必要专业Provider适配、逐源权利/用途/input绑定、真实成本、失败与不确定回执）。B线代码测试不等待A线原件，但在A线来源/权利和M1—M3真实前置未就绪前不得向真实材料发起外部模型调用。A/B就绪后，按ST03→ST04顺序完成真实候选分析保存与Creator正式生产请求；随后完成13类专业语义、Admin逐条管理、H1/H2/H3和19组件真实创作链，补齐独立G5/媒体权利/精确WorkRevision发布及WATCH逐请求消费/撤权。所有关键路径代码、接线、权限/数据、PG/HTTP正反和真实输入均就绪后，才运行一次端到端真实作品实验。M6/M7/M8保持原任务边界。
 
 本裁决只明确M5验收解释与Owner API调用授权，不降低MHKA、M1—M4安全/来源/Gate/生产条件，不把全链实验提前标PASS。详细源码事实和前置差异按本节引用的既有文件核对；后续在原PLAN/progress/handoff持续更新，不另建平行任务书。
+
+
+## 2026-11-06｜M5与M0—M4阶段准出复盘归档
+
+完整复盘已归档：[`tasks/results/MAB/M5_M0_M4_GATE_RETROSPECTIVE_20261106.md`](https://github.com/xiezuojie03-web/mohen-agent-2.0/blob/main/tasks/results/MAB/M5_M0_M4_GATE_RETROSPECTIVE_20261106.md)。本报告核对MAB-ENG-01受控任务书、M0—M5原计划、M1-C01—C04/M2-C01—C03/M3-C01—C03/M4-C01—C04固定条件及实际回执。结论：M0仅审查级EXIT_PASS；M1—M4均为限定代码/隔离范围的CONDITIONAL_EXIT，未取得完整真实运行PASS；M4真实混合仍MIXED_NOT_VERIFIED。原任务书已有完整产品目标的高层要求，但原M5六项施工清单未形成八维度单一真实作品E2E准出矩阵，且未将上游固定条件汇总为M5真实实验硬门。M5_OVERALL_HOLD保持。本报告为审查存档，不新建阶段、不修改MHKA、不改变现有阶段状态；是否将建议矩阵正式纳入PLAN，待Owner裁决。
