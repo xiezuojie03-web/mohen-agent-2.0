@@ -1323,3 +1323,13 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 ## 2026-11-06｜M5与M0—M4阶段准出复盘归档
 
 完整复盘已归档：[`tasks/results/MAB/M5_M0_M4_GATE_RETROSPECTIVE_20261106.md`](https://github.com/xiezuojie03-web/mohen-agent-2.0/blob/main/tasks/results/MAB/M5_M0_M4_GATE_RETROSPECTIVE_20261106.md)。本报告核对MAB-ENG-01受控任务书、M0—M5原计划、M1-C01—C04/M2-C01—C03/M3-C01—C03/M4-C01—C04固定条件及实际回执。结论：M0仅审查级EXIT_PASS；M1—M4均为限定代码/隔离范围的CONDITIONAL_EXIT，未取得完整真实运行PASS；M4真实混合仍MIXED_NOT_VERIFIED。原任务书已有完整产品目标的高层要求，但原M5六项施工清单未形成八维度单一真实作品E2E准出矩阵，且未将上游固定条件汇总为M5真实实验硬门。M5_OVERALL_HOLD保持。本报告为审查存档，不新建阶段、不修改MHKA、不改变现有阶段状态；是否将建议矩阵正式纳入PLAN，待Owner裁决。
+
+
+## 2026-11-06｜Owner裁决：改以M5反推M0—M4缺口，按唯一PLAN逐项补齐
+
+- **唯一执行标准**：现行[`tasks/implementation/MAB/PLAN.md`](https://github.com/xiezuojie03-web/mohen-agent-2.0/blob/main/tasks/implementation/MAB/PLAN.md)。本日已原位加入“M5真实作品验收反推M0—M4缺口”及八维度验收矩阵，并明确任务书/PLAN/progress/target-diff/Codex handoff的文件职责。不得另建M5任务书、补缺清单、验收标准或平行计划。
+- **目标**：至少一项真实历史文化作品在受控非生产环境完成真实史料字节、真实Provider、内外AI互补、D00—D05/L0—L5/G0—G5、13类资产、H1/H2/H3与19组件、Admin、独立G5/媒资权利、同一WorkRevision发布及WATCH撤权的完整垂直切片。隔离实验不等于生产切换/公开发布。
+- **补缺路径**：M0基线冻结不重开；先补M1的M5隔离Owner会话/最小权限/撤权/恢复，再补M2真实原件持久化与L0/L1/L2首次/回放/撤权，再补M3真实D00—D05及独立Reviewer/G0—G5，再补M4真实Provider派发/实际费用/Receipt/恢复，最后按ST-01→ST-09完成同一作品。无依赖冲突的M4执行器合成输入开发可先行，但真实外发不得越过M1—M3前置。
+- **继承原则**：已通过且源码/合同未变化的测试直接继承；只对真实缺口和受影响路径定向施工，不重复全量盘点或重开已通过任务。M1—M4生产固定条件仍保留，不以M5隔离PASS销账。
+- **编号澄清**：R4.5正式ST-05为AssembleDirectorPlan；历史progress中“ST05受控模型执行”实际指M4 Provider执行器，后续统一用“M4受控Provider执行器”，不再混用ST-05编号。
+- **状态**：M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY不变；本条为施工方向裁决，不是阶段PASS或生产授权。
