@@ -83,13 +83,16 @@ EXP完整功能、L6—L8运行启用遵循包内“延后激活”边界：本�
 
 建议角色：Owner负责产品/授权与最终体验；工程负责人负责适配与发布准备；数据安全负责人负责Schema/ACL/RLS/Storage与恢复；独立Gate Reviewer按实际策略资格审签；测试负责人负责证据完整性。角色可以由同一自然人兼任，但生产与Gate的机器身份、权限和审计必须真正分离。
 
-建议在真实仓库现有任务与结果目录内复用以下账册，路径以M0核查结果为准，不预设存在：
+**权威文件与执行账唯一性（本轮起严格执行）**：
 
-- 工程范围账：保留234路径与74目标的原身份，新增本轮KEEP/ADAPT/CREATE/HOLD判定、批次、责任人和证据。
-- API与动作账：保留85/152原ID，链接测试结果，避免复制成第二份规范。
-- 迁移清单：前置Schema、兼容性、执行及回滚条件、备份ID。
-- 批次回执：`changed_paths / before_sha / after_sha / requirement_id / method / tests(POS,NEG,AUTH) / environment / policy_version / source_refs / unresolved_HOLD / rollback`。
-- 状态使用`DESIGN_ONLY / CODE_PRESENT / VERIFIED_ISOLATED / VERIFIED_LIVE / HOLD`并分别记录Owner体验签收；不得把一列综合PASS覆盖所有证明层次。
+- `MAB-ENG-01_墨痕新架构工程接续施工与体验保全_受控任务书_V1.0.md`：已批准的任务身份、总体范围、Owner裁决和不可突破的上位约束。
+- **本文件 `tasks/implementation/MAB/PLAN.md`：M0—M8唯一施工计划、唯一执行顺序和唯一阶段/任务验收标准。** 后续所有缺口、施工任务、责任、依赖、验收和顺序调整，只在本文件原位维护；不新建平行任务书、M5专项计划、补缺清单或第二套验收标准。
+- `progress.md`：只记实际施工、commit、测试、环境、证据、HOLD和回滚，不另行制定任务或改变准出标准。
+- `target-diff.csv`：只记74目标/路径级实现差异与证据，不承担任务规划。
+- `CURRENT.md`：只反映实际运行状态；`CODEX_HANDOFF_CURRENT.md`只提供工具接续入口/命令，不得另立任务顺序或验收标准。
+- `tasks/results/MAB/`内已有报告仅为特定批次证据或历史审查材料，不构成新的权威任务书；与本文件不一致时以本文件为执行依据，必要时在本文件原位修正。
+
+批次回执继续使用`changed_paths / before_sha / after_sha / requirement_id / method / tests(POS,NEG,AUTH) / environment / policy_version / source_refs / unresolved_HOLD / rollback`。状态使用`DESIGN_ONLY / CODE_PRESENT / VERIFIED_ISOLATED / VERIFIED_LIVE / HOLD`并分别记录Owner体验签收；不得把一列综合PASS覆盖所有证明层次。
 
 每批建议分支/PR独立审阅；当前用户尚未要求创建分支或PR，本轮不执行。代码提交粒度以可独立回退的能力为界，不以74份文件一次性大提交。
 
@@ -333,9 +336,60 @@ MAB-ENG-01批次进展（2026-11-02，详细证据见progress.md）：私有原�
 
 **执行要求**：采用两条可并行的工程线，避免等待循环：A线补真实原件/私有Storage及ST02 L0→L1→L2首次/回放/撤权；B线在既有M4委托/Tool Registry/预算/回执/权限体系内完成ST05受控Provider执行器，并先以合成输入完成代码/PG/HTTP正反测试与真实费用核销。B线代码施工不等待A线原件，但A线来源/权利及M1—M3真实前置未就绪前，不得向真实材料发起外部模型调用。A/B就绪后按ST03→ST04完成真实候选分析与Creator正式请求；继而完成13类专业语义、H1/H2/H3/19组件、Admin、独立G5/媒资权利、精确修订发布及WATCH撤权。所有关键路径代码、接线、权限/数据、PG/HTTP正反及真实输入就绪后，才进行一次真实作品全链实验。此裁决不勾选未完成项，不改变M0—M8阶段顺序或既有安全/Gate/生产条件；M5仍HOLD直至原验收全部满足。
 
-### 2026-11-06｜M0—M4条件准出与M5全链准出复盘索引（不改变原状态）
+### 2026-11-06 Owner裁决｜以M5真实作品验收反推M0—M4缺口并逐项补齐（本计划唯一执行标准）
 
-完整审查见[`tasks/results/MAB/M5_M0_M4_GATE_RETROSPECTIVE_20261106.md`](https://github.com/xiezuojie03-web/mohen-agent-2.0/blob/main/tasks/results/MAB/M5_M0_M4_GATE_RETROSPECTIVE_20261106.md)。审查确认：M0为审查级PASS；M1—M4仅在明确限定范围内CONDITIONAL_EXIT，相关M1-C/M2-C/M3-C/M4-C条件未全部关闭；M4真实混合仍MIXED_NOT_VERIFIED。MAB-ENG-01原任务书已包含M4混合和M5产品汇合的高层目标，但原M5六项清单未将八个环节编成同一真实作品的完整E2E准出矩阵，也未汇总上游固定条件为单一真实实验准入门。此处仅登记复盘证据，不改原复选框、条件和阶段状态；正式增加验收矩阵须按Owner裁决执行。
+**本节是下一步施工的直接依据，取代继续讨论历史原因。** 目标不是重开M0—M4，而是从M5真实作品全链验收反推必要条件，继承已完成的源码、合同和测试，只关闭尚未满足的缺口。
+
+**M5真实验收场景边界**：至少一项真实历史文化作品，在受控、隔离的非生产环境中完成完整垂直切片。必须使用真实合法史料字节、真实Provider调用、墨痕Agent与外部AI真实互补、真实D00—D05/L0—L5/G0—G5链路、真实知识资产和作品修订；不能以mock、合成业务材料、静态页面或单项CI替代。隔离环境中的受控发布和WATCH消费可以作为M5验收；不因此授权生产DB/Storage迁移、生产Gate启用或公开生产发布，后者仍属M8及原独立授权范围。
+
+#### A. 从M5反推M0—M4的必要缺口
+
+| 上游阶段 | M5真实作品所依赖的必要条件 | 当前继承证据与未完成点 | 补缺完成证据及边界 |
+|---|---|---|---|
+| **M0** | 唯一工程基线、目标分母、源码路径和证据索引 | M0审查级EXIT_PASS已完成；234路径、74目标、85 API、152动作及差异账已有基线 | **不重开M0、不重做全量盘点**。只在发现具体源码/目标冲突时，按受影响条目定向更新PLAN、progress和target-diff |
+| **M1** | M5实验环境中的真实Owner会话、项目/用户最小权限、私有资料访问、禁用/过期/跨Owner拒绝、退出撤权和实验数据恢复 | 签名身份、Owner事务/RLS及多项隔离PG/HTTP证据可继承；M1-C01—C04生产条件仍未全部核证，M5实验所需的真实Owner会话与受控环境端到端证据尚未形成 | 在**非生产隔离环境**完成真实登录→本人项目读写→跨Owner/匿名/禁用/过期拒绝→退出后旧会话拒绝→隔离备份恢复；实际Web/worker DB身份与最小权限可核。该证据只满足M5实验前置，不把M1生产C01—C04改成PASS；历史凭据失效、生产切换和生产恢复仍按原时点/M8处理 |
+| **M2** | 一份合法原件的真实字节可持久化、回读、hash校验、精确定位；完成D00来源登记、D01载体读取、D02证据理解；首次/回放/撤权均可验证 | UTF8持久候选和隔离Storage/PG工程证据可继承；上图《金泽小志》本轮未命中开放PDF目录；NAJ《松江府志7》权利和IIIF manifest已核，但当前仅有临时派生页、未持久化；Storage生产桶仍0；ST02 L0/L1/L2未完成 | 在隔离私有Storage中持久化一份经权利确认的NAJ原件页/页组（遵守单件10MiB限制），保存source/version/canvas或页码/locator/hash/rights/provider/method；实际回读字节与hash一致；跑L0→L1→L2首次、同输入回放、撤权拒绝的PG+HTTP正反。不得把临时下载或目录元数据当原件PASS；生产桶/迁移仍需独立授权 |
+| **M3** | 原D00—D05生产链能接收M2真实输入并逐阶段产生精确修订；G0—G5由独立Reviewer/服务签发、撤权和当前资格消费，不由Producer/Agent/Operator自签 | 独立Gate客户端、服务处理器、专用角色与部分隔离PG/HTTP工程可继承；独立Reviewer真实鉴权/正式部署、真实材料全链D阶段、真实专业资格签发与撤权恢复仍未完成 | 在M5隔离实验环境完成真实原件从D00—D05的阶段接线与输出引用；独立Reviewer身份真实认证，逐阶段Gate绑定source/revision/input/output/purpose/scope/consumer；Producer/Operator不能代签；通过有效、拒绝、过期、依赖撤销、恢复不复活的PG+HTTP正反。此处是隔离实验资格，不授权生产Reviewer/Gate启用 |
+| **M4** | 同一root任务中，墨痕Agent与外部AI均有可证明的互补贡献；Provider真实派发、逐源外发授权、实际成本、永久Receipt、失败/未知费用HOLD和跨会话恢复 | Plan/Delegation/Receipt/T1—T7候选收包与隔离协调基础可继承；M4真实Provider dispatch尚未完成，外发DENIED/预算0，真实混合仍MIXED_NOT_VERIFIED；内部credit不是Provider实际费用 | 在既有M4委托、Tool Registry、权限和账本内完成受控Provider执行器；先以合成输入做PG/HTTP正反，再在M1—M3真实前置满足后用合法最小材料执行真实调用。Receipt记录同root/subtask、Provider/model/version、input manifest/hash、purpose、rights decision、allowed actions、token/用量、实际币种费用、输出hash、失败与成本终态；真实超时/不确定费用/中断恢复不自动重试、不补零。不得裸调脚本绕过Guard |
+
+**重要边界**：M1—M4原有生产固定条件和最迟关闭点不因M5实验而取消。M5只需先具备上述受控隔离实验的等价条件；不能把隔离证据升级成生产PASS。M2-C03跨项目授权复用按真实使用范围关闭：M5至少验证同项目精确revision、来源引用和use_events；跨项目复用的完整正反验收在M5确实使用时必须完成，否则保留至M7，不得伪造使用事件。
+
+#### B. M5八个维度的唯一验收矩阵
+
+以下八项必须由**同一项真实作品**贯通；各项可分批施工，但最终不能用八个互不相关的演示拼成PASS。
+
+| M5维度 | 对应既有合同/动作 | 当前状态 | 必须补齐的真实验收 |
+|---|---|---|---|
+| **1. 自然语言创作入口** | ST-01 CreateWorkBrief | Brief项目绑定、不可变修订、幂等/恢复已有隔离PASS；Agent资料可得性和问题收敛仍HOLD | Owner以自然语言提出真实问题；Agent读取项目授权资产、判断资料可得性、收敛问题并形成可追溯Brief/Plan；失败原因和继续条件可见 |
+| **2. 内外AI混合协作** | M4 Delegation/ExecutionReceipt、ST-05受控执行 | 未完成真实Provider派发与双主体互补 | 同一root下Agent和外部AI分别产生可核验贡献；真实Provider、合法最小输入、实际成本、永久Receipt、失败/恢复均闭环 |
+| **3. 真实来源、证据和D/L/G生产** | ST-02/03/04；D00—D05、L0—L5、G0—G5 | ST02真实字节未持久化；ST03/04未准出；正式独立资格未就绪 | 从原件来源到读取单元、证据、主张、人文解释及合法消费分面，所有阶段有精确source/version/locator/revision和独立Gate回执；原文、转引、模型解释、推断分层 |
+| **4. 13类知识资产沉淀** | R4.3资产合同、M4-C04、Admin | 10类私有候选+3类规范对象有持久化/权限矩阵，不等于13类完整业务 | 13类各自的字段、创建/修订、状态、来源/权利、ACL、幂等/CAS、引用和失效规则均有真实业务正反验收；真实作品只沉淀研究实际产生的类型，不为凑数伪造资产；不适用类型须说明原因 |
+| **5. Studio真实创作** | ST-05/06/07；H1/H2/H3与19组件合同 | 结构/时码/引用校验和部分交互已验；没有真实研究驱动的完整创作 | H1/H2/H3实际参与导演、叙事、镜头/材料组织；19组件按真实作品内容逐项验证；创作者可预览、局部修改、保存/恢复并形成不可变WorkRevision |
+| **6. Admin知识资产管理** | F05 Admin；ST-07/08/09关联 | 条目、历史修订、部分use_events已有隔离能力；13类专业语义及全链来源仍不完整 | 对同一作品实际形成的知识条目逐条显示类型、内容、认识状态、精确来源/locator、D/G资格、权利/用途、版本、研究贡献、被何处复用及缺口；仅授权Owner可执行相应管理/撤回动作 |
+| **7. 独立G5、媒资权利与发布** | ST-08/09；独立Reviewer/G5、canonical media rights、精确WorkRevision | G5桥接和部分ST08/ST09隔离证据存在；正式Reviewer未启用，canonical media-selection POST仍HOLD/503 | 独立Reviewer对精确WorkRevision及其知识/媒资依赖作当前资格审查；媒资逐动作权利明确；发布指针原子指向该修订；退回、通过、发布、撤回均有真实正反证据 |
+| **8. WATCH同修订合法消费与撤权** | WATCH、Evidence、visual_stage及所有公开消费者 | 部分消费者PG/HTTP已验；当前约15秒周期重核不等于严格即时撤权 | WATCH只消费第7项发布的同一WorkRevision；每次新请求核当前G5、rights、purpose、consumer、scope和source；撤权后新请求立即拒绝、可控缓存失效、原件字节不经长期公开URL泄露；已交付字节的不可逆边界如实说明 |
+
+**13类和19组件的验收口径**：13类必须全部完成类型级业务合同与正反测试，但真实作品不强制生成不符合研究语义的资产；19组件必须逐项证明在真实作品内容中的职责、输入输出和交互，不以组件文件存在或静态截图代替。H1/H2/H3的专业判断按现有合同执行，不另造方法编号。
+
+#### C. 按依赖顺序补缺，不再反复重开阶段
+
+1. **冻结M0基线**：继承M0_AUDIT_EXIT_PASS和已有234/74/85/152差异证据；不重做盘点，只处理M5反推发现的具体差异。
+2. **先关闭M1的M5隔离实验前置**：真实Owner会话、最小权限、项目ACL、撤权/旧会话拒绝和隔离恢复；生产C01—C04仍按原规则管理。
+3. **再关闭M2的真实原件链**：沿已选NAJ《松江府志7》完成合法页定位、真实字节持久化、L0/L1/L2首次/回放/撤权。不得再次把来源搜索、容量核验或临时sandbox下载当作本阶段完成。
+4. **接着关闭M3的真实D/G链**：让同一原件沿D00—D05运行，并在隔离环境完成独立Reviewer、G0—G5签发/撤权/当前资格消费。不得用Producer/Operator模拟Reviewer。
+5. **再关闭M4真实混合协作**：既有执行器/账本代码可先用合成输入补齐；真实调用必须等M1—M3的材料、权利和资格前置完成，再以同一root完成Agent+外部AI互补、费用、Receipt和恢复。
+6. **按ST-01→ST-09完成M5真实作品**：ST01已通过的Brief持久化/幂等子项直接继承，只补Agent资料可得性和问题收敛；随后ST02→ST03→ST04→ST05→ST06→ST07→ST08→ST09。Admin在知识资产产生时同步验收，WATCH在合法发布后验收。
+7. **只做一次完整端到端验收**：上述关键链路的代码、接线、权限、真实输入和PG/HTTP正反证据齐备后，运行同一真实作品全链实验；逐项填写本节八维矩阵，全部通过才签M5。M6的85 API/152动作全量回归、M7双课题跨题复用、M8生产切换仍保持原边界。
+
+**执行纪律**：
+- 允许不互相依赖的代码施工并行（例如M4执行器先用合成输入开发）；真实数据调用和阶段验收仍按M1→M2→M3→M4依赖顺序，不得越过前置。
+- 任何已通过且相关源码/合同未变化的测试直接继承；只重跑受变更影响的回归，不从M0反复重审。
+- 每关闭一个缺口，必须在本PLAN对应任务/矩阵中更新状态，并在progress记录commit、环境、POS/NEG/AUTH、真实输入、回执和回滚；target-diff只更新对应路径证据。
+- M5真实作品实验使用隔离环境，不要求提前执行生产迁移/公开发布；生产固定条件仍留在原责任节点，不得用M5隔离PASS销账。
+- 当前M5仍为`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY`。本节只确立从M5反推的施工与验收路径，不把任何未完成项预先标PASS。
+
+历史复盘材料仅供追溯：[M5/M0—M4阶段准出复盘](https://github.com/xiezuojie03-web/mohen-agent-2.0/blob/main/tasks/results/MAB/M5_M0_M4_GATE_RETROSPECTIVE_20261106.md)。它不是任务书、执行计划或验收标准；本文件本节才是本轮Owner裁决后的唯一执行依据。
+
 
 ### M6｜全量合同回归与延期能力闭环
 
