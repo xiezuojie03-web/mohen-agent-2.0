@@ -1272,3 +1272,49 @@ Data API范围：pg_db_role_setting未见pgrst.db_schemas/db_extra_search_path�
 - 识典古籍文本把水利内容分为卷十五“水利上”、卷十六“水利下”；Harvard v.7覆盖卷十四—十六，因此已找到明确包含水利两卷的定位副本。NAJDA第7册与Harvard v.7的物理分页不同，不能仅凭同为“第7册”就假定页码对应；需先通过卷首/卷端和页序建立跨副本locator，再从NAJ原件选取对应页。
 - 另核对了NLC 1818年版卷十五文件（814KB/30页），其目录题名为“建置志·古署”，不是1663年版水利卷；不作为本次水利研究主件，避免不同版本卷次混淆。
 - **获取策略调整**：以NAJ 1663年原件为正式source original；Harvard v.7只作定位参考；识典古籍只作辅助转录。待Owner批准一次低成本图像识读后，仅对选定的NAJ原件页做一次DeepSeek Flash OCR/版面识读，再与辅助转录和原件人工核对；不对整册PDF批量外发。单件M2持久化时仅选合法、必要的原件页/页组，单件不得超过现行10MiB合同，不把整册21.67MB PDF直接塞入原件表。
+
+
+## 2026-11-06｜Owner裁决：M5完整垂直切片验收定义与API/模型调用授权（优先于此前单次OCR待授权）
+
+### 1. M5目标理解与M0—M8边界
+
+Owner确认的M5终极验收不是单点页面/接口演示，而是至少一项真实历史文化作品的完整产品垂直切片：自然语言创作入口与项目Brief → 墨痕Agent和外部AI在既有M4委托/回执/权限体系下混合协作 → 合法真实来源及原件读取 → 原D00—D05、L0—L5、独立G0—G5生产链 → 研究中知识资产按13类生命周期沉淀 → H1/H2/H3及19组件参与导演、编创、修订并形成精确WorkRevision → F05 Admin逐条管理知识资产/来源/用途/历史 → 独立G5与逐项媒资权利核验 → 发布同一WorkRevision → WATCH合法消费同一修订并验证撤权/失效。
+
+边界不得混淆：M4负责混合Agent/外部委托的基础能力；M5负责Studio创作、Admin、发布与WATCH产品闭环，并必须真实消费M4能力；M6负责85 API/152动作及完整合同回归；M7负责KAD5双课题（隋唐大运河及江南水路连接、宋代江南运河沿线城镇与日常生活）真实验收及跨题复用；M8负责正式架构切换、投运与Owner签收。故M5应完成“一项真实作品的全链垂直切片”，不把M7双课题或M8生产切换提前吞入M5。
+
+### 2. Owner模型/API调用授权
+
+Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研究，可使用现有已配置的API密钥/Provider凭据，包括大模型调用；如需要其它专业模型（OCR/版面识读、多模态、GIS等），须及时向Owner说明具体能力缺口、候选Provider、所需密钥/权限及预计费用。对已配置Provider、在M5明确范围内的必要低成本调用，不再逐次要求重复授权。
+
+执行约束：
+- 本授权取代此前“DeepSeek单页OCR需再次单独批准”的等待项；但实际模型调用仍须先具备代码适配、合法输入、用途/provider绑定、费用记录及持久回执，不以裸调脚本绕过系统。
+- 只使用完成当前任务所需的最小输入和调用；记录Provider/model/version、purpose、input manifest/hash、来源及外发权利决定、token/用量、实际费用与币种、调用/回执状态。费用未知或执行结果不确定时HOLD并核对，不自动重试。
+- 密钥只保留在受控服务端Secret环境；不得写入GitHub、任务书、日志、聊天正文、Codex提示词或客户端；不得把Vercel环境变量假定为Codex/CodeBuddy可直接读取。
+- 新增Provider账号、另购订阅/额度/充值或显著扩大费用/批量调用前，及时告知Owner并确认具体安排。此授权不是无限额批量外发许可。
+- Owner授权不替代每份材料的来源权利、数据主体同意、Provider条款、逐用途/逐动作外发权限；不自动授权生产DB/Storage迁移、生产Bucket/凭据、正式Reviewer/Gate启用、生产发布或其它既有独立门槛。
+
+### 3. 当前真实施工就绪审查（全链实验暂不启动）
+
+| 能力 | 当前证据/状态 | 对全链实验的判断 |
+|---|---|---|
+| ST01创作入口/Brief | 项目绑定、Brief不可变修订、同key幂等与HOLD已真实PG17+Chromium隔离验证 | 局部PASS；不等于研究执行成功 |
+| ST02来源/原件读取 | 上图Provider元数据查询已验证；NAJ《松江府志7》来源及官方二次利用规则已核，IIIF 73页；仅有派生页曾在临时sandbox获取，未持久化；M2 Storage桶/对象仍0，L0/L1/L2首次/回放/撤权未跑 | DATA_BLOCKED；不可启动真实研究链 |
+| ST03候选分析与保存 | 依赖真实ST02材料、D02证据与合法资格，未准出 | NOT_READY |
+| ST04正式生产请求 | ST01不再自动触发；显式Creator请求POST尚未完成 | NOT_READY |
+| ST05受控模型执行 | 不是单纯缺Key：studio-creation.ts的directorExternalProcessingBlocker()恒返回external_processing_not_authorized；studio-director.ts项目输入当前恒HOLD；M4 studio-delegation-repository只保存委托/仅接受HOLD回执，不执行Provider、不授予支出/外发权；需完成受控执行适配 | CODE_NOT_READY；禁止绕过Guard裸调 |
+| LLM运行配置 | Vercel项目环境变量元数据含DEEPSEEK_API_KEY、SHANGHAI_LIBRARY_KEY、AMAP_WEB_KEY；未发现MOHEN_LLM_BASE_URL、MOHEN_LLM_API_KEY。research-prerequisites.ts仍要求后两者；studio-creation.ts虽有DeepSeek fallback，但恒HOLD使调用不可达。未读取/记录任何密钥值 | 需统一现有Secret映射及Provider注册，不要求Owner重复提供已存在的密钥 |
+| 调度/费用/回执 | tool-ledger.ts已有reserve/settle/receipt与不确定调用HOLD，但工具价格单位为内部credit（如LLM=1），并非Provider真实USD/币种/token成本；M4委托仓储记录budget/currency，但不具备实际dispatch和成本核销 | 需在现有账本/委托体系内补真实费用映射与回执，不新建平行授权系统 |
+| H1/H2/H3与19组件 | 有结构/字段/时码/引用校验和部分交互/局部HTTP测试；真实研究驱动的专业45项H1、7项H2判断、H3全作品与19组件体验未完成 | 结构通过不等于专业运行通过 |
+| 13类知识资产/Admin | 10类私有候选+3类规范对象的持久化/权限矩阵已有隔离证据；完整专业语义、真实来源解引用、跨项目合法复用、反馈同意/撤回及canonical媒资业务仍不完整 | 不得把10+3矩阵误报为13类完整业务PASS |
+| G5/发布/WATCH | 精确WorkRevision/G5/rights读取桥与WATCH部分HTTP/Chromium测试已有；正式Reviewer/生产资格未启用；canonical media-selection POST仍503 HOLD；WATCH客户端约15秒周期重核，不是瞬时撤权 | 无正式独立G5与媒资权利不得公开发布；WATCH不得借用合成资格 |
+| M4真实混合协作 | M4代码级委托/回执基础存在；任务书明确M4真实双主体仍需M1合法Owner/撤权、M2真实原件D01—D03、M3独立Reviewer/资格撤权及逐源外发/Provider/预算条件 | Owner授权已补足Owner许可这一项，不代表M1—M3和M4执行器已完成 |
+
+**当前结论**：M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY继续有效。现有M5源码与CI证明若干隔离子能力，不证明完整作品链已运行。尤其ST02真实字节链、ST03/04、ST05受控执行适配、M4真实混合执行、13类完整专业语义、H1/H2/H3与19组件、正式G5/媒资权利/发布均未达到全链实验准入。
+
+### 4. 全链实验准入规则与执行顺序
+
+全链实验开始前，先逐组件核对“代码存在→实际调用接线→权限/数据/Provider前置→PG/HTTP正反验证→真实输入准备”；任何关键链路仍是恒HOLD、stub、mock、SKIP或只有静态结构时，不得启动全链实验。合成/隔离测试可继续用于补齐组件，但不得包装成真实研究/真实作品PASS。
+
+接续顺序：①在M1/M2/M3既有边界内补齐合法Owner会话、真实原件字节与私有Storage/PG隔离链，完成ST02 L0→L1→L2首次/回放/撤权；②按ST03→ST04顺序完成候选分析保存与创作者正式生产请求；③基于Owner本轮授权，在既有M4委托/Tool Registry/预算/回执/权限体系内完成ST05受控Provider执行器（含DeepSeek文本/图像及必要专业Provider适配、逐源权利/用途/input绑定、真实成本、失败与不确定回执）；④完成13类专业语义、Admin逐条管理、H1/H2/H3和19组件的真实创作链；⑤补齐独立G5/媒体权利/精确WorkRevision发布和WATCH逐请求消费/撤权；⑥所有关键路径具备代码、隔离正反与必要真实输入后，才运行一次端到端真实作品实验。M6/M7/M8保持原任务边界。
+
+本裁决只明确M5验收解释与Owner API调用授权，不降低MHKA、M1—M4安全/来源/Gate/生产条件，不把全链实验提前标PASS。详细源码事实和前置差异按本节引用的既有文件核对；后续在原PLAN/progress/handoff持续更新，不另建平行任务书。
