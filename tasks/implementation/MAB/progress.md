@@ -1263,3 +1263,12 @@ Data API范围：pg_db_role_setting未见pgrst.db_schemas/db_extra_search_path�
 - **当前准确状态**：`SOURCE_SELECTED / RIGHTS_VERIFIED / IIIF_MANIFEST_VERIFIED / PAGE_FETCHED_EPHEMERAL / SUPABASE_CAPACITY_SUFFICIENT / DEEPSEEK_KEY_AUTH_VALID / DEEPSEEK_INFERENCE_NOT_AUTHORIZED / STORAGE_BUCKET_NOT_PROVISIONED`。ST-02仍未完成，因为尚未把真实原件字节持久化到M2私有Storage，也未跑L0→L1→L2、自动笔记首次/回放/撤权PG+HTTP。未进入ST-03。
 - **Owner待确认的唯一即时权限**：是否允许使用现有Vercel `DEEPSEEK_API_KEY`，以 `deepseek-flash` 对上述一张公开、官方允许再利用的《松江府志》原件页做**单次OCR/版面识读试验**，`max_tokens=1000`，不重试、不批量、不上传其它资料；按官方当前最高峰时价估算仍低于USD $0.01。此授权只覆盖这一笔单次模型调用，不授权Codex长期付费调用或M4外发预算。等待Owner明确同意后才调用。
 - **下一步**：在不重复评估的前提下，取得/恢复一张可用原件页→单次受控OCR→对照识典古籍转录及原件人工复核→确定精确卷次/页码/引用locator→生成source manifest与研究brief。之后沿现有M2候选方案完成隔离Storage正反测试；只有隔离测试、备份/回滚、Owner授权齐备，才申请一次生产私有桶/迁移授权。所有结果继续回写本文件及原PLAN。
+
+
+### 2026-11-06｜卷次定位补证：同版《松江府志》多馆藏分册（不把不同副本混为一件）
+
+- Wikimedia Commons 精确文件页确认国立公文书馆数字化文件 `NAJDA-292-0017 松江府志7.pdf`：73页、21.67MB、作者郭廷弼（清）、康熙二年刊本、馆藏National Archives of Japan、档案号292-0017、数字档案ID F1000000000000096923；该文件被标为Public Domain。此文件与NAJ item 4252790 / IIIF 73 canvas在题名、册号、页数上吻合，可作为同一馆藏数字化副本的稳定书目交叉记录；原件权利依据仍以国立公文书馆官方二次利用规则为准。
+- 另找到Harvard-Yenching Library同版《松江府志》分册v.7，Commons目录明确标注其内容为卷十四至卷十六、78页；在临时Vercel sandbox下载该PDF（76,674,953 bytes，SHA256 `5466a31f417f71bbeb909aed4defc2744db50b941b9f67f6caf56a1c3f49b39c`），PyMuPDF核实78页、无文本层。它可作为卷次/页序定位的**独立副本交叉参考**，不能与NAJ副本混成同一原件；其v.7单文件授权条款尚未独立核实，故暂不作为再利用权依据或外发OCR输入。
+- 识典古籍文本把水利内容分为卷十五“水利上”、卷十六“水利下”；Harvard v.7覆盖卷十四—十六，因此已找到明确包含水利两卷的定位副本。NAJDA第7册与Harvard v.7的物理分页不同，不能仅凭同为“第7册”就假定页码对应；需先通过卷首/卷端和页序建立跨副本locator，再从NAJ原件选取对应页。
+- 另核对了NLC 1818年版卷十五文件（814KB/30页），其目录题名为“建置志·古署”，不是1663年版水利卷；不作为本次水利研究主件，避免不同版本卷次混淆。
+- **获取策略调整**：以NAJ 1663年原件为正式source original；Harvard v.7只作定位参考；识典古籍只作辅助转录。待Owner批准一次低成本图像识读后，仅对选定的NAJ原件页做一次DeepSeek Flash OCR/版面识读，再与辅助转录和原件人工核对；不对整册PDF批量外发。单件M2持久化时仅选合法、必要的原件页/页组，单件不得超过现行10MiB合同，不把整册21.67MB PDF直接塞入原件表。
