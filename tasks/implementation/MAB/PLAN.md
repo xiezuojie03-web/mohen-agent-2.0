@@ -33,17 +33,21 @@
 
 | 追踪ID | 工作包 | 已知阻断/当前状态 | 必须提交的关闭证据 | 当前状态 |
 |---|---|---|---|---|
-| KAD1-DLG-EX01 | D00/P0通用来源获取 | 金泽固定样板为主；Provider/采集意图、资源目录/方法目录/尝试日志未证通用接线 | P0.1/.2/.3→Provider/Work/Version/Holding/Digital Asset→获取尝试→真实私有原件/SHA/权利→L0/G0/D01的正反链及失败例 | OPEN |
-| KAD1-DLG-EX02 | 63方法与六Stage Skill/Executor/Adapter唯一绑定 | 原方法来源SHA可追溯；当前选中Adapter只固定覆盖部分方法，不消费完整Registry方法清单；五份Skill身份错位 | 63/63逐项唯一执行绑定或明确HOLD；Stage/L/G、输入输出、方法版本、Tool/Adapter、权限、候选证据和正反测试；未绑定Adapter替换/退役裁决 | OPEN |
-| KAD1-DLG-EX03 | G0—G5候选→Reviewer→当前资格→Runner/Consumer | writeGate要求qualification_request，D00—D05调用点均未传；recordGate完整候选元数据未组装；D00首次G0提交按代码路径将抛GATE_CANDIDATE_METADATA_REQUIRED | 六Stage完整候选元数据、独立Reviewer签发、持久资格、精确当前资格消费、撤权/过期/并发/跨用户负测；使用当前Registry选中Adapter验证 | OPEN / P0 |
-| KAD1-DLG-EX04 | L0—L5持久化与唯一写入边界 | Adapter内部写表、Executor薄包装；memory://与公共照片目录不能证明私有原件/回放/恢复 | L0—L5主表/对象存储/版本/SHA/ACL/事务/幂等/备份恢复与唯一写入Owner双向映射 | OPEN / P0 |
-| KAD1-DLG-EX05 | D05事实/解释分支与P08独立控制 | Runner固定D04→D05；当前Adapter混绑P08只延期、不执行；未绑定模块化Adapter混绑HOLD | G3事实分支与G4解释分支独立合法路由；P08独立触发、先阻断后复审；P01—P07发布分路及正反测试 | OPEN / P0 |
-| KAD1-DLG-EX06 | 当前Adapter测试覆盖与旧五阶段清退 | 编排测试使用Fixture、模块测试注入函数、私有Adapter测试用合成Worker；旧五阶段零引用/DB回滚依赖未证 | 当前Registry选中Adapter完整隔离链测试计划；逐文件核对CLI/CI/调用者/DB迁移/回滚，区分旧五阶段与历史Legacy迁移工具 | OPEN |
-| KAD6-DLG-EX01 | 有限差异终审 | 等待EX01—EX06及KAD1-A/B补核关闭 | 受影响repo_target/GitHub Blob SHA/manifest、KAD1矩阵KAD-DLG-RUN-01—18、原规则→规范→实现及反向追溯；只签DATA_PRODUCTION_DELTA_REVIEW_PASS或列明HOLD | WAITING |
+| KAD1-DLG-EX01 | D00/P0通用来源获取 | 金泽固定样板为主；Provider/采集意图、资源目录/方法目录/尝试日志未证通用接线 | P0.1/.2/.3→Provider/Work/Version/Holding/Digital Asset→获取尝试→真实私有原件/SHA/权利→L0/G0/D01的正反链及失败例 | DESIGN_CLOSED / ENGINEERING_OPEN |
+| KAD1-DLG-EX02 | 63方法与六Stage Skill/Executor/Adapter唯一绑定 | 原方法来源SHA可追溯；当前选中Adapter只固定覆盖部分方法，不消费完整Registry方法清单；五份Skill身份错位 | 63/63逐项唯一执行绑定或明确HOLD；Stage/L/G、输入输出、方法版本、Tool/Adapter、权限、候选证据和正反测试；未绑定Adapter替换/退役裁决 | DESIGN_CLOSED / ENGINEERING_OPEN |
+| KAD1-DLG-EX03 | G0—G5候选→Reviewer→当前资格→Runner/Consumer | writeGate要求qualification_request，D00—D05调用点均未传；recordGate完整候选元数据未组装；D00首次G0提交按代码路径将抛GATE_CANDIDATE_METADATA_REQUIRED | 六Stage完整候选元数据、独立Reviewer签发、持久资格、精确当前资格消费、撤权/过期/并发/跨用户负测；使用当前Registry选中Adapter验证 | DESIGN_CLOSED / ENGINEERING_OPEN |
+| KAD1-DLG-EX04 | L0—L5持久化与唯一写入边界 | Adapter内部写表、Executor薄包装；memory://与公共照片目录不能证明私有原件/回放/恢复 | L0—L5主表/对象存储/版本/SHA/ACL/事务/幂等/备份恢复与唯一写入Owner双向映射 | DESIGN_CLOSED / ENGINEERING_OPEN |
+| KAD1-DLG-EX05 | D05事实/解释分支与P08独立控制 | Runner固定D04→D05；当前Adapter混绑P08只延期、不执行；未绑定模块化Adapter混绑HOLD | G3事实分支与G4解释分支独立合法路由；P08独立触发、先阻断后复审；P01—P07发布分路及正反测试 | DESIGN_CLOSED / ENGINEERING_OPEN |
+| KAD1-DLG-EX06 | 当前Adapter测试覆盖与旧五阶段清退 | 编排测试使用Fixture、模块测试注入函数、私有Adapter测试用合成Worker；旧五阶段零引用/DB回滚依赖未证 | 当前Registry选中Adapter完整隔离链测试计划；逐文件核对CLI/CI/调用者/DB迁移/回滚，区分旧五阶段与历史Legacy迁移工具 | DESIGN_CLOSED / ENGINEERING_OPEN |
+| KAD6-DLG-EX01 | 有限差异终审 | 等待EX01—EX06及KAD1-A/B补核关闭 | 受影响repo_target/GitHub Blob SHA/manifest、KAD1矩阵KAD-DLG-RUN-01—18、原规则→规范→实现及反向追溯；只签DATA_PRODUCTION_DELTA_REVIEW_PASS或列明HOLD | DATA_PRODUCTION_DELTA_DESIGN_PASS / M5_PAUSED |
+
+**2026-11-06设计继承最终状态（覆盖上方原技术核查的待审描述）：** KAD-02 §00.9.11已经把EX01—EX06的专业设计、唯一MHKA Owner、规范、负例和实施责任全部明确；KAD6限定范围静态终审已签`DATA_PRODUCTION_DELTA_DESIGN_PASS`，**工程仍OPEN**。复工实施顺序不变，以下原`执行依赖`是历史设计补核顺序，不再意味着研究工作仍需循环启动。当前选中Adapter的`GATE_CANDIDATE_METADATA_REQUIRED`、63项实施绑定、私有原件与G0资格、L0—L5持久化、D05双分支/P08、旧五阶段物理退出均继续归原M0—M5/M8施工及测试，不因设计PASS自动改代码。
 
 **执行依赖：** EX01优先；EX02与EX03在D00职责明确后并行；EX04与EX05按接口依赖并行；EX06持续补证；最后KAD6有限复核。所有工作包目前均为只读核查/设计证据整理，不代表代码修复或运行验收。
 
 **证据基线更新：** main@73bc5e0ac8da6251d8c54a9a26a7ff0ed19b16e8；GitHub Actions workflow run 42178650013于2026-11-06完成success。该CI仅证明其实际覆盖的构建/测试通过，不覆盖当前Registry选中layer1-adapters.mjs的完整D00—D05候选提交、真实独立Reviewer、私有原件Storage/恢复及双分支消费者E2E。pipeline-internal-flows.md §6记录当前源码事实；KAD-02 V0.4 §00.9.10是本轮执行清单和关闭标准的唯一详细任务书位置。
+
+**最终恢复条件：** 本轮交付的是允许Owner审批原MAB恢复施工的设计基线，不等于当前工程可直接真实M5 PASS。Owner若批准复工，须先按M0差异保护、M2私有原件与Stage链接、M3资格候选与独立Reviewer、M4动态路由和P08正反验收补齐前置，再完成M5作品闭环；保留所有现行迁移、数据、权限、审计及回滚，禁止旧D01起五阶段重新成为活动生产入口。
 
 **暂停纪律不变：** M5及反推M0—M4继续M5_OWNER_PAUSED。不得修改Skill、Registry、Executor/Adapter、Gate服务、SQL/迁移、数据库、测试或部署；不得把静态核查、CI success或历史金泽样板PASS升级为新架构真实生产PASS。恢复施工须Owner另行批准。
 
