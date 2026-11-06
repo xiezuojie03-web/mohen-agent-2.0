@@ -260,3 +260,6 @@ Codex额度不足后的ChatGPT/GitHub工具施工仍延续同一`PLAN.md`/`progr
 - `2352c368`、`faddc2a4`、`10b7a3dd`、`f79dc436` 完成旧PASS继承的Producer/lineage/read_model当前资格读取收紧（非空scope、精确用途消费者、上游撤权），最后主CI41637141950、独立PG1741637142076、M1 HTTP41637141998均成功；PG17为合成业务数据真实数据库隔离，不是生产Gate签发。
 - `64eed3f55d8a6f6d21d1b62c0629f139e5dfe341` M2 Runner增加受控冻结stage输入文件与部分阶段Adapter一致性核查，主CI41638126713成功；Owner worker/真实原件/Stage Gate未接入，Registry维持关闭。
 - 最新M1—M8与HANDOFF_NOT_READY不变：下一步优先在有合法权限的环境完成M2真实Owner+原件bytes/版本绑定→L1和证据桥→独立G；M3专有Reviewer/签发服务、当前G5消费者即时撤权；其后M4实际混合与预算、M5作品业务及M6—M8真实验收。不得因代码路径/CI存在而宣布系统可运行。
+
+
+> **2026-11-06阶段准出复盘**：完整证据审查归档于[`tasks/results/MAB/M5_M0_M4_GATE_RETROSPECTIVE_20261106.md`](https://github.com/xiezuojie03-web/mohen-agent-2.0/blob/main/tasks/results/MAB/M5_M0_M4_GATE_RETROSPECTIVE_20261106.md)。M1—M4均为限定范围CONDITIONAL_EXIT，M4真实混合仍未验证；M5完整作品E2E矩阵与上游真实实验准入门的缺口已记录。不得把条件准出当全阶段PASS；当前M5全链实验仍HOLD。该复盘不改变阶段顺序或授权。
