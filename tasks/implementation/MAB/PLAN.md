@@ -331,7 +331,7 @@ MAB-ENG-01批次进展（2026-11-02，详细证据见progress.md）：私有原�
 
 **全链实验硬门槛**：不得在关键组件仅有结构/静态代码、恒HOLD、stub/mock、关键HTTP/PG未运行或关键Storage SKIP时启动真实全链实验。当前ST01 Brief项目绑定已VERIFIED_ISOLATED；ST02真实原件字节未持久化、L0/L1/L2未验；ST03/04未准出；ST05受控模型执行适配尚未实现（directorExternalProcessingBlocker恒HOLD，M4委托仓储仅持久化、不派发Provider；现有Tool Ledger以credit计价，尚非真实Provider成本）；H1/H2/H3与19组件只有结构/部分交互证据；13类10+3矩阵不等于完整专业语义；正式G5/Reviewer和canonical媒资动作仍HOLD；M4真实双主体仍受M1—M3真实Owner/原件/独立Reviewer条件约束。详细逐项状态及执行顺序见progress.md本裁决记录。
 
-**执行要求**：先补真实原件/私有Storage及ST02 L0→L1→L2首次/回放/撤权；再按ST03→ST04完成候选分析与Creator正式请求；在既有M4委托/Tool Registry/预算/回执/权限体系内完成ST05受控Provider执行器与真实费用核销；继而完成13类专业语义、H1/H2/H3/19组件、Admin、独立G5/媒资权利、精确修订发布及WATCH撤权。所有关键路径代码、接线、权限/数据、PG/HTTP正反及真实输入就绪后，才进行一次真实作品全链实验。此裁决不勾选未完成项，不改变M0—M8阶段顺序或既有安全/Gate/生产条件；M5仍HOLD直至原验收全部满足。
+**执行要求**：采用两条可并行的工程线，避免等待循环：A线补真实原件/私有Storage及ST02 L0→L1→L2首次/回放/撤权；B线在既有M4委托/Tool Registry/预算/回执/权限体系内完成ST05受控Provider执行器，并先以合成输入完成代码/PG/HTTP正反测试与真实费用核销。B线代码施工不等待A线原件，但A线来源/权利及M1—M3真实前置未就绪前，不得向真实材料发起外部模型调用。A/B就绪后按ST03→ST04完成真实候选分析与Creator正式请求；继而完成13类专业语义、H1/H2/H3/19组件、Admin、独立G5/媒资权利、精确修订发布及WATCH撤权。所有关键路径代码、接线、权限/数据、PG/HTTP正反及真实输入就绪后，才进行一次真实作品全链实验。此裁决不勾选未完成项，不改变M0—M8阶段顺序或既有安全/Gate/生产条件；M5仍HOLD直至原验收全部满足。
 
 ### M6｜全量合同回归与延期能力闭环
 
