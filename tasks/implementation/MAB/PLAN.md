@@ -27,6 +27,26 @@
 | M5 | 六阶段成果到Agent/Studio/WATCH合法消费及真实作品完整创作与存储 | 前置缺口关闭后才验收真实环境、私有原件、正式G资格、知识复用和作品E2E |
 
 **唯一记录归属：** KAD-02现行任务书§00.9.9、既有KAD1专业合同与工程接口归属矩阵KAD-DLG-RUN-01—18为本轮证据；MAB的target-diff.csv继续作74目标实际工程差异账。最近CI成功仅证明该CI覆盖的检查，不授权激活正式生产。当前状态为M5_OWNER_PAUSED / DLG_INHERITANCE_HOLD；不得按下文历史“当前施工”继续。
+### 2026-11-06 数据生产线继承补核执行清单（KAD-02 §00.9.10）
+
+本清单是既有M0—M8计划内的受控补核记录，不新增工程阶段、不授权复工。KAD1-A/B负责专业继承差异核销；KAD6仅在KAD1补核关闭后作受影响范围有限差异复核。详细定义、验收字段和证据边界以KAD-02 V0.4 §00.9.10为准。
+
+| 追踪ID | 工作包 | 已知阻断/当前状态 | 必须提交的关闭证据 | 当前状态 |
+|---|---|---|---|---|
+| KAD1-DLG-EX01 | D00/P0通用来源获取 | 金泽固定样板为主；Provider/采集意图、资源目录/方法目录/尝试日志未证通用接线 | P0.1/.2/.3→Provider/Work/Version/Holding/Digital Asset→获取尝试→真实私有原件/SHA/权利→L0/G0/D01的正反链及失败例 | OPEN |
+| KAD1-DLG-EX02 | 63方法与六Stage Skill/Executor/Adapter唯一绑定 | 原方法来源SHA可追溯；当前选中Adapter只固定覆盖部分方法，不消费完整Registry方法清单；五份Skill身份错位 | 63/63逐项唯一执行绑定或明确HOLD；Stage/L/G、输入输出、方法版本、Tool/Adapter、权限、候选证据和正反测试；未绑定Adapter替换/退役裁决 | OPEN |
+| KAD1-DLG-EX03 | G0—G5候选→Reviewer→当前资格→Runner/Consumer | writeGate要求qualification_request，D00—D05调用点均未传；recordGate完整候选元数据未组装；D00首次G0提交按代码路径将抛GATE_CANDIDATE_METADATA_REQUIRED | 六Stage完整候选元数据、独立Reviewer签发、持久资格、精确当前资格消费、撤权/过期/并发/跨用户负测；使用当前Registry选中Adapter验证 | OPEN / P0 |
+| KAD1-DLG-EX04 | L0—L5持久化与唯一写入边界 | Adapter内部写表、Executor薄包装；memory://与公共照片目录不能证明私有原件/回放/恢复 | L0—L5主表/对象存储/版本/SHA/ACL/事务/幂等/备份恢复与唯一写入Owner双向映射 | OPEN / P0 |
+| KAD1-DLG-EX05 | D05事实/解释分支与P08独立控制 | Runner固定D04→D05；当前Adapter混绑P08只延期、不执行；未绑定模块化Adapter混绑HOLD | G3事实分支与G4解释分支独立合法路由；P08独立触发、先阻断后复审；P01—P07发布分路及正反测试 | OPEN / P0 |
+| KAD1-DLG-EX06 | 当前Adapter测试覆盖与旧五阶段清退 | 编排测试使用Fixture、模块测试注入函数、私有Adapter测试用合成Worker；旧五阶段零引用/DB回滚依赖未证 | 当前Registry选中Adapter完整隔离链测试计划；逐文件核对CLI/CI/调用者/DB迁移/回滚，区分旧五阶段与历史Legacy迁移工具 | OPEN |
+| KAD6-DLG-EX01 | 有限差异终审 | 等待EX01—EX06及KAD1-A/B补核关闭 | 受影响repo_target/GitHub Blob SHA/manifest、KAD1矩阵KAD-DLG-RUN-01—18、原规则→规范→实现及反向追溯；只签DATA_PRODUCTION_DELTA_REVIEW_PASS或列明HOLD | WAITING |
+
+**执行依赖：** EX01优先；EX02与EX03在D00职责明确后并行；EX04与EX05按接口依赖并行；EX06持续补证；最后KAD6有限复核。所有工作包目前均为只读核查/设计证据整理，不代表代码修复或运行验收。
+
+**证据基线更新：** main@73bc5e0ac8da6251d8c54a9a26a7ff0ed19b16e8；GitHub Actions workflow run 42178650013于2026-11-06完成success。该CI仅证明其实际覆盖的构建/测试通过，不覆盖当前Registry选中layer1-adapters.mjs的完整D00—D05候选提交、真实独立Reviewer、私有原件Storage/恢复及双分支消费者E2E。pipeline-internal-flows.md §6记录当前源码事实；KAD-02 V0.4 §00.9.10是本轮执行清单和关闭标准的唯一详细任务书位置。
+
+**暂停纪律不变：** M5及反推M0—M4继续M5_OWNER_PAUSED。不得修改Skill、Registry、Executor/Adapter、Gate服务、SQL/迁移、数据库、测试或部署；不得把静态核查、CI success或历史金泽样板PASS升级为新架构真实生产PASS。恢复施工须Owner另行批准。
+
 
 
 ## 1. 审阅结论与施工总策略
