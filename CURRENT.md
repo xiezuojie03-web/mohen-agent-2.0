@@ -1,5 +1,21 @@
 # 墨痕｜当前真实工程状态
 
+> **当前施工快照｜2026-11-06**：M5已恢复施工，状态为 `M5_REMEDIATION_ACTIVE / M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY`。本快照只说明施工接续，不表示产品准出、生产启用或Owner验收。
+>
+> **唯一施工依据**：`tasks/implementation/MAB/PLAN.md`。当前任务是按其“M5真实作品验收反推M0—M4缺口”及八维度矩阵定向补缺；M0基线冻结，M1—M4只补M5所需前置，已通过且未受影响的成果直接继承。
+>
+> **两条并行线**：A线完成M1隔离Owner/权限/撤权/恢复及M2真实原件私有Storage、L0—L2首次/回放/撤权；B线在既有M4委托、Tool Registry、预算和Receipt体系内实现受控Provider执行器及合成输入PG/HTTP正反测试。B线代码可并行，真实材料外发须等M1—M3真实前置满足。
+>
+> **现有授权**：M5范围内现有Provider必要低成本调用已获授权；仍须受控执行器、来源权利、purpose/input、实际币种费用和持久Receipt。不得裸调或自动重试不确定费用。新增Provider/订阅/额度/明显扩大费用另行确认。
+>
+> **禁止越界**：不进行未经单独授权的生产DB/Storage迁移、正式Reviewer/Gate启用或公开生产发布。M6全量合同回归、M7双课题、M8生产启用与旧运行代际退役不并入M5。
+>
+> **最新真实运行状态**：本轮只修改文档；未修改应用源码、数据库、Storage、Gate或部署。下方旧时间戳记录仅作历史证据，不能作为当前状态或施工指令。
+
+---
+
+# 墨痕｜当前真实工程状态
+
 > **本轮最终远端核证**：源码`eec13b2373ac74101f497be40f928d2b89d40690`已入main，主CI42037766176 SUCCESS（571单测/4既有联网SKIP、133边界、14Skill、类型/Build/鉴权）；HTTP42037766124 SUCCESS（24PASS/1官方StorageSKIP）。PG42035692988在22b8c1c通过，后续补丁未改DB。Admin/当前材料/Owner/改稿/消费/状态及Skill v0.2.1修补已受测；**ST02真实原件、受控导演与canonical选材适配及正式资格/体验仍未全部完成**，M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY。完整回执沿原文件§7.4，收尾仅证据补记[skip ci]。
 
 > **2026-11-05｜M5全量清单施工最新状态**：从main@7246ec0接续，Admin/Studio/消费三批源码51f1234、82afee6、14b4d2c已本地完成定向与全检查（567单测/4旧联网SKIP、133边界、类型、合成PG17及Chromium5PASS），精确远端CI按progress最终核证。原PLAN M5六项及既有回执§7逐项记账。开发Skill同源v0.2.1补四类阻塞/依赖调度/两次失败停止；产品Skill与EXP S01—S08保留。**ST02真实原件DATA_BLOCKED；ST05受控外发/费用执行适配、canonical选材写入绑定尚未完成，安全HOLD不等于功能完成**。正式G5/生产/真实作品/Owner体验继续阻塞；ST03/04未提前启动。M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY，不声明M5全量完成。下一步先取得既有业务授权源契约以接通受控创作适配，同时等待合法真实原件/隔离授权；不重做已验工程。

@@ -1335,3 +1335,13 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 - **状态**：M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY不变；本条为施工方向裁决，不是阶段PASS或生产授权。
 
 - **计划版本核验**：唯一施工计划已更新为[`PLAN.md V1.2`](https://github.com/xiezuojie03-web/mohen-agent-2.0/blob/main/tasks/implementation/MAB/PLAN.md)，最终计划提交 `3b6f62b3a9b828964e5015b603b45f821e13bc44`。本次只修改既有计划/进度/交接文件，没有新增第二份执行标准；无源码、数据库、Storage、Gate或部署变更。
+
+
+## 2026-11-06｜Owner恢复M5施工与文档现行状态收敛
+
+- **裁决**：M5恢复施工，状态 `M5_REMEDIATION_ACTIVE / M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY`。KAD-02 §00.9.11及KAD6有限差异设计终审已完成；此裁决不代表M5整体准出。
+- **唯一标准**：PLAN现有“M5真实作品验收反推M0—M4缺口”与八维度矩阵；不新增任务书、补缺表、验收标准或状态表。M0冻结继承；M1—M4仅定向补齐M5所需条件。
+- **并行线**：A线M1隔离Owner/权限/撤权/恢复及M2真实原件私有Storage/L0—L2首次、回放、撤权；B线在现有M4委托/Tool Registry/预算/Receipt/Guard中实现受控Provider执行器，先用合成输入做PG/HTTP正反。B线代码不等待A线；真实材料外发必须等M1—M3来源、权利、Owner和独立资格前置满足。
+- **授权**：M5必要低成本开发、隔离测试和受控真实研究使用现有Provider已获Owner授权；调用仍须受控执行器、来源权利/purpose/input绑定、真实币种费用及持久Receipt。新增Provider/订阅/额度/显著扩大费用另行确认。不得裸调、自动重试未知费用或补零。
+- **边界**：不授权生产DB/Storage迁移、生产桶创建、正式Reviewer/Gate启用、生产/公开发布；M6—M8保持原任务边界。已通过且未受影响的代码和测试继承，不重复全量盘点/无差别重测。
+- **本次文档变更**：更新PLAN顶部现行状态与M5复工规则；根CURRENT增加当前施工快照；交接书收敛为本轮唯一Codex执行入口；MAB受控任务书更新至V1.1并同步Library。**本次未改应用源码、SQL/迁移、数据库、Storage、Gate、测试或部署；没有运行应用测试，故不签任何工程PASS。**
