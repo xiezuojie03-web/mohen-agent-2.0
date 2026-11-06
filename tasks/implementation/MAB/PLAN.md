@@ -1008,3 +1008,11 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 ### 2026-11-06｜上图PDF开放下载资格核验增量（ST-02仍HOLD）
 
 官方2025 API说明书已确认PDF开放下载为list→info→stream三步POST JSON流程，API Key放body；资源类型仅jp/gj/mgts。对本轮发现的《金泽小志》两个DOI（STGJ073678、STGJ073677）、索书号線普553957及题名四种list检索均返回state=0但total=0/data=[]，未调用stream，未下载字节。故该书目真实可检索，但本次核验的具体馆藏条目未进入PDF开放下载目录；accessLevel=1不能替代下载资格。下一步只测试明确命中list的另一条合格`gj`原件，或转用另一个已授权来源；不重复查询上述参数。详细调用证据、边界和sandbox清理记录见progress 2026-11-06追加记录。ST-02仍DATA_BLOCKED，ST03仍依赖ST02，原M5准出不变。
+
+
+## 2026-11-06｜Owner继续接续：真实原件来源与运行环境核验（不改变M0—M8门槛）
+
+- ST-02首选真实来源改为国立公文书馆《松江府志７》（item 4252790；请款号292-0017-0007；IIIF manifest 73页、单canvas 6300×4400）。馆方官方二次利用规则允许数字内容商业/非商业自由复制、修改、再分发，无需申请；公开使用应标注来源并披露加工。权利来源已核实，但具体卷次/页码映射须回到原件核定。当前仅有一张派生页在临时sandbox成功获取、未持久化，状态不得记为STORED_VERIFIED。
+- Supabase mohen-cloud Free项目真实只读核验：DB约18MB，Storage桶/对象均0；官方1GB Storage配额足够；M2应用层单件10MiB限制优先。未创建生产桶、未应用候选迁移。生产激活仍须完成隔离Storage/PG正反验证、备份回滚与Owner单独授权。
+- Vercel环境已配置并通过只读认证检查的 `DEEPSEEK_API_KEY` 可用；官方 `deepseek-flash` 支持图像输入。此key仅属于Vercel运行环境，不自动属于Codex Cloud或CodeBuddy本地。尚未进行任何模型推理；单页OCR调用需Owner明确批准（单次、max_tokens=1000、不重试/不批量、预算上限USD $0.01），不得扩展为长期付费/外发授权。
+- 详细来源、rights、manifest、辅助转录、容量SQL、凭据边界及后续顺序见 `progress.md` 2026-11-06记录。ST-02仍HOLD；取得原件并完成L0/L1/L2首次/回放/撤权PG+HTTP前不启动ST-03。双Skill与其它M5任务继续按原计划，不因本次外部来源核验改写职责或门槛。
