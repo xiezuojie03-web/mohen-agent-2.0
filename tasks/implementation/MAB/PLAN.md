@@ -323,6 +323,16 @@ MAB-ENG-01批次进展（2026-11-02，详细证据见progress.md）：私有原�
 
 回退：维持仍合法旧版；关闭受影响新发布/分面，不清除已存合法草稿，不复活已撤权缓存。
 
+### 2026-11-06 Owner裁决｜M5完整垂直切片与模型/API调用授权（优先于此前单次OCR待授权）
+
+**M5完整验收定义**：至少完成一项真实历史文化作品的端到端产品垂直切片：自然语言Brief → M4混合Agent/外部AI受控协作 → 合法来源与真实原件读取 → D00—D05/L0—L5/G0—G5生产链 → 13类知识资产沉淀 → H1/H2/H3及19组件参与创作/修订 → F05 Admin逐条管理 → 独立G5与媒资权利核验 → 发布精确WorkRevision → WATCH消费同一修订并验证撤权。M4负责混合协作基础，M5负责Studio/Admin/发布/WATCH产品闭环并真实消费M4；M6仍是85 API/152动作全量合同回归，M7仍是KAD5双课题真实验收/跨题复用，M8仍是正式架构切换与Owner签收。M5完成一项真实作品全链，不提前吞并M7/M8。
+
+**Owner API授权**：Owner授权M5必要开发、隔离测试及受控真实研究使用现有已配置API密钥/Provider凭据，包括大模型调用；已配置Provider在M5范围内的必要低成本调用不再逐次重复请示。若需要新的专业模型、Provider账号/密钥、订阅/额度/充值或明显扩大费用/批量调用，及时向Owner说明具体能力缺口、候选、权限和费用。密钥只在受控服务端Secret使用，不写入仓库/提示词/日志/聊天或客户端；调用须绑定来源权利、purpose、provider、input manifest、预算/实际费用和持久回执。Owner授权取代此前单次DeepSeek OCR等待，但不替代第三方来源权利/数据主体同意/Provider条款，也不授权生产DB/Storage迁移、正式Reviewer/G5启用或生产发布。
+
+**全链实验硬门槛**：不得在关键组件仅有结构/静态代码、恒HOLD、stub/mock、关键HTTP/PG未运行或关键Storage SKIP时启动真实全链实验。当前ST01 Brief项目绑定已VERIFIED_ISOLATED；ST02真实原件字节未持久化、L0/L1/L2未验；ST03/04未准出；ST05受控模型执行适配尚未实现（directorExternalProcessingBlocker恒HOLD，M4委托仓储仅持久化、不派发Provider；现有Tool Ledger以credit计价，尚非真实Provider成本）；H1/H2/H3与19组件只有结构/部分交互证据；13类10+3矩阵不等于完整专业语义；正式G5/Reviewer和canonical媒资动作仍HOLD；M4真实双主体仍受M1—M3真实Owner/原件/独立Reviewer条件约束。详细逐项状态及执行顺序见progress.md本裁决记录。
+
+**执行要求**：先补真实原件/私有Storage及ST02 L0→L1→L2首次/回放/撤权；再按ST03→ST04完成候选分析与Creator正式请求；在既有M4委托/Tool Registry/预算/回执/权限体系内完成ST05受控Provider执行器与真实费用核销；继而完成13类专业语义、H1/H2/H3/19组件、Admin、独立G5/媒资权利、精确修订发布及WATCH撤权。所有关键路径代码、接线、权限/数据、PG/HTTP正反及真实输入就绪后，才进行一次真实作品全链实验。此裁决不勾选未完成项，不改变M0—M8阶段顺序或既有安全/Gate/生产条件；M5仍HOLD直至原验收全部满足。
+
 ### M6｜全量合同回归与延期能力闭环
 
 依赖：M1—M5。
