@@ -18,7 +18,9 @@
 | --- | --- | --- |
 | M0/M8 | 现行Registry权威仍指旧C2/C3；早期D01起五阶段Research Runner/N桥和旧五Gate文档未全部退出；另将Legacy数据移植脚本分类，不混同 | 完整调用者/CLI/CI/测试/DB/回滚引用和删除条件；仅六阶段正式执行入口 |
 | M2 | D00固定材料/照片样板不能代通用资源获取；P0资源目录、获取方法版本、追加尝试日志与真实原件持久化未全部证实 | D00→L0→独立G0→D01及D01/D02精确引用、权利、SHA、成功/失败与恢复正反实测 |
+| M2/M3 | 当前六Job统一绑定`layer1-adapters.mjs`；其`writeGate()`要求`qualification_request`，但D00—D05全部调用点未传，`recordGate()`所需版本/purpose/scope/consumer/依赖/证据/指纹也未组装；按当前代码路径D00首次G0候选提交即会抛`GATE_CANDIDATE_METADATA_REQUIRED` | 统一候选元数据组装与候选仓储→独立Reviewer→当前资格→Runner交接的隔离正反测试；核清Executor/Adapter唯一持久化Owner与事务边界 |
 | M2/M3/M4 | 五份Stage Skill的Stage/L/G旧编号错位，63个专业方法定义的执行绑定未核实 | 六Job各Skill/Executor/Adapter/Method/权限/错误和资格绑定逐项一致 |
+| M2/M3/M4 | 当前被选中Adapter固定方法覆盖为D01 C01/C04、D02 H05/H04、D03 W01/W02/W05/W09、D04 A01/A10、D05 P01—P07；未消费Registry逐项`job.methods`，另有未绑定的私有/模块化Adapter | 63项方法逐项绑定唯一现行Adapter/方法版本/输入输出/候选证据/正反测试；决定未绑定Adapter的替换/退役去向，禁止形成第二生产实现 |
 | M3 | 六G合同/Reviewer源码存在，但当前Registry禁用、Reviewer绑定待核、真实签发未证 | Reviewer独立身份及Gate候选/追加审计/有效消费/撤权、并发与权限负测，历史样板PASS不替代本轮签发 |
 | M4/M5 | 现Runner强制D04→D05且D05默认仅人文输入，未支撑合法G3事实直接入D05的分支 | 事实型G3→D05合法分支、解释型G4→D05分支、P02/P04按用途选择，不造L4、不跳G5 |
 | M4 | 默认D05 Job列P01—P08，但独立D05 Adapter拒绝P08与P01—07同Job（当前绑定另有样板Adapter） | 独立P08控制请求与P01—07发布分路、真实路由对齐、撤权先拒消费且可回滚 |
