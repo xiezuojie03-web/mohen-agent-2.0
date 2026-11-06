@@ -1,4 +1,7 @@
 # pipelines/research · Research Production 执行体（Discovery 模式）
+> **RETIRED_FIVE_STAGE_NO_CURRENT_AUTHORITY（2026-11-06）**：本文件以下内容仅为早期无D00的D01—D05/Discovery/Directed研究和迁移的历史记录。**已被C0—C4认可、MHKA继续继承的D00—D05/L0—L5/G0—G5六阶段主链取代，禁止再把本文件当现行SKILL、Runner、Registry、Gate/权限或生产操作指令。**
+> **当前正式入口**：`pipelines/data-production/run.mjs`，规则与状态见`specs/data-production/MoHen_Data_Production_Protocol.md`及`production-registry.json`；此Registry仍默认禁用。旧代码/本文件处于`DELETE_CANDIDATE / DEPENDENCY_AUDIT_HOLD`，待逐调用者、CLI/CI、数据及回滚依据核查后按MAB移除。M5已依Owner暂停；下面的历史命令不得复制执行。
+
 
 > **定位**：Discovery Research（D01–D05）的唯一执行体。对应 C2 V1.1 §1.5「两种生产模式」、
 > C3 V1.2 §2.9「Research Workspace」、主生产协议 V3.0 §12.2「Research Job Family」。
