@@ -159,3 +159,15 @@
 原BR图谱曾记录325条正式边、201项条件性设计批准及124项HOLD（其中56项延期关系）。这些均为**当时历史版本/原评审范围的证据**，不构成当前`main`运行时可用的资格表、权限或可释放许可；不得静默抹除、自动晋级或仅按编号决定当前消费。对应历史`edge_id`、`release_requirement`及原Gate证据须保留可追溯；若未来要消费或恢复，应按现行MHKA、资产修订、用途、范围、消费者、Reviewer和实际部署状态重新审查。
 
 本合同的源码映射须区分：(a)机器`gate-contracts.v3.json`的设计规则；(b)`control.gate_candidates`的Producer候选与`control.gate_audits`的独立审计职责；(c)数据库中是否真正迁移和授予独立Reviewer权限；(d)当前Guard消费是否逐项校验资格；(e)旧样板G0—G5 PASS与新架构G0—G5真实PASS。这五项绝不因同一目录或Gate代码存在而合并。M5施工按Owner 2026-11-06裁决暂停，本次只写规范、不触及配置/Skill/执行器/SQL/权限。
+
+## 12｜KAD1-B六Gate设计继承裁决与候选/消费严格接口（2026-11-06）
+
+本节在既有六Gate机器规则之内收口，并继承生产协议§13.3、§13.5；不授权新Gate政策版本、生效策略、Reviewer DB账户或真实签发。G0—G5必须各有独立资格语义，不能因原最早五阶段存在相同编号而误引用G1“证据”/G2“世界”/G3“解释”/G4“运行”。
+
+1. **候选Producer封套（EX03）**：输入`run_id,stage,gate_code,artifact(type/id/revision),method/profile/version,input_fingerprint,output_hash,evidence_refs,source_refs,dependency_snapshot,purpose(namespace/code/version),scope,consumer,rights_by_action,policy_version,requester_identity,idempotency_key`；缺任一必要字段仅HOLD，不填虚构默认。Producer只写候选，不写正式`gate_audits`或当前资格。
+2. **独立Reviewer**：只依据原D/G已批准的机器/人工审批政策、审查角色与证据签署`PASS/HOLD/REJECT`，失效追加`REVOKED`；记录审查人、方法/规则版本、精确有效期与因果依赖。历史成功回执不复制为当前资格。自动Reviewer若无有权批准的范围则HOLD。
+3. **当前资格Guard**：在每次D阶段交接、Admin/Studio/Agent/视觉消费者阅读和P08变化后的首次读取时重核`revision×gate×purpose×scope×consumer×rights×dependency_snapshot×effective_time`。引用权不授图片展示；下载权不授`machine_read`或`retain`；确需对外传送文件须另核`external_processing`。目的冲突/撤权/无字节/旧依赖/超时默认拒绝。
+4. **精确G0**：必须有合法来源作品/版本/数字副本、文件可读证明、用途适配的`machine_read`和必要`retain`许可及许可证据；只有Provider S1/S2、Acquisition Intent、书目或历史获取日志不得自动签G0。G0不判断史实；G1载体、G2材料、G3世界、G4解释、G5消费各自独立。
+5. **D05双路与撤权**：仅G3通过的事实分面可以合法进入D05且经G5签发，无需伪造G4；解释分面必须当前G4；P08为独立失效控制请求，不得与P01—P07混合发布、不自签G5。任何失效先拒消费，再精确复审。
+
+**设计验收结论：** 上述语义与原认可六Gate、生产协议、KAD1-B原研究一致。当前选中`layer1-adapters.mjs`遗漏`qualification_request`的故障、DB角色/Reviewer、迁移及真实运行一律`ENGINEERING_M3_HOLD`；不以本设计裁决伪造任何审查PASS。
