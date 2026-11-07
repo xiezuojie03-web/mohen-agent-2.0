@@ -1345,3 +1345,39 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 - **授权**：M5必要低成本开发、隔离测试和受控真实研究使用现有Provider已获Owner授权；调用仍须受控执行器、来源权利/purpose/input绑定、真实币种费用及持久Receipt。新增Provider/订阅/额度/显著扩大费用另行确认。不得裸调、自动重试未知费用或补零。
 - **边界**：不授权生产DB/Storage迁移、生产桶创建、正式Reviewer/Gate启用、生产/公开发布；M6—M8保持原任务边界。已通过且未受影响的代码和测试继承，不重复全量盘点/无差别重测。
 - **本次文档变更**：更新PLAN顶部现行状态与M5复工规则；根CURRENT增加当前施工快照；交接书收敛为本轮唯一Codex执行入口；MAB受控任务书更新至V1.1并同步Library。**本次未改应用源码、SQL/迁移、数据库、Storage、Gate、测试或部署；没有运行应用测试，故不签任何工程PASS。**
+
+
+## 2026-11-07｜Owner执行方式调整与MAB V1.2施工计划结构收敛
+
+**Owner裁决**：后续工程由ChatGPT主导；不再使用Codex。ChatGPT负责GitHub可完成的源码、文档、测试、CI、审查和状态回写；仅将必须访问用户本地文件、本机浏览器、本地运行环境或本地凭据的任务集中交给CodeBuddy。CodeBuddy完成后，仍须由ChatGPT核验commit、实际测试和环境证据。
+
+**PLAN原位修订**：在保留MAB V1.2原有M0—M8阶段、任务分母、条件准出、M1-C01—C04/M2-C01—C03/M3-C01—C03/M4-C01—C04、M5八维度矩阵、M6—M8范围、20项工程责任和74项目标登记的前提下，移除PLAN中重复的历史过程叙述，统一当前执行顺序为：
+- A线：M1隔离Owner/最小权限/撤权/恢复；M2真实NAJ原件页、私有Storage、SHA回读、L0—L2首次/回放/撤权。
+- B线并行：在既有Delegation、Tool Registry、预算、Receipt、Guard和唯一Runner内实现受控Provider执行器，先以合成输入完成PG/HTTP正反测试、实际费用模型、失败HOLD和恢复。
+- 汇合后：M3真实D00—D05与独立Reviewer/G0—G5；M4真实混合协作；M5按ST-01—ST-09完成同一真实作品及八维度验收。
+- M0冻结继承；M6—M8不提前启动；生产迁移、正式Gate启用和公开生产发布仍须原有独立授权。
+
+**工程入口更新**：
+- 新增当前工具无关入口：tasks/implementation/MAB/ENGINEERING_HANDOFF_CURRENT.md。
+- 根AGENTS.md已将当前执行工具改为ChatGPT与CodeBuddy，并指向新入口。
+- OWNERSHIP_MAP.md将Codex宿主验收标记为历史，不再作为本轮执行要求。
+- scripts/guards/check-authority-routing.mjs已改为检查新入口及当前工具路由。
+- 原tasks/implementation/MAB/CODEX_HANDOFF_CURRENT.md已退役；历史progress和旧结果中的引用仅作历史记录。
+- 根CURRENT.md已收敛为当前状态快照；本轮没有修改应用源码、生产DB、Storage、Gate运行配置或部署。
+
+**本批远端基线与待核事项**：
+- 起始main：c1652c4b9bcf865c08d46c6baf5f4cc020286a86。
+- 当前施工分支：mab/owner-led-execution-plan-20261107。
+- 起始main主CI 42238756963 FAILURE，实际失败为权威路由守卫未找到交接文档中的“新工程权威入口（2026-11-05 Owner 纠偏）”章节；当前分支已补回并改为工具无关入口。必须以本分支PR的完整CI结果核验，不能把修正文档或守卫代码存在视为PASS。
+- 本批未改target-diff.csv中的74个产品/工程目标路径；本次修改属于计划、治理入口和CI静态守卫，不冒充74目标功能实现。
+
+**下一步**：创建PR并检查完整CI。若通过，合并后以新main为基线，开始第一轮真实施工：先定向关闭CI/权威入口阻断，再并行推进A线M1/M2真实原件链与B线M4受控Provider执行器。若CI出现新的Typecheck/测试失败，按实际日志定向修复，不覆盖历史失败，不重跑无变化的全量环境任务。
+
+
+## 2026-11-07｜V1.2计划收敛后两项CI守卫核销
+
+- 第一轮PR CI 42318111500：MHKA authority routing通过；Developer Skill packaging guard失败，原因是收敛PLAN时漏保留canonical开发Skill在PLAN中的显式路由。已在PLAN §2补回唯一方法源及CodeBuddy适配器引用，并明确Skill不替代MAB、不授产品权限。
+- 第二轮PR CI 42318240958：MHKA authority routing、Developer Skill packaging、开发Skill离线测试、Typecheck、Playwright规格解析、Unit、Production Boundary、K3 Traceability、Build、Auth Coverage均通过；最后MAB 74目标审计因PLAN中原HP01—HP13追溯表被收敛时移除而失败，报告仅有 HANDOFF_HP_TRACE_INCOMPLETE，74路径缺失数为0。
+- 已在PLAN §2恢复HP01—HP13原编号/责任映射，明确其仅为追溯标签，不形成第二施工计划；M0—M8仍是唯一执行顺序。20项A01—A20和74目标登记继续保留。
+- 当前修订分支：mab/owner-led-execution-plan-20261107；最新分支HEAD 75ca11340df3e363e097154205c2c8371aa37cd3。上述HP修复后的完整PR CI尚待GitHub Actions新回执，不提前记PASS。
+- 目前只有文档、工程入口和静态守卫改动；应用源码、DB、Storage、Gate运行配置和部署均未修改。下一步以最新PR CI为准；通过后合并，再开始A线M1/M2与B线M4源码施工。

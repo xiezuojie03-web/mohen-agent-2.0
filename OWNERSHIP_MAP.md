@@ -63,8 +63,8 @@ mohen-agent-2.0/
 ## .agents/ 与 .codebuddy/（CTX-ENG）
 - `.agents/skills/mohen-dev-continuation/SKILL.md` 是跨开发工具开发方法的唯一 canonical 正文；仅供获授权的工程建设与后续维护，不是产品 Agent Skill。
 - `.codebuddy/skills/mohen-dev-continuation/SKILL.md` 只负责 CodeBuddy 识别并加载 canonical 正文，不独立维护方法。CodeBuddy 的本地凭据、日志、运行状态等目录继续被 .gitignore 排除。
-- `.agents/skills/mohen-dev-continuation/references/task-tool-environment-map.json` 统一记录任务—工具—执行环境—验收及不允许自动运行的环境依赖；`scripts/dev-skills/continuation.mjs` 以固定白名单执行环境探测与只读/离线验证，`tests/dev-skills/continuation.test.mjs` 作标准 Node.js 正反测试，`.agents/skills/mohen-dev-continuation/references/HOST_ACCEPTANCE.md` 负责 Codex/CodeBuddy 分别验收。不是新产品或专业知识 Registry。
-- 加载、静态检查和实际工具使用属于不同证明级别，不能以文件存在推定 Codex/CodeBuddy 宿主已加载、可后台运行或 M5 产品验收已通过。跨工具打包检查见 `scripts/guards/check-dev-skill-layout.mjs`。
+- `.agents/skills/mohen-dev-continuation/references/task-tool-environment-map.json` 统一记录任务—工具—执行环境—验收及不允许自动运行的环境依赖；`scripts/dev-skills/continuation.mjs` 以固定白名单执行环境探测与只读/离线验证，`tests/dev-skills/continuation.test.mjs` 作标准 Node.js 正反测试，`.agents/skills/mohen-dev-continuation/references/HOST_ACCEPTANCE.md` 保留跨工具历史验收定义；本轮仅执行CodeBuddy宿主验收，Codex不再作为当前工具。不是新产品或专业知识 Registry。
+- 加载、静态检查和实际工具使用属于不同证明级别，不能以文件存在推定 CodeBuddy 宿主已加载、可后台运行或 M5 产品验收已通过。跨工具打包检查见 `scripts/guards/check-dev-skill-layout.mjs`。
 
 ## skills/
 一个目录一个Skill。阶段Owner与可复用能力分别登记；每阶段只拥有一个生命周期Owner。保留五个可适配Stage Skill，新增mohen-carrier-reading承接D01/C，material-understanding承接D02/H。新Skill是PLANNED，未实现不称正式能力。

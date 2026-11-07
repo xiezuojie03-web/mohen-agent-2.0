@@ -4,7 +4,7 @@
 
 ## 0｜强制设计权威与事实边界
 
-**本轮所有 ChatGPT、Codex、CodeBuddy 工程设计、开发、审查、修复、测试和交接，必须以已批准的 MHKA-00—05 新架构及其授权的现行专业合同为唯一上位依据。** 旧 C0—C4 只保留作历史来源与旧实现的兼容参照，不是新架构工程的默认裁决依据。不得以旧规范、旧代码或过去任务记录否决新的 Owner 决策。
+**本轮所有 ChatGPT、CodeBuddy 工程设计、开发、审查、修复、测试和交接，必须以已批准的 MHKA-00—05 新架构及其授权的现行专业合同为唯一上位依据。** 旧 C0—C4 只保留作历史来源与旧实现的兼容参照，不是新架构工程的默认裁决依据。不得以旧规范、旧代码或过去任务记录否决新的 Owner 决策。
 
 权威顺序：Owner 已批准裁决 → MHKA-00 治理及相应 MHKA 专业语义 Owner → 授权的现行专业合同 → MAB 受控任务书。旧实现可以在安全和合规前提下继续运行、被复用及逐步适配，但不得由此反向改变目标架构。
 
@@ -28,7 +28,7 @@
 | 唯一施工计划 | `tasks/implementation/MAB/PLAN.md` |
 | 当前真实状态 | `CURRENT.md` |
 | 唯一执行进度与目标差异账 | `tasks/implementation/MAB/progress.md`；`tasks/implementation/MAB/target-diff.csv` |
-| Codex 接续书 | `tasks/implementation/MAB/CODEX_HANDOFF_CURRENT.md` |
+| 当前工程执行入口 | `tasks/implementation/MAB/ENGINEERING_HANDOFF_CURRENT.md` |
 | 目录与源码职责 | `OWNERSHIP_MAP.md` |
 | 现有数据生产执行入口 | `pipelines/data-production/run.mjs` |
 
