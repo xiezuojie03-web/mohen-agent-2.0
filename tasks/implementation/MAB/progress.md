@@ -1636,3 +1636,19 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 **施工中按失败关闭处理的真实边界**：① `deepseek-flash` 为推理型模型，max_tokens 过小时 `content` 为空 → dispatcher 如实记 HOLD（`PROVIDER_USAGE_UNKNOWN`）不冒充成功；② data-access 文本通道 `rights` 为 JSON 字符串，权利判定兼容对象/字符串两形态，解析失败 = TRANSFER_DENIED。
 
 **状态**：第 4 步 4.1–4.4 闭环（隔离环境）。**生产启用、ACTUAL 对账、路由接线未做**；内部 7 工具 credit 账本与真实币种账并存，对账核销留 M4-C03。下一步：第 5 步 M5 八维度闭环（ST-01→ST-09，含 Studio 路由接 dispatcher）。
+
+### 2026-11-08 第 5 步批次 G：Studio 路由接 dispatcher 正道（`VERIFIED_ISOLATED`）
+
+**代码（`CODE_PRESENT`）**：
+- `apps/web/lib/studio/provider-dispatcher.ts` 新增路由级授权 Grant 层：`authorizeStudioDispatchGrant`（签发时校验委托未过期/GRANTED/USD + 动作白名单 ⊆ 委托 allowed_actions + 逐来源权利 + 预算早期检查 maxCalls×单次最坏上界）与 `dispatchWithGrant`（每次真实调用仍走 `authorizeProviderDispatch` 全量校验铸一次性句柄执行，名额先消耗、失败也计）；grant 模块内发行、不可外部构造、次数耗尽即废。委托/权利校验逻辑抽取共用，句柄层语义与批次 F 测试不变。动作 maxTokens 表：h1/h2/panels/insight=4096、h3=8192、narration=2048。
+- `apps/web/lib/studio-creation.ts`：blocker 接受句柄或 grant；`callLlm` 带 grant 时经 `dispatchWithGrant`；六个入口函数接 `auth` 参数（无参调用行为不变=仍阻断）；拆出 `generateDirectorPlansFromFacts`（项目真实材料 facts 由调用方供给）。
+- 迁移 `20261108090000_director_plans_source_ids.sql`：`public.director_plans` 加 `source_ids jsonb not null default ''[]''`（服务端权威来源绑定，防客户端 widening；已应用本地隔离 PG）。
+- 新路由 `POST /api/studio/dispatch-authorizations`（ST-04 显式外发授权决定：session+项目 Owner 归属 RLS 校验 + 动作白名单 + 预算 ≤5 USD + ttl ≤120 分钟 → GRANTED/USD 委托，幂等，无自动触发）；新 lib `apps/web/lib/studio/dispatch-grant.ts`（项目来源服务端推导：私有原件 SHA ↔ raw_items ↔ source_versions ↔ sources；作品来源取最新修订绑定 plan.source_ids）。
+- 路由接线：`director-plans` POST（project_id + delegation_id → grant + 项目真实材料 facts 正道；仅 project_id 维持 409 HOLD 绑定不变）、`select`、`panels`、`narration-suggestions` 接 grant。`create`/`direct`/`insight-views` 本批保持阻断。
+- 单测 +4 例（grant 签发/伪造/耗尽/动作越界/权利拒绝/预算不足），合计 603。
+
+**验证（`VERIFIED_ISOLATED`）**：`VERIFY_5_ALL_PASS`——真实 Owner 会话；项目来源推导命中 NAJ 源；真实委托（预算 1.00 USD，六动作白名单）；grant 驱动 H1（母题"低田等则下的正耗并征与准熟起科"，来自真实 L2 证据）+ H2（A/B 方案）+ H3（3 章节 beats）+ panels 四次真实 DeepSeek 派发全部成功，回执 ACCEPT+ESTIMATED、io hash 齐，委托累计真实费用 $0.007452（≈¥0.053，Owner ≤¥20 预授权内）。负例：grant 耗尽/伪造 grant 拒绝、权利 `{}` 来源 TRANSFER_DENIED，均无回执无请求。回归：typecheck 6/6、unit 603 pass/2 skipped。
+
+**施工中按失败关闭处理的真实边界**：deepseek-flash 推理型在 H3 多章节 JSON、maxTokens 4096 下正文耗尽 → 如实 HOLD（PROVIDER_USAGE_UNKNOWN 回执）不冒充成功；按动作表上调后全链通过。
+
+**证据边界**：本批验证到 dispatcher grant 层真实派发 + 路由静态接线（typecheck/单测）；路由 HTTP 级正反归 5.9 Owner 浏览器体验批次。**状态**：批次 G 闭环（隔离）；ST-06–09 全链、Admin、WATCH 撤权、Owner 体验未做，`M5_OVERALL_HOLD` 不变。

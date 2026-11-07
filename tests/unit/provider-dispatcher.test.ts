@@ -5,9 +5,12 @@ vi.mock('../../apps/web/lib/mohen-agent/research', () => ({ runResearch: vi.fn()
 
 import {
   authorizeProviderDispatch,
+  authorizeStudioDispatchGrant,
   currentPriceTable,
   dispatchAuthorizedCall,
+  dispatchWithGrant,
   estimateCostFromUsageUsd,
+  isUsableDispatchGrant,
   isUsableDispatchHandle,
   worstCaseCostUsd,
   type DispatcherDeps,
@@ -225,5 +228,63 @@ describe('studio-creation blocker wiring', () => {
     const { deps } = makeDeps();
     const handle = await authorizeProviderDispatch(deps, AUTH_INPUT);
     expect(directorExternalProcessingBlocker(handle)).toBeNull();
+  });
+});
+
+const GRANT_INPUT = {
+  delegationId: DELEGATION_ID, actions: ['llm_director_h1', 'llm_director_h2'],
+  model: 'deepseek-flash', sourceIds: [SOURCE_OK], sessionToken: 'session-token', maxCalls: 2,
+};
+
+describe('authorizeStudioDispatchGrant / dispatchWithGrant（M5 批次 G）', () => {
+  it('issues a usable grant for a fully-authorized delegation and blocker accepts it', async () => {
+    const { deps } = makeDeps({}, { budget_limit: '5.000000', allowed_actions: ['llm_director_h1', 'llm_director_h2'] });
+    const grant = await authorizeStudioDispatchGrant(deps, GRANT_INPUT);
+    expect(isUsableDispatchGrant(grant)).toBe(true);
+    expect(directorExternalProcessingBlocker(grant)).toBeNull();
+    expect(deps.fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it('rejects unknown actions, actions outside the delegation, denied rights and short budget', async () => {
+    const wide = { budget_limit: '5.000000', allowed_actions: ['llm_director_h1', 'llm_director_h2'] };
+    const { deps } = makeDeps({}, wide);
+    await expect(authorizeStudioDispatchGrant(deps, { ...GRANT_INPUT, actions: ['drop_table'] }))
+      .rejects.toMatchObject({ code: 'DISPATCH_ACTION_NOT_ALLOWED' });
+    const narrow = makeDeps({}, { budget_limit: '5.000000', allowed_actions: ['llm_director_h1'] });
+    await expect(authorizeStudioDispatchGrant(narrow.deps, GRANT_INPUT))
+      .rejects.toMatchObject({ code: 'DISPATCH_ACTION_NOT_ALLOWED' });
+    const denied = makeDeps({}, wide);
+    await expect(authorizeStudioDispatchGrant(denied.deps, { ...GRANT_INPUT, sourceIds: [SOURCE_DENIED] }))
+      .rejects.toMatchObject({ code: 'TRANSFER_DENIED' });
+    const broke = makeDeps({}, { ...wide, budget_limit: '0.010000' });
+    await expect(authorizeStudioDispatchGrant(broke.deps, GRANT_INPUT))
+      .rejects.toMatchObject({ code: 'HOLD_BUDGET' });
+    expect(deps.fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it('dispatches real calls through the grant, persists receipts and enforces maxCalls', async () => {
+    const { deps, receipts } = makeDeps({}, { budget_limit: '5.000000', allowed_actions: ['llm_director_h1'] });
+    const grant = await authorizeStudioDispatchGrant(deps, { ...GRANT_INPUT, actions: ['llm_director_h1'], maxCalls: 1 });
+    const result = await dispatchWithGrant(deps, grant, 'llm_director_h1',
+      { system: CALL.system, user: CALL.user, temperature: 0.3 });
+    expect(result.text).toBe('收到。');
+    expect(deps.fetchImpl).toHaveBeenCalledTimes(1);
+    expect((receipts[0] as Record<string, unknown>).acceptance_state).toBe('ACCEPT_AS_CANDIDATE');
+    expect(isUsableDispatchGrant(grant)).toBe(false);
+    await expect(dispatchWithGrant(deps, grant, 'llm_director_h1',
+      { system: CALL.system, user: CALL.user, temperature: 0.3 }))
+      .rejects.toMatchObject({ code: 'DISPATCH_GRANT_INVALID' });
+    expect(deps.fetchImpl).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects an action not covered by the grant and forged grants before any fetch', async () => {
+    const { deps } = makeDeps({}, { budget_limit: '5.000000', allowed_actions: ['llm_director_h1', 'llm_work_panels'] });
+    const grant = await authorizeStudioDispatchGrant(deps, { ...GRANT_INPUT, actions: ['llm_director_h1'], maxCalls: 1 });
+    await expect(dispatchWithGrant(deps, grant, 'llm_work_panels',
+      { system: 's', user: 'u', temperature: 0.3 }))
+      .rejects.toMatchObject({ code: 'DISPATCH_ACTION_NOT_ALLOWED' });
+    expect(isUsableDispatchGrant({ grantId: 'forged' })).toBe(false);
+    expect(directorExternalProcessingBlocker({ grantId: 'forged' })).toBe('external_processing_not_authorized');
+    expect(deps.fetchImpl).not.toHaveBeenCalled();
   });
 });

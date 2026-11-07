@@ -7,6 +7,7 @@ import { readJsonColumn } from "./db-json";
 import { queryRows, queryValue, run } from "@mohen/data-access";
 import {
   generateDirectorPlans,
+  generateDirectorPlansFromFacts,
   generateBeats,
   generateWorkPanels,
   type DirectorPlan,
@@ -49,18 +50,23 @@ export interface CreatedPlan {
   finding: H1Finding;
 }
 
-/** 生成 A/B 导演方案（H1→H2）并持久化，返回 plan_id。P0-1：方案归属创建者。 */
+/** 生成 A/B 导演方案（H1→H2）并持久化，返回 plan_id。P0-1：方案归属创建者。
+ * opts.facts 存在时走 M5 正道（项目真实材料 + dispatcher grant auth）；
+ * sourceIds 服务端持久化到 plan 行，供后续 select/panels 逐来源权利核验。 */
 export async function createDirectorPlan(
   brief: string,
   topic = "jinze",
-  ownerUserId: string
+  ownerUserId: string,
+  opts?: { auth?: unknown; facts?: string[]; sourceIds?: string[] }
 ): Promise<CreatedPlan | null> {
-  const result = await generateDirectorPlans(brief, topic);
+  const result = opts?.facts
+    ? await generateDirectorPlansFromFacts(opts.facts, brief, opts.auth)
+    : await generateDirectorPlans(brief, topic, opts?.auth);
   if (!result) return null;
   const planId = await queryValue("select gen_random_uuid()::text");
   await run(
-    `insert into public.director_plans (plan_id, brief, topic, plan_a, plan_b, facts, finding, owner_user_id)
-     values (:'id', :'brief', :'topic', :'a'::jsonb, :'b'::jsonb, :'facts'::jsonb, :'finding'::jsonb, :'owner')`,
+    `insert into public.director_plans (plan_id, brief, topic, plan_a, plan_b, facts, finding, owner_user_id, source_ids)
+     values (:'id', :'brief', :'topic', :'a'::jsonb, :'b'::jsonb, :'facts'::jsonb, :'finding'::jsonb, :'owner', :'sids'::jsonb)`,
     {
       id: planId!,
       brief,
@@ -70,6 +76,7 @@ export async function createDirectorPlan(
       facts: JSON.stringify(result.facts),
       finding: JSON.stringify(result.finding),
       owner: ownerUserId,
+      sids: JSON.stringify(opts?.sourceIds ?? []),
     }
   );
   return { planId: planId!, planA: result.planA, planB: result.planB, facts: result.facts, finding: result.finding };
@@ -77,7 +84,7 @@ export async function createDirectorPlan(
 
 export async function getDirectorPlan(planId: string) {
   const rows = await queryRows(
-    "select plan_id::text as plan_id, brief, topic, plan_a, plan_b, facts, finding, selected, beats, created_at::text as created_at from public.director_plans where plan_id = :'id'",
+    "select plan_id::text as plan_id, brief, topic, plan_a, plan_b, facts, finding, source_ids, selected, beats, created_at::text as created_at from public.director_plans where plan_id = :'id'",
     { id: planId }
   );
   return rows[0] ?? null;
@@ -86,13 +93,14 @@ export async function getDirectorPlan(planId: string) {
 /** 选定方案 A/B，生成节拍，更新持久化 */
 export async function selectDirectorPlan(
   planId: string,
-  which: "A" | "B"
+  which: "A" | "B",
+  auth?: unknown
 ): Promise<{ beats: Beat[] } | null> {
   const row = await getDirectorPlan(planId);
   if (!row) return null;
   const plan = which === "A" ? readJsonColumn<DirectorPlan>(row.plan_a, {} as DirectorPlan) : readJsonColumn<DirectorPlan>(row.plan_b, {} as DirectorPlan);
   const facts = readJsonColumn<string[]>(row.facts, []);
-  const beats = await generateBeats(plan, facts);
+  const beats = await generateBeats(plan, facts, auth);
   if (!beats) return null;
   await run(
     `update public.director_plans
@@ -104,7 +112,7 @@ export async function selectDirectorPlan(
 }
 
 /** 生成作品四面板（API-X01）：需先选定方案并生成分镜。 */
-export async function getWorkPanels(planId: string): Promise<WorkPanels | null> {
+export async function getWorkPanels(planId: string, auth?: unknown): Promise<WorkPanels | null> {
   const row = await getDirectorPlan(planId);
   if (!row || !row.selected) return null;
   const which = row.selected === "B" ? "B" : "A";
@@ -112,7 +120,7 @@ export async function getWorkPanels(planId: string): Promise<WorkPanels | null> 
   const facts = readJsonColumn<string[]>(row.facts, []);
   const beats = readJsonColumn<Beat[]>(row.beats, []);
   if (!beats.length) return null;
-  return generateWorkPanels(plan, facts, beats);
+  return generateWorkPanels(plan, facts, beats, auth);
 }
 
 /** E1-3 WorkRevision：把选定方案 + H3 节拍存为不可变修订（content hash = CAS）。 */

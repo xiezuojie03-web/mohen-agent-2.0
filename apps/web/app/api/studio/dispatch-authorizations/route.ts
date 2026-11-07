@@ -1,0 +1,88 @@
+import { NextResponse } from "next/server";
+import { randomUUID } from "node:crypto";
+import { getSession } from "../../../../lib/session";
+import { signDatabaseSessionToken } from "../../../../lib/auth";
+import { studioAssetStore } from "../../../../lib/studio-assets";
+import { createStudioDelegationRepository, getNodePgPool } from "@mohen/data-access";
+import { STUDIO_LLM_ACTION_MAX_TOKENS } from "../../../../lib/studio/provider-dispatcher";
+import { listProjectSourceIds } from "../../../../lib/studio/dispatch-grant";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+const MAX_BUDGET_USD = 5;
+const MAX_TTL_MINUTES = 120;
+
+function privateJson(body: unknown, status = 200) {
+  return NextResponse.json(body, { status, headers: { "cache-control": "no-store" } });
+}
+
+// ST-04 POST /api/studio/dispatch-authorizations —— Creator 显式外发授权决定。
+// 只登记一份 GRANTED/USD 受控委托（动作白名单 + 预算 + 短时效 + 服务端推导的项目来源），
+// 不发起任何 Provider 调用；执行仍须 dispatcher 逐次校验。幂等键防重复扣费额度登记。
+export async function POST(req: Request) {
+  const session = await getSession();
+  if (!session) return privateJson({ ok: false, reason: "login_required" }, 401);
+  let body: Record<string, unknown>;
+  try {
+    body = (await req.json()) as Record<string, unknown>;
+  } catch {
+    return privateJson({ ok: false, reason: "bad_request" }, 400);
+  }
+  const projectId = body.project_id;
+  const idempotencyKey = body.idempotency_key;
+  const actions = body.actions;
+  const budgetUsd = body.budget_usd;
+  const ttlMinutes = body.ttl_minutes === undefined ? 60 : body.ttl_minutes;
+  if (typeof projectId !== "string" || !uuid.test(projectId))
+    return privateJson({ ok: false, reason: "project_id_required" }, 400);
+  if (typeof idempotencyKey !== "string" || !uuid.test(idempotencyKey))
+    return privateJson({ ok: false, reason: "idempotency_key_required" }, 400);
+  if (!Array.isArray(actions) || !actions.length || actions.length > 6
+    || !actions.every((a) => typeof a === "string" && Object.hasOwn(STUDIO_LLM_ACTION_MAX_TOKENS, a)))
+    return privateJson({ ok: false, reason: "actions_not_whitelisted" }, 400);
+  if (typeof budgetUsd !== "number" || !Number.isFinite(budgetUsd) || budgetUsd <= 0 || budgetUsd > MAX_BUDGET_USD)
+    return privateJson({ ok: false, reason: "budget_out_of_range" }, 400);
+  if (typeof ttlMinutes !== "number" || !Number.isFinite(ttlMinutes) || ttlMinutes < 1 || ttlMinutes > MAX_TTL_MINUTES)
+    return privateJson({ ok: false, reason: "ttl_out_of_range" }, 400);
+
+  const sessionToken = signDatabaseSessionToken(session);
+  const projects = await studioAssetStore().listProjects(sessionToken);
+  const project = projects.find((p) => p.project_id === projectId && p.lifecycle_status === "ACTIVE");
+  if (!project) return privateJson({ ok: false, reason: "project_not_found" }, 404);
+
+  // 来源集合服务端推导（私有原件 ↔ L0 链），客户端无权指定；无来源 = 不能授权外发。
+  const sourceIds = await listProjectSourceIds(projectId, sessionToken);
+  if (!sourceIds.length) return privateJson({ ok: false, reason: "project_source_unbound" }, 409);
+
+  const expiresAt = new Date(Date.now() + ttlMinutes * 60_000).toISOString();
+  const delegation = await createStudioDelegationRepository(getNodePgPool()).saveDelegation({
+    projectId,
+    seriesId: randomUUID(),
+    revisionNo: 1,
+    rootTaskRef: "studio-llm-dispatch",
+    rootTaskSnapshot: { purpose: "studio_llm_dispatch", actions, source_ids: sourceIds },
+    subtaskRef: "studio-director-llm",
+    executor: "mohen-studio",
+    provider: "deepseek",
+    engineVersion: "deepseek/2026-11-07",
+    inputManifest: { actions, source_ids: sourceIds },
+    allowedActions: actions,
+    transferRightsDecision: { external_processing: "GRANTED" },
+    policyVersion: "m5.g",
+    expiresAt,
+    budgetLimit: budgetUsd.toFixed(6),
+    currency: "USD",
+    outputSchema: "mohen.studio-llm-dispatch.v1",
+    idempotencyKey,
+  }, sessionToken);
+  return privateJson({
+    ok: true,
+    delegation_id: delegation.delegation_id,
+    expires_at: delegation.expires_at,
+    allowed_actions: delegation.allowed_actions,
+    source_ids: sourceIds,
+    budget_usd: budgetUsd,
+  });
+}

@@ -7,6 +7,8 @@ import { runResearch } from "./mohen-agent/research";
 import {
   createStudioDispatcherDeps,
   dispatchAuthorizedCall,
+  dispatchWithGrant,
+  isUsableDispatchGrant,
   isUsableDispatchHandle,
 } from "./studio/provider-dispatcher";
 
@@ -62,18 +64,31 @@ function validPlan(value: unknown): value is DirectorPlan {
 /** No current director adapter verifies per-source external_processing rights,
  * provider/purpose/input binding and authorized spend. Display/research read,
  * a client boolean, an API key or engineering permission cannot admit a call.
- * 唯一放行路径：持有 provider-dispatcher 签发的一次性授权句柄（M4 受控派发），
- * 其余一律失败关闭。 */
+ * 唯一放行路径：持有 provider-dispatcher 签发的一次性授权句柄（M4 受控派发）
+ * 或路由级授权 Grant（M5 批次 G，每次调用仍逐次铸句柄），其余一律失败关闭。 */
 export function directorExternalProcessingBlocker(auth?: unknown): string | null {
-  return isUsableDispatchHandle(auth) ? null : "external_processing_not_authorized";
+  return isUsableDispatchHandle(auth) || isUsableDispatchGrant(auth)
+    ? null
+    : "external_processing_not_authorized";
 }
 
-/** LLM 调用唯一通道：无授权句柄恒阻断；有句柄必须经受控 dispatcher
- * （真实委托/预算/逐来源权利/一次性消费/回执），不存在绕过 dispatcher 的原始 fetch 路径。 */
-async function callLlm(system: string, user: string, temperature: number, auth?: unknown): Promise<string | null> {
+/** LLM 调用唯一通道：无授权恒阻断；句柄直接派发，grant 逐次铸句柄派发（真实委托/
+ * 预算/逐来源权利/一次性消费/回执），不存在绕过 dispatcher 的原始 fetch 路径。 */
+async function callLlm(
+  system: string,
+  user: string,
+  temperature: number,
+  auth?: unknown,
+  action?: string
+): Promise<string | null> {
   if (directorExternalProcessingBlocker(auth)) return null;
   try {
     const deps = await createStudioDispatcherDeps();
+    if (isUsableDispatchGrant(auth)) {
+      if (!action) return null;
+      const result = await dispatchWithGrant(deps, auth, action, { system, user, temperature });
+      return result.text;
+    }
     const result = await dispatchAuthorizedCall(deps, auth as never, { system, user, temperature });
     return result.text;
   } catch {
@@ -125,8 +140,8 @@ export function parseH1Candidate(value: unknown): H1Finding | null {
 }
 
 /** H1：从真实材料识别适用母题 + 认识增量（母题是追问方向，不是答案；材料不足如实收窄） */
-export async function identifyMotifs(facts: string[], brief: string): Promise<H1Finding | null> {
-  if (directorExternalProcessingBlocker()) return null;
+export async function identifyMotifs(facts: string[], brief: string, auth?: unknown): Promise<H1Finding | null> {
+  if (directorExternalProcessingBlocker(auth)) return null;
   const system = `你是墨痕的 H1 历史叙事方法。基于真实材料识别适用母题（M1-M5），形成认识增量。
 铁律：1. 母题是追问方向，不是答案；材料不足就收窄问题、保留未知；2. 禁止新增任何年份、地名、人物、关系、事件；3. 认识增量必须基于材料里能查证的内容。
 母题定义：
@@ -134,7 +149,7 @@ ${Object.values(MOTIFS).map((m) => `${m.code} ${m.name}：${m.question}`).join("
 只输出 JSON：{"motifCodes":["M1"],"historicalQuestion":"...","understandingDelta":"...","supportScope":"...","limitations":["..."]}。`;
 
   const user = `真实材料：\n${facts.map((f) => "- " + f).join("\n")}\n\n委托：${brief}`;
-  const text = await callLlm(system, user, 0.3);
+  const text = await callLlm(system, user, 0.3, auth, "llm_director_h1");
   if (!text) return null;
   return parseH1Candidate(parseJson(text));
 }
@@ -145,16 +160,17 @@ export function parseDirectorCandidates(value: unknown): {planA: DirectorPlan; p
   return {planA: parsed.planA, planB: parsed.planB};
 }
 
-/** H1→H2：先识别母题（H1），再生成 A/B 导演方案（H2，D1-D7 导演取舍） */
-export async function generateDirectorPlans(
+/** H1→H2：先识别母题（H1），再生成 A/B 导演方案（H2，D1-D7 导演取舍）。
+ * facts 由调用方供给（M5 正道 = 项目真实材料快照）。 */
+export async function generateDirectorPlansFromFacts(
+  facts: string[],
   brief: string,
-  topic = "jinze"
+  auth?: unknown
 ): Promise<DirectorPlansResult | null> {
-  if (directorExternalProcessingBlocker()) return null;
-  const facts = await collectFacts(topic);
-  if (!facts.length) return null;
+  if (directorExternalProcessingBlocker(auth)) return null;
+  if (!strings(facts) || !facts.length) return null;
 
-  const finding = await identifyMotifs(facts, brief);
+  const finding = await identifyMotifs(facts, brief, auth);
   if (!finding) return null;
   const motifLine = `适用母题：${finding.motifCodes.join("、")}\n历史问题：${finding.historicalQuestion}\n认识增量：${finding.understandingDelta}\n支持范围：${finding.supportScope}`;
 
@@ -162,10 +178,22 @@ export async function generateDirectorPlans(
 铁律（违反即作废）：1. 只能使用「真实材料」里出现的事实，禁止新增任何年份、地名、人物、关系、事件；2. 方案A与方案B的差异必须来自叙事角度/结构（导演取舍 D1-D7：视角、故事顺序、主要焦点、节奏），不是换措辞；3. 每个方案给出 angle（一句话角度）、points（3条结构要点）、cover（封面画面建议）、motif（一个母题代码）、directorDecisions（2-3条导演取舍）。4. 只输出 JSON：{"planA":{"angle":"...","points":["..."],"cover":"...","motif":"M1","directorDecisions":["..."]},"planB":{...}}，不要多余文字。`;
 
   const user = `真实材料：\n${facts.map((f) => "- " + f).join("\n")}\n\n${motifLine}\n\n委托：${brief}`;
-  const text = await callLlm(system, user, 0.7);
+  const text = await callLlm(system, user, 0.7, auth, "llm_director_h2");
   if (!text) return null;
   const candidates = parseDirectorCandidates(parseJson(text));
   return candidates ? { ...candidates, facts, finding } : null;
+}
+
+/** 旧 topic 路径（jinze/a001 读模型事实）：无授权仍恒阻断。 */
+export async function generateDirectorPlans(
+  brief: string,
+  topic = "jinze",
+  auth?: unknown
+): Promise<DirectorPlansResult | null> {
+  if (directorExternalProcessingBlocker(auth)) return null;
+  const facts = await collectFacts(topic);
+  if (!facts.length) return null;
+  return generateDirectorPlansFromFacts(facts, brief, auth);
 }
 
 export function parseBeatCandidates(value: unknown, facts: string[]): Beat[] | null {
@@ -184,24 +212,24 @@ export function parseBeatCandidates(value: unknown, facts: string[]): Beat[] | n
 }
 
 /** H3：生成章节 + 旁白（基于选定方案 + 真实材料），带导演时码与溯源 */
-export async function generateBeats(plan: DirectorPlan, facts: string[]): Promise<Beat[] | null> {
-  if (directorExternalProcessingBlocker()) return null;
+export async function generateBeats(plan: DirectorPlan, facts: string[], auth?: unknown): Promise<Beat[] | null> {
+  if (directorExternalProcessingBlocker(auth)) return null;
   if (!validPlan(plan) || !strings(facts) || !facts.length) return null;
   const system = `你是墨痕的创作编导。基于给定的真实历史材料和一个选定的讲故事方案，生成这部短作品的分镜章节。
 铁律：1. 只能使用材料里的事实，禁止新增任何年份、地名、人物、关系、事件；2. 每章给出 title（标题）、narration（旁白，2-3句话，纪录片口吻，只讲有据内容）、visual（画面建议，1句，基于材料里的对象）、directorTimecodeMs（导演时码，毫秒，从0递增，各章间隔约5000-15000）、provenanceRefs（逐项原样引用输入真实材料列表中的完整字符串，不得自编标识符）；3. 共 3-5 章；时码是播放时间，不是历史年代。4. 只输出 JSON：{"beats":[{"title":"...","narration":"...","visual":"...","directorTimecodeMs":0,"provenanceRefs":["..."]}]}，不要多余文字。`;
 
   const user = `真实材料：\n${facts.map((f) => "- " + f).join("\n")}\n\n选定方案：${plan.angle}\n结构要点：${plan.points.join("；")}`;
-  const text = await callLlm(system, user, 0.7);
+  const text = await callLlm(system, user, 0.7, auth, "llm_director_h3");
   if (!text) return null;
   return parseBeatCandidates(parseJson(text), facts);
 }
 
 /** 旁白 AI 优化：只润色措辞/口吻/节奏，绝不新增或篡改事实（复用 DeepSeek + 事实护栏）。 */
-export async function suggestNarration(narration: string): Promise<string | null> {
-  if (directorExternalProcessingBlocker()) return null;
+export async function suggestNarration(narration: string, auth?: unknown): Promise<string | null> {
+  if (directorExternalProcessingBlocker(auth)) return null;
   const system = `你是墨痕的旁白润色助手。只润色措辞、语气、节奏，使旁白更像纪录片口吻。
 铁律：1. 绝不新增任何年份、地名、人名、关系、事件、数字；2. 绝不删改或替换既有事实表述；3. 只调整语序、用词、标点与口吻。4. 只输出润色后的旁白文本，不要任何解释或引号。`;
-  const text = await callLlm(system, `原始旁白：${narration}`, 0.4);
+  const text = await callLlm(system, `原始旁白：${narration}`, 0.4, auth, "llm_narration_suggest");
   return text && text.trim() ? text.trim() : null;
 }
 
@@ -232,9 +260,10 @@ function formatTimecode(ms: number): string {
 export async function generateWorkPanels(
   plan: DirectorPlan,
   facts: string[],
-  beats: Beat[]
+  beats: Beat[],
+  auth?: unknown
 ): Promise<WorkPanels | null> {
-  if (directorExternalProcessingBlocker()) return null;
+  if (directorExternalProcessingBlocker(auth)) return null;
   const storyStructure = beats.map((b) => ({
     title: b.title,
     timecode: formatTimecode(b.directorTimecodeMs),
@@ -247,7 +276,7 @@ export async function generateWorkPanels(
 只输出 JSON：{"visualStyle":{"style":"...","palette":"...","shot":"..."},"soundtrack":{"plan":"...","note":"..."}}，不要多余文字。`;
 
   const user = `导演方案：${plan.angle}\n真实材料：\n${facts.map((f) => "- " + f).join("\n")}`;
-  const text = await callLlm(system, user, 0.6);
+  const text = await callLlm(system, user, 0.6, auth, "llm_work_panels");
   if (!text) return null;
   const parsed = parseJson(text) as {
     visualStyle?: { style?: string; palette?: string; shot?: string };
@@ -291,8 +320,8 @@ export interface InsightGraph {
 }
 
 /** 基于检索到的真实材料，用 LLM 提取实体与关系，生成可溯源的关系图（不新增事实）。 */
-export async function generateInsightView(question: string): Promise<InsightGraph | null> {
-  if (directorExternalProcessingBlocker()) return null;
+export async function generateInsightView(question: string, auth?: unknown): Promise<InsightGraph | null> {
+  if (directorExternalProcessingBlocker(auth)) return null;
   const { decision } = await runResearch(question);
   const materials = decision.materials ?? [];
   if (!materials.length) return null;
@@ -304,7 +333,7 @@ export async function generateInsightView(question: string): Promise<InsightGrap
   const user = `真实材料：\n${materials
     .map((m) => "- " + m.snippet + "（出处：" + m.sourceRef + "）")
     .join("\n")}`;
-  const text = await callLlm(system, user, 0.3);
+  const text = await callLlm(system, user, 0.3, auth, "llm_insight_view");
   if (!text) return null;
   const parsed = parseJson(text) as { nodes?: InsightGraphNode[]; edges?: InsightGraphEdge[] } | null;
   if (!parsed?.nodes?.length) return null;

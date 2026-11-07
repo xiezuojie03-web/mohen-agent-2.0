@@ -64,6 +64,20 @@
 
 ### 第 5 步 · M5 八维度闭环（见 §三 第 5 步）
 
+**批次 G 方案（2026-11-07 已核定，依据 PLAN §3.5 + ST-04/05；目标：Studio 正道接线 dispatcher）**
+1. `provider-dispatcher.ts` 新增授权 Grant 层：`authorizeStudioDispatchGrant`（路由级一次性校验委托未过期/GRANTED/USD/动作白名单/逐来源权利/预算 ≥ maxCalls×单次最坏上界，发不透明 grant，绑死 delegationId+actions+model+sourceIds+sessionToken，记 maxCalls/used）+ `dispatchWithGrant`（每次 LLM 调用用真实 call 内容再走 `authorizeProviderDispatch` 全量校验铸一次性句柄执行）。句柄层语义不变，批次 F 测试不受影响。
+2. 动作与 maxTokens 表：h1=2048 / h2=4096 / h3=4096 / panels=2048 / narration=1024 / insight=2048（deepseek-flash 为推理型，输出须留足）。
+3. `studio-creation.ts`：blocker 接受 handle 或 grant；`callLlm` 带 grant 时经 `dispatchWithGrant`；六个入口函数接 `auth` 参数（无参调用行为不变=仍阻断）；拆出 `generateDirectorPlansFromFacts`（项目真实材料 facts 由调用方供给，不再只走 jinze/a001 topic）。
+4. 迁移 `20261108090000`：`public.director_plans` 加 `source_ids jsonb not null default '[]'`（服务端权威来源绑定，防客户端 widening）。
+5. 新路由 `POST /api/studio/dispatch-authorizations`：ST-04 显式 Creator 外发授权——session+项目 Owner 归属（RLS listProjects）+ 动作白名单 + 预算上限 5 USD + ttl ≤120 分钟 → GRANTED/USD 委托（幂等）。无自动触发。
+6. 接线：`director-plans` POST（带 delegation_id 时走 grant + 项目 facts 正道；无则维持 409 HOLD 绑定）、`select`、`panels`、`narration-suggestions` 接 grant。`create`（旧 jinze 路径）、`direct`、`insight-views`（EXPLORE 面）本批保持阻断。
+7. 单测扩展 grant 生命周期（伪造/过期/超次/动作越界/权利拒绝/预算耗尽）+ 回归。
+8. `tools/verify-5-studio-dispatch.mjs`：真实 PG + 真实 DeepSeek 走 grant 正道（项目 facts → H1/H2 → select beats → panels），回执落库；负例：无 grant 阻断、grant 耗尽、权利拒绝。预算 <¥0.1。
+**批次 G 结果（2026-11-08 本地，VERIFIED_ISOLATED）**：`tools/verify-5-studio-dispatch.mjs` = **VERIFY_5_ALL_PASS**。真实委托 `1ef4a7f9…`（GRANTED，预算 1.00 USD，六动作白名单）；项目来源服务端推导命中 NAJ 源；grant `a65e1223…` 签发；真实 DeepSeek 派发 H1（母题"低田等则下的正耗并征与准熟起科"，来自真实 L2 证据）+ H2（A/B 方案）+ H3（3 章节 beats）+ panels 全部成功，回执 ACCEPT+ESTIMATED、input/output hash 齐，本委托累计真实费用 **$0.007452（≈¥0.053）**；负例全过：grant 耗尽 DISPATCH_GRANT_INVALID、伪造 grant 拒绝、权利 `{}` 来源 TRANSFER_DENIED，均无回执无请求。回归：typecheck 6/6、unit 603 pass/2 skipped（新增 grant 生命周期 4 例）。
+**施工中发现并如实处置的真实边界**：deepseek-flash 推理型在 H3 多章节 JSON、maxTokens 4096 下正文耗尽 → HOLD（PROVIDER_USAGE_UNKNOWN，如实记回执，不当作成功）；H3 提到 8192、h1/panels/insight 4096、narration 2048 后全链通过。
+**批次 G 证据边界（诚实声明）**：本批验证到 dispatcher grant 层真实派发 + 路由静态接线（typecheck/单测）；路由 HTTP 级正反（含 guardRoute/session）归 5.9 Owner 浏览器体验批次补证。`create`/`direct`/`insight-views` 三路由仍恒阻断（不在 M5 主创作链）。
+**不在本批**：ST-06–09 HTTP 全链、Admin、WATCH 撤权、Owner 体验（后续批次）。
+
 ## 三、每步闭环自检清单（做到才算"这一步闭环"）
 
 ### 第 1 步 · M2 底座（自检 10 项）
