@@ -197,9 +197,18 @@ export interface StudioExecutionReceiptRecord {
 export interface StudioHeldReceiptRecord extends StudioExecutionReceiptRecord {
  result_hash:string;acceptance_state:'HOLD';cost_confidence:'UNKNOWN'|'ESTIMATED';
 }
+export interface StudioVerifiedReceiptInput {
+ delegationId:string;attemptNo:number;requestHash:string;resultManifest:Record<string,unknown>;candidateRefs:unknown[];
+ acceptanceState?:'ACCEPT_AS_CANDIDATE';actualProvider:string;actualEngineVersion:string;
+ startedAt:string;finishedAt:string;cost:string;currency:string;costConfidence:'ESTIMATED';errorCode?:null;
+}
+export interface StudioVerifiedReceiptRecord extends StudioExecutionReceiptRecord {
+ result_hash:string;acceptance_state:'ACCEPT_AS_CANDIDATE';cost:string;cost_confidence:'ESTIMATED';
+}
 export declare function createStudioDelegationRepository(pool:{connect:Function}):{
  saveDelegation(input:StudioDelegationInput,token:string):Promise<StudioDelegationRecord>;
  appendHeldReceipt(input:StudioHeldReceiptInput,token:string):Promise<StudioHeldReceiptRecord>;
+ appendVerifiedReceipt(input:StudioVerifiedReceiptInput,token:string):Promise<StudioVerifiedReceiptRecord>;
  getDelegationForPlan(projectId:string,rootTaskRef:string,idempotencyKey:string,token:string):Promise<StudioDelegationRecord|null>;
  listDelegations(projectId:string,token:string):Promise<StudioDelegationRecord[]>;
  getDelegation(delegationId:string,token:string):Promise<StudioDelegationRecord|null>;

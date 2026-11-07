@@ -11,8 +11,8 @@
 |---|---|---|---|
 | 1 | M2 底座：studio schema 全表 + 私有原件 + L0→L1→L2 真实链（含 13 类资产） | PLAN §3.2 / §5-M2 | ✅ 闭环（1.1–1.10 全完成） |
 | 2 | M3 真实 D 链：production-registry 激活 + M5 实际方法唯一绑定 + D00–D05 真实执行 | PLAN §3.3 | ✅ 主体闭环（批次 A/B/C：registry 隔离激活 + 方法绑定 6/63 + D00–D05 经 run.mjs 真实端到端落库，VERIFIED_ISOLATED；全部 HOLD 待 G0–G5）。遗留：6 executor 2 行桩、D00→D05 单run串链、非私有无分支 |
-| 3 | M3 独立 Gate：真实 Reviewer 投运 + G0–G5 签发/撤权/当前消费 | PLAN §3.3 | 🔵 进行中（批次 D：独立 signer 登录/策略/绑定已投运，私有链每个阶段已提交 Gate 候选（G0 候选已产生）；G0–G5 签发由 Owner 本人执行，尚待签） |
-| 4 | M4 受控 Provider 执行器（B 线）：正道解阻断 + 真实派发/费用/Receipt | PLAN §3.4 | ⬜ 待施工 |
+| 3 | M3 独立 Gate：真实 Reviewer 投运 + G0–G5 签发/撤权/当前消费 | PLAN §3.3 | ✅ 主体闭环（批次 D：D 链 G0–G5 机器签发，VERIFY_3_ALL_PASS；遗留：候选撤回能力 HOLD、永久撤权演练待 Owner 同意、生产侧 HTTP 断言待 Web 通道） |
+| 4 | M4 受控 Provider 执行器（B 线）：正道解阻断 + 真实派发/费用/Receipt | PLAN §3.4 | ✅ 批次 F 闭环（VERIFIED_ISOLATED，VERIFY_4_ALL_PASS；Studio 路由接线留第 5 步） |
 | 5 | M5 八维度完整闭环：ST-01→ST-09 同一真实作品 + Owner 亲自体验 | PLAN §3.5 / 八维矩阵 | ⬜ 待施工 |
 
 > 说明：原 6 步里的"M2 原件链"和"13 类资产表"实为**同一 studio schema 迁移链**（private_originals 依赖 projects+asset_revisions），已合并为第 1 步。5 步顺序即 PLAN §3.5-C 的依赖顺序（M1 隔离前提已在历史批次满足 → M2 → M3 → M4 → M5）。
@@ -44,10 +44,23 @@
 **本轮由机器评审器发现并修复的真实缺陷（非放行）**：① D00 候选错绑 `raw_item` 版本（新增 `source_version_artifact_revision`，候选改绑 `source_version`）；② `control.artifact_revision_for('claim_revision',…)` 因 `world.claim_revisions` 缺 `mohen_gate_authority` RLS 策略恒返回 null（补 `k3_artifact_read` 策略）；③ 评审器 `claim_support` 漏选 `o.byte_size` 致 `PRIVATE_WORLD_CLAIM_NOT_PERSISTED` 误判（补列）。**已知限制**：同一 gate/object 存在多个 `SUBMITTED` 候选时，规则评审器显式告警并取最新一条（超期未签的旧候选 `24da0dfb…` 无法撤回，控制面尚无候选撤回能力，已记 HOLD 待补）。
 
 ### 第 4 步 · M4 受控 Provider
-- ⬜ 4.1 `directorExternalProcessingBlocker()` 恒阻断（`return "external_processing_not_authorized"`）→ 正道是**实现受控派发后条件放行**，不是删掉阻断。
-- ⬜ 4.2 `studio-plans.ts` 的 `transferRightsDecision.external_processing=DENIED`、`execution_authorized=false`、`budget='0'CRD` → 需接真实授权/预算。
-- ⬜ 4.3 费用真实化：`tool-ledger.ts` 7 工具 cost 为内部 credit（非真实币种/token）→ 映射真实 Provider 费用。
-- ⬜ 4.4 Receipt 持久化：真实 provider/model/version、token/用量、币种费用、输入输出 hash。
+- ✅ 4.1 正道解阻断：`directorExternalProcessingBlocker(auth?)` 仅在持有 dispatcher 签发的有效未消费一次性句柄时放行；无句柄仍恒阻断（安全网保留）。
+- ✅ 4.2 dispatcher 要求真实委托：`authorizeProviderDispatch` 核验未过期 + action 在 allowed_actions + external_processing=GRANTED + USD 预算 ≥ 最坏估算（含已花费累计）+ 逐来源权利（仅 `external_processing='allow'` 或 `status='public_domain_secondary_use'` 放行，权利未知/缺失/不可解析 = TRANSFER_DENIED）。
+- ✅ 4.3 费用真实化：回执记真实 usage × 版本化价格表 `deepseek/2026-11-07`（USD/1M token，peak 保守上界）；模型不在表内 = 费用未知 = 拒绝派发。
+- ✅ 4.4 Receipt 持久化：`appendVerifiedReceipt`（ACCEPT_AS_CANDIDATE + ESTIMATED；manifest 必含 usage/price_ref/rate_window/model/input_hash/output_hash；ACTUAL 保留给 M4-C03 对账核销）；unique(delegation_id,attempt_no) 幂等。
+
+**批次 F 方案（2026-11-07 已核定，依据 PLAN §3.4 + B线）**
+1. 新建 `apps/web/lib/studio/provider-pricing.ts`：版本化价格表 `deepseek/2026-11-07`（来源 api-docs.deepseek.com/pricing，USD/1M token）。deepseek-flash：in miss $0.30/hit $0.006/out $1.20（peak，off-peak 减半）；deepseek-v4-pro：$1.32/$0.044/$3.96。估算用 peak+cache-miss 最坏值；实算用 usage 的 cache_hit/miss 字段 × peak 价（**保守上界**，peak 窗口 UTC 01-04/06-10 周一至五，节假日不建模→一律 peak 计）。模型不在价格表 → 费用未知 → 拒绝派发（失败关闭）。
+2. 扩 `packages/data-access/src/studio-delegation-repository.mjs`：新增 `appendVerifiedReceipt`（acceptance_state='ACCEPT_AS_CANDIDATE'，cost_confidence='ESTIMATED'，result_manifest 必含 usage/price_ref/rate_window/input_hash/output_hash；ACTUAL 保留给将来对账单核销 M4-C03）。沿用 unique(delegation_id,attempt_no) 幂等。原 `appendHeldReceipt` 不变。
+3. 新建 `apps/web/lib/studio/provider-dispatcher.ts`：`authorizeProviderDispatch`（查委托：未过期/action 在 allowed_actions/transfer_rights=GRANTED/currency=USD/预算≥最坏估算；**逐来源**查 source.sources.rights：仅 `external_processing='allow'` 或 `status='public_domain_secondary_use'` 放行，其余 TRANSFER_DENIED；重复 input_hash 已有 ACCEPT 回执→回放句柄不再扣费）→ 发一次性句柄（模块内 Map，不可外部构造）；`dispatchAuthorizedCall`（30s 超时、不重试、成功写 verified receipt、失败/超时写 HOLD receipt + 抛 uncertain）。
+4. 改 `studio-creation.ts`：`directorExternalProcessingBlocker(auth?)` 仅在持有有效未消费句柄时返回 null；`callLlm(...,auth)` 有句柄时走 dispatcher，无句柄仍恒阻断——**不保留任何绕过 dispatcher 的原始 fetch 路径**。H1/H2/H3/suggestNarration/workPanels/insightView 的现有无参调用行为不变（仍阻断），M5 第5步再接线路由。
+5. 单测 `tests/unit/provider-dispatcher.test.ts`：合成 repo + stub fetch：正例（权利+预算→派发→ESTIMATED 回执含 usage/费用/hash）；反例：权利`{}`来源→TRANSFER_DENIED 无 fetch；预算不足→HOLD_BUDGET 无 fetch；超时→HOLD 回执+不重试；重复→回放无二次 fetch；过期委托→拒绝。现有 transfer-boundary 测试保持通过。
+6. 真实隔离验证 `tools/verify-4-provider-dispatch.mjs`：铸 Owner 会话（MOHEN_DATABASE_SESSION_SECRET）→ saveDelegation 真实委托（项目 b0a11000-…-0001，GRANTED，budget 0.02 USD，allowed_actions=['llm_director_h1']）→ 对 NAJ 源（public_domain_secondary_use）做真实 DeepSeek 极小调用（deepseek-flash，maxTokens≈200，费用<¥0.02，在 Owner ≤¥20 预授权内）→ 核 PG 回执行；反例：rights='{}' 来源 TRANSFER_DENIED / 零预算 HOLD_BUDGET / 重放不增回执。打印 VERIFY_4_ALL_PASS。
+7. 回归 typecheck+unit → 提交 → 回写 progress.md/本台账。不在本批：Studio 路由接线（第5步）、M4-C03 中断恢复演练、T1—T7、ACTUAL 对账核销。
+
+**批次 F 结果（2026-11-07/08 本地，VERIFIED_ISOLATED）**：`tools/verify-4-provider-dispatch.mjs` = **VERIFY_4_ALL_PASS**。真实委托 `3a869a5d…`（budget 0.02 USD，GRANTED）；对 NAJ 源（public_domain_secondary_use）真实 DeepSeek deepseek-flash 调用成功，回执 `7c353e92…`：ACCEPT_AS_CANDIDATE + ESTIMATED，**真实费用 $0.000074（≈¥0.0005）**，usage 66 in / 10 out，price_ref `deepseek/2026-11-07`，input/output hash 齐。反例全过：同输入回放不增回执不二次扣费；rights=`{}` 来源 TRANSFER_DENIED 且无回执；零预算委托 HOLD_BUDGET 且无回执。回归：typecheck 6/6、unit 599 pass/2 skipped、data-production 166 pass + 1 既有 DEFERRED_ENV（independent-gate-service-runtime，无 openssl，非本批引入）。
+**施工中发现的两个真实边界（已按失败关闭处理）**：① `deepseek-flash` 是推理型模型，`max_tokens=16` 时全部输出耗尽于 reasoning、`content` 为空 → dispatcher 如实记 HOLD 回执（`PROVIDER_USAGE_UNKNOWN`）而非当作成功；验证调用 maxTokens 提到 200 后正文正常。② data-access 文本通道下 `rights` 以 JSON 字符串返回，dispatcher 权利判定已兼容对象/字符串两形态，解析失败 = TRANSFER_DENIED。
+**不在本批**：Studio 路由接线（第 5 步 M5）、M4-C03 中断恢复演练、ACTUAL 对账核销、生产启用。
 
 ### 第 5 步 · M5 八维度闭环（见 §三 第 5 步）
 

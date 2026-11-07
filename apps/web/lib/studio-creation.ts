@@ -4,6 +4,11 @@
 // 生成内容禁止新增任何年份、地名、人物、关系、事件。无材料或无 key 时返回 null（不编造）。
 import { readProductionRelationSummary } from "./read-model-bridge";
 import { runResearch } from "./mohen-agent/research";
+import {
+  createStudioDispatcherDeps,
+  dispatchAuthorizedCall,
+  isUsableDispatchHandle,
+} from "./studio/provider-dispatcher";
 
 // H1 五母题定义（取自 specs/experience-ui/MoHen_Narrative_Motif_Framework.md §3）。
 // 母题是追问方向，不是预设答案；可组合、可单独使用，不要求五母题全出现。
@@ -57,47 +62,22 @@ function validPlan(value: unknown): value is DirectorPlan {
 /** No current director adapter verifies per-source external_processing rights,
  * provider/purpose/input binding and authorized spend. Display/research read,
  * a client boolean, an API key or engineering permission cannot admit a call.
- * Keep legacy signatures but fail closed until the existing controlled
- * delegation/authorization service can supply and revalidate that context. */
-export function directorExternalProcessingBlocker(): string | null {
-  return "external_processing_not_authorized";
+ * 唯一放行路径：持有 provider-dispatcher 签发的一次性授权句柄（M4 受控派发），
+ * 其余一律失败关闭。 */
+export function directorExternalProcessingBlocker(auth?: unknown): string | null {
+  return isUsableDispatchHandle(auth) ? null : "external_processing_not_authorized";
 }
 
-function llmConfig() {
-  return {
-    baseUrl: (process.env.MOHEN_LLM_BASE_URL || "https://api.deepseek.com").replace(/\/$/, ""),
-    apiKey: process.env.MOHEN_LLM_API_KEY || process.env.DEEPSEEK_API_KEY,
-    model: process.env.MOHEN_LLM_MODEL || "deepseek-chat",
-  };
-}
-
-async function callLlm(system: string, user: string, temperature: number): Promise<string | null> {
-  if (directorExternalProcessingBlocker()) return null;
-  const { baseUrl, apiKey, model } = llmConfig();
-  if (!apiKey) return null;
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 30000);
+/** LLM 调用唯一通道：无授权句柄恒阻断；有句柄必须经受控 dispatcher
+ * （真实委托/预算/逐来源权利/一次性消费/回执），不存在绕过 dispatcher 的原始 fetch 路径。 */
+async function callLlm(system: string, user: string, temperature: number, auth?: unknown): Promise<string | null> {
+  if (directorExternalProcessingBlocker(auth)) return null;
   try {
-    const res = await fetch(`${baseUrl}/chat/completions`, {
-      method: "POST",
-      headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
-      body: JSON.stringify({
-        model,
-        temperature,
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: user },
-        ],
-      }),
-      signal: ctrl.signal,
-    });
-    if (!res.ok) return null;
-    const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
-    return json.choices?.[0]?.message?.content?.trim() || null;
+    const deps = await createStudioDispatcherDeps();
+    const result = await dispatchAuthorizedCall(deps, auth as never, { system, user, temperature });
+    return result.text;
   } catch {
     return null;
-  } finally {
-    clearTimeout(timer);
   }
 }
 

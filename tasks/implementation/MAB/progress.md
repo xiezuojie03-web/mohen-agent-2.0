@@ -1622,3 +1622,17 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 - 回归：`pnpm test:data-production` 166/167（唯一失败仍为 `independent-gate-service-runtime.test.mjs` 的 `DEFERRED_ENV`，本机无 `openssl`）；`pnpm -r typecheck` 6/6 Done；`guard:registry`、`guard:k3-traceability`、`guard:physical-model`、`guard:cross-layer-write`、`guard:runtime-boundary`、`guard:stage-handoff`、`guard:no-legacy-production-entry` 全 OK（`guard:structure` 仍为既有技能目录问题，与本批无关）。
 
 **状态**：3.1、3.7 闭环；3.2/3.3/3.4 为 🔵（G0 候选已提交待 Owner 签；G1–G5 须上游签发后才能提交，禁止越级）。**未签任何 Gate，`M5_OVERALL_HOLD` 不变**。本批策略 `source_ref` 标记 `LOCAL_ISOLATED:m5-gate-policy-v1`，不构成生产政策；生产 Gate 启用与正式政策文本仍属另需授权事项。
+
+### 2026-11-08 第 4 步批次 F（4.1–4.4）：M4 受控 Provider 派发正道解阻断（`VERIFIED_ISOLATED`）
+
+**代码（`CODE_PRESENT`）**：
+- 新建 `apps/web/lib/studio/provider-dispatcher.ts`：单文件含版本化价格表 `deepseek/2026-11-07`（USD/1M token，peak 保守上界；deepseek-flash $0.30/$0.006/$1.20，deepseek-v4-pro $1.32/$0.044/$3.96；模型不在表内 = 拒绝派发）与受控派发器。`authorizeProviderDispatch` 核验：委托未过期 + action ∈ allowed_actions + `transfer_rights_decision.external_processing='GRANTED'` + currency=USD + 预算 ≥ 最坏估算（含同委托已花费累计）+ **逐来源权利**（仅 `external_processing='allow'` 或 `status='public_domain_secondary_use'` 放行，其余/缺失/不可解析一律 `TRANSFER_DENIED`）；同 input_hash 已有 ACCEPT 回执 → 回放句柄。句柄一次性、模块内发行、不可外部构造。`dispatchAuthorizedCall` 30s 超时、**永不重试**；成功写 verified 回执，失败/超时写 HOLD 回执并抛 `DISPATCH_UNCERTAIN`。文件刻意只用可擦除 TS 语法，供 `tools/*.mjs` 在 Node 内建 type stripping 下复用同一实现，不产生第二套派发逻辑。
+- 扩 `packages/data-access/src/studio-delegation-repository.mjs`：`appendVerifiedReceipt`（`ACCEPT_AS_CANDIDATE` + `ESTIMATED`；manifest 必含 usage/price_ref/rate_window/model/input_hash/output_hash；`ACTUAL` 保留给 M4-C03 对账核销；沿用 unique(delegation_id,attempt_no) 幂等）；`index.d.mts` 同步类型。
+- 改 `apps/web/lib/studio-creation.ts`：`directorExternalProcessingBlocker(auth?)` 仅对有效未消费句柄放行，无句柄仍恒阻断；`callLlm(...,auth)` 有句柄走 dispatcher，**不存在绕过 dispatcher 的原始 fetch 路径**（旧 llmConfig/直连 fetch 已删）。H1/H2/H3/suggestNarration/workPanels/insightView 无参调用行为不变（仍阻断），路由接线留第 5 步。
+- 新建 `tests/unit/provider-dispatcher.test.ts`（15 例：价格表/授权正反/一次性句柄/回放不扣费/超时与 HTTP 失败写 HOLD 不重试/伪造句柄拒绝/blocker 接线）与 `tools/verify-4-provider-dispatch.mjs`。
+
+**验证（`VERIFIED_ISOLATED`）**：`VERIFY_4_ALL_PASS`——真实 Owner 会话 + 真实委托（budget 0.02 USD，GRANTED，allowed_actions=['llm_director_h1']）；对 NAJ 源做真实 DeepSeek `deepseek-flash` 极小调用成功，PG 回执 `ACCEPT_AS_CANDIDATE` + `ESTIMATED`，真实费用 **$0.000074**（usage 66 in/10 out，price_ref `deepseek/2026-11-07`，io hash 齐；在 Owner ≤¥20 预授权内）。反例：同输入回放不增回执不二次扣费；rights=`{}` 来源 `TRANSFER_DENIED` 无回执；零预算委托 `HOLD_BUDGET` 无回执。回归：typecheck 6/6；unit 599 passed / 2 skipped；data-production 166 pass + 1 既有 `DEFERRED_ENV`（非本批引入）。
+
+**施工中按失败关闭处理的真实边界**：① `deepseek-flash` 为推理型模型，max_tokens 过小时 `content` 为空 → dispatcher 如实记 HOLD（`PROVIDER_USAGE_UNKNOWN`）不冒充成功；② data-access 文本通道 `rights` 为 JSON 字符串，权利判定兼容对象/字符串两形态，解析失败 = TRANSFER_DENIED。
+
+**状态**：第 4 步 4.1–4.4 闭环（隔离环境）。**生产启用、ACTUAL 对账、路由接线未做**；内部 7 工具 credit 账本与真实币种账并存，对账核销留 M4-C03。下一步：第 5 步 M5 八维度闭环（ST-01→ST-09，含 Studio 路由接 dispatcher）。
