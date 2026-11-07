@@ -33,7 +33,7 @@ begin
             'qualification','UNASSESSED',
             'read_run_id',r.read_run_id,
             'read_unit_id',u.read_unit_id,
-            'artifact_revision',u.artifact_revision,
+            'artifact_revision',control.artifact_revision_for('read_unit',u.read_unit_id),
             'source_id',v.source_id,
             'source_version_id',v.source_version_id,
             'source_checksum_sha256',v.checksum_sha256,

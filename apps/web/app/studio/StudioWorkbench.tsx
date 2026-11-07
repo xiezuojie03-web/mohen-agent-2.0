@@ -118,6 +118,10 @@ export default function StudioWorkbench() {
   const [generating, setGenerating] = useState(false);
   const [directing, setDirecting] = useState(false);
   const [plansError, setPlansError] = useState<string | null>(null);
+  // ST-04 Creator 显式外发授权：委托 id 仅存在于本页面会话，刷新即失效
+  const [delegationId, setDelegationId] = useState<string | null>(null);
+  const [authorizing, setAuthorizing] = useState(false);
+  const [needsAuthorization, setNeedsAuthorization] = useState(false);
 
   // 四面板
   const [activeTab, setActiveTab] = useState(0);
@@ -248,9 +252,42 @@ export default function StudioWorkbench() {
 
   const lastUserBrief = [...messages].reverse().find((m) => m.role === "user")?.text;
 
-  async function generatePlans() {
+  async function authorizeExternal(): Promise<string | null> {
+    if (authorizing) return null;
+    setAuthorizing(true);
+    try {
+      const res = await fetch("/api/studio/dispatch-authorizations", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          project_id: projectId,
+          idempotency_key: crypto.randomUUID(),
+          actions: ["llm_director_h1", "llm_director_h2", "llm_director_h3", "llm_work_panels", "llm_narration_suggest"],
+          budget_usd: 1,
+          ttl_minutes: 30,
+        }),
+      });
+      const json = (await res.json()) as { ok?: boolean; delegation_id?: string };
+      if (res.ok && json.ok && json.delegation_id) {
+        setDelegationId(json.delegation_id);
+        setNeedsAuthorization(false);
+        setPlansError(null);
+        return json.delegation_id;
+      }
+      setPlansError("授权登记失败，未发起任何外部调用。请重试。");
+      return null;
+    } catch {
+      setPlansError("授权登记失败，未发起任何外部调用。请重试。");
+      return null;
+    } finally {
+      setAuthorizing(false);
+    }
+  }
+
+  async function generatePlans(delegationOverride?: string) {
     const brief = lastUserBrief;
     if (!brief || generating || directing || submitLock.current) return;
+    const effectiveDelegation = delegationOverride ?? delegationId;
     setGenerating(true);
     setPlansError(null);
     setPreviewPlan(null);
@@ -258,7 +295,7 @@ export default function StudioWorkbench() {
       const res = await fetch("/api/studio/director-plans", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ brief, topic: "generic", project_id: projectId }),
+        body: JSON.stringify({ brief, topic: "generic", project_id: projectId, ...(effectiveDelegation ? { delegation_id: effectiveDelegation } : {}) }),
       });
       const json = (await res.json()) as {
         ok?: boolean;
@@ -269,12 +306,15 @@ export default function StudioWorkbench() {
         facts?: string[];
       };
       if (res.ok && json.ok && json.planA && json.planB && json.plan_id) {
+        setNeedsAuthorization(false);
         setPlans({ planId: json.plan_id, planA: json.planA, planB: json.planB, facts: json.facts ?? [], brief });
+      } else if (json.reason === "external_processing_not_authorized") {
+        setNeedsAuthorization(true);
+        setPlansError("导演生成需要把项目材料发给外部 AI 处理。这是唯一的外发环节：仅限本项目已绑定来源，30 分钟内有效，预算上限 1 美元，逐次调用留回执。");
       } else {
+        setNeedsAuthorization(false);
         setPlansError(
-          json.reason === "external_processing_not_authorized"
-            ? "材料仍限项目内研究；资料外发权、执行服务及费用授权未齐，导演生成尚未执行。"
-            : json.reason === "no_material_or_llm"
+          json.reason === "no_material_or_llm"
             ? "没有可用的真实材料或模型，暂时生成不了方案。"
             : "生成方案失败，请重试。"
         );
@@ -295,7 +335,7 @@ export default function StudioWorkbench() {
       const res = await fetch(`/api/studio/director-plans/${plans.planId}/select`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ which }),
+        body: JSON.stringify({ which, ...(delegationId ? { delegation_id: delegationId } : {}) }),
       });
       const json = (await res.json()) as { ok?: boolean; beats?: Beat[] };
       if (res.ok && json.ok && Array.isArray(json.beats) && json.beats.length) {
@@ -310,7 +350,11 @@ export default function StudioWorkbench() {
         setActiveTab(0);
         setPanelsLoading(true);
         try {
-          const pres = await fetch(`/api/studio/director-plans/${plans.planId}/panels`, { method: "POST" });
+          const pres = await fetch(`/api/studio/director-plans/${plans.planId}/panels`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(delegationId ? { delegation_id: delegationId } : {}),
+          });
           const pjson = (await pres.json()) as { ok?: boolean; panels?: WorkPanels };
           if (pjson.ok && pjson.panels) setPanels(pjson.panels);
         } catch {
@@ -591,6 +635,21 @@ export default function StudioWorkbench() {
             </div>
 
             {plansError && <p role="alert" className="studio__submit-msg" style={{ color: "#b0413e" }}>{plansError}</p>}
+
+            {needsAuthorization && (
+              <div className="studio__panel" style={{ borderStyle: "dashed" }}>
+                <p className="studio__asset-meta">
+                  点击下面的按钮即表示你明确同意：把本项目的已绑定史料发给外部模型（DeepSeek）参与构思，逐次调用单独记账并留存回执，30 分钟后授权自动失效。
+                </p>
+                <button
+                  className="studio__ghost-btn"
+                  disabled={authorizing || generating || directing}
+                  onClick={() => void authorizeExternal().then((id) => { if (id) void generatePlans(id); })}
+                >
+                  {authorizing ? "登记授权中…" : "我同意本次外发处理"}
+                </button>
+              </div>
+            )}
 
             {!plans && !generating && (
               <div className="studio__empty">
