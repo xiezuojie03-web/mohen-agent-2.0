@@ -1490,3 +1490,26 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 **结论**：NAJ 第7册 = 《松江府志》田赋部分（约卷十~十四，田赋一~六），含各乡保图的田亩科则、平米折征、青浦县上乡等。M5 选题"松江府田赋"素材充足。
 
 **下一步（A线）**：确定卷十一（田赋六）精确页范围 → 提取该卷完整 OCR 转录 → 形成 research_brief/source_anchor/reading_note 资产（写入本地 studio 资产表）→ 入私有存储 + SHA 回读。
+
+## 2026-11-07｜M5闭环跑通：作品生产+发布+WATCH可观看（CodeBuddy）
+
+**作品生产**（受控 DeepSeek，绑定 NAJ 史料出处，tools/generate-work-content.py）：
+- 标题《墨痕·田赋卷：一亩三分地的账》，6 章 beats，每章含 title/narration/visual/directorTimecodeMs/provenanceRefs（原样引用 NAJ 田赋 OCR 出处）。
+- 只讲有据史料：草蕩一頃七畝九分八釐、熟田六十七畝八分一釐七毫、青浦縣屬上鄉、均科正耗平米三斗六升五合、九十六图四百八十六丁、二区五图、四十二保七区等。
+
+**数据库落地**（隔离环境，tools/gen-m5-landing-sql.mjs）：
+- 应用 M3 Gate 迁移：202610310900(安全边界+角色)、202610310910(gate_candidates+qualification_current)、202611010900(gate_policy_versions+gate_reviewer_bindings+qualification_allows/sign_gate_candidate 函数) 成功；20261103234154(gate_service_auth) 因本地无 Supabase `anon` 角色失败（不影响 G5 check）。
+- 建立 L5 资产 story_seed + G5 资格链：gate_policy_versions(enabled) + gate_reviewer_bindings(Owner) + gate_audits(decision_origin=independent_gate, PASS) + qualification_current。
+- Owner 本人（Napoles，users 表已有 reviewer 角色）作为独立 Reviewer 签发 G5。
+- 写作品 works+work_revisions + 发布 published_pointers。
+
+**环境配置**：.env.local 追加 MOHEN_G5_CONTEXTS（watch 消费上下文）。
+
+**端到端验证**：
+- control.qualification_allows(...) = true（G5 资格核心检查通过）。
+- GET /api/works/published → HTTP 200，返回作品《墨痕·田赋卷：一亩三分地的账》。
+- GET /watch → 200；GET / → 200。本地 dev server（localhost:3000）可观看。
+
+**状态**：M5 隔离环境端到端垂直切片已跑通（真实史料→OCR→创作→G5签发→发布→WATCH消费）。生产 Gate 投运仍 HOLD（隔离环境由 Owner 本人签发，非生产独立 Reviewer 身份）；B 线受控 Provider 执行器、13 类资产完整语义、独立 Reviewer 正式投运仍待 M6/M7。注意：本地 dev server 启动时 CodeBuddy safe-delete 守卫会拦截 Next.js 清理 .next（500 文件阈值），需先删 .next 再启动。
+
+**交付**：Owner 可在 http://localhost:3000/watch 观看作品（隔离环境验收）。
