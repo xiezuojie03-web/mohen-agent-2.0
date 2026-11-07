@@ -196,7 +196,7 @@ try{
  const before=sql('select md5(jsonb_agg(to_jsonb(e)order by event_id)::text)from studio.execution_control_events e');
  sql(readFileSync(new URL('../../supabase/rollback/20261107090000_mab_m4_execution_controls.rollback.sql',import.meta.url),'utf8'));
  await assert.rejects(()=>repo.reserveBudget({delegationId:spend.delegation.delegation_id,requestId:randomUUID(),expectedVersion:settled.version,
-  leaseId:null,inputDigest:spend.delegation.request_hash,policyVersion:'fixture-v1',amount:'0.000100',currency:'USD',
+  leaseId:spendLease.lease_id,inputDigest:spend.delegation.request_hash,policyVersion:'fixture-v1',amount:'0.000100',currency:'USD',
   pricingPolicyVersion:spend.pricingPolicyVersion},token(a)),/permission denied/);
  sql(readFileSync(new URL('../../supabase/rollback/20261104013351_mab_m4_execution_controls.rollback.sql',import.meta.url),'utf8'));
  await assert.rejects(()=>repo.claim(call(active,initial.version),token(a)),/permission denied/);
