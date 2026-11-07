@@ -33,7 +33,7 @@ test('M2 private worker consumes the Runner grant once; no duplicate nonce or un
     execution_policy:{enabled:true,attended:true,enable_requires:[]}};
   const registry={status:'ACTIVE_AUTHORIZED',activation:{enabled:true},
     architecture_generation:'mohen.six-stage.v1',jobs:[job]};
-  const run={run_id:id(),execution_mode:'attended',current_stage:'D01'};
+  const run={run_id:id(),execution_mode:'attended',current_stage:'D01',scope:{project_id:id()}};
   const now=Math.floor(Date.now()/1000);
   const claims={iss:'mohen-independent-execution-authorizer',aud:'mohen-production-stage',
     run_id:run.run_id,stage:'D01',job_id:job.job_id,mode:'attended',
@@ -61,6 +61,9 @@ test('M2 private worker consumes the Runner grant once; no duplicate nonce or un
       readOriginal:async()=>{reads++;return {record:{state:'STORED_VERIFIED',content_type:'text/plain',sha256:sha},bytes};},
       bridge:{linkReading:async()=>({link_id:id(),qualification:'UNASSESSED'}),
         linkClaim:async()=>({link_id:id(),qualification:'UNASSESSED'})},
+      // Candidate submission is stubbed: this test asserts one-shot authorization.
+      submitGateCandidate:async()=>'candidate-fixture',
+      readGateAudit:async()=>null,
     });
     await assertStageExecutionAuthorized({registry,job,run,input,context});
     assert.equal(verifyCalls,1);

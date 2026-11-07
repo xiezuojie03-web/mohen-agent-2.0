@@ -14,9 +14,11 @@ const extent={kind:'utf8_byte_range/v1',start_byte:0,end_byte:Buffer.byteLength(
  raw_sha256:sha(bytes),quote_sha256:sha(Buffer.from(quote)),
  source_version_id:'22222222-2222-4222-8222-222222222222',raw_item_id:'33333333-3333-4333-8333-333333333333'};
 const readOriginal=vi.fn(),linkReading=vi.fn(),linkClaim=vi.fn(),verifySourceBinding=vi.fn(),persistReading=vi.fn();
-const worker=createPrivateEvidenceStageWorker({readOriginal,bridge:{linkReading,linkClaim},verifySourceBinding,persistReading});
-const base=(stage,input)=>({run:{run_id:'r'},job:{stage,job_id:'j'},registry:{status:'ACTIVE_AUTHORIZED'},context:{},input,token:'synthetic-actor-session'});
+const submitGateCandidate=vi.fn(),readGateAudit=vi.fn();
+const worker=createPrivateEvidenceStageWorker({readOriginal,bridge:{linkReading,linkClaim},verifySourceBinding,persistReading,submitGateCandidate,readGateAudit});
+const base=(stage,input)=>({run:{run_id:'r',scope:{project_id:'44444444-4444-4444-8444-444444444444'}},job:{stage,job_id:'j'},registry:{status:'ACTIVE_AUTHORIZED'},context:{},input,token:'synthetic-actor-session'});
 beforeEach(()=>{vi.clearAllMocks();auth.handoff.mockReset().mockReturnValue(false);auth.check.mockImplementation(async()=>{auth.handoff.mockReturnValueOnce(true);});verifySourceBinding.mockResolvedValue(true);
+ submitGateCandidate.mockResolvedValue('candidate-1');readGateAudit.mockResolvedValue(null);
  readOriginal.mockResolvedValue({record:{state:'STORED_VERIFIED',content_type:'text/plain',sha256:sha(bytes)},bytes});
  linkReading.mockResolvedValue({link_id:'link-1',qualification:'UNASSESSED'});
  linkClaim.mockResolvedValue({link_id:'link-2',qualification:'UNASSESSED'});
@@ -35,7 +37,7 @@ it('binds a D01 candidate to exact UTF8 bytes, never signs G1',async()=>{
  expect(auth.check).toHaveBeenCalledWith(expect.objectContaining({input:{originalId,extent,quote}}));
 });
 it('cannot acknowledge D01 without durable L1 persistence or with a self-qualified persistence result',async()=>{
- const unbound=createPrivateEvidenceStageWorker({readOriginal,bridge:{linkReading,linkClaim},verifySourceBinding});
+ const unbound=createPrivateEvidenceStageWorker({readOriginal,bridge:{linkReading,linkClaim},verifySourceBinding,submitGateCandidate,readGateAudit});
  await expect(unbound.draftTextReading(base('D01',{originalId,extent,quote}))).rejects.toThrow('PRIVATE_READING_PERSISTENCE_REQUIRED');
  persistReading.mockResolvedValueOnce({qualification:'PASS'});
  await expect(worker.draftTextReading(base('D01',{originalId,extent,quote}))).rejects.toThrow('PRIVATE_READING_NOT_PERSISTED');

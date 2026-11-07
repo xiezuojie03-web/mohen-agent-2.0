@@ -26,9 +26,36 @@ function requireToken(token) {
   if(typeof token!=='string'||token.length===0)throw Error('PRIVATE_STAGE_SESSION_REQUIRED');
 }
 export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySourceBinding,persistReading,readRegistration,persistPageReading,
-  persistMaterialObservation,persistWorldClaim,persistHumanisticFinding,persistWorldProjection}={}) {
+  persistMaterialObservation,persistWorldClaim,persistHumanisticFinding,persistWorldProjection,
+  submitGateCandidate,readGateAudit}={}) {
   if(typeof readOriginal!=='function'||typeof verifySourceBinding!=='function'||
      typeof bridge?.linkReading!=='function'||typeof bridge?.linkClaim!=='function')throw Error('PRIVATE_EVIDENCE_BRIDGE_REQUIRED');
+  // A real stage must never silently skip candidate submission: the existing
+  // control.gate_candidates insert is the only path an independent Gate can
+  // review. Missing deps fail at construction, not after persistence.
+  if(typeof submitGateCandidate!=='function')throw Error('PRIVATE_GATE_CANDIDATE_SUBMISSION_REQUIRED');
+  if(typeof readGateAudit!=='function')throw Error('PRIVATE_GATE_AUDIT_READ_REQUIRED');
+
+  // Candidate only: no result, no qualification, no dependency invention.
+  // An unsigned upstream yields an empty dependency_snapshot and signing will
+  // legitimately fail closed instead of a Producer-fabricated ancestor.
+  async function submitStageCandidate({run,stage,gateCode,objectType,objectId,artifactRevision,
+    projectId,evidenceRefs,upstreamGate,upstreamObjectType,upstreamObjectId,requestDigest}) {
+    if(typeof projectId!=='string'||!UUID.test(projectId))throw Error('PRIVATE_GATE_CANDIDATE_SCOPE_INVALID');
+    if(!HEX.test(artifactRevision??''))throw Error('PRIVATE_GATE_CANDIDATE_REVISION_REQUIRED');
+    const refs=Array.isArray(evidenceRefs)?evidenceRefs.filter(ref=>ref&&typeof ref.id==='string'&&ref.id):[];
+    if(refs.length===0)throw Error('PRIVATE_GATE_CANDIDATE_EVIDENCE_REQUIRED');
+    let dependencySnapshot=[];
+    if(upstreamGate){
+      const audit=await readGateAudit({gateCode:upstreamGate,objectType:upstreamObjectType,objectId:upstreamObjectId});
+      dependencySnapshot=audit?[{gate_audit_id:audit.gate_audit_id,
+        qualification_digest:audit.qualification_digest,artifact_revision:audit.artifact_revision}]:[];
+    }
+    return submitGateCandidate({runId:run.run_id,stage,gateCode,objectType,objectId,artifactRevision,
+      purpose:{namespace:'data-production',code:'m5-remediation',version:'v1'},
+      allowedScope:{project_id:projectId},consumer:'producer',
+      dependencySnapshot,evidenceRefs:refs,inputFingerprint:requestDigest});
+  }
 
   async function authorized({stage,run,job,registry,context,input,token}) {
     requireBoundStage(stage,job);
@@ -75,6 +102,12 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
       if(bound!==true)throw Error('PRIVATE_READING_SOURCE_NOT_BOUND');
       const requestDigest=digestOf({runId:run.run_id,originalId,pageNumber,researchIntent});
       // Durable L0 candidate refs; professional G0 qualification stays independent.
+      const gateCandidateId=await submitStageCandidate({run,stage:'D00',gateCode:'G0',
+        objectType:'source_version',objectId:registration.source_version_id,
+        artifactRevision:registration.artifact_revision,projectId,
+        evidenceRefs:[{kind:'source_version',id:registration.source_version_id,
+          artifact_revision:registration.artifact_revision}],
+        requestDigest});
       return {stage:'D00',candidate_kind:'private_source_intake',
         original_id:originalId,project_id:projectId,page_number:pageNumber,
         source_id:registration.source_id,source_version_id:registration.source_version_id,
@@ -82,7 +115,8 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         content_type:record.content_type,rights:registration.rights,provider:registration.provider,
         title:registration.title,source_type:registration.source_type,carrier_type:registration.carrier_type,
         asset_revision_id:registration.asset_revision_id,artifact_revision:registration.artifact_revision,
-        request_digest:requestDigest,qualification:'UNASSESSED',gate_code:'G0'};
+        request_digest:requestDigest,gate_candidate_id:gateCandidateId,
+        gate_candidate_status:'SUBMITTED',qualification:'UNASSESSED',gate_code:'G0'};
     },
 
     async readScannedPage({run,job,registry,context={},input,token}) {
@@ -107,12 +141,20 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         !UUID.test(saved?.read_unit_id??'')||!HEX.test(saved?.artifact_revision??'')||!HEX.test(saved?.request_digest??''))
         throw Error('PRIVATE_PAGE_READING_NOT_PERSISTED');
       // Durable L1 candidate; professional qualification remains independent.
+      const gateCandidateId=await submitStageCandidate({run,stage:'D01',gateCode:'G1',
+        objectType:'read_unit',objectId:saved.read_unit_id,artifactRevision:saved.artifact_revision,
+        projectId:run?.scope?.project_id,
+        evidenceRefs:[{kind:'read_unit',id:saved.read_unit_id,artifact_revision:saved.artifact_revision},
+          {kind:'source_version',id:page.source_version_id}],
+        upstreamGate:'G0',upstreamObjectType:'source_version',upstreamObjectId:page.source_version_id,
+        requestDigest:saved.request_digest});
       return {stage:'D01',candidate_kind:'private_scanned_page_reading',
         original_id:originalId,source_version_id:page.source_version_id,
         raw_item_id:page.raw_item_id,raw_sha256:record.sha256,
         read_run_id:saved.read_run_id,read_unit_id:saved.read_unit_id,
         artifact_revision:saved.artifact_revision,request_digest:saved.request_digest,
-        page,qualification:'UNASSESSED',gate_code:'G1'};
+        page,gate_candidate_id:gateCandidateId,gate_candidate_status:'SUBMITTED',
+        qualification:'UNASSESSED',gate_code:'G1'};
     },
 
     async draftTextReading({run,job,registry,context={},input,token}) {
@@ -146,12 +188,20 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         !UUID.test(saved?.read_unit_id??'')||!HEX.test(saved?.artifact_revision??'')||!HEX.test(saved?.request_digest??''))
         throw Error('PRIVATE_READING_NOT_PERSISTED');
       // Durable L1 candidate; professional qualification remains independent.
+      const gateCandidateId=await submitStageCandidate({run,stage:'D01',gateCode:'G1',
+        objectType:'read_unit',objectId:saved.read_unit_id,artifactRevision:saved.artifact_revision,
+        projectId:run?.scope?.project_id,
+        evidenceRefs:[{kind:'read_unit',id:saved.read_unit_id,artifact_revision:saved.artifact_revision},
+          {kind:'source_version',id:extent.source_version_id}],
+        upstreamGate:'G0',upstreamObjectType:'source_version',upstreamObjectId:extent.source_version_id,
+        requestDigest:saved.request_digest});
       return {stage:'D01',candidate_kind:'private_text_reading',
         original_id:originalId,source_version_id:extent.source_version_id,
         raw_item_id:extent.raw_item_id,raw_sha256:record.sha256,
         read_run_id:saved.read_run_id,read_unit_id:saved.read_unit_id,
         artifact_revision:saved.artifact_revision,request_digest:saved.request_digest,
-        extent,quote,qualification:'UNASSESSED',gate_code:'G1'};
+        extent,quote,gate_candidate_id:gateCandidateId,gate_candidate_status:'SUBMITTED',
+        qualification:'UNASSESSED',gate_code:'G1'};
     },
 
     async linkReading({run,job,registry,context={},input,token}) {
@@ -198,12 +248,19 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
          !HEX.test(saved?.request_digest??''))
         throw Error('PRIVATE_MATERIAL_OBSERVATION_NOT_PERSISTED');
       // Durable L2 candidate; professional qualification remains independent.
+      const gateCandidateId=await submitStageCandidate({run,stage:'D02',gateCode:'G2',
+        objectType:'material_evidence',objectId:saved.evidence_id,artifactRevision:saved.artifact_revision,
+        projectId:run?.scope?.project_id,
+        evidenceRefs:[{kind:'material_evidence',id:saved.evidence_id,artifact_revision:saved.artifact_revision},
+          {kind:'read_unit',id:readUnitId}],
+        upstreamGate:'G1',upstreamObjectType:'read_unit',upstreamObjectId:readUnitId,
+        requestDigest:saved.request_digest});
       return {stage:'D02',candidate_kind:'private_material_observation',
         original_id:originalId,evidence_id:saved.evidence_id,
         reading_unit_id:saved.reading_unit_id,link_id:saved.link_id,
         read_unit_id:saved.read_unit_id,read_run_id:saved.read_run_id,
         artifact_revision:saved.artifact_revision,request_digest:saved.request_digest,
-        qualification:'UNASSESSED',gate_code:'G2'};
+        gate_candidate_id:gateCandidateId,gate_candidate_status:'SUBMITTED',qualification:'UNASSESSED',gate_code:'G2'};
     },
 
     async assertWorldClaim({run,job,registry,context={},input,token}) {
@@ -224,12 +281,19 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
          !HEX.test(saved?.artifact_revision??'')||!HEX.test(saved?.request_digest??''))
         throw Error('PRIVATE_WORLD_CLAIM_NOT_PERSISTED');
       // Durable L3 candidate; professional qualification remains independent.
+      const gateCandidateId=await submitStageCandidate({run,stage:'D03',gateCode:'G3',
+        objectType:'claim_revision',objectId:saved.claim_revision_id,
+        artifactRevision:saved.artifact_revision,projectId:run?.scope?.project_id,
+        evidenceRefs:[{kind:'claim_revision',id:saved.claim_revision_id,artifact_revision:saved.artifact_revision},
+          {kind:'material_evidence',id:evidenceId}],
+        upstreamGate:'G2',upstreamObjectType:'material_evidence',upstreamObjectId:evidenceId,
+        requestDigest:saved.request_digest});
       return {stage:'D03',candidate_kind:'private_world_claim',
         original_id:originalId,change_id:saved.change_id,
         claim_revision_id:saved.claim_revision_id,
         claim_evidence_link_id:saved.claim_evidence_link_id,evidence_id:saved.evidence_id,
         artifact_revision:saved.artifact_revision,request_digest:saved.request_digest,
-        qualification:'UNASSESSED',gate_code:'G3'};
+        gate_candidate_id:gateCandidateId,gate_candidate_status:'SUBMITTED',qualification:'UNASSESSED',gate_code:'G3'};
     },
 
     async recordHumanisticFinding({run,job,registry,context={},input,token}) {
@@ -253,11 +317,18 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
          !HEX.test(saved?.artifact_revision??'')||!HEX.test(saved?.request_digest??''))
         throw Error('PRIVATE_HUMANISTIC_FINDING_NOT_PERSISTED');
       // Durable L4 candidate; professional qualification remains independent.
+      const gateCandidateId=await submitStageCandidate({run,stage:'D04',gateCode:'G4',
+        objectType:'finding',objectId:saved.finding_id,artifactRevision:saved.artifact_revision,
+        projectId:run?.scope?.project_id,
+        evidenceRefs:[{kind:'finding',id:saved.finding_id,artifact_revision:saved.artifact_revision},
+          {kind:'claim_revision',id:claimRevisionId}],
+        upstreamGate:'G3',upstreamObjectType:'claim_revision',upstreamObjectId:claimRevisionId,
+        requestDigest:saved.request_digest});
       return {stage:'D04',candidate_kind:'private_humanistic_finding',
         original_id:originalId,finding_id:saved.finding_id,
         claim_revision_id:saved.claim_revision_id,
         artifact_revision:saved.artifact_revision,request_digest:saved.request_digest,
-        qualification:'UNASSESSED',gate_code:'G4'};
+        gate_candidate_id:gateCandidateId,gate_candidate_status:'SUBMITTED',qualification:'UNASSESSED',gate_code:'G4'};
     },
 
     async projectWorld({run,job,registry,context={},input,token}) {
@@ -275,11 +346,18 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
          !HEX.test(saved?.artifact_revision??'')||!HEX.test(saved?.request_digest??''))
         throw Error('PRIVATE_WORLD_PROJECTION_NOT_PERSISTED');
       // Durable L5 candidate; professional qualification remains independent.
+      const gateCandidateId=await submitStageCandidate({run,stage:'D05',gateCode:'G5',
+        objectType:'world_projection',objectId:saved.projection_id,
+        artifactRevision:saved.artifact_revision,projectId:run?.scope?.project_id,
+        evidenceRefs:[{kind:'world_projection',id:saved.projection_id,artifact_revision:saved.artifact_revision},
+          {kind:'finding',id:findingId}],
+        upstreamGate:'G4',upstreamObjectType:'finding',upstreamObjectId:findingId,
+        requestDigest:saved.request_digest});
       return {stage:'D05',candidate_kind:'private_world_projection',
         original_id:originalId,projection_id:saved.projection_id,
         finding_id:saved.finding_id,
         artifact_revision:saved.artifact_revision,request_digest:saved.request_digest,
-        qualification:'UNASSESSED',gate_code:'G5'};
+        gate_candidate_id:gateCandidateId,gate_candidate_status:'SUBMITTED',qualification:'UNASSESSED',gate_code:'G5'};
     },
   };
 }

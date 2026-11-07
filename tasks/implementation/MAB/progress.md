@@ -1590,3 +1590,23 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 - 回归：`pnpm -r typecheck` PASS；`pnpm test:unit` 577 passed / 2 skipped（579，两跳过为环境依赖用例）；`pnpm test:data-production` **157/158**，唯一失败仍为 `independent-gate-service-runtime.test.mjs`（本机无 `openssl`，`DEFERRED_ENV`，非本批引入）。
 
 **状态**：D02–D05 候选链 `VERIFIED_ISOLATED`，第 2 步自检 2.1–2.9 的主体已通（全部 HOLD 待 G2–G5）。仍未做：6 个 executor 的 2 行桩（真实执行走私有适配器动作，不经桩）、同一 run 下 D00→D05 串链、D01–D03 非私有分支。`M5_OVERALL_HOLD` 不变。`target-diff.csv` 已同步 `production-registry.json`（`d26219b6…`）与 `method-binding-contract.json`（`9fdb0f0e…`）当前 SHA。下一步：第 3 步 M3 独立 Gate（G0–G5 签发/撤权/当前资格消费/P08）。
+
+### 2026-11-07 第 3 步批次 D（3.1）：独立 Gate 投运 + 私有链候选提交（`VERIFIED_ISOLATED`，签发 HOLD）
+
+**Owner 裁决**：Owner 为唯一 Reviewer；**G0–G5 由 Owner 本人签发，作者（AI）不代签、不铸造会话、不使用 Owner 身份调用 `sign_gate_candidate`**。
+
+**代码与迁移（`CODE_PRESENT`）**：
+- 私有 D 链每个阶段现在必须提交一个 Gate 候选：`private-evidence-stage.mjs` 新增必填依赖 `submitGateCandidate` / `readGateAudit`，缺失即抛 `PRIVATE_GATE_CANDIDATE_SUBMISSION_REQUIRED` / `PRIVATE_GATE_AUDIT_READ_REQUIRED`。候选一律经既有 `recordGate` 写入，无第二条 Gate/audit 写入路径，不传 `result`（候选不是裁定）。G1–G5 的 `dependency_snapshot` 只取**已签且当前有效**的上游审计；上游未签则留空 `[]`，绝不复用旧 PASS、绝不伪造祖先。
+- `private-evidence-binding.mjs` 接线：`submitGateCandidate` → `createDataProductionRepository.recordGate`（producer pool）；`readGateAudit` 为只读投影（`qualification_current` ⋈ `gate_audits`，过滤 `result='PASS'`、`decision_origin='independent_gate'`、`consumer='producer'`、`current_qualification_is_valid`）。
+- 迁移 `20261107210000_mab_m3_private_gate_candidate_submission.sql`：私有 worker 仅 `insert` 候选（RLS 强限 `producer_identity=current_user and candidate_status='SUBMITTED'`）、只读 `gate_audits`（仅 `consumer='producer' and decision_origin='independent_gate'`）与 `qualification_current`（仅 `consumer='producer'`）、列级 `select(candidate_id,producer_identity)`；显式 `revoke` 全部 Gate 写入与 `sign_gate_candidate`/`revoke_gate_qualification` 执行权。
+- 迁移 `20261107211000_mab_m3_local_owner_gate_signer.sql`：新建独立登录 `mohen_gate_signer_m5_owner`（`login noinherit`，唯一成员关系 `mohen_gate_signer`；无 `mohen_producer`/`mohen_app_runtime`/`mohen_gate_authority` 成员、无特权），仅授两个 SECURITY DEFINER 函数执行权，无表直写，`gate-authority-repository.mjs` 的隔离断言因此成立。
+- 新工具：`tools/provision-3-gate-authority.mjs`（幂等投运：G0–G4 策略 `m5-local-v1` + G5 既有 `v1`、G0–G5 Owner reviewer 绑定、signer 登录口令仅落 `D:/MoHen/keys/gate-authority/` 不打印）、`tools/verify-3-gate-chain.mjs`（逐 Gate 策略/绑定/候选/审计/当前资格 + `--negative` 两条负例）。
+
+**验证（`VERIFIED_ISOLATED`）**：
+- 投运：`PROVISION_3_ALL_PASS`（策略 G0–G5 全 `enabled`、绑定 6 条 `active`、G5 既有策略未被覆盖）。
+- 校验：`VERIFY_3_ALL_PASS`（`VERIFY_3_ROLE_PRIVATE_WORKER PASS`、`VERIFY_3_ROLE_OWNER_SIGNER PASS`、G0–G5 逐条 PASS、`VERIFY_3_CHAIN_TOTALS candidates=1 independent_pass=1 qualification=1 invalid=0`）。
+- 负例（3.7 闭环）：`VERIFY_3_NEGATIVE producer_cannot_sign PASS`（`set role mohen_producer` 调 `sign_gate_candidate` 得 42501，审计总数 712→712 未变）；`VERIFY_3_NEGATIVE unsigned_qualification_denied PASS`（未签时 `qualification_allows` 返回 false）。
+- 私有链真实 run：D00 `run_id=33d0f84c…` 经 `run.mjs` + 本地执行授权器，候选 `24da0dfb…`（`source_version b0a11000-…-0005`、`artifact_revision a2418dc0…`、`input_fingerprint b5d38e87…`、`dependency_snapshot []`）落库为 `SUBMITTED`；阶段仍 HOLD `INDEPENDENT_GATE_NOT_VERIFIED`（G0 未签，合同预期）。
+- 回归：`pnpm test:data-production` 166/167（唯一失败仍为 `independent-gate-service-runtime.test.mjs` 的 `DEFERRED_ENV`，本机无 `openssl`）；`pnpm -r typecheck` 6/6 Done；`guard:registry`、`guard:k3-traceability`、`guard:physical-model`、`guard:cross-layer-write`、`guard:runtime-boundary`、`guard:stage-handoff`、`guard:no-legacy-production-entry` 全 OK（`guard:structure` 仍为既有技能目录问题，与本批无关）。
+
+**状态**：3.1、3.7 闭环；3.2/3.3/3.4 为 🔵（G0 候选已提交待 Owner 签；G1–G5 须上游签发后才能提交，禁止越级）。**未签任何 Gate，`M5_OVERALL_HOLD` 不变**。本批策略 `source_ref` 标记 `LOCAL_ISOLATED:m5-gate-policy-v1`，不构成生产政策；生产 Gate 启用与正式政策文本仍属另需授权事项。

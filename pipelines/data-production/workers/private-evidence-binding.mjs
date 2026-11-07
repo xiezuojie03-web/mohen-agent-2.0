@@ -11,6 +11,7 @@ import {
   createPrivateSourceRegistrationRepository,
   createPrivateCandidateRepository,
 } from '../../../packages/data-access/src/index.mjs';
+import { createDataProductionRepository } from '../../../packages/data-access/src/data-production-repository.mjs';
 import { createPrivateEvidenceStageWorker } from './private-evidence-stage.mjs';
 
 export function createBoundPrivateEvidenceStageWorker({
@@ -39,11 +40,36 @@ export function createBoundPrivateEvidenceStageWorker({
   const pageReadings=createPrivateScannedPageReadingRepository(pool,{verificationKey,keyVersion});
   const registrations=createPrivateSourceRegistrationRepository(pool);
   const candidates=createPrivateCandidateRepository(pool,{verificationKey,keyVersion});
+  // The one existing producer-side candidate writer. It only inserts a
+  // SUBMITTED candidate; no Gate decision, signer role or audit write exists
+  // in the Producer process.
+  const gateCandidates=createDataProductionRepository({query:(text,values)=>pool.query(text,values)});
+  const submitGateCandidate=metadata=>gateCandidates.recordGate(metadata);
+  // Read-only projection of an already signed, current, Producer-consumable
+  // upstream audit. A missing or unsigned upstream yields null and the stage
+  // candidate keeps an empty dependency_snapshot instead of a faked ancestor.
+  async function readGateAudit({gateCode,objectType,objectId}={}) {
+    const {rows}=await pool.query(
+      `select a.gate_audit_id::text as gate_audit_id, a.qualification_digest, a.artifact_revision
+       from control.qualification_current q
+       join control.gate_audits a on a.gate_audit_id=q.gate_audit_id
+       where q.gate_code=$1 and q.object_type=$2 and q.object_id=$3::uuid
+         and a.result='PASS' and a.decision_origin='independent_gate' and a.consumer='producer'
+         and control.current_qualification_is_valid(a.gate_audit_id)
+       limit 1`,
+      [gateCode,objectType,objectId]);
+    const row=rows[0];
+    if(!row||typeof row.gate_audit_id!=='string'||typeof row.qualification_digest!=='string'||
+      typeof row.artifact_revision!=='string')return null;
+    return {gate_audit_id:row.gate_audit_id,qualification_digest:row.qualification_digest,
+      artifact_revision:row.artifact_revision};
+  }
   return createPrivateEvidenceStageWorker({ readOriginal, bridge, verifySourceBinding,
     persistReading:readings.save, readRegistration:registrations.lookup,
     persistPageReading:pageReadings.save,
     persistMaterialObservation:candidates.saveMaterialObservation,
     persistWorldClaim:candidates.saveWorldClaim,
     persistHumanisticFinding:candidates.saveHumanisticFinding,
-    persistWorldProjection:candidates.saveWorldProjection });
+    persistWorldProjection:candidates.saveWorldProjection,
+    submitGateCandidate, readGateAudit });
 }

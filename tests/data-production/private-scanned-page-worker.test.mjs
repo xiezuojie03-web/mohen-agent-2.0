@@ -25,7 +25,7 @@ async function withStageAuthority({stage,input},body) {
     execution_policy:{enabled:true,attended:true,enable_requires:[]}};
   const registry={status:'ACTIVE_AUTHORIZED',activation:{enabled:true},
     architecture_generation:'mohen.six-stage.v1',jobs:[job]};
-  const run={run_id:id(),execution_mode:'attended',current_stage:stage};
+  const run={run_id:id(),execution_mode:'attended',current_stage:stage,scope:{project_id:id()}};
   const now=Math.floor(Date.now()/1000);
   const claims={iss:'mohen-independent-execution-authorizer',aud:'mohen-production-stage',
     run_id:run.run_id,stage,job_id:job.job_id,mode:'attended',
@@ -56,6 +56,8 @@ async function withStageAuthority({stage,input},body) {
 }
 
 const IMAGE=Buffer.from([0xff,0xd8,0xff,0xe0,1,2,3,4]);
+// Candidate submission stub; this file asserts provenance, not Gate I/O.
+const gateStub={submitGateCandidate:async()=>'candidate-fixture',readGateAudit:async()=>null};
 const IMAGE_SHA=digest(IMAGE);
 const registrationFor=(originalId,projectId)=>({schema:'mohen.private-source-registration.v1',
   original_id:originalId,project_id:projectId,source_id:id(),source_version_id:id(),raw_item_id:id(),
@@ -75,7 +77,7 @@ test('D00 verifySourceIntake returns an UNASSESSED registration candidate under 
         state:'STORED_VERIFIED',content_type:'image/jpeg',sha256:IMAGE_SHA,byte_size:IMAGE.length},bytes:IMAGE};},
       verifySourceBinding:async()=>{bindings++;return true;},
       readRegistration:async()=>{registrations++;return registrationFor(originalId,projectId);},
-      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},
+      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},...gateStub,
     });
     const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
     assert.equal(reads,1);assert.equal(registrations,1);assert.equal(bindings,1);
@@ -99,7 +101,7 @@ test('D00 rejects an authorized but invalid scope before any read',async()=>{
     const worker=createPrivateEvidenceStageWorker({
       readOriginal:async()=>{throw Error('must not read');},
       verifySourceBinding:async()=>true,
-      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},
+      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},...gateStub,
     });
     await assert.rejects(()=>worker.verifySourceIntake({run,job,registry,context,input:badScope,token:'s'}),
       /PRIVATE_SOURCE_INTAKE_SCOPE_INVALID/);
@@ -113,7 +115,7 @@ test('D00 requires the registration repository before touching the original',asy
     const worker=createPrivateEvidenceStageWorker({
       readOriginal:async()=>{throw Error('must not read');},
       verifySourceBinding:async()=>true,
-      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},
+      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},...gateStub,
     });
     await assert.rejects(()=>worker.verifySourceIntake({run,job,registry,context,input,token:'s'}),
       /PRIVATE_SOURCE_REGISTRATION_REQUIRED/);
@@ -128,17 +130,17 @@ test('D00 fails closed when the original bytes, project or binding disagree',asy
     wrongBytes:{readOriginal:async()=>({record:{original_id:originalId,project_id:projectId,
         state:'STORED_VERIFIED',content_type:'image/jpeg',sha256:IMAGE_SHA,byte_size:IMAGE.length},bytes:Buffer.from('tampered')}),
       readRegistration:async()=>registration,verifySourceBinding:async()=>true,
-      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},
+      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},...gateStub,
       expect:/PRIVATE_SOURCE_INTAKE_ORIGINAL_UNVERIFIED/},
     wrongProject:{readOriginal:async()=>({record:{original_id:originalId,project_id:id(),
         state:'STORED_VERIFIED',content_type:'image/jpeg',sha256:IMAGE_SHA,byte_size:IMAGE.length},bytes:IMAGE}),
       readRegistration:async()=>registration,verifySourceBinding:async()=>true,
-      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},
+      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},...gateStub,
       expect:/PRIVATE_SOURCE_INTAKE_ORIGINAL_UNVERIFIED/},
     unbound:{readOriginal:async()=>({record:{original_id:originalId,project_id:projectId,
         state:'STORED_VERIFIED',content_type:'image/jpeg',sha256:IMAGE_SHA,byte_size:IMAGE.length},bytes:IMAGE}),
       readRegistration:async()=>registration,verifySourceBinding:async()=>false,
-      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},
+      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},...gateStub,
       expect:/PRIVATE_READING_SOURCE_NOT_BOUND/},
   };
   for(const [name,deps] of Object.entries(cases)) {
@@ -163,7 +165,7 @@ test('D01 readScannedPage persists one C02 candidate under a real stage grant an
       verifySourceBinding:async()=>true,
       persistPageReading:async()=>{persisted++;return {read_run_id:id(),read_unit_id:id(),
         artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64),qualification:'UNASSESSED'};},
-      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},
+      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},...gateStub,
     });
     const candidate=await worker.readScannedPage({run,job,registry,context,input,token:'synthetic-session'});
     assert.equal(persisted,1);
@@ -197,7 +199,7 @@ test('D01 readScannedPage rejects authorized-but-invalid locators before any rea
         readOriginal:async()=>{throw Error('must not read an invalid locator');},
         verifySourceBinding:async()=>true,
         persistPageReading:async()=>{throw Error('must not persist an invalid locator');},
-        bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},
+        bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},...gateStub,
       });
       await assert.rejects(()=>worker.readScannedPage({run,job,registry,context,input,token:'s'}),
         /PRIVATE_PAGE_READING_LOCATOR_INVALID/);
@@ -216,16 +218,16 @@ test('D01 readScannedPage rejects unbound sources, wrong bytes and a missing per
     unbound:{readOriginal:goodRead,verifySourceBinding:async()=>false,
       persistPageReading:async()=>({read_run_id:id(),read_unit_id:id(),
         artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64),qualification:'UNASSESSED'}),
-      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},
+      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},...gateStub,
       expect:/PRIVATE_READING_SOURCE_NOT_BOUND/},
     noPersist:{readOriginal:goodRead,verifySourceBinding:async()=>true,
-      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},
+      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},...gateStub,
       expect:/PRIVATE_PAGE_READING_PERSISTENCE_REQUIRED/},
     wrongBytes:{readOriginal:async()=>({record:{original_id:originalId,project_id:id(),
         state:'STORED_VERIFIED',content_type:'image/jpeg',sha256:IMAGE_SHA,byte_size:IMAGE.length},bytes:Buffer.from('tampered')}),
       verifySourceBinding:async()=>true,
       persistPageReading:async()=>{throw Error('must not persist unverified bytes');},
-      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},
+      bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},...gateStub,
       expect:/PRIVATE_PAGE_READING_ORIGINAL_UNVERIFIED/},
   };
   for(const [name,deps] of Object.entries(cases)) {

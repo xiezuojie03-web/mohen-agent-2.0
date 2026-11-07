@@ -3,7 +3,7 @@
 // only; nothing here signs a Gate.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {generateKeyPairSync, randomUUID, sign} from 'node:crypto';
+import {createHash, generateKeyPairSync, randomUUID, sign} from 'node:crypto';
 import {
   assertStageExecutionAuthorized, executionDigest,
 } from '../../pipelines/data-production/orchestrator/execution-authority.mjs';
@@ -26,7 +26,7 @@ async function withStageAuthority({stage,input},body) {
     execution_policy:{enabled:true,attended:true,enable_requires:[]}};
   const registry={status:'ACTIVE_AUTHORIZED',activation:{enabled:true},
     architecture_generation:'mohen.six-stage.v1',jobs:[job]};
-  const run={run_id:id(),execution_mode:'attended',current_stage:stage};
+  const run={run_id:id(),execution_mode:'attended',current_stage:stage,scope:{project_id:id()}};
   const now=Math.floor(Date.now()/1000);
   const claims={iss:'mohen-independent-execution-authorizer',aud:'mohen-production-stage',
     run_id:run.run_id,stage,job_id:job.job_id,mode:'attended',
@@ -57,6 +57,8 @@ async function withStageAuthority({stage,input},body) {
 }
 
 const bridgeStub={linkReading:async()=>({}),linkClaim:async()=>({})};
+// Minimal candidate-submission stub: a candidate id, never a Gate decision.
+const gateStub={submitGateCandidate:async()=>'candidate-fixture',readGateAudit:async()=>null};
 const observation=()=>({h_type:'H05',
   literal_reading:'均科正耗平米三斗六升五合以下低田等准熟起科同',
   normalized_text:'均科正耗平米三斗六升五合。以下低田等，准熟起科同。',
@@ -82,7 +84,7 @@ const INVALID_ERROR={D02:/PRIVATE_MATERIAL_OBSERVATION_INVALID/,D03:/PRIVATE_WOR
   D04:/PRIVATE_HUMANISTIC_FINDING_INVALID/,D05:/PRIVATE_WORLD_PROJECTION_INVALID/};
 const rejectsInvalid=async(stage,input)=>{
   await withStageAuthority({stage,input},async({registry,job,run,context})=>{
-    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,
+    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,...gateStub,
       persistMaterialObservation:async()=>{throw Error('must not persist an invalid D02 input');},
       persistWorldClaim:async()=>{throw Error('must not persist an invalid D03 input');},
       persistHumanisticFinding:async()=>{throw Error('must not persist an invalid D04 input');},
@@ -99,7 +101,7 @@ test('D02 observeMaterial persists one H05 candidate under a real stage grant',a
   const input={originalId,readUnitId,observation:observation()};
   let persisted=0;
   return withStageAuthority({stage:'D02',input},async({registry,job,run,context})=>{
-    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,
+    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,...gateStub,
       persistMaterialObservation:async(args,token)=>{
         persisted++;
         assert.equal(args.runId,run.run_id);
@@ -150,13 +152,13 @@ test('D02 observeMaterial rejects authorized-but-invalid inputs before any persi
 test('D02 observeMaterial requires the persistence repository and a persisted result',async()=>{
   const missingDep={originalId:id(),readUnitId:id(),observation:observation()};
   await withStageAuthority({stage:'D02',input:missingDep},async({registry,job,run,context})=>{
-    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub});
+    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,...gateStub});
     await assert.rejects(()=>worker.observeMaterial({run,job,registry,context,input:missingDep,token:'s'}),
       /PRIVATE_CANDIDATE_PERSISTENCE_REQUIRED/);
   });
   const unpersisted={originalId:id(),readUnitId:id(),observation:observation()};
   await withStageAuthority({stage:'D02',input:unpersisted},async({registry,job,run,context})=>{
-    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,
+    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,...gateStub,
       persistMaterialObservation:async()=>({read_run_id:id()})});
     await assert.rejects(()=>worker.observeMaterial({run,job,registry,context,input:unpersisted,token:'s'}),
       /PRIVATE_MATERIAL_OBSERVATION_NOT_PERSISTED/);
@@ -168,7 +170,7 @@ test('D03 assertWorldClaim persists one W07 candidate under a real stage grant',
   const input={originalId,evidenceId,claim:claim()};
   let persisted=0;
   return withStageAuthority({stage:'D03',input},async({registry,job,run,context})=>{
-    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,
+    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,...gateStub,
       persistWorldClaim:async(args,token)=>{
         persisted++;
         assert.equal(args.runId,run.run_id);
@@ -216,13 +218,13 @@ test('D03 assertWorldClaim rejects authorized-but-invalid claims before any pers
 test('D03 assertWorldClaim requires the persistence repository and a persisted result',async()=>{
   const missingDep={originalId:id(),evidenceId:id(),claim:claim()};
   await withStageAuthority({stage:'D03',input:missingDep},async({registry,job,run,context})=>{
-    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub});
+    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,...gateStub});
     await assert.rejects(()=>worker.assertWorldClaim({run,job,registry,context,input:missingDep,token:'s'}),
       /PRIVATE_CANDIDATE_PERSISTENCE_REQUIRED/);
   });
   const unpersisted={originalId:id(),evidenceId:id(),claim:claim()};
   await withStageAuthority({stage:'D03',input:unpersisted},async({registry,job,run,context})=>{
-    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,
+    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,...gateStub,
       persistWorldClaim:async()=>({change_id:id()})});
     await assert.rejects(()=>worker.assertWorldClaim({run,job,registry,context,input:unpersisted,token:'s'}),
       /PRIVATE_WORLD_CLAIM_NOT_PERSISTED/);
@@ -234,7 +236,7 @@ test('D04 recordHumanisticFinding persists one A06 candidate under a real stage 
   const input={originalId,claimRevisionId,finding:finding()};
   let persisted=0;
   return withStageAuthority({stage:'D04',input},async({registry,job,run,context})=>{
-    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,
+    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,...gateStub,
       persistHumanisticFinding:async(args,token)=>{
         persisted++;
         assert.equal(args.runId,run.run_id);
@@ -283,13 +285,13 @@ test('D04 recordHumanisticFinding rejects authorized-but-invalid findings before
 test('D04 recordHumanisticFinding requires the persistence repository and a persisted result',async()=>{
   const missingDep={originalId:id(),claimRevisionId:id(),finding:finding()};
   await withStageAuthority({stage:'D04',input:missingDep},async({registry,job,run,context})=>{
-    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub});
+    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,...gateStub});
     await assert.rejects(()=>worker.recordHumanisticFinding({run,job,registry,context,input:missingDep,token:'s'}),
       /PRIVATE_CANDIDATE_PERSISTENCE_REQUIRED/);
   });
   const unpersisted={originalId:id(),claimRevisionId:id(),finding:finding()};
   await withStageAuthority({stage:'D04',input:unpersisted},async({registry,job,run,context})=>{
-    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,
+    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,...gateStub,
       persistHumanisticFinding:async()=>({finding_id:'not-a-uuid'})});
     await assert.rejects(()=>worker.recordHumanisticFinding({run,job,registry,context,input:unpersisted,token:'s'}),
       /PRIVATE_HUMANISTIC_FINDING_NOT_PERSISTED/);
@@ -301,7 +303,7 @@ test('D05 projectWorld persists one P02 candidate under a real stage grant',asyn
   const input={originalId,findingId,projection:projection()};
   let persisted=0;
   return withStageAuthority({stage:'D05',input},async({registry,job,run,context})=>{
-    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,
+    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,...gateStub,
       persistWorldProjection:async(args,token)=>{
         persisted++;
         assert.equal(args.runId,run.run_id);
@@ -344,15 +346,301 @@ test('D05 projectWorld rejects authorized-but-invalid projections before any per
 test('D05 projectWorld requires the persistence repository and a persisted result',async()=>{
   const missingDep={originalId:id(),findingId:id(),projection:projection()};
   await withStageAuthority({stage:'D05',input:missingDep},async({registry,job,run,context})=>{
-    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub});
+    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,...gateStub});
     await assert.rejects(()=>worker.projectWorld({run,job,registry,context,input:missingDep,token:'s'}),
       /PRIVATE_CANDIDATE_PERSISTENCE_REQUIRED/);
   });
   const unpersisted={originalId:id(),findingId:id(),projection:projection()};
   await withStageAuthority({stage:'D05',input:unpersisted},async({registry,job,run,context})=>{
-    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,
+    const worker=createPrivateEvidenceStageWorker({readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,...gateStub,
       persistWorldProjection:async()=>({projection_id:id(),finding_id:'not-a-uuid'})});
     await assert.rejects(()=>worker.projectWorld({run,job,registry,context,input:unpersisted,token:'s'}),
       /PRIVATE_WORLD_PROJECTION_NOT_PERSISTED/);
   });
+});
+
+// ---- Candidate submission: one SUBMITTED candidate per successful private stage.
+// No Gate decision, no audit write, no result field. No real DB is touched.
+const IMAGE=Buffer.from([0xff,0xd8,0xff,0xe0,1,2,3,4]);
+const IMAGE_SHA=createHash('sha256').update(IMAGE).digest('hex');
+const TEXT=Buffer.from('均科正耗平米三斗六升五合。','utf8');
+const TEXT_SHA=createHash('sha256').update(TEXT).digest('hex');
+const TEXT_QUOTE='均科正耗平米三斗六升五合。';
+const CANDIDATE_PURPOSE={namespace:'data-production',code:'m5-remediation',version:'v1'};
+const registrationFor=(originalId,projectId,overrides={})=>({
+  original_id:originalId,project_id:projectId,source_id:id(),source_version_id:id(),raw_item_id:id(),
+  sha256:IMAGE_SHA,byte_size:IMAGE.length,content_type:'image/jpeg',
+  provider:'NAJ',title:'松江府志7',source_type:'gazetteer',carrier_type:'scanned_page',
+  rights:{status:'public_domain_secondary_use'},asset_revision_id:id(),
+  artifact_revision:'c'.repeat(64),...overrides});
+const imageRecord=(originalId,projectId)=>({record:{original_id:originalId,project_id:projectId,
+  state:'STORED_VERIFIED',content_type:'image/jpeg',sha256:IMAGE_SHA,byte_size:IMAGE.length},bytes:IMAGE});
+const textRecord=()=>({record:{state:'STORED_VERIFIED',content_type:'text/plain',sha256:TEXT_SHA},
+  bytes:TEXT});
+const extentFor=(sourceVersionId)=>({kind:'utf8_byte_range/v1',start_byte:0,end_byte:TEXT.length,
+  source_version_id:sourceVersionId,raw_item_id:id(),raw_sha256:TEXT_SHA,
+  quote_sha256:createHash('sha256').update(Buffer.from(TEXT_QUOTE,'utf8')).digest('hex')});
+const scannedPageFor=(sourceVersionId)=>({kind:'scanned_page/v1',page_number:35,
+  source_version_id:sourceVersionId,raw_item_id:id(),raw_sha256:IMAGE_SHA,page_sha256:IMAGE_SHA});
+const persistedReading=(readUnitId)=>({read_run_id:id(),read_unit_id:readUnitId,
+  artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64),qualification:'UNASSESSED'});
+
+test('a private stage cannot be constructed without candidate submission or audit read',()=>{
+  const base={readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub};
+  assert.throws(()=>createPrivateEvidenceStageWorker({...base,readGateAudit:async()=>null}),
+    /PRIVATE_GATE_CANDIDATE_SUBMISSION_REQUIRED/);
+  assert.throws(()=>createPrivateEvidenceStageWorker({...base,submitGateCandidate:async()=>'candidate'}),
+    /PRIVATE_GATE_AUDIT_READ_REQUIRED/);
+  assert.doesNotThrow(()=>createPrivateEvidenceStageWorker({...base,
+    submitGateCandidate:async()=>'candidate',readGateAudit:async()=>null}));
+});
+
+test('D00 verifySourceIntake submits exactly one G0 source_version candidate',async()=>{
+  const originalId=id(),projectId=id(),sourceVersionId=id();
+  const input={research_intent:'松江府田赋卷十一',scope:{project_id:projectId,original_id:originalId,page_number:35}};
+  const submitted=[];
+  return withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
+    const worker=createPrivateEvidenceStageWorker({
+      readOriginal:async()=>imageRecord(originalId,projectId),
+      verifySourceBinding:async()=>true,
+      readRegistration:async()=>registrationFor(originalId,projectId,{source_version_id:sourceVersionId}),
+      bridge:bridgeStub,
+      submitGateCandidate:async metadata=>{submitted.push(metadata);return 'candidate-g0';},
+      readGateAudit:async()=>{throw Error('G0 must not read an upstream audit');},
+    });
+    const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
+    assert.equal(submitted.length,1);
+    assert.deepEqual(submitted[0],{runId:run.run_id,stage:'D00',gateCode:'G0',
+      objectType:'source_version',objectId:sourceVersionId,artifactRevision:'c'.repeat(64),
+      purpose:CANDIDATE_PURPOSE,allowedScope:{project_id:projectId},consumer:'producer',
+      dependencySnapshot:[],evidenceRefs:[{kind:'source_version',id:sourceVersionId,
+        artifact_revision:'c'.repeat(64)}],inputFingerprint:candidate.request_digest});
+    assert.equal('result' in submitted[0],false,'a candidate is not a decision');
+    assert.equal(candidate.gate_candidate_id,'candidate-g0');
+    assert.equal(candidate.gate_candidate_status,'SUBMITTED');
+    assert.equal(candidate.qualification,'UNASSESSED');
+  });
+});
+
+test('D01 readScannedPage submits one G1 read_unit candidate with an empty dependency snapshot when G0 is unsigned',async()=>{
+  const originalId=id(),sourceVersionId=id(),readUnitId=id();
+  const input={originalId,page:scannedPageFor(sourceVersionId)};
+  const audits=[];
+  let submitted=null;
+  return withStageAuthority({stage:'D01',input},async({registry,job,run,context})=>{
+    const worker=createPrivateEvidenceStageWorker({
+      readOriginal:async()=>imageRecord(originalId,run.scope.project_id),
+      verifySourceBinding:async()=>true,
+      persistPageReading:async()=>persistedReading(readUnitId),
+      bridge:bridgeStub,
+      submitGateCandidate:async metadata=>{submitted=metadata;return 'candidate-g1';},
+      readGateAudit:async query=>{audits.push(query);return null;},
+    });
+    const candidate=await worker.readScannedPage({run,job,registry,context,input,token:'synthetic-session'});
+    assert.deepEqual(audits,[{gateCode:'G0',objectType:'source_version',objectId:sourceVersionId}]);
+    // An unsigned upstream is never faked; the candidate keeps [] and signing
+    // will fail closed on its own.
+    assert.deepEqual(submitted.dependencySnapshot,[]);
+    assert.deepEqual(submitted,{runId:run.run_id,stage:'D01',gateCode:'G1',
+      objectType:'read_unit',objectId:readUnitId,artifactRevision:'a'.repeat(64),
+      purpose:CANDIDATE_PURPOSE,allowedScope:{project_id:run.scope.project_id},consumer:'producer',
+      dependencySnapshot:[],evidenceRefs:[
+        {kind:'read_unit',id:readUnitId,artifact_revision:'a'.repeat(64)},
+        {kind:'source_version',id:sourceVersionId}],inputFingerprint:'b'.repeat(64)});
+    assert.equal(candidate.gate_candidate_id,'candidate-g1');
+    assert.equal(candidate.gate_candidate_status,'SUBMITTED');
+    assert.equal(candidate.qualification,'UNASSESSED');
+  });
+});
+
+test('D01 draftTextReading submits one G1 read_unit candidate against the extent source version',async()=>{
+  const originalId=id(),sourceVersionId=id(),readUnitId=id();
+  const extent=extentFor(sourceVersionId);
+  const input={originalId,extent,quote:TEXT_QUOTE};
+  const audits=[];
+  let submitted=null;
+  return withStageAuthority({stage:'D01',input},async({registry,job,run,context})=>{
+    const worker=createPrivateEvidenceStageWorker({
+      readOriginal:async()=>textRecord(),
+      verifySourceBinding:async()=>true,
+      persistReading:async()=>persistedReading(readUnitId),
+      bridge:bridgeStub,
+      submitGateCandidate:async metadata=>{submitted=metadata;return 'candidate-g1-text';},
+      readGateAudit:async query=>{audits.push(query);return null;},
+    });
+    const candidate=await worker.draftTextReading({run,job,registry,context,input,token:'synthetic-session'});
+    assert.deepEqual(audits,[{gateCode:'G0',objectType:'source_version',objectId:sourceVersionId}]);
+    assert.equal(submitted.stage,'D01');
+    assert.equal(submitted.gateCode,'G1');
+    assert.equal(submitted.objectType,'read_unit');
+    assert.equal(submitted.objectId,readUnitId);
+    assert.equal(submitted.artifactRevision,'a'.repeat(64));
+    assert.equal(submitted.inputFingerprint,'b'.repeat(64));
+    assert.deepEqual(submitted.evidenceRefs,[
+      {kind:'read_unit',id:readUnitId,artifact_revision:'a'.repeat(64)},
+      {kind:'source_version',id:sourceVersionId}]);
+    assert.deepEqual(submitted.dependencySnapshot,[]);
+    assert.equal(candidate.gate_candidate_id,'candidate-g1-text');
+    assert.equal(candidate.gate_candidate_status,'SUBMITTED');
+  });
+});
+
+test('D02 observeMaterial submits one G2 material_evidence candidate with the signed G1 dependency',async()=>{
+  const originalId=id(),readUnitId=id(),evidenceId=id();
+  const auditId=id();
+  const input={originalId,readUnitId,observation:observation()};
+  const audits=[];
+  let submitted=null;
+  return withStageAuthority({stage:'D02',input},async({registry,job,run,context})=>{
+    const worker=createPrivateEvidenceStageWorker({
+      readOriginal:async()=>({}),
+      verifySourceBinding:async()=>true,
+      persistMaterialObservation:async()=>({evidence_id:evidenceId,reading_unit_id:id(),link_id:id(),
+        read_unit_id:readUnitId,read_run_id:id(),artifact_revision:'a'.repeat(64),
+        request_digest:'b'.repeat(64),qualification:'UNASSESSED'}),
+      bridge:bridgeStub,
+      submitGateCandidate:async metadata=>{submitted=metadata;return 'candidate-g2';},
+      readGateAudit:async query=>{audits.push(query);return {gate_audit_id:auditId,
+        qualification_digest:'d'.repeat(64),artifact_revision:'e'.repeat(64)};},
+    });
+    const candidate=await worker.observeMaterial({run,job,registry,context,input,token:'synthetic-session'});
+    assert.deepEqual(audits,[{gateCode:'G1',objectType:'read_unit',objectId:readUnitId}]);
+    assert.deepEqual(submitted,{runId:run.run_id,stage:'D02',gateCode:'G2',
+      objectType:'material_evidence',objectId:evidenceId,artifactRevision:'a'.repeat(64),
+      purpose:CANDIDATE_PURPOSE,allowedScope:{project_id:run.scope.project_id},consumer:'producer',
+      dependencySnapshot:[{gate_audit_id:auditId,qualification_digest:'d'.repeat(64),
+        artifact_revision:'e'.repeat(64)}],
+      evidenceRefs:[{kind:'material_evidence',id:evidenceId,artifact_revision:'a'.repeat(64)},
+        {kind:'read_unit',id:readUnitId}],inputFingerprint:'b'.repeat(64)});
+    assert.equal(candidate.gate_candidate_id,'candidate-g2');
+    assert.equal(candidate.gate_candidate_status,'SUBMITTED');
+    assert.equal(candidate.qualification,'UNASSESSED');
+  });
+});
+
+test('D03 assertWorldClaim submits one G3 claim_revision candidate with the signed G2 dependency',async()=>{
+  const originalId=id(),evidenceId=id(),claimRevisionId=id();
+  const auditId=id();
+  const input={originalId,evidenceId,claim:claim()};
+  let submitted=null;
+  return withStageAuthority({stage:'D03',input},async({registry,job,run,context})=>{
+    const worker=createPrivateEvidenceStageWorker({
+      readOriginal:async()=>({}),
+      verifySourceBinding:async()=>true,
+      persistWorldClaim:async()=>({change_id:id(),claim_revision_id:claimRevisionId,
+        claim_evidence_link_id:id(),evidence_id:evidenceId,artifact_revision:'a'.repeat(64),
+        request_digest:'b'.repeat(64),qualification:'UNASSESSED'}),
+      bridge:bridgeStub,
+      submitGateCandidate:async metadata=>{submitted=metadata;return 'candidate-g3';},
+      readGateAudit:async()=>({gate_audit_id:auditId,qualification_digest:'d'.repeat(64),
+        artifact_revision:'e'.repeat(64)}),
+    });
+    const candidate=await worker.assertWorldClaim({run,job,registry,context,input,token:'synthetic-session'});
+    assert.deepEqual(submitted,{runId:run.run_id,stage:'D03',gateCode:'G3',
+      objectType:'claim_revision',objectId:claimRevisionId,artifactRevision:'a'.repeat(64),
+      purpose:CANDIDATE_PURPOSE,allowedScope:{project_id:run.scope.project_id},consumer:'producer',
+      dependencySnapshot:[{gate_audit_id:auditId,qualification_digest:'d'.repeat(64),
+        artifact_revision:'e'.repeat(64)}],
+      evidenceRefs:[{kind:'claim_revision',id:claimRevisionId,artifact_revision:'a'.repeat(64)},
+        {kind:'material_evidence',id:evidenceId}],inputFingerprint:'b'.repeat(64)});
+    assert.equal(candidate.gate_candidate_id,'candidate-g3');
+    assert.equal(candidate.gate_candidate_status,'SUBMITTED');
+  });
+});
+
+test('D04 recordHumanisticFinding submits one G4 finding candidate with the signed G3 dependency',async()=>{
+  const originalId=id(),claimRevisionId=id(),findingId=id();
+  const auditId=id();
+  const input={originalId,claimRevisionId,finding:finding()};
+  let submitted=null;
+  return withStageAuthority({stage:'D04',input},async({registry,job,run,context})=>{
+    const worker=createPrivateEvidenceStageWorker({
+      readOriginal:async()=>({}),
+      verifySourceBinding:async()=>true,
+      persistHumanisticFinding:async()=>({finding_id:findingId,claim_revision_id:claimRevisionId,
+        artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64),qualification:'UNASSESSED'}),
+      bridge:bridgeStub,
+      submitGateCandidate:async metadata=>{submitted=metadata;return 'candidate-g4';},
+      readGateAudit:async()=>({gate_audit_id:auditId,qualification_digest:'d'.repeat(64),
+        artifact_revision:'e'.repeat(64)}),
+    });
+    const candidate=await worker.recordHumanisticFinding({run,job,registry,context,input,token:'synthetic-session'});
+    assert.deepEqual(submitted,{runId:run.run_id,stage:'D04',gateCode:'G4',
+      objectType:'finding',objectId:findingId,artifactRevision:'a'.repeat(64),
+      purpose:CANDIDATE_PURPOSE,allowedScope:{project_id:run.scope.project_id},consumer:'producer',
+      dependencySnapshot:[{gate_audit_id:auditId,qualification_digest:'d'.repeat(64),
+        artifact_revision:'e'.repeat(64)}],
+      evidenceRefs:[{kind:'finding',id:findingId,artifact_revision:'a'.repeat(64)},
+        {kind:'claim_revision',id:claimRevisionId}],inputFingerprint:'b'.repeat(64)});
+    assert.equal(candidate.gate_candidate_id,'candidate-g4');
+    assert.equal(candidate.gate_candidate_status,'SUBMITTED');
+  });
+});
+
+test('D05 projectWorld submits one G5 world_projection candidate with the signed G4 dependency',async()=>{
+  const originalId=id(),findingId=id(),projectionId=id();
+  const auditId=id();
+  const input={originalId,findingId,projection:projection()};
+  let submitted=null;
+  return withStageAuthority({stage:'D05',input},async({registry,job,run,context})=>{
+    const worker=createPrivateEvidenceStageWorker({
+      readOriginal:async()=>({}),
+      verifySourceBinding:async()=>true,
+      persistWorldProjection:async()=>({projection_id:projectionId,finding_id:findingId,
+        artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64),qualification:'UNASSESSED'}),
+      bridge:bridgeStub,
+      submitGateCandidate:async metadata=>{submitted=metadata;return 'candidate-g5';},
+      readGateAudit:async()=>({gate_audit_id:auditId,qualification_digest:'d'.repeat(64),
+        artifact_revision:'e'.repeat(64)}),
+    });
+    const candidate=await worker.projectWorld({run,job,registry,context,input,token:'synthetic-session'});
+    assert.deepEqual(submitted,{runId:run.run_id,stage:'D05',gateCode:'G5',
+      objectType:'world_projection',objectId:projectionId,artifactRevision:'a'.repeat(64),
+      purpose:CANDIDATE_PURPOSE,allowedScope:{project_id:run.scope.project_id},consumer:'producer',
+      dependencySnapshot:[{gate_audit_id:auditId,qualification_digest:'d'.repeat(64),
+        artifact_revision:'e'.repeat(64)}],
+      evidenceRefs:[{kind:'world_projection',id:projectionId,artifact_revision:'a'.repeat(64)},
+        {kind:'finding',id:findingId}],inputFingerprint:'b'.repeat(64)});
+    assert.equal(candidate.gate_candidate_id,'candidate-g5');
+    assert.equal(candidate.gate_candidate_status,'SUBMITTED');
+  });
+});
+
+test('candidate submission fails closed on a missing project scope, a non-hex revision and empty evidence refs',async()=>{
+  // A run without a project scope cannot submit a scoped candidate.
+  const originalId=id(),readUnitId=id();
+  const scoped={originalId,readUnitId,observation:observation()};
+  await withStageAuthority({stage:'D02',input:scoped},async({registry,job,run,context})=>{
+    const worker=createPrivateEvidenceStageWorker({
+      readOriginal:async()=>({}),verifySourceBinding:async()=>true,bridge:bridgeStub,
+      persistMaterialObservation:async()=>({evidence_id:id(),reading_unit_id:id(),link_id:id(),
+        read_unit_id:readUnitId,read_run_id:id(),artifact_revision:'a'.repeat(64),
+        request_digest:'b'.repeat(64),qualification:'UNASSESSED'}),
+      submitGateCandidate:async()=>'candidate-never',readGateAudit:async()=>null});
+    delete run.scope;
+    await assert.rejects(()=>worker.observeMaterial({run,job,registry,context,input:scoped,token:'s'}),
+      /PRIVATE_GATE_CANDIDATE_SCOPE_INVALID/);
+  });
+  // A registration without a lowercase sha256-shaped artifact revision cannot
+  // become a Gate candidate revision.
+  for (const spec of [
+    {name:'upper-case revision',overrides:{artifact_revision:'C'.repeat(64)},pattern:/PRIVATE_GATE_CANDIDATE_REVISION_REQUIRED/},
+    {name:'empty source version',overrides:{source_version_id:''},pattern:/PRIVATE_GATE_CANDIDATE_EVIDENCE_REQUIRED/},
+  ]) {
+    const originalId=id(),projectId=id();
+    const input={research_intent:'松江府田赋卷十一',
+      scope:{project_id:projectId,original_id:originalId,page_number:35}};
+    await withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
+      const worker=createPrivateEvidenceStageWorker({
+        readOriginal:async()=>imageRecord(originalId,projectId),
+        verifySourceBinding:async()=>true,
+        readRegistration:async()=>registrationFor(originalId,projectId,spec.overrides),
+        bridge:bridgeStub,
+        submitGateCandidate:async()=>{throw Error('must not submit '+spec.name);},
+        readGateAudit:async()=>null,
+      });
+      await assert.rejects(()=>worker.verifySourceIntake({run,job,registry,context,input,token:'s'}),
+        spec.pattern);
+    });
+  }
 });

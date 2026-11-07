@@ -29,7 +29,7 @@ const hash=(bytes:Buffer)=>createHash('sha256').update(bytes).digest('hex');
 const bytes=Buffer.from('江南水乡的合成材料。');
 const quote='江南水乡';
 const originalId='11111111-1111-4111-8111-111111111111';
-const pool={connect:vi.fn()};
+const pool={connect:vi.fn(),query:vi.fn()};
 const storage={readVerified:vi.fn()};
 const key='synthetic-m2-private-evidence-hmac-secret';
 const extent={kind:'utf8_byte_range/v1',start_byte:0,end_byte:Buffer.byteLength(quote),
@@ -38,10 +38,14 @@ const extent={kind:'utf8_byte_range/v1',start_byte:0,end_byte:Buffer.byteLength(
  raw_sha256:hash(bytes),quote_sha256:hash(Buffer.from(quote))};
 const input={originalId,extent,quote};
 function args(stage:string,content:unknown){
- return {run:{run_id:'run'},job:{stage,job_id:'job'},registry:{status:'ACTIVE_AUTHORIZED'},context:{},input:content,token:'synthetic-user-session'};
+ return {run:{run_id:'run',scope:{project_id:'44444444-4444-4444-8444-444444444444'}},job:{stage,job_id:'job'},registry:{status:'ACTIVE_AUTHORIZED'},context:{},input:content,token:'synthetic-user-session'};
 }
 beforeEach(()=>{
  vi.clearAllMocks();
+ // Producer-side candidate submission and audit read share the same pool; no
+ // candidate id or signed upstream audit is fabricated by this mock.
+ pool.query.mockImplementation(async(sql:string)=>String(sql).includes('qualification_current')
+   ? {rows:[]} : {rows:[{candidate_id:'candidate-fixture'}]});
  deps.handoff.mockReset().mockReturnValue(false);
  deps.authorize.mockImplementation(async()=>{deps.handoff.mockReturnValueOnce(true);});
  deps.originalRepository.mockReturnValue({marker:'scoped-repository'});

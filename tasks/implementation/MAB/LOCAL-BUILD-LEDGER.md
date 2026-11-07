@@ -11,7 +11,7 @@
 |---|---|---|---|
 | 1 | M2 底座：studio schema 全表 + 私有原件 + L0→L1→L2 真实链（含 13 类资产） | PLAN §3.2 / §5-M2 | ✅ 闭环（1.1–1.10 全完成） |
 | 2 | M3 真实 D 链：production-registry 激活 + M5 实际方法唯一绑定 + D00–D05 真实执行 | PLAN §3.3 | ✅ 主体闭环（批次 A/B/C：registry 隔离激活 + 方法绑定 6/63 + D00–D05 经 run.mjs 真实端到端落库，VERIFIED_ISOLATED；全部 HOLD 待 G0–G5）。遗留：6 executor 2 行桩、D00→D05 单run串链、非私有无分支 |
-| 3 | M3 独立 Gate：真实 Reviewer 投运 + G0–G5 签发/撤权/当前消费 | PLAN §3.3 | ⬜ 待施工 |
+| 3 | M3 独立 Gate：真实 Reviewer 投运 + G0–G5 签发/撤权/当前消费 | PLAN §3.3 | 🔵 进行中（批次 D：独立 signer 登录/策略/绑定已投运，私有链每个阶段已提交 Gate 候选（G0 候选已产生）；G0–G5 签发由 Owner 本人执行，尚待签） |
 | 4 | M4 受控 Provider 执行器（B 线）：正道解阻断 + 真实派发/费用/Receipt | PLAN §3.4 | ⬜ 待施工 |
 | 5 | M5 八维度完整闭环：ST-01→ST-09 同一真实作品 + Owner 亲自体验 | PLAN §3.5 / 八维矩阵 | ⬜ 待施工 |
 
@@ -32,8 +32,8 @@
 - ✅ 2.4 L0–L5 候选真实产出：D00→L0 登记候选、D01→L1 `read_unit`、D02→L2 `material_evidence`、D03→L3 `world.claim_revisions`、D04→L4 `meaning.findings`、D05→L5 投影候选，全部经 `run.mjs` 真实落库，`verify-2-c-d-chain.mjs` = `VERIFY_2_C_ALL_PASS`；候选一律 `UNASSESSED`，G2–G5 未签。
 
 ### 第 3 步 · M3 独立 Gate
-- ⬜ 3.1 独立 Reviewer 真实身份：DB 层 `control.sign_gate_candidate`/`revoke_gate_qualification`/`qualification_allows` 已存在；但 `m3-gate-preflight` 返回 `reviewer_identity_verified:false`（未投运）。按 Owner 决策，Owner 本人兼任唯一 Reviewer。
-- ⬜ 3.2 G0–G5 独立签发（非 Producer/Operator 自签）。
+- ✅ 3.1 独立 Reviewer 真实身份：DB 层 `control.sign_gate_candidate`/`revoke_gate_qualification`/`qualification_allows` 已存在；批次 D 新建专用登录 `mohen_gate_signer_m5_owner`（仅 `mohen_gate_signer` 成员、无 producer/app_runtime/authority 成员、无表直写）+ G0–G5 策略与 Owner reviewer 绑定；`tools/verify-3-gate-chain.mjs` 断言 `VERIFY_3_ROLE_OWNER_SIGNER PASS`。Owner 本人是唯一 Reviewer。
+- 🔵 3.2 G0–G5 独立签发（非 Producer/Operator 自签）：**仅 Owner 本人执行**，作者不代签。私有链已提交 G0 候选 `24da0dfb…`（source_version `b0a11000-…-0005`），G1–G5 候选须在上游 Gate 签后方可提交（依赖快照不能伪造）。
 - ⬜ 3.3 撤权 + P08 精准失效（`revoke_gate_qualification`，撤权后新请求即时拒绝）。
 - ⬜ 3.4 当前资格消费（`qualification_allows` 逐请求核验，非旧 PASS 复用）。
 
@@ -73,13 +73,13 @@
 - [x] 2.9 D05 发布：P 方法 → L5 projection/seed（G5 待签）；run.mjs 端到端真实跑通（无 hidden fallback、无金泽样板）— run 2dd6e297…，L5 投影候选落库，HOLD 待 G5
 
 ### 第 3 步 · M3 独立 Gate（自检 8 项）
-- [ ] 3.1 独立 Reviewer 身份：系统登记 Owner 为唯一 Reviewer，`m3-gate-preflight` 不再 `reviewer_identity_verified:false`
-- [ ] 3.2 G0–G4 独立签发：`control.sign_gate_candidate` 逐阶段 PASS（非 Producer/Operator 自签）
-- [ ] 3.3 G5 独立签发：精确 WorkRevision + 知识/媒资依赖
-- [ ] 3.4 当前资格消费：`control.qualification_allows` 逐请求核验 true
+- [x] 3.1 独立 Reviewer 身份：Owner 已登记为唯一 Reviewer（G0–G5 绑定 + 专用 signer 登录 `mohen_gate_signer_m5_owner`）；`VERIFY_3_ROLE_OWNER_SIGNER PASS`
+- [ ] 3.2 G0–G4 独立签发：`control.sign_gate_candidate` 逐阶段 PASS（非 Producer/Operator 自签）— 🔵 G0 候选 `24da0dfb…` 已提交，待 Owner 签发
+- [ ] 3.3 G5 独立签发：精确 WorkRevision + 知识/媒资依赖 — 🔵 待 G0–G4 签完后提交 G5 候选
+- [ ] 3.4 当前资格消费：`control.qualification_allows` 逐请求核验 true — 🔵 负例已证未签时返回 false（`VERIFY_3_NEGATIVE unsigned_qualification_denied PASS`）
 - [ ] 3.5 撤权：`control.revoke_gate_qualification` 生效
 - [ ] 3.6 P08 精准失效：撤权后新请求即时拒绝（PG 断言 + HTTP 断言）
-- [ ] 3.7 负例：Producer/Operator 代签被拒（失败关闭）
+- [x] 3.7 负例：Producer/Operator 代签被拒（失败关闭）— `VERIFY_3_NEGATIVE producer_cannot_sign PASS`（42501，审计数不变 712==712）
 - [ ] 3.8 旧 PASS/错 consumer 不复活（非旧资格复用）
 
 ### 第 4 步 · M4 受控 Provider（自检 8 项）
@@ -127,7 +127,8 @@
   - Gate：DB 层 `control.sign_gate_candidate`/`revoke_gate_qualification`/`qualification_allows` 已存在；reviewer binding 声明 `m5-owner-reviewer-g0g1-producer`（G0/G1）与 `m5-owner-reviewer-g2g5-producer`（G2–G5，producer）已登记，但独立 Gate 服务未投运、未签任何 G；web 侧 `revokeGate` 被禁用、`signWorkPublication` 可用。
   - M4：7 工具 registry（内部 credit）、`transferRightsDecision=DENIED`、`directorExternalProcessingBlocker` 恒阻断；4 个 studio repository 存在。
 - **第 2 步（M3 真实 D 链）批次 C 完成（2026-11-07，主体闭环）**：新增迁移 `20261107200000`（D02 H05 材料观察 + D03 主张 + D04 发现 + D05 投影候选，HMAC 字节证明/确定性 ID/幂等）、`private-candidate-repository.mjs`、`private-evidence-stage.mjs` 四个新动作、registry D02–D05 启用并绑定私有适配器、方法绑定 2→6。真实 run.mjs 落库：D04 run 48b55e23…（finding 8412d171…）、D05 run 2dd6e297…（L5 投影）；`verify-2-c-d-chain.mjs` = `VERIFY_2_C_ALL_PASS`；typecheck PASS、unit 577/579（2 skipped）、DP 157/158（唯一失败仍为 openssl `DEFERRED_ENV`）。G2–G5 未签，HOLD 属合同预期。
-- **剩余**：第 2 步遗留（6 executor 桩、D00→D05 单 run 串链、非私有分支）→ 第 3 步 M3 Gate（G0–G5 签发/撤权/当前消费/P08）→ 第 4 步 M4 Provider → 第 5 步 M5 八维度闭环。
+- 2026-11-07：第 3 步批次 D 完成（3.1 + 3.7）——私有 D 链每个阶段强制提交 Gate 候选（`submitGateCandidate`/`readGateAudit` 必填，G1–G5 依赖快照只取已签当前审计，未签留空不伪造）；迁移 `20261107210000`（私有 worker 仅 insert 候选 + 只读当前资格，显式 revoke 全部 Gate 权力）与 `20261107211000`（独立登录 `mohen_gate_signer_m5_owner` 仅 `mohen_gate_signer` 成员、无表直写）；新工具 `provision-3-gate-authority.mjs`（`PROVISION_3_ALL_PASS`）与 `verify-3-gate-chain.mjs`（`VERIFY_3_ALL_PASS` + 两条负例 PASS）。D00 run `33d0f84c…` 产出 G0 候选 `24da0dfb…`（`SUBMITTED`，阶段仍 HOLD）。**G0–G5 由 Owner 本人签发，AI 不代签**；3.2/3.3/3.4 待 Owner 逐级签发后推进。
+- **剩余**：第 2 步遗留（6 executor 桩、D00→D05 单 run 串链、非私有分支）→ 第 3 步余项（Owner 逐级签 G0–G5、撤权/P08、当前资格消费、旧 PASS 不复活）→ 第 4 步 M4 Provider → 第 5 步 M5 八维度闭环。
 
 ## 五、施工历史（每次施工追加一行）
 
