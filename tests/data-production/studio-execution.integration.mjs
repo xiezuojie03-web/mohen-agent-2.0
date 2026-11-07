@@ -194,9 +194,14 @@ try{
  assert.throws(()=>sql('delete from studio.execution_control_events'),/PERMANENT_RECEIPT_IMMUTABLE/);
  assert.throws(()=>sql('truncate studio.execution_control_events'),/PERMANENT_RECEIPT_IMMUTABLE/);
  const before=sql('select md5(jsonb_agg(to_jsonb(e)order by event_id)::text)from studio.execution_control_events e');
+ sql(readFileSync(new URL('../../supabase/rollback/20261107090000_mab_m4_execution_controls.rollback.sql',import.meta.url),'utf8'));
+ await assert.rejects(()=>repo.reserveBudget({delegationId:spend.delegation.delegation_id,requestId:randomUUID(),expectedVersion:settled.version,
+  leaseId:null,inputDigest:spend.delegation.request_hash,policyVersion:'fixture-v1',amount:'0.000100',currency:'USD',
+  pricingPolicyVersion:spend.pricingPolicyVersion},token(a)),/permission denied/);
  sql(readFileSync(new URL('../../supabase/rollback/20261104013351_mab_m4_execution_controls.rollback.sql',import.meta.url),'utf8'));
  await assert.rejects(()=>repo.claim(call(active,initial.version),token(a)),/permission denied/);
  assert.equal(sql('select md5(jsonb_agg(to_jsonb(e)order by event_id)::text)from studio.execution_control_events e'),before);
  assert.equal(sql(`select state from studio.execution_controls where delegation_id='${d.delegation_id}'`),'REVOKED');
- console.log('MAB_EXECUTION_CONTROLS_PASS actual-low-privilege-LOGIN no-authority-switch same-lease-retry-denied atomic-CAS parallel-claim stale-lease current-Owner active-project expiry immutable-revoke sticky-unknown no-spend-grants rollback-audit-preserved');
+ assert.equal(sql(`select spent_cost::text||':'||reserved_cost::text||':'||unknown_cost::text from studio.execution_controls where delegation_id='${spend.delegation.delegation_id}'`),'0.000400:0.000000:false');
+ console.log('MAB_EXECUTION_CONTROLS_PASS low-privilege-LOGIN atomic-CAS reservation exact-owner-rights currency-budget estimate-settlement budget-overrun sticky-unknown revoke-release post-revoke-settlement no-provider-network-call rollback-audit-preserved');
 }finally{await pool.end();sql(`drop owned by ${login};drop role ${login}`);}
