@@ -71,10 +71,12 @@ try {
       env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
     if (delegationResult.status !== 0) throw new Error("STUDIO_DELEGATION_REPOSITORY_TEST_FAILED");
     apply('20261104013351_mab_m4_execution_controls.sql');
+    apply('20261107090000_mab_m4_execution_controls.sql');
     const executionResult=spawnSync(process.execPath,['tests/data-production/studio-execution.integration.mjs'],{
       cwd:root,env:{...process.env,MOHEN_TEST_DATABASE:database},stdio:'inherit'});
     if(executionResult.status!==0)throw Error('STUDIO_EXECUTION_CONTROLS_TEST_FAILED');
     apply('20261104013351_mab_m4_execution_controls.sql');
+    apply('20261107090000_mab_m4_execution_controls.sql');
 
     apply("20261102140000_mab_m2_private_originals.sql");
     apply(fs.readdirSync(directory).find(n => n.endsWith('_mab_m2_evidence_bridge.sql')));
@@ -150,6 +152,7 @@ try {
     if (query(database, "select md5(jsonb_agg(to_jsonb(r) order by original_id)::text) from studio.private_originals r") !== originalsBefore) throw new Error("PRIVATE_ORIGINAL_ROLLBACK_LOST_RECEIPTS");
     console.log("MAB_PRIVATE_ORIGINAL_ROLLBACK_PASS receipt-hashes-preserved read-write-closed");
     const studioBefore = query(database, "select md5(jsonb_agg(to_jsonb(r) order by revision_id)::text) from studio.asset_revisions r");
+    apply('20261107090000_mab_m4_execution_controls.rollback.sql','rollback');
     apply('20261104013351_mab_m4_execution_controls.rollback.sql','rollback');
     apply(studioMigration.replace(".sql", ".rollback.sql"), "rollback");
     if (query(database, "select has_schema_privilege('mohen_app_runtime','studio','USAGE')") !== "f" ||
