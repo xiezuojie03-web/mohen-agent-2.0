@@ -1434,3 +1434,21 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 **下一步（A线）**：取 1-2 页样本（卷首/目次页），用已授权 DeepSeek flash 图像识读定位"水利"卷（卷十五/十六）对应 canvas 范围，再取目标页字节入私有存储 + SHA 回读。
 
 **状态**：M5_OVERALL_HOLD 不变。本批仍为只读盘点/网络验证，未写私有存储、未改生产 DB/Storage/Gate。
+
+## 2026-11-07｜A线：NAJ原件字节取得(Commons下载) + sha1验证 + 扫描版确认（CodeBuddy）
+
+**NAJ content 端点本地 403**：`api/content/item/da12/...` 所有 URL 变体（native/default × max/1800 × ua/referer/accept）均 403；manifest 端点 `api/iiif/4252790/manifest.json` 可达（200）。判定为 content 服务器对本地 IP 限制。
+
+**备选：Wikimedia Commons 同副本下载成功**：
+- 文件 `File:NAJDA-292-0017 松江府志7.pdf`，Public Domain。
+- 真实 URL `upload.wikimedia.org/wikipedia/commons/e/e3/NAJDA-292-0017_松江府志7.pdf`。
+- 下载 22,722,624 bytes（21.67MB），sha1 `dc7abb31b4e21ec3aefcb5314856ac6d1c4a4e15` 与 Commons 期望值**完全匹配**。
+- sha256 `34513d6af0fca4b617add1aa317492a4b8ab797a856da5b89e31e748bde22e27`。
+- 73 页，纯扫描版（抽样页文本=0），需 OCR。
+- 已存本地临时 `%TEMP%\naj\NAJDA-292-0017_松江府志7.pdf`（未入 M2 私有 Storage）。
+
+**工具链缺口**：本地无 poppler/Ghostscript/PyMuPDF/pdf2image，无法从扫描 PDF 渲染页面图像做 OCR；需先安装 PyMuPDF（或 poppler）。
+
+**状态**：M5_OVERALL_HOLD 不变。原件字节已本地取得（从 EPHEMERAL 前进为"本地缓存字节+sha验证"），尚未入 M2 私有 Storage、未跑 L0-L2。
+
+**下一步（A线）**：安装 PyMuPDF → 渲染样本页图像 → DeepSeek flash OCR 定位"水利"卷（卷十五/十六）→ 提取目标页入私有存储 + SHA 回读。
