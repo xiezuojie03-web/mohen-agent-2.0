@@ -1390,3 +1390,29 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 - 起始main CI 42238756963失败已关闭。修复范围为当前权威入口、交接文档路径和守卫；没有应用业务代码、DB、Storage、Gate运行配置或部署变化。
 - PLAN V1.2结构收敛修订、ENGINEERING_HANDOFF_CURRENT.md、AGENTS.md、OWNERSHIP_MAP.md、CURRENT.md已在main生效。当前工具为ChatGPT主导、CodeBuddy本地环境补充，不再使用Codex。
 - 后续按PLAN A/B并行施工：A线M1隔离Owner/M2真实NAJ原件链；B线M4受控Provider执行器。任何本地凭据、真实浏览器或本机运行依赖集中交CodeBuddy，ChatGPT核验回执。当前M5仍HOLD；文档与CI通过不代表业务生产链已完成。
+
+## 2026-11-07｜本地主导施工启动：A线原件盘点 + B线M4受控执行器侦察（CodeBuddy）
+
+**背景**：Owner 2026-11-07 授权 CodeBuddy 为总系统工程师、本地主导施工（决策 1A/2A/3B），云端 main 已回写本地（本地 main=c62e791，领先 origin/main 一个 docs 提交，未 push）。
+
+**本地环境核实（解除环境型阻塞）**：
+- 本地 `.env.local` 已配置 DEEPSEEK_API_KEY / AUTH_SECRET / SHANGHAI_LIBRARY_KEY / AMAP_WEB_KEY / DATABASE_URL / OWNER_EMAIL 等（不读取/记录值）。
+- 本地 PostgreSQL 运行中（D:\MoHen\tools\PostgreSQL\18，监听 5432，唯一真相源）。
+- 结论：progress 历史中"未发现 MOHEN_LLM_API_KEY""Storage 桶 0"为 Codex 云端环境限制；本地 `llmConfig` 有 `DEEPSEEK_API_KEY` fallback，环境型阻塞不再成立。
+
+**A线原件盘点（只读，未动 hushang-jingwei）**：
+- hushang-jingwei 共 3976 个 PDF（data/ 3947、corpus/ 1、scripts/ 25、docs/ 2、.tmpchk/ 1）。
+- 命中地方志类原件 1 部：`corpus/gazetteers/高层通志府州/[崇禎]松江府志九十四卷.pdf`（653.66 MB，94 卷，崇祯版）。
+- 版本差异：M2 指定 NAJ《松江府志7》为 1663 清康熙版（日本国立公文书馆 IIIF 73 页）；崇祯版为更早明版，按 PLAN"不得混用"原则，需 Owner 定用哪部作 M5 真实作品原件。
+
+**B线M4受控执行器侦察（只读）**：
+- 账本框架 `apps/web/lib/studio/tool-ledger.ts`：TOOL_REGISTRY(7工具)、reserve/settle/release、writeReceipt、useTool(reserve→执行→settle/release→回执)、BudgetHoldError/ToolReceiptPersistenceError/ToolExecutionUncertainError 三类失败关闭。缺陷：cost 为内部 credit（llm=1），非真实币种/token。
+- 计划+委托框架 `apps/web/lib/studio-plans.ts`：saveStudioResearchPlan 生成 plan+delegation，但 `transferRightsDecision={external_processing:'DENIED'}`、`execution_authorized=false`、`budget='0'CRD`——只持久化计划/回执，不派发 Provider。
+- 仓储层 `packages/data-access/src/`：studio-delegation-repository / studio-execution-repository / studio-receive-candidate / studio-candidate-assessment 已有骨架。
+- 阻断器 `apps/web/lib/studio-creation.ts` 的 `directorExternalProcessingBlocker()` 恒返回阻断（fail-closed 安全设计）；正确解法=实现受控 Provider 派发，非简单解除阻断。
+
+**状态**：M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY 不变。本批为只读盘点+文档，未改应用源码/DB/Storage/Gate/部署。
+
+**下一步（待 Owner 决策）**：
+1. A线原件版本：崇祯版（本地已有 653MB）vs NAJ 1663 版（官方 IIIF 取字节）。
+2. B线：在现有账本/委托体系内补真实 Provider 派发+真实费用映射，解开 ST05 阻断正道。
