@@ -1652,3 +1652,19 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 **施工中按失败关闭处理的真实边界**：deepseek-flash 推理型在 H3 多章节 JSON、maxTokens 4096 下正文耗尽 → 如实 HOLD（PROVIDER_USAGE_UNKNOWN 回执）不冒充成功；按动作表上调后全链通过。
 
 **证据边界**：本批验证到 dispatcher grant 层真实派发 + 路由静态接线（typecheck/单测）；路由 HTTP 级正反归 5.9 Owner 浏览器体验批次。**状态**：批次 G 闭环（隔离）；ST-06–09 全链、Admin、WATCH 撤权、Owner 体验未做，`M5_OVERALL_HOLD` 不变。
+
+### 2026-11-08 第 5 步批次 H：ST-05→ST-09 同一真实作品全链 + WATCH 消费 + 撤权/恢复（`VERIFIED_ISOLATED`）
+
+**代码（`CODE_PRESENT`）**：
+- `apps/web/lib/studio-director.ts`：`commitWorkRevision` 新增 `opts.rightsAcknowledged`——Creator 保存时的显式"本作不含第三方媒体"确认写入不可变修订 content（`media: []` + `rights_acknowledged: true`）；无媒体时发布资格必要条件之一，含媒体仍须逐件许可不得靠此声明。
+- `apps/web/app/api/studio/works/[id]/revisions/route.ts`：透传请求体 `rights_acknowledged===true` 到上述 opts。
+- 新增 `tests/integration/m5-batch-h.integration.ts` + 独立配置 `vitest.m5-batch-h.config.ts`（alias data-access、单文件、串行）：承载真实 lib 路径 + 真实隔离 PG + 真实 DeepSeek + 真实独立 Gate CLI 的 11 步顺序验证。
+- 新增只读探针 `tools/probe-g5-state.mjs`。
+
+**验证（`VERIFIED_ISOLATED`，11/11 PASS）**：同一真实作品《松江府田赋：一亩低田的税单》贯通——真实委托+grant（H1/H2/H3 三动作，预算 1.00 USD）→ 真实 LLM 导演方案落库且 source_ids 服务端持久化 → 选定方案 A 生成 H3 真实节拍（provenanceRefs 逐条 ∈ 真实 L2 材料）→ 建作品 + 不可变修订（revision 2，权利确认）+ 幂等回放同修订 → 投稿 submitted + 机器评审人编辑签发决策绑定同一精确修订 → 从真实 D 链 G5 候选（`c1b252bc-7a1d-4784-a72f-d1b0a8a76e73`，world_projection `560c5f6d…`，run/stage/依赖快照/evidence 同系）登记 WATCH G5 候选 + 机器评审 watch 绑定（幂等）→ 机器评审经独立通道 `gate-authority.mjs decide` 签 WATCH G5（回执含 work_revision_binding 精确修订绑定 + rights_by_operation + rationale + evidence_refs，CAS `expectedAuditId` 防并发/重跑冲突）→ `publishWork` 四道门全过、发布指针原子指向同一修订 → `listWatchEligible` 命中且仅该修订可消费、错修订拒绝 → `revoke` 后 WATCH 立即拒绝（blocked_count≥1）→ 新候选+重签后恢复消费。
+
+**修复中按失败关闭处理的真实边界**：① 候选登记初版误用不存在列（`submitted_by`/`candidate_digest`）与 uuid 强转（`artifact_revision` 实为 text）——按真实 schema 修正（run_id 复用同系 production_run、stage D05、producer_identity=mohen_private_worker）；② psql 通道 jsonb 返回文本导致二次编码违反 `jsonb_typeof=array` 检查——统一归一化；③ 签发回执绑定 schema 名与 reader 期望不一致（`mohen.work-revision-g5-binding.v1`）→ `independent_g5_required` 如实拒绝，修正后放行；④ LLM 重放同 input_hash 不二次扣费（批次 F 句柄语义），重跑零新增费用。
+
+**回归**：`pnpm test` 620 passed / 9 failed / 2 skipped——与干净 HEAD 基线完全一致（9 项均为既有失败：`publish-gate` 旧期望早于 G5 门、`next/server` 解析与 Next cookies 上下文属环境类、feature flag 503、rule-gate-reviewer TTL 断言），本批零新增失败；`tsc --noEmit -p apps/web` PASS。提交 `ab306b5`。
+
+**证据边界（诚实声明）**：编辑签发决策由机器评审人账号记录（Owner 已授权本地隔离 M5 机器规则化签发，人文背书仍以 Owner 体验为准）；G5 候选登记由超级用户直连完成（隔离演练）；HTTP 级正反归 5.9 Owner 浏览器体验批次。**状态**：维度 5（ST-05/06/07）、维度 7（ST-08/09）、维度 8（WATCH 消费+撤权即时生效）闭环（隔离）；维度 1/2/4/6 部分、19 组件、Admin 可见性、5.9 Owner 体验未做，`M5_OVERALL_HOLD` 不变。
