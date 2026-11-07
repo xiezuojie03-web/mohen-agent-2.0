@@ -1692,3 +1692,13 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 **回归**：无代码改动，沿用批次 I 回归结论（622/10/2，零本批相关失败）。
 
 **证据边界（诚实声明）**：组件职责核验在数据/工件层完成；组件的真实浏览器渲染交互归 5.9 Owner 体验批次。**状态**：维度 3/4/5/6/7/8 闭环（隔离）；剩余维度 1/2 补强（并入 5.9 证据）与 5.9 Owner 体验（批次 K），`M5_OVERALL_HOLD` 不变。
+
+### 2026-11-08 第 5 步批次 K：路由 HTTP 正反补证 + ST-04 Studio UI 显式授权接线（`VERIFIED_ISOLATED`）
+
+**代码（`CODE_PRESENT`）**：新增 `tools/run-dev-server.mjs`（读根 .env.local 注入子进程起 `next dev -p 3210`）、`tools/verify-5k-http.mjs`（mintCookie 复制 `signSessionToken` 算法，对真实 dev 服务器做 HTTP 断言）；`apps/web/app/studio/StudioWorkbench.tsx` 接 ST-04 显式外发授权（delegationId/authorizing/needsAuthorization 状态 + 虚线授权卡"我同意本次外发处理"→ POST dispatch-authorizations → `generatePlans(delegationOverride?)` 自动重试，修复授权后重试读旧 delegationId 的 React 闭包问题）；**真实缺陷修复**：`supabase/migrations/20261105110000_mab_m5_studio_research_read.sql` 中 `studio.read_private_text_reading` 引用不存在的 `u.artifact_revision` 列，修为 `control.artifact_revision_for('read_unit',u.read_unit_id)`（与其他迁移做法一致），已应用到真实 dev 库。
+
+**验证（`VERIFIED_ISOLATED`）**：`VERIFY_5K_ALL_PASS`——对真实 dev 服务器 14 项 HTTP 断言：① `GET /watch` 公开列表含真实已发布作品（作品标题=方案角度"把一条科则拆成四道关口…"，按 work_id+"科则"断言）；② `GET /api/studio/projects`、`/api/studio/assets`：Owner 会话可见真实数据、匿名 401、跨 Owner（机器评审账号）0 行；③ `POST /api/studio/dispatch-authorizations`：匿名 401、Owner 200 GRANTED；④ `POST /api/studio/director-plans`：无委托 409 `external_processing_not_authorized`（失败关闭不外发）、匿名 401、带委托真实 DeepSeek 派发 200（plan `5c44ad3a…`，回执 ACCEPT_AS_CANDIDATE + ESTIMATED，真实费用 **$0.001314 ≈¥0.009**，远在 ≤¥20 预授权内）。**HTTP 层首曝系统性缺口**：迁移 `20261105110000` 此前只进 _test 库（测试经快照+全量迁移构建故绿）、从未应用到真实 dev 库，HTTP 链路报 503 `studio_storage_unavailable`；应用迁移并修列引用后 lib 层 materials=4、HTTP 链路恢复；函数级漂移审计确认仅此一项差异。
+
+**回归**：`pnpm test` 622 passed / 10 failed / 2 skipped，与既有基线一致（9 项既有失败 + shl-materials K2 联网 flaky，单跑 PASS），零本批引入失败。提交 `291fbfc`。
+
+**证据边界（诚实声明）**：HTTP 链路用本地 dev 服务器 + 本地真实 PG 验证，属隔离环境；维度 1/2 的浏览器渲染交互归 5.9 Owner 亲验。**状态**：维度 1–8 全部机器验证闭环（隔离）；仅剩 5.9 Owner 亲自体验签收（台账 §5.9 白话清单已备），`M5_OVERALL_HOLD` 不变。

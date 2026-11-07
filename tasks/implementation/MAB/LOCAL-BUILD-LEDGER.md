@@ -127,15 +127,23 @@
 
 ### 第 5 步 · M5 八维度闭环（自检 8 维度 + Owner 签收）
 > 八维度必须由**同一项真实作品《松江府田赋》**贯通（PLAN §3.5-B 矩阵）。
-- [ ] 5.1 维度 1 自然语言创作入口（ST-01）：Owner 自然语言提问 → Agent 读项目资产、判断资料可得性、收敛问题、可追溯 Brief/Plan
-- [ ] 5.2 维度 2 内外 AI 混合协作（M4）：同一 root 下 Agent + 外部 AI 各自可核验贡献，真实 Receipt/费用/失败恢复闭环
+- [x] 5.1 维度 1 自然语言创作入口（ST-01）：Owner 自然语言提问 → Agent 读项目资产、判断资料可得性、收敛问题、可追溯 Brief/Plan — 批次 K `verify-5k-http.mjs` HTTP 正反：Owner 会话下 `GET /api/studio/projects` 返回真实项目列表、匿名 401、跨 Owner 0 行；委托→Brief/Plan 生成链路在 5.2 真实派发中一并走通（H1 输入即真实项目材料收敛的历史问题）
+- [x] 5.2 维度 2 内外 AI 混合协作（M4）：同一 root 下 Agent + 外部 AI 各自可核验贡献，真实 Receipt/费用/失败恢复闭环 — 批次 K HTTP 级证据：`POST /api/studio/dispatch-authorizations` 匿名 401 / Owner 200 GRANTED；`POST /api/studio/director-plans` 无委托 409 `external_processing_not_authorized`、匿名 401、带委托真实 DeepSeek 派发 200（plan 5c44ad3a…，回执 ACCEPT_AS_CANDIDATE + ESTIMATED，真实费用 $0.001314 ≈¥0.009，在 ≤¥20 预授权内）；失败恢复 = 无委托即 409 HOLD 不外发
 - [x] 5.3 维度 3 真实来源/证据/D·L·G（ST-02/03/04）：原件→读取→证据→主张→人文解释，精确 source/version/locator/revision + 独立 Gate 回执 — 第 1–3 步闭环（私有原件 SHA 回读、C02 read_unit、material_evidence、claim、finding，G0–G5 机器签发回执）；批次 I 复核 G0–G5 全部 current 且 G5 审计绑定已发布修订
 - [x] 5.4 维度 4 13 类知识资产（M4-C04/Admin）：真实作品实际产生的类型逐项字段/修订/ACL/CAS 正反验收；不适用类型说明原因（不为凑数伪造）— 批次 I `verify-5i-asset-matrix.mjs` = `VERIFY_5I_ALL_PASS`：产出 6 类（research_brief×1/source_anchor×2/reading_note×1/evidence_note×1 于 studio.asset_heads + director_plan×9 于 canonical public.director_plans + work_revision 于 publication，发布指针原子指向 revision 2）；未产出 7 类逐类如实记原因（时空/关系假设/合集/媒资/引用快照/反馈未发生，humanistic_insight 经 D04 入 meaning.findings 且 G4 已签）；字段/不可变（单修订唯一 hash）/CAS 头指针/跨 Owner 0 行/匿名拒绝/过期 expectedRevisionId 冲突且无残留写入/canonical 守卫全过
 - [x] 5.5 维度 5 Studio 真实创作（ST-05/06/07）：H1/H2/H3 + 19 组件实际参与导演/叙事/镜头；可预览、局部修改、保存/恢复、不可变 WorkRevision — 批次 J `verify-5j-components.mjs` = `VERIFY_5J_ALL_PASS`：H1（真实历史问题/理解增量/母题 M1+M4/5 条材料边界）；H2（A/B 双真实方案各 3 决策+3 要点、selected=A 记录可溯、修订逐字携带所选方案）；H3（4 节拍、4 条 provenanceRefs 全部 ∈ 真实 L2 证据、旁白如实陈述证据边界）；组件 12 项真实参与（C01–C05、W01/W02/W03/W05/W08/W09/W10/W11），W04/W06/W07 核验"无证据不伪造几何/对照/关系"退路职责，X01/X02 按 PLAN 延后如实记录，F01 缺口已入 finding（5 条 limitations）未触发工单；局部修改/保存恢复 = 修订链 1:draft→2:published（批次 H）
 - [x] 5.6 维度 6 Admin 知识资产管理（F05/ST-07/08/09）：逐条显示类型/认识状态/精确来源/D·G 资格/权利用途/版本/复用/缺口；仅授权 Owner 可管理 — 批次 I：Inspector 每条新增真实治理行（`assetGovernanceSummary`：缺口只按已存字段报告、G 资格不签发不替代）；类型/认识状态/来源/版本/复用/权利既有；ACL 仓储层正反（跨 Owner 0 行、匿名拒）；G 逆查真实断言（G0–G5 current + G5 审计绑定已发布修订）；HTTP 级正反归 5.9
 - [x] 5.7 维度 7 独立 G5/媒资权利/发布（ST-08/09）：独立 Reviewer 对精确 WorkRevision + 知识/媒资依赖当前资格审查；发布指针原子指向该修订 — 批次 H：机器评审独立通道签 WATCH G5（精确修订绑定 + rights_by_operation + CAS），四道门发布指针原子指向同一修订（VERIFIED_ISOLATED；机器签不构成人文背书）
 - [x] 5.8 维度 8 WATCH 消费与撤权：WATCH 只消费第 7 项发布的同一 WorkRevision；每请求核 G5/rights/purpose/consumer/scope/source；撤权后新请求立即拒绝 — 批次 H：`listWatchEligible` 仅该修订可消费、错修订拒绝、撤权即时拒绝、重签恢复（VERIFIED_ISOLATED）
-- [ ] 5.9 Owner 亲自体验签收：Owner 实际完成 Studio 创作、Admin 条目核查、WATCH 消费，逐项确认八维矩阵
+- [ ] 5.9 Owner 亲自体验签收：Owner 实际完成 Studio 创作、Admin 条目核查、WATCH 消费，逐项确认八维矩阵 — HTTP 级正反已补证（批次 K `VERIFY_5K_ALL_PASS`）；Studio UI 显式授权入口已接线；待 Owner 亲验
+
+### 5.9 Owner 体验清单（白话版，逐项打勾即签收）
+
+启动：仓库根目录执行 `node tools/run-dev-server.mjs`，浏览器打开 http://127.0.0.1:3210 ，用 Owner 账号登录。
+1. **Studio 创作**：进入 /studio，打开项目「松江府田赋」→ 左侧输入一句创作意图（如"用这些史料做一集 3 分钟短片"）→ 点「生成方案」→ 首次会提示外发授权 → 点「我同意本次外发处理」→ 稍候出现方案 A/B → 选一个 → 出现 4 个节拍分镜与旁白。
+2. **Admin 核查**：进入 /admin → 「知识资产」面板 → 应看到本项目 5 条知识条目（简报/来源×2/阅读笔记/证据笔记），每条有类型、状态、缺口与"独立G资格须逐案核验"字样；「发布管理」可见已发布作品。
+3. **WATCH 消费**：进入 /watch → 应看到作品《把一条科则拆成四道关口…》→ 点开逐拍播放，旁白与出处随行。
+4. 逐项确认八维矩阵（§三 5.1–5.8 已机器验证条目）无异议即完成 M5 第 5 步签收。
 
 ## 四、当前进度（最新状态，持续更新）
 
@@ -162,6 +170,11 @@
 - **第 2 步（M3 真实 D 链）批次 C 完成（2026-11-07，主体闭环）**：新增迁移 `20261107200000`（D02 H05 材料观察 + D03 主张 + D04 发现 + D05 投影候选，HMAC 字节证明/确定性 ID/幂等）、`private-candidate-repository.mjs`、`private-evidence-stage.mjs` 四个新动作、registry D02–D05 启用并绑定私有适配器、方法绑定 2→6。真实 run.mjs 落库：D04 run 48b55e23…（finding 8412d171…）、D05 run 2dd6e297…（L5 投影）；`verify-2-c-d-chain.mjs` = `VERIFY_2_C_ALL_PASS`；typecheck PASS、unit 577/579（2 skipped）、DP 157/158（唯一失败仍为 openssl `DEFERRED_ENV`）。G2–G5 未签，HOLD 属合同预期。
 - 2026-11-07：第 3 步批次 D 完成（3.1 + 3.7）——私有 D 链每个阶段强制提交 Gate 候选（`submitGateCandidate`/`readGateAudit` 必填，G1–G5 依赖快照只取已签当前审计，未签留空不伪造）；迁移 `20261107210000`（私有 worker 仅 insert 候选 + 只读当前资格，显式 revoke 全部 Gate 权力）与 `20261107211000`（独立登录 `mohen_gate_signer_m5_owner` 仅 `mohen_gate_signer` 成员、无表直写）；新工具 `provision-3-gate-authority.mjs`（`PROVISION_3_ALL_PASS`）与 `verify-3-gate-chain.mjs`（`VERIFY_3_ALL_PASS` + 两条负例 PASS）。D00 run `33d0f84c…` 产出 G0 候选 `24da0dfb…`（`SUBMITTED`，阶段仍 HOLD）。**G0–G5 由 Owner 本人签发，AI 不代签**；3.2/3.3/3.4 待 Owner 逐级签发后推进。
 - **剩余**：第 2 步遗留（6 executor 桩、D00→D05 单 run 串链、非私有分支）→ 第 3 步余项（Owner 逐级签 G0–G5、撤权/P08、当前资格消费、旧 PASS 不复活）→ 第 4 步 M4 Provider → 第 5 步 M5 八维度闭环。
+- **第 5 步批次 K 完成（2026-11-08，VERIFIED_ISOLATED）**：批次 G 遗留的路由 HTTP 正反补证 + ST-04 Studio UI 显式授权接线。
+  - 新工具 `tools/run-dev-server.mjs`（读根 .env.local 注入子进程起 `next dev -p 3210`）+ `tools/verify-5k-http.mjs`（mintCookie 复制 signSessionToken 算法，对真实 dev 服务器做 14 项 HTTP 断言）= **VERIFY_5K_ALL_PASS**：WATCH 公开列表含真实已发布作品；`GET /api/studio/projects`、`/assets` Owner 可见 / 匿名 401 / 跨 Owner 0 行；`POST /dispatch-authorizations` 匿名 401 / Owner 200 GRANTED；`POST /director-plans` 无委托 409 `external_processing_not_authorized` / 匿名 401 / 带委托真实 DeepSeek 派发 200（plan 5c44ad3a…，回执 ACCEPT_AS_CANDIDATE+ESTIMATED，真实费用 $0.001314 ≈¥0.009）。
+  - **发现并修复真实缺陷（HTTP 层首曝）**：迁移 `20261105110000` 的 `studio.read_private_text_reading` 此前只进 _test 库、从未应用到真实 dev 库，HTTP 链路报 503 `studio_storage_unavailable`；应用后暴露第二层潜伏 bug——函数引用不存在的 `u.artifact_revision` 列，已修为 `control.artifact_revision_for('read_unit',u.read_unit_id)`（与其他迁移做法一致）；函数级漂移审计确认仅此一项。
+  - ST-04 UI 接线：`StudioWorkbench.tsx` 新增外发授权状态与虚线授权卡（"我同意本次外发处理"→ POST dispatch-authorizations → 自动重试生成）；修复授权后重试读旧 delegationId 的 React 闭包问题（`generatePlans(delegationOverride?)` 直传）。
+  - 回归与基线一致（622 pass / 10 failed 既有 / 2 skipped）；提交 `291fbfc`。维度 1–8 全部机器验证闭环；仅剩 5.9 Owner 亲自体验签收（§5.9 白话清单已备），`M5_OVERALL_HOLD` 不变。
 
 ## 五、施工历史（每次施工追加一行）
 
@@ -176,3 +189,4 @@
 - 2026-11-08：第 5 步批次 H 完成——同一真实作品 ST-05→ST-09 全链（真实委托+grant → 真实 LLM 导演方案/节拍 → 作品+不可变修订+幂等回放 → 投稿+机器编辑签发绑定同一修订 → WATCH G5 候选登记（复用 D 链 run/stage/依赖）+ 机器评审独立通道签发（精确修订绑定+逐动作权利+CAS）→ 四道门发布指针原子指向同修订 → WATCH 仅消费该修订、错修订拒绝 → 撤权即时拒绝 + 重签恢复）；`commitWorkRevision` 增 Creator 权利确认 opts 并接线 revisions 路由；新增 `m5-batch-h.integration.ts`（11/11 PASS）+ `probe-g5-state.mjs`；回归基线零新增失败（620/9/2 与干净 HEAD 一致），typecheck PASS；提交 `ab306b5`。维度 5/7/8 隔离闭环；维度 1/2/4/6 部分、19 组件、Admin、5.9 Owner 体验未做，`M5_OVERALL_HOLD` 不变。
 - 2026-11-08：第 5 步批次 I 完成——维度 4+6：13 类资产矩阵真实盘点（`verify-5i-asset-matrix.mjs` = `VERIFY_5I_ALL_PASS`：产出 6 类逐项字段/不可变/CAS/ACL 正反，未产出 7 类如实记原因；G0–G5 current + G5 审计绑定已发布修订；缺口如实报告 use_events=0、5/5 条目无 refs）；Admin F05 Inspector 每条新增真实治理行 `assetGovernanceSummary`（缺口只按已存字段、G 资格不签发不替代）+ 单测 3 例；提交 `88be1f6`。维度 3/4/6/7/8 隔离闭环；剩余：维度 5 的 19 组件核对（批次 J）、维度 1/2 补强、5.9 Owner 体验（批次 K），`M5_OVERALL_HOLD` 不变。
 - 2026-11-08：第 5 步批次 J 完成——维度 5 剩余：H1/H2/H3 + 19 组件职责核对（`verify-5j-components.mjs` = `VERIFY_5J_ALL_PASS`：12 组件真实工件佐证、W04/W06/W07 不伪造退路核验、X01/X02 按 PLAN 延后、F01 缺口入 finding 未触发工单）；纯验证批零应用代码改动；提交见本条 SHA。维度 3/4/5/6/7/8 隔离闭环；剩余：维度 1/2 补强（并入 5.9 证据）、5.9 Owner 浏览器体验批次（批次 K，含路由 HTTP 正反补证），`M5_OVERALL_HOLD` 不变。
+- 2026-11-08：第 5 步批次 K 完成——批次 G 遗留路由 HTTP 正反补证 + ST-04 UI 显式授权接线：新增 `tools/run-dev-server.mjs` + `tools/verify-5k-http.mjs`（mintCookie 仿 signSessionToken，对真实 dev 服务器 14 项断言）= **VERIFY_5K_ALL_PASS**（WATCH 公开列表含真实作品；projects/assets Owner 可见+匿名 401+跨 Owner 0 行；dispatch-authorizations 匿名 401+Owner GRANTED；director-plans 无委托 409+匿名 401+带委托真实 DeepSeek 派发 200，plan 5c44ad3a…，真实费用 $0.001314 ≈¥0.009）。**HTTP 层首曝并修复真实缺陷**：迁移 `20261105110000` 未应用到真实 dev 库（_test 库由快照+全量迁移构建故测试绿）且函数引用不存在的 `u.artifact_revision` 列，已修并应用；`StudioWorkbench.tsx` 接 ST-04 授权卡 + 修闭包旧值。回归 622/10/2 与基线一致；提交 `291fbfc`。维度 1–8 全部机器验证闭环；仅剩 5.9 Owner 亲自体验签收，`M5_OVERALL_HOLD` 不变。
