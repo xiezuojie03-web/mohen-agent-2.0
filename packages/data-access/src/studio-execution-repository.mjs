@@ -8,9 +8,9 @@ const fail=()=>{throw Error('STUDIO_EXECUTION_INVALID');};
 function copy(v){try{const s=JSON.stringify(v);if(!s||Buffer.byteLength(s)>1_000_000)return fail();return JSON.parse(s);}catch{return fail();}}
 function request(input){const v=copy(input);if(!object(v)||!uuid.test(v.delegationId??'')||!uuid.test(v.requestId??''))fail();return v;}
 function binding(v){if(!Number.isSafeInteger(v.expectedVersion)||v.expectedVersion<0||!/^[a-f0-9]{64}$/.test(v.inputDigest??'')||!text(v.policyVersion))fail();}
-/** Owner-only coordination and evidence, never a provider dispatch or spend grant.
- * inputDigest is the exact immutable delegation.request_hash, not an arbitrary
- * input hash. Uncertain external attempts require separate verified reconciliation.
+/** Owner-scoped coordination and spend accounting; never a provider dispatcher or Gate signer.
+ * inputDigest is the exact immutable delegation.request_hash. Cost settlement accepts only
+ * a persisted, usage-and-pricing-checked ESTIMATED receipt; it does not claim invoice-verified ACTUAL cost.
  */
 export function createStudioExecutionRepository(pool){
  const tx=createAppTransaction(pool,'STUDIO_IDENTITY_REQUIRED');
