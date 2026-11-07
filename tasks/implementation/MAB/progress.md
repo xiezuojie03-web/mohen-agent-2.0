@@ -1682,3 +1682,13 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 **回归**：`pnpm test` 622 passed / 10 failed / 2 skipped——9 项为既有基线失败（同批次 H 基线），第 10 项 `shl-materials K2` 为联网 flaky，单独重跑 PASS，非本批引入；本批 3 个新单测全过；typecheck 6/6 PASS。提交 `88be1f6`。
 
 **证据边界（诚实声明）**：维度 6 的 Admin 可见性在 PG/RLS/视图逻辑层闭环；路由 HTTP 级正反（含 guardRoute/session）归 5.9 Owner 浏览器体验批次。**状态**：维度 3/4/6/7/8 闭环（隔离），维度 5 待 19 组件核对（批次 J），维度 1/2 部分，5.9 Owner 体验未做，`M5_OVERALL_HOLD` 不变。
+
+### 2026-11-08 第 5 步批次 J：维度 5 剩余——H1/H2/H3 + 19 组件职责核对（`VERIFIED_ISOLATED`）
+
+**代码（`CODE_PRESENT`）**：纯验证批，零应用代码改动；新增 `tools/verify-5j-components.mjs`（真实 PG 断言）+ `tools/probe-5j-work-payload.mjs`（只读探针）。
+
+**验证（`VERIFIED_ISOLATED`）**：`VERIFY_5J_ALL_PASS`——对同一真实作品已发布修订 `62a8ba95…`（content `05e0ea4b…`）与导演方案 `15d32996…` 逐条断言：① H1：真实历史问题（科则残文能否说明农户实际负担）、理解增量、母题 M1+M4、5 条材料边界（limitations）+ supportScope；② H2：A/B 双候选方案真实异构（各 3 条 directorDecisions + 3 条 points）、`director_source.selected=A` 决策可溯、修订逐字携带所选方案；③ H3：4 节拍（title/visual/narration/provenanceRefs/directorTimecodeMs 齐）、4 条 provenanceRefs 全部 ∈ 方案 facts（真实 L2 证据串）、旁白如实陈述证据边界不编造数字；④ 19 组件：C01–C05、W01/W02/W03/W05/W08/W09/W10/W11 共 12 项有真实工件佐证实际参与（source_ids 服务端绑定、A/B 比较+接受记录、节拍编辑单元、修订链 1:draft→2:published 64-hex hash、G5 审计绑定精确修订、时码有序、visual/narration 逐拍齐、media=[] 诚实空态）；W04/W06/W07 核验"不伪造"退路职责（节拍无 geometry/compare/relations 伪造键）；X01/X02 按 PLAN §4.5 EXP 延后如实记录；F01 缺口真实识别登记于 finding.limitations（5 条）但未触发工单流转，不伪造进度。
+
+**回归**：无代码改动，沿用批次 I 回归结论（622/10/2，零本批相关失败）。
+
+**证据边界（诚实声明）**：组件职责核验在数据/工件层完成；组件的真实浏览器渲染交互归 5.9 Owner 体验批次。**状态**：维度 3/4/5/6/7/8 闭环（隔离）；剩余维度 1/2 补强（并入 5.9 证据）与 5.9 Owner 体验（批次 K），`M5_OVERALL_HOLD` 不变。
