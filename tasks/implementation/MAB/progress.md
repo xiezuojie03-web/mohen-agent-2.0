@@ -1529,3 +1529,24 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 - **验证（tools/verify-1-10.py，全部 PASS）**：字节层正例（2 原件 SHA 回读一致）/反例（错误 SHA 不一致）；身份层正例（有效 Owner token → `current_app_user_id()`=Owner 且 RLS 可见 2 原件）/反例（无 token、无效 token、跨 Owner/未登记 uid → null 且 0 行）。等价 HTTP 200/401/404 底层逻辑。
 
 **状态**：第 1 步（M2 底座）1.1–1.10 全部闭环。真实 HTTP 层（dev server + 登录 cookie）由 M5 端到端统一验收。下一步进入第 2 步 M3 D 链（production-registry 激活 + M5 实际方法唯一绑定 + D00–D05 真实执行）。M5 仍 M5_OVERALL_HOLD。
+
+## 2026-11-07｜第 2 步批次 A：D00 + D01 C02 扫描页垂直切片 + 63 方法绑定收敛（CodeBuddy）
+
+**范围与边界**：M5 隔离范围《松江府田赋》/ NAJ《松江府志》田赋卷 2 张 JPEG 私有原件。只读 + 隔离本地 PG；未写生产库/Storage、未启用 Gate、未调用外部模型、未新增费用、未做生产启用。
+
+**只读核查（2.0）**：本地库有 2 张 `STORED_VERIFIED` JPEG、1 个 NAJ source、1 个 version、2 条 `source.raw_items`；但 17 条历史 `read_runs` 全部 `raw_item_id=null`（method_set 为 C01/C04），没有绑定到私有原件的 C02 `read_unit`。故第 1 步 1.5 的"C02 扫描书影"当时并未真正成立，需新做扫描页读取链；批次 A 后已有 1 条精确绑定的 `C02/page/scanned_page/v1/ordinal=35` 行。该更正已同步 `LOCAL-BUILD-LEDGER.md` §三 1.5。
+
+**代码与迁移（`CODE_PRESENT`）**：
+- `supabase/migrations/20261107120000_mab_m2_private_scanned_page.sql`：新增 `studio.private_source_registration(uuid)`（D00 精确 L0 登记，校验 private_originals ↔ raw_items ↔ source_versions ↔ asset_revisions 的 SHA/byte_size/storage_ref 与 binding）与 `studio.persist_private_scanned_page_reading(...)`（D01 C02，确定性 ID、幂等、不可变 pin 扩展到 `scanned_page/v1`）。沿用 20261103143451 的 Owner RLS / `SECURITY DEFINER` / `set search_path=pg_catalog` / 最小 EXECUTE 授权；`mohen_app_runtime` 仍不得直读 source 表。
+- 新仓储 `packages/data-access/src/private-source-registration-repository.mjs` 与 `private-scanned-page-reading-repository.mjs`（HMAC byte attestation，token kind `MOHEN_PRIVATE_SCANNED_PAGE_READING_V1`）；`private-evidence-binding.mjs` 组合根接线；`private-evidence-runtime.mjs` 支持 `MOHEN_PRIVATE_ORIGINAL_LOCAL_FS` 本地 FS 后端。
+- `pipelines/data-production/workers/private-evidence-stage.mjs` 新增 `verifySourceIntake`(D00/G0) 与 `readScannedPage`(D01/G1)；`adapters/private-evidence-adapters.mjs` 重写 D00 来源获取适配器、D01 scanned-page 路由，D04/D05 仍 `inactiveStage`。所有候选一律 `qualification='UNASSESSED'`；适配器 `PASS` 仅表示 Producer 阶段完成，**不是 G0/G1 独立签发**。
+- `specs/data-production/method-binding-contract.json` → `M5_ISOLATED_PARTIAL_BINDING`：63 方法中 `C01 → D01:draftTextReading`、`C02 → D01:readScannedPage` 绑定可执行体，其余 61 显式 `HOLD` + `hold_reason`，`TO_VERIFY_IN_M0` 残留 0；`validation` 要求 HOLD 方法启用前必须绑定并做正反测试。
+
+**验证（`VERIFIED_ISOLATED`）**：
+- 迁移已应用到本地隔离 PostgreSQL 18。`tools/verify-2-a-scanned-page.mjs` PG 级正反 12/12 `VERIFY_2_A_ALL_PASS`：登记查找、字节 SHA 校验、C02 `read_runs`/`read_units` 落库、幂等重放、重复行计数、错误 page hash 拒绝、未绑定 raw item 拒绝、update 不可变反例。
+- 私有相关 DP 定向测试 26/26；全量 `pnpm test:unit` 84 files / 578 tests 全通过；`pnpm -r typecheck` PASS。
+- 修复本批引入及 1.10 遗留的测试问题：`tests/unit/private-evidence-binding.test.ts` 补新工厂 mock + 2 项组合测试；`tests/unit/studio-attachment-storage.test.ts` 改为显式 `vi.stubEnv`/`unstubAllEnvs`，消除依赖本地 `.env.local` 的假失败。
+
+**环境缺口（`DEFERRED_ENV`，非功能失败）**：全量 `tests/data-production/*.test.mjs` 139/140，唯一失败 `independent-gate-service-runtime.test.mjs` 因本机无 `openssl`（`spawnSync` ENOENT -4058）；未改生产代码绕过。另：`mohen_producer` 为 NOLOGIN 组角色，真实 run 需 `SET ROLE` 模式。
+
+**状态**：第 2 步仍为**部分闭环**，不是 D 链准出，未签任何 G0–G5。未做：2.1 registry 激活（仍 `DESIGN_TARGET_NOT_APPLIED` / `enabled=false`）、D04/D05 执行器与 6 个 2 行桩、`adapter_binding` 在真实 registry 中的指向、H05/W/A/P 方法绑定、L2–L5 候选与 `run.mjs` 端到端。第 3 步独立 Gate、第 4 步受控 Provider、第 5 步八维度均未施工。`M5_OVERALL_HOLD` 不变。`target-diff.csv` 为 M0 路径差异账，本批新增文件不属于 M0 基线路径集合，未新增行；证据以本节与 `tasks/implementation/MAB/LOCAL-BUILD-LEDGER.md` 为准。

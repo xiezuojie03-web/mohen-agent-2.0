@@ -3,6 +3,8 @@ const deps=vi.hoisted(()=>({
   originalRepository:vi.fn(),originalWorkflow:vi.fn(),
   evidenceBridge:vi.fn(),sourceVerifier:vi.fn(),sourceBinding:vi.fn(),download:vi.fn(),linkReading:vi.fn(),linkClaim:vi.fn(),
   authorize:vi.fn(),handoff:vi.fn(),readingRepository:vi.fn(),persistReading:vi.fn(),
+  pageReadingRepository:vi.fn(),persistPageReading:vi.fn(),
+  registrationRepository:vi.fn(),registrationLookup:vi.fn(),
 }));
 vi.mock('../../packages/data-access/src/index.mjs',()=>({
   createPrivateOriginalRepository:deps.originalRepository,
@@ -10,6 +12,8 @@ vi.mock('../../packages/data-access/src/index.mjs',()=>({
   createEvidenceBridgeRepository:deps.evidenceBridge,
   createPrivateOriginalSourceVerifier:deps.sourceVerifier,
   createPrivateTextReadingRepository:deps.readingRepository,
+  createPrivateScannedPageReadingRepository:deps.pageReadingRepository,
+  createPrivateSourceRegistrationRepository:deps.registrationRepository,
 }));
 vi.mock('../../pipelines/data-production/orchestrator/execution-authority.mjs',()=>({
   assertStageExecutionAuthorized:deps.authorize,
@@ -48,6 +52,17 @@ beforeEach(()=>{
  deps.persistReading.mockResolvedValue({read_run_id:originalId,read_unit_id:originalId,
    artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64),qualification:'UNASSESSED'});
  deps.readingRepository.mockReturnValue({save:deps.persistReading});
+ deps.persistPageReading.mockResolvedValue({read_run_id:originalId,read_unit_id:originalId,
+   artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64),qualification:'UNASSESSED'});
+ deps.pageReadingRepository.mockReturnValue({save:deps.persistPageReading});
+ deps.registrationLookup.mockResolvedValue({schema:'mohen.private-source-registration.v1',
+   original_id:originalId,project_id:'44444444-4444-4444-8444-444444444444',
+   source_id:'55555555-5555-4555-8555-555555555555',source_version_id:extent.source_version_id,
+   raw_item_id:extent.raw_item_id,sha256:hash(bytes),byte_size:bytes.length,content_type:'image/jpeg',
+   provider:'NAJ',title:'松江府志7',source_type:'gazetteer',carrier_type:'scanned_page',
+   rights:{status:'public_domain_secondary_use'},asset_revision_id:'66666666-6666-4666-8666-666666666666',
+   artifact_revision:'c'.repeat(64)});
+ deps.registrationRepository.mockReturnValue({lookup:deps.registrationLookup});
 });
 it('requires a server-side repository, verified object store, and verifier key',()=>{
  expect(()=>createBoundPrivateEvidenceStageWorker({storage,verificationKey:key})).toThrow('PRIVATE_STAGE_DATABASE_REQUIRED');
@@ -99,4 +114,38 @@ it('cannot turn a wrong private source binding into a D01 candidate',async()=>{
    .rejects.toThrow('PRIVATE_READING_SOURCE_NOT_BOUND');
  expect(deps.download).not.toHaveBeenCalled();
  expect(deps.linkReading).not.toHaveBeenCalled();
+});
+it('composes D00 source intake through the registration lookup',async()=>{
+ const worker=createBoundPrivateEvidenceStageWorker({pool,storage,verificationKey:key,keyVersion:'test-only'});
+ expect(deps.registrationRepository).toHaveBeenCalledWith(pool);
+ deps.download.mockResolvedValue({record:{original_id:originalId,
+   project_id:'44444444-4444-4444-8444-444444444444',
+   state:'STORED_VERIFIED',content_type:'image/jpeg',sha256:hash(bytes),byte_size:bytes.length},bytes});
+ const result=await worker.verifySourceIntake(args('D00',{research_intent:'松江府田赋',
+   scope:{project_id:'44444444-4444-4444-8444-444444444444',original_id:originalId,page_number:35}}));
+ expect(result.qualification).toBe('UNASSESSED');
+ expect(result.gate_code).toBe('G0');
+ expect(result.candidate_kind).toBe('private_source_intake');
+ expect(result.rights).toEqual({status:'public_domain_secondary_use'});
+ expect(deps.registrationLookup).toHaveBeenCalledWith(originalId,'synthetic-user-session');
+ expect(deps.sourceBinding).toHaveBeenCalledWith({originalId,
+   sourceVersionId:extent.source_version_id,rawItemId:extent.raw_item_id,rawSha256:hash(bytes)},
+   'synthetic-user-session');
+});
+it('composes the scanned-page reader for C02 page requests, never the text reader',async()=>{
+ const worker=createBoundPrivateEvidenceStageWorker({pool,storage,verificationKey:key,keyVersion:'test-only'});
+ expect(deps.pageReadingRepository).toHaveBeenCalledWith(pool,{verificationKey:key,keyVersion:'test-only'});
+ deps.download.mockResolvedValue({record:{original_id:originalId,
+   project_id:'44444444-4444-4444-8444-444444444444',
+   state:'STORED_VERIFIED',content_type:'image/jpeg',sha256:hash(bytes),byte_size:bytes.length},bytes});
+ const page={kind:'scanned_page/v1',page_number:35,
+   source_version_id:extent.source_version_id,raw_item_id:extent.raw_item_id,
+   raw_sha256:hash(bytes),page_sha256:hash(bytes)};
+ const result=await worker.readScannedPage(args('D01',{originalId,page}));
+ expect(result.qualification).toBe('UNASSESSED');
+ expect(result.gate_code).toBe('G1');
+ expect(result.candidate_kind).toBe('private_scanned_page_reading');
+ expect(result.read_unit_id).toBe(originalId);
+ expect(deps.persistPageReading).toHaveBeenCalledTimes(1);
+ expect(deps.persistReading).not.toHaveBeenCalled();
 });

@@ -6,6 +6,8 @@ import {PRIVATE_EVIDENCE_ADAPTER_PATH, assertNoUnboundPrivateEvidenceInput} from
 import {executionDigest} from '../orchestrator/execution-authority.mjs';
 
 const SCHEMA='mohen.private-evidence-stage-request.v1';
+const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+const HASH=/^[a-f0-9]{64}$/;
 const ACTIONS=Object.freeze({
   D01:'draftTextReading',
   D02:'linkReading',
@@ -21,6 +23,68 @@ function hold(reason, next) {
   }};
 }
 
+async function loadRuntime(context) {
+  if(context.registry&&(!context.privateEvidenceWorker||!context.privateEvidenceOwnerSessionToken)&&
+    typeof context.loadPrivateEvidenceRuntime==='function') {
+    return await context.loadPrivateEvidenceRuntime()??{};
+  }
+  return context;
+}
+
+// D00 source intake: verify the immutable private original against its exact L0
+// registration (source/version/raw item/rights), then hand D01 a typed private
+// stage request. The output is the only stage-to-stage carrier of private refs.
+function privateSourceIntakeAdapter() {
+  return async ({run,job,input,context={}})=>{
+    if(job?.stage!=='D00'||typeof input?.research_intent!=='string'||
+       !input.research_intent.trim()||typeof input?.scope?.original_id!=='string'||
+       !UUID.test(input.scope.original_id)) {
+      return hold('PRIVATE_SOURCE_INTAKE_SCOPE_REQUIRED',
+        'Provide research_intent and scope {project_id,original_id,page_number} for the registered private original');
+    }
+    if(job.implementation?.adapter_binding!==PRIVATE_EVIDENCE_ADAPTER_PATH) {
+      throw Error('PRIVATE_STAGE_ADAPTER_NOT_BOUND');
+    }
+    const runtime=await loadRuntime(context);
+    const worker=runtime.privateEvidenceWorker;
+    const token=runtime.privateEvidenceOwnerSessionToken;
+    if(!context.registry || typeof worker?.verifySourceIntake!=='function' ||
+        typeof token!=='string' || !token) {
+      return hold('PRIVATE_STAGE_RUNTIME_NOT_BOUND','Bind a trusted Owner-scoped private worker and short-lived session');
+    }
+    const candidate=await worker.verifySourceIntake({
+      run,job,registry:context.registry,context,input,token,
+    });
+    if(candidate?.qualification!=='UNASSESSED'||candidate?.stage!=='D00'||
+       candidate?.gate_code!=='G0') {
+      throw Error('PRIVATE_STAGE_CANDIDATE_INVALID');
+    }
+    if(!UUID.test(candidate.raw_item_id??'')||!UUID.test(candidate.source_version_id??'')||
+       !UUID.test(candidate.asset_revision_id??'')||!HASH.test(candidate.artifact_revision??'')||
+       !HASH.test(candidate.request_digest??'')||!HASH.test(candidate.sha256??''))
+      throw Error('PRIVATE_STAGE_CANDIDATE_NOT_PERSISTED');
+    // Typed D01 request: the runner hands this to the bound private D01 adapter.
+    const request={schema:SCHEMA,stage:'D01',originalId:candidate.original_id,
+      page:{kind:'scanned_page/v1',page_number:candidate.page_number,
+        source_version_id:candidate.source_version_id,raw_item_id:candidate.raw_item_id,
+        raw_sha256:candidate.sha256,page_sha256:candidate.sha256}};
+    const control_outputs={candidate_refs:[{object_type:'raw_item',object_id:candidate.raw_item_id,
+      artifact_revision:candidate.artifact_revision,source_version_id:candidate.source_version_id,
+      run_id:run.run_id,stage:'D00',gate_code:'G0',job_id:job.job_id,
+      reviewer_binding_ref:job.implementation.gate_reviewer_binding,consumer:'producer',
+      input_digest:executionDigest(input),output_digest:executionDigest(candidate),
+      request_digest:candidate.request_digest,qualification:'UNASSESSED'}]};
+    // PASS here is *producer completion*, NEVER a signed G0 PASS.
+    return {disposition:'PASS',output:request,control_outputs,
+      gate_evidence:{candidate_kind:candidate.candidate_kind,stage:'D00',gate_code:'G0',
+        qualification:'UNASSESSED',rights:candidate.rights,provider:candidate.provider,
+        title:candidate.title,source_type:candidate.source_type,carrier_type:candidate.carrier_type,
+        sha256:candidate.sha256,byte_size:candidate.byte_size,content_type:candidate.content_type,
+        candidate_refs:control_outputs.candidate_refs},
+      content_stats:{sources:1},review_records:[]};
+  };
+}
+
 function privateCandidateAdapter(stage) {
   return async ({run,job,input,context={}})=>{
     // This is a separate check; the Runner must already have validated the
@@ -32,18 +96,16 @@ function privateCandidateAdapter(stage) {
     if(job.implementation?.adapter_binding!==PRIVATE_EVIDENCE_ADAPTER_PATH) {
       throw Error('PRIVATE_STAGE_ADAPTER_NOT_BOUND');
     }
-    let runtime=context;
-    if(context.registry&&(!context.privateEvidenceWorker||!context.privateEvidenceOwnerSessionToken)&&
-      typeof context.loadPrivateEvidenceRuntime==='function') {
-      runtime=await context.loadPrivateEvidenceRuntime()??{};
-    }
+    const action=stage==='D01'&&input?.page?.kind==='scanned_page/v1'
+      ?'readScannedPage':ACTIONS[stage];
+    const runtime=await loadRuntime(context);
     const worker=runtime.privateEvidenceWorker;
     const token=runtime.privateEvidenceOwnerSessionToken;
-    if(!context.registry || typeof worker?.[ACTIONS[stage]]!=='function' ||
+    if(!context.registry || typeof worker?.[action]!=='function' ||
         typeof token!=='string' || !token) {
       return hold('PRIVATE_STAGE_RUNTIME_NOT_BOUND','Bind a trusted Owner-scoped private worker and short-lived session');
     }
-    const candidate=await worker[ACTIONS[stage]]({
+    const candidate=await worker[action]({
       run,job,registry:context.registry,context,input,token,
     });
     if(candidate?.qualification!=='UNASSESSED' || candidate?.stage!==stage ||
@@ -82,7 +144,7 @@ function inactiveStage(stage) {
     'Use an independently qualified, Registry-bound source/meaning adapter for '+stage);
 }
 export const adapters=Object.freeze({
-  D00:inactiveStage('D00'),
+  D00:privateSourceIntakeAdapter(),
   D01:privateCandidateAdapter('D01'),
   D02:privateCandidateAdapter('D02'),
   D03:privateCandidateAdapter('D03'),

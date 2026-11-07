@@ -2,7 +2,7 @@
   "schema": "mohen.method-bindings",
   "schema_version": "1.0-target",
   "architecture_generation": "mohen.six-stage.v1",
-  "status": "DESIGN_TARGET_NOT_APPLIED",
+  "status": "M5_ISOLATED_PARTIAL_BINDING",
   "method_count": 63,
   "stage_d00": "source standards govern source discovery/acquisition; not counted among C/H/W/A/P",
   "methods": [
@@ -23,7 +23,7 @@
       "output_contract": [
         "reading_unit"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
+      "implementation_binding": "pipelines/data-production/adapters/private-evidence-adapters.mjs#D01:draftTextReading",
       "may_grant_gate": false
     },
     {
@@ -43,7 +43,7 @@
       "output_contract": [
         "reading_unit"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
+      "implementation_binding": "pipelines/data-production/adapters/private-evidence-adapters.mjs#D01:readScannedPage",
       "may_grant_gate": false
     },
     {
@@ -63,8 +63,9 @@
       "output_contract": [
         "reading_unit"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "C04",
@@ -83,8 +84,9 @@
       "output_contract": [
         "reading_unit"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "C05",
@@ -103,8 +105,9 @@
       "output_contract": [
         "reading_unit"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "C06",
@@ -123,8 +126,9 @@
       "output_contract": [
         "reading_unit"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "C07",
@@ -143,8 +147,9 @@
       "output_contract": [
         "reading_unit"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "C08",
@@ -163,8 +168,9 @@
       "output_contract": [
         "reading_unit"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H01",
@@ -183,8 +189,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H02",
@@ -203,8 +210,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H03",
@@ -223,8 +231,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H04",
@@ -243,8 +252,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H05",
@@ -263,8 +273,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H06",
@@ -283,8 +294,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H07",
@@ -303,8 +315,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H08",
@@ -323,8 +336,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H09",
@@ -343,8 +357,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H10",
@@ -363,8 +378,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H11",
@@ -383,8 +399,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H12",
@@ -403,8 +420,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H13",
@@ -423,8 +441,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H14",
@@ -443,8 +462,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H15",
@@ -463,8 +483,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H16",
@@ -483,8 +504,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H17",
@@ -503,8 +525,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H18",
@@ -523,8 +546,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H19",
@@ -543,8 +567,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H20",
@@ -563,8 +588,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H21",
@@ -583,8 +609,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H22",
@@ -603,8 +630,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H23",
@@ -623,8 +651,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H24",
@@ -643,8 +672,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "H25",
@@ -663,8 +693,9 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "W01",
@@ -683,8 +714,9 @@
       "output_contract": [
         "world_claim_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "W02",
@@ -703,8 +735,9 @@
       "output_contract": [
         "world_claim_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "W03",
@@ -723,8 +756,9 @@
       "output_contract": [
         "world_claim_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "W04",
@@ -743,8 +777,9 @@
       "output_contract": [
         "world_claim_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "W05",
@@ -763,8 +798,9 @@
       "output_contract": [
         "world_claim_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "W06",
@@ -783,8 +819,9 @@
       "output_contract": [
         "world_claim_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "W07",
@@ -803,8 +840,9 @@
       "output_contract": [
         "world_claim_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "W08",
@@ -823,8 +861,9 @@
       "output_contract": [
         "world_claim_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "W09",
@@ -843,8 +882,9 @@
       "output_contract": [
         "world_claim_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "W10",
@@ -863,8 +903,9 @@
       "output_contract": [
         "world_claim_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "A01",
@@ -883,8 +924,9 @@
       "output_contract": [
         "humanistic_finding_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "A02",
@@ -903,8 +945,9 @@
       "output_contract": [
         "humanistic_finding_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "A03",
@@ -923,8 +966,9 @@
       "output_contract": [
         "humanistic_finding_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "A04",
@@ -943,8 +987,9 @@
       "output_contract": [
         "humanistic_finding_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "A05",
@@ -963,8 +1008,9 @@
       "output_contract": [
         "humanistic_finding_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "A06",
@@ -983,8 +1029,9 @@
       "output_contract": [
         "humanistic_finding_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "A07",
@@ -1003,8 +1050,9 @@
       "output_contract": [
         "humanistic_finding_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "A08",
@@ -1023,8 +1071,9 @@
       "output_contract": [
         "humanistic_finding_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "A09",
@@ -1043,8 +1092,9 @@
       "output_contract": [
         "humanistic_finding_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "A10",
@@ -1063,8 +1113,9 @@
       "output_contract": [
         "humanistic_finding_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "A11",
@@ -1083,8 +1134,9 @@
       "output_contract": [
         "humanistic_finding_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "A12",
@@ -1103,8 +1155,9 @@
       "output_contract": [
         "humanistic_finding_revision"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "P01",
@@ -1123,8 +1176,9 @@
       "output_contract": [
         "selection_manifest"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "P02",
@@ -1143,8 +1197,9 @@
       "output_contract": [
         "world_projections"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "P03",
@@ -1163,8 +1218,9 @@
       "output_contract": [
         "map_timeline_projections"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "P04",
@@ -1184,8 +1240,9 @@
         "story_seeds",
         "agent_contexts"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "P05",
@@ -1204,8 +1261,9 @@
       "output_contract": [
         "discovery_paths"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "P06",
@@ -1224,8 +1282,9 @@
       "output_contract": [
         "evidence_pointers"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "P07",
@@ -1244,8 +1303,9 @@
       "output_contract": [
         "consumer_facet"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     },
     {
       "method_id": "P08",
@@ -1264,8 +1324,9 @@
       "output_contract": [
         "control.invalidation_event"
       ],
-      "implementation_binding": "TO_VERIFY_IN_M0",
-      "may_grant_gate": false
+      "implementation_binding": "HOLD",
+      "may_grant_gate": false,
+      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
     }
   ],
   "formal_br_policy": {
@@ -1274,5 +1335,18 @@
     "no_implicit_runtime_allowlist": true
   },
   "rule_version": "source document hashes and section locators",
-  "validation": "IDs unique; references exist; method version equals source hash; binding to executable adapter must be verified before enable"
+  "validation": "IDs unique; references exist; method version equals source hash; bound methods point to executable adapter actions verified by unit and isolated-PG tests; HOLD methods must be bound with positive/negative tests before enable",
+  "m5_isolated_binding": {
+    "scope": "MAB M5 isolated vertical slice (松江府田赋, NAJ 松江府志7)",
+    "bound_methods": [
+      "C01",
+      "C02"
+    ],
+    "bound_evidence": [
+      "tests/data-production/private-scanned-page-worker.test.mjs",
+      "tests/data-production/private-evidence-adapters.test.mjs",
+      "tools/verify-2-a-scanned-page.mjs (isolated PG positive/negative/idempotency)"
+    ],
+    "note": "D00 is governed by source standards (stage_d00), not a C/H/W/A/P method binding; its executable is the private-evidence D00 adapter action verifySourceIntake."
+  }
 }

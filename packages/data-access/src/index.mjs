@@ -288,6 +288,8 @@ export { createEvidenceBridgeRepository } from './evidence-bridge-repository.mjs
 export { createReadModelRepository, assertQualificationContext } from './read-model-repository.mjs';
 export { createPrivateOriginalSourceVerifier } from './private-original-source-binding.mjs';
 export { createPrivateTextReadingRepository } from './private-text-reading-repository.mjs';
+export { createPrivateScannedPageReadingRepository } from './private-scanned-page-reading-repository.mjs';
+export { createPrivateSourceRegistrationRepository } from './private-source-registration-repository.mjs';
 export { createStudioDelegationRepository } from './studio-delegation-repository.mjs';
 export {assessStudioReceiptCandidates} from './studio-candidate-assessment.mjs';
 

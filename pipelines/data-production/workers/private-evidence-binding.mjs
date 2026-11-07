@@ -7,6 +7,8 @@ import {
   createEvidenceBridgeRepository,
   createPrivateOriginalSourceVerifier,
   createPrivateTextReadingRepository,
+  createPrivateScannedPageReadingRepository,
+  createPrivateSourceRegistrationRepository,
 } from '../../../packages/data-access/src/index.mjs';
 import { createPrivateEvidenceStageWorker } from './private-evidence-stage.mjs';
 
@@ -23,7 +25,8 @@ export function createBoundPrivateEvidenceStageWorker({
     throw new Error('PRIVATE_STAGE_BRIDGE_VERIFIER_REQUIRED');
   }
   // The repository enforces project/Owner RLS via transaction-local identity.
-  // The same readback is used for D01 and for D02/D03 bridge attestation.
+  // The same readback is used for D00 registration lookup, D01 reads and
+  // D02/D03 bridge attestation.
   const repository = createPrivateOriginalRepository(pool);
   const original = createPrivateOriginalWorkflow({ repository, storage });
   const readOriginal = (originalId, token) => original.download(originalId, token);
@@ -32,5 +35,9 @@ export function createBoundPrivateEvidenceStageWorker({
   });
   const verifySourceBinding=createPrivateOriginalSourceVerifier(pool);
   const readings=createPrivateTextReadingRepository(pool,{verificationKey,keyVersion});
-  return createPrivateEvidenceStageWorker({ readOriginal, bridge, verifySourceBinding,persistReading:readings.save });
+  const pageReadings=createPrivateScannedPageReadingRepository(pool,{verificationKey,keyVersion});
+  const registrations=createPrivateSourceRegistrationRepository(pool);
+  return createPrivateEvidenceStageWorker({ readOriginal, bridge, verifySourceBinding,
+    persistReading:readings.save, readRegistration:registrations.lookup,
+    persistPageReading:pageReadings.save });
 }

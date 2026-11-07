@@ -88,6 +88,100 @@ test('private adapter lazily binds the configured runtime only for an exact Regi
   assert.equal(loads,1,'missing authorized Registry must not initialize runtime');
 });
 
+test('D00 source intake returns a typed D01 request and UNASSESSED candidate refs with a trusted runtime',async()=>{
+  const input={research_intent:'松江府田赋卷十一',scope:{project_id:randomUUID(),original_id:randomUUID(),page_number:37}};
+  const j=job('D00');let called=0;
+  const worker={verifySourceIntake:async args=>{
+    called++;assert.equal(args.input,input);assert.equal(args.token,'synthetic-owner-session');
+    return {stage:'D00',candidate_kind:'private_source_intake',gate_code:'G0',qualification:'UNASSESSED',
+      original_id:input.scope.original_id,project_id:input.scope.project_id,page_number:37,
+      source_id:randomUUID(),source_version_id:randomUUID(),raw_item_id:randomUUID(),
+      sha256:'a'.repeat(64),byte_size:362221,content_type:'image/jpeg',
+      rights:{status:'public_domain_secondary_use'},provider:'NAJ',title:'松江府志7',
+      source_type:'gazetteer',carrier_type:'scanned_page',
+      asset_revision_id:randomUUID(),artifact_revision:'b'.repeat(64),request_digest:'c'.repeat(64)};
+  }};
+  const result=await adapters.D00({run:{run_id:randomUUID()},job:j,input,
+    context:{registry:{},privateEvidenceWorker:worker,privateEvidenceOwnerSessionToken:'synthetic-owner-session'}});
+  assert.equal(called,1);
+  assert.equal(result.disposition,'PASS');
+  assert.equal(result.output.schema,'mohen.private-evidence-stage-request.v1');
+  assert.equal(result.output.stage,'D01');
+  assert.equal(result.output.originalId,input.scope.original_id);
+  assert.equal(result.output.page.kind,'scanned_page/v1');
+  assert.equal(result.output.page.page_number,37);
+  assert.equal(result.output.page.raw_sha256,'a'.repeat(64));
+  assert.equal(result.output.page.source_version_id===undefined,false,'page carries the exact registered version');
+  assert.equal(result.gate_evidence.qualification,'UNASSESSED');
+  assert.equal(result.gate_evidence.gate_code,'G0');
+  assert.equal(result.gate_evidence.rights.status,'public_domain_secondary_use');
+  assert.equal(result.gate_evidence.provider,'NAJ');
+  assert.equal(result.control_outputs.candidate_refs[0].object_type,'raw_item');
+  assert.equal(result.control_outputs.candidate_refs[0].qualification,'UNASSESSED');
+  assert.equal(result.content_stats.sources,1);
+  assert.ok(!JSON.stringify(result.output).includes('synthetic-owner-session'));
+});
+
+test('D00 fails closed without scope or without a trusted runtime',async()=>{
+  const j=job('D00');
+  const missingScope=await adapters.D00({run:{},job:j,input:{},context:{}});
+  assert.equal(missingScope.disposition,'HOLD');
+  assert.equal(missingScope.hold.reason_code,'PRIVATE_SOURCE_INTAKE_SCOPE_REQUIRED');
+  const input={research_intent:'松江府田赋',scope:{project_id:randomUUID(),original_id:randomUUID(),page_number:1}};
+  const noRuntime=await adapters.D00({run:{},job:j,input,context:{}});
+  assert.equal(noRuntime.disposition,'HOLD');
+  assert.equal(noRuntime.hold.reason_code,'PRIVATE_STAGE_RUNTIME_NOT_BOUND');
+});
+
+test('D00 rejects a self-qualified or unpersisted source candidate',async()=>{
+  const input={research_intent:'松江府田赋',scope:{project_id:randomUUID(),original_id:randomUUID(),page_number:1}};
+  const j=job('D00');
+  const base={stage:'D00',candidate_kind:'private_source_intake',gate_code:'G0',qualification:'UNASSESSED',
+    original_id:input.scope.original_id,project_id:input.scope.project_id,page_number:1,
+    source_id:randomUUID(),source_version_id:randomUUID(),raw_item_id:randomUUID(),
+    sha256:'a'.repeat(64),byte_size:1,content_type:'image/jpeg',rights:{},provider:'p',title:'t',
+    source_type:'gazetteer',carrier_type:'scanned_page',asset_revision_id:randomUUID(),
+    artifact_revision:'b'.repeat(64),request_digest:'c'.repeat(64)};
+  await assert.rejects(()=>adapters.D00({run:{run_id:randomUUID()},job:j,input,
+    context:{registry:{},privateEvidenceOwnerSessionToken:'s',
+      privateEvidenceWorker:{verifySourceIntake:async()=>({...base,qualification:'PASS'})}}}),
+    /PRIVATE_STAGE_CANDIDATE_INVALID/);
+  await assert.rejects(()=>adapters.D00({run:{run_id:randomUUID()},job:j,input,
+    context:{registry:{},privateEvidenceOwnerSessionToken:'s',
+      privateEvidenceWorker:{verifySourceIntake:async()=>({...base,raw_item_id:'not-a-uuid'})}}}),
+    /PRIVATE_STAGE_CANDIDATE_NOT_PERSISTED/);
+});
+
+test('D01 routes a scanned-page request to readScannedPage, never the text reader',async()=>{
+  const input={schema:'mohen.private-evidence-stage-request.v1',stage:'D01',originalId:randomUUID(),
+    page:{kind:'scanned_page/v1',page_number:37,source_version_id:randomUUID(),raw_item_id:randomUUID(),
+      raw_sha256:'a'.repeat(64),page_sha256:'a'.repeat(64)}};
+  const j=job('D01');let pageCalls=0;
+  const worker={readScannedPage:async args=>{
+    pageCalls++;assert.equal(args.input,input);
+    return {stage:'D01',candidate_kind:'private_scanned_page_reading',
+      gate_code:'G1',qualification:'UNASSESSED',read_run_id:randomUUID(),read_unit_id:randomUUID(),
+      artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64)};
+  },draftTextReading:async()=>{throw Error('draftTextReading must not run for scanned pages');}};
+  const result=await adapters.D01({run:{run_id:randomUUID()},job:j,input,
+    context:{registry:{},privateEvidenceWorker:worker,privateEvidenceOwnerSessionToken:'synthetic-owner-session'}});
+  assert.equal(pageCalls,1);
+  assert.equal(result.disposition,'PASS');
+  assert.equal(result.output.candidate_kind,'private_scanned_page_reading');
+  assert.equal(result.gate_evidence.candidate_kind,'private_scanned_page_reading');
+  assert.equal(result.control_outputs.candidate_refs[0].object_type,'read_unit');
+});
+
+test('D01 scanned-page request fails closed when the runtime lacks the page reader',async()=>{
+  const input={schema:'mohen.private-evidence-stage-request.v1',stage:'D01',originalId:randomUUID(),
+    page:{kind:'scanned_page/v1',page_number:1,source_version_id:randomUUID(),raw_item_id:randomUUID(),
+      raw_sha256:'a'.repeat(64),page_sha256:'a'.repeat(64)}};
+  const result=await adapters.D01({run:{run_id:randomUUID()},job:job('D01'),input,
+    context:{registry:{},privateEvidenceWorker:{draftTextReading:async()=>{}},privateEvidenceOwnerSessionToken:'s'}});
+  assert.equal(result.disposition,'HOLD');
+  assert.equal(result.hold.reason_code,'PRIVATE_STAGE_RUNTIME_NOT_BOUND');
+});
+
 test('D01 exposes only durable candidate refs outside qualified outputs and refuses an in-memory-only candidate',async()=>{
   const input=request('D01'),j=job('D01');
   const candidate={stage:'D01',gate_code:'G1',qualification:'UNASSESSED',read_run_id:input.originalId,

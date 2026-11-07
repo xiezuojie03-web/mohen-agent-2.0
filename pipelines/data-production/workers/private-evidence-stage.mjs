@@ -5,14 +5,21 @@ import { assertStageExecutionAuthorized, consumeAuthorizedStageHandoff } from '.
 
 const HEX=/^[a-f0-9]{64}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+const IMAGE_TYPE=/^image\/(png|jpeg|webp)$/;
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+function canonical(value){
+  if(Array.isArray(value))return '['+value.map(canonical).join(',')+']';
+  if(value&&typeof value==='object')return '{'+Object.keys(value).sort().map(k=>JSON.stringify(k)+':'+canonical(value[k])).join(',')+'}';
+  return JSON.stringify(value);
+}
+const digestOf=value=>createHash('sha256').update(canonical(value)).digest('hex');
 function requireBoundStage(stage, job) {
   if(job?.stage!==stage)throw Error('PRIVATE_STAGE_MISMATCH');
 }
 function requireToken(token) {
   if(typeof token!=='string'||token.length===0)throw Error('PRIVATE_STAGE_SESSION_REQUIRED');
 }
-export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySourceBinding,persistReading}={}) {
+export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySourceBinding,persistReading,readRegistration,persistPageReading}={}) {
   if(typeof readOriginal!=='function'||typeof verifySourceBinding!=='function'||
      typeof bridge?.linkReading!=='function'||typeof bridge?.linkClaim!=='function')throw Error('PRIVATE_EVIDENCE_BRIDGE_REQUIRED');
 
@@ -35,6 +42,72 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
   }
 
   return {
+    async verifySourceIntake({run,job,registry,context={},input,token}) {
+      await authorized({stage:'D00',run,job,registry,context,input,token});
+      const {research_intent:researchIntent,scope}=input??{};
+      const originalId=scope?.original_id,projectId=scope?.project_id,pageNumber=scope?.page_number;
+      if(typeof researchIntent!=='string'||!researchIntent.trim()||researchIntent.length>2000||
+         typeof originalId!=='string'||!UUID.test(originalId)||
+         typeof projectId!=='string'||!UUID.test(projectId)||
+         !Number.isSafeInteger(pageNumber)||pageNumber<1||pageNumber>10000)
+        throw Error('PRIVATE_SOURCE_INTAKE_SCOPE_INVALID');
+      if(typeof readRegistration!=='function')throw Error('PRIVATE_SOURCE_REGISTRATION_REQUIRED');
+      const {record,bytes}=await readOriginal(originalId,token);
+      if(record?.state!=='STORED_VERIFIED'||!IMAGE_TYPE.test(record?.content_type??'')||
+         !HEX.test(record?.sha256??'')||hash(bytes)!==record.sha256||
+         record?.project_id!==projectId)
+        throw Error('PRIVATE_SOURCE_INTAKE_ORIGINAL_UNVERIFIED');
+      const registration=await readRegistration(originalId,token);
+      if(registration?.project_id!==projectId||registration?.original_id!==originalId||
+         registration?.sha256!==record.sha256||registration?.content_type!==record.content_type||
+         registration?.byte_size!==record.byte_size)
+        throw Error('PRIVATE_SOURCE_REGISTRATION_INVALID');
+      const bound=await verifySourceBinding({originalId,
+        sourceVersionId:registration.source_version_id,rawItemId:registration.raw_item_id,
+        rawSha256:record.sha256},token);
+      if(bound!==true)throw Error('PRIVATE_READING_SOURCE_NOT_BOUND');
+      const requestDigest=digestOf({runId:run.run_id,originalId,pageNumber,researchIntent});
+      // Durable L0 candidate refs; professional G0 qualification stays independent.
+      return {stage:'D00',candidate_kind:'private_source_intake',
+        original_id:originalId,project_id:projectId,page_number:pageNumber,
+        source_id:registration.source_id,source_version_id:registration.source_version_id,
+        raw_item_id:registration.raw_item_id,sha256:record.sha256,byte_size:record.byte_size,
+        content_type:record.content_type,rights:registration.rights,provider:registration.provider,
+        title:registration.title,source_type:registration.source_type,carrier_type:registration.carrier_type,
+        asset_revision_id:registration.asset_revision_id,artifact_revision:registration.artifact_revision,
+        request_digest:requestDigest,qualification:'UNASSESSED',gate_code:'G0'};
+    },
+
+    async readScannedPage({run,job,registry,context={},input,token}) {
+      await authorized({stage:'D01',run,job,registry,context,input,token});
+      if(typeof persistPageReading!=='function')throw Error('PRIVATE_PAGE_READING_PERSISTENCE_REQUIRED');
+      const {originalId,page}=input??{};
+      if(typeof originalId!=='string'||!UUID.test(originalId)||page?.kind!=='scanned_page/v1'||
+         !UUID.test(page.source_version_id??'')||!UUID.test(page.raw_item_id??'')||
+         !Number.isSafeInteger(page.page_number)||page.page_number<1||page.page_number>10000||
+         page.raw_sha256!==page.page_sha256||!HEX.test(page.raw_sha256??''))
+        throw Error('PRIVATE_PAGE_READING_LOCATOR_INVALID');
+      const bound=await verifySourceBinding({originalId,sourceVersionId:page.source_version_id,
+        rawItemId:page.raw_item_id,rawSha256:page.raw_sha256},token);
+      if(bound!==true)throw Error('PRIVATE_READING_SOURCE_NOT_BOUND');
+      const {record,bytes}=await readOriginal(originalId,token);
+      if(record?.state!=='STORED_VERIFIED'||!IMAGE_TYPE.test(record?.content_type??'')||
+         !HEX.test(record?.sha256??'')||hash(bytes)!==record.sha256||
+         page.raw_sha256!==record.sha256)
+        throw Error('PRIVATE_PAGE_READING_ORIGINAL_UNVERIFIED');
+      const saved=await persistPageReading({runId:run.run_id,originalId,page,record,bytes},token);
+      if(saved?.qualification!=='UNASSESSED'||!UUID.test(saved?.read_run_id??'')||
+        !UUID.test(saved?.read_unit_id??'')||!HEX.test(saved?.artifact_revision??'')||!HEX.test(saved?.request_digest??''))
+        throw Error('PRIVATE_PAGE_READING_NOT_PERSISTED');
+      // Durable L1 candidate; professional qualification remains independent.
+      return {stage:'D01',candidate_kind:'private_scanned_page_reading',
+        original_id:originalId,source_version_id:page.source_version_id,
+        raw_item_id:page.raw_item_id,raw_sha256:record.sha256,
+        read_run_id:saved.read_run_id,read_unit_id:saved.read_unit_id,
+        artifact_revision:saved.artifact_revision,request_digest:saved.request_digest,
+        page,qualification:'UNASSESSED',gate_code:'G1'};
+    },
+
     async draftTextReading({run,job,registry,context={},input,token}) {
       await authorized({stage:'D01',run,job,registry,context,input,token});
       if(typeof persistReading!=='function')throw Error('PRIVATE_READING_PERSISTENCE_REQUIRED');
