@@ -1416,3 +1416,21 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 **下一步（待 Owner 决策）**：
 1. A线原件版本：崇祯版（本地已有 653MB）vs NAJ 1663 版（官方 IIIF 取字节）。
 2. B线：在现有账本/委托体系内补真实 Provider 派发+真实费用映射，解开 ST05 阻断正道。
+
+## 2026-11-07｜A线原件定案：崇祯版验证 + Owner选NAJ 1663版 + IIIF manifest本地可达（CodeBuddy）
+
+**崇祯版验证结论**（tools/verify-gazetteer-pdf.py，PyPDF2）：
+- `corpus/gazetteers/高层通志府州/[崇禎]松江府志九十四卷.pdf` = 1845 页、未加密、纯扫描版（抽样页文本=0）、无书签目录。
+- 结论：真实史料但"无文本层+无书签+94卷1845页"，使用需卷次定位+OCR，成本高，不适合 M5 首选。
+
+**Owner 决策（2026-11-07）**：M5 原件用 NAJ 1663 版（选项 A）。
+
+**NAJ IIIF 本地可达性验证**：
+- manifest `https://www.digital.archives.go.jp/api/iiif/4252790/manifest.json` 本地 HTTP 200（66,969 bytes）。
+- 解析出 73 个 canvas，label 连续 `C101041974900`→`C101041982100`，对应图文件 `M2016092009552459771_0001.jp2`→`_0073.jp2`（每页 6300×4400px）。
+- IIIF Image API service 前缀：`https://www.digital.archives.go.jp/api/content/item/da12/{canvas}/iiif/{file}.jp2`，可用 `full/{w},/0/default.jpg` 取派生 JPEG。
+- 注意：此站对连续访问有短时 403 限制（历史记录），取页须降频、逐页留间隔。
+
+**下一步（A线）**：取 1-2 页样本（卷首/目次页），用已授权 DeepSeek flash 图像识读定位"水利"卷（卷十五/十六）对应 canvas 范围，再取目标页字节入私有存储 + SHA 回读。
+
+**状态**：M5_OVERALL_HOLD 不变。本批仍为只读盘点/网络验证，未写私有存储、未改生产 DB/Storage/Gate。
