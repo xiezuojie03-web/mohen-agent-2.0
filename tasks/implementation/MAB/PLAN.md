@@ -73,6 +73,8 @@ M5必须在非生产隔离环境完成至少一项真实历史文化作品的完
 
 本次将原Codex交接入口改为工具无关的ENGINEERING_HANDOFF_CURRENT.md。当前执行不再使用Codex；ChatGPT主导可通过GitHub连接器完成的工作，CodeBuddy仅承担必须访问用户本地文件、浏览器、本机运行环境或本地凭据的集中任务。
 
+开发工具Skill的唯一方法源为 `.agents/skills/mohen-dev-continuation/SKILL.md`，CodeBuddy轻量适配器为 `.codebuddy/skills/mohen-dev-continuation/SKILL.md`。该Skill只辅助CTX-ENG工程执行，不替代MHKA/MAB计划、不进入产品Registry、不赋予数据库、Gate、Provider或生产权限；本轮由ChatGPT主导，CodeBuddy仅承担本地环境任务，Codex不参与当前执行。
+
 过程性重复记录从PLAN移出，保留在progress.md及原结果报告中；PLAN只保留当前有效的任务、依赖、条件和验收。不得为了简短删除原M0—M8任务分母、固定条件、20项工程责任或74项目标登记。
 
 ## 3. M1—M4条件准出与固定条件
