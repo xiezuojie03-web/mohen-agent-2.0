@@ -25,6 +25,39 @@ try{
  for(const role of ['mohen_execution_authority','mohen_producer','mohen_gate_signer'])await assert.rejects(()=>pool.query('set role '+role),/permission denied/);
  await assets.createProject({projectId:project,title:'M4 synthetic execution controls'},token(a));
  const make=()=>delegations.saveDelegation({projectId:project,rootTaskRef:task,rootTaskSnapshot:{prompt:'synthetic'},subtaskRef:'synthetic',seriesId:randomUUID(),revisionNo:1,executor:'fixture',provider:'no-provider-called',engineVersion:'fixture-v1',inputManifest:{source_refs:[]},allowedActions:['prepare_candidate'],transferRightsDecision:{status:'UNVERIFIED',external_processing:'DENIED'},policyVersion:'fixture-v1',expiresAt:new Date(Date.now()+600000).toISOString(),budgetLimit:'0',currency:'CNY',idempotencyKey:randomUUID(),outputSchema:'fixture-v1'},token(a));
+ const makeProviderDelegation=async({allowed=true,budget='2.000000'}={})=>{
+  const sourceRef=randomUUID(),sourceRevision=randomUUID(),purpose='studio_research_candidate';
+  const pricingPolicyVersion='fixture-deepseek-v1',issuedAt=new Date().toISOString(),expiresAt=new Date(Date.now()+600000).toISOString();
+  const transferRightsDecision={schema:'mohen.transfer-rights-decision.v1',status:allowed?'ALLOWED':'DENIED',
+   decision_method:'OWNER_ATTESTATION',external_processing:allowed?'ALLOWED':'DENIED',decision_id:randomUUID(),
+   owner_user_id:a,project_id:project,purpose,provider:'deepseek',engine_version:'deepseek-chat',
+   pricing_policy_version:pricingPolicyVersion,issued_at:issuedAt,expires_at:expiresAt,
+   source_refs:[{ref:sourceRef,revision:sourceRevision,action:'external_processing',decision:allowed?'ALLOW':'DENY',
+    rights_basis:'official_reuse_policy',evidence_ref:'fixture:rights-evidence'}]};
+  const delegation=await delegations.saveDelegation({projectId:project,rootTaskRef:task,rootTaskSnapshot:{prompt:'synthetic provider input'},
+   subtaskRef:'provider-call',seriesId:randomUUID(),revisionNo:1,executor:'mohen-provider-worker',provider:'deepseek',
+   engineVersion:'deepseek-chat',inputManifest:{purpose,source_refs:[{ref:sourceRef,revision:sourceRevision}],prompt_digest:'a'.repeat(64)},
+   allowedActions:['external_processing','prepare_candidate'],transferRightsDecision,policyVersion:'fixture-v1',
+   expiresAt,budgetLimit:budget,currency:'USD',idempotencyKey:randomUUID(),outputSchema:'mohen.provider-execution-result.v1'},token(a));
+  return {delegation,purpose,pricingPolicyVersion};
+ };
+ const reserveInput=(delegation,state,amount='0.000100',pricingPolicyVersion='fixture-deepseek-v1')=>({
+  delegationId:delegation.delegation_id,requestId:randomUUID(),expectedVersion:state.version,leaseId:state.lease_id,
+  inputDigest:delegation.request_hash,policyVersion:'fixture-v1',amount,currency:'USD',pricingPolicyVersion});
+ const appendEstimatedReceipt=async(delegation,purpose,pricingPolicyVersion,cost='0.000400')=>{
+  const now=new Date(),finished=new Date(now.getTime()+10);
+  const resultManifest={schema:'mohen.provider-execution-result.v1',delegation_request_hash:delegation.request_hash,
+   provider:'deepseek',engine_version:'deepseek-chat',purpose,pricing_policy_version:pricingPolicyVersion,
+   input_digest:'b'.repeat(64),output_digest:'c'.repeat(64),
+   usage:{prompt_tokens:100,completion_tokens:50,total_tokens:150},
+   pricing:{version:pricingPolicyVersion,currency:'USD',provider:'deepseek',model:'deepseek-chat',
+    input_per_million:'2',output_per_million:'4'},
+   cost_estimate:{amount:cost,currency:'USD'}};
+  return delegations.appendHeldReceipt({delegationId:delegation.delegation_id,attemptNo:1,requestHash:delegation.request_hash,
+   resultManifest,candidateRefs:[],actualProvider:'deepseek',actualEngineVersion:'deepseek-chat',
+   startedAt:now.toISOString(),finishedAt:finished.toISOString(),cost,currency:'USD',
+   costConfidence:'ESTIMATED',errorCode:'PROVIDER_COMPLETED_PENDING_REVIEW'},token(a));
+ };
  const d=await make();
  assert.equal((await repo.getState(d.delegation_id,token(a))).version,0);
  await assert.rejects(()=>repo.getState(d.delegation_id,token(b)),/STUDIO_EXECUTION_NOT_FOUND/);
@@ -96,6 +129,64 @@ try{
  await assert.rejects(()=>repo.claim(call(expiring),token(a)),/STUDIO_EXECUTION_EXPIRED/);
  await delegations.appendHeldReceipt({delegationId:active.delegation_id,attemptNo:1,requestHash:active.request_hash,resultManifest:{uncertain:true},candidateRefs:[],actualProvider:'synthetic',actualEngineVersion:'fixture',startedAt:new Date().toISOString(),finishedAt:new Date().toISOString(),cost:null,currency:null,costConfidence:'UNKNOWN',errorCode:'SYNTHETIC_UNKNOWN'},token(a));
  await assert.rejects(()=>repo.claim(call(active,initial.version),token(a)),/STUDIO_EXECUTION_RECONCILIATION_REQUIRED/);
+ // Provider spend controls: synthetic only; no network/provider request is made.
+ const denied=await makeProviderDelegation({allowed:false});
+ const deniedLease=await repo.claim(call(denied.delegation),token(a));
+ await assert.rejects(()=>repo.reserveBudget(reserveInput(denied.delegation,deniedLease),token(a)),/STUDIO_EXECUTION_TRANSFER_DENIED/);
+ await repo.revoke({delegationId:denied.delegation.delegation_id,requestId:randomUUID(),reason:'Denied transfer fixture'},token(a));
+
+ const spend=await makeProviderDelegation();
+ const spendLease=await repo.claim(call(spend.delegation),token(a));
+ await assert.rejects(()=>repo.checkpoint(checkpoint(spend.delegation,spendLease,'IN_FLIGHT',{synthetic:true}),token(a)),/STUDIO_EXECUTION_RESERVATION_REQUIRED/);
+ const reservation=reserveInput(spend.delegation,spendLease);
+ const reserved=await repo.reserveBudget(reservation,token(a));
+ assert.equal(reserved.reserved_cost,'0.000100');
+ assert.deepEqual(await repo.reserveBudget(reservation,token(a)),reserved);
+ await assert.rejects(()=>repo.reserveBudget({...reservation,amount:'0.000200'},token(a)),/STUDIO_EXECUTION_IDEMPOTENCY_CONFLICT/);
+ const flight=await repo.checkpoint(checkpoint(spend.delegation,reserved,'IN_FLIGHT',{synthetic_provider_attempt:true}),token(a));
+ assert.equal(flight.unknown_cost,true);assert.equal(flight.external_attempted,true);
+ const spendReceipt=await appendEstimatedReceipt(spend.delegation,spend.purpose,spend.pricingPolicyVersion);
+ const reconcileRequest={delegationId:spend.delegation.delegation_id,requestId:randomUUID(),expectedVersion:flight.version,
+  inputDigest:spend.delegation.request_hash,policyVersion:'fixture-v1',receiptId:spendReceipt.receipt_id};
+ const settled=await repo.reconcileCost(reconcileRequest,token(a));
+ assert.equal(settled.state,'HOLD');assert.equal(settled.unknown_cost,false);
+ assert.equal(settled.reserved_cost,'0.000000');assert.equal(settled.spent_cost,'0.000400');
+ assert.equal(settled.budget_overrun,true);assert.equal(settled.external_attempted,true);
+ assert.deepEqual(await repo.reconcileCost(reconcileRequest,token(a)),settled);
+ await assert.rejects(()=>repo.reconcileCost({...reconcileRequest,receiptId:randomUUID()},token(a)),/STUDIO_EXECUTION_IDEMPOTENCY_CONFLICT/);
+ await assert.rejects(()=>repo.claim(call(spend.delegation,settled.version),token(a)),/STUDIO_EXECUTION_RECONCILIATION_REQUIRED/);
+ await assert.rejects(()=>repo.reconcileCost({...reconcileRequest,requestId:randomUUID()},token(b)),/STUDIO_EXECUTION_NOT_FOUND/);
+
+ const releasable=await makeProviderDelegation();
+ const releaseLease=await repo.claim(call(releasable.delegation),token(a));
+ const releaseReserve=await repo.reserveBudget(reserveInput(releasable.delegation,releaseLease,'0.000100'),token(a));
+ const released=await repo.releaseBudget({delegationId:releasable.delegation.delegation_id,requestId:randomUUID(),
+  expectedVersion:releaseReserve.version,leaseId:releaseReserve.lease_id,inputDigest:releasable.delegation.request_hash,
+  policyVersion:'fixture-v1',reason:'Provider call not started'},token(a));
+ assert.equal(released.state,'HOLD');assert.equal(released.reserved_cost,'0.000000');
+ assert.equal((await repo.claim(call(releasable.delegation,released.version),token(a))).state,'LEASED');
+
+ const revokeBeforeRelease=await makeProviderDelegation();
+ const revokeReleaseLease=await repo.claim(call(revokeBeforeRelease.delegation),token(a));
+ await repo.reserveBudget(reserveInput(revokeBeforeRelease.delegation,revokeReleaseLease,'0.000100'),token(a));
+ const revokedReservation=await repo.revoke({delegationId:revokeBeforeRelease.delegation.delegation_id,requestId:randomUUID(),reason:'Owner revoked before dispatch'},token(a));
+ const releasedAfterRevoke=await repo.releaseBudget({delegationId:revokeBeforeRelease.delegation.delegation_id,requestId:randomUUID(),
+  expectedVersion:revokedReservation.version,leaseId:null,inputDigest:revokeBeforeRelease.delegation.request_hash,
+  policyVersion:'fixture-v1',reason:'Release unused reservation after revoke'},token(a));
+ assert.equal(releasedAfterRevoke.state,'REVOKED');assert.equal(releasedAfterRevoke.reserved_cost,'0.000000');
+
+ const reconcileAfterRevoke=await makeProviderDelegation();
+ const revokeFlightLease=await repo.claim(call(reconcileAfterRevoke.delegation),token(a));
+ const revokeFlightReserve=await repo.reserveBudget(reserveInput(reconcileAfterRevoke.delegation,revokeFlightLease,'0.000100'),token(a));
+ await repo.checkpoint(checkpoint(reconcileAfterRevoke.delegation,revokeFlightReserve,'IN_FLIGHT',{synthetic_provider_attempt:true}),token(a));
+ const revokedInFlight=await repo.revoke({delegationId:reconcileAfterRevoke.delegation.delegation_id,requestId:randomUUID(),reason:'Owner revoked after dispatch'},token(a));
+ const revokedReceipt=await appendEstimatedReceipt(reconcileAfterRevoke.delegation,reconcileAfterRevoke.purpose,reconcileAfterRevoke.pricingPolicyVersion);
+ const reconciledAfterRevoke=await repo.reconcileCost({delegationId:reconcileAfterRevoke.delegation.delegation_id,requestId:randomUUID(),
+  expectedVersion:revokedInFlight.version,inputDigest:reconcileAfterRevoke.delegation.request_hash,
+  policyVersion:'fixture-v1',receiptId:revokedReceipt.receipt_id},token(a));
+ assert.equal(reconciledAfterRevoke.state,'REVOKED');assert.equal(reconciledAfterRevoke.unknown_cost,false);
+ assert.equal(reconciledAfterRevoke.reserved_cost,'0.000000');assert.equal(reconciledAfterRevoke.spent_cost,'0.000400');
+
  const signed=token(a);
  for(const statement of ["update studio.execution_controls set revoked_at=null,state='READY'","delete from studio.execution_controls","insert into studio.execution_control_events(event_id)values(gen_random_uuid())"]){assert.throws(()=>sql(`begin;set local role mohen_app_runtime;select set_config('mohen.session_token','${signed}',true);${statement};rollback`),/permission denied/);}
  for(const role of ['mohen_producer','mohen_gate_signer','anon','authenticated','service_role'])assert.equal(sql(`select has_function_privilege('${role}','studio.apply_execution_control(text,jsonb)','execute')`),'f');
