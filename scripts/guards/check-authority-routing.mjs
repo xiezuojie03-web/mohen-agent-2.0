@@ -13,14 +13,14 @@ const names=[
 ];
 const router=read('AGENTS.md'),map=read('OWNERSHIP_MAP.md'),
  plan=read('tasks/implementation/MAB/PLAN.md'),
- handoff=read('tasks/implementation/MAB/CODEX_HANDOFF_CURRENT.md');
+ handoff=read('tasks/implementation/MAB/ENGINEERING_HANDOFF_CURRENT.md');
 const errors=[];
 for(const filename of names){
  const p='governance/mhka/'+filename;
  if(!fs.existsSync(p))errors.push('MISSING_MHKA:'+p);
  if(!router.includes('`'+p+'`'))errors.push('UNROUTED_MHKA:'+p);
 }
-if(!router.includes('本轮所有 ChatGPT、Codex、CodeBuddy 工程设计'))errors.push('NO_CROSS_TOOL_AUTHORITY');
+if(!router.includes('本轮所有 ChatGPT、CodeBuddy 工程设计'))errors.push('NO_CROSS_TOOL_AUTHORITY');
 if(!router.includes('M8 仍负责生产启用'))errors.push('NO_M8_RUNTIME_BOUNDARY');
 if(/\|\s*C[0-4]宪法\s*\|/u.test(router)||router.includes('冲突依C0/C1'))errors.push('OLD_C_AUTHORITY_IN_ROUTER');
 if(map.includes('只放 C0–C4 与治理域长期 Authority'))errors.push('OLD_C_AUTHORITY_IN_MAP');
