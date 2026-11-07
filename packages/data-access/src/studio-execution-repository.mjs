@@ -2,7 +2,7 @@ import {createAppTransaction} from './app-transaction.mjs';
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const text=v=>typeof v==='string'&&v.trim().length>0&&v.length<=500;
 const object=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
-const decimal=v=>typeof v==='string'&&/^(0|[1-9][0-9]{0,7})(\\.[0-9]{1,6})?$/.test(v);
+const decimal=v=>typeof v==='string'&&/^(0|[1-9][0-9]{0,7})(\.[0-9]{1,6})?$/.test(v);
 const currency=v=>typeof v==='string'&&/^[A-Z]{3}$/.test(v);
 const fail=()=>{throw Error('STUDIO_EXECUTION_INVALID');};
 function copy(v){try{const s=JSON.stringify(v);if(!s||Buffer.byteLength(s)>1_000_000)return fail();return JSON.parse(s);}catch{return fail();}}
