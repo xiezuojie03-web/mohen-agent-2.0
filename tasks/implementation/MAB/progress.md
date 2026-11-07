@@ -1668,3 +1668,17 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 **回归**：`pnpm test` 620 passed / 9 failed / 2 skipped——与干净 HEAD 基线完全一致（9 项均为既有失败：`publish-gate` 旧期望早于 G5 门、`next/server` 解析与 Next cookies 上下文属环境类、feature flag 503、rule-gate-reviewer TTL 断言），本批零新增失败；`tsc --noEmit -p apps/web` PASS。提交 `ab306b5`。
 
 **证据边界（诚实声明）**：编辑签发决策由机器评审人账号记录（Owner 已授权本地隔离 M5 机器规则化签发，人文背书仍以 Owner 体验为准）；G5 候选登记由超级用户直连完成（隔离演练）；HTTP 级正反归 5.9 Owner 浏览器体验批次。**状态**：维度 5（ST-05/06/07）、维度 7（ST-08/09）、维度 8（WATCH 消费+撤权即时生效）闭环（隔离）；维度 1/2/4/6 部分、19 组件、Admin 可见性、5.9 Owner 体验未做，`M5_OVERALL_HOLD` 不变。
+
+### 2026-11-08 第 5 步批次 I：维度 4+6——13 类资产矩阵真实盘点 + Admin F05 逐条治理行（`VERIFIED_ISOLATED`）
+
+**代码（`CODE_PRESENT`）**：
+- `apps/web/app/admin/knowledge-asset-view.ts` 新增 `assetGovernanceSummary`：F05 每条治理行——缺口只按已存字段报告（source_refs/dependency_refs 空 → "未登记来源/依赖引用"；validation.status 非 CHECKED → "存储验证未通过评估"；refs 不可解析 → "状态未知"而非冒充空）；明示"独立G资格：须按对象逐案核验，本视图不签发不替代"。
+- `apps/web/app/admin/KnowledgeAssetInspector.tsx` 每条资产卡渲染该治理行。
+- `tests/unit/mab-hp11-knowledge-inspector-contract.test.ts` +3 例（有缺口如实报 / 齐全才显示无缺口 / 不可解析标未知）。
+- 新增 `tools/verify-5i-asset-matrix.mjs`（真实 PG 断言工具）与 `tools/probe-5i-asset-inventory.mjs`（只读盘点探针）。
+
+**验证（`VERIFIED_ISOLATED`）**：`VERIFY_5I_ALL_PASS`——对同一真实作品《松江府田赋》（project `b0a11000-…-0001`）：① 13 类矩阵：产出 6 类（research_brief×1、source_anchor×2、reading_note×1、evidence_note×1 于 studio.asset_heads；director_plan×9 于 canonical `public.director_plans`（A/B 方案齐、source_ids 服务端绑定非空）；work_revision 于 `publication`（revision 1 draft → revision 2 published，published_pointers 原子指向同一修订 `62a8ba95…`））；未产出 7 类逐类如实记原因（spacetime_candidate/relation_hypothesis/research_collection/media_selection/citation_snapshot/consented_feedback 未发生；humanistic_insight 经 D04 沉淀于 meaning.findings 且 G4 已签，未另存 Studio 资产），不为凑数伪造。② 5 个 studio head 逐条字段（64-hex content_hash/epistemic_class/SNAPSHOTTED/RESTRICTED/UNASSESSED/actor=Owner/origin=human）+ 不可变（单修订唯一 hash）+ CAS 头指针一致。③ ACL/CAS 正反经真实仓储路径（`set local role mohen_app_runtime`）：跨 Owner（机器评审账号）0 行、空 token 拒绝、过期 expectedRevisionId → STUDIO_REVISION_CONFLICT 且确认无残留写入、canonical 类（director_plan）→ STUDIO_CANONICAL_BINDING_REQUIRED。④ G 逆查：G0–G5 全部 current（source_version/read_unit/material_evidence/claim_revision/finding/world_projection），G5 审计 2 条绑定已发布修订且 current=true。⑤ 缺口如实报告：use_events=0（无复用记录，不得解释为已授权复用）；5/5 studio 条目 source_refs/dependency_refs 为空（第 1 步早期条目未回链 D 链对象，Admin 逐条显示为缺口）。
+
+**回归**：`pnpm test` 622 passed / 10 failed / 2 skipped——9 项为既有基线失败（同批次 H 基线），第 10 项 `shl-materials K2` 为联网 flaky，单独重跑 PASS，非本批引入；本批 3 个新单测全过；typecheck 6/6 PASS。提交 `88be1f6`。
+
+**证据边界（诚实声明）**：维度 6 的 Admin 可见性在 PG/RLS/视图逻辑层闭环；路由 HTTP 级正反（含 guardRoute/session）归 5.9 Owner 浏览器体验批次。**状态**：维度 3/4/6/7/8 闭环（隔离），维度 5 待 19 组件核对（批次 J），维度 1/2 部分，5.9 Owner 体验未做，`M5_OVERALL_HOLD` 不变。

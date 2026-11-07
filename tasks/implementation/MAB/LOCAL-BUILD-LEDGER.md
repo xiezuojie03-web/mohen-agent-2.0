@@ -129,12 +129,12 @@
 > 八维度必须由**同一项真实作品《松江府田赋》**贯通（PLAN §3.5-B 矩阵）。
 - [ ] 5.1 维度 1 自然语言创作入口（ST-01）：Owner 自然语言提问 → Agent 读项目资产、判断资料可得性、收敛问题、可追溯 Brief/Plan
 - [ ] 5.2 维度 2 内外 AI 混合协作（M4）：同一 root 下 Agent + 外部 AI 各自可核验贡献，真实 Receipt/费用/失败恢复闭环
-- [ ] 5.3 维度 3 真实来源/证据/D·L·G（ST-02/03/04）：原件→读取→证据→主张→人文解释，精确 source/version/locator/revision + 独立 Gate 回执
-- [ ] 5.4 维度 4 13 类知识资产（M4-C04/Admin）：真实作品实际产生的类型逐项字段/修订/ACL/CAS 正反验收；不适用类型说明原因（不为凑数伪造）
-- [ ] 5.5 维度 5 Studio 真实创作（ST-05/06/07）：H1/H2/H3 + 19 组件实际参与导演/叙事/镜头；可预览、局部修改、保存/恢复、不可变 WorkRevision
-- [ ] 5.6 维度 6 Admin 知识资产管理（F05/ST-07/08/09）：逐条显示类型/认识状态/精确来源/D·G 资格/权利用途/版本/复用/缺口；仅授权 Owner 可管理
-- [ ] 5.7 维度 7 独立 G5/媒资权利/发布（ST-08/09）：独立 Reviewer 对精确 WorkRevision + 知识/媒资依赖当前资格审查；发布指针原子指向该修订
-- [ ] 5.8 维度 8 WATCH 消费与撤权：WATCH 只消费第 7 项发布的同一 WorkRevision；每请求核 G5/rights/purpose/consumer/scope/source；撤权后新请求立即拒绝
+- [x] 5.3 维度 3 真实来源/证据/D·L·G（ST-02/03/04）：原件→读取→证据→主张→人文解释，精确 source/version/locator/revision + 独立 Gate 回执 — 第 1–3 步闭环（私有原件 SHA 回读、C02 read_unit、material_evidence、claim、finding，G0–G5 机器签发回执）；批次 I 复核 G0–G5 全部 current 且 G5 审计绑定已发布修订
+- [x] 5.4 维度 4 13 类知识资产（M4-C04/Admin）：真实作品实际产生的类型逐项字段/修订/ACL/CAS 正反验收；不适用类型说明原因（不为凑数伪造）— 批次 I `verify-5i-asset-matrix.mjs` = `VERIFY_5I_ALL_PASS`：产出 6 类（research_brief×1/source_anchor×2/reading_note×1/evidence_note×1 于 studio.asset_heads + director_plan×9 于 canonical public.director_plans + work_revision 于 publication，发布指针原子指向 revision 2）；未产出 7 类逐类如实记原因（时空/关系假设/合集/媒资/引用快照/反馈未发生，humanistic_insight 经 D04 入 meaning.findings 且 G4 已签）；字段/不可变（单修订唯一 hash）/CAS 头指针/跨 Owner 0 行/匿名拒绝/过期 expectedRevisionId 冲突且无残留写入/canonical 守卫全过
+- [ ] 5.5 维度 5 Studio 真实创作（ST-05/06/07）：H1/H2/H3 + 19 组件实际参与导演/叙事/镜头；可预览、局部修改、保存/恢复、不可变 WorkRevision — 批次 G/H 已闭环 H1/H2/H3 真实派发与不可变 WorkRevision；19 组件职责核对留批次 J
+- [x] 5.6 维度 6 Admin 知识资产管理（F05/ST-07/08/09）：逐条显示类型/认识状态/精确来源/D·G 资格/权利用途/版本/复用/缺口；仅授权 Owner 可管理 — 批次 I：Inspector 每条新增真实治理行（`assetGovernanceSummary`：缺口只按已存字段报告、G 资格不签发不替代）；类型/认识状态/来源/版本/复用/权利既有；ACL 仓储层正反（跨 Owner 0 行、匿名拒）；G 逆查真实断言（G0–G5 current + G5 审计绑定已发布修订）；HTTP 级正反归 5.9
+- [x] 5.7 维度 7 独立 G5/媒资权利/发布（ST-08/09）：独立 Reviewer 对精确 WorkRevision + 知识/媒资依赖当前资格审查；发布指针原子指向该修订 — 批次 H：机器评审独立通道签 WATCH G5（精确修订绑定 + rights_by_operation + CAS），四道门发布指针原子指向同一修订（VERIFIED_ISOLATED；机器签不构成人文背书）
+- [x] 5.8 维度 8 WATCH 消费与撤权：WATCH 只消费第 7 项发布的同一 WorkRevision；每请求核 G5/rights/purpose/consumer/scope/source；撤权后新请求立即拒绝 — 批次 H：`listWatchEligible` 仅该修订可消费、错修订拒绝、撤权即时拒绝、重签恢复（VERIFIED_ISOLATED）
 - [ ] 5.9 Owner 亲自体验签收：Owner 实际完成 Studio 创作、Admin 条目核查、WATCH 消费，逐项确认八维矩阵
 
 ## 四、当前进度（最新状态，持续更新）
@@ -174,3 +174,4 @@
 - 2026-11-07：第 2 步批次 B 完成（2.1）——registry 隔离激活（ACTIVE_AUTHORIZED，仅 D00/D01 enabled/attended + 私有适配器 + reviewer binding）；run.mjs 加 `--scope-file` 与执行授权预检（先于适配器 import）；resume-input 接受 D00 typed 扫描页请求；迁移 `20261107160000`（producer 列级 run 进度授权 + RLS 策略）；本地 PG 启用 SSL + producer/private_worker 登录角色；新工具 local-execution-authorizer / provision / prepare / verify。**run.mjs D00/D01 真实端到端首通**（签名 grant + 一次性 nonce + 候选落库 + 幂等复跑 + 合同 HOLD）；unit 578/578、DP 139/140（唯一失败为既有 openssl `DEFERRED_ENV`）。**2.1 闭环（VERIFIED_ISOLATED）**，第 2 步仍部分闭环。
 - 2026-11-07：第 2 步批次 C 完成（2.2–2.9 主体）——迁移 `20261107200000`（D02–D05 私有候选持久化：HMAC 字节证明、确定性 ID、幂等、UNASSESSED、无 Gate 写入）；`private-candidate-repository.mjs` + 阶段/适配器/恢复输入接线；registry D02–D05 enabled/attended 并绑定私有适配器；方法绑定 2→6/63（0 残留）。真实 run.mjs：D04 48b55e23…、D05 2dd6e297… 落库并合同 HOLD；`verify-2-c-d-chain.mjs` = `VERIFY_2_C_ALL_PASS`；typecheck PASS、unit 577/579、DP 157/158（openssl `DEFERRED_ENV`）。**第 2 步主体闭环（VERIFIED_ISOLATED）**，未签任何 G。
 - 2026-11-08：第 5 步批次 H 完成——同一真实作品 ST-05→ST-09 全链（真实委托+grant → 真实 LLM 导演方案/节拍 → 作品+不可变修订+幂等回放 → 投稿+机器编辑签发绑定同一修订 → WATCH G5 候选登记（复用 D 链 run/stage/依赖）+ 机器评审独立通道签发（精确修订绑定+逐动作权利+CAS）→ 四道门发布指针原子指向同修订 → WATCH 仅消费该修订、错修订拒绝 → 撤权即时拒绝 + 重签恢复）；`commitWorkRevision` 增 Creator 权利确认 opts 并接线 revisions 路由；新增 `m5-batch-h.integration.ts`（11/11 PASS）+ `probe-g5-state.mjs`；回归基线零新增失败（620/9/2 与干净 HEAD 一致），typecheck PASS；提交 `ab306b5`。维度 5/7/8 隔离闭环；维度 1/2/4/6 部分、19 组件、Admin、5.9 Owner 体验未做，`M5_OVERALL_HOLD` 不变。
+- 2026-11-08：第 5 步批次 I 完成——维度 4+6：13 类资产矩阵真实盘点（`verify-5i-asset-matrix.mjs` = `VERIFY_5I_ALL_PASS`：产出 6 类逐项字段/不可变/CAS/ACL 正反，未产出 7 类如实记原因；G0–G5 current + G5 审计绑定已发布修订；缺口如实报告 use_events=0、5/5 条目无 refs）；Admin F05 Inspector 每条新增真实治理行 `assetGovernanceSummary`（缺口只按已存字段、G 资格不签发不替代）+ 单测 3 例；提交 `88be1f6`。维度 3/4/6/7/8 隔离闭环；剩余：维度 5 的 19 组件核对（批次 J）、维度 1/2 补强、5.9 Owner 体验（批次 K），`M5_OVERALL_HOLD` 不变。
