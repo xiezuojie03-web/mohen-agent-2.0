@@ -12,10 +12,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const { id } = await params;
   let plan_id: unknown;
   let expected_revision_no: unknown;
+  let rights_acknowledged: unknown;
   try {
-    const body = (await req.json()) as { plan_id?: unknown; expected_revision_no?: unknown };
+    const body = (await req.json()) as { plan_id?: unknown; expected_revision_no?: unknown; rights_acknowledged?: unknown };
     plan_id = body.plan_id;
     expected_revision_no = body.expected_revision_no;
+    rights_acknowledged = body.rights_acknowledged;
   } catch {
     return NextResponse.json({ ok: false, reason: "bad_request" }, { status: 400 });
   }
@@ -25,7 +27,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (expected_revision_no !== undefined && (!Number.isInteger(expected_revision_no) || (expected_revision_no as number) < 0)) {
     return NextResponse.json({ ok: false, reason: "invalid_expected_revision_no" }, { status: 400 });
   }
-  const rev = await commitWorkRevision(id, plan_id, expected_revision_no as number | undefined);
+  const rev = await commitWorkRevision(id, plan_id, expected_revision_no as number | undefined,
+    rights_acknowledged === true ? { rightsAcknowledged: true } : undefined);
   if (!rev) {
     return NextResponse.json({ ok: false, reason: "no_selected_plan" }, { status: 400 });
   }

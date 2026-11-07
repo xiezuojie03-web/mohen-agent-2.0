@@ -123,11 +123,14 @@ export async function getWorkPanels(planId: string, auth?: unknown): Promise<Wor
   return generateWorkPanels(plan, facts, beats, auth);
 }
 
-/** E1-3 WorkRevision：把选定方案 + H3 节拍存为不可变修订（content hash = CAS）。 */
+/** E1-3 WorkRevision：把选定方案 + H3 节拍存为不可变修订（content hash = CAS）。
+ * opts.rightsAcknowledged 是 Creator 在保存时的显式确认：本作不含第三方媒体
+ * （无第三方媒体时发布资格的必要条件之一；含媒体则须逐件许可，不得靠此声明确认）。 */
 export async function commitWorkRevision(
   workId: string,
   planId: string,
-  expectedRevisionNo?: number
+  expectedRevisionNo?: number,
+  opts?: { rightsAcknowledged?: boolean }
 ): Promise<{ revisionId: string; revisionNo: number; contentHash: string; conflict?: boolean } | null> {
   // The plan is a private Owner source, not a free-standing authorization to
   // append to an arbitrary work. Check both owners in the same read.
@@ -156,6 +159,7 @@ export async function commitWorkRevision(
     understandingDelta: finding.understandingDelta ?? "",
     plan: { angle: plan.angle ?? "", points: plan.points ?? [], cover: plan.cover ?? "", directorDecisions: plan.directorDecisions ?? [] },
     beats,
+    ...(opts?.rightsAcknowledged ? { media: [] as unknown[], rights_acknowledged: true } : {}),
   };
   const contentHash = crypto.createHash("sha256").update(JSON.stringify(content)).digest("hex");
   const latest = await queryRows(
