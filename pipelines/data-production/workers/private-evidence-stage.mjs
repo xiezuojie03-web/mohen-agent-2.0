@@ -1,11 +1,17 @@
-// MAB-ENG-01: private D01-D03 candidate bridge to the existing six-stage chain.
+// MAB-ENG-01: private D01-D05 candidate bridge to the existing six-stage chain.
 // Not a second producer, not a Gate signer, and not a replacement for source L0/L1 rows.
+// D02-D05 persist candidates only; every disposition stays UNASSESSED until an
+// independent Gate signs it.
 import { createHash } from 'node:crypto';
 import { assertStageExecutionAuthorized, consumeAuthorizedStageHandoff } from '../orchestrator/execution-authority.mjs';
 
 const HEX=/^[a-f0-9]{64}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const IMAGE_TYPE=/^image\/(png|jpeg|webp)$/;
+// SQL 侧白名单的镜像；D02 观察 source_voice 与 D03 support_type 必须在此集合内。
+const SOURCE_VOICES=new Set(['official_gazetteer','institutional_record','private_note']);
+const SUPPORT_TYPES=new Set(['supports','contradicts','contextualizes']);
+const isStringArray=v=>Array.isArray(v)&&v.every(item=>typeof item==='string');
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 function canonical(value){
   if(Array.isArray(value))return '['+value.map(canonical).join(',')+']';
@@ -19,7 +25,8 @@ function requireBoundStage(stage, job) {
 function requireToken(token) {
   if(typeof token!=='string'||token.length===0)throw Error('PRIVATE_STAGE_SESSION_REQUIRED');
 }
-export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySourceBinding,persistReading,readRegistration,persistPageReading}={}) {
+export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySourceBinding,persistReading,readRegistration,persistPageReading,
+  persistMaterialObservation,persistWorldClaim,persistHumanisticFinding,persistWorldProjection}={}) {
   if(typeof readOriginal!=='function'||typeof verifySourceBinding!=='function'||
      typeof bridge?.linkReading!=='function'||typeof bridge?.linkClaim!=='function')throw Error('PRIVATE_EVIDENCE_BRIDGE_REQUIRED');
 
@@ -164,6 +171,115 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
       return {stage:'D03',candidate_kind:'private_claim_revision_evidence_link',
         link_id:linked.link_id,claim_revision_id:claimRevisionId,
         qualification:'UNASSESSED',gate_code:'G3'};
+    },
+
+    async observeMaterial({run,job,registry,context={},input,token}) {
+      await authorized({stage:'D02',run,job,registry,context,input,token});
+      if(typeof persistMaterialObservation!=='function')throw Error('PRIVATE_CANDIDATE_PERSISTENCE_REQUIRED');
+      const {originalId,readUnitId,observation}=input??{};
+      if(typeof originalId!=='string'||!UUID.test(originalId)||
+         typeof readUnitId!=='string'||!UUID.test(readUnitId)||
+         !observation||typeof observation!=='object'||
+         observation.h_type!=='H05'||
+         typeof observation.literal_reading!=='string'||!observation.literal_reading||
+         Buffer.byteLength(observation.literal_reading)>32768||
+         !SOURCE_VOICES.has(observation.source_voice)||
+         typeof observation.evidence_type!=='string'||!observation.evidence_type||
+         observation.evidence_type.length>200||
+         !observation.uncertainty||typeof observation.uncertainty!=='object'||
+         observation.uncertainty?.qualification!=='UNASSESSED'||
+         (observation.normalized_text!=null&&(typeof observation.normalized_text!=='string'||Buffer.byteLength(observation.normalized_text)>32768))||
+         (observation.research_proposition!=null&&(typeof observation.research_proposition!=='string'||Buffer.byteLength(observation.research_proposition)>2000)))
+        throw Error('PRIVATE_MATERIAL_OBSERVATION_INVALID');
+      const saved=await persistMaterialObservation({runId:run.run_id,originalId,readUnitId,observation},token);
+      if(!UUID.test(saved?.evidence_id??'')||!UUID.test(saved?.reading_unit_id??'')||
+         !UUID.test(saved?.link_id??'')||!UUID.test(saved?.read_unit_id??'')||
+         !UUID.test(saved?.read_run_id??'')||!HEX.test(saved?.artifact_revision??'')||
+         !HEX.test(saved?.request_digest??''))
+        throw Error('PRIVATE_MATERIAL_OBSERVATION_NOT_PERSISTED');
+      // Durable L2 candidate; professional qualification remains independent.
+      return {stage:'D02',candidate_kind:'private_material_observation',
+        original_id:originalId,evidence_id:saved.evidence_id,
+        reading_unit_id:saved.reading_unit_id,link_id:saved.link_id,
+        read_unit_id:saved.read_unit_id,read_run_id:saved.read_run_id,
+        artifact_revision:saved.artifact_revision,request_digest:saved.request_digest,
+        qualification:'UNASSESSED',gate_code:'G2'};
+    },
+
+    async assertWorldClaim({run,job,registry,context={},input,token}) {
+      await authorized({stage:'D03',run,job,registry,context,input,token});
+      if(typeof persistWorldClaim!=='function')throw Error('PRIVATE_CANDIDATE_PERSISTENCE_REQUIRED');
+      const {originalId,evidenceId,claim}=input??{};
+      if(typeof originalId!=='string'||!UUID.test(originalId)||
+         typeof evidenceId!=='string'||!UUID.test(evidenceId)||
+         !claim||typeof claim!=='object'||
+         typeof claim.assertion!=='string'||!claim.assertion||Buffer.byteLength(claim.assertion)>2000||
+         typeof claim.change_type!=='string'||!claim.change_type||claim.change_type.length>200||
+         !claim.time_scope||typeof claim.time_scope!=='object'||
+         !SUPPORT_TYPES.has(claim.support_type))
+        throw Error('PRIVATE_WORLD_CLAIM_INVALID');
+      const saved=await persistWorldClaim({runId:run.run_id,originalId,evidenceId,claim},token);
+      if(!UUID.test(saved?.change_id??'')||!UUID.test(saved?.claim_revision_id??'')||
+         !UUID.test(saved?.claim_evidence_link_id??'')||!UUID.test(saved?.evidence_id??'')||
+         !HEX.test(saved?.artifact_revision??'')||!HEX.test(saved?.request_digest??''))
+        throw Error('PRIVATE_WORLD_CLAIM_NOT_PERSISTED');
+      // Durable L3 candidate; professional qualification remains independent.
+      return {stage:'D03',candidate_kind:'private_world_claim',
+        original_id:originalId,change_id:saved.change_id,
+        claim_revision_id:saved.claim_revision_id,
+        claim_evidence_link_id:saved.claim_evidence_link_id,evidence_id:saved.evidence_id,
+        artifact_revision:saved.artifact_revision,request_digest:saved.request_digest,
+        qualification:'UNASSESSED',gate_code:'G3'};
+    },
+
+    async recordHumanisticFinding({run,job,registry,context={},input,token}) {
+      await authorized({stage:'D04',run,job,registry,context,input,token});
+      if(typeof persistHumanisticFinding!=='function')throw Error('PRIVATE_CANDIDATE_PERSISTENCE_REQUIRED');
+      const {originalId,claimRevisionId,finding}=input??{};
+      if(typeof originalId!=='string'||!UUID.test(originalId)||
+         typeof claimRevisionId!=='string'||!UUID.test(claimRevisionId)||
+         !finding||typeof finding!=='object'||
+         finding.finding_type!=='institutional_mechanism'||
+         typeof finding.human_question!=='string'||!finding.human_question||Buffer.byteLength(finding.human_question)>2000||
+         typeof finding.interpretive_statement!=='string'||!finding.interpretive_statement||Buffer.byteLength(finding.interpretive_statement)>5000||
+         (finding.understanding_delta!=null&&typeof finding.understanding_delta!=='string')||
+         !isStringArray(finding.counter_view_or_alternative)||
+         !isStringArray(finding.missing_evidence)||
+         !finding.uncertainty||typeof finding.uncertainty!=='object'||
+         finding.uncertainty?.qualification!=='UNASSESSED')
+        throw Error('PRIVATE_HUMANISTIC_FINDING_INVALID');
+      const saved=await persistHumanisticFinding({runId:run.run_id,originalId,claimRevisionId,finding},token);
+      if(!UUID.test(saved?.finding_id??'')||!UUID.test(saved?.claim_revision_id??'')||
+         !HEX.test(saved?.artifact_revision??'')||!HEX.test(saved?.request_digest??''))
+        throw Error('PRIVATE_HUMANISTIC_FINDING_NOT_PERSISTED');
+      // Durable L4 candidate; professional qualification remains independent.
+      return {stage:'D04',candidate_kind:'private_humanistic_finding',
+        original_id:originalId,finding_id:saved.finding_id,
+        claim_revision_id:saved.claim_revision_id,
+        artifact_revision:saved.artifact_revision,request_digest:saved.request_digest,
+        qualification:'UNASSESSED',gate_code:'G4'};
+    },
+
+    async projectWorld({run,job,registry,context={},input,token}) {
+      await authorized({stage:'D05',run,job,registry,context,input,token});
+      if(typeof persistWorldProjection!=='function')throw Error('PRIVATE_CANDIDATE_PERSISTENCE_REQUIRED');
+      const {originalId,findingId,projection}=input??{};
+      if(typeof originalId!=='string'||!UUID.test(originalId)||
+         typeof findingId!=='string'||!UUID.test(findingId)||
+         !projection||typeof projection!=='object'||
+         typeof projection.projection_key!=='string'||!projection.projection_key||projection.projection_key.length>200||
+         !projection.payload||typeof projection.payload!=='object')
+        throw Error('PRIVATE_WORLD_PROJECTION_INVALID');
+      const saved=await persistWorldProjection({runId:run.run_id,originalId,findingId,projection},token);
+      if(!UUID.test(saved?.projection_id??'')||!UUID.test(saved?.finding_id??'')||
+         !HEX.test(saved?.artifact_revision??'')||!HEX.test(saved?.request_digest??''))
+        throw Error('PRIVATE_WORLD_PROJECTION_NOT_PERSISTED');
+      // Durable L5 candidate; professional qualification remains independent.
+      return {stage:'D05',candidate_kind:'private_world_projection',
+        original_id:originalId,projection_id:saved.projection_id,
+        finding_id:saved.finding_id,
+        artifact_revision:saved.artifact_revision,request_digest:saved.request_digest,
+        qualification:'UNASSESSED',gate_code:'G5'};
     },
   };
 }

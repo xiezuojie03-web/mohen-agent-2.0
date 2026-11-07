@@ -5,6 +5,8 @@ const deps=vi.hoisted(()=>({
   authorize:vi.fn(),handoff:vi.fn(),readingRepository:vi.fn(),persistReading:vi.fn(),
   pageReadingRepository:vi.fn(),persistPageReading:vi.fn(),
   registrationRepository:vi.fn(),registrationLookup:vi.fn(),
+  candidateRepository:vi.fn(),persistMaterialObservation:vi.fn(),
+  persistWorldClaim:vi.fn(),persistHumanisticFinding:vi.fn(),persistWorldProjection:vi.fn(),
 }));
 vi.mock('../../packages/data-access/src/index.mjs',()=>({
   createPrivateOriginalRepository:deps.originalRepository,
@@ -14,6 +16,7 @@ vi.mock('../../packages/data-access/src/index.mjs',()=>({
   createPrivateTextReadingRepository:deps.readingRepository,
   createPrivateScannedPageReadingRepository:deps.pageReadingRepository,
   createPrivateSourceRegistrationRepository:deps.registrationRepository,
+  createPrivateCandidateRepository:deps.candidateRepository,
 }));
 vi.mock('../../pipelines/data-production/orchestrator/execution-authority.mjs',()=>({
   assertStageExecutionAuthorized:deps.authorize,
@@ -63,6 +66,19 @@ beforeEach(()=>{
    rights:{status:'public_domain_secondary_use'},asset_revision_id:'66666666-6666-4666-8666-666666666666',
    artifact_revision:'c'.repeat(64)});
  deps.registrationRepository.mockReturnValue({lookup:deps.registrationLookup});
+ deps.persistMaterialObservation.mockResolvedValue({evidence_id:originalId,reading_unit_id:originalId,
+   link_id:originalId,read_unit_id:originalId,read_run_id:originalId,
+   artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64)});
+ deps.persistWorldClaim.mockResolvedValue({change_id:originalId,claim_revision_id:originalId,
+   claim_evidence_link_id:originalId,evidence_id:originalId,
+   artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64)});
+ deps.persistHumanisticFinding.mockResolvedValue({finding_id:originalId,claim_revision_id:originalId,
+   artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64)});
+ deps.persistWorldProjection.mockResolvedValue({projection_id:originalId,finding_id:originalId,
+   artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64)});
+ deps.candidateRepository.mockReturnValue({saveMaterialObservation:deps.persistMaterialObservation,
+   saveWorldClaim:deps.persistWorldClaim,saveHumanisticFinding:deps.persistHumanisticFinding,
+   saveWorldProjection:deps.persistWorldProjection});
 });
 it('requires a server-side repository, verified object store, and verifier key',()=>{
  expect(()=>createBoundPrivateEvidenceStageWorker({storage,verificationKey:key})).toThrow('PRIVATE_STAGE_DATABASE_REQUIRED');
@@ -105,6 +121,40 @@ it('passes D02 and D03 candidates to the existing evidence bridge, never grants 
  expect((await worker.linkClaim(args('D03',d03))).qualification).toBe('UNASSESSED');
  expect(deps.linkReading).toHaveBeenCalledWith(d02,'synthetic-user-session');
  expect(deps.linkClaim).toHaveBeenCalledWith(d03,'synthetic-user-session');
+});
+it('persists D02-D05 private candidates through the candidate repository, never grants a Gate PASS',async()=>{
+ const worker=createBoundPrivateEvidenceStageWorker({pool,storage,verificationKey:key,keyVersion:'test-only'});
+ expect(deps.candidateRepository).toHaveBeenCalledWith(pool,{verificationKey:key,keyVersion:'test-only'});
+ const observation={h_type:'H05',literal_reading:'均徭均费，一从田办。',
+   source_voice:'official_gazetteer',evidence_type:'tax_institution_statement',
+   uncertainty:{qualification:'UNASSESSED'}};
+ const claim={assertion:'松江府官田佃种推行本色改折',change_type:'institutional_change',
+   time_scope:{start_year:1581},support_type:'supports'};
+ const finding={finding_type:'institutional_mechanism',
+   human_question:'为何田赋负担会改变小农生活处境？',
+   interpretive_statement:'徭役折银减轻了人身依附，但纳银门槛把压力转嫁给小农。',
+   counter_view_or_alternative:['也可能是市场米价波动的结果'],missing_evidence:['县级粮长册'],
+   uncertainty:{qualification:'UNASSESSED'}};
+ const projection={projection_key:'songjiang_tianfu_snapshot',payload:{prefecture:'松江府',year:1581}};
+ const d02=await worker.observeMaterial(args('D02',{originalId,readUnitId:originalId,observation}));
+ const d03=await worker.assertWorldClaim(args('D03',{originalId,evidenceId:originalId,claim}));
+ const d04=await worker.recordHumanisticFinding(args('D04',{originalId,claimRevisionId:originalId,finding}));
+ const d05=await worker.projectWorld(args('D05',{originalId,findingId:originalId,projection}));
+ expect([d02,d03,d04,d05].map(c=>c.qualification)).toEqual(
+   ['UNASSESSED','UNASSESSED','UNASSESSED','UNASSESSED']);
+ expect([d02,d03,d04,d05].map(c=>c.gate_code)).toEqual(['G2','G3','G4','G5']);
+ expect(d02.candidate_kind).toBe('private_material_observation');
+ expect(d03.candidate_kind).toBe('private_world_claim');
+ expect(d04.candidate_kind).toBe('private_humanistic_finding');
+ expect(d05.candidate_kind).toBe('private_world_projection');
+ expect(deps.persistMaterialObservation).toHaveBeenCalledWith(
+   {runId:'run',originalId,readUnitId:originalId,observation},'synthetic-user-session');
+ expect(deps.persistWorldClaim).toHaveBeenCalledWith(
+   {runId:'run',originalId,evidenceId:originalId,claim},'synthetic-user-session');
+ expect(deps.persistHumanisticFinding).toHaveBeenCalledWith(
+   {runId:'run',originalId,claimRevisionId:originalId,finding},'synthetic-user-session');
+ expect(deps.persistWorldProjection).toHaveBeenCalledWith(
+   {runId:'run',originalId,findingId:originalId,projection},'synthetic-user-session');
 });
 
 it('cannot turn a wrong private source binding into a D01 candidate',async()=>{

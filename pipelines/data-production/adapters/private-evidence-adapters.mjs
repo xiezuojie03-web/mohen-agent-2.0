@@ -12,6 +12,23 @@ const ACTIONS=Object.freeze({
   D01:'draftTextReading',
   D02:'linkReading',
   D03:'linkClaim',
+  D04:'recordHumanisticFinding',
+  D05:'projectWorld',
+});
+// Per-action candidate reference contract. Null entries are the legacy text
+// bridge paths, which still emit only their link candidate without persisted
+// cross-layer refs.
+const CANDIDATE_REF_SPECS=Object.freeze({
+  draftTextReading:{object_type:'read_unit',object_id:'read_unit_id',extras:['read_run_id']},
+  readScannedPage:{object_type:'read_unit',object_id:'read_unit_id',extras:['read_run_id']},
+  observeMaterial:{object_type:'material_evidence',object_id:'evidence_id',
+    extras:['reading_unit_id','link_id','read_unit_id','read_run_id']},
+  assertWorldClaim:{object_type:'claim_revision',object_id:'claim_revision_id',
+    extras:['change_id','claim_evidence_link_id','evidence_id']},
+  recordHumanisticFinding:{object_type:'finding',object_id:'finding_id',extras:['claim_revision_id']},
+  projectWorld:{object_type:'world_projection',object_id:'projection_id',extras:['finding_id']},
+  linkReading:null,
+  linkClaim:null,
 });
 
 function hold(reason, next) {
@@ -96,8 +113,10 @@ function privateCandidateAdapter(stage) {
     if(job.implementation?.adapter_binding!==PRIVATE_EVIDENCE_ADAPTER_PATH) {
       throw Error('PRIVATE_STAGE_ADAPTER_NOT_BOUND');
     }
-    const action=stage==='D01'&&input?.page?.kind==='scanned_page/v1'
-      ?'readScannedPage':ACTIONS[stage];
+    const action=stage==='D01'&&input?.page?.kind==='scanned_page/v1'?'readScannedPage'
+      :stage==='D02'&&input?.observation?'observeMaterial'
+      :stage==='D03'&&input?.claim?'assertWorldClaim'
+      :ACTIONS[stage];
     const runtime=await loadRuntime(context);
     const worker=runtime.privateEvidenceWorker;
     const token=runtime.privateEvidenceOwnerSessionToken;
@@ -113,21 +132,23 @@ function privateCandidateAdapter(stage) {
       throw Error('PRIVATE_STAGE_CANDIDATE_INVALID');
     }
     let control_outputs;
-    if(stage==='D01'){
-      const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
-      const hash=/^[a-f0-9]{64}$/;
-      if(!uuid.test(candidate.read_unit_id??'')||!uuid.test(candidate.read_run_id??'')||
-        !hash.test(candidate.artifact_revision??'')||!hash.test(candidate.request_digest??''))
+    const spec=CANDIDATE_REF_SPECS[action];
+    if(spec){
+      if(!UUID.test(candidate[spec.object_id]??'')||
+         spec.extras.some(field=>!UUID.test(candidate[field]??''))||
+         !HASH.test(candidate.artifact_revision??'')||!HASH.test(candidate.request_digest??''))
         throw Error('PRIVATE_STAGE_CANDIDATE_NOT_PERSISTED');
       // The Runner clears qualified outputs on WAITING_GATE/HOLD. Preserve
       // exact persisted references, without private text or credentials, for
       // the independent review service to consume. References grant no access.
-      control_outputs={candidate_refs:[{object_type:'read_unit',object_id:candidate.read_unit_id,
-        artifact_revision:candidate.artifact_revision,read_run_id:candidate.read_run_id,
-        run_id:run.run_id,stage,gate_code:candidate.gate_code,job_id:job.job_id,
-        reviewer_binding_ref:job.implementation.gate_reviewer_binding,consumer:'producer',
-        input_digest:executionDigest(input),output_digest:executionDigest(candidate),
-        request_digest:candidate.request_digest,qualification:'UNASSESSED'}]};
+      const ref={object_type:spec.object_type,object_id:candidate[spec.object_id],
+        artifact_revision:candidate.artifact_revision};
+      for(const field of spec.extras)ref[field]=candidate[field];
+      ref.run_id=run.run_id;ref.stage=stage;ref.gate_code=candidate.gate_code;ref.job_id=job.job_id;
+      ref.reviewer_binding_ref=job.implementation.gate_reviewer_binding;ref.consumer='producer';
+      ref.input_digest=executionDigest(input);ref.output_digest=executionDigest(candidate);
+      ref.request_digest=candidate.request_digest;ref.qualification='UNASSESSED';
+      control_outputs={candidate_refs:[ref]};
     }
     // PASS here is *producer completion*, NEVER a signed G PASS.
     // The unmodified orchestrator must check independent G(n) current status
@@ -139,15 +160,11 @@ function privateCandidateAdapter(stage) {
       content_stats:{candidates:1},review_records:[]};
   };
 }
-function inactiveStage(stage) {
-  return async()=>hold('PRIVATE_ADAPTER_STAGE_NOT_IMPLEMENTED',
-    'Use an independently qualified, Registry-bound source/meaning adapter for '+stage);
-}
 export const adapters=Object.freeze({
   D00:privateSourceIntakeAdapter(),
   D01:privateCandidateAdapter('D01'),
   D02:privateCandidateAdapter('D02'),
   D03:privateCandidateAdapter('D03'),
-  D04:inactiveStage('D04'),
-  D05:inactiveStage('D05'),
+  D04:privateCandidateAdapter('D04'),
+  D05:privateCandidateAdapter('D05'),
 });

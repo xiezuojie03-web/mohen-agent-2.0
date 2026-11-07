@@ -5,7 +5,7 @@
   "status": "ACTIVE_AUTHORIZED",
   "activation": {
     "enabled": true,
-    "reason": "M5 isolated local activation (MAB step 2.1): owner-authorized remediation scope on the local isolated database, D00+D01 only via the bound private-evidence adapters and the local execution authorizer; D02-D05 remain disabled and production deployment is not authorized by this status."
+    "reason": "M5 isolated local activation (MAB step 2 batch C): owner-authorized remediation scope on the local isolated database, D00-D05 enabled via the bound private-evidence adapters and the local execution authorizer; production deployment is not authorized by this status."
   },
   "authority": [
     "governance/C2_MoHen_Humanistic_Data_OS_and_Dual_Skill_Architecture_V1.3.md",
@@ -171,8 +171,8 @@
       "implementation": {
         "skill": "mohen-material-understanding",
         "executor": "pipelines/data-production/executors/d02-material-understanding.mjs",
-        "adapter_binding": "pipelines/data-production/adapters/layer1-adapters.mjs",
-        "gate_reviewer_binding": "TO_VERIFY_IN_M0"
+        "adapter_binding": "pipelines/data-production/adapters/private-evidence-adapters.mjs",
+        "gate_reviewer_binding": "m5-owner-reviewer-g2g5-producer"
       },
       "inputs": [
         "typed_artifact_refs",
@@ -220,8 +220,8 @@
         "H25"
       ],
       "execution_policy": {
-        "enabled": false,
-        "attended": false,
+        "enabled": true,
+        "attended": true,
         "unattended": false,
         "batch": false,
         "interactive": false,
@@ -263,8 +263,8 @@
       "implementation": {
         "skill": "mohen-world-construction",
         "executor": "pipelines/data-production/executors/d03-world-construction.mjs",
-        "adapter_binding": "pipelines/data-production/adapters/layer1-adapters.mjs",
-        "gate_reviewer_binding": "TO_VERIFY_IN_M0"
+        "adapter_binding": "pipelines/data-production/adapters/private-evidence-adapters.mjs",
+        "gate_reviewer_binding": "m5-owner-reviewer-g2g5-producer"
       },
       "inputs": [
         "typed_artifact_refs",
@@ -297,8 +297,8 @@
         "W10"
       ],
       "execution_policy": {
-        "enabled": false,
-        "attended": false,
+        "enabled": true,
+        "attended": true,
         "unattended": false,
         "batch": false,
         "interactive": false,
@@ -340,8 +340,8 @@
       "implementation": {
         "skill": "mohen-humanistic-discovery",
         "executor": "pipelines/data-production/executors/d04-humanistic-discovery.mjs",
-        "adapter_binding": "pipelines/data-production/adapters/layer1-adapters.mjs",
-        "gate_reviewer_binding": "TO_VERIFY_IN_M0"
+        "adapter_binding": "pipelines/data-production/adapters/private-evidence-adapters.mjs",
+        "gate_reviewer_binding": "m5-owner-reviewer-g2g5-producer"
       },
       "inputs": [
         "typed_artifact_refs",
@@ -376,8 +376,8 @@
         "A12"
       ],
       "execution_policy": {
-        "enabled": false,
-        "attended": false,
+        "enabled": true,
+        "attended": true,
         "unattended": false,
         "batch": false,
         "interactive": false,
@@ -419,8 +419,8 @@
       "implementation": {
         "skill": "mohen-read-model-publication",
         "executor": "pipelines/data-production/executors/d05-read-model-publication.mjs",
-        "adapter_binding": "pipelines/data-production/adapters/layer1-adapters.mjs",
-        "gate_reviewer_binding": "TO_VERIFY_IN_M0"
+        "adapter_binding": "pipelines/data-production/adapters/private-evidence-adapters.mjs",
+        "gate_reviewer_binding": "m5-owner-reviewer-g2g5-producer"
       },
       "inputs": [
         "typed_artifact_refs",
@@ -457,8 +457,8 @@
         "P08"
       ],
       "execution_policy": {
-        "enabled": false,
-        "attended": false,
+        "enabled": true,
+        "attended": true,
         "unattended": false,
         "batch": false,
         "interactive": false,

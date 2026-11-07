@@ -198,3 +198,113 @@ test('D01 exposes only durable candidate refs outside qualified outputs and refu
     privateEvidenceWorker:{draftTextReading:async()=>({stage:'D01',gate_code:'G1',qualification:'UNASSESSED'})}}}),
     /PRIVATE_STAGE_CANDIDATE_NOT_PERSISTED/);
 });
+
+test('D02 observation form routes to observeMaterial and emits material_evidence refs',async()=>{
+  const input={schema:'mohen.private-evidence-stage-request.v1',stage:'D02',originalId:randomUUID(),
+    readUnitId:randomUUID(),
+    observation:{h_type:'H05',literal_reading:'均科正耗平米三斗六升五合',
+      source_voice:'official_gazetteer',evidence_type:'gazetteer_tax_quota_observation',
+      uncertainty:{qualification:'UNASSESSED'}}};
+  const j=job('D02');const evidenceId=randomUUID(),readingUnitId=randomUUID(),linkId=randomUUID();
+  let linkCalls=0;
+  const worker={observeMaterial:async args=>{
+    assert.equal(args.input,input);assert.equal(args.token,'synthetic-owner-session');
+    return {stage:'D02',candidate_kind:'private_material_observation',qualification:'UNASSESSED',
+      gate_code:'G2',evidence_id:evidenceId,reading_unit_id:readingUnitId,link_id:linkId,
+      read_unit_id:input.readUnitId,read_run_id:randomUUID(),
+      artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64)};
+  },linkReading:async()=>{linkCalls++;throw Error('linkReading must not run for the observation form');}};
+  const result=await adapters.D02({run:{run_id:randomUUID()},job:j,input,
+    context:{registry:{},privateEvidenceWorker:worker,privateEvidenceOwnerSessionToken:'synthetic-owner-session'}});
+  assert.equal(linkCalls,0);
+  assert.equal(result.disposition,'PASS');
+  const ref=result.control_outputs.candidate_refs[0];
+  assert.equal(ref.object_type,'material_evidence');
+  assert.equal(ref.object_id,evidenceId);
+  assert.equal(ref.reading_unit_id,readingUnitId);
+  assert.equal(ref.link_id,linkId);
+  assert.equal(ref.read_unit_id,input.readUnitId);
+  assert.equal(ref.gate_code,'G2');
+  assert.equal(ref.qualification,'UNASSESSED');
+  assert.doesNotMatch(JSON.stringify(result.control_outputs),/synthetic-owner-session/);
+});
+
+test('D03 claim form routes to assertWorldClaim and emits claim_revision refs',async()=>{
+  const input={schema:'mohen.private-evidence-stage-request.v1',stage:'D03',originalId:randomUUID(),
+    evidenceId:randomUUID(),claim:{assertion:'青浦县低田均科正耗平米三斗六升五合。',
+    change_type:'taxation_quota_assessment',time_scope:{note:'n'},support_type:'supports'}};
+  const j=job('D03');const changeId=randomUUID(),revisionId=randomUUID();
+  let linkCalls=0;
+  const worker={assertWorldClaim:async args=>{
+    assert.equal(args.input,input);assert.equal(args.token,'synthetic-owner-session');
+    return {stage:'D03',candidate_kind:'private_world_claim',qualification:'UNASSESSED',
+      gate_code:'G3',change_id:changeId,claim_revision_id:revisionId,
+      claim_evidence_link_id:randomUUID(),evidence_id:input.evidenceId,
+      artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64)};
+  },linkClaim:async()=>{linkCalls++;throw Error('linkClaim must not run for the claim form');}};
+  const result=await adapters.D03({run:{run_id:randomUUID()},job:j,input,
+    context:{registry:{},privateEvidenceWorker:worker,privateEvidenceOwnerSessionToken:'synthetic-owner-session'}});
+  assert.equal(linkCalls,0);
+  assert.equal(result.disposition,'PASS');
+  const ref=result.control_outputs.candidate_refs[0];
+  assert.equal(ref.object_type,'claim_revision');
+  assert.equal(ref.object_id,revisionId);
+  assert.equal(ref.change_id,changeId);
+  assert.equal(ref.evidence_id,input.evidenceId);
+  assert.equal(ref.qualification,'UNASSESSED');
+});
+
+test('D04/D05 emit finding and world_projection refs on the new forms',async()=>{
+  const run={run_id:randomUUID()};
+  const d04Input={schema:'mohen.private-evidence-stage-request.v1',stage:'D04',originalId:randomUUID(),
+    claimRevisionId:randomUUID(),finding:{finding_type:'institutional_mechanism',
+      human_question:'?',interpretive_statement:'!',counter_view_or_alternative:[],
+      missing_evidence:[],uncertainty:{qualification:'UNASSESSED'}}};
+  const findingId=randomUUID();
+  const d04=await adapters.D04({run,job:job('D04'),input:d04Input,
+    context:{registry:{},privateEvidenceOwnerSessionToken:'s',
+      privateEvidenceWorker:{recordHumanisticFinding:async()=>({stage:'D04',
+        candidate_kind:'private_humanistic_finding',qualification:'UNASSESSED',gate_code:'G4',
+        finding_id:findingId,claim_revision_id:d04Input.claimRevisionId,
+        artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64)})}}});
+  assert.equal(d04.disposition,'PASS');
+  assert.equal(d04.control_outputs.candidate_refs[0].object_type,'finding');
+  assert.equal(d04.control_outputs.candidate_refs[0].object_id,findingId);
+  assert.equal(d04.control_outputs.candidate_refs[0].claim_revision_id,d04Input.claimRevisionId);
+  const d05Input={schema:'mohen.private-evidence-stage-request.v1',stage:'D05',originalId:randomUUID(),
+    findingId:randomUUID(),projection:{projection_key:'m5.songjiang.tianze.quota-rule.v1',payload:{title:'t'}}};
+  const projectionId=randomUUID();
+  const d05=await adapters.D05({run,job:job('D05'),input:d05Input,
+    context:{registry:{},privateEvidenceOwnerSessionToken:'s',
+      privateEvidenceWorker:{projectWorld:async()=>({stage:'D05',
+        candidate_kind:'private_world_projection',qualification:'UNASSESSED',gate_code:'G5',
+        projection_id:projectionId,finding_id:d05Input.findingId,
+        artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64)})}}});
+  assert.equal(d05.disposition,'PASS');
+  assert.equal(d05.control_outputs.candidate_refs[0].object_type,'world_projection');
+  assert.equal(d05.control_outputs.candidate_refs[0].object_id,projectionId);
+  assert.equal(d05.control_outputs.candidate_refs[0].finding_id,d05Input.findingId);
+});
+
+test('D04/D05 hold on wrong stage and fail closed on unpersisted candidates',async()=>{
+  const j=job('D04');
+  const mismatch=await adapters.D04({run:{},job:j,
+    input:{schema:'mohen.private-evidence-stage-request.v1',stage:'D05',originalId:randomUUID(),
+      findingId:randomUUID(),projection:{projection_key:'k',payload:{}}},context:{}});
+  assert.equal(mismatch.disposition,'HOLD');
+  assert.equal(mismatch.hold.reason_code,'PRIVATE_STAGE_REQUEST_REQUIRED');
+  const d04Input={schema:'mohen.private-evidence-stage-request.v1',stage:'D04',originalId:randomUUID(),
+    claimRevisionId:randomUUID(),finding:{}};
+  await assert.rejects(()=>adapters.D04({run:{},job:job('D04'),input:d04Input,
+    context:{registry:{},privateEvidenceOwnerSessionToken:'s',
+      privateEvidenceWorker:{recordHumanisticFinding:async()=>({stage:'D04',qualification:'UNASSESSED',
+        gate_code:'G4'})}}}),/PRIVATE_STAGE_CANDIDATE_NOT_PERSISTED/);
+  const d05Input={schema:'mohen.private-evidence-stage-request.v1',stage:'D05',originalId:randomUUID(),
+    findingId:randomUUID(),projection:{projection_key:'k',payload:{}}};
+  await assert.rejects(()=>adapters.D05({run:{},job:job('D05'),input:d05Input,
+    context:{registry:{},privateEvidenceOwnerSessionToken:'s',
+      privateEvidenceWorker:{projectWorld:async()=>({stage:'D05',qualification:'UNASSESSED',
+        gate_code:'G5',projection_id:'not-a-uuid',finding_id:randomUUID(),
+        artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64)})}}}),
+    /PRIVATE_STAGE_CANDIDATE_NOT_PERSISTED/);
+});

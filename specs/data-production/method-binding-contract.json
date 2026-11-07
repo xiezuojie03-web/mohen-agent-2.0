@@ -273,9 +273,8 @@
       "output_contract": [
         "material_observation"
       ],
-      "implementation_binding": "HOLD",
-      "may_grant_gate": false,
-      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
+      "implementation_binding": "pipelines/data-production/adapters/private-evidence-adapters.mjs#D02:observeMaterial",
+      "may_grant_gate": false
     },
     {
       "method_id": "H06",
@@ -840,9 +839,8 @@
       "output_contract": [
         "world_claim_revision"
       ],
-      "implementation_binding": "HOLD",
-      "may_grant_gate": false,
-      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
+      "implementation_binding": "pipelines/data-production/adapters/private-evidence-adapters.mjs#D03:assertWorldClaim",
+      "may_grant_gate": false
     },
     {
       "method_id": "W08",
@@ -1029,9 +1027,8 @@
       "output_contract": [
         "humanistic_finding_revision"
       ],
-      "implementation_binding": "HOLD",
-      "may_grant_gate": false,
-      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
+      "implementation_binding": "pipelines/data-production/adapters/private-evidence-adapters.mjs#D04:recordHumanisticFinding",
+      "may_grant_gate": false
     },
     {
       "method_id": "A07",
@@ -1197,9 +1194,8 @@
       "output_contract": [
         "world_projections"
       ],
-      "implementation_binding": "HOLD",
-      "may_grant_gate": false,
-      "hold_reason": "M5 isolated scope: no executable binding for the 松江府田赋 vertical slice yet; bind with positive/negative tests before any run selects this method"
+      "implementation_binding": "pipelines/data-production/adapters/private-evidence-adapters.mjs#D05:projectWorld",
+      "may_grant_gate": false
     },
     {
       "method_id": "P03",
@@ -1340,12 +1336,18 @@
     "scope": "MAB M5 isolated vertical slice (松江府田赋, NAJ 松江府志7)",
     "bound_methods": [
       "C01",
-      "C02"
+      "C02",
+      "H05",
+      "W07",
+      "A06",
+      "P02"
     ],
     "bound_evidence": [
       "tests/data-production/private-scanned-page-worker.test.mjs",
       "tests/data-production/private-evidence-adapters.test.mjs",
-      "tools/verify-2-a-scanned-page.mjs (isolated PG positive/negative/idempotency)"
+      "tests/data-production/private-candidate-worker.test.mjs",
+      "tools/verify-2-a-scanned-page.mjs (isolated PG positive/negative/idempotency)",
+      "tools/verify-2-c-d-chain.mjs (isolated PG D02-D05 chain verification)"
     ],
     "note": "D00 is governed by source standards (stage_d00), not a C/H/W/A/P method binding; its executable is the private-evidence D00 adapter action verifySourceIntake."
   }

@@ -10,11 +10,32 @@ const PRIVATE_FIELDS={
   // D01 accepts either a text-byte-range reading request, or the typed
   // scanned-page request the bound D00 adapter hands to D01.
   D01:new Set(["schema","stage","originalId","extent","quote","page"]),
-  D02:new Set(["schema","stage","originalId","evidenceId","readUnitId","extent","quote","extentOrder"]),
-  D03:new Set(["schema","stage","originalId","evidenceId","claimRevisionId","supportType"]),
+  // D02 accepts either the new H05 observation form, or the legacy text
+  // bridge link form. D03 accepts either the new W07 claim form, or the
+  // legacy claim link form. D04/D05 have exactly one form each.
+  D02:new Set(["schema","stage","originalId","readUnitId","observation",
+    "evidenceId","extent","quote","extentOrder"]),
+  D03:new Set(["schema","stage","originalId","evidenceId","claim","claimRevisionId","supportType"]),
+  D04:new Set(["schema","stage","originalId","claimRevisionId","finding"]),
+  D05:new Set(["schema","stage","originalId","findingId","projection"]),
 };
 const PRIVATE_SHAPE={
-  D01(value){return value.extent||value.quote?"text":value.page?"scanned_page":"invalid";},
+  D01(value){
+    if(value.extent||value.quote)return !value.extent||!value.quote?"invalid":"text";
+    if(value.page)return value.page?.kind==="scanned_page/v1"&&
+      Number.isSafeInteger(value.page?.page_number)?"scanned_page":"invalid";
+    return "invalid";
+  },
+  // D02/D03 互斥形态：observation 或 link 二选一，混用即失败关闭。
+  D02(value){
+    if(value.observation)return value.evidenceId===undefined&&value.extent===undefined&&
+      value.quote===undefined&&value.extentOrder===undefined?"observation":"invalid";
+    return value.evidenceId!==undefined&&value.extent!==undefined&&value.quote!==undefined?"link":"invalid";
+  },
+  D03(value){
+    if(value.claim)return value.claimRevisionId===undefined&&value.supportType===undefined?"claim":"invalid";
+    return value.claimRevisionId!==undefined&&value.supportType!==undefined?"link":"invalid";
+  },
 };
 export function loadTrustedResumeInput({stage,filePath,trustedDirectory}={}){
   if(stage==="D00"){
@@ -63,14 +84,9 @@ export function loadTrustedResumeInput({stage,filePath,trustedDirectory}={}){
       throw Error("PRIVATE_EVIDENCE_RESUME_SHAPE_INVALID");
     const shape=PRIVATE_SHAPE[stage];
     if(shape){
-      // D01: exactly one request shape — a text byte range (extent+quote) or
-      // the typed scanned-page locator produced by the bound D00 adapter.
-      const kind=shape(value);
-      if(kind==="invalid"||kind==="text"&&(!value.extent||!value.quote)||
-         kind==="scanned_page"&&(value.extent||value.quote))
-        throw Error("PRIVATE_EVIDENCE_RESUME_SHAPE_INVALID");
-      if(kind==="scanned_page"&&(value.page?.kind!=="scanned_page/v1"||
-         !Number.isSafeInteger(value.page?.page_number)))
+      // 每个私有 stage 只接受一种已定义形态：D01 文本区间或扫描页 locator、
+      // D02/D03 observation/link 互斥、其余不设多形态。
+      if(shape(value)==="invalid")
         throw Error("PRIVATE_EVIDENCE_RESUME_SHAPE_INVALID");
     }
   }

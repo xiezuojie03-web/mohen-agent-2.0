@@ -1568,3 +1568,25 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 **既有环境漂移（非本批引入，`DEFERRED_ENV`）**：`guard:naming` 报本地库遗留 C0—C4 时代表（`cultural_*`/`claims`/`entities` 等）未登记 naming-map；`guard:identifiers`/`guard:names` 依赖的 psql 无密码直连在 scram 下不可达。均未在本批修复。
 
 **状态**：2.1 完成（`VERIFIED_ISOLATED`）。第 2 步仍**部分闭环**：未做 2.3 D04/D05 执行器与 6 个 2 行桩、D02–D05 真实接线、L2–L5 候选。未签任何 G0–G5（D00/D01 的 HOLD 属合同预期，待第 3 步独立 Gate 签发）。`M5_OVERALL_HOLD` 不变。`target-diff.csv` 已更新 registry `current_sha256`（38ab739a…）。密钥/凭据位于 `D:/MoHen/keys/execution-auth`，未入库。
+
+### 2026-11-07 第 2 步批次 C（2.C）：D02–D05 私有候选链真实落地（`VERIFIED_ISOLATED`）
+
+**范围与边界**：M5 隔离范围《松江府田赋》/ NAJ《松江府志》田赋卷（page 35，image/jpeg 362221 字节，sha256 `99dae89a…`）。只写本地隔离 PG；未写生产库/Storage、未启用正式 Gate、未调用外部模型、未新增费用。**未签任何 G0–G5**。
+
+**代码与迁移（`CODE_PRESENT`）**：
+- 新迁移 `supabase/migrations/20261107200000_mab_m5_d02_d05_private_candidates.sql`：D02 `studio.persist_private_material_observation(...)`（H05 材料观察，HMAC 字节证明固定 request digest + 全部派生 ID，确定性 ID/幂等/失败关闭）、D03/D04/D05 对应 `world.claim_revisions` / `meaning.findings` / L5 投影候选写入；沿用 `SECURITY DEFINER` + `search_path=pg_catalog` + 最小 EXECUTE，候选一律 `UNASSESSED`。
+- 新仓储 `packages/data-access/src/private-candidate-repository.mjs`；`private-evidence-binding.mjs` 组合根接线；`private-evidence-stage.mjs` 新增 `observeMaterial`(D02/H05)、`assertWorldClaim`(D03/W07)、`recordHumanisticFinding`(D04/A06)、`projectWorld`(D05/P02)；`private-evidence-adapters.mjs` D02–D05 由 `inactiveStage` 改为真实动作；`resume-input.mjs` 接受 D02–D05 typed 请求。
+- `specs/data-production/production-registry.json`：D02–D05 `execution_policy.enabled=true/attended=true`，`adapter_binding` → `private-evidence-adapters.mjs`，`gate_reviewer_binding` → `m5-owner-reviewer-g2g5-producer`（`status` 仍 `ACTIVE_AUTHORIZED`，`reason` 明确不授权生产部署）。
+- `specs/data-production/method-binding-contract.json`：绑定从 2 个扩到 6 个（`C01`/`C02`/`H05`/`W07`/`A06`/`P02`），其余 57 仍显式 `HOLD`，`TO_VERIFY_IN_M0` 残留 0。
+- 新工具 `tools/prepare-2-c-run-inputs.mjs`（按阶段从隔离库读上游引用生成 typed 受信请求 + 预登记 `control.production_runs`）、`tools/verify-2-c-d-chain.mjs`（只读校验 D02–D05 落库行）。均为隔离工程脚手架，硬编码本 M5 项目/原件/read_unit，非通用生产工具。
+
+**验证（`VERIFIED_ISOLATED`）**：
+- 真实 `run.mjs` 端到端（本地隔离 PG + 本地原件，经本地执行授权器签名 grant + 一次性 nonce）：
+  - D02 `run_id`（批次 C 先行跑通）→ `evidence.material_evidence` + `read_unit_evidence_links`(`link_version=mab.private-material-observation.v1`) + 派生 `evidence.reading_units` 落库。
+  - D03 → `world.claim_revisions`（`producer_method_id=W07`）落库。
+  - D04 `run_id=48b55e23-922e-4d64-b94b-8ae9cba807aa` → `meaning.findings` `8412d171-e6c3-c5db-66df-ecd4188e0135`（`artifact_revision=02e4c9ed…`，claim `7afd01d9…`）落库，HOLD `INDEPENDENT_GATE_NOT_VERIFIED`（G4 未签，合同预期）。
+  - D05 `run_id=2dd6e297-5fb6-473b-9e87-1c8139ef78fd` → L5 投影候选落库，HOLD（G5 未签，合同预期）。
+- `tools/verify-2-c-d-chain.mjs`：`rows {"d02":true,"d03":true,"d04":true,"d05":true}` / **`VERIFY_2_C_ALL_PASS`**（字段、`UNASSESSED` 资格、字节证明、确定性 ID 断言通过）。
+- 回归：`pnpm -r typecheck` PASS；`pnpm test:unit` 577 passed / 2 skipped（579，两跳过为环境依赖用例）；`pnpm test:data-production` **157/158**，唯一失败仍为 `independent-gate-service-runtime.test.mjs`（本机无 `openssl`，`DEFERRED_ENV`，非本批引入）。
+
+**状态**：D02–D05 候选链 `VERIFIED_ISOLATED`，第 2 步自检 2.1–2.9 的主体已通（全部 HOLD 待 G2–G5）。仍未做：6 个 executor 的 2 行桩（真实执行走私有适配器动作，不经桩）、同一 run 下 D00→D05 串链、D01–D03 非私有分支。`M5_OVERALL_HOLD` 不变。`target-diff.csv` 已同步 `production-registry.json`（`d26219b6…`）与 `method-binding-contract.json`（`9fdb0f0e…`）当前 SHA。下一步：第 3 步 M3 独立 Gate（G0–G5 签发/撤权/当前资格消费/P08）。

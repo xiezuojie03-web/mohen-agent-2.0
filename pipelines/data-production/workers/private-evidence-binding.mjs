@@ -9,6 +9,7 @@ import {
   createPrivateTextReadingRepository,
   createPrivateScannedPageReadingRepository,
   createPrivateSourceRegistrationRepository,
+  createPrivateCandidateRepository,
 } from '../../../packages/data-access/src/index.mjs';
 import { createPrivateEvidenceStageWorker } from './private-evidence-stage.mjs';
 
@@ -26,7 +27,7 @@ export function createBoundPrivateEvidenceStageWorker({
   }
   // The repository enforces project/Owner RLS via transaction-local identity.
   // The same readback is used for D00 registration lookup, D01 reads and
-  // D02/D03 bridge attestation.
+  // D02-D05 candidate persistence.
   const repository = createPrivateOriginalRepository(pool);
   const original = createPrivateOriginalWorkflow({ repository, storage });
   const readOriginal = (originalId, token) => original.download(originalId, token);
@@ -37,7 +38,12 @@ export function createBoundPrivateEvidenceStageWorker({
   const readings=createPrivateTextReadingRepository(pool,{verificationKey,keyVersion});
   const pageReadings=createPrivateScannedPageReadingRepository(pool,{verificationKey,keyVersion});
   const registrations=createPrivateSourceRegistrationRepository(pool);
+  const candidates=createPrivateCandidateRepository(pool,{verificationKey,keyVersion});
   return createPrivateEvidenceStageWorker({ readOriginal, bridge, verifySourceBinding,
     persistReading:readings.save, readRegistration:registrations.lookup,
-    persistPageReading:pageReadings.save });
+    persistPageReading:pageReadings.save,
+    persistMaterialObservation:candidates.saveMaterialObservation,
+    persistWorldClaim:candidates.saveWorldClaim,
+    persistHumanisticFinding:candidates.saveHumanisticFinding,
+    persistWorldProjection:candidates.saveWorldProjection });
 }

@@ -33,7 +33,7 @@ export function assertNoUnboundTopicInputs(environment = process.env) {
 }
 
 
-/** The only private evidence adapter module eligible for D01–D03.
+/** The only private evidence adapter module eligible for D01–D05.
  * A Registry document cannot enable private inputs merely by inventing a
  * binding name; binding must resolve to this exact reviewed module.
  */
@@ -65,7 +65,7 @@ function containsPrivateRequest(input) {
  */
 export function assertNoUnboundPrivateEvidenceInput(input, { job } = {}) {
   if (!containsPrivateRequest(input)) return;
-  if (!job || !["D01","D02","D03"].includes(job.stage) ||
+  if (!job || !["D01","D02","D03","D04","D05"].includes(job.stage) ||
       job.implementation?.adapter_binding !== PRIVATE_EVIDENCE_ADAPTER_PATH ||
       input?.schema !== PRIVATE_REQUEST_SCHEMA ||
       input?.stage !== job.stage ||
