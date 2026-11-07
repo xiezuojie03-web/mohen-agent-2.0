@@ -252,13 +252,13 @@ begin
    or source_ref->>'decision' is distinct from 'ALLOW'
    or coalesce(source_ref->>'rights_basis','')=''
    or coalesce(source_ref->>'evidence_ref','')=''
-   or not exists(select from jsonb_array_elements(delegation.input_manifest->'source_refs') s
-    where s->>'ref'=source_ref->>'ref' and s->>'revision'=source_ref->>'revision') then
+   or not exists(select from jsonb_array_elements(delegation.input_manifest->'source_refs') as s(value)
+    where s.value->>'ref'=source_ref->>'ref' and s.value->>'revision'=source_ref->>'revision') then
    raise exception 'STUDIO_EXECUTION_TRANSFER_DENIED';end if;
  end loop;
  for source_ref in select value from jsonb_array_elements(delegation.input_manifest->'source_refs') loop
-  if not exists(select from jsonb_array_elements(decision->'source_refs') d
-   where d->>'ref'=source_ref->>'ref' and d->>'revision'=source_ref->>'revision'
+  if not exists(select from jsonb_array_elements(decision->'source_refs') as d(value)
+   where d.value->>'ref'=source_ref->>'ref' and d.value->>'revision'=source_ref->>'revision'
     and d->>'action'='external_processing' and d->>'decision'='ALLOW') then
    raise exception 'STUDIO_EXECUTION_TRANSFER_DENIED';end if;
  end loop;
