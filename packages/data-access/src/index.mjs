@@ -283,7 +283,7 @@ export { createStudioAssetRepository } from './studio-asset-repository.mjs';
 
 export { createPrivateOriginalRepository, createPrivateOriginalWorkflow } from './private-original-repository.mjs';
 
-export { createPrivateOriginalStorage, MAX_ORIGINAL_BYTES } from './private-original-storage.mjs';
+export { createPrivateOriginalStorage, createLocalPrivateOriginalStorage, MAX_ORIGINAL_BYTES } from './private-original-storage.mjs';
 export { createEvidenceBridgeRepository } from './evidence-bridge-repository.mjs';
 export { createReadModelRepository, assertQualificationContext } from './read-model-repository.mjs';
 export { createPrivateOriginalSourceVerifier } from './private-original-source-binding.mjs';

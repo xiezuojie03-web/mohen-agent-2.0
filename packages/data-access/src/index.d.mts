@@ -137,6 +137,9 @@ export declare function createPrivateOriginalWorkflow(args:{repository:PrivateOr
 export declare function createPrivateOriginalStorage(options?:{
  endpoint?:string;token?:string;fetcher?:typeof fetch;
 }):PrivateOriginalStorage;
+export declare function createLocalPrivateOriginalStorage(options?:{
+ dir?:string;
+}):PrivateOriginalStorage;
 export declare const MAX_ORIGINAL_BYTES:number;
 
 export interface PrivateTextExtent {

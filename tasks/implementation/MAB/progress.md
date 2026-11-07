@@ -1513,3 +1513,19 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 **状态**：M5 隔离环境端到端垂直切片已跑通（真实史料→OCR→创作→G5签发→发布→WATCH消费）。生产 Gate 投运仍 HOLD（隔离环境由 Owner 本人签发，非生产独立 Reviewer 身份）；B 线受控 Provider 执行器、13 类资产完整语义、独立 Reviewer 正式投运仍待 M6/M7。注意：本地 dev server 启动时 CodeBuddy safe-delete 守卫会拦截 Next.js 清理 .next（500 文件阈值），需先删 .next 再启动。
 
 **交付**：Owner 可在 http://localhost:3000/watch 观看作品（隔离环境验收）。
+
+## 2026-11-07｜M5 完整闭环执行计划 + 第 1 步（M2 底座）1.10 收尾闭环（CodeBuddy）
+
+**背景**：Owner 要求先建立执行计划、把 M5 之前的断点都补上，再实现 M5 真正可闭环；并确认两点铁律——①施工落在持久台账（LOCAL-BUILD-LEDGER.md）而非对话上下文；②有自检机制、不跳步、技术细节不麻烦 Owner 确认。
+
+**执行计划（已写入 LOCAL-BUILD-LEDGER.md，5 步 + 缺口全景 + 每步自检清单）**：
+- 第 1 步 M2 底座 → 第 2 步 M3 D 链 → 第 3 步 M3 Gate → 第 4 步 M4 Provider → 第 5 步 M5 八维度闭环。对齐 PLAN §3.5-C 依赖顺序。
+
+**第 1 步 1.10 HTTP 正反（本次完成）**：
+- 复用 `GET /api/studio/attachments?original_id=` 私有原件下载端点（该端点本已实现身份+RLS+SHA 回读，只缺本地存储后端）。
+- 新增 `createLocalPrivateOriginalStorage`（packages/data-access/src/private-original-storage.mjs）：本地文件系统后端，与 Supabase 版**同 storage key（{projectId}/{objectId}.bin）/同 SHA256+长度双校验/同 fail-closed/同不覆盖**；仅在 `MOHEN_PRIVATE_ORIGINAL_LOCAL_FS==="true"` + `MOHEN_PRIVATE_ORIGINAL_LOCAL_DIR` 都设置时由 route 选中。
+- `attachments/route.ts` 的 `workflow()` 按环境变量选择本地/Supabase 后端；`index.mjs`/`index.d.mts` 补导出与类型声明。
+- **发现并补上的隐藏断点**：本地 `control.session_verification_keys=0`、`.env.local` 缺 `MOHEN_DATABASE_SESSION_SECRET`，即 M1 身份验签链未 provision，`signDatabaseSessionToken` 会抛 `DATABASE_SESSION_KEY_UNAVAILABLE`、`current_app_user_id()` 恒 null（1.9 的"无身份返回 0 行"实为"验签链未 provision"而非"撤权"）。已 provision：生成随机 secret（不打印/不提交，`.env.local` 已 gitignored）写入 DB `session_verification_keys(key_slot=true)` 与 `.env.local`，并追加 `MOHEN_PRIVATE_ORIGINAL_UPLOAD_ENABLED/MOHEN_PRIVATE_ORIGINAL_LOCAL_FS/MOHEN_PRIVATE_ORIGINAL_LOCAL_DIR` 开关。
+- **验证（tools/verify-1-10.py，全部 PASS）**：字节层正例（2 原件 SHA 回读一致）/反例（错误 SHA 不一致）；身份层正例（有效 Owner token → `current_app_user_id()`=Owner 且 RLS 可见 2 原件）/反例（无 token、无效 token、跨 Owner/未登记 uid → null 且 0 行）。等价 HTTP 200/401/404 底层逻辑。
+
+**状态**：第 1 步（M2 底座）1.1–1.10 全部闭环。真实 HTTP 层（dev server + 登录 cookie）由 M5 端到端统一验收。下一步进入第 2 步 M3 D 链（production-registry 激活 + M5 实际方法唯一绑定 + D00–D05 真实执行）。M5 仍 M5_OVERALL_HOLD。

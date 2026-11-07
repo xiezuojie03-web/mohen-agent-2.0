@@ -3,6 +3,8 @@
 // Database ownership/RLS checks remain a separate mandatory gate.
 import { createHash } from "node:crypto";
 import { setTimeout as delay } from "node:timers/promises";
+import { readFile, writeFile, mkdir, rm } from "node:fs/promises";
+import path from "node:path";
 
 export const PRIVATE_ORIGINAL_BUCKET = "mohen-private-originals";
 export const MAX_ORIGINAL_BYTES = 10 * 1024 * 1024;
@@ -147,4 +149,54 @@ export function createPrivateOriginalStorage(options = {}) {
       if (!res.ok && res.status !== 404) throw new Error("ORIGINAL_STORAGE_CLEANUP_FAILED");
     },
   };
+}
+
+// ---- Local filesystem private original backend (isolated/local-only) ----
+// The Supabase Storage backend above is the production path. On a local,
+// isolated workstation where no Supabase Storage service is reachable, this
+// backend maps the SAME storage keys ({projectId}/{objectId}.bin) onto a
+// configured absolute directory. It is never selected unless
+// MOHEN_PRIVATE_ORIGINAL_LOCAL_FS==="true" and MOHEN_PRIVATE_ORIGINAL_LOCAL_DIR
+// are both set; it keeps the exact same verify/never-overwrite/fail-closed
+// rules (server-side byte re-read + SHA + length double check).
+export function createLocalPrivateOriginalStorage(options = {}) {
+  const dir = options.dir ?? process.env.MOHEN_PRIVATE_ORIGINAL_LOCAL_DIR;
+  if (typeof dir !== "string" || !dir.trim()) throw new Error("ORIGINAL_STORAGE_NOT_CONFIGURED");
+  const root = path.resolve(dir);
+  if (!path.isAbsolute(root)) throw new Error("ORIGINAL_STORAGE_NOT_CONFIGURED");
+  const resolveKey = (key) => {
+    if (!KEY.test(key)) throw new Error("ORIGINAL_INVALID_KEY");
+    const full = path.join(root, ...key.split("/"));
+    const rel = path.relative(root, full);
+    if (rel === "" || rel.startsWith("..") || path.isAbsolute(rel)) throw new Error("ORIGINAL_INVALID_KEY");
+    return full;
+  };
+  async function readVerified(key, expectedSha256, expectedLength) {
+    if (!HEX256.test(expectedSha256)) throw new Error("ORIGINAL_HASH_INVALID");
+    const data = await readFile(resolveKey(key));
+    if (data.length > MAX_ORIGINAL_BYTES ||
+        (expectedLength !== undefined && data.length !== expectedLength) ||
+        originalHash(data) !== expectedSha256) throw new Error("ORIGINAL_INTEGRITY_FAILED");
+    return data;
+  }
+  async function putVerified(key, input, mime = "application/octet-stream") {
+    const bytes = Buffer.from(input);
+    if (bytes.length < 1 || bytes.length > MAX_ORIGINAL_BYTES) throw new Error("ORIGINAL_SIZE_INVALID");
+    const checksum = originalHash(bytes);
+    const full = resolveKey(key);
+    await mkdir(path.dirname(full), { recursive: true });
+    try {
+      await writeFile(full, bytes, { flag: "wx" }); // never overwrite an existing original
+    } catch (e) {
+      if (e && e.code === "EEXIST") throw new Error("ORIGINAL_STORAGE_UPLOAD_FAILED");
+      throw e;
+    }
+    const verified = await readVerified(key, checksum, bytes.length);
+    if (!verified.equals(bytes)) throw new Error("ORIGINAL_BYTES_MISMATCH");
+    return { sha256: checksum, byteSize: bytes.length, contentType: mime };
+  }
+  async function discardUnverified(key) {
+    await rm(resolveKey(key), { force: true });
+  }
+  return { putVerified, readVerified, discardUnverified };
 }

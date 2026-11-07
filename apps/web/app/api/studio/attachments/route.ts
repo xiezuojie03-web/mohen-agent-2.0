@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getSession } from "../../../../lib/session";
 import { signDatabaseSessionToken } from "../../../../lib/auth";
-import { getNodePgPool, createPrivateOriginalRepository, createPrivateOriginalWorkflow, createPrivateOriginalStorage, MAX_ORIGINAL_BYTES } from "@mohen/data-access";
+import { getNodePgPool, createPrivateOriginalRepository, createPrivateOriginalWorkflow, createPrivateOriginalStorage, createLocalPrivateOriginalStorage, MAX_ORIGINAL_BYTES } from "@mohen/data-access";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,9 +19,15 @@ function errorResult(e:unknown){
  return fail("private_original_storage_unavailable",503);
 }
 function enabled(){return process.env.MOHEN_PRIVATE_ORIGINAL_UPLOAD_ENABLED==="true";}
+function storage(){
+ // Isolated/local workstation uses the local filesystem backend (same keys,
+ // same verify/fail-closed rules). Production always uses Supabase Storage.
+ if(process.env.MOHEN_PRIVATE_ORIGINAL_LOCAL_FS==="true")return createLocalPrivateOriginalStorage();
+ return createPrivateOriginalStorage();
+}
 function workflow(){
  const repository=createPrivateOriginalRepository(getNodePgPool());
- return createPrivateOriginalWorkflow({repository,storage:createPrivateOriginalStorage()});
+ return createPrivateOriginalWorkflow({repository,storage:storage()});
 }
 async function boundedForm(req:Request):Promise<FormData>{
  if(!req.body)throw new Error('ORIGINAL_BODY_INVALID');
