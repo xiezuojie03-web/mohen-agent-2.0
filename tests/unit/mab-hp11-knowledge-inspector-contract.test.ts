@@ -42,3 +42,28 @@ it('reports stored validation and use context without inventing Gate qualificati
  expect(assetUseSummary({purpose:'research',created_at:'2026-01-01',asset_revision_id:'old'})).toContain('old');
  expect(assetUseSummary({})).toContain('未记录');
 });
+
+describe("F05 per-entry governance and gap line",()=>{
+ it("reports real gaps only from stored fields and never issues G qualification",async()=>{
+  const {assetGovernanceSummary}=await import('../../apps/web/app/admin/knowledge-asset-view');
+  const bare=assetGovernanceSummary({source_refs:[],dependency_refs:[],validation:{status:'UNASSESSED'}});
+  expect(bare).toContain("未登记来源引用");
+  expect(bare).toContain("未登记依赖引用");
+  expect(bare).toContain("存储验证未通过评估");
+  expect(bare).toContain("独立G资格：须按对象逐案核验");
+  expect(bare).not.toContain("无已登记缺口");
+ });
+ it("shows no-gap only when refs and evaluation are actually stored",async()=>{
+  const {assetGovernanceSummary}=await import('../../apps/web/app/admin/knowledge-asset-view');
+  const full=assetGovernanceSummary({source_refs:[{id:'s1'}],dependency_refs:[{id:'d1'}],validation:{status:'CHECKED'}});
+  expect(full).toContain("无已登记缺口");
+  expect(full).not.toContain("未登记来源引用");
+  expect(full).toContain("本视图不签发不替代");
+ });
+ it("marks unknown provenance state instead of treating it as empty",async()=>{
+  const {assetGovernanceSummary}=await import('../../apps/web/app/admin/knowledge-asset-view');
+  const unknown=assetGovernanceSummary({source_refs:"{bad-json",dependency_refs:null,validation:undefined});
+  expect(unknown).toContain("来源/依赖记录状态未知");
+  expect(unknown).not.toContain("未登记来源引用");
+ });
+});

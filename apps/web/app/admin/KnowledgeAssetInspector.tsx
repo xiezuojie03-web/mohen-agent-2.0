@@ -1,7 +1,7 @@
 "use client";
 
 import {useEffect,useRef,useState} from "react";
-import {countStoredRefs,privateAssetStatus,assetPayloadPreview,selectInspectedRevision,assetRightsSummary,assetValidationSummary,assetPermissionSummary,assetUseSummary} from "./knowledge-asset-view";
+import {countStoredRefs,privateAssetStatus,assetPayloadPreview,selectInspectedRevision,assetRightsSummary,assetValidationSummary,assetPermissionSummary,assetUseSummary,assetGovernanceSummary} from "./knowledge-asset-view";
 
 type Project={project_id:string;project_title?:string};
 type Asset={asset_id:string;revision_id:string;revision_no?:number;asset_kind?:string;
@@ -154,6 +154,7 @@ export default function KnowledgeAssetInspector(){
             onClick={()=>{setRevisionId("");setWithdrawConfirm(false);setNotice("");withdrawalAttempt.current=null;setAssetId(a.asset_id);}}>查看来源与历史</button>
         </div>
         <p className="admin__asset-meta">{privateAssetStatus(a)}</p>
+        <p className="admin__asset-meta">{assetGovernanceSummary(a)}</p>
         <p className="admin__asset-meta">来源 {countStoredRefs(a.source_refs)??"未知"} 条 · 依赖 {countStoredRefs(a.dependency_refs)??"未知"} 条</p>
         <p className="admin__asset-meta">资产 {a.asset_id} · 当前修订 {a.revision_id}</p>
       </div>)}

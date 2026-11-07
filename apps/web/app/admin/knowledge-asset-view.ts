@@ -46,3 +46,20 @@ export function assetUseSummary(event:{purpose?:unknown;created_at?:unknown;asse
   '修订：'+(typeof event.asset_revision_id==='string'?event.asset_revision_id:'未记录'),
   '事件：'+(typeof event.use_event_id==='string'?event.use_event_id:'未记录')].join(' · ');
 }
+
+// F05 per-entry governance line: report only what is actually stored.
+// Missing refs/evaluation are shown as gaps, never back-filled or hidden;
+// this view never issues or implies an independent G0—G5 qualification.
+export function assetGovernanceSummary(asset:{source_refs?:unknown;dependency_refs?:unknown;validation?:unknown}):string {
+ const src=countStoredRefs(asset.source_refs),dep=countStoredRefs(asset.dependency_refs);
+ const gaps:string[]=[];
+ if(src===0)gaps.push("未登记来源引用");
+ if(dep===0)gaps.push("未登记依赖引用");
+ const validation=asset.validation;
+ const status=validation&&typeof validation==="object"&&!Array.isArray(validation)
+  ?(validation as Record<string,unknown>).status:undefined;
+ if(status!=="CHECKED")gaps.push("存储验证未通过评估");
+ const provenance=(src===null||dep===null)?"来源/依赖记录状态未知 · ":"";
+ const gapText=gaps.length?gaps.join("；"):"无已登记缺口";
+ return provenance+`缺口：${gapText} · 独立G资格：须按对象逐案核验，本视图不签发不替代`;
+}
