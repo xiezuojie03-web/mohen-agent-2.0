@@ -174,7 +174,7 @@ returns jsonb language plpgsql security definer set search_path=pg_catalog set j
 declare
  actor uuid; target uuid; request_uuid uuid; delegation studio.delegations; project studio.projects;
  current_state studio.execution_controls; prior studio.execution_control_events; decision jsonb; source_ref jsonb;
- expected bigint; amount numeric(14,6); response jsonb;
+ expected bigint; amount numeric(14,6); response jsonb; account_status text;
 begin
  actor:=control.current_app_user_id();
  if actor is null then raise exception 'STUDIO_IDENTITY_REQUIRED';end if;
@@ -196,8 +196,8 @@ begin
  target:=(p_input->>'delegationId')::uuid;request_uuid:=(p_input->>'requestId')::uuid;
  expected:=(p_input->>'expectedVersion')::bigint;amount:=(p_input->>'amount')::numeric;
  perform pg_advisory_xact_lock(hashtextextended(request_uuid::text,0));
- if (select u.status from public.users u where u.user_id=actor for share) is distinct from 'active' then
-  raise exception 'STUDIO_IDENTITY_REQUIRED';end if;
+ select u.status into account_status from public.users u where u.user_id=actor for share;
+ if account_status is distinct from 'active' then raise exception 'STUDIO_IDENTITY_REQUIRED';end if;
  select * into delegation from studio.delegations where delegation_id=target;
  if not found then raise exception 'STUDIO_EXECUTION_NOT_FOUND';end if;
  select * into project from studio.projects p where p.project_id=delegation.project_id for share;
@@ -232,7 +232,7 @@ begin
   or coalesce(decision->>'decision_id','') !~* '^[a-f0-9-]{36}$'
   or decision->>'owner_user_id' is distinct from actor::text
   or decision->>'project_id' is distinct from delegation.project_id::text
-  or decision->>'purpose' is distinct from delegation.input_manifest->>'purpose'
+  or coalesce(decision->>'purpose','')='' or decision->>'purpose' is distinct from delegation.input_manifest->>'purpose'
   or decision->>'provider' is distinct from delegation.provider
   or decision->>'engine_version' is distinct from delegation.engine_version
   or decision->>'pricing_policy_version' is distinct from p_input->>'pricingPolicyVersion'
@@ -256,6 +256,12 @@ begin
     where s->>'ref'=source_ref->>'ref' and s->>'revision'=source_ref->>'revision') then
    raise exception 'STUDIO_EXECUTION_TRANSFER_DENIED';end if;
  end loop;
+ for source_ref in select value from jsonb_array_elements(delegation.input_manifest->'source_refs') loop
+  if not exists(select from jsonb_array_elements(decision->'source_refs') d
+   where d->>'ref'=source_ref->>'ref' and d->>'revision'=source_ref->>'revision'
+    and d->>'action'='external_processing' and d->>'decision'='ALLOW') then
+   raise exception 'STUDIO_EXECUTION_TRANSFER_DENIED';end if;
+ end loop;
  if amount>delegation.budget_limit-current_state.spent_cost-current_state.reserved_cost then
   raise exception 'STUDIO_EXECUTION_BUDGET_EXHAUSTED';end if;
  update studio.execution_controls set reserved_cost=reserved_cost+amount,version=version+1,updated_at=clock_timestamp(),
@@ -276,7 +282,7 @@ create or replace function studio.release_execution_budget(p_input jsonb)
 returns jsonb language plpgsql security definer set search_path=pg_catalog set jit=off as $$
 declare
  actor uuid; target uuid; request_uuid uuid; delegation studio.delegations; project studio.projects;
- current_state studio.execution_controls; prior studio.execution_control_events; expected bigint; response jsonb;
+ current_state studio.execution_controls; prior studio.execution_control_events; expected bigint; response jsonb; account_status text;
 begin
  actor:=control.current_app_user_id();
  if actor is null then raise exception 'STUDIO_IDENTITY_REQUIRED';end if;
@@ -298,8 +304,8 @@ begin
  target:=(p_input->>'delegationId')::uuid;request_uuid:=(p_input->>'requestId')::uuid;
  expected:=(p_input->>'expectedVersion')::bigint;
  perform pg_advisory_xact_lock(hashtextextended(request_uuid::text,0));
- if (select u.status from public.users u where u.user_id=actor for share) is distinct from 'active' then
-  raise exception 'STUDIO_IDENTITY_REQUIRED';end if;
+ select u.status into account_status from public.users u where u.user_id=actor for share;
+ if account_status is distinct from 'active' then raise exception 'STUDIO_IDENTITY_REQUIRED';end if;
  select * into delegation from studio.delegations where delegation_id=target;
  if not found then raise exception 'STUDIO_EXECUTION_NOT_FOUND';end if;
  select * into project from studio.projects where project_id=delegation.project_id;
@@ -348,7 +354,7 @@ returns jsonb language plpgsql security definer set search_path=pg_catalog set j
 declare
  actor uuid; target uuid; request_uuid uuid; receipt_uuid uuid; delegation studio.delegations; project studio.projects;
  current_state studio.execution_controls; prior studio.execution_control_events; receipt studio.execution_receipts;
- expected bigint; manifest jsonb; decision jsonb; usage jsonb; pricing jsonb; estimate jsonb;
+ expected bigint; manifest jsonb; decision jsonb; usage jsonb; pricing jsonb; estimate jsonb; account_status text;
  prompt_tokens bigint; completion_tokens bigint; total_tokens bigint; input_rate numeric; output_rate numeric;
  calculated numeric(14,6); overrun boolean; response jsonb;
 begin
@@ -369,8 +375,8 @@ begin
  target:=(p_input->>'delegationId')::uuid;request_uuid:=(p_input->>'requestId')::uuid;
  receipt_uuid:=(p_input->>'receiptId')::uuid;expected:=(p_input->>'expectedVersion')::bigint;
  perform pg_advisory_xact_lock(hashtextextended(request_uuid::text,0));
- if (select u.status from public.users u where u.user_id=actor for share) is distinct from 'active' then
-  raise exception 'STUDIO_IDENTITY_REQUIRED';end if;
+ select u.status into account_status from public.users u where u.user_id=actor for share;
+ if account_status is distinct from 'active' then raise exception 'STUDIO_IDENTITY_REQUIRED';end if;
  select * into delegation from studio.delegations where delegation_id=target;
  if not found then raise exception 'STUDIO_EXECUTION_NOT_FOUND';end if;
  select * into project from studio.projects where project_id=delegation.project_id;
