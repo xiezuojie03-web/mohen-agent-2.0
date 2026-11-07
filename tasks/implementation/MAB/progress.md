@@ -1381,3 +1381,12 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 - 已在PLAN §2恢复HP01—HP13原编号/责任映射，明确其仅为追溯标签，不形成第二施工计划；M0—M8仍是唯一执行顺序。20项A01—A20和74目标登记继续保留。
 - 当前修订分支：mab/owner-led-execution-plan-20261107；最新分支HEAD 75ca11340df3e363e097154205c2c8371aa37cd3。上述HP修复后的完整PR CI尚待GitHub Actions新回执，不提前记PASS。
 - 目前只有文档、工程入口和静态守卫改动；应用源码、DB、Storage、Gate运行配置和部署均未修改。下一步以最新PR CI为准；通过后合并，再开始A线M1/M2与B线M4源码施工。
+
+
+## 2026-11-07｜PR #1合并与计划/权威入口CI准出
+
+- PR #1已合并到main，merge commit 12e7529953e0b8f788704ba8f45616ee2f468342。
+- PR完整CI 42318629059 SUCCESS；合并后main Push CI 42318924701 SUCCESS。MHKA authority routing、Developer Skill packaging/executable checks、Typecheck、Playwright规格解析、Unit、Production Boundary、K3 Traceability、Build、Auth Coverage和MAB 74目标审计均通过。
+- 起始main CI 42238756963失败已关闭。修复范围为当前权威入口、交接文档路径和守卫；没有应用业务代码、DB、Storage、Gate运行配置或部署变化。
+- PLAN V1.2结构收敛修订、ENGINEERING_HANDOFF_CURRENT.md、AGENTS.md、OWNERSHIP_MAP.md、CURRENT.md已在main生效。当前工具为ChatGPT主导、CodeBuddy本地环境补充，不再使用Codex。
+- 后续按PLAN A/B并行施工：A线M1隔离Owner/M2真实NAJ原件链；B线M4受控Provider执行器。任何本地凭据、真实浏览器或本机运行依赖集中交CodeBuddy，ChatGPT核验回执。当前M5仍HOLD；文档与CI通过不代表业务生产链已完成。

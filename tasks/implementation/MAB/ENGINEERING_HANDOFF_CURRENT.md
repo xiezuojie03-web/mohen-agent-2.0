@@ -11,11 +11,11 @@
 
 ## 当前状态
 
-- 远端基线：main@c1652c4b9bcf865c08d46c6baf5f4cc020286a86。
+- 远端基线：main@12e7529953e0b8f788704ba8f45616ee2f468342。
 - 当前施工：M5_REMEDIATION_ACTIVE。
 - 整体验收：M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY。
 - M0审查级EXIT_PASS冻结继承；M1—M4仅补M5真实作品必需缺口；M6—M8不提前启动。
-- 最新main主CI 42238756963因本文件旧版本缺少MHKA权威章节而触发守卫失败；当前修订恢复该章节，并需重新跑完整CI。历史失败保留，不以文档提交本身认定通过。
+- 起始main主CI 42238756963的MHKA权威入口失败已关闭；PR完整CI 42318629059与合并后main CI 42318924701均SUCCESS。历史失败保留，不以文档提交本身认定通过。
 
 ## 当前施工顺序
 

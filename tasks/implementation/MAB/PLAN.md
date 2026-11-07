@@ -2,7 +2,7 @@
 
 版本：V1.2（Owner批准基线；2026-11-07结构收敛修订）  
 设计基线：MAB完整设计交付包（2026-11-02）  
-当前工程基线：main@c1652c4b9bcf865c08d46c6baf5f4cc020286a86  
+当前工程基线：main@12e7529953e0b8f788704ba8f45616ee2f468342（本轮计划/治理修订合并后的代码基线）  
 本次修订：收敛现行施工路径，移除已在 progress.md 留存的过程性重复记录；不改变M0—M8阶段、原任务分母、专业标准、固定条件和生产授权边界。
 
 > 本文件是MAB-ENG-01受控任务书下M0—M8唯一施工计划、唯一执行顺序和唯一阶段验收标准。MHKA-00—05及授权专业合同是设计权威；本计划负责把它们落实为工程任务。不得以历史过程记录、旧交接指令或局部CI成功替代当前工程事实。
@@ -26,7 +26,7 @@
 | M6—M8 | NOT_STARTED | 保留原范围与依赖，不提前并入M5 |
 
 **当前已知工程阻断：**
-1. 最新main的GitHub主CI 42238756963因权威路由守卫找不到交接文件中的MHKA裁决章节而失败；该失败不是已证实的业务源码故障。先修复文档入口和守卫，再运行完整CI。
+1. 起始main主CI 42238756963的MHKA交接路由失败已由PR #1修复；PR完整CI 42318629059和合并后main CI 42318924701均SUCCESS。该CI阻断已关闭，不再作为当前施工障碍。
 2. production-registry.json仍为 DESIGN_TARGET_NOT_APPLIED、全局启用关闭；六个Stage的正式执行绑定尚未完成。
 3. method-binding-contract.json登记63项方法，implementation_binding目前均为TO_VERIFY_IN_M0。
 4. 当前Registry选中的layer1-adapters仍含金泽样板路径；private-evidence-adapters仅为候选，D00/D04/D05未实现，D01—D03依赖可信Owner Worker/会话注入。

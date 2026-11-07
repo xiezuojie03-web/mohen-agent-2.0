@@ -4,10 +4,10 @@
 
 ## 当前工程基线
 
-- main：c1652c4b9bcf865c08d46c6baf5f4cc020286a86。
-- 当前执行分支：mab/owner-led-execution-plan-20261107（Owner主导执行方式与计划结构收敛，等待PR CI）。
-- 本次分支只修改工程计划、权威入口、执行交接和CI静态守卫；尚未修改应用源码、数据库、Storage、Gate运行配置或部署。
-- 最新main主CI：42238756963 FAILURE；失败原因为权威路由守卫未找到交接文档中的MHKA裁决章节。当前分支已恢复该权威章节并将守卫改为检查工具无关的ENGINEERING_HANDOFF_CURRENT.md；必须以PR CI实际结果核验，不预先标PASS。
+- main：12e7529953e0b8f788704ba8f45616ee2f468342。
+- 当前运行代码基线与文档基线一致；PR #1仅调整计划、权威入口、执行交接和CI静态守卫，没有修改应用业务代码、数据库、Storage、Gate运行配置或部署。
+- PR完整CI：42318629059 SUCCESS；合并后main CI：42318924701 SUCCESS。
+- 起始main CI 42238756963的权威路由守卫失败已关闭；Developer Skill路由和HP01—HP13追溯已恢复。
 
 ## 当前施工与准出
 
