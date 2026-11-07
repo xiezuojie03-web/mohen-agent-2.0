@@ -10,5 +10,8 @@ export interface StudioExecutionRepository {
  revoke(input:{delegationId:string;requestId:string;reason:string},token:string):Promise<StudioExecutionState>;
  claim(input:StudioExecutionBinding&{ownerRef:string;leaseSeconds:number},token:string):Promise<StudioExecutionState>;
  checkpoint(input:StudioExecutionBinding&{leaseId:string;state:'HOLD'|'IN_FLIGHT'|'COMPLETED';payload:Record<string,unknown>},token:string):Promise<StudioExecutionState>;
+ reserveBudget(input:StudioExecutionBinding&{leaseId:string;amount:string;currency:string;pricingPolicyVersion:string},token:string):Promise<StudioExecutionState>;
+ releaseBudget(input:StudioExecutionBinding&{leaseId:string|null;reason:string},token:string):Promise<StudioExecutionState>;
+ reconcileCost(input:StudioExecutionBinding&{receiptId:string},token:string):Promise<StudioExecutionState&{budget_overrun?:boolean;reconciled_receipt_id?:string}>;
 }
 export function createStudioExecutionRepository(pool: {connect:Function}):StudioExecutionRepository;
