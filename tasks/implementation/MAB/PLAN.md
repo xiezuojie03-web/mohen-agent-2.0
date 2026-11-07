@@ -75,6 +75,26 @@ M5必须在非生产隔离环境完成至少一项真实历史文化作品的完
 
 开发工具Skill的唯一方法源为 `.agents/skills/mohen-dev-continuation/SKILL.md`，CodeBuddy轻量适配器为 `.codebuddy/skills/mohen-dev-continuation/SKILL.md`。该Skill只辅助CTX-ENG工程执行，不替代MHKA/MAB计划、不进入产品Registry、不赋予数据库、Gate、Provider或生产权限；本轮由ChatGPT主导，CodeBuddy仅承担本地环境任务，Codex不参与当前执行。
 
+### 原HP01—HP13工作包追溯（保留原编号，不构成第二施工计划）
+
+HP编号用于保持原工程责任和74目标审计的可追溯性；当前执行顺序、阶段准出和任务归属一律以本文件M0—M8及A/B线为准，不再按HP编号并行派工。
+
+| HP | 归属阶段 | 工程责任 | 关闭边界 | 优先级 |
+|---|---|---|---|---|
+| HP01 | M1—M5/M6 | 核验最近源码主CI、M1隔离HTTP、M3撤权、类型与构建；修复真实失败，保存SHA和运行ID | 只有真实成功日志才记VERIFIED_ISOLATED；无Actions证据不得填PASS | P0 |
+| HP02 | M1 | Owner/匿名/跨账户/禁用/登出/恢复自动化正反测试，防旧附件入口放行 | 生产Owner、旧凭据失效、备用账号和生产恢复由有权环境补验 | P0 |
+| HP03 | M2 | 复用现有资产模型，核复合唯一、不可变revision、head CAS、links/use_events、delegation/receipt | 只补真实缺口，不建第二套资产正文；生产迁移仍受控 | P0 |
+| HP04 | M2/M3 | 私有原件字节→source_version/read_unit/evidence/claim→唯一Runner/D00—D03授权适配与候选交接 | 禁止memory假原件、batch_level或首条材料冒充精确来源；正式Storage/Reviewer启用须授权 | P0 |
+| HP05 | M2 | 隔离PG/Storage/签名/备份恢复/ACK失败/撤权/并发幂等正反测试 | 生产备份、桶、密钥和迁移由有权环境实施，不提前开放私有上传 | P0 |
+| HP06 | M3 | 独立Reviewer服务、Signer身份/角色、签发与撤权、事件幂等和失败关闭 | 独立服务身份/密钥/部署须实测；旧Operator端点不得假借签名 | P0 |
+| HP07 | M3/M5 | 当前qualification、purpose/consumer/scope/精确revision及P08撤权即时阻断 | 专业Gate不可由作品Reviewer批准或Producer伪造；缺映射对象/分面保持HOLD | P0 |
+| HP08 | M4 | 同root任务DAG、不可变DelegationEnvelope/ExecutionReceipt、预算费用与跨会话恢复 | 不得静默费用记零或伪造Provider回执 | P1 |
+| HP09 | M4 | T1—T7接包负例、最小合法传输、幂等/超时/撤委托/重试及权限前置失败关闭 | 真实Provider、原件外发、收费上限、凭据和资料权利须满足原授权 | P1 |
+| HP10 | M5 | H1/H2/H3与Studio自然语言研究创作、导演、作品原本/分镜/局部修改及持久修订 | 不以关键词模拟Agent完成研究；真实体验由Owner后验 | P1 |
+| HP11 | M5 | F05 Admin管理内部知识条目的来源、精确revision、证据、rights/purpose、use_events和缺口 | 保留原运营功能；条目不得假造，高权限操作另做身份验收 | P1 |
+| HP12 | M3/M5 | 出版Operator/作品rev/独立知识G5/媒体许可；WATCH/Evidence/visual_stage/Agent逐请求资格和撤权 | 无合法精确G5映射则关闭相应发布或分面；作品Reviewer不替代G5 | P0 |
+| HP13 | 全部 | 74目标逐项CREATE/REVISE/等价/延期双向语义核销；20责任/85API/152动作源→测试→证据清单 | 只在剩余本地/生产权限或完整体验验收条件明确后冻结唯一增量交接包 | 最终 |
+
 过程性重复记录从PLAN移出，保留在progress.md及原结果报告中；PLAN只保留当前有效的任务、依赖、条件和验收。不得为了简短删除原M0—M8任务分母、固定条件、20项工程责任或74项目标登记。
 
 ## 3. M1—M4条件准出与固定条件
