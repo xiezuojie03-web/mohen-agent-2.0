@@ -65,7 +65,7 @@ const registrationFor=(originalId,projectId)=>({schema:'mohen.private-source-reg
   storage_ref:'mohen-private-originals/'+projectId+'/'+originalId+'.bin',
   provider:'NAJ',title:'松江府志7',source_type:'gazetteer',carrier_type:'scanned_page',
   rights:{status:'public_domain_secondary_use'},asset_revision_id:id(),
-  artifact_revision:'a'.repeat(64)});
+  artifact_revision:'b'.repeat(64),source_version_artifact_revision:'a'.repeat(64)});
 
 test('D00 verifySourceIntake returns an UNASSESSED registration candidate under a real stage grant',async()=>{
   const originalId=id(),projectId=id();
@@ -87,6 +87,8 @@ test('D00 verifySourceIntake returns an UNASSESSED registration candidate under 
     assert.equal(candidate.candidate_kind,'private_source_intake');
     assert.equal(candidate.rights.status,'public_domain_secondary_use');
     assert.equal(candidate.sha256,IMAGE_SHA);
+    // G0 must bind the source_version revision, never the raw_item revision.
+    assert.equal(candidate.artifact_revision,'a'.repeat(64));
     assert.equal(candidate.provider,'NAJ');
     assert.match(candidate.request_digest,/^[a-f0-9]{64}$/);
     await assert.rejects(()=>worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'}),

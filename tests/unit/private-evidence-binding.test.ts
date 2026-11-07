@@ -68,7 +68,7 @@ beforeEach(()=>{
    raw_item_id:extent.raw_item_id,sha256:hash(bytes),byte_size:bytes.length,content_type:'image/jpeg',
    provider:'NAJ',title:'松江府志7',source_type:'gazetteer',carrier_type:'scanned_page',
    rights:{status:'public_domain_secondary_use'},asset_revision_id:'66666666-6666-4666-8666-666666666666',
-   artifact_revision:'c'.repeat(64)});
+   artifact_revision:'c'.repeat(64),source_version_artifact_revision:'c'.repeat(64)});
  deps.registrationRepository.mockReturnValue({lookup:deps.registrationLookup});
  deps.persistMaterialObservation.mockResolvedValue({evidence_id:originalId,reading_unit_id:originalId,
    link_id:originalId,read_unit_id:originalId,read_run_id:originalId,
@@ -181,6 +181,7 @@ it('composes D00 source intake through the registration lookup',async()=>{
  expect(result.gate_code).toBe('G0');
  expect(result.candidate_kind).toBe('private_source_intake');
  expect(result.rights).toEqual({status:'public_domain_secondary_use'});
+ expect(result.artifact_revision).toBe('c'.repeat(64));
  expect(deps.registrationLookup).toHaveBeenCalledWith(originalId,'synthetic-user-session');
  expect(deps.sourceBinding).toHaveBeenCalledWith({originalId,
    sourceVersionId:extent.source_version_id,rawItemId:extent.raw_item_id,rawSha256:hash(bytes)},

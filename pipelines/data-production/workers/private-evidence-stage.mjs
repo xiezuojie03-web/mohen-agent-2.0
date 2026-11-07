@@ -101,12 +101,16 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         rawSha256:record.sha256},token);
       if(bound!==true)throw Error('PRIVATE_READING_SOURCE_NOT_BOUND');
       const requestDigest=digestOf({runId:run.run_id,originalId,pageNumber,researchIntent});
+      // The G0 candidate must bind the source_version revision, not the raw_item revision.
+      const sourceRevision=registration?.source_version_artifact_revision;
+      if(typeof sourceRevision!=='string'||!/^[0-9a-f]{64}$/.test(sourceRevision))
+        throw Error('PRIVATE_SOURCE_REGISTRATION_REVISION_INVALID');
       // Durable L0 candidate refs; professional G0 qualification stays independent.
       const gateCandidateId=await submitStageCandidate({run,stage:'D00',gateCode:'G0',
         objectType:'source_version',objectId:registration.source_version_id,
-        artifactRevision:registration.artifact_revision,projectId,
+        artifactRevision:sourceRevision,projectId,
         evidenceRefs:[{kind:'source_version',id:registration.source_version_id,
-          artifact_revision:registration.artifact_revision}],
+          artifact_revision:sourceRevision}],
         requestDigest});
       return {stage:'D00',candidate_kind:'private_source_intake',
         original_id:originalId,project_id:projectId,page_number:pageNumber,
@@ -114,7 +118,7 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         raw_item_id:registration.raw_item_id,sha256:record.sha256,byte_size:record.byte_size,
         content_type:record.content_type,rights:registration.rights,provider:registration.provider,
         title:registration.title,source_type:registration.source_type,carrier_type:registration.carrier_type,
-        asset_revision_id:registration.asset_revision_id,artifact_revision:registration.artifact_revision,
+        asset_revision_id:registration.asset_revision_id,artifact_revision:sourceRevision,
         request_digest:requestDigest,gate_candidate_id:gateCandidateId,
         gate_candidate_status:'SUBMITTED',qualification:'UNASSESSED',gate_code:'G0'};
     },

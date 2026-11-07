@@ -9,7 +9,6 @@ import { queryRows, getNodePgPool, run } from "../packages/data-access/src/index
 const OWNER = "270bcecf-9bfb-4865-9432-a0ac9db8df75";
 const PROJECT = "b0a11000-0000-4000-8000-000000000001";
 const ORIGINAL = "b0a11000-0000-4000-8000-000000000002";
-const READ_UNIT = "9e847de9-8ac3-3da1-65ac-b4a7868dd1a8";
 const SCHEMA = "mohen.private-evidence-stage-request.v1";
 const baseDir = "D:/MoHen/data/m5-runs";
 const trustedDir = path.join(baseDir, "trusted");
@@ -22,9 +21,11 @@ const flagValue = (name) => {
 };
 const stage = flagValue("--stage");
 if (!["d02", "d03", "d04", "d05"].includes(stage)) {
-  throw new Error("usage: node tools/prepare-2-c-run-inputs.mjs --stage d02|d03|d04|d05 [--run-id <uuid>]");
+  throw new Error("usage: node tools/prepare-2-c-run-inputs.mjs --stage d02|d03|d04|d05 [--run-id <uuid>] [--read-unit <uuid>]");
 }
 const runId = flagValue("--run-id") ?? crypto.randomUUID();
+// 默认上游引用：D01 真实 run 产出、且已由 G1 独立 Gate 签发的 C02 扫描页 read_unit。
+const READ_UNIT = flagValue("--read-unit") ?? "ff227f15-b9b5-c37f-b309-52ad6120b5dc";
 
 const intents = {
   d02: "松江府田赋·卷十一（M5 隔离D链 D02 材料观察）",
@@ -109,7 +110,7 @@ if (stage === "d02") {
   request = {
     schema: SCHEMA, stage: "D05", originalId: ORIGINAL, findingId: rows[0].finding_id,
     projection: {
-      projection_key: "m5.songjiang.tianze.quota-rule.v1",
+      projection_key: "m5.songjiang.tianze.quota-rule.v2",
       payload: {
         title: "松江府田赋科则投影（候选）",
         summary: "青浦县低田均科正耗平米三斗六升五合、准熟起科的规则投影。",

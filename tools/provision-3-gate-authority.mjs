@@ -8,6 +8,7 @@ import { execFileSync } from "node:child_process";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { MACHINE_REVIEWER_USER_ID, MACHINE_SIGNER_LOGIN } from "./machine-reviewer-session.mjs";
 import { PSQL_PATH, getConnection, getNodePgPool, queryRows, run } from "../packages/data-access/src/index.mjs";
 
 const OWNER = "270bcecf-9bfb-4865-9432-a0ac9db8df75";
@@ -18,12 +19,16 @@ const G5_RULE_VERSION = "v1";
 const MAX_VALIDITY = "7 days";
 const POLICY_SOURCE_REF = "LOCAL_ISOLATED:m5-gate-policy-v1";
 const BINDING_SOURCE_REF = "LOCAL_ISOLATED:m5-owner-reviewer";
+const MACHINE_BINDING_SOURCE_REF = "LOCAL_ISOLATED:m5-machine-rule-reviewer-v1";
 const PURPOSE = { namespace: "data-production", code: "m5-remediation", version: "v1" };
 const CONSUMER = "producer";
 const PASSWORD_FILE = "D:/MoHen/keys/gate-authority/owner-signer-password.txt";
+const MACHINE_PASSWORD_FILE = "D:/MoHen/keys/gate-authority/machine-signer-password.txt";
+const MACHINE_URL_KEY = "MOHEN_GATE_MACHINE_DATABASE_URL";
 const MIGRATIONS = [
   "supabase/migrations/20261107210000_mab_m3_private_gate_candidate_submission.sql",
   "supabase/migrations/20261107211000_mab_m3_local_owner_gate_signer.sql",
+  "supabase/migrations/20261107220000_mab_m5_machine_rule_reviewer.sql",
 ];
 // Required checks per gate; G5 already has a local policy and is only verified.
 const POLICIES = {
@@ -74,23 +79,49 @@ async function main() {
       flag(role.producer) || flag(role.runtime) || flag(role.authority)) throw Error("OWNER_SIGNER_ROLE_INVALID");
   check("owner signer login isolated", true, SIGNER_LOGIN);
 
+  const machineUser = await queryRows(`select count(*)::int as n from public.users
+    where user_id=:'uid'::uuid and email=:'email' and status='active'`, { uid: MACHINE_REVIEWER_USER_ID, email: "machine-reviewer@mohen.local" });
+  if (Number(machineUser[0]?.n) !== 1) throw Error("MACHINE_REVIEWER_USER_REQUIRED");
+  check("machine reviewer user active", true, MACHINE_REVIEWER_USER_ID);
+
+  const machineRole = await queryRows(`select rolcanlogin, rolinherit, rolsuper, rolbypassrls,
+    pg_has_role(:'login','mohen_gate_signer','MEMBER') as signer,
+    pg_has_role(:'login','mohen_producer','MEMBER') as producer,
+    pg_has_role(:'login','mohen_app_runtime','MEMBER') as runtime,
+    pg_has_role(:'login','mohen_gate_authority','MEMBER') as authority
+    from pg_roles where rolname=:'login'`, { login: MACHINE_SIGNER_LOGIN });
+  const machine = machineRole[0] ?? {};
+  if (!flag(machine.rolcanlogin) || flag(machine.rolsuper) || flag(machine.rolbypassrls) || !flag(machine.signer) ||
+      flag(machine.producer) || flag(machine.runtime) || flag(machine.authority)) throw Error("MACHINE_SIGNER_ROLE_INVALID");
+  check("machine signer login isolated", true, MACHINE_SIGNER_LOGIN);
+
   const g5 = await queryRows(`select enabled from control.gate_policy_versions where gate_code='G5' and rule_version=:'rule'`, { rule: G5_RULE_VERSION });
   if (!g5.length) throw Error("G5_POLICY_MISSING");
   if (!flag(g5[0].enabled)) throw Error("G5_POLICY_DISABLED");
   check("G5 policy present and enabled", true, G5_RULE_VERSION);
 
-  // 3) Missing Owner bindings, decided before any write so provisioning stays all-or-nothing.
-  const missingBindings = [];
-  for (const gate of GATES) {
-    const existing = await queryRows(`select count(*)::int as n from control.gate_reviewer_bindings
+  // 3) Missing reviewer bindings, decided before any write so provisioning stays all-or-nothing.
+  //    Owner and machine bindings coexist: neither replaces the other.
+  const OWNER_BINDINGS = { owner: OWNER, db: SIGNER_LOGIN, sourceRef: BINDING_SOURCE_REF };
+  const MACHINE_BINDINGS = { owner: MACHINE_REVIEWER_USER_ID, db: MACHINE_SIGNER_LOGIN, sourceRef: MACHINE_BINDING_SOURCE_REF };
+  const bindingSql = `select count(*)::int as n from control.gate_reviewer_bindings
       where reviewer_user_id=:'owner'::uuid and db_identity=:'db' and gate_code=:'gate'
         and purpose_namespace=:'ns' and purpose_code=:'code' and purpose_version=:'version'
-        and consumer=:'consumer' and active`, { owner: OWNER, db: SIGNER_LOGIN, gate,
-      ns: PURPOSE.namespace, code: PURPOSE.code, version: PURPOSE.version, consumer: CONSUMER });
-    if (Number(existing[0]?.n) === 0) missingBindings.push(gate);
-  }
+        and consumer=:'consumer' and active`;
+  const bindingParams = (spec, gate) => ({ owner: spec.owner, db: spec.db, gate,
+    ns: PURPOSE.namespace, code: PURPOSE.code, version: PURPOSE.version, consumer: CONSUMER });
+  const missingOf = async spec => {
+    const missing = [];
+    for (const gate of GATES) {
+      const existing = await queryRows(bindingSql, bindingParams(spec, gate));
+      if (Number(existing[0]?.n) === 0) missing.push(gate);
+    }
+    return missing;
+  };
+  const missingBindings = await missingOf(OWNER_BINDINGS);
+  const missingMachineBindings = await missingOf(MACHINE_BINDINGS);
 
-  // 4) All writes in one transaction: gate policies, then Owner reviewer bindings.
+  // 4) All writes in one transaction: gate policies, then reviewer bindings.
   const statements = [];
   for (const [gate, requiredChecks] of Object.entries(POLICIES)) {
     statements.push(`insert into control.gate_policy_versions(gate_code,rule_version,required_checks,max_validity,source_ref,enabled)
@@ -103,14 +134,23 @@ async function main() {
       values (:'owner'::uuid,:'db',:'gate_${gate}',:'ns',:'code',:'version',:'consumer',:'scope'::jsonb,
       now(),now()+interval '30 days',:'binding_ref',true)`);
   }
+  for (const gate of missingMachineBindings) {
+    statements.push(`insert into control.gate_reviewer_bindings(reviewer_user_id,db_identity,gate_code,purpose_namespace,
+      purpose_code,purpose_version,consumer,allowed_scope,valid_from,valid_until,source_ref,active)
+      values (:'machine_owner'::uuid,:'machine_db',:'machine_gate_${gate}',:'ns',:'code',:'version',:'consumer',:'scope'::jsonb,
+      now(),now()+interval '30 days',:'machine_binding_ref',true)`);
+  }
   const params = { rule: RULE_VERSION, source_ref: POLICY_SOURCE_REF, owner: OWNER, db: SIGNER_LOGIN,
     ns: PURPOSE.namespace, code: PURPOSE.code, version: PURPOSE.version, consumer: CONSUMER,
-    scope: JSON.stringify({ project_id: PROJECT }), binding_ref: BINDING_SOURCE_REF };
+    scope: JSON.stringify({ project_id: PROJECT }), binding_ref: BINDING_SOURCE_REF,
+    machine_owner: MACHINE_REVIEWER_USER_ID, machine_db: MACHINE_SIGNER_LOGIN, machine_binding_ref: MACHINE_BINDING_SOURCE_REF };
   for (const gate of Object.keys(POLICIES)) params[`gate_${gate}`] = gate;
   for (const gate of missingBindings) params[`gate_${gate}`] = gate;
+  for (const gate of missingMachineBindings) params[`machine_gate_${gate}`] = gate;
   await run(`begin; ${statements.join(";\n")}; commit;`, params);
   check("gate policies declared G0..G4", true, RULE_VERSION);
   check("owner reviewer bindings declared", true, missingBindings.length ? missingBindings.join(",") : "already present");
+  check("machine reviewer bindings declared", true, missingMachineBindings.length ? missingMachineBindings.join(",") : "already present");
 
   // 5) Read back the exact objects the Owner signing path will rely on.
   for (const gate of GATES) {
@@ -126,6 +166,16 @@ async function main() {
         version: PURPOSE.version, consumer: CONSUMER, scope: JSON.stringify({ project_id: PROJECT }) });
     if (Number(binding[0]?.n) < 1) throw Error(`REVIEWER_BINDING_MISSING:${gate}`);
     check(`policy+binding active ${gate}`, true, `${RULE_BY_GATE[gate]} ${policy[0].checks}`);
+    const machineBinding = await queryRows(`select count(*)::int as n from control.gate_reviewer_bindings
+      where reviewer_user_id=:'owner'::uuid and db_identity=:'db' and gate_code=:'gate'
+        and purpose_namespace=:'ns' and purpose_code=:'code' and purpose_version=:'version'
+        and consumer=:'consumer' and active and valid_until>now() and allowed_scope @> :'scope'::jsonb
+        and source_ref=:'ref'`,
+      { owner: MACHINE_REVIEWER_USER_ID, db: MACHINE_SIGNER_LOGIN, gate, ns: PURPOSE.namespace, code: PURPOSE.code,
+        version: PURPOSE.version, consumer: CONSUMER, scope: JSON.stringify({ project_id: PROJECT }),
+        ref: MACHINE_BINDING_SOURCE_REF });
+    if (Number(machineBinding[0]?.n) < 1) throw Error(`MACHINE_REVIEWER_BINDING_MISSING:${gate}`);
+    check(`machine binding active ${gate}`, true, MACHINE_SIGNER_LOGIN);
   }
 
   // 6) Owner signer password: environment value, else generated into an owner-only file.
@@ -139,14 +189,40 @@ async function main() {
   await run(`alter role ${SIGNER_LOGIN} login password :'pw'`, { pw: password });
   check("owner signer password set", true, provided && provided.trim().length ? "env MOHEN_GATE_SIGNER_PASSWORD" : "file");
 
+  // 7) Machine reviewer login password plus its own connection string. Machine
+  //    bindings coexist with the Owner bindings; neither path is removed here.
+  const machineProvided = process.env.MOHEN_GATE_MACHINE_SIGNER_PASSWORD;
+  const machinePassword = machineProvided && machineProvided.trim().length ? machineProvided : crypto.randomBytes(24).toString("hex");
+  if (!(machineProvided && machineProvided.trim().length)) {
+    fs.mkdirSync(path.dirname(MACHINE_PASSWORD_FILE), { recursive: true });
+    fs.writeFileSync(MACHINE_PASSWORD_FILE, `${machinePassword}\n`, { mode: 0o600 });
+  }
+  await run(`alter role ${MACHINE_SIGNER_LOGIN} login password :'pw'`, { pw: machinePassword });
+  check("machine signer password set", true, machineProvided && machineProvided.trim().length ? "env MOHEN_GATE_MACHINE_SIGNER_PASSWORD" : "file");
+  const machineUrl = `postgresql://${MACHINE_SIGNER_LOGIN}:${machinePassword}@${connection.host}:${connection.port}/${connection.db}`;
+  const envPath = path.join(process.cwd(), ".env.local");
+  const envText = fs.existsSync(envPath) ? fs.readFileSync(envPath, "utf8") : "";
+  const upsert = (current, key, value) => {
+    const re = new RegExp(`^${key}=.*$`, "m");
+    return re.test(current) ? current.replace(re, `${key}=${value}`) : `${current.replace(/\s*$/, "\n")}${key}=${value}\n`;
+  };
+  const nextEnv = upsert(envText, MACHINE_URL_KEY, machineUrl);
+  if (nextEnv !== envText) fs.writeFileSync(envPath, nextEnv, "utf8");
+  check("machine connection string written", true, `.env.local:${MACHINE_URL_KEY}`);
+
   await getNodePgPool().end();
 
   for (const item of results) console.log(`${item.ok ? "PASS" : "FAIL"} | ${item.label}${item.detail ? " | " + item.detail : ""}`);
   if (!results.every(item => item.ok)) throw Error("PROVISION_3_STEP_FAILED");
 
   console.log(`password file: ${provided && provided.trim().length ? "(not written)" : PASSWORD_FILE}`);
+  console.log(`machine password file: ${machineProvided && machineProvided.trim().length ? "(not written)" : MACHINE_PASSWORD_FILE}`);
+  console.log(`machine binding source_ref: ${MACHINE_BINDING_SOURCE_REF} (coexists with ${BINDING_SOURCE_REF})`);
   console.log("sign order: " + GATES.join(" -> ") + " (submit the next candidate only after the previous Gate is signed)");
   for (const gate of GATES) console.log(`  ${gate} | ${OWNED_OBJECT_TYPES[gate]} | rule ${RULE_BY_GATE[gate]} | required_checks ${(POLICIES[gate] ?? ["work_revision_binding", "rights_by_operation"]).join(",")}`);
+  console.log("machine rule reviewer (LOCAL ISOLATED only; token minted internally and never printed):");
+  console.log("  node tools/rule-gate-reviewer.mjs --gate G0 --dry-run");
+  console.log("  node tools/rule-gate-reviewer.mjs --gate G0");
   console.log("owner self-service command (password never printed):");
   console.log(`  $env:MOHEN_GATE_DATABASE_URL="postgresql://${SIGNER_LOGIN}:<YOUR_PASSWORD>@127.0.0.1:5432/<DB_NAME>"`);
   console.log("  @'{\"decision\":{\"candidateId\":\"<candidate-uuid>\",\"requestId\":\"<new-request-uuid>\",\"result\":\"PASS\",\"ruleVersion\":\"" + RULE_VERSION + "\",\"validUntil\":\"<iso-8601-within-7-days>\",\"receipt\":{\"rationale\":\"<why>\",\"evidence_refs\":[<same refs as the candidate>],\"checks\":{<required checks all true>}}},\"sessionToken\":\"<OWNER_SESSION_TOKEN>\"}'@ | node packages/data-access/scripts/gate-authority.mjs decide");

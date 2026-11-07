@@ -32,10 +32,16 @@
 - ✅ 2.4 L0–L5 候选真实产出：D00→L0 登记候选、D01→L1 `read_unit`、D02→L2 `material_evidence`、D03→L3 `world.claim_revisions`、D04→L4 `meaning.findings`、D05→L5 投影候选，全部经 `run.mjs` 真实落库，`verify-2-c-d-chain.mjs` = `VERIFY_2_C_ALL_PASS`；候选一律 `UNASSESSED`，G2–G5 未签。
 
 ### 第 3 步 · M3 独立 Gate
-- ✅ 3.1 独立 Reviewer 真实身份：DB 层 `control.sign_gate_candidate`/`revoke_gate_qualification`/`qualification_allows` 已存在；批次 D 新建专用登录 `mohen_gate_signer_m5_owner`（仅 `mohen_gate_signer` 成员、无 producer/app_runtime/authority 成员、无表直写）+ G0–G5 策略与 Owner reviewer 绑定；`tools/verify-3-gate-chain.mjs` 断言 `VERIFY_3_ROLE_OWNER_SIGNER PASS`。Owner 本人是唯一 Reviewer。
-- 🔵 3.2 G0–G5 独立签发（非 Producer/Operator 自签）：**仅 Owner 本人执行**，作者不代签。私有链已提交 G0 候选 `24da0dfb…`（source_version `b0a11000-…-0005`），G1–G5 候选须在上游 Gate 签后方可提交（依赖快照不能伪造）。
-- ⬜ 3.3 撤权 + P08 精准失效（`revoke_gate_qualification`，撤权后新请求即时拒绝）。
-- ⬜ 3.4 当前资格消费（`qualification_allows` 逐请求核验，非旧 PASS 复用）。
+- ✅ 3.1 独立 Reviewer 真实身份：DB 层 `control.sign_gate_candidate`/`revoke_gate_qualification`/`qualification_allows` 已存在；批次 D 新建专用登录 `mohen_gate_signer_m5_owner`（仅 `mohen_gate_signer` 成员、无 producer/app_runtime/authority 成员、无表直写）+ G0–G5 策略与 Owner reviewer 绑定；`tools/verify-3-gate-chain.mjs` 断言 `VERIFY_3_ROLE_OWNER_SIGNER PASS`。
+- ✅ 3.2 G0–G5 独立签发：Owner 于本轮明确裁决 **B. 全部规则化机器签**（本地隔离 M5 内，接受机器背书风险；生产 Gate 启用仍另需授权）。新增机器 Reviewer 身份 `machine-reviewer@mohen.local`（`b0a11000-…-00a1`）+ 专用登录 `mohen_gate_signer_m5_machine`（NOINHERIT、仅 `mohen_gate_signer` 成员、19 条只读 RLS、无直写）+ 规则评审器 `tools/rule-gate-reviewer.mjs`（先序校验、逐 gate 检查映射、仅全通过才签）。本轮 D 链真实签发：G0 `00ef6451…`、G1、G2、G3 `45f9e081…`、G4 `b440e417…`、G5 `c1792c87…`。**机器签不构成 G4/G5 的专业判断**，人文解释与发布准出仍待 Owner。
+- 🔵 3.3 撤权 + P08 精准失效：`revoke_gate_qualification` 已实跑（事务内演练，`blocked_count=1`、`current` true→false、回滚后恢复 true）。**永久撤权演练待专门重跑链**（会打断当前已签链，需先取得 Owner 同意再做）。
+- ✅ 3.4 当前资格消费：G0–G5 逐条 `current_qualification_is_valid=true` 且 `qualification_allows(...,'producer','data-production','m5-remediation','v1')=true`（本轮 D 链对象；G5 story_seed 行因 purpose 不同为 false，属正确）。
+- ✅ 3.5 撤权机制生效：`VERIFY_3_NEGATIVE` + 事务演练（见 3.3）。
+- 🔵 3.6 撤权后即时拒绝：已由 `current_qualification_is_valid` 闸门翻转证明；生产侧 HTTP 断言仍待 Web 通道启用。
+- ✅ 3.7 负例：Producer/Operator 代签被拒（失败关闭）— `VERIFY_3_NEGATIVE producer_cannot_sign PASS`（42501，审计数不变 718==718）。
+- ✅ 3.8 旧 PASS/错 consumer 不复活：资格有效性按当前状态派生，不使用旧 PASS 缓存；`unsigned_qualification_denied allowed=f`。
+
+**本轮由机器评审器发现并修复的真实缺陷（非放行）**：① D00 候选错绑 `raw_item` 版本（新增 `source_version_artifact_revision`，候选改绑 `source_version`）；② `control.artifact_revision_for('claim_revision',…)` 因 `world.claim_revisions` 缺 `mohen_gate_authority` RLS 策略恒返回 null（补 `k3_artifact_read` 策略）；③ 评审器 `claim_support` 漏选 `o.byte_size` 致 `PRIVATE_WORLD_CLAIM_NOT_PERSISTED` 误判（补列）。**已知限制**：同一 gate/object 存在多个 `SUBMITTED` 候选时，规则评审器显式告警并取最新一条（超期未签的旧候选 `24da0dfb…` 无法撤回，控制面尚无候选撤回能力，已记 HOLD 待补）。
 
 ### 第 4 步 · M4 受控 Provider
 - ⬜ 4.1 `directorExternalProcessingBlocker()` 恒阻断（`return "external_processing_not_authorized"`）→ 正道是**实现受控派发后条件放行**，不是删掉阻断。
@@ -74,13 +80,13 @@
 
 ### 第 3 步 · M3 独立 Gate（自检 8 项）
 - [x] 3.1 独立 Reviewer 身份：Owner 已登记为唯一 Reviewer（G0–G5 绑定 + 专用 signer 登录 `mohen_gate_signer_m5_owner`）；`VERIFY_3_ROLE_OWNER_SIGNER PASS`
-- [ ] 3.2 G0–G4 独立签发：`control.sign_gate_candidate` 逐阶段 PASS（非 Producer/Operator 自签）— 🔵 G0 候选 `24da0dfb…` 已提交，待 Owner 签发
-- [ ] 3.3 G5 独立签发：精确 WorkRevision + 知识/媒资依赖 — 🔵 待 G0–G4 签完后提交 G5 候选
-- [ ] 3.4 当前资格消费：`control.qualification_allows` 逐请求核验 true — 🔵 负例已证未签时返回 false（`VERIFY_3_NEGATIVE unsigned_qualification_denied PASS`）
-- [ ] 3.5 撤权：`control.revoke_gate_qualification` 生效
-- [ ] 3.6 P08 精准失效：撤权后新请求即时拒绝（PG 断言 + HTTP 断言）
-- [x] 3.7 负例：Producer/Operator 代签被拒（失败关闭）— `VERIFY_3_NEGATIVE producer_cannot_sign PASS`（42501，审计数不变 712==712）
-- [ ] 3.8 旧 PASS/错 consumer 不复活（非旧资格复用）
+- [x] 3.2 G0–G4 独立签发：`control.sign_gate_candidate` 逐阶段 PASS（非 Producer/Operator 自签）— 依 Owner 裁决 B 由规则评审器签发：G0 `00ef6451…`、G1、G2、G3 `45f9e081…`、G4 `b440e417…`（`RULE_GATE_REVIEW … PASS current=true`）
+- [x] 3.3 G5 独立签发：精确 WorkRevision + 知识/媒资依赖 — G5 `c1792c87…`（`work_revision_binding` + `rights_by_operation` PASS）
+- [x] 3.4 当前资格消费：`control.qualification_allows` 逐请求核验 true — 本轮 D 链 G0–G5 全 true；负例未签时 false（`VERIFY_3_NEGATIVE unsigned_qualification_denied PASS`）
+- [x] 3.5 撤权：`control.revoke_gate_qualification` 生效 — 事务演练 `blocked_count=1`、`current` true→false（永久撤权演练另行授权）
+- [ ] 3.6 P08 精准失效：撤权后新请求即时拒绝（PG 断言已由资格闸门翻转证明；HTTP 断言仍待 Web 通道）
+- [x] 3.7 负例：Producer/Operator 代签被拒（失败关闭）— `VERIFY_3_NEGATIVE producer_cannot_sign PASS`（42501，审计数不变 718==718）
+- [x] 3.8 旧 PASS/错 consumer 不复活（非旧资格复用）— 有效性按当前状态派生，无旧 PASS 缓存
 
 ### 第 4 步 · M4 受控 Provider（自检 8 项）
 - [ ] 4.1 正道解阻断：`directorExternalProcessingBlocker` 在受控派发条件满足后放行（非删除安全网）

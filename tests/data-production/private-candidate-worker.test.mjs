@@ -372,7 +372,8 @@ const registrationFor=(originalId,projectId,overrides={})=>({
   sha256:IMAGE_SHA,byte_size:IMAGE.length,content_type:'image/jpeg',
   provider:'NAJ',title:'松江府志7',source_type:'gazetteer',carrier_type:'scanned_page',
   rights:{status:'public_domain_secondary_use'},asset_revision_id:id(),
-  artifact_revision:'c'.repeat(64),...overrides});
+  artifact_revision:'c'.repeat(64),source_version_artifact_revision:'c'.repeat(64),
+  ...overrides});
 const imageRecord=(originalId,projectId)=>({record:{original_id:originalId,project_id:projectId,
   state:'STORED_VERIFIED',content_type:'image/jpeg',sha256:IMAGE_SHA,byte_size:IMAGE.length},bytes:IMAGE});
 const textRecord=()=>({record:{state:'STORED_VERIFIED',content_type:'text/plain',sha256:TEXT_SHA},
@@ -621,10 +622,11 @@ test('candidate submission fails closed on a missing project scope, a non-hex re
     await assert.rejects(()=>worker.observeMaterial({run,job,registry,context,input:scoped,token:'s'}),
       /PRIVATE_GATE_CANDIDATE_SCOPE_INVALID/);
   });
-  // A registration without a lowercase sha256-shaped artifact revision cannot
-  // become a Gate candidate revision.
+  // A registration without a lowercase sha256-shaped source_version artifact
+  // revision cannot become a Gate candidate revision.
   for (const spec of [
-    {name:'upper-case revision',overrides:{artifact_revision:'C'.repeat(64)},pattern:/PRIVATE_GATE_CANDIDATE_REVISION_REQUIRED/},
+    {name:'upper-case revision',overrides:{source_version_artifact_revision:'C'.repeat(64)},pattern:/PRIVATE_SOURCE_REGISTRATION_REVISION_INVALID/},
+    {name:'missing source revision',overrides:{source_version_artifact_revision:undefined},pattern:/PRIVATE_SOURCE_REGISTRATION_REVISION_INVALID/},
     {name:'empty source version',overrides:{source_version_id:''},pattern:/PRIVATE_GATE_CANDIDATE_EVIDENCE_REQUIRED/},
   ]) {
     const originalId=id(),projectId=id();

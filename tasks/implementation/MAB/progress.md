@@ -1088,6 +1088,18 @@ M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；下一仍原M5 ST01—04/13类�
 - 代码 SHA `4497cf10b95b0ea0e57aa1ae41f3d67b1431d968`，Actions [41975584235](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/41975584235)：MHKA guard 和 Developer Skill packaging guard **SUCCESS**，后者日志 `DS_DEV_SKILL_LAYOUT_PASS`；**完整 CI FAILURE**，原 M5 `apps/web/lib/studio-research-read.ts` TS2353（46行 `Material.title`）＋两处 TS2451（84/180行 `privateMaterialIds` 复声明）。没有把跳过的 Unit/Build 记 PASS。
 - DS-01 仓库方法源和平台适配 **STATIC_VERIFIED**；DS-02 方法首版 **CODE_PRESENT**；Codex/CodeBuddy 实际宿主触发 **NOT_RUN**；DS-03 真实 M5 连续施工 **NOT_RUN**；DS-04 后续维护 **NOT_STARTED**。详细见 `tasks/results/MAB/DS01_DEV_SKILL_ENVIRONMENT_20261105.md §5`；主 M5/ST-02 与原所有 HOLD 不变。
 
+## 2026-11-07｜第 3 步 M3 独立 Gate 投运（批次 E，本地隔离）
+
+- **Owner 裁决**：Owner 先选"A. 我准备，你签发"，随后就"是否必须人类签发、能否由 gate 规则执行"提问，最终明确选择 **B. 全部规则化机器签**（本地隔离 M5 范围内，接受机器背书风险）。依据 MHKA-00 L24（允许机器 Reviewer，但须合法策略版本 + 可审计复核身份）与 L91（Owner 须指定策略版本、机器 Reviewer 身份、风险升级与回滚）。**此裁决不授权生产 Gate 启用**，G4/G5 的机器签不构成专业判断，人文解释与发布准出仍归 Owner。
+- **新增能力**：机器 Reviewer 身份 `machine-reviewer@mohen.local`（`b0a11000-0000-4000-8000-0000000000a1`，roles=['reviewer']）；专用登录 `mohen_gate_signer_m5_machine`（LOGIN NOINHERIT、仅 `mohen_gate_signer` 成员、19 条只读 RLS、无表直写）；`tools/machine-reviewer-session.mjs`（仅为本身份签 ≤5min 令牌，拒绝为任何他人签，不打印令牌）；`tools/rule-gate-reviewer.mjs`（gate 先序校验 + 7 项检查映射 + 全通过才签，支持 `--dry-run`）；`tests/unit/rule-gate-reviewer.test.ts` 11 项无 DB 用例。
+- **真实签发（本轮 D 链）**：D00 run `eddd1d76…`→G0 `00ef6451…`；D01 run `5ade3712…`→G1；D02 run `b203faa5…`→G2；D03 run `2bd5a537…`→G3 `45f9e081…`；D04 run `7b429685…`→G4 `b440e417…`；D05 run `c8a786f8…`→G5 `c1792c87…`。`tools/verify-3-gate-chain.mjs` = `VERIFY_3_ALL_PASS`（正向 7 候选/7 独立 PASS/7 资格、invalid=0；负向 producer 代签 42501、未签资格 allowed=f）。
+- **资格消费（3.4）**：G0–G5 逐条 `current_qualification_is_valid=true`、`qualification_allows(…,'producer','data-production','m5-remediation','v1')=true`。
+- **撤权演练（3.5/3.6/3.8）**：以机器 Reviewer 身份在事务内 `revoke_gate_qualification`，`blocked_count=1`、`current` true→false、回滚后恢复 true；资格有效性按当前状态派生、无旧 PASS 缓存。**未做永久撤权**（会打断已签链，须 Owner 另行授权重跑）。
+- **机器评审器拦下的真实缺陷（均已修复，非放行）**：① D00 候选错绑 `raw_item` 版本 → 新增 `20261107230000_…source_revision.sql` 暴露 `source_version_artifact_revision`，`private-evidence-stage.mjs` 改绑 `source_version`（`PRIVATE_SOURCE_REGISTRATION_REVISION_INVALID` 失败关闭）；② `control.artifact_revision_for('claim_revision',…)` 恒 null → 原迁移只 grant 未给 RLS 策略，新增 `20261107240000_…claim_revision_artifact_read_policy.sql`；③ 规则评审器 `claim_support` 漏选 `o.byte_size` → 补 `original_bytes`。②③ 若不修，G3 会把真实缺陷误报为 producer 持久化失败并长期卡链。
+- **已知限制（记 HOLD）**：同一 gate/object 多个 `SUBMITTED` 候选时，评审器显式告警并取最新一条；旧候选 `24da0dfb…`（错绑 raw_item 版本）无法撤回，控制面尚无候选撤回能力，需后续补齐 supersede/withdraw。
+- **回归**：`pnpm -r typecheck` 6/6 Done；`pnpm test:unit` 588 pass / 2 skipped；`pnpm test:data-production` 166 pass / 1 fail（仅 `independent-gate-service-runtime.test.mjs` 缺 openssl，DEFERRED_ENV）；`guard:registry` = `REGISTRY_OK`；`guard:gate-enforcement` 仍为既有缺陷（`lineage-validator.mjs:27 QUALIFICATION_CONTEXT_REQUIRED`，与本批无关）。
+- **边界**：全部为本地隔离 PG 与本地文件；未启用生产 Gate、未发外部模型调用、未改真实数据权限、未推送远端。3.6 的生产侧 HTTP 断言随 Web 通道启用后再补。
+
 ## 2026-11-05｜DS-02 开发工具能力映射与安全执行入口（待本批 GitHub CI 核证）
 
 - 用户确认继续沿 **一个 `mohen-dev-continuation`** 深化真实开发能力，绝不机械新增多个 Skill，也不改变 MHKA、既有 MAB 主计划或产品 `skills/`、D/L/G Registry。
