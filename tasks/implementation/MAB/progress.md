@@ -1550,3 +1550,21 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 **环境缺口（`DEFERRED_ENV`，非功能失败）**：全量 `tests/data-production/*.test.mjs` 139/140，唯一失败 `independent-gate-service-runtime.test.mjs` 因本机无 `openssl`（`spawnSync` ENOENT -4058）；未改生产代码绕过。另：`mohen_producer` 为 NOLOGIN 组角色，真实 run 需 `SET ROLE` 模式。
 
 **状态**：第 2 步仍为**部分闭环**，不是 D 链准出，未签任何 G0–G5。未做：2.1 registry 激活（仍 `DESIGN_TARGET_NOT_APPLIED` / `enabled=false`）、D04/D05 执行器与 6 个 2 行桩、`adapter_binding` 在真实 registry 中的指向、H05/W/A/P 方法绑定、L2–L5 候选与 `run.mjs` 端到端。第 3 步独立 Gate、第 4 步受控 Provider、第 5 步八维度均未施工。`M5_OVERALL_HOLD` 不变。`target-diff.csv` 为 M0 路径差异账，本批新增文件不属于 M0 基线路径集合，未新增行；证据以本节与 `tasks/implementation/MAB/LOCAL-BUILD-LEDGER.md` 为准。
+
+### 2026-11-07 第 2 步批次 B（2.1）：registry 隔离激活 + run.mjs 真实 D00/D01 端到端（`VERIFIED_ISOLATED`）
+
+**变更（全部本地隔离，未推送）**：
+- `specs/data-production/production-registry.json` → `ACTIVE_AUTHORIZED` / `activation.enabled=true`（范围仅本地隔离库 M5 复核；`reason` 明确不授权生产部署）。D00 `d00.source-intake` 与 D01 `d01.carrier-reading` `execution_policy.enabled=true/attended=true`，`adapter_binding` → `pipelines/data-production/adapters/private-evidence-adapters.mjs`，`gate_reviewer_binding` → `m5-owner-reviewer-g0g1-producer`；D02–D05 保持禁用。`guard:registry` / `guard:no-legacy-production-entry` / `guard:stage-handoff` 全过（schema 条件校验通过）。
+- `run.mjs`：新增 `--scope-file`（D00 显式 scope 接线，≤8KB JSON 对象）；新增执行授权环境预检 `assertExecutionAuthorityConfigured`（在 import 任何适配器模块之前，修复激活后"先评估适配器后验权"的排序缺口，合同测试 `execution-authorization.test.mjs` 驱动）。
+- `orchestrator/resume-input.mjs`：D01 受信恢复输入接受 D00 产出的 typed scanned-page 请求形态（`page.kind='scanned_page/v1'`，互斥 `extent/quote` 文本形态）。
+- 新迁移 `supabase/migrations/20261107160000_mab_m2_1_producer_run_progress.sql`：`control.production_runs`（RLS 已启用且无策略）对 `mohen_producer` 开 SELECT + 列级 UPDATE（仅 `current_stage/status/finished_at`）+ `producer_run_progress` 策略；run 创建与 scope 仍属控制面。
+- 新工具：`tools/local-execution-authorizer.mjs`（本地隔离执行授权器：Ed25519 签名 stage grant + 本地 HTTPS 一次性 nonce 验证器 + `run` 启动器；**非独立生产执行权威**）、`tools/provision-2-1-local-execution-env.mjs`（producer/private_worker 登录角色、G0/G1 reviewer binding 声明、.env.local 连接串）、`tools/prepare-2-1-run-inputs.mjs`、`tools/verify-2-1-d-chain.mjs`。`selfsigned` 加入 root devDependencies（仅工程脚手架）。
+- 环境操作（Owner 授权后执行）：本地 PG 18 启用 `ssl=on`（本地 CA + server cert，`server.key` ACL 收紧至服务账户，服务已重启）；创建 `mohen_private_worker` 登录角色（仅 MEMBER `mohen_app_runtime`）。`.env.local` 新增 `MOHEN_PRODUCER_DATABASE_URL` / `MOHEN_PRIVATE_WORKER_DATABASE_URL`。
+
+**验证（`VERIFIED_ISOLATED`）**：
+- 真实 `run.mjs` 端到端（本地隔离 PG + 本地原件）：D00 `run_id=3f6d59f2-99f5-46e7-8954-3bdf32f014f3` —— EdDSA 签名 grant + 一次性 nonce 消费 + registry/input digest 全链验证通过；NAJ《松江府志7》登记校验（sha256 匹配、image/jpeg 362221 字节）；候选 ref（raw_item b0a1…0015 / artifact_revision / source_version）真实记录；按合同 HOLD（G0 未签）。D01 `run_id=227cff63-797a-4c69-a78b-8e029dc65408` —— C02 扫描页候选真实落库（read_unit 9e847de9…，locator_hash=sha256，payload_ref 指向私有原件 bin；read_run be31613d… deterministic/UNASSESSED）；幂等复跑（51005de1…）同 read_unit 无重复行。两 run 均 HOLD（G1 未签），`control.production_runs` 行以 producer 身份真实推进。
+- 回归：`pnpm -r typecheck` PASS；`pnpm test:unit` 578 全过（`production-trigger.test.ts` 断言随激活前提更新：未全量启用时 Studio 后台生产仍阻塞，原因 `production_job_disabled`，无 prepare/spawn/run 副作用）；`pnpm test:data-production` 139/140，唯一失败为既有 openssl 缺失（`independent-gate-service-runtime.test.mjs`，`DEFERRED_ENV` 基线不变）。
+
+**既有环境漂移（非本批引入，`DEFERRED_ENV`）**：`guard:naming` 报本地库遗留 C0—C4 时代表（`cultural_*`/`claims`/`entities` 等）未登记 naming-map；`guard:identifiers`/`guard:names` 依赖的 psql 无密码直连在 scram 下不可达。均未在本批修复。
+
+**状态**：2.1 完成（`VERIFIED_ISOLATED`）。第 2 步仍**部分闭环**：未做 2.3 D04/D05 执行器与 6 个 2 行桩、D02–D05 真实接线、L2–L5 候选。未签任何 G0–G5（D00/D01 的 HOLD 属合同预期，待第 3 步独立 Gate 签发）。`M5_OVERALL_HOLD` 不变。`target-diff.csv` 已更新 registry `current_sha256`（38ab739a…）。密钥/凭据位于 `D:/MoHen/keys/execution-auth`，未入库。

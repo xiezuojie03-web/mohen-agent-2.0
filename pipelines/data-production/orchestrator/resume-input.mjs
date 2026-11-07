@@ -7,9 +7,14 @@ const MAX=128*1024;
 const STAGES=new Set(["D01","D02","D03","D04","D05"]);
 const PRIVATE="mohen.private-evidence-stage-request.v1";
 const PRIVATE_FIELDS={
-  D01:new Set(["schema","stage","originalId","extent","quote"]),
+  // D01 accepts either a text-byte-range reading request, or the typed
+  // scanned-page request the bound D00 adapter hands to D01.
+  D01:new Set(["schema","stage","originalId","extent","quote","page"]),
   D02:new Set(["schema","stage","originalId","evidenceId","readUnitId","extent","quote","extentOrder"]),
   D03:new Set(["schema","stage","originalId","evidenceId","claimRevisionId","supportType"]),
+};
+const PRIVATE_SHAPE={
+  D01(value){return value.extent||value.quote?"text":value.page?"scanned_page":"invalid";},
 };
 export function loadTrustedResumeInput({stage,filePath,trustedDirectory}={}){
   if(stage==="D00"){
@@ -56,6 +61,18 @@ export function loadTrustedResumeInput({stage,filePath,trustedDirectory}={}){
     const keys=PRIVATE_FIELDS[stage];
     if(!keys||value.stage!==stage||Object.keys(value).some(k=>!keys.has(k)))
       throw Error("PRIVATE_EVIDENCE_RESUME_SHAPE_INVALID");
+    const shape=PRIVATE_SHAPE[stage];
+    if(shape){
+      // D01: exactly one request shape — a text byte range (extent+quote) or
+      // the typed scanned-page locator produced by the bound D00 adapter.
+      const kind=shape(value);
+      if(kind==="invalid"||kind==="text"&&(!value.extent||!value.quote)||
+         kind==="scanned_page"&&(value.extent||value.quote))
+        throw Error("PRIVATE_EVIDENCE_RESUME_SHAPE_INVALID");
+      if(kind==="scanned_page"&&(value.page?.kind!=="scanned_page/v1"||
+         !Number.isSafeInteger(value.page?.page_number)))
+        throw Error("PRIVATE_EVIDENCE_RESUME_SHAPE_INVALID");
+    }
   }
   // The independent signed execution grant later binds executionDigest(value),
   // current Registry, job, mode and one-use nonce. This file alone is inert.

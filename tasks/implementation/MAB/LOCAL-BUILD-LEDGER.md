@@ -10,7 +10,7 @@
 | 步 | 目标 | PLAN 依据 | 状态 |
 |---|---|---|---|
 | 1 | M2 底座：studio schema 全表 + 私有原件 + L0→L1→L2 真实链（含 13 类资产） | PLAN §3.2 / §5-M2 | ✅ 闭环（1.1–1.10 全完成） |
-| 2 | M3 真实 D 链：production-registry 激活 + M5 实际方法唯一绑定 + D00–D05 真实执行 | PLAN §3.3 | 🔵 进行中（批次 A：2.2 绑定收敛、2.3 的 D00 + D01 C02 垂直切片已落地；2.1/2.4–2.9 待补） |
+| 2 | M3 真实 D 链：production-registry 激活 + M5 实际方法唯一绑定 + D00–D05 真实执行 | PLAN §3.3 | 🔵 进行中（批次 B：2.1 registry 隔离激活 + run.mjs D00/D01 真实端到端已落地（VERIFIED_ISOLATED，G0/G1 未签按合同 HOLD）；2.3 D04/D05、2.4–2.9 待补） |
 | 3 | M3 独立 Gate：真实 Reviewer 投运 + G0–G5 签发/撤权/当前消费 | PLAN §3.3 | ⬜ 待施工 |
 | 4 | M4 受控 Provider 执行器（B 线）：正道解阻断 + 真实派发/费用/Receipt | PLAN §3.4 | ⬜ 待施工 |
 | 5 | M5 八维度完整闭环：ST-01→ST-09 同一真实作品 + Owner 亲自体验 | PLAN §3.5 / 八维矩阵 | ⬜ 待施工 |
@@ -26,9 +26,9 @@
 - ✅ **1.10 HTTP 正反**：复用 `GET /api/studio/attachments?original_id=` 私有原件下载端点，新增本地文件系统存储后端（`createLocalPrivateOriginalStorage`，与 Supabase 版同 key/同 SHA 校验/fail-closed），并在本地 provision M1 身份验签链（`MOHEN_DATABASE_SESSION_SECRET` + `control.session_verification_keys`）。字节层正反 + 身份层正反（有效 Owner token → 可见 2 原件；无/无效/跨 owner token → 0 行）全部 PASS。
 
 ### 第 2 步 · M3 真实 D 链（当前最大断点群）
-- ⬜ 2.1 production-registry 激活：`status=DESIGN_TARGET_NOT_APPLIED`、`activation.enabled=false` → 需对 M5 真实作品范围激活（非全量生产）。
+- ✅ 2.1 production-registry 隔离激活（`VERIFIED_ISOLATED`）：`ACTIVE_AUTHORIZED` / `enabled=true`，D00+D01 enabled/attended、绑定私有适配器与 reviewer binding，D02–D05 保持禁用；PG 启用 SSL；producer/private_worker 登录角色 + 列级 run 进度授权（迁移 20261107160000）；本地执行授权器（Ed25519 grant + HTTPS 一次性 nonce 验证器）首次跑通 run.mjs D00/D01 真实端到端（候选落库、幂等复跑无重复、按合同 HOLD 待 G0/G1）。
 - 🔵 2.2 方法唯一绑定（部分闭环）：`specs/data-production/method-binding-contract.json` 已收敛为 `M5_ISOLATED_PARTIAL_BINDING`——63 方法中 `C01 → D01:draftTextReading`、`C02 → D01:readScannedPage` 绑定可执行体，其余 61 个显式 `HOLD` + `hold_reason`，**无 `TO_VERIFY_IN_M0` 残留**。M5 全景仍需绑定 D02=H05、D03=W、D04=A、D05=P（随各阶段施工时绑定并做正反测试）。
-- 🔵 2.3 D 链执行器（部分闭环）：`private-evidence-adapters.mjs` 已重写——`D00:privateSourceIntakeAdapter()` 真实来源获取、D01 scanned-page 路由 `readScannedPage`，D01–D03 其余动作沿用；`D04/D05` 仍 `inactiveStage`（HOLD）。`production-registry` 未激活（2.1），6 个 executor 的 2 行桩未动，`adapter_binding` 尚未在真实 registry 指向私有适配器。
+- 🔵 2.3 D 链执行器（部分闭环）：`private-evidence-adapters.mjs` 已重写——`D00:privateSourceIntakeAdapter()` 真实来源获取、D01 scanned-page 路由 `readScannedPage`，D01–D03 其余动作沿用；D00/D01 的 `adapter_binding` 已在真实 registry 指向私有适配器（2.1）；`D04/D05` 仍 `inactiveStage`（HOLD），6 个 executor 的 2 行桩未动。
 - ⬜ 2.4 L0–L5 候选真实产出：D 链跑通后各层候选（含 L3 world_claim、L4 humanistic_finding、L5 projection/seed）。
 
 ### 第 3 步 · M3 独立 Gate
@@ -61,12 +61,12 @@
 - [x] 1.10 HTTP 正反：本地文件系统后端读私有原件字节（正例 SHA 回读一致=200 逻辑）；有效 Owner token → RLS 可见 2 原件；无/无效/跨 owner token → 0 行（401/404 逻辑）
 
 ### 第 2 步 · M3 真实 D 链（自检 9 项）
-> 勾选口径：必须 `run.mjs` 真实 D 链端到端产出候选才算闭环。2026-11-07 批次 A 只完成"代码 + 隔离 PG 垂直切片"（`VERIFY_2_A_ALL_PASS`），故 2.2–2.5 仍保持未勾选，仅标注已达成的部分。
-- [ ] 2.1 registry 激活：production-registry.json `status` → 激活态、`enabled=true`（M5 作品范围），run.mjs 不再报 `REGISTRY_NOT_ACTIVE`
+> 勾选口径：必须 `run.mjs` 真实 D 链端到端产出候选才算闭环。2026-11-07 批次 B 完成 2.1 + D00/D01 经 run.mjs 真实端到端（签名授权 + nonce 消费 + 候选落库 + 合同 HOLD）。
+- [x] 2.1 registry 激活：production-registry.json `status` → 激活态、`enabled=true`（M5 作品范围），run.mjs 不再报 `REGISTRY_NOT_ACTIVE`
 - [ ] 2.2 方法绑定：M5 实际方法（C02/H05 + 选定 W/A/P）`implementation_binding` → 具体 executable；其余方法登记 HOLD（不残留 TO_VERIFY_IN_M0）— 🔵 部分：C01/C02 已绑定、61 HOLD、0 残留；H05/W/A/P 待绑定
-- [ ] 2.3 适配器指向：`adapter_binding` 指向真实私有证据适配器（非金泽 layer1 默认），D00/D04/D05 补齐 — 🔵 部分：D00 与 D01 C02 已实现；D04/D05 仍 inactive，registry 未激活
-- [ ] 2.4 D00 来源获取：真实 NAJ 来源→原件字节→L0 候选（G0 待签）— 🔵 部分：worker/适配器 + 隔离 PG 已通，未接入 run.mjs
-- [ ] 2.5 D01 载体读取：C02 → L1 read_unit（G1 待签）— 🔵 部分：隔离 PG 已真实落 `source.read_runs`/`read_units(C02)`，未接入 run.mjs
+- [ ] 2.3 适配器指向：`adapter_binding` 指向真实私有证据适配器（非金泽 layer1 默认），D00/D04/D05 补齐 — 🔵 部分：D00/D01 已在 registry 指向私有适配器且端到端跑通；D04/D05 仍 inactive
+- [ ] 2.4 D00 来源获取：真实 NAJ 来源→原件字节→L0 候选（G0 待签）— 🔵 部分：run.mjs 真实端到端已通（run 3f6d59f2…，候选 ref 记录，G0 未签 HOLD）；L0 候选引用沿用 M5 已落库登记
+- [ ] 2.5 D01 载体读取：C02 → L1 read_unit（G1 待签）— 🔵 部分：run.mjs 真实端到端已通（run 227cff63…，read_unit 9e847de9… 落库，幂等复跑无重复，G1 未签 HOLD）
 - [ ] 2.6 D02 材料理解：H05 → L2 material_observation（G2 待签）
 - [ ] 2.7 D03 世界建构：W 方法 → L3 world_claim（G3 待签）
 - [ ] 2.8 D04 人文发现：A 方法 → L4 humanistic_finding（G4 待签）
@@ -121,11 +121,12 @@
 - **关键环境事实**：
   - 本地 PostgreSQL 18（D:\MoHen\tools\PostgreSQL\18，监听 5432）是唯一真相源；`.env.local` 已配 DATABASE_URL / DEEPSEEK_API_KEY 等（不读取/记录值）。
   - 私有原件存储：本地文件系统 `D:/MoHen/data/private_originals`（Supabase Storage 本地不可用，用文件系统替代，SHA 回读）。
-  - D 链框架文件仍未整体激活：registry `DESIGN_TARGET_NOT_APPLIED`；6 executor 仍是 2 行桩；`private-evidence-adapters.mjs` 现已支持 D00 + D01–D03（D01 含 C02 扫描页），D04/D05 仍 inactive；`layer1-adapters.mjs` 默认金泽主题；本批为隔离本地施工，未推送、未生产启用。
-  - `mohen_producer` 是 NOLOGIN 组角色，真实 run 需 `SET ROLE` 模式；本机无 `openssl` 可执行文件（CI Ubuntu 通常具备）。
-  - Gate：DB 层 `control.sign_gate_candidate`/`revoke_gate_qualification`/`qualification_allows` 已存在；web 侧 `revokeGate` 被禁用、`signWorkPublication` 可用。
+  - D 链框架：registry 已 `ACTIVE_AUTHORIZED`（批次 B，仅 D00/D01 enabled/attended，D02–D05 禁用）；6 executor 仍是 2 行桩；`private-evidence-adapters.mjs` 支持 D00 + D01–D03（D01 含 C02 扫描页），D04/D05 仍 inactive；本批为隔离本地施工，未推送、未生产启用。
+  - 本地 PG 已启用 SSL（本地 CA，`server.key` ACL 收紧至服务账户）；`mohen_producer` 与 `mohen_private_worker` 已是 LOGIN 角色（连接串在 `.env.local`，仅隔离库）；本地执行授权器密钥在 `D:/MoHen/keys/execution-auth`（未入库）。
+  - 本机无 `openssl` 可执行文件（CI Ubuntu 通常具备；`independent-gate-service-runtime.test.mjs` 因此 `DEFERRED_ENV`）。
+  - Gate：DB 层 `control.sign_gate_candidate`/`revoke_gate_qualification`/`qualification_allows` 已存在；reviewer binding 声明 `m5-owner-reviewer-g0g1-producer`（G0/G1, producer）已登记，但独立 Gate 服务未投运、未签任何 G；web 侧 `revokeGate` 被禁用、`signWorkPublication` 可用。
   - M4：7 工具 registry（内部 credit）、`transferRightsDecision=DENIED`、`directorExternalProcessingBlocker` 恒阻断；4 个 studio repository 存在。
-- **剩余**：第 2 步收尾（2.1 registry 激活、2.3 D04/D05/executor/registry `adapter_binding`、2.4–2.9 L0–L5 真实候选与 `run.mjs` 端到端）→ 第 3 步 M3 Gate → 第 4 步 M4 Provider → 第 5 步 M5 八维度闭环。
+- **剩余**：第 2 步收尾（2.2 H05/W/A/P 绑定、2.3 D04/D05、2.6–2.9 L2–L5 真实候选与 `run.mjs` 端到端）→ 第 3 步 M3 Gate → 第 4 步 M4 Provider → 第 5 步 M5 八维度闭环。
 
 ## 五、施工历史（每次施工追加一行）
 
@@ -135,3 +136,4 @@
 - 2026-11-07：第 1 步 1.10 完成——新增本地私有原件存储后端 + route 按环境选择 + 本地 provision M1 身份验签链；字节层/身份层正反全部 PASS；**第 1 步（M2 底座）完整闭环**。
 - 2026-11-07：第 2 步批次 A 前置核查——只读确认本地隔离库有 2 张 `STORED_VERIFIED` JPEG、NAJ source/version、2 条 raw_items，但旧 read_runs 未正确绑定 raw_item、`read_units_c02=[]`；故第 1 步 L1 行不能算真实 D01 C02 产出。
 - 2026-11-07：第 2 步批次 A 完成——新增 `20261107120000` 迁移（D00 L0 登记查询 + D01 C02 扫描页持久化）、两个仓储、组合根/运行时接线、D00/D01 适配器与正反单测；方法绑定收敛 2/61/63；隔离 PG `VERIFY_2_A_ALL_PASS`、定向 26/26、全量 unit 578/578、typecheck PASS。**第 2 步仍为部分闭环**（2.1、D04/D05、2.4–2.9 未施工；未签 G0/G1）。
+- 2026-11-07：第 2 步批次 B 完成（2.1）——registry 隔离激活（ACTIVE_AUTHORIZED，仅 D00/D01 enabled/attended + 私有适配器 + reviewer binding）；run.mjs 加 `--scope-file` 与执行授权预检（先于适配器 import）；resume-input 接受 D00 typed 扫描页请求；迁移 `20261107160000`（producer 列级 run 进度授权 + RLS 策略）；本地 PG 启用 SSL + producer/private_worker 登录角色；新工具 local-execution-authorizer / provision / prepare / verify。**run.mjs D00/D01 真实端到端首通**（签名 grant + 一次性 nonce + 候选落库 + 幂等复跑 + 合同 HOLD）；unit 578/578、DP 139/140（唯一失败为既有 openssl `DEFERRED_ENV`）。**2.1 闭环（VERIFIED_ISOLATED）**，第 2 步仍部分闭环。

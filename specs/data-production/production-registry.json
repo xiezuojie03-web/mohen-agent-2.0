@@ -2,10 +2,10 @@
   "schema": "mohen.production-registry",
   "schema_version": "4.0-target",
   "architecture_generation": "mohen.six-stage.v1",
-  "status": "DESIGN_TARGET_NOT_APPLIED",
+  "status": "ACTIVE_AUTHORIZED",
   "activation": {
-    "enabled": false,
-    "reason": "K3 local migration: independent execution authority and least-privilege DB verification pending; historical sample evidence does not activate this generation."
+    "enabled": true,
+    "reason": "M5 isolated local activation (MAB step 2.1): owner-authorized remediation scope on the local isolated database, D00+D01 only via the bound private-evidence adapters and the local execution authorizer; D02-D05 remain disabled and production deployment is not authorized by this status."
   },
   "authority": [
     "governance/C2_MoHen_Humanistic_Data_OS_and_Dual_Skill_Architecture_V1.3.md",
@@ -33,8 +33,8 @@
       "implementation": {
         "skill": "mohen-source-intake",
         "executor": "pipelines/data-production/executors/d00-source-intake.mjs",
-        "adapter_binding": "pipelines/data-production/adapters/layer1-adapters.mjs",
-        "gate_reviewer_binding": "TO_VERIFY_IN_M0"
+        "adapter_binding": "pipelines/data-production/adapters/private-evidence-adapters.mjs",
+        "gate_reviewer_binding": "m5-owner-reviewer-g0g1-producer"
       },
       "inputs": [
         "research_intent",
@@ -53,8 +53,8 @@
       "method_binding": "specs/data-production/method-binding-contract.json",
       "methods": [],
       "execution_policy": {
-        "enabled": false,
-        "attended": false,
+        "enabled": true,
+        "attended": true,
         "unattended": false,
         "batch": false,
         "interactive": false,
@@ -96,8 +96,8 @@
       "implementation": {
         "skill": "mohen-carrier-reading",
         "executor": "pipelines/data-production/executors/d01-carrier-reading.mjs",
-        "adapter_binding": "pipelines/data-production/adapters/layer1-adapters.mjs",
-        "gate_reviewer_binding": "TO_VERIFY_IN_M0"
+        "adapter_binding": "pipelines/data-production/adapters/private-evidence-adapters.mjs",
+        "gate_reviewer_binding": "m5-owner-reviewer-g0g1-producer"
       },
       "inputs": [
         "typed_artifact_refs",
@@ -128,8 +128,8 @@
         "C08"
       ],
       "execution_policy": {
-        "enabled": false,
-        "attended": false,
+        "enabled": true,
+        "attended": true,
         "unattended": false,
         "batch": false,
         "interactive": false,

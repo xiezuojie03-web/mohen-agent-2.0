@@ -14,6 +14,22 @@ export function consumeAuthorizedStageHandoff({registry,job,run,input}) {
     proof.inputDigest === executionDigest(input);
 }
 
+export function assertExecutionAuthorityConfigured(tokens, environment = process.env) {
+  // Cheap pre-flight before the CLI imports any adapter module: the full
+  // per-stage grant verification still happens in assertStageExecutionAuthorized.
+  const parsed = typeof tokens === "string" ? JSON.parse(tokens) : tokens;
+  if (!parsed || typeof parsed !== "object" || Object.values(parsed).some(v => typeof v !== "string"))
+    throw Error("EXECUTION_SIGNED_GRANT_MISSING");
+  const url = environment.MOHEN_EXECUTION_AUTH_VERIFY_URL;
+  if (typeof url !== "string" || !/^https:\/\/.+/.test(url))
+    throw Error("EXECUTION_TRUSTED_VERIFIER_NOT_CONFIGURED");
+  const credential = environment.MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL;
+  if (typeof credential !== "string" || credential.length < 32)
+    throw Error("EXECUTION_TRUSTED_VERIFIER_NOT_CONFIGURED");
+  if (typeof environment.MOHEN_EXECUTION_AUTH_PUBLIC_KEY !== "string")
+    throw Error("EXECUTION_TRUSTED_VERIFIER_NOT_CONFIGURED");
+}
+
 /** Canonical digest shared with the independent authorizer, never a caller-supplied digest. */
 export function executionDigest(value) {
   function canonical(x) {

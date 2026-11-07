@@ -57,7 +57,10 @@ test("CLI cannot evaluate an adapter module before checking execution authorizat
     fs.writeFileSync(adapter, `import fs from 'node:fs'; fs.writeFileSync(${JSON.stringify(marker)},'bad'); export const adapters = {};`);
     const child = spawnSync(process.execPath, ["pipelines/data-production/run.mjs", "--intent", "deny before import", "--adapters", adapter], { cwd: root, encoding: "utf8" });
     assert.notEqual(child.status, 0);
-    assert.match(child.stderr, /REGISTRY_NOT_ACTIVE/);
+    // The M5 isolated activation made the registry ACTIVE_AUTHORIZED, so the
+    // CLI now fails closed on the missing independent execution authority
+    // before importing any adapter module.
+    assert.match(child.stderr, /EXECUTION_SIGNED_GRANT_MISSING/);
     assert.equal(fs.existsSync(marker), false);
   } finally { fs.rmSync(temp, { recursive: true, force: true }); }
 });
