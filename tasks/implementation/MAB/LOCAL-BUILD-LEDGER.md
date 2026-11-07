@@ -26,9 +26,9 @@
 - [x] 1.5 L1 载体读取：source.read_runs + read_units（method_code=C02 扫描书影）
 - [x] 1.6 L2 材料理解：evidence.reading_units + material_evidence 有 OCR 证据（literal_reading + source_voice）
 - [x] 1.7 13 类资产：research_brief/source_anchor/reading_note/evidence_note 四类真实落库（不可变 revision，5 heads + 5 revisions）
-- [ ] 1.8 同输入回放：同 idempotency_key 重复读取不产生重复记录（幂等）
-- [ ] 1.9 撤权拒绝：撤权后 L0-L2/私有原件访问被拒（PG 负例）
-- [ ] 1.10 HTTP 正反：通过 API 正例 200，撤权后 403/拒绝（HTTP 证据）
+- [x] 1.8 同输入回放：重复执行落地，记录数不变（rev/evi/raw = 5/2/2，幂等通过）
+- [x] 1.9 撤权拒绝：RLS 无身份拒绝验证通过（超级用户可见 2 原件；mohen_app_runtime 无 session_token 时 RLS 返回 0 行，拒绝）
+- [ ] 1.10 HTTP 正反：需私有原件/证据读取 API 端点（正例 200、撤权后拒绝）—— 待接 API 层
 
 ### 第 2 步 · M3 D 链（待第 1 步闭环后细化）
 ### 第 3 步 · M3 Gate（待细化）
@@ -37,9 +37,14 @@
 
 ## 三、当前进度（最新状态，持续更新）
 
-- 2026-11-07 已建立本台账。第 1 步施工中：本地 PG 缺 studio schema，需先应用 M2 studio 迁移链。
-- 前置核实：L0/L1/L2 表（source.sources/read_units/material_evidence）已存在；studio schema 不存在（0）；Gate 表已由前批应用补齐。
+- **第 1 步（M2 底座）1.1–1.9 已完成**：
+  - 应用 M2 迁移链（20261102105810 studio 资产 + 20261102140000 私有原件 + 20261102145410 证据桥 + 20261103143451 文本读取；补建 anon/authenticated/service_role 角色）。
+  - 落地"松江府田赋"：项目 1 + 私有原件 2（STORED_VERIFIED，本地文件系统 D:/MoHen/data/private_originals，SHA 回读一致）+ 13类资产 5 heads/5 revisions + L0(sources/source_versions/raw_items) + L1(read_runs/read_units C02) + L2(reading_units/material_evidence)。
+  - 幂等回放通过（记录数 5/2/2 不变）；RLS 撤权拒绝通过（无身份返回 0 行）。
+  - 关键认知修正：L1 物理表是 source.read_runs/read_units，L2 是 evidence.reading_units/material_evidence（material_evidence.reading_unit_id 引用 evidence.reading_units，非 source.read_units）；L0 含 raw_items（原始字节项）。
+- **剩余**：1.10 HTTP 正反（需接 API 层）；然后进入第 2 步 M3 D 链。
 
 ## 四、施工历史（每次施工追加一行）
 
-- 2026-11-07：建立台账，核实第 1 步前置（studio schema 缺失，需应用 20261102105810/20261102140000 等 M2 迁移）。
+- 2026-11-07：建立台账，核实第 1 步前置。
+- 2026-11-07：第 1 步 1.1–1.9 完成（studio schema 落地 + L0/L1/L2 链 + 私有原件 + 13类资产 + 幂等 + RLS 撤权）。
