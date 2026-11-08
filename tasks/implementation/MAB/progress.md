@@ -1702,3 +1702,13 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 **回归**：`pnpm test` 622 passed / 10 failed / 2 skipped，与既有基线一致（9 项既有失败 + shl-materials K2 联网 flaky，单跑 PASS），零本批引入失败。提交 `291fbfc`。
 
 **证据边界（诚实声明）**：HTTP 链路用本地 dev 服务器 + 本地真实 PG 验证，属隔离环境；维度 1/2 的浏览器渲染交互归 5.9 Owner 亲验。**状态**：维度 1–8 全部机器验证闭环（隔离）；仅剩 5.9 Owner 亲自体验签收（台账 §5.9 白话清单已备），`M5_OVERALL_HOLD` 不变。
+
+### 2026-11-08 批次 L（工程债）：补推本地提交 + 远端 CI 真结论 + 全量套件回绿 + 状态源回写（`VERIFIED_ISOLATED`）
+
+**变更（`CODE_PRESENT`）**：提交 `3f8cc1b`。① `tasks/implementation/MAB/target-diff.csv` 去除 UTF-8 BOM（表头首列曾成为不可见的 `\uFEFFpath`）；② `vitest.config.ts` 补齐 `next/server`、`next/headers` 别名，与 `vitest.unit.config.ts` 同源；③ `tests/setup/db-guard.ts` 不再 import data-access（该包导入时把 `.env.local` 全量键写入 `process.env`，而 setup 先于所有测试执行），改为只读 `DATABASE_URL` 字面值、不做 env 注入；④ `tests/unit/studio-original-attachment-route.test.ts` 固定 `MOHEN_PRIVATE_ORIGINAL_LOCAL_FS=false`；⑤ `tests/integration/publish-gate.test.ts` 收敛为 G5 收紧后的失败关闭契约。
+
+**推送与远端 CI（真实结论，取自 GitHub Actions REST）**：本地 26 个提交补推 `d1cf3fc..99a33a2`。`99a33a2`：`ci` 42442455790 **FAILURE**（唯一失败步骤为 MAB 74 目标交接审计，报 `HANDOFF_CSV_INVALID_HEADER`）；`MAB isolated PostgreSQL 17 verification` 42442455901 SUCCESS；`MAB M1 isolated authenticated HTTP acceptance` 42442455811 SUCCESS。根因修复后 `3f8cc1b` 的 `ci` 42444946341 **SUCCESS**（11 步骤全通过）。
+
+**回归**：`pnpm test` **668 passed / 0 failed / 2 skipped**（84 文件通过、2 跳过，`real_db_untouched=YES`）——此前长期记账的 10 项失败全部处置，且**未 skip、未放宽断言**；`pnpm test:unit` 606 通过 / 0 失败；`pnpm -r typecheck` 6/6；`pnpm build` 通过；Playwright 规格解析 25 条 / 8 文件；auth coverage strict routes=110、public=18、protected=92、missing=0。
+
+**证据边界（诚实声明）**：CI 结论为远端 Actions 实际 run 结果，非本地推断；`tests/data-production/independent-gate-service-runtime.test.mjs` 因本机 Windows 缺 `openssl` CLI 记 `DEFERRED_ENV`（远端 CI 该步骤通过）；7 个 `guard:*` 在本地为红且不在 CI 范围，已如实记入 `CURRENT.md` 未关闭事项，未并入本次绿灯结论。**状态**：工程基线恢复绿灯；`M5_OVERALL_HOLD` 不变，5.9 Owner 体验签收仍为唯一剩余项。
