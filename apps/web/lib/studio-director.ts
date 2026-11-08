@@ -50,21 +50,36 @@ export interface CreatedPlan {
   finding: H1Finding;
 }
 
+/** The project binding is additive and may not yet be installed in production.
+ * Read it through information_schema so callers can HOLD before a paid model call. */
+export async function isDirectorPlanProjectBindingReady(): Promise<boolean> {
+  const rows = await queryRows(
+    `select exists (
+       select 1 from information_schema.columns
+        where table_schema='public' and table_name='director_plans' and column_name='project_id'
+     ) as ready`
+  );
+  const ready = rows[0]?.ready as unknown;
+  return ready === true || ready === "true" || ready === "t";
+}
+
 /** 生成 A/B 导演方案（H1→H2）并持久化，返回 plan_id。P0-1：方案归属创建者。
  * opts.facts 存在时走 M5 正道（项目真实材料 + dispatcher grant auth）；
- * sourceIds 服务端持久化到 plan 行，供后续 select/panels 逐来源权利核验。 */
+ * sourceIds与projectId由服务端持久化，供后续逐项目/逐来源权利核验。 */
 export async function createDirectorPlan(
   brief: string,
   topic = "jinze",
   ownerUserId: string,
   opts?: { auth?: unknown; facts?: string[]; sourceIds?: string[]; projectId?: string }
 ): Promise<CreatedPlan | null> {
+  if (typeof opts?.projectId !== "string" || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(opts.projectId))
+    throw new Error("STUDIO_PROJECT_BINDING_REQUIRED");
+  if (!(await isDirectorPlanProjectBindingReady()))
+    throw new Error("STUDIO_PROJECT_BINDING_MIGRATION_REQUIRED");
   const result = opts?.facts
     ? await generateDirectorPlansFromFacts(opts.facts, brief, opts.auth)
     : await generateDirectorPlans(brief, topic, opts?.auth);
   if (!result) return null;
-  if (typeof opts?.projectId !== "string" || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(opts.projectId))
-    throw new Error("STUDIO_PROJECT_BINDING_REQUIRED");
   const planId = await queryValue("select gen_random_uuid()::text");
   await run(
     `insert into public.director_plans (plan_id, brief, topic, plan_a, plan_b, facts, finding, owner_user_id, source_ids, project_id)

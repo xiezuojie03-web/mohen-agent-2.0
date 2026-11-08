@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createDirectorPlan, prepareProjectDirectorInput } from "../../../../lib/studio-director";
+import { createDirectorPlan, isDirectorPlanProjectBindingReady, prepareProjectDirectorInput } from "../../../../lib/studio-director";
 import { readStudioResearchProject } from "../../../../lib/studio-research-read";
 import { grantForStudioLlm, listProjectSourceIds } from "../../../../lib/studio/dispatch-grant";
 import { guardRoute } from "../../../../lib/guard";
@@ -39,6 +39,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ok:false,reason:"project_id_invalid"},{status:400,headers:{"Cache-Control":"no-store"}});
     const sessionToken = signDatabaseSessionToken(session);
     if (typeof delegationId === "string" && delegationId) {
+      if (!(await isDirectorPlanProjectBindingReady()))
+        return NextResponse.json({ok:false,state:"HOLD",reason:"project_binding_migration_required"},
+          {status:409,headers:{"Cache-Control":"no-store"}});
       try {
         const sourceIds = await listProjectSourceIds(projectId, sessionToken);
         const outcome = await grantForStudioLlm({
