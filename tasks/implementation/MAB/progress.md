@@ -1945,4 +1945,17 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 4. 登记 `source_version`/`raw_item`（provider=`shanghai-library`，沿用 CP2-C 的显式许可），再跑 D00—D05 与 G0—G5 基线；
 5. 采集器实现必须内置 `state=-1` 限流识别、串行节流、繁体词表与"原文不改字"约束。
 
+### CP2-E 第一步实测（2026-11-08）：接口元数据链路通，逐页取字节今天返回空
+
+新增 `tools/fetch-shl-original.mjs`（串行+节流+限流识别+只认真字节），实测结果：
+
+| 动作 | 结果 |
+|---|---|
+| `pdf/list`（dbname=gj, title=松江） | **通**：2026 版形状 `data[]={id,title,dbname,items:[{id,value}]}`，检索到 `[崇禎]松江府志九十四卷`(id 27188)、`[崇禎]松江府志五十八卷`、`[正德]松江府志三十二卷`×3，`total=6` |
+| `pdf/info`（value=`787979-88`） | **通**：`data.isDownload=0`、`items[0]={value:"14373",name:"复本1",pageCount:1845,catalogue:[…]}` —— 与既有档案的 itemId `14373` 完全一致 |
+| `pdf/stream`（itemId=14373，pageNo 0/1/2/5/20，POST；itemId 传字符串与数字、附 `value`/`type`、GET 形式） | **全部 HTTP 200 + 0 字节**；GET 返回 405（说明端点存在、只收 POST）；mgts 另一本书同样 0 字节 → 属**账号/页配额层**问题，不是某本书没全文，也不像权限拒绝 |
+| 既有成果可用性 | **沪上经纬 `data\archive\.gaz_pages\gj_14373\` 有 1,845 个逐页 PDF（合计 694,902,784 字节，单页最大 954,368 字节，均 < 10 MiB 上限）**，即同一 itemId 的逐页真实字节早已下载成功（2026-09-14，`gazetteer_manifest_20260914.json` 在册）；另有整本合并版 685 MB |
+
+**处理决定**：CP2-E 先**复用已落地的 SHL 逐页 PDF**（来源=上图开放数据 `pdf/stream`，itemId 14373），不重复触网、不撞配额；`pdf/stream` 今日空正文只记作"待观察（疑似 24 小时页配额）"，不写成"上图不给全文"。
+
 
