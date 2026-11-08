@@ -22,10 +22,12 @@ it('refuses a foreign/inactive project without returning its snapshot',async()=>
  mocks.prepare.mockRejectedValue(Error('STUDIO_PROJECT_NOT_FOUND'));
  const response=await POST(request({brief:'brief',project_id:project}));expect(response.status).toBe(404);expect(await response.json()).toEqual({ok:false,reason:'STUDIO_PROJECT_NOT_FOUND'});
 });
-it('keeps legacy requests reachable while explaining missing transfer authority',async()=>{
- mocks.create.mockResolvedValue(null);
- const response=await POST(request({brief:'legacy',topic:'jinze'}));expect(response.status).toBe(409);expect(await response.json()).toMatchObject({ok:false,state:'HOLD',reason:'external_processing_not_authorized'});
+it('holds unscoped legacy requests before model generation or persistence',async()=>{
+ const response=await POST(request({brief:'legacy',topic:'jinze'}));
+ expect(response.status).toBe(409);
+ expect(await response.json()).toMatchObject({ok:false,state:'HOLD',reason:'project_scope_required'});
  expect(mocks.prepare).not.toHaveBeenCalled();
+ expect(mocks.create).not.toHaveBeenCalled();
 });
 
 it('binds the saved director plan and every Grant to the selected project',async()=>{

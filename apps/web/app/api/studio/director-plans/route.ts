@@ -77,20 +77,8 @@ export async function POST(req: Request) {
       const response = studioAssetFailure(error); response.headers.set("Cache-Control", "no-store"); return response;
     }
   }
-  const created = await createDirectorPlan(
-    brief.trim(),
-    typeof topic === "string" ? topic : "jinze",
-    session.uid
-  );
-  if (!created) {
-    return NextResponse.json({ ok: false, state: "HOLD", reason: "external_processing_not_authorized", missing_requirements: ["PROJECT_SOURCE_SNAPSHOT", "CURRENT_EXTERNAL_PROCESSING_RIGHTS", "CONTROLLED_PROVIDER_PURPOSE_INPUT_CONTEXT", "AUTHORIZED_SPEND"] }, {status:409,headers:{"Cache-Control":"no-store"}});
-  }
-  return NextResponse.json({
-    ok: true,
-    plan_id: created.planId,
-    planA: created.planA,
-    planB: created.planB,
-    facts: created.facts,
-    finding: created.finding,
-  });
+  // Legacy unscoped requests cannot create or dispatch a DirectorPlan.
+  // Require an Owner project before any external processing or persistence.
+  return NextResponse.json({ok:false,state:"HOLD",reason:"project_scope_required"},
+    {status:409,headers:{"Cache-Control":"no-store"}});
 }
