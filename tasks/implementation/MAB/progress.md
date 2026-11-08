@@ -1823,3 +1823,39 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 4. 完成集成环境备份/恢复实测（本地 PG 与 private_originals 一致恢复），形成 CP1 交付证据。
 5. 未在 CP0 关闭任何 QR，M5 继续 `M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY`；无生产迁移、无正式 Gate 启用、无公开发布。
 
+## CP1 持久环境与 M1/M2（2026-11-08，本地隔离 · 已停点待 Owner 继续）
+
+### 已完成（均有真实 PG/磁盘/命令行证据）
+
+1. **工具链**：会话内 `PATH` 加入 `D:\Program Files\Git\usr\bin`（openssl 3.5.7）与 `D:\MoHen\tools\PostgreSQL\18\bin`（psql 18.6），未写系统级 PATH，不污染全局环境。
+2. **迁移前快照**：`pg_dump` custom 格式 → `D:\MoHen\data\snapshots\mohen_dev_before_cp1_20261108_192628.dump`（726KB）。属运行数据，不入 Git；CP1 验收后清理。
+3. **未落库迁移补齐**：应用 `supabase/migrations/20261108100000_mab_m5_director_plan_project_binding.sql` 到 `mohen_dev`。核实：`director_plans.project_id` 可空、外键 `REFERENCES studio.projects(project_id) ON DELETE RESTRICT`、局部索引存在。
+4. **旧计划不推测回填**：`director_plans` 共 20 条，`project_id` 绑定 0 条、全为 NULL；且 `source_ids` 全为 `[]`。两条闸门叠加 → 路由在**铸 Grant 之前**返回 409 `director_plan_project_binding_missing`，`grantForStudioLlm` 亦因无项目/无来源拒绝，未产生任何 Provider 调用或费用。
+5. **新工具 `tools/check-env-parity.mjs`**（本地与云端共用契约）：15 项检查 → `pass=13 fail=0 hold=2 skip=0`，`ENV_PARITY_PASS`。覆盖 env 键契约、DB/schema/结构契约、Gate 函数、四身份角色不变量与三身份真实登录、11 张关键表 RLS、私有原件本地 FS 与逐键 sha/长度一致、psql+openssl 可用。两项 HOLD 如实记账：`GAP_RIGHTS_ACTIONS`（QR-04/05 未落地）、`GAP_ASSET_USAGE`（use_events=0/asset_links=0，QR-07）。
+6. **QR-02 关闭**：新增 `tools/verify-qr02-session-switch.mjs`，同一 Node PG 连接池同一物理连接上连续切换 Owner A → Owner B → 匿名 → 回 Owner A，8 项断言全 PASS（`QR02_ALL_PASS`）：身份解析正确、A 只见自己项目、B 看不到 A 项目、匿名 0 行、切回 A 仍可见、每次提交后 `mohen.session_token` 清空、`pg_backend_pid` 全程不变（确为连接复用）。
+7. **QR-08 关闭**：新增 `tools/verify-local-execution-env.mjs`（独立证据生成器）+ 改造 `tools/local-execution-authorizer.mjs`。
+   - 生成器对 Registry 四项 `enable_requires` 逐项产出可验证证据：Owner 授权记录（隔离范围/attended 模式/有效期/授权号）、环境与绑定真实存在（executor/adapter 文件、reviewer 绑定、方法合同无 `TO_VERIFY_IN_M0`、身份密钥齐备）、**现场执行** `tests/data-production` 全量契约测试（30 文件 172 pass 0 fail）、HOLD 绕过不变量（非生产环境 + 库为 loopback + 无生产 service-role key + 六阶段均非 unattended/batch/interactive + 无“仍标当前却已过期”的 PASS）。证据文件 `D:\MoHen\keys\execution-auth\enable-requires-evidence.json`，绑定 git HEAD + registry digest + 24 小时新鲜度。
+   - 授权器新增三道闸门：`AUTHORIZER_TARGET_NOT_ISOLATED`（生产环境/非 loopback 库/service-role key/生产执行开关任一出现即拒）、证据文件必须存在且 git HEAD 与 registry digest 一致且未过期、`enable_requires` 逐项必须 PASS 才写 `authorized_conditions`。
+   - 正反实测：正向 `grant --stage D00` 成功签发（claims 内 `authorized_conditions` 四项均来自证据）；负向三类拒绝均命中精确错误码：无证据 `ENABLE_REQUIRES_EVIDENCE_MISSING`、改写 git HEAD `ENABLE_REQUIRES_EVIDENCE_STALE:git-head`、`MOHEN_ENV=production` 与远端库 → `AUTHORIZER_TARGET_NOT_ISOLATED`。全程无 Provider 调用、无费用。
+   - 授权记录来源：`D:\MoHen\keys\execution-auth\owner-authorization.json`，内容为 Owner 既有授权（PLAN §0.2 A/H + 本轮“执行吧”）的**转写**，非新授权、不构成 Gate 准出或生产执行许可。
+8. **备份/恢复实测**：用快照还原到临时库 `mohen_restore_cp1`，13 项关键计数（projects/assets/private_originals/director_plans/sources/read_units/material_evidence/claim_revisions/findings/gate_audits 等）与 `originals_sha_digest` 与 `mohen_dev` **完全一致**；将 `private_originals` 目录整体复制到探针目录后，2 个原件逐字节 sha/长度与还原库记录一致；随后删除临时库与副本，未留冗余副本。
+9. **回归**：`pnpm -r typecheck` 6/6 通过；`pnpm test:unit` = 615 pass / 2 skipped / **1 fail**（`tests/unit/k7-five-themes.test.ts` 180s 超时）。已核实 `api.library.sh.cn:443` 本机不可达（`Test-NetConnection=False`），该测试在 `SHANGHAI_LIBRARY_KEY` 存在时访问真实外网来源，属既有联网依赖，非本批引入、非代码缺陷；不计入通过。
+10. **顺带修复的真实缺陷**：`pipelines/data-production/orchestrator/resume-input.mjs` 先 `realpath` 后 `lstat`，在 Windows 上符号链接 realpath 抛 ENOENT，把“链接被拒绝”误报成 `TRUSTED_RESUME_INPUT_UNAVAILABLE`（测试期望 `TRUSTED_RESUME_INPUT_INVALID`）。改为先 `lstat` 判符号链接并统一按 INVALID 失败关闭，两平台同义；失败关闭语义不变。此修复同时让此前因缺 openssl 而 DEFERRED_ENV 的 `independent-gate-service-runtime`（5 项）真实执行并通过，data-production 套件 172 pass / 0 fail。
+
+### CP1 未关闭项（如实记账）
+
+- QR-03（持久原子预算预留、跨实例防超支、Receipt 写失败后的持久不确定态、人工对账）仍开放；候选分支 `mab/m4-provider-spend-controls-20261107` 待兼容性审查后定向移植。
+- QR-04/05（`source.sources` 仍缺 `rights_by_action`/`external_processing`，权利动作词典与 KAD/Gate 合同未统一）仍开放；parity 中 `GAP_RIGHTS_ACTIONS` 保持 HOLD。
+- QR-06（Agent 研究 task 与 Provider 委托同 root 未合并）、QR-07（use_events=0/asset_links=0，资产来源依赖回链空）仍开放。
+- QR-09（7 项本地 guard 未重跑）、QR-10（M5 八维度待重算）仍开放。
+- 生产库迁移（`director_plans.project_id` 等）**未执行**，仍需单独授权；本地证据不构成生产准出。
+- 受影响的隔离端到端套件（`verify-5-studio-dispatch.mjs`、`verify-5k-http.mjs`）本轮未重跑：前者产生真实付费调用且其依赖面未被本次变更触及（迁移为加列、授权器仅加闸门），后者需起 dev server 属 CP2/M3 范畴；留至下一停点按变更影响执行。
+
+### 下一步精确动作（CP2 首包候选）
+
+1. 按 §0.1 整改顺序进入 QR-04/05：统一动作词典（KAD `rights_by_action` + Gate 要求的 machine_read/retain）→ 在 `source_anchor`/`asset_revision` 写不可变权利快照 → G0/G5 显式 ALLOW 才放行，缺失/unknown 一律 HOLD，并补正反测试。
+2. 迁移到位后重跑 `tools/verify-2-c-d-chain.mjs`、`verify-3-gate-chain.mjs`，为 CP2（M3 独立生产资格）建立同原件 G0—G5 基线。
+3. 若 Owner 要求先验证 Studio 正道，再按预算最小化跑 `verify-5-studio-dispatch.mjs`（同输入回放不二次计费）。
+4. M5 继续 `M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY`；无生产迁移、无正式 Gate 启用、无公开发布、无新增付费调用。
+
+

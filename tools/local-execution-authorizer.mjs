@@ -15,7 +15,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import httpz from "node:https";
-import { spawn } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -36,6 +36,39 @@ function readPem(name) {
 async function loadRegistryInstance() {
   const { loadRegistry } = await import("../pipelines/data-production/orchestrator/registry.mjs");
   return loadRegistry(repoRoot);
+}
+
+// QR-08：本授权器只对“本地隔离目标”生效，绝不接受生产端点或生产凭据。
+async function assertIsolatedTarget() {
+  if (!process.env.DATABASE_URL) await import("../packages/data-access/src/index.mjs"); // 触发 .env.local 加载
+  const env = String(process.env.MOHEN_ENV || "").toLowerCase();
+  if (env === "production" || env === "prod") throw new Error("AUTHORIZER_TARGET_NOT_ISOLATED:env-production");
+  const url = String(process.env.DATABASE_URL || "");
+  if (!/^postgresql:\/\/[^@]*@(127\.0\.0\.1|localhost)(:\d+)?\//.test(url)) {
+    throw new Error("AUTHORIZER_TARGET_NOT_ISOLATED:database-not-loopback");
+  }
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) throw new Error("AUTHORIZER_TARGET_NOT_ISOLATED:production-service-role-key-present");
+  if (process.env.MOHEN_PRODUCTION_EXECUTION_AUTHORIZED === "true") {
+    throw new Error("AUTHORIZER_TARGET_NOT_ISOLATED:production-execution-flag-present");
+  }
+}
+
+// QR-08：enable_requires 只能来自独立可验证检查生成的证据，不允许签名时自报 true。
+// 证据由 tools/verify-local-execution-env.mjs 生成，绑定 git HEAD + registry digest + 生成时间。
+async function requireEnableRequiresEvidence(registry) {
+  const file = path.join(stateDir(), "enable-requires-evidence.json");
+  if (!fs.existsSync(file)) throw new Error("ENABLE_REQUIRES_EVIDENCE_MISSING:run tools/verify-local-execution-env.mjs");
+  const evidence = JSON.parse(fs.readFileSync(file, "utf8"));
+  const head = execFileSync("git", ["rev-parse", "HEAD"], { cwd: repoRoot, encoding: "utf8" }).trim();
+  if (evidence.git_head !== head) throw new Error("ENABLE_REQUIRES_EVIDENCE_STALE:git-head");
+  const { executionDigest } = await import("../pipelines/data-production/orchestrator/execution-authority.mjs");
+  if (evidence.registry_digest !== executionDigest(registry)) throw new Error("ENABLE_REQUIRES_EVIDENCE_STALE:registry-digest");
+  const ageMs = Date.now() - Date.parse(evidence.generated_at || "");
+  if (!Number.isFinite(ageMs) || ageMs < 0 || ageMs > 24 * 60 * 60 * 1000) {
+    throw new Error("ENABLE_REQUIRES_EVIDENCE_STALE:age");
+  }
+  if (evidence.target !== "local-isolated") throw new Error("ENABLE_REQUIRES_EVIDENCE_NOT_ISOLATED");
+  return evidence.checks || {};
 }
 
 function makeToken(uid, secret) {
@@ -114,7 +147,9 @@ function loadJournal() {
 
 async function buildGrant({ stage, runId, mode = "attended", intent, scopeFile, inputFile }) {
   const { executionDigest } = await import("../pipelines/data-production/orchestrator/execution-authority.mjs");
+  await assertIsolatedTarget();
   const registry = await loadRegistryInstance();
+  const evidenceChecks = await requireEnableRequiresEvidence(registry);
   const job = registry.jobs.find(j => j.stage === stage);
   if (!job) throw new Error(`STAGE_JOB_NOT_FOUND:${stage}`);
   let input;
@@ -126,6 +161,9 @@ async function buildGrant({ stage, runId, mode = "attended", intent, scopeFile, 
     input = JSON.parse(fs.readFileSync(path.resolve(inputFile), "utf8"));
   }
   const iat = Math.floor(Date.now() / 1000);
+  const requires = Array.isArray(job.execution_policy?.enable_requires) ? job.execution_policy.enable_requires : [];
+  const unproven = requires.filter(k => evidenceChecks[k]?.status !== "PASS");
+  if (unproven.length) throw new Error(`ENABLE_REQUIRES_EVIDENCE_INCOMPLETE:${unproven.join(",")}`);
   const claims = {
     iss: "mohen-independent-execution-authorizer",
     aud: "mohen-production-stage",
@@ -139,7 +177,8 @@ async function buildGrant({ stage, runId, mode = "attended", intent, scopeFile, 
     hold_epoch: readPem("hold_epoch").trim(),
     registry_digest: executionDigest(registry),
     input_digest: executionDigest(input),
-    authorized_conditions: Object.fromEntries((job.execution_policy?.enable_requires ?? []).map(k => [k, true])),
+    // 每一条件对应一条独立生成的 PASS 证据（见 tools/verify-local-execution-env.mjs）。
+    authorized_conditions: Object.fromEntries(requires.map(k => [k, true])),
   };
   const header = { alg: "EdDSA", typ: "MOHEN-STAGE", kid: "mohen-stage-v1" };
   const h = Buffer.from(JSON.stringify(header)).toString("base64url");

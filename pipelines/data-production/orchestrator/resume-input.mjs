@@ -49,9 +49,16 @@ export function loadTrustedResumeInput({stage,filePath,trustedDirectory}={}){
   let dir,actual,di,li,fi;
   try{
     dir=fs.realpathSync(trustedDirectory);
+    // 先判符号链接再做 realpath：Windows 上 realpath 解析符号链接可能抛 ENOENT/EPERM，
+    // 会把“链接被拒绝”误报成 UNAVAILABLE；此处统一按 INVALID 失败关闭，两平台同义。
+    li=fs.lstatSync(filePath);
+    if(li.isSymbolicLink())throw Error("TRUSTED_RESUME_INPUT_INVALID");
     actual=fs.realpathSync(filePath);
-    di=fs.statSync(dir);li=fs.lstatSync(filePath);fi=fs.statSync(actual);
-  }catch{throw Error("TRUSTED_RESUME_INPUT_UNAVAILABLE");}
+    di=fs.statSync(dir);fi=fs.statSync(actual);
+  }catch(error){
+    if(error?.message==="TRUSTED_RESUME_INPUT_INVALID")throw error;
+    throw Error("TRUSTED_RESUME_INPUT_UNAVAILABLE");
+  }
   if(!di.isDirectory()||path.dirname(actual)!==dir||li.isSymbolicLink()||
      !fi.isFile()||fi.size<=0||fi.size>MAX)
     throw Error("TRUSTED_RESUME_INPUT_INVALID");
