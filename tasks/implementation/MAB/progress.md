@@ -1914,7 +1914,7 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 | `gj/webapi/works?title=金泽小志` | 200，1 条 `[道光]金澤小志六卷首一卷` | 否：同上 |
 | `gj/webapi/instances?freetext=金泽` | 200，8 条版本元数据（分类、纂者、版本、馆藏号 `史71556491`） | 否：目录/版本层 |
 | `gj/webapi/instanceInfo?uri=…dqfavccjdcmnr10n` | 200，1088 字节，含 `identifier/creator/edition/instanceOf` | 否：元数据 |
-| `gj/webapi/instanceContent` / `instanceText` / `fulltext` / `catalog` | **全部 404** | 否：开放数据**不提供**古籍正文或影像字节下载 |
+| `gj/webapi/instanceContent` / `instanceText` / `fulltext` / `catalog` | **全部 404** | 否：这些是我**猜的**路径，不存在；真实下载路径见下方"更正"（`pdf/list→pdf/info→pdf/stream`） |
 | `gj/webapi/instances?freetext=古桥` | 200 但 `result=1`、0 条（检索式不命中） | — |
 | `shnh/dmz/webapi/geonames/list?type=3&freetext=金泽`（上海地名志，同平台合作单位） | 200，**返回正文** `description`："在县境西南部…有宋、元年间建的迎祥桥、普济桥、万安桥…" | **是**：真实正文可留存、可哈希、可引用 |
 | `shnh/dmz/webapi/geonames/list?type=2&freetext=金泽` | 200，金泽镇志条目正文（"现存古桥 21 座…"） | **是**：同上 |
@@ -1922,5 +1922,27 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 **由此明确两件事**：
 1. 上海图书馆开放数据能提供的正文是**地名志/家谱/人物等合作单位志书条目文本**，不是古籍影像扫描页。因此 M3 原有的 `C02 scanned_page/v1`（扫描页读法）基线**无法**用该授权数据重建；要重建扫描页链，需要 Owner 另行开通上图古籍影像下载权限（或提供已获授权的影像文件）。
 2. CP2 的"同一真实原件"应先走**文本/条目正文**路径（真实 HTTP 字节 → sha256 → 私有原件 → `source_version`/`raw_item` → D01 文本读法 → D02—D05 → G0—G5），这条路径在现有授权内可完成，且不涉及任何外发。
+
+#### 更正（同日，吸收 `D:\work Buddy\2026-08-23-23-12-38\hushang-jingwei` 既有经验后）
+
+上面第 1 条**结论错误**，已作废。我此前只试了猜的路径（`instanceContent/instanceText/fulltext/catalog`），而沪上经纬在 2026-08-30 已按**官方《API 说明书 2026 改版》**走通并留下档案：
+
+| 事实 | 出处 | 对 CP2-E 的意义 |
+|---|---|---|
+| `POST /service_pdf_race/race/pdf/list`（body `{dbname,title,apiKey,pageNo,pageSize}`，dbname∈`gj`古籍/`mgts`民国图书/`jp`家谱） | `docs/01_知识库/上图可下载全文资源普查_20260830.md` | **上图开放数据确实提供全文影像下载** |
+| `pdf/info` → 取 `data.items[].value` 作为 `itemId`；`POST pdf/stream` 参数必须是 **`itemId`+`pageNo`**（`id`/`bookId`/`value` 全失败） | 同上 + `民国图书原文直取实录_大上海指南_104971.md` | 逐页可下载；`isDownload:0` 只表示整本打包受限，逐页 100% 通 |
+| 古籍 `gj` = **纯扫描无文本层**（需自 OCR，繁体竖排）；民国图书 `mgts` = **自带 OCR 文本层**（可直接抽原文） | 同上 | 古籍原件=扫描页（可支撑 `C02 scanned_page/v1`）；正文需 OCR |
+| 限流**不走异常**：HTTP 200 + `{"state":-1,"msg":"操作频繁"}`；并发>3 瞬时返回空 `data`，必须串行+节流 | 同上 | 采集器必须把 `state=-1` 当失败重试，不能当"该页无全文" |
+| 检索词规律：古籍库用现代镇名（朱家角/新场）命中 0，须用区县名（青浦/松江/金山/嘉定）或旧称（槎溪/珠里） | `_历史归档/上图端点实测地图_20260828.md` | 选件时不要用镇名硬搜 |
+| 上海地名志 = `shnh/dmz` 属上图开放数据（1 万余个地名），我上表的实测佐证 | 同上 + 普查表 | 合作单位数据确在授权范围内 |
+| 已有下载成果：`hushang-jingwei\corpus\gazetteers\高层通志府州\[崇禎]松江府志九十四卷.pdf`（685 MB，itemId `14373`，1,845 页）；`data\raw_snapshots`、`data\fetched` 有页文本/条目 | 本地实测 | 可直接吸纳为真实原件，不必重复下载 |
+| 台账里可下载古籍 75 部 / 29,386 页；民国图书 98 部 / 9,746 页；家谱 952 部 / 260,304 页 | `上图可下载全文资源普查_20260830.md` | CP2-E 有充足真实原件可选 |
+
+**修正后的 CP2-E 路径**（下一步执行，待 Owner 同意生产口径后一并推进）：
+1. 用 `pdf/list`（dbname=`gj`）选定一部已获授权且与项目主题相关的方志（优先复用沪上经纬已下载的《[崇禎]松江府志九十四卷》，避免重复下载与限流）；
+2. 取 1 页真实影像字节（`pdf/stream` POST，`itemId`+`pageNo`）落私有原件、回读校验 sha256 → 作为 CP2 的"同一真实原件"（扫描页读法可成立）；
+3. 另取 `mgts`（自带 OCR 文本层）1 册正文作**文本读法**原件，两条读法都能拿到真实字节；
+4. 登记 `source_version`/`raw_item`（provider=`shanghai-library`，沿用 CP2-C 的显式许可），再跑 D00—D05 与 G0—G5 基线；
+5. 采集器实现必须内置 `state=-1` 限流识别、串行节流、繁体词表与"原文不改字"约束。
 
 
