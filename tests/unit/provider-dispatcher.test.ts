@@ -18,6 +18,8 @@ import {
 import { directorExternalProcessingBlocker } from '../../apps/web/lib/studio-creation';
 
 const DELEGATION_ID = '11111111-2222-4333-8444-555555555555';
+const PROJECT_ID = 'aaaaaaaa-2222-4333-8444-555555555555';
+const OTHER_PROJECT_ID = 'bbbbbbbb-2222-4333-8444-555555555555';
 const SOURCE_OK = 'b0a11000-0000-4000-8000-000000000004';
 const SOURCE_DENIED = 'b0a11000-0000-4000-8000-0000000000ff';
 const CALL = { system: '你是墨痕的 H1 方法。', user: '真实材料：松江府田赋。', temperature: 0.3, maxTokens: 64 };
@@ -25,6 +27,7 @@ const CALL = { system: '你是墨痕的 H1 方法。', user: '真实材料：松
 function makeDelegation(overrides: Record<string, unknown> = {}) {
   return {
     delegation_id: DELEGATION_ID,
+    project_id: PROJECT_ID,
     request_hash: 'a'.repeat(64),
     expires_at: new Date(Date.now() + 600_000).toISOString(),
     allowed_actions: ['llm_director_h1'],
@@ -128,6 +131,22 @@ describe('authorizeProviderDispatch', () => {
     expect(deps.fetchImpl).not.toHaveBeenCalled();
   });
 
+  it('uses UTF-8 bytes rather than character count as a conservative input-token bound', async () => {
+    const { deps } = makeDeps({}, { budget_limit: '0.000500' });
+    const multibyteCall = { ...CALL, system: '汉'.repeat(500), user: '字'.repeat(500) };
+    await expect(authorizeProviderDispatch(deps, { ...AUTH_INPUT, call: multibyteCall }))
+      .rejects.toMatchObject({ code: 'HOLD_BUDGET' });
+    expect(deps.fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it('counts every known billable receipt state, not only ACCEPT_AS_CANDIDATE', async () => {
+    const { deps, receipts } = makeDeps({}, { budget_limit: '0.000500' });
+    receipts.push({ acceptance_state: 'QUARANTINE', cost: '0.000490', cost_confidence: 'ESTIMATED' });
+    await expect(authorizeProviderDispatch(deps, AUTH_INPUT))
+      .rejects.toMatchObject({ code: 'HOLD_BUDGET' });
+    expect(deps.fetchImpl).not.toHaveBeenCalled();
+  });
+
   it('rejects expired delegations, wrong actions, non-granted transfer and unpriced models', async () => {
     const expired = makeDeps({}, { expires_at: new Date(Date.now() - 1000).toISOString() });
     await expect(authorizeProviderDispatch(expired.deps, AUTH_INPUT))
@@ -199,6 +218,26 @@ describe('dispatchAuthorizedCall', () => {
     expect(held.acceptance_state).toBe('HOLD');
     expect(held.cost_confidence).toBe('UNKNOWN');
     expect(held.error_code).toBe('PROVIDER_TIMEOUT');
+    await expect(authorizeProviderDispatch(deps, AUTH_INPUT))
+      .rejects.toMatchObject({ code: 'DISPATCH_RECONCILIATION_REQUIRED' });
+  });
+
+  it('keeps the timeout active until the response body has been fully read', async () => {
+    const bodyTimeout = vi.fn(async (_url: unknown, init: RequestInit) => {
+      const body = new ReadableStream<Uint8Array>({
+        start(controller) {
+          init.signal?.addEventListener('abort', () => controller.error(new DOMException('Aborted', 'AbortError')));
+        },
+      });
+      return new Response(body, { status: 200, headers: { 'content-type': 'application/json' } });
+    });
+    const { deps, receipts } = makeDeps({ fetchImpl: bodyTimeout as never });
+    (deps as any).timeoutMs = 10;
+    const handle = await authorizeProviderDispatch(deps, AUTH_INPUT);
+    await expect(dispatchAuthorizedCall(deps, handle, CALL))
+      .rejects.toMatchObject({ code: 'DISPATCH_UNCERTAIN' });
+    expect(bodyTimeout).toHaveBeenCalledTimes(1);
+    expect((receipts[0] as Record<string, unknown>).error_code).toBe('PROVIDER_TIMEOUT');
   });
 
   it('writes a HOLD receipt on provider HTTP failure and never retries', async () => {
@@ -232,7 +271,7 @@ describe('studio-creation blocker wiring', () => {
 });
 
 const GRANT_INPUT = {
-  delegationId: DELEGATION_ID, actions: ['llm_director_h1', 'llm_director_h2'],
+  delegationId: DELEGATION_ID, projectId: PROJECT_ID, actions: ['llm_director_h1', 'llm_director_h2'],
   model: 'deepseek-flash', sourceIds: [SOURCE_OK], sessionToken: 'session-token', maxCalls: 2,
 };
 
@@ -242,6 +281,17 @@ describe('authorizeStudioDispatchGrant / dispatchWithGrant（M5 批次 G）', ()
     const grant = await authorizeStudioDispatchGrant(deps, GRANT_INPUT);
     expect(isUsableDispatchGrant(grant)).toBe(true);
     expect(directorExternalProcessingBlocker(grant)).toBeNull();
+    expect(deps.fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it('rejects a delegation belonging to another project even when the Owner can read both projects', async () => {
+    const { deps } = makeDeps({}, {
+      project_id: OTHER_PROJECT_ID,
+      budget_limit: '5.000000',
+      allowed_actions: ['llm_director_h1', 'llm_director_h2'],
+    });
+    await expect(authorizeStudioDispatchGrant(deps, GRANT_INPUT))
+      .rejects.toMatchObject({ code: 'DISPATCH_PROJECT_MISMATCH' });
     expect(deps.fetchImpl).not.toHaveBeenCalled();
   });
 

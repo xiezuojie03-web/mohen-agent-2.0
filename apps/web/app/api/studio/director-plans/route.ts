@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       try {
         const sourceIds = await listProjectSourceIds(projectId, sessionToken);
         const outcome = await grantForStudioLlm({
-          delegationId, sessionToken,
+          delegationId, projectId, sessionToken,
           actions: ["llm_director_h1", "llm_director_h2"],
           sourceIds, maxCalls: 2,
         });
@@ -55,7 +55,7 @@ export async function POST(req: Request) {
           return NextResponse.json({ ok: false, state: "HOLD", reason: "no_project_materials" },
             { status: 409, headers: { "Cache-Control": "no-store" } });
         const created = await createDirectorPlan(brief.trim(), "jinze", session.uid,
-          { auth: outcome.grant, facts, sourceIds });
+          { auth: outcome.grant, facts, sourceIds, projectId });
         if (!created)
           return NextResponse.json({ ok: false, state: "HOLD", reason: "llm_dispatch_failed" },
             { status: 409, headers: { "Cache-Control": "no-store" } });

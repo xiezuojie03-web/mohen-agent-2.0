@@ -26,10 +26,13 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const session = await getSession();
     if (!session) return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401 });
     const row = await getDirectorPlan(id);
-    const sids = row ? (typeof row.source_ids === "string" ? JSON.parse(row.source_ids) : row.source_ids) : [];
+    if (!row || typeof row.project_id !== "string")
+      return NextResponse.json({ok:false,state:"HOLD",reason:"director_plan_project_binding_missing"},
+        {status:409,headers:{"Cache-Control":"no-store"}});
+    const sids = typeof row.source_ids === "string" ? JSON.parse(row.source_ids) : row.source_ids;
     const sourceIds = Array.isArray(sids) ? sids.filter((s: unknown) => typeof s === "string") : [];
     const outcome = await grantForStudioLlm({
-      delegationId, sessionToken: signDatabaseSessionToken(session),
+      delegationId, projectId: row.project_id, sessionToken: signDatabaseSessionToken(session),
       actions: ["llm_work_panels"], sourceIds, maxCalls: 1,
     });
     if (!("grant" in outcome))

@@ -18,7 +18,7 @@ export async function listProjectSourceIds(projectId: string, sessionToken: stri
        join source.raw_items r on r.checksum_sha256 = o.sha256
        join source.source_versions v on v.source_version_id = r.source_version_id
        join source.sources s on s.source_id = v.source_id,
-       (select set_config('mohen.session_token', :'token', false)) cfg
+       (select set_config('mohen.session_token', :'token', true)) cfg
       where o.project_id = :'pid'`,
     { token: sessionToken, pid: projectId }
   );
@@ -26,9 +26,9 @@ export async function listProjectSourceIds(projectId: string, sessionToken: stri
 }
 
 /** 作品已绑定来源（不可变修订 → 导演方案行）：旁白润色等后续动作的逐来源权利核验用。 */
-export async function sourceIdsForWork(workId: string): Promise<string[]> {
+export async function sourceBindingForWork(workId: string): Promise<{ projectId: string | null; sourceIds: string[] }> {
   const rows = await queryRows(
-    `select p.source_ids as sids
+    `select p.project_id::text as project_id, p.source_ids as sids
        from publication.work_revisions r
        join public.director_plans p on p.plan_id = nullif(r.content->'director_source'->>'plan_id','')::uuid
       where r.work_id = :'wid'
@@ -37,7 +37,10 @@ export async function sourceIdsForWork(workId: string): Promise<string[]> {
   );
   const raw = rows[0]?.sids;
   const arr = typeof raw === "string" ? JSON.parse(raw) : raw;
-  return Array.isArray(arr) ? arr.filter((s) => typeof s === "string").sort() : [];
+  return {
+    projectId: typeof rows[0]?.project_id === "string" ? rows[0].project_id : null,
+    sourceIds: Array.isArray(arr) ? arr.filter((s) => typeof s === "string").sort() : [],
+  };
 }
 
 export type GrantOutcome = { grant: DispatchGrant } | { reason: string };
@@ -45,6 +48,7 @@ export type GrantOutcome = { grant: DispatchGrant } | { reason: string };
 /** 签发 grant；DispatchError 翻译为简短 reason（路由据此回 409/403）。 */
 export async function grantForStudioLlm(input: {
   delegationId: string;
+  projectId: string;
   sessionToken: string;
   actions: string[];
   sourceIds: string[];
@@ -55,6 +59,7 @@ export async function grantForStudioLlm(input: {
     const deps = await createStudioDispatcherDeps();
     const grant = await authorizeStudioDispatchGrant(deps, {
       delegationId: input.delegationId,
+      projectId: input.projectId,
       actions: input.actions,
       model: "deepseek-flash",
       sourceIds: input.sourceIds,

@@ -154,6 +154,8 @@ export interface AuthorizeDispatchInput {
   call: AuthorizedCall;
   sourceIds: string[];
   sessionToken: string;
+  /** Required for Studio grants; binds every sub-call to the same Owner project. */
+  projectId?: string;
 }
 
 /** 授权句柄：对外不透明，一次性消费。replay=true 时执行不发起请求、不扣费。 */
@@ -193,10 +195,13 @@ const uuidPattern = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{1
 async function loadUsableDelegation(
   deps: DispatcherDeps,
   delegationId: string,
-  sessionToken: string
+  sessionToken: string,
+  expectedProjectId?: string
 ): Promise<StudioDelegationRecord> {
   const delegation = await deps.delegations.getDelegation(delegationId, sessionToken);
   if (!delegation) throw new DispatchError("DISPATCH_DELEGATION_NOT_FOUND");
+  if (expectedProjectId !== undefined && delegation.project_id !== expectedProjectId)
+    throw new DispatchError("DISPATCH_PROJECT_MISMATCH");
   if (!Number.isFinite(Date.parse(String(delegation.expires_at ?? "")))
     || Date.parse(String(delegation.expires_at)) <= Date.now())
     throw new DispatchError("DISPATCH_DELEGATION_EXPIRED");
@@ -250,6 +255,8 @@ function validateInput(input: AuthorizeDispatchInput): void {
     throw new DispatchError("DISPATCH_INPUT_INVALID");
   if (typeof input.sessionToken !== "string" || !input.sessionToken)
     throw new DispatchError("DISPATCH_INPUT_INVALID");
+  if (input.projectId !== undefined && !uuidPattern.test(input.projectId))
+    throw new DispatchError("DISPATCH_INPUT_INVALID");
 }
 
 /**
@@ -261,21 +268,29 @@ export async function authorizeProviderDispatch(
   input: AuthorizeDispatchInput
 ): Promise<DispatchHandle> {
   validateInput(input);
-  const delegation = await loadUsableDelegation(deps, input.delegationId, input.sessionToken);
+  const delegation = await loadUsableDelegation(deps, input.delegationId, input.sessionToken, input.projectId);
   const actions = Array.isArray(delegation.allowed_actions) ? delegation.allowed_actions : [];
   if (!actions.includes(input.action)) throw new DispatchError("DISPATCH_ACTION_NOT_ALLOWED");
 
-  // 最坏情况：输入按 1 token/字符上界 + 输出按 maxTokens，全部 cache miss、peak 价。
-  const estInputTokens = input.call.system.length + input.call.user.length + 32;
+  // UTF-8 字节数是保守token上界；另为消息边界/角色元数据留足固定余量。
+  const estInputTokens = Buffer.byteLength(input.call.system, "utf8")
+    + Buffer.byteLength(input.call.user, "utf8") + 64;
   const worst = worstCaseCostUsd(input.model, estInputTokens, input.call.maxTokens);
   if (worst === null) throw new DispatchError("DISPATCH_MODEL_UNPRICED");
   const budget = Number(delegation.budget_limit);
   if (!Number.isFinite(budget) || budget < 0) throw new DispatchError("HOLD_BUDGET");
 
   const receipts = await deps.delegations.listReceipts(input.delegationId, input.sessionToken);
-  const spent = receipts
-    .filter((r) => r.acceptance_state === "ACCEPT_AS_CANDIDATE" && r.cost !== null)
-    .reduce((sum, r) => sum + Number(r.cost), 0);
+  // Any unresolved/unknown receipt freezes new external calls. All known costs
+  // count regardless of candidate acceptance state: rejection/quarantine is
+  // still a billable provider attempt.
+  if (receipts.some((r) => r.acceptance_state === "HOLD" || r.cost_confidence === "UNKNOWN" || r.cost === null))
+    throw new DispatchError("DISPATCH_RECONCILIATION_REQUIRED");
+  const spent = receipts.reduce((sum, r) => {
+    const amount = Number(r.cost);
+    if (!Number.isFinite(amount) || amount < 0) throw new DispatchError("DISPATCH_RECONCILIATION_REQUIRED");
+    return sum + amount;
+  }, 0);
   if (spent + worst > budget + 1e-9) throw new DispatchError("HOLD_BUDGET");
 
   // 逐来源权利核验（与 grant 路径同一实现）。
@@ -371,9 +386,10 @@ export async function dispatchAuthorizedCall(
   const startedAt = new Date().toISOString();
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
-  let res: Response;
+  let json: { choices?: Array<{ message?: { content?: string } }>; usage?: ProviderUsage } | null = null;
+  let failureCode: string | null = null;
   try {
-    res = await fetchImpl(`${baseUrl}/chat/completions`, {
+    const res = await fetchImpl(`${baseUrl}/chat/completions`, {
       method: "POST",
       headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
@@ -387,22 +403,26 @@ export async function dispatchAuthorizedCall(
       }),
       signal: ctrl.signal,
     });
-  } catch (error) {
-    const code = ctrl.signal.aborted ? "PROVIDER_TIMEOUT" : "PROVIDER_TRANSPORT_ERROR";
-    await writeHeldReceipt(deps, state, startedAt, code);
-    throw new DispatchError("DISPATCH_UNCERTAIN", code);
+    if (!res.ok) {
+      failureCode = `PROVIDER_HTTP_${res.status}`;
+    } else {
+      try {
+        // Keep the abort deadline active until the entire response body is read.
+        json = (await res.json()) as typeof json;
+      } catch {
+        failureCode = ctrl.signal.aborted ? "PROVIDER_TIMEOUT" : "PROVIDER_RESPONSE_INVALID";
+      }
+    }
+  } catch {
+    failureCode = ctrl.signal.aborted ? "PROVIDER_TIMEOUT" : "PROVIDER_TRANSPORT_ERROR";
   } finally {
     clearTimeout(timer);
   }
-  if (!res.ok) {
-    await writeHeldReceipt(deps, state, startedAt, `PROVIDER_HTTP_${res.status}`);
-    throw new DispatchError("DISPATCH_UNCERTAIN", `PROVIDER_HTTP_${res.status}`);
+  if (failureCode) {
+    await writeHeldReceipt(deps, state, startedAt, failureCode);
+    throw new DispatchError("DISPATCH_UNCERTAIN", failureCode);
   }
-
-  let json: { choices?: Array<{ message?: { content?: string } }>; usage?: ProviderUsage };
-  try {
-    json = (await res.json()) as typeof json;
-  } catch {
+  if (!json) {
     await writeHeldReceipt(deps, state, startedAt, "PROVIDER_RESPONSE_INVALID");
     throw new DispatchError("DISPATCH_UNCERTAIN", "PROVIDER_RESPONSE_INVALID");
   }
@@ -467,7 +487,7 @@ export async function createStudioDispatcherDeps(): Promise<DispatcherDeps> {
       const list = ids.map((id) => `'${id}'::uuid`).join(",");
       return dataAccess.queryRows(
         `select s.source_id::text as source_id, s.rights as rights
-         from source.sources s, (select set_config('mohen.session_token', :'token', false)) cfg
+         from source.sources s, (select set_config('mohen.session_token', :'token', true)) cfg
          where s.source_id = any(array[${list}])`,
         { token }
       ) as unknown as Promise<Array<{ source_id: string; rights: Record<string, unknown> | string | null }>>;
@@ -499,6 +519,7 @@ export interface DispatchGrant {
 
 interface GrantState {
   delegationId: string;
+  projectId: string;
   actions: string[];
   model: string;
   sourceIds: string[];
@@ -512,6 +533,7 @@ const grants = new Map<string, GrantState>();
 
 export interface AuthorizeGrantInput {
   delegationId: string;
+  projectId: string;
   actions: string[];
   model: string;
   sourceIds: string[];
@@ -538,7 +560,8 @@ export async function authorizeStudioDispatchGrant(
   input: AuthorizeGrantInput
 ): Promise<DispatchGrant> {
   if (!input || typeof input !== "object") throw new DispatchError("DISPATCH_INPUT_INVALID");
-  if (!uuidPattern.test(input.delegationId ?? "")) throw new DispatchError("DISPATCH_INPUT_INVALID");
+  if (!uuidPattern.test(input.delegationId ?? "") || !uuidPattern.test(input.projectId ?? ""))
+    throw new DispatchError("DISPATCH_INPUT_INVALID");
   if (!Array.isArray(input.actions) || !input.actions.length || input.actions.length > 16
     || !input.actions.every((a) => typeof a === "string" && Object.hasOwn(STUDIO_LLM_ACTION_MAX_TOKENS, a)))
     throw new DispatchError("DISPATCH_ACTION_NOT_ALLOWED");
@@ -552,7 +575,7 @@ export async function authorizeStudioDispatchGrant(
   if (!Number.isSafeInteger(input.maxCalls) || input.maxCalls < 1 || input.maxCalls > 16)
     throw new DispatchError("DISPATCH_INPUT_INVALID");
 
-  const delegation = await loadUsableDelegation(deps, input.delegationId, input.sessionToken);
+  const delegation = await loadUsableDelegation(deps, input.delegationId, input.sessionToken, input.projectId);
   const allowed = Array.isArray(delegation.allowed_actions) ? delegation.allowed_actions : [];
   for (const action of input.actions)
     if (!allowed.includes(action)) throw new DispatchError("DISPATCH_ACTION_NOT_ALLOWED");
@@ -562,7 +585,9 @@ export async function authorizeStudioDispatchGrant(
 
   // 预算早期失败：输入按 call 字符上界 200_032、输出按本 grant 最大动作上界。
   const maxOut = Math.max(...input.actions.map((a) => STUDIO_LLM_ACTION_MAX_TOKENS[a]));
-  const worst = worstCaseCostUsd(input.model, 200_032, maxOut);
+  // Studio calls are bounded to 200,000 UTF-16 code units; 3 UTF-8 bytes per
+  // code unit is a conservative maximum before the per-call exact byte check.
+  const worst = worstCaseCostUsd(input.model, 600_064, maxOut);
   if (worst === null) throw new DispatchError("DISPATCH_MODEL_UNPRICED");
   const budget = Number(delegation.budget_limit);
   if (!Number.isFinite(budget) || budget < 0 || worst * input.maxCalls > budget + 1e-9)
@@ -570,7 +595,7 @@ export async function authorizeStudioDispatchGrant(
 
   const grantId = randomUUID();
   grants.set(grantId, {
-    delegationId: input.delegationId, actions: [...input.actions], model: input.model,
+    delegationId: input.delegationId, projectId: input.projectId, actions: [...input.actions], model: input.model,
     sourceIds, sessionToken: input.sessionToken, maxCalls: input.maxCalls, used: 0,
     expiresAtMs: Date.parse(String(delegation.expires_at)),
   });
@@ -594,7 +619,7 @@ export async function dispatchWithGrant(
   if (!maxTokens) throw new DispatchError("DISPATCH_ACTION_NOT_ALLOWED");
   state.used += 1;
   const handle = await authorizeProviderDispatch(deps, {
-    delegationId: state.delegationId, action, model: state.model,
+    delegationId: state.delegationId, projectId: state.projectId, action, model: state.model,
     call: { system: call.system, user: call.user, temperature: call.temperature, maxTokens },
     sourceIds: state.sourceIds, sessionToken: state.sessionToken,
   });

@@ -61,6 +61,11 @@ try {
   const studioMigration = fs.readdirSync(directory).find(n => n.endsWith("_mab_studio_assets.sql"));
   if (studioMigration) {
     apply(studioMigration);
+    apply("20261108090000_director_plans_source_ids.sql");
+    apply("20261108100000_mab_m5_director_plan_project_binding.sql");
+    const planProjectColumn = query(database, "select count(*) from information_schema.columns where table_schema='public' and table_name='director_plans' and column_name='project_id' and is_nullable='YES'");
+    const planProjectForeignKey = query(database, "select count(*) from pg_constraint c join pg_class t on t.oid=c.conrelid join pg_namespace n on n.oid=t.relnamespace where n.nspname='public' and t.relname='director_plans' and c.contype='f' and c.conkey=(select array[a.attnum] from pg_attribute a where a.attrelid=t.oid and a.attname='project_id') and c.confrelid='studio.projects'::regclass");
+    if (planProjectColumn !== "1" || planProjectForeignKey !== "1") throw new Error("DIRECTOR_PLAN_PROJECT_BINDING_SCHEMA_FAILED");
     const studioResult = spawnSync(process.execPath, ["tests/data-production/studio-assets.integration.mjs"], { cwd: root,
       env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
     if (studioResult.status !== 0) throw new Error("STUDIO_ASSET_TEST_FAILED");

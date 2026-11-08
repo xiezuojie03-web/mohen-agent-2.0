@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { suggestNarration } from "../../../../../../lib/studio-creation";
-import { grantForStudioLlm, sourceIdsForWork } from "../../../../../../lib/studio/dispatch-grant";
+import { grantForStudioLlm, sourceBindingForWork } from "../../../../../../lib/studio/dispatch-grant";
 import { guardRoute } from "../../../../../../lib/guard";
 import { getSession } from "../../../../../../lib/session";
 import { signDatabaseSessionToken } from "../../../../../../lib/auth";
@@ -30,10 +30,13 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (typeof delegationId === "string" && delegationId) {
     const session = await getSession();
     if (!session) return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401 });
-    const sourceIds = await sourceIdsForWork(id);
+    const binding = await sourceBindingForWork(id);
+    if (!binding.projectId || !binding.sourceIds.length)
+      return NextResponse.json({ok:false,state:"HOLD",reason:"work_project_binding_missing"},
+        {status:409,headers:{"Cache-Control":"no-store"}});
     const outcome = await grantForStudioLlm({
-      delegationId, sessionToken: signDatabaseSessionToken(session),
-      actions: ["llm_narration_suggest"], sourceIds, maxCalls: 1,
+      delegationId, projectId: binding.projectId, sessionToken: signDatabaseSessionToken(session),
+      actions: ["llm_narration_suggest"], sourceIds: binding.sourceIds, maxCalls: 1,
     });
     if (!("grant" in outcome))
       return NextResponse.json({ ok: false, state: "HOLD", reason: outcome.reason },

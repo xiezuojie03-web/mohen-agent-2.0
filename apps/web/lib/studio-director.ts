@@ -57,16 +57,18 @@ export async function createDirectorPlan(
   brief: string,
   topic = "jinze",
   ownerUserId: string,
-  opts?: { auth?: unknown; facts?: string[]; sourceIds?: string[] }
+  opts?: { auth?: unknown; facts?: string[]; sourceIds?: string[]; projectId?: string }
 ): Promise<CreatedPlan | null> {
   const result = opts?.facts
     ? await generateDirectorPlansFromFacts(opts.facts, brief, opts.auth)
     : await generateDirectorPlans(brief, topic, opts?.auth);
   if (!result) return null;
+  if (typeof opts?.projectId !== "string" || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(opts.projectId))
+    throw new Error("STUDIO_PROJECT_BINDING_REQUIRED");
   const planId = await queryValue("select gen_random_uuid()::text");
   await run(
-    `insert into public.director_plans (plan_id, brief, topic, plan_a, plan_b, facts, finding, owner_user_id, source_ids)
-     values (:'id', :'brief', :'topic', :'a'::jsonb, :'b'::jsonb, :'facts'::jsonb, :'finding'::jsonb, :'owner', :'sids'::jsonb)`,
+    `insert into public.director_plans (plan_id, brief, topic, plan_a, plan_b, facts, finding, owner_user_id, source_ids, project_id)
+     values (:'id', :'brief', :'topic', :'a'::jsonb, :'b'::jsonb, :'facts'::jsonb, :'finding'::jsonb, :'owner', :'sids'::jsonb, :'project'::uuid)`,
     {
       id: planId!,
       brief,
@@ -77,6 +79,7 @@ export async function createDirectorPlan(
       finding: JSON.stringify(result.finding),
       owner: ownerUserId,
       sids: JSON.stringify(opts?.sourceIds ?? []),
+      project: opts.projectId,
     }
   );
   return { planId: planId!, planA: result.planA, planB: result.planB, facts: result.facts, finding: result.finding };
@@ -84,7 +87,7 @@ export async function createDirectorPlan(
 
 export async function getDirectorPlan(planId: string) {
   const rows = await queryRows(
-    "select plan_id::text as plan_id, brief, topic, plan_a, plan_b, facts, finding, source_ids, selected, beats, created_at::text as created_at from public.director_plans where plan_id = :'id'",
+    "select plan_id::text as plan_id, project_id::text as project_id, brief, topic, plan_a, plan_b, facts, finding, source_ids, selected, beats, created_at::text as created_at from public.director_plans where plan_id = :'id'",
     { id: planId }
   );
   return rows[0] ?? null;

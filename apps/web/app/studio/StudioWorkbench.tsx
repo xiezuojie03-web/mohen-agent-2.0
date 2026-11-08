@@ -102,7 +102,7 @@ export default function StudioWorkbench() {
       const body=await response.json();
       if(!response.ok||body.ok!==true||!body.project?.project_id)throw new Error("研究项目未保存，请重试；项目名称仍保留。");
       setProjects(current=>[body.project,...current.filter(p=>p.project_id!==body.project.project_id)]);
-      setProjectId(body.project.project_id);setProjectTitle("");setCreateProjectOpen(false);projectAttempt.current=null;
+      switchProject(body.project.project_id);setProjectTitle("");setCreateProjectOpen(false);projectAttempt.current=null;
     }catch(error){setProjectError(error instanceof Error?error.message:"研究项目未保存，请重试。");}
     finally{setProjectBusy(false);}
   }
@@ -145,6 +145,24 @@ export default function StudioWorkbench() {
   const [mediaCandidates, setMediaCandidates] = useState<Array<{ title: string; license: string; author: string; intendedUse: string }> | null>(null);
 
   const [mediaError, setMediaError] = useState<string | null>(null);
+
+  // A project switch invalidates only transient client state. Saved server
+  // assets/revisions are not deleted; old project Grants must never carry over.
+  function switchProject(nextProjectId: string) {
+    if (!nextProjectId || nextProjectId === projectId) return;
+    setProjectId(nextProjectId);
+    setProjectError(null);
+    setMessages([]); setInput("");
+    setPlans(null); setPreviewPlan(null); setAdoptedDefinition(null); setAdoptedBrief("");
+    setAdoptedPlanId(null); setSelectedPlan(null); setBeats(null); setPlansError(null);
+    setDelegationId(null); setAuthorizing(false); setNeedsAuthorization(false);
+    setActiveTab(0); setPanels(null); setPanelsLoading(false);
+    setWorkTitle(""); setSubmitBusy(false); setSubmitMsg(null); setSubmitErr(false);
+    submitLock.current = false; creationRequests.current.clear(); requestAttempt.current = null;
+    setSavedWork(null); setSubmitted(false); setProduction(null);
+    setMediaCandidates(null); setMediaError(null);
+  }
+
   useEffect(() => {
     if (!savedWork) { setMediaCandidates(null); setMediaError(null); return; }
     const controller = new AbortController();
@@ -513,7 +531,7 @@ export default function StudioWorkbench() {
             <label htmlFor="studio-project-select" style={{fontSize:12,color:"#5c6662"}}>当前研究项目</label>
             {projectLoading?<span role="status" style={{fontSize:12}}>正在读取项目…</span>:
               projects.length>0?<select id="studio-project-select" aria-label="当前研究项目" value={projectId}
-                disabled={busy||projectBusy} onChange={e=>setProjectId(e.target.value)}
+                disabled={busy||projectBusy||generating||directing||authorizing||submitBusy} onChange={e=>switchProject(e.target.value)}
                 style={{maxWidth:"min(100%,280px)",padding:"6px 8px",border:"1px solid #c9c2b4",borderRadius:4}}>
                 {projects.map(p=><option key={p.project_id} value={p.project_id}>{p.project_title}</option>)}
               </select>:<span style={{fontSize:12,color:"#8a3b3b"}}>尚未创建研究项目</span>}
