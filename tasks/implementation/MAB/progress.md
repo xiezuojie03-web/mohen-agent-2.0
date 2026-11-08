@@ -1792,7 +1792,7 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 **本检查点只做同步与盘点，未改业务代码或迁移。**
 
 - **施工基线**：远端 `origin/main@04af9c6`（V1.5 §0.2 裁决提交）。本地同步前 HEAD `0fe38aa`，落后 9、领先 0，工作树干净（无未提交/未跟踪）。
-- **备份/恢复路径**：`backup/cp0-local-pre-sync` 分支与 `cp0-backup-0fe38aa` 标签均指向 `0fe38aa`；恢复命令 `git checkout -b restore/cp0 backup/cp0-local-pre-sync`。未使用 reset --hard / force-push / stash / rebase，无本地成果被覆盖。
+- **备份与恢复（Owner 2026-11-08 裁定：零冗余副本）**：CP0 期间临时建立的 `backup/cp0-local-pre-sync` 分支与 `cp0-backup-0fe38aa` 标签**已删除**（占用仅约 82 字节）。不保留任何本地代码副本／镜像／打包备份；恢复依赖 `origin/main` 历史——`0fe38aa` 是 `04af9c6` 的祖先，可从云端随时取回。同步全程未使用 reset --hard / force-push / stash / rebase。政策已写入 PLAN §0.2 G。
 - **同步方式与结果**：`git fetch origin main` + `git merge --ff-only origin/main`，快进 `0fe38aa..04af9c6`，21 文件 +604/−148；同步后 HEAD `04af9c6` = `origin/main`，工作树干净。
 
 ### 本地环境盘点（真实探测；只读键名，未读取/记录任何密钥值）
