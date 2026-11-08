@@ -1712,3 +1712,33 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 **回归**：`pnpm test` **668 passed / 0 failed / 2 skipped**（84 文件通过、2 跳过，`real_db_untouched=YES`）——此前长期记账的 10 项失败全部处置，且**未 skip、未放宽断言**；`pnpm test:unit` 606 通过 / 0 失败；`pnpm -r typecheck` 6/6；`pnpm build` 通过；Playwright 规格解析 25 条 / 8 文件；auth coverage strict routes=110、public=18、protected=92、missing=0。
 
 **证据边界（诚实声明）**：CI 结论为远端 Actions 实际 run 结果，非本地推断；`tests/data-production/independent-gate-service-runtime.test.mjs` 因本机 Windows 缺 `openssl` CLI 记 `DEFERRED_ENV`（远端 CI 该步骤通过）；7 个 `guard:*` 在本地为红且不在 CI 范围，已如实记入 `CURRENT.md` 未关闭事项，未并入本次绿灯结论。**状态**：工程基线恢复绿灯；`M5_OVERALL_HOLD` 不变，5.9 Owner 体验签收仍为唯一剩余项。
+
+
+### 2026-11-08｜Trae推送后独立质量复核与整改登记（基线 `main@0fe38aa`）
+
+**核查范围**：以GitHub main实际HEAD `0fe38aa88cd1150fdae55f0a3190dfc299cc5fa7`为基线，复核Studio授权/Provider派发、项目与来源绑定、D/L/G授权、G5机器Reviewer、Admin资产来源回链、M5测试与状态文档；同时盘点全部远端分支。此次为只读质量复核，未修改应用代码、未执行生产DB/Storage变更、未发起Provider调用。
+
+**HEAD与CI证据**：
+- main HEAD为`0fe38aa`，父提交`3f8cc1b`。`3f8cc1b` GitHub Actions run 42444946341为SUCCESS（11步骤）；`0fe38aa`当前可见Vercel status为success，但未发现其自身完整CI run。故继承父提交CI，不得表述为HEAD已重跑完整CI。
+- `production-registry.json`当前为`ACTIVE_AUTHORIZED`，但activation文本明确为M5本地隔离授权、生产部署未授权；D00—D05执行策略仅attended。63项方法绑定为6项具体实现、57项HOLD。
+- `CURRENT.md`中SEC-01及7项本地guard红灯是现有状态记录，本轮尚未重新连接生产数据库或本地环境复测，状态保留OPEN/VERIFY_REQUIRED。
+
+**分支盘点**：
+- `mab/m4-provider-spend-controls-20261107`：13个ahead commits，新增`20261107090000_mab_m4_execution_controls.sql`及rollback，扩展`studio-execution-repository`并增加真实隔离PG/单测；分支Vercel status success。它提供持久预留/释放/对账候选，但与当前Studio一个delegation承载多动作/多次Provider调用的模型不直接兼容，且使用独立source_refs/ALLOWED权利封套；未合并。
+- `mab/owner-led-execution-plan-20261107`：11个ahead commits，主要是计划、交接和治理文件；比当前main早，未合并。
+- 未创建新分支；继续按现有main唯一施工路径增量修复，避免覆盖已有提交。
+
+**代码级确认的问题**：
+1. QR-01项目绑定：`director-plans/route.ts`用请求project_id推导来源，但`dispatch-grant.ts`未把预期project_id传入Grant校验；Grant仅按delegationId、actions、sourceIds授权。DirectorPlan当前持久化source_ids但没有project_id，项目切换未清理旧delegationId/方案状态。需补project_id持久绑定及每个后续Grant入口核验。
+2. QR-02会话上下文：`listProjectSourceIds`与`provider-dispatcher.ts:createStudioDispatcherDeps.readSourceRights`均用`set_config(...,false)`；Vercel无psql时使用复用node-pg Pool，存在会话设置跨查询残留风险。需改事务局部设置并做连接复用正反测试。
+3. QR-03预算：`authorizeProviderDispatch`仅累计`ACCEPT_AS_CANDIDATE`且cost非空的Receipt；UNKNOWN/HOLD不计入spent，缺少原子持久预留；并发授权可能竞态。Provider timeout在fetch返回Response后清除，`res.json()`正文不受同一超时保护。输入上界按字符数估算，不是可靠token上界。现有分支控制代码可借鉴，但需先解决多调用Delegation兼容。
+4. QR-04来源权利：项目来源由SHA连接raw_items/source_version/source，外发Grant按source_id读取rights；没有在同一不可变manifest内绑定原件revision、source_version、raw_item、hash、purpose及权利证据。当前代码使用的`allow/public_domain_secondary_use`与KAD rights_by_action、Gate machine_read/retain术语需做统一映射。
+5. QR-05 G5权利：`rule-gate-reviewer.mjs:assessRights`只拒绝DENIED_RIGHTS列出的明确值，缺失/空白操作字段不构成失败；其测试正例仅含basis和public_domain_secondary_use。当前权利动作词典尚未统一，不能只靠修补DENIED_RIGHTS集合解决。
+6. QR-05媒体：`work-qualification-reader.mjs`对media主要要求rights_status=cleared、license非空和未过期，尚未逐动作核验display/adapt/download等许可；批次H的media=[]正例不能证明有媒体时的合法许可链。
+7. QR-06同root：Studio研究任务由`research-tasks/route.ts`创建并返回task_id；外部授权由`dispatch-authorizations/route.ts`以固定`studio-llm-dispatch`创建另一个rootTaskRef，前端未传task_id/Agent研究产物到授权与导演派发。当前不能验收为同一root的双主体互补。
+8. QR-07知识回链：批次I已记录5/5 Studio资产source_refs/dependency_refs为空、use_events=0；Admin当前如实显示缺口，但未完成来源依赖修复。
+9. QR-08本地执行授权：`local-execution-authorizer.mjs`将Registry列出的enable_requires直接构造成true claims；执行器核对签名和声明匹配，不独立验证条件是否实际满足。只可作为隔离脚手架，不能当正式生产授权。
+10. QR-09安全/守卫：SEC-01及7个本地guard红灯仍按CURRENT开放；本轮没有生产数据库权限可读回执或本机guard重跑，不擅自声称关闭。
+11. QR-10准出：批次K的隔离HTTP正反证据保留，但不能覆盖上述缺口；M5仍`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY`，无VERIFIED_LIVE，Owner体验签收未完成。
+
+**处置裁决**：不回滚Trae有效成果，不合并两个分支，不新增任务书。按PLAN §0.1及§3.5既有八维度准出标准执行QR-01—QR-10定向增量整改；每个问题须有代码、POS/NEG/AUTH、PG/HTTP或明确DEFERRED_ENV证据。生产迁移、正式Reviewer/Gate启用、生产部署及新增费用均不在本次默示授权范围内。

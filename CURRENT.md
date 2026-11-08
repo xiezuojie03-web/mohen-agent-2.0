@@ -4,7 +4,7 @@
 
 ## 当前工程基线
 
-- main：`3f8cc1b`（本文回写提交紧随其后）。
+- main HEAD：`0fe38aa88cd1150fdae55f0a3190dfc299cc5fa7`（2026-11-08状态同步提交）。
 - 补齐推送：远端 main 此前停在 `d1cf3fc`，本地 26 个提交（M2—M5 批次 C—K）于本日补推，区间 `d1cf3fc..99a33a2`。
 - 远端 CI（`3f8cc1b`）：`ci` 42444946341 **SUCCESS**，11 个步骤全通过——权威路由、Dev Skill 版式与用例、typecheck、Playwright 规格解析、单测、数据生产边界、K3 追溯、build、auth coverage strict、MAB 74 目标交接审计。
 - 推送后基线 CI（`99a33a2`）：`ci` 42442455790 **FAILURE**；`MAB isolated PostgreSQL 17 verification` 42442455901 SUCCESS；`MAB M1 isolated authenticated HTTP acceptance` 42442455811 SUCCESS。失败步骤为 MAB 74 目标交接审计，根因 `target-diff.csv` 携带 UTF-8 BOM（表头首列成为不可见的 `\uFEFFpath`），已在 `3f8cc1b` 修复。
@@ -22,12 +22,12 @@
 
 ## 当前施工与准出
 
-- 当前施工：M5_REMEDIATION_ACTIVE。
+- 当前施工：M5_REMEDIATION_ACTIVE / QUALITY_REMEDIATION_ACTIVE（Trae推送后独立质量整改）。
 - M5整体：M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY。
 - M0：审查级EXIT_PASS，冻结继承，不重做全量盘点。
 - M1—M4：仅补M5真实作品所需的具名缺口；原CONDITIONAL_EXIT和M1-C01—C04、M2-C01—C03、M3-C01—C03、M4-C01—C04继续有效。
 - M6—M8：未启动，保持原依赖和准出范围。
-- M5 分维度进度、批次证据与各自证据边界以 `tasks/implementation/MAB/progress.md` 为准（唯一进度账）；本文不再复写施工线细节，避免出现第二个进度真值源。
+- M5 分维度进度、批次证据与各自证据边界以 `tasks/implementation/MAB/progress.md` 为准（唯一进度账）；Trae批次K的隔离证据继续保留，但本次QR-01—QR-10质量问题未关闭前，不接受“仅剩Owner体验签收”的准出表述。
 
 ## 未关闭事项
 
@@ -44,3 +44,11 @@
 ## 授权边界
 
 M5范围内现有Provider必要低成本调用已获Owner授权，但必须通过受控执行器并绑定逐来源权利、purpose、输入、预算、实际费用和持久Receipt。新增Provider/账号/密钥、订阅/充值或明显扩大费用须另行确认。不得擅自执行生产DB/Storage迁移、正式Reviewer/Gate启用或公开生产发布。向 GitHub 推送需明确授权范围；本次补推与 CI 修复推送已获 Owner 授权。
+
+
+## 本轮质量整改快照（2026-11-08）
+
+- 独立复核基线：`main@0fe38aa`；父提交`3f8cc1b`的CI 42444946341 SUCCESS；HEAD自身完整CI尚未复跑，HEAD可见Vercel status success。
+- 当前质量整改：QR-01项目/委托绑定；QR-02连接池身份上下文；QR-03 Provider持久预算与未知费用；QR-04来源/权利精确封套；QR-05 G5/媒体动作级权利；QR-06同root内外AI协作；QR-07知识资产来源回链；QR-08本地执行授权条件；QR-09 SEC-01与7项Guard；QR-10 M5准出证据边界。详见唯一施工计划`tasks/implementation/MAB/PLAN.md §0.1`，唯一进度账`progress.md`。
+- 发现两个未合并候选分支：`mab/m4-provider-spend-controls-20261107`（持久预算预留候选，待适配审查）及`mab/owner-led-execution-plan-20261107`（旧计划分支，不合并）。main保持当前唯一施工基线。
+- M5继续`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY`；所有能力当前仍为隔离证据，未获得生产启用授权。
