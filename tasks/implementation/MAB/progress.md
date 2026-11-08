@@ -1784,3 +1784,42 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 - QR-04/05须先统一KAD/Gate动作词典并改为读取精确source_anchor/asset_revision权利快照；当前生产无权利动作记录。
 - QR-06同root Agent+Provider协作、QR-07来源依赖回链、QR-08本地执行授权条件未关闭。
 - M5仍M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；隔离HTTP通过不等于真实原件/付费Provider/正式Gate/生产LIVE或Owner体验签收。
+
+---
+
+## CP0｜Trae 本地总装开工（2026-11-08，依 PLAN V1.5 §0.2）
+
+**本检查点只做同步与盘点，未改业务代码或迁移。**
+
+- **施工基线**：远端 `origin/main@04af9c6`（V1.5 §0.2 裁决提交）。本地同步前 HEAD `0fe38aa`，落后 9、领先 0，工作树干净（无未提交/未跟踪）。
+- **备份/恢复路径**：`backup/cp0-local-pre-sync` 分支与 `cp0-backup-0fe38aa` 标签均指向 `0fe38aa`；恢复命令 `git checkout -b restore/cp0 backup/cp0-local-pre-sync`。未使用 reset --hard / force-push / stash / rebase，无本地成果被覆盖。
+- **同步方式与结果**：`git fetch origin main` + `git merge --ff-only origin/main`，快进 `0fe38aa..04af9c6`，21 文件 +604/−148；同步后 HEAD `04af9c6` = `origin/main`，工作树干净。
+
+### 本地环境盘点（真实探测；只读键名，未读取/记录任何密钥值）
+
+- 工具链：Node v22.22.3、pnpm 9.15.4、git 2.55.0，`node_modules` 已安装。
+- PostgreSQL：本地实例 PostgreSQL 18.6，Windows 服务 `postgresql-x64-18`，程序 `D:\MoHen\tools\PostgreSQL\18`，数据 `D:\MoHen\data\postgresql\18\data`，监听 127.0.0.1:5432。库：`mohen_dev`（主）、`mohen_dev_test`、`mohen_test`、`postgres`。`psql.exe` 在 `D:\MoHen\tools\PostgreSQL\18\bin`，但不在 PATH。
+- 身份分离（`.env.local` 键）：`DATABASE_URL`→postgres@mohen_dev；`MOHEN_PRODUCER_DATABASE_URL`→mohen_producer；`MOHEN_PRIVATE_WORKER_DATABASE_URL`→mohen_private_worker；`MOHEN_GATE_MACHINE_DATABASE_URL`→mohen_gate_signer_m5_machine。四者均指向同一 `mohen_dev`，角色隔离靠 DB 角色与 RLS，不靠库分离。
+- 私有原件与原料：`MOHEN_PRIVATE_ORIGINAL_LOCAL_FS=true` 且 `MOHEN_PRIVATE_ORIGINAL_LOCAL_DIR` 目录存在；`MOHEN_RAW_STORE_PATH` 存在。实测目录 `D:\MoHen\data\private_originals`、`raw`、`m5-runs`。
+- 运行开关：`MOHEN_ENV=dev`、`MOHEN_WRITE_ENABLED=false`、`MOHEN_REGISTRATION_MODE=open`、`MOHEN_PRIVATE_ORIGINAL_UPLOAD_ENABLED` 已设、`MOHEN_G5_CONTEXTS` 已设。
+- Provider 凭据：`DEEPSEEK_API_KEY`、`SHANGHAI_LIBRARY_KEY`、`AMAP_WEB_KEY` 均为 SET（未读取值）。
+- **工具缺失（具名阻断）**：无 `docker`；无 `supabase` CLI；PATH 内无 `openssl`（`tests/data-production/independent-gate-service-runtime.test.mjs` 仍为既有 `DEFERRED_ENV`）。因此集成验收环境**不能**取 Docker 全离线自建或 Supabase 本地栈，确定为：**本地 PostgreSQL 18 + 本地私有原件文件系统 + Next dev 服务（`tools/run-dev-server.mjs`，端口 3210）**。
+
+### 本地库现状审计（只读，未写入）
+
+- Schema 齐备：`control`14 / `source`7 / `evidence`6 / `world`15 / `meaning`4 / `publication`4 / `studio`8 / `public`15 / `read_model`。`control.sign_gate_candidate`、`revoke_gate_qualification`、`qualification_allows`、`current_qualification_is_valid`、`artifact_revision_for` 等函数均在。
+- 真实数据在位：`studio.projects`=1、`asset_heads`=6、`asset_revisions`=6、`private_originals`=2；`public.director_plans`=20；`source.sources`=40、`source_versions`=40、`read_units`=256；`evidence.material_evidence`=170；`world.claim_revisions`=91；`meaning.findings`=52。
+- **QR-01 未落到本地**：`public.director_plans` 无 `project_id` 列，迁移 `20261108100000_mab_m5_director_plan_project_binding.sql` 尚未应用到 `mohen_dev`（与批次 K 的"迁移只进 _test 库"同型漂移，属真实缺陷，不是文档问题）。
+- **QR-04/05 在本地同样成立**：`source.sources` 仅 `rights`，无 `rights_by_action`/`external_processing`；KAD/Gate 动作词典与逐动作权利快照缺失。
+- **QR-07 成立**：`studio.use_events`=0、`studio.asset_links`=0（资产来源/依赖回链为空）。
+- `studio.asset_revisions` 无 `project_id`（其父级 `asset_heads` 有）；迁移文件总数 60，最新为 `20261108090000` 与 `20261108100000`。
+- **QR-09 未销账**：7 项本地 guard 最后记录为红，本轮未重跑，保留 OPEN/VERIFY_REQUIRED。
+
+### 下一步精确动作（CP1 首包，尚未执行）
+
+1. 将未应用的本地迁移（至少 `20261108100000`）应用到隔离库 `mohen_dev`，验证 nullable 列 + FK，并确认旧无 project 的导演请求仍在 Provider 调用前 HOLD、不推测回填。
+2. 复跑既有隔离验证套件建立 CP1 基线（`tools/verify-2-c-d-chain.mjs`、`verify-3-gate-chain.mjs`、`verify-4-provider-dispatch.mjs`、`verify-5-studio-dispatch.mjs`、`verify-5i-asset-matrix.mjs`、`verify-5j-components.mjs`、`verify-5k-http.mjs`），只跑受变更影响项，不做无变化全量重跑。
+3. 关闭 QR-02（同一连接池下 Owner A/B/匿名连续切换的正反真实测试）与 QR-08（本地执行授权 `enable_requires` 逐项由独立可验证检查生成，拒绝生产端点/生产密钥）。
+4. 完成集成环境备份/恢复实测（本地 PG 与 private_originals 一致恢复），形成 CP1 交付证据。
+5. 未在 CP0 关闭任何 QR，M5 继续 `M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY`；无生产迁移、无正式 Gate 启用、无公开发布。
+
