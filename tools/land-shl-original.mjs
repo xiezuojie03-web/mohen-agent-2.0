@@ -65,9 +65,32 @@ async function ensureSource({ title, itemId, projectId }) {
   if (existing.length === 1) return existing[0].source_id;
   const rows = await queryRows(
     `insert into source.sources(provider,title,source_type,carrier_type,content_availability,provenance_status,original_locator,scope)
-     values (:'p',:'t','gazetteer','scanned_page','image_scan','verified_original',:'locator'::jsonb,:'scope'::jsonb)
+     values (:'p',:'t',:'st','scanned_page','image_scan','verified_original',:'locator'::jsonb,:'scope'::jsonb)
      returning source_id::text as source_id`,
-    { p: PROVIDER, t: title, locator: JSON.stringify({ dataset: "Shanghai Library Open Data", dbname: "gj", item_id: itemId }),
+    { p: PROVIDER, t: title, st: "gazetteer",
+      locator: JSON.stringify({ dataset: "Shanghai Library Open Data", dbname: "gj", item_id: itemId }),
+      scope: JSON.stringify({ project_id: projectId }) });
+  return rows[0].source_id;
+}
+
+// Owner 2026-11-08 选定路线：改为吸纳"同平台自带正文"的数据后，来源载体是文本记录，
+// 不是扫描页。（既有图片页来源不受影响，仍在上面那条路径登记。）
+async function ensureTextSource({ title, projectId, endpoint }) {
+  const existing = await queryRows(
+    `select source_id::text from source.sources where provider=:'p' and title=:'t'`, { p: PROVIDER, t: title });
+  if (existing.length > 1) throw new Error("SHL_SOURCE_AMBIGUOUS");
+  if (existing.length === 1) {
+    const rows = await queryRows(
+      `update source.sources set carrier_type='text_record', content_availability='structured_content'
+        where source_id=:'id'::uuid returning source_id::text as source_id`, { id: existing[0].source_id });
+    return rows[0].source_id;
+  }
+  const rows = await queryRows(
+    `insert into source.sources(provider,title,source_type,carrier_type,content_availability,provenance_status,original_locator,scope)
+     values (:'p',:'t','gazetteer','text_record','structured_content','verified_original',:'locator'::jsonb,:'scope'::jsonb)
+     returning source_id::text as source_id`,
+    { p: PROVIDER, t: title,
+      locator: JSON.stringify({ dataset: "Shanghai Library Open Data", dbname: "shnh/dmz", endpoint }),
       scope: JSON.stringify({ project_id: projectId }) });
   return rows[0].source_id;
 }
@@ -96,7 +119,138 @@ async function ensureRawItem({ versionId, storageRef, sha256, byteSize, mediaTyp
   return rows[0].id;
 }
 
+// ---- 文本路线（Owner 2026-11-08 选定）：同平台自带正文 → text/plain 原件 ----
+function locateFieldExtent(bytes, field, entryIndex) {
+  const text = bytes.toString("utf8");
+  const marker = `"${field}":"`;
+  const starts = [];
+  let at = text.indexOf(marker);
+  while (at >= 0) { starts.push(at); at = text.indexOf(marker, at + 1); }
+  if (starts.length === 0) throw new Error(`SHL_TEXT_FIELD_NOT_FOUND:${field}`);
+  const pick = starts[entryIndex];
+  if (pick === undefined) throw new Error(`SHL_TEXT_ENTRY_INDEX_OUT_OF_RANGE:${entryIndex}:${starts.length}`);
+  const valueStartChar = pick + marker.length;
+  const valueEndChar = text.indexOf('"', valueStartChar);
+  if (valueEndChar < 0) throw new Error("SHL_TEXT_FIELD_UNTERMINATED");
+  const rawValue = text.slice(valueStartChar, valueEndChar);
+  if (/[\\]/.test(rawValue)) throw new Error("SHL_TEXT_FIELD_HAS_ESCAPES");
+  const startByte = Buffer.byteLength(text.slice(0, valueStartChar), "utf8");
+  const endByte = startByte + Buffer.byteLength(rawValue, "utf8");
+  const selected = bytes.subarray(startByte, endByte);
+  if (!Buffer.from(rawValue, "utf8").equals(selected) || !Buffer.from(selected.toString("utf8"), "utf8").equals(selected)) {
+    throw new Error("SHL_TEXT_EXTENT_MISALIGNED");
+  }
+  return { start_byte: startByte, end_byte: endByte, quote: rawValue, quote_sha256: originalHash(selected), matches: starts.length };
+}
+
+async function landText() {
+  const file = arg("file");
+  const field = arg("field", "description");
+  const entryIndex = Number(arg("entry-index", "0"));
+  const title = arg("title");
+  const endpoint = arg("endpoint", "");
+  const originalId = arg("original-id", randomUUID());
+  const assetId = arg("asset-id", randomUUID());
+  const apply = process.argv.includes("--apply");
+  const projectId = arg("project-id", "b0a11000-0000-4000-8000-000000000001");
+  const owner = arg("owner", "270bcecf-9bfb-4865-9432-a0ac9db8df75");
+  if (!file || !fs.existsSync(file)) throw new Error("SHL_TEXT_FILE_MISSING");
+  if (!title) throw new Error("SHL_TEXT_TITLE_MISSING");
+
+  const bytes = Buffer.from(fs.readFileSync(file));
+  if (bytes.length > MAX_ORIGINAL_BYTES) throw new Error("SHL_TEXT_EXCEEDS_PRIVATE_ORIGINAL_LIMIT");
+  const sha256 = originalHash(bytes);
+  const extent = locateFieldExtent(bytes, field, entryIndex);
+
+  const summary = {
+    step: "SHL_LAND_TEXT",
+    applied: apply,
+    source_file: { path_basename: file.split(/[\\/]/).pop(), bytes: bytes.length, sha256 },
+    field, entry_index: entryIndex, field_occurrences: extent.matches,
+    extent: { start_byte: extent.start_byte, end_byte: extent.end_byte,
+      bytes: extent.end_byte - extent.start_byte, quote_sha256: extent.quote_sha256,
+      quote_head: extent.quote.slice(0, 60) },
+    title, original_id: originalId, asset_id: assetId,
+  };
+  if (!apply) {
+    summary.status = "SHL_LAND_TEXT_DRY_RUN";
+    console.log(JSON.stringify(summary, null, 2));
+    await getNodePgPool().end();
+    return;
+  }
+
+  const secret = process.env.MOHEN_DATABASE_SESSION_SECRET;
+  if (typeof secret !== "string" || !secret) throw new Error("MOHEN_DATABASE_SESSION_SECRET missing");
+  const token = makeToken(owner, secret);
+  const pool = getNodePgPool();
+  const storage = createLocalPrivateOriginalStorage();
+  const repository = createPrivateOriginalRepository(pool);
+
+  const reserved = await repository.reserve({
+    projectId, originalId, assetId,
+    idempotencyKey: `shl-text:${sha256.slice(0, 16)}`,
+    sha256, byteSize: bytes.length,
+    fileName: `shl-dmz-${sha256.slice(0, 12)}.json.txt`,
+    contentType: "text/plain",
+  }, token);
+  let alreadyStored = false;
+  try {
+    const previous = await storage.readVerified(reserved.storage_key, sha256, bytes.length);
+    if (!previous.equals(bytes)) throw new Error("ORIGINAL_INTEGRITY_FAILED");
+    alreadyStored = true;
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
+  if (!alreadyStored) await storage.putVerified(reserved.storage_key, bytes, "text/plain");
+  const finalRecord = await repository.finalize(originalId, sha256, token);
+  summary.original = { state: finalRecord.state, sha256: finalRecord.sha256, byte_size: finalRecord.byte_size,
+    asset_revision_id: finalRecord.asset_revision_id, already_stored: alreadyStored };
+
+  const actualStorageRef = (await queryRows(
+    `select storage_bucket||'/'||storage_key as ref from studio.private_originals where original_id=:'o'::uuid`,
+    { o: originalId }))[0].ref;
+  const sourceId = await ensureTextSource({ title, projectId, endpoint });
+  const versionId = await ensureVersion({
+    sourceId, label: `dmz-${sha256.slice(0, 16)}`, sha256,
+    metadata: {
+      schema: "mohen.shl-text-original.v1",
+      dataset: "Shanghai Library Open Data Platform",
+      dbname: "shnh/dmz", endpoint,
+      field, entry_index: entryIndex,
+      extent_kind: "utf8_byte_range/v1",
+      start_byte: extent.start_byte, end_byte: extent.end_byte, quote_sha256: extent.quote_sha256,
+      landed_by: "tools/land-shl-original.mjs --mode text",
+    },
+  });
+  const rawItemId = await ensureRawItem({
+    versionId, storageRef: actualStorageRef, sha256, byteSize: bytes.length, mediaType: "text/plain" });
+  summary.registration = { source_id: sourceId, source_version_id: versionId, raw_item_id: rawItemId, storage_ref: actualStorageRef };
+
+  const registrations = createPrivateSourceRegistrationRepository(pool);
+  const registration = await registrations.lookup(originalId, token);
+  summary.d00_lookup = {
+    ok: registration.sha256 === sha256 && registration.raw_item_id === rawItemId &&
+      registration.source_version_id === versionId && registration.provider === PROVIDER,
+    provider: registration.provider, title: registration.title,
+    carrier_type: registration.carrier_type, content_type: registration.content_type,
+    artifact_revision: registration.artifact_revision,
+    source_version_artifact_revision: registration.source_version_artifact_revision,
+  };
+  summary.reading_input = {
+    original_id: originalId, raw_item_id: rawItemId, source_version_id: versionId,
+    raw_sha256: sha256, kind: "utf8_byte_range/v1",
+    start_byte: extent.start_byte, end_byte: extent.end_byte,
+    quote_sha256: extent.quote_sha256, quote: extent.quote,
+  };
+  summary.status = summary.d00_lookup.ok ? "SHL_LAND_TEXT_OK" : "SHL_LAND_TEXT_NOT_BOUND";
+  await pool.end();
+  console.log(JSON.stringify(summary, null, 2));
+  if (!summary.d00_lookup.ok) process.exitCode = 1;
+}
+
 async function main() {
+  const mode = arg("mode", "pdf-page");
+  if (mode === "text") return landText();
   const pdfPath = arg("pdf");
   const pageNumber = Number(arg("page", "0"));
   const itemId = arg("item-id");
