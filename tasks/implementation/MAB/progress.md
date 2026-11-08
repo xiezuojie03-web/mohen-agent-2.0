@@ -2001,6 +2001,31 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 | D01—D05 | 未开始 | D01 依赖 G0 独立 PASS；D02 另需转写（见卡点表） |
 | G0—G5 | 未重签 | 旧决策因加列全部失效，需按新 artifact_revision 重签 |
 
+### CP2-E 第四步：按 Owner 选定路线（同平台文字正文）吸纳成功，但暴露一处契约不一致（2026-11-08）
+
+Owner 于本停点选择"用同平台文字正文数据"后，已按该路线取到真实正文并落库：
+
+| 环节 | 实际结果 | 证据 |
+|---|---|---|
+| 取数端点 | `https://data1.library.sh.cn/shnh/dmz/webapi/geonames/list?type=3&freetext=金泽`（上海地名志，同属上海图书馆开放数据平台合作单位数据） | 新增 `tools/fetch-shl-dmz-text.mjs` |
+| 取数两个坑（必须记住） | ①key **只能放查询参数**，放请求头会回 `HTTP200 + {"result":"2","data":"缺少参数Key"}`（极易误判为"无数据"）；②不声明 `Accept-Encoding: identity` 时正文尾部会混入压缩残片（U+FFFD/U+0000），`JSON.parse` 仍能过但正文已毁 | 同一 freetext 先后实测 4 种 key 位置 + 两种编码 |
+| 正文质量 | `松江` 条目的 `description` 已损坏（尾部为压缩残片），**弃用**；`金泽` 条目正文干净 | 落库工具 `locateFieldExtent` 对转义/错位/损坏失败关闭 |
+| 私有原件 | `original_id=b0a11000-…-0006`，`text/plain`，**1,015 字节**，sha256 `b6f03053…`，`STORED_VERIFIED` 且回读一致 | 原始 HTTP 响应字节原样留存，未改一字节 |
+| L0 登记 | `source`（provider=`shanghai-library`，title=`上海地名志（上海图书馆开放数据 shnh/dmz）`，`carrier_type=text_record`，`content_availability=structured_content`）→ `source_version`（metadata 记 endpoint/field/entry/extent 区间）→ `raw_item`（`media_type=text/plain`） | `source_version_id=…`，`raw_item_id=…`；D00 窄口回查 `ok=true` |
+| 转写区间 | 字节 **332—751**（419 字节），`quote_sha256=2a2661da…`，正文以"金泽一名金泽镇……"起 | 区间已用 UTF-8 往返一致性校验 |
+| 权利复标 | SHL 来源 **29/29** 显式许可、**29/29** 不可变快照冻结，其他 7 类 provider 仍 `with_actions=0` | 词典回读 29/29 `granted_ok` |
+
+**但 D00 在这份文本原件上跑不起来，暴露一处既有实现与新路线不一致**：
+
+| 事实 | 位置 | 说明 |
+|---|---|---|
+| D00 私有来源准入只接受 `image/(png\|jpeg\|webp)` | `pipelines/data-production/workers/private-evidence-stage.mjs:10,90`（`IMAGE_TYPE`） | 实测报 `PRIVATE_SOURCE_INTAKE_ORIGINAL_UNVERIFIED` |
+| 但 D01 已经有文本读法 | 同文件 `draftTextReading`（第 164—208 行），明确要求并校验 `content_type==='text/plain'` + `utf8_byte_range/v1` | 即**管线本身支持文本读取，只是 D00 准入把它挡在门外** |
+| 结论 | 属"旧实现不符目标需要的最小的必要适配"，不是新造能力 | 最小改法：D00 准入的 `IMAGE_TYPE` 判定放宽为 `image/* or text/plain`，并补一条"文本原件可通过 D00 且 D01 能绑定同一版本"的正向测试，同时保留图片路径的既有反例 |
+
+**未做**：这处契约放宽尚未落地（需同步改 `tests/data-production/private-scanned-page-worker.test.mjs:136,141` 附近的反例口径），因此文本路线的 D00 仍是 `HOLD/BLOCKED`，D01—D05 与 G0—G5 仍未开始。
+
+
 
 
 
