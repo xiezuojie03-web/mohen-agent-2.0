@@ -42,7 +42,7 @@ async function main() {
 
   const who = await dataAccess.queryRows(
     `select control.current_app_user_id()::text as uid
-     from (select set_config('mohen.session_token', :'token', false)) s`, { token });
+     from (select set_config('mohen.session_token', :'token', true)) s`, { token });
   record("VERIFY_5_IDENTITY", who[0]?.uid === OWNER, `uid=${who[0]?.uid}`);
 
   // 1) 项目来源服务端推导（与路由 listProjectSourceIds 同一查询）。
@@ -52,7 +52,7 @@ async function main() {
        join source.raw_items r on r.checksum_sha256 = o.sha256
        join source.source_versions v on v.source_version_id = r.source_version_id
        join source.sources s on s.source_id = v.source_id,
-       (select set_config('mohen.session_token', :'token', false)) cfg
+       (select set_config('mohen.session_token', :'token', true)) cfg
       where o.project_id = :'pid'`, { token, pid: PROJECT });
   const projectSources = srcRows.map((r) => r.source_id).sort();
   record("VERIFY_5_PROJECT_SOURCES", projectSources.includes(NAJ_SOURCE), `sources=${projectSources.join(",")}`);
@@ -81,7 +81,7 @@ async function main() {
 
   // 3) grant 签发（maxCalls=4）。
   const grant = await dispatcher.authorizeStudioDispatchGrant(deps, {
-    delegationId: delegation.delegation_id, actions: ACTIONS,
+    delegationId: delegation.delegation_id, projectId: PROJECT, actions: ACTIONS,
     model: "deepseek-flash", sourceIds: projectSources, sessionToken: token, maxCalls: 4,
   });
   record("VERIFY_5_GRANT_AUTHORIZED", dispatcher.isUsableDispatchGrant(grant), `grantId=${grant.grantId}`);
@@ -154,14 +154,14 @@ async function main() {
   } catch (error) { forgedCode = errCode(error); }
   const deniedRows = await dataAccess.queryRows(
     `select s.source_id::text as source_id from source.sources s,
-       (select set_config('mohen.session_token', :'token', false)) cfg
+       (select set_config('mohen.session_token', :'token', true)) cfg
      where s.rights = '{}'::jsonb and s.source_id <> :'naj'::uuid limit 1`,
     { token, naj: NAJ_SOURCE });
   let deniedCode = "";
   if (deniedRows.length === 1) {
     try {
       await dispatcher.authorizeStudioDispatchGrant(deps, {
-        delegationId: delegation.delegation_id, actions: ["llm_director_h1"],
+        delegationId: delegation.delegation_id, projectId: PROJECT, actions: ["llm_director_h1"],
         model: "deepseek-flash", sourceIds: [deniedRows[0].source_id], sessionToken: token, maxCalls: 1,
       });
     } catch (error) { deniedCode = errCode(error); }

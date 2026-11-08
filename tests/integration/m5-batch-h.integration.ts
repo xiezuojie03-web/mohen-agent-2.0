@@ -85,7 +85,7 @@ describe("M5 批次 H：同一真实作品 ST-05→ST-09 + WATCH + 撤权/恢复
     expect(WATCH_CTX?.scope?.mode).toBe("public_watch");
     const who = await queryRows(
       `select control.current_app_user_id()::text as uid
-       from (select set_config('mohen.session_token', :'token', false)) s`, { token: state.token });
+       from (select set_config('mohen.session_token', :'token', true)) s`, { token: state.token });
     expect(who[0]?.uid).toBe(OWNER);
     const srcRows = await queryRows(
       `select distinct s.source_id::text as source_id
@@ -93,7 +93,7 @@ describe("M5 批次 H：同一真实作品 ST-05→ST-09 + WATCH + 撤权/恢复
          join source.raw_items r on r.checksum_sha256 = o.sha256
          join source.source_versions v on v.source_version_id = r.source_version_id
          join source.sources s on s.source_id = v.source_id,
-         (select set_config('mohen.session_token', :'token', false)) cfg
+         (select set_config('mohen.session_token', :'token', true)) cfg
         where o.project_id = :'pid'`, { token: state.token, pid: PROJECT });
     state.sourceIds = srcRows.map((r: any) => String(r.source_id)).sort();
     expect(state.sourceIds).toContain(NAJ_SOURCE);
@@ -121,7 +121,7 @@ describe("M5 批次 H：同一真实作品 ST-05→ST-09 + WATCH + 撤权/恢复
       ?? await state.deps.delegations.saveDelegation(delegationInput, state.token);
     state.delegationId = delegation.delegation_id;
     state.grant = await authorizeStudioDispatchGrant(state.deps, {
-      delegationId: state.delegationId, actions: ["llm_director_h1", "llm_director_h2", "llm_director_h3"],
+      delegationId: state.delegationId, projectId: PROJECT, actions: ["llm_director_h1", "llm_director_h2", "llm_director_h3"],
       model: "deepseek-flash", sourceIds: state.sourceIds, sessionToken: state.token, maxCalls: 3,
     });
     expect(state.grant.grantId).toBeTruthy();
@@ -137,16 +137,17 @@ describe("M5 批次 H：同一真实作品 ST-05→ST-09 + WATCH + 撤权/恢复
     const brief = "用松江府田赋史料做一集 3 分钟短片，说明清代田赋征收中普通农户的实际负担。";
     state.brief = brief;
     const created = await createDirectorPlan(brief, "jinze", OWNER,
-      { auth: state.grant, facts: state.facts, sourceIds: state.sourceIds });
+      { auth: state.grant, facts: state.facts, sourceIds: state.sourceIds, projectId: PROJECT });
     expect(created).toBeTruthy();
     expect(created!.planA.angle.length).toBeGreaterThan(0);
     expect(created!.planB.angle.length).toBeGreaterThan(0);
     expect(created!.finding).toBeTruthy();
     state.planId = created!.planId;
     const row = (await queryRows(
-      `select source_ids from public.director_plans where plan_id = :'id'`, { id: state.planId }))[0] as any;
+      `select source_ids, project_id::text as project_id from public.director_plans where plan_id = :'id'`, { id: state.planId }))[0] as any;
     const sids = typeof row?.source_ids === "string" ? JSON.parse(row.source_ids) : row?.source_ids;
     expect(sids).toEqual(state.sourceIds);
+    expect(row?.project_id).toBe(PROJECT);
   });
 
   it("3. ST-05b：选定方案 A，H3 真实节拍（provenanceRefs 绑真实材料）", async () => {
