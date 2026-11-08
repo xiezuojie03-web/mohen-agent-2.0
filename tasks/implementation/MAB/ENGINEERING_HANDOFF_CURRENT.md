@@ -11,8 +11,8 @@
 
 ## 当前状态
 
-- 远端基线：main@3262fe431386d4f86c1d74d963f38b768d604532；CI 42453345351 SUCCESS，MAB隔离HTTP 42453345284 SUCCESS，Vercel status success。
-- 当前施工：M5_REMEDIATION_ACTIVE / QUALITY_REMEDIATION_ACTIVE；唯一施工计划PLAN.md §0.1已登记QR-01—QR-10。
+- 施工接续读取基线：GitHub main@9c20ddf934a3f6caf5b702371d93051a1d6b1abf（本次受控文档修订之前）；Trae开工必须先重新fetch核HEAD并与本地安全对齐，不能以本行作当前HEAD断言。历史CI 42453345351及隔离HTTP 42453345284 SUCCESS，只代表其对应隔离版本。
+- 当前施工：M5_REMEDIATION_ACTIVE / QUALITY_REMEDIATION_ACTIVE；PLAN.md §0.1登记QR-01—QR-10，**§0.2登记Trae本地总装和首用户交付裁决**；当前未准出。
 - 整体验收：M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY。
 - M0审查级EXIT_PASS冻结继承；M1—M4仅补M5真实作品必需缺口；M6—M8不提前启动。
 - 起始main主CI 42238756963的MHKA权威入口失败已关闭；PR完整CI 42318629059与合并后main CI 42318924701均SUCCESS。历史失败保留，不以文档提交本身认定通过。
@@ -25,12 +25,13 @@
 4. QR-03已完成未知费用冻结、费用状态累计、UTF-8上界、完整响应超时和成功重放；仍需评估`mab/m4-provider-spend-controls-20261107`，解决多调用Delegation兼容后再实现持久原子预算预留/对账/恢复。
 5. 完成QR-06同root Agent+外部AI协作、QR-07知识资产来源依赖回链；随后按PLAN既有M1—M5条件和八维度矩阵做一次完整回归。Owner体验签收最后进行。
 
-## 工具分工
+## 本地Trae总装入口（2026-11-08 Owner最新执行裁决）
 
-- **ChatGPT主导：** GitHub源码和文档修改、测试与CI、代码审查、受控迁移候选、进度/差异/当前状态回写。
-- **CodeBuddy集中处理：** 仅处理必须访问用户本地原件、本机浏览器、本地运行环境、本地凭据或当前连接器无法安全触达的任务。每次交接必须包含精确路径/命令、环境、授权、POS/NEG/AUTH验收、失败关闭和回滚。
-- **Codex不再作为本轮执行工具。**
-- CodeBuddy完成后将commit和实际测试回执交回，由ChatGPT核对GitHub源码、CI、环境和证据；不能只凭口头报告准出。
+- **唯一施工标准**：`tasks/implementation/MAB/PLAN.md` **§0.2**（本地安全同步、总装责任、CP0—CP5过程控制、全角色首用户可开放级交付）；继续按**§0.1、§3.1—3.5、§5、§6**原工程依赖与门禁执行，不另起计划。
+- **Trae本地唯一工程集成者**：先核真实本地工作树/未提交/未推送内容，备份并执行`git fetch origin main`、双向差异检查；安全fast-forward或保留冲突另作受控解决，禁止重置覆盖；再在持久非生产环境完成M1—M5真实总装、M6/M7验收及M8经授权的Owner首用户私有部署。
+- **Owner过程控制**：CP0备份同步；CP1持久环境与M1/M2；CP2真实D00—D05/独立G0—G5；CP3同root内外AI；CP4 Studio/Admin/WATCH与M6/M7；CP5 M8首用户完整验收。每点提交简短证据/阻断/下一步，暂停新增施工等Owner“继续”；不让Owner体验半成品或替工程师调试。
+- **ChatGPT**：仅独立代码/合同/验收核查，不同时改main；CodeBuddy按Owner指令处理具名环境缺口；Codex不使用。所有版本/证据/阻断继续原位入`progress.md`、`CURRENT.md`，不得以口头报告签PASS。
+- **最终交付边界**：原M5隔离PASS不等于公开可用；跨M6/M7/M8完整门，Owner在实际Web按各独立角色测试，达到可对外开放级别**但不开放公众**；生产迁移、正式Gate和私有Owner入口启用仍须对应授权。
 
 ## 授权与硬边界
 
