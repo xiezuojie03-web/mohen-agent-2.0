@@ -28,7 +28,7 @@ export async function listProjectSourceIds(projectId: string, sessionToken: stri
 /** 作品已绑定来源（不可变修订 → 导演方案行）：旁白润色等后续动作的逐来源权利核验用。 */
 export async function sourceBindingForWork(workId: string): Promise<{ projectId: string | null; sourceIds: string[] }> {
   const rows = await queryRows(
-    `select p.project_id::text as project_id, p.source_ids as sids
+    `select to_jsonb(p)->>'project_id' as project_id, p.source_ids as sids
        from publication.work_revisions r
        join public.director_plans p on p.plan_id = nullif(r.content->'director_source'->>'plan_id','')::uuid
       where r.work_id = :'wid'

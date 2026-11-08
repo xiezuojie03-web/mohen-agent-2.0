@@ -386,7 +386,8 @@ export async function dispatchAuthorizedCall(
   const startedAt = new Date().toISOString();
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
-  let json: { choices?: Array<{ message?: { content?: string } }>; usage?: ProviderUsage } | null = null;
+  type ProviderResponse = { choices?: Array<{ message?: { content?: string } }>; usage?: ProviderUsage };
+  let json: ProviderResponse | null = null;
   let failureCode: string | null = null;
   try {
     const res = await fetchImpl(`${baseUrl}/chat/completions`, {
@@ -408,7 +409,7 @@ export async function dispatchAuthorizedCall(
     } else {
       try {
         // Keep the abort deadline active until the entire response body is read.
-        json = (await res.json()) as typeof json;
+        json = (await res.json()) as ProviderResponse;
       } catch {
         failureCode = ctrl.signal.aborted ? "PROVIDER_TIMEOUT" : "PROVIDER_RESPONSE_INVALID";
       }

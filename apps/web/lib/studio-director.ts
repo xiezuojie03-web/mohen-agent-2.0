@@ -87,7 +87,7 @@ export async function createDirectorPlan(
 
 export async function getDirectorPlan(planId: string) {
   const rows = await queryRows(
-    "select plan_id::text as plan_id, project_id::text as project_id, brief, topic, plan_a, plan_b, facts, finding, source_ids, selected, beats, created_at::text as created_at from public.director_plans where plan_id = :'id'",
+    "select plan_id::text as plan_id, to_jsonb(d)->>'project_id' as project_id, brief, topic, plan_a, plan_b, facts, finding, source_ids, selected, beats, created_at::text as created_at from public.director_plans d where plan_id = :'id'",
     { id: planId }
   );
   return rows[0] ?? null;
