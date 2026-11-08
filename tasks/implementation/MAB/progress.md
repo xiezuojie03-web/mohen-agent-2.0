@@ -1980,7 +1980,27 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 | 上图**古籍（gj）**扫描页无文本层 | 抽出的 JPEG 是纯影像；D02 的 `literal_reading`（原文转写）无法从字节直接得到 | D02→D05（以及依赖 D02 证据的 G2—G5） | 需要 OCR：①本机无本地离线 OCR 引擎（`tesseract` 不在 PATH）；②走外部模型 OCR 属 `external_processing`，当前显式 `unknown` → **HOLD，需 Owner 明示授权** |
 | 上图**民国图书（mgts）**自带平台 OCR 文本层（可免外部模型） | 但本机只留有 `pages_raw.json` 文本快照（沪上经纬 2026-09），**没有对应的 mgts 容器字节**；`pdf/stream` 今日返回空（疑 24 小时页配额） | D02—D05（文本读法路径） | 配额恢复后重新取 mgts 逐页字节，或 Owner 提供已下载的 mgts 原件文件 |
 
-**因此 CP2 的 D00/D01 已在授权真实原件上成立，D02—D05 与 G2—G5 仍停在"需要一次 OCR 授权或一份 mgts 容器字节"**；未用任何非授权来源、未做任何付费模型调用。
+**因此 CP2 的 D00 已在授权真实原件上真实运行并产出可核验证据，但 D01 起至 D05 与 G1—G5 尚未完成**；未用任何非授权来源、未做任何付费模型调用。
+
+### CP2-E 第三步：D00 在授权原件上真实运行（2026-11-08）
+
+`node tools/verify-local-execution-env.mjs` 在 HEAD=`dbb2ea9` 上重新出证：`user_engineering_authorization` / `M0_environment_and_bindings_verified` / `isolation_and_contract_tests_pass`（30 文件 172 pass 0 fail）/ `no_formal_hold_bypass` 全 PASS，写入 `D:\MoHen\keys\execution-auth\enable-requires-evidence.json`。
+
+`node tools/local-execution-authorizer.mjs run --stage D00 --scope-file D:/MoHen/data/m5-runs/cp2e-d00-scope.json`（scope：`project_id=b0a11000-…-0001`、`original_id=b0a11000-…-0004`、`page_number=51`，run_id `c0a12000-0000-4000-8000-000000000010`）：
+
+| 事实 | 值 |
+|---|---|
+| 运行结果 | `status=HOLD`，`disposition=HOLD`，`reason_code=INDEPENDENT_GATE_NOT_VERIFIED`，`verification_error=INDEPENDENT_STAGE_QUALIFICATION_REQUIRED` |
+| 产出的 Gate 候选证据 | provider=`shanghai-library`、title=`[崇禎]松江府志九十四卷`、`carrier_type=scanned_page`、`sha256=3b47ed4b…`、`byte_size=236005`、`content_type=image/jpeg`；`raw_item_id=827ddd73-…`，`artifact_revision=20e94f01…`，input/output/request digest 三项齐全 |
+| 为何 HOLD | `verifyStageQualification` 必须由受信生产入口提供**独立 Gate 决策**；本机 `local-execution-authorizer` 不提供，属设计内失败关闭（不是数据或权利问题） |
+| 连带事实 | 加列后 `control.artifact_revision_for` 对整行取哈希，**旧 G0—G5 决策对新 artifact_revision 一律失效**，`tools/verify-3-gate-chain.mjs` 既有 7 FAIL 与此同源；须在 CP2-E 对新原件重新签 G0—G5 |
+
+| 阶段 | 状态 | 说明 |
+|---|---|---|
+| D00 | `CODE_PRESENT` + 已真实运行，**HOLD**（等独立 G0 决策） | 证据文件 `verification/data-production-runs/c0a12000-….machine.json` 与 `.human-review.json` |
+| D01—D05 | 未开始 | D01 依赖 G0 独立 PASS；D02 另需转写（见卡点表） |
+| G0—G5 | 未重签 | 旧决策因加列全部失效，需按新 artifact_revision 重签 |
+
 
 
 
