@@ -4,16 +4,16 @@
 
 ## 当前工程基线
 
-- main HEAD：`0fe38aa88cd1150fdae55f0a3190dfc299cc5fa7`（2026-11-08状态同步提交）。
+- main HEAD：`3262fe431386d4f86c1d74d963f38b768d604532`（2026-11-08质量整改最新提交）。
 - 补齐推送：远端 main 此前停在 `d1cf3fc`，本地 26 个提交（M2—M5 批次 C—K）于本日补推，区间 `d1cf3fc..99a33a2`。
-- 远端 CI（`3f8cc1b`）：`ci` 42444946341 **SUCCESS**，11 个步骤全通过——权威路由、Dev Skill 版式与用例、typecheck、Playwright 规格解析、单测、数据生产边界、K3 追溯、build、auth coverage strict、MAB 74 目标交接审计。
+- 最新远端 CI（`3262fe4`）：run 42453345351 **SUCCESS**；84个测试文件通过/4跳过，614项单测通过/4跳过，172项Node测试通过/0失败，K3追溯85 API/152动作/62模块/5屏通过，Next build通过。
 - 推送后基线 CI（`99a33a2`）：`ci` 42442455790 **FAILURE**；`MAB isolated PostgreSQL 17 verification` 42442455901 SUCCESS；`MAB M1 isolated authenticated HTTP acceptance` 42442455811 SUCCESS。失败步骤为 MAB 74 目标交接审计，根因 `target-diff.csv` 携带 UTF-8 BOM（表头首列成为不可见的 `\uFEFFpath`），已在 `3f8cc1b` 修复。
 
 ## 当前测试与门禁事实
 
-- 全量隔离套件（`pnpm test`；真库只读快照 → `_test` 库执行 → 前后行数对账）：**668 通过 / 0 失败 / 2 跳过**，84 个文件通过、2 跳过，`real_db_untouched=YES`。上一记录为 622 通过 / 10 失败。
+- 最新GitHub CI Vitest：**614通过/0失败/4跳过**（84个文件通过、4跳过）；Node集成/边界测试：**172通过/0失败**。此前`3f8cc1b`全量隔离套件668通过/0失败/2跳过仍作为历史基线，不与本轮CI计数混写。
 - 10 项历史失败已于 `3f8cc1b` 全部处置，**未使用 skip 或放宽断言**：5 个文件因全量配置缺 `next/server`、`next/headers` 别名而无法收集（已补齐，与 unit 配置同源）；`tests/setup/db-guard.ts` 曾因 import data-access 而把 `.env.local` 全量键注入测试进程（已改为只读 `DATABASE_URL`）；`studio-original-attachment-route` 4 例因上述环境泄漏误走本地存储分支（已固定 env 并失败关闭）；`publish-gate` 收敛为 M5 收紧后的 G5 契约。
-- 单测门禁（`pnpm test:unit`）：606 通过 / 0 失败 / 2 跳过。
+- 最新单测门禁：614通过 / 0失败 / 4跳过。
 - `pnpm -r typecheck`：6/6 项目通过。
 - `pnpm build`：通过。
 - Playwright 规格解析：25 条用例 / 8 个文件。
@@ -31,9 +31,9 @@
 
 ## 未关闭事项
 
-- **SEC-01 仍开放**：`public.imported_materials` 未启 RLS，`anon`/`authenticated` 持有 SELECT/INSERT/UPDATE 权限；需权责任人在授权窗口整改，进入真实数据前必须关闭。
+- **SEC-01已关闭（生产只读复核）**：`public.imported_materials` RLS=true；anon/authenticated均无SELECT/INSERT/UPDATE；`mohen_app_runtime`保留SELECT。FORCE RLS=false，但应用运行角色不是该表所有者且不具绕过权限；无需重复施工。
 - **7 个 `guard:*` 在本地为红，且不在远端 CI 范围内**：已确认两类根因——`check-structure` 报 `skills/archive` 缺 `SKILL.md` 及 6 个 `SKILL_MD_NO_ENTRY`；`check-naming-map` 报真库存在未登记表名。其余（source-gate、identifier-registry、escalations、links、gate-enforcement）未逐一定位。均需具名任务处置，当前不进入 CI 门禁，也不改变本次 CI 结论。
-- **生产运行证据仍为零**：全部能力停留在 `VERIFIED_ISOLATED`；无 `VERIFIED_LIVE`，正式 Gate Reviewer 未启用，M8 生产启用与旧系统退役未启动。
+- **生产运行证据仍为零**：Studio projects=0、asset_revisions=0、private_originals表不存在、Storage buckets=0；Gate候选表存在但策略版本表/Reviewer绑定表/当前资格函数不存在；无`VERIFIED_LIVE`，M8未启动。
 
 ## 工具分工
 
@@ -48,7 +48,16 @@ M5范围内现有Provider必要低成本调用已获Owner授权，但必须通�
 
 ## 本轮质量整改快照（2026-11-08）
 
-- 独立复核基线：`main@0fe38aa`；父提交`3f8cc1b`的CI 42444946341 SUCCESS；HEAD自身完整CI尚未复跑，HEAD可见Vercel status success。
-- 当前质量整改：QR-01项目/委托绑定；QR-02连接池身份上下文；QR-03 Provider持久预算与未知费用；QR-04来源/权利精确封套；QR-05 G5/媒体动作级权利；QR-06同root内外AI协作；QR-07知识资产来源回链；QR-08本地执行授权条件；QR-09 SEC-01与7项Guard；QR-10 M5准出证据边界。详见唯一施工计划`tasks/implementation/MAB/PLAN.md §0.1`，唯一进度账`progress.md`。
+- 独立复核基线已更新为：`main@3262fe431386d4f86c1d74d963f38b768d604532`；CI 42453345351 SUCCESS；MAB隔离HTTP 42453345284 SUCCESS；Vercel status success。
+- 当前质量整改：QR-01已实现隔离项目绑定及生产schema preflight；QR-02已改事务局部MATERIALIZED session context，仍缺真实连接池切换测试；QR-03已补未知费用冻结/费用累计/正文超时/UTF-8上界/成功重放，持久原子预算预留未完成；QR-04/05权利动作合同与生产数据缺口已确认；QR-06/07/08仍开放；QR-09 SEC-01关闭、7项Guard待复核；QR-10 M5仍HOLD。详见PLAN §0.1和progress最新记录。
 - 发现两个未合并候选分支：`mab/m4-provider-spend-controls-20261107`（持久预算预留候选，待适配审查）及`mab/owner-led-execution-plan-20261107`（旧计划分支，不合并）。main保持当前唯一施工基线。
 - M5继续`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY`；所有能力当前仍为隔离证据，未获得生产启用授权。
+
+## 生产只读快照（2026-11-08）
+
+- source.sources=39；source.raw_items=98；source.source_versions=39；source_versions中rights/rights_by_action快照=0。
+- Studio projects=0；studio.asset_revisions=0；studio.private_originals表不存在；Storage buckets=0。
+- public.director_plans.project_id列不存在；新代码已增加schema readiness preflight，未部署该列时返回HOLD，不发起模型调用。
+- control.gate_candidates存在；gate_policy_versions、gate_reviewer_bindings、current_qualification_is_valid(uuid)不存在。
+- source.sources.rights无rights_by_action/external_processing/status；仅8条有basis，5条有CC BY-SA标识，3条有政府摘录限制，31条信息不完整。不得推断外部模型处理许可。
+- 本次只读核查未修改生产数据库、Storage、权限、数据或密钥。

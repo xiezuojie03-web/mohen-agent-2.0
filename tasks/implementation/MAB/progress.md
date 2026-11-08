@@ -1742,3 +1742,45 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 11. QR-10准出：批次K的隔离HTTP正反证据保留，但不能覆盖上述缺口；M5仍`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY`，无VERIFIED_LIVE，Owner体验签收未完成。
 
 **处置裁决**：不回滚Trae有效成果，不合并两个分支，不新增任务书。按PLAN §0.1及§3.5既有八维度准出标准执行QR-01—QR-10定向增量整改；每个问题须有代码、POS/NEG/AUTH、PG/HTTP或明确DEFERRED_ENV证据。生产迁移、正式Reviewer/Gate启用、生产部署及新增费用均不在本次默示授权范围内。
+
+### 2026-11-08｜QR-01/02/03第一批整改、CI回绿与生产只读复核（隔离验证；生产仍HOLD）
+
+**代码整改提交链**：
+- b999e21：新增director_plans.project_id迁移、项目绑定、Provider预算/超时第一批修复及对应测试；初次CI因本补丁的Provider响应类型声明错误失败，MAB隔离PG验证通过。
+- 6032530：同步M5隔离测试与verify-5脚本，Grant输入增加project_id。
+- de7d5b0：修正Provider响应类型声明；兼容旧生产schema读取（to_jsonb(row)->>'project_id'），避免缺列时查询崩溃。
+- 4fc1908：增加project binding migration readiness preflight；生产迁移未应用时，在付费模型调用前HOLD。
+- 6f1d7aa：session identity查询改为WITH session_context AS MATERIALIZED (... set_config(...,true))；成功重放先于剩余预算判断；同步M5/本地验证SQL。
+- 3262fe4：无project scope的旧导演请求在任何模型生成/持久化前明确HOLD。
+
+**具体修复**：
+1. QR-01：director_plans.project_id为新增nullable FK列，旧行不猜测回填；主导演、选方案、生成面板、旁白建议均绑定project_id与delegation.project_id；Grant状态保存projectId；Studio切换项目清除旧delegationId及临时方案/作品状态。新增迁移20261108100000_mab_m5_director_plan_project_binding.sql及非破坏性rollback。生产未应用迁移；新代码通过information_schema预检，在列不存在时返回project_binding_migration_required，不发起Provider调用。
+2. QR-02：项目来源与Provider权利读取的session设置改为事务局部MATERIALIZED CTE；单测验证查询形态。仍缺同一Node PG Pool连接连续切换Owner A/B/匿名的真实集成测试，不能提前关闭。
+3. QR-03：所有已知费用状态均计入spent；HOLD/UNKNOWN/空cost冻结新调用；输入按UTF-8字节+固定余量估算；Abort timeout覆盖response body；成功相同input replay不重复调用/扣费，即使剩余预算不足。持久化原子reserve、跨实例并发预算锁、Receipt写失败的持久不确定状态及对账恢复仍未完成。
+
+**测试与部署证据（GitHub Actions REST真实结果）**：
+- 0fe38aa自身CI run 42445203315 SUCCESS；先前质量复核曾误记为无HEAD CI，现纠正。
+- de7d5b0：CI 42452909329 SUCCESS；MAB HTTP 42452909301 SUCCESS。
+- 4fc1908：CI 42453062922 SUCCESS；MAB HTTP 42453062988 SUCCESS。
+- 6f1d7aa：CI 42453296243 SUCCESS；MAB HTTP 42453296242 SUCCESS。
+- 最新3262fe4：CI run 42453345351 SUCCESS；84个测试文件通过、4个跳过；614项单测通过、4项跳过；172项Node测试通过、0失败；K3追溯85 API/152动作/62模块/5屏；Next build通过。
+- 最新3262fe4：MAB隔离HTTP run 42453345284 SUCCESS；24项浏览器/HTTP测试通过、1项私有原件HTTP测试跳过；覆盖Owner/匿名/跨Owner、M4计划与撤权、ST-01项目绑定Brief、M5四类G5消费者、WATCH撤权即时生效、ST-02、13类资产与Admin逐条管理。日志明确no-production-data no-paid-provider-calls，合成数据库已清理。
+- MAB隔离PG run 42452692208 SUCCESS：应用新DirectorPlan project_id迁移并验证nullable列及FK；不代表生产迁移已执行。
+- 最新Vercel状态：3262fe4 success。部署成功不等于生产schema已迁移或M5 LIVE。
+
+**生产数据库只读核查（Supabase；本轮无写操作/迁移）**：
+- source.sources=39、source.raw_items=98、source.source_versions=39；source_versions中rights/rights_by_action快照=0。
+- studio.projects=0、studio.asset_revisions=0；studio.private_originals表不存在；Storage buckets=0。
+- public.director_plans.project_id列不存在，readiness=false；故当前部署代码会在Provider调用前HOLD。
+- control.gate_candidates表存在；control.gate_policy_versions、control.gate_reviewer_bindings及control.current_qualification_is_valid(uuid)不存在。
+- 39条source.sources.rights中rights_by_action=0、external_processing=0、status=0；仅8条有basis，5条有CC BY-SA标识、3条有政府资料摘录限制，31条权利信息不完整。不得从许可标签/来源类别推断外部模型处理许可。
+- public.imported_materials：RLS=true、FORCE RLS=false；anon/authenticated均无SELECT/INSERT/UPDATE；mohen_app_runtime保留SELECT。SEC-01据此标记CLOSED，不重复施工。
+- 7项本地guard最后记录仍为红，本轮未在本机重跑；保留OPEN/VERIFY_REQUIRED。
+
+**未完成与证据边界**：
+- QR-01隔离迁移与代码测试已完成；生产迁移未授权、未执行，旧DirectorPlan不回填。
+- QR-02仍缺真实PG Pool身份连续切换测试。
+- QR-03持久预算原子预留/跨实例并发/Receipt失败恢复未完成。
+- QR-04/05须先统一KAD/Gate动作词典并改为读取精确source_anchor/asset_revision权利快照；当前生产无权利动作记录。
+- QR-06同root Agent+Provider协作、QR-07来源依赖回链、QR-08本地执行授权条件未关闭。
+- M5仍M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY；隔离HTTP通过不等于真实原件/付费Provider/正式Gate/生产LIVE或Owner体验签收。

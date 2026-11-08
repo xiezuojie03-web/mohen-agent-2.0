@@ -11,7 +11,7 @@
 
 ## 当前状态
 
-- 远端基线：main@0fe38aa88cd1150fdae55f0a3190dfc299cc5fa7（2026-11-08最新HEAD）；父提交3f8cc1b的CI 42444946341 SUCCESS，0fe38aa自身完整CI待复跑。
+- 远端基线：main@3262fe431386d4f86c1d74d963f38b768d604532；CI 42453345351 SUCCESS，MAB隔离HTTP 42453345284 SUCCESS，Vercel status success。
 - 当前施工：M5_REMEDIATION_ACTIVE / QUALITY_REMEDIATION_ACTIVE；唯一施工计划PLAN.md §0.1已登记QR-01—QR-10。
 - 整体验收：M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY。
 - M0审查级EXIT_PASS冻结继承；M1—M4仅补M5真实作品必需缺口；M6—M8不提前启动。
@@ -20,9 +20,9 @@
 ## 当前施工顺序
 
 1. 每次先核最新main、commit差异、Actions、Vercel和受控文档状态；不强推、不盲目reset、不覆盖未提交成果。现有两个MAB分支只作候选评估，不整支合并。
-2. 按PLAN §0.1优先关闭QR-01/02/08：项目—委托绑定、连接池身份上下文、本地执行授权条件；补正反和真实PG测试。
-3. 对齐QR-04/05权利动作合同及G5/媒体许可，再定向修复Provider外发和独立Reviewer；缺失权利字段一律HOLD。
-4. 评估`mab/m4-provider-spend-controls-20261107`并在既有ExecutionControl/Receipt内完成QR-03持久预算预留、未知费用冻结、对账和恢复；先验证与当前多调用Grant兼容，不新建平行账本。
+2. QR-01项目绑定已完成隔离代码/迁移测试，生产列缺失时会在Provider前HOLD；QR-02已改MATERIALIZED事务局部身份，仍需同一Node PG连接复用正反测试；继续QR-08本地执行授权条件核验。
+3. 先统一KAD/Gate rights_by_action词典；生产39条来源均无rights_by_action/external_processing，Studio资产修订0条，必须先建立可审核的source_anchor/asset_revision权利快照；缺失/unknown一律HOLD。
+4. QR-03已完成未知费用冻结、费用状态累计、UTF-8上界、完整响应超时和成功重放；仍需评估`mab/m4-provider-spend-controls-20261107`，解决多调用Delegation兼容后再实现持久原子预算预留/对账/恢复。
 5. 完成QR-06同root Agent+外部AI协作、QR-07知识资产来源依赖回链；随后按PLAN既有M1—M5条件和八维度矩阵做一次完整回归。Owner体验签收最后进行。
 
 ## 工具分工
@@ -53,3 +53,11 @@
 - 最新main：`0fe38aa88cd1150fdae55f0a3190dfc299cc5fa7`。先读PLAN §0.1、§3.5及progress最新记录，不按旧CURRENT/历史交接描述推断。
 - 两个MAB候选分支未合并。Provider spend分支有持久预留/对账设计，但需先解决当前多调用Delegation与source_refs权利合同的兼容问题。
 - 本轮不执行生产DB/Storage迁移、正式Reviewer/Gate启用或公开生产发布；任何新增Provider、账号、密钥、订阅/额度或明显扩大费用仍须单独确认。
+
+
+## 生产环境核验（2026-11-08）
+
+- SEC-01已通过生产只读查询确认关闭：imported_materials RLS启用，anon/authenticated无直接SELECT/INSERT/UPDATE。
+- 生产source rights未形成动作级授权快照；source.sources 39条中rights_by_action/external_processing为0，source_versions权利快照为0。
+- Studio projects/asset_revisions均为0；private_originals和Storage bucket缺失；Gate policy/reviewer/current qualification缺失；director_plans.project_id列未部署。
+- 当前代码在project binding schema缺失时先HOLD，不付费调用。生产DB/Storage迁移、正式Gate启用及任何公开发布仍需单独授权。

@@ -1,9 +1,9 @@
 # 墨痕 MoHen｜MAB工程施工方案与计划
 
-版本：V1.3（Owner批准基线；2026-11-08质量复核增补）  
+版本：V1.4（质量整改执行更新；Owner已同意整改范围）  
 设计基线：MAB完整设计交付包（2026-11-02）  
-当前工程基线：main@0fe38aa88cd1150fdae55f0a3190dfc299cc5fa7（2026-11-08 Trae施工推送后的最新HEAD）  
-本次修订：在不改变M0—M8阶段、原任务分母、专业标准、固定条件和生产授权边界的前提下，登记Trae施工后的独立质量复核、现存分支候选评估及增量整改顺序。
+当前工程基线：main@3262fe431386d4f86c1d74d963f38b768d604532（2026-11-08质量整改增量）  
+本次修订：在不改变M0—M8阶段、原任务分母、专业标准和生产授权边界的前提下，回写QR-01/02/03第一批代码修复、远端CI/隔离HTTP证据及生产数据库只读核查；SEC-01经复核关闭，来源权利与生产LIVE缺口进一步明确。
 
 > 本文件是MAB-ENG-01受控任务书下M0—M8唯一施工计划、唯一执行顺序和唯一阶段验收标准。MHKA-00—05及授权专业合同是设计权威；本计划负责把它们落实为工程任务。不得以历史过程记录、旧交接指令或局部CI成功替代当前工程事实。
 
@@ -25,18 +25,18 @@
 | M5 | REMEDIATION_ACTIVE / HOLD | Studio/Admin/WATCH已有局部真实工程；同一真实作品八维度闭环尚未完成 |
 | M6—M8 | NOT_STARTED | 保留原范围与依赖，不提前并入M5 |
 
-**当前已知工程阻断（基于 main@0fe38aa；2026-11-08复核）：**
+**当前已知工程阻断（基于 main@3262fe43；2026-11-08复核）：**
 
-1. **CI与部署证据分开记账。** main@3f8cc1b 的 GitHub CI run 42444946341 为 SUCCESS（11/11）；当前 HEAD 0fe38aa 的已见提交状态只有 Vercel success，尚无该 HEAD 自身完整 CI 复跑证据。不得把父提交 CI 直接写成最新 HEAD 的 CI。
-2. **Registry只在隔离范围激活。** `production-registry.json` 当前为 `ACTIVE_AUTHORIZED`，但 activation 明确限定 M5 本地隔离环境，生产未授权。D00—D05 六个Stage的本地执行策略为 attended；63项方法中6项有实现绑定、57项为 HOLD。
-3. **本地执行授权仍需补强。** `tools/local-execution-authorizer.mjs` 按Registry的 `enable_requires` 列表直接生成全部 `true` 声明；`execution-authority.mjs` 验证签名与声明一致性，但不独立证明这些前置条件实际成立。当前脚手架只可按隔离工具使用，不能当作正式生产授权证据。
-4. **Provider链存在授权、身份与费用缺口。** 项目/委托绑定未在所有Grant入口强制一致；两个来源权利查询使用会话级 `set_config(..., false)`，在Node PG连接池中存在身份上下文残留风险；未知费用HOLD不参与现有预算累计，且没有与当前多次调用Grant完全接通的持久化原子预留。
-5. **权利字段与专业合同未完全对齐。** Provider派发器、机器Reviewer和当前KAD/ Gate合同使用的权利字段及动作枚举不一致；G5 Reviewer对缺失动作字段未做到显式允许才通过，媒体权利也未完成动作级验证。
-6. **Agent与外部AI尚未证明同一root协作。** Studio研究任务与外部模型授权/派发目前使用不同任务引用，前端没有把研究task_id及其Agent产物传入外部委托链。
-7. **知识资产来源回链存在已报告缺口。** 批次I记录同一作品5/5 Studio资产头的 `source_refs/dependency_refs` 为空、`use_events=0`；该批Admin虽能显示缺口，但不等于来源依赖已补齐。
-8. **M5八维度不能提前准出。** 批次K的隔离HTTP证据可继承，但其“八维度机器验证闭环”不能覆盖本次发现的代码/合同缺口；无 `VERIFIED_LIVE`，正式Reviewer/Gate未启用，Owner体验签收未完成，M5继续HOLD。
-9. **安全与本地守卫未关闭。** 根CURRENT此前记录SEC-01：`public.imported_materials` RLS未启用且anon/authenticated仍有直接表权限；另有7项本地 `guard:*` 检查为红、未纳入远端CI。该状态需在整改中重新核实并分别关闭，不得以主CI绿灯销账。
-10. **受控文档基线曾落后实际HEAD。** 本次已发现PLAN/HANDOFF仍引用12e7529、CURRENT引用3f8cc1b；本次同步修订这些状态源，后续每次HEAD变化均按唯一职责回写。
+1. **远端工程门禁已恢复绿灯。** main@3262fe43 的 GitHub CI run 42453345351 SUCCESS；84个测试文件通过、4个跳过，614项单测通过、4项跳过，172项Node测试通过、0失败；K3追溯85 API/152动作/62模块/5屏通过，Next build通过。MAB隔离HTTP run 42453345284 SUCCESS，24项通过、1项私有原件测试跳过；Vercel状态success。0fe38aa本身也有CI run 42445203315 SUCCESS；此前“无HEAD CI”的审查记录已纠正。
+2. **Registry只在隔离范围激活。** production-registry.json 当前为 ACTIVE_AUTHORIZED，但activation明确限定M5本地隔离环境，生产未授权。D00—D05六个Stage的本地执行策略为attended；63项方法中6项有实现绑定、57项为HOLD。
+3. **本地执行授权仍需补强。** local-execution-authorizer.mjs按Registry的enable_requires列表直接生成全部true声明；execution-authority.mjs验证签名与声明一致性，但不独立证明这些前置条件实际成立。当前脚手架只可按隔离工具使用。
+4. **Provider预算仍未形成持久化原子闭环。** 已补项目绑定、未知费用冻结、全状态费用累计、UTF-8保守估算、响应正文超时及成功重放；但跨实例原子预算预留、Receipt写失败后的持久不确定状态、对账与恢复仍未完成。
+5. **权利字段与专业合同存在实证不一致。** 生产39条source.sources.rights均无rights_by_action和external_processing字段，source_versions 39条均无rights快照；KAD动作词典未覆盖Gate明确要求的machine_read/retain。G5 Reviewer对缺失动作字段仍未做到显式允许才通过，媒体权利也未完成动作级验证。
+6. **Agent与外部AI尚未证明同一root协作。** Studio研究task与外部模型授权/派发仍使用不同任务引用，前端未把研究task_id及Agent产物传入外部委托链。
+7. **知识资产来源回链仍有缺口。** 隔离批次I记录5/5资产source_refs/dependency_refs为空、use_events=0；生产Studio项目和资产修订当前均为0，不能把隔离样本当作生产资产。
+8. **生产运行条件尚未建立。** 生产只读核查：Studio项目0、Studio资产修订0、private_originals表不存在、Storage桶0；Gate候选表存在，但Gate策略版本表、Reviewer绑定表及current_qualification_is_valid函数不存在。director_plans.project_id列尚未部署；新代码会在模型调用前返回HOLD，不会为缺失迁移发起付费调用。
+9. **SEC-01已关闭；7项本地Guard仍待复核。** 生产public.imported_materials的RLS=true；anon/authenticated无SELECT/INSERT/UPDATE权限；mohen_app_runtime的SELECT保留。7项本地guard最后记录为红，未在本轮重新执行，不能销账。
+10. **M5八维度不能提前准出。** 最新CI、隔离PG和隔离HTTP通过只证明对应隔离证据；无VERIFIED_LIVE，正式生产Reviewer/Gate未启用，来源权利、同root协作、真实原件、Admin回链及Owner体验仍未完成，M5继续HOLD。
 
 ### 0.1 Trae施工后质量复核与整改任务（2026-11-08）
 
@@ -44,15 +44,15 @@
 
 | ID | 优先级 | 复核发现与证据位置 | 必须关闭的验收条件 |
 |---|---|---|---|
-| QR-01 | P1 | **项目—委托绑定不足。** `director-plans/route.ts`接收project_id并按该项目推导来源；`dispatch-grant.ts`仅向Grant传delegationId/sourceIds，`authorizeStudioDispatchGrant`未核对委托的project_id与当前作品/项目。Studio项目切换也未清理旧delegationId及项目级临时作品状态。 | DirectorPlan持久保存project_id；所有导演、分镜、面板、旁白Grant入口逐次核对delegation.project_id、plan/work.project_id及来源集合；项目切换清除旧Grant/方案/作品临时状态。正测同项目通过，负测同一Owner的另一项目委托拒绝。 |
-| QR-02 | P1 | **数据库身份上下文可能跨连接复用。** `listProjectSourceIds`与`createStudioDispatcherDeps.readSourceRights`使用`set_config('mohen.session_token',...,false)`；serverless路径使用复用的node-pg Pool。 | 改为事务局部身份上下文；以同一连接先后切换Owner A/B、匿名及无身份查询，证明前一请求身份不会污染后一请求；保留RLS正反测试。 |
-| QR-03 | P1 | **Provider预算与不确定费用未形成持久化闭环。** `provider-dispatcher.ts`只累计ACCEPT回执；UNKNOWN/HOLD回执不冻结后续调用，预算检查与调用非原子，Grant/Handle为进程内Map；fetch返回响应头后即清除超时器，正文读取不受该超时保护；输入token估算以字符数代替可靠上界。 | 每次外发先持久化原子预算预留；未知结果永久冻结对应预留/委托，必须凭核实回执对账；并发预算不能超发；超时覆盖响应正文；输入估算采用可证明上界；Receipt写失败不得留下可自动重试窗口。评估并复用现存`mab/m4-provider-spend-controls-20261107`分支作为候选，不直接合并。 |
-| QR-04 | P1 | **来源/权利绑定精度不足。** 项目来源集合当前主要由原件SHA连接raw_item/source_version/source；Provider核验按source_id读取rights，未将每次外发的original@revision、source_version、raw_item、hash、purpose和权利证据作为同一不可变输入封套核对。当前`allow/public_domain_secondary_use`判定与合同动作枚举需对齐。 | 依据KAD与Gate现行合同统一rights_by_action及source_ref@revision字段；逐来源核对原件字节、精确版本、用途、external_processing、权利证据与委托快照；缺字段、未知或版本变化均拒绝。未完成字段映射前不扩大发送范围。 |
-| QR-05 | P1 | **G5权利审查未做到显式允许才通过。** `rule-gate-reviewer.mjs`的`assessRights`只拒绝已列入DENIED_RIGHTS的值；缺失/空白动作字段不会被拒绝。其测试正例只提供basis与`public_domain_secondary_use`。同时，KAD资产合同的rights_by_action枚举与Gate合同中的machine_read/retain等动作术语需统一；`work-qualification-reader`对媒体主要检查rights_status/license/expiry，未完成逐动作许可核验。 | 先冻结唯一动作词典及其与source/media字段映射；G0/G5分别核验各自必要动作，必须逐项显式ALLOW；缺失、unknown、restricted、expired均HOLD；媒体display/adapt/download等按具体消费动作分别核验。补齐G0—G5规则测试和真实PG正反验证。 |
+| QR-01 | P1 | **第一批修复已提交。** 新增director_plans.project_id迁移；所有导演/分镜/面板/旁白Grant入口绑定项目；授权校验delegation.project_id；项目切换清除临时Grant/方案/作品状态。隔离PG迁移及外键检查通过；生产列尚不存在，代码会在Provider调用前HOLD。 | 继续完成项目身份真实连接池/HTTP正反测试；生产迁移仍需单独授权；旧project_id为空的计划必须保持HOLD，不推测回填。 |
+| QR-02 | P1 | **代码已改为事务局部且物化的session_context CTE。** project source读取、Provider source-right读取及隔离验证脚本均已同步；单测检查SQL使用MATERIALIZED + set_config(...,true)。 | 仍需同一Node PG连接复用下Owner A/B/匿名连续切换的真实数据库正反测试，完成后才可关闭。 |
+| QR-03 | P1 | **第一批安全修复已提交。** HOLD/UNKNOWN/空费用回执冻结新调用；所有已知费用状态计入spent；UTF-8字节作为保守输入上界；超时覆盖完整响应正文；相同成功输入可无额外费用重放。 | 持久化原子预留、跨实例并发防超支、Receipt写失败后的持久不确定状态、人工对账/恢复仍未实现。评估现有M4分支时必须先解决多调用Delegation兼容，不直接合并。 |
+| QR-04 | P1 | **生产只读核查确认权利数据缺口。** 39条source.sources记录均无rights_by_action/external_processing；仅8条有basis，31条权利信息不完整；source_versions 39条均无rights快照。Studio资产修订0条，当前没有可供Provider核验的正式source_anchor权利快照。 | 先统一动作词典与source_anchor/asset_revision权利快照来源；逐来源、逐版本绑定原件/locator/hash/purpose/rights evidence；任何缺失或unknown均HOLD，禁止从CC许可标签或来源类别自动推断外发权限。 |
+| QR-05 | P1 | **动作词典冲突已确认。** KAD rights_by_action仅列read/quote/display/download/adapt/external_processing；Gate G0明确machine_read/retain及其他逐动作许可。当前Reviewer缺失字段仍可能通过；生产无rights_by_action数据。 | 先修订既有KAD/Gate合同形成唯一动作词典，再接入source_anchor与媒体的不可变权利快照；G0/G5按实际动作显式ALLOW，缺失/unknown/restricted/过期一律HOLD；补G0—G5正反测试。 |
 | QR-06 | P1 | **内外AI不是同一研究root的可验证协作。** `research-tasks/route.ts`创建Studio研究task并运行Agent研究；`dispatch-authorizations/route.ts`另建固定rootTaskRef=`studio-llm-dispatch`；Studio前端没有将研究task_id/Agent发现传给授权及导演派发。 | 同一root_task_id/ref下形成Agent与Provider互补子任务；外部输入包含经筛选的Agent研究成果和来源快照；输出分别回写同一任务事件/资产；保存双方input/output hash、贡献、Receipt、成本与失败状态。 |
-| QR-07 | P1 | **Admin显示缺口不等于知识资产回链完成。** 批次I已报告5/5 Studio资产source_refs/dependency_refs为空、use_events=0。不能为历史记录推测补写来源。 | 新资产必须从创建时写入可验证source/dependency refs；已有记录逐条核实后再补，不能推断；Admin能按条逆查原件、source_version、locator、证据、D/G资格、rights/purpose和实际use_events；缺口仍明确HOLD。 |
+| QR-07 | P1 | **隔离批次I的5/5资产source_refs/dependency_refs为空、use_events=0；生产Studio项目与资产修订均为0。** Admin显示缺口不等于来源依赖已修复。 | 新资产创建时写入可验证source/dependency refs；已有记录逐条核实后再补，不能推断；Admin按条逆查原件、source_version、locator、证据、D/G资格、rights/purpose和use_events。 |
 | QR-08 | P1 | **本地执行授权条件不能自证。** Registry的enable_requires被本地授权脚手架直接转为true，需验证运行环境/隔离标记/绑定/测试事实，而不是签名自报。 | 生产与本地隔离授权分离；本地脚手架仅接受明确的隔离目标并拒绝生产端点/生产密钥；每个enable_requires由独立可验证检查生成，缺任一证据不签发。 |
-| QR-09 | P0（生产前） | **SEC-01与7项本地Guard仍未关闭。** 当前CURRENT记录imported_materials的RLS/GRANT问题及7项本地guard红灯。 | 先只读核实真实库状态；修复必须有授权窗口、迁移/回滚、匿名/跨Owner正反证据；7项Guard逐一定位、修复或明确合法延期，并纳入持续CI。未经单独授权不执行生产变更。 |
+| QR-09 | P0（生产前/门禁） | **SEC-01已由生产只读核查确认关闭**（RLS=true，anon/auth无SELECT/INSERT/UPDATE）；7项本地Guard最后记录为红，本轮未重跑。 | 只针对7项Guard逐一定位、修复或有据延期并纳入持续CI；SEC-01保留关闭证据，不重复施工。生产变更仍须单独授权。 |
 | QR-10 | P1 | **M5准出证据被批次摘要过度概括。** 同一作品的隔离PG/HTTP链路有价值，但Owner体验、正式Reviewer、媒体权利、同root混合协作、来源依赖和全链D/L/G尚未全部达到PLAN准出条件。 | 逐项按本PLAN八维度矩阵及M1—M4条件准出复核；所有P0/P1关闭、同一真实作品证据齐全、隔离PG/HTTP正反通过，最后Owner实际体验签收；之前保持M5_OVERALL_HOLD。 |
 
 **已发现但暂不合并的分支候选：**
