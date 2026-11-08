@@ -1958,4 +1958,29 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 
 **处理决定**：CP2-E 先**复用已落地的 SHL 逐页 PDF**（来源=上图开放数据 `pdf/stream`，itemId 14373），不重复触网、不撞配额；`pdf/stream` 今日空正文只记作"待观察（疑似 24 小时页配额）"，不写成"上图不给全文"。
 
+### CP2-E 第二步：上图真实原件已落库（2026-11-08，本地隔离 `mohen_dev`）
+
+新增 `tools/land-shl-original.mjs`：把上图开放数据的一页真实原件落到本地私有原件库并登记 L0。
+
+| 环节 | 实际结果 | 证据 |
+|---|---|---|
+| 原件字节来源 | 沪上经纬 2026-09-14 已下载的逐页 PDF `data\archive\.gaz_pages\gj_14373\00051.pdf`（itemId `14373`，第 51 页，容器 338,944 字节，容器 sha256 `390416fa…`） | 不复触网、不撞配额 |
+| 字节抽取方式 | 单页 PDF 内嵌 `/Filter/DCTDecode` 直通影像流按 `/Length` 原样取出（**未重新编码、未改像素**）；两个候选取最大者（193,352 / 236,005 两页实测一致规律） | 抽出的 JPEG 以 `ffd8ffee000e41646f626500`（JFIF/Adobe）开头；`candidates=2` 已显式报告 |
+| 私有原件 | `original_id=b0a11000-0000-4000-8000-000000000004`，`image/jpeg`，**236,005 字节**，sha256 `3b47ed4b4779aed20ce4e97235ac471553131ced1863e1f7b0efcb3db61da9c4`，状态 `STORED_VERIFIED`，落盘后回读校验一致 | `D:/MoHen/data/private_originals/{project}/b0a11000-…-0004.bin` |
+| L0 登记 | `source.sources`（provider=`shanghai-library`，title=`[崇禎]松江府志九十四卷`，`carrier_type=scanned_page`，`content_availability=image_scan`）→ `source_version_id=d2d138af-…`（metadata 记录容器 sha256/itemId/pageNo/`dctdecode-byte-passthrough`/`reencoded:false`）→ `raw_item_id=827ddd73-…`（`storage_ref` 与私有原件完全一致） | 一条 source/version/raw_item 三元链 |
+| D00 回查 | 经 `studio.private_source_registration` 窄口返回同一原件：`ok=true`，provider/title/sha256/raw_item/version 全部一致 | `artifact_revision=3b7e1ab1…`；`source_version_artifact_revision=941ddd36…` |
+| 权利标定 | `tools/stamp-shl-open-data-rights.mjs --apply`：SHL 来源 **28/28** 写入 `access_view/machine_read/retain/quote=allowed`、其余五动作 `unknown`；并首次写入 `source_versions.rights_snapshot`（**28/28 冻结**，0 冲突） | 回读按词典判定 `granted_ok=true` 且 `held_still_hold=true` |
+
+**口径声明**：抽取内嵌影像属项目内部"机器读取＋留存"范围内（`machine_read`/`retain` 均显式 allowed），不展示、不外发、不再分发；`adapt`/`external_processing` 仍为 `unknown`（HOLD）。若 Owner 认为"从 PDF 取内嵌影像"应另算 `adapt`，请明示，我立即把该原件降级 HOLD。
+
+### CP2-E 卡点（如实记账，不记作完成）
+
+| 卡点 | 事实 | 阻塞的阶段 | 恢复条件 |
+|---|---|---|---|
+| 上图**古籍（gj）**扫描页无文本层 | 抽出的 JPEG 是纯影像；D02 的 `literal_reading`（原文转写）无法从字节直接得到 | D02→D05（以及依赖 D02 证据的 G2—G5） | 需要 OCR：①本机无本地离线 OCR 引擎（`tesseract` 不在 PATH）；②走外部模型 OCR 属 `external_processing`，当前显式 `unknown` → **HOLD，需 Owner 明示授权** |
+| 上图**民国图书（mgts）**自带平台 OCR 文本层（可免外部模型） | 但本机只留有 `pages_raw.json` 文本快照（沪上经纬 2026-09），**没有对应的 mgts 容器字节**；`pdf/stream` 今日返回空（疑 24 小时页配额） | D02—D05（文本读法路径） | 配额恢复后重新取 mgts 逐页字节，或 Owner 提供已下载的 mgts 原件文件 |
+
+**因此 CP2 的 D00/D01 已在授权真实原件上成立，D02—D05 与 G2—G5 仍停在"需要一次 OCR 授权或一份 mgts 容器字节"**；未用任何非授权来源、未做任何付费模型调用。
+
+
 

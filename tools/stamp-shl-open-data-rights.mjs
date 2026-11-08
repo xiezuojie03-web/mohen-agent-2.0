@@ -75,6 +75,7 @@ async function main() {
 
   const conflicts = [];
   const writable = [];
+  let snapshotsWritten = 0;
   for (const row of rows) {
     const current = parseJson(row.rights_by_action);
     if (current === null) {
@@ -102,6 +103,18 @@ async function main() {
           evidence: JSON.stringify(RIGHTS_EVIDENCE),
         }
       );
+      // CP2-B 的不可变权利快照：只对**尚未写过**的版本做第一次写入（写一次即冻结）。
+      await run(
+        `update source.source_versions set rights_snapshot = (:'rights')::jsonb
+          where source_id = (:'id')::uuid and rights_snapshot = '{}'::jsonb`,
+        { id: sourceId, rights: JSON.stringify(targetRights) }
+      );
+      const frozen = await queryRows(
+        `select count(*)::int as n from source.source_versions
+          where source_id = (:'id')::uuid and rights_snapshot <> '{}'::jsonb`,
+        { id: sourceId }
+      );
+      snapshotsWritten += Number(frozen[0]?.n ?? 0);
     }
   }
 
@@ -143,6 +156,7 @@ async function main() {
     granted_actions: ALLOWED_ACTIONS,
     held_actions: HELD_ACTIONS,
     changes: apply ? writable.length : 0,
+    snapshots_frozen: apply ? snapshotsWritten : 0,
     conflicts,
     verified,
     other_providers_hold: others.map((row) => ({
