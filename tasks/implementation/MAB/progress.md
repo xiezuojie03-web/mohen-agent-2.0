@@ -1839,7 +1839,9 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
    - 正反实测：正向 `grant --stage D00` 成功签发（claims 内 `authorized_conditions` 四项均来自证据）；负向三类拒绝均命中精确错误码：无证据 `ENABLE_REQUIRES_EVIDENCE_MISSING`、改写 git HEAD `ENABLE_REQUIRES_EVIDENCE_STALE:git-head`、`MOHEN_ENV=production` 与远端库 → `AUTHORIZER_TARGET_NOT_ISOLATED`。全程无 Provider 调用、无费用。
    - 授权记录来源：`D:\MoHen\keys\execution-auth\owner-authorization.json`，内容为 Owner 既有授权（PLAN §0.2 A/H + 本轮“执行吧”）的**转写**，非新授权、不构成 Gate 准出或生产执行许可。
 8. **备份/恢复实测**：用快照还原到临时库 `mohen_restore_cp1`，13 项关键计数（projects/assets/private_originals/director_plans/sources/read_units/material_evidence/claim_revisions/findings/gate_audits 等）与 `originals_sha_digest` 与 `mohen_dev` **完全一致**；将 `private_originals` 目录整体复制到探针目录后，2 个原件逐字节 sha/长度与还原库记录一致；随后删除临时库与副本，未留冗余副本。
-9. **回归**：`pnpm -r typecheck` 6/6 通过；`pnpm test:unit` = 615 pass / 2 skipped / **1 fail**（`tests/unit/k7-five-themes.test.ts` 180s 超时）。已核实 `api.library.sh.cn:443` 本机不可达（`Test-NetConnection=False`），该测试在 `SHANGHAI_LIBRARY_KEY` 存在时访问真实外网来源，属既有联网依赖，非本批引入、非代码缺陷；不计入通过。
+9. **回归**：`pnpm -r typecheck` 6/6 通过；`pnpm test:unit` 首跑 615 pass / 2 skipped / 1 fail，复核后**更正为 616 pass / 2 skipped / 0 fail（86 文件通过、2 跳过，exit 0）**。
+   - 更正说明：首跑把 `tests/unit/k7-five-themes.test.ts` 记成“上海图书馆接口不可达”是**误判**——当时探测用了错误域名（`api.library.sh.cn`）与错误参数名（`apikey`）。用应用真实端点 `data1.library.sh.cn` 与真实参数 `key=` 实测：状态 200，单主题 12 次调用合计 1.4 秒，接口正常。
+   - 真实原因：该用例真实访外网（4 端点 × 4 词 × 分页 + Commons），单跑约 58 秒；与其它联网用例并行时因上游限流明显变慢，180 秒超时被误判为失败。已把该用例超时上调到 600 秒（仅放宽等待上限、不放松任何断言），全量套件随即通过。此前“接口不可达、不计入通过”的记录作废。
 10. **顺带修复的真实缺陷**：`pipelines/data-production/orchestrator/resume-input.mjs` 先 `realpath` 后 `lstat`，在 Windows 上符号链接 realpath 抛 ENOENT，把“链接被拒绝”误报成 `TRUSTED_RESUME_INPUT_UNAVAILABLE`（测试期望 `TRUSTED_RESUME_INPUT_INVALID`）。改为先 `lstat` 判符号链接并统一按 INVALID 失败关闭，两平台同义；失败关闭语义不变。此修复同时让此前因缺 openssl 而 DEFERRED_ENV 的 `independent-gate-service-runtime`（5 项）真实执行并通过，data-production 套件 172 pass / 0 fail。
 
 ### CP1 未关闭项（如实记账）

@@ -53,5 +53,7 @@ describe.skipIf(!KEY)("K2/K5/K7 五主题重跑", () => {
     expect(rows.length).toBe(5);
     // 至少不能比 K0 更差：每个主题都应有材料
     for (const r of rows as Array<{ materials: number }>) expect(r.materials).toBeGreaterThan(0);
-  }, 180000);
+    // 该用例真实访外网（上海图书馆 4 端点 × 4 词 × 分页 + Commons），单跑约 60s；
+    // 与其它联网用例并行时会因上游限流明显变慢，故给足超时，不用 180s 误判为失败。
+  }, 600000);
 });
