@@ -1904,4 +1904,23 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 
 **范围声明**：本轮无生产迁移、无生产数据/Storage 写入、无正式 Gate/Reviewer 启用、无付费模型调用；未把任何旧自述许可"洗白"成 allowed。
 
+### CP2-E 前置核查：上海图书馆开放数据到底能给什么（2026-11-08 实测）
+
+用 `.env.local` 里的 `SHANGHAI_LIBRARY_KEY` 直接打平台接口（未落库、未调用模型），结论如下：
+
+| 接口 | 实测结果 | 能不能当 CP2 的真实原件 |
+|---|---|---|
+| `gj/webapi/works?title=松江府志` | 200，5 条 work（`dtitle`+`uri`） | 否：只有书名/作品 URI |
+| `gj/webapi/works?title=金泽小志` | 200，1 条 `[道光]金澤小志六卷首一卷` | 否：同上 |
+| `gj/webapi/instances?freetext=金泽` | 200，8 条版本元数据（分类、纂者、版本、馆藏号 `史71556491`） | 否：目录/版本层 |
+| `gj/webapi/instanceInfo?uri=…dqfavccjdcmnr10n` | 200，1088 字节，含 `identifier/creator/edition/instanceOf` | 否：元数据 |
+| `gj/webapi/instanceContent` / `instanceText` / `fulltext` / `catalog` | **全部 404** | 否：开放数据**不提供**古籍正文或影像字节下载 |
+| `gj/webapi/instances?freetext=古桥` | 200 但 `result=1`、0 条（检索式不命中） | — |
+| `shnh/dmz/webapi/geonames/list?type=3&freetext=金泽`（上海地名志，同平台合作单位） | 200，**返回正文** `description`："在县境西南部…有宋、元年间建的迎祥桥、普济桥、万安桥…" | **是**：真实正文可留存、可哈希、可引用 |
+| `shnh/dmz/webapi/geonames/list?type=2&freetext=金泽` | 200，金泽镇志条目正文（"现存古桥 21 座…"） | **是**：同上 |
+
+**由此明确两件事**：
+1. 上海图书馆开放数据能提供的正文是**地名志/家谱/人物等合作单位志书条目文本**，不是古籍影像扫描页。因此 M3 原有的 `C02 scanned_page/v1`（扫描页读法）基线**无法**用该授权数据重建；要重建扫描页链，需要 Owner 另行开通上图古籍影像下载权限（或提供已获授权的影像文件）。
+2. CP2 的"同一真实原件"应先走**文本/条目正文**路径（真实 HTTP 字节 → sha256 → 私有原件 → `source_version`/`raw_item` → D01 文本读法 → D02—D05 → G0—G5），这条路径在现有授权内可完成，且不涉及任何外发。
+
 
