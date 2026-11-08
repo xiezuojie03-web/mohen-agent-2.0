@@ -25,6 +25,8 @@ import type {
   StudioHeldReceiptRecord,
   StudioVerifiedReceiptRecord,
 } from "@mohen/data-access";
+// CP2-D：外发许可只认唯一权利动作词典（显式 allowed 才放行），不再做任何推断。
+import { assertRightsActionsAllowed } from "@mohen/data-access";
 
 // ---------- 版本化价格表（USD / 1M token） ----------
 // 来源：DeepSeek 官方价格文档。口径：估算是"最坏情况上界"（peak 时段 + cache 全
@@ -133,7 +135,7 @@ export interface DispatcherDeps {
   readSourceRights(
     sourceIds: string[],
     token: string
-  ): Promise<Array<{ source_id: string; rights: Record<string, unknown> | string | null }>>;
+  ): Promise<Array<{ source_id: string; rights_by_action: Record<string, unknown> | string | null }>>;
   fetchImpl?: typeof fetch;
   baseUrl?: string;
   apiKey?: string;
@@ -211,8 +213,10 @@ async function loadUsableDelegation(
   return delegation;
 }
 
-/** 逐来源权利：权利未知/缺失/不可解析 = TRANSFER_DENIED（失败关闭）。
- * rights 可能是对象（pg 驱动解析 jsonb）或 JSON 字符串（psql 文本通道），两种都接受。 */
+/** 逐来源权利：只认 `rights_by_action.external_processing` 的显式 allowed。
+ * 缺失 / unknown / restricted / denied / 不可解析 = TRANSFER_DENIED（失败关闭）。
+ * 不再接受 `rights.external_processing='allow'`、`rights.status='public_domain_secondary_use'`
+ * 之类推断旁路（Owner 2026-11-08 裁定）。 */
 async function assertSourcesAllowExternal(
   deps: DispatcherDeps,
   sourceIds: string[],
@@ -221,18 +225,13 @@ async function assertSourcesAllowExternal(
   const rows = await deps.readSourceRights(sourceIds, sessionToken);
   if (!Array.isArray(rows) || rows.length !== sourceIds.length) throw new DispatchError("TRANSFER_DENIED");
   for (const row of rows) {
-    let rights: Record<string, unknown>;
     try {
-      const raw = row?.rights as unknown;
-      rights = typeof raw === "string" ? JSON.parse(raw) : (raw ?? {});
-    } catch {
+      assertRightsActionsAllowed(row?.rights_by_action, ["external_processing"], "TRANSFER_DENIED");
+    } catch (error) {
+      const code = (error as { code?: string } | null)?.code;
+      if (code !== "RIGHTS_NOT_ALLOWED") throw error;
       throw new DispatchError("TRANSFER_DENIED", `TRANSFER_DENIED source=${row?.source_id}`);
     }
-    if (!rights || typeof rights !== "object" || Array.isArray(rights))
-      throw new DispatchError("TRANSFER_DENIED", `TRANSFER_DENIED source=${row?.source_id}`);
-    const allowed = rights.external_processing === "allow"
-      || rights.status === "public_domain_secondary_use";
-    if (!allowed) throw new DispatchError("TRANSFER_DENIED", `TRANSFER_DENIED source=${row?.source_id}`);
   }
 }
 
@@ -492,12 +491,12 @@ export async function createStudioDispatcherDeps(): Promise<DispatcherDeps> {
         `with session_context as materialized (
            select set_config('mohen.session_token', :'token', true)
          )
-         select s.source_id::text as source_id, s.rights as rights
+         select s.source_id::text as source_id, s.rights_by_action as rights_by_action
            from session_context
            cross join source.sources s
           where s.source_id = any(array[${list}])`,
         { token }
-      ) as unknown as Promise<Array<{ source_id: string; rights: Record<string, unknown> | string | null }>>;
+      ) as unknown as Promise<Array<{ source_id: string; rights_by_action: Record<string, unknown> | string | null }>>;
     },
   };
 }

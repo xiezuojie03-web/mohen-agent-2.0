@@ -22,6 +22,8 @@ const PROJECT_ID = 'aaaaaaaa-2222-4333-8444-555555555555';
 const OTHER_PROJECT_ID = 'bbbbbbbb-2222-4333-8444-555555555555';
 const SOURCE_OK = 'b0a11000-0000-4000-8000-000000000004';
 const SOURCE_DENIED = 'b0a11000-0000-4000-8000-0000000000ff';
+// 旧式"自述许可"来源：只有 rights.status='public_domain_secondary_use'，没有逐动作 allowed。
+const SOURCE_LEGACY_SELF_DECLARED = 'b0a11000-0000-4000-8000-00000000000e';
 const CALL = { system: '你是墨痕的 H1 方法。', user: '真实材料：松江府田赋。', temperature: 0.3, maxTokens: 64 };
 
 function makeDelegation(overrides: Record<string, unknown> = {}) {
@@ -69,9 +71,11 @@ function makeDeps(overrides: Partial<DispatcherDeps> = {}, delegationOverrides: 
     },
     readSourceRights: vi.fn(async (ids: string[]) => ids.map((id) => ({
       source_id: id,
-      rights: id === SOURCE_OK
-        ? { basis: 'NAJ_secondary_use_policy', status: 'public_domain_secondary_use' }
-        : {},
+      rights_by_action: id === SOURCE_OK
+        ? { access_view: 'allowed', machine_read: 'allowed', retain: 'allowed', external_processing: 'allowed' }
+        : id === SOURCE_LEGACY_SELF_DECLARED
+          ? {}
+          : { external_processing: 'denied' },
     }))),
     fetchImpl: vi.fn(async () => new Response(JSON.stringify({
       choices: [{ message: { content: '收到。' } }],
@@ -120,6 +124,40 @@ describe('authorizeProviderDispatch', () => {
     await expect(authorizeProviderDispatch(deps, { ...AUTH_INPUT, sourceIds: [SOURCE_DENIED] }))
       .rejects.toMatchObject({ code: 'TRANSFER_DENIED' });
     await expect(authorizeProviderDispatch(deps, { ...AUTH_INPUT, sourceIds: [SOURCE_OK, SOURCE_DENIED] }))
+      .rejects.toMatchObject({ code: 'TRANSFER_DENIED' });
+    expect(deps.fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it('no longer accepts legacy rights self-description as an external-processing grant', async () => {
+    // 旧旁路：rights.status='public_domain_secondary_use' / rights.external_processing='allow'。
+    // Owner 2026-11-08 裁定后必须拒绝；只有 rights_by_action.external_processing='allowed' 才放行。
+    const { deps } = makeDeps();
+    (deps as unknown as Record<string, unknown>).readSourceRights = vi.fn(async (ids: string[]) => ids.map((id) => ({
+      source_id: id,
+      // 只有 OK 来源在词典里有显式 allowed；旧式自述字段对两者都写着"许可"。
+      rights_by_action: id === SOURCE_OK ? { external_processing: 'allowed' } : {},
+      rights: { basis: 'NAJ_secondary_use_policy', status: 'public_domain_secondary_use', external_processing: 'allow' },
+    })));
+    await expect(authorizeProviderDispatch(deps, { ...AUTH_INPUT, sourceIds: [SOURCE_LEGACY_SELF_DECLARED] }))
+      .rejects.toMatchObject({ code: 'TRANSFER_DENIED' });
+    // 显式 allowed 的字典字段仍然是唯一放行依据。
+    expect((await authorizeProviderDispatch(deps, AUTH_INPUT)).replay).toBe(false);
+    expect(deps.fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it('denies when the rights row is unparsable or missing rather than defaulting to allow', async () => {
+    const { deps } = makeDeps();
+    for (const raw of ['{not json', '[]', null]) {
+      (deps as unknown as Record<string, unknown>).readSourceRights = vi.fn(async (ids: string[]) => ids.map((id) => ({
+        source_id: id,
+        rights_by_action: raw,
+      })));
+      await expect(authorizeProviderDispatch(deps, AUTH_INPUT))
+        .rejects.toMatchObject({ code: 'TRANSFER_DENIED' });
+    }
+    // 少返回一行（来源在 RLS 下不可见）也必须拒绝。
+    (deps as unknown as Record<string, unknown>).readSourceRights = vi.fn(async () => []);
+    await expect(authorizeProviderDispatch(deps, AUTH_INPUT))
       .rejects.toMatchObject({ code: 'TRANSFER_DENIED' });
     expect(deps.fetchImpl).not.toHaveBeenCalled();
   });

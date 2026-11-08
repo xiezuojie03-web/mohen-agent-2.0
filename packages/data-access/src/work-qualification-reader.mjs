@@ -4,7 +4,8 @@ import {createHash} from 'node:crypto';
 import {requireQualifiedReadContext} from './qualification-read-context.mjs';
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const KINDS=new Set(['world_projection','agent_context','story_seed','discovery_path','map_timeline_projection','evidence_pointer']);
-const ACTIONS=Object.freeze({watch:'display',visual_stage:'display',agent:'read',evidence_on_demand:'quote'});
+// 消费方 → 规范动作（CP2-A 词典；旧写法 read 已归并为 access_view）。
+const ACTIONS=Object.freeze({watch:'display',visual_stage:'display',agent:'access_view',evidence_on_demand:'quote'});
 const object=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
 const canonical=x=>Array.isArray(x)?'['+x.map(canonical).join(',')+']':object(x)?'{'+Object.keys(x).sort().map(k=>JSON.stringify(k)+':'+canonical(x[k])).join(',')+'}':JSON.stringify(x);
 export const workContentDigest=content=>createHash('sha256').update(canonical(content)).digest('hex');

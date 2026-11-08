@@ -14,6 +14,8 @@ import {
   mintMachineSessionToken,
   openMachineQuery,
 } from "./machine-reviewer-session.mjs";
+// CP2-D：逐动作权利只认唯一词典（显式 allowed 才放行）。
+import { decideRightsActions } from "../packages/data-access/src/rights-actions.mjs";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const AUTHORITY_CLI = path.join(ROOT, "..", "packages", "data-access", "scripts", "gate-authority.mjs");
@@ -24,9 +26,11 @@ export const UPSTREAM_BY_GATE = { G1: "G0", G2: "G1", G3: "G2", G4: "G3", G5: "G
 export const METHOD_BY_GATE = { G1: "C02", G3: "W07", G4: "A06", G5: "P02" };
 export const QUALIFICATION_VALIDITY_MS = 6 * 24 * 60 * 60 * 1000;
 const READ_RUN_SCHEMAS = new Set(["mab.private-text-reading.v1", "mab.private-scanned-page-reading.v1"]);
-// Any declared rights status/basis in this set is treated as no authorisation.
-const DENIED_RIGHTS = new Set(["unknown", "unknown_rights", "unreviewed", "copyright_restricted", "restricted", "prohibited", "denied", "revoked", "expired", "none"]);
-const RIGHTS_OPERATION_KEYS = ["status", "redistribution", "usage", "publish", "output_use"];
+// 每个 Gate 涉及的原始件（或私有原件）都必须被逐动作显式许可：
+//   machine_read = 允许机器读取正文；retain = 允许保存该数字副本。
+// 旧黑名单式判定（status/redistribution/usage/publish/output_use 只拒绝已知值）已删除：
+// 缺失字段不再"默认通过"，全部按 unknown 失败关闭。
+const REQUIRED_SOURCE_ACTIONS = ["machine_read", "retain"];
 const HEX = /^[a-f0-9]{64}$/;
 
 const text = value => (value == null ? "" : String(value));
@@ -66,17 +70,25 @@ function assessRights(rows, ctx) {
     const which = text(row.source_id) || text(row.original_id);
     if (text(row.original_state) !== "STORED_VERIFIED") return { ok: false, reason: `original_not_verified:${which}` };
     if (!flag(row.rights_declared)) return { ok: false, reason: `rights_not_declared:${which}` };
-    const rights = json(row.rights);
-    if (!rights || typeof rights !== "object" || Array.isArray(rights)) return { ok: false, reason: `rights_record_invalid:${which}` };
-    const basis = text(rights.basis).trim();
+    const evidence = json(row.rights_evidence);
+    if (!evidence || typeof evidence !== "object" || Array.isArray(evidence)) {
+      return { ok: false, reason: `rights_evidence_missing:${which}` };
+    }
+    const basis = text(evidence.basis).trim();
     if (!basis) return { ok: false, reason: `rights_basis_missing:${which}` };
-    const denied = RIGHTS_OPERATION_KEYS.filter(key => DENIED_RIGHTS.has(text(rights[key]).trim().toLowerCase()));
-    if (denied.length) return { ok: false, reason: `rights_operation_denied:${which}:${denied[0]}=${text(rights[denied[0]])}` };
-    if (rights.expires_at != null) {
-      const at = Date.parse(text(rights.expires_at));
+    // 逐动作显式许可：任何一项不是 allowed 就 HOLD（含缺失 / unknown / restricted / denied）。
+    const decision = decideRightsActions(
+      row.rights_by_action == null ? null : json(row.rights_by_action),
+      REQUIRED_SOURCE_ACTIONS
+    );
+    if (!decision.ok) {
+      return { ok: false, reason: `rights_action_not_allowed:${which}:${decision.reasons[0] ?? "rights_actions_empty"}` };
+    }
+    if (evidence.expires_at != null) {
+      const at = Date.parse(text(evidence.expires_at));
       if (!Number.isFinite(at) || at <= ctx.now) return { ok: false, reason: `rights_expired_or_unreadable:${which}` };
     }
-    const entry = `${which}:basis=${basis}${text(rights.status) ? `;status=${text(rights.status)}` : ""}`;
+    const entry = `${which}:basis=${basis};actions=${REQUIRED_SOURCE_ACTIONS.join(",")}=allowed`;
     if (!observed.includes(entry)) observed.push(entry);
   }
   return { ok: true, detail: observed.join(" ") };
@@ -89,7 +101,7 @@ async function checkRightsByOperation(ctx) {
     const originalId = text(projection[0]?.original_id);
     if (!originalId) return { ok: false, reason: "rights_original_ref_missing" };
     const rows = await ctx.query(`select o.original_id::text as original_id, o.state as original_state, o.rights_declared,
-        s.source_id::text as source_id, s.rights::text as rights
+        s.source_id::text as source_id, s.rights_by_action::text as rights_by_action, s.rights_evidence::text as rights_evidence
       from studio.private_originals o
       join source.raw_items ri on o.storage_bucket || '/' || o.storage_key = ri.storage_ref
         and ri.checksum_sha256 = o.sha256 and ri.byte_size = o.byte_size
@@ -99,7 +111,7 @@ async function checkRightsByOperation(ctx) {
     return assessRights(rows, ctx);
   }
   const rows = await ctx.query(`select o.original_id::text as original_id, o.state as original_state, o.rights_declared,
-      s.source_id::text as source_id, s.rights::text as rights
+      s.source_id::text as source_id, s.rights_by_action::text as rights_by_action, s.rights_evidence::text as rights_evidence
     from source.source_versions v
     join source.raw_items ri on ri.source_version_id = v.source_version_id
     join studio.private_originals o on o.storage_bucket || '/' || o.storage_key = ri.storage_ref

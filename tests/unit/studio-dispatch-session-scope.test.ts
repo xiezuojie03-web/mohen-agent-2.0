@@ -33,10 +33,13 @@ it('uses transaction-local identity for project source reads and work binding',a
 });
 
 it('uses transaction-local identity for Provider source-right reads',async()=>{
-  mocks.queryRows.mockResolvedValueOnce([{source_id:source,rights:{external_processing:'allow'}}]);
+  mocks.queryRows.mockResolvedValueOnce([{source_id:source,rights_by_action:{external_processing:'allowed'}}]);
   const deps=await createStudioDispatcherDeps();
   const rows=await deps.readSourceRights([source],'owner-token');
   expect(rows).toHaveLength(1);
   expect(mocks.queryRows.mock.calls[0][0]).toContain("with session_context as materialized");
   expect(mocks.queryRows.mock.calls[0][0]).toContain("set_config('mohen.session_token', :'token', true)");
+  // CP2-D：逐来源权利只读唯一词典字段，不再读自由格式 rights。
+  expect(mocks.queryRows.mock.calls[0][0]).toContain('s.rights_by_action as rights_by_action');
+  expect(mocks.queryRows.mock.calls[0][0]).not.toContain('s.rights as rights');
 });

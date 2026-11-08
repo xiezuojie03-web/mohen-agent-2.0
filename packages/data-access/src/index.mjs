@@ -297,3 +297,10 @@ export {assessStudioReceiptCandidates} from './studio-candidate-assessment.mjs';
 export {createStudioExecutionRepository} from './studio-execution-repository.mjs';
 export {createStudioCandidateReceiver} from './studio-receive-candidate.mjs';
 export {createWorkQualificationReader,workContentDigest} from './work-qualification-reader.mjs';
+
+// CP2-A：唯一权利动作词典与判定器（QR-04/QR-05）。
+export {
+  RIGHTS_ACTIONS,RIGHTS_VALUES,RIGHTS_ACTION_ALIASES,G0_REQUIRED_ACTIONS,G0_RETAIN_ACTION,CONSUMER_ACTIONS,
+  canonicalRightsAction,canonicalRightsValue,normalizeRightsSnapshot,
+  decideRightsAction,decideRightsActions,evaluateG0Rights,assertRightsActionsAllowed,
+} from './rights-actions.mjs';

@@ -1860,4 +1860,48 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 3. 若 Owner 要求先验证 Studio 正道，再按预算最小化跑 `verify-5-studio-dispatch.mjs`（同输入回放不二次计费）。
 4. M5 继续 `M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY`；无生产迁移、无正式 Gate 启用、无公开发布、无新增付费调用。
 
+## CP2 开工记录（M3 独立生产资格 · 2026-11-08）
+
+**Owner 裁定（生效）**：上海图书馆开放数据集（`data1.library.sh.cn`，含同一开放平台的各合作单位数据）是本项目**唯一明确授权来源**且有效；需要补充时 Owner 可再提供。其他来源（Wikimedia Commons、政府网站、国立公文书馆、青浦博物馆、江南桥梁研究等）权利未明确 → 一律 HOLD，禁止从 CC 标签、`public_domain_secondary_use` 之类自述或来源类别自动推断外发权限。
+
+### 开工前的真实只读核查（本地 `mohen_dev`，未写入）
+
+| 事实 | 数值 | 影响 |
+|---|---|---|
+| `source.sources` 按 provider | shanghai-library 27、wikimedia-commons 5、qingpu-gov 2、yangpu-gov 2、jiangnan-bridge-research 1、shanghai-gov 1、qingpu-museum 1、国立公文书馆(NAJ) 1 | 授权来源仅 27 条 |
+| SHL 27 条的 `rights` | 全部 `{}`（未知） | 即便 Owner 已授权数据集，**库里没有把它落成逐动作许可** → QR-04/05 |
+| SHL `content_availability` | 27 条全 `full_content`；versions 69、raw_items 69 | 有全文数字载体，可作真实原件候选 |
+| SHL `raw_items.storage_ref` | 全部 `memory://…`，`byte_size` 为空 | **尚无经校验的真实字节**，不满足 G0 的“文件可读证明” |
+| NAJ 那 1 条 | `rights={"basis":"NAJ_secondary_use_policy","status":"public_domain_secondary_use"}` | 按新裁定**不再具有授权地位** |
+| 现有 2 份私有原件 | `songjiang-tianfu-p35.jpg` / `p37.jpg`（sha `99dae89a…`/`03c6fd44…`，362KB/455KB）源出 NAJ《松江府志7》 | 原 M5 真实原件基础按新裁定 **HOLD**，不能继续充当 CP2 验收原件 |
+| `studio.asset_revisions` 6 条（M5 隔离样本） | `source_refs=[]`、`dependency_refs=[]`、`rights_by_action` 六动作全 `unknown` | QR-07 与 QR-04 均成立 |
+| `studio.use_events` / `asset_links` | 0 / 0 | QR-07 成立 |
+
+### CP2 施工顺序（本检查点内唯一顺序）
+
+1. **CP2-A 词典统一（QR-05 前半）**：新增 `packages/data-access/src/rights-actions.mjs` 作为唯一动作词典与判定器；动作集 `access_view/machine_read/retain/download/quote/display/adapt/redistribute/external_processing`，取值 `allowed|denied|unknown|restricted`，别名 `read→access_view`、`public_display→display`；`G0` 必检 `machine_read`（涉保存时 `retain`），只有显式 `allowed` 才放行，缺失/unknown/restricted/denied 一律 HOLD 并带原因码。补正反单测。
+2. **CP2-B 迁移（QR-04）**：`source.sources.rights_by_action`+`rights_evidence`、`source.source_versions.rights_snapshot`（不可变），默认全空、不推断回填；只应用到本地 `mohen_dev`，生产不执行。
+3. **CP2-C 授权标定**：`tools/stamp-shl-open-data-rights.mjs` 只对 `provider='shanghai-library'` 的 27 条写显式许可——`access_view/machine_read/retain/quote=allowed`（依据 Owner 2026-11-08 授权，scope=本项目内部研究），`display/download/adapt/redistribute/external_processing=unknown`（HOLD，另需 Owner 明示）；其他 7 类 provider 一律不动并列出 HOLD 清单。
+4. **CP2-D 接线**：`provider-dispatcher.ts` 的 `assertSourcesAllowExternal` 改读统一词典的 `rights_by_action`，删除 `rights.status='public_domain_secondary_use'` 这类推断旁路；G0 候选提交与 G5 消费按显式 ALLOW 判定；补正反测试。
+5. **CP2-E 真实原件**：从 SHL 开放数据取得一份古籍全文数字载体，落私有原件（字节+sha 回读校验）、登记 version/raw_item，形成 CP2 的“同一真实原件”。
+6. **CP2-F QR-07**：资产创建写 `source_refs`/`dependency_refs` 与 `use_events` 回链。
+7. 重跑受影响的隔离验证（`verify-2-c-d-chain`、`verify-3-gate-chain`、`verify-4-provider-dispatch`），按 D00—D05 / G0—G5 逐项记账；回写本账与 `CURRENT.md`，小批提交+推送，按四问暂停。
+
+**未执行**：生产迁移、正式 Gate/Reviewer 启用、公开外发、任何新增付费调用。M5 继续 `M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY`。
+
+### CP2-A—D 落地记录（2026-11-08，本地隔离 `mohen_dev`）
+
+| 步骤 | 实际做了什么 | 真实证据 | 未做到 |
+|---|---|---|---|
+| **CP2-A 词典** | 新增 `packages/data-access/src/rights-actions.mjs` + `.d.mts`，从 `index.mjs`/`index.d.mts` 导出 | 九动作、四取值、别名 `read→access_view`/`public_display→display`；只有显式 `allowed` 放行；`tools/read` 等未知动作按 `rights_action_unrecognized` 拒绝；`tests/unit/rights-actions.test.ts` **17 PASS**（含"旧 `public_domain_secondary_use` 自述不再当外发许可"反例） | 只是判定器，不取回、不写库、不签发 Gate |
+| **CP2-B 迁移** | `supabase/migrations/20261108110000_mab_m5_source_rights_actions.sql` 应用到本地 `mohen_dev` | `source.sources.rights_by_action`/`rights_evidence`（jsonb，默认 `{}`，check 必须为 object）；`source.source_versions.rights_snapshot`（不可变触发器 `source_versions_rights_snapshot_immutable`）。实测：第一次写入非空快照成功、第二次改写被 `RIGHTS_SNAPSHOT_IMMUTABLE` 拒绝，事务回滚后快照仍为 0 | **生产库未执行**；不推断回填，迁移后 0 条被自动赋权 |
+| **CP2-C 授权标定** | 新增 `tools/stamp-shl-open-data-rights.mjs`（默认只报告，`--apply` 才写） | 只对 `provider='shanghai-library'` 的 **27** 条写入 `access_view/machine_read/retain/quote=allowed`、其余五动作显式 `unknown`，并写 `rights_evidence`（Owner 2026-11-08 授权、scope=项目内部研究）；回读按词典判定 27/27 granted_ok 且 held 仍 HOLD；其余 7 类 provider `with_actions=0` 未改动；重复运行幂等、无冲突 | `display/download/adapt/redistribute/external_processing` 保持 HOLD —— 需 Owner 明示（CP3 才需要外发） |
+| **CP2-D 接线** | 改 `apps/web/lib/studio/provider-dispatcher.ts`（读 `s.rights_by_action`，删 `rights.external_processing='allow' || rights.status='public_domain_secondary_use'` 推断旁路）、`tools/rule-gate-reviewer.mjs`（删 `DENIED_RIGHTS` 黑名单，改逐动作显式判定且必检 `machine_read`+`retain`、证据 `rights_evidence.basis`）、`work-qualification-reader.mjs` 与 G5 夹具动作名归并为 `access_view` | 新增/改写反例：`TRANSFER_DENIED`（旧自述仍拒）、不可解析/少返回行必拒、Reviewer `rights_action_not_allowed`、`rights_basis_missing`、`rights_restricted:retain`；全套 unit **637 pass / 2 skip / 0 fail**（87 文件），typecheck **6/6 工作区 0 错** | 未跑真实 Provider 付费派发；G5 消费仍需 G5 独立签核 + 该动作显式 allowed |
+
+**回写时发现的两处本地基线失效（不记作通过）**：
+- `tools/verify-3-gate-chain.mjs`：7 项 FAIL（候选 submitted=0、qualification invalid=7）。只读核查未改动签名数据；根因是 `control.artifact_revision_for` 对**整行 `to_jsonb`** 取哈希，CP2-B（以及更早加列迁移）一加列，旧签名就不再对应当前 artifact revision → 失败关闭，需要 CP2-E 用上海图书馆原件重建 G0—G5 基线后重新签核。
+- `tools/verify-2-c-d-chain.mjs`：`D05 projection_key` FAIL，同样属既有本地链状态，需在 CP2-E 一并重建。
+
+**范围声明**：本轮无生产迁移、无生产数据/Storage 写入、无正式 Gate/Reviewer 启用、无付费模型调用；未把任何旧自述许可"洗白"成 allowed。
+
 

@@ -82,7 +82,20 @@ function rightsRow(overrides: Record<string, unknown> = {}) {
     original_state: 'STORED_VERIFIED',
     rights_declared: 't',
     source_id: 'src-1',
-    rights: JSON.stringify({ basis: 'NAJ_secondary_use_policy', status: 'public_domain_secondary_use' }),
+    // CP2-D：逐动作显式许可（唯一词典）。display / external_processing 故意留 unknown。
+    rights_by_action: JSON.stringify({
+      access_view: 'allowed',
+      machine_read: 'allowed',
+      retain: 'allowed',
+      quote: 'allowed',
+      display: 'unknown',
+      external_processing: 'unknown',
+    }),
+    rights_evidence: JSON.stringify({
+      basis: 'owner_authorization',
+      owner_decision_at: '2026-11-08',
+      scope: 'project_internal_research',
+    }),
     ...overrides,
   };
 }
@@ -217,7 +230,7 @@ describe('machine rule reviewer', () => {
       'control.gate_policy_versions': policyHandler,
       'from control.gate_candidates': () => [candidateRow()],
       'control.artifact_revision_for': () => [{ revision: REVISION }],
-      'from source.source_versions v': () => [rightsRow({ rights: '{}' })],
+      'from source.source_versions v': () => [rightsRow({ rights_evidence: '{}' })],
     });
     const { reviewer, decisions, lines } = makeReviewer(query);
     const outcome = await reviewer.review({ gate: 'G0' });
@@ -225,6 +238,40 @@ describe('machine rule reviewer', () => {
     expect(outcome.failed).toEqual(['rights_by_operation']);
     expect(decisions).toHaveLength(0);
     expect(lines.join('\n')).toContain('rights_basis_missing');
+  });
+
+  it('no longer accepts a legacy rights self-description instead of explicit per-action allow', async () => {
+    const { query } = makeQuery({
+      'control.gate_policy_versions': policyHandler,
+      'from control.gate_candidates': () => [candidateRow()],
+      'control.artifact_revision_for': () => [{ revision: REVISION }],
+      'from source.source_versions v': () => [rightsRow({
+        rights_by_action: JSON.stringify({}),
+        rights: JSON.stringify({ basis: 'NAJ_secondary_use_policy', status: 'public_domain_secondary_use' }),
+      })],
+    });
+    const { reviewer, decisions, lines } = makeReviewer(query);
+    const outcome = await reviewer.review({ gate: 'G0' });
+    expect(outcome.status).toBe('FAIL');
+    expect(outcome.failed).toEqual(['rights_by_operation']);
+    expect(decisions).toHaveLength(0);
+    expect(lines.join('\n')).toContain('rights_action_not_allowed:src-1:rights_unknown:machine_read');
+  });
+
+  it('holds when machine read is allowed but the copy may not be retained', async () => {
+    const { query } = makeQuery({
+      'control.gate_policy_versions': policyHandler,
+      'from control.gate_candidates': () => [candidateRow()],
+      'control.artifact_revision_for': () => [{ revision: REVISION }],
+      'from source.source_versions v': () => [rightsRow({
+        rights_by_action: JSON.stringify({ machine_read: 'allowed', retain: 'restricted' }),
+      })],
+    });
+    const { reviewer, decisions, lines } = makeReviewer(query);
+    const outcome = await reviewer.review({ gate: 'G0' });
+    expect(outcome.status).toBe('FAIL');
+    expect(decisions).toHaveLength(0);
+    expect(lines.join('\n')).toContain('rights_action_not_allowed:src-1:rights_restricted:retain');
   });
 
   it('reports an already signed audit that does not match the machine reviewer', async () => {

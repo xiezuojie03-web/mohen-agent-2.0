@@ -35,7 +35,7 @@ export function seedWorkG5(sql,{kind='story_seed',workContent,purposeCode='m5-ht
    insert into read_model.${table}(${key},${columns})values('${story}',${values})`);
  }
  let parent=null,root;
- const actions={watch:'display',visual_stage:'display',agent:'read',evidence_on_demand:'quote'};
+ const actions={watch:'display',visual_stage:'display',agent:'access_view',evidence_on_demand:'quote'};
  function sign(gate,kind,id,consumer,binding){
   const signedScope=gate==='G5'?{...scope,requested_action:actionOverrides[consumer]??actions[consumer]}:scope;
   const rule='http-work-binding-'+gate;
