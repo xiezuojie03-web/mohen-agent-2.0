@@ -281,19 +281,7 @@ export async function authorizeProviderDispatch(
   if (!Number.isFinite(budget) || budget < 0) throw new DispatchError("HOLD_BUDGET");
 
   const receipts = await deps.delegations.listReceipts(input.delegationId, input.sessionToken);
-  // Any unresolved/unknown receipt freezes new external calls. All known costs
-  // count regardless of candidate acceptance state: rejection/quarantine is
-  // still a billable provider attempt.
-  if (receipts.some((r) => r.acceptance_state === "HOLD" || r.cost_confidence === "UNKNOWN" || r.cost === null))
-    throw new DispatchError("DISPATCH_RECONCILIATION_REQUIRED");
-  const spent = receipts.reduce((sum, r) => {
-    const amount = Number(r.cost);
-    if (!Number.isFinite(amount) || amount < 0) throw new DispatchError("DISPATCH_RECONCILIATION_REQUIRED");
-    return sum + amount;
-  }, 0);
-  if (spent + worst > budget + 1e-9) throw new DispatchError("HOLD_BUDGET");
-
-  // 逐来源权利核验（与 grant 路径同一实现）。
+  // 逐来源权利核验（与 grant 路径同一实现）；即使重放，也必须重新确认当前权利。
   const sourceIds = [...new Set(input.sourceIds)].sort();
   await assertSourcesAllowExternal(deps, sourceIds, input.sessionToken);
 
@@ -304,6 +292,20 @@ export async function authorizeProviderDispatch(
   });
   const replay = receipts.find((r) => r.acceptance_state === "ACCEPT_AS_CANDIDATE"
     && (r.result_manifest as Record<string, unknown> | undefined)?.input_hash === inputHash) ?? null;
+
+  // Exact accepted replay has no new provider call or charge, so it remains
+  // readable when the remaining budget cannot fund another attempt.
+  // Any unresolved receipt still freezes new calls and requires reconciliation.
+  if (receipts.some((r) => r.acceptance_state === "HOLD" || r.cost_confidence === "UNKNOWN" || r.cost === null))
+    throw new DispatchError("DISPATCH_RECONCILIATION_REQUIRED");
+  if (!replay) {
+    const spent = receipts.reduce((sum, r) => {
+      const amount = Number(r.cost);
+      if (!Number.isFinite(amount) || amount < 0) throw new DispatchError("DISPATCH_RECONCILIATION_REQUIRED");
+      return sum + amount;
+    }, 0);
+    if (spent + worst > budget + 1e-9) throw new DispatchError("HOLD_BUDGET");
+  }
   const attemptNo = receipts.reduce((max, r) => Math.max(max, Number(r.attempt_no) || 0), 0) + 1;
 
   const handleId = randomUUID();
@@ -487,9 +489,13 @@ export async function createStudioDispatcherDeps(): Promise<DispatcherDeps> {
       if (ids.length !== sourceIds.length || !ids.length) return [];
       const list = ids.map((id) => `'${id}'::uuid`).join(",");
       return dataAccess.queryRows(
-        `select s.source_id::text as source_id, s.rights as rights
-         from source.sources s, (select set_config('mohen.session_token', :'token', true)) cfg
-         where s.source_id = any(array[${list}])`,
+        `with session_context as materialized (
+           select set_config('mohen.session_token', :'token', true)
+         )
+         select s.source_id::text as source_id, s.rights as rights
+           from session_context
+           cross join source.sources s
+          where s.source_id = any(array[${list}])`,
         { token }
       ) as unknown as Promise<Array<{ source_id: string; rights: Record<string, unknown> | string | null }>>;
     },

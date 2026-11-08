@@ -13,12 +13,15 @@ import {
 /** 项目 L0 来源集合（服务端权威推导）：私有原件 SHA ↔ raw_items ↔ source_versions ↔ sources。 */
 export async function listProjectSourceIds(projectId: string, sessionToken: string): Promise<string[]> {
   const rows = await queryRows(
-    `select distinct s.source_id::text as source_id
-       from studio.private_originals o
+    `with session_context as materialized (
+       select set_config('mohen.session_token', :'token', true)
+     )
+     select distinct s.source_id::text as source_id
+       from session_context
+       cross join studio.private_originals o
        join source.raw_items r on r.checksum_sha256 = o.sha256
        join source.source_versions v on v.source_version_id = r.source_version_id
-       join source.sources s on s.source_id = v.source_id,
-       (select set_config('mohen.session_token', :'token', true)) cfg
+       join source.sources s on s.source_id = v.source_id
       where o.project_id = :'pid'`,
     { token: sessionToken, pid: projectId }
   );

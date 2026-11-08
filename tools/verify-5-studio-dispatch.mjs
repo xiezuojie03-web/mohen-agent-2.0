@@ -41,18 +41,23 @@ async function main() {
   const deps = await dispatcher.createStudioDispatcherDeps();
 
   const who = await dataAccess.queryRows(
-    `select control.current_app_user_id()::text as uid
-     from (select set_config('mohen.session_token', :'token', true)) s`, { token });
+    `with session_context as materialized (
+       select set_config('mohen.session_token', :'token', true)
+     )
+     select control.current_app_user_id()::text as uid from session_context`, { token });
   record("VERIFY_5_IDENTITY", who[0]?.uid === OWNER, `uid=${who[0]?.uid}`);
 
   // 1) 项目来源服务端推导（与路由 listProjectSourceIds 同一查询）。
   const srcRows = await dataAccess.queryRows(
-    `select distinct s.source_id::text as source_id
-       from studio.private_originals o
+    `with session_context as materialized (
+       select set_config('mohen.session_token', :'token', true)
+     )
+     select distinct s.source_id::text as source_id
+       from session_context
+       cross join studio.private_originals o
        join source.raw_items r on r.checksum_sha256 = o.sha256
        join source.source_versions v on v.source_version_id = r.source_version_id
-       join source.sources s on s.source_id = v.source_id,
-       (select set_config('mohen.session_token', :'token', true)) cfg
+       join source.sources s on s.source_id = v.source_id
       where o.project_id = :'pid'`, { token, pid: PROJECT });
   const projectSources = srcRows.map((r) => r.source_id).sort();
   record("VERIFY_5_PROJECT_SOURCES", projectSources.includes(NAJ_SOURCE), `sources=${projectSources.join(",")}`);

@@ -27,6 +27,7 @@ it('uses transaction-local identity for project source reads and work binding',a
     .mockResolvedValueOnce([{source_id:source}])
     .mockResolvedValueOnce([{project_id:project,sids:JSON.stringify([source])}]);
   expect(await listProjectSourceIds(project,'owner-token')).toEqual([source]);
+  expect(mocks.queryRows.mock.calls[0][0]).toContain("with session_context as materialized");
   expect(mocks.queryRows.mock.calls[0][0]).toContain("set_config('mohen.session_token', :'token', true)");
   expect(await sourceBindingForWork('work-id')).toEqual({projectId:project,sourceIds:[source]});
 });
@@ -36,5 +37,6 @@ it('uses transaction-local identity for Provider source-right reads',async()=>{
   const deps=await createStudioDispatcherDeps();
   const rows=await deps.readSourceRights([source],'owner-token');
   expect(rows).toHaveLength(1);
+  expect(mocks.queryRows.mock.calls[0][0]).toContain("with session_context as materialized");
   expect(mocks.queryRows.mock.calls[0][0]).toContain("set_config('mohen.session_token', :'token', true)");
 });

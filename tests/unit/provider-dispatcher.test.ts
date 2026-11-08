@@ -188,11 +188,12 @@ describe('dispatchAuthorizedCall', () => {
       .rejects.toMatchObject({ code: 'DISPATCH_HANDLE_INVALID' });
   });
 
-  it('replays an identical input without a second fetch or a second charge', async () => {
-    const { deps, receipts } = makeDeps();
+  it('replays an identical input without a second fetch or a second charge, even if remaining budget is insufficient', async () => {
+    const { deps, receipts, delegation } = makeDeps();
     const first = await authorizeProviderDispatch(deps, AUTH_INPUT);
     await dispatchAuthorizedCall(deps, first, CALL);
     expect(deps.fetchImpl).toHaveBeenCalledTimes(1);
+    delegation.budget_limit = '0.000001';
     const second = await authorizeProviderDispatch(deps, AUTH_INPUT);
     expect(second.replay).toBe(true);
     const replayed = await dispatchAuthorizedCall(deps, second, CALL);
