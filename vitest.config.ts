@@ -23,6 +23,10 @@ export default defineConfig({
       "@mohen/experience-engine": path.resolve(__dirname, "packages/experience-engine/src/index.ts"),
       // 根级测试直接引用 apps/web/lib 时，需要把 workspace 包指到源码（根 node_modules 无该链接）。
       "@mohen/data-access": path.resolve(__dirname, "packages/data-access/src/index.mjs"),
+      // M5 批次 K 修复：next 只装在 apps/web/node_modules，根级解析不到；
+      // 与 vitest.unit.config.ts 使用同一组别名，避免同一测试在两条门禁下语义分叉。
+      "next/headers": path.resolve(__dirname, "apps/web/node_modules/next/headers.js"),
+      "next/server": path.resolve(__dirname, "apps/web/node_modules/next/server.js"),
     },
   },
   test: {

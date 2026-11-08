@@ -74,14 +74,18 @@ describe("P0-4 发布双条件", () => {
     expect(r.reason).toBe("no_rights_ack");
   });
 
-  it("出处 + 独立签核 + 权利确认 → ok", async () => {
+  // M5 起 G5 独立制作门为更上位条件（work-publish-qualification）：
+  // 原 P0-4「出处 + 独立签核 + 权利确认」已不再是放行充分条件，缺少当前 G5 时必须失败关闭。
+  // G5 的正向路径由 MAB isolated PostgreSQL 17 工作流中的 work-binding 用例覆盖。
+  it("出处 + 独立签核 + 权利确认仍不足 → independent_g5_required", async () => {
     const { workId, revisionId } = await seedSubmittedWork({
       beats: [{ provenanceRefs: ["src-1"] }],
       rights_acknowledged: true,
     });
     await decide(workId, revisionId, reviewerEmail);
     const r = await checkPublishEligibility(workId, publisherId);
-    expect(r.ok).toBe(true);
+    expect(r.ok).toBe(false);
+    expect(r.reason).toBe("independent_g5_required");
   });
 
   it("签核人同时是发布人 → reviewer_is_publisher", async () => {

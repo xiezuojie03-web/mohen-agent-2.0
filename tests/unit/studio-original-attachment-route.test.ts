@@ -17,7 +17,7 @@ function request(){
  form.set("file",new File(["private original"],"page.txt",{type:"text/plain"}));
  return new Request("http://test.invalid/api/studio/attachments",{method:"POST",body:form});
 }
-beforeEach(()=>{vi.clearAllMocks();vi.stubEnv("MOHEN_PRIVATE_ORIGINAL_UPLOAD_ENABLED","true");state.session.mockResolvedValue({uid:id});state.token.mockReturnValue("synthetic");state.upload.mockResolvedValue({
+beforeEach(()=>{vi.clearAllMocks();vi.stubEnv("MOHEN_PRIVATE_ORIGINAL_UPLOAD_ENABLED","true");vi.stubEnv("MOHEN_PRIVATE_ORIGINAL_LOCAL_FS","false");state.session.mockResolvedValue({uid:id});state.token.mockReturnValue("synthetic");state.upload.mockResolvedValue({
  original_id:id,asset_id:id,asset_revision_id:id,sha256:"a".repeat(64),byte_size:16,state:"STORED_VERIFIED",
 });state.download.mockResolvedValue({record:{content_type:"text/plain"},bytes:Buffer.from("original")});});
 it("refuses anonymous upload and download",async()=>{
