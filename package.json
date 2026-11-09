@@ -37,6 +37,7 @@
     "test:data-production": "node --test --experimental-test-isolation=none tests/data-production/*.test.mjs",
     "test:k3-db": "node scripts/test-k3-db.mjs",
     "guard:k3-traceability": "node scripts/guards/check-k3-traceability.mjs",
+    "guard:isolated-db-fixtures": "node scripts/guards/check-isolated-db-fixtures.mjs",
     "guard:physical-model": "node scripts/guards/check-physical-data-model.mjs",
     "test:physical-model": "node --test tests/data-production/physical-model.test.mjs",
     "guard:runtime-boundary": "node scripts/guards/check-runtime-data-boundary.mjs",

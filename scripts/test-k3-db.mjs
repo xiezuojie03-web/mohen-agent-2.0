@@ -27,6 +27,16 @@ const baseline = ["202610070100_data_production_v2_baseline.sql", ...fs.readdirS
 function apply(name, folder = "migrations") {
   execFileSync(psql, [...base, "-d", database, "-f", path.join(root, "supabase", folder, name)], { stdio: ["ignore", "pipe", "pipe"] });
 }
+// One run reports every failing suite instead of stopping at the first one, so a fix round
+// does not need one full chain execution per defect.
+const failures = [];
+function runTest(label, script, { args = [], env = {} } = {}) {
+  const result = spawnSync(process.execPath, [script, ...args], {
+    cwd: root, env: { ...process.env, MOHEN_TEST_DATABASE: database, ...env }, stdio: "inherit" });
+  if (result.status === 0) return true;
+  failures.push(result.signal ? `${label}(signal ${result.signal})` : `${label}(exit ${result.status})`);
+  return false;
+}
 try {
   for (const file of baseline) apply(file);
   // Match managed PG installations where pgcrypto is installed outside public.
@@ -50,21 +60,11 @@ try {
   if (query(database, snapshotSql) !== before) throw new Error("LEGACY_AUDIT_CHANGED");
   if (query(database, "select count(*) from control.gate_audits where decision_origin='legacy_untrusted'") !== "711" ||
       query(database, "select count(*) from control.qualification_current") !== "0") throw new Error("LEGACY_QUALIFICATION_PROMOTION");
-  const result = spawnSync(process.execPath, ["tests/data-production/db-security.integration.mjs"], { cwd: root,
-    env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
-  if (result.status !== 0) throw new Error("DB_SECURITY_TEST_FAILED");
-  const materialResult = spawnSync(process.execPath, ["tests/data-production/imported-material-repository.integration.mjs"], { cwd: root,
-    env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
-  if (materialResult.status !== 0) throw new Error("IMPORTED_MATERIAL_REPOSITORY_TEST_FAILED");
-  const authorityResult = spawnSync(process.execPath, ["tests/data-production/gate-authority.integration.mjs"], { cwd: root,
-    env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
-  if (authorityResult.status !== 0) throw new Error("GATE_AUTHORITY_TEST_FAILED");
-  const consumptionResult = spawnSync(process.execPath, ["tests/data-production/read-model-qualification.integration.mjs"], { cwd: root,
-    env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
-  if (consumptionResult.status !== 0) throw new Error("QUALIFICATION_CONSUMPTION_TEST_FAILED");
-  const workFacetsResult=spawnSync(process.execPath,['tests/data-production/work-g5-facets.integration.mjs'],{
-    cwd:root,env:{...process.env,MOHEN_TEST_DATABASE:database},stdio:'inherit'});
-  if(workFacetsResult.status!==0)throw Error('WORK_G5_FACETS_TEST_FAILED');
+  runTest("DB_SECURITY", "tests/data-production/db-security.integration.mjs");
+  runTest("IMPORTED_MATERIAL_REPOSITORY", "tests/data-production/imported-material-repository.integration.mjs");
+  runTest("GATE_AUTHORITY", "tests/data-production/gate-authority.integration.mjs");
+  runTest("QUALIFICATION_CONSUMPTION", "tests/data-production/read-model-qualification.integration.mjs");
+  runTest("WORK_G5_FACETS", "tests/data-production/work-g5-facets.integration.mjs");
   const studioMigration = fs.readdirSync(directory).find(n => n.endsWith("_mab_studio_assets.sql"));
   if (studioMigration) {
     apply(studioMigration);
@@ -80,49 +80,27 @@ try {
     const planProjectColumn = query(database, "select count(*) from information_schema.columns where table_schema='public' and table_name='director_plans' and column_name='project_id' and is_nullable='YES'");
     const planProjectForeignKey = query(database, "select count(*) from pg_constraint c join pg_class t on t.oid=c.conrelid join pg_namespace n on n.oid=t.relnamespace where n.nspname='public' and t.relname='director_plans' and c.contype='f' and c.conkey=(select array[a.attnum] from pg_attribute a where a.attrelid=t.oid and a.attname='project_id') and c.confrelid='studio.projects'::regclass");
     if (planProjectColumn !== "1" || planProjectForeignKey !== "1") throw new Error("DIRECTOR_PLAN_PROJECT_BINDING_SCHEMA_FAILED");
-    const studioResult = spawnSync(process.execPath, ["tests/data-production/studio-assets.integration.mjs"], { cwd: root,
-      env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
-    if (studioResult.status !== 0) throw new Error("STUDIO_ASSET_TEST_FAILED");
-    const studioRepositoryResult = spawnSync(process.execPath, ["tests/data-production/studio-asset-repository.integration.mjs"], { cwd: root,
-      env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
-    if (studioRepositoryResult.status !== 0) throw new Error("STUDIO_ASSET_REPOSITORY_TEST_FAILED");
-    const delegationResult = spawnSync(process.execPath, ["tests/data-production/studio-delegation.integration.mjs"], { cwd: root,
-      env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
-    if (delegationResult.status !== 0) throw new Error("STUDIO_DELEGATION_REPOSITORY_TEST_FAILED");
+    runTest("STUDIO_ASSET", "tests/data-production/studio-assets.integration.mjs");
+    runTest("STUDIO_ASSET_REPOSITORY", "tests/data-production/studio-asset-repository.integration.mjs");
+    runTest("STUDIO_DELEGATION_REPOSITORY", "tests/data-production/studio-delegation.integration.mjs");
     apply('20261104013351_mab_m4_execution_controls.sql');
-    const executionResult=spawnSync(process.execPath,['tests/data-production/studio-execution.integration.mjs'],{
-      cwd:root,env:{...process.env,MOHEN_TEST_DATABASE:database},stdio:'inherit'});
-    if(executionResult.status!==0)throw Error('STUDIO_EXECUTION_CONTROLS_TEST_FAILED');
+    runTest("STUDIO_EXECUTION_CONTROLS", "tests/data-production/studio-execution.integration.mjs");
     apply('20261104013351_mab_m4_execution_controls.sql');
 
     apply(fs.readdirSync(directory).find(n => n.endsWith('_mab_m2_evidence_bridge.sql')));
     apply('20261103143451_mab_m2_private_text_reading.sql');
     apply('20261103234154_mab_m3_gate_service_auth.sql');
-    const readingResult=spawnSync(process.execPath,['tests/data-production/private-text-reading.integration.mjs'],{
-      cwd:root,env:{...process.env,MOHEN_TEST_DATABASE:database},stdio:'inherit'});
-    if(readingResult.status!==0)throw Error('PRIVATE_TEXT_READING_TEST_FAILED');
-    const provenanceResult = spawnSync(process.execPath, ["tests/data-production/private-original-source-binding.integration.mjs"], { cwd: root,
-      env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
-    if (provenanceResult.status !== 0) throw new Error("PRIVATE_SOURCE_BINDING_TEST_FAILED");
-    const originalResult = spawnSync(process.execPath, ["tests/data-production/private-original-repository.integration.mjs"], { cwd: root,
-      env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
-    if (originalResult.status !== 0) throw new Error("PRIVATE_ORIGINAL_REPOSITORY_TEST_FAILED");
+    runTest("PRIVATE_TEXT_READING", "tests/data-production/private-text-reading.integration.mjs");
+    runTest("PRIVATE_SOURCE_BINDING", "tests/data-production/private-original-source-binding.integration.mjs");
+    runTest("PRIVATE_ORIGINAL_REPOSITORY", "tests/data-production/private-original-repository.integration.mjs");
     if (process.env.MOHEN_TEST_STORAGE_CONFIG) {
-      const workflowResult = spawnSync(process.execPath, ["tests/data-production/private-original-workflow.integration.mjs"], { cwd: root,
-        env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
-      if (workflowResult.status !== 0) throw new Error("PRIVATE_ORIGINAL_WORKFLOW_TEST_FAILED");
-      const bridgeResult = spawnSync(process.execPath, ["tests/data-production/evidence-bridge.integration.mjs"], { cwd: root,
-        env: { ...process.env, MOHEN_TEST_DATABASE: database }, stdio: "inherit" });
-      if (bridgeResult.status !== 0) throw new Error("EVIDENCE_BRIDGE_TEST_FAILED");
+      runTest("PRIVATE_ORIGINAL_WORKFLOW", "tests/data-production/private-original-workflow.integration.mjs");
+      runTest("EVIDENCE_BRIDGE", "tests/data-production/evidence-bridge.integration.mjs");
     } else console.log("MAB_PRIVATE_ORIGINAL_STORAGE_HOLD no isolated official Storage configuration supplied");
   }
-  const gateServiceResult=spawnSync(process.execPath,['tests/data-production/gate-service.integration.mjs'],{
-    cwd:root,env:{...process.env,MOHEN_TEST_DATABASE:database},stdio:'inherit'});
-  if(gateServiceResult.status!==0)throw Error('GATE_SERVICE_TEST_FAILED');
+  runTest("GATE_SERVICE", "tests/data-production/gate-service.integration.mjs");
   apply("20261103095024_mab_web_session_revocation.sql");
-  const sessionResult = spawnSync(process.execPath, ["tests/data-production/web-session-revocation.integration.mjs"], {
-    cwd:root,env:{...process.env,MOHEN_TEST_DATABASE:database},stdio:"inherit"});
-  if(sessionResult.status!==0)throw Error("WEB_SESSION_REVOCATION_TEST_FAILED");
+  runTest("WEB_SESSION_REVOCATION", "tests/data-production/web-session-revocation.integration.mjs");
   const sessionSnapshot=query(database,"select md5(jsonb_agg(to_jsonb(r) order by token_hash)::text) from control.web_session_revocations r");
   apply("20261103095024_mab_web_session_revocation.sql");
   apply("20261103095024_mab_web_session_revocation.rollback.sql","rollback");
@@ -131,11 +109,11 @@ try {
   console.log("MAB_WEB_SESSION_ROLLBACK_PASS tombstones-retained runtime-closed migration-repeatable");
   const researchUrl=new URL(`postgresql://k3_admin:synthetic@localhost:${port}/${database}`);
   researchUrl.searchParams.set('host',host);
-  const resumeResult=spawnSync(process.execPath,[path.join(root,'node_modules/vitest/vitest.mjs'),'run','--config','vitest.research-db.config.ts'],{
-    cwd:root,env:{...process.env,MOHEN_RESEARCH_RESUME_TEST:'isolated-pg17',MOHEN_TEST_DATABASE:database,
-      DATABASE_URL:researchUrl.toString(),MOHEN_DATABASE_PASSWORD:'synthetic',MOHEN_DB_DRIVER:'pg',DEEPSEEK_API_KEY:'',SHANGHAI_LIBRARY_KEY:''},stdio:'inherit'});
-  if(resumeResult.status!==0)throw Error('RESEARCH_RESUME_POSTGRES_TEST_FAILED');
-  console.log('MAB_RESEARCH_RESUME_PG_PASS client-budget-denied single-CAS-winner crash-review-HOLD no-provider-calls');
+  if (runTest('RESEARCH_RESUME_POSTGRES',path.join(root,'node_modules/vitest/vitest.mjs'),{
+    args:['run','--config','vitest.research-db.config.ts'],
+    env:{MOHEN_RESEARCH_RESUME_TEST:'isolated-pg17',DATABASE_URL:researchUrl.toString(),MOHEN_DATABASE_PASSWORD:'synthetic',
+      MOHEN_DB_DRIVER:'pg',DEEPSEEK_API_KEY:'',SHANGHAI_LIBRARY_KEY:''}}))
+    console.log('MAB_RESEARCH_RESUME_PG_PASS client-budget-denied single-CAS-winner crash-review-HOLD no-provider-calls');
   const allAuditSnapshot = query(database, "select md5(jsonb_agg(to_jsonb(g) order by gate_audit_id)::text) from control.gate_audits g");
   for (const file of migrations) apply(file);
   if (query(database, "select md5(jsonb_agg(to_jsonb(g) order by gate_audit_id)::text) from control.gate_audits g") !== allAuditSnapshot) throw new Error("REPEAT_MIGRATION_CHANGED_SIGNED_HISTORY");
@@ -180,7 +158,10 @@ try {
   if (query(database, "select has_any_column_privilege('mohen_producer','control.gate_candidates','INSERT')") !== "f") throw new Error("ROLLBACK_LEFT_CANDIDATE_COLUMN_INSERT");
   console.log("ROLLBACK_COLUMN_ACL_PASS column_insert=true_before,false_after on PostgreSQL17 REVOKE ALL");
   if (query(database, snapshotSql) !== before) throw new Error("ROLLBACK_CHANGED_HISTORY");
-  console.log(`K3_DB_TEST_PASS baseline_migrations=${baseline.length} synthetic_legacy_rows=711 unchanged; no automatic qualification; migrations repeatable; rollback fail-closed`);
+  if (failures.length) {
+    console.error(`K3_DB_TEST_FAILED failing_suites=${failures.length} ${failures.join(" ")}`);
+    process.exitCode = 1;
+  } else console.log(`K3_DB_TEST_PASS baseline_migrations=${baseline.length} synthetic_legacy_rows=711 unchanged; no automatic qualification; migrations repeatable; rollback fail-closed`);
 } finally {
   query("postgres", `drop database ${database} with (force)`);
 }

@@ -2157,6 +2157,20 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **QR-06 状态不变**：`studio-delegation` 集成测试仍未被执行，维持 CODE_PRESENT + VERIFIED_ISOLATED(本地单测/tsc) / 集成取证 PENDING，不收口。
 - **当前阶段定位**：M5_REMEDIATION_ACTIVE / M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY。QR-10 中 QR-07 已关闭、QR-06 代码完成待取证；D00-A1 待 QR-06 收口后插入；D00-A2/B/C 各自 HOLD；M6—M8 未启动。
 
+## 2026-11-09 C 批（本地隔离链可跑通）与 B 批（失败汇总）
+
+- **C 达成**：用本机 `D:\MoHen\tools\PostgreSQL\18\bin` 的 `initdb` 在工作区 `work/pg-isolated`（gitignore）起**独立临时集群**：端口 55432、`listen_addresses=127.0.0.1`、`trust`、`mohen.test_instance='codex-k3-isolated'`；未使用 5432 生产实例、未索取其密码、未写任何真实库。
+- **端点解析改造（不再只认单一 socket）**：`scripts/test-k3-db.mjs` 与 20 个 DB 链测试文件支持 `MOHEN_TEST_HOST=127.0.0.1|localhost`（Windows 无 Unix socket）；CI 仍走 `/workspace/` socket，`mohen.test_instance` 实例标记校验**不变**，误连真实库依旧失败关闭。
+- **本地整链结果**：`K3_DB_TEST_PASS baseline_migrations=22 synthetic_legacy_rows=711 unchanged; no automatic qualification; migrations repeatable; rollback fail-closed`。即 DB 安全边界、素材仓储、Gate 权威/服务、读模型资格、work G5、Studio 资产/仓储/**委托（QR-06）**/执行控制、私读、私原件、会话撤销、研究恢复 PG、以及全部 rollback 断言**首次在一条链上连续通过**。Storage 依赖的 2 项仍按 `MAB_PRIVATE_ORIGINAL_STORAGE_HOLD` 跳过（无隔离对象存储配置）。
+- **QR-06 取证**：`MAB_DELEGATION_REPOSITORY_PASS concurrent-idempotency exact-hashes unknown-cost-HOLD immutable cross-owner disabled-identity permanent-root same-root-binding clean-pool no-provider-calls`——`same-root-binding` 即本批 task 绑定（任务存在+属主+同项目）正反例。级别：**VERIFIED_ISOLATED（本地实跑）**，GitHub CI 回执待本批推送后取证。
+- **本批顺带修掉的既有缺陷（均为测试/脚手架不同步，不动生产语义）**：①`psql` 输出按 CRLF/LF 切分（Windows 换行使命令标签过滤失效）；②手写清单顺序错——`private_originals` 必须**先于** CP2-F 应用（`studio.asset_verified_original_bindings` 是 `language sql`，建函数时即校验表存在）；③CP2-F 未给 `source_version` 登记版本身份，改为 `checksum_sha256`，否则校验和永远"未核验"、篡改用例形同虚设；④`gate-service` 去掉 `openssl` CLI 依赖，改用已声明依赖 `selfsigned` 就地生成测试证书；⑤资产测试夹具对齐 CP2-F 语义（`asset_revision` 引用用 `revision_id`；证据类资产必须带来源引用）。
+- **B 达成**：`test-k3-db.mjs` 不再 fail-fast，改为逐个跑完全部套件后一次汇总 `K3_DB_TEST_FAILED failing_suites=...`；迁移/权限断言仍立即中止（后续依赖其状态）。
+- **D 达成（静态预检，已入 CI）**：新增 `scripts/guards/check-isolated-db-fixtures.mjs`，`package.json` 加 `guard:isolated-db-fixtures`，CI `ci` 工作流在 K3 追溯后新增该步。两项检查：**D1** 迁移覆盖——凡 `supabase/migrations` 中未被隔离链应用、且未在 `UNCHAINED` 登记原因的迁移一律失败（登记项失配也失败）；**D2** 取值枚举——从**实际被应用**的迁移中抽取 `check(col in (...))` / `check(col = any(array[...]))` 允许集合，比对测试 INSERT 的字面量，`assert.throws/rejects` 期望拒绝的用例跳过。已用一次人为越界值（`source.sources.content_availability='excerpt'`）实证守卫会红并打印允许集合，随后删除探针。当前 PASS：`migrations=63 checked_literals=47 check_columns=86`。
+- **D 的已知局限（不夸大）**：只覆盖 `CHECK (column IN/ANY)` 这一类枚举；词典/函数语义类漂移（动作词典、`reference_kinds` 目标键语义）仍需隔离实跑或专项比对覆盖。
+- **D1 暴露的新发现（HOLD 级，未修）**：14 个 MAB/KAD1 迁移**从未进入隔离链**（`202611020900/0910/0920_kad1_*`、`20261105110000_mab_m5_studio_research_read`、`20261107120000_mab_m2_private_scanned_page`、`20261107160000_mab_m2_1_producer_run_progress`、`20261107200000_mab_m5_d02_d05_private_candidates`、`20261107210000_mab_m3_private_gate_candidate_submission`、`20261107211000_mab_m3_local_owner_gate_signer`、`20261107220000_mab_m5_machine_rule_reviewer`、`20261107230000_mab_m2_private_source_registration_source_revision`、`20261107240000_mab_m5_claim_revision_artifact_read_policy`、`20261108110000_mab_m5_source_rights_actions`、`20261109120000_mab_m5_artifact_content_revision`）。含义：**这些迁移所承载的 M2/M3/M5 能力没有被隔离链验证过**，其中包含 QR-04/QR-05 涉及的 `source_rights_actions` 与 Gate 候选提交/签发。已按"记录债务"方式登记进 `UNCHAINED`（新增或漏登记仍会红），但接入它们需要逐迁移确认依赖顺序与受影响断言，属独立批次，不在本批偷跑。
+- **验证级别**：C/B 为 VERIFIED_ISOLATED（本机隔离 PG18；CI 为 PG17，本批推送后以 CI 回执为准）；D 为 CODE_PRESENT + 静态守卫 PASS。未触碰生产 DB/Storage/Gate/发布，无付费模型调用。
+
+
 
 
 

@@ -51,6 +51,9 @@ jobs:
       - name: K3 requirement traceability
         run: pnpm guard:k3-traceability
 
+      - name: Isolated DB fixture preflight (static, no DB)
+        run: pnpm guard:isolated-db-fixtures
+
       - name: Build
         run: pnpm build
 
