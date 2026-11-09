@@ -2147,6 +2147,9 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 
 - **边界披露**：绑定只是"证据合并"（delegation 可追溯到一个真实研究任务），不授予任何 Provider 派发、费用或 Gate 资格；`root_task_ref` 固定值与幂等行为不变（`request_hash` 不含 rootTaskId，同键重放返回首次结果）；双主体同 root 的浏览器真实验收属 CP4，不提前宣称。老任务（checkpoint 无 `studio.project_id`）核验失败即拒绝绑定，属预期失败关闭。
 - **回滚**：单提交 git revert 即可；无 DB 迁移、无生产数据变更。
+- **提交与 CI 取证（2026-11-09）**：Owner 批准后提交 `5329be1`（QR-06 全批）并推送；该 SHA 的 `ci` workflow **success**（Typecheck/Unit/边界/追溯/Build 全绿），但 `mab-isolated-db` 与 `mab-m1-isolated-http` **failure**——经诊断均为**既有失败**：失败点是 `read-model-qualification.integration.mjs` "agent real signed G5 complete work positive" 断言 false，与 QR-06 无关，且 71610d4（CP2-A..D）起的 4 个 SHA（71610d4/92a830f/…/dab2950）连续同位置红。
+- **既有失败根因与 bounded prerequisite 修复**：71610d4 将 agent 消费动作按词典由 `read` 改为 `access_view`（reader 与 `tests/fixtures/mab-work-g5.mjs` 已同步），但 `read-model-qualification.integration.mjs` L93 漏改——binding 签发 `rights_by_action:{read:'allowed'}`，reader 查 `access_view`，恒拒绝。本地 `pnpm test:unit` 不覆盖该 DB 链，故 CP2-A..D 批未发现。修复 = 测试 L93 对齐词典 `access_view`（1 行，不改生产语义），提交 `3bd3426` 并推送。该失败也挡住了同链上 `studio-delegation.integration.mjs` 的取证路径，修复属于解锁本批取证的必要前置。
+- **3bd3426 待取证**：`ci`、`mab-isolated-db`、`mab-m1-isolated-http` 三 workflow 运行中；结果为绿即 QR-06 集成测试与既有失败一并闭合，QR-06 收口。
 
 
 
