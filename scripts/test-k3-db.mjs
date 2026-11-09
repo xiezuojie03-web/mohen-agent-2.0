@@ -63,6 +63,10 @@ try {
     apply(studioMigration);
     apply("20261108090000_director_plans_source_ids.sql");
     apply("20261108100000_mab_m5_director_plan_project_binding.sql");
+    // CP2-F asset backlink: studio.resolve_asset_references and the reference guards are
+    // required by the studio asset/repository tests below; omitting it here left the
+    // function undefined in the isolated database.
+    apply("20261109130000_mab_cp2f_asset_backlink.sql");
     const planProjectColumn = query(database, "select count(*) from information_schema.columns where table_schema='public' and table_name='director_plans' and column_name='project_id' and is_nullable='YES'");
     const planProjectForeignKey = query(database, "select count(*) from pg_constraint c join pg_class t on t.oid=c.conrelid join pg_namespace n on n.oid=t.relnamespace where n.nspname='public' and t.relname='director_plans' and c.contype='f' and c.conkey=(select array[a.attnum] from pg_attribute a where a.attrelid=t.oid and a.attname='project_id') and c.confrelid='studio.projects'::regclass");
     if (planProjectColumn !== "1" || planProjectForeignKey !== "1") throw new Error("DIRECTOR_PLAN_PROJECT_BINDING_SCHEMA_FAILED");
