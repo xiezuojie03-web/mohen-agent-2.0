@@ -2052,6 +2052,26 @@ Owner 裁决「机器自审 + 您本人签」，且「载体不设限、读法�
 | 权利范围 | G5 的 `rights_by_operation` 判定为 `machine_read,retain=allowed`（`basis=owner_authorization`）；**不包含**对外发布、外发或商业使用 |
 | 仍是本地 dev | 全部证据产生在本地 `mohen_dev` 与 `127.0.0.1`，**不构成生产 Gate 准出**；M8 的生产启用、真实数据变更与发布授权仍未进行 |
 
+### CP2-E 收口：artifact 身份改为内容列哈希 + 资格退休修正（2026-11-09）
+
+`verify-3-gate-chain` 的 **7 FAIL** 与"每次加列就要重签全链"同源，本批一并处置。迁移 `supabase/migrations/20261109120000_mab_m5_artifact_content_revision.sql`。
+
+| 问题 | 真实成因（实测，不是脚本口径） | 处置 |
+|---|---|---|
+| 每次加列旧签名集体失效 | `control.artifact_revision_for` 对 `to_jsonb(t)` **整行**取哈希；CP2-B 给 `source.sources` 加 `rights_by_action`/`rights_evidence`、给 `source_versions` 加 `rights_snapshot` 后，所有旧 revision 随之改变 | 新增 `control.artifact_content_columns` 内容列登记表（22 kind / **234 列**，按迁移时实际列一次性登记）；`artifact_revision_for` 改为只对登记列 `jsonb_object_agg` 后再取哈希，模式演进与内容变更解耦 |
+| 迁移本身会不会又废掉现有签名 | — | 迁移内先快照"当前可复现的 revision"，换实现后逐条比对，任一发生位移即 `ARTIFACT_REVISION_SEMANTICS_MOVED` 回滚。实测 12 个对象**位移 0**，故现有 G0—G5 签名**一处未失效，本轮不需要任何重签** |
+| 7 个 FAIL | `control.qualification_current` 是基表；`sign_gate_candidate` 用**含 `artifact_revision`** 的键查 `current_id` 且只删这一行。对象内容一变，`current_id` 为 null → 旧行永不退休。残留 7 行（2026-11-07 旧链路的 G0 `b0a11000-…-0005` 及其 G1—G5 下游，含 G5 同对象不同 purpose 的各行），全部 `now()<valid_until` 却已不可用 | 退休键改为（gate_code, object_type, object_id, purpose×3, consumer）**不含 revision**，并删除该键下所有行；顾问锁键同步去掉 revision。7 行逐条写 `control.invalidation_events`（`producer_method_id='mab-m5-artifact-content-revision'`，`control_request_id` 由 `sha256('mab-retire-stale-qualification:'||gate_audit_id)` 派生，可幂等重放）后再退休；**已签名审计行未做任何修改**，属"有记录的退休"而非删行刷绿 |
+
+| 验证 | 结果 |
+|---|---|
+| `node tools/verify-3-gate-chain.mjs` | `VERIFY_3_ALL_PASS`，9 行 0 失败，`qualification=7 invalid=0` |
+| `node tools/verify-3-gate-chain.mjs --negative` | 11 行 0 失败；producer 签名仍报 `42501`、审计数 740→740 未变 |
+| 退休语义正反实测（事务内回滚，`work/retire-semantics.sql`） | 同键插入一行不同 revision → 退休后该键 0 行；不同 purpose 的 G5 行 1 行不动 |
+| `tests/data-production` | **172/172 通过** |
+| `pnpm -r typecheck` | 6/6 通过 |
+
+未做/边界：`guard:structure` 报 `SKILL_MD_NO_ENTRY`（5 个 skills 的 SKILL.md 未声明 Entry）属既有问题，与本批无关，未修；本批仍只在本地 `mohen_dev`，不构成生产 Gate 准出。
+
 
 
 
