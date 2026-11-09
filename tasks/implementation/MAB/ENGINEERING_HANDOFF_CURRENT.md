@@ -11,7 +11,7 @@
 
 ## 当前状态
 
-- 施工接续读取基线：GitHub main@7a7b250（2026-11-09 推送，含 C/B/D 隔离链改造与交接书同步）；Trae开工必须先重新fetch核HEAD并与本地安全对齐，不能以本行作当前HEAD断言。CI 事实：`1429bd6` 的 `ci` 42622093977 与 `MAB isolated PostgreSQL 17 verification` 42622093495 均 SUCCESS（日志实测 `K3_DB_TEST_PASS` 与 `same-root-binding`），`7a7b250` 的 `ci` 42622194224 SUCCESS。
+- 施工接续读取基线：GitHub main@26be1ad（2026-11-09 推送，含 QR-06 收口、D00-A1、14 个漏链迁移接入）；Trae开工必须先重新fetch核HEAD并与本地安全对齐，不能以本行作当前HEAD断言。CI 事实：`26be1ad` 的 `ci` 42635392953 与 `MAB isolated PostgreSQL 17 verification` 42635392879 均 SUCCESS（日志实测 `K3_DB_TEST_PASS`、`same-root-binding`、`MAB_GATE_SERVICE_PASS`，无 `failing_suites`）；历史 `1429bd6` 与 `7a7b250` 亦 SUCCESS，仅代表各自版本。
 - 当前施工：M5_REMEDIATION_ACTIVE / QUALITY_REMEDIATION_ACTIVE；PLAN.md §0.1登记QR-01—QR-10，**§0.2登记Trae本地总装和首用户交付裁决**；当前未准出。
 - 整体验收：M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY。
 - M0审查级EXIT_PASS冻结继承；M1—M4仅补M5真实作品必需缺口；M6—M8不提前启动。

@@ -2213,6 +2213,14 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **未做（如实登记，不夸大）**：本批只解决"迁移进链且被现有套件触及"，**没有为这 14 项能力新增专项正/负断言**。当前覆盖度 = 现有套件顺带触达的深度；`rights_by_action` 新列、`mohen_private_worker` 权限矩阵、机器评审员身份边界、内容列哈希的篡改拒绝等仍缺专项用例，需另立批次。`ENV_PARITY` 的 `GAP_RIGHTS_ACTIONS` HOLD 不因此解除——那是**生产库缺列**的事实，与隔离链覆盖无关。
 - **边界**：只改 `scripts/test-k3-db.mjs` 与 `scripts/guards/check-isolated-db-fixtures.mjs`；无新增 DDL、无生产库写入、无 Provider 调用、未推送。
 
+## 2026-11-09 迁移接入批 CI 回执（26be1ad）
+
+- **推送**：`main` `7a7b250..26be1ad`，含 QR-06 收口（4556bfc）、D00-A1（675caeb）、14 迁移接入（26be1ad）三个提交。首次推送因本机到 GitHub 连接超时失败（未产生任何远端变更），网络恢复后重推成功。
+- **CI 结果**：`ci` run `42635392953` = **SUCCESS**；`MAB isolated PostgreSQL 17 verification` run `42635392879` = **SUCCESS**。
+- **日志实证（不是只看绿灯）**：run `42635392879` 步骤「Execute original K3/M2 database suite in disposable PG17」实测——L93 `MAB_DELEGATION_REPOSITORY_PASS ... same-root-binding`；L102 `MAB_GATE_SERVICE_PASS actual-dedicated-LOGIN ...`（跑的是 `20261109120000` 覆盖后的 `sign_gate_candidate`，与生产同款实现）；L129 `K3_DB_TEST_PASS baseline_migrations=22 synthetic_legacy_rows=711 ... rollback fail-closed`。日志内无任何 `failing_suites` 行，证明整链跑完而非提前退出。
+- **结论**：14 个迁移的接入顺序在 **CI 的 PG17 + Unix socket** 与 **本地 PG18 + 回环 TCP** 两种环境下同时成立 → 该批记 **VERIFIED_ISOLATED（双环境）**。此前"本地绿"的单证状态由此消除。
+- **仍未改变**：这批能力缺专项正/负断言；`ENV_PARITY` 的 `GAP_RIGHTS_ACTIONS` 仍 HOLD（生产库缺列）；D00-A2/B/C 各自 HOLD。
+
 
 
 
