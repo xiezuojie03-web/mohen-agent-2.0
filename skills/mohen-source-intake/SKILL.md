@@ -2,10 +2,10 @@
 
 **Status:** TARGET · Phase D execution-bound  
 **Kind:** stage-owner  
-**Stage:** D01  
+**Stage:** D00  
 **Data Layer:** L0  
 **Exit Gate:** G0  
-**Allowed Calling Stages:** D01
+**Allowed Calling Stages:** D00
 
 ## Purpose
 Turn a research intent into qualified L0 Cultural Sources with preserved Raw, provenance, rights and locator.
@@ -24,8 +24,8 @@ A new Source Discovery request, a directed source gap, or an L7 cultural trace e
 1. Discover source leads using broad/directed/mixed strategy.
 2. Acquire source or catalog record without hiding availability limits.
 3. Preserve raw/version and register provenance/rights/locator.
-4. Run G0 Source Gate.
-5. Persist PASS/HOLD/REJECT in L0 and hand qualified sources to D02.
+4. Prepare the G0 source review request; G0 signing belongs to an independent reviewer and is never performed here.
+5. Persist producer PASS/HOLD/REJECT on the L0 candidate and hand qualified sources to D01; producer PASS is not G0 PASS.
 
 ## Outputs
 - Qualified Source
@@ -39,11 +39,12 @@ A new Source Discovery request, a directed source gap, or an L7 cultural trace e
 
 ## Write Scope
 - L0 source/version/raw metadata
-- G0 audit records
+- G0 candidate submission only (`control.gate_candidates`); never `control.gate_audits`
 
 ## Gate / Responsibility
 - This Skill may not bypass `G0`. 
-- Stage PASS/HOLD/REJECT belongs to `D01`.
+- Producer PASS/HOLD/REJECT belongs to `D00` and is not a G0 decision; G0 signing is held by an independent reviewer.
+- D01 carrier reading is a separate stage; qualified sources are handed over, never read here.
 - Reusable capabilities called by this Skill never own final persistence.
 
 ## Human Review Contribution
@@ -55,7 +56,7 @@ Provide source coverage, source independence, content availability and real sour
 - rights boundary is unknown and blocks use
 
 ## Canonical Entry
-`pipelines/data-production/executors/d01-source-intake.mjs`
+`pipelines/data-production/executors/d00-source-intake.mjs`
 
 The executor is the stage-owned entry. Reusable capabilities are injected through adapters and cannot replace this owner.
 

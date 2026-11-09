@@ -130,13 +130,36 @@ L7/L8参与/新痕迹要回流则经D00；当下贡献不直接写历史Truth。
 
 ### 11.2｜D00：来源发现、获取与L0
 
-### 2.1 三个专业方法的完整责任
+### 2.1 P0原三类专业责任与Y方法继承关系
 
-| P0方法 | 必须执行的专业规则 | 最小输出 | 禁止/失败边界 |
+| P0原专业责任/资格合同 | 必须执行的专业规则 | 最小输出 | 禁止/失败边界 |
 | --- | --- | --- | --- |
 | P0.1 资源发现与获取 | 以研究问题、时空范围、来源类型和权利边界驱动多源检索；区分命中、可访问、已取得正文/原件、已核版本。 | source_candidate、acquisition_attempt、availability、fulltext/scan/excerpt/bibliography-only、失败原因与替代源。 | 目录命中/书目条数不能冒充取得全文；被拒绝/无权/无资源应保留明确状态。 |
 | P0.2 来源身份、版本、权利与依赖 | 稳定标识来源作品、具体版本、数字载体、持有/访问/引用/展示/下载/改编许可；记录转载、转引、底本和依赖关系。 | source_identity、edition/version、carrier_copy、locator、rights_by_action、dependency/provenance。 | 作品身份不等于某一数字副本；访问权不等于展示/再分发权；同源副本不算独立见证。 |
 | P0.3 L0/G0与D01交接 | 仅将身份/版本/权利/定位达到用途要求的来源形成L0候选；按用途申请G0，G0有效后向D01交付可读载体。 | L0 source_ref@revision、原件/数字副本hash、权利/用途、取得状态、D01 handoff packet。 | G0不批准史实；无正文仍可保存合法目录候选但不得伪称可读取；未获授权不得下发D01。 |
+
+**D00 的正式方法集为 Y01—Y08（V1.2 接收，2026-11-09）**：上表 P0.1—P0.3 是原三类专业责任与资格合同，其规则继续适用，但不再作为独立方法身份计数；C/H/W/A/P 六十三条语义不变。Y01—Y08 均为 `stage=D00`、`layer=L0`、`independent_gate=G0`、`may_grant_gate=false`，八条职责与主输出如下。
+
+| 方法 | 专业职责 | 主输出 |
+| --- | --- | --- |
+| Y01 | 来源需求与存量缺口诊断 | source_need、source_candidate、search_trace |
+| Y02 | 机构集合与多渠道来源发现 | source_candidate、source_need、search_trace |
+| Y03 | 时空异名与跨语言检索扩展 | source_candidate、source_need、search_trace |
+| Y04 | 聚合目录原机构回溯 | source_candidate、source_need、search_trace |
+| Y05 | 来源对象、版本与依赖鉴别 | source_identity、source_version、source_dependency |
+| Y06 | 资源价值互补与取得优先级评估 | source_candidate、source_need、search_trace |
+| Y07 | 合法获取方案与协议路径组合 | source_candidate、acquisition_attempt、raw_asset_candidate |
+| Y08 | 来源资产完整性与取得证据鉴定 | raw_asset_candidate、asset_integrity_receipt、gate_review_request |
+
+上述八条同时受七条约束，缺一不得视为已联通：
+
+1. **无 Gate 签权**：Y01—Y08 只能产出候选与评审申请；G0 由独立 Reviewer 依机器合同签发，生产者自签一律无效，登记不等于可执行。
+2. **获取方法另有身份**：Y07 使用的具体路径必须登记为 `ACQUISITION_METHOD:Mxxxx@version`（见 §2.5 获取方法目录），不得以 Y 编号代替方法版本，也不得靠历史成功推定当前有效。
+3. **十类输出不等于原件**：`source_need`、`source_candidate`、`search_trace`、`source_identity`、`source_version`、`source_dependency`、`acquisition_attempt`、`raw_asset_candidate`、`asset_integrity_receipt`、`gate_review_request` 是阶段产物类型；只有经 Y08 核验并落 L0 的字节资产才可作为原件引用。
+4. **逐动作权利**：一律使用 `packages/data-access/src/rights-actions.mjs` 的九动作——`access_view / machine_read / retain / download / quote / display / adapt / redistribute / external_processing`；取值 `allowed / denied / unknown / restricted`，空或缺失等价 `unknown` 并 HOLD，禁止按来源类别或开放许可标签推断放行，禁止另立第三套动作词典。
+5. **阶段结果与逻辑类型分开**：D00 阶段结果名为 `qualified_source`（运行合同），`source_asset` 是 L0 逻辑资产类型名，二者是同义指代而非并列类型，不得并存两个类型名。
+6. **D01 才读取**：Y01—Y06 的输出不得直接构成 D01 读取依据；只有 `content_availability` 达可读、且 `machine_read`（需留副本时叠加 `retain`，外部模型/OCR 另核 `external_processing`）为 `allowed` 的来源才进入 D01。
+7. **C 方法预选目前 HOLD**：现行 G0 机器合同的 `GateReviewRequest` 无承载"消费者方法计划"的字段，D01 预选 `Cxx@version` 无法无损表达；在 D00-B 裁决前该预选链路记 HOLD，不得声称 D00→D01 已联通。
 
 ### 2.2 来源取得的状态必须分清
 

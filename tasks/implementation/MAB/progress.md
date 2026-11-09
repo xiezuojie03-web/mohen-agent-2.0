@@ -2179,6 +2179,28 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **取证方式备注**：本机 `gh` CLI 不存在，改用本地已存凭据调用 GitHub REST（run 列表 / jobs / 日志），凭据未落盘、未打印。
 - **下一步（按 Owner 已批准顺序）**：插 D00-A1 文档批（V1.2 包 A1 增量）；随后做 14 个漏链迁移的接入批；D00-A2/B/C 维持各自 HOLD。
 
+## 2026-11-09 D00-A1 文档批（V1.2 包 A1 增量接收）
+
+- **基线重算（先算后改）**：包声明基线 `dab2950`，实际施工前本地 HEAD=`7a7b250`（另有 QR-06 收口文档提交 `4556bfc`）。对包内 `GITHUB_MAIN_已核基线.json` 的 15 个受控路径逐条重算 SHA256 与 git blob，**15/15 与包内记录完全一致，零漂移**，故可按包内 A1 差异施工。
+- **改动范围：仅 2 个文件**（`git diff --stat` = 33 insertions / 9 deletions）。
+  1. `specs/data-production/MoHen_Data_Production_Protocol.md` §11.2：标题 `### 2.1 三个专业方法的完整责任` → `### 2.1 P0原三类专业责任与Y方法继承关系`；表头 `P0方法` → `P0原专业责任/资格合同`，三条 P0 正文一字未改；在三行后、§2.2 前**新增** Y01—Y08 身份（均 `stage=D00/layer=L0/independent_gate=G0/may_grant_gate=false`）与职责输出表、以及七条约束——无 Gate 签权、获取方法另有 `ACQUISITION_METHOD:Mxxxx@version`、十类输出不等于原件、九动作逐动作权利（`access_view/machine_read/retain/download/quote/display/adapt/redistribute/external_processing`，与 `rights-actions.mjs` 唯一动作集逐字一致）、`qualified_source` 与 `source_asset` 的同义关系、D01 才读取、C 方法预选因 G0 缺承载记 HOLD。`git diff -U0` 仅 3 个 hunk（L133、L135、L141+23），§2.2—§2.5、§11.3 及其后一字未动。
+  2. `skills/mohen-source-intake/SKILL.md`：`Stage` D01→**D00**、`Allowed Calling Stages` D01→**D00**、`Canonical Entry` `d01-source-intake.mjs`→**`d00-source-intake.mjs`**（该文件实测存在，`createStageExecutor("D00")`）、`Write Scope` 去掉 Gate 审计写权改为仅 `control.gate_candidates` 候选提交、Procedure 第 4/5 步改为"准备评审申请，G0 由独立 Reviewer 签发"、Gate/Responsibility 增加"producer PASS ≠ G0 PASS"与"D01 才读取"。Provider 边界（Wikidata/Commons）原文未动。改正后与 `production-registry.json` 的 `d00.source-intake`（stage=D00、executor=d00-source-intake.mjs、skill=mohen-source-intake）对齐。
+- **本批未做（属 A2，维持原状）**：`method-binding-contract.json` 63→71、`identifier-registry.json` 追加 Y01—Y08、`production-registry.json` 的 `jobs[].methods` 填 Y、`method-route-decisions.schema.json` 枚举追加。
+- **验证（逐项对照基线）**：
+
+| 验证 | 结果 |
+|---|---|
+| `node tools/verify-3-gate-chain.mjs` | `VERIFY_3_ALL_PASS`，`qualification=7 invalid=0`，与接收前一致 |
+| `node tools/verify-2-a-scanned-page.mjs` | `VERIFY_2_A_ALL_PASS` |
+| `node tools/check-env-parity.mjs` | `ENV_PARITY_PASS` pass=14 fail=0 hold=1（HOLD 仍为 `GAP_RIGHTS_ACTIONS`，既有） |
+| `pnpm test:unit` | **638 passed / 2 skipped**（87 文件通过 / 2 跳过），与基线持平 |
+| `pnpm -r typecheck` | 6/6 项目通过 |
+| `guard:stage-handoff` / `guard:registry` / `guard:physical-model` / `guard:no-legacy-production-entry` / `guard:cross-layer-write` / `guard:docs` / `guard:names` | 全部 PASS |
+
+- **既有红（非本批引入，已逐条取证，不粉饰）**：`check-structure` 报 `skills/archive` 缺 `SKILL.md` + 6 个 `SKILL_MD_NO_ENTRY`（CURRENT.md 已记录的同批既有问题）；`check-identifier-registry` 报 `schema_version 必须是数字`/`columns 为空`（该脚本只读 `identifier-registry.json`，本批未改此文件）；`check-gate-enforcement` 抛 `QUALIFICATION_CONTEXT_REQUIRED`（缺合格读上下文，既有）；`check-links` broken=66，其中 Protocol 相关的 `orchestrator/registry.mjs`、`adapters/layer1-adapters.mjs`、`memory://` 已用 `git show HEAD:` 核对为改动前即存在，本批新增的唯一路径 `packages/data-access/src/rights-actions.mjs` 实际存在。
+- **中间态披露（重要）**：本批只做 A1。Protocol 已宣告 Y01—Y08 为 D00 正式方法集，而 Binding 仍 63 条、Identifier 未登记、Registry `methods` 仍为空——这是包内 A1/A2 分批的**预期中间态**，不等于已登记、更不等于可执行。A2 须单独裁决，且不得改动 `activation`、`execution_policy.enabled`、`adapter_binding`、`gate_reviewer_binding` 与 D01—D05 的 Job。
+- **边界**：零 DDL、无数据库写入、无 Provider 调用、未推送；D00-B（G0 承载 C 方法预选）与 D00-C（Y01—Y06 落点、Y07 台账、Y08 范围字段）继续 HOLD。
+
 
 
 
