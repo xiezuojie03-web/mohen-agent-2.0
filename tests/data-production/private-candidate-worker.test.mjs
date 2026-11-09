@@ -447,7 +447,7 @@ test('D01 readScannedPage submits one G1 read_unit candidate with an empty depen
       purpose:CANDIDATE_PURPOSE,allowedScope:{project_id:run.scope.project_id},consumer:'producer',
       dependencySnapshot:[],evidenceRefs:[
         {kind:'read_unit',id:readUnitId,artifact_revision:'a'.repeat(64)},
-        {kind:'source_version',id:sourceVersionId}],inputFingerprint:'b'.repeat(64)});
+        {kind:'source_version',id:sourceVersionId}],inputFingerprint:executionDigest(input)});
     assert.equal(candidate.gate_candidate_id,'candidate-g1');
     assert.equal(candidate.gate_candidate_status,'SUBMITTED');
     assert.equal(candidate.qualification,'UNASSESSED');
@@ -476,7 +476,7 @@ test('D01 draftTextReading submits one G1 read_unit candidate against the extent
     assert.equal(submitted.objectType,'read_unit');
     assert.equal(submitted.objectId,readUnitId);
     assert.equal(submitted.artifactRevision,'a'.repeat(64));
-    assert.equal(submitted.inputFingerprint,'b'.repeat(64));
+    assert.equal(submitted.inputFingerprint,executionDigest(input));
     assert.deepEqual(submitted.evidenceRefs,[
       {kind:'read_unit',id:readUnitId,artifact_revision:'a'.repeat(64)},
       {kind:'source_version',id:sourceVersionId}]);
@@ -512,7 +512,7 @@ test('D02 observeMaterial submits one G2 material_evidence candidate with the si
       dependencySnapshot:[{gate_audit_id:auditId,qualification_digest:'d'.repeat(64),
         artifact_revision:'e'.repeat(64)}],
       evidenceRefs:[{kind:'material_evidence',id:evidenceId,artifact_revision:'a'.repeat(64)},
-        {kind:'read_unit',id:readUnitId}],inputFingerprint:'b'.repeat(64)});
+        {kind:'read_unit',id:readUnitId}],inputFingerprint:executionDigest(input)});
     assert.equal(candidate.gate_candidate_id,'candidate-g2');
     assert.equal(candidate.gate_candidate_status,'SUBMITTED');
     assert.equal(candidate.qualification,'UNASSESSED');
@@ -543,7 +543,7 @@ test('D03 assertWorldClaim submits one G3 claim_revision candidate with the sign
       dependencySnapshot:[{gate_audit_id:auditId,qualification_digest:'d'.repeat(64),
         artifact_revision:'e'.repeat(64)}],
       evidenceRefs:[{kind:'claim_revision',id:claimRevisionId,artifact_revision:'a'.repeat(64)},
-        {kind:'material_evidence',id:evidenceId}],inputFingerprint:'b'.repeat(64)});
+        {kind:'material_evidence',id:evidenceId}],inputFingerprint:executionDigest(input)});
     assert.equal(candidate.gate_candidate_id,'candidate-g3');
     assert.equal(candidate.gate_candidate_status,'SUBMITTED');
   });
@@ -572,7 +572,7 @@ test('D04 recordHumanisticFinding submits one G4 finding candidate with the sign
       dependencySnapshot:[{gate_audit_id:auditId,qualification_digest:'d'.repeat(64),
         artifact_revision:'e'.repeat(64)}],
       evidenceRefs:[{kind:'finding',id:findingId,artifact_revision:'a'.repeat(64)},
-        {kind:'claim_revision',id:claimRevisionId}],inputFingerprint:'b'.repeat(64)});
+        {kind:'claim_revision',id:claimRevisionId}],inputFingerprint:executionDigest(input)});
     assert.equal(candidate.gate_candidate_id,'candidate-g4');
     assert.equal(candidate.gate_candidate_status,'SUBMITTED');
   });
@@ -601,7 +601,7 @@ test('D05 projectWorld submits one G5 world_projection candidate with the signed
       dependencySnapshot:[{gate_audit_id:auditId,qualification_digest:'d'.repeat(64),
         artifact_revision:'e'.repeat(64)}],
       evidenceRefs:[{kind:'world_projection',id:projectionId,artifact_revision:'a'.repeat(64)},
-        {kind:'finding',id:findingId}],inputFingerprint:'b'.repeat(64)});
+        {kind:'finding',id:findingId}],inputFingerprint:executionDigest(input)});
     assert.equal(candidate.gate_candidate_id,'candidate-g5');
     assert.equal(candidate.gate_candidate_status,'SUBMITTED');
   });

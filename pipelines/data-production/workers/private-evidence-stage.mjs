@@ -156,7 +156,9 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         evidenceRefs:[{kind:'read_unit',id:saved.read_unit_id,artifact_revision:saved.artifact_revision},
           {kind:'source_version',id:page.source_version_id}],
         upstreamGate:'G0',upstreamObjectType:'source_version',upstreamObjectId:page.source_version_id,
-        requestDigest:saved.request_digest});
+        // input_fingerprint 必须与 orchestrator 的 executionDigest(input) 一致：
+        // 各 stage 的 input 是上一阶段的 contract output，只读取证据此绑定。
+        requestDigest:digestOf(input)});
       return {stage:'D01',candidate_kind:'private_scanned_page_reading',
         original_id:originalId,source_version_id:page.source_version_id,
         raw_item_id:page.raw_item_id,raw_sha256:record.sha256,
@@ -203,7 +205,9 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         evidenceRefs:[{kind:'read_unit',id:saved.read_unit_id,artifact_revision:saved.artifact_revision},
           {kind:'source_version',id:extent.source_version_id}],
         upstreamGate:'G0',upstreamObjectType:'source_version',upstreamObjectId:extent.source_version_id,
-        requestDigest:saved.request_digest});
+        // input_fingerprint 必须与 orchestrator 的 executionDigest(input) 一致：
+        // 各 stage 的 input 是上一阶段的 contract output，只读取证据此绑定。
+        requestDigest:digestOf(input)});
       return {stage:'D01',candidate_kind:'private_text_reading',
         original_id:originalId,source_version_id:extent.source_version_id,
         raw_item_id:extent.raw_item_id,raw_sha256:record.sha256,
@@ -263,7 +267,9 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         evidenceRefs:[{kind:'material_evidence',id:saved.evidence_id,artifact_revision:saved.artifact_revision},
           {kind:'read_unit',id:readUnitId}],
         upstreamGate:'G1',upstreamObjectType:'read_unit',upstreamObjectId:readUnitId,
-        requestDigest:saved.request_digest});
+        // input_fingerprint 必须与 orchestrator 的 executionDigest(input) 一致：
+        // 各 stage 的 input 是上一阶段的 contract output，只读取证据此绑定。
+        requestDigest:digestOf(input)});
       return {stage:'D02',candidate_kind:'private_material_observation',
         original_id:originalId,evidence_id:saved.evidence_id,
         reading_unit_id:saved.reading_unit_id,link_id:saved.link_id,
@@ -296,7 +302,9 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         evidenceRefs:[{kind:'claim_revision',id:saved.claim_revision_id,artifact_revision:saved.artifact_revision},
           {kind:'material_evidence',id:evidenceId}],
         upstreamGate:'G2',upstreamObjectType:'material_evidence',upstreamObjectId:evidenceId,
-        requestDigest:saved.request_digest});
+        // input_fingerprint 必须与 orchestrator 的 executionDigest(input) 一致：
+        // 各 stage 的 input 是上一阶段的 contract output，只读取证据此绑定。
+        requestDigest:digestOf(input)});
       return {stage:'D03',candidate_kind:'private_world_claim',
         original_id:originalId,change_id:saved.change_id,
         claim_revision_id:saved.claim_revision_id,
@@ -332,7 +340,9 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         evidenceRefs:[{kind:'finding',id:saved.finding_id,artifact_revision:saved.artifact_revision},
           {kind:'claim_revision',id:claimRevisionId}],
         upstreamGate:'G3',upstreamObjectType:'claim_revision',upstreamObjectId:claimRevisionId,
-        requestDigest:saved.request_digest});
+        // input_fingerprint 必须与 orchestrator 的 executionDigest(input) 一致：
+        // 各 stage 的 input 是上一阶段的 contract output，只读取证据此绑定。
+        requestDigest:digestOf(input)});
       return {stage:'D04',candidate_kind:'private_humanistic_finding',
         original_id:originalId,finding_id:saved.finding_id,
         claim_revision_id:saved.claim_revision_id,
@@ -361,7 +371,9 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         evidenceRefs:[{kind:'world_projection',id:saved.projection_id,artifact_revision:saved.artifact_revision},
           {kind:'finding',id:findingId}],
         upstreamGate:'G4',upstreamObjectType:'finding',upstreamObjectId:findingId,
-        requestDigest:saved.request_digest});
+        // input_fingerprint 必须与 orchestrator 的 executionDigest(input) 一致：
+        // 各 stage 的 input 是上一阶段的 contract output，只读取证据此绑定。
+        requestDigest:digestOf(input)});
       return {stage:'D05',candidate_kind:'private_world_projection',
         original_id:originalId,projection_id:saved.projection_id,
         finding_id:saved.finding_id,

@@ -2025,6 +2025,33 @@ Owner 于本停点选择"用同平台文字正文数据"后，已按该路线取
 
 **未做**：这处契约放宽尚未落地（需同步改 `tests/data-production/private-scanned-page-worker.test.mjs:136,141` 附近的反例口径），因此文本路线的 D00 仍是 `HOLD/BLOCKED`，D01—D05 与 G0—G5 仍未开始。
 
+### CP2-E 第五步：G0—G5 全链在真实原件上打通（2026-11-09）
+
+Owner 裁决「机器自审 + 您本人签」，且「载体不设限、读法分责」。据此在本地 `mohen_dev` 上完成 D00—D05 与 G0—G5 的完整闭环。
+
+| 环节 | 实际结果 | 证据 |
+|---|---|---|
+| Gate 权威布置 | `node tools/provision-3-gate-authority.mjs` → `PROVISION_3_ALL_PASS`；G0—G4 规则版本 `m5-local-v1`、G5 `v1`；Owner 与机器两个独立签字身份均已绑定并可登录 | `control.gate_policy_versions`、`control.gate_reviewer_bindings` |
+| 只读取证 | 新增 `tools/local-gate-verifier.mjs`：`127.0.0.1:8788` 提供 `POST /verify`，以 `mohen_producer` 只读身份查 `control.gate_audits` 并调 `control.current_qualification_is_valid(uuid)`；凭据与 TLS 均从 `D:/MoHen/keys/` 读取，不入库不入仓 | 健康探测 ok；错误凭据 401；伪造 run 404；真实 G0 200 带正确回执 |
+| 关键实现修正 | 各阶段 `submitStageCandidate` 原先用持久层的 `saved.request_digest` 作 `input_fingerprint`，与编排器 `executionDigest(input)` 不一致，导致取证恒返回 `NO_CURRENT_QUALIFICATION`；已统一改为 `digestOf(input)`，两者经实测同为 sha256(canonical JSON) | `pipelines/data-production/workers/private-evidence-stage.mjs` D01—D05 六处 |
+| 真实原件 | `[崇禎]松江府志九十四卷` 第 51 页扫描件（`provider=shanghai-library`，`carrier_type=scanned_page`，`image/jpeg`，`sha256=3b47ed4b…`，236,005 字节），`original_id=b0a11000-…-0004` | `source_version_id=d2d138af-…`，`raw_item_id=827ddd73-…` |
+| D01 文本化 | Δ=51 页 OCR 转录，`read_unit_id=4509da31-c21b-7c55-f028-26393fb7d2d2`，**PASS** | `verification/data-production-runs/c0a12000-…-010.machine.json` |
+| D02 观察 | H05 材料观察，`evidence_id=32ca42ce-…`，**PASS** | `…-020.machine.json` |
+| D03 断言 | 世界断言 `claim_revision_id=67bc7e3f-…`，**PASS** | `…-030.machine.json` |
+| D04 发现 | `finding_type=institutional_mechanism`，`finding_id=01612b63-…`，**PASS** | `…-040.machine.json` |
+| D05 投影 | `projection_id=d84dbac5-…`，`artifact_revision=9093453f…`，**PASS** | `…-050.machine.json` |
+| G0—G5 签字 | 每道门均「机器自审 PASS」+「Owner 本人签 PASS」双签，Owner 身份 `mohen_gate_signer_m5_owner`，机器身份 `mohen_gate_signer_m5_machine`；`control.current_qualification_is_valid` 对 G1—G5 现均为 `true` | `control.gate_audits`（Owner 签：G0 `97a6c3a1`、G1 `128a27ec`、G2 `b4807c1c`、G3 `ba852243`、G4 `62751b3f`、G5 `b00a6751`） |
+| 回归测试 | `tests/data-production/*.test.mjs` **172/172 通过** | `node --test` |
+
+**已知边界，不得当作已完成能力宣传：**
+
+| 项 | 事实 |
+|---|---|
+| OCR 质量 | 第 51 页为竖排繁体木刻本，`easyocr` 对这类版面输出不可用；最终采用 `tools/ocr-shl-page51.py` 走 DeepSeek 图像接口转录。转录文本已由 Owner 确认「用 OCR 原文推进」，但**仍存在字符级误差**，属观察层不确定性，不是已校勘定本 |
+| D03—D05 内容性质 | 断言、人文发现、世界投影均为在 OCR 原文之上的**解读性构造**，已逐项经 Owner 逐条批准后才落库（D02/D03/D04/D05 各一次明确确认）；它们**不是原文直引，也不是领域专家已核证结论** |
+| 权利范围 | G5 的 `rights_by_operation` 判定为 `machine_read,retain=allowed`（`basis=owner_authorization`）；**不包含**对外发布、外发或商业使用 |
+| 仍是本地 dev | 全部证据产生在本地 `mohen_dev` 与 `127.0.0.1`，**不构成生产 Gate 准出**；M8 的生产启用、真实数据变更与发布授权仍未进行 |
+
 
 
 
