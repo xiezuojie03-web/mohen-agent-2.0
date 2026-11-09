@@ -2149,7 +2149,9 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **回滚**：单提交 git revert 即可；无 DB 迁移、无生产数据变更。
 - **提交与 CI 取证（2026-11-09）**：Owner 批准后提交 `5329be1`（QR-06 全批）并推送；该 SHA 的 `ci` workflow **success**（Typecheck/Unit/边界/追溯/Build 全绿），但 `mab-isolated-db` 与 `mab-m1-isolated-http` **failure**——经诊断均为**既有失败**：失败点是 `read-model-qualification.integration.mjs` "agent real signed G5 complete work positive" 断言 false，与 QR-06 无关，且 71610d4（CP2-A..D）起的 4 个 SHA（71610d4/92a830f/…/dab2950）连续同位置红。
 - **既有失败根因与 bounded prerequisite 修复**：71610d4 将 agent 消费动作按词典由 `read` 改为 `access_view`（reader 与 `tests/fixtures/mab-work-g5.mjs` 已同步），但 `read-model-qualification.integration.mjs` L93 漏改——binding 签发 `rights_by_action:{read:'allowed'}`，reader 查 `access_view`，恒拒绝。本地 `pnpm test:unit` 不覆盖该 DB 链，故 CP2-A..D 批未发现。修复 = 测试 L93 对齐词典 `access_view`（1 行，不改生产语义），提交 `3bd3426` 并推送。该失败也挡住了同链上 `studio-delegation.integration.mjs` 的取证路径，修复属于解锁本批取证的必要前置。
-- **3bd3426 待取证**：`ci`、`mab-isolated-db`、`mab-m1-isolated-http` 三 workflow 运行中；结果为绿即 QR-06 集成测试与既有失败一并闭合，QR-06 收口。
+- **3bd3426 取证结果与第二处既有失败**：`ci` **success**；`mab-isolated-db` 仍 failure，但失败点**已前移**——`read-model-qualification` 通过，暴露 `studio-asset-repository.integration.mjs` 的合成来源 `content_availability='excerpt'` 违反 `source.sources` 约束（允许值：full_content/image_scan/ocr/structured_content/catalog_only/unavailable）。该行由 d7d126c（CP2-F/QR-07）引入，一直被前一失败挡住未执行，本地 `test:unit` 与 `pnpm test` 默认集均不覆盖该 DB 链。修复 = 测试取值改 `full_content`（1 行，不动库约束与生产语义），提交 `0fd02ec` 并推送；已全量扫描 `tests/data-production` 未发现其它越界取值。
+- **取证链条说明（如实记账）**：串行集成链每次只暴露第一个失败，故存在"修一处露一处"的可能。当前记录两处均为**前批遗留的测试与契约不同步**，不涉及生产代码语义变更。QR-06 集成测试（`studio-delegation`）位于该链下游，尚未得到执行回执，故 QR-06 维持 **CODE_PRESENT + VERIFIED_ISOLATED(本地) / 集成取证 PENDING**，不提前收口。
+- **当前阶段定位**：M5_REMEDIATION_ACTIVE / M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY。QR-10 中 QR-07 已关闭、QR-06 代码完成待取证；D00-A1 待 QR-06 收口后插入；D00-A2/B/C 各自 HOLD；M6—M8 未启动。
 
 
 
