@@ -2112,7 +2112,7 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 
 | 项 | 事实 |
 |---|---|
-| 2 条 legacy 行仍 `BLOCKED` | 5 条 m2 脚本行中 2 条证据类资产既无 stored refs 也无 verified 原件绑定。`asset_revisions` 不可变，**不回填**；如需可用，须由 Owner 决定是否以新 revision 重建，或确认它们属历史废弃数据 |
+| 2 条 legacy 行仍 `BLOCKED` | 5 条 m2 脚本行中 2 条证据类资产（`b0a11000-…-0013` reading_note、`…-0014` evidence_note）既无 stored refs 也无 verified 原件绑定。`asset_revisions` 不可变，**不回填**。**Owner 于 2026-11-09 裁决：不用了，标为历史演示数据**——两行原样保留、不修改、不参与研究，仅在此记账；它们属演示脚本产物，不是真实研究成果，也不得在 Admin 之外被当作可用资产。演示项目内另有 4 条 `source_anchor`（`VERIFIED_ORIGINAL_BINDING`）可正常消费 |
 | 一次探针副作用 | 早期守卫探针按 `created_at` 选目标，而 5 条 m2 行 `created_at` 完全相同 → 误选到已 `ELIGIBLE` 的行，真的写进 1 条 `use_events`（`consumer='studio'`、`purpose='cp2f-probe'`、`rights_decision_ref='cp2f probe rights decision'`）。使用事件只增不改，**未删除，在此披露**；后续已改为按 disposition 选目标 |
 | `asset_links` 仍为 0 | 该表目前**无任何真实写入方**，本批未新造写入方；`GAP_RIGHTS_ACTIONS` 仍是既有 HOLD，未动 |
 
