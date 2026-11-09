@@ -90,7 +90,7 @@ try {
  const workReader=createWorkQualificationReader(pool),checks=[];
  for(const consumer of ['watch','visual_stage','agent','evidence_on_demand']){
   const ctx={consumer,purpose:{namespace:'G5',code:'work-fixture',version:'1'},scope:{project:'fixture',work_id:work}};
-  const action=consumer==='agent'?'read':consumer==='evidence_on_demand'?'quote':'display';
+  const action=consumer==='agent'?'access_view':consumer==='evidence_on_demand'?'quote':'display';
   const binding={schema:'mohen.work-revision-g5-binding.v1',work_id:work,revision_id:revision,content_sha256:workContentDigest(content),
    title:'TEST_ONLY',description:'',complete_work:true,consumer,purpose:ctx.purpose,scope:ctx.scope,rights_by_action:{[action]:'allowed'},rights_valid_until:new Date(Date.now()+600000).toISOString()};
   assert.equal(await workReader.check(work,revision,ctx,content),false,'no signed binding never gains permission');
