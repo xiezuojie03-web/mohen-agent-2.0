@@ -2201,6 +2201,18 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **中间态披露（重要）**：本批只做 A1。Protocol 已宣告 Y01—Y08 为 D00 正式方法集，而 Binding 仍 63 条、Identifier 未登记、Registry `methods` 仍为空——这是包内 A1/A2 分批的**预期中间态**，不等于已登记、更不等于可执行。A2 须单独裁决，且不得改动 `activation`、`execution_policy.enabled`、`adapter_binding`、`gate_reviewer_binding` 与 D01—D05 的 Job。
 - **边界**：零 DDL、无数据库写入、无 Provider 调用、未推送；D00-B（G0 承载 C 方法预选）与 D00-C（Y01—Y06 落点、Y07 台账、Y08 范围字段）继续 HOLD。
 
+## 2026-11-09 14 个漏链迁移接入（CHAIN_GAP 清零）
+
+- **先探测后施工**：写临时脚本在独立临时库（端口 55432、`mohen.test_instance=codex-k3-isolated` 标记校验未放松）实跑，确认 14 个文件在候选顺序下全部 `apply` 成功、无 DDL 冲突，再动正式链；探测脚本跑完即删（位于 gitignore 的 `work/`，未入库）。
+- **接入位置按生产演进顺序，不按文件名排序**：
+  1. KAD1 三条（`202611020900` / `202611020910` / `202611020920`）插在 K3 权威迁移之后、读模型套件之前——因为 `202611020910` 覆盖 `control.qualification_allows`，读模型与资格消费测试必须跑在 KAD1 版本上，否则测的是旧函数。
+  2. 其余 11 条插在私有原件块之后（此时 `studio.private_originals`、evidence bridge、私有借据均已存在），按 11-05 → 11-09 日期顺序：studio research read → private scanned page → producer run progress → D02–D05 私有候选 → Gate 候选提交 → 本地 Owner 签发身份 → 机器规则评审器 → 私有来源登记 revision → claim revision 读策略 → 逐动作权利 → 内容列修订哈希。
+- **静态守卫**：`UNCHAINED` 由 27 条降为 13 条（仅余 pre-V2 legacy，标 `LEGACY_SUPERSEDED`），`CHAIN_GAP` 常量与 14 条登记一并移除。`guard:isolated-db-fixtures` = `ISOLATED_DB_FIXTURE_PREFLIGHT_PASS migrations=63 chained_or_declared=all checked_literals=47 check_columns=86`。
+- **整链结果**：`K3_DB_TEST_PASS`，**零失败套件**（baseline_migrations=22、synthetic_legacy_rows=711、migrations repeatable、rollback fail-closed 全部保持）。回归覆盖的正面证据：`MAB_GATE_SERVICE_PASS`、`MAB_DELEGATION_REPOSITORY_PASS ... same-root-binding`、`MAB_STUDIO_ASSETS_PASS`、`MAB_STUDIO_REPOSITORY_PASS`、`MAB_EXECUTION_CONTROLS_PASS`、`MAB_PRIVATE_TEXT_READING_PASS`、`MAB_PRIVATE_SOURCE_BINDING_PG_PASS`、`MAB_PRIVATE_ORIGINAL_DB_PASS`、`MAB_WEB_SESSION_REVOCATION_PG_PASS`，以及七组回滚断言（SESSION / GATE_SERVICE / PRIVATE_READING / EVIDENCE_BRIDGE / PRIVATE_ORIGINAL / STUDIO / COLUMN_ACL）全部通过。
+- **本批揭示并已消除的隐性风险**：`20261109120000_mab_m5_artifact_content_revision` 覆盖 `control.sign_gate_candidate` 与 `control.artifact_revision_for`。接入前隔离链测的是**旧签名实现**，与生产实际版本不一致；接入后闸门相关套件跑的是生产同款实现且通过。"迁移进链"不只是补覆盖，也纠正了此前测试对象的偏差。
+- **未做（如实登记，不夸大）**：本批只解决"迁移进链且被现有套件触及"，**没有为这 14 项能力新增专项正/负断言**。当前覆盖度 = 现有套件顺带触达的深度；`rights_by_action` 新列、`mohen_private_worker` 权限矩阵、机器评审员身份边界、内容列哈希的篡改拒绝等仍缺专项用例，需另立批次。`ENV_PARITY` 的 `GAP_RIGHTS_ACTIONS` HOLD 不因此解除——那是**生产库缺列**的事实，与隔离链覆盖无关。
+- **边界**：只改 `scripts/test-k3-db.mjs` 与 `scripts/guards/check-isolated-db-fixtures.mjs`；无新增 DDL、无生产库写入、无 Provider 调用、未推送。
+
 
 
 

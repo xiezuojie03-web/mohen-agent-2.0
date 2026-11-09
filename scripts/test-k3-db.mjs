@@ -57,6 +57,13 @@ try {
   const before = query(database, snapshotSql);
   const migrations = ["202610310900_k3_security_boundary.sql", "202610310910_k3_gate_candidates.sql", "202611010900_k3_independent_gate_authority.sql"];
   for (const file of migrations) apply(file);
+  // KAD1 (2026-11-02) sits between the K3 authority migrations and the MAB studio work in the
+  // production timeline, so it is applied at the same point here. It replaces
+  // control.qualification_allows, which means the read-model suites below exercise the KAD1
+  // version instead of the baseline one.
+  for (const file of ["202611020900_kad1_watch_revision_isolation.sql",
+    "202611020910_kad1_consumption_blocks.sql",
+    "202611020920_kad1_account_transactions.sql"]) apply(file);
   if (query(database, snapshotSql) !== before) throw new Error("LEGACY_AUDIT_CHANGED");
   if (query(database, "select count(*) from control.gate_audits where decision_origin='legacy_untrusted'") !== "711" ||
       query(database, "select count(*) from control.qualification_current") !== "0") throw new Error("LEGACY_QUALIFICATION_PROMOTION");
@@ -93,6 +100,24 @@ try {
     runTest("PRIVATE_TEXT_READING", "tests/data-production/private-text-reading.integration.mjs");
     runTest("PRIVATE_SOURCE_BINDING", "tests/data-production/private-original-source-binding.integration.mjs");
     runTest("PRIVATE_ORIGINAL_REPOSITORY", "tests/data-production/private-original-repository.integration.mjs");
+    // Remaining 2026-11 migrations, in production date order. They were authored but never
+    // registered here, so the capabilities they carry (studio research read, private scanned-page
+    // reading, producer run progress, D02-D05 private candidates, Gate candidate submission,
+    // owner/machine signers, claim-revision read policy, rights-by-action, content-only revision
+    // hashing) had no isolated coverage at all. Applying them at the point where private originals
+    // already exist matches how the live database evolved.
+    for (const file of [
+      "20261105110000_mab_m5_studio_research_read.sql",
+      "20261107120000_mab_m2_private_scanned_page.sql",
+      "20261107160000_mab_m2_1_producer_run_progress.sql",
+      "20261107200000_mab_m5_d02_d05_private_candidates.sql",
+      "20261107210000_mab_m3_private_gate_candidate_submission.sql",
+      "20261107211000_mab_m3_local_owner_gate_signer.sql",
+      "20261107220000_mab_m5_machine_rule_reviewer.sql",
+      "20261107230000_mab_m2_private_source_registration_source_revision.sql",
+      "20261107240000_mab_m5_claim_revision_artifact_read_policy.sql",
+      "20261108110000_mab_m5_source_rights_actions.sql",
+      "20261109120000_mab_m5_artifact_content_revision.sql"]) apply(file);
     if (process.env.MOHEN_TEST_STORAGE_CONFIG) {
       runTest("PRIVATE_ORIGINAL_WORKFLOW", "tests/data-production/private-original-workflow.integration.mjs");
       runTest("EVIDENCE_BRIDGE", "tests/data-production/evidence-bridge.integration.mjs");

@@ -17,21 +17,12 @@ const chainFile = path.join(root, "scripts/test-k3-db.mjs");
 // Recorded debt: a migration listed here is known not to be applied by the isolated chain.
 // Adding an entry requires a reason; a stale entry (file now chained, or deleted) fails too.
 const LEGACY_SUPERSEDED = "pre-V2-baseline legacy migration, superseded by 202610070100_data_production_v2_baseline";
-const CHAIN_GAP = "not applied by the isolated chain yet - recorded gap, see progress.md 2026-11-09";
 const UNCHAINED = new Map([
   ...["008_cultural_world_objects.sql", "202609210001_foundation.sql", "202609210002_data_factory.sql",
     "202609210003_human_review.sql", "202609220004_knowledge_weave.sql", "202609220006_visual_linkage.sql",
     "202609220007_historical_spatial_reconstruction.sql", "202610020008_visual_asset_promotion_gate.sql",
     "202610020009_review_queue_triage.sql", "202610030010_research_workspace.sql", "202610040001_research_bridge_queue.sql",
     "202610050011_second_promotion_gate.sql", "202610070200_legacy_v1_to_v2_backfill.sql"].map(f => [f, LEGACY_SUPERSEDED]),
-  ...["202611020900_kad1_watch_revision_isolation.sql", "202611020910_kad1_consumption_blocks.sql",
-    "202611020920_kad1_account_transactions.sql", "20261105110000_mab_m5_studio_research_read.sql",
-    "20261107120000_mab_m2_private_scanned_page.sql", "20261107160000_mab_m2_1_producer_run_progress.sql",
-    "20261107200000_mab_m5_d02_d05_private_candidates.sql", "20261107210000_mab_m3_private_gate_candidate_submission.sql",
-    "20261107211000_mab_m3_local_owner_gate_signer.sql", "20261107220000_mab_m5_machine_rule_reviewer.sql",
-    "20261107230000_mab_m2_private_source_registration_source_revision.sql",
-    "20261107240000_mab_m5_claim_revision_artifact_read_policy.sql", "20261108110000_mab_m5_source_rights_actions.sql",
-    "20261109120000_mab_m5_artifact_content_revision.sql"].map(f => [f, CHAIN_GAP])
 ]);
 
 const chainSource = fs.readFileSync(chainFile, "utf8");
