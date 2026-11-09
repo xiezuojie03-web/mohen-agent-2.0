@@ -31,6 +31,14 @@ export async function GET(request: Request) {
       const revisions=await store.listAssetRevisions(projectId,assetId,token);
       return privateJson({ok:true,revisions});
     }
+    if (query.get('references')==='1') {
+      const projectId=query.get('project_id'),revisionId=query.get('revision_id');
+      if (!projectId || !revisionId)
+        return privateJson({ok:false,reason:'project_and_revision_required'},400);
+      const report=await store.assetReferenceReport(projectId,revisionId,token);
+      if (!report) return privateJson({ok:false,reason:'asset_not_found'},404);
+      return privateJson({ok:true,references:report});
+    }
     if (query.get('use_events')==='1') {
       const projectId=query.get('project_id'),revisionId=query.get('revision_id');
       if (!projectId || !revisionId)

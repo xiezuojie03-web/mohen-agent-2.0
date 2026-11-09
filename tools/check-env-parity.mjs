@@ -210,7 +210,7 @@ if (conn) {
     const usage = psql(conn, `
       select (select count(*) from studio.use_events)::text, (select count(*) from studio.asset_links)::text`);
     record("GAP_ASSET_USAGE", Number(usage[0]?.[0]) > 0 ? "PASS" : "HOLD",
-      `use_events=${usage[0]?.[0]} asset_links=${usage[0]?.[1]}（QR-07 回链未建立）`);
+      `use_events=${usage[0]?.[0]} asset_links=${usage[0]?.[1]}（QR-07：回链可解析且消费记账生效；asset_links 目前无真实写入方）`);
   } catch (error) {
     record("GAP_RIGHTS_ACTIONS", "FAIL", String(error?.message ?? error).split("\n")[0]);
   }

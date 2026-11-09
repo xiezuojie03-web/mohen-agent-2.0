@@ -153,9 +153,22 @@ test('all thirteen asset kinds keep exact private revisions and canonical write 
    research_collection:{references:[]},citation_snapshot:{qualification_snapshot:'UNVERIFIED',recheck_required:true},
    consented_feedback:{consent:true,withdrawal_allowed:true,text:'TEST_ONLY feedback'}
   };
+  const evidenceBearing=new Set(['source_anchor','reading_note','evidence_note','spacetime_candidate','relation_hypothesis']);
   for(const [kind,payload] of Object.entries(payloads)){
    const data={project_id:project.project_id,asset_id:randomUUID(),asset_kind:kind,expected_revision_id:null as string|null,idempotency_key:randomUUID(),payload,
-    source_refs:[{id:'TEST_ONLY_UNVERIFIED',revision:'1',locator:{page:1}}],dependency_refs:[]};
+    source_refs:[] as unknown[],dependency_refs:[]};
+   if(evidenceBearing.has(kind)){
+    // Evidence-bearing assets must carry at least one verified backlink; an
+    // unverifiable or absent source is refused instead of stored as a gap.
+    const dangling=await api.post('/api/studio/assets',{data:{...data,source_refs:[{type:'source_version',id:randomUUID()}]}});
+    expect(dangling.status(),kind).toBe(409);
+    expect((await dangling.json()).reason,kind).toContain('STUDIO_REFERENCE_UNRESOLVED');
+    const empty=await api.post('/api/studio/assets',{data});
+    expect(empty.status(),kind).toBe(409);
+    expect((await empty.json()).reason,kind).toBe('STUDIO_SOURCE_REFERENCE_REQUIRED');
+    console.log('MAB_HTTP_ASSET_BACKLINK_DENIED '+kind+' dangling-ref + no-source-ref refused');
+    continue;
+   }
    const created=await api.post('/api/studio/assets',{data});expect(created.status(),kind).toBe(200);
    const first=(await created.json()).asset;
    const secondResponse=await api.post('/api/studio/assets',{data:{...data,expected_revision_id:first.revision_id,idempotency_key:randomUUID(),payload:{...payload as object,changed:true}}});

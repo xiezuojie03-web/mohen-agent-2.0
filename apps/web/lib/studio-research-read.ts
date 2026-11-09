@@ -77,6 +77,7 @@ export async function readStudioResearchProject(projectId:string,sessionToken:st
   let remainingReadUnits=50;
   let readingsTruncated=false;
   const assetRefs:Obj[]=[];
+  const blockedAssetRefs:Obj[]=[];
   const originalRefs:Obj[]=[];
   const readingNoteRefs:Obj[]=[];
   const readUnitRefs:Obj[]=[];
@@ -92,6 +93,32 @@ export async function readStudioResearchProject(projectId:string,sessionToken:st
     // context below. Re-reading them as independent assets would duplicate
     // material on replay and could revive a stale source after withdrawal.
     if(kind==="reading_note"&&payload.schema==="mohen.studio-reading-note.v1")continue;
+    // Content is only turned into research material when the revision's own
+    // backlinks resolve and the action is allowed. A revision without a
+    // resolvable source is reported as a gap, never silently consumed.
+    let decision:Obj;
+    try {
+      decision=object(await store.assetConsumptionDecision(revisionId,"read",sessionToken));
+    } catch(error) {
+      gaps.push("asset_consumption_decision_unavailable:"+assetId);
+      continue;
+    }
+    if(decision.disposition!=="ELIGIBLE") {
+      blockedAssetRefs.push({asset_id:assetId,revision_id:revisionId,asset_kind:kind,
+        epistemic_class:text(asset.epistemic_class,60),
+        blockers:Array.isArray(decision.blockers)?decision.blockers:["UNKNOWN"]});
+      continue;
+    }
+    try {
+      await store.recordUseEvent({projectId,revisionId,consumer:"agent",
+        purpose:"studio_research_context",requestedAction:"read"},sessionToken);
+    } catch(error) {
+      const reason=error instanceof Error?error.message:"";
+      if(!reason.startsWith("STUDIO_USE_BLOCKED"))throw error;
+      blockedAssetRefs.push({asset_id:assetId,revision_id:revisionId,asset_kind:kind,
+        epistemic_class:text(asset.epistemic_class,60),blockers:[reason]});
+      continue;
+    }
     assetRefs.push({asset_id:assetId,revision_id:revisionId,asset_kind:kind,
       revision_no:Number(asset.revision_no)||null,epistemic_class:text(asset.epistemic_class,60),
       content_state:state,access_state:access,validation_status:text(object(asset.validation).status,60)});
@@ -189,6 +216,7 @@ export async function readStudioResearchProject(projectId:string,sessionToken:st
   if(readUnitCount>0&&evidenceCount===0)gaps.push("当前L1记录没有经字节核验的L2证据链接；只有定位，不得作为事实结论。");
   if(candidateL3===0)gaps.push("项目尚无时空候选或关系假设资产。");
   if(candidateL4===0)gaps.push("项目尚无人文洞察候选资产。");
+  if(blockedAssetRefs.length>0)gaps.push("有"+blockedAssetRefs.length+"条资产因回链不可解析或权利/访问受限被阻断消费；缺口已逐条记录，未以空集合放行。");
   gaps.push("L5仅由既有read-model-repository按当前G5资格/consumer/purpose/scope读取；本私有项目读取不绕过或复制L5。");
 
   const layerCoverage={
@@ -201,7 +229,8 @@ export async function readStudioResearchProject(projectId:string,sessionToken:st
   };
   const stableSnapshot={
     schema:"mohen.studio-research-read-snapshot.v1",project_id:projectId,
-    project_scope:object(project.research_scope),asset_refs:assetRefs,original_refs:originalRefs,
+    project_scope:object(project.research_scope),asset_refs:assetRefs,blocked_asset_refs:blockedAssetRefs,
+    original_refs:originalRefs,
     reading_note_refs:readingNoteRefs,read_unit_refs:readUnitRefs,evidence_refs:evidenceRefs,
     layer_coverage:layerCoverage,gaps,private_material_ids:privateMaterialIds,
     external_processing_allowed:false,storage_key_exposed:false,source_table_direct_select:false,

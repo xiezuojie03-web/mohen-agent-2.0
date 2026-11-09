@@ -63,3 +63,39 @@ export function assetGovernanceSummary(asset:{source_refs?:unknown;dependency_re
  const gapText=gaps.length?gaps.join("；"):"无已登记缺口";
  return provenance+`缺口：${gapText} · 独立G资格：须按对象逐案核验，本视图不签发不替代`;
 }
+
+function refCounts(value:unknown):{total:number|null;resolved:number|null;blocked:number|null} {
+  if(!value||typeof value!=='object'||Array.isArray(value))return {total:null,resolved:null,blocked:null};
+  const record=value as Record<string,unknown>;
+  const num=(v:unknown)=>typeof v==='number'&&Number.isFinite(v)?v:null;
+  return {total:num(record.total),resolved:num(record.resolved),blocked:num(record.blocked)};
+}
+
+// QR-07 reverse lookup: each stored ref is reported against the object it
+// actually names. A ref that cannot be resolved stays visible as BLOCKED, and
+// an empty set is unknown dependency, never "no dependency".
+export function assetBacklinkSummary(report:unknown):string {
+  if(!report||typeof report!=='object'||Array.isArray(report))return '回链解析：未读取';
+  const record=report as Record<string,unknown>;
+  const source=refCounts(record.source),dependency=refCounts(record.dependency);
+  const show=(label:string,counts:{total:number|null;resolved:number|null;blocked:number|null})=>{
+    if(counts.total===null)return `${label}未登记`;
+    if(counts.total===0)return `${label}0条（视为未知依赖，不得当作无依赖放行）`;
+    return `${label}${counts.resolved??0}/${counts.total}可解析${counts.blocked?`，${counts.blocked}条不可解析`:''}`;
+  };
+  const useCount=typeof record.use_event_count==='number'?record.use_event_count:null;
+  return `回链解析：${show('来源',source)} · ${show('依赖',dependency)} · 使用事件 ${useCount===null?'未知':useCount+'条'}`;
+}
+
+export function assetConsumptionSummary(report:unknown):string {
+  if(!report||typeof report!=='object'||Array.isArray(report))return '消费判定：未读取';
+  const decision=(report as Record<string,unknown>).decision;
+  if(!decision||typeof decision!=='object'||Array.isArray(decision))return '消费判定：未读取';
+  return ['read','quote','display','download','adapt','external_processing'].map(action=>{
+    const entry=(decision as Record<string,unknown>)[action];
+    if(!entry||typeof entry!=='object'||Array.isArray(entry))return `${action}: 未判定`;
+    const value=entry as Record<string,unknown>;
+    const blockers=Array.isArray(value.blockers)&&value.blockers.length?`(${value.blockers.join(',')})`:'';
+    return `${action}: ${typeof value.disposition==='string'?value.disposition:'未判定'}${blockers}`;
+  }).join(' · ');
+}

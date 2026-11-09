@@ -19,6 +19,55 @@ function jsonCopy(value, code) {
 }
 const deniedActions = Object.freeze({read:'denied',quote:'denied',display:'denied',
   download:'denied',adapt:'denied',external_processing:'denied'});
+const actions = Object.freeze(['read','quote','display','download','adapt','external_processing']);
+const refType = /^[a-z][a-z0-9_]{0,63}$/;
+
+// The epistemic class is a property of the asset kind, not a constant. Marking
+// every human save 'editorial' hid exactly the class that must carry a source
+// ref (observation/original_material), so backlink enforcement never applied.
+const epistemicByKind = Object.freeze({
+  research_brief:'editorial', source_anchor:'original_material', reading_note:'observation',
+  evidence_note:'observation', spacetime_candidate:'hypothesis', relation_hypothesis:'hypothesis',
+  humanistic_insight:'editorial', research_collection:'editorial', director_plan:'editorial',
+  media_selection:'editorial', work_revision:'editorial', citation_snapshot:'editorial',
+  consented_feedback:'editorial',
+});
+const evidenceBearing = new Set(['original_material','observation','claim','hypothesis','qualified_L_ref']);
+
+/** A stored backlink must name a registered object type and a non-empty id.
+ * A bare string, an unknown type or a silently dropped field is not a ref.
+ */
+function normalizeReferences(value, code='STUDIO_REFERENCES_INVALID') {
+  if (!Array.isArray(value)) throw new Error(code);
+  if (value.length > 50) throw new Error(code);
+  const seen = new Set(); const out = [];
+  for (const item of value) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) throw new Error(code);
+    const type = typeof item.type === 'string' ? item.type.trim() : '';
+    const id = typeof item.id === 'string' ? item.id.trim() : '';
+    const rawRevision = item.revision ?? null;
+    const revision = rawRevision === null ? null : String(rawRevision).trim();
+    if (!refType.test(type) || !id || id.length > 200) throw new Error(code);
+    if (revision !== null && (!revision || revision.length > 200)) throw new Error(code);
+    const key = `${type}:${id}${revision ? '@' + revision : ''}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(revision === null ? {type, id} : {type, id, revision});
+  }
+  return out;
+}
+
+async function requireResolvableReferences(client, refs) {
+  if (!refs.length) return null;
+  const {rows} = await client.query('select studio.resolve_asset_references($1::jsonb) as report',
+    [JSON.stringify(refs)]);
+  const report = rows[0]?.report;
+  if (!report || report.status !== 'OK' || Number(report.blocked) > 0) {
+    const first = Array.isArray(report?.blocked_items) ? report.blocked_items[0] : null;
+    throw new Error(`STUDIO_REFERENCE_UNRESOLVED:${first?.type ?? 'unknown'}:${first?.status ?? 'INVALID'}`);
+  }
+  return report;
+}
 
 function requireConsentedFeedback(payload) {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload) ||
@@ -115,6 +164,72 @@ export function createStudioAssetRepository(pool) {
         [projectId,revisionId]
       )).rows);
     },
+    /** Fail-closed per-revision decision for one consumption action. An empty
+     * ref set is reported as unknown dependency, never as a pass.
+     */
+    assetConsumptionDecision(revisionId, requestedAction, sessionToken) {
+      requireId(revisionId);
+      if (!actions.includes(requestedAction)) return Promise.reject(new Error('STUDIO_USE_ACTION_INVALID'));
+      return transaction(sessionToken, async client => {
+        const {rows} = await client.query('select studio.asset_consumption_disposition($1,$2) as decision',
+          [revisionId,requestedAction]);
+        const decision = rows[0]?.decision;
+        if (!decision || typeof decision !== 'object') throw new Error('STUDIO_CONSUMPTION_DECISION_UNAVAILABLE');
+        return decision;
+      });
+    },
+    /** Records one actually executed, authorized use. Append-only and
+     * independently guarded in the database: a blocked revision/action cannot
+     * be recorded, and no event can be edited or deleted afterwards.
+     */
+    recordUseEvent({projectId,revisionId,consumer,purpose,requestedAction,rightsDecisionRef=null},sessionToken) {
+      requireId(projectId); requireId(revisionId);
+      if (!actions.includes(requestedAction)) throw new Error('STUDIO_USE_ACTION_INVALID');
+      const bounded=(value,code,max)=>{if(typeof value!=='string'||!value.trim()||value.trim().length>max)throw new Error(code);return value.trim();};
+      const consumerName=bounded(consumer,'STUDIO_USE_CONTEXT_INVALID',80);
+      const purposeName=bounded(purpose,'STUDIO_USE_CONTEXT_INVALID',120);
+      const decisionRef=rightsDecisionRef===null
+        ?`studio_rights_by_action_v1:${requestedAction}`
+        :bounded(rightsDecisionRef,'STUDIO_USE_CONTEXT_INVALID',200);
+      return transaction(sessionToken, async (client,actor) => {
+        const {rows:decided} = await client.query('select studio.asset_consumption_disposition($1,$2) as decision',
+          [revisionId,requestedAction]);
+        const decision=decided[0]?.decision;
+        if (!decision||decision.disposition!=='ELIGIBLE')
+          throw new Error('STUDIO_USE_BLOCKED:'+(Array.isArray(decision?.blockers)?decision.blockers.join(','):'UNKNOWN'));
+        const {rows} = await client.query(`insert into studio.use_events
+          (project_id,asset_revision_id,actor_id,consumer,purpose,requested_action,rights_decision_ref)
+          values($1,$2,$3,$4,$5,$6,$7)
+          returning use_event_id,asset_revision_id,consumer,purpose,requested_action,rights_decision_ref,
+            created_at::text as created_at`,
+          [projectId,revisionId,actor,consumerName,purposeName,requestedAction,decisionRef]);
+        return rows[0];
+      });
+    },
+    /** Per-revision reverse lookup: what each stored ref actually resolves to,
+     * plus the recorded use events. Missing refs stay visible as gaps.
+     */
+    assetReferenceReport(projectId, revisionId, sessionToken) {
+      requireId(projectId); requireId(revisionId);
+      return transaction(sessionToken, async client => {
+        const {rows} = await client.query(
+          `select r.revision_id::text as revision_id,r.asset_id::text as asset_id,h.asset_kind,
+             r.epistemic_class,r.access_state,r.content_state,r.freshness_state,
+             r.source_refs,r.dependency_refs,
+             studio.resolve_asset_references(r.source_refs) as source,
+             studio.resolve_asset_references(r.dependency_refs) as dependency,
+             (select count(*) from studio.use_events e where e.asset_revision_id=r.revision_id)::int as use_event_count
+           from studio.asset_revisions r join studio.asset_heads h on h.asset_id=r.asset_id
+           where h.project_id=$1 and r.revision_id=$2`,[projectId,revisionId]);
+        const row=rows[0];
+        if (!row) return null;
+        const decision={};
+        for (const action of actions)
+          decision[action]=(await client.query('select studio.asset_consumption_disposition($1,$2) as decision',
+            [revisionId,action])).rows[0]?.decision??null;
+        return {...row,decision};
+      });
+    },
     async createProject({projectId,title,scope={}}, sessionToken) {
       requireId(projectId);
       if (typeof title !== 'string' || !title.trim() || title.trim().length > 200) throw new Error('STUDIO_PROJECT_TITLE_INVALID');
@@ -145,12 +260,19 @@ export function createStudioAssetRepository(pool) {
       if (taskSnapshot === null || Array.isArray(taskSnapshot) || typeof taskSnapshot !== 'object' ||
           (originTaskId === null && Object.keys(taskSnapshot).length > 0))
         throw new Error('STUDIO_ORIGIN_SNAPSHOT_INVALID');
-      const sources = jsonCopy(sourceRefs,'STUDIO_REFERENCES_INVALID');
-      const dependencies = jsonCopy(dependencyRefs,'STUDIO_REFERENCES_INVALID');
-      if (!Array.isArray(sources) || !Array.isArray(dependencies)) throw new Error('STUDIO_REFERENCES_INVALID');
+      const sources = normalizeReferences(sourceRefs);
+      const dependencies = normalizeReferences(dependencyRefs);
+      const epistemicClass = epistemicByKind[kind];
+      // An evidence-bearing asset without a single source ref would be an
+      // unverifiable "observation". Refuse it instead of storing a gap.
+      if (evidenceBearing.has(epistemicClass) && sources.length === 0)
+        throw new Error('STUDIO_SOURCE_REFERENCE_REQUIRED');
       return transaction(sessionToken, async (client, actor) => {
         const project = await client.query("select project_id from studio.projects where project_id=$1 and lifecycle_status='ACTIVE'",[projectId]);
         if (project.rows.length !== 1) throw new Error('STUDIO_PROJECT_NOT_FOUND');
+        // Dangling or unknown refs fail closed before anything is written.
+        await requireResolvableReferences(client, sources);
+        await requireResolvableReferences(client, dependencies);
         if (expectedRevisionId === null) {
           await client.query(`insert into studio.asset_heads(asset_id,project_id,asset_kind) values($1,$2,$3)
             on conflict(asset_id) do nothing`,[assetId,projectId,kind]);
@@ -165,7 +287,7 @@ export function createStudioAssetRepository(pool) {
         }
         const hash = createHash('sha256').update(canonical({projectId,assetId,kind,actor,expectedRevisionId,
           payload:content,sourceRefs:sources,dependencyRefs:dependencies,originTaskId,originTaskSnapshot:taskSnapshot,
-          origin:'human',epistemicClass:'editorial',contentState:'WORKING',accessState:'RESTRICTED',
+          origin:'human',epistemicClass,contentState:'WORKING',accessState:'RESTRICTED',
           freshnessState:'UNKNOWN_DEPENDENCY',validation:'UNASSESSED'})).digest('hex');
         const previous = await client.query('select revision_id,content_hash from studio.asset_revisions where asset_id=$1 and idempotency_key=$2',[assetId,idempotencyKey]);
         if (previous.rows.length) {
@@ -183,9 +305,10 @@ export function createStudioAssetRepository(pool) {
         await client.query(`insert into studio.asset_revisions(revision_id,asset_id,revision_no,supersedes_revision_id,actor_id,workspace_id,
           origin_kind,epistemic_class,payload,content_hash,source_refs,dependency_refs,idempotency_key,correlation_id,
           origin_task_id,origin_task_snapshot)
-          values($1,$2,$3,$4,$5,'studio','human','editorial',$6::jsonb,$7,$8::jsonb,$9::jsonb,$10,$11,$12,$13::jsonb)`,
-          [revisionId,assetId,revisionNo,expectedRevisionId,actor,JSON.stringify(content),hash,JSON.stringify(sources),
-            JSON.stringify(dependencies),idempotencyKey,randomUUID(),originTaskId,JSON.stringify(taskSnapshot)]);
+          values($1,$2,$3,$4,$5,'studio','human',$6,$7::jsonb,$8,$9::jsonb,$10::jsonb,$11,$12,$13,$14::jsonb)`,
+          [revisionId,assetId,revisionNo,expectedRevisionId,actor,epistemicClass,JSON.stringify(content),hash,
+            JSON.stringify(sources),JSON.stringify(dependencies),idempotencyKey,randomUUID(),originTaskId,
+            JSON.stringify(taskSnapshot)]);
         const changed = await client.query(`update studio.asset_heads set current_revision_id=$1
           where asset_id=$2 and current_revision_id is not distinct from $3::uuid returning asset_id`,[revisionId,assetId,expectedRevisionId]);
         if (changed.rows.length !== 1) throw new Error('STUDIO_REVISION_CONFLICT');

@@ -63,12 +63,28 @@ try {
 
  // All 13 kinds: real private persistence for ten; three canonical bodies must
  // stay in their existing stores. Saved source/dependency hints confer no G5.
+ const srcId=randomUUID(),srcVersionId=randomUUID(),srcChecksum='c'.repeat(64);
+ sql(`insert into source.sources(source_id,provider,title,source_type,carrier_type,content_availability)
+   values('${srcId}','TEST_ONLY','合成来源','book','print','excerpt');
+  insert into source.source_versions(source_version_id,source_id,checksum_sha256)
+   values('${srcVersionId}','${srcId}','${srcChecksum}')`);
  const privateKinds=['research_brief','source_anchor','reading_note','evidence_note','spacetime_candidate','relation_hypothesis','humanistic_insight','research_collection','citation_snapshot','consented_feedback'];
  for(const kind of privateKinds){
   const consent=kind==='consented_feedback'?{consent:true,withdrawal_allowed:true}:{};
   const item={...input,assetId:randomUUID(),kind,idempotencyKey:'matrix-first',payload:{kind,text:'TEST_ONLY '+kind,...consent},
-   sourceRefs:[{type:'source_version',id:randomUUID(),revision:'UNVERIFIED',locator:{page:1}}],
-   dependencyRefs:[{type:'reading_note',id:asset,revision:first.revision_id}]};
+   sourceRefs:[{type:'source_version',id:srcVersionId,revision:srcChecksum},{type:'source',id:srcId}],
+   dependencyRefs:[{type:'asset_revision',id:asset,revision:second.revision_id}]};
+  // A backlink that does not resolve is refused, and so is an evidence-bearing
+  // asset with no source at all: neither may be stored as a silent gap.
+  await assert.rejects(()=>repo.saveRevision({...item,assetId:randomUUID(),sourceRefs:[{id:'TEST_ONLY_UNVERIFIED',revision:'1'}]},token(a)),
+   /STUDIO_REFERENCES_INVALID/,'a reference without a registered type is not a backlink');
+  await assert.rejects(()=>repo.saveRevision({...item,assetId:randomUUID(),sourceRefs:[{type:'source_version',id:randomUUID(),revision:'UNVERIFIED'}]},token(a)),
+   /STUDIO_REFERENCE_UNRESOLVED/,'a dangling version ref cannot be stored');
+  await assert.rejects(()=>repo.saveRevision({...item,assetId:randomUUID(),sourceRefs:[{type:'source_version',id:srcVersionId,revision:'d'.repeat(64)}]},token(a)),
+   /STUDIO_REFERENCE_UNRESOLVED/,'a mismatched checksum is a revision mismatch, not a hit');
+  if(['source_anchor','reading_note','evidence_note','spacetime_candidate','relation_hypothesis'].includes(kind))
+   await assert.rejects(()=>repo.saveRevision({...item,assetId:randomUUID(),sourceRefs:[]},token(a)),
+    /STUDIO_SOURCE_REFERENCE_REQUIRED/,'evidence-bearing kinds need at least one source ref');
   if(kind==='consented_feedback')
    await assert.rejects(()=>repo.saveRevision({...item,payload:{kind,text:'TEST_ONLY no consent'}},token(a)),/STUDIO_FEEDBACK_CONSENT_REQUIRED/);
   const one=await repo.saveRevision(item,token(a));
@@ -89,6 +105,22 @@ try {
   assert.equal((await repo.listRevisionUseEvents(project,two.revision_id,token(a))).length,1);
   assert.equal((await repo.listRevisionUseEvents(project,one.revision_id,token(a))).length,0);
   assert.equal((await repo.listRevisionUseEvents(project,two.revision_id,token(b))).length,0);
+  // Consumption accounting: an authorized read is recorded, an action whose
+  // right is not explicitly allowed is refused by the repository and again by
+  // the database guard, so no code path can record a use it cannot justify.
+  const recorded=await repo.recordUseEvent({projectId:project,revisionId:two.revision_id,consumer:'agent',
+   purpose:'studio_research_context',requestedAction:'read'},token(a));
+  assert.equal(recorded.requested_action,'read');
+  await assert.rejects(()=>repo.recordUseEvent({projectId:project,revisionId:two.revision_id,consumer:'agent',
+   purpose:'studio_research_context',requestedAction:'quote'},token(a)),/STUDIO_USE_BLOCKED/);
+  assert.throws(()=>sql(`insert into studio.use_events(project_id,asset_revision_id,actor_id,consumer,purpose,requested_action,rights_decision_ref)
+   values('${project}','${two.revision_id}','${a}','studio','TEST_ONLY','adapt','TEST_ONLY not a rights grant')`),
+   /ASSET_USE_BLOCKED/,'database guard refuses a blocked use without the repository');
+  const report=await repo.assetReferenceReport(project,two.revision_id,token(a));
+  assert.equal(report.source.blocked,0);assert.equal(report.source.resolved,2);
+  assert.equal(report.dependency.resolved,1);
+  assert.equal(report.use_event_count,2,'raw fixture plus recorded read');
+  assert.equal(await repo.assetReferenceReport(project,two.revision_id,token(b)),null,'cross-owner cannot reverse-look-up refs');
   console.log('MAB_ASSET_KIND_PRIVATE_PASS '+kind+' POS revision/history/source/dependency NEG cross-owner/no-G5/unknown-rights');
  }
  for(const kind of ['director_plan','media_selection','work_revision']){

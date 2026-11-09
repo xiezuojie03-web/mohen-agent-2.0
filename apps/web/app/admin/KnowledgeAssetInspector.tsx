@@ -1,7 +1,7 @@
 "use client";
 
 import {useEffect,useRef,useState} from "react";
-import {countStoredRefs,privateAssetStatus,assetPayloadPreview,selectInspectedRevision,assetRightsSummary,assetValidationSummary,assetPermissionSummary,assetUseSummary,assetGovernanceSummary} from "./knowledge-asset-view";
+import {countStoredRefs,privateAssetStatus,assetPayloadPreview,selectInspectedRevision,assetRightsSummary,assetValidationSummary,assetPermissionSummary,assetUseSummary,assetGovernanceSummary,assetBacklinkSummary,assetConsumptionSummary} from "./knowledge-asset-view";
 
 type Project={project_id:string;project_title?:string};
 type Asset={asset_id:string;revision_id:string;revision_no?:number;asset_kind?:string;
@@ -32,6 +32,7 @@ export default function KnowledgeAssetInspector(){
   const [history,setHistory]=useState<Asset[]>([]);
   const [revisionId,setRevisionId]=useState("");
   const [uses,setUses]=useState<UseEvent[]>([]);
+  const [references,setReferences]=useState<Record<string,unknown>|null>(null);
   const [loading,setLoading]=useState("projects");
   const [error,setError]=useState("");
   const [notice,setNotice]=useState("");
@@ -74,7 +75,7 @@ export default function KnowledgeAssetInspector(){
   },[projectId,refresh,query,cursor]);
 
   useEffect(()=>{
-    const c=new AbortController();setHistory([]);setUses([]);
+    const c=new AbortController();setHistory([]);setUses([]);setReferences(null);
     if(!assetId||!projectId)return ()=>c.abort();
     const selected=assets.find(a=>a.asset_id===assetId);
     if(!selected)return ()=>c.abort();
@@ -82,12 +83,14 @@ export default function KnowledgeAssetInspector(){
     const q=(data:Record<string,string>)=>"/api/studio/assets?"+new URLSearchParams(data).toString();
     void (async()=>{
       try{
-        const [h,u]=await Promise.all([
+        const [h,u,r]=await Promise.all([
           getPrivate(q({history:"1",project_id:projectId,asset_id:assetId}),c.signal),
-          getPrivate(q({use_events:"1",project_id:projectId,revision_id:revisionId||selected.revision_id}),c.signal)
+          getPrivate(q({use_events:"1",project_id:projectId,revision_id:revisionId||selected.revision_id}),c.signal),
+          getPrivate(q({references:"1",project_id:projectId,revision_id:revisionId||selected.revision_id}),c.signal)
         ]);
         if(!Array.isArray(h.revisions)||!Array.isArray(u.events))throw Error("版本/使用记录格式无效");
-        if(!c.signal.aborted){setHistory(h.revisions as Asset[]);setUses(u.events as UseEvent[]);}
+        if(!c.signal.aborted){setHistory(h.revisions as Asset[]);setUses(u.events as UseEvent[]);
+          setReferences(r.references&&typeof r.references==="object"&&!Array.isArray(r.references)?r.references as Record<string,unknown>:null);}
       }catch(e){if(!c.signal.aborted)setError(e instanceof Error?e.message:"详情读取失败");}
       finally{if(!c.signal.aborted)setLoading("");}
     })();
@@ -173,6 +176,8 @@ export default function KnowledgeAssetInspector(){
       <pre style={{whiteSpace:"pre-wrap",overflowWrap:"anywhere",maxHeight:150,overflow:"auto"}}>
         {assetPayloadPreview(selected.dependency_refs)}
       </pre>
+      <p className="admin__asset-meta">{assetBacklinkSummary(references)}</p>
+      <p className="admin__asset-meta">{assetConsumptionSummary(references)}</p>
       <p className="admin__asset-meta">{assetRightsSummary(selected.rights_by_action)}</p>
       <p className="admin__asset-meta">{assetPermissionSummary(selected.permission_scope)}</p>
       <p className="admin__asset-meta">{assetValidationSummary(selected.validation)}</p>

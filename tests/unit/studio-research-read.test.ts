@@ -1,6 +1,7 @@
 import {beforeEach,expect,it,vi} from "vitest";
-const {listProjects,listAssets,saveRevision,listForProject,listByOriginal}=vi.hoisted(()=>({
- listProjects:vi.fn(),listAssets:vi.fn(),saveRevision:vi.fn(),listForProject:vi.fn(),listByOriginal:vi.fn()
+const {listProjects,listAssets,saveRevision,listForProject,listByOriginal,assetConsumptionDecision,recordUseEvent}=vi.hoisted(()=>({
+ listProjects:vi.fn(),listAssets:vi.fn(),saveRevision:vi.fn(),listForProject:vi.fn(),listByOriginal:vi.fn(),
+ assetConsumptionDecision:vi.fn(),recordUseEvent:vi.fn()
 }));
 vi.mock("@mohen/data-access",()=>({
  getNodePgPool:()=>({connect:vi.fn()}),
@@ -8,7 +9,7 @@ vi.mock("@mohen/data-access",()=>({
  createPrivateTextReadingRepository:()=>({listByOriginal}),
 }));
 vi.mock("../../apps/web/lib/studio-assets",()=>({
- studioAssetStore:()=>({listProjects,listAssets,saveRevision})
+ studioAssetStore:()=>({listProjects,listAssets,saveRevision,assetConsumptionDecision,recordUseEvent})
 }));
 import {readStudioResearchProject} from "../../apps/web/lib/studio-research-read";
 
@@ -51,6 +52,8 @@ beforeEach(()=>{
     literal_reading:"河边形成集市，后续仍需核对原件",link_version:"mab.private-read-bridge.v1",key_version:"test-v1"}]}],
   readings_limit:50,direct_storage_reference_exposed:false});
  saveRevision.mockImplementation(async input=>({asset_id:input.assetId,revision_id:revisionId,revision_no:1}));
+ assetConsumptionDecision.mockResolvedValue({disposition:"ELIGIBLE",action:"read",blockers:[]});
+ recordUseEvent.mockResolvedValue({use_event_id:linkId,requested_action:"read"});
 });
 
 it("composes Owner project L0-L2 and candidate L3/L4 context, persists an idempotent reading_note and marks all private materials as leads",async()=>{
@@ -132,3 +135,16 @@ it('revalidates existing material for a task GET without persisting generated no
  expect(result.materials.some(m=>m.id==='private-evidence:'+evidenceId)).toBe(true);
  expect(listByOriginal).toHaveBeenCalledWith(originalId,token);
 });
+it('never turns an asset into research material when its backlinks do not resolve',async()=>{
+ assetConsumptionDecision.mockResolvedValue({disposition:"BLOCKED",action:"read",blockers:["NO_SOURCE_REF"]});
+ const result=await readStudioResearchProject(projectId,token);
+ expect(assetConsumptionDecision).toHaveBeenCalledWith(linkId,"read",token);
+ expect(recordUseEvent).not.toHaveBeenCalled();
+ expect(result.snapshot.asset_refs.some((x:Record<string,unknown>)=>x.asset_id===revisionId)).toBe(false);
+ const blocked=result.snapshot.blocked_asset_refs as Record<string,unknown>[];
+ expect(blocked.map(x=>x.asset_id)).toEqual([revisionId]);
+ expect(blocked[0].blockers).toEqual(["NO_SOURCE_REF"]);
+ expect(result.gaps.some(g=>g.includes("被阻断消费"))).toBe(true);
+ expect(result.materials.some(m=>String(m.id).startsWith("studio:"))).toBe(false);
+});
+

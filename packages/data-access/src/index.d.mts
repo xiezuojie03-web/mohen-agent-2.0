@@ -107,6 +107,20 @@ export interface StudioAssetRepository {
   saveRevision(input: {projectId: string; assetId: string; kind: string; expectedRevisionId: string | null; idempotencyKey: string; payload: unknown; sourceRefs?: unknown[]; dependencyRefs?: unknown[]; originTaskId?: string | null; originTaskSnapshot?: Record<string,unknown>}, token: string): Promise<StudioStoredRevision>;
   withdrawFeedback(input: {projectId: string; assetId: string; expectedRevisionId: string; idempotencyKey: string},token:string):Promise<StudioStoredRevision>;
   getRevision(revisionId: string, token: string): Promise<StudioStoredRevision | null>;
+  assetConsumptionDecision(revisionId: string, requestedAction: string, token: string): Promise<{
+    disposition: 'ELIGIBLE' | 'BLOCKED'; action: string; blockers: string[]; source_origin?: string;
+    verified_original_bindings?: number; right?: string; source?: unknown; dependency?: unknown;
+  }>;
+  recordUseEvent(input: {projectId: string; revisionId: string; consumer: string; purpose: string; requestedAction: string; rightsDecisionRef?: string | null}, token: string): Promise<{
+    use_event_id: string; asset_revision_id: string; consumer: string; purpose: string;
+    requested_action: string; rights_decision_ref: string; created_at: string;
+  }>;
+  assetReferenceReport(projectId: string, revisionId: string, token: string): Promise<{
+    revision_id: string; asset_id: string; asset_kind: string; epistemic_class: string;
+    access_state: string; content_state: string; freshness_state: string;
+    source_refs: unknown; dependency_refs: unknown; source: unknown; dependency: unknown;
+    use_event_count: number; decision: Record<string, unknown>;
+  } | null>;
 }
 export declare function createStudioAssetRepository(pool: {connect: Function}): StudioAssetRepository;
 

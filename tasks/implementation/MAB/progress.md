@@ -2072,6 +2072,50 @@ Owner 裁决「机器自审 + 您本人签」，且「载体不设限、读法�
 
 未做/边界：`guard:structure` 报 `SKILL_MD_NO_ENTRY`（5 个 skills 的 SKILL.md 未声明 Entry）属既有问题，与本批无关，未修；本批仍只在本地 `mohen_dev`，不构成生产 Gate 准出。
 
+### CP2-F：QR-07 资产回链（source_refs / dependency_refs / use_events）（2026-11-09）
+
+Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后的真实答案如下（按写入路径拆开，不是一句"存储问题"）：
+
+| 条数 | 写入路径 | 为什么为空 | 是否会再发生 |
+|---|---|---|---|
+| 5 | `tools/m2-landing.py` 一次性落地脚本直插 SQL | 脚本把 `source_refs/dependency_refs` 写死为 `'[]'::jsonb`，此时**手里其实握着全部原始绑定 id 却没用**；同时硬编码 `freshness_state='CURRENT'`、`access_state='RESTRICTED'` | 不会：该脚本是一次性历史产物，不在运行路径上 |
+| 1 | ST-01 议题创建路径写入 `research_brief` | 该 `asset_kind` 属编辑类，按合同本就不要求来源引用 | 不会：属设计内合法空集 |
+| 2 | 生产代码 `packages/data-access/src/private-original-repository.mjs` `finalize()` | 绑定只写进了 `provenance`，**从未写 `source_refs`** | **会：这是真实施工缺陷，不是存储问题**（列存在、JSONB 可存、ST-02 阅读笔记路径确实写了 refs） |
+
+**关键边界（直接回答"是不是刚签的 D00—D05/G0—G5 链路"）**：不是。D00—D05 与 G0—G5 绑定的是 `source`/`evidence`/`world`/`meaning`/`control` 下的对象，`control.qualification_current` 里 7 条现行资格全部指向这些对象，**从未触碰 `studio.asset_revisions`**。因此 G0—G5 全 PASS 本来就不会让 studio 回链变满；把两者混为一谈是错的。检查这 8 条的目的也不是"复核 D/G 链"，而是：`studio.asset_revisions` 是消费链起点，回链空 = 资产无法被追溯到原件，合同 §7/§11 要求"依赖未知必须 BLOCK，不得空集合放行"，所以必须逐条核实这批已存在的资产究竟是"合法无依赖"还是"漏写"。
+
+**本批落地（迁移 `supabase/migrations/20261109130000_mab_cp2f_asset_backlink.sql`）**：
+
+| 组件 | 作用 |
+|---|---|
+| `studio.reference_kinds` | 18 种 ref 类型 → 目标表/主键列/版本列的显式登记表（`private_original`/`source`/`source_version`/`raw_item`/`source_read_unit`/`read_unit`/`material_evidence`/`asset_revision`/`claim_revision`/`entity`/`event`/`relation_claim`/`change`/`historical_space_claim`/`visual_object`/`finding`/`open_question`/`present_connection`）。未登记类型不得解析，杜绝"文本 ref 一律当成字段串" |
+| `studio.resolve_asset_reference(s)` | 逐条回查真实对象+版本；状态 `INVALID_SHAPE`/`MISSING_ID`/`UNKNOWN_TYPE`/`NOT_FOUND`/`REVISION_MISMATCH`/`RESOLVED`；只有登记了 `revision_key` 的类型才校版本（`raw_item` 按 `checksum_sha256`） |
+| `studio.asset_verified_original_bindings` | 把「FK 已存在且 `STORED_VERIFIED` 的原件绑定」与「写进 JSONB 的 source_refs」区分开，前者是可核验事实，不当成已写入的 ref 冒充 |
+| `studio.asset_consumption_disposition` | 消费前裁决：`REVOKED`/`ARCHIVED` 直接阻断；`read` 只在 rights=`denied` 时阻断、其它动作必须显式 `allowed`；refs 不可解析 → `UNRESOLVED_REFERENCE`；证据类资产**既无 stored refs 又无 verified 原件绑定** → `NO_SOURCE_REF`。输出 `source_origin ∈ STORED_SOURCE_REFS｜VERIFIED_ORIGINAL_BINDING｜NONE` |
+| 触发器 `studio_asset_revision_reference_guard`（BEFORE INSERT） | 悬空 ref 直接 `ASSET_REFERENCE_UNRESOLVED`；形状非法 `ASSET_REFERENCE_SHAPE_INVALID`。数据库兜底，任何绕过仓储层的写入同样失败关闭 |
+| 触发器 `studio_use_event_guard`（BEFORE INSERT） | `ASSET_USE_REVISION_NOT_FOUND`/`ASSET_USE_PROJECT_MISMATCH`/`ASSET_USE_RIGHTS_DECISION_REQUIRED`/`ASSET_USE_BLOCKED <blockers>` |
+
+应用侧改动：`studio-asset-repository.mjs` 新增 `epistemicByKind` 映射——原先所有人工保存一律硬编码 `epistemic_class='editorial'`，这正是"证据类资产不需要来源也不会被拦"的根因之一；新增 `normalizeReferences` + `requireResolvableReferences`（写库前先解析，失败即 `STUDIO_REFERENCE_UNRESOLVED`）；新增 `assetConsumptionDecision`/`recordUseEvent`/`assetReferenceReport`。`private-original-repository.mjs` `finalize()` 补写 `source_refs=[{type:'private_original',...}]`（**直接修掉会复发的那条路径**）。`studio-research-read.ts` 在把资产变成研究材料前先取 disposition、非 `ELIGIBLE` 记入 `blocked_asset_refs` 并跳过，合格才 `recordUseEvent`。Admin 详情页新增回链解析与六动作消费摘要两行。
+
+**`use_events` 记账为什么不需要 Owner 逐条签**：合同 §5/§7 已把它定为**系统义务**——`studio.use_events` 记录"确实执行的授权引用/检索/复用"，受控消费链终点就是可复核使用事件。因此本批实现为自动记账：只增不改、必须带 `rights_decision_ref`、不合法即 `BLOCKED`，Owner 看到的是审计流水而不是待批清单。这与 D02—D05 的"含判断内容需逐条批准"是两回事，后者未变。
+
+| 验证 | 结果 |
+|---|---|
+| `node tools/verify-6-asset-backlinks.mjs`（新增） | `VERIFY_6_BACKLINK_PASS`，17 项全 PASS；含 A 注册表、B 解析语义正反（真实 `raw_item` MATCH / 错 checksum `REVISION_MISMATCH` / 不存在 `NOT_FOUND` / 未登记类型 `UNKNOWN_TYPE`）、C 两道 DB 守卫探针（`REFUSED_UNRESOLVED`/`REFUSED_BLOCKED`）、D 逐条 8 条 revision 现状、E 触发器存在性 |
+| 真实消费路径 `readStudioResearchProject` 真跑 | `blocked=2 eligible=4 new_use_events=4`；blocked 两条正是 m2 脚本造的 `reading_note`/`evidence_note`（`NO_SOURCE_REF`） |
+| 8 条现状（不伪造、不回填不可变行） | 2 条 `research_brief` → `read=ELIGIBLE/quote=BLOCKED`；4 条 `source_anchor` → `source_origin=VERIFIED_ORIGINAL_BINDING`、`read=ELIGIBLE/quote=BLOCKED`；2 条 m2 行 → `read=BLOCKED(NO_SOURCE_REF)` |
+| `node tools/check-env-parity.mjs` | `ENV_PARITY_PASS`，14 PASS / 0 FAIL / 1 HOLD；`GAP_ASSET_USAGE` 由 HOLD 转 PASS |
+| `node tools/verify-3-gate-chain.mjs` | `VERIFY_3_ALL_PASS`，`qualification=7 invalid=0`（G0—G5 签名未受本批影响） |
+| `tests/data-production/**` / `vitest.unit` / `pnpm -r typecheck` | 172/172 通过；638 passed / 2 skipped；6/6 通过 |
+
+**必须披露的两处边界：**
+
+| 项 | 事实 |
+|---|---|
+| 2 条 legacy 行仍 `BLOCKED` | 5 条 m2 脚本行中 2 条证据类资产既无 stored refs 也无 verified 原件绑定。`asset_revisions` 不可变，**不回填**；如需可用，须由 Owner 决定是否以新 revision 重建，或确认它们属历史废弃数据 |
+| 一次探针副作用 | 早期守卫探针按 `created_at` 选目标，而 5 条 m2 行 `created_at` 完全相同 → 误选到已 `ELIGIBLE` 的行，真的写进 1 条 `use_events`（`consumer='studio'`、`purpose='cp2f-probe'`、`rights_decision_ref='cp2f probe rights decision'`）。使用事件只增不改，**未删除，在此披露**；后续已改为按 disposition 选目标 |
+| `asset_links` 仍为 0 | 该表目前**无任何真实写入方**，本批未新造写入方；`GAP_RIGHTS_ACTIONS` 仍是既有 HOLD，未动 |
+
 
 
 

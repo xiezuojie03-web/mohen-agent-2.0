@@ -51,9 +51,14 @@ export function createPrivateOriginalRepository(pool){
     if(h.rows.length!==1||h.rows[0].project_id!==r.project_id||h.rows[0].asset_kind!=='source_anchor'||h.rows[0].current_revision_id!==null)
       throw new Error('ORIGINAL_ASSET_BINDING_CONFLICT');
     const revisionId=randomUUID(),locator='mohen-private-originals/'+r.storage_key;
-    await client.query("insert into studio.asset_revisions(revision_id,asset_id,revision_no,actor_id,workspace_id,origin_kind,epistemic_class,payload_storage_ref,payload_format,content_hash,provenance,idempotency_key,correlation_id) values($1,$2,1,$3,'studio','human','original_material',$4,$5,$6,$7::jsonb,$8,$9)",
+    // The anchor must point back at the verified original byte object in the
+    // standard source_refs column, not only inside provenance: otherwise the
+    // asset is an unbacklinked original_material and cannot be consumed.
+    const sourceRefs=[{type:'private_original',id:r.original_id,revision:revisionId}];
+    await client.query("insert into studio.asset_revisions(revision_id,asset_id,revision_no,actor_id,workspace_id,origin_kind,epistemic_class,payload_storage_ref,payload_format,content_hash,provenance,source_refs,idempotency_key,correlation_id) values($1,$2,1,$3,'studio','human','original_material',$4,$5,$6,$7::jsonb,$8::jsonb,$9,$10)",
       [revisionId,r.asset_id,actor,locator,r.content_type,r.sha256,JSON.stringify({private_original_id:r.original_id,
       storage_ref:locator,file_name:r.file_name,byte_size:Number(r.byte_size),rights_status:'declared_unverified'}),
+      JSON.stringify(sourceRefs),
       'original:'+r.original_id,randomUUID()]);
     const u=await client.query("update studio.asset_heads set current_revision_id=$1 where asset_id=$2 and current_revision_id is null returning asset_id",
       [revisionId,r.asset_id]);
