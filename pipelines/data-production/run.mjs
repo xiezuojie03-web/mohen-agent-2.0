@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import path from "node:path";
+import fs from "node:fs";
 import {STAGE_ORDER} from "./orchestrator/contracts.mjs";
 import {loadTrustedResumeInput} from "./orchestrator/resume-input.mjs";
 import { pathToFileURL } from "node:url";
@@ -11,6 +12,22 @@ import { assertExecutionAuthorityConfigured } from "./orchestrator/execution-aut
 import { createOptionalIndependentGateClient } from "./orchestrator/independent-gate-client.mjs";
 import { persistStageProgress, finalizeRun } from "./orchestrator/run-persistence.mjs";
 import {createPrivateEvidenceRuntimeLoader} from "./workers/private-evidence-runtime.mjs";
+
+// Load .env.local before createOptionalIndependentGateClient() reads
+// MOHEN_INDEPENDENT_GATE_VERIFY_URL / _CREDENTIAL. data-access/index.mjs also
+// loads dotenv, but it is imported lazily (queryRows) and would run too late.
+(function loadDotEnv() {
+  const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..", "..");
+  for (const name of [".env.local", ".env"]) {
+    const p = path.join(root, name);
+    if (!fs.existsSync(p)) continue;
+    for (const line of fs.readFileSync(p, "utf8").replace(/^\uFEFF/, "").split("\n")) {
+      const m = line.match(/^\s*([A-Za-z0-9_]+)\s*=\s*(.*?)\s*$/);
+      if (!m) continue;
+      if (process.env[m[1]] === undefined) process.env[m[1]] = m[2].replace(/^["']|["']$/g, "");
+    }
+  }
+})();
 
 function arg(name, fallback = null) {
   const i = process.argv.indexOf(`--${name}`);

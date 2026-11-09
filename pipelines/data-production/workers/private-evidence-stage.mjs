@@ -103,7 +103,9 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         sourceVersionId:registration.source_version_id,rawItemId:registration.raw_item_id,
         rawSha256:record.sha256},token);
       if(bound!==true)throw Error('PRIVATE_READING_SOURCE_NOT_BOUND');
-      const requestDigest=digestOf({runId:run.run_id,originalId,pageNumber,researchIntent});
+      // input_fingerprint 必须与 orchestrator 的 executionDigest(input) 一致，
+      // 只读取证服务据此把资格绑定到本次 stage 的精确输入。
+      const requestDigest=digestOf(input);
       // The G0 candidate must bind the source_version revision, not the raw_item revision.
       const sourceRevision=registration?.source_version_artifact_revision;
       if(typeof sourceRevision!=='string'||!/^[0-9a-f]{64}$/.test(sourceRevision))
