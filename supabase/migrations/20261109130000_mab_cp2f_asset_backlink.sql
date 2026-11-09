@@ -51,7 +51,7 @@ create policy studio_reference_kinds_read on studio.reference_kinds for select
 insert into studio.reference_kinds(ref_type,target_schema,target_table,target_key,revision_key) values
  ('private_original','studio','private_originals','original_id',null),
  ('source','source','sources','source_id',null),
- ('source_version','source','source_versions','source_version_id',null),
+ ('source_version','source','source_versions','source_version_id','checksum_sha256'),
  ('raw_item','source','raw_items','raw_item_id','checksum_sha256'),
  ('source_read_unit','source','read_units','read_unit_id',null),
  ('read_unit','source','read_units','read_unit_id',null),

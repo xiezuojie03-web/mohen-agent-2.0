@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {createHmac} from 'node:crypto';
-const {MOHEN_TEST_PSQL:psql,MOHEN_TEST_SOCKET:socket,MOHEN_TEST_DATABASE:database}=process.env;
-if(!psql||!socket?.startsWith('/workspace/')||!/^mohen_k3_[a-z0-9_]*test$/.test(database??''))throw Error('ISOLATED_TEST_DATABASE_REQUIRED');
+const {MOHEN_TEST_PSQL:psql,MOHEN_TEST_DATABASE:database}=process.env;
+const localTcpHost=["127.0.0.1","localhost"].includes(process.env.MOHEN_TEST_HOST??"")?process.env.MOHEN_TEST_HOST:undefined;
+const socket=localTcpHost??process.env.MOHEN_TEST_SOCKET;
+if(!psql||!(localTcpHost||socket?.startsWith('/workspace/'))||!/^mohen_k3_[a-z0-9_]*test$/.test(database??''))throw Error('ISOLATED_TEST_DATABASE_REQUIRED');
 const args=['-X','-q','-h',socket,'-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database,'-At','-v','ON_ERROR_STOP=1'];
 const sql=s=>execFileSync(psql,args,{input:s,encoding:'utf8',stdio:['pipe','pipe','pipe']}).trim();
 assert.equal(sql("select current_setting('mohen.test_instance',true)"),'codex-k3-isolated');
@@ -13,7 +15,7 @@ const asset='c0000000-0000-4000-8000-000000000003',other='c0000000-0000-4000-800
 const r1='c0000000-0000-4000-8000-000000000011',r2='c0000000-0000-4000-8000-000000000012',or='c0000000-0000-4000-8000-000000000013';
 const key='studio-long-term-synthetic-database-session-key-32';
 function token(uid){const p=Buffer.from(JSON.stringify({uid,r:[],exp:Date.now()+60000})).toString('base64url');return p+'.'+createHmac('sha256',key).update(p).digest('base64url');}
-const as=(uid,q)=>sql(`begin;set local role mohen_app_runtime;select set_config('mohen.session_token','${token(uid)}',true);${q};commit;`).split('\n').filter(x=>!x.includes('.')).join('\n').trim();
+const as=(uid,q)=>sql(`begin;set local role mohen_app_runtime;select set_config('mohen.session_token','${token(uid)}',true);${q};commit;`).split(/\r?\n/).filter(x=>!x.includes('.')).join('\n').trim();
 // The test fixture uses only synthetic users and cannot run against an unmarked DB.
 sql(`insert into public.users(user_id,email,username,password_hash) values('${a}','asset-a@example.invalid','A','synthetic'),('${b}','asset-b@example.invalid','B','synthetic');
 insert into control.session_verification_keys(verification_key) values('${key}') on conflict(key_slot) do update set verification_key=excluded.verification_key;`);
@@ -55,7 +57,9 @@ assert.equal(sql(`select root_task_id is null and root_task_ref='stable-root' fr
 assert.equal(sql(`select count(*) from studio.execution_receipts where delegation_id='${delegation}'`),'1');
 assert.throws(()=>as(a,envelope.replaceAll(rootTask,"c0000000-0000-4000-8000-000000000099").replace("'c0000000-0000-4000-8000-000000000099'",'null').replaceAll(delegation,'c0000000-0000-4000-8000-000000000032')),/unique constraint/,'root deletion must not destroy stable idempotency');
 as(a,`insert into studio.use_events(project_id,asset_revision_id,actor_id,consumer,purpose,requested_action,rights_decision_ref)values('${project}','${r1}','${a}','studio','research','read','TEST_ONLY')`);
-assert.throws(()=>as(b,`insert into studio.use_events(project_id,asset_revision_id,actor_id,consumer,purpose,requested_action,rights_decision_ref)values('${foreign}','${r1}','${b}','studio','research','read','TEST_ONLY')`),/row-level security/);
+// CP2-F adds studio.guard_asset_use_event(), which rejects a use event whose project does not
+// own the referenced revision before RLS is reached. Either rejection proves the boundary.
+assert.throws(()=>as(b,`insert into studio.use_events(project_id,asset_revision_id,actor_id,consumer,purpose,requested_action,rights_decision_ref)values('${foreign}','${r1}','${b}','studio','research','read','TEST_ONLY')`),/row-level security|ASSET_USE_PROJECT_MISMATCH/);
 // All three row types share one guard; a missing-column error is not its contract.
 assert.throws(()=>sql(`update studio.use_events set purpose='changed' where project_id='${project}'`),/PERMANENT_RECEIPT_IMMUTABLE/);
 assert.throws(()=>sql(`delete from studio.use_events where project_id='${project}'`),/PERMANENT_RECEIPT_IMMUTABLE/);

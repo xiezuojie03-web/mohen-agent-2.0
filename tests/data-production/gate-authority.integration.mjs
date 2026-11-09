@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import { execFileSync, spawn } from 'node:child_process';
 import { createHash, createHmac, randomUUID } from 'node:crypto';
-const { MOHEN_TEST_PSQL: psql, MOHEN_TEST_SOCKET: socket, MOHEN_TEST_DATABASE: database } = process.env;
-if (!psql || !socket?.startsWith('/workspace/') || !/^mohen_k3_[a-z0-9_]*test$/.test(database ?? '')) throw new Error('ISOLATED_TEST_DATABASE_REQUIRED');
+const { MOHEN_TEST_PSQL: psql, MOHEN_TEST_DATABASE: database } = process.env;
+const localTcpHost=["127.0.0.1","localhost"].includes(process.env.MOHEN_TEST_HOST??"")?process.env.MOHEN_TEST_HOST:undefined;
+const socket=localTcpHost??process.env.MOHEN_TEST_SOCKET;
+if (!psql || !(localTcpHost||socket?.startsWith('/workspace/')) || !/^mohen_k3_[a-z0-9_]*test$/.test(database ?? '')) throw new Error('ISOLATED_TEST_DATABASE_REQUIRED');
 const args = ['-X','-q','-h',socket,'-p',process.env.MOHEN_TEST_PORT ?? '55432','-U','k3_admin','-d',database,'-At','-v','ON_ERROR_STOP=1'];
 const sql = text => execFileSync(psql,args,{input:text,encoding:'utf8',stdio:['pipe','pipe','pipe']}).trim();
 assert.equal(sql("select current_setting('mohen.test_instance',true)"),'codex-k3-isolated');

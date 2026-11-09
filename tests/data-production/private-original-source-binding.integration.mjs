@@ -7,8 +7,10 @@ import {createHmac,randomUUID} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {createStudioAssetRepository,createPrivateOriginalRepository,createPrivateOriginalSourceVerifier} from '../../packages/data-access/src/index.mjs';
 import {assertPrivateWorkerIdentity} from '../../packages/data-access/src/private-worker-pool.mjs';
-const {MOHEN_TEST_PSQL:psql,MOHEN_TEST_SOCKET:socket,MOHEN_TEST_DATABASE:database}=process.env;
-if(!psql||!socket?.startsWith('/workspace/')||!/^mohen_k3_[a-z0-9_]*test$/.test(database??''))
+const {MOHEN_TEST_PSQL:psql,MOHEN_TEST_DATABASE:database}=process.env;
+const localTcpHost=["127.0.0.1","localhost"].includes(process.env.MOHEN_TEST_HOST??"")?process.env.MOHEN_TEST_HOST:undefined;
+const socket=localTcpHost??process.env.MOHEN_TEST_SOCKET;
+if(!psql||!(localTcpHost||socket?.startsWith('/workspace/'))||!/^mohen_k3_[a-z0-9_]*test$/.test(database??''))
  throw Error('ISOLATED_TEST_DATABASE_REQUIRED');
 const sql=s=>execFileSync(psql,['-X','-q','-h',socket,'-p',process.env.MOHEN_TEST_PORT??'55432',
  '-U','k3_admin','-d',database,'-At','-v','ON_ERROR_STOP=1'],{input:s,encoding:'utf8',stdio:['pipe','pipe','pipe']}).trim();

@@ -1,5 +1,8 @@
 #!/usr/bin/env node
-// Fresh database only, on an explicitly marked local Unix-socket instance.
+// Fresh database only, on an explicitly marked isolated instance.
+// Endpoint is either the CI workspace Unix socket or an explicit loopback TCP port for a
+// disposable local cluster (Windows has no Unix sockets). Both paths require the same
+// server-side instance marker below, so an unrelated database can never be used.
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync, spawnSync } from "node:child_process";
@@ -7,10 +10,14 @@ import { randomUUID } from "node:crypto";
 
 const psql = process.env.MOHEN_TEST_PSQL;
 const socket = process.env.MOHEN_TEST_SOCKET;
+const requestedHost = process.env.MOHEN_TEST_HOST;
 const port = process.env.MOHEN_TEST_PORT ?? "55432";
-if (!psql || !socket?.startsWith("/workspace/") || !fs.statSync(socket).isDirectory()) throw new Error("ISOLATED_TEST_SOCKET_REQUIRED");
+const localHost = requestedHost === "127.0.0.1" || requestedHost === "localhost" ? requestedHost : undefined;
+if (!localHost && !(socket?.startsWith("/workspace/") && fs.existsSync(socket) && fs.statSync(socket).isDirectory())) throw new Error("ISOLATED_TEST_ENDPOINT_REQUIRED");
+if (!psql) throw new Error("ISOLATED_TEST_PSQL_REQUIRED");
+const host = localHost ?? socket;
 const root = path.resolve(import.meta.dirname, "..");
-const base = ["-X", "-h", socket, "-p", port, "-U", "k3_admin", "-At", "-v", "ON_ERROR_STOP=1"];
+const base = ["-X", "-h", host, "-p", port, "-U", "k3_admin", "-At", "-v", "ON_ERROR_STOP=1"];
 function query(database, text) { return execFileSync(psql, [...base, "-d", database], { input: text, encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] }).trim(); }
 if (query("postgres", "select current_setting('mohen.test_instance',true)") !== "codex-k3-isolated") throw new Error("UNMARKED_DATABASE_INSTANCE");
 const database = `mohen_k3_${randomUUID().replaceAll("-", "")}_test`;
@@ -65,7 +72,10 @@ try {
     apply("20261108100000_mab_m5_director_plan_project_binding.sql");
     // CP2-F asset backlink: studio.resolve_asset_references and the reference guards are
     // required by the studio asset/repository tests below; omitting it here left the
-    // function undefined in the isolated database.
+    // function undefined in the isolated database. It must run after private_originals
+    // because studio.asset_verified_original_bindings is a SQL-language function whose
+    // body is validated against studio.private_originals at creation time.
+    apply("20261102140000_mab_m2_private_originals.sql");
     apply("20261109130000_mab_cp2f_asset_backlink.sql");
     const planProjectColumn = query(database, "select count(*) from information_schema.columns where table_schema='public' and table_name='director_plans' and column_name='project_id' and is_nullable='YES'");
     const planProjectForeignKey = query(database, "select count(*) from pg_constraint c join pg_class t on t.oid=c.conrelid join pg_namespace n on n.oid=t.relnamespace where n.nspname='public' and t.relname='director_plans' and c.contype='f' and c.conkey=(select array[a.attnum] from pg_attribute a where a.attrelid=t.oid and a.attname='project_id') and c.confrelid='studio.projects'::regclass");
@@ -85,7 +95,6 @@ try {
     if(executionResult.status!==0)throw Error('STUDIO_EXECUTION_CONTROLS_TEST_FAILED');
     apply('20261104013351_mab_m4_execution_controls.sql');
 
-    apply("20261102140000_mab_m2_private_originals.sql");
     apply(fs.readdirSync(directory).find(n => n.endsWith('_mab_m2_evidence_bridge.sql')));
     apply('20261103143451_mab_m2_private_text_reading.sql');
     apply('20261103234154_mab_m3_gate_service_auth.sql');
@@ -121,7 +130,7 @@ try {
   if(query(database,"select has_table_privilege('mohen_app_runtime','control.web_session_revocations','SELECT') or has_table_privilege('mohen_app_runtime','control.web_session_revocations','INSERT')")!=="f")throw Error("SESSION_ROLLBACK_LEFT_ACCESS");
   console.log("MAB_WEB_SESSION_ROLLBACK_PASS tombstones-retained runtime-closed migration-repeatable");
   const researchUrl=new URL(`postgresql://k3_admin:synthetic@localhost:${port}/${database}`);
-  researchUrl.searchParams.set('host',socket);
+  researchUrl.searchParams.set('host',host);
   const resumeResult=spawnSync(process.execPath,[path.join(root,'node_modules/vitest/vitest.mjs'),'run','--config','vitest.research-db.config.ts'],{
     cwd:root,env:{...process.env,MOHEN_RESEARCH_RESUME_TEST:'isolated-pg17',MOHEN_TEST_DATABASE:database,
       DATABASE_URL:researchUrl.toString(),MOHEN_DATABASE_PASSWORD:'synthetic',MOHEN_DB_DRIVER:'pg',DEEPSEEK_API_KEY:'',SHANGHAI_LIBRARY_KEY:''},stdio:'inherit'});

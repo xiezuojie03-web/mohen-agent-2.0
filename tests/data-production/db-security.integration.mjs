@@ -3,9 +3,10 @@ import { execFileSync } from "node:child_process";
 import { createHmac } from "node:crypto";
 
 const psql = process.env.MOHEN_TEST_PSQL;
-const socket = process.env.MOHEN_TEST_SOCKET;
+const localTcpHost=["127.0.0.1","localhost"].includes(process.env.MOHEN_TEST_HOST??"")?process.env.MOHEN_TEST_HOST:undefined;
+const socket=localTcpHost??process.env.MOHEN_TEST_SOCKET;
 const database = process.env.MOHEN_TEST_DATABASE;
-if (!psql || !socket?.startsWith("/workspace/") || !/^mohen_k3_[a-z0-9_]*test$/.test(database ?? "")) {
+if (!psql || !(localTcpHost||socket?.startsWith('/workspace/')) || !/^mohen_k3_[a-z0-9_]*test$/.test(database ?? "")) {
   throw new Error("ISOLATED_TEST_DATABASE_REQUIRED");
 }
 export function sql(text) {
@@ -41,7 +42,7 @@ sql(`insert into public.users(user_id,email,username,password_hash) values
   insert into public.imported_materials(material_id,owner_user_id,title,text_content) values
   ('00000000-0000-0000-0000-000000000001','${a}','A private','A'),('00000000-0000-0000-0000-000000000002','${b}','B private','B') on conflict do nothing;`);
 function asRuntime(text, sessionToken = token(a)) {
-  return sql(`begin; set local role mohen_app_runtime; set local mohen.session_token='${sessionToken}'; ${text}; rollback;`).split("\n").filter(s => !/^(BEGIN|SET|ROLLBACK)$/.test(s)).join("\n");
+  return sql(`begin; set local role mohen_app_runtime; set local mohen.session_token='${sessionToken}'; ${text}; rollback;`).split(/\r?\n/).filter(s => !/^(BEGIN|SET|ROLLBACK)$/.test(s)).join("\n");
 }
 assert.equal(asRuntime("select count(*) from public.imported_materials"), "1", "only authenticated owner rows are visible");
 sql("create policy k3_fixture_old_public_policy on public.imported_materials for select using(true)");

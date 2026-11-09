@@ -6,8 +6,10 @@ import {createReadModelRepository} from '../../packages/data-access/src/read-mod
 import {createDataProductionRepository} from '../../packages/data-access/src/data-production-repository.mjs';
 import {createWorkQualificationReader,workContentDigest} from '../../packages/data-access/src/work-qualification-reader.mjs';
 import {validateG5Lineage} from '../../packages/data-access/src/lineage-validator.mjs';
-const {MOHEN_TEST_PSQL:psql,MOHEN_TEST_SOCKET:socket,MOHEN_TEST_DATABASE:database}=process.env;
-if(!socket?.startsWith('/workspace/')||!/^mohen_k3_[a-z0-9_]*test$/.test(database??''))throw new Error('ISOLATED_TEST_DATABASE_REQUIRED');
+const {MOHEN_TEST_PSQL:psql,MOHEN_TEST_DATABASE:database}=process.env;
+const localTcpHost=["127.0.0.1","localhost"].includes(process.env.MOHEN_TEST_HOST??"")?process.env.MOHEN_TEST_HOST:undefined;
+const socket=localTcpHost??process.env.MOHEN_TEST_SOCKET;
+if(!(localTcpHost||socket?.startsWith('/workspace/'))||!/^mohen_k3_[a-z0-9_]*test$/.test(database??''))throw new Error('ISOLATED_TEST_DATABASE_REQUIRED');
 const sql=text=>execFileSync(psql,['-X','-q','-h',socket,'-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database,'-At','-v','ON_ERROR_STOP=1'],{input:text,encoding:'utf8',stdio:['pipe','pipe','pipe']}).trim();
 const requirePg=createRequire(new URL('../../packages/data-access/package.json',import.meta.url));
 const {Pool}=requirePg('pg');

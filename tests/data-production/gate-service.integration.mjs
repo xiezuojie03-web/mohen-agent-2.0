@@ -6,11 +6,14 @@ import {createRequire} from 'node:module';
 import {randomUUID,randomBytes,createHash} from 'node:crypto';
 import https from 'node:https';
 import {once} from 'node:events';
-import {mkdtempSync,readFileSync,rmSync,mkdirSync} from 'node:fs';
-import {resolve,join} from 'node:path';
+import {mkdirSync} from 'node:fs';
+import {resolve} from 'node:path';
+import selfsigned from 'selfsigned';
 import {createIndependentGateHttpsServer} from '../../pipelines/data-production/orchestrator/independent-gate-service-runtime.mjs';
-const {MOHEN_TEST_PSQL:psql,MOHEN_TEST_SOCKET:socket,MOHEN_TEST_DATABASE:database}=process.env;
-if(!psql||!socket?.startsWith('/workspace/')||!/^mohen_k3_[a-z0-9_]*test$/.test(database??''))throw Error('ISOLATED_TEST_DATABASE_REQUIRED');
+const {MOHEN_TEST_PSQL:psql,MOHEN_TEST_DATABASE:database}=process.env;
+const localTcpHost=["127.0.0.1","localhost"].includes(process.env.MOHEN_TEST_HOST??"")?process.env.MOHEN_TEST_HOST:undefined;
+const socket=localTcpHost??process.env.MOHEN_TEST_SOCKET;
+if(!psql||!(localTcpHost||socket?.startsWith('/workspace/'))||!/^mohen_k3_[a-z0-9_]*test$/.test(database??''))throw Error('ISOLATED_TEST_DATABASE_REQUIRED');
 const sql=s=>execFileSync(psql,['-X','-q','-h',socket,'-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database,'-At','-v','ON_ERROR_STOP=1'],{input:s,encoding:'utf8',stdio:['pipe','pipe','pipe']}).trim();
 assert.equal(sql("select current_setting('mohen.test_instance',true)"),'codex-k3-isolated');
 const {Pool}=createRequire(new URL('../../packages/data-access/package.json',import.meta.url))('pg');
@@ -33,9 +36,11 @@ for(const [cap,login,token] of [['review',signer,reviewToken],['consume',reader,
 const connection={host:socket,port:Number(process.env.MOHEN_TEST_PORT??55432),database,max:2};
 const signerPool=new Pool({...connection,user:signer}),readerPool=new Pool({...connection,user:reader});
 mkdirSync(resolve('work'),{recursive:true});
-const tlsScratch=mkdtempSync(resolve('work/gate-service-tls-'));
-execFileSync('openssl',['req','-x509','-newkey','rsa:2048','-nodes','-keyout',join(tlsScratch,'key.pem'),'-out',join(tlsScratch,'cert.pem'),'-days','1','-subj','/CN=localhost','-addext','subjectAltName=IP:127.0.0.1,DNS:localhost'],{stdio:'ignore'});
-const tlsCert=readFileSync(join(tlsScratch,'cert.pem')),tlsKey=readFileSync(join(tlsScratch,'key.pem'));
+// Generated in-process from the declared `selfsigned` dependency so the fixture also works on
+// hosts without an openssl CLI; the SAN and chain are exercised exactly as the CLI version was.
+const tlsPems=await selfsigned.generate([{name:'commonName',value:'localhost'}],{days:1,keySize:2048,algorithm:'sha256',
+ extensions:[{name:'basicConstraints',cA:false},{name:'subjectAltName',altNames:[{type:2,value:'localhost'},{type:7,ip:'127.0.0.1'}]}]});
+const tlsCert=Buffer.from(tlsPems.cert),tlsKey=Buffer.from(tlsPems.private);
 const service=createIndependentGateHttpsServer({enabled:true,signerPool,readerPool,databaseSessionKey:key,tlsCert,tlsKey});
 service.listen(0,'127.0.0.1');await once(service,'listening');
 // Fetch-shaped result via built-in HTTPS: both trust chain and SAN are verified.
@@ -97,4 +102,4 @@ try{
  assert.throws(()=>sql(`update control.gate_service_credentials set revoked_at=null where token_hash='${digest(reviewToken)}'`),/GATE_SERVICE_CREDENTIAL_IMMUTABLE/);
  assert.throws(()=>sql(`delete from control.gate_service_credentials where token_hash='${digest(reviewToken)}'`),/GATE_SERVICE_CREDENTIAL_IMMUTABLE/);
  console.log('MAB_GATE_SERVICE_PASS actual-dedicated-LOGIN hashed-capability scoped-decide current-consume idempotency identity-disable binding-disable revoke replay-denied immutable-tombstone no-table-access');
-}finally{await new Promise(resolve=>{service.close(resolve);service.closeAllConnections();});rmSync(tlsScratch,{recursive:true,force:true});await signerPool.end();await readerPool.end();sql(`drop owned by ${signer};drop owned by ${reader};drop role ${signer};drop role ${reader}`);}
+}finally{await new Promise(resolve=>{service.close(resolve);service.closeAllConnections();});await signerPool.end();await readerPool.end();sql(`drop owned by ${signer};drop owned by ${reader};drop role ${signer};drop role ${reader}`);}

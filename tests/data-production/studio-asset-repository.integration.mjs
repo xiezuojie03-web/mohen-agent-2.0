@@ -4,8 +4,10 @@ import {createHmac,randomUUID} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import * as access from '../../packages/data-access/src/index.mjs';
 assert.equal(typeof access.createStudioAssetRepository,'function','Studio revisions require a transaction-backed store');
-const {MOHEN_TEST_PSQL:psql,MOHEN_TEST_SOCKET:socket,MOHEN_TEST_DATABASE:database}=process.env;
-if(!psql||!socket?.startsWith('/workspace/')||!/^mohen_k3_[a-z0-9_]*test$/.test(database??''))throw Error('ISOLATED_TEST_DATABASE_REQUIRED');
+const {MOHEN_TEST_PSQL:psql,MOHEN_TEST_DATABASE:database}=process.env;
+const localTcpHost=["127.0.0.1","localhost"].includes(process.env.MOHEN_TEST_HOST??"")?process.env.MOHEN_TEST_HOST:undefined;
+const socket=localTcpHost??process.env.MOHEN_TEST_SOCKET;
+if(!psql||!(localTcpHost||socket?.startsWith('/workspace/'))||!/^mohen_k3_[a-z0-9_]*test$/.test(database??''))throw Error('ISOLATED_TEST_DATABASE_REQUIRED');
 const sql=s=>execFileSync(psql,['-X','-q','-h',socket,'-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database,'-At','-v','ON_ERROR_STOP=1'],{input:s,encoding:'utf8',stdio:['pipe','pipe','pipe']}).trim();
 assert.equal(sql("select current_setting('mohen.test_instance',true)"),'codex-k3-isolated');
 const a=randomUUID(),b=randomUUID(),project=randomUUID(),asset=randomUUID();
@@ -73,7 +75,7 @@ try {
   const consent=kind==='consented_feedback'?{consent:true,withdrawal_allowed:true}:{};
   const item={...input,assetId:randomUUID(),kind,idempotencyKey:'matrix-first',payload:{kind,text:'TEST_ONLY '+kind,...consent},
    sourceRefs:[{type:'source_version',id:srcVersionId,revision:srcChecksum},{type:'source',id:srcId}],
-   dependencyRefs:[{type:'asset_revision',id:asset,revision:second.revision_id}]};
+   dependencyRefs:[{type:'asset_revision',id:second.revision_id}]};
   // A backlink that does not resolve is refused, and so is an evidence-bearing
   // asset with no source at all: neither may be stored as a silent gap.
   await assert.rejects(()=>repo.saveRevision({...item,assetId:randomUUID(),sourceRefs:[{id:'TEST_ONLY_UNVERIFIED',revision:'1'}]},token(a)),
@@ -138,10 +140,12 @@ try {
  // displace the oldest research candidate on a full-page replay.
  const fullProject=randomUUID();await repo.createProject({projectId:fullProject,title:'ST02 limit fixture',scope:{}},token(a));
  for(let i=0;i<100;i++)await repo.saveRevision({projectId:fullProject,assetId:randomUUID(),kind:'reading_note',
-  expectedRevisionId:null,idempotencyKey:'st02-limit-'+i,payload:{literal_reading:'synthetic candidate '+i}},token(a));
+  expectedRevisionId:null,idempotencyKey:'st02-limit-'+i,payload:{literal_reading:'synthetic candidate '+i},
+  sourceRefs:[{type:'source',id:srcId}]},token(a));
  const before=(await repo.listAssets(fullProject,token(a),{excludeGeneratedReadingNotes:true})).map(r=>r.revision_id);
  const generated=await repo.saveRevision({projectId:fullProject,assetId:randomUUID(),kind:'reading_note',expectedRevisionId:null,
-  idempotencyKey:'st02-generated',payload:{schema:'mohen.studio-reading-note.v1'}},token(a));
+  idempotencyKey:'st02-generated',payload:{schema:'mohen.studio-reading-note.v1'},
+  sourceRefs:[{type:'source',id:srcId}]},token(a));
  assert.equal(before.length,100);
  assert((await repo.listAssets(fullProject,token(a))).some(r=>r.revision_id===generated.revision_id),'normal notebook retains generated notes');
  assert.deepEqual((await repo.listAssets(fullProject,token(a),{excludeGeneratedReadingNotes:true})).map(r=>r.revision_id),before);

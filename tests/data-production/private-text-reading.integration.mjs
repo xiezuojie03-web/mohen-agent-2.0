@@ -24,8 +24,10 @@ import {createIndependentGateClient} from '../../pipelines/data-production/orche
 import {requireIndependentStageQualification} from '../../pipelines/data-production/orchestrator/independent-stage-qualification.mjs';
 import {createIndependentGateService} from '../../pipelines/data-production/orchestrator/independent-gate-service.mjs';
 import {writeReports} from '../../pipelines/data-production/reporting/write-reports.mjs';
-const {MOHEN_TEST_PSQL:psql,MOHEN_TEST_SOCKET:socket,MOHEN_TEST_DATABASE:database}=process.env;
-if(!psql||!socket?.startsWith('/workspace/')||!/^mohen_k3_[a-z0-9_]*test$/.test(database??''))throw Error('ISOLATED_TEST_DATABASE_REQUIRED');
+const {MOHEN_TEST_PSQL:psql,MOHEN_TEST_DATABASE:database}=process.env;
+const localTcpHost=["127.0.0.1","localhost"].includes(process.env.MOHEN_TEST_HOST??"")?process.env.MOHEN_TEST_HOST:undefined;
+const socket=localTcpHost??process.env.MOHEN_TEST_SOCKET;
+if(!psql||!(localTcpHost||socket?.startsWith('/workspace/'))||!/^mohen_k3_[a-z0-9_]*test$/.test(database??''))throw Error('ISOLATED_TEST_DATABASE_REQUIRED');
 const sql=s=>execFileSync(psql,['-X','-q','-h',socket,'-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database,'-At','-v','ON_ERROR_STOP=1'],{input:s,encoding:'utf8',stdio:['pipe','pipe','pipe']}).trim();
 assert.equal(sql("select current_setting('mohen.test_instance',true)"),'codex-k3-isolated');
 const {Pool}=createRequire(new URL('../../packages/data-access/package.json',import.meta.url))('pg');

@@ -4,9 +4,9 @@ const model=vi.hoisted(()=>({run:vi.fn()}));
 vi.mock('../../apps/web/lib/mohen-agent/research',()=>({runResearch:model.run,resolveTopic:()=> 'generic'}));
 import {queryRows,queryValue,run,getNodePgPool} from '@mohen/data-access';
 import {resumeResearchTask} from '../../apps/web/lib/studio-research';
-const socket=process.env.MOHEN_TEST_SOCKET,database=process.env.MOHEN_TEST_DATABASE;
+const localTcpHost=["127.0.0.1","localhost"].includes(process.env.MOHEN_TEST_HOST??"")?process.env.MOHEN_TEST_HOST:undefined,socket=localTcpHost??process.env.MOHEN_TEST_SOCKET,database=process.env.MOHEN_TEST_DATABASE;
 const url=new URL(process.env.DATABASE_URL??'https://invalid.invalid');
-if(process.env.MOHEN_RESEARCH_RESUME_TEST!=='isolated-pg17'||!socket?.startsWith('/workspace/')||
+if(process.env.MOHEN_RESEARCH_RESUME_TEST!=='isolated-pg17'||!(localTcpHost||socket?.startsWith('/workspace/'))||
  !/^mohen_k3_[a-z0-9_]*test$/.test(database??'')||url.protocol!=='postgresql:'||url.hostname!=='localhost'||
  url.pathname!=='/'+database||url.searchParams.get('host')!==socket||process.env.MOHEN_DB_DRIVER!=='pg')throw Error('MARKED_ISOLATED_RESEARCH_DATABASE_REQUIRED');
 const owner=randomUUID();let taskId:string;

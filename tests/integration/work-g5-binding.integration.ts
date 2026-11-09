@@ -1,8 +1,10 @@
 import {afterAll,expect,it} from 'vitest';
 import {getNodePgPool} from '@mohen/data-access';
 import {requireCurrentWorkConsumerQualification,requireIndependentWorkPublicationG5} from '../../apps/web/lib/work-publish-qualification';
-const {MOHEN_TEST_SOCKET:socket,MOHEN_TEST_DATABASE:database,MOHEN_WORK_BINDING_FIXTURE:raw}=process.env;
-if(!socket?.startsWith('/workspace/')||!/^mohen_k3_[a-z0-9_]*test$/.test(database??'')||!raw)throw Error('MARKED_WORK_BINDING_DATABASE_REQUIRED');
+const {MOHEN_TEST_DATABASE:database,MOHEN_WORK_BINDING_FIXTURE:raw}=process.env;
+const localTcpHost=["127.0.0.1","localhost"].includes(process.env.MOHEN_TEST_HOST??"")?process.env.MOHEN_TEST_HOST:undefined;
+const socket=localTcpHost??process.env.MOHEN_TEST_SOCKET;
+if(!(localTcpHost||socket?.startsWith('/workspace/'))||!/^mohen_k3_[a-z0-9_]*test$/.test(database??'')||!raw)throw Error('MARKED_WORK_BINDING_DATABASE_REQUIRED');
 const fixture=JSON.parse(raw) as {work:string;revision:string;content:Record<string,unknown>};
 const context={purpose:{namespace:'G5',code:'m5-http',version:'1'},scope:{project:'m5-http'}};
 const consumers=['watch','visual_stage','agent','evidence_on_demand'] as const;
