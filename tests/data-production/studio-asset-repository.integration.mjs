@@ -65,7 +65,7 @@ try {
  // stay in their existing stores. Saved source/dependency hints confer no G5.
  const srcId=randomUUID(),srcVersionId=randomUUID(),srcChecksum='c'.repeat(64);
  sql(`insert into source.sources(source_id,provider,title,source_type,carrier_type,content_availability)
-   values('${srcId}','TEST_ONLY','合成来源','book','print','excerpt');
+   values('${srcId}','TEST_ONLY','合成来源','book','print','full_content');
   insert into source.source_versions(source_version_id,source_id,checksum_sha256)
    values('${srcVersionId}','${srcId}','${srcChecksum}')`);
  const privateKinds=['research_brief','source_anchor','reading_note','evidence_note','spacetime_candidate','relation_hypothesis','humanistic_insight','research_collection','citation_snapshot','consented_feedback'];
