@@ -87,7 +87,10 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         throw Error('PRIVATE_SOURCE_INTAKE_SCOPE_INVALID');
       if(typeof readRegistration!=='function')throw Error('PRIVATE_SOURCE_REGISTRATION_REQUIRED');
       const {record,bytes}=await readOriginal(originalId,token);
-      if(record?.state!=='STORED_VERIFIED'||!IMAGE_TYPE.test(record?.content_type??'')||
+      // D00 是"来源准入"，不挑载体：图片、文本、音频、视频、混合件都能进。
+      // 载体由 D01 的具体读法各自声明前提（扫页要图、文本要文……），
+      // 没有可用读法时由 D01 如实报 NO_READING_METHOD_FOR_CARRIER，不在入口拒收。
+      if(record?.state!=='STORED_VERIFIED'||typeof record?.content_type!=='string'||!record.content_type||
          !HEX.test(record?.sha256??'')||hash(bytes)!==record.sha256||
          record?.project_id!==projectId)
         throw Error('PRIVATE_SOURCE_INTAKE_ORIGINAL_UNVERIFIED');

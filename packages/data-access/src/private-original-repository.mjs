@@ -4,6 +4,8 @@ import { originalHash, privateOriginalKey, MAX_ORIGINAL_BYTES } from './private-
 
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const HASH=/^[a-f0-9]{64}$/;
+// 私有原件不限制载体类型（多模态）：只校验 MIME 语法与长度，由各读法自行判断能否处理。
+const MIME_TYPE=/^[a-zA-Z0-9][a-zA-Z0-9!#$%^&*_+.-]{0,126}\/[a-zA-Z0-9][a-zA-Z0-9!#$%^&*_+.-]{0,126}$/;
 function id(v){if(typeof v!=='string'||!UUID.test(v))throw new Error('ORIGINAL_ID_INVALID');}
 function result(r){return {original_id:r.original_id,project_id:r.project_id,asset_id:r.asset_id,
  asset_revision_id:r.asset_revision_id,state:r.state,sha256:r.sha256,
@@ -18,7 +20,7 @@ export function createPrivateOriginalRepository(pool){
    if(typeof idempotencyKey!=='string'||idempotencyKey.length<8||idempotencyKey.length>200)throw new Error('ORIGINAL_IDEMPOTENCY_INVALID');
    if(!HASH.test(sha256)||!Number.isSafeInteger(byteSize)||byteSize<1||byteSize>MAX_ORIGINAL_BYTES)throw new Error('ORIGINAL_INTEGRITY_INVALID');
    if(typeof fileName!=='string'||!fileName.trim()||fileName.length>200||/[\u0000-\u001f\u007f/\\]/.test(fileName))throw new Error('ORIGINAL_FILENAME_INVALID');
-   if(!['application/pdf','text/plain','image/png','image/jpeg','image/webp','application/octet-stream'].includes(contentType))throw new Error('ORIGINAL_MIME_INVALID');
+   if(typeof contentType!=='string'||contentType.length>100||!MIME_TYPE.test(contentType))throw new Error('ORIGINAL_MIME_INVALID');
    const storageKey=privateOriginalKey(projectId,originalId);
    return tx(token,async(client,actor)=>{
     const p=await client.query("select project_id from studio.projects where project_id=$1 and lifecycle_status='ACTIVE'",[projectId]);
