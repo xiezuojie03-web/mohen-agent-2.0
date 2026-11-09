@@ -2170,6 +2170,15 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **D1 暴露的新发现（HOLD 级，未修）**：14 个 MAB/KAD1 迁移**从未进入隔离链**（`202611020900/0910/0920_kad1_*`、`20261105110000_mab_m5_studio_research_read`、`20261107120000_mab_m2_private_scanned_page`、`20261107160000_mab_m2_1_producer_run_progress`、`20261107200000_mab_m5_d02_d05_private_candidates`、`20261107210000_mab_m3_private_gate_candidate_submission`、`20261107211000_mab_m3_local_owner_gate_signer`、`20261107220000_mab_m5_machine_rule_reviewer`、`20261107230000_mab_m2_private_source_registration_source_revision`、`20261107240000_mab_m5_claim_revision_artifact_read_policy`、`20261108110000_mab_m5_source_rights_actions`、`20261109120000_mab_m5_artifact_content_revision`）。含义：**这些迁移所承载的 M2/M3/M5 能力没有被隔离链验证过**，其中包含 QR-04/QR-05 涉及的 `source_rights_actions` 与 Gate 候选提交/签发。已按"记录债务"方式登记进 `UNCHAINED`（新增或漏登记仍会红），但接入它们需要逐迁移确认依赖顺序与受影响断言，属独立批次，不在本批偷跑。
 - **验证级别**：C/B 为 VERIFIED_ISOLATED（本机隔离 PG18；CI 为 PG17，本批推送后以 CI 回执为准）；D 为 CODE_PRESENT + 静态守卫 PASS。未触碰生产 DB/Storage/Gate/发布，无付费模型调用。
 
+## 2026-11-09 QR-06 收口（CI 回执到位）
+
+- **CI 回执（此前"还在跑"的两条已出结果）**：`main@1429bd6` 的 `ci` run `42622093977` = **success**；`MAB isolated PostgreSQL 17 verification` run `42622093495` = **success**（job `isolated-pg` 全步骤 success）。`main@7a7b250`（纯文档）`ci` run `42622194224` = success，其无隔离 PG run 属路径触发规则正常结果，不是缺证。
+- **日志实证（不是只看绿灯）**：run `42622093495` 步骤「Execute original K3/M2 database suite in disposable PG17」中实测两行——`MAB_DELEGATION_REPOSITORY_PASS concurrent-idempotency exact-hashes unknown-cost-HOLD immutable cross-owner disabled-identity permanent-root same-root-binding clean-pool no-provider-calls`（L92）与 `K3_DB_TEST_PASS baseline_migrations=22 synthetic_legacy_rows=711 unchanged; no automatic qualification; migrations repeatable; rollback fail-closed`（L128）。
+- **判定**：QR-06 = **CODE_PRESENT + VERIFIED_ISOLATED（本地重跑 + GitHub CI 隔离 PG17 双证）**，据此**收口**。此前"只差一纸回执"的条件已满足。
+- **边界不变（不夸大）**：同 root 绑定只是"证据合并"——delegation 可追溯到一个真实研究任务；不授予 Provider 派发、费用预算或 Gate 资格；`root_task_ref` 固定值与幂等语义未改；双主体同 root 的浏览器真实验收属 CP4，仍未宣称。
+- **取证方式备注**：本机 `gh` CLI 不存在，改用本地已存凭据调用 GitHub REST（run 列表 / jobs / 日志），凭据未落盘、未打印。
+- **下一步（按 Owner 已批准顺序）**：插 D00-A1 文档批（V1.2 包 A1 增量）；随后做 14 个漏链迁移的接入批；D00-A2/B/C 维持各自 HOLD。
+
 
 
 

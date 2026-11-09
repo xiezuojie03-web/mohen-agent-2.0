@@ -11,7 +11,7 @@
 
 ## 当前状态
 
-- 施工接续读取基线：GitHub main@1429bd6（2026-11-09 推送，含 C/B/D 隔离链改造）；Trae开工必须先重新fetch核HEAD并与本地安全对齐，不能以本行作当前HEAD断言。历史CI 42453345351及隔离HTTP 42453345284 SUCCESS，只代表其对应隔离版本。
+- 施工接续读取基线：GitHub main@7a7b250（2026-11-09 推送，含 C/B/D 隔离链改造与交接书同步）；Trae开工必须先重新fetch核HEAD并与本地安全对齐，不能以本行作当前HEAD断言。CI 事实：`1429bd6` 的 `ci` 42622093977 与 `MAB isolated PostgreSQL 17 verification` 42622093495 均 SUCCESS（日志实测 `K3_DB_TEST_PASS` 与 `same-root-binding`），`7a7b250` 的 `ci` 42622194224 SUCCESS。
 - 当前施工：M5_REMEDIATION_ACTIVE / QUALITY_REMEDIATION_ACTIVE；PLAN.md §0.1登记QR-01—QR-10，**§0.2登记Trae本地总装和首用户交付裁决**；当前未准出。
 - 整体验收：M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY。
 - M0审查级EXIT_PASS冻结继承；M1—M4仅补M5真实作品必需缺口；M6—M8不提前启动。
@@ -23,7 +23,7 @@
 2. QR-01项目绑定已完成隔离代码/迁移测试，生产列缺失时会在Provider前HOLD；QR-02已改MATERIALIZED事务局部身份，仍需同一Node PG连接复用正反测试；继续QR-08本地执行授权条件核验。
 3. 先统一KAD/Gate rights_by_action词典；生产39条来源均无rights_by_action/external_processing，Studio资产修订0条，必须先建立可审核的source_anchor/asset_revision权利快照；缺失/unknown一律HOLD。
 4. QR-03已完成未知费用冻结、费用状态累计、UTF-8上界、完整响应超时和成功重放；仍需评估`mab/m4-provider-spend-controls-20261107`，解决多调用Delegation兼容后再实现持久原子预算预留/对账/恢复。
-5. QR-07知识资产来源依赖回链已关闭（CP2-F：`studio.reference_kinds` 登记 + 解析/消费裁决/两道写入守卫，`tools/verify-6-asset-backlinks.mjs`=`VERIFY_6_BACKLINK_PASS`；2条m2脚本legacy行仍`BLOCKED(NO_SOURCE_REF)`不回填、`studio.asset_links` 仍无写入方）；QR-06同root绑定已完成代码施工（Owner 2026-11-09批准方案：授权路由可选task_id+仓储同事务前核验属主/同项目+前端自动携带）。**2026-11-09 起该链已在本地隔离 PG18 完整跑通**（`work/pg-isolated`，端口 55432，`MOHEN_TEST_HOST` 回环 TCP 模式；CI 仍走 `/workspace/` socket），`studio-delegation` 集成测试首次实跑通过：`MAB_DELEGATION_REPOSITORY_PASS ... same-root-binding`，故 QR-06 = CODE_PRESENT + VERIFIED_ISOLATED(本地)；GitHub CI 回执以 main@1429bd6 之后的新 run 为准。QR-06 CI 取证通过即收口，随后插入D00-A1文档批（V1.2包基线dab2950已核零漂移、只读预检通过、51/51完整），再按PLAN既有M1—M5条件和八维度矩阵做一次完整回归；D00-A2/B/C维持各自HOLD到点单独裁决。Owner体验签收最后进行。
+5. QR-07知识资产来源依赖回链已关闭（CP2-F：`studio.reference_kinds` 登记 + 解析/消费裁决/两道写入守卫，`tools/verify-6-asset-backlinks.mjs`=`VERIFY_6_BACKLINK_PASS`；2条m2脚本legacy行仍`BLOCKED(NO_SOURCE_REF)`不回填、`studio.asset_links` 仍无写入方）；QR-06同root绑定已完成代码施工（Owner 2026-11-09批准方案：授权路由可选task_id+仓储同事务前核验属主/同项目+前端自动携带）。**2026-11-09 起该链已在本地隔离 PG18 完整跑通**（`work/pg-isolated`，端口 55432，`MOHEN_TEST_HOST` 回环 TCP 模式；CI 仍走 `/workspace/` socket），`studio-delegation` 集成测试首次实跑通过：`MAB_DELEGATION_REPOSITORY_PASS ... same-root-binding`，故 QR-06 = CODE_PRESENT + VERIFIED_ISOLATED(本地)；**已收口**：`1429bd6` 的隔离 PG17 run 42622093495 日志实测 `MAB_DELEGATION_REPOSITORY_PASS ... same-root-binding` 与 `K3_DB_TEST_PASS`，CI 回执到位。随后插入D00-A1文档批（V1.2包声明基线dab2950已核零漂移、只读预检通过、51/51完整；**施工前须以当前 main `7a7b250` 重算 15 个受控路径哈希**，C/B/D 三个提交已改动测试脚本与交接书），再按PLAN既有M1—M5条件和八维度矩阵做一次完整回归；D00-A2/B/C维持各自HOLD到点单独裁决。Owner体验签收最后进行。
 6. 隔离链本身已按 Owner 2026-11-09 的 C→B、D 必做决定改造完成：C=本地可跑整条链；B=`test-k3-db.mjs` 一次汇总全部失败；D=`guard:isolated-db-fixtures` 静态预检（迁移覆盖 + CHECK 枚举取值）已入 CI。**新发现 HOLD 级缺口**：14 个 MAB/KAD1 迁移从未进入隔离链（含 `20261108110000_mab_m5_source_rights_actions`、`20261109120000_mab_m5_artifact_content_revision`、Gate 候选提交/签发相关），其承载能力未被隔离验证，已在守卫中登记为已知债，接入属独立批次。
 
 ## 本地Trae总装入口（2026-11-08 Owner最新执行裁决）
