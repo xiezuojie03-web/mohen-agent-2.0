@@ -8,10 +8,36 @@ const decimal=v=>typeof v==='string'&&/^(0|[1-9]\d{0,7})(\.\d{1,6})?$/.test(v);
 function copy(v){try{const s=JSON.stringify(v);if(!s||Buffer.byteLength(s)>1_000_000)throw Error();return JSON.parse(s);}catch{throw Error('STUDIO_DELEGATION_INVALID');}}
 const object=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
 function id(v){if(!idPattern.test(v??''))throw Error('STUDIO_ID_INVALID');}
+/** Same-root binding verification (QR-06): the task must exist, belong to the
+ * caller and belong to the same project before any write. Runs on an
+ * owner-privileged read-only connection because the runtime role has no direct
+ * grant on public.research_tasks; the in-transaction FK keeps referential
+ * integrity if the task disappears between check and insert.
+ */
+async function verifyTaskBinding(pool,taskId,projectId,token){
+ const client=await pool.connect();
+ try{
+  await client.query('begin');
+  await client.query("select set_config('mohen.session_token',$1,true)",[token]);
+  const uid=(await client.query('select control.current_app_user_id()::text as uid')).rows[0]?.uid;
+  const row=(await client.query("select owner_user_id::text as owner_user_id,checkpoint->'studio'->>'project_id' as bound_project_id from public.research_tasks where task_id=$1",[taskId])).rows[0];
+  const uidOk=typeof uid==='string'&&idPattern.test(uid);
+  const boundOk=uidOk&&!!row&&row.owner_user_id===uid&&row.bound_project_id===projectId;
+  await client.query('commit');
+  if(!boundOk)throw Error(uidOk?'STUDIO_TASK_BINDING_INVALID':'STUDIO_IDENTITY_REQUIRED');
+ }catch(error){
+  await client.query('rollback').catch(()=>{});
+  throw error;
+ }finally{
+  client.release();
+ }
+}
 /** Private, immutable evidence storage only. This repository never dispatches a
  * provider, grants spend/transfer permission, or validates a candidate. Unverified
  * outcomes remain HOLD; ACTUAL costs require a separate verified reconciliation.
  * The stable root reference/snapshot deliberately does not depend on task FK life.
+ * Optional rootTaskId (QR-06) binds one delegation to an existing research task
+ * after ownership+project verification; binding alone grants nothing.
  */
 export function createStudioDelegationRepository(pool){
  const tx=createAppTransaction(pool,'STUDIO_IDENTITY_REQUIRED');
@@ -24,8 +50,12 @@ export function createStudioDelegationRepository(pool){
     !object(v.rootTaskSnapshot)||!object(v.inputManifest)||!object(v.transferRightsDecision)||
     !Array.isArray(v.allowedActions)||!v.allowedActions.length||!v.allowedActions.every(text)||
     !decimal(v.budgetLimit)||typeof v.expiresAt!=='string'||!Number.isFinite(Date.parse(v.expiresAt)))throw Error('STUDIO_DELEGATION_INVALID');
-   // No task FK binding until its current ownership can be verified by a dedicated service.
-   if(v.rootTaskId!==undefined&&v.rootTaskId!==null)throw Error('STUDIO_TASK_BINDING_REQUIRED');
+   // Optional same-root binding is verified before any write; omitted/null keeps the
+   // legacy unbound behaviour byte-for-byte.
+   if(v.rootTaskId!==undefined&&v.rootTaskId!==null){
+    if(!idPattern.test(v.rootTaskId))throw Error('STUDIO_DELEGATION_INVALID');
+    await verifyTaskBinding(pool,v.rootTaskId,v.projectId,token);
+   }
    const payload={projectId:v.projectId,seriesId:v.seriesId,revisionNo:v.revisionNo,rootTaskRef:v.rootTaskRef,
     rootTaskSnapshot:v.rootTaskSnapshot,subtaskRef:v.subtaskRef,executor:v.executor,provider:v.provider,
     engineVersion:v.engineVersion,inputManifest:v.inputManifest,allowedActions:v.allowedActions,
@@ -40,12 +70,12 @@ export function createStudioDelegationRepository(pool){
     if(Date.parse(payload.expiresAt)<=Date.now())throw Error('STUDIO_DELEGATION_EXPIRED');
     await client.query(`insert into studio.delegations(delegation_id,project_id,root_task_ref,root_task_snapshot,subtask_ref,
      delegation_series_id,delegation_revision_no,requester,executor,provider,engine_version,input_manifest,allowed_actions,
-     transfer_rights_decision,policy_version,expires_at,budget_limit,currency,request_hash,idempotency_key,output_schema)
-     values($1,$2,$3,$4::jsonb,$5,$6,$7,$8,$9,$10,$11,$12::jsonb,$13,$14::jsonb,$15,$16,$17,$18,$19,$20,$21)
+     transfer_rights_decision,policy_version,expires_at,budget_limit,currency,request_hash,idempotency_key,output_schema,root_task_id)
+     values($1,$2,$3,$4::jsonb,$5,$6,$7,$8,$9,$10,$11,$12::jsonb,$13,$14::jsonb,$15,$16,$17,$18,$19,$20,$21,$22)
      on conflict(project_id,root_task_ref,idempotency_key) do nothing`,
      [randomUUID(),v.projectId,v.rootTaskRef,JSON.stringify(v.rootTaskSnapshot),v.subtaskRef,v.seriesId,v.revisionNo,actor,
       v.executor,v.provider,v.engineVersion,JSON.stringify(v.inputManifest),v.allowedActions,JSON.stringify(v.transferRightsDecision),
-      v.policyVersion,payload.expiresAt,payload.budgetLimit,v.currency,requestHash,v.idempotencyKey,v.outputSchema]);
+      v.policyVersion,payload.expiresAt,payload.budgetLimit,v.currency,requestHash,v.idempotencyKey,v.outputSchema,v.rootTaskId??null]);
     const saved=await client.query('select * from studio.delegations where project_id=$1 and root_task_ref=$2 and idempotency_key=$3',[v.projectId,v.rootTaskRef,v.idempotencyKey]);
     if(saved.rows.length!==1)throw Error('STUDIO_DELEGATION_NOT_PERSISTED');
     if(saved.rows[0].request_hash!==requestHash)throw Error('STUDIO_DELEGATION_IDEMPOTENCY_CONFLICT');

@@ -70,6 +70,9 @@ export default function StudioWorkbench() {
   const [createProjectOpen,setCreateProjectOpen]=useState(false);
   const projectAttempt=useRef<{title:string;id:string}|null>(null);
   const requestAttempt=useRef<{fingerprint:string;id:string}|null>(null);
+  // QR-06: remember the latest Agent research task so external-AI authorization can bind
+  // to the same root; the server verifies ownership before accepting the binding.
+  const lastTaskIdRef=useRef<string|null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -205,6 +208,7 @@ export default function StudioWorkbench() {
         production?: { ok?: boolean; run_id?: string; reason?: string } | null;
       };
       if(res.ok&&json.ok)requestAttempt.current=null;
+      if(res.ok&&json.ok&&json.task_id)lastTaskIdRef.current=json.task_id;
       if (res.ok && json.ok && json.status === 'hold') {
         const missing:Record<string,string>={
           REAL_PROVIDER_UNAVAILABLE:'研究模型尚未接通',
@@ -280,6 +284,7 @@ export default function StudioWorkbench() {
         body: JSON.stringify({
           project_id: projectId,
           idempotency_key: crypto.randomUUID(),
+          task_id: lastTaskIdRef.current ?? undefined,
           actions: ["llm_director_h1", "llm_director_h2", "llm_director_h3", "llm_work_panels", "llm_narration_suggest"],
           budget_usd: 1,
           ttl_minutes: 30,

@@ -2116,6 +2116,38 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 | 一次探针副作用 | 早期守卫探针按 `created_at` 选目标，而 5 条 m2 行 `created_at` 完全相同 → 误选到已 `ELIGIBLE` 的行，真的写进 1 条 `use_events`（`consumer='studio'`、`purpose='cp2f-probe'`、`rights_decision_ref='cp2f probe rights decision'`）。使用事件只增不改，**未删除，在此披露**；后续已改为按 disposition 选目标 |
 | `asset_links` 仍为 0 | 该表目前**无任何真实写入方**，本批未新造写入方；`GAP_RIGHTS_ACTIONS` 仍是既有 HOLD，未动 |
 
+### 2026-11-09｜D00 完整统一设计交付包 V1.2 接收（只读预检；零仓库变更）
+
+- **包身份**：`MoHen_D00_完整统一设计交付包_V1.2_20261109`，完整 D00 专项交付（非 V1.0/V1.1 拼接补充）；声明基线 `dab2950`。
+- **基线核对**：`git fetch` 后本地 HEAD = `origin/main` = `dab2950343566a61f73a4bbd22f419df0e80dd92`；包内 15 个受控路径（11 份内容 SHA256 + 9 份 git blob，去重 15）全部逐字相符，**基线零漂移**。
+- **包完整性**：`SHA256SUMS.txt` 51/51 匹配；Y 方法唯一正文 SHA256=`17a7a12b…78773`。
+- **只读预检**：包内 `tools/d00_preflight_full.py --repo .` 退出 0；产出拟差异 A1=2（Skill 订正、Protocol §11.2 最小改）、A2=3（Binding 63→71、Identifier、Route Schema，登记不等于可执行）、C=1（Registry 填 Y，工具标注禁止自动并入）；全程 NO REPO WRITE / NO DB / NO PUSH。为通过 clean-worktree 检查临时移出未跟踪的 V1.0 审查报告，预检后已原位恢复。
+- **Owner 裁决（施工顺序）**：先按 MAB 检查点收口 QR-06 → QR-06 收口后插入 D00-A1 文档批 → 再进完整回归；D00-A2 须先验证校验器容忍 `TO_VERIFY_IN_M0`；D00-B（G0 承载 C 方法预选，零 DDL evidence_refs 首选）与 D00-C（逐 Y 运行能力/DDL）维持 HOLD，各到点单独裁决，不阻塞 QR-06。
+- **包外不动项**：不整版覆盖共享 Protocol/Registry/Binding/DATA_CONTRACT；不动 D01—D05 与 G1—G5；不动 Registry activation/execution_policy/adapter/gate_reviewer 绑定；未满足运行条件的方法保持 HOLD。
+
+### 2026-11-09｜QR-06 同 root 绑定施工（Agent 研究任务 ↔ 外部 AI 授权合并为同一 root DAG）
+
+- **目标与方案（Owner 已批准）**：外部授权路由接受可选 `task_id`；仓储放开可选 `rootTaskId` 并在写前核验（任务存在+属主+同项目）；前端自动携带最近一次研究 task_id。不改 `root_task_ref='studio-llm-dispatch'` 固定值语义，不动 director-plans 正道，零 DDL——`studio.delegations.root_task_id` 列与 FK（`references research_tasks(task_id) on delete set null`）建表时已存在，一直空置。
+- **变更路径**：
+  1. `packages/data-access/src/studio-delegation-repository.mjs`：新增 `verifyTaskBinding()`——在受限身份事务**之外**用 owner 权限只读连接（begin/set_config session_token/查 uid + `public.research_tasks` 的 owner 与 `checkpoint->'studio'->>'project_id'`/commit）核验，失败关闭抛 `STUDIO_TASK_BINDING_INVALID` 或 `STUDIO_IDENTITY_REQUIRED`，不产生任何行；`saveDelegation` 接受可选 `rootTaskId`（非法格式 `STUDIO_DELEGATION_INVALID`）；INSERT 增加 `root_task_id` 列（FK 以表属主身份兜底核验与插入之间的 TOCTOU 引用完整性）。
+  2. `apps/web/app/api/studio/dispatch-authorizations/route.ts`：接受可选 `body.task_id`（UUID 校验，否则 400 `task_id_invalid`）；传入 saveDelegation；捕获核验错误 → 403 `task_binding_invalid` / 401 `login_required`，其他错误原样抛出；`rootTaskSnapshot` 增加 `research_task_id`。
+  3. `apps/web/app/studio/StudioWorkbench.tsx`：`lastTaskIdRef` 记录最近一次成功创建的研究任务；`authorizeExternal()` 请求体自动携带 `task_id`。
+  4. `packages/data-access/src/index.d.mts`：`StudioDelegationInput` 增加可选 `rootTaskId?:string|null`。
+  5. `tests/data-production/studio-delegation.integration.mjs`：原"锁定拒绝"（`STUDIO_TASK_BINDING_REQUIRED`）断言改为新行为——不传 task_id 行为不变（`root_task_id` null）；合法绑定落库（`bound.root_task_id===task`）；反例：不存在任务/他人任务/跨项目任务/他人调用/非法格式各自拒绝；任务删除后再绑定拒绝。
+- **验证级别（如实记账）**：
+
+| 验证 | 结果 |
+|---|---|
+| `apps/web` tsc --noEmit | PASS |
+| vitest unit 全套（`vitest.unit.config.ts`） | **638 passed / 2 skipped**，与基线持平 |
+| 相关 dispatch/delegation 单测 51 项 | PASS（studio-delegation 8、provider-dispatcher 21、plans-route 11、plan-service 5、director-project-route 4、dispatch-session-scope 2） |
+| `node --check` 两个改动 mjs + 静态守卫（MHKA routing、dev-skill layout） | PASS |
+| 集成测试 `tests/data-production/studio-delegation.integration.mjs` | **NOT_RUN / DEFERRED_ENV**：本机 Windows 无 Unix socket + `mohen.test_instance` 标记的一次性 PG17（CI 以 Docker 执行）；`mab-isolated-db` workflow 按路径触发规则已监听本批两文件，推送后以 CI 取证为准 |
+| 生产 DB / Storage / Gate / 部署 | 未触碰；无付费模型调用 |
+
+- **边界披露**：绑定只是"证据合并"（delegation 可追溯到一个真实研究任务），不授予任何 Provider 派发、费用或 Gate 资格；`root_task_ref` 固定值与幂等行为不变（`request_hash` 不含 rootTaskId，同键重放返回首次结果）；双主体同 root 的浏览器真实验收属 CP4，不提前宣称。老任务（checkpoint 无 `studio.project_id`）核验失败即拒绝绑定，属预期失败关闭。
+- **回滚**：单提交 git revert 即可；无 DB 迁移、无生产数据变更。
+
 
 
 

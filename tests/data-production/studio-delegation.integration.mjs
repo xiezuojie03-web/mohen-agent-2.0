@@ -17,7 +17,12 @@ const pool=new Pool({host:socket,port:Number(process.env.MOHEN_TEST_PORT??55432)
 const assets=access.createStudioAssetRepository(pool),repo=access.createStudioDelegationRepository(pool);
 try {
  await assets.createProject({projectId:project,title:'合成委托测试'},token(a));
- const task=randomUUID();sql(`insert into public.research_tasks(task_id,owner_user_id,prompt)values('${task}','${a}','synthetic')`);
+ const task=randomUUID(),foreignTask=randomUUID(),otherProjectTask=randomUUID();
+ const foreignProject=randomUUID();
+ sql(`insert into public.research_tasks(task_id,owner_user_id,prompt,checkpoint)values
+ ('${task}','${a}','synthetic','{"studio":{"project_id":"${project}","state":"BRIEF_PENDING"}}'::jsonb),
+ ('${foreignTask}','${b}','synthetic','{"studio":{"project_id":"${project}"}}'::jsonb),
+ ('${otherProjectTask}','${a}','synthetic','{"studio":{"project_id":"${foreignProject}"}}'::jsonb)`);
  const input={projectId:project,rootTaskRef:task,rootTaskSnapshot:{prompt:'synthetic',status:'hold'},subtaskRef:'subtask-1',seriesId:randomUUID(),revisionNo:1,
  executor:'fixture-only',provider:'no-provider-called',engineVersion:'fixture-v1',inputManifest:{source_refs:[]},allowedActions:['prepare_candidate'],
  transferRightsDecision:{status:'UNVERIFIED',external_processing:'DENIED'},policyVersion:'fixture-v1',expiresAt:new Date(Date.now()+60000).toISOString(),
@@ -26,7 +31,14 @@ try {
  const d=concurrent[0];assert.equal(concurrent[1].delegation_id,d.delegation_id);assert.match(d.request_hash,/^[a-f0-9]{64}$/);
  assert.equal(d.requester,a);assert.equal(d.root_task_id,null);assert.equal(d.budget_limit,'0.000000');
  await assert.rejects(()=>repo.saveDelegation({...input,budgetLimit:'1'},token(a)),/STUDIO_DELEGATION_IDEMPOTENCY_CONFLICT/);
- await assert.rejects(()=>repo.saveDelegation({...input,rootTaskId:task},token(a)),/STUDIO_TASK_BINDING_REQUIRED/);
+ // QR-06 same-root binding: unbound behaviour unchanged (root_task_id null above).
+ await assert.rejects(()=>repo.saveDelegation({...input,idempotencyKey:'bound-missing',seriesId:randomUUID(),rootTaskId:randomUUID()},token(a)),/STUDIO_TASK_BINDING_INVALID/);
+ await assert.rejects(()=>repo.saveDelegation({...input,idempotencyKey:'bound-foreign-task',seriesId:randomUUID(),rootTaskId:foreignTask},token(a)),/STUDIO_TASK_BINDING_INVALID/);
+ await assert.rejects(()=>repo.saveDelegation({...input,idempotencyKey:'bound-other-project',seriesId:randomUUID(),rootTaskId:otherProjectTask},token(a)),/STUDIO_TASK_BINDING_INVALID/);
+ await assert.rejects(()=>repo.saveDelegation({...input,idempotencyKey:'bound-foreign-owner',seriesId:randomUUID(),rootTaskId:task},token(b)),/STUDIO_TASK_BINDING_INVALID/);
+ await assert.rejects(()=>repo.saveDelegation({...input,idempotencyKey:'bound-malformed',seriesId:randomUUID(),rootTaskId:'not-a-uuid'},token(a)),/STUDIO_DELEGATION_INVALID/);
+ const bound=await repo.saveDelegation({...input,idempotencyKey:'bound',seriesId:randomUUID(),rootTaskId:task},token(a));
+ assert.equal(bound.root_task_id,task,'verified same-root binding persists root_task_id');
  await assert.rejects(()=>repo.saveDelegation({...input,idempotencyKey:'expired',seriesId:randomUUID(),expiresAt:'2000-01-01T00:00:00Z'},token(a)),/STUDIO_DELEGATION_EXPIRED/);
  assert.equal(await repo.getDelegation(d.delegation_id,token(b)),null);
  await assert.rejects(()=>repo.saveDelegation({...input,idempotencyKey:'foreign'},token(b)),/STUDIO_PROJECT_NOT_FOUND/);
@@ -41,6 +53,7 @@ try {
  const estimate=await repo.appendHeldReceipt({...r,attemptNo:2,costConfidence:'ESTIMATED',cost:'1.25',currency:'CNY'},token(a));
  assert.equal(estimate.cost,'1.250000');assert.equal(estimate.acceptance_state,'HOLD','over-budget observations remain evidence, never permission');
  sql(`delete from public.research_tasks where task_id='${task}'`);
+ await assert.rejects(()=>repo.saveDelegation({...input,idempotencyKey:'bound-after-delete',seriesId:randomUUID(),rootTaskId:task},token(a)),/STUDIO_TASK_BINDING_INVALID/,'deleted task can no longer be bound');
  assert.equal((await repo.getDelegation(d.delegation_id,token(a))).root_task_ref,task,'stable root ref survives scheduler deletion');
  assert.equal((await repo.listReceipts(d.delegation_id,token(a))).length,2,'permanent receipts survive scheduler deletion');
  assert.throws(()=>sql(`update studio.execution_receipts set error_code='changed' where receipt_id='${estimate.receipt_id}'`),/PERMANENT_RECEIPT_IMMUTABLE/);
@@ -49,5 +62,5 @@ try {
  await assert.rejects(()=>repo.listReceipts(d.delegation_id,token(a)),/STUDIO_IDENTITY_REQUIRED/);
  sql(`update public.users set status='active' where user_id='${a}'`);
  for(let i=0;i<2;i++){const c=await pool.connect();try{const state=(await c.query("select current_user as role,coalesce(current_setting('mohen.session_token',true),'')as token")).rows[0];assert.equal(state.role,'k3_admin');assert.equal(state.token,'');}finally{c.release();}}
- console.log('MAB_DELEGATION_REPOSITORY_PASS concurrent-idempotency exact-hashes unknown-cost-HOLD immutable cross-owner disabled-identity permanent-root clean-pool no-provider-calls');
+ console.log('MAB_DELEGATION_REPOSITORY_PASS concurrent-idempotency exact-hashes unknown-cost-HOLD immutable cross-owner disabled-identity permanent-root same-root-binding clean-pool no-provider-calls');
 }finally{await pool.end();}

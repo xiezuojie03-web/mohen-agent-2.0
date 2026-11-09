@@ -35,10 +35,16 @@ export async function POST(req: Request) {
   const actions = body.actions;
   const budgetUsd = body.budget_usd;
   const ttlMinutes = body.ttl_minutes === undefined ? 60 : body.ttl_minutes;
+  // QR-06: optional same-root binding to the caller's Agent research task. Omitted keeps
+  // the legacy behaviour; supplied must be a UUID and is verified server-side against
+  // task ownership + same project before any delegation row is written.
+  const taskId = typeof body.task_id === "string" && body.task_id ? body.task_id : undefined;
   if (typeof projectId !== "string" || !uuid.test(projectId))
     return privateJson({ ok: false, reason: "project_id_required" }, 400);
   if (typeof idempotencyKey !== "string" || !uuid.test(idempotencyKey))
     return privateJson({ ok: false, reason: "idempotency_key_required" }, 400);
+  if (taskId !== undefined && !uuid.test(taskId))
+    return privateJson({ ok: false, reason: "task_id_invalid" }, 400);
   if (!Array.isArray(actions) || !actions.length || actions.length > 6
     || !actions.every((a) => typeof a === "string" && Object.hasOwn(STUDIO_LLM_ACTION_MAX_TOKENS, a)))
     return privateJson({ ok: false, reason: "actions_not_whitelisted" }, 400);
@@ -57,26 +63,38 @@ export async function POST(req: Request) {
   if (!sourceIds.length) return privateJson({ ok: false, reason: "project_source_unbound" }, 409);
 
   const expiresAt = new Date(Date.now() + ttlMinutes * 60_000).toISOString();
-  const delegation = await createStudioDelegationRepository(getNodePgPool()).saveDelegation({
-    projectId,
-    seriesId: randomUUID(),
-    revisionNo: 1,
-    rootTaskRef: "studio-llm-dispatch",
-    rootTaskSnapshot: { purpose: "studio_llm_dispatch", actions, source_ids: sourceIds },
-    subtaskRef: "studio-director-llm",
-    executor: "mohen-studio",
-    provider: "deepseek",
-    engineVersion: "deepseek/2026-11-07",
-    inputManifest: { actions, source_ids: sourceIds },
-    allowedActions: actions,
-    transferRightsDecision: { external_processing: "GRANTED" },
-    policyVersion: "m5.g",
-    expiresAt,
-    budgetLimit: budgetUsd.toFixed(6),
-    currency: "USD",
-    outputSchema: "mohen.studio-llm-dispatch.v1",
-    idempotencyKey,
-  }, sessionToken);
+  let delegation;
+  try {
+    delegation = await createStudioDelegationRepository(getNodePgPool()).saveDelegation({
+      projectId,
+      seriesId: randomUUID(),
+      revisionNo: 1,
+      rootTaskRef: "studio-llm-dispatch",
+      rootTaskId: taskId ?? null,
+      rootTaskSnapshot: { purpose: "studio_llm_dispatch", actions, source_ids: sourceIds, research_task_id: taskId ?? null },
+      subtaskRef: "studio-director-llm",
+      executor: "mohen-studio",
+      provider: "deepseek",
+      engineVersion: "deepseek/2026-11-07",
+      inputManifest: { actions, source_ids: sourceIds },
+      allowedActions: actions,
+      transferRightsDecision: { external_processing: "GRANTED" },
+      policyVersion: "m5.g",
+      expiresAt,
+      budgetLimit: budgetUsd.toFixed(6),
+      currency: "USD",
+      outputSchema: "mohen.studio-llm-dispatch.v1",
+      idempotencyKey,
+    }, sessionToken);
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : "";
+    // Binding verification failed: nothing was written; the caller may retry or proceed unbound.
+    if (reason === "STUDIO_TASK_BINDING_INVALID")
+      return privateJson({ ok: false, reason: "task_binding_invalid" }, 403);
+    if (reason === "STUDIO_IDENTITY_REQUIRED")
+      return privateJson({ ok: false, reason: "login_required" }, 401);
+    throw error;
+  }
   return privateJson({
     ok: true,
     delegation_id: delegation.delegation_id,

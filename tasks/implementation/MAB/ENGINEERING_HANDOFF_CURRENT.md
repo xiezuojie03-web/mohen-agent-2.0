@@ -23,7 +23,7 @@
 2. QR-01项目绑定已完成隔离代码/迁移测试，生产列缺失时会在Provider前HOLD；QR-02已改MATERIALIZED事务局部身份，仍需同一Node PG连接复用正反测试；继续QR-08本地执行授权条件核验。
 3. 先统一KAD/Gate rights_by_action词典；生产39条来源均无rights_by_action/external_processing，Studio资产修订0条，必须先建立可审核的source_anchor/asset_revision权利快照；缺失/unknown一律HOLD。
 4. QR-03已完成未知费用冻结、费用状态累计、UTF-8上界、完整响应超时和成功重放；仍需评估`mab/m4-provider-spend-controls-20261107`，解决多调用Delegation兼容后再实现持久原子预算预留/对账/恢复。
-5. QR-07知识资产来源依赖回链已关闭（CP2-F：`studio.reference_kinds` 登记 + 解析/消费裁决/两道写入守卫，`tools/verify-6-asset-backlinks.mjs`=`VERIFY_6_BACKLINK_PASS`；2条m2脚本legacy行仍`BLOCKED(NO_SOURCE_REF)`不回填、`studio.asset_links` 仍无写入方）；剩余QR-06同root Agent+外部AI协作；随后按PLAN既有M1—M5条件和八维度矩阵做一次完整回归。Owner体验签收最后进行。
+5. QR-07知识资产来源依赖回链已关闭（CP2-F：`studio.reference_kinds` 登记 + 解析/消费裁决/两道写入守卫，`tools/verify-6-asset-backlinks.mjs`=`VERIFY_6_BACKLINK_PASS`；2条m2脚本legacy行仍`BLOCKED(NO_SOURCE_REF)`不回填、`studio.asset_links` 仍无写入方）；QR-06同root绑定已完成代码施工（Owner 2026-11-09批准方案：授权路由可选task_id+仓储同事务前核验属主/同项目+前端自动携带；本地tsc/unit 638持平/51项相关单测/静态守卫全PASS，集成测试DEFERRED_ENV由CI mab-isolated-db取证，未提交未推送）；QR-06 CI取证通过即收口，随后插入D00-A1文档批（V1.2包基线dab2950已核零漂移、只读预检通过、51/51完整），再按PLAN既有M1—M5条件和八维度矩阵做一次完整回归；D00-A2/B/C维持各自HOLD到点单独裁决。Owner体验签收最后进行。
 
 ## 本地Trae总装入口（2026-11-08 Owner最新执行裁决）
 

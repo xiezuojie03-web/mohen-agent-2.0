@@ -190,6 +190,8 @@ export declare function createPrivateOriginalSourceVerifier(pool:{connect:Functi
 /** Persistence of unverified envelopes and HOLD observations, never execution permission. */
 export interface StudioDelegationInput {
  projectId:string;rootTaskRef:string;rootTaskSnapshot:Record<string,unknown>;subtaskRef:string;
+ /** Optional same-root binding (QR-06); verified for ownership+project before write. */
+ rootTaskId?:string|null;
  seriesId:string;revisionNo:number;executor:string;provider:string;engineVersion:string;
  inputManifest:Record<string,unknown>;allowedActions:string[];transferRightsDecision:Record<string,unknown>;
  policyVersion:string;expiresAt:string;budgetLimit:string;currency:string;idempotencyKey:string;outputSchema:string;
