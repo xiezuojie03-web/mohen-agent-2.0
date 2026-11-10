@@ -87,6 +87,50 @@ export function createPrivateOriginalRepository(pool){
     return q.rows[0]?{...result(q.rows[0]),storage_key:q.rows[0].storage_key}:null;
    });
   },
+  // Y01 存量缺口诊断的唯一清点路径（同一工作室 RLS 作用域）：只数本项目自己的东西。
+  // 来源绑定沿用 studio.private_source_registration 这个既有真值函数；
+  // 未绑定如实计为 unbound，其它错误（身份/权限/连接/元数据）一律抛出，绝不当成"零存量"。
+  async projectStock(projectId,token){
+   id(projectId);
+   const LIMIT=50;
+   return tx(token,async(client)=>{
+    const counts=await client.query(
+     `select (select count(*)::int from studio.private_originals where project_id=$1) as originals,
+             (select count(*)::int from studio.private_originals where project_id=$1 and state='STORED_VERIFIED') as verified_originals,
+             (select coalesce(jsonb_object_agg(c.content_type,c.n),'{}'::jsonb)
+                from (select content_type, count(*)::int as n from studio.private_originals
+                       where project_id=$1 group by content_type) c) as carriers`,[projectId]);
+    const row=counts.rows[0]??{};
+    const verified=Number(row.verified_originals??0);
+    if(verified>LIMIT)throw new Error('PROJECT_STOCK_TOO_LARGE');
+    const stored=await client.query(
+     `select original_id::text as original_id from studio.private_originals
+       where project_id=$1 and state='STORED_VERIFIED' order by created_at,original_id limit $2`,[projectId,LIMIT]);
+    const sources=new Set();
+    let unbound=0;
+    for(const item of stored.rows){
+     // 未绑定的原件会让真值函数抛错并中止事务，故逐条用 savepoint 隔离：
+     // 未绑定如实计为 unbound，其它错误仍然中止并抛出（失败关闭）。
+     await client.query('savepoint project_stock_registration');
+     try{
+      const reg=await client.query("select studio.private_source_registration($1) as registration",[item.original_id]);
+      const registration=reg.rows[0]?.registration;
+      const sourceId=registration&&typeof registration==='object'?registration.source_id:null;
+      if(typeof sourceId!=='string'||!UUID.test(sourceId))throw new Error('STUDIO_SOURCE_REGISTRATION_INVALID');
+      sources.add(sourceId);
+      await client.query('release savepoint project_stock_registration');
+     }catch(error){
+      await client.query('rollback to savepoint project_stock_registration');
+      await client.query('release savepoint project_stock_registration');
+      if(String(error?.message??error).includes('PRIVATE_SOURCE_REGISTRATION_NOT_BOUND')){unbound+=1;continue;}
+      throw error;
+     }
+    }
+    return {originals:Number(row.originals??0),verified_originals:verified,unbound_verified:unbound,
+     linked_sources:sources.size,
+     carriers:row.carriers&&typeof row.carriers==='object'&&!Array.isArray(row.carriers)?row.carriers:{}};
+   });
+  },
  };
 }
 

@@ -7,7 +7,7 @@ const deps=vi.hoisted(()=>({
   registrationRepository:vi.fn(),registrationLookup:vi.fn(),
   candidateRepository:vi.fn(),persistMaterialObservation:vi.fn(),
   persistWorldClaim:vi.fn(),persistHumanisticFinding:vi.fn(),persistWorldProjection:vi.fn(),
-  sourceDiscoveryRepository:vi.fn(),recordSourceNeed:vi.fn(),
+  sourceDiscoveryRepository:vi.fn(),recordSourceNeed:vi.fn(),projectStock:vi.fn(),
   registerAcquisitionMethod:vi.fn(),appendAcquisitionAttempt:vi.fn(),
 }));
 vi.mock('../../packages/data-access/src/index.mjs',()=>({
@@ -60,7 +60,10 @@ beforeEach(()=>{
  });
  deps.handoff.mockReset().mockReturnValue(false);
  deps.authorize.mockImplementation(async()=>{deps.handoff.mockReturnValueOnce(true);});
- deps.originalRepository.mockReturnValue({marker:'scoped-repository'});
+ deps.originalRepository.mockReturnValue({marker:'scoped-repository',projectStock:deps.projectStock});
+ // Y01 存量清点：两个已核验原件、一个已绑定来源。
+ deps.projectStock.mockResolvedValue({originals:2,verified_originals:2,unbound_verified:0,
+   linked_sources:1,carriers:{'image/jpeg':2}});
  deps.download.mockResolvedValue({record:{state:'STORED_VERIFIED',content_type:'text/plain',sha256:hash(bytes)},bytes});
  deps.originalWorkflow.mockReturnValue({download:deps.download});
  deps.linkReading.mockResolvedValue({link_id:'bridge-reading',qualification:'UNASSESSED'});
@@ -112,7 +115,7 @@ it('composes one identical RLS-authorized original readback into D01 and the evi
  expect(deps.sourceVerifier).toHaveBeenCalledWith(pool);
  const original=deps.originalWorkflow.mock.calls[0][0];
  expect(original.storage).toBe(storage);
- expect(original.repository).toEqual({marker:'scoped-repository'});
+ expect(original.repository).toMatchObject({marker:'scoped-repository'});
  const options=deps.evidenceBridge.mock.calls[0][1];
  expect(options).toMatchObject({verificationKey:key,keyVersion:'test-only'});
  expect(typeof options.readOriginal).toBe('function');
@@ -204,6 +207,12 @@ it('composes D00 source intake through the registration lookup',async()=>{
  expect(deps.recordSourceNeed).toHaveBeenCalledWith(expect.objectContaining({
    projectId:'44444444-4444-4444-8444-444444444444',researchIntent:'松江府田赋',
    rightsBoundary:{status:'public_domain_secondary_use'},producedBy:'D00/Y01'}));
+ expect(deps.projectStock).toHaveBeenCalledWith('44444444-4444-4444-8444-444444444444','synthetic-user-session');
+ // 缺口是 Y01 自己从真实存量算出来的，不是调用方传进来的空对象。
+ expect(deps.recordSourceNeed).toHaveBeenCalledWith(expect.objectContaining({
+   existingStockGap:expect.objectContaining({schema:'mohen.source-need-diagnosis.v1',
+     has_gap:true,stock:expect.objectContaining({originals:2,verified_originals:2,linked_sources:1})})}));
+ expect(result.stock_gap.has_gap).toBe(true);
  expect(result.need_id).toBe(originalId);
  // No acquisition provenance was supplied, so no attempt may be invented.
  expect(deps.appendAcquisitionAttempt).not.toHaveBeenCalled();

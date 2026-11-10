@@ -38,8 +38,7 @@ export function createApprovedMethodPlanReader(pool, {gateCode: defaultGate='G0'
   };
 }
 
-export function createBoundPrivateEvidenceStageWorker({
-  pool, storage, verificationKey, keyVersion='mab-original-bridge-v1',
+export function createBoundPrivateEvidenceStageWorker({ pool, storage, verificationKey, keyVersion='mab-original-bridge-v1',
 } = {}) {
   if (!pool || typeof pool.connect !== 'function') {
     throw new Error('PRIVATE_STAGE_DATABASE_REQUIRED');
@@ -92,6 +91,8 @@ export function createBoundPrivateEvidenceStageWorker({
       artifact_revision:row.artifact_revision};
   }
   const readApprovedMethodPlan = createApprovedMethodPlanReader(pool);
+  // Y01 的存量清点与原件读回走同一个 Owner RLS 作用域，不另开一条读取通道。
+  const readProjectStock = ({projectId, token}) => repository.projectStock(projectId, token);
   return createPrivateEvidenceStageWorker({ readOriginal, bridge, verifySourceBinding,
     persistReading:readings.save, readRegistration:registrations.lookup,
     persistPageReading:pageReadings.save,
@@ -100,6 +101,7 @@ export function createBoundPrivateEvidenceStageWorker({
     persistHumanisticFinding:candidates.saveHumanisticFinding,
     persistWorldProjection:candidates.saveWorldProjection,
     recordSourceNeed:sourceDiscovery.recordSourceNeed,
+    readProjectStock,
     registerAcquisitionMethod:sourceDiscovery.registerAcquisitionMethod,
     appendAcquisitionAttempt:sourceDiscovery.appendAcquisitionAttempt,
     recordCatalogEntry:sourceDiscovery.recordCatalogEntry,

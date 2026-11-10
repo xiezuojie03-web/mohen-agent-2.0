@@ -112,6 +112,36 @@ export default async function DeskPage() {
   const baskets = buildBaskets(materials, latest?.topic ?? "");
   const v1Sources = V1_SOURCES;
 
+  // D00 第一道工序（Y01 来源需求）的真实回执：只列本人项目，缺口由工序自己算。
+  const needRows = (await queryRows(
+    `select n.need_id::text as need_id, n.research_intent, n.produced_by,
+            n.created_at::text as created_at, n.existing_stock_gap::text as existing_stock_gap,
+            p.project_title
+       from source.source_needs n
+       join studio.projects p on p.project_id = n.project_id
+      where p.owner_user_id = :'owner'
+      order by n.created_at desc limit 10`,
+    { owner: session.uid }
+  )) as Array<{
+    need_id: string;
+    research_intent: string;
+    produced_by: string;
+    created_at: string;
+    existing_stock_gap: string | null;
+    project_title: string;
+  }>;
+
+  const readGap = (raw: string | null) => {
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw) as { schema?: string; gaps?: unknown; has_gap?: boolean };
+      if (parsed?.schema !== "mohen.source-need-diagnosis.v1" || !Array.isArray(parsed.gaps)) return null;
+      return parsed.gaps as Array<{ dimension: string; state: string; detail: string }>;
+    } catch {
+      return null;
+    }
+  };
+
   return (
     <main style={{ maxWidth: 1180, margin: "0 auto", padding: "28px 20px 60px", color: "#17201d" }}>
       <a href="/studio" style={{ color: "#3d6b8f", fontSize: 13 }}>
@@ -206,6 +236,40 @@ export default async function DeskPage() {
           </section>
         </>
       )}
+
+      <section style={{ borderTop: "1px solid #e2ddd1", paddingTop: 14, marginBottom: 20 }}>
+        <h2 style={{ fontSize: 15 }}>来源需求回执（D00 第一道工序）</h2>
+        <p style={{ fontSize: 12, color: "#6b746f", margin: "4px 0 10px" }}>
+          每条都是生产线上真实落库的需求回执；缺口由工序按项目真实存量算出，不是人工填的。
+        </p>
+        {needRows.length === 0 && (
+          <p style={{ fontSize: 13, color: "#8a3b3b" }}>还没有来源需求回执。</p>
+        )}
+        {needRows.map((need) => {
+          const gaps = readGap(need.existing_stock_gap);
+          return (
+            <article key={need.need_id} style={{ border: "1px solid #e2ddd1", borderRadius: 8, padding: 10, marginBottom: 8 }}>
+              <div style={{ fontSize: 13, fontWeight: 600 }}>{need.research_intent}</div>
+              <div style={{ fontSize: 11, color: "#6b746f", marginTop: 3 }}>
+                {need.project_title} · {need.produced_by} · {need.created_at.slice(0, 10)}
+              </div>
+              {gaps === null ? (
+                <div style={{ fontSize: 12, color: "#9a6b2f", marginTop: 5 }}>旧回执：当时未做存量缺口诊断。</div>
+              ) : gaps.length === 0 ? (
+                <div style={{ fontSize: 12, color: "#1f7a4d", marginTop: 5 }}>存量未发现缺口。</div>
+              ) : (
+                <ul style={{ fontSize: 12, color: "#8a3b3b", margin: "5px 0 0 18px" }}>
+                  {gaps.map((gap) => (
+                    <li key={gap.dimension}>
+                      {gap.dimension}（{gap.state}）：{gap.detail}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </article>
+          );
+        })}
+      </section>
 
       <section style={{ borderTop: "1px solid #e2ddd1", paddingTop: 14 }}>
         <h2 style={{ fontSize: 15 }}>来源地图（V1 接入中）</h2>

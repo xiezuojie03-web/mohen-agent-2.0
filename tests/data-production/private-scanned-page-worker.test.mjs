@@ -82,6 +82,7 @@ test('D00 verifySourceIntake returns an UNASSESSED registration candidate under 
       verifySourceBinding:async()=>{bindings++;return true;},
       readRegistration:async()=>{registrations++;return registrationFor(originalId,projectId);},
       recordSourceNeed:async()=>({need_id:id(),created_at:new Date().toISOString()}),
+      readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
       bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},...gateStub,
     });
     const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});

@@ -2473,3 +2473,16 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **单测**：新增 4 例（无批准拒绝且不消费字节、计划不含该法拒绝、交接计划被改拒绝、一致时写入 `method_plan_approval`）；stage 14/14、binding 8/8、data-production 定向 3 文件全绿。
 - **回归**：`pnpm test` 87 files passed / 2 skipped、706 tests passed / 2 skipped（0 failed），`ISOLATION_VERDICT real_db_untouched=YES`（含新补登两条迁移后的 `_test` 库重建）；`pnpm -r typecheck` 6/6；`pnpm test:data-production` 183 pass + 1 既有 `DEFERRED_ENV`（`independent-gate-service-runtime`，无 openssl，非本批引入）；`guard:docs`/`structure`/`registry`/`source-gate`/`identifiers`/`acquisition`/`reconciliation`/`stage-handoff`/`k3-traceability`/`physical-model`/`runtime-boundary`/`cross-layer-write`/`gate-enforcement`/`no-legacy-production-entry`/`isolated-db-fixtures` 全部 exit 0。
 - **边界**：C 方法仍未进 `production-registry.json` 路由（57 仍 `HOLD`）；每个 D01 动作目前只对应一个 C 方法，"多法并存时由预选择优"未实现——预选是读法的必要条件，不是选择依据。私有工人池在新机器上需 `MOHEN_DATABASE_CA_CERT(_FILE)`（本机为 `D:\MoHen\keys\execution-auth\tls-ca-cert.pem`），缺省即 HOLD，不降级跳过校验。
+
+## M5-D｜D00 第一道工序（Y01 来源需求）执行器接通（2026-11-10，本地隔离 VERIFIED_ISOLATED）
+
+- **应完成什么**：步骤④要求 D00 八工序里先接通一个"真执行器"，而不是只有存证表。
+- **核查到的真实缺陷**：此前 Y01 只把调用方传入的 `existing_stock_gap`/`coverage_dimensions` 原样写库（库内 3 条既有回执的缺口字段为 `{}`），工序自身不产生任何诊断。
+- **做了什么**：
+  - 新增 `pipelines/data-production/workers/source-need-diagnosis.mjs`：`diagnoseSourceNeed()` 只从真实存量算缺口（原件数/已核验数/未绑定数/已绑定来源数/载体分布）；算不出来的维度一律 `unassessed`；意图为空或存量不可用即抛错（失败关闭）。
+  - `private-evidence-stage.mjs`：D00 段先 `readProjectStock` 清点、再诊断、再经唯一写入口 `recordSourceNeed` 落库；缺读取依赖即 `PRIVATE_SOURCE_STOCK_READ_REQUIRED`（D00 HOLD）；`stock_gap` 随 D00 输出交接。
+  - `private-original-repository.mjs`：新增 `projectStock(projectId, token)`，与原件读回同一 Owner RLS 事务；来源绑定沿用 `studio.private_source_registration`，未绑定以 savepoint 隔离后如实计 `unbound`。
+  - `apps/web/app/studio/desk/page.tsx`：资料台新增「来源需求回执（D00 第一道工序）」区，只列本人项目，显示工序算出的缺口；旧回执标注"当时未做缺口诊断"。
+- **证据**：`tools/verify-y01-executor.mjs` = `Y01_EXECUTOR_PROVEN`（私有工人登录 + CA 校验）：存量 4 原件/4 已核验/1 未绑定/3 已绑定来源；负例 `empty_intent_rejected`、`bad_stock_scope_rejected`、`needs_unchanged` 全 true；回执 `2a35e020…`/`386c3156…` 落库并回读 `mohen.source-need-diagnosis.v1` 的 4 条缺口。资料台以 Owner 会话实测 200，含标题、真实意图与 `unbound`/`unassessed` 条目。
+- **回归**：typecheck 6/6；unit 644 通过 / 2 跳过 / 0 失败；data-production 187 通过 + 1 既有 `DEFERRED_ENV`；`guard:auth:strict`（routes=111 public=19 missing=0）、`guard:structure`、`guard:gate-enforcement` 全 PASS。
+- **边界**：只接通 1 个工序（Y02—Y08 仍无独立执行器）；未给 `mohen_app_runtime` 开任何 `source.*` 读写权限；存量清点上限 50 原件、超限失败关闭；不签 Gate、不构成生产准出，`M5_OVERALL_HOLD` 不变。

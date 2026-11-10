@@ -5,6 +5,7 @@
 import { createHash } from 'node:crypto';
 import { assertStageExecutionAuthorized, consumeAuthorizedStageHandoff } from '../orchestrator/execution-authority.mjs';
 import { buildMethodPlanRefs, inspectMethodPlanRef, isMethodPlanRef } from '../../../packages/data-access/src/method-plan-ref.mjs';
+import { diagnoseSourceNeed } from './source-need-diagnosis.mjs';
 
 const HEX=/^[a-f0-9]{64}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
@@ -28,7 +29,7 @@ function requireToken(token) {
 }
 export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySourceBinding,persistReading,readRegistration,persistPageReading,
   persistMaterialObservation,persistWorldClaim,persistHumanisticFinding,persistWorldProjection,
-  recordSourceNeed,registerAcquisitionMethod,appendAcquisitionAttempt,
+  recordSourceNeed,readProjectStock,registerAcquisitionMethod,appendAcquisitionAttempt,
   recordCatalogEntry,recordAcquisitionCoverage,recordCandidateVerification,recordPriorityAssessment,
   submitGateCandidate,readGateAudit,readApprovedMethodPlan}={}) {
   if(typeof readOriginal!=='function'||typeof verifySourceBinding!=='function'||
@@ -149,9 +150,15 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
       // 需求回执在此登记才不是无生产者的空表。缺写入口即失败关闭，
       // 不允许"看起来跑了 D00 却没有需求回执"。
       if(typeof recordSourceNeed!=='function')throw Error('PRIVATE_SOURCE_NEED_RECORDING_REQUIRED');
+      // Y01 的职责是"需求 + 存量缺口诊断"，缺口必须由本工序从真实存量算出，
+      // 不抄调用方给的空对象。读不到存量就失败关闭（D00 HOLD），不写"看起来做过诊断"的回执。
+      if(typeof readProjectStock!=='function')throw Error('PRIVATE_SOURCE_STOCK_READ_REQUIRED');
+      const stock=await readProjectStock({projectId,token});
+      const diagnosis=diagnoseSourceNeed({researchIntent,
+        stock,requestedDimensions:input?.coverage_dimensions});
       const need=await recordSourceNeed({projectId,researchIntent,
-        scope:input?.research_scope,coverageDimensions:input?.coverage_dimensions,
-        existingStockGap:input?.existing_stock_gap,rightsBoundary:registration.rights,
+        scope:input?.research_scope,coverageDimensions:diagnosis.coverage_dimensions,
+        existingStockGap:diagnosis.existing_stock_gap,rightsBoundary:registration.rights,
         producedBy:'D00/Y01'});
       if(!UUID.test(need?.need_id??''))throw Error('PRIVATE_SOURCE_NEED_NOT_RECORDED');
       // Y07：只在调用方确实知道"这份原件怎么来的"时记账；不知道就不写，
@@ -277,6 +284,7 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         content_type:record.content_type,rights:registration.rights,provider:registration.provider,
         title:registration.title,source_type:registration.source_type,carrier_type:registration.carrier_type,
         asset_revision_id:registration.asset_revision_id,need_id:need.need_id,
+        stock_gap:diagnosis.existing_stock_gap,
         acquisition_attempt_id:acquisitionAttemptId,method_plan:methodPlan??[],
         catalog_entry_ids:catalogEntryIds,coverage_ids:coverageIds,
         verification_ids:verificationIds,assessment_ids:assessmentIds,
