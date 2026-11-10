@@ -2382,4 +2382,23 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **刻意不做**：没给 `control.gate_candidates` 加列、没改 `GateReviewRequest`、没动 D01—D05 Job、registry `methods: []`、`activation`/`enabled`/`adapter_binding`/`gate_reviewer_binding`、绑定合同 `method_count=63`；没给 C 方法造第二份清单（方法是否登记只问 `identifier-registry.json`）；没在生产库或生产 Gate 上做任何事。
 - **口径（不得放大解读）**：本批解决的是"预选**可承载、可强制**"，不是"预选**驱动读法**"——D01 尚未按该预选选法（仍按载体与现行实现，C 方法也尚未进入 registry 路由），故 Protocol §2.1 第 7 条只认「已在 G0 承载」，不认 D00→D01 全链联通。真实 D00 运行若调用方不给计划，G0 会如实 FAIL（失败关闭），这是设计意图，不是回归。
 
+## D00-C3｜真实入口可给消费者方法计划，并在隔离库跑出 G0 正反事实（2026-11-10，基线 main@50a394b，零 DDL）
+
+- **为何必须做（B 的遗留缺口）**：B 让 G0 强制方法预选之后，真实入口（`local-execution-authorizer` grant/run 与 `run.mjs`）只能给 `{research_intent, scope}`，任何真实 D00 都必然在 G0 失败关闭——规则生效了，却没人能满足它。本批只补入口，**不动规则**。
+- **变更 1｜入参唯一口径（新增 `tools/lib/method-plan-input.mjs`）**：`--method-plan` 同时接受文件路径与内联 JSON（允许 `{methods:[...]}` 包装），规范成 `{method_id, method_version}`；缺省返回 `undefined` 即不补默认计划，非法一律失败关闭（`METHOD_PLAN_JSON_INVALID` / `METHOD_PLAN_METHODS_REQUIRED` / `METHOD_PLAN_METHOD_IDENTITY_REQUIRED`）。授权器签发与 Runner 实跑必须共用同一份实现，否则签名覆盖的 `input_digest` 永远对不上。
+- **变更 2｜D00 输入唯一定义（`orchestrator.mjs` 导出 `buildSourceIntakeInput`）**：`research_intent + scope +（可选）consumer_method_plan`；未给计划时不追加该键，与旧输入**逐字节同源**，既有运行 digest 不变（有断言钉住）。`run-state.mjs` 仅在调用方给出时携带该字段。
+- **变更 3｜入口透传**：`run.mjs` 与 `local-execution-authorizer.mjs` 的 `grant`/`run` 均支持 `--method-plan`，`grant` 与 `run` 走同一个解析函数，签名覆盖的输入与实跑输入同源。
+- **正反运行（本批实跑，非口头；原件 `b0a1…0006` 为 text/plain，走 CP2-E 既有 scope 文件）**：
+  - POS：`local-execution-authorizer run --stage D00 --method-plan …C01@v1`（run `c0a12000-…-020`）→ 候选 `f3bb637d-54ec-406d-9397-823b3b2cbb6d` 含 1 条 `method_plan` 引用（`artifact_revision=2fd1ff57…`）→ `rule-gate-reviewer --gate G0` **PASS**，真实审计 `1abbcf13-0ee9-480f-ac65-47881b709194`（`decision_origin=independent_gate`、`rule_version=m5-local-v1`、现行有效、回执 `checks={identity_version,rights_by_operation,method_plan_preselection}` 三项皆 true）。
+  - NEG：同 scope 去掉 `--method-plan`（run `c0a12000-…-021`）→ 候选 `d0622f5d-94fb-4d7b-9624-c1f9b363b652` 无任何 `method_plan` 引用 → 同一评审器 **FAIL**（`method_plan_ref_missing`），**零审计行**、候选仍 `SUBMITTED`。
+  - 两次运行的结果都是 `HOLD / INDEPENDENT_GATE_NOT_VERIFIED`：生产侧只提交候选、不自签资格；资格只由独立评审消费候选后产生。
+  - 选 `b0a1…0006` 而非 `0004` 是为不动既有 G0→G5 链：该对象此前**零** G0 审计，本批后现行 G0 恰为 1 条（正例那条），反例没有污染它。
+- **证据落点（刻意不进方法隔离目录）**：新增 `tools/verify-d00-g0-method-plan.mjs`（只读核事实、19 项断言，实跑 `ALL_PASS`），证据写 `tasks/results/MAB/evidence/method-plan-gate/d00-g0-method-plan.json`，钉脚本 SHA-256 并显式 `isolation_credit=NONE`。**不写进 `evidence/method-isolation/`**：那个目录的回执会被 `report-method-ledger` 直接计成 `ISOLATED_VERIFIED`，而本批证明的是「G0 强制方法预选」这道前置，不是 C01/C02 方法本身的实现已验证，混进去等于虚增隔离验证数。实测 `pnpm report:ledger` 仍为 `DESIGN_IDENTITIES_TOTAL=71 / METHOD=63 / STAGE_STEP=8 / BOUND_IMPLEMENTATION=6 / ISOLATED_VERIFIED=2(Y01,Y07)`，一位没变。
+- **验证（本批实跑）**：
+  - 新增 `tests/data-production/method-plan-input.test.mjs`（7 条）：缺省不补计划、内联/文件/包装三形同解、四类非法失败关闭、**不给计划时 D00 输入 digest 与旧口径相等**、给计划后改方法即改摘要。
+  - `pnpm test:data-production` **181/181**（基线 174 → 181）；`pnpm test`（隔离库 `mohen_dev_test`）**87 文件通过 / 2 跳过、703 用例通过 / 2 跳过 / 0 失败**，`real_db_untouched=YES`；守卫前七段全绿（`guard:naming` 仍为既有 DEFERRED，与本批无关）。
+- **刻意不做**：没碰 D01—D05 Job、registry `methods: []`、`activation`/`enabled`/`adapter_binding`/`gate_reviewer_binding`、绑定合同 `method_count=63`；没为方法计划另造第二份方法清单（是否登记只问 `identifier-registry.json`）；零 DDL、零生产变更、零模型费用、零外发。
+- **口径（不得放大解读）**：本批到「真实入口能给计划、G0 真会拦、正反各一次有真实审计/无审计」为止；**D01 仍未按预选选法**，C02—C08 的方法实现、Y02—Y06 生产者、registry 路由与激活、生产库与生产 Gate 均不在本口径内。
+
+
 

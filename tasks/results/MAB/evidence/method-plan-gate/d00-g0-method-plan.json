@@ -1,0 +1,122 @@
+{
+  "schema": "mohen.method-plan-gate-evidence.v1",
+  "isolation_credit": "NONE",
+  "verifier": "tools/verify-d00-g0-method-plan.mjs",
+  "verifier_sha256": "dd03894102ceb7f51501184af2e7e08c588b9ae51817af1dded4e63116de7217",
+  "methods_in_plan": [
+    "C01@v1"
+  ],
+  "scope": "D00→G0 真实执行授权＋机器评审；原件 b0a11000-0000-4000-8000-000000000006（text/plain），对象 source_version e9580d39-de3c-46b4-a737-ee153eae5b40",
+  "not_covered": [
+    "不覆盖 C01/C02 等方法本身的实现：只证明 G0 的方法预选前置是强制的",
+    "不覆盖生产环境：全部事实来自本地隔离库 mohen_dev",
+    "不覆盖 D01 及下游：G0 之后的阶段未在本批运行"
+  ],
+  "environment": {
+    "database": "local-isolated mohen_dev",
+    "project": "b0a11000-0000-4000-8000-000000000001",
+    "positive_run": "c0a12000-0000-4000-8000-000000000020",
+    "negative_run": "c0a12000-0000-4000-8000-000000000021"
+  },
+  "ran_at": "2026-11-10T05:26:10.347Z",
+  "total": 19,
+  "failed": 0,
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "positive: D00 产出唯一 G0 候选",
+      "ok": true,
+      "detail": "f3bb637d-54ec-406d-9397-823b3b2cbb6d"
+    },
+    {
+      "name": "positive: 候选含 1 条 method_plan 引用",
+      "ok": true,
+      "detail": "count=1"
+    },
+    {
+      "name": "positive: 引用形/版本/摘要自洽",
+      "ok": true,
+      "detail": "C01@v1"
+    },
+    {
+      "name": "positive: 引用指向 C01@v1 且阶段 D01",
+      "ok": true,
+      "detail": "C01@v1@D01"
+    },
+    {
+      "name": "positive: 摘要等于规范重算",
+      "ok": true,
+      "detail": "2fd1ff57cc40dfa03cad3eb403f8fde575177c209cc7d11ae3e051cd3e01f873"
+    },
+    {
+      "name": "positive: 生产侧不自签资格（评审后候选被消费）",
+      "ok": true,
+      "detail": "CONSUMED"
+    },
+    {
+      "name": "positive: 运行结果 HOLD 且原因是独立 Gate 未验证",
+      "ok": true,
+      "detail": "INDEPENDENT_GATE_NOT_VERIFIED"
+    },
+    {
+      "name": "positive: 该候选有 1 条 G0 审计",
+      "ok": true,
+      "detail": "count=1"
+    },
+    {
+      "name": "positive: G0 PASS 且来源为独立 Gate",
+      "ok": true,
+      "detail": "PASS/independent_gate"
+    },
+    {
+      "name": "positive: 审计绑同一对象与 revision",
+      "ok": true,
+      "detail": "e9580d39-de3c-46b4-a737-ee153eae5b40 108b3531ff62d6a4b0f7c319921d06ec1c2e7e9c2a3669b72f2b36e92528b530"
+    },
+    {
+      "name": "positive: 现行资格有效",
+      "ok": true,
+      "detail": "t"
+    },
+    {
+      "name": "positive: 回执 checks 含 method_plan_preselection=true",
+      "ok": true,
+      "detail": "{\"identity_version\":true,\"rights_by_operation\":true,\"method_plan_preselection\":true}"
+    },
+    {
+      "name": "positive: 规则版本为 m5-local-v1",
+      "ok": true,
+      "detail": "m5-local-v1"
+    },
+    {
+      "name": "negative: D00 产出唯一 G0 候选",
+      "ok": true,
+      "detail": "d0622f5d-94fb-4d7b-9624-c1f9b363b652"
+    },
+    {
+      "name": "negative: 候选无任何 method_plan 引用",
+      "ok": true,
+      "detail": "refs=1"
+    },
+    {
+      "name": "negative: 未产生任何 Gate 审计（失败关闭不留资格）",
+      "ok": true,
+      "detail": "audits=0"
+    },
+    {
+      "name": "negative: 候选仍为 SUBMITTED",
+      "ok": true,
+      "detail": "SUBMITTED"
+    },
+    {
+      "name": "negative: 运行同样 HOLD，未越级",
+      "ok": true,
+      "detail": "HOLD"
+    },
+    {
+      "name": "isolation: 该对象现行 G0 恰为 1 条",
+      "ok": true,
+      "detail": "current=1"
+    }
+  ]
+}
