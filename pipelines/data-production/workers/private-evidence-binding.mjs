@@ -78,5 +78,9 @@ export function createBoundPrivateEvidenceStageWorker({
     recordSourceNeed:sourceDiscovery.recordSourceNeed,
     registerAcquisitionMethod:sourceDiscovery.registerAcquisitionMethod,
     appendAcquisitionAttempt:sourceDiscovery.appendAcquisitionAttempt,
+    recordCatalogEntry:sourceDiscovery.recordCatalogEntry,
+    recordAcquisitionCoverage:sourceDiscovery.recordAcquisitionCoverage,
+    recordCandidateVerification:sourceDiscovery.recordCandidateVerification,
+    recordPriorityAssessment:sourceDiscovery.recordPriorityAssessment,
     submitGateCandidate, readGateAudit });
 }

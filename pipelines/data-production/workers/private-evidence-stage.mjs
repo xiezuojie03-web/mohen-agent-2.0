@@ -29,6 +29,7 @@ function requireToken(token) {
 export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySourceBinding,persistReading,readRegistration,persistPageReading,
   persistMaterialObservation,persistWorldClaim,persistHumanisticFinding,persistWorldProjection,
   recordSourceNeed,registerAcquisitionMethod,appendAcquisitionAttempt,
+  recordCatalogEntry,recordAcquisitionCoverage,recordCandidateVerification,recordPriorityAssessment,
   submitGateCandidate,readGateAudit}={}) {
   if(typeof readOriginal!=='function'||typeof verifySourceBinding!=='function'||
      typeof bridge?.linkReading!=='function'||typeof bridge?.linkClaim!=='function')throw Error('PRIVATE_EVIDENCE_BRIDGE_REQUIRED');
@@ -152,6 +153,79 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         if(!UUID.test(appended?.attempt_id??''))throw Error('PRIVATE_ACQUISITION_ATTEMPT_NOT_RECORDED');
         acquisitionAttemptId=appended.attempt_id;
       }
+      // Y02/Y04/Y03/Y06：只在调用方确实给出判断材料时落库；没给就不写，
+      // 绝不替研究者编造目录、覆盖结论、核查意见或优先级。
+      // 目录可按下标引用本次刚登记的条目，也可直接给已存在的条目 id。
+      const catalogEntryIds=[];
+      if(input?.catalog!=null){
+        if(!Array.isArray(input.catalog))throw Error('PRIVATE_SOURCE_CATALOG_INVALID');
+        if(typeof recordCatalogEntry!=='function')throw Error('PRIVATE_SOURCE_CATALOG_RECORDING_REQUIRED');
+        for(const entry of input.catalog){
+          const saved=await recordCatalogEntry({projectId,needId:need.need_id,
+            provider:entry?.provider,catalogTitle:entry?.catalog_title,
+            catalogIdentifier:entry?.catalog_identifier,carrierHint:entry?.carrier_hint,
+            language:entry?.language,coverageHint:entry?.coverage_hint,rightsHint:entry?.rights_hint,
+            availabilityState:entry?.availability_state,discoveredByMethod:entry?.discovered_by_method,
+            methodVersion:entry?.method_version,evidenceRef:entry?.evidence_ref,
+            correctionOf:entry?.correction_of});
+          if(!UUID.test(saved?.catalog_entry_id??''))throw Error('PRIVATE_SOURCE_CATALOG_NOT_RECORDED');
+          catalogEntryIds.push(saved.catalog_entry_id);
+        }
+      }
+      const resolveCatalogEntry=(ref,code)=>{
+        if(ref==null)return null;
+        if(Number.isSafeInteger(ref)&&catalogEntryIds[ref])return catalogEntryIds[ref];
+        if(typeof ref==='string'&&UUID.test(ref))return ref;
+        throw Error(code);
+      };
+      const coverageIds=[];
+      if(input?.coverage!=null){
+        if(!Array.isArray(input.coverage))throw Error('PRIVATE_SOURCE_COVERAGE_INVALID');
+        if(typeof recordAcquisitionCoverage!=='function')throw Error('PRIVATE_SOURCE_COVERAGE_RECORDING_REQUIRED');
+        for(const item of input.coverage){
+          // 覆盖是"某次尝试拿到了什么"，没有尝试就没有覆盖结论可写。
+          const attemptId=item?.attempt_id??acquisitionAttemptId;
+          if(!UUID.test(attemptId??''))throw Error('PRIVATE_SOURCE_COVERAGE_ATTEMPT_REQUIRED');
+          const saved=await recordAcquisitionCoverage({projectId,attemptId,
+            catalogEntryId:resolveCatalogEntry(item?.catalog_index??item?.catalog_entry_id,
+              'PRIVATE_SOURCE_COVERAGE_CATALOG_INVALID'),
+            coverageScope:item?.coverage_scope,missingParts:item?.missing_parts,
+            completenessState:item?.completeness_state,verifiedAgainst:item?.verified_against,
+            note:item?.note,correctionOf:item?.correction_of});
+          if(!UUID.test(saved?.coverage_id??''))throw Error('PRIVATE_SOURCE_COVERAGE_NOT_RECORDED');
+          coverageIds.push(saved.coverage_id);
+        }
+      }
+      const verificationIds=[];
+      if(input?.verifications!=null){
+        if(!Array.isArray(input.verifications))throw Error('PRIVATE_SOURCE_VERIFICATIONS_INVALID');
+        if(typeof recordCandidateVerification!=='function')throw Error('PRIVATE_SOURCE_VERIFICATIONS_RECORDING_REQUIRED');
+        for(const item of input.verifications){
+          const saved=await recordCandidateVerification({projectId,
+            catalogEntryId:resolveCatalogEntry(item?.catalog_index??item?.catalog_entry_id,
+              'PRIVATE_SOURCE_VERIFICATION_CATALOG_INVALID'),
+            checks:item?.checks,verdict:item?.verdict,reasonCode:item?.reason_code,
+            methodKey:item?.method_key,methodVersion:item?.method_version,
+            correctionOf:item?.correction_of});
+          if(!UUID.test(saved?.verification_id??''))throw Error('PRIVATE_SOURCE_VERIFICATION_NOT_RECORDED');
+          verificationIds.push(saved.verification_id);
+        }
+      }
+      const assessmentIds=[];
+      if(input?.priorities!=null){
+        if(!Array.isArray(input.priorities))throw Error('PRIVATE_SOURCE_PRIORITIES_INVALID');
+        if(typeof recordPriorityAssessment!=='function')throw Error('PRIVATE_SOURCE_PRIORITIES_RECORDING_REQUIRED');
+        for(const item of input.priorities){
+          const saved=await recordPriorityAssessment({projectId,needId:need.need_id,
+            catalogEntryId:resolveCatalogEntry(item?.catalog_index??item?.catalog_entry_id,
+              'PRIVATE_SOURCE_PRIORITY_CATALOG_INVALID'),
+            criteria:item?.criteria,decision:item?.decision,rationale:item?.rationale,
+            methodKey:item?.method_key,methodVersion:item?.method_version,
+            correctionOf:item?.correction_of});
+          if(!UUID.test(saved?.assessment_id??''))throw Error('PRIVATE_SOURCE_PRIORITY_NOT_RECORDED');
+          assessmentIds.push(saved.assessment_id);
+        }
+      }
       // D00-B：C 方法预选（消费者方法计划）以类型化引用随 G0 候选存证，零 DDL。
       // 调用方没给计划就不构造引用、也不补默认方法：G0 会因缺计划失败关闭，
       // 而不是由生产者替消费者决定 D01 用什么读法。
@@ -172,6 +246,8 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         title:registration.title,source_type:registration.source_type,carrier_type:registration.carrier_type,
         asset_revision_id:registration.asset_revision_id,need_id:need.need_id,
         acquisition_attempt_id:acquisitionAttemptId,method_plan:methodPlan??[],
+        catalog_entry_ids:catalogEntryIds,coverage_ids:coverageIds,
+        verification_ids:verificationIds,assessment_ids:assessmentIds,
         artifact_revision:sourceRevision,
         request_digest:requestDigest,gate_candidate_id:gateCandidateId,
         gate_candidate_status:'SUBMITTED',qualification:'UNASSESSED',gate_code:'G0'};

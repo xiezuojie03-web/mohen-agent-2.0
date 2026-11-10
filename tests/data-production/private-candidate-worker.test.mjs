@@ -478,6 +478,130 @@ test('D00 rejects a malformed consumer method plan before submitting any candida
   }
 });
 
+test('D00 records Y02/Y04/Y03/Y06 in order and exposes the written ids',async()=>{
+  const originalId=id(),projectId=id(),sourceVersionId=id();
+  const calls=[];
+  const catalogIds=[id(),id()];
+  const coverageId=id(),verificationId=id(),assessmentId=id();
+  const existingAttemptId=id();
+  const input={research_intent:'松江府田赋卷十一',
+    scope:{project_id:projectId,original_id:originalId,page_number:35},
+    catalog:[
+      {provider:'国立公文书馆(NAJ)',catalog_title:'松江府志7',catalog_identifier:'NAJ-14373',
+        availability_state:'catalog_found',discovered_by_method:'M0001',method_version:'v1'},
+      {provider:'上海图书馆',catalog_title:'松江府志（另一版本）',availability_state:'catalog_listed_no_item',
+        discovered_by_method:'M0001',method_version:'v1'},
+    ],
+    coverage:[{catalog_index:0,attempt_id:existingAttemptId,completeness_state:'partial',
+      missing_parts:[{part:'卷十二'}]}],
+    verifications:[{catalog_index:0,checks:{identity_matched:'pass'},verdict:'admissible',
+      reason_code:'IDENTITY_CONFIRMED',method_key:'M0001',method_version:'v1'}],
+    priorities:[{catalog_index:0,criteria:{authority:'primary'},decision:'selected',
+      rationale:'唯一身份已核且有权利依据的版本',method_key:'M0001',method_version:'v1'}],
+  };
+  return withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
+    let submitted=null;
+    const worker=createPrivateEvidenceStageWorker({
+      readOriginal:async()=>imageRecord(originalId,projectId),
+      verifySourceBinding:async()=>true,
+      readRegistration:async()=>registrationFor(originalId,projectId,{source_version_id:sourceVersionId}),
+      recordSourceNeed:async()=>({need_id:id(),created_at:new Date().toISOString()}),
+      recordCatalogEntry:async entry=>{
+        calls.push(`catalog:${entry.catalogTitle}`);
+        return {catalog_entry_id:catalogIds[calls.filter(c=>c.startsWith('catalog:')).length-1]};
+      },
+      recordAcquisitionCoverage:async item=>{
+        calls.push(`coverage:${item.catalogEntryId}`);
+        return {coverage_id:coverageId};
+      },
+      recordCandidateVerification:async item=>{
+        calls.push(`verification:${item.verdict}`);
+        return {verification_id:verificationId};
+      },
+      recordPriorityAssessment:async item=>{
+        calls.push(`priority:${item.decision}`);
+        return {assessment_id:assessmentId};
+      },
+      bridge:bridgeStub,
+      submitGateCandidate:async metadata=>{submitted=metadata;return 'candidate-g0';},
+      readGateAudit:async()=>null,
+    });
+    const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
+    // 顺序固定：先有目录，才有覆盖/核查/优先级的引用对象。
+    assert.deepEqual(calls,['catalog:松江府志7','catalog:松江府志（另一版本）',
+      `coverage:${catalogIds[0]}`,'verification:admissible','priority:selected']);
+    assert.deepEqual(candidate.catalog_entry_ids,catalogIds);
+    assert.deepEqual(candidate.coverage_ids,[coverageId]);
+    assert.deepEqual(candidate.verification_ids,[verificationId]);
+    assert.deepEqual(candidate.assessment_ids,[assessmentId]);
+    assert.equal(submitted!==null,true);
+  });
+});
+
+test('D00 writes no Y02/Y04/Y03/Y06 rows when the caller supplies none',async()=>{
+  const originalId=id(),projectId=id(),sourceVersionId=id();
+  const input={research_intent:'松江府田赋卷十一',scope:{project_id:projectId,original_id:originalId,page_number:35}};
+  return withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
+    let touched=0;
+    const worker=createPrivateEvidenceStageWorker({
+      readOriginal:async()=>imageRecord(originalId,projectId),
+      verifySourceBinding:async()=>true,
+      readRegistration:async()=>registrationFor(originalId,projectId,{source_version_id:sourceVersionId}),
+      recordSourceNeed:async()=>({need_id:id(),created_at:new Date().toISOString()}),
+      recordCatalogEntry:async()=>{touched+=1;return {catalog_entry_id:id()};},
+      recordAcquisitionCoverage:async()=>{touched+=1;return {coverage_id:id()};},
+      recordCandidateVerification:async()=>{touched+=1;return {verification_id:id()};},
+      recordPriorityAssessment:async()=>{touched+=1;return {assessment_id:id()};},
+      bridge:bridgeStub,
+      submitGateCandidate:async()=>'candidate-g0',
+      readGateAudit:async()=>null,
+    });
+    const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
+    // 没给材料就不落库，也不替研究者补默认判断。
+    assert.equal(touched,0);
+    assert.deepEqual(candidate.catalog_entry_ids,[]);
+    assert.deepEqual(candidate.assessment_ids,[]);
+  });
+});
+
+test('D00 fails closed on malformed or unwritable Y02—Y06 material',async()=>{
+  const cases=[
+    {extra:{catalog:'not-an-array'},pattern:/PRIVATE_SOURCE_CATALOG_INVALID/,drop:'recordCatalogEntry'},
+    {extra:{catalog:[{provider:'X',catalog_title:'Y',availability_state:'unknown'}]},
+      pattern:/PRIVATE_SOURCE_CATALOG_RECORDING_REQUIRED/,drop:'recordCatalogEntry'},
+    {extra:{coverage:[{completeness_state:'partial',missing_parts:[]}]},
+      pattern:/PRIVATE_SOURCE_COVERAGE_ATTEMPT_REQUIRED/,drop:null},
+    {extra:{verifications:[{catalog_index:0,checks:{},verdict:'admissible'}]},
+      pattern:/PRIVATE_SOURCE_VERIFICATION_CATALOG_INVALID/,drop:null},
+  ];
+  for(const {extra,pattern,drop} of cases){
+    const originalId=id(),projectId=id(),sourceVersionId=id();
+    const input={research_intent:'松江府田赋卷十一',
+      scope:{project_id:projectId,original_id:originalId,page_number:35},...extra};
+    await withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
+      let submitted=0;
+      const deps={
+        readOriginal:async()=>imageRecord(originalId,projectId),
+        verifySourceBinding:async()=>true,
+        readRegistration:async()=>registrationFor(originalId,projectId,{source_version_id:sourceVersionId}),
+        recordSourceNeed:async()=>({need_id:id(),created_at:new Date().toISOString()}),
+        recordCatalogEntry:async()=>({catalog_entry_id:id()}),
+        recordAcquisitionCoverage:async()=>({coverage_id:id()}),
+        recordCandidateVerification:async()=>({verification_id:id()}),
+        recordPriorityAssessment:async()=>({assessment_id:id()}),
+        bridge:bridgeStub,
+        submitGateCandidate:async()=>{submitted+=1;return 'candidate-g0';},
+        readGateAudit:async()=>null,
+      };
+      if(drop)delete deps[drop];
+      const worker=createPrivateEvidenceStageWorker(deps);
+      await assert.rejects(()=>worker.verifySourceIntake({run,job,registry,context,input,token:'s'}),
+        pattern);
+      assert.equal(submitted,0,'malformed source material must not reach G0');
+    });
+  }
+});
+
 test('D01 readScannedPage submits one G1 read_unit candidate with an empty dependency snapshot when G0 is unsigned',async()=>{
   const originalId=id(),sourceVersionId=id(),readUnitId=id();
   const input={originalId,page:scannedPageFor(sourceVersionId)};

@@ -2415,3 +2415,13 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **验证（本批实跑）**：`pnpm test:data-production` 181/181；`pnpm test` 全绿、`real_db_untouched=YES`；守卫前七段绿（`guard:docs` 75/180、`guard:structure` undeclared=0、`guard:registry` jobs=6、`guard:identifiers` design=71/bound=63/steps=8）。
 - **刻意不做**：不建 Y05 表、不建 `search_trace`/`source_dependency`/十类标签映射等无生产者的死结构；不写种子与推断回填；不给 Y02—Y06 造假执行器（表与写入口有了，生产者仍缺，属下一批）；不动 registry `methods: []`、`activation`/`enabled`、D01—D05、生产库与生产 Gate。
 
+## D00-D｜Y02/Y03/Y04/Y06 生产者接入 D00 阶段调用面（2026-11-10，零 DDL）
+
+- **Owner 排序裁决（2026-11-10）**：不并行，**先把 D00 收口再做 M5**，"除非有矛盾"。核对结论：无矛盾——唯一耦合点（新 G0 必带方法计划）已由 C3 解除，既有已签 G0—G5 审计不受影响。
+- **变更**：D00 worker 新增四个可选输入段 `catalog`（Y02）、`coverage`（Y04）、`verifications`（Y03）、`priorities`（Y06），按 Y02→Y04→Y03→Y06 顺序写库并回显 `catalog_entry_ids / coverage_ids / verification_ids / assessment_ids`；`private-evidence-binding.mjs` 把仓库四个写入口接进 worker 依赖。
+- **失败关闭规则**：段不是数组 → `PRIVATE_SOURCE_*_INVALID`；写入口缺失 → `PRIVATE_SOURCE_*_RECORDING_REQUIRED`；覆盖没有尝试可依 → `PRIVATE_SOURCE_COVERAGE_ATTEMPT_REQUIRED`；引用不存在/不合法的目录条目 → `PRIVATE_SOURCE_*_CATALOG_INVALID`；任一情况**不提交 G0 候选**（有断言）。
+- **不许替研究者编造**：段缺省即不落库（`touched=0` 有断言），不补默认目录/覆盖/核查/优先级；目录可按下标引用本次刚登记的条目或直接给已存在 id。
+- **验证**：新增 3 条用例（顺序与回显、无输入不落库、四类失败关闭）→ `private-candidate-worker.test.mjs` 26/26；`pnpm test:data-production` 全绿；`pnpm test` 全绿 `real_db_untouched=YES`（gate_audits=741）；守卫前七段绿（docs 76/180、structure undeclared=0、registry jobs=6、identifiers 71/63/8）。
+- **尚未做（下一批首件）**：真实运行链路证明——授权器与 `run.mjs` 目前只能给 intent/scope/method-plan，还不能给这四个段，因此本轮只到"单测覆盖 + 写入口已在真实库逐项验证（C4）"，**未做真实 D00 跑出四表数据**。下一批给 D00 增加 `--sections` 入参（与 `--method-plan` 同源解析、digest 口径不变）后实跑取证。
+
+
