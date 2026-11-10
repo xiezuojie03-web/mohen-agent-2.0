@@ -291,6 +291,10 @@ export { createPrivateTextReadingRepository } from './private-text-reading-repos
 export { createPrivateScannedPageReadingRepository } from './private-scanned-page-reading-repository.mjs';
 export { createPrivateSourceRegistrationRepository } from './private-source-registration-repository.mjs';
 export { createPrivateCandidateRepository } from './private-candidate-repository.mjs';
+// D00-C1：Y01 来源需求回执与 Y07 获取方法目录/尝试日志的唯一写入口。
+export {
+  createSourceDiscoveryRepository, assertRightsActions, RESULT_STATES, METHOD_STATES,
+} from './source-discovery-repository.mjs';
 export { createStudioDelegationRepository } from './studio-delegation-repository.mjs';
 export {assessStudioReceiptCandidates} from './studio-candidate-assessment.mjs';
 

@@ -2323,3 +2323,24 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
   - NEG（临时脚本 `work/verify-ledger-negatives.mjs`，实测后不入户）：① 删除 C02 并同步下调 method_count → 被 (d) 拦（`专业方法未进入绑定合同（执行分母缺项）：C02`）；② 仅虚增 method_count +1 → 被 (a) 拦（`method_count=64 与实际条目数 63 不一致`）；③ 将 Y02 塞入合同 → 被 (c) 拦（`D00 阶段工序不得进入方法绑定合同：Y02`）。三例 exit=1；随后逐字节还原，`RESTORE_SHA_EQUAL=true`（9fdbf0e6560d）、还原后守卫复绿。
   - 回归持平：`pnpm test:unit` 638 passed / 2 skipped；`pnpm typecheck` 六工作区 Done。
 - **效果**：此后"完成了多少"只由 `pnpm report:ledger` 一个出口回答；两套分母（71 设计身份 / 63 执行分母）关系由前缀分类机械表达，不再依赖散落文档表述。
+
+## D00-C1｜Y01 需求回执与 Y07 获取日志的最小可信落点（2026-11-10，基线 main@39946f0）
+
+- **顺序裁决（本批自行评估，未再让 Owner 决策顺序）**：先 C 后 B。原先拟先做的 D00-A4（文字类原件准入适配）经核查**作废**——`a8a42d6`（2026-11-09）已把 D00 入口改为"来源准入不挑载体"，`IMAGE_TYPE` 仅用于 D01 扫页读法；该过期记录已在 CURRENT.md 更正。B（C 方法预选走 handoff packet）的"预选什么"依赖 Y05 来源身份与 Y06 优先级评估，二者须先有 C 的落点；B 只涉及一两个交接字段，放最后不阻塞任何东西。
+- **为何必须有 DDL（先证"现有表不足"，非按设计清单建表）**：① `source` 现有 7 表（sources / source_versions / raw_items / read_runs / read_units / read_handoffs / read_quality_checks）全部以"来源身份已成立"为前提，无任何列能承载"来源尚未确定时的事件"；② `studio.execution_receipts` 是 Studio 委派（`delegation_id` 非空 FK）的创作侧执行回执，复用即跨域第二套真值；③ `public.research_events`（task_id/stage/event/payload）无方法版本、无项目作用域、无追加不可变约束。交付包 `03_十类方法输出与L0资产承载.md` 明文"十类标签不等于十张新表"，故本批**只补三张**，不建 source_candidate / search_trace / source_identity / source_dependency。
+- **变更 1｜迁移 `20261110110000_mab_d00c_source_discovery_ledger.sql`（已应用本地 `mohen_dev`，生产库未执行）**：
+  - `source.source_needs`（Y01 回执）：project_id、research_intent、scope、coverage_dimensions、existing_stock_gap、rights_boundary、produced_by；**不建到 studio.projects 的外键**（source 为更低层，反向依赖会让 L0 依赖创作层），项目归属由写入口强制。
+  - `source.acquisition_methods`（§2.5 方法目录）：主键 `(method_key, method_version)`，`method_key ~ '^M[0-9]{4}$'`；六态 `method_state`；触发器 `ACQUISITION_METHOD_DEFINITION_IMMUTABLE` 冻结身份与定义列，只允许推进 method_state / last_revalidated_at / recommended / alternatives（"上次成功"不得靠改历史变成"当前有效"）。
+  - `source.acquisition_attempts`（§2.5 追加式日志）：need_id / method 复合外键 / request_digest（脱敏请求哈希，不存密钥）/ result_state 十一态 / failure_certainty（CONFIRMED|HYPOTHESIS）/ byte_size / asset_sha256 / source_locator / rights_actions / dependency_refs / alternatives / correction_of。约束：`result_state='acquired_verified'` 必须同时有 byte_size 与 sha256（禁止无字节冒充已取得正文）；`source.is_rights_actions_valid()` 只认九动作四取值。
+  - 历史不可变：`source_needs` 与 `acquisition_attempts` 的 UPDATE/DELETE 一律 `D00_HISTORY_APPEND_ONLY`，更正用新行 + `correction_of`。
+  - 最小授权：三个新表 RLS=true；`mohen_private_worker` 仅 SELECT/INSERT（方法表另加四列 UPDATE）；`mohen_gate_authority` / `mohen_gate_signer_m5_machine` 只读；`mohen_producer`/anon/authenticated/service_role 无权限。
+- **变更 2｜唯一写入口 `packages/data-access/src/source-discovery-repository.mjs`（已从 index.mjs 导出）**：`recordSourceNeed` / `registerAcquisitionMethod`（重复登记返回 `created:false` 且不覆盖定义）/ `appendAcquisitionAttempt`。边界：只写 L0 候选与事件，不写 `source.sources|source_versions|raw_items`、不提交 G0 候选、不写 `control.gate_audits`。九动作直接引用 `rights-actions.mjs`（不另立第三套词典）；旧键 `public_display`/`read` 在写入口归一为 `display`/`access_view` 后入库，库内只存规范九键。成本缺省 `certainty:'unknown'`，不填 0。
+- **变更 3｜隔离证据工具 `tools/verify-d00c-source-discovery-ledger.mjs`**：单事务 + `rollback`，不向 `mohen_dev` 留测试行；用 `SET LOCAL ROLE` 真实验证三个角色的权限与 RLS；用 savepoint 逐条捕获负例。
+- **刻意不做**：不实现 Y02—Y06 生产者（先建表即无生产者的死结构，`CODE_PRESENT≠可用`）；不注册 registry 的 D00 方法路由（`methods: []` 未动，激活须另行隔离验证）；不改 `intent id`/acquisition-intents 的既有 JSON 词典；不写任何种子数据或推断回填。
+- **禁区遵守**：零生产变更、零模型费用、零网络；D01—D05、`activation`/`enabled`/`adapter_binding`/`gate_reviewer_binding`、绑定合同 `method_count=63` 均未触碰；既有 source 三元链行数未变（本事务内 42/42/102）。
+- **验证（POS/NEG，`D00C1_ALL_PASS total=24 failed=0`，回滚后零残留）**：
+  - POS：Y01 回执落库；`M0001@shl-pdf-race-v1` 方法身份登记；重复登记不覆盖定义（access_mode 仍为 `api_pdf_stream`、collection 仍为 `gj`）；`acquired_verified` 带字节与哈希落库；`catalog_found` 无字节可登记且 cost certainty 自动 `unknown`；更正以新行指向原尝试；worker 角色可读自身回执；复核角色可只读；旧键归一后入库。
+  - NEG：需求回执 UPDATE → `D00_HISTORY_APPEND_ONLY`；尝试 DELETE → `D00_HISTORY_APPEND_ONLY`；方法定义 UPDATE → `ACQUISITION_METHOD_DEFINITION_IMMUTABLE`；方法 DELETE → `RAW_APPEND_ONLY`；无字节标 `acquired_verified` → check 约束；`publish_worldwide` → `acquisition_attempts_rights_actions_valid`（库）与 `SOURCE_DISCOVERY_RIGHTS_ACTION_UNKNOWN`（仓库）；未登记方法引用 → 外键；非法 project → `SOURCE_DISCOVERY_PROJECT_INVALID`；worker 改需求 → 权限不够；复核角色写尝试 → 权限不够；`mohen_producer` 读 → 对模式 source 权限不够。
+  - 守卫：`pnpm guard` 前七段（docs/structure/registry/source-gate/identifiers/acquisition/reconciliation）全绿；`guard:naming` 仍红，属既有 DEFERRED（naming-map 为 `DESIGN_TARGET_NOT_APPLIED`，RECON-02 专项，`actual_tables=45` 含本批三张新表），**不构成本批回归**。
+- **未达成项**：`ISOLATED_VERIFIED` 不计入——本批只到"存储契约 + 写入口"（`CODE_PRESENT` + 本地隔离实证），Y01/Y07 尚无 stage 授权调用路径与 registry 路由，故 `report-method-ledger` 的 `ISOLATED_VERIFIED` 继续 `NOT_TRACKED`。下一步 D00-C2：把 Y01/Y07 接进 `private-evidence-stage.mjs` 的授权调用面，并为每个 Y 建逐项证据账。
+
