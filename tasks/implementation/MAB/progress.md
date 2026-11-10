@@ -2668,3 +2668,33 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - `robots_or_terms_reviewed` 仍为 `false`：只观察到限流并遵守，馆方使用条款的**合规审阅**未做（需要人读条款，不由工具自证）。
 - D00 侧工序归位已在代码与单测完成；该变更后的**下一次真实 D00 全链**尚未重跑（本轮真实跑的是 Y04 与 Y07→Y08 两条工序级真链），因此旧行 `54906f7d…` 仍显示 `D00/Y04:intake_coverage@v1`。
 
+## M5-I｜Y07 余下协议路径继续落地：OAI-PMH / SPARQL / 馆方申请 / 批量包 / HTTP-Range（2026-11-10，本地隔离 + 真实网络）
+
+**Owner 指令（照录）**：「既然缺，为什么不继续呢？」
+→ 处置：不停在缺口汇报，把 M5-H-4 列出的 Y07 余下路径逐条实现并各跑一条真实链。
+
+### M5-I-1｜规范条款 → 判据 → 证据
+
+| # | 规范条款（Y07 第 157—175 行） | 验收判据 | 实现 | 真实证据 | 状态 |
+|---|---|---|---|---|---|
+| I1 | 「OAI-PMH」协议路径 | 能真实收割元数据并如实标 `metadata_only`，不得当成原件下载 | `tools/acquire-directory-api.mjs`，`M0005@v1 / oai_pmh_metadata`：Identify → ListRecords + `resumptionToken` 翻页（上限 20 页/`--max` 条），逐条 `recordCatalogEntry` | attempt `29d80f75…`=`metadata_only`；覆盖 `32a40c35…`（`Y08:directory_coverage@v1`，`completeness_state=unknown`）；真实端点 `https://repository.kulib.kyoto-u.ac.jp/dspace-oai/request` HTTP 200 | VERIFIED_LIVE |
+| I2 | 「SPARQL」协议路径 | 能真实查语义库并记 `metadata_only` | `M0006@v1 / sparql_select`：POST `application/sparql-results+json` | attempt `58aa6a82…`；覆盖 `6e0abf7e…`；真实端点 `https://query.wikidata.org/sparql` HTTP 200 | VERIFIED_LIVE |
+| I3 | 「馆方申请」（登录/付费/受限时的合法路径） | 受限即停、不得绕访问控制，且必须留下可发出的申请内容 | `--request-permission` 分支：attempt `restricted` + `failureCode=ACQUISITION_REQUIRES_PERMISSION`，打印收件方/主题/正文 | attempt `91f2d148…`（NAJ 受限路径）；未发任何越权请求 | VERIFIED_ISOLATED |
+| I4 | 「批量包」 | 一次请求组内逐件取回、逐件登记、分母按件数 | `tools/acquire-http-file.mjs` 增 `--list`（JSON 清单，支持 `page`/`name`）；一件失败整批停，不允许"取到几件先记账" | attempt `ac38a245…`：3/3 件 `acquired_verified`，2544004B，逐件 `source_version`+`raw_item`+私有原件回读一致、登记绑定一致；覆盖 `a1d4fe88…`=`complete`（`coverage_ratio=3/3 file`、`pages_extent=unknown`） | VERIFIED_LIVE |
+| I5 | 「HTTP-Range」 | 走分段必须如实记录是否真的分过段 | `download()` 始终带 `Range: bytes=start-(start+4MiB-1)`；206 解析 `content-range` 取总长并累计，200 视为服务端忽略 Range 则整件取回并把 `ranged=false` 写清；逐块核 `HTTP_RANGE_OVERRUN/LENGTH_MISMATCH/EXCEEDS_LIMIT/EMPTY_BODY` | 本批真实取件 3 件全部 `ranged=false`（NAJ 与 `thumb.wikimedia.org` 实测均忽略 Range，返回 200 且无 `content-range`），账上如实记 `boundary=none` | 分段分支 CODE_PRESENT；**206 分支无真实样本**（见 M5-I-3） |
+| I6 | 批量件的"包身份" | 不得把多件伪造成一个文件哈希 | 多件时 `asset_sha256` 记**可复算包摘要**（逐件 页码/URL/SHA256/字节数 的规范 JSON 再 SHA256），并在 `acquiredExtent.asset_sha256_scope=package_manifest_digest`、`package_digest`、`coverage_scope.package_digest` 三处同名同值；单件仍记该件真实 `sha256` | attempt `ac38a245…` 的 `acquired_extent` 与覆盖 `a1d4fe88…` 的 scope 均含同一 `package_digest`，逐件 `files[].sha256` 齐全 | VERIFIED_LIVE |
+| I7 | Y07「检查认证、速率」 | 限流要退避并留痕 | 429/403/5xx 退避重试（403 只重试 1 次、5s 起） | 探测期 Japan Search 429/403 已按此策略停止重复请求 | VERIFIED_ISOLATED |
+
+### M5-I-2｜新增/改动清单
+
+- 新增：`tools/acquire-directory-api.mjs`（`M0005@v1` OAI-PMH、`M0006@v1` SPARQL、`--request-permission` 三条分支共用同一登记/尝试/覆盖写入口）。
+- 改动：`tools/acquire-http-file.mjs`（多目标 `--list`、Range 感知 `download()`、逐件落库与回读、包摘要、attempt/coverage 多件语义）。
+- 删除：临时探测脚本 `scripts/tmp-probe.mjs`（探测结束即删，未留残留）。
+
+### M5-I-3｜仍未做（据实记账）
+
+- **HTTP-Range 206 分支无真实成功样本**：本环境实测 NAJ 与 Wikimedia 均忽略 `Range`（回 200、无 `content-range`），因此"分段拼回"只在代码与逻辑上成立。恢复条件：找到一家真实支持 `Range`（返回 206 + `content-range`）且权利已核的来源，再跑一次批量/大件取件。
+- `robots_or_terms_reviewed` 仍为 `false`：使用条款的**合规审阅**需人读，不由工具自证。
+- OAI-PMH / SPARQL 只证到"能真实查到目录元数据"，**未取到任何原件字节**；原件仍走 M0002/M0003/M0004。
+- 图幅/内页清点（Y08 的 `pages_extent`）在已取得样本上仍为 `unknown`，未做逐页比对。
+
