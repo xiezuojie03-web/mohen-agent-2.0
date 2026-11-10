@@ -294,19 +294,19 @@ export default async function DeskPage() {
   // evidence_refs 一并提交，等待独立 Gate 审；候选只是提交，不是任何资格。
   const gateCandidateRows = (await queryRows(
     `select c.candidate_id::text as candidate_id, c.candidate_status,
-            c.evidence_refs::text as evidence_refs, c.created_at::text as created_at,
+            c.evidence_refs::text as evidence_refs, c.submitted_at::text as submitted_at,
             p.project_title
        from control.gate_candidates c
        join studio.projects p
          on p.project_id = (c.allowed_scope->>'project_id')::uuid
       where p.owner_user_id = :'owner' and c.stage = 'D00'
-      order by c.created_at desc limit 5`,
+      order by c.submitted_at desc limit 5`,
     { owner: session.uid }
   )) as Array<{
     candidate_id: string;
     candidate_status: string;
     evidence_refs: string;
-    created_at: string;
+    submitted_at: string;
     project_title: string;
   }>;
 
@@ -903,7 +903,7 @@ export default async function DeskPage() {
                 链上依据 {kinds.length} 条：{kinds.join("、") || "（无）"}
               </div>
               <div style={{ fontSize: 11, color: "#6b746f", marginTop: 5 }}>
-                {row.project_title} · 提交于 {row.created_at.slice(0, 10)}
+                {row.project_title} · 提交于 {row.submitted_at.slice(0, 10)}
               </div>
             </article>
           );
