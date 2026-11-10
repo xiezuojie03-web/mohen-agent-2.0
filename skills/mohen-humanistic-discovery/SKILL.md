@@ -6,6 +6,7 @@
 **Data Layer:** L3  
 **Exit Gate:** G3  
 **Allowed Calling Stages:** D04
+- **Entry**：`pipelines/data-production/executors/d04-humanistic-discovery.mjs`
 
 ## Purpose
 Discover meaningful relations, change, comparison, mechanisms and present connections on top of adjudicated L2 facts.

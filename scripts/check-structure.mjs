@@ -30,6 +30,9 @@ if (skillCount < SKILL_FLOOR) {
   failed = true;
 }
 for (const d of skillDirs) {
+  // skills/archive/ 是退役 Skill 的归档容器（内部每个归档件仍自带 SKILL.md），
+  // 本身不是一个 Skill，不适用「每个 skills/<dir> 必须带 SKILL.md」的活技能断言。
+  if (d === "archive") continue;
   if (!fs.existsSync(`skills/${d}/SKILL.md`)) {
     console.error(`SKILL_DIR_WITHOUT_SKILL_MD skills/${d}`);
     failed = true;

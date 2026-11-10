@@ -2288,3 +2288,23 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 
 
 
+
+## 完整回归批（2026-11-10，基线 main@7f7587a）
+
+- **范围**：按 PLAN §3.1—3.5 既有 M1—M5 条件做本机完整回归：pnpm guard 全链、test:unit、typecheck、test-k3-db 隔离整链、verify-local-execution-env、既有 verify-* 只读核验、十个补充守卫与 phase 套件。全部实跑、逐一记账。
+- **修复 1｜guard:structure（两处）**：`check-structure.mjs` 豁免 `skills/archive/` 归档容器（归档件各自带 SKILL.md，容器不是活技能）；`check-structure-map.mjs` 顶层覆盖改按「git 已跟踪 + 未忽略新增文件」枚举（git ls-files），本地构建/运行散件（.next、work/、dev*.log 等 gitignored）不再误红；OWNERSHIP_MAP §0 补登 21 个真实在册顶层条目（apps/、sources/、.github/、package.json、各 vitest/playwright 配置等）。六个数据生产 Skill 的 SKILL.md 补 `- **Entry**` 声明，与 registry `implementation.executor` 一致（六个 executor 文件均在库）；registry 本体未动。修复后 `undeclared=0 tree_missing=0 router_broken=0`。
+- **修复 2｜guard:source-gate**：`source-providers.json`（specs 与 data/fixtures 两处）中 hushang_legacy 的 `defined_at` 从已被归档移除的 `governance/C3_...V1.2.md` 改指 `governance/archive/C3_...V1.2.md`（文件确在）；定义语义不变，仅修失效指针。
+- **修复 3｜guard:gate-enforcement**：守卫脚本按旧签名调 `validateGnLineage(db, ids)`——M3 起校验器强制第三参「资格读上下文」，且 mock fixture 缺 decision_origin/current_qualification 等字段，HEAD 原样即崩（QUALIFICATION_CONTEXT_REQUIRED）。参照同断言的 `tests/data-production/gate-enforcement.test.mjs` 补齐 fixture 字段与 qualifiedContext 后通过：`GATE_ENFORCEMENT_OK`。
+- **修复 4｜test:phase-g**：套件仍 import 原始 `runProduction`——M2 起编排器强制独立签名授权令牌，HEAD 原样三例 `EXECUTION_SIGNED_GRANT_MISSING`；且 registry 已含 D00 而 fixture 只有 D01—D05 适配器。改以 `runAuthorizedFixture`（测试专用签名夹具）+ `from_stage:"D01"` 起跑，保持原断言语义，6/6 通过。
+- **修复 5｜verify-2-c-d-chain / verify-5i-asset-matrix（陈旧选择器/期望，非数据回归）**：CP2-E 第二原件（0004，松江府志51页水利论）11-08/09 又落一条完整 D 链，两脚本按「最新一行」/批次 I 头数断言，必然失配。verify-2-c 的 D02/D03/D04/D05 选择器钉住批次 C（v1 迭代：finding 8412d171、claim 7afd01d9、投影 m5.songjiang.tianze.quota-rule.v1）→ `VERIFY_2_C_ALL_PASS`。verify-5i 矩阵计数更新为当前真实值（research_brief 2、source_anchor 4、reading_note 1、evidence_note 1，共 8 头）；SNAPSHOTTED 断言钉住批次 I 五个头（b0a11000-…-0010…0014），后增三头经标准 saveRevision 落库如实为 WORKING，两侧计数钉死（5+3）；CAS 负例改用 research_brief 头（evidence-bearing 类会先被 CP2-F 引用守卫拒绝，该守卫已由 verify-6 覆盖），恢复测到 STUDIO_REVISION_CONFLICT → `VERIFY_5I_ALL_PASS`。
+- **有据延期（QR-09 残留 3 项红灯，非本批新引入）**：`guard:naming`（naming-map.json 为 DESIGN_TARGET_NOT_APPLIED、physical_rename_authorized=false，45 个真实表登记属 RECON-02 方案 A 专项，不在回归批伪造登记）；`guard:escalations`（CURRENT.md 缺 §9 Architecture Escalations，须先裁决哪些升级线入册，不代拟）；`guard:links`（68 处断链引用，豁免 archive/tasks/data/legacy 后，属文档级专项整改，单独批次处理）。三项均不进 CI 门禁。
+- **回归结果全表**：
+  - `pnpm guard` 链：docs/structure/registry/source-gate/identifiers/acquisition/reconciliation ✓ → naming ✗（延期，链止）→ names ✓（单独实跑）→ escalations/links ✗（延期）→ `pnpm test`（test-isolated）✓ 87 文件 **700 passed / 2 skipped**，ISOLATION_VERDICT real_db_untouched=YES。
+  - `pnpm test:unit` ✓ **638 passed / 2 skipped**（与基线一致）；`pnpm typecheck` ✓ 6/6 工作区。
+  - `node scripts/test-k3-db.mjs`（隔离簇 55432 一次性库）✓ **K3_DB_TEST_PASS**，全部套件零失败（含昨日四专项断言套件与 gate_audits RLS 关闭）。
+  - `tools/verify-local-execution-env.mjs` ✓ PASS×4（172/0），证据写入 D:\MoHen\keys\execution-auth\。
+  - verify 系列：verify-2-0-state ✓ / 2-0-l0-binding ✓ / 2-1-d-chain ✓（HOLD 为如实状态）/ 2-a-scanned-page ✓ / **2-c ✓（修复后）** / 3-gate-chain ✓ VERIFY_3_ALL_PASS（29 候选、7 资格现行）/ **5i ✓（修复后）** / 5j-components ✓ / 6 ✓ VERIFY_6_BACKLINK_PASS / qr02-session-switch ✓ QR02_ALL_PASS。
+  - 补充守卫：isolated-db-fixtures ✓ / physical-model ✓ / runtime-boundary ✓ / k3-traceability ✓ / **gate-enforcement ✓（修复后）** / cross-layer-write ✓ / e2e-completeness ✓ / auth ✓（顺带刷新 P0 鉴权矩阵 CSV：新增 6 条在册路由，全部 protected/OK）/ no-legacy-production-entry ✓ / stage-handoff ✓；test:phase-f ✓ / **test:phase-g ✓（修复后）** / test:data-production ✓ 172/0。
+- **环境注记**：跑链环境变量组合为 `MOHEN_TEST_PSQL/HOST=127.0.0.1/PORT=55432/CRYPTO_SCHEMA=extensions` + `NODE_OPTIONS=--max-old-space-size=1024`；openssl 系测试需 `PATH` 含 `D:\MoHen\tools\OpenSSL-Win64\bin` 且 `OPENSSL_CONF` 指向 D 盘 cnf（机器级变量已设，但旧会话不继承，新开 shell 须重设）。
+- **未跑（按条件）**：verify-4/verify-5 需真实 DeepSeek 付费小调用（预授权 ≤¥20 内，本批无免费替代证据缺口，留待需要时跑）；verify-5k-http 需本地 dev server（3210）；test:mab:http 由 CI 承担。GAP_RIGHTS_ACTIONS 仍属生产缺列事实，不随隔离链解除。
+- **验证级别**：全部为本机隔离/只读证据（VERIFIED_ISOLATED）；不涉及生产变更，CI 回执待推送后取证。

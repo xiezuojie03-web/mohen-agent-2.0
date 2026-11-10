@@ -6,6 +6,7 @@
 **Data Layer:** L1  
 **Exit Gate:** G1  
 **Allowed Calling Stages:** D02
+- **Entry**：`pipelines/data-production/executors/d02-material-understanding.mjs`
 
 ## Purpose
 Read heterogeneous carriers at content level and produce replayable L1 Material Evidence.

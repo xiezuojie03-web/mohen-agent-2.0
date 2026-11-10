@@ -6,6 +6,7 @@
 **Data Layer:** L0  
 **Exit Gate:** G0  
 **Allowed Calling Stages:** D00
+- **Entry**：`pipelines/data-production/executors/d00-source-intake.mjs`
 
 ## Purpose
 Turn a research intent into qualified L0 Cultural Sources with preserved Raw, provenance, rights and locator.

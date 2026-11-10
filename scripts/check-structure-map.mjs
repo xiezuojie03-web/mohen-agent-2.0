@@ -17,6 +17,7 @@
 //     权威路径清单在 AGENTS.md §1（严格，逐条校验）。
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 
 const MAP = "OWNERSHIP_MAP.md";
 const ROUTER = "AGENTS.md";
@@ -57,11 +58,24 @@ const mapText = fs.readFileSync(MAP, "utf8");
 const items = parseTree(mapText);
 if (!items.length) { console.error(`NO_TREE_PARSED: ${MAP} §0 未解析到任何树行`); process.exit(1); }
 
-const actualRoot = fs
-  .readdirSync(".", { withFileTypes: true })
-  .map((d) => d.name)
-  .filter((n) => !IGNORE.has(n))
-  .sort();
+// 顶层覆盖只针对「仓库相关」条目：git 已跟踪 + 未被 .gitignore 排除的新增文件。
+// 本地构建/运行产物（.next、.env.local、work/、dev*.log 等 gitignored 散件）不属于结构
+// SOT 管辖——本守卫不在 CI 执行，真实开发机是其主战场，不能因本地散件常态化误红。
+let actualRoot;
+try {
+  const out = execFileSync("git", ["ls-files", "--cached", "--others", "--exclude-standard"], {
+    encoding: "utf8", maxBuffer: 64 * 1024 * 1024,
+  });
+  actualRoot = [...new Set(out.split(/\r?\n/).filter(Boolean).map((p) => p.split("/")[0]))]
+    .filter((n) => !IGNORE.has(n))
+    .sort();
+} catch {
+  actualRoot = fs
+    .readdirSync(".", { withFileTypes: true })
+    .map((d) => d.name)
+    .filter((n) => !IGNORE.has(n))
+    .sort();
+}
 
 // ---------- ① 顶层覆盖 ----------
 // 顶层项可能写作 `apps/web` / `supabase/migrations` / `tools/production` —— 取第一段作为顶层名

@@ -1,5 +1,7 @@
 // 校验 M5 批次C D02-D05 私有候选链落库行（本地隔离 PG）。只读校验，
 // 不改数据；失败即打印具体字段并输出 VERIFY_2_C_ALL_FAIL。
+// 选择器钉住批次 C（第一链）对象：项目内后续批次（CP2-E 第二链 0004 原件等）会在同表
+// 追加更新行，"取最新一行"会误选；本脚本只断言批次 C 链的字段真值，后续链另有自己的验证。
 import { queryRows, getNodePgPool } from "../packages/data-access/src/index.mjs";
 
 const PROJECT = "b0a11000-0000-4000-8000-000000000001";
@@ -23,7 +25,8 @@ const ev = await queryRows(`select e.evidence_id::text, e.source_voice, e.eviden
   join evidence.read_unit_evidence_links l on l.evidence_id=e.evidence_id
   join evidence.reading_units ru on ru.reading_unit_id=e.reading_unit_id
   where l.link_version='mab.private-material-observation.v1'
-  order by e.created_at desc limit 1`);
+    and e.evidence_type='gazetteer_tax_quota_observation'
+  order by e.created_at asc limit 1`);
 const e0 = ev[0];
 if (!e0) { failed += 1; console.log("FAIL D02 evidence/link rows missing"); }
 else {
@@ -61,8 +64,8 @@ const cl = await queryRows(`select c.change_id::text, c.change_type,
   from world.claim_revisions cr
   join world.changes c on c.change_id=cr.subject_id
   join world.claim_evidence_links cel on cel.claim_revision_id=cr.claim_revision_id
-  where cr.producer_method_id='W07'
-  order by cr.authored_at desc limit 1`);
+  where cr.producer_method_id='W07' and c.change_type='taxation_quota_assessment'
+  order by cr.authored_at asc limit 1`);
 const c0 = cl[0];
 if (!c0) { failed += 1; console.log("FAIL D03 claim rows missing"); }
 else {
@@ -91,7 +94,11 @@ const f = await queryRows(`select finding_id::text, finding_type, human_question
   supporting_world_objects->0->>'id' as ref_id
   from meaning.findings
   where discovery_method->>'method_id'='A06'
-  order by created_at desc limit 1`);
+    and supporting_world_objects->0->>'id' in (
+      select cr.claim_revision_id::text from world.claim_revisions cr
+      join world.changes c on c.change_id=cr.subject_id
+      where cr.producer_method_id='W07' and c.change_type='taxation_quota_assessment')
+  order by created_at asc limit 1`);
 const f0 = f[0];
 if (!f0) { failed += 1; console.log("FAIL D04 finding rows missing"); }
 else {
@@ -115,7 +122,7 @@ const p = await queryRows(`select projection_id::text, projection_key,
   expression_rule->>'method_id' as method,
   expression_rule->>'qualification' as rule_qualification
   from read_model.world_projections
-  where expression_rule->>'method_id'='P02'
+  where expression_rule->>'method_id'='P02' and projection_key='m5.songjiang.tianze.quota-rule.v1'
   order by generated_at desc limit 1`);
 const p0 = p[0];
 if (!p0) { failed += 1; console.log("FAIL D05 projection rows missing"); }

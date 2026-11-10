@@ -6,6 +6,7 @@
 **Data Layer:** L4  
 **Exit Gate:** G4  
 **Allowed Calling Stages:** D05
+- **Entry**：`pipelines/data-production/executors/d05-read-model-publication.mjs`
 
 ## Purpose
 Assemble trusted L4 read models and determine runtime eligibility without rewriting L0–L3 truth.

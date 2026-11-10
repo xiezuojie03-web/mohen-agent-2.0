@@ -57,7 +57,10 @@ const db = createMockDb({
     { object_type: "finding", object_id: "F_HOLD", gate_code: "G4", result: "HOLD" },
     { object_type: "entity", object_id: "ENT_OK", gate_code: "G3", result: "PASS" },
     { object_type: "entity", object_id: "ENT_CONFLICT", gate_code: "G3", result: "HOLD" },
-  ],
+  ].map((a) => ({ ...a, decision_origin: "independent_gate",
+    current_qualification: a.result === "PASS", consumer: "producer",
+    purpose_namespace: "mohen", purpose_code: "guard-check", purpose_version: "1",
+    allowed_scope: { project: "guard" } })),
   worldObjects: [
     { id: "ENT_OK", kind: "entity", maturity: "adjudicated" },
     { id: "ENT_CONFLICT", kind: "entity", maturity: "adjudicated" },
@@ -68,41 +71,46 @@ const db = createMockDb({
   ],
 });
 
+// 血统校验与 legalInput 均要求显式资格读上下文（M3 起 PASS 标志本身不授予知识使用权）。
+const qualifiedContext = { consumer: "producer",
+  purpose: { namespace: "mohen", code: "guard-check", version: "1" },
+  scope: { project: "guard" } };
+
 const repo = createDataProductionRepository(db);
 
 // ---- 2. G1 reading cannot consume non-G0-PASS source ----
 let threw = false;
-try { await validateG1Lineage(db, ["S_HOLD"]); } catch { threw = true; }
+try { await validateG1Lineage(db, ["S_HOLD"], qualifiedContext); } catch { threw = true; }
 assert(threw, "G1 lineage must block source not G0 PASS");
-await validateG1Lineage(db, ["S_PASS"]);
+await validateG1Lineage(db, ["S_PASS"], qualifiedContext);
 
 // ---- 3. G2 evidence cannot consume non-G1-PASS reading unit ----
 threw = false;
-try { await validateG2Lineage(db, ["R_HOLD"]); } catch { threw = true; }
+try { await validateG2Lineage(db, ["R_HOLD"], qualifiedContext); } catch { threw = true; }
 assert(threw, "G2 lineage must block reading unit not G1 PASS");
-await validateG2Lineage(db, ["R_PASS"]);
+await validateG2Lineage(db, ["R_PASS"], qualifiedContext);
 
 // ---- 3b. G3 world cannot consume non-G2-PASS material evidence ----
 threw = false;
-try { await validateG3Lineage(db, ["E_HOLD"]); } catch { threw = true; }
+try { await validateG3Lineage(db, ["E_HOLD"], qualifiedContext); } catch { threw = true; }
 assert(threw, "G3 lineage must block material evidence not G2 PASS");
-await validateG3Lineage(db, ["E_PASS"]);
+await validateG3Lineage(db, ["E_PASS"], qualifiedContext);
 
 // ---- 3c. G4 finding cannot consume non-G3-PASS world object ----
 threw = false;
-try { await validateG4Lineage(db, ["W_HOLD"]); } catch { threw = true; }
+try { await validateG4Lineage(db, ["W_HOLD"], qualifiedContext); } catch { threw = true; }
 assert(threw, "G4 lineage must block world object not G3 PASS");
-await validateG4Lineage(db, ["W_PASS"]);
+await validateG4Lineage(db, ["W_PASS"], qualifiedContext);
 
 // ---- 3d. G5 read model cannot consume non-G4-PASS finding ----
 threw = false;
-try { await validateG5Lineage(db, ["F_HOLD"]); } catch { threw = true; }
+try { await validateG5Lineage(db, ["F_HOLD"], qualifiedContext); } catch { threw = true; }
 assert(threw, "G5 lineage must block finding not G4 PASS");
-await validateG5Lineage(db, ["F_PASS"]);
+await validateG5Lineage(db, ["F_PASS"], qualifiedContext);
 
 // ---- 4. empty upstream dependency blocked (F09) ----
 threw = false;
-try { await validateG1Lineage(db, []); } catch { threw = true; }
+try { await validateG1Lineage(db, [], qualifiedContext); } catch { threw = true; }
 assert(threw, "empty upstream dependency must be blocked");
 
 // ---- 5. conflicted identity cannot masquerade as adjudicated ----
@@ -121,13 +129,13 @@ const dbClean = createMockDb({
 await validateNoConflictedAdjudicated(dbClean);
 
 // ---- 6. legalInput exposes only G(n-1) PASS rows ----
-const g0Input = await repo.legalInput("D01");
+const g0Input = await repo.legalInput("D01", qualifiedContext);
 assert(g0Input.length === 1 && g0Input[0].object_id === "S_PASS", "D01 must consume only G0 PASS source");
-const g1Input = await repo.legalInput("D02");
+const g1Input = await repo.legalInput("D02", qualifiedContext);
 assert(g1Input.length === 1 && g1Input[0].object_id === "R_PASS", "D02 must consume only G1 PASS reading unit");
-const g2Input = await repo.legalInput("D03");
+const g2Input = await repo.legalInput("D03", qualifiedContext);
 assert(g2Input.length === 1 && g2Input[0].object_id === "E_PASS", "D03 must consume only G2 PASS material evidence");
-const g3Input = await repo.legalInput("D04");
+const g3Input = await repo.legalInput("D04", qualifiedContext);
 assert(g3Input.some((r) => r.object_id === "W_PASS"), "D04 must consume G3 PASS world object");
 assert(!g3Input.some((r) => r.object_id === "W_HOLD"), "D04 must not consume G3 HOLD world object");
 

@@ -7,6 +7,7 @@ Stage: D01
 Data layer: L1
 Independent exit gate: G1
 Canonical target entry: `pipelines/data-production/executors/d01-carrier-reading.mjs`
+- **Entry**：`pipelines/data-production/executors/d01-carrier-reading.mjs`
 Implementation status: IMPLEMENT_BY_CODEBUDDY_AFTER_M0，未实现不称正式能力。
 
 ## Trigger and inputs

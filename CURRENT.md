@@ -32,7 +32,7 @@
 ## 未关闭事项
 
 - **SEC-01已关闭（生产只读复核）**：`public.imported_materials` RLS=true；anon/authenticated均无SELECT/INSERT/UPDATE；`mohen_app_runtime`保留SELECT。FORCE RLS=false，但应用运行角色不是该表所有者且不具绕过权限；无需重复施工。
-- **7 个 `guard:*` 在本地为红，且不在远端 CI 范围内**：已确认两类根因——`check-structure` 报 `skills/archive` 缺 `SKILL.md` 及 6 个 `SKILL_MD_NO_ENTRY`；`check-naming-map` 报真库存在未登记表名。其余（source-gate、identifier-registry、escalations、links、gate-enforcement）未逐一定位。均需具名任务处置，当前不进入 CI 门禁，也不改变本次 CI 结论。
+- **本地 `guard:*` 红灯已收口 4/7（2026-11-10 完整回归批）**：`check-structure`（archive 容器豁免 + 顶层覆盖改 git 语义 + OWNERSHIP_MAP 补登 + 6 个 Skill 补 Entry）、`source-gate`（hushang_legacy 失效指针改指 archive）、`identifier-registry`（昨日 0cba2b9 重写）、`gate-enforcement`（守卫脚本补齐资格读上下文与新签名）均已修复转绿。**剩余 3 项有据延期**：`check-naming-map`（naming-map 为 DESIGN_TARGET_NOT_APPLIED，RECON-02 专项）、`check-escalations`（CURRENT.md 待补 §9，须先裁决升级线）、`check-links`（68 处断链，文档专项）。均不进 CI 门禁，也不改变 CI 结论。
 - **生产运行证据仍为零**：Studio projects=0、asset_revisions=0、private_originals表不存在、Storage buckets=0。本地 `mohen_dev` 已有 Gate 策略版本表、Reviewer 绑定表与 `control.current_qualification_is_valid`，但这些仅存在于本地隔离库，**生产库未执行迁移**；G0—G5 的本地双签（机器自审 + Owner 本人签）属隔离证据，不等于生产启用。无`VERIFIED_LIVE`，M8未启动。
 
 ## 工具分工

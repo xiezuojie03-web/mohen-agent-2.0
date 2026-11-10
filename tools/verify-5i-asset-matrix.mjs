@@ -1,6 +1,11 @@
 // M5 batch I: dimension 4+6 — 13-kind asset matrix for the real work 《松江府田赋》.
 // Real PG assertions only; no fabrication. Prints VERIFY_5I_ALL_PASS when every check holds.
 // Read-only except two fail-fast negatives (CAS conflict / canonical-binding guard) that never insert.
+//
+// 2026-11-10 回归校准：项目内后续批次（批次 H/K 工作稿、CP2-E 第二原件 0004 及其 SHL 登记）
+// 又落库 3 个头（research_brief×1、source_anchor×2），头数从 5 变为 8。矩阵计数随之更新为
+// 当前真实值；批次 I 的 5 个头仍是唯一 SNAPSHOTTED 组（确定性修订号 b0a11000-…-0010…0014），
+// 后增 3 头经标准 saveRevision 路径落库、content_state=WORKING 属如实记录，不冒充已快照。
 const OWNER = "270bcecf-9bfb-4865-9432-a0ac9db8df75";
 const FOREIGN = "b0a11000-0000-4000-8000-0000000000a1"; // machine reviewer: real user, not project owner
 const PROJECT = "b0a11000-0000-4000-8000-000000000001";
@@ -37,7 +42,7 @@ const heads = await q(`select h.asset_id::text, h.asset_kind, h.current_revision
 const byKind = {};
 for (const h of heads) (byKind[h.asset_kind] ??= []).push(h);
 
-const producedStudio = { research_brief: 1, source_anchor: 2, reading_note: 1, evidence_note: 1 };
+const producedStudio = { research_brief: 2, source_anchor: 4, reading_note: 1, evidence_note: 1 };
 for (const [kind, n] of Object.entries(producedStudio)) {
   ok(`matrix.produced.${kind}`, (byKind[kind] ?? []).length === n, `${(byKind[kind] ?? []).length}/${n} heads`);
 }
@@ -71,10 +76,25 @@ ok("matrix.produced.work_revision",
 
 // ---------- B. per-revision fields / immutability / CAS state ----------
 const hashRe = /^[a-f0-9]{64}$/;
+// 批次 I 的 5 个头经快照/定稿路径落库，content_state 必须保持 SNAPSHOTTED；
+// 后续批次的头如实为 WORKING。两种状态分别计数钉死，任一侧漂移都报红。
+const BATCH_I_SNAPSHOTTED = new Set([
+  "b0a11000-0000-4000-8000-000000000010", // source_anchor（11-07 批次 I）
+  "b0a11000-0000-4000-8000-000000000011", // source_anchor（11-07 批次 I）
+  "b0a11000-0000-4000-8000-000000000012", // research_brief（11-07 批次 I）
+  "b0a11000-0000-4000-8000-000000000013", // reading_note（11-07 批次 I）
+  "b0a11000-0000-4000-8000-000000000014", // evidence_note（11-07 批次 I）
+]);
+let snapshotted = 0;
+let working = 0;
 for (const h of heads) {
   const label = `${h.asset_kind}@${h.revision_id.slice(0, 8)}`;
+  const isBatchI = BATCH_I_SNAPSHOTTED.has(h.revision_id);
+  if (h.content_state === "SNAPSHOTTED") snapshotted++;
+  if (h.content_state === "WORKING") working++;
   ok(`fields.${label}`, hashRe.test(h.content_hash) && h.revision_no === "1" && !!h.epistemic_class
-    && h.content_state === "SNAPSHOTTED" && h.access_state === "RESTRICTED" && !!h.validation_status
+    && (isBatchI ? h.content_state === "SNAPSHOTTED" : h.content_state === "WORKING")
+    && h.access_state === "RESTRICTED" && !!h.validation_status
     && h.actor_id === OWNER && h.origin_kind === "human",
     `state=${h.epistemic_class}/${h.content_state}/${h.access_state}/${h.validation_status}`);
   ok(`cas_head.${label}`, h.current_revision_id === h.revision_id);
@@ -82,6 +102,8 @@ for (const h of heads) {
     from studio.asset_revisions r /*cfg*/ where r.asset_id=:'aid'`, { aid: h.asset_id });
   ok(`immutable.${label}`, lineage[0].n === "1" && lineage[0].d === "1", "single immutable revision, unique hash");
 }
+ok("fields.content_state_mix", snapshotted === BATCH_I_SNAPSHOTTED.size && working === heads.length - BATCH_I_SNAPSHOTTED.size,
+  `SNAPSHOTTED=${snapshotted}/${BATCH_I_SNAPSHOTTED.size} WORKING=${working}/${heads.length - BATCH_I_SNAPSHOTTED.size}`);
 
 // ---------- C. ACL / CAS / canonical-binding negatives through the real repository path ----------
 const repo = dataAccess.createStudioAssetRepository(dataAccess.getNodePgPool());
@@ -90,7 +112,10 @@ const foreign = await repo.listAssets(PROJECT, foreignToken).then(r => ({ rows: 
 ok("acl.cross_owner_denied", foreign.rows === 0, foreign.denied ? "identity resolution refused foreign user" : `foreign user sees ${foreign.rows} rows`);
 const anon = await repo.listAssets(PROJECT, "").then(() => false).catch(e => e.message === "STUDIO_IDENTITY_REQUIRED");
 ok("acl.anonymous_denied", anon === true, "empty token refused before any read");
-const oneHead = heads[0];
+// CAS 负例必须到达 CAS 检查：evidence-bearing 类（source_anchor/reading_note/evidence_note 等）
+// 会先被 CP2-F 引用守卫以 STUDIO_SOURCE_REFERENCE_REQUIRED 拒绝（该守卫自身已由 verify-6 覆盖），
+// 因此这里选 research_brief（editorial，非 evidence-bearing）探测陈旧 expectedRevisionId。
+const oneHead = heads.find(h => h.asset_kind === "research_brief");
 const casNegative = await repo.saveRevision({
   projectId: PROJECT, assetId: oneHead.asset_id, kind: oneHead.asset_kind,
   expectedRevisionId: crypto.randomUUID(), idempotencyKey: "verify-5i-cas-negative-" + Date.now(),
@@ -120,7 +145,7 @@ function bindingDetail(rows) { return rows.length ? `${rows.length} audit(s), cu
 // ---------- E. honest gap report (printed, not failed) ----------
 const uses = await q(`select count(*)::text as n from studio.use_events /*cfg*/ where project_id=:'project'`, { project: PROJECT });
 const bareRefs = heads.filter(h => h.source_refs_text === "[]" && h.dependency_refs_text === "[]").length;
-console.log(`\nGAP_REPORT use_events=${uses[0].n}（无复用记录，不得解释为已授权复用）; studio_heads_without_refs=${bareRefs}/${heads.length}（第 1 步早期条目未回链 D 链对象，Admin 视图逐条如实显示为缺口）`);
+console.log(`\nGAP_REPORT use_events=${uses[0].n}（复用记录逐条留痕，不得解释为已授权复用的扩大）; studio_heads_without_refs=${bareRefs}/${heads.length}（批次 I 五件早于 CP2-F 引用守卫、CP2-E 三件走独立登记路径，均未回链 D 链对象，Admin 视图逐条如实显示为缺口）`);
 
 if (failures) { console.error(`\nVERIFY_5I_FAILED failures=${failures}`); process.exit(1); }
 console.log("\nVERIFY_5I_ALL_PASS");

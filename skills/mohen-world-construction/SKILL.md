@@ -6,6 +6,7 @@
 **Data Layer:** L2  
 **Exit Gate:** G2  
 **Allowed Calling Stages:** D03
+- **Entry**：`pipelines/data-production/executors/d03-world-construction.mjs`
 
 ## Purpose
 Construct and adjudicate L2 Cultural World objects from qualified evidence.

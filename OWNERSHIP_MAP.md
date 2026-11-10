@@ -14,6 +14,11 @@ mohen-agent-2.0/
 ├── CURRENT.md
 ├── OWNERSHIP_MAP.md
 ├── DATA_PRODUCTION_MAP.md
+├── package.json pnpm-workspace.yaml pnpm-lock.yaml   # 工作区清单与锁文件
+├── vitest.config.ts vitest.unit.config.ts vitest.legacy.config.ts vitest.research-db.config.ts vitest.submission-db.config.ts vitest.work-binding-db.config.ts vitest.qualified-retrieve-db.config.ts vitest.m5-batch-h.config.ts   # Vitest 各套件配置
+├── playwright.config.ts playwright.mab.config.ts playwright.uxd7.config.ts   # Playwright 配置
+├── .gitattributes .gitignore .env.example    # Git 配置与环境变量样例
+├── .github/                    # CI 工作流
 ├── governance/                 # 宪法与治理
 ├── specs/                      # 当前有效协议 / Contract / Registry / Config
 ├── .agents/                    # CTX-ENG 开发工具 canonical Skill（不入产品 Registry）
@@ -23,6 +28,9 @@ mohen-agent-2.0/
 ├── scripts/                    # Guard / Report / Maintenance
 ├── packages/                   # 可复用运行时代码包
 ├── supabase/                   # migration / rollback
+├── apps/                       # Web 应用（Next.js）
+├── sources/                    # 来源登记与健康快照（registry.json / health）
+├── implementation_artifacts/   # 实施产物证据（预检 SQL、SHA 清单等）
 ├── data/                       # 数据
 ├── tasks/                      # 未来实施任务
 ├── decisions/                  # ADR
