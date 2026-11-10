@@ -111,8 +111,9 @@
 - [x] 3.3 G5 独立签发：精确 WorkRevision + 知识/媒资依赖 — G5 `c1792c87…`（`work_revision_binding` + `rights_by_operation` PASS）
 - [x] 3.4 当前资格消费：`control.qualification_allows` 逐请求核验 true — 本轮 D 链 G0–G5 全 true；负例未签时 false（`VERIFY_3_NEGATIVE unsigned_qualification_denied PASS`）
 - [x] 3.5 撤权：`control.revoke_gate_qualification` 生效 — 事务演练 `blocked_count=1`、`current` true→false（永久撤权演练另行授权）
-- [ ] 3.6 P08 精准失效：撤权后新请求即时拒绝（PG 断言已由资格闸门翻转证明；**HTTP 断言仍缺**）
-  - 2026-11-10 真实 HTTP 复核（`GET /api/works/published`，本地 3210，`MOHEN_G5_CONTEXTS` 已注入）：**只返回样例作品 `c0ffee00-…a001`，M5 真实作品 `5b42577e-…` 不出现**。根因见 §二「2026-11-10 复核发现的 M5 真实可用性回归」。真实作品恢复 WATCH 可消费之前，HTTP 撤权断言只能在样例作品上做，且样例 `G5` 审计 `c0ffee00-…a006` 无候选（种子直插、无依赖链），撤权后无法按合同重签，故未执行。
+- [x] 3.6 P08 精准失效：撤权后新请求即时拒绝（PG 断言 + **HTTP 断言**均已成立）
+  - 2026-11-10 HTTP 复核先发现问题：`GET /api/works/published` 只返回样例作品 `c0ffee00-…a001`，M5 真实作品不出现（根因见 §二专条）。
+  - Owner 裁决 A 后已修复并取得 HTTP 证据：`tools/verify-5m-watch-eligibility.mjs` = `VERIFY_5M_ALL_PASS`，证据 `tasks/results/MAB/evidence/m5-watch-eligibility/verify-5m.json`。三步实测：①重签后 `GET /api/works/published` 同时返回真实作品 `5b42577e-…` 与样例；②撤权 G5 watch（`blocked_count=1`）后同一请求**立即**只剩样例，真实作品消失；③再签一次后立即恢复。**边界**：G5 watch 由机器评审身份签发，不等于 Owner 人文背书；样例作品仍是种子数据，不作验收对象。
 - [x] 3.7 负例：Producer/Operator 代签被拒（失败关闭）— `VERIFY_3_NEGATIVE producer_cannot_sign PASS`（42501，审计数不变 718==718）
 - [x] 3.8 旧 PASS/错 consumer 不复活（非旧资格复用）— 有效性按当前状态派生，无旧 PASS 缓存
 
@@ -136,12 +137,14 @@
 - **即便重签也过不去**：`source.sources` `b0a11000-…-0004`（松江府志7）的 `rights_by_action` 为 `{}`，只有 `rights={basis:"NAJ_secondary_use_policy",status:"public_domain_secondary_use"}`；CP2-A/CP2-D 已删除该状态的推断旁路，G0 权利核验必然 HOLD。
 - 当前 WATCH 唯一可消费项是样例作品：`G5 c0ffee00-…a006`（`story_seed c0ffee00-…a003`，**无候选、无依赖链、种子直插**，reviewer=Owner，valid_until 2027-12-31）。它不能作为"真实作品"验收，撤权后也无法按合同重签。
 
-**影响**：5.9 Owner 亲验第 3 项（WATCH 看到真实作品）必失败；3.6 的 HTTP 撤权断言没有可复现对象，故未做。
+**影响**：5.9 Owner 亲验第 3 项（WATCH 看到真实作品）会失败；3.6 HTTP 撤权断言没有可复现对象。
 
-**待 Owner 裁决的三条路径（互斥）**
-- A. 为《松江府志7》补**显式** `rights_by_action`（按该馆 secondary-use 政策逐动作映射并留 `rights_evidence`）→ 整链可重签，真实作品恢复到 WATCH。属资料权利裁决，必须 Owner 定。
-- B. 改用 CP2-E 上图《[崇禎]松江府志》已显式授权链作为 M5 真实作品，重新产出/发布并签 G5 watch。注意上图 27/28 条 `display=unknown`，需 Owner 就"展示的是**作品**（自撰 beat/narration）而非原图、权利依据为 Creator 权利确认"表态。
-- C. 两条都不选：WATCH 继续只显示样例作品，M5 真实可用性记 HOLD，等资料权利条件成熟再补。
+**Owner 裁决与处置（2026-11-10，裁决 A：补显式权利后重签整链）**
+1. `tools/stamp-public-domain-rights.mjs --apply`：按维基共享资源 `File:NAJDA-292-0017 松江府志7.pdf` 的 `{{PD-old}}` 许可（作者郭廷弼，清康熙 2 年 1663 刊本，著作权保护期届满）+ 国立公文书馆 item `4252790` 写成**显式** `rights_by_action`（九动作全 allowed）与 `rights_evidence`；其余 7 类 provider 保持 HOLD。**唯一限制**：该版本被 `private_text_reading_immutable` 触发器钉死（D01 私读用过），`rights_snapshot` 无法写入，工具逐条如实记 `pinned`，不绕过触发器。
+2. `tools/verify-5m-watch-eligibility.mjs` = **`VERIFY_5M_ALL_PASS`**：按当前对象内容哈希重建 G0→G4、G5(producer)（一律经 `tools/rule-gate-reviewer.mjs` 真实规则评审，`current=true`），再签 G5(watch) 绑定已发布修订；随后完成 HTTP 正例 / 撤权即时拒绝 / 重签恢复三步（见 3.6）。
+3. 重建过程中暴露的**新依赖**：G0 现在要求 `method_plan` 预选引用。本工具不臆造，按该 `read_unit` 实际使用的读运行 `config.schema`（`mab.private-scanned-page-reading.v1`）反推为 **C02@v1** 并记入证据，属"补登实际读法"而非新决策。
+4. 证据文件：`tasks/results/MAB/evidence/m5-watch-eligibility/verify-5m.json`（`isolation=local-mohen_dev + localhost:3210`）。
+5. **仍未闭合**：5.9 Owner 亲验（需 Owner 本人从 UI 走一遍）；G5 watch 为机器签发，人文背书未替代；样例作品 `c0ffee00…` 仍会出现在 WATCH 列表，验收时须认准真实作品。
 
 ### 第 5 步 · M5 八维度闭环（自检 8 维度 + Owner 签收）
 > 八维度必须由**同一项真实作品《松江府田赋》**贯通（PLAN §3.5-B 矩阵）。
@@ -152,15 +155,22 @@
 - [x] 5.5 维度 5 Studio 真实创作（ST-05/06/07）：H1/H2/H3 + 19 组件实际参与导演/叙事/镜头；可预览、局部修改、保存/恢复、不可变 WorkRevision — 批次 J `verify-5j-components.mjs` = `VERIFY_5J_ALL_PASS`：H1（真实历史问题/理解增量/母题 M1+M4/5 条材料边界）；H2（A/B 双真实方案各 3 决策+3 要点、selected=A 记录可溯、修订逐字携带所选方案）；H3（4 节拍、4 条 provenanceRefs 全部 ∈ 真实 L2 证据、旁白如实陈述证据边界）；组件 12 项真实参与（C01–C05、W01/W02/W03/W05/W08/W09/W10/W11），W04/W06/W07 核验"无证据不伪造几何/对照/关系"退路职责，X01/X02 按 PLAN 延后如实记录，F01 缺口已入 finding（5 条 limitations）未触发工单；局部修改/保存恢复 = 修订链 1:draft→2:published（批次 H）
 - [x] 5.6 维度 6 Admin 知识资产管理（F05/ST-07/08/09）：逐条显示类型/认识状态/精确来源/D·G 资格/权利用途/版本/复用/缺口；仅授权 Owner 可管理 — 批次 I：Inspector 每条新增真实治理行（`assetGovernanceSummary`：缺口只按已存字段报告、G 资格不签发不替代）；类型/认识状态/来源/版本/复用/权利既有；ACL 仓储层正反（跨 Owner 0 行、匿名拒）；G 逆查真实断言（G0–G5 current + G5 审计绑定已发布修订）；HTTP 级正反归 5.9
 - [x] 5.7 维度 7 独立 G5/媒资权利/发布（ST-08/09）：独立 Reviewer 对精确 WorkRevision + 知识/媒资依赖当前资格审查；发布指针原子指向该修订 — 批次 H：机器评审独立通道签 WATCH G5（精确修订绑定 + rights_by_operation + CAS），四道门发布指针原子指向同一修订（VERIFIED_ISOLATED；机器签不构成人文背书）
-- [x] 5.8 维度 8 WATCH 消费与撤权：WATCH 只消费第 7 项发布的同一 WorkRevision；每请求核 G5/rights/purpose/consumer/scope/source；撤权后新请求立即拒绝 — 批次 H：`listWatchEligible` 仅该修订可消费、错修订拒绝、撤权即时拒绝、重签恢复（VERIFIED_ISOLATED）
+- [x] 5.8 维度 8 WATCH 消费与撤权：WATCH 只消费第 7 项发布的同一 WorkRevision；每请求核 G5/rights/purpose/consumer/scope/source；撤权后新请求立即拒绝 — 批次 H：`listWatchEligible` 仅该修订可消费、错修订拒绝、撤权即时拒绝、重签恢复（VERIFIED_ISOLATED）。**2026-11-10 更正**：本条的批次 H 结论在 11-09 artifact 身份迁移后已实际失效（真实作品从 WATCH 掉出，详见 §二专条），故不能只按批次 H 记账；经 Owner 裁决 A 重签整链后才重新成立，且证据升级为 HTTP 级（`VERIFY_5M_ALL_PASS`，见 3.6）。
 - [ ] 5.9 Owner 亲自体验签收：Owner 实际完成 Studio 创作、Admin 条目核查、WATCH 消费，逐项确认八维矩阵 — HTTP 级正反已补证（批次 K `VERIFY_5K_ALL_PASS`）；Studio UI 显式授权入口已接线；待 Owner 亲验
 
 ### 5.9 Owner 体验清单（白话版，逐项打勾即签收）
 
-启动：仓库根目录执行 `node tools/run-dev-server.mjs`，浏览器打开 http://127.0.0.1:3210 ，用 Owner 账号登录。
+启动（PowerShell，必须先注入 WATCH 的消费者上下文，否则 WATCH 按失败关闭返回空列表）：
+
+```
+$env:MOHEN_G5_CONTEXTS='{"watch":{"purpose":{"namespace":"mohen.watch","code":"display","version":"1"},"scope":{"mode":"public_watch"}}}'
+node tools/run-dev-server.mjs
+```
+
+浏览器打开 http://127.0.0.1:3210 ，用 Owner 账号登录。
 1. **Studio 创作**：进入 /studio，打开项目「松江府田赋」→ 左侧输入一句创作意图（如"用这些史料做一集 3 分钟短片"）→ 点「生成方案」→ 首次会提示外发授权 → 点「我同意本次外发处理」→ 稍候出现方案 A/B → 选一个 → 出现 4 个节拍分镜与旁白。
 2. **Admin 核查**：进入 /admin → 「知识资产」面板 → 应看到本项目 5 条知识条目（简报/来源×2/阅读笔记/证据笔记），每条有类型、状态、缺口与"独立G资格须逐案核验"字样；「发布管理」可见已发布作品。
-3. **WATCH 消费**：进入 /watch → 应看到作品《把一条科则拆成四道关口…》→ 点开逐拍播放，旁白与出处随行。
+3. **WATCH 消费**：进入 /watch → 应看到作品《把一条科则拆成四道关口…》（`5b42577e…`）；**列表里还会有一条样例作品「墨痕·田赋卷：一亩三分地的账」（`c0ffee00…` 种子数据），验收请认准前者**。点开逐拍播放，旁白与出处随行。
 4. 逐项确认八维矩阵（§三 5.1–5.8 已机器验证条目）无异议即完成 M5 第 5 步签收。
 
 ## 四、当前进度（最新状态，持续更新）

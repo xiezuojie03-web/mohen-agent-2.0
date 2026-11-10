@@ -2445,4 +2445,18 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **待 Owner 裁决（资料权利/产品，越权不自行决定）**：A 为《松江府志7》补显式 `rights_by_action`；B 改用 CP2-E 上图已显式授权链重做/重发作品（并确认"展示作品而非原图"的权利依据）；C 两者都不选，WATCH 维持样例、M5 真实可用性记 HOLD。
 - **本批未改任何代码、未改数据库、未签任何 Gate**；回到 main 工作树干净后按 Owner 裁决再续。
 
+## M5-B｜Owner 裁决 A 落地：公有领域显式权利 + 整链重签 + 3.6 HTTP 撤权断言（2026-11-10，仅本地隔离）
 
+- **裁决**：Owner 选 A——「先为该来源补显式权利，再按合同重签整链」。
+- **权利取证**：维基共享资源 `File:NAJDA-292-0017 松江府志7.pdf`（pageid 93466029）wikitext 许可模板为 `{{PD-old}}`；著录 作者郭廷弼（清）、刊本（序刊）清康熙 02 年（1663）、Accession 292-0017、Source 国立公文书馆 item `4252790`。据此 `tools/stamp-public-domain-rights.mjs --apply` 写入**显式** `rights_by_action`（九动作全 allowed）与 `rights_evidence`（出处/许可/核验日/署名义务/裁决记录）；其余 7 类 provider 保持 HOLD。
+- **一处硬限制（如实记，不绕过）**：该 `source_version`（`b0a11000-…-0005`）已被 D01 私读使用，触发 `PRIVATE_READING_IMMUTABLE`，`rights_snapshot` 无法写入；工具逐条记 `pinned_snapshots`，未强改触发器。
+- **整链重建**：`tools/verify-5m-watch-eligibility.mjs` = **`VERIFY_5M_ALL_PASS`**。G0 `8973c476`、G1–G4（G3 `a1ea2b1b`、G4 `fc3645f6`）、G5(producer) `6acaa767` 均经 `tools/rule-gate-reviewer.mjs` 真实规则评审 `PASS current=true`，对象内容哈希取当前值（G0 `50d6d1e0…`、G5 projection `1dd8ad71…`）；G5(watch) `359cdfed`（绑定已发布修订 `62a8ba95`，`content_sha256 ad6e2d39…`）。逐条审计 id 见证据文件 `steps[]`。
+- **新依赖（重要）**：G0 现在要求 `method_plan` 预选引用。工具不臆造：按该 `read_unit` 实际读运行 `config.schema = mab.private-scanned-page-reading.v1` 反推 **C02@v1** 补登（"补登实际读法"，不是新决策）。
+- **3.6 HTTP 撤权断言（首次真正取得）**：①重签后 `GET /api/works/published` 同时返回真实作品 `5b42577e-…` 与样例；②撤权 G5(watch)（`blocked_count=1`）后同一请求**立即**只剩样例；③再签 `675b446a` 后立即恢复。证据 `tasks/results/MAB/evidence/m5-watch-eligibility/verify-5m.json`。
+- **台账回勾**：第 4 步 4.1–4.7 转 `[x]`（4.8 仍空：同 root 双主体只到证据合并）；3.6 转 `[x]`；5.8 补"批次 H 结论曾失效"更正；5.9 仍待 Owner 亲验，启动命令已写明必须先注入 `MOHEN_G5_CONTEXTS`，并提示样例作品 `c0ffee00…` 会与真实作品同时出现。
+- **边界**：G5(watch) 由机器评审签发，不构成 Owner 人文背书；全部证据仅在本地 `mohen_dev` + `localhost:3210`，无 `VERIFIED_LIVE`，生产库未执行任何迁移。
+
+
+
+- **收尾修正（M5-B 内）**：`stamp-public-domain-rights.mjs` 复跑误报 HOLD 已修——被 `PRIVATE_READING_IMMUTABLE` 钉死的版本改为按库内事实（该 `source_version` 存在私读 `read_run`）判定，不再依赖本次 `--apply` 的副作用；dry-run 复跑现为 `PUBLIC_DOMAIN_RIGHTS_STAMPED`（`granted_ok=true`、`pinned_versions=1`、`unfrozen_writable_versions=0`）。
+- **回归**：`pnpm test` 主套件 87 files passed / 2 skipped，703 tests passed / 2 skipped（0 failed），`ISOLATION_VERDICT real_db_untouched=YES`；`pnpm -r typecheck` 6/6；`pnpm test:data-production` 189 pass / 0 fail；`guard:docs`/`guard:structure`/`guard:registry`/`guard:source-gate`/`guard:identifiers`/`guard:acquisition`/`guard:reconciliation` 均 exit 0。

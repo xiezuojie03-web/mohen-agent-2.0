@@ -1,0 +1,165 @@
+{
+  "status": "VERIFY_5M_ALL_PASS",
+  "ranAt": "2026-11-10T06:34:50.352Z",
+  "isolation": "local-mohen_dev + localhost:3210",
+  "work": "5b42577e-a4d6-4024-b1f9-99d0d788c9ec",
+  "revision": "62a8ba95-e07f-4f7e-bcb9-f728004d651a",
+  "projection": "560c5f6d-a7b0-6ec5-1f0b-0ed98d60c91d",
+  "projectionRevision": "1dd8ad71c1fa3919fbe21638ebd1e2383855f4f09f61ae70d83db461f8fbee29",
+  "methodPlan": {
+    "read_run_schema": "mab.private-scanned-page-reading.v1",
+    "method_id": "C02",
+    "refs": [
+      {
+        "kind": "method_plan",
+        "id": "C02@v1",
+        "stage": "D01",
+        "method_id": "C02",
+        "method_version": "v1",
+        "artifact_revision": "54334fb87bf1d023efbda1e7a4ac3679d413740a9a4f5653cee056b69636bbd3"
+      }
+    ]
+  },
+  "watchAuditId": "359cdfed-7c33-4be0-87ad-2fd350abe268",
+  "restoredAuditId": "675b446a-3f16-4aea-84f0-ff0a40417e7e",
+  "revokedAuditId": "359cdfed-7c33-4be0-87ad-2fd350abe268",
+  "boundary": {
+    "machineSigned": "G5 watch 由机器评审身份签发，不等于 Owner 人文背书",
+    "candidateInsert": "候选登记由超级用户直连完成（隔离演练口径）",
+    "rights": "公有领域显式权利来自 tools/stamp-public-domain-rights.mjs 的 PD-old 证据"
+  },
+  "steps": [
+    {
+      "step": "http.before_rebuild",
+      "ok": true,
+      "status": 200,
+      "ids": [
+        "c0ffee00-0000-4000-8000-00000000a001"
+      ]
+    },
+    {
+      "step": "chain.G0",
+      "ok": true,
+      "reused": true,
+      "auditId": "8973c476-5255-40aa-9d94-60f4bdfcc735",
+      "objectType": "source_version",
+      "objectId": "b0a11000-0000-4000-8000-000000000005",
+      "artifactRevision": "50d6d1e0089a4c82a4a207723911d95256339359a8f11fbfe96e34140a003129"
+    },
+    {
+      "step": "chain.G1",
+      "ok": true,
+      "candidateId": "fa6f1683-08e0-44c7-a57e-3683b73308fa",
+      "auditId": "87b232cc-7715-43ac-945c-da56a7018c0c",
+      "current": true,
+      "reviewer": "RULE_GATE_REVIEW G1 PASS audit=87b232cc-7715-43ac-945c-da56a7018c0c current=true",
+      "objectType": "read_unit",
+      "objectId": "ff227f15-b9b5-c37f-b309-52ad6120b5dc",
+      "artifactRevision": "0e522f8a1671d23c65e6d28a3e88711b1474239c70bd64d546eef06b62a33159",
+      "dependedOn": "8973c476-5255-40aa-9d94-60f4bdfcc735"
+    },
+    {
+      "step": "chain.G2",
+      "ok": true,
+      "candidateId": "0009ad81-9109-4600-92fe-2183f860354d",
+      "auditId": "2c8921fc-2dfb-4518-aba7-49432de817a0",
+      "current": true,
+      "reviewer": "RULE_GATE_REVIEW G2 PASS audit=2c8921fc-2dfb-4518-aba7-49432de817a0 current=true",
+      "objectType": "material_evidence",
+      "objectId": "0c9c3a44-1b2e-1cd7-2a86-5c4009cd7402",
+      "artifactRevision": "a6ebbce2451af0659f444d363aeed1f3449671d6ee886a6e2da751515a1b6806",
+      "dependedOn": "87b232cc-7715-43ac-945c-da56a7018c0c"
+    },
+    {
+      "step": "chain.G3",
+      "ok": true,
+      "candidateId": "3024a6a6-0071-4e66-ad2a-1760867be815",
+      "auditId": "a1ea2b1b-0d29-4f0c-93f4-e028d45da998",
+      "current": true,
+      "reviewer": "RULE_GATE_REVIEW G3 PASS audit=a1ea2b1b-0d29-4f0c-93f4-e028d45da998 current=true",
+      "objectType": "claim_revision",
+      "objectId": "54c21e1a-adab-4663-eceb-fa4aa9cea753",
+      "artifactRevision": "f2059d9626fa4252fefc13351d24a7dc56646e3edb9c2e06bce3fae64a516892",
+      "dependedOn": "2c8921fc-2dfb-4518-aba7-49432de817a0"
+    },
+    {
+      "step": "chain.G4",
+      "ok": true,
+      "candidateId": "aab22afe-65e6-46c9-9eaa-34ebee829f34",
+      "auditId": "fc3645f6-1fde-457d-abf2-4a7dcceda991",
+      "current": true,
+      "reviewer": "RULE_GATE_REVIEW G4 PASS audit=fc3645f6-1fde-457d-abf2-4a7dcceda991 current=true",
+      "objectType": "finding",
+      "objectId": "b31f534e-33eb-5b80-3034-e6ecde9e2b20",
+      "artifactRevision": "5801911e4c58843f8a5ad4093748458e81c079162c5927cae6f2c34f50572a42",
+      "dependedOn": "a1ea2b1b-0d29-4f0c-93f4-e028d45da998"
+    },
+    {
+      "step": "chain.G5",
+      "ok": true,
+      "candidateId": "9ffea650-027e-454b-a5cb-54e3e7a4eab0",
+      "auditId": "6acaa767-9ccd-4468-812f-21186c5ab8c3",
+      "current": true,
+      "reviewer": "RULE_GATE_REVIEW G5 PASS audit=6acaa767-9ccd-4468-812f-21186c5ab8c3 current=true",
+      "objectType": "world_projection",
+      "objectId": "560c5f6d-a7b0-6ec5-1f0b-0ed98d60c91d",
+      "artifactRevision": "1dd8ad71c1fa3919fbe21638ebd1e2383855f4f09f61ae70d83db461f8fbee29",
+      "dependedOn": "fc3645f6-1fde-457d-abf2-4a7dcceda991"
+    },
+    {
+      "step": "chain.G5_watch",
+      "ok": true,
+      "candidateId": "b9c894f5-f37e-4ca4-9f28-a3d477796de8",
+      "auditId": "359cdfed-7c33-4be0-87ad-2fd350abe268",
+      "current": true,
+      "binding": {
+        "schema": "mohen.work-revision-g5-binding.v1",
+        "work_id": "5b42577e-a4d6-4024-b1f9-99d0d788c9ec",
+        "revision_id": "62a8ba95-e07f-4f7e-bcb9-f728004d651a",
+        "content_sha256": "ad6e2d394e92184639dd00461271cb1e21b8dd30ac14892d7da42ab115bace25",
+        "complete_work": true,
+        "consumer": "watch",
+        "purpose": {
+          "namespace": "mohen.watch",
+          "code": "display",
+          "version": "1"
+        },
+        "scope": {
+          "mode": "public_watch"
+        },
+        "rights_by_action": {
+          "display": "allowed"
+        },
+        "title": "把一条科则拆成四道关口：田等、正耗、平米折算、准熟起科，让观众看见“每亩多少”从来不是农户真正缴出的数。",
+        "description": "材料只提供一条科则句，却已显示负担由四项条件共同确定，并非单一税率：一是按田等分科（“低田等”）；二是正耗并称（正粮与加耗同时出现）；三是以“平米”为统一折算计量；四是以“准熟起科”决定起科的时间点（“同”表示与前述情形相同）。这说明“每亩多少”式的单一税额无法等同于农户实际负担，因为等则、加耗、折算、起科认定任一环节变动都会改变实际缴纳量。此为本材料可查证的增量：把一个看似枯燥的税率句读成一套征收机制的组合。同时，三条完全相同的文字提示这是抄件残文或重复转录，不能据此复原科则表，更不能据此推出任何农户负担数字。",
+        "rights_valid_until": "2026-12-10T06:34:44.209Z"
+      }
+    },
+    {
+      "step": "http.positive_after_resign",
+      "ok": true,
+      "ids": [
+        "5b42577e-a4d6-4024-b1f9-99d0d788c9ec",
+        "c0ffee00-0000-4000-8000-00000000a001"
+      ]
+    },
+    {
+      "step": "http.revoked_immediate_deny",
+      "ok": true,
+      "blockedCount": 1,
+      "ids": [
+        "c0ffee00-0000-4000-8000-00000000a001"
+      ]
+    },
+    {
+      "step": "http.restored_after_resign",
+      "ok": true,
+      "auditId": "675b446a-3f16-4aea-84f0-ff0a40417e7e",
+      "current": true,
+      "ids": [
+        "5b42577e-a4d6-4024-b1f9-99d0d788c9ec",
+        "c0ffee00-0000-4000-8000-00000000a001"
+      ]
+    }
+  ]
+}
