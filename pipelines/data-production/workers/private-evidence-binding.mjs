@@ -41,19 +41,19 @@ export function createApprovedMethodPlanReader(pool, {gateCode: defaultGate='G0'
 // Y04 分母真值：本次准入的这一件属于某来源时，读取该来源最近一次"整卷覆盖结论"。
 // 只有已落库、带真实分母（manifest canvas 总数）与整卷摘要的结论才会被采纳；
 // 没做过整卷取件就返回 null，D00 继续如实写 unknown，绝不按页数猜。
+// 以 source_id 为键（登记回执自带），因此不需要 worker 直接读 source.source_versions。
 export function createVolumeCoverageReader(pool) {
-  return async function readVolumeCoverage({ sourceVersionId } = {}) {
+  return async function readVolumeCoverage({ sourceId } = {}) {
     const { rows } = await pool.query(
       `select c.coverage_id::text as coverage_id, c.completeness_state,
               c.coverage_scope, c.missing_parts, c.verified_against, c.created_at,
-              a.acquired_extent, v.source_id::text as source_id
-         from source.source_versions v, source.acquisition_coverages c
+              a.acquired_extent
+         from source.acquisition_coverages c
          left join source.acquisition_attempts a
            on a.attempt_id = (c.verified_against->>'attempt_id')::uuid
-        where v.source_version_id=$1::uuid
-          and c.coverage_scope->>'target'='source_volume'
-          and c.coverage_scope->>'source_id'=v.source_id::text
-        order by c.created_at desc limit 1`, [sourceVersionId]);
+        where c.coverage_scope->>'target'='source_volume'
+          and c.coverage_scope->>'source_id'=$1
+        order by c.created_at desc limit 1`, [sourceId]);
     const row = rows[0];
     if (!row) return null;
     const scope = typeof row.coverage_scope === 'string' ? JSON.parse(row.coverage_scope) : row.coverage_scope;
@@ -65,7 +65,7 @@ export function createVolumeCoverageReader(pool) {
       page: Number(item?.page), sha256: item?.sha256 ?? null, byte_size: Number(item?.byte_size),
     }));
     return {
-      coverage_id: row.coverage_id, source_id: row.source_id,
+      coverage_id: row.coverage_id, source_id: sourceId,
       completeness_state: row.completeness_state,
       denominator: scope.denominator, acquired_pages: acquired,
       total_pages: total, volume_digest: scope.volume_digest ?? null,

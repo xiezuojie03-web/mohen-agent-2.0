@@ -236,7 +236,7 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
       // 分母真值：本来源若已做过整卷取件，Y04 用它的真实页数作分母并逐页列出缺件；
       // 没做过（或读不到）就仍写 unknown，绝不按页数猜。
       const volumeCoverage=typeof readVolumeCoverage==='function'
-        ? await readVolumeCoverage({sourceVersionId:registration.source_version_id,token}) : null;
+        ? await readVolumeCoverage({sourceId:registration.source_id,token}) : null;
       const intakeCoverage=deriveIntakeCoverage({registration,record,
         attempt:{attempt_id:acquisitionAttemptId,...input.acquisition.attempt},pageNumber,
         volume:volumeCoverage});
