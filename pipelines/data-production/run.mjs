@@ -45,6 +45,8 @@ const resumeInputFile = arg("resume-input-file");
 const scopeFile = arg("scope-file");
 // D00 消费者方法计划（C 方法预选）：可选，缺省即不预选，由 G0 失败关闭。
 const methodPlanArg = arg("method-plan");
+// D00 分段材料（目录/覆盖/核查/优先级/取用）：可选，缺省即各段都不写。
+const sectionsArg = arg("sections");
 const reportDir = path.resolve(arg("report-dir", path.join(projectRoot, "verification", "data-production-runs")));
 
 if (!intent) throw new Error("--intent is required");
@@ -80,7 +82,10 @@ const selectedStages=STAGE_ORDER.slice(start,end+1);
 const consumerMethodPlan = methodPlanArg === null
   ? undefined
   : (await import("../../tools/lib/method-plan-input.mjs")).readMethodPlanArg(methodPlanArg);
-const run = createRunState({ research_intent: intent, ...(scope !== undefined ? { scope } : {}), execution_mode: executionMode, run_id: runId || undefined, ...(consumerMethodPlan === undefined ? {} : { consumer_method_plan: consumerMethodPlan }) });
+const sections = sectionsArg === null
+  ? undefined
+  : (await import("../../tools/lib/method-plan-input.mjs")).readSectionsArg(sectionsArg);
+const run = createRunState({ research_intent: intent, ...(scope !== undefined ? { scope } : {}), execution_mode: executionMode, run_id: runId || undefined, ...(consumerMethodPlan === undefined ? {} : { consumer_method_plan: consumerMethodPlan }), ...(sections === undefined ? {} : { sections }) });
 
 // Lazy data access: no adapter or database side effect before execution authorization.
 async function queryRows(...args) {

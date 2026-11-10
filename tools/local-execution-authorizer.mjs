@@ -17,7 +17,7 @@ import path from "node:path";
 import httpz from "node:https";
 import { execFileSync, spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { readMethodPlanArg } from "./lib/method-plan-input.mjs";
+import { readMethodPlanArg, readSectionsArg } from "./lib/method-plan-input.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, "..");
@@ -146,7 +146,7 @@ function loadJournal() {
   return { file, issued };
 }
 
-async function buildGrant({ stage, runId, mode = "attended", intent, scopeFile, inputFile, methodPlan }) {
+async function buildGrant({ stage, runId, mode = "attended", intent, scopeFile, inputFile, methodPlan, sections }) {
   const { executionDigest } = await import("../pipelines/data-production/orchestrator/execution-authority.mjs");
   await assertIsolatedTarget();
   const registry = await loadRegistryInstance();
@@ -162,6 +162,7 @@ async function buildGrant({ stage, runId, mode = "attended", intent, scopeFile, 
       research_intent: intent,
       scope: JSON.parse(fs.readFileSync(path.resolve(scopeFile), "utf8")),
       consumer_method_plan: methodPlan,
+      sections,
     });
   } else {
     if (!inputFile) throw new Error(`${stage}_GRANT_REQUIRES_INPUT_FILE`);
@@ -206,6 +207,7 @@ async function grant() {
     stage, runId, mode: arg("mode", "attended"),
     intent: arg("intent"), scopeFile: arg("scope-file"), inputFile: arg("input-file"),
     methodPlan: readMethodPlanArg(arg("method-plan")),
+    sections: readSectionsArg(arg("sections")),
   });
   console.log(JSON.stringify({ stage, run_id: runId, jti: claims.jti, exp: claims.exp,
     tokens: { [stage]: token } }));
@@ -263,6 +265,8 @@ async function run() {
   const resumeInputFile = arg("resume-input-file");
   const methodPlanArg = arg("method-plan");
   const methodPlan = readMethodPlanArg(methodPlanArg);
+  const sectionsArg = arg("sections");
+  const sections = readSectionsArg(sectionsArg);
   const reportDir = arg("report-dir");
   if (!stage || !intent) throw new Error("run requires --stage and --intent");
 
@@ -279,7 +283,7 @@ async function run() {
      on conflict (run_id) do update set status='RUNNING', current_stage=null, finished_at=null`,
     { run_id: runId, intent, scope: JSON.stringify(scope) });
 
-  const { token } = await buildGrant({ stage, runId, mode: "attended", intent, scopeFile, inputFile: resumeInputFile, methodPlan });
+  const { token } = await buildGrant({ stage, runId, mode: "attended", intent, scopeFile, inputFile: resumeInputFile, methodPlan, sections });
   const { server, port } = await createVerifier();
 
   const env = {
@@ -307,6 +311,7 @@ async function run() {
     "--intent", intent, "--run-id", runId,
     ...(scopeFile ? ["--scope-file", scopeFile] : []),
     ...(methodPlanArg ? ["--method-plan", methodPlanArg] : []),
+    ...(sectionsArg ? ["--sections", sectionsArg] : []),
     ...(resumeInputFile ? ["--resume-input-file", resumeInputFile] : []),
     ...(reportDir ? ["--report-dir", reportDir] : [])];
   console.log(`RUN ${stage} run_id=${runId}`);

@@ -2424,4 +2424,13 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **验证**：新增 3 条用例（顺序与回显、无输入不落库、四类失败关闭）→ `private-candidate-worker.test.mjs` 26/26；`pnpm test:data-production` 全绿；`pnpm test` 全绿 `real_db_untouched=YES`（gate_audits=741）；守卫前七段绿（docs 76/180、structure undeclared=0、registry jobs=6、identifiers 71/63/8）。
 - **尚未做（下一批首件）**：真实运行链路证明——授权器与 `run.mjs` 目前只能给 intent/scope/method-plan，还不能给这四个段，因此本轮只到"单测覆盖 + 写入口已在真实库逐项验证（C4）"，**未做真实 D00 跑出四表数据**。下一批给 D00 增加 `--sections` 入参（与 `--method-plan` 同源解析、digest 口径不变）后实跑取证。
 
+## D00-E｜D00 入口可给分段材料（`--sections`）；四表真实行仍卡在研究方法身份（2026-11-10，零 DDL）
+
+- **变更**：`tools/lib/method-plan-input.mjs` 新增 `readSectionsArg`（文件路径或内联 JSON，与 `--method-plan` 同一份口径）；`buildSourceIntakeInput` 把 `sections` 平铺进 D00 输入顶层（正是 worker 读取 `catalog/coverage/verifications/priorities/acquisition` 的位置）；`createRunState`、`run.mjs`、`local-execution-authorizer` 的 `grant` 与 `run` 全链透传 `--sections`，签名覆盖的 `input_digest` 与实跑输入同源。
+- **失败关闭**：非 JSON / 非对象 / 空对象 / 未知键 → `SECTIONS_JSON_INVALID` / `SECTIONS_OBJECT_REQUIRED` / `SECTIONS_EMPTY` / `SECTIONS_KEY_UNSUPPORTED:<key>`；未给 `--sections` 时不追加任何键，`input_digest` 与旧口径**逐字节一致**（有断言）。拼错的段名必须报错，不允许"跑完显示成功、库里什么都没落"。
+- **验证**：`tests/data-production/method-plan-input.test.mjs` **12/12**（7 旧 + 5 新）；`pnpm test:data-production` **189/189**；`pnpm test` **87 文件 / 703 用例全绿**、`real_db_untouched=YES`（`control.gate_audits=741`）；守卫前七段绿（docs 77/180、structure undeclared=0、registry jobs=6、identifiers 71/63/8、acquisition intents=28、reconciliation pending=0）。
+- **环境坑（记下以免重犯）**：`OPENSSL_CONF` 必须指向 `D:\MoHen\tools\OpenSSL-Win64\openssl.cnf`（不是 `bin\openssl.cfg`），否则 `independent-gate-service-runtime.test.mjs` 的 `openssl req` 静默失败、整文件报 `Command failed`。
+- **本批刻意不做（真实四表数据的阻塞原因）**：四张表的写入口都强制要求**研究方法身份**——`recordCatalogEntry` 需 `discovered_by_method + method_version`，`recordCandidateVerification` / `recordPriorityAssessment` 需 `method_key + method_version`，`recordAcquisitionCoverage` 需 `attempt_id`（外键指向 `source.acquisition_methods`，本地该表 0 行）。权威方法 Registry 是外部 Excel 的 `M0001—M0006`，仓库内没有它们的定义字段；先行编一个 M 码跑通既违反"不替研究者编造"，也越过 Registry 裁决权。因此本批**不做**编造式实跑，四表真实行仍为 **0**。
+- **口径**：本批只证"真实入口能把分段材料无损送进 D00、并参与签名摘要与 G0 候选输入"。四表真实数据、Y04 覆盖的端到端、D01 按预选选法、registry 路由与激活、生产库与生产 Gate 均不在此口径内。
+
 

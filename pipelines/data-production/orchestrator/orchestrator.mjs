@@ -7,13 +7,17 @@ import { requireIndependentStageQualification } from "./independent-stage-qualif
 /**
  * D00 输入的唯一定义。授权器签发的 input_digest 与 Runner 实际执行的输入必须
  * 逐字节同源，所以 D00 的输入形状只在这里拼一次：研究意图 + 精确作用域 +
- * （可选）消费者方法计划。调用方没给计划就不追加该键，digest 与旧口径完全一致。
+ * （可选）消费者方法计划 +（可选）分段材料。调用方没给就不追加对应键，
+ * digest 与旧口径完全一致。
  */
-export function buildSourceIntakeInput({ research_intent, scope, consumer_method_plan } = {}) {
+export function buildSourceIntakeInput({ research_intent, scope, consumer_method_plan, sections } = {}) {
   return {
     research_intent,
     scope,
     ...(consumer_method_plan === undefined ? {} : { consumer_method_plan }),
+    // 分段材料（catalog/coverage/verifications/priorities/acquisition）平铺在
+    // D00 输入顶层，正是 worker 读取它们的位置；不给就一个键都不多。
+    ...(sections ?? {}),
   };
 }
 

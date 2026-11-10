@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 
-export function createRunState({ research_intent, scope = {}, execution_mode = "attended", run_id, consumer_method_plan } = {}) {
+export function createRunState({ research_intent, scope = {}, execution_mode = "attended", run_id, consumer_method_plan, sections } = {}) {
   if (!research_intent) throw new Error("RESEARCH_INTENT_REQUIRED");
   if (!["attended","unattended","batch","interactive"].includes(execution_mode)) {
     throw new Error(`EXECUTION_MODE_INVALID:${execution_mode}`);
@@ -11,6 +11,8 @@ export function createRunState({ research_intent, scope = {}, execution_mode = "
     scope,
     // D00 的消费者方法计划（C 方法预选）随运行状态携带；未给出就不出现该字段。
     ...(consumer_method_plan === undefined ? {} : { consumer_method_plan }),
+    // D00 分段材料（Y02/Y03/Y04/Y06/Y07）同理：未给出就不出现该字段。
+    ...(sections === undefined ? {} : { sections }),
     execution_mode,
     status: "RUNNING",
     current_stage: null,
