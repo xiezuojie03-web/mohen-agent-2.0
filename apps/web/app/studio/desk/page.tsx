@@ -131,6 +131,51 @@ export default async function DeskPage() {
     project_title: string;
   }>;
 
+  // D00 第二道工序（Y02 资源目录观察）的真实登记：条目由工序在来源准入时
+  // 按已核验的登记真值派生（含馆方目录号），只列本人项目。
+  const catalogRows = (await queryRows(
+    `select c.catalog_entry_id::text as catalog_entry_id, c.provider, c.catalog_title,
+            c.catalog_identifier, c.carrier_hint, c.availability_state,
+            c.discovered_by_method, c.method_version,
+            c.rights_hint::text as rights_hint, c.created_at::text as created_at,
+            p.project_title
+       from source.resource_catalog c
+       join studio.projects p on p.project_id = c.project_id
+      where p.owner_user_id = :'owner'
+      order by c.created_at desc limit 10`,
+    { owner: session.uid }
+  )) as Array<{
+    catalog_entry_id: string;
+    provider: string;
+    catalog_title: string;
+    catalog_identifier: string | null;
+    carrier_hint: string | null;
+    availability_state: string;
+    discovered_by_method: string;
+    method_version: string;
+    rights_hint: string | null;
+    created_at: string;
+    project_title: string;
+  }>;
+
+  const readRightsStatus = (raw: string | null) => {
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw) as { status?: string };
+      return typeof parsed?.status === "string" && parsed.status ? parsed.status : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const AVAILABILITY_LABELS: Record<string, string> = {
+    catalog_found: "目录中可见",
+    catalog_listed_no_item: "目录有条目、未见实物",
+    restricted: "受限",
+    not_available: "不可得",
+    unknown: "未知",
+  };
+
   const readGap = (raw: string | null) => {
     if (!raw) return null;
     try {
@@ -266,6 +311,36 @@ export default async function DeskPage() {
                   ))}
                 </ul>
               )}
+            </article>
+          );
+        })}
+      </section>
+
+      <section style={{ borderTop: "1px solid #e2ddd1", paddingTop: 14, marginBottom: 20 }}>
+        <h2 style={{ fontSize: 15 }}>资源目录登记（D00 第二道工序）</h2>
+        <p style={{ fontSize: 12, color: "#6b746f", margin: "4px 0 10px" }}>
+          每条都是来源准入时工序自己从已核验登记派生的目录观察：这个研究看到了哪家机构的哪件资源、
+          对方目录里叫什么。不是人工填的，也不是搜索结果的堆叠。
+        </p>
+        {catalogRows.length === 0 && (
+          <p style={{ fontSize: 13, color: "#8a3b3b" }}>还没有资源目录登记。</p>
+        )}
+        {catalogRows.map((entry) => {
+          const rightsStatus = readRightsStatus(entry.rights_hint);
+          return (
+            <article key={entry.catalog_entry_id} style={{ border: "1px solid #e2ddd1", borderRadius: 8, padding: 10, marginBottom: 8 }}>
+              <div style={{ fontSize: 13, fontWeight: 600 }}>
+                {entry.catalog_title}
+                {entry.catalog_identifier ? ` · ${entry.catalog_identifier}` : ""}
+              </div>
+              <div style={{ fontSize: 11, color: "#6b746f", marginTop: 3 }}>
+                {entry.provider} · {AVAILABILITY_LABELS[entry.availability_state] ?? entry.availability_state}
+                {entry.carrier_hint ? ` · ${entry.carrier_hint}` : ""}
+                {rightsStatus ? ` · 权利：${rightsStatus}` : ""}
+              </div>
+              <div style={{ fontSize: 11, color: "#6b746f", marginTop: 3 }}>
+                {entry.project_title} · {entry.discovered_by_method}@{entry.method_version} · {entry.created_at.slice(0, 10)}
+              </div>
             </article>
           );
         })}

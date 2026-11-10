@@ -69,12 +69,16 @@ const registrationFor=(originalId,projectId)=>({schema:'mohen.private-source-reg
   storage_ref:'mohen-private-originals/'+projectId+'/'+originalId+'.bin',
   provider:'NAJ',title:'松江府志7',source_type:'gazetteer',carrier_type:'scanned_page',
   rights:{status:'public_domain_secondary_use'},asset_revision_id:id(),
+  original_locator:{item:4252790,catalog_no:'NAJDA-292-0017'},
+  provenance_status:'verified',content_availability:'image_scan',
   artifact_revision:'b'.repeat(64),source_version_artifact_revision:'a'.repeat(64)});
 
 test('D00 verifySourceIntake returns an UNASSESSED registration candidate under a real stage grant',async()=>{
   const originalId=id(),projectId=id();
   const input={research_intent:'松江府田赋卷十一',scope:{project_id:projectId,original_id:originalId,page_number:35}};
   let reads=0,registrations=0,bindings=0;
+  let intakeEntry=null;
+  const intakeEntryId=id();
   return withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
     const worker=createPrivateEvidenceStageWorker({
       readOriginal:async()=>{reads++;return {record:{original_id:originalId,project_id:projectId,
@@ -83,10 +87,25 @@ test('D00 verifySourceIntake returns an UNASSESSED registration candidate under 
       readRegistration:async()=>{registrations++;return registrationFor(originalId,projectId);},
       recordSourceNeed:async()=>({need_id:id(),created_at:new Date().toISOString()}),
       readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
+      recordCatalogEntry:async entry=>{intakeEntry=entry;return {catalog_entry_id:intakeEntryId};},
       bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},...gateStub,
     });
     const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
     assert.equal(reads,1);assert.equal(registrations,1);assert.equal(bindings,1);
+    // Y02：工序必须从登记真值派生目录观察（含馆方目录号），不抄调用方。
+    assert.equal(candidate.intake_catalog_entry_id,intakeEntryId);
+    assert.equal(intakeEntry.provider,'NAJ');
+    assert.equal(intakeEntry.catalogTitle,'松江府志7');
+    assert.equal(intakeEntry.catalogIdentifier,'NAJDA-292-0017');
+    assert.equal(intakeEntry.carrierHint,'scanned_page');
+    assert.equal(intakeEntry.language,null,'本次准入没读语言真值，保持未登记');
+    assert.deepEqual(intakeEntry.coverageHint,{content_availability:'image_scan'});
+    assert.deepEqual(intakeEntry.rightsHint,{status:'public_domain_secondary_use'});
+    assert.equal(intakeEntry.availabilityState,'catalog_found');
+    assert.equal(intakeEntry.discoveredByMethod,'D00/Y02:intake_registration');
+    assert.equal(intakeEntry.evidenceRef.schema,'mohen.source-catalog-observation.v1');
+    assert.equal(intakeEntry.evidenceRef.original_id,originalId);
+    assert.equal(intakeEntry.evidenceRef.provenance_status,'verified');
     assert.equal(candidate.stage,'D00');
     assert.equal(candidate.gate_code,'G0');
     assert.equal(candidate.qualification,'UNASSESSED');

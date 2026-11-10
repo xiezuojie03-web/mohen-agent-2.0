@@ -8,7 +8,7 @@ const deps=vi.hoisted(()=>({
   candidateRepository:vi.fn(),persistMaterialObservation:vi.fn(),
   persistWorldClaim:vi.fn(),persistHumanisticFinding:vi.fn(),persistWorldProjection:vi.fn(),
   sourceDiscoveryRepository:vi.fn(),recordSourceNeed:vi.fn(),projectStock:vi.fn(),
-  registerAcquisitionMethod:vi.fn(),appendAcquisitionAttempt:vi.fn(),
+  registerAcquisitionMethod:vi.fn(),appendAcquisitionAttempt:vi.fn(),recordCatalogEntry:vi.fn(),
 }));
 vi.mock('../../packages/data-access/src/index.mjs',()=>({
   createPrivateOriginalRepository:deps.originalRepository,
@@ -83,6 +83,8 @@ beforeEach(()=>{
    raw_item_id:extent.raw_item_id,sha256:hash(bytes),byte_size:bytes.length,content_type:'image/jpeg',
    provider:'NAJ',title:'松江府志7',source_type:'gazetteer',carrier_type:'scanned_page',
    rights:{status:'public_domain_secondary_use'},asset_revision_id:'66666666-6666-4666-8666-666666666666',
+   original_locator:{item:4252790,catalog_no:'NAJDA-292-0017'},
+   provenance_status:'verified',content_availability:'image_scan',
    artifact_revision:'c'.repeat(64),source_version_artifact_revision:'c'.repeat(64)});
  deps.registrationRepository.mockReturnValue({lookup:deps.registrationLookup});
  deps.persistMaterialObservation.mockResolvedValue({evidence_id:originalId,reading_unit_id:originalId,
@@ -99,9 +101,11 @@ beforeEach(()=>{
    saveWorldClaim:deps.persistWorldClaim,saveHumanisticFinding:deps.persistHumanisticFinding,
    saveWorldProjection:deps.persistWorldProjection});
  deps.recordSourceNeed.mockResolvedValue({need_id:originalId,created_at:'2026-11-10T00:00:00.000Z'});
+ deps.recordCatalogEntry.mockResolvedValue({catalog_entry_id:'77777777-7777-4777-8777-777777777777'});
  deps.sourceDiscoveryRepository.mockReturnValue({recordSourceNeed:deps.recordSourceNeed,
    registerAcquisitionMethod:deps.registerAcquisitionMethod,
-   appendAcquisitionAttempt:deps.appendAcquisitionAttempt});
+   appendAcquisitionAttempt:deps.appendAcquisitionAttempt,
+   recordCatalogEntry:deps.recordCatalogEntry});
 });
 it('requires a server-side repository, verified object store, and verifier key',()=>{
  expect(()=>createBoundPrivateEvidenceStageWorker({storage,verificationKey:key})).toThrow('PRIVATE_STAGE_DATABASE_REQUIRED');
@@ -214,6 +218,16 @@ it('composes D00 source intake through the registration lookup',async()=>{
      has_gap:true,stock:expect.objectContaining({originals:2,verified_originals:2,linked_sources:1})})}));
  expect(result.stock_gap.has_gap).toBe(true);
  expect(result.need_id).toBe(originalId);
+ // Y02 目录观察同样经唯一写入口，由工序从登记真值派生（含馆方目录号），不抄调用方。
+ expect(deps.recordCatalogEntry).toHaveBeenCalledTimes(1);
+ expect(deps.recordCatalogEntry).toHaveBeenCalledWith(expect.objectContaining({
+   projectId:'44444444-4444-4444-8444-444444444444',needId:originalId,
+   provider:'NAJ',catalogTitle:'松江府志7',catalogIdentifier:'NAJDA-292-0017',
+   carrierHint:'scanned_page',language:null,availabilityState:'catalog_found',
+   coverageHint:{content_availability:'image_scan'},
+   rightsHint:{status:'public_domain_secondary_use'},
+   discoveredByMethod:'D00/Y02:intake_registration',methodVersion:'v1'}));
+ expect(result.intake_catalog_entry_id).toBe('77777777-7777-4777-8777-777777777777');
  // No acquisition provenance was supplied, so no attempt may be invented.
  expect(deps.appendAcquisitionAttempt).not.toHaveBeenCalled();
  expect(deps.registrationLookup).toHaveBeenCalledWith(originalId,'synthetic-user-session');

@@ -2486,3 +2486,16 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **证据**：`tools/verify-y01-executor.mjs` = `Y01_EXECUTOR_PROVEN`（私有工人登录 + CA 校验）：存量 4 原件/4 已核验/1 未绑定/3 已绑定来源；负例 `empty_intent_rejected`、`bad_stock_scope_rejected`、`needs_unchanged` 全 true；回执 `2a35e020…`/`386c3156…` 落库并回读 `mohen.source-need-diagnosis.v1` 的 4 条缺口。资料台以 Owner 会话实测 200，含标题、真实意图与 `unbound`/`unassessed` 条目。
 - **回归**：typecheck 6/6；unit 644 通过 / 2 跳过 / 0 失败；data-production 187 通过 + 1 既有 `DEFERRED_ENV`；`guard:auth:strict`（routes=111 public=19 missing=0）、`guard:structure`、`guard:gate-enforcement` 全 PASS。
 - **边界**：只接通 1 个工序（Y02—Y08 仍无独立执行器）；未给 `mohen_app_runtime` 开任何 `source.*` 读写权限；存量清点上限 50 原件、超限失败关闭；不签 Gate、不构成生产准出，`M5_OVERALL_HOLD` 不变。
+
+## M5-E｜D00 第二道工序（Y02 资源目录观察）执行器接通（2026-11-10，本地隔离 VERIFIED_ISOLATED）
+
+- **应完成什么**：步骤④按序接通 D00 八工序的第二个真执行器。Y02 此前只有"调用方给材料才登记"的被动通道（`input.catalog`），没有任何一次真实 D00 运行真正产生过目录登记。
+- **做了什么**：
+  - 新增 `pipelines/data-production/workers/source-catalog-observation.mjs`：`deriveIntakeCatalogEntry()` 只从本次准入已核验的登记真值派生目录条目（提供方/题名/馆方目录号/载体/权利线索/内容形态）；没读到的字段保持缺失（语言未读 → null），不补默认；可用性只声称 `catalog_found`（在册+绑定+字节已核验），取得与否留给 Y07/Y04；登记与原件不复核一致（状态/哈希/类型/大小）即抛错，失败关闭。
+  - `private-evidence-stage.mjs`：D00 段在 Y01 需求回执之后**强制**派生并登记准入目录观察（缺 `recordCatalogEntry` 即 `PRIVATE_SOURCE_CATALOG_RECORDING_REQUIRED`，登记未落库即 `PRIVATE_SOURCE_CATALOG_NOT_RECORDED`）；`input.catalog` 保留给调用方另外看到的候选；候选输出新增 `intake_catalog_entry_id`。
+  - 迁移 `20261110140000_mab_d00_y02_registration_locator.sql`：`studio.private_source_registration` 增加 `original_locator`/`provenance_status`/`content_availability` 三个真实输出键（馆方目录号 `catalog_no` 的真值来源）；只加键、不改任何绑定校验、不放宽访问，已应用到本地 dev 库。
+  - `apps/web/app/studio/desk/page.tsx`：资料台新增「资源目录登记（D00 第二道工序）」区，只列本人项目，显示题名/馆方目录号/提供方/可用性/载体/权利状态/发现方法与日期。
+- **证据**：`tools/verify-y02-executor.mjs` = `Y02_EXECUTOR_PROVEN`（私有工人登录 + CA 校验）：真实登记读到 `original_locator.catalog_no=NAJDA-292-0017`（迁移生效的端到端证明）；条目 `5b958694-2b86-41b5-a02a-af7040c7b432` 经唯一写入口落库并以工人角色回读一致（`mohen.source-catalog-observation.v1`，`D00/Y02:intake_registration@v1`），挂在此前 Y01 的真实需求下；重跑幂等复用不产生重复条目；负例三项全 true（字节被篡改拒绝、缺提供方拒绝、缺目录号如实留空）。
+- **单测**：新增 `source-catalog-observation.test.mjs` 4 例（真值全量派生/缺目录号留空/不复核失败关闭/身份不全失败关闭）；既有 D00 测试同步更新（准入观察先于调用方材料、`intake_catalog_entry_id` 独立字段、空 `source_version_id` 提前到目录观察处失败关闭）。
+- **回归**：typecheck 6/6；unit 644 通过 / 2 跳过 / 0 失败；data-production 191 通过 + 1 既有 `DEFERRED_ENV`（`independent-gate-service-runtime`，无 openssl）；`guard:auth:strict`（routes=111 public=19 missing=0）、`guard:structure`、`guard:gate-enforcement` 全 PASS。
+- **边界**：只接通第 2 个工序（Y03—Y08 仍无独立执行器；`input.catalog` 通道仍未被真实运行使用）；可用性 `catalog_found` 不代表"已取得"，取得记录属 Y07/Y04；未给 `mohen_app_runtime` 开任何 `source.*` 写权限；不签 Gate、不构成生产准出，`M5_OVERALL_HOLD` 不变。

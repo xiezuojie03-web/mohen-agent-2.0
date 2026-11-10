@@ -377,6 +377,8 @@ const registrationFor=(originalId,projectId,overrides={})=>({
   sha256:IMAGE_SHA,byte_size:IMAGE.length,content_type:'image/jpeg',
   provider:'NAJ',title:'松江府志7',source_type:'gazetteer',carrier_type:'scanned_page',
   rights:{status:'public_domain_secondary_use'},asset_revision_id:id(),
+  original_locator:{item:4252790,catalog_no:'NAJDA-292-0017'},
+  provenance_status:'verified',content_availability:'image_scan',
   artifact_revision:'c'.repeat(64),source_version_artifact_revision:'c'.repeat(64),
   ...overrides});
 const imageRecord=(originalId,projectId)=>({record:{original_id:originalId,project_id:projectId,
@@ -405,6 +407,7 @@ test('D00 verifySourceIntake submits exactly one G0 source_version candidate',as
   const originalId=id(),projectId=id(),sourceVersionId=id();
   const input={research_intent:'松江府田赋卷十一',scope:{project_id:projectId,original_id:originalId,page_number:35}};
   const submitted=[];
+  const intakeEntries=[];
   return withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
     const worker=createPrivateEvidenceStageWorker({
       readOriginal:async()=>imageRecord(originalId,projectId),
@@ -412,11 +415,19 @@ test('D00 verifySourceIntake submits exactly one G0 source_version candidate',as
       readRegistration:async()=>registrationFor(originalId,projectId,{source_version_id:sourceVersionId}),
       recordSourceNeed:async()=>({need_id:id(),created_at:new Date().toISOString()}),
       readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
+      recordCatalogEntry:async entry=>{intakeEntries.push(entry);return {catalog_entry_id:id()};},
       bridge:bridgeStub,
       submitGateCandidate:async metadata=>{submitted.push(metadata);return 'candidate-g0';},
       readGateAudit:async()=>{throw Error('G0 must not read an upstream audit');},
     });
     const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
+    // Y02 目录观察必须先于 G0 候选落库，且由工序从登记真值派生。
+    assert.equal(intakeEntries.length,1);
+    assert.equal(intakeEntries[0].provider,'NAJ');
+    assert.equal(intakeEntries[0].catalogIdentifier,'NAJDA-292-0017');
+    assert.equal(intakeEntries[0].availabilityState,'catalog_found');
+    assert.equal(intakeEntries[0].discoveredByMethod,'D00/Y02:intake_registration');
+    assert.match(candidate.intake_catalog_entry_id,/^[a-f0-9-]{36}$/);
     assert.equal(submitted.length,1);
     assert.deepEqual(submitted[0],{runId:run.run_id,stage:'D00',gateCode:'G0',
       objectType:'source_version',objectId:sourceVersionId,artifactRevision:'c'.repeat(64),
@@ -444,6 +455,7 @@ test('D00 carries the consumer C method plan as typed refs on the G0 candidate',
       readRegistration:async()=>registrationFor(originalId,projectId,{source_version_id:sourceVersionId}),
       recordSourceNeed:async()=>({need_id:id(),created_at:new Date().toISOString()}),
       readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
+      recordCatalogEntry:async()=>({catalog_entry_id:id()}),
       bridge:bridgeStub,
       submitGateCandidate:async metadata=>{submitted=metadata;return 'candidate-g0';},
       readGateAudit:async()=>{throw Error('G0 must not read an upstream audit');},
@@ -474,7 +486,7 @@ test('D00 rejects a malformed consumer method plan before submitting any candida
         readRegistration:async()=>registrationFor(originalId,projectId,{source_version_id:sourceVersionId}),
         recordSourceNeed:async()=>({need_id:id(),created_at:new Date().toISOString()}),
         readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
-      readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
+        recordCatalogEntry:async()=>({catalog_entry_id:id()}),
         bridge:bridgeStub,
         submitGateCandidate:async()=>{submitted+=1;return 'candidate-g0';},
         readGateAudit:async()=>null,
@@ -486,9 +498,10 @@ test('D00 rejects a malformed consumer method plan before submitting any candida
   }
 });
 
-test('D00 records Y02/Y04/Y03/Y06 in order and exposes the written ids',async()=>{
+test('D00 records intake observation then Y02/Y04/Y03/Y06 in order and exposes the written ids',async()=>{
   const originalId=id(),projectId=id(),sourceVersionId=id();
   const calls=[];
+  const intakeId=id();
   const catalogIds=[id(),id()];
   const coverageId=id(),verificationId=id(),assessmentId=id();
   const existingAttemptId=id();
@@ -517,7 +530,7 @@ test('D00 records Y02/Y04/Y03/Y06 in order and exposes the written ids',async()=
       readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
       recordCatalogEntry:async entry=>{
         calls.push(`catalog:${entry.catalogTitle}`);
-        return {catalog_entry_id:catalogIds[calls.filter(c=>c.startsWith('catalog:')).length-1]};
+        return {catalog_entry_id:[intakeId,...catalogIds][calls.filter(c=>c.startsWith('catalog:')).length-1]};
       },
       recordAcquisitionCoverage:async item=>{
         calls.push(`coverage:${item.catalogEntryId}`);
@@ -536,9 +549,11 @@ test('D00 records Y02/Y04/Y03/Y06 in order and exposes the written ids',async()=
       readGateAudit:async()=>null,
     });
     const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
-    // 顺序固定：先有目录，才有覆盖/核查/优先级的引用对象。
-    assert.deepEqual(calls,['catalog:松江府志7','catalog:松江府志（另一版本）',
+    // 顺序固定：工序先落自己的准入目录观察（松江府志7，来自登记真值），
+    // 再登记调用方补充的候选，然后才有覆盖/核查/优先级的引用对象。
+    assert.deepEqual(calls,['catalog:松江府志7','catalog:松江府志7','catalog:松江府志（另一版本）',
       `coverage:${catalogIds[0]}`,'verification:admissible','priority:selected']);
+    assert.equal(candidate.intake_catalog_entry_id,intakeId);
     assert.deepEqual(candidate.catalog_entry_ids,catalogIds);
     assert.deepEqual(candidate.coverage_ids,[coverageId]);
     assert.deepEqual(candidate.verification_ids,[verificationId]);
@@ -547,28 +562,32 @@ test('D00 records Y02/Y04/Y03/Y06 in order and exposes the written ids',async()=
   });
 });
 
-test('D00 writes no Y02/Y04/Y03/Y06 rows when the caller supplies none',async()=>{
+test('D00 writes only the intake observation when the caller supplies no extra material',async()=>{
   const originalId=id(),projectId=id(),sourceVersionId=id();
   const input={research_intent:'松江府田赋卷十一',scope:{project_id:projectId,original_id:originalId,page_number:35}};
   return withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
-    let touched=0;
+    let catalogCalls=0,extraCalls=0;
+    const intakeId=id();
     const worker=createPrivateEvidenceStageWorker({
       readOriginal:async()=>imageRecord(originalId,projectId),
       verifySourceBinding:async()=>true,
       readRegistration:async()=>registrationFor(originalId,projectId,{source_version_id:sourceVersionId}),
       recordSourceNeed:async()=>({need_id:id(),created_at:new Date().toISOString()}),
       readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
-      recordCatalogEntry:async()=>{touched+=1;return {catalog_entry_id:id()};},
-      recordAcquisitionCoverage:async()=>{touched+=1;return {coverage_id:id()};},
-      recordCandidateVerification:async()=>{touched+=1;return {verification_id:id()};},
-      recordPriorityAssessment:async()=>{touched+=1;return {assessment_id:id()};},
+      recordCatalogEntry:async()=>{catalogCalls+=1;return {catalog_entry_id:intakeId};},
+      recordAcquisitionCoverage:async()=>{extraCalls+=1;return {coverage_id:id()};},
+      recordCandidateVerification:async()=>{extraCalls+=1;return {verification_id:id()};},
+      recordPriorityAssessment:async()=>{extraCalls+=1;return {assessment_id:id()};},
       bridge:bridgeStub,
       submitGateCandidate:async()=>'candidate-g0',
       readGateAudit:async()=>null,
     });
     const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
-    // 没给材料就不落库，也不替研究者补默认判断。
-    assert.equal(touched,0);
+    // 调用方没给材料，工序只落自己从登记真值派生的目录观察，
+    // 不替研究者补覆盖、核查或优先级判断。
+    assert.equal(catalogCalls,1);
+    assert.equal(extraCalls,0);
+    assert.equal(candidate.intake_catalog_entry_id,intakeId);
     assert.deepEqual(candidate.catalog_entry_ids,[]);
     assert.deepEqual(candidate.assessment_ids,[]);
   });
@@ -576,7 +595,9 @@ test('D00 writes no Y02/Y04/Y03/Y06 rows when the caller supplies none',async()=
 
 test('D00 fails closed on malformed or unwritable Y02—Y06 material',async()=>{
   const cases=[
-    {extra:{catalog:'not-an-array'},pattern:/PRIVATE_SOURCE_CATALOG_INVALID/,drop:'recordCatalogEntry'},
+    // Y02 准入观察先于 input.catalog 校验：本例不撤写入口，让畸形 catalog 在自身校验处失败。
+    {extra:{catalog:'not-an-array'},pattern:/PRIVATE_SOURCE_CATALOG_INVALID/,drop:null},
+    // 撤掉写入口时，强制的 Y02 准入观察本身即失败关闭（等不到调用方材料）。
     {extra:{catalog:[{provider:'X',catalog_title:'Y',availability_state:'unknown'}]},
       pattern:/PRIVATE_SOURCE_CATALOG_RECORDING_REQUIRED/,drop:'recordCatalogEntry'},
     {extra:{coverage:[{completeness_state:'partial',missing_parts:[]}]},
@@ -814,7 +835,9 @@ test('candidate submission fails closed on a missing project scope, a non-hex re
   for (const spec of [
     {name:'upper-case revision',overrides:{source_version_artifact_revision:'C'.repeat(64)},pattern:/PRIVATE_SOURCE_REGISTRATION_REVISION_INVALID/},
     {name:'missing source revision',overrides:{source_version_artifact_revision:undefined},pattern:/PRIVATE_SOURCE_REGISTRATION_REVISION_INVALID/},
-    {name:'empty source version',overrides:{source_version_id:''},pattern:/PRIVATE_GATE_CANDIDATE_EVIDENCE_REQUIRED/},
+    // Y02 派生复核登记身份：空 source_version_id 在目录观察处即失败关闭，
+    // 比 G0 证据检查更早、更靠近事实点。
+    {name:'empty source version',overrides:{source_version_id:''},pattern:/SOURCE_CATALOG_REGISTRATION_INVALID/},
   ]) {
     const originalId=id(),projectId=id();
     const input={research_intent:'松江府田赋卷十一',
@@ -826,7 +849,7 @@ test('candidate submission fails closed on a missing project scope, a non-hex re
         readRegistration:async()=>registrationFor(originalId,projectId,spec.overrides),
         recordSourceNeed:async()=>({need_id:id(),created_at:new Date().toISOString()}),
         readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
-      readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
+        recordCatalogEntry:async()=>({catalog_entry_id:id()}),
         bridge:bridgeStub,
         submitGateCandidate:async()=>{throw Error('must not submit '+spec.name);},
         readGateAudit:async()=>null,

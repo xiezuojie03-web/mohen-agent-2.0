@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import { assertStageExecutionAuthorized, consumeAuthorizedStageHandoff } from '../orchestrator/execution-authority.mjs';
 import { buildMethodPlanRefs, inspectMethodPlanRef, isMethodPlanRef } from '../../../packages/data-access/src/method-plan-ref.mjs';
 import { diagnoseSourceNeed } from './source-need-diagnosis.mjs';
+import { deriveIntakeCatalogEntry } from './source-catalog-observation.mjs';
 
 const HEX=/^[a-f0-9]{64}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
@@ -161,6 +162,15 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         existingStockGap:diagnosis.existing_stock_gap,rightsBoundary:registration.rights,
         producedBy:'D00/Y01'});
       if(!UUID.test(need?.need_id??''))throw Error('PRIVATE_SOURCE_NEED_NOT_RECORDED');
+      // Y02：把本次准入已核验的来源登记为资源目录条目。条目由工序自己从登记真值
+      // 派生（含馆方目录号），不抄调用方；缺写入口或登记与原件不复核即失败关闭，
+      // 不允许"看起来跑了 D00 却没有目录观察"。调用方另外看到的候选（未取得的
+      // 线索等）仍可经 input.catalog 补充登记，与本观察并存。
+      if(typeof recordCatalogEntry!=='function')throw Error('PRIVATE_SOURCE_CATALOG_RECORDING_REQUIRED');
+      const savedIntakeEntry=await recordCatalogEntry({projectId,needId:need.need_id,
+        ...deriveIntakeCatalogEntry({registration,record})});
+      if(!UUID.test(savedIntakeEntry?.catalog_entry_id??''))throw Error('PRIVATE_SOURCE_CATALOG_NOT_RECORDED');
+      const intakeCatalogEntryId=savedIntakeEntry.catalog_entry_id;
       // Y07：只在调用方确实知道"这份原件怎么来的"时记账；不知道就不写，
       // 绝不补默认方法或默认结果充当历史。方法身份可选（可能先前已登记）。
       let acquisitionAttemptId=null;
@@ -286,6 +296,7 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         asset_revision_id:registration.asset_revision_id,need_id:need.need_id,
         stock_gap:diagnosis.existing_stock_gap,
         acquisition_attempt_id:acquisitionAttemptId,method_plan:methodPlan??[],
+        intake_catalog_entry_id:intakeCatalogEntryId,
         catalog_entry_ids:catalogEntryIds,coverage_ids:coverageIds,
         verification_ids:verificationIds,assessment_ids:assessmentIds,
         artifact_revision:sourceRevision,
