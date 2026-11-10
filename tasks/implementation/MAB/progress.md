@@ -2253,6 +2253,16 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **证据级别**：本批 = **CODE_PRESENT + VERIFIED_ISOLATED（本地实跑）**；GitHub CI 的 PG17 回执待推送后取证，未推送前不宣称双证。
 - **仍未改变**：`GAP_RIGHTS_ACTIONS` HOLD（生产库缺列）、`GAP_GATE_AUDITS_RLS`（新增，另批修）、D00-A2/B/C HOLD、生产/费用/外发全部原 HOLD 不变；页面文件扩容需重启才生效，重启前宿主提交上限仍是 31.82 GB。
 
+## 2026-11-10 GAP_GATE_AUDITS_RLS 修复批（同日按 Owner 裁决另开批次，已关闭）
+
+- **读身份盘点（先行，避免漏配）**：`control.gate_audits` 的 SELECT 授权对象仅两类——`mohen_private_worker`（20261107210000，已有 `k3_private_worker_gate_audit_read` 策略）与 `mohen_gate_signer_m5_machine`（20261107220000，**只有 GRANT 无策略**）；`mohen_gate_authority` 走既有 `k3_authority` 策略；表属主 `k3_admin` 与 SECURITY DEFINER 的 sign/revoke 函数按属主身份绕过。
+- **修复**：新增迁移 `supabase/migrations/20261110100000_mab_gate_audits_rls.sql`——`alter table control.gate_audits enable row level security` + 新建 `k3_gate_signer_audit_read`（`for select to mohen_gate_signer, mohen_gate_signer_m5_machine using (true)`），评审员读面保持原样不变；不启用 FORCE。
+- **断言回改按设计**：`private-worker-acl` 中 worker 读 `legacy_untrusted` 期望回到 `0`，断言 `relrowsecurity='t'`，PASS 行后缀由 `known-gap-GAP_GATE_AUDITS_RLS` 改为 `gate-audit-rls-enforced`；`machine-reviewer-boundary` 的「读面全通」断言不变（验证读面确实没被顺手关掉）。
+- **链挂接**：新迁移加入 `scripts/test-k3-db.mjs` apply 列表。
+- **验证（本地隔离 PG18 + 回环 TCP）**：整链 `K3_DB_TEST_PASS` 零 `failing_suites`；`MAB_PRIVATE_WORKER_ACL_PASS ... gate-audit-rls-enforced`；`MAB_MACHINE_REVIEWER_BOUNDARY_PASS ... read-surface-open ...`。
+- **状态**：`GAP_GATE_AUDITS_RLS` **关闭**（证据级别：本地 PG18 实跑 VERIFIED_ISOLATED；CI 的 PG17 回执待推送后取证）。
+- **仍未改变**：`GAP_RIGHTS_ACTIONS` HOLD（生产库缺列）、D00-A2/B/C HOLD、生产/费用/外发全部原 HOLD 不变。
+
 
 
 

@@ -117,7 +117,8 @@ try {
       "20261107230000_mab_m2_private_source_registration_source_revision.sql",
       "20261107240000_mab_m5_claim_revision_artifact_read_policy.sql",
       "20261108110000_mab_m5_source_rights_actions.sql",
-      "20261109120000_mab_m5_artifact_content_revision.sql"]) apply(file);
+      "20261109120000_mab_m5_artifact_content_revision.sql",
+      "20261110100000_mab_gate_audits_rls.sql"]) apply(file);
     // Capability assertions for the migrations applied immediately above. They can only run at
     // this point in the chain: the rights columns, the private worker, the machine reviewer and
     // the content-based sign_gate_candidate semantics do not exist any earlier.
