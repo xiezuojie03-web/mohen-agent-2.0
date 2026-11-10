@@ -107,5 +107,6 @@
 /api/works,protected,yes,n/a,OK
 /api/works/[id]/publish,protected,yes,n/a,OK
 /api/works/[id]/submit,protected,yes,n/a,OK
+/api/works/media/[assetId],public,no,n/a,OK_PUBLIC
 /api/works/published,public,no,n/a,OK_PUBLIC
 /api/works/submitted,protected,yes,n/a,OK
