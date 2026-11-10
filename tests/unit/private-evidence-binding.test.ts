@@ -7,6 +7,8 @@ const deps=vi.hoisted(()=>({
   registrationRepository:vi.fn(),registrationLookup:vi.fn(),
   candidateRepository:vi.fn(),persistMaterialObservation:vi.fn(),
   persistWorldClaim:vi.fn(),persistHumanisticFinding:vi.fn(),persistWorldProjection:vi.fn(),
+  sourceDiscoveryRepository:vi.fn(),recordSourceNeed:vi.fn(),
+  registerAcquisitionMethod:vi.fn(),appendAcquisitionAttempt:vi.fn(),
 }));
 vi.mock('../../packages/data-access/src/index.mjs',()=>({
   createPrivateOriginalRepository:deps.originalRepository,
@@ -17,6 +19,7 @@ vi.mock('../../packages/data-access/src/index.mjs',()=>({
   createPrivateScannedPageReadingRepository:deps.pageReadingRepository,
   createPrivateSourceRegistrationRepository:deps.registrationRepository,
   createPrivateCandidateRepository:deps.candidateRepository,
+  createSourceDiscoveryRepository:deps.sourceDiscoveryRepository,
 }));
 vi.mock('../../pipelines/data-production/orchestrator/execution-authority.mjs',()=>({
   assertStageExecutionAuthorized:deps.authorize,
@@ -83,6 +86,10 @@ beforeEach(()=>{
  deps.candidateRepository.mockReturnValue({saveMaterialObservation:deps.persistMaterialObservation,
    saveWorldClaim:deps.persistWorldClaim,saveHumanisticFinding:deps.persistHumanisticFinding,
    saveWorldProjection:deps.persistWorldProjection});
+ deps.recordSourceNeed.mockResolvedValue({need_id:originalId,created_at:'2026-11-10T00:00:00.000Z'});
+ deps.sourceDiscoveryRepository.mockReturnValue({recordSourceNeed:deps.recordSourceNeed,
+   registerAcquisitionMethod:deps.registerAcquisitionMethod,
+   appendAcquisitionAttempt:deps.appendAcquisitionAttempt});
 });
 it('requires a server-side repository, verified object store, and verifier key',()=>{
  expect(()=>createBoundPrivateEvidenceStageWorker({storage,verificationKey:key})).toThrow('PRIVATE_STAGE_DATABASE_REQUIRED');
@@ -182,6 +189,15 @@ it('composes D00 source intake through the registration lookup',async()=>{
  expect(result.candidate_kind).toBe('private_source_intake');
  expect(result.rights).toEqual({status:'public_domain_secondary_use'});
  expect(result.artifact_revision).toBe('c'.repeat(64));
+ // Y01 receipts come from the one source-discovery write entry point, in the
+ // verified project scope, with the already-checked rights boundary.
+ expect(deps.sourceDiscoveryRepository).toHaveBeenCalled();
+ expect(deps.recordSourceNeed).toHaveBeenCalledWith(expect.objectContaining({
+   projectId:'44444444-4444-4444-8444-444444444444',researchIntent:'松江府田赋',
+   rightsBoundary:{status:'public_domain_secondary_use'},producedBy:'D00/Y01'}));
+ expect(result.need_id).toBe(originalId);
+ // No acquisition provenance was supplied, so no attempt may be invented.
+ expect(deps.appendAcquisitionAttempt).not.toHaveBeenCalled();
  expect(deps.registrationLookup).toHaveBeenCalledWith(originalId,'synthetic-user-session');
  expect(deps.sourceBinding).toHaveBeenCalledWith({originalId,
    sourceVersionId:extent.source_version_id,rawItemId:extent.raw_item_id,rawSha256:hash(bytes)},

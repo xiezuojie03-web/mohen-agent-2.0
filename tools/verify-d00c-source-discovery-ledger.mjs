@@ -8,6 +8,13 @@ import { randomUUID } from 'node:crypto';
 import '../packages/data-access/src/index.mjs';
 import { getNodePgPool } from '../packages/data-access/src/node-pg-client.mjs';
 import { createSourceDiscoveryRepository } from '../packages/data-access/src/source-discovery-repository.mjs';
+import { writeMethodIsolationReceipt } from './lib/method-isolation-receipt.mjs';
+
+// 逐项隔离证据账：本工具跑完即写回执（见 tools/lib/method-isolation-receipt.mjs）。
+const VERIFIER = 'tools/verify-d00c-source-discovery-ledger.mjs';
+const METHODS = ['Y01', 'Y07'];
+const SCOPE = 'D00 来源账本的存储契约（三表/约束/触发器/RLS/最小授权）+ 唯一写入口的输入守卫';
+const NOT_COVERED = ['stage 端到端运行（需真实 stage 授权与私有原件字节）', 'registry 方法路由与激活', '生产库'];
 
 const results = [];
 const pass = (name, detail = '') => results.push({ ok: true, name, detail });
@@ -237,4 +244,21 @@ try {
 for (const r of results) console.log(`${r.ok ? 'PASS' : 'FAIL'}  ${r.name}${r.detail ? '  :: ' + r.detail : ''}`);
 const failed = results.filter((r) => !r.ok).length;
 console.log(`\nD00C1_${failed === 0 ? 'ALL_PASS' : 'FAILED'} total=${results.length} failed=${failed}`);
+
+// 回执无论通过与否都写：失败的回执会被派生工具判 NOT_PASS 并拒绝计入，
+// 而不是留下上一轮的旧回执冒充本次结果。
+const written = writeMethodIsolationReceipt({
+  receiptId: 'd00c-source-discovery-ledger',
+  verifier: VERIFIER,
+  methods: METHODS,
+  scope: SCOPE,
+  notCovered: NOT_COVERED,
+  environment: {
+    node: process.version,
+    database: 'local postgres 127.0.0.1:5432/mohen_dev',
+    isolation: 'single transaction, rolled back; zero residue checked after rollback',
+  },
+  checks: results.map((r) => ({ name: r.name, ok: r.ok })),
+});
+console.log(`RECEIPT ${written.file} status=${written.receipt.status} total=${written.receipt.total} failed=${written.receipt.failed}`);
 process.exit(failed === 0 ? 0 : 1);

@@ -2344,3 +2344,25 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
   - 守卫：`pnpm guard` 前七段（docs/structure/registry/source-gate/identifiers/acquisition/reconciliation）全绿；`guard:naming` 仍红，属既有 DEFERRED（naming-map 为 `DESIGN_TARGET_NOT_APPLIED`，RECON-02 专项，`actual_tables=45` 含本批三张新表），**不构成本批回归**。
 - **未达成项**：`ISOLATED_VERIFIED` 不计入——本批只到"存储契约 + 写入口"（`CODE_PRESENT` + 本地隔离实证），Y01/Y07 尚无 stage 授权调用路径与 registry 路由，故 `report-method-ledger` 的 `ISOLATED_VERIFIED` 继续 `NOT_TRACKED`。下一步 D00-C2：把 Y01/Y07 接进 `private-evidence-stage.mjs` 的授权调用面，并为每个 Y 建逐项证据账。
 
+## D00-C2｜Y01/Y07 接入 D00 阶段面与逐项隔离证据账（2026-11-10，基线 main@f48aa41）
+
+- **顺序（自行评估，未再问 Owner）**：C1→C2→B。理由：C2 只依赖 C1 已交付的表与写入口，且它是 B 的前提（B 要"预选什么"必须先有 C 的落点）；B 只动一两个交接字段，放最后不阻塞任何东西。
+- **变更 1｜Y01 有了真实调用面（`pipelines/data-production/workers/private-evidence-stage.mjs`）**：D00 `verifySourceIntake` 在「原件字节回读校验 → 注册行一致性 → 来源绑定核验」三重通过之后、提交 G0 候选之前写需求回执。项目作用域取自已核验的 `registration.project_id`，`rights_boundary` 取已核对的 `registration.rights`，不新造权利判断；`research_scope`/`coverage_dimensions`/`existing_stock_gap` 由 `input` 可选提供，缺省不编造。缺写入口直接 `PRIVATE_SOURCE_NEED_RECORDING_REQUIRED` 失败关闭——不允许"看起来跑了 D00 却没有需求回执"。
+- **变更 2｜Y07 有入口但不编造历史**：仅当调用方在 `input.acquisition` 里给出"这份原件怎么来的"时，才登记方法身份（`method` 段可选，可能先前已登记）并追加尝试；未提供就一行不写，绝不补默认方法或默认结果。`acquired_verified` 仍须 byte_size + sha256（库约束 + 仓库守卫双保险）。方法状态由调用方声明，本批不给任何"上次成功即当前有效"的自动推进。
+- **变更 3｜组合根只加装配（`private-evidence-binding.mjs`）**：用 `createSourceDiscoveryRepository` 取三个写入口注入 worker；仍是 Producer 侧唯一写入口，未新增 Gate 候选或审计写路径。
+- **变更 4｜逐项隔离证据账（新增 `tools/lib/method-isolation-receipt.mjs`、`tools/verify-d00c2-stage-wiring.mjs`，改 `tools/verify-d00c-source-discovery-ledger.mjs`、`tools/report-method-ledger.mjs`）**：
+  - 回执只能由真正跑过验证的工具写，落在 `tasks/results/MAB/evidence/method-isolation/`；回执内记下写入者脚本当前字节的 SHA-256，**脚本一改旧回执自动失效**，想计入就得重跑；失败也照写，避免旧结论冒充本次结果。
+  - `report-method-ledger` 只采纳「schema 对 + status=PASS + 验证脚本字节未变 + 方法身份在册」的回执，其余逐条列入 `ISOLATED_EVIDENCE_REJECTED` 并说明原因；没有任何可采纳回执时才输出 `NOT_TRACKED`。
+  - 实测输出从 `ISOLATED_VERIFIED=NOT_TRACKED` 变为 `ISOLATED_VERIFIED=2`（`ISOLATED_VERIFIED_IDS=Y01,Y07`），并新增 `ISOLATED_EVIDENCE_ACCEPTED` / `ISOLATED_EVIDENCE_REJECTED` 两行。
+- **配套测试改动（不是放宽断言）**：`tests/data-production/private-scanned-page-worker.test.mjs`、`tests/data-production/private-candidate-worker.test.mjs` 的 D00 worker 增加 `recordSourceNeed` 注入；`tests/unit/private-evidence-binding.test.ts` 增加 `createSourceDiscoveryRepository` mock，并新增三条断言：需求回执确由该唯一写入口在已核项目作用域内写入、`need_id` 透出、未提供来源时**不得**调用 `appendAcquisitionAttempt`。
+- **验证（本批实跑，非口头）**：
+  - POS/NEG 存储契约：`node tools/verify-d00c-source-discovery-ledger.mjs` → `D00C1_ALL_PASS total=24 failed=0`，单事务回滚零残留。
+  - 阶段接线：`node tools/verify-d00c2-stage-wiring.mjs` → 实跑三套 `node --test`（含真实 EdDSA stage 授权夹具）全绿，回执 `status=PASS failed=0`。
+  - 计数派生：`node tools/report-method-ledger.mjs` → `ISOLATED_VERIFIED=2`。
+  - 证据账反例（防伪造）：① 改回执里的 `verifier_sha256` → `VERIFIER_CHANGED_SINCE_RUN`；② 回执改 `status=FAIL` → `NOT_PASS`；③ 塞入未登记身份 `Y99` → `UNKNOWN_METHOD_ID`；④ 两份回执全部篡改 → `ISOLATED_VERIFIED` 从 2 掉回 `NOT_TRACKED`；四次篡改后逐字节还原并核对 SHA 一致，末次输出复归 `ISOLATED_VERIFIED=2`。
+  - 回归：`pnpm test`（CI 同口径，隔离库 `mohen_dev_test`）**87 文件通过 / 700 用例通过 / 0 失败**，`ISOLATION_VERDICT real_db_untouched=YES`（真库 `source.sources=42`、`raw_items=102`、`gate_audits=740` 等一行未动）；`pnpm test:unit` 638/638（与基线同）；`pnpm test:data-production` 172/172。注：上述套件在本机需先备好 `PATH` 里的 `openssl` 与 `OPENSSL_CONF=D:\MoHen\tools\OpenSSL-Win64\openssl.cnf`，否则 `independent-gate-service-runtime` 会因环境缺 openssl 失败——属既有环境前置，与本批改动无关（本批未触碰该路径）。
+  - 守卫：`pnpm guard` 前七段（docs/structure/registry/source-gate/identifiers/acquisition/reconciliation）全绿；`guard:naming`、`guard:escalations`、`guard:links` 仍为既有 DEFERRED，不计入本批回归。
+- **刻意不做**：没给 Y02—Y06 建表或建无生产者的空壳；没动 registry `methods: []`、`activation`/`enabled`/`adapter_binding`/`gate_reviewer_binding`、D01—D05、绑定合同 `method_count=63`；没写任何种子数据或推断回填。
+- **口径（不得放大解读）**：`ISOLATED_VERIFIED=2` 只代表「存储契约 + 唯一写入口 + D00 阶段接线单测」；**真实 stage 端到端运行（需真实签名授权与私有原件字节）、registry 方法路由与激活、生产库**均不在该口径内，回执的 `not_covered` 已明写。Y02—Y06 仍无生产者，D00 整段仍不能算"可用"，`CODE_PRESENT` 与可用性继续分开记账。
+
+

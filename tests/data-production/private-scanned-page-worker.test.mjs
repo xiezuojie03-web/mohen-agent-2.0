@@ -77,6 +77,7 @@ test('D00 verifySourceIntake returns an UNASSESSED registration candidate under 
         state:'STORED_VERIFIED',content_type:'image/jpeg',sha256:IMAGE_SHA,byte_size:IMAGE.length},bytes:IMAGE};},
       verifySourceBinding:async()=>{bindings++;return true;},
       readRegistration:async()=>{registrations++;return registrationFor(originalId,projectId);},
+      recordSourceNeed:async()=>({need_id:id(),created_at:new Date().toISOString()}),
       bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},...gateStub,
     });
     const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});

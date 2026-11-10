@@ -27,6 +27,7 @@ function requireToken(token) {
 }
 export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySourceBinding,persistReading,readRegistration,persistPageReading,
   persistMaterialObservation,persistWorldClaim,persistHumanisticFinding,persistWorldProjection,
+  recordSourceNeed,registerAcquisitionMethod,appendAcquisitionAttempt,
   submitGateCandidate,readGateAudit}={}) {
   if(typeof readOriginal!=='function'||typeof verifySourceBinding!=='function'||
      typeof bridge?.linkReading!=='function'||typeof bridge?.linkClaim!=='function')throw Error('PRIVATE_EVIDENCE_BRIDGE_REQUIRED');
@@ -110,6 +111,46 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
       const sourceRevision=registration?.source_version_artifact_revision;
       if(typeof sourceRevision!=='string'||!/^[0-9a-f]{64}$/.test(sourceRevision))
         throw Error('PRIVATE_SOURCE_REGISTRATION_REVISION_INVALID');
+      // Y01：D00 是唯一"已有项目作用域 + 已核对原件 + 已核验绑定"的位置，
+      // 需求回执在此登记才不是无生产者的空表。缺写入口即失败关闭，
+      // 不允许"看起来跑了 D00 却没有需求回执"。
+      if(typeof recordSourceNeed!=='function')throw Error('PRIVATE_SOURCE_NEED_RECORDING_REQUIRED');
+      const need=await recordSourceNeed({projectId,researchIntent,
+        scope:input?.research_scope,coverageDimensions:input?.coverage_dimensions,
+        existingStockGap:input?.existing_stock_gap,rightsBoundary:registration.rights,
+        producedBy:'D00/Y01'});
+      if(!UUID.test(need?.need_id??''))throw Error('PRIVATE_SOURCE_NEED_NOT_RECORDED');
+      // Y07：只在调用方确实知道"这份原件怎么来的"时记账；不知道就不写，
+      // 绝不补默认方法或默认结果充当历史。方法身份可选（可能先前已登记）。
+      let acquisitionAttemptId=null;
+      if(input?.acquisition){
+        const method=input.acquisition.method??null,attempt=input.acquisition.attempt;
+        if(!attempt||typeof attempt!=='object')throw Error('PRIVATE_ACQUISITION_ATTEMPT_REQUIRED');
+        if(typeof registerAcquisitionMethod!=='function'||typeof appendAcquisitionAttempt!=='function')
+          throw Error('PRIVATE_ACQUISITION_RECORDING_REQUIRED');
+        if(method){
+          await registerAcquisitionMethod({methodKey:method.method_key,methodVersion:method.method_version,
+            resourceScope:method.resource_scope,accessMode:method.access_mode,
+            preconditions:method.preconditions,steps:method.steps,
+            successCriteria:method.success_criteria,failureModes:method.failure_modes,
+            alternatives:method.alternatives,methodState:method.method_state,
+            recommended:method.recommended});
+        }
+        const appended=await appendAcquisitionAttempt({projectId,needId:need.need_id,
+          candidateRef:attempt.candidate_ref,methodKey:attempt.method_key??method?.method_key,
+          methodVersion:attempt.method_version??method?.method_version,
+          executionEnvironment:attempt.execution_environment,requestDigest:attempt.request_digest,
+          pagination:attempt.pagination,startedAt:attempt.started_at,finishedAt:attempt.finished_at,
+          resultState:attempt.result_state,failureCode:attempt.failure_code,
+          failureCertainty:attempt.failure_certainty,acquiredExtent:attempt.acquired_extent,
+          byteSize:attempt.byte_size,assetSha256:attempt.asset_sha256,
+          sourceLocator:attempt.source_locator,rightsActions:attempt.rights_actions,
+          accessRestrictions:attempt.access_restrictions,dependencyRefs:attempt.dependency_refs,
+          alternatives:attempt.alternatives,recoveryCondition:attempt.recovery_condition,
+          cost:attempt.cost,correctionOf:attempt.correction_of});
+        if(!UUID.test(appended?.attempt_id??''))throw Error('PRIVATE_ACQUISITION_ATTEMPT_NOT_RECORDED');
+        acquisitionAttemptId=appended.attempt_id;
+      }
       // Durable L0 candidate refs; professional G0 qualification stays independent.
       const gateCandidateId=await submitStageCandidate({run,stage:'D00',gateCode:'G0',
         objectType:'source_version',objectId:registration.source_version_id,
@@ -123,7 +164,9 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         raw_item_id:registration.raw_item_id,sha256:record.sha256,byte_size:record.byte_size,
         content_type:record.content_type,rights:registration.rights,provider:registration.provider,
         title:registration.title,source_type:registration.source_type,carrier_type:registration.carrier_type,
-        asset_revision_id:registration.asset_revision_id,artifact_revision:sourceRevision,
+        asset_revision_id:registration.asset_revision_id,need_id:need.need_id,
+        acquisition_attempt_id:acquisitionAttemptId,
+        artifact_revision:sourceRevision,
         request_digest:requestDigest,gate_candidate_id:gateCandidateId,
         gate_candidate_status:'SUBMITTED',qualification:'UNASSESSED',gate_code:'G0'};
     },

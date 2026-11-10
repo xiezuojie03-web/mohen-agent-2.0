@@ -10,6 +10,7 @@ import {
   createPrivateScannedPageReadingRepository,
   createPrivateSourceRegistrationRepository,
   createPrivateCandidateRepository,
+  createSourceDiscoveryRepository,
 } from '../../../packages/data-access/src/index.mjs';
 import { createDataProductionRepository } from '../../../packages/data-access/src/data-production-repository.mjs';
 import { createPrivateEvidenceStageWorker } from './private-evidence-stage.mjs';
@@ -40,6 +41,9 @@ export function createBoundPrivateEvidenceStageWorker({
   const pageReadings=createPrivateScannedPageReadingRepository(pool,{verificationKey,keyVersion});
   const registrations=createPrivateSourceRegistrationRepository(pool);
   const candidates=createPrivateCandidateRepository(pool,{verificationKey,keyVersion});
+  // Y01/Y07 的唯一写入口（source.source_needs / acquisition_methods / acquisition_attempts）。
+  // 它只写 L0 候选与事件，不提交 Gate 候选、不写 Gate 审计。
+  const sourceDiscovery=createSourceDiscoveryRepository({query:(text,values)=>pool.query(text,values)});
   // The one existing producer-side candidate writer. It only inserts a
   // SUBMITTED candidate; no Gate decision, signer role or audit write exists
   // in the Producer process.
@@ -71,5 +75,8 @@ export function createBoundPrivateEvidenceStageWorker({
     persistWorldClaim:candidates.saveWorldClaim,
     persistHumanisticFinding:candidates.saveHumanisticFinding,
     persistWorldProjection:candidates.saveWorldProjection,
+    recordSourceNeed:sourceDiscovery.recordSourceNeed,
+    registerAcquisitionMethod:sourceDiscovery.registerAcquisitionMethod,
+    appendAcquisitionAttempt:sourceDiscovery.appendAcquisitionAttempt,
     submitGateCandidate, readGateAudit });
 }

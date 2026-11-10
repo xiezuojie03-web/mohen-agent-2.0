@@ -1,0 +1,43 @@
+{
+  "schema": "mohen.method-isolation-evidence.v1",
+  "receipt_id": "d00c2-stage-wiring",
+  "verifier": "tools/verify-d00c2-stage-wiring.mjs",
+  "verifier_sha256": "b4ba29595973e0cd16d9c4c8c7b2a91b6418a66263c707def8de6f9b4f4ca0dc",
+  "methods": [
+    "Y01",
+    "Y07"
+  ],
+  "scope": "Y01 需求回执与 Y07 获取尝试在 D00 阶段授权面内的接线行为（点名/失败关闭/未提供来源即不编造尝试）",
+  "not_covered": [
+    "真实私有原件字节与 Storage 读回",
+    "registry 方法路由与激活",
+    "生产库"
+  ],
+  "environment": {
+    "node": "v22.22.3",
+    "suites": [
+      "tests/data-production/private-scanned-page-worker.test.mjs",
+      "tests/data-production/private-candidate-worker.test.mjs",
+      "tests/data-production/private-evidence-adapters.test.mjs"
+    ],
+    "runner": "node --test"
+  },
+  "ran_at": "2026-11-10T04:38:34.064Z",
+  "total": 3,
+  "failed": 0,
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "D00/D01/D02 私有阶段套件实跑通过（零失败）",
+      "ok": true
+    },
+    {
+      "name": "套件确实执行了用例（通过数 > 0）",
+      "ok": true
+    },
+    {
+      "name": "通过数与用例数吻合（无静默丢失的用例）",
+      "ok": true
+    }
+  ]
+}

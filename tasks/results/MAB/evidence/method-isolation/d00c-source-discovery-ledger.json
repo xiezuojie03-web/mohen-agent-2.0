@@ -1,0 +1,123 @@
+{
+  "schema": "mohen.method-isolation-evidence.v1",
+  "receipt_id": "d00c-source-discovery-ledger",
+  "verifier": "tools/verify-d00c-source-discovery-ledger.mjs",
+  "verifier_sha256": "394b77b7f06bc58d5508f024680e5a7747dba43e075ea0aeb05687036f46e1a2",
+  "methods": [
+    "Y01",
+    "Y07"
+  ],
+  "scope": "D00 来源账本的存储契约（三表/约束/触发器/RLS/最小授权）+ 唯一写入口的输入守卫",
+  "not_covered": [
+    "stage 端到端运行（需真实 stage 授权与私有原件字节）",
+    "registry 方法路由与激活",
+    "生产库"
+  ],
+  "environment": {
+    "node": "v22.22.3",
+    "database": "local postgres 127.0.0.1:5432/mohen_dev",
+    "isolation": "single transaction, rolled back; zero residue checked after rollback"
+  },
+  "ran_at": "2026-11-10T04:38:34.429Z",
+  "total": 24,
+  "failed": 0,
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Y01 需求回执落库",
+      "ok": true
+    },
+    {
+      "name": "Y07 方法身份登记",
+      "ok": true
+    },
+    {
+      "name": "重复登记不覆盖既有方法定义",
+      "ok": true
+    },
+    {
+      "name": "Y07 已核验取得尝试落库",
+      "ok": true
+    },
+    {
+      "name": "成本未知保持 unknown 且无字节也可登记目录命中",
+      "ok": true
+    },
+    {
+      "name": "更正以新行表达并指向原尝试",
+      "ok": true
+    },
+    {
+      "name": "需求回执不可改写",
+      "ok": true
+    },
+    {
+      "name": "获取尝试不可删除",
+      "ok": true
+    },
+    {
+      "name": "方法定义不可改写",
+      "ok": true
+    },
+    {
+      "name": "方法身份不可删除",
+      "ok": true
+    },
+    {
+      "name": "无字节不得标记已核验取得",
+      "ok": true
+    },
+    {
+      "name": "九动作之外的键被库拒绝",
+      "ok": true
+    },
+    {
+      "name": "未登记方法不得被尝试引用",
+      "ok": true
+    },
+    {
+      "name": "仓库层拒绝九动作之外的键",
+      "ok": true
+    },
+    {
+      "name": "旧键 public_display/read 经写入口归一为九动作后入库",
+      "ok": true
+    },
+    {
+      "name": "仓库层拒绝无字节的已核验取得",
+      "ok": true
+    },
+    {
+      "name": "需求必须绑定合法项目",
+      "ok": true
+    },
+    {
+      "name": "mohen_private_worker 可读自己写入的需求回执",
+      "ok": true
+    },
+    {
+      "name": "mohen_private_worker 无改写需求回执的权限",
+      "ok": true
+    },
+    {
+      "name": "独立复核角色可只读获取尝试",
+      "ok": true
+    },
+    {
+      "name": "独立复核角色不可写获取尝试",
+      "ok": true
+    },
+    {
+      "name": "生产角色无 D00 历史表权限",
+      "ok": true
+    },
+    {
+      "name": "既有 source 三元链行数（本事务内未触碰）",
+      "ok": true
+    },
+    {
+      "name": "回滚后零残留",
+      "ok": true
+    }
+  ]
+}
