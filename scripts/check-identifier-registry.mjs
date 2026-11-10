@@ -8,121 +8,88 @@
 //       而它的定义一直躺在 tasks/TASK-0009 里，只需两分钟就能搜到。
 //   结论：**只进数据的名字没有任何东西逼它被解释，所以必须由守卫来逼。**
 //
-// 范围（项目拥有者 2026-10-02 选定「范围 C」）：
-//   只覆盖真库中**可以随便写**的词表型标识符（无 CHECK 约束的 text[] 标签列 + 自由文本方法代号）。
-//   CHECK 约束的枚举定义在 supabase/migrations，本守卫**不去复制**（复制＝制造平行真源）。
-//
-// 检查项：
-//   ① schema / schema_version
-//   ② 每个列条目结构完整（column / kind / why；fixed→values[]；pattern→patterns[]）
-//   ③ origin 合法；derived / coined 的 defined_at 必须真实存在；coined 必须有非空 definition
-//   ④ pattern 必须是能编译的正则
-//   ⑤ 登记的列必须真实存在于真库（防写错表名/列名）
-//   ⑥ **真库实际取值必须被覆盖**：fixed 列 ⊆ 已登记值；pattern 列每个值必须命中某条规则
-//      ★ 这一条是核心：新增任何标签/代号而未登记 → 红
-//   DB 不可达时跳过 ⑤⑥ 并 WARN，保证 pnpm guard 离线可跑。
+// 2026-11-10 重写：registry 已从「词表型列登记」（schema_version 数字 + columns[]）演进为
+// 「标识符命名空间注册表」（schema_version: "2.0-target"，stages / layers / gates /
+// professional_methods / br_responsibility_nodes）。旧检查项（fixed/pattern 值与真库取值核对）
+// 随旧结构一并退役；本守卫现在检查：
+//   ① schema / 各命名空间数组完整且无重复；
+//   ② professional_methods 代号格式合法（字母前缀+两位数字）；
+//   ③ 三文件一致性：method-binding-contract.json 的每个 method_id 必须已登记；
+//      method-route-decisions.schema.json 的 method_id enum 必须与 professional_methods 完全一致
+//      （同一词表两个落点，防漂移）。
+// 纯文件检查，不依赖数据库，离线可跑。
 import fs from "node:fs";
-import path from "node:path";
-import { PROJECT_ROOT, queryRows } from "../packages/data-access/src/index.mjs";
 
 const REG = "specs/data-production/identifier-registry.json";
-const ORIGINS = new Set(["external", "derived", "coined"]);
+const BINDING = "specs/data-production/method-binding-contract.json";
+const ROUTE_SCHEMA = "specs/data-production/schemas/method-route-decisions.schema.json";
+
 let failed = false;
 const bad = (m) => { console.error("IDENTIFIER_REGISTRY_ERROR " + m); failed = true; };
+const load = (p) => {
+  if (!fs.existsSync(p)) { bad(`MISSING ${p}`); return null; }
+  try { return JSON.parse(fs.readFileSync(p, "utf8")); }
+  catch (e) { bad(`${p} JSON 解析失败：${(e && e.message) || e}`); return null; }
+};
 
-if (!fs.existsSync(REG)) { console.error(`MISSING ${REG}`); process.exit(1); }
-let reg;
-try { reg = JSON.parse(fs.readFileSync(REG, "utf8")); }
-catch (e) { console.error(`IDENTIFIER_REGISTRY_ERROR JSON 解析失败：${(e && e.message) || e}`); process.exit(1); }
+const reg = load(REG);
+const binding = load(BINDING);
+const route = load(ROUTE_SCHEMA);
+if (!reg || !binding || !route) process.exit(1);
 
-// ---------- ①②③④ ----------
+// ---------- ①② ----------
 if (reg.schema !== "mohen.identifier-registry") bad(`schema 应为 "mohen.identifier-registry"，实际 "${reg.schema}"`);
-if (typeof reg.schema_version !== "number") bad("schema_version 必须是数字");
-const cols = Array.isArray(reg.columns) ? reg.columns : [];
-if (!cols.length) bad("columns 为空");
 
-function checkEntry(tag, e, valueField) {
-  if (e.origin !== undefined && !ORIGINS.has(e.origin)) bad(`${tag}: origin "${e.origin}" 不在 ${[...ORIGINS].join(" / ")} 之内`);
-  if (e.origin === "derived" || e.origin === "coined") {
-    if (!e.defined_at) bad(`${tag}: origin=${e.origin} 必须给出 defined_at`);
-    else if (!fs.existsSync(path.join(PROJECT_ROOT, e.defined_at))) bad(`${tag}: defined_at "${e.defined_at}" 在仓内不存在 —— 定义指针已失效`);
-  }
-  if (e.origin === "coined" && (e.definition === undefined || String(e.definition).trim() === "")) {
-    bad(`${tag}: origin=coined 必须给出 definition（一句话说清它指什么）`);
-  }
-  if (valueField === "value" && !e.value) bad(`${tag}: 缺 value`);
+const expectArrays = {
+  stages: ["D00", "D01", "D02", "D03", "D04", "D05"],
+  production_layers: ["L0", "L1", "L2", "L3", "L4", "L5"],
+  gates: ["G0", "G1", "G2", "G3", "G4", "G5"],
+};
+for (const [key, expected] of Object.entries(expectArrays)) {
+  const arr = Array.isArray(reg[key]) ? reg[key] : null;
+  if (!arr) { bad(`${key} 缺失或不是数组`); continue; }
+  const dup = arr.filter((v, i) => arr.indexOf(v) !== i);
+  if (dup.length) bad(`${key} 存在重复：${[...new Set(dup)].join(", ")}`);
+  const missing = expected.filter((v) => !arr.includes(v));
+  if (missing.length) bad(`${key} 缺 ${missing.join(", ")}`);
 }
 
-let valueCount = 0;
-let patternCount = 0;
-for (const c of cols) {
-  const tag = c && c.column ? c.column : "(无 column)";
-  if (!c.column || !c.kind) { bad(`${tag}: 缺 column 或 kind`); continue; }
-  if (!c.why) bad(`${tag}: 缺 why（说明为什么这一列在范围内）`);
-  if (c.kind === "fixed") {
-    if (!Array.isArray(c.values) || !c.values.length) { bad(`${tag}: kind=fixed 必须有非空 values[]`); continue; }
-    for (const v of c.values) { checkEntry(`${tag}[${v && v.value}]`, v, "value"); valueCount++; }
-  } else if (c.kind === "pattern") {
-    if (!Array.isArray(c.patterns) || !c.patterns.length) { bad(`${tag}: kind=pattern 必须有非空 patterns[]`); continue; }
-    for (const p of c.patterns) {
-      if (!p.match) { bad(`${tag}: pattern 条目缺 match`); continue; }
-      try { new RegExp(p.match); } catch (e) { bad(`${tag}: match "${p.match}" 不是合法正则`); continue; }
-      checkEntry(`${tag}[${p.match}]`, p, "match");
-      patternCount++;
-    }
-  } else {
-    bad(`${tag}: kind 必须是 fixed 或 pattern，实际 "${c.kind}"`);
+const methods = Array.isArray(reg.professional_methods) ? reg.professional_methods : null;
+if (!methods || !methods.length) {
+  bad("professional_methods 缺失或为空");
+  process.exit(1);
+}
+{
+  const dup = methods.filter((v, i) => methods.indexOf(v) !== i);
+  if (dup.length) bad(`professional_methods 存在重复：${[...new Set(dup)].join(", ")}`);
+  for (const m of methods) {
+    if (!/^[A-Z]+\d{2}$/.test(m)) bad(`professional_methods 代号 "${m}" 不符合格式（字母前缀+两位数字）`);
   }
 }
 
-// ---------- ⑤⑥ 真库核对 ----------
-let dbNote = "";
-let checkedCols = 0;
-let covered = 0;
-const uncovered = [];
-try {
-  const dbCols = await queryRows(
-    `select table_name, column_name, udt_name from information_schema.columns where table_schema='public'`
-  );
-  const dbMap = new Map(dbCols.map((r) => [`${r.table_name}.${r.column_name}`, r.udt_name]));
-  for (const c of cols) {
-    if (!dbMap.has(c.column)) { bad(`${c.column}: 该列在真库中不存在（写错表名/列名？）`); continue; }
-    const [tbl, col] = c.column.split(".");
-    // 是否是数组列必须**看真库类型**，不能看 kind ——
-    // 例：hr_constraint 是 text[] 但用 pattern 规则（编号非固定词表）。
-    const isArray = dbMap.get(c.column) === "_text";
-    const rows = await queryRows(
-      isArray
-        ? `select distinct unnest(${col})::text as v from ${tbl} where ${col} is not null`
-        : `select distinct ${col}::text as v from ${tbl} where ${col} is not null and ${col} <> ''`
-    );
-    checkedCols++;
-    for (const r of rows) {
-      const v = r.v;
-      if (v === null || v === undefined || v === "") continue;
-      if (c.kind === "fixed") {
-        if (!c.values.some((x) => x.value === v)) uncovered.push(`${c.column} → "${v}"`);
-        else covered++;
-      } else {
-        if (!c.patterns.some((p) => new RegExp(p.match).test(v))) uncovered.push(`${c.column} → "${v}"`);
-        else covered++;
-      }
-    }
-  }
-} catch (e) {
-  dbNote = "WARN DB 不可达，跳过真库取值核对（离线环境可接受）：" + String((e && e.message) || e).slice(0, 140);
-}
-if (uncovered.length) {
-  console.error(`IDENTIFIER_REGISTRY_ERROR 真库中有 ${uncovered.length} 个取值未登记 —— 词表型标识符必须逐个声明出身与定义：`);
-  for (const u of uncovered.slice(0, 25)) console.error("     " + u);
-  if (uncovered.length > 25) console.error(`     … 其余 ${uncovered.length - 25} 个省略`);
-  console.error(`     处置：在 ${REG} 对应列的 values[] 里补一条（origin / definition / defined_at），或补一条 pattern 规则。`);
-  failed = true;
+// ---------- ③ 三文件一致性 ----------
+const boundIds = (Array.isArray(binding.methods) ? binding.methods : []).map((m) => m.method_id).filter(Boolean);
+for (const id of boundIds) {
+  if (!methods.includes(id)) bad(`绑定合同 method_id "${id}" 未在 identifier-registry 登记`);
 }
 
-if (dbNote) console.error(dbNote);
+const enumIds = route?.properties?.method_id?.enum;
+if (!Array.isArray(enumIds) || !enumIds.length) {
+  bad("method-route-decisions.schema.json 缺 properties.method_id.enum");
+} else {
+  const a = [...methods].sort();
+  const b = [...enumIds].sort();
+  if (a.length !== b.length || a.some((v, i) => v !== b[i])) {
+    const onlyReg = a.filter((v) => !b.includes(v));
+    const onlyEnum = b.filter((v) => !a.includes(v));
+    bad(`professional_methods 与 route schema enum 不一致（registry=${a.length} enum=${b.length}` +
+      (onlyReg.length ? `；仅 registry 有：${onlyReg.join(", ")}` : "") +
+      (onlyEnum.length ? `；仅 enum 有：${onlyEnum.join(", ")}` : "") + "）");
+  }
+}
+
 console.log(
-  `IDENTIFIER_REGISTRY schema=v${reg.schema_version} columns=${cols.length} fixed_values=${valueCount} ` +
-  `patterns=${patternCount} db_checked_columns=${checkedCols} covered_values=${covered} uncovered=${uncovered.length}`
+  `IDENTIFIER_REGISTRY_OK professional_methods=${methods.length} bound_ids=${boundIds.length} ` +
+  `route_enum=${Array.isArray(enumIds) ? enumIds.length : 0} stages=${reg.stages.length} layers=${reg.production_layers.length} gates=${reg.gates.length}`
 );
 process.exit(failed ? 1 : 0);
