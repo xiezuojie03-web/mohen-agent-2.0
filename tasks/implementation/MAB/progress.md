@@ -2275,6 +2275,13 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **两处如实登记的既存本地缺口（与本批无关，非本批引入）**：①`scripts/check-identifier-registry.mjs` 为陈旧守卫——它检查 `schema_version` 为数字与 `columns` 数组，而现行 registry 为 `schema_version:"2.0-target"` 且无 `columns` 键，HEAD 原样即失败；②`tools/verify-local-execution-env.mjs` 的 `isolation_and_contract_tests_pass` 本地失败原因为本机缺 `openssl` 可执行文件（`spawnSync openssl ENOENT`，`independent-gate-service-runtime.test.mjs`），与本批 JSON/文档改动无关，CI ubuntu 环境具备 openssl。
 - **遗留**：命名分叉（`qualified_source` vs `source_asset`）维持现状未改，更名属 Owner 单独裁决项；D00-B（G0 承载 C 预选）、D00-C（Y 持久化落点）维持 HOLD；`GAP_RIGHTS_ACTIONS` HOLD；今日三笔推送的 CI PG17 回执均待取证。
 
+## 2026-11-10 守卫修复批（完整回归批的前置清障，Owner 裁决：先修守卫）
+
+- **`check-identifier-registry.mjs` 重写**（commit `0cba2b9`）：旧守卫按已废弃的词表型结构（`schema_version` 数字 + `columns[]`）检查，HEAD 原样即失败；新守卫按现行「命名空间注册表」结构检查——命名空间数组完整去重、代号格式、三文件一致性（绑定合同 `method_id` ⊆ registry、route schema enum == professional_methods）。纯文件检查不依赖数据库。实跑输出 `IDENTIFIER_REGISTRY_OK professional_methods=71 bound_ids=63 route_enum=71`。
+- **本机补装 OpenSSL**（Owner 授权，指定 D 盘）：`D:\MoHen\tools\OpenSSL-Win64\bin\openssl.exe` 4.1.0。MSI 两次忽略自定义路径（winget `--location` 与 `msiexec INSTALLDIR` 均无效），最终按「拷贝到 D:→卸载 C:→机器 PATH 指向 D:」完成。Light 版不自带 `openssl.cnf` 且编译默认路径指向 C: 已删除位置，故写入极简 `D:\MoHen\tools\OpenSSL-Win64\openssl.cnf` 并以机器环境变量 `OPENSSL_CONF` 指向它。
+- **验证**：`tools/verify-local-execution-env.mjs` 本地全绿——PASS×4（用户授权、M0 环境绑定、隔离与合同测试 **172 pass / 0 fail**、无 HOLD 绕过），证据文件已写入 `D:\MoHen\keys\execution-auth\enable-requires-evidence.json`。
+- **状态**：D00-A2 登记的两个既存缺口均已关闭；完整回归批前的本地环境障碍清零。
+
 
 
 
