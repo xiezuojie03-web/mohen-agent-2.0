@@ -2221,6 +2221,39 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **结论**：14 个迁移的接入顺序在 **CI 的 PG17 + Unix socket** 与 **本地 PG18 + 回环 TCP** 两种环境下同时成立 → 该批记 **VERIFIED_ISOLATED（双环境）**。此前"本地绿"的单证状态由此消除。
 - **仍未改变**：这批能力缺专项正/负断言；`ENV_PARITY` 的 `GAP_RIGHTS_ACTIONS` 仍 HOLD（生产库缺列）；D00-A2/B/C 各自 HOLD。
 
+## 2026-11-09 专项断言批（14 迁移能力覆盖深度）— 代码就位，本地验证被宿主内存阻塞
+
+- **授权与目标**：Owner 批准上轮判断——先做专项断言（②），不做 D00-A2。给已接入隔离链的 14 个迁移补专项正/负断言，4 个方向：`rights_by_action` 新列、`mohen_private_worker` 权限矩阵、机器评审员身份边界、内容列哈希篡改拒绝。边界：只加测试与 `scripts/test-k3-db.mjs` 挂接，不改业务代码、无 DDL、无生产写入、无付费调用。
+- **应完成什么**：4 个新套件各自输出 `MAB_RIGHTS_BY_ACTION_PASS`、`MAB_PRIVATE_WORKER_ACL_PASS`、`MAB_MACHINE_REVIEWER_BOUNDARY_PASS`、`MAB_ARTIFACT_CONTENT_REVISION_PASS`，整链零 `failing_suites`。
+- **已完成**：新建 `tests/data-production/rights-by-action.integration.mjs`（三列存在且默认 `'{}'`、非对象 CHECK 拒绝、合法对象写入、快照一次性写入后 `RIGHTS_SNAPSHOT_IMMUTABLE`/非对象 `RIGHTS_SNAPSHOT_INVALID`）；`private-worker-acl.integration.mjs`（角色 nologin/nosuper/nobypassrls、仅以自身身份提交 SUBMITTED、冒充 Producer 与预决状态被 RLS 拒绝、UPDATE/DELETE/列越权 permission denied、行级只见自己、audit 只见 independent_gate 不见 711 legacy、qualification 按 consumer 过滤、四张 Gate 内部表拒绝、签发/撤权函数拒绝、两个只读函数可调）；`machine-reviewer-boundary.integration.mjs`（固定账号/角色属性、仅 mohen_gate_signer 单一成员、8 表写权限目录事实+实探拒绝、读面全通、`private_originals` 限 M5 项目策略与实测、5 函数 EXECUTE 全 t）；`artifact-content-revision.integration.mjs`（注册表 23 kind/RLS/仅 authority 可读、revision 64hex 幂等、改 title 变 hash、注册表删列后改该列 hash 不变、删光注册行抛 `ARTIFACT_CONTENT_COLUMNS_NOT_REGISTERED`、未知 kind 返回 null；新版签发专项：独立 reviewer/session/policy/binding fixture，cA 签发→cB 新 revision 签发后旧 qualification 行**物理删除**且 audit 历史保留→cC 旧 revision 抛 `ARTIFACT_REVISION_NOT_CURRENT`；G1 正例签发后改上游内容，G1 候选抛 `DEPENDENCY_NOT_CURRENT`）。`scripts/test-k3-db.mjs` 在 11 条迁移 apply 之后、STORAGE 条件块之前挂接 4 个 runTest——**新版 `sign_gate_candidate`（20261109120000 覆盖后）自此首次被测试执行**，补上 GATE_AUTHORITY 只测旧版函数的缺口。
+- **静态自查已修一处真缺陷**：rights 套件 information_schema 的 `like` pattern 误用双引号（Postgres 标识符），已改为单引号转义 `'''{}''::jsonb%'`；该 bug 在运行前由代码审查捕获。
+- **未完成原因（如实阻塞登记）**：本地隔离链两次未能跑完——第一次在 `WORK_G5_FACETS`（位于本批新套件之前，与本批改动无关）服务器后端 `out of memory`（56 字节分配失败），随后整库崩溃进入恢复；第二次 node 因 `paging file too small` 无法启动；此后宿主持续线程级饥饿（`线程未能创建`，PowerShell 多次 StackOverflow），实测可用虚拟内存 ≈0 GB（总量 32 GB）、物理空闲一度 2 MB。根因是宿主提交内存耗尽（Trae ~1.5 GB、Defender、浏览器、两个 Next.js dev server 等同机竞争），非测试逻辑或数据库缺陷。隔离集群本身完好（标记 `codex-k3-isolated` 在、恢复后接受连接、残留测试库已清）。
+- **恢复条件**：宿主释放 ≥1.5 GB 提交内存（关闭部分浏览器/Next.js 或重启重进程）后，重跑 `node scripts/test-k3-db.mjs`（环境：`MOHEN_TEST_PSQL=D:\MoHen\tools\PostgreSQL\18\bin\psql.exe`、`MOHEN_TEST_HOST=127.0.0.1`、`MOHEN_TEST_PORT=55432`、`MOHEN_TEST_CRYPTO_SCHEMA="extensions"`）；聚焦复跑脚本 `work/run-mab-assertions.mjs`（gitignored）可只验 4 个新套件。
+- **对下一步影响**：本批记 **CODE_PRESENT / LOCAL_VERIFICATION_BLOCKED（DEFERRED_ENV）**，不推送未跑过的断言；验证恢复后先本地全链零 `failing_suites`，再推送并等 CI PG17 回执入账。暴露缺陷则如实登记修复，不掩盖。
+- **观察披露（不夸大）**：`rights_snapshot` 触发器仅 `BEFORE UPDATE OF rights_snapshot`，INSERT 路径无对象 CHECK——与迁移设计一致（初始由 default 保证），如实记录，不列为缺陷。
+- **仍未改变**：`GAP_RIGHTS_ACTIONS` HOLD（生产库缺列）、D00-A2/B/C HOLD、生产/费用/外发全部原 HOLD 不变。
+
+## 2026-11-10 专项断言批收口（宿主内存阻塞解除，4 套件全绿，整链 K3_DB_TEST_PASS）
+
+- **内存阻塞的根因复核（用日志定案，不是推测）**：`work/pg-isolated/server.log` 实证 23:16:01 `ERROR: out of memory ... Failed on request of size 56 in memory context "ExprContext"`、23:16:02 `FATAL: out of memory ... size 140`、23:16:03 后端被异常 `0x45A`（Windows 提交内存超限）终止；`server-mab-assert.log` 另有 23:22:16 `could not reattach to shared memory ... error code 1455`（页面文件太小）、23:31:11 `terminated by exception 0xC0000142`。**56 字节分配失败证明这是宿主提交内存耗尽，不是查询、迁移或断言缺陷**；集群随后自动恢复且数据完好。
+- **根因**：物理内存 7.82 GB + 系统托管页面文件实分配 24 GB（≈3×RAM 上限）→ Windows 提交上限 31.82 GB。11-09 首次把整条 DB 链放到本机（此前只在 CI 的独占 PG17 容器跑），同日迁移 22→63 条、套件增到 20+，并叠加两个 Next.js dev server、Trae、Defender、浏览器，提交需求触顶。
+- **处置（Owner 2026-11-10 授权）**：①页面文件由系统托管改为固定 `InitialSize=40960 / MaximumSize=49152`（`HKLM\...\Memory Management\PagingFiles = D:\pagefile.sys 40960 49152`，当前仍分配 24576，**需重启生效**，之后提交上限约 47.8 GB）；②关闭 msedge/GeminiBrowser 释放内存；③复跑时 `NODE_OPTIONS=--max-old-space-size=1024` 限制单进程堆；④隔离集群按 `127.0.0.1:55432` 启动并在同一会话内跑链（该 pg 进程随宿主终端退出会被杀掉，必须在同一命令内先 `pg_ctl start` 再跑）。
+- **复跑发现并修正两处新断言自身缺陷（只改测试，不动业务代码、无 DDL）**：①`private-worker-acl` 的 `insert ... returning producer_identity,candidate_status` 越权——迁移只授予 `select (candidate_id, producer_identity)`，改为 `returning producer_identity` 并由管理连接回读 `candidate_status`；可见行断言改用已授权列 `string_agg(producer_identity,...)`。②`machine-reviewer-boundary` 的 `string_agg(v::text,',')` 输出 `true,...`（`boolean::text` 语义），期望值由 `t,t,t,t,t` 更正为 `true,true,true,true,true`（该断言在 CI 亦会失败，非环境差异）。
+- **本批发现的真实缺口（如实登记 HOLD，不掩盖）`GAP_GATE_AUDITS_RLS`**：`supabase/migrations` 内对 `control.gate_audits` **从未执行 `alter table ... enable row level security`**（`gate_candidates`、`qualification_current`、`gate_policy_versions` 等均有），故 `20261107210000` 建的 `k3_private_worker_gate_audit_read` 策略挂空，私有 worker 实测可读到全部 `legacy_untrusted` 审计与其他消费者的行。**牵连**：直接启用 RLS 会连带关闭机器评审员读面（`mohen_gate_signer_m5_machine` 只有表 GRANT、无策略；`machine-reviewer-boundary` 的「读面全通」当前正依赖 RLS 关闭），故修复必须四身份（`mohen_gate_authority`／`mohen_gate_signer_m5_machine`／`mohen_private_worker`／运行角色）一次配齐，属 Gate 安全边界改动，另开批次。**Owner 2026-11-10 裁决：本批先收口，断言按现状如实标注 `GAP_GATE_AUDITS_RLS`，另立批次修。** 断言因此写成"worker 可见 = 管理可见"（不写死 711，因为整链中前面的套件会改变绝对行数）并显式断言 `relrowsecurity='f'`、策略存在但失效。
+- **验证（本地隔离 PG18 + 回环 TCP）**：
+
+| 验证 | 结果 |
+|---|---|
+| `node scripts/test-k3-db.mjs` 整链 | **`K3_DB_TEST_PASS`，零 `failing_suites`**（`baseline_migrations=22 synthetic_legacy_rows=711 unchanged; no automatic qualification; migrations repeatable; rollback fail-closed`） |
+| `MAB_RIGHTS_BY_ACTION_PASS` | `columns-default-empty object-checks-enforced snapshot-one-time-write snapshot-immutable` |
+| `MAB_PRIVATE_WORKER_ACL_PASS` | `role-shape self-submission-only no-predecided-status row-column-least-privilege independent-audit-read qualification-read gate-internals-closed signer-execute-denied known-gap-GAP_GATE_AUDITS_RLS` |
+| `MAB_MACHINE_REVIEWER_BOUNDARY_PASS` | `account-locked noinherit-signer-membership-only gate-write-closed read-surface-open originals-scoped-to-m5-project five-executes` |
+| `MAB_ARTIFACT_CONTENT_REVISION_PASS` | `registry-23-kinds-authority-only content-hash-tamper-evident registry-decoupled fail-closed-unregistered stale-revision-rejected retirement-by-object-key dependency-freshness-enforced` |
+
+- **证据级别**：本批 = **CODE_PRESENT + VERIFIED_ISOLATED（本地实跑）**；GitHub CI 的 PG17 回执待推送后取证，未推送前不宣称双证。
+- **仍未改变**：`GAP_RIGHTS_ACTIONS` HOLD（生产库缺列）、`GAP_GATE_AUDITS_RLS`（新增，另批修）、D00-A2/B/C HOLD、生产/费用/外发全部原 HOLD 不变；页面文件扩容需重启才生效，重启前宿主提交上限仍是 31.82 GB。
+
+
 
 
 

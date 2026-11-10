@@ -118,6 +118,13 @@ try {
       "20261107240000_mab_m5_claim_revision_artifact_read_policy.sql",
       "20261108110000_mab_m5_source_rights_actions.sql",
       "20261109120000_mab_m5_artifact_content_revision.sql"]) apply(file);
+    // Capability assertions for the migrations applied immediately above. They can only run at
+    // this point in the chain: the rights columns, the private worker, the machine reviewer and
+    // the content-based sign_gate_candidate semantics do not exist any earlier.
+    runTest("RIGHTS_BY_ACTION", "tests/data-production/rights-by-action.integration.mjs");
+    runTest("PRIVATE_WORKER_ACL", "tests/data-production/private-worker-acl.integration.mjs");
+    runTest("MACHINE_REVIEWER_BOUNDARY", "tests/data-production/machine-reviewer-boundary.integration.mjs");
+    runTest("ARTIFACT_CONTENT_REVISION", "tests/data-production/artifact-content-revision.integration.mjs");
     if (process.env.MOHEN_TEST_STORAGE_CONFIG) {
       runTest("PRIVATE_ORIGINAL_WORKFLOW", "tests/data-production/private-original-workflow.integration.mjs");
       runTest("EVIDENCE_BRIDGE", "tests/data-production/evidence-bridge.integration.mjs");
