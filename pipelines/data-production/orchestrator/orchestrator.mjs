@@ -4,6 +4,19 @@ import { loadExecutor } from "./load-executor.mjs";
 import { finishRun } from "./run-state.mjs";
 import { requireIndependentStageQualification } from "./independent-stage-qualification.mjs";
 
+/**
+ * D00 输入的唯一定义。授权器签发的 input_digest 与 Runner 实际执行的输入必须
+ * 逐字节同源，所以 D00 的输入形状只在这里拼一次：研究意图 + 精确作用域 +
+ * （可选）消费者方法计划。调用方没给计划就不追加该键，digest 与旧口径完全一致。
+ */
+export function buildSourceIntakeInput({ research_intent, scope, consumer_method_plan } = {}) {
+  return {
+    research_intent,
+    scope,
+    ...(consumer_method_plan === undefined ? {} : { consumer_method_plan }),
+  };
+}
+
 export async function runProduction({ run, registry, context = {}, from_stage = "D00", to_stage = "D05" }) {
   const start = STAGE_ORDER.indexOf(from_stage);
   const end = STAGE_ORDER.indexOf(to_stage);
@@ -11,7 +24,7 @@ export async function runProduction({ run, registry, context = {}, from_stage = 
 
   let state = run;
   let input = start === 0
-    ? { research_intent: run.research_intent, scope: run.scope }
+    ? buildSourceIntakeInput(run)
     : context.resume_input;
 
   if (start > 0 && input == null) throw new Error(`RESUME_INPUT_REQUIRED:${from_stage}`);

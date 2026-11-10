@@ -17,6 +17,7 @@ import path from "node:path";
 import httpz from "node:https";
 import { execFileSync, spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { readMethodPlanArg } from "./lib/method-plan-input.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, "..");
@@ -145,7 +146,7 @@ function loadJournal() {
   return { file, issued };
 }
 
-async function buildGrant({ stage, runId, mode = "attended", intent, scopeFile, inputFile }) {
+async function buildGrant({ stage, runId, mode = "attended", intent, scopeFile, inputFile, methodPlan }) {
   const { executionDigest } = await import("../pipelines/data-production/orchestrator/execution-authority.mjs");
   await assertIsolatedTarget();
   const registry = await loadRegistryInstance();
@@ -155,7 +156,13 @@ async function buildGrant({ stage, runId, mode = "attended", intent, scopeFile, 
   let input;
   if (stage === "D00") {
     if (!intent || !scopeFile) throw new Error("D00_GRANT_REQUIRES_INTENT_AND_SCOPE_FILE");
-    input = { research_intent: intent, scope: JSON.parse(fs.readFileSync(path.resolve(scopeFile), "utf8")) };
+    // 与 Runner 同源拼装 D00 输入：签名覆盖的 input_digest 必须等于实跑输入。
+    const { buildSourceIntakeInput } = await import("../pipelines/data-production/orchestrator/orchestrator.mjs");
+    input = buildSourceIntakeInput({
+      research_intent: intent,
+      scope: JSON.parse(fs.readFileSync(path.resolve(scopeFile), "utf8")),
+      consumer_method_plan: methodPlan,
+    });
   } else {
     if (!inputFile) throw new Error(`${stage}_GRANT_REQUIRES_INPUT_FILE`);
     input = JSON.parse(fs.readFileSync(path.resolve(inputFile), "utf8"));
@@ -198,6 +205,7 @@ async function grant() {
   const { token, claims } = await buildGrant({
     stage, runId, mode: arg("mode", "attended"),
     intent: arg("intent"), scopeFile: arg("scope-file"), inputFile: arg("input-file"),
+    methodPlan: readMethodPlanArg(arg("method-plan")),
   });
   console.log(JSON.stringify({ stage, run_id: runId, jti: claims.jti, exp: claims.exp,
     tokens: { [stage]: token } }));
@@ -253,6 +261,8 @@ async function run() {
   const intent = arg("intent");
   const scopeFile = arg("scope-file");
   const resumeInputFile = arg("resume-input-file");
+  const methodPlanArg = arg("method-plan");
+  const methodPlan = readMethodPlanArg(methodPlanArg);
   const reportDir = arg("report-dir");
   if (!stage || !intent) throw new Error("run requires --stage and --intent");
 
@@ -269,7 +279,7 @@ async function run() {
      on conflict (run_id) do update set status='RUNNING', current_stage=null, finished_at=null`,
     { run_id: runId, intent, scope: JSON.stringify(scope) });
 
-  const { token } = await buildGrant({ stage, runId, mode: "attended", intent, scopeFile, inputFile: resumeInputFile });
+  const { token } = await buildGrant({ stage, runId, mode: "attended", intent, scopeFile, inputFile: resumeInputFile, methodPlan });
   const { server, port } = await createVerifier();
 
   const env = {
@@ -296,6 +306,7 @@ async function run() {
     "--adapters", job.implementation.adapter_binding,
     "--intent", intent, "--run-id", runId,
     ...(scopeFile ? ["--scope-file", scopeFile] : []),
+    ...(methodPlanArg ? ["--method-plan", methodPlanArg] : []),
     ...(resumeInputFile ? ["--resume-input-file", resumeInputFile] : []),
     ...(reportDir ? ["--report-dir", reportDir] : [])];
   console.log(`RUN ${stage} run_id=${runId}`);

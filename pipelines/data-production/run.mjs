@@ -43,6 +43,8 @@ const fromStage = arg("from", "D00");
 const toStage = arg("to", "D05");
 const resumeInputFile = arg("resume-input-file");
 const scopeFile = arg("scope-file");
+// D00 消费者方法计划（C 方法预选）：可选，缺省即不预选，由 G0 失败关闭。
+const methodPlanArg = arg("method-plan");
 const reportDir = path.resolve(arg("report-dir", path.join(projectRoot, "verification", "data-production-runs")));
 
 if (!intent) throw new Error("--intent is required");
@@ -75,7 +77,10 @@ const resumeInput=loadTrustedResumeInput({
 // verification still happens inside the orchestrator).
 assertExecutionAuthorityConfigured(process.env.MOHEN_EXECUTION_AUTH_TOKENS);
 const selectedStages=STAGE_ORDER.slice(start,end+1);
-const run = createRunState({ research_intent: intent, ...(scope !== undefined ? { scope } : {}), execution_mode: executionMode, run_id: runId || undefined });
+const consumerMethodPlan = methodPlanArg === null
+  ? undefined
+  : (await import("../../tools/lib/method-plan-input.mjs")).readMethodPlanArg(methodPlanArg);
+const run = createRunState({ research_intent: intent, ...(scope !== undefined ? { scope } : {}), execution_mode: executionMode, run_id: runId || undefined, ...(consumerMethodPlan === undefined ? {} : { consumer_method_plan: consumerMethodPlan }) });
 
 // Lazy data access: no adapter or database side effect before execution authorization.
 async function queryRows(...args) {
