@@ -122,7 +122,8 @@ try {
       // D00-C：来源发现台账（source_needs/acquisition_methods…）与 D00-C4 余下阶段的结构，
       // 已在本地 dev 库应用；补进隔离链，避免 _test 库缺表而测试"假绿"。
       "20261110110000_mab_d00c_source_discovery_ledger.sql",
-      "20261110120000_mab_d00c4_remaining_stages.sql"]) apply(file);
+      "20261110120000_mab_d00c4_remaining_stages.sql",
+      "20261110130000_mab_original_media_assets.sql"]) apply(file);
     // Capability assertions for the migrations applied immediately above. They can only run at
     // this point in the chain: the rights columns, the private worker, the machine reviewer and
     // the content-based sign_gate_candidate semantics do not exist any earlier.
