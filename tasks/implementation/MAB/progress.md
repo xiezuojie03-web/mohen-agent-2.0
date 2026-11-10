@@ -2263,6 +2263,18 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **状态**：`GAP_GATE_AUDITS_RLS` **关闭**（证据级别：本地 PG18 实跑 VERIFIED_ISOLATED；CI 的 PG17 回执待推送后取证）。
 - **仍未改变**：`GAP_RIGHTS_ACTIONS` HOLD（生产库缺列）、D00-A2/B/C HOLD、生产/费用/外发全部原 HOLD 不变。
 
+## 2026-11-10 D00-A2 设计身份注册批（按 V1.2 包批次定义执行，含两处对 V1.0 审计口径的修正）
+
+- **前置验证结论（先行）**：`tools/verify-local-execution-env.mjs:77` 对 `method-binding-contract.json` 中出现 `TO_VERIFY_IN_M0` 一律判失败。按 V1.2 包批次规则「校验器不允许则保持未写入运行绑定，绝不硬扩方法分母」：**绑定合同保持 63 条不动，`method_count` 不扩**，8 条 Y 的 Method Binding 保持未写入（`implementation_binding=TO_VERIFY_IN_M0` 无法通过现有校验器）。
+- **本批完成的写入（3 处）**：
+  1. 新建 `specs/data-production/standards/d00/规范_P0_Y01-Y08来源探寻与合法获取专业方法_V1.1.md`——从 V1.2 包 `01_D00五职责完整设计/02_Y01-Y08专业方法唯一目标正文_V1.1.md` 原样复制，SHA256=`17a7a12b…78773` 与包锁定值逐字符一致；现有五份 d00 规范未动。
+  2. `specs/data-production/identifier-registry.json` 的 `/professional_methods` 追加 Y01—Y08（63→71），Y 在唯一 ID 命名空间完成登记。
+  3. `specs/data-production/schemas/method-route-decisions.schema.json` 的 `/properties/method_id/enum` 追加 Y01—Y08（路由声明层面的设计身份；路由选择仍受 HOLD 拦截）。
+- **对 V1.0 接收审计口径的两处修正（以 V1.2 包为准）**：①`production-registry.json` 的 `jobs[d00.source-intake].methods` **保持 `[]`**（V1.2：A 阶段不赋可调用执行权，V1.1 中"直接设成 Y01—Y08"仅作未来待激活方案）；②`PLAN.md` 的 M6 方法分母**不擅改**（V1.2：改 MAB 计划需 Owner 有界授权，M6 验收口径改为"71 设计身份／已授权执行数／已隔离验证数／HOLD 项"分别列）。
+- **验证**：`pnpm test:unit` **638 passed / 2 skipped**（与基线一致，无回归）；类型检查未跑（本批仅 JSON/Markdown，不涉 TS）。
+- **两处如实登记的既存本地缺口（与本批无关，非本批引入）**：①`scripts/check-identifier-registry.mjs` 为陈旧守卫——它检查 `schema_version` 为数字与 `columns` 数组，而现行 registry 为 `schema_version:"2.0-target"` 且无 `columns` 键，HEAD 原样即失败；②`tools/verify-local-execution-env.mjs` 的 `isolation_and_contract_tests_pass` 本地失败原因为本机缺 `openssl` 可执行文件（`spawnSync openssl ENOENT`，`independent-gate-service-runtime.test.mjs`），与本批 JSON/文档改动无关，CI ubuntu 环境具备 openssl。
+- **遗留**：命名分叉（`qualified_source` vs `source_asset`）维持现状未改，更名属 Owner 单独裁决项；D00-B（G0 承载 C 预选）、D00-C（Y 持久化落点）维持 HOLD；`GAP_RIGHTS_ACTIONS` HOLD；今日三笔推送的 CI PG17 回执均待取证。
+
 
 
 
