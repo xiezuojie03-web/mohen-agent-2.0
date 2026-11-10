@@ -212,6 +212,26 @@ export default async function DeskPage() {
     project_title: string;
   }>;
 
+  // D00 第五道工序（Y05 来源对象、版本与依赖鉴别）：按架构不另建身份表，
+  // 七层身份分层随获取尝试的 candidate_ref 存证，此处读回展示。
+  const identityRows = (await queryRows(
+    `select a.attempt_id::text as attempt_id, a.candidate_ref::text as candidate_ref,
+            a.method_key, a.method_version, a.created_at::text as created_at,
+            p.project_title
+       from source.acquisition_attempts a
+       join studio.projects p on p.project_id = a.project_id
+      where p.owner_user_id = :'owner'
+      order by a.created_at desc limit 10`,
+    { owner: session.uid }
+  )) as Array<{
+    attempt_id: string;
+    candidate_ref: string | null;
+    method_key: string;
+    method_version: string;
+    created_at: string;
+    project_title: string;
+  }>;
+
   const readRightsStatus = (raw: string | null) => {
     if (!raw) return null;
     try {
@@ -301,6 +321,54 @@ export default async function DeskPage() {
       };
     } catch {
       return null;
+    }
+  };
+
+  const IDENTITY_LAYER_LABELS: Record<string, string> = {
+    provider: "提供方",
+    collection: "收藏",
+    catalog_record: "目录记录",
+    work: "作品",
+    version: "版本",
+    holding: "藏所",
+    digital_asset: "数字资产",
+  };
+
+  const readIdentityRef = (raw: string | null) => {
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw) as {
+        schema?: string;
+        layers?: Array<{ layer?: string; state?: string; value?: Record<string, unknown> }>;
+        dependencies?: { unresolved?: unknown };
+      };
+      if (parsed?.schema !== "mohen.source-identity-stratification.v1" || !Array.isArray(parsed.layers)) {
+        return null;
+      }
+      const unresolved = Array.isArray(parsed.dependencies?.unresolved)
+        ? (parsed.dependencies.unresolved as string[])
+        : [];
+      return {
+        layers: parsed.layers.filter((l) => typeof l?.layer === "string") as Array<{
+          layer: string; state?: string; value?: Record<string, unknown>;
+        }>,
+        unresolved,
+      };
+    } catch {
+      return null;
+    }
+  };
+
+  const identityLayerText = (layer: { layer: string; value?: Record<string, unknown> }) => {
+    const v = layer.value ?? {};
+    switch (layer.layer) {
+      case "provider": return String(v.name ?? "");
+      case "catalog_record": return [v.catalog_no, v.item != null ? `件 ${String(v.item)}` : null].filter(Boolean).join(" · ");
+      case "work": return String(v.title ?? "");
+      case "version": return [v.source_type, v.carrier_type].filter(Boolean).join(" · ") || "已定位";
+      case "holding": return String(v.institution ?? "");
+      case "digital_asset": return [v.content_type, v.byte_size != null ? `${String(v.byte_size)} B` : null].filter(Boolean).join(" · ");
+      default: return "";
     }
   };
 
@@ -570,6 +638,47 @@ export default async function DeskPage() {
               <div style={{ fontSize: 11, color: "#6b746f", marginTop: 3 }}>
                 {row.project_title}
                 {coverage?.method ? ` · ${coverage.method}` : ""} · {row.created_at.slice(0, 10)}
+              </div>
+            </article>
+          );
+        })}
+      </section>
+
+      <section style={{ borderTop: "1px solid #e2ddd1", paddingTop: 14, marginBottom: 20 }}>
+        <h2 style={{ fontSize: 15 }}>来源身份分层（D00 第五道工序）</h2>
+        <p style={{ fontSize: 12, color: "#6b746f", margin: "4px 0 10px" }}>
+          这份来源是谁、哪个版本、依赖什么：七层身份（提供方/收藏/目录记录/作品/版本/藏所/数字资产）
+          逐层标明已确认或未确认。按架构不另建身份表，分层随获取尝试的 candidate_ref 存证。
+        </p>
+        {identityRows.length === 0 && (
+          <p style={{ fontSize: 13, color: "#8a3b3b" }}>还没有获取尝试，身份分层无从存证。</p>
+        )}
+        {identityRows.map((row) => {
+          const identity = readIdentityRef(row.candidate_ref);
+          return (
+            <article key={row.attempt_id} style={{ border: "1px solid #e2ddd1", borderRadius: 8, padding: 10, marginBottom: 8 }}>
+              {identity === null ? (
+                <div style={{ fontSize: 12, color: "#9a6b2f" }}>
+                  该次获取尝试未带身份分层（D00 第七道工序接通前的记录）。
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 2 }}>
+                  {identity.layers.map((layer) => (
+                    <span
+                      key={layer.layer}
+                      style={{
+                        border: "1px solid #e2ddd1", borderRadius: 4, padding: "3px 8px", fontSize: 12,
+                        color: layer.state === "known" ? "#1f7a4d" : "#9a6b2f",
+                      }}
+                    >
+                      {IDENTITY_LAYER_LABELS[layer.layer] ?? layer.layer}：
+                      {layer.state === "known" ? (identityLayerText(layer) || "已确认") : "未确认"}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div style={{ fontSize: 11, color: "#6b746f", marginTop: 5 }}>
+                {row.project_title} · {row.method_key}@{row.method_version} · {row.created_at.slice(0, 10)}
               </div>
             </article>
           );

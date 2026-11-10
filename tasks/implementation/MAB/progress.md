@@ -2523,3 +2523,15 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **单测**：新增 `source-coverage-conclusion.test.mjs` 5 例（取得一致只核一页/字节对不上失败关闭/未取得如实写未获得/缺尝试或身份不全失败关闭/准入真值不复核失败关闭）；`private-candidate-worker.test.mjs` 新增 2 例（调用顺序 catalog→verification→method→attempt→coverage 且覆盖参数由工序派生；撤写入口与字节对不上均失败关闭且不提交 G0）。
 - **回归**：typecheck 6/6；unit 644 通过 / 2 跳过 / 0 失败；data-production 204 通过 + 1 既有 `DEFERRED_ENV`（`independent-gate-service-runtime`，无 openssl）；`guard:auth:strict`（routes=111 public=19 missing=0）、`guard:structure`、`guard:gate-enforcement` 全 PASS。
 - **边界**：只接通第 4 个工序（Y05—Y08 仍无独立执行器）；无获取尝试时本工序不产生记录（覆盖是"某次尝试拿到了什么"，Y07 接通后获取账将成为 D00 必填）；未给 `mohen_app_runtime` 开任何 `source.*` 写权限；不签 Gate、不构成生产准出，`M5_OVERALL_HOLD` 不变。
+
+## M5-F｜D00 第五道工序（Y05 来源对象、版本与依赖鉴别）执行器接通（2026-11-10，本地隔离 VERIFIED_ISOLATED）
+
+- **应完成什么**：步骤④按序接通 D00 八工序的第五个真执行器。按迁移 D00-C4 的明示语义，Y05 产出即 `source.sources`/`source_versions` 既有身份、不建新表、核查动作由 Y03 承载；故本工序的"接通"=真实派生身份分层 + 随候选输出存证 + 资料台读回，不落新表。
+- **做了什么**：
+  - 新增 `pipelines/data-production/workers/source-identity-stratification.mjs`：`deriveSourceIdentityStratification()` 只从本次准入已核验真值派生七层身份（提供方/收藏/目录记录/作品/版本/藏所/数字资产），逐层标 `known`/`unknown` 与证据；收藏层本次没读如实 `unknown`；版本层必须带不可变 `artifact_revision`；数字资产层必须与库存原件字节一致；依赖方向随层给出，未确认层列入 `unresolved`。
+  - `private-evidence-stage.mjs`：D00 段在 Y03 核查落库后派生身份分层，候选输出新增 `source_identity`（Y07 candidate_ref/dependency_refs 与 Y08 回执的同一份派生源）。
+  - `apps/web/app/studio/desk/page.tsx`：资料台新增「来源身份分层（D00 第五道工序）」区，读获取尝试的 candidate_ref 逐层展示；Y07 前的旧尝试如实标注"未带身份分层"。
+- **证据**：`tools/verify-y05-executor.mjs` = `Y05_EXECUTOR_PROVEN`（私有工人登录 + CA 校验 + 真实登记读取通道）：真实登记派生七层并与登记逐层核对全 true（提供方=国立公文书馆（NAJ)、目录记录=NAJDA-292-0017、作品=松江府志7、版本带修订、藏所同馆、数字资产哈希与原件一致、收藏如实 `unknown`）；同真值重跑派生逐字节一致；负例三项全 true（字节篡改/缺锚点/版本无修订均拒绝）。
+- **单测**：新增 `source-identity-stratification.test.mjs` 5 例（已读层带证据/缺目录号如实 unknown/无修订失败关闭/缺锚点失败关闭/未核字节失败关闭）；既有 D00 测试补 Y05 断言。
+- **回归**：typecheck 6/6；unit 644 通过 / 2 跳过 / 0 失败；data-production 209 通过 + 1 既有 `DEFERRED_ENV`（`independent-gate-service-runtime`，无 openssl）；三项 guard 全 PASS。
+- **边界**：只接通第 5 个工序（Y06—Y08 仍无独立执行器）；本工序按架构不落新表，资料台分层要等 Y07 接通后随新尝试的 candidate_ref 可见；未给 `mohen_app_runtime` 开任何 `source.*` 写权限；不签 Gate、不构成生产准出，`M5_OVERALL_HOLD` 不变。

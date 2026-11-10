@@ -9,6 +9,7 @@ import { diagnoseSourceNeed } from './source-need-diagnosis.mjs';
 import { deriveIntakeCatalogEntry } from './source-catalog-observation.mjs';
 import { deriveIntakeCandidateVerification } from './source-candidate-verification.mjs';
 import { deriveIntakeCoverage } from './source-coverage-conclusion.mjs';
+import { deriveSourceIdentityStratification } from './source-identity-stratification.mjs';
 
 const HEX=/^[a-f0-9]{64}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
@@ -186,6 +187,11 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         methodKey:intakeVerification.methodKey,methodVersion:intakeVerification.methodVersion});
       if(!UUID.test(savedIntakeVerification?.verification_id??''))
         throw Error('PRIVATE_SOURCE_VERIFICATION_NOT_RECORDED');
+      // Y05：身份分层（提供方/收藏/目录记录/作品/版本/藏所/数字资产）从准入真值
+      // 派生，逐层标 known/unknown 与证据；按迁移 D00-C4 不落新表——分层结论随
+      // 候选输出存证，后续 Y07 的 candidate_ref/dependency_refs 与 Y08 取得回执
+      // 都从这一份派生，不另造第二套身份。
+      const sourceIdentity=deriveSourceIdentityStratification({registration,record});
       // Y07：只在调用方确实知道"这份原件怎么来的"时记账；不知道就不写，
       // 绝不补默认方法或默认结果充当历史。方法身份可选（可能先前已登记）。
       let acquisitionAttemptId=null;
@@ -331,7 +337,7 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         intake_catalog_entry_id:intakeCatalogEntryId,
         intake_verification_id:savedIntakeVerification.verification_id,
         intake_verification_verdict:intakeVerification.verdict,
-        intake_coverage_id:intakeCoverageId,
+        intake_coverage_id:intakeCoverageId,source_identity:sourceIdentity,
         catalog_entry_ids:catalogEntryIds,coverage_ids:coverageIds,
         verification_ids:verificationIds,assessment_ids:assessmentIds,
         artifact_revision:sourceRevision,

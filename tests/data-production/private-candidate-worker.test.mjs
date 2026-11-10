@@ -693,6 +693,14 @@ test('D00 writes only the intake observation when the caller supplies no extra m
     assert.deepEqual(candidate.catalog_entry_ids,[]);
     assert.deepEqual(candidate.verification_ids,[]);
     assert.deepEqual(candidate.assessment_ids,[]);
+    // Y05 身份分层随候选输出存证（不落新表）：七层齐全，收藏未读如实 unknown，
+    // 数字资产层的哈希就是库存原件的哈希。
+    assert.equal(candidate.source_identity.schema,'mohen.source-identity-stratification.v1');
+    assert.equal(candidate.source_identity.method,'D00/Y05:intake_identity@v1');
+    assert.equal(candidate.source_identity.layers.length,7);
+    assert.equal(candidate.source_identity.layers.find(l=>l.layer==='collection').state,'unknown');
+    assert.equal(candidate.source_identity.layers.find(l=>l.layer==='digital_asset').value.sha256,IMAGE_SHA);
+    assert.deepEqual(candidate.source_identity.dependencies.unresolved,['collection']);
   });
 });
 
