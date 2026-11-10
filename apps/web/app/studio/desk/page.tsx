@@ -185,6 +185,33 @@ export default async function DeskPage() {
     project_title: string;
   }>;
 
+  // D00 第四道工序（Y04 取得范围与缺失部件）的真实记录：拿到了什么、还缺什么，
+  // 只写核到的；总量没核实就说未核实，不说完整。
+  const coverageRows = (await queryRows(
+    `select v.coverage_id::text as coverage_id, v.completeness_state,
+            v.coverage_scope::text as coverage_scope, v.missing_parts::text as missing_parts,
+            v.verified_against::text as verified_against, v.created_at::text as created_at,
+            c.catalog_title, c.provider, c.catalog_identifier,
+            p.project_title
+       from source.acquisition_coverages v
+       left join source.resource_catalog c on c.catalog_entry_id = v.catalog_entry_id
+       join studio.projects p on p.project_id = v.project_id
+      where p.owner_user_id = :'owner'
+      order by v.created_at desc limit 10`,
+    { owner: session.uid }
+  )) as Array<{
+    coverage_id: string;
+    completeness_state: string;
+    coverage_scope: string | null;
+    missing_parts: string | null;
+    verified_against: string | null;
+    created_at: string;
+    catalog_title: string | null;
+    provider: string | null;
+    catalog_identifier: string | null;
+    project_title: string;
+  }>;
+
   const readRightsStatus = (raw: string | null) => {
     if (!raw) return null;
     try {
@@ -237,6 +264,41 @@ export default async function DeskPage() {
         ? (parsed.rights.unknown_actions as string[])
         : [];
       return { locator: parsed.locator?.catalog_no ?? null, unresolved, rightsUnknown: unknownActions.length };
+    } catch {
+      return null;
+    }
+  };
+
+  const COMPLETENESS_LABELS: Record<string, string> = {
+    complete: "完整",
+    partial: "部分",
+    unknown: "总量未核实",
+  };
+
+  const MISSING_PART_LABELS: Record<string, string> = {
+    unassessed: "未评估",
+    not_acquired: "本次未取得",
+  };
+
+  const readCoverage = (scopeRaw: string | null, missingRaw: string | null) => {
+    try {
+      const scope = scopeRaw
+        ? (JSON.parse(scopeRaw) as {
+            schema?: string;
+            method?: string;
+            acquired?: { pages?: unknown } | null;
+            total_extent?: string;
+          })
+        : null;
+      if (scope?.schema !== "mohen.source-coverage-conclusion.v1") return null;
+      const missing = missingRaw ? (JSON.parse(missingRaw) as Array<{ part?: string; state?: string }>) : [];
+      const pages = Array.isArray(scope.acquired?.pages) ? (scope.acquired.pages as number[]) : [];
+      return {
+        method: typeof scope.method === "string" ? scope.method : null,
+        pages,
+        totalExtent: scope.total_extent ?? "unknown",
+        missing: missing.filter((m) => typeof m?.part === "string") as Array<{ part: string; state?: string }>,
+      };
     } catch {
       return null;
     }
@@ -456,6 +518,58 @@ export default async function DeskPage() {
               )}
               <div style={{ fontSize: 11, color: "#6b746f", marginTop: 3 }}>
                 {row.project_title} · {row.method_key}@{row.method_version} · {row.created_at.slice(0, 10)}
+              </div>
+            </article>
+          );
+        })}
+      </section>
+
+      <section style={{ borderTop: "1px solid #e2ddd1", paddingTop: 14, marginBottom: 20 }}>
+        <h2 style={{ fontSize: 15 }}>取得范围与缺失部件（D00 第四道工序）</h2>
+        <p style={{ fontSize: 12, color: "#6b746f", margin: "4px 0 10px" }}>
+          每次取得到底拿到了什么、还缺什么：本页字节与取得账对上的写已取得；
+          其余页如实写未评估；这份版本一共多少页没核实，就说总量未核实，不说完整。
+        </p>
+        {coverageRows.length === 0 && (
+          <p style={{ fontSize: 13, color: "#8a3b3b" }}>还没有取得范围记录。</p>
+        )}
+        {coverageRows.map((row) => {
+          const coverage = readCoverage(row.coverage_scope, row.missing_parts);
+          return (
+            <article key={row.coverage_id} style={{ border: "1px solid #e2ddd1", borderRadius: 8, padding: 10, marginBottom: 8 }}>
+              <div style={{ fontSize: 13, fontWeight: 600 }}>
+                {row.catalog_title ?? "未挂目录条目"} · {COMPLETENESS_LABELS[row.completeness_state] ?? row.completeness_state}
+              </div>
+              <div style={{ fontSize: 11, color: "#6b746f", marginTop: 3 }}>
+                {row.provider ?? "机构未知"}
+                {row.catalog_identifier ? ` · ${row.catalog_identifier}` : ""}
+              </div>
+              {coverage === null ? (
+                <div style={{ fontSize: 12, color: "#9a6b2f", marginTop: 5 }}>
+                  旧覆盖记录：不是本工序派生的，未按取得范围结构评估。
+                </div>
+              ) : (
+                <>
+                  <div style={{ fontSize: 12, color: "#2f4a3f", marginTop: 5 }}>
+                    {coverage.pages.length > 0
+                      ? `已取得并核验：第 ${coverage.pages.join("、")} 页（字节与取得账一致）`
+                      : "本次尝试未取得已核验字节"}
+                  </div>
+                  {coverage.missing.length > 0 && (
+                    <ul style={{ fontSize: 12, color: "#9a6b2f", margin: "4px 0 0 18px" }}>
+                      {coverage.missing.map((part) => (
+                        <li key={part.part}>
+                          {part.part === "other_pages" ? "其余页" : part.part}：
+                          {MISSING_PART_LABELS[part.state ?? ""] ?? part.state ?? "未评估"}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              )}
+              <div style={{ fontSize: 11, color: "#6b746f", marginTop: 3 }}>
+                {row.project_title}
+                {coverage?.method ? ` · ${coverage.method}` : ""} · {row.created_at.slice(0, 10)}
               </div>
             </article>
           );

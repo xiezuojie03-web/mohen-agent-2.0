@@ -2511,3 +2511,15 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **单测**：新增 `source-candidate-verification.test.mjs` 6 例（词源齐备才可采纳/无词源如实需人确认/只补一维仍列缺项/缺词源或维度不合规失败关闭/准入真值不复核失败关闭/权利只登记不裁决）；既有 D00 测试同步更新（准入核查紧随目录观察、撤掉写入口失败关闭、既有调用顺序与计数）。
 - **回归**：typecheck 6/6；unit 644 通过 / 2 跳过 / 0 失败；data-production 197 通过 + 1 既有 `DEFERRED_ENV`（`independent-gate-service-runtime`，无 openssl）；`guard:auth:strict`（routes=111 public=19 missing=0）、`guard:structure`、`guard:gate-enforcement` 全 PASS。
 - **边界**：只接通第 3 个工序（Y04—Y08 仍无独立执行器）；真实来源的异名词源目前没有来源可自动读，故真实运行结论如实停在 `needs_owner`（这正是失败关闭，不是缺陷）；`needs_owner` 不阻塞 D00 候选提交，但 Y06 的 `selected` 仍按既有规则要求 `admissible`；未给 `mohen_app_runtime` 开任何 `source.*` 写权限；不签 Gate、不构成生产准出，`M5_OVERALL_HOLD` 不变。
+
+## M5-F｜D00 第四道工序（Y04 取得范围与缺失部件结论）执行器接通（2026-11-10，本地隔离 VERIFIED_ISOLATED）
+
+- **应完成什么**：步骤④按序接通 D00 八工序的第四个真执行器。Y04「聚合目录与原机构回溯」的落库语义按迁移为 `source.acquisition_coverages`（取得范围/缺失部件），此前只有调用方传 `input.coverage` 才落库的被动通道，真实 D00 运行从未产生过一条取得范围结论。
+- **做了什么**：
+  - 新增 `pipelines/data-production/workers/source-coverage-conclusion.mjs`：`deriveIntakeCoverage()` 只由两处真值派生——①本次准入已逐项核验的登记/原件；②刚落库的获取尝试。尝试自称 `acquired_verified` 就必须字节与哈希同库存原件一致（不一致即 `COVERAGE_ATTEMPT_ASSET_MISMATCH`，不替取得账背书）；本次只核到这一页，其余页如实 `unassessed`，总量未核实 `completeness_state` 只能是 `unknown`；缺尝试、尝试身份不全、登记与原件不复核一致均失败关闭。
+  - `private-evidence-stage.mjs`：D00 段在获取尝试落库**之后**强制派生并写覆盖结论（有尝试缺写入口即 `PRIVATE_SOURCE_COVERAGE_RECORDING_REQUIRED`，未落库即 `PRIVATE_SOURCE_COVERAGE_NOT_RECORDED`），候选输出新增 `intake_coverage_id`。
+  - `apps/web/app/studio/desk/page.tsx`：资料台新增「取得范围与缺失部件（D00 第四道工序）」区，只列本人项目，逐条显示完整性白话标签、已取得页（字节与取得账一致）、缺失部件（其余页未评估）；旧格式记录如实标注。
+- **证据**：`tools/verify-y04-executor.mjs` = `Y04_EXECUTOR_PROVEN`（私有工人登录 + CA 校验 + 真实登记读取通道）：先经同一唯一写入口补记真实获取账（`M0002` NAJ 馆藏页面人工下载，`acquired_verified`，字节/哈希取自真实登记；登记只有自述 basis/status，九动作如实留空），再派生并落库覆盖结论（coverage `514b0a99-6ce7-412d-8934-254b23d560eb`：第 35 页已取得、其余页未评估、总量未核实），工人角色回读 `mohen.source-coverage-conclusion.v1` / `D00/Y04:intake_coverage@v1` 一致；负例三项全 true（字节篡改拒绝、尝试字节对不上拒绝、缺尝试拒绝）且都不写库，正例覆盖总数 +1。
+- **单测**：新增 `source-coverage-conclusion.test.mjs` 5 例（取得一致只核一页/字节对不上失败关闭/未取得如实写未获得/缺尝试或身份不全失败关闭/准入真值不复核失败关闭）；`private-candidate-worker.test.mjs` 新增 2 例（调用顺序 catalog→verification→method→attempt→coverage 且覆盖参数由工序派生；撤写入口与字节对不上均失败关闭且不提交 G0）。
+- **回归**：typecheck 6/6；unit 644 通过 / 2 跳过 / 0 失败；data-production 204 通过 + 1 既有 `DEFERRED_ENV`（`independent-gate-service-runtime`，无 openssl）；`guard:auth:strict`（routes=111 public=19 missing=0）、`guard:structure`、`guard:gate-enforcement` 全 PASS。
+- **边界**：只接通第 4 个工序（Y05—Y08 仍无独立执行器）；无获取尝试时本工序不产生记录（覆盖是"某次尝试拿到了什么"，Y07 接通后获取账将成为 D00 必填）；未给 `mohen_app_runtime` 开任何 `source.*` 写权限；不签 Gate、不构成生产准出，`M5_OVERALL_HOLD` 不变。

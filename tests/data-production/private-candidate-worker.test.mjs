@@ -578,6 +578,91 @@ test('D00 records intake observation then Y02/Y04/Y03/Y06 in order and exposes t
   });
 });
 
+test('D00 derives the Y04 intake coverage conclusion from the recorded acquisition attempt',async()=>{
+  const originalId=id(),projectId=id(),sourceVersionId=id();
+  const intakeId=id(),attemptId=id(),coverageId=id();
+  const input={research_intent:'松江府田赋卷十一',
+    scope:{project_id:projectId,original_id:originalId,page_number:35},
+    acquisition:{
+      method:{method_key:'M0002',method_version:'v1',access_mode:'manual_download',
+        resource_scope:{provider:'国立公文书馆(NAJ)'},steps:['打开馆藏页面','下载本页 JPEG'],
+        success_criteria:['字节与馆藏页面一致'],failure_modes:['页面不可达'],alternatives:[]},
+      attempt:{result_state:'acquired_verified',asset_sha256:IMAGE_SHA,byte_size:IMAGE.length,
+        started_at:'2026-11-10T00:00:00.000Z',finished_at:'2026-11-10T00:01:00.000Z',
+        request_digest:'d'.repeat(64)},
+    }};
+  return withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
+    const calls=[];let coverageArgs=null;
+    const worker=createPrivateEvidenceStageWorker({
+      readOriginal:async()=>imageRecord(originalId,projectId),
+      verifySourceBinding:async()=>true,
+      readRegistration:async()=>registrationFor(originalId,projectId,{source_version_id:sourceVersionId}),
+      recordSourceNeed:async()=>({need_id:id(),created_at:new Date().toISOString()}),
+      readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
+      recordCatalogEntry:async()=>{calls.push('catalog');return {catalog_entry_id:intakeId};},
+      recordCandidateVerification:async()=>{calls.push('verification');return {verification_id:id()};},
+      registerAcquisitionMethod:async()=>{calls.push('method');return {method_key:'M0002',method_version:'v1'};},
+      appendAcquisitionAttempt:async()=>{calls.push('attempt');return {attempt_id:attemptId};},
+      recordAcquisitionCoverage:async item=>{calls.push('coverage');coverageArgs=item;return {coverage_id:coverageId};},
+      bridge:bridgeStub,
+      submitGateCandidate:async()=>'candidate-g0',
+      readGateAudit:async()=>null,
+    });
+    const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
+    // 顺序固定：先有准入目录观察与就地核查，再落获取尝试，然后才有覆盖结论的引用对象。
+    assert.deepEqual(calls,['catalog','verification','method','attempt','coverage']);
+    assert.equal(candidate.acquisition_attempt_id,attemptId);
+    assert.equal(candidate.intake_coverage_id,coverageId);
+    // 覆盖结论由工序派生：挂在本次尝试与准入目录条目上，只核到第 35 页，总量未核实。
+    assert.equal(coverageArgs.attemptId,attemptId);
+    assert.equal(coverageArgs.catalogEntryId,intakeId);
+    assert.equal(coverageArgs.completenessState,'unknown');
+    assert.deepEqual(coverageArgs.coverageScope.acquired,{pages:[35],byte_size:IMAGE.length,sha256:IMAGE_SHA});
+    assert.deepEqual(coverageArgs.missingParts,[{part:'other_pages',state:'unassessed'}]);
+    assert.equal(coverageArgs.verifiedAgainst.matched,true);
+  });
+});
+
+test('D00 fails closed when the Y04 coverage conclusion cannot be recorded',async()=>{
+  const originalId=id(),projectId=id(),sourceVersionId=id();
+  const cases=[
+    // 有获取尝试就必须有覆盖结论：撤掉写入口即失败关闭。
+    {drop:'recordAcquisitionCoverage',pattern:/PRIVATE_SOURCE_COVERAGE_RECORDING_REQUIRED/},
+    // 尝试自称取得已核验但字节对不上：工序拒绝在不一致的取得账上写覆盖结论。
+    {tamperSha:true,pattern:/COVERAGE_ATTEMPT_ASSET_MISMATCH/},
+  ];
+  for(const {drop,tamperSha,pattern} of cases){
+    const input={research_intent:'松江府田赋卷十一',
+      scope:{project_id:projectId,original_id:originalId,page_number:35},
+      acquisition:{attempt:{result_state:'acquired_verified',
+        asset_sha256:tamperSha?'e'.repeat(64):IMAGE_SHA,byte_size:IMAGE.length,
+        started_at:'2026-11-10T00:00:00.000Z',request_digest:'d'.repeat(64)}}};
+    await withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
+      let submitted=0;
+      const deps={
+        readOriginal:async()=>imageRecord(originalId,projectId),
+        verifySourceBinding:async()=>true,
+        readRegistration:async()=>registrationFor(originalId,projectId,{source_version_id:sourceVersionId}),
+        recordSourceNeed:async()=>({need_id:id(),created_at:new Date().toISOString()}),
+        readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
+        recordCatalogEntry:async()=>({catalog_entry_id:id()}),
+        recordCandidateVerification:async()=>({verification_id:id()}),
+        registerAcquisitionMethod:async()=>({method_key:'M0002',method_version:'v1'}),
+        appendAcquisitionAttempt:async()=>({attempt_id:id()}),
+        recordAcquisitionCoverage:async()=>({coverage_id:id()}),
+        bridge:bridgeStub,
+        submitGateCandidate:async()=>{submitted+=1;return 'candidate-g0';},
+        readGateAudit:async()=>null,
+      };
+      if(drop)delete deps[drop];
+      const worker=createPrivateEvidenceStageWorker(deps);
+      await assert.rejects(()=>worker.verifySourceIntake({run,job,registry,context,input,token:'s'}),
+        pattern);
+      assert.equal(submitted,0,'coverage write failure must not reach G0');
+    });
+  }
+});
+
 test('D00 writes only the intake observation when the caller supplies no extra material',async()=>{
   const originalId=id(),projectId=id(),sourceVersionId=id();
   const input={research_intent:'松江府田赋卷十一',scope:{project_id:projectId,original_id:originalId,page_number:35}};

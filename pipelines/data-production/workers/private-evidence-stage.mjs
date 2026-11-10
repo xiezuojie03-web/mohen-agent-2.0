@@ -8,6 +8,7 @@ import { buildMethodPlanRefs, inspectMethodPlanRef, isMethodPlanRef } from '../.
 import { diagnoseSourceNeed } from './source-need-diagnosis.mjs';
 import { deriveIntakeCatalogEntry } from './source-catalog-observation.mjs';
 import { deriveIntakeCandidateVerification } from './source-candidate-verification.mjs';
+import { deriveIntakeCoverage } from './source-coverage-conclusion.mjs';
 
 const HEX=/^[a-f0-9]{64}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
@@ -216,6 +217,23 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         if(!UUID.test(appended?.attempt_id??''))throw Error('PRIVATE_ACQUISITION_ATTEMPT_NOT_RECORDED');
         acquisitionAttemptId=appended.attempt_id;
       }
+      // Y04：取得范围与缺失部件结论紧跟本次获取尝试就地进行。结论由工序从准入
+      // 真值与刚落库的尝试派生：本次只核到这一页的字节，其余页如实 unassessed，
+      // 总量未核实不冒充 partial/complete。有尝试就必须有覆盖结论，写不进去即
+      // 失败关闭，不允许"看起来取得了却没有覆盖账"。
+      let intakeCoverageId=null;
+      if(acquisitionAttemptId){
+        if(typeof recordAcquisitionCoverage!=='function')throw Error('PRIVATE_SOURCE_COVERAGE_RECORDING_REQUIRED');
+        const intakeCoverage=deriveIntakeCoverage({registration,record,
+          attempt:{attempt_id:acquisitionAttemptId,...input.acquisition.attempt},pageNumber});
+        const savedIntakeCoverage=await recordAcquisitionCoverage({projectId,
+          attemptId:acquisitionAttemptId,catalogEntryId:intakeCatalogEntryId,
+          coverageScope:intakeCoverage.coverage_scope,missingParts:intakeCoverage.missing_parts,
+          completenessState:intakeCoverage.completeness_state,
+          verifiedAgainst:intakeCoverage.verified_against});
+        if(!UUID.test(savedIntakeCoverage?.coverage_id??''))throw Error('PRIVATE_SOURCE_COVERAGE_NOT_RECORDED');
+        intakeCoverageId=savedIntakeCoverage.coverage_id;
+      }
       // Y02/Y04/Y03/Y06：只在调用方确实给出判断材料时落库；没给就不写，
       // 绝不替研究者编造目录、覆盖结论、核查意见或优先级。
       // 目录可按下标引用本次刚登记的条目，也可直接给已存在的条目 id。
@@ -313,6 +331,7 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         intake_catalog_entry_id:intakeCatalogEntryId,
         intake_verification_id:savedIntakeVerification.verification_id,
         intake_verification_verdict:intakeVerification.verdict,
+        intake_coverage_id:intakeCoverageId,
         catalog_entry_ids:catalogEntryIds,coverage_ids:coverageIds,
         verification_ids:verificationIds,assessment_ids:assessmentIds,
         artifact_revision:sourceRevision,
