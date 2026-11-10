@@ -290,6 +290,26 @@ export default async function DeskPage() {
     project_title: string;
   }>;
 
+  // D00 第八道工序（Y08 取得回执与 G0 候选）：回执依据的五条链上记录随候选的
+  // evidence_refs 一并提交，等待独立 Gate 审；候选只是提交，不是任何资格。
+  const gateCandidateRows = (await queryRows(
+    `select c.candidate_id::text as candidate_id, c.candidate_status,
+            c.evidence_refs::text as evidence_refs, c.created_at::text as created_at,
+            p.project_title
+       from control.gate_candidates c
+       join studio.projects p
+         on p.project_id = (c.allowed_scope->>'project_id')::uuid
+      where p.owner_user_id = :'owner' and c.stage = 'D00'
+      order by c.created_at desc limit 5`,
+    { owner: session.uid }
+  )) as Array<{
+    candidate_id: string;
+    candidate_status: string;
+    evidence_refs: string;
+    created_at: string;
+    project_title: string;
+  }>;
+
   const readRightsStatus = (raw: string | null) => {
     if (!raw) return null;
     try {
@@ -853,6 +873,37 @@ export default async function DeskPage() {
                 {row.project_title}
                 {row.byte_size ? ` · ${row.byte_size} B` : ""}
                 {row.asset_sha256 ? ` · sha256 ${row.asset_sha256.slice(0, 12)}…` : ""} · {row.created_at.slice(0, 10)}
+              </div>
+            </article>
+          );
+        })}
+      </section>
+
+      <section style={{ borderTop: "1px solid #e2ddd1", paddingTop: 14, marginBottom: 20 }}>
+        <h2 style={{ fontSize: 15 }}>取得回执与 G0 候选（D00 第八道工序）</h2>
+        <p style={{ fontSize: 12, color: "#6b746f", margin: "4px 0 10px" }}>
+          八道工序走完，这份原件的取得回执（在库、来路在账、身份已分层）连同链上依据
+          （需求/目录/核查/获取尝试/覆盖结论）一起作为 G0 候选提交。候选只是提交，
+          批准与否是独立 Gate 的事；核查没判的地方（如词源）如实保留，不会被回执改掉。
+        </p>
+        {gateCandidateRows.length === 0 && (
+          <p style={{ fontSize: 13, color: "#8a3b3b" }}>还没有 D00 的 G0 候选。</p>
+        )}
+        {gateCandidateRows.map((row) => {
+          const refs = (() => {
+            try { return JSON.parse(row.evidence_refs) as Array<{ kind?: string }>; } catch { return []; }
+          })();
+          const kinds = refs.map((ref) => ref?.kind).filter((k): k is string => typeof k === "string");
+          return (
+            <article key={row.candidate_id} style={{ border: "1px solid #e2ddd1", borderRadius: 8, padding: 10, marginBottom: 8 }}>
+              <div style={{ fontSize: 13, fontWeight: 600 }}>
+                G0 候选 · <span style={{ color: "#9a6b2f" }}>{row.candidate_status}</span>
+              </div>
+              <div style={{ fontSize: 12, color: "#2f4a3f", marginTop: 4 }}>
+                链上依据 {kinds.length} 条：{kinds.join("、") || "（无）"}
+              </div>
+              <div style={{ fontSize: 11, color: "#6b746f", marginTop: 5 }}>
+                {row.project_title} · 提交于 {row.created_at.slice(0, 10)}
               </div>
             </article>
           );

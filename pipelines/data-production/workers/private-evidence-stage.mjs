@@ -12,6 +12,7 @@ import { deriveIntakeCoverage } from './source-coverage-conclusion.mjs';
 import { deriveSourceIdentityStratification } from './source-identity-stratification.mjs';
 import { deriveIntakePriority } from './source-priority-assessment.mjs';
 import { deriveIntakeAcquisitionRecord } from './source-acquisition-record.mjs';
+import { deriveValidatedAssetReceipt } from './source-asset-receipt.mjs';
 
 const HEX=/^[a-f0-9]{64}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
@@ -240,6 +241,16 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         verifiedAgainst:intakeCoverage.verified_against});
       if(!UUID.test(savedIntakeCoverage?.coverage_id??''))throw Error('PRIVATE_SOURCE_COVERAGE_NOT_RECORDED');
       const intakeCoverageId=savedIntakeCoverage.coverage_id;
+      // Y08：取得回执是本次准入的存证小结——库存回读哈希、登记一致、身份分层、
+      // 获取尝试已核验、覆盖结论已核对、核查结论原样带回（needs_owner 不升级）。
+      // 缺任一道工序的存证即失败关闭；回执不是资格，G0 签署仍是独立 Gate 的事。
+      const {receipt:assetReceipt,evidenceRefs:chainRefs}=deriveValidatedAssetReceipt({
+        registration,record,identity:sourceIdentity,
+        attempt:{attempt_id:acquisitionAttemptId,...intakeAcquisition.attempt},
+        coverage:{coverage_id:intakeCoverageId,verifiedAgainst:intakeCoverage.verified_against},
+        verification:{verification_id:savedIntakeVerification.verification_id,
+          verdict:intakeVerification.verdict},
+        needId:need.need_id,catalogEntryId:intakeCatalogEntryId,pageNumber});
       // Y02/Y04/Y03/Y06：只在调用方确实给出判断材料时落库；没给就不写，
       // 绝不替研究者编造目录、覆盖结论、核查意见或优先级。
       // 目录可按下标引用本次刚登记的条目，也可直接给已存在的条目 id。
@@ -323,7 +334,7 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         objectType:'source_version',objectId:registration.source_version_id,
         artifactRevision:sourceRevision,projectId,
         evidenceRefs:[{kind:'source_version',id:registration.source_version_id,
-          artifact_revision:sourceRevision},...(methodPlan??[])],
+          artifact_revision:sourceRevision},...chainRefs,...(methodPlan??[])],
         requestDigest});
       return {stage:'D00',candidate_kind:'private_source_intake',
         original_id:originalId,project_id:projectId,page_number:pageNumber,
@@ -338,6 +349,7 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         intake_verification_id:savedIntakeVerification.verification_id,
         intake_verification_verdict:intakeVerification.verdict,
         intake_coverage_id:intakeCoverageId,source_identity:sourceIdentity,
+        asset_receipt:assetReceipt,
         intake_priority_id:savedIntakePriority.assessment_id,
         intake_priority_decision:intakePriority.decision,
         catalog_entry_ids:catalogEntryIds,coverage_ids:coverageIds,

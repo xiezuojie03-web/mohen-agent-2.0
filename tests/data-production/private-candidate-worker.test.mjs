@@ -427,16 +427,20 @@ test('D00 verifySourceIntake submits exactly one G0 source_version candidate',as
   const intakeEntries=[];
   const intakeVerifications=[];
   return withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
+    const needId=id(),intakeCatalogId=id(),intakeVerificationId=id(),
+      attemptId=id(),coverageId=id();
     const worker=createPrivateEvidenceStageWorker({
       readOriginal:async()=>imageRecord(originalId,projectId),
       verifySourceBinding:async()=>true,
       readRegistration:async()=>registrationFor(originalId,projectId,{source_version_id:sourceVersionId}),
-      recordSourceNeed:async()=>({need_id:id(),created_at:new Date().toISOString()}),
+      recordSourceNeed:async()=>({need_id:needId,created_at:new Date().toISOString()}),
       readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
-      recordCatalogEntry:async entry=>{intakeEntries.push(entry);return {catalog_entry_id:id()};},
-      recordCandidateVerification:async item=>{intakeVerifications.push(item);return {verification_id:id()};},
+      recordCatalogEntry:async entry=>{intakeEntries.push(entry);return {catalog_entry_id:intakeCatalogId};},
+      recordCandidateVerification:async item=>{intakeVerifications.push(item);return {verification_id:intakeVerificationId};},
       recordPriorityAssessment:async()=>({assessment_id:id()}),
-      ...acquisitionMocks(),
+      registerAcquisitionMethod:async()=>({method_key:'M0002',method_version:'v1'}),
+      appendAcquisitionAttempt:async()=>({attempt_id:attemptId}),
+      recordAcquisitionCoverage:async()=>({coverage_id:coverageId}),
       bridge:bridgeStub,
       submitGateCandidate:async metadata=>{submitted.push(metadata);return 'candidate-g0';},
       readGateAudit:async()=>{throw Error('G0 must not read an upstream audit');},
@@ -459,11 +463,23 @@ test('D00 verifySourceIntake submits exactly one G0 source_version candidate',as
     assert.match(candidate.intake_verification_id,/^[a-f0-9-]{36}$/);
     assert.equal(candidate.intake_verification_verdict,'needs_owner');
     assert.equal(submitted.length,1);
+    // Y08：G0 证据引用在版本修订之外追加 D00 链上五条可回读记录（回执的依据）。
     assert.deepEqual(submitted[0],{runId:run.run_id,stage:'D00',gateCode:'G0',
       objectType:'source_version',objectId:sourceVersionId,artifactRevision:'c'.repeat(64),
       purpose:CANDIDATE_PURPOSE,allowedScope:{project_id:projectId},consumer:'producer',
       dependencySnapshot:[],evidenceRefs:[{kind:'source_version',id:sourceVersionId,
-        artifact_revision:'c'.repeat(64)}],inputFingerprint:candidate.request_digest});
+        artifact_revision:'c'.repeat(64)},
+      {kind:'source_need',id:needId},{kind:'resource_catalog',id:intakeCatalogId},
+      {kind:'candidate_verification',id:intakeVerificationId},
+      {kind:'acquisition_attempt',id:attemptId},{kind:'acquisition_coverage',id:coverageId}],
+      inputFingerprint:candidate.request_digest});
+    // Y08：回执随候选输出存证——依据六道工序逐条可回读，核查结论原样带回不升级。
+    assert.equal(candidate.asset_receipt.schema,'mohen.validated-asset-receipt.v1');
+    assert.equal(candidate.asset_receipt.qualification,'UNASSESSED');
+    assert.equal(candidate.asset_receipt.verification_verdict,'needs_owner');
+    assert.deepEqual(candidate.asset_receipt.basis,['storage_readback_sha256',
+      'registration_consistency','identity_stratification',
+      'acquisition_attempt_verified','coverage_conclusion','candidate_verification']);
     assert.equal('result' in submitted[0],false,'a candidate is not a decision');
     assert.equal(candidate.gate_candidate_id,'candidate-g0');
     assert.equal(candidate.gate_candidate_status,'SUBMITTED');
@@ -495,8 +511,10 @@ test('D00 carries the consumer C method plan as typed refs on the G0 candidate',
       readGateAudit:async()=>{throw Error('G0 must not read an upstream audit');},
     });
     const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
-    assert.deepEqual(submitted.evidenceRefs,[
-      {kind:'source_version',id:sourceVersionId,artifact_revision:'c'.repeat(64)},...expected]);
+    assert.deepEqual(submitted.evidenceRefs.slice(0,1),[
+      {kind:'source_version',id:sourceVersionId,artifact_revision:'c'.repeat(64)}]);
+    // Y08 链上五条引用位于版本引用之后、方法计划引用之前。
+    assert.deepEqual(submitted.evidenceRefs.slice(-expected.length),expected);
     assert.deepEqual(candidate.method_plan,expected);
   });
 });

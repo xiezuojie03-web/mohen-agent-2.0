@@ -2559,3 +2559,15 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **单测**：新增 `source-acquisition-record.test.mjs` 5 例（真实人工下载规范化/缺输入失败关闭/方法键摘要时间逐项校验/字节不符即伪造/登记与身份不符失败关闭）；既有测试同步——candidate-worker 六处（共享夹具、调用顺序 catalog→verification→priority→method→attempt→coverage、fail-closed 新增缺 acquisition 与撤写入口两例）、scanned-page-worker 补 Y07 断言、binding 单测断言反转并补 mock。
 - **回归**：typecheck 6/6；unit 644 通过 / 2 跳过 / 0 失败；data-production 218 通过 + 1 既有 `DEFERRED_ENV`（independent-gate-service-runtime 无 openssl）；三项 guard 全 PASS。
 - **边界**：只接通第 7 个工序（Y08 仍无独立执行器）；获取账如实记录真实 NAJ 人工下载这次取得，不编造任何额外来源；真实链 D00 的 acquisition 走 `buildSourceIntakeInput` 的 sections 平铺入参，无需改编排器/授权器；未给 `mohen_app_runtime` 开任何 `source.*` 写权限；不签 Gate、不构成生产准出，`M5_OVERALL_HOLD` 不变。`git push` 网络仍不通，本地领先远端待补推。
+
+## M5-G｜D00 第八道工序（Y08 完整性鉴定与取得回执）执行器接通（2026-11-10，本地隔离 VERIFIED_ISOLATED）
+
+- **应完成什么**：步骤④最后一个工序。Y08 不落新表：回执随候选输出与 G0 evidenceRefs 存证，是"原件在库、来路在账、身份已分层"的存证小结，不是资格。
+- **做了什么**：
+  - 新增 `pipelines/data-production/workers/source-asset-receipt.mjs`：`deriveValidatedAssetReceipt()` 从六道已存证工序派生回执（库存回读哈希/登记一致/Y05 身份/Y07 尝试已核验/Y04 覆盖已核对/Y03 结论原样带回），缺任一项失败关闭；`qualification` 恒 UNASSESSED。
+  - `private-evidence-stage.mjs`：Y04 准入覆盖后强制派生回执；G0 候选 evidenceRefs 追加链上五条（source_need/resource_catalog/candidate_verification/acquisition_attempt/acquisition_coverage）；候选输出新增 `asset_receipt`。
+  - `apps/web/app/studio/desk/page.tsx`：资料台新增「取得回执与 G0 候选」区。
+- **证据**：`tools/verify-y08-executor.mjs` = `Y08_EXECUTOR_PROVEN`：链上五记录真实读取派生回执成文；负例三项全 true（尝试未核验/覆盖未核对/外来身份）不写库；五条 evidenceRefs 工人角色逐条回读存在。
+- **单测**：新增 `source-asset-receipt.test.mjs` 5 例；candidate-worker 两处证据引用断言更新 + 回执断言。
+- **回归**：typecheck 6/6；unit 644 通过 / 2 跳过 / 0 失败；data-production 223 通过 + 1 既有 `DEFERRED_ENV`；三项 guard 全 PASS。
+- **边界**：回执不是资格，不签 Gate；本地隔离不构成生产准出，`M5_OVERALL_HOLD` 不变；`git push` 网络仍不通，待补推。
