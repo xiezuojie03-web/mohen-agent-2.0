@@ -2400,5 +2400,18 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **刻意不做**：没碰 D01—D05 Job、registry `methods: []`、`activation`/`enabled`/`adapter_binding`/`gate_reviewer_binding`、绑定合同 `method_count=63`；没为方法计划另造第二份方法清单（是否登记只问 `identifier-registry.json`）；零 DDL、零生产变更、零模型费用、零外发。
 - **口径（不得放大解读）**：本批到「真实入口能给计划、G0 真会拦、正反各一次有真实审计/无审计」为止；**D01 仍未按预选选法**，C02—C08 的方法实现、Y02—Y06 生产者、registry 路由与激活、生产库与生产 Gate 均不在本口径内。
 
+## D00-C4｜Y02/Y03/Y04/Y06 落点：四表一次签、隔离验证 27 项全过（2026-11-10，本地隔离 DDL）
 
+- **Owner 裁决（2026-11-10）**：D00 剩余工序 DDL 按「一次签四张表」执行；Y05 是否单列由我技术评估——结论 **不建表**（Y05 产出即 `source.sources`/`source_versions` 的既有身份，另建即第二套身份真值；核查动作归 Y03）。Owner 同时明确原则：利于存储、合法、不重复。
+- **迁移**：`supabase/migrations/20261110120000_mab_d00c4_remaining_stages.sql`（仅应用到本地 `mohen_dev`，生产库零改动）。
+  - `source.resource_catalog`（Y02）：目录条目；`(need_id, provider, catalog_identifier)` 唯一（`correction_of` 行不占位，允许同题多版无编号并存）；`availability_state` 五态受限，只描述目录层面看到什么。
+  - `source.acquisition_coverages`（Y04）：跨尝试的覆盖结论；CHECK「`complete` ⇒ `missing_parts=[]`」，触发器 `COVERAGE_COMPLETE_REQUIRES_VERIFIED_ATTEMPT` 要求依据尝试为 `acquired_verified` 且带 sha256/byte_size。
+  - `source.candidate_verifications`（Y03）：CHECK `checks <> '{}'`——空依据不得给结论；`verdict` 三态受限。
+  - `source.priority_assessments`（Y06）：触发器 `PRIORITY_SELECTED_REQUIRES_ADMISSIBLE_VERIFICATION`——`selected` 必须已有同候选 `admissible` 核查行，未核不得入选。
+  - 四表全部 append-only（复用 `source.forbid_d00_history_mutation`）+ `correction_of` 自引用表达更正；RLS 默认拒绝，`mohen_private_worker` 只 select/insert，独立复核角色只 select，`mohen_producer` / `anon` / `service_role` 全撤。
+- **唯一写入口**：`source-discovery-repository.mjs` 新增 `recordCatalogEntry` / `recordAcquisitionCoverage` / `recordCandidateVerification` / `recordPriorityAssessment`，并把 `AVAILABILITY_STATES`、`COMPLETENESS_STATES`、`VERIFICATION_VERDICTS`、`PRIORITY_DECISIONS` 作为导出枚举，避免调用方各写一套字面量；库内约束与仓库守卫**双份同规则**（任一侧被绕过另一侧仍拦）。
+- **隔离验证**：新增 `tools/verify-d00c4-remaining-stages.mjs`（单事务 + rollback，27 项断言）实跑 `D00C4_ALL_PASS total=27 failed=0`，回执 `tasks/results/MAB/evidence/method-isolation/d00c4-remaining-stages.json`（status=PASS，钉脚本 SHA），回滚后零残留、`source.sources=42/versions=42/raw_items=102` 未动。
+- **账本影响**：`ISOLATED_VERIFIED` 由 **2 → 6**（`Y01,Y02,Y03,Y04,Y06,Y07`）。口径与 C1 完全一致：**只代表「存储契约束 + 唯一写入口守卫」在隔离库被逐项验证**，不代表 Y02—Y06 已有生产者实现，也不代表 D00 端到端可跑。
+- **验证（本批实跑）**：`pnpm test:data-production` 181/181；`pnpm test` 全绿、`real_db_untouched=YES`；守卫前七段绿（`guard:docs` 75/180、`guard:structure` undeclared=0、`guard:registry` jobs=6、`guard:identifiers` design=71/bound=63/steps=8）。
+- **刻意不做**：不建 Y05 表、不建 `search_trace`/`source_dependency`/十类标签映射等无生产者的死结构；不写种子与推断回填；不给 Y02—Y06 造假执行器（表与写入口有了，生产者仍缺，属下一批）；不动 registry `methods: []`、`activation`/`enabled`、D01—D05、生产库与生产 Gate。
 

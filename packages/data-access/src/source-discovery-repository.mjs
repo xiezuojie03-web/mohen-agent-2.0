@@ -24,6 +24,21 @@ export const METHOD_STATES = Object.freeze([
   'TESTED_FAILURE', 'DEGRADED', 'RETIRED',
 ]);
 
+// Y02 目录里的可用性只描述"目录层面看到了什么"，不等于取到了内容。
+export const AVAILABILITY_STATES = Object.freeze([
+  'catalog_found', 'catalog_listed_no_item', 'restricted', 'not_available', 'unknown',
+]);
+
+// Y04 覆盖结论只有三态；"完整"必须有一次已核验的取得做依据（库内触发器同样把关）。
+export const COMPLETENESS_STATES = Object.freeze(['complete', 'partial', 'unknown']);
+
+// Y03 核查结论；空依据不得给结论（库内 CHECK 同样把关）。
+export const VERIFICATION_VERDICTS = Object.freeze(['admissible', 'rejected', 'needs_owner']);
+
+// Y06 处置三态；selected 必须已有同一候选的 admissible 核查（库内触发器同样把关）。
+export const PRIORITY_DECISIONS = Object.freeze(['selected', 'deferred', 'excluded']);
+
+
 const asObject = (value) => (value && typeof value === 'object' && !Array.isArray(value) ? value : {});
 const asArray = (value) => (Array.isArray(value) ? value : []);
 
@@ -173,6 +188,139 @@ export function createSourceDiscoveryRepository(pool) {
       const row = rows[0];
       return { attempt_id: row.attempt_id, need_id: needId,
         method_key: methodKey, method_version: version, result_state: resultState,
+        created_at: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at };
+    },
+
+    /** Y02：登记一条目录条目。看到什么就记什么，是否取到由 Y07/Y04 记。 */
+    async recordCatalogEntry({
+      projectId, needId, provider, catalogTitle, catalogIdentifier, carrierHint, language,
+      coverageHint, rightsHint, availabilityState, discoveredByMethod, methodVersion,
+      evidenceRef, correctionOf,
+    } = {}) {
+      requireProject(projectId);
+      if (typeof needId !== 'string' || !UUID.test(needId)) throw new Error('CATALOG_ENTRY_NEED_INVALID');
+      const owner = String(provider ?? '').trim();
+      if (!owner) throw new Error('CATALOG_ENTRY_PROVIDER_REQUIRED');
+      const title = String(catalogTitle ?? '').trim();
+      if (!title) throw new Error('CATALOG_ENTRY_TITLE_REQUIRED');
+      if (!AVAILABILITY_STATES.includes(availabilityState)) throw new Error('CATALOG_ENTRY_AVAILABILITY_INVALID');
+      const method = String(discoveredByMethod ?? '').trim();
+      const version = String(methodVersion ?? '').trim();
+      if (!method) throw new Error('CATALOG_ENTRY_METHOD_REQUIRED');
+      if (!version) throw new Error('CATALOG_ENTRY_METHOD_VERSION_REQUIRED');
+      if (correctionOf != null && (typeof correctionOf !== 'string' || !UUID.test(correctionOf))) {
+        throw new Error('CATALOG_ENTRY_CORRECTION_INVALID');
+      }
+      const identifier = String(catalogIdentifier ?? '').trim() || null;
+      const { rows } = await pool.query(
+        `insert into source.resource_catalog
+           (project_id, need_id, provider, catalog_title, catalog_identifier, carrier_hint, language,
+            coverage_hint, rights_hint, availability_state, discovered_by_method, method_version,
+            evidence_ref, correction_of)
+         values ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9::jsonb,$10,$11,$12,$13::jsonb,$14)
+         returning catalog_entry_id::text as catalog_entry_id, created_at`,
+        [projectId, needId, owner, title, identifier,
+         String(carrierHint ?? '').trim() || null, String(language ?? '').trim() || null,
+         JSON.stringify(asObject(coverageHint)), JSON.stringify(asObject(rightsHint)),
+         availabilityState, method, version, JSON.stringify(asObject(evidenceRef)), correctionOf ?? null]);
+      const row = rows[0];
+      return { catalog_entry_id: row.catalog_entry_id, need_id: needId, availability_state: availabilityState,
+        created_at: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at };
+    },
+
+    /** Y04：记录一次覆盖结论（拿到了什么、还缺什么）。完整与缺件互斥。 */
+    async recordAcquisitionCoverage({
+      projectId, attemptId, catalogEntryId, coverageScope, missingParts,
+      completenessState, verifiedAgainst, note, correctionOf,
+    } = {}) {
+      requireProject(projectId);
+      if (typeof attemptId !== 'string' || !UUID.test(attemptId)) throw new Error('COVERAGE_ATTEMPT_INVALID');
+      if (catalogEntryId != null && (typeof catalogEntryId !== 'string' || !UUID.test(catalogEntryId))) {
+        throw new Error('COVERAGE_CATALOG_ENTRY_INVALID');
+      }
+      if (!COMPLETENESS_STATES.includes(completenessState)) throw new Error('COVERAGE_COMPLETENESS_INVALID');
+      const missing = asArray(missingParts);
+      if (completenessState === 'complete' && missing.length > 0) {
+        throw new Error('COVERAGE_COMPLETE_WITH_MISSING_PARTS');
+      }
+      if (correctionOf != null && (typeof correctionOf !== 'string' || !UUID.test(correctionOf))) {
+        throw new Error('COVERAGE_CORRECTION_INVALID');
+      }
+      const { rows } = await pool.query(
+        `insert into source.acquisition_coverages
+           (project_id, attempt_id, catalog_entry_id, coverage_scope, missing_parts,
+            completeness_state, verified_against, note, correction_of)
+         values ($1,$2,$3,$4::jsonb,$5::jsonb,$6,$7::jsonb,$8,$9)
+         returning coverage_id::text as coverage_id, created_at`,
+        [projectId, attemptId, catalogEntryId ?? null, JSON.stringify(asObject(coverageScope)),
+         JSON.stringify(missing), completenessState, JSON.stringify(asObject(verifiedAgainst)),
+         note ?? null, correctionOf ?? null]);
+      const row = rows[0];
+      return { coverage_id: row.coverage_id, attempt_id: attemptId,
+        completeness_state: completenessState, missing_parts: missing.length,
+        created_at: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at };
+    },
+
+    /** Y03：登记候选核查结论，必须带逐项依据。 */
+    async recordCandidateVerification({
+      projectId, catalogEntryId, checks, verdict, reasonCode, methodKey, methodVersion, correctionOf,
+    } = {}) {
+      requireProject(projectId);
+      if (typeof catalogEntryId !== 'string' || !UUID.test(catalogEntryId)) {
+        throw new Error('VERIFICATION_CATALOG_ENTRY_INVALID');
+      }
+      const checkObject = asObject(checks);
+      if (Object.keys(checkObject).length === 0) throw new Error('VERIFICATION_CHECKS_REQUIRED');
+      if (!VERIFICATION_VERDICTS.includes(verdict)) throw new Error('VERIFICATION_VERDICT_INVALID');
+      const reason = String(reasonCode ?? '').trim();
+      if (!reason) throw new Error('VERIFICATION_REASON_REQUIRED');
+      const method = String(methodKey ?? '').trim();
+      const version = String(methodVersion ?? '').trim();
+      if (!method || !version) throw new Error('VERIFICATION_METHOD_REQUIRED');
+      if (correctionOf != null && (typeof correctionOf !== 'string' || !UUID.test(correctionOf))) {
+        throw new Error('VERIFICATION_CORRECTION_INVALID');
+      }
+      const { rows } = await pool.query(
+        `insert into source.candidate_verifications
+           (project_id, catalog_entry_id, checks, verdict, reason_code, method_key, method_version, correction_of)
+         values ($1,$2,$3::jsonb,$4,$5,$6,$7,$8)
+         returning verification_id::text as verification_id, created_at`,
+        [projectId, catalogEntryId, JSON.stringify(checkObject), verdict, reason,
+         method, version, correctionOf ?? null]);
+      const row = rows[0];
+      return { verification_id: row.verification_id, catalog_entry_id: catalogEntryId, verdict,
+        created_at: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at };
+    },
+
+    /** Y06：登记优先级评估。未核不得入选由库内触发器与调用顺序共同保证。 */
+    async recordPriorityAssessment({
+      projectId, needId, catalogEntryId, criteria, decision, rationale,
+      methodKey, methodVersion, correctionOf,
+    } = {}) {
+      requireProject(projectId);
+      if (typeof needId !== 'string' || !UUID.test(needId)) throw new Error('PRIORITY_NEED_INVALID');
+      if (typeof catalogEntryId !== 'string' || !UUID.test(catalogEntryId)) {
+        throw new Error('PRIORITY_CATALOG_ENTRY_INVALID');
+      }
+      if (!PRIORITY_DECISIONS.includes(decision)) throw new Error('PRIORITY_DECISION_INVALID');
+      const why = String(rationale ?? '').trim();
+      if (!why) throw new Error('PRIORITY_RATIONALE_REQUIRED');
+      const method = String(methodKey ?? '').trim();
+      const version = String(methodVersion ?? '').trim();
+      if (!method || !version) throw new Error('PRIORITY_METHOD_REQUIRED');
+      if (correctionOf != null && (typeof correctionOf !== 'string' || !UUID.test(correctionOf))) {
+        throw new Error('PRIORITY_CORRECTION_INVALID');
+      }
+      const { rows } = await pool.query(
+        `insert into source.priority_assessments
+           (project_id, need_id, catalog_entry_id, criteria, decision, rationale,
+            method_key, method_version, correction_of)
+         values ($1,$2,$3,$4::jsonb,$5,$6,$7,$8,$9)
+         returning assessment_id::text as assessment_id, created_at`,
+        [projectId, needId, catalogEntryId, JSON.stringify(asObject(criteria)), decision, why,
+         method, version, correctionOf ?? null]);
+      const row = rows[0];
+      return { assessment_id: row.assessment_id, catalog_entry_id: catalogEntryId, decision,
         created_at: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at };
     },
   };

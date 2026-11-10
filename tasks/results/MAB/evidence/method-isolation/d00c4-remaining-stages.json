@@ -1,0 +1,138 @@
+{
+  "schema": "mohen.method-isolation-evidence.v1",
+  "receipt_id": "d00c4-remaining-stages",
+  "verifier": "tools/verify-d00c4-remaining-stages.mjs",
+  "verifier_sha256": "5d7fbfead2b4cde491ad75bf433322824500b56b1b3891b7f5646d34e05bb973",
+  "methods": [
+    "Y02",
+    "Y03",
+    "Y04",
+    "Y06"
+  ],
+  "scope": "D00 剩余四工序的存储契约（四表/约束/触发器/RLS/最小授权）+ 唯一写入口的输入守卫",
+  "not_covered": [
+    "Y02—Y06 的生产者实现：本批只有表与写入口，没有真实检索/核查/评估执行器",
+    "stage 端到端运行与 registry 方法路由激活",
+    "Y05 身份确认（按 Owner 裁决不建新表，复用 source.sources / source_versions）",
+    "生产库"
+  ],
+  "environment": {
+    "node": "v22.22.3",
+    "database": "local postgres 127.0.0.1:5432/mohen_dev",
+    "isolation": "single transaction, rolled back; zero residue checked after rollback"
+  },
+  "ran_at": "2026-11-10T05:31:18.954Z",
+  "total": 27,
+  "failed": 0,
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Y02 目录条目落库",
+      "ok": true
+    },
+    {
+      "name": "无目录编号的同题多版可并存",
+      "ok": true
+    },
+    {
+      "name": "同需求同提供方同编号不得重复登记",
+      "ok": true
+    },
+    {
+      "name": "目录可用性取值受限",
+      "ok": true
+    },
+    {
+      "name": "Y04 完整覆盖（有已核验取得做依据）落库",
+      "ok": true
+    },
+    {
+      "name": "Y04 部分覆盖记录缺失部件",
+      "ok": true
+    },
+    {
+      "name": "完整与缺件互斥（仓库层）",
+      "ok": true
+    },
+    {
+      "name": "完整与缺件互斥（库约束）",
+      "ok": true
+    },
+    {
+      "name": "未经核验的尝试不得宣布覆盖完整",
+      "ok": true
+    },
+    {
+      "name": "Y03 核查结论落库（带逐项依据）",
+      "ok": true
+    },
+    {
+      "name": "空依据不得给结论（仓库层）",
+      "ok": true
+    },
+    {
+      "name": "空依据不得给结论（库约束）",
+      "ok": true
+    },
+    {
+      "name": "Y06 已核候选可入选",
+      "ok": true
+    },
+    {
+      "name": "Y06 未核候选可挂起",
+      "ok": true
+    },
+    {
+      "name": "未核不得入选",
+      "ok": true
+    },
+    {
+      "name": "目录条目不可改写",
+      "ok": true
+    },
+    {
+      "name": "覆盖结论不可删除",
+      "ok": true
+    },
+    {
+      "name": "核查结论不可改写",
+      "ok": true
+    },
+    {
+      "name": "优先级评估不可删除",
+      "ok": true
+    },
+    {
+      "name": "更正以新行表达（correction_of 不占唯一约束）",
+      "ok": true
+    },
+    {
+      "name": "mohen_private_worker 可读自己写入的四表",
+      "ok": true
+    },
+    {
+      "name": "mohen_private_worker 无改写目录条目的权限",
+      "ok": true
+    },
+    {
+      "name": "独立复核角色可只读四表",
+      "ok": true
+    },
+    {
+      "name": "独立复核角色不可写四表",
+      "ok": true
+    },
+    {
+      "name": "生产角色无 D00 历史表权限",
+      "ok": true
+    },
+    {
+      "name": "既有 source 三元链行数（本事务内未触碰）",
+      "ok": true
+    },
+    {
+      "name": "回滚后零残留",
+      "ok": true
+    }
+  ]
+}
