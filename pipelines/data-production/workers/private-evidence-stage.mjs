@@ -229,17 +229,21 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
       if(!UUID.test(appended?.attempt_id??''))throw Error('PRIVATE_ACQUISITION_ATTEMPT_NOT_RECORDED');
       const acquisitionAttemptId=appended.attempt_id;
       // Y04：取得范围与缺失部件结论紧跟本次获取尝试就地进行。结论由工序从准入
-      // 真值与刚落库的尝试派生：本次只核到这一页的字节，其余页如实 unassessed，
-      // 总量未核实不冒充 partial/complete。写不进去即失败关闭，
-      // 不允许"看起来取得了却没有覆盖账"。
+      // 真值与刚落库的尝试派生：本页字节必须与本页库存一致（分页整卷尝试只看本页
+      // 明细，不拿整卷摘要冒充本页哈希）；本来源若已有整卷覆盖结论，分母用它核实的
+      // 真实页数，缺页逐页列出；否则总量如实写 unknown，不冒充 partial/complete。
+      // 写不进去即失败关闭，不允许"看起来取得了却没有覆盖账"。
       if(typeof recordAcquisitionCoverage!=='function')throw Error('PRIVATE_SOURCE_COVERAGE_RECORDING_REQUIRED');
       // 分母真值：本来源若已做过整卷取件，Y04 用它的真实页数作分母并逐页列出缺件；
       // 没做过（或读不到）就仍写 unknown，绝不按页数猜。
       const volumeCoverage=typeof readVolumeCoverage==='function'
         ? await readVolumeCoverage({sourceId:registration.source_id,token}) : null;
       const intakeCoverage=deriveIntakeCoverage({registration,record,
-        attempt:{attempt_id:acquisitionAttemptId,...input.acquisition.attempt},pageNumber,
-        volume:volumeCoverage});
+        attempt:{attempt_id:acquisitionAttemptId,
+          result_state:intakeAcquisition.attempt.resultState,
+          asset_sha256:intakeAcquisition.attempt.assetSha256,
+          byte_size:intakeAcquisition.attempt.byteSize},
+        pageNumber,volume:volumeCoverage});
       const savedIntakeCoverage=await recordAcquisitionCoverage({projectId,
         attemptId:acquisitionAttemptId,catalogEntryId:intakeCatalogEntryId,
         coverageScope:intakeCoverage.coverage_scope,missingParts:intakeCoverage.missing_parts,
