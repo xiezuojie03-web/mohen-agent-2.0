@@ -2582,3 +2582,22 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
   - acquisition 真实值经 `buildSourceIntakeInput` 的 sections 平铺入参（`D:\MoHen\data\m5-runs\d00-sections.json`），授权器与 Runner 同源算 input_digest。
 - **环境修复**：授权证据按 git HEAD 重生成；`OPENSSL_CONF` 补配后独立 Gate 运行时测试真实通过（229/0），旧 `DEFERRED_ENV`（无 openssl）挂账消除；查明 `MOHEN_DATABASE_CA_CERT` 会污染 database-tls 单测，证据生成不带该变量。
 - **边界**：run 报告 HOLD 为设计内失败关闭（独立 Gate 决策不在本机）；本批不签任何 Gate；本地隔离不构成生产准出，`M5_OVERALL_HOLD` 不变；`git push` 待网络恢复补推（本地领先 6 个提交）。
+
+## M5-G｜Y07/Y08 规范条款→验收判据→当前证据（先出表，后写代码）
+
+> Owner 2026-11-10 追问「为什么我不问这些能力就不能实现」后确立的强制程序：任何方法在写代码前，先把规范原文条款抄成验收判据，再据实记下当前证据；达不到就写「未实现／部分实现」，不再用 `Y0X_EXECUTOR_PROVEN` 代表能力评价。
+
+| # | 规范条款（原文） | 验收判据（可核） | 当前证据（本表写作时刻） | 判定 |
+|---|---|---|---|---|
+| Y07-1 | 「可组合 REST/OAI-PMH/SPARQL/**IIIF Presentation/Image**/HTTP-Range/批量包/馆方申请」 | 存在一条真实可执行的 IIIF 路径，且能被反复调用而非人工逐页 | 只有 `M0002 manual_download`：人工取第 35 页；`tools/fetch-naj-page.py` 硬编码 canvas 号 | **未实现**（人工路径冒充获取能力） |
+| Y07-2 | 「在目标资源范围内选择 Mxxxx@version 路径」「按权限选受控 Tool/Adapter」「检查认证、速率、保存权限、**分页边界**」 | 获取方法目录里有 IIIF 方法键+版本，含 resource_scope/steps/成功判据/失败码/限流 | `source.acquisition_methods` 仅 `M0002@v1`（3 步、1 条成功判据） | **未实现** |
+| Y07-3 | 「产生**逐次** Attempt」「真实尝试逐次有时间、环境、脱敏响应」 | 每次真实取件一条 attempt，带 started/finished/request_digest/pagination/locator/成本 | 5 条 attempt 全是同一页 35、`pagination={}`、`acquired_extent={pages:[35]}` | **部分实现**（只有单页、无分页边界） |
+| Y07-4 | 「**元数据 200 不算原件下载**」 | 成功判据必须是字节+哈希+MIME 魔数，不是 HTTP 200 | M0002 的 attempt 确实记录了字节与 sha256 | 已实现（单页范围） |
+| Y08-1 | 「核原始字节长度、MIME/魔数、SHA256 与可得官方 Hash、**全部页卷图幅**…范围」 | 整卷每页都有字节/魔数/SHA256，且与可得官方校验值可比 | 仅第 35 页有字节与哈希；另有 1 个 raw_item 无登记绑定 | **未实现**（缺页卷全量） |
+| Y08-2 | 「已取得范围有**明确分母**或标未知」 | 覆盖结论里 `total_extent` 是真实数字（分母来源可回指），分母未知才允许 unknown | 覆盖结论 `total_extent:"unknown"`、`completeness_state:"unknown"`（分母来自 metadata 的 73 但未被工序采用） | **部分实现**（分母存在，但工序没用上） |
+| Y08-3 | 「缺页称全件」（反例禁止） | 未取满不得写 `complete`；取满必须每页哈希可回读复算 | 库内触发器只保证 `complete` 需一次已核验尝试，不校验页数分母 | **部分实现** |
+| Y08-4 | 「追 Y07 重新合法取得」+「校验私有存储可回读」 | 每页落私有原件后回读哈希一致，且可从库内 raw_item 复算整卷摘要 | 仅单页有回读证据 | **部分实现** |
+
+**本批要闭合的最小集合**：Y07-1/2/3、Y08-1/2/3/4 的整卷部分——即「IIIF Presentation+Image 整卷自动取件 → 每页落库并回读 → 一次带分页边界的真实尝试 → 以 manifest canvas 总数为分母的覆盖结论」。仍不闭合的：Y07 的聚合目录/原机构回溯（规范 Y04 编号问题见下）；跨库抓取（Commons/馆方 PDF）不在本批。
+
+**已知编号偏差（未擅自改动，如实挂账）**：现行实现把 `Y04` 接成「取得范围与缺失部件」（`source.acquisition_coverages`），而规范 Y04 原文是「**聚合目录原机构回溯**」，其 `extent/missing_parts` 语义落在规范 Y08。规范 Y04 要求的 `OriginalProviderTrace`（聚合 provider/dataProvider/holding → 原机构 URL 与编目号回溯、链路缺损记录）目前**没有任何实现与落点**。改编号或补建表属架构裁决，等 Owner 判定后再动。

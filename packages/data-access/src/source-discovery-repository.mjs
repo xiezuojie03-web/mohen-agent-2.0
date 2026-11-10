@@ -130,6 +130,38 @@ export function createSourceDiscoveryRepository(pool) {
         method_state: row.method_state, recommended: row.recommended, created: false };
     },
 
+    /**
+     * Y07：推进一次方法的"当前有效性"。方法定义不可改写，只有状态与复核时间可推进；
+     * 由此「上次成功」不会被当成「当前有效」，而是每次真实尝试后重新判定。
+     */
+    async recordAcquisitionMethodRevalidation({
+      methodKey, methodVersion, methodState, revalidatedAt = new Date(), recommended,
+    } = {}) {
+      if (typeof methodKey !== 'string' || !METHOD_KEY.test(methodKey)) {
+        throw new Error('ACQUISITION_METHOD_KEY_INVALID');
+      }
+      const version = String(methodVersion ?? '').trim();
+      if (!version) throw new Error('ACQUISITION_METHOD_VERSION_INVALID');
+      if (!METHOD_STATES.includes(methodState)) throw new Error('ACQUISITION_METHOD_STATE_INVALID');
+      const at = revalidatedAt instanceof Date ? revalidatedAt : new Date(revalidatedAt);
+      if (Number.isNaN(at.getTime())) throw new Error('ACQUISITION_METHOD_REVALIDATED_AT_INVALID');
+      const { rows } = await pool.query(
+        `update source.acquisition_methods
+            set method_state=$3, last_revalidated_at=$4
+                ${recommended === undefined ? '' : ', recommended=$5'}
+          where method_key=$1 and method_version=$2
+          returning method_key, method_version, method_state, recommended, last_revalidated_at`,
+        recommended === undefined
+          ? [methodKey, version, methodState, at]
+          : [methodKey, version, methodState, at, recommended === true]);
+      if (rows.length === 0) throw new Error('ACQUISITION_METHOD_NOT_REGISTERED');
+      const row = rows[0];
+      return { method_key: row.method_key, method_version: row.method_version,
+        method_state: row.method_state, recommended: row.recommended,
+        last_revalidated_at: row.last_revalidated_at instanceof Date
+          ? row.last_revalidated_at.toISOString() : row.last_revalidated_at };
+    },
+
     /** Y07：追加一次获取尝试。成功与失败都保留，更正另起一行。 */
     async appendAcquisitionAttempt({
       projectId, needId, candidateRef, methodKey, methodVersion, executionEnvironment,

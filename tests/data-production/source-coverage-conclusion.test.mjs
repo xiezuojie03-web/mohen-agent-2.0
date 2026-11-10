@@ -94,3 +94,78 @@ test('Y04 覆盖：准入真值不复核就失败关闭，不在未核的字节�
   assert.throws(() => deriveIntakeCoverage({ registration: registration({ source_version_id: '' }),
     record: record(), attempt: attempt(), pageNumber: 35 }), /COVERAGE_REGISTRATION_INVALID/);
 });
+
+// 整卷分母：只有"已落库、分母来自 manifest、页码在已取得清单里、整卷摘要齐全"的结论
+// 才允许把 Y04 从 unknown 抬到 partial/complete；缺一即失败关闭或退回 unknown。
+const VOLUME_COVERAGE_ID = '77777777-7777-4777-8777-777777777777';
+const volume = (overrides = {}) => ({
+  coverage_id: VOLUME_COVERAGE_ID,
+  source_id: registration().source_id,
+  completeness_state: 'complete',
+  denominator: { kind: 'iiif_manifest_canvas_count', total_pages: 3, manifest_sha256: 'd'.repeat(64) },
+  total_pages: 3,
+  acquired_pages: [1, 2, 3],
+  volume_digest: 'e'.repeat(64),
+  // 整卷里每一页的字节摘要：第 2 页正是本次准入的这一份。
+  pages: [{ page: 1, sha256: '1'.repeat(64), byte_size: 7 },
+    { page: 2, sha256: SHA, byte_size: 8 },
+    { page: 3, sha256: '3'.repeat(64), byte_size: 9 }],
+  ...overrides,
+});
+
+test('Y04 覆盖：整卷取满时用 manifest 总页数作分母，写 complete 并回指整卷结论', () => {
+  const result = deriveIntakeCoverage({ registration: registration(), record: record(),
+    attempt: attempt(), pageNumber: 2, volume: volume() });
+  assert.equal(result.completeness_state, 'complete');
+  assert.equal(result.coverage_scope.target, 'source_volume');
+  assert.equal(result.coverage_scope.total_extent, 3);
+  assert.deepEqual(result.coverage_scope.volume.acquired_pages, [1, 2, 3]);
+  assert.equal(result.coverage_scope.volume.denominator.kind, 'iiif_manifest_canvas_count');
+  assert.deepEqual(result.missing_parts, []);
+  assert.equal(result.verified_against.volume_coverage_id, VOLUME_COVERAGE_ID);
+  assert.equal(result.verified_against.total_pages, 3);
+  assert.equal(result.verified_against.acquired_pages, 3);
+});
+
+test('Y04 覆盖：整卷缺页时如实 partial 并逐页列出缺的是哪几页', () => {
+  const result = deriveIntakeCoverage({ registration: registration(), record: record(),
+    attempt: attempt(), pageNumber: 2, volume: volume({ acquired_pages: [1, 2], completeness_state: 'partial' }) });
+  assert.equal(result.completeness_state, 'partial');
+  assert.deepEqual(result.missing_parts, [{ part: 'page_3_asset', state: 'not_acquired' }]);
+  assert.equal(result.coverage_scope.total_extent, 3);
+});
+
+test('Y04 覆盖：整卷结论缺分母/缺摘要/页码不在清单里一律失败关闭', () => {
+  assert.throws(() => deriveIntakeCoverage({ registration: registration(), record: record(),
+    attempt: attempt(), pageNumber: 2, volume: volume({ coverage_id: 'nope' }) }),
+    /COVERAGE_VOLUME_ID_INVALID/);
+  assert.throws(() => deriveIntakeCoverage({ registration: registration(), record: record(),
+    attempt: attempt(), pageNumber: 2, volume: volume({ total_pages: 0, denominator: {} }) }),
+    /COVERAGE_VOLUME_DENOMINATOR_INVALID/);
+  assert.throws(() => deriveIntakeCoverage({ registration: registration(), record: record(),
+    attempt: attempt(), pageNumber: 2, volume: volume({ acquired_pages: [1, 9] }) }),
+    /COVERAGE_VOLUME_PAGES_INVALID/);
+  assert.throws(() => deriveIntakeCoverage({ registration: registration(), record: record(),
+    attempt: attempt(), pageNumber: 2, volume: volume({ acquired_pages: [1, 3] }) }),
+    /COVERAGE_VOLUME_PAGE_NOT_ACQUIRED/);
+  assert.throws(() => deriveIntakeCoverage({ registration: registration(), record: record(),
+    attempt: attempt(), pageNumber: 2, volume: volume({ volume_digest: null }) }),
+    /COVERAGE_VOLUME_DIGEST_REQUIRED/);
+  // 页码在清单里，但整卷那一页的字节不是手上的这份 → 不许拿别的数字件给这一页背书。
+  assert.throws(() => deriveIntakeCoverage({ registration: registration(), record: record(),
+    attempt: attempt(), pageNumber: 2,
+    volume: volume({ pages: [{ page: 1, sha256: '1'.repeat(64), byte_size: 7 },
+      { page: 2, sha256: '2'.repeat(64), byte_size: 8 }, { page: 3, sha256: '3'.repeat(64), byte_size: 9 }] }) }),
+    /COVERAGE_VOLUME_PAGE_BYTES_MISMATCH/);
+  assert.throws(() => deriveIntakeCoverage({ registration: registration(), record: record(),
+    attempt: attempt(), pageNumber: 2, volume: volume({ pages: [] }) }),
+    /COVERAGE_VOLUME_PAGE_DIGEST_REQUIRED/);
+});
+
+test('Y04 覆盖：整卷取满但本次字节未核验时，不得写 complete', () => {
+  const result = deriveIntakeCoverage({ registration: registration(), record: record(),
+    attempt: attempt({ result_state: 'metadata_only', asset_sha256: null, byte_size: null }),
+    pageNumber: 2, volume: volume() });
+  assert.equal(result.completeness_state, 'partial');
+  assert.deepEqual(result.missing_parts, [{ part: 'page_2_asset', state: 'not_acquired' }]);
+});

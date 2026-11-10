@@ -103,5 +103,11 @@ export function deriveValidatedAssetReceipt({ registration, record, identity,
     { kind: 'acquisition_attempt', id: attempt.attempt_id },
     { kind: 'acquisition_coverage', id: coverage.coverage_id },
   ];
+  // 若这次覆盖结论用了整卷分母，整卷结论本身也要作为存证一起被引用，
+  // 否则"分母是 73"这句话就无法在 Gate 侧回指到它的出处。
+  const volumeCoverageId = coverage.verifiedAgainst?.volume_coverage_id;
+  if (typeof volumeCoverageId === 'string' && UUID.test(volumeCoverageId) && volumeCoverageId !== coverage.coverage_id) {
+    evidenceRefs.push({ kind: 'acquisition_coverage', id: volumeCoverageId });
+  }
   return { receipt, evidenceRefs };
 }

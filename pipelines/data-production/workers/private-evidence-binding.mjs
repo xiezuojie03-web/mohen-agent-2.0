@@ -38,6 +38,43 @@ export function createApprovedMethodPlanReader(pool, {gateCode: defaultGate='G0'
   };
 }
 
+// Y04 分母真值：本次准入的这一件属于某来源时，读取该来源最近一次"整卷覆盖结论"。
+// 只有已落库、带真实分母（manifest canvas 总数）与整卷摘要的结论才会被采纳；
+// 没做过整卷取件就返回 null，D00 继续如实写 unknown，绝不按页数猜。
+export function createVolumeCoverageReader(pool) {
+  return async function readVolumeCoverage({ sourceVersionId } = {}) {
+    const { rows } = await pool.query(
+      `select c.coverage_id::text as coverage_id, c.completeness_state,
+              c.coverage_scope, c.missing_parts, c.verified_against, c.created_at,
+              a.acquired_extent, v.source_id::text as source_id
+         from source.source_versions v, source.acquisition_coverages c
+         left join source.acquisition_attempts a
+           on a.attempt_id = (c.verified_against->>'attempt_id')::uuid
+        where v.source_version_id=$1::uuid
+          and c.coverage_scope->>'target'='source_volume'
+          and c.coverage_scope->>'source_id'=v.source_id::text
+        order by c.created_at desc limit 1`, [sourceVersionId]);
+    const row = rows[0];
+    if (!row) return null;
+    const scope = typeof row.coverage_scope === 'string' ? JSON.parse(row.coverage_scope) : row.coverage_scope;
+    const total = Number(scope?.denominator?.total_pages);
+    const acquired = Array.isArray(scope?.acquired_pages) ? scope.acquired_pages.map(Number) : [];
+    if (!Number.isSafeInteger(total) || total < 1 || acquired.length === 0) return null;
+    const extent = typeof row.acquired_extent === 'string' ? JSON.parse(row.acquired_extent) : row.acquired_extent;
+    const pages = (Array.isArray(extent?.pages) ? extent.pages : []).map((item) => ({
+      page: Number(item?.page), sha256: item?.sha256 ?? null, byte_size: Number(item?.byte_size),
+    }));
+    return {
+      coverage_id: row.coverage_id, source_id: row.source_id,
+      completeness_state: row.completeness_state,
+      denominator: scope.denominator, acquired_pages: acquired,
+      total_pages: total, volume_digest: scope.volume_digest ?? null,
+      // 每页摘要用于核对"手上的这一页"是否正是整卷里那一页（同一份字节）。
+      pages,
+    };
+  };
+}
+
 export function createBoundPrivateEvidenceStageWorker({ pool, storage, verificationKey, keyVersion='mab-original-bridge-v1',
 } = {}) {
   if (!pool || typeof pool.connect !== 'function') {
@@ -108,5 +145,6 @@ export function createBoundPrivateEvidenceStageWorker({ pool, storage, verificat
     recordAcquisitionCoverage:sourceDiscovery.recordAcquisitionCoverage,
     recordCandidateVerification:sourceDiscovery.recordCandidateVerification,
     recordPriorityAssessment:sourceDiscovery.recordPriorityAssessment,
+    readVolumeCoverage:createVolumeCoverageReader(pool),
     submitGateCandidate, readGateAudit, readApprovedMethodPlan });
 }

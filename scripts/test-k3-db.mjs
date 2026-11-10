@@ -123,6 +123,9 @@ try {
       // 已在本地 dev 库应用；补进隔离链，避免 _test 库缺表而测试"假绿"。
       "20261110110000_mab_d00c_source_discovery_ledger.sql",
       "20261110120000_mab_d00c4_remaining_stages.sql",
+      // D00-C5：补 acquisition_methods 的 worker update 策略，让"当前有效性"能随真实
+      // 尝试推进（此前只有列级 grant 没有策略，方法状态永远停在首次登记值）。
+      "20261110150000_mab_d00c5_method_revalidation.sql",
       "20261110130000_mab_original_media_assets.sql"]) apply(file);
     // Capability assertions for the migrations applied immediately above. They can only run at
     // this point in the chain: the rights columns, the private worker, the machine reviewer and

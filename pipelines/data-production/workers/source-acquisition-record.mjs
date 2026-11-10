@@ -87,10 +87,18 @@ export function deriveIntakeAcquisitionRecord({ registration, record, identity, 
 
   let byteSize = attempt.byte_size ?? null;
   let assetSha256 = attempt.asset_sha256 ?? null;
+  // 分页尝试（如 IIIF 整卷逐页取件）里，整次尝试的 asset_sha256 是整卷摘要，
+  // 不是这一页的哈希。判断"这一件确实是本次尝试取到的"必须落到页码明细：
+  // acquired_extent.pages 里必须恰有一条与本页字节、长度完全一致。
+  const pageEntries = asArray(attempt.acquired_extent?.pages);
+  const pageMatches = pageEntries.filter((item) => item?.sha256 === record.sha256
+    && Number(item?.byte_size) === record.byte_size);
+  let paginatedAttempt = false;
   if (resultState === 'acquired_verified') {
-    // 自称"取得并已核验"就必须对得上库存字节；对不上是取得账在说谎。
+    // 自称"取得并已核验"就必须对得上库存字节；对不上（或分页明细里找不到这一页）就是取得账在说谎。
     if (assetSha256 !== record.sha256 || Number(byteSize) !== record.byte_size) {
-      throw new Error('ACQUISITION_ASSET_MISMATCH');
+      if (pageMatches.length !== 1) throw new Error('ACQUISITION_ASSET_MISMATCH');
+      paginatedAttempt = true;
     }
     byteSize = record.byte_size;
     assetSha256 = record.sha256;
@@ -112,7 +120,11 @@ export function deriveIntakeAcquisitionRecord({ registration, record, identity, 
     attempt: {
       executionEnvironment: attempt.execution_environment ?? null,
       requestDigest: attempt.request_digest,
-      pagination: attempt.pagination ?? null,
+      // 分页尝试落库时带上"本次准入的是哪一页、依据哪条字节"，避免整卷摘要被误读成本页哈希。
+      pagination: paginatedAttempt
+        ? { ...(isPlainObject(attempt.pagination) ? attempt.pagination : {}),
+          admitted_page: { sha256: record.sha256, byte_size: record.byte_size, page_scope_verified: true } }
+        : (attempt.pagination ?? null),
       startedAt, finishedAt,
       resultState,
       failureCode: attempt.failure_code ?? null,

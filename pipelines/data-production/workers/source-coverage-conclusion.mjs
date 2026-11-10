@@ -37,10 +37,14 @@ function requireIntakeFacts(registration, record) {
 
 /**
  * 从本次准入的真值 + 本次获取尝试派生一条取得范围结论。
+ *
+ * `volume` 是"本来源最近一次整卷取件"的已落库结论（可缺省）。给出时，分母改用
+ * manifest canvas 总数这个真实数字，并逐个列出未取得的页；没给出时仍如实写
+ * unknown——分母不能靠页数猜，只能用已核实的整卷结论。
  * @returns {{coverage_scope:object,missing_parts:Array<object>,
- *   completeness_state:'unknown',verified_against:object}}
+ *   completeness_state:'unknown'|'partial'|'complete',verified_against:object}}
  */
-export function deriveIntakeCoverage({ registration, record, attempt, pageNumber } = {}) {
+export function deriveIntakeCoverage({ registration, record, attempt, pageNumber, volume } = {}) {
   requireIntakeFacts(registration, record);
   if (!isPlainObject(attempt)) throw new Error('COVERAGE_ATTEMPT_REQUIRED');
   if (!UUID.test(attempt.attempt_id ?? '') ||
@@ -64,6 +68,42 @@ export function deriveIntakeCoverage({ registration, record, attempt, pageNumber
     // 本次尝试未取得已核验字节：如实写这一页不是这次尝试拿到的。
     missingParts.push({ part: `page_${pageNumber}_asset`, state: 'not_acquired' });
   }
+
+  if (volume != null) {
+    const scope = requireVolumeFacts(volume, pageNumber, verified, record);
+    return {
+      coverage_scope: {
+        schema: COVERAGE_CONCLUSION_SCHEMA,
+        method: `${INTAKE_COVERAGE_METHOD}@${INTAKE_COVERAGE_METHOD_VERSION}`,
+        target: scope.target,
+        source_version_id: registration.source_version_id,
+        source_id: volume.source_id ?? null,
+        acquired,
+        volume: {
+          coverage_id: volume.coverage_id,
+          acquired_pages: scope.acquiredPages,
+          total_pages: scope.total,
+          denominator: volume.denominator,
+          volume_digest: volume.volume_digest,
+          page_in_volume: pageNumber,
+        },
+        total_extent: scope.total,
+      },
+      missing_parts: [...scope.missingParts, ...missingParts],
+      completeness_state: scope.completeness,
+      verified_against: {
+        attempt_id: attempt.attempt_id,
+        asset_sha256: record.sha256,
+        byte_size: record.byte_size,
+        matched: verified,
+        volume_coverage_id: volume.coverage_id,
+        volume_digest: volume.volume_digest ?? null,
+        acquired_pages: scope.acquiredPages.length,
+        total_pages: scope.total,
+      },
+    };
+  }
+
   // 总量未核实：除本次核到的这一页，其余部分一律未评估。
   missingParts.push({ part: 'other_pages', state: 'unassessed' });
 
@@ -85,5 +125,40 @@ export function deriveIntakeCoverage({ registration, record, attempt, pageNumber
       byte_size: record.byte_size,
       matched: verified,
     },
+  };
+}
+
+// 整卷结论必须自带可核的分母、页清单与摘要；给不全就不许用它把覆盖抬成 partial/complete。
+function requireVolumeFacts(volume, pageNumber, verified, record) {
+  if (!UUID.test(volume.coverage_id ?? '')) throw new Error('COVERAGE_VOLUME_ID_INVALID');
+  const total = Number(volume.total_pages ?? volume.denominator?.total_pages);
+  if (!Number.isSafeInteger(total) || total < 1) throw new Error('COVERAGE_VOLUME_DENOMINATOR_INVALID');
+  const pages = Array.isArray(volume.acquired_pages) ? volume.acquired_pages.map(Number) : null;
+  if (!pages || pages.length === 0 || pages.some((n) => !Number.isSafeInteger(n) || n < 1 || n > total)) {
+    throw new Error('COVERAGE_VOLUME_PAGES_INVALID');
+  }
+  if (!pages.includes(pageNumber)) {
+    // 手上这一页不在整卷已取得清单里，说明整卷结论与本次原件不是同一份东西，失败关闭。
+    throw new Error('COVERAGE_VOLUME_PAGE_NOT_ACQUIRED');
+  }
+  if (!HEX.test(volume.volume_digest ?? '')) throw new Error('COVERAGE_VOLUME_DIGEST_REQUIRED');
+  // 页码对得上还不够：整卷里那一页必须是**同一份字节**，否则就是拿别的数字件给这一页背书。
+  const volumePages = Array.isArray(volume.pages) ? volume.pages : null;
+  if (!volumePages) throw new Error('COVERAGE_VOLUME_PAGE_DIGEST_REQUIRED');
+  const pageEntry = volumePages.find((item) => Number(item?.page) === pageNumber);
+  if (!pageEntry || !HEX.test(pageEntry.sha256 ?? '')) throw new Error('COVERAGE_VOLUME_PAGE_DIGEST_REQUIRED');
+  if (pageEntry.sha256 !== record.sha256 || Number(pageEntry.byte_size) !== record.byte_size) {
+    throw new Error('COVERAGE_VOLUME_PAGE_BYTES_MISMATCH');
+  }
+  const acquiredPages = [...new Set(pages)].sort((a, b) => a - b);
+  const missingParts = [];
+  for (let n = 1; n <= total; n += 1) {
+    if (!acquiredPages.includes(n)) missingParts.push({ part: `page_${n}_asset`, state: 'not_acquired' });
+  }
+  // 缺页称全件是规范明令禁止的反例：只有取满且本次字节也核过，才配写 complete。
+  const full = acquiredPages.length === total && verified && missingParts.length === 0;
+  return {
+    target: 'source_volume', total, acquiredPages, missingParts,
+    completeness: full ? 'complete' : 'partial',
   };
 }

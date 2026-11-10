@@ -117,6 +117,40 @@ test('Y07 获取账：自称 acquired_verified 却字节不符即伪造，失败
   assert.equal(result.attempt.assetSha256, null);
 });
 
+test('Y07 获取账：分页整卷尝试按页码明细认这一页，摘要不符仍失败关闭', () => {
+  const reg = registration(), rec = record(), idn = identityOf(reg, rec);
+  const volumeDigest = 'c'.repeat(64);
+  const paginated = acquisition();
+  paginated.method = { ...paginated.method, method_key: 'M0003', method_version: 'v1',
+    access_mode: 'iiif_presentation_and_image_api' };
+  paginated.attempt = {
+    result_state: 'acquired_verified', asset_sha256: volumeDigest, byte_size: BYTES.length * 73,
+    request_digest: 'd'.repeat(64), started_at: '2026-11-10T00:00:00.000Z',
+    pagination: { boundary: 'canvas_index', total_pages: 73, pages_acquired: [34, 35, 36] },
+    acquired_extent: { total_pages: 73, pages: [
+      { page: 34, sha256: 'a'.repeat(64), byte_size: 1 },
+      { page: 35, sha256: SHA, byte_size: BYTES.length },
+      { page: 36, sha256: 'b'.repeat(64), byte_size: 2 },
+    ] },
+  };
+  const result = deriveIntakeAcquisitionRecord({
+    registration: reg, record: rec, identity: idn, acquisition: paginated });
+  // 整卷摘要是整次尝试的哈希，落库时不得被当成这一页的哈希。
+  assert.equal(result.attempt.assetSha256, SHA);
+  assert.equal(result.attempt.byteSize, BYTES.length);
+  assert.equal(result.attempt.pagination.admitted_page.sha256, SHA);
+  assert.equal(result.attempt.pagination.admitted_page.page_scope_verified, true);
+  assert.equal(result.attempt.pagination.total_pages, 73);
+
+  // 明细里没有任何一页对得上这份字节 → 仍按伪造处理。
+  const lying = acquisition();
+  lying.attempt = { ...paginated.attempt, acquired_extent: { total_pages: 73, pages: [
+    { page: 35, sha256: 'f'.repeat(64), byte_size: BYTES.length }] } };
+  assert.throws(() => deriveIntakeAcquisitionRecord({
+    registration: reg, record: rec, identity: idn, acquisition: lying }),
+    /ACQUISITION_ASSET_MISMATCH/);
+});
+
 test('Y07 获取账：登记/原件事实不符或身份不是本次准入这份即失败关闭', () => {
   const reg = registration(), rec = record();
   assert.throws(() => deriveIntakeAcquisitionRecord({ record: rec, identity: identityOf(),
