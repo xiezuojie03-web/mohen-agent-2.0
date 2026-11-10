@@ -1,0 +1,84 @@
+{
+  "evidence_kind": "d00_real_run_sections",
+  "isolation_credit": "NONE",
+  "recorded_at": "2026-11-10",
+  "git_head": "41a2dcd",
+  "database": "mohen_dev (isolated)",
+  "entry": "tools/local-execution-authorizer.mjs run --stage D00",
+  "authorization": {
+    "kind": "EdDSA stage grant, attended, one-shot nonce",
+    "enable_requires_evidence": "D:\\MoHen\\keys\\execution-auth\\enable-requires-evidence.json (regenerated for current git HEAD)"
+  },
+  "run": {
+    "run_id": "4cea42af-e7d6-4133-80ea-45282d5f8c25",
+    "stage": "D00",
+    "gate_code": "G0",
+    "status": "HOLD",
+    "hold_reason_code": "INDEPENDENT_GATE_NOT_VERIFIED",
+    "hold_verification_error": "INDEPENDENT_GATE_VERIFY_UNAVAILABLE",
+    "hold_is_expected": true,
+    "input_digest": "b9c1b33c1a6508ff719fc7e89c3fddff257e205a99b99919ee89da15459c4333",
+    "output_digest": "c701f32cc73e7c94701564d772aa4ab2e43de3300e60d7b336de11961966c8d4",
+    "reports": {
+      "machine_report": "verification/data-production-runs/4cea42af-e7d6-4133-80ea-45282d5f8c25.machine.json",
+      "human_review_report": "verification/data-production-runs/4cea42af-e7d6-4133-80ea-45282d5f8c25.human-review.json"
+    }
+  },
+  "inputs": {
+    "intent": "D00 真实入口分段材料取证：对上图开放数据 shnh/dmz《上海地名志》私有原件做来源准入（目录/核查/优先级），覆盖段因缺研究方法身份暂不写",
+    "scope_file": "D:/MoHen/data/m5-runs/cp2e-d00-text-scope.json",
+    "original_id": "b0a11000-0000-4000-8000-000000000006",
+    "source_version_id": "e9580d39-de3c-46b4-a737-ee153eae5b40",
+    "raw_item_id": "4f54be77-73a2-4ae8-a77c-7f130fcadbe2",
+    "sha256": "b6f030537b165b5da0973f87b7ebf031e47628419f13c715bb9ace2bf08b10cb",
+    "byte_size": 1015,
+    "method_plan": [{"method_id": "C01", "method_version": "v1"}],
+    "sections_keys": ["catalog", "verifications", "priorities"]
+  },
+  "rows_written": {
+    "source.source_needs": {"need_id": "aab76a08-f75b-410e-8e81-a83b5999199d"},
+    "source.resource_catalog": {
+      "catalog_entry_id": "7933199c-5ffe-4308-82f2-b212a5880d17",
+      "provider": "shanghai-library",
+      "catalog_title": "上海地名志（上海图书馆开放数据 shnh/dmz）",
+      "availability_state": "catalog_found",
+      "discovered_by_method": "tools/fetch-shl-dmz-text.mjs",
+      "method_version": "v1"
+    },
+    "source.candidate_verifications": {
+      "verification_id": "65ae092a-7cf9-4ff2-81f2-2dbcb57f89d2",
+      "verdict": "needs_owner",
+      "reason_code": "EDITORIAL_ADMISSIBILITY_AND_RIGHTS_UNRESOLVED",
+      "checks": {
+        "original_sha256": "match",
+        "byte_size": "match",
+        "source_registration_bound": true,
+        "project_scope": "match",
+        "editorial_admissibility": "not_assessed",
+        "rights_snapshot": "empty"
+      }
+    },
+    "source.priority_assessments": {
+      "assessment_id": "f6912d62-9247-4009-8dbf-3fe39f1b9936",
+      "decision": "deferred"
+    },
+    "source.acquisition_coverages": {
+      "count": 0,
+      "reason_code": "ACQUISITION_METHOD_IDENTITY_REQUIRED",
+      "detail": "recordAcquisitionCoverage 需要 attempt_id（FK → source.acquisition_methods），而 registerAcquisitionMethod 只接受 ^M\\d{4}$；权威方法 Registry（M0001—M0006）在仓库外，本地该表 0 行，不能编造。"
+    }
+  },
+  "verification_queries": [
+    "select count(*) from source.resource_catalog;  -- 1",
+    "select count(*) from source.candidate_verifications;  -- 1",
+    "select count(*) from source.priority_assessments;  -- 1",
+    "select count(*) from source.acquisition_coverages;  -- 0"
+  ],
+  "not_claimed": [
+    "G0 独立 Gate 准出（本次 HOLD 属设计内失败关闭）",
+    "Y04 覆盖段的真实行",
+    "Y08 多卷/页码范围",
+    "任何研究成果的编次或适用性判定（verdict 明确为 needs_owner）",
+    "生产库、生产 Gate、真实原件外发或费用"
+  ]
+}
