@@ -2435,4 +2435,14 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **唯一仍未落的段（Y04 覆盖）**：`recordAcquisitionCoverage` 需 `attempt_id`（外键 → `source.acquisition_attempts`），而 `registerAcquisitionMethod` 只接受 `^M\d{4}$`；权威方法 Registry 是外部 Excel 的 `M0001—M0006`，仓库内没有其定义，本地 `source.acquisition_methods` 为 0 行。编一个 M 码跑通既违反"不编造"也越过 Registry 裁决权，故 Y04 真实行保持 0，等 Owner 给方法身份。
 - **口径**：本批证到"真实入口能把分段材料无损送进 D00、参与签名摘要与 G0 候选输入，并在隔离库真实落行（Y02/Y03/Y06）"。四表齐备、Y04 端到端、Y08 多卷、D01 按预选选法、registry 路由与激活、生产库与生产 Gate 均不在此口径内。
 
+## M5-A｜台账第 4 步按证据回勾 + 发现 M5 真实作品不在 WATCH（2026-11-10，暂停待 Owner 权利裁决）
+
+- **台账回勾（只认已有工具/单测/回执）**：4.1–4.7 转 `[x]`（依据：`verify-4-provider-dispatch.mjs` = `VERIFY_4_ALL_PASS`、`tests/unit/provider-dispatcher.test.ts`、批次 G/H 真实 H1/H2/H3 派发回执、版本化价格表 `deepseek/2026-11-07`、`appendVerifiedReceipt` 幂等）；**4.8 仍是 `[ ]`**——同 root 双主体只做到"证据合并"，浏览器级互补验收未做，不得勾。
+- **真实 HTTP 复核（本地隔离，3210，`MOHEN_G5_CONTEXTS` 已注入）**：`GET /api/works/published` → 200，但**只返回样例作品 `c0ffee00-…a001`，M5 真实作品 `5b42577e-…` 不出现**。即 5.9 第 3 项（WATCH 看到真实作品）当前必失败。
+- **根因（不是误删，也不是本轮代码问题）**：M5 真实作品整链（G0 `00ef6451`→G1 `97c59c77`→G2 `6b0641f4`→G3 `45f9e081`→G4 `b440e417`→G5 `c1792c87`/watch `03e30a41`）已于 2026-11-09 12:40 写入 `control.invalidation_events` 后退休；触发点是 G0 对象 `source.source_versions b0a11000-…-0005` 的内容列哈希变了（CP2-C 冻结 `rights_snapshot`，旧 `95a333cb` ≠ 当前 `50d6d1e0`），`current_qualification_is_valid` 随之判假。
+- **重签也过不去**：`source.sources b0a11000-…-0004`（松江府志7）`rights_by_action={}`，仅有 `rights.basis=NAJ_secondary_use_policy / status=public_domain_secondary_use`；CP2-A/CP2-D 已删除该状态的推断旁路 → G0 权利核验必然 HOLD。样例作品 `c0ffee00-…a006` 无候选、无依赖链（种子直插），不能当真实作品验收，撤权后也无法重签。
+- **因此 3.6 HTTP 撤权断言没有可复现对象，本批不做**（不拿样例作品冒充）。台账第 3.6 / 4.8 与 §二 已如实记。
+- **待 Owner 裁决（资料权利/产品，越权不自行决定）**：A 为《松江府志7》补显式 `rights_by_action`；B 改用 CP2-E 上图已显式授权链重做/重发作品（并确认"展示作品而非原图"的权利依据）；C 两者都不选，WATCH 维持样例、M5 真实可用性记 HOLD。
+- **本批未改任何代码、未改数据库、未签任何 Gate**；回到 main 工作树干净后按 Owner 裁决再续。
+
 

@@ -111,19 +111,37 @@
 - [x] 3.3 G5 独立签发：精确 WorkRevision + 知识/媒资依赖 — G5 `c1792c87…`（`work_revision_binding` + `rights_by_operation` PASS）
 - [x] 3.4 当前资格消费：`control.qualification_allows` 逐请求核验 true — 本轮 D 链 G0–G5 全 true；负例未签时 false（`VERIFY_3_NEGATIVE unsigned_qualification_denied PASS`）
 - [x] 3.5 撤权：`control.revoke_gate_qualification` 生效 — 事务演练 `blocked_count=1`、`current` true→false（永久撤权演练另行授权）
-- [ ] 3.6 P08 精准失效：撤权后新请求即时拒绝（PG 断言已由资格闸门翻转证明；HTTP 断言仍待 Web 通道）
+- [ ] 3.6 P08 精准失效：撤权后新请求即时拒绝（PG 断言已由资格闸门翻转证明；**HTTP 断言仍缺**）
+  - 2026-11-10 真实 HTTP 复核（`GET /api/works/published`，本地 3210，`MOHEN_G5_CONTEXTS` 已注入）：**只返回样例作品 `c0ffee00-…a001`，M5 真实作品 `5b42577e-…` 不出现**。根因见 §二「2026-11-10 复核发现的 M5 真实可用性回归」。真实作品恢复 WATCH 可消费之前，HTTP 撤权断言只能在样例作品上做，且样例 `G5` 审计 `c0ffee00-…a006` 无候选（种子直插、无依赖链），撤权后无法按合同重签，故未执行。
 - [x] 3.7 负例：Producer/Operator 代签被拒（失败关闭）— `VERIFY_3_NEGATIVE producer_cannot_sign PASS`（42501，审计数不变 718==718）
 - [x] 3.8 旧 PASS/错 consumer 不复活（非旧资格复用）— 有效性按当前状态派生，无旧 PASS 缓存
 
 ### 第 4 步 · M4 受控 Provider（自检 8 项）
-- [ ] 4.1 正道解阻断：`directorExternalProcessingBlocker` 在受控派发条件满足后放行（非删除安全网）
-- [ ] 4.2 逐来源外发权核验：无权 → TRANSFER_DENIED（禁止发送后补授权）
-- [ ] 4.3 真实 Provider 派发：DeepSeek（已授权低成本），真实调用
-- [ ] 4.4 费用真实化：内部 credit → 真实 token/币种
-- [ ] 4.5 Receipt 持久化：provider/model/version、token/用量、币种费用、输入输出 hash
-- [ ] 4.6 正例：合法派发成功 + 永久 Receipt
-- [ ] 4.7 反例：外发无权/预算不足/超时/重复请求 → 失败 HOLD（不自动重试收费调用、不补零）
-- [ ] 4.8 双主体互补：同一 root 下 Agent 内部 + 外部 Provider 职责互补
+> 2026-11-10 按证据回勾（trae）。勾选口径只认已存在的真实工具/单测/回执，不认计划本身。
+- [x] 4.1 正道解阻断：`directorExternalProcessingBlocker` 在受控派发条件满足后放行（非删除安全网）— `provider-dispatcher.ts` 句柄 + Studio grant 双通道；无句柄/无 grant 仍恒阻断（`tests/unit/provider-dispatcher.test.ts`、批次 G 负例）
+- [x] 4.2 逐来源外发权核验：无权 → TRANSFER_DENIED（禁止发送后补授权）— 统一权利动作词典 `rights-actions.mjs`；`verify-4` 反例 rights=`{}` → TRANSFER_DENIED 且无请求无回执
+- [x] 4.3 真实 Provider 派发：DeepSeek（已授权低成本），真实调用 — `verify-4` 真实调用（回执 `7c353e92…`）、批次 G/H 真实 H1/H2/H3 派发
+- [x] 4.4 费用真实化：内部 credit → 真实 token/币种 — 版本化价格表 `deepseek/2026-11-07`，实费 $0.000074 / $0.007452 / $0.001314
+- [x] 4.5 Receipt 持久化：provider/model/version、token/用量、币种费用、输入输出 hash — `appendVerifiedReceipt`（ACCEPT_AS_CANDIDATE + ESTIMATED，usage/price_ref/input_hash/output_hash 必填，unique(delegation_id,attempt_no) 幂等）
+- [x] 4.6 正例：合法派发成功 + 永久 Receipt — 同 4.3（PG 回执核验通过）
+- [x] 4.7 反例：外发无权/预算不足/超时/重复请求 → 失败 HOLD（不自动重试收费调用、不补零）— `verify-4` 反例三项 + dispatcher 单测（超时/HOLD/回放不二次扣费）全过
+- [ ] 4.8 双主体互补：同一 root 下 Agent 内部 + 外部 Provider 职责互补 — **仍不成立**。当前只做到"证据合并"（delegation 可追溯到一个真实研究任务，`progress.md` 2026-11-08 QR-06 条目），浏览器级真实同 root 双主体互补验收未做，按 CP4/5.9 前不得勾
+
+#### 2026-11-10 复核发现的 M5 真实可用性回归（属资料权利/产品裁决，未自行处置）
+
+**事实（本地隔离库 `mohen_dev` 实测 + 真实 HTTP）**
+- M5 真实作品 `publication.works 5b42577e-a4d6-4024-b1f9-99d0d788c9ec` / `revision 62a8ba95-e07f-4f7e-bcb9-f728004d651a` 仍存在且已发布，但 `GET /api/works/published`（3210，`MOHEN_G5_CONTEXTS` 已注入）**不返回它**，只返回样例作品 `c0ffee00-…a001`。
+- 其 G0–G5 整链（G0 `00ef6451` source_version `b0a11000-…-0005`、G1 `97c59c77` read_unit `ff227f15`、G2 `6b0641f4` material_evidence `0c9c3a44`、G3 `45f9e081` claim `54c21e1a`、G4 `b440e417` finding `b31f534e`、G5 producer `c1792c87`、G5 watch `03e30a41` world_projection `560c5f6d`）已于 2026-11-09 12:40 全部写入 `control.invalidation_events` 后从 `control.qualification_current` 退休（7 行，`control_request_id` 见该表）。
+- 直接原因不是误删：**G0 对象内容列哈希已变**（CP2-C 冻结 `source.source_versions.rights_snapshot`，旧签名 rev `95a333cb` ≠ 当前 `50d6d1e0`），`control.current_qualification_is_valid` 因此判假，下游 G1–G5 依赖一并失效。`world_projection 560c5f6d` 与 G1–G4 对象本身位移为 0（rev 与当前一致）。
+- **即便重签也过不去**：`source.sources` `b0a11000-…-0004`（松江府志7）的 `rights_by_action` 为 `{}`，只有 `rights={basis:"NAJ_secondary_use_policy",status:"public_domain_secondary_use"}`；CP2-A/CP2-D 已删除该状态的推断旁路，G0 权利核验必然 HOLD。
+- 当前 WATCH 唯一可消费项是样例作品：`G5 c0ffee00-…a006`（`story_seed c0ffee00-…a003`，**无候选、无依赖链、种子直插**，reviewer=Owner，valid_until 2027-12-31）。它不能作为"真实作品"验收，撤权后也无法按合同重签。
+
+**影响**：5.9 Owner 亲验第 3 项（WATCH 看到真实作品）必失败；3.6 的 HTTP 撤权断言没有可复现对象，故未做。
+
+**待 Owner 裁决的三条路径（互斥）**
+- A. 为《松江府志7》补**显式** `rights_by_action`（按该馆 secondary-use 政策逐动作映射并留 `rights_evidence`）→ 整链可重签，真实作品恢复到 WATCH。属资料权利裁决，必须 Owner 定。
+- B. 改用 CP2-E 上图《[崇禎]松江府志》已显式授权链作为 M5 真实作品，重新产出/发布并签 G5 watch。注意上图 27/28 条 `display=unknown`，需 Owner 就"展示的是**作品**（自撰 beat/narration）而非原图、权利依据为 Creator 权利确认"表态。
+- C. 两条都不选：WATCH 继续只显示样例作品，M5 真实可用性记 HOLD，等资料权利条件成熟再补。
 
 ### 第 5 步 · M5 八维度闭环（自检 8 维度 + Owner 签收）
 > 八维度必须由**同一项真实作品《松江府田赋》**贯通（PLAN §3.5-B 矩阵）。

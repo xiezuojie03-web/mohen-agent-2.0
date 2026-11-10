@@ -32,6 +32,7 @@
 ## 未关闭事项
 
 - **SEC-01已关闭（生产只读复核）**：`public.imported_materials` RLS=true；anon/authenticated均无SELECT/INSERT/UPDATE；`mohen_app_runtime`保留SELECT。FORCE RLS=false，但应用运行角色不是该表所有者且不具绕过权限；无需重复施工。
+- **M5真实作品当前不在WATCH可消费范围（2026-11-10复核，待Owner权利裁决）**：本地 `GET /api/works/published` 只返回样例作品 `c0ffee00-…a001`，真实作品 `5b42577e-…` 不出现。其G0—G5整链已于2026-11-09 12:40经 `control.invalidation_events` 退休，触发点是G0对象 `source_version b0a11000-…-0005` 内容哈希变化（CP2-C冻结 `rights_snapshot`）。重签亦不可行：`source.sources b0a11000-…-0004`（松江府志7）`rights_by_action={}`，CP2-A/D已删除 `public_domain_secondary_use` 推断旁路。故5.9第3项与3.6 HTTP撤权断言当前都不成立，三条可选路径已记入 `LOCAL-BUILD-LEDGER.md` §二，等Owner定。
 - **本地 `guard:*` 红灯已收口 4/7（2026-11-10 完整回归批）**：`check-structure`（archive 容器豁免 + 顶层覆盖改 git 语义 + OWNERSHIP_MAP 补登 + 6 个 Skill 补 Entry）、`source-gate`（hushang_legacy 失效指针改指 archive）、`identifier-registry`（昨日 0cba2b9 重写）、`gate-enforcement`（守卫脚本补齐资格读上下文与新签名）均已修复转绿。**剩余 3 项有据延期**：`check-naming-map`（naming-map 为 DESIGN_TARGET_NOT_APPLIED，RECON-02 专项）、`check-escalations`（CURRENT.md 待补 §9，须先裁决升级线）、`check-links`（68 处断链，文档专项）。均不进 CI 门禁，也不改变 CI 结论。
 - **生产运行证据仍为零**：Studio projects=0、asset_revisions=0、private_originals表不存在、Storage buckets=0。本地 `mohen_dev` 已有 Gate 策略版本表、Reviewer 绑定表与 `control.current_qualification_is_valid`，但这些仅存在于本地隔离库，**生产库未执行迁移**；G0—G5 的本地双签（机器自审 + Owner 本人签）属隔离证据，不等于生产启用。无`VERIFIED_LIVE`，M8未启动。
 
