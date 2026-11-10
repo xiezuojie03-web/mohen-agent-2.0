@@ -23,6 +23,7 @@
     "guard:registry": "node scripts/guards/check-production-registry.mjs",
     "guard:source-gate": "node scripts/check-source-gate.mjs",
     "guard:identifiers": "node scripts/check-identifier-registry.mjs",
+    "report:ledger": "node tools/report-method-ledger.mjs",
     "guard:acquisition": "node scripts/check-acquisition-intents.mjs",
     "guard:reconciliation": "node scripts/check-reconciliation.mjs",
     "guard:naming": "node scripts/check-naming-map.mjs",

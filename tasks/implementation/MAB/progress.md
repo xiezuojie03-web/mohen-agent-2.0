@@ -2308,3 +2308,18 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **环境注记**：跑链环境变量组合为 `MOHEN_TEST_PSQL/HOST=127.0.0.1/PORT=55432/CRYPTO_SCHEMA=extensions` + `NODE_OPTIONS=--max-old-space-size=1024`；openssl 系测试需 `PATH` 含 `D:\MoHen\tools\OpenSSL-Win64\bin` 且 `OPENSSL_CONF` 指向 D 盘 cnf（机器级变量已设，但旧会话不继承，新开 shell 须重设）。
 - **未跑（按条件）**：verify-4/verify-5 需真实 DeepSeek 付费小调用（预授权 ≤¥20 内，本批无免费替代证据缺口，留待需要时跑）；verify-5k-http 需本地 dev server（3210）；test:mab:http 由 CI 承担。GAP_RIGHTS_ACTIONS 仍属生产缺列事实，不随隔离链解除。
 - **验证级别**：全部为本机隔离/只读证据（VERIFIED_ISOLATED）；不涉及生产变更，CI 回执待推送后取证。
+
+## D00-A3｜身份账本单一化（2026-11-10，基线 main@0b6387d）
+
+- **裁决**：Owner 2026-11-10 选择「账本机械化、保留 71」。理由：63 / 71 / 已验证数三套手写数字并存是 QR-10 反复失真的结构性根因；改数字（重切 65）需重写已核 SHA 的 V1.1 标准并重发设计包 V1.3，属设计权威变更；而改账本机制不动任何设计内容。
+- **时机依据（为何不是"现在不适合"）**：① registry D00 `methods: []`，八条 Y 零运行绑定；② `producer_method_id` 为 `text NOT NULL`，无 CHECK/ENUM 约束 → 零 DDL；③ `Y01—Y08` 仅出现在 6 个文件（其中 progress.md、交付审计为历史记录不改）。一旦 D00-C 给 Y 项接执行器/迁移/Gate 请求，分母即固化进运行时—迁移—审计三层，成本升一个数量级。
+- **变更 1｜新增唯一派生入口 `tools/report-method-ledger.mjs`（只读，无 DB/网络）**：从 `identifier-registry.json` + `method-binding-contract.json` + `method-route-decisions.schema.json` 派生设计身份/执行分母/实现绑定/HOLD 四类，前缀 Y 判为 `stage_step`、C/H/W/A/P 判为 `method`，绑定状态由合同 `implementation_binding` 是否为 `HOLD` 判定。实测输出：`DESIGN_IDENTITIES_TOTAL=71 METHOD=63 STAGE_STEP=8`；`EXECUTION_DENOMINATOR=63`；`BOUND_IMPLEMENTATION=6 → C01,C02,H05,W07,A06,P02`；`HOLD_COUNT=57`（D01:6 D02:24 D03:9 D04:11 D05:7）；`ROUTE_ENUM_MATCHES_REGISTRY=true`。**该 6/57 与 PLAN §0 记载"6 项有实现绑定、57 项 HOLD"独立吻合，交叉验证派生正确。** 新增脚本别名 `pnpm report:ledger`。
+- **变更 2｜`scripts/check-identifier-registry.mjs` 增四条账本不变量**：(a) `method_count` 必须等于合同实际条目数；(b) 身份前缀必须落在 C/H/W/A/P/Y；(c) Y 阶段工序不得出现于绑定合同；(d) 非 Y 身份必须全部进入合同。成功输出追加 `design_identities=71 execution_denominator=63 stage_steps=8`。守卫只校验不变量、不重复实现派生，避免第二套真值。
+- **变更 3｜Protocol §11.2 增一段账本纪律**：明确 71/63/绑定数不得分别手写，唯一派生入口为该工具，文档/进度账/M6 验收/交接材料须引用派生结果，禁止另建第二份身份清单；「隔离已验证」需逐项独立证据、工具不推断、未取得证据前不计入。
+- **刻意不做**：未给每个身份加手写 status 字段——绑定状态已可从合同 `implementation_binding` 机械判定，再造一份手写状态等于制造新的漂移点。`ISOLATED_VERIFIED` 如实输出 `NOT_TRACKED`（当前无逐项证据账，不猜、不填 0 冒充已核）。逐项证据账列为 D00-C 接执行器前的前置。
+- **禁区遵守**：绑定合同 `method_count=63` 不扩、registry `methods: []` 未动、`activation` / `enabled` / `adapter_binding` / `gate_reviewer_binding` 未触碰、D01—D05 未动、MAB 分母未改、零 DDL、零生产变更、零模型费用。
+- **验证（POS/NEG）**：
+  - POS：`pnpm guard:identifiers` → `IDENTIFIER_REGISTRY_OK ... design_identities=71 execution_denominator=63 stage_steps=8`，exit 0。
+  - NEG（临时脚本 `work/verify-ledger-negatives.mjs`，实测后不入户）：① 删除 C02 并同步下调 method_count → 被 (d) 拦（`专业方法未进入绑定合同（执行分母缺项）：C02`）；② 仅虚增 method_count +1 → 被 (a) 拦（`method_count=64 与实际条目数 63 不一致`）；③ 将 Y02 塞入合同 → 被 (c) 拦（`D00 阶段工序不得进入方法绑定合同：Y02`）。三例 exit=1；随后逐字节还原，`RESTORE_SHA_EQUAL=true`（9fdbf0e6560d）、还原后守卫复绿。
+  - 回归持平：`pnpm test:unit` 638 passed / 2 skipped；`pnpm typecheck` 六工作区 Done。
+- **效果**：此后"完成了多少"只由 `pnpm report:ledger` 一个出口回答；两套分母（71 设计身份 / 63 执行分母）关系由前缀分类机械表达，不再依赖散落文档表述。

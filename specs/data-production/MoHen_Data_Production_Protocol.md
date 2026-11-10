@@ -161,6 +161,8 @@ L7/L8参与/新痕迹要回流则经D00；当下贡献不直接写历史Truth。
 6. **D01 才读取**：Y01—Y06 的输出不得直接构成 D01 读取依据；只有 `content_availability` 达可读、且 `machine_read`（需留副本时叠加 `retain`，外部模型/OCR 另核 `external_processing`）为 `allowed` 的来源才进入 D01。
 7. **C 方法预选目前 HOLD**：现行 G0 机器合同的 `GateReviewRequest` 无承载"消费者方法计划"的字段，D01 预选 `Cxx@version` 无法无损表达；在 D00-B 裁决前该预选链路记 HOLD，不得声称 D00→D01 已联通。
 
+**身份账本必须机器派生（D00-A3，2026-11-10）**：设计身份目录（71）、执行分母（63）与实现绑定数不是三个可以分别手写的数字。唯一派生入口是 `tools/report-method-ledger.mjs`，其来源为 `identifier-registry.json`、`method-binding-contract.json` 与 `method-route-decisions.schema.json`；`scripts/check-identifier-registry.mjs` 强制不变量（`method_count` 等于合同条目数、非 Y 身份全部入合同、Y 阶段工序不得占用执行分母）。任何文档、进度账、M6 验收与交接材料引用分母时须引用该派生结果，不得手写，也不得另建第二份身份清单。「隔离已验证」需逐项独立证据，派生工具不推断，未取得证据前一律不计入。
+
 ### 2.2 来源取得的状态必须分清
 
 `not_found / catalog_found / metadata_only / bibliography_only / excerpt / full_text / scan_or_image / restricted / unavailable / acquired_unverified / acquired_verified`是研究状态语义，不得把它们压成一个“已获取”。每次获取需保存：来源作品身份、具体版本/版次、数字载体副本、获取渠道/时间、原始URL或档案定位、文件hash、取得范围、是否完整、权利动作、访问限制、依赖/转引、失败/重试与成本（未知即unknown）。

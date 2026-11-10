@@ -88,8 +88,41 @@ if (!Array.isArray(enumIds) || !enumIds.length) {
   }
 }
 
+// ---------- ④ 身份账本一致性（D00-A3）----------
+// 设计身份目录（71）、执行分母（method_count=63）、实现绑定状态必须能从同一处机械派生，
+// 不允许文档手写三套数字。派生入口是 tools/report-method-ledger.mjs，本守卫只校验不变量。
+const METHOD_PREFIXES = new Set(["C", "H", "W", "A", "P"]);
+const prefixOf = (id) => String(id).replace(/\d+$/, "");
+
+// (a) 执行分母必须与绑定合同实际条目数一致，不允许只改 method_count 数字。
+if (binding.method_count !== boundIds.length) {
+  bad(`绑定合同 method_count=${binding.method_count} 与实际条目数 ${boundIds.length} 不一致`);
+}
+
+// (b) 身份前缀必须落在已知类：C/H/W/A/P = 专业方法；Y = D00 阶段工序。
+for (const id of methods) {
+  if (!METHOD_PREFIXES.has(prefixOf(id)) && prefixOf(id) !== "Y") {
+    bad(`身份 "${id}" 前缀未登记类别（应为 C/H/W/A/P 方法或 Y 阶段工序）`);
+  }
+}
+
+// (c) Y 阶段工序不得占用执行分母：出现即说明 Stage 内部工序被当成可绑定方法。
+const stageSteps = methods.filter((id) => prefixOf(id) === "Y");
+const leaked = stageSteps.filter((id) => boundIds.includes(id));
+if (leaked.length) {
+  bad(`D00 阶段工序不得进入方法绑定合同：${leaked.join(", ")}`);
+}
+
+// (d) 非 Y 身份必须全部进入绑定合同，否则执行分母会悄悄缩小。
+const methodClass = methods.filter((id) => METHOD_PREFIXES.has(prefixOf(id)));
+const unbound = methodClass.filter((id) => !boundIds.includes(id));
+if (unbound.length) {
+  bad(`专业方法未进入绑定合同（执行分母缺项）：${unbound.join(", ")}`);
+}
+
 console.log(
   `IDENTIFIER_REGISTRY_OK professional_methods=${methods.length} bound_ids=${boundIds.length} ` +
-  `route_enum=${Array.isArray(enumIds) ? enumIds.length : 0} stages=${reg.stages.length} layers=${reg.production_layers.length} gates=${reg.gates.length}`
+  `route_enum=${Array.isArray(enumIds) ? enumIds.length : 0} stages=${reg.stages.length} layers=${reg.production_layers.length} gates=${reg.gates.length} ` +
+  `design_identities=${methods.length} execution_denominator=${methodClass.length} stage_steps=${stageSteps.length}`
 );
 process.exit(failed ? 1 : 0);
