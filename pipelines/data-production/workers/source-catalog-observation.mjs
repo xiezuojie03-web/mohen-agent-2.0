@@ -5,7 +5,7 @@
 //     不让调用方代填——那样的"Y02"只是抄表，不是工序。
 //   * 本次运行没有读到的字段保持缺失：语言未读 → null，不补默认、不推断。
 //   * 可用性只声称 catalog_found：准入已证明"在册 + 绑定一致 + 字节已核验"；
-//     是否取得、取得多少由 Y07/Y04 记录，不在本条目里冒充。
+//     是否取得、取得多少由 Y07/Y08 记录，不在本条目里冒充。
 //   * 本模块不写库；写入口仍是 source-discovery-repository.mjs 的 recordCatalogEntry。
 export const CATALOG_OBSERVATION_SCHEMA = 'mohen.source-catalog-observation.v1';
 export const INTAKE_DISCOVERY_METHOD = 'D00/Y02:intake_registration';

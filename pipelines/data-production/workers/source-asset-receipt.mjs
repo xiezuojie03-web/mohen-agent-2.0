@@ -6,7 +6,7 @@
 //     签署 G0 是独立 Gate 的事，回执不构成任何资格。
 //   * 回执只从本次准入已核验真值与刚落库的工序记录派生：库存回读哈希、
 //     登记一致性、Y05 身份分层、Y07 获取尝试（acquired_verified 且字节一致）、
-//     Y04 覆盖结论（verified_against.matched）、Y03 核查结论，缺任一项即失败关闭。
+//     Y08 覆盖结论（verified_against.matched）、Y03 核查结论，缺任一项即失败关闭。
 //   * 本模块不写库；回执随 D00 候选输出与 G0 evidenceRefs 存证，
 //     落库仍走既有唯一写入口。
 import { IDENTITY_STRATIFICATION_SCHEMA } from './source-identity-stratification.mjs';

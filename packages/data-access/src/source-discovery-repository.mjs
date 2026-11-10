@@ -29,8 +29,10 @@ export const AVAILABILITY_STATES = Object.freeze([
   'catalog_found', 'catalog_listed_no_item', 'restricted', 'not_available', 'unknown',
 ]);
 
-// Y04 覆盖结论只有三态；"完整"必须有一次已核验的取得做依据（库内触发器同样把关）。
+// Y08 覆盖结论只有三态；"完整"必须有一次已核验的取得做依据（库内触发器同样把关）。
 export const COMPLETENESS_STATES = Object.freeze(['complete', 'partial', 'unknown']);
+// Y04：回源成立与否只有两种结论，不存在"大概回源了"。
+export const ORIGIN_STATES = Object.freeze(['RESOLVED', 'UNRESOLVED']);
 
 // Y03 核查结论；空依据不得给结论（库内 CHECK 同样把关）。
 export const VERIFICATION_VERDICTS = Object.freeze(['admissible', 'rejected', 'needs_owner']);
@@ -223,7 +225,56 @@ export function createSourceDiscoveryRepository(pool) {
         created_at: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at };
     },
 
-    /** Y02：登记一条目录条目。看到什么就记什么，是否取到由 Y07/Y04 记。 */
+    /** Y04：记录一次聚合目录原机构回溯（OriginalProviderTrace + provenance 链）。 */
+    async recordProviderTrace({
+      projectId, catalogEntryId, originState, aggregatedRecord, originalProvider,
+      holdingRef, rightsLayers, provenance, checkedAt, methodKey, methodVersion,
+      producedBy = 'Y04', correctionOf,
+    } = {}) {
+      requireProject(projectId);
+      if (catalogEntryId != null && (typeof catalogEntryId !== 'string' || !UUID.test(catalogEntryId))) {
+        throw new Error('PROVIDER_TRACE_CATALOG_REF_INVALID');
+      }
+      if (!ORIGIN_STATES.includes(originState)) throw new Error('PROVIDER_TRACE_ORIGIN_STATE_INVALID');
+      const chain = asObject(provenance);
+      const hops = asArray(chain.hops);
+      if (hops.length === 0) throw new Error('PROVIDER_TRACE_HOPS_REQUIRED');
+      const provider = asObject(originalProvider);
+      const holding = asObject(holdingRef);
+      if (originState === 'RESOLVED') {
+        if (!String(provider.catalog_no ?? '').trim() || !String(provider.uri ?? '').trim()
+          || !String(provider.provider ?? '').trim()) {
+          throw new Error('PROVIDER_TRACE_RESOLVED_WITHOUT_ORIGINAL_IDENTITY');
+        }
+        if (hops.length < 2) throw new Error('PROVIDER_TRACE_RESOLVED_HOPS_UNTRACEABLE');
+      } else if (provider.catalog_no || provider.uri || holding.value) {
+        // 未回源不得携带馆藏身份：这是规范点名的禁止推定。
+        throw new Error('PROVIDER_TRACE_UNRESOLVED_WITH_INVENTED_HOLDING');
+      }
+      const at = checkedAt instanceof Date ? checkedAt : new Date(checkedAt ?? NaN);
+      if (Number.isNaN(at.getTime())) throw new Error('PROVIDER_TRACE_CHECKED_AT_REQUIRED');
+      if (correctionOf != null && (typeof correctionOf !== 'string' || !UUID.test(correctionOf))) {
+        throw new Error('PROVIDER_TRACE_CORRECTION_INVALID');
+      }
+      const { rows } = await pool.query(
+        `insert into source.original_provider_traces
+           (project_id, catalog_entry_id, aggregated_record, original_provider, holding_ref,
+            rights_layers, provenance, origin_state, checked_at, method_key, method_version,
+            produced_by, correction_of)
+         values ($1,$2,$3::jsonb,$4::jsonb,$5::jsonb,$6::jsonb,$7::jsonb,$8,$9,$10,$11,$12,$13)
+         returning trace_id::text as trace_id, created_at`,
+        [projectId, catalogEntryId ?? null, JSON.stringify(asObject(aggregatedRecord)),
+         JSON.stringify(provider), JSON.stringify(holding), JSON.stringify(asObject(rightsLayers)),
+         JSON.stringify(chain), originState, at,
+         String(methodKey ?? '').trim() || null, String(methodVersion ?? '').trim() || null,
+         String(producedBy ?? '').trim() || 'Y04', correctionOf ?? null]);
+      const row = rows[0];
+      return { trace_id: row.trace_id, catalog_entry_id: catalogEntryId ?? null,
+        origin_state: originState, hop_count: hops.length,
+        created_at: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at };
+    },
+
+    /** Y02：登记一条目录条目。看到什么就记什么，是否取到由 Y07/Y08 记。 */
     async recordCatalogEntry({
       projectId, needId, provider, catalogTitle, catalogIdentifier, carrierHint, language,
       coverageHint, rightsHint, availabilityState, discoveredByMethod, methodVersion,
@@ -260,7 +311,7 @@ export function createSourceDiscoveryRepository(pool) {
         created_at: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at };
     },
 
-    /** Y04：记录一次覆盖结论（拿到了什么、还缺什么）。完整与缺件互斥。 */
+    /** Y08：记录一次覆盖结论（拿到了什么、还缺什么）。完整与缺件互斥。 */
     async recordAcquisitionCoverage({
       projectId, attemptId, catalogEntryId, coverageScope, missingParts,
       completenessState, verifiedAgainst, note, correctionOf,

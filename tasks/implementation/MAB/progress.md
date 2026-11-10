@@ -2629,7 +2629,42 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - 回归：`pnpm typecheck` 6/6；`pnpm test:unit` 644 passed / 2 skipped；`pnpm test:data-production` 234 passed / 0 failed；`guard:registry`、`guard:stage-handoff` PASS（`guard:source-gate` 需本机 psql 直连库，离线时按既有方式仅报结构检查）。
 - 仍为设计内 HOLD：run `74cdfe60` 的 G0 结论 `INDEPENDENT_GATE_NOT_VERIFIED`（本机无独立 Gate 签发上下文），与上一轮一致，不构成新问题。
 
-**本批仍未做（明确不做，避免又变成"以为做了"）**
+**本批仍未做（明确不做，避免又变成"以为做了"）**（**已由下方 M5-H 取代，保留原文作对照**）
 - 规范 Y04「聚合目录→原机构回溯」仍空白（等 Owner 裁决编号与落点）。
 - 跨库另一条取件路线（Commons PDF 单文件、馆方批量包、HTTP-Range）未接；当前只有 IIIF 一条真实路径。
 - 取件的"条款审阅"字段 `robots_or_terms_reviewed` 仍为 `false`（只观察到限流并遵守），馆方使用条款的合规审阅未做。
+
+## M5-H｜按 D00 交付包规范原文归位并补齐 Y04 / Y07 多路径（Owner 纠偏后执行）
+
+**Owner 指令（照录）**：「D00交付包咋设计的就咋定啊；原则上也是设计怎么要求的怎么做啊？是设计没要求吗？按道理外部资源不应该又限制啊，这样才能找到资料啊。」
+→ 处置：不再把"编号/落点"挂成 Owner 待裁；以 `specs/data-production/standards/d00/` 六份交付包为唯一依据，逐条落地。
+
+### M5-H-1｜规范条款 → 判据 → 证据
+
+| # | 规范条款（原文位置） | 验收判据 | 判据实现 | 真实证据 | 状态 |
+|---|---|---|---|---|---|
+| H1 | Y08（规范 V1.1 第 178 行）输出 `ValidatedAssetReceipt、asset@revision、SHA256、extent/missing_parts、rights_snapshot、AttemptRef` | extent/missing_parts 必须挂在 Y08，不得挂在 Y04 | `INTAKE_COVERAGE_METHOD` 由 `D00/Y04:intake_coverage` 改为 `D00/Y08:intake_coverage`；IIIF 整卷覆盖率 `coverage_scope.method=Y08:volume_coverage@v1`；迁移里更正 `source.acquisition_coverages` 表注释 | 新行 `c0c3e516…` 已是 `Y08:file_coverage@v1`；旧 append-only 行保留原 Y04 文本（不改历史） | VERIFIED_ISOLATED |
+| H2 | Y04（第 94—112 行）输出 `OriginalProviderTrace、catalog_record_ref、holding_ref 候选及 provenance 链` | 有原馆编号与核查时刻；每跳可追；未回源不虚构馆藏身份；三层许可分离 | 新增 `source.original_provider_traces`（追加不可写、库内 CHECK 强制四件事）+ `source-provider-trace.mjs` 派生失败关闭 + `recordProviderTrace` 唯一写入口 + D00 worker 接 `origin_trace` | trace `23a562e6…`：`RESOLVED`、`catalog_no=NAJDA-292-0017`、2 跳（Japan Search 200 → NAJ 记录页 200）、`checked_at=22:33:38`；回读一致；UPDATE 被拒（SQLSTATE 42501） | VERIFIED_LIVE（真实 HTTP + 真库） |
+| H3 | Y04 反例「聚合元数据 CC0 等同图像许可 / 镜像 PDF 冒原馆授权」 | 数字副本许可不得引用聚合侧证据 | 派生层拒绝 `digital_copy_rights=licensed` 且证据 URI 等于聚合记录 URI 或许可证据 URI | 负例在真实链里跑通：抛 `PROVIDER_TRACE_AGGREGATE_LICENSE_REUSED_AS_IMAGE_RIGHTS` | VERIFIED_LIVE |
+| H4 | Y04 失败路径「无法查证时仅保留聚合线索并标 ORIGIN_UNRESOLVED/HOLD」 | 未回源不得带原馆编号/馆藏值 | `origin_state=UNRESOLVED` 时库内 CHECK 要求 `original_provider.catalog_no/uri` 与 `holding_ref.value` 全空且必须写原因 | 单测 + 真实链负例：抛 `PROVIDER_TRACE_UNRESOLVED_WITH_INVENTED_HOLDING` | VERIFIED_ISOLATED |
+| H5 | Y07（第 157—175 行）「可组合 REST/OAI-PMH/SPARQL/IIIF Presentation/Image/HTTP-Range/批量包/馆方申请」 | 取件路线不得只有 IIIF 一条 | 新增 `M0004@v1 / http_get_single_file`（`tools/acquire-http-file.mjs`）：直链单文件、魔数校验、SHA256、私有原件回读、登记绑定、文件粒度分母 | attempt `d1b6ecc4…`：`acquired_verified`，690947B，`sha256=f900c330…`；覆盖 `c0c3e516…`=`complete`（文件 1/1，`pages_extent=unknown`）；M0004 状态 `TESTED_SUCCESS`+`recommended=true` | VERIFIED_LIVE |
+| H6 | Y07「元数据 200 不算原件下载」/ Y08「缺页称全件」为反例 | 单文件不得顺手声称整卷齐全 | 覆盖结论显式写 `granularity=file`、`denominator=requested_file_count 1/1`、`pages_extent=unknown`，note 明写"不得据此声称全卷齐全" | 同上 `c0c3e516…` 的 scope 与 note | VERIFIED_LIVE |
+| H7 | Y07 强制权利 Guard | download/retain/machine_read 任一非 allowed 即停 | 两条取件工具同一 Guard；未知即 HOLD | 现存 Commons 类来源 `rights_by_action={}` → 一律 `HTTP_FILE_RIGHTS_HOLD`（不推断） | CODE_PRESENT（等待权利证据） |
+
+### M5-H-2｜新增/改动清单
+
+- 新增：`supabase/migrations/20261110160000_mab_d00_y04_original_provider_trace.sql`（新表 + 追加触发器 + 最小授权 + 表注释更正）；`pipelines/data-production/workers/source-provider-trace.mjs`；`tools/verify-y04-origin-trace.mjs`；`tools/acquire-http-file.mjs`；`tests/data-production/source-provider-trace.test.mjs`（12 例）。
+- 改动：`packages/data-access/src/source-discovery-repository.mjs`（`recordProviderTrace` + `ORIGIN_STATES`）；`pipelines/data-production/workers/private-evidence-stage.mjs`（Y04 段 + `origin_trace_ids`）；`private-evidence-binding.mjs`（装配 + 注释）；`source-coverage-conclusion.mjs`（工序归位 Y08）；`source-acquisition-record.mjs`/`source-catalog-observation.mjs`/`source-asset-receipt.mjs`（注释归位）；`tools/acquire-iiif-volume.mjs`（`Y08:volume_coverage@v1`）；`scripts/test-k3-db.mjs`（迁移登记）。
+
+### M5-H-3｜回归与真实链
+
+- `pnpm typecheck` 6/6；`pnpm test:data-production` 246 passed / 0 failed；`pnpm test:unit` 644 passed / 2 skipped；`guard:registry`=`REGISTRY_OK`、`guard:source-gate`=`SOURCE_GATE providers=17`、`guard:stage-handoff`=`STAGE_HANDOFF_OK`。
+- 真实链 1（Y04）：`tools/verify-y04-origin-trace.mjs` 真实发两次 HTTP（聚合检索入口 + 原馆记录页），落库 `23a562e6…` 并回读；负例两条均失败关闭；追加不可改写实测被拒。
+- 真实链 2（Y07→Y08 单文件）：`tools/acquire-http-file.mjs --apply` 取 NAJ 单幅原件 690947B，落私有原件、回读哈希一致、登记绑定一致、写 attempt `d1b6ecc4…` 与覆盖 `c0c3e516…`，方法状态推进为 `TESTED_SUCCESS`。
+
+### M5-H-4｜仍未做（据实记账，不再拿"等 Owner 定"当理由）
+
+- Y07 余下协议路径：OAI-PMH、SPARQL、HTTP-Range 分段、馆方批量包、馆方正式申请（`REQUEST_PERMISSION` 分支）尚未各自形成可执行 Adapter；已有 IIIF/HTTP 两条真实路径可组合。
+- `robots_or_terms_reviewed` 仍为 `false`：只观察到限流并遵守，馆方使用条款的**合规审阅**未做（需要人读条款，不由工具自证）。
+- D00 侧工序归位已在代码与单测完成；该变更后的**下一次真实 D00 全链**尚未重跑（本轮真实跑的是 Y04 与 Y07→Y08 两条工序级真链），因此旧行 `54906f7d…` 仍显示 `D00/Y04:intake_coverage@v1`。
+

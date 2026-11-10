@@ -9,6 +9,7 @@ import { diagnoseSourceNeed } from './source-need-diagnosis.mjs';
 import { deriveIntakeCatalogEntry } from './source-catalog-observation.mjs';
 import { deriveIntakeCandidateVerification } from './source-candidate-verification.mjs';
 import { deriveIntakeCoverage } from './source-coverage-conclusion.mjs';
+import { deriveOriginalProviderTrace } from './source-provider-trace.mjs';
 import { deriveSourceIdentityStratification } from './source-identity-stratification.mjs';
 import { deriveIntakePriority } from './source-priority-assessment.mjs';
 import { deriveIntakeAcquisitionRecord } from './source-acquisition-record.mjs';
@@ -37,7 +38,7 @@ function requireToken(token) {
 export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySourceBinding,persistReading,readRegistration,persistPageReading,
   persistMaterialObservation,persistWorldClaim,persistHumanisticFinding,persistWorldProjection,
   recordSourceNeed,readProjectStock,registerAcquisitionMethod,appendAcquisitionAttempt,
-  recordCatalogEntry,recordAcquisitionCoverage,recordCandidateVerification,recordPriorityAssessment,
+  recordCatalogEntry,recordProviderTrace,recordAcquisitionCoverage,recordCandidateVerification,recordPriorityAssessment,
   readVolumeCoverage,
   submitGateCandidate,readGateAudit,readApprovedMethodPlan}={}) {
   if(typeof readOriginal!=='function'||typeof verifySourceBinding!=='function'||
@@ -228,13 +229,14 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         ...intakeAcquisition.attempt,dependencyRefs:intakeAcquisition.dependencyRefs});
       if(!UUID.test(appended?.attempt_id??''))throw Error('PRIVATE_ACQUISITION_ATTEMPT_NOT_RECORDED');
       const acquisitionAttemptId=appended.attempt_id;
-      // Y04：取得范围与缺失部件结论紧跟本次获取尝试就地进行。结论由工序从准入
+      // Y08：取得范围与缺失部件结论紧跟本次获取尝试就地进行（规范原文把 extent/missing_parts
+      // 归 Y08；Y04 的产出是原机构回溯链，见下面的 Y04 段）。结论由工序从准入
       // 真值与刚落库的尝试派生：本页字节必须与本页库存一致（分页整卷尝试只看本页
       // 明细，不拿整卷摘要冒充本页哈希）；本来源若已有整卷覆盖结论，分母用它核实的
       // 真实页数，缺页逐页列出；否则总量如实写 unknown，不冒充 partial/complete。
       // 写不进去即失败关闭，不允许"看起来取得了却没有覆盖账"。
       if(typeof recordAcquisitionCoverage!=='function')throw Error('PRIVATE_SOURCE_COVERAGE_RECORDING_REQUIRED');
-      // 分母真值：本来源若已做过整卷取件，Y04 用它的真实页数作分母并逐页列出缺件；
+      // 分母真值：本来源若已做过整卷取件，Y08 用它的真实页数作分母并逐页列出缺件；
       // 没做过（或读不到）就仍写 unknown，绝不按页数猜。
       const volumeCoverage=typeof readVolumeCoverage==='function'
         ? await readVolumeCoverage({sourceId:registration.source_id,token}) : null;
@@ -262,7 +264,7 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
           verdict:intakeVerification.verdict},
         needId:need.need_id,catalogEntryId:intakeCatalogEntryId,pageNumber});
       // Y02/Y04/Y03/Y06：只在调用方确实给出判断材料时落库；没给就不写，
-      // 绝不替研究者编造目录、覆盖结论、核查意见或优先级。
+      // 绝不替研究者编造目录、回溯链、覆盖结论、核查意见或优先级。
       // 目录可按下标引用本次刚登记的条目，也可直接给已存在的条目 id。
       const catalogEntryIds=[];
       if(input?.catalog!=null){
@@ -302,6 +304,32 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
             note:item?.note,correctionOf:item?.correction_of});
           if(!UUID.test(saved?.coverage_id??''))throw Error('PRIVATE_SOURCE_COVERAGE_NOT_RECORDED');
           coverageIds.push(saved.coverage_id);
+        }
+      }
+      // Y04：聚合目录原机构回溯——只有调用方真的查过才落库。每跳必须带 URI、核查时刻
+      // 与结果；回不到原馆就只能是 ORIGIN_UNRESOLVED，且不得携带任何馆藏身份值
+      // （规范反例：聚合元数据许可当图像许可、镜像 PDF 冒原馆授权、404 断言对象不存在）。
+      // 派生失败即失败关闭，不落"像是查过"的链。
+      const originTraceIds=[];
+      if(input?.origin_trace!=null){
+        if(typeof recordProviderTrace!=='function')throw Error('PRIVATE_PROVIDER_TRACE_RECORDING_REQUIRED');
+        const traces=Array.isArray(input.origin_trace)?input.origin_trace:[input.origin_trace];
+        for(const item of traces){
+          const trace=deriveOriginalProviderTrace({
+            catalogEntryId:resolveCatalogEntry(item?.catalog_index??item?.catalog_entry_id,
+              'PRIVATE_PROVIDER_TRACE_CATALOG_INVALID')??intakeCatalogEntryId,
+            aggregatedRecord:item?.aggregated_record,originalProvider:item?.original_provider,
+            holdingRef:item?.holding_ref,hops:item?.hops,rightsLayers:item?.rights_layers,
+            checkedAt:item?.checked_at,correctionOf:item?.correction_of});
+          const saved=await recordProviderTrace({projectId,
+            catalogEntryId:trace.catalog_entry_id,originState:trace.origin_state,
+            aggregatedRecord:trace.aggregated_record,originalProvider:trace.original_provider,
+            holdingRef:trace.holding_ref,rightsLayers:trace.rights_layers,
+            provenance:trace.provenance,checkedAt:trace.checked_at,
+            methodKey:trace.method.key,methodVersion:trace.method.version,
+            producedBy:'Y04',correctionOf:trace.correction_of});
+          if(!UUID.test(saved?.trace_id??''))throw Error('PRIVATE_PROVIDER_TRACE_NOT_RECORDED');
+          originTraceIds.push(saved.trace_id);
         }
       }
       const verificationIds=[];
@@ -362,7 +390,7 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         asset_receipt:assetReceipt,
         intake_priority_id:savedIntakePriority.assessment_id,
         intake_priority_decision:intakePriority.decision,
-        catalog_entry_ids:catalogEntryIds,coverage_ids:coverageIds,
+        catalog_entry_ids:catalogEntryIds,coverage_ids:coverageIds,origin_trace_ids:originTraceIds,
         verification_ids:verificationIds,assessment_ids:assessmentIds,
         artifact_revision:sourceRevision,
         request_digest:requestDigest,gate_candidate_id:gateCandidateId,

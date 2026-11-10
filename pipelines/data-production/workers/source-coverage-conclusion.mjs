@@ -1,4 +1,7 @@
-// Y04「聚合目录与原机构回溯」在来源准入侧的取得范围结论（D00 第四道工序）。
+// Y08「来源资产完整性与取得证据鉴定」在来源准入侧的取得范围结论（D00 第八道工序）。
+// 规范原文（Y01—Y08 V1.1）：Y08 输出 ValidatedAssetReceipt、extent/missing_parts、rights_snapshot、
+// AttemptRef，验收「已取得范围有明确分母或标未知」，反例「缺页称全件」。因此"取得多少、还缺什么"
+// 属 Y08；Y04 的产出是 OriginalProviderTrace 与原机构回溯链，不是范围结论（见 source-provider-trace.mjs）。
 //
 // 边界：
 //   * 覆盖结论只由两处真值构成：本次准入已逐项核验的登记/原件，以及刚落库的
@@ -10,7 +13,7 @@
 //   * 本模块不写库；写入口仍是 source-discovery-repository.mjs 的
 //     recordAcquisitionCoverage。
 export const COVERAGE_CONCLUSION_SCHEMA = 'mohen.source-coverage-conclusion.v1';
-export const INTAKE_COVERAGE_METHOD = 'D00/Y04:intake_coverage';
+export const INTAKE_COVERAGE_METHOD = 'D00/Y08:intake_coverage';
 export const INTAKE_COVERAGE_METHOD_VERSION = 'v1';
 
 const HEX = /^[a-f0-9]{64}$/;

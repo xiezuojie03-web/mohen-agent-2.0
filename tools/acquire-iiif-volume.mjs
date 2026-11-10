@@ -508,7 +508,7 @@ async function main() {
   });
   summary.attempt = attempt;
 
-  // 4) Y08/Y04：覆盖结论必须带真实分母；缺页就如实 partial 并列出缺哪几页。
+  // 4) Y08：覆盖结论必须带真实分母；缺页就如实 partial 并列出缺哪几页。
   const missing = [
     ...failures.map((f) => ({ part: `page_${f.page}_asset`, state: "not_acquired", reason: f.error })),
     ...(selected.length < pages.length
@@ -523,7 +523,7 @@ async function main() {
     projectId: PROJECT_ID, attemptId: attempt.attempt_id,
     catalogEntryId: arg("catalog-entry-id", null) ?? catalogRows[0]?.id ?? null,
     coverageScope: {
-      schema: "mohen.source-volume-coverage.v1", method: "Y04:volume_coverage@v1",
+      schema: "mohen.source-volume-coverage.v1", method: "Y08:volume_coverage@v1",
       target: "source_volume", source_id: source.source_id,
       denominator: { kind: "iiif_manifest_canvas_count", total_pages: pages.length, manifest_sha256: manifestSha256 },
       acquired_pages: acquired.map((p) => p.page),

@@ -38,7 +38,7 @@ export function createApprovedMethodPlanReader(pool, {gateCode: defaultGate='G0'
   };
 }
 
-// Y04 分母真值：本次准入的这一件属于某来源时，读取该来源最近一次"整卷覆盖结论"。
+// Y08 分母真值：本次准入的这一件属于某来源时，读取该来源最近一次"整卷覆盖结论"。
 // 只有已落库、带真实分母（manifest canvas 总数）与整卷摘要的结论才会被采纳；
 // 没做过整卷取件就返回 null，D00 继续如实写 unknown，绝不按页数猜。
 // 以 source_id 为键（登记回执自带），因此不需要 worker 直接读 source.source_versions。
@@ -142,6 +142,7 @@ export function createBoundPrivateEvidenceStageWorker({ pool, storage, verificat
     registerAcquisitionMethod:sourceDiscovery.registerAcquisitionMethod,
     appendAcquisitionAttempt:sourceDiscovery.appendAcquisitionAttempt,
     recordCatalogEntry:sourceDiscovery.recordCatalogEntry,
+    recordProviderTrace:sourceDiscovery.recordProviderTrace,
     recordAcquisitionCoverage:sourceDiscovery.recordAcquisitionCoverage,
     recordCandidateVerification:sourceDiscovery.recordCandidateVerification,
     recordPriorityAssessment:sourceDiscovery.recordPriorityAssessment,

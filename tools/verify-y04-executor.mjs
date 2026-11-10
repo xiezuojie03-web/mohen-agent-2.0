@@ -1,8 +1,13 @@
 #!/usr/bin/env node
-// Y04 工序真实链验证：D00 第四道工序（取得范围与缺失部件结论）必须用真实
-// 私有工人角色、真实登记读取通道跑通——覆盖结论由工序从本次准入真值与
-// 真实获取尝试派生，经唯一写入口（source-discovery-repository.recordAcquisitionCoverage）
-// 落库，并能以工人角色回读，在 Studio 资料台可见。
+// Y08 工序真实链验证（历史文件名，工序归位见下）：D00 第八道工序「来源资产完整性与
+// 取得证据鉴定」的 extent/missing_parts 结论必须用真实私有工人角色、真实登记读取通道跑通——
+// 覆盖结论由工序从本次准入真值与真实获取尝试派生，经唯一写入口
+// （source-discovery-repository.recordAcquisitionCoverage）落库，并能以工人角色回读，在 Studio 资料台可见。
+//
+// 工序归位（按 D00 交付包规范原文，不是改名游戏）：
+//   * 「取得范围与缺失部件」是 Y08 的产出（ValidatedAssetReceipt、extent/missing_parts），
+//     本工具早先被标为 Y04；Y04 的产出是 OriginalProviderTrace 与原机构回溯链
+//     （见 tools/verify-y04-origin-trace.mjs）。旧 append-only 行保留原样，新行一律写 Y08。
 //
 // 证据边界（不夸大）：
 //   * 登记读取走私有工人登录 + 工作室身份的 Owner RLS 事务，与原件读回同一条通道；
