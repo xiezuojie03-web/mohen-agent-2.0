@@ -158,6 +158,33 @@ export default async function DeskPage() {
     project_title: string;
   }>;
 
+  // D00 第三道工序（Y03 候选核查）的真实记录：核过的逐项留依据，没读到的写未评估。
+  const verificationRows = (await queryRows(
+    `select v.verification_id::text as verification_id, v.verdict, v.reason_code,
+            v.method_key, v.method_version, v.checks::text as checks,
+            v.created_at::text as created_at,
+            c.catalog_title, c.provider, c.catalog_identifier,
+            p.project_title
+       from source.candidate_verifications v
+       join source.resource_catalog c on c.catalog_entry_id = v.catalog_entry_id
+       join studio.projects p on p.project_id = v.project_id
+      where p.owner_user_id = :'owner'
+      order by v.created_at desc limit 10`,
+    { owner: session.uid }
+  )) as Array<{
+    verification_id: string;
+    verdict: string;
+    reason_code: string;
+    method_key: string;
+    method_version: string;
+    checks: string | null;
+    created_at: string;
+    catalog_title: string;
+    provider: string;
+    catalog_identifier: string | null;
+    project_title: string;
+  }>;
+
   const readRightsStatus = (raw: string | null) => {
     if (!raw) return null;
     try {
@@ -174,6 +201,45 @@ export default async function DeskPage() {
     restricted: "受限",
     not_available: "不可得",
     unknown: "未知",
+  };
+
+  const VERIFICATION_LABELS: Record<string, string> = {
+    admissible: "可采纳（身份与词源均已核）",
+    needs_owner: "需人确认（有时空/语言未评估项）",
+    rejected: "不采纳",
+  };
+
+  const EXPANSION_LABELS: Record<string, string> = {
+    place_name: "历史地名/旧辖属",
+    era: "时代纪年",
+    language: "语言",
+    person: "人物名",
+    water_system: "水系",
+    genre: "文类",
+    version: "版本",
+    topic: "主题",
+  };
+
+  const readVerificationChecks = (raw: string | null) => {
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw) as {
+        schema?: string;
+        locator?: { catalog_no?: string };
+        named_expansions?: { unresolved?: unknown };
+        rights?: { unknown_actions?: unknown };
+      };
+      if (parsed?.schema !== "mohen.source-candidate-verification.v1") return null;
+      const unresolved = Array.isArray(parsed.named_expansions?.unresolved)
+        ? (parsed.named_expansions.unresolved as string[])
+        : [];
+      const unknownActions = Array.isArray(parsed.rights?.unknown_actions)
+        ? (parsed.rights.unknown_actions as string[])
+        : [];
+      return { locator: parsed.locator?.catalog_no ?? null, unresolved, rightsUnknown: unknownActions.length };
+    } catch {
+      return null;
+    }
   };
 
   const readGap = (raw: string | null) => {
@@ -340,6 +406,56 @@ export default async function DeskPage() {
               </div>
               <div style={{ fontSize: 11, color: "#6b746f", marginTop: 3 }}>
                 {entry.project_title} · {entry.discovered_by_method}@{entry.method_version} · {entry.created_at.slice(0, 10)}
+              </div>
+            </article>
+          );
+        })}
+      </section>
+
+      <section style={{ borderTop: "1px solid #e2ddd1", paddingTop: 14, marginBottom: 20 }}>
+        <h2 style={{ fontSize: 15 }}>候选核查（D00 第三道工序）</h2>
+        <p style={{ fontSize: 12, color: "#6b746f", margin: "4px 0 10px" }}>
+          这条来源能不能用，结论必须带逐项依据：身份、字节、馆方目录号核过的写核过；
+          历史地名异称、时代纪年、语言没有词源依据的写未评估。未评估不会被说成可用。
+        </p>
+        {verificationRows.length === 0 && (
+          <p style={{ fontSize: 13, color: "#8a3b3b" }}>还没有候选核查记录。</p>
+        )}
+        {verificationRows.map((row) => {
+          const checks = readVerificationChecks(row.checks);
+          return (
+            <article key={row.verification_id} style={{ border: "1px solid #e2ddd1", borderRadius: 8, padding: 10, marginBottom: 8 }}>
+              <div style={{ fontSize: 13, fontWeight: 600 }}>
+                {row.catalog_title} · {VERIFICATION_LABELS[row.verdict] ?? row.verdict}
+              </div>
+              <div style={{ fontSize: 11, color: "#6b746f", marginTop: 3 }}>
+                {row.provider}
+                {row.catalog_identifier ? ` · ${row.catalog_identifier}` : ""} · {row.reason_code}
+              </div>
+              {checks === null ? (
+                <div style={{ fontSize: 12, color: "#9a6b2f", marginTop: 5 }}>
+                  旧核查记录：不是本工序派生的，未按时空异名维度评估。
+                </div>
+              ) : (
+                <div style={{ fontSize: 12, color: "#2f4a3f", marginTop: 5 }}>
+                  已核：身份与字节一致
+                  {checks.locator === "present" ? "、馆方目录号在册" : "、馆方未给目录号"}
+                  {`；权利九动作中 ${checks.rightsUnknown} 项未核`}
+                </div>
+              )}
+              {checks && checks.unresolved.length > 0 ? (
+                <ul style={{ fontSize: 12, color: "#9a6b2f", margin: "4px 0 0 18px" }}>
+                  {checks.unresolved.map((dimension) => (
+                    <li key={dimension}>
+                      未评估：{EXPANSION_LABELS[dimension] ?? dimension}（本次没有可回指的词源）
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div style={{ fontSize: 12, color: "#1f7a4d", marginTop: 4 }}>时空异名维度均已带词源核过。</div>
+              )}
+              <div style={{ fontSize: 11, color: "#6b746f", marginTop: 3 }}>
+                {row.project_title} · {row.method_key}@{row.method_version} · {row.created_at.slice(0, 10)}
               </div>
             </article>
           );

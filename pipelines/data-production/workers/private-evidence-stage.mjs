@@ -7,6 +7,7 @@ import { assertStageExecutionAuthorized, consumeAuthorizedStageHandoff } from '.
 import { buildMethodPlanRefs, inspectMethodPlanRef, isMethodPlanRef } from '../../../packages/data-access/src/method-plan-ref.mjs';
 import { diagnoseSourceNeed } from './source-need-diagnosis.mjs';
 import { deriveIntakeCatalogEntry } from './source-catalog-observation.mjs';
+import { deriveIntakeCandidateVerification } from './source-candidate-verification.mjs';
 
 const HEX=/^[a-f0-9]{64}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
@@ -171,6 +172,19 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         ...deriveIntakeCatalogEntry({registration,record})});
       if(!UUID.test(savedIntakeEntry?.catalog_entry_id??''))throw Error('PRIVATE_SOURCE_CATALOG_NOT_RECORDED');
       const intakeCatalogEntryId=savedIntakeEntry.catalog_entry_id;
+      // Y03：候选核查紧接准入目录条目就地进行。能真判的（身份/目录号/溯源/权利现状）
+      // 由本次登记真值算出；判不了的（异名词源、适用时代、语言）如实写 unassessed
+      // 并给 needs_owner，绝不给"看起来能用"的 admissible。缺写入口即失败关闭，
+      // 不允许"看起来跑了 D00 却没有核查记录"。
+      if(typeof recordCandidateVerification!=='function')throw Error('PRIVATE_SOURCE_VERIFICATIONS_RECORDING_REQUIRED');
+      const intakeVerification=deriveIntakeCandidateVerification({registration,record,
+        expansions:input?.candidate_expansion});
+      const savedIntakeVerification=await recordCandidateVerification({projectId,
+        catalogEntryId:intakeCatalogEntryId,checks:intakeVerification.checks,
+        verdict:intakeVerification.verdict,reasonCode:intakeVerification.reasonCode,
+        methodKey:intakeVerification.methodKey,methodVersion:intakeVerification.methodVersion});
+      if(!UUID.test(savedIntakeVerification?.verification_id??''))
+        throw Error('PRIVATE_SOURCE_VERIFICATION_NOT_RECORDED');
       // Y07：只在调用方确实知道"这份原件怎么来的"时记账；不知道就不写，
       // 绝不补默认方法或默认结果充当历史。方法身份可选（可能先前已登记）。
       let acquisitionAttemptId=null;
@@ -297,6 +311,8 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         stock_gap:diagnosis.existing_stock_gap,
         acquisition_attempt_id:acquisitionAttemptId,method_plan:methodPlan??[],
         intake_catalog_entry_id:intakeCatalogEntryId,
+        intake_verification_id:savedIntakeVerification.verification_id,
+        intake_verification_verdict:intakeVerification.verdict,
         catalog_entry_ids:catalogEntryIds,coverage_ids:coverageIds,
         verification_ids:verificationIds,assessment_ids:assessmentIds,
         artifact_revision:sourceRevision,

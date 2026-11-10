@@ -78,7 +78,9 @@ test('D00 verifySourceIntake returns an UNASSESSED registration candidate under 
   const input={research_intent:'松江府田赋卷十一',scope:{project_id:projectId,original_id:originalId,page_number:35}};
   let reads=0,registrations=0,bindings=0;
   let intakeEntry=null;
+  let intakeVerification=null;
   const intakeEntryId=id();
+  const intakeVerificationId=id();
   return withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
     const worker=createPrivateEvidenceStageWorker({
       readOriginal:async()=>{reads++;return {record:{original_id:originalId,project_id:projectId,
@@ -88,6 +90,7 @@ test('D00 verifySourceIntake returns an UNASSESSED registration candidate under 
       recordSourceNeed:async()=>({need_id:id(),created_at:new Date().toISOString()}),
       readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
       recordCatalogEntry:async entry=>{intakeEntry=entry;return {catalog_entry_id:intakeEntryId};},
+      recordCandidateVerification:async item=>{intakeVerification=item;return {verification_id:intakeVerificationId};},
       bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},...gateStub,
     });
     const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
@@ -106,6 +109,13 @@ test('D00 verifySourceIntake returns an UNASSESSED registration candidate under 
     assert.equal(intakeEntry.evidenceRef.schema,'mohen.source-catalog-observation.v1');
     assert.equal(intakeEntry.evidenceRef.original_id,originalId);
     assert.equal(intakeEntry.evidenceRef.provenance_status,'verified');
+    // Y03：候选核查就地派生，挂在刚登记的准入条目上；本次没读异名词源即如实需人确认。
+    assert.equal(candidate.intake_verification_id,intakeVerificationId);
+    assert.equal(intakeVerification.catalogEntryId,intakeEntryId);
+    assert.equal(intakeVerification.verdict,'needs_owner');
+    assert.equal(intakeVerification.methodKey,'D00/Y03:intake_candidate_check');
+    assert.equal(intakeVerification.checks.identity.content_type,'image/jpeg');
+    assert.equal(intakeVerification.checks.locator.catalog_no,'present');
     assert.equal(candidate.stage,'D00');
     assert.equal(candidate.gate_code,'G0');
     assert.equal(candidate.qualification,'UNASSESSED');

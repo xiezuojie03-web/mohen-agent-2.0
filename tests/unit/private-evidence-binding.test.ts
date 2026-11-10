@@ -9,6 +9,7 @@ const deps=vi.hoisted(()=>({
   persistWorldClaim:vi.fn(),persistHumanisticFinding:vi.fn(),persistWorldProjection:vi.fn(),
   sourceDiscoveryRepository:vi.fn(),recordSourceNeed:vi.fn(),projectStock:vi.fn(),
   registerAcquisitionMethod:vi.fn(),appendAcquisitionAttempt:vi.fn(),recordCatalogEntry:vi.fn(),
+  recordCandidateVerification:vi.fn(),
 }));
 vi.mock('../../packages/data-access/src/index.mjs',()=>({
   createPrivateOriginalRepository:deps.originalRepository,
@@ -102,10 +103,12 @@ beforeEach(()=>{
    saveWorldProjection:deps.persistWorldProjection});
  deps.recordSourceNeed.mockResolvedValue({need_id:originalId,created_at:'2026-11-10T00:00:00.000Z'});
  deps.recordCatalogEntry.mockResolvedValue({catalog_entry_id:'77777777-7777-4777-8777-777777777777'});
+ deps.recordCandidateVerification.mockResolvedValue({verification_id:'88888888-8888-4888-8888-888888888888'});
  deps.sourceDiscoveryRepository.mockReturnValue({recordSourceNeed:deps.recordSourceNeed,
    registerAcquisitionMethod:deps.registerAcquisitionMethod,
    appendAcquisitionAttempt:deps.appendAcquisitionAttempt,
-   recordCatalogEntry:deps.recordCatalogEntry});
+   recordCatalogEntry:deps.recordCatalogEntry,
+   recordCandidateVerification:deps.recordCandidateVerification});
 });
 it('requires a server-side repository, verified object store, and verifier key',()=>{
  expect(()=>createBoundPrivateEvidenceStageWorker({storage,verificationKey:key})).toThrow('PRIVATE_STAGE_DATABASE_REQUIRED');
@@ -228,6 +231,15 @@ it('composes D00 source intake through the registration lookup',async()=>{
    rightsHint:{status:'public_domain_secondary_use'},
    discoveredByMethod:'D00/Y02:intake_registration',methodVersion:'v1'}));
  expect(result.intake_catalog_entry_id).toBe('77777777-7777-4777-8777-777777777777');
+ // Y03 候选核查同样经唯一写入口，挂在刚登记的准入条目上；没有词源就如实需人确认。
+ expect(deps.recordCandidateVerification).toHaveBeenCalledTimes(1);
+ expect(deps.recordCandidateVerification).toHaveBeenCalledWith(expect.objectContaining({
+   projectId:'44444444-4444-4444-8444-444444444444',
+   catalogEntryId:'77777777-7777-4777-8777-777777777777',
+   verdict:'needs_owner',reasonCode:'Y03_EXPANSION_UNASSESSED:place_name,era',
+   methodKey:'D00/Y03:intake_candidate_check',methodVersion:'v1'}));
+ expect(result.intake_verification_id).toBe('88888888-8888-4888-8888-888888888888');
+ expect(result.intake_verification_verdict).toBe('needs_owner');
  // No acquisition provenance was supplied, so no attempt may be invented.
  expect(deps.appendAcquisitionAttempt).not.toHaveBeenCalled();
  expect(deps.registrationLookup).toHaveBeenCalledWith(originalId,'synthetic-user-session');

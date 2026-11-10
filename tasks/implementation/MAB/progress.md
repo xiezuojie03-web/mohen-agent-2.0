@@ -2499,3 +2499,15 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **单测**：新增 `source-catalog-observation.test.mjs` 4 例（真值全量派生/缺目录号留空/不复核失败关闭/身份不全失败关闭）；既有 D00 测试同步更新（准入观察先于调用方材料、`intake_catalog_entry_id` 独立字段、空 `source_version_id` 提前到目录观察处失败关闭）。
 - **回归**：typecheck 6/6；unit 644 通过 / 2 跳过 / 0 失败；data-production 191 通过 + 1 既有 `DEFERRED_ENV`（`independent-gate-service-runtime`，无 openssl）；`guard:auth:strict`（routes=111 public=19 missing=0）、`guard:structure`、`guard:gate-enforcement` 全 PASS。
 - **边界**：只接通第 2 个工序（Y03—Y08 仍无独立执行器；`input.catalog` 通道仍未被真实运行使用）；可用性 `catalog_found` 不代表"已取得"，取得记录属 Y07/Y04；未给 `mohen_app_runtime` 开任何 `source.*` 写权限；不签 Gate、不构成生产准出，`M5_OVERALL_HOLD` 不变。
+
+## M5-F｜D00 第三道工序（Y03 候选核查）执行器接通（2026-11-10，本地隔离 VERIFIED_ISOLATED）
+
+- **应完成什么**：步骤④按序接通 D00 八工序的第三个真执行器。Y03「时空异名与跨语言检索扩展」此前只有调用方传 `input.verifications` 才落库的被动通道（`recordCandidateVerification` 写 API 早已存在但从未被任何真实 D00 运行调用过）。
+- **做了什么**：
+  - 新增 `pipelines/data-production/workers/source-candidate-verification.mjs`：`deriveIntakeCandidateVerification()` 只由两处真值派生核查结论——①本次准入已逐项核验的登记/原件（身份、字节、馆方目录号、溯源、载体、权利九动作现状）；②调用方确实给出的检索扩展簇，每条必须能回指词源 `source_ref`、适用时代 `applicable_era`、歧义 `ambiguity`、转换理由 `rationale`，缺任一项即失败关闭（不替研究者编词源）。判不了的维度写 `unassessed` 并列入 `unresolved`，结论只能是 `needs_owner`；只有时空异名两维都带词源依据（`Y03_EXPANSION_SOURCED`）才给 `admissible`。权利只登记现状（有值/`unknown`/`denied` 计数），不在本工序裁决；主权重/历史地名实体真值明确 `out_of_scope:D03`，不拿今天行政区边界套古代地名。
+  - `private-evidence-stage.mjs`：D00 段在准入目录条目落库**之后就地**强制派生并写入核查（缺 `recordCandidateVerification` 即 `PRIVATE_SOURCE_VERIFICATIONS_RECORDING_REQUIRED`，未落库即 `PRIVATE_SOURCE_VERIFICATION_NOT_RECORDED`）；候选输出新增 `intake_verification_id` 与 `intake_verification_verdict`。
+  - `apps/web/app/studio/desk/page.tsx`：资料台新增「候选核查（D00 第三道工序）」区，只列本人项目，逐条显示结论白话标签、`reason_code`、已核项（身份/字节/馆方目录号/权利未核数）与未评估维度（历史地名异称、时代纪年、语言）；旧格式核查记录如实标"不是本工序派生"，不冒充已核。
+- **证据**：`tools/verify-y03-executor.mjs` = `Y03_EXECUTOR_PROVEN`（私有工人登录 + CA 校验 + 真实登记读取通道）：真实原件与登记派生 `needs_owner`（`Y03_EXPANSION_UNASSESSED:place_name,era`），核查记录经唯一写入口落库并挂在该项目 Y02 准入条目上，工人角色回读 `mohen.source-candidate-verification.v1` / `D00/Y03:intake_candidate_check@v1` 一致；负例四项全 true（字节被篡改拒绝、扩展缺词源拒绝、不合规维度拒绝、负例不写库），正例核查总数 +1。
+- **单测**：新增 `source-candidate-verification.test.mjs` 6 例（词源齐备才可采纳/无词源如实需人确认/只补一维仍列缺项/缺词源或维度不合规失败关闭/准入真值不复核失败关闭/权利只登记不裁决）；既有 D00 测试同步更新（准入核查紧随目录观察、撤掉写入口失败关闭、既有调用顺序与计数）。
+- **回归**：typecheck 6/6；unit 644 通过 / 2 跳过 / 0 失败；data-production 197 通过 + 1 既有 `DEFERRED_ENV`（`independent-gate-service-runtime`，无 openssl）；`guard:auth:strict`（routes=111 public=19 missing=0）、`guard:structure`、`guard:gate-enforcement` 全 PASS。
+- **边界**：只接通第 3 个工序（Y04—Y08 仍无独立执行器）；真实来源的异名词源目前没有来源可自动读，故真实运行结论如实停在 `needs_owner`（这正是失败关闭，不是缺陷）；`needs_owner` 不阻塞 D00 候选提交，但 Y06 的 `selected` 仍按既有规则要求 `admissible`；未给 `mohen_app_runtime` 开任何 `source.*` 写权限；不签 Gate、不构成生产准出，`M5_OVERALL_HOLD` 不变。
