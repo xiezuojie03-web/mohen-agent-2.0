@@ -4,6 +4,7 @@
 // independent Gate signs it.
 import { createHash } from 'node:crypto';
 import { assertStageExecutionAuthorized, consumeAuthorizedStageHandoff } from '../orchestrator/execution-authority.mjs';
+import { buildMethodPlanRefs } from '../../../packages/data-access/src/method-plan-ref.mjs';
 
 const HEX=/^[a-f0-9]{64}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
@@ -151,12 +152,17 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         if(!UUID.test(appended?.attempt_id??''))throw Error('PRIVATE_ACQUISITION_ATTEMPT_NOT_RECORDED');
         acquisitionAttemptId=appended.attempt_id;
       }
+      // D00-B：C 方法预选（消费者方法计划）以类型化引用随 G0 候选存证，零 DDL。
+      // 调用方没给计划就不构造引用、也不补默认方法：G0 会因缺计划失败关闭，
+      // 而不是由生产者替消费者决定 D01 用什么读法。
+      const methodPlan=input?.consumer_method_plan==null?null
+        :buildMethodPlanRefs({methods:input.consumer_method_plan});
       // Durable L0 candidate refs; professional G0 qualification stays independent.
       const gateCandidateId=await submitStageCandidate({run,stage:'D00',gateCode:'G0',
         objectType:'source_version',objectId:registration.source_version_id,
         artifactRevision:sourceRevision,projectId,
         evidenceRefs:[{kind:'source_version',id:registration.source_version_id,
-          artifact_revision:sourceRevision}],
+          artifact_revision:sourceRevision},...(methodPlan??[])],
         requestDigest});
       return {stage:'D00',candidate_kind:'private_source_intake',
         original_id:originalId,project_id:projectId,page_number:pageNumber,
@@ -165,7 +171,7 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         content_type:record.content_type,rights:registration.rights,provider:registration.provider,
         title:registration.title,source_type:registration.source_type,carrier_type:registration.carrier_type,
         asset_revision_id:registration.asset_revision_id,need_id:need.need_id,
-        acquisition_attempt_id:acquisitionAttemptId,
+        acquisition_attempt_id:acquisitionAttemptId,method_plan:methodPlan??[],
         artifact_revision:sourceRevision,
         request_digest:requestDigest,gate_candidate_id:gateCandidateId,
         gate_candidate_status:'SUBMITTED',qualification:'UNASSESSED',gate_code:'G0'};

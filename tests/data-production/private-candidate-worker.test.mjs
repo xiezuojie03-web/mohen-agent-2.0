@@ -8,6 +8,7 @@ import {
   assertStageExecutionAuthorized, executionDigest,
 } from '../../pipelines/data-production/orchestrator/execution-authority.mjs';
 import {createPrivateEvidenceStageWorker} from '../../pipelines/data-production/workers/private-evidence-stage.mjs';
+import {buildMethodPlanRefs} from '../../packages/data-access/src/method-plan-ref.mjs';
 
 const id=()=>randomUUID();
 const names=['MOHEN_EXECUTION_AUTH_PUBLIC_KEY','MOHEN_EXECUTION_AUTH_VERIFY_URL','MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL'];
@@ -422,6 +423,59 @@ test('D00 verifySourceIntake submits exactly one G0 source_version candidate',as
     assert.equal(candidate.gate_candidate_status,'SUBMITTED');
     assert.equal(candidate.qualification,'UNASSESSED');
   });
+});
+
+test('D00 carries the consumer C method plan as typed refs on the G0 candidate',async()=>{
+  const originalId=id(),projectId=id(),sourceVersionId=id();
+  const input={research_intent:'松江府田赋卷十一',
+    scope:{project_id:projectId,original_id:originalId,page_number:35},
+    consumer_method_plan:[{method_id:'C02',method_version:'v1'},{method_id:'C03',method_version:'v2'}]};
+  const expected=buildMethodPlanRefs({methods:input.consumer_method_plan});
+  return withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
+    let submitted=null;
+    const worker=createPrivateEvidenceStageWorker({
+      readOriginal:async()=>imageRecord(originalId,projectId),
+      verifySourceBinding:async()=>true,
+      readRegistration:async()=>registrationFor(originalId,projectId,{source_version_id:sourceVersionId}),
+      recordSourceNeed:async()=>({need_id:id(),created_at:new Date().toISOString()}),
+      bridge:bridgeStub,
+      submitGateCandidate:async metadata=>{submitted=metadata;return 'candidate-g0';},
+      readGateAudit:async()=>{throw Error('G0 must not read an upstream audit');},
+    });
+    const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
+    assert.deepEqual(submitted.evidenceRefs,[
+      {kind:'source_version',id:sourceVersionId,artifact_revision:'c'.repeat(64)},...expected]);
+    assert.deepEqual(candidate.method_plan,expected);
+  });
+});
+
+test('D00 rejects a malformed consumer method plan before submitting any candidate',async()=>{
+  const cases=[
+    {consumer_method_plan:[]},
+    {consumer_method_plan:[{method_id:'H05',method_version:'v1'}]},
+    {consumer_method_plan:[{method_id:'C02',method_version:'1'}]},
+    {consumer_method_plan:[{method_id:'C02',method_version:'v1'},{method_id:'C02',method_version:'v1'}]},
+  ];
+  for(const extra of cases){
+    const originalId=id(),projectId=id(),sourceVersionId=id();
+    const input={research_intent:'松江府田赋卷十一',
+      scope:{project_id:projectId,original_id:originalId,page_number:35},...extra};
+    await withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
+      let submitted=0;
+      const worker=createPrivateEvidenceStageWorker({
+        readOriginal:async()=>imageRecord(originalId,projectId),
+        verifySourceBinding:async()=>true,
+        readRegistration:async()=>registrationFor(originalId,projectId,{source_version_id:sourceVersionId}),
+        recordSourceNeed:async()=>({need_id:id(),created_at:new Date().toISOString()}),
+        bridge:bridgeStub,
+        submitGateCandidate:async()=>{submitted+=1;return 'candidate-g0';},
+        readGateAudit:async()=>null,
+      });
+      await assert.rejects(()=>worker.verifySourceIntake({run,job,registry,context,input,token:'s'}),
+        /PRIVATE_METHOD_PLAN_/);
+      assert.equal(submitted,0,'a rejected plan must not reach the candidate table');
+    });
+  }
 });
 
 test('D01 readScannedPage submits one G1 read_unit candidate with an empty dependency snapshot when G0 is unsigned',async()=>{

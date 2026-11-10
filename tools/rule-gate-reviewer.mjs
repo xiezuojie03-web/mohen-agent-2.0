@@ -5,6 +5,7 @@
 // refuses to sign. Signing goes through the existing authority repository CLI
 // (control.sign_gate_candidate) — there is no second Gate/audit write path.
 import crypto from "node:crypto";
+import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -16,6 +17,8 @@ import {
 } from "./machine-reviewer-session.mjs";
 // CP2-D：逐动作权利只认唯一词典（显式 allowed 才放行）。
 import { decideRightsActions } from "../packages/data-access/src/rights-actions.mjs";
+// D00-B：C 方法预选以 evidence_refs 类型化引用承载，G0 由本评审器强制校验。
+import { inspectMethodPlanRef, isMethodPlanRef } from "../packages/data-access/src/method-plan-ref.mjs";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const AUTHORITY_CLI = path.join(ROOT, "..", "packages", "data-access", "scripts", "gate-authority.mjs");
@@ -270,6 +273,44 @@ const CHECKS = {
   work_revision_binding: checkWorkRevisionBinding,
 };
 
+// ---- 策略之外的结构性前置（D00-B，零 DDL）------------------------------------
+// required_checks 来自 control.gate_policy_versions，加检查项需要 DDL；
+// 因此 G0 的"C 方法预选"要求在本进程内强制：候选的 evidence_refs 必须含
+// 合法 method_plan 引用，且方法已登记在唯一身份目录里，否则拒绝签发。
+const REGISTRY_PATH = path.join(ROOT, "..", "specs", "data-production", "identifier-registry.json");
+let professionalCMethods = null;
+function registeredCMethods() {
+  if (professionalCMethods) return professionalCMethods;
+  const registry = JSON.parse(readFileSync(REGISTRY_PATH, "utf8"));
+  professionalCMethods = new Set((registry.professional_methods ?? []).map(text).filter(id => /^C\d{2}$/.test(id)));
+  return professionalCMethods;
+}
+
+async function checkMethodPlanPreselection(ctx) {
+  const refs = (Array.isArray(ctx.candidate.evidence_refs) ? ctx.candidate.evidence_refs : []).filter(isMethodPlanRef);
+  if (!refs.length) return { ok: false, reason: "method_plan_ref_missing" };
+  let registered;
+  try {
+    registered = registeredCMethods();
+  } catch (error) {
+    return { ok: false, reason: `method_plan_authority_unavailable:${String(error?.message ?? error).split("\n")[0]}` };
+  }
+  if (!registered.size) return { ok: false, reason: "method_plan_authority_empty" };
+  const observed = [];
+  for (const ref of refs) {
+    const inspected = inspectMethodPlanRef(ref);
+    if (!inspected.ok) return { ok: false, reason: inspected.reason };
+    if (!registered.has(inspected.methodId)) {
+      return { ok: false, reason: `method_plan_method_not_registered:${inspected.methodId}` };
+    }
+    if (observed.includes(inspected.id)) return { ok: false, reason: `method_plan_ref_duplicate:${inspected.id}` };
+    observed.push(inspected.id);
+  }
+  return { ok: true, detail: `methods=${observed.join(",")}` };
+}
+
+const STRUCTURAL_CHECKS_BY_GATE = { G0: [["method_plan_preselection", checkMethodPlanPreselection]] };
+
 // ---- reviewer ---------------------------------------------------------------
 
 export function createRuleGateReviewer({
@@ -350,8 +391,13 @@ export function createRuleGateReviewer({
 
     log(`candidate ${gate} candidate=${candidate.candidate_id} object=${candidate.object_type}:${candidate.object_id} revision=${candidate.artifact_revision} rule=${ruleVersion}`);
     const results = {};
-    for (const name of requiredChecks) {
-      const evaluator = CHECKS[name];
+    const structural = STRUCTURAL_CHECKS_BY_GATE[gate] ?? [];
+    // 策略检查 + 策略外结构性前置统一评估；任一失败即不签发，回执写明实际查了什么。
+    const evaluators = [
+      ...requiredChecks.map(name => [name, CHECKS[name]]),
+      ...structural,
+    ];
+    for (const [name, evaluator] of evaluators) {
       if (!evaluator) {
         results[name] = { ok: false, reason: `unverifiable_required_check:${name}` };
         log(`  ${name}: FAIL unverifiable_required_check`);
@@ -367,18 +413,18 @@ export function createRuleGateReviewer({
       log(`  ${name}: ${outcome.ok ? "PASS" : "FAIL"}${outcome.detail ? " " + outcome.detail : ""}${outcome.ok ? "" : " " + outcome.reason}`);
     }
 
-    const failed = requiredChecks.filter(name => !results[name].ok);
+    const failed = evaluators.map(([name]) => name).filter(name => !results[name].ok);
     if (failed.length) {
       log(`RULE_GATE_REVIEW ${gate} FAIL checks=${failed.join(",")} reason=${results[failed[0]].reason}`);
       return { status: "FAIL", gate, candidateId: candidate.candidate_id, checks: results, failed };
     }
     if (dryRun) {
-      log(`RULE_GATE_REVIEW ${gate} DRY_RUN_PASS audit=none checks=${requiredChecks.join(",")}`);
+      log(`RULE_GATE_REVIEW ${gate} DRY_RUN_PASS audit=none checks=${evaluators.map(([name]) => name).join(",")}`);
       return { status: "DRY_RUN_PASS", gate, candidateId: candidate.candidate_id, checks: results };
     }
 
     const checks = {};
-    for (const name of requiredChecks) checks[name] = true;
+    for (const [name] of evaluators) checks[name] = true;
     const validUntil = new Date(ctx.now + QUALIFICATION_VALIDITY_MS).toISOString();
     const requestId = randomId();
     const sessionToken = mintToken({ uid: MACHINE_REVIEWER_USER_ID });

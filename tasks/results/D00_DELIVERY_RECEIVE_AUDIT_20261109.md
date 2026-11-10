@@ -161,7 +161,7 @@
 6. `skills/mohen-source-intake/SKILL.md`：最小订正 `Stage → D00`、`Canonical Entry → d00-source-intake.mjs`、`Write Scope` 去掉 Gate 审计写权。
 
 ### D00-B｜G0 承载 C 方法预选（需单独裁决）
-7. 首选零 DDL：`evidence_refs` 内类型化引用 + 机器评审器强制校验；否则才考虑 `gate_candidates` 加列。在此之前 D00→D01 的预选链路一律记 `HOLD`。
+7. 首选零 DDL：`evidence_refs` 内类型化引用 + 机器评审器强制校验；否则才考虑 `gate_candidates` 加列。在此之前 D00→D01 的预选链路一律记 `HOLD`。**→ 已于 2026-11-10 按首选方案执行（零 DDL），结果见 `tasks/implementation/MAB/progress.md` 的 `## D00-B` 与 `specs/data-production/MoHen_Data_Production_Protocol.md` §2.1 第 7 条。**
 
 ### D00-C｜后续批次（不属本增量）
 8. Y01—Y06 的持久化落点、Y07 的不可变 Attempt 台账、Y08 的范围/缺损字段。均需字段级迁移授权，必须单独立项，不得夹带在文档批内。

@@ -2365,4 +2365,21 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **刻意不做**：没给 Y02—Y06 建表或建无生产者的空壳；没动 registry `methods: []`、`activation`/`enabled`/`adapter_binding`/`gate_reviewer_binding`、D01—D05、绑定合同 `method_count=63`；没写任何种子数据或推断回填。
 - **口径（不得放大解读）**：`ISOLATED_VERIFIED=2` 只代表「存储契约 + 唯一写入口 + D00 阶段接线单测」；**真实 stage 端到端运行（需真实签名授权与私有原件字节）、registry 方法路由与激活、生产库**均不在该口径内，回执的 `not_covered` 已明写。Y02—Y06 仍无生产者，D00 整段仍不能算"可用"，`CODE_PRESENT` 与可用性继续分开记账。
 
+## D00-B｜G0 承载 C 方法预选（2026-11-10，基线 main@1dffdae，零 DDL）
+
+- **顺序（自行评估，未再问 Owner）**：C1→C2→B。C 的落点先有，B 才知道"预选什么"往哪儿放；B 只补交接字段与评审前置，放最后不阻塞任何东西。
+- **裁决落地方式**：取 `D00_DELIVERY_RECEIVE_AUDIT_20261109.md` §7 第 7 条的首选方案——**不加列、不改 `GateReviewRequest`**。`control.gate_candidates.evidence_refs` 本身是 jsonb 数组、库级只约束"非空数组"（`202610310910_k3_gate_candidates.sql`），类型化引用天然可存，零 DDL 成立。
+- **变更 1｜引用格式有了唯一实现（新增 `packages/data-access/src/method-plan-ref.mjs`）**：`{kind:'method_plan', id:'C02@v1', stage:'D01', method_id, method_version, artifact_revision}`；`artifact_revision` 是该引用语义字段的规范化 JSON sha256，改任一字段（含 id 与 stage）即摘要不符。构造时拦空计划、超 8 条、非 C 编号、版本非 `vN`、同一方法重复；本模块只描述引用，不写库、不签 Gate、不产生资格。
+- **变更 2｜D00 只在调用方给计划时才构造引用（`private-evidence-stage.mjs`）**：`input.consumer_method_plan` 缺省即不构造、不补默认方法——生产者不替消费者决定 D01 用什么读法；给了就并入 G0 候选 `evidence_refs` 并在返回值透出 `method_plan`。计划非法时在任何 Gate 候选写入之前失败关闭（实测 `submitGateCandidate` 零调用）。
+- **变更 3｜计划无损转交 D01（`private-evidence-adapters.mjs`）**：typed D01 request 带上 `method_plan`，否则下一阶段看不到消费者预选；`assertNoUnboundPrivateEvidenceInput` 不拒绝该附加字段，绑定规则未放宽。
+- **变更 4｜机器评审器在 G0 强制校验（`tools/rule-gate-reviewer.mjs`）**：`required_checks` 来自库表 `control.gate_policy_versions`，加检查项要 DDL——所以做成**策略外结构性前置** `method_plan_preselection`：与策略检查同批评估、同一失败判定、同一 dry-run 出口，并写进签发回执的 `checks`（库端 `sign_gate_candidate` 只要求策略项为 true，不禁止多报实际查过的项）。判定内容：缺引用、引用形不对、id 与字段不符、摘要不符、方法未登记在 `identifier-registry.json`、同一方法重复出现——任一即 FAIL，不签发。
+- **配套测试（补正例，不放宽反例）**：`tests/unit/rule-gate-reviewer.test.ts` 的 G0 候选统一带上生产者真实构造的计划引用，签发正例的回执断言改为 `identity_version, rights_by_operation, method_plan_preselection` 三项皆 true 且 `evidence_refs` 原样回显；新增三条反例——无计划引用 → `method_plan_ref_missing`、构建后手改 `method_version` → `method_plan_ref_id_mismatch`、预选未登记方法 `C09` → `method_plan_method_not_registered:C09`。`tests/data-production/private-candidate-worker.test.mjs` 新增两条：D00 把两级计划写成两条类型化引用并随候选提交、四种非法计划在写候选前即被拒。
+- **验证（本批实跑，非口头）**：
+  - `npx vitest run --config vitest.unit.config.ts tests/unit/rule-gate-reviewer.test.ts` → **16/16 通过**。
+  - `node --test tests/data-production/private-candidate-worker.test.mjs` → **23/23 通过**（含新增两条计划用例）。
+  - 回归：`pnpm test`（CI 同口径，隔离库 `mohen_dev_test`）**87 文件通过 / 2 跳过、703 用例通过 / 2 跳过 / 0 失败**（基线 700 → 703，差值即本批新增三条 reviewer 反例），`ISOLATION_VERDICT real_db_untouched=YES`（真库 `source.sources=42`、`raw_items=102`、`gate_audits=740` 一行未动）；`pnpm test:data-production` **174/174**（基线 172 → 174，即本批新增两条 D00 计划用例）。本机仍需先把 `openssl` 放进 `PATH` 并设 `OPENSSL_CONF`，属既有环境前置。
+  - 守卫：`pnpm guard` 前七段全绿——`DOC_BUDGET_OK`（CURRENT.md 74/180）、`STRUCTURE_MAP root_entries=42 undeclared=0 tree_missing=0 router_broken=0`、`REGISTRY_OK jobs=6`、`SOURCE_GATE providers=17`、`IDENTIFIER_REGISTRY_OK professional_methods=71 bound_ids=63`、`ACQUISITION_INTENTS intents=28`、`RECONCILIATION decided=2 scanned=413`。链在第八段 `guard:naming` 停止：真库遗留表（`cultural_events`、`evidence`、`claims` 等）未登记进 `naming-map.json`，属 RECON-02 既有 DEFERRED，本批未新增任何表、未改命名映射，与本批无关；`guard:names`/`guard:escalations`/`guard:links` 因此未在本批执行。另：source-gate/identifiers/acquisition 三段的「DB 不可达，跳过真库核对」是本机 shell 未注入 `PGPASSWORD` 时的离线告警（脚本标注离线可接受），非本批回归。
+- **刻意不做**：没给 `control.gate_candidates` 加列、没改 `GateReviewRequest`、没动 D01—D05 Job、registry `methods: []`、`activation`/`enabled`/`adapter_binding`/`gate_reviewer_binding`、绑定合同 `method_count=63`；没给 C 方法造第二份清单（方法是否登记只问 `identifier-registry.json`）；没在生产库或生产 Gate 上做任何事。
+- **口径（不得放大解读）**：本批解决的是"预选**可承载、可强制**"，不是"预选**驱动读法**"——D01 尚未按该预选选法（仍按载体与现行实现，C 方法也尚未进入 registry 路由），故 Protocol §2.1 第 7 条只认「已在 G0 承载」，不认 D00→D01 全链联通。真实 D00 运行若调用方不给计划，G0 会如实 FAIL（失败关闭），这是设计意图，不是回归。
+
 

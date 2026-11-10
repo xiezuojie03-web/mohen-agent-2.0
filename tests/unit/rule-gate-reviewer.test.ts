@@ -10,9 +10,12 @@ import {
   MAX_SESSION_TTL_MS,
   mintMachineSessionToken,
 } from '../../tools/machine-reviewer-session.mjs';
+import { buildMethodPlanRefs } from '../../packages/data-access/src/method-plan-ref.mjs';
 
 const REVISION = 'a'.repeat(64);
 const AUDIT_ID = '11111111-1111-4111-8111-111111111111';
+// 生产者侧真实产物：D00 收到的消费者方法计划 → G0 evidence_refs 里的类型化引用。
+const PLAN_REFS = buildMethodPlanRefs({ methods: [{ method_id: 'C02', method_version: 'v1' }] });
 
 type Call = { sql: string; params: Record<string, unknown> };
 
@@ -26,7 +29,10 @@ function candidateRow(overrides: Record<string, unknown> = {}) {
     artifact_revision: REVISION,
     allowed_scope: JSON.stringify({ project_id: PROJECT_ID }),
     consumer: 'producer',
-    evidence_refs: JSON.stringify([{ kind: 'source_version', id: 'sv-1', artifact_revision: REVISION }]),
+    evidence_refs: JSON.stringify([
+      { kind: 'source_version', id: 'sv-1', artifact_revision: REVISION },
+      ...PLAN_REFS,
+    ]),
     dependency_snapshot: '[]',
     input_fingerprint: REVISION,
     submitted_at: '2026-11-07 21:16:00',
@@ -219,8 +225,15 @@ describe('machine rule reviewer', () => {
     expect(decision.result).toBe('PASS');
     expect(decision.ruleVersion).toBe(RULE_VERSION_BY_GATE.G0);
     expect(decision.candidateId).toBe('cand-g0');
-    expect(decision.receipt.checks).toEqual({ identity_version: true, rights_by_operation: true });
-    expect(decision.receipt.evidence_refs).toEqual([{ kind: 'source_version', id: 'sv-1', artifact_revision: REVISION }]);
+    expect(decision.receipt.checks).toEqual({
+      identity_version: true,
+      rights_by_operation: true,
+      method_plan_preselection: true,
+    });
+    expect(decision.receipt.evidence_refs).toEqual([
+      { kind: 'source_version', id: 'sv-1', artifact_revision: REVISION },
+      ...PLAN_REFS,
+    ]);
     expect(decision.receipt.rationale).toBe(`MACHINE_RULE_REVIEW:${RULE_VERSION_BY_GATE.G0}:all deterministic checks passed`);
     expect(new Date(decision.validUntil).getTime()).toBe(Date.parse('2026-11-07T12:00:00Z') + 6 * 24 * 60 * 60 * 1000);
   });
@@ -301,5 +314,47 @@ describe('machine rule reviewer', () => {
     expect(outcome.status).toBe('DRY_RUN_PASS');
     expect(decisions).toHaveLength(0);
     expect(lines.join('\n')).toContain('RULE_GATE_REVIEW G0 DRY_RUN_PASS audit=none');
+  });
+
+  // ---- D00-B：G0 必须承载 C 方法预选（策略之外的结构性前置，零 DDL）----
+  function g0QueryWith(evidenceRefs: unknown[]) {
+    return makeQuery({
+      'control.gate_policy_versions': policyHandler,
+      'from control.gate_candidates': () => [candidateRow({ evidence_refs: JSON.stringify(evidenceRefs) })],
+      'control.artifact_revision_for': () => [{ revision: REVISION }],
+      'from source.source_versions v': () => [rightsRow()],
+    });
+  }
+
+  it('refuses G0 when the candidate carries no C method plan preselection', async () => {
+    const { query } = g0QueryWith([{ kind: 'source_version', id: 'sv-1', artifact_revision: REVISION }]);
+    const { reviewer, decisions, lines } = makeReviewer(query);
+    const outcome = await reviewer.review({ gate: 'G0' });
+    expect(outcome.status).toBe('FAIL');
+    expect(outcome.failed).toEqual(['method_plan_preselection']);
+    expect(outcome.checks.method_plan_preselection.reason).toBe('method_plan_ref_missing');
+    expect(decisions).toHaveLength(0);
+    expect(lines.join('\n')).toContain('method_plan_ref_missing');
+  });
+
+  it('refuses G0 when a method plan ref was edited after it was built', async () => {
+    const tampered = { ...PLAN_REFS[0], method_version: 'v2' };
+    const { query } = g0QueryWith([{ kind: 'source_version', id: 'sv-1', artifact_revision: REVISION }, tampered]);
+    const { reviewer, decisions } = makeReviewer(query);
+    const outcome = await reviewer.review({ gate: 'G0' });
+    expect(outcome.status).toBe('FAIL');
+    expect(outcome.failed).toEqual(['method_plan_preselection']);
+    expect(outcome.checks.method_plan_preselection.reason).toBe('method_plan_ref_id_mismatch:C02@v1');
+    expect(decisions).toHaveLength(0);
+  });
+
+  it('refuses G0 when the preselected method is not in the identity registry', async () => {
+    const unregistered = buildMethodPlanRefs({ methods: [{ method_id: 'C09', method_version: 'v1' }] });
+    const { query } = g0QueryWith([{ kind: 'source_version', id: 'sv-1', artifact_revision: REVISION }, ...unregistered]);
+    const { reviewer, decisions } = makeReviewer(query);
+    const outcome = await reviewer.review({ gate: 'G0' });
+    expect(outcome.status).toBe('FAIL');
+    expect(outcome.checks.method_plan_preselection.reason).toBe('method_plan_method_not_registered:C09');
+    expect(decisions).toHaveLength(0);
   });
 });

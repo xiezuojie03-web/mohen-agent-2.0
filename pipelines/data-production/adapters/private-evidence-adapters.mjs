@@ -81,7 +81,10 @@ function privateSourceIntakeAdapter() {
        !HASH.test(candidate.request_digest??'')||!HASH.test(candidate.sha256??''))
       throw Error('PRIVATE_STAGE_CANDIDATE_NOT_PERSISTED');
     // Typed D01 request: the runner hands this to the bound private D01 adapter.
+    // D00-B：消费者方法计划必须无损转交，否则 D01 看不到消费者预选的 C 方法。
     const request={schema:SCHEMA,stage:'D01',originalId:candidate.original_id,
+      ...(Array.isArray(candidate.method_plan)&&candidate.method_plan.length
+        ? {method_plan:candidate.method_plan}:{}),
       page:{kind:'scanned_page/v1',page_number:candidate.page_number,
         source_version_id:candidate.source_version_id,raw_item_id:candidate.raw_item_id,
         raw_sha256:candidate.sha256,page_sha256:candidate.sha256}};

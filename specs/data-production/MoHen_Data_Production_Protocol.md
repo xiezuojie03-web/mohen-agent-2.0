@@ -159,7 +159,7 @@ L7/L8参与/新痕迹要回流则经D00；当下贡献不直接写历史Truth。
 4. **逐动作权利**：一律使用 `packages/data-access/src/rights-actions.mjs` 的九动作——`access_view / machine_read / retain / download / quote / display / adapt / redistribute / external_processing`；取值 `allowed / denied / unknown / restricted`，空或缺失等价 `unknown` 并 HOLD，禁止按来源类别或开放许可标签推断放行，禁止另立第三套动作词典。
 5. **阶段结果与逻辑类型分开**：D00 阶段结果名为 `qualified_source`（运行合同），`source_asset` 是 L0 逻辑资产类型名，二者是同义指代而非并列类型，不得并存两个类型名。
 6. **D01 才读取**：Y01—Y06 的输出不得直接构成 D01 读取依据；只有 `content_availability` 达可读、且 `machine_read`（需留副本时叠加 `retain`，外部模型/OCR 另核 `external_processing`）为 `allowed` 的来源才进入 D01。
-7. **C 方法预选目前 HOLD**：现行 G0 机器合同的 `GateReviewRequest` 无承载"消费者方法计划"的字段，D01 预选 `Cxx@version` 无法无损表达；在 D00-B 裁决前该预选链路记 HOLD，不得声称 D00→D01 已联通。
+7. **C 方法预选已在 G0 承载（D00-B，2026-11-10，零 DDL）**：`GateReviewRequest` 不加字段，消费者方法计划以 `evidence_refs` 内的类型化引用 `{kind:'method_plan',id:'Cxx@vN',stage:'D01',method_id,method_version,artifact_revision}` 承载；`artifact_revision` 是该引用的规范化 JSON 摘要，改任一字段即摘要不符。D00 只在调用方给出 `consumer_method_plan` 时构造该引用（不补默认方法），独立机器评审器在 G0 做策略外结构性前置校验：缺引用、id 与字段不符、摘要不符、方法未登记在 `identifier-registry.json`、重复同一方法，一律失败关闭。**仍 HOLD 的部分**：D01 尚未以该预选作为选法依据（选法仍按载体与现行实现，C 方法也尚未进入 `production-registry.json` 路由），故"预选决定读法"这一层不得声称已联通。
 
 **身份账本必须机器派生（D00-A3，2026-11-10）**：设计身份目录（71）、执行分母（63）与实现绑定数不是三个可以分别手写的数字。唯一派生入口是 `tools/report-method-ledger.mjs`，其来源为 `identifier-registry.json`、`method-binding-contract.json` 与 `method-route-decisions.schema.json`；`scripts/check-identifier-registry.mjs` 强制不变量（`method_count` 等于合同条目数、非 Y 身份全部入合同、Y 阶段工序不得占用执行分母）。任何文档、进度账、M6 验收与交接材料引用分母时须引用该派生结果，不得手写，也不得另建第二份身份清单。「隔离已验证」需逐项独立证据，派生工具不推断，未取得证据前一律不计入。
 
