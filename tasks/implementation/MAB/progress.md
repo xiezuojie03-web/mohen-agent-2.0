@@ -2601,3 +2601,35 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 **本批要闭合的最小集合**：Y07-1/2/3、Y08-1/2/3/4 的整卷部分——即「IIIF Presentation+Image 整卷自动取件 → 每页落库并回读 → 一次带分页边界的真实尝试 → 以 manifest canvas 总数为分母的覆盖结论」。仍不闭合的：Y07 的聚合目录/原机构回溯（规范 Y04 编号问题见下）；跨库抓取（Commons/馆方 PDF）不在本批。
 
 **已知编号偏差（未擅自改动，如实挂账）**：现行实现把 `Y04` 接成「取得范围与缺失部件」（`source.acquisition_coverages`），而规范 Y04 原文是「**聚合目录原机构回溯**」，其 `extent/missing_parts` 语义落在规范 Y08。规范 Y04 要求的 `OriginalProviderTrace`（聚合 provider/dataProvider/holding → 原机构 URL 与编目号回溯、链路缺损记录）目前**没有任何实现与落点**。改编号或补建表属架构裁决，等 Owner 判定后再动。
+
+### M5-G-1｜执行结果（2026-11-10，真实跑通，非骨架）
+
+同一张表按实测填证据：
+
+| # | 验收判据 | 实测证据 | 判定 |
+|---|---|---|---|
+| Y07-1 | 有可反复调用的 IIIF 路径 | `tools/acquire-iiif-volume.mjs`：manifest → canvas 全集 → 逐页 Image API 取图，`--resume` 续取 | **已实现** |
+| Y07-2 | 方法目录有该路径及限流/成功判据 | `M0003@v1`（`iiif_presentation_and_image_api`）：5 步、3 条成功判据、6 个失败码、限流 `inter_request_delay_ms`+退避；实测推进为 `TESTED_SUCCESS` | **已实现** |
+| Y07-3 | 逐次尝试带分页边界 | attempt `81d5766e`：`pagination` = canvas 边界、73 页请求/取得/失败清单、本次实取 vs 库内续取页数；`started_at/finished_at/request_digest/executor/UA/宽度`齐全 | **已实现** |
+| Y08-1 | 每页字节/魔数/SHA256 | 73 页全部落私有原件，逐页 `content_type` 校验 + 魔数校验 + SHA256；页 35 = `7dccbdb1…`/365676B（与旧人工单页 `99dae89a…`/362221B **不是同一份字节**，故未混用） | **已实现** |
+| Y08-2 | 分母明确或标未知 | 分母 = manifest canvas 总数 **73**（`denominator.kind=iiif_manifest_canvas_count`，并记 manifest 自身 `sha256`）；D00 的 Y04 结论因此从 `unknown` 变为 `total_extent=73` | **已实现** |
+| Y08-3 | 缺页不得称全件 | 覆盖率实测两态：首轮 49/73 → `partial`（`missing_parts` 24 条逐页）；续取后 73/73 → `complete`，`missing_parts=0` | **已实现** |
+| Y08-4 | 私有存储可回读、摘要可复算 | 整卷摘要 `cb92c475…`：写入时算一次，随后**从库内 `raw_item` 逐页回读复算**得到同值（`digest_recomputed_from_db` 相等）；73/73 页登记绑定核对通过 | **已实现** |
+
+**真实链证据（本批）**
+- 整卷取件 attempt：`81d5766e`（73/73，`complete`，`volume_digest=cb92c475…`）；覆盖结论 `f2146b5f`。
+- 续取验证（不发新请求，只回读库内字节）：attempt `cfb37a9e` 复算摘要一致 → 说明"续取"不是抄近路而是可复核能力。
+- D00 重跑：run `74cdfe60` → Y04 结论 `54906f7d`：`target=source_volume`、`total_extent=73`、`completeness=complete`、`missing_parts=0`，`verified_against` 同时带本页 `asset_sha256=7dccbdb1…`、`volume_digest=cb92c475…`、`volume_coverage_id=f2146b5f`。
+- G0 候选：`fd871840`（SUBMITTED，`evidence_refs=9`，比上一轮多出整卷覆盖结论这一条）。
+- 实测发现并修正的三个真实阻塞（都不是"骨架"问题）：
+  1. `PROJECT_STOCK_TOO_LARGE`——存量诊断上限 50 件是单页时代的值，整卷 73 页直接撞死；按整卷量级放宽到 2000（仍保持有界，不是取消限制）。
+  2. worker 角色没有 `source.source_versions` 的 select 权限；改为用登记回执自带的 `source_id` 作键，不扩权限。
+  3. 分页尝试的 `asset_sha256` 是整卷摘要，被 Y04 误当本页哈希而失败关闭；改为按 `acquired_extent.pages` 逐页认账，并把"本次准入的是哪一页"写进 attempt 的 `pagination.admitted_page`。
+- 方法状态曾因 D00-C5 缺 update 策略而永远停在首次登记值（`TESTED_FAILURE` 与事实相反）；补策略后随真实结果推进为 `TESTED_SUCCESS`，定义列仍由触发器拒绝改写。
+- 回归：`pnpm typecheck` 6/6；`pnpm test:unit` 644 passed / 2 skipped；`pnpm test:data-production` 234 passed / 0 failed；`guard:registry`、`guard:stage-handoff` PASS（`guard:source-gate` 需本机 psql 直连库，离线时按既有方式仅报结构检查）。
+- 仍为设计内 HOLD：run `74cdfe60` 的 G0 结论 `INDEPENDENT_GATE_NOT_VERIFIED`（本机无独立 Gate 签发上下文），与上一轮一致，不构成新问题。
+
+**本批仍未做（明确不做，避免又变成"以为做了"）**
+- 规范 Y04「聚合目录→原机构回溯」仍空白（等 Owner 裁决编号与落点）。
+- 跨库另一条取件路线（Commons PDF 单文件、馆方批量包、HTTP-Range）未接；当前只有 IIIF 一条真实路径。
+- 取件的"条款审阅"字段 `robots_or_terms_reviewed` 仍为 `false`（只观察到限流并遵守），馆方使用条款的合规审阅未做。
