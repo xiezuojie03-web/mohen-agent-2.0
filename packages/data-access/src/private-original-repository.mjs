@@ -92,7 +92,10 @@ export function createPrivateOriginalRepository(pool){
   // 未绑定如实计为 unbound，其它错误（身份/权限/连接/元数据）一律抛出，绝不当成"零存量"。
   async projectStock(projectId,token){
    id(projectId);
-   const LIMIT=50;
+   // 上限只用于兜住单次诊断的扫描量，不是"本项目最多能存多少件"的业务上限。
+   // Y07 允许 IIIF 整卷逐页取件（一部方志几十上百页），因此留足整卷量级；
+   // 仍保持有界，避免一次诊断把无界库存全部拉进事务。
+   const LIMIT=2000;
    return tx(token,async(client)=>{
     const counts=await client.query(
      `select (select count(*)::int from studio.private_originals where project_id=$1) as originals,
