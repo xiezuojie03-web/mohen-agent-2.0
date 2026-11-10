@@ -2571,3 +2571,14 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **单测**：新增 `source-asset-receipt.test.mjs` 5 例；candidate-worker 两处证据引用断言更新 + 回执断言。
 - **回归**：typecheck 6/6；unit 644 通过 / 2 跳过 / 0 失败；data-production 223 通过 + 1 既有 `DEFERRED_ENV`；三项 guard 全 PASS。
 - **边界**：回执不是资格，不签 Gate；本地隔离不构成生产准出，`M5_OVERALL_HOLD` 不变；`git push` 网络仍不通，待补推。
+
+## M5-G｜D00 全工序真实链总验证：G0 候选可回读（2026-11-10，本地隔离 VERIFIED_ISOLATED）
+
+- **应完成什么**：真实链一次跑完 D00 的 Y01—Y08 八道工序，产出可回读的 G0 候选——"跑通到 G0"的交付点。
+- **结果**：
+  - run `222edcc1-2cf2-4605-a614-2a398201f8d8`（local-execution-authorizer run，真实 Runner + 真实授权 + 私有工人池），G0 候选 `84108f97-0dd9-4a54-8c6d-4c95b311d31a`（SUBMITTED，dependency_snapshot 空属预期）。
+  - `evidence_refs` 8 条：source_version + 链上五条 + C01@v1/C02@v1 方法计划；链上记录逐条回读真实存在（NAJ 松江府志7 catalog_found、核查 needs_owner、M0002 acquired_verified 带 Y05 身份 candidate_ref、覆盖 unknown、优先级 deferred）。
+  - 机器评审 `rule-gate-reviewer --gate G0 --dry-run`：identity_version / rights_by_operation / method_plan_preselection 三项全 PASS。
+  - acquisition 真实值经 `buildSourceIntakeInput` 的 sections 平铺入参（`D:\MoHen\data\m5-runs\d00-sections.json`），授权器与 Runner 同源算 input_digest。
+- **环境修复**：授权证据按 git HEAD 重生成；`OPENSSL_CONF` 补配后独立 Gate 运行时测试真实通过（229/0），旧 `DEFERRED_ENV`（无 openssl）挂账消除；查明 `MOHEN_DATABASE_CA_CERT` 会污染 database-tls 单测，证据生成不带该变量。
+- **边界**：run 报告 HOLD 为设计内失败关闭（独立 Gate 决策不在本机）；本批不签任何 Gate；本地隔离不构成生产准出，`M5_OVERALL_HOLD` 不变；`git push` 待网络恢复补推（本地领先 6 个提交）。
