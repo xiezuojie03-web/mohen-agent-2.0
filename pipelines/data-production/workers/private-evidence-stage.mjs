@@ -4,7 +4,7 @@
 // independent Gate signs it.
 import { createHash } from 'node:crypto';
 import { assertStageExecutionAuthorized, consumeAuthorizedStageHandoff } from '../orchestrator/execution-authority.mjs';
-import { buildMethodPlanRefs } from '../../../packages/data-access/src/method-plan-ref.mjs';
+import { buildMethodPlanRefs, inspectMethodPlanRef, isMethodPlanRef } from '../../../packages/data-access/src/method-plan-ref.mjs';
 
 const HEX=/^[a-f0-9]{64}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
@@ -30,7 +30,7 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
   persistMaterialObservation,persistWorldClaim,persistHumanisticFinding,persistWorldProjection,
   recordSourceNeed,registerAcquisitionMethod,appendAcquisitionAttempt,
   recordCatalogEntry,recordAcquisitionCoverage,recordCandidateVerification,recordPriorityAssessment,
-  submitGateCandidate,readGateAudit}={}) {
+  submitGateCandidate,readGateAudit,readApprovedMethodPlan}={}) {
   if(typeof readOriginal!=='function'||typeof verifySourceBinding!=='function'||
      typeof bridge?.linkReading!=='function'||typeof bridge?.linkClaim!=='function')throw Error('PRIVATE_EVIDENCE_BRIDGE_REQUIRED');
   // A real stage must never silently skip candidate submission: the existing
@@ -58,6 +58,38 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
       purpose:{namespace:'data-production',code:'m5-remediation',version:'v1'},
       allowedScope:{project_id:projectId},consumer:'producer',
       dependencySnapshot,evidenceRefs:refs,inputFingerprint:requestDigest});
+  }
+
+  // D00-C/D01：消费者方法预选经独立 G0 批准后，D01 的读法由该批准计划决定，
+  // 不再只按载体猜方法。计划缺失、引用不自洽、或未覆盖本次动作的方法一律失败关闭，
+  // 且必须在读取任何原件字节之前抛出（不先消费再报错）。
+  const D01_METHOD_BY_ACTION={readScannedPage:'C02',draftTextReading:'C01'};
+  async function requireApprovedMethodPlan({action,sourceVersionId,carriedPlan}) {
+    if(typeof readApprovedMethodPlan!=='function')throw Error('PRIVATE_D01_METHOD_PLAN_READ_REQUIRED');
+    const approved=await readApprovedMethodPlan({gateCode:'G0',objectType:'source_version',objectId:sourceVersionId});
+    if(!approved||!Array.isArray(approved.refs)||approved.refs.length===0)
+      throw Error('PRIVATE_D01_G0_METHOD_PLAN_NOT_APPROVED');
+    if(!approved.refs.every(isMethodPlanRef))throw Error('PRIVATE_D01_METHOD_PLAN_REF_INVALID');
+    const inspected=[];
+    for(const ref of approved.refs){
+      const result=inspectMethodPlanRef(ref);
+      if(!result.ok)throw Error(`PRIVATE_D01_METHOD_PLAN_REF_INVALID:${result.reason}`);
+      if(inspected.some(item=>item.id===result.id))throw Error(`PRIVATE_D01_METHOD_PLAN_REF_DUPLICATE:${result.id}`);
+      inspected.push(result);
+    }
+    const methodId=D01_METHOD_BY_ACTION[action];
+    const planned=inspected.find(item=>item.methodId===methodId);
+    if(!planned)throw Error(`PRIVATE_D01_METHOD_NOT_PLANNED:${methodId}`);
+    // D00 原样带下来的预选必须与 G0 批准的计划逐条一致；不一致说明交接被改过。
+    if(carriedPlan!=null){
+      if(!Array.isArray(carriedPlan)||!carriedPlan.every(isMethodPlanRef))
+        throw Error('PRIVATE_D01_METHOD_PLAN_MISMATCH');
+      const carriedIds=carriedPlan.map(ref=>`${String(ref.method_id??'')}@${String(ref.method_version??'')}`).sort().join(',');
+      const approvedIds=inspected.map(item=>item.id).sort().join(',');
+      if(carriedIds!==approvedIds)throw Error('PRIVATE_D01_METHOD_PLAN_MISMATCH');
+    }
+    return {gate_audit_id:String(approved.gate_audit_id??''),method_id:planned.methodId,
+      method_version:planned.methodVersion,planned_methods:inspected.map(item=>item.id)};
   }
 
   async function authorized({stage,run,job,registry,context,input,token}) {
@@ -265,6 +297,9 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
       const bound=await verifySourceBinding({originalId,sourceVersionId:page.source_version_id,
         rawItemId:page.raw_item_id,rawSha256:page.raw_sha256},token);
       if(bound!==true)throw Error('PRIVATE_READING_SOURCE_NOT_BOUND');
+      // G0 必须先批准 C02 才能读这一页；未经批准不消费原件字节。
+      const methodPlanApproval=await requireApprovedMethodPlan({action:'readScannedPage',
+        sourceVersionId:page.source_version_id,carriedPlan:input?.method_plan});
       const {record,bytes}=await readOriginal(originalId,token);
       if(record?.state!=='STORED_VERIFIED'||!IMAGE_TYPE.test(record?.content_type??'')||
          !HEX.test(record?.sha256??'')||hash(bytes)!==record.sha256||
@@ -289,7 +324,8 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         raw_item_id:page.raw_item_id,raw_sha256:record.sha256,
         read_run_id:saved.read_run_id,read_unit_id:saved.read_unit_id,
         artifact_revision:saved.artifact_revision,request_digest:saved.request_digest,
-        page,gate_candidate_id:gateCandidateId,gate_candidate_status:'SUBMITTED',
+        page,method_plan_approval:methodPlanApproval,gate_candidate_id:gateCandidateId,
+        gate_candidate_status:'SUBMITTED',
         qualification:'UNASSESSED',gate_code:'G1'};
     },
 
@@ -309,6 +345,9 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         sourceVersionId:extent.source_version_id,rawItemId:extent.raw_item_id,
         rawSha256:extent.raw_sha256},token);
       if(bound!==true)throw Error('PRIVATE_READING_SOURCE_NOT_BOUND');
+      // G0 必须先批准 C01 才能读这段正文；未经批准不消费原件字节。
+      const methodPlanApproval=await requireApprovedMethodPlan({action:'draftTextReading',
+        sourceVersionId:extent.source_version_id,carriedPlan:input?.method_plan});
       const {record,bytes}=await readOriginal(originalId,token);
       if(record?.state!=='STORED_VERIFIED'||record?.content_type!=='text/plain'||
          !HEX.test(record?.sha256??'')||hash(bytes)!==record.sha256||
@@ -338,7 +377,8 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         raw_item_id:extent.raw_item_id,raw_sha256:record.sha256,
         read_run_id:saved.read_run_id,read_unit_id:saved.read_unit_id,
         artifact_revision:saved.artifact_revision,request_digest:saved.request_digest,
-        extent,quote,gate_candidate_id:gateCandidateId,gate_candidate_status:'SUBMITTED',
+        extent,quote,method_plan_approval:methodPlanApproval,gate_candidate_id:gateCandidateId,
+        gate_candidate_status:'SUBMITTED',
         qualification:'UNASSESSED',gate_code:'G1'};
     },
 

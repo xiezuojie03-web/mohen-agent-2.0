@@ -59,7 +59,11 @@ async function withStageAuthority({stage,input},body) {
 
 const bridgeStub={linkReading:async()=>({}),linkClaim:async()=>({})};
 // Minimal candidate-submission stub: a candidate id, never a Gate decision.
-const gateStub={submitGateCandidate:async()=>'candidate-fixture',readGateAudit:async()=>null};
+// D01 现在要求 G0 已批准消费者方法预选，故这里给出 C01/C02 均在内的合成批准。
+const approvedPlanStub={gate_audit_id:'audit-fixture',refs:buildMethodPlanRefs({methods:[
+  {method_id:'C01',method_version:'v1'},{method_id:'C02',method_version:'v1'}]})};
+const gateStub={submitGateCandidate:async()=>'candidate-fixture',readGateAudit:async()=>null,
+  readApprovedMethodPlan:async()=>approvedPlanStub};
 const observation=()=>({h_type:'H05',
   literal_reading:'均科正耗平米三斗六升五合以下低田等准熟起科同',
   normalized_text:'均科正耗平米三斗六升五合。以下低田等，准熟起科同。',
@@ -602,34 +606,27 @@ test('D00 fails closed on malformed or unwritable Y02—Y06 material',async()=>{
   }
 });
 
-test('D01 readScannedPage submits one G1 read_unit candidate with an empty dependency snapshot when G0 is unsigned',async()=>{
+test('D01 refuses to read a page when G0 has not approved a consumer method plan',async()=>{
   const originalId=id(),sourceVersionId=id(),readUnitId=id();
   const input={originalId,page:scannedPageFor(sourceVersionId)};
   const audits=[];
-  let submitted=null;
+  let submitted=null,reads=0;
   return withStageAuthority({stage:'D01',input},async({registry,job,run,context})=>{
     const worker=createPrivateEvidenceStageWorker({
-      readOriginal:async()=>imageRecord(originalId,run.scope.project_id),
+      readOriginal:async()=>{reads++;return imageRecord(originalId,run.scope.project_id);},
       verifySourceBinding:async()=>true,
       persistPageReading:async()=>persistedReading(readUnitId),
       bridge:bridgeStub,
       submitGateCandidate:async metadata=>{submitted=metadata;return 'candidate-g1';},
       readGateAudit:async query=>{audits.push(query);return null;},
+      // G0 未签 = 没有批准的计划：预选不能由生产者自述替代。
+      readApprovedMethodPlan:async()=>null,
     });
-    const candidate=await worker.readScannedPage({run,job,registry,context,input,token:'synthetic-session'});
-    assert.deepEqual(audits,[{gateCode:'G0',objectType:'source_version',objectId:sourceVersionId}]);
-    // An unsigned upstream is never faked; the candidate keeps [] and signing
-    // will fail closed on its own.
-    assert.deepEqual(submitted.dependencySnapshot,[]);
-    assert.deepEqual(submitted,{runId:run.run_id,stage:'D01',gateCode:'G1',
-      objectType:'read_unit',objectId:readUnitId,artifactRevision:'a'.repeat(64),
-      purpose:CANDIDATE_PURPOSE,allowedScope:{project_id:run.scope.project_id},consumer:'producer',
-      dependencySnapshot:[],evidenceRefs:[
-        {kind:'read_unit',id:readUnitId,artifact_revision:'a'.repeat(64)},
-        {kind:'source_version',id:sourceVersionId}],inputFingerprint:executionDigest(input)});
-    assert.equal(candidate.gate_candidate_id,'candidate-g1');
-    assert.equal(candidate.gate_candidate_status,'SUBMITTED');
-    assert.equal(candidate.qualification,'UNASSESSED');
+    await assert.rejects(()=>worker.readScannedPage({run,job,registry,context,input,token:'synthetic-session'}),
+      /PRIVATE_D01_G0_METHOD_PLAN_NOT_APPROVED/);
+    assert.deepEqual(audits,[]);
+    assert.equal(submitted,null,'unsigned G0 must not reach G1');
+    assert.equal(reads,0,'original bytes must not be consumed before approval');
   });
 });
 
@@ -647,6 +644,9 @@ test('D01 draftTextReading submits one G1 read_unit candidate against the extent
       bridge:bridgeStub,
       submitGateCandidate:async metadata=>{submitted=metadata;return 'candidate-g1-text';},
       readGateAudit:async query=>{audits.push(query);return null;},
+      // 本用例只断言候选元数据；D01 的方法计划前置用合成批准满足，审计仍为空，
+      // 因此依赖快照保持 []（未签上游不伪造）。
+      readApprovedMethodPlan:async()=>approvedPlanStub,
     });
     const candidate=await worker.draftTextReading({run,job,registry,context,input,token:'synthetic-session'});
     assert.deepEqual(audits,[{gateCode:'G0',objectType:'source_version',objectId:sourceVersionId}]);

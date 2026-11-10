@@ -2460,3 +2460,16 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 
 - **收尾修正（M5-B 内）**：`stamp-public-domain-rights.mjs` 复跑误报 HOLD 已修——被 `PRIVATE_READING_IMMUTABLE` 钉死的版本改为按库内事实（该 `source_version` 存在私读 `read_run`）判定，不再依赖本次 `--apply` 的副作用；dry-run 复跑现为 `PUBLIC_DOMAIN_RIGHTS_STAMPED`（`granted_ok=true`、`pinned_versions=1`、`unfrozen_writable_versions=0`）。
 - **回归**：`pnpm test` 主套件 87 files passed / 2 skipped，703 tests passed / 2 skipped（0 failed），`ISOLATION_VERDICT real_db_untouched=YES`；`pnpm -r typecheck` 6/6；`pnpm test:data-production` 189 pass / 0 fail；`guard:docs`/`guard:structure`/`guard:registry`/`guard:source-gate`/`guard:identifiers`/`guard:acquisition`/`guard:reconciliation` 均 exit 0。
+
+## M5-C｜D01 消费预选落地（2026-11-10，本地隔离）
+
+- **应完成什么**：D00 的消费者方法预选此前只是"被 G0 承载"，D01 仍按载体自行决定读法。本批让 D01 真正**消费**批准的计划：读取前必须先取得 G0 批准的预选。
+- **做了什么**：
+  - `pipelines/data-production/workers/private-evidence-binding.mjs` 新增并导出 `createApprovedMethodPlanReader(pool)`：从 `control.qualification_current` → G0 审计（`result=PASS`、`decision_origin='independent_gate'`、`consumer='producer'`、`current_qualification_is_valid`）读其**不可变** `details->'evidence_refs'`；不读可变候选行（私有工人对该表本就无 SELECT，不借机扩权），读不到返回 `null`。
+  - `private-evidence-stage.mjs`：`readScannedPage`/`draftTextReading` 在 `verifySourceBinding` 之后、**读取原件字节之前**调用 `requireApprovedMethodPlan` —— 引用须逐条 `inspectMethodPlanRef` 自洽、计划须覆盖本次动作方法（`C02`/`C01`）、D00 交接下来的 `method_plan` 须与批准计划逐条一致；否则 `PRIVATE_D01_G0_METHOD_PLAN_NOT_APPROVED` / `PRIVATE_D01_METHOD_NOT_PLANNED:*` / `PRIVATE_D01_METHOD_PLAN_REF_INVALID*` / `PRIVATE_D01_METHOD_PLAN_MISMATCH` 失败关闭。批准结果写入候选 `method_plan_approval`。
+  - 协议 `specs/data-production/MoHen_Data_Production_Protocol.md` §2.1 第 7 条据实改写：写明 D01 已消费，同时保留"预选≠择优"的边界声明。
+  - 补登两条**早已在本地 dev 库应用、却未进隔离链**的迁移（`20261110110000_mab_d00c_source_discovery_ledger.sql`、`20261110120000_mab_d00c4_remaining_stages.sql`）到 `scripts/test-k3-db.mjs`——此前 `guard:isolated-db-fixtures` 因此报 2 条 VIOLATION（非本批引入，属上一批次漏登）。
+- **证据**：`tools/probe-d01-method-plan.mjs`（真实 `mohen_private_worker` 登录 + 真实 RLS 只读）= **`D01_METHOD_PLAN_CONSUMPTION_PROVEN`**：`b0a11000-…-0005` 读到 G0 `8973c476` 的 `C02@v1`；从未签 G0 的 `…-0006` 读到 `null`（探针与 D01 都必须拒绝）。
+- **单测**：新增 4 例（无批准拒绝且不消费字节、计划不含该法拒绝、交接计划被改拒绝、一致时写入 `method_plan_approval`）；stage 14/14、binding 8/8、data-production 定向 3 文件全绿。
+- **回归**：`pnpm test` 87 files passed / 2 skipped、706 tests passed / 2 skipped（0 failed），`ISOLATION_VERDICT real_db_untouched=YES`（含新补登两条迁移后的 `_test` 库重建）；`pnpm -r typecheck` 6/6；`pnpm test:data-production` 183 pass + 1 既有 `DEFERRED_ENV`（`independent-gate-service-runtime`，无 openssl，非本批引入）；`guard:docs`/`structure`/`registry`/`source-gate`/`identifiers`/`acquisition`/`reconciliation`/`stage-handoff`/`k3-traceability`/`physical-model`/`runtime-boundary`/`cross-layer-write`/`gate-enforcement`/`no-legacy-production-entry`/`isolated-db-fixtures` 全部 exit 0。
+- **边界**：C 方法仍未进 `production-registry.json` 路由（57 仍 `HOLD`）；每个 D01 动作目前只对应一个 C 方法，"多法并存时由预选择优"未实现——预选是读法的必要条件，不是选择依据。私有工人池在新机器上需 `MOHEN_DATABASE_CA_CERT(_FILE)`（本机为 `D:\MoHen\keys\execution-auth\tls-ca-cert.pem`），缺省即 HOLD，不降级跳过校验。

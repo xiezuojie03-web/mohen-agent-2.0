@@ -27,6 +27,7 @@ vi.mock('../../pipelines/data-production/orchestrator/execution-authority.mjs',(
 }));
 import { createHash } from 'node:crypto';
 import { createBoundPrivateEvidenceStageWorker } from '../../pipelines/data-production/workers/private-evidence-binding.mjs';
+import { buildMethodPlanRefs } from '../../packages/data-access/src/method-plan-ref.mjs';
 
 const hash=(bytes:Buffer)=>createHash('sha256').update(bytes).digest('hex');
 const bytes=Buffer.from('江南水乡的合成材料。');
@@ -40,15 +41,23 @@ const extent={kind:'utf8_byte_range/v1',start_byte:0,end_byte:Buffer.byteLength(
  raw_item_id:'33333333-3333-4333-8333-333333333333',
  raw_sha256:hash(bytes),quote_sha256:hash(Buffer.from(quote))};
 const input={originalId,extent,quote};
+// G0 已批准的消费者方法预选（C01 文本读 + C02 扫页读）。
+const approvedPlanRefs=buildMethodPlanRefs({methods:[
+ {method_id:'C01',method_version:'v1'},{method_id:'C02',method_version:'v1'}]});
 function args(stage:string,content:unknown){
  return {run:{run_id:'run',scope:{project_id:'44444444-4444-4444-8444-444444444444'}},job:{stage,job_id:'job'},registry:{status:'ACTIVE_AUTHORIZED'},context:{},input:content,token:'synthetic-user-session'};
 }
 beforeEach(()=>{
  vi.clearAllMocks();
- // Producer-side candidate submission and audit read share the same pool; no
- // candidate id or signed upstream audit is fabricated by this mock.
- pool.query.mockImplementation(async(sql:string)=>String(sql).includes('qualification_current')
-   ? {rows:[]} : {rows:[{candidate_id:'candidate-fixture'}]});
+ // Producer-side candidate submission, signed-audit read and the D01 approved method plan share
+ // the same pool; no candidate id or signed upstream audit is fabricated by this mock.
+ // D01 现在要求 G0 已批准消费者方法预选，故只对"读批准计划"这一条查询给出合成批准，
+ // 其余上游审计查询仍返回空（未签上游不伪造）。
+ pool.query.mockImplementation(async(sql:string)=>{
+   const text=String(sql);
+   if(text.includes("details->'evidence_refs'"))return {rows:[{gate_audit_id:'audit-g0',evidence_refs:approvedPlanRefs}]};
+   return text.includes('qualification_current')?{rows:[]}:{rows:[{candidate_id:'candidate-fixture'}]};
+ });
  deps.handoff.mockReset().mockReturnValue(false);
  deps.authorize.mockImplementation(async()=>{deps.handoff.mockReturnValueOnce(true);});
  deps.originalRepository.mockReturnValue({marker:'scoped-repository'});

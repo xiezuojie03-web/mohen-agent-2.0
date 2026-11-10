@@ -5,6 +5,7 @@ import {
   assertStageExecutionAuthorized, executionDigest, consumeAuthorizedStageHandoff,
 } from '../../pipelines/data-production/orchestrator/execution-authority.mjs';
 import {createPrivateEvidenceStageWorker} from '../../pipelines/data-production/workers/private-evidence-stage.mjs';
+import {buildMethodPlanRefs} from '../../packages/data-access/src/method-plan-ref.mjs';
 
 const digest=b=>createHash('sha256').update(b).digest('hex');
 const id=()=>randomUUID();
@@ -64,6 +65,9 @@ test('M2 private worker consumes the Runner grant once; no duplicate nonce or un
       // Candidate submission is stubbed: this test asserts one-shot authorization.
       submitGateCandidate:async()=>'candidate-fixture',
       readGateAudit:async()=>null,
+      // G0 已批准的消费者方法预选（C01/C02 均在计划内），本文件只断言一次性授权。
+      readApprovedMethodPlan:async()=>({gate_audit_id:'audit-fixture',refs:buildMethodPlanRefs({methods:[
+        {method_id:'C01',method_version:'v1'},{method_id:'C02',method_version:'v1'}]})}),
     });
     await assertStageExecutionAuthorized({registry,job,run,input,context});
     assert.equal(verifyCalls,1);

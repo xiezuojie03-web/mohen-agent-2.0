@@ -118,7 +118,11 @@ try {
       "20261107240000_mab_m5_claim_revision_artifact_read_policy.sql",
       "20261108110000_mab_m5_source_rights_actions.sql",
       "20261109120000_mab_m5_artifact_content_revision.sql",
-      "20261110100000_mab_gate_audits_rls.sql"]) apply(file);
+      "20261110100000_mab_gate_audits_rls.sql",
+      // D00-C：来源发现台账（source_needs/acquisition_methods…）与 D00-C4 余下阶段的结构，
+      // 已在本地 dev 库应用；补进隔离链，避免 _test 库缺表而测试"假绿"。
+      "20261110110000_mab_d00c_source_discovery_ledger.sql",
+      "20261110120000_mab_d00c4_remaining_stages.sql"]) apply(file);
     // Capability assertions for the migrations applied immediately above. They can only run at
     // this point in the chain: the rights columns, the private worker, the machine reviewer and
     // the content-based sign_gate_candidate semantics do not exist any earlier.

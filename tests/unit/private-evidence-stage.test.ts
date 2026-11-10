@@ -6,6 +6,7 @@ vi.mock('../../pipelines/data-production/orchestrator/execution-authority.mjs',(
 }));
 import {createHash} from 'node:crypto';
 import {createPrivateEvidenceStageWorker} from '../../pipelines/data-production/workers/private-evidence-stage.mjs';
+import {buildMethodPlanRefs} from '../../packages/data-access/src/method-plan-ref.mjs';
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const bytes=Buffer.from('桥边有市。\n这是合成材料。');
 const quote='桥边有市。';
@@ -14,11 +15,15 @@ const extent={kind:'utf8_byte_range/v1',start_byte:0,end_byte:Buffer.byteLength(
  raw_sha256:sha(bytes),quote_sha256:sha(Buffer.from(quote)),
  source_version_id:'22222222-2222-4222-8222-222222222222',raw_item_id:'33333333-3333-4333-8333-333333333333'};
 const readOriginal=vi.fn(),linkReading=vi.fn(),linkClaim=vi.fn(),verifySourceBinding=vi.fn(),persistReading=vi.fn();
-const submitGateCandidate=vi.fn(),readGateAudit=vi.fn();
-const worker=createPrivateEvidenceStageWorker({readOriginal,bridge:{linkReading,linkClaim},verifySourceBinding,persistReading,submitGateCandidate,readGateAudit});
+const submitGateCandidate=vi.fn(),readGateAudit=vi.fn(),readApprovedMethodPlan=vi.fn();
+// G0 已批准的消费者方法预选：C01（文本读）与 C02（扫页读）都在计划内。
+const approvedPlan={gate_audit_id:'audit-g0',refs:buildMethodPlanRefs({methods:[
+ {method_id:'C01',method_version:'v1'},{method_id:'C02',method_version:'v1'}]})};
+const worker=createPrivateEvidenceStageWorker({readOriginal,bridge:{linkReading,linkClaim},verifySourceBinding,persistReading,submitGateCandidate,readGateAudit,readApprovedMethodPlan});
 const base=(stage,input)=>({run:{run_id:'r',scope:{project_id:'44444444-4444-4444-8444-444444444444'}},job:{stage,job_id:'j'},registry:{status:'ACTIVE_AUTHORIZED'},context:{},input,token:'synthetic-actor-session'});
 beforeEach(()=>{vi.clearAllMocks();auth.handoff.mockReset().mockReturnValue(false);auth.check.mockImplementation(async()=>{auth.handoff.mockReturnValueOnce(true);});verifySourceBinding.mockResolvedValue(true);
  submitGateCandidate.mockResolvedValue('candidate-1');readGateAudit.mockResolvedValue(null);
+ readApprovedMethodPlan.mockResolvedValue(approvedPlan);
  readOriginal.mockResolvedValue({record:{state:'STORED_VERIFIED',content_type:'text/plain',sha256:sha(bytes)},bytes});
  linkReading.mockResolvedValue({link_id:'link-1',qualification:'UNASSESSED'});
  linkClaim.mockResolvedValue({link_id:'link-2',qualification:'UNASSESSED'});
@@ -47,6 +52,27 @@ it('refuses mutated quotes, mid-character offsets, fake hash and wrong original 
  await expect(worker.draftTextReading(base('D01',{originalId,extent:{...extent,raw_sha256:'a'.repeat(64)},quote}))).rejects.toThrow('PRIVATE_READING_ORIGINAL_UNVERIFIED');
  readOriginal.mockResolvedValueOnce({record:{state:'PENDING',content_type:'text/plain',sha256:sha(bytes)},bytes});
  await expect(worker.draftTextReading(base('D01',{originalId,extent,quote}))).rejects.toThrow('PRIVATE_READING_ORIGINAL_UNVERIFIED');
+});
+it('refuses to read before G0 has approved a consumer method plan',async()=>{
+ readApprovedMethodPlan.mockResolvedValueOnce(null);
+ await expect(worker.draftTextReading(base('D01',{originalId,extent,quote})))
+  .rejects.toThrow('PRIVATE_D01_G0_METHOD_PLAN_NOT_APPROVED');
+ expect(readOriginal).not.toHaveBeenCalled();
+});
+it('refuses a read method that the approved plan does not cover',async()=>{
+ readApprovedMethodPlan.mockResolvedValueOnce({gate_audit_id:'audit-g0',
+  refs:buildMethodPlanRefs({methods:[{method_id:'C02',method_version:'v1'}]})});
+ await expect(worker.draftTextReading(base('D01',{originalId,extent,quote})))
+  .rejects.toThrow('PRIVATE_D01_METHOD_NOT_PLANNED:C01');
+ expect(readOriginal).not.toHaveBeenCalled();
+});
+it('refuses a handoff whose carried plan differs from the approved one, and accepts the exact match',async()=>{
+ const carriedOnlyC02=buildMethodPlanRefs({methods:[{method_id:'C02',method_version:'v1'}]});
+ await expect(worker.draftTextReading(base('D01',{originalId,extent,quote,method_plan:carriedOnlyC02})))
+  .rejects.toThrow('PRIVATE_D01_METHOD_PLAN_MISMATCH');
+ expect(readOriginal).not.toHaveBeenCalled();
+ const result=await worker.draftTextReading(base('D01',{originalId,extent,quote,method_plan:approvedPlan.refs}));
+ expect(result.method_plan_approval).toMatchObject({gate_audit_id:'audit-g0',method_id:'C01',method_version:'v1'});
 });
 it('D02 uses only the existing byte-attested bridge, not an invented Gate decision',async()=>{
  const input={originalId,evidenceId:'e1',readUnitId:'u1',extent,quote,extentOrder:1};

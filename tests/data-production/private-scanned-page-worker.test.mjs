@@ -5,6 +5,7 @@ import {
   assertStageExecutionAuthorized, executionDigest,
 } from '../../pipelines/data-production/orchestrator/execution-authority.mjs';
 import {createPrivateEvidenceStageWorker} from '../../pipelines/data-production/workers/private-evidence-stage.mjs';
+import {buildMethodPlanRefs} from '../../packages/data-access/src/method-plan-ref.mjs';
 
 const digest=b=>createHash('sha256').update(b).digest('hex');
 const id=()=>randomUUID();
@@ -57,7 +58,10 @@ async function withStageAuthority({stage,input},body) {
 
 const IMAGE=Buffer.from([0xff,0xd8,0xff,0xe0,1,2,3,4]);
 // Candidate submission stub; this file asserts provenance, not Gate I/O.
-const gateStub={submitGateCandidate:async()=>'candidate-fixture',readGateAudit:async()=>null};
+// D01 现在要求 G0 已批准消费者方法预选，故这里给出 C01/C02 均在内的合成批准。
+const gateStub={submitGateCandidate:async()=>'candidate-fixture',readGateAudit:async()=>null,
+  readApprovedMethodPlan:async()=>({gate_audit_id:'audit-fixture',refs:buildMethodPlanRefs({methods:[
+    {method_id:'C01',method_version:'v1'},{method_id:'C02',method_version:'v1'}]})})};
 const IMAGE_SHA=digest(IMAGE);
 const registrationFor=(originalId,projectId)=>({schema:'mohen.private-source-registration.v1',
   original_id:originalId,project_id:projectId,source_id:id(),source_version_id:id(),raw_item_id:id(),
