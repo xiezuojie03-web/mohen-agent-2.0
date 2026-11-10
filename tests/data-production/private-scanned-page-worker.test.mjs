@@ -75,13 +75,22 @@ const registrationFor=(originalId,projectId)=>({schema:'mohen.private-source-reg
 
 test('D00 verifySourceIntake returns an UNASSESSED registration candidate under a real stage grant',async()=>{
   const originalId=id(),projectId=id();
-  const input={research_intent:'松江府田赋卷十一',scope:{project_id:projectId,original_id:originalId,page_number:35}};
+  const input={research_intent:'松江府田赋卷十一',scope:{project_id:projectId,original_id:originalId,page_number:35},
+    acquisition:{
+      method:{method_key:'M0002',method_version:'v1',access_mode:'manual_download',
+        resource_scope:{provider:'国立公文书馆(NAJ)'},steps:['打开馆藏页面','下载本页 JPEG'],
+        success_criteria:['字节与馆藏页面一致'],failure_modes:['页面不可达'],alternatives:[]},
+      attempt:{result_state:'acquired_verified',asset_sha256:IMAGE_SHA,byte_size:IMAGE.length,
+        started_at:'2026-11-10T00:00:00.000Z',finished_at:'2026-11-10T00:01:00.000Z',
+        request_digest:'d'.repeat(64)}}};
   let reads=0,registrations=0,bindings=0;
   let intakeEntry=null;
   let intakeVerification=null;
   let intakePriority=null;
+  let intakeAttempt=null;
   const intakeEntryId=id();
   const intakeVerificationId=id();
+  const intakeAttemptId=id();
   return withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
     const worker=createPrivateEvidenceStageWorker({
       readOriginal:async()=>{reads++;return {record:{original_id:originalId,project_id:projectId,
@@ -93,6 +102,9 @@ test('D00 verifySourceIntake returns an UNASSESSED registration candidate under 
       recordCatalogEntry:async entry=>{intakeEntry=entry;return {catalog_entry_id:intakeEntryId};},
       recordCandidateVerification:async item=>{intakeVerification=item;return {verification_id:intakeVerificationId};},
       recordPriorityAssessment:async item=>{intakePriority=item;return {assessment_id:id()};},
+      registerAcquisitionMethod:async()=>({method_key:'M0002',method_version:'v1'}),
+      appendAcquisitionAttempt:async item=>{intakeAttempt=item;return {attempt_id:intakeAttemptId};},
+      recordAcquisitionCoverage:async()=>({coverage_id:id()}),
       bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},...gateStub,
     });
     const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
@@ -123,6 +135,14 @@ test('D00 verifySourceIntake returns an UNASSESSED registration candidate under 
     assert.equal(intakePriority.decision,'deferred');
     assert.equal(intakePriority.methodKey,'D00/Y06:intake_priority');
     assert.equal(candidate.intake_priority_decision,'deferred');
+    // Y07：获取尝试落库，candidate_ref 是本次准入的 Y05 身份分层本身，
+    // 依赖引用指向版本与数字资产两层真实实体；字节与库存一致才可自称 acquired_verified。
+    assert.equal(candidate.acquisition_attempt_id,intakeAttemptId);
+    assert.equal(intakeAttempt.methodKey,'M0002');
+    assert.equal(intakeAttempt.resultState,'acquired_verified');
+    assert.equal(intakeAttempt.assetSha256,IMAGE_SHA);
+    assert.equal(intakeAttempt.candidateRef.schema,'mohen.source-identity-stratification.v1');
+    assert.deepEqual(intakeAttempt.dependencyRefs.map(d=>d.kind).sort(),['raw_item','source_version']);
     assert.equal(candidate.stage,'D00');
     assert.equal(candidate.gate_code,'G0');
     assert.equal(candidate.qualification,'UNASSESSED');

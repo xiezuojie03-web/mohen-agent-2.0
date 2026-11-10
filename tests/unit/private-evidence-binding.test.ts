@@ -9,7 +9,7 @@ const deps=vi.hoisted(()=>({
   persistWorldClaim:vi.fn(),persistHumanisticFinding:vi.fn(),persistWorldProjection:vi.fn(),
   sourceDiscoveryRepository:vi.fn(),recordSourceNeed:vi.fn(),projectStock:vi.fn(),
   registerAcquisitionMethod:vi.fn(),appendAcquisitionAttempt:vi.fn(),recordCatalogEntry:vi.fn(),
-  recordCandidateVerification:vi.fn(),
+  recordCandidateVerification:vi.fn(),recordPriorityAssessment:vi.fn(),recordAcquisitionCoverage:vi.fn(),
 }));
 vi.mock('../../packages/data-access/src/index.mjs',()=>({
   createPrivateOriginalRepository:deps.originalRepository,
@@ -104,11 +104,17 @@ beforeEach(()=>{
  deps.recordSourceNeed.mockResolvedValue({need_id:originalId,created_at:'2026-11-10T00:00:00.000Z'});
  deps.recordCatalogEntry.mockResolvedValue({catalog_entry_id:'77777777-7777-4777-8777-777777777777'});
  deps.recordCandidateVerification.mockResolvedValue({verification_id:'88888888-8888-4888-8888-888888888888'});
+ deps.recordPriorityAssessment.mockResolvedValue({assessment_id:'99999999-9999-4999-8999-999999999999'});
+ deps.registerAcquisitionMethod.mockResolvedValue({method_key:'M0002',method_version:'v1'});
+ deps.appendAcquisitionAttempt.mockResolvedValue({attempt_id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'});
+ deps.recordAcquisitionCoverage.mockResolvedValue({coverage_id:'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb'});
  deps.sourceDiscoveryRepository.mockReturnValue({recordSourceNeed:deps.recordSourceNeed,
    registerAcquisitionMethod:deps.registerAcquisitionMethod,
    appendAcquisitionAttempt:deps.appendAcquisitionAttempt,
    recordCatalogEntry:deps.recordCatalogEntry,
-   recordCandidateVerification:deps.recordCandidateVerification});
+   recordCandidateVerification:deps.recordCandidateVerification,
+   recordPriorityAssessment:deps.recordPriorityAssessment,
+   recordAcquisitionCoverage:deps.recordAcquisitionCoverage});
 });
 it('requires a server-side repository, verified object store, and verifier key',()=>{
  expect(()=>createBoundPrivateEvidenceStageWorker({storage,verificationKey:key})).toThrow('PRIVATE_STAGE_DATABASE_REQUIRED');
@@ -202,7 +208,13 @@ it('composes D00 source intake through the registration lookup',async()=>{
    project_id:'44444444-4444-4444-8444-444444444444',
    state:'STORED_VERIFIED',content_type:'image/jpeg',sha256:hash(bytes),byte_size:bytes.length},bytes});
  const result=await worker.verifySourceIntake(args('D00',{research_intent:'松江府田赋',
-   scope:{project_id:'44444444-4444-4444-8444-444444444444',original_id:originalId,page_number:35}}));
+   scope:{project_id:'44444444-4444-4444-8444-444444444444',original_id:originalId,page_number:35},
+   acquisition:{method:{method_key:'M0002',method_version:'v1',access_mode:'manual_download',
+     resource_scope:{provider:'国立公文书馆(NAJ)'},steps:['打开馆藏页面','下载本页 JPEG'],
+     success_criteria:['字节与馆藏页面一致'],failure_modes:['页面不可达'],alternatives:[]},
+   attempt:{result_state:'acquired_verified',asset_sha256:hash(bytes),byte_size:bytes.length,
+     started_at:'2026-11-10T00:00:00.000Z',finished_at:'2026-11-10T00:01:00.000Z',
+     request_digest:'d'.repeat(64)}}}));
  expect(result.qualification).toBe('UNASSESSED');
  expect(result.gate_code).toBe('G0');
  expect(result.candidate_kind).toBe('private_source_intake');
@@ -240,8 +252,26 @@ it('composes D00 source intake through the registration lookup',async()=>{
    methodKey:'D00/Y03:intake_candidate_check',methodVersion:'v1'}));
  expect(result.intake_verification_id).toBe('88888888-8888-4888-8888-888888888888');
  expect(result.intake_verification_verdict).toBe('needs_owner');
- // No acquisition provenance was supplied, so no attempt may be invented.
- expect(deps.appendAcquisitionAttempt).not.toHaveBeenCalled();
+ // Y06 准入处置紧跟 Y03 结论：needs_owner 只能 deferred，经同一写入口落库。
+ expect(deps.recordPriorityAssessment).toHaveBeenCalledTimes(1);
+ expect(deps.recordPriorityAssessment).toHaveBeenCalledWith(expect.objectContaining({
+   catalogEntryId:'77777777-7777-4777-8777-777777777777',decision:'deferred',
+   methodKey:'D00/Y06:intake_priority'}));
+ expect(result.intake_priority_decision).toBe('deferred');
+ // Y07 获取账是 D00 硬前提：尝试经唯一写入口落库，candidate_ref 是本次准入的
+ // Y05 身份分层本身，依赖引用指向版本与数字资产两层真实实体。
+ expect(deps.appendAcquisitionAttempt).toHaveBeenCalledTimes(1);
+ expect(deps.appendAcquisitionAttempt).toHaveBeenCalledWith(expect.objectContaining({
+   methodKey:'M0002',methodVersion:'v1',resultState:'acquired_verified',
+   assetSha256:hash(bytes),byteSize:bytes.length,
+   candidateRef:expect.objectContaining({schema:'mohen.source-identity-stratification.v1'})}));
+ expect(result.acquisition_attempt_id).toBe('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa');
+ // Y04 准入覆盖结论紧跟本次尝试：只核到第 35 页，总量未核实。
+ expect(deps.recordAcquisitionCoverage).toHaveBeenCalledTimes(1);
+ expect(deps.recordAcquisitionCoverage).toHaveBeenCalledWith(expect.objectContaining({
+   attemptId:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+   catalogEntryId:'77777777-7777-4777-8777-777777777777',completenessState:'unknown'}));
+ expect(result.intake_coverage_id).toBe('bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb');
  expect(deps.registrationLookup).toHaveBeenCalledWith(originalId,'synthetic-user-session');
  expect(deps.sourceBinding).toHaveBeenCalledWith({originalId,
    sourceVersionId:extent.source_version_id,rawItemId:extent.raw_item_id,rawSha256:hash(bytes)},

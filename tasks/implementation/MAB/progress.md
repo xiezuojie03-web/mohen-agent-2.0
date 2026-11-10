@@ -2547,3 +2547,15 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **单测**：新增 `source-priority-assessment.test.mjs` 4 例（needs_owner 只能 deferred 且理由可回读/admissible 才 selected、rejected 即 excluded/结论缺失或越界失败关闭/权利逐动作现状如实登记）；既有 D00 测试三处接入 Y06 断言。
 - **回归**：typecheck 6/6；unit 644 通过 / 2 跳过 / 0 失败；data-production 213 通过 + 1 既有 `DEFERRED_ENV`；三项 guard 全 PASS。
 - **边界**：只接通第 6 个工序（Y07—Y08 仍无独立执行器）；处置是准入评估不是最终选取（selected 需同候选 admissible 核查，库内触发器把关）；未给 `mohen_app_runtime` 开任何 `source.*` 写权限；不签 Gate、不构成生产准出，`M5_OVERALL_HOLD` 不变。
+
+## M5-G｜D00 第七道工序（Y07 合法获取方案与协议路径组合）执行器接通（2026-11-10，本地隔离 VERIFIED_ISOLATED）
+
+- **应完成什么**：步骤④按序接通 D00 八工序的第七个真执行器。Y07 落库语义为 `source.acquisition_methods` + `source.acquisition_attempts`，此前 acquisition 只是可选被动材料；本批升格为 D00 硬前提：原件在库就必须有"怎么来的"获取账，没有即失败关闭。
+- **做了什么**：
+  - 新增 `pipelines/data-production/workers/source-acquisition-record.mjs`：`deriveIntakeAcquisitionRecord()` 逐项校验方法与尝试（M#### 方法键、64hex 请求摘要、可解析时间）；自称 `acquired_verified` 必须字节与哈希同库存原件一致（`ACQUISITION_ASSET_MISMATCH`）；`candidate_ref`/`dependency_refs` 由本次准入的 Y05 身份分层派生，不抄调用方。
+  - `private-evidence-stage.mjs`：D00 段在 Y06 处置后强制校验并落库（缺输入 `ACQUISITION_REQUIRED`、缺写入口 `PRIVATE_ACQUISITION_RECORDING_REQUIRED`、方法回执不符 `PRIVATE_ACQUISITION_METHOD_MISMATCH`）；Y04 准入覆盖结论改为恒做；候选输出新增 `acquisition_attempt_id`。
+  - `apps/web/app/studio/desk/page.tsx`：资料台新增「获取方法与尝试（D00 第七道工序）」区（方法键/途径/步骤/结果白话标签/字节/哈希）。
+- **证据**：`tools/verify-y07-executor.mjs` = `Y07_EXECUTOR_PROVEN`（私有工人登录 + CA 校验 + 真实登记读取通道）：M0002@v1 方法登记 + 尝试 `8fdfb13d-b858-42d7-8179-b1ec6255b529`（acquired_verified，sha256 `99dae89a…` 与库存一致）落库并回读一致（candidate_ref 七层身份、依赖引用 raw_item+source_version）；负例三项全 true（缺 acquisition/字节对不上/外来身份均拒绝）且都不写库，正例尝试总数 +1。
+- **单测**：新增 `source-acquisition-record.test.mjs` 5 例（真实人工下载规范化/缺输入失败关闭/方法键摘要时间逐项校验/字节不符即伪造/登记与身份不符失败关闭）；既有测试同步——candidate-worker 六处（共享夹具、调用顺序 catalog→verification→priority→method→attempt→coverage、fail-closed 新增缺 acquisition 与撤写入口两例）、scanned-page-worker 补 Y07 断言、binding 单测断言反转并补 mock。
+- **回归**：typecheck 6/6；unit 644 通过 / 2 跳过 / 0 失败；data-production 218 通过 + 1 既有 `DEFERRED_ENV`（independent-gate-service-runtime 无 openssl）；三项 guard 全 PASS。
+- **边界**：只接通第 7 个工序（Y08 仍无独立执行器）；获取账如实记录真实 NAJ 人工下载这次取得，不编造任何额外来源；真实链 D00 的 acquisition 走 `buildSourceIntakeInput` 的 sections 平铺入参，无需改编排器/授权器；未给 `mohen_app_runtime` 开任何 `source.*` 写权限；不签 Gate、不构成生产准出，`M5_OVERALL_HOLD` 不变。`git push` 网络仍不通，本地领先远端待补推。

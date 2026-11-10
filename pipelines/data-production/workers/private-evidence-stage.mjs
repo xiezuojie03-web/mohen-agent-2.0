@@ -11,6 +11,7 @@ import { deriveIntakeCandidateVerification } from './source-candidate-verificati
 import { deriveIntakeCoverage } from './source-coverage-conclusion.mjs';
 import { deriveSourceIdentityStratification } from './source-identity-stratification.mjs';
 import { deriveIntakePriority } from './source-priority-assessment.mjs';
+import { deriveIntakeAcquisitionRecord } from './source-acquisition-record.mjs';
 
 const HEX=/^[a-f0-9]{64}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
@@ -206,54 +207,39 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         methodVersion:intakePriority.methodVersion});
       if(!UUID.test(savedIntakePriority?.assessment_id??''))
         throw Error('PRIVATE_PRIORITY_ASSESSMENT_NOT_RECORDED');
-      // Y07：只在调用方确实知道"这份原件怎么来的"时记账；不知道就不写，
-      // 绝不补默认方法或默认结果充当历史。方法身份可选（可能先前已登记）。
-      let acquisitionAttemptId=null;
-      if(input?.acquisition){
-        const method=input.acquisition.method??null,attempt=input.acquisition.attempt;
-        if(!attempt||typeof attempt!=='object')throw Error('PRIVATE_ACQUISITION_ATTEMPT_REQUIRED');
-        if(typeof registerAcquisitionMethod!=='function'||typeof appendAcquisitionAttempt!=='function')
-          throw Error('PRIVATE_ACQUISITION_RECORDING_REQUIRED');
-        if(method){
-          await registerAcquisitionMethod({methodKey:method.method_key,methodVersion:method.method_version,
-            resourceScope:method.resource_scope,accessMode:method.access_mode,
-            preconditions:method.preconditions,steps:method.steps,
-            successCriteria:method.success_criteria,failureModes:method.failure_modes,
-            alternatives:method.alternatives,methodState:method.method_state,
-            recommended:method.recommended});
-        }
-        const appended=await appendAcquisitionAttempt({projectId,needId:need.need_id,
-          candidateRef:attempt.candidate_ref,methodKey:attempt.method_key??method?.method_key,
-          methodVersion:attempt.method_version??method?.method_version,
-          executionEnvironment:attempt.execution_environment,requestDigest:attempt.request_digest,
-          pagination:attempt.pagination,startedAt:attempt.started_at,finishedAt:attempt.finished_at,
-          resultState:attempt.result_state,failureCode:attempt.failure_code,
-          failureCertainty:attempt.failure_certainty,acquiredExtent:attempt.acquired_extent,
-          byteSize:attempt.byte_size,assetSha256:attempt.asset_sha256,
-          sourceLocator:attempt.source_locator,rightsActions:attempt.rights_actions,
-          accessRestrictions:attempt.access_restrictions,dependencyRefs:attempt.dependency_refs,
-          alternatives:attempt.alternatives,recoveryCondition:attempt.recovery_condition,
-          cost:attempt.cost,correctionOf:attempt.correction_of});
-        if(!UUID.test(appended?.attempt_id??''))throw Error('PRIVATE_ACQUISITION_ATTEMPT_NOT_RECORDED');
-        acquisitionAttemptId=appended.attempt_id;
-      }
+      // Y07：获取是 D00 的硬前提——原件既然在库，就必须有"怎么来的"获取账；
+      // 没有 acquisition 输入即失败关闭，不允许来源不明地躺在库里。方法与尝试
+      // 字段由工序逐项校验（M#### 方法键、64hex 请求摘要、可解析时间、
+      // acquired_verified 必须字节与哈希同库存原件一致，不一致即伪造）；
+      // candidate_ref/dependency_refs 由 Y05 身份分层派生，不抄调用方。
+      const intakeAcquisition=deriveIntakeAcquisitionRecord({registration,record,
+        identity:sourceIdentity,acquisition:input?.acquisition});
+      if(typeof registerAcquisitionMethod!=='function'||typeof appendAcquisitionAttempt!=='function')
+        throw Error('PRIVATE_ACQUISITION_RECORDING_REQUIRED');
+      const registered=await registerAcquisitionMethod(intakeAcquisition.method);
+      if(!registered||registered.method_key!==intakeAcquisition.method.methodKey||
+         registered.method_version!==intakeAcquisition.method.methodVersion)
+        throw Error('PRIVATE_ACQUISITION_METHOD_MISMATCH');
+      const appended=await appendAcquisitionAttempt({projectId,needId:need.need_id,
+        candidateRef:intakeAcquisition.candidateRef,
+        methodKey:registered.method_key,methodVersion:registered.method_version,
+        ...intakeAcquisition.attempt,dependencyRefs:intakeAcquisition.dependencyRefs});
+      if(!UUID.test(appended?.attempt_id??''))throw Error('PRIVATE_ACQUISITION_ATTEMPT_NOT_RECORDED');
+      const acquisitionAttemptId=appended.attempt_id;
       // Y04：取得范围与缺失部件结论紧跟本次获取尝试就地进行。结论由工序从准入
       // 真值与刚落库的尝试派生：本次只核到这一页的字节，其余页如实 unassessed，
-      // 总量未核实不冒充 partial/complete。有尝试就必须有覆盖结论，写不进去即
-      // 失败关闭，不允许"看起来取得了却没有覆盖账"。
-      let intakeCoverageId=null;
-      if(acquisitionAttemptId){
-        if(typeof recordAcquisitionCoverage!=='function')throw Error('PRIVATE_SOURCE_COVERAGE_RECORDING_REQUIRED');
-        const intakeCoverage=deriveIntakeCoverage({registration,record,
-          attempt:{attempt_id:acquisitionAttemptId,...input.acquisition.attempt},pageNumber});
-        const savedIntakeCoverage=await recordAcquisitionCoverage({projectId,
-          attemptId:acquisitionAttemptId,catalogEntryId:intakeCatalogEntryId,
-          coverageScope:intakeCoverage.coverage_scope,missingParts:intakeCoverage.missing_parts,
-          completenessState:intakeCoverage.completeness_state,
-          verifiedAgainst:intakeCoverage.verified_against});
-        if(!UUID.test(savedIntakeCoverage?.coverage_id??''))throw Error('PRIVATE_SOURCE_COVERAGE_NOT_RECORDED');
-        intakeCoverageId=savedIntakeCoverage.coverage_id;
-      }
+      // 总量未核实不冒充 partial/complete。写不进去即失败关闭，
+      // 不允许"看起来取得了却没有覆盖账"。
+      if(typeof recordAcquisitionCoverage!=='function')throw Error('PRIVATE_SOURCE_COVERAGE_RECORDING_REQUIRED');
+      const intakeCoverage=deriveIntakeCoverage({registration,record,
+        attempt:{attempt_id:acquisitionAttemptId,...input.acquisition.attempt},pageNumber});
+      const savedIntakeCoverage=await recordAcquisitionCoverage({projectId,
+        attemptId:acquisitionAttemptId,catalogEntryId:intakeCatalogEntryId,
+        coverageScope:intakeCoverage.coverage_scope,missingParts:intakeCoverage.missing_parts,
+        completenessState:intakeCoverage.completeness_state,
+        verifiedAgainst:intakeCoverage.verified_against});
+      if(!UUID.test(savedIntakeCoverage?.coverage_id??''))throw Error('PRIVATE_SOURCE_COVERAGE_NOT_RECORDED');
+      const intakeCoverageId=savedIntakeCoverage.coverage_id;
       // Y02/Y04/Y03/Y06：只在调用方确实给出判断材料时落库；没给就不写，
       // 绝不替研究者编造目录、覆盖结论、核查意见或优先级。
       // 目录可按下标引用本次刚登记的条目，也可直接给已存在的条目 id。

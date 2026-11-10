@@ -258,6 +258,38 @@ export default async function DeskPage() {
     project_title: string;
   }>;
 
+  // D00 第七道工序（Y07 合法获取方案与尝试）：每份在库原件都必须有"怎么来的"账——
+  // 方法（怎么取得）与尝试（这次取得了什么）逐条可见，字节与库存一致才标已核验。
+  const attemptRows = (await queryRows(
+    `select a.attempt_id::text as attempt_id, a.result_state, a.asset_sha256,
+            a.byte_size::text as byte_size, a.started_at::text as started_at,
+            a.finished_at::text as finished_at, a.method_key, a.method_version,
+            a.created_at::text as created_at,
+            m.access_mode, m.method_state, m.steps::text as steps,
+            p.project_title
+       from source.acquisition_attempts a
+       left join source.acquisition_methods m
+         on m.method_key = a.method_key and m.method_version = a.method_version
+       join studio.projects p on p.project_id = a.project_id
+      where p.owner_user_id = :'owner'
+      order by a.created_at desc limit 10`,
+    { owner: session.uid }
+  )) as Array<{
+    attempt_id: string;
+    result_state: string;
+    asset_sha256: string | null;
+    byte_size: string | null;
+    started_at: string | null;
+    finished_at: string | null;
+    method_key: string;
+    method_version: string;
+    created_at: string;
+    access_mode: string | null;
+    method_state: string | null;
+    steps: string | null;
+    project_title: string;
+  }>;
+
   const readRightsStatus = (raw: string | null) => {
     if (!raw) return null;
     try {
@@ -280,6 +312,13 @@ export default async function DeskPage() {
     admissible: "可采纳（身份与词源均已核）",
     needs_owner: "需人确认（有时空/语言未评估项）",
     rejected: "不采纳",
+  };
+
+  const ATTEMPT_RESULT_LABELS: Record<string, string> = {
+    acquired_verified: "已取得并核验",
+    acquired_unverified: "已取得未核验",
+    failed: "未取得",
+    partial: "部分取得",
   };
 
   const EXPANSION_LABELS: Record<string, string> = {
@@ -777,6 +816,43 @@ export default async function DeskPage() {
               <div style={{ fontSize: 11, color: "#6b746f", marginTop: 5 }}>
                 {row.project_title}
                 {row.method_key ? ` · ${row.method_key}@${row.method_version}` : ""} · {row.created_at.slice(0, 10)}
+              </div>
+            </article>
+          );
+        })}
+      </section>
+
+      <section style={{ borderTop: "1px solid #e2ddd1", paddingTop: 14, marginBottom: 20 }}>
+        <h2 style={{ fontSize: 15 }}>获取方法与尝试（D00 第七道工序）</h2>
+        <p style={{ fontSize: 12, color: "#6b746f", margin: "4px 0 10px" }}>
+          这份原件是怎么来的：合法获取方案（途径、步骤、成败判据）与每一次尝试的结果逐条在账；
+          自称"已核验"的尝试，字节与哈希必须与库存原件一致，否则工序失败关闭、不会出现在这里。
+        </p>
+        {attemptRows.length === 0 && (
+          <p style={{ fontSize: 13, color: "#8a3b3b" }}>还没有获取尝试记录。</p>
+        )}
+        {attemptRows.map((row) => {
+          const steps = (() => {
+            try { return row.steps ? (JSON.parse(row.steps) as string[]) : []; } catch { return []; }
+          })();
+          return (
+            <article key={row.attempt_id} style={{ border: "1px solid #e2ddd1", borderRadius: 8, padding: 10, marginBottom: 8 }}>
+              <div style={{ fontSize: 13, fontWeight: 600 }}>
+                {row.method_key}@{row.method_version}
+                {row.access_mode ? ` · ${row.access_mode}` : ""} ·{" "}
+                <span style={{ color: row.result_state === "acquired_verified" ? "#1f7a4d" : "#9a6b2f" }}>
+                  {ATTEMPT_RESULT_LABELS[row.result_state] ?? row.result_state}
+                </span>
+              </div>
+              {steps.length > 0 && (
+                <div style={{ fontSize: 12, color: "#2f4a3f", marginTop: 4 }}>
+                  步骤：{steps.join(" → ")}
+                </div>
+              )}
+              <div style={{ fontSize: 11, color: "#6b746f", marginTop: 5 }}>
+                {row.project_title}
+                {row.byte_size ? ` · ${row.byte_size} B` : ""}
+                {row.asset_sha256 ? ` · sha256 ${row.asset_sha256.slice(0, 12)}…` : ""} · {row.created_at.slice(0, 10)}
               </div>
             </article>
           );

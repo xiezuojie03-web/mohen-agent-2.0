@@ -403,9 +403,26 @@ test('a private stage cannot be constructed without candidate submission or audi
     submitGateCandidate:async()=>'candidate',readGateAudit:async()=>null}));
 });
 
+// Y07：获取账是 D00 必填——每次成功的准入都要带一份合法获取方案与尝试。
+// 这份夹具给出通过工序校验的最小真实形状（NAJ 页面人工下载、字节与库存一致）。
+const acquisitionInput=()=>({
+  method:{method_key:'M0002',method_version:'v1',access_mode:'manual_download',
+    resource_scope:{provider:'国立公文书馆(NAJ)'},steps:['打开馆藏页面','下载本页 JPEG'],
+    success_criteria:['字节与馆藏页面一致'],failure_modes:['页面不可达'],alternatives:[]},
+  attempt:{result_state:'acquired_verified',asset_sha256:IMAGE_SHA,byte_size:IMAGE.length,
+    started_at:'2026-11-10T00:00:00.000Z',finished_at:'2026-11-10T00:01:00.000Z',
+    request_digest:'d'.repeat(64)},
+});
+const acquisitionMocks=()=>({
+  registerAcquisitionMethod:async()=>({method_key:'M0002',method_version:'v1'}),
+  appendAcquisitionAttempt:async()=>({attempt_id:id()}),
+  recordAcquisitionCoverage:async()=>({coverage_id:id()}),
+});
+
 test('D00 verifySourceIntake submits exactly one G0 source_version candidate',async()=>{
   const originalId=id(),projectId=id(),sourceVersionId=id();
-  const input={research_intent:'松江府田赋卷十一',scope:{project_id:projectId,original_id:originalId,page_number:35}};
+  const input={research_intent:'松江府田赋卷十一',scope:{project_id:projectId,original_id:originalId,page_number:35},
+    acquisition:acquisitionInput()};
   const submitted=[];
   const intakeEntries=[];
   const intakeVerifications=[];
@@ -419,6 +436,7 @@ test('D00 verifySourceIntake submits exactly one G0 source_version candidate',as
       recordCatalogEntry:async entry=>{intakeEntries.push(entry);return {catalog_entry_id:id()};},
       recordCandidateVerification:async item=>{intakeVerifications.push(item);return {verification_id:id()};},
       recordPriorityAssessment:async()=>({assessment_id:id()}),
+      ...acquisitionMocks(),
       bridge:bridgeStub,
       submitGateCandidate:async metadata=>{submitted.push(metadata);return 'candidate-g0';},
       readGateAudit:async()=>{throw Error('G0 must not read an upstream audit');},
@@ -457,6 +475,7 @@ test('D00 carries the consumer C method plan as typed refs on the G0 candidate',
   const originalId=id(),projectId=id(),sourceVersionId=id();
   const input={research_intent:'松江府田赋卷十一',
     scope:{project_id:projectId,original_id:originalId,page_number:35},
+    acquisition:acquisitionInput(),
     consumer_method_plan:[{method_id:'C02',method_version:'v1'},{method_id:'C03',method_version:'v2'}]};
   const expected=buildMethodPlanRefs({methods:input.consumer_method_plan});
   return withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
@@ -470,6 +489,7 @@ test('D00 carries the consumer C method plan as typed refs on the G0 candidate',
       recordCatalogEntry:async()=>({catalog_entry_id:id()}),
       recordCandidateVerification:async()=>({verification_id:id()}),
       recordPriorityAssessment:async()=>({assessment_id:id()}),
+      ...acquisitionMocks(),
       bridge:bridgeStub,
       submitGateCandidate:async metadata=>{submitted=metadata;return 'candidate-g0';},
       readGateAudit:async()=>{throw Error('G0 must not read an upstream audit');},
@@ -491,7 +511,8 @@ test('D00 rejects a malformed consumer method plan before submitting any candida
   for(const extra of cases){
     const originalId=id(),projectId=id(),sourceVersionId=id();
     const input={research_intent:'松江府田赋卷十一',
-      scope:{project_id:projectId,original_id:originalId,page_number:35},...extra};
+      scope:{project_id:projectId,original_id:originalId,page_number:35},
+      acquisition:acquisitionInput(),...extra};
     await withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
       let submitted=0;
       const worker=createPrivateEvidenceStageWorker({
@@ -503,6 +524,7 @@ test('D00 rejects a malformed consumer method plan before submitting any candida
         recordCatalogEntry:async()=>({catalog_entry_id:id()}),
         recordCandidateVerification:async()=>({verification_id:id()}),
         recordPriorityAssessment:async()=>({assessment_id:id()}),
+        ...acquisitionMocks(),
         bridge:bridgeStub,
         submitGateCandidate:async()=>{submitted+=1;return 'candidate-g0';},
         readGateAudit:async()=>null,
@@ -523,6 +545,7 @@ test('D00 records intake observation then Y02/Y04/Y03/Y06 in order and exposes t
   const existingAttemptId=id();
   const input={research_intent:'松江府田赋卷十一',
     scope:{project_id:projectId,original_id:originalId,page_number:35},
+    acquisition:acquisitionInput(),
     catalog:[
       {provider:'国立公文书馆(NAJ)',catalog_title:'松江府志7',catalog_identifier:'NAJ-14373',
         availability_state:'catalog_found',discovered_by_method:'M0001',method_version:'v1'},
@@ -560,6 +583,8 @@ test('D00 records intake observation then Y02/Y04/Y03/Y06 in order and exposes t
         calls.push(`priority:${item.decision}`);
         return {assessment_id:assessmentId};
       },
+      registerAcquisitionMethod:async()=>{calls.push('method');return {method_key:'M0002',method_version:'v1'};},
+      appendAcquisitionAttempt:async()=>{calls.push('attempt');return {attempt_id:id()};},
       bridge:bridgeStub,
       submitGateCandidate:async metadata=>{submitted=metadata;return 'candidate-g0';},
       readGateAudit:async()=>null,
@@ -567,9 +592,11 @@ test('D00 records intake observation then Y02/Y04/Y03/Y06 in order and exposes t
     const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
     // 顺序固定：工序先落自己的准入目录观察（松江府志7，来自登记真值）与就地
     // 候选核查（Y03，词源未读 → 需人确认），Y06 准入处置紧跟核查结论
-    // （needs_owner 只能 deferred，绝不放宽为 selected）；再登记调用方补充的候选，
+    // （needs_owner 只能 deferred，绝不放宽为 selected）；Y07 获取方法与尝试随后，
+    // Y04 准入覆盖结论挂在本次尝试与准入条目上；再登记调用方补充的候选，
     // 然后才有覆盖/核查/优先级的引用对象。
     assert.deepEqual(calls,['catalog:松江府志7','verification:needs_owner','priority:deferred',
+      'method','attempt',`coverage:${intakeId}`,
       'catalog:松江府志7','catalog:松江府志（另一版本）',
       `coverage:${catalogIds[0]}`,'verification:admissible','priority:selected']);
     assert.equal(candidate.intake_catalog_entry_id,intakeId);
@@ -636,15 +663,16 @@ test('D00 fails closed when the Y04 coverage conclusion cannot be recorded',asyn
   const cases=[
     // 有获取尝试就必须有覆盖结论：撤掉写入口即失败关闭。
     {drop:'recordAcquisitionCoverage',pattern:/PRIVATE_SOURCE_COVERAGE_RECORDING_REQUIRED/},
-    // 尝试自称取得已核验但字节对不上：工序拒绝在不一致的取得账上写覆盖结论。
-    {tamperSha:true,pattern:/COVERAGE_ATTEMPT_ASSET_MISMATCH/},
+    // 尝试自称取得已核验但字节对不上：Y07 先拒这份说谎的取得账，覆盖结论无从落笔。
+    {tamperSha:true,pattern:/ACQUISITION_ASSET_MISMATCH/},
   ];
   for(const {drop,tamperSha,pattern} of cases){
     const input={research_intent:'松江府田赋卷十一',
       scope:{project_id:projectId,original_id:originalId,page_number:35},
-      acquisition:{attempt:{result_state:'acquired_verified',
-        asset_sha256:tamperSha?'e'.repeat(64):IMAGE_SHA,byte_size:IMAGE.length,
-        started_at:'2026-11-10T00:00:00.000Z',request_digest:'d'.repeat(64)}}};
+      acquisition:{method:acquisitionInput().method,
+        attempt:{result_state:'acquired_verified',
+          asset_sha256:tamperSha?'e'.repeat(64):IMAGE_SHA,byte_size:IMAGE.length,
+          started_at:'2026-11-10T00:00:00.000Z',request_digest:'d'.repeat(64)}}};
     await withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
       let submitted=0;
       const deps={
@@ -674,9 +702,10 @@ test('D00 fails closed when the Y04 coverage conclusion cannot be recorded',asyn
 
 test('D00 writes only the intake observation when the caller supplies no extra material',async()=>{
   const originalId=id(),projectId=id(),sourceVersionId=id();
-  const input={research_intent:'松江府田赋卷十一',scope:{project_id:projectId,original_id:originalId,page_number:35}};
+  const input={research_intent:'松江府田赋卷十一',scope:{project_id:projectId,original_id:originalId,page_number:35},
+    acquisition:acquisitionInput()};
   return withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
-    let catalogCalls=0,intakeVerifications=0,intakePriorities=0,extraCalls=0;
+    let catalogCalls=0,intakeVerifications=0,intakePriorities=0,coverageCalls=0;
     let intakePriorityArgs=null;
     const intakeId=id();
     const worker=createPrivateEvidenceStageWorker({
@@ -688,14 +717,15 @@ test('D00 writes only the intake observation when the caller supplies no extra m
       recordCatalogEntry:async()=>{catalogCalls+=1;return {catalog_entry_id:intakeId};},
       recordCandidateVerification:async()=>{intakeVerifications+=1;return {verification_id:id()};},
       recordPriorityAssessment:async item=>{intakePriorities+=1;intakePriorityArgs=item;return {assessment_id:id()};},
-      recordAcquisitionCoverage:async()=>{extraCalls+=1;return {coverage_id:id()};},
+      ...acquisitionMocks(),
+      recordAcquisitionCoverage:async()=>{coverageCalls+=1;return {coverage_id:id()};},
       bridge:bridgeStub,
       submitGateCandidate:async()=>'candidate-g0',
       readGateAudit:async()=>null,
     });
     const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
     // 调用方没给材料，工序只落自己从登记真值派生的目录观察、候选核查与 Y06 处置，
-    // 不替研究者补覆盖或额外优先级判断。
+    // 加上 Y07 获取账强制的 Y04 准入覆盖结论；不替研究者补额外覆盖或优先级判断。
     assert.equal(catalogCalls,1);
     assert.equal(intakeVerifications,1);
     // Y06 准入处置由 Y03 结论决定：needs_owner 只能 deferred；理由可回读核查结论；
@@ -708,7 +738,8 @@ test('D00 writes only the intake observation when the caller supplies no extra m
     assert.equal(intakePriorityArgs.criteria.relevance.state,'unknown');
     assert.equal(intakePriorityArgs.criteria.authority.state,'known');
     assert.equal(candidate.intake_priority_decision,'deferred');
-    assert.equal(extraCalls,0);
+    // 唯一一次覆盖写入是 Y07 获取账带来的准入覆盖结论，没有调用方补充的第二条。
+    assert.equal(coverageCalls,1);
     assert.equal(candidate.intake_catalog_entry_id,intakeId);
     assert.deepEqual(candidate.catalog_entry_ids,[]);
     assert.deepEqual(candidate.verification_ids,[]);
@@ -724,24 +755,29 @@ test('D00 writes only the intake observation when the caller supplies no extra m
   });
 });
 
-test('D00 fails closed on malformed or unwritable Y02—Y06 material',async()=>{
+test('D00 fails closed on malformed or unwritable Y02—Y07 material',async()=>{
   const cases=[
     // Y02 准入观察先于 input.catalog 校验：本例不撤写入口，让畸形 catalog 在自身校验处失败。
     {extra:{catalog:'not-an-array'},pattern:/PRIVATE_SOURCE_CATALOG_INVALID/,drop:null},
     // 撤掉写入口时，强制的 Y02 准入观察本身即失败关闭（等不到调用方材料）。
     {extra:{catalog:[{provider:'X',catalog_title:'Y',availability_state:'unknown'}]},
       pattern:/PRIVATE_SOURCE_CATALOG_RECORDING_REQUIRED/,drop:'recordCatalogEntry'},
-    {extra:{coverage:[{completeness_state:'partial',missing_parts:[]}]},
-      pattern:/PRIVATE_SOURCE_COVERAGE_ATTEMPT_REQUIRED/,drop:null},
+    // 调用方补充的覆盖引用了不存在的目录条目：拒绝落库。
+    {extra:{coverage:[{catalog_index:9,completeness_state:'partial',missing_parts:[{part:'卷十二'}]}]},
+      pattern:/PRIVATE_SOURCE_COVERAGE_CATALOG_INVALID/,drop:null},
     {extra:{verifications:[{catalog_index:0,checks:{},verdict:'admissible'}]},
       pattern:/PRIVATE_SOURCE_VERIFICATION_CATALOG_INVALID/,drop:null},
     // Y03 准入核查是强制项：撤掉写入口即失败关闭，不能"看起来跑了 D00 却没有核查记录"。
     {extra:{},pattern:/PRIVATE_SOURCE_VERIFICATIONS_RECORDING_REQUIRED/,drop:'recordCandidateVerification'},
+    // Y07 获取账是 D00 硬前提：原件在库却没有"怎么来的"账，失败关闭。
+    {extra:{},pattern:/ACQUISITION_REQUIRED/,drop:null,noAcquisition:true},
+    {extra:{},pattern:/PRIVATE_ACQUISITION_RECORDING_REQUIRED/,drop:'registerAcquisitionMethod'},
   ];
-  for(const {extra,pattern,drop} of cases){
+  for(const {extra,pattern,drop,noAcquisition} of cases){
     const originalId=id(),projectId=id(),sourceVersionId=id();
     const input={research_intent:'松江府田赋卷十一',
-      scope:{project_id:projectId,original_id:originalId,page_number:35},...extra};
+      scope:{project_id:projectId,original_id:originalId,page_number:35},
+      ...(noAcquisition?{}:{acquisition:acquisitionInput()}),...extra};
     await withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
       let submitted=0;
       const deps={
@@ -750,11 +786,11 @@ test('D00 fails closed on malformed or unwritable Y02—Y06 material',async()=>{
         readRegistration:async()=>registrationFor(originalId,projectId,{source_version_id:sourceVersionId}),
         recordSourceNeed:async()=>({need_id:id(),created_at:new Date().toISOString()}),
         readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
-      readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
         recordCatalogEntry:async()=>({catalog_entry_id:id()}),
         recordAcquisitionCoverage:async()=>({coverage_id:id()}),
         recordCandidateVerification:async()=>({verification_id:id()}),
         recordPriorityAssessment:async()=>({assessment_id:id()}),
+        ...acquisitionMocks(),
         bridge:bridgeStub,
         submitGateCandidate:async()=>{submitted+=1;return 'candidate-g0';},
         readGateAudit:async()=>null,
