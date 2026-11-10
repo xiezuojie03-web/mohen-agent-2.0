@@ -13,6 +13,58 @@ function parseBeats(content: string): Beat[] {
   }
 }
 
+/** 作品修订里逐件已核权利的真实媒体（由服务端 /api/works/media 供图）。 */
+type WorkMedia = {
+  asset_id: string;
+  kind?: string;
+  title?: string;
+  license?: string;
+  rights_status?: string;
+  src?: string;
+  caption?: string;
+  provenance?: Record<string, unknown>;
+};
+
+function parseMedia(content: string): WorkMedia[] {
+  try {
+    const c = JSON.parse(content || "{}") as { media?: unknown };
+    if (!Array.isArray(c.media)) return [];
+    return c.media.filter((item): item is WorkMedia => {
+      if (!item || typeof item !== "object") return false;
+      const m = item as WorkMedia;
+      return typeof m.asset_id === "string" && m.asset_id.length > 0
+        && typeof m.src === "string" && m.src === `/api/works/media/${m.asset_id}`
+        && typeof m.license === "string" && m.license.trim().length > 0
+        && m.rights_status === "cleared";
+    });
+  } catch {
+    return [];
+  }
+}
+
+/** 只展示库里确实提供了的字段，缺失即不显示（不补默认、不编造）。 */
+function mediaEvidence(media: WorkMedia): Array<{ label: string; value: string; href?: string }> {
+  const p = (media.provenance ?? {}) as Record<string, unknown>;
+  const text = (key: string) => {
+    const value = p[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+    if (typeof value === "number" && Number.isFinite(value)) return String(value);
+    return "";
+  };
+  const url = text("source_url");
+  const rows = [
+    { label: "书名", value: text("work_title") },
+    { label: "版本", value: text("edition") },
+    { label: "馆藏号", value: text("catalog_no") },
+    { label: "页码", value: text("page_no") ? `第 ${text("page_no")} 页` : "" },
+    { label: "藏地", value: text("held_by") },
+    { label: "授权", value: media.license ?? "" },
+    { label: "原件指纹", value: text("content_sha256") ? `SHA-256 ${text("content_sha256")}` : "" },
+    { label: "来源", value: url, href: /^https?:\/\//.test(url) ? url : undefined },
+  ];
+  return rows.filter(row => row.value);
+}
+
 function formatTimecode(ms: number): string {
   if (!Number.isFinite(ms) || ms < 0) return "时码未提供";
   const totalSec = Math.round(ms / 1000);
@@ -38,7 +90,7 @@ export default function WatchGallery() {
   const [current, setCurrent] = useState(0);
   const [playing, setPlaying] = useState(false);
   const stageRef = useRef<HTMLDivElement>(null);
-  const [sidePanel, setSidePanel] = useState<"overview" | "references">("overview");
+  const [sidePanel, setSidePanel] = useState<"overview" | "references" | "evidence">("overview");
 
   const selectedRef = useRef(selected);
   selectedRef.current = selected;
@@ -94,6 +146,7 @@ export default function WatchGallery() {
 
   const selectedContent = selected?.content;
   const beats = useMemo(() => selectedContent ? parseBeats(selectedContent) : [], [selectedContent]);
+  const media = useMemo(() => selectedContent ? parseMedia(selectedContent) : [], [selectedContent]);
 
   // 切换作品时重置进度
   useEffect(() => {
@@ -134,6 +187,11 @@ export default function WatchGallery() {
   async function openReferences() {
     setPlaying(false);
     if (await revalidate()) setSidePanel("references");
+  }
+
+  async function openEvidence() {
+    setPlaying(false);
+    if (await revalidate()) setSidePanel("evidence");
   }
 
   if (loading) {
@@ -183,6 +241,19 @@ export default function WatchGallery() {
     ? [...new Set(beat.provenanceRefs.filter((ref): ref is string => typeof ref === "string" && ref.trim().length > 0))] : [];
   const progress = beats.length ? ((current + 1) / beats.length) * 100 : 0;
 
+  // 真实原件扫描页：字节由 /api/works/media/<assetId> 在每次请求时复核 WATCH 资格后提供。
+  const mediaBlock = media.length > 0 ? (
+    <div className="watch__stage-media" aria-label="原件扫描页">
+      {media.map((item) => (
+        <figure className="watch__stage-media-item" key={item.asset_id}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={item.src} alt={item.caption || item.title || "原件扫描页"} loading="lazy" decoding="async" />
+          {(item.caption || item.title) && <figcaption>{item.caption || item.title}</figcaption>}
+        </figure>
+      ))}
+    </div>
+  ) : null;
+
   return (
     <main className="watch">
       <div className="watch__body watch__body--player">
@@ -198,6 +269,7 @@ export default function WatchGallery() {
 
             {beats.length === 0 ? (
               <div className="watch__stage-visual" role="status">
+                {mediaBlock}
                 <div className="watch__stage-frame">
                   <strong>该作品暂无可阅读章节</strong>
                   <p>已发布记录存在，但没有有效的章节内容；无法播放或自动翻页。可在右侧选择其他作品。</p>
@@ -207,6 +279,7 @@ export default function WatchGallery() {
               <>
             {/* 视觉舞台：画面（文字化）+ 旁白字幕 */}
             <div className="watch__stage-visual">
+              {mediaBlock}
               <div className="watch__stage-frame">
                 <span className="watch__stage-frame-label">画面</span>
                 <p>{beat?.visual || "（本章暂无画面描述）"}</p>
@@ -221,7 +294,9 @@ export default function WatchGallery() {
               </div>
             </div>
 
-            <p className="watch__reading-notice">图文阅读 · 暂无可播放媒体</p>
+            <p className="watch__reading-notice">
+              {media.length > 0 ? `图文阅读 · 含 ${media.length} 页原件扫描页` : "图文阅读 · 暂无可播放媒体"}
+            </p>
             {/* 图文章节阅读；自动翻页不是媒体播放。 */}
             <div className="watch__controls">
               <button
@@ -270,12 +345,46 @@ export default function WatchGallery() {
           <div className="watch__tabs">
             <button className={`watch__tab${sidePanel === "overview" ? " is-active" : ""}`} onClick={() => setSidePanel("overview")}>作品简介</button>
             <button className="watch__tab" disabled aria-describedby="watch-explore-gap">相关探索</button>
+            <button
+              className={`watch__tab${sidePanel === "evidence" ? " is-active" : ""}`}
+              disabled={!media.length}
+              onClick={openEvidence}
+              aria-describedby={!media.length ? "watch-media-gap" : undefined}
+            >
+              依据
+            </button>
             <button className={`watch__tab${sidePanel === "references" ? " is-active" : ""}`} disabled={!provenance.length} onClick={openReferences} aria-describedby={!provenance.length ? "watch-reference-gap" : undefined}>参考资料</button>
           </div>
 
           <p id="watch-explore-gap" className="watch__info">相关探索尚未提供可用入口。</p>
+          {!media.length && <p id="watch-media-gap" className="watch__info">本作暂未绑定可展示的原件扫描页。</p>}
           {!provenance.length && <p id="watch-reference-gap" className="watch__info">本章未提供可读出处。</p>}
-          {sidePanel === "references" && provenance.length > 0 ? (
+          {sidePanel === "evidence" && media.length > 0 ? (
+            <section className="watch__info" aria-label="原件依据">
+              <strong>{selected?.title} · 版本 {selected?.revision_no} · 原件</strong>
+              {media.map((item) => {
+                const rows = mediaEvidence(item);
+                return (
+                  <div className="watch__evidence" key={item.asset_id}>
+                    <p className="watch__evidence-title">{item.title || item.caption || "原件扫描页"}</p>
+                    <dl>
+                      {rows.map(row => (
+                        <div className="watch__evidence-row" key={`${item.asset_id}-${row.label}`}>
+                          <dt>{row.label}</dt>
+                          <dd>
+                            {row.href
+                              ? <a href={row.href} target="_blank" rel="noreferrer noopener">{row.value}</a>
+                              : row.value}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </div>
+                );
+              })}
+              <button className="watch__ctrl" onClick={() => setSidePanel("overview")}>返回当前章节</button>
+            </section>
+          ) : sidePanel === "references" && provenance.length > 0 ? (
             <section className="watch__info" aria-label="当前章节出处">
               <strong>{selected?.title} · 版本 {selected?.revision_no} · {beat?.title}</strong>
               <p>以下为本章记录的出处文字；原件详情尚未开放。</p>
@@ -299,7 +408,7 @@ export default function WatchGallery() {
 
           <div className="watch__info">
             <strong>观看说明</strong>
-            观看消费的是已发布作品；画面以文字描述呈现，配音与真实影像待创作编导引擎逐步补齐。
+            观看消费的是已发布作品；未绑定原件的作品以文字描述呈现，已绑定真实原件的作品同时展示原件扫描页，可在「依据」中核对来源。
           </div>
         </aside>
       </div>

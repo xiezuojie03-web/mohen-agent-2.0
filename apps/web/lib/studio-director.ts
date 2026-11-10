@@ -141,15 +141,52 @@ export async function getWorkPanels(planId: string, auth?: unknown): Promise<Wor
   return generateWorkPanels(plan, facts, beats, auth);
 }
 
+/** WATCH 展示用真实媒体项。每个值都必须是库内既有真实数据（asset 台账 / 原件存储），
+ * 只允许指向本服务自己的只读取图路由，不允许外部 URL 或占位内容。 */
+export interface WorkMediaItem {
+  asset_id: string;
+  kind: string;
+  title: string;
+  license: string;
+  rights_status: "cleared";
+  src: string;
+  caption?: string;
+  provenance?: Record<string, string | number>;
+}
+
+const WORK_MEDIA_UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+
+function assertWorkMedia(media: unknown): asserts media is WorkMediaItem[] {
+  if (!Array.isArray(media)) throw new Error("WORK_MEDIA_INVALID");
+  for (const item of media) {
+    if (!item || typeof item !== "object" || Array.isArray(item)) throw new Error("WORK_MEDIA_INVALID");
+    const entry = item as Record<string, unknown>;
+    if (typeof entry.asset_id !== "string" || !WORK_MEDIA_UUID.test(entry.asset_id)) throw new Error("WORK_MEDIA_INVALID");
+    if (typeof entry.kind !== "string" || !entry.kind.trim()) throw new Error("WORK_MEDIA_INVALID");
+    if (typeof entry.title !== "string" || !entry.title.trim()) throw new Error("WORK_MEDIA_INVALID");
+    if (typeof entry.license !== "string" || !entry.license.trim()) throw new Error("WORK_MEDIA_INVALID");
+    if (entry.rights_status !== "cleared") throw new Error("WORK_MEDIA_INVALID");
+    // 只接受本服务只读取图路由，避免把外部/伪造地址写进不可变修订。
+    if (entry.src !== `/api/works/media/${entry.asset_id}`) throw new Error("WORK_MEDIA_INVALID");
+    if (entry.caption !== undefined && typeof entry.caption !== "string") throw new Error("WORK_MEDIA_INVALID");
+    if (entry.provenance !== undefined &&
+        (!entry.provenance || typeof entry.provenance !== "object" || Array.isArray(entry.provenance)))
+      throw new Error("WORK_MEDIA_INVALID");
+  }
+}
+
 /** E1-3 WorkRevision：把选定方案 + H3 节拍存为不可变修订（content hash = CAS）。
  * opts.rightsAcknowledged 是 Creator 在保存时的显式确认：本作不含第三方媒体
- * （无第三方媒体时发布资格的必要条件之一；含媒体则须逐件许可，不得靠此声明确认）。 */
+ * （无第三方媒体时发布资格的必要条件之一；含媒体则须逐件许可，不得靠此声明确认）。
+ * opts.media 是逐件已核权利的真实媒体（来自 public.assets + 私有原件）；
+ * 一旦含媒体，就不再声明"本作不含第三方媒体"（rights_acknowledged=false）。 */
 export async function commitWorkRevision(
   workId: string,
   planId: string,
   expectedRevisionNo?: number,
-  opts?: { rightsAcknowledged?: boolean }
+  opts?: { rightsAcknowledged?: boolean; media?: WorkMediaItem[] }
 ): Promise<{ revisionId: string; revisionNo: number; contentHash: string; conflict?: boolean } | null> {
+  if (opts?.media !== undefined) assertWorkMedia(opts.media);
   // The plan is a private Owner source, not a free-standing authorization to
   // append to an arbitrary work. Check both owners in the same read.
   const rows = await queryRows(
@@ -177,7 +214,11 @@ export async function commitWorkRevision(
     understandingDelta: finding.understandingDelta ?? "",
     plan: { angle: plan.angle ?? "", points: plan.points ?? [], cover: plan.cover ?? "", directorDecisions: plan.directorDecisions ?? [] },
     beats,
-    ...(opts?.rightsAcknowledged ? { media: [] as unknown[], rights_acknowledged: true } : {}),
+    ...(opts?.media !== undefined
+      ? (opts.media.length
+          ? { media: opts.media, rights_acknowledged: false }
+          : { media: [] as unknown[], rights_acknowledged: true })
+      : opts?.rightsAcknowledged ? { media: [] as unknown[], rights_acknowledged: true } : {}),
   };
   const contentHash = crypto.createHash("sha256").update(JSON.stringify(content)).digest("hex");
   const latest = await queryRows(

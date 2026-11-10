@@ -333,6 +333,67 @@
   color: #7f9290;
 }
 
+/* 真实原件扫描页（字节由 /api/works/media 提供，逐请求复核 WATCH 资格） */
+.watch__stage-media {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
+.watch__stage-media-item {
+  margin: 0;
+  max-width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.03);
+}
+.watch__stage-media-item img {
+  display: block;
+  width: 100%;
+  max-height: 52vh;
+  object-fit: contain;
+  background: #0d1512;
+}
+.watch__stage-media-item figcaption {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #a9b8b5;
+  text-align: center;
+}
+
+.watch__evidence {
+  margin-top: 12px;
+}
+.watch__evidence-title {
+  color: var(--mo-text);
+  font-size: 13px;
+  margin: 0 0 8px;
+}
+.watch__evidence dl {
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+.watch__evidence-row {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 8px;
+}
+.watch__evidence-row dt {
+  color: #7f9290;
+  font-size: 12px;
+}
+.watch__evidence-row dd {
+  margin: 0;
+  font-size: 12px;
+  word-break: break-all;
+}
+.watch__evidence-row dd a {
+  color: #9ec8bf;
+  text-decoration: underline;
+}
+
 @media (max-width: 900px) {
   .watch__body--player {
     grid-template-columns: 1fr;

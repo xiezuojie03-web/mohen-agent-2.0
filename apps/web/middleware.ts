@@ -14,7 +14,12 @@ const COOKIE = "mohen_role";
 // Fail-closed auth responses must not be cached by the browser or Vercel edge.
 const DENIED_HEADERS = { "Cache-Control": "private, no-store, max-age=0", "Pragma": "no-cache" };
 
-const PUBLIC_PREFIXES = ["/api/public/", "/api/help/"];
+const PUBLIC_PREFIXES = [
+  "/api/public/",
+  "/api/help/",
+  // 已发布作品的原件扫描页：route 内部每次请求都复核 WATCH 资格，不含未发布/未授权内容。
+  "/api/works/media/",
+];
 const PUBLIC_EXACT = new Set([
   "/api/auth/login",
   "/api/auth/register",

@@ -34,7 +34,8 @@ const EVIDENCE_PATH = path.resolve(rootDir, "tasks/results/MAB/evidence/m5-watch
 const BASE_URL = process.env.MOHEN_VERIFY_BASE_URL ?? "http://127.0.0.1:3210";
 
 const WORK = "5b42577e-a4d6-4024-b1f9-99d0d788c9ec";
-const REVISION = "62a8ba95-e07f-4f7e-bcb9-f728004d651a";
+// 修订 id 取发布指针的现行值（环境变量可覆盖）：避免写死旧修订导致为已停止发布的内容签发资格。
+let REVISION = process.env.MOHEN_VERIFY_REVISION ?? "";
 const PROJECTION = "560c5f6d-a7b0-6ec5-1f0b-0ed98d60c91d";
 
 // 已退休的链：按门顺序排列，候选只作为"证据碎片模板"（run_id/stage/evidence_refs/scope）。
@@ -259,6 +260,14 @@ async function signWatchRevision(template, dependencySnapshot, validUntil, state
 
 async function main() {
   const state = { projectionRevision: await artifactRevision("world_projection", PROJECTION) };
+  if (!REVISION) {
+    const pointerRows = await queryRows(
+      `select revision_id::text as revision_id from publication.published_pointers where work_id = :'wid'::uuid`,
+      { wid: WORK }
+    );
+    REVISION = String(pointerRows[0]?.revision_id ?? "");
+    if (!REVISION) throw new Error("PUBLISHED_REVISION_MISSING");
+  }
   const steps = [];
   const record = (name, ok, detail) => {
     steps.push({ step: name, ok, ...detail });

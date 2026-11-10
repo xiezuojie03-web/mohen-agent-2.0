@@ -30,7 +30,9 @@ const PUBLIC_EXACT = new Set([
   "mohen/ask",
   "mohen/materials",
 ]);
-const PUBLIC_PREFIX = ["public/", "help/"];
+// works/media/ 是观看侧只读取图：与 /api/works/published 同属公开消费面，
+// 每次请求在 route 内重跑 WATCH 资格校验（未发布/撤权即 404），不依赖登录态。
+const PUBLIC_PREFIX = ["public/", "help/", "works/media/"];
 
 const AUTH_TOKENS = /getSession|isOperator|getSessionUser|hasRole|parseSessionToken|canAccess|isOwnedBy|guardRoute|verifyReviewer/;
 const OWNER_TOKENS = /canAccess|isOwnedBy|owner_user_id|guardRoute\(params,\s*"|listWorks\(\s*session\.uid/;
