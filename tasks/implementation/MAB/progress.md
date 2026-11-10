@@ -2535,3 +2535,15 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - **单测**：新增 `source-identity-stratification.test.mjs` 5 例（已读层带证据/缺目录号如实 unknown/无修订失败关闭/缺锚点失败关闭/未核字节失败关闭）；既有 D00 测试补 Y05 断言。
 - **回归**：typecheck 6/6；unit 644 通过 / 2 跳过 / 0 失败；data-production 209 通过 + 1 既有 `DEFERRED_ENV`（`independent-gate-service-runtime`，无 openssl）；三项 guard 全 PASS。
 - **边界**：只接通第 5 个工序（Y06—Y08 仍无独立执行器）；本工序按架构不落新表，资料台分层要等 Y07 接通后随新尝试的 candidate_ref 可见；未给 `mohen_app_runtime` 开任何 `source.*` 写权限；不签 Gate、不构成生产准出，`M5_OVERALL_HOLD` 不变。
+
+## M5-F｜D00 第六道工序（Y06 取得优先级评估）执行器接通（2026-11-10，本地隔离 VERIFIED_ISOLATED）
+
+- **应完成什么**：步骤④按序接通 D00 八工序的第六个真执行器。Y06 落库语义为 `source.priority_assessments`，此前只有调用方传 `input.priorities` 才落库的被动通道，真实 D00 运行从未产生过一条优先级处置。
+- **做了什么**：
+  - 新增 `pipelines/data-production/workers/source-priority-assessment.mjs`：`deriveIntakePriority()` 处置只由 Y03 核查结论决定（admissible→selected、needs_owner→deferred、rejected→excluded）；五维标准各带依据，机构身份与权利现状取准入已知，相关性/覆盖/时效如实 `unknown`；rationale 引用 Y03 reasonCode；结论缺失或越界即失败关闭。
+  - `private-evidence-stage.mjs`：D00 段在 Y05 身份分层后强制派生并写处置，候选输出新增 `intake_priority_id`/`intake_priority_decision`。
+  - `apps/web/app/studio/desk/page.tsx`：资料台新增「取得优先级评估（D00 第六道工序）」区，处置白话标签 + 理由 + 五维依据芯片，只列本人项目。
+- **证据**：`tools/verify-y06-executor.mjs` = `Y06_EXECUTOR_PROVEN`：真实登记重跑 Y03 得 needs_owner → 派生处置 deferred（理由含 `Y03_EXPANSION_UNASSESSED:place_name,era`，明示"等 Owner 判定，不放宽为 selected"），落库 `4553619f-20cf-42dd-ab33-e356e155d010` 并回读一致；负例三项全 true——结论缺失/越界拒绝、**库内触发器拒绝无 admissible 核查强写 selected**（`PRIORITY_SELECTED_REQUIRES_ADMISSIBLE_VERIFICATION`）、负例不写库且正例 +1。
+- **单测**：新增 `source-priority-assessment.test.mjs` 4 例（needs_owner 只能 deferred 且理由可回读/admissible 才 selected、rejected 即 excluded/结论缺失或越界失败关闭/权利逐动作现状如实登记）；既有 D00 测试三处接入 Y06 断言。
+- **回归**：typecheck 6/6；unit 644 通过 / 2 跳过 / 0 失败；data-production 213 通过 + 1 既有 `DEFERRED_ENV`；三项 guard 全 PASS。
+- **边界**：只接通第 6 个工序（Y07—Y08 仍无独立执行器）；处置是准入评估不是最终选取（selected 需同候选 admissible 核查，库内触发器把关）；未给 `mohen_app_runtime` 开任何 `source.*` 写权限；不签 Gate、不构成生产准出，`M5_OVERALL_HOLD` 不变。

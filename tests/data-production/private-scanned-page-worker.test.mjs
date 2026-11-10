@@ -79,6 +79,7 @@ test('D00 verifySourceIntake returns an UNASSESSED registration candidate under 
   let reads=0,registrations=0,bindings=0;
   let intakeEntry=null;
   let intakeVerification=null;
+  let intakePriority=null;
   const intakeEntryId=id();
   const intakeVerificationId=id();
   return withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
@@ -91,6 +92,7 @@ test('D00 verifySourceIntake returns an UNASSESSED registration candidate under 
       readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
       recordCatalogEntry:async entry=>{intakeEntry=entry;return {catalog_entry_id:intakeEntryId};},
       recordCandidateVerification:async item=>{intakeVerification=item;return {verification_id:intakeVerificationId};},
+      recordPriorityAssessment:async item=>{intakePriority=item;return {assessment_id:id()};},
       bridge:{linkReading:async()=>({}),linkClaim:async()=>({})},...gateStub,
     });
     const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
@@ -116,6 +118,11 @@ test('D00 verifySourceIntake returns an UNASSESSED registration candidate under 
     assert.equal(intakeVerification.methodKey,'D00/Y03:intake_candidate_check');
     assert.equal(intakeVerification.checks.identity.content_type,'image/jpeg');
     assert.equal(intakeVerification.checks.locator.catalog_no,'present');
+    // Y06：处置由 Y03 结论决定，needs_owner 只能 deferred，挂在准入条目上。
+    assert.equal(intakePriority.catalogEntryId,intakeEntryId);
+    assert.equal(intakePriority.decision,'deferred');
+    assert.equal(intakePriority.methodKey,'D00/Y06:intake_priority');
+    assert.equal(candidate.intake_priority_decision,'deferred');
     assert.equal(candidate.stage,'D00');
     assert.equal(candidate.gate_code,'G0');
     assert.equal(candidate.qualification,'UNASSESSED');

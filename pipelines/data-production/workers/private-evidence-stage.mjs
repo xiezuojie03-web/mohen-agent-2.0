@@ -10,6 +10,7 @@ import { deriveIntakeCatalogEntry } from './source-catalog-observation.mjs';
 import { deriveIntakeCandidateVerification } from './source-candidate-verification.mjs';
 import { deriveIntakeCoverage } from './source-coverage-conclusion.mjs';
 import { deriveSourceIdentityStratification } from './source-identity-stratification.mjs';
+import { deriveIntakePriority } from './source-priority-assessment.mjs';
 
 const HEX=/^[a-f0-9]{64}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
@@ -192,6 +193,19 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
       // 候选输出存证，后续 Y07 的 candidate_ref/dependency_refs 与 Y08 取得回执
       // 都从这一份派生，不另造第二套身份。
       const sourceIdentity=deriveSourceIdentityStratification({registration,record});
+      // Y06：取得优先级处置紧跟 Y03 核查结论就地进行。五维标准各带依据、未评估
+      // 如实 unknown；处置由 Y03 结论决定（admissible→selected、needs_owner→deferred、
+      // rejected→excluded），绝不把未 Owner 判定的来源放宽成 selected（库内触发器
+      // 同样把关）。处置写不进去即失败关闭，不允许"核查完了却没有处置账"。
+      if(typeof recordPriorityAssessment!=='function')throw Error('PRIVATE_PRIORITY_ASSESSMENT_RECORDING_REQUIRED');
+      const intakePriority=deriveIntakePriority({registration,verification:intakeVerification});
+      const savedIntakePriority=await recordPriorityAssessment({projectId,
+        needId:need.need_id,catalogEntryId:intakeCatalogEntryId,
+        criteria:intakePriority.criteria,decision:intakePriority.decision,
+        rationale:intakePriority.rationale,methodKey:intakePriority.methodKey,
+        methodVersion:intakePriority.methodVersion});
+      if(!UUID.test(savedIntakePriority?.assessment_id??''))
+        throw Error('PRIVATE_PRIORITY_ASSESSMENT_NOT_RECORDED');
       // Y07：只在调用方确实知道"这份原件怎么来的"时记账；不知道就不写，
       // 绝不补默认方法或默认结果充当历史。方法身份可选（可能先前已登记）。
       let acquisitionAttemptId=null;
@@ -338,6 +352,8 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         intake_verification_id:savedIntakeVerification.verification_id,
         intake_verification_verdict:intakeVerification.verdict,
         intake_coverage_id:intakeCoverageId,source_identity:sourceIdentity,
+        intake_priority_id:savedIntakePriority.assessment_id,
+        intake_priority_decision:intakePriority.decision,
         catalog_entry_ids:catalogEntryIds,coverage_ids:coverageIds,
         verification_ids:verificationIds,assessment_ids:assessmentIds,
         artifact_revision:sourceRevision,

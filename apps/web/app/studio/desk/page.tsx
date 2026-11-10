@@ -232,6 +232,32 @@ export default async function DeskPage() {
     project_title: string;
   }>;
 
+  // D00 第六道工序（Y06 取得优先级评估）：处置由 Y03 核查结论决定——
+  // admissible 选用、needs_owner 暂缓等 Owner 判定、rejected 排除；五维依据逐条可见。
+  const assessmentRows = (await queryRows(
+    `select a.assessment_id::text as assessment_id, a.decision, a.rationale,
+            a.method_key, a.method_version, a.criteria::text as criteria,
+            a.created_at::text as created_at,
+            c.catalog_title, c.provider, p.project_title
+       from source.priority_assessments a
+       left join source.resource_catalog c on c.catalog_entry_id = a.catalog_entry_id
+       join studio.projects p on p.project_id = a.project_id
+      where p.owner_user_id = :'owner'
+      order by a.created_at desc limit 10`,
+    { owner: session.uid }
+  )) as Array<{
+    assessment_id: string;
+    decision: string;
+    rationale: string | null;
+    method_key: string | null;
+    method_version: string | null;
+    criteria: string | null;
+    created_at: string;
+    catalog_title: string | null;
+    provider: string | null;
+    project_title: string;
+  }>;
+
   const readRightsStatus = (raw: string | null) => {
     if (!raw) return null;
     try {
@@ -369,6 +395,34 @@ export default async function DeskPage() {
       case "holding": return String(v.institution ?? "");
       case "digital_asset": return [v.content_type, v.byte_size != null ? `${String(v.byte_size)} B` : null].filter(Boolean).join(" · ");
       default: return "";
+    }
+  };
+
+  const PRIORITY_DECISION_LABELS: Record<string, string> = {
+    selected: "选用",
+    deferred: "暂缓（等 Owner 判定）",
+    excluded: "排除",
+  };
+
+  const PRIORITY_CRITERION_LABELS: Record<string, string> = {
+    authority: "机构身份",
+    relevance: "相关性",
+    coverage: "覆盖",
+    freshness: "时效",
+    rights: "权利现状",
+  };
+
+  const readPriorityCriteria = (raw: string | null) => {
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw) as {
+        schema?: string;
+      } & Record<string, { state?: string } | string | undefined>;
+      if (parsed?.schema !== "mohen.source-priority-assessment.v1") return null;
+      return Object.keys(PRIORITY_CRITERION_LABELS)
+        .map((key) => ({ key, state: (parsed[key] as { state?: string } | undefined)?.state ?? "unknown" }));
+    } catch {
+      return null;
     }
   };
 
@@ -679,6 +733,50 @@ export default async function DeskPage() {
               )}
               <div style={{ fontSize: 11, color: "#6b746f", marginTop: 5 }}>
                 {row.project_title} · {row.method_key}@{row.method_version} · {row.created_at.slice(0, 10)}
+              </div>
+            </article>
+          );
+        })}
+      </section>
+
+      <section style={{ borderTop: "1px solid #e2ddd1", paddingTop: 14, marginBottom: 20 }}>
+        <h2 style={{ fontSize: 15 }}>取得优先级评估（D00 第六道工序）</h2>
+        <p style={{ fontSize: 12, color: "#6b746f", margin: "4px 0 10px" }}>
+          这批来源先用哪批：处置由候选核查结论决定——可收才选用，未判定的如实暂缓等 Owner 决定，
+          绝不放宽；五维依据逐条标明已确认或未评估。
+        </p>
+        {assessmentRows.length === 0 && (
+          <p style={{ fontSize: 13, color: "#8a3b3b" }}>还没有取得优先级评估。</p>
+        )}
+        {assessmentRows.map((row) => {
+          const criteria = readPriorityCriteria(row.criteria);
+          return (
+            <article key={row.assessment_id} style={{ border: "1px solid #e2ddd1", borderRadius: 8, padding: 10, marginBottom: 8 }}>
+              <div style={{ fontSize: 13, fontWeight: 600 }}>
+                {row.catalog_title ?? "未挂目录条目"} · {PRIORITY_DECISION_LABELS[row.decision] ?? row.decision}
+              </div>
+              <div style={{ fontSize: 11, color: "#6b746f", marginTop: 3 }}>{row.provider ?? "机构未知"}</div>
+              {row.rationale && (
+                <div style={{ fontSize: 12, color: "#2f4a3f", marginTop: 5 }}>{row.rationale}</div>
+              )}
+              {criteria !== null && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 5 }}>
+                  {criteria.map((item) => (
+                    <span
+                      key={item.key}
+                      style={{
+                        border: "1px solid #e2ddd1", borderRadius: 4, padding: "3px 8px", fontSize: 12,
+                        color: item.state === "known" ? "#1f7a4d" : "#9a6b2f",
+                      }}
+                    >
+                      {PRIORITY_CRITERION_LABELS[item.key]}：{item.state === "known" ? "已确认" : "未评估"}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div style={{ fontSize: 11, color: "#6b746f", marginTop: 5 }}>
+                {row.project_title}
+                {row.method_key ? ` · ${row.method_key}@${row.method_version}` : ""} · {row.created_at.slice(0, 10)}
               </div>
             </article>
           );

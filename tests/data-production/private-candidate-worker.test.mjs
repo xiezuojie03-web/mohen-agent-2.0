@@ -418,6 +418,7 @@ test('D00 verifySourceIntake submits exactly one G0 source_version candidate',as
       readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
       recordCatalogEntry:async entry=>{intakeEntries.push(entry);return {catalog_entry_id:id()};},
       recordCandidateVerification:async item=>{intakeVerifications.push(item);return {verification_id:id()};},
+      recordPriorityAssessment:async()=>({assessment_id:id()}),
       bridge:bridgeStub,
       submitGateCandidate:async metadata=>{submitted.push(metadata);return 'candidate-g0';},
       readGateAudit:async()=>{throw Error('G0 must not read an upstream audit');},
@@ -468,6 +469,7 @@ test('D00 carries the consumer C method plan as typed refs on the G0 candidate',
       readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
       recordCatalogEntry:async()=>({catalog_entry_id:id()}),
       recordCandidateVerification:async()=>({verification_id:id()}),
+      recordPriorityAssessment:async()=>({assessment_id:id()}),
       bridge:bridgeStub,
       submitGateCandidate:async metadata=>{submitted=metadata;return 'candidate-g0';},
       readGateAudit:async()=>{throw Error('G0 must not read an upstream audit');},
@@ -500,6 +502,7 @@ test('D00 rejects a malformed consumer method plan before submitting any candida
         readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
         recordCatalogEntry:async()=>({catalog_entry_id:id()}),
         recordCandidateVerification:async()=>({verification_id:id()}),
+        recordPriorityAssessment:async()=>({assessment_id:id()}),
         bridge:bridgeStub,
         submitGateCandidate:async()=>{submitted+=1;return 'candidate-g0';},
         readGateAudit:async()=>null,
@@ -563,13 +566,16 @@ test('D00 records intake observation then Y02/Y04/Y03/Y06 in order and exposes t
     });
     const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
     // 顺序固定：工序先落自己的准入目录观察（松江府志7，来自登记真值）与就地
-    // 候选核查（Y03，词源未读 → 需人确认），再登记调用方补充的候选，
+    // 候选核查（Y03，词源未读 → 需人确认），Y06 准入处置紧跟核查结论
+    // （needs_owner 只能 deferred，绝不放宽为 selected）；再登记调用方补充的候选，
     // 然后才有覆盖/核查/优先级的引用对象。
-    assert.deepEqual(calls,['catalog:松江府志7','verification:needs_owner','catalog:松江府志7',
-      'catalog:松江府志（另一版本）',
+    assert.deepEqual(calls,['catalog:松江府志7','verification:needs_owner','priority:deferred',
+      'catalog:松江府志7','catalog:松江府志（另一版本）',
       `coverage:${catalogIds[0]}`,'verification:admissible','priority:selected']);
     assert.equal(candidate.intake_catalog_entry_id,intakeId);
     assert.equal(candidate.intake_verification_verdict,'needs_owner');
+    assert.equal(candidate.intake_priority_decision,'deferred');
+    assert.equal(candidate.intake_priority_id,assessmentId);
     assert.deepEqual(candidate.catalog_entry_ids,catalogIds);
     assert.deepEqual(candidate.coverage_ids,[coverageId]);
     assert.deepEqual(candidate.verification_ids,[verificationId]);
@@ -601,6 +607,7 @@ test('D00 derives the Y04 intake coverage conclusion from the recorded acquisiti
       readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
       recordCatalogEntry:async()=>{calls.push('catalog');return {catalog_entry_id:intakeId};},
       recordCandidateVerification:async()=>{calls.push('verification');return {verification_id:id()};},
+      recordPriorityAssessment:async()=>{calls.push('priority');return {assessment_id:id()};},
       registerAcquisitionMethod:async()=>{calls.push('method');return {method_key:'M0002',method_version:'v1'};},
       appendAcquisitionAttempt:async()=>{calls.push('attempt');return {attempt_id:attemptId};},
       recordAcquisitionCoverage:async item=>{calls.push('coverage');coverageArgs=item;return {coverage_id:coverageId};},
@@ -609,8 +616,9 @@ test('D00 derives the Y04 intake coverage conclusion from the recorded acquisiti
       readGateAudit:async()=>null,
     });
     const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
-    // 顺序固定：先有准入目录观察与就地核查，再落获取尝试，然后才有覆盖结论的引用对象。
-    assert.deepEqual(calls,['catalog','verification','method','attempt','coverage']);
+    // 顺序固定：先有准入目录观察、就地核查与 Y06 处置，再落获取尝试，
+    // 然后才有覆盖结论的引用对象。
+    assert.deepEqual(calls,['catalog','verification','priority','method','attempt','coverage']);
     assert.equal(candidate.acquisition_attempt_id,attemptId);
     assert.equal(candidate.intake_coverage_id,coverageId);
     // 覆盖结论由工序派生：挂在本次尝试与准入目录条目上，只核到第 35 页，总量未核实。
@@ -647,6 +655,7 @@ test('D00 fails closed when the Y04 coverage conclusion cannot be recorded',asyn
         readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
         recordCatalogEntry:async()=>({catalog_entry_id:id()}),
         recordCandidateVerification:async()=>({verification_id:id()}),
+        recordPriorityAssessment:async()=>({assessment_id:id()}),
         registerAcquisitionMethod:async()=>({method_key:'M0002',method_version:'v1'}),
         appendAcquisitionAttempt:async()=>({attempt_id:id()}),
         recordAcquisitionCoverage:async()=>({coverage_id:id()}),
@@ -667,7 +676,8 @@ test('D00 writes only the intake observation when the caller supplies no extra m
   const originalId=id(),projectId=id(),sourceVersionId=id();
   const input={research_intent:'松江府田赋卷十一',scope:{project_id:projectId,original_id:originalId,page_number:35}};
   return withStageAuthority({stage:'D00',input},async({registry,job,run,context})=>{
-    let catalogCalls=0,intakeVerifications=0,extraCalls=0;
+    let catalogCalls=0,intakeVerifications=0,intakePriorities=0,extraCalls=0;
+    let intakePriorityArgs=null;
     const intakeId=id();
     const worker=createPrivateEvidenceStageWorker({
       readOriginal:async()=>imageRecord(originalId,projectId),
@@ -677,17 +687,27 @@ test('D00 writes only the intake observation when the caller supplies no extra m
       readProjectStock:async()=>({originals:1,verified_originals:1,unbound_verified:0,linked_sources:1,carriers:{'image/jpeg':1}}),
       recordCatalogEntry:async()=>{catalogCalls+=1;return {catalog_entry_id:intakeId};},
       recordCandidateVerification:async()=>{intakeVerifications+=1;return {verification_id:id()};},
+      recordPriorityAssessment:async item=>{intakePriorities+=1;intakePriorityArgs=item;return {assessment_id:id()};},
       recordAcquisitionCoverage:async()=>{extraCalls+=1;return {coverage_id:id()};},
-      recordPriorityAssessment:async()=>{extraCalls+=1;return {assessment_id:id()};},
       bridge:bridgeStub,
       submitGateCandidate:async()=>'candidate-g0',
       readGateAudit:async()=>null,
     });
     const candidate=await worker.verifySourceIntake({run,job,registry,context,input,token:'synthetic-session'});
-    // 调用方没给材料，工序只落自己从登记真值派生的目录观察与候选核查，
-    // 不替研究者补覆盖或优先级判断。
+    // 调用方没给材料，工序只落自己从登记真值派生的目录观察、候选核查与 Y06 处置，
+    // 不替研究者补覆盖或额外优先级判断。
     assert.equal(catalogCalls,1);
     assert.equal(intakeVerifications,1);
+    // Y06 准入处置由 Y03 结论决定：needs_owner 只能 deferred；理由可回读核查结论；
+    // 与研究意图的相关性等未评估维度如实 unknown。
+    assert.equal(intakePriorities,1);
+    assert.equal(intakePriorityArgs.decision,'deferred');
+    assert.equal(intakePriorityArgs.catalogEntryId,intakeId);
+    assert.equal(intakePriorityArgs.methodKey,'D00/Y06:intake_priority');
+    assert.match(intakePriorityArgs.rationale,/Y03_EXPANSION_UNASSESSED:place_name,era/);
+    assert.equal(intakePriorityArgs.criteria.relevance.state,'unknown');
+    assert.equal(intakePriorityArgs.criteria.authority.state,'known');
+    assert.equal(candidate.intake_priority_decision,'deferred');
     assert.equal(extraCalls,0);
     assert.equal(candidate.intake_catalog_entry_id,intakeId);
     assert.deepEqual(candidate.catalog_entry_ids,[]);
