@@ -173,7 +173,15 @@ export function createLocalPrivateOriginalStorage(options = {}) {
   };
   async function readVerified(key, expectedSha256, expectedLength) {
     if (!HEX256.test(expectedSha256)) throw new Error("ORIGINAL_HASH_INVALID");
-    const data = await readFile(resolveKey(key));
+    let data;
+    try {
+      data = await readFile(resolveKey(key));
+    } catch (e) {
+      // 与 Supabase 实现同一语义：对象不存在统一抛 ORIGINAL_NOT_FOUND。
+      // 否则上层 upload 的"先探已存在对象"恢复分支永远接不住，首次上传必然失败。
+      if (e && e.code === "ENOENT") throw new Error("ORIGINAL_NOT_FOUND");
+      throw e;
+    }
     if (data.length > MAX_ORIGINAL_BYTES ||
         (expectedLength !== undefined && data.length !== expectedLength) ||
         originalHash(data) !== expectedSha256) throw new Error("ORIGINAL_INTEGRITY_FAILED");

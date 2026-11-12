@@ -1,8 +1,14 @@
+import { redirect } from "next/navigation";
+import { getSession } from "../../lib/session";
 import StudioWorkbench from "./StudioWorkbench";
 
 export const metadata = { title: "创作 Studio · 墨痕" };
 
-export default function StudioPage() {
+// 未登录时不应渲染工作台：客户端取项目会 401，界面只剩「研究项目读取失败」。
+// 与 /studio/desk 一致，先由服务端确认会话，再进入创作界面。
+export default async function StudioPage() {
+  const session = await getSession();
+  if (!session) redirect("/login");
   return (
     <>
       <a

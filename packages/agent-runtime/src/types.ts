@@ -57,6 +57,9 @@ export interface Understanding {
   /** 0–1；低于阈值时不猜，转澄清 */
   confidence: number;
   source: "deterministic" | "llm" | "hybrid";
+  /** LLM 档是否真的返回了可解析结果（即使判为 unknown）。与 source 分开：
+   *  source 说明"意图从哪来"，本字段说明"模型是否接通并作答"，研究前置校验只认后者。 */
+  llmResponded?: boolean;
   needsClarification: boolean;
   clarifyQuestion: string | null;
 }

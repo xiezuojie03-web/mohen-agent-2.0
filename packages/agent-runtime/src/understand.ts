@@ -193,13 +193,13 @@ export async function understand(
   question: string,
   aliases: EntityAliases
 ): Promise<Understanding> {
-  const base = understandDeterministic(question, aliases);
+  const base = { ...understandDeterministic(question, aliases), llmResponded: false };
   const llm = await llmUnderstand(question, aliases);
   if (!llm) return base;
 
   if (llm.intent && llm.intent !== "unknown") {
     if (llm.intent === base.intent) {
-      return { ...base, confidence: Math.min(1, base.confidence + 0.2), source: "hybrid" };
+      return { ...base, confidence: Math.min(1, base.confidence + 0.2), source: "hybrid", llmResponded: true };
     }
     // L0 完全没信号、LLM 有 → 采信 LLM，但标记来源以便审计
     if (base.intent === "unknown") {
@@ -209,14 +209,17 @@ export async function understand(
         objects: llm.objects?.length ? llm.objects : base.objects,
         confidence: 0.6,
         source: "llm",
+        llmResponded: true,
         needsClarification: false,
         clarifyQuestion: null,
       };
     }
     // 有冲突时不猜：保持 L0，降级为澄清
-    return { ...base, needsClarification: true, clarifyQuestion: `你说的是「${labelOf(base.intent as Exclude<AgentIntentKind, "unknown">)}」吗？`, source: "hybrid" };
+    return { ...base, needsClarification: true, clarifyQuestion: `你说的是「${labelOf(base.intent as Exclude<AgentIntentKind, "unknown">)}」吗？`, source: "hybrid", llmResponded: true };
   }
-  return base;
+  // 模型确实作答但判为 unknown（例如"给我研究方法"这类自由委托）：意图仍以 L0 为准，
+  // 但必须留下"模型已接通并作答"的事实，否则上层会误判成模型未接通。
+  return { ...base, llmResponded: true };
 }
 
 /** 收敛到引擎既有四类（复用 FOLLOWUP_REPLAN，不建第二套） */

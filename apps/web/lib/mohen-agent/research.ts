@@ -130,7 +130,9 @@ export async function runResearch(
   const qualification = requireResearchPrerequisites(ledger);
   const profile = TOPIC_PROFILES[topic];
   const understanding = await useTool(ledger, "llm-understand", () => understand(question, profile.aliases));
-  if (understanding.source === 'deterministic')
+  // 前置校验看"模型是否真的接通并作答"，不看意图最终取自哪一档：
+  // 自由委托常被判为 unknown，这属于合法结果，不能因此阻断研究。
+  if (!understanding.llmResponded)
     throw new ResearchPrerequisiteHold(['PROVIDER_UNDERSTANDING_NOT_VERIFIED']);
   const aliasTerms = understanding.objects.flatMap((id) => profile.aliases[id] ?? []);
   const terms = dedupe([...aliasTerms, ...understanding.terms]);

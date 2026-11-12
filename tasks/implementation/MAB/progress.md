@@ -3160,6 +3160,8 @@ ights_by_action={display:allowed}、scope=public_watch。
 
 - **推送**：github.com:443 仍不稳，改走 GitHub Git Data API 重放本地提交（内容不变，SHA 由远端重算）。远端 main 依次到 `6bb6b9e6`（CI 修复）→ `c1d244be`（隔离链补齐）→ `6562ece3`（Agent 检索归一）。本地 `origin/main` 仍停在已推送内容的旧 SHA，属传输替代的已知偏差，**不代表有未推送提交**。
 - **真实模型派发已打通（M4 派发器）**：`node --experimental-strip-types tools/verify-4-provider-dispatch.mjs` = `VERIFY_4_ALL_PASS`。真调 DeepSeek（`deepseek-flash`）返回正文，回执 `ACCEPT_AS_CANDIDATE` + `ESTIMATED`，`cost=$0.000074`（≈¥0.0005）；同输入二次授权 `replay=true` 不重复扣费；`rights={}` 来源 `TRANSFER_DENIED`；零预算 `HOLD_BUDGET`，三者均无新增回执。累计真实 Provider 支出（本地库 17 张回执）`$0.017176`，远低于 Owner 授权 ¥20。
+## 2026-11-12 本地亲验就绪批（Owner 可亲手走的 M5 链路）
+
 - **本地生产实例已起并可操作**：`next build` + `next start`（`127.0.0.1:3100`，环境来自 `apps/web/.env.local` + 根 `.env.local`）。真机探测：`/`、`/studio`、`/studio/desk`、`/watch`、`/explore`、`/admin` 均 200，`/studio/desk` 含「我的研究记录／新项目名称／当前研究项目／创建项目」。探针合成用户已删除（`public.users` 恢复为 2 个真实账号：Owner `20195689@qq.com`、machine reviewer）。
 - **本地库真实存量（mohen_dev，只读盘点）**：`studio.projects=1`、`asset_heads=85`、`asset_revisions=86`、`private_originals=81`、`control.gate_audits=755`、`control.gate_candidates=50`、`control.qualification_current=15`、`studio.delegations=17`、`execution_receipts=17`、`source.raw_items=179`。
 - **备份/恢复演练（本地）**：`pg_dump -Fc` 991,143 字节 → 还原到一次性库 → 17 张关键表逐表行数 + 整表 `to_jsonb` 哈希比对 `diffs=0`，耗时 3.9s，演练库已 drop。判定 `BACKUP_RESTORE_DRILL_PASS`。
@@ -3172,7 +3174,17 @@ ights_by_action={display:allowed}、scope=public_watch。
 - **CI 全绿回执（同日收口）**：远端 `bd94f91c` → `ci` run 43212146248 **SUCCESS**、`MAB M1 isolated authenticated HTTP acceptance` run 43212146038 **SUCCESS**（此前该工作流 6 FAIL → 1 FAIL → 0 FAIL，23 passed/1 skipped）。修复链：①隔离 HTTP 链补齐 24 份漂移迁移并加双链守卫；②Agent 检索消费方动作按词典归一（`read`→`access_view`），使公开 Agent 首次真正读到材料；③ST-02 改以 `asset_revision` 回链满足 CP2-F（本地先复现 `materials=1` 且回放快照一致再提交，13 类矩阵的悬空引用/缺来源拒绝断言未放宽）。
 - **本地探针数据说明（未清理成功，按设计）**：为验证真实 200 与写入契约，本地 `mohen_dev` 曾建 5 个合成探针账号（`*probe*`/`finalcheck*@example.invalid`）及其项目/资产；尝试清理时 `studio.use_events` 报 `PERMANENT_RECEIPT_IMMUTABLE`、`asset_heads`/`projects`/`users` 报外键 RESTRICT，删除被**正确拒绝**——这反证永久回执与引用完整性在真实数据上生效。探针数据只存在于本地 dev 库，未进生产；如需洁净本地库，须按受控重置流程另开批次，不在本批静默绕过守卫。
 
-## 2026-11-12 本地亲验就绪批（Owner 可亲手走的 M5 链路）
+## 2026-11-12 创作链可走性诊断批（Owner 亲验中暴露的真实断链）
+
+Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关键是我都不知道如何创作作品」。据此定位并修复：
+
+- **界面差异根因**：`/studio` 页面本身不校验会话，未带登录态（如用 `127.0.0.1` 打开或会话过期）时客户端取项目 401，整页退化成「当前研究项目：尚未创建研究项目 + 研究项目读取失败」。已把 `/studio` 改为服务端先确认会话、未登录即跳 `/login`（与 `/studio/desk` 一致），杜绝"看起来坏了"的状态。另一差异是宽度自适应：窄窗单列只显示对话委托，宽窗三列。
+- **委托必然 HOLD 的真实缺陷（已修）**：DeepSeek 对"给我研究方法"这类自由委托合法地判为 `unknown`，而 `understand()` 把"意图不是六类之一"等同于"模型没接通"，`runResearch` 据此抛 `PROVIDER_UNDERSTANDING_NOT_VERIFIED`，导致创作第一步永久失败。修法：`Understanding` 增加 `llmResponded`，区分"模型是否作答"与"意图取自哪一档"；前置校验只认前者。实测同一句委托由 HOLD 变为 `done`，带回 3 条真实上图检索线索（《松江府志》《松江府志抄》《松江府志摘要》）。unit 87 passed / 0 failed。
+- **本地环境补齐（仅本地）**：`.env.local` 补 `MOHEN_LLM_BASE_URL`（api.deepseek.com）、`MOHEN_LLM_API_KEY`（复用既有 DeepSeek 凭据，未新增账号/未新增费用口径）、`MOHEN_LLM_MODEL=deepseek-chat`，并在 `MOHEN_G5_CONTEXTS` 增 `agent` 用途（`mohen.research/agent_read/v1`、`requested_action=read`），保留 watch 原值。备份在 `%TEMP%\env.local.bak.20261112`。
+- **本地原件存储缺陷（已修，但环境仍阻断）**：`private-original-storage` 本地实现 `readVerified` 未把 ENOENT 归一为 `ORIGINAL_NOT_FOUND`，导致上传里"先探已存在对象"的恢复分支永远接不住，本地后端所有上传必然失败（路由折叠成 503）。已按 Supabase 实现同一语义修正。**但实测 `D:\MoHen\data\private_originals` 对当前进程写权限被拒（EPERM/访问被拒绝，`icacls` 授权亦被拒），因此本地仍无法上传新原件**，属环境/ACL 问题，未绕过。
+- **创作链当前实测卡点**：① 委托=done（已通）→ ② 生成方案需要项目**已绑定来源且这些来源允许外发**：新建项目无原件 → `project_source_unbound`；「松江府田赋」项目绑定的上图来源 `external_processing=unknown` → `TRANSFER_DENIED`（既有的 `tools/stamp-shl-open-data-rights.mjs` 按设计拒绝对已写权利做覆盖，权利变更需单独受控修订）。全库仅《松江府志7》（PD-old）九动作全 `allowed`，但上传受阻已无法把该来源绑定到新项目。
+- **Owner 方向（2026-11-12 会话内）**：「按 D00 的设计研究，墨痕不应该是可以自动获取外部资源的吗？库里没有知识很正常，现在目的就是要生产数据。」——即外部获取与外部处理应作为常规能力，而非长期 HOLD。据此下一步需做一次受控权利修订（给上图开放数据下发 `external_processing=allowed` 并留证），以及解除本地原件存储写入限制，二者完成前不宣称创作链可端到端走通。
+- 未变更：未改生产库、未改 M5 准出状态、未新增付费口径；本地实例仍 `VERIFIED_ISOLATED`。
 
 - **本地生产实例可亲手操作**：`http://localhost:3100`（`next build` + `next start`）。真实浏览器复验 PASS：Owner 账号登录成功；`/studio/desk`=「资料台·墨痕 Studio」正文 134,687 字节（含真实研究记录与资料）；`/studio`=创作工作台「01 对话与构思 / 02 受托研究与编导 / 03 预览与修改 / 04 审核与发布」；`/`、`/watch`、`/admin`、`/admin/sources` 均 200。接口侧：`/api/studio/projects` 200 返回真实项目；`/api/works/published` 200 返回真实作品 `5b42577e-…`（revision `825a56c9-ccb8-45fa-a0ba-c55df6b67f04`、rev 3）；`/api/works/media/dd0ffa3b-…` 200 返回 362,221 字节扫描件（松江府志 第35页）。
 - **本地 Owner 登录凭据（仅本地隔离库）**：为 `mohen_dev` 的 Owner 账号 `20195689@qq.com`（roles=member,creator,operator,reviewer）设置 scrypt 口令（与 `apps/web/lib/auth.ts` 同口径，salt:hash）。明文仅当面/会话交付 Owner，**未写入仓库任何文件**；生产库账号口令未被触碰。浏览器侧已实测 Secure cookie 在 `http://localhost` 被保留（`127.0.0.1` 走 PowerShell 会话时会被丢弃，故清单统一用 `localhost`）。
