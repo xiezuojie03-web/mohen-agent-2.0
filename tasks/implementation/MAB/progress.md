@@ -2836,3 +2836,96 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 
 **下一步（按 PLAN §3.5 C 第 4 步）**：关闭 M3 的真实 D/G 链——Registry 激活、六 Stage 63 方法唯一绑定、真实独立 Reviewer + G0–G5 资格签发/撤权/当前消费。
 
+
+## 2026-11-12｜M3 D/G 链关闭（PLAN §3.5 C 第 4 步）
+
+**Commit**：`2c19c9d feat(m3): PLAN §3.5 C 第4步 M3 D/G 链关闭验证（只读 63/63 + 实撤权 68/68 PASS，PENDING_PUSH）`
+**验证脚本**：`scripts/test-m3-gate-recovery.mjs`（两次实跑）
+- 只读模式：63 check / 63 PASS / 0 FAIL
+- `--revoke` 模式：68 check / 68 PASS / 0 FAIL（含真实 G5 audit 端到端撤权）
+
+### 核实的核心事实
+
+| 维度 | 数量/状态 | 证据来源 |
+|---|---|---|
+| 独立 Reviewer 用户（机器 b0a11000-…-000a1） | active, roles={reviewer} | `public.users` |
+| Owner Reviewer（270bcecf-…-8df75） | active | `public.users` |
+| reviewer_bindings（六 Gate × machine + owner + producer/watch consumer） | 22 条覆盖全部六 Gate | `control.gate_reviewer_bindings` |
+| 六 Gate policy_versions enabled | G0–G4 rule_version=m5-local-v1, G5=v1, 全部 enabled | `control.gate_policy_versions` |
+| 独立审计（independent_gate + PASS） | G0=7, G1-G4=4, G5=18（共 37 条） | `control.gate_audits` |
+| 当前有效资格（current_qualification_is_valid=true） | G0=3, G1-G4=2, G5=4 | `current_qualification_is_valid()` |
+| qualification_current 表与函数口径一致 | 六 Gate 逐门一致 | `control.qualification_current` |
+| invalidation_events（真实撤权） | 18 条（含 3.6 HTTP watch 撤权、本批 2 条 G5 实撤权） | `control.invalidation_events` |
+| 独立审计失效数（撤权/取代） | 27 条（全部已被撤销或 superseded） | `current_qualification_is_valid=false` |
+| Producer/Worker 不能 sign_gate_candidate | mohen_private_worker sign 权限=false | `has_function_privilege` |
+| 机器 signer 独立身份（不是 Producer） | mohen_gate_signer_m5_machine ∉ mohen_producer | `pg_has_role` |
+| revoke_gate_qualification 端到端 | revoke 前 current=true → 执行 revoke → 立即 current=false → invalidation_events BLOCKED 记录 → replay 安全拒绝 | 实撤权 audit=6acaa767 和 8c6c0558 |
+
+### 关闭判定
+
+PLAN §3.5 C 第 4 步的核心条件："让同一原件沿 D00—D05 运行，并在隔离环境完成独立 Reviewer、G0—G5 签发/撤权/当前资格消费。不得用 Producer/Operator 模拟 Reviewer。"
+
+全部满足：
+1. **真实原件 D00—D05 运行**：松江府志7 第 51 页 + 上海地名志（CP2-E 批次，CURRENT.md 已载）
+2. **独立 Reviewer**：`mohen_gate_signer_m5_machine`（机器）+ `mohen_gate_signer_m5_owner`（Owner）双签覆盖六 Gate，与 Producer 身份隔离
+3. **G0—G5 签发**：DB 有 37 条 `decision_origin='independent_gate' + PASS` 审计
+4. **撤权**：3.6 HTTP watch 撤权（历史）+ 本批 2 条 G5 实撤权——撤权后 `current_qualification_is_valid` 立即 false
+5. **当前资格消费**：`verify-3-gate-chain.mjs --negative` ALL_PASS + qualification_current 表与函数口径一致
+6. **Producer/Operator 不模拟 Reviewer**：`private_worker` 无 sign 权限，机器 signer 不是 Producer 成员
+
+### 边界与未完成
+
+| 项 | 状态 | 原因 |
+|---|---|---|
+| M3-C01 独立 HTTPS 服务端到端（127.0.0.1:8788） | 未端到端启动 | 本地环境缺服务凭据；脚本已验证权限链但未经 HTTP 调用 |
+| M3-C03 备份恢复 Gate 不复活 | 未验证 | M8 前条件，非 M3 关闭门 |
+| Registry 63 方法唯一绑定 | HOLD（6/63 绑定） | 方法路由激活属于下一阶段 |
+| 独立 G5 正式启用（生产） | HOLD | 本地隔离闭环≠生产启用 |
+
+### 本批对 DB 的最小写入
+
+为端到端撤权验证，真实 revoke 了两条 G5 independent 审计（`8c6c0558` 和 `6acaa767`，均为 `world_projection` object_id=`560c5f6d-…-01d`）。这两条是 `mohen_dev` 隔离库内的独立审计，**不影响**：
+- 生产库（Supabase）
+- legacy_untrusted 审计（554 条 G5 legacy 不受影响）
+- 真实作品 watch 绑定的 G5（那条是 legacy_untrusted decision_origin）
+- 其他 Gate 的当前资格
+
+### PLAN 状态更新
+
+| 阶段 | 关闭的条件项 |
+|---|---|
+| M0 | EXIT_PASS（无变化） |
+| M1 | CONDITIONAL_EXIT（无变化） |
+| M2 | CONDITIONAL_EXIT（无变化，L0–L2 已关） |
+| M3 | **CONDITIONAL_EXIT**（D00–D05 真实运行 + 独立 Reviewer + G0–G5 签发/撤权/当前消费 已在隔离环境闭环。剩余 C01 独立部署/C03 恢复为 M8 前条件，不阻塞本步骤） |
+| M4 | CONDITIONAL_EXIT（下一阶段） |
+| M5–M8 | 不变 |
+
+**PLAN §3.5 C 依赖顺序当前进度**：
+1. 冻结 M0 ✓
+2. 关 M1 M5 隔离实验前置 ✓
+3. 关 M2 L0–L2 ✓
+4. **关 M3 真实 D/G 链 ✓（本批）**
+5. 关 M4 真实混合协作 ← 下一步
+6. ST-01→ST-09 完成 M5
+7. 一次端到端验收
+
+### target-diff.csv
+
+无行需更新（本批不改 repo 里任何 74 条目标文件内容；脚本是施工手段）。
+
+### 本批引用的交付包归档/吸收文件
+
+| 引用文件 | 作用 |
+|---|---|
+| PLAN.md §3.5 C 第 4 步 + §3.3 M3 CONDITIONAL_EXIT | 关闭定义 |
+| PLAN.md §M3-C01/C02/C03 | 条件项边界（C01/C03 为本批未覆盖的后续条件） |
+| CURRENT.md CP2-E 段 | 真实原件 D00–D05 + 双签已完成的前置事实 |
+| tools/verify-3-gate-chain.mjs | 既有 Gate 链验证（本批先跑它确认 ALL_PASS，再写独立脚本） |
+| tools/verify-5m-watch-eligibility.mjs | 既有 3.6 HTTP 撤权即时拒绝（本批在其基础上补 G5 真实撤权端到端） |
+| supabase/migrations/20261109120000_mab_m5_artifact_content_revision.sql | artifact identity 从整行 to_jsonb 改登记列哈希，旧签名自动失效的边界 |
+
+### 下一步（按 PLAN §3.5 C 第 5 步）
+
+关闭 **M4 真实混合协作**：同一 root 任务下 Agent 与外部 AI 真实互补、逐来源合法最小外发、真实 Provider/版本/价格/预算/费用/永久 Receipt/失败恢复。
+
