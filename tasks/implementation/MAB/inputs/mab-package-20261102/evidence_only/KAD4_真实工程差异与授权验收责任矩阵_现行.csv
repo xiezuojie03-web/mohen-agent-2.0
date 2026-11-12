@@ -1,0 +1,20 @@
+﻿priority,id,subject,action,actual_evidence,positive_acceptance,owner_domain,phase,negative_example
+P0,SEC01,public.imported_materials,ADAPT,anon unauth SELECT/INSERT + no RLS,anon and auth client blocked; owner legitimate upload survives,ACTOR/SECURITY,KAD4/KAD5,must fix before file import
+P0,RAW01,Storage private business bucket,CREATE,buckets=0; objects=0; 98 raw refs no backed object,upload/read hash verified in isolated env; unauthorized export denied,D00/STORAGE,KAD4/KAD5,must not claim old blobs present
+P0,L1L2,source.read_units → evidence.read_unit_evidence_links,ADAPT,link table empty with FK to G1/read_unit/evidence,true document page→material evidence link including G1,D01/D02,KAD4/KAD5,no invented historic links
+P0,L2L3,evidence.material_evidence → world.claim_evidence_links,ADAPT,world links 0 rows,claim@rev resolves evidence exact source and reading,D02/D03,KAD4/KAD5,no false published narrative
+P0,L0,source.raw_items,ADAPT,all 98 storage_refs yet storage empty,state tracks POINTER_UNVERIFIED vs STORED_VERIFIED after actual check,D00,KAD4,no automatic verified status
+P0,STUDIO,studio.asset_heads/revisions/links,CREATE,research checkpoints editable; task logs cascade,13 kinds durable immutable revision + CAS and rev provenance,STUDIO/KAD1,KAD4/KAD5,no second published work truth
+P0,DELEGATE,studio.delegations/execution_receipts,CREATE,study_asset_receipts cascades with research_tasks,"actual external AI receipt, budget, rights and recovery",KAD2,KAD4/KAD5,no unconditional external DB grant
+P0,AI01,SearchAuthorizedKnowledge,REVISE,existing agent retrieve only qualified L5,Studio project L0-L4 and agent L5 rights split,KAD1/AGENT,KAD4/KAD5,no unfiltered all-table RAG
+P0,G05,G5/P08 consumer guards,REVISE,current G5 rows do not prove target activation,current purpose/scope/consumer/action/rights/dep checked per request,GATE,KAD4/KAD5,old G5 pass not blanket permission
+P1,L6,experience.runtime_sessions/events,CREATE,explore/watch tables incomplete experience state,persistent session/action provenance and legal permissions,EXPERIENCE,KAD4,EXP UI activation deferred
+P1,L7,participation.contributions,CREATE,work_engagement is aggregate not consent ledger,consent/revoke actor data no implicit promotion,PARTICIPATION,KAD4,no user tracking without consent
+P1,L8,culture.trace_candidates,CREATE,no trace table found,candidate refs observed place/time and D00 request,CULTURE,KAD4,no truth auto-upgrade
+P1,WATCH,published work revisions/eligibility,REVISE,eligibility route only published list,"rights,G5,revision, revocation fully checked",WATCH,KAD4/KAD5,avoid new WATCH DB
+P1,ADMIN,AdminKnowledgeRead,REVISE,AdminWorkbench summaries only,sub-function consumes authoritative authorized refs/usage,ADMIN,KAD4,no independent platform UI
+P1,BACKUP,DB+Storage backup manifest,CREATE,none verified as complete,restore exact source@rev/hash/locator/rights in isolated environment,STORAGE,KAD4/KAD5,do not assume Postgres backup includes blob
+P1,REUSE,studio.use_events,CREATE,no durable per-asset cross-study usage ledger,"second project uses first revision+rights log, zero dup",STUDIO,KAD4/KAD5,use ≠ original knowledge growth
+P0,GATECAND,control.gate_candidates,CREATE,main recordGate writes candidates but to_regclass is null,candidate persisted and Reviewer independently signs; Producer cannot write gate audit,G0-G5/PERSISTENCE,KAD4/KAD5,no candidate table -> code break
+P0,PROJECTACL,studio.projects/project_id,ADAPT,no verified canonical projects table or verified membership authority,Canonical project_id/owner_user_id is verified; historic tasks map by authorised Owner review; foreign keys enforce project existence; two-project cross-scope negative reads denied,MHKA-05/SECURITY,KAD4,never trust arbitrary text project_ref; never grant implicit cross-project read
+P0,GATEGUARD,data-production-repository.passed/legalInput,REVISE,current selects only gate/result/current_valid,compare artifact revision purpose consumer policy expiry dependency and independent signer,G0-G5,KAD4/KAD5,historic PASS cannot authorize

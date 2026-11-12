@@ -1,0 +1,50 @@
+{
+  "check_time": "2026-11-02",
+  "baseline_main_sha": "db21cefcc09c6bcb5d7e3fca16d100cc0accd13d",
+  "invariants": {
+    "G01_authority_root": {
+      "status": "PASS",
+      "evidence": "六MHKA+AGENTS+OWNERSHIP实际文件"
+    },
+    "G02_method_skill_preservation": {
+      "status": "PASS",
+      "evidence": "63唯一method ID，六Stage/Job、目标runtime均disabled；19Skill分类设计目标在能力规范，物理激活另验"
+    },
+    "G03_production_gate_separation": {
+      "status": "PASS",
+      "evidence": "生产Protocol与Gate完整两本现行Owner+新候选分工"
+    },
+    "G04_storage_identity": {
+      "status": "PASS",
+      "evidence": "13资产与12候选实体、L0-L8、文件hash/版本及恢复字段均在唯一Owner合同"
+    },
+    "G05_agent_external": {
+      "status": "PASS",
+      "evidence": "KAD2同根任务/外发许可/验候选/不可变回执明确"
+    },
+    "G06_product_scope": {
+      "status": "PASS",
+      "evidence": "Admin为F05内部；Studio修订/WATCH动态资格/EXP未来合同"
+    },
+    "G07_machine_maps": {
+      "status": "PASS",
+      "evidence": "85API及152动作原编号保留，KAD6按逐行领域义务更新目标字段"
+    },
+    "G08_security_recovery": {
+      "status": "PASS",
+      "evidence": "项目ACL、导入RLS P0、独立Gate、外部AI最小包与备份还原有设计和负例"
+    },
+    "G09_two_topic_acceptance": {
+      "status": "PASS",
+      "evidence": "双题唯一官方样本A/B与研究候选/作品/资格/原件/复用负例齐备，真实运行HOLD"
+    },
+    "G10_manifest_integrity": {
+      "status": "PASS",
+      "evidence": "74目标文件与234受检路径和Owner/正反断言齐全；每文件哈希需另登记"
+    }
+  },
+  "target_count": 74,
+  "index_count": 234,
+  "blockers": [],
+  "real_runtime_tested": false
+}

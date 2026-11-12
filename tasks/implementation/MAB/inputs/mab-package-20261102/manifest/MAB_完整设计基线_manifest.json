@@ -1,0 +1,617 @@
+{
+  "schema": "mohen.mab.design.handoff.v1",
+  "created": "2026-11-02",
+  "project": "墨痕 MoHen",
+  "baseline_main": "db21cefcc09c6bcb5d7e3fca16d100cc0accd13d",
+  "design_release": "MAB_DESIGN_BASELINE_EXIT_PASS",
+  "static_review": "KAD6_DESIGN_BIDIRECTIONAL_STATIC_PASS",
+  "runtime_status": "NOT_RUN",
+  "repo_targets": 74,
+  "newly_integrated_targets": 20,
+  "field_level_engineering_deltas": 20,
+  "audited_git_paths": 234,
+  "github_source_blob_verified": 212,
+  "expected_not_in_main_create": 21,
+  "placeholder_nonfile": 1,
+  "api_ids": 85,
+  "experience_action_ids": 152,
+  "method_ids": 63,
+  "gates_static": 10,
+  "KAD5_live": "HOLD",
+  "KAD3_UI": "REJECTED_DEFERRED",
+  "engineering_authorization": "NOT_GRANTED_BY_THIS_PACKAGE",
+  "targets": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "action": "REVISE",
+      "sha256": "8929efac9a2a343446f322ccd8a593adf854eb6ef59acc1e0c06a3d42129c020",
+      "prior_sha256": "8929efac9a2a343446f322ccd8a593adf854eb6ef59acc1e0c06a3d42129c020",
+      "base_blob": "345235d4f6d609574da76a14d9c3210e68a6ae01",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "AGENTS.md",
+      "action": "REVISE",
+      "sha256": "3ed0f5d00452c1ca9234617635ca3c38773a919928a6ebdec3dc7040305c9775",
+      "prior_sha256": "3ed0f5d00452c1ca9234617635ca3c38773a919928a6ebdec3dc7040305c9775",
+      "base_blob": "54b041fdb2702f62eef1d4d635d9cdea70da160e",
+      "authority": "MHKA-00"
+    },
+    {
+      "path": "OWNERSHIP_MAP.md",
+      "action": "REVISE",
+      "sha256": "cdbbbbe884a24712e1c0728a78ff570d9000e3f34b7a44d0cbebe64722ae4e41",
+      "prior_sha256": "cdbbbbe884a24712e1c0728a78ff570d9000e3f34b7a44d0cbebe64722ae4e41",
+      "base_blob": "4180f63ab13274b5ebe224b66d6c99c5fd9d6e7e",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/app/api/admin/acl/route.ts",
+      "action": "REVISE",
+      "sha256": "9073375171a67606409fe4c971c8977b8903173d1d15e6ce89a180ecbc8cd2f3",
+      "prior_sha256": "9073375171a67606409fe4c971c8977b8903173d1d15e6ce89a180ecbc8cd2f3",
+      "base_blob": "84fd0a87a286009df91dbab222d10f5daee376aa",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
+      "action": "REVISE",
+      "sha256": "dae20cfaa3cba6fa6e5058a0f27b6e31b2e96dee2e595802c61285ffa1c55224",
+      "prior_sha256": "dae20cfaa3cba6fa6e5058a0f27b6e31b2e96dee2e595802c61285ffa1c55224",
+      "base_blob": "1922f14f51e383067b1bea4fab2a24b996ac9fae",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/app/api/admin/publications/route.ts",
+      "action": "REVISE",
+      "sha256": "eba82468b39f8b6786b38f666f4e07d185fd07bf821ed630424a15eca299b4e7",
+      "prior_sha256": "eba82468b39f8b6786b38f666f4e07d185fd07bf821ed630424a15eca299b4e7",
+      "base_blob": "5811326c1e1a78917c97ca95bdd2a300f10337f1",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/app/api/admin/rights/invalidate/route.ts",
+      "action": "REVISE",
+      "sha256": "402a55c3b9b959a3d6cc51ecdfc4a1431ae8a9144f2f9118f14992cf48fef58d",
+      "prior_sha256": "402a55c3b9b959a3d6cc51ecdfc4a1431ae8a9144f2f9118f14992cf48fef58d",
+      "base_blob": "8c0a951c7f03d1af8a5e7d3dbabfb792bdc84d75",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/app/api/admin/users/[id]/status/route.ts",
+      "action": "REVISE",
+      "sha256": "3dcb8680053b26a5ed46718cc51c432d4606992d23bddb7e9f25e5cdb8632aa0",
+      "prior_sha256": "3dcb8680053b26a5ed46718cc51c432d4606992d23bddb7e9f25e5cdb8632aa0",
+      "base_blob": "91079c329cc4a75a5f1c7f4e2e7530f4970a466d",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/app/api/explore/entities/[id]/route.ts",
+      "action": "REVISE",
+      "sha256": "2dd1df70dc6305f5773d634454addee55b03bd7edf072c8ee09f07dea9d9e268",
+      "prior_sha256": "2dd1df70dc6305f5773d634454addee55b03bd7edf072c8ee09f07dea9d9e268",
+      "base_blob": "8b1df3f9ff2e6f2e48852685f849671aa9f603a9",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/app/api/explore/events/[id]/route.ts",
+      "action": "REVISE",
+      "sha256": "2dd1df70dc6305f5773d634454addee55b03bd7edf072c8ee09f07dea9d9e268",
+      "prior_sha256": "2dd1df70dc6305f5773d634454addee55b03bd7edf072c8ee09f07dea9d9e268",
+      "base_blob": "a1a4935adf34ef3bb0fb3022faba4c0ac6c8d8c3",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/app/api/explore/relations/[id]/route.ts",
+      "action": "REVISE",
+      "sha256": "2dd1df70dc6305f5773d634454addee55b03bd7edf072c8ee09f07dea9d9e268",
+      "prior_sha256": "2dd1df70dc6305f5773d634454addee55b03bd7edf072c8ee09f07dea9d9e268",
+      "base_blob": "773630e3ca53945fe9b6da0532c52dcf3027f959",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/app/api/governance/gates/revoke/route.ts",
+      "action": "REVISE",
+      "sha256": "c9c2d199b6b58e5a5534d65b76a743327fa1acd6e0081a8170d3c2f6111ec6e9",
+      "prior_sha256": "c9c2d199b6b58e5a5534d65b76a743327fa1acd6e0081a8170d3c2f6111ec6e9",
+      "base_blob": "6f2b568e4faa57d51698a9247688c1e114579414",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/app/api/public/evidence/[id]/route.ts",
+      "action": "REVISE",
+      "sha256": "0a743129172cbe8b26612cefc91aaa2c89baab406325cafeb9469c08802611bc",
+      "prior_sha256": "0a743129172cbe8b26612cefc91aaa2c89baab406325cafeb9469c08802611bc",
+      "base_blob": "4daedd91ec207bc291dc7683a0ed768b1b33a17b",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/app/api/studio/attachments/route.ts",
+      "action": "REVISE",
+      "sha256": "61c8c18a9cc1d56557911191766ec95c46582f5fa2e5ddd7f91219693a8af6e0",
+      "prior_sha256": "61c8c18a9cc1d56557911191766ec95c46582f5fa2e5ddd7f91219693a8af6e0",
+      "base_blob": "05692e22e0af2d578e41c27e76bab904436aeb9e",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/app/api/studio/works/[id]/revisions/[rev]/panels/[panel]/route.ts",
+      "action": "CREATE",
+      "sha256": "0f5001e7feb38188caafb33aed36cdbced339522b484091e2915e78ed86449f0",
+      "prior_sha256": "0f5001e7feb38188caafb33aed36cdbced339522b484091e2915e78ed86449f0",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/app/api/studio/works/[id]/revisions/[rev]/route.ts",
+      "action": "REVISE",
+      "sha256": "11a2527377dafb595af670c85020631c118fff25e607eac1a04f83526b730a4e",
+      "prior_sha256": "11a2527377dafb595af670c85020631c118fff25e607eac1a04f83526b730a4e",
+      "base_blob": "b8447314d038bffe28733809c6bd648cf48bff3c",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/app/api/studio/works/[id]/revisions/route.ts",
+      "action": "REVISE",
+      "sha256": "80f3c1ebbffb2251e35b6f5c19f37a333ad016407bdfa837f4d9d5788b0e3cab",
+      "prior_sha256": "80f3c1ebbffb2251e35b6f5c19f37a333ad016407bdfa837f4d9d5788b0e3cab",
+      "base_blob": "5b7ebbac12376b08da2b68a953bb2248efde876a",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/app/api/watch/sessions/route.ts",
+      "action": "REVISE",
+      "sha256": "2e347c98421724cff753fcc81c31bf94a3bc398e0716e635be634a7138d0ee05",
+      "prior_sha256": "2e347c98421724cff753fcc81c31bf94a3bc398e0716e635be634a7138d0ee05",
+      "base_blob": "c63564c5b0df192801a74f2bfddb6206d1b3cb30",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/lib/gate-review.ts",
+      "action": "REVISE",
+      "sha256": "555f7af929b641988eb4d9633a87d9e63e6d617deb98e92488c44af7eaf56272",
+      "prior_sha256": "555f7af929b641988eb4d9633a87d9e63e6d617deb98e92488c44af7eaf56272",
+      "base_blob": "a59acfa72c285a281239ac1752637ed31354a796",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/lib/gate-revoke.ts",
+      "action": "REVISE",
+      "sha256": "9be091ddd41f953b5f3aa96904cdbe70396480ca7cbbd72eff372ed8a824564d",
+      "prior_sha256": "9be091ddd41f953b5f3aa96904cdbe70396480ca7cbbd72eff372ed8a824564d",
+      "base_blob": "4caee08aca9fbac8b0479282f18af048fa6593e0",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/lib/mohen-agent/retrieve.ts",
+      "action": "REVISE",
+      "sha256": "bb411ec65fe84a5794c91612f7ec728c6b35ad7483ae6cc8696bbba9ec3f6311",
+      "prior_sha256": "bb411ec65fe84a5794c91612f7ec728c6b35ad7483ae6cc8696bbba9ec3f6311",
+      "base_blob": "930ff340a81275d5a2f9104e3d77ea133878f55c",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/lib/publication.ts",
+      "action": "REVISE",
+      "sha256": "06fbf7b66383b05e9d7dd9da185eb3cf65df25fb04b2a8ad92c2e38432ddea54",
+      "prior_sha256": "06fbf7b66383b05e9d7dd9da185eb3cf65df25fb04b2a8ad92c2e38432ddea54",
+      "base_blob": "028cff6da6a8426fecd446675dbd809f5290d997",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/lib/read-model-bridge.ts",
+      "action": "REVISE",
+      "sha256": "16daf96b20aa111381d74ce34d2b3ec1de86113961e35017aba1e84acde325a5",
+      "prior_sha256": "16daf96b20aa111381d74ce34d2b3ec1de86113961e35017aba1e84acde325a5",
+      "base_blob": "7f35265120997ed82c4df87f040d715a3e7bc434",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/lib/studio-director.ts",
+      "action": "REVISE",
+      "sha256": "7911882277f62a2c930118fcf45d202d14e864776687fd7a13c4f21998bac1c6",
+      "prior_sha256": "7911882277f62a2c930118fcf45d202d14e864776687fd7a13c4f21998bac1c6",
+      "base_blob": "8f235d513d80ef46e9b686ded67e6e2be77b6376",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "governance/mhka/MHKA-00_Governance_Charter.md",
+      "action": "CREATE",
+      "sha256": "d52459fd0e00754409b73fae54ee6f8df8fd72d12b270712a15f2f502345c6d1",
+      "prior_sha256": "d52459fd0e00754409b73fae54ee6f8df8fd72d12b270712a15f2f502345c6d1",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-00"
+    },
+    {
+      "path": "governance/mhka/MHKA-01_Value_and_Strategy.md",
+      "action": "CREATE",
+      "sha256": "fc578ab95fa05e61000decd540427086152f3094886efb9fa00f9580eca43795",
+      "prior_sha256": "fc578ab95fa05e61000decd540427086152f3094886efb9fa00f9580eca43795",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-01"
+    },
+    {
+      "path": "governance/mhka/MHKA-02_Humanistic_Product_and_Experience.md",
+      "action": "CREATE",
+      "sha256": "ad1b0a91c6625e4412546379f05327bfcc0e951d6496229ac31993adfedecc7e",
+      "prior_sha256": "d68a937b73d45b3a773cc05b81bdf25725ce631fa8260451f5e6727984d1ca46",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-02"
+    },
+    {
+      "path": "governance/mhka/MHKA-03_Knowledge_World_and_Data_Architecture.md",
+      "action": "CREATE",
+      "sha256": "c9ef393996b2848587dbaf1ab5d86ba7c17d5ea2bf53b22bf60c6b414f017d69",
+      "prior_sha256": "0208464ce0f0247442e95163a0e4256e11ef406702e7abdfb38696fb2b4a3aca",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-03"
+    },
+    {
+      "path": "governance/mhka/MHKA-04_Agent_and_Professional_Capabilities.md",
+      "action": "CREATE",
+      "sha256": "45fc8f85f85dcabebb76a8ec593d85758ac5c81336a3f9c39bea839ab4c721c7",
+      "prior_sha256": "e11cc97fbac7871fc3f6b29524775fdab8ea6eb63596b17b6a6d316a71582d50",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "governance/mhka/MHKA-05_Software_Engineering_and_Operations.md",
+      "action": "CREATE",
+      "sha256": "1797e4f3c70806a3581f5fed37297223bcf798e9a2e130e1601241689365be61",
+      "prior_sha256": "0fcd2f67e9b40ccdacc4b289bdcdafbbd3453714fffb94089e8006f9593c5c76",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "skills/README_DATA_PRODUCTION_SKILLS.md",
+      "action": "REVISE",
+      "sha256": "e04bc89e3df2a4f0f58b72c0437a64073e9ce2295c33f793728c70c2ae3c6ef1",
+      "prior_sha256": "e04bc89e3df2a4f0f58b72c0437a64073e9ce2295c33f793728c70c2ae3c6ef1",
+      "base_blob": "3a0e088bcaa062d902f66f99487b44f05f21c148",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "skills/mohen-carrier-reading/SKILL.md",
+      "action": "REVISE",
+      "sha256": "16a2704d02732bfeb4d120eff6bc497c68f36aaa55ea06ecced182a470f393b7",
+      "prior_sha256": "16a2704d02732bfeb4d120eff6bc497c68f36aaa55ea06ecced182a470f393b7",
+      "base_blob": "917ced24be7788697ec35b1fbea7ccc8f66958a9",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "skills/mohen-humanistic-discovery/SKILL.md",
+      "action": "REVISE",
+      "sha256": "fe6370a7725e85f56218a3c2ba339d4c5e2e76e596e1368183e46259dcf2ddfb",
+      "prior_sha256": "fe6370a7725e85f56218a3c2ba339d4c5e2e76e596e1368183e46259dcf2ddfb",
+      "base_blob": "7e9efe46c6a7336628f6c5943ffe91f2da6624b6",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "skills/mohen-material-understanding/SKILL.md",
+      "action": "REVISE",
+      "sha256": "aab4dd10c9791d90018911ae179753801ecaf7224f340930d6212258984f167c",
+      "prior_sha256": "aab4dd10c9791d90018911ae179753801ecaf7224f340930d6212258984f167c",
+      "base_blob": "53a6fe6785d1c4a97b8f9916ffc76eb9db376465",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "skills/mohen-read-model-publication/SKILL.md",
+      "action": "REVISE",
+      "sha256": "7bd1d0aa22ddd2af141d9c7967ed2f8a82391baf03150138de132041acae5bc0",
+      "prior_sha256": "7bd1d0aa22ddd2af141d9c7967ed2f8a82391baf03150138de132041acae5bc0",
+      "base_blob": "d451ff5e2638832e3f5fbb5b8afdb9a8b67bb6a7",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "skills/mohen-source-intake/SKILL.md",
+      "action": "REVISE",
+      "sha256": "9935cb39fa1665357f52875a0297f7c083db50db28f6e72f526e91edad546dee",
+      "prior_sha256": "9935cb39fa1665357f52875a0297f7c083db50db28f6e72f526e91edad546dee",
+      "base_blob": "85d4cb2b939322621f2502db418816faeba39f14",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "skills/mohen-world-construction/SKILL.md",
+      "action": "REVISE",
+      "sha256": "79205999af044e3754060c3136e2284e86dc7100ebed39ee2e653655675022c4",
+      "prior_sha256": "79205999af044e3754060c3136e2284e86dc7100ebed39ee2e653655675022c4",
+      "base_blob": "b52c1dc33b3611dee6cbf9ea4aaa872121991877",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "specs/AGENT_CONTRACT.md",
+      "action": "REVISE",
+      "sha256": "2f2e5b32e211dc440e1cd89cc6cee27f18a3b725146203dd38acfb455136ecc3",
+      "prior_sha256": "6d7e6a51622eed353e5f021aabd90e4d9085db285a29defdd0a172380cbd29ec",
+      "base_blob": "6fbba48d1855a029abf2e0b591b29b483b8665a9",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "specs/API_TOOL_CONTRACT.md",
+      "action": "REVISE",
+      "sha256": "0b5481886d2d6185690f58452023347e76fadb275ab6e7a92c37f4e937880012",
+      "prior_sha256": "4bd5f5265e0c5a6833dc83789e9737d83b74f2c2d723b3412bd97139b96c69b3",
+      "base_blob": "0f8d72d9f7521b87487636dad361e7f22df65c22",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "specs/DATA_CONTRACT.md",
+      "action": "REVISE",
+      "sha256": "db92892ca5b5c4813e436e7935c55042a0f006105df41bb4604b8c24749dcc27",
+      "prior_sha256": "cfb4d6043d558cb36f580cb87121502fc65167946e7211c8c3ecba9c13e240c3",
+      "base_blob": "7b2eba44ddcfc31ab7355396a59447eefd3e885a",
+      "authority": "MHKA-03"
+    },
+    {
+      "path": "specs/EXPERIENCE_CONTRACT.md",
+      "action": "REVISE",
+      "sha256": "a697cfb4642e8bb1baef20ec0077c00af0d878d13cc0290a710ac279b4a90177",
+      "prior_sha256": "9ced69430af5c5f47d722ef9be0247948ce6c15665e615f429c9ef521e6b3ac4",
+      "base_blob": "7e7f6945b2d5c95ffe47a4b89da70d6b5e643c19",
+      "authority": "MHKA-02"
+    },
+    {
+      "path": "specs/FOUNDATION.md",
+      "action": "REVISE",
+      "sha256": "4f01461c659bcbdccae059903a3782c8165c18a4b3a2637bccfb11915996aaf6",
+      "prior_sha256": "4f01461c659bcbdccae059903a3782c8165c18a4b3a2637bccfb11915996aaf6",
+      "base_blob": "04a5051ebac3f46a9313bb3793f2335a90822bc3",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "specs/OPERATIONS_DEPLOYMENT.md",
+      "action": "REVISE",
+      "sha256": "711bb7aa77bc46b08519d99fdacd4873fddef2e38f46e63d8b6ae782009e1dda",
+      "prior_sha256": "0900337cb46278e0fb335d31228e3f3d35557d8d987457b823687a63932cc6aa",
+      "base_blob": "f116f3449724ee190d9acd6a50d17c4855c36d66",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "specs/SECURITY_ACCESS_CONTRACT.md",
+      "action": "REVISE",
+      "sha256": "6c1a3fb8b67232314f2304419f291d1314754df3bf4964f777182f8663ba5f1a",
+      "prior_sha256": "b3c995a200b04e7d71fa171a793492fdbde0d2bffb92bfc71cbea0194a7dbab3",
+      "base_blob": "041e7a2fa01b38b822a27af1a96f95d137b2709c",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "specs/SYSTEM_RUNTIME_ARCHITECTURE.md",
+      "action": "CREATE",
+      "sha256": "367a94c395995e5c1dbd12da5ebdef706c642e26c10b5da74e362f9edc1bd514",
+      "prior_sha256": "ae6f588371d5617f6a3efd807c517db178963f992fa464a961f879cd2065578e",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "specs/data-production/MoHen_Data_Production_Protocol.md",
+      "action": "REVISE",
+      "sha256": "d3f1846e361f959df8742358c17e4ea0b60e8da1d0c547bfcdd65291589e4d16",
+      "prior_sha256": "b033ddb106f9be87a806519024b45244875917cdc9eb984695d144b2d0f4ae62",
+      "base_blob": "7cdf55078101693cb5506304bad3edae85a0a21d",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "specs/data-production/PERSISTENCE_BINDING_CONTRACT.md",
+      "action": "REVISE",
+      "sha256": "b781ad6cea0831be4eb18f377b4324332671005089fa660f4a7572546ab02e0a",
+      "prior_sha256": "879e116aa0faa295fda9b1a01a9e5a4e4dc138d3eacb3d15dd50081bd7d77b1c",
+      "base_blob": "5388e354fddbf31c87cfbc291835248260a1faf7",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "specs/data-production/contracts/ENGINEERING_HANDOFF_CONTRACT.md",
+      "action": "REVISE",
+      "sha256": "98e8de0bd2ae562d8927dac76378da5017c0e62ab0963b37b75fdf6b3b553286",
+      "prior_sha256": "98e8de0bd2ae562d8927dac76378da5017c0e62ab0963b37b75fdf6b3b553286",
+      "base_blob": "b922ebe17a2123a192e7e14521c2156e3cfe7426",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "specs/data-production/gates/G0-G5_MACHINE_GATE_CONTRACT_V3.0.md",
+      "action": "REVISE",
+      "sha256": "fafff9fc2034194c4837fd3d85072e3b47fcb0650fbafda7eec70a38f9d45307",
+      "prior_sha256": "e96731cbd4c7bcf966b416e52b1c84ab323e3690079ab1d588b79424c63906b7",
+      "base_blob": "771428e787836325b25c1485fadb1b9c97e34d06",
+      "authority": "MHKA-03"
+    },
+    {
+      "path": "specs/data-production/method-binding-contract.json",
+      "action": "REVISE",
+      "sha256": "fd801731dd2e457e8feaeb28272e4c12cbcede12db13d8b9b8df20e9e6a8abb2",
+      "prior_sha256": "fd801731dd2e457e8feaeb28272e4c12cbcede12db13d8b9b8df20e9e6a8abb2",
+      "base_blob": "450b221dca627c099d6039927484a870c7032177",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "specs/data-production/production-registry.json",
+      "action": "REVISE",
+      "sha256": "6a2f1441f2ddd086f29c18a24986d715d1fe40a21cc1aba90766147d0d18aa91",
+      "prior_sha256": "6a2f1441f2ddd086f29c18a24986d715d1fe40a21cc1aba90766147d0d18aa91",
+      "base_blob": "bf1c69fefe9c7117e5ba456ad3caf60411b42cc6",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "specs/requirements/TRACEABILITY_INDEX.md",
+      "action": "REVISE",
+      "sha256": "5ec7f9156202c964bde0f781e197f0c96084ec11d4e38a68f054676352adef28",
+      "prior_sha256": "be209e84d03eefd573c0961929705c8a3693138f4d497048ee906f2ee6c99519",
+      "base_blob": "ef6b581eb4acba2b89dd1c29bcddcebd1345ccd5",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "specs/requirements/api-route-contracts.csv",
+      "action": "REVISE",
+      "sha256": "6e1d6e81d774430fe26d24ec855145215aa14facda76a1a6df88134cc98022a2",
+      "prior_sha256": "3942a5eeb02d871f52b555188de967f44b68d6d29a9f24f55abd2d2daa46ab61",
+      "base_blob": "d16c8403ac9f7cb9503301126c2c91a7b2bdac14",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "specs/requirements/u07-action-contracts.csv",
+      "action": "REVISE",
+      "sha256": "953e916df7847022a7b6a246de6f4e6bebd10fc9b9cc525241366b4f1b0dc65f",
+      "prior_sha256": "6adc81d18ace08a1e5cfdbd52c61fb399ebd8fbb1ab54cd4a921cdec6c1b7b19",
+      "base_blob": "785e5789fec7e203aea07f0cc577f94253234861",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md",
+      "action": "CREATE",
+      "sha256": "08749317bc769e6acbbf1f816b00c10daae9d7834e89b5472496e4182dba326f",
+      "prior_sha256": "a4ae9cd5975aac82d8acf77c833606af2d411ebe4f73fb161d652e46b6e335e8",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-03"
+    },
+    {
+      "path": "specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md",
+      "action": "CREATE",
+      "sha256": "418c57706a21d4d6074e5a25bb8136e483fcad5b016ebf3f9dcaf202051c14e3",
+      "prior_sha256": "0cb366800abb3a3b2861ad93f4e70b85a46f35c094953d6e3266d43bac23c94d",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "specs/experience-ui/H1_H2_H3_AND_COMPONENTS_CONTRACT.md",
+      "action": "CREATE",
+      "sha256": "8cb8fb8d706f988e30f4a127b2d99623f69633f2b5c727d7d80809341e819cb4",
+      "prior_sha256": "416854f37c27fb843285d9f0ef8460d83e855f314b8e20eea7353260130d68fb",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-02"
+    },
+    {
+      "path": "skills/mohen-acceptance/SKILL.md",
+      "action": "REVISE",
+      "sha256": "544679097e4a87a7da43ebcb4053c15672a56366bcf2f269281667bf80348277",
+      "prior_sha256": "544679097e4a87a7da43ebcb4053c15672a56366bcf2f269281667bf80348277",
+      "base_blob": "e797beaf8f4beae5bcb0df6decf7529b0e9db48e",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "skills/mohen-project-guard/SKILL.md",
+      "action": "REVISE",
+      "sha256": "4f44261d0dce46cc097c94f15e0956adceddd5aa265b56e8e4cb763ef516eaeb",
+      "prior_sha256": "4f44261d0dce46cc097c94f15e0956adceddd5aa265b56e8e4cb763ef516eaeb",
+      "base_blob": "88ac073713bfdefdd9003b4957b0c25208086413",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "skills/mohen-vertical-slice/SKILL.md",
+      "action": "REVISE",
+      "sha256": "ca8a58f7b928fe2fbf1f5470b7cf549d8f728fefc8ccde9ae6947afa175adcd3",
+      "prior_sha256": "ca8a58f7b928fe2fbf1f5470b7cf549d8f728fefc8ccde9ae6947afa175adcd3",
+      "base_blob": "f50ae295bad72066f284d5a583a92f254cda571f",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "skills/mohen-historical-spatial-source/SKILL.md",
+      "action": "REVISE",
+      "sha256": "d419a42fb28b8576f75b0be823a687cef838016c98d1f6adb31152c3c80dc3f9",
+      "prior_sha256": "d419a42fb28b8576f75b0be823a687cef838016c98d1f6adb31152c3c80dc3f9",
+      "base_blob": "676861a90fe903c7d433fa12d8e41b3f13047fd4",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "skills/mohen-historical-spatial-reconstruction/SKILL.md",
+      "action": "REVISE",
+      "sha256": "7e8c6f6282a048cdecd83cff14f2521717ee440d6b16d5d2f55f148f75229125",
+      "prior_sha256": "7e8c6f6282a048cdecd83cff14f2521717ee440d6b16d5d2f55f148f75229125",
+      "base_blob": "4b740fa95d0c13aa6bba9d7152934e657b579924",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "skills/mohen-visual-asset/SKILL.md",
+      "action": "REVISE",
+      "sha256": "69888f09eba0b0fb0612501914f8cec68533e94c1d3637a3779b02ad6f6a97ca",
+      "prior_sha256": "69888f09eba0b0fb0612501914f8cec68533e94c1d3637a3779b02ad6f6a97ca",
+      "base_blob": "22e4df7420631507166b121a393dfda5f8271227",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "skills/mohen-experience-prototype/SKILL.md",
+      "action": "REVISE",
+      "sha256": "368f3e39ec17b64e69ddfe73325a1600e9031d8251987a270b86782dddfc32c8",
+      "prior_sha256": "368f3e39ec17b64e69ddfe73325a1600e9031d8251987a270b86782dddfc32c8",
+      "base_blob": "7df2b50e1b81ce691d689f2226fcc44611bf7201",
+      "authority": "MHKA-04"
+    },
+    {
+      "path": "apps/web/lib/kad1-policy.d.mts",
+      "action": "CREATE",
+      "sha256": "d40c6a66e42e3ac2ec5c364d107a9f7b692abd4163f6c9972b9a3ef428a7ea3a",
+      "prior_sha256": "d40c6a66e42e3ac2ec5c364d107a9f7b692abd4163f6c9972b9a3ef428a7ea3a",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "apps/web/lib/kad1-policy.mjs",
+      "action": "CREATE",
+      "sha256": "50a4ffbaded23ac179afdc3f4a5547b8f2f5e93f3098698aedb6465c6cd5fae8",
+      "prior_sha256": "50a4ffbaded23ac179afdc3f4a5547b8f2f5e93f3098698aedb6465c6cd5fae8",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "supabase/migrations/202611020900_kad1_watch_revision_isolation.sql",
+      "action": "CREATE",
+      "sha256": "3a8e7191d117c900c489d420e22b23788e44f0836c9a648be04f30eeafc9bfc3",
+      "prior_sha256": "3a8e7191d117c900c489d420e22b23788e44f0836c9a648be04f30eeafc9bfc3",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "supabase/migrations/202611020910_kad1_consumption_blocks.sql",
+      "action": "CREATE",
+      "sha256": "f6cdbae764c000187eef6e036007bf930708404dba975129fe99d1e4e023f20a",
+      "prior_sha256": "f6cdbae764c000187eef6e036007bf930708404dba975129fe99d1e4e023f20a",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "supabase/migrations/202611020920_kad1_account_transactions.sql",
+      "action": "CREATE",
+      "sha256": "50cc8ac779658884bdfac6d915ecc9c7717b6607836a77d64f4f89de18ea0b7d",
+      "prior_sha256": "50cc8ac779658884bdfac6d915ecc9c7717b6607836a77d64f4f89de18ea0b7d",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "supabase/rollback/202611020900_kad1_watch_revision_isolation.rollback.sql",
+      "action": "CREATE",
+      "sha256": "51f8aab22e6b79f9a794b3f501d6f41bcc925d127bac361f7196923f454a2e83",
+      "prior_sha256": "51f8aab22e6b79f9a794b3f501d6f41bcc925d127bac361f7196923f454a2e83",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "supabase/rollback/202611020910_kad1_consumption_blocks.rollback.sql",
+      "action": "CREATE",
+      "sha256": "559faf581fe572d1d6d5ab7d7c3d4cda2efede015df6e8cbecc38acb3c5e19fe",
+      "prior_sha256": "559faf581fe572d1d6d5ab7d7c3d4cda2efede015df6e8cbecc38acb3c5e19fe",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "supabase/rollback/202611020920_kad1_account_transactions.rollback.sql",
+      "action": "CREATE",
+      "sha256": "902a4812f3cf641cfb3567b98bb584a31ce284866920306c77eb125d4a0536fa",
+      "prior_sha256": "902a4812f3cf641cfb3567b98bb584a31ce284866920306c77eb125d4a0536fa",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "tests/unit/kad1-policy.test.mjs",
+      "action": "CREATE",
+      "sha256": "d98025fd54c179cb658f19e45ed0a739217420e5a11d738245de3b117eb259f9",
+      "prior_sha256": "d98025fd54c179cb658f19e45ed0a739217420e5a11d738245de3b117eb259f9",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-05"
+    },
+    {
+      "path": "tests/unit/kad1-route.test.mjs",
+      "action": "CREATE",
+      "sha256": "abc75cfe0012e70b4d3aeffd3a707eabe07f53ab0347db542ea141cd5b7ce789",
+      "prior_sha256": "abc75cfe0012e70b4d3aeffd3a707eabe07f53ab0347db542ea141cd5b7ce789",
+      "base_blob": "NOT_IN_MAIN",
+      "authority": "MHKA-05"
+    }
+  ]
+}

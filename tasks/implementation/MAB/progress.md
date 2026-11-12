@@ -1932,6 +1932,17 @@ Owner明确授权：为完成M5所需的开发、隔离测试和受控真实研�
 | `POST /service_pdf_race/race/pdf/list`（body `{dbname,title,apiKey,pageNo,pageSize}`，dbname∈`gj`古籍/`mgts`民国图书/`jp`家谱） | `docs/01_知识库/上图可下载全文资源普查_20260830.md` | **上图开放数据确实提供全文影像下载** |
 | `pdf/info` → 取 `data.items[].value` 作为 `itemId`；`POST pdf/stream` 参数必须是 **`itemId`+`pageNo`**（`id`/`bookId`/`value` 全失败） | 同上 + `民国图书原文直取实录_大上海指南_104971.md` | 逐页可下载；`isDownload:0` 只表示整本打包受限，逐页 100% 通 |
 | 古籍 `gj` = **纯扫描无文本层**（需自 OCR，繁体竖排）；民国图书 `mgts` = **自带 OCR 文本层**（可直接抽原文） | 同上 | 古籍原件=扫描页（可支撑 `C02 scanned_page/v1`）；正文需 OCR |
+
+## 2026-11-12｜MAB交付包（20261102）吸收接线批（本地批，PENDING_PUSH）
+
+- 背景：GitHub 网络受限，Owner 指令本地优先、推送批量延后（AGENTS.md §0A 新增）。本批为纯文档接线，未动代码、未动数据库、未触发 Gate。
+- 吸收①（归档）：交付包中 19 份包外文档原样归档至 `tasks/implementation/MAB/inputs/mab-package-20261102/`（acceptance 3 + evidence_only 9 + manifest 6 + 交接指引 1），归档时逐文件 SHA256 与包内原件比对 0 差异。只读设计证据，已接入 AGENTS.md §1 路由行与 PLAN.md 附录D。
+- 吸收账：PLAN.md 新增附录D（包身份、三类归宿、24 份施工目标挂 M5/M6、禁止回写清单、PENDING_PUSH）。
+- 批次挂钩：PLAN.md M5 增加吸收② checklist（7 消费侧路由 + 7 Skill，未完成不得关闭 M5）；M6 增加吸收③ checklist（7 代际合同 + 3 requirements 矩阵，未完成不得关闭 M6）。
+- 权威纪律：AGENTS.md 新增 §0A（本地优先批量推送；规则服务施工，死循环/停滞条款必须具名上报 Owner 并给最小修正建议）。
+- target-diff.csv：本批无增行——24 份未推送目标已在 MAB234 账逐行登记（BASE_UNCHANGED），吸收批未改变任何目标语义。
+- 解读报告：`tasks/results/MAB_DELIVERY_PACKAGE_INTERPRETATION_20261112.md`（B 类计数由分组口径 14 修正为逐文件 19）。
+- **PENDING_PUSH**：本批提交（AGENTS.md §0A+路由行、PLAN.md 附录D+M5/M6 checklist、归档 19 份、解读报告）仅在本地，待 Owner 确认窗口一次性推送；推送后在此销项并记 `PUSHED`。
 | 限流**不走异常**：HTTP 200 + `{"state":-1,"msg":"操作频繁"}`；并发>3 瞬时返回空 `data`，必须串行+节流 | 同上 | 采集器必须把 `state=-1` 当失败重试，不能当"该页无全文" |
 | 检索词规律：古籍库用现代镇名（朱家角/新场）命中 0，须用区县名（青浦/松江/金山/嘉定）或旧称（槎溪/珠里） | `_历史归档/上图端点实测地图_20260828.md` | 选件时不要用镇名硬搜 |
 | 上海地名志 = `shnh/dmz` 属上图开放数据（1 万余个地名），我上表的实测佐证 | 同上 + 普查表 | 合作单位数据确在授权范围内 |

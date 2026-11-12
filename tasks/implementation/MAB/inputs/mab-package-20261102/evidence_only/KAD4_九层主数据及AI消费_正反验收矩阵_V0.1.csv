@@ -1,0 +1,45 @@
+﻿test_id,category,assertion,design_status,code_status,isolated_test,live_test,negative_test_required,owner
+KAD4-ST-01,层级物理映射,来源身份/版次/raw hash具有源主表和原件链接；书目候选未虚构全文,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-02,层级物理映射,双读取表职责不重叠；read_unit可精确回原件区域,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-03,层级物理映射,证据主张指向L1并保存source voice与反证,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-04,层级物理映射,实体/关系/主张/变化有各自主表与共同身份,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-05,层级物理映射,人文发现保存理解增量/争议/上游G依赖,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-06,层级物理映射,六类消费表有身份/版本/资格，不强造第七真值表,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-07,层级物理映射,体验会话主实体与动作/状态有ADAPT/CREATE物理方案,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-08,层级物理映射,参与贡献与统计分离，具同意/撤回/版本主实体,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-09,层级物理映射,当代文化新痕迹主实体/外来证据再入D00设计,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-10,层级物理映射,每层主数据明确但无9套孤岛库与平行D/G,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-11,存储和恢复,原件/地图/视频存私有桶，匿名不可取源文件,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-12,存储和恢复,source.raw_items.storage_ref、hash与不可变来源版本可回放,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-13,存储和恢复,仅书目/不明权利不得保存全本或向外部提供,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-14,存储和恢复,文件缺失时表记录标不可回放并阻断合格引用,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-15,存储和恢复,数据库+私有文件+manifest一致备份，恢复校验hash,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-16,存储和恢复,同资产并发更新不覆盖旧修订,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-17,存储和恢复,机器知识包导出后可校验出处、许可、身份与版本,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-18,存储和恢复,月成本/存储限额/留存/删除/回滚成文,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-19,AI与多端消费,Studio有项目权限读工作候选/合法L层；越权拒绝,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-20,AI与多端消费,Agent对consumer=agent有按用途当前G5与版权检查,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-21,AI与多端消费,仅指定项目最小知识包+委托id/授权/回执，无DB全权限,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-22,AI与多端消费,不明权利原件不能外传第三方模型,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-23,AI与多端消费,WATCH指向已审作品不可变revision且当前许可有效,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-24,AI与多端消费,G/rights撤权后旧缓存/引用失效，非受影响部分可用,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-25,AI与多端消费,EXP晚启但未来读L5+L6可追身份、消费者和用途,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-26,AI与多端消费,第二课题按asset@rev读取第一题且新增证据而非改写旧真值,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-27,AI与多端消费,索引/向量可删除重建，无权/撤权后不被检索泄漏,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-28,Admin与安全,知识资产是既有Admin子菜单，五图结构与其他运营功能保留,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-29,Admin与安全,可从内容条目进入原件、主表、版本、证据、资格、引用/消费,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-30,Admin与安全,按L0-L8、studio/watch/exp/agent/external用途显示实际消费回执,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-31,Admin与安全,存储失败/没数据/没权限/未核状态不能混为0或已合格,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-32,Admin与安全,public.imported_materials无anon任意读写，项目RLS负测通过,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-33,Admin与安全,运营审核不可签正式G、不可直接改历史真值,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-ST-34,Admin与安全,审计与外部托管执行不会泄露DB密钥/私人片段,DEFINED,PARTIAL_OR_UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→经授权工程/KAD5验证
+KAD4-CO-01,生产存储闭环,D00真实原件私有对象与DB哈希能双向回查，D01定位读取D02理解各保存可验证修订，不以UI/聊天替代,DEFINED,UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→工程授权→KAD5
+KAD4-CO-02,跨项目长期复用,Studio工作资产不可变13类型全覆盖，跨题精确引用rev，删除research_task/run不得级联损失知识资产,DEFINED,UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→工程授权→KAD5
+KAD4-CO-03,非UI验收门,KAD3 HTML未获Owner认可且已递延；KAD4 DESIGN_EXIT只检生产/存储/授权接口与物理合同，不得以界面签收替代,DEFINED,NOT_APPLICABLE,NOT_RUN,NOT_RUN,YES,KAD4专业审查
+KAD4-CO-04,最小权利与撤权,用户不允许原件外发时外部AI仅收合法元数据包；G或版权撤权后即使索引缓存尚存仍拒绝消费,DEFINED,UNVERIFIED,NOT_RUN,NOT_RUN,YES,KAD4设计→工程授权→KAD5
+KAD4-CO-05,源码与数据库候选签发交接,main recordGate 写control.gate_candidates但现库缺表；必须先迁移表且producer不可写gate_audits,DEFINED,CODE_DB_MISMATCH,NOT_RUN,NOT_RUN,YES,KAD4/PERSISTENCE_BINDING+SECURITY
+KAD4-CO-06,项目授权绑定,Studio project_ref必须绑定真实项目/Owner/成员；不存在项目主表时不得按字符串信任ACL,DEFINED,PROJECT_BINDING_HOLD,NOT_RUN,NOT_RUN,YES,KAD4/SECURITY
+KAD4-CO-07,对象存储与原件指针,98个raw_items指针与哈希不得自动标STORED_VERIFIED，旧文件来源按三态查验,DEFINED,POINTER_ONLY,NOT_RUN,NOT_RUN,YES,KAD4/STORAGE
+KAD4-CO-08,受托委托精确修订,Delegation@revision和ExecutionReceipt@attempt不可变且不随research_task CASCADE消失；相同幂等键不重复,DEFINED,DRAFT_ONLY,NOT_RUN,NOT_RUN,YES,KAD4/KAD2
+KAD4-CO-09,私有资源撤权,短时签名URL有效期内撤权限制要明确，敏感原件改用服务端代理实现即时停止,DEFINED,DRAFT_ONLY,NOT_RUN,NOT_RUN,YES,KAD4/SECURITY
+KAD4-CO-10,物理字段级变更,11张候选新增表含一个control.gate_candidates，需与KAD1 PERSISTENCE_BINDING目标规范对照且不重复,DEFINED,DRAFT_ONLY,NOT_RUN,NOT_RUN,YES,KAD4/KAD1

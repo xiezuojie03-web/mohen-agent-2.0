@@ -399,6 +399,8 @@ M5按ST-01→ST-09顺序施工；不跳过依赖、不把任务入队显示为�
 
 按3.5和本文件八维度矩阵完成同一真实作品全链。未满足专业G5/媒资权利不得公开消费；M5隔离验收不等于生产启用。
 
+- [ ] 吸收②（附录D）：消费侧 7 路由目标（admin/acl、admin/publications、admin/users/[id]/status、explore entities/events/relations、watch/sessions）与 7 份 Skill 更新按交付包目标三方合并施工，禁止整文件覆盖；未完成不得关闭 M5。
+
 ### M6｜全量合同回归与延期能力闭环
 
 依赖：M1—M5。
@@ -409,6 +411,8 @@ M5按ST-01→ST-09顺序施工；不跳过依赖、不把任务入队显示为�
 - [ ] 验证AT-01—16、X1 A01—A07、Gate合同26项及相关安全反例，不以方法/组件数量直接算运行通过。
 - [ ] 对L6—L8及完整EXP形成设计冻结、实现、测试、启用四列账；实施范围内全部闭合，晚启用部分提交具名排期。
 - [ ] 完整仓库类型检查、构建、既有回归、集成、E2E及设备体验检查；命令依M0实际脚本，不在本计划伪造项目命令。
+
+- [ ] 吸收③（附录D）：7 份代际合同与 3 份 requirements 验收矩阵完成逐字段 diff 合并入库；7 份合同生效切换留待 M8 并需 Owner 具名授权；未完成不得关闭 M6。
 
 验收：全部分母逐行有结果与证据；核心准出不允许未关闭P0/P1或关键链路NOT_RUN。延期项只能标延期，不计入完整运行验收通过。
 
@@ -774,3 +778,19 @@ A：隋唐大运河及江南水路连接。B：宋代江南运河沿线的城镇
 本轮完成：附件解包；92项哈希及74目标哈希核验；完整范围与批次计划编制；20项责任与74目标登记；UTF-8 Markdown实体文件生成与回读检查。
 
 本轮未执行：最新远端/生产现场盘点、代码施工、PG/Storage迁移、真实模型委托、正式Gate签发、部署、双课题研究与Owner业务签收。本文各项未来检查框保持未勾选。
+
+## 12. 附录D｜MAB完整设计交付包（20261102）受控吸收账
+
+**包身份**：KAD6 十门静态终审签发的设计基线（`MAB_DESIGN_BASELINE_EXIT_PASS`），基线 `main@db21cef`（2026-11-01）。Owner 2026-11-12 指令：本地优先施工、推送批量延后（AGENTS.md §0A）；只提取有用文件，不覆盖已建成果。完整解读与核查方法见 `tasks/results/MAB_DELIVERY_PACKAGE_INTERPRETATION_20261112.md`。逐文件哈希比对已确认：包内 74 份 repo_target 路径全部已存在于仓库，无整文件缺失；缺口为 24 份 REVISE 目标（仓库停留在基线）与 19 份包外文档。
+
+**吸收①｜归档（已完成 2026-11-12，本地批）**：19 份包外文档原样归档至 `tasks/implementation/MAB/inputs/mab-package-20261102/`（acceptance 3 + evidence_only 9 + manifest 6 + 交接指引 1）。归档时逐文件 SHA256 与包内原件比对 0 差异；完整性锚为随档 `manifest/FILE_HASHES.sha256`。身份：只读设计证据，不进权威路由正文，不构成第二套现行合同。
+
+**吸收②｜挂 M5**：24 份未推送目标中的消费侧部分——7 份 route.ts（admin/acl、admin/publications、admin/users/[id]/status、explore entities/events/relations、watch/sessions）+ 7 份 SKILL.md（mohen-acceptance、mohen-experience-prototype、mohen-historical-spatial-reconstruction、mohen-historical-spatial-source、mohen-project-guard、mohen-vertical-slice、mohen-visual-asset）。施工方式：包目标 × 当前 HEAD 三方合并，禁止整文件覆盖；7 份 Skill 须与仓库 11-06 六阶段对齐结果合并。见 §5 M5 checklist。
+
+**吸收③｜挂 M6**：7 份代际合同（AGENT/API_TOOL/DATA/EXPERIENCE/FOUNDATION/OPERATIONS_DEPLOYMENT/SECURITY_ACCESS）+ 3 份 requirements（api-route-contracts.csv 85 API 全字段、u07-action-contracts.csv 152 动作全字段、TRACEABILITY_INDEX）。入库方式为逐字段 diff 合并（保留仓库行、以包版补全字段）；**7 份合同的"生效切换"属 M8 并需 Owner 具名授权**（AGENT_CONTRACT 包内原文要求 AGENTS.md 同步切换），M6 前仅作施工依据参照。见 §6 M6 checklist。
+
+**禁止回写清单（护栏，任何批次不得违反）**：以下内容仓库版本已领先，交付包对应文件一律不得覆盖——①六 MHKA（仓库 11-05 Owner 批准版）；②`specs/data-production/` 全部五件（Protocol、Registry、Binding、Gate 合同、Handoff 合同，含 D00-A/B/C 施工增量与隔离链路激活状态，照抄包版会关停现役链路，参见 2026-11-09 D00 交付审计的"危险漂移"预警）；③G0-G5 合同与 Persistence 合同（仓库 11-06 定稿）；④AGENTS.md、OWNERSHIP_MAP.md、ci.yml、skills README 及 5 份已对齐 skill；⑤apps/web/lib 全部演进代码。与包字节一致、无需动作：KNOWLEDGE_ASSET、AGENT_PROFESSIONAL、SYSTEM_RUNTIME、H1_H2_H3、kad1 三迁移+三回滚。
+
+**差异账说明**：24 份未推送目标已在 target-diff.csv 按 MAB234 账逐行登记（状态 BASE_UNCHANGED），本附录不重复登记；本吸收批未改变任何目标语义，target-diff.csv 无需增行。
+
+**推送状态：`PENDING_PUSH`**——本附录及吸收①归档、AGENTS.md §0A 目前仅在本地提交，待 Owner 确认窗口一次性推送 GitHub；推送完成后在此销项并记 `PUSHED`。
