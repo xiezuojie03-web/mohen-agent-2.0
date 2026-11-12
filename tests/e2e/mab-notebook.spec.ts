@@ -15,10 +15,16 @@ test('ST-02 reads current project candidates over real authenticated HTTP and re
  const projectId=randomUUID(),assetId=randomUUID();
  expect((await owner.post('/api/studio/projects',{data:{project_id:projectId,title:'ST02合成项目',scope:{}}})).status()).toBe(200);
  // CP2-F 起，证据承载类资产（source_anchor/reading_note/evidence_note…）必须至少带一个
- // 可解析来源回链，否则失败关闭。ST-02 只验证"当前修订候选读取 + 跨 Owner 隔离"，
- // 因此改用非证据承载的 research_brief；证据类缺来源/悬空引用的拒绝由 13 类矩阵用例覆盖。
+ // 可解析来源回链，否则失败关闭；同时 research-read 只把"研究材料类"种类当候选
+ // （research_brief 是计划不是材料，不进 materials）。因此这里先落一份无回链的
+ // research_brief，再以它的修订作为 reading_note 的可解析来源回链（asset_revision 是
+ // CP2-F 登记的合法引用类型），既满足新契约，又保留"当前修订候选 + 跨 Owner 隔离"的原意。
+ const briefRevision=(await (await owner.post('/api/studio/assets',{data:{project_id:projectId,
+  asset_id:randomUUID(),asset_kind:'research_brief',expected_revision_id:null,
+  idempotency_key:randomUUID(),payload:{title:'ST02合成研究问题'}}})).json()).asset.revision_id;
  const saved=await owner.post('/api/studio/assets',{data:{project_id:projectId,asset_id:assetId,
-  asset_kind:'research_brief',expected_revision_id:null,idempotency_key:randomUUID(),payload:{title:'合成材料，仅待核候选'}}});
+  asset_kind:'reading_note',expected_revision_id:null,idempotency_key:randomUUID(),
+  payload:{literal_reading:'合成材料，仅待核候选'},source_refs:[{type:'asset_revision',id:briefRevision}]}});
  expect(saved.status()).toBe(200);const revision=(await saved.json()).asset.revision_id;
  const read=await owner.post('/api/studio/research-read',{data:{project_id:projectId}});
  expect(read.status()).toBe(200);expect(read.headers()['cache-control']).toBe('no-store');
