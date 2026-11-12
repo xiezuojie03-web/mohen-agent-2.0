@@ -6,6 +6,7 @@
 
 - 远端 main HEAD：`6562ece3`（2026-11-12，Agent 检索回归修复）。本地 HEAD `e1231bb` 与远端**内容一致、SHA 不同**：GitHub 直连不稳期间改走 Git Data API 重放，SHA 由远端重算。本地 `origin/main` 停在旧 SHA，属该传输替代的已知偏差，**不代表有未推送提交**（详见 `tasks/implementation/MAB/progress.md` 2026-11-12 条）。
 - 2026-11-12 CI 收口过程：`6bb6b9e6` ci SUCCESS；`c1d244be` ci SUCCESS（补齐隔离 HTTP 链 24 份漂移迁移 + 守卫改双链校验）；M1 隔离 HTTP 验收由 6 FAIL 降至 3 FAIL，余项按 CP2-F 后契约修正后待 `6562ece3` 回执。`MAB isolated PostgreSQL 17 verification` 持续 SUCCESS。
+- **2026-11-12 最终 CI 全绿**：远端 `bd94f91c` → `ci` 43212146248 **SUCCESS**、`MAB M1 isolated authenticated HTTP acceptance` 43212146038 **SUCCESS**（23 passed / 1 skipped，0 failed）。本地 `vitest.unit` 650 passed / 2 skipped / 0 failed，`apps/web` tsc 0 错误，`guard:isolated-db-fixtures` PASS。
 - 真实模型派发已在本地隔离环境真跑：`tools/verify-4-provider-dispatch.mjs` = `VERIFY_4_ALL_PASS`，真实 DeepSeek 调用 `cost=$0.000074`，回放不重复扣费，权利拒绝/零预算阻断成立；本地库累计 Provider 支出 `$0.017176`（授权上限 ¥20）。
 - 本地生产实例可运行：`next build` + `next start` 于 `127.0.0.1:3100`，私有用例页面（含 `/studio/desk`）真机 200。本地 `mohen_dev` 有真实存量（1 项目 / 86 修订 / 81 私有原件 / 755 Gate 审计 / 50 候选 / 15 当前资格）。
 - 历史基线（保留）：`3262fe4`（2026-11-08 质量整改）run 42453345351 SUCCESS；`99a33a2` 的 `ci` 因 `target-diff.csv` UTF-8 BOM 失败，已在 `3f8cc1b` 修复。
