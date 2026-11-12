@@ -2929,3 +2929,87 @@ PLAN §3.5 C 第 4 步的核心条件："让同一原件沿 D00—D05 运行，�
 
 关闭 **M4 真实混合协作**：同一 root 任务下 Agent 与外部 AI 真实互补、逐来源合法最小外发、真实 Provider/版本/价格/预算/费用/永久 Receipt/失败恢复。
 
+
+## 2026-11-12｜M4 合成层（Owner 执行协调）关闭（PLAN §3.5 C 第 5 步前置）
+
+**Commit**：`9c074fe feat(m4): M4 Owner 执行协调合成层关闭验证（27/27 PASS，PENDING_PUSH）`
+**部署**：手动分步应用 `supabase/migrations/20261104013351_mab_m4_execution_controls.sql`（30 步全部 OK）
+**验证脚本**：`scripts/test-m4-execution-control.mjs`（27 check / 27 PASS / 0 FAIL）
+
+### 核实的核心事实
+
+| 维度 | 数量/状态 | 证据来源 |
+|---|---|---|
+| mohen_execution_authority 独立角色 | 存在、nologin/noinherit/nosuperuser/nobypassrls | `pg_roles` |
+| studio.execution_controls 表 | 存在，PK delegation_id + 6 状态机（READY/LEASED/IN_FLIGHT/HOLD/COMPLETED/REVOKED），CHECK 约束 + FK | 新建 migration |
+| studio.execution_control_events 表 | 存在，request_id UNIQUE 幂等键，operation CHECK（CLAIM/CHECKPOINT/REVOKE） | 新建 migration |
+| RLS 策略 | 8 条（identity/project/delegation/receipt/execution_authority/event_authority + Owner 读 controls/events） | `pg_policies` |
+| SECURITY DEFINER apply_execution_control | GET/CLAIM/CHECKPOINT/REVOKE 四操作，OWNERSHIP 校验，request_id 幂等，version 乐观锁，input_digest + policy_version 绑定，pg_advisory_xact_lock 防跨事务并发 | migration SQL 232 行 |
+| 触发器 protect_execution_control | DELETE/TRUNCATE 永久禁止，revoked 后永久禁止修改，cost/attempted/unknown_cost 单调绑定，绑定字段不可变 | trigger |
+| protect_permanent_receipt | 已有 trigger（M2 批次），execution_control_events 复用 | 复用 |
+| Delegation 存量 | 13 条（含本批 INSERT 1 条合成测试） | `studio.delegations` |
+| Receipt 存量 | 16 条（不可变） | `studio.execution_receipts` |
+
+### apply_execution_control 四操作端到端（真跑）
+
+| 操作 | 状态变化 | 幂等 | 说明 |
+|---|---|---|---|
+| GET | 自动建 execution_control（state=READY, version=0） | — | **不写 event**（设计） |
+| CLAIM | READY/REVOKED 以外 → LEASED + lease_id 生成 + lease_expires_at 约束（≤ delegation.expires_at） | 相同 request_id + expectedVersion + input_digest + policyVersion → VERSION_CONFLICT（安全保护，防跨版本重放） | 写 event |
+| CHECKPOINT | LEASED（lease 未过期）→ HOLD/IN_FLIGHT/COMPLETED；IN_FLIGHT 要求无残留（无 spent_cost/execution_receipts/external_attempted） | version 已变后 VERSION_CONFLICT | 写 event |
+| REVOKE | 任何状态 → REVOKED + revoked_at + revoke_reason；**revoked 后不能再 CLAIM/CHECKPOINT** | 幂等（request_id 已处理则返回同 result_state） | 写 event |
+
+events 链（本批测试 delegation）：CLAIM → CHECKPOINT → REVOKE = **3 条**（GET 不写）
+
+### 安全机制验证
+
+| 机制 | 结果 |
+|---|---|
+| Owner 隔离 | 机器 Reviewer（MACHINE_REVIEWER）用 set role mohen_app_runtime + 自己的 session_token 调 apply_execution_control → **STUDIO_EXECUTION_NOT_FOUND**（project.owner_user_id 不匹配） |
+| RLS runtime 直写拒 | mohen_app_runtime 直接 `insert into studio.execution_controls` → **RLS denied** |
+| 角色隔离 | mohen_private_worker 无独立 EXECUTE grant（仅继承 mohen_app_runtime——这是设计，worker 通过 SECURITY DEFINER 函数受控访问） |
+| runtime 有 EXECUTE | ✅（正确：HTTP handler 用 set role mohen_app_runtime 调用） |
+| 触发器保护 | execution_control  DELETE/TRUNCATE → **PERMANENT_RECEIPT_IMMUTABLE**；REVOKED 后 UPDATE → **STUDIO_EXECUTION_REVOCATION_PERMANENT** |
+
+### PLAN 状态更新
+
+| 阶段 | 关闭的条件项 |
+|---|---|
+| M4 | **CONDITIONAL_EXIT**（合成层 Owner 执行协调 + apply_execution_control 四操作 + 安全隔离 已在隔离环境闭环。真实 Provider 外部调用（M4 全条件）待独立部署） |
+
+**PLAN §3.5 C 依赖顺序当前进度**：
+1. 冻结 M0 ✓
+2. 关 M1 M5 隔离实验前置 ✓
+3. 关 M2 L0–L2 ✓
+4. 关 M3 真实 D/G 链 ✓
+5. **关 M4 合成层（Owner 执行协调） ✓（本批）**
+6. ST-01→ST-09 完成 M5
+7. 一次端到端验收
+
+**PLAN §3.4 M4 CONDITIONAL_EXIT 完整条件**：合成层已闭环，但 M4-C01 真实 Provider 调用（外部模型 + 真实费用 + 永久 Receipt 验收）需要：
+- 独立 HTTPS 服务端到端（类似 M3-C01）
+- 真实 API 凭据
+- 费用账本核销
+
+这些不在本轮合成层关闭范围，保留为 M4 全条件 HOLD。
+
+### DB 最小写入
+
+为端到端验证：
+- INSERT 1 条合成 delegation（`aeb9949b-...-...-...`，policy_version=`m4-synthetic-test-policy`，expires_at=+7d）
+- apply_execution_control 在这条 delegation 上自动建了 execution_controls + 3 条 execution_control_events
+- 所有数据在隔离库 mohen_dev，不影响生产
+
+### 本批引用的交付包归档/吸收文件
+
+| 引用文件 | 作用 |
+|---|---|
+| PLAN.md §3.4 M4 CONDITIONAL_EXIT | 合成层定义 + 边界 |
+| PLAN.md §3.5 C 第 5 步 | 依赖顺序 |
+| supabase/migrations/20261104013351_mab_m4_execution_controls.sql | M4 execution controls 完整 migration（232 行） |
+| CURRENT.md CP2-D/M4 段 | Owner 执行协调的设计边界（合成 vs 真实） |
+
+### 下一步
+
+**按 PLAN §3.5 C 第 6 步**：ST-01→ST-09 完成 M5 真实作品实验（九阶段端到端 D00–D05 + G0–G5 + L0–L5）。合成层/M0–M4 全部闭环后，M5 真实作品实验成为依赖链上唯一未完成项。
+
