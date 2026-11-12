@@ -155,7 +155,7 @@ async function auditFor(candidateId) {
   return { ...row, current: row.current === true || row.current === "t" };
 }
 
-async function currentQualification(objectType, objectId, artifactRevisionValue) {
+async function currentQualification(objectType, objectId, artifactRevisionValue, gate) {
   const rows = await queryRows(
     `select q.gate_audit_id::text as audit_id, q.artifact_revision::text as artifact_revision,
         a.qualification_digest,
@@ -165,7 +165,7 @@ async function currentQualification(objectType, objectId, artifactRevisionValue)
       where q.gate_code = (:'gate') and q.object_type = (:'ot')::text and q.object_id = (:'oid')::uuid
         and q.artifact_revision = (:'arev')::text and q.consumer = 'producer'
       order by q.valid_until desc limit 1`,
-    { gate: "G0", ot: objectType, oid: objectId, arev: artifactRevisionValue }
+    { gate, ot: objectType, oid: objectId, arev: artifactRevisionValue }
   );
   const row = rows[0];
   if (!row) return null;
@@ -303,7 +303,7 @@ async function main() {
   for (const entry of CHAIN) {
     const template = await readCandidate(entry.candidate);
     const currentRevision = await artifactRevision(template.object_type, template.object_id);
-    const reusable = await currentQualification(template.object_type, template.object_id, currentRevision);
+    const reusable = await currentQualification(template.object_type, template.object_id, currentRevision, entry.gate);
     if (reusable) {
       // 幂等：该门在该对象当前内容上已有有效资格，直接复用，不重复签发。
       record(`chain.${entry.gate}`, true, {
