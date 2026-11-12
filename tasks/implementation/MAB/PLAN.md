@@ -399,7 +399,7 @@ M5按ST-01→ST-09顺序施工；不跳过依赖、不把任务入队显示为�
 
 按3.5和本文件八维度矩阵完成同一真实作品全链。未满足专业G5/媒资权利不得公开消费；M5隔离验收不等于生产启用。
 
-- [ ] 吸收②（附录D）：消费侧 7 路由目标（admin/acl、admin/publications、admin/users/[id]/status、explore entities/events/relations、watch/sessions）与 7 份 Skill 更新按交付包目标三方合并施工，禁止整文件覆盖；未完成不得关闭 M5。
+- [x] 吸收②（附录D）：消费侧 7 路由目标（admin/acl、admin/publications、admin/users/[id]/status、explore entities/events/relations、watch/sessions）与 7 份 Skill 更新按交付包目标三方合并施工，禁止整文件覆盖；未完成不得关闭 M5。（2026-11-12 本地批完成，PENDING_PUSH：7 路由以包目标为骨架落地 KAD1 生成代语义——acl/users 收敛库内事务 `control.kad1_change_account`、publications 到期发布显式化、explore 详情 423 资格投影失败关闭、watch/sessions 会话隔离逐请求核发布指针；7 Skill 逐字节采用包版（HEAD==基线，含 D00 纳入调用阶段与独立 Gate 表述）。适配两处：UUID 正则硬化、`processDueSchedules` 无参调用。实证 typecheck 6/6、unit 650P/2S、guard:auth:strict 111 路由 0 缺口、structure/gate-enforcement PASS；PG/HTTP 实证与生产 kad1 迁移应用仍按原门禁 HOLD。回执见 progress.md 2026-11-12 批。）
 
 ### M6｜全量合同回归与延期能力闭环
 

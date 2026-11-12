@@ -2709,3 +2709,45 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 - OAI-PMH / SPARQL 只证到"能真实查到目录元数据"，**未取到任何原件字节**；原件仍走 M0002/M0003/M0004。
 - 图幅/内页清点（Y08 的 `pages_extent`）在已取得样本上仍为 `unknown`，未做逐页比对。
 
+## 2026-11-12｜吸收②消费侧批：7 路由 + 7 Skill 三方合并落地（本地批，PENDING_PUSH）
+
+**应完成什么**：PLAN.md §5 M5 checklist 的吸收②项——交付包 24 份 REVISE 目标中的消费侧部分（7 份 route.ts + 7 份 SKILL.md）按"包目标 × 当前 HEAD 三方合并、禁止整文件覆盖"施工。
+
+**固定四问**：
+
+1. **本批按计划应完成什么**：14 份文件的吸收②合并施工（7 路由 + 7 Skill），全部完成。
+2. **是否全部完成**：是。7 份 Skill 逐字节采用包版（开工前核实 HEAD==基线 db21cef blob，仓库侧无分叉可合并，包版即三方合并结果）；7 份路由以包目标为骨架，两处对当前 HEAD 适配（见下）。
+3. **未完成的原因**：无未完成项。PG/HTTP 实证与生产侧应用按原门禁保持 HOLD（见边界）。
+4. **对下一步的影响**：吸收②销项；M5 八维度矩阵中 Admin/WATCH 消费侧的路由依据就位。吸收③（7 代际合同 + 3 requirements 矩阵）仍挂 M6；D00 遗留（Range-206 样本、条款人读、pages_extent、G0 正式签署）不变。
+
+**7 份路由落地内容（KAD1 生成代语义）**：
+
+- `admin/acl`、`admin/users/[id]/status`：角色/状态变更由逐条 check-then-act（TOCTOU 窗口）收敛为库内事务 `control.kad1_change_account`（advisory lock 串行化；operator 身份、禁自改、reviewer 两把钥匙、末位保护由 DB 统一执行）；动者身份经 `mohen.session_token` 会话上下文绑定，不由请求自述。
+- `admin/publications`：GET 不再隐式触发到期定时发布（GET 无副作用）；到期任务改操作员显式 `POST {action:"run_due"}`，执行时仍逐件重验发布资格。
+- `explore/entities|events|relations/[id]`：详情由裸读 `world.*` 行改为 423 `qualified_projection_required` 失败关闭——EXP 详情只允许消费资格投影，投影生产方就绪前不降级为裸读。
+- `watch/sessions`：观看进度由"无账号 work_id 语义"升级为 (owner_user_id, work_id, revision_id) 会话隔离，逐请求核发布指针；RLS 要求 owner=会话验证身份；匿名/越权/未发布/撤指针一律拒绝。
+- **两处对当前 HEAD 的适配**：①包版 UUID 校验为宽松 `[0-9a-f-]{36}`（畸形 id 会落 PG cast 500），改为规范 UUID 正则，兑现包版自身声明的 `invalid_id` 400 语义；②包版 `processDueSchedules(session.uid)` 与现行 lib 无参签名不符，改为无参调用（lib 不动）。
+- **单测**：`tests/unit/admin-authorization.test.ts` 重写至 kad1 合同（9 例：输入校验不触库、last_reviewer→409、not_found→404、self_change→403、ok 确认回执、operator_required→403、acl 角色白名单与 `{member,creator}` 参数、kad1 SQL 断言）。
+
+**回归**：`pnpm typecheck` 6/6；`pnpm test:unit` 650 通过 / 2 跳过 / 0 失败；`guard:auth:strict`（routes=111 public=19 missing=0）、`guard:structure`（router_broken=0）、`guard:gate-enforcement`（GATE_ENFORCEMENT_OK）、`guard:dev-skill`、`guard:docs` 全 PASS。
+
+**顺带修复（前置批次遗留）**：`guard:structure` 在本批开工核查时发现 BROKEN_ROUTER_PATHS——吸收接线批（a5cb5a1）在 AGENTS.md §0A 写的裸文件名 `` `progress.md` `` 被路由守卫按路径校验判破。最小修复为完整路径 `tasks/implementation/MAB/progress.md`，规则文本语义不变。
+
+**target-diff.csv**：14 行吸收②目标更新（current_sha256 刷新、m0_base_change=CHANGED_SINCE_BASE；7 路由行补 m5_public_consumer_evidence/scope）。另 6 行已对齐 Skill 仅顺带刷新 current_sha256（文件本就领先基线，base_change 原值即 CHANGED_SINCE_BASE，事实无损）。
+
+**边界（据实记账）**：①kad1 三迁移在仓库与本地隔离链已就位，生产库未应用——生产环境这些路由会失败关闭（函数/列缺失即错误），不静默降级，生产应用仍属受控迁移窗口；②路由级 PG/HTTP 实证未做（单测为 mock 级），并入 M5 真实作品全链实验统一验收；③explore 详情 423 是设计内状态：资格投影生产方就绪后按 KAD1 消费合同解锁，届时另批施工；④`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变，不签任何 Gate。
+
+**本批引用的交付包归档/吸收文件（Owner 汇报纪律）**：
+
+| 引用文件 | 作用 |
+|---|---|
+| 交付包 `repo_target/apps/web/app/api/admin/acl/route.ts`、`admin/users/[id]/status/route.ts`、`admin/publications/route.ts`、`explore/{entities,events,relations}/[id]/route.ts`、`watch/sessions/route.ts`（7 份，包内未归档的 repo_target 区，经 manifest 哈希校验） | 施工骨架本体：KAD1 库内事务收敛、GET 无副作用、423 资格投影、会话隔离语义的唯一定义来源 |
+| 交付包 `repo_target/skills/*/SKILL.md`（7 份） | MHKA-04 代际更新本体：D00 纳入调用阶段、D01/D02 语义重述（取得/读载体/材料理解）、独立 Gate 表述、新代际绑定与停止节 |
+| 归档 `tasks/implementation/MAB/inputs/mab-package-20261102/manifest/FILE_HASHES.sha256` + `MAB_74份正式工程目标_manifest.csv` | 开工前对 14 份包目标做哈希校验、对 HEAD==基线做 blob 断言的核查依据 |
+| 归档 `manifest/MAB_工程目标文件审查总索引_现行.csv` | target-diff.csv 14 行账定位（MAB234 行号对应）的索引依据 |
+| 解读报告 `tasks/results/MAB_DELIVERY_PACKAGE_INTERPRETATION_20261112.md` §3.3/§3.4/§8 | 批次定界与"三方合并、禁止整文件覆盖"施工方式依据 |
+| PLAN.md 附录D 吸收②条目 | 本批的唯一任务授权与禁止回写护栏 |
+
+**PENDING_PUSH**：本批提交（7 路由 + 7 Skill + 单测重写 + AGENTS.md 路径修复 + PLAN.md checklist + target-diff 14+6 行 + 本回执）仅在本地，待 Owner 确认窗口与吸收接线批一并推送；推送后在此销项并记 `PUSHED`。
+
+

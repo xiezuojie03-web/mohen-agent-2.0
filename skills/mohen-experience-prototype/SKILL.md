@@ -2,15 +2,15 @@
 
 **Status:** TARGET · Phase C
 **Kind:** experience
-**Allowed Calling Stages:** L5 / C4 only
+**Allowed Calling Stages:** CTX-STUDIO / authorized L5 consumption
 
 ## Purpose
-Experience-side capability governed by C4/L5. It consumes trusted read models and does not write L0–L4.
+Experience-side capability governed by MHKA-02 and current L5 qualification. It consumes trusted read models and does not write L0–L4.
 
 ## Contract
-- No independent D01–D05 Stage PASS unless explicitly designated as a Stage Owner (this Skill is not).
+- No independent D00–D05 Stage PASS unless explicitly designated as a Stage Owner (this Skill is not).
 - No final writes across multiple L layers.
-- Caller Stage owns persistence, Gate and downstream handoff.
+- Caller Stage owns candidate persistence and qualified handoff; independent Gate owns final qualification and audit.
 - Reuse existing implementation where possible; duplicate canonical entries are not allowed.
 - Exact executable entry is frozen during implementation phase.
 
@@ -22,3 +22,7 @@ Stop when requested action would require this capability to own another Stage's 
 
 ## Canonical Entry
 `PENDING_PHASE_D`
+
+## 新代际绑定与停止
+
+MHKA-02体验；正式知识消费走L5，内部候选按项目授权隔离。唯一专业规则来自`specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md` §3/§7，输出候选由调用Stage/资产合同持久化；不得自签资格、越权外传、伪造工具回执或把原型当正式事实。方法绑定/版权/预算缺失时HOLD并保留受限候选。当前为设计镜像，未激活运行。
