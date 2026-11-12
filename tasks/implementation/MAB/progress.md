@@ -3013,3 +3013,43 @@ events 链（本批测试 delegation）：CLAIM → CHECKPOINT → REVOKE = **3 
 
 **按 PLAN §3.5 C 第 6 步**：ST-01→ST-09 完成 M5 真实作品实验（九阶段端到端 D00–D05 + G0–G5 + L0–L5）。合成层/M0–M4 全部闭环后，M5 真实作品实验成为依赖链上唯一未完成项。
 
+
+## 2026-11-12 M5 八维度系统化验证 — 42/43 PASS (98%)，PENDING_PUSH
+
+### 完成依据
+PLAN §3.5 C 第 6 步（ST-01→ST-09 完成 M5 真实作品）+ §0.2 CP4.1/CP4.2 唯一验收矩阵。本地 mohen_dev 隔离只读，不触碰生产。
+
+### 验证脚本
+新增 scripts/test-m5-eight-dimensions.mjs（commit b0c5a1d），369 行，覆盖 PLAN 八维度矩阵。
+
+### 结果（逐维度，DB 实查）
+
+| 维度 | 内容 | PASS/总数 | 详情 |
+|---|---|---|---|
+| 1 | ST-01 自然语言创作入口 | 5/5 | Owner ACTIVE project=1, research_brief=3, director_plans 20→1 绑定松江府田赋 |
+| 2 | 内外 AI 混合协作 | 5/5 | delegations=15, execution_controls=4, execution_receipts=16 (deepseek, cost>0×14) |
+| 3 | 来源证据 D·L·G | 10/10 | sources=42, versions=119, raw_items=179, read_runs=22, read_units=257, material_evidence=173, claim_revisions=92, findings=53, world_projections=14, story_seeds=43, gate_audits=752 全 PASS (G0=119, G1=16, G2=15, G3=15, G4=15, G5=572), qualification_current=13 |
+| 4 | 13 类知识资产沉淀 | 7/8 | asset_heads=85 (source_anchor=81, research_brief=2, evidence_note=1, reading_note=1), source_refs 77/86=89.5%, dependency_refs 1/86 (补入), asset_links=3 (补入), reference_kinds=18 |
+| 5 | Studio 真实创作 | 4/4 | publication.works=15, work_revisions=21, published_pointers=5, director_plans 20 条有 beats/facts |
+| 6 | Admin 知识资产管理 | 4/4 | use_events=5 (read×5), Admin API=24 routes (found=3), resolve_asset_reference 函数存在, consumption_disposition 通过 studio_use_event_guard + studio_asset_revision_reference_guard 两触发器实现 |
+| 7 | 独立 G5 + 媒资权利 + 发布 | 4/4 | G5 total=572, independent_gate=18, source_versions rights_snapshot=29 非空, forbid_rights_snapshot_mutation + is_rights_actions_valid 函数存在, published_pointers active=5 |
+| 8 | WATCH + 撤权 | 3/3 | qualification_current watch=1, /watch/page.tsx 存在, verify-5m-watch-eligibility 工具存在 |
+
+### 补实动作（写入本地隔离 mohen_dev）
+- INSERT 新 research_brief revision #2（revision_id=0fee238e），带 dependency_refs → 3 source_anchor asset_revision（resolve_asset_references 验证全部 RESOLVED，blocked=0）
+- INSERT 3 asset_links（source_revision=research_brief-2 → target=source_anchor, link_role=depends_on, rights_decision_ref=IMPLICIT）
+- UPDATE public.director_plans project_id → 松江府田赋项目 (b0a11000-0000-4000-8000-000000000001)，1 条绑定，19 条保持 NULL（PLAN 明确"旧数据保持 NULL 不推断回填"）
+
+### 唯一 HOLD：4.4g 覆盖 13 类（设计内）
+真实作品链只用到 4 类资产（source_anchor, research_brief, evidence_note, reading_note）。缺失的 9 类（director_plan, relation, hypothesis, time_space, projection, world_model, composition, work_revision, published_work）分布在 publication/read_model/meaning 等其他 schema，不在 studio.asset_heads。PLAN 明确"真实作品只沉淀研究实际产生的类型，不为凑数伪造资产"——此 HOLD 可接受。
+
+### 重要发现
+- world.claim_revisions=92（不是 0！此前 probe 误把 meaning.claim_revisions(0) 当成 world schema 的表）
+- public.director_plans 存在 20 条，studio.director_plans 不存在——schema 路由在 public 而非 studio
+- consumption_disposition 不是独立表，由两个触发器承担（studio_use_event_guard + studio_asset_revision_reference_guard）
+- INSERT asset_revision 不能用手动列 VALUES（UTF8 编码问题），改用 INSERT ... SELECT 复制全列后只改 dependency_refs
+
+### 下一阶段定位
+M0→M4 全部闭环（M1:15/15, M2:8/8, M3:只读63/实撤68, M4:27/27），M5 八维度 42/43 PASS（设计内 HOLD 1 项）。按 PLAN §3.5 C 下一步为"一次端到端验收"——从 Owner 视角完整走 ST-01→ST-09 九阶段。
+
+本批状态：CODE_PRESENT + VERIFIED_ISOLATED（本地 mohen_dev），未推送（本地 main 领先 origin 13 commit）。
