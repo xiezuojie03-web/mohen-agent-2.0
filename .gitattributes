@@ -10,3 +10,5 @@
 *.yml text eol=lf
 *.css text eol=lf
 *.ps1 text eol=crlf
+# MAB 交付包归档证据：禁用行尾转换，保证归档件与包内原件字节一致、SHA256 可复核
+tasks/implementation/MAB/inputs/mab-package-20261102/** -text
