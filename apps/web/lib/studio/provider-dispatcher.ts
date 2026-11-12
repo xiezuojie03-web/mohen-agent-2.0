@@ -398,6 +398,8 @@ export async function dispatchAuthorizedCall(
         model: state.model,
         temperature: call.temperature,
         max_tokens: state.call.maxTokens,
+        // Studio 的结构化动作必须由 provider 保证 JSON 语法完整；旁白润色仍是纯文本。
+        ...(state.action === "llm_narration_suggest" ? {} : { response_format: { type: "json_object" } }),
         messages: [
           { role: "system", content: call.system },
           { role: "user", content: call.user },

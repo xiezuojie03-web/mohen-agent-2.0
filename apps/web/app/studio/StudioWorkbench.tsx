@@ -405,7 +405,7 @@ export default function StudioWorkbench() {
       setSubmitErr(true);
       return;
     }
-    if (!selectedPlan || !beats || beats.length === 0) {
+    if (!selectedPlan || !adoptedPlanId || !beats || beats.length === 0) {
       setSubmitMsg("请先在「② 研究定方向」选定一个导演方案并生成分镜，再提交。");
       setSubmitErr(true);
       return;
@@ -446,6 +446,23 @@ export default function StudioWorkbench() {
         saved = { workId: created.work_id, revisionId: created.revision_id, snapshot };
         setSavedWork(saved);
       }
+      // 保存并提交同一导演来源修订；初始草稿不能直接送审。
+      const revisionRes = await fetch(`/api/studio/works/${saved.workId}/revisions`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          plan_id: adoptedPlanId,
+          expected_revision_no: 1,
+          rights_acknowledged: true,
+        }),
+      });
+      if (!revisionRes.ok) throw new Error("revision_unavailable");
+      const revision = await revisionRes.json() as { ok?: boolean; revisionId?: string; revisionNo?: number };
+      if (revision.ok !== true || typeof revision.revisionId !== "string" || !revision.revisionId ||
+          revision.revisionNo !== 2) throw new Error("revision_not_acknowledged");
+      saved = { ...saved, revisionId: revision.revisionId };
+      setSavedWork(saved);
+
       const res = await fetch(`/api/works/${saved.workId}/submit`, {
         method: "POST",
         headers: { "content-type": "application/json" },

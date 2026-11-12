@@ -36,10 +36,18 @@ test.describe("WATCH catalogue failures", () => {
 });
 
 async function prepareSubmission(page: import("@playwright/test").Page) {
+  await page.route("**/api/studio/projects", route => route.fulfill({ json: {
+    ok: true,
+    projects: [{ project_id: "submission-project", project_title: "投稿测试项目" }],
+  } }));
   await page.route("**/api/studio/research-tasks", route => route.fulfill({ json: { ok: true, decision: { mohenLine: "测试发现", materials: [], gaps: [] } } }));
   await page.route("**/api/studio/director-plans", route => route.fulfill({ json: { ok: true, plan_id: "submission-plan", facts: [], planA: { angle: "观察空间变化", points: ["观察地点"] }, planB: { angle: "观察日常生活", points: ["观察生活"] } } }));
   await page.route("**/api/studio/director-plans/submission-plan/select", route => route.fulfill({ json: { ok: true, beats: [{ title: "首章", visual: "预览画面", narration: "预览旁白", directorTimecodeMs: 0, provenanceRefs: ["test-ref"] }] } }));
   await page.route("**/api/studio/director-plans/submission-plan/panels", route => route.fulfill({ status: 503, json: { ok: false } }));
+  await page.route("**/api/studio/works/*/revisions", route => {
+    const workId = new URL(route.request().url()).pathname.split("/")[4];
+    return route.fulfill({ json: { ok: true, revisionId: `director-${workId}`, revisionNo: 2 } });
+  });
   await page.goto("/studio");
   await page.getByLabel("向墨痕委托或提问").fill("研究金泽古桥");
   await page.getByRole("button", { name: "发送", exact: true }).click();
@@ -52,20 +60,26 @@ async function prepareSubmission(page: import("@playwright/test").Page) {
 
 test("Studio keeps the created work when submission fails and retries only the saved revision", async ({ page }) => {
   const work = "9ab37577-1789-4e5a-9d5a-9e629cffdbf7";
-  const revision = "4790013f-43ed-422e-b047-d3f8ddbf22c3";
+  const initialRevision = "4790013f-43ed-422e-b047-d3f8ddbf22c3";
+  const directorRevision = `director-${work}`;
   let creations = 0;
+  const committed: unknown[] = [];
   const submitted: unknown[] = [];
   await page.route("**/api/works", route => {
     creations++;
-    return route.fulfill({ json: { ok: true, work_id: work, revision_id: revision } });
+    return route.fulfill({ json: { ok: true, work_id: work, revision_id: initialRevision } });
   });
   await page.route(`**/api/works/${work}/submit`, route => {
     submitted.push(route.request().postData() ? route.request().postDataJSON() : null);
     return submitted.length === 1
       ? route.fulfill({ status: 503, contentType: "text/html", body: "unavailable" })
-      : route.fulfill({ json: { ok: true, work_id: work, revision_id: revision, status: "submitted" } });
+      : route.fulfill({ json: { ok: true, work_id: work, revision_id: directorRevision, status: "submitted" } });
   });
   await prepareSubmission(page);
+  await page.route(`**/api/studio/works/${work}/revisions`, route => {
+    committed.push(route.request().postDataJSON());
+    return route.fulfill({ json: { ok: true, revisionId: directorRevision, revisionNo: 2 } });
+  });
   await page.getByRole("button", { name: "提交审核", exact: true }).click();
   await expect(page.locator(".studio__submit-msg")).toContainText("已创建的作品已保留");
   await expect(page.getByPlaceholder("给这部作品起个标题")).toHaveValue("保存的作品");
@@ -73,7 +87,11 @@ test("Studio keeps the created work when submission fails and retries only the s
   await page.getByRole("button", { name: "提交审核", exact: true }).click();
   await expect(page.locator(".studio__submit-msg")).toContainText("已提交审核");
   expect(creations).toBe(1);
-  expect(submitted).toEqual([{ revision_id: revision }, { revision_id: revision }]);
+  expect(committed).toEqual([
+    { plan_id: "submission-plan", expected_revision_no: 1, rights_acknowledged: true },
+    { plan_id: "submission-plan", expected_revision_no: 1, rights_acknowledged: true },
+  ]);
+  expect(submitted).toEqual([{ revision_id: directorRevision }, { revision_id: directorRevision }]);
 });
 
 test("Studio does not submit an old snapshot after an edit", async ({ page }) => {
@@ -105,7 +123,7 @@ test("Studio freezes draft changes while a creation acknowledgement is pending",
     await pending;
     return route.fulfill({ json: { ok: true, work_id: "pending-work", revision_id: "pending-revision" } });
   });
-  await page.route("**/api/works/pending-work/submit", route => route.fulfill({ json: { ok: true, work_id: "pending-work", revision_id: "pending-revision", status: "submitted" } }));
+  await page.route("**/api/works/pending-work/submit", route => route.fulfill({ json: { ok: true, work_id: "pending-work", revision_id: "director-pending-work", status: "submitted" } }));
   await prepareSubmission(page);
   await page.getByRole("button", { name: "提交审核", exact: true }).click();
   try {
@@ -121,7 +139,7 @@ test("Studio keeps a stable creation identity when the creation response is lost
     ids.push(route.request().postDataJSON().creation_id);
     return ids.length === 1 ? route.abort("failed") : route.fulfill({ json: { ok: true, work_id: "retry-work", revision_id: "retry-revision" } });
   });
-  await page.route("**/api/works/retry-work/submit", route => route.fulfill({ json: { ok: true, work_id: "retry-work", revision_id: "retry-revision", status: "submitted" } }));
+  await page.route("**/api/works/retry-work/submit", route => route.fulfill({ json: { ok: true, work_id: "retry-work", revision_id: "director-retry-work", status: "submitted" } }));
   await prepareSubmission(page);
   await page.getByRole("button", { name: "提交审核", exact: true }).click();
   await expect(page.locator(".studio__submit-msg")).toContainText("创建作品失败");

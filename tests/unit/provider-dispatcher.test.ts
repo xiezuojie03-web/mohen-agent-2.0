@@ -226,6 +226,21 @@ describe('dispatchAuthorizedCall', () => {
       .rejects.toMatchObject({ code: 'DISPATCH_HANDLE_INVALID' });
   });
 
+  it('uses provider JSON mode for structured Studio actions but not narration prose', async () => {
+    const structured = makeDeps();
+    const structuredHandle = await authorizeProviderDispatch(structured.deps, AUTH_INPUT);
+    await dispatchAuthorizedCall(structured.deps, structuredHandle, CALL);
+    const structuredInit = vi.mocked(structured.deps.fetchImpl!).mock.calls[0]?.[1];
+    expect(JSON.parse(String(structuredInit?.body)).response_format).toEqual({ type: 'json_object' });
+
+    const narration = makeDeps({}, { allowed_actions: ['llm_narration_suggest'] });
+    const narrationHandle = await authorizeProviderDispatch(narration.deps,
+      { ...AUTH_INPUT, action: 'llm_narration_suggest' });
+    await dispatchAuthorizedCall(narration.deps, narrationHandle, CALL);
+    const narrationInit = vi.mocked(narration.deps.fetchImpl!).mock.calls[0]?.[1];
+    expect(JSON.parse(String(narrationInit?.body)).response_format).toBeUndefined();
+  });
+
   it('replays an identical input without a second fetch or a second charge, even if remaining budget is insufficient', async () => {
     const { deps, receipts, delegation } = makeDeps();
     const first = await authorizeProviderDispatch(deps, AUTH_INPUT);

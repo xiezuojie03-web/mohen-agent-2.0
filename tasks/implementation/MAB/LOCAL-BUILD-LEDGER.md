@@ -13,7 +13,7 @@
 | 2 | M3 真实 D 链：production-registry 激活 + M5 实际方法唯一绑定 + D00–D05 真实执行 | PLAN §3.3 | ✅ 主体闭环（批次 A/B/C：registry 隔离激活 + 方法绑定 6/63 + D00–D05 经 run.mjs 真实端到端落库，VERIFIED_ISOLATED；全部 HOLD 待 G0–G5）。遗留：6 executor 2 行桩、D00→D05 单run串链、非私有无分支 |
 | 3 | M3 独立 Gate：真实 Reviewer 投运 + G0–G5 签发/撤权/当前消费 | PLAN §3.3 | ✅ 主体闭环（批次 D：D 链 G0–G5 机器签发，VERIFY_3_ALL_PASS；遗留：候选撤回能力 HOLD、永久撤权演练待 Owner 同意、生产侧 HTTP 断言待 Web 通道） |
 | 4 | M4 受控 Provider 执行器（B 线）：正道解阻断 + 真实派发/费用/Receipt | PLAN §3.4 | ✅ 批次 F 闭环（VERIFIED_ISOLATED，VERIFY_4_ALL_PASS；Studio 路由接线留第 5 步） |
-| 5 | M5 八维度完整闭环：ST-01→ST-09 同一真实作品 + Owner 亲自体验 | PLAN §3.5 / 八维矩阵 | ⬜ 待施工 |
+| 5 | M5 八维度完整闭环：ST-01→ST-09 同一真实作品 + Owner 亲自体验 | PLAN §3.5 / 八维矩阵 | 🔵 进行中：新作工程链已本地跑通（rev 3 + WATCH 撤权/恢复，VERIFIED_ISOLATED）；Owner 体验、新作独立 D00—D05 专业验收及生产准出未完成。证据见 progress.md 2026-11-12 最新条 |
 
 > 说明：原 6 步里的"M2 原件链"和"13 类资产表"实为**同一 studio schema 迁移链**（private_originals 依赖 projects+asset_revisions），已合并为第 1 步。5 步顺序即 PLAN §3.5-C 的依赖顺序（M1 隔离前提已在历史批次满足 → M2 → M3 → M4 → M5）。
 
