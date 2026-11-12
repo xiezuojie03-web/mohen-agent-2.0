@@ -3053,3 +3053,47 @@ PLAN §3.5 C 第 6 步（ST-01→ST-09 完成 M5 真实作品）+ §0.2 CP4.1/CP
 M0→M4 全部闭环（M1:15/15, M2:8/8, M3:只读63/实撤68, M4:27/27），M5 八维度 42/43 PASS（设计内 HOLD 1 项）。按 PLAN §3.5 C 下一步为"一次端到端验收"——从 Owner 视角完整走 ST-01→ST-09 九阶段。
 
 本批状态：CODE_PRESENT + VERIFIED_ISOLATED（本地 mohen_dev），未推送（本地 main 领先 origin 13 commit）。
+
+## 2026-11-12 M5 端到端验收 — ST-01→ST-09 完整链路 28/28 PASS (100%)，PENDING_PUSH
+
+### 完成依据
+PLAN §3.5 C 第 7 步：一次端到端验收。围绕真实作品验证九阶段完整链路。
+
+### 验收对象
+**松江府田赋：一亩低田的税单（M5 批次 H 真实链）**
+work_id = 5b42577e-a4d6-4024-b1f9-99d0d788c9ec
+published revision = 825a56c9-ccb8-45fa-a0ba-c55df6b67f04
+published_at = 2026-11-10 16:23:58
+
+### 验收脚本
+新增 scripts/test-m5-e2e-st01-st09.mjs（commit 1ccc0ea），286 行，28 项检查全 PASS。
+
+### ST-01→ST-09 逐阶段结果
+
+| 阶段 | 内容 | 结果 | 证据 |
+|---|---|---|---|
+| **P0 前置** | 作品存在且已发布 | ✅ | work_revisions 3 修订 (draft→published→published)，published_pointers 有效 |
+| **ST-01** CreateWorkBrief | 选题、核心问题、受众 | ✅ | research_brief×3，有 dependency_refs 依赖 source_anchor |
+| **ST-02** StudioResearchRead | 选择材料/摘录 | ✅ | source_anchor×81，reading/evidence_note×2，source_refs×77 |
+| **ST-03** AnalyzeAndSaveCandidates | 选研究方向 | ✅ | claim_revisions×92，findings×53 |
+| **ST-04** RequestFormalProduction | 正式生产请求 | ✅ | production_runs×86，gate_candidates×46 |
+| **ST-05** AssembleDirectorPlan | 导演方向 | ✅ | director_plan 绑定项目，有 beats/facts，work_revision 有 plan 结构 (angle/cover/points/directorDecisions) |
+| **ST-06** PreviewWork | 预览 | ✅ | plan=object, beats×4，内容结构完整 |
+| **ST-07** SaveWorkRevision | 版本管理 | ✅ | 3 work_revisions，research_brief 修订链×3 |
+| **ST-08** SubmitForEditorialReview | 提交审查 | ✅ | work_publication_decisions×7，G0-G4 PASS (G0=119, G4=15) |
+| **ST-09** Publish/Withdraw | 发布与撤回 | ✅ | published_pointers 有效，G5 independent=18，watch qualification=1 |
+
+### Gate 链完整性
+G0=119, G1=16, G2=15, G3=15, G4=15, G5=572 — 全部 PASS。
+
+### 数据链路完整性
+work_revision content (plan+beats) → source_anchor source_refs (×77) → asset_links (×3) 全部连通。
+
+### 结论
+**M5 端到端验收通过** — 从 Owner 视角走通 ST-01→ST-09 九阶段，G0→G5 Gate 链完整，数据链路可追溯。
+
+### 边界与诚实披露
+- 本验收为 DB 只读验证（mohen_dev 隔离库），未启动 HTTP 服务、未调用付费模型、未触碰生产。
+- G5 watch 资格由机器评审身份签发，不等于 Owner 人文背书。
+- HTTP 级消费/撤权/恢复验证由 	ools/verify-5m-watch-eligibility.mjs 承担（需本地 dev server），本验收不重复。
+- 本地 main 领先 origin 15 commit，PENDING_PUSH。
