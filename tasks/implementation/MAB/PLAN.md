@@ -794,3 +794,5 @@ A：隋唐大运河及江南水路连接。B：宋代江南运河沿线的城镇
 **差异账说明**：24 份未推送目标已在 target-diff.csv 按 MAB234 账逐行登记（状态 BASE_UNCHANGED），本附录不重复登记；本吸收批未改变任何目标语义，target-diff.csv 无需增行。
 
 **推送状态：`PENDING_PUSH`**——本附录及吸收①归档、AGENTS.md §0A 目前仅在本地提交，待 Owner 确认窗口一次性推送 GitHub；推送完成后在此销项并记 `PUSHED`。
+
+**汇报纪律（Owner 2026-11-12 指令）**：自本账生效起，后续每批施工的汇报与 progress.md 回执必须注明：本批实际引用了哪些交付包归档/吸收文件（归档根：`tasks/implementation/MAB/inputs/mab-package-20261102/`）及其发挥的具体作用；某批确无引用时如实写明"本批未引用交付包文件"，不得虚构引用。
