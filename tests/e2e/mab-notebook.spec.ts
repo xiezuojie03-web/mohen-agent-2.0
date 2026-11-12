@@ -14,8 +14,11 @@ test('ST-02 reads current project candidates over real authenticated HTTP and re
  expect((await owner.post('/api/auth/register',{data:{email:`st02-${randomUUID()}@example.invalid`,username:'ST02研究者',password:randomUUID()}})).status()).toBe(200);
  const projectId=randomUUID(),assetId=randomUUID();
  expect((await owner.post('/api/studio/projects',{data:{project_id:projectId,title:'ST02合成项目',scope:{}}})).status()).toBe(200);
+ // CP2-F 起，证据承载类资产（source_anchor/reading_note/evidence_note…）必须至少带一个
+ // 可解析来源回链，否则失败关闭。ST-02 只验证"当前修订候选读取 + 跨 Owner 隔离"，
+ // 因此改用非证据承载的 research_brief；证据类缺来源/悬空引用的拒绝由 13 类矩阵用例覆盖。
  const saved=await owner.post('/api/studio/assets',{data:{project_id:projectId,asset_id:assetId,
-  asset_kind:'reading_note',expected_revision_id:null,idempotency_key:randomUUID(),payload:{literal_reading:'合成材料，仅待核候选'}}});
+  asset_kind:'research_brief',expected_revision_id:null,idempotency_key:randomUUID(),payload:{title:'合成材料，仅待核候选'}}});
  expect(saved.status()).toBe(200);const revision=(await saved.json()).asset.revision_id;
  const read=await owner.post('/api/studio/research-read',{data:{project_id:projectId}});
  expect(read.status()).toBe(200);expect(read.headers()['cache-control']).toBe('no-store');
@@ -164,7 +167,8 @@ test('all thirteen asset kinds keep exact private revisions and canonical write 
     expect(dangling.status(),kind).toBe(409);
     expect((await dangling.json()).reason,kind).toContain('STUDIO_REFERENCE_UNRESOLVED');
     const empty=await api.post('/api/studio/assets',{data});
-    expect(empty.status(),kind).toBe(409);
+    // 缺必需来源是请求本身不合法（400）；引用指向不存在对象才是与已记录状态冲突（409）。
+    expect(empty.status(),kind).toBe(400);
     expect((await empty.json()).reason,kind).toBe('STUDIO_SOURCE_REFERENCE_REQUIRED');
     console.log('MAB_HTTP_ASSET_BACKLINK_DENIED '+kind+' dangling-ref + no-source-ref refused');
     continue;

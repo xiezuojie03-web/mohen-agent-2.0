@@ -24,7 +24,10 @@ it('materials uses only the server Agent context and ignores caller self-grants'
  const context={purpose:{namespace:'G5',code:'server-only',version:'1'},scope:{project:'server-project',requested_action:'read'}};
  vi.stubEnv('MOHEN_PUBLIC_AGENT_QUALIFICATION_CONTEXT',JSON.stringify({consumer:'agent',...context}));
  await POST(new Request('http://localhost/api/mohen/materials',{method:'POST',body:JSON.stringify({terms:['桥市'],qualification:{consumer:'agent',scope:{project:'attacker'}}})}));
- expect(mocks.retrieve).toHaveBeenCalledWith(['桥市'],12,{qualification:{consumer:'agent',...context}});
+ // 服务端上下文仍然是唯一依据；动作名以唯一权利词典归一（read → access_view），
+ // 因为 G5 审计里签的消费方动作就是 access_view，字面不等会被判成未授权。
+ expect(mocks.retrieve).toHaveBeenCalledWith(['桥市'],12,{qualification:{consumer:'agent',...context,
+  scope:{...context.scope,requested_action:'access_view'}}});
  vi.unstubAllEnvs();
 });
 it('does not use a server context for another rights operation',async()=>{
