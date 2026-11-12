@@ -28,14 +28,33 @@ try {
     if not exists(select from pg_roles where rolname='service_role') then create role service_role nologin; end if;
   end $$`);
   const migrations=path.join(root,'supabase/migrations');
-  const names=['202610070100_data_production_v2_baseline.sql',...fs.readdirSync(migrations).filter(n=>n>='202610160300'&&n<='202610292100_imported_materials.sql'&&!n.startsWith('202610160400')),
-    '202610310900_k3_security_boundary.sql','202610310910_k3_gate_candidates.sql','202611010900_k3_independent_gate_authority.sql',fs.readdirSync(migrations).find(n=>n.endsWith('_mab_studio_assets.sql')),'20261104013351_mab_m4_execution_controls.sql'];
+  const studioMigration=fs.readdirSync(migrations).find(n=>n.endsWith('_mab_studio_assets.sql'));
+  if(!studioMigration)throw Error('ISOLATED_MIGRATION_NOT_FOUND:_mab_studio_assets.sql');
+  // 顺序与 scripts/test-k3-db.mjs 一致。两份隔离执行器曾各持一份手写清单，新迁移只登记进
+  // DB 链、没登记进 HTTP 链，隔离库里就缺 studio.resolve_asset_references、来源权利动作列、
+  // D00 台账表等对象，产品页面与写接口在 CI 里假红：那是隔离夹具缺口，不是产品缺陷。
+  // guard:isolated-db-fixtures 的 D3 现在会强制本清单与 supabase/migrations 目录同步，
+  // 新增迁移必须同时登记两处。
+  // ST-02 需要的私有原件元数据表（不创建任何 bucket）随 studio 组一起落库。
+  const names=['202610070100_data_production_v2_baseline.sql',
+    ...fs.readdirSync(migrations).filter(n=>n>='202610160300'&&n<='202610292100_imported_materials.sql'&&!n.startsWith('202610160400')),
+    '202610310900_k3_security_boundary.sql','202610310910_k3_gate_candidates.sql','202611010900_k3_independent_gate_authority.sql',
+    '202611020900_kad1_watch_revision_isolation.sql','202611020910_kad1_consumption_blocks.sql','202611020920_kad1_account_transactions.sql',
+    studioMigration,'20261108090000_director_plans_source_ids.sql','20261108100000_mab_m5_director_plan_project_binding.sql',
+    '20261102140000_mab_m2_private_originals.sql','20261109130000_mab_cp2f_asset_backlink.sql',
+    '20261104013351_mab_m4_execution_controls.sql',
+    '20261102145410_mab_m2_evidence_bridge.sql','20261103143451_mab_m2_private_text_reading.sql','20261103234154_mab_m3_gate_service_auth.sql',
+    '20261105110000_mab_m5_studio_research_read.sql','20261107120000_mab_m2_private_scanned_page.sql',
+    '20261107160000_mab_m2_1_producer_run_progress.sql','20261107200000_mab_m5_d02_d05_private_candidates.sql',
+    '20261107210000_mab_m3_private_gate_candidate_submission.sql','20261107211000_mab_m3_local_owner_gate_signer.sql',
+    '20261107220000_mab_m5_machine_rule_reviewer.sql','20261107230000_mab_m2_private_source_registration_source_revision.sql',
+    '20261107240000_mab_m5_claim_revision_artifact_read_policy.sql','20261108110000_mab_m5_source_rights_actions.sql',
+    '20261109120000_mab_m5_artifact_content_revision.sql','20261110100000_mab_gate_audits_rls.sql',
+    '20261110110000_mab_d00c_source_discovery_ledger.sql','20261110120000_mab_d00c4_remaining_stages.sql',
+    '20261110150000_mab_d00c5_method_revalidation.sql','20261110160000_mab_d00_y04_original_provider_trace.sql',
+    '20261110130000_mab_original_media_assets.sql','20261110140000_mab_d00_y02_registration_locator.sql'];
+  if(process.env.MOHEN_REVOCABLE_SESSIONS_ENABLED==='true')names.push('20261103095024_mab_web_session_revocation.sql');
   for(const name of names)execFileSync(psql,[...base,'-d',database,'-f',path.join(migrations,name)],{stdio:['ignore','pipe','pipe']});
-  // ST-02 needs the existing private-original metadata table even when no
-  // Storage service is configured. This migration does not create buckets.
-  execFileSync(psql,[...base,'-d',database,'-f',path.join(migrations,'20261102140000_mab_m2_private_originals.sql')],{stdio:['ignore','pipe','pipe']});
-  if(process.env.MOHEN_REVOCABLE_SESSIONS_ENABLED==='true')
-    execFileSync(psql,[...base,'-d',database,'-f',path.join(migrations,'20261103095024_mab_web_session_revocation.sql')],{stdio:['ignore','pipe','pipe']});
   if(process.env.MOHEN_TEST_STORAGE_CONFIG){
     storageConfig=JSON.parse(fs.readFileSync(process.env.MOHEN_TEST_STORAGE_CONFIG,'utf8'));
     const httpsOrigin=new URL(storageConfig.httpsOrigin),httpOrigin=new URL(storageConfig.origin);

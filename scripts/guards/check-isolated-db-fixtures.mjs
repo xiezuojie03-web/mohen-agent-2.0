@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 // Static preflight for the isolated-database test chain (no database required).
 //
-// D1 — every migration must be reachable from scripts/test-k3-db.mjs. The chain applies an
-//      explicit, hand-maintained list, so a migration that is authored but never registered
-//      silently leaves functions/tables missing in the isolated database. Unchained files must
-//      be declared below with a reason instead of being forgotten.
+// D1 — every migration must be reachable from BOTH isolated chains
+//      (scripts/test-k3-db.mjs and scripts/test-mab-http.mjs). Each chain applies an explicit,
+//      hand-maintained list, so a migration that is authored but never registered silently
+//      leaves functions/tables missing in the isolated database. That happened for real: the
+//      HTTP chain lagged behind the DB chain, so product pages and write APIs failed in CI
+//      against a schema that was simply missing objects. Unchained files must be declared
+//      below with a reason instead of being forgotten.
 // D2 — literal values written by fixtures into CHECK (column IN (...)) columns must be legal.
 //      Inserts inside an expected-rejection assertion are skipped on purpose.
 import fs from "node:fs";
@@ -12,7 +15,7 @@ import path from "node:path";
 
 const root = path.resolve(import.meta.dirname, "../..");
 const migrationsDir = path.join(root, "supabase/migrations");
-const chainFile = path.join(root, "scripts/test-k3-db.mjs");
+const chainFiles = ["scripts/test-k3-db.mjs", "scripts/test-mab-http.mjs"];
 
 // Recorded debt: a migration listed here is known not to be applied by the isolated chain.
 // Adding an entry requires a reason; a stale entry (file now chained, or deleted) fails too.
@@ -25,10 +28,10 @@ const UNCHAINED = new Map([
     "202610050011_second_promotion_gate.sql", "202610070200_legacy_v1_to_v2_backfill.sql"].map(f => [f, LEGACY_SUPERSEDED]),
 ]);
 
-const chainSource = fs.readFileSync(chainFile, "utf8");
+const chains = chainFiles.map(file => ({ file, source: fs.readFileSync(path.join(root, file), "utf8") }));
 const allMigrations = fs.readdirSync(migrationsDir).filter(n => n.endsWith(".sql") && !n.endsWith(".rollback.sql")).sort();
 
-function referencedByChain(file) {
+function referencedByChain(chainSource, file) {
   if (chainSource.includes(file)) return true;
   for (const suffix of chainSource.matchAll(/endsWith\(\s*["']([^"']+)["']\s*\)/g)) {
     if (file.endsWith(suffix[1])) return true;
@@ -38,7 +41,13 @@ function referencedByChain(file) {
   return false;
 }
 
-const missing = allMigrations.filter(f => !referencedByChain(f) && !UNCHAINED.has(f));
+const missing = [];
+for (const chain of chains) {
+  for (const file of allMigrations) {
+    if (UNCHAINED.has(file) || referencedByChain(chain.source, file)) continue;
+    missing.push({ chain: chain.file, file });
+  }
+}
 const violations = [];
 
 // ---- D2: CHECK (column IN (...)) value preflight -------------------------------------------
@@ -46,7 +55,7 @@ const checks = new Map(); // "table|column" and "schema.table|column" -> Set(all
 const createOrAlter = /create\s+table\s+(?:if\s+not\s+exists\s+)?([\w.]+)|alter\s+table\s+(?:only\s+)?([\w.]+)/gi;
 const checkIn = /check\s*\(\s*([a-z_][\w]*)\s*(?:in\s*\(([^)]*)\)|=\s*any\s*\(\s*array\s*\[([^\]]*)\]\s*\)\s*\))/gi;
 // Only migrations the chain actually applies describe the isolated database.
-const appliedMigrations = allMigrations.filter(referencedByChain);
+const appliedMigrations = allMigrations.filter(file => chains.some(c => referencedByChain(c.source, file)));
 
 for (const file of appliedMigrations) {
   const text = fs.readFileSync(path.join(migrationsDir, file), "utf8");
@@ -122,7 +131,7 @@ for (const rel of testFiles) {
   }
 }
 
-for (const file of missing) violations.push(`supabase/migrations/${file} 未被隔离链应用，也未在 UNCHAINED 中登记原因`);
+for (const { chain, file } of missing) violations.push(`supabase/migrations/${file} 未被隔离链 ${chain} 应用，也未在 UNCHAINED 中登记原因`);
 for (const [file, reason] of UNCHAINED) if (!allMigrations.includes(file)) violations.push(`UNCHAINED 登记的 ${file} 已不存在（${reason}）`);
 
 if (violations.length) {
