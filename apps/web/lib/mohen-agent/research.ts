@@ -11,7 +11,8 @@ import {
   type Material,
 } from "@mohen/agent-runtime";
 import { retrieveMaterials } from "./retrieve";
-import { searchShanghaiLibrary, extractExternalEntities, type ShlLead } from "./retrieve-shl";
+import { extractExternalEntities, type ShlMaterial } from "./retrieve-shl";
+import { discoverExternalSources } from "./source-discovery";
 import { useTool, type Ledger } from "../studio/tool-ledger";
 import {requireResearchPrerequisites, ResearchPrerequisiteHold} from './research-prerequisites';
 
@@ -106,14 +107,15 @@ export function resolveTopic(topic: unknown): TopicKey {
 }
 
 /** 外部线索 → 材料（epistemic 固定 RESEARCH_LEAD，不得冒充合格知识） */
-function toExternalMaterial(lead: ShlLead): Material {
-  const yearMatch = lead.summary.match(/(1\d{3}|2\d{3})/);
+function toExternalMaterial(lead: ShlMaterial): Material {
+  const text = lead.fragments.join(" ");
+  const yearMatch = text.match(/(1\d{3}|2\d{3})/);
   return {
-    id: `shl:${lead.uri ?? `${lead.endpoint}:${lead.title}`}`,
+    id: `${lead.provider}:${lead.url || lead.title}`,
     kind: "evidence",
     entityIds: [],
-    snippet: lead.summary,
-    sourceRef: `上海图书馆开放数据（外部检索线索）· ${lead.title}`,
+    snippet: lead.fragments.slice(0, 2).join(" · ") || lead.title,
+    sourceRef: `${lead.publisher || lead.provider}（外部检索线索）· ${lead.title}`,
     epistemic: "RESEARCH_LEAD",
     year: yearMatch ? Number(yearMatch[1]) : null,
     score: 0.4,
@@ -150,15 +152,16 @@ export async function runResearch(
     degraded = retry.degraded;
   }
 
-  // 外部找资料（系统之外）：先抽具体实体名（LLM，优先），再叠加通用词检索上海图书馆；结果只作「检索线索」。
+  // 外部找资料（D00 来源发现 Y02/Y03）：先抽具体实体名（LLM，优先），
+  // 再按查询梯子多渠道检索（上海图书馆 / Commons / 国会图书馆 / 维基文库）；
+  // 结果只作「检索线索」，不是合格知识，也不冒充原件。
   const externalEntities = await useTool(ledger, "llm-extract-entities", () =>
     extractExternalEntities(question)
   );
-  const externalTerms = dedupe([...externalEntities, ...effectiveTerms]).slice(0, 5);
-  const { leads, degraded: externalDegraded } = await useTool(ledger, "retrieve-shl", () =>
-    searchShanghaiLibrary(externalTerms, 6)
+  const discovery = await useTool(ledger, "retrieve-external", () =>
+    discoverExternalSources(question, { localMaterialCount: materials.length, entities: externalEntities })
   );
-  const externalMaterials = leads.map(toExternalMaterial);
+  const externalMaterials = discovery.leads.map(toExternalMaterial);
   materials = [...materials, ...externalMaterials];
 
   let materialsForDecision = materials;
@@ -173,6 +176,10 @@ export async function runResearch(
   const decision = applyRiskGuards(topic, question, baseDecision);
   const finalGaps = [...decision.gaps];
   if (degraded) finalGaps.push("暂时查不到库里的材料");
-  if (externalDegraded) finalGaps.push("外部资料检索（上海图书馆）当前不可用");
-  return { decision: { ...decision, gaps: finalGaps }, degraded: degraded || externalDegraded, researchLeads: externalMaterials };
+  // 外部渠道的缺口逐个如实列出：单渠道不可用不再整体中断研究，
+  // 但"四个渠道都没有线索"必须显式说出，不能当作"没有资料"。
+  for (const gap of discovery.gaps) {
+    if (!finalGaps.includes(gap)) finalGaps.push(gap);
+  }
+  return { decision: { ...decision, gaps: finalGaps }, degraded, researchLeads: externalMaterials };
 }

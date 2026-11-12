@@ -26,6 +26,9 @@ export const TOOL_REGISTRY: Record<string, ToolSpec> = {
   "llm-understand": { toolId: "llm-understand", capability: "意图理解", cost: 1, trustTier: "llm", idempotent: true },
   "retrieve-local": { toolId: "retrieve-local", capability: "本地合格知识检索", cost: 0, trustTier: "deterministic", idempotent: true },
   "retrieve-shl": { toolId: "retrieve-shl", capability: "上海图书馆开放数据检索", cost: 1, trustTier: "external", idempotent: true },
+  // D00 来源发现（Y02 机构集合与多渠道来源发现）：一次发现动作覆盖多个渠道，
+  // 与单源检索等价计费，不因渠道数增加而放大预算。
+  "retrieve-external": { toolId: "retrieve-external", capability: "多渠道来源发现（Y02/Y03）", cost: 1, trustTier: "external", idempotent: true },
   "llm-extract-entities": { toolId: "llm-extract-entities", capability: "外部检索实体名抽取", cost: 1, trustTier: "llm", idempotent: true },
   "llm-polish": { toolId: "llm-polish", capability: "措辞润色", cost: 1, trustTier: "llm", idempotent: true },
   "production-run": { toolId: "production-run", capability: "D阶段生产（D00-D05）", cost: 5, trustTier: "production", idempotent: false },
