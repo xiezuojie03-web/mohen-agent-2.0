@@ -129,7 +129,9 @@ try {
       // D00-Y04：聚合目录原机构回溯（OriginalProviderTrace + provenance 链）的追加式落点；
       // extent/missing_parts 归 Y08 的注释更正也随这一支。
       "20261110160000_mab_d00_y04_original_provider_trace.sql",
-      "20261110130000_mab_original_media_assets.sql"]) apply(file);
+      "20261110130000_mab_original_media_assets.sql",
+      // D00-Y02：登记读取通道补出馆方目录号/来源状态/载体可得性三键，供 Y02 资源目录条目引用。
+      "20261110140000_mab_d00_y02_registration_locator.sql"]) apply(file);
     // Capability assertions for the migrations applied immediately above. They can only run at
     // this point in the chain: the rights columns, the private worker, the machine reviewer and
     // the content-based sign_gate_candidate semantics do not exist any earlier.
