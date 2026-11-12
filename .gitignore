@@ -3,6 +3,7 @@ node_modules/
 dist/
 coverage/
 playwright-report/
+tasks/results/dashboard.json
 test-results/
 .env
 .env.local

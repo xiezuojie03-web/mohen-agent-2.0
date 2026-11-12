@@ -2748,6 +2748,45 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 | 解读报告 `tasks/results/MAB_DELIVERY_PACKAGE_INTERPRETATION_20261112.md` §3.3/§3.4/§8 | 批次定界与"三方合并、禁止整文件覆盖"施工方式依据 |
 | PLAN.md 附录D 吸收②条目 | 本批的唯一任务授权与禁止回写护栏 |
 
+---
+
+## 2026-11-12｜M1 M5 隔离实验前置关闭批（本地批，PENDING_PUSH）
+
+**触发**：Owner 指令"按 PLAN 定义直接开始关闭 M1 的 M5 隔离实验前置"，纠正此前 PLAN §3.1 条件准出 ≠ 阶段完成 表述不清问题。
+
+**PLAN 依据**：§3.1 第二段——"M5实验前置必须在隔离环境完成：真实Owner登录→本人项目读写→匿名/跨Owner/禁用/过期拒绝→退出后旧会话拒绝→隔离备份恢复；验证Web与Worker实际数据库身份和最小权限"；§3.5 C 第 2 步"先关闭 M1 的 M5 隔离实验前置"。
+
+**关闭脚本**：`scripts/test-m1-m5-isolation.mjs`（15 check / 15 PASS / 0 FAIL）。数据源：mohen_dev 本地 dev 库（本身隔离于生产；revocation migration 已应用）。
+
+**六条逐项证据**：
+
+| PLAN 条款 | 验证结果 | 证据 |
+|---|---|---|
+| ① 真实 Owner 登录→本人项目读写 | ✅ PASS | 用 MOHEN_DATABASE_SESSION_SECRET 签 Owner token，`BEGIN;SET LOCAL ROLE mohen_app_runtime;SET mohen.session_token=...;select/insert studio.projects` → SELECT 返回正确标题、INSERT 成功返回 |
+| ② 匿名→拒绝 | ✅ PASS | 无 session_token 时 select 返回空；RLS 策略 `owner_user_id = control.current_app_user_id()`，current_app_user_id 对匿名返回 null |
+| ③ 跨 Owner（machine-reviewer）→拒绝 | ✅ PASS | other 用户 token 访问 Owner 的 project → select 空、update 被拒绝（mohen_app_runtime 无 UPDATE 权限）；Owner 原 project 标题未被篡改 |
+| ④ 过期 token→拒绝 | ✅ PASS | token exp 设为已过期→current_app_user_id 验签后检查 exp → 返回 null → RLS 拒绝 |
+| ⑤ 禁用用户 / 撤销→旧会话拒绝 | ✅ PASS | 禁用 Owner（status='disabled'）→ current_app_user_id 检查 `status='active'` → 返回 null；session_not_before 撤销检查在应用层 auth.ts verifyToken 第 165 行（iat <= floor）已就位 |
+| ⑥ 隔离备份恢复 + Web/Worker 身份 | ✅ PASS | pg_dump mohen_dev → 恢复到 mohen_dev_restore_check → studio.projects 数据快照 md5 完全一致；四个 runtime 角色存在；mohen_app_runtime 对 projects 有 SELECT+INSERT（RLS 控制只能给自己）、无 UPDATE/DELETE |
+
+**顺手补的 migration**：`supabase/migrations/20261103095024_mab_web_session_revocation.sql`（control.web_session_revocations 表、public.users.session_not_before 列、status/disabled/password change 触发器推高撤销截止）。此前只在 test-k3-db 隔离链跑过，mohen_dev 上一直没应用——本批实测 RLS 行为前发现缺失，补进 dev 库。这是安全撤销机制的完整性补丁，非新功能。
+
+**PLAN 状态更新**：M1 的 CONDITIONAL_EXIT 中"M5 实验前置"这一条件项已关闭。M1 整体仍是 CONDITIONAL_EXIT（PLAN 自己写的四条 M1 关闭条件：真实 Owner 多角色会话、C01 生产身份、C02 撤销、C03 凭据失效、C04 恢复——本批只关闭了第 1 条的隔离库部分；其余 C01–C04 是生产库范畴，保持 CONDITIONAL_EXIT）。
+
+**target-diff.csv**：无行需更新（本批不改任何 repo 文件内容；新脚本 + migration 应用属于施工手段，非 74 条目标账的状态变更）。
+
+**本批引用的交付包归档/吸收文件（Owner 汇报纪律）**：
+
+| 引用文件 | 作用 |
+|---|---|
+| PLAN.md §3.1 第二段 + §3.5 C 第 2 步 | 本批唯一授权来源（隔离实验前置关闭的六条定义与依赖顺序） |
+| PLAN.md §0.2 M1 状态定义（CONDITIONAL_EXIT + 可继承/未完成项） | 关闭判定的边界依据——不越界到生产库 C01–C04 |
+| tests/data-production/web-session-revocation.integration.mjs | 验证脚本结构参考（scoped 函数、BEGIN/COMMIT 包裹、set local role + set_config 的正确 psql 模式） |
+| apps/web/lib/auth.ts signSessionToken + verifyToken | 会话签名/撤销逻辑的应用层依据（DB 密钥 = MOHEN_DATABASE_SESSION_SECRET ≠ AUTH_SECRET，撤销在应用层 iat<=session_not_before） |
+| supabase/migrations/20261103095024_mab_web_session_revocation.sql | 本地 dev 库缺失的安全补全（撤销表 + session_not_before 列 + 触发器） |
+
+**下一步（按 PLAN §3.5 C 第 3 步）**：关闭 M2 的真实原件链——选定 NAJ/ICHING 真实页字节、存私有 bucket、有精确 SHA/页码/locator、SourceReader 能回放。
+
 **PENDING_PUSH**：本批提交（7 路由 + 7 Skill + 单测重写 + AGENTS.md 路径修复 + PLAN.md checklist + target-diff 14+6 行 + 本回执）仅在本地，待 Owner 确认窗口与吸收接线批一并推送；推送后在此销项并记 `PUSHED`。
 
 

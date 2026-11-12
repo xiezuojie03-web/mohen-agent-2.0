@@ -16,6 +16,7 @@
     "test:e2e": "playwright test",
     "guard:docs": "node scripts/check-doc-budget.mjs",
     "guard:dev-skill": "node scripts/guards/check-dev-skill-layout.mjs",
+    "build:dashboard": "node scripts/build-dashboard.mjs",
     "dev-skill:doctor": "node scripts/dev-skills/continuation.mjs doctor --json",
     "dev-skill:verify": "node scripts/dev-skills/continuation.mjs verify --profile static --json",
     "test:dev-skill": "node --test tests/dev-skills/continuation.test.mjs",

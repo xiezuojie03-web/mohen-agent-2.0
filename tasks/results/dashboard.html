@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>墨痕 MAB 施工进度仪表盘</title>
+<style>
+  :root {
+    --surface: #ffffff; --surface-muted: #f6f7f9; --surface-soft: #eef0f4;
+    --text: #1f2430; --text-muted: #5a6274; --text-faint: #9aa2b3;
+    --border: #e4e7ec; --border-strong: #c6cad4;
+    --brand: #2a7d4f; --brand-soft: #d7ebdd; --brand-text: #1a5c3a;
+    --warn: #c98b28; --warn-soft: #f7e6c8;
+    --danger: #b93e3e; --danger-soft: #f6d3d3;
+    --info: #2d5f8c; --info-soft: #d3e3f3;
+    --radius: 10px; --shadow: 0 1px 3px rgba(16,24,40,.06), 0 1px 2px rgba(16,24,40,.04);
+  }
+  :root[data-widget-theme="dark"] {
+    --surface: #1a1d26; --surface-muted: #222631; --surface-soft: #2b303c;
+    --text: #e5e8ef; --text-muted: #a4abbd; --text-faint: #6a7184;
+    --border: #2f3442; --border-strong: #3d4455;
+    --brand: #4dbf80; --brand-soft: #1a3d2a; --brand-text: #8ee0b0;
+    --warn: #e8a84b; --warn-soft: #4a3612;
+    --danger: #e36464; --danger-soft: #3d1a1a;
+    --info: #6aa0cf; --info-soft: #16344f;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--surface-muted); color: var(--text); font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 14px; line-height: 1.5; }
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 16px 24px; position: sticky; top: 0; z-index: 10; }
+  header .title { font-size: 18px; font-weight: 600; }
+  header .sub { color: var(--text-muted); font-size: 12px; margin-top: 4px; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px 24px 60px; }
+  .grid { display: grid; gap: 16px; }
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 20px; }
+  .card h2 { margin: 0 0 14px 0; font-size: 15px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .card h2 .tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: var(--surface-soft); color: var(--text-muted); font-weight: 500; }
+  .summary-tile { display: flex; flex-direction: column; gap: 4px; }
+  .summary-tile .num { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .summary-tile .lbl { color: var(--text-muted); font-size: 12px; }
+  .summary-tile.ok .num { color: var(--brand); }
+  .summary-tile.warn .num { color: var(--warn); }
+  .summary-tile.danger .num { color: var(--danger); }
+  .summary-tile.info .num { color: var(--info); }
+  .summary-tile.soft { opacity: .85; }
+  section.heatmap table { border-collapse: separate; border-spacing: 2px; width: 100%; font-size: 12px; }
+  section.heatmap th, section.heatmap td { padding: 6px 8px; text-align: center; border-radius: 4px; min-width: 64px; }
+  section.heatmap th { color: var(--text-muted); font-weight: 500; }
+  section.heatmap td.cell { position: relative; cursor: default; }
+  section.heatmap td.cell.empty { background: var(--surface-soft); color: var(--text-faint); }
+  section.heatmap td.cell.zone { background: var(--surface-soft); color: var(--text-muted); font-weight: 600; text-align: left; }
+  .cell-bg-0 { background: var(--surface-soft); color: var(--text-faint); }
+  .cell-bg-1 { background: var(--danger-soft); color: var(--danger); }
+  .cell-bg-2 { background: var(--warn-soft); color: var(--warn); }
+  .cell-bg-3 { background: var(--info-soft); color: var(--info); }
+  .cell-bg-4 { background: var(--brand-soft); color: var(--brand-text); }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .bar-row .label { width: 140px; color: var(--text-muted); font-size: 12px; flex-shrink: 0; }
+  .bar-row .bar { flex: 1; height: 14px; background: var(--surface-soft); border-radius: 7px; overflow: hidden; display: flex; }
+  .bar-row .bar > div { height: 100%; }
+  .bar-row .bar .b-changed { background: var(--info); }
+  .bar-row .bar .b-absent { background: var(--danger); }
+  .bar-row .bar .b-unchanged { background: var(--warn); }
+  .bar-row .bar .b-match { background: var(--brand); }
+  .bar-row .counts { width: 120px; text-align: right; font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
+  table.simple { width: 100%; border-collapse: collapse; font-size: 12px; }
+  table.simple th { text-align: left; color: var(--text-muted); font-weight: 500; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  table.simple td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--text); }
+  table.simple tr:last-child td { border-bottom: none; }
+  .badge { font-size: 11px; padding: 2px 7px; border-radius: 9px; font-weight: 500; }
+  .badge.absent { background: var(--danger-soft); color: var(--danger); }
+  .badge.unchanged { background: var(--warn-soft); color: var(--warn); }
+  .badge.changed { background: var(--info-soft); color: var(--info); }
+  .badge.match { background: var(--brand-soft); color: var(--brand-text); }
+  .badge.code { font-family: "JetBrains Mono", Consolas, monospace; font-size: 11px; padding: 2px 6px; background: var(--surface-soft); color: var(--text-muted); }
+  .bar-legend { display: flex; gap: 14px; font-size: 11px; color: var(--text-muted); margin-bottom: 10px; flex-wrap: wrap; }
+  .bar-legend span { display: inline-flex; align-items: center; gap: 4px; }
+  .bar-legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .bar-legend i.b-changed { background: var(--info); }
+  .bar-legend i.b-absent { background: var(--danger); }
+  .bar-legend i.b-unchanged { background: var(--warn); }
+  .bar-legend i.b-match { background: var(--brand); }
+  details { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 6px; background: var(--surface-muted); }
+  details summary { cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text); padding: 2px 0; }
+  details table { margin-top: 10px; }
+  .pending-commit { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--border); font-size: 12px; }
+  .pending-commit:last-child { border-bottom: none; }
+  .pending-commit .sha { font-family: "JetBrains Mono", Consolas, monospace; color: var(--text-faint); width: 56px; flex-shrink: 0; }
+  footer { padding: 30px 24px; text-align: center; color: var(--text-faint); font-size: 11px; }
+  footer code { font-family: "JetBrains Mono", Consolas, monospace; }
+  @media (max-width: 760px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } .bar-row .label { width: 90px; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="title">墨痕 MAB 施工进度</div>
+  <div class="sub" id="meta-line">加载中……</div>
+</header>
+<div class="container" id="root">
+  <div class="grid grid-3" id="summary-grid"></div>
+
+  <div class="grid grid-2" style="margin-top:16px">
+    <section class="card">
+      <h2>按阶段推进（M0–M8 批次）<span class="tag">progress</span></h2>
+      <div class="bar-legend">
+        <span><i class="b-match"></i>已达目标</span>
+        <span><i class="b-changed"></i>已改</span>
+        <span><i class="b-unchanged"></i>基线未动</span>
+        <span><i class="b-absent"></i>缺失</span>
+      </div>
+      <div id="batch-bars"></div>
+    </section>
+    <section class="card">
+      <h2>按 MHKA 六章分布<span class="tag">authority</span></h2>
+      <div id="auth-bars"></div>
+    </section>
+  </div>
+
+  <section class="card heatmap" style="margin-top:16px">
+    <h2>阶段 × 架构 热力图（格子颜色越深=越靠后）<span class="tag">交叉矩阵</span></h2>
+    <div id="heatmap"></div>
+  </section>
+
+  <div class="grid grid-2" style="margin-top:16px">
+    <section class="card">
+      <h2>按目录缺口排行（ABSENT + 未达目标）<span class="tag">gaps</span></h2>
+      <table class="simple" id="gap-table"></table>
+    </section>
+    <section class="card">
+      <h2>21 个完全缺失的文件<span class="tag">ABSENT</span></h2>
+      <details open>
+        <summary>点击折叠清单</summary>
+        <table class="simple" id="absent-table"></table>
+      </details>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:16px">
+    <h2>本地领先待推送提交<span class="tag">PENDING_PUSH</span></h2>
+    <div id="pending-commits"></div>
+  </section>
+
+  <section class="card" style="margin-top:16px">
+    <h2>Plan checklist 销项<span class="tag">PLAN.md</span></h2>
+    <div id="plan-progress"></div>
+  </section>
+</div>
+<footer>由 <code>scripts/build-dashboard.mjs</code> 生成 · 数据源：target-diff.csv + git log + PLAN.md · 刷新即重跑脚本</footer>
+
+<script>
+const TOKEN = "dashboard.json";
+async function load() {
+  const base = new URL(".", location.href);
+  const json = await fetch(new URL(TOKEN, base)).then(r => r.json()).catch(() => null);
+  if (!json) { document.getElementById("root").innerHTML = "<div style='padding:40px;text-align:center;color:var(--danger)'>无法加载 dashboard.json，请在 tasks/results 目录运行</div>"; return; }
+  render(json);
+}
+
+function render(d) {
+  document.getElementById("meta-line").textContent =
+    `生成时间 ${d.meta.buildAt.replace("T"," ").slice(0,19)} · HEAD ${d.meta.headSha} · origin/main ${d.meta.originMain || "未同步"} · 路径 ${d.meta.repoPath}`;
+
+  // summary
+  const s = d.summary;
+  const tiles = [
+    { cls: "info", num: s.totalRows, lbl: "交付包目标总数" },
+    { cls: "soft", num: s.matchTargetCount, lbl: "已达交付包目标 (9%)" },
+    { cls: "", num: s.changedCount, lbl: "已开工 (CHANGED)" },
+    { cls: "warn", num: s.unchangedCount, lbl: "基线未动" },
+    { cls: "danger", num: s.absentCount, lbl: "完全缺失 (ABSENT)" },
+    { cls: "info", num: `${s.checklistsDone}/${s.checklistsTotal}`, lbl: "PLAN checklist 销项" },
+    { cls: "danger", num: s.aheadLocalCommits, lbl: "本地领先提交 (PENDING_PUSH)" },
+  ];
+  document.getElementById("summary-grid").innerHTML = tiles.map(t =>
+    `<div class="card summary-tile ${t.cls}"><div class="num">${t.num}</div><div class="lbl">${t.lbl}</div></div>`
+  ).join("");
+
+  // batch bars
+  document.getElementById("batch-bars").innerHTML = d.byBatch.map(b => {
+    const t = b.total || 1;
+    const html = `<div class="bar-row"><div class="label">${b.label}</div><div class="bar">
+      <div class="b-match" style="width:${(b.matchTarget/t*100).toFixed(0)}%"></div>
+      <div class="b-changed" style="width:${((b.changed-b.matchTarget)/t*100).toFixed(0)}%"></div>
+      <div class="b-unchanged" style="width:${(b.unchanged/t*100).toFixed(0)}%"></div>
+      <div class="b-absent" style="width:${(b.absent/t*100).toFixed(0)}%"></div>
+    </div><div class="counts">${b.matchTarget}/${b.changed}/${b.unchanged}/${b.absent} = ${b.total}</div></div>`;
+    return html;
+  }).join("");
+
+  // authority bars
+  document.getElementById("auth-bars").innerHTML = d.byAuthority.map(b => {
+    const t = b.total || 1;
+    return `<div class="bar-row"><div class="label">${b.label}</div><div class="bar">
+      <div class="b-match" style="width:${(b.matchTarget/t*100).toFixed(0)}%"></div>
+      <div class="b-changed" style="width:${((b.changed-b.matchTarget)/t*100).toFixed(0)}%"></div>
+      <div class="b-unchanged" style="width:${(b.unchanged/t*100).toFixed(0)}%"></div>
+      <div class="b-absent" style="width:${(b.absent/t*100).toFixed(0)}%"></div>
+    </div><div class="counts">${b.matchTarget}/${b.changed}/${b.unchanged}/${b.absent} = ${b.total}</div></div>`;
+  }).join("");
+
+  // heatmap
+  const batches = d.byBatchAuth.reduce((acc, r) => { if (!acc.includes(r.batch)) acc.push(r.batch); return acc; }, []);
+  const auths = d.byBatchAuth.reduce((acc, r) => { if (!acc.includes(r.auth)) acc.push(r.auth); return acc; }, []);
+  const labelMapB = Object.fromEntries(d.byBatch.map(b => [b.batch, b.label]));
+  const labelMapA = Object.fromEntries(d.byAuthority.map(a => [a.authority, a.label]));
+  const dict = Object.fromEntries(d.byBatchAuth.map(r => [`${r.batch}|${r.auth}`, r]));
+  function score(cell) {
+    if (!cell || cell.total === 0) return 0;
+    if (cell.matchTarget > 0) return 4;
+    if (cell.changed - cell.matchTarget > 0) return 3;
+    if (cell.unchanged > 0) return 2;
+    if (cell.absent > 0) return 1;
+    return 0;
+  }
+  const th = `<tr><th></th>${auths.map(a => `<th>${labelMapA[a] || a}</th>`).join("")}</tr>`;
+  const tbody = batches.map(b => {
+    const cells = auths.map(a => {
+      const cell = dict[`${b}|${a}`];
+      const sc = score(cell);
+      if (!cell) return `<td class="cell empty">—</td>`;
+      const title = `${labelMapB[b]} × ${labelMapA[a]}：${cell.matchTarget}达标 / ${cell.changed}改 / ${cell.unchanged}未动 / ${cell.absent}缺 (${cell.total})`;
+      return `<td class="cell cell-bg-${sc}" title="${title}">${cell.matchTarget}/${cell.changed}/${cell.absent}</td>`;
+    }).join("");
+    return `<tr><td class="cell zone">${labelMapB[b] || b}</td>${cells}</tr>`;
+  }).join("");
+  document.getElementById("heatmap").innerHTML = `<table>${th}${tbody}</table>`;
+
+  // gap dirs
+  document.getElementById("gap-table").innerHTML = d.gapDirs.map(g =>
+    `<tr><td><span class="badge code">${g.dir}</span></td><td>${g.total}</td><td>${g.gap}</td><td>${Math.round(g.gap/g.total*100)}%</td></tr>`
+  ).join("") || `<tr><td colspan="4" style="color:var(--text-faint)">无缺口</td></tr>`;
+  const gapHead = `<tr><th>目录</th><th>总数</th><th>缺口</th><th>缺口率</th></tr>`;
+  document.getElementById("gap-table").innerHTML = gapHead + document.getElementById("gap-table").innerHTML;
+
+  // absent files
+  document.getElementById("absent-table").innerHTML = d.absentFiles.map(a =>
+    `<tr><td><span class="badge absent">ABSENT</span></td><td><span class="badge code">${a.path}</span></td><td>${a.batch}</td><td>${a.authority}</td></tr>`
+  ).join("") || `<tr><td colspan="4" style="color:var(--brand)">全部就位</td></tr>`;
+  const abHead = `<tr><th>状态</th><th>路径</th><th>批次</th><th>权威</th></tr>`;
+  document.getElementById("absent-table").innerHTML = abHead + document.getElementById("absent-table").innerHTML;
+
+  // pending commits
+  if (d.pendingCommits && d.pendingCommits.length) {
+    document.getElementById("pending-commits").innerHTML = d.pendingCommits.map(c =>
+      `<div class="pending-commit"><span class="sha">${c.sha}</span><span>${c.subject}</span></div>`
+    ).join("");
+  } else {
+    document.getElementById("pending-commits").innerHTML = `<div style="color:var(--text-faint);padding:8px 0">本地与 origin/main 无领先提交（或 origin/main 尚未同步）。请先 <code>git fetch origin main</code> 再重跑脚本。</div>`;
+  }
+
+  // plan progress
+  const pct = d.summary.checklistsTotal ? Math.round(d.summary.checklistsDone / d.summary.checklistsTotal * 100) : 0;
+  document.getElementById("plan-progress").innerHTML =
+    `<div class="bar-row"><div class="label">Plan checklist</div><div class="bar"><div class="b-match" style="width:${pct}%"></div></div><div class="counts">${d.summary.checklistsDone}/${d.summary.checklistsTotal} (${pct}%)</div></div>`;
+}
+
+// 自动适配主题
+(function autoTheme() {
+  const root = document.documentElement;
+  const setTheme = () => {
+    const mq = matchMedia("(prefers-color-scheme: dark)").matches;
+    root.setAttribute("data-widget-theme", mq ? "dark" : "light");
+  };
+  setTheme();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", setTheme);
+})();
+
+load();
+</script>
+</body>
+</html>
