@@ -3203,3 +3203,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **本批复验**：`provider-dispatcher` + `mab-m5-director-commit` 定向单测 **28 passed / 0 failed**；`@mohen/web` TypeScript 0 错误；源码修复后的 `next build` 通过。四个 Studio 投稿 Playwright 用例在补齐当前项目及导演修订夹具、使用临时合成登录态后 **4 passed / 0 failed**，覆盖提交失败重试、编辑后旧快照拒绝、创建回执等待期间锁定、创建响应丢失后的稳定身份；这些 mock 浏览器用例不替代上述真实 API/数据库/WATCH 证据。
 - **事实边界与剩余项**：媒体绑定工具复用既有 M5 WATCH Gate 对象模板及当前 G4 依赖，**没有为本作重新跑一条新的 D00—D05 知识生产链**；候选材料及“负担链假设”不等于史实已独立核验，机器 Reviewer/G5 不等于 Owner 人文背书。本批仅 `VERIFIED_ISOLATED`，未改生产 DB/Storage、未公开生产发布、未启用 M8；`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变，Owner 对新作内容、视觉和交互的体验签收仍待做。Studio 刷新后 React 不自动恢复 plans/beats 的现象已记录，未在本批擅自新增恢复功能。目标合同未变，`target-diff.csv` 不新增差异。
 - **提交与推送**：本批源码、测试及状态记录本地提交后标记 **`PENDING_PUSH`**；按 Owner 本地优先规则等待批量推送窗口，不在网络受限时循环重试。
+
+## 2026-11-12 D00 来源发现接线批（本地 VERIFIED_ISOLATED）
+
+- **问题**：Studio 对话研究的真实外部检索只有 `retrieve-shl` 单源（`apps/web/lib/mohen-agent/research.ts`）。对上海图书馆馆藏覆盖不到的题材（Owner 实测「我想以湖北电视台纪录片楚国八百年进行空间叙事」），只能返回题名近似的无关书目，表现为「随便输入自然语言就进行不下去」。
+- **设计依据**：协议 §11.2 规定 D00 由正式方法集 Y01—Y08 承担，其中 Y02「机构集合与多渠道来源发现」、Y03「时空异名与跨语言检索扩展」、Y04「聚合目录原机构回溯」、Y06「资源价值互补与取得优先级评估」；MHKA-04 §100 明确外部来源可含网络公开资源、书影、地图、图像、地方志。因此「搜不到就扩展来源」属 D00 既有职责，不是新增产品方向。
+- **施工前事实（非设计缺陷）**：`identifier-registry.json` 已登记 Y01—Y08（71 条设计目录含这 8 条），但 `production-registry.json` 的 D00 未绑定任何 Y 方法，`d00-source-intake.mjs` 仅是 `createStageExecutor("D00")` 空壳，D00 adapter 只校验已上传私有原件（强制 `scope.original_id`）。即 D00 当时只会确认已有原件，不具备「出去找」的能力。
+- **本批改动（未新增 Runner/Gate/第二套真值）**：① 新增 `retrieve-wikisource.ts`，补齐 `sources/registry.json` 已登记但无实现的 zh-wikisource；② 新增 `source-discovery.ts`，承载 Y01 缺口诊断、Y03 查询梯子、Y02 四渠道发现（上海图书馆／Commons／国会图书馆／维基文库）、Y06 优先级分级，只产 `source_candidate`/`search_trace` 级候选，不签 G0、不冒充原件；③ `research.ts` 外部线索改走该发现器，单渠道不可用不再整体中断研究，四渠道皆无结果时显式说明「渠道覆盖不到」而非「没有资料」；④ `tool-ledger.ts` 登记 `retrieve-external`（cost 1，与单源检索等价，不放大预算）。
+- **真实可达性实测（本机）**：SHL 200（检索「楚国」返回《張方楚國先賢傳》《春秋左傳楚國大事年表》）、Commons 200、维基文库 200、LOC 403（Cloudflare 拦截，按 registry `degraded_fallback: skip` 降级，不伪造结果）。
+- **真实复测**：同一句委托经 `POST /api/studio/research-tasks`，外部线索由 3 条单源变为 8 条，覆盖 Commons 与维基文库两个渠道，其中含真实图像线索「湖北省博物馆-楚国八百年」。
+- **仍未达标（不夸大）**：该次复测仍混入题名无关古籍与两份无关民事判决书，且 `verdict=cannot_answer`、`gaps=["意图未确定"]`。根因是 Studio 把「创作委托」交给问答式 `understand` 判定，以及检索词未按题材收敛，属另一段断点。本批只算「渠道接通 + 诚实降级」，**不算创作链可用性达标**。
+- **复验**：`tests/unit/source-discovery.test.ts` 5 passed；`mab-hp08-tool-ledger` 12 passed；`@mohen/web` tsc 0 错误；`next build` 通过；本地 3100 已按新构建重启。全部 `VERIFIED_ISOLATED`，未触生产库、未改 Gate、未公开部署；`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变。
