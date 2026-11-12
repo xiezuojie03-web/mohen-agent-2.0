@@ -3097,3 +3097,58 @@ work_revision content (plan+beats) → source_anchor source_refs (×77) → asse
 - G5 watch 资格由机器评审身份签发，不等于 Owner 人文背书。
 - HTTP 级消费/撤权/恢复验证由 	ools/verify-5m-watch-eligibility.mjs 承担（需本地 dev server），本验收不重复。
 - 本地 main 领先 origin 15 commit，PENDING_PUSH。
+
+## 2026-11-12 服务层实跑 —— HTTP 级 E2E 全通 + 推送受限登记
+
+### 一、推送：失败，登记 PENDING_PUSH
+
+- git push origin main → atal: unable to access ... Connection timed out after 300041 milliseconds。
+- 远端 main 停在 80df5e5，本地 HEAD 37d3103，**领先 17 commit 未推送**。
+- 按 AGENTS.md 0A 纪律：不因网络受限阻塞本地施工，不重复盲试推送，等待 Owner 确认窗口批量推送。**无任何 CI 回执**，本批全部状态为本地隔离证据。
+
+### 二、服务层实跑：VERIFY_5M_ALL_PASS
+
+**环境**：本地 mohen_dev + localhost:3210（pnpm dev --port 3210，Next dev）。
+
+**先行复现问题**：GET /api/works/published 返回 {"works":[]} —— 已发布真实作品当时**不在**可消费列表，与 verify-5m 注释描述一致（artifact 内容列哈希修正后整链被 invalidation 登记退休）。
+
+**首轮失败与根因**：STEP_FAILED:chain.G1 → QUALIFICATION_CAS_CONFLICT。
+根因定位到 	ools/verify-5m-watch-eligibility.mjs 的 currentQualification()——查询条件里 gate_code **硬编码为 'G0'**，因此处理 G1—G4 时永远查不到该门已有有效资格，走不到"幂等复用"分支，重复重签被 control.sign_gate_candidate 的乐观并发保护（current_id is distinct from p_expected）正确拦下。**这是验证工具的缺陷，不是产品缺陷**；CAS 拦截本身是设计正确的失败关闭。
+
+**修复**（commit 37d3103，2 行）：currentQualification(objectType, objectId, artifactRevisionValue, gate) 增加 gate 形参，调用处传 entry.gate。
+
+**实跑结果**（	asks/results/MAB/evidence/m5-watch-eligibility/verify-5m.json）：
+
+| 步骤 | 结果 | 证据 |
+|---|---|---|
+| http.before_rebuild | ✅ | works=[]（问题现场） |
+| chain.G0—chain.G4 | ✅ | 全部命中已有有效资格并复用，未重复签发 |
+| chain.G5 / chain.G5_watch | ✅ | audit e304497，current=true，绑定修订 825a56c9 |
+| http.positive_after_resign | ✅ | 作品 5b42577e 出现在 /api/works/published |
+| http.revoked_immediate_deny | ✅ | 撤权后立即消失，locked_count=1 |
+| http.restored_after_resign | ✅ | 重签 audit  a0da364 后恢复可见 |
+
+- 方法计划：ead_run schema = mab.private-scanned-page-reading.v1 → C02（按读运行实际 schema 反推，不补默认值）。
+- G5 watch 绑定内容：work_id=5b42577e、evision_id=825a56c9、content_sha256=c897ff77…、complete_work=true、ights_by_action={display:allowed}、scope=public_watch。
+- 复验：GET /api/works/published → HTTP 200，返回该作品完整 revision_no=3 内容（plan/beats/media/h1Finding）。
+
+### 三、证据级别（严格区分）
+
+| 项 | 级别 |
+|---|---|
+| M0—M5 工程与数据契约 | VERIFIED_ISOLATED |
+| HTTP 消费 / 撤权即时拒绝 / 重签恢复 | VERIFIED_ISOLATED（本地 Next dev + 本地 PG，**真实 HTTP 链路**） |
+| GitHub CI 回执 | **未取得**（推送超时） |
+| 生产 DB / Vercel / 真实用户 | **未触碰** |
+
+### 四、诚实边界（不夸大）
+
+- 本批 HTTP 验证是**对已发布作品的资格重签与消费面验证**，不是从 UI 入口重新驱动 ST-01→ST-09 的新鲜创作流程。
+- G5 watch 由机器评审身份签发，**不等于 Owner 人文背书**。
+- 候选登记由超级用户直连完成（隔离演练口径）。
+- 既有缺口不变：dependency_refs 1/86、director_plans 1/20 绑定、13 类资产实际 4 类、GAP_RIGHTS_ACTIONS 生产缺列 HOLD、M4 真实 Provider 调用 HOLD。
+- M6/M7/M8 未启动。
+
+### 五、下一步
+1. GitHub 网络恢复后批量推送 17 commit，取 CI（ci + mab-isolated-db）回执。
+2. 若需"新鲜创作"证据，须从 UI 入口真实走一遍 ST-01→ST-09（涉及真实模型调用与费用，需 Owner 授权）。
