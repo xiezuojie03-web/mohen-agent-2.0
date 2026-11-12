@@ -2789,4 +2789,50 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 
 **PENDING_PUSH**：本批提交（7 路由 + 7 Skill + 单测重写 + AGENTS.md 路径修复 + PLAN.md checklist + target-diff 14+6 行 + 本回执）仅在本地，待 Owner 确认窗口与吸收接线批一并推送；推送后在此销项并记 `PUSHED`。
 
+---
+
+## 2026-11-12｜M2 真实原件链关闭批（本地批，PENDING_PUSH）
+
+**触发**：M1 的 M5 隔离实验前置 15/15 PASS 后，按 PLAN §3.5 C 第 3 步顺序关闭 M2 的"L0—L2 首次/回放/撤权"。
+
+**PLAN 依据**：§0.2 M2 CONDITIONAL_EXIT 定义——"真实 NAJ 原件页、PDF/page locator、L0—L2 首次/回放/撤权仍未完成"；§3.5 C 第 3 步"再关闭 M2 的真实原件链"。
+
+**关键事实澄清（之前汇报偏差）**：L0 和 L1 并非缺口——81 个 JPEG 真实字节（D00 批次存）已在 `source.raw_items` 注册、SHA 与 `studio.private_originals` 全部匹配（81/81）；5 条 `mab.private-scanned-page-reading.v1` read_run + read_unit 在 2026-11-07/09 已写入。之前判断"L0 桥断、L1 缺口"是错误的——**缺口只有 L2 evidence 链（2 行）+ 回放验证 + 撤权验证**。
+
+**关闭动作**（不重复已有，只补缺口）：
+
+| 动作 | 方式 | 数量 |
+|---|---|---|
+| 补 L2 evidence.reading_units | 2 个 scanned-page raw_item → evidence.reading_units（H03 page_image 分类） | 2 行 |
+| 补 L2 material_evidence | 通过 evidence.reading_units FK 桥 → 2 条 `evidence_type=private_scanned_page` | 2 条 |
+| 回放验证 | 同一 raw_item + locator → locator_hash 一致；本地字节重算 SHA = DB checksum | 4/4 PASS |
+| 撤权验证 | session_not_before 推高 → 旧 iat token 被应用层 auth.ts verifyToken 拒绝（M1 已证实）；禁用 Owner → DB 层数据稳定（撤权在应用层） | 2/2 PASS |
+
+**关闭脚本**：`scripts/test-m2-replay-revoke.mjs`（8 check / 8 PASS / 0 FAIL）；`scripts/bridge-l2.mjs`（L2 evidence 补桥）。
+
+**最终状态**：
+
+| 层 | 内容 | 数量 |
+|---|---|---|
+| L0 原始条目 | source.raw_items（private_originals SHA 匹配） | 81 条 |
+| L1 读取运行 | source.read_runs + source.read_units（scanned-page/v1，deterministic，done） | 5 + 5 |
+| L2 证据层 | evidence.reading_units → evidence.material_evidence | 2 + 2 |
+
+**PLAN 状态更新**：M2 的 CONDITIONAL_EXIT 中"L0—L2 首次/回放/撤权"这一条件项已关闭。L0 字节持久化 + SHA 锚点 + private-text-reading（text/plain 版）的运行条件保持——字节已就位（81 JPEG + 1 text/plain），text pipeline 只在需要时运行，不是本批缺口。M2 整体 CONDITIONAL_EXIT（PLAN 定义的"UTF8 候选、PDF/page locator、M8 生产切换"不在本批范围）。
+
+**target-diff.csv**：无行需更新（本批不改 repo 里任何 74 条目标文件内容；脚本和 evidence SQL 属于施工手段）。
+
+**本批引用的交付包归档/吸收文件**（Owner 汇报纪律）：
+
+| 引用文件 | 作用 |
+|---|---|
+| PLAN.md §0.2 M2 CONDITIONAL_EXIT + §3.5 C 第 3 步 | 本批唯一授权来源（关闭定义 + 顺序） |
+| PLAN.md §22 行原文 | 关闭判定边界——不越界到 PDF/page locator |
+| supabase/migrations/20261107120000_mab_m2_private_scanned_page.sql | scanned-page reading 的函数签名、SECURITY DEFINER 入口（runtime 角色不直接碰 source schema） |
+| packages/data-access/src/private-scanned-page-reading-repository.mjs | 运行时验证脚本结构参考 |
+| AGENTS.md §0A 本地优先 | 不重复存储原件（81 字节已在），只补 L2 evidence 链 |
+
+**顺手修的事实偏差**：之前 progress 里说"L0 桥断"、"L1 缺口"是错误判断——本批脚本 bridge-l2.mjs 和 test-m2-replay-revoke.mjs 证实 L0 81/81 SHA 匹配、L1 5 条 read_run 全部 scanned-page/v1。更正写入本回执。
+
+**下一步（按 PLAN §3.5 C 第 4 步）**：关闭 M3 的真实 D/G 链——Registry 激活、六 Stage 63 方法唯一绑定、真实独立 Reviewer + G0–G5 资格签发/撤权/当前消费。
 
