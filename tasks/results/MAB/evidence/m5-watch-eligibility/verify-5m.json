@@ -1,6 +1,6 @@
 {
   "status": "VERIFY_5M_ALL_PASS",
-  "ranAt": "2026-11-12T10:53:49.150Z",
+  "ranAt": "2026-11-12T12:27:08.338Z",
   "isolation": "local-mohen_dev + localhost:3210",
   "work": "5b42577e-a4d6-4024-b1f9-99d0d788c9ec",
   "revision": "825a56c9-ccb8-45fa-a0ba-c55df6b67f04",
@@ -20,9 +20,9 @@
       }
     ]
   },
-  "watchAuditId": "ae304497-8345-48b6-8fd0-61f551584121",
-  "restoredAuditId": "0a0da364-00f5-495e-a47d-fedc1da13115",
-  "revokedAuditId": "ae304497-8345-48b6-8fd0-61f551584121",
+  "watchAuditId": "ac15a591-c536-47fc-90b7-ea8bef4569fa",
+  "restoredAuditId": "f6be1ac3-5dbe-40cb-800e-ed82320f61f2",
+  "revokedAuditId": "ac15a591-c536-47fc-90b7-ea8bef4569fa",
   "boundary": {
     "machineSigned": "G5 watch 由机器评审身份签发，不等于 Owner 人文背书",
     "candidateInsert": "候选登记由超级用户直连完成（隔离演练口径）",
@@ -33,7 +33,9 @@
       "step": "http.before_rebuild",
       "ok": true,
       "status": 200,
-      "ids": []
+      "ids": [
+        "5b42577e-a4d6-4024-b1f9-99d0d788c9ec"
+      ]
     },
     {
       "step": "chain.G0",
@@ -83,20 +85,17 @@
     {
       "step": "chain.G5",
       "ok": true,
-      "candidateId": "19efc2e2-54cd-4fe6-bcfb-473ada20ac86",
+      "reused": true,
       "auditId": "7982eed7-693d-4d6a-923e-3779713440fd",
-      "current": true,
-      "reviewer": "RULE_GATE_REVIEW G5 PASS audit=7982eed7-693d-4d6a-923e-3779713440fd current=true",
       "objectType": "world_projection",
       "objectId": "560c5f6d-a7b0-6ec5-1f0b-0ed98d60c91d",
-      "artifactRevision": "1dd8ad71c1fa3919fbe21638ebd1e2383855f4f09f61ae70d83db461f8fbee29",
-      "dependedOn": "fc3645f6-1fde-457d-abf2-4a7dcceda991"
+      "artifactRevision": "1dd8ad71c1fa3919fbe21638ebd1e2383855f4f09f61ae70d83db461f8fbee29"
     },
     {
       "step": "chain.G5_watch",
       "ok": true,
-      "candidateId": "80f97f60-38a5-413d-b3f0-bd3fdcae4e19",
-      "auditId": "ae304497-8345-48b6-8fd0-61f551584121",
+      "candidateId": "9e32dd48-b670-4248-8578-4dfa5632bd73",
+      "auditId": "ac15a591-c536-47fc-90b7-ea8bef4569fa",
       "current": true,
       "binding": {
         "schema": "mohen.work-revision-g5-binding.v1",
@@ -118,7 +117,7 @@
         },
         "title": "把一条科则拆成四道关口：田等、正耗、平米折算、准熟起科，让观众看见“每亩多少”从来不是农户真正缴出的数。",
         "description": "材料只提供一条科则句，却已显示负担由四项条件共同确定，并非单一税率：一是按田等分科（“低田等”）；二是正耗并称（正粮与加耗同时出现）；三是以“平米”为统一折算计量；四是以“准熟起科”决定起科的时间点（“同”表示与前述情形相同）。这说明“每亩多少”式的单一税额无法等同于农户实际负担，因为等则、加耗、折算、起科认定任一环节变动都会改变实际缴纳量。此为本材料可查证的增量：把一个看似枯燥的税率句读成一套征收机制的组合。同时，三条完全相同的文字提示这是抄件残文或重复转录，不能据此复原科则表，更不能据此推出任何农户负担数字。",
-        "rights_valid_until": "2026-12-12T10:53:42.260Z"
+        "rights_valid_until": "2026-12-12T12:27:02.635Z"
       }
     },
     {
@@ -137,7 +136,7 @@
     {
       "step": "http.restored_after_resign",
       "ok": true,
-      "auditId": "0a0da364-00f5-495e-a47d-fedc1da13115",
+      "auditId": "f6be1ac3-5dbe-40cb-800e-ed82320f61f2",
       "current": true,
       "ids": [
         "5b42577e-a4d6-4024-b1f9-99d0d788c9ec"

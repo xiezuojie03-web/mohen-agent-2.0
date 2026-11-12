@@ -3128,8 +3128,11 @@ work_revision content (plan+beats) → source_anchor source_refs (×77) → asse
 | http.revoked_immediate_deny | ✅ | 撤权后立即消失，locked_count=1 |
 | http.restored_after_resign | ✅ | 重签 audit  a0da364 后恢复可见 |
 
-- 方法计划：ead_run schema = mab.private-scanned-page-reading.v1 → C02（按读运行实际 schema 反推，不补默认值）。
-- G5 watch 绑定内容：work_id=5b42577e、evision_id=825a56c9、content_sha256=c897ff77…、complete_work=true、ights_by_action={display:allowed}、scope=public_watch。
+- 方法计划：
+ead_run schema = mab.private-scanned-page-reading.v1 → C02（按读运行实际 schema 反推，不补默认值）。
+- G5 watch 绑定内容：work_id=5b42577e、
+evision_id=825a56c9、content_sha256=c897ff77…、complete_work=true、
+ights_by_action={display:allowed}、scope=public_watch。
 - 复验：GET /api/works/published → HTTP 200，返回该作品完整 revision_no=3 内容（plan/beats/media/h1Finding）。
 
 ### 三、证据级别（严格区分）
@@ -3168,3 +3171,11 @@ work_revision content (plan+beats) → source_anchor source_refs (×77) → asse
 - **下一步唯一硬缺口**：Owner 侧提供 Supabase 当前数据库口令或 Personal Access Token（用于走官方接口重置/执行迁移），否则生产迁移无法开始；其余能力均已在本机可运行、可验证。
 - **CI 全绿回执（同日收口）**：远端 `bd94f91c` → `ci` run 43212146248 **SUCCESS**、`MAB M1 isolated authenticated HTTP acceptance` run 43212146038 **SUCCESS**（此前该工作流 6 FAIL → 1 FAIL → 0 FAIL，23 passed/1 skipped）。修复链：①隔离 HTTP 链补齐 24 份漂移迁移并加双链守卫；②Agent 检索消费方动作按词典归一（`read`→`access_view`），使公开 Agent 首次真正读到材料；③ST-02 改以 `asset_revision` 回链满足 CP2-F（本地先复现 `materials=1` 且回放快照一致再提交，13 类矩阵的悬空引用/缺来源拒绝断言未放宽）。
 - **本地探针数据说明（未清理成功，按设计）**：为验证真实 200 与写入契约，本地 `mohen_dev` 曾建 5 个合成探针账号（`*probe*`/`finalcheck*@example.invalid`）及其项目/资产；尝试清理时 `studio.use_events` 报 `PERMANENT_RECEIPT_IMMUTABLE`、`asset_heads`/`projects`/`users` 报外键 RESTRICT，删除被**正确拒绝**——这反证永久回执与引用完整性在真实数据上生效。探针数据只存在于本地 dev 库，未进生产；如需洁净本地库，须按受控重置流程另开批次，不在本批静默绕过守卫。
+
+## 2026-11-12 本地亲验就绪批（Owner 可亲手走的 M5 链路）
+
+- **本地生产实例可亲手操作**：`http://localhost:3100`（`next build` + `next start`）。真实浏览器复验 PASS：Owner 账号登录成功；`/studio/desk`=「资料台·墨痕 Studio」正文 134,687 字节（含真实研究记录与资料）；`/studio`=创作工作台「01 对话与构思 / 02 受托研究与编导 / 03 预览与修改 / 04 审核与发布」；`/`、`/watch`、`/admin`、`/admin/sources` 均 200。接口侧：`/api/studio/projects` 200 返回真实项目；`/api/works/published` 200 返回真实作品 `5b42577e-…`（revision `825a56c9-ccb8-45fa-a0ba-c55df6b67f04`、rev 3）；`/api/works/media/dd0ffa3b-…` 200 返回 362,221 字节扫描件（松江府志 第35页）。
+- **本地 Owner 登录凭据（仅本地隔离库）**：为 `mohen_dev` 的 Owner 账号 `20195689@qq.com`（roles=member,creator,operator,reviewer）设置 scrypt 口令（与 `apps/web/lib/auth.ts` 同口径，salt:hash）。明文仅当面/会话交付 Owner，**未写入仓库任何文件**；生产库账号口令未被触碰。浏览器侧已实测 Secure cookie 在 `http://localhost` 被保留（`127.0.0.1` 走 PowerShell 会话时会被丢弃，故清单统一用 `localhost`）。
+- **门禁与证据复跑（本地）**：`tools/verify-local-execution-env.mjs` 全 PASS 并重写 `enable-requires-evidence.json`（40 文件 / 246 断言 / 0 失败）；`tools/verify-3-gate-chain.mjs` = `VERIFY_3_ALL_PASS`（G0—G5 逐门 PASS：50 候选、44 独立通过、15 当前资格、0 invalid、审计 119+16+15+15+15+575）；`tools/verify-6-asset-backlinks.mjs` = `VERIFY_6_BACKLINK_PASS`（7 条使用事件复核通过；6 条无存储来源的证据承载修订均被阻断或经原件绑定验证；标引必须显式 allowed）。
+- **`tools/verify-5m-watch-eligibility.mjs` 已按正确端口重跑并全部通过**：该工具默认端口 3210（首次误用默认值触发 `DEV_SERVER_UNREACHABLE` 并曾覆盖证据文件），改以 `MOHEN_VERIFY_BASE_URL=http://127.0.0.1:3100` 重跑 = **`VERIFY_5M_ALL_PASS`**，证据已按真实结果重写：G0—G4 与 G5(producer) 走 `rule-gate-reviewer.mjs` 真实规则评审重签 → `http.positive_after_resign` 返回 `5b42577e-…` → **`http.revoked_immediate_deny`（`blocked_count=1`、`ids=[]`，撤权即时拒绝在 HTTP 级成立）** → `http.restored_after_resign`（新审计 `f6be1ac3-…`、`current=true`）恢复消费。重签后 `GET /api/works/published` = 200、count=1、`825a56c9`。重跑过程会临时撤销再重签整链，已确认结束时链处于有效状态。
+- **诚实边界（不因本地就绪而放宽）**：G5 watch 为机器评审身份签发，不等于 Owner 人文背书；样例作品仍在列表，验收须认准 `5b42577e-a4d6-4024-b1f9-99d0d788c9ec`；本批全部证据为 `VERIFIED_ISOLATED`（本地 PG + 本地实例），**不得写成生产 `VERIFIED_LIVE`**；生产迁移仍因 Supabase 口令失效而 HOLD；M5 仍 `M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY`，尚欠 Owner 亲验结论与生产链。
