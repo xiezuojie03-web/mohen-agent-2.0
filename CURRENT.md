@@ -1,13 +1,15 @@
 # 墨痕｜当前真实工程状态
 
-更新：2026-11-09。本文只记录当前状态，不承担施工计划或过程日志。
+更新：2026-11-12。本文只记录当前状态，不承担施工计划或过程日志。
 
 ## 当前工程基线
 
-- main HEAD：`3262fe431386d4f86c1d74d963f38b768d604532`（2026-11-08质量整改最新提交）。
-- 补齐推送：远端 main 此前停在 `d1cf3fc`，本地 26 个提交（M2—M5 批次 C—K）于本日补推，区间 `d1cf3fc..99a33a2`。
-- 最新远端 CI（`3262fe4`）：run 42453345351 **SUCCESS**；84个测试文件通过/4跳过，614项单测通过/4跳过，172项Node测试通过/0失败，K3追溯85 API/152动作/62模块/5屏通过，Next build通过。
-- 推送后基线 CI（`99a33a2`）：`ci` 42442455790 **FAILURE**；`MAB isolated PostgreSQL 17 verification` 42442455901 SUCCESS；`MAB M1 isolated authenticated HTTP acceptance` 42442455811 SUCCESS。失败步骤为 MAB 74 目标交接审计，根因 `target-diff.csv` 携带 UTF-8 BOM（表头首列成为不可见的 `\uFEFFpath`），已在 `3f8cc1b` 修复。
+- 远端 main HEAD：`6562ece3`（2026-11-12，Agent 检索回归修复）。本地 HEAD `e1231bb` 与远端**内容一致、SHA 不同**：GitHub 直连不稳期间改走 Git Data API 重放，SHA 由远端重算。本地 `origin/main` 停在旧 SHA，属该传输替代的已知偏差，**不代表有未推送提交**（详见 `tasks/implementation/MAB/progress.md` 2026-11-12 条）。
+- 2026-11-12 CI 收口过程：`6bb6b9e6` ci SUCCESS；`c1d244be` ci SUCCESS（补齐隔离 HTTP 链 24 份漂移迁移 + 守卫改双链校验）；M1 隔离 HTTP 验收由 6 FAIL 降至 3 FAIL，余项按 CP2-F 后契约修正后待 `6562ece3` 回执。`MAB isolated PostgreSQL 17 verification` 持续 SUCCESS。
+- 真实模型派发已在本地隔离环境真跑：`tools/verify-4-provider-dispatch.mjs` = `VERIFY_4_ALL_PASS`，真实 DeepSeek 调用 `cost=$0.000074`，回放不重复扣费，权利拒绝/零预算阻断成立；本地库累计 Provider 支出 `$0.017176`（授权上限 ¥20）。
+- 本地生产实例可运行：`next build` + `next start` 于 `127.0.0.1:3100`，私有用例页面（含 `/studio/desk`）真机 200。本地 `mohen_dev` 有真实存量（1 项目 / 86 修订 / 81 私有原件 / 755 Gate 审计 / 50 候选 / 15 当前资格）。
+- 历史基线（保留）：`3262fe4`（2026-11-08 质量整改）run 42453345351 SUCCESS；`99a33a2` 的 `ci` 因 `target-diff.csv` UTF-8 BOM 失败，已在 `3f8cc1b` 修复。
+
 
 ## 当前测试与门禁事实
 
@@ -36,6 +38,8 @@
 - **本地 `guard:*` 红灯已收口 4/7（2026-11-10 完整回归批）**：`check-structure`（archive 容器豁免 + 顶层覆盖改 git 语义 + OWNERSHIP_MAP 补登 + 6 个 Skill 补 Entry）、`source-gate`（hushang_legacy 失效指针改指 archive）、`identifier-registry`（昨日 0cba2b9 重写）、`gate-enforcement`（守卫脚本补齐资格读上下文与新签名）均已修复转绿。**剩余 3 项有据延期**：`check-naming-map`（naming-map 为 DESIGN_TARGET_NOT_APPLIED，RECON-02 专项）、`check-escalations`（CURRENT.md 待补 §9，须先裁决升级线）、`check-links`（68 处断链，文档专项）。均不进 CI 门禁，也不改变 CI 结论。
 - **D01 现在必须先有 G0 批准的方法计划才读（2026-11-10，仅本地隔离）**：`readScannedPage`/`draftTextReading` 在读取原件字节之前，必须从"当前有效、独立签、`consumer='producer'`"的 G0 审计不可变 `details.evidence_refs` 取到 `method_plan` 预选，且计划须覆盖本次动作方法（扫页 `C02`、文本 `C01`）、D00 交接计划须与之一致；否则失败关闭（`PRIVATE_D01_G0_METHOD_PLAN_NOT_APPROVED` 等）。`tools/probe-d01-method-plan.mjs` = `D01_METHOD_PLAN_CONSUMPTION_PROVEN`（私有工人真实 RLS：`…-0005` 读到 `C02@v1`，从未签 G0 的 `…-0006` 读到 `null`）。**边界**：C 方法仍未进 `production-registry.json` 路由（57 仍 `HOLD`），"多法并存时由预选择优"未实现；私有工人连接需 `MOHEN_DATABASE_CA_CERT(_FILE)`，缺省即 HOLD。
 - **生产运行证据仍为零**：Studio projects=0、asset_revisions=0、private_originals表不存在、Storage buckets=0。本地 `mohen_dev` 已有 Gate 策略版本表、Reviewer 绑定表与 `control.current_qualification_is_valid`，但这些仅存在于本地隔离库，**生产库未执行迁移**；G0—G5 的本地双签（机器自审 + Owner 本人签）属隔离证据，不等于生产启用。无`VERIFIED_LIVE`，M8未启动。
+- **生产迁移的唯一硬缺口（2026-11-12 实测，非代码问题）**：Supabase 连接池 `aws-0-ap-southeast-1.pooler.supabase.com:5432/6543` 可达，但 `D:\MoHen\supabase\db_url.txt` 中的口令已失效（`28P01 password authentication failed`），因此无法执行任何生产迁移；直连 `db.<ref>.supabase.co` 仅 IPv6 且 TLS 被重置。Vercel CLI 令牌失效（`api.vercel.com` 403 invalidToken），且 `*.vercel.app` 在本机被 DNS 污染、对真实 IP 的 TLS 被重置，**云端 UI 本机不可访问**。需要一个当前可用的 Supabase 数据库口令或 Personal Access Token 才能继续；在此之前全部生产动作保持 HOLD，不用本地结果冒充线上。
+
 
 ## 工具分工
 

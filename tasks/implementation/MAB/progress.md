@@ -3152,3 +3152,17 @@ work_revision content (plan+beats) → source_anchor source_refs (×77) → asse
 ### 五、下一步
 1. GitHub 网络恢复后批量推送 17 commit，取 CI（ci + mab-isolated-db）回执。
 2. 若需"新鲜创作"证据，须从 UI 入口真实走一遍 ST-01→ST-09（涉及真实模型调用与费用，需 Owner 授权）。
+
+## 2026-11-12 网络恢复后真跑批（推送到位 / 真实模型 / 本地生产实例 / 备份演练 / CI 收口）
+
+- **推送**：github.com:443 仍不稳，改走 GitHub Git Data API 重放本地提交（内容不变，SHA 由远端重算）。远端 main 依次到 `6bb6b9e6`（CI 修复）→ `c1d244be`（隔离链补齐）→ `6562ece3`（Agent 检索归一）。本地 `origin/main` 仍停在已推送内容的旧 SHA，属传输替代的已知偏差，**不代表有未推送提交**。
+- **真实模型派发已打通（M4 派发器）**：`node --experimental-strip-types tools/verify-4-provider-dispatch.mjs` = `VERIFY_4_ALL_PASS`。真调 DeepSeek（`deepseek-flash`）返回正文，回执 `ACCEPT_AS_CANDIDATE` + `ESTIMATED`，`cost=$0.000074`（≈¥0.0005）；同输入二次授权 `replay=true` 不重复扣费；`rights={}` 来源 `TRANSFER_DENIED`；零预算 `HOLD_BUDGET`，三者均无新增回执。累计真实 Provider 支出（本地库 17 张回执）`$0.017176`，远低于 Owner 授权 ¥20。
+- **本地生产实例已起并可操作**：`next build` + `next start`（`127.0.0.1:3100`，环境来自 `apps/web/.env.local` + 根 `.env.local`）。真机探测：`/`、`/studio`、`/studio/desk`、`/watch`、`/explore`、`/admin` 均 200，`/studio/desk` 含「我的研究记录／新项目名称／当前研究项目／创建项目」。探针合成用户已删除（`public.users` 恢复为 2 个真实账号：Owner `20195689@qq.com`、machine reviewer）。
+- **本地库真实存量（mohen_dev，只读盘点）**：`studio.projects=1`、`asset_heads=85`、`asset_revisions=86`、`private_originals=81`、`control.gate_audits=755`、`control.gate_candidates=50`、`control.qualification_current=15`、`studio.delegations=17`、`execution_receipts=17`、`source.raw_items=179`。
+- **备份/恢复演练（本地）**：`pg_dump -Fc` 991,143 字节 → 还原到一次性库 → 17 张关键表逐表行数 + 整表 `to_jsonb` 哈希比对 `diffs=0`，耗时 3.9s，演练库已 drop。判定 `BACKUP_RESTORE_DRILL_PASS`。
+- **CI 红灯真因（两次修复）**：① 隔离 HTTP 执行器 `scripts/test-mab-http.mjs` 的迁移清单长期漂移，缺 `202611020900..20261110160000` 共 24 份，隔离库没有 `studio.resolve_asset_references`、来源权利动作列、D00 台账表等对象 → 产品页面与写接口在 CI 里失败成 400/503/元素找不到。已按 `test-k3-db` 同一顺序补齐，并把 `guards/check-isolated-db-fixtures.mjs` 的 D1 改为**两条链都必须可达**（新迁移漏登记即红，`ISOLATED_DB_FIXTURE_PREFLIGHT_PASS migrations=70`）。② `ci` 由 6 FAIL 降到 3 FAIL，余下为真契约问题（见下）。
+- **产品硬断点修复（Agent 真的读不到知识）**：`publicAgentContext()` 只做字面比较 `requested_action==='read'`，而 G5 审计给 agent 消费方签的是 `access_view`（`CONSUMER_ACTIONS.agent`），`control.qualification_allows` 因此恒判未授权，`/api/mohen/materials` 永远空材料。改为先用 `canonicalRightsAction` 归一（`read`→`access_view`，词典既有同义归并），再把归一后的动作交给 G5 判定；无法识别的动作仍一律不认。
+- **两处 E2E 期望对齐 CP2-F 后契约**：ST-02 改用非证据承载的 `research_brief`（证据类资产缺来源/悬空引用已由 13 类矩阵专测覆盖）；缺必需来源按请求不合法记 400，引用指向不存在对象才是 409。
+- **本地门禁**：`vitest.unit` **650 passed / 2 skipped / 0 failed**（87 文件通过、2 跳过）；`apps/web` tsc 0 错误；`guard:isolated-db-fixtures` PASS。
+- **未改变 / 仍 HOLD**：生产库迁移**未执行**——Supabase 连接池可达但 `D:\MoHen\supabase\db_url.txt` 中的口令 28P01 失效（`aws-0-ap-southeast-1.pooler.supabase.com:5432/6543` 均失败），Vercel CLI 令牌 403 invalidToken，`*.vercel.app` 在本机 DNS 被污染且对真实 IP 的 TLS 被重置 → **云端 UI 本机不可访问**。生产 `VERIFIED_LIVE`、M5 Owner 亲验、M6—M8、付费外发扩大均原样 HOLD。本地库与生产库未混用，未向生产写任何数据。
+- **下一步唯一硬缺口**：Owner 侧提供 Supabase 当前数据库口令或 Personal Access Token（用于走官方接口重置/执行迁移），否则生产迁移无法开始；其余能力均已在本机可运行、可验证。
