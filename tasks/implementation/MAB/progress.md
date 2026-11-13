@@ -3235,3 +3235,18 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
   3. 再关 QR-07/09（资产回链+Guard）。
   4. QR-10 泛化冒烟 ≥2 非模板 topic 后，八维度方可转为 ✅。
 - **提交与推送**：commit `18d2395`，仅改 `PLAN.md` + `LOCAL-BUILD-LEDGER.md`，本地提交，**PENDING_PUSH**。按 AGENTS.md §0A 纪律等待批量推送窗口。
+
+## 2026-11-13｜QR-01 关闭（项目身份边界 VERIFIED_ISOLATED）
+
+- **前置**：PLAN §0.1 整改顺序重排后 QR-01 与 QR-02/08/06 一并先关；QR-01 第一批迁移（director_plans.project_id + 写入端点强制 pid + 项目切换清除临时 Grant）已在之前批次提交，本轮补齐 HTTP 正反测试和历史遗留保护。
+- **HTTP 正反测试**（`_test_qr01_http.mjs`，本地隔离，VERIFIED_ISOLATED）：15/15 PASS。
+  - Phase 1 匿名一律 401：GET /projects、POST /director-plans、POST /dispatch-authorizations 全部 401。
+  - Phase 2 Owner 登录：POST /api/auth/login 200，`set-cookie: mohen_role=...`（scrypt 密码验证 + hmac session token）。
+  - Phase 3 Owner 项目隔离：GET /projects 200，9 个项目全部 owner=`270bcecf-9bfb-4865-9432-a0ac9db8df75`，无跨 owner 泄漏。
+  - Phase 4 director-plans 强制 pid：无 pid → 409 `project_scope_required`；bad pid → 400。
+  - Phase 5 dispatch-authorizations 强制 pid：无 pid → 400 `project_id_required`；bad pid → 400。
+  - Phase 6 历史 null_pid plan 原样保留：public.director_plans 19 null_pid / 21 total（不推测回填、不迁移、不 DELETE）；studio.asset_heads/links/private_originals/use_events/delegations 全 0 null_pid；无 orphan pid（pid 指向不存在的 project）。
+- **PLAN QR-01 验收条件全部满足**：① HTTP 正反测试 VERIFIED_ISOLATED；② 生产迁移按 PLAN 明确需单独授权，本轮未触；③ 旧 null_pid plan 原样保留、不推测回填。
+- **保留的历史遗留**：public.director_plans.canAccess 仅按 owner_user_id 校验、不按 project_id 校验（因为 19 条历史 plan 无 pid）。同一 owner 仍能 GET 到自己的 null_pid 历史 plan（这是允许的 owner 读历史行为，不是跨 owner 泄漏）。POST 创建新 plan 已强制 pid，不会产生新的 null_pid。
+- **下一步**：按整改顺序继续 QR-02（数据库会话隔离 session_context CTE）+ QR-08（本地执行授权边界）+ QR-06（同根内外 AI 协作）。
+- **提交与推送**：纯文档记录，本地提交，PENDING_PUSH（按 AGENTS.md §0A 纪律）。
