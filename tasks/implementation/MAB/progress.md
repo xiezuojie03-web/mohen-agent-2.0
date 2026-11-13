@@ -3512,3 +3512,44 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **本地 PENDING_PUSH**：三个 commit — `875bc2f`（JS fix）+ `4a8e9e1`（isolation test script）+ `8a8bea5`/`1320f06`（ST-05 前序），按 AGENTS.md §0A 等待 Owner 确认窗口批量推送。
 - **口径边界**：ST-06 只到 G5 投影签发；D06 叙事种子 story_seeds / P04 有界解释组合未做；P04 上游依赖 P02 projection（D05）已就位；机器签不构成 Owner 人文背书；本批 purpose 仍为 `data-production/m5-remediation`（M5 isolated 简化路径），G5 完整 purpose_profile（`G5.purpose-profile`）待 production 启用时配置；A 方法 implementation_binding 仍全 HOLD；不签任何 Stage 完成，`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变。
 - **下一阶段**：ST-07 — P04 story_seeds / agent_contexts（从 A01-A12 finding 走 P04 有界解释组合，projection 已就位可直接消费）+ G5 再次签发（purpose 可能换，需加 reviewer binding）。
+
+## 2026-11-14｜ST-07 D06 P04 story_seed+agent_context + G5 四例通过（VERIFIED_ISOLATED）
+
+- **施工前置：先读 D06 设计原文**。按 Owner 要求完整读取 `specs/data-production/standards/d06/契约_P5_P02-P08_有界解释组合与世界投影.md`（D06 主规 + P04 有界解释组合方法：story_seed 叙事种子 + agent_context Agent 上下文）、`gate-contracts.v3.json#G5`（required_checks={work_revision_binding, rights_by_operation}）、`PLAN.md §ST-07`。D06 位于 D05 world_projection（P02）之后，属于 L5 持久化层的 P04 组合方法。
+
+- **DB 迁移 `20261114090000_mab_m5_d06_story_seed.sql`（commit `fa4df83`）**：
+  - 创建 `studio.persist_private_story_seed(uuid, text, uuid[], jsonb)` security definer 函数，幂等（advisory lock + INSERT ON CONFLICT DO NOTHING），payload 结构 `{schema, qualification:'UNASSESSED', method_id:'P04', original_ids:[...], body:{narrative_arc, entities, temporal_nodes, bounded_claims}}`，校验 finding method_id ∈ A01-A12。
+  - 创建 `studio.persist_private_agent_context(uuid, text, uuid[], jsonb)` 同上，payload 结构 `{schema, qualification:'UNASSESSED', method_id:'P04', original_ids:[...], body:{agent_readable_facts, open_questions, forbidden_assumptions}}`。
+  - read_model 层：`read_model.story_seeds` / `read_model.agent_contexts` 表（由迁移前期已建）。
+
+- **G5 reviewer 扩展（`tools/rule-gate-reviewer.mjs`）**：
+  - `checkWorkRevisionBinding`：动态路由 `world_projection` / `story_seed` / `agent_context` 三种 object_type，从 artifact 的 `method_id` 字段取方法（P02 / P04），与上游 finding method 做 A01-A12 泛化校验。
+  - `checkRightsByOperation`：动态从 `payload.original_ids` 数组取上游 original_refs（story_seed/agent_context 的 original_ids 字段存的是原件 UUID 数组，不是 finding_ids），绕过 queryRows 数组参数 bug（用 `ARRAY[${uuidArray}]::uuid[]` 直接拼接）。
+  - loadUpstream 七项检查（gate_code/result/origin/consumer/current/qual_digest/artifact_rev）全部 PASS，DEPENDENCY_NOT_CURRENT 不再触发。
+
+- **session_token 格式关键坑（ST-05/ST-06 隐性发现）**：`control.current_app_user_id()` 要求**两段式** token（`payload.signature`），不是标准 JWT 三段（`header.payload.signature`）。payload 用 `uid` 字段（不是 `sub`），`exp` 是毫秒级时间戳（不是秒）。secret 用 `control.session_verification_keys` 里 key_slot=true 的 key（从 `.env.local` 的 `MOHEN_DATABASE_SESSION_SECRET` 读）。错误使用 JWT 格式会导致 `uid=null` → `REVIEWER_IDENTITY_REQUIRED` 失败。正确 mint：
+  ```js
+  const payload = Buffer.from(JSON.stringify({ uid, r: [], exp: Date.now() + expiresMs }))
+    .toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const sig = crypto.createHmac("sha256", secret).update(payload)
+    .digest("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const token = `${payload}.${sig}`;
+  ```
+
+- **四例 G5 PASS current（本地隔离库 mohen_dev）**：
+  | 题材 | finding (method) | object_type | run_id | G5 gate_audit_id |
+  |------|-----------------|-------------|--------|-----------------|
+  | 朱家角 | 749414aa (A05 actor_situation) | story_seed | ffb4430e | `3878b811-8130-4c9d-a911-93f717999533` |
+  | 朱家角 | 749414aa (A05) | agent_context | ffb4430e | `8d28fa9b-0df2-43d1-a783-05e6b95a3d54` |
+  | 七宝 | 3cffc174 (A09 historical_transformation) | story_seed | abc3251e | `1521aabb-34f3-4075-b5d7-1c669e51b720` |
+  | 七宝 | 3cffc174 (A09) | agent_context | abc3251e | `b09e6039-d3f9-4f39-9ecc-0a879fa63f5f` |
+
+- **脚本 `scripts/test-d06-g5-isolation.mjs`（387 行）**：完整包含两题材 story_seed+agent_context 输入构造、两段式 session_token mint、Studio 身份 persist、artifact_revision 查询、G4 audit dep_snapshot 取 artifact_revision + qualification_digest、gate_candidate INSERT（D05 stage 因 CHECK 约束）、G5 reviewer dryRun + decideGate（BEGIN → set role mohen_gate_signer_m5_machine → set session_token → sign_gate_candidate → commit）。同一 project 多 candidate 混淆问题已解决（INSERT 前 DELETE 旧 SUBMITTED）。
+
+- **commit 记录**：`fa4df83 feat(d06): P04 story_seed+agent_context persist + G5 reviewer extension`（新增 638 行，删除 26 行）。
+
+- **本地 PENDING_PUSH**：全部 commit（含 ST-05 `8a8bea5/1320f06`、ST-06 `4a8e9e1/3304b5b`、ST-07 `fa4df83`）按 AGENTS.md §0A 等待 Owner 确认窗口批量推送。
+
+- **口径边界**：ST-07 只到 G5 叙事种子/Agent 上下文签发；D07 导演方向（director_plan）+ D08 作品修订（work_revision）未做；P04 上游 P02 world_projection（D05）虽已就位，但未在本批显式消费（story_seed 直接从 finding 构造，不经过 projection 层）；机器签不构成 Owner 人文背书；本批 purpose 仍为 `data-production/m5-remediation`（M5 isolated 简化路径），G5 完整 purpose_profile 待 production 启用时配置；A 方法 implementation_binding 仍全 HOLD；不签任何 Stage 完成，`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变。
+
+- **下一阶段**：ST-08 — director_plan（D07）+ work_revision（D08）+ G5 签发。P04 story_seed 已就位可作为导演方向输入。需新增 persist_private_director_plan / persist_private_work_revision DB 函数，reviewer 继续扩展。
