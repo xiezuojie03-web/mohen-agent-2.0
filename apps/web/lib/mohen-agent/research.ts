@@ -106,6 +106,80 @@ export function resolveTopic(topic: unknown): TopicKey {
   return typeof topic === "string" && topic in TOPIC_PROFILES ? (topic as TopicKey) : "generic";
 }
 
+// B1（2026-11-13）自由研究委托的通用入口。
+//
+// understand() 是问答式意图分类器。自由委托（如「楚国八百年」）常被判为 unknown，
+// decideStep 据此直接返回 cannot_answer +「意图未确定」，把已检索到的库内材料与
+// 外部线索全部丢弃——这就是"非模板题材一律崩"的根因。
+//
+// 研究委托本身没有具体问句，语义上不是"答不出"，而是"研究焦点待收敛"（MHKA-02 §3）。
+// 这里把它转成可继续的研究裁决：保留真实材料及其 epistemic 标记（外部线索仍是
+// RESEARCH_LEAD，不得升格），如实说明需要收敛，并给出可点的焦点候选。
+// 本函数不产生任何事实，只重新组织已检索到的材料。
+/** 是否存在可支撑结论的材料（外部线索不算——线索不是答案） */
+function hasEvidencedMaterial(materials: Material[]): boolean {
+  return materials.some(
+    (m) => m.epistemic === "FACT_EVIDENCED" || m.epistemic === "SUPPORTED_CANDIDATE" || m.epistemic === "CONFLICTED"
+  );
+}
+
+function toMissionDecision(
+  decision: AgentDecision,
+  materials: Material[],
+  objects: string[],
+  entities: string[]
+): AgentDecision {
+  const ranked = [...materials].sort((a, b) => b.score - a.score).slice(0, 12);
+  const focus = dedupe([...objects, ...entities]).slice(0, 5);
+  const evidenced = hasEvidencedMaterial(ranked);
+  const gaps = decision.gaps.filter((gap) => gap !== "意图未确定");
+  gaps.unshift("这是研究委托而非具体问句：需要先收敛到一个可回答的研究问题");
+  if (!evidenced) {
+    gaps.splice(1, 0, `库内已审核材料还不能直接回答这个问题；下面 ${ranked.length} 条是待核验的外部线索，不是答案`);
+  }
+  return {
+    ...decision,
+    materials: ranked,
+    evidenceRefs: ranked.map((m) => m.id),
+    verdict: "partial",
+    primaryStage: "evidence_reveal",
+    secondaryStage: null,
+    focus,
+    mohenLine: evidenced
+      ? `这是研究委托。我找到 ${ranked.length} 条可先看的材料，先确认要追哪一条。`
+      : `这是研究委托。库里还不能直接回答，但我找到 ${ranked.length} 条外部线索可以核验。`,
+    gaps,
+    clarifyQuestion: focus.length
+      ? `先从「${focus[0]}」追起，还是换一个焦点？`
+      : "你想先从哪个角度追这条线？",
+  };
+}
+
+/**
+ * 自由研究委托入口的唯一判定点。只有三个条件同时成立才转换：
+ * ① 非预置题材；② 确实检索到材料；③ 问答式裁决确实判死（cannot_answer）。
+ *
+ * 判死有两种形态，都必须转：
+ *   · 意图判不出（intent=unknown →「意图未确定」）；
+ *   · 意图判出来了，但没有该 intent 类型的材料（如 time 类意图只要 event/claim，
+ *     外部线索 kind=evidence 会被整体过滤掉）——这条在真实委托「楚国八百年」上实测到，
+ *     18 条线索被丢弃。
+ *
+ * 任一条件不满足就原样返回——不假装有收获，也不污染预置题材的问答语义。
+ */
+export function applyFreeMissionEntry(
+  topic: TopicKey,
+  materials: Material[],
+  decision: AgentDecision,
+  objects: string[],
+  entities: string[]
+): AgentDecision {
+  if (topic !== "generic") return decision;
+  if (!materials.length) return decision;
+  if (decision.verdict !== "cannot_answer") return decision;
+  return toMissionDecision(decision, materials, objects, entities);
+}
+
 /** 外部线索 → 材料（epistemic 固定 RESEARCH_LEAD，不得冒充合格知识） */
 function toExternalMaterial(lead: ShlMaterial): Material {
   const text = lead.fragments.join(" ");
@@ -173,7 +247,16 @@ export async function runResearch(
   const baseDecision = await useTool(ledger, "llm-polish", () =>
     decideStep(understanding, materialsForDecision, profile.aliases)
   );
-  const decision = applyRiskGuards(topic, question, baseDecision);
+  // B1：自由研究委托不再因问答式意图判不出而死路。判定逻辑在 applyFreeMissionEntry，
+  // 有一条材料都没有时保持 cannot_answer（不假装有收获）。
+  const missionBase = applyFreeMissionEntry(
+    topic,
+    materialsForDecision,
+    baseDecision,
+    understanding.objects,
+    externalEntities
+  );
+  const decision = applyRiskGuards(topic, question, missionBase);
   const finalGaps = [...decision.gaps];
   if (degraded) finalGaps.push("暂时查不到库里的材料");
   // 外部渠道的缺口逐个如实列出：单渠道不可用不再整体中断研究，
