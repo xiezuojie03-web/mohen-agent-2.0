@@ -53,7 +53,7 @@
 | QR-07 | P1 | **已由 CP2-F 关闭（2026-11-09，仅本地隔离）。** 迁移 `20261109130000_mab_cp2f_asset_backlink.sql` 建立 `studio.reference_kinds` 18 种类型登记、`resolve_asset_reference(s)` 逐条回查、`asset_consumption_disposition` 六动作裁决与两道 BEFORE INSERT 守卫；生产代码 `private-original-repository.finalize()` 漏写 `source_refs` 的复发缺陷已修，`saveRevision` 硬编码 `epistemic_class='editorial'` 已改按 `asset_kind` 映射。`tools/verify-6-asset-backlinks.mjs`=`VERIFY_6_BACKLINK_PASS`，真实消费路径 `blocked=2 eligible=4 new_use_events=4`，`GAP_ASSET_USAGE` 由 HOLD 转 PASS。 | 新资产创建时写入可验证source/dependency refs；已有记录逐条核实后再补，不能推断；Admin按条逆查原件、source_version、locator、证据、D/G资格、rights/purpose和use_events。**残留**：2条m2脚本legacy证据类行仍`BLOCKED(NO_SOURCE_REF)`（不可变、不回填；Owner 2026-11-09裁决「不用了，标为历史演示数据」，原样保留不参与研究）；`studio.asset_links` 仍无真实写入方；生产Studio项目与资产修订仍为0。 |
 | QR-08 | P1 | **本地执行授权条件不能自证。** Registry的enable_requires被本地授权脚手架直接转为true，需验证运行环境/隔离标记/绑定/测试事实，而不是签名自报。 | 生产与本地隔离授权分离；本地脚手架仅接受明确的隔离目标并拒绝生产端点/生产密钥；每个enable_requires由独立可验证检查生成，缺任一证据不签发。 |
 | QR-09 | P0（生产前/门禁） | **SEC-01已由生产只读核查确认关闭**（RLS=true，anon/auth无SELECT/INSERT/UPDATE）；7项本地Guard最后记录为红，本轮未重跑。 | 只针对7项Guard逐一定位、修复或有据延期并纳入持续CI；SEC-01保留关闭证据，不重复施工。生产变更仍须单独授权。 |
-| QR-10 | P1 | **M5准出证据被批次摘要过度概括。** 同一作品的隔离PG/HTTP链路有价值，但Owner体验、正式Reviewer、媒体权利、同root混合协作、来源依赖和全链D/L/G尚未全部达到PLAN准出条件。 | 逐项按本PLAN八维度矩阵及M1—M4条件准出复核；所有P0/P1关闭、同一真实作品证据齐全、隔离PG/HTTP正反通过，最后Owner实际体验签收；之前保持M5_OVERALL_HOLD。 |
+| QR-10 | P1 | **M5准出证据被批次摘要过度概括。** 同一作品的隔离PG/HTTP链路有价值，但Owner体验、正式Reviewer、媒体权利、同root混合协作、来源依赖和全链D/L/G尚未全部达到PLAN准出条件。**泛化冒烟（2026-11-13补入）**：一条模板作品链路跑通≠通用创作入口闭环；research.ts 强制 generic→understand() 导致非模板topic崩、D00 registry methods=[] 导致无多渠道来源发现。 | 逐项按本PLAN八维度矩阵及M1—M4条件准出复核；所有P0/P1关闭、同一真实作品证据齐全、隔离PG/HTTP正反通过；**泛化冒烟补证**：至少两个非模板topic跑通 ST-01（通用委托入口）→D00（多渠道来源发现+权利字段）→G0→Admin 资产流入；未过泛化冒烟的维度不得转 ✅；最后Owner实际体验签收；之前保持M5_OVERALL_HOLD。 |
 
 **已发现但暂不合并的分支候选：**
 
@@ -63,12 +63,14 @@
 **整改顺序（唯一顺序，按依赖可并行测试，不改变M0—M8）：**
 
 1. QR-01/02/08：先关闭项目身份、数据库会话隔离和本地执行授权边界。
-2. QR-04/05：对齐权利动作词典与source/media权利读取，补独立G0/G5正反证据。
-3. QR-03：在现有Delegation/ExecutionControl/Receipt内完成持久预算预留、未知费用冻结、核销和恢复；先评估分支候选，再决定最小增量。
-4. QR-06：把Studio Agent研究task与Provider委托合并为同一root任务DAG。
+2. **QR-06（前调）**：把Studio Agent研究task与Provider委托合并为同一root任务DAG。没有同根协作，外部AI Agent调用就是孤立Provider派发，不是用户要求的"墨痕+外部Agent都能跑通"。与QR-01/02/08一并先关。
+3. QR-04/05：对齐权利动作词典与source/media权利读取，补独立G0/G5正反证据。D00多渠道发现（QR-10泛化补证）依赖权利字段。
+4. QR-03：在现有Delegation/ExecutionControl/Receipt内完成持久预算预留、未知费用冻结、核销和恢复；先评估分支候选，再决定最小增量。
 5. QR-07：修复知识资产来源/依赖回链及Admin逐条逆查。
 6. QR-09：在只读核实后关闭SEC-01及7项Guard；生产迁移仍需独立授权。
-7. 对受影响链路执行完整测试，重算M5八维度；Owner体验签收仍是最后一步。
+7. 对受影响链路执行完整测试，重算M5八维度；泛化冒烟（至少两个非模板topic跑通ST-01→D00→G0→Admin链）；Owner体验签收仍是最后一步。
+
+**顺序调整依据（2026-11-13 Owner裁决）**：原顺序把QR-06放在第4位、QR-04/05放在第2位，是基于"先有权利再做协作"的假设。但用户目标明确说"墨痕自主+外部AI（比如你）都能跑通"——同根协作是创作线的核心能力，没有它外部AI就是孤立Provider调用。故QR-06前调到第2位，与QR-01/02/08一并作为创作线的前置基础。
 
 **质量整改准出纪律：** 代码存在、单测通过、CI通过、隔离PG/HTTP通过、生产LIVE、Owner体验签收是不同证据级别。每项必须分别记录；不得以Vercel READY、主CI绿灯、机器Reviewer账号或合成fixture替代真实业务验收。所有整改优先原位修复现有代码/合同；不新增第二套Provider账本、第二套Gate、第二Runner或第二权威进度文件。
 ### 0.2 Owner裁决｜Trae本地总装、过程控制与首用户交付（2026-11-08）
