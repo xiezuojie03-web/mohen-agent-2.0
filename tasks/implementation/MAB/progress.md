@@ -3725,3 +3725,16 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
   2. 作品 `content.media` 未挂原件图（本批只验指针与消费链路，未做媒体绑定）；WATCH 页面的原件显示仍由既有媒体链路负责，本题材未验。
   3. `listWatchEligible` 之外的 WATCH 公开路由（`/api/works/published`、搜索、分享）现在会列出通过 studio 复核的题材；但"WATCH 自己的 consumer 资格（`MOHEN_G5_CONTEXTS`）"对 studio 修订仍无对应签发路径，属另批事项。
 - **口径边界**：仅本地 `mohen_dev`，未触碰生产库、未签任何非机器 Gate、未伪造许可；机器签与隔离证据不构成 Owner 人文背书；`M5_OVERALL_HOLD` 不变。本批按 AGENTS.md §0A 本地提交并登记 `PENDING_PUSH`。
+
+## 2026-11-13｜M5 出口端到端（一）：同一作品在 WATCH 目录与 Admin 运营视角读到同一精确修订（HTTP 级，VERIFIED_ISOLATED；Owner 体验签收待进行）
+
+- **为什么做**：ST-09 的隔离证据只证明库内函数正反；WATCH／Admin 的 HTTP 读路径此前从未在 studio 作品上真跑过（`listPublished` 一直是 legacy join）。
+- **产出可公开作品**：`scripts/republish-songjiang-revision-2.mjs` 在「松江府田赋」上出 rev2（`6caec62b…`，expected 1，同一 finding／director_plan／原件），G5 `ca030afd…`（机器评审两检查项 PASS）、快照 `215394ca…`、运营核签 `APPROVED`（权利缺口 0）→ 发布 `efc947ee…`，指针 `source_schema=studio`、精确修订 rev2。这是正常生命周期动作（rev1 已在 ST-10 撤回），不是为验收补数据。
+- **HTTP 证据**（`tools/verify-e2e-st10-http.mjs`，真实 cookie／真实库／真实 dev server，**7/7 PASS**）：
+  - `/api/works/published`（匿名）含该 work+rev2；已撤回的 rev1 不出现；
+  - `/api/admin/publications` 未带运营身份 401、带运营身份含**同一** work+rev2；
+  - `/watch`、`/studio` 页面 200；
+  - 汇总断言：WATCH 目录与 Admin 运营视角的 `work_id`/`revision_id` 完全一致（`6caec62b…`）。
+- **未评估（如实记，不算通过）**：`/api/watch/sessions` 观看进度。它依赖的 `202611020900_kad1_watch_revision_isolation.sql` 首行自标 **"NOT APPLIED"**，本地 `public.watch_sessions` 仍只有 `(work_id, playhead, updated_at)`，路由必然 500——与 studio 无关，legacy 作品同样不可用。**过程记录**：我一度按"外键指向 legacy 作品表"的假设改了 sessions 的 SQL 并写了放宽外键的迁移，核对到该迁移是**设计目标、故意未应用**后，已回退路由改动、删除该迁移，未擅自启用 KAD1。
+- **其他已知缺口（不影响本批判定，交由后续）**：作品 `content.media` 未挂原件图，WATCH 页面看到的是分镜文本而非原件细读；`/admin` 需运营角色会话。
+- **口径**：仅本地隔离库；`M5_OVERALL_HOLD` 不变；Owner 体验签收（§3.5 C.7 / §5 M5）尚未进行。本批本地提交并登记 `PENDING_PUSH`。
