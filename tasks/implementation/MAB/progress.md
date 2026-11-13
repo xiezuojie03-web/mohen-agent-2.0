@@ -3644,3 +3644,33 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 - **本地 PENDING_PUSH**：commit 待生成，连同之前的 f902a5a（ST-05）等，按 AGENTS.md §0A 等待批量推送窗口。
 
+
+## 2026-11-13｜ST-08 SubmitForEditorialReview — 提交冻结稿件 + submission_snapshot 两题材通过（VERIFIED_ISOLATED）
+
+- **三轴定位**：本批属 **M5 Studio 业务任务轴 ST-08**（KAD2 §7 九业务动作第 8 步），不是 D 轴新阶段；D 轴止于 D05（含 P02/P04）。
+- **施工依据（先读原文再施工）**：`tasks/implementation/MAB/inputs/mab-package-20261102/evidence_only/KAD2_混合任务委托、执行、成果回流与Studio全链合同_现行.md` §7 ST-08「明确提交冻结稿件｜确认当前 revision / 媒体权利 / 知识资格缺口、版本快照｜`submission_snapshot`；投稿不代表公开/合格知识」、§8「WorkRevision@rev 不得互相覆盖」；`specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md` §6.2 ST-08「主动提交冻结版本｜预检出处/权利/用途｜submission_snapshot」；`specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md` §作品状态机与「运营编辑决定不构成知识 G 资格」；`PLAN.md` §3.5 八维度矩阵第 7 项。
+- **设计取舍（按原文，不自行发挥）**：
+  1. **不改写不可变修订行** `studio.work_revisions`。设计只要求产出 `submission_snapshot`，而修订按 KALC 不可变、KAD2 §8 不得互相覆盖；因此提交事实由新表 append-only 承载，`publication_status` 保留创建时的 `draft`（它是冻结内容的一部分，不是可编辑状态）。
+  2. 快照冻结「精确修订身份 + 当时的知识资格 + 上游版本快照 + 逐动作媒体权利 + 缺口」，供 ST-09 运营只审核**这一份精确修订**。
+  3. 投稿前置必须对**精确修订**做当前资格复核：G5 PASS + current + 未过期，且签发时的 `artifact_revision` 必须仍等于当前内容。
+  4. 逐动作权利与 `packages/data-access/src/rights-actions.mjs` 同口径（只认显式 `allowed`），未许可动作如实入 gaps，不推断、不把投稿当公开许可。
+
+- **DB 迁移 `supabase/migrations/20261114180000_mab_m5_st08_submission_snapshot.sql`**：
+  - `studio.submission_snapshots`（snapshot_id / work_id / revision_id / revision_no / project_id / content_hash / artifact_revision / knowledge_gate_audit_id / submitted_by / payload / created_at；`unique(revision_id)`——一个不可变修订只接受一次投稿冻结，退修改稿须产生新修订）；RLS 仅 `mohen_app_runtime`（select+insert）+ `mohen_gate_authority`（select）；**无 UPDATE/DELETE 授权**，并加 `submission_snapshots_immutable` BEFORE UPDATE/DELETE 触发器兜底。
+  - `studio.persist_private_submission_snapshot(snapshot_id, revision_id, project_id, submitted_by)` security definer，失败关闭码：`PRIVATE_SUBMISSION_INVALID` / `REVISION_NOT_FOUND` / `NOT_LATEST_REVISION` / `KNOWLEDGE_NOT_QUALIFIED:no_current_g5` / `KNOWLEDGE_NOT_QUALIFIED:artifact_revision_moved` / `ORIGINAL_REFS_MISSING` / `ORIGINAL_NOT_RESOLVED` / `ORIGINAL_NOT_VERIFIED` / `RIGHTS_NOT_ALLOWED`；幂等（同修订已有快照即返回原快照）。
+  - payload schema `mohen.submission-snapshot.v1`：`statements`（submission_is_not_publication / submission_is_not_knowledge_qualification / publication_eligible）、`work_revision`（含 content_hash + artifact_revision）、`knowledge_qualification`（G5 audit/qualification_digest/purpose/consumer/rule_version/valid_until）、`version_snapshot`（director_plan + story_seeds + agent_contexts + world_projections 各自 artifact_revision 与当前 G5）、`rights.originals`（逐原件 basis/actions/blocked_actions）、`gaps`。
+- **两个题材实测（本地隔离库 mohen_dev）**：
+  | 题材 | revision（上游 finding 方法） | snapshot | 知识资格 G5 | 缺口 |
+  |---|---|---|---|---|
+  | 朱家角 | `8c5a7cc4…`（A05 actor_situation） | `695e5117-33ee-427d-81f2-f79f47eef5b8` | `8ff90207…` | 6 项 |
+  | 七宝 | `333ab162…`（A09 historical_transformation） | `8574bf61-57c6-493c-88a9-5bfbf4c16e5b` | `91dbb175…` | 6 项 |
+
+  缺口构成（两题材一致、如实记账）：`display / download / adapt / redistribute / external_processing` 均 `unknown`（SHL 来源只显式许可 `access_view/machine_read/retain/quote`）+ `knowledge_purpose_is_production_not_publication`（本次 G5 用途 `data-production/m5-remediation/v1` 是生产用途，不是公开发布用途）→ `publication_eligible=false`。这正是设计要表达的「投稿不代表公开、也不代表合格知识」。
+- **负向 11 例全部实证**：未知修订 / 跨项目提交同一修订 / 重复提交幂等（不产生第二份）/ 应用角色无 UPDATE、DELETE 授权 / 库属主触发器仍拒绝改写与删除 / 非授权角色 42501 / **非最新修订不得送审**（事务内构造 rev2 后 `PRIVATE_SUBMISSION_NOT_LATEST_REVISION`）/ **无当前 G5 的修订失败关闭**（`KNOWLEDGE_NOT_QUALIFIED:no_current_g5`）/ **G5 之后内容被改动 → `artifact_revision_moved`**（事务内 UPDATE 后回滚）。副作用：负向用例全部在事务内构造并回滚，库内不残留 rev2 与任何测试快照。
+- **脚本**：`scripts/test-st08-submission-snapshot-isolation.mjs`，23 项断言全 PASS（`VERIFIED_ISOLATED`），可重复运行（已投稿情形按幂等复用原快照并照常核验内容）。
+- **顺带修复（既有缺陷，非本批新增）**：ST-05 泛化 A 方法后，`tests/data-production/private-candidate-worker.test.mjs` 3 个用例一直红——`finding()` 夹具没有 `method_id`（被新校验拒绝）、G4 用途期望仍写旧生产用途 `CANDIDATE_PURPOSE`、`finding_type:'dating'` 这一无效例在泛化后已不再无效。按现行合同改为：夹具补 `method_id:'A06'`、G4 期望改 `{namespace:'G4.interpretation.v1',code:'BE',version:'v1'}`、无效例换成 `method_id` 缺省/`A13`/小写三例（断言未放宽、未 skip）。
+- **回归**：`node --test tests/data-production/*.test.mjs` = **246 通过 / 0 失败 / 0 跳过**（修复前 243 通过 / 3 失败）。
+- **引用 MAB 交付包**：`evidence_only/KAD2_混合任务委托、执行、成果回流与Studio全链合同_现行.md` §7 ST-08 行（提交冻结稿件的产出与失败态）与 §8（WorkRevision@rev/PublicationSnapshot@rev 不得互相覆盖）。无其他包内文件被本批引用。
+- **口径边界**：只到 ST-08「投稿」；**ST-09 运营决策（EditorialDecision）/发布指针/撤回未做**，因此本次快照 `publication_eligible=false` 尚未有下游消费者；机器签与快照都不构成 Owner 人文背书；SHL 来源 `display` 仍 HOLD，故即便 ST-09 完成也不能直接公开消费；`studio.work_revisions.publication_status` 保持 `draft` 是有意设计（不可变修订行），不视为状态漏写；全部证据在本地 `mohen_dev`，不构成生产准出，`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变。
+- **下一阶段**：ST-09 EditorialDecision/Publish/Withdraw（独立 Operator 决策精确修订、发布指针原子上切、失败保留旧合法稿、撤回与撤权），须先补 `publication_snapshot` 写入口与 Operator 身份分权；本批不预先建设。
+- **本地 PENDING_PUSH**：本批 commit（迁移 + 隔离脚本 + 3 处测试用例修正 + progress/ledger）按 AGENTS.md §0A 等待 Owner 确认窗口批量推送。

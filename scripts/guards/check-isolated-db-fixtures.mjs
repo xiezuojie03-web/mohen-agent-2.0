@@ -20,12 +20,26 @@ const chainFiles = ["scripts/test-k3-db.mjs", "scripts/test-mab-http.mjs"];
 // Recorded debt: a migration listed here is known not to be applied by the isolated chain.
 // Adding an entry requires a reason; a stale entry (file now chained, or deleted) fails too.
 const LEGACY_SUPERSEDED = "pre-V2-baseline legacy migration, superseded by 202610070100_data_production_v2_baseline";
+// M5 Studio 业务轴（ST-01→ST-09）的 DB 层迁移：只被各自专门的隔离脚本
+// （scripts/test-st0X-*.mjs / scripts/test-d05-*.mjs）按需单独应用并取证，
+// 不并入 k3 / mab-http 两条链。登记在此如实记账，避免"作者写了但无人应用"被静默忘记；
+// 需要它们在 HTTP 链生效时，应连同对应路由一起进链，而不是靠本登记绕过。
+const M5_STUDIO_AXIS_DB_ONLY = "M5 Studio 业务轴 DB 层迁移，由专门隔离脚本单独应用（不进 k3 / mab-http 链）";
 const UNCHAINED = new Map([
   ...["008_cultural_world_objects.sql", "202609210001_foundation.sql", "202609210002_data_factory.sql",
     "202609210003_human_review.sql", "202609220004_knowledge_weave.sql", "202609220006_visual_linkage.sql",
     "202609220007_historical_spatial_reconstruction.sql", "202610020008_visual_asset_promotion_gate.sql",
     "202610020009_review_queue_triage.sql", "202610030010_research_workspace.sql", "202610040001_research_bridge_queue.sql",
     "202610050011_second_promotion_gate.sql", "202610070200_legacy_v1_to_v2_backfill.sql"].map(f => [f, LEGACY_SUPERSEDED]),
+  ...["20261113150000_mab_m5_reviewer_scope_follows_candidates.sql",
+    "20261113160000_mab_gate_scope_rule_for_studio_projects.sql",
+    "20261113170000_mab_m5_d02_text_plain_observation.sql",
+    "20261113180000_mab_g3_world_purpose_binding.sql",
+    "20261113190000_mab_m5_d04_meaning_finding_generalize.sql",
+    "20261114090000_mab_m5_d05_p04_story_seed.sql",
+    "20261114120000_mab_m5_director_plan.sql",
+    "20261114150000_mab_m5_st07_work_revision.sql",
+    "20261114180000_mab_m5_st08_submission_snapshot.sql"].map(f => [f, M5_STUDIO_AXIS_DB_ONLY]),
 ]);
 
 const chains = chainFiles.map(file => ({ file, source: fs.readFileSync(path.join(root, file), "utf8") }));

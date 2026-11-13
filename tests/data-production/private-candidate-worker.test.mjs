@@ -74,7 +74,7 @@ const claim=()=>({assertion:'《松江府志》卷十一田赋门记载：青浦
   change_type:'taxation_quota_assessment',
   time_scope:{note:'edition dating unresolved',qualification:'UNASSESSED'},
   support_type:'supports'});
-const finding=()=>({finding_type:'institutional_mechanism',
+const finding=()=>({method_id:'A06',finding_type:'institutional_mechanism',
   human_question:'松江府田赋如何通过田等差则实现税负分配？',
   interpretive_statement:'《松江府志》卷十一田赋门所示科则以田等为变量差别税额：低田均科正耗平米三斗六升五合并准熟起科。',
   understanding_delta:'将孤立的科则条文理解为田等×熟荒状态的二维征税规则。',
@@ -270,7 +270,11 @@ test('D04 recordHumanisticFinding persists one A06 candidate under a real stage 
 test('D04 recordHumanisticFinding rejects authorized-but-invalid findings before any persistence',async()=>{
   const originalId=id(),claimRevisionId=id();
   const cases=[
-    {originalId,claimRevisionId,finding:{...finding(),finding_type:'dating'}},
+    // method_id 必须属于设计登记的 A01—A12（finding_type 本身是方法派生的标签，非封闭枚举）
+    {originalId,claimRevisionId,finding:{...finding(),method_id:null}},
+    {originalId,claimRevisionId,finding:{...finding(),method_id:'A13'}},
+    {originalId,claimRevisionId,finding:{...finding(),method_id:'a06'}},
+    {originalId,claimRevisionId,finding:{...finding(),finding_type:''}},
     {originalId,claimRevisionId,finding:{...finding(),human_question:''}},
     {originalId,claimRevisionId,finding:{...finding(),human_question:'x'.repeat(2001)}},
     {originalId,claimRevisionId,finding:{...finding(),interpretive_statement:''}},
@@ -966,7 +970,9 @@ test('D04 recordHumanisticFinding submits one G4 finding candidate with the sign
     const candidate=await worker.recordHumanisticFinding({run,job,registry,context,input,token:'synthetic-session'});
     assert.deepEqual(submitted,{runId:run.run_id,stage:'D04',gateCode:'G4',
       objectType:'finding',objectId:findingId,artifactRevision:'a'.repeat(64),
-      purpose:CANDIDATE_PURPOSE,allowedScope:{project_id:run.scope.project_id},consumer:'producer',
+      // G4 人文发现门按合同绑 G4.interpretation.v1 五用途，不走 data-production 生产用途
+      purpose:{namespace:'G4.interpretation.v1',code:'BE',version:'v1'},
+      allowedScope:{project_id:run.scope.project_id},consumer:'producer',
       dependencySnapshot:[{gate_audit_id:auditId,qualification_digest:'d'.repeat(64),
         artifact_revision:'e'.repeat(64)}],
       evidenceRefs:[{kind:'finding',id:findingId,artifact_revision:'a'.repeat(64)},
