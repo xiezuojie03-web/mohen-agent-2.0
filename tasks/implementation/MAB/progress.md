@@ -3412,3 +3412,29 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
   - 机器评审此前在一次误用中给 CP1 样本项目的旧候选补签了一条 G0（audit `3ffc2f40…`，规则全过、该对象此前无 current 审计，未覆盖任何既有资格），已如实记录。
 - **口径边界（不得夸大）**：本项只到 **G0**。未签 G1–G5、未做 D01 读取、未产出 claims/作品；来源为地名志正文（`display/download` 仍 HOLD），故"跑到 G0"≠"可展示/可发布"。5.1 转 ✅ 仅指**通用创作入口这一维度**，不代替 5.2–5.8。
 - **本地 PENDING_PUSH**：commit `54f2ac6`、`77faadf`、`67fbe15` 与本批提交，按 AGENTS.md §0A 等待批量推送窗口。
+
+## 2026-11-13｜ST-02 D01+G1 两例通过（本地隔离库，VERIFIED_ISOLATED）
+
+- **本批依据**：PLAN §3.5-C ST-02 StudioResearchRead 依赖链（D00 G0→D01 draftTextReading/C01→G1）；两个非模板题材朱家角/七宝已完成 ST-01→D00→G0（B4 已核）。
+- **两个题材实测（本地隔离库 mohen_dev）**：
+  - 「朱家角」`d9d48901-…`：D01 run `146fd8da-…`（config.schema=`mab.private-text-reading.v1`，draftTextReading/C01）→ read_unit `d26163e9-…`（method_code=C01, unit_kind=paragraph, locator_schema=utf8_byte_range/v1, byte 335–995/1259）→ **G1 PASS current**（audit `d0e0179b-…`，decision_origin=independent_gate）。
+  - 「七宝」`b1ecefa4-…`：D01 run `e8b20f8d-…` → read_unit `4086564e-…`（method_code=C01, byte 332–857/1121）→ **G1 PASS current**（audit `66dca9ca-…`）。
+- **修掉的真实缺陷（commit 7b15869）**：
+  1. `private-evidence-binding.mjs#createApprovedMethodPlanReader` 返回 G0 audit **全部** 7 条 evidence_refs（含 source_version/source_need 等），D01 `every(isMethodPlanRef)` 因此恒 `PRIVATE_D01_METHOD_PLAN_REF_INVALID`——现已过滤 `refs.filter(r => r.kind === 'method_plan')`。
+  2. `rule-gate-reviewer.mjs#checkReadUnitBinding` 写死 `METHOD_BY_GATE.G1='C02'`，C01 文本读取一律 `read_unit_method_mismatch:C01`——现已按 `read_run.config->>'schema'` 动态判（text-reading.v1→C01，scanned-page-reading.v1→C02）。
+- **口径边界**：ST-02 只到 G1；D02–D05 + G2–G5 未做；非模板题材 D00→D01→G1 真实跑通，但 D01→D02 依赖链（D02 可接收 C01 文本证据）仍待 DB 层泛化。
+- **本地 PENDING_PUSH**：commit `7b15869`、`6b347ff`，按 AGENTS.md §0A 等待批量推送窗口。
+
+## 2026-11-13｜ST-03 D02+G2 两例通过（本地隔离库，VERIFIED_ISOLATED）
+
+- **本批依据**：PLAN §3.5-C ST-03 AnalyzeAndSaveCandidates 依赖链（D01 G1→D02 observeMaterial/H05→G2）；ST-02 已核两题材 G1 current。
+- **两个题材实测（本地隔离库 mohen_dev）**：
+  - 「朱家角」`d9d48901-…`：D02 run `a793399e-…`（observeMaterial/H05, literal_reading 摘录原文, source_voice=official_gazetteer）→ evidence `ec737b0a-…`（modality=`text_quote`, reading_unit.unit_kind=`paragraph`, locator_schema_version=`utf8_byte_range/v1`, selection_basis=`exact byte-range quote verified by read_unit locator`）→ **G2 PASS current**（audit `b2e149d0-…`，decision_origin=independent_gate）。
+  - 「七宝」`b1ecefa4-…`：D02 run `47d3b0e0-…` → evidence `fb50e834-…`（同 modality/link 模式）→ **G2 PASS current**（audit `32f8f64b-…`）。
+- **修掉的真实缺陷（DB 函数本地已应用，migration 待 commit）**：
+  - `studio.persist_private_material_observation` 函数原 M2 时代写死：content_type ∈ {image/png,jpeg,webp} + locator_schema='scanned_page/v1' + method_code='C02' + read_run schema='mab.private-scanned-page-reading.v1' + insert 时 modality='page_image' + locator_schema_version='scanned_page/v1'——SHL 地名志 text/plain 原件 + C01 utf8_byte_range/v1 读法全进不去。
+  - 现已泛化 14 处：content_type 放开 text/plain；locator_schema ∋ utf8_byte_range/v1 + scanned_page/v1；method_code ∋ C01 + C02；read_run schema ∋ text-reading + scanned-page-reading；insert material_evidence.modality='text_quote'；evidence_links.locator_schema_version='utf8_byte_range/v1'；reading_units.unit_kind='paragraph'；selection_basis='exact byte-range quote verified by read_unit locator' 等。
+  - DB 函数体经 pg_get_functiondef dump 去重后写入完整 migration：`supabase/migrations/20261113170000_mab_m5_d02_text_plain_observation.sql`（begin/commit + revoke/grant）。
+- **DB 证据核（psql 直查）**：两个题材 G1/G2 gate_audits 均 result=PASS + current_valid=true + decision_origin=independent_gate；qualification_current 两道门均存在；material_evidence modality=text_quote；evidence_links locator_schema_version=utf8_byte_range/v1。
+- **口径边界**：ST-03 只到 G2；D03–D05 + G3–G5 未做；D02→D03 依赖链已就绪（material_evidence + read_unit + G2 current），可开始 ST-04 施工（D03 assertWorldClaim/W07）；`fetch-shl-dmz-text` acquisition_attempts、Admin assets project_id filter 仍 HOLD。
+- **本地 PENDING_PUSH**：migration `20261113170000_mab_m5_d02_text_plain_observation.sql` + ledger 更新，待 commit 后按 AGENTS.md §0A 批量推送。
