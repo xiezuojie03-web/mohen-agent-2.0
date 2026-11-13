@@ -1,5 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { createAppTransaction } from './app-transaction.mjs';
+import { RIGHTS_ACTIONS, canonicalRightsAction } from './rights-actions.mjs';
 
 const kinds = new Set(['research_brief','source_anchor','reading_note','evidence_note','spacetime_candidate',
   'relation_hypothesis','humanistic_insight','research_collection','director_plan','media_selection','work_revision','citation_snapshot','consented_feedback']);
@@ -17,9 +18,10 @@ function jsonCopy(value, code) {
     return JSON.parse(text);
   } catch { throw new Error(code); }
 }
-const deniedActions = Object.freeze({read:'denied',quote:'denied',display:'denied',
-  download:'denied',adapt:'denied',external_processing:'denied'});
-const actions = Object.freeze(['read','quote','display','download','adapt','external_processing']);
+// QR-05：动作名不再在本文件另列一套。`read` 等旧写法由唯一词典归一，
+// 撤回快照必须覆盖全部九动作（少写一个就等于给该动作留了未知口子）。
+const deniedActions = Object.freeze(Object.fromEntries(RIGHTS_ACTIONS.map(action => [action, 'denied'])));
+const actions = RIGHTS_ACTIONS;
 const refType = /^[a-z][a-z0-9_]{0,63}$/;
 
 // The epistemic class is a property of the asset kind, not a constant. Marking
@@ -169,10 +171,11 @@ export function createStudioAssetRepository(pool) {
      */
     assetConsumptionDecision(revisionId, requestedAction, sessionToken) {
       requireId(revisionId);
-      if (!actions.includes(requestedAction)) return Promise.reject(new Error('STUDIO_USE_ACTION_INVALID'));
+      const action = canonicalRightsAction(requestedAction);
+      if (!action) return Promise.reject(new Error('STUDIO_USE_ACTION_INVALID'));
       return transaction(sessionToken, async client => {
         const {rows} = await client.query('select studio.asset_consumption_disposition($1,$2) as decision',
-          [revisionId,requestedAction]);
+          [revisionId,action]);
         const decision = rows[0]?.decision;
         if (!decision || typeof decision !== 'object') throw new Error('STUDIO_CONSUMPTION_DECISION_UNAVAILABLE');
         return decision;
@@ -184,16 +187,17 @@ export function createStudioAssetRepository(pool) {
      */
     recordUseEvent({projectId,revisionId,consumer,purpose,requestedAction,rightsDecisionRef=null},sessionToken) {
       requireId(projectId); requireId(revisionId);
-      if (!actions.includes(requestedAction)) throw new Error('STUDIO_USE_ACTION_INVALID');
+      const action = canonicalRightsAction(requestedAction);
+      if (!action) throw new Error('STUDIO_USE_ACTION_INVALID');
       const bounded=(value,code,max)=>{if(typeof value!=='string'||!value.trim()||value.trim().length>max)throw new Error(code);return value.trim();};
       const consumerName=bounded(consumer,'STUDIO_USE_CONTEXT_INVALID',80);
       const purposeName=bounded(purpose,'STUDIO_USE_CONTEXT_INVALID',120);
       const decisionRef=rightsDecisionRef===null
-        ?`studio_rights_by_action_v1:${requestedAction}`
+        ?`studio_rights_by_action_v1:${action}`
         :bounded(rightsDecisionRef,'STUDIO_USE_CONTEXT_INVALID',200);
       return transaction(sessionToken, async (client,actor) => {
         const {rows:decided} = await client.query('select studio.asset_consumption_disposition($1,$2) as decision',
-          [revisionId,requestedAction]);
+          [revisionId,action]);
         const decision=decided[0]?.decision;
         if (!decision||decision.disposition!=='ELIGIBLE')
           throw new Error('STUDIO_USE_BLOCKED:'+(Array.isArray(decision?.blockers)?decision.blockers.join(','):'UNKNOWN'));
@@ -202,7 +206,7 @@ export function createStudioAssetRepository(pool) {
           values($1,$2,$3,$4,$5,$6,$7)
           returning use_event_id,asset_revision_id,consumer,purpose,requested_action,rights_decision_ref,
             created_at::text as created_at`,
-          [projectId,revisionId,actor,consumerName,purposeName,requestedAction,decisionRef]);
+          [projectId,revisionId,actor,consumerName,purposeName,action,decisionRef]);
         return rows[0];
       });
     },

@@ -216,7 +216,7 @@ type StudioAssetRevisionV1 = {
   source_refs: Array<{source_id:string; version:string; locator_type:string; locator:string}>;
   formal_L_refs: Array<{layer:string; artifact_id:string; revision:string; gate_decision_ref:string|null}>;
   dependency_refs: Array<{type:string; id:string; revision:string; relation:string}>;
-  rights_by_action: Record<'read'|'quote'|'display'|'download'|'adapt'|'external_processing', 'allowed'|'denied'|'unknown'|'restricted'>;
+  rights_by_action: Record<'access_view'|'machine_read'|'retain'|'download'|'quote'|'display'|'adapt'|'redistribute'|'external_processing', 'allowed'|'denied'|'unknown'|'restricted'>;
   permission_scope: {project_id:string; roles:string[]; purposes:string[]; consent_ref:string|null};
   content_state: 'WORKING'|'SNAPSHOTTED'|'REUSE_READY'|'ARCHIVED';
   access_state: 'AUTHORIZED'|'RESTRICTED'|'REVOKED';
@@ -226,6 +226,8 @@ type StudioAssetRevisionV1 = {
   idempotency_key: string; correlation_id: string; created_at: string;
 }
 ```
+
+**唯一权利动作词典：** `rights_by_action` 的动作名与取值一律取 `packages/data-access/src/rights-actions.mjs`（`mohen.rights-actions.v1`）的九动作四取值，本合同只引用不复述，禁止另立第二套词表；键缺失等价 `unknown`。除 `access_view` 外，只有显式 `allowed` 才放行，`unknown / restricted / denied` 一律阻断。`access_view`（本项目内研究读取）的取证语义是：显式 `denied` 即拒，`unknown` 不阻断，但项目归属、`access_state`、`content_state`、依赖解析与原件绑定仍须另行通过——该动作裁决的是本项目内的读取，不构成任何对外许可，也不得由它推出 `quote / display / download / machine_read / retain / redistribute / external_processing` 的授权。
 
 **校验要求：** `asset_id`跨修订稳定、`revision_id`及`revision_no`只增不改；`supersedes`必须指向同asset的既有版本；所有引用均是身份+版本，不接收隐式“最新版”。引用来源缺原件定位则不得生成`quote`合格引用；权利`unknown`不能默认`allowed`；`qualified_L_ref`必须含正式层当前有效资格引用，其他`epistemic_class`不能自行改为该枚举；`content_hash`绑定内容与必需元数据。项目/用户隔离和下游用途必须另验，不因引用某个已合格L而继承所有动作授权。
 

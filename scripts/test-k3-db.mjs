@@ -131,7 +131,10 @@ try {
       "20261110160000_mab_d00_y04_original_provider_trace.sql",
       "20261110130000_mab_original_media_assets.sql",
       // D00-Y02：登记读取通道补出馆方目录号/来源状态/载体可得性三键，供 Y02 资源目录条目引用。
-      "20261110140000_mab_d00_y02_registration_locator.sql"]) apply(file);
+      "20261110140000_mab_d00_y02_registration_locator.sql",
+      // QR-05：Studio 资产消费裁决对齐唯一九动作词典（此前 machine_read/retain 等一律
+      // INVALID_ACTION）；必须排在 cp2f_asset_backlink 建函数之后。
+      "20261113100000_mab_qr05_single_rights_action_dictionary.sql"]) apply(file);
     // Capability assertions for the migrations applied immediately above. They can only run at
     // this point in the chain: the rights columns, the private worker, the machine reviewer and
     // the content-based sign_gate_candidate semantics do not exist any earlier.
