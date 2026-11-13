@@ -3767,3 +3767,30 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **修法（只做读侧映射，不改数据、不改合同、不新增表）**：新增 `apps/web/lib/watch-studio-content.ts::studioContentForWatch()`；`PUBLISHED_WORKS_SQL` 的 studio 分支多取 `r.beats::text as studio_beats`（legacy 分支补 `null::text`，保持 UNION 列一致）；`listPublished()` 对 studio 行用它拼出 `content.beats`——标题取 frame 的著录位置（缺失才回落真实 `kind` 标签），旁白取 `beat.content`，画面说明由「著录位置 / 版本·年代」真实字段拼成，`directorTimecodeMs` 按 `duration_ms` 累加，`provenanceRefs` 取 `material_refs`；缺字段一律不编（无 refs 就不给「参考资料」）。
 - **真实证据**（真实 dev server `127.0.0.1:3210` + 真实 `mohen_dev`）：`/api/works/published` 对该修订返回 3 章，标题为「卷十一田赋门低田科则条 / 准熟起科条件 / 缺失证据说明」，时码 0 / 30000 / 70000ms；WATCH 页面 **8/8 断言 PASS**（不再出现「暂无可阅读章节」、章节轴 3 章、计数 01/03、翻到第二章标题正确、参考资料入口因真实 `material_refs` 可用）；截图自查通过，临时脚本与截图已删除。新增 `tests/unit/watch-studio-content.test.ts` 4 例（真实字段夹具、缺 location 回落、无 beats 不合成、legacy 原样返回）：**4/4 PASS**。
 - **未做与边界**：作品仍未绑定原件扫描页（`content.media` 为空），WATCH 只有文字与著录位置、无原件细读——这是另一件事，不属于本次缺章问题；`M5_OVERALL_HOLD` 不变；只本地 `mohen_dev`，未触生产库；本批本地提交，**按 Owner 指示先不推送**（`PENDING_PUSH` 继续挂账）。
+
+---
+
+## M5 批次｜原件扫描页绑定到发布作品（WATCH 原件细读）
+
+- **三轴定位**：本批属 **M5 Studio 业务任务轴**（KAD2 §6 ST-07 SaveWorkRevision 更换媒资 + §7 ST-08 投稿冻结 + §9 ST-09 运营发布），D 轴不新增；目标是让已发布作品在 WATCH 能显示真实原件扫描页，闭合八维矩阵第 8 维「WATCH 同修订合法消费」的原件细读部分。
+- **施工依据（先读原文再施工）**：`KAD2_混合任务委托、执行、成果回流与Studio全链合同_现行.md` §6 ST-07「修改文字/排序/图像；更换媒资→单独检查行动级许可」、§7 ST-08「投稿不代表公开/合格知识」、§8「WorkRevision@rev 不得互相覆盖」；`KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md` §作品状态机与不可变修订；`PLAN.md` §3.5 八维矩阵第 8 项；既有 `tools/bind-original-media-to-work.mjs`（legacy 链路）与 `scripts/republish-songjiang-revision-2.mjs`（studio 链路）。
+- **设计取舍（按原文，不自行发挥）**：
+  1. **修订不可变，不改 rev2**：KAD2 §8 / KALC 规定修订不得互相覆盖；因此绑定媒资必须出 rev3，`publish_exact_revision` 原子地把公开指针从 rev2 切到 rev3（`on conflict (work_id) do update`），旧合法稿不受影响。
+  2. **只追加 `content.media`，其余逐字段不变**：rev3 内容 = rev2 内容 + `media:[{asset_id, src, kind, title, license, provenance, rights_status}]`；脚本用递归键排序做结构校验，确认除 media 外与 rev2 完全一致。
+  3. **媒资取自已 verified 且 display=allowed 的真实资产**：`public.assets` 中 `dd0ffa3b`（松江府志7 · 第35页，PD-old，`rights_by_action.display=allowed`，`STORED_VERIFIED`，SHA 与原件字节一致），不新增、不伪造、不推断权限。
+  4. **重走完整 ST-08→ST-09 链**：rev3 经 G5 机器评审 PASS → submission_snapshot 冻结 → editorial APPROVED（权利缺口 0）→ `publish_exact_revision` 发布；运营角色与创作者隔离，不自签。
+- **脚本 `scripts/bind-songjiang-original-rev3.mjs`**（幂等：rev3/G5/快照/决策/发布任一已存在则跳过）：
+  - 前置校验：rev2 存在且当前指针指向 rev2；读取 rev2 内容、beats、source_and_rights_refs。
+  - 媒资组装：从 `public.assets` 联 `source.sources` / `source.source_versions` 取真实 provenance（page_no、catalog_no、held_by、work_title、edition、source_url、content_sha256）。
+  - rev3 创建：`studio.persist_private_work_revision`，content = rev2 + media；校验内容结构一致。
+  - G5：与 ST-10 同通道（dryRun PASS → 签发），依赖 G4 finding + director_plan G5。
+  - ST-08：`persist_private_submission_snapshot`。
+  - ST-09：`decide_editorial` APPROVED → `publish_exact_revision`。
+- **真实证据**（真实 dev server `127.0.0.1:3210` + 真实 `mohen_dev`）：
+  - rev3 `78254134…` 创建，content_hash `48dd05c2…`，G5 `227ec929…` PASS current。
+  - 公开指针从 rev2 `6caec62b…` 原子切到 rev3 `78254134…`，publication_id `e7a8f505…`。
+  - `/api/works/published` 返回松江府田赋修订3：`content.media` 含 `dd0ffa3b`（松江府志7 · 第35页，src `/api/works/media/dd0ffa3b…`），`content.beats` 3 章（0/30000/70000ms）。
+  - `/api/works/media/dd0ffa3b-db10-4673-9fa8-eed17e7e3246` 返回 **200 + image/jpeg + 362221 字节**，与 `studio.private_originals.byte_size` 完全一致。
+  - 回归：`pnpm -r typecheck` 全 PASS；静态守卫 2/2 PASS；`watch-studio-content.test.ts` 4/4 PASS；单测 679/686（5 个预存失败在 rule-gate-reviewer/k7/private-evidence-binding，与本批无关，本批未改任何源码）。
+- **MAB 交付包引用**：本批未新增读取 MAB 交付包文件；复用既有实现（`persist_private_work_revision` / `persist_private_submission_snapshot` / `publish_exact_revision` / `studioContentForWatch`），均由 ST-05—ST-10 与 WATCH 缺章修复批次吸纳自 MAB 交付包的 KAD2/KALC 设计。
+- **未做与边界**：snapshot gaps 仍含 `knowledge_purpose_is_production_not_publication`（G5 用途为 `data-production/m5-remediation`，非 publication 用途——这是合同层口径，不影响发布与显示，需在合同层另议）；`/api/watch/sessions` 依赖的 KAD1 迁移仍 NOT APPLIED（KAD1 启用事项，不影响本批结论）；`M5_OVERALL_HOLD` 不变；只本地 `mohen_dev`，未触生产库；本批本地提交，**PENDING_PUSH 继续挂账**。
