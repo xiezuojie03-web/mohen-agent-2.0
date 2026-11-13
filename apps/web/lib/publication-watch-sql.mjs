@@ -10,6 +10,7 @@ export const PUBLISHED_WORKS_SQL = `
     select w.work_id::text as work_id, r.revision_id::text as revision_id,
            r.title as title, r.description as description, r.revision_no::text as revision_no,
            r.content::text as content, p.published_at::text as published_at,
+           null::text as studio_beats,
            'publication'::text as source_schema
     from publication.published_pointers p
     join publication.works w on w.work_id = p.work_id
@@ -19,6 +20,7 @@ export const PUBLISHED_WORKS_SQL = `
     select p.work_id::text as work_id, r.revision_id::text as revision_id,
            r.title as title, ''::text as description, r.revision_no::text as revision_no,
            r.content::text as content, p.published_at::text as published_at,
+           r.beats::text as studio_beats,
            'studio'::text as source_schema
     from publication.published_pointers p
     join studio.work_revisions r on r.revision_id = p.studio_revision_id

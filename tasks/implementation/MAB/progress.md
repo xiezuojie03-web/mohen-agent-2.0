@@ -3759,3 +3759,11 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **口径与未做**：改名只改显示名称，不合并档案、不改 `project_id`；主题分档按 Owner 决定暂不做（触发条件：同一批材料/结论被 ≥2 部作品真实复用，或需对外发布多作品「专题」）。E2E 选择器与文案全部保留，`five-pages-ui-acceptance.spec.ts` 的 UXD7 断言因区域名与注释文案恢复而重新成立，但本机**未执行**（`NOT_RUN`）。
 - **回归**：`tests/data-production` **246/0**；`check-structure`、`check-structure-map`、`guard:isolated-db-fixtures` 全 PASS；`tsc --noEmit -p apps/web` 0 错误。
 - **边界**：`VERIFIED_ISOLATED`，只本地 `mohen_dev`，未触生产库；`M5_OVERALL_HOLD` 不变；`6caec62b…` 作品在 WATCH「有发布记录但无章节内容」仍排队未修；本批本地提交登记 `PENDING_PUSH`（AGENTS.md §0A）。
+
+## 2026-11-13｜修复 WATCH「有发布记录但无章节内容」：Studio 修订字段映射（本地已核，`VERIFIED_ISOLATED`）
+
+- **现象**：`work 32217c75…` 的精确修订 `6caec62b…`（「松江府田赋·低田科则与准熟起科·修订2」，2026-11-13 20:04 发布，ST-10 产物）在 WATCH 目录里可选，但舞台显示「该作品暂无可阅读章节」，章节轴为空。
+- **根因（实测，非推断）**：Studio 修订的真实结构是 `content.frames`（`location` / `time_scope` / `material_refs`）+ `studio.work_revisions.beats` 列（`kind` / `content` / `duration_ms`），共 3 条；而 WATCH 画廊的 `parseBeats` 只认 legacy 口径 `content.beats`，且要求每项含 `title`+`narration` 字符串。两条链字段口径不一致 → 章节被整批过滤掉。修订按合同不可变，**不能回写数据**，所以修在读侧。
+- **修法（只做读侧映射，不改数据、不改合同、不新增表）**：新增 `apps/web/lib/watch-studio-content.ts::studioContentForWatch()`；`PUBLISHED_WORKS_SQL` 的 studio 分支多取 `r.beats::text as studio_beats`（legacy 分支补 `null::text`，保持 UNION 列一致）；`listPublished()` 对 studio 行用它拼出 `content.beats`——标题取 frame 的著录位置（缺失才回落真实 `kind` 标签），旁白取 `beat.content`，画面说明由「著录位置 / 版本·年代」真实字段拼成，`directorTimecodeMs` 按 `duration_ms` 累加，`provenanceRefs` 取 `material_refs`；缺字段一律不编（无 refs 就不给「参考资料」）。
+- **真实证据**（真实 dev server `127.0.0.1:3210` + 真实 `mohen_dev`）：`/api/works/published` 对该修订返回 3 章，标题为「卷十一田赋门低田科则条 / 准熟起科条件 / 缺失证据说明」，时码 0 / 30000 / 70000ms；WATCH 页面 **8/8 断言 PASS**（不再出现「暂无可阅读章节」、章节轴 3 章、计数 01/03、翻到第二章标题正确、参考资料入口因真实 `material_refs` 可用）；截图自查通过，临时脚本与截图已删除。新增 `tests/unit/watch-studio-content.test.ts` 4 例（真实字段夹具、缺 location 回落、无 beats 不合成、legacy 原样返回）：**4/4 PASS**。
+- **未做与边界**：作品仍未绑定原件扫描页（`content.media` 为空），WATCH 只有文字与著录位置、无原件细读——这是另一件事，不属于本次缺章问题；`M5_OVERALL_HOLD` 不变；只本地 `mohen_dev`，未触生产库；本批本地提交，**按 Owner 指示先不推送**（`PENDING_PUSH` 继续挂账）。

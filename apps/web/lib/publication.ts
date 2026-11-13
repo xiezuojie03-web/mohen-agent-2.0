@@ -18,6 +18,9 @@ export interface PublishedWork {
   revision_no: string;
   published_at: string;
   content: string;
+  /** Studio 修订逐条要点（`studio.work_revisions.beats` 原文）；由
+   * `studioContentForWatch` 映射成 WATCH 画廊消费的 `content.beats`。 */
+  studio_beats?: string | null;
   /** Which chain the pointer targets. Legacy editorial works keep
    * `publication`; MHKA Studio works are `studio`. One pointer table, no second
    * publication truth. */
@@ -300,10 +303,20 @@ export async function cancelSchedule(scheduleId: string): Promise<boolean> {
   return true;
 }
 
+/** Studio 修订的真实字段是 `content.frames`（著录位置/版本年代）与 `beats`
+ * 列（逐条要点与时长），而 WATCH 画廊消费的是 `content.beats`
+ * （title/narration/visual/导演时码）。映射规则见 `watch-studio-content`，
+ * 不补写任何史料。 */
+import { studioContentForWatch } from "./watch-studio-content";
+export { studioContentForWatch };
+
 /** 读已发布作品（WATCH 消费）。同一张公开指针表同时承载 legacy 作品与
  * MHKA Studio 精确修订；Studio 行经 studio.work_revisions 连接，撤回即失效。 */
-export function listPublished(): Promise<PublishedWork[]> {
-  return queryRows(PUBLISHED_WORKS_SQL) as unknown as Promise<PublishedWork[]>;
+export async function listPublished(): Promise<PublishedWork[]> {
+  const rows = (await queryRows(PUBLISHED_WORKS_SQL)) as unknown as PublishedWork[];
+  return rows.map((row) => (row.source_schema === "studio"
+    ? { ...row, content: studioContentForWatch(row.content, row.studio_beats) }
+    : row));
 }
 
 /**
