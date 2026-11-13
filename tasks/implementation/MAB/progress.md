@@ -3347,3 +3347,24 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **诚实边界 / 遗留缺陷（未在本批修，需记账）**：`source-discovery.ts#relevanceTier` 对图像渠道结果一律返回 `"title"`（`if (m.source_type === "image" || m.carrier_type === "image") return "title"`），使 Commons 图像扫描件不经题名比对即视为高相关，样本中出现「孟子趙注補正(二)」这类与「楚国八百年」明显无关的件进入 `materials`，会污染 D01 读取质量。这是**既有 Y06 逻辑缺陷，非 B2 引入**；修复需重设图像渠道的相关性判据（图像题名同样应对检索词做命中判定），列入后续批次评估，不在本批顺手改。
 - **记账影响**：LOCAL-BUILD-LEDGER §三 5.1（通用入口）由 🔵 具备"任意题材可进入生产准备并获得多渠道可读材料"的能力，但**尚未跑通 ST-01→D00→G0→Admin 全链**，且未满足 QR-10 泛化冒烟门（≥2 个非模板 topic），故仍不转 ✅。
 - **本地 PENDING_PUSH**：commit `885de09`，按 AGENTS.md §0A 等待批量推送窗口。当前 main 领先 origin/main，累计未推送提交见本文件各批记录。
+
+## 2026-11-13｜QR-05 关闭（唯一九动作词典 VERIFIED_ISOLATED）；QR-04 词典层关闭、数据层仍 HOLD
+
+- **PLAN QR-05 描述**：KAD `rights_by_action` 只列 read/quote/display/download/adapt/external_processing；Gate G0 又明确要求 machine_read/retain；"先修订既有 KAD/Gate 合同形成唯一动作词典，再接入 source_anchor 与媒体的不可变权利快照；G0/G5 按实际动作显式 ALLOW，缺失/unknown/restricted/过期一律 HOLD"。
+- **本轮核查（先查实现再动手）**：统一词典 `packages/data-access/src/rights-actions.mjs`（`mohen.rights-actions.v1`，九动作四取值）**已在 CP2-A/CP2-B 建好并被 G0 Reviewer、Provider 派发器、原件媒资登记、SHL/PD 标定工具共用**；G5 侧 `work-qualification-reader` 也已是显式动作 + 有效期 + 独立 G5 审计绑定。真正没对齐的是三处：
+  1. **合同层**：KAD 的动作类型仍写六动作；Gate 合同也只在正文里内联提 machine_read/retain，两份合同都没有指向唯一词典 → 想按合同请求 `machine_read`/`retain` 找不到依据。
+  2. **代码层第二词典**：`studio-asset-repository.mjs` 自带 `actions`（六动作，用旧名 `read`）与 `deniedActions`（六键），撤回快照漏掉 machine_read/retain/redistribute。
+  3. **数据库第三词典**：`studio.asset_consumption_disposition` 的动作白名单是六动作 → `machine_read`/`retain`/`redistribute`/`access_view` 一律 `INVALID_ACTION`，按词典请求机器读取根本拿不到裁决；`studio.asset_revisions.rights_by_action` 默认快照也只写六键。
+- **改动**（commit `cdbb204`）：
+  - 合同：KAD 动作类型改为九动作 + 新增「唯一权利动作词典」条款（只引用不复述、禁止另立词表）；Gate §12.3 当前资格 Guard 改为引用同一词典。
+  - 代码：`studio-asset-repository.mjs` 从 `rights-actions.mjs` 派生动作集与撤回快照，`read` 等旧写法由 `canonicalRightsAction` 归一，`studio.use_events.requested_action` 落库名与词典一致。
+  - 数据：迁移 `20261113100000_mab_qr05_single_rights_action_dictionary.sql` 对齐函数白名单、补齐默认快照九键、`read`/`public_display` 读取归一；历史快照与历史 `use_events` 原样保留不改写。迁移已登记进 `scripts/test-k3-db.mjs` 与 `scripts/test-mab-http.mjs` 隔离链。
+- **判定语义未变（重要，非"顺手放宽"）**：`access_view` 沿用既有取证规则——显式 `denied` 才阻断、`unknown` 不阻断，项目归属/`access_state`/`content_state`/依赖解析照旧另验；其余八动作照旧只有显式 `allowed` 才放行。**声明**：KAD 原先只写"权利 unknown 不能默认 allowed"，与本实现（`access_view` unknown 不阻断）存在张力，本批把实现里的既有语义写成合同明文，而不是反过来放宽实现。若 Owner 要更严（`access_view` unknown 也阻断），需另起一批给自有资产写显式快照并跑研究链回归——这会改变 Studio 研究读取行为，属资料权利语义，留给 Owner 裁定。
+- **验证（本地隔离 `mohen_dev` 真实库）**：
+  - 迁移已应用；函数白名单含九动作；`asset_revisions.rights_by_action` 默认快照为九键 `unknown`。
+  - 真实修订 `2c27180c…`/`5be54013…`（epistemic=editorial，快照仍是旧六键含 `read`）：`read` 与 `access_view` 都归一为 `access_view` 且 `ELIGIBLE`（语义未变，旧键回退生效）；`machine_read` 由 `INVALID_ACTION` 变为 `BLOCKED/RIGHT_NOT_ALLOWED`（仍失败关闭，因权利未声明）；`quote`/`display` 仍 `BLOCKED`；未知动作 `copy_to_model` 仍 `INVALID_ACTION`。
+  - 单测：新增 `tests/unit/qr05-single-rights-action-dictionary.test.ts` **5/5**（词典本体九动作、SQL 白名单与词典逐项一致、`read` 归一、仓储无第二份清单、两份合同都指向词典）。
+  - 全量 unit **675 passed / 2 skipped / 0 failed**；`tsc --noEmit` 0 错误。
+  - guards：`isolated-db-fixtures`（migrations=71 全部登记）、`physical-data-model`、`structure`、`structure-map`、`doc-budget` 全 PASS。
+- **QR-04 现状（未关闭，如实记）**：PLAN QR-04 的验收含两半——(a) 统一动作词典与 `source_anchor`/`asset_revision` 权利快照来源；(b) 逐来源、逐版本绑定原件/locator/hash/purpose/rights evidence。本批完成 (a) 的词典与快照形状统一；(b) 依赖**生产库真实权利数据**（复核发现 39 条 `source.sources` 无 `rights_by_action`/`external_processing`、仅 8 条有 basis、31 条权利信息不完整、`source_versions` 39 条无 rights 快照），属生产数据变更，须 Owner 单独授权，本批不动。本地侧已有按词典标定的工具（`tools/stamp-shl-open-data-rights.mjs`、`tools/stamp-public-domain-rights.mjs`），但未对真实来源批量执行——那等于替 Owner 判权利，不做。
+- **本地 PENDING_PUSH**：commit `cdbb204`（连同 `885de09`、`392034a` 等）按 AGENTS.md §0A 等待批量推送窗口。
