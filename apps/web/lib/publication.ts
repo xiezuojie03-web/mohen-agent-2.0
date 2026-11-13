@@ -5,6 +5,7 @@ import { readJsonColumn } from "./db-json";
 import { queryRows, queryValue, run } from "@mohen/data-access";
 import { reflowWorkToAssets } from "./asset-reflow";
 import { requireIndependentWorkPublicationG5, requireCurrentWorkConsumerQualification } from "./work-publish-qualification";
+import { PUBLISHED_WORKS_SQL, STUDIO_REVISION_WATCHABLE_SQL } from "./publication-watch-sql.mjs";
 import { createHash, randomUUID } from "node:crypto";
 
 const canonicalUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id) ? id.toLowerCase() : null;
@@ -17,6 +18,10 @@ export interface PublishedWork {
   revision_no: string;
   published_at: string;
   content: string;
+  /** Which chain the pointer targets. Legacy editorial works keep
+   * `publication`; MHKA Studio works are `studio`. One pointer table, no second
+   * publication truth. */
+  source_schema?: "publication" | "studio";
 }
 
 export interface SubmittedWork {
@@ -295,18 +300,10 @@ export async function cancelSchedule(scheduleId: string): Promise<boolean> {
   return true;
 }
 
-/** 读已发布作品（WATCH 消费） */
+/** 读已发布作品（WATCH 消费）。同一张公开指针表同时承载 legacy 作品与
+ * MHKA Studio 精确修订；Studio 行经 studio.work_revisions 连接，撤回即失效。 */
 export function listPublished(): Promise<PublishedWork[]> {
-  return queryRows(
-    `select w.work_id::text as work_id, r.revision_id::text as revision_id,
-            r.title as title, r.description as description, r.revision_no::text as revision_no,
-            r.content::text as content, p.published_at::text as published_at
-     from publication.published_pointers p
-     join publication.works w on w.work_id = p.work_id
-     join publication.work_revisions r on r.revision_id = p.revision_id
-     where r.status = 'published'
-     order by p.published_at desc`
-  ) as unknown as Promise<PublishedWork[]>;
+  return queryRows(PUBLISHED_WORKS_SQL) as unknown as Promise<PublishedWork[]>;
 }
 
 /**
@@ -314,6 +311,12 @@ export function listPublished(): Promise<PublishedWork[]> {
  * status for authorized inspection; public WATCH must not reuse that list as
  * authorization. Every response rechecks each exact work revision and its
  * own consumer qualification. A failed/absent G5 only removes that work.
+ *
+ * Studio rows are rechecked against the same conditions the publish gate
+ * refused to publish without (pointer + snapshot still bound to this exact
+ * revision, not withdrawn, current G5, artifact revision unmoved). The legacy
+ * `work_revision_g5_binding` bridge stays legacy-only: it reads
+ * `publication.work_revisions`, so it can never qualify a Studio revision.
  */
 export async function listWatchEligible(): Promise<PublishedWork[]> {
   const published = await listPublished();
@@ -323,6 +326,11 @@ export async function listWatchEligible(): Promise<PublishedWork[]> {
     try { content = readJsonColumn<Record<string, unknown>>(work.content, {}); }
     catch { continue; }
     try {
+      if (work.source_schema === "studio") {
+        const rows = await queryRows(STUDIO_REVISION_WATCHABLE_SQL, { wid: work.work_id, rid: work.revision_id });
+        if (rows.length === 1) allowed.push(work);
+        continue;
+      }
       const check = await requireCurrentWorkConsumerQualification(
         work.work_id, work.revision_id, "watch", content
       );

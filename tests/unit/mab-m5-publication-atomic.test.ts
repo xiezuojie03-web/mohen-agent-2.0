@@ -171,5 +171,16 @@ describe("MAB M5 publish revision/pointer atomic transition", () => {
     const statement=String(queryRows.mock.calls[0][0]);
     expect(statement).toContain("join publication.work_revisions r on r.revision_id = p.revision_id");
     expect(statement).toContain("where r.status = 'published'");
+    expect(statement).toContain("where p.source_schema = 'studio'");
+    expect(statement).toContain("from publication.withdrawals wd");
+  });
+  it("studio published revisions are rechecked by the publish-gate conditions, not the legacy binding bridge",async()=>{
+    const studioWork={work_id:wid,revision_id:rid,content:JSON.stringify({beats:[]}),source_schema:"studio"};
+    queryRows.mockImplementation(async (sql:string)=>String(sql).includes("where p.source_schema = 'studio'")
+      && String(sql).includes("control.artifact_revision_for") ? [{ok:1}] : [studioWork]);
+    await expect(listWatchEligible()).resolves.toEqual([studioWork]);
+    expect(requireCurrentWorkConsumerQualification).not.toHaveBeenCalled();
+    queryRows.mockImplementation(async (sql:string)=>String(sql).includes("control.artifact_revision_for") ? [] : [studioWork]);
+    await expect(listWatchEligible()).resolves.toEqual([]);
   });
 });

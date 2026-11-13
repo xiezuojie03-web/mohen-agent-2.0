@@ -3699,3 +3699,29 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **引用 MAB 交付包**：`evidence_only/KAD2_混合任务委托、执行、成果回流与Studio全链合同_现行.md` §1 / §7 / §9。无其他包内文件被本批引用。
 - **口径边界**：运营核签成立但公开消费未成立；M5 八维度「发布指针原子指向该修订」现在只到 HOLD 分支成立、成功分支待原条件；`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变；仅本地 `mohen_dev`，无生产动作。
 - **本地 PENDING_PUSH**：本批（迁移 + 隔离脚本 + 守卫登记 + progress/ledger）按 AGENTS.md §0A 待 Owner 确认窗口批量推送。
+
+## 2026-11-13｜ST-10 第三题材全链：「松江府田赋」发布正面成功路径 + 撤回 + WATCH 消费适配（VERIFIED_ISOLATED，PENDING_PUSH）
+
+- **Owner 决策（照录意图）**：用「松江府志7」原件建第三题材、跑到发布，并适配 WATCH 消费；一次同时验证发布指针正面成功路径、撤回、以及 WATCH 读到 studio 已发布修订。
+- **为什么必须另建一条题材**：ST-09 的 `DEFERRED` 写得很清楚——发布闸要求 `display` 显式 `allowed`，而朱家角／七宝用的是上海图书馆地名志（`display=unknown`），全库唯一九动作全 `allowed` 的来源只有模板项目「松江府田赋」的 `松江府志7`（`b0a11000-…-0004`，PD-old，`tools/stamp-public-domain-rights.mjs` 记录）。因此本题材不是"换一个好看的作品"，而是**唯一能满足发布闸真实权利的素材**。
+- **未重建的部分（据实说明）**：该题材的 D01（5 条 C02 扫描页 read_unit）、D02/D03（3 条 W07 claim）、D04（3 条 A06 institutional_mechanism finding，其中 `b31f534e` 与 `01612b63` 有 current G4 PASS）在历史批次已真实存在，本批直接复用 `b31f534e` + G4 `fc3645f6`，不重复造数据。
+- **本批新增链路（脚本 `scripts/test-st10-third-topic-fullchain-isolation.mjs`，14 项断言全 PASS）**：
+  - D05 P02 `world_projection` `0c69d986…` → G5 `554658b7…`；
+  - D05 P04 `story_seed` `a228d400…` → G5 `a4a7f000…`、`agent_context` `4d5e0488…` → G5 `b67b8df2…`；
+  - ST-05 `director_plan` `01719b9f…` → G5 `76ff1404…`；
+  - ST-07 `work_revision` `f09c8431…`（rev 1，expected 0）→ G5 `030048d7…`；
+  - ST-08 `submission_snapshot` `ef70e986…`；
+  - ST-09 运营核签 `APPROVED`（权利缺口 **0**、`publishable=true`）→ `publish_exact_revision` **成功**：`publication_id f7c003f2…`，指针 `source_schema=studio`、`studio_revision_id=f09c8431…`、legacy `revision_id` 为 null，**legacy 指针仍 6 条未动**；
+  - 撤回 `withdraw_publication`：指针归零，历史 `publication_snapshots` / `editorial_decisions` / `withdrawals` 各保留 1 条；同幂等键重放返回原撤回记录、不新增行。
+- **应用层适配（本批唯一改动的产品代码）**：
+  - 新增 `apps/web/lib/publication-watch-sql.mjs`（+ `.d.mts`）承载两条只读语句：`PUBLISHED_WORKS_SQL`（同一张指针表的 legacy `union all` studio 分支，studio 行经 `studio.work_revisions` 连接并排除已撤回）与 `STUDIO_REVISION_WATCHABLE_SQL`（studio 修订的当前复核）。
+  - `apps/web/lib/publication.ts`：`listPublished()` 改为执行上述联合语句（legacy 分支谓词逐字未变，故旧单测断言仍成立）；`listWatchEligible()` 对 `source_schema='studio'` 的行改走 studio 复核，legacy 行仍走原 `requireCurrentWorkConsumerQualification`。
+  - **studio 复核重放的是发布闸本身拒绝发布的条件**（指针+发布快照仍绑该精确修订、未撤回、该修订有 current G5 PASS、`artifact_revision_for('work_revision')` 仍等于发布时值），不是新造判据；legacy 的 `work_revision_g5_binding` 桥只读 `publication.work_revisions`，结构上永远无法给 studio 修订发资格，故不能复用。
+  - 新增单测 1 例（`tests/unit/mab-m5-publication-atomic.test.ts`）：studio 行只由 studio 复核决定去留、且不调用 legacy 资格桥；同时把 `listPublished` 断言补到 studio 分支。
+- **真实数据验证（不是 mock）**：`listPublished` 生产语句在真实库读出 7 部（legacy 6 + studio 1），命中的正是本修订且内容含真实科则文本；studio 复核通过；把该修订内容改动后（事务内、已回滚）复核立刻拒绝；撤回后列表与复核均不再返回该作品。
+- **回归**：`node --test tests/data-production/*.test.mjs` = **246 通过 / 0 失败**；`tests/unit/mab-m5-publication-atomic.test.ts` 13 例通过；`apps/web` `tsc --noEmit` 通过；`guard:structure`（`router_broken=0`）、`guard:structure-map`、`guard:isolated-db-fixtures`（81 条迁移全部入链）均 PASS。
+- **仍未闭合（据实记账，不掩盖）**：
+  1. **知识资格用途仍有跨合同缺口**：本批 G5 沿用现行唯一可用用途 `data-production/m5-remediation@v1`，ST-08 因此如实记 `knowledge_purpose_is_production_not_publication` 缺口（`publication_eligible=false`），而 ST-09 发布闸只核"当前 G5 + 逐动作权利 + 运营核签"，不核用途。也就是说**发布在机制上成功，但"生产用途的 G5 是否等于发布用途资格"这一合同问题本批未解决**，需在专业合同层裁定，不在施工层自行发明用途码。
+  2. 作品 `content.media` 未挂原件图（本批只验指针与消费链路，未做媒体绑定）；WATCH 页面的原件显示仍由既有媒体链路负责，本题材未验。
+  3. `listWatchEligible` 之外的 WATCH 公开路由（`/api/works/published`、搜索、分享）现在会列出通过 studio 复核的题材；但"WATCH 自己的 consumer 资格（`MOHEN_G5_CONTEXTS`）"对 studio 修订仍无对应签发路径，属另批事项。
+- **口径边界**：仅本地 `mohen_dev`，未触碰生产库、未签任何非机器 Gate、未伪造许可；机器签与隔离证据不构成 Owner 人文背书；`M5_OVERALL_HOLD` 不变。本批按 AGENTS.md §0A 本地提交并登记 `PENDING_PUSH`。
