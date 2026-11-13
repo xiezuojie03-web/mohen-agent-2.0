@@ -63,13 +63,18 @@ export async function POST(req: Request) {
   if (!sourceIds.length) return privateJson({ ok: false, reason: "project_source_unbound" }, 409);
 
   const expiresAt = new Date(Date.now() + ttlMinutes * 60_000).toISOString();
+  // QR-06: rootTaskRef follows the caller's Agent research task when supplied,
+  // so that Studio research and external Provider dispatch form the same root DAG.
+  // Legacy behaviour (hardcoded "studio-llm-dispatch") is preserved when task_id is absent,
+  // allowing direct external dispatch without a prior research step.
+  const rootTaskRef = taskId ? `studio-research:${taskId}` : "studio-llm-dispatch";
   let delegation;
   try {
     delegation = await createStudioDelegationRepository(getNodePgPool()).saveDelegation({
       projectId,
       seriesId: randomUUID(),
       revisionNo: 1,
-      rootTaskRef: "studio-llm-dispatch",
+      rootTaskRef,
       rootTaskId: taskId ?? null,
       rootTaskSnapshot: { purpose: "studio_llm_dispatch", actions, source_ids: sourceIds, research_task_id: taskId ?? null },
       subtaskRef: "studio-director-llm",
