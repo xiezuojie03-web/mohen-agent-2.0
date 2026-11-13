@@ -3368,3 +3368,24 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
   - guards：`isolated-db-fixtures`（migrations=71 全部登记）、`physical-data-model`、`structure`、`structure-map`、`doc-budget` 全 PASS。
 - **QR-04 现状（未关闭，如实记）**：PLAN QR-04 的验收含两半——(a) 统一动作词典与 `source_anchor`/`asset_revision` 权利快照来源；(b) 逐来源、逐版本绑定原件/locator/hash/purpose/rights evidence。本批完成 (a) 的词典与快照形状统一；(b) 依赖**生产库真实权利数据**（复核发现 39 条 `source.sources` 无 `rights_by_action`/`external_processing`、仅 8 条有 basis、31 条权利信息不完整、`source_versions` 39 条无 rights 快照），属生产数据变更，须 Owner 单独授权，本批不动。本地侧已有按词典标定的工具（`tools/stamp-shl-open-data-rights.mjs`、`tools/stamp-public-domain-rights.mjs`），但未对真实来源批量执行——那等于替 Owner 判权利，不做。
 - **本地 PENDING_PUSH**：commit `cdbb204`（连同 `885de09`、`392034a` 等）按 AGENTS.md §0A 等待批量推送窗口。
+
+## 2026-11-13｜B3 修 Y06 图像相关性 + 泛化冒烟第一个题材「朱家角」推进到 D00 门（未过）
+
+- **本批依据**：B2 记账里如实留的**遗留缺陷**——`source-discovery.ts#relevanceTier` 对图像渠道一律返回 `title`，使无关图像（实测「孟子趙注補正(二)」）冒充题名命中进 `materials`，污染 D01 读取；D00 Y06 要求研究相关性逐条判、未命中线索限量保留且不得冒充命中。
+- **B3 改动**（commit `54f2ac6`）：
+  - `source-discovery.ts`：图像不再免判，改按「题名 + 描述」命中检索词定 tier；未命中降 `body-only`（沿用 Y06 限量 2 条），`wikimedia-commons` 从「题名检索型渠道」移除；导出 `relevanceTier` 供下游复用，trace 措辞改为「题名/图像内容命中…仅正文或描述偶遇…」。
+  - `prepare-topic.ts`：`classifyDiscoveredLeads(leads, terms)` 新增检索词入参；未命中题名/描述的图像只进 `candidates`，不进 `materials`。文本渠道口径不变，不传词时行为与 B2 完全一致（不扩大收缩）。
+  - 单测 `tests/unit/b2-source-discovery-preparation.test.ts` 追加 4 例（无关图像→候选、英文题名但描述命中→材料、文本口径不变、不传词向后兼容）；**全量 unit 679 passed / 2 skipped**，`tsc -p apps/web` 0 错误。
+- **本批顺带修的真实缺陷**（不修则"首次落原件"根本走不通）：`tools/land-shl-original.mjs` 预读分支只容忍 `ENOENT`，而存储契约把「对象还不存在」报成 `ORIGINAL_NOT_FOUND`，导致新对象首次 `--apply` 必然中断。文本与影像两条路径均改为两者都视为"尚未存"。**注意**：此前该工具的"已验证"只在对象已存在时成立，属验证口径漏洞，已如实记入本批。
+- **泛化冒烟第一例（题材「朱家角」，非模板）实测链路**（本地隔离 `mohen_dev`，全程真实外呼/真实落库）：
+  1. **ST-01 通用委托**：`POST /api/studio/projects` 建项目 `d9d48901…`；`POST /api/studio/research-tasks` 真实跑通，产出 research_brief 资产，`verdict=partial`，材料 3 条、线索 18 条 —— 非模板题材走通用入口，无白名单拦截。
+  2. **原件落地**：`tools/fetch-shl-dmz-text.mjs --freetext 朱家角` 取上海图书馆地名志条目（description 纯文本，无压缩残片）→ `tools/land-shl-original.mjs --mode text` 落为私有原件 `f474b91b…`（660 字节，`STORED_VERIFIED`），并登记 L0（`source`/`source_version`/`raw_item`，`source_version_id=a49ff014…`），`d00_lookup` 回查一致。
+  3. **权利标定**：`tools/stamp-shl-open-data-rights.mjs --apply` 按既有 SHL 平台政策对本地库 30 条 SHL 来源统一标定（`access_view/machine_read/retain/quote` 显式 allowed；`display/download/adapt/redistribute/external_processing` 仍 HOLD），`rights_snapshot` 冻结 30/30，冲突 0。**仅本地隔离库，未触生产**。
+  4. **执行授权前置**：`tools/verify-local-execution-env.mjs` 重新生成 enable_requires 证据（jobs=6、isolation 246 pass、无 stale PASS），绑定当前 HEAD。
+  5. **D00 实跑（Owner 已具名批准）**：两次失败关闭，均为**设计预期的失败关闭**，不是环境问题：
+     - 第 1 次 `PRIVATE_SOURCE_INTAKE_SCOPE_INVALID`：scope 缺 `page_number`（worker 要求 `1..10000` 的页级作用域）。补 `page_number: 1`。
+     - 第 2 次 `ACQUISITION_REQUIRED`：D00 Y07 硬要求 `sections.acquisition`，且其中 `method.method_key` 必须是**已登记**的 `M####`。核查 `source.acquisition_methods` 现有 5 条：`M0002`(NAJ 手工下载)、`M0003`(IIIF 整卷)、`M0004`(HTTP 直链单文件，含 provider 作用域)、`M0005`(OAI-PMH 目录)、`M0006`(SPARQL 目录)——**没有任何一条覆盖「开放数据 REST 接口取条目正文文本」这条通用入口实际在用的路**，而 `M0005/M0006` 明确只算目录元数据、不冒充原件字节。按设计只能失败关闭，不得拿 `M0004` 顶替（其作用域是"单文件原件"且 provider 逐次登记）。
+  - 落库现状如实记：`source.source_needs` 已写 1 条（Y01 需求回执，逐工序提交）；Y02 目录之后的工序未写；**未产生 G0 候选、未签发任何 Gate**。
+- **结论（对 5.1 / QR-10 的影响）**：通用入口「任意题材 → 发现 → 落原件 → L0 登记」这一段**已真实跑通**（此前只有模板题材能做到）；**D00→G0 这一段没跑通，卡点是获取方法登记缺口，不是 D00/G0 机制**。5.1 仍不转 ✅，QR-10 泛化冒烟门 0/2。
+- **下一批（已定，不改变 PLAN 依赖顺序）**：补齐「开放数据 REST 文本/影像接口」的获取方法登记（`M0007@v1`，字段按《长期资源与获取方法维护规范》§7.2/§7.7 填全，含 resource_scope/access_mode/preconditions/success_criteria/failure_modes），并把 `fetch-shl-dmz-text` 升级为**会自行登记方法与追加 Attempt**（照 `acquire-http-file.mjs` 的既有做法），再用真实取件结果喂 D00 的 `sections.acquisition`；随后 G0 机器评审。**方法登记属 Registry 变更，按 Owner 纪律单独列批、不顺手改**。
+- **本地 PENDING_PUSH**：commit `54f2ac6`（B3）与 land-shl-original 缺陷修复，按 AGENTS.md §0A 等待批量推送窗口。

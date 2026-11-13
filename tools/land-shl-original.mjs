@@ -199,7 +199,10 @@ async function landText() {
     if (!previous.equals(bytes)) throw new Error("ORIGINAL_INTEGRITY_FAILED");
     alreadyStored = true;
   } catch (error) {
-    if (error?.code !== "ENOENT") throw error;
+    // 首次落地时对象本来就不存在。存储契约把"不存在"统一报成 ORIGINAL_NOT_FOUND
+    // （本地 FS 由 ENOENT 转换而来），两个都必须是"还没存"，否则首次 --apply 必然中断。
+    const missing = error?.code === "ENOENT" || error?.message === "ORIGINAL_NOT_FOUND";
+    if (!missing) throw error;
   }
   if (!alreadyStored) await storage.putVerified(reserved.storage_key, bytes, "text/plain");
   const finalRecord = await repository.finalize(originalId, sha256, token);
@@ -308,7 +311,8 @@ async function main() {
     if (!previous.equals(bytes)) throw new Error("ORIGINAL_INTEGRITY_FAILED");
     alreadyStored = true;
   } catch (error) {
-    if (error?.code !== "ENOENT") throw error;
+    const missing = error?.code === "ENOENT" || error?.message === "ORIGINAL_NOT_FOUND";
+    if (!missing) throw error;
   }
   if (!alreadyStored) await storage.putVerified(reserved.storage_key, bytes, "image/jpeg");
   const finalRecord = await repository.finalize(originalId, sha256, token);
