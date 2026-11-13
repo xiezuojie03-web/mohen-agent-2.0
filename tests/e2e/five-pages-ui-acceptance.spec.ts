@@ -36,10 +36,10 @@ test.describe("WATCH catalogue failures", () => {
 });
 
 async function prepareSubmission(page: import("@playwright/test").Page) {
-  await page.route("**/api/studio/projects", route => route.fulfill({ json: {
-    ok: true,
-    projects: [{ project_id: "submission-project", project_title: "投稿测试项目" }],
-  } }));
+  // 项目对用户隐形：页面不再要求选择/新建项目，第一句话发出时后台自动建立研究底稿。
+  await page.route("**/api/studio/projects", route => route.request().method() === "POST"
+    ? route.fulfill({ json: { ok: true, project: { project_id: "submission-project", project_title: "投稿测试项目" } } })
+    : route.fulfill({ json: { ok: true, projects: [] } }));
   await page.route("**/api/studio/research-tasks", route => route.fulfill({ json: { ok: true, decision: { mohenLine: "测试发现", materials: [], gaps: [] } } }));
   await page.route("**/api/studio/director-plans", route => route.fulfill({ json: { ok: true, plan_id: "submission-plan", facts: [], planA: { angle: "观察空间变化", points: ["观察地点"] }, planB: { angle: "观察日常生活", points: ["观察生活"] } } }));
   await page.route("**/api/studio/director-plans/submission-plan/select", route => route.fulfill({ json: { ok: true, beats: [{ title: "首章", visual: "预览画面", narration: "预览旁白", directorTimecodeMs: 0, provenanceRefs: ["test-ref"] }] } }));

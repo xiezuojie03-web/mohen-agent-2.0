@@ -3738,3 +3738,13 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **未评估（如实记，不算通过）**：`/api/watch/sessions` 观看进度。它依赖的 `202611020900_kad1_watch_revision_isolation.sql` 首行自标 **"NOT APPLIED"**，本地 `public.watch_sessions` 仍只有 `(work_id, playhead, updated_at)`，路由必然 500——与 studio 无关，legacy 作品同样不可用。**过程记录**：我一度按"外键指向 legacy 作品表"的假设改了 sessions 的 SQL 并写了放宽外键的迁移，核对到该迁移是**设计目标、故意未应用**后，已回退路由改动、删除该迁移，未擅自启用 KAD1。
 - **其他已知缺口（不影响本批判定，交由后续）**：作品 `content.media` 未挂原件图，WATCH 页面看到的是分镜文本而非原件细读；`/admin` 需运营角色会话。
 - **口径**：仅本地隔离库；`M5_OVERALL_HOLD` 不变；Owner 体验签收（§3.5 C.7 / §5 M5）尚未进行。本批本地提交并登记 `PENDING_PUSH`。
+
+## 2026-11-13｜Studio 形态改版（一）：项目对用户隐形 + 左栏收敛 + 中右栏合并为「你的作品」（本地 UI 已核，`VERIFIED_ISOLATED`）
+
+- **Owner 指出的问题**：创作页左栏选择过多（研究项目下拉／新建项目／项目管理／研究记录／知识范围标签／示例按钮），「项目」概念对用户不可理解；应当是简单的一句话对话驱动作品创作；上一版看起来没有差别。
+- **改动（只动呈现与客户端路径，服务端合同零改动）**：`apps/web/app/studio/StudioWorkbench.tsx` 删除项目下拉/新建/管理、知识范围标签、五步研究进度条、独立「研究定方向」中栏；左栏只剩「和墨痕说话」+ 一个「研究底稿」折叠入口 + 对话 + 输入框（+「重新开始另一部作品」）；右栏合并为「你的作品」：两个方向 → 预览 → 分镜/故事/画面/旁白/音乐 → 提交。`studio.css` 改两栏栅格（`minmax(320px,34%) 1fr`），删掉已无用的流水线样式。
+- **项目隐形机制**：界面不再要求选择或命名项目。第一句话发出时 `ensureProject()` 用真实 `POST /api/studio/projects` 在后台建底稿（title=第一句话前 40 字、`scope.auto_created=true`、同句重试沿用同一 `project_id`），研究委托绑定该 `project_id`；「项目」字样不再出现，以往档案只在抽屉「以往研究档案」，另有「打开完整研究记录」→ `/studio/desk`。研究资料与「正式合格资产」口径移入抽屉，措辞与判定未变（仍未接入资格、不冒充资产）。
+- **真实证据**（真实 dev server `127.0.0.1:3210` + 真实 HMAC 会话 + 真实库；仅 `/api/studio/research-tasks` 换固定回执，避免外部模型调用与费用）：18 项断言全 PASS——旧控件与五步进度条均为 0；左栏仅 1 个「研究底稿」按钮；两栏并排；发送后墨痕有回应；后台真实建底稿（例 `352a91a9…`，`research_scope={auto_created:true}`）且研究任务请求体 `project_id` 与其完全一致；抽屉展开才可见、列出本次档案与完整研究记录入口、不含「项目」字样。
+- **测试同步**：`tests/e2e/five-pages-ui-acceptance.spec.ts` 的 projects 替身改为按方法分流（GET 空列表／POST 返回项目）；`tests/e2e/mab-m4-plan.spec.ts` ST-01 改为「第一句话 → 后台建底稿 → 研究任务绑定同一项目」。两者属隔离 HTTP 验收，本机**未执行**（`NOT_RUN`），不据源码改动声称通过。
+- **回归**：`tests/data-production` 246/0；`guard:structure`（含 structure-map）与 `guard:isolated-db-fixtures` PASS；`tsc --noEmit -p apps/web` 0 错误。
+- **边界**：`VERIFIED_ISOLATED`，只本地 `mohen_dev`；研究答复为替身，D00—D05/LLM 真实链本批未重跑（ST-10/ST-11 证据保持有效）；验证产生的 3 份 auto_created 底稿已按 project_id 精确删除（0 资产／0 研究任务）；`M5_OVERALL_HOLD` 不变；`6caec62b…` 作品在 WATCH「有发布记录但无章节内容」的缺陷仍排队未修；本批本地提交登记 `PENDING_PUSH`（AGENTS.md §0A）。

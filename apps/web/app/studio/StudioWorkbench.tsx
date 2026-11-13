@@ -18,7 +18,6 @@ type Message = {
 };
 
 const STAGES = ["对话与构思", "受托研究与编导", "预览与修改", "审核与发布"];
-const PIPELINE = ["资料检索", "史料筛选", "事实校验", "编导方案", "分镜生成"];
 const TABS = ["分镜与脚本", "故事结构", "画面风格", "配音旁白", "背景音乐"];
 const EXAMPLES = [
   "寺和桥真的有关系吗？",
@@ -61,13 +60,14 @@ function ColumnHead({ no, title, desc }: { no: string; title: string; desc: stri
 }
 
 export default function StudioWorkbench() {
+  // Owner 决定：研究「项目」对用户隐形。页面不再要求选择或命名项目；用户发出第一句话时
+  // 由后台自动建立一份研究底稿并绑定本次创作，界面只把它当作「以往研究档案」在抽屉里可见。
   const [projects,setProjects]=useState<StudioProject[]>([]);
   const [projectId,setProjectId]=useState("");
-  const [projectTitle,setProjectTitle]=useState("");
   const [projectLoading,setProjectLoading]=useState(true);
   const [projectBusy,setProjectBusy]=useState(false);
   const [projectError,setProjectError]=useState<string|null>(null);
-  const [createProjectOpen,setCreateProjectOpen]=useState(false);
+  const [draftsOpen,setDraftsOpen]=useState(false);
   const projectAttempt=useRef<{title:string;id:string}|null>(null);
   const requestAttempt=useRef<{fingerprint:string;id:string}|null>(null);
   // QR-06: remember the latest Agent research task so external-AI authorization can bind
@@ -83,31 +83,36 @@ export default function StudioWorkbench() {
       try{
         const response=await fetch("/api/studio/projects",{cache:"no-store",signal:controller.signal});
         const body=await response.json();
-        if(!response.ok||body.ok!==true||!Array.isArray(body.projects))throw new Error("研究项目读取失败");
+        if(!response.ok||body.ok!==true||!Array.isArray(body.projects))throw new Error("研究底稿读取失败");
         const items=(body.projects as StudioProject[]).filter(p=>p&&typeof p.project_id==="string"&&typeof p.project_title==="string");
         if(controller.signal.aborted)return;
         setProjects(items);
-        setProjectId(old=>items.some(p=>p.project_id===old)?old:items[0]?.project_id??"");
-      }catch(error){if(!controller.signal.aborted)setProjectError(error instanceof Error?error.message:"研究项目读取失败");}
+      }catch(error){if(!controller.signal.aborted)setProjectError(error instanceof Error?error.message:"研究底稿读取失败");}
       finally{if(!controller.signal.aborted)setProjectLoading(false);}
     })();
     return ()=>controller.abort();
   },[]);
 
-  async function createResearchProject(){
-    const title=projectTitle.trim();
-    if(!title||projectBusy)return;
+  // 后台建立本次创作的研究底稿。用户看不到这一步，也不需要命名；标题直接取第一句话，
+  // 重试时沿用同一个 project_id，避免同一句话生成重复底稿。
+  async function ensureProject(brief:string):Promise<string|null>{
+    const title=brief.replace(/\s+/g," ").trim().slice(0,40)||"未命名创作";
     if(projectAttempt.current?.title!==title)projectAttempt.current={title,id:crypto.randomUUID()};
     setProjectBusy(true);setProjectError(null);
     try{
       const response=await fetch("/api/studio/projects",{method:"POST",headers:{"content-type":"application/json"},
-        body:JSON.stringify({project_id:projectAttempt.current.id,title,scope:{}})});
+        body:JSON.stringify({project_id:projectAttempt.current.id,title,scope:{auto_created:true}})});
       const body=await response.json();
-      if(!response.ok||body.ok!==true||!body.project?.project_id)throw new Error("研究项目未保存，请重试；项目名称仍保留。");
-      setProjects(current=>[body.project,...current.filter(p=>p.project_id!==body.project.project_id)]);
-      switchProject(body.project.project_id);setProjectTitle("");setCreateProjectOpen(false);projectAttempt.current=null;
-    }catch(error){setProjectError(error instanceof Error?error.message:"研究项目未保存，请重试。");}
-    finally{setProjectBusy(false);}
+      if(!response.ok||body.ok!==true||!body.project?.project_id)throw new Error();
+      const created=body.project as StudioProject;
+      setProjects(current=>[created,...current.filter(p=>p.project_id!==created.project_id)]);
+      setProjectId(created.project_id);
+      projectAttempt.current=null;
+      return created.project_id;
+    }catch{
+      setProjectError("墨痕没能保存这次创作的底稿，请再发一次；刚才那句话没有丢。");
+      return null;
+    }finally{setProjectBusy(false);}
   }
 
   // 创作流程状态
@@ -149,23 +154,6 @@ export default function StudioWorkbench() {
 
   const [mediaError, setMediaError] = useState<string | null>(null);
 
-  // A project switch invalidates only transient client state. Saved server
-  // assets/revisions are not deleted; old project Grants must never carry over.
-  function switchProject(nextProjectId: string) {
-    if (!nextProjectId || nextProjectId === projectId) return;
-    setProjectId(nextProjectId);
-    setProjectError(null);
-    setMessages([]); setInput("");
-    setPlans(null); setPreviewPlan(null); setAdoptedDefinition(null); setAdoptedBrief("");
-    setAdoptedPlanId(null); setSelectedPlan(null); setBeats(null); setPlansError(null);
-    setDelegationId(null); setAuthorizing(false); setNeedsAuthorization(false);
-    setActiveTab(0); setPanels(null); setPanelsLoading(false);
-    setWorkTitle(""); setSubmitBusy(false); setSubmitMsg(null); setSubmitErr(false);
-    submitLock.current = false; creationRequests.current.clear(); requestAttempt.current = null;
-    setSavedWork(null); setSubmitted(false); setProduction(null);
-    setMediaCandidates(null); setMediaError(null);
-  }
-
   useEffect(() => {
     if (!savedWork) { setMediaCandidates(null); setMediaError(null); return; }
     const controller = new AbortController();
@@ -183,19 +171,21 @@ export default function StudioWorkbench() {
 
   async function ask(q: string) {
     const text = q.trim();
-    if (!text || busy || submitLock.current) return;
-    if(projectLoading||!projectId){setProjectError("请先创建或选择研究项目，再提交研究委托。");return;}
-    const fingerprint=JSON.stringify({projectId,prompt:text,topic:"generic"});
-    if(requestAttempt.current?.fingerprint!==fingerprint)
-      requestAttempt.current={fingerprint,id:crypto.randomUUID()};
+    if (!text || busy || projectBusy || submitLock.current) return;
     setMessages((m) => [...m, { role: "user", text }]);
     setInput("");
     setBusy(true);
     try {
+      // 用户不选项目：第一句话时后台自动建立研究底稿并绑定本次创作。
+      const activeProjectId = projectId || await ensureProject(text);
+      if (!activeProjectId) return;
+      const fingerprint=JSON.stringify({projectId:activeProjectId,prompt:text,topic:"generic"});
+      if(requestAttempt.current?.fingerprint!==fingerprint)
+        requestAttempt.current={fingerprint,id:crypto.randomUUID()};
       const res = await fetch("/api/studio/research-tasks", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ prompt: text, topic: "generic", project_id: projectId, idempotency_key: requestAttempt.current.id }),
+        body: JSON.stringify({ prompt: text, topic: "generic", project_id: activeProjectId, idempotency_key: requestAttempt.current.id }),
       });
       const json = (await res.json()) as {
         ok?: boolean;
@@ -406,7 +396,7 @@ export default function StudioWorkbench() {
       return;
     }
     if (!selectedPlan || !adoptedPlanId || !beats || beats.length === 0) {
-      setSubmitMsg("请先在「② 研究定方向」选定一个导演方案并生成分镜，再提交。");
+      setSubmitMsg("请先在上面选定一个方向并生成分镜，再提交。");
       setSubmitErr(true);
       return;
     }
@@ -490,6 +480,9 @@ export default function StudioWorkbench() {
     if (hasLocalContent && !window.confirm("开始新对话将清空当前页面的临时对话、方案和未保存分镜。服务器上已保存的研究任务、记录及作品不会被删除。确定继续？")) return;
     setMessages([]);
     requestAttempt.current=null;
+    // 下一句话会重新建立一份底稿，不复用上一部作品的研究档案。
+    setProjectId("");
+    projectAttempt.current=null;
     setInput("");
     setPlans(null);
     setPreviewPlan(null);
@@ -525,7 +518,7 @@ export default function StudioWorkbench() {
       <header className="studio__header">
         <div className="studio__title">
           <h1>创作 Studio</h1>
-          <p>用自然语言委托墨痕研究、编导与创作</p>
+          <p>说一句话，墨痕去查资料、给方向，再写成分镜</p>
         </div>
         <div className="studio__stages">
           {STAGES.map((s, i) => (
@@ -538,37 +531,43 @@ export default function StudioWorkbench() {
       </header>
 
       <div className="studio__body">
-        {/* 左栏 ①：对话委托（人 → 墨痕 的输入口） */}
+        {/* 左栏：一句话委托。项目对用户隐形；历史与研究档案收进可折叠的「研究底稿」抽屉。 */}
         <section className="studio__col studio__col--chat">
-          <ColumnHead no="①" title="对话委托" desc="你在这里说想法、问问题" />
+          <div className="studio__chat-top">
+            <div className="studio__chat-title">
+              <strong>和墨痕说话</strong>
+              <span>想做什么，直接说</span>
+            </div>
+            <button type="button" className="studio__link-btn" aria-expanded={draftsOpen}
+              onClick={()=>setDraftsOpen(v=>!v)}>{draftsOpen?"收起底稿":"研究底稿"}</button>
+          </div>
 
-          <div className="studio__chat-head">
-            <button type="button" className="studio__ghost-btn" disabled={busy || generating || directing || submitBusy || production?.status === "RUNNING"} onClick={startNewConversation}>新对话</button>
-            <a className="studio__ghost-btn" href="/studio/desk" title="打开已保存的研究项目与记录；此处不是聊天历史">研究记录</a>
-            <span className="studio__msg-label" style={{ marginLeft: "auto", alignSelf: "center" }}>
-              当前可对话知识：金泽、绿之丘
-            </span>
-          </div>
-          <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",margin:"0 0 10px"}}>
-            <label htmlFor="studio-project-select" style={{fontSize:12,color:"#5c6662"}}>当前研究项目</label>
-            {projectLoading?<span role="status" style={{fontSize:12}}>正在读取项目…</span>:
-              projects.length>0?<select id="studio-project-select" aria-label="当前研究项目" value={projectId}
-                disabled={busy||projectBusy||generating||directing||authorizing||submitBusy} onChange={e=>switchProject(e.target.value)}
-                style={{maxWidth:"min(100%,280px)",padding:"6px 8px",border:"1px solid #c9c2b4",borderRadius:4}}>
-                {projects.map(p=><option key={p.project_id} value={p.project_id}>{p.project_title}</option>)}
-              </select>:<span style={{fontSize:12,color:"#8a3b3b"}}>尚未创建研究项目</span>}
-            <button type="button" className="studio__ghost-btn" disabled={projectBusy||projectLoading}
-              onClick={()=>setCreateProjectOpen(v=>!v)}>新建项目</button>
-            <a href="/studio/desk" className="studio__ghost-btn">项目管理</a>
-          </div>
-          {(createProjectOpen||(!projectLoading&&projects.length===0))&&<div style={{display:"flex",gap:6,marginBottom:8}}>
-            <input aria-label="新研究项目名称" value={projectTitle} maxLength={200}
-              onChange={e=>setProjectTitle(e.target.value)} placeholder="例如：隋唐大运河与江南水路"
-              disabled={projectBusy} style={{flex:1,minWidth:0,padding:"7px 9px",border:"1px solid #c9c2b4",borderRadius:4}}/>
-            <button type="button" className="studio__send" disabled={projectBusy||!projectTitle.trim()}
-              onClick={()=>void createResearchProject()}>{projectBusy?"保存中…":"创建研究项目"}</button>
-          </div>}
-          {projectError&&<p role="alert" style={{fontSize:12,color:"#b0413e",margin:"0 0 8px"}}>{projectError}</p>}
+          {draftsOpen&&(
+            <div className="studio__drawer">
+              <h3>这次找到的资料</h3>
+              {materials.length===0?(
+                <p className="studio__drawer-note">还没有资料。你提问后，墨痕查到的材料会保留来源与可信度标签。</p>
+              ):(
+                <div className="studio__materials">
+                  {materials.map((mat)=>(
+                    <div className="studio__material" key={mat.id}>
+                      <span className="studio__material-badge">{humanEpistemic(mat.epistemic,false)}</span>
+                      <div className="studio__material-snippet">{mat.snippet}</div>
+                      <div className="studio__material-source">{mat.sourceRef}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <p className="studio__drawer-note">这些资料还不是正式合格资产；专业资格需另行核验。</p>
+              <h3>以往研究档案</h3>
+              {projectLoading?<p className="studio__drawer-note">读取中…</p>
+                :projects.length===0?<p className="studio__drawer-note">还没有保存过。</p>
+                :<ul className="studio__drawer-list">{projects.slice(0,8).map(p=><li key={p.project_id}>{p.project_title}</li>)}</ul>}
+              <a className="studio__link-btn" href="/studio/desk">打开完整研究记录</a>
+            </div>
+          )}
+
+          {projectError&&<p role="alert" className="studio__error">{projectError}</p>}
 
           <div className="studio__thread">
             {messages.length === 0 && (
@@ -604,6 +603,7 @@ export default function StudioWorkbench() {
               </div>
             ))}
 
+            {projectBusy && <div className="studio__typing">墨痕在准备这次创作的底稿…</div>}
             {busy && <div className="studio__typing">墨痕在查资料…</div>}
             {production && (
               <div className="studio__production">
@@ -616,10 +616,20 @@ export default function StudioWorkbench() {
             )}
           </div>
 
+          {messages.length === 0 && (
+            <div className="studio__starters">
+              {EXAMPLES.map((s) => (
+                <button key={s} className="studio__tab" onClick={() => void ask(s)}>
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
+
           <div className="studio__composer">
             <input
               value={input}
-              placeholder="问墨痕，或描述你想创作的作品…"
+              placeholder="我想做一部关于……的作品"
               onChange={(e) => setInput(e.target.value)}
               disabled={submitBusy}
               onKeyDown={(e) => {
@@ -629,42 +639,27 @@ export default function StudioWorkbench() {
             />
             <button
               className="studio__send"
-              disabled={submitBusy || busy || projectLoading || !projectId || input.trim().length === 0}
+              disabled={submitBusy || busy || projectBusy || input.trim().length === 0}
               onClick={() => void ask(input)}
             >
               {busy ? "查…" : "发送"}
             </button>
           </div>
 
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-            {EXAMPLES.map((s) => (
-              <button key={s} className="studio__tab" onClick={() => void ask(s)}>
-                {s}
-              </button>
-            ))}
-          </div>
+          {messages.length > 0 && (
+            <button type="button" className="studio__link-btn studio__link-btn--muted"
+              disabled={busy || generating || directing || submitBusy || production?.status === "RUNNING"}
+              onClick={startNewConversation}>重新开始另一部作品</button>
+          )}
         </section>
 
-        {/* 中栏 ②：研究定方向（墨痕研究 + 你拍板方案） */}
-        <section className="studio__col">
-          <ColumnHead no="②" title="研究定方向" desc="墨痕研究，你在这里拍板方案" />
-
-          <div className="studio__panel">
-            <h2>研究与作品形成</h2>
-            <p className="studio__empty">{busy ? "正在查询资料，已有内容会保留。" : materials.length ? "已获得材料线索；可以继续研究，也可以比较导演方案。" : "等待你的研究委托。"}</p>
-            <div className="studio__pipeline" aria-label="可能的研究步骤">
-              {PIPELINE.map((p, i) => (
-                <div className="studio__pipe" key={p}>
-                  <span className="studio__pipe-dot" />
-                  <span>{p}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+        {/* 右栏：作品。方向、成稿、提交都在这里；研究资料与以往档案收在左栏「研究底稿」抽屉。 */}
+        <section className="studio__col studio__col--work" aria-label="作品产出">
+          <ColumnHead no="②" title="你的作品" desc="墨痕给方向，你定稿并提交" />
 
           <div className="studio__panel">
             <div className="studio__panel-head">
-              <h2>导演方案 A / B</h2>
+              <h2>墨痕给的两种方向</h2>
               <button
                 className="studio__ghost-btn"
                 disabled={submitBusy || generating || directing || !lastUserBrief}
@@ -739,33 +734,7 @@ export default function StudioWorkbench() {
             {directing && <div className="studio__typing">墨痕在写分镜章节…</div>}
           </div>
 
-          <section className="studio__panel" aria-label="研究资料与知识资产">
-            <h2>研究资料与知识资产</h2>
-            <p className="studio__empty">材料与知识候选可独立积累，不需要先发布作品。</p>
-            <h3>资料线索与待验证候选</h3>
-            {materials.length === 0 ? (
-              <div className="studio__empty">尚未获得资料；研究返回的材料将保留其来源与认识标签，不自动成为正式资产。</div>
-            ) : (
-              <div className="studio__materials">
-                {materials.map((mat) => (
-                  <div className="studio__material" key={mat.id}>
-                    <span className="studio__material-badge">{humanEpistemic(mat.epistemic, false)}</span>
-                    <div className="studio__material-snippet">{mat.snippet}</div>
-                    <div className="studio__material-source">{mat.sourceRef}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-            <h3>正式合格资产</h3>
-            <p className="studio__empty">尚未接入当前资格，不能确认正式资产；上方资料不代表已获专业资格。</p>
-          </section>
-        </section>
-
-        {/* 右栏 ③：成稿提交（看分镜 + 提交审核） */}
-        <section className="studio__col studio__col--preview" aria-label="作品产出">
-          <ColumnHead no="③" title="成稿提交" desc="看分镜，起标题，提交审核" />
-
-          <div className="studio__preview">
+          <div className={`studio__preview${beats && beats.length > 0 ? "" : " studio__preview--idle"}`}>
             {beats && beats.length > 0 ? (
               <div className="studio__preview-frame">
                 <div className="studio__preview-title">{workTitle || "未命名作品"}</div>
@@ -778,6 +747,8 @@ export default function StudioWorkbench() {
             )}
           </div>
 
+          {/* 作品还没成形时不摊开五个空面板：先把方向定下来。 */}
+          {beats && beats.length > 0 && (<>
           <div className="studio__tabs">
             {TABS.map((t, i) => (
               <button
@@ -799,7 +770,7 @@ export default function StudioWorkbench() {
                   <div className="studio__empty">
                     {selectedPlan
                       ? "墨痕正在生成分镜…"
-                      : "在「② 研究定方向」保存作品后可查询登记素材候选（登记不等于有权选用）；选定导演方案后，墨痕会在这里生成分镜章节与旁白。"}
+                      : "选定一个方向后，墨痕会在这里生成分镜章节与旁白。"}
                   </div>
                 ) : (
                   <div className="studio__beats">
@@ -824,7 +795,7 @@ export default function StudioWorkbench() {
                 <h2>故事结构</h2>
                 {!panels ? (
                   <div className="studio__empty">
-                    {panelsLoading ? "墨痕在梳理故事结构…" : "保存作品后可查询登记素材候选（登记不等于有权选用）；选定导演方案后，这里展示分镜的章节结构。"}
+                    {panelsLoading ? "墨痕在梳理故事结构…" : "选定方向后，这里展示分镜的章节结构。"}
                   </div>
                 ) : (
                   <div className="studio__beats">
@@ -848,7 +819,7 @@ export default function StudioWorkbench() {
                 <h2>画面风格</h2>
                 {!panels ? (
                   <div className="studio__empty">
-                    {panelsLoading ? "墨痕在设计画面风格…" : "保存作品后可查询登记素材候选（登记不等于有权选用）；选定导演方案后，这里展示画面风格方案。"}
+                    {panelsLoading ? "墨痕在设计画面风格…" : "选定方向后，这里展示画面风格方案。"}
                   </div>
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -875,7 +846,7 @@ export default function StudioWorkbench() {
                 <h2>配音旁白</h2>
                 {!panels ? (
                   <div className="studio__empty">
-                    {panelsLoading ? "墨痕在整理旁白…" : "保存作品后可查询登记素材候选（登记不等于有权选用）；选定导演方案后，这里展示完整旁白。"}
+                    {panelsLoading ? "墨痕在整理旁白…" : "选定方向后，这里展示完整旁白。"}
                   </div>
                 ) : (
                   <div className="studio__beat">
@@ -894,7 +865,7 @@ export default function StudioWorkbench() {
                 <h2>背景音乐</h2>
                 {!panels ? (
                   <div className="studio__empty">
-                    {panelsLoading ? "墨痕在设计音乐方案…" : "保存作品后可查询登记素材候选（登记不等于有权选用）；选定导演方案后，这里展示音乐方案。"}
+                    {panelsLoading ? "墨痕在设计音乐方案…" : "选定方向后，这里展示音乐方案。"}
                   </div>
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -911,12 +882,14 @@ export default function StudioWorkbench() {
               </>
             )}
           </div>
+          </>)}
 
+          {savedWork && (
           <div className="studio__panel">
             <h2>画面候选素材</h2>
             {mediaError && <p role="alert">{mediaError}</p>}
             {mediaCandidates === null ? (
-              <div className="studio__empty">保存作品后可查询登记素材候选（登记不等于有权选用）；选定导演方案后，这里列出可用的已登记画面素材。</div>
+              <div className="studio__empty">作品已保存，正在读取已登记的画面素材…</div>
             ) : mediaCandidates.length === 0 ? (
               <div className="studio__empty">暂无可用画面素材（资产台账为空）。</div>
             ) : (
@@ -930,6 +903,7 @@ export default function StudioWorkbench() {
               </div>
             )}
           </div>
+          )}
 
           <div className="studio__submit">
             <input

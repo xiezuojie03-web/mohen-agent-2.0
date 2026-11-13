@@ -52,17 +52,14 @@ test('ST-01 creates one project-bound immutable brief before research; HOLD and 
  const owner=await browserRequests(page);
  expect((await owner.post('/api/auth/register',{data:{email:`research-hold-${randomUUID()}@example.invalid`,username:'合成研究作者',password:randomUUID()}})).status()).toBe(200);
  await page.goto('/studio');
- await page.getByLabel('新研究项目名称',{exact:true}).fill('隋唐大运河研究·隔离验收');
- const projectResponse=page.waitForResponse(r=>r.url().endsWith('/api/studio/projects')&&r.request().method()==='POST');
- await page.getByRole('button',{name:'创建研究项目',exact:true}).click();
- const project=(await(await projectResponse).json()).project;
- await expect(page.getByLabel('当前研究项目',{exact:true})).toHaveValue(project.project_id);
-
  const prompt='TEST_ONLY 研究隋唐运河与江南水路如何连接，逐项保留来源身份、修订与不确定性 '+randomUUID();
  await page.getByLabel('向墨痕委托或提问').fill(prompt);
+ // 项目对用户隐形：第一句话发出时客户端在后台建立研究底稿，研究任务必须绑定到同一个新项目。
+ const projectResponse=page.waitForResponse(r=>r.url().endsWith('/api/studio/projects')&&r.request().method()==='POST');
  const requestWait=page.waitForRequest(r=>r.url().endsWith('/api/studio/research-tasks')&&r.method()==='POST');
  const responseWait=page.waitForResponse(r=>r.url().endsWith('/api/studio/research-tasks')&&r.request().method()==='POST');
  await page.getByRole('button',{name:'发送',exact:true}).click();
+ const project=(await(await projectResponse).json()).project;
  const [request,response]=await Promise.all([requestWait,responseWait]);
  const requestBody=request.postDataJSON();
  const body=await response.json();
