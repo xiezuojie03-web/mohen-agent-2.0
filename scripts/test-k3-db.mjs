@@ -134,7 +134,9 @@ try {
       "20261110140000_mab_d00_y02_registration_locator.sql",
       // QR-05：Studio 资产消费裁决对齐唯一九动作词典（此前 machine_read/retain 等一律
       // INVALID_ACTION）；必须排在 cp2f_asset_backlink 建函数之后。
-      "20261113100000_mab_qr05_single_rights_action_dictionary.sql"]) apply(file);
+      "20261113100000_mab_qr05_single_rights_action_dictionary.sql",
+      // M5 通用入口：机器评审只读范围跟"有待评审候选的项目"走，不再写死 CP1 样本项目。
+      "20261113150000_mab_m5_reviewer_scope_follows_candidates.sql"]) apply(file);
     // Capability assertions for the migrations applied immediately above. They can only run at
     // this point in the chain: the rights columns, the private worker, the machine reviewer and
     // the content-based sign_gate_candidate semantics do not exist any earlier.

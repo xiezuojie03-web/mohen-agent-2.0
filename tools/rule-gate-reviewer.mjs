@@ -319,6 +319,9 @@ export function createRuleGateReviewer({
   mintToken = mintMachineSessionToken,
   now = () => Date.now(),
   randomId = () => crypto.randomUUID(),
+  // 评审作用域必须可传入：机器评审原先写死 CP1 样本项目，导致任何新建项目
+  // （如通用入口产出的非模板题材项目）都没有 G0 决策可签。规则与检查项不变。
+  projectId = PROJECT_ID,
   log = line => console.log(line),
 } = {}) {
   if (typeof query !== "function" || typeof decide !== "function") throw Error("RULE_REVIEWER_DEPENDENCIES_REQUIRED");
@@ -331,7 +334,7 @@ export function createRuleGateReviewer({
       from control.gate_candidates
       where gate_code = :'gate' and consumer = 'producer' and candidate_status = 'SUBMITTED'
         and allowed_scope->>'project_id' = :'project'
-      order by submitted_at desc`, { gate, project: PROJECT_ID });
+      order by submitted_at desc`, { gate, project: projectId });
     if (!rows.length) throw Error("NO_SUBMITTED_CANDIDATE");
     if (rows.length > 1) log(`MULTIPLE_SUBMITTED_CANDIDATES ${gate} count=${rows.length} using=${rows[0].candidate_id}`);
     const row = rows[0];
@@ -387,7 +390,7 @@ export function createRuleGateReviewer({
 
     const candidate = await loadCandidate(gate);
     const upstream = await loadUpstream(gate, candidate);
-    const ctx = { gate, ruleVersion, candidate, upstream, project: PROJECT_ID, now: now(), query };
+    const ctx = { gate, ruleVersion, candidate, upstream, project: projectId, now: now(), query };
 
     log(`candidate ${gate} candidate=${candidate.candidate_id} object=${candidate.object_type}:${candidate.object_id} revision=${candidate.artifact_revision} rule=${ruleVersion}`);
     const results = {};
@@ -482,8 +485,12 @@ async function decideThroughAuthority(decision, sessionToken) {
 async function main() {
   const gate = argument("gate");
   if (!gate) throw Error("GATE_ARGUMENT_REQUIRED");
+  const projectId = argument("project") ?? PROJECT_ID;
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(projectId)) {
+    throw Error("PROJECT_ARGUMENT_INVALID");
+  }
   const query = await openMachineQuery();
-  const reviewer = createRuleGateReviewer({ query, decide: decideThroughAuthority });
+  const reviewer = createRuleGateReviewer({ query, decide: decideThroughAuthority, projectId });
   const outcome = await reviewer.review({ gate, dryRun: process.argv.includes("--dry-run") });
   if (outcome.status === "FAIL") process.exitCode = 1;
 }
