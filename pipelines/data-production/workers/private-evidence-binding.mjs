@@ -34,6 +34,10 @@ export function createApprovedMethodPlanReader(pool, {gateCode: defaultGate='G0'
     let refs=row.evidence_refs;
     if(typeof refs==='string'){try{refs=JSON.parse(refs);}catch{return null;}}
     if(!Array.isArray(refs))return null;
+    // D01 只关心 C 方法预选：过滤到 kind='method_plan' 的 ref。
+    // G0 audit 的 evidence_refs 同时包含 source_version、source_need 等其他类型，
+    // 原样返回会导致 requireApprovedMethodPlan 的 every(isMethodPlanRef) 失败关闭。
+    refs=refs.filter(r=>r&&typeof r.kind==='string'&&r.kind==='method_plan');
     return {gate_audit_id:row.gate_audit_id,refs};
   };
 }

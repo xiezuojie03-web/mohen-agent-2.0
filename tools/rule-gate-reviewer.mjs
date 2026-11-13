@@ -137,9 +137,11 @@ async function checkReadUnitBinding(ctx) {
     where ru.read_unit_id = :'objectId'`, { objectId: ctx.candidate.object_id, project: ctx.project });
   const row = rows[0];
   if (!row) return { ok: false, reason: "read_unit_missing" };
-  if (text(row.method_code) !== METHOD_BY_GATE.G1) return { ok: false, reason: `read_unit_method_mismatch:${text(row.method_code)}` };
   if (text(row.run_status) !== "done") return { ok: false, reason: `read_run_not_done:${text(row.run_status)}` };
   if (!READ_RUN_SCHEMAS.has(text(row.run_schema))) return { ok: false, reason: `read_run_schema_unrecognized:${text(row.run_schema)}` };
+  // D01 有两种读法：文本区间 C01 或扫页 C02。按 schema 动态判 method，不再写死 C02。
+  const expectedMethod = text(row.run_schema) === "mab.private-text-reading.v1" ? "C01" : "C02";
+  if (text(row.method_code) !== expectedMethod) return { ok: false, reason: `read_unit_method_mismatch:${text(row.method_code)}:expected=${expectedMethod}` };
   if (text(row.run_input_sha256) !== text(row.raw_checksum)) return { ok: false, reason: "read_run_input_digest_mismatch" };
   if (!text(row.original_id) || text(row.original_state) !== "STORED_VERIFIED") return { ok: false, reason: "read_unit_original_not_verified" };
   if (text(row.raw_checksum) !== text(row.original_sha256) || text(row.raw_bytes) !== text(row.original_bytes)) {
