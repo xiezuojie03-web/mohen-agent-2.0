@@ -3283,6 +3283,26 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **前调依据**：QR-06 前调到整改顺序第 2 位（与 QR-01/02/08 一并先关），是用户目标"墨痕+外部 AI Agent 都能跑通"的核心依赖——没有同根协作，外部 AI 就是孤立 Provider 派发。本轮代码已修，B2 后补端到端证据。
 - **下一步**：QR-01/02/06/08 四个全部关闭。QR-04/05/03/07/09 待后续批次。B1（research.ts 泛化入口修复）和 B2（D00 多渠道来源发现）是 ST-01/D00 泛化的核心，优先级最高。
 
+## 2026-11-13｜B1 关闭（自由研究委托通用入口 VERIFIED_ISOLATED）
+
+- **问题**：`research.ts` 的非模板题材入口会判死，导致 ST-01 只对《松江府田赋》成立。实测「楚国八百年」两类死路：
+  1. `understand()` 是问答式意图分类器，自由委托常判 `intent=unknown` → `decideStep` 直接返回 `cannot_answer` + `gaps=["意图未确定"]`，已检索材料与外部线索全部丢弃。
+  2. **本轮新发现**：意图判出来了但 kind 不匹配时同样判死。「楚国八百年：…关系如何演变？」被判 `temporal`，而 `KIND_BY_INTENT.temporal=["event","claim"]`，18 条 `kind=evidence` 的外部线索被整体过滤 → `cannot_answer` +「已审核材料里没有能回答这个问题的条目」，线索全丢。
+- **修复**（`apps/web/lib/mohen-agent/research.ts`，commit `0aab67e`）：新增 `applyFreeMissionEntry`，三个条件同时成立才把裁决转成研究委托裁决：
+  1. 非预置题材（`topic==="generic"`）；
+  2. 确实检索到材料（`materials.length>0`）；
+  3. 裁决确实判死（`verdict==="cannot_answer"`）。
+  转换后保留真实材料及其 `epistemic` 原值（外部线索仍是 `RESEARCH_LEAD`，不升格），`verdict="partial"`，`primaryStage="evidence_reveal"`，`focus` 取委托中的具体实体，`clarifyQuestion` 给可点焦点。
+  诚实性守卫：**有线索但无库内证据时**，`gaps` 显式插入「库内已审核材料还不能直接回答这个问题；下面 N 条是待核验的外部线索，不是答案」，`mohenLine` 同步说「库里还不能直接回答」。
+- **不改动的边界**：`agent-runtime` 的 `understand`/`decideStep` 是问答语义，正确，未改；`TOPIC_PROFILES` 中 jinze/a001 的别名表是既有策展数据，保留（不是硬编码 hack）；`resolveTopic` 行为不变。
+- **验证**：
+  - 单测 `tests/unit/b1-free-mission-entry.test.ts` **8 passed**，含 5 正例 + 3 反例（无材料保持 cannot_answer／预置题材不受污染／已可回答不改写／只有线索必须写明「不是答案」）。
+  - `pnpm --filter @mohen/web exec tsc --noEmit` 0 错误；`next build` 通过。
+  - **真实 HTTP**（`POST /api/studio/research-tasks`，项目"楚国八百年"）：`verdict: cannot_answer → partial`，`decision.materials: 0 → 12`，`focus: [楚国,中原,诸夏]`，`research_leads: 18`，gaps 三条如实（委托非问句／线索不是答案／原库内缺口）。
+  - **模板回归**（项目"松江府志·一条科则的负担链"）：`verdict: partial` 不变，`materials: 3`、`leads: 15`，无回归。
+- **记账影响**：LOCAL-BUILD-LEDGER §三 5.1 的"通用入口 HOLD"由本批解除一半——**非模板题材已能进入研究链并产出可追溯委托裁决**；但"多渠道真实来源 + 权利字段 + G0 签署"仍待 B2，故 5.1 保持 🔵 不转 ✅（按 QR-10 泛化冒烟门，需 ≥2 个非模板 topic 跑通 ST-01→D00→G0→Admin 才可转）。
+- **本地 PENDING_PUSH**：commit `0aab67e`，按 AGENTS.md §0A 纪律等待批量推送窗口。
+
 ## 2026-11-13｜QR-08 关闭（本地执行授权不签名自报，独立证据链已完备）
 
 - **PLAN QR-08 描述**："本地执行授权条件不能自证——Registry的enable_requires被本地授权脚手架直接转为true，需验证运行环境/隔离标记/绑定/测试事实，而不是签名自报。"
