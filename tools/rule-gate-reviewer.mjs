@@ -305,7 +305,8 @@ async function checkWorkRevisionBinding(ctx) {
   }
   const finding = await ctx.query(`select f.discovery_method->>'method_id' as method_id from meaning.findings f where f.finding_id = :'id'`,
     { id: upstream.object_id });
-  if (text(finding[0]?.method_id) !== METHOD_BY_GATE.G4) return { ok: false, reason: `projection_upstream_finding_not_current:${text(finding[0]?.method_id)}` };
+  // G5 上游 finding 的 method_id ∈ A01-A12（G4 已泛化），不再写死 A06
+  if (!G4_METHOD_SET.has(text(finding[0]?.method_id))) return { ok: false, reason: `projection_upstream_finding_not_current:${text(finding[0]?.method_id)}` };
   return { ok: true, detail: `projection=${text(row.projection_id)} finding=${upstream.object_id}` };
 }
 
