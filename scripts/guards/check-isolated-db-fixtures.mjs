@@ -39,7 +39,8 @@ const UNCHAINED = new Map([
     "20261114090000_mab_m5_d05_p04_story_seed.sql",
     "20261114120000_mab_m5_director_plan.sql",
     "20261114150000_mab_m5_st07_work_revision.sql",
-    "20261114180000_mab_m5_st08_submission_snapshot.sql"].map(f => [f, M5_STUDIO_AXIS_DB_ONLY]),
+    "20261114180000_mab_m5_st08_submission_snapshot.sql",
+    "20261114190000_mab_m5_st09_editorial_publish_withdraw.sql"].map(f => [f, M5_STUDIO_AXIS_DB_ONLY]),
 ]);
 
 const chains = chainFiles.map(file => ({ file, source: fs.readFileSync(path.join(root, file), "utf8") }));

@@ -3674,3 +3674,28 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **口径边界**：只到 ST-08「投稿」；**ST-09 运营决策（EditorialDecision）/发布指针/撤回未做**，因此本次快照 `publication_eligible=false` 尚未有下游消费者；机器签与快照都不构成 Owner 人文背书；SHL 来源 `display` 仍 HOLD，故即便 ST-09 完成也不能直接公开消费；`studio.work_revisions.publication_status` 保持 `draft` 是有意设计（不可变修订行），不视为状态漏写；全部证据在本地 `mohen_dev`，不构成生产准出，`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变。
 - **下一阶段**：ST-09 EditorialDecision/Publish/Withdraw（独立 Operator 决策精确修订、发布指针原子上切、失败保留旧合法稿、撤回与撤权），须先补 `publication_snapshot` 写入口与 Operator 身份分权；本批不预先建设。
 - **本地 PENDING_PUSH**：本批 commit（迁移 + 隔离脚本 + 3 处测试用例修正 + progress/ledger）按 AGENTS.md §0A 等待 Owner 确认窗口批量推送。
+
+## 2026-11-13｜ST-09 EditorialDecision / Publish / Withdraw — 核签成立、发布失败关闭（VERIFIED_ISOLATED，发布正面路径 DEFERRED）
+
+- **三轴定位**：M5 Studio 业务任务轴 **ST-09**（KAD2 §7 第 9 个业务动作），非 D 轴新阶段。ST-01—ST-09 的业务动作至此全部有实现与隔离证据；M5 八维度仍未签收。
+- **施工依据（先读原文再施工）**：`inputs/mab-package-20261102/evidence_only/KAD2…Studio全链合同_现行.md` §1 主体表（Editorial Operator「不得因运营批准覆盖 G/权利」）、§7 ST-09 行「独立 Operator 决策精确 revision 与指针；不代 G；失败保留旧合法稿」、§9 `PUBLISH_ELIGIBILITY_HOLD`；`specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md` §4 作品状态机、§10（当时快照不抵当前复核）、§11 X1 五实体与「CAS 发布只指向批准且当下合法的不可变 WorkRevision」；`specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md` §6.2 ST-09 与「同一合法 WorkRevision@rev 供 WATCH 消费，不另建第二作品；运营审核不代签 G」。
+- **DB 迁移 `supabase/migrations/20261114190000_mab_m5_st09_editorial_publish_withdraw.sql`**：
+  - `publication.editorial_decisions`（append-only，不可改删）：绑定精确修订 + 投稿冻结快照 + 决策当下 G5 审计 + 实时权利快照与缺口；决策值 `APPROVED / CHANGES_REQUESTED / REJECTED`；幂等键唯一。
+  - `publication.publication_snapshots`（X1 `PublicationSnapshot@rev`，append-only）：绑定运营决策、投稿快照、精确修订 artifact_revision、权利快照。
+  - `publication.withdrawals`（append-only）：撤回留痕，撤回时同事务删除公开指针（撤回即失效）。
+  - `publication.published_pointers` **保持唯一一张指针表**，扩展为可指向 studio 精确修订（`source_schema` + `studio_revision_id` + `publication_id`，目标互斥约束），旧行默认不变。
+  - 函数：`publication.decide_editorial` / `publication.publish_exact_revision` / `publication.withdraw_publication` + 权利实时复核 `studio.private_work_rights_summary`；失败关闭码 `EDITORIAL_SUBMISSION_REQUIRED` / `EDITORIAL_OPERATOR_CONFLICT:creator_self_review` / `EDITORIAL_KNOWLEDGE_NOT_CURRENT*` / `PUBLISH_DECISION_REQUIRED` / `PUBLISH_ELIGIBILITY_HOLD:*` / `WITHDRAW_NOT_PUBLISHED`。
+  - 新增 DB 角色 `mohen_editorial_operator`（nologin），仅能执行三个运营函数；Creator 侧 `mohen_app_runtime` 一律无权决策/发布。
+- **设计取舍（按原文）**：① 不另建第二套发布真值，指针仍是同一张表；② 运营决策不等于知识资格，发布时必须在其当下重新核 G5 与逐动作权利；③ 权利按当前 `source.sources.rights_by_action` 实时重查，不沿用 ST-08 快照旧值；④ 运营、创作者、Gate 签发三方身份分离。
+- **修复的真实结构障碍**：`publication.published_pointers.work_id` 原有 `→ publication.works` 外键把作品身份锁死在 legacy 表上，而新链作品身份只在 `studio.work_revisions.work_id`（无 `studio.works` 表），导致 studio 作品根本无法挂指针。改为目标校验触发器：legacy 行仍必须在 `publication.works` 存在，studio 行必须对上精确修订与其 work_id。这是"同一指针表承载两条链"的必要条件，不是放宽约束。
+- **实测结果（脚本 `scripts/test-st09-editorial-publish-withdraw-isolation.mjs`，29 项断言全 PASS）**：
+  - 两题材运营核签 **APPROVED 均成立**（朱家角 / 七宝，绑定精确修订 + 当前 G5 + 投稿快照，各记 6 项权利缺口），`publishable=false`。
+  - **公开发布一律 `PUBLISH_ELIGIBILITY_HOLD:rights_display_not_allowed`**，公开指针总数 6 → 6 未变，两题材作品指针仍为 0（失败保留旧合法稿、不切公开指针）。
+  - 负向实证：创作者自审（`EDITORIAL_OPERATOR_CONFLICT`）、未知修订、非法决策值、未投稿修订不可核签/不可发布、撤回未发布作品 `WITHDRAW_NOT_PUBLISHED`、Creator 角色无权决策（权限不够）、运营角色无历史决策改写授权、库属主触发器仍拒绝改写。
+  - 结构验证（事务内、回滚）：studio 指针可写入并按 studio 修订联接读取、legacy 联接不误命中、目标互斥约束生效。
+- **DEFERRED（如实记账，不伪造）**：`publish_exact_revision` 的**正面成功路径**与 `withdraw_publication` 的正面路径本批未能验证——真实素材里只有「松江府志7」一条来源显式许可 `display`，而当前两个非模板题材用的是上海图书馆地名志（`display=unknown`），且尚无以「松江府志7」原件为基础的作品修订。恢复条件：新建一条以该来源原件为基础、跑完 D01—D05 + G1—G5 + ST-05—ST-08 的作品修订，即可正面验证发布与撤回。代码存在 ≠ 已验证，此处按 `CODE_PRESENT + 负向已验 + 正向 DEFERRED` 记账。
+- **新发现并已记账的下一批事项**：`apps/web/lib/publication.ts` 的 `listPublished()` 仍走 legacy 联接，读不到 studio 指针——WATCH 消费 studio 已发布修订必须在下一批适配（本批未改应用层，避免无发布样本时盲改）。
+- **回归**：`node --test tests/data-production/*.test.mjs` = **246 通过 / 0 失败**；`guard:structure`、`guard:isolated-db-fixtures`（81 条迁移全部入链或已登记）均 PASS。
+- **引用 MAB 交付包**：`evidence_only/KAD2_混合任务委托、执行、成果回流与Studio全链合同_现行.md` §1 / §7 / §9。无其他包内文件被本批引用。
+- **口径边界**：运营核签成立但公开消费未成立；M5 八维度「发布指针原子指向该修订」现在只到 HOLD 分支成立、成功分支待原条件；`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变；仅本地 `mohen_dev`，无生产动作。
+- **本地 PENDING_PUSH**：本批（迁移 + 隔离脚本 + 守卫登记 + progress/ledger）按 AGENTS.md §0A 待 Owner 确认窗口批量推送。
