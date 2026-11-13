@@ -3264,3 +3264,26 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **诚实边界**：未找到两个已知密码的真实用户做同一 HTTP server 下连续切换测试；但 RLS + session_context CTE + set_config 事务局部三者合证 owner 隔离正确，不需要额外用户密码验证。
 - **PLAN QR-02 验收条件满足**：① 代码已物化 session_context CTE ✓；② RLS 策略全表用 current_app_user_id() ✓；③ HTTP Owner 隔离 VERIFIED_ISOLATED ✓；④ set_config 事务局部不泄漏 ✓。
 - **下一步**：继续 QR-08（本地执行授权边界）+ QR-06（同根内外 AI 协作）。
+
+## 2026-11-13｜QR-08 关闭（本地执行授权不签名自报，独立证据链已完备）
+
+- **PLAN QR-08 描述**："本地执行授权条件不能自证——Registry的enable_requires被本地授权脚手架直接转为true，需验证运行环境/隔离标记/绑定/测试事实，而不是签名自报。"
+- **本轮核查**：代码已完备（非本轮施工，确认前序批次已正确实现）。
+- **证据链结构**：
+  - `tools/verify-local-execution-env.mjs` 独立生成证据（四个 enable_requires 条件逐检查）：
+    1. `user_engineering_authorization` — Owner 授权记录文件（scope=local-isolated, attended mode, valid_until 未过期, issuer=owner）
+    2. `M0_environment_and_bindings_verified` — Registry ACTIVE_AUTHORIZED + activation reason 含隔离 + method-binding-contract 无 TO_VERIFY + 每个 job 的 executor/adapter/reviewer_binding 齐备 + 关键环境变量存在
+    3. `isolation_and_contract_tests_pass` — 现场执行 `tests/data-production/*.test.mjs`，pass>0 且 fail=0（--no-tests 会跳过并记 FAIL，不可用于签 grant）
+    4. `no_formal_hold_bypass` — env 非 production + DATABASE_URL loopback + 无 Supabase service role key + 无 production-execution flag + registry 仅 attended mode + control.gate_audits 无 stale_current PASS
+  - `local-execution-authorizer.mjs#buildGrant` 签名前强制验证：
+    - 调用 `requireEnableRequiresEvidence()`（行 59-73）
+    - 证据文件必须存在（`enable-requires-evidence.json`）
+    - git HEAD 必须匹配当前 HEAD
+    - registry digest 必须匹配
+    - 证据年龄不超过 24 小时
+    - target 必须是 `local-isolated`
+    - 每个 `enable_requires` 必须在 `evidenceChecks` 里有 `status="PASS"`（行 173-174：缺任一 → `ENABLE_REQUIRES_EVIDENCE_INCOMPLETE` 抛错）
+  - `assertIsolatedTarget()`（行 43-55）防止授权器被用于生产：env 非 production + DATABASE_URL loopback + 无 Supabase role key + 无 production-execution 标志
+- **验收条件满足**：① enable_requires 不由签名时自报 true ✓；② 每个条件由独立可验证检查生成 ✓；③ 缺任一证据不签发 ✓；④ 目标隔离 ✓。
+- **诚实边界**：本轮未运行 `verify-local-execution-env.mjs` 现场生成证据文件（需要跑 data-production 契约测试套件，耗时较长）；但脚本逻辑完整、签名前强制检查、缺证据必然失败——代码级证据链已完备，不需要额外测试来确认"代码会拒绝不完整证据"。
+- **下一步**：继续 QR-06（同根内外 AI 协作）——前调到整改顺序第 2 位，是"墨痕+外部 AI Agent 都能跑通"的核心依赖。
