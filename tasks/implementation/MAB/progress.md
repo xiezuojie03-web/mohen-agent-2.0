@@ -3487,3 +3487,28 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **下一阶段**：ST-06 D05 world_projection（read_model 层合成 + P02 投影方法）+ G5（purpose_namespace 待核实，method 待确认是否仍 P02）。persist_private_world_projection DB 函数已在本批泛化（A06→A01-A12），无需额外 DB 改动。
 - **口径边界**：ST-05 只到 G4；D05–D06 + G5 未做；A 方法 implementation_binding 仍全 HOLD（method-binding-contract.json），A05/A09 本次是手工构造 finding 输入，无自动化 Adapter 生成；机器签不构成 Owner 人文背书；G4 只覆盖 BE 一种人文用途，其余 BC/RF/PS/PL 按「五用途不互相继承」不预先授权；按 Gate 合同 §7 不标记 GATE_ACTIVE。
 - **本地 PENDING_PUSH**：本批 commit + `20261113180000` 迁移，按 AGENTS.md §0A 等待批量推送窗口。
+
+## 2026-11-13｜ST-06 D05+G5 两例通过（D05 P02 投影 + G5 机器评审泛化，VERIFIED_ISOLATED）
+
+- **施工前置：先读 D05/G5 设计原文，不擅自理解**。完整读取 `specs/data-production/standards/d05/契约_P5_L5持久化_独立G5与双读消费_V0.1.md`（D05 主规 + P02 world_projection 方法 + G5 独立 Gate 合同）、`gate-contracts.v3.json#G5`（purpose_source="G5.purpose-profile"，gate_policy.required_checks={work_revision_binding, rights_by_operation}）、`PLAN.md §ST-06`。
+- **设计结论**：D05 职责为「从 D04 finding（经 G4 PASS）派生 L5 世界投影 world_projection → read_model 层持久化 → G5 独立审查 work_revision_binding（投影必须明确关联上游 finding）+ rights_by_operation（投影内容引用的 source 必须有允许展示的权利）」。G5 rule_version 为 `v1`（与 G0–G4 的 `m5-local-v1` 不同，是独立 G5 合同）。
+- **前置条件核实（ST-05 已完成，无需额外 DB 改动）**：
+  - DB 函数 `studio.persist_private_world_projection` 已 ST-05 泛化：`finding method_id ∈ A(0[1-9]|1[0-2])`（原写死 A06）。
+  - `read_model.world_projections` 表已存在（projection_id, projection_key, payload, derived_from_finding_ids, expression_rule, generated_at）。
+  - G5 gate_policy `v1`：enabled=true, required_checks={work_revision_binding, rights_by_operation}。
+  - G5 gate_reviewer_bindings：`purpose=data-production/m5-remediation/v1` × `mohen_gate_signer_m5_machine` × `allowed_scope={"scope_kind":"studio_project"}`（source_needs 两题材已存在，or 条件满足）。
+- **发现的 JS 层缺陷：`checkWorkRevisionBinding` 行 308 上游 method 校验写死 METHOD_BY_GATE.G4**。ST-05 已移除 `METHOD_BY_GATE.G4`（原 A06），改为 `G4_METHOD_SET`（A01-A12 Set），但 `checkWorkRevisionBinding` 仍引用已删除的 `METHOD_BY_GATE.G4` → 对非 A06 finding（A05/A09）会 FAIL。
+- **修复**（commit `875bc2f`）：`tools/rule-gate-reviewer.mjs` 行 308 `if (text(row.method_id) !== METHOD_BY_GATE.G4)` → `if (!G4_METHOD_SET.has(text(row.method_id)))`。G4_METHOD_SET 已是 Set，直接 `.has()` 校验即可覆盖 A01-A12。
+- **两个题材实测（本地隔离库 mohen_dev）**：
+  - 「朱家角」`d9d48901-…`：projection_key=`zhujiajiao_canal_rice_market_network`，从 A05 actor_situation finding `749414aa-…`（G4 PASS current，audit `07f2ecbb-…`）派生 → **G5 PASS current**（audit `c32a7afd-…`，work_revision_binding PASS，rights_by_operation PASS basis=owner_authorization）。
+  - 「七宝」`b1ecefa4-…`：projection_key=`qibao_town_multilayer_identity_projection`，从 A09 historical_transformation finding `3cffc174-…`（G4 PASS current，audit `7c1625c0-…`）派生 → **G5 PASS current**（audit `69a67049-…`，work_revision_binding PASS，rights_by_operation PASS basis=owner_authorization）。
+- **泛化验证要点**：
+  - work_revision_binding：上游 finding method=A05/A09（非 A06），之前 METHOD_BY_GATE.G4 会 FAIL → 现在 G4_METHOD_SET.has() PASS ✓
+  - rights_by_operation：两题材 projection.payload.original_id 均能找到对应 source_versions + rights_snapshot（basis=owner_authorization，machinery_read/retain=allowed）→ PASS ✓
+  - gate_reviewer_bindings：purpose `data-production/m5-remediation/v1` × machine signer × studio_project scope — binding 匹配 ✓
+  - G5 rule_version=`v1`（独立 G5 合同，不同于 G0-G4 的 m5-local-v1）→ sign_gate_candidate 按 gate_policy_versions 匹配 ✓
+- **MAB 交付包引用**：本批未引用 MAB 交付包归档文件（ST-06 属 D05+G5 新阶段，设计原文已提供）。
+- **脚本**：`scripts/test-d05-g5-isolation.mjs`（334 行，commit `4a8e9e1`），完整包含两题材 projection 输入、Studio 身份、DB persist、gate_candidate、G5 reviewer dryRun + sign、错误处理、role reset。
+- **本地 PENDING_PUSH**：三个 commit — `875bc2f`（JS fix）+ `4a8e9e1`（isolation test script）+ `8a8bea5`/`1320f06`（ST-05 前序），按 AGENTS.md §0A 等待 Owner 确认窗口批量推送。
+- **口径边界**：ST-06 只到 G5 投影签发；D06 叙事种子 story_seeds / P04 有界解释组合未做；P04 上游依赖 P02 projection（D05）已就位；机器签不构成 Owner 人文背书；本批 purpose 仍为 `data-production/m5-remediation`（M5 isolated 简化路径），G5 完整 purpose_profile（`G5.purpose-profile`）待 production 启用时配置；A 方法 implementation_binding 仍全 HOLD；不签任何 Stage 完成，`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变。
+- **下一阶段**：ST-07 — P04 story_seeds / agent_contexts（从 A01-A12 finding 走 P04 有界解释组合，projection 已就位可直接消费）+ G5 再次签发（purpose 可能换，需加 reviewer binding）。
