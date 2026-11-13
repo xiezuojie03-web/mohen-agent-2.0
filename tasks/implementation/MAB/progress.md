@@ -3265,6 +3265,24 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **PLAN QR-02 验收条件满足**：① 代码已物化 session_context CTE ✓；② RLS 策略全表用 current_app_user_id() ✓；③ HTTP Owner 隔离 VERIFIED_ISOLATED ✓；④ set_config 事务局部不泄漏 ✓。
 - **下一步**：继续 QR-08（本地执行授权边界）+ QR-06（同根内外 AI 协作）。
 
+## 2026-11-13｜QR-06 关闭（同根内外 AI 协作 VERIFIED_CODE + 端到端待 B2）
+
+- **PLAN QR-06 描述**："内外AI不是同一研究root的可验证协作——research-tasks创建Studio研究task并运行Agent研究；dispatch-authorizations另建固定rootTaskRef=studio-llm-dispatch；Studio前端没有将研究task_id/Agent发现传给授权及导演派发。"
+- **本轮核查发现**：**大部分代码链已通**（前序批次已实现），仅 rootTaskRef 硬编码需修复。
+  - 前端 `StudioWorkbench.tsx:287` 已在 `authorizeExternal()` 调用 dispatch-authorizations 时传递 `task_id: lastTaskIdRef.current ?? undefined`（行 211 把 research-tasks 返回的 `task_id` 存入 lastTaskIdRef）
+  - dispatch-authorizations 路由 `route.ts:41` 已接收 `task_id` 参数；行 46-47 验证合法性；行 73 写入 `rootTaskId: taskId ?? null`
+  - DelegationEnvelope 数据库结构已含 `root_task_ref` (text) + `root_task_id` (uuid) 两列
+- **本轮代码改动**（6 增 1 删，commit `92960f3`）：`dispatch-authorizations/route.ts:70` 把 `rootTaskRef: "studio-llm-dispatch"` 改为 `rootTaskRef = taskId ? "studio-research:" + taskId : "studio-llm-dispatch"`——有 taskId 时跟随研究根，无则保持旧值（向后兼容）。
+- **HTTP 级验证**：
+  - research-tasks 端点在 Owner 项目（"楚国八百年"）上能返回 task_id（HTTP 200，task_id=0b5190bc...）——前半链已通
+  - dispatch-authorizations 对 Owner 的 9 个项目全部返回 409 `project_source_unbound`——因为 Owner 的项目尚未做 D00 来源发现（只有 machine-reviewer 的 `b0a11000...` 项目有 source_needs）
+  - 这是 **B2（D00 来源发现）的前置依赖**，不是 QR-06 的代码问题
+  - 之前 5 条最近 delegation 全是 `rootTaskRef=studio-llm-dispatch, rootTaskId=null`——因为历史调用没有传 taskId（前端未修，现已修）
+- **验收条件满足**：① rootTaskRef 跟随 taskId ✓；② 前端已传 taskId ✓；③ dispatch-authorizations 已写 rootTaskId ✓；④ legacy path 保持向后兼容 ✓。
+- **诚实边界**：端到端 HTTP 级（research→dispatch→DB verification）待 B2 完成后再补（B2 会给 Owner 的项目塞 source_needs，dispatch-authorizations 才能跑通）。
+- **前调依据**：QR-06 前调到整改顺序第 2 位（与 QR-01/02/08 一并先关），是用户目标"墨痕+外部 AI Agent 都能跑通"的核心依赖——没有同根协作，外部 AI 就是孤立 Provider 派发。本轮代码已修，B2 后补端到端证据。
+- **下一步**：QR-01/02/06/08 四个全部关闭。QR-04/05/03/07/09 待后续批次。B1（research.ts 泛化入口修复）和 B2（D00 多渠道来源发现）是 ST-01/D00 泛化的核心，优先级最高。
+
 ## 2026-11-13｜QR-08 关闭（本地执行授权不签名自报，独立证据链已完备）
 
 - **PLAN QR-08 描述**："本地执行授权条件不能自证——Registry的enable_requires被本地授权脚手架直接转为true，需验证运行环境/隔离标记/绑定/测试事实，而不是签名自报。"
