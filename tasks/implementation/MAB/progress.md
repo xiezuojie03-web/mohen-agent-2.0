@@ -3325,3 +3325,25 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **验收条件满足**：① enable_requires 不由签名时自报 true ✓；② 每个条件由独立可验证检查生成 ✓；③ 缺任一证据不签发 ✓；④ 目标隔离 ✓。
 - **诚实边界**：本轮未运行 `verify-local-execution-env.mjs` 现场生成证据文件（需要跑 data-production 契约测试套件，耗时较长）；但脚本逻辑完整、签名前强制检查、缺证据必然失败——代码级证据链已完备，不需要额外测试来确认"代码会拒绝不完整证据"。
 - **下一步**：继续 QR-06（同根内外 AI 协作）——前调到整改顺序第 2 位，是"墨痕+外部 AI Agent 都能跑通"的核心依赖。
+
+## 2026-11-13｜B2 关闭（生产准备改走 D00 多渠道来源发现 VERIFIED_ISOLATED）
+
+- **问题**：`apps/web/lib/mohen-agent/prepare-topic.ts`（Studio 生产准备入口）只调 `searchShanghaiLibraryMaterials` 单一渠道。该渠道一旦不可用即返回 `shl_unavailable`，**任意题材的生产准备永不启动**——这是"创作线路畅通"的硬断点，且与题目难度无关，是渠道单点。
+- **权威落位（先查设计再动手，三处自我纠正）**：
+  1. 曾误判"D00 `methods: []` 是缺陷应补 Y01—Y08"。核实 `specs/data-production/method-binding-contract.json`：`"stage_d00": "source standards govern source discovery/acquisition; not counted among C/H/W/A/P"`，`methods: []` **是设计如此**，未改动。
+  2. 曾误判"生产阶段固定金泽样板题材"。核实 `apps/web/lib/studio-production.ts:135` 已传 `env.MOHEN_TOPIC_JSON_FILE = prepared.jsonFile`；`layer1-adapters.mjs` 的 `TOPIC_KEY = __TOPIC?.key ?? "jinze"` 只是 CLI 缺省值，**非缺陷**，未改动。
+  3. 曾误判"多渠道发现缺失"。核实 `research.ts` 已走多渠道；真正单渠道的只有 `prepare-topic.ts`——**修复面据此收敛到一处**。
+  - 落位依据：MHKA-04 §2「D00 = 发现、登记、合法获取和管理来源/权利/版本 → L0 → G0」；§12 业务顺序「brief@rev → Agent检索与计划 → Studio研究候选@rev → 受控 D00—D05 申请 → 独立 G」。Studio 侧发现属于 **D00 之前的"Agent 检索与计划"**，故 `source-discovery.ts` 位置正确、不下沉 `pipelines/`；web 不写 L0（`source.*` RLS 只授 `mohen_private_worker`/gate 角色，无 `app_runtime`），边界未越。
+- **改动**（commit `885de09`）：
+  - `prepare-topic.ts` 改调 `discoverExternalSources`（Y01 缺口诊断 + Y02 四渠 + Y03 查询梯子 + Y06 优先级），与 `research.ts` 同源，不再各写一套发现逻辑。
+  - 新增导出 `classifyDiscoveredLeads`：只有「可定位（有 url）+ 带内容片段」的线索才进 `topicConfig.materials` 交 D01 读取；其余如实留在 `discovery.candidates`（`rights_hint.status="unverified"`），**不参与读取**，避免把线索当原件。
+  - `PreparedTopic` 增 `discovery` 段（`channels` 渠道轨迹 / `gaps` / `needReason` / `candidateCount`）落盘 `topicConfig`，D00 来源准备过程可回溯。
+  - `collectPhotos` 优先用已发现候选取图，减少重复外呼。
+- **验证**：
+  - 单测 `tests/unit/b2-source-discovery-preparation.test.ts` **6/6 passed**（1 正例 url+片段→材料；3 反例：无 url／空片段／纯空白片段→候选；空输入；混合输入正确分流）。
+  - `tsc --noEmit` 0 错误；`next build` 通过。
+  - **真实多渠道**（题材「楚国八百年」）：`materialCount=8`、`photoCount=6`、`label=楚国八百年`；渠道轨迹 SHL `unavailable`(0)、Commons `ok`(6)、Wikisource `ok`(6)、LOC `empty`(跳过)；Y06 记录「题名命中 6 条；仅正文偶遇检索词 6 条，降级并最多保留 2 条」；`gaps=["上海图书馆开放数据当前不可用"]`；`needReason="库内没有可用材料，必须按 Y02/Y03 出去找来源"`；materials providers=`["wikimedia-commons","zh-wikisource"]`；candidates=0。
+  - **对照结论**：修复前 SHL 不可用 → `shl_unavailable` → 生产永不启动；修复后 2 个渠道给出 8 条可读材料。
+- **诚实边界 / 遗留缺陷（未在本批修，需记账）**：`source-discovery.ts#relevanceTier` 对图像渠道结果一律返回 `"title"`（`if (m.source_type === "image" || m.carrier_type === "image") return "title"`），使 Commons 图像扫描件不经题名比对即视为高相关，样本中出现「孟子趙注補正(二)」这类与「楚国八百年」明显无关的件进入 `materials`，会污染 D01 读取质量。这是**既有 Y06 逻辑缺陷，非 B2 引入**；修复需重设图像渠道的相关性判据（图像题名同样应对检索词做命中判定），列入后续批次评估，不在本批顺手改。
+- **记账影响**：LOCAL-BUILD-LEDGER §三 5.1（通用入口）由 🔵 具备"任意题材可进入生产准备并获得多渠道可读材料"的能力，但**尚未跑通 ST-01→D00→G0→Admin 全链**，且未满足 QR-10 泛化冒烟门（≥2 个非模板 topic），故仍不转 ✅。
+- **本地 PENDING_PUSH**：commit `885de09`，按 AGENTS.md §0A 等待批量推送窗口。当前 main 领先 origin/main，累计未推送提交见本文件各批记录。
