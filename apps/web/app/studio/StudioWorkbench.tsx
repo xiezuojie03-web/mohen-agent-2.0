@@ -68,6 +68,10 @@ export default function StudioWorkbench() {
   const [projectBusy,setProjectBusy]=useState(false);
   const [projectError,setProjectError]=useState<string|null>(null);
   const [draftsOpen,setDraftsOpen]=useState(false);
+  // 底稿改名：只改显示名称，不合并档案、不改 project_id。
+  const [renaming,setRenaming]=useState<{id:string;title:string}|null>(null);
+  const [renameBusy,setRenameBusy]=useState(false);
+  const [renameError,setRenameError]=useState<string|null>(null);
   const projectAttempt=useRef<{title:string;id:string}|null>(null);
   const requestAttempt=useRef<{fingerprint:string;id:string}|null>(null);
   // QR-06: remember the latest Agent research task so external-AI authorization can bind
@@ -113,6 +117,22 @@ export default function StudioWorkbench() {
       setProjectError("墨痕没能保存这次创作的底稿，请再发一次；刚才那句话没有丢。");
       return null;
     }finally{setProjectBusy(false);}
+  }
+
+  async function renameProject(id:string,title:string){
+    const clean=title.trim();
+    if(!clean||renameBusy)return;
+    setRenameBusy(true);setRenameError(null);
+    try{
+      const response=await fetch("/api/studio/projects",{method:"PATCH",headers:{"content-type":"application/json"},
+        body:JSON.stringify({project_id:id,title:clean})});
+      const body=await response.json();
+      if(!response.ok||body.ok!==true||!body.project?.project_id)throw new Error();
+      const updated=body.project as StudioProject;
+      setProjects(current=>current.map(p=>p.project_id===updated.project_id?{...p,project_title:updated.project_title}:p));
+      setRenaming(null);
+    }catch{setRenameError("改名没保存成功，原名称还留着。");}
+    finally{setRenameBusy(false);}
   }
 
   // 创作流程状态
@@ -512,6 +532,22 @@ export default function StudioWorkbench() {
 
   const lastMohen = [...messages].reverse().find((m) => m.role === "mohen");
   const materials = [...new Map(messages.flatMap((message) => message.materials ?? []).map((material) => [material.id, material])).values()];
+  // 中栏只放真实回执：有资料支持的进「这次查到的」，其余进「待验证候选」，缺口原样列出。
+  const evidenced = materials.filter((material) => material.epistemic === "FACT_EVIDENCED");
+  const candidates = materials.filter((material) => material.epistemic !== "FACT_EVIDENCED");
+  const gaps = [...new Set(messages.flatMap((message) => message.gaps ?? []))];
+  const materialCard = (material: Material) => {
+    const label = humanEpistemic(material.epistemic, false);
+    // 引擎可能透出未登记的档位（例如测试夹具的 hypothesis）：不冒充已核实，统一按待核验线索显示。
+    const shown = label === material.epistemic ? "待核验线索" : label;
+    return (
+      <div className="studio__material" key={material.id}>
+        <span className="studio__material-badge">{shown}</span>
+        <div className="studio__material-snippet">{material.snippet}</div>
+        <div className="studio__material-source">{material.sourceRef}</div>
+      </div>
+    );
+  };
 
   return (
     <div className="studio">
@@ -534,35 +570,38 @@ export default function StudioWorkbench() {
         {/* 左栏：一句话委托。项目对用户隐形；历史与研究档案收进可折叠的「研究底稿」抽屉。 */}
         <section className="studio__col studio__col--chat">
           <div className="studio__chat-top">
-            <div className="studio__chat-title">
-              <strong>和墨痕说话</strong>
-              <span>想做什么，直接说</span>
-            </div>
+            <ColumnHead no="①" title="和墨痕说话" desc="想做什么，直接说" />
             <button type="button" className="studio__link-btn" aria-expanded={draftsOpen}
               onClick={()=>setDraftsOpen(v=>!v)}>{draftsOpen?"收起底稿":"研究底稿"}</button>
           </div>
 
           {draftsOpen&&(
             <div className="studio__drawer">
-              <h3>这次找到的资料</h3>
-              {materials.length===0?(
-                <p className="studio__drawer-note">还没有资料。你提问后，墨痕查到的材料会保留来源与可信度标签。</p>
-              ):(
-                <div className="studio__materials">
-                  {materials.map((mat)=>(
-                    <div className="studio__material" key={mat.id}>
-                      <span className="studio__material-badge">{humanEpistemic(mat.epistemic,false)}</span>
-                      <div className="studio__material-snippet">{mat.snippet}</div>
-                      <div className="studio__material-source">{mat.sourceRef}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <p className="studio__drawer-note">这些资料还不是正式合格资产；专业资格需另行核验。</p>
               <h3>以往研究档案</h3>
+              <p className="studio__drawer-note">一次创作一份底稿；改名只改显示名称，不会合并已有记录。</p>
               {projectLoading?<p className="studio__drawer-note">读取中…</p>
                 :projects.length===0?<p className="studio__drawer-note">还没有保存过。</p>
-                :<ul className="studio__drawer-list">{projects.slice(0,8).map(p=><li key={p.project_id}>{p.project_title}</li>)}</ul>}
+                :<ul className="studio__drawer-list">{projects.slice(0,8).map(p=>(
+                  <li key={p.project_id}>
+                    {renaming?.id===p.project_id?(
+                      <span className="studio__rename">
+                        <input value={renaming.title} maxLength={200} aria-label="研究底稿新名称"
+                          onChange={e=>setRenaming({id:p.project_id,title:e.target.value})}/>
+                        <button type="button" className="studio__link-btn" disabled={renameBusy}
+                          onClick={()=>void renameProject(p.project_id,renaming.title)}>保存</button>
+                        <button type="button" className="studio__link-btn studio__link-btn--muted"
+                          onClick={()=>setRenaming(null)}>取消</button>
+                      </span>
+                    ):(
+                      <span className="studio__rename">
+                        <span>{p.project_title}</span>
+                        <button type="button" className="studio__link-btn studio__link-btn--muted"
+                          onClick={()=>{setRenameError(null);setRenaming({id:p.project_id,title:p.project_title});}}>改名</button>
+                      </span>
+                    )}
+                  </li>
+                ))}</ul>}
+              {renameError&&<p role="alert" className="studio__error">{renameError}</p>}
               <a className="studio__link-btn" href="/studio/desk">打开完整研究记录</a>
             </div>
           )}
@@ -586,17 +625,6 @@ export default function StudioWorkbench() {
                 <div>{m.text}</div>
                 {m.taskRef && <div className="studio__msg-label">任务编号：{m.taskRef}</div>}
                 {m.clarify && <div className="studio__clarify">{m.clarify}</div>}
-                {m.materials?.map((mat) => (
-                  <div className="studio__material" key={mat.id}>
-                    <span className="studio__material-badge">{humanEpistemic(mat.epistemic, false)}</span>
-                    <div className="studio__material-snippet">{mat.snippet}</div>
-                    <div className="studio__material-source">{mat.sourceRef}</div>
-                  </div>
-                ))}
-                {Boolean(m.gaps?.length) && <div className="studio__gap">缺口已识别，尚未提交正式生产；可继续补充研究材料。</div>}
-                {m.gaps?.map((g) => (
-                  <div className="studio__gap" key={g}>还缺：{g}</div>
-                ))}
                 {m.degraded && (
                   <div className="studio__gap">暂时连不上材料库，以上是墨痕能确定的边界，没有替你补内容。</div>
                 )}
@@ -605,15 +633,6 @@ export default function StudioWorkbench() {
 
             {projectBusy && <div className="studio__typing">墨痕在准备这次创作的底稿…</div>}
             {busy && <div className="studio__typing">墨痕在查资料…</div>}
-            {production && (
-              <div className="studio__production">
-                {production.status === "RUNNING"
-                  ? `正在生产（${production.current_stage ?? "启动中"}）…`
-                  : production.status === "PASS"
-                    ? "生产阶段已结束；知识资格需独立核验。"
-                    : `生产结束（${production.status}），详情见任务事件。`}
-              </div>
-            )}
           </div>
 
           {messages.length === 0 && (
@@ -653,9 +672,47 @@ export default function StudioWorkbench() {
           )}
         </section>
 
-        {/* 右栏：作品。方向、成稿、提交都在这里；研究资料与以往档案收在左栏「研究底稿」抽屉。 */}
-        <section className="studio__col studio__col--work" aria-label="作品产出">
-          <ColumnHead no="②" title="你的作品" desc="墨痕给方向，你定稿并提交" />
+        {/* 中栏：研究进展与导演谱（MHKA-02 §3）。只放真实回执，不设静态进度条。 */}
+        <section className="studio__col studio__col--research" aria-label="研究资料与知识资产">
+          <ColumnHead no="②" title="墨痕在研究什么" desc="查到什么、缺什么、能不能往下走" />
+
+          <div className="studio__research-block">
+            <h3>这次查到的</h3>
+            {evidenced.length === 0 ? (
+              <p className="studio__drawer-note">还没有材料。你提问后，查到的来源与可信度会留在这里。</p>
+            ) : (
+              <div className="studio__materials">{evidenced.map(materialCard)}</div>
+            )}
+            <p className="studio__drawer-note">这些材料尚未接入当前资格，只是研究线索，不是已签发的史实。</p>
+          </div>
+
+          <div className="studio__research-block">
+            <h3>缺口</h3>
+            {gaps.length === 0 ? (
+              <p className="studio__drawer-note">墨痕还没有报出缺口；这不等于材料已经够用。</p>
+            ) : (
+              <ul className="studio__drawer-list">{gaps.map((g) => <li key={g}>还缺：{g}</li>)}</ul>
+            )}
+          </div>
+
+          <div className="studio__research-block">
+            <h3>待验证候选</h3>
+            {candidates.length === 0 ? (
+              <p className="studio__drawer-note">还没有待验证的判断。</p>
+            ) : (
+              <div className="studio__materials">{candidates.map(materialCard)}</div>
+            )}
+          </div>
+
+          {production && (
+            <div className="studio__production">
+              {production.status === "RUNNING"
+                ? `正在生产（${production.current_stage ?? "启动中"}）…`
+                : production.status === "PASS"
+                  ? "生产阶段已结束；知识资格需独立核验。"
+                  : `生产结束（${production.status}），详情见任务事件。`}
+            </div>
+          )}
 
           <div className="studio__panel">
             <div className="studio__panel-head">
@@ -733,6 +790,11 @@ export default function StudioWorkbench() {
             </div>}
             {directing && <div className="studio__typing">墨痕在写分镜章节…</div>}
           </div>
+        </section>
+
+        {/* 右栏：作品。预览、五个面板、素材与提交都在这里。 */}
+        <section className="studio__col studio__col--work" aria-label="作品产出">
+          <ColumnHead no="③" title="你的作品" desc="分镜、画面与提交都在这里" />
 
           <div className={`studio__preview${beats && beats.length > 0 ? "" : " studio__preview--idle"}`}>
             {beats && beats.length > 0 ? (

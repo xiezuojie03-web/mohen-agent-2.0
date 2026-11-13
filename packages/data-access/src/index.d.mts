@@ -104,6 +104,7 @@ export interface StudioAssetRepository {
     requested_action: string; rights_decision_ref: string; created_at: string;
   }>>;
   createProject(input: {projectId: string; title: string; scope?: Record<string, unknown>}, token: string): Promise<{project_id: string; project_title: string; research_scope: unknown}>;
+  updateProjectTitle(input: {projectId: string; title: string}, token: string): Promise<{project_id: string; project_title: string; research_scope: unknown}>;
   saveRevision(input: {projectId: string; assetId: string; kind: string; expectedRevisionId: string | null; idempotencyKey: string; payload: unknown; sourceRefs?: unknown[]; dependencyRefs?: unknown[]; originTaskId?: string | null; originTaskSnapshot?: Record<string,unknown>}, token: string): Promise<StudioStoredRevision>;
   withdrawFeedback(input: {projectId: string; assetId: string; expectedRevisionId: string; idempotencyKey: string},token:string):Promise<StudioStoredRevision>;
   getRevision(revisionId: string, token: string): Promise<StudioStoredRevision | null>;

@@ -3748,3 +3748,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **测试同步**：`tests/e2e/five-pages-ui-acceptance.spec.ts` 的 projects 替身改为按方法分流（GET 空列表／POST 返回项目）；`tests/e2e/mab-m4-plan.spec.ts` ST-01 改为「第一句话 → 后台建底稿 → 研究任务绑定同一项目」。两者属隔离 HTTP 验收，本机**未执行**（`NOT_RUN`），不据源码改动声称通过。
 - **回归**：`tests/data-production` 246/0；`guard:structure`（含 structure-map）与 `guard:isolated-db-fixtures` PASS；`tsc --noEmit -p apps/web` 0 错误。
 - **边界**：`VERIFIED_ISOLATED`，只本地 `mohen_dev`；研究答复为替身，D00—D05/LLM 真实链本批未重跑（ST-10/ST-11 证据保持有效）；验证产生的 3 份 auto_created 底稿已按 project_id 精确删除（0 资产／0 研究任务）；`M5_OVERALL_HOLD` 不变；`6caec62b…` 作品在 WATCH「有发布记录但无章节内容」的缺陷仍排队未修；本批本地提交登记 `PENDING_PUSH`（AGENTS.md §0A）。
+
+## 2026-11-13｜Studio 形态改版（二）：恢复三栏（中栏=真进展）+ 研究底稿可改名（本地 UI 已核，`VERIFIED_ISOLATED`）
+
+- **Owner 决定**：① 恢复三栏，中栏换成真进展（禁止静态五步进度条）；② 主题分档暂不做，一次创作一份底稿；③ 底稿允许用户自己改名。依据 `MHKA-02 §3`（L30 三工作面、L35 进展/可靠性/关键选择/不足、L36 可比较并采纳）与 `KALC §19.1 L256`（项目是受控研究身份，不按题名自动归属、跨题复用分别核权）。
+- **视图层**（`StudioWorkbench.tsx`）：恢复三栏——左①「和墨痕说话」、中②「墨痕在研究什么」（`aria-label="研究资料与知识资产"`）、右③「你的作品」（`aria-label="作品产出"`）。中栏只放真实回执：这次查到的（仅 `FACT_EVIDENCED`）/缺口/待验证候选（其余档位；引擎透出的未登记档位如 `hypothesis` 显示「待核验线索」，不冒充已核实）/生产状态/两种方向与采纳。右栏只留预览、五个面板、画面候选素材、提交；方案卡不再出现在右栏。左栏气泡不再重复材料卡与缺口行；抽屉删除「这次找到的资料」，只留以往研究档案与完整研究记录入口。
+- **样式**（`studio.css`）：三列栅格 `minmax(280px,25%) minmax(300px,29%) minmax(340px,1fr)`；新增 `.studio__col--research` / `.studio__research-block` / `.studio__rename`；`≤1100px` 单列堆叠（不压缩成三等宽栏）。删除已无用的 `.studio__chat-title`。
+- **改名能力**：新增 `PATCH /api/studio/projects` → `studioAssetStore().updateProjectTitle()`（`owner_user_id` 与会话身份双条件、只写 `project_title` 一列、返回落库行）+ `index.d.mts` 声明；迁移 `supabase/migrations/20261114200000_mab_m5_studio_project_title_rename.sql` 仅给运行账号 `grant update(project_title)`（行级仍由 `studio_project_owner` 限本人，`lifecycle_status` 仍归执行权威），已应用 `mohen_dev`；两条隔离链 `scripts/test-k3-db.mjs`、`scripts/test-mab-http.mjs` 同步登记，`guard:isolated-db-fixtures` PASS。
+- **真实证据**（真实 dev server `127.0.0.1:3210` + 真实 HMAC 会话 + 真实 `mohen_dev`；仅研究任务与导演方案换固定回执以避免外部模型费用）：**14/14 断言 PASS**——三栏并排（394/457/701 px，同一行）；后台真实建底稿（`72c9e6cc…`）；中栏显示材料来源《金泽镇志》卷三、未登记档位显示「待核验线索」、缺口「还缺：原件定位待核对」、声明「尚未接入当前资格」；中栏无静态进度条；两个区域名仍在；两种方向出现在中栏而右栏方案卡为 0；采纳后右栏预览成形；抽屉不含「这次找到的资料」；改名经真实 PATCH 落库（`studio.projects.project_title='金泽古桥与寺院'`）且界面同步。截图自查通过；验证产生的 auto_created 底稿已按 project_id 精确删除（`leftover=0`）。
+- **口径与未做**：改名只改显示名称，不合并档案、不改 `project_id`；主题分档按 Owner 决定暂不做（触发条件：同一批材料/结论被 ≥2 部作品真实复用，或需对外发布多作品「专题」）。E2E 选择器与文案全部保留，`five-pages-ui-acceptance.spec.ts` 的 UXD7 断言因区域名与注释文案恢复而重新成立，但本机**未执行**（`NOT_RUN`）。
+- **回归**：`tests/data-production` **246/0**；`check-structure`、`check-structure-map`、`guard:isolated-db-fixtures` 全 PASS；`tsc --noEmit -p apps/web` 0 错误。
+- **边界**：`VERIFIED_ISOLATED`，只本地 `mohen_dev`，未触生产库；`M5_OVERALL_HOLD` 不变；`6caec62b…` 作品在 WATCH「有发布记录但无章节内容」仍排队未修；本批本地提交登记 `PENDING_PUSH`（AGENTS.md §0A）。

@@ -249,6 +249,18 @@ export function createStudioAssetRepository(pool) {
         return rows[0];
       });
     },
+    // 底稿改名：只允许改显示名称。project_id/归属/材料一律不动，不能借改名合并档案。
+    async updateProjectTitle({projectId,title}, sessionToken) {
+      requireId(projectId);
+      if (typeof title !== 'string' || !title.trim() || title.trim().length > 200) throw new Error('STUDIO_PROJECT_TITLE_INVALID');
+      return transaction(sessionToken, async (client, actor) => {
+        const {rows} = await client.query(`update studio.projects set project_title=$2
+          where project_id=$1 and owner_user_id=$3
+          returning project_id,project_title,research_scope`,[projectId,title.trim(),actor]);
+        if (rows.length !== 1) throw new Error('STUDIO_PROJECT_NOT_FOUND');
+        return rows[0];
+      });
+    },
     async saveRevision(input, sessionToken) {
       const {projectId,assetId,kind,expectedRevisionId=null,idempotencyKey,payload,sourceRefs=[],dependencyRefs=[],originTaskId=null,originTaskSnapshot={}} = input;
       requireId(projectId); requireId(assetId); if (expectedRevisionId !== null) requireId(expectedRevisionId);

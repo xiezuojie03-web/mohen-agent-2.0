@@ -139,7 +139,9 @@ try {
       "20261113150000_mab_m5_reviewer_scope_follows_candidates.sql",
       // M5 通用入口：Gate 授权支持"规则范围"（studio_project），同口径修正资格有效性判定，
       // 并对 CAS 期望着值；否则新题材项目签不出门、签出也立刻被判非当前。
-      "20261113160000_mab_gate_scope_rule_for_studio_projects.sql"]) apply(file);
+      "20261113160000_mab_gate_scope_rule_for_studio_projects.sql",
+      // 研究底稿改名：只给运行账号 project_title 列级 update，行级仍由 owner 策略限制。
+      "20261114200000_mab_m5_studio_project_title_rename.sql"]) apply(file);
     // Capability assertions for the migrations applied immediately above. They can only run at
     // this point in the chain: the rights columns, the private worker, the machine reviewer and
     // the content-based sign_gate_candidate semantics do not exist any earlier.

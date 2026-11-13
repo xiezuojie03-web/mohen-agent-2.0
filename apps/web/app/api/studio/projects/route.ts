@@ -25,3 +25,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ok:true,project});
   } catch(error) { return studioAssetFailure(error); }
 }
+// 只改显示名称；所有者由数据库会话判定，不从 JSON 取。
+export async function PATCH(request: Request) {
+  const session=await getSession();
+  if (!session) return NextResponse.json({ok:false,reason:'login_required'},{status:401});
+  const body=await studioObjectBody(request);
+  if (body instanceof NextResponse) return body;
+  try {
+    const project=await studioAssetStore().updateProjectTitle({projectId:body.project_id as string,title:body.title as string},
+      signDatabaseSessionToken(session));
+    return NextResponse.json({ok:true,project});
+  } catch(error) { return studioAssetFailure(error); }
+}

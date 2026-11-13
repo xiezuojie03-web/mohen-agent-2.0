@@ -53,7 +53,8 @@ try {
     '20261110110000_mab_d00c_source_discovery_ledger.sql','20261110120000_mab_d00c4_remaining_stages.sql',
     '20261110150000_mab_d00c5_method_revalidation.sql','20261110160000_mab_d00_y04_original_provider_trace.sql',
     '20261110130000_mab_original_media_assets.sql','20261110140000_mab_d00_y02_registration_locator.sql',
-    '20261113100000_mab_qr05_single_rights_action_dictionary.sql'];
+    '20261113100000_mab_qr05_single_rights_action_dictionary.sql',
+    '20261114200000_mab_m5_studio_project_title_rename.sql'];
   if(process.env.MOHEN_REVOCABLE_SESSIONS_ENABLED==='true')names.push('20261103095024_mab_web_session_revocation.sql');
   for(const name of names)execFileSync(psql,[...base,'-d',database,'-f',path.join(migrations,name)],{stdio:['ignore','pipe','pipe']});
   if(process.env.MOHEN_TEST_STORAGE_CONFIG){
