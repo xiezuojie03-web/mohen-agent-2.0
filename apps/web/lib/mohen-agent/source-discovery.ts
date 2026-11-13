@@ -20,18 +20,22 @@ import { searchWikisourceMaterials } from "./retrieve-wikisource";
 import { buildQueryPlan } from "./query-plan";
 
 /** 题名检索型渠道：返回即题名命中，不做正文偶遇判定。 */
-const TITLE_SEARCH_PROVIDERS = new Set(["shanghai-library", "wikimedia-commons", "loc"]);
+const TITLE_SEARCH_PROVIDERS = new Set(["shanghai-library", "loc"]);
 
 /**
  * Y06：资源价值互补与取得优先级评估（不是删除）。
  * 全文检索引擎（维基文库）会把"正文里偶然提到该词"的文档一起返回（判决书、佛经、无关古籍）。
  * 这类候选题名与该题材无关，作为首屏线索会误导，因此降到最低优先级并限量保留。
- * 题名检索渠道与图像渠道不受此判定，避免误杀馆藏繁体题名。
+ * 题名检索馆藏（上海图书馆、国会图书馆）不受此判定，避免误杀繁体题名。
+ *
+ * B3（2026-11-13）：图像渠道此前一律记作题名命中，是**既有缺陷**——Commons 是全文索引，
+ * 检索词命中可能只落在文件描述里，甚至与题材完全无关（B2 实测「楚国八百年」返回「孟子趙注補正」）。
+ * 图像因此改为按「题名 + 描述」判命中；未命中降为 body-only，限量保留，不冒充题名命中。
  */
-function relevanceTier(m: ShlMaterial, terms: string[]): "title" | "body-only" {
-  if (m.source_type === "image" || m.carrier_type === "image") return "title";
+export function relevanceTier(m: ShlMaterial, terms: string[]): "title" | "body-only" {
   if (TITLE_SEARCH_PROVIDERS.has(m.provider)) return "title";
-  const hay = m.title || "";
+  const isImage = m.source_type === "image" || m.carrier_type === "image";
+  const hay = isImage ? `${m.title || ""} ${(m.fragments ?? []).join(" ")}` : (m.title || "");
   return terms.some((t) => t && hay.includes(t)) ? "title" : "body-only";
 }
 
@@ -169,7 +173,7 @@ export async function discoverExternalSources(
       label: "相关性优先级（Y06）",
       status: "ok",
       count: leads.length,
-      note: `题名命中 ${titled.length} 条；仅正文偶遇检索词 ${bodyOnly.length} 条，降级并最多保留 2 条`,
+      note: `题名/图像内容命中 ${titled.length} 条；仅正文或描述偶遇检索词 ${bodyOnly.length} 条，降级并最多保留 2 条`,
     });
   }
 

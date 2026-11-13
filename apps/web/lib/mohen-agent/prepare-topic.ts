@@ -15,7 +15,7 @@ import { extractExternalEntities, type ShlMaterial } from "./retrieve-shl";
 import { searchCommonsForTopic } from "./retrieve-commons";
 import { searchLocMaterials } from "./retrieve-loc";
 import { buildQueryPlan, type QueryPlan } from "./query-plan";
-import { discoverExternalSources, type DiscoveryChannelTrace } from "./source-discovery";
+import { discoverExternalSources, relevanceTier, type DiscoveryChannelTrace } from "./source-discovery";
 
 export interface PreparedTopic {
   jsonFile: string;
@@ -45,14 +45,23 @@ function isLocatableMaterial(m: ShlMaterial): boolean {
  * 把发现结果分成两类：可读材料与仅候选。
  * 只有 locatable 能进 topicConfig.materials 交给 D01 读取；
  * candidates 如实留痕（题名/渠道/权利未知），绝不参与读取，避免把线索当原件。
+ *
+ * B3（2026-11-13）：图像另加一道 Y06 相关性判定——检索词没落在题名或描述里的图像
+ * （Commons 全文索引的偶遇命中）只作候选，不冒充可读材料送进 D01。
+ * 文本渠道保持原口径，brief 的「仅正文偶遇」仍按 Y06 限量保留，不在此扩大收缩。
  */
-export function classifyDiscoveredLeads(leads: ShlMaterial[]): {
+export function classifyDiscoveredLeads(leads: ShlMaterial[], terms: string[] = []): {
   locatable: ShlMaterial[];
   candidates: ShlMaterial[];
 } {
   const locatable: ShlMaterial[] = [];
   const candidates: ShlMaterial[] = [];
-  for (const lead of leads) (isLocatableMaterial(lead) ? locatable : candidates).push(lead);
+  for (const lead of leads) {
+    const imageWithoutMatch = terms.length > 0
+      && (lead.source_type === "image" || lead.carrier_type === "image")
+      && relevanceTier(lead, terms) !== "title";
+    (isLocatableMaterial(lead) && !imageWithoutMatch ? locatable : candidates).push(lead);
+  }
   return { locatable, candidates };
 }
 
@@ -144,7 +153,8 @@ export async function prepareFreeTopic(intent: string): Promise<PrepareResult> {
 
   // 3. Y01 缺口诊断 + Y02 多渠道 + Y03 查询扩展 + Y06 优先级
   const discovery = await discoverExternalSources(intent, { localMaterialCount: 0, entities });
-  const { locatable, candidates } = classifyDiscoveredLeads(discovery.leads);
+  // B3：图像按 Y06 相关性判（题名/描述须命中检索词），与文本同一口径但不误伤文本线索。
+  const { locatable, candidates } = classifyDiscoveredLeads(discovery.leads, [...plan.terms, ...plan.entities]);
   const discoveryMeta: PreparedTopic["discovery"] = {
     channels: discovery.trace,
     gaps: discovery.gaps,
