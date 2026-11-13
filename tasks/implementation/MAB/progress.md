@@ -3214,3 +3214,24 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **真实复测**：同一句委托经 `POST /api/studio/research-tasks`，外部线索由 3 条单源变为 8 条，覆盖 Commons 与维基文库两个渠道，其中含真实图像线索「湖北省博物馆-楚国八百年」。
 - **仍未达标（不夸大）**：该次复测仍混入题名无关古籍与两份无关民事判决书，且 `verdict=cannot_answer`、`gaps=["意图未确定"]`。根因是 Studio 把「创作委托」交给问答式 `understand` 判定，以及检索词未按题材收敛，属另一段断点。本批只算「渠道接通 + 诚实降级」，**不算创作链可用性达标**。
 - **复验**：`tests/unit/source-discovery.test.ts` 5 passed；`mab-hp08-tool-ledger` 12 passed；`@mohen/web` tsc 0 错误；`next build` 通过；本地 3100 已按新构建重启。全部 `VERIFIED_ISOLATED`，未触生产库、未改 Gate、未公开部署；`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变。
+
+## 2026-11-13｜文档诚实化 + QR-06 前调 + QR-10 泛化冒烟门（纯文档批，本地 PENDING_PUSH）
+
+- **Owner 触发点**：Owner 补充四项目标——①创作线通（含 D00—D05 生产线）；②墨痕 Agent 自主 + 外部 AI（如 Trae）都能跑；③跑通自然产出知识资产和作品；④Admin 可视化逐条管理与签发；EXP 暂停深入但现有设计落地。Owner 明确"不能出了问题就补那个问题"，要求先做设计意图 vs 真实实现 vs PLAN vs 账本三角对账，再决定施工顺序。
+- **三角对账发现**（本轮独立分析，不新增 Runner/Gate/第二套真值）：
+  1. LOCAL-BUILD-LEDGER 系统性虚报：§三 5.1（通用委托入口）标 ✅ 但 `research.ts` 硬编码 `TOPIC_PROFILES={jinze,a001,generic}`，非模板 topic 走 `generic→understand()` → verdict=cannot_answer；§三 5.5（Studio 真实创作）标 ✅ 但仅对《松江府田赋》模板作品验证，无第二个泛化证据；§二 第 2 步（M3 D 链）标 ✅ 但 `production-registry.json` D00 `"methods":[]`（Y01—Y08 全 HOLD）、63 方法仅 6 绑定。
+  2. PLAN QR-06（同根内外 AI 协作）排在整改顺序第 4 位，与用户目标"墨痕+外部 AI 都能跑通"的核心依赖矛盾——没有同根协作，外部 AI 就是孤立 Provider 派发。
+  3. PLAN QR-10（M5 准出证据概括）验收条件缺少"泛化冒烟"——"一条模板作品跑通"被台账当成"通用能力闭环"，是反复出现的根问题。
+- **本批改动**（纯文档，不动代码/数据库/路由）：
+  1. PLAN §0.1 整改顺序：QR-06 从第 4 位前调到第 2 位，与 QR-01/02/08 一并先关；附前调依据。
+  2. PLAN §0.1 QR-10 验收条件补充泛化冒烟：至少两个非模板 topic 跑通 ST-01→D00→G0→Admin 链，否则 M5 八维度不得转 ✅。
+  3. LOCAL-BUILD-LEDGER §二 第 2 步：✅ 主体闭环 → 🔵 部分闭环，补充 D00 methods=[] + 6/63 方法绑定事实。
+  4. LOCAL-BUILD-LEDGER §三 5.1：[x] → [ ]，改写为诚实描述（通用入口 HOLD，模板作品链路跑通）。
+  5. LOCAL-BUILD-LEDGER §三 5.5：[x] → [ ]，改写为诚实描述（依赖 5.1 修复后方可泛化验证）。
+- **保留不动**：M0—M8 大阶段、ST-01—ST-09、QR-01/02/03/04/05/07/08/09/10（除 QR-10 补泛化门外）、§3.5-B 八维度矩阵、M0—M4 CONDITIONAL_EXIT 继承策略、EXP 暂停状态。
+- **施工批次对齐**（未写 PLAN，仅把现有 QR 按正确依赖顺序解释）：
+  1. 先关 QR-01/02/08/06（项目身份+会话隔离+授权边界+同根协作）——创作线的前置基础。
+  2. 再关 QR-04/05/03（权利字段+预算）——D00 多渠道发现依赖权利字段。
+  3. 再关 QR-07/09（资产回链+Guard）。
+  4. QR-10 泛化冒烟 ≥2 非模板 topic 后，八维度方可转为 ✅。
+- **提交与推送**：commit `18d2395`，仅改 `PLAN.md` + `LOCAL-BUILD-LEDGER.md`，本地提交，**PENDING_PUSH**。按 AGENTS.md §0A 纪律等待批量推送窗口。
