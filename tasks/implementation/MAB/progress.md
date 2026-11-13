@@ -3438,3 +3438,23 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **DB 证据核（psql 直查）**：两个题材 G1/G2 gate_audits 均 result=PASS + current_valid=true + decision_origin=independent_gate；qualification_current 两道门均存在；material_evidence modality=text_quote；evidence_links locator_schema_version=utf8_byte_range/v1。
 - **口径边界**：ST-03 只到 G2；D03–D05 + G3–G5 未做；D02→D03 依赖链已就绪（material_evidence + read_unit + G2 current），可开始 ST-04 施工（D03 assertWorldClaim/W07）；`fetch-shl-dmz-text` acquisition_attempts、Admin assets project_id filter 仍 HOLD。
 - **本地 PENDING_PUSH**：migration `20261113170000_mab_m5_d02_text_plain_observation.sql` + ledger 更新，待 commit 后按 AGENTS.md §0A 批量推送。
+
+## 2026-11-13｜ST-04 D03+G3 两例通过（G3 首次按世界用途签发，VERIFIED_ISOLATED）
+
+- **施工前置：先读设计原文，不擅自理解**。按 Owner 要求，先核 `specs/data-production/gates/gate-contracts.v3.json`、`G0-G5_MACHINE_GATE_CONTRACT_V3.0.md §3.1`、`契约_P3_L3持久化_独立G3与D04交接.md §3/§7`、`主规_P3_D03职责与研究边界.md`。
+- **设计结论（差异性质澄清）**：
+  - `gate-contracts.v3.json#G3` 规定 `purpose_source: "G3.world.v1"`、`purpose_codes` 七种、`purpose_rule: "G3/G4 exact namespaces retain original semantics; G0/G1/G2/G5 operations require explicit versioned profile, unknown → HOLD"`。
+  - 因此 **G0/G1/G2 用 `data-production/m5-remediation/v1` 是设计规定的正确做法**；**G3 必须绑世界用途**。此前 ST-02/ST-03 把生产用途沿袭到 G3 是真实语义偏移，不是设计缺陷。
+  - W 方法范围差异（只 W07 可执行）属已批准的 `M5_ISOLATED_PARTIAL_BINDING` 阶段性范围，与设计「W01—W10 联合循环」不冲突。
+- **D03 现状核实（不需像 D02 那样大改 DB）**：`world.claim_revisions` 已按契约 §3.1 建成（`revision_no`/`claim_family_id`/`supersedes_revision_id`/`evidence_snapshot_id`/`asserted_time_json`/`upstream_refs`）；`persist_private_world_claim` 通过 `evidence_id→raw_items→storage_ref/checksum` 反查原件绑定，**与载体类型无关，天然兼容 text/plain**；`qualification_current` 主键含 `purpose_namespace/code/version`，**多用途资格可并存**；`control.gate_audits` 主键仅 `gate_audit_id`（append-only），合同 §3 担心的旧唯一约束在当前新 schema 已不成立，无需新建 `world_gate_audits_vnext`。
+- **两个题材实测（本地隔离库 mohen_dev）**：
+  - 「朱家角」`d9d48901…`：D03 run `ffb4430e…` → claim_revision `0c30a997…`（W07, subject_kind=`change`, asserted_time=`{dynasty:明清,…}`）→ **G3 PASS current**（audit `22b4b749…`, purpose=`world/explain_bounded/v1`, consumer=producer, independent_gate）。
+  - 「七宝」`b1ecefa4-3320-4932-94b4-e57e16a2779c`：D03 run `abc3251e…` → claim_revision `e5432434…` → **G3 PASS current**（audit `ab72978b…`, 同 purpose）。
+- **本批改动**：
+  1. `pipelines/data-production/workers/private-evidence-stage.mjs`：`submitStageCandidate` purpose 参数化（默认 `data-production/m5-remediation/v1` 不变），D03 传 `world/explain_bounded/v1`。
+  2. `tools/rule-gate-reviewer.mjs`：`checkClaimSupport` 加用途校验（必须属七用途白名单，否则 `unknown_purpose_mapping` 失败关闭）+ `explain_bounded` 最小必要条件（身份/时空/证据 byte-verified）；`METHOD_BY_GATE.G3='W07'` 写死改为按 `method-binding-contract.json` 读 D03 授权集合（当前 `{W07}`）。
+  3. 迁移 `supabase/migrations/20261113180000_mab_g3_world_purpose_binding.sql`：G3 补 `world/explain_bounded/v1` 规则范围 Reviewer 绑定 3 条（180 天，判据仍是项目须有 D00 `source.source_needs` 回执）。**只补这一个用途**，其余六种按「七用途不互相继承」不预先授权。
+- **回归**：`node --test tests/data-production/*.test.mjs` = **246 pass / 0 fail**；两文件 `node --check` 通过；`verify-local-execution-env.mjs` 刷新 enable_requires（246 pass，绑定当前 HEAD）。
+- **修掉的实测踩坑**：七宝真实 `project_id` 是 `b1ecefa4-3320-4932-94b4-e57e16a2779c`（历史摘要记的 `b1ecefa4-023a-…` 为误值）；`MOHEN_TRUSTED_RESUME_INPUT_DIR` 必须是绝对路径且输入文件在其直接子级，否则 `TRUSTED_RESUME_INPUT_REQUIRED`。
+- **口径边界**：ST-04 只到 G3；D04–D05 + G4–G5 未做；G3 只覆盖 `explain_bounded` 一种世界用途；机器签不构成 Owner 人文背书；按 Gate 合同 §7 不标记 `GATE_ACTIVE`，Reviewer 身份与机审范围最终生效仍属原 D/G 治理责任方。
+- **本地 PENDING_PUSH**：本批 commit + `20261113180000` 迁移，按 AGENTS.md §0A 等待批量推送窗口。
