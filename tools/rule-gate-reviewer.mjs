@@ -162,6 +162,24 @@ async function checkRightsByOperation(ctx) {
       } else {
         return { ok: false, reason: "director_plan_rights_original_refs_missing:need_payload_original_ids_from_depends_on" };
       }
+    } else if (ot === "work_revision") {
+      // work_revision (ST-07 SaveWorkRevision) 从 studio.work_revisions.payload.original_ids 取；
+      // persist_private_work_revision 写入时已从 depends_on_director_plan 回溯填充
+      const wr = await ctx.query(
+        "select w.payload::text as payload from studio.work_revisions w where w.revision_id = :'objectId'",
+        { objectId: ctx.candidate.object_id }
+      );
+      if (!wr[0]) return { ok: false, reason: "work_revision_missing" };
+      const payload = json(wr[0]?.payload) ?? {};
+      const rawIds = payload.original_ids ?? payload.body?.original_ids;
+      let ids;
+      if (Array.isArray(rawIds)) ids = rawIds;
+      else ids = json(rawIds);
+      if (Array.isArray(ids) && ids.length > 0) {
+        originalIds = ids.map(text);
+      } else {
+        return { ok: false, reason: "work_revision_rights_original_refs_missing:need_payload_original_ids_from_depends_on_director_plan" };
+      }
     } else {
       return { ok: false, reason: `rights_unknown_object_type:${ot}` };
     }
@@ -423,6 +441,70 @@ async function checkWorkRevisionBinding(ctx) {
     }
 
     return { ok: true, detail: `director_plan=${text(row.id)} method=H1H2H3 has_depends=[story_seed:${hasStorySeeds},agent_ctx:${hasAgentCtx},projection:${hasProjections}]` };
+  }
+
+  if (ot === "work_revision") {
+    const rows = await ctx.query(
+      `select w.revision_id::text as id, w.title as key, w.payload::text as payload,
+              w.qualification, w.content_hash,
+              w.depends_on_director_plan::text as depends_dp,
+              array_to_string(w.depends_on_story_seeds,',') as depends_story_seeds,
+              array_to_string(w.depends_on_agent_contexts,',') as depends_agent_contexts,
+              array_to_string(w.depends_on_projections,',') as depends_projections
+       from studio.work_revisions w where w.revision_id = :'objectId'`,
+      { objectId: ctx.candidate.object_id }
+    );
+    const row = rows[0];
+    if (!row) return { ok: false, reason: "work_revision_missing" };
+
+    // method_id 在 payload 里，不是显式列（work_revision 表设计）
+    const payload = json(row.payload) ?? {};
+    const methodId = text(payload.method_id);
+    if (methodId !== "H1H2H3") {
+      return { ok: false, reason: `work_revision_method_mismatch:${methodId}(expected H1H2H3)` };
+    }
+
+    if (text(row.qualification) !== "UNASSESSED") {
+      return { ok: false, reason: `work_revision_qualification_not_candidate:${text(row.qualification)}` };
+    }
+
+    if (!text(row.content_hash) || !/^[0-9a-f]{64}$/i.test(text(row.content_hash))) {
+      return { ok: false, reason: `work_revision_content_hash_invalid:${text(row.content_hash ?? "")}` };
+    }
+
+    // depends_on_director_plan 存在 + 有 G5 PASS current
+    const dpPlanId = text(row.depends_dp);
+    if (!dpPlanId) return { ok: false, reason: "work_revision_no_depends_on_director_plan" };
+    const dpExists = await ctx.query("select 1 from studio.director_plans where plan_id = :'dp'", { dp: dpPlanId });
+    if (!dpExists[0]) return { ok: false, reason: `work_revision_director_plan_not_found:${dpPlanId}` };
+
+    // 从 payload 里的 depends_on_director_plan 拿 director_plan 的 G5 PASS 审计 ID（payload 已在上方声明）
+    const upstreamDpId = text(payload.body?.depends_on_director_plan);
+    if (!upstreamDpId || upstreamDpId !== dpPlanId) {
+      return { ok: false, reason: "work_revision_payload_director_plan_mismatch" };
+    }
+
+    // 校验 director_plan 确实有 G5 PASS current
+    const dpG5 = await ctx.query(
+      `select ga.gate_audit_id::text as ga_id from control.gate_audits ga
+       where ga.object_type='director_plan' and ga.object_id=:'dp'
+         and ga.gate_code='G5' and ga.result='PASS' and ga.current_valid
+         and (ga.valid_until is null or ga.valid_until > now())
+       order by ga.signed_at desc limit 1`,
+      { dp: dpPlanId }
+    );
+    if (!dpG5[0]) return { ok: false, reason: `work_revision_director_plan_not_qualified:no_current_g5_pass` };
+
+    // 如果提供了 upstream（来自 dependency_snapshot 的第一条 G4 finding），校验 director_plan 的 story_seeds 里包含 finding 的上游链
+    // 简化：不强制 upstream 精确匹配，director_plan 有 G5 PASS current 就足够
+    const hasStorySeeds = text(row.depends_story_seeds) !== "";
+    const hasAgentCtx = text(row.depends_agent_contexts) !== "";
+    const hasProjections = text(row.depends_projections) !== "";
+    if (!hasStorySeeds && !hasAgentCtx && !hasProjections) {
+      return { ok: false, reason: "work_revision_no_upstream_depends_on_arrays" };
+    }
+
+    return { ok: true, detail: `work_revision=${text(row.id)} method=H1H2H3 content_hash=${text(row.content_hash).slice(0,12)}... depends_on_director_plan=${dpPlanId.slice(0,8)}... has_depends=[story_seed:${hasStorySeeds},agent_ctx:${hasAgentCtx},projection:${hasProjections}]` };
   }
 
   let table, idCol, keyCol, methodCol, derivedCol;
