@@ -3457,4 +3457,33 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **回归**：`node --test tests/data-production/*.test.mjs` = **246 pass / 0 fail**；两文件 `node --check` 通过；`verify-local-execution-env.mjs` 刷新 enable_requires（246 pass，绑定当前 HEAD）。
 - **修掉的实测踩坑**：七宝真实 `project_id` 是 `b1ecefa4-3320-4932-94b4-e57e16a2779c`（历史摘要记的 `b1ecefa4-023a-…` 为误值）；`MOHEN_TRUSTED_RESUME_INPUT_DIR` 必须是绝对路径且输入文件在其直接子级，否则 `TRUSTED_RESUME_INPUT_REQUIRED`。
 - **口径边界**：ST-04 只到 G3；D04–D05 + G4–G5 未做；G3 只覆盖 `explain_bounded` 一种世界用途；机器签不构成 Owner 人文背书；按 Gate 合同 §7 不标记 `GATE_ACTIVE`，Reviewer 身份与机审范围最终生效仍属原 D/G 治理责任方。
+
+## 2026-11-13｜ST-05 D04+G4 两例通过（不写死 A06 泛化，VERIFIED_ISOLATED）
+
+- **施工前置：先读 D04/G4 设计原文，不擅自理解**。按 Owner 要求完整读取 `specs/data-production/standards/d04/主规_P4_A01-A12人文发现机制与专业方法.md`（12 个 A 方法的设计规格）、`specs/data-production/standards/d04/契约_P4_L4持久化_独立G4与D05交接.md`、`gate-contracts.v3.json#G4`（purpose_source=G4.interpretation.v1, purpose_codes=[BE,BC,RF,PS,PL]）、`PLAN.md §ST-05`。
+- **设计结论**：D04 职责为「从 D03/L3/G3 给出的历史世界/证据引用，按 A01-A12 方法发现值得理解的人文问题→形成 L4 解释候选→独立 G4 按五用途（BE/BC/RF/PS/PL）审查→D05 消费」。G4 Reviewer 必须校验 6 项：world_authorization/fact_interpretation_firewall/understanding_delta/alternatives_counterview/present_basis_if_applicable/purpose_specific_extent。
+- **核心缺陷核实：DB/JS/Reviewer 三层写死 A06**。
+  - DB 层 `studio.persist_private_humanistic_finding`（迁移 `20261107200000`）：① 行 234 `p_finding_spec->>'finding_type' is distinct from 'institutional_mechanism'` 硬编码；② 行 268 `disc:=jsonb_build_object('method_id','A06',…)` 硬编码；③ 行 280 `f.finding_type is distinct from 'institutional_mechanism'` 硬编码。
+  - DB 层 `studio.persist_private_world_projection`：行 319 `f.discovery_method->>'method_id' is distinct from 'A06'` 硬编码（D05 入口也被锁死）。
+  - JS 层 `private-evidence-stage.mjs`：行 610 `finding.finding_type!=='institutional_mechanism'` 硬编码。
+  - JS 层 `rule-gate-reviewer.mjs`：行 29 `METHOD_BY_GATE={…, G4:"A06",…}` 硬编码；行 265 `if (text(row.method_id) !== METHOD_BY_GATE.G4)` 硬编码；purpose namespace 未校验。
+- **修复方案（泛化而非替换）**：
+  1. **DB 迁移** `20261113190000_mab_m5_d04_meaning_finding_generalize.sql`：两个函数 CREATE OR REPLACE。
+     - `persist_private_humanistic_finding`：finding_type 校验改为非空 + method_id 加校验 `!~ '^A(0[1-9]|1[0-2])$'`；disc.discovery_method.method_id 改为从 p_finding_spec->>'method_id' 取。
+     - `persist_private_world_projection`：`discovery_method->>'method_id' !~ '^A(0[1-9]|1[0-2])$'`（泛化后自然接受所有 A 方法）。
+  2. **JS 层 `private-evidence-stage.mjs`**：finding_type 校验改为 `!finding.method_id || !/^A(0[1-9]|1[0-2])$/.test(finding.method_id) || typeof finding.finding_type!=='string' || !finding.finding_type`；新增 `D04_PURPOSE_CODES`（BE/BC/RF/PS/PL）+ `resolveD04Purpose()`；D04 submitStageCandidate 加上 `purpose: resolveD04Purpose(finding)`。
+  3. **JS 层 `rule-gate-reviewer.mjs`**：`METHOD_BY_GATE.G4` 移除；新增 `G4_METHOD_SET`（A01-A12 Set）、`G4_PURPOSE_CODES`（BE/BC/RF/PS/PL Set）、`G4_PURPOSE_NAMESPACE`（"G4.interpretation.v1"）；`checkFindingGrounding` method 校验改为 `!G4_METHOD_SET.has(text(row.method_id))`；新增 purpose 校验（namespace + code）。
+  4. **DB 配置**：`gate_reviewer_bindings` 为 G4 五用途 × mohen_gate_signer_m5_machine × scope_kind=studio_project 补 5 条 binding（source_needs 已有两题材 project 记录，or 条件满足）。
+- **两个题材实测（本地隔离库 mohen_dev）**：
+  - 「朱家角」`d9d48901-…`：A05 actor_situation（行动链）/BE → finding `749414aa-…` → claim `0c30a997-…`（G3 PASS current 上游）→ **G4 PASS current**（audit `07f2ecbb-…`，purpose=`G4.interpretation.v1/BE`，method=A05，finding_type=actor_situation）。
+  - 「七宝」`b1ecefa4-…`：A09 historical_transformation（变化链）/BE → finding `3cffc174-…` → claim `e5432434-…`（G3 PASS current 上游）→ **G4 PASS current**（audit `7c1625c0-…`，purpose=`G4.interpretation.v1/BE`，method=A09，finding_type=historical_transformation）。
+- **泛化验证要点**：
+  - method_id：A05（朱家角）+ A09（七宝）—— 之前写死 A06 会在 finding_grounding 检查时 FAIL → 现在 PASS ✓
+  - finding_type：actor_situation（朱家角）+ historical_transformation（七宝）—— 之前写死 institutional_mechanism 会在 DB 函数 `is distinct from` 时 RAISE → 现在 INSERT ✓
+  - purpose_namespace：`G4.interpretation.v1`（新）—— 之前 candidate 默认 purpose_namespace=`data-production` 会在 G4 Reviewer purpose 检查时 FAIL → 现在 PASS ✓
+  - gate_reviewer_bindings：G4 新 purpose（BE/BC/RF/PS/PL）× machine signer × studio_project scope—— 之前 binding 只有 `data-production/m5-remediation` 会在 sign_gate_candidate REVIEWER_BINDING_REQUIRED 时 FAIL → 现在 PASS ✓
+- **MAB 交付包引用**：本批未引用 MAB 交付包归档文件（ST-01 至 ST-03 的 D00–D03 已按 PLAN 顺序独立施工，D04 属 ST-05 新阶段）。
+- **本地 PENDING_PUSH**：commit `8a8bea5`（4 files: DB migration + 2 JS edits + isolation test script），待 Owner 确认窗口批量推送。
+- **下一阶段**：ST-06 D05 world_projection（read_model 层合成 + P02 投影方法）+ G5（purpose_namespace 待核实，method 待确认是否仍 P02）。persist_private_world_projection DB 函数已在本批泛化（A06→A01-A12），无需额外 DB 改动。
+- **口径边界**：ST-05 只到 G4；D05–D06 + G5 未做；A 方法 implementation_binding 仍全 HOLD（method-binding-contract.json），A05/A09 本次是手工构造 finding 输入，无自动化 Adapter 生成；机器签不构成 Owner 人文背书；G4 只覆盖 BE 一种人文用途，其余 BC/RF/PS/PL 按「五用途不互相继承」不预先授权；按 Gate 合同 §7 不标记 GATE_ACTIVE。
 - **本地 PENDING_PUSH**：本批 commit + `20261113180000` 迁移，按 AGENTS.md §0A 等待批量推送窗口。
