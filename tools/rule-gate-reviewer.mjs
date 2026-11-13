@@ -116,10 +116,46 @@ function assessRights(rows, ctx) {
 
 async function checkRightsByOperation(ctx) {
   if (ctx.gate === "G5") {
-    const projection = await ctx.query("select p.payload->>'original_id' as original_id from read_model.world_projections p where p.projection_id = :'objectId'",
-      { objectId: ctx.candidate.object_id });
-    const originalId = text(projection[0]?.original_id);
-    if (!originalId) return { ok: false, reason: "rights_original_ref_missing" };
+    const ot = text(ctx.candidate.object_type);
+    let originalIds = [];
+    if (ot === "world_projection") {
+      const proj = await ctx.query("select p.payload->>'original_id' as original_id from read_model.world_projections p where p.projection_id = :'objectId'",
+        { objectId: ctx.candidate.object_id });
+      const oid = text(proj[0]?.original_id);
+      if (!oid) return { ok: false, reason: "rights_original_ref_missing" };
+      originalIds = [oid];
+    } else if (ot === "story_seed" || ot === "agent_context") {
+      // story_seed/agent_context 从 payload.body->'original_ids' 或 payload->'original_ids' 取，
+      // 或从 derived_from_finding_ids 回溯 finding → supporting_world_objects 链上找 claim_revision → source refs
+      const seed = await ctx.query(
+        ot === "story_seed"
+          ? "select s.payload::text as payload from read_model.story_seeds s where s.story_seed_id = :'objectId'"
+          : "select c.payload::text as payload from read_model.agent_contexts c where c.agent_context_id = :'objectId'",
+        { objectId: ctx.candidate.object_id }
+      );
+      const payload = json(seed[0]?.payload) ?? {};
+      // 优先取 payload.original_ids 数组；再取 body.original_ids
+      // 注意 payload 可能已经是对象（queryRows 自动解析 jsonb），
+      // 也可能是字符串 → 需要兼容两种情况
+      const rawIds = payload.original_ids ?? payload.body?.original_ids;
+      let ids;
+      if (Array.isArray(rawIds)) ids = rawIds;        // 已是数组
+      else ids = json(rawIds);                         // JSON 字符串化后 parse
+      if (Array.isArray(ids) && ids.length > 0) {
+        originalIds = ids.map(text);
+      } else {
+        // 没有显式 original_ids — 通过 derived_from_finding_ids 回溯上游 chain
+        // 这意味着 story_seed 的 G5 权利检查会 FAIL，persist 函数需在 payload 里写 original_ids
+        return { ok: false, reason: `${ot}_rights_original_refs_missing:need_payload_original_ids` };
+      }
+    } else {
+      return { ok: false, reason: `rights_unknown_object_type:${ot}` };
+    }
+
+    // 批量检查所有 original_id
+    // 注意：queryRows 的 renderSql 不支持数组参数（String(array) 会变成 "a,b,c"），
+    // 所以直接拼 UUID 数组字面量（UUID 安全，无注入风险）
+    const uuidArray = originalIds.map(id => `'${id}'`).join(",");
     const rows = await ctx.query(`select o.original_id::text as original_id, o.state as original_state, o.rights_declared,
         s.source_id::text as source_id, s.rights_by_action::text as rights_by_action, s.rights_evidence::text as rights_evidence
       from studio.private_originals o
@@ -127,8 +163,16 @@ async function checkRightsByOperation(ctx) {
         and ri.checksum_sha256 = o.sha256 and ri.byte_size = o.byte_size
       join source.source_versions v on v.source_version_id = ri.source_version_id
       join source.sources s on s.source_id = v.source_id
-      where o.original_id = :'originalId' and o.project_id = :'project'`, { originalId, project: ctx.project });
-    return assessRights(rows, ctx);
+      where o.original_id = any(ARRAY[${uuidArray}]::uuid[]) and o.project_id = :'project'`,
+      { project: ctx.project });
+    const result = assessRights(rows, ctx);
+    // 确保所有 originalIds 都被 rights 记录覆盖
+    const covered = rows.map(r => text(r.original_id));
+    const missing = originalIds.filter(id => !covered.includes(id));
+    if (missing.length > 0) {
+      return { ok: false, reason: `${ot}_rights_missing_for:${missing.join(",")}` };
+    }
+    return result;
   }
   const rows = await ctx.query(`select o.original_id::text as original_id, o.state as original_state, o.rights_declared,
       s.source_id::text as source_id, s.rights_by_action::text as rights_by_action, s.rights_evidence::text as rights_evidence
@@ -288,26 +332,61 @@ async function checkFindingGrounding(ctx) {
 }
 
 async function checkWorkRevisionBinding(ctx) {
-  const rows = await ctx.query(`select p.projection_id::text as projection_id, p.payload::text as payload,
-      p.derived_from_finding_ids::text as derived_from, p.expression_rule->>'method_id' as method_id
-    from read_model.world_projections p where p.projection_id = :'objectId'`, { objectId: ctx.candidate.object_id });
-  const row = rows[0];
-  if (!row) return { ok: false, reason: "world_projection_missing" };
-  if (text(row.method_id) !== METHOD_BY_GATE.G5) return { ok: false, reason: `projection_method_mismatch:${text(row.method_id)}` };
-  const payload = json(row.payload) ?? {};
-  if (text(payload.qualification) !== "UNASSESSED") return { ok: false, reason: `projection_qualification_not_candidate:${text(payload.qualification)}` };
+  const ot = text(ctx.candidate.object_type);
   const upstream = ctx.upstream;
-  if (!upstream || text(payload.finding_id) !== text(upstream.object_id)) {
-    return { ok: false, reason: `projection_finding_not_upstream:${text(payload.finding_id)}` };
+
+  // 根据 object_type 路由到对应表（world_projection / story_seed / agent_context 三选）
+  let table, idCol, keyCol, methodCol, derivedCol;
+  if (ot === "world_projection") {
+    table = "read_model.world_projections"; idCol = "projection_id"; keyCol = "projection_key";
+    methodCol = "expression_rule->>'method_id'"; derivedCol = "derived_from_finding_ids";
+  } else if (ot === "story_seed") {
+    table = "read_model.story_seeds"; idCol = "story_seed_id"; keyCol = "seed_key";
+    methodCol = "payload->>'method_id'"; derivedCol = "derived_from_finding_ids";
+  } else if (ot === "agent_context") {
+    table = "read_model.agent_contexts"; idCol = "agent_context_id"; keyCol = "context_key";
+    methodCol = "payload->>'method_id'"; derivedCol = "derived_from_finding_ids";
+  } else {
+    return { ok: false, reason: `work_revision_binding_unknown_object_type:${ot}` };
   }
-  if (!textArray(row.derived_from).includes(text(upstream.object_id))) {
-    return { ok: false, reason: "projection_finding_dependency_mismatch" };
+
+  const rows = await ctx.query(
+    `select ${idCol}::text as id, ${keyCol} as key, payload::text as payload,
+            ${methodCol} as method_id, ${derivedCol}::text as derived_from
+     from ${table} where ${idCol} = :'objectId'`,
+    { objectId: ctx.candidate.object_id }
+  );
+  const row = rows[0];
+  if (!row) return { ok: false, reason: `${ot}_missing` };
+
+  // 方法白名单：P02 (world_projection) 或 P04 (story_seed/agent_context)
+  const allowedMethod = ot === "world_projection" ? "P02" : "P04";
+  if (text(row.method_id) !== allowedMethod) {
+    return { ok: false, reason: `${ot}_method_mismatch:${text(row.method_id)}(expected ${allowedMethod})` };
   }
-  const finding = await ctx.query(`select f.discovery_method->>'method_id' as method_id from meaning.findings f where f.finding_id = :'id'`,
-    { id: upstream.object_id });
-  // G5 上游 finding 的 method_id ∈ A01-A12（G4 已泛化），不再写死 A06
-  if (!G4_METHOD_SET.has(text(finding[0]?.method_id))) return { ok: false, reason: `projection_upstream_finding_not_current:${text(finding[0]?.method_id)}` };
-  return { ok: true, detail: `projection=${text(row.projection_id)} finding=${upstream.object_id}` };
+
+  const payload = json(row.payload) ?? {};
+  if (text(payload.qualification) !== "UNASSESSED") {
+    return { ok: false, reason: `${ot}_qualification_not_candidate:${text(payload.qualification)}` };
+  }
+
+  // derived_from_finding_ids 必须包含上游 object_id
+  if (!upstream) return { ok: false, reason: `${ot}_upstream_missing` };
+  const derived = textArray(row.derived_from);
+  if (!derived.includes(text(upstream.object_id))) {
+    return { ok: false, reason: `${ot}_finding_dependency_mismatch` };
+  }
+
+  // 上游 finding 的 method_id ∈ A01-A12（G4 已泛化，不再写死 A06）
+  const finding = await ctx.query(
+    `select f.discovery_method->>'method_id' as method_id from meaning.findings f where f.finding_id = :'id'`,
+    { id: upstream.object_id }
+  );
+  if (!G4_METHOD_SET.has(text(finding[0]?.method_id))) {
+    return { ok: false, reason: `${ot}_upstream_finding_not_current:${text(finding[0]?.method_id)}` };
+  }
+
+  return { ok: true, detail: `${ot}=${text(row.id)} method=${allowedMethod} finding=${upstream.object_id}` };
 }
 
 const CHECKS = {
@@ -425,10 +504,16 @@ export function createRuleGateReviewer({
         from control.gate_audits a where a.gate_audit_id = :'id'`, { id: dependency.gate_audit_id });
       const row = rows[0];
       if (!row) throw Error(`GATE_ORDER_VIOLATION:${upstreamGate}_audit_missing:${dependency.gate_audit_id}`);
-      if (text(row.gate_code) !== upstreamGate || text(row.result) !== "PASS" || text(row.decision_origin) !== "independent_gate" ||
-          text(row.consumer) !== "producer" || !flag(row.current) ||
-          text(row.qualification_digest) !== text(dependency.qualification_digest) ||
-          text(row.artifact_revision) !== text(dependency.artifact_revision)) {
+      const checks = {
+        gate_code_ok: text(row.gate_code) === upstreamGate,
+        result_ok: text(row.result) === "PASS",
+        origin_ok: text(row.decision_origin) === "independent_gate",
+        consumer_ok: text(row.consumer) === "producer",
+        current_ok: flag(row.current),
+        qual_digest_ok: text(row.qualification_digest) === text(dependency.qualification_digest),
+        artifact_rev_ok: text(row.artifact_revision) === text(dependency.artifact_revision),
+      };
+      if (!Object.values(checks).every(Boolean)) {
         throw Error(`GATE_ORDER_VIOLATION:${upstreamGate}_not_current:${dependency.gate_audit_id}`);
       }
       if (!hasRef(candidate.evidence_refs, text(row.object_type), text(row.object_id))) {
