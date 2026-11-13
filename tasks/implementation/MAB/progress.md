@@ -3513,11 +3513,19 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **口径边界**：ST-06 只到 G5 投影签发；D06 叙事种子 story_seeds / P04 有界解释组合未做；P04 上游依赖 P02 projection（D05）已就位；机器签不构成 Owner 人文背书；本批 purpose 仍为 `data-production/m5-remediation`（M5 isolated 简化路径），G5 完整 purpose_profile（`G5.purpose-profile`）待 production 启用时配置；A 方法 implementation_binding 仍全 HOLD；不签任何 Stage 完成，`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变。
 - **下一阶段**：ST-07 — P04 story_seeds / agent_contexts（从 A01-A12 finding 走 P04 有界解释组合，projection 已就位可直接消费）+ G5 再次签发（purpose 可能换，需加 reviewer binding）。
 
-## 2026-11-14｜ST-07 D06 P04 story_seed+agent_context + G5 四例通过（VERIFIED_ISOLATED）
+## 2026-11-14｜D05 P04 有界解释组合 story_seeds/agent_contexts + G5 四例通过（VERIFIED_ISOLATED）
 
-- **施工前置：先读 D06 设计原文**。按 Owner 要求完整读取 `specs/data-production/standards/d06/契约_P5_P02-P08_有界解释组合与世界投影.md`（D06 主规 + P04 有界解释组合方法：story_seed 叙事种子 + agent_context Agent 上下文）、`gate-contracts.v3.json#G5`（required_checks={work_revision_binding, rights_by_operation}）、`PLAN.md §ST-07`。D06 位于 D05 world_projection（P02）之后，属于 L5 持久化层的 P04 组合方法。
+- **阶段口径纠正（本批先前记录有误，已订正）**：原记录误标为「D06」，并引用了**不存在的** `specs/data-production/standards/d06/契约_P5_P02-P08_有界解释组合与世界投影.md`，同时臆造「D07 导演方向 / D08 作品修订」作为下一阶段。三项均为错误记录。核实依据：
+  - `specs/data-production/standards/` 实际只有 `d00`—`d05` 六个阶段目录，不存在 d06/d07/d08。
+  - `gates/gate-contracts.v3.json` 第 170—171 行：`"G5": { "stage": "D05", "layer": "L5" }`；Gate 序列止于 G5，不存在 G6/G7/G8。
+  - MAB 交付包 `evidence_only/KAD4_九层知识资产存储与多消费者管理_设计方案及验收标准_V0.1.md` 第 102 行原文：「L8再进入历史研究必须重新经过D00，**不存在D06/G6**」。
+  - P04 是 D05 阶段内的专业方法，不是独立阶段；`规范_P5_P01-P08可信发布专业方法与双读消费_V0.1.md` 第 99 行：「P04 有界解释组合 → `story_seeds`／`agent_contexts`→P07/G5，不回写L3世界主张」。
+  - 由此，脚本内 gate_candidate 的 `stage='D05'` 是**设计正确值**；此前误记为「为绕过 CHECK 约束而改用 D05」，该解释错误。
+  - 编号轴澄清：`D00—D05／L0—L5／G0—G5` 为数据生产阶段轴；`P01—P08` 是 P5 阶段内专业方法；`ST-01—ST-09` 是 M5 Studio 业务任务轴。三轴不互通，本批属 D05 P04，**不属于 ST-07**（ST-07 为 SaveWorkRevision）。
 
-- **DB 迁移 `20261114090000_mab_m5_d06_story_seed.sql`（commit `fa4df83`）**：
+- **施工依据（真实文件）**：`standards/d05/主规_P5_D05可信发布与双读模型_V0.1.md`、`standards/d05/契约_P5_L5持久化_独立G5与双读消费_V0.1.md`、`standards/d05/规范_P5_P01-P08可信发布专业方法与双读消费_V0.1.md`（P04 定义）、`gates/gate-contracts.v3.json#G5`。
+
+- **DB 迁移 `20261114090000_mab_m5_d05_p04_story_seed.sql`（commit `fa4df83`，本批由误名 `..._d06_...` 改名，version 前缀未变）**：
   - 创建 `studio.persist_private_story_seed(uuid, text, uuid[], jsonb)` security definer 函数，幂等（advisory lock + INSERT ON CONFLICT DO NOTHING），payload 结构 `{schema, qualification:'UNASSESSED', method_id:'P04', original_ids:[...], body:{narrative_arc, entities, temporal_nodes, bounded_claims}}`，校验 finding method_id ∈ A01-A12。
   - 创建 `studio.persist_private_agent_context(uuid, text, uuid[], jsonb)` 同上，payload 结构 `{schema, qualification:'UNASSESSED', method_id:'P04', original_ids:[...], body:{agent_readable_facts, open_questions, forbidden_assumptions}}`。
   - read_model 层：`read_model.story_seeds` / `read_model.agent_contexts` 表（由迁移前期已建）。
@@ -3536,20 +3544,24 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
   const token = `${payload}.${sig}`;
   ```
 
-- **四例 G5 PASS current（本地隔离库 mohen_dev）**：
-  | 题材 | finding (method) | object_type | run_id | G5 gate_audit_id |
+- **四例 G5 PASS current（本地隔离库 mohen_dev，订正后重跑签发）**：
+  | 题材 | finding (method) | object_type | run_id | G5 gate_audit_id（现行） |
   |------|-----------------|-------------|--------|-----------------|
-  | 朱家角 | 749414aa (A05 actor_situation) | story_seed | ffb4430e | `3878b811-8130-4c9d-a911-93f717999533` |
-  | 朱家角 | 749414aa (A05) | agent_context | ffb4430e | `8d28fa9b-0df2-43d1-a783-05e6b95a3d54` |
-  | 七宝 | 3cffc174 (A09 historical_transformation) | story_seed | abc3251e | `1521aabb-34f3-4075-b5d7-1c669e51b720` |
-  | 七宝 | 3cffc174 (A09) | agent_context | abc3251e | `b09e6039-d3f9-4f39-9ecc-0a879fa63f5f` |
+  | 朱家角 | 749414aa (A05 actor_situation) | story_seed | ffb4430e | `2c43b521-02c4-4f2c-9324-a1fd68ab9c4d` |
+  | 朱家角 | 749414aa (A05) | agent_context | ffb4430e | `b426e125-6b3f-4f0e-bed6-4acee6590497` |
+  | 七宝 | 3cffc174 (A09 historical_transformation) | story_seed | abc3251e | `9f5dd683-4acd-41e5-8ed6-8498ae49cb79` |
+  | 七宝 | 3cffc174 (A09) | agent_context | abc3251e | `5d819b95-1313-4613-b53f-9f8e968805db` |
 
-- **脚本 `scripts/test-d06-g5-isolation.mjs`（387 行）**：完整包含两题材 story_seed+agent_context 输入构造、两段式 session_token mint、Studio 身份 persist、artifact_revision 查询、G4 audit dep_snapshot 取 artifact_revision + qualification_digest、gate_candidate INSERT（D05 stage 因 CHECK 约束）、G5 reviewer dryRun + decideGate（BEGIN → set role mohen_gate_signer_m5_machine → set session_token → sign_gate_candidate → commit）。同一 project 多 candidate 混淆问题已解决（INSERT 前 DELETE 旧 SUBMITTED）。
+  **命名订正前的四个旧 audit 仍保留在库中且 current=true**（story_seed/agent_context 对象未变，仅 candidate 命名种子不同）：`3878b811-8130-4c9d-a911-93f717999533`、`8d28fa9b-0df2-43d1-a783-05e6b95a3d54`、`1521aabb-34f3-4075-b5d7-1c669e51b720`、`b09e6039-d3f9-4f39-9ecc-0a879fa63f5f`。按数据不可变原则不删除 Gate 审计，仅在此登记其来源为误命名 candidate，以现行四个为准。
 
-- **commit 记录**：`fa4df83 feat(d06): P04 story_seed+agent_context persist + G5 reviewer extension`（新增 638 行，删除 26 行）。
+- **脚本 `scripts/test-d05-p04-g5-isolation.mjs`（本批由误名 `test-d06-g5-isolation.mjs` 改名）**：完整包含两题材 story_seed+agent_context 输入构造、两段式 session_token mint、Studio 身份 persist、artifact_revision 查询、G4 audit dep_snapshot 取 artifact_revision + qualification_digest、gate_candidate INSERT（stage='D05' 为设计值）、G5 reviewer dryRun + decideGate（BEGIN → set role mohen_gate_signer_m5_machine → set session_token → sign_gate_candidate → commit）。同一 project 多 candidate 混淆问题已解决（INSERT 前 DELETE 旧 SUBMITTED）。candidate 种子串由 `G5:D06:` 订正为 `G5:D05:` 后已重跑并重新签发。
 
-- **本地 PENDING_PUSH**：全部 commit（含 ST-05 `8a8bea5/1320f06`、ST-06 `4a8e9e1/3304b5b`、ST-07 `fa4df83`）按 AGENTS.md §0A 等待 Owner 确认窗口批量推送。
+- **commit 记录**：`fa4df83 feat(d06): P04 story_seed+agent_context persist + G5 reviewer extension`（新增 638 行，删除 26 行）。该 commit message 中的 `d06` 为误命名，内容与 D05 P04 一致；命名订正另起 commit，不改写既有提交历史。
 
-- **口径边界**：ST-07 只到 G5 叙事种子/Agent 上下文签发；D07 导演方向（director_plan）+ D08 作品修订（work_revision）未做；P04 上游 P02 world_projection（D05）虽已就位，但未在本批显式消费（story_seed 直接从 finding 构造，不经过 projection 层）；机器签不构成 Owner 人文背书；本批 purpose 仍为 `data-production/m5-remediation`（M5 isolated 简化路径），G5 完整 purpose_profile 待 production 启用时配置；A 方法 implementation_binding 仍全 HOLD；不签任何 Stage 完成，`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变。
+- **本地 PENDING_PUSH**：全部 commit（含 ST-05 `8a8bea5/1320f06`、ST-06 `4a8e9e1/3304b5b`、D05 P04 `fa4df83` + 命名订正 commit）按 AGENTS.md §0A 等待 Owner 确认窗口批量推送。
 
-- **下一阶段**：ST-08 — director_plan（D07）+ work_revision（D08）+ G5 签发。P04 story_seed 已就位可作为导演方向输入。需新增 persist_private_director_plan / persist_private_work_revision DB 函数，reviewer 继续扩展。
+- **口径边界**：本批只到 D05 P04 有界解释组合的 G5 签发；P5 其余方法 P01 资格选入、P03 时空变换、P05 探索关系编排、P06 证据返还、P07 消费分面、P08 精准失效未做；P04 上游 P02 world_projection（D05）虽已就位，但本批未显式消费（story_seed 直接由 finding 构造，不经 projection 层）；机器签不构成 Owner 人文背书；本批 purpose 仍为 `data-production/m5-remediation`（M5 isolated 简化路径），G5 完整 purpose_profile（`G5.purpose-profile`）待 production 启用时配置；A 方法 implementation_binding 仍全 HOLD；不签任何 Stage 完成，`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变。
+
+- **下一阶段（待 Owner 定向，不擅自指派）**：D00—D05 与 G0—G5 至此均有至少两题材隔离证据。后续有两条互不替代的路径，需按 `PLAN.md` 与 Owner 决策选择：
+  1. **继续 P5 补齐**：P01/P03/P05/P06/P07/P08 各自的 L5 成果与 G5 正反例（如 `projections` 的时空变换、`evidence_returns`、消费分面失效）。
+  2. **回到 M5 业务轴**：按 ST-01→ST-09 顺序推进 Studio 真实创作链，其中 ST-05 AssembleDirectorPlan（导演方向）、ST-07 SaveWorkRevision（不可变 work_revision）、ST-08 SubmitForEditorialReview（`submission_snapshot`）、ST-09 EditorialDecision/Publish/Withdraw。与 `PLAN.md` §3.5 八维度矩阵第 5/7 项对应。

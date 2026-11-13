@@ -1,4 +1,6 @@
--- ST-07 D06 P04 story_seed + agent_context persist functions
+-- D05 / L5 / P04 有界解释组合：story_seed + agent_context persist functions
+-- 阶段口径：数据生产阶段止于 D00—D05，不存在 D06；P04 属于 D05 阶段内专业方法，
+--           产出 story_seeds / agent_contexts，由 G5（stage=D05, layer=L5）签发资格。
 -- 参考 persist_private_world_projection，简化：
 --   上游是 finding（G4 PASS），不是 original；
 --   不需要 production_run 强绑定（由 persist 函数自己从 finding 的 claim_revision 推导 project_id）；

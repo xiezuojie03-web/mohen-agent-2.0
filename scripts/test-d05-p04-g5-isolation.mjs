@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 /**
- * test-d06-g5-isolation.mjs —— ST-07 D06 story_seed + agent_context (P04) + G5 机器评审
+ * test-d05-p04-g5-isolation.mjs —— D05 P04 有界解释组合：story_seed + agent_context + G5 机器评审
+ *
+ * 阶段口径：数据生产阶段止于 D00—D05，不存在 D06。P04 是 D05 内部专业方法，
+ *           L5 成果 story_seeds / agent_contexts 由 G5（stage=D05, layer=L5）签发。
  *
  * 两个题材：
  *  - 「朱家角」 project_id=d9d48901-… finding_id=749414aa (A05 actor_situation, G4 PASS)
@@ -107,7 +110,7 @@ function mintSessionToken(userId, secret, expiresMs = 3600_000) {
 
 async function main() {
   console.log("=".repeat(70));
-  console.log("ST-07 D06 story_seed+agent_context(P04) + G5 机器评审 —— 本地隔离验证");
+  console.log("D05 P04 有界解释组合 story_seed+agent_context + G5 机器评审 —— 本地隔离验证");
   console.log("两题材（朱家角_A05 / 七宝_A09）+ P04 有界解释组合泛化");
   console.log("=".repeat(70));
 
@@ -248,7 +251,7 @@ async function main() {
     const seedInputFp = crypto.createHash("sha256")
       .update(`${topic.projectId}:story_seed:${storySeedUuid}:${seedArtifactRev}`).digest("hex");
     const seedCandidateRaw = crypto.createHash("sha256")
-      .update(`mab-private-gate-candidate:G5:D06:story_seed:${storySeedUuid}`).digest("hex").slice(0, 32);
+      .update(`mab-private-gate-candidate:G5:D05:story_seed:${storySeedUuid}`).digest("hex").slice(0, 32);
     const seedCandidateUuid = `${seedCandidateRaw.slice(0,8)}-${seedCandidateRaw.slice(8,12)}-${seedCandidateRaw.slice(12,16)}-${seedCandidateRaw.slice(16,20)}-${seedCandidateRaw.slice(20,32)}`;
 
     const depSnapshot = [{
@@ -314,7 +317,7 @@ async function main() {
     const ctxInputFp = crypto.createHash("sha256")
       .update(`${topic.projectId}:agent_context:${ctxUuid}:${ctxRev}`).digest("hex");
     const ctxCandidateRaw = crypto.createHash("sha256")
-      .update(`mab-private-gate-candidate:G5:D06:agent_context:${ctxUuid}`).digest("hex").slice(0, 32);
+      .update(`mab-private-gate-candidate:G5:D05:agent_context:${ctxUuid}`).digest("hex").slice(0, 32);
     const ctxCandidateUuid = `${ctxCandidateRaw.slice(0,8)}-${ctxCandidateRaw.slice(8,12)}-${ctxCandidateRaw.slice(12,16)}-${ctxCandidateRaw.slice(16,20)}-${ctxCandidateRaw.slice(20,32)}`;
 
     const evidenceRefs2 = [
@@ -371,8 +374,8 @@ async function main() {
   await db.end();
 
   console.log(`\n${"=".repeat(70)}`);
-  console.log(`✅ VERIFIED_ISOLATED — ST-07 两题材 D06+G5 通过`);
-  console.log(`ST-07 完成：P04 story_seed + agent_context 两题材 + G5 机器评审均 PASS current`);
+  console.log(`✅ VERIFIED_ISOLATED — D05 P04 两题材 story_seed/agent_context + G5 通过`);
+  console.log(`D05 P04 完成：有界解释组合两题材 + G5 机器评审均 PASS current`);
   console.log(`\n关键泛化验证：checkWorkRevisionBinding 路由 story_seed/agent_context`);
   console.log(`checkRightsByOperation 查 payload.original_ids 数组`);
   console.log(`上游 finding method ∈ A05/A09（G4 已泛化）`);
