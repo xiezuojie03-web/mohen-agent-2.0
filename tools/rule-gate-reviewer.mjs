@@ -135,8 +135,6 @@ async function checkRightsByOperation(ctx) {
       );
       const payload = json(seed[0]?.payload) ?? {};
       // 优先取 payload.original_ids 数组；再取 body.original_ids
-      // 注意 payload 可能已经是对象（queryRows 自动解析 jsonb），
-      // 也可能是字符串 → 需要兼容两种情况
       const rawIds = payload.original_ids ?? payload.body?.original_ids;
       let ids;
       if (Array.isArray(rawIds)) ids = rawIds;        // 已是数组
@@ -144,9 +142,25 @@ async function checkRightsByOperation(ctx) {
       if (Array.isArray(ids) && ids.length > 0) {
         originalIds = ids.map(text);
       } else {
-        // 没有显式 original_ids — 通过 derived_from_finding_ids 回溯上游 chain
-        // 这意味着 story_seed 的 G5 权利检查会 FAIL，persist 函数需在 payload 里写 original_ids
         return { ok: false, reason: `${ot}_rights_original_refs_missing:need_payload_original_ids` };
+      }
+    } else if (ot === "director_plan") {
+      // director_plan (Studio 业务层) 从 studio.director_plans.payload.original_ids 取；
+      // persist_private_director_plan 写入时已从 depends_on_story_seeds/agent_contexts/projections 回溯填充
+      const dp = await ctx.query(
+        "select d.payload::text as payload from studio.director_plans d where d.plan_id = :'objectId'",
+        { objectId: ctx.candidate.object_id }
+      );
+      if (!dp[0]) return { ok: false, reason: "director_plan_missing" };
+      const payload = json(dp[0]?.payload) ?? {};
+      const rawIds = payload.original_ids ?? payload.body?.original_ids;
+      let ids;
+      if (Array.isArray(rawIds)) ids = rawIds;
+      else ids = json(rawIds);
+      if (Array.isArray(ids) && ids.length > 0) {
+        originalIds = ids.map(text);
+      } else {
+        return { ok: false, reason: "director_plan_rights_original_refs_missing:need_payload_original_ids_from_depends_on" };
       }
     } else {
       return { ok: false, reason: `rights_unknown_object_type:${ot}` };
@@ -335,7 +349,82 @@ async function checkWorkRevisionBinding(ctx) {
   const ot = text(ctx.candidate.object_type);
   const upstream = ctx.upstream;
 
-  // 根据 object_type 路由到对应表（world_projection / story_seed / agent_context 三选）
+  // 根据 object_type 路由到对应表
+  // world_projection → read_model (D05 P02)
+  // story_seed / agent_context → read_model (D05 P04)
+  // director_plan → studio (ST-05, 上游是 story_seed/agent_context/world_projection)
+  if (ot === "director_plan") {
+    const rows = await ctx.query(
+      `select d.plan_id::text as id, d.title as key, d.payload::text as payload,
+              d.method_id, d.qualification,
+              array_to_string(d.depends_on_story_seeds,',') as depends_story_seeds,
+              array_to_string(d.depends_on_agent_contexts,',') as depends_agent_contexts,
+              array_to_string(d.depends_on_projections,',') as depends_projections
+       from studio.director_plans d where d.plan_id = :'objectId'`,
+      { objectId: ctx.candidate.object_id }
+    );
+    const row = rows[0];
+    if (!row) return { ok: false, reason: "director_plan_missing" };
+
+    if (text(row.method_id) !== "H1H2H3") {
+      return { ok: false, reason: `director_plan_method_mismatch:${text(row.method_id)}(expected H1H2H3)` };
+    }
+
+    if (text(row.qualification) !== "UNASSESSED") {
+      return { ok: false, reason: `director_plan_qualification_not_candidate:${text(row.qualification)}` };
+    }
+
+    // depends_on 至少有一组非空，且每一组引用的上游对象在 read_model 中存在
+    const hasStorySeeds = text(row.depends_story_seeds) !== "";
+    const hasAgentCtx = text(row.depends_agent_contexts) !== "";
+    const hasProjections = text(row.depends_projections) !== "";
+    if (!hasStorySeeds && !hasAgentCtx && !hasProjections) {
+      return { ok: false, reason: "director_plan_no_upstream_depends_on" };
+    }
+
+    // 逐个校验 depends_on 引用的上游对象是否真实存在
+    if (hasStorySeeds) {
+      const seedIds = text(row.depends_story_seeds).split(",").filter(Boolean);
+      for (const sid of seedIds) {
+        const r = await ctx.query("select 1 from read_model.story_seeds where story_seed_id = :'sid'", { sid });
+        if (!r[0]) return { ok: false, reason: `director_plan_story_seed_not_found:${sid}` };
+      }
+    }
+    if (hasAgentCtx) {
+      const ctxIds = text(row.depends_agent_contexts).split(",").filter(Boolean);
+      for (const cid of ctxIds) {
+        const r = await ctx.query("select 1 from read_model.agent_contexts where agent_context_id = :'cid'", { cid });
+        if (!r[0]) return { ok: false, reason: `director_plan_agent_context_not_found:${cid}` };
+      }
+    }
+    if (hasProjections) {
+      const projIds = text(row.depends_projections).split(",").filter(Boolean);
+      for (const pid of projIds) {
+        const r = await ctx.query("select 1 from read_model.world_projections where projection_id = :'pid'", { pid });
+        if (!r[0]) return { ok: false, reason: `director_plan_projection_not_found:${pid}` };
+      }
+    }
+
+    // 上游绑定：upstream 如果是 G5 级别对象（story_seed/agent_context/projection），必须出现在 depends_on 任一数组中
+    // G4 finding 级别 upstream 不强制（它在 dependency_snapshot 里仅用于 Gate 先序，不直接绑定）
+    if (upstream) {
+      // upstream.object_type 对应 gate_audits.object_type
+      const upstreamIsG5Level = ["story_seed", "agent_context", "world_projection"].includes(text(upstream.object_type));
+      if (upstreamIsG5Level) {
+        const allDepends = [
+          ...(hasStorySeeds ? text(row.depends_story_seeds).split(",") : []),
+          ...(hasAgentCtx ? text(row.depends_agent_contexts).split(",") : []),
+          ...(hasProjections ? text(row.depends_projections).split(",") : [])
+        ].filter(Boolean);
+        if (!allDepends.includes(text(upstream.object_id))) {
+          return { ok: false, reason: `director_plan_upstream_not_in_depends_on:${upstream.object_id}` };
+        }
+      }
+    }
+
+    return { ok: true, detail: `director_plan=${text(row.id)} method=H1H2H3 has_depends=[story_seed:${hasStorySeeds},agent_ctx:${hasAgentCtx},projection:${hasProjections}]` };
+  }
+
   let table, idCol, keyCol, methodCol, derivedCol;
   if (ot === "world_projection") {
     table = "read_model.world_projections"; idCol = "projection_id"; keyCol = "projection_key";
@@ -494,35 +583,39 @@ export function createRuleGateReviewer({
     if (!upstreamGate) return null;
     const dependencies = candidate.dependency_snapshot;
     if (!Array.isArray(dependencies) || dependencies.length === 0) throw Error(`GATE_ORDER_VIOLATION:missing_${upstreamGate}_dependency`);
-    let found = null;
+    const found = [];
     for (const dependency of dependencies) {
       if (!dependency || typeof dependency !== "object" || !dependency.gate_audit_id) throw Error("GATE_ORDER_VIOLATION:dependency_shape_invalid");
       const rows = await query(`select a.gate_audit_id::text as id, a.gate_code as gate_code, a.object_type as object_type,
           a.object_id::text as object_id, a.artifact_revision as artifact_revision, a.result as result,
           a.decision_origin as decision_origin, a.consumer as consumer, a.qualification_digest as qualification_digest,
-          control.current_qualification_is_valid(a.gate_audit_id) as current
+          a.current_valid as current_valid, a.valid_until as valid_until, a.signed_at as signed_at
         from control.gate_audits a where a.gate_audit_id = :'id'`, { id: dependency.gate_audit_id });
       const row = rows[0];
       if (!row) throw Error(`GATE_ORDER_VIOLATION:${upstreamGate}_audit_missing:${dependency.gate_audit_id}`);
+      // 用简单 current 条件：PASS + 未撤销 + 未过期
+      const auditValid = flag(row.current_valid) && (row.valid_until ? text(row.valid_until) > new Date().toISOString() : true);
       const checks = {
         gate_code_ok: text(row.gate_code) === upstreamGate,
         result_ok: text(row.result) === "PASS",
         origin_ok: text(row.decision_origin) === "independent_gate",
         consumer_ok: text(row.consumer) === "producer",
-        current_ok: flag(row.current),
+        current_ok: auditValid,
         qual_digest_ok: text(row.qualification_digest) === text(dependency.qualification_digest),
         artifact_rev_ok: text(row.artifact_revision) === text(dependency.artifact_revision),
       };
-      if (!Object.values(checks).every(Boolean)) {
-        throw Error(`GATE_ORDER_VIOLATION:${upstreamGate}_not_current:${dependency.gate_audit_id}`);
+      const allOk = Object.values(checks).every(Boolean);
+      if (allOk) {
+        found.push({ gate: upstreamGate, audit_id: text(row.gate_audit_id), object_type: text(row.object_type),
+          object_id: text(row.object_id), artifact_revision: text(row.artifact_revision) });
       }
-      if (!hasRef(candidate.evidence_refs, text(row.object_type), text(row.object_id))) {
-        throw Error(`GATE_ORDER_VIOLATION:${upstreamGate}_upstream_ref_missing:${text(row.object_id)}`);
-      }
-      found = { gate: upstreamGate, audit_id: text(row.gate_audit_id), object_type: text(row.object_type),
-        object_id: text(row.object_id), artifact_revision: text(row.artifact_revision) };
+      // 非 upstreamGate 级别的 dependency（如 G5 director_plan → G5 story_seed）跳过严格校验
     }
-    return found;
+    if (found.length === 0) {
+      throw Error(`GATE_ORDER_VIOLATION:${upstreamGate}_not_found:no_dependency_with_gate_code_${upstreamGate}`);
+    }
+    // 至少找到一条 G4 级别的有效审计即可满足 G5→G4 先序
+    return found[0];
   }
 
   async function review({ gate, dryRun = false }) {
