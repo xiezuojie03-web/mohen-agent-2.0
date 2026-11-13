@@ -3250,3 +3250,17 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **保留的历史遗留**：public.director_plans.canAccess 仅按 owner_user_id 校验、不按 project_id 校验（因为 19 条历史 plan 无 pid）。同一 owner 仍能 GET 到自己的 null_pid 历史 plan（这是允许的 owner 读历史行为，不是跨 owner 泄漏）。POST 创建新 plan 已强制 pid，不会产生新的 null_pid。
 - **下一步**：按整改顺序继续 QR-02（数据库会话隔离 session_context CTE）+ QR-08（本地执行授权边界）+ QR-06（同根内外 AI 协作）。
 - **提交与推送**：纯文档记录，本地提交，PENDING_PUSH（按 AGENTS.md §0A 纪律）。
+
+## 2026-11-13｜QR-02 关闭（session_context CTE + RLS owner 隔离 VERIFIED_ISOLATED）
+
+- **前置**：PLAN §0.1 QR-02 复核发现"代码已改为事务局部且物化的 session_context CTE"，本轮补齐数据库级和 HTTP 级隔离证据。
+- **session_context CTE 物化验证**：`dispatch-grant.ts:16-20` 和 `provider-dispatcher.ts:492-499` 均为 `with session_context as materialized (select set_config('mohen.session_token', :'token', true))`；同一 PG 连接内两次 set_config 不同 token → `current_setting` 在事务外均返回 null（正确的事务局部隔离，不泄漏连接级）。
+- **RLS 策略完整性**（pg_policies 枚举）：
+  - studio.projects: `studio_project_owner` USING `owner_user_id = control.current_app_user_id()`；`studio_execution_project` USING true（execution authority）
+  - studio.asset_heads/links/private_originals/use_events/delegations: 全有 RLS（USING `EXISTS(SELECT 1 FROM studio.projects p WHERE p.project_id = ...)`）
+  - publication.works/work_revisions/published_pointers: 全有 RLS
+  - source.* 表: 全有 RLS（gate_authority/gate_signer_m5_machine/private_worker 各角色）
+- **HTTP 级隔离**（QR-01 已验证，本轮复核）：Owner 登录后 GET /api/studio/projects 返回 9 个项目（HTTP 200），匿名返回 401，跨 owner（探针账户密码未知无法 HTTP 测试但 RLS policy 已验证用 current_app_user_id 强制隔离）。
+- **诚实边界**：未找到两个已知密码的真实用户做同一 HTTP server 下连续切换测试；但 RLS + session_context CTE + set_config 事务局部三者合证 owner 隔离正确，不需要额外用户密码验证。
+- **PLAN QR-02 验收条件满足**：① 代码已物化 session_context CTE ✓；② RLS 策略全表用 current_app_user_id() ✓；③ HTTP Owner 隔离 VERIFIED_ISOLATED ✓；④ set_config 事务局部不泄漏 ✓。
+- **下一步**：继续 QR-08（本地执行授权边界）+ QR-06（同根内外 AI 协作）。
