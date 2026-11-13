@@ -26,7 +26,7 @@ const AUTHORITY_CLI = path.join(ROOT, "..", "packages", "data-access", "scripts"
 export const PROJECT_ID = "b0a11000-0000-4000-8000-000000000001";
 export const RULE_VERSION_BY_GATE = { G0: "m5-local-v1", G1: "m5-local-v1", G2: "m5-local-v1", G3: "m5-local-v1", G4: "m5-local-v1", G5: "v1" };
 export const UPSTREAM_BY_GATE = { G1: "G0", G2: "G1", G3: "G2", G4: "G3", G5: "G4" };
-export const METHOD_BY_GATE = { G1: "C02", G4: "A06", G5: "P02" };
+export const METHOD_BY_GATE = { G1: "C02", G5: "P02" };
 // G3 是世界门：方法集合与用途均来自现行合同，不写死单值。
 // - 方法：method-binding-contract.json 中 stage=D03 且 implementation_binding 非 HOLD 的方法。
 // - 用途：gate-contracts.v3.json 的 G3.purpose_codes（purpose_source: G3.world.v1）。
@@ -39,6 +39,11 @@ export const G3_PURPOSE_CODES = new Set([
   "world.change_compare",
   "world.relation_explain",
 ]);
+// G4 人文发现门：方法 A01-A12 全集 + 五用途 BE/BC/RF/PS/PL。
+// gate-contracts.v3.json purpose_source=G4.interpretation.v1。
+export const G4_METHOD_SET = new Set(Array.from({length:12},(_,i)=>`A${String(i+1).padStart(2,'0')}`));
+export const G4_PURPOSE_CODES = new Set(["BE","BC","RF","PS","PL"]);
+export const G4_PURPOSE_NAMESPACE = "G4.interpretation.v1";
 export const QUALIFICATION_VALIDITY_MS = 6 * 24 * 60 * 60 * 1000;
 const READ_RUN_SCHEMAS = new Set(["mab.private-text-reading.v1", "mab.private-scanned-page-reading.v1"]);
 // 每个 Gate 涉及的原始件（或私有原件）都必须被逐动作显式许可：
@@ -262,8 +267,15 @@ async function checkFindingGrounding(ctx) {
     from meaning.findings f where f.finding_id = :'objectId'`, { objectId: ctx.candidate.object_id });
   const row = rows[0];
   if (!row) return { ok: false, reason: "finding_missing" };
-  if (text(row.method_id) !== METHOD_BY_GATE.G4) return { ok: false, reason: `finding_method_mismatch:${text(row.method_id)}` };
+  // G4 方法 ∈ A01-A12 全集（不写死 A06）。
+  if (!G4_METHOD_SET.has(text(row.method_id))) return { ok: false, reason: `finding_method_mismatch:${text(row.method_id)}` };
   if (text(row.qualification) !== "UNASSESSED") return { ok: false, reason: `finding_qualification_not_candidate:${text(row.qualification)}` };
+  // G4 用途白名单：purpose_namespace = G4.interpretation.v1，purpose_code ∈ BE/BC/RF/PS/PL。
+  const purposeNs = text(ctx.candidate.purpose_namespace);
+  const purposeCode = text(ctx.candidate.purpose_code);
+  if (purposeNs !== G4_PURPOSE_NAMESPACE || !G4_PURPOSE_CODES.has(purposeCode)) {
+    return { ok: false, reason: `unknown_purpose_mapping:${purposeNs}.${purposeCode || "none"}` };
+  }
   const refs = json(row.refs);
   const upstream = ctx.upstream;
   if (!upstream || !hasRef(refs, "claim_revision", upstream.object_id)) {
@@ -272,7 +284,7 @@ async function checkFindingGrounding(ctx) {
   const claim = await ctx.query(`select c.assertion_payload_json->>'project_id' as project_id
     from world.claim_revisions c where c.claim_revision_id = :'id'`, { id: upstream.object_id });
   if (text(claim[0]?.project_id) !== ctx.project) return { ok: false, reason: `finding_claim_scope_mismatch:${text(claim[0]?.project_id)}` };
-  return { ok: true, detail: `finding=${text(row.finding_id)} claim=${upstream.object_id}` };
+  return { ok: true, detail: `finding=${text(row.finding_id)} method=${text(row.method_id)} purpose=${purposeCode} claim=${upstream.object_id}` };
 }
 
 async function checkWorkRevisionBinding(ctx) {

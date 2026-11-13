@@ -58,6 +58,13 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
   // 未知用途映射按合同一律 deny（unknown_purpose_mapping）。
   const DEFAULT_PURPOSE = {namespace:'data-production',code:'m5-remediation',version:'v1'};
   const D03_PURPOSE = {namespace:'world',code:'explain_bounded',version:'v1'};
+  // G4 人文发现门：purpose_namespace 固定 G4.interpretation.v1，purpose_code ∈ BE/BC/RF/PS/PL。
+  // 默认 BE（bounded_explanation），finding 输入可显式指定 purpose_code 覆盖。
+  const D04_PURPOSE_CODES = new Set(['BE','BC','RF','PS','PL']);
+  function resolveD04Purpose(finding){
+    const code = finding?.purpose_code && D04_PURPOSE_CODES.has(finding.purpose_code) ? finding.purpose_code : 'BE';
+    return {namespace:'G4.interpretation.v1',code,version:'v1'};
+  }
 
   async function submitStageCandidate({run,stage,gateCode,objectType,objectId,artifactRevision,
     projectId,evidenceRefs,upstreamGate,upstreamObjectType,upstreamObjectId,requestDigest,purpose}) {
@@ -607,7 +614,8 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
       if(typeof originalId!=='string'||!UUID.test(originalId)||
          typeof claimRevisionId!=='string'||!UUID.test(claimRevisionId)||
          !finding||typeof finding!=='object'||
-         finding.finding_type!=='institutional_mechanism'||
+         !finding.method_id||!/^A(0[1-9]|1[0-2])$/.test(finding.method_id)||
+         typeof finding.finding_type!=='string'||!finding.finding_type||
          typeof finding.human_question!=='string'||!finding.human_question||Buffer.byteLength(finding.human_question)>2000||
          typeof finding.interpretive_statement!=='string'||!finding.interpretive_statement||Buffer.byteLength(finding.interpretive_statement)>5000||
          (finding.understanding_delta!=null&&typeof finding.understanding_delta!=='string')||
@@ -627,6 +635,8 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         evidenceRefs:[{kind:'finding',id:saved.finding_id,artifact_revision:saved.artifact_revision},
           {kind:'claim_revision',id:claimRevisionId}],
         upstreamGate:'G3',upstreamObjectType:'claim_revision',upstreamObjectId:claimRevisionId,
+        // G4 人文发现门：purpose_namespace=G4.interpretation.v1，purpose_code ∈ BE/BC/RF/PS/PL。
+        purpose:resolveD04Purpose(finding),
         // input_fingerprint 必须与 orchestrator 的 executionDigest(input) 一致：
         // 各 stage 的 input 是上一阶段的 contract output，只读取证据此绑定。
         requestDigest:digestOf(input)});
