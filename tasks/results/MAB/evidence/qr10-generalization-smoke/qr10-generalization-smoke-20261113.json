@@ -1,0 +1,87 @@
+{
+  "evidence_id": "qr10-generalization-smoke-20261113",
+  "recorded_at": "2026-11-13",
+  "scope": "本地隔离库 mohen_dev；不涉生产、不调付费模型",
+  "gate_requirement": "PLAN QR-10：≥2 个非模板 topic 跑通 ST-01 → D00（多渠道来源发现 + 权利字段）→ G0 → Admin 资产流入",
+  "topics": [
+    {
+      "topic": "朱家角",
+      "project_id": "d9d48901-3aa3-4424-b50f-965d6749ee8e",
+      "st01": {
+        "transport": "真实 HTTP POST /api/studio/research-tasks",
+        "verdict": "partial",
+        "brief_asset": "research_brief rev1（studio.asset_heads 有 head）",
+        "materials": 3,
+        "leads": 18
+      },
+      "original": {
+        "original_id": "f474b91b-07f0-47ab-94dc-20dc7f55e518",
+        "provider": "上海图书馆开放数据 shnh/dmz 地名志",
+        "byte_size": 1259,
+        "sha256": "273222eef548dfbbd1d5cf45633bca28abd312c03c53f818be7226b8fb5b6777",
+        "state": "STORED_VERIFIED",
+        "l0": "source / source_version / raw_item 三件登记齐，artifact_revision 可回算"
+      },
+      "rights": {
+        "policy": "既有 SHL 平台政策（tools/stamp-shl-open-data-rights.mjs --apply）",
+        "granted": ["access_view", "machine_read", "retain", "quote"],
+        "held": ["display", "download", "adapt", "redistribute", "external_processing"],
+        "snapshot_frozen": "30/30 来源"
+      },
+      "acquisition": {
+        "method": "M0007@v1（开放数据 REST 接口取条目正文；本批新登记）",
+        "attempt_result": "acquired_verified",
+        "byte_size": 1259
+      },
+      "d00": { "status": "PASS", "run_id": "1a4e6f43-56c7-4b8b-95d0-87b77e95c009" },
+      "g0": { "audit_id": "14ae25d3-7c19-4ed5-9481-c16eeb4b119d", "result": "PASS", "current": true },
+      "admin_assets": ["research_brief", "source_anchor"]
+    },
+    {
+      "topic": "七宝",
+      "project_id": "b1ecefa4-3320-4932-94b4-e57e16a2779c",
+      "st01": {
+        "transport": "真实 HTTP POST /api/studio/research-tasks",
+        "verdict": "partial",
+        "brief_asset": "research_brief rev1",
+        "materials": 3,
+        "leads": 14
+      },
+      "original": {
+        "original_id": "1cc126eb-7aac-42ce-b5d5-61c7a0d6ac53",
+        "provider": "上海图书馆开放数据 shnh/dmz 地名志",
+        "byte_size": 1121,
+        "sha256": "47178ce6046540323b39f68216814f0be356449f0548080521370442468124f7",
+        "state": "STORED_VERIFIED"
+      },
+      "rights": {
+        "policy": "既有 SHL 平台政策",
+        "granted": ["access_view", "machine_read", "retain", "quote"],
+        "held": ["display", "download", "adapt", "redistribute", "external_processing"],
+        "snapshot_frozen": "31/31 来源"
+      },
+      "acquisition": {
+        "method": "M0007@v1",
+        "attempt_result": "acquired_verified",
+        "byte_size": 1121
+      },
+      "d00": { "status": "PASS", "run_id": "cd685bec-b0d4-4c58-ba6b-d2458149ff76" },
+      "g0": { "audit_id": "3cd12761-f90f-486c-b1ab-c6f06a7068ba", "result": "PASS", "current": true },
+      "admin_assets": ["research_brief", "source_anchor"]
+    }
+  ],
+  "defects_fixed_in_this_batch": [
+    "land-shl-original 预读分支只认 ENOENT，存储契约报 ORIGINAL_NOT_FOUND → 首次落地必然中断",
+    "source-discovery relevanceTier 对图像渠道一律 title → 无关图像冒充可读材料",
+    "rule-gate-reviewer 候选查询写死 CP1 样本项目（PROJECT_ID）",
+    "studio.private_originals 的 m5_machine_reviewer_read 策略写死单项目",
+    "gate_reviewer_bindings 只覆盖单项目 → 逐项目人工授权不可行；改为规则范围（studio_project），以 D00 需求回执为可核判据",
+    "current_qualification_is_valid 与签发判定不同口径 → 规则范围签出的审计立刻被判非当前",
+    "rule-gate-reviewer 不传 CAS 期望值 → 同对象键上重签恒抛 QUALIFICATION_CAS_CONFLICT"
+  ],
+  "known_gaps_not_closed": [
+    "Admin /api/admin/assets 不按 project 过滤，资产页把全部项目混在一起（既有实现）",
+    "degraded 渠道：验证时 shanghai-library 检索可用，但历史上曾整段 unavailable，需按 Y07 失败码另立可靠性台账",
+    "本批未签发 G1–G5，也未做 D01 读取；泛化冒烟只到 G0"
+  ]
+}

@@ -3389,3 +3389,26 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **结论（对 5.1 / QR-10 的影响）**：通用入口「任意题材 → 发现 → 落原件 → L0 登记」这一段**已真实跑通**（此前只有模板题材能做到）；**D00→G0 这一段没跑通，卡点是获取方法登记缺口，不是 D00/G0 机制**。5.1 仍不转 ✅，QR-10 泛化冒烟门 0/2。
 - **下一批（已定，不改变 PLAN 依赖顺序）**：补齐「开放数据 REST 文本/影像接口」的获取方法登记（`M0007@v1`，字段按《长期资源与获取方法维护规范》§7.2/§7.7 填全，含 resource_scope/access_mode/preconditions/success_criteria/failure_modes），并把 `fetch-shl-dmz-text` 升级为**会自行登记方法与追加 Attempt**（照 `acquire-http-file.mjs` 的既有做法），再用真实取件结果喂 D00 的 `sections.acquisition`；随后 G0 机器评审。**方法登记属 Registry 变更，按 Owner 纪律单独列批、不顺手改**。
 - **本地 PENDING_PUSH**：commit `54f2ac6`（B3）与 land-shl-original 缺陷修复，按 AGENTS.md §0A 等待批量推送窗口。
+
+## 2026-11-13｜B4 泛化冒烟 2/2 通过（D00→G0 真实签出），5.1 转 ✅
+
+- **本批依据**：PLAN §0.1 QR-10 泛化冒烟门（≥2 个非模板 topic 跑通 ST-01→D00→G0→Admin）+ Owner 2026-11-13 对授权范围的裁决（"既考虑签发安全，也考虑人肉维护可行"）。
+- **新增获取方法登记**：`M0007@v1`「开放数据 REST 接口取条目正文」（`access_mode=http_get_json_field`，scope 写明"取 description 字段作文本原件，不是扫描影像、不是目录元数据"；`resource_scope/preconditions/steps/success_criteria/failure_modes/alternatives` 按《长期资源与获取方法维护规范》§7.2/§7.7 填全，`method_state=TESTED_SUCCESS` 仅在**落库字节与接口原始响应逐字节一致**时成立）。由 D00 Y07 在真实取件后登记，不是手写死值。
+- **两个非模板题材实测（本地隔离库，全程真实外呼/落库/签发）**：
+  - 「朱家角」`d9d48901…`：ST-01（HTTP、verdict=partial、材料 3/线索 18）→ 原件 `f474b91b…` 1259B → M0007 `acquired_verified` → **D00 PASS**（run `1a4e6f43…`）→ **G0 PASS current**（audit `14ae25d3…`）→ Admin 资产 `research_brief` + `source_anchor`。
+  - 「七宝」`b1ecefa4…`：ST-01（HTTP、verdict=partial、材料 3/线索 14）→ 原件 `1cc126eb…` 1121B → M0007 `acquired_verified` → **D00 PASS**（run `cd685bec…`）→ **G0 PASS current**（audit `3cd12761…`）→ 同上两类资产。
+  - 证据包：`tasks/results/MAB/evidence/qr10-generalization-smoke/qr10-generalization-smoke-20261113.json`。
+- **打通这段修掉的真实缺陷（逐个都是实测撞出来的，不是重构）**：
+  1. `land-shl-original` 预读只认 `ENOENT`，而存储契约报 `ORIGINAL_NOT_FOUND` → 新对象首次 `--apply` 必然中断（此前只在"对象已存在"上验过）。
+  2. D00 Y07 只认已登记 `M####`；既有 5 条方法无一覆盖开放数据 REST 取正文 → 补 `M0007@v1`（M0005/M0006 是目录方法，明确不得冒充原件字节，未拿它们顶替）。
+  3. `rule-gate-reviewer` 候选查询写死 `PROJECT_ID=b0a1…0001` → 改为 `--project` 参数，规则与 7 项检查不变。
+  4. `studio.private_originals` 的 `m5_machine_reviewer_read` 只允许单项目 → 改为"当前有待评审候选的项目"，不放开写权限，候选 `CONSUMED/HOLD` 后可见性自然收回（迁移 `20261113150000`）。
+  5. **Gate 授权只覆盖单项目**（`gate_reviewer_bindings.allowed_scope`）→ 逐项目人工授权对"任意题材"不可行。按 Owner 裁决改为**规则范围** `{"scope_kind":"studio_project"}`，判据落在库内可核事实（候选项目必须有 D00 Y01 需求回执 `source.source_needs`），非 Studio/伪造项目仍签不了；有效期沿用既有口径（180 天）。**这不是按来源标签推断权限，而是把"项目是否真实存在过生产"作为可核判据**（迁移 `20261113160000`）。
+  6. `current_qualification_is_valid` 与签发判定不同口径 → 规则范围签出的审计会立刻被判"非当前"，表现为签名成功但 D00 仍 `INDEPENDENT_GATE_VERIFY_DENIED`；已同口径修订。
+  7. `rule-gate-reviewer` 不传 CAS 期望值（等价 `null`）→ 同一对象键上已有资格时重签恒抛 `QUALIFICATION_CAS_CONFLICT`；改为签发前读当前资格并作为期望值传入（CAS 语义不变，仍防并发覆盖）。
+- **顺带发现并记账、但本批刻意未做**：
+  - `Admin /api/admin/assets` 不按 `project_id` 过滤（实测忽略参数），资产页会把所有项目混在一起——既有实现问题，需单列一批。
+  - 早前记录的"SHL 开放数据不可用"经复测为**可用**（带 key、`Accept-Encoding: identity`、`Accept: application/json` 时 200）；此前 404 系真实端点/请求头差异，需把该结论回写以免继续误判渠道 degrade。
+  - 机器评审此前在一次误用中给 CP1 样本项目的旧候选补签了一条 G0（audit `3ffc2f40…`，规则全过、该对象此前无 current 审计，未覆盖任何既有资格），已如实记录。
+- **口径边界（不得夸大）**：本项只到 **G0**。未签 G1–G5、未做 D01 读取、未产出 claims/作品；来源为地名志正文（`display/download` 仍 HOLD），故"跑到 G0"≠"可展示/可发布"。5.1 转 ✅ 仅指**通用创作入口这一维度**，不代替 5.2–5.8。
+- **本地 PENDING_PUSH**：commit `54f2ac6`、`77faadf`、`67fbe15` 与本批提交，按 AGENTS.md §0A 等待批量推送窗口。

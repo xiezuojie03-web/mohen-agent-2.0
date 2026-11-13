@@ -136,7 +136,10 @@ try {
       // INVALID_ACTION）；必须排在 cp2f_asset_backlink 建函数之后。
       "20261113100000_mab_qr05_single_rights_action_dictionary.sql",
       // M5 通用入口：机器评审只读范围跟"有待评审候选的项目"走，不再写死 CP1 样本项目。
-      "20261113150000_mab_m5_reviewer_scope_follows_candidates.sql"]) apply(file);
+      "20261113150000_mab_m5_reviewer_scope_follows_candidates.sql",
+      // M5 通用入口：Gate 授权支持"规则范围"（studio_project），同口径修正资格有效性判定，
+      // 并对 CAS 期望着值；否则新题材项目签不出门、签出也立刻被判非当前。
+      "20261113160000_mab_gate_scope_rule_for_studio_projects.sql"]) apply(file);
     // Capability assertions for the migrations applied immediately above. They can only run at
     // this point in the chain: the rights columns, the private worker, the machine reviewer and
     // the content-based sign_gate_candidate semantics do not exist any earlier.

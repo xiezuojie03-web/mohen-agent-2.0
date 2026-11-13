@@ -431,12 +431,27 @@ export function createRuleGateReviewer({
     const validUntil = new Date(ctx.now + QUALIFICATION_VALIDITY_MS).toISOString();
     const requestId = randomId();
     const sessionToken = mintToken({ uid: MACHINE_REVIEWER_USER_ID });
+    // CAS 期望值必须是"签发前读到的当前资格"。此前不传（等价 null），
+    // 于是同一对象键上只要已有一条资格，重签就恒抛 QUALIFICATION_CAS_CONFLICT——
+    // 换新候选（如 D00 重跑）后无法再签，只能靠删资格绕过，那是错的。
+    const current = await query(`select gate_audit_id::text as id from control.qualification_current
+       where architecture_generation='mohen.six-stage.v1' and gate_code=:'gate' and object_type=:'objectType'
+         and object_id=:'objectId' and purpose_namespace=:'ns' and purpose_code=:'purpose'
+         and purpose_version=:'version' and consumer=:'consumer'
+       order by valid_from desc limit 1`,
+      {
+        gate, objectType: candidate.object_type, objectId: candidate.object_id,
+        ns: candidate.purpose_namespace, purpose: candidate.purpose_code,
+        version: candidate.purpose_version, consumer: candidate.consumer,
+      });
+    const expectedAuditId = text(current[0]?.id) || null;
     const auditId = await decide({
       candidateId: candidate.candidate_id,
       requestId,
       result: "PASS",
       ruleVersion,
       validUntil,
+      expectedAuditId,
       receipt: {
         checks,
         rationale: `MACHINE_RULE_REVIEW:${ruleVersion}:all deterministic checks passed`,
