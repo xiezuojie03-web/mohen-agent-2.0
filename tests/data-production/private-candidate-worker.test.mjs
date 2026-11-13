@@ -372,6 +372,9 @@ const TEXT=Buffer.from('均科正耗平米三斗六升五合。','utf8');
 const TEXT_SHA=createHash('sha256').update(TEXT).digest('hex');
 const TEXT_QUOTE='均科正耗平米三斗六升五合。';
 const CANDIDATE_PURPOSE={namespace:'data-production',code:'m5-remediation',version:'v1'};
+// gate-contracts.v3.json purpose_rule：G3/G4 保留原语义命名空间；
+// G3 用途取自 G3.purpose_codes（purpose_source: G3.world.v1）。
+const G3_CANDIDATE_PURPOSE={namespace:'world',code:'explain_bounded',version:'v1'};
 const registrationFor=(originalId,projectId,overrides={})=>({
   original_id:originalId,project_id:projectId,source_id:id(),source_version_id:id(),raw_item_id:id(),
   sha256:IMAGE_SHA,byte_size:IMAGE.length,content_type:'image/jpeg',
@@ -934,7 +937,7 @@ test('D03 assertWorldClaim submits one G3 claim_revision candidate with the sign
     const candidate=await worker.assertWorldClaim({run,job,registry,context,input,token:'synthetic-session'});
     assert.deepEqual(submitted,{runId:run.run_id,stage:'D03',gateCode:'G3',
       objectType:'claim_revision',objectId:claimRevisionId,artifactRevision:'a'.repeat(64),
-      purpose:CANDIDATE_PURPOSE,allowedScope:{project_id:run.scope.project_id},consumer:'producer',
+      purpose:G3_CANDIDATE_PURPOSE,allowedScope:{project_id:run.scope.project_id},consumer:'producer',
       dependencySnapshot:[{gate_audit_id:auditId,qualification_digest:'d'.repeat(64),
         artifact_revision:'e'.repeat(64)}],
       evidenceRefs:[{kind:'claim_revision',id:claimRevisionId,artifact_revision:'a'.repeat(64)},

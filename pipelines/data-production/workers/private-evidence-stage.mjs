@@ -52,8 +52,15 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
   // Candidate only: no result, no qualification, no dependency invention.
   // An unsigned upstream yields an empty dependency_snapshot and signing will
   // legitimately fail closed instead of a Producer-fabricated ancestor.
+  // 用途口径按 specs/data-production/gates/gate-contracts.v3.json 的 purpose_rule：
+  // - G3/G4 必须保留原语义命名空间（G3.world.v1 → world.*，G4 → 人文五用途）；
+  // - G0/G1/G2/G5 走显式版本化 profile（data-production/m5-remediation/v1）。
+  // 未知用途映射按合同一律 deny（unknown_purpose_mapping）。
+  const DEFAULT_PURPOSE = {namespace:'data-production',code:'m5-remediation',version:'v1'};
+  const D03_PURPOSE = {namespace:'world',code:'explain_bounded',version:'v1'};
+
   async function submitStageCandidate({run,stage,gateCode,objectType,objectId,artifactRevision,
-    projectId,evidenceRefs,upstreamGate,upstreamObjectType,upstreamObjectId,requestDigest}) {
+    projectId,evidenceRefs,upstreamGate,upstreamObjectType,upstreamObjectId,requestDigest,purpose}) {
     if(typeof projectId!=='string'||!UUID.test(projectId))throw Error('PRIVATE_GATE_CANDIDATE_SCOPE_INVALID');
     if(!HEX.test(artifactRevision??''))throw Error('PRIVATE_GATE_CANDIDATE_REVISION_REQUIRED');
     const refs=Array.isArray(evidenceRefs)?evidenceRefs.filter(ref=>ref&&typeof ref.id==='string'&&ref.id):[];
@@ -65,7 +72,7 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         qualification_digest:audit.qualification_digest,artifact_revision:audit.artifact_revision}]:[];
     }
     return submitGateCandidate({runId:run.run_id,stage,gateCode,objectType,objectId,artifactRevision,
-      purpose:{namespace:'data-production',code:'m5-remediation',version:'v1'},
+      purpose:purpose??DEFAULT_PURPOSE,
       allowedScope:{project_id:projectId},consumer:'producer',
       dependencySnapshot,evidenceRefs:refs,inputFingerprint:requestDigest});
   }
@@ -579,6 +586,9 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         evidenceRefs:[{kind:'claim_revision',id:saved.claim_revision_id,artifact_revision:saved.artifact_revision},
           {kind:'material_evidence',id:evidenceId}],
         upstreamGate:'G2',upstreamObjectType:'material_evidence',upstreamObjectId:evidenceId,
+        // G3 是世界门：按 gate-contracts.v3.json G3.purpose_codes 必须绑世界用途，
+        // 不能沿用 G0/G1/G2 的生产用途（purpose_rule: G3/G4 保留原语义命名空间）。
+        purpose:D03_PURPOSE,
         // input_fingerprint 必须与 orchestrator 的 executionDigest(input) 一致：
         // 各 stage 的 input 是上一阶段的 contract output，只读取证据此绑定。
         requestDigest:digestOf(input)});

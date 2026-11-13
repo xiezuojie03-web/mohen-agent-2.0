@@ -26,7 +26,19 @@ const AUTHORITY_CLI = path.join(ROOT, "..", "packages", "data-access", "scripts"
 export const PROJECT_ID = "b0a11000-0000-4000-8000-000000000001";
 export const RULE_VERSION_BY_GATE = { G0: "m5-local-v1", G1: "m5-local-v1", G2: "m5-local-v1", G3: "m5-local-v1", G4: "m5-local-v1", G5: "v1" };
 export const UPSTREAM_BY_GATE = { G1: "G0", G2: "G1", G3: "G2", G4: "G3", G5: "G4" };
-export const METHOD_BY_GATE = { G1: "C02", G3: "W07", G4: "A06", G5: "P02" };
+export const METHOD_BY_GATE = { G1: "C02", G4: "A06", G5: "P02" };
+// G3 是世界门：方法集合与用途均来自现行合同，不写死单值。
+// - 方法：method-binding-contract.json 中 stage=D03 且 implementation_binding 非 HOLD 的方法。
+// - 用途：gate-contracts.v3.json 的 G3.purpose_codes（purpose_source: G3.world.v1）。
+export const G3_PURPOSE_CODES = new Set([
+  "world.explain_bounded",
+  "world.show_original_region",
+  "world.map_anchor_link",
+  "world.map_registered_overlay",
+  "world.reconstruct_bounded",
+  "world.change_compare",
+  "world.relation_explain",
+]);
 export const QUALIFICATION_VALIDITY_MS = 6 * 24 * 60 * 60 * 1000;
 const READ_RUN_SCHEMAS = new Set(["mab.private-text-reading.v1", "mab.private-scanned-page-reading.v1"]);
 // 每个 Gate 涉及的原始件（或私有原件）都必须被逐动作显式许可：
@@ -189,8 +201,16 @@ async function checkEvidenceBinding(ctx) {
 }
 
 async function checkClaimSupport(ctx) {
+  // 用途先于内容判定：gate-contracts.v3.json 的 purpose_rule 要求 G3/G4 保留原语义命名空间，
+  // 未知用途映射一律 deny（deny_when 含 unknown_purpose_mapping）。
+  const purpose = `${text(ctx.candidate.purpose_namespace)}.${text(ctx.candidate.purpose_code)}`;
+  if (!G3_PURPOSE_CODES.has(purpose)) {
+    return { ok: false, reason: `unknown_purpose_mapping:${purpose || "none"}` };
+  }
   const rows = await ctx.query(`select cr.claim_revision_id::text as claim_revision_id, cr.producer_method_id as producer_method_id,
-      cr.assertion_payload_json::text as payload, l.evidence_id::text as evidence_id,
+      cr.subject_kind as subject_kind, cr.subject_id::text as subject_id,
+      cr.asserted_time_json::text as asserted_time, cr.assertion_payload_json::text as payload,
+      l.evidence_id::text as evidence_id, l.support_type as support_type,
       e.input_fingerprint as input_fingerprint, ri.checksum_sha256 as raw_checksum, ri.byte_size as raw_bytes,
       o.original_id::text as original_id, o.state as original_state, o.sha256 as original_sha256,
       o.byte_size as original_bytes,
@@ -207,7 +227,19 @@ async function checkClaimSupport(ctx) {
     where cr.claim_revision_id = :'objectId'`, { objectId: ctx.candidate.object_id, project: ctx.project });
   const first = rows[0];
   if (!first) return { ok: false, reason: "claim_revision_missing" };
-  if (text(first.producer_method_id) !== METHOD_BY_GATE.G3) return { ok: false, reason: `claim_method_mismatch:${text(first.producer_method_id)}` };
+  const method = text(first.producer_method_id);
+  let authorized;
+  try {
+    authorized = d03AuthorizedMethods();
+  } catch (error) {
+    return { ok: false, reason: `claim_method_authority_unavailable:${String(error?.message ?? error).split("\n")[0]}` };
+  }
+  if (!authorized.size) return { ok: false, reason: "claim_method_authority_empty" };
+  if (!authorized.has(method)) return { ok: false, reason: `claim_method_not_authorized_for_d03:${method}` };
+  // world.explain_bounded 最小必要条件（Gate 合同 §3.1 + D03 契约 §7）：
+  // 身份、时空、主张、证据范围可审。缺任一即不得签该用途。
+  if (!text(first.subject_kind) || !text(first.subject_id)) return { ok: false, reason: "claim_identity_scope_missing" };
+  if (!first.asserted_time || text(first.asserted_time) === "null") return { ok: false, reason: "claim_time_scope_missing" };
   const payload = json(first.payload) ?? {};
   if (text(payload.project_id) !== ctx.project) return { ok: false, reason: `claim_project_scope_mismatch:${text(payload.project_id)}` };
   const cited = Array.isArray(payload.evidence_ids) ? payload.evidence_ids.map(text) : [];
@@ -286,6 +318,21 @@ function registeredCMethods() {
   const registry = JSON.parse(readFileSync(REGISTRY_PATH, "utf8"));
   professionalCMethods = new Set((registry.professional_methods ?? []).map(text).filter(id => /^C\d{2}$/.test(id)));
   return professionalCMethods;
+}
+
+// D03 当前可执行方法集合来自唯一绑定合同，不在评审器里写死单个方法号。
+// HOLD 的方法（W01-W06/W08-W10）即便将来解冻也须先有可执行绑定与正反测试。
+const METHOD_BINDING_PATH = path.join(ROOT, "..", "specs", "data-production", "method-binding-contract.json");
+let d03MethodsCache = null;
+function d03AuthorizedMethods() {
+  if (d03MethodsCache) return d03MethodsCache;
+  const contract = JSON.parse(readFileSync(METHOD_BINDING_PATH, "utf8"));
+  const methods = contract.methods ?? contract.bindings ?? [];
+  d03MethodsCache = new Set(methods
+    .filter(entry => text(entry.stage) === "D03" && text(entry.implementation_binding) && text(entry.implementation_binding) !== "HOLD")
+    .map(entry => text(entry.method_id))
+    .filter(id => /^W\d{2}$/.test(id)));
+  return d03MethodsCache;
 }
 
 async function checkMethodPlanPreselection(ctx) {
