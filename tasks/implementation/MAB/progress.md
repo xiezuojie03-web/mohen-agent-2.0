@@ -4116,3 +4116,17 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **证据等级**：双路径Registry/Studio真实任务参数/Y07实际本地回读代码和CI`CODE_PRESENT+CI_SUCCESS`；隔离PG/HTTP仅对对应较早精确SHA已有回归证据，非最新HEAD同一真实作品G0正签。**没有**本轮真实登录Studio→Runner→Worker→D00生成真实来源候选→独立G0 PASS/当前资格回读/恢复的持久集成证据；此项`NOT_RUN/DEFERRED_ENV`，不能把新增Y07源码或单测冒充来源合法取得，不能把先前组件级正签拼接为本次主链正签。
 - **最前阻断/唯一下一入口**：在具有真实已授权原件、私人字节、PG17持久库存、Owner身份、独立授权服务、Gate Reviewer的具名持久非生产环境，从Studio本人项目原任务执行本批D00-only真实启动，逐次保留同run的Y07实际获取账/权限来源、Producer G0候选、Reviewer资格回执和恢复/HOLD。若外部馆藏取得/权利依据不完备，必须停在专业G0，不可将本地回读当外部馆藏下载许可。当前ChatGPT GitHub连接器没有Owner本地实际运行环境，故没有擅用生产库、未伪造签发。
 - **最终状态**：`M5_REMEDIATION_ACTIVE / M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY`；仍以PLAN §3.5 B同一真实作品八维作为唯一M5准出，其他M6—M8不提前激活。
+
+---
+
+## 2026-11-14｜M5批次B：单一Runner终态/G0审签阻断回读与Studio启动恢复（已提交）
+
+- **来源与权威**：承接`main@313ca0e7ec519316989644280c830705fc54343d`的批次A；仅沿`PLAN.md V1.7` §0、§3.5 B/C、§6施工。保持同一真实作品的八维准出、单一Registry/Runner及专业独立Gate，不变更计划和上位合同。
+- **提交①** `e347710bb73b73f4244e494c6a92b3d50edc50c6`：现有`pipelines/data-production/orchestrator/run-persistence.mjs`在终态原子回写`production_runs`时同写有界`metadata.m5_terminal`（实际stage/gate、独立audit标识、过滤后的原因与verification error），`apps/web/lib/studio-production.ts`受权状态查询读取。原`tests/data-production/run-persistence.test.mjs`增2条负例：无签发不能显示G0 PASS、隐私/非机器错误不能进入终态。主CI [43612054525](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43612054525) SUCCESS。
+- **提交②** `689e13fa2f99cedc2ce997b258f84bdb2a01d279`：修正Studio spawn的独立G0 verifier配置，保留既有默认隔离地址但优先实际环境明确配置的verify端点与Credential；授权器或动态服务启动失败时写明确FAILED/原因并清理scope与已开的listener，正常退出和spawn失败也清理scope。绝不为Producer颁发Gate签章或默认PASS。主CI [43612233335](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43612233335) SUCCESS。
+- **提交③** `da888e0c7b5c970899feebffdb5aa41b8df420e0`：`StudioWorkbench.tsx`既有轮询与恢复读取相同终态字段，向Creator显示D00/G0与具体HOLD代码；D00-only阶段完成不冒充D00—D05/M5全部完成。主CI [43612526438](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43612526438) SUCCESS。
+- **本批实际测试**：三个精确SHA主CI均SUCCESS；各自Typecheck、Unit、Production boundary regression、Build步骤均PASS。没有新执行同一真实作品的持久隔离PG/原件Storage/真实浏览器登录/Reviewer签发测试，也无新的独立PG/HTTP工作流成功证据；上一批历史PG/HTTP仅继承与未变接口相关的局部证据。
+- **生产部署隔离**：复核Vercel production最近部署，最晚仍为`83560224`对应READY，晚于此的本批三SHA未部署；未触生产DB/Storage、公开发布或真实Provider调用。
+- **实际最远节点**：可信Studio项目/私有原件登记→受审Private Adapter→唯一Runner D00-only启动输入/Worker Y07本地字节回读→候选与独立Gate核验HOLD的代码闭合和CI。**没有**由真实持久原件经过单root Runner实际生成D00候选及独立G0 PASS的具名验收记录；明确`NOT_RUN/DEFERRED_ENV`，不拼接组件级签发。
+- **下一个最前阻断**：具名非生产隔离环境、真实Owner受权原件/精确source/version/rights、低权Worker/独立G0审签及可回读的同run证据。若来源许可/Reviewer条件不足，应保持G0 HOLD与费用预留对账，不擅自释放预留或重复计费。M5整体`M5_REMEDIATION_ACTIVE / M5_OVERALL_HOLD`；后续M6—M8不启动。
+

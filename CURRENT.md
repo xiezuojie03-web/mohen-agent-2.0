@@ -2,7 +2,7 @@
 
 > **职责**：当前代码与运行证据及剩余阻断，不规定工程施工标准。唯一计划：`tasks/implementation/MAB/PLAN.md` V1.7；历史逐批证据：`tasks/implementation/MAB/progress.md`。每次施工仍须实时查询GitHub `main` HEAD、CI、PG/HTTP及部署，不能把本页SHA当永久最新版本。
 
-**核验日期：2026-11-14。最新批次A业务/测试提交：`main@8b0efba79a41ea15238343688c3b3ac1f646a265`；主CI [43610692797](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43610692797) SUCCESS。** 后续文档提交将生成另一个main SHA，不替换该业务测试证据身份。真实持久Studio→D00→独立G0仍未实测准出。
+**核验日期：2026-11-14。本轮最新业务/界面提交：`main@da888e0c7b5c970899feebffdb5aa41b8df420e0`；主CI [43612526438](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43612526438) SUCCESS。** 对应前两批提交 `e347710b`、`689e13fa` 的CI也均SUCCESS。后续文档提交将产生另一个main SHA，不替换业务代码的准确测试身份。真实持久Studio→D00→独立G0仍未实测准出。
 
 ## 1. 唯一当前验收：PLAN §3.5 B 八维
 
@@ -12,6 +12,15 @@
 - M6—M8：`NOT_STARTED`；本轮没有执行生产库/Storage迁移、正式Gate投运、公众开放或Owner最终签收。
 
 **Owner进度口径**：只报告同一真实作品已达到的最远受证节点、下一处不能继续的连接及M5八维准出；QR、CP、HP、旧M1—M4是工程回溯索引，不是另几套准出率。
+
+## 本轮 M5 批次B：D00/G0真实失败状态可追踪（2026-11-14）
+
+- **同一主干的已提交增量**：`e347710bb73b73f4244e494c6a92b3d50edc50c6`将单一Runner的有限终态字段（stage、gate、经验证的独立审计ID、可公开错误代码）写入既有`control.production_runs.metadata.m5_terminal`，Studio受权GET回读；加2条无Gate/PASS伪造负例。主CI [43612054525](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43612054525) SUCCESS。
+- **启动/环境连续性**：`689e13fa2f99cedc2ce997b258f84bdb2a01d279`修复独立Gate URL/credential被强制替换的接线、认证服务失败导致RUNNING滞留与私有scope临时文件清理；不改变Producer与独立Reviewer权限，不在无权环境启动Gate。主CI [43612233335](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43612233335) SUCCESS。
+- **Creator可读恢复**：`da888e0c7b5c970899feebffdb5aa41b8df420e0`在既有Studio任务状态轮询/历史研究恢复展示同一run的G0 HOLD代码/阶段，区分D00-only工序状态与完整M5。主CI [43612526438](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43612526438) SUCCESS（Typecheck、Unit、Production-boundary、Build）；**本次并未在隔离PG或真实HTTP环境重新执行对应三笔代码**。
+- **生产隔离复核**：Vercel项目`mohen-agent-2-0` production最新READY仍为旧`83560224`（09:29:42Z），本批三笔main代码提交未出现production deployment，未操作生产DB/Storage/手动部署/正式Gate。
+- **最高运行证明仍受限**：`CODE_PRESENT + MAIN_CI_SUCCESS`。当前无具名持久非生产的真实Owner原件字节/合法rights、低权Private Worker、授权服务、独立Reviewer会话可贯通本批同一run，**D00候选落库、独立G0签PASS与现行资格回读仍`NOT_RUN/DEFERRED_ENV`**；不可把Y07本地读取称为馆藏下载/使用许可，也不可把新HOLD回读当作生产成功。原Studio生产预留因现行费用回执严格要求仍需受控核销，不能自动解锁/重试。M5八维保持`M5_OVERALL_HOLD`。
+- **下个实际施工关注点**：沿同一Studio项目/任务核实际持久环境签名授权与首次D00候选→独立G0当前资格；材料、权利或签发不足时保留来源/阶段/原因和对账阻断，再定向接合法恢复与D01；不得重建Runner、Y01、Gate或模拟PASS。
 
 ## 2. 最新可核的质量与发布事实
 
