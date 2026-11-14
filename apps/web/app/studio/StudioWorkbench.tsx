@@ -168,6 +168,17 @@ export default function StudioWorkbench() {
 
   // 生产进度（委托后异步 D00–D05 生产，轮询 control.production_runs）
   const [production, setProduction] = useState<{ status: string; current_stage: string | null } | null>(null);
+  const [currentResearch, setCurrentResearch] = useState<{ taskId: string; status: "done" | "hold" } | null>(null);
+  const [productionBusy, setProductionBusy] = useState(false);
+  const [productionError, setProductionError] = useState<string | null>(null);
+  const productionPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  useEffect(() => () => {
+    if (productionPollRef.current !== null) clearInterval(productionPollRef.current);
+  }, []);
+  function stopProductionPoll() {
+    if (productionPollRef.current !== null) clearInterval(productionPollRef.current);
+    productionPollRef.current = null;
+  }
 
   // 画面候选素材（从资产台账取的 verified 素材，预览阶段展示）
   const [mediaCandidates, setMediaCandidates] = useState<Array<{ title: string; license: string; author: string; intendedUse: string }> | null>(null);
@@ -192,6 +203,11 @@ export default function StudioWorkbench() {
   async function ask(q: string) {
     const text = q.trim();
     if (!text || busy || projectBusy || submitLock.current) return;
+    stopProductionPoll();
+    setCurrentResearch(null);
+    lastTaskIdRef.current = null;
+    setProduction(null);
+    setProductionError(null);
     setMessages((m) => [...m, { role: "user", text }]);
     setInput("");
     setBusy(true);
@@ -218,7 +234,11 @@ export default function StudioWorkbench() {
         production?: { ok?: boolean; run_id?: string; reason?: string } | null;
       };
       if(res.ok&&json.ok)requestAttempt.current=null;
-      if(res.ok&&json.ok&&json.task_id)lastTaskIdRef.current=json.task_id;
+      if (res.ok && json.ok && json.task_id) {
+        lastTaskIdRef.current = json.task_id;
+        if (json.status === "done" || json.status === "hold")
+          setCurrentResearch({ taskId: json.task_id, status: json.status });
+      }
       if (res.ok && json.ok && json.status === 'hold') {
         const missing:Record<string,string>={
           REAL_PROVIDER_UNAVAILABLE:'研究模型尚未接通',
@@ -249,11 +269,8 @@ export default function StudioWorkbench() {
           degraded: !!json.degraded,
         },
       ]);
-      // 委托成功后异步轮询真实生产进度（D00–D05）
-      if (json.task_id && json.production?.run_id) {
-        setProduction({ status: "RUNNING", current_stage: null });
-        void pollProduction(json.task_id);
-      }
+      // ST-01 saves research/brief only. ST-04 is a separate Creator action:
+      // never infer that production has started from the research response.
     } catch {
       setMessages((m) => [...m, { role: "mohen", text: "这一下没接上，可以再问一次。" }]);
     } finally {
@@ -261,25 +278,71 @@ export default function StudioWorkbench() {
     }
   }
 
-  // 轮询生产状态（RUNNING 时每 2s 查一次，直到终态）
-  async function pollProduction(taskId: string) {
-    const timer = setInterval(async () => {
-      try {
-        const r = await fetch(`/api/studio/research-tasks/${taskId}/production`);
-        const j = (await r.json()) as {
-          ok?: boolean;
-          production?: { status: string; current_stage: string | null } | null;
-        };
-        if (!j.ok || !j.production) {
-          clearInterval(timer);
-          return;
+  // Poll only a run confirmed by the ST-04 POST. No synthetic progress or PASS.
+  function pollProduction(taskId: string) {
+    stopProductionPoll();
+    productionPollRef.current = setInterval(() => {
+      void (async () => {
+        try {
+          const response = await fetch(`/api/studio/research-tasks/${encodeURIComponent(taskId)}/production`, { cache: "no-store" });
+          const body = (await response.json()) as {
+            ok?: boolean;
+            production?: { status: string; current_stage: string | null } | null;
+          };
+          if (!response.ok || !body.ok || !body.production) {
+            stopProductionPoll();
+            setProduction({ status: "UNKNOWN", current_stage: null });
+            setProductionError("暂时无法复核真实生产状态；不能将其记作成功，请在任务记录中核查回执。");
+            return;
+          }
+          setProduction(body.production);
+          if (body.production.status !== "RUNNING") stopProductionPoll();
+        } catch {
+          stopProductionPoll();
+          setProduction({ status: "UNKNOWN", current_stage: null });
+          setProductionError("生产状态读取失败，结果尚未核实；已保存的研究记录不会因此丢失。");
         }
-        setProduction(j.production);
-        if (j.production.status !== "RUNNING") clearInterval(timer);
-      } catch {
-        clearInterval(timer);
-      }
+      })();
     }, 2000);
+  }
+
+  async function requestFormalProduction() {
+    if (!currentResearch || currentResearch.status !== "done" || productionBusy || busy ||
+        projectBusy || production?.status === "RUNNING") return;
+    const taskId = currentResearch.taskId;
+    setProductionBusy(true);
+    setProductionError(null);
+    try {
+      const response = await fetch(`/api/studio/research-tasks/${encodeURIComponent(taskId)}/production`, {
+        method: "POST", headers: { "content-type": "application/json" }, cache: "no-store",
+      });
+      const result = (await response.json()) as { ok?: boolean; run_id?: string; reason?: string };
+      if (!response.ok || !result.ok || !result.run_id) {
+        const reasons: Record<string, string> = {
+          task_not_ready: "研究委托仍在暂停或审查中，不能申请正式生产",
+          production_project_binding_required: "这份研究尚未绑定合法的项目身份",
+          production_project_forbidden: "当前账户无权在该项目发起生产",
+          forbidden: "当前账户无权发起这份生产",
+          production_registry_not_active: "专业生产 Registry 尚未授权激活",
+          production_job_disabled: "D00—D05 中存在尚未授权的生产工序",
+          production_input_binding_required: "本机独立执行授权与原件输入尚未具备",
+          production_reservation_reconciliation_required: "上一次预算预留尚未核销，不能重复执行",
+          production_reservation_receipt_uncertain: "预算回执未能确认，需先对账",
+          production_reservation_conflict: "另一次请求已占用生产预算，请核对原任务",
+          budget_hold: "当前研究任务预算不足",
+        };
+        setProductionError(`正式生产未启动：${reasons[result.reason ?? ""] ?? result.reason ?? "受控生产前提不满足"}。研究委托与已有资料仍保留。`);
+        return;
+      }
+      setProduction({ status: "RUNNING", current_stage: null });
+      pollProduction(taskId);
+    } catch {
+      // A lost POST response is ambiguous: do not automatically retry a possibly
+      // already reserved invocation or claim that a Runner was launched.
+      setProductionError("启动回执尚未确认，请核查任务记录和预算预留后再决定是否重试。");
+    } finally {
+      setProductionBusy(false);
+    }
   }
 
   const lastUserBrief = [...messages].reverse().find((m) => m.role === "user")?.text;
@@ -495,9 +558,14 @@ export default function StudioWorkbench() {
   }
 
   function startNewConversation() {
-    if (busy || generating || directing || submitBusy || submitLock.current || production?.status === "RUNNING") return;
+    if (busy || generating || directing || submitBusy || submitLock.current || productionBusy || production?.status === "RUNNING") return;
     const hasLocalContent = messages.length > 0 || Boolean(plans) || Boolean(beats?.length) || Boolean(workTitle.trim());
     if (hasLocalContent && !window.confirm("开始新对话将清空当前页面的临时对话、方案和未保存分镜。服务器上已保存的研究任务、记录及作品不会被删除。确定继续？")) return;
+    stopProductionPoll();
+    lastTaskIdRef.current = null;
+    setCurrentResearch(null);
+    setProductionError(null);
+    setProductionBusy(false);
     setMessages([]);
     requestAttempt.current=null;
     // 下一句话会重新建立一份底稿，不复用上一部作品的研究档案。
@@ -704,6 +772,20 @@ export default function StudioWorkbench() {
             )}
           </div>
 
+          {currentResearch && (
+            <div className="studio__research-block" aria-label="正式知识生产申请">
+              <h3>正式知识生产 · D00—D05</h3>
+              <p className="studio__drawer-note">研究委托与研究线索不会自动变为合格史实。申请后须按来源、独立 G0—G5 资格及项目授权逐门核验；本步不发布作品。</p>
+              {currentResearch.status === "hold"
+                ? <p role="status" className="studio__drawer-note">研究委托仍处于暂停状态；请先补齐左侧列出的前提，不能启动正式生产。</p>
+                : <button type="button" className="studio__ghost-btn"
+                    disabled={productionBusy || busy || projectBusy || production?.status === "RUNNING"}
+                    onClick={() => void requestFormalProduction()}>
+                    {productionBusy ? "正在核对生产前提…" : "申请进入 D00—D05"}
+                  </button>}
+              {productionError && <p role="alert" className="studio__submit-msg">{productionError}</p>}
+            </div>
+          )}
           {production && (
             <div className="studio__production">
               {production.status === "RUNNING"
