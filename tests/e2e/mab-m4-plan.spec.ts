@@ -118,6 +118,20 @@ test('ST-01 creates one project-bound immutable brief before research; HOLD and 
  await page.reload();
  const reopened=await owner.get(`/api/studio/research-tasks/${task}/status`);
  expect(reopened.status()).toBe(200);expect((await reopened.json()).task.status).toBe('hold');
+ // UI recovery uses Owner-scoped persisted task + current read-authority recheck.
+ const taskIndex=await owner.get('/api/studio/tasks');
+ expect(taskIndex.status()).toBe(200);
+ expect((await taskIndex.json()).tasks.find((t:{task_id:string})=>t.task_id===task).project_id).toBe(project.project_id);
+ await page.getByRole('button',{name:'研究底稿',exact:true}).click();
+ await page.getByRole('button',{name:'继续',exact:true}).click();
+ await expect(page.getByText(prompt,{exact:true})).toBeVisible();
+ await expect(page.getByText('已从受授权的持久任务恢复',{exact:false})).toBeVisible();
+ await expect(page.getByRole('button',{name:'申请进入 D00—D05'})).toHaveCount(0);
+ await expect(page.getByText('研究委托仍处于暂停状态',{exact:false})).toBeVisible();
+ // A held research task must not reserve a budget or start the original Runner.
+ const productionHold=await owner.post(`/api/studio/research-tasks/${task}/production`);
+ expect(productionHold.status()).toBe(409);
+ expect((await productionHold.json()).reason).toBe('task_not_ready');
  const resumed=await owner.post(`/api/studio/research-tasks/${task}/resume`,{data:{}});
  expect(resumed.status()).toBe(409);expect((await resumed.json()).reason).toBe('research_prerequisites');
  expect(sql(`select count(*) from public.study_asset_receipts where task_id='${task}' and kind='tool'`)).toBe('0');
@@ -127,6 +141,7 @@ test('ST-01 creates one project-bound immutable brief before research; HOLD and 
   expect((await other.post('/api/auth/register',{data:{email:`research-foreign-${randomUUID()}@example.invalid`,username:'其他研究作者',password:randomUUID()}})).status()).toBe(200);
   expect((await other.get(`/api/studio/research-tasks/${task}/status`)).status()).toBe(403);
   expect((await other.post(`/api/studio/research-tasks/${task}/resume`,{data:{}})).status()).toBe(403);
+  expect((await other.post(`/api/studio/research-tasks/${task}/production`)).status()).toBe(403);
   expect((await other.post('/api/studio/research-tasks',{data:requestBody})).status()).toBe(404);
  }finally{await foreign.close();}
  console.log('MAB_ST01_BRIEF_HTTP_PASS project-bound-immutable-origin idempotent-replay prerequisite-HOLD zero-tool-charge no-auto-ST04 owner-only');
