@@ -17,6 +17,7 @@ const SUPABASE_DB_URL_FILE = path.join(SECRETS_DIR, "supabase-db-url.txt");
 const SUPABASE_DB_URL_LEGACY = "D:\\MoHen\\supabase\\db_url.txt";
 const SUPABASE_REF = "fwrhxddcpkibsnmddcfl";
 const POOLER_HOST = `aws-0-ap-southeast-1.pooler.supabase.com`;
+const VERCEL_TOKEN_FILE = path.join(SECRETS_DIR, "vercel-token.txt");
 const VERCEL_AUTH_JSON = path.join(os.homedir(), "AppData", "Roaming", "com.vercel.cli", "Data", "auth.json");
 
 function readDbUrl() {
@@ -30,6 +31,11 @@ function readDbUrl() {
 }
 
 function readVercelToken() {
+  // 唯一存放处为 .secrets/vercel-token.txt；旧位置 auth.json 仅作只读回退（该目录对工程会话不可写）。
+  if (fs.existsSync(VERCEL_TOKEN_FILE)) {
+    const t = fs.readFileSync(VERCEL_TOKEN_FILE, "utf8").trim();
+    if (t) return t;
+  }
   if (!fs.existsSync(VERCEL_AUTH_JSON)) return null;
   try {
     const j = JSON.parse(fs.readFileSync(VERCEL_AUTH_JSON, "utf8"));
@@ -90,16 +96,23 @@ async function checkVercel() {
   const token = readVercelToken();
   if (!token) {
     return { name: "Vercel 部署令牌", ok: false, code: "NO_LOGIN",
-      renew: `未找到 vercel 登录文件。换新：命令行运行 npx vercel@latest login（浏览器点确认），完成后重跑体检。` };
+      renew: `未找到 Vercel 令牌。换新：浏览器 vercel.com/account/settings/tokens → Create Token（建议选 No Expiration）→ 复制粘贴给工程方存入 .secrets/vercel-token.txt → 重跑体检。` };
   }
   try {
-    const res = await fetch("https://api.vercel.com/v2/user", {
+    // 校验"读取部署项目"这一真实能力（部分令牌无个人用户信息权限，/v2/user 会 404）。
+    const projFile = path.join(REPO, ".vercel", "project.json");
+    let target = "https://api.vercel.com/v2/user";
+    if (fs.existsSync(projFile)) {
+      const p = JSON.parse(fs.readFileSync(projFile, "utf8"));
+      target = `https://api.vercel.com/v9/projects/${p.projectId}?teamId=${p.orgId}`;
+    }
+    const res = await fetch(target, {
       headers: { Authorization: `Bearer ${token}` },
       signal: AbortSignal.timeout(12000),
     });
-    if (res.ok) return { name: "Vercel 部署令牌", ok: true, detail: "GET /v2/user 200" };
+    if (res.ok) return { name: "Vercel 部署令牌", ok: true, detail: "项目读取 GET /v9/projects/{projectId} 200" };
     return { name: "Vercel 部署令牌", ok: false, code: `HTTP_${res.status}`,
-      renew: `令牌失效（HTTP ${res.status}）：npx vercel@latest login 重新登录，或浏览器 vercel.com/account/tokens 新建 token 后由工程方写入 auth.json；然后重跑体检。` };
+      renew: `令牌失效（HTTP ${res.status}）：浏览器 vercel.com/account/settings/tokens → Create Token（建议选 No Expiration）→ 复制粘贴给工程方存入 .secrets/vercel-token.txt → 重跑体检。` };
   } catch (e) {
     return { name: "Vercel 部署令牌", ok: false, code: e?.cause?.code || e.code || "NETWORK",
       renew: `网络不可达（${e?.cause?.code || e.code || "NETWORK"}）：如本机 DNS 污染 vercel 域名，开启芒果 VPN 或经代理后重跑。` };

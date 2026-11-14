@@ -2842,6 +2842,8 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 **边界**：本批为运维配置与工具，不改任何业务代码/表结构/Gate；两把失效钥匙的换新需 Owner 浏览器操作（Supabase Reset password、Vercel login），按 §4.5 SOP 执行；`.secrets/` 属 gitignored 本机文件，云端副本按既有规则在换新后经 Vercel env API 写入（本手册 §5），不在本批。
 
 **PENDING_PUSH**：本批提交（tools/check-credentials.mjs、package.json script、.gitignore、OPERATIONS_DEPLOYMENT.md §4/§4.5、本回执）待推送窗口销项。
+
+**同日收口（2026-11-14 续）**：Owner 亲手完成两把钥匙换新——Supabase 口令经 dashboard 重置（新串入 `.secrets/supabase-db-url.txt`，pooler 会话连接 SELECT 1 实测通过）；Vercel 新建 No Expiration 令牌（入 `.secrets/vercel-token.txt`；该令牌无 `/v2/user` 个人信息权限属预期，体检器改为校验 `GET /v9/projects/{projectId}?teamId={orgId}` 项目读取能力，200 实测通过）。`pnpm check:credentials` **4/4 全绿**。注意：`D:\MoHen\` 与 vercel CLI 数据目录对当前会话不可写（OS 级 ACL），故钥匙册以 `.secrets/` 为唯一写入处。**此收口解除了 CURRENT.md「生产迁移硬缺口」中的口令失效阻断**——生产库迁移、Vercel 部署恢复可执行，仍按受控迁移窗口另行申请执行。
 | PLAN.md §22 行原文 | 关闭判定边界——不越界到 PDF/page locator |
 | supabase/migrations/20261107120000_mab_m2_private_scanned_page.sql | scanned-page reading 的函数签名、SECURITY DEFINER 入口（runtime 角色不直接碰 source schema） |
 | packages/data-access/src/private-scanned-page-reading-repository.mjs | 运行时验证脚本结构参考 |

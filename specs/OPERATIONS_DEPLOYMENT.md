@@ -107,9 +107,9 @@ psql -h aws-0-ap-southeast-1.pooler.supabase.com -p 5432 -U postgres.<ref> -d po
 
 | 密钥/凭据 | 存放位置 | 说明 |
 |---|---|---|
-| Supabase 数据库连接串（含密码） | `.secrets/supabase-db-url.txt`（旧：`D:\MoHen\supabase\db_url.txt`，只读回退） | pooler 串用它拼；**绝不提交** |
+| Supabase 数据库连接串（含密码） | `.secrets/supabase-db-url.txt`（旧：`D:\MoHen\supabase\db_url.txt`，只读回退） | pooler 串用它拼；**绝不提交**。2026-11-14 Owner 重置口令后已更新 |
 | Supabase 官方 CA（公开证书，非密钥） | `.secrets/supabase-ca/prod-ca-2021.crt` | SHA256 指纹 `80:70:25:AD:…:CA:FA`（与 §0 记录一致），有效期至 2031-04-26 |
-| vercel CLI token | `C:\Users\Administrator\AppData\Roaming\com.vercel.cli\Data\auth.json` | `vercel login` 自动生成 |
+| vercel API token | `.secrets/vercel-token.txt`（旧：`C:\Users\Administrator\AppData\Roaming\com.vercel.cli\Data\auth.json`，该目录对工程会话不可写，只读回退） | 2026-11-14 Owner 新建 No Expiration 令牌；体检器以 `GET /v9/projects/{projectId}?teamId={orgId}` 校验（部分令牌无 `/v2/user` 权限，属预期） |
 | vercel 项目 id/org | `mohen-agent-2.0/.vercel/project.json` | 本地 gitignored |
 | GitHub 凭据 | git 凭据管理器缓存 | HTTPS + 代理，无单独 token |
 | 本地 PG / DeepSeek / 上海图书馆 / 高德 key | `mohen-agent-2.0/.env.local` | 本地 gitignored |
