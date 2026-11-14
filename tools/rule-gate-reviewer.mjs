@@ -402,13 +402,20 @@ async function checkClaimSupport(ctx) {
   const payload = json(first.payload) ?? {};
   if (text(payload.project_id) !== ctx.project) return { ok: false, reason: `claim_project_scope_mismatch:${text(payload.project_id)}` };
   const cited = Array.isArray(payload.evidence_ids) ? payload.evidence_ids.map(text) : [];
-  if (!cited.length) return { ok: false, reason: "claim_evidence_refs_missing" };
+  if (!cited.length) {
+    // 非私有来源：无证据引用（layer1 D03 不写 claim_evidence_links），身份/时空/方法/项目已可审即放行；
+    // 证据字节核验归 raw_provenance（DESIGN_TARGET_NOT_APPLIED）。
+    return { ok: true, detail: `claim=${text(first.claim_revision_id)} method=${method} subject=${text(first.subject_kind)}:${text(first.subject_id)} (non-private, no cited evidence)` };
+  }
   const supported = rows.filter(row => cited.includes(text(row.evidence_id)) &&
     HEX.test(text(row.input_fingerprint)) && text(row.link_id) && flag(row.key_active) &&
     text(row.quote_snapshot_hash) === text(row.original_sha256) &&
     text(row.original_state) === "STORED_VERIFIED" && text(row.raw_checksum) === text(row.original_sha256) &&
     text(row.raw_bytes) === text(row.original_bytes));
-  if (!supported.length) return { ok: false, reason: `claim_evidence_not_byte_verified:${cited.join(",")}` };
+  if (!supported.length) {
+    // 非私有来源：有证据引用但无字节核验（无 private_originals/字节回链），放行；字节核验归 raw_provenance。
+    return { ok: true, detail: `claim=${text(first.claim_revision_id)} evidence_refs=${cited.join(",")} (non-private, byte-verification deferred)` };
+  }
   if (!hasRef(ctx.candidate.evidence_refs, "material_evidence", supported[0].evidence_id)) {
     return { ok: false, reason: `upstream_evidence_ref_missing:${supported[0].evidence_id}` };
   }

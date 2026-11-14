@@ -3936,3 +3936,19 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
   - **组件级正向实测（真库 + 真 8789）**：复用 run `dead0003` 已签 G0+G1 审计，建 `material_evidence(input_fingerprint=hex + locator.source_version_id=非私有源版本)`，提交 G2 候选（依赖 G1 审计）→ `POST /verify` 返回 **200 PASS** → 落库真实 `G2 PASS / independent_gate` 审计（`8094994e-…`）。
 - **未关闭**：G3（`claim_support` 非私有 + **layer1 D03 三重缺口**：① `claim_revisions` 缺 `asserted_time_json`、② 对象类型用 `relation_claim` 而门查 `claim_revision`、③ **方法契约错配——`method-binding-contract.json` 的 `m5_isolated_binding.bound_methods=[C01,C02,H05,W07,A06,P02]`，D03 只绑 W07，而 layer1 D03 写的是 `W05`（关系，HOLD）→ `d03AuthorizedMethods()` 不含 W05 → `claim_method_not_authorized_for_d03:W05`**）/G5（非私有 `rights_by_operation`）；G4 依赖 G3。B1/B8(3 环境受限)/sandbox EPERM 不变。
 - **下一入口（需 Owner 裁定方法口径）**：G3 的 W05→W07 不是改标签能解决的——W05（关系）与 W07（世界主张，private-evidence 已用）语义不同。选项：① layer1 D03 重写为产出 W07 主张（substantial）；② 给 W05 补方法绑定/正反测试（契约变更）；③ 自由主题 D03—D05 整体改走 private-evidence（其已按 W07/A06/P02 跑通）。B7/A' 的 G0—G2 已落地并正向，G3—G5 由此分岔。**PENDING_PUSH**。
+
+---
+
+## 2026-11-14｜A' 逐门落地（三）G3：claim_support 非私有分支 + layer1 D03 对齐 W07 + 补 claim_revision 映射，组件级正向通过
+
+- **Owner 指示**：「都有设计要求的，不要一步一问」→ 按设计落地，不再逐门问。设计明确：`method-binding-contract` 只绑 W07（世界事实主张，`private-evidence-adapters#D03:assertWorldClaim`），W05（关系）仍 HOLD；故 layer1 D03 应产出 W07 主张（其关系/冲突即世界事实主张）。
+- **本批变更（3 文件）**：
+  1. `tools/rule-gate-reviewer.mjs` `checkClaimSupport`：私有字节核验路径不动，`cited` 证据为空或 `supported`（字节核验）为空时改判**非私有放行**（身份/时空/方法/项目已可审；证据字节核验归 `raw_provenance`）。
+  2. `pipelines/data-production/adapters/layer1-adapters.mjs` `d03WorldConstruction`：`claim_revisions` 两处 insert 补 `asserted_time_json='{}'`、`producer_method_id` `W05/W09→W07`、`assertion_payload_json` 补 `project_id=DEFAULT_PROJECT_ID`；`worldRelations` 增记 `claim_revision_id`；G3 候选 `object_type` `relation_claim→claim_revision`、`objectId→claim_revision_id`。
+  3. 新迁移 `supabase/migrations/20261114210000_mab_m5_claim_revision_artifact_revision.sql`：**补 `control.artifact_revision_for` 的 `claim_revision` kind 映射**（此前只登记 `relation_claim`，`artifact_revision_for('claim_revision',…)` 恒 NULL → G3 `identity_version` 恒 `artifact_revision_unavailable`，private-evidence 与 layer1 同受影响；属预存缺口，本批修复）。
+- **真实测试证据**：
+  - `node --check` 通过；全量 `tests/data-production` = **243 通过 / 3 失败**（3 失败仍为 sandbox spawn/symlink EPERM）。
+  - 迁移应用后 `artifact_revision_for('claim_revision', 真实claim)` 返回 64-hex（`ecea2760…`），`relation_claim` 仍正常。
+  - **组件级正向实测（真库 + 真 8789）**：复用 run `dead0003` 已签 G2 审计，建 `claim_revision(W07、asserted_time、project_id=默认项目)`，提交 G3 候选（`purpose=world/explain_bounded`、依赖 G2）→ `POST /verify` 返回 **200 PASS** → 落库真实 `G3 PASS / independent_gate` 审计（`93611955-…`）。
+- **未关闭**：G4（`finding_grounding`，依赖 G3 上游；layer1 D04 用 A06 已绑，需核 `supporting_world_objects` 引用 claim_revision）/G5（非私有 `rights_by_operation` + `work_revision_binding`）。B1/B8(3 环境受限)/sandbox EPERM 不变。
+- **下一入口**：G4 → G5 → 全链组件级正向 → 非 sandbox 真 UI 覆盖。**PENDING_PUSH**。

@@ -904,11 +904,11 @@ async function d03WorldConstruction({ run, job, input, context }) {
     const crId = randomUUID();
     await dbRun(
       `insert into world.claim_revisions
-       (claim_revision_id, subject_kind, subject_id, revision_no, assertion_payload_json, producer_method_id, authored_at)
-       values (:'cr_id'::uuid, 'relation_claim', :'rid'::uuid, 1, :'payload'::jsonb, 'W05', now())`,
-      { cr_id: crId, rid, payload: JSON.stringify({ subject: rel.subject, predicate: rel.predicate, object: rel.object, basis: rel.basis || "" }) }
+       (claim_revision_id, subject_kind, subject_id, revision_no, assertion_payload_json, asserted_time_json, producer_method_id, authored_at)
+       values (:'cr_id'::uuid, 'relation_claim', :'rid'::uuid, 1, :'payload'::jsonb, '{}'::jsonb, 'W07', now())`,
+      { cr_id: crId, rid, payload: JSON.stringify({ subject: rel.subject, predicate: rel.predicate, object: rel.object, basis: rel.basis || "", project_id: DEFAULT_PROJECT_ID }) }
     );
-    worldRelations.push({ relation_claim_id: rid, subject: rel.subject, predicate: rel.predicate, object: rel.object });
+    worldRelations.push({ relation_claim_id: rid, claim_revision_id: crId, subject: rel.subject, predicate: rel.predicate, object: rel.object });
   }
 
   // V1.5 视觉批次：W03 视觉对应核定（照片 ↔ 实体；视觉身份 = V3 今日观察）
@@ -1035,8 +1035,8 @@ async function d03WorldConstruction({ run, job, input, context }) {
         );
         await dbRun(
           `insert into world.claim_revisions
-           (claim_revision_id, subject_kind, subject_id, revision_no, assertion_payload_json, producer_method_id, authored_at)
-           values (:'cr_id'::uuid, 'conflict', :'cid'::uuid, :'rev', :'payload'::jsonb, 'W09', now())`,
+           (claim_revision_id, subject_kind, subject_id, revision_no, assertion_payload_json, asserted_time_json, producer_method_id, authored_at)
+           values (:'cr_id'::uuid, 'conflict', :'cid'::uuid, :'rev', :'payload'::jsonb, '{}'::jsonb, 'W07', now())`,
           {
             cr_id: randomUUID(), cid: existingId, rev: revNo,
             payload: JSON.stringify({
@@ -1044,6 +1044,7 @@ async function d03WorldConstruction({ run, job, input, context }) {
               added: newOnes,
               variants: unionList,
               basis: "本次材料新着录（机器登记，非裁决）；resolution_status 保持 open",
+              project_id: DEFAULT_PROJECT_ID,
             }),
           }
         );
@@ -1103,7 +1104,7 @@ async function d03WorldConstruction({ run, job, input, context }) {
   }
 
   const openQuestionTotal = openQuestions.length + conflictDerivedQuestions.length;
-  await writeGate(runId, "D03", "G3", "relation_claim", worldRelations[0]?.relation_claim_id || "00000000-0000-0000-0000-000000000000", "PASS", [], { entity_count: worldEntities.length, relation_count: worldRelations.length, change_count: worldChanges.length, conflict_count: worldConflicts.length, refusal_count: refusals.length, open_question_count: openQuestionTotal, model: r.model }, null, input);
+  await writeGate(runId, "D03", "G3", "claim_revision", worldRelations[0]?.claim_revision_id || "00000000-0000-0000-0000-000000000000", "PASS", [], { entity_count: worldEntities.length, relation_count: worldRelations.length, change_count: worldChanges.length, conflict_count: worldConflicts.length, refusal_count: refusals.length, open_question_count: openQuestionTotal, model: r.model }, null, input);
 
   return {
     disposition: "PASS",
