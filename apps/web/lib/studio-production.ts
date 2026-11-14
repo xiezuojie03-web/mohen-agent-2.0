@@ -46,6 +46,38 @@ export interface ProductionTrigger {
   started: boolean;
   reason?: string;
 }
+/** Exact Owner-RLS validated project original, not a client assertion. */
+export interface ProductionOriginal {
+  originalId: string;
+  pageNumber: number;
+  sourceVersionId: string;
+  sha256: string;
+  assetRevisionId: string;
+  contentType: string;
+  byteSize: number;
+}
+const SOURCE_UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+const SOURCE_SHA=/^[a-f0-9]{64}$/i;
+const PRIVATE_STAGE_ADAPTER="pipelines/data-production/adapters/private-evidence-adapters.mjs";
+export function privateSourceHandoffBlocker(registry: {jobs?:Array<{stage:string;implementation?:{adapter_binding?:string}}>}, source?:ProductionOriginal):string|null{
+  if(!source)return "production_original_selection_required";
+  if(!SOURCE_UUID.test(source.originalId)||!SOURCE_UUID.test(source.sourceVersionId)||
+     !SOURCE_UUID.test(source.assetRevisionId)||!SOURCE_SHA.test(source.sha256)||
+     !Number.isSafeInteger(source.pageNumber)||source.pageNumber<1||source.pageNumber>10000||
+     !Number.isSafeInteger(source.byteSize)||source.byteSize<1||
+     typeof source.contentType!=="string"||!source.contentType.includes("/"))
+    return "production_original_binding_invalid";
+  // The existing Runner authorizes one exact Adapter for all selected jobs.
+  // Until this canonical Registry binds the reviewed private Worker, do not
+  // route genuine originals through the parallel memory/topic adapter.
+  if(!Array.isArray(registry.jobs)||registry.jobs.length!==6||
+     registry.jobs.some(job=>job.implementation?.adapter_binding!==PRIVATE_STAGE_ADAPTER))
+    return "production_private_adapter_not_bound";
+  // Y07 requires an authentic acquisition attempt, not an invented Studio value.
+  // The existing trusted D00 worker enforces this; Studio must not silently
+  // fabricate a receipt or consume a budget while this interface is incomplete.
+  return "production_acquisition_receipt_required";
+}
 
 async function addEvent(taskId: string, stage: string, event: string, payload: unknown) {
   try {
@@ -58,11 +90,13 @@ async function addEvent(taskId: string, stage: string, event: string, payload: u
   }
 }
 
-function productionBlocker(projectRoot: string): string | null {
+function productionBlocker(projectRoot: string, source?:ProductionOriginal): string | null {
   try {
     const registry = loadRegistry(projectRoot);
     if (registry.status !== "ACTIVE_AUTHORIZED" || registry.activation.enabled !== true) return "production_registry_not_active";
     if (registry.jobs.some(job => !job.execution_policy.enabled)) return "production_job_disabled";
+    const sourceBlocker=privateSourceHandoffBlocker(registry,source);
+    if(sourceBlocker)return sourceBlocker;
     // Studio 触发生产需要本地隔离执行授权（签名密钥 + evidence + 验证器）。
     // 未就绪则失败关闭，不允许裸调 run.mjs。
     if (!isExecutionAuthorityReady()) return "production_input_binding_required";
@@ -73,8 +107,8 @@ function productionBlocker(projectRoot: string): string | null {
 /** Synchronous no-cost preflight: cannot prepare materials, reserve funds,
  * or spawn a Runner before the signed production input and registry authorize.
  */
-export function getProductionBlocker(): string | null {
-  return productionBlocker(resolveProjectRoot());
+export function getProductionBlocker(source?:ProductionOriginal): string | null {
+  return productionBlocker(resolveProjectRoot(),source);
 }
 
 export async function failProductionRun(runId: string): Promise<void> {
@@ -85,7 +119,7 @@ export async function failProductionRun(runId: string): Promise<void> {
  * 触发一次真实生产（D00–D05）。fire-and-forget：本函数只负责登记 + 启动进程并返回 run_id，
  * 生产进度与终态由 run.mjs 内部回写 control.production_runs。
  */
-export async function triggerProduction(taskId: string, intent: string, projectId: string): Promise<ProductionTrigger> {
+export async function triggerProduction(taskId: string, intent: string, projectId: string, source?:ProductionOriginal): Promise<ProductionTrigger> {
   if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(projectId))
     return { runId: "", started: false, reason: "production_project_binding_required" };
   const projectRoot = resolveProjectRoot();
@@ -95,7 +129,7 @@ export async function triggerProduction(taskId: string, intent: string, projectI
   if (!fs.existsSync(runPath) || !fs.existsSync(adaptersPath)) {
     return { runId: "", started: false, reason: "production_entry_missing" };
   }
-  const blocker = productionBlocker(projectRoot);
+  const blocker = productionBlocker(projectRoot,source);
   if (blocker) return { runId: "", started: false, reason: blocker };
 
   // 自由主题准备：检索材料 + 组装动态主题配置（材料是生产前提，同步做；无材料则诚实降级）

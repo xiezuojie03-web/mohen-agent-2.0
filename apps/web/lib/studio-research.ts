@@ -4,6 +4,7 @@
 import { queryRows, queryValue, run } from "@mohen/data-access";
 import { runResearch, resolveTopic, type TopicKey } from "./mohen-agent/research";
 import { triggerProduction, getProductionBlocker } from "./studio-production";
+import type { ProductionOriginal } from "./studio-production";
 import type { AgentDecision, Material } from "@mohen/agent-runtime";
 import { readJsonColumn } from "./db-json";
 import { createHash, randomUUID } from "node:crypto";
@@ -255,7 +256,8 @@ export async function requestProduction(
   taskId: string,
   ownerUserId: string,
   terms?: string[],
-  extraBudget?: number
+  extraBudget?: number,
+  source?: ProductionOriginal
 ): Promise<{ ok: boolean; reason?: string; run_id?: string }> {
   if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(ownerUserId))
     return { ok: false, reason: "forbidden" };
@@ -292,7 +294,7 @@ export async function requestProduction(
   if (extraBudget !== undefined)
     return { ok: false, reason: "additional_budget_requires_authorization" };
   // Registry and signed input contract are zero-cost preconditions.
-  const blocker = getProductionBlocker();
+  const blocker = getProductionBlocker(source);
   if (blocker) return { ok: false, reason: blocker };
   const intent = String(rows[0].prompt ?? "").trim();
   if (!intent) return { ok: false, reason: "intent_missing" };
@@ -347,7 +349,7 @@ export async function requestProduction(
   }
 
   let trig: { runId: string; started: boolean; reason?: string };
-  try { trig = await triggerProduction(taskId, intent, projectId); }
+  try { trig = await triggerProduction(taskId, intent, projectId, source); }
   catch {
     trig = { runId: "", started: false, reason: "production_start_uncertain" };
   }
