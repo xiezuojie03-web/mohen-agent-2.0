@@ -25,3 +25,44 @@ test("an acknowledged terminal row publishes the matching run reports", async ()
     assert.equal(JSON.parse(fs.readFileSync(reports.machine_report)).status, "PASS");
   } finally { fs.rmSync(directory, { recursive: true, force: true }); }
 });
+
+test("Studio terminal readback retains exact D00/G0 HOLD reason without claiming independent PASS", async () => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "mohen-g0-terminal-"));
+  let written;
+  const run = { run_id: "run-held", research_intent: "fixture", scope: {},
+    status: "HOLD", current_stage: "D00", stage_results: [{
+      disposition: "HOLD", hold: { reason_code: "INDEPENDENT_GATE_NOT_VERIFIED",
+        verification_error: "INDEPENDENT_GATE_VERIFY_UNAVAILABLE",
+        next_action: "private content must never enter the Studio status response" },
+    }] };
+  try {
+    await finalizeRun({ run, db: { queryRows: async (_sql, params) => {
+      written = params; return [{ run_id: "run-held" }];
+    } }, outDir: directory });
+    assert.deepEqual(JSON.parse(written.terminal), {
+      stage: "D00", gate_code: "G0", disposition: "HOLD",
+      independent_gate_audit_id: null, reason_code: "INDEPENDENT_GATE_NOT_VERIFIED",
+      verification_error: "INDEPENDENT_GATE_VERIFY_UNAVAILABLE",
+    });
+    assert.equal(JSON.stringify(written).includes("private content"), false);
+  } finally { fs.rmSync(directory, { recursive: true, force: true }); }
+});
+
+test("a stage candidate and arbitrary error text cannot become a G0 PASS receipt", async () => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "mohen-g0-no-sign-"));
+  let terminal;
+  try {
+    await finalizeRun({ run: { run_id: "run-candidate", status: "HOLD", current_stage: "D00",
+      research_intent: "fixture", scope: {}, stage_results: [{
+        disposition: "HOLD", gate_evidence: { qualification: "UNASSESSED" },
+        hold: { reason_code: "INDEPENDENT_GATE_NOT_VERIFIED",
+          verification_error: "request contains private/secret" },
+      }] },
+      db: { queryRows: async (_sql, params) => {
+        terminal = JSON.parse(params.terminal); return [{ run_id: "run-candidate" }];
+      } }, outDir: directory });
+    assert.equal(terminal.independent_gate_audit_id, null);
+    assert.equal(terminal.disposition, "HOLD");
+    assert.equal(terminal.verification_error, null);
+  } finally { fs.rmSync(directory, { recursive: true, force: true }); }
+});

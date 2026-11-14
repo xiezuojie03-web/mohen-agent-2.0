@@ -274,7 +274,9 @@ export async function triggerProduction(taskId: string, intent: string, projectI
 /** 查询一次生产运行状态（供前端轮询 / status 接口） */
 export async function getProductionStatus(runId: string) {
   const rows = await queryRows(
-    `select run_id::text as run_id, status, current_stage, started_at::text as started_at, finished_at::text as finished_at
+    `select run_id::text as run_id, status, current_stage,
+            metadata->'m5_terminal' as terminal,
+            started_at::text as started_at, finished_at::text as finished_at
      from control.production_runs where run_id = :'run_id'::uuid`,
     { run_id: runId }
   );

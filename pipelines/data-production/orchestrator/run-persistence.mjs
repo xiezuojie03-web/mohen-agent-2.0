@@ -10,9 +10,29 @@ export async function persistStageProgress({ runId, stage, db }) {
   requireRunAcknowledgment(rows, runId);
 }
 
+// Only machine-readable, bounded diagnostic codes leave the Runner. Never
+// persist source bytes, claims, credentials or an untrusted exception message.
+export function terminalRunEvidence(run) {
+  const last = Array.isArray(run.stage_results) ? run.stage_results.at(-1) : null;
+  const stage = /^D0[0-5]$/.test(run.current_stage ?? '') ? run.current_stage : null;
+  const code = value => typeof value === 'string' && /^[A-Z0-9_]{3,100}$/.test(value) ? value : null;
+  const audit = last?.independent_qualification?.gate_audit_id;
+  return {
+    stage, gate_code: stage ? 'G' + stage.slice(-1) : null,
+    disposition: run.status,
+    independent_gate_audit_id: typeof audit === 'string' &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(audit) ? audit : null,
+    reason_code: code(last?.hold?.reason_code),
+    verification_error: code(last?.hold?.verification_error),
+  };
+}
+
 export async function finalizeRun({ run, db, outDir }) {
-  const rows = await db.queryRows(`update control.production_runs set status=:'status', finished_at=now()
-    where run_id=:'run_id'::uuid returning run_id::text as run_id`, { status: run.status, run_id: run.run_id });
+  const rows = await db.queryRows(`update control.production_runs
+    set status=:'status', finished_at=now(),
+        metadata=coalesce(metadata,'{}'::jsonb) || jsonb_build_object('m5_terminal', :'terminal'::jsonb)
+    where run_id=:'run_id'::uuid returning run_id::text as run_id`,
+    { status: run.status, run_id: run.run_id, terminal: JSON.stringify(terminalRunEvidence(run)) });
   requireRunAcknowledgment(rows, run.run_id);
   return writeReports({ run, outDir });
 }
