@@ -4023,3 +4023,27 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **自动部署配置** `5b02081b`：仓库根新增`vercel.json`，`git.deploymentEnabled=false`；依据Vercel官方Git配置规范关闭Git提交驱动的自动部署。该配置与真实项目是否完全生效需通过后续main提交和Vercel部署记录交叉验证；未证实时保持`DEPLOYMENT_ISOLATION_HOLD`。
 - **未碰范围**：未修改业务生产链、数据库、Storage、正式Gate/Reviewer；后续主链改动仍需先取得部署隔离实证。
 - **已知待续**：当前业务单测6 FAIL（4测试文件），隔离PG/HTTP历史失败需修复后按精确SHA再跑；M5持续`M5_OVERALL_HOLD`。
+
+
+---
+
+## 2026-11-14｜授权CI质量整改、真实隔离PG/HTTP验收及自动生产部署隔离（最终回执）
+
+**授权范围**：Owner批准修3项权威路由守卫、6个原单测错误、重跑真实隔离PostgreSQL/HTTP，并隔离main自动生产部署；唯一分支main，无PR，未授权任何生产DB/Storage迁移、正式Gate投运或付费Provider。
+
+**实际提交（先后顺序）**：
+- `83560224`：`scripts/guards/check-authority-routing.mjs`由对旧平台名称/旧标题硬编码，改为验证现行MHKA、M8和交接引用，`MHKA_AUTHORITY_ROUTE_PASS`。
+- `5b02081b`：根目录`vercel.json`设置`git.deploymentEnabled=false`；后续多次main提交仍运行Actions，但Vercel生产部署列表未出现任何配置生效后的SHA。Git自动生产部署隔离**VERIFIED_BY_BEHAVIOR**；手动发布及回滚不在本次授权。
+- `6ea907d4`：4份unit测试及`tools/rule-gate-reviewer.mjs`精准修改，修复原6个Vitest用例，维持独立Gate当前资格失败关闭、权限负例。
+- `091c5ac5`：登记`20261114210000_mab_m5_claim_revision_artifact_revision.sql`进入PG/HTTP隔离迁移链，消除`guard:isolated-db-fixtures`的2项漏链。
+- `61e6e3a1`：追加补偿迁移`20261114220000_mab_m5_restore_registered_content_revision.sql`，保留K5内容列注册指纹与新的claim revision对象映射；PG执行顺序调整至QR05后测试资产消费；机器Reviewer动态候选项目范围真实断言；HTTP增加受控服务端诊断；主CI的74目标审计明确保持“informational”、保留完整失败JSON及artifact，不充作准出。
+- `76b7ffd2`：资产消费`read`已按唯一权利词典归一为`access_view`，修正隔离PG中旧响应名称预期，未删除越权/无权负例。
+- `c594f4ee`：HTTP隔离链加入ST-05/07/08/09正式Studio/Publication Schema，修复旧三个公共消费者500的环境缺表问题；不伪造测试表。
+
+**实际运行证据**：
+1. 主CI `c594f4ee`：`43582293608` **SUCCESS**，682单测PASS/4SKIP/0FAIL，246数据生产测试PASS，typescript、Next build、权限覆盖、迁移预检均PASS；74目标哈希差异仍独立记录`HANDOFF_DECLARED_SHA256_MISMATCH`，语义未核74项不虚报。
+2. 独立PG17 `76b7ffd2`：`43582203932` **SUCCESS**，`K3_DB_TEST_PASS`、Studio资产消费与回链、机器Reviewer动态范围、artifact revision内容列、原件/权限/Gate/撤权/回滚多组真实隔离POS/NEG全部过；后续HTTP脚本变更未影响此PG证据。
+3. 独立HTTP/Chromium `c594f4ee`：`43582293680` **SUCCESS**，**24/24 PASS**，真实Next服务+合成用户+独立PG17，作品资格和媒体保护、撤权、Admin及合法读路径已验证。用户数据/生产DB、Storage、付费Provider均未使用。
+4. Vercel：最近10次production部署均来自`5b02081b`配置之前的SHA，后续数次main提交没有生成新的生产deployment，满足Git部署隔离的可观察判据。
+
+**未改变的工程准出**：本批只关闭CI、隔离测试与自动发布耦合的具名质量问题；`M5_OVERALL_HOLD`不变，同一真实Studio→D00—D05/G0—G5→AI/资产→作品→Admin/WATCH的持久完整八维度尚待工程自验和Owner体验，M6—M8未开始。生产权限/真实环境边界继续原位HOLD，PLAN V1.6不升版。
