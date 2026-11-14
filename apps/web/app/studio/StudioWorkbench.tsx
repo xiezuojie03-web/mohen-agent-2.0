@@ -68,6 +68,8 @@ export default function StudioWorkbench() {
   const [projectBusy,setProjectBusy]=useState(false);
   const [projectError,setProjectError]=useState<string|null>(null);
   const [draftsOpen,setDraftsOpen]=useState(false);
+  const [reopening,setReopening]=useState(false);
+  const [resumeNotice,setResumeNotice]=useState<string|null>(null);
   // 底稿改名：只改显示名称，不合并档案、不改 project_id。
   const [renaming,setRenaming]=useState<{id:string;title:string}|null>(null);
   const [renameBusy,setRenameBusy]=useState(false);
@@ -133,6 +135,72 @@ export default function StudioWorkbench() {
       setRenaming(null);
     }catch{setRenameError("改名没保存成功，原名称还留着。");}
     finally{setRenameBusy(false);}
+  }
+
+  type SavedResearchTask = { task_id:string;project_id:string|null;prompt:string;status:string };
+  async function reopenProject(project:StudioProject) {
+    if (reopening || busy || projectBusy || productionBusy || production?.status === "RUNNING") return;
+    setReopening(true);setProjectError(null);
+    try {
+      const tasksResponse=await fetch("/api/studio/tasks",{cache:"no-store"});
+      const tasksBody=await tasksResponse.json() as {ok?:boolean;tasks?:SavedResearchTask[]};
+      if (!tasksResponse.ok || !tasksBody.ok || !Array.isArray(tasksBody.tasks)) throw new Error("已保存研究任务暂时无法读取。");
+      const task=tasksBody.tasks.find(t=>t.project_id===project.project_id);
+      let restored:{taskId:string;status:"done"|"hold";prompt:string;decision:AgentDecision|null}|null=null;
+      let priorProduction:{status:string;current_stage:string|null}|null=null;
+      if (task) {
+        const statusResponse=await fetch(`/api/studio/research-tasks/${encodeURIComponent(task.task_id)}/status`,{cache:"no-store"});
+        const statusBody=await statusResponse.json() as {ok?:boolean;task?:{
+          task_id?:string;prompt?:string;status?:string;checkpoint?:unknown
+        }};
+        if (!statusResponse.ok || !statusBody.ok || !statusBody.task || statusBody.task.task_id!==task.task_id)
+          throw new Error("无法确认历史任务的当前资格和项目归属。");
+        const raw=statusBody.task.checkpoint;
+        let checkpoint:Record<string,unknown>={};
+        try {
+          const parsed=typeof raw==="string"?JSON.parse(raw):raw;
+          if(parsed&&typeof parsed==="object"&&!Array.isArray(parsed))checkpoint=parsed as Record<string,unknown>;
+        }catch{throw new Error("历史研究回执无效，不能自动恢复。");}
+        const studio=checkpoint.studio;
+        if (!studio || typeof studio!=="object" ||
+            (studio as Record<string,unknown>).project_id!==project.project_id)
+          throw new Error("历史任务与所选项目不匹配，已拒绝恢复。");
+        const read=checkpoint.materialRead;
+        const unavailable=read&&typeof read==="object"&&(read as Record<string,unknown>).state==="HOLD";
+        const decision=checkpoint.decision;
+        const validDecision=!unavailable&&decision&&typeof decision==="object"&&!Array.isArray(decision)
+          ?decision as AgentDecision:null;
+        restored={taskId:task.task_id,status:statusBody.task.status==="done"&&!unavailable?"done":"hold",
+          prompt:statusBody.task.prompt??task.prompt,decision:validDecision};
+        const prodResponse=await fetch(`/api/studio/research-tasks/${encodeURIComponent(task.task_id)}/production`,{cache:"no-store"});
+        if (prodResponse.ok) {
+          const p=await prodResponse.json() as {ok?:boolean;production?:{status:string;current_stage:string|null}|null};
+          if(p.ok&&p.production)priorProduction=p.production;
+        }
+      }
+      if (!startNewConversation()) return;
+      setProjectId(project.project_id);
+      if (restored) {
+        lastTaskIdRef.current=restored.taskId;
+        setCurrentResearch({taskId:restored.taskId,status:restored.status});
+        setMessages([
+          {role:"user",text:restored.prompt},
+          {role:"mohen",
+            text:restored.decision?.mohenLine??"已恢复这份研究任务的原始问题。历史材料尚未通过当前读取复核，不能直接作为合格知识使用。",
+            ...(restored.decision?{
+              materials:restored.decision.materials,gaps:restored.decision.gaps,clarify:restored.decision.clarifyQuestion,
+            }:{gaps:["需要重新核对来源、权利和独立知识资格"]}),
+            taskRef:restored.taskId},
+        ]);
+        setProduction(priorProduction);
+        if(priorProduction?.status==="RUNNING")pollProduction(restored.taskId);
+        setResumeNotice("已从受授权的持久任务恢复；材料按当前资格重新核验，未自动启动或重发任何模型请求。");
+      } else {
+        setResumeNotice("已打开保存的项目，但尚无可恢复的研究任务。你可以从这里继续提问。");
+      }
+      setDraftsOpen(false);
+    }catch(error){setProjectError(error instanceof Error?error.message:"暂时无法恢复研究项目。");}
+    finally{setReopening(false);}
   }
 
   // 创作流程状态
@@ -557,13 +625,14 @@ export default function StudioWorkbench() {
     }
   }
 
-  function startNewConversation() {
-    if (busy || generating || directing || submitBusy || submitLock.current || productionBusy || production?.status === "RUNNING") return;
+  function startNewConversation(): boolean {
+    if (busy || generating || directing || submitBusy || submitLock.current || productionBusy || production?.status === "RUNNING") return false;
     const hasLocalContent = messages.length > 0 || Boolean(plans) || Boolean(beats?.length) || Boolean(workTitle.trim());
-    if (hasLocalContent && !window.confirm("开始新对话将清空当前页面的临时对话、方案和未保存分镜。服务器上已保存的研究任务、记录及作品不会被删除。确定继续？")) return;
+    if (hasLocalContent && !window.confirm("开始新对话将清空当前页面的临时对话、方案和未保存分镜。服务器上已保存的研究任务、记录及作品不会被删除。确定继续？")) return false;
     stopProductionPoll();
     lastTaskIdRef.current = null;
     setCurrentResearch(null);
+    setResumeNotice(null);
     setProductionError(null);
     setProductionBusy(false);
     setMessages([]);
@@ -593,6 +662,7 @@ export default function StudioWorkbench() {
     setProduction(null);
     setMediaCandidates(null);
     creationRequests.current.clear();
+    return true;
   }
 
   // 真实对话、分镜、确认投稿的页面步骤；高亮不代表知识资格通过。
@@ -663,6 +733,8 @@ export default function StudioWorkbench() {
                     ):(
                       <span className="studio__rename">
                         <span>{p.project_title}</span>
+                        <button type="button" className="studio__link-btn" disabled={reopening||busy||productionBusy}
+                          onClick={()=>void reopenProject(p)}>{reopening?"核验中…":"继续"}</button>
                         <button type="button" className="studio__link-btn studio__link-btn--muted"
                           onClick={()=>{setRenameError(null);setRenaming({id:p.project_id,title:p.project_title});}}>改名</button>
                       </span>
@@ -675,6 +747,7 @@ export default function StudioWorkbench() {
           )}
 
           {projectError&&<p role="alert" className="studio__error">{projectError}</p>}
+          {resumeNotice&&<p role="status" className="studio__drawer-note">{resumeNotice}</p>}
 
           <div className="studio__thread">
             {messages.length === 0 && (

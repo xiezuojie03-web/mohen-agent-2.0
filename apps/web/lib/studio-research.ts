@@ -565,7 +565,7 @@ export async function appendResearchMessage(
 /** 列出当前用户最近研究任务（供 Studio 任务列表）。P0-1：按 owner 过滤。 */
 export function listResearchTasks(ownerUserId: string) {
   return queryRows(
-    "select task_id::text as task_id, work_id::text as work_id, topic, prompt, status, created_at::text as created_at, updated_at::text as updated_at from public.research_tasks where owner_user_id = :'owner' order by created_at desc limit 50",
+    "select task_id::text as task_id, work_id::text as work_id, topic, prompt, status, checkpoint->'studio'->>'project_id' as project_id, created_at::text as created_at, updated_at::text as updated_at from public.research_tasks where owner_user_id = :'owner' order by created_at desc limit 50",
     { owner: ownerUserId }
   );
 }
