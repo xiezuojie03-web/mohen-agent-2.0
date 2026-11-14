@@ -230,9 +230,25 @@ async function checkRightsByOperation(ctx) {
       join source.sources s on s.source_id = v.source_id
       where o.original_id = any(ARRAY[${uuidArray}]::uuid[]) and o.project_id = :'project'`,
       { project: ctx.project });
-    const result = assessRights(rows, ctx);
-    // 确保所有 originalIds 都被 rights 记录覆盖
-    const covered = rows.map(r => text(r.original_id));
+    if (rows.length) {
+      const result = assessRights(rows, ctx);
+      // 确保所有 originalIds 都被 rights 记录覆盖
+      const covered = rows.map(r => text(r.original_id));
+      const missing = originalIds.filter(id => !covered.includes(id));
+      if (missing.length > 0) {
+        return { ok: false, reason: `${ot}_rights_missing_for:${missing.join(",")}` };
+      }
+      return result;
+    }
+    // 非私有来源：original_ids 是 source_version 引用（非 private_originals），按 source.sources 逐动作权利判定；
+    // 字节核验归 raw_provenance（DESIGN_TARGET_NOT_APPLIED）。
+    const nonPrivate = await ctx.query(`select s.source_id::text as source_id, v.source_version_id::text as source_version_id,
+        s.rights_by_action::text as rights_by_action, s.rights_evidence::text as rights_evidence
+      from source.source_versions v
+      join source.sources s on s.source_id = v.source_id
+      where v.source_version_id = any(ARRAY[${uuidArray}]::uuid[])`);
+    const result = assessNonPrivateRights(nonPrivate, ctx);
+    const covered = nonPrivate.map(r => text(r.source_version_id));
     const missing = originalIds.filter(id => !covered.includes(id));
     if (missing.length > 0) {
       return { ok: false, reason: `${ot}_rights_missing_for:${missing.join(",")}` };

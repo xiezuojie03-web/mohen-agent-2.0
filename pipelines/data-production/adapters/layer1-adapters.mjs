@@ -1400,6 +1400,9 @@ async function d05ReadModelPublication({ run, job, input, context }) {
   const refusals = Array.isArray(world.refusals) ? world.refusals : [];
   const evidences = Array.isArray(world.evidences) ? world.evidences : [];
   const visualObjects = Array.isArray(world.visual_objects) ? world.visual_objects : [];
+  // G5 权利回查的 source_version 引用（非私有来源：material_evidence.locator.source_version_id）。
+  const sourceVersionIds = [...new Set(evidences.map((e) => e?.locator?.source_version_id).filter(Boolean))];
+  const firstSourceVersionId = sourceVersionIds[0] ?? null;
   if (!entities.length) return hold("NO_WORLD", "D05 无本 run 世界对象", "先完成 D03 世界建构", "world.entities 非空");
 
   const entityLabels = entities.map((e) => e.canonical_label ?? e.label).filter(Boolean);
@@ -1433,7 +1436,7 @@ async function d05ReadModelPublication({ run, job, input, context }) {
   await dbRun(
     `insert into read_model.world_projections
      (projection_id, projection_key, payload, derived_from_finding_ids, expression_rule)
-     values (:'proj_id'::uuid, :'proj_key', :'payload'::jsonb, :'fids'::uuid[], '{}'::jsonb)`,
+     values (:'proj_id'::uuid, :'proj_key', :'payload'::jsonb, :'fids'::uuid[], :'expr'::jsonb)`,
     {
       proj_id: projId, proj_key: projKey,
       payload: JSON.stringify({
@@ -1480,8 +1483,11 @@ async function d05ReadModelPublication({ run, job, input, context }) {
           evidence_id: vo.evidence_id ?? null,
         })),
         source_ref: `production-run:${runId}`,
+        qualification: "UNASSESSED",
+        original_id: firstSourceVersionId,
       }),
       fids: `{${fidArr}}`,
+      expr: JSON.stringify({ method_id: "P02" }),
     }
   );
   // 主产物用 consumer=producer：评审绑定与 verify 均以 producer 为资格请求方，
@@ -1536,7 +1542,7 @@ async function d05ReadModelPublication({ run, job, input, context }) {
       {
         seed_id: seedId, key: `seed-${f.finding_id.slice(0, 8)}`, title: __TOPIC?.d05SeedTitle ?? "金泽古桥·寺院·水道",
         q: "哪些历史关系能够证实，哪些仍有疑问？",
-        payload: JSON.stringify({ statement: f.interpretive_statement, entities: entitiesForText(f.interpretive_statement, entityLabels).join(" ") }),
+        payload: JSON.stringify({ statement: f.interpretive_statement, entities: entitiesForText(f.interpretive_statement, entityLabels).join(" "), method_id: "P04", qualification: "UNASSESSED", original_ids: sourceVersionIds }),
         fids: `{${f.finding_id}}`,
       }
     );
@@ -1580,6 +1586,9 @@ async function d05ReadModelPublication({ run, job, input, context }) {
           conflicts: conflictLines,
           refused_relations: refusalLines,
           source_ref: `production-run:${runId}`,
+          method_id: "P04",
+          qualification: "UNASSESSED",
+          original_ids: sourceVersionIds,
         }),
         fids: `{${f.finding_id}}`,
       }

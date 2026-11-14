@@ -3963,3 +3963,17 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
   - **组件级正向实测（真库 + 真 8789）**：复用 run `dead0003` 已签 G3 审计（claim `dead0008`），建 `finding(A01、UNASSESSED、supporting_world_objects 含 claim_revision ref)`，提交 G4 候选（`purpose=G4.interpretation.v1/BE`、依赖 G3）→ `POST /verify` 返回 **200 PASS** → 落库真实 `G4 PASS / independent_gate` 审计（`9c2b27fb-…`）。
 - **未关闭**：G5（`work_revision_binding` + 非私有 `rights_by_operation`；layer1 D05 的 world_projection/story_seed 需补 `expression_rule.method_id=P02/P04`、`payload.qualification=UNASSESSED`、`payload.original_ids`，并给 G5 权利加非私有分支）。B1/B8(3 环境受限)/sandbox EPERM 不变。
 - **下一入口**：G5（最后一道门）→ 全链 D00—D05/G0—G5 组件级正向 → 非 sandbox 真 UI 覆盖。**PENDING_PUSH**。
+
+---
+
+## 2026-11-14｜A' 逐门落地（五）G5：G5 权利非私有分支 + layer1 D05 补投影完整性，组件级正向通过 —— 六门全通
+
+- **本批变更（2 文件）**：
+  1. `tools/rule-gate-reviewer.mjs` `checkRightsByOperation` G5 分支：私有原件路径不动，`private_originals` 查不到时新增**非私有 fallback**——`original_ids` 作 `source_version` 引用，按 `source.sources.rights_by_action`（machine_read/retain=allowed + evidence）判定（字节核验归 `raw_provenance`）。
+  2. `pipelines/data-production/adapters/layer1-adapters.mjs` `d05ReadModelPublication`：world_projection 补 `expression_rule={method_id:"P02"}` + `payload.qualification="UNASSESSED"` + `payload.original_id`；story_seed/agent_context 补 `payload.method_id="P04"` + `qualification="UNASSESSED"` + `original_ids`（从 `world.evidences[].locator.source_version_id` 提取）。
+- **真实测试证据**：
+  - `node --check` 通过；全量 `tests/data-production` = **243 通过 / 3 失败**（3 失败仍为 sandbox spawn/symlink EPERM）。
+  - **组件级正向实测（真库 + 真 8789）**：复用 run `dead0003` 已签 G4 审计，建 `world_projection(P02、UNASSESSED、original_id=非私有源版本、derived_from_finding_ids 含上游 finding)`，提交 G5 候选（`purpose=data-production/m5-remediation`、依赖 G4）→ `POST /verify` 返回 **200 PASS** → 落库真实 `G5 PASS / independent_gate` 审计（`78114b50-…`）。
+- **里程碑**：**自由主题 layer1 的 D00—D05 → G0—G5 六门现全部组件级正向通过**（G0 `93611955` 前各门审计见上各批；G0=113f71d9、G1=d3a84419、G2=8094994e、G3=93611955、G4=9c2b27fb、G5=78114b50）。每门均真库 + 真 8789 自动签发、落库 `independent_gate PASS` 审计。
+- **未关闭（全链仍 HOLD，见前）**：① **全链一次真跑**（D00→D05 串联，需执行授权 `execFileSync`/`spawn`，本 sandbox EPERM）；② **B1** evidence 陈旧需非 sandbox `verify-local-execution-env.mjs` 重新出证；③ **B8** 3 例环境受限测试（CI/Linux 可过）；④ Studio 真 UI 触发、M5 八维度验收、M6—M8。`M5_OVERALL_HOLD` 不变。
+- **下一入口**：非 sandbox/CI 跑 `verify-local-execution-env.mjs` 出证 → Studio 真 UI 触发自由主题 → 核 D00→D05 全链（六门已组件级正向，待串联真跑）→ M5 八维度验收 → M6—M8。**PENDING_PUSH**。
