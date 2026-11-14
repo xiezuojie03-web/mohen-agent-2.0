@@ -4047,3 +4047,27 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 4. Vercel：最近10次production部署均来自`5b02081b`配置之前的SHA，后续数次main提交没有生成新的生产deployment，满足Git部署隔离的可观察判据。
 
 **未改变的工程准出**：本批只关闭CI、隔离测试与自动发布耦合的具名质量问题；`M5_OVERALL_HOLD`不变，同一真实Studio→D00—D05/G0—G5→AI/资产→作品→Admin/WATCH的持久完整八维度尚待工程自验和Owner体验，M6—M8未开始。生产权限/真实环境边界继续原位HOLD，PLAN V1.6不升版。
+
+
+---
+
+## 2026-11-14｜M5 Studio真实入口—项目Gate作用域—可恢复委托（沿PLAN V1.6原位施工）
+
+**本轮真实断点**：Studio主页ST-01已持久保存私有项目/研究brief，但无显式ST-04申请动作；旧自动轮询依赖不存在的`json.production.run_id`。生产Runner和后续Gates仍以固定样板project ID填作用域，破坏任意新用户/新题材的精准签发隔离。研究底稿只能改名，不能恢复当前任务。
+
+**已写入main（无新分支、无新任务书）**：
+- `39593dc1`：ST-04服务端必须由实际Creator拥有且ACTIVE的Studio项目启动，在任何预算CAS/Runner前查权；POST运营浏览权不可替他人发起。注册run、D00输入文件、20个Gate候选调用及D03主张作用域统一使用真实`run.scope.project_id`，无固定样板回退。
+- `a205fe27`：Studio三栏中栏新增显式“申请进入D00—D05”，只对研究已完成任务操作，实际POST→GET轮询及HOLD/不可用状态展示；无授权时不自动开始或报告PASS，重新开始取消旧轮询。
+- `8e31fd4f`：修复7条HP08旧调用夹具并增加3项Owner/旧任务/跨项目早拒绝测试；保留预算CAS、未知启动、不可重复收款、回执不确定HOLD规则。
+- `b8b621cf`＋`0ffe5aaa`：新增2条data-production对真实run.project跨D00—D05传播及非法/错项目拒绝测试，实测抓到并修复scope UUID校验遗漏第四段问题。
+- `7f36db2d`：研究底稿“继续”接Owner受控任务索引→当前状态和现行材料复核→恢复已有task与原问题，不自动重发模型或生产，不将旧缓存当合格事实。
+- `99ef0774`：扩展已有真实HTTP浏览器ST01用例：刷新后打开底稿、HOLD无ST04按钮、直接POST=409、外Owner POST=403。
+- `78709c02`：恢复入口对未重新确认有效材料的历史done状态继续HOLD，不出现无证据的正式生产按钮。
+
+**本次可核准据**：
+- 主CI：`78709c02` / `43585324862` **SUCCESS**，685单测PASS/4SKIP/0FAIL、248 data-production PASS/0FAIL、TypeScript、Next.js Build、权限覆盖与静态门通过。
+- 真PG17：`7f36db2d` / `43585072924` **SUCCESS**；前一身份作用域原改动`39593dc1` / `43584283680`也SUCCESS。
+- 真HTTP/Chromium：`99ef0774` / `43585157777` **SUCCESS**，新增ST01受权恢复、HOLD阻止生产和跨Owner拒绝在24项浏览器套件内通过。随后`78709c02`仅收紧恢复时的展示条件，未修改服务端/Schema。
+- Vercel git自动部署仍被`vercel.json`阻断；本轮无生产DB/Storage或正式G操作，无付费Provider调用。
+
+**未关闭，仍`M5_OVERALL_HOLD`**：D00自由题材旧adapter缺Y01持久来源需求回执，规则化Reviewer真实项目签发要求该回执；唯一获权写入身份是`mohen_private_worker`，应继承现有`private-evidence-stage.mjs`与`source-discovery-repository.mjs`受控接线，不能为了通过G0开放Producer INSERT或假写回执。真实原件/跨场景内外Agent、D00—D05/G0—G5连续合法链、Studio H1/H2/H3修订、Admin到WATCH及正式用户体验八维度尚未整体验收。唯一下步施工入口仍`PLAN.md V1.6`原M5，不新增规范文件。
