@@ -239,6 +239,32 @@ export default function StudioWorkbench() {
   const [currentResearch, setCurrentResearch] = useState<{ taskId: string; status: "done" | "hold" } | null>(null);
   const [productionBusy, setProductionBusy] = useState(false);
   const [productionError, setProductionError] = useState<string | null>(null);
+  const [privateSources, setPrivateSources] = useState<Array<{
+    original_id:string;file_name:string;sha256:string;content_type:string;
+    registration_state:"BOUND"|"UNBOUND";source_version_id:string|null;
+  }>>([]);
+  const [sourceChoice,setSourceChoice]=useState("");
+  const [sourcePage,setSourcePage]=useState("");
+  const [sourceReadError,setSourceReadError]=useState<string|null>(null);
+  useEffect(()=>{
+    if(!projectId || !currentResearch){setPrivateSources([]);setSourceChoice("");setSourceReadError(null);return;}
+    const controller=new AbortController();
+    setPrivateSources([]);setSourceChoice("");setSourceReadError(null);
+    void(async()=>{
+      try{
+        const response=await fetch(`/api/studio/attachments?project_id=${encodeURIComponent(projectId)}`,{
+          cache:"no-store",signal:controller.signal
+        });
+        const body=await response.json() as {ok?:boolean;originals?:Array<{
+          original_id:string;file_name:string;sha256:string;content_type:string;
+          registration_state:"BOUND"|"UNBOUND";source_version_id:string|null;
+        }>};
+        if(!response.ok||body.ok!==true||!Array.isArray(body.originals))throw Error("source_unavailable");
+        if(!controller.signal.aborted)setPrivateSources(body.originals);
+      }catch{if(!controller.signal.aborted)setSourceReadError("项目私有原件或正式来源登记暂时无法核验；不得自动启动D00。");}
+    })();
+    return()=>controller.abort();
+  },[projectId,currentResearch?.taskId]);
   const productionPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   useEffect(() => () => {
     if (productionPollRef.current !== null) clearInterval(productionPollRef.current);
@@ -273,6 +299,7 @@ export default function StudioWorkbench() {
     if (!text || busy || projectBusy || submitLock.current) return;
     stopProductionPoll();
     setCurrentResearch(null);
+    setSourceChoice("");setSourcePage("");
     lastTaskIdRef.current = null;
     setProduction(null);
     setProductionError(null);
@@ -378,11 +405,18 @@ export default function StudioWorkbench() {
     if (!currentResearch || currentResearch.status !== "done" || productionBusy || busy ||
         projectBusy || production?.status === "RUNNING") return;
     const taskId = currentResearch.taskId;
+    const source=privateSources.find(x=>x.original_id===sourceChoice&&x.registration_state==="BOUND");
+    const pageNumber=Number(sourcePage);
+    if(!source||!Number.isSafeInteger(pageNumber)||pageNumber<1||pageNumber>10000){
+      setProductionError("请选择本项目已与正式来源绑定的原件，并填写原件真实页码；未具备该条件不能申请生产。");
+      return;
+    }
     setProductionBusy(true);
     setProductionError(null);
     try {
       const response = await fetch(`/api/studio/research-tasks/${encodeURIComponent(taskId)}/production`, {
-        method: "POST", headers: { "content-type": "application/json" }, cache: "no-store",
+        method: "POST", headers: { "content-type": "application/json" },
+        body:JSON.stringify({original_id:source.original_id,page_number:pageNumber}),cache: "no-store",
       });
       const result = (await response.json()) as { ok?: boolean; run_id?: string; reason?: string };
       if (!response.ok || !result.ok || !result.run_id) {
@@ -393,6 +427,12 @@ export default function StudioWorkbench() {
           forbidden: "当前账户无权发起这份生产",
           production_registry_not_active: "专业生产 Registry 尚未授权激活",
           production_job_disabled: "D00—D05 中存在尚未授权的生产工序",
+          production_original_selection_required: "请选择当前项目已与正式来源登记绑定的原件和页码",
+          production_original_forbidden: "原件不是本账户、本项目的已验证原件",
+          production_original_not_bound: "原件尚未绑定准确来源版本，不能作为D00正式输入",
+          production_original_check_unavailable: "原件或来源登记暂不可核验，已安全停止",
+          production_private_adapter_not_bound: "唯一Registry尚未将可信私有Worker接入六阶段，不能用旧平行Adapter冒充真实原件生产",
+          production_acquisition_receipt_required: "可信来源的取得方式与回执尚未完成正式交接，不能开始计费生产",
           production_input_binding_required: "本机独立执行授权与原件输入尚未具备",
           production_reservation_reconciliation_required: "上一次预算预留尚未核销，不能重复执行",
           production_reservation_receipt_uncertain: "预算回执未能确认，需先对账",
@@ -851,11 +891,31 @@ export default function StudioWorkbench() {
               <p className="studio__drawer-note">研究委托与研究线索不会自动变为合格史实。申请后须按来源、独立 G0—G5 资格及项目授权逐门核验；本步不发布作品。</p>
               {currentResearch.status === "hold"
                 ? <p role="status" className="studio__drawer-note">研究委托仍处于暂停状态；请先补齐左侧列出的前提，不能启动正式生产。</p>
-                : <button type="button" className="studio__ghost-btn"
-                    disabled={productionBusy || busy || projectBusy || production?.status === "RUNNING"}
-                    onClick={() => void requestFormalProduction()}>
-                    {productionBusy ? "正在核对生产前提…" : "申请进入 D00—D05"}
-                  </button>}
+                : <>
+                    <label className="studio__drawer-note" htmlFor="studio-production-source">项目内已核验并绑定正式来源的原件</label>
+                    <select id="studio-production-source" value={sourceChoice} onChange={e=>setSourceChoice(e.target.value)}
+                      disabled={productionBusy} aria-label="选择正式生产原件">
+                      <option value="">选择一份已绑定原件</option>
+                      {privateSources.filter(x=>x.registration_state==="BOUND").map(x=>
+                        <option key={x.original_id} value={x.original_id}>{x.file_name} · {x.content_type}</option>)}
+                    </select>
+                    <label className="studio__drawer-note" htmlFor="studio-production-page">原件真实页码</label>
+                    <input id="studio-production-page" type="number" min={1} max={10000} step={1}
+                      value={sourcePage} onChange={e=>setSourcePage(e.target.value)}
+                      placeholder="请输入准确页码" aria-label="原件真实页码" disabled={productionBusy}/>
+                    {privateSources.length>0 && privateSources.every(x=>x.registration_state!=="BOUND") &&
+                      <p className="studio__drawer-note" role="status">当前项目已有原件，但尚无已核实的正式来源版本绑定。保存原件不等于通过D00。</p>}
+                    {privateSources.length===0 && !sourceReadError &&
+                      <p className="studio__drawer-note">当前项目尚无可选择的已登记私有原件。请先从受控上传与来源登记入口完成原件入账。</p>}
+                    {sourceReadError && <p role="alert" className="studio__drawer-note">{sourceReadError}</p>}
+                    <button type="button" className="studio__ghost-btn"
+                      disabled={productionBusy || busy || projectBusy || production?.status==="RUNNING"||
+                        !privateSources.some(x=>x.original_id===sourceChoice&&x.registration_state==="BOUND")||
+                        !Number.isSafeInteger(Number(sourcePage))||Number(sourcePage)<1}
+                      onClick={() => void requestFormalProduction()}>
+                      {productionBusy ? "正在核对生产前提…" : "申请进入 D00—D05"}
+                    </button>
+                  </>}
               {productionError && <p role="alert" className="studio__submit-msg">{productionError}</p>}
             </div>
           )}
