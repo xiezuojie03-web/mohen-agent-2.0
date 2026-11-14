@@ -3895,3 +3895,19 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **测试残留（如实记账）**：`source.sources/source_versions/raw_items` 为 append-only、`gate_audits` 不可变、`gate_candidates` 被审计 FK 引用，无法删除；已将测试 `production_runs`（`b0a11000-…-dead0003`）标记 `FAILED` 并 `metadata={"tx_verify":true}`，其余 1 候选（CONSUMED）+1 审计（PASS）+3 行 append-only 源数据留库留痕，不参与研究/发布。
 - **口径边界**：这是**组件级正向**（绕开了仍需 `execFileSync`/`spawn` 的执行授权与真 UI 触发，二者本 sandbox EPERM）；**不等于**「Studio 真 UI 自由选题全链已 VERIFIED_ISOLATED」。`M5_OVERALL_HOLD` 不变。B8 另已收至 243/3（剩余 3 例环境受限）。本批本地提交 **PENDING_PUSH**。
 - **下一入口（不变）**：非 sandbox/CI 跑 `verify-local-execution-env.mjs` 重新出证 → Studio 真 UI 触发自由主题 → 核 D00→独立 G0（本轮已组件级正向，待真 UI 覆盖）→ 续 D01—D05。
+
+---
+
+## 2026-11-14｜D01—D05 断点前瞻核（重要：自由主题 layer1 与 k3 G1—G5 门结构性不匹配）
+
+- **为什么核**：D00→G0 已组件级正向通过，但自由主题全链（D00→D05）不能只停在 G0。前瞻核对 layer1 的 D01—D05 输出与 k3 `rule-gate-reviewer` 的 G1—G5 `required_checks`，确认下游是否还有同类硬断点。
+- **结论（源码对照，非猜测）**：**自由主题 layer1 的 D01—D05 与 k3 G1—G5 门存在结构性不匹配**，不是一处定向修能解决的：
+  1. **G1 `read_unit_binding`（required）**：要求 `read_units→read_runs→raw_items→private_originals(STORED_VERIFIED)` 整链，且 `read_runs.config->>'schema'` ∈ `{mab.private-text-reading.v1, mab.private-scanned-page-reading.v1}`。而 layer1 `d01CarrierReading` 写入的 `read_runs` **`raw_item_id` 为 NULL、`config` 为 NULL、无 private_originals**（文本 `payload_ref=memory://…`）→ 恒 `read_unit_missing`/`read_run_schema_unrecognized`/`read_unit_original_not_verified`。
+  2. **G2 `evidence_binding` / G3 `claim_support` / G5 `rights_by_operation`（required）**：均要求 `material_evidence/claim_revision→raw_items→private_originals(STORED_VERIFIED)` + 字节回链（`read_unit_evidence_links`/`claim_evidence_links`）。layer1 D02/D03/D05 写的是 `memory://` 文本对象，无 private_originals、无字节回链 → 同类失败。
+  3. **G4 `finding_grounding`**：依赖 G3 的 claim_revision 上游，G3 不过则 G4 连带不过。
+- **这意味着**：B7 只解决了 G0 的「权利口径」；**G1—G5 的「私有原件 + 字节核验」门槛对自由主题网络文本来源整体不成立**。自由主题 D00 能过 G0，但 D01 必被 G1 拦下。
+- **处置选项（需 Owner 裁定，不擅自扩大施工）**：
+  1. **A'（对非私有来源全链放开）**：把 G1—G5 的 `read_unit_binding/evidence_binding/claim_support/rights_by_operation` 同样按「逐动作显式权利 + 载体可回放」口径给非私有来源单开分支（放弃 private_originals 字节核验，字节核验归 `raw_provenance`/`raw_evidence` 独立检查，DESIGN_TARGET_NOT_APPLIED）。改动面大、涉安全关键门，须逐门正反验证。
+  2. **B'（自由主题改走私有原件登记）**：让自由主题检索到的文本按私有原件模型落地（STORED_VERIFIED 字节核验 + 显式权利），复用已验证的 private-evidence G1—G5 门。语义上「网络文本当私有原件」需另议，但复用度最高。
+  3. **C'（撤销 8963c9d 的 layer1 切换）**：自由主题回归 private-evidence-adapters 整链（其 D00—D05 已按私有原件口径跑通），layer1 仅保留历史/SAMPLE-TRIAL 用途。
+- **口径边界**：本批只做前瞻核 + 记账，零代码改动、零 DDL、未签任何 Gate；`M5_OVERALL_HOLD` 不变；D00→G0 组件级正向结论不受影响。**PENDING_PUSH** 延续。
