@@ -81,5 +81,5 @@ it("passes only rechecked source/version/locator to the existing governed Runner
  expect(s.production).toHaveBeenCalledWith(taskId,owner,undefined,undefined,{
    originalId,pageNumber:3,sourceVersionId,sha256:bytesSha,
    assetRevisionId,contentType:"image/jpeg",byteSize:125,
- });
+ },"owner-session");
 });

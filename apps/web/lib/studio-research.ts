@@ -257,7 +257,8 @@ export async function requestProduction(
   ownerUserId: string,
   terms?: string[],
   extraBudget?: number,
-  source?: ProductionOriginal
+  source?: ProductionOriginal,
+  ownerSessionToken?:string
 ): Promise<{ ok: boolean; reason?: string; run_id?: string }> {
   if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(ownerUserId))
     return { ok: false, reason: "forbidden" };
@@ -349,7 +350,7 @@ export async function requestProduction(
   }
 
   let trig: { runId: string; started: boolean; reason?: string };
-  try { trig = await triggerProduction(taskId, intent, projectId, source); }
+  try { trig = await triggerProduction(taskId, intent, projectId, source, ownerSessionToken); }
   catch {
     trig = { runId: "", started: false, reason: "production_start_uncertain" };
   }

@@ -49,8 +49,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   // Same short-lived Owner RLS identity as Studio's original inventory. Merely
   // passing an original_id from the browser never supplies production authority.
   let source:ProductionOriginal;
+  let ownerSessionToken:string;
   try{
     const pool=getNodePgPool(),token=signDatabaseSessionToken(session);
+    ownerSessionToken=token;
     const original=await createPrivateOriginalRepository(pool).getStored(originalId,token);
     if(!original||original.project_id!==project||original.state!=="STORED_VERIFIED"||
        !original.asset_revision_id||!original.sha256||!original.content_type)
@@ -71,7 +73,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ok:false,reason:"production_original_check_unavailable"},{status:503});
   }
 
-  const result = await requestProduction(id, session.uid, undefined, undefined, source);
+  const result = await requestProduction(id, session.uid, undefined, undefined, source, ownerSessionToken);
   if (!result.ok) {
     const status = result.reason === "task_not_found" ? 404
       : result.reason === "task_not_ready" ? 409

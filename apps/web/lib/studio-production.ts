@@ -2,18 +2,17 @@
 //
 // Studio 生产触发：把「一句话委托」转成真实 D00–D05 生产。
 // 方式：child_process 异步 spawn `pipelines/data-production/run.mjs`（唯一生产入口），
-// 不阻塞 HTTP 响应；进程内由 layer1-adapters 写 42 表 + gate 审核。
+// 不阻塞 HTTP 响应；私有原件必须走唯一 Registry 的受审私有 Adapter 与独立 Gate。
 //
 // 关联：预分配 run_id → 预登记 control.production_runs(RUNNING) → 写入 research_events
 // → 更新 research_tasks.checkpoint.production_run_id → spawn run.mjs --run-id。
-// layer1-adapters 的 D00 用 on conflict (run_id) do nothing 复用该预登记行。
+// 非私有 layer1 保留为另一条合法 Registry route，不接受私有原件降级。
 import { spawn } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { run as dbRun, queryRows } from "@mohen/data-access";
-import { prepareFreeTopic } from "./mohen-agent/prepare-topic";
 import { loadRegistry } from "../../../pipelines/data-production/orchestrator/registry.mjs";
 import {
   isExecutionAuthorityReady,
@@ -59,6 +58,12 @@ export interface ProductionOriginal {
 const SOURCE_UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const SOURCE_SHA=/^[a-f0-9]{64}$/i;
 const PRIVATE_STAGE_ADAPTER="pipelines/data-production/adapters/private-evidence-adapters.mjs";
+/** D00 preselects the D01 method; ambiguous or unimplemented carriers remain HOLD. */
+export function privateD01MethodForCarrier(contentType:string):"C01"|"C02"|null{
+  if(["image/jpeg","image/png","image/webp"].includes(contentType))return "C02";
+  if(contentType==="text/plain")return "C01";
+  return null;
+}
 export function privateSourceHandoffBlocker(registry: unknown, source?:ProductionOriginal):string|null{
   const jobs=(registry&&typeof registry==="object"&&"jobs" in registry&&
     Array.isArray(registry.jobs))?registry.jobs as Array<{implementation?:{adapter_binding?:string;private_evidence_adapter_binding?:string}}>:null;
@@ -121,12 +126,12 @@ export async function failProductionRun(runId: string): Promise<void> {
  * 触发一次真实生产（D00–D05）。fire-and-forget：本函数只负责登记 + 启动进程并返回 run_id，
  * 生产进度与终态由 run.mjs 内部回写 control.production_runs。
  */
-export async function triggerProduction(taskId: string, intent: string, projectId: string, source?:ProductionOriginal): Promise<ProductionTrigger> {
+export async function triggerProduction(taskId: string, intent: string, projectId: string, source?:ProductionOriginal, ownerSessionToken?:string): Promise<ProductionTrigger> {
   if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(projectId))
     return { runId: "", started: false, reason: "production_project_binding_required" };
   const projectRoot = resolveProjectRoot();
   const runPath = path.join(projectRoot, "pipelines", "data-production", "run.mjs");
-  const adaptersPath = path.join(projectRoot, "pipelines", "data-production", "adapters", "layer1-adapters.mjs");
+  const adaptersPath = path.join(projectRoot, PRIVATE_STAGE_ADAPTER);
 
   if (!fs.existsSync(runPath) || !fs.existsSync(adaptersPath)) {
     return { runId: "", started: false, reason: "production_entry_missing" };
@@ -134,16 +139,18 @@ export async function triggerProduction(taskId: string, intent: string, projectI
   const blocker = productionBlocker(projectRoot,source);
   if (blocker) return { runId: "", started: false, reason: blocker };
 
-  // 自由主题准备：检索材料 + 组装动态主题配置（材料是生产前提，同步做；无材料则诚实降级）
-  const prepared = await prepareFreeTopic(intent);
-  if ("reason" in prepared) {
-    await addEvent(taskId, "D00", "production_no_material", { reason: prepared.reason, intent });
-    return { runId: "", started: false, reason: prepared.reason };
-  }
-
+  // Studio private originals cannot be replaced by a free-topic network search.
+  // The Owner token comes only from the authenticated POST, never from the browser.
+  if(!source||!ownerSessionToken||typeof ownerSessionToken!=="string")
+    return {runId:"",started:false,reason:"production_private_owner_session_required"};
+  const methodId=privateD01MethodForCarrier(source.contentType);
+  if(!methodId)return {runId:"",started:false,reason:"production_private_read_method_unavailable"};
   const runId = randomUUID();
-  // Same exact ST-01 project in persistent run identity and all signed stage inputs.
-  const scope = { topic_key: prepared.key, topic_label: prepared.label, material_count: prepared.materialCount, project_id: projectId };
+  // Signed D00 input: exact project/root, immutable original and chosen page.
+  // The Worker independently verifies these references against live RLS/bytes.
+  const scope = {project_id:projectId,root_task_id:taskId,original_id:source.originalId,
+    page_number:source.pageNumber,source_version_id:source.sourceVersionId,
+    asset_revision_id:source.assetRevisionId,raw_sha256:source.sha256};
 
   // 1) 预登记 production_runs（RUNNING），前端立即可查；D00 的 on conflict 会复用。
   try {
@@ -196,9 +203,10 @@ export async function triggerProduction(taskId: string, intent: string, projectI
         "--run-id", runId,
         "--execution-mode", EXECUTION_MODE,
         "--scope-file", scopeFile,
+        "--to", "D00", // This batch verifies the real D00/G0 handoff; do not claim D01-D05 yet.
         // D00-B：自由主题生产必须预选 D01 读法（文本材料走 C01），否则 G0 的
         // method_plan_preselection 结构性前置失败关闭（不补默认方法）。见 2026-11-14 断点核。
-        "--method-plan", JSON.stringify({ methods: [{ method_id: "C01", method_version: "v1" }] }),
+        "--method-plan", JSON.stringify({ methods: [{ method_id: methodId, method_version: "v1" }] }),
       ],
       {
         cwd: projectRoot,
@@ -207,7 +215,10 @@ export async function triggerProduction(taskId: string, intent: string, projectI
           // Producer 必须以 mohen_producer 身份连库（禁超管、禁 bypass RLS、禁 gate 签名）。
           ...(process.env.MOHEN_PRODUCER_DATABASE_URL
             ? { DATABASE_URL: process.env.MOHEN_PRODUCER_DATABASE_URL } : {}),
-          MOHEN_TOPIC_JSON_FILE: prepared.jsonFile,
+          // No topic-file fallback or unreviewed network corpus for private bytes.
+          MOHEN_TOPIC_JSON_FILE:"",
+          MOHEN_TOPIC_CONFIG:"",
+          MOHEN_PRIVATE_WORKER_OWNER_SESSION:ownerSessionToken,
           ...authEnv,
           MOHEN_EXECUTION_AUTH_DYNAMIC_URL: `https://127.0.0.1:${dynamic.port}/token`,
           MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL: dynamic.credential,
