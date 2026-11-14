@@ -3952,3 +3952,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
   - **组件级正向实测（真库 + 真 8789）**：复用 run `dead0003` 已签 G2 审计，建 `claim_revision(W07、asserted_time、project_id=默认项目)`，提交 G3 候选（`purpose=world/explain_bounded`、依赖 G2）→ `POST /verify` 返回 **200 PASS** → 落库真实 `G3 PASS / independent_gate` 审计（`93611955-…`）。
 - **未关闭**：G4（`finding_grounding`，依赖 G3 上游；layer1 D04 用 A06 已绑，需核 `supporting_world_objects` 引用 claim_revision）/G5（非私有 `rights_by_operation` + `work_revision_binding`）。B1/B8(3 环境受限)/sandbox EPERM 不变。
 - **下一入口**：G4 → G5 → 全链组件级正向 → 非 sandbox 真 UI 覆盖。**PENDING_PUSH**。
+
+---
+
+## 2026-11-14｜A' 逐门落地（四）G4：layer1 D04 补 finding 完整性（method/qualification/claim_revision 引用），组件级正向通过
+
+- **本批变更（1 文件）**：`pipelines/data-production/adapters/layer1-adapters.mjs` `d04HumanisticDiscovery` 的 `meaning.findings` insert 补齐三处（G4 `finding_grounding` 所需）：① `discovery_method={method_id}`（`explicit_relation→A01`、`conflict_discovery→A10`，均在 G4 允许集 A01—A12）；② `uncertainty={qualification:"UNASSESSED"}`；③ `supporting_world_objects` 追加 `{kind:"claim_revision",id:上游 claim_revision_id}`（引用 D03 首个已签 claim）。G4 门本身不要求 private_originals，无需加非私有分支。
+- **真实测试证据**：
+  - `node --check` 通过；全量 `tests/data-production` = **243 通过 / 3 失败**（3 失败仍为 sandbox spawn/symlink EPERM）。
+  - **组件级正向实测（真库 + 真 8789）**：复用 run `dead0003` 已签 G3 审计（claim `dead0008`），建 `finding(A01、UNASSESSED、supporting_world_objects 含 claim_revision ref)`，提交 G4 候选（`purpose=G4.interpretation.v1/BE`、依赖 G3）→ `POST /verify` 返回 **200 PASS** → 落库真实 `G4 PASS / independent_gate` 审计（`9c2b27fb-…`）。
+- **未关闭**：G5（`work_revision_binding` + 非私有 `rights_by_operation`；layer1 D05 的 world_projection/story_seed 需补 `expression_rule.method_id=P02/P04`、`payload.qualification=UNASSESSED`、`payload.original_ids`，并给 G5 权利加非私有分支）。B1/B8(3 环境受限)/sandbox EPERM 不变。
+- **下一入口**：G5（最后一道门）→ 全链 D00—D05/G0—G5 组件级正向 → 非 sandbox 真 UI 覆盖。**PENDING_PUSH**。

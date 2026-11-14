@@ -1176,19 +1176,24 @@ async function d04HumanisticDiscovery({ run, job, input, context }) {
 
   const findings = Array.isArray(r.parsed.findings) ? r.parsed.findings : [];
   const findingRows = [];
+  const claimRevId = input?.relations?.[0]?.claim_revision_id ?? null;
   for (const f of findings) {
     const fid = randomUUID();
+    const methodId = f.finding_type === "conflict_discovery" ? "A10" : "A01";
     await dbRun(
       `insert into meaning.findings
        (finding_id, finding_type, interpretive_statement, understanding_delta, supporting_world_objects,
         counter_view_or_alternative, missing_evidence, uncertainty, expression_rule, discovery_method, ranking_components, maturity)
        values (:'fid'::uuid, :'ftype', :'stmt', :'delta', :'support'::jsonb,
-               :'counter'::jsonb, :'missing'::jsonb, '{}'::jsonb, '{}'::jsonb, '{}'::jsonb, '{}'::jsonb, 'candidate')`,
+               :'counter'::jsonb, :'missing'::jsonb, :'uncert'::jsonb, '{}'::jsonb, :'method'::jsonb, '{}'::jsonb, 'candidate')`,
       {
         fid, ftype: f.finding_type || "explicit_relation", stmt: f.interpretive_statement || "", delta: f.understanding_delta || "",
-        support: JSON.stringify(f.supporting_world_objects || []),
+        // 支持对象 = LLM 给出的世界对象 + 上游 claim_revision 引用（G4 finding_grounding 需 hasRef(claim_revision)）
+        support: JSON.stringify([...(Array.isArray(f.supporting_world_objects) ? f.supporting_world_objects : []), ...(claimRevId ? [{ kind: "claim_revision", id: claimRevId }] : [])]),
         counter: JSON.stringify(f.counter_view_or_alternative ? [{ text: f.counter_view_or_alternative }] : []),
         missing: JSON.stringify(f.missing_evidence ? [{ text: f.missing_evidence }] : []),
+        uncert: JSON.stringify({ qualification: "UNASSESSED" }),
+        method: JSON.stringify({ method_id: methodId }),
       }
     );
     findingRows.push({ finding_id: fid, finding_type: f.finding_type, interpretive_statement: f.interpretive_statement, supporting_world_objects: Array.isArray(f.supporting_world_objects) ? f.supporting_world_objects : [] });
