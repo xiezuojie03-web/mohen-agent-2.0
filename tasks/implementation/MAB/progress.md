@@ -3925,3 +3925,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **测试残留**：1 条 G1 审计（不可变）+ 候选（CONSUMED）+ read_run/read_unit（delete 失败或留痕）沿用 `dead` 前缀 run 记账，不参与研究/发布。
 - **未关闭**：G2（`evidence_binding`）/G3（`claim_support`）/G5（`rights_by_operation`）同类非私有放开待续；G4 依赖 G3。B1/B8(3 环境受限)/sandbox EPERM 不变。
 - **下一入口**：按同口径做 G2（layer1 D02 对象类型 `material_evidence` + 非私有 evidence_binding 分支）→ G3（`relation_claim`→`claim_revision` + 非私有 claim_support）→ G5（非私有 rights_by_operation）→ 全链组件级正向 → 非 sandbox 真 UI 覆盖。**PENDING_PUSH**。
+
+---
+
+## 2026-11-14｜A' 逐门落地（二）G2：evidence_binding 非私有分支，组件级正向通过
+
+- **本批变更（1 文件）**：`tools/rule-gate-reviewer.mjs` `checkEvidenceBinding`：私有原件路径不动，`rows` 为空时新增**非私有 fallback**——按设计 §2 G2 只判 `input_fingerprint` 为 64 hex + `locator.source_version_id` 存在且指向真实 `source_versions`（来源归属可审）；不再要求 `raw_item`/`private_originals`/字节回链（归 `raw_provenance`）。layer1 D02 对象类型本已 `material_evidence`，无需改。
+- **真实测试证据**：
+  - `node --check` 通过；全量 `tests/data-production` = **243 通过 / 3 失败**（3 失败仍为 sandbox spawn/symlink EPERM，与本批无关）。
+  - **组件级正向实测（真库 + 真 8789）**：复用 run `dead0003` 已签 G0+G1 审计，建 `material_evidence(input_fingerprint=hex + locator.source_version_id=非私有源版本)`，提交 G2 候选（依赖 G1 审计）→ `POST /verify` 返回 **200 PASS** → 落库真实 `G2 PASS / independent_gate` 审计（`8094994e-…`）。
+- **未关闭**：G3（`claim_support` 非私有 + **layer1 D03 完整性缺口**：`claim_revisions` 缺 `asserted_time_json`、对象类型用 `relation_claim` 而门查 `claim_revision`、`producer_method_id='W05'` 需核是否入 `d03AuthorizedMethods`）/G5（非私有 `rights_by_operation`）；G4 依赖 G3。B1/B8(3 环境受限)/sandbox EPERM 不变。
+- **下一入口**：G3（先补 layer1 D03 `claim_revisions` 的 `asserted_time_json` + 对象类型 `relation_claim`→`claim_revision` + 方法口径，再加非私有 `claim_support` 分支）→ G5。**PENDING_PUSH**。

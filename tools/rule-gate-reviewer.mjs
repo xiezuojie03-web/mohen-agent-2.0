@@ -326,7 +326,23 @@ async function checkEvidenceBinding(ctx) {
     left join control.original_bridge_verification_keys k on k.key_version = l.byte_verification_receipt->>'key_version'
     where e.evidence_id = :'objectId'`, { objectId: ctx.candidate.object_id, project: ctx.project });
   const row = rows[0];
-  if (!row) return { ok: false, reason: "material_evidence_missing" };
+  if (!row) {
+    // 非私有来源（无 private_originals/raw_item 绑定）：设计 §2 G2 = 材料类型、来源声音、
+    // 原文主张、来源归属可审。只判 input_fingerprint + locator.source_version_id 归属真实来源。
+    const nonPrivate = await ctx.query(`select e.evidence_id::text as evidence_id, e.input_fingerprint as input_fingerprint,
+        e.locator::text as locator
+      from evidence.material_evidence e
+      where e.evidence_id = :'objectId'`, { objectId: ctx.candidate.object_id });
+    const np = nonPrivate[0];
+    if (!np) return { ok: false, reason: "material_evidence_missing" };
+    if (!HEX.test(text(np.input_fingerprint))) return { ok: false, reason: "evidence_request_digest_missing" };
+    const locator = json(np.locator) ?? {};
+    const sourceVersionId = text(locator.source_version_id);
+    if (!sourceVersionId) return { ok: false, reason: "evidence_locator_not_attributed:missing_source_version" };
+    const sv = await ctx.query(`select 1 from source.source_versions where source_version_id = :'sv'`, { sv: sourceVersionId });
+    if (!sv[0]) return { ok: false, reason: `evidence_source_version_not_found:${sourceVersionId}` };
+    return { ok: true, detail: `evidence=${text(np.evidence_id)} source_version=${sourceVersionId}` };
+  }
   if (!HEX.test(text(row.input_fingerprint))) return { ok: false, reason: "evidence_request_digest_missing" };
   if (text(row.reading_raw_item) !== text(row.raw_item_id) || text(row.reading_source_version) !== text(row.source_version_id)) {
     return { ok: false, reason: "evidence_reading_unit_not_binding_source" };
