@@ -3884,3 +3884,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
   3. **B3/B5（sandbox EPERM）**：`verify-local-execution-env.mjs` 内部 `execFileSync`、`studio-execution-authority.ts` 的 `execFileSync("git")`、`studio-production.ts` `spawn(run.mjs)` 三处 piped-stdio 子进程在本 sandbox 均 EPERM；正向 D00→G0 自动签发待非 sandbox 环境真跑。
 - **下一入口**：① 非 sandbox 环境（或 CI/Linux）跑 `verify-local-execution-env.mjs` 重新出证（git_head 对齐当前 HEAD，`isolation_and_contract_tests_pass` 在 CI 应 246/0）→ ② 从 Studio 真 UI 触发自由主题，核 D00→独立 G0 自动签发（本轮 B7/B9 修复后的首次正向覆盖）→ ③ 继续 D01—D05 逐门核。本批本地提交登记 **PENDING_PUSH**。
 - **口径边界**：仍零 DDL、未触生产库、未签任何 Gate；`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变；证据等级 `CODE_PRESENT`（B7/B9/B8(2/5) 就位、纯逻辑/负向已验证，正向待真 UI 覆盖）。
+
+---
+
+## 2026-11-14｜D00→独立 G0 自动签发「正向」实测通过（B7/B9 修复后首次，组件级）
+
+- **为什么做**：B7（非私有来源权利口径）与 B9（自动签发指向）修复后，需一次**正向**证据证明「非私有来源 + 显式权利 → G0 候选 → 独立服务自动签发 → PASS 审计」全链真的能过，而不是只停在纯逻辑/负向。
+- **实测方式（组件级，真库 + 真 8789 服务）**：用 `dead` 前缀 UUID 建**非私有** `source.sources`（`shanghai-library`、`carrier_type=digital_text`、`raw_items.storage_ref=memory://`、无 `private_originals`）+ 显式 `rights_by_action`（machine_read/retain/quote/access_view=allowed）+ `rights_evidence.basis=owner_authorization`，再按修复后 layer1 口径写 G0 候选（`object_type=source_version`、`purpose=data-production/m5-remediation/v1`、`allowed_scope.project_id=b0a11000-…-0001`、含 `C01@v1` 方法计划引用、`input_fingerprint`=指定 hex），启动 `tools/local-gate-service.mjs`(8789) 后 `POST /verify`。
+- **结果（真签落库，非 mock）**：`/verify` 返回 **200** `{qualification_current:true, decision_origin:"independent_gate", result:"PASS", gate_code:"G0"}`；候选由 `SUBMITTED` 转 **`CONSUMED`**；落库真实 `control.gate_audits` 一条 `G0 PASS / independent_gate / consumer=producer / purpose=data-production/m5-remediation`（`gate_audit_id=113f71d9-…`）。这证明 B7 的 `checkRightsByOperation` 非私有 fallback、B9 的 `candidateId` 指向、以及 `method_plan_preselection`/`REVIEWER_BINDING` 全链正向成立。
+- **测试残留（如实记账）**：`source.sources/source_versions/raw_items` 为 append-only、`gate_audits` 不可变、`gate_candidates` 被审计 FK 引用，无法删除；已将测试 `production_runs`（`b0a11000-…-dead0003`）标记 `FAILED` 并 `metadata={"tx_verify":true}`，其余 1 候选（CONSUMED）+1 审计（PASS）+3 行 append-only 源数据留库留痕，不参与研究/发布。
+- **口径边界**：这是**组件级正向**（绕开了仍需 `execFileSync`/`spawn` 的执行授权与真 UI 触发，二者本 sandbox EPERM）；**不等于**「Studio 真 UI 自由选题全链已 VERIFIED_ISOLATED」。`M5_OVERALL_HOLD` 不变。B8 另已收至 243/3（剩余 3 例环境受限）。本批本地提交 **PENDING_PUSH**。
+- **下一入口（不变）**：非 sandbox/CI 跑 `verify-local-execution-env.mjs` 重新出证 → Studio 真 UI 触发自由主题 → 核 D00→独立 G0（本轮已组件级正向，待真 UI 覆盖）→ 续 D01—D05。
