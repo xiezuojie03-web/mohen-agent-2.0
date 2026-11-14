@@ -55,7 +55,8 @@ try {
     '20261110130000_mab_original_media_assets.sql','20261110140000_mab_d00_y02_registration_locator.sql',
     '20261113100000_mab_qr05_single_rights_action_dictionary.sql',
     '20261114200000_mab_m5_studio_project_title_rename.sql',
-    '20261114210000_mab_m5_claim_revision_artifact_revision.sql'];
+    '20261114210000_mab_m5_claim_revision_artifact_revision.sql',
+    '20261114220000_mab_m5_restore_registered_content_revision.sql'];
   if(process.env.MOHEN_REVOCABLE_SESSIONS_ENABLED==='true')names.push('20261103095024_mab_web_session_revocation.sql');
   for(const name of names)execFileSync(psql,[...base,'-d',database,'-f',path.join(migrations,name)],{stdio:['ignore','pipe','pipe']});
   if(process.env.MOHEN_TEST_STORAGE_CONFIG){
@@ -90,6 +91,16 @@ try {
   console.log('MAB_HTTP_BROWSER_SYNTHETIC');
   await command([path.join(root,'node_modules/@playwright/test/cli.js'),'test','--config','playwright.mab.config.ts'],env);
   console.log('MAB_HTTP_BROWSER_PASS no-production-data no-paid-provider-calls');
+}catch(error){
+  // Synthetic test server only: surface bounded SQL/schema failures in Actions so that a 500
+  // can be diagnosed without repeatedly rebuilding the whole isolated browser fixture.
+  try {
+    const serverLog=fs.readFileSync(path.join(output,'next.log'),'utf8');
+    const relevant=serverLog.split(/\r?\n/).filter(line=>/relation .* does not exist|column .* does not exist|function .* does not exist|permission denied|error:|error |Error:|PostgresError|QueryFailed|missing_qualification/i.test(line)).slice(-32);
+    console.error('MAB_HTTP_SYNTHETIC_SERVER_DIAGNOSTICS count='+relevant.length);
+    for(const line of relevant)console.error('MAB_HTTP_SERVER '+line.slice(0,340));
+  }catch{console.error('MAB_HTTP_SYNTHETIC_SERVER_LOG_UNAVAILABLE');}
+  throw error;
 }finally{
   if(server){try{if(process.platform==='win32')server.kill();else process.kill(-server.pid,'SIGTERM');}catch{} }
   fs.closeSync(logFile);

@@ -88,7 +88,6 @@ try {
     const planProjectForeignKey = query(database, "select count(*) from pg_constraint c join pg_class t on t.oid=c.conrelid join pg_namespace n on n.oid=t.relnamespace where n.nspname='public' and t.relname='director_plans' and c.contype='f' and c.conkey=(select array[a.attnum] from pg_attribute a where a.attrelid=t.oid and a.attname='project_id') and c.confrelid='studio.projects'::regclass");
     if (planProjectColumn !== "1" || planProjectForeignKey !== "1") throw new Error("DIRECTOR_PLAN_PROJECT_BINDING_SCHEMA_FAILED");
     runTest("STUDIO_ASSET", "tests/data-production/studio-assets.integration.mjs");
-    runTest("STUDIO_ASSET_REPOSITORY", "tests/data-production/studio-asset-repository.integration.mjs");
     runTest("STUDIO_DELEGATION_REPOSITORY", "tests/data-production/studio-delegation.integration.mjs");
     apply('20261104013351_mab_m4_execution_controls.sql');
     runTest("STUDIO_EXECUTION_CONTROLS", "tests/data-production/studio-execution.integration.mjs");
@@ -143,10 +142,14 @@ try {
       // 研究底稿改名：只给运行账号 project_title 列级 update，行级仍由 owner 策略限制。
       "20261114200000_mab_m5_studio_project_title_rename.sql",
       // G3 non-private world claim: artifact_revision_for resolves claim_revision with current-row hashing.
-      "20261114210000_mab_m5_claim_revision_artifact_revision.sql"]) apply(file);
+      "20261114210000_mab_m5_claim_revision_artifact_revision.sql",
+      // Preserve the K5 registered-content fingerprint after the later G3 mapping migration.
+      "20261114220000_mab_m5_restore_registered_content_revision.sql"]) apply(file);
     // Capability assertions for the migrations applied immediately above. They can only run at
     // this point in the chain: the rights columns, the private worker, the machine reviewer and
     // the content-based sign_gate_candidate semantics do not exist any earlier.
+    // QR-05 must land before asset-use tests: read is normalized to access_view.
+    runTest("STUDIO_ASSET_REPOSITORY", "tests/data-production/studio-asset-repository.integration.mjs");
     runTest("RIGHTS_BY_ACTION", "tests/data-production/rights-by-action.integration.mjs");
     runTest("PRIVATE_WORKER_ACL", "tests/data-production/private-worker-acl.integration.mjs");
     runTest("MACHINE_REVIEWER_BOUNDARY", "tests/data-production/machine-reviewer-boundary.integration.mjs");

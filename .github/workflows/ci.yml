@@ -64,6 +64,7 @@ jobs:
       # HP13 readiness is informational until every exact target and live Gate
       # has its own evidence. Presence is NOT semantic equivalence.
       - name: MAB 74 target handoff audit (informational)
+        continue-on-error: true # Preserve drift report, but this is explicitly not a release gate.
         run: node scripts/audit-mab-handoff-targets.mjs --out /tmp/mab-target-audit.json
 
       - name: Upload MAB target audit evidence

@@ -33,12 +33,19 @@ assert.throws(() => sql("set role mohen_gate_signer_m5_machine; delete from cont
 for (const table of ["control.gate_candidates", "control.gate_audits", "control.qualification_current", "control.gate_policy_versions", "control.gate_reviewer_bindings", "source.sources", "source.source_versions"])
   assert.match(sql(`set role mohen_gate_signer_m5_machine; select count(*) from ${table}`), /^\d+$/, table);
 
-// Private originals stay scoped to the single isolated M5 project.
+// Machine reviewer scope follows SUBMITTED producer candidates, not a frozen sample project.
+// Readable originals must be a subset of those projects; a reviewer must never see unrelated
+// projects or cross-owner private bytes just because it has the signer role.
 const policyQual = sql("select qual from pg_policies where schemaname='studio' and tablename='private_originals' and policyname='m5_machine_reviewer_read'");
-assert.match(policyQual, /b0a11000-0000-4000-8000-000000000001/);
-const inScope = sql("select count(*) from studio.private_originals where project_id='b0a11000-0000-4000-8000-000000000001'");
+assert.match(policyQual, /gate_candidates/);
+assert.match(policyQual, /consumer\s*=\s*'producer'/);
+assert.match(policyQual, /candidate_status\s*=\s*'SUBMITTED'/);
+const eligibleProjects = `select distinct (c.allowed_scope->>'project_id')::uuid as id
+ from control.gate_candidates c where c.consumer='producer' and c.candidate_status='SUBMITTED'
+ and c.allowed_scope->>'project_id' is not null`;
+const inScope = sql(`select count(*) from studio.private_originals where project_id in (${eligibleProjects})`);
 assert.equal(sql("set role mohen_gate_signer_m5_machine; select count(*) from studio.private_originals"), inScope);
-assert.equal(sql("set role mohen_gate_signer_m5_machine; select count(*) from studio.private_originals where project_id<>'b0a11000-0000-4000-8000-000000000001'"), "0");
+assert.equal(sql(`set role mohen_gate_signer_m5_machine; select count(*) from studio.private_originals where project_id not in (${eligibleProjects})`), "0");
 
 // The five execution entry points remain available to the machine identity.
 assert.equal(sql(`select string_agg(v::text,',' order by v) from (values
