@@ -4015,3 +4015,11 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - GitHub最新实测：上述文档提交`6eec624d`的CI [43579905048](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43579905048) **FAIL**；此前`b137483f`的6个业务单测故障仍未修复，文档修订不登记代码回归PASS。发布隔离仍未实际配置。
 - **静态完整性复核**：PLAN QR=10、CP停点=9、M0—M8阶段=9、附录A—D与V1.6整理前原文逐字节一致；18个AGENTS权威索引路径在main tree均存在。AGENTS/PLAN/CURRENT/交接文件未保留指定具体平台为施工责任方；progress历史批次保留。
 - **准出口径**：仅`DOC_RECONCILIATION_COMPLETE`，无业务代码、数据库、自动部署配置或运行环境施工；M5仍`M5_OVERALL_HOLD`。下一入口不变，按PLAN §0.2先隔离自动生产发布再修CI。
+
+
+## 2026-11-14｜CI权威路由恢复与生产自动部署隔离（受控整改）
+
+- **权威路由修复** `83560224`：`scripts/guards/check-authority-routing.mjs` 删除对旧平台名称、M8固定旧句、交接旧章节标题的字符串刚性依赖，改为验证现行MHKA路由/工具无关职责/M8生产责任及交接引用。GitHub `ci` run `43580799770` 已越过权威路由步骤，之后因既有单测失败而总体FAIL；因此本项限定为`AUTHORITY_ROUTE_PASS`，不是CI全绿。
+- **自动部署配置** `5b02081b`：仓库根新增`vercel.json`，`git.deploymentEnabled=false`；依据Vercel官方Git配置规范关闭Git提交驱动的自动部署。该配置与真实项目是否完全生效需通过后续main提交和Vercel部署记录交叉验证；未证实时保持`DEPLOYMENT_ISOLATION_HOLD`。
+- **未碰范围**：未修改业务生产链、数据库、Storage、正式Gate/Reviewer；后续主链改动仍需先取得部署隔离实证。
+- **已知待续**：当前业务单测6 FAIL（4测试文件），隔离PG/HTTP历史失败需修复后按精确SHA再跑；M5持续`M5_OVERALL_HOLD`。
