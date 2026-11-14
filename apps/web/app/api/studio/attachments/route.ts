@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getSession } from "../../../../lib/session";
 import { signDatabaseSessionToken } from "../../../../lib/auth";
-import { getNodePgPool, createPrivateOriginalRepository, createPrivateOriginalWorkflow, createPrivateOriginalStorage, createLocalPrivateOriginalStorage, MAX_ORIGINAL_BYTES } from "@mohen/data-access";
+import { getNodePgPool, createPrivateOriginalRepository, createPrivateOriginalWorkflow, createPrivateOriginalStorage, createLocalPrivateOriginalStorage, createPrivateSourceRegistrationRepository, MAX_ORIGINAL_BYTES } from "@mohen/data-access";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -110,13 +110,37 @@ export async function GET(req:Request){
  if (projectId !== null && originalId === null) {
   if (!UUID.test(projectId))return fail("bad_request",400);
   try {
-   const originals=await createPrivateOriginalRepository(getNodePgPool()).listForProject(
-     projectId,signDatabaseSessionToken(session));
-   return NextResponse.json({ok:true,project_id:projectId,originals:originals.map(o=>({
-     original_id:o.original_id,project_id:o.project_id,asset_revision_id:o.asset_revision_id,
-     file_name:o.file_name,content_type:o.content_type,sha256:o.sha256,
-     byte_size:o.byte_size,state:o.state,
-   }))},{headers:noStore});
+   const pool=getNodePgPool();
+   const token=signDatabaseSessionToken(session);
+   const originals=await createPrivateOriginalRepository(pool).listForProject(projectId,token);
+   const registrations=createPrivateSourceRegistrationRepository(pool);
+   // Only the trusted owner/RLS source-registration helper can confirm an L0
+   // source binding. A stored byte object is NOT yet an eligible D00 source.
+   const checked=[];
+   for(const original of originals){
+    let registrationState="UNBOUND",sourceVersionId:string|null=null;
+    try{
+     const registration=await registrations.lookup(original.original_id,token);
+     if(registration.project_id===projectId&&registration.original_id===original.original_id&&
+        registration.sha256===original.sha256&&registration.content_type===original.content_type&&
+        Number(registration.byte_size)===Number(original.byte_size)&&
+        registration.asset_revision_id===original.asset_revision_id){
+       registrationState="BOUND";sourceVersionId=registration.source_version_id;
+     }
+    }catch(error){
+     // The existing helper reports absent/invalid registration by this exact
+     // code; all other SQL/RLS errors must propagate, not become "no source".
+     if(!(error instanceof Error&&error.message==="PRIVATE_SOURCE_REGISTRATION_INVALID"))throw error;
+    }
+    checked.push({
+     original_id:original.original_id,project_id:original.project_id,
+     asset_revision_id:original.asset_revision_id,file_name:original.file_name,
+     content_type:original.content_type,sha256:original.sha256,
+     byte_size:original.byte_size,state:original.state,
+     registration_state:registrationState,source_version_id:sourceVersionId,
+    });
+   }
+   return NextResponse.json({ok:true,project_id:projectId,originals:checked},{headers:noStore});
   }catch(e){return errorResult(e);}
  }
  if (!originalId||projectId!==null||!UUID.test(originalId))return fail("bad_request",400);
