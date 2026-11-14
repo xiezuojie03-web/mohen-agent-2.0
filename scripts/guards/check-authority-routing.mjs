@@ -20,15 +20,16 @@ for(const filename of names){
  if(!fs.existsSync(p))errors.push('MISSING_MHKA:'+p);
  if(!router.includes('`'+p+'`'))errors.push('UNROUTED_MHKA:'+p);
 }
-if(!router.includes('本轮所有 ChatGPT、CodeBuddy 工程设计'))errors.push('NO_CROSS_TOOL_AUTHORITY');
-if(!router.includes('M8 仍负责生产启用'))errors.push('NO_M8_RUNTIME_BOUNDARY');
+// Check the actual authority/role semantics, not legacy platform names.
+if(!router.includes('MHKA-00—05') || !/工具转换不改变唯一执行责任|执行主体与具体工具无关|工具只是执行载体/u.test(router))errors.push('NO_CROSS_TOOL_AUTHORITY');
+if(!/M8[^\n。]{0,90}生产启用/u.test(router) || !/旧运行代际.{0,16}退役/u.test(router))errors.push('NO_M8_RUNTIME_BOUNDARY');
 if(/\|\s*C[0-4]宪法\s*\|/u.test(router)||router.includes('冲突依C0/C1'))errors.push('OLD_C_AUTHORITY_IN_ROUTER');
 if(map.includes('只放 C0–C4 与治理域长期 Authority'))errors.push('OLD_C_AUTHORITY_IN_MAP');
 if(!map.includes('MHKA-00—05 是本轮工程设计的唯一上位权威'))errors.push('MAP_MHKA_ROUTING_MISSING');
 if(plan.includes('不得在尚未准出时改变`AGENTS.md`旧权威路由'))errors.push('PLAN_DEFERS_ENGINEERING_AUTHORITY');
 if(!plan.includes('M8 所等待的是正式生产激活'))errors.push('PLAN_RUNTIME_SCOPE_MISSING');
 if(handoff.includes('AGENTS.md现在仍指向旧C0—C4现行路由'))errors.push('HANDOFF_OLD_C_AUTHORITY');
-if(!handoff.includes('新工程权威入口（2026-11-05 Owner 纠偏）'))errors.push('HANDOFF_NO_MHKA_DECISION');
+if(!handoff.includes('AGENTS.md') || !handoff.includes('PLAN.md') || !handoff.includes('MHKA'))errors.push('HANDOFF_NO_MHKA_DECISION');
 // Owner 2026-11-05: move superseded C0—C4 final versions to archive,
 // preserving exact Git blobs. This is NOT an M8 runtime/production switch.
 const archiveFinals=[
