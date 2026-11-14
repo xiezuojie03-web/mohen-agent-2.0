@@ -4101,3 +4101,18 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 **现存主干阻断**：Registry六阶段唯一Adapter仍为`layer1`，而现有可信原件Worker的唯一受审Adapter为`private-evidence-adapters.mjs`；该Worker D00要求原件owner/session、字节、准确source/version、消费者方法预选及真实`acquisition` Y07取得证据，独立G0需同run的当前资格。当前只连接到**真实来源准入与生产前置**，没有绕过受控绑定直接签G或假装D00全链已启动。下一动作按现有Runner/Registry/Private Worker的相邻合同补接可信取得记录与选定受权绑定，经真实隔离环境签审G0，不能重做Y01/创建第二Runner/Producer越权写source表。
 
 **M5准出不变**：`M5_OVERALL_HOLD`，同一真实历史作品的8维度仍须在持久非生产环境贯通并由Owner正式体验；局部CODE/UNIT/HTTP通过不得冒充整体PASS。
+
+---
+
+## 2026-11-14｜M5批次A：唯一Registry私有原件Adapter接线、Studio D00启动与Y07受限回读（本轮GitHub施工）
+
+- **唯一施工依据**：`PLAN.md V1.7` §0、§3.5 B/C及§6；Owner明确本轮直接施工，不修改PLAN、不做M1—M4全盘重复审查、不新建分支/Runner/Registry/Gate。main自动生产部署隔离已在写前只读核实，生产DB/Storage/正式Gate/Provider/公众未动。
+- **施工前源基线**：`main@95625379b92c5fe72cd68bedd7975943ec8770e8`。本轮经精确HEAD比对，以GitHub单main条件提交；未接入Owner本地Trae，**本地未提交成果状态未核、不得据此宣称已同步工作站**。
+- **提交①** `c6a05f83e7075402395a5d51d0e37e1f876f6f50`：唯一`production-registry.json`及schema增加六阶段受审私有Adapter候选绑定，保留非私有`layer1`；Runner按原件scope校验精确绑定；适配Private Worker和单测。首次CI [43608695824](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43608695824) FAIL：旧`studio-private-handoff`预期没有对应新明确绑定；隔离PG17 [43608695778](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43608695778) SUCCESS。
+- **提交②** `b098f254a610d6bfa618f8e679819c28ecc2ba89`：仅修该旧测试适应已审双路径，不放宽缺权限/假Adapter拒绝；主CI [43609032951](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43609032951) **SUCCESS**。
+- **提交③** `86faf76a456de0ca68199a6248bbbfd49b52c1b9`：Studio Production POST→唯一Runner保持真正Creator/Project/Root Task、L0精确source_version、原件SHA、真实页码及短期Owner-RLS身份；私有生产选受审私有Adapter，不经旧layer1自由网络主题路径；本批只运行到`--to D00`，根据载体显式C01或C02（不支持的载体HOLD）。主CI [43609531029](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43609531029) SUCCESS；隔离PG17 [43609531072](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43609531072) SUCCESS。
+- **提交④** `2a34f3f6f1fd4452825ba059a6a4c06d11cf3c4c`：对已上传且`STORED_VERIFIED`的真实私有文件，Owner-RLS仓储返回持久创建/验证时间；仅在可信Worker实际回读原件、核查字节/SHA和L0版本成功后，登记Y07`M9001@private-original-readback.v1`本地回读方法及一次真实尝试，记录`upstream_acquisition_claim=not_attested_by_this_readback`、不推断任何来源权利；独立G0必须另核`machine_read/retain`逐动作许可及basis。无持久时间、错SHA、错项目、未知权利仍HOLD。首次主CI [43610359428](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43610359428) FAIL（TS接口声明未同步），对应HTTP构建未执行，不能记正向PASS。
+- **提交⑤⑥** `642c3323ef868c664f95896bafac1cc1da85409b`：补`index.d.mts`的时间戳声明，隔离HTTP/Chromium [43610472680](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43610472680) **SUCCESS**；同SHA主CI [43610472720](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43610472720) FAIL：原`private-candidate-worker`旧无取得账反例预期`ACQUISITION_REQUIRED`，现已细化为`ACQUISITION_UPLOAD_EVENT_MISSING`。随后`8b0efba79a41ea15238343688c3b3ac1f646a265`仅修此负例断言继续失败关闭；主CI [43610692797](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43610692797) **SUCCESS**。
+- **证据等级**：双路径Registry/Studio真实任务参数/Y07实际本地回读代码和CI`CODE_PRESENT+CI_SUCCESS`；隔离PG/HTTP仅对对应较早精确SHA已有回归证据，非最新HEAD同一真实作品G0正签。**没有**本轮真实登录Studio→Runner→Worker→D00生成真实来源候选→独立G0 PASS/当前资格回读/恢复的持久集成证据；此项`NOT_RUN/DEFERRED_ENV`，不能把新增Y07源码或单测冒充来源合法取得，不能把先前组件级正签拼接为本次主链正签。
+- **最前阻断/唯一下一入口**：在具有真实已授权原件、私人字节、PG17持久库存、Owner身份、独立授权服务、Gate Reviewer的具名持久非生产环境，从Studio本人项目原任务执行本批D00-only真实启动，逐次保留同run的Y07实际获取账/权限来源、Producer G0候选、Reviewer资格回执和恢复/HOLD。若外部馆藏取得/权利依据不完备，必须停在专业G0，不可将本地回读当外部馆藏下载许可。当前ChatGPT GitHub连接器没有Owner本地实际运行环境，故没有擅用生产库、未伪造签发。
+- **最终状态**：`M5_REMEDIATION_ACTIVE / M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY`；仍以PLAN §3.5 B同一真实作品八维作为唯一M5准出，其他M6—M8不提前激活。
