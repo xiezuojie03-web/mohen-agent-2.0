@@ -11,7 +11,8 @@ const source={originalId:id,pageNumber:2,sourceVersionId:id,sha256:"a".repeat(64
 const privateAdapter="pipelines/data-production/adapters/private-evidence-adapters.mjs";
 const oldAdapter="pipelines/data-production/adapters/layer1-adapters.mjs";
 const canonical=(adapter:string)=>({jobs:["D00","D01","D02","D03","D04","D05"].map(stage=>({
- stage,implementation:{adapter_binding:adapter}
+ stage,implementation:{adapter_binding:oldAdapter,
+ ...(adapter===privateAdapter?{private_evidence_adapter_binding:privateAdapter}:{})}
 }))});
 
 it("never binds genuine private originals to the parallel layer1 adapter",()=>{
