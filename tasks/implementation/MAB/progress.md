@@ -7,7 +7,7 @@
 - **接续读法**：先核GitHub最新main与CI → 读`CURRENT.md`当前事实 → 读`PLAN.md`相应阶段/QR/CP → **只读本账末尾最新实际批次、相关历史ID/证据**，不要求每次从头扫描数千行。
 - **时间口径**：历史PASS/HOLD、旧HEAD及推送计划只对原批次和环境有效；后续批次可能推翻旧结果，必须以精确SHA、执行环境和真实回执区分`CODE_PRESENT / VERIFIED_ISOLATED / VERIFIED_LIVE / HOLD / NOT_RUN`。
 - **写入原则**：历史账不删除、不整段重写、不以“清爽”为由丢掉原始证据；新施工按时间**追加**批次记录，含需求ID、before/after SHA、受影响文件、正反权限测试、PG/HTTP/真实数据、费用（适用时）、HOLD/回退和下一精确动作。只有运行事实变化才改`CURRENT.md`；仅执行标准变更才改`PLAN.md`。
-- **单main边界**：现行Owner裁决以`PLAN.md` V1.6为准；历史本地批量推送可留作过程事实，不替代当前单main的并发保护和生产自动部署隔离。
+- **单main边界**：现行Owner裁决以`PLAN.md` V1.7的§3.5 B八维为唯一当前M5准出依据；历史本地批量推送、旧阶段/QR/CP只保留回溯身份，不替代当前单main并发保护或必要专业门禁。
 
 ---
 
@@ -4081,3 +4081,23 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **实际受控修订**：`PLAN.md` V1.6→V1.7，§0入口/QR依赖、§0.2 CP意义、§2责任、§3历史阶段说明、§3.5 C、§4/§5的施工组织改为同一真实作品M5八维驱动、优先主干和相邻接口、必要支管随节点接入；旧M0—M4仅可按需追溯已建能力与固定专业条件。全部QR 10、CP 9、M0—M8编号9、八维8和附录A—D不删。必要安全/独立Gate/权利/Provider/费用/非生产环境门禁仍原样有效；M6—M8的后续准出和投运授权不改变。
 - **入口同步**：`AGENTS.md`、`CURRENT.md`及`ENGINEERING_HANDOFF_CURRENT.md`仅同步V1.7引用，不新增工程权威或新阶段。设计路线图V0.4仍为辅助映射及旧HEAD快照，不升级为已批准工程合同；工程验收仍依PLAN+真实CI/PG/HTTP/持久Studio实操。
 - **证据边界**：本批**仅文档/执行口径修订，不是代码施工**；M5维持`M5_OVERALL_HOLD`。下一实际施工从同一Studio任务找最前连接阻断，优先把既有可信Private Worker/Y01、唯一Runner/Registry和独立Gate贯通，不重做Y01，不靠添加Producer写权限或模拟数据凑PASS。
+
+
+---
+
+## 2026-11-14｜Studio真实来源/受控生产输入衔接；唯一M5验收阅读入口
+
+**Owner唯一准出标准**：`PLAN.md V1.7` §3.5 B既有八维；QR/HP/旧M1—M4为源码与历史证据索引，CP为过程检查点，不单独计算M5验收率。本次在PLAN §0前加Owner阅读说明（`f4fd93d8`），不新建指标、版本或方案，不改变原权利/Gate/费用/权限约束。
+
+**本批已入main的真实连接**：
+- `3f091eb8`、`c624436b`：Studio `GET /api/studio/attachments?project_id=`复用已有Owner-RLS项目原件仓储，仅返回已验证原件的安全元数据，绝不导出私有字节/存储key；原`GET ?original_id=`下载不变。
+- `16957071`、`065fb846`、`284754bb`：通过已有Owner-RLS `createPrivateSourceRegistrationRepository.lookup`逐件核真实项目/sha/content-type/bytes/asset-revision/source_version，明确BOUND/UNBOUND；没有准确来源登记则不得冒充正式D00输入。严格JS/TS边界已补，未修改已有数据库权力或来源账簿。
+- `3465fcbf`、`b591b4e1`：Production POST只接收本人done任务绑定的原件ID与真实页码；经RLS `getStored`与L0来源登记双重核验，服务层传递经验证的原件/版本/locator；不信任客户端提供的sha、source_version或project值。当前唯一Registry的六阶段仍绑`layer1-adapters.mjs`，因此`getProductionBlocker`在任何费用预算CAS与Runner前明确拒绝`production_private_adapter_not_bound`。私有Worker的Y07取得方式/回执尚未建立同root合法交接，也明确HOLD，不发明回执。中间CI曾出现TS类型导出错误，已复核修复。
+- `19c381d6`：Studio创作者可选择本项目BOUND原件、输入真实页码，再显式申请正式生产；缺原件/登记时禁用，失败如实提示。
+- `3388fafa`、`15fda338`：新增受控邻接与POST回归测试，覆盖无权、跨Owner、错项目、错SHA、未绑定原件、错误页码、错误Registry路径，不得启动预算/Runner。
+
+**准确质量证据**：最新业务代码`15fda338` GitHub CI [43591589635](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43591589635) **SUCCESS**（静态、unit、构建、权限等）；此前最近一次有对应Web/HTTP改动的`284754bb` GitHub隔离HTTP/Chromium [43591433174](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43591433174) **SUCCESS**；私有Worker与Y01—Y08已有旧版分段PG证据继承，**不能作为当前Studio→同root D00/G0 PASS**。本批无正式DB/Storage迁移、无付费Provider、无独立Gate生产启用、无Vercel生产部署。
+
+**现存主干阻断**：Registry六阶段唯一Adapter仍为`layer1`，而现有可信原件Worker的唯一受审Adapter为`private-evidence-adapters.mjs`；该Worker D00要求原件owner/session、字节、准确source/version、消费者方法预选及真实`acquisition` Y07取得证据，独立G0需同run的当前资格。当前只连接到**真实来源准入与生产前置**，没有绕过受控绑定直接签G或假装D00全链已启动。下一动作按现有Runner/Registry/Private Worker的相邻合同补接可信取得记录与选定受权绑定，经真实隔离环境签审G0，不能重做Y01/创建第二Runner/Producer越权写source表。
+
+**M5准出不变**：`M5_OVERALL_HOLD`，同一真实历史作品的8维度仍须在持久非生产环境贯通并由Owner正式体验；局部CODE/UNIT/HTTP通过不得冒充整体PASS。
