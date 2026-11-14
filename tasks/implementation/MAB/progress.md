@@ -3906,8 +3906,7 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
   2. **G2 `evidence_binding` / G3 `claim_support` / G5 `rights_by_operation`（required）**：均要求 `material_evidence/claim_revision→raw_items→private_originals(STORED_VERIFIED)` + 字节回链（`read_unit_evidence_links`/`claim_evidence_links`）。layer1 D02/D03/D05 写的是 `memory://` 文本对象，无 private_originals、无字节回链 → 同类失败。
   3. **G4 `finding_grounding`**：依赖 G3 的 claim_revision 上游，G3 不过则 G4 连带不过。
 - **这意味着**：B7 只解决了 G0 的「权利口径」；**G1—G5 的「私有原件 + 字节核验」门槛对自由主题网络文本来源整体不成立**。自由主题 D00 能过 G0，但 D01 必被 G1 拦下。
-- **处置选项（需 Owner 裁定，不擅自扩大施工）**：
-  1. **A'（对非私有来源全链放开）**：把 G1—G5 的 `read_unit_binding/evidence_binding/claim_support/rights_by_operation` 同样按「逐动作显式权利 + 载体可回放」口径给非私有来源单开分支（放弃 private_originals 字节核验，字节核验归 `raw_provenance`/`raw_evidence` 独立检查，DESIGN_TARGET_NOT_APPLIED）。改动面大、涉安全关键门，须逐门正反验证。
-  2. **B'（自由主题改走私有原件登记）**：让自由主题检索到的文本按私有原件模型落地（STORED_VERIFIED 字节核验 + 显式权利），复用已验证的 private-evidence G1—G5 门。语义上「网络文本当私有原件」需另议，但复用度最高。
-  3. **C'（撤销 8963c9d 的 layer1 切换）**：自由主题回归 private-evidence-adapters 整链（其 D00—D05 已按私有原件口径跑通），layer1 仅保留历史/SAMPLE-TRIAL 用途。
-- **口径边界**：本批只做前瞻核 + 记账，零代码改动、零 DDL、未签任何 Gate；`M5_OVERALL_HOLD` 不变；D00→G0 组件级正向结论不受影响。**PENDING_PUSH** 延续。
+- **处置选项（Owner 追问「这些不应该在设计文件里都有吗？」→ 查证后判定 A' 即设计本意，非另造设计）**：`specs/data-production/gates/G0-G5_MACHINE_GATE_CONTRACT_V3.0.md` §2 表 + §12.4 明确各门语义：G0 准入=`合法来源作品/版本/数字副本、文件可读证明、逐动作 machine_read/retain 许可及依据`；G1=`read_unit 原件定位、覆盖/完整性、读取方法/工具版本、可回放性、用途画像`；G2=`材料类型、来源声音、原文主张、支持/反证`；G3=`证据支持与反证、见证独立性`；G5=`权利动作、scope、consumer、依赖快照`。**设计从未要求 `private_originals STORED_VERIFIED`**——那是 `rule-gate-reviewer.mjs` 实现时把「数字副本+文件可读证明」过度收窄成「字节核验私有原件」的结果。故 **A'（G1—G5 对非私有来源按设计语义放开）即设计本意**；另需把 layer1 D01—D05 的对象类型/候选结构对齐到 k3（如 D01 `read_run`→`read_unit`、G3 `relation_claim`→`claim_revision`）。
+  1. **A'（设计本意，采纳）**：按设计语义放开 G1—G5 的 private_originals 硬约束（逐动作显式权利 + 载体可回放定位），并修 layer1 D01—D05 对象类型/候选结构。字节核验归 `raw_provenance`（DESIGN_TARGET_NOT_APPLIED）。
+  2. B'（自由主题改走私有原件登记）/ C'（撤销 layer1 切换）作为备选，仅在 A' 逐门正反验证不过或 Owner 另有裁定时采用。
+- **口径边界**：本批只做前瞻核 + 设计查证 + 记账，零代码改动、零 DDL、未签任何 Gate；`M5_OVERALL_HOLD` 不变；D00→G0 组件级正向结论不受影响。**PENDING_PUSH** 延续。
