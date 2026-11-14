@@ -114,6 +114,39 @@ function assessRights(rows, ctx) {
   return { ok: true, detail: observed.join(" ") };
 }
 
+// 非私有来源（无 studio.private_originals）的 G0 权利判定：合同 G0 的
+// rights_by_operation 只判「逐动作显式权利」（CP2-A 权利词典），字节核验属独立的
+// raw_provenance 检查（DESIGN_TARGET_NOT_APPLIED，另行）——不能因为不是私有原件
+// 就拒绝有显式授权的合法来源（Owner 2026-11-14 裁定口径）。
+function assessNonPrivateRights(rows, ctx) {
+  if (!rows.length) return { ok: false, reason: "rights_record_missing" };
+  const observed = [];
+  for (const row of rows) {
+    const which = text(row.source_id) || text(row.source_version_id);
+    const evidence = json(row.rights_evidence);
+    if (!evidence || typeof evidence !== "object" || Array.isArray(evidence)) {
+      return { ok: false, reason: `rights_evidence_missing:${which}` };
+    }
+    const basis = text(evidence.basis).trim();
+    if (!basis) return { ok: false, reason: `rights_basis_missing:${which}` };
+    // 逐动作显式许可：machine_read/retain 任何一项不是 allowed 就 HOLD。
+    const decision = decideRightsActions(
+      row.rights_by_action == null ? null : json(row.rights_by_action),
+      REQUIRED_SOURCE_ACTIONS
+    );
+    if (!decision.ok) {
+      return { ok: false, reason: `rights_action_not_allowed:${which}:${decision.reasons[0] ?? "rights_actions_empty"}` };
+    }
+    if (evidence.expires_at != null) {
+      const at = Date.parse(text(evidence.expires_at));
+      if (!Number.isFinite(at) || at <= ctx.now) return { ok: false, reason: `rights_expired_or_unreadable:${which}` };
+    }
+    const entry = `${which}:basis=${basis};actions=${REQUIRED_SOURCE_ACTIONS.join(",")}=allowed`;
+    if (!observed.includes(entry)) observed.push(entry);
+  }
+  return { ok: true, detail: observed.join(" ") };
+}
+
 async function checkRightsByOperation(ctx) {
   if (ctx.gate === "G5") {
     const ot = text(ctx.candidate.object_type);
@@ -214,7 +247,17 @@ async function checkRightsByOperation(ctx) {
       and o.sha256 = ri.checksum_sha256 and o.byte_size = ri.byte_size and o.project_id = :'project'
     join source.sources s on s.source_id = v.source_id
     where v.source_version_id = :'objectId'`, { objectId: ctx.candidate.object_id, project: ctx.project });
-  return assessRights(rows, ctx);
+  if (rows.length) return assessRights(rows, ctx);
+  // 非私有来源（自由主题网络文本等）：无 private_originals，但若 source.sources
+  // 已有显式 rights_by_action + rights_evidence，则按逐动作权利判定放行；
+  // 字节核验（raw_provenance）是独立检查、另行 HOLD，不在这里混入。
+  const nonPrivate = await ctx.query(`select s.source_id::text as source_id,
+      v.source_version_id::text as source_version_id,
+      s.rights_by_action::text as rights_by_action, s.rights_evidence::text as rights_evidence
+    from source.source_versions v
+    join source.sources s on s.source_id = v.source_id
+    where v.source_version_id = :'objectId'`, { objectId: ctx.candidate.object_id });
+  return assessNonPrivateRights(nonPrivate, ctx);
 }
 
 async function checkReadUnitBinding(ctx) {
@@ -638,7 +681,7 @@ export function createRuleGateReviewer({
 } = {}) {
   if (typeof query !== "function" || typeof decide !== "function") throw Error("RULE_REVIEWER_DEPENDENCIES_REQUIRED");
 
-  async function loadCandidate(gate) {
+  async function loadCandidate(gate, candidateId = null) {
     const rows = await query(`select candidate_id::text as candidate_id, gate_code, stage, object_type, object_id::text as object_id,
         artifact_revision, purpose_namespace, purpose_code, purpose_version, allowed_scope::text as scope, consumer,
         evidence_refs::text as evidence_refs, dependency_snapshot::text as dependency_snapshot,
@@ -646,7 +689,8 @@ export function createRuleGateReviewer({
       from control.gate_candidates
       where gate_code = :'gate' and consumer = 'producer' and candidate_status = 'SUBMITTED'
         and allowed_scope->>'project_id' = :'project'
-      order by submitted_at desc`, { gate, project: projectId });
+        ${candidateId ? "and candidate_id = :'cid'" : ""}
+      order by submitted_at desc`, candidateId ? { gate, project: projectId, cid: candidateId } : { gate, project: projectId });
     if (!rows.length) throw Error("NO_SUBMITTED_CANDIDATE");
     if (rows.length > 1) log(`MULTIPLE_SUBMITTED_CANDIDATES ${gate} count=${rows.length} using=${rows[0].candidate_id}`);
     const row = rows[0];
@@ -700,7 +744,7 @@ export function createRuleGateReviewer({
     return found[0];
   }
 
-  async function review({ gate, dryRun = false }) {
+  async function review({ gate, dryRun = false, candidateId = null }) {
     if (!RULE_VERSION_BY_GATE[gate]) throw Error("GATE_ARGUMENT_INVALID");
     const ruleVersion = RULE_VERSION_BY_GATE[gate];
     const policy = await query(`select required_checks::text as required_checks, max_validity::text as max_validity
@@ -710,7 +754,7 @@ export function createRuleGateReviewer({
     const requiredChecks = textArray(policy[0].required_checks);
     if (!requiredChecks.length) throw Error(`GATE_POLICY_CHECKS_MISSING:${gate}`);
 
-    const candidate = await loadCandidate(gate);
+    const candidate = await loadCandidate(gate, candidateId);
     const upstream = await loadUpstream(gate, candidate);
     const ctx = { gate, ruleVersion, candidate, upstream, project: projectId, now: now(), query };
 

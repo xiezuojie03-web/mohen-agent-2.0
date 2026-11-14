@@ -114,7 +114,9 @@ async function autoSign(query, { run_id, gate_code, input_digest, stage }) {
     });
     // The reviewer's loadCandidate filters by project_id; our candidate already
     // carries the right scope, so review({gate}) finds and signs it.
-    const outcome = await reviewer.review({ gate: gate_code });
+    // 精确指向按 input_fingerprint 命中的候选，避免误评同 gate+project 下
+    // 更晚提交的其它候选（如未授权照片 HOLD 之外的 PASS 文本候选顺序问题）。
+    const outcome = await reviewer.review({ gate: gate_code, candidateId: cands[0].candidate_id });
     if (outcome.status !== "PASS") return null;
     return await findCurrentAudit(query, { run_id, gate_code, input_digest });
   } catch (err) {

@@ -3862,3 +3862,25 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
   4. **B3/B5（sandbox EPERM）**：`verify-local-execution-env.mjs` 内部 `execFileSync` 跑测试套件、`studio-production.ts` `spawn(run.mjs,{stdio:["ignore","pipe","pipe"]})` 在本 sandbox 均 EPERM。`MOHEN_DB_DRIVER=pg` 可绕过 psql；但「从 Studio 真 UI 触发」需非 sandbox 环境（或把 spawn 改 `stdio:"inherit"` 并放弃 stderr 截尾，属产品代码改动，未擅动）。
 - **下一入口**：① Owner 裁定 B7（自由主题文本来源 G0 权利/资格口径）→ ② 按裁定同步修 B8 测试（adapter-binding/execution-authorization 断言与 registry 一致）→ ③ `verify-local-execution-env.mjs` 重新出证（git_head 对齐 1c35f3e）→ ④ 非 sandbox 环境从 Studio 真 UI 触发自由主题，核 D00→独立 G0 自动签发是否进 D01。本批不 commit 即推；**PENDING_PUSH**（AGENTS.md §0A 批量推送窗口由 Owner 确认）。
 - **口径边界**：本批只改 3 个源码/守卫文件、零 DDL、未触生产库、未签任何 Gate；G0 资格/权利口径未决前 `M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变；证据等级仍 `CODE_PRESENT`（B2/B6/B4 就位，未达 `VERIFIED_ISOLATED`）。
+
+---
+
+## 2026-11-14｜B7 裁定落地：G0 权利口径对齐合同（非私有来源逐动作显式授权）+ 自动签发指向修复（B9）
+
+- **Owner 裁定（照录）**：问「设计要求是什么样的？不应该只要是合法资源都可以吗？」→ 裁定口径为**任何有显式逐动作授权的合法资源（不管是否私有原件）都应能过 G0**；「合法」= 显式 `rights_by_action`（machine_read+retain=allowed）+ `rights_evidence.basis`，**不得**从 CC 标签/公开自述/来源类别推断（沿用 Owner 2026-11-08 裁定）。
+- **设计依据**：`gate-contracts.v3.json` G0 `checks` 把 `rights_by_operation`（逐动作权利）与 `raw_provenance`（来源/字节核验）列为两个独立检查；现行实现把两者混进一个 `private_originals + STORED_VERIFIED` 查询，故非私有来源恒 `rights_record_missing`。修法 = 把 `rights_by_operation` 还原为「逐动作权利」，字节核验留给 `raw_provenance`（仍 `DESIGN_TARGET_NOT_APPLIED`）。
+- **本批变更（3 文件，定向 + 失败关闭不变）**：
+  1. `tools/rule-gate-reviewer.mjs`：新增 `assessNonPrivateRights`（与 `assessRights` 同口径，但不要求 `STORED_VERIFIED`）；`checkRightsByOperation` 非 G5 分支先查私有原件，查不到再走非私有 fallback（读 `source.sources.rights_by_action`/`rights_evidence`，仍要求 `machine_read`+`retain`=allowed + `basis`）；`loadCandidate`/`review` 增加可选 `candidateId` 精确指向。
+  2. `tools/local-gate-service.mjs`：`autoSign` 把按 `input_fingerprint` 命中的候选 `candidate_id` 传给 `review`，避免误评同 gate+project 下更晚提交的其它候选（**B9**：`loadCandidate` 原只取最新，照片 HOLD 之外的顺序会误伤文本候选）。
+  3. `pipelines/data-production/adapters/layer1-adapters.mjs`：新增 `explicitRightsForMaterial`（只对 `shanghai-library` 开放数据 stamp 显式 `rights_by_action`/`rights_evidence`，CP2-C 同口径）；D00 文本 G0 候选 `object_type` 由 `source` 改为 `source_version`、`objectId` 由 `source_id` 改为 `version_id`；Wikimedia Commons 照片因无显式授权改记 `HOLD`（`PHOTO_RIGHTS_NOT_EXPLICIT`，不入 SUBMITTED 池）。
+- **真实测试证据**：
+  - `node --check` 三 mjs 通过；`apps/web` `tsc --noEmit` **0 错误**。
+  - 全量 `node --test tests/data-production/*.test.mjs` = **241 通过 / 5 失败 / 0 跳过**（5 失败仍为预存，与上批相同，本批未引入新失败）。
+  - `assessNonPrivateRights` 纯逻辑正反实测：有 `machine_read/retain=allowed`+`basis` → **ok**；`machine_read=unknown` → `rights_action_not_allowed`；无 evidence → `rights_evidence_missing`；空 → `rights_record_missing`（失败关闭成立）。
+  - 真库反例：无显式 `rights_by_action` 的来源版本 → `decision_ok=false`（不放行）。真库现无「非私有来源 + 显式权利」样本（CP2-C 已 stamp 的来源均有私有原件），故正向 fallback 以纯逻辑验证为准，待真实自由主题运行覆盖。
+- **未关闭缺口（延续上批）**：
+  1. **B8（5 测试预存失败）**：仍待修 `adapter-binding.test.mjs`/`execution-authorization.test.mjs`（registry 已 layer1，测试仍断言 private-evidence）→ 修后才可 `verify-local-execution-env.mjs` 转 PASS。
+  2. **B1（evidence 陈旧）**：`enable-requires-evidence.json` git_head 仍 `21436301`，需 B8 后重新出证。
+  3. **B3/B5（sandbox EPERM）**：本会话仍无法跑 `verify-local-execution-env.mjs` 内部 `execFileSync` 测试套件与 `studio-production.ts` `spawn(run.mjs)` 真 UI 链；正向 D00→G0 自动签发待非 sandbox 环境（或 `MOHEN_DB_DRIVER=pg` + spawn stdio 重构）真跑。
+- **下一入口**：① 修 B8 测试断言（adapter-binding/execution-authorization 与 layer1 registry 对齐，或按 Owner 后续裁定回退）→ ② `verify-local-execution-env.mjs` 重新出证（git_head 对齐当前 HEAD）→ ③ 非 sandbox 环境从 Studio 真 UI 触发自由主题，核 D00→独立 G0 自动签发（本轮 B7/B9 修复后的首次正向覆盖）→ ④ 继续 D01—D05 逐门核。本批本地提交登记 **PENDING_PUSH**。
+- **口径边界**：仍零 DDL、未触生产库、未签任何 Gate；`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变；证据等级 `CODE_PRESENT`（B7/B9 就位、纯逻辑/负向已验证，正向待真 UI 覆盖）。

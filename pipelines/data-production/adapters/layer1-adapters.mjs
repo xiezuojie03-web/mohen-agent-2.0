@@ -308,6 +308,32 @@ async function writeGate(runId, stage, gateCode, objectType, objectId, result, r
 // ============================================================
 // D00 来源摄取（L0/G0）——确定性
 // ============================================================
+// 自由主题来源的逐动作权利显式化（CP2-A/CP2-C 口径）：只有已获 Owner 显式授权的
+// 渠道才 stamp rights_by_action + rights_evidence；未授权渠道返回 null（不 stamp，
+// G0 rights_by_operation 失败关闭）。Owner 2026-11-08 裁定：不得从 CC 标签/公开
+// 自述/来源类别推断许可——因此 wikimedia-commons/LOC 等未经显式授权一律不 stamp。
+function explicitRightsForMaterial(m) {
+  if (m?.provider === "shanghai-library") {
+    return {
+      rights_by_action: {
+        access_view: "allowed", machine_read: "allowed", retain: "allowed", quote: "allowed",
+        display: "unknown", download: "unknown", adapt: "unknown", redistribute: "unknown", external_processing: "unknown",
+      },
+      rights_evidence: {
+        schema: "mohen.rights-evidence.v1",
+        basis: "owner_authorization",
+        scope: "project_internal_research",
+        dataset: "Shanghai Library Open Data Platform (data1.library.sh.cn) incl. partner institutions",
+        granted_actions: ["access_view", "machine_read", "retain", "quote"],
+        held_actions: ["display", "download", "adapt", "redistribute", "external_processing"],
+        owner_decision_at: "2026-11-08",
+        note: "自由主题来源沿用 CP2-C（stamp-shl-open-data-rights.mjs）的上海图书馆开放数据逐动作授权；其余渠道未获显式授权，不 stamp。",
+      },
+    };
+  }
+  return null;
+}
+
 async function d00SourceIntake({ run, job, input, context }) {
   const runId = run.run_id;
   const sourceVersions = [];
@@ -389,7 +415,16 @@ async function d00SourceIntake({ run, job, input, context }) {
         );
       }
     }
-    await writeGate(runId, "D00", "G0", "source", sourceId, "PASS", [], { title: m.title }, null, input);
+    // G0 逐动作权利显式化：已获授权渠道（上海图书馆开放数据）stamp 显式
+    // rights_by_action + rights_evidence；未授权渠道不 stamp，由 G0 失败关闭。
+    const explicitRights = explicitRightsForMaterial(m);
+    if (explicitRights) {
+      await dbRun(
+        `update source.sources set rights_by_action = :'ra'::jsonb, rights_evidence = :'re'::jsonb where source_id = :'source_id'::uuid`,
+        { ra: JSON.stringify(explicitRights.rights_by_action), re: JSON.stringify(explicitRights.rights_evidence), source_id: sourceId }
+      );
+    }
+    await writeGate(runId, "D00", "G0", "source_version", versionId, "PASS", [], { title: m.title }, null, input);
     // 来源元数据向下游透传（D02 逐条证据归属 + D05 证据指针返证都用它）
     sourceVersions.push({
       source_id: sourceId, source_version_id: versionId, title: m.title, fragments: m.fragments,
@@ -450,7 +485,9 @@ async function d00SourceIntake({ run, job, input, context }) {
           { item_id: randomUUID(), version_id: versionId, storage_ref: outFile, media_type: dl.contentType, checksum: dl.sha256 }
         );
       }
-      await writeGate(runId, "D00", "G0", "source", sourceId, "PASS", [], { title, kind: "photo" }, null, input);
+      // Wikimedia Commons（CC）未经 Owner 显式授权（2026-11-08 裁定不得从 CC 标签推断许可），
+      // 来源照常登记，但 G0 资格按失败关闭记 HOLD，不进入 SUBMITTED 池。
+      await writeGate(runId, "D00", "G0", "source_version", versionId, "HOLD", ["PHOTO_RIGHTS_NOT_EXPLICIT"], { title, kind: "photo" }, null, input);
       photoSources.push({
         source_id: sourceId, source_version_id: versionId, title,
         feature_key: p.feature_key, entity_label: p.entity_label,
