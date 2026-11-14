@@ -3934,5 +3934,5 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **真实测试证据**：
   - `node --check` 通过；全量 `tests/data-production` = **243 通过 / 3 失败**（3 失败仍为 sandbox spawn/symlink EPERM，与本批无关）。
   - **组件级正向实测（真库 + 真 8789）**：复用 run `dead0003` 已签 G0+G1 审计，建 `material_evidence(input_fingerprint=hex + locator.source_version_id=非私有源版本)`，提交 G2 候选（依赖 G1 审计）→ `POST /verify` 返回 **200 PASS** → 落库真实 `G2 PASS / independent_gate` 审计（`8094994e-…`）。
-- **未关闭**：G3（`claim_support` 非私有 + **layer1 D03 完整性缺口**：`claim_revisions` 缺 `asserted_time_json`、对象类型用 `relation_claim` 而门查 `claim_revision`、`producer_method_id='W05'` 需核是否入 `d03AuthorizedMethods`）/G5（非私有 `rights_by_operation`）；G4 依赖 G3。B1/B8(3 环境受限)/sandbox EPERM 不变。
-- **下一入口**：G3（先补 layer1 D03 `claim_revisions` 的 `asserted_time_json` + 对象类型 `relation_claim`→`claim_revision` + 方法口径，再加非私有 `claim_support` 分支）→ G5。**PENDING_PUSH**。
+- **未关闭**：G3（`claim_support` 非私有 + **layer1 D03 三重缺口**：① `claim_revisions` 缺 `asserted_time_json`、② 对象类型用 `relation_claim` 而门查 `claim_revision`、③ **方法契约错配——`method-binding-contract.json` 的 `m5_isolated_binding.bound_methods=[C01,C02,H05,W07,A06,P02]`，D03 只绑 W07，而 layer1 D03 写的是 `W05`（关系，HOLD）→ `d03AuthorizedMethods()` 不含 W05 → `claim_method_not_authorized_for_d03:W05`**）/G5（非私有 `rights_by_operation`）；G4 依赖 G3。B1/B8(3 环境受限)/sandbox EPERM 不变。
+- **下一入口（需 Owner 裁定方法口径）**：G3 的 W05→W07 不是改标签能解决的——W05（关系）与 W07（世界主张，private-evidence 已用）语义不同。选项：① layer1 D03 重写为产出 W07 主张（substantial）；② 给 W05 补方法绑定/正反测试（契约变更）；③ 自由主题 D03—D05 整体改走 private-evidence（其已按 W07/A06/P02 跑通）。B7/A' 的 G0—G2 已落地并正向，G3—G5 由此分岔。**PENDING_PUSH**。
