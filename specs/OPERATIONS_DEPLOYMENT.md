@@ -103,15 +103,35 @@ psql -h aws-0-ap-southeast-1.pooler.supabase.com -p 5432 -U postgres.<ref> -d po
 
 ## 4｜密钥位置索引（不写明文）
 
+> **2026-11-14 更新：钥匙册唯一存放处改为仓库根 `.secrets/`（已 gitignore，绝不提交）。** 原因：`D:\MoHen\` 根目录对当前工程会话不可写、散落多处易失管。旧位置仅作只读兼容回退。任何密钥换新后存入 `.secrets/` 对应文件，然后跑 `pnpm check:credentials` 确认。
+
 | 密钥/凭据 | 存放位置 | 说明 |
 |---|---|---|
-| Supabase 数据库密码 | `D:\MoHen\supabase\db_url.txt`（直连串，含密码） | 本地 gitignored，**绝不提交**；pooler 串用它拼 |
+| Supabase 数据库连接串（含密码） | `.secrets/supabase-db-url.txt`（旧：`D:\MoHen\supabase\db_url.txt`，只读回退） | pooler 串用它拼；**绝不提交** |
+| Supabase 官方 CA（公开证书，非密钥） | `.secrets/supabase-ca/prod-ca-2021.crt` | SHA256 指纹 `80:70:25:AD:…:CA:FA`（与 §0 记录一致），有效期至 2031-04-26 |
 | vercel CLI token | `C:\Users\Administrator\AppData\Roaming\com.vercel.cli\Data\auth.json` | `vercel login` 自动生成 |
 | vercel 项目 id/org | `mohen-agent-2.0/.vercel/project.json` | 本地 gitignored |
 | GitHub 凭据 | git 凭据管理器缓存 | HTTPS + 代理，无单独 token |
-| 本地 PG 密码 | `mohen-agent-2.0/.env.local`（DATABASE_URL） | 本地 gitignored |
-| DeepSeek / 上海图书馆 / 高德 key | `mohen-agent-2.0/.env.local` | 本地 gitignored |
+| 本地 PG / DeepSeek / 上海图书馆 / 高德 key | `mohen-agent-2.0/.env.local` | 本地 gitignored |
 | 代理（芒果 VPN） | `http://127.0.0.1:51081` | 需 VPN 运行中 |
+
+### 4.5｜钥匙体检与换新 SOP（2026-11-14 新增）
+
+一条命令体检全部外部凭据，失效项自动给出换新路径，不打印密钥明文：
+
+```bash
+pnpm check:credentials    # 等价 node tools/check-credentials.mjs；退出码 0=全绿
+```
+
+当前覆盖 4 项：Supabase 生产库（pooler 会话连接 SELECT 1 + 官方 CA 强校验）、Vercel 令牌（GET /v2/user）、GitHub 仓库连通（git ls-remote 走代理）、本地开发库（SELECT 1）。
+
+**换新 SOP（失效时照做，每次约 5 分钟）：**
+
+1. **Supabase 口令**：浏览器 supabase.com/dashboard → mohen-cloud 项目 → Settings → Database → Reset database password → 复制 Connection string（URI）→ 覆盖存入 `.secrets/supabase-db-url.txt` → 重跑体检。注意 Free 计划 7 天不活动会自动暂停，项目页显示 paused 时先点 Restore。
+2. **Vercel 令牌**：命令行 `npx vercel@latest login`（浏览器确认，token 自动写入 auth.json）；或 vercel.com/account/tokens 新建 token 后由工程方写入 auth.json → 重跑体检。
+3. **GitHub**：一般只需芒果 VPN 运行中；凭据由 git 凭据管理器缓存，无需换新。
+4. **CA 证书**：轮换时从官方地址重新下载 `https://supabase-downloads.s3-ap-southeast-1.amazonaws.com/prod/ssl/prod-ca-2021.crt` 存入 `.secrets/supabase-ca/`，并按 §0 核验 SHA256 指纹，不盲目固定旧文件。
+5. 换新完成后**必须**重跑 `pnpm check:credentials` 至全绿，并把换新日期记入 `tasks/implementation/MAB/progress.md`。
 
 ---
 

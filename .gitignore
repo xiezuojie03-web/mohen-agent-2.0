@@ -40,6 +40,9 @@ verification/*
 
 .vercel
 
+# 本机凭据钥匙册（唯一存放处，绝不提交）：体检工具 tools/check-credentials.mjs 读取。
+.secrets/
+
 # 浏览器自动化(Playwright/agent-browser)生成的 DOM 快照临时产物
 s2e.yaml
 s2e-after.yaml

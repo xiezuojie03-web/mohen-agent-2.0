@@ -2827,6 +2827,21 @@ Owner 先问「既有 8 条资产回链为空是怎么造成的」。查证后�
 | 引用文件 | 作用 |
 |---|---|
 | PLAN.md §0.2 M2 CONDITIONAL_EXIT + §3.5 C 第 3 步 | 本批唯一授权来源（关闭定义 + 顺序） |
+
+---
+
+## 2026-11-14｜钥匙册集中化 + 凭据体检工具（本地批，PENDING_PUSH）
+
+**触发**：Owner 指令「先解决 Supabase 口令/Vercel 令牌失效问题，一劳永逸，在本地和云端把信息存起来，不要总是找不到」。
+
+**做了什么**：
+- 新增唯一钥匙册 `.secrets/`（仓库根，已 gitignore）：`supabase-db-url.txt`（自旧位置 `D:\MoHen\supabase\db_url.txt` 迁入，旧位置仅只读回退；发现 `D:\MoHen\` 根对当前会话不可写，是钥匙散失的根因之一）、`supabase-ca/prod-ca-2021.crt`（官方源下载，X.509 SHA256 指纹 `80:70:25:AD:…:CA:FA` 与本手册 §0 记录一致，有效期至 2031-04-26）。
+- 新增 `tools/check-credentials.mjs` + `pnpm check:credentials`：4 项体检（Supabase pooler 会话连接 + CA 强校验、Vercel GET /v2/user、GitHub ls-remote 走代理、本地 PG SELECT 1），失效项输出精确换新路径，不打印密钥明文。实跑：GitHub PASS、本地 PG PASS、Supabase **FAIL 28P01**、Vercel **FAIL HTTP_403**（与 2026-11-12 CURRENT 记录一致，确认为真实失效）。
+- `specs/OPERATIONS_DEPLOYMENT.md` §4 更新钥匙位置索引，新增 §4.5 体检与换新 SOP。
+
+**边界**：本批为运维配置与工具，不改任何业务代码/表结构/Gate；两把失效钥匙的换新需 Owner 浏览器操作（Supabase Reset password、Vercel login），按 §4.5 SOP 执行；`.secrets/` 属 gitignored 本机文件，云端副本按既有规则在换新后经 Vercel env API 写入（本手册 §5），不在本批。
+
+**PENDING_PUSH**：本批提交（tools/check-credentials.mjs、package.json script、.gitignore、OPERATIONS_DEPLOYMENT.md §4/§4.5、本回执）待推送窗口销项。
 | PLAN.md §22 行原文 | 关闭判定边界——不越界到 PDF/page locator |
 | supabase/migrations/20261107120000_mab_m2_private_scanned_page.sql | scanned-page reading 的函数签名、SECURITY DEFINER 入口（runtime 角色不直接碰 source schema） |
 | packages/data-access/src/private-scanned-page-reading-repository.mjs | 运行时验证脚本结构参考 |
