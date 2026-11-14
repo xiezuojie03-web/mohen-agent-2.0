@@ -153,7 +153,7 @@ describe('machine rule reviewer', () => {
       'a.qualification_digest': () => [{
         id: 'audit-g0', gate_code: 'G0', object_type: 'source_version', object_id: 'sv-1',
         artifact_revision: REVISION, result: 'PASS', decision_origin: 'independent_gate', consumer: 'producer',
-        qualification_digest: 'digest-g0', current: 'f',
+        qualification_digest: 'digest-g0', current_valid: 'f',
       }],
     });
     const { reviewer, decisions } = makeReviewer(query);
@@ -210,6 +210,7 @@ describe('machine rule reviewer', () => {
       'from control.gate_candidates': () => [candidateRow()],
       'control.artifact_revision_for': () => [{ revision: REVISION }],
       'from source.source_versions v': () => [rightsRow()],
+      'from control.qualification_current': () => [],
       'a.reviewer_user_id': () => [{
         gate_code: 'G0', result: 'PASS', decision_origin: 'independent_gate', consumer: 'producer',
         reviewer_user_id: MACHINE_REVIEWER_USER_ID, reviewer_db_identity: MACHINE_SIGNER_LOGIN, current: 't',
@@ -293,6 +294,7 @@ describe('machine rule reviewer', () => {
       'from control.gate_candidates': () => [candidateRow()],
       'control.artifact_revision_for': () => [{ revision: REVISION }],
       'from source.source_versions v': () => [rightsRow()],
+      'from control.qualification_current': () => [],
       'a.reviewer_user_id': () => [{
         gate_code: 'G0', result: 'PASS', decision_origin: 'independent_gate', consumer: 'producer',
         reviewer_user_id: '270bcecf-9bfb-4865-9432-a0ac9db8df75', reviewer_db_identity: MACHINE_SIGNER_LOGIN, current: 't',

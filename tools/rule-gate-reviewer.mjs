@@ -768,6 +768,7 @@ export function createRuleGateReviewer({
     const dependencies = candidate.dependency_snapshot;
     if (!Array.isArray(dependencies) || dependencies.length === 0) throw Error(`GATE_ORDER_VIOLATION:missing_${upstreamGate}_dependency`);
     const found = [];
+    let sawNonCurrentUpstream = false;
     for (const dependency of dependencies) {
       if (!dependency || typeof dependency !== "object" || !dependency.gate_audit_id) throw Error("GATE_ORDER_VIOLATION:dependency_shape_invalid");
       const rows = await query(`select a.gate_audit_id::text as id, a.gate_code as gate_code, a.object_type as object_type,
@@ -779,6 +780,7 @@ export function createRuleGateReviewer({
       if (!row) throw Error(`GATE_ORDER_VIOLATION:${upstreamGate}_audit_missing:${dependency.gate_audit_id}`);
       // 用简单 current 条件：PASS + 未撤销 + 未过期
       const auditValid = flag(row.current_valid) && (row.valid_until ? text(row.valid_until) > new Date().toISOString() : true);
+      if (text(row.gate_code) === upstreamGate && !auditValid) sawNonCurrentUpstream = true;
       const checks = {
         gate_code_ok: text(row.gate_code) === upstreamGate,
         result_ok: text(row.result) === "PASS",
@@ -796,6 +798,7 @@ export function createRuleGateReviewer({
       // 非 upstreamGate 级别的 dependency（如 G5 director_plan → G5 story_seed）跳过严格校验
     }
     if (found.length === 0) {
+      if (sawNonCurrentUpstream) throw Error(`GATE_ORDER_VIOLATION:${upstreamGate}_not_current`);
       throw Error(`GATE_ORDER_VIOLATION:${upstreamGate}_not_found:no_dependency_with_gate_code_${upstreamGate}`);
     }
     // 至少找到一条 G4 级别的有效审计即可满足 G5→G4 先序

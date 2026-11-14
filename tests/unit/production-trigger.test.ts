@@ -3,6 +3,11 @@ const effects = vi.hoisted(() => ({ prepare: vi.fn(), run: vi.fn(), queryRows: v
 vi.mock("../../packages/data-access/src/index.mjs", () => ({ run: effects.run, queryRows: effects.queryRows, queryValue: effects.queryValue }));
 vi.mock("../../apps/web/lib/mohen-agent/prepare-topic", () => ({ prepareFreeTopic: effects.prepare }));
 vi.mock("node:child_process", () => ({ spawn: effects.spawn }));
+// The test owns its partial-activation fixture; it must not depend on the live Registry state.
+vi.mock("../../pipelines/data-production/orchestrator/registry.mjs", () => ({
+  loadRegistry: () => ({ status: "ACTIVE_AUTHORIZED", activation: { enabled: true },
+    jobs: [{ execution_policy: { enabled: true } }, { execution_policy: { enabled: false } }] })
+}));
 import { triggerProduction } from "../../apps/web/lib/studio-production";
 import { requestProduction } from "../../apps/web/lib/studio-research";
 

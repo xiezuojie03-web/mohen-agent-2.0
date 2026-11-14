@@ -166,7 +166,7 @@ it('persists D02-D05 private candidates through the candidate repository, never 
    uncertainty:{qualification:'UNASSESSED'}};
  const claim={assertion:'松江府官田佃种推行本色改折',change_type:'institutional_change',
    time_scope:{start_year:1581},support_type:'supports'};
- const finding={finding_type:'institutional_mechanism',
+ const finding={method_id:'A06',finding_type:'institutional_mechanism',
    human_question:'为何田赋负担会改变小农生活处境？',
    interpretive_statement:'徭役折银减轻了人身依附，但纳银门槛把压力转嫁给小农。',
    counter_view_or_alternative:['也可能是市场米价波动的结果'],missing_evidence:['县级粮长册'],
