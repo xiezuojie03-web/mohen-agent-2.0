@@ -141,7 +141,9 @@ try {
       // 并对 CAS 期望着值；否则新题材项目签不出门、签出也立刻被判非当前。
       "20261113160000_mab_gate_scope_rule_for_studio_projects.sql",
       // 研究底稿改名：只给运行账号 project_title 列级 update，行级仍由 owner 策略限制。
-      "20261114200000_mab_m5_studio_project_title_rename.sql"]) apply(file);
+      "20261114200000_mab_m5_studio_project_title_rename.sql",
+      // G3 non-private world claim: artifact_revision_for resolves claim_revision with current-row hashing.
+      "20261114210000_mab_m5_claim_revision_artifact_revision.sql"]) apply(file);
     // Capability assertions for the migrations applied immediately above. They can only run at
     // this point in the chain: the rights columns, the private worker, the machine reviewer and
     // the content-based sign_gate_candidate semantics do not exist any earlier.
