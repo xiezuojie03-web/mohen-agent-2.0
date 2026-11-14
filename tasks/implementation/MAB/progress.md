@@ -1,12 +1,26 @@
-# SDD ledger — plan: tasks/implementation/MAB/PLAN.md
+# MAB工程施工证据账（历史追加式，唯一计划：tasks/implementation/MAB/PLAN.md）
 
-## 授权与执行约束
+> **本文件不是“当前状态”或施工指令。** 2026-11-02起的批次记录按写入时间保留，包含当时正确但如今过时的HEAD、测试、计划入口、工具分工与`PENDING_PUSH`；不能把任意旧段中的“当前/下一步”直接作为现行裁决。
+
+## 使用方法与更新边界（2026-11-14统一）
+
+- **接续读法**：先核GitHub最新main与CI → 读`CURRENT.md`当前事实 → 读`PLAN.md`相应阶段/QR/CP → **只读本账末尾最新实际批次、相关历史ID/证据**，不要求每次从头扫描数千行。
+- **时间口径**：历史PASS/HOLD、旧HEAD及推送计划只对原批次和环境有效；后续批次可能推翻旧结果，必须以精确SHA、执行环境和真实回执区分`CODE_PRESENT / VERIFIED_ISOLATED / VERIFIED_LIVE / HOLD / NOT_RUN`。
+- **写入原则**：历史账不删除、不整段重写、不以“清爽”为由丢掉原始证据；新施工按时间**追加**批次记录，含需求ID、before/after SHA、受影响文件、正反权限测试、PG/HTTP/真实数据、费用（适用时）、HOLD/回退和下一精确动作。只有运行事实变化才改`CURRENT.md`；仅执行标准变更才改`PLAN.md`。
+- **单main边界**：现行Owner裁决以`PLAN.md` V1.6为准；历史本地批量推送可留作过程事实，不替代当前单main的并发保护和生产自动部署隔离。
+
+---
+
+## 历史施工流水（原记录按时序保留）
+
+
+## 2026-11-02 当时授权与执行约束（历史快照）
 
 2026-11-02 Owner批准持续施工；技术自主；产品功能/效果/方向/成本变化需白话说明并决策。最终唯一main、Vercel可访问、三模式+Admin+持久知识资产存储。
 
 Ruling: 在现有干净checkout切换到最新main施工，不新建远端分支 — Owner要求唯一main，现目录是本任务独立执行副本 — 风险以小批提交、测试与历史记录控制。
 
-## M0事实
+## 2026-11-02 M0事实（历史快照）
 
 - origin/main=db21cefcc09c6bcb5d7e3fca16d100cc0accd13d；与设计base一致。
 - a001/production=759dbbd、codex/k3-migration-20261101=65b26cd均为main祖先，无独有提交。尚未删除。
@@ -16,14 +30,14 @@ Ruling: 在现有干净checkout切换到最新main施工，不新建远端分支
 - pnpm test基线受包管理器用户目录不可写及历史Windows-only隔离脚本影响，未通过；unit首次缺ajv且联网Commons失败；正在补依赖与隔离PG。
 - Docker socket权限请求被自动审批拒绝（可控制整个容器环境），没有绕过；改用workspace下普通用户PG进程。
 
-## 接口依赖预检
+## 2026-11-02 接口依赖预检（历史快照）
 
 M1→M2: 数据库验证会话与项目身份先闭合再引入持久资产。
 M2→M3: 现Gate候选/审计与原件/修订映射必须一致。
 M3→M4/M5: 正式资格启用与业务保存、出版各自分账。
 M4/M5→M6/M7: 双主体回执、同作品rev与合法消费提供真实验收前置。
 
-## 当前工作
+## 2026-11-02 当时工作状态（已过时，以CURRENT为准）
 
 M0 进行中；M1兼容权限边界验证进行中；M2—M8未完成。
 
@@ -3978,3 +3992,18 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **未关闭（全链仍 HOLD，见前）**：① **全链一次真跑**（D00→D05 串联，需执行授权 `execFileSync`/`spawn`，本 sandbox EPERM）；② **B1** evidence 陈旧需非 sandbox `verify-local-execution-env.mjs` 重新出证；③ **B8** 3 例环境受限测试（CI/Linux 可过）；④ Studio 真 UI 触发、M5 八维度验收、M6—M8。`M5_OVERALL_HOLD` 不变。
 - **下一入口**：非 sandbox/CI 跑 `verify-local-execution-env.mjs` 出证 → Studio 真 UI 触发自由主题 → 核 D00→D05 全链（六门已组件级正向，待串联真跑）→ M5 八维度验收 → M6—M8。
 - **推送销项（2026-11-14 Owner 指令「全部推送」）**：此前各批挂账的 PENDING_PUSH（含 1c35f3e 起共 14 个本地提交，至 `c07a287`）已一次性推送 GitHub main（`1c35f3e..c07a287`），`git rev-parse origin/main` = `c07a287`、本地领先 0，全部销项。证据等级不变：仍为组件级 `CODE_PRESENT`/真库正向组件证据，全链串联真跑与 M5 验收未完成，推送不等于验证通过。本批工作区另有 `.tmp_*` 调试残留未入提交、未推送。
+
+
+---
+
+## 2026-11-14｜必读文件一致性整理（文档任务，不构成M5工程准出）
+
+- **修订依据**：Owner要求审查PLAN V1.6内部逻辑，协同消除AGENTS、CURRENT、工程交接及本进度账的过期状态、平台绑定和重复规则；保留唯一main、上位专业合同、原M0—M8与QR/CP/M5八维的任务标准。
+- **实际修改**：
+  - `tasks/implementation/MAB/PLAN.md` `29bc0d53`：原位V1.6整理，保留QR-01—QR-10关闭标准、九个CP停点及M0—M8；消除历史运行快照、双份CP4表、重复工具指派；PLAN只记录规则。
+  - `AGENTS.md` `f25c5545`：改为无平台绑定的权威导航；明确2026-11-12本地批量push的有界适用场景，与正常小批次main施工一致。
+  - `CURRENT.md` `b20c96da`：改成按日期和SHA核验的真实状态快照，明确CI失败、生产自动部署仍耦合、本地组件PASS不等于全链。
+  - `ENGINEERING_HANDOFF_CURRENT.md` `bf6d724c`：删除过期平台、固定SHA、重复施工清单，只提供最短接续路径。
+  - 本账只调整开头读取说明、将2026-11-02“当前工作”标为历史，保留后续原始批次完整文本。
+- **质量边界**：全是文档变更，没有修改业务源码、CI配置、生产DB/Storage或Vercel设置；文档对应Actions执行结果需按精确SHA另核。生产自动部署隔离仍HOLD，主业务CI仍有6个单测失败，M5维持`M5_OVERALL_HOLD`。
+- **下一实际施工入口**：执行`PLAN.md` §0.2 B 的自动生产部署隔离核验，再按现有QR/M5断点修复CI与隔离PG/HTTP/Gate回归；未取得新证据不改判。
