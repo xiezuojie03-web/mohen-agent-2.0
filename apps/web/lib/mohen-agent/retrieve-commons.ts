@@ -129,7 +129,7 @@ export async function searchCommonsMaterials(
         source_type: "image",
         carrier_type: "image",
         provenance_status: "candidate",
-        content_availability: "image_only",
+        content_availability: "image_scan",
         url: info.thumburl || info.url || "",
         publisher: "Wikimedia Commons",
         license: license || "未标注（以文件页为准）",

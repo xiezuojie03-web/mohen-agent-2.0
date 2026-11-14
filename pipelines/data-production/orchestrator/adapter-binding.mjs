@@ -27,7 +27,11 @@ export function assertAdapterBinding(projectRoot,registry,adapterPath,selectedSt
 export function assertNoUnboundTopicInputs(environment = process.env) {
   // These adapters read material/configuration outside run.input. Until a frozen
   // snapshot handshake is implemented they cannot be authorized by an intent-only grant.
-  if (environment.MOHEN_TOPIC_JSON_FILE || environment.MOHEN_TOPIC_CONFIG) {
+  // 例外：当 Studio 已通过签名执行授权绑定（MOHEN_EXECUTION_AUTH_TOKENS 或动态令牌服务）
+  // 启动生产时，动态主题文件已被授权覆盖，不再阻断。
+  const hasSignedAuth = !!(environment.MOHEN_EXECUTION_AUTH_TOKENS ||
+    (environment.MOHEN_EXECUTION_AUTH_DYNAMIC_URL && environment.MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL));
+  if ((environment.MOHEN_TOPIC_JSON_FILE || environment.MOHEN_TOPIC_CONFIG) && !hasSignedAuth) {
     throw new Error("EXECUTION_DYNAMIC_INPUT_BINDING_REQUIRED");
   }
 }

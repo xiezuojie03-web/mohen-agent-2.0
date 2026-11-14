@@ -95,6 +95,30 @@ async function queryRows(...args) {
 const tokens = process.env.MOHEN_EXECUTION_AUTH_TOKENS
   ? JSON.parse(process.env.MOHEN_EXECUTION_AUTH_TOKENS) : undefined;
 
+// 动态令牌获取：当 MOHEN_EXECUTION_AUTH_TOKENS 中没有某 stage 的预签令牌时，
+// 从本地授权服务按需签发（D01–D05 输入依赖上一阶段产出，无法预签）。
+// 授权服务必须验证 run_id/stage/job/input 后才签发，Producer 不能自造令牌。
+const dynamicTokenUrl = process.env.MOHEN_EXECUTION_AUTH_DYNAMIC_URL;
+const dynamicTokenCredential = process.env.MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL;
+async function fetchStageToken({ stage, job, run, input }) {
+  if (!dynamicTokenUrl || !dynamicTokenCredential) {
+    throw new Error("EXECUTION_DYNAMIC_TOKEN_ENDPOINT_NOT_CONFIGURED");
+  }
+  const reply = await fetch(dynamicTokenUrl, {
+    method: "POST", redirect: "error", cache: "no-store",
+    signal: AbortSignal.timeout(10000),
+    headers: { "content-type": "application/json", authorization: `Bearer ${dynamicTokenCredential}` },
+    body: JSON.stringify({
+      run_id: run.run_id, stage, job_id: job.job_id, mode: run.execution_mode,
+      input,
+    }),
+  });
+  if (!reply.ok) throw new Error(`EXECUTION_DYNAMIC_TOKEN_REJECTED:${reply.status}`);
+  const data = await reply.json();
+  if (typeof data.token !== "string") throw new Error("EXECUTION_DYNAMIC_TOKEN_MALFORMED");
+  return data.token;
+}
+
 // This is only a READ-ONLY qualification check. No credentials means the
 // existing independent-Gate guard holds every Producer PASS (never a fallback).
 const gateVerifier = createOptionalIndependentGateClient();
@@ -106,6 +130,7 @@ finished = await runProduction({
   run, registry, from_stage: fromStage, to_stage: toStage,
   context: {
     execution_authority_tokens: tokens,
+    ...(dynamicTokenUrl && dynamicTokenCredential ? { fetchStageToken } : {}),
     loadPrivateEvidenceRuntime:()=>privateRuntime.load(),
     ...(resumeInput!==undefined?{resume_input:resumeInput}:{}),
     ...(gateVerifier ? {verifyStageQualification: gateVerifier} : {}),

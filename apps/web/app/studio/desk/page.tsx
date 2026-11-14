@@ -37,9 +37,9 @@ function asMaterials(raw: unknown): ShlMaterial[] {
         carrier_type: String(m.carrier_type ?? "digital_text"),
         provenance_status: String(m.provenance_status ?? "candidate"),
         content_availability:
-          m.content_availability === "full_text" || m.content_availability === "excerpt"
+          m.content_availability === "full_content" || m.content_availability === "catalog_only"
             ? (m.content_availability as ShlMaterial["content_availability"])
-            : "metadata_only",
+            : "catalog_only",
         url: String(m.url ?? m.uri ?? ""),
         publisher: String(m.publisher ?? m.provider ?? ""),
         license: String(m.license ?? ""),

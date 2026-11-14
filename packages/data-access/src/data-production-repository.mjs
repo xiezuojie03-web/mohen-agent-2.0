@@ -38,14 +38,16 @@ export function createDataProductionRepository(db) {
       }
       if (GATE_BY_STAGE[stage] !== gateCode || !objectType || !objectId) throw new Error("GATE_CANDIDATE_STAGE_MISMATCH");
       if (result && !["PASS", "HOLD", "REJECT"].includes(result)) throw new Error("STAGE_RESULT_INVALID");
+      // HOLD/REJECT 候选不进入 SUBMITTED 池，独立 Reviewer 只审 SUBMITTED 的 PASS 候选。
+      const candidateStatus = result === "HOLD" ? "HOLD" : result === "REJECT" ? "REJECTED" : "SUBMITTED";
       const { rows } = await db.query(
         `insert into control.gate_candidates
          (run_id,stage,gate_code,object_type,object_id,artifact_revision,purpose_namespace,purpose_code,purpose_version,
           allowed_scope,consumer,dependency_snapshot,evidence_refs,input_fingerprint,candidate_status)
-         values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11,$12::jsonb,$13::jsonb,$14,'SUBMITTED')
+         values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11,$12::jsonb,$13::jsonb,$14,$15)
          returning candidate_id`,
         [runId, stage, gateCode, objectType, objectId, artifactRevision, purpose.namespace, purpose.code, purpose.version,
-          JSON.stringify(allowedScope), consumer, JSON.stringify(dependencySnapshot), JSON.stringify(evidenceRefs), inputFingerprint]
+          JSON.stringify(allowedScope), consumer, JSON.stringify(dependencySnapshot), JSON.stringify(evidenceRefs), inputFingerprint, candidateStatus]
       );
       return rows[0].candidate_id;
     },

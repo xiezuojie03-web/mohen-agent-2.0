@@ -9,13 +9,21 @@
 // layer1-adapters 的 D00 用 on conflict (run_id) do nothing 复用该预登记行。
 import { spawn } from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { run as dbRun, queryRows } from "@mohen/data-access";
 import { prepareFreeTopic } from "./mohen-agent/prepare-topic";
 import { loadRegistry } from "../../../pipelines/data-production/orchestrator/registry.mjs";
+import {
+  isExecutionAuthorityReady,
+  startVerifier,
+  startDynamicTokenService,
+  buildAuthEnv,
+  executionDigest,
+} from "./studio-execution-authority";
 
-const EXECUTION_MODE = "unattended"; // 后台自驱动生产，非交互
+const EXECUTION_MODE = "attended"; // Studio UI 触发的生产由 Owner 会话驱动，用 attended 模式
 const ARCH = "mohen.six-stage.v1";
 
 function resolveProjectRoot(): string {
@@ -54,10 +62,11 @@ function productionBlocker(projectRoot: string): string | null {
   try {
     const registry = loadRegistry(projectRoot);
     if (registry.status !== "ACTIVE_AUTHORIZED" || registry.activation.enabled !== true) return "production_registry_not_active";
-    if (registry.jobs.some(job => !job.execution_policy.enabled || !job.execution_policy.unattended)) return "production_job_disabled";
-    // Studio always generates a dynamic material file. Do not prepare/spend/start
-    // until that frozen snapshot has a signed execution-authority binding.
-    return "production_input_binding_required";
+    if (registry.jobs.some(job => !job.execution_policy.enabled)) return "production_job_disabled";
+    // Studio 触发生产需要本地隔离执行授权（签名密钥 + evidence + 验证器）。
+    // 未就绪则失败关闭，不允许裸调 run.mjs。
+    if (!isExecutionAuthorityReady()) return "production_input_binding_required";
+    return null;
   } catch { return "production_registry_invalid"; }
 }
 
@@ -120,8 +129,25 @@ export async function triggerProduction(taskId: string, intent: string): Promise
   }
   await addEvent(taskId, "D00", "production_started", { run_id: runId, mode: EXECUTION_MODE });
 
-  // 3) spawn 生产进程（异步，不阻塞）
+  // 3) 生成 D00 scope 文件（与 Runner 同源拼装，签名覆盖的 input_digest 必须等于实跑输入）
+  // project_id 复用本地隔离评审绑定的默认项目（自由主题不创建独立项目），
+  // 使 writeGate 构造的 allowed_scope.project_id 命中 gate_reviewer_bindings。
+  const registry = loadRegistry(projectRoot);
+  const registryDigest = executionDigest(registry);
+  const scope = { topic_key: prepared.key, topic_label: prepared.label, material_count: prepared.materialCount, project_id: "b0a11000-0000-4000-8000-000000000001" };
+  const scopeDir = path.join(os.tmpdir(), "mohen-scopes");
+  fs.mkdirSync(scopeDir, { recursive: true });
+  const scopeFile = path.join(scopeDir, `${runId}.json`);
+  fs.writeFileSync(scopeFile, JSON.stringify(scope), "utf8");
+
+  // 4) 启动本地一次性 nonce 验证器 + 动态令牌签发服务
+  // （D01–D05 输入依赖上一阶段产出，无法预签，由 Runner 按需请求）
+  const { server, port: verifierPort, issued } = await startVerifier();
+  const dynamic = await startDynamicTokenService(registry, registryDigest, runId, issued);
+
+  // 5) spawn 生产进程（异步，不阻塞）
   try {
+    const authEnv = buildAuthEnv({}, verifierPort);
     const child = spawn(
       process.execPath,
       [
@@ -131,8 +157,32 @@ export async function triggerProduction(taskId: string, intent: string): Promise
         "--project-root", projectRoot,
         "--run-id", runId,
         "--execution-mode", EXECUTION_MODE,
+        "--scope-file", scopeFile,
       ],
-      { cwd: projectRoot, env: { ...process.env, MOHEN_TOPIC_JSON_FILE: prepared.jsonFile }, stdio: ["ignore", "pipe", "pipe"] }
+      {
+        cwd: projectRoot,
+        env: {
+          ...process.env,
+          // Producer 必须以 mohen_producer 身份连库（禁超管、禁 bypass RLS、禁 gate 签名）。
+          ...(process.env.MOHEN_PRODUCER_DATABASE_URL
+            ? { DATABASE_URL: process.env.MOHEN_PRODUCER_DATABASE_URL } : {}),
+          MOHEN_TOPIC_JSON_FILE: prepared.jsonFile,
+          ...authEnv,
+          MOHEN_EXECUTION_AUTH_DYNAMIC_URL: `https://127.0.0.1:${dynamic.port}/token`,
+          MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL: dynamic.credential,
+          // 独立 Gate 验证 + 按需签发（本地隔离服务，见 tools/local-gate-service.mjs）。
+          // Producer 不自签；管线每阶段 PASS 后向此服务 verify，服务按需把候选签成 audit。
+          MOHEN_INDEPENDENT_GATE_VERIFY_URL: "https://127.0.0.1:8789/verify",
+          MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL: (() => {
+            try { return fs.readFileSync(process.env.MOHEN_GATE_VERIFIER_CREDENTIAL_FILE || "D:/MoHen/keys/gate-verifier/credential", "utf8").trim(); }
+            catch { return ""; }
+          })(),
+          MOHEN_PRIVATE_EVIDENCE_WORKER_ENABLED: "true",
+          ...(process.env.MOHEN_PRIVATE_WORKER_DATABASE_URL
+            ? { MOHEN_PRIVATE_WORKER_DATABASE_URL: process.env.MOHEN_PRIVATE_WORKER_DATABASE_URL } : {}),
+        },
+        stdio: ["ignore", "pipe", "pipe"],
+      }
     );
 
     let stderrBuf = "";
@@ -143,6 +193,8 @@ export async function triggerProduction(taskId: string, intent: string): Promise
       void addEvent(taskId, "D00", "production_process_error", { run_id: runId, error: String(err) });
     });
     child.on("exit", (code) => {
+      server.close();
+      dynamic.server.close();
       if (code !== 0) void failProductionRun(runId).catch(() => console.error("production_failure_persistence_unavailable"));
       void addEvent(taskId, "D05", code === 0 ? "production_finished" : "production_failed", {
         run_id: runId,
@@ -152,6 +204,8 @@ export async function triggerProduction(taskId: string, intent: string): Promise
     });
     child.unref?.(); // 不阻止父进程（Next.js）退出
   } catch (e) {
+    server.close();
+    dynamic.server.close();
     await failProductionRun(runId);
     return { runId, started: false, reason: "production_spawn_failed" };
   }

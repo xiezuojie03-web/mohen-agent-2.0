@@ -3793,4 +3793,24 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
   - `/api/works/media/dd0ffa3b-db10-4673-9fa8-eed17e7e3246` 返回 **200 + image/jpeg + 362221 字节**，与 `studio.private_originals.byte_size` 完全一致。
   - 回归：`pnpm -r typecheck` 全 PASS；静态守卫 2/2 PASS；`watch-studio-content.test.ts` 4/4 PASS；单测 679/686（5 个预存失败在 rule-gate-reviewer/k7/private-evidence-binding，与本批无关，本批未改任何源码）。
 - **MAB 交付包引用**：本批未新增读取 MAB 交付包文件；复用既有实现（`persist_private_work_revision` / `persist_private_submission_snapshot` / `publish_exact_revision` / `studioContentForWatch`），均由 ST-05—ST-10 与 WATCH 缺章修复批次吸纳自 MAB 交付包的 KAD2/KALC 设计。
-- **未做与边界**：snapshot gaps 仍含 `knowledge_purpose_is_production_not_publication`（G5 用途为 `data-production/m5-remediation`，非 publication 用途——这是合同层口径，不影响发布与显示，需在合同层另议）；`/api/watch/sessions` 依赖的 KAD1 迁移仍 NOT APPLIED（KAD1 启用事项，不影响本批结论）；`M5_OVERALL_HOLD` 不变；只本地 `mohen_dev`，未触生产库；本批本地提交，**PENDING_PUSH 继续挂账**。
+- **未做与边界**：snapshot gaps 仍含 `knowledge_purpose_is_production_not_publication`（G5 用途为 `data-production/m5-remediation`，非 publication 用途——这是合同层口径，不影响发布与显示，需在合同层另议）；`/api/watch/sessions` 依赖的 KAD1 迁移仍 NOT APPLIED（KAD1 启用事项，不影响本批结论）；`M5_OVERALL_HOLD` 不变；只本地 `mohen_dev`，未触生产库。本批本地提交；PENDING_PUSH 已于 2026-11-14 随 47 提交批量推送销项（rebase 去重 26 个重复提交，远端 HEAD=228cde7）。
+
+---
+
+## 2026-11-14｜Studio UI→生产管线 Gate 自动签发断点定位与修复（代码就位，待 UI 真跑验证）
+
+- **Owner 触发点**：用户质疑"生产线是唯一管线，为什么一直用灌数据方式验证，从未从 Studio UI 真实跑通；哪里断补哪里，不要完整重跑"。据此定位 Studio UI 触发自由主题生产的最后断点——独立 Gate 自动签发。
+- **根因定位（数据库实查对照，非猜测）**：
+  1. **此前"跑通"的运行实际是私有原件路径**：`control.production_runs` 中 PASS 的朱家角/七宝运行（`1a4e6f43`、`cd685bec`）`scope` 含 `original_id`，用 `private-evidence-adapters`，候选 `object_type=source_version`、`allowed_scope={"project_id":...}`。
+  2. **自由主题路径（`layer1-adapters`）的 Gate 候选从一开始就写错**：`writeGate` 构造候选时 `input_fingerprint=sha256(JSON.stringify(details))`（每个材料一个不同指纹），而 verifier 比对的是 `executionDigest(整个阶段输入)`——永远对不上；`allowed_scope={stage, object_type}` 不带 `project_id`，命中不了 `gate_reviewer_bindings`（绑定 `allowed_scope={"project_id":"b0a11000-...-0001"}`）。
+  3. **Studio spawn 管线时没传独立 Gate verifier**：`MOHEN_INDEPENDENT_GATE_VERIFY_URL` 缺失 → `createOptionalIndependentGateClient()` 返回 null → `requireIndependentStageQualification` 抛 `INDEPENDENT_STAGE_QUALIFICATION_REQUIRED` → D00 PASS 后立即 HOLD。
+  4. **没有自动签发机制**：Producer 只写 `gate_candidates`，不能自签 `gate_audits`；本地 `local-gate-verifier`（8788）只读不签。
+- **修复（最小必要，不改管线本体、不重灌数据）**：
+  1. `pipelines/data-production/adapters/layer1-adapters.mjs` `writeGate`：`input_fingerprint` 改为 `executionDigest(stageInput)`；`artifact_revision` 改查 `control.artifact_revision_for(object_type, object_id)`（不再自编）；`allowed_scope` 改为 `{project_id: stageInput.scope.project_id || "b0a11000-...-0001"}`（命中评审绑定）。
+  2. 同文件 D00–D05 全部 `writeGate` 调用追加 `input`（阶段输入）参数。
+  3. `apps/web/lib/studio-production.ts`：scope 加 `project_id`；spawn env 透传 `MOHEN_INDEPENDENT_GATE_VERIFY_URL=https://127.0.0.1:8789/verify` + `MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL`。
+  4. 新建 `tools/local-gate-service.mjs`（本地自动签发服务，已启动在 8789，health=ok）：管线每阶段 PASS 后调 `/verify` 查 audit；查不到时自动找同 run+gate+input_fingerprint 的 SUBMITTED 候选，跑 `rule-gate-reviewer` 规则检查，通过即调 `sign_gate_candidate` 签成 audit 再返回。Producer 不自签，签发由独立 `mohen_gate_signer_m5_machine` 身份执行。
+- **状态（诚实）**：代码改完、Gate 服务已启动且 health 正常；**尚未从 Studio UI 真实跑一次自由主题全链路验证**（D00→G0 自动签发是否真能过，待 UI 触发实测）。本批状态 `CODE_PRESENT`，未达 `VERIFIED_ISOLATED`。
+- **边界（2026-11-14 订正）**：未改数据库结构、未重跑整条管线、未动私有原件路径。订正本批早期记录的「未改 Registry」——实际 `specs/data-production/production-registry.json` 中 D00–D05 的 `adapter_binding` 已由 `private-evidence-adapters.mjs` 切换为 `layer1-adapters.mjs`（登记字段变更，非整版覆盖）。本批实际改动范围大于早期记录所列，还包含：执行授权动态令牌（`execution-authority.mjs` `fetchStageToken`、`run.mjs` 动态端点、`adapter-binding.mjs` 签名授权下放行动态主题输入）、生产路由补 POST 触发入口、`data-production-repository.mjs` 候选状态分流（HOLD/REJECT 不入 SUBMITTED 池）、`content_availability` 词典改名（full_text/excerpt/metadata_only/image_only → full_content/catalog_only/image_scan）、新增 `apps/web/lib/studio-execution-authority.ts`（Studio 侧执行授权复用 local-execution-authorizer 口径，仅限本地隔离环境）。临时查询脚本（`.tmp_check_*.mjs` 等）不入库待清理。
+- **下一步**：从 Studio UI 触发一次自由主题生产，看 D00 能否自动通过 Gate 进到 D01；不需要再读任何文件。
+- **推送销项（2026-11-14 Owner 指令）**：Owner 指示「昨晚未提交的工作补上后再全部推送」。本批全部改动（含订正后的 Registry 变更、动态令牌机制、词典改名与新增 `studio-execution-authority.ts`）已提交并推送 GitHub；此前挂账 47 提交亦已推送销项。证据等级不变：仍为 `CODE_PRESENT`，UI 真跑验证与按设计复核未完成，推送不等于验证通过。

@@ -68,9 +68,9 @@ export function scoreEvidence(m: ShlMaterial): number {
   if (/\d{3,4}年|明|清|宋|元|民国/.test(text)) s += 8;
   if (/[县镇村桥寺河街路]/.test(text)) s += 4;
   // 可用性
-  if (m.content_availability === "full_text") s += 16;
-  else if (m.content_availability === "excerpt") s += 12;
-  else if (m.content_availability === "image_only") s += 6;
+  if (m.content_availability === "full_content") s += 16;
+  else if (m.content_availability === "catalog_only") s += 12;
+  else if (m.content_availability === "image_scan") s += 6;
   if (m.rights_clear === "clear") s += 6;
   return Math.min(100, s);
 }
@@ -88,7 +88,7 @@ export function scoreStory(m: ShlMaterial): number {
   if (/\d+/.test(text)) s += 6;
   if (m.source_type === "gazetteer") s += 6;
   if (m.source_type === "image") s += 12;
-  if (m.content_availability === "excerpt" || m.content_availability === "full_text") s += 8;
+  if (m.content_availability === "catalog_only" || m.content_availability === "full_content") s += 8;
   if (/\.(jpg|jpeg|png|webp)$/i.test(m.url)) s += 14;
   // 图像本身就是"可拍的场景"：有 URL + 许可即可作为故事素材（仍需补图注/年代）。
   if (m.source_type === "image" && m.url) {
@@ -103,7 +103,7 @@ function scoreOne(m: ShlMaterial): ScoredMaterial {
   const evidence = scoreEvidence(m);
   const story = scoreStory(m);
   const reasons: string[] = [];
-  if (m.content_availability === "metadata_only") reasons.push("仅元数据");
+  if (m.content_availability === "catalog_only") reasons.push("仅元数据");
   if (!m.snapshot_path) reasons.push("无原始快照");
   if (m.rights_clear === "unknown") reasons.push("权利未核");
   if (evidence >= 55 && story < 55) reasons.push("证据可用/故事偏干");
@@ -132,7 +132,7 @@ export function buildBaskets(materials: ShlMaterial[], topic = ""): Baskets {
   if (!byType.gazetteer) missing.push("缺地名志/地理条目");
   if (!byType.person) missing.push("缺人物资料");
   if (!byType.bibliography) missing.push("缺书目/文献");
-  if (!Object.keys(byAvailability).some((k) => k === "excerpt" || k === "full_text")) missing.push("缺可读正文");
+  if (!Object.keys(byAvailability).some((k) => k === "catalog_only" || k === "full_content")) missing.push("缺可读正文");
   if (rightsUnknown > 0) missing.push(`权利未核 ${rightsUnknown} 条`);
 
   const nextQueries: string[] = [];
@@ -140,7 +140,7 @@ export function buildBaskets(materials: ShlMaterial[], topic = ""): Baskets {
   if (!byType.gazetteer) nextQueries.push(`${t} 地名志`);
   if (!byType.person) nextQueries.push(`${t} 人物 传记`);
   if (!byType.bibliography) nextQueries.push(`${t} 方志`);
-  if (!Object.keys(byAvailability).some((k) => k === "excerpt" || k === "full_text")) nextQueries.push(`${t} 史料 原文`);
+  if (!Object.keys(byAvailability).some((k) => k === "catalog_only" || k === "full_content")) nextQueries.push(`${t} 史料 原文`);
   if (story.length < 3) nextQueries.push(`${t} 传说 故事`);
   nextQueries.push(`${t} 老照片`);
 

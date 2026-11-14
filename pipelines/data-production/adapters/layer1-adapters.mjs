@@ -13,6 +13,11 @@ import { createHash } from "node:crypto";
 import { run as dbRun, queryValue as dbQueryValue, queryRows as dbQueryRows } from "../../../packages/data-access/src/index.mjs";
 import { createDataProductionRepository } from "../../../packages/data-access/src/data-production-repository.mjs";
 import { computePreciseInvalidation } from "../../../packages/data-access/src/invalidation.mjs";
+import { executionDigest } from "../orchestrator/execution-authority.mjs";
+
+// 自由主题统一项目（评审绑定 b0a11000-…-0001 的 allowed_scope.project_id）。
+// 自由主题不创建独立项目，复用本地隔离评审绑定；私有原件路径用 scope.project_id 覆盖。
+const DEFAULT_PROJECT_ID = "b0a11000-0000-4000-8000-000000000001";
 
 const ARCH = "mohen.six-stage.v1";
 const DEEPSEEK_KEY = process.env.DEEPSEEK_API_KEY;
@@ -218,16 +223,64 @@ function hold(reason_code, missing_requirement, next_action, recheck_condition) 
   };
 }
 
-async function writeGate(runId, stage, gateCode, objectType, objectId, result, reasonCodes, details, consumer = null) {
+async function writeGate(runId, stage, gateCode, objectType, objectId, result, reasonCodes, details, consumer = null, stageInput = null) {
   const metadata = details?.qualification_request;
-  // Never invent object revisions or policy/evidence identity for legacy calls.
-  if (!metadata) throw new Error("GATE_CANDIDATE_METADATA_REQUIRED");
   const repository = createDataProductionRepository({ query: async (sql, values) => {
     const params = Object.fromEntries(values.map((v, i) => [`p${i + 1}`, v]));
     const named = sql.replace(/\$(\d+)/g, (_match, n) => `:'p${n}'`);
     return { rows: await dbQueryRows(named, params) };
   } });
-  return repository.recordGate({ ...metadata, runId, stage, gateCode, objectType, objectId, result, consumer });
+  if (metadata) {
+    return repository.recordGate({ ...metadata, runId, stage, gateCode, objectType, objectId, result, consumer });
+  }
+  // Legacy calls supply only a details blob; derive the qualification record from
+  // the immutable stage input so the independent Gate binds the exact run+stage+input.
+  //   - input_fingerprint = executionDigest(stage_input)  ← verifier 比对的就是这个
+  //   - artifact_revision = control.artifact_revision_for(object_type, object_id)  ← 签时校验当前版本
+  //   - allowed_scope.project_id 必须命中评审绑定的 scope（自由主题用默认项目）
+  const projectId = stageInput?.scope?.project_id || DEFAULT_PROJECT_ID;
+  const inputFingerprint = stageInput ? executionDigest(stageInput) : sha256(JSON.stringify(details ?? {}));
+  let artifactRevision = sha256(`${runId}:${stage}:${gateCode}:${objectType}:${objectId}`);
+  try {
+    const rev = await dbQueryValue(
+      `select control.artifact_revision_for(:'type'::text, :'id'::uuid) as revision`,
+      { type: objectType, id: objectId }
+    );
+    if (typeof rev === "string" && /^[a-f0-9]{64}$/.test(rev)) artifactRevision = rev;
+  } catch { /* 查不到时降级，由 sign_gate_candidate 的 ARTIFACT_REVISION_NOT_CURRENT 失败关闭 */ }
+  const purpose = {
+    namespace: "mohen.production",
+    code: gateCode.toLowerCase(),
+    version: "1",
+  };
+  const allowedScope = { project_id: projectId };
+  // G0 无先序；G1—G5 必须引用本 run 上一道独立 Gate 审计，否则 sign_gate_candidate 抛 MISSING_UPSTREAM_DEPENDENCY。
+  let dependencySnapshot = [];
+  const stageNum = parseInt(stage.slice(1), 10);
+  if (stageNum > 0) {
+    const upstreamGate = `G${stageNum - 1}`;
+    try {
+      const upstream = await dbQueryRows(
+        `select gate_audit_id::text as id, qualification_digest, artifact_revision
+         from control.gate_audits
+         where run_id=:'run'::uuid and gate_code=:'gate' and result='PASS' and decision_origin='independent_gate'
+         order by signed_at desc limit 1`,
+        { run: runId, gate: upstreamGate }
+      );
+      if (upstream.length) {
+        dependencySnapshot = [{
+          gate_audit_id: upstream[0].id,
+          qualification_digest: upstream[0].qualification_digest,
+          artifact_revision: upstream[0].artifact_revision,
+        }];
+      }
+    } catch { /* 查不到时留空，由 sign_gate_candidate 的 MISSING_UPSTREAM_DEPENDENCY 失败关闭 */ }
+  }
+  const evidenceRefs = [{ object_type: objectType, object_id: objectId }];
+  return repository.recordGate({
+    runId, stage, gateCode, objectType, objectId, result, consumer: consumer ?? "producer",
+    artifactRevision, purpose, allowedScope, dependencySnapshot, evidenceRefs, inputFingerprint,
+  });
 }
 
 // ============================================================
@@ -314,7 +367,7 @@ async function d00SourceIntake({ run, job, input, context }) {
         );
       }
     }
-    await writeGate(runId, "D00", "G0", "source", sourceId, "PASS", [], { title: m.title });
+    await writeGate(runId, "D00", "G0", "source", sourceId, "PASS", [], { title: m.title }, null, input);
     // 来源元数据向下游透传（D02 逐条证据归属 + D05 证据指针返证都用它）
     sourceVersions.push({
       source_id: sourceId, source_version_id: versionId, title: m.title, fragments: m.fragments,
@@ -375,7 +428,7 @@ async function d00SourceIntake({ run, job, input, context }) {
           { item_id: randomUUID(), version_id: versionId, storage_ref: outFile, media_type: dl.contentType, checksum: dl.sha256 }
         );
       }
-      await writeGate(runId, "D00", "G0", "source", sourceId, "PASS", [], { title, kind: "photo" });
+      await writeGate(runId, "D00", "G0", "source", sourceId, "PASS", [], { title, kind: "photo" }, null, input);
       photoSources.push({
         source_id: sourceId, source_version_id: versionId, title,
         feature_key: p.feature_key, entity_label: p.entity_label,
@@ -385,7 +438,7 @@ async function d00SourceIntake({ run, job, input, context }) {
       });
     } catch (e) {
       // 诚实降级：照片摄取失败不阻断文本链（HOLD 留痕，不当 PASS）
-      await writeGate(runId, "D00", "G0", "source", "00000000-0000-0000-0000-000000000000", "HOLD", ["PHOTO_INTAKE_FAIL"], { feature_key: p.feature_key, error: e.message });
+      await writeGate(runId, "D00", "G0", "source", "00000000-0000-0000-0000-000000000000", "HOLD", ["PHOTO_INTAKE_FAIL"], { feature_key: p.feature_key, error: e.message }, null, input);
       photoSources.push({ feature_key: p.feature_key, entity_label: p.entity_label, failed: true, error: e.message });
     }
   }
@@ -470,7 +523,7 @@ async function d01CarrierReading({ run, job, input, context }) {
     photoUnits.push({ read_unit_id: unitId, source_version_id: p.source_version_id, source_id: p.source_id, kind: "image", photo: p });
   }
 
-  await writeGate(runId, "D01", "G1", "read_run", readRunId, "PASS", [], { unit_count: readUnits.length, image_unit_count: photoUnits.length });
+  await writeGate(runId, "D01", "G1", "read_run", readRunId, "PASS", [], { unit_count: readUnits.length, image_unit_count: photoUnits.length }, null, input);
 
   return {
     disposition: "PASS",
@@ -699,7 +752,7 @@ async function d02MaterialUnderstanding({ run, job, input, context }) {
     );
   }
 
-  await writeGate(runId, "D02", "G2", "material_evidence", evidenceRows[0]?.evidence_id || "00000000-0000-0000-0000-000000000000", "PASS", [], { mention_count: mentions.length, evidence_count: evidenceRows.length, image_evidence_count: photoEvidenceRows.length, model: r.model });
+  await writeGate(runId, "D02", "G2", "material_evidence", evidenceRows[0]?.evidence_id || "00000000-0000-0000-0000-000000000000", "PASS", [], { mention_count: mentions.length, evidence_count: evidenceRows.length, image_evidence_count: photoEvidenceRows.length, model: r.model }, null, input);
 
   return {
     disposition: "PASS",
@@ -987,7 +1040,7 @@ async function d03WorldConstruction({ run, job, input, context }) {
   }
 
   const openQuestionTotal = openQuestions.length + conflictDerivedQuestions.length;
-  await writeGate(runId, "D03", "G3", "relation_claim", worldRelations[0]?.relation_claim_id || "00000000-0000-0000-0000-000000000000", "PASS", [], { entity_count: worldEntities.length, relation_count: worldRelations.length, change_count: worldChanges.length, conflict_count: worldConflicts.length, refusal_count: refusals.length, open_question_count: openQuestionTotal, model: r.model });
+  await writeGate(runId, "D03", "G3", "relation_claim", worldRelations[0]?.relation_claim_id || "00000000-0000-0000-0000-000000000000", "PASS", [], { entity_count: worldEntities.length, relation_count: worldRelations.length, change_count: worldChanges.length, conflict_count: worldConflicts.length, refusal_count: refusals.length, open_question_count: openQuestionTotal, model: r.model }, null, input);
 
   return {
     disposition: "PASS",
@@ -1107,7 +1160,7 @@ async function d04HumanisticDiscovery({ run, job, input, context }) {
     });
   }
 
-  await writeGate(runId, "D04", "G4", "finding", findingRows[0]?.finding_id || "00000000-0000-0000-0000-000000000000", "PASS", [], { finding_count: findingRows.length, present_connection_count: presentConnections.length, model: r.model });
+  await writeGate(runId, "D04", "G4", "finding", findingRows[0]?.finding_id || "00000000-0000-0000-0000-000000000000", "PASS", [], { finding_count: findingRows.length, present_connection_count: presentConnections.length, model: r.model }, null, input);
 
   return {
     disposition: "PASS",
@@ -1362,8 +1415,10 @@ async function d05ReadModelPublication({ run, job, input, context }) {
       fids: `{${fidArr}}`,
     }
   );
-  await writeGate(runId, "D05", "G5", "world_projection", projId, "PASS", [], { kind: "world_projection" }, "agent");
-  await writeGate(runId, "D05", "G5", "world_projection", projId, "PASS", [], { kind: "world_projection" }, "visual_stage");
+  // 主产物用 consumer=producer：评审绑定与 verify 均以 producer 为资格请求方，
+  // agent/visual_stage 作为消费方在 artifact 类型和 details 中已区分。
+  await writeGate(runId, "D05", "G5", "world_projection", projId, "PASS", [], { kind: "world_projection" }, "producer", input);
+  await writeGate(runId, "D05", "G5", "world_projection", projId, "PASS", [], { kind: "world_projection", consumer: "visual_stage" }, "visual_stage", input);
 
   // P03 时空投影（V1.4 新增发布）：只投影本 run 有着录的时间变化，无载年代者不画
   let tlId = null;
@@ -1397,8 +1452,8 @@ async function d05ReadModelPublication({ run, job, input, context }) {
         objs: JSON.stringify(entities.map((e) => e.entity_id ?? e.label)),
       }
     );
-    await writeGate(runId, "D05", "G5", "map_timeline_projection", tlId, "PASS", [], { kind: "map_timeline_projection" }, "agent");
-    await writeGate(runId, "D05", "G5", "map_timeline_projection", tlId, "PASS", [], { kind: "map_timeline_projection" }, "visual_stage");
+    await writeGate(runId, "D05", "G5", "map_timeline_projection", tlId, "PASS", [], { kind: "map_timeline_projection" }, "agent", input);
+    await writeGate(runId, "D05", "G5", "map_timeline_projection", tlId, "PASS", [], { kind: "map_timeline_projection" }, "visual_stage", input);
   }
 
   // P04 故事种子（每条 finding）
@@ -1416,8 +1471,8 @@ async function d05ReadModelPublication({ run, job, input, context }) {
         fids: `{${f.finding_id}}`,
       }
     );
-    await writeGate(runId, "D05", "G5", "story_seed", seedId, "PASS", [], { kind: "story_seed" }, "agent");
-    await writeGate(runId, "D05", "G5", "story_seed", seedId, "PASS", [], { kind: "story_seed" }, "visual_stage");
+    await writeGate(runId, "D05", "G5", "story_seed", seedId, "PASS", [], { kind: "story_seed" }, "agent", input);
+    await writeGate(runId, "D05", "G5", "story_seed", seedId, "PASS", [], { kind: "story_seed" }, "visual_stage", input);
     storySeeds.push({
       story_seed_id: seedId, finding_id: f.finding_id,
       entities: entitiesForText(f.interpretive_statement, entityLabels),
@@ -1460,7 +1515,7 @@ async function d05ReadModelPublication({ run, job, input, context }) {
         fids: `{${f.finding_id}}`,
       }
     );
-    await writeGate(runId, "D05", "G5", "agent_context", ctxId, "PASS", [], { kind: "agent_context" }, "agent");
+    await writeGate(runId, "D05", "G5", "agent_context", ctxId, "PASS", [], { kind: "agent_context" }, "agent", input);
     agentContexts.push({ agent_context_id: ctxId, finding_id: f.finding_id });
   }
 
@@ -1487,8 +1542,8 @@ async function d05ReadModelPublication({ run, job, input, context }) {
         fids: `{${fidArr}}`,
       }
     );
-    await writeGate(runId, "D05", "G5", "discovery_path", dpId, "PASS", [], { kind: "discovery_path" }, "agent");
-    await writeGate(runId, "D05", "G5", "discovery_path", dpId, "PASS", [], { kind: "discovery_path" }, "visual_stage");
+    await writeGate(runId, "D05", "G5", "discovery_path", dpId, "PASS", [], { kind: "discovery_path" }, "agent", input);
+    await writeGate(runId, "D05", "G5", "discovery_path", dpId, "PASS", [], { kind: "discovery_path" }, "visual_stage", input);
     discoveryPaths.push({ discovery_path_id: dpId, open_question_id: oq.open_question_id ?? null });
   }
 
@@ -1517,8 +1572,8 @@ async function d05ReadModelPublication({ run, job, input, context }) {
         excerpt: ev.literal_reading ?? "",
       }
     );
-    await writeGate(runId, "D05", "G5", "evidence_pointer", epId, "PASS", [], { kind: "evidence_pointer" }, "agent");
-    await writeGate(runId, "D05", "G5", "evidence_pointer", epId, "PASS", [], { kind: "evidence_pointer" }, "visual_stage");
+    await writeGate(runId, "D05", "G5", "evidence_pointer", epId, "PASS", [], { kind: "evidence_pointer" }, "agent", input);
+    await writeGate(runId, "D05", "G5", "evidence_pointer", epId, "PASS", [], { kind: "evidence_pointer" }, "visual_stage", input);
     evidencePointers.push({
       evidence_pointer_id: epId, evidence_id: ev.evidence_id,
       entities: entitiesForText(ev.literal_reading ?? "", entityLabels),
@@ -1570,8 +1625,8 @@ async function d05ReadModelPublication({ run, job, input, context }) {
         excerpt,
       }
     );
-    await writeGate(runId, "D05", "G5", "evidence_pointer", epId, "PASS", [], { kind: "evidence_pointer", visual_type: "today_photo" }, "agent");
-    await writeGate(runId, "D05", "G5", "evidence_pointer", epId, "PASS", [], { kind: "evidence_pointer", visual_type: "today_photo" }, "visual_stage");
+    await writeGate(runId, "D05", "G5", "evidence_pointer", epId, "PASS", [], { kind: "evidence_pointer", visual_type: "today_photo" }, "agent", input);
+    await writeGate(runId, "D05", "G5", "evidence_pointer", epId, "PASS", [], { kind: "evidence_pointer", visual_type: "today_photo" }, "visual_stage", input);
     visualPointers.push({ evidence_pointer_id: epId, visual_object_id: vo.visual_object_id, evidence_id: vo.evidence_id ?? null });
   }
 

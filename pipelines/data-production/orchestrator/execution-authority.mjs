@@ -60,7 +60,13 @@ export async function assertStageExecutionAuthorized({ registry, job, run, input
   if (typeof binding !== "string" || !binding || /^(TO_VERIFY|PENDING|UNBOUND|NONE)/i.test(binding)) {
     throw new Error(`REVIEWER_BINDING_UNVERIFIED:${job.stage}`);
   }
-  const token = context.execution_authority_tokens?.[job.stage] ?? context.execution_authority_token;
+  let token = context.execution_authority_tokens?.[job.stage] ?? context.execution_authority_token;
+  // 动态获取：当预签名令牌不存在时，从授权服务按需签发（D01–D05 的输入
+  // 依赖上一阶段产出，无法在 run 启动前预签）。授权服务必须独立验证
+  // run_id/stage/job/input 后才签发，Producer 不能自造令牌。
+  if (!token && typeof context.fetchStageToken === "function") {
+    token = await context.fetchStageToken({ stage: job.stage, job, run, input });
+  }
   const publicKey = process.env.MOHEN_EXECUTION_AUTH_PUBLIC_KEY;
   if (typeof token !== "string" || !publicKey) throw new Error("EXECUTION_SIGNED_GRANT_MISSING");
   const parts = token.split(".");
@@ -103,9 +109,16 @@ export async function assertStageExecutionAuthorized({ registry, job, run, input
       body: JSON.stringify({ jti: claims.jti, run_id: run.run_id, stage: job.stage, job_id: job.job_id, mode,
         hold_epoch: claims.hold_epoch, registry_digest: claims.registry_digest, input_digest: claims.input_digest }),
     });
-    if (!reply.ok) throw new Error("verifier rejected");
+    if (!reply.ok) {
+      const text = await reply.text().catch(() => "");
+      console.error("[execution-authority] verifier rejected status:", reply.status, "body:", text.slice(0, 200));
+      throw new Error("verifier rejected");
+    }
     attestation = await reply.json();
-  } catch { throw new Error("EXECUTION_TRUSTED_VERIFIER_UNAVAILABLE"); }
+  } catch (e) {
+    console.error("[execution-authority] verifier fetch failed:", e?.message, "url:", process.env.MOHEN_EXECUTION_AUTH_VERIFY_URL, "ca:", process.env.NODE_EXTRA_CA_CERTS);
+    throw new Error("EXECUTION_TRUSTED_VERIFIER_UNAVAILABLE");
+  }
   if (attestation?.allowed !== true || attestation.consumed_nonce !== claims.jti ||
       attestation.run_id !== run.run_id || attestation.stage !== job.stage ||
       attestation.job_id !== job.job_id || attestation.mode !== mode ||

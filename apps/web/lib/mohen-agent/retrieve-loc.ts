@@ -99,7 +99,7 @@ export async function searchLocMaterials(
         source_type: "image",
         carrier_type: "image",
         provenance_status: "candidate",
-        content_availability: "image_only",
+        content_availability: "image_scan",
         url: imgs[0] ?? String(it.url ?? ""),
         publisher: "Library of Congress",
         license: rights || "见 LOC 条目权利说明",

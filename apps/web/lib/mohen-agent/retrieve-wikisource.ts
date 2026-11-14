@@ -107,7 +107,7 @@ export async function searchWikisourceMaterials(
         carrier_type: "text",
         provenance_status: "candidate",
         // 搜索片段只是命中摘录，不能当成已读取正文。
-        content_availability: "excerpt",
+        content_availability: "catalog_only",
         url: `https://zh.wikisource.org/wiki/${encodeURIComponent(hit.title ?? "")}`,
         publisher: "维基文库（中文）",
         // 逐页许可不同，不按站点整体放行。

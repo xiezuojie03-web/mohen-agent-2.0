@@ -213,8 +213,8 @@ export interface ShlMaterial {
   source_type: string;
   carrier_type: string;
   provenance_status: string;
-  /** K2 修正：只有真有正文才是 full_text；书目/题名是 metadata_only，描述/注释是 excerpt；图像是 image_only。 */
-  content_availability: "full_text" | "excerpt" | "metadata_only" | "image_only";
+  /** K2 修正：只有真有正文才是 full_content；书目/题名是 catalog_only，描述/注释是 catalog_only；图像是 image_scan。 */
+  content_availability: "full_content" | "catalog_only" | "image_scan";
   url: string;
   publisher: string;
   /** K2 新增：许可与权利状态（unknown/per_item/clear）。 */
@@ -238,14 +238,14 @@ function itemFragments(endpoint: string, item: unknown): ItemFragments | null {
   const frags: string[] = [];
   let title = "";
   let source_type = "bibliography";
-  let availability: ShlMaterial["content_availability"] = "metadata_only";
+  let availability: ShlMaterial["content_availability"] = "catalog_only";
 
   if (endpoint === "shnh/dmz/webapi/geonames/list") {
     source_type = "gazetteer";
     title = String(it.name || it.placeLabel || "");
     if (it.description) {
       frags.push(String(it.description));
-      availability = "excerpt";
+      availability = "catalog_only";
     }
     if (it.placeLabel) frags.push(`所属：${String(it.placeLabel)}`);
     if (it.riverLabel) frags.push(`相关水系：${String(it.riverLabel)}`);
@@ -270,7 +270,7 @@ function itemFragments(endpoint: string, item: unknown): ItemFragments | null {
       for (const a of it.annoList) {
         if (a && typeof a === "object" && (a as Record<string, unknown>).hasBody) {
           frags.push(String((a as Record<string, unknown>).hasBody));
-          availability = "excerpt";
+          availability = "catalog_only";
         }
       }
     }
