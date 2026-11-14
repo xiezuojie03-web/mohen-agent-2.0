@@ -46,7 +46,7 @@
 ## 工具分工
 
 - 2026-11-08 Owner裁决后：**Trae在用户电脑本地担任唯一工程总装执行者**，须先备份并安全同步GitHub main；按PLAN §0.2 CP0—CP5过程检查点暂停、汇报方向、接续。
-- ChatGPT按需独立审计、合同和准出证据复核；不与Trae并行改写同一main。CodeBuddy仅在Trae具名环境受阻且Owner指示时接力；不再使用Codex。
+- ChatGPT按需独立审计、合同和准出证据复核；**2026-11-14 Owner裁决扩展：ChatGPT可承担工程仓库修改**——推荐分支+PR（Trae/Owner合并）；直改main时须先拉取最新main、改完立即推送，避免与Trae本地未推送工作并行冲突。云端"检查"以仓库内回执为准（CURRENT.md/progress.md/证据账），ChatGPT不持有也不使用任何密钥。CodeBuddy仅在Trae具名环境受阻且Owner指示时接力；不再使用Codex。
 - 最终目标是按原M5—M8强制门形成**Owner首用户私有真实环境**：实际Web/UI、真实全链数据/能力、按真实独立角色体验，具备对外开放质量但未授权不向公众开放；当前仅为目标，未准出。
 
 ## 授权边界
