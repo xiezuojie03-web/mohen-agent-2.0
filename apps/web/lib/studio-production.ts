@@ -85,7 +85,9 @@ export async function failProductionRun(runId: string): Promise<void> {
  * 触发一次真实生产（D00–D05）。fire-and-forget：本函数只负责登记 + 启动进程并返回 run_id，
  * 生产进度与终态由 run.mjs 内部回写 control.production_runs。
  */
-export async function triggerProduction(taskId: string, intent: string): Promise<ProductionTrigger> {
+export async function triggerProduction(taskId: string, intent: string, projectId: string): Promise<ProductionTrigger> {
+  if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(projectId))
+    return { runId: "", started: false, reason: "production_project_binding_required" };
   const projectRoot = resolveProjectRoot();
   const runPath = path.join(projectRoot, "pipelines", "data-production", "run.mjs");
   const adaptersPath = path.join(projectRoot, "pipelines", "data-production", "adapters", "layer1-adapters.mjs");
@@ -104,15 +106,17 @@ export async function triggerProduction(taskId: string, intent: string): Promise
   }
 
   const runId = randomUUID();
+  // Same exact ST-01 project in persistent run identity and all signed stage inputs.
+  const scope = { topic_key: prepared.key, topic_label: prepared.label, material_count: prepared.materialCount, project_id: projectId };
 
   // 1) 预登记 production_runs（RUNNING），前端立即可查；D00 的 on conflict 会复用。
   try {
     await dbRun(
       `insert into control.production_runs
        (run_id, research_intent, scope, execution_mode, status, started_at, metadata, architecture_generation)
-       values (:'run_id'::uuid, :'intent', '{}'::jsonb, :'mode', 'RUNNING', now(), '{}'::jsonb, :'arch')
+       values (:'run_id'::uuid, :'intent', :'scope'::jsonb, :'mode', 'RUNNING', now(), '{}'::jsonb, :'arch')
        on conflict (run_id) do nothing`,
-      { run_id: runId, intent, mode: EXECUTION_MODE, arch: ARCH }
+      { run_id: runId, intent, scope: JSON.stringify(scope), mode: EXECUTION_MODE, arch: ARCH }
     );
   } catch (e) {
     return { runId: "", started: false, reason: "production_run_register_failed" };
@@ -130,11 +134,9 @@ export async function triggerProduction(taskId: string, intent: string): Promise
   await addEvent(taskId, "D00", "production_started", { run_id: runId, mode: EXECUTION_MODE });
 
   // 3) 生成 D00 scope 文件（与 Runner 同源拼装，签名覆盖的 input_digest 必须等于实跑输入）
-  // project_id 复用本地隔离评审绑定的默认项目（自由主题不创建独立项目），
-  // 使 writeGate 构造的 allowed_scope.project_id 命中 gate_reviewer_bindings。
+  // No sample project. The Gate candidate is tied to the Owner's actual project.
   const registry = loadRegistry(projectRoot);
   const registryDigest = executionDigest(registry);
-  const scope = { topic_key: prepared.key, topic_label: prepared.label, material_count: prepared.materialCount, project_id: "b0a11000-0000-4000-8000-000000000001" };
   const scopeDir = path.join(os.tmpdir(), "mohen-scopes");
   fs.mkdirSync(scopeDir, { recursive: true });
   const scopeFile = path.join(scopeDir, `${runId}.json`);

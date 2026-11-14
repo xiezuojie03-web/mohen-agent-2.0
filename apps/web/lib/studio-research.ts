@@ -253,37 +253,49 @@ export async function createResearchTask(
  */
 export async function requestProduction(
   taskId: string,
+  ownerUserId: string,
   terms?: string[],
   extraBudget?: number
 ): Promise<{ ok: boolean; reason?: string; run_id?: string }> {
+  if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(ownerUserId))
+    return { ok: false, reason: "forbidden" };
   const rows = await queryRows(
-    "select prompt, status, checkpoint from public.research_tasks where task_id = :'id'",
-    { id: taskId }
+    "select prompt, status, checkpoint from public.research_tasks where task_id = :'id' and owner_user_id = :'owner'",
+    { id: taskId, owner: ownerUserId }
   );
   if (!rows.length) return { ok: false, reason: "task_not_found" };
   if (rows[0].status !== "done") return { ok: false, reason: "task_not_ready" };
 
-  const spec = getTool("production-run");
-  if (!spec || !Number.isFinite(spec.cost) || spec.cost <= 0)
-    return { ok: false, reason: "production_tool_unpriced" };
-
-  // A budget parameter from a caller is NOT a signed authorization to add
-  // credits. Budget changes must first be approved and persisted on the task.
-  if (extraBudget !== undefined)
-    return { ok: false, reason: "additional_budget_requires_authorization" };
-
-  // The registry and signed input contract are checked at zero cost.
-  // The current production registry is not activated; this must remain HOLD.
-  const blocker = getProductionBlocker();
-  if (blocker) return { ok: false, reason: blocker };
-
-  const intent = String(rows[0].prompt ?? "").trim();
-  if (!intent) return { ok: false, reason: "intent_missing" };
+  // ST-04 carries the ST-01 Creator-owned project, never a sample-project alias.
+  // Archived, foreign or unbound projects must stop before any cost/Runner action.
   let saved: Record<string, unknown>;
   try { saved = readJsonColumn<Record<string, unknown>>(rows[0].checkpoint, {}); }
   catch { return { ok: false, reason: "budget_checkpoint_invalid" }; }
   if (!saved || Array.isArray(saved) || typeof saved !== "object")
     return { ok: false, reason: "budget_checkpoint_invalid" };
+  const studio = saved.studio;
+  const projectId = studio && typeof studio === "object" && !Array.isArray(studio)
+    ? (studio as Record<string, unknown>).project_id : null;
+  if (typeof projectId !== "string" ||
+      !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(projectId))
+    return { ok: false, reason: "production_project_binding_required" };
+  const ownedProjects = await queryRows(
+    "select project_id::text as project_id from studio.projects where project_id=:'project'::uuid and owner_user_id=:'owner'::uuid and lifecycle_status='ACTIVE'",
+    { project: projectId, owner: ownerUserId }
+  );
+  if (ownedProjects.length !== 1 || ownedProjects[0].project_id !== projectId)
+    return { ok: false, reason: "production_project_forbidden" };
+
+  const spec = getTool("production-run");
+  if (!spec || !Number.isFinite(spec.cost) || spec.cost <= 0)
+    return { ok: false, reason: "production_tool_unpriced" };
+  if (extraBudget !== undefined)
+    return { ok: false, reason: "additional_budget_requires_authorization" };
+  // Registry and signed input contract are zero-cost preconditions.
+  const blocker = getProductionBlocker();
+  if (blocker) return { ok: false, reason: blocker };
+  const intent = String(rows[0].prompt ?? "").trim();
+  if (!intent) return { ok: false, reason: "intent_missing" };
 
   const spent = Number(saved.budgetSpent);
   const reserved = Number(saved.reserved ?? 0);
@@ -335,7 +347,7 @@ export async function requestProduction(
   }
 
   let trig: { runId: string; started: boolean; reason?: string };
-  try { trig = await triggerProduction(taskId, intent); }
+  try { trig = await triggerProduction(taskId, intent, projectId); }
   catch {
     trig = { runId: "", started: false, reason: "production_start_uncertain" };
   }

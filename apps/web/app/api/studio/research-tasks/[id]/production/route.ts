@@ -13,16 +13,19 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
     return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401 });
   }
   const { id } = await params;
-  const allowed = await canAccess("public.research_tasks", id, session.uid, isOperatorSession(session));
+  // Operator may inspect authorized records but cannot spend another Creator's
+  // research budget or start production in their Studio project.
+  const allowed = await canAccess("public.research_tasks", id, session.uid, false);
   if (!allowed) {
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }
 
-  const result = await requestProduction(id);
+  const result = await requestProduction(id, session.uid);
   if (!result.ok) {
     const status = result.reason === "task_not_found" ? 404
       : result.reason === "task_not_ready" ? 409
-      : result.reason === "forbidden" ? 403
+      : result.reason === "forbidden" || result.reason === "production_project_forbidden" ? 403
+      : result.reason === "production_project_binding_required" ? 409
       : 400;
     return NextResponse.json({ ok: false, reason: result.reason }, { status });
   }

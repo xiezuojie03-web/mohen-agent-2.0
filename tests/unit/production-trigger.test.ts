@@ -16,10 +16,12 @@ it("a partially enabled registry does not prepare, register, spawn, announce or 
   // jobs. Unattended Studio full-chain production must stay blocked until
   // every job is enabled+unattended and the signed input binding exists.
   effects.prepare.mockResolvedValue({ jsonFile: "/not-loaded.json" });
-  effects.queryRows.mockResolvedValue([{ prompt: "fixture intent", status: "done", checkpoint: {budgetSpent: 0, reserved: 0, ceiling: 8} }]);
-  const result = await triggerProduction("fixture-task", "fixture intent");
+  effects.queryRows.mockImplementation(async (sql: string) => sql.includes("studio.projects")
+    ? [{project_id:"b0a11000-0000-4000-8000-000000000001"}]
+    : [{prompt:"fixture intent", status:"done", checkpoint:{budgetSpent:0, reserved:0, ceiling:8, studio:{project_id:"b0a11000-0000-4000-8000-000000000001"}}}]);
+  const result = await triggerProduction("fixture-task", "fixture intent", "b0a11000-0000-4000-8000-000000000001");
   expect(result).toMatchObject({ started: false, reason: "production_job_disabled" });
-  expect(await requestProduction("fixture-task")).toMatchObject({ ok: false, reason: "production_job_disabled" });
+  expect(await requestProduction("fixture-task", "b0a11000-0000-4000-8000-0000000000a2")).toMatchObject({ ok: false, reason: "production_job_disabled" });
   expect(effects.prepare).not.toHaveBeenCalled();
   expect(effects.spawn).not.toHaveBeenCalled();
   expect(effects.run).not.toHaveBeenCalled();

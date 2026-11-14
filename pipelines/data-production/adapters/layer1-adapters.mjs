@@ -16,9 +16,16 @@ import { computePreciseInvalidation } from "../../../packages/data-access/src/in
 import { executionDigest } from "../orchestrator/execution-authority.mjs";
 import { buildMethodPlanRefs } from "../../../packages/data-access/src/method-plan-ref.mjs";
 
-// 自由主题统一项目（评审绑定 b0a11000-…-0001 的 allowed_scope.project_id）。
-// 自由主题不创建独立项目，复用本地隔离评审绑定；私有原件路径用 scope.project_id 覆盖。
-const DEFAULT_PROJECT_ID = "b0a11000-0000-4000-8000-000000000001";
+// D01—D05 inputs are stage outputs (without scope): only the authorized
+// run carries the Creator project. Never fall back to a fixture project.
+export function requireRunProjectId(run, stageInput = null) {
+  const projectId = run?.scope?.project_id;
+  if (typeof projectId !== "string" ||
+      !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(projectId) ||
+      (stageInput?.scope?.project_id != null && stageInput.scope.project_id !== projectId))
+    throw new Error("PRODUCTION_PROJECT_SCOPE_INVALID");
+  return projectId;
+}
 
 // G0—G5 用途口径与 gate-contracts.v3.json 的 purpose_rule 及评审绑定一致
 // （private-evidence-stage.mjs 同口径）：G0/G1/G2/G5 走显式 profile
@@ -239,7 +246,9 @@ function hold(reason_code, missing_requirement, next_action, recheck_condition) 
   };
 }
 
-async function writeGate(runId, stage, gateCode, objectType, objectId, result, reasonCodes, details, consumer = null, stageInput = null) {
+async function writeGate(run, stage, gateCode, objectType, objectId, result, reasonCodes, details, consumer = null, stageInput = null) {
+  const runId = run.run_id;
+  const projectId = requireRunProjectId(run, stageInput);
   const metadata = details?.qualification_request;
   const repository = createDataProductionRepository({ query: async (sql, values) => {
     const params = Object.fromEntries(values.map((v, i) => [`p${i + 1}`, v]));
@@ -247,14 +256,14 @@ async function writeGate(runId, stage, gateCode, objectType, objectId, result, r
     return { rows: await dbQueryRows(named, params) };
   } });
   if (metadata) {
+    if (metadata.allowedScope?.project_id !== projectId) throw new Error("PRODUCTION_PROJECT_SCOPE_INVALID");
     return repository.recordGate({ ...metadata, runId, stage, gateCode, objectType, objectId, result, consumer });
   }
   // Legacy calls supply only a details blob; derive the qualification record from
   // the immutable stage input so the independent Gate binds the exact run+stage+input.
   //   - input_fingerprint = executionDigest(stage_input)  ← verifier 比对的就是这个
   //   - artifact_revision = control.artifact_revision_for(object_type, object_id)  ← 签时校验当前版本
-  //   - allowed_scope.project_id 必须命中评审绑定的 scope（自由主题用默认项目）
-  const projectId = stageInput?.scope?.project_id || DEFAULT_PROJECT_ID;
+  //   - allowed_scope.project_id comes only from the actual run scope.
   const inputFingerprint = stageInput ? executionDigest(stageInput) : sha256(JSON.stringify(details ?? {}));
   let artifactRevision = sha256(`${runId}:${stage}:${gateCode}:${objectType}:${objectId}`);
   try {
@@ -342,9 +351,9 @@ async function d00SourceIntake({ run, job, input, context }) {
   await dbRun(
     `insert into control.production_runs
      (run_id, research_intent, scope, execution_mode, status, started_at, metadata, architecture_generation)
-     values (:'run_id'::uuid, :'intent', '{}'::jsonb, :'mode', 'RUNNING', now(), '{}'::jsonb, :'arch')
+     values (:'run_id'::uuid, :'intent', :'scope'::jsonb, :'mode', 'RUNNING', now(), '{}'::jsonb, :'arch')
      on conflict (run_id) do nothing`,
-    { run_id: runId, intent: run.research_intent, mode: run.execution_mode, arch: ARCH }
+    { run_id: runId, intent: run.research_intent, scope: JSON.stringify({ project_id: requireRunProjectId(run, input) }), mode: run.execution_mode, arch: ARCH }
   );
 
   for (const m of MATERIALS) {
@@ -424,7 +433,7 @@ async function d00SourceIntake({ run, job, input, context }) {
         { ra: JSON.stringify(explicitRights.rights_by_action), re: JSON.stringify(explicitRights.rights_evidence), source_id: sourceId }
       );
     }
-    await writeGate(runId, "D00", "G0", "source_version", versionId, "PASS", [], { title: m.title }, null, input);
+    await writeGate(run, "D00", "G0", "source_version", versionId, "PASS", [], { title: m.title }, null, input);
     // 来源元数据向下游透传（D02 逐条证据归属 + D05 证据指针返证都用它）
     sourceVersions.push({
       source_id: sourceId, source_version_id: versionId, title: m.title, fragments: m.fragments,
@@ -487,7 +496,7 @@ async function d00SourceIntake({ run, job, input, context }) {
       }
       // Wikimedia Commons（CC）未经 Owner 显式授权（2026-11-08 裁定不得从 CC 标签推断许可），
       // 来源照常登记，但 G0 资格按失败关闭记 HOLD，不进入 SUBMITTED 池。
-      await writeGate(runId, "D00", "G0", "source_version", versionId, "HOLD", ["PHOTO_RIGHTS_NOT_EXPLICIT"], { title, kind: "photo" }, null, input);
+      await writeGate(run, "D00", "G0", "source_version", versionId, "HOLD", ["PHOTO_RIGHTS_NOT_EXPLICIT"], { title, kind: "photo" }, null, input);
       photoSources.push({
         source_id: sourceId, source_version_id: versionId, title,
         feature_key: p.feature_key, entity_label: p.entity_label,
@@ -497,7 +506,7 @@ async function d00SourceIntake({ run, job, input, context }) {
       });
     } catch (e) {
       // 诚实降级：照片摄取失败不阻断文本链（HOLD 留痕，不当 PASS）
-      await writeGate(runId, "D00", "G0", "source", "00000000-0000-0000-0000-000000000000", "HOLD", ["PHOTO_INTAKE_FAIL"], { feature_key: p.feature_key, error: e.message }, null, input);
+      await writeGate(run, "D00", "G0", "source", "00000000-0000-0000-0000-000000000000", "HOLD", ["PHOTO_INTAKE_FAIL"], { feature_key: p.feature_key, error: e.message }, null, input);
       photoSources.push({ feature_key: p.feature_key, entity_label: p.entity_label, failed: true, error: e.message });
     }
   }
@@ -585,7 +594,7 @@ async function d01CarrierReading({ run, job, input, context }) {
   // G1 候选按 read_unit 逐条提交（与 k3 门/private-evidence 口径一致；D01 旧用 read_run 与门查 read_unit 不匹配）。
   // 照片 read_unit（C04）的源在 G0 已 HOLD，不在此提交 G1 候选。
   for (const u of readUnits) {
-    await writeGate(runId, "D01", "G1", "read_unit", u.read_unit_id, "PASS", [], { source_version_id: u.source_version_id, method: "C01" }, null, input);
+    await writeGate(run, "D01", "G1", "read_unit", u.read_unit_id, "PASS", [], { source_version_id: u.source_version_id, method: "C01" }, null, input);
   }
 
   return {
@@ -815,7 +824,7 @@ async function d02MaterialUnderstanding({ run, job, input, context }) {
     );
   }
 
-  await writeGate(runId, "D02", "G2", "material_evidence", evidenceRows[0]?.evidence_id || "00000000-0000-0000-0000-000000000000", "PASS", [], { mention_count: mentions.length, evidence_count: evidenceRows.length, image_evidence_count: photoEvidenceRows.length, model: r.model }, null, input);
+  await writeGate(run, "D02", "G2", "material_evidence", evidenceRows[0]?.evidence_id || "00000000-0000-0000-0000-000000000000", "PASS", [], { mention_count: mentions.length, evidence_count: evidenceRows.length, image_evidence_count: photoEvidenceRows.length, model: r.model }, null, input);
 
   return {
     disposition: "PASS",
@@ -850,6 +859,7 @@ let D03_SYSTEM = `你是墨痕数据生产的 D03 世界建构器，方法 W01 �
 
 async function d03WorldConstruction({ run, job, input, context }) {
   const runId = run.run_id;
+  const projectId = requireRunProjectId(run, input);
   const evidence = input?.material_evidence || [];
   if (!evidence.length) return hold("NO_EVIDENCE", "D03 无 material_evidence 输入", "先完成 D02 材料观察", "material_evidence 非空");
 
@@ -906,7 +916,7 @@ async function d03WorldConstruction({ run, job, input, context }) {
       `insert into world.claim_revisions
        (claim_revision_id, subject_kind, subject_id, revision_no, assertion_payload_json, asserted_time_json, producer_method_id, authored_at)
        values (:'cr_id'::uuid, 'relation_claim', :'rid'::uuid, 1, :'payload'::jsonb, '{}'::jsonb, 'W07', now())`,
-      { cr_id: crId, rid, payload: JSON.stringify({ subject: rel.subject, predicate: rel.predicate, object: rel.object, basis: rel.basis || "", project_id: DEFAULT_PROJECT_ID }) }
+      { cr_id: crId, rid, payload: JSON.stringify({ subject: rel.subject, predicate: rel.predicate, object: rel.object, basis: rel.basis || "", project_id: projectId }) }
     );
     worldRelations.push({ relation_claim_id: rid, claim_revision_id: crId, subject: rel.subject, predicate: rel.predicate, object: rel.object });
   }
@@ -1044,7 +1054,7 @@ async function d03WorldConstruction({ run, job, input, context }) {
               added: newOnes,
               variants: unionList,
               basis: "本次材料新着录（机器登记，非裁决）；resolution_status 保持 open",
-              project_id: DEFAULT_PROJECT_ID,
+              project_id: projectId,
             }),
           }
         );
@@ -1104,7 +1114,7 @@ async function d03WorldConstruction({ run, job, input, context }) {
   }
 
   const openQuestionTotal = openQuestions.length + conflictDerivedQuestions.length;
-  await writeGate(runId, "D03", "G3", "claim_revision", worldRelations[0]?.claim_revision_id || "00000000-0000-0000-0000-000000000000", "PASS", [], { entity_count: worldEntities.length, relation_count: worldRelations.length, change_count: worldChanges.length, conflict_count: worldConflicts.length, refusal_count: refusals.length, open_question_count: openQuestionTotal, model: r.model }, null, input);
+  await writeGate(run, "D03", "G3", "claim_revision", worldRelations[0]?.claim_revision_id || "00000000-0000-0000-0000-000000000000", "PASS", [], { entity_count: worldEntities.length, relation_count: worldRelations.length, change_count: worldChanges.length, conflict_count: worldConflicts.length, refusal_count: refusals.length, open_question_count: openQuestionTotal, model: r.model }, null, input);
 
   return {
     disposition: "PASS",
@@ -1229,7 +1239,7 @@ async function d04HumanisticDiscovery({ run, job, input, context }) {
     });
   }
 
-  await writeGate(runId, "D04", "G4", "finding", findingRows[0]?.finding_id || "00000000-0000-0000-0000-000000000000", "PASS", [], { finding_count: findingRows.length, present_connection_count: presentConnections.length, model: r.model }, null, input);
+  await writeGate(run, "D04", "G4", "finding", findingRows[0]?.finding_id || "00000000-0000-0000-0000-000000000000", "PASS", [], { finding_count: findingRows.length, present_connection_count: presentConnections.length, model: r.model }, null, input);
 
   return {
     disposition: "PASS",
@@ -1492,8 +1502,8 @@ async function d05ReadModelPublication({ run, job, input, context }) {
   );
   // 主产物用 consumer=producer：评审绑定与 verify 均以 producer 为资格请求方，
   // agent/visual_stage 作为消费方在 artifact 类型和 details 中已区分。
-  await writeGate(runId, "D05", "G5", "world_projection", projId, "PASS", [], { kind: "world_projection" }, "producer", input);
-  await writeGate(runId, "D05", "G5", "world_projection", projId, "PASS", [], { kind: "world_projection", consumer: "visual_stage" }, "visual_stage", input);
+  await writeGate(run, "D05", "G5", "world_projection", projId, "PASS", [], { kind: "world_projection" }, "producer", input);
+  await writeGate(run, "D05", "G5", "world_projection", projId, "PASS", [], { kind: "world_projection", consumer: "visual_stage" }, "visual_stage", input);
 
   // P03 时空投影（V1.4 新增发布）：只投影本 run 有着录的时间变化，无载年代者不画
   let tlId = null;
@@ -1527,8 +1537,8 @@ async function d05ReadModelPublication({ run, job, input, context }) {
         objs: JSON.stringify(entities.map((e) => e.entity_id ?? e.label)),
       }
     );
-    await writeGate(runId, "D05", "G5", "map_timeline_projection", tlId, "PASS", [], { kind: "map_timeline_projection" }, "agent", input);
-    await writeGate(runId, "D05", "G5", "map_timeline_projection", tlId, "PASS", [], { kind: "map_timeline_projection" }, "visual_stage", input);
+    await writeGate(run, "D05", "G5", "map_timeline_projection", tlId, "PASS", [], { kind: "map_timeline_projection" }, "agent", input);
+    await writeGate(run, "D05", "G5", "map_timeline_projection", tlId, "PASS", [], { kind: "map_timeline_projection" }, "visual_stage", input);
   }
 
   // P04 故事种子（每条 finding）
@@ -1546,8 +1556,8 @@ async function d05ReadModelPublication({ run, job, input, context }) {
         fids: `{${f.finding_id}}`,
       }
     );
-    await writeGate(runId, "D05", "G5", "story_seed", seedId, "PASS", [], { kind: "story_seed" }, "agent", input);
-    await writeGate(runId, "D05", "G5", "story_seed", seedId, "PASS", [], { kind: "story_seed" }, "visual_stage", input);
+    await writeGate(run, "D05", "G5", "story_seed", seedId, "PASS", [], { kind: "story_seed" }, "agent", input);
+    await writeGate(run, "D05", "G5", "story_seed", seedId, "PASS", [], { kind: "story_seed" }, "visual_stage", input);
     storySeeds.push({
       story_seed_id: seedId, finding_id: f.finding_id,
       entities: entitiesForText(f.interpretive_statement, entityLabels),
@@ -1593,7 +1603,7 @@ async function d05ReadModelPublication({ run, job, input, context }) {
         fids: `{${f.finding_id}}`,
       }
     );
-    await writeGate(runId, "D05", "G5", "agent_context", ctxId, "PASS", [], { kind: "agent_context" }, "agent", input);
+    await writeGate(run, "D05", "G5", "agent_context", ctxId, "PASS", [], { kind: "agent_context" }, "agent", input);
     agentContexts.push({ agent_context_id: ctxId, finding_id: f.finding_id });
   }
 
@@ -1620,8 +1630,8 @@ async function d05ReadModelPublication({ run, job, input, context }) {
         fids: `{${fidArr}}`,
       }
     );
-    await writeGate(runId, "D05", "G5", "discovery_path", dpId, "PASS", [], { kind: "discovery_path" }, "agent", input);
-    await writeGate(runId, "D05", "G5", "discovery_path", dpId, "PASS", [], { kind: "discovery_path" }, "visual_stage", input);
+    await writeGate(run, "D05", "G5", "discovery_path", dpId, "PASS", [], { kind: "discovery_path" }, "agent", input);
+    await writeGate(run, "D05", "G5", "discovery_path", dpId, "PASS", [], { kind: "discovery_path" }, "visual_stage", input);
     discoveryPaths.push({ discovery_path_id: dpId, open_question_id: oq.open_question_id ?? null });
   }
 
@@ -1650,8 +1660,8 @@ async function d05ReadModelPublication({ run, job, input, context }) {
         excerpt: ev.literal_reading ?? "",
       }
     );
-    await writeGate(runId, "D05", "G5", "evidence_pointer", epId, "PASS", [], { kind: "evidence_pointer" }, "agent", input);
-    await writeGate(runId, "D05", "G5", "evidence_pointer", epId, "PASS", [], { kind: "evidence_pointer" }, "visual_stage", input);
+    await writeGate(run, "D05", "G5", "evidence_pointer", epId, "PASS", [], { kind: "evidence_pointer" }, "agent", input);
+    await writeGate(run, "D05", "G5", "evidence_pointer", epId, "PASS", [], { kind: "evidence_pointer" }, "visual_stage", input);
     evidencePointers.push({
       evidence_pointer_id: epId, evidence_id: ev.evidence_id,
       entities: entitiesForText(ev.literal_reading ?? "", entityLabels),
@@ -1703,8 +1713,8 @@ async function d05ReadModelPublication({ run, job, input, context }) {
         excerpt,
       }
     );
-    await writeGate(runId, "D05", "G5", "evidence_pointer", epId, "PASS", [], { kind: "evidence_pointer", visual_type: "today_photo" }, "agent", input);
-    await writeGate(runId, "D05", "G5", "evidence_pointer", epId, "PASS", [], { kind: "evidence_pointer", visual_type: "today_photo" }, "visual_stage", input);
+    await writeGate(run, "D05", "G5", "evidence_pointer", epId, "PASS", [], { kind: "evidence_pointer", visual_type: "today_photo" }, "agent", input);
+    await writeGate(run, "D05", "G5", "evidence_pointer", epId, "PASS", [], { kind: "evidence_pointer", visual_type: "today_photo" }, "visual_stage", input);
     visualPointers.push({ evidence_pointer_id: epId, visual_object_id: vo.visual_object_id, evidence_id: vo.evidence_id ?? null });
   }
 
