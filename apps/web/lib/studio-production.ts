@@ -158,6 +158,9 @@ export async function triggerProduction(taskId: string, intent: string): Promise
         "--run-id", runId,
         "--execution-mode", EXECUTION_MODE,
         "--scope-file", scopeFile,
+        // D00-B：自由主题生产必须预选 D01 读法（文本材料走 C01），否则 G0 的
+        // method_plan_preselection 结构性前置失败关闭（不补默认方法）。见 2026-11-14 断点核。
+        "--method-plan", JSON.stringify({ methods: [{ method_id: "C01", method_version: "v1" }] }),
       ],
       {
         cwd: projectRoot,

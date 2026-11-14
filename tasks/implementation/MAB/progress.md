@@ -3143,7 +3143,7 @@ work_revision content (plan+beats) → source_anchor source_refs (×77) → asse
 | chain.G5 / chain.G5_watch | ✅ | audit e304497，current=true，绑定修订 825a56c9 |
 | http.positive_after_resign | ✅ | 作品 5b42577e 出现在 /api/works/published |
 | http.revoked_immediate_deny | ✅ | 撤权后立即消失，locked_count=1 |
-| http.restored_after_resign | ✅ | 重签 audit  a0da364 后恢复可见 |
+| http.restored_after_resign | ✅ | 重签 audit a0da364 后恢复可见 |
 
 - 方法计划：
 ead_run schema = mab.private-scanned-page-reading.v1 → C02（按读运行实际 schema 反推，不补默认值）。
@@ -3831,3 +3831,32 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **边界（2026-11-14 订正）**：未改数据库结构、未重跑整条管线、未动私有原件路径。订正本批早期记录的「未改 Registry」——实际 `specs/data-production/production-registry.json` 中 D00–D05 的 `adapter_binding` 已由 `private-evidence-adapters.mjs` 切换为 `layer1-adapters.mjs`（登记字段变更，非整版覆盖）。本批实际改动范围大于早期记录所列，还包含：执行授权动态令牌（`execution-authority.mjs` `fetchStageToken`、`run.mjs` 动态端点、`adapter-binding.mjs` 签名授权下放行动态主题输入）、生产路由补 POST 触发入口、`data-production-repository.mjs` 候选状态分流（HOLD/REJECT 不入 SUBMITTED 池）、`content_availability` 词典改名（full_text/excerpt/metadata_only/image_only → full_content/catalog_only/image_scan）、新增 `apps/web/lib/studio-execution-authority.ts`（Studio 侧执行授权复用 local-execution-authorizer 口径，仅限本地隔离环境）。临时查询脚本（`.tmp_check_*.mjs` 等）不入库待清理。
 - **下一步**：从 Studio UI 触发一次自由主题生产，看 D00 能否自动通过 Gate 进到 D01；不需要再读任何文件。
 - **推送销项（2026-11-14 Owner 指令）**：Owner 指示「昨晚未提交的工作补上后再全部推送」。本批全部改动（含订正后的 Registry 变更、动态令牌机制、词典改名与新增 `studio-execution-authority.ts`）已提交并推送 GitHub；此前挂账 47 提交亦已推送销项。证据等级不变：仍为 `CODE_PRESENT`，UI 真跑验证与按设计复核未完成，推送不等于验证通过。
+
+---
+
+## 2026-11-14｜Studio UI 自由选题→D00→独立 G0 签发链：断点核 + 定向修复（B2/B6/B4，未闭合 B7/B8/B1）
+
+- **三轴定位**：续 8963c9d 的「独立 Gate 自动签发断点修复批（CODE_PRESENT，待 UI 真跑）」。本批按 Owner「哪里断补哪里」对该链做**源码 + 真库对照核**，发现 8963c9d 只修了 `input_fingerprint`/`allowed_scope`/verifier 透传/自动签发服务，**自由主题 layer1 的 G0 候选仍有多处硬断点**，未达「真跑可过」。不重跑 M0—M4、不改私有原件路径、未重灌数据。
+- **环境事实**：本地 HEAD=`1c35f3e`，与 `origin/main` 同步（0/0）；`mohen_dev` 经 node pg 直连可达（`production_runs=134`、`gate_candidates SUBMITTED=32`）。本会话 sandbox 限制：**子进程 piped-stdio spawn 一律 EPERM**（`execFileSync`/`execFile`/`spawn` 捕获输出均失败，`node`/`git`/`psql` 子进程皆然），故 `data-access` 默认 psql 驱动不可用，须 `MOHEN_DB_DRIVER=pg` 走 node pg 直连（`data-access/index.mjs` 已原生支持该驱动，非代码改动）。
+- **断点核（DB 实查对照，非猜测）**：
+  1. **B2｜QR-08 守卫误报**：`tools/verify-local-execution-env.mjs` check #4 用 `gate_audits.current_valid and valid_until<=now()` 判「过期仍当前」。实查 `gate_audits` 有 6 条 2026-11-07 签发、11-13 到期的 `independent_gate` 审计仍 `current_valid=true`，但**均不在 `qualification_current`（0 过期行）且 `current_qualification_is_valid()`=false**——`current_valid` 是 k3 `sign_gate_candidate` 只 insert 不回写的冗余标记，不能当「当前」判据。故该守卫把「已自然过期但非当前」误报为 `stale_current_pass=6`，阻断证据再生成。
+  2. **B6｜G0 用途错配**：`layer1-adapters.mjs` `writeGate` 写死 `purpose={namespace:"mohen.production",code:"g0",version:"1"}`，而机器评审 G0 绑定只有 `data-production/m5-remediation/v1`（DB 实查 18 条绑定无 `mohen.production`），`sign_gate_candidate` 恒抛 `REVIEWER_BINDING_REQUIRED`。private-evidence 路径同口径见 `private-evidence-stage.mjs` `DEFAULT_PURPOSE`。
+  3. **B4｜方法计划缺失**：G0 策略外结构性前置 `method_plan_preselection`（`rule-gate-reviewer.mjs`）要求候选 `evidence_refs` 含合法 C 方法引用；自由主题 D00 的 `writeGate` 只写 `[{object_type,object_id}]`，且 `studio-production.ts` 未给 `--method-plan` → 恒 `method_plan_ref_missing`。
+  4. **B7｜权利模型不匹配（未修）**：G0 policy `required_checks={identity_version,rights_by_operation}`；`checkRightsByOperation`（非 G5）要求 `object_type=source_version` 且 `source_versions→raw_items→studio.private_originals（STORED_VERIFIED+显式 rights_by_action machine_read/retain=allowed）`。自由主题文本材料落的是 `source.sources`（`carrier_type=digital_text`、`raw_items.storage_ref=memory://`、无 `private_originals`、无 `rights_by_action`），且 layer1 G0 用 `object_type="source"`+`objectId=source_id` → 恒 `rights_record_missing`。**这是自由主题（非私有网络文本来源）能否过 G0 的资格口径问题，需设计裁定，不在本批施工层自行发明。**
+- **本批变更（3 文件，最小定向）**：
+  1. `tools/verify-local-execution-env.mjs`：check #4 改查 `control.qualification_current where valid_until<=now()`（当前资格唯一真源），并改写注释说明 `gate_audits.current_valid` 为何不可作判据。
+  2. `pipelines/data-production/adapters/layer1-adapters.mjs`：新增 `PURPOSE_BY_GATE`（G0/G1/G2/G5=`data-production/m5-remediation/v1`，G3=`world/explain_bounded/v1`，G4=`G4.interpretation.v1/BE`）并在 `writeGate` 使用；G0 分支按 `stageInput.consumer_method_plan` 用 `buildMethodPlanRefs` 把 C 方法引用并入 `evidence_refs`（无计划不补默认，失败关闭不变）。
+  3. `apps/web/lib/studio-production.ts`：`triggerProduction` spawn 追加 `--method-plan {"methods":[{"method_id":"C01","method_version":"v1"}]}`（自由主题文本材料预选 D01 读法 C01）。
+- **真实测试证据**：
+  - `node --check` 两 mjs 通过；`apps/web` `tsc --noEmit` **0 错误**；`import('./.../layer1-adapters.mjs')` 成功（`adapters` 导出）。
+  - `node --test tests/data-production/method-plan-input.test.mjs tests/data-production/private-evidence-adapters.test.mjs` = **27/27 PASS**。
+  - `MOHEN_DB_DRIVER=pg node tools/verify-local-execution-env.mjs --no-tests --stdout`：`user_engineering_authorization`、`M0_environment_and_bindings_verified`、`no_formal_hold_bypass` 全 **PASS**（B2 修复生效，`stale_current_pass` 消项）。
+  - `buildMethodPlanRefs({C01@v1})` 往返 `inspectMethodPlanRef`=ok；`identifier-registry` 已登记 C01–C08；D00 输入 `executionDigest` 含 `consumer_method_plan`（授权器与 Runner 同源）。
+  - 全量 `node --test tests/data-production/*.test.mjs` = **241 通过 / 5 失败 / 0 跳过**。5 失败为**预存**（非本批引入，本批未改那 4 个测试文件）：`adapter-binding.test.mjs`（2，8963c9d 切 registry 到 layer1 后测试仍断言 private-evidence 绑定）、`execution-authorization.test.mjs`（1，CLI 先于授权评估适配器）、`independent-gate-service-runtime.test.mjs`（1，本机无 openssl，CURRENT.md 已记 DEFERRED_ENV）、`resume-input.test.mjs`（1，M2 快照符号链接）。
+- **未关闭缺口（如实记账）**：
+  1. **B7（G0 权利口径）**：自由主题非私有文本来源如何过 G0 `rights_by_operation`，需 Owner/合同层裁定（选项：把文本来源登记为带显式权利的私有原件、或给非私有来源单开 G0 权利检查口径、或裁定自由主题走既有 private-evidence 链）。此未决前 D00→G0 不可能真过。
+  2. **B8（5 测试预存失败）**：8963c9d 切 registry 未同步 `adapter-binding.test.mjs`/`execution-authorization.test.mjs`；随 B7 裁定一并修，否则 `verify-local-execution-env.mjs` 的 `isolation_and_contract_tests_pass` 无法转 PASS。
+  3. **B1（evidence 陈旧）**：`D:/MoHen/keys/execution-auth/enable-requires-evidence.json` `git_head=21436301`≠`1c35f3e`（registry_digest 仍 `24c73c31` 未变、生成 14.6h 内未过期），执行授权 `signStageGrant` 会因 git-head 陈旧拒绝签发。需 B8 修完后 `verify-local-execution-env.mjs` 重新出证。
+  4. **B3/B5（sandbox EPERM）**：`verify-local-execution-env.mjs` 内部 `execFileSync` 跑测试套件、`studio-production.ts` `spawn(run.mjs,{stdio:["ignore","pipe","pipe"]})` 在本 sandbox 均 EPERM。`MOHEN_DB_DRIVER=pg` 可绕过 psql；但「从 Studio 真 UI 触发」需非 sandbox 环境（或把 spawn 改 `stdio:"inherit"` 并放弃 stderr 截尾，属产品代码改动，未擅动）。
+- **下一入口**：① Owner 裁定 B7（自由主题文本来源 G0 权利/资格口径）→ ② 按裁定同步修 B8 测试（adapter-binding/execution-authorization 断言与 registry 一致）→ ③ `verify-local-execution-env.mjs` 重新出证（git_head 对齐 1c35f3e）→ ④ 非 sandbox 环境从 Studio 真 UI 触发自由主题，核 D00→独立 G0 自动签发是否进 D01。本批不 commit 即推；**PENDING_PUSH**（AGENTS.md §0A 批量推送窗口由 Owner 确认）。
+- **口径边界**：本批只改 3 个源码/守卫文件、零 DDL、未触生产库、未签任何 Gate；G0 资格/权利口径未决前 `M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变；证据等级仍 `CODE_PRESENT`（B2/B6/B4 就位，未达 `VERIFIED_ISOLATED`）。

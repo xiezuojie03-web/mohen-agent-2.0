@@ -14,10 +14,26 @@ import { run as dbRun, queryValue as dbQueryValue, queryRows as dbQueryRows } fr
 import { createDataProductionRepository } from "../../../packages/data-access/src/data-production-repository.mjs";
 import { computePreciseInvalidation } from "../../../packages/data-access/src/invalidation.mjs";
 import { executionDigest } from "../orchestrator/execution-authority.mjs";
+import { buildMethodPlanRefs } from "../../../packages/data-access/src/method-plan-ref.mjs";
 
 // 自由主题统一项目（评审绑定 b0a11000-…-0001 的 allowed_scope.project_id）。
 // 自由主题不创建独立项目，复用本地隔离评审绑定；私有原件路径用 scope.project_id 覆盖。
 const DEFAULT_PROJECT_ID = "b0a11000-0000-4000-8000-000000000001";
+
+// G0—G5 用途口径与 gate-contracts.v3.json 的 purpose_rule 及评审绑定一致
+// （private-evidence-stage.mjs 同口径）：G0/G1/G2/G5 走显式 profile
+// data-production/m5-remediation/v1；G3 走 world/explain_bounded/v1；
+// G4 走 G4.interpretation.v1 人文五用途（默认 BE bounded_explanation）。
+// 之前写死 mohen.production/{g0..g5}/1 命中不了任何评审绑定 → sign_gate_candidate 恒
+// 抛 REVIEWER_BINDING_REQUIRED（2026-11-14 断点核）。
+const PURPOSE_BY_GATE = {
+  G0: { namespace: "data-production", code: "m5-remediation", version: "v1" },
+  G1: { namespace: "data-production", code: "m5-remediation", version: "v1" },
+  G2: { namespace: "data-production", code: "m5-remediation", version: "v1" },
+  G3: { namespace: "world", code: "explain_bounded", version: "v1" },
+  G4: { namespace: "G4.interpretation.v1", code: "BE", version: "v1" },
+  G5: { namespace: "data-production", code: "m5-remediation", version: "v1" },
+};
 
 const ARCH = "mohen.six-stage.v1";
 const DEEPSEEK_KEY = process.env.DEEPSEEK_API_KEY;
@@ -248,7 +264,7 @@ async function writeGate(runId, stage, gateCode, objectType, objectId, result, r
     );
     if (typeof rev === "string" && /^[a-f0-9]{64}$/.test(rev)) artifactRevision = rev;
   } catch { /* 查不到时降级，由 sign_gate_candidate 的 ARTIFACT_REVISION_NOT_CURRENT 失败关闭 */ }
-  const purpose = {
+  const purpose = PURPOSE_BY_GATE[gateCode] ?? {
     namespace: "mohen.production",
     code: gateCode.toLowerCase(),
     version: "1",
@@ -276,7 +292,13 @@ async function writeGate(runId, stage, gateCode, objectType, objectId, result, r
       }
     } catch { /* 查不到时留空，由 sign_gate_candidate 的 MISSING_UPSTREAM_DEPENDENCY 失败关闭 */ }
   }
-  const evidenceRefs = [{ object_type: objectType, object_id: objectId }];
+  // G0（D00）必须携带消费者方法计划（C 方法预选，D00-B）：调用方给了
+  // consumer_method_plan 就以类型化引用进 evidence_refs，G0 评审器据此强制校验；
+  // 不给就不补默认方法（缺计划由 method_plan_preselection 失败关闭）。
+  let evidenceRefs = [{ object_type: objectType, object_id: objectId }];
+  if (gateCode === "G0" && Array.isArray(stageInput?.consumer_method_plan) && stageInput.consumer_method_plan.length) {
+    evidenceRefs = [...evidenceRefs, ...buildMethodPlanRefs({ methods: stageInput.consumer_method_plan })];
+  }
   return repository.recordGate({
     runId, stage, gateCode, objectType, objectId, result, consumer: consumer ?? "producer",
     artifactRevision, purpose, allowedScope, dependencySnapshot, evidenceRefs, inputFingerprint,

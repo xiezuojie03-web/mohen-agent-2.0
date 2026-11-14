@@ -130,11 +130,14 @@ async function main() {
       }
     }
     try {
-      // 仍被标记为“当前有效”却已过期 = 过期 PASS 被继续当作有效资格（真正的 HOLD 绕过信号）。
+      // 过期 PASS 被继续当作有效资格 = 当前资格表里仍有已过期行（真正的 HOLD 绕过信号）。
+      // 当前资格的唯一真源是 control.qualification_current；gate_audits.current_valid 是
+      // 签名时默认 true、且 k3 签发/撤权都不回写的冗余标记，不能作为“当前”判据——
+      // 否则任何按 6 天有效期自然过期的历史审计都会触发误报（见 2026-11-14 断点核）。
       const rows = await dataAccess.queryRows(
         `select count(*)::text as stale_current
-           from control.gate_audits
-          where current_valid and valid_until <= now()`);
+           from control.qualification_current
+          where valid_until <= now()`);
       const stale = Number(rows[0]?.stale_current ?? -1);
       if (!Number.isFinite(stale) || stale !== 0) problems.push(`stale_current_pass=${rows[0]?.stale_current}`);
       const audits = await dataAccess.queryRows("select count(*)::text as total from control.gate_audits");
