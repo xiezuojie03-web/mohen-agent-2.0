@@ -1,9 +1,10 @@
 import { beforeEach,expect,it,vi } from "vitest";
-const state=vi.hoisted(()=>({session:vi.fn(),upload:vi.fn(),download:vi.fn(),list:vi.fn(),token:vi.fn(),store:vi.fn()}));
+const state=vi.hoisted(()=>({session:vi.fn(),upload:vi.fn(),download:vi.fn(),list:vi.fn(),registration:vi.fn(),token:vi.fn(),store:vi.fn()}));
 vi.mock("../../apps/web/lib/session",()=>({getSession:state.session}));
 vi.mock("../../apps/web/lib/auth",()=>({signDatabaseSessionToken:state.token}));
 vi.mock("../../packages/data-access/src/index.mjs",()=>({
  getNodePgPool:()=>({}),createPrivateOriginalRepository:()=>({listForProject:state.list}),
+ createPrivateSourceRegistrationRepository:()=>({lookup:state.registration}),
  createPrivateOriginalWorkflow:()=>({upload:state.upload,download:state.download}),
  MAX_ORIGINAL_BYTES:10485760,createPrivateOriginalStorage:()=>state.store,
 }));
@@ -17,7 +18,8 @@ function request(){
  form.set("file",new File(["private original"],"page.txt",{type:"text/plain"}));
  return new Request("http://test.invalid/api/studio/attachments",{method:"POST",body:form});
 }
-beforeEach(()=>{vi.clearAllMocks();state.list.mockResolvedValue([]);vi.stubEnv("MOHEN_PRIVATE_ORIGINAL_UPLOAD_ENABLED","true");vi.stubEnv("MOHEN_PRIVATE_ORIGINAL_LOCAL_FS","false");state.session.mockResolvedValue({uid:id});state.token.mockReturnValue("synthetic");state.upload.mockResolvedValue({
+beforeEach(()=>{vi.clearAllMocks();state.list.mockResolvedValue([]);
+ state.registration.mockRejectedValue(new Error('PRIVATE_SOURCE_REGISTRATION_INVALID'));vi.stubEnv("MOHEN_PRIVATE_ORIGINAL_UPLOAD_ENABLED","true");vi.stubEnv("MOHEN_PRIVATE_ORIGINAL_LOCAL_FS","false");state.session.mockResolvedValue({uid:id});state.token.mockReturnValue("synthetic");state.upload.mockResolvedValue({
  original_id:id,asset_id:id,asset_revision_id:id,sha256:"a".repeat(64),byte_size:16,state:"STORED_VERIFIED",
 });state.download.mockResolvedValue({record:{content_type:"text/plain"},bytes:Buffer.from("original")});});
 it("refuses anonymous upload and download",async()=>{
@@ -103,7 +105,7 @@ it("lists only Owner-RLS verified original metadata for a project, never bytes o
  expect(response.status).toBe(200);
  expect(response.headers.get("Cache-Control")).toBe("no-store");
  const data=await response.json();
- expect(data).toMatchObject({ok:true,project_id:id,originals:[{original_id:id,state:"STORED_VERIFIED"}]});
+ expect(data).toMatchObject({ok:true,project_id:id,originals:[{original_id:id,state:"STORED_VERIFIED",registration_state:"UNBOUND",source_version_id:null}]});
  expect(JSON.stringify(data)).not.toContain("NEVER_LEAK");
  expect(state.list).toHaveBeenCalledWith(id,"synthetic");
  expect(state.download).not.toHaveBeenCalled();
@@ -121,4 +123,31 @@ it("rejects malformed and ambiguous project/source requests before accessing sto
  expect((await GET(new Request("http://test.invalid/api/studio/attachments?project_id="+id+"&original_id="+id))).status).toBe(400);
  expect(state.list).not.toHaveBeenCalled();
  expect(state.download).not.toHaveBeenCalled();
+});
+
+it("marks an original as L0-bound only when owner-scoped registration matches the exact stored version",async()=>{
+ state.list.mockResolvedValue([{original_id:id,project_id:id,asset_revision_id:id,
+   file_name:"registered.jpg",content_type:"image/jpeg",sha256:"a".repeat(64),
+   byte_size:1234,state:"STORED_VERIFIED"}]);
+ state.registration.mockResolvedValue({original_id:id,project_id:id,source_version_id:id,
+   asset_revision_id:id,content_type:"image/jpeg",sha256:"a".repeat(64),byte_size:1234});
+ const response=await GET(new Request("http://test.invalid/api/studio/attachments?project_id="+id));
+ expect(response.status).toBe(200);
+ expect((await response.json()).originals).toMatchObject([{
+   original_id:id,registration_state:"BOUND",source_version_id:id
+ }]);
+ expect(state.registration).toHaveBeenCalledWith(id,"synthetic");
+ state.registration.mockResolvedValueOnce({original_id:id,project_id:id,
+   source_version_id:id,asset_revision_id:id,content_type:"image/jpeg",sha256:"b".repeat(64),byte_size:1234});
+ const changed=await GET(new Request("http://test.invalid/api/studio/attachments?project_id="+id));
+ expect((await changed.json()).originals[0].registration_state).toBe("UNBOUND");
+});
+it("fails inventory closed if source-registration lookup fails for reasons other than an unbound original",async()=>{
+ state.list.mockResolvedValue([{original_id:id,project_id:id,asset_revision_id:id,
+   file_name:"registered.jpg",content_type:"image/jpeg",sha256:"a".repeat(64),
+   byte_size:1234,state:"STORED_VERIFIED"}]);
+ state.registration.mockRejectedValueOnce(new Error("permission denied"));
+ const response=await GET(new Request("http://test.invalid/api/studio/attachments?project_id="+id));
+ expect(response.status).toBe(503);
+ expect(JSON.stringify(await response.json())).not.toContain("permission denied");
 });
