@@ -102,8 +102,24 @@ export async function GET(req:Request){
  const session=await getSession();
  if(!session)return fail("login_required",401);
  if(!enabled())return fail("private_original_storage_unavailable",503);
- const originalId=new URL(req.url).searchParams.get("original_id");
- if(!originalId||!UUID.test(originalId))return fail("bad_request",400);
+ const url=new URL(req.url);
+ const originalId=url.searchParams.get("original_id");
+ const projectId=url.searchParams.get("project_id");
+ // ST-02: one Owner-RLS-scoped inventory for the ST-01 project. Metadata only:
+ // do not download private bytes, reveal storage keys or infer a source license.
+ if (projectId !== null && originalId === null) {
+  if (!UUID.test(projectId))return fail("bad_request",400);
+  try {
+   const originals=await createPrivateOriginalRepository(getNodePgPool()).listForProject(
+     projectId,signDatabaseSessionToken(session));
+   return NextResponse.json({ok:true,project_id:projectId,originals:originals.map(o=>({
+     original_id:o.original_id,project_id:o.project_id,asset_revision_id:o.asset_revision_id,
+     file_name:o.file_name,content_type:o.content_type,sha256:o.sha256,
+     byte_size:o.byte_size,state:o.state,
+   }))},{headers:noStore});
+  }catch(e){return errorResult(e);}
+ }
+ if (!originalId||projectId!==null||!UUID.test(originalId))return fail("bad_request",400);
  try{
   const {record,bytes}=await workflow().download(originalId,signDatabaseSessionToken(session));
   return new NextResponse(new Uint8Array(bytes),{status:200,headers:{
