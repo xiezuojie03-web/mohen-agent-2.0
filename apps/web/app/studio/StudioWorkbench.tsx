@@ -6,6 +6,17 @@ import { humanEpistemic } from "../experience/jinze-water-net/humanLabels";
 import type { Beat, DirectorPlan, WorkPanels } from "../../lib/studio-creation";
 
 type StudioProject = {project_id:string;project_title:string;research_scope?:unknown};
+// The existing Runner writes only bounded terminal diagnostics. A D00
+// candidate or an empty status is never equivalent to an independent G0 PASS.
+type StudioProductionReadback = {
+  status:string;
+  current_stage:string|null;
+  terminal?:{
+    stage:string|null;gate_code:string|null;disposition:string;
+    independent_gate_audit_id:string|null;
+    reason_code:string|null;verification_error:string|null;
+  }|null;
+};
 
 type Message = {
   role: "user" | "mohen";
@@ -147,7 +158,7 @@ export default function StudioWorkbench() {
       if (!tasksResponse.ok || !tasksBody.ok || !Array.isArray(tasksBody.tasks)) throw new Error("已保存研究任务暂时无法读取。");
       const task=tasksBody.tasks.find(t=>t.project_id===project.project_id);
       let restored:{taskId:string;status:"done"|"hold";prompt:string;decision:AgentDecision|null}|null=null;
-      let priorProduction:{status:string;current_stage:string|null}|null=null;
+      let priorProduction:StudioProductionReadback|null=null;
       if (task) {
         const statusResponse=await fetch(`/api/studio/research-tasks/${encodeURIComponent(task.task_id)}/status`,{cache:"no-store"});
         const statusBody=await statusResponse.json() as {ok?:boolean;task?:{
@@ -174,7 +185,7 @@ export default function StudioWorkbench() {
           prompt:statusBody.task.prompt??task.prompt,decision:validDecision};
         const prodResponse=await fetch(`/api/studio/research-tasks/${encodeURIComponent(task.task_id)}/production`,{cache:"no-store"});
         if (prodResponse.ok) {
-          const p=await prodResponse.json() as {ok?:boolean;production?:{status:string;current_stage:string|null}|null};
+          const p=await prodResponse.json() as {ok?:boolean;production?:StudioProductionReadback|null};
           if(p.ok&&p.production)priorProduction=p.production;
         }
       }
@@ -235,7 +246,7 @@ export default function StudioWorkbench() {
   const [submitted, setSubmitted] = useState(false);
 
   // 生产进度（委托后异步 D00–D05 生产，轮询 control.production_runs）
-  const [production, setProduction] = useState<{ status: string; current_stage: string | null } | null>(null);
+  const [production, setProduction] = useState<StudioProductionReadback | null>(null);
   const [currentResearch, setCurrentResearch] = useState<{ taskId: string; status: "done" | "hold" } | null>(null);
   const [productionBusy, setProductionBusy] = useState(false);
   const [productionError, setProductionError] = useState<string | null>(null);
@@ -382,7 +393,7 @@ export default function StudioWorkbench() {
           const response = await fetch(`/api/studio/research-tasks/${encodeURIComponent(taskId)}/production`, { cache: "no-store" });
           const body = (await response.json()) as {
             ok?: boolean;
-            production?: { status: string; current_stage: string | null } | null;
+            production?: StudioProductionReadback | null;
           };
           if (!response.ok || !body.ok || !body.production) {
             stopProductionPoll();
@@ -434,6 +445,7 @@ export default function StudioWorkbench() {
           production_private_adapter_not_bound: "唯一Registry尚未将可信私有Worker接入六阶段，不能用旧平行Adapter冒充真实原件生产",
           production_acquisition_receipt_required: "可信来源的取得方式与回执尚未完成正式交接，不能开始计费生产",
           production_input_binding_required: "本机独立执行授权与原件输入尚未具备",
+          production_authority_start_failed: "本次独立执行授权服务启动失败，已保留失败回执，未运行生产工序",
           production_reservation_reconciliation_required: "上一次预算预留尚未核销，不能重复执行",
           production_reservation_receipt_uncertain: "预算回执未能确认，需先对账",
           production_reservation_conflict: "另一次请求已占用生产预算，请核对原任务",
@@ -920,12 +932,12 @@ export default function StudioWorkbench() {
             </div>
           )}
           {production && (
-            <div className="studio__production">
+            <div className="studio__production" role="status">
               {production.status === "RUNNING"
                 ? `正在生产（${production.current_stage ?? "启动中"}）…`
                 : production.status === "PASS"
-                  ? "生产阶段已结束；知识资格需独立核验。"
-                  : `生产结束（${production.status}），详情见任务事件。`}
+                  ? `本次已执行工序结束（${production.terminal?.stage ?? production.current_stage ?? "未确认阶段"}）；不代表D00—D05或整部作品准出。`
+                  : `本次受控生产${production.status === "HOLD" ? "暂停" : "未通过"}（${production.terminal?.stage ?? production.current_stage ?? "阶段未确认"} / ${production.terminal?.gate_code ?? "独立资格未确认"}）${production.terminal?.reason_code ? "：" + production.terminal.reason_code : "；具体原因未持久核实"}${production.terminal?.verification_error ? "（" + production.terminal.verification_error + "）" : ""}。未取得独立知识资格，不得作为合格材料使用。`}
             </div>
           )}
 
