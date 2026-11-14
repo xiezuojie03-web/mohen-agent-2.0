@@ -21,7 +21,7 @@ import { buildMethodPlanRefs } from "../../../packages/data-access/src/method-pl
 export function requireRunProjectId(run, stageInput = null) {
   const projectId = run?.scope?.project_id;
   if (typeof projectId !== "string" ||
-      !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(projectId) ||
+      !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(projectId) ||
       (stageInput?.scope?.project_id != null && stageInput.scope.project_id !== projectId))
     throw new Error("PRODUCTION_PROJECT_SCOPE_INVALID");
   return projectId;
