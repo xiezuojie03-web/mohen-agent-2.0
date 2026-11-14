@@ -1,6 +1,6 @@
 # 墨痕｜当前工程事实快照
 
-> **职责**：当前代码与运行证据及剩余阻断，不规定工程施工标准。唯一计划：`tasks/implementation/MAB/PLAN.md` V1.6；历史逐批证据：`tasks/implementation/MAB/progress.md`。每次施工仍须实时查询GitHub `main` HEAD、CI、PG/HTTP及部署，不能把本页SHA当永久最新版本。
+> **职责**：当前代码与运行证据及剩余阻断，不规定工程施工标准。唯一计划：`tasks/implementation/MAB/PLAN.md` V1.7；历史逐批证据：`tasks/implementation/MAB/progress.md`。每次施工仍须实时查询GitHub `main` HEAD、CI、PG/HTTP及部署，不能把本页SHA当永久最新版本。
 
 **核验日期：2026-11-14。最近Studio功能代码/CI检查点：`main@78709c026f0d5bdff7dbd9d5f8249711a86907e3`。** 本页后续文档更新会形成新的main SHA，但不改变该次业务测试的证据身份。
 

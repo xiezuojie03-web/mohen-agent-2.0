@@ -7,7 +7,7 @@
 | 文件 | 职责 |
 |---|---|
 | 根 `AGENTS.md` | 设计权威、合同导航及最短读取顺序 |
-| `tasks/implementation/MAB/PLAN.md` V1.6 | M0—M8、QR-01—QR-10、九个CP停点、M5八维及唯一准出标准 |
+| `tasks/implementation/MAB/PLAN.md` V1.7 | M0—M8、QR-01—QR-10、九个CP停点、M5八维及唯一准出标准 |
 | 根 `CURRENT.md` | 最近可核的代码/CI/云端/隔离状态、当前HOLD；仅为带日期快照 |
 | `tasks/implementation/MAB/progress.md` | 历史追加式施工与测试证据；末尾为最近写入的批次，不保证现场已停止变化 |
 | `tasks/implementation/MAB/target-diff.csv` | 74目标与对应文件级差异、证据 |

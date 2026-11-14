@@ -4071,3 +4071,13 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - Vercel git自动部署仍被`vercel.json`阻断；本轮无生产DB/Storage或正式G操作，无付费Provider调用。
 
 **未关闭，仍`M5_OVERALL_HOLD`**：D00自由题材旧adapter缺Y01持久来源需求回执，规则化Reviewer真实项目签发要求该回执；唯一获权写入身份是`mohen_private_worker`，应继承现有`private-evidence-stage.mjs`与`source-discovery-repository.mjs`受控接线，不能为了通过G0开放Producer INSERT或假写回执。真实原件/跨场景内外Agent、D00—D05/G0—G5连续合法链、Studio H1/H2/H3修订、Admin到WATCH及正式用户体验八维度尚未整体验收。唯一下步施工入口仍`PLAN.md V1.6`原M5，不新增规范文件。
+
+
+---
+
+## 2026-11-14｜Owner裁决：M5八维目标驱动，旧M1—M4仅供追溯（执行标准V1.7）
+
+- **原因**：系统路线图V0.4已显示各模块多有局部隔离实测，但同一Studio任务的专业生产、知识资产、作品和消费者没有持续接力；旧M1→M2→M3→M4阶段化施工会诱发重复验收与接口各自为战。当前真实HEAD为本次修订前`9a773b70`，不是新实验成功。
+- **实际受控修订**：`PLAN.md` V1.6→V1.7，§0入口/QR依赖、§0.2 CP意义、§2责任、§3历史阶段说明、§3.5 C、§4/§5的施工组织改为同一真实作品M5八维驱动、优先主干和相邻接口、必要支管随节点接入；旧M0—M4仅可按需追溯已建能力与固定专业条件。全部QR 10、CP 9、M0—M8编号9、八维8和附录A—D不删。必要安全/独立Gate/权利/Provider/费用/非生产环境门禁仍原样有效；M6—M8的后续准出和投运授权不改变。
+- **入口同步**：`AGENTS.md`、`CURRENT.md`及`ENGINEERING_HANDOFF_CURRENT.md`仅同步V1.7引用，不新增工程权威或新阶段。设计路线图V0.4仍为辅助映射及旧HEAD快照，不升级为已批准工程合同；工程验收仍依PLAN+真实CI/PG/HTTP/持久Studio实操。
+- **证据边界**：本批**仅文档/执行口径修订，不是代码施工**；M5维持`M5_OVERALL_HOLD`。下一实际施工从同一Studio任务找最前连接阻断，优先把既有可信Private Worker/Y01、唯一Runner/Registry和独立Gate贯通，不重做Y01，不靠添加Producer写权限或模拟数据凑PASS。
