@@ -170,7 +170,7 @@ export default function StudioWorkbench() {
         const decision=checkpoint.decision;
         const validDecision=!unavailable&&decision&&typeof decision==="object"&&!Array.isArray(decision)
           ?decision as AgentDecision:null;
-        restored={taskId:task.task_id,status:statusBody.task.status==="done"&&!unavailable?"done":"hold",
+        restored={taskId:task.task_id,status:statusBody.task.status==="done"&&!!validDecision?"done":"hold",
           prompt:statusBody.task.prompt??task.prompt,decision:validDecision};
         const prodResponse=await fetch(`/api/studio/research-tasks/${encodeURIComponent(task.task_id)}/production`,{cache:"no-store"});
         if (prodResponse.ok) {
