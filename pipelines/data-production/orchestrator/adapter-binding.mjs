@@ -1,7 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
 
-export function assertAdapterBinding(projectRoot,registry,adapterPath,selectedStages) {
+export function assertAdapterBinding(projectRoot,registry,adapterPath,selectedStages,runScope) {
+  // A typed private-original scope selects only the approved alternative of
+  // this same Registry. Real ownership, bytes and rights remain Worker checks.
+  const privateRoute=runScope?.original_id!==undefined;
+  if(privateRoute&&(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(runScope.original_id)||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(runScope.project_id??'')||
+      !Number.isSafeInteger(runScope.page_number)||runScope.page_number<1||runScope.page_number>10000))
+    throw Error('PRIVATE_SOURCE_RUN_SCOPE_INVALID');
   const root=fs.realpathSync(projectRoot);
   let selected;
   try{selected=fs.realpathSync(path.resolve(root,adapterPath));}
@@ -14,7 +21,8 @@ export function assertAdapterBinding(projectRoot,registry,adapterPath,selectedSt
     throw Error('ADAPTER_BINDING_MISMATCH');
   for(const stage of stages){
     const job=registry.jobs.find(j=>j.stage===stage);
-    const bound=job?.implementation?.adapter_binding;
+    const bound=privateRoute?job?.implementation?.private_evidence_adapter_binding:job?.implementation?.adapter_binding;
+    if(privateRoute&&bound!==PRIVATE_EVIDENCE_ADAPTER_PATH)throw Error('PRIVATE_STAGE_ADAPTER_NOT_BOUND');
     if(typeof bound!=='string'||path.isAbsolute(bound)||
         bound.split(/[\\/]/).includes('..'))throw Error('ADAPTER_BINDING_MISMATCH');
     let canonical;
@@ -44,6 +52,11 @@ export function assertNoUnboundTopicInputs(environment = process.env) {
 export const PRIVATE_EVIDENCE_ADAPTER_PATH =
   "pipelines/data-production/adapters/private-evidence-adapters.mjs";
 
+export function hasReviewedPrivateStageBinding(job) {
+  return job?.implementation?.private_evidence_adapter_binding===PRIVATE_EVIDENCE_ADAPTER_PATH ||
+    job?.implementation?.adapter_binding===PRIVATE_EVIDENCE_ADAPTER_PATH;
+}
+
 const PRIVATE_REQUEST_SCHEMA = "mohen.private-evidence-stage-request.v1";
 
 function containsPrivateRequest(input) {
@@ -70,7 +83,7 @@ function containsPrivateRequest(input) {
 export function assertNoUnboundPrivateEvidenceInput(input, { job } = {}) {
   if (!containsPrivateRequest(input)) return;
   if (!job || !["D01","D02","D03","D04","D05"].includes(job.stage) ||
-      job.implementation?.adapter_binding !== PRIVATE_EVIDENCE_ADAPTER_PATH ||
+      !hasReviewedPrivateStageBinding(job) ||
       input?.schema !== PRIVATE_REQUEST_SCHEMA ||
       input?.stage !== job.stage ||
       typeof input?.originalId !== "string" ||

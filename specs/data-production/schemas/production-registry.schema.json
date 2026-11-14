@@ -270,6 +270,9 @@
               "type": "string",
               "minLength": 1
             },
+            "private_evidence_adapter_binding": {
+              "const": "pipelines/data-production/adapters/private-evidence-adapters.mjs"
+            },
             "gate_reviewer_binding": {
               "type": "string",
               "minLength": 1

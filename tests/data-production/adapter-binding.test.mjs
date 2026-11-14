@@ -15,6 +15,19 @@ test("CLI adapter choice must match the signed registry binding", () => {
   assertAdapterBinding(root, registry, "pipelines/data-production/adapters/layer1-adapters.mjs", ["D02", "D03", "D04", "D05"]);
   assert.throws(() => assertAdapterBinding(root, registry, "pipelines/data-production/adapters/private-evidence-adapters.mjs", ["D02", "D03", "D04", "D05"]), /ADAPTER_BINDING_MISMATCH/);
 });
+test("one canonical Registry admits a reviewed private route while retaining layer1",()=>{
+  const registry=loadRegistry(root);
+  const privatePath="pipelines/data-production/adapters/private-evidence-adapters.mjs",layer1Path="pipelines/data-production/adapters/layer1-adapters.mjs";
+  const scope={project_id:"123e4567-e89b-42d3-a456-426614174003",original_id:"123e4567-e89b-42d3-a456-426614174004",page_number:3};
+  assertAdapterBinding(root,registry,privatePath,undefined,scope);
+  assert.throws(()=>assertAdapterBinding(root,registry,layer1Path,undefined,scope),/ADAPTER_BINDING_MISMATCH/);
+  assert.throws(()=>assertAdapterBinding(root,registry,privatePath),/ADAPTER_BINDING_MISMATCH/);
+  assert.throws(()=>assertAdapterBinding(root,registry,privatePath,undefined,{...scope,original_id:"invalid"}),/PRIVATE_SOURCE_RUN_SCOPE_INVALID/);
+  const missing=structuredClone(registry);
+  delete missing.jobs[0].implementation.private_evidence_adapter_binding;
+  assert.throws(()=>assertAdapterBinding(root,missing,privatePath,undefined,scope),/PRIVATE_STAGE_ADAPTER_NOT_BOUND/);
+  assertAdapterBinding(root,registry,layer1Path);
+});
 test("dynamic topic bytes and executable topic configuration require a bound snapshot protocol", () => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "mohen-unbound-topic-"));
   try {

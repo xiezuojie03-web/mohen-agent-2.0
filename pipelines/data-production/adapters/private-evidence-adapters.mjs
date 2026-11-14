@@ -2,7 +2,7 @@
 // No database, Storage, Reviewer, or model client is created at module import.
 // Runtime must inject the Owner-scoped worker and session after trusted
 // execution authorization. Registry is still disabled until independent gates.
-import {PRIVATE_EVIDENCE_ADAPTER_PATH, assertNoUnboundPrivateEvidenceInput} from '../orchestrator/adapter-binding.mjs';
+import {PRIVATE_EVIDENCE_ADAPTER_PATH, assertNoUnboundPrivateEvidenceInput, hasReviewedPrivateStageBinding} from '../orchestrator/adapter-binding.mjs';
 import {executionDigest} from '../orchestrator/execution-authority.mjs';
 
 const SCHEMA='mohen.private-evidence-stage-request.v1';
@@ -59,7 +59,7 @@ function privateSourceIntakeAdapter() {
       return hold('PRIVATE_SOURCE_INTAKE_SCOPE_REQUIRED',
         'Provide research_intent and scope {project_id,original_id,page_number} for the registered private original');
     }
-    if(job.implementation?.adapter_binding!==PRIVATE_EVIDENCE_ADAPTER_PATH) {
+    if(!hasReviewedPrivateStageBinding(job)) {
       throw Error('PRIVATE_STAGE_ADAPTER_NOT_BOUND');
     }
     const runtime=await loadRuntime(context);
@@ -113,7 +113,7 @@ function privateCandidateAdapter(stage) {
       return hold('PRIVATE_STAGE_REQUEST_REQUIRED','Provide a signed stage-specific private evidence request');
     }
     assertNoUnboundPrivateEvidenceInput(input,{job});
-    if(job.implementation?.adapter_binding!==PRIVATE_EVIDENCE_ADAPTER_PATH) {
+    if(!hasReviewedPrivateStageBinding(job)) {
       throw Error('PRIVATE_STAGE_ADAPTER_NOT_BOUND');
     }
     const action=stage==='D01'&&input?.page?.kind==='scanned_page/v1'?'readScannedPage'

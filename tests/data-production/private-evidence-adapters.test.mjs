@@ -23,6 +23,12 @@ test('private inputs require the exact reviewed stage binding; legacy and nested
     /PRIVATE_EVIDENCE_STAGE_BINDING_REQUIRED/);
   assert.doesNotThrow(()=>assertNoUnboundPrivateEvidenceInput(input,{job:job('D01')}));
 });
+test('typed private requests require the exact reviewed alternative binding',()=>{
+  const input=request('D01');
+  const j={stage:'D01',implementation:{adapter_binding:'pipelines/data-production/adapters/layer1-adapters.mjs',private_evidence_adapter_binding:PRIVATE_EVIDENCE_ADAPTER_PATH}};
+  assert.doesNotThrow(()=>assertNoUnboundPrivateEvidenceInput(input,{job:j}));
+  assert.throws(()=>assertNoUnboundPrivateEvidenceInput(input,{job:{...j,implementation:{...j.implementation,private_evidence_adapter_binding:'untrusted'}}}),/PRIVATE_EVIDENCE_STAGE_BINDING_REQUIRED/);
+});
 test('private adapter fails closed without trusted Owner worker, session and Registry',async()=>{
   const input=request('D01'),boundJob=job('D01');
   const result=await adapters.D01({run:{},job:boundJob,input,context:{}});

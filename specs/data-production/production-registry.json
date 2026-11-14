@@ -34,6 +34,7 @@
         "skill": "mohen-source-intake",
         "executor": "pipelines/data-production/executors/d00-source-intake.mjs",
         "adapter_binding": "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "private_evidence_adapter_binding": "pipelines/data-production/adapters/private-evidence-adapters.mjs",
         "gate_reviewer_binding": "m5-owner-reviewer-g0g1-producer"
       },
       "inputs": [
@@ -97,6 +98,7 @@
         "skill": "mohen-carrier-reading",
         "executor": "pipelines/data-production/executors/d01-carrier-reading.mjs",
         "adapter_binding": "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "private_evidence_adapter_binding": "pipelines/data-production/adapters/private-evidence-adapters.mjs",
         "gate_reviewer_binding": "m5-owner-reviewer-g0g1-producer"
       },
       "inputs": [
@@ -172,6 +174,7 @@
         "skill": "mohen-material-understanding",
         "executor": "pipelines/data-production/executors/d02-material-understanding.mjs",
         "adapter_binding": "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "private_evidence_adapter_binding": "pipelines/data-production/adapters/private-evidence-adapters.mjs",
         "gate_reviewer_binding": "m5-owner-reviewer-g2g5-producer"
       },
       "inputs": [
@@ -264,6 +267,7 @@
         "skill": "mohen-world-construction",
         "executor": "pipelines/data-production/executors/d03-world-construction.mjs",
         "adapter_binding": "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "private_evidence_adapter_binding": "pipelines/data-production/adapters/private-evidence-adapters.mjs",
         "gate_reviewer_binding": "m5-owner-reviewer-g2g5-producer"
       },
       "inputs": [
@@ -341,6 +345,7 @@
         "skill": "mohen-humanistic-discovery",
         "executor": "pipelines/data-production/executors/d04-humanistic-discovery.mjs",
         "adapter_binding": "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "private_evidence_adapter_binding": "pipelines/data-production/adapters/private-evidence-adapters.mjs",
         "gate_reviewer_binding": "m5-owner-reviewer-g2g5-producer"
       },
       "inputs": [
@@ -420,6 +425,7 @@
         "skill": "mohen-read-model-publication",
         "executor": "pipelines/data-production/executors/d05-read-model-publication.mjs",
         "adapter_binding": "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "private_evidence_adapter_binding": "pipelines/data-production/adapters/private-evidence-adapters.mjs",
         "gate_reviewer_binding": "m5-owner-reviewer-g2g5-producer"
       },
       "inputs": [

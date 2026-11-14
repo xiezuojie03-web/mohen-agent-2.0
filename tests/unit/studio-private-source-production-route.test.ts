@@ -38,7 +38,7 @@ beforeEach(()=>{
  s.registration.mockResolvedValue({original_id:originalId,project_id:project,
    source_version_id:sourceVersionId,asset_revision_id:assetRevisionId,sha256:bytesSha,
    content_type:"image/jpeg",byte_size:125});
- s.production.mockResolvedValue({ok:false,reason:"production_private_adapter_not_bound"});
+ s.production.mockResolvedValue({ok:false,reason:"production_acquisition_receipt_required"});
 });
 it("rejects anonymous and foreign Creator before any original lookup",async()=>{
  s.session.mockResolvedValueOnce(null);
@@ -76,7 +76,7 @@ it("refuses a stale source version or byte hash before budget reservation",async
 it("passes only rechecked source/version/locator to the existing governed Runner preflight",async()=>{
  const res=await submit({original_id:originalId,page_number:3});
  expect(res.status).toBe(409);
- expect((await res.json()).reason).toBe("production_private_adapter_not_bound");
+ expect((await res.json()).reason).toBe("production_acquisition_receipt_required");
  expect(s.registration).toHaveBeenCalledWith(originalId,"owner-session");
  expect(s.production).toHaveBeenCalledWith(taskId,owner,undefined,undefined,{
    originalId,pageNumber:3,sourceVersionId,sha256:bytesSha,

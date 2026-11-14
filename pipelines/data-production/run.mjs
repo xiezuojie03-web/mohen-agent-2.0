@@ -135,7 +135,7 @@ finished = await runProduction({
     ...(resumeInput!==undefined?{resume_input:resumeInput}:{}),
     ...(gateVerifier ? {verifyStageQualification: gateVerifier} : {}),
     loadAdapters: async () => {
-      assertAdapterBinding(projectRoot, registry, adaptersModule, selectedStages);
+      assertAdapterBinding(projectRoot, registry, adaptersModule, selectedStages, run.scope);
       const { assertProducerIdentity } = await import("../../packages/data-access/src/producer-identity.mjs");
       const db = await import("../../packages/data-access/src/index.mjs");
       await assertProducerIdentity(db.queryRows);

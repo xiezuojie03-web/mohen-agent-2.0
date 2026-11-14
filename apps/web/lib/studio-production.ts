@@ -61,7 +61,7 @@ const SOURCE_SHA=/^[a-f0-9]{64}$/i;
 const PRIVATE_STAGE_ADAPTER="pipelines/data-production/adapters/private-evidence-adapters.mjs";
 export function privateSourceHandoffBlocker(registry: unknown, source?:ProductionOriginal):string|null{
   const jobs=(registry&&typeof registry==="object"&&"jobs" in registry&&
-    Array.isArray(registry.jobs))?registry.jobs as Array<{implementation?:{adapter_binding?:string}}>:null;
+    Array.isArray(registry.jobs))?registry.jobs as Array<{implementation?:{adapter_binding?:string;private_evidence_adapter_binding?:string}}>:null;
   if(!source)return "production_original_selection_required";
   if(!SOURCE_UUID.test(source.originalId)||!SOURCE_UUID.test(source.sourceVersionId)||
      !SOURCE_UUID.test(source.assetRevisionId)||!SOURCE_SHA.test(source.sha256)||
@@ -73,7 +73,7 @@ export function privateSourceHandoffBlocker(registry: unknown, source?:Productio
   // Until this canonical Registry binds the reviewed private Worker, do not
   // route genuine originals through the parallel memory/topic adapter.
   if(!jobs||jobs.length!==6||
-     jobs.some(job=>job.implementation?.adapter_binding!==PRIVATE_STAGE_ADAPTER))
+     jobs.some(job=>job.implementation?.private_evidence_adapter_binding!==PRIVATE_STAGE_ADAPTER))
     return "production_private_adapter_not_bound";
   // Y07 requires an authentic acquisition attempt, not an invented Studio value.
   // The existing trusted D00 worker enforces this; Studio must not silently
