@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { getTaskStatus, requestProduction } from "../../../../../../lib/studio-research";
 import { canAccess } from "../../../../../../lib/ownership";
 import { signDatabaseSessionToken } from "../../../../../../lib/auth";
-import { createPrivateOriginalRepository, createPrivateSourceRegistrationRepository, getNodePgPool } from "@mohen/data-access";
+import { createPrivateOriginalRepository, getNodePgPool } from "@mohen/data-access";
 import type { ProductionOriginal } from "../../../../../../lib/studio-production";
+import { createPrivateSourceRegistrationRepository } from "../../../../../../../../packages/data-access/src/private-source-registration-repository.mjs";
 import { getSession, isOperatorSession } from "../../../../../../lib/session";
 
 export const runtime = "nodejs";
@@ -51,7 +52,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   try{
     const pool=getNodePgPool(),token=signDatabaseSessionToken(session);
     const original=await createPrivateOriginalRepository(pool).getStored(originalId,token);
-    if(!original||original.project_id!==project||original.state!=="STORED_VERIFIED")
+    if(!original||original.project_id!==project||original.state!=="STORED_VERIFIED"||
+       !original.asset_revision_id||!original.sha256||!original.content_type)
       return NextResponse.json({ok:false,reason:"production_original_forbidden"},{status:403});
     const registration=await createPrivateSourceRegistrationRepository(pool).lookup(originalId,token);
     if(registration.original_id!==originalId||registration.project_id!==project||

@@ -2,6 +2,9 @@ import { beforeEach,expect,it,vi } from "vitest";
 const state=vi.hoisted(()=>({session:vi.fn(),upload:vi.fn(),download:vi.fn(),list:vi.fn(),registration:vi.fn(),token:vi.fn(),store:vi.fn()}));
 vi.mock("../../apps/web/lib/session",()=>({getSession:state.session}));
 vi.mock("../../apps/web/lib/auth",()=>({signDatabaseSessionToken:state.token}));
+vi.mock("../../packages/data-access/src/private-source-registration-repository.mjs",()=>({
+ createPrivateSourceRegistrationRepository:()=>({lookup:state.registration}),
+}));
 vi.mock("../../packages/data-access/src/index.mjs",()=>({
  getNodePgPool:()=>({}),createPrivateOriginalRepository:()=>({listForProject:state.list}),
  createPrivateSourceRegistrationRepository:()=>({lookup:state.registration}),

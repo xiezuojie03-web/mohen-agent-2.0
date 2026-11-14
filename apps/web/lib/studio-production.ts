@@ -59,7 +59,9 @@ export interface ProductionOriginal {
 const SOURCE_UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const SOURCE_SHA=/^[a-f0-9]{64}$/i;
 const PRIVATE_STAGE_ADAPTER="pipelines/data-production/adapters/private-evidence-adapters.mjs";
-export function privateSourceHandoffBlocker(registry: {jobs?:Array<{stage:string;implementation?:{adapter_binding?:string}}>}, source?:ProductionOriginal):string|null{
+export function privateSourceHandoffBlocker(registry: unknown, source?:ProductionOriginal):string|null{
+  const jobs=(registry&&typeof registry==="object"&&"jobs" in registry&&
+    Array.isArray(registry.jobs))?registry.jobs as Array<{implementation?:{adapter_binding?:string}}>:null;
   if(!source)return "production_original_selection_required";
   if(!SOURCE_UUID.test(source.originalId)||!SOURCE_UUID.test(source.sourceVersionId)||
      !SOURCE_UUID.test(source.assetRevisionId)||!SOURCE_SHA.test(source.sha256)||
@@ -70,8 +72,8 @@ export function privateSourceHandoffBlocker(registry: {jobs?:Array<{stage:string
   // The existing Runner authorizes one exact Adapter for all selected jobs.
   // Until this canonical Registry binds the reviewed private Worker, do not
   // route genuine originals through the parallel memory/topic adapter.
-  if(!Array.isArray(registry.jobs)||registry.jobs.length!==6||
-     registry.jobs.some(job=>job.implementation?.adapter_binding!==PRIVATE_STAGE_ADAPTER))
+  if(!jobs||jobs.length!==6||
+     jobs.some(job=>job.implementation?.adapter_binding!==PRIVATE_STAGE_ADAPTER))
     return "production_private_adapter_not_bound";
   // Y07 requires an authentic acquisition attempt, not an invented Studio value.
   // The existing trusted D00 worker enforces this; Studio must not silently
