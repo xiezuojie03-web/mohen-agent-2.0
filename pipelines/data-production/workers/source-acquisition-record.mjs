@@ -12,6 +12,7 @@
 //   * 本模块不写库；写入口仍是 source-discovery-repository.mjs 的
 //     registerAcquisitionMethod / appendAcquisitionAttempt。
 import { IDENTITY_STRATIFICATION_SCHEMA } from './source-identity-stratification.mjs';
+import { createHash } from 'node:crypto';
 
 const HEX = /^[a-f0-9]{64}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
@@ -64,6 +65,52 @@ const parseTime = (value, code) => {
  * 校验并规范化一次 D00 获取账。
  * @returns {{method:object,attempt:object,candidateRef:object,dependencyRefs:Array<object>}}
  */
+/**
+ * Evidence of a REAL readback from verified Owner private storage; never
+ * evidence of acquisition from an outside provider or permission to use it.
+ * A signed independent G0 still checks rights and upstream source provenance.
+ */
+export function deriveAttestedPrivateReadbackAcquisition({registration,record,checkedAt=new Date()}={}) {
+  requireIntakeFacts(registration,record);
+  if(record.original_id!==registration.original_id||record.project_id!==registration.project_id)
+    throw Error('ACQUISITION_PRIVATE_UPLOAD_SCOPE_MISMATCH');
+  if(record.upload_started_at==null||record.upload_verified_at==null)
+    throw Error('ACQUISITION_UPLOAD_EVENT_MISSING');
+  const started=parseTime(record.upload_started_at,'ACQUISITION_UPLOAD_STARTED_INVALID');
+  const verified=parseTime(record.upload_verified_at,'ACQUISITION_UPLOAD_VERIFIED_INVALID');
+  const now=parseTime(checkedAt,'ACQUISITION_READBACK_TIME_INVALID');
+  if(verified.getTime()<started.getTime()||now.getTime()<verified.getTime()||
+     verified.getTime()>Date.now()+30000||now.getTime()>Date.now()+30000)
+    throw Error('ACQUISITION_UPLOAD_EVENT_ORDER_INVALID');
+  const requestDigest=createHash('sha256').update(JSON.stringify({
+    kind:'private-original-verified-readback/v1',original_id:record.original_id,
+    project_id:record.project_id,source_version_id:registration.source_version_id,
+    sha256:record.sha256,byte_size:record.byte_size,
+    upload_started_at:started.toISOString(),upload_verified_at:verified.toISOString(),
+    readback_at:now.toISOString(),
+  })).digest('hex');
+  return {
+    method:{method_key:'M9001',method_version:'private-original-readback.v1',
+      resource_scope:{kind:'studio_verified_owner_upload'},
+      access_mode:'owner_authenticated_private_storage_readback',
+      preconditions:['original STORED_VERIFIED','Owner scope and exact source binding'],
+      steps:['re-read stored private bytes','verify sha256 and byte size against registration'],
+      success_criteria:['exact verified bytes and source version match'],
+      failure_modes:['missing original','hash mismatch','unverified upload event'],
+      method_state:'DRAFT',recommended:false},
+    attempt:{request_digest:requestDigest,started_at:now.toISOString(),finished_at:now.toISOString(),
+      result_state:'acquired_verified',asset_sha256:record.sha256,byte_size:record.byte_size,
+      source_locator:{kind:'studio_private_original',original_id:record.original_id,
+        source_version_id:registration.source_version_id},
+      execution_environment:{kind:'trusted_private_worker_readback',
+        upload_started_at:started.toISOString(),upload_verified_at:verified.toISOString(),
+        upstream_acquisition_claim:'not_attested_by_this_readback'},
+      access_restrictions:{upstream_rights_and_origin:'independent_G0_review_required'},
+      rights_actions:{},
+    },
+  };
+}
+
 export function deriveIntakeAcquisitionRecord({ registration, record, identity, acquisition } = {}) {
   requireIntakeFacts(registration, record);
   const candidateRef = requireMatchingIdentity(identity, registration, record);

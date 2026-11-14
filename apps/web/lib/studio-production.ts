@@ -54,6 +54,8 @@ export interface ProductionOriginal {
   assetRevisionId: string;
   contentType: string;
   byteSize: number;
+  uploadStartedAt: string;
+  uploadVerifiedAt: string;
 }
 const SOURCE_UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const SOURCE_SHA=/^[a-f0-9]{64}$/i;
@@ -80,10 +82,13 @@ export function privateSourceHandoffBlocker(registry: unknown, source?:Productio
   if(!jobs||jobs.length!==6||
      jobs.some(job=>job.implementation?.private_evidence_adapter_binding!==PRIVATE_STAGE_ADAPTER))
     return "production_private_adapter_not_bound";
-  // Y07 requires an authentic acquisition attempt, not an invented Studio value.
-  // The existing trusted D00 worker enforces this; Studio must not silently
-  // fabricate a receipt or consume a budget while this interface is incomplete.
-  return "production_acquisition_receipt_required";
+  // A trusted fresh Worker readback may document the actual Owner upload,
+  // without implying an upstream institution download or source rights.
+  const started=Date.parse(source.uploadStartedAt??""),verified=Date.parse(source.uploadVerifiedAt??"");
+  if(!Number.isFinite(started)||!Number.isFinite(verified)||started>verified||
+     verified>Date.now()+30000)return "production_acquisition_receipt_required";
+  if(!privateD01MethodForCarrier(source.contentType))return "production_private_read_method_unavailable";
+  return null;
 }
 
 async function addEvent(taskId: string, stage: string, event: string, payload: unknown) {
@@ -150,7 +155,8 @@ export async function triggerProduction(taskId: string, intent: string, projectI
   // The Worker independently verifies these references against live RLS/bytes.
   const scope = {project_id:projectId,root_task_id:taskId,original_id:source.originalId,
     page_number:source.pageNumber,source_version_id:source.sourceVersionId,
-    asset_revision_id:source.assetRevisionId,raw_sha256:source.sha256};
+    asset_revision_id:source.assetRevisionId,raw_sha256:source.sha256,
+    upload_started_at:source.uploadStartedAt,upload_verified_at:source.uploadVerifiedAt};
 
   // 1) 预登记 production_runs（RUNNING），前端立即可查；D00 的 on conflict 会复用。
   try {

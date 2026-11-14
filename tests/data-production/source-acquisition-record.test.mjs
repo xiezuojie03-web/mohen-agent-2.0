@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { deriveIntakeAcquisitionRecord }
+import { deriveIntakeAcquisitionRecord, deriveAttestedPrivateReadbackAcquisition }
   from '../../pipelines/data-production/workers/source-acquisition-record.mjs';
 import { deriveSourceIdentityStratification }
   from '../../pipelines/data-production/workers/source-identity-stratification.mjs';
@@ -44,6 +44,21 @@ const acquisition = (overrides = {}) => ({
   ...overrides,
 });
 
+test('Y07 real local readback is distinctly not upstream acquisition or rights',()=>{
+ const reg=registration({original_id:ORIGINAL_ID,project_id:'55555555-5555-4555-8555-555555555555'});
+ const rec=record({original_id:ORIGINAL_ID,project_id:reg.project_id,
+   upload_started_at:'2026-11-10T00:00:00.000Z',upload_verified_at:'2026-11-10T00:01:00.000Z'});
+ const local=deriveAttestedPrivateReadbackAcquisition({registration:reg,record:rec,checkedAt:new Date('2026-11-10T00:02:00.000Z')});
+ assert.equal(local.method.method_key,'M9001');
+ assert.equal(local.attempt.execution_environment.upstream_acquisition_claim,'not_attested_by_this_readback');
+ assert.deepEqual(local.attempt.rights_actions,{});
+ const receipt=deriveIntakeAcquisitionRecord({registration:reg,record:rec,identity:identityOf(reg,rec),acquisition:local});
+ assert.equal(receipt.attempt.assetSha256,SHA);
+ assert.throws(()=>deriveAttestedPrivateReadbackAcquisition({registration:reg,record:record({original_id:ORIGINAL_ID,project_id:reg.project_id})}),/ACQUISITION_UPLOAD_EVENT_MISSING/);
+ assert.throws(()=>deriveAttestedPrivateReadbackAcquisition({registration:reg,record:{...rec,sha256:'f'.repeat(64)}}),/ACQUISITION_ORIGINAL_NOT_VERIFIED/);
+ assert.throws(()=>deriveAttestedPrivateReadbackAcquisition({registration:reg,record:{...rec,project_id:ORIGINAL_ID}}),/ACQUISITION_PRIVATE_UPLOAD_SCOPE_MISMATCH/);
+ assert.throws(()=>deriveAttestedPrivateReadbackAcquisition({registration:reg,record:{...rec,upload_verified_at:'2026-11-09T00:00:00.000Z'}}),/ACQUISITION_UPLOAD_EVENT_ORDER_INVALID/);
+});
 test('Y07 获取账：真实人工下载尝试规范化，身份引用即本次准入的 Y05 分层', () => {
   const reg = registration(), rec = record();
   const result = deriveIntakeAcquisitionRecord({

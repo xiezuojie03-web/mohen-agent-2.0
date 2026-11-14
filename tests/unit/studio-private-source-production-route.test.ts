@@ -34,7 +34,8 @@ beforeEach(()=>{
  s.token.mockReturnValue("owner-session");
  s.task.mockResolvedValue({task_id:taskId,status:"done",checkpoint:{studio:{project_id:project}}});
  s.stored.mockResolvedValue({original_id:originalId,project_id:project,state:"STORED_VERIFIED",
-   asset_revision_id:assetRevisionId,sha256:bytesSha,content_type:"image/jpeg",byte_size:125});
+   asset_revision_id:assetRevisionId,sha256:bytesSha,content_type:"image/jpeg",byte_size:125,
+   upload_started_at:"2026-11-10T00:00:00.000Z",upload_verified_at:"2026-11-10T00:01:00.000Z"});
  s.registration.mockResolvedValue({original_id:originalId,project_id:project,
    source_version_id:sourceVersionId,asset_revision_id:assetRevisionId,sha256:bytesSha,
    content_type:"image/jpeg",byte_size:125});
@@ -81,5 +82,6 @@ it("passes only rechecked source/version/locator to the existing governed Runner
  expect(s.production).toHaveBeenCalledWith(taskId,owner,undefined,undefined,{
    originalId,pageNumber:3,sourceVersionId,sha256:bytesSha,
    assetRevisionId,contentType:"image/jpeg",byteSize:125,
+   uploadStartedAt:"2026-11-10T00:00:00.000Z",uploadVerifiedAt:"2026-11-10T00:01:00.000Z",
  },"owner-session");
 });

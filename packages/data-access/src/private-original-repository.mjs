@@ -84,7 +84,9 @@ export function createPrivateOriginalRepository(pool){
    id(originalId);
    return tx(token,async(client)=>{
     const q=await client.query("select * from studio.private_originals where original_id=$1 and state='STORED_VERIFIED'",[originalId]);
-    return q.rows[0]?{...result(q.rows[0]),storage_key:q.rows[0].storage_key}:null;
+    return q.rows[0]?{...result(q.rows[0]),storage_key:q.rows[0].storage_key,
+       // Trusted DB upload/finalization times, NOT upstream source rights.
+       upload_started_at:q.rows[0].created_at,upload_verified_at:q.rows[0].verified_at}:null;
    });
   },
   // Y01 存量缺口诊断的唯一清点路径（同一工作室 RLS 作用域）：只数本项目自己的东西。

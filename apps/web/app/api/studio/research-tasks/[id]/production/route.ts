@@ -63,9 +63,16 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
        registration.asset_revision_id!==original.asset_revision_id||
        Number(registration.byte_size)!==Number(original.byte_size))
       return NextResponse.json({ok:false,reason:"production_original_not_bound"},{status:409});
+    const uploadStartedAt=original.upload_started_at instanceof Date
+      ? original.upload_started_at.toISOString():String(original.upload_started_at??"");
+    const uploadVerifiedAt=original.upload_verified_at instanceof Date
+      ? original.upload_verified_at.toISOString():String(original.upload_verified_at??"");
+    if(!Number.isFinite(Date.parse(uploadStartedAt))||!Number.isFinite(Date.parse(uploadVerifiedAt))||
+       Date.parse(uploadStartedAt)>Date.parse(uploadVerifiedAt))
+      return NextResponse.json({ok:false,reason:"production_acquisition_receipt_required"},{status:409});
     source={originalId,pageNumber:page as number,sourceVersionId:registration.source_version_id,
       sha256:original.sha256,assetRevisionId:original.asset_revision_id,
-      contentType:original.content_type,byteSize:Number(original.byte_size)};
+      contentType:original.content_type,byteSize:Number(original.byte_size),uploadStartedAt,uploadVerifiedAt};
   }catch(error){
     const code=error instanceof Error?error.message:"";
     if(code==="PRIVATE_SOURCE_REGISTRATION_INVALID")

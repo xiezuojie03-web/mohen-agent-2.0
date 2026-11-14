@@ -12,7 +12,7 @@ import { deriveIntakeCoverage } from './source-coverage-conclusion.mjs';
 import { deriveOriginalProviderTrace } from './source-provider-trace.mjs';
 import { deriveSourceIdentityStratification } from './source-identity-stratification.mjs';
 import { deriveIntakePriority } from './source-priority-assessment.mjs';
-import { deriveIntakeAcquisitionRecord } from './source-acquisition-record.mjs';
+import { deriveIntakeAcquisitionRecord, deriveAttestedPrivateReadbackAcquisition } from './source-acquisition-record.mjs';
 import { deriveValidatedAssetReceipt } from './source-asset-receipt.mjs';
 
 const HEX=/^[a-f0-9]{64}$/;
@@ -229,8 +229,11 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
       // 字段由工序逐项校验（M#### 方法键、64hex 请求摘要、可解析时间、
       // acquired_verified 必须字节与哈希同库存原件一致，不一致即伪造）；
       // candidate_ref/dependency_refs 由 Y05 身份分层派生，不抄调用方。
+      // Only an actual readback in this trusted Worker can produce a local Y07
+      // attempt. The optional external acquisition remains a separate claim.
+      const acquisition=input?.acquisition??deriveAttestedPrivateReadbackAcquisition({registration,record});
       const intakeAcquisition=deriveIntakeAcquisitionRecord({registration,record,
-        identity:sourceIdentity,acquisition:input?.acquisition});
+        identity:sourceIdentity,acquisition});
       if(typeof registerAcquisitionMethod!=='function'||typeof appendAcquisitionAttempt!=='function')
         throw Error('PRIVATE_ACQUISITION_RECORDING_REQUIRED');
       const registered=await registerAcquisitionMethod(intakeAcquisition.method);
