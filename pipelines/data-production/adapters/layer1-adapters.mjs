@@ -582,7 +582,11 @@ async function d01CarrierReading({ run, job, input, context }) {
     photoUnits.push({ read_unit_id: unitId, source_version_id: p.source_version_id, source_id: p.source_id, kind: "image", photo: p });
   }
 
-  await writeGate(runId, "D01", "G1", "read_run", readRunId, "PASS", [], { unit_count: readUnits.length, image_unit_count: photoUnits.length }, null, input);
+  // G1 候选按 read_unit 逐条提交（与 k3 门/private-evidence 口径一致；D01 旧用 read_run 与门查 read_unit 不匹配）。
+  // 照片 read_unit（C04）的源在 G0 已 HOLD，不在此提交 G1 候选。
+  for (const u of readUnits) {
+    await writeGate(runId, "D01", "G1", "read_unit", u.read_unit_id, "PASS", [], { source_version_id: u.source_version_id, method: "C01" }, null, input);
+  }
 
   return {
     disposition: "PASS",

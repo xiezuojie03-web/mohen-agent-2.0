@@ -272,7 +272,26 @@ async function checkReadUnitBinding(ctx) {
       and o.sha256 = ri.checksum_sha256 and o.byte_size = ri.byte_size and o.project_id = :'project'
     where ru.read_unit_id = :'objectId'`, { objectId: ctx.candidate.object_id, project: ctx.project });
   const row = rows[0];
-  if (!row) return { ok: false, reason: "read_unit_missing" };
+  if (!row) {
+    // 非私有来源（无 private_originals）：设计 §2 G1 = read_unit 原件定位 + 可回放性 + 读取方法。
+    // 字节核验归 raw_provenance（DESIGN_TARGET_NOT_APPLIED），不在这里混入（2026-11-14 A'）。
+    const nonPrivate = await ctx.query(`select ru.read_unit_id::text as read_unit_id, ru.method_code as method_code,
+        ru.locator::text as locator, rr.status as run_status
+      from source.read_units ru
+      join source.read_runs rr on rr.read_run_id = ru.read_run_id
+      where ru.read_unit_id = :'objectId'`, { objectId: ctx.candidate.object_id });
+    const np = nonPrivate[0];
+    if (!np) return { ok: false, reason: "read_unit_missing" };
+    if (text(np.run_status) !== "done") return { ok: false, reason: `read_run_not_done:${text(np.run_status)}` };
+    const method = text(np.method_code);
+    if (!/^C0[1-8]$/.test(method)) return { ok: false, reason: `read_unit_method_invalid:${method}` };
+    const locator = json(np.locator) ?? {};
+    const sourceVersionId = text(locator.source_version_id);
+    if (!sourceVersionId) return { ok: false, reason: "read_unit_locator_not_replayable:missing_source_version" };
+    const sv = await ctx.query(`select 1 from source.source_versions where source_version_id = :'sv'`, { sv: sourceVersionId });
+    if (!sv[0]) return { ok: false, reason: `read_unit_source_version_not_found:${sourceVersionId}` };
+    return { ok: true, detail: `read_unit=${text(np.read_unit_id)} method=${method} source_version=${sourceVersionId} replayable` };
+  }
   if (text(row.run_status) !== "done") return { ok: false, reason: `read_run_not_done:${text(row.run_status)}` };
   if (!READ_RUN_SCHEMAS.has(text(row.run_schema))) return { ok: false, reason: `read_run_schema_unrecognized:${text(row.run_schema)}` };
   // D01 有两种读法：文本区间 C01 或扫页 C02。按 schema 动态判 method，不再写死 C02。

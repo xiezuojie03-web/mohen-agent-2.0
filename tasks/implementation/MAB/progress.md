@@ -3910,3 +3910,18 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
   1. **A'（设计本意，采纳）**：按设计语义放开 G1—G5 的 private_originals 硬约束（逐动作显式权利 + 载体可回放定位），并修 layer1 D01—D05 对象类型/候选结构。字节核验归 `raw_provenance`（DESIGN_TARGET_NOT_APPLIED）。
   2. B'（自由主题改走私有原件登记）/ C'（撤销 layer1 切换）作为备选，仅在 A' 逐门正反验证不过或 Owner 另有裁定时采用。
 - **口径边界**：本批只做前瞻核 + 设计查证 + 记账，零代码改动、零 DDL、未签任何 Gate；`M5_OVERALL_HOLD` 不变；D00→G0 组件级正向结论不受影响。**PENDING_PUSH** 延续。
+
+---
+
+## 2026-11-14｜A' 逐门落地（一）G1：read_unit_binding 非私有分支 + layer1 D01 改逐 read_unit 候选，组件级正向通过
+
+- **三轴定位**：按 A'（设计本意）逐门放开。本批做 G1（D01），续 D00→G0 已组件级正向。
+- **本批变更（2 文件）**：
+  1. `tools/rule-gate-reviewer.mjs` `checkReadUnitBinding`：私有原件路径不动，`rows` 为空时新增**非私有 fallback**——按设计 §2 G1 只判 `read_run.status='done'` + `read_unit.method_code ∈ C01—C08` + `locator.source_version_id` 存在且指向真实 `source_versions`（原件定位 + 可回放性 + 读取方法）；不再要求 `raw_item`/`private_originals`/`run_schema`（字节核验归 `raw_provenance`，DESIGN_TARGET_NOT_APPLIED）。
+  2. `pipelines/data-production/adapters/layer1-adapters.mjs` `d01CarrierReading`：G1 候选由「一条 `read_run`」改为「逐 `read_unit`（C01 文本）」，对象类型 `read_run`→`read_unit`、`objectId=read_unit_id`（对齐 k3 门查 `read_unit`）；照片 read_unit（C04，源在 G0 已 HOLD）不提交 G1。
+- **真实测试证据**：
+  - `node --check` 两文件通过；全量 `tests/data-production` = **243 通过 / 3 失败**（3 失败仍为本 sandbox spawn/symlink EPERM，与本批无关）。
+  - **组件级正向实测（真库 + 真 8789）**：复用 D00 正向已签的 G0 审计（run `dead0003`），建 `read_run(status=done)`+`read_unit(C01, locator.source_version_id=非私有源版本)`，提交 G1 候选（`dependency_snapshot` 指向该 G0 审计、`purpose=data-production/m5-remediation/v1`、`object_type=read_unit`），`POST /verify` 返回 **200 PASS**，落库真实 `G1 PASS / independent_gate` 审计（`d3a84419-…`）。证明 G1 非私有 fallback + 上游依赖 + `identity_version` 全链正向成立。
+- **测试残留**：1 条 G1 审计（不可变）+ 候选（CONSUMED）+ read_run/read_unit（delete 失败或留痕）沿用 `dead` 前缀 run 记账，不参与研究/发布。
+- **未关闭**：G2（`evidence_binding`）/G3（`claim_support`）/G5（`rights_by_operation`）同类非私有放开待续；G4 依赖 G3。B1/B8(3 环境受限)/sandbox EPERM 不变。
+- **下一入口**：按同口径做 G2（layer1 D02 对象类型 `material_evidence` + 非私有 evidence_binding 分支）→ G3（`relation_claim`→`claim_revision` + 非私有 claim_support）→ G5（非私有 rights_by_operation）→ 全链组件级正向 → 非 sandbox 真 UI 覆盖。**PENDING_PUSH**。
