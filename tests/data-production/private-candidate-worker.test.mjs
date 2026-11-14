@@ -795,7 +795,7 @@ test('D00 fails closed on malformed or unwritable Y02—Y07 material',async()=>{
     // Y03 准入核查是强制项：撤掉写入口即失败关闭，不能"看起来跑了 D00 却没有核查记录"。
     {extra:{},pattern:/PRIVATE_SOURCE_VERIFICATIONS_RECORDING_REQUIRED/,drop:'recordCandidateVerification'},
     // Y07 获取账是 D00 硬前提：原件在库却没有"怎么来的"账，失败关闭。
-    {extra:{},pattern:/ACQUISITION_REQUIRED/,drop:null,noAcquisition:true},
+    {extra:{},pattern:/ACQUISITION_UPLOAD_EVENT_MISSING/,drop:null,noAcquisition:true},
     {extra:{},pattern:/PRIVATE_ACQUISITION_RECORDING_REQUIRED/,drop:'registerAcquisitionMethod'},
   ];
   for(const {extra,pattern,drop,noAcquisition} of cases){
