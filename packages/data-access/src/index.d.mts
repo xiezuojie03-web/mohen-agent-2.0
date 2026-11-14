@@ -137,7 +137,7 @@ export interface PrivateOriginalRepository {
  reserve(input: Omit<PrivateOriginalInput,"bytes"> & {sha256:string;byteSize:number},token:string):Promise<PrivateOriginalRecord & {storage_key:string}>;
  finalize(originalId:string,sha256:string,token:string):Promise<PrivateOriginalRecord>;
  listForProject(projectId:string,token:string):Promise<PrivateOriginalRecord[]>;
- getStored(originalId:string,token:string):Promise<(PrivateOriginalRecord & {storage_key:string})|null>;
+ getStored(originalId:string,token:string):Promise<(PrivateOriginalRecord & {storage_key:string;upload_started_at:Date|string|null;upload_verified_at:Date|string|null})|null>;
 }
 export interface PrivateOriginalStorage {
  putVerified(key:string,bytes:Buffer,contentType?:string):Promise<{sha256:string;byteSize:number;contentType:string}>;
