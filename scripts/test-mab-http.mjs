@@ -54,6 +54,14 @@ try {
     '20261110150000_mab_d00c5_method_revalidation.sql','20261110160000_mab_d00_y04_original_provider_trace.sql',
     '20261110130000_mab_original_media_assets.sql','20261110140000_mab_d00_y02_registration_locator.sql',
     '20261113100000_mab_qr05_single_rights_action_dictionary.sql',
+    // Public consumers now read one publication pointer for both legacy and Studio works.
+    // Without ST-05/07/08/09, p.source_schema and p.studio_revision_id do not exist:
+    // a safe empty public catalogue incorrectly returns HTTP 500 instead of 200.
+    // Apply the actual dependent Studio business migrations, not synthetic fixture columns.
+    '20261114120000_mab_m5_director_plan.sql',
+    '20261114150000_mab_m5_st07_work_revision.sql',
+    '20261114180000_mab_m5_st08_submission_snapshot.sql',
+    '20261114190000_mab_m5_st09_editorial_publish_withdraw.sql',
     '20261114200000_mab_m5_studio_project_title_rename.sql',
     '20261114210000_mab_m5_claim_revision_artifact_revision.sql',
     '20261114220000_mab_m5_restore_registered_content_revision.sql'];
