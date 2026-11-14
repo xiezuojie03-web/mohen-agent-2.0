@@ -123,8 +123,13 @@ export function getProductionBlocker(source?:ProductionOriginal): string | null 
   return productionBlocker(resolveProjectRoot(),source);
 }
 
-export async function failProductionRun(runId: string): Promise<void> {
-  await dbRun("update control.production_runs set status='FAILED', finished_at=now() where run_id=:'id'::uuid and status='RUNNING'", { id: runId });
+export async function failProductionRun(runId: string, reason = "PRODUCTION_PROCESS_EXIT_NONZERO"): Promise<void> {
+  // A failure before the Runner writes its own terminal report must not leave
+  // a RUNNING row indefinitely. Never overwrite a legitimate HOLD/Gate result.
+  await dbRun(`update control.production_runs set status='FAILED', finished_at=now(),
+      metadata=coalesce(metadata,'{}'::jsonb) ||
+        jsonb_build_object('m5_terminal',jsonb_build_object('disposition','FAILED','reason_code',:'reason'))
+      where run_id=:'id'::uuid and status='RUNNING'`, { id: runId, reason });
 }
 
 /**
@@ -187,14 +192,35 @@ export async function triggerProduction(taskId: string, intent: string, projectI
   const registry = loadRegistry(projectRoot);
   const registryDigest = executionDigest(registry);
   const scopeDir = path.join(os.tmpdir(), "mohen-scopes");
-  fs.mkdirSync(scopeDir, { recursive: true });
   const scopeFile = path.join(scopeDir, `${runId}.json`);
-  fs.writeFileSync(scopeFile, JSON.stringify(scope), "utf8");
-
-  // 4) 启动本地一次性 nonce 验证器 + 动态令牌签发服务
-  // （D01–D05 输入依赖上一阶段产出，无法预签，由 Runner 按需请求）
-  const { server, port: verifierPort, issued } = await startVerifier();
-  const dynamic = await startDynamicTokenService(registry, registryDigest, runId, issued);
+  let verifier: Awaited<ReturnType<typeof startVerifier>> | undefined;
+  let dynamic: Awaited<ReturnType<typeof startDynamicTokenService>> | undefined;
+  const removeScope = () => { try { fs.rmSync(scopeFile, { force: true }); } catch {} };
+  // 4) Trusted nonce verifier and dynamic issuer must be ready before spawn.
+  // If either fails after the RUNNING insert, persist a failed terminal state,
+  // close the first listener and do not leak a per-run scope file.
+  try {
+    fs.mkdirSync(scopeDir, { recursive: true, mode: 0o700 });
+    fs.writeFileSync(scopeFile, JSON.stringify(scope), { encoding: "utf8", mode: 0o600, flag: "wx" });
+    verifier = await startVerifier();
+    dynamic = await startDynamicTokenService(registry, registryDigest, runId, verifier.issued);
+  } catch {
+    verifier?.server.close();
+    dynamic?.server.close();
+    removeScope();
+    await failProductionRun(runId, "PRODUCTION_AUTHORITY_START_FAILED");
+    await addEvent(taskId, "D00", "production_authority_start_failed", { run_id: runId });
+    return { runId, started: false, reason: "production_authority_start_failed" };
+  }
+  const { server, port: verifierPort } = verifier;
+  let cleanedUp = false;
+  const cleanup = () => {
+    if (cleanedUp) return;
+    cleanedUp = true;
+    server.close();
+    dynamic.server.close();
+    removeScope();
+  };
 
   // 5) spawn 生产进程（异步，不阻塞）
   try {
@@ -230,11 +256,15 @@ export async function triggerProduction(taskId: string, intent: string, projectI
           MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL: dynamic.credential,
           // 独立 Gate 验证 + 按需签发（本地隔离服务，见 tools/local-gate-service.mjs）。
           // Producer 不自签；管线每阶段 PASS 后向此服务 verify，服务按需把候选签成 audit。
-          MOHEN_INDEPENDENT_GATE_VERIFY_URL: "https://127.0.0.1:8789/verify",
-          MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL: (() => {
-            try { return fs.readFileSync(process.env.MOHEN_GATE_VERIFIER_CREDENTIAL_FILE || "D:/MoHen/keys/gate-verifier/credential", "utf8").trim(); }
-            catch { return ""; }
-          })(),
+          // Honour the independently operated Gate's actual isolated endpoint
+          // and credential. Never treat a missing Gate as a Producer PASS.
+          MOHEN_INDEPENDENT_GATE_VERIFY_URL:
+            process.env.MOHEN_INDEPENDENT_GATE_VERIFY_URL?.trim() || "https://127.0.0.1:8789/verify",
+          MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL:
+            process.env.MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL?.trim() || (() => {
+              try { return fs.readFileSync(process.env.MOHEN_GATE_VERIFIER_CREDENTIAL_FILE || "D:/MoHen/keys/gate-verifier/credential", "utf8").trim(); }
+              catch { return ""; }
+            })(),
           MOHEN_PRIVATE_EVIDENCE_WORKER_ENABLED: "true",
           ...(process.env.MOHEN_PRIVATE_WORKER_DATABASE_URL
             ? { MOHEN_PRIVATE_WORKER_DATABASE_URL: process.env.MOHEN_PRIVATE_WORKER_DATABASE_URL } : {}),
@@ -246,13 +276,13 @@ export async function triggerProduction(taskId: string, intent: string, projectI
     let stderrBuf = "";
     child.stderr?.on("data", (d) => { stderrBuf += String(d); });
     child.on("error", (err) => {
-      void failProductionRun(runId).catch(() => console.error("production_failure_persistence_unavailable"));
+      cleanup();
+      void failProductionRun(runId, "PRODUCTION_PROCESS_SPAWN_ERROR").catch(() => console.error("production_failure_persistence_unavailable"));
       console.error(`[studio-production] 生产进程启动失败 run=${runId}:`, err);
       void addEvent(taskId, "D00", "production_process_error", { run_id: runId, error: String(err) });
     });
     child.on("exit", (code) => {
-      server.close();
-      dynamic.server.close();
+      cleanup();
       if (code !== 0) void failProductionRun(runId).catch(() => console.error("production_failure_persistence_unavailable"));
       void addEvent(taskId, "D05", code === 0 ? "production_finished" : "production_failed", {
         run_id: runId,
@@ -262,9 +292,8 @@ export async function triggerProduction(taskId: string, intent: string, projectI
     });
     child.unref?.(); // 不阻止父进程（Next.js）退出
   } catch (e) {
-    server.close();
-    dynamic.server.close();
-    await failProductionRun(runId);
+    cleanup();
+    await failProductionRun(runId, "PRODUCTION_PROCESS_SPAWN_ERROR");
     return { runId, started: false, reason: "production_spawn_failed" };
   }
 
