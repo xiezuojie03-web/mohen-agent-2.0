@@ -7,13 +7,13 @@ import { loadRegistry } from "../../pipelines/data-production/orchestrator/regis
 import { assertAdapterBinding, assertNoUnboundTopicInputs, assertNoUnboundPrivateEvidenceInput } from "../../pipelines/data-production/orchestrator/adapter-binding.mjs";
 const root = path.resolve(import.meta.dirname, "../..");
 test("CLI adapter choice must match the signed registry binding", () => {
-  // M5 isolated activation (MAB step 2 batch C): D00-D05 all bind the
-  // private-evidence adapters on the local isolated database.
+  // 8963c9d 起 D00-D05 的 registry adapter_binding 切至 layer1-adapters（自由主题闭环）；
+  // 私有原件路径仍走 private-evidence-adapters（runtime loader，不经 registry 绑定）。
   const registry = loadRegistry(root);
   assert.throws(() => assertAdapterBinding(root, registry, "tests/data-production/fixture-adapters.mjs"), /ADAPTER_BINDING_MISMATCH/);
-  assertAdapterBinding(root, registry, "pipelines/data-production/adapters/private-evidence-adapters.mjs", ["D00", "D01"]);
-  assertAdapterBinding(root, registry, "pipelines/data-production/adapters/private-evidence-adapters.mjs", ["D02", "D03", "D04", "D05"]);
-  assert.throws(() => assertAdapterBinding(root, registry, "pipelines/data-production/adapters/layer1-adapters.mjs", ["D02", "D03", "D04", "D05"]), /ADAPTER_BINDING_MISMATCH/);
+  assertAdapterBinding(root, registry, "pipelines/data-production/adapters/layer1-adapters.mjs", ["D00", "D01"]);
+  assertAdapterBinding(root, registry, "pipelines/data-production/adapters/layer1-adapters.mjs", ["D02", "D03", "D04", "D05"]);
+  assert.throws(() => assertAdapterBinding(root, registry, "pipelines/data-production/adapters/private-evidence-adapters.mjs", ["D02", "D03", "D04", "D05"]), /ADAPTER_BINDING_MISMATCH/);
 });
 test("dynamic topic bytes and executable topic configuration require a bound snapshot protocol", () => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "mohen-unbound-topic-"));
@@ -49,17 +49,17 @@ test("a nested typed private source cannot bypass the unbound D01-D03 registry",
   });
 });
 
-test("M5 batch C private stages bind the reviewed private adapters; layer1 is not eligible",()=>{
-  // With the M5 isolated batch C activation all six stages bind the private
-  // adapters; the historical layer1 binding is no longer accepted anywhere.
+test("M5 free-topic stages bind the reviewed layer1 adapters; private-evidence is a runtime path, not the registry binding",()=>{
+  // 8963c9d：registry 六阶段 adapter_binding 均切至 layer1（自由主题闭环）；
+  // private-evidence 仅作私有原件 runtime 路径，不再被 registry 接受为 CLI 绑定。
   const registry=structuredClone(loadRegistry(root));
   const privatePath="pipelines/data-production/adapters/private-evidence-adapters.mjs";
   const layer1Path="pipelines/data-production/adapters/layer1-adapters.mjs";
-  assertAdapterBinding(root,registry,privatePath,["D01"]);
-  assertAdapterBinding(root,registry,privatePath,["D00","D01"]);
-  assertAdapterBinding(root,registry,privatePath,["D02","D03","D04","D05"]);
-  assertAdapterBinding(root,registry,privatePath);
-  assert.throws(()=>assertAdapterBinding(root,registry,privatePath,["D01","D01"]),/ADAPTER_BINDING_MISMATCH/);
-  assert.throws(()=>assertAdapterBinding(root,registry,privatePath,["D99"]),/ADAPTER_BINDING_MISMATCH/);
-  assert.throws(()=>assertAdapterBinding(root,registry,layer1Path),/ADAPTER_BINDING_MISMATCH/);
+  assertAdapterBinding(root,registry,layer1Path,["D01"]);
+  assertAdapterBinding(root,registry,layer1Path,["D00","D01"]);
+  assertAdapterBinding(root,registry,layer1Path,["D02","D03","D04","D05"]);
+  assertAdapterBinding(root,registry,layer1Path);
+  assert.throws(()=>assertAdapterBinding(root,registry,layer1Path,["D01","D01"]),/ADAPTER_BINDING_MISMATCH/);
+  assert.throws(()=>assertAdapterBinding(root,registry,layer1Path,["D99"]),/ADAPTER_BINDING_MISMATCH/);
+  assert.throws(()=>assertAdapterBinding(root,registry,privatePath),/ADAPTER_BINDING_MISMATCH/);
 });

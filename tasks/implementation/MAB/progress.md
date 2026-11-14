@@ -3879,8 +3879,8 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
   - `assessNonPrivateRights` 纯逻辑正反实测：有 `machine_read/retain=allowed`+`basis` → **ok**；`machine_read=unknown` → `rights_action_not_allowed`；无 evidence → `rights_evidence_missing`；空 → `rights_record_missing`（失败关闭成立）。
   - 真库反例：无显式 `rights_by_action` 的来源版本 → `decision_ok=false`（不放行）。真库现无「非私有来源 + 显式权利」样本（CP2-C 已 stamp 的来源均有私有原件），故正向 fallback 以纯逻辑验证为准，待真实自由主题运行覆盖。
 - **未关闭缺口（延续上批）**：
-  1. **B8（5 测试预存失败）**：仍待修 `adapter-binding.test.mjs`/`execution-authorization.test.mjs`（registry 已 layer1，测试仍断言 private-evidence）→ 修后才可 `verify-local-execution-env.mjs` 转 PASS。
-  2. **B1（evidence 陈旧）**：`enable-requires-evidence.json` git_head 仍 `21436301`，需 B8 后重新出证。
-  3. **B3/B5（sandbox EPERM）**：本会话仍无法跑 `verify-local-execution-env.mjs` 内部 `execFileSync` 测试套件与 `studio-production.ts` `spawn(run.mjs)` 真 UI 链；正向 D00→G0 自动签发待非 sandbox 环境（或 `MOHEN_DB_DRIVER=pg` + spawn stdio 重构）真跑。
-- **下一入口**：① 修 B8 测试断言（adapter-binding/execution-authorization 与 layer1 registry 对齐，或按 Owner 后续裁定回退）→ ② `verify-local-execution-env.mjs` 重新出证（git_head 对齐当前 HEAD）→ ③ 非 sandbox 环境从 Studio 真 UI 触发自由主题，核 D00→独立 G0 自动签发（本轮 B7/B9 修复后的首次正向覆盖）→ ④ 继续 D01—D05 逐门核。本批本地提交登记 **PENDING_PUSH**。
-- **口径边界**：仍零 DDL、未触生产库、未签任何 Gate；`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变；证据等级 `CODE_PRESENT`（B7/B9 就位、纯逻辑/负向已验证，正向待真 UI 覆盖）。
+  1. **B8（测试失败，已修 2/5）**：`adapter-binding.test.mjs` 两例已改为断言 layer1 为 registry 绑定（私有原件走 runtime 路径，非 registry 绑定）→ 全量 `tests/data-production` 由 **241/5 → 243/3**。剩余 3 例为**环境受限**（本 sandbox 子进程 spawn/symlink EPERM，CI/Linux 可过）：`execution-authorization.test.mjs`（spawn run.mjs）、`independent-gate-service-runtime.test.mjs`（spawnSync node）、`resume-input.test.mjs`（symlink 夹具）。非代码缺陷，不修。
+  2. **B1（evidence 陈旧）**：`enable-requires-evidence.json` git_head 仍 `21436301`，需非 sandbox 环境跑 `verify-local-execution-env.mjs`（其内部 `execFileSync` git + 测试套件在本 sandbox EPERM）重新出证。
+  3. **B3/B5（sandbox EPERM）**：`verify-local-execution-env.mjs` 内部 `execFileSync`、`studio-execution-authority.ts` 的 `execFileSync("git")`、`studio-production.ts` `spawn(run.mjs)` 三处 piped-stdio 子进程在本 sandbox 均 EPERM；正向 D00→G0 自动签发待非 sandbox 环境真跑。
+- **下一入口**：① 非 sandbox 环境（或 CI/Linux）跑 `verify-local-execution-env.mjs` 重新出证（git_head 对齐当前 HEAD，`isolation_and_contract_tests_pass` 在 CI 应 246/0）→ ② 从 Studio 真 UI 触发自由主题，核 D00→独立 G0 自动签发（本轮 B7/B9 修复后的首次正向覆盖）→ ③ 继续 D01—D05 逐门核。本批本地提交登记 **PENDING_PUSH**。
+- **口径边界**：仍零 DDL、未触生产库、未签任何 Gate；`M5_OVERALL_HOLD / TECHNICAL_HANDOFF_NOT_READY` 不变；证据等级 `CODE_PRESENT`（B7/B9/B8(2/5) 就位、纯逻辑/负向已验证，正向待真 UI 覆盖）。
