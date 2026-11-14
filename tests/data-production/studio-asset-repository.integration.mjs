@@ -112,7 +112,7 @@ try {
   // the database guard, so no code path can record a use it cannot justify.
   const recorded=await repo.recordUseEvent({projectId:project,revisionId:two.revision_id,consumer:'agent',
    purpose:'studio_research_context',requestedAction:'read'},token(a));
-  assert.equal(recorded.requested_action,'read');
+  assert.equal(recorded.requested_action,'access_view','legacy read is stored using the single canonical action vocabulary');
   await assert.rejects(()=>repo.recordUseEvent({projectId:project,revisionId:two.revision_id,consumer:'agent',
    purpose:'studio_research_context',requestedAction:'quote'},token(a)),/STUDIO_USE_BLOCKED/);
   assert.throws(()=>sql(`insert into studio.use_events(project_id,asset_revision_id,actor_id,consumer,purpose,requested_action,rights_decision_ref)
