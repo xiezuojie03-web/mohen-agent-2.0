@@ -1,10 +1,10 @@
 # 墨痕｜当前真实工程状态
 
-更新：2026-11-12。本文只记录当前状态，不承担施工计划或过程日志。
+更新：2026-11-14。本文只记录当前状态，不承担施工计划或过程日志。
 
 ## 当前工程基线
 
-- 远端 main HEAD：`1ff58e6b`（2026-11-12，本地亲验就绪回执）。本地 HEAD `926dea4` 与远端**内容一致、SHA 不同**：GitHub 直连不稳期间改走 Git Data API 重放，SHA 由远端重算。本地 `origin/main` 停在 `c67a5bf`，属该传输替代的已知偏差，**不代表有未推送提交**（详见 `tasks/implementation/MAB/progress.md` 2026-11-12 条）。
+- 远端 main HEAD：`c07a287`（2026-11-14，本地 14 个挂账提交经 Owner 指令一次性批量推送，`1c35f3e..c07a287`，本地与远端 0 差异）。本次推送内容：Studio 自由主题 D00—D05/G0—G5 六门 A' 逐门落地（组件级正向）及各批断点核记录；推送不改变证据等级（全链串联真跑与 M5 验收未完成）。
 - 2026-11-12 CI 收口过程：`6bb6b9e6` ci SUCCESS；`c1d244be` ci SUCCESS（补齐隔离 HTTP 链 24 份漂移迁移 + 守卫改双链校验）；M1 隔离 HTTP 验收由 6 FAIL 降至 3 FAIL，余项按 CP2-F 后契约修正后待 `6562ece3` 回执。`MAB isolated PostgreSQL 17 verification` 持续 SUCCESS。
 - **2026-11-12 最终 CI 全绿**：远端 `bd94f91c` → `ci` 43212146248 **SUCCESS**、`MAB M1 isolated authenticated HTTP acceptance` 43212146038 **SUCCESS**（23 passed / 1 skipped，0 failed）。本地 `vitest.unit` 650 passed / 2 skipped / 0 failed，`apps/web` tsc 0 错误，`guard:isolated-db-fixtures` PASS。
 - 真实模型派发已在本地隔离环境真跑：`tools/verify-4-provider-dispatch.mjs` = `VERIFY_4_ALL_PASS`，真实 DeepSeek 调用 `cost=$0.000074`，回放不重复扣费，权利拒绝/零预算阻断成立；本地库累计 Provider 支出 `$0.017176`（授权上限 ¥20）。

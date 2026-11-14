@@ -3976,4 +3976,5 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
   - **组件级正向实测（真库 + 真 8789）**：复用 run `dead0003` 已签 G4 审计，建 `world_projection(P02、UNASSESSED、original_id=非私有源版本、derived_from_finding_ids 含上游 finding)`，提交 G5 候选（`purpose=data-production/m5-remediation`、依赖 G4）→ `POST /verify` 返回 **200 PASS** → 落库真实 `G5 PASS / independent_gate` 审计（`78114b50-…`）。
 - **里程碑**：**自由主题 layer1 的 D00—D05 → G0—G5 六门现全部组件级正向通过**（G0 `93611955` 前各门审计见上各批；G0=113f71d9、G1=d3a84419、G2=8094994e、G3=93611955、G4=9c2b27fb、G5=78114b50）。每门均真库 + 真 8789 自动签发、落库 `independent_gate PASS` 审计。
 - **未关闭（全链仍 HOLD，见前）**：① **全链一次真跑**（D00→D05 串联，需执行授权 `execFileSync`/`spawn`，本 sandbox EPERM）；② **B1** evidence 陈旧需非 sandbox `verify-local-execution-env.mjs` 重新出证；③ **B8** 3 例环境受限测试（CI/Linux 可过）；④ Studio 真 UI 触发、M5 八维度验收、M6—M8。`M5_OVERALL_HOLD` 不变。
-- **下一入口**：非 sandbox/CI 跑 `verify-local-execution-env.mjs` 出证 → Studio 真 UI 触发自由主题 → 核 D00→D05 全链（六门已组件级正向，待串联真跑）→ M5 八维度验收 → M6—M8。**PENDING_PUSH**。
+- **下一入口**：非 sandbox/CI 跑 `verify-local-execution-env.mjs` 出证 → Studio 真 UI 触发自由主题 → 核 D00→D05 全链（六门已组件级正向，待串联真跑）→ M5 八维度验收 → M6—M8。
+- **推送销项（2026-11-14 Owner 指令「全部推送」）**：此前各批挂账的 PENDING_PUSH（含 1c35f3e 起共 14 个本地提交，至 `c07a287`）已一次性推送 GitHub main（`1c35f3e..c07a287`），`git rev-parse origin/main` = `c07a287`、本地领先 0，全部销项。证据等级不变：仍为组件级 `CODE_PRESENT`/真库正向组件证据，全链串联真跑与 M5 验收未完成，推送不等于验证通过。本批工作区另有 `.tmp_*` 调试残留未入提交、未推送。
