@@ -1,7 +1,7 @@
--- M5 Studio authorized read-context compatibility: align the existing SECDEF
--- reader to actual persisted C01 byte-attestation and D02 observation receipts.
--- Never grants new permissions or exposes original storage keys. Requires the
--- normal reviewed migration process in a nonproduction environment.
+-- M5 Studio L1/L2 read-context compatibility: align existing Owner-scoped reader
+-- with exact C01 byte attestation and D02 material observation receipts.
+-- Fail closed on invalid source binding, storage SHA, revoked verification key.
+-- No new roles, grants or knowledge qualifications.
 -- MAB M5 / ST-02: project-scoped, read-only private L1/L2 context.
 -- No direct source/evidence table grants are added to mohen_app_runtime.
 -- The returned JSON deliberately omits storage_key and source.read_units.payload_ref.
@@ -84,92 +84,7 @@ begin
                    and l.quote_snapshot_hash=u.locator_hash)
                   or
                   (l.link_version='mab.private-material-observation.v1'
-                   and l.byte_verification_receipt->>'attestation_digest' ~ '^[a-f0-9]{64}
-                and e.locator=u.locator
-                and e.source_id=v.source_id
-                and e.source_version_id=v.source_version_id
-                and e.raw_item_id=raw.raw_item_id
-                and e.literal_reading is not null
-            ),'[]'::jsonb)
-          ) as reading
-        from source.read_runs r
-        join source.read_units u on u.read_run_id=r.read_run_id
-        join source.raw_items raw on raw.raw_item_id=r.raw_item_id
-        join source.source_versions v on v.source_version_id=raw.source_version_id
-        join control.original_bridge_verification_keys run_key
-          on run_key.key_version=r.config->'byte_verification_receipt'->>'key_version'
-          and run_key.is_active
-        where r.status='done'
-          and r.input_sha256=original.sha256
-          and r.config->>'schema'='mab.private-text-reading.v1'
-          and r.config->>'private_original_id'=original.original_id::text
-          and r.config->>'project_id'=original.project_id::text
-          -- The C01 writer records project/private_original and an HMAC receipt,
-          -- but no original_revision_id or 'VERIFIED' status field. Verify the
-          -- attestation digest and retain the exact source/hash checks below.
-          and r.config->'byte_verification_receipt'->>'attestation_digest' ~ '^[a-f0-9]{64}
-          and raw.checksum_sha256=original.sha256
-          and raw.byte_size=original.byte_size
-          and v.checksum_sha256=original.sha256
-          and u.locator_schema='utf8_byte_range/v1'
-          and u.locator->>'source_version_id'=v.source_version_id::text
-          and u.locator->>'raw_item_id'=raw.raw_item_id::text
-          and u.locator->>'raw_sha256'=original.sha256
-          and u.locator->>'quote_sha256'=u.locator_hash
-          and u.payload_ref=raw.storage_ref
-          and studio.private_source_binding_matches(
-            original.original_id,v.source_version_id,raw.raw_item_id,original.sha256
-          )
-        order by r.created_at desc,u.ordinal
-        limit 50
-      ) q
-    ),'[]'::jsonb),
-    'readings_limit',50,
-    'direct_storage_reference_exposed',false
-  ) into result;
-
-  return result;
-end;
-$mab_read$;
-
-revoke all on function studio.read_private_text_reading(uuid)
-  from public,anon,authenticated,service_role,mohen_producer,mohen_gate_signer;
-grant execute on function studio.read_private_text_reading(uuid) to mohen_app_runtime;
-
-comment on function studio.read_private_text_reading(uuid) is
-  'MAB M5 ST-02 owner/project scoped read-only L1/L2 snapshot. No storage keys or direct source/evidence grants.';
-
-          and raw.checksum_sha256=original.sha256
-          and raw.byte_size=original.byte_size
-          and v.checksum_sha256=original.sha256
-          and u.locator_schema='utf8_byte_range/v1'
-          and u.locator->>'source_version_id'=v.source_version_id::text
-          and u.locator->>'raw_item_id'=raw.raw_item_id::text
-          and u.locator->>'raw_sha256'=original.sha256
-          and u.locator->>'quote_sha256'=u.locator_hash
-          and u.payload_ref=raw.storage_ref
-          and studio.private_source_binding_matches(
-            original.original_id,v.source_version_id,raw.raw_item_id,original.sha256
-          )
-        order by r.created_at desc,u.ordinal
-        limit 50
-      ) q
-    ),'[]'::jsonb),
-    'readings_limit',50,
-    'direct_storage_reference_exposed',false
-  ) into result;
-
-  return result;
-end;
-$mab_read$;
-
-revoke all on function studio.read_private_text_reading(uuid)
-  from public,anon,authenticated,service_role,mohen_producer,mohen_gate_signer;
-grant execute on function studio.read_private_text_reading(uuid) to mohen_app_runtime;
-
-comment on function studio.read_private_text_reading(uuid) is
-  'MAB M5 ST-02 owner/project scoped read-only L1/L2 snapshot. No storage keys or direct source/evidence grants.';
-
+                   and l.byte_verification_receipt->>'attestation_digest' ~ '^[a-f0-9]{64}$'
                    and l.quote_snapshot_hash=original.sha256)
                 )
                 and e.locator=u.locator
@@ -191,41 +106,8 @@ comment on function studio.read_private_text_reading(uuid) is
           and r.config->>'schema'='mab.private-text-reading.v1'
           and r.config->>'private_original_id'=original.original_id::text
           and r.config->>'project_id'=original.project_id::text
-          -- The C01 writer records project/private_original and an HMAC receipt,
-          -- but no original_revision_id or 'VERIFIED' status field. Verify the
-          -- attestation digest and retain the exact source/hash checks below.
-          and r.config->'byte_verification_receipt'->>'attestation_digest' ~ '^[a-f0-9]{64}
-          and raw.checksum_sha256=original.sha256
-          and raw.byte_size=original.byte_size
-          and v.checksum_sha256=original.sha256
-          and u.locator_schema='utf8_byte_range/v1'
-          and u.locator->>'source_version_id'=v.source_version_id::text
-          and u.locator->>'raw_item_id'=raw.raw_item_id::text
-          and u.locator->>'raw_sha256'=original.sha256
-          and u.locator->>'quote_sha256'=u.locator_hash
-          and u.payload_ref=raw.storage_ref
-          and studio.private_source_binding_matches(
-            original.original_id,v.source_version_id,raw.raw_item_id,original.sha256
-          )
-        order by r.created_at desc,u.ordinal
-        limit 50
-      ) q
-    ),'[]'::jsonb),
-    'readings_limit',50,
-    'direct_storage_reference_exposed',false
-  ) into result;
-
-  return result;
-end;
-$mab_read$;
-
-revoke all on function studio.read_private_text_reading(uuid)
-  from public,anon,authenticated,service_role,mohen_producer,mohen_gate_signer;
-grant execute on function studio.read_private_text_reading(uuid) to mohen_app_runtime;
-
-comment on function studio.read_private_text_reading(uuid) is
-  'MAB M5 ST-02 owner/project scoped read-only L1/L2 snapshot. No storage keys or direct source/evidence grants.';
-
+          -- Exact C01 persisted byte attestation does not contain original_revision_id or status.
+          and r.config->'byte_verification_receipt'->>'attestation_digest' ~ '^[a-f0-9]{64}$'
           and raw.checksum_sha256=original.sha256
           and raw.byte_size=original.byte_size
           and v.checksum_sha256=original.sha256
