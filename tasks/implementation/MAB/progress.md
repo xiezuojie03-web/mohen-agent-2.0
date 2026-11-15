@@ -4140,3 +4140,13 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **归因纠偏**：旧 D00—D05 的专业 DeepSeek 内容生产和 L5 多类型投影真实存在且仍有代码；新私有链引入字节/来源/分权/独立资格，但缺专业 typed request 自动生成及部分 Studio 受控 Provider/新修订衔接；不能据此推断旧 D00—D05 从未闭环，也不得重用旧写 Gate PASS 模式冒充新 Reviewer。
 - **具体优先问题**：Studio `--to D00`；当前 D00 已构造 D01 request，不是完全无接口；文本 C01 无 extent+quote，C02 只校验页图非 OCR；D01 产物未转换到 D02 observation；D02-D04 的旧 LLM 处理未接新合法执行器；D05 私有只投影；Studio 新旧导演作品链路并存；生产预算预留无终态核销。每项对应源码/适用原证据/尚缺验证详见 `tasks/results/MAB/M5_DLG_LEGACY_INHERITANCE_CODE_AUDIT_20261115.md`。
 - **证据限制**：`SOURCE_REVIEWED + HISTORICAL_RUN_DOCUMENTED + CURRENT_CODE_AUDITED`；没有完成63方法/13资产/19组件全量检查，没有本次 PG/HTTP/Provider/Gate 真人正签，没碰生产。下步优先在合法持久隔离环境核同一 Studio D00 候选及独立 G0 的资格，再定向接 C01/C02 与 D01→D02，沿到真实作品；`M5_OVERALL_HOLD`。
+
+
+---
+
+## 2026-11-15｜M5施工标准与落实情况定向复核（代码审查，非业务修复）
+
+- 唯一标准 `PLAN.md V1.7 §0/§3.3/§3.5 B/C/§6/§7` 已明确逐节点真实输入、执行、输出、下游接收、旧能力继承与失败/恢复，**无必要修订PLAN**。
+- 直接源码发现 `scripts/guards/check-stage-handoff.mjs` 只查相邻合同键名非空；`orchestrator.test.mjs` 的六阶段 PASS 是 fixture；`private-runner-stage-handoff.test.mjs` 限单阶段，独立私有 Adapter 测试没覆盖真实 D01→D02 schema 兼容。当前 Studio 仍启动 `--to D00`，D01 产出不满足 D02 typed request，而旧 `layer1-adapters.mjs` 专业生产可定向复用但未完整接入现行私有链。
+- **责任归因**：工程核查与测试覆盖未落实现行PLAN的邻接验收要求，不是PLAN没有提出要求；受控 D00-only/未有本地 PG 不构成虚报PASS，但不能替代可做的静态接力核验。
+- **产物**：现有 `tasks/results/MAB/M5_DLG_LEGACY_INHERITANCE_CODE_AUDIT_20261115.md` §7；本次只修改审查记录，没有业务代码修复、没有新运行资格、没有本轮PG/HTTP/Provider验证。M5仍HOLD。

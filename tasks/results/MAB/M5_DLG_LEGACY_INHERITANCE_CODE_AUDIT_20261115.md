@@ -61,3 +61,32 @@
 - **三种“位置”不可混为一谈**：① GitHub `main` 是当前应审查的远端源码基线；② Trae/其他开发工具的本地 Git 工作树可能含未提交/未推送代码，本轮无法直接访问，**不能证明完全同步**；③ Vercel 部署是另一个精确 SHA 的构建副本，Supabase 运行库是数据/模式状态，均不等于 GitHub 最新源码。不能把旧部署当现行运行事实。
 - **漏查根因（本次责任归属）**：初次核查只顺着目前 Studio 调用的私有 Adapter→Worker 读，虽然看过 Runner，却**没有同时对照同一目录下仍存在的旧 layer1 内容生产函数、历史运行代码及其 Gate 语义**，还没有把 `apps/web` 各真实消费者/业务路径完全反向追踪。由于动态加载、Registry 的双 Adapter 绑定、历史与当前并存，在只看“当前执行路径”时就可能漏掉“必须继承的可用实现”。这不是六个仓库引起，也不是必须先跑程序才可发现，是**我对代码范围与继承核查不完整**。
 - **后续同一路线的正确核法**：先钉住 `main@SHA` 和本地差异可知性，逐段记录实际调用者→被调用实现→输入/输出契约→旧可继承实现→DB/Gate/权限/费用→后续消费者；每个节点同时核对“在用、已实现但未接线、历史仅供移植、未实现”四类。**源代码路径走通和 Owner 实机验收是两种不同证据**；没有查过的节点标未查，不写“已查全”。
+
+## 7. PLAN V1.7 任务标准清晰度与实际执行合规复核（2026-11-15）
+
+**裁决：现行任务标准在本轮主干断点上已足够明确；主要失效在施工落实与自动检查覆盖，而非缺任务书或需要再升 PLAN 版本。** 本节只记录“要求→实际代码/测试→判定”，不修改权威施工标准、不宣称本轮已修复业务代码。
+
+### 7.1 现行权威已明确约束输入—执行—输出—下游接收
+
+- `PLAN.md` §0：以同一 Creator/Project/root_task 从 Studio 开始，找最前断点，优先继承已有能力；每节点核真实输入/输出、失败回执、权限和来源。
+- §3.3：D00—D05 每个专业方法要有 Stage、L输入/输出、Gate、Skill、Executor、Adapter、Tool、权限及版本的唯一绑定；每项有正反测试或具名 HOLD。
+- §3.5 C(1)：**逐站**核上游真实输出与下游真实消费、同一 project/root/source/version/revision/rights/purpose/receipt及失败恢复；区分已有模块、邻接合同和新缺口。
+- §3.5 C(2)、(5)：优先贯通同一用户作品主干；每批记录最远可信节点、最前阻断、可继承证据及下游接收，局部 PASS 不准冒充同 root 整链 PASS。
+- §6.2、§6.4：每批回执含实际输入、依赖、真实输出、下游接受结果，必要正/负例与运行环境；未跑必须标 NOT_RUN。§7只提供接续入口，不另立标准。
+
+**小幅可执行性局限**：PLAN 描述的是业务准出标准，没有逐字段枚举每一种阶段请求的 JSON schema；这应由各阶段现行专业合同和可执行测试落实，不是必须新增另一套 PLAN/验收任务才能开发的缺失。现有计划本身已要求核对字段和邻接真实消费。
+
+### 7.2 对照当前 HEAD 的具体不合规/不充分实现
+
+1. **静态交接守卫名存实亡（确定）**：`scripts/guards/check-stage-handoff.mjs` 仅断言 `prev.output` 和 `cur.input` 非空，不核是否相等、对象 schema、真实生产 Adapter 的返回结构、下一阶段实际可消费。打印 `STAGE_HANDOFF_OK` 不能证明阶段输入输出匹配。
+2. **“六阶段 PASS”测试使用合成 Adapter（确定）**：`tests/data-production/orchestrator.test.mjs` 的 `full PASS flows D00→D05` 调用 `runAuthorizedFixture` 与 `fixture-adapters.mjs`；证明 Runner 可在 *fixture* 条件下流转，不证明 `private-evidence-adapters.mjs` 的 D00→D05 真实结构交接。
+3. **私有测试主要覆盖单阶段而非前后两站（确定）**：`tests/data-production/private-runner-stage-handoff.test.mjs` 显式以 D01→D01 一阶段范围运行，验证授权/Gate HOLD；`private-evidence-adapters.test.mjs` 独立给 D02/D03/D04/D05 预构造请求测试 Worker 候选持久化，没有构造 `D01 output → D02 input` 的正例，不能证明自动连续交接。
+4. **真实代码的具体断点（确定）**：`apps/web/lib/studio-production.ts` 仍指定 `--to D00`；`orchestrator.mjs` 把上游 `result.outputs[contract.output]` 直接传下一阶段；`private-evidence-adapters.mjs` 的 D01 output 是 `stage:'D01'` 候选，D02 Adapter 则要求 `schema:'mohen.private-evidence-stage-request.v1', stage:'D02'` 及专业 `observation` 或证据关联输入。旧 `layer1-adapters.mjs` 的专业内容生成虽存在，但新的受控路径尚未完整适配。因此：**即便把启动终点改为 D05，也不能仅凭已有守卫/fixture 测试判断整链可用**。
+5. **历史继承输入盘点不足（确定）**：本轮之前排查新私有 Adapter 却未先查同仓库旧 `layer1-adapters.mjs` 和金泽/A001真实代码/报告。这违反 §0 和 §3.5 C 要求“优先复用已验能力、区分模块与邻接合同”。不应以“新代码没调用到”为由认定专业生产能力须重建。
+6. **受限真实运行是另一个事实（不能误称违反计划）**：最近 `progress.md` 的 D00-only 是受控小批次，已明确不冒充全链 PASS；当前远程连接缺 Owner 本地持久 PG/Storage/Gate 环境，本轮实机 NOT_RUN 是如实标注。问题是**在此限制下仍应先完成静态邻接兼容检查、既有能力继承审计和可用的定向单测**，不能把缺本地运行条件当作代码断点无法查清的理由。
+
+### 7.3 责任归因、执行调整与验收
+
+- **主要原因**：执行者没有持续按§3.5 C的“同一 root 从前到后逐站追踪、对旧实现同步继承”开展核查和交接修复；质量守卫与测试名称容易让局部 PASS 被误读为全链 PASS。归类为 **工程执行/自动测试覆盖失效**。
+- **非主要原因**：PLAN文字含糊。业务标准、原有职责及准出条件已清楚；不另建“输入执行输出专项/新矩阵/新计划版本”，也不追加验收分母。
+- **后续必须真正落实在业务代码而非再写承诺**：从真实 Studio 入口，逐节点确认①输入（精确身份/source/rights/schema）②执行（当前调用的 Worker/Adapter/Agent/Gate）③输出（持久候选+资格/失败回执）④下游接收（下一站实际接受的字段、精确修订/用途）；每处识别历史可继承实现，修适配层而非重造能力。使定向交接测试在上述真实输入输出不兼容时明确 FAIL。只能在实际代码和对应测试提交之后记 `CODE_FIXED`，在真实持久环境同任务跑过之后记 `RUN_VERIFIED`。本次只提供诊断，未做这两类变更。
