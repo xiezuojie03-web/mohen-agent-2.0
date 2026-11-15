@@ -2,7 +2,16 @@
 
 > **职责**：当前代码与运行证据及剩余阻断，不规定工程施工标准。唯一计划：`tasks/implementation/MAB/PLAN.md` V1.7；历史逐批证据：`tasks/implementation/MAB/progress.md`。每次施工仍须实时查询GitHub `main` HEAD、CI、PG/HTTP及部署，不能把本页SHA当永久最新版本。
 
-**核验日期：2026-11-14。本轮最新业务/界面提交：`main@da888e0c7b5c970899feebffdb5aa41b8df420e0`；主CI [43612526438](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43612526438) SUCCESS。** 对应前两批提交 `e347710b`、`689e13fa` 的CI也均SUCCESS。后续文档提交将产生另一个main SHA，不替换业务代码的准确测试身份。真实持久Studio→D00→独立G0仍未实测准出。
+**核验日期：2026-11-15。本轮最新业务代码：`main@977b36963fe80d492df1b9f255c50abdc9b02897`。** 本轮连续三笔业务代码提交：`ec975c3`（Studio D00→D01 C01 原件读取，主CI [43681077049](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681077049) SUCCESS、隔离PG17 [43681076978](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681076978) SUCCESS）；`f127751`（真实Runner私有D01→D02 typed输入不匹配时持久HOLD，主CI [43681233345](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681233345) SUCCESS）；`977b369`（本地隔离Gate必须校验签署的精确stage_binding而不是复制请求output_digest，主CI [43681613039](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681613039) 最后查询仍在运行，独立Gate撤权合同 [43681613052](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681613052) SUCCESS）。本轮没有实际Owner同一作品持久环境D00/G0→G5/Studio作品实跑，不得以CI当M5 PASS。
+
+
+## 2026-11-15｜批次C：Studio文本读取、D01→D02错误交接和独立Gate输出绑定
+
+- **已实现**：Studio现在按`--to D02`启动同一Runner，D00对文本按G0预选C01形成不含私有原文的D01 typed request，对图像保留C02页请求；低权D01只在源版本绑定、G0当前批准方法后读取校验原件UTF8字节，保存精确extent/quote候选，大于32KiB或非无损UTF8拒绝；不在报告/跨进程阶段输出暴露全文。来源、Gate、身份和费用底线不变。
+- **下游可接收性**：真正的D01 reading candidate并不等于D02 observation请求。唯一Runner检测上游资格PASS但下游typed输入不匹配时在**D02**登记`PRIVATE_NEXT_STAGE_REQUEST_NOT_READY` HOLD，并持久化阶段与原因，不调用D02或伪造资格。该改动附有针对Runner实际接口的自动测试，并非仅fixture整链PASS。
+- **新增独立G问题**：实际`tools/local-gate-service.mjs`先前只用`input_fingerprint`挑审计，再回显请求的`output_digest`，不核审计的`stage_binding`。现已改成与只读资格服务一样必须核对审计所签job/reviewer/consumer/input/output；现有机器规则Review流程尚未产生完整精确stage_binding时**严格HOLD**。这不是新Gate也不是允许Producer补签。后续需合法构建真实输出摘要和审核回执同源绑定，不得恢复旧回显漏洞。
+- **可用证据**：`ec975c3`主CI+隔离PG17成功；`f127751`主CI成功；`977b369`独立Gate撤权合同成功，其主CI/PG17/HTTP最后查询尚在运行。没有本次同一真实历史作品PG/HTTP/私有存储/Agent/Provider/G0—G5连续运行业务证据；生产Vercel和正式DB/Storage未变。
+- **真实下一阻断**：当前Private D02缺由已签G1读取结果生成合规H05专业观察的受控步骤，且本地隔离机器审签回执未提供独立签发的stage_binding。因此当前最远只可证明代码与CI级D00→D01条件执行、D02确定性HOLD，不得称D02/G2实际接通。保持`M5_REMEDIATION_ACTIVE / M5_OVERALL_HOLD`，继续按`PLAN.md §3.5 B/C`实施，不另立标准。
 
 ## 1. 唯一当前验收：PLAN §3.5 B 八维
 

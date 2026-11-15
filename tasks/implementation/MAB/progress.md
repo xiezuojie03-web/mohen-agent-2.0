@@ -4150,3 +4150,15 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 直接源码发现 `scripts/guards/check-stage-handoff.mjs` 只查相邻合同键名非空；`orchestrator.test.mjs` 的六阶段 PASS 是 fixture；`private-runner-stage-handoff.test.mjs` 限单阶段，独立私有 Adapter 测试没覆盖真实 D01→D02 schema 兼容。当前 Studio 仍启动 `--to D00`，D01 产出不满足 D02 typed request，而旧 `layer1-adapters.mjs` 专业生产可定向复用但未完整接入现行私有链。
 - **责任归因**：工程核查与测试覆盖未落实现行PLAN的邻接验收要求，不是PLAN没有提出要求；受控 D00-only/未有本地 PG 不构成虚报PASS，但不能替代可做的静态接力核验。
 - **产物**：现有 `tasks/results/MAB/M5_DLG_LEGACY_INHERITANCE_CODE_AUDIT_20261115.md` §7；本次只修改审查记录，没有业务代码修复、没有新运行资格、没有本轮PG/HTTP/Provider验证。M5仍HOLD。
+
+
+---
+
+## 2026-11-15｜M5批次C：真实业务代码施工三提交（非分析报告）
+
+- 施工依据唯一`PLAN.md V1.7 §0/§3.5 B/C/§6`；写前核了main与`vercel.json git.deploymentEnabled=false`，Vercel生产部署仍为旧SHA`83560224`，没有进行生产DB/Storage迁移、正式Gate投运或公开发布；没有本地Trae未推送工作区访问权限。
+- `ec975c3254d353fbfda3304fe8aa04f0d69d7481`：在原`private-evidence-adapters.mjs`→`private-evidence-stage.mjs`路径修D00到D01的C01/C02载体选择：可信text/plain生成精确D01 metadata-only文本请求；Worker必须核G0批准的C01、源绑定、原件SHA/无损UTF8、字节上限后落存真实阅读单元，图像C02保持原逻辑；Studio`--to D01`。新增D00文本→D01实际Adapter调用、真实签名Stage Worker正反测试（均模拟G0批准，未冒充实际Gate）。主CI [43681077049](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681077049) SUCCESS，PG17 [43681076978](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681076978) SUCCESS。
+- `f12775153ee5bb8cd408c995ef8dc35d199f59c5`：唯一Runner在上游独立G合格后，检查下游私人Stage typed输入；真实D01 candidate不能充当D02观察请求，明确`PRIVATE_NEXT_STAGE_REQUEST_NOT_READY` HOLD并经`onStage`记录D02终态，不调用D02。Studio执行范围升到D02以暴露真交接错误。针对真实Runner+模拟外部审签的交接负例已加入原`orchestrator.test.mjs`。主CI [43681233345](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681233345) SUCCESS。
+- `977b36963fe80d492df1b9f255c50abdc9b02897`：发现本地隔离`local-gate-service.mjs`把请求`output_digest`回显为PASS而不核签署的stage_binding；在既有只读Gate资格合同增加纯比较并用于本地Gate服务，只有审计含精确job/reviewer/consumer/input/output时才返回当前资格，新增错输出/错job/错reviewer/错阶段等拒绝测试，缺stage_binding则HOLD。主CI [43681613039](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681613039) 末次查询未完；独立Gate撤权合同 [43681613052](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681613052) SUCCESS。
+- **本次实际交付**：业务代码SHA已入main且回读，前两提交已有精确SHA CI通过。当前Runner可证明D00→D01合法读取的代码条件，无法证明本地隔离Owner真实G0签发/持久D01 PASS；D01→D02仍为具名HOLD（专业生成尚未受控接线），机器Gate精确输出审签的可信回执尚需补齐，真实整体`NOT_RUN/DEFERRED_ENV`。旧`layer1-adapters.mjs`专业生产保持可继承，未改回无权直接外发或Producer签Gate。
+- **下游结论**：D01的阅读候选只允许作为候选对象；未经D02专业观察/独立G2，不会得到material_evidence PASS，更不会被D03、作品或WATCH误读。M5八维`M5_OVERALL_HOLD`，没有新增计划或验收标准。
