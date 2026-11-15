@@ -3,6 +3,7 @@ import { jobForStage, assertStageExecutionAuthorized } from "./registry.mjs";
 import { loadExecutor } from "./load-executor.mjs";
 import { finishRun } from "./run-state.mjs";
 import { requireIndependentStageQualification } from "./independent-stage-qualification.mjs";
+import { isTypedPrivateStageRequest } from "./adapter-binding.mjs";
 
 /**
  * D00 输入的唯一定义。授权器签发的 input_digest 与 Runner 实际执行的输入必须
@@ -80,8 +81,31 @@ export async function runProduction({ run, registry, context = {}, from_stage = 
 
     if (result.disposition !== "PASS") return finishRun(state, result.disposition);
 
-    // F02 fix: hand off the stage's declared contract output explicitly, never the first key.
-    input = result.outputs[STAGE_CONTRACTS[stage].output];
+    // F02: only the declared contract output may become the next input.
+    // A qualified producer candidate is NOT automatically a valid request for
+    // another private stage. Fail closed with a persisted, stage-specific HOLD
+    // rather than attempting to sign/execute a mismatched next-stage payload.
+    const nextInput = result.outputs[STAGE_CONTRACTS[stage].output];
+    const nextStage = STAGE_ORDER[STAGE_ORDER.indexOf(stage) + 1];
+    if(nextStage && STAGE_ORDER.indexOf(nextStage) <= end &&
+       state.scope?.original_id !== undefined &&
+       !isTypedPrivateStageRequest(nextStage,nextInput)){
+      state.current_stage=nextStage;
+      const nextContract=STAGE_CONTRACTS[nextStage];
+      const blocked={
+        run_id:state.run_id,stage:nextStage,data_layer:nextContract.layer,
+        gate:nextContract.gate,disposition:"HOLD",outputs:{},gate_evidence:{},
+        content_stats:{},review_records:[],
+        hold:{reason_code:"PRIVATE_NEXT_STAGE_REQUEST_NOT_READY",
+          missing_requirement:"An approved upstream candidate must be transformed into the next typed professional stage request",
+          next_action:"Adapt the existing professional producer to produce an evidence-bound next-stage request",
+          recheck_condition:"Exact signed next-stage request and current upstream Gate qualification"},
+      };
+      state.stage_results.push(blocked);
+      if(typeof context.onStage==="function")await context.onStage(nextStage,blocked);
+      return finishRun(state,"HOLD");
+    }
+    input=nextInput;
   }
   return finishRun(state, "PASS");
 }

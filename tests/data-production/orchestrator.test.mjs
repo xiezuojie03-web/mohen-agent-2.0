@@ -29,6 +29,33 @@ test("full PASS flows D00→D05 and produces human review data", async () => {
   assert.ok(!("gate_evidence" in review.stages[0]));
 });
 
+
+test("a private D01 reading candidate cannot masquerade as a D02 professional request",async()=>{
+  const registry=loadRegistry(root),originalId="11111111-1111-4111-8111-111111111111";
+  const run=createRunState({research_intent:"verified text source",scope:{
+    project_id:"22222222-2222-4222-8222-222222222222",original_id:originalId,page_number:1}});
+  let d02Calls=0;const visited=[];
+  const d01Request={schema:"mohen.private-evidence-stage-request.v1",stage:"D01",
+    originalId,text:{kind:"verified_utf8_full/v1",source_version_id:"33333333-3333-4333-8333-333333333333",
+      raw_item_id:"44444444-4444-4444-8444-444444444444",raw_sha256:"a".repeat(64)}};
+  const readingCandidate={stage:"D01",candidate_kind:"private_text_reading",qualification:"UNASSESSED",
+    gate_code:"G1",read_unit_id:"55555555-5555-4555-8555-555555555555",
+    read_run_id:"66666666-6666-4666-8666-666666666666"};
+  const adapters={...passAdapters,
+    D00:async()=>({disposition:"PASS",output:d01Request}),
+    D01:async()=>({disposition:"PASS",output:readingCandidate}),
+    D02:async()=>{d02Calls++;throw Error("No typed D02 request may be executed");}};
+  const done=await runProduction({run,registry,context:{adapters,
+    onStage:async(stage,result)=>visited.push([stage,result.disposition,result.hold?.reason_code??null])}});
+  assert.equal(done.status,"HOLD");
+  assert.equal(done.current_stage,"D02");
+  assert.deepEqual(done.stage_results.map(x=>x.stage),["D00","D01","D02"]);
+  assert.equal(done.stage_results[2].hold.reason_code,"PRIVATE_NEXT_STAGE_REQUEST_NOT_READY");
+  assert.equal(d02Calls,0,"D02 must not read an unconverted D01 producer candidate");
+  assert.deepEqual(visited.at(-1),["D02","HOLD","PRIVATE_NEXT_STAGE_REQUEST_NOT_READY"]);
+  assert.equal(done.stage_results[1].disposition,"PASS","synthetic G1 was only a test fixture");
+});
+
 test("HOLD stops downstream stages", async () => {
   const adapters = { ...passAdapters, D03: async () => ({
     disposition: "HOLD",

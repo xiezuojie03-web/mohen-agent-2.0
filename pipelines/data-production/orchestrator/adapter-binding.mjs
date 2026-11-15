@@ -59,6 +59,16 @@ export function hasReviewedPrivateStageBinding(job) {
 
 const PRIVATE_REQUEST_SCHEMA = "mohen.private-evidence-stage-request.v1";
 
+/** Pure shape check for the ONE Runner's real next-stage input. Not authorization,
+ * not a Gate PASS, and not a substitute for per-Worker professional validation. */
+export function isTypedPrivateStageRequest(stage,input) {
+  return ["D01","D02","D03","D04","D05"].includes(stage) &&
+    input?.schema===PRIVATE_REQUEST_SCHEMA && input.stage===stage &&
+    typeof input.originalId==="string" &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input.originalId) &&
+    !["private_evidence","private_original","mab_private_evidence"].some(k=>input[k]!==undefined);
+}
+
 function containsPrivateRequest(input) {
   const seen = new WeakSet();
   function visit(value) {
