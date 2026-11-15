@@ -19,6 +19,22 @@ export function assertStageQualificationRequest(request) {
     throw Error('STAGE_QUALIFICATION_REQUEST_INVALID');
 }
 
+/** Check that a current independent audit actually signed the exact output,
+ * job, Reviewer and consumer. A Producer-supplied hash in a request is never
+ * evidence of a Reviewer-attested stage binding on its own. */
+export function auditHasExactStageBinding(audit,request) {
+  let binding=audit?.stage_binding;
+  if(typeof binding==='string'){try{binding=JSON.parse(binding);}catch{return false;}}
+  if(!binding||typeof binding!=='object'||Array.isArray(binding))return false;
+  return audit.input_fingerprint===request?.input_digest &&
+    audit.stage===request.stage && audit.consumer==='producer' &&
+    binding.input_digest===request.input_digest &&
+    binding.output_digest===request.output_digest &&
+    binding.job_id===request.job_id &&
+    binding.reviewer_binding_ref===request.reviewer_binding_ref &&
+    binding.consumer==='producer';
+}
+
 export function createGateStageQualificationReader(db) {
   if(typeof db?.query!=='function')throw Error('DB_QUERY_INTERFACE_REQUIRED');
   return async function readStageQualification(request,context) {

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createGateStageQualificationReader} from '../../packages/data-access/src/gate-stage-qualification.mjs';
+import {createGateStageQualificationReader,auditHasExactStageBinding} from '../../packages/data-access/src/gate-stage-qualification.mjs';
 import {createIndependentGateCurrentHandler} from '../../pipelines/data-production/orchestrator/independent-gate-current-handler.mjs';
 import {createIndependentGateClient} from '../../pipelines/data-production/orchestrator/independent-gate-client.mjs';
 
@@ -14,6 +14,22 @@ const receipt={gate_audit_id:id,object_type:'read_unit',object_id:id,artifact_re
   valid_until:new Date(Date.now()+60000).toISOString()};
 const req=(body=request,auth=credential)=>new Request('https://gate.example.invalid/current',{
   method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+auth},body:JSON.stringify(body)});
+
+test('local Gate cannot echo a Producer-supplied output digest without an exact signed audit binding',()=>{
+  const matching={stage:'D01',consumer:'producer',input_fingerprint:request.input_digest,
+    stage_binding:{job_id:request.job_id,reviewer_binding_ref:request.reviewer_binding_ref,
+      consumer:'producer',input_digest:request.input_digest,output_digest:request.output_digest}};
+  assert.equal(auditHasExactStageBinding(matching,request),true);
+  assert.equal(auditHasExactStageBinding({...matching,stage_binding:undefined},request),false);
+  assert.equal(auditHasExactStageBinding({...matching,stage_binding:{...matching.stage_binding,output_digest:'c'.repeat(64)}},request),false);
+  assert.equal(auditHasExactStageBinding(matching,{...request,output_digest:'c'.repeat(64)}),false);
+  assert.equal(auditHasExactStageBinding(matching,{...request,job_id:'other'}),false);
+  assert.equal(auditHasExactStageBinding(matching,{...request,reviewer_binding_ref:'other'}),false);
+  assert.equal(auditHasExactStageBinding({...matching,stage:'D02'},request),false);
+  assert.equal(auditHasExactStageBinding({...matching,input_fingerprint:'c'.repeat(64)},request),false);
+  assert.equal(auditHasExactStageBinding({...matching,consumer:'agent'},request),false);
+  assert.equal(auditHasExactStageBinding({...matching,stage_binding:'not-json'},request),false);
+});
 
 test('current stage read binds digests/job/Reviewer and scoped SQL, returns only qualification metadata',async()=>{
   let calls=0;

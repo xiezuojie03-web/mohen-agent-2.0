@@ -22,6 +22,7 @@ import {
   openMachineQuery,
 } from "./machine-reviewer-session.mjs";
 import { createGateAuthorityRepository } from "../packages/data-access/src/gate-authority-repository.mjs";
+import {assertStageQualificationRequest,auditHasExactStageBinding} from "../packages/data-access/src/gate-stage-qualification.mjs";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 
@@ -71,17 +72,18 @@ async function getQuery() {
   return _query;
 }
 
-async function findCurrentAudit(query, { run_id, gate_code, input_digest }) {
+async function findCurrentAudit(query, request) {
+  const {run_id,gate_code,stage}=request;
   const audits = await query(
     `select a.gate_audit_id, a.object_type, a.object_id, a.artifact_revision, a.input_fingerprint,
-            a.valid_until
+            a.valid_until,a.stage,a.consumer,a.details->'stage_binding' as stage_binding
      from control.gate_audits a
-     where a.run_id=:'run'::uuid and a.gate_code=:'gate'
-       and a.result='PASS' and a.decision_origin='independent_gate'
+     where a.run_id=:'run'::uuid and a.gate_code=:'gate' and a.stage=:'stage'
+       and a.result='PASS' and a.decision_origin='independent_gate' and a.consumer='producer'
      order by a.signed_at desc`,
-    { run: run_id, gate: gate_code });
+    { run: run_id, gate: gate_code, stage });
   for (const a of audits) {
-    if (a.input_fingerprint !== input_digest) continue;
+    if (!auditHasExactStageBinding(a,request)) continue;
     const ok = await query(
       `select control.current_qualification_is_valid(:'id'::uuid) as valid`,
       { id: a.gate_audit_id });
@@ -92,7 +94,8 @@ async function findCurrentAudit(query, { run_id, gate_code, input_digest }) {
 
 // On-demand signing: find a SUBMITTED candidate for this run+gate+input and
 // run the deterministic rule reviewer. Returns the new audit or null.
-async function autoSign(query, { run_id, gate_code, input_digest, stage }) {
+async function autoSign(query, request) {
+  const {run_id,gate_code,input_digest,stage}=request;
   const ruleVersion = RULE_VERSION_BY_GATE[gate_code];
   if (!ruleVersion) return null;
   // Find a SUBMITTED candidate with matching input_fingerprint.
@@ -118,7 +121,10 @@ async function autoSign(query, { run_id, gate_code, input_digest, stage }) {
     // 更晚提交的其它候选（如未授权照片 HOLD 之外的 PASS 文本候选顺序问题）。
     const outcome = await reviewer.review({ gate: gate_code, candidateId: cands[0].candidate_id });
     if (outcome.status !== "PASS") return null;
-    return await findCurrentAudit(query, { run_id, gate_code, input_digest });
+    // A rule PASS without an immutable stage_binding is not an output-qualified
+    // PASS for this Runner. The caller remains HOLD until the reviewed output
+    // binding is part of the independently signed audit itself.
+    return await findCurrentAudit(query,request);
   } catch (err) {
     console.error(`[local-gate-service] auto-sign ${gate_code} failed: ${String(err?.message || err).split("\n")[0]}`);
     return null;
@@ -132,16 +138,12 @@ async function handleVerify(req, res) {
     let request;
     try { request = JSON.parse(body); } catch { return sendJson(res, 400, { error: "INVALID_JSON" }); }
     const { run_id, job_id, stage, gate_code, input_digest, output_digest, reviewer_binding_ref, consumer } = request || {};
-    if (!run_id || !UUID.test(run_id) || !job_id || typeof job_id !== "string" ||
-        !STAGES.has(stage) || !GATES.has(gate_code) || gate_code !== "G" + stage.slice(-1) ||
-        !SHA.test(input_digest || "") || !SHA.test(output_digest || "") ||
-        consumer !== "producer") {
-      return sendJson(res, 400, { error: "INVALID_REQUEST" });
-    }
+    try {assertStageQualificationRequest(request);}
+    catch {return sendJson(res,400,{error:"INVALID_REQUEST"});}
     try {
       const query = await getQuery();
-      let audit = await findCurrentAudit(query, { run_id, gate_code, input_digest });
-      if (!audit) audit = await autoSign(query, { run_id, gate_code, input_digest, stage });
+      let audit = await findCurrentAudit(query,request);
+      if (!audit) audit = await autoSign(query,request);
       if (!audit) return sendJson(res, 404, { error: "NO_CURRENT_QUALIFICATION" });
       const receipt = {
         qualification_current: true,
