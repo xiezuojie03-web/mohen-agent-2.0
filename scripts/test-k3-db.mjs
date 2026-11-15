@@ -95,6 +95,10 @@ try {
 
     apply(fs.readdirSync(directory).find(n => n.endsWith('_mab_m2_evidence_bridge.sql')));
     apply('20261103143451_mab_m2_private_text_reading.sql');
+    // C01 reader test must run after the actual Owner-scoped read view, and
+    // after the corrective migration aligning read filters with stored receipts.
+    apply('20261105110000_mab_m5_studio_research_read.sql');
+    apply('20261115130000_mab_m5_private_text_read_context_consistency.sql');
     apply('20261103234154_mab_m3_gate_service_auth.sql');
     runTest("PRIVATE_TEXT_READING", "tests/data-production/private-text-reading.integration.mjs");
     runTest("PRIVATE_SOURCE_BINDING", "tests/data-production/private-original-source-binding.integration.mjs");
@@ -106,7 +110,8 @@ try {
     // hashing) had no isolated coverage at all. Applying them at the point where private originals
     // already exist matches how the live database evolved.
     for (const file of [
-      "20261105110000_mab_m5_studio_research_read.sql",
+      // Studio read view and its consistency correction were applied before
+      // PRIVATE_TEXT_READING; do not re-apply its older definition here.
       "20261107120000_mab_m2_private_scanned_page.sql",
       "20261107160000_mab_m2_1_producer_run_progress.sql",
       "20261107200000_mab_m5_d02_d05_private_candidates.sql",

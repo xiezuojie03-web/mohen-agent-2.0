@@ -41,6 +41,7 @@ on:
       - "tests/data-production/private-text-reading.integration.mjs"
       - "tests/data-production/evidence-bridge.integration.mjs"
       - "supabase/migrations/*_mab_m2_private_text_reading.sql"
+      - "supabase/migrations/*_mab_m5_private_text_read_context_consistency.sql"
       - "supabase/rollback/*_mab_m2_private_text_reading.rollback.sql"
       - "pipelines/data-production/workers/private-evidence-runtime.mjs"
       - "pipelines/data-production/orchestrator/independent-gate-current-handler.mjs"
