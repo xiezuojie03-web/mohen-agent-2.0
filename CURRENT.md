@@ -30,6 +30,14 @@
 
 **导航定向收口与持续使用要求（2026-11-15）**：本组三份导航为持续维护的工程指南针，已补齐M5八维映射、跨Agent/Provider与13类资产定位、所有连接可点击检查、原码SHA固定链接和证据等级；不是M5完成/工程实跑PASS。后续工程执行者应按`PLAN.md §0 M5主干导航必读入口`先读`CURRENT.md`、`PLAN §3.5 B/C`及`tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json`，对当前最前断点做定向源码与运行核验；变化时同提交同步JSON/MD/HTML。旧导航精确源代码SHA为`2c4db01783cc`，其后文档类提交不等于业务断点变化；未来业务提交仍须先核影响范围。
 
+## 2026-11-15｜导航断点分类第一批定向源码审查（静态证据，不是业务准出）
+
+- 由截图暴露的“橙色被误解为代码缺失”触发。原54条只是业务交接，其中16 partial、36 blocked、2 future；不是54项源码或工程完成率。30个边级唯一定位文件均在固定代码 `2c4db01783cc` 找到；除下列7边外其余未实证分类，必须注明未核。
+- **G0源代码合同不匹配**：`tools/rule-gate-reviewer.mjs` 通过既有权威签发时的机器PASS receipt不含 `stage_binding`；`packages/data-access/src/gate-stage-qualification.mjs`和`tools/local-gate-service.mjs` 现必须精确核输入、输出、job及独立Reviewer。已有审签逻辑，但并非Runner准确阶段资格，可证为**交接合同不匹配**，不能以旧对象PASS冒充。
+- **D01→D02源代码缺失的是适配交接**：真正的reading candidate与D02 H05观察Worker存在，唯一Runner现对下一阶段无typed request时生成`PRIVATE_NEXT_STAGE_REQUEST_NOT_READY`。先合法形成G1合格L1→D02类型化专业观察输入，不重建D02。
+- D00源候选/D01读取/Owner回读有代码、此前CI与隔离PG/HTTP局部成功；上述均**没有同Root的持久真实Creator/G0/G1/Provider全链正反实证**。最新相关CI/隔离PG/HTTP需按精确SHA继续取证，不预判整体PASS。
+- 本批分类已同步于导航JSON/MD/HTML。下一批从G0签发合同和下游受权消费的**最前邻接**做正反/独立身份测试；G0具备后接D01/G1→D02 typed转换与真实持久证据。每批补受影响边，最终覆盖全部M5相关边；M5唯一准出保持PLAN §3.5 B八维。
+
 ## 1. 唯一当前验收：PLAN §3.5 B 八维
 
 - M0：`EXIT_PASS`（审查级证据冻结继承，不重做全量差异核查）。

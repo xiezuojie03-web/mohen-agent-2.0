@@ -4182,3 +4182,12 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 在唯一仓库`main`新增`tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.html/.md/.json`（commit `e0da6997c661ccb6b685bbda675e6e6c6b2d4ffe`）。HTML可点击节点/连线和筛选工程断点，JSON共35节点、47条关系，机器可逐边读取`source/target/kind/required_checks/code_paths/status`，Markdown提供Mermaid和已知缺口总表。
 - 业务定位：Studio有条件调用L0—L5全部六层；L候选先持久化后G独立判资格，Admin全层横向治理且不得代签专业G，WATCH属本次M5，EXP仅预留；没有新增第二知识库或第二套Gate/Runner。图所列状态基于`2c4db017`精确旧SHA代码快照，不是实时准出事实。
 - 图不替代唯一`PLAN.md V1.7 §3.5 B/C`、`CURRENT.md`或各阶段合同，也没有本轮真实Provider、持久PG/Storage和同一作品D00—G5→Studio→Admin→WATCH新PASS。仅增加后续施工的人机共同索引；业务代码未改。CI在记录时仍待最终结果。
+
+
+## 2026-11-15｜M5-NAV-AUDIT-01 断点性质定向核查（源代码级）
+
+- 触发：Owner发现导航橙色断点误导为大比例缺代码，要求区分代码缺失、邻接不匹配与实证不足；旧54条边只是结构性关系，不等于54项完成率。
+- 固定业务源码：2c4db01783ccdb24d21f1fc99e1b28abca82d3fc；边级定位源码30个唯一文件存在；不等于54条可执行接口；本批7条边做定向归因，其余不能预判无代码。
+- G0源代码：`tools/rule-gate-reviewer.mjs` 机器审核receipt未携stage_binding；`packages/data-access/src/gate-stage-qualification.mjs`、`tools/local-gate-service.mjs`必须校验当前独立审签的job、Reviewer、input/output digest，同一Run应严格HOLD而非伪PASS。属**现有能力之间合同不匹配**。
+- D01→D02源代码：D01读取/原件回读与D02 H05持久化均有部分实现，但缺经合格G1结果组织D02 typed request的受控连接；`orchestrator.mjs` 正确返回 `PRIVATE_NEXT_STAGE_REQUEST_NOT_READY`。属**缺中间适配代码**，不是D02全无代码。
+- 既有CI/PG/HTTP定向回执成功，未开展Owner真实同Root+独立Reviewer/Provider/持久原件整链试验。继续 `M5_OVERALL_HOLD`；M5八维唯一标准不变；下一步先G0精确签发和合法读取，再跟进D01/G1→D02转换并逐批证实。

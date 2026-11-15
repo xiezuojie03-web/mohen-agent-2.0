@@ -158,7 +158,12 @@
       "input_contract": "research_intent + project/root/source/rights",
       "executor": "唯一Runner + Registry绑定Adapter/Worker",
       "output_contract": "L0候选@revision + Gate候选",
-      "next_required": "合法原件 source_version + raw_item + G0 审批与消费范围"
+      "next_required": "合法原件 source_version + raw_item + G0 审批与消费范围",
+      "code_vs_integration": {
+        "code": "RELATED_PRODUCER_CODE_EXISTS",
+        "handoff": "PARTIAL_ONLY",
+        "runtime": "NOT_ROOT_E2E_VERIFIED"
+      }
     },
     {
       "id": "L0_CANDIDATE",
@@ -189,7 +194,12 @@
         "HOLD",
         "REJECT",
         "REVOKED"
-      ]
+      ],
+      "code_vs_integration": {
+        "code": "INDEPENDENT_GATE_CODE_EXISTS",
+        "handoff": "EXACT_SIGNED_STAGE_BINDING_NOT_VERIFIED",
+        "runtime": "NOT_ROOT_E2E_VERIFIED"
+      }
     },
     {
       "id": "L0_QUALIFIED",
@@ -218,7 +228,12 @@
       "input_contract": "上一层当前合格@revision + 受权方法/技能",
       "executor": "唯一Runner + Registry绑定Adapter/Worker",
       "output_contract": "L1候选@revision + Gate候选",
-      "next_required": "read_unit + 现行G1资格 + 精确locator和方法"
+      "next_required": "read_unit + 现行G1资格 + 精确locator和方法",
+      "code_vs_integration": {
+        "code": "RELATED_PRODUCER_CODE_EXISTS",
+        "handoff": "PARTIAL_ONLY",
+        "runtime": "NOT_ROOT_E2E_VERIFIED"
+      }
     },
     {
       "id": "L1_CANDIDATE",
@@ -249,7 +264,12 @@
         "HOLD",
         "REJECT",
         "REVOKED"
-      ]
+      ],
+      "code_vs_integration": {
+        "code": "INDEPENDENT_GATE_CODE_EXISTS",
+        "handoff": "EXACT_SIGNED_STAGE_BINDING_NOT_VERIFIED",
+        "runtime": "NOT_ROOT_E2E_VERIFIED"
+      }
     },
     {
       "id": "L1_QUALIFIED",
@@ -278,7 +298,12 @@
       "input_contract": "上一层当前合格@revision + 受权方法/技能",
       "executor": "唯一Runner + Registry绑定Adapter/Worker",
       "output_contract": "L2候选@revision + Gate候选",
-      "next_required": "合格H05证据@revision + G2审签"
+      "next_required": "合格H05证据@revision + G2审签",
+      "code_vs_integration": {
+        "code": "RELATED_PRODUCER_CODE_EXISTS",
+        "handoff": "CANDIDATE_CODE_EXISTS_NO_NEXT_STAGE_E2E",
+        "runtime": "NOT_ROOT_E2E_VERIFIED"
+      }
     },
     {
       "id": "L2_CANDIDATE",
@@ -309,7 +334,12 @@
         "HOLD",
         "REJECT",
         "REVOKED"
-      ]
+      ],
+      "code_vs_integration": {
+        "code": "INDEPENDENT_GATE_CODE_EXISTS",
+        "handoff": "EXACT_SIGNED_STAGE_BINDING_NOT_VERIFIED",
+        "runtime": "NOT_ROOT_E2E_VERIFIED"
+      }
     },
     {
       "id": "L2_QUALIFIED",
@@ -337,7 +367,12 @@
       "input_contract": "上一层当前合格@revision + 受权方法/技能",
       "executor": "唯一Runner + Registry绑定Adapter/Worker",
       "output_contract": "L3候选@revision + Gate候选",
-      "next_required": "合格claim/关系对象@revision + G3审签"
+      "next_required": "合格claim/关系对象@revision + G3审签",
+      "code_vs_integration": {
+        "code": "RELATED_PRODUCER_CODE_EXISTS",
+        "handoff": "CANDIDATE_CODE_EXISTS_NO_NEXT_STAGE_E2E",
+        "runtime": "NOT_ROOT_E2E_VERIFIED"
+      }
     },
     {
       "id": "L3_CANDIDATE",
@@ -367,7 +402,12 @@
         "HOLD",
         "REJECT",
         "REVOKED"
-      ]
+      ],
+      "code_vs_integration": {
+        "code": "INDEPENDENT_GATE_CODE_EXISTS",
+        "handoff": "EXACT_SIGNED_STAGE_BINDING_NOT_VERIFIED",
+        "runtime": "NOT_ROOT_E2E_VERIFIED"
+      }
     },
     {
       "id": "L3_QUALIFIED",
@@ -394,7 +434,12 @@
       "input_contract": "上一层当前合格@revision + 受权方法/技能",
       "executor": "唯一Runner + Registry绑定Adapter/Worker",
       "output_contract": "L4候选@revision + Gate候选",
-      "next_required": "合格finding@revision + G4审签"
+      "next_required": "合格finding@revision + G4审签",
+      "code_vs_integration": {
+        "code": "RELATED_PRODUCER_CODE_EXISTS",
+        "handoff": "CANDIDATE_CODE_EXISTS_NO_NEXT_STAGE_E2E",
+        "runtime": "NOT_ROOT_E2E_VERIFIED"
+      }
     },
     {
       "id": "L4_CANDIDATE",
@@ -424,7 +469,12 @@
         "HOLD",
         "REJECT",
         "REVOKED"
-      ]
+      ],
+      "code_vs_integration": {
+        "code": "INDEPENDENT_GATE_CODE_EXISTS",
+        "handoff": "EXACT_SIGNED_STAGE_BINDING_NOT_VERIFIED",
+        "runtime": "NOT_ROOT_E2E_VERIFIED"
+      }
     },
     {
       "id": "L4_QUALIFIED",
@@ -452,7 +502,12 @@
       "input_contract": "上一层当前合格@revision + 受权方法/技能",
       "executor": "唯一Runner + Registry绑定Adapter/Worker",
       "output_contract": "L5候选@revision + Gate候选",
-      "next_required": "按用途可消费read_model@revision + G5审签"
+      "next_required": "按用途可消费read_model@revision + G5审签",
+      "code_vs_integration": {
+        "code": "RELATED_PRODUCER_CODE_EXISTS",
+        "handoff": "CANDIDATE_CODE_EXISTS_NO_NEXT_STAGE_E2E",
+        "runtime": "NOT_ROOT_E2E_VERIFIED"
+      }
     },
     {
       "id": "L5_CANDIDATE",
@@ -483,7 +538,12 @@
         "HOLD",
         "REJECT",
         "REVOKED"
-      ]
+      ],
+      "code_vs_integration": {
+        "code": "INDEPENDENT_GATE_CODE_EXISTS",
+        "handoff": "EXACT_SIGNED_STAGE_BINDING_NOT_VERIFIED",
+        "runtime": "NOT_ROOT_E2E_VERIFIED"
+      }
     },
     {
       "id": "L5_QUALIFIED",
@@ -690,7 +750,20 @@
       "acceptance_dimensions": [
         1
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/app/studio/StudioWorkbench.tsx",
+          "apps/web/lib/studio-production.ts"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E01",
@@ -712,7 +785,20 @@
         1,
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "BUSINESS_CAPABILITY_GAP",
+        "confidence": "CURRENT_AND_SOURCE",
+        "diagnosis": "Studio入口具备受控私有原件生产路径，通用合法资源发现/获得到D00尚未达到原计划要求；不是D00完全无代码",
+        "evidence": [
+          "apps/web/lib/studio-production.ts",
+          "CURRENT.md"
+        ],
+        "next": "在合法授权范围内验证新题材来源发现、取得、逐动作权利与Studio→D00交接；不因仅已有私有原件可跑而签通用能力",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_D00_WRITE",
@@ -734,7 +820,20 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "CODE_PRESENT_NO_ROOT_E2E",
+        "confidence": "CI_AND_SOURCE",
+        "diagnosis": "来源候选持久化相关Worker/Registry代码存在且有隔离回归，缺同Root真实G0审签及实际用户运行证据",
+        "evidence": [
+          "pipelines/data-production/workers/private-evidence-stage.mjs",
+          "CURRENT.md"
+        ],
+        "next": "同一真实Creator/Project/Root检查数据库持久候选与原件SHA/rights，再串接G0",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_D00_REVIEW",
@@ -755,7 +854,20 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "CONTRACT_MISMATCH",
+        "confidence": "SOURCE_CONFIRMED",
+        "diagnosis": "独立机器审核器PASS receipt未构造stage_binding；候选对象签发不等于当前Runner job/输入/输出审签",
+        "evidence": [
+          "tools/rule-gate-reviewer.mjs#decide-receipt",
+          "tools/local-gate-service.mjs#autoSign"
+        ],
+        "next": "复用唯一Gate签发入口，在独立Reviewer合法重核后把stage_binding作为不可变签发事实入账；验证无绑定/错digest均拒绝",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_D00_QUALIFY",
@@ -779,7 +891,20 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "CONTRACT_MISMATCH",
+        "confidence": "SOURCE_CONFIRMED",
+        "diagnosis": "当前资格读取端必须校验job_id/reviewer_binding_ref/input_digest/output_digest；既有机器审核PASS回执尚不能满足",
+        "evidence": [
+          "packages/data-access/src/gate-stage-qualification.mjs#auditHasExactStageBinding",
+          "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+        ],
+        "next": "同一真实Run校验签发记录与资格读取记录逐字段一致，包含过期/撤权和假绑定负例",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_L0_TO_D01",
@@ -800,7 +925,20 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "CODE_PRESENT_NO_ROOT_E2E",
+        "confidence": "CI_AND_SOURCE",
+        "diagnosis": "受权C01/C02 D01请求和私有Worker已有代码及局部隔离测试；依赖G0当前资格、合法原件及运行环境尚未同Root实证",
+        "evidence": [
+          "pipelines/data-production/workers/private-evidence-stage.mjs",
+          "apps/web/lib/studio-production.ts"
+        ],
+        "next": "先完成G0合法资格，随后真实同Root执行D01并回读source/version/locator",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_L0_TO_CREATIVE",
@@ -825,7 +963,21 @@
         3,
         5
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/studio-research-read.ts",
+          "apps/web/lib/read-model-bridge.ts",
+          "pipelines/data-production/workers/private-evidence-stage.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_ADMIN_L0",
@@ -847,7 +999,21 @@
       "acceptance_dimensions": [
         6
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/admin-assets.ts",
+          "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
+          "pipelines/data-production/workers/private-evidence-stage.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_D01_WRITE",
@@ -869,7 +1035,20 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "CODE_PRESENT_NO_ROOT_E2E",
+        "confidence": "CI_AND_SOURCE",
+        "diagnosis": "D01读取候选与Owner读回回执兼容已有代码及CI/隔离PG/HTTP成功，但不等于取得同Root真实G1及D02生产资格",
+        "evidence": [
+          "packages/data-access/src/private-text-reading-repository.mjs",
+          "supabase/migrations/20261115130000_mab_m5_private_text_read_context_consistency.sql"
+        ],
+        "next": "同一真实L1候选独立G1审签与受权消费，验证不一致/撤权负例",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_D01_REVIEW",
@@ -890,7 +1069,19 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "tools/local-gate-service.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_D01_QUALIFY",
@@ -914,7 +1105,22 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "tools/local-gate-service.mjs",
+          "tools/rule-gate-reviewer.mjs",
+          "pipelines/data-production/orchestrator/independent-stage-qualification.mjs",
+          "pipelines/data-production/workers/private-evidence-stage.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_L1_TO_D02",
@@ -935,7 +1141,20 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "MISSING_HANDOFF_TRANSFORM",
+        "confidence": "SOURCE_CONFIRMED",
+        "diagnosis": "D01有reading candidate，D02已有H05观察持久化，但Runner尚无把现行合格L1变为D02 typed专业观察请求的受控转换",
+        "evidence": [
+          "pipelines/data-production/orchestrator/orchestrator.mjs#PRIVATE_NEXT_STAGE_REQUEST_NOT_READY",
+          "pipelines/data-production/adapters/private-evidence-adapters.mjs#CANDIDATE_REF_SPECS"
+        ],
+        "next": "在唯一Runner/Registry内依据G1现行资格及精确locator形成D02 typed请求；真实证据与权利输入、负例及持久HOLD验证",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_L1_TO_CREATIVE",
@@ -960,7 +1179,21 @@
         3,
         5
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/studio-research-read.ts",
+          "apps/web/lib/read-model-bridge.ts",
+          "pipelines/data-production/workers/private-evidence-stage.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_ADMIN_L1",
@@ -982,7 +1215,21 @@
       "acceptance_dimensions": [
         6
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/admin-assets.ts",
+          "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
+          "pipelines/data-production/workers/private-evidence-stage.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_D02_WRITE",
@@ -1004,7 +1251,21 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "pipelines/data-production/adapters/layer1-adapters.mjs",
+          "pipelines/data-production/workers/private-evidence-stage.mjs",
+          "supabase/migrations/20261113170000_mab_m5_d02_text_plain_observation.sql"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_D02_REVIEW",
@@ -1025,7 +1286,19 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "tools/local-gate-service.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_D02_QUALIFY",
@@ -1049,7 +1322,22 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "tools/local-gate-service.mjs",
+          "tools/rule-gate-reviewer.mjs",
+          "pipelines/data-production/orchestrator/independent-stage-qualification.mjs",
+          "pipelines/data-production/adapters/layer1-adapters.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_L2_TO_D03",
@@ -1070,7 +1358,19 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "pipelines/data-production/orchestrator/orchestrator.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_L2_TO_CREATIVE",
@@ -1095,7 +1395,21 @@
         3,
         5
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/studio-research-read.ts",
+          "apps/web/lib/read-model-bridge.ts",
+          "pipelines/data-production/adapters/layer1-adapters.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_ADMIN_L2",
@@ -1117,7 +1431,21 @@
       "acceptance_dimensions": [
         6
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/admin-assets.ts",
+          "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
+          "pipelines/data-production/adapters/layer1-adapters.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_D03_WRITE",
@@ -1138,7 +1466,20 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "pipelines/data-production/adapters/layer1-adapters.mjs",
+          "pipelines/data-production/workers/private-evidence-stage.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_D03_REVIEW",
@@ -1159,7 +1500,19 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "tools/local-gate-service.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_D03_QUALIFY",
@@ -1183,7 +1536,22 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "tools/local-gate-service.mjs",
+          "tools/rule-gate-reviewer.mjs",
+          "pipelines/data-production/orchestrator/independent-stage-qualification.mjs",
+          "pipelines/data-production/adapters/layer1-adapters.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_L3_TO_D04",
@@ -1204,7 +1572,19 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "pipelines/data-production/orchestrator/orchestrator.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_L3_TO_CREATIVE",
@@ -1229,7 +1609,21 @@
         3,
         5
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/studio-research-read.ts",
+          "apps/web/lib/read-model-bridge.ts",
+          "pipelines/data-production/adapters/layer1-adapters.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_ADMIN_L3",
@@ -1251,7 +1645,21 @@
       "acceptance_dimensions": [
         6
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/admin-assets.ts",
+          "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
+          "pipelines/data-production/adapters/layer1-adapters.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_D04_WRITE",
@@ -1272,7 +1680,20 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "pipelines/data-production/adapters/layer1-adapters.mjs",
+          "pipelines/data-production/workers/private-evidence-stage.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_D04_REVIEW",
@@ -1293,7 +1714,19 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "tools/local-gate-service.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_D04_QUALIFY",
@@ -1317,7 +1750,22 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "tools/local-gate-service.mjs",
+          "tools/rule-gate-reviewer.mjs",
+          "pipelines/data-production/orchestrator/independent-stage-qualification.mjs",
+          "pipelines/data-production/adapters/layer1-adapters.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_L4_TO_D05",
@@ -1338,7 +1786,19 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "pipelines/data-production/orchestrator/orchestrator.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_L4_TO_CREATIVE",
@@ -1363,7 +1823,21 @@
         3,
         5
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/studio-research-read.ts",
+          "apps/web/lib/read-model-bridge.ts",
+          "pipelines/data-production/adapters/layer1-adapters.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_ADMIN_L4",
@@ -1385,7 +1859,21 @@
       "acceptance_dimensions": [
         6
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/admin-assets.ts",
+          "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
+          "pipelines/data-production/adapters/layer1-adapters.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_D05_WRITE",
@@ -1407,7 +1895,21 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "pipelines/data-production/adapters/layer1-adapters.mjs",
+          "pipelines/data-production/workers/private-evidence-stage.mjs",
+          "apps/web/lib/read-model-bridge.ts"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_D05_REVIEW",
@@ -1428,7 +1930,19 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "tools/local-gate-service.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_D05_QUALIFY",
@@ -1452,7 +1966,22 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "tools/local-gate-service.mjs",
+          "tools/rule-gate-reviewer.mjs",
+          "pipelines/data-production/orchestrator/independent-stage-qualification.mjs",
+          "pipelines/data-production/adapters/layer1-adapters.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_L5_TO_CREATIVE",
@@ -1477,7 +2006,21 @@
         3,
         5
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/studio-research-read.ts",
+          "apps/web/lib/read-model-bridge.ts",
+          "pipelines/data-production/adapters/layer1-adapters.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_ADMIN_L5",
@@ -1499,7 +2042,21 @@
       "acceptance_dimensions": [
         6
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/admin-assets.ts",
+          "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
+          "pipelines/data-production/adapters/layer1-adapters.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_REUSE_TO_STUDIO",
@@ -1521,7 +2078,20 @@
         3,
         5
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/studio-research-read.ts",
+          "apps/web/lib/read-model-bridge.ts"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_STUDIO_TO_REV",
@@ -1544,7 +2114,21 @@
       "acceptance_dimensions": [
         5
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/studio-creation.ts",
+          "apps/web/lib/studio-director.ts",
+          "apps/web/app/api/studio/works/[id]/revisions/route.ts"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_REV_TO_EDITORIAL",
@@ -1567,7 +2151,21 @@
         5,
         7
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/publication.ts",
+          "apps/web/lib/work-publish-qualification.ts",
+          "apps/web/lib/publication-watch-sql.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_EDITORIAL_TO_PUBLISH",
@@ -1590,7 +2188,21 @@
       "acceptance_dimensions": [
         7
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/publication.ts",
+          "apps/web/lib/work-publish-qualification.ts",
+          "apps/web/lib/publication-watch-sql.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_PUBLISH_TO_WATCH",
@@ -1612,7 +2224,20 @@
       "acceptance_dimensions": [
         8
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/watch-studio-content.ts",
+          "apps/web/lib/publication-watch-sql.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_ADMIN_TO_EDITORIAL",
@@ -1634,7 +2259,20 @@
         6,
         7
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/app/api/admin/submissions/[id]/decision/route.ts",
+          "apps/web/lib/publication.ts"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_ADMIN_TO_REVOKE",
@@ -1656,7 +2294,20 @@
         6,
         8
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/admin-assets.ts",
+          "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_REVOKE_TO_WATCH",
@@ -1678,7 +2329,21 @@
       "acceptance_dimensions": [
         8
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "tools/local-gate-service.mjs",
+          "apps/web/lib/watch-studio-content.ts",
+          "apps/web/lib/publication-watch-sql.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_REUSE_TO_EXP",
@@ -1694,7 +2359,19 @@
         "tasks/implementation/MAB/PLAN.md"
       ],
       "acceptance_dimensions": [],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "FUTURE_NOT_CURRENT",
+        "confidence": "PLAN_CONFIRMED",
+        "diagnosis": "当前M5范围外，不能称为缺代码或工程阻断",
+        "evidence": [
+          "tasks/implementation/MAB/PLAN.md#3.5 C"
+        ],
+        "next": "后续阶段按已授权设计与工作范围激活",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_WORKREV_TO_EXP",
@@ -1710,7 +2387,19 @@
         "tasks/implementation/MAB/PLAN.md"
       ],
       "acceptance_dimensions": [],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "engineering_diagnosis": {
+        "category": "FUTURE_NOT_CURRENT",
+        "confidence": "PLAN_CONFIRMED",
+        "diagnosis": "当前M5范围外，不能称为缺代码或工程阻断",
+        "evidence": [
+          "tasks/implementation/MAB/PLAN.md#3.5 C"
+        ],
+        "next": "后续阶段按已授权设计与工作范围激活",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_AGENT_TO_MIXED",
@@ -1733,7 +2422,21 @@
         "apps/web/lib/studio-execution-authority.ts",
         "specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md"
       ],
-      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS"
+      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/studio/tool-ledger.ts",
+          "apps/web/lib/studio-execution-authority.ts",
+          "specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_MIXED_TO_D00",
@@ -1758,7 +2461,22 @@
         "specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md",
         "pipelines/data-production/orchestrator/orchestrator.mjs"
       ],
-      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS"
+      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/studio/tool-ledger.ts",
+          "apps/web/lib/studio-execution-authority.ts",
+          "specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md",
+          "pipelines/data-production/orchestrator/orchestrator.mjs"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_MIXED_TO_CREATIVE",
@@ -1783,7 +2501,22 @@
         "specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md",
         "apps/web/lib/studio-creation.ts"
       ],
-      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS"
+      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/studio/tool-ledger.ts",
+          "apps/web/lib/studio-execution-authority.ts",
+          "specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md",
+          "apps/web/lib/studio-creation.ts"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_REUSE_TO_ASSETS",
@@ -1807,7 +2540,22 @@
         "apps/web/lib/studio-assets.ts",
         "specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md"
       ],
-      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS"
+      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/studio-research-read.ts",
+          "apps/web/lib/read-model-bridge.ts",
+          "apps/web/lib/studio-assets.ts",
+          "specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_CREATIVE_TO_ASSETS",
@@ -1833,7 +2581,23 @@
         "apps/web/lib/studio-assets.ts",
         "specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md"
       ],
-      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS"
+      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/studio-creation.ts",
+          "apps/web/lib/studio-director.ts",
+          "apps/web/app/api/studio/works/[id]/revisions/route.ts",
+          "apps/web/lib/studio-assets.ts",
+          "specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_ASSETS_TO_CREATIVE",
@@ -1857,7 +2621,21 @@
         "specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md",
         "apps/web/lib/studio-creation.ts"
       ],
-      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS"
+      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/studio-assets.ts",
+          "specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md",
+          "apps/web/lib/studio-creation.ts"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     },
     {
       "id": "E_ASSETS_TO_ADMIN",
@@ -1882,7 +2660,22 @@
         "apps/web/lib/admin-assets.ts",
         "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts"
       ],
-      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS"
+      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS",
+      "engineering_diagnosis": {
+        "category": "REFERENCE_ONLY_UNVERIFIED",
+        "confidence": "SOURCE_FILES_EXIST_INTERFACES_NOT_CHECKED",
+        "diagnosis": "对应源码文件存在，但尚未逐调用点确认是否确有逻辑缺失/连接错误/仅欠真机实证，禁止判定为代码缺失",
+        "evidence": [
+          "apps/web/lib/studio-assets.ts",
+          "specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md",
+          "apps/web/lib/admin-assets.ts",
+          "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts"
+        ],
+        "next": "按本边上游实际输出、下游typed合同、可执行入口、持久化与权限、运行正反及恢复定向核验",
+        "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
+        "interface_pass": "NOT_PROVEN",
+        "runtime_pass": "NOT_PROVEN"
+      }
     }
   ],
   "earliest_verified_code_point": "D00→D01 C01代码接线、合格候选读模型修改、自动验证（不代表同Root G0真实签发）",
@@ -2072,7 +2865,7 @@
     ],
     "on_every_m5_handoff": "执行方在选择下一个断点前读取机器JSON及CURRENT/PLAN，并对仍有效的旧证据继承；状态先核当前HEAD与真实证据",
     "refresh_trigger": "任何影响节点/边/资格/计划与当前最前阻断的代码、真实运行回执或设计合同变化",
-    "refresh_rule": "三份导航同一事务/提交原位同步，不新增权威或验收标准；旧事实标过期，不把NOT_RUN升PASS",
+    "refresh_rule": "三份导航同一事务/提交原位同步，不新增权威或验收标准；旧事实标过期，不把NOT_RUN升PASS 断点归因仅在有新增源码或实跑证据时更改，禁止把橙色块当无代码。",
     "acceptance_rule": "准出唯一以PLAN §3.5 B八维真实作品正反验收为准",
     "source_ref_policy": "源码链接锁定source_sha；当前HEAD变化时先比较影响范围再复核，不以HEAD自动判过期"
   },
@@ -2087,6 +2880,39 @@
       "扩展的混合协作/13类资产/19组件据正式合同标注，类型级完整正反验收未证实"
     ],
     "verified_at": "2026-11-15",
-    "evidence_rule": "RELATED_CODE_PATH_EXISTS只证明路径存在及可能关联，不证明实际接口、资格或整链成功"
+    "evidence_rule": "RELATED_CODE_PATH_EXISTS只证明路径存在及可能关联，不证明实际接口、资格或整链成功",
+    "verified_edge_locator_paths": 30,
+    "evidence_scope": "已复核30条唯一边级路径均存在；仅7条边完成针对性诊断，其余未按接口/实跑归因；非54条实证"
+  },
+  "diagnosis_taxonomy": {
+    "CONTRACT_MISMATCH": "有代码｜签发/资格接口不匹配",
+    "MISSING_HANDOFF_TRANSFORM": "两端有代码｜缺受控转换",
+    "BUSINESS_CAPABILITY_GAP": "部分能力有代码｜业务范围未覆盖",
+    "CODE_PRESENT_NO_ROOT_E2E": "实现及局部测试｜整链实证缺失",
+    "REFERENCE_ONLY_UNVERIFIED": "只核到关联源码｜接口性质待判",
+    "FUTURE_NOT_CURRENT": "未来预留｜不计当前M5"
+  },
+  "active_audit_batch": {
+    "id": "M5-NAV-AUDIT-01",
+    "date": "2026-11-15",
+    "purpose": "当前最前阻断与邻接合同定向核查，非完成全仓/54边的全链实证",
+    "selected_edges": [
+      "E_D00_REVIEW",
+      "E_D00_QUALIFY",
+      "E_L1_TO_D02",
+      "E01",
+      "E_D00_WRITE",
+      "E_L0_TO_D01",
+      "E_D01_WRITE"
+    ],
+    "source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+    "findings": [
+      "30条唯一边级定位路径在固定源码SHA全部存在，但不能据此断言54条边已实现",
+      "机器审核器PASS receipt缺独立stage_binding，而资格读取和Runner要求精确job/reviewer/input/output摘要；G0对象PASS≠Runner阶段PASS",
+      "D01读取候选与D02 H05专业证据各自存在；缺已签G1合格L1→D02 typed request转换，Runner返回PRIVATE_NEXT_STAGE_REQUEST_NOT_READY",
+      "代码级与已有CI/隔离PG/HTTP成功不等于同一真实Creator/Root/Reviewer/Provider E2E"
+    ],
+    "next_batch": "修现有G0精确签发合同并完成同Root独立G0实测；随后验证D01/G1→D02 H05 typed转换和持久候选；两端复用现有代码，不再造第二Gate或Runner",
+    "gate": "PLAN.md §3.5 B/C；缺实际独立Reviewer/持久私有原件/Provider授权环境则HOLD/NOT_RUN"
   }
 }
