@@ -137,7 +137,12 @@
       "code_paths": [
         "apps/web/app/api/studio/director-plans/route.ts",
         "apps/web/lib/studio-creation.ts"
-      ]
+      ],
+      "acceptance_dimensions": [
+        1,
+        2
+      ],
+      "evidence_level": "SOURCE_INSPECTED_RUNTIME_NOT_VERIFIED"
     },
     {
       "id": "D00",
@@ -503,6 +508,11 @@
         "apps/web/lib/studio-research-read.ts",
         "apps/web/lib/read-model-bridge.ts",
         "apps/web/lib/work-publish-qualification.ts"
+      ],
+      "acceptance_dimensions": [
+        3,
+        4,
+        5
       ]
     },
     {
@@ -513,8 +523,14 @@
       "summary": "创作可按需读取L0-L5合格成果；书影仍须按媒资展示权、来源和用途审核",
       "code_paths": [
         "apps/web/lib/studio-creation.ts",
-        "apps/web/lib/studio-director.ts"
-      ]
+        "apps/web/lib/studio-director.ts",
+        "specs/experience-ui/H1_H2_H3_AND_COMPONENTS_CONTRACT.md"
+      ],
+      "acceptance_dimensions": [
+        5
+      ],
+      "experience_contract": "H1历史叙事、H2导演、H3协同验证与19组件逐项真实作品验证",
+      "evidence_level": "SOURCE_INSPECTED_RUNTIME_NOT_VERIFIED"
     },
     {
       "id": "WORK_REVISION",
@@ -536,6 +552,9 @@
       "code_paths": [
         "apps/web/lib/admin-assets.ts",
         "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts"
+      ],
+      "acceptance_dimensions": [
+        6
       ]
     },
     {
@@ -558,6 +577,9 @@
       "code_paths": [
         "apps/web/lib/publication.ts",
         "apps/web/lib/work-publish-qualification.ts"
+      ],
+      "acceptance_dimensions": [
+        7
       ]
     },
     {
@@ -569,6 +591,9 @@
       "code_paths": [
         "apps/web/lib/publication-watch-sql.mjs",
         "apps/web/lib/watch-studio-content.ts"
+      ],
+      "acceptance_dimensions": [
+        8
       ]
     },
     {
@@ -580,6 +605,9 @@
       "code_paths": [
         "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
         "apps/web/lib/publication.ts"
+      ],
+      "acceptance_dimensions": [
+        8
       ]
     },
     {
@@ -591,6 +619,55 @@
       "code_paths": [
         "tasks/implementation/MAB/PLAN.md"
       ]
+    },
+    {
+      "id": "MIXED_COLLABORATION",
+      "label": "内外AI同Root协作与受控费用回执",
+      "kind": "crosscutting",
+      "status": "blocked",
+      "summary": "已核到工具预算/回执与受权执行代码；同一真实Root下Agent与外部Provider的互补贡献、逐源权利、准确费用与长期Receipt尚无连续运行证明",
+      "code_paths": [
+        "apps/web/lib/studio/tool-ledger.ts",
+        "apps/web/lib/studio-execution-authority.ts",
+        "specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md"
+      ],
+      "acceptance_dimensions": [
+        2
+      ],
+      "evidence_level": "CODE_AND_CONTRACT_FOUND_E2E_NOT_RUN",
+      "next_required": "合法DelegationEnvelope、明确Creator授权、provider/model/version与input/output hash、实际费用Receipt及恢复回执"
+    },
+    {
+      "id": "KNOWLEDGE_ASSETS",
+      "label": "13类知识工作资产的持久修订与复用",
+      "kind": "crosscutting",
+      "status": "blocked",
+      "summary": "13种asset_kind及字段/生命周期有明确正式设计合同；已有部分持久化代码，但未证明13类类型级正反业务与同作品逐项Admin回链均已通过",
+      "code_paths": [
+        "apps/web/lib/studio-assets.ts",
+        "specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md"
+      ],
+      "asset_kinds": [
+        "research_brief",
+        "source_anchor",
+        "reading_note",
+        "evidence_note",
+        "spacetime_candidate",
+        "relation_hypothesis",
+        "humanistic_insight",
+        "research_collection",
+        "director_plan",
+        "media_selection",
+        "work_revision",
+        "citation_snapshot",
+        "consented_feedback"
+      ],
+      "acceptance_dimensions": [
+        4,
+        6
+      ],
+      "evidence_level": "CONTRACT_AND_ADJACENT_CODE_FOUND_FULL_VALIDATION_NOT_RUN",
+      "next_required": "类型字段、source/locator/revision、rights/ACL、CAS/幂等、dependency/use_events、正反与撤权；真实作品只生成适用类型"
     }
   ],
   "edges": [
@@ -606,7 +683,14 @@
         "root_task"
       ],
       "notes": "自然语言先进入Agent研究规划，不应自动越过Creator正式生产申请",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/app/studio/StudioWorkbench.tsx",
+        "apps/web/lib/studio-production.ts"
+      ],
+      "acceptance_dimensions": [
+        1
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E01",
@@ -623,7 +707,12 @@
       "notes": "Studio入口仍要求已有私有原件，广源发现/取得尚未从自然语言充分接线",
       "source_paths": [
         "apps/web/lib/studio-production.ts"
-      ]
+      ],
+      "acceptance_dimensions": [
+        1,
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_D00_WRITE",
@@ -637,7 +726,15 @@
         "owner/project"
       ],
       "notes": "Producer先保存候选、不可直接签Gate",
-      "source_paths": []
+      "source_paths": [
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "pipelines/data-production/adapters/private-evidence-adapters.mjs",
+        "pipelines/data-production/adapters/layer1-adapters.mjs"
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_D00_REVIEW",
@@ -654,7 +751,11 @@
       "notes": "独立Reviewer须绑定精确对象、输入输出、policy/scope",
       "source_paths": [
         "tools/local-gate-service.mjs"
-      ]
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_D00_QUALIFY",
@@ -669,7 +770,16 @@
         "not revoked"
       ],
       "notes": "符合批准规则才具有当前资格；未合格对象留作候选或HOLD",
-      "source_paths": []
+      "source_paths": [
+        "tools/local-gate-service.mjs",
+        "tools/rule-gate-reviewer.mjs",
+        "pipelines/data-production/orchestrator/independent-stage-qualification.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs"
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_L0_TO_D01",
@@ -686,7 +796,11 @@
       "notes": "同一root，上一层只有当前合格、用途准许且输入schema正确才可以进入下一D",
       "source_paths": [
         "pipelines/data-production/orchestrator/orchestrator.mjs"
-      ]
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_L0_TO_CREATIVE",
@@ -702,7 +816,16 @@
         "exact revision"
       ],
       "notes": "六层都可用于创作，但每次真实消费须核自己的资格和用途；原件/书影须另核展示许可",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/lib/studio-research-read.ts",
+        "apps/web/lib/read-model-bridge.ts",
+        "pipelines/data-production/workers/private-evidence-stage.mjs"
+      ],
+      "acceptance_dimensions": [
+        3,
+        5
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_ADMIN_L0",
@@ -716,7 +839,15 @@
         "reasoned invalidation"
       ],
       "notes": "Admin查看管理候选/资格/版本/缺口，独立Gate依旧独立签发",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/lib/admin-assets.ts",
+        "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
+        "pipelines/data-production/workers/private-evidence-stage.mjs"
+      ],
+      "acceptance_dimensions": [
+        6
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_D01_WRITE",
@@ -730,7 +861,15 @@
         "owner/project"
       ],
       "notes": "Producer先保存候选、不可直接签Gate",
-      "source_paths": []
+      "source_paths": [
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "packages/data-access/src/private-text-reading-repository.mjs",
+        "supabase/migrations/20261115130000_mab_m5_private_text_read_context_consistency.sql"
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_D01_REVIEW",
@@ -747,7 +886,11 @@
       "notes": "独立Reviewer须绑定精确对象、输入输出、policy/scope",
       "source_paths": [
         "tools/local-gate-service.mjs"
-      ]
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_D01_QUALIFY",
@@ -762,7 +905,16 @@
         "not revoked"
       ],
       "notes": "符合批准规则才具有当前资格；未合格对象留作候选或HOLD",
-      "source_paths": []
+      "source_paths": [
+        "tools/local-gate-service.mjs",
+        "tools/rule-gate-reviewer.mjs",
+        "pipelines/data-production/orchestrator/independent-stage-qualification.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs"
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_L1_TO_D02",
@@ -779,7 +931,11 @@
       "notes": "同一root，上一层只有当前合格、用途准许且输入schema正确才可以进入下一D",
       "source_paths": [
         "pipelines/data-production/orchestrator/orchestrator.mjs"
-      ]
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_L1_TO_CREATIVE",
@@ -795,7 +951,16 @@
         "exact revision"
       ],
       "notes": "六层都可用于创作，但每次真实消费须核自己的资格和用途",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/lib/studio-research-read.ts",
+        "apps/web/lib/read-model-bridge.ts",
+        "pipelines/data-production/workers/private-evidence-stage.mjs"
+      ],
+      "acceptance_dimensions": [
+        3,
+        5
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_ADMIN_L1",
@@ -809,7 +974,15 @@
         "reasoned invalidation"
       ],
       "notes": "Admin查看管理候选/资格/版本/缺口，独立Gate依旧独立签发",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/lib/admin-assets.ts",
+        "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
+        "pipelines/data-production/workers/private-evidence-stage.mjs"
+      ],
+      "acceptance_dimensions": [
+        6
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_D02_WRITE",
@@ -823,7 +996,15 @@
         "owner/project"
       ],
       "notes": "Producer先保存候选、不可直接签Gate",
-      "source_paths": []
+      "source_paths": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "supabase/migrations/20261113170000_mab_m5_d02_text_plain_observation.sql"
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_D02_REVIEW",
@@ -840,7 +1021,11 @@
       "notes": "独立Reviewer须绑定精确对象、输入输出、policy/scope",
       "source_paths": [
         "tools/local-gate-service.mjs"
-      ]
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_D02_QUALIFY",
@@ -855,7 +1040,16 @@
         "not revoked"
       ],
       "notes": "符合批准规则才具有当前资格；未合格对象留作候选或HOLD",
-      "source_paths": []
+      "source_paths": [
+        "tools/local-gate-service.mjs",
+        "tools/rule-gate-reviewer.mjs",
+        "pipelines/data-production/orchestrator/independent-stage-qualification.mjs",
+        "pipelines/data-production/adapters/layer1-adapters.mjs"
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_L2_TO_D03",
@@ -872,7 +1066,11 @@
       "notes": "同一root，上一层只有当前合格、用途准许且输入schema正确才可以进入下一D",
       "source_paths": [
         "pipelines/data-production/orchestrator/orchestrator.mjs"
-      ]
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_L2_TO_CREATIVE",
@@ -888,7 +1086,16 @@
         "exact revision"
       ],
       "notes": "六层都可用于创作，但每次真实消费须核自己的资格和用途",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/lib/studio-research-read.ts",
+        "apps/web/lib/read-model-bridge.ts",
+        "pipelines/data-production/adapters/layer1-adapters.mjs"
+      ],
+      "acceptance_dimensions": [
+        3,
+        5
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_ADMIN_L2",
@@ -902,7 +1109,15 @@
         "reasoned invalidation"
       ],
       "notes": "Admin查看管理候选/资格/版本/缺口，独立Gate依旧独立签发",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/lib/admin-assets.ts",
+        "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
+        "pipelines/data-production/adapters/layer1-adapters.mjs"
+      ],
+      "acceptance_dimensions": [
+        6
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_D03_WRITE",
@@ -916,7 +1131,14 @@
         "owner/project"
       ],
       "notes": "Producer先保存候选、不可直接签Gate",
-      "source_paths": []
+      "source_paths": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs"
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_D03_REVIEW",
@@ -933,7 +1155,11 @@
       "notes": "独立Reviewer须绑定精确对象、输入输出、policy/scope",
       "source_paths": [
         "tools/local-gate-service.mjs"
-      ]
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_D03_QUALIFY",
@@ -948,7 +1174,16 @@
         "not revoked"
       ],
       "notes": "符合批准规则才具有当前资格；未合格对象留作候选或HOLD",
-      "source_paths": []
+      "source_paths": [
+        "tools/local-gate-service.mjs",
+        "tools/rule-gate-reviewer.mjs",
+        "pipelines/data-production/orchestrator/independent-stage-qualification.mjs",
+        "pipelines/data-production/adapters/layer1-adapters.mjs"
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_L3_TO_D04",
@@ -965,7 +1200,11 @@
       "notes": "同一root，上一层只有当前合格、用途准许且输入schema正确才可以进入下一D",
       "source_paths": [
         "pipelines/data-production/orchestrator/orchestrator.mjs"
-      ]
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_L3_TO_CREATIVE",
@@ -981,7 +1220,16 @@
         "exact revision"
       ],
       "notes": "六层都可用于创作，但每次真实消费须核自己的资格和用途",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/lib/studio-research-read.ts",
+        "apps/web/lib/read-model-bridge.ts",
+        "pipelines/data-production/adapters/layer1-adapters.mjs"
+      ],
+      "acceptance_dimensions": [
+        3,
+        5
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_ADMIN_L3",
@@ -995,7 +1243,15 @@
         "reasoned invalidation"
       ],
       "notes": "Admin查看管理候选/资格/版本/缺口，独立Gate依旧独立签发",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/lib/admin-assets.ts",
+        "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
+        "pipelines/data-production/adapters/layer1-adapters.mjs"
+      ],
+      "acceptance_dimensions": [
+        6
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_D04_WRITE",
@@ -1009,7 +1265,14 @@
         "owner/project"
       ],
       "notes": "Producer先保存候选、不可直接签Gate",
-      "source_paths": []
+      "source_paths": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs"
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_D04_REVIEW",
@@ -1026,7 +1289,11 @@
       "notes": "独立Reviewer须绑定精确对象、输入输出、policy/scope",
       "source_paths": [
         "tools/local-gate-service.mjs"
-      ]
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_D04_QUALIFY",
@@ -1041,7 +1308,16 @@
         "not revoked"
       ],
       "notes": "符合批准规则才具有当前资格；未合格对象留作候选或HOLD",
-      "source_paths": []
+      "source_paths": [
+        "tools/local-gate-service.mjs",
+        "tools/rule-gate-reviewer.mjs",
+        "pipelines/data-production/orchestrator/independent-stage-qualification.mjs",
+        "pipelines/data-production/adapters/layer1-adapters.mjs"
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_L4_TO_D05",
@@ -1058,7 +1334,11 @@
       "notes": "同一root，上一层只有当前合格、用途准许且输入schema正确才可以进入下一D",
       "source_paths": [
         "pipelines/data-production/orchestrator/orchestrator.mjs"
-      ]
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_L4_TO_CREATIVE",
@@ -1074,7 +1354,16 @@
         "exact revision"
       ],
       "notes": "六层都可用于创作，但每次真实消费须核自己的资格和用途",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/lib/studio-research-read.ts",
+        "apps/web/lib/read-model-bridge.ts",
+        "pipelines/data-production/adapters/layer1-adapters.mjs"
+      ],
+      "acceptance_dimensions": [
+        3,
+        5
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_ADMIN_L4",
@@ -1088,7 +1377,15 @@
         "reasoned invalidation"
       ],
       "notes": "Admin查看管理候选/资格/版本/缺口，独立Gate依旧独立签发",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/lib/admin-assets.ts",
+        "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
+        "pipelines/data-production/adapters/layer1-adapters.mjs"
+      ],
+      "acceptance_dimensions": [
+        6
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_D05_WRITE",
@@ -1102,7 +1399,15 @@
         "owner/project"
       ],
       "notes": "Producer先保存候选、不可直接签Gate",
-      "source_paths": []
+      "source_paths": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "apps/web/lib/read-model-bridge.ts"
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_D05_REVIEW",
@@ -1119,7 +1424,11 @@
       "notes": "独立Reviewer须绑定精确对象、输入输出、policy/scope",
       "source_paths": [
         "tools/local-gate-service.mjs"
-      ]
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_D05_QUALIFY",
@@ -1134,7 +1443,16 @@
         "not revoked"
       ],
       "notes": "符合批准规则才具有当前资格；未合格对象留作候选或HOLD",
-      "source_paths": []
+      "source_paths": [
+        "tools/local-gate-service.mjs",
+        "tools/rule-gate-reviewer.mjs",
+        "pipelines/data-production/orchestrator/independent-stage-qualification.mjs",
+        "pipelines/data-production/adapters/layer1-adapters.mjs"
+      ],
+      "acceptance_dimensions": [
+        3
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_L5_TO_CREATIVE",
@@ -1150,7 +1468,16 @@
         "exact revision"
       ],
       "notes": "六层都可用于创作，但每次真实消费须核自己的资格和用途",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/lib/studio-research-read.ts",
+        "apps/web/lib/read-model-bridge.ts",
+        "pipelines/data-production/adapters/layer1-adapters.mjs"
+      ],
+      "acceptance_dimensions": [
+        3,
+        5
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_ADMIN_L5",
@@ -1164,7 +1491,15 @@
         "reasoned invalidation"
       ],
       "notes": "Admin查看管理候选/资格/版本/缺口，独立Gate依旧独立签发",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/lib/admin-assets.ts",
+        "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
+        "pipelines/data-production/adapters/layer1-adapters.mjs"
+      ],
+      "acceptance_dimensions": [
+        6
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_REUSE_TO_STUDIO",
@@ -1178,7 +1513,15 @@
         "use_events"
       ],
       "notes": "已有部分Owner研究读，但尚未证明全六层同Root受控复用",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/lib/studio-research-read.ts",
+        "apps/web/lib/read-model-bridge.ts"
+      ],
+      "acceptance_dimensions": [
+        3,
+        5
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_STUDIO_TO_REV",
@@ -1193,7 +1536,15 @@
         "idempotency"
       ],
       "notes": "真实导演/结构/编辑/保存，绑定引用及不可变修订",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/lib/studio-creation.ts",
+        "apps/web/lib/studio-director.ts",
+        "apps/web/app/api/studio/works/[id]/revisions/route.ts"
+      ],
+      "acceptance_dimensions": [
+        5
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_REV_TO_EDITORIAL",
@@ -1207,7 +1558,16 @@
         "submission status"
       ],
       "notes": "管理员审核作品，不能替代专业G5",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/lib/publication.ts",
+        "apps/web/lib/work-publish-qualification.ts",
+        "apps/web/lib/publication-watch-sql.mjs"
+      ],
+      "acceptance_dimensions": [
+        5,
+        7
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_EDITORIAL_TO_PUBLISH",
@@ -1222,7 +1582,15 @@
         "operator authorization"
       ],
       "notes": "独立G5 + 媒资逐动作权利 + Operator审核 + 原子发布指针",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/lib/publication.ts",
+        "apps/web/lib/work-publish-qualification.ts",
+        "apps/web/lib/publication-watch-sql.mjs"
+      ],
+      "acceptance_dimensions": [
+        7
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_PUBLISH_TO_WATCH",
@@ -1237,7 +1605,14 @@
         "recheck"
       ],
       "notes": "每个新请求校验当前资格、版本和撤权状态",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/lib/watch-studio-content.ts",
+        "apps/web/lib/publication-watch-sql.mjs"
+      ],
+      "acceptance_dimensions": [
+        8
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_ADMIN_TO_EDITORIAL",
@@ -1245,9 +1620,21 @@
       "target": "EDITORIAL",
       "kind": "manage_publication",
       "status": "partial",
-      "required_checks": [],
+      "required_checks": [
+        "准确Owner/project/root和来源",
+        "现行资格/权利及用途",
+        "边界正反测试与失败关闭"
+      ],
       "notes": "Admin管理投稿、审核、运营决策，与专业独立Gate分权",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/app/api/admin/submissions/[id]/decision/route.ts",
+        "apps/web/lib/publication.ts"
+      ],
+      "acceptance_dimensions": [
+        6,
+        7
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_ADMIN_TO_REVOKE",
@@ -1255,9 +1642,21 @@
       "target": "REVOKE",
       "kind": "invalidation",
       "status": "partial",
-      "required_checks": [],
+      "required_checks": [
+        "授权管理者与独立Reviewer职责",
+        "影响依赖闭包",
+        "审计与重新准入"
+      ],
       "notes": "管理方可以申请撤权/纠错，实际资格失效由独立服务执行",
-      "source_paths": []
+      "source_paths": [
+        "apps/web/lib/admin-assets.ts",
+        "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts"
+      ],
+      "acceptance_dimensions": [
+        6,
+        8
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_REVOKE_TO_WATCH",
@@ -1265,9 +1664,21 @@
       "target": "WATCH",
       "kind": "deny_new_requests",
       "status": "blocked",
-      "required_checks": [],
+      "required_checks": [
+        "每次新请求即时禁止",
+        "现行rights/G5/consumer/revision",
+        "缓存/已交付字节不可逆边界"
+      ],
       "notes": "撤权后新请求即时阻断，不依赖定时重核",
-      "source_paths": []
+      "source_paths": [
+        "tools/local-gate-service.mjs",
+        "apps/web/lib/watch-studio-content.ts",
+        "apps/web/lib/publication-watch-sql.mjs"
+      ],
+      "acceptance_dimensions": [
+        8
+      ],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_REUSE_TO_EXP",
@@ -1275,9 +1686,15 @@
       "target": "EXP",
       "kind": "future_experience",
       "status": "future",
-      "required_checks": [],
+      "required_checks": [
+        "未来授权设计与激活；非M5已实现"
+      ],
       "notes": "EXP未来可按权限消费各层知识；当前不计为M5通过",
-      "source_paths": []
+      "source_paths": [
+        "tasks/implementation/MAB/PLAN.md"
+      ],
+      "acceptance_dimensions": [],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
     },
     {
       "id": "E_WORKREV_TO_EXP",
@@ -1285,13 +1702,391 @@
       "target": "EXP",
       "kind": "future_experience",
       "status": "future",
-      "required_checks": [],
+      "required_checks": [
+        "未来授权设计与激活；非M5已实现"
+      ],
       "notes": "未来作品关联探索的候选连接，待EXP设计确认",
-      "source_paths": []
+      "source_paths": [
+        "tasks/implementation/MAB/PLAN.md"
+      ],
+      "acceptance_dimensions": [],
+      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED"
+    },
+    {
+      "id": "E_AGENT_TO_MIXED",
+      "source": "AGENT_PLAN",
+      "target": "MIXED_COLLABORATION",
+      "kind": "mixed_authorized_delegation",
+      "status": "blocked",
+      "acceptance_dimensions": [
+        2
+      ],
+      "required_checks": [
+        "project/root及Owner权限",
+        "精确revision与来源证据",
+        "rights/purpose/consumer与失败关闭",
+        "持久保存/恢复及独立资格（需要时）"
+      ],
+      "notes": "同Root在明确委托与逐源权利、费用前置后才可调用真实外部Provider",
+      "source_paths": [
+        "apps/web/lib/studio/tool-ledger.ts",
+        "apps/web/lib/studio-execution-authority.ts",
+        "specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md"
+      ],
+      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS"
+    },
+    {
+      "id": "E_MIXED_TO_D00",
+      "source": "MIXED_COLLABORATION",
+      "target": "D00",
+      "kind": "support_production",
+      "status": "blocked",
+      "acceptance_dimensions": [
+        2,
+        3
+      ],
+      "required_checks": [
+        "project/root及Owner权限",
+        "精确revision与来源证据",
+        "rights/purpose/consumer与失败关闭",
+        "持久保存/恢复及独立资格（需要时）"
+      ],
+      "notes": "Agent/Provider协作可以辅助来源研究，不能取代Creator授权和D00/G0独立资格",
+      "source_paths": [
+        "apps/web/lib/studio/tool-ledger.ts",
+        "apps/web/lib/studio-execution-authority.ts",
+        "specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md",
+        "pipelines/data-production/orchestrator/orchestrator.mjs"
+      ],
+      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS"
+    },
+    {
+      "id": "E_MIXED_TO_CREATIVE",
+      "source": "MIXED_COLLABORATION",
+      "target": "STUDIO_CREATIVE",
+      "kind": "support_creative",
+      "status": "blocked",
+      "acceptance_dimensions": [
+        2,
+        5
+      ],
+      "required_checks": [
+        "project/root及Owner权限",
+        "精确revision与来源证据",
+        "rights/purpose/consumer与失败关闭",
+        "持久保存/恢复及独立资格（需要时）"
+      ],
+      "notes": "真实研究贡献进入H1/H2/H3之前必须有合法来源、受权内容及可追踪Receipt",
+      "source_paths": [
+        "apps/web/lib/studio/tool-ledger.ts",
+        "apps/web/lib/studio-execution-authority.ts",
+        "specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md",
+        "apps/web/lib/studio-creation.ts"
+      ],
+      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS"
+    },
+    {
+      "id": "E_REUSE_TO_ASSETS",
+      "source": "QUALIFIED_CONSUMPTION",
+      "target": "KNOWLEDGE_ASSETS",
+      "kind": "asset_reference",
+      "status": "blocked",
+      "acceptance_dimensions": [
+        4
+      ],
+      "required_checks": [
+        "project/root及Owner权限",
+        "精确revision与来源证据",
+        "rights/purpose/consumer与失败关闭",
+        "持久保存/恢复及独立资格（需要时）"
+      ],
+      "notes": "知识工作资产可以引用按用途合格的L0-L5对象；草稿资产不得借此冒充G PASS",
+      "source_paths": [
+        "apps/web/lib/studio-research-read.ts",
+        "apps/web/lib/read-model-bridge.ts",
+        "apps/web/lib/studio-assets.ts",
+        "specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md"
+      ],
+      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS"
+    },
+    {
+      "id": "E_CREATIVE_TO_ASSETS",
+      "source": "STUDIO_CREATIVE",
+      "target": "KNOWLEDGE_ASSETS",
+      "kind": "asset_lifecycle",
+      "status": "blocked",
+      "acceptance_dimensions": [
+        4,
+        5
+      ],
+      "required_checks": [
+        "project/root及Owner权限",
+        "精确revision与来源证据",
+        "rights/purpose/consumer与失败关闭",
+        "持久保存/恢复及独立资格（需要时）"
+      ],
+      "notes": "导演/作品草稿需在既有13类型资产合同内精确持久化、可修订和恢复",
+      "source_paths": [
+        "apps/web/lib/studio-creation.ts",
+        "apps/web/lib/studio-director.ts",
+        "apps/web/app/api/studio/works/[id]/revisions/route.ts",
+        "apps/web/lib/studio-assets.ts",
+        "specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md"
+      ],
+      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS"
+    },
+    {
+      "id": "E_ASSETS_TO_CREATIVE",
+      "source": "KNOWLEDGE_ASSETS",
+      "target": "STUDIO_CREATIVE",
+      "kind": "reuse_work_assets",
+      "status": "blocked",
+      "acceptance_dimensions": [
+        4,
+        5
+      ],
+      "required_checks": [
+        "project/root及Owner权限",
+        "精确revision与来源证据",
+        "rights/purpose/consumer与失败关闭",
+        "持久保存/恢复及独立资格（需要时）"
+      ],
+      "notes": "重新利用工作资产需重新核对来源、revision、用途及资格",
+      "source_paths": [
+        "apps/web/lib/studio-assets.ts",
+        "specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md",
+        "apps/web/lib/studio-creation.ts"
+      ],
+      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS"
+    },
+    {
+      "id": "E_ASSETS_TO_ADMIN",
+      "source": "KNOWLEDGE_ASSETS",
+      "target": "ADMIN",
+      "kind": "admin_asset_governance",
+      "status": "blocked",
+      "acceptance_dimensions": [
+        4,
+        6
+      ],
+      "required_checks": [
+        "project/root及Owner权限",
+        "精确revision与来源证据",
+        "rights/purpose/consumer与失败关闭",
+        "持久保存/恢复及独立资格（需要时）"
+      ],
+      "notes": "Admin逐条呈现13类资产真实修订、来源/权限/认识状态、用例、纠错与失效",
+      "source_paths": [
+        "apps/web/lib/studio-assets.ts",
+        "specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md",
+        "apps/web/lib/admin-assets.ts",
+        "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts"
+      ],
+      "evidence_level": "ADJACENT_CODE_PATHS_ONLY_NOT_EDGE_PASS"
     }
   ],
   "earliest_verified_code_point": "D00→D01 C01代码接线、合格候选读模型修改、自动验证（不代表同Root G0真实签发）",
   "earliest_runtime_blocker": "Studio/D00真实同Root独立G0当前精确签发及合法D01消费仍未实测",
   "next_real_code_blocker": "严格G0精确签发的正确回执绑定；其后D01合格候选→D02专业类型请求生成",
-  "acceptance_basis": "PLAN V1.7 M5八维同一真实作品，绝不以本图状态代替验收"
+  "acceptance_basis": "PLAN V1.7 M5八维同一真实作品，绝不以本图状态代替验收",
+  "acceptance_dimensions": [
+    {
+      "id": 1,
+      "title": "自然语言创作入口",
+      "condition": "Studio真实问题→Brief/Plan，资料可得性与可继续状态",
+      "owner": "tasks/implementation/MAB/PLAN.md#3.5 B",
+      "linked_nodes": [
+        "AGENT_PLAN"
+      ],
+      "linked_edges": [
+        "E00",
+        "E01"
+      ],
+      "result": "NOT_ASSESSED_BY_NAVIGATION"
+    },
+    {
+      "id": 2,
+      "title": "内外AI混合协作",
+      "condition": "同root下Agent/外部Provider真实贡献、权利、预算、Receipt与恢复",
+      "owner": "tasks/implementation/MAB/PLAN.md#3.5 B",
+      "linked_nodes": [
+        "AGENT_PLAN",
+        "MIXED_COLLABORATION"
+      ],
+      "linked_edges": [
+        "E_AGENT_TO_MIXED",
+        "E_MIXED_TO_D00",
+        "E_MIXED_TO_CREATIVE"
+      ],
+      "result": "NOT_ASSESSED_BY_NAVIGATION"
+    },
+    {
+      "id": 3,
+      "title": "真实来源、证据和D/L/G生产",
+      "condition": "合法原件→D00-D05/L0-L5/G0-G5精确资格与整链消费",
+      "owner": "tasks/implementation/MAB/PLAN.md#3.5 B",
+      "linked_nodes": [
+        "QUALIFIED_CONSUMPTION"
+      ],
+      "linked_edges": [
+        "E01",
+        "E_D00_WRITE",
+        "E_D00_REVIEW",
+        "E_D00_QUALIFY",
+        "E_L0_TO_D01",
+        "E_L0_TO_CREATIVE",
+        "E_D01_WRITE",
+        "E_D01_REVIEW",
+        "E_D01_QUALIFY",
+        "E_L1_TO_D02",
+        "E_L1_TO_CREATIVE",
+        "E_D02_WRITE",
+        "E_D02_REVIEW",
+        "E_D02_QUALIFY",
+        "E_L2_TO_D03",
+        "E_L2_TO_CREATIVE",
+        "E_D03_WRITE",
+        "E_D03_REVIEW",
+        "E_D03_QUALIFY",
+        "E_L3_TO_D04",
+        "E_L3_TO_CREATIVE",
+        "E_D04_WRITE",
+        "E_D04_REVIEW",
+        "E_D04_QUALIFY",
+        "E_L4_TO_D05",
+        "E_L4_TO_CREATIVE",
+        "E_D05_WRITE",
+        "E_D05_REVIEW",
+        "E_D05_QUALIFY",
+        "E_L5_TO_CREATIVE",
+        "E_REUSE_TO_STUDIO",
+        "E_MIXED_TO_D00"
+      ],
+      "result": "NOT_ASSESSED_BY_NAVIGATION"
+    },
+    {
+      "id": 4,
+      "title": "13类知识资产沉淀",
+      "condition": "13类型级正反合同，真实作品只产生实际适用类型",
+      "owner": "tasks/implementation/MAB/PLAN.md#3.5 B",
+      "linked_nodes": [
+        "QUALIFIED_CONSUMPTION",
+        "KNOWLEDGE_ASSETS"
+      ],
+      "linked_edges": [
+        "E_REUSE_TO_ASSETS",
+        "E_CREATIVE_TO_ASSETS",
+        "E_ASSETS_TO_CREATIVE",
+        "E_ASSETS_TO_ADMIN"
+      ],
+      "result": "NOT_ASSESSED_BY_NAVIGATION"
+    },
+    {
+      "id": 5,
+      "title": "Studio真实创作",
+      "condition": "H1/H2/H3与19组件真实职责、预览编辑、WorkRevision",
+      "owner": "tasks/implementation/MAB/PLAN.md#3.5 B",
+      "linked_nodes": [
+        "QUALIFIED_CONSUMPTION",
+        "STUDIO_CREATIVE"
+      ],
+      "linked_edges": [
+        "E_L0_TO_CREATIVE",
+        "E_L1_TO_CREATIVE",
+        "E_L2_TO_CREATIVE",
+        "E_L3_TO_CREATIVE",
+        "E_L4_TO_CREATIVE",
+        "E_L5_TO_CREATIVE",
+        "E_REUSE_TO_STUDIO",
+        "E_STUDIO_TO_REV",
+        "E_REV_TO_EDITORIAL",
+        "E_MIXED_TO_CREATIVE",
+        "E_CREATIVE_TO_ASSETS",
+        "E_ASSETS_TO_CREATIVE"
+      ],
+      "result": "NOT_ASSESSED_BY_NAVIGATION"
+    },
+    {
+      "id": 6,
+      "title": "Admin知识资产管理",
+      "condition": "逐条精确修订、来源权利资格与使用史、撤回管理",
+      "owner": "tasks/implementation/MAB/PLAN.md#3.5 B",
+      "linked_nodes": [
+        "ADMIN",
+        "KNOWLEDGE_ASSETS"
+      ],
+      "linked_edges": [
+        "E_ADMIN_L0",
+        "E_ADMIN_L1",
+        "E_ADMIN_L2",
+        "E_ADMIN_L3",
+        "E_ADMIN_L4",
+        "E_ADMIN_L5",
+        "E_ADMIN_TO_EDITORIAL",
+        "E_ADMIN_TO_REVOKE",
+        "E_ASSETS_TO_ADMIN"
+      ],
+      "result": "NOT_ASSESSED_BY_NAVIGATION"
+    },
+    {
+      "id": 7,
+      "title": "独立G5、媒资权利与发布",
+      "condition": "Reviewer分权、WorkRevision及媒体逐动作许可、原子指针",
+      "owner": "tasks/implementation/MAB/PLAN.md#3.5 B",
+      "linked_nodes": [
+        "PUBLISH"
+      ],
+      "linked_edges": [
+        "E_REV_TO_EDITORIAL",
+        "E_EDITORIAL_TO_PUBLISH",
+        "E_ADMIN_TO_EDITORIAL"
+      ],
+      "result": "NOT_ASSESSED_BY_NAVIGATION"
+    },
+    {
+      "id": 8,
+      "title": "WATCH同修订合法消费与撤权",
+      "condition": "每次资格检查、立即阻断新请求、缓存及原件保护",
+      "owner": "tasks/implementation/MAB/PLAN.md#3.5 B",
+      "linked_nodes": [
+        "WATCH",
+        "REVOKE"
+      ],
+      "linked_edges": [
+        "E_PUBLISH_TO_WATCH",
+        "E_ADMIN_TO_REVOKE",
+        "E_REVOKE_TO_WATCH"
+      ],
+      "result": "NOT_ASSESSED_BY_NAVIGATION"
+    }
+  ],
+  "navigation_policy": {
+    "role": "持续维护的主链工程定位/断点索引，不是新验收体系",
+    "read_order": [
+      "CURRENT.md（最新已证事实与最前HOLD）",
+      "tasks/implementation/MAB/PLAN.md §3.5 B/C（唯一准出与施工规则）",
+      "tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json（Agent机器逐边核对）",
+      "tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.md（解释/人工校对）",
+      "tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.html（交互观察）",
+      "精确工程代码/相关CI/隔离PG HTTP Provider与最新progress证据"
+    ],
+    "on_every_m5_handoff": "执行方在选择下一个断点前读取机器JSON及CURRENT/PLAN，并对仍有效的旧证据继承；状态先核当前HEAD与真实证据",
+    "refresh_trigger": "任何影响节点/边/资格/计划与当前最前阻断的代码、真实运行回执或设计合同变化",
+    "refresh_rule": "三份导航同一事务/提交原位同步，不新增权威或验收标准；旧事实标过期，不把NOT_RUN升PASS",
+    "acceptance_rule": "准出唯一以PLAN §3.5 B八维真实作品正反验收为准",
+    "source_ref_policy": "源码链接锁定source_sha；当前HEAD变化时先比较影响范围再复核，不以HEAD自动判过期"
+  },
+  "source_audit": {
+    "frozen_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+    "verified_existing_code_paths": 26,
+    "verification_scope": "26个旧导航节点引用的唯一代码路径逐项存在核查；定向读取Studio/Runner/Worker/Gate/资产/叙事合同关键逻辑；非全仓全量审计",
+    "known_gaps": [
+      "47旧边没有逐条同root持续环境验收，旧47边中35边缺直接源码路径",
+      "缺真实同Root从Studio至WATCH的完整PG/HTTP/Provider/Reviewer证据",
+      "当前关键信息为独立G0精确stage_binding合法签发与D01候选到D02 H05合规专业请求",
+      "扩展的混合协作/13类资产/19组件据正式合同标注，类型级完整正反验收未证实"
+    ],
+    "verified_at": "2026-11-15",
+    "evidence_rule": "RELATED_CODE_PATH_EXISTS只证明路径存在及可能关联，不证明实际接口、资格或整链成功"
+  }
 }
