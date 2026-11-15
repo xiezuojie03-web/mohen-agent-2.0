@@ -4174,3 +4174,11 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - `9730e527e71fadd94b539f7631eb5dd8fc472683`：把兼容迁移按顺序加入`scripts/test-mab-http.mjs`，两套隔离清单完整；主CI [43682350601](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43682350601) **SUCCESS**，隔离HTTP [43682350602](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43682350602)记录时仍在跑，不能记真实HTTP/PG PASS。
 - **本次代码受控结果**：C01阅读来源真实Writer和Studio读视图字段已逐项核对并修复，仍需真实PG/HTTP结果及Owner实际可用性；此前的局部G0/G1合法执行代码证据不等于同root审核PASS。下一阻断为独立Reviewer真正精确stage_binding签发及D01→D02专业H05输入，不重新造D02。未操作正式数据库、原件或生产部署；`PLAN V1.7`不变，`M5_OVERALL_HOLD`。
 
+
+---
+
+## 2026-11-15｜M5完整链路人机共同导航图（文档索引，不改变现行PLAN）
+
+- 在唯一仓库`main`新增`tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.html/.md/.json`（commit `e0da6997c661ccb6b685bbda675e6e6c6b2d4ffe`）。HTML可点击节点/连线和筛选工程断点，JSON共35节点、47条关系，机器可逐边读取`source/target/kind/required_checks/code_paths/status`，Markdown提供Mermaid和已知缺口总表。
+- 业务定位：Studio有条件调用L0—L5全部六层；L候选先持久化后G独立判资格，Admin全层横向治理且不得代签专业G，WATCH属本次M5，EXP仅预留；没有新增第二知识库或第二套Gate/Runner。图所列状态基于`2c4db017`精确旧SHA代码快照，不是实时准出事实。
+- 图不替代唯一`PLAN.md V1.7 §3.5 B/C`、`CURRENT.md`或各阶段合同，也没有本轮真实Provider、持久PG/Storage和同一作品D00—G5→Studio→Admin→WATCH新PASS。仅增加后续施工的人机共同索引；业务代码未改。CI在记录时仍待最终结果。

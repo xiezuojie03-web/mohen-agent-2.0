@@ -21,6 +21,13 @@
 - **目前同root主干已完成的代码级接线**：Studio C01`D00→D01`输入按来源/载体分派、Worker已核G0方法与真实原件精确字节的L1持久候选；D01输出交D02前有专属schema拒绝与持久HOLD；下游Studio L1读模型已实现精确回执兼容，**仍需隔离PG新测试最终结果**。主干没有真实PG/Storage/Review/G0—G5同run实测回执，M5为`M5_REMEDIATION_ACTIVE / M5_OVERALL_HOLD`。
 - **当前最前仍阻断**：独立本地机器Reviewer签发的真实stage_binding（stage+job+reviewer+input/output）尚未与Runner计算的输出摘要同源，严格HOLD，不能恢复旧Gate回显漏洞；D01候选→D02合规H05专业观察请求/受控Provider/费用回执尚未接入，不得伪造历史观察与G2资格。其后知识资产/Studio作品/Admin/发布/WATCH仍未在本轮连接到同一root。
 
+
+## 2026-11-15｜M5主线可视化/机器导航（非权威、非业务完成证据）
+
+- 导航图 `tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.html`、人机共同可读的Mermaid与工程索引 `tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.md`、节点/边/代码绑定 `tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json` 均已存 `main`；静态索引基于 `2c4db017` 主线源码，登记提交为 `e0da6997`。**这不是另一套设计/验收标准，也不是施工通过凭证**；每次必须核实时新的main、CI及真实运行事实。
+- 本导航明确Dxx→Lx候选保存→Gx独立资格→同层Lx合格消费；Studio H1/H2/H3 可按授权及逐用途资格消费L0—L5（原件书影另核媒资权利），Admin横向管理六层候选/资格/修订/失效，WATCH在本次M5业务主链，EXP仅作未来接口预留。
+- JSON由35节点、47关系构成，含每边连接类型、检查条件、现行/旧代码路径及BLOCKED/部分实现/未来预留状态；其状态为**该SHA定向核查快照**，绝不代替`PLAN.md §3.5 B/C`或把静态图当作D00—D05同一真实作品的PASS。下一最前阻断仍是同Root真实G0精确审签/合法消费与D01→D02专业请求生成。
+
 ## 1. 唯一当前验收：PLAN §3.5 B 八维
 
 - M0：`EXIT_PASS`（审查级证据冻结继承，不重做全量差异核查）。
