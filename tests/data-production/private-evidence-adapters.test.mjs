@@ -128,6 +128,61 @@ test('D00 source intake returns a typed D01 request and UNASSESSED candidate ref
   assert.ok(!JSON.stringify(result.output).includes('synthetic-owner-session'));
 });
 
+
+test('D00 hands a real text/plain C01 request to D01 without turning it into a scanned page',async()=>{
+  const input={research_intent:'田赋条文',scope:{project_id:randomUUID(),original_id:randomUUID(),page_number:1}};
+  const methodPlan=[{kind:'method_plan',method_id:'C01',method_version:'v1'}];
+  const sourceVersionId=randomUUID(),rawItemId=randomUUID();
+  const run={run_id:randomUUID()};
+  const sourceJob=job('D00');
+  const readingJob=job('D01');
+  const registry={};
+  const worker={
+    verifySourceIntake:async()=>({
+      stage:'D00',candidate_kind:'private_source_intake',gate_code:'G0',qualification:'UNASSESSED',
+      original_id:input.scope.original_id,source_version_id:sourceVersionId,raw_item_id:rawItemId,
+      sha256:'a'.repeat(64),asset_revision_id:randomUUID(),artifact_revision:'b'.repeat(64),
+      request_digest:'c'.repeat(64),content_type:'text/plain',method_plan:methodPlan,
+    }),
+    draftTextReading:async({input:readingInput})=>{
+      assert.equal(readingInput.text.kind,'verified_utf8_full/v1');
+      assert.deepEqual(readingInput.method_plan,methodPlan);
+      assert.equal(readingInput.text.source_version_id,sourceVersionId);
+      assert.equal(readingInput.text.raw_item_id,rawItemId);
+      assert.equal(readingInput.text.raw_sha256,'a'.repeat(64));
+      assert.equal(readingInput.extent,undefined);
+      assert.equal(readingInput.quote,undefined);
+      return {stage:'D01',candidate_kind:'private_text_reading',gate_code:'G1',
+        qualification:'UNASSESSED',read_run_id:randomUUID(),read_unit_id:randomUUID(),
+        artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64)};
+    },
+    readScannedPage:async()=>{throw Error('C02 must not read text/plain');},
+  };
+  const context={registry,privateEvidenceWorker:worker,
+    privateEvidenceOwnerSessionToken:'synthetic-owner-session'};
+  const d00=await adapters.D00({run,job:sourceJob,input,context});
+  assert.equal(d00.disposition,'PASS');
+  assert.equal(d00.output.page,undefined);
+  assert.equal(d00.output.text.kind,'verified_utf8_full/v1');
+  assert.doesNotMatch(JSON.stringify(d00.output),/田赋条文|synthetic-owner-session/);
+  const d01=await adapters.D01({run,job:readingJob,input:d00.output,context});
+  assert.equal(d01.disposition,'PASS');
+  assert.equal(d01.control_outputs.candidate_refs[0].object_type,'read_unit');
+  assert.equal(d01.gate_evidence.qualification,'UNASSESSED');
+});
+
+test('D00 refuses an unsupported carrier before forwarding a mislabelled D01 request',async()=>{
+  const input={research_intent:'来源',scope:{project_id:randomUUID(),original_id:randomUUID(),page_number:1}};
+  const candidate={stage:'D00',gate_code:'G0',qualification:'UNASSESSED',
+    original_id:input.scope.original_id,source_version_id:randomUUID(),raw_item_id:randomUUID(),
+    asset_revision_id:randomUUID(),artifact_revision:'b'.repeat(64),
+    request_digest:'c'.repeat(64),sha256:'a'.repeat(64),content_type:'application/pdf'};
+  await assert.rejects(()=>adapters.D00({run:{run_id:randomUUID()},job:job('D00'),input,
+    context:{registry:{},privateEvidenceWorker:{verifySourceIntake:async()=>candidate},
+      privateEvidenceOwnerSessionToken:'synthetic-owner-session'}}),
+    /PRIVATE_D01_CARRIER_NOT_SUPPORTED/);
+});
+
 test('D00 fails closed without scope or without a trusted runtime',async()=>{
   const j=job('D00');
   const missingScope=await adapters.D00({run:{},job:j,input:{},context:{}});

@@ -461,7 +461,24 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
     async draftTextReading({run,job,registry,context={},input,token}) {
       await authorized({stage:'D01',run,job,registry,context,input,token});
       if(typeof persistReading!=='function')throw Error('PRIVATE_READING_PERSISTENCE_REQUIRED');
-      const {originalId,extent,quote}=input??{};
+      const {originalId}=input??{};
+      let {extent,quote}=input??{};
+      // Studio D00 may request a whole verified UTF-8 document without sending
+      // private bytes/quotes through the Runner. Resolve exact bytes only here,
+      // after the approved C01 method plan and exact L0 binding are checked.
+      const fullText=input?.text?.kind==='verified_utf8_full/v1';
+      if(fullText){
+        if(input.extent!==undefined||input.quote!==undefined||
+           !UUID.test(input.text?.source_version_id??'')||
+           !UUID.test(input.text?.raw_item_id??'')||
+           !HEX.test(input.text?.raw_sha256??''))
+          throw Error('PRIVATE_READING_LOCATOR_INVALID');
+        extent={kind:'utf8_byte_range/v1',
+          source_version_id:input.text.source_version_id,raw_item_id:input.text.raw_item_id,
+          raw_sha256:input.text.raw_sha256,start_byte:0,end_byte:1,
+          quote_sha256:input.text.raw_sha256};
+        quote='';
+      }
       if(typeof originalId!=='string'||!UUID.test(originalId)||!extent||
          !UUID.test(extent.source_version_id??'')||!UUID.test(extent.raw_item_id??'')||
          extent.kind!=='utf8_byte_range/v1'||
@@ -478,10 +495,20 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
       const methodPlanApproval=await requireApprovedMethodPlan({action:'draftTextReading',
         sourceVersionId:extent.source_version_id,carriedPlan:input?.method_plan});
       const {record,bytes}=await readOriginal(originalId,token);
-      if(record?.state!=='STORED_VERIFIED'||record?.content_type!=='text/plain'||
+      if(!Buffer.isBuffer(bytes)||record?.state!=='STORED_VERIFIED'||record?.content_type!=='text/plain'||
          !HEX.test(record?.sha256??'')||hash(bytes)!==record.sha256||
          extent.end_byte>bytes.length||extent.raw_sha256!==record.sha256)
         throw Error('PRIVATE_READING_ORIGINAL_UNVERIFIED');
+      if(fullText){
+        // The existing private L1 persistence contract allows <=32 KiB per
+        // reading. Refuse larger/binary/invalid UTF-8 sources rather than
+        // silently truncating historical evidence or inventing an extent.
+        if(bytes.length===0||bytes.length>32768||
+           !Buffer.from(bytes.toString('utf8'),'utf8').equals(bytes))
+          throw Error('PRIVATE_READING_FULL_TEXT_NOT_SUPPORTED');
+        extent={...extent,end_byte:bytes.length,quote_sha256:hash(bytes)};
+        quote=bytes.toString('utf8');
+      }
       const selected=bytes.subarray(extent.start_byte,extent.end_byte);
       if(!Buffer.from(quote,'utf8').equals(selected)||
          !Buffer.from(selected.toString('utf8'),'utf8').equals(selected)||
@@ -506,7 +533,7 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
         raw_item_id:extent.raw_item_id,raw_sha256:record.sha256,
         read_run_id:saved.read_run_id,read_unit_id:saved.read_unit_id,
         artifact_revision:saved.artifact_revision,request_digest:saved.request_digest,
-        extent,quote,method_plan_approval:methodPlanApproval,gate_candidate_id:gateCandidateId,
+        extent,...(fullText?{}:{quote}),method_plan_approval:methodPlanApproval,gate_candidate_id:gateCandidateId,
         gate_candidate_status:'SUBMITTED',
         qualification:'UNASSESSED',gate_code:'G1'};
     },

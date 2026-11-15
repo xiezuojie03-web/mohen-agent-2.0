@@ -80,14 +80,22 @@ function privateSourceIntakeAdapter() {
        !UUID.test(candidate.asset_revision_id??'')||!HASH.test(candidate.artifact_revision??'')||
        !HASH.test(candidate.request_digest??'')||!HASH.test(candidate.sha256??''))
       throw Error('PRIVATE_STAGE_CANDIDATE_NOT_PERSISTED');
-    // Typed D01 request: the runner hands this to the bound private D01 adapter.
-    // D00-B：消费者方法计划必须无损转交，否则 D01 看不到消费者预选的 C 方法。
+    // D00-B: carry the approved C01/C02 plan and exact immutable source identity.
+    // The previous unconditional scanned_page request routed text/plain through
+    // C02 despite Studio explicitly preselecting C01, making D01 unreachable.
+    // Never attach private bytes or a caller-manufactured quote to a Runner output.
+    const locator={source_version_id:candidate.source_version_id,raw_item_id:candidate.raw_item_id,
+      raw_sha256:candidate.sha256};
+    const readingLocator=candidate.content_type==='text/plain'
+      ? {text:{kind:'verified_utf8_full/v1',...locator}}
+      : ['image/jpeg','image/png','image/webp'].includes(candidate.content_type)
+        ? {page:{kind:'scanned_page/v1',page_number:candidate.page_number,...locator,
+            page_sha256:candidate.sha256}}
+        : null;
+    if(!readingLocator)throw Error('PRIVATE_D01_CARRIER_NOT_SUPPORTED');
     const request={schema:SCHEMA,stage:'D01',originalId:candidate.original_id,
       ...(Array.isArray(candidate.method_plan)&&candidate.method_plan.length
-        ? {method_plan:candidate.method_plan}:{}),
-      page:{kind:'scanned_page/v1',page_number:candidate.page_number,
-        source_version_id:candidate.source_version_id,raw_item_id:candidate.raw_item_id,
-        raw_sha256:candidate.sha256,page_sha256:candidate.sha256}};
+        ? {method_plan:candidate.method_plan}:{}),...readingLocator};
     const control_outputs={candidate_refs:[{object_type:'raw_item',object_id:candidate.raw_item_id,
       artifact_revision:candidate.artifact_revision,source_version_id:candidate.source_version_id,
       run_id:run.run_id,stage:'D00',gate_code:'G0',job_id:job.job_id,

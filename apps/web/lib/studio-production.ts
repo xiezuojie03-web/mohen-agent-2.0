@@ -235,7 +235,7 @@ export async function triggerProduction(taskId: string, intent: string, projectI
         "--run-id", runId,
         "--execution-mode", EXECUTION_MODE,
         "--scope-file", scopeFile,
-        "--to", "D00", // This batch verifies the real D00/G0 handoff; do not claim D01-D05 yet.
+        "--to", "D01", // D00/G0 → the existing C01/C02 private D01 reader; D02-D05 remain unclaimed until typed professional handoff is connected.
         // D00-B：自由主题生产必须预选 D01 读法（文本材料走 C01），否则 G0 的
         // method_plan_preselection 结构性前置失败关闭（不补默认方法）。见 2026-11-14 断点核。
         "--method-plan", JSON.stringify({ methods: [{ method_id: methodId, method_version: "v1" }] }),

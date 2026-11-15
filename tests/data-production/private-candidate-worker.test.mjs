@@ -888,6 +888,88 @@ test('D01 draftTextReading submits one G1 read_unit candidate against the extent
   });
 });
 
+
+test('D01 C01 consumes the D00 text locator, proves exact UTF-8 bytes and submits only an unassessed G1 candidate',async()=>{
+  const originalId=id(),sourceVersionId=id(),rawItemId=id(),readUnitId=id();
+  const input={originalId,text:{kind:'verified_utf8_full/v1',source_version_id:sourceVersionId,
+    raw_item_id:rawItemId,raw_sha256:TEXT_SHA}};
+  let sourceChecked=0,reads=0,stored=null,submitted=null,methodApproved=0;
+  await withStageAuthority({stage:'D01',input},async({registry,job,run,context})=>{
+    const worker=createPrivateEvidenceStageWorker({
+      verifySourceBinding:async q=>{
+        sourceChecked++;assert.deepEqual(q,{originalId,sourceVersionId,rawItemId,rawSha256:TEXT_SHA});
+        return true;
+      },
+      readApprovedMethodPlan:async()=>{methodApproved++;return approvedPlanStub;},
+      readOriginal:async()=>{reads++;return textRecord();},
+      persistReading:async (args)=>{
+        stored=args;
+        assert.equal(args.extent.kind,'utf8_byte_range/v1');
+        assert.equal(args.extent.start_byte,0);
+        assert.equal(args.extent.end_byte,TEXT.length);
+        assert.equal(args.extent.quote_sha256,TEXT_SHA);
+        assert.equal(args.quote,TEXT_QUOTE);
+        assert.equal(args.extent.source_version_id,sourceVersionId);
+        assert.equal(args.extent.raw_item_id,rawItemId);
+        return persistedReading(readUnitId);
+      },
+      bridge:bridgeStub,
+      submitGateCandidate:async meta=>{submitted=meta;return 'candidate-g1';},
+      readGateAudit:async()=>null,
+    });
+    const candidate=await worker.draftTextReading({run,job,registry,context,input,token:'synthetic-session'});
+    assert.equal(candidate.read_unit_id,readUnitId);
+    assert.equal(candidate.qualification,'UNASSESSED');
+    assert.equal(candidate.gate_code,'G1');
+    assert.equal(candidate.quote,undefined,'private text stays in the low-privilege L1 persistence boundary');
+    assert.equal(submitted.inputFingerprint,executionDigest(input),'G1 binds the actual signed D01 input');
+    assert.deepEqual(submitted.evidenceRefs,[
+      {kind:'read_unit',id:readUnitId,artifact_revision:'a'.repeat(64)},
+      {kind:'source_version',id:sourceVersionId}]);
+  });
+  assert.equal(sourceChecked,1);assert.equal(methodApproved,1);assert.equal(reads,1);
+  assert.ok(stored);
+});
+
+test('D01 C01 full-text request denies unapproved G0 before reading any private bytes',async()=>{
+  const originalId=id(),sourceVersionId=id(),rawItemId=id();
+  const input={originalId,text:{kind:'verified_utf8_full/v1',source_version_id:sourceVersionId,
+    raw_item_id:rawItemId,raw_sha256:TEXT_SHA}};
+  let reads=0,persisted=0;
+  await withStageAuthority({stage:'D01',input},async({registry,job,run,context})=>{
+    const worker=createPrivateEvidenceStageWorker({
+      verifySourceBinding:async()=>true,readApprovedMethodPlan:async()=>null,
+      readOriginal:async()=>{reads++;return textRecord();},
+      persistReading:async()=>{persisted++;return {};},
+      bridge:bridgeStub,...gateStub,readApprovedMethodPlan:async()=>null,
+    });
+    await assert.rejects(()=>worker.draftTextReading({run,job,registry,context,input,token:'synthetic-session'}),
+      /PRIVATE_D01_G0_METHOD_PLAN_NOT_APPROVED/);
+  });
+  assert.equal(reads,0);assert.equal(persisted,0);
+});
+
+test('D01 C01 full-text request refuses oversized or non-UTF8 bytes instead of silently inventing an extent',async()=>{
+  const originalId=id(),sourceVersionId=id(),rawItemId=id();
+  for(const bytes of [Buffer.alloc(32769,0x61),Buffer.from([0xff,0xfe])]){
+    const sha=createHash('sha256').update(bytes).digest('hex');
+    const input={originalId,text:{kind:'verified_utf8_full/v1',
+      source_version_id:sourceVersionId,raw_item_id:rawItemId,raw_sha256:sha}};
+    let persisted=0;
+    await withStageAuthority({stage:'D01',input},async({registry,job,run,context})=>{
+      const worker=createPrivateEvidenceStageWorker({
+        verifySourceBinding:async()=>true,readApprovedMethodPlan:async()=>approvedPlanStub,
+        readOriginal:async()=>({record:{state:'STORED_VERIFIED',content_type:'text/plain',sha256:sha},bytes}),
+        persistReading:async()=>{persisted++;return {};},
+        bridge:bridgeStub,...gateStub,
+      });
+      await assert.rejects(()=>worker.draftTextReading({run,job,registry,context,input,token:'synthetic-session'}),
+        /PRIVATE_READING_FULL_TEXT_NOT_SUPPORTED/);
+    });
+    assert.equal(persisted,0);
+  }
+});
+
 test('D02 observeMaterial submits one G2 material_evidence candidate with the signed G1 dependency',async()=>{
   const originalId=id(),readUnitId=id(),evidenceId=id();
   const auditId=id();
