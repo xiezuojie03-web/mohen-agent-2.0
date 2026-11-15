@@ -110,9 +110,9 @@ inspect.innerHTML='<span class="pill">'+esc(statusText[n.status]||n.status)+'</s
 inspect.scrollIntoView({behavior:'smooth',block:'nearest'});}
 function showEdge(id){let e=edgeById.get(id);if(!e)return;inspect.innerHTML='<span class="pill">'+esc(statusText[e.status]||e.status)+'</span><h3>'+esc(e.id)+': '+esc((nodeById.get(e.source)||{}).label||e.source)+' → '+esc((nodeById.get(e.target)||{}).label||e.target)+'</h3><p>'+esc(e.notes)+'</p>'+
 '<p><b>M5验收维度：</b>'+esc((e.acceptance_dimensions||[]).join('、')||'未来预留／不计M5')+'</p>'+
-'<p><b>证据等级：</b>'+esc(e.evidence_level||'NOT_RUN')+'；路径存在≠接口验通，需与当前HEAD及运行证据比对</p>+
+'<p><b>证据等级：</b>'+esc(e.evidence_level||'NOT_RUN')+'；路径存在≠接口验通，需与当前HEAD及运行证据比对</p>'+
 '<p><b>工程归因：</b>'+esc(graph.diagnosis_taxonomy?.[e.engineering_diagnosis?.category]||'待核')+'；'+esc(e.engineering_diagnosis?.diagnosis||'')+'</p>'+
-'<p><b>下一核查动作：</b>'+esc(e.engineering_diagnosis?.next||'逐接口核查')+'</p>''+
+'<p><b>下一核查动作：</b>'+esc(e.engineering_diagnosis?.next||'逐接口核查')+'</p>'+
 '<p><b>邻接合同必须检查：</b></p><ul>'+e.required_checks.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'+
 '<p><b>源码定位入口（固定SHA）：</b></p><ul>'+e.source_paths.map(linkFile).join('')+'</ul>';
 inspect.scrollIntoView({behavior:'smooth',block:'nearest'});}
