@@ -1,0 +1,1297 @@
+{
+  "schema": "mohen.m5.mainline-navigation.v0",
+  "snapshot_date": "2026-11-15",
+  "repository": "xiezuojie03-web/mohen-agent-2.0",
+  "branch": "main",
+  "source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+  "authority": "tasks/implementation/MAB/PLAN.md#3.5 B/C",
+  "document_role": "non_authoritative_navigation_and_gap_index",
+  "notice": "非新任务书、非完整架构权威、非真实整链PASS；以精确代码和CI/真实PG/HTTP/Provider证据为最终依据。",
+  "principles": [
+    "Studio可按需消费L0-L5的当前合格成果；是否可展示/外发由每次用途、权利、消费者和精确版本决定",
+    "D生产，L保存候选及历史，G独立签当前资格；L候选与L合格为同层不同状态而非两套真值库",
+    "Admin横向管理L0-L5对象与状态，不能直接签G0-G5或改写签署历史",
+    "D00允许发现所有合法来源，但取得与使用需区分许可、访问、用途、工具支持与费用",
+    "ST-04须Creator明确申请真实生产，自然语言研究任务不会自动越权触发付费/外发",
+    "WATCH在M5目标内，EXP仅预留；生产部署需要独立授权"
+  ],
+  "state_definitions": {
+    "partial": "模块/部分邻接代码已实现，不代表同Root真实通过",
+    "blocked": "已知结构/资格/实际接线缺口，整链HOLD",
+    "future": "规划预留，非M5已实现"
+  },
+  "stage_rows": [
+    {
+      "stage": "D00",
+      "layer": "L0",
+      "gate": "G0",
+      "name": "来源发现与准入",
+      "substrate": "来源、版本、馆藏、数字资产、原件字节、权利与SHA",
+      "status": "partial",
+      "state": "来源候选的持久化已有代码；通用外部资源获取到Studio的连接与真实G0签发待闭环",
+      "code": [
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "pipelines/data-production/adapters/private-evidence-adapters.mjs",
+        "pipelines/data-production/adapters/layer1-adapters.mjs"
+      ],
+      "blocker": "Studio 当前仍要求已登记私有原件；独立Reviewer精确签发尚未由同一真实Run验证",
+      "next_input": "合法原件 source_version + raw_item + G0 审批与消费范围"
+    },
+    {
+      "stage": "D01",
+      "layer": "L1",
+      "gate": "G1",
+      "name": "原件读取与识读",
+      "substrate": "read_unit、原文摘录、页/字节定位、识读质量、不确定性",
+      "status": "partial",
+      "state": "C01文本真实字节读取与Studio授权读回已修；C02专业OCR、完整G1资格仍待实证",
+      "code": [
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "packages/data-access/src/private-text-reading-repository.mjs",
+        "supabase/migrations/20261115130000_mab_m5_private_text_read_context_consistency.sql"
+      ],
+      "blocker": "G1精确审签与D01→D02专业请求生成未连通",
+      "next_input": "read_unit + 现行G1资格 + 精确locator和方法"
+    },
+    {
+      "stage": "D02",
+      "layer": "L2",
+      "gate": "G2",
+      "name": "材料理解与证据",
+      "substrate": "material_evidence、证据链接、引文及事实/解释分离",
+      "status": "blocked",
+      "state": "旧D02专业内容生成与新H05候选持久化都存在，但尚未受控连接",
+      "code": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "supabase/migrations/20261113170000_mab_m5_d02_text_plain_observation.sql"
+      ],
+      "blocker": "PRIVATE_NEXT_STAGE_REQUEST_NOT_READY；需要从合格L1组织真实观察输入",
+      "next_input": "合格H05证据@revision + G2审签"
+    },
+    {
+      "stage": "D03",
+      "layer": "L3",
+      "gate": "G3",
+      "name": "历史事实与关系",
+      "substrate": "实体、事实主张、年代地点、关系、冲突及证据链",
+      "status": "blocked",
+      "state": "旧D03专业推理与新claim候选持久化存在，真实G2→D03接力未证实",
+      "code": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs"
+      ],
+      "blocker": "缺以合格L2证据生成D03类型请求及独立G3整链实证",
+      "next_input": "合格claim/关系对象@revision + G3审签"
+    },
+    {
+      "stage": "D04",
+      "layer": "L4",
+      "gate": "G4",
+      "name": "人文发现与解释",
+      "substrate": "人文发现、当下联系、多种解释与认识限制",
+      "status": "blocked",
+      "state": "旧D04专业提示词与新finding候选Worker存在，L3→D04接力未完成",
+      "code": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs"
+      ],
+      "blocker": "缺合格L3事实到人文解释的类型化与专业审签交接",
+      "next_input": "合格finding@revision + G4审签"
+    },
+    {
+      "stage": "D05",
+      "layer": "L5",
+      "gate": "G5",
+      "name": "知识投影与消费",
+      "substrate": "read_model、story_seed、地图时间线、agent_context等合格消费视图",
+      "status": "blocked",
+      "state": "旧D05投影与新world_projection候选已有实现，G5跨用户用途消费尚未整链实证",
+      "code": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "apps/web/lib/read-model-bridge.ts"
+      ],
+      "blocker": "L4→D05专业转换、精确G5和多消费者资格未接通",
+      "next_input": "按用途可消费read_model@revision + G5审签"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "STUDIO_INTENT",
+      "label": "Studio自然语言研究任务",
+      "kind": "entry",
+      "status": "partial",
+      "summary": "已存在真实UI任务、Project、Root Task及研究入口，但自然语言到受权通用D00资源发现未闭合",
+      "code_paths": [
+        "apps/web/app/studio/StudioWorkbench.tsx",
+        "apps/web/lib/studio-production.ts"
+      ]
+    },
+    {
+      "id": "AGENT_PLAN",
+      "label": "Agent研究规划与合法生产申请",
+      "kind": "planning",
+      "status": "partial",
+      "summary": "已存在Agent研究与授权委托；正式触发生产须遵守ST-04 Creator明确请求，不能把询问默认当付费生产",
+      "code_paths": [
+        "apps/web/app/api/studio/director-plans/route.ts",
+        "apps/web/lib/studio-creation.ts"
+      ]
+    },
+    {
+      "id": "D00",
+      "label": "D00 · 来源发现与准入",
+      "kind": "producer",
+      "status": "partial",
+      "summary": "来源候选的持久化已有代码；通用外部资源获取到Studio的连接与真实G0签发待闭环",
+      "code_paths": [
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "pipelines/data-production/adapters/private-evidence-adapters.mjs",
+        "pipelines/data-production/adapters/layer1-adapters.mjs"
+      ],
+      "input_contract": "research_intent + project/root/source/rights",
+      "executor": "唯一Runner + Registry绑定Adapter/Worker",
+      "output_contract": "L0候选@revision + Gate候选",
+      "next_required": "合法原件 source_version + raw_item + G0 审批与消费范围"
+    },
+    {
+      "id": "L0_CANDIDATE",
+      "label": "L0 · 已持久化候选",
+      "kind": "candidate",
+      "status": "partial",
+      "summary": "来源、版本、馆藏、数字资产、原件字节、权利与SHA",
+      "code_paths": [
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "pipelines/data-production/adapters/private-evidence-adapters.mjs",
+        "pipelines/data-production/adapters/layer1-adapters.mjs"
+      ],
+      "qualification": "UNASSESSED / HOLD / REJECT / REVOKED可保留数据和审核历史"
+    },
+    {
+      "id": "G0",
+      "label": "G0 · 独立质量审核",
+      "kind": "gate",
+      "status": "blocked",
+      "summary": "既有机器规则与独立Gate合同；精确stage_binding合法签发及同Root实证尚未完成",
+      "code_paths": [
+        "tools/rule-gate-reviewer.mjs",
+        "tools/local-gate-service.mjs",
+        "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+      ],
+      "decision_set": [
+        "PASS",
+        "HOLD",
+        "REJECT",
+        "REVOKED"
+      ]
+    },
+    {
+      "id": "L0_QUALIFIED",
+      "label": "L0 · 合格资格视图",
+      "kind": "qualified",
+      "status": "blocked",
+      "summary": "不是另一套数据库；由独立当前Gate资格 + rights/purpose/consumer/scope/revision决定可否被消费",
+      "code_paths": [
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "pipelines/data-production/adapters/private-evidence-adapters.mjs",
+        "pipelines/data-production/adapters/layer1-adapters.mjs"
+      ],
+      "storage_identity": "same-layer-as-L0_CANDIDATE"
+    },
+    {
+      "id": "D01",
+      "label": "D01 · 原件读取与识读",
+      "kind": "producer",
+      "status": "partial",
+      "summary": "C01文本真实字节读取与Studio授权读回已修；C02专业OCR、完整G1资格仍待实证",
+      "code_paths": [
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "packages/data-access/src/private-text-reading-repository.mjs",
+        "supabase/migrations/20261115130000_mab_m5_private_text_read_context_consistency.sql"
+      ],
+      "input_contract": "上一层当前合格@revision + 受权方法/技能",
+      "executor": "唯一Runner + Registry绑定Adapter/Worker",
+      "output_contract": "L1候选@revision + Gate候选",
+      "next_required": "read_unit + 现行G1资格 + 精确locator和方法"
+    },
+    {
+      "id": "L1_CANDIDATE",
+      "label": "L1 · 已持久化候选",
+      "kind": "candidate",
+      "status": "partial",
+      "summary": "read_unit、原文摘录、页/字节定位、识读质量、不确定性",
+      "code_paths": [
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "packages/data-access/src/private-text-reading-repository.mjs",
+        "supabase/migrations/20261115130000_mab_m5_private_text_read_context_consistency.sql"
+      ],
+      "qualification": "UNASSESSED / HOLD / REJECT / REVOKED可保留数据和审核历史"
+    },
+    {
+      "id": "G1",
+      "label": "G1 · 独立质量审核",
+      "kind": "gate",
+      "status": "blocked",
+      "summary": "既有机器规则与独立Gate合同；精确stage_binding合法签发及同Root实证尚未完成",
+      "code_paths": [
+        "tools/rule-gate-reviewer.mjs",
+        "tools/local-gate-service.mjs",
+        "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+      ],
+      "decision_set": [
+        "PASS",
+        "HOLD",
+        "REJECT",
+        "REVOKED"
+      ]
+    },
+    {
+      "id": "L1_QUALIFIED",
+      "label": "L1 · 合格资格视图",
+      "kind": "qualified",
+      "status": "blocked",
+      "summary": "不是另一套数据库；由独立当前Gate资格 + rights/purpose/consumer/scope/revision决定可否被消费",
+      "code_paths": [
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "packages/data-access/src/private-text-reading-repository.mjs",
+        "supabase/migrations/20261115130000_mab_m5_private_text_read_context_consistency.sql"
+      ],
+      "storage_identity": "same-layer-as-L1_CANDIDATE"
+    },
+    {
+      "id": "D02",
+      "label": "D02 · 材料理解与证据",
+      "kind": "producer",
+      "status": "blocked",
+      "summary": "旧D02专业内容生成与新H05候选持久化都存在，但尚未受控连接",
+      "code_paths": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "supabase/migrations/20261113170000_mab_m5_d02_text_plain_observation.sql"
+      ],
+      "input_contract": "上一层当前合格@revision + 受权方法/技能",
+      "executor": "唯一Runner + Registry绑定Adapter/Worker",
+      "output_contract": "L2候选@revision + Gate候选",
+      "next_required": "合格H05证据@revision + G2审签"
+    },
+    {
+      "id": "L2_CANDIDATE",
+      "label": "L2 · 已持久化候选",
+      "kind": "candidate",
+      "status": "blocked",
+      "summary": "material_evidence、证据链接、引文及事实/解释分离",
+      "code_paths": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "supabase/migrations/20261113170000_mab_m5_d02_text_plain_observation.sql"
+      ],
+      "qualification": "UNASSESSED / HOLD / REJECT / REVOKED可保留数据和审核历史"
+    },
+    {
+      "id": "G2",
+      "label": "G2 · 独立质量审核",
+      "kind": "gate",
+      "status": "blocked",
+      "summary": "既有机器规则与独立Gate合同；精确stage_binding合法签发及同Root实证尚未完成",
+      "code_paths": [
+        "tools/rule-gate-reviewer.mjs",
+        "tools/local-gate-service.mjs",
+        "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+      ],
+      "decision_set": [
+        "PASS",
+        "HOLD",
+        "REJECT",
+        "REVOKED"
+      ]
+    },
+    {
+      "id": "L2_QUALIFIED",
+      "label": "L2 · 合格资格视图",
+      "kind": "qualified",
+      "status": "blocked",
+      "summary": "不是另一套数据库；由独立当前Gate资格 + rights/purpose/consumer/scope/revision决定可否被消费",
+      "code_paths": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "supabase/migrations/20261113170000_mab_m5_d02_text_plain_observation.sql"
+      ],
+      "storage_identity": "same-layer-as-L2_CANDIDATE"
+    },
+    {
+      "id": "D03",
+      "label": "D03 · 历史事实与关系",
+      "kind": "producer",
+      "status": "blocked",
+      "summary": "旧D03专业推理与新claim候选持久化存在，真实G2→D03接力未证实",
+      "code_paths": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs"
+      ],
+      "input_contract": "上一层当前合格@revision + 受权方法/技能",
+      "executor": "唯一Runner + Registry绑定Adapter/Worker",
+      "output_contract": "L3候选@revision + Gate候选",
+      "next_required": "合格claim/关系对象@revision + G3审签"
+    },
+    {
+      "id": "L3_CANDIDATE",
+      "label": "L3 · 已持久化候选",
+      "kind": "candidate",
+      "status": "blocked",
+      "summary": "实体、事实主张、年代地点、关系、冲突及证据链",
+      "code_paths": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs"
+      ],
+      "qualification": "UNASSESSED / HOLD / REJECT / REVOKED可保留数据和审核历史"
+    },
+    {
+      "id": "G3",
+      "label": "G3 · 独立质量审核",
+      "kind": "gate",
+      "status": "blocked",
+      "summary": "既有机器规则与独立Gate合同；精确stage_binding合法签发及同Root实证尚未完成",
+      "code_paths": [
+        "tools/rule-gate-reviewer.mjs",
+        "tools/local-gate-service.mjs",
+        "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+      ],
+      "decision_set": [
+        "PASS",
+        "HOLD",
+        "REJECT",
+        "REVOKED"
+      ]
+    },
+    {
+      "id": "L3_QUALIFIED",
+      "label": "L3 · 合格资格视图",
+      "kind": "qualified",
+      "status": "blocked",
+      "summary": "不是另一套数据库；由独立当前Gate资格 + rights/purpose/consumer/scope/revision决定可否被消费",
+      "code_paths": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs"
+      ],
+      "storage_identity": "same-layer-as-L3_CANDIDATE"
+    },
+    {
+      "id": "D04",
+      "label": "D04 · 人文发现与解释",
+      "kind": "producer",
+      "status": "blocked",
+      "summary": "旧D04专业提示词与新finding候选Worker存在，L3→D04接力未完成",
+      "code_paths": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs"
+      ],
+      "input_contract": "上一层当前合格@revision + 受权方法/技能",
+      "executor": "唯一Runner + Registry绑定Adapter/Worker",
+      "output_contract": "L4候选@revision + Gate候选",
+      "next_required": "合格finding@revision + G4审签"
+    },
+    {
+      "id": "L4_CANDIDATE",
+      "label": "L4 · 已持久化候选",
+      "kind": "candidate",
+      "status": "blocked",
+      "summary": "人文发现、当下联系、多种解释与认识限制",
+      "code_paths": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs"
+      ],
+      "qualification": "UNASSESSED / HOLD / REJECT / REVOKED可保留数据和审核历史"
+    },
+    {
+      "id": "G4",
+      "label": "G4 · 独立质量审核",
+      "kind": "gate",
+      "status": "blocked",
+      "summary": "既有机器规则与独立Gate合同；精确stage_binding合法签发及同Root实证尚未完成",
+      "code_paths": [
+        "tools/rule-gate-reviewer.mjs",
+        "tools/local-gate-service.mjs",
+        "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+      ],
+      "decision_set": [
+        "PASS",
+        "HOLD",
+        "REJECT",
+        "REVOKED"
+      ]
+    },
+    {
+      "id": "L4_QUALIFIED",
+      "label": "L4 · 合格资格视图",
+      "kind": "qualified",
+      "status": "blocked",
+      "summary": "不是另一套数据库；由独立当前Gate资格 + rights/purpose/consumer/scope/revision决定可否被消费",
+      "code_paths": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs"
+      ],
+      "storage_identity": "same-layer-as-L4_CANDIDATE"
+    },
+    {
+      "id": "D05",
+      "label": "D05 · 知识投影与消费",
+      "kind": "producer",
+      "status": "blocked",
+      "summary": "旧D05投影与新world_projection候选已有实现，G5跨用户用途消费尚未整链实证",
+      "code_paths": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "apps/web/lib/read-model-bridge.ts"
+      ],
+      "input_contract": "上一层当前合格@revision + 受权方法/技能",
+      "executor": "唯一Runner + Registry绑定Adapter/Worker",
+      "output_contract": "L5候选@revision + Gate候选",
+      "next_required": "按用途可消费read_model@revision + G5审签"
+    },
+    {
+      "id": "L5_CANDIDATE",
+      "label": "L5 · 已持久化候选",
+      "kind": "candidate",
+      "status": "blocked",
+      "summary": "read_model、story_seed、地图时间线、agent_context等合格消费视图",
+      "code_paths": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "apps/web/lib/read-model-bridge.ts"
+      ],
+      "qualification": "UNASSESSED / HOLD / REJECT / REVOKED可保留数据和审核历史"
+    },
+    {
+      "id": "G5",
+      "label": "G5 · 独立质量审核",
+      "kind": "gate",
+      "status": "blocked",
+      "summary": "既有机器规则与独立Gate合同；精确stage_binding合法签发及同Root实证尚未完成",
+      "code_paths": [
+        "tools/rule-gate-reviewer.mjs",
+        "tools/local-gate-service.mjs",
+        "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+      ],
+      "decision_set": [
+        "PASS",
+        "HOLD",
+        "REJECT",
+        "REVOKED"
+      ]
+    },
+    {
+      "id": "L5_QUALIFIED",
+      "label": "L5 · 合格资格视图",
+      "kind": "qualified",
+      "status": "blocked",
+      "summary": "不是另一套数据库；由独立当前Gate资格 + rights/purpose/consumer/scope/revision决定可否被消费",
+      "code_paths": [
+        "pipelines/data-production/adapters/layer1-adapters.mjs",
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "apps/web/lib/read-model-bridge.ts"
+      ],
+      "storage_identity": "same-layer-as-L5_CANDIDATE"
+    },
+    {
+      "id": "QUALIFIED_CONSUMPTION",
+      "label": "合格资产用途校验 / 读取",
+      "kind": "read",
+      "status": "partial",
+      "summary": "概念汇聚，非新的数据库或新服务；复用现有Owner项目读、G5读模型与按用途资格校验",
+      "code_paths": [
+        "apps/web/lib/studio-research-read.ts",
+        "apps/web/lib/read-model-bridge.ts",
+        "apps/web/lib/work-publish-qualification.ts"
+      ]
+    },
+    {
+      "id": "STUDIO_CREATIVE",
+      "label": "Studio H1/H2/H3 导演与创作",
+      "kind": "creative",
+      "status": "partial",
+      "summary": "创作可按需读取L0-L5合格成果；书影仍须按媒资展示权、来源和用途审核",
+      "code_paths": [
+        "apps/web/lib/studio-creation.ts",
+        "apps/web/lib/studio-director.ts"
+      ]
+    },
+    {
+      "id": "WORK_REVISION",
+      "label": "WorkRevision 不可变作品修订",
+      "kind": "artifact",
+      "status": "partial",
+      "summary": "已有作品修订/预览/编辑模块，但尚未证明与同一Root合格知识的完整引用",
+      "code_paths": [
+        "apps/web/lib/studio-director.ts",
+        "apps/web/app/api/studio/works/[id]/revisions/route.ts"
+      ]
+    },
+    {
+      "id": "ADMIN",
+      "label": "Admin 横向全层资产管理",
+      "kind": "governance",
+      "status": "partial",
+      "summary": "应管理L0-L5候选/资格/版本/来源/使用/撤销；现有公共资产入口偏图片台账，专业全层管理未闭合",
+      "code_paths": [
+        "apps/web/lib/admin-assets.ts",
+        "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts"
+      ]
+    },
+    {
+      "id": "EDITORIAL",
+      "label": "Admin 作品审核 / Operator",
+      "kind": "governance",
+      "status": "partial",
+      "summary": "作品编辑审核与独立专业Gate不同；不能由Admin代签G0-G5",
+      "code_paths": [
+        "apps/web/app/api/admin/submissions/[id]/decision/route.ts",
+        "apps/web/lib/publication.ts"
+      ]
+    },
+    {
+      "id": "PUBLISH",
+      "label": "精确修订发布与媒体权利",
+      "kind": "publish",
+      "status": "blocked",
+      "summary": "部分事务/资格核验存在；同一真实WorkRevision和媒资资格的实测未准出",
+      "code_paths": [
+        "apps/web/lib/publication.ts",
+        "apps/web/lib/work-publish-qualification.ts"
+      ]
+    },
+    {
+      "id": "WATCH",
+      "label": "WATCH 合法观看",
+      "kind": "consumer",
+      "status": "partial",
+      "summary": "代码入口已存在，准确版本消费和即时撤权的同作品实测尚未完成",
+      "code_paths": [
+        "apps/web/lib/publication-watch-sql.mjs",
+        "apps/web/lib/watch-studio-content.ts"
+      ]
+    },
+    {
+      "id": "REVOKE",
+      "label": "失效撤权及依赖重核",
+      "kind": "revocation",
+      "status": "partial",
+      "summary": "已有撤权客户端/API，但要求所有消费者的新请求立即阻断与回链证明",
+      "code_paths": [
+        "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
+        "apps/web/lib/publication.ts"
+      ]
+    },
+    {
+      "id": "EXP",
+      "label": "EXP 自由探索（预留）",
+      "kind": "future",
+      "status": "future",
+      "summary": "以后接入受权L0-L5与作品/关系探索；不计入本次M5已实现",
+      "code_paths": [
+        "tasks/implementation/MAB/PLAN.md"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "E00",
+      "source": "STUDIO_INTENT",
+      "target": "AGENT_PLAN",
+      "kind": "task",
+      "status": "partial",
+      "required_checks": [
+        "owner",
+        "project",
+        "root_task"
+      ],
+      "notes": "自然语言先进入Agent研究规划，不应自动越过Creator正式生产申请",
+      "source_paths": []
+    },
+    {
+      "id": "E01",
+      "source": "AGENT_PLAN",
+      "target": "D00",
+      "kind": "trigger",
+      "status": "blocked",
+      "required_checks": [
+        "ST-04 explicit production request",
+        "rights",
+        "budget",
+        "source availability"
+      ],
+      "notes": "Studio入口仍要求已有私有原件，广源发现/取得尚未从自然语言充分接线",
+      "source_paths": [
+        "apps/web/lib/studio-production.ts"
+      ]
+    },
+    {
+      "id": "E_D00_WRITE",
+      "source": "D00",
+      "target": "L0_CANDIDATE",
+      "kind": "persist",
+      "status": "partial",
+      "required_checks": [
+        "source/version/locator",
+        "artifact_revision",
+        "owner/project"
+      ],
+      "notes": "Producer先保存候选、不可直接签Gate",
+      "source_paths": []
+    },
+    {
+      "id": "E_D00_REVIEW",
+      "source": "L0_CANDIDATE",
+      "target": "G0",
+      "kind": "submit_review",
+      "status": "blocked",
+      "required_checks": [
+        "independent signer",
+        "reviewer binding",
+        "input/output digest",
+        "current policy"
+      ],
+      "notes": "独立Reviewer须绑定精确对象、输入输出、policy/scope",
+      "source_paths": [
+        "tools/local-gate-service.mjs"
+      ]
+    },
+    {
+      "id": "E_D00_QUALIFY",
+      "source": "G0",
+      "target": "L0_QUALIFIED",
+      "kind": "qualify",
+      "status": "blocked",
+      "required_checks": [
+        "current Gate PASS",
+        "qualified revision",
+        "purpose/consumer/scope",
+        "not revoked"
+      ],
+      "notes": "符合批准规则才具有当前资格；未合格对象留作候选或HOLD",
+      "source_paths": []
+    },
+    {
+      "id": "E_L0_TO_D01",
+      "source": "L0_QUALIFIED",
+      "target": "D01",
+      "kind": "next_stage",
+      "status": "partial",
+      "required_checks": [
+        "current qualification",
+        "typed request",
+        "exact source/locator",
+        "authorized executor"
+      ],
+      "notes": "同一root，上一层只有当前合格、用途准许且输入schema正确才可以进入下一D",
+      "source_paths": [
+        "pipelines/data-production/orchestrator/orchestrator.mjs"
+      ]
+    },
+    {
+      "id": "E_L0_TO_CREATIVE",
+      "source": "L0_QUALIFIED",
+      "target": "QUALIFIED_CONSUMPTION",
+      "kind": "studio_reuse",
+      "status": "blocked",
+      "required_checks": [
+        "current qualification",
+        "purpose/action",
+        "consumer=studio",
+        "rights & revocation",
+        "exact revision"
+      ],
+      "notes": "六层都可用于创作，但每次真实消费须核自己的资格和用途；原件/书影须另核展示许可",
+      "source_paths": []
+    },
+    {
+      "id": "E_ADMIN_L0",
+      "source": "ADMIN",
+      "target": "L0_CANDIDATE",
+      "kind": "admin_manage",
+      "status": "partial",
+      "required_checks": [
+        "operator/owner role",
+        "audit immutability",
+        "reasoned invalidation"
+      ],
+      "notes": "Admin查看管理候选/资格/版本/缺口，独立Gate依旧独立签发",
+      "source_paths": []
+    },
+    {
+      "id": "E_D01_WRITE",
+      "source": "D01",
+      "target": "L1_CANDIDATE",
+      "kind": "persist",
+      "status": "partial",
+      "required_checks": [
+        "source/version/locator",
+        "artifact_revision",
+        "owner/project"
+      ],
+      "notes": "Producer先保存候选、不可直接签Gate",
+      "source_paths": []
+    },
+    {
+      "id": "E_D01_REVIEW",
+      "source": "L1_CANDIDATE",
+      "target": "G1",
+      "kind": "submit_review",
+      "status": "blocked",
+      "required_checks": [
+        "independent signer",
+        "reviewer binding",
+        "input/output digest",
+        "current policy"
+      ],
+      "notes": "独立Reviewer须绑定精确对象、输入输出、policy/scope",
+      "source_paths": [
+        "tools/local-gate-service.mjs"
+      ]
+    },
+    {
+      "id": "E_D01_QUALIFY",
+      "source": "G1",
+      "target": "L1_QUALIFIED",
+      "kind": "qualify",
+      "status": "blocked",
+      "required_checks": [
+        "current Gate PASS",
+        "qualified revision",
+        "purpose/consumer/scope",
+        "not revoked"
+      ],
+      "notes": "符合批准规则才具有当前资格；未合格对象留作候选或HOLD",
+      "source_paths": []
+    },
+    {
+      "id": "E_L1_TO_D02",
+      "source": "L1_QUALIFIED",
+      "target": "D02",
+      "kind": "next_stage",
+      "status": "blocked",
+      "required_checks": [
+        "current qualification",
+        "typed request",
+        "exact source/locator",
+        "authorized executor"
+      ],
+      "notes": "同一root，上一层只有当前合格、用途准许且输入schema正确才可以进入下一D",
+      "source_paths": [
+        "pipelines/data-production/orchestrator/orchestrator.mjs"
+      ]
+    },
+    {
+      "id": "E_L1_TO_CREATIVE",
+      "source": "L1_QUALIFIED",
+      "target": "QUALIFIED_CONSUMPTION",
+      "kind": "studio_reuse",
+      "status": "blocked",
+      "required_checks": [
+        "current qualification",
+        "purpose/action",
+        "consumer=studio",
+        "rights & revocation",
+        "exact revision"
+      ],
+      "notes": "六层都可用于创作，但每次真实消费须核自己的资格和用途",
+      "source_paths": []
+    },
+    {
+      "id": "E_ADMIN_L1",
+      "source": "ADMIN",
+      "target": "L1_CANDIDATE",
+      "kind": "admin_manage",
+      "status": "partial",
+      "required_checks": [
+        "operator/owner role",
+        "audit immutability",
+        "reasoned invalidation"
+      ],
+      "notes": "Admin查看管理候选/资格/版本/缺口，独立Gate依旧独立签发",
+      "source_paths": []
+    },
+    {
+      "id": "E_D02_WRITE",
+      "source": "D02",
+      "target": "L2_CANDIDATE",
+      "kind": "persist",
+      "status": "blocked",
+      "required_checks": [
+        "source/version/locator",
+        "artifact_revision",
+        "owner/project"
+      ],
+      "notes": "Producer先保存候选、不可直接签Gate",
+      "source_paths": []
+    },
+    {
+      "id": "E_D02_REVIEW",
+      "source": "L2_CANDIDATE",
+      "target": "G2",
+      "kind": "submit_review",
+      "status": "blocked",
+      "required_checks": [
+        "independent signer",
+        "reviewer binding",
+        "input/output digest",
+        "current policy"
+      ],
+      "notes": "独立Reviewer须绑定精确对象、输入输出、policy/scope",
+      "source_paths": [
+        "tools/local-gate-service.mjs"
+      ]
+    },
+    {
+      "id": "E_D02_QUALIFY",
+      "source": "G2",
+      "target": "L2_QUALIFIED",
+      "kind": "qualify",
+      "status": "blocked",
+      "required_checks": [
+        "current Gate PASS",
+        "qualified revision",
+        "purpose/consumer/scope",
+        "not revoked"
+      ],
+      "notes": "符合批准规则才具有当前资格；未合格对象留作候选或HOLD",
+      "source_paths": []
+    },
+    {
+      "id": "E_L2_TO_D03",
+      "source": "L2_QUALIFIED",
+      "target": "D03",
+      "kind": "next_stage",
+      "status": "blocked",
+      "required_checks": [
+        "current qualification",
+        "typed request",
+        "exact source/locator",
+        "authorized executor"
+      ],
+      "notes": "同一root，上一层只有当前合格、用途准许且输入schema正确才可以进入下一D",
+      "source_paths": [
+        "pipelines/data-production/orchestrator/orchestrator.mjs"
+      ]
+    },
+    {
+      "id": "E_L2_TO_CREATIVE",
+      "source": "L2_QUALIFIED",
+      "target": "QUALIFIED_CONSUMPTION",
+      "kind": "studio_reuse",
+      "status": "blocked",
+      "required_checks": [
+        "current qualification",
+        "purpose/action",
+        "consumer=studio",
+        "rights & revocation",
+        "exact revision"
+      ],
+      "notes": "六层都可用于创作，但每次真实消费须核自己的资格和用途",
+      "source_paths": []
+    },
+    {
+      "id": "E_ADMIN_L2",
+      "source": "ADMIN",
+      "target": "L2_CANDIDATE",
+      "kind": "admin_manage",
+      "status": "partial",
+      "required_checks": [
+        "operator/owner role",
+        "audit immutability",
+        "reasoned invalidation"
+      ],
+      "notes": "Admin查看管理候选/资格/版本/缺口，独立Gate依旧独立签发",
+      "source_paths": []
+    },
+    {
+      "id": "E_D03_WRITE",
+      "source": "D03",
+      "target": "L3_CANDIDATE",
+      "kind": "persist",
+      "status": "blocked",
+      "required_checks": [
+        "source/version/locator",
+        "artifact_revision",
+        "owner/project"
+      ],
+      "notes": "Producer先保存候选、不可直接签Gate",
+      "source_paths": []
+    },
+    {
+      "id": "E_D03_REVIEW",
+      "source": "L3_CANDIDATE",
+      "target": "G3",
+      "kind": "submit_review",
+      "status": "blocked",
+      "required_checks": [
+        "independent signer",
+        "reviewer binding",
+        "input/output digest",
+        "current policy"
+      ],
+      "notes": "独立Reviewer须绑定精确对象、输入输出、policy/scope",
+      "source_paths": [
+        "tools/local-gate-service.mjs"
+      ]
+    },
+    {
+      "id": "E_D03_QUALIFY",
+      "source": "G3",
+      "target": "L3_QUALIFIED",
+      "kind": "qualify",
+      "status": "blocked",
+      "required_checks": [
+        "current Gate PASS",
+        "qualified revision",
+        "purpose/consumer/scope",
+        "not revoked"
+      ],
+      "notes": "符合批准规则才具有当前资格；未合格对象留作候选或HOLD",
+      "source_paths": []
+    },
+    {
+      "id": "E_L3_TO_D04",
+      "source": "L3_QUALIFIED",
+      "target": "D04",
+      "kind": "next_stage",
+      "status": "blocked",
+      "required_checks": [
+        "current qualification",
+        "typed request",
+        "exact source/locator",
+        "authorized executor"
+      ],
+      "notes": "同一root，上一层只有当前合格、用途准许且输入schema正确才可以进入下一D",
+      "source_paths": [
+        "pipelines/data-production/orchestrator/orchestrator.mjs"
+      ]
+    },
+    {
+      "id": "E_L3_TO_CREATIVE",
+      "source": "L3_QUALIFIED",
+      "target": "QUALIFIED_CONSUMPTION",
+      "kind": "studio_reuse",
+      "status": "blocked",
+      "required_checks": [
+        "current qualification",
+        "purpose/action",
+        "consumer=studio",
+        "rights & revocation",
+        "exact revision"
+      ],
+      "notes": "六层都可用于创作，但每次真实消费须核自己的资格和用途",
+      "source_paths": []
+    },
+    {
+      "id": "E_ADMIN_L3",
+      "source": "ADMIN",
+      "target": "L3_CANDIDATE",
+      "kind": "admin_manage",
+      "status": "partial",
+      "required_checks": [
+        "operator/owner role",
+        "audit immutability",
+        "reasoned invalidation"
+      ],
+      "notes": "Admin查看管理候选/资格/版本/缺口，独立Gate依旧独立签发",
+      "source_paths": []
+    },
+    {
+      "id": "E_D04_WRITE",
+      "source": "D04",
+      "target": "L4_CANDIDATE",
+      "kind": "persist",
+      "status": "blocked",
+      "required_checks": [
+        "source/version/locator",
+        "artifact_revision",
+        "owner/project"
+      ],
+      "notes": "Producer先保存候选、不可直接签Gate",
+      "source_paths": []
+    },
+    {
+      "id": "E_D04_REVIEW",
+      "source": "L4_CANDIDATE",
+      "target": "G4",
+      "kind": "submit_review",
+      "status": "blocked",
+      "required_checks": [
+        "independent signer",
+        "reviewer binding",
+        "input/output digest",
+        "current policy"
+      ],
+      "notes": "独立Reviewer须绑定精确对象、输入输出、policy/scope",
+      "source_paths": [
+        "tools/local-gate-service.mjs"
+      ]
+    },
+    {
+      "id": "E_D04_QUALIFY",
+      "source": "G4",
+      "target": "L4_QUALIFIED",
+      "kind": "qualify",
+      "status": "blocked",
+      "required_checks": [
+        "current Gate PASS",
+        "qualified revision",
+        "purpose/consumer/scope",
+        "not revoked"
+      ],
+      "notes": "符合批准规则才具有当前资格；未合格对象留作候选或HOLD",
+      "source_paths": []
+    },
+    {
+      "id": "E_L4_TO_D05",
+      "source": "L4_QUALIFIED",
+      "target": "D05",
+      "kind": "next_stage",
+      "status": "blocked",
+      "required_checks": [
+        "current qualification",
+        "typed request",
+        "exact source/locator",
+        "authorized executor"
+      ],
+      "notes": "同一root，上一层只有当前合格、用途准许且输入schema正确才可以进入下一D",
+      "source_paths": [
+        "pipelines/data-production/orchestrator/orchestrator.mjs"
+      ]
+    },
+    {
+      "id": "E_L4_TO_CREATIVE",
+      "source": "L4_QUALIFIED",
+      "target": "QUALIFIED_CONSUMPTION",
+      "kind": "studio_reuse",
+      "status": "blocked",
+      "required_checks": [
+        "current qualification",
+        "purpose/action",
+        "consumer=studio",
+        "rights & revocation",
+        "exact revision"
+      ],
+      "notes": "六层都可用于创作，但每次真实消费须核自己的资格和用途",
+      "source_paths": []
+    },
+    {
+      "id": "E_ADMIN_L4",
+      "source": "ADMIN",
+      "target": "L4_CANDIDATE",
+      "kind": "admin_manage",
+      "status": "partial",
+      "required_checks": [
+        "operator/owner role",
+        "audit immutability",
+        "reasoned invalidation"
+      ],
+      "notes": "Admin查看管理候选/资格/版本/缺口，独立Gate依旧独立签发",
+      "source_paths": []
+    },
+    {
+      "id": "E_D05_WRITE",
+      "source": "D05",
+      "target": "L5_CANDIDATE",
+      "kind": "persist",
+      "status": "blocked",
+      "required_checks": [
+        "source/version/locator",
+        "artifact_revision",
+        "owner/project"
+      ],
+      "notes": "Producer先保存候选、不可直接签Gate",
+      "source_paths": []
+    },
+    {
+      "id": "E_D05_REVIEW",
+      "source": "L5_CANDIDATE",
+      "target": "G5",
+      "kind": "submit_review",
+      "status": "blocked",
+      "required_checks": [
+        "independent signer",
+        "reviewer binding",
+        "input/output digest",
+        "current policy"
+      ],
+      "notes": "独立Reviewer须绑定精确对象、输入输出、policy/scope",
+      "source_paths": [
+        "tools/local-gate-service.mjs"
+      ]
+    },
+    {
+      "id": "E_D05_QUALIFY",
+      "source": "G5",
+      "target": "L5_QUALIFIED",
+      "kind": "qualify",
+      "status": "blocked",
+      "required_checks": [
+        "current Gate PASS",
+        "qualified revision",
+        "purpose/consumer/scope",
+        "not revoked"
+      ],
+      "notes": "符合批准规则才具有当前资格；未合格对象留作候选或HOLD",
+      "source_paths": []
+    },
+    {
+      "id": "E_L5_TO_CREATIVE",
+      "source": "L5_QUALIFIED",
+      "target": "QUALIFIED_CONSUMPTION",
+      "kind": "studio_reuse",
+      "status": "blocked",
+      "required_checks": [
+        "current qualification",
+        "purpose/action",
+        "consumer=studio",
+        "rights & revocation",
+        "exact revision"
+      ],
+      "notes": "六层都可用于创作，但每次真实消费须核自己的资格和用途",
+      "source_paths": []
+    },
+    {
+      "id": "E_ADMIN_L5",
+      "source": "ADMIN",
+      "target": "L5_CANDIDATE",
+      "kind": "admin_manage",
+      "status": "partial",
+      "required_checks": [
+        "operator/owner role",
+        "audit immutability",
+        "reasoned invalidation"
+      ],
+      "notes": "Admin查看管理候选/资格/版本/缺口，独立Gate依旧独立签发",
+      "source_paths": []
+    },
+    {
+      "id": "E_REUSE_TO_STUDIO",
+      "source": "QUALIFIED_CONSUMPTION",
+      "target": "STUDIO_CREATIVE",
+      "kind": "context",
+      "status": "partial",
+      "required_checks": [
+        "qualifications L0-L5",
+        "per-source rights",
+        "use_events"
+      ],
+      "notes": "已有部分Owner研究读，但尚未证明全六层同Root受控复用",
+      "source_paths": []
+    },
+    {
+      "id": "E_STUDIO_TO_REV",
+      "source": "STUDIO_CREATIVE",
+      "target": "WORK_REVISION",
+      "kind": "create_revision",
+      "status": "partial",
+      "required_checks": [
+        "H1/H2/H3",
+        "evidence refs",
+        "CAS",
+        "idempotency"
+      ],
+      "notes": "真实导演/结构/编辑/保存，绑定引用及不可变修订",
+      "source_paths": []
+    },
+    {
+      "id": "E_REV_TO_EDITORIAL",
+      "source": "WORK_REVISION",
+      "target": "EDITORIAL",
+      "kind": "submit",
+      "status": "partial",
+      "required_checks": [
+        "exact work revision",
+        "owner",
+        "submission status"
+      ],
+      "notes": "管理员审核作品，不能替代专业G5",
+      "source_paths": []
+    },
+    {
+      "id": "E_EDITORIAL_TO_PUBLISH",
+      "source": "EDITORIAL",
+      "target": "PUBLISH",
+      "kind": "publish",
+      "status": "blocked",
+      "required_checks": [
+        "current G5 for WATCH",
+        "work revision",
+        "media license",
+        "operator authorization"
+      ],
+      "notes": "独立G5 + 媒资逐动作权利 + Operator审核 + 原子发布指针",
+      "source_paths": []
+    },
+    {
+      "id": "E_PUBLISH_TO_WATCH",
+      "source": "PUBLISH",
+      "target": "WATCH",
+      "kind": "watch",
+      "status": "partial",
+      "required_checks": [
+        "exact published revision",
+        "watch consumer",
+        "rights",
+        "recheck"
+      ],
+      "notes": "每个新请求校验当前资格、版本和撤权状态",
+      "source_paths": []
+    },
+    {
+      "id": "E_ADMIN_TO_EDITORIAL",
+      "source": "ADMIN",
+      "target": "EDITORIAL",
+      "kind": "manage_publication",
+      "status": "partial",
+      "required_checks": [],
+      "notes": "Admin管理投稿、审核、运营决策，与专业独立Gate分权",
+      "source_paths": []
+    },
+    {
+      "id": "E_ADMIN_TO_REVOKE",
+      "source": "ADMIN",
+      "target": "REVOKE",
+      "kind": "invalidation",
+      "status": "partial",
+      "required_checks": [],
+      "notes": "管理方可以申请撤权/纠错，实际资格失效由独立服务执行",
+      "source_paths": []
+    },
+    {
+      "id": "E_REVOKE_TO_WATCH",
+      "source": "REVOKE",
+      "target": "WATCH",
+      "kind": "deny_new_requests",
+      "status": "blocked",
+      "required_checks": [],
+      "notes": "撤权后新请求即时阻断，不依赖定时重核",
+      "source_paths": []
+    },
+    {
+      "id": "E_REUSE_TO_EXP",
+      "source": "QUALIFIED_CONSUMPTION",
+      "target": "EXP",
+      "kind": "future_experience",
+      "status": "future",
+      "required_checks": [],
+      "notes": "EXP未来可按权限消费各层知识；当前不计为M5通过",
+      "source_paths": []
+    },
+    {
+      "id": "E_WORKREV_TO_EXP",
+      "source": "WORK_REVISION",
+      "target": "EXP",
+      "kind": "future_experience",
+      "status": "future",
+      "required_checks": [],
+      "notes": "未来作品关联探索的候选连接，待EXP设计确认",
+      "source_paths": []
+    }
+  ],
+  "earliest_verified_code_point": "D00→D01 C01代码接线、合格候选读模型修改、自动验证（不代表同Root G0真实签发）",
+  "earliest_runtime_blocker": "Studio/D00真实同Root独立G0当前精确签发及合法D01消费仍未实测",
+  "next_real_code_blocker": "严格G0精确签发的正确回执绑定；其后D01合格候选→D02专业类型请求生成",
+  "acceptance_basis": "PLAN V1.7 M5八维同一真实作品，绝不以本图状态代替验收"
+}
