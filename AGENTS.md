@@ -25,6 +25,7 @@ Owner已批准的裁决 → `MHKA-00—05` 相应设计职责 → 现行授权�
 | 数据生产与Registry | `specs/data-production/MoHen_Data_Production_Protocol.md`；`specs/data-production/production-registry.json` |
 | **唯一施工计划、标准** | `tasks/implementation/MAB/PLAN.md` |
 | **当前工程事实与风险** | `CURRENT.md`（事实仍需对照实时GitHub/CI/DB/部署验证） |
+| **M5主干工程指南针（非权威、持续更新）** | `tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json`（机器按节点/边与八维定位）＋同目录`.md`（人机解释）/`.html`（点击检查），三份同一提交同步；须再对照当前HEAD与实跑证据 |
 | **不可变历史过程与证据** | `tasks/implementation/MAB/progress.md`（优先读顶端说明、末尾最新批及所需历史段落） |
 | 目标级差异与实际接线 | `tasks/implementation/MAB/target-diff.csv` |
 | 快速接续入口 | `tasks/implementation/MAB/ENGINEERING_HANDOFF_CURRENT.md` |
@@ -34,7 +35,7 @@ Owner已批准的裁决 → `MHKA-00—05` 相应设计职责 → 现行授权�
 ## 3. 一次施工的最短读取与写入顺序
 
 1. **先核实现场**：重新取远端`main` HEAD、最新相关CI及生产自动部署隔离状态；用`CURRENT.md`定位已知断点。历史SHA与旧报告不能充作当前基线。
-2. **再读精准合同**：读本PLAN对应阶段/QR/CP和相应MHKA及专业合同，必要时定位`progress.md`最后一批/精确证据；**不从头通读数千行施工史，也不无条件读全部架构文件**。
+2. **再读精准合同**：读本PLAN对应阶段/QR/CP和相应MHKA及专业合同，必要时定位`progress.md`最后一批/精确证据；**不从头通读数千行施工史，也不无条件读全部架构文件**。 **M5主干施工必读导航JSON（含 navigation_policy、acceptance_dimensions、nodes[]、edges[]）；再按实际缺口读取MD/HTML。该导航不是准出依据，任何边以当前源码与运行证据核实。**
 3. **只在单main范围施工**：依PLAN §0.2先确认“提交不会自动发布生产”的隔离已实测；未完成只能做获授权的文档/只读任务及不触生产的准备。每批检查受影响文件版本，禁止并行竞争写、强推、重置及新建施工分支/PR。
 4. **验证和留账**：按任务实际执行POS/NEG/AUTH、PG/HTTP、Gate/权限、恢复/撤权等必要用例；没运行标NOT_RUN，遇到阻断标具名HOLD。只把实际SHA/测试/费用/回滚写`progress.md`，运行事实变化时刷新`CURRENT.md`；`PLAN.md`只在任务/规则/验收标准变化时修改。
 
