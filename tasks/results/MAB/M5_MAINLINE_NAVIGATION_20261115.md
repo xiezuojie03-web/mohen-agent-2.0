@@ -28,6 +28,12 @@
 
 全图另有1个EXP未来节点、2条未来连接，三层状态均为FUTURE。每行按自己的分母算比例，例如连接能力PARTIAL为**13.5%**、连接能力NOT_VERIFIED为**86.5%**，不能用未核实比例推断开发缺失。
 
+### 专业合同细目与工程状态的界线
+
+- **13类知识工作资产**：`research_brief / source_anchor / reading_note / evidence_note / spacetime_candidate / relation_hypothesis / humanistic_insight / research_collection / director_plan / media_selection / work_revision / citation_snapshot / consented_feedback`（来源：`specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md` §10）。均是受控的合同目标，现阶段不能用清单存在推断全部实现。
+- **19组件**：W01 作品导航；W02 视觉舞台容器；W03 时间节拍轴；W04 历史空间承载；W05 原件阅读与导读；W06 对照与比较；W07 关系观察；W08 叙事字幕与声音；W09 墨痕在场；W10 证据与出处返查；W11 镜头调度与播放；X01 探索意图与路径；X02 探索快照与返回；C01 资产检索选择器；C02 AI 编排建议比较；C03 节拍与镜头编辑器；C04 预览和版本管理；C05 资格与导出发布；F01 缺口工单与回流（来源：`specs/experience-ui/H1_H2_H3_AND_COMPONENTS_CONTRACT.md` §4.1）。其中W族11项、X族2项、C族5项、F族1项，跨WATCH/EXP/Studio/回流，不全属于Studio页面。
+- HTML在对应模块中提供可展开的**合同目录**，仅帮助后续逐项核查，**不改变37节点/54连接与M5八维准出分母**。
+
 ### 模块结构分布（互斥主归属）
 
 | 业务领域 | 节点 | 连接 | 占全部54条 |

@@ -5620,7 +5620,67 @@
         "E_CREATIVE_TO_ASSETS",
         "E_ASSETS_TO_CREATIVE",
         "E_ASSETS_TO_ADMIN"
-      ]
+      ],
+      "inventory": {
+        "kind": "CONTRACT_CHECKLIST",
+        "title": "13种asset_kind完整合同目录",
+        "source_path": "specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md",
+        "entries": [
+          {
+            "id": "research_brief",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "source_anchor",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "reading_note",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "evidence_note",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "spacetime_candidate",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "relation_hypothesis",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "humanistic_insight",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "research_collection",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "director_plan",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "media_selection",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "work_revision",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "citation_snapshot",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "consented_feedback",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          }
+        ],
+        "note": "仅为权威合同目录；不得将条目数量算作13类已实现或13次PASS；真实作品只生成实际适用类型"
+      }
     },
     {
       "id": "studio",
@@ -5666,7 +5726,129 @@
       "primary_edge_ids": [
         "E_STUDIO_TO_REV",
         "E_REV_TO_EDITORIAL"
-      ]
+      ],
+      "inventory": {
+        "kind": "CONTRACT_CHECKLIST",
+        "title": "H1/H2/H3与19组件跨模式正式目录",
+        "source_path": "specs/experience-ui/H1_H2_H3_AND_COMPONENTS_CONTRACT.md",
+        "entries": [
+          {
+            "id": "W01",
+            "label": "作品导航",
+            "family": "W",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "W02",
+            "label": "视觉舞台容器",
+            "family": "W",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "W03",
+            "label": "时间节拍轴",
+            "family": "W",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "W04",
+            "label": "历史空间承载",
+            "family": "W",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "W05",
+            "label": "原件阅读与导读",
+            "family": "W",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "W06",
+            "label": "对照与比较",
+            "family": "W",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "W07",
+            "label": "关系观察",
+            "family": "W",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "W08",
+            "label": "叙事字幕与声音",
+            "family": "W",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "W09",
+            "label": "墨痕在场",
+            "family": "W",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "W10",
+            "label": "证据与出处返查",
+            "family": "W",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "W11",
+            "label": "镜头调度与播放",
+            "family": "W",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "X01",
+            "label": "探索意图与路径",
+            "family": "X",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "X02",
+            "label": "探索快照与返回",
+            "family": "X",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "C01",
+            "label": "资产检索选择器",
+            "family": "C",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "C02",
+            "label": "AI 编排建议比较",
+            "family": "C",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "C03",
+            "label": "节拍与镜头编辑器",
+            "family": "C",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "C04",
+            "label": "预览和版本管理",
+            "family": "C",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "C05",
+            "label": "资格与导出发布",
+            "family": "C",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          },
+          {
+            "id": "F01",
+            "label": "缺口工单与回流",
+            "family": "F",
+            "status": "NOT_ASSESSED_IN_NAVIGATION"
+          }
+        ],
+        "note": "19组件横跨WATCH(W)、探索(X)、创作(C)、回流(F)；这是合同目标清单，不是19个已运行组件，也不强制全部作为Studio UI子模块"
+      }
     },
     {
       "id": "admin",
@@ -6328,6 +6510,11 @@
       "focused_diagnostic_edges": 7,
       "not_yet_focused_edges": 45,
       "future_edges": 2
+    },
+    "contract_catalog": {
+      "knowledge_asset_kinds": 13,
+      "experience_components": 19,
+      "interpretation": "静态合同目录规模，不反映代码实现或工程验收；不得计入37节点/54连接或状态完成比例"
     }
   }
 }
