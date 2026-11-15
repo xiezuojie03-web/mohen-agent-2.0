@@ -4162,3 +4162,15 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - `977b36963fe80d492df1b9f255c50abdc9b02897`：发现本地隔离`local-gate-service.mjs`把请求`output_digest`回显为PASS而不核签署的stage_binding；在既有只读Gate资格合同增加纯比较并用于本地Gate服务，只有审计含精确job/reviewer/consumer/input/output时才返回当前资格，新增错输出/错job/错reviewer/错阶段等拒绝测试，缺stage_binding则HOLD。主CI [43681613039](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681613039) 末次查询未完；独立Gate撤权合同 [43681613052](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681613052) SUCCESS。
 - **本次实际交付**：业务代码SHA已入main且回读，前两提交已有精确SHA CI通过。当前Runner可证明D00→D01合法读取的代码条件，无法证明本地隔离Owner真实G0签发/持久D01 PASS；D01→D02仍为具名HOLD（专业生成尚未受控接线），机器Gate精确输出审签的可信回执尚需补齐，真实整体`NOT_RUN/DEFERRED_ENV`。旧`layer1-adapters.mjs`专业生产保持可继承，未改回无权直接外发或Producer签Gate。
 - **下游结论**：D01的阅读候选只允许作为候选对象；未经D02专业观察/独立G2，不会得到material_evidence PASS，更不会被D03、作品或WATCH误读。M5八维`M5_OVERALL_HOLD`，没有新增计划或验收标准。
+
+
+---
+
+## 2026-11-15｜M5批次D：C01持久阅读到Studio Owner下游消费者的真实SQL合同修复
+
+- `5245b89a4b65c92be180935fca870ccdb74cb9fb`：新版本化迁移`20261115130000_mab_m5_private_text_read_context_consistency.sql` 修`studio.read_private_text_reading`对写入方不存在字段的过滤和D02证据链接回执格式；`private-text-reading.integration.mjs`对Owner同项目真实写入后读回、精确source/version/locator、跨Owner拒绝、资格UNASSESSED及不泄露Storage增加断言。初版SQL文本替换损坏，此提交本身**不合格/旧CI失败**。
+- `0ac9a19e4c4ffc2fec302aad40afb76addb2645b`：纠正SQL文本替换中`$'`特殊插值损坏（新迁移由11862字节恢复为单一定义约6598字节，回读验证）。本笔CI的fixture静态守卫发现新迁移没有列入隔离PG和HTTP清单，**FAIL**。
+- `e625513782e9ec0ed6f1a9258edb5595793e890f`：现有`scripts/test-k3-db.mjs`将旧L1读视图与新兼容迁移在`PRIVATE_TEXT_READING`真实PG测试前应用，去除后面二次覆盖旧读视图；`.github/workflows/mab-isolated-db.yml`含新迁移变更路径。CI指出HTTP测试仍缺迁移清单，**FAIL**，对应隔离PG17运行 [43682283964](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43682283964) 当记录时仍在跑。
+- `9730e527e71fadd94b539f7631eb5dd8fc472683`：把兼容迁移按顺序加入`scripts/test-mab-http.mjs`，两套隔离清单完整；主CI [43682350601](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43682350601) **SUCCESS**，隔离HTTP [43682350602](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43682350602)记录时仍在跑，不能记真实HTTP/PG PASS。
+- **本次代码受控结果**：C01阅读来源真实Writer和Studio读视图字段已逐项核对并修复，仍需真实PG/HTTP结果及Owner实际可用性；此前的局部G0/G1合法执行代码证据不等于同root审核PASS。下一阻断为独立Reviewer真正精确stage_binding签发及D01→D02专业H05输入，不重新造D02。未操作正式数据库、原件或生产部署；`PLAN V1.7`不变，`M5_OVERALL_HOLD`。
+
