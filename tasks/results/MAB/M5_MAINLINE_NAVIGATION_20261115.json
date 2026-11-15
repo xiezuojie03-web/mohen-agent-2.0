@@ -152,7 +152,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "intake"
     },
     {
       "id": "AGENT_PLAN",
@@ -196,7 +197,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "intake"
     },
     {
       "id": "D00",
@@ -244,7 +246,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "L0_CANDIDATE",
@@ -284,7 +287,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "G0",
@@ -337,7 +341,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "L0_QUALIFIED",
@@ -380,7 +385,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "D01",
@@ -430,7 +436,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "L1_CANDIDATE",
@@ -470,7 +477,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "G1",
@@ -520,7 +528,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "L1_QUALIFIED",
@@ -560,7 +569,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "D02",
@@ -610,7 +620,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "L2_CANDIDATE",
@@ -650,7 +661,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "G2",
@@ -700,7 +712,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "L2_QUALIFIED",
@@ -740,7 +753,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "D03",
@@ -786,7 +800,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "L3_CANDIDATE",
@@ -824,7 +839,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "G3",
@@ -874,7 +890,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "L3_QUALIFIED",
@@ -912,7 +929,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "D04",
@@ -958,7 +976,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "L4_CANDIDATE",
@@ -996,7 +1015,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "G4",
@@ -1046,7 +1066,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "L4_QUALIFIED",
@@ -1084,7 +1105,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "D05",
@@ -1132,7 +1154,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "L5_CANDIDATE",
@@ -1172,7 +1195,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "G5",
@@ -1222,7 +1246,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "L5_QUALIFIED",
@@ -1262,7 +1287,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "QUALIFIED_CONSUMPTION",
@@ -1306,7 +1332,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "knowledge_use"
     },
     {
       "id": "STUDIO_CREATIVE",
@@ -1350,7 +1377,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "studio"
     },
     {
       "id": "WORK_REVISION",
@@ -1387,7 +1415,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "studio"
     },
     {
       "id": "ADMIN",
@@ -1427,7 +1456,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "admin"
     },
     {
       "id": "EDITORIAL",
@@ -1464,7 +1494,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "admin"
     },
     {
       "id": "PUBLISH",
@@ -1504,7 +1535,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "publish"
     },
     {
       "id": "WATCH",
@@ -1544,7 +1576,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "publish"
     },
     {
       "id": "REVOKE",
@@ -1584,7 +1617,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "publish"
     },
     {
       "id": "EXP",
@@ -1623,7 +1657,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "exp"
     },
     {
       "id": "MIXED_COLLABORATION",
@@ -1667,7 +1702,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "mixed"
     },
     {
       "id": "KNOWLEDGE_ASSETS",
@@ -1725,7 +1761,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "assets"
     }
   ],
   "edges": [
@@ -1784,7 +1821,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "intake"
     },
     {
       "id": "E01",
@@ -1848,7 +1886,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "intake"
     },
     {
       "id": "E_D00_WRITE",
@@ -1912,7 +1951,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_D00_REVIEW",
@@ -1975,7 +2015,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_D00_QUALIFY",
@@ -2041,7 +2082,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_L0_TO_D01",
@@ -2104,7 +2146,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_L0_TO_CREATIVE",
@@ -2166,7 +2209,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "knowledge_use"
     },
     {
       "id": "E_ADMIN_L0",
@@ -2225,7 +2269,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "admin"
     },
     {
       "id": "E_D01_WRITE",
@@ -2289,7 +2334,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_D01_REVIEW",
@@ -2345,7 +2391,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_D01_QUALIFY",
@@ -2407,7 +2454,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_L1_TO_D02",
@@ -2470,7 +2518,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_L1_TO_CREATIVE",
@@ -2532,7 +2581,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "knowledge_use"
     },
     {
       "id": "E_ADMIN_L1",
@@ -2591,7 +2641,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "admin"
     },
     {
       "id": "E_D02_WRITE",
@@ -2650,7 +2701,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_D02_REVIEW",
@@ -2706,7 +2758,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_D02_QUALIFY",
@@ -2768,7 +2821,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_L2_TO_D03",
@@ -2824,7 +2878,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_L2_TO_CREATIVE",
@@ -2886,7 +2941,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "knowledge_use"
     },
     {
       "id": "E_ADMIN_L2",
@@ -2945,7 +3001,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "admin"
     },
     {
       "id": "E_D03_WRITE",
@@ -3002,7 +3059,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_D03_REVIEW",
@@ -3058,7 +3116,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_D03_QUALIFY",
@@ -3120,7 +3179,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_L3_TO_D04",
@@ -3176,7 +3236,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_L3_TO_CREATIVE",
@@ -3238,7 +3299,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "knowledge_use"
     },
     {
       "id": "E_ADMIN_L3",
@@ -3297,7 +3359,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "admin"
     },
     {
       "id": "E_D04_WRITE",
@@ -3354,7 +3417,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_D04_REVIEW",
@@ -3410,7 +3474,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_D04_QUALIFY",
@@ -3472,7 +3537,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_L4_TO_D05",
@@ -3528,7 +3594,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_L4_TO_CREATIVE",
@@ -3590,7 +3657,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "knowledge_use"
     },
     {
       "id": "E_ADMIN_L4",
@@ -3649,7 +3717,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "admin"
     },
     {
       "id": "E_D05_WRITE",
@@ -3708,7 +3777,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_D05_REVIEW",
@@ -3764,7 +3834,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_D05_QUALIFY",
@@ -3826,7 +3897,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "production"
     },
     {
       "id": "E_L5_TO_CREATIVE",
@@ -3888,7 +3960,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "knowledge_use"
     },
     {
       "id": "E_ADMIN_L5",
@@ -3947,7 +4020,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "admin"
     },
     {
       "id": "E_REUSE_TO_STUDIO",
@@ -4005,7 +4079,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "knowledge_use"
     },
     {
       "id": "E_STUDIO_TO_REV",
@@ -4065,7 +4140,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "studio"
     },
     {
       "id": "E_REV_TO_EDITORIAL",
@@ -4125,7 +4201,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "studio"
     },
     {
       "id": "E_EDITORIAL_TO_PUBLISH",
@@ -4185,7 +4262,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "publish"
     },
     {
       "id": "E_PUBLISH_TO_WATCH",
@@ -4243,7 +4321,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "publish"
     },
     {
       "id": "E_ADMIN_TO_EDITORIAL",
@@ -4301,7 +4380,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "admin"
     },
     {
       "id": "E_ADMIN_TO_REVOKE",
@@ -4359,7 +4439,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "admin"
     },
     {
       "id": "E_REVOKE_TO_WATCH",
@@ -4418,7 +4499,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "publish"
     },
     {
       "id": "E_REUSE_TO_EXP",
@@ -4475,7 +4557,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "exp"
     },
     {
       "id": "E_WORKREV_TO_EXP",
@@ -4532,7 +4615,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "exp"
     },
     {
       "id": "E_AGENT_TO_MIXED",
@@ -4592,7 +4676,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "mixed"
     },
     {
       "id": "E_MIXED_TO_D00",
@@ -4655,7 +4740,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "mixed"
     },
     {
       "id": "E_MIXED_TO_CREATIVE",
@@ -4718,7 +4804,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "mixed"
     },
     {
       "id": "E_REUSE_TO_ASSETS",
@@ -4780,7 +4867,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "assets"
     },
     {
       "id": "E_CREATIVE_TO_ASSETS",
@@ -4845,7 +4933,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "assets"
     },
     {
       "id": "E_ASSETS_TO_CREATIVE",
@@ -4906,7 +4995,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "assets"
     },
     {
       "id": "E_ASSETS_TO_ADMIN",
@@ -4969,7 +5059,8 @@
           "verified_source_sha": null,
           "observed_on": null
         }
-      }
+      },
+      "primary_domain": "assets"
     }
   ],
   "earliest_verified_code_point": "D00→D01 C01代码接线、合格候选读模型修改、自动验证（不代表同Root G0真实签发）",
@@ -5159,7 +5250,7 @@
     ],
     "on_every_m5_handoff": "执行方在选择下一个断点前读取机器JSON及CURRENT/PLAN，并对仍有效的旧证据继承；状态先核当前HEAD与真实证据",
     "refresh_trigger": "任何影响节点/边/资格/计划与当前最前阻断的代码、真实运行回执或设计合同变化",
-    "refresh_rule": "JSON/MD/HTML同一提交同步，相关代码或证据改变时仅刷新受影响层；保留其他NOT_VERIFIED，不凭文件存在或旧status推断PASS。",
+    "refresh_rule": "JSON/MD/HTML同一提交同步，相关代码或证据改变时仅刷新受影响层；保留其他NOT_VERIFIED，不凭文件存在或旧status推断PASS。 非D/L/G模块细读分组只编排既有nodes/edges，统计以primary_domain互斥分组且状态按原verification_layers源字段重算；状态改变时同时校验statistics。",
     "acceptance_rule": "准出唯一以PLAN §3.5 B八维真实作品正反验收为准",
     "source_ref_policy": "源码链接锁定source_sha；当前HEAD变化时先比较影响范围再复核，不以HEAD自动判过期"
   },
@@ -5177,7 +5268,8 @@
     "evidence_rule": "RELATED_CODE_PATH_EXISTS只证明路径存在及可能关联，不证明实际接口、资格或整链成功",
     "verified_edge_locator_paths": 30,
     "evidence_scope": "已复核30条唯一边级路径均存在；仅7条边完成针对性诊断，其余未按接口/实跑归因；非54条实证",
-    "layer_visualization_note": "2026-11-15：本次仅把此前7条定向边诊断及节点局部源码事实转换为三层状态，不是54条连线完整复核或同Root运行实证。"
+    "layer_visualization_note": "2026-11-15：本次仅把此前7条定向边诊断及节点局部源码事实转换为三层状态，不是54条连线完整复核或同Root运行实证。",
+    "domain_expansion_note": "2026-11-15：9个主归属领域对37节点/54边做互斥分组，Studio/Agent/资产/Admin/发布等以既有连接组织步骤；没有增加业务模块、运行证据或M5验收标准。"
   },
   "diagnosis_taxonomy": {
     "CONTRACT_MISMATCH": "有代码｜签发/资格接口不匹配",
@@ -5260,6 +5352,982 @@
       "HOLD": "可复查的具体故障或缺失前置",
       "NOT_VERIFIED": "证据不足，非失败/非缺代码",
       "FUTURE": "来源于批准计划的未来范围"
+    }
+  },
+  "navigation_domains": [
+    {
+      "id": "intake",
+      "label": "Studio入口与研究委托",
+      "subtitle": "真实问题、Brief/Plan、Creator生产申请",
+      "emphasis": "入口前置",
+      "acceptance_dimensions": [
+        1
+      ],
+      "steps": [
+        {
+          "title": "提出研究问题与持久底稿",
+          "detail": "Owner自然语言问题→授权项目/资料可得性→可追溯Brief及恢复",
+          "edges": [
+            "E00"
+          ]
+        },
+        {
+          "title": "从规划到合法生产请求",
+          "detail": "ST-04明确申请、权限/预算/来源条件→唯一生产Runner。通用合法来源能力仍需核查",
+          "edges": [
+            "E01"
+          ]
+        }
+      ],
+      "primary_node_ids": [
+        "STUDIO_INTENT",
+        "AGENT_PLAN"
+      ],
+      "primary_edge_ids": [
+        "E00",
+        "E01"
+      ]
+    },
+    {
+      "id": "production",
+      "label": "D00—D05六阶段生产主链",
+      "subtitle": "D→L候选→G独立审核→L当前合格→下一阶段",
+      "emphasis": "主干已展示",
+      "acceptance_dimensions": [
+        3
+      ],
+      "steps": [
+        {
+          "title": "生产并保存同层L候选",
+          "detail": "D00—D05均必须先保存候选；不可由Producer自行签发Gate",
+          "edges": [
+            "E_D00_WRITE",
+            "E_D01_WRITE",
+            "E_D02_WRITE",
+            "E_D03_WRITE",
+            "E_D04_WRITE",
+            "E_D05_WRITE"
+          ]
+        },
+        {
+          "title": "G0—G5独立审签",
+          "detail": "同Root的job/reviewer/input/output摘要及权利、用途必须由独立资格记录支持",
+          "edges": [
+            "E_D00_REVIEW",
+            "E_D00_QUALIFY",
+            "E_D01_REVIEW",
+            "E_D01_QUALIFY",
+            "E_D02_REVIEW",
+            "E_D02_QUALIFY",
+            "E_D03_REVIEW",
+            "E_D03_QUALIFY",
+            "E_D04_REVIEW",
+            "E_D04_QUALIFY",
+            "E_D05_REVIEW",
+            "E_D05_QUALIFY"
+          ]
+        },
+        {
+          "title": "合格结果进入下一D阶段",
+          "detail": "真实typed输入/输出、Gate当前资格与source/version/locator连续，未满足则持久HOLD",
+          "edges": [
+            "E_L0_TO_D01",
+            "E_L1_TO_D02",
+            "E_L2_TO_D03",
+            "E_L3_TO_D04",
+            "E_L4_TO_D05"
+          ]
+        }
+      ],
+      "primary_node_ids": [
+        "D00",
+        "L0_CANDIDATE",
+        "G0",
+        "L0_QUALIFIED",
+        "D01",
+        "L1_CANDIDATE",
+        "G1",
+        "L1_QUALIFIED",
+        "D02",
+        "L2_CANDIDATE",
+        "G2",
+        "L2_QUALIFIED",
+        "D03",
+        "L3_CANDIDATE",
+        "G3",
+        "L3_QUALIFIED",
+        "D04",
+        "L4_CANDIDATE",
+        "G4",
+        "L4_QUALIFIED",
+        "D05",
+        "L5_CANDIDATE",
+        "G5",
+        "L5_QUALIFIED"
+      ],
+      "primary_edge_ids": [
+        "E_D00_WRITE",
+        "E_D00_REVIEW",
+        "E_D00_QUALIFY",
+        "E_L0_TO_D01",
+        "E_D01_WRITE",
+        "E_D01_REVIEW",
+        "E_D01_QUALIFY",
+        "E_L1_TO_D02",
+        "E_D02_WRITE",
+        "E_D02_REVIEW",
+        "E_D02_QUALIFY",
+        "E_L2_TO_D03",
+        "E_D03_WRITE",
+        "E_D03_REVIEW",
+        "E_D03_QUALIFY",
+        "E_L3_TO_D04",
+        "E_D04_WRITE",
+        "E_D04_REVIEW",
+        "E_D04_QUALIFY",
+        "E_L4_TO_D05",
+        "E_D05_WRITE",
+        "E_D05_REVIEW",
+        "E_D05_QUALIFY"
+      ]
+    },
+    {
+      "id": "mixed",
+      "label": "内外AI混合协作",
+      "subtitle": "Agent委托→Provider授权/预算→Receipt→研究及创作",
+      "emphasis": "M5维度2",
+      "acceptance_dimensions": [
+        2
+      ],
+      "steps": [
+        {
+          "title": "同Root双主体分工与委托",
+          "detail": "DelegationEnvelope、授权范围、合法最小输入、跨进程续跑及预算先行",
+          "edges": [
+            "E_AGENT_TO_MIXED"
+          ]
+        },
+        {
+          "title": "真实Provider参与史料生产",
+          "detail": "模型版本、真实贡献、输入输出哈希、实际费用与永久ExecutionReceipt；不越过独立Gate",
+          "edges": [
+            "E_MIXED_TO_D00"
+          ]
+        },
+        {
+          "title": "Agent与外部AI贡献进入导演",
+          "detail": "合法知识、修订和Receipt可追踪；本次单一Root验证仍待完成",
+          "edges": [
+            "E_MIXED_TO_CREATIVE"
+          ]
+        }
+      ],
+      "primary_node_ids": [
+        "MIXED_COLLABORATION"
+      ],
+      "primary_edge_ids": [
+        "E_AGENT_TO_MIXED",
+        "E_MIXED_TO_D00",
+        "E_MIXED_TO_CREATIVE"
+      ]
+    },
+    {
+      "id": "knowledge_use",
+      "label": "L0—L5合格知识复用",
+      "subtitle": "当前资格→逐用途授权→Studio消费",
+      "emphasis": "贯穿创作",
+      "acceptance_dimensions": [
+        3,
+        5
+      ],
+      "steps": [
+        {
+          "title": "六层合法知识均可作为创作材料",
+          "detail": "L0原件书影与L1识读、L2证据、L3事实、L4人文发现、L5表达均需按用途合法消费",
+          "edges": [
+            "E_L0_TO_CREATIVE",
+            "E_L1_TO_CREATIVE",
+            "E_L2_TO_CREATIVE",
+            "E_L3_TO_CREATIVE",
+            "E_L4_TO_CREATIVE",
+            "E_L5_TO_CREATIVE"
+          ]
+        },
+        {
+          "title": "受权知识进入Studio上下文",
+          "detail": "同一Project/Owner、Gate当前资格、来源与精确revision；原件展示另核媒资权利",
+          "edges": [
+            "E_REUSE_TO_STUDIO"
+          ]
+        }
+      ],
+      "primary_node_ids": [
+        "QUALIFIED_CONSUMPTION"
+      ],
+      "primary_edge_ids": [
+        "E_L0_TO_CREATIVE",
+        "E_L1_TO_CREATIVE",
+        "E_L2_TO_CREATIVE",
+        "E_L3_TO_CREATIVE",
+        "E_L4_TO_CREATIVE",
+        "E_L5_TO_CREATIVE",
+        "E_REUSE_TO_STUDIO"
+      ]
+    },
+    {
+      "id": "assets",
+      "label": "13类知识资产与复用生命周期",
+      "subtitle": "合法引用→创建/修订→重用→Admin治理",
+      "emphasis": "M5维度4",
+      "acceptance_dimensions": [
+        4
+      ],
+      "steps": [
+        {
+          "title": "合格L成果与研究工作资产引用",
+          "detail": "来源、版本、证据、认识状态、ACL/rights和引用关系必须可追溯；草稿不可自动取得专业G资格",
+          "edges": [
+            "E_REUSE_TO_ASSETS"
+          ]
+        },
+        {
+          "title": "Studio生成与保存研究/作品资产",
+          "detail": "按13种asset_kind落实真实字段、revision、CAS与依赖，不为凑数伪造资产",
+          "edges": [
+            "E_CREATIVE_TO_ASSETS"
+          ]
+        },
+        {
+          "title": "跨研究/作品复用与资格重核",
+          "detail": "重用时必须重新核source/rights/consumer/revision及失效依赖",
+          "edges": [
+            "E_ASSETS_TO_CREATIVE"
+          ]
+        },
+        {
+          "title": "Admin逐条审计与失效治理",
+          "detail": "来源、利用记录、当前资格、历史修订、撤权及纠错可追踪",
+          "edges": [
+            "E_ASSETS_TO_ADMIN"
+          ]
+        }
+      ],
+      "primary_node_ids": [
+        "KNOWLEDGE_ASSETS"
+      ],
+      "primary_edge_ids": [
+        "E_REUSE_TO_ASSETS",
+        "E_CREATIVE_TO_ASSETS",
+        "E_ASSETS_TO_CREATIVE",
+        "E_ASSETS_TO_ADMIN"
+      ]
+    },
+    {
+      "id": "studio",
+      "label": "Studio创作与作品修订",
+      "subtitle": "H1/H2/H3→19组件→预览编辑→WorkRevision",
+      "emphasis": "M5维度5",
+      "acceptance_dimensions": [
+        5
+      ],
+      "steps": [
+        {
+          "title": "历史叙事、导演与组件表达",
+          "detail": "H1/H2/H3与19组件须基于合格材料承担真实职责；这一层是现有STUDIO_CREATIVE节点的内部检查项",
+          "edges": [
+            "E_STUDIO_TO_REV"
+          ],
+          "nodes": [
+            "STUDIO_CREATIVE"
+          ]
+        },
+        {
+          "title": "预览、局部修改与不可变修订",
+          "detail": "材料依赖、版本、时码、保存/恢复与精确WorkRevision，不能用静态截图取代",
+          "edges": [
+            "E_STUDIO_TO_REV"
+          ],
+          "nodes": [
+            "WORK_REVISION"
+          ]
+        },
+        {
+          "title": "作品进入独立运营审核",
+          "detail": "同一作品修订与其依赖进入Operator审核；作品审核不代替专业Gate",
+          "edges": [
+            "E_REV_TO_EDITORIAL"
+          ]
+        }
+      ],
+      "primary_node_ids": [
+        "STUDIO_CREATIVE",
+        "WORK_REVISION"
+      ],
+      "primary_edge_ids": [
+        "E_STUDIO_TO_REV",
+        "E_REV_TO_EDITORIAL"
+      ]
+    },
+    {
+      "id": "admin",
+      "label": "Admin全层知识与运营治理",
+      "subtitle": "L0—L5、资产、运营审核、纠错撤权",
+      "emphasis": "横向独立线",
+      "acceptance_dimensions": [
+        6
+      ],
+      "steps": [
+        {
+          "title": "横向管理L0—L5候选/资格/历史",
+          "detail": "逐层原件、主张、证据、专业资格、权利、版本、使用史可追踪；不得代签G0—G5",
+          "edges": [
+            "E_ADMIN_L0",
+            "E_ADMIN_L1",
+            "E_ADMIN_L2",
+            "E_ADMIN_L3",
+            "E_ADMIN_L4",
+            "E_ADMIN_L5"
+          ]
+        },
+        {
+          "title": "作品提交后的运营审核",
+          "detail": "独立专业G5之外的编辑责任、批准/退回及可回查决定",
+          "edges": [
+            "E_ADMIN_TO_EDITORIAL"
+          ]
+        },
+        {
+          "title": "纠错申请与撤权操作",
+          "detail": "授权Owner/Operator管理动作→独立资格失效/依赖闭包；禁将Admin当Gate签发者",
+          "edges": [
+            "E_ADMIN_TO_REVOKE"
+          ]
+        }
+      ],
+      "primary_node_ids": [
+        "ADMIN",
+        "EDITORIAL"
+      ],
+      "primary_edge_ids": [
+        "E_ADMIN_L0",
+        "E_ADMIN_L1",
+        "E_ADMIN_L2",
+        "E_ADMIN_L3",
+        "E_ADMIN_L4",
+        "E_ADMIN_L5",
+        "E_ADMIN_TO_EDITORIAL",
+        "E_ADMIN_TO_REVOKE"
+      ]
+    },
+    {
+      "id": "publish",
+      "label": "发布、WATCH与即时撤权",
+      "subtitle": "精确修订→审核发布→合法消费→新请求阻断",
+      "emphasis": "M5维度7、8",
+      "acceptance_dimensions": [
+        7,
+        8
+      ],
+      "steps": [
+        {
+          "title": "精确WorkRevision与媒资许可",
+          "detail": "独立专业G5、逐用途rights、运营批准及原子发布指针；不能凭草稿或过期资格发布",
+          "edges": [
+            "E_EDITORIAL_TO_PUBLISH"
+          ]
+        },
+        {
+          "title": "WATCH按同修订合法消费",
+          "detail": "每个新请求核对发布指针、来源、G5、purpose/consumer/scope和合法可见媒资",
+          "edges": [
+            "E_PUBLISH_TO_WATCH"
+          ]
+        },
+        {
+          "title": "撤权后立即阻断新请求",
+          "detail": "即时拒绝、缓存失效及已交付字节不可逆边界必须真实验收",
+          "edges": [
+            "E_REVOKE_TO_WATCH"
+          ]
+        }
+      ],
+      "primary_node_ids": [
+        "PUBLISH",
+        "WATCH",
+        "REVOKE"
+      ],
+      "primary_edge_ids": [
+        "E_EDITORIAL_TO_PUBLISH",
+        "E_PUBLISH_TO_WATCH",
+        "E_REVOKE_TO_WATCH"
+      ]
+    },
+    {
+      "id": "exp",
+      "label": "EXP探索（未来预留）",
+      "subtitle": "作品与合格知识进入探索的接口预留",
+      "emphasis": "不计M5当前准出",
+      "acceptance_dimensions": [],
+      "steps": [
+        {
+          "title": "合格知识到探索",
+          "detail": "按后续批准的EXP合同接入，不把预留标成当前工程缺口",
+          "edges": [
+            "E_REUSE_TO_EXP"
+          ]
+        },
+        {
+          "title": "作品上下文进入探索",
+          "detail": "与HOME/探索体验研究后续衔接，目前只保留入口与类型归属",
+          "edges": [
+            "E_WORKREV_TO_EXP"
+          ]
+        }
+      ],
+      "primary_node_ids": [
+        "EXP"
+      ],
+      "primary_edge_ids": [
+        "E_REUSE_TO_EXP",
+        "E_WORKREV_TO_EXP"
+      ]
+    }
+  ],
+  "statistics": {
+    "schema": "mohen.m5.navigation-statistics.v1",
+    "source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+    "measured_on": "2026-11-15",
+    "updated_from": "nodes,edges,primary_domain,verification_layers,acceptance_dimensions",
+    "scope_note": "固定源码与定向诊断快照；非工程完成率或当前生产运行实时遥测，状态变更须按证据回填",
+    "denominators": {
+      "nodes_all": 37,
+      "nodes_m5": 36,
+      "nodes_future": 1,
+      "edges_all": 54,
+      "edges_m5": 52,
+      "edges_future": 2
+    },
+    "layer_counts": {
+      "nodes_all": {
+        "capability": {
+          "PASS": 0,
+          "PARTIAL": 36,
+          "HOLD": 0,
+          "NOT_VERIFIED": 0,
+          "FUTURE": 1
+        },
+        "handoff": {
+          "PASS": 0,
+          "PARTIAL": 2,
+          "HOLD": 3,
+          "NOT_VERIFIED": 31,
+          "FUTURE": 1
+        },
+        "runtime": {
+          "PASS": 0,
+          "PARTIAL": 0,
+          "HOLD": 0,
+          "NOT_VERIFIED": 36,
+          "FUTURE": 1
+        }
+      },
+      "nodes_m5": {
+        "capability": {
+          "PASS": 0,
+          "PARTIAL": 36,
+          "HOLD": 0,
+          "NOT_VERIFIED": 0,
+          "FUTURE": 0
+        },
+        "handoff": {
+          "PASS": 0,
+          "PARTIAL": 2,
+          "HOLD": 3,
+          "NOT_VERIFIED": 31,
+          "FUTURE": 0
+        },
+        "runtime": {
+          "PASS": 0,
+          "PARTIAL": 0,
+          "HOLD": 0,
+          "NOT_VERIFIED": 36,
+          "FUTURE": 0
+        }
+      },
+      "edges_all": {
+        "capability": {
+          "PASS": 0,
+          "PARTIAL": 7,
+          "HOLD": 0,
+          "NOT_VERIFIED": 45,
+          "FUTURE": 2
+        },
+        "handoff": {
+          "PASS": 0,
+          "PARTIAL": 3,
+          "HOLD": 4,
+          "NOT_VERIFIED": 45,
+          "FUTURE": 2
+        },
+        "runtime": {
+          "PASS": 0,
+          "PARTIAL": 0,
+          "HOLD": 0,
+          "NOT_VERIFIED": 52,
+          "FUTURE": 2
+        }
+      },
+      "edges_m5": {
+        "capability": {
+          "PASS": 0,
+          "PARTIAL": 7,
+          "HOLD": 0,
+          "NOT_VERIFIED": 45,
+          "FUTURE": 0
+        },
+        "handoff": {
+          "PASS": 0,
+          "PARTIAL": 3,
+          "HOLD": 4,
+          "NOT_VERIFIED": 45,
+          "FUTURE": 0
+        },
+        "runtime": {
+          "PASS": 0,
+          "PARTIAL": 0,
+          "HOLD": 0,
+          "NOT_VERIFIED": 52,
+          "FUTURE": 0
+        }
+      }
+    },
+    "domain_counts": [
+      {
+        "id": "intake",
+        "label": "Studio入口与研究委托",
+        "nodes": 2,
+        "edges": 2,
+        "edge_percent_all": 3.7,
+        "edge_percent_m5": 3.8,
+        "edge_layer_counts": {
+          "capability": {
+            "PASS": 0,
+            "PARTIAL": 1,
+            "HOLD": 0,
+            "NOT_VERIFIED": 1,
+            "FUTURE": 0
+          },
+          "handoff": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 1,
+            "NOT_VERIFIED": 1,
+            "FUTURE": 0
+          },
+          "runtime": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 2,
+            "FUTURE": 0
+          }
+        }
+      },
+      {
+        "id": "production",
+        "label": "D00—D05六阶段生产主链",
+        "nodes": 24,
+        "edges": 23,
+        "edge_percent_all": 42.6,
+        "edge_percent_m5": 44.2,
+        "edge_layer_counts": {
+          "capability": {
+            "PASS": 0,
+            "PARTIAL": 6,
+            "HOLD": 0,
+            "NOT_VERIFIED": 17,
+            "FUTURE": 0
+          },
+          "handoff": {
+            "PASS": 0,
+            "PARTIAL": 3,
+            "HOLD": 3,
+            "NOT_VERIFIED": 17,
+            "FUTURE": 0
+          },
+          "runtime": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 23,
+            "FUTURE": 0
+          }
+        }
+      },
+      {
+        "id": "mixed",
+        "label": "内外AI混合协作",
+        "nodes": 1,
+        "edges": 3,
+        "edge_percent_all": 5.6,
+        "edge_percent_m5": 5.8,
+        "edge_layer_counts": {
+          "capability": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 3,
+            "FUTURE": 0
+          },
+          "handoff": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 3,
+            "FUTURE": 0
+          },
+          "runtime": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 3,
+            "FUTURE": 0
+          }
+        }
+      },
+      {
+        "id": "knowledge_use",
+        "label": "L0—L5合格知识复用",
+        "nodes": 1,
+        "edges": 7,
+        "edge_percent_all": 13,
+        "edge_percent_m5": 13.5,
+        "edge_layer_counts": {
+          "capability": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 7,
+            "FUTURE": 0
+          },
+          "handoff": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 7,
+            "FUTURE": 0
+          },
+          "runtime": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 7,
+            "FUTURE": 0
+          }
+        }
+      },
+      {
+        "id": "assets",
+        "label": "13类知识资产与复用生命周期",
+        "nodes": 1,
+        "edges": 4,
+        "edge_percent_all": 7.4,
+        "edge_percent_m5": 7.7,
+        "edge_layer_counts": {
+          "capability": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 4,
+            "FUTURE": 0
+          },
+          "handoff": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 4,
+            "FUTURE": 0
+          },
+          "runtime": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 4,
+            "FUTURE": 0
+          }
+        }
+      },
+      {
+        "id": "studio",
+        "label": "Studio创作与作品修订",
+        "nodes": 2,
+        "edges": 2,
+        "edge_percent_all": 3.7,
+        "edge_percent_m5": 3.8,
+        "edge_layer_counts": {
+          "capability": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 2,
+            "FUTURE": 0
+          },
+          "handoff": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 2,
+            "FUTURE": 0
+          },
+          "runtime": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 2,
+            "FUTURE": 0
+          }
+        }
+      },
+      {
+        "id": "admin",
+        "label": "Admin全层知识与运营治理",
+        "nodes": 2,
+        "edges": 8,
+        "edge_percent_all": 14.8,
+        "edge_percent_m5": 15.4,
+        "edge_layer_counts": {
+          "capability": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 8,
+            "FUTURE": 0
+          },
+          "handoff": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 8,
+            "FUTURE": 0
+          },
+          "runtime": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 8,
+            "FUTURE": 0
+          }
+        }
+      },
+      {
+        "id": "publish",
+        "label": "发布、WATCH与即时撤权",
+        "nodes": 3,
+        "edges": 3,
+        "edge_percent_all": 5.6,
+        "edge_percent_m5": 5.8,
+        "edge_layer_counts": {
+          "capability": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 3,
+            "FUTURE": 0
+          },
+          "handoff": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 3,
+            "FUTURE": 0
+          },
+          "runtime": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 3,
+            "FUTURE": 0
+          }
+        }
+      },
+      {
+        "id": "exp",
+        "label": "EXP探索（未来预留）",
+        "nodes": 1,
+        "edges": 2,
+        "edge_percent_all": 3.7,
+        "edge_percent_m5": null,
+        "edge_layer_counts": {
+          "capability": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 0,
+            "FUTURE": 2
+          },
+          "handoff": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 0,
+            "FUTURE": 2
+          },
+          "runtime": {
+            "PASS": 0,
+            "PARTIAL": 0,
+            "HOLD": 0,
+            "NOT_VERIFIED": 0,
+            "FUTURE": 2
+          }
+        }
+      }
+    ],
+    "dimension_coverage": [
+      {
+        "id": 1,
+        "title": "自然语言创作入口",
+        "edge_ids": [
+          "E00",
+          "E01"
+        ],
+        "unique_edges": 2,
+        "percent_of_m5": 3.8,
+        "mapping_note": "同一连接可关联多个维度，各维百分比不可相加"
+      },
+      {
+        "id": 2,
+        "title": "内外AI混合协作",
+        "edge_ids": [
+          "E_AGENT_TO_MIXED",
+          "E_MIXED_TO_D00",
+          "E_MIXED_TO_CREATIVE"
+        ],
+        "unique_edges": 3,
+        "percent_of_m5": 5.8,
+        "mapping_note": "同一连接可关联多个维度，各维百分比不可相加"
+      },
+      {
+        "id": 3,
+        "title": "真实来源、证据和D/L/G生产",
+        "edge_ids": [
+          "E01",
+          "E_D00_WRITE",
+          "E_D00_REVIEW",
+          "E_D00_QUALIFY",
+          "E_L0_TO_D01",
+          "E_L0_TO_CREATIVE",
+          "E_D01_WRITE",
+          "E_D01_REVIEW",
+          "E_D01_QUALIFY",
+          "E_L1_TO_D02",
+          "E_L1_TO_CREATIVE",
+          "E_D02_WRITE",
+          "E_D02_REVIEW",
+          "E_D02_QUALIFY",
+          "E_L2_TO_D03",
+          "E_L2_TO_CREATIVE",
+          "E_D03_WRITE",
+          "E_D03_REVIEW",
+          "E_D03_QUALIFY",
+          "E_L3_TO_D04",
+          "E_L3_TO_CREATIVE",
+          "E_D04_WRITE",
+          "E_D04_REVIEW",
+          "E_D04_QUALIFY",
+          "E_L4_TO_D05",
+          "E_L4_TO_CREATIVE",
+          "E_D05_WRITE",
+          "E_D05_REVIEW",
+          "E_D05_QUALIFY",
+          "E_L5_TO_CREATIVE",
+          "E_REUSE_TO_STUDIO",
+          "E_MIXED_TO_D00"
+        ],
+        "unique_edges": 32,
+        "percent_of_m5": 61.5,
+        "mapping_note": "同一连接可关联多个维度，各维百分比不可相加"
+      },
+      {
+        "id": 4,
+        "title": "13类知识资产沉淀",
+        "edge_ids": [
+          "E_REUSE_TO_ASSETS",
+          "E_CREATIVE_TO_ASSETS",
+          "E_ASSETS_TO_CREATIVE",
+          "E_ASSETS_TO_ADMIN"
+        ],
+        "unique_edges": 4,
+        "percent_of_m5": 7.7,
+        "mapping_note": "同一连接可关联多个维度，各维百分比不可相加"
+      },
+      {
+        "id": 5,
+        "title": "Studio真实创作",
+        "edge_ids": [
+          "E_L0_TO_CREATIVE",
+          "E_L1_TO_CREATIVE",
+          "E_L2_TO_CREATIVE",
+          "E_L3_TO_CREATIVE",
+          "E_L4_TO_CREATIVE",
+          "E_L5_TO_CREATIVE",
+          "E_REUSE_TO_STUDIO",
+          "E_STUDIO_TO_REV",
+          "E_REV_TO_EDITORIAL",
+          "E_MIXED_TO_CREATIVE",
+          "E_CREATIVE_TO_ASSETS",
+          "E_ASSETS_TO_CREATIVE"
+        ],
+        "unique_edges": 12,
+        "percent_of_m5": 23.1,
+        "mapping_note": "同一连接可关联多个维度，各维百分比不可相加"
+      },
+      {
+        "id": 6,
+        "title": "Admin知识资产管理",
+        "edge_ids": [
+          "E_ADMIN_L0",
+          "E_ADMIN_L1",
+          "E_ADMIN_L2",
+          "E_ADMIN_L3",
+          "E_ADMIN_L4",
+          "E_ADMIN_L5",
+          "E_ADMIN_TO_EDITORIAL",
+          "E_ADMIN_TO_REVOKE",
+          "E_ASSETS_TO_ADMIN"
+        ],
+        "unique_edges": 9,
+        "percent_of_m5": 17.3,
+        "mapping_note": "同一连接可关联多个维度，各维百分比不可相加"
+      },
+      {
+        "id": 7,
+        "title": "独立G5、媒资权利与发布",
+        "edge_ids": [
+          "E_REV_TO_EDITORIAL",
+          "E_EDITORIAL_TO_PUBLISH",
+          "E_ADMIN_TO_EDITORIAL"
+        ],
+        "unique_edges": 3,
+        "percent_of_m5": 5.8,
+        "mapping_note": "同一连接可关联多个维度，各维百分比不可相加"
+      },
+      {
+        "id": 8,
+        "title": "WATCH同修订合法消费与撤权",
+        "edge_ids": [
+          "E_PUBLISH_TO_WATCH",
+          "E_ADMIN_TO_REVOKE",
+          "E_REVOKE_TO_WATCH"
+        ],
+        "unique_edges": 3,
+        "percent_of_m5": 5.8,
+        "mapping_note": "同一连接可关联多个维度，各维百分比不可相加"
+      }
+    ],
+    "audit": {
+      "focused_diagnostic_edges": 7,
+      "not_yet_focused_edges": 45,
+      "future_edges": 2
     }
   }
 }
