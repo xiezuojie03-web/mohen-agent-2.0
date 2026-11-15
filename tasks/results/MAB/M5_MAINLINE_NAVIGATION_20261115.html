@@ -7,6 +7,10 @@
 .stage-row:has(.blocked){box-shadow:inset 3px 0 #d58549;padding-left:7px}
 .edge-summary{cursor:pointer;list-style:revert;font-size:13px;color:#275f5c;padding:12px 0}.edge-toolbar{display:flex;gap:8px;margin:10px 0}.edge-toolbar input,.edge-toolbar select{padding:10px 12px;border-radius:10px;border:1px solid #cadad9;min-width:0;background:#fff;color:#28444a}.edge-toolbar input{flex:1}.edge-ledger{border:1px solid #d9e4e3;border-radius:12px;max-height:420px;overflow:auto;background:white}.edge-entry{display:block;width:100%;text-align:left;padding:12px 15px;border:0;border-bottom:1px solid #e8eeed;background:#fff;font-size:12px;line-height:1.5;color:#28444a}.edge-entry:last-child{border-bottom:none}.edge-entry:hover,.edge-entry:focus-visible{background:#eef7f4}.edge-entry b{font-weight:730}.edge-entry .chip{display:inline-block;border-radius:6px;padding:1px 6px;margin-left:8px;background:#e2f1ef;color:#206d62}.edge-entry .chip.blocked{background:#fff0df;color:#99532a}.edge-entry .chip.future{background:#f1effb;color:#65569f}.edge-entry small{display:block;color:#677d81;margin-top:3px}.flow-arrow-action{cursor:pointer;border:1px solid transparent;border-radius:6px}.flow-arrow-action:hover,.flow-arrow-action:focus-visible{border-color:#87aba7;background:#edf7f5;color:#145b53}.creation button small{display:block;font-size:11px;font-weight:400;margin-top:5px;color:#57716c}
 @media(max-width:650px){.edge-toolbar{flex-wrap:wrap}.edge-toolbar input{flex-basis:100%}.edge-entry{padding:11px}} 
+.flow-node.stage.blocked{background:#edf4f7;border-color:#94b5c1;color:#315567}
+.flow-node.stage.blocked small{color:#516f7c}
+.flow-node.candidate.blocked{background:#f4f7f8;border-color:#c1d1d5;color:#34545f}
+.flow-node.candidate.blocked small{color:#6e858b}
 </style></head><body>
 <header><div class="eyebrow">MOHEN / M5 / NON-AUTHORITATIVE NAVIGATION MAP</div><h1>墨痕 · 从自然语言到知识、创作、发布的完整链路</h1><p>同一主工程、同一Root Task：D负责生产，L保存候选及证据，G独立判定资格；Studio按需调用六层，Admin横向治理。每个节点可查看真实代码依据和未闭合的交接。</p></header>
 <main><div class="topbar"><button class="filterbtn" id="allBtn" aria-pressed="true">完整链路</button><button class="filterbtn" id="gapBtn" aria-pressed="false">突出工程断点</button><button class="filterbtn" id="sourceBtn" aria-pressed="false">突出已有实现</button><div class="smallmeta">源码基线 <code>main@2c4db017</code> · 2026-11-15</div></div>
@@ -15,72 +19,72 @@
 <div class="start"><button data-node="STUDIO_INTENT">Studio 自然语言研究任务<small>Project / Root Task / Creator</small></button><span class="arrow">→</span><button data-node="AGENT_PLAN">Agent 规划 + 合法生产申请<small>ST-04明确请求 / 权利 / 预算</small></button><span class="arrow">↓ D00</span></div>
 <div class="stage-title">生产执行 → 保存候选 → 独立审核 → 同层合格资格　　│　　Admin可横向管理各层</div>
 <div class="stages"><div class="stage-row" data-filter-status="partial">
-   <button class="flow-node stage partial" data-node="D00"><span class="num">D00</span><span>来源发现与准入</span><small>点击查看实现</small></button>
+   <button class="flow-node stage partial" data-node="D00"><span class="num">D00</span><span>来源发现与准入</span><small>来源候选已有代码</small></button>
    <span class="arrow">→</span>
    <button class="flow-node candidate partial" data-node="L0_CANDIDATE"><span class="num">L0 · 候选入库</span><small>source / revision / 状态</small></button>
    <span class="arrow">→</span>
-   <button class="flow-node gate blocked" data-node="G0"><span class="num">G0 审核</span><small>独立机器 / 专业Reviewer</small></button>
+   <button class="flow-node gate blocked" data-node="G0"><span class="num">G0 审核</span><small>签发合同待修</small></button>
    <span class="arrow">→</span>
    <button class="flow-node qualified blocked" data-node="L0_QUALIFIED"><span class="num">L0 当前合格</span><small>同层资格视图</small></button>
    <span class="from-qualified">↘</span>
    <button class="admin-mini" title="查看该层 Admin 治理连接" data-edge="E_ADMIN_L0">管理 ↔</button>
  </div>
 <div class="stage-row" data-filter-status="partial">
-   <button class="flow-node stage partial" data-node="D01"><span class="num">D01</span><span>原件读取与识读</span><small>点击查看实现</small></button>
+   <button class="flow-node stage partial" data-node="D01"><span class="num">D01</span><span>原件读取与识读</span><small>C01读取已有代码</small></button>
    <span class="arrow">→</span>
    <button class="flow-node candidate partial" data-node="L1_CANDIDATE"><span class="num">L1 · 候选入库</span><small>source / revision / 状态</small></button>
    <span class="arrow">→</span>
-   <button class="flow-node gate blocked" data-node="G1"><span class="num">G1 审核</span><small>独立机器 / 专业Reviewer</small></button>
+   <button class="flow-node gate blocked" data-node="G1"><span class="num">G1 审核</span><small>有Gate代码 · 精确资格未证</small></button>
    <span class="arrow">→</span>
    <button class="flow-node qualified blocked" data-node="L1_QUALIFIED"><span class="num">L1 当前合格</span><small>同层资格视图</small></button>
    <span class="from-qualified">↘</span>
    <button class="admin-mini" title="查看该层 Admin 治理连接" data-edge="E_ADMIN_L1">管理 ↔</button>
  </div>
 <div class="stage-row" data-filter-status="blocked">
-   <button class="flow-node stage blocked" data-node="D02"><span class="num">D02</span><span>材料理解与证据</span><small>点击查看实现</small></button>
+   <button class="flow-node stage blocked" data-node="D02"><span class="num">D02</span><span>材料理解与证据</span><small>证据候选已有代码 · 输入缺转换</small></button>
    <span class="arrow">→</span>
    <button class="flow-node candidate blocked" data-node="L2_CANDIDATE"><span class="num">L2 · 候选入库</span><small>source / revision / 状态</small></button>
    <span class="arrow">→</span>
-   <button class="flow-node gate blocked" data-node="G2"><span class="num">G2 审核</span><small>独立机器 / 专业Reviewer</small></button>
+   <button class="flow-node gate blocked" data-node="G2"><span class="num">G2 审核</span><small>有Gate代码 · 精确资格未证</small></button>
    <span class="arrow">→</span>
    <button class="flow-node qualified blocked" data-node="L2_QUALIFIED"><span class="num">L2 当前合格</span><small>同层资格视图</small></button>
    <span class="from-qualified">↘</span>
    <button class="admin-mini" title="查看该层 Admin 治理连接" data-edge="E_ADMIN_L2">管理 ↔</button>
  </div>
 <div class="stage-row" data-filter-status="blocked">
-   <button class="flow-node stage blocked" data-node="D03"><span class="num">D03</span><span>历史事实与关系</span><small>点击查看实现</small></button>
+   <button class="flow-node stage blocked" data-node="D03"><span class="num">D03</span><span>历史事实与关系</span><small>候选代码存在 · 交接未实证</small></button>
    <span class="arrow">→</span>
    <button class="flow-node candidate blocked" data-node="L3_CANDIDATE"><span class="num">L3 · 候选入库</span><small>source / revision / 状态</small></button>
    <span class="arrow">→</span>
-   <button class="flow-node gate blocked" data-node="G3"><span class="num">G3 审核</span><small>独立机器 / 专业Reviewer</small></button>
+   <button class="flow-node gate blocked" data-node="G3"><span class="num">G3 审核</span><small>有Gate代码 · 精确资格未证</small></button>
    <span class="arrow">→</span>
    <button class="flow-node qualified blocked" data-node="L3_QUALIFIED"><span class="num">L3 当前合格</span><small>同层资格视图</small></button>
    <span class="from-qualified">↘</span>
    <button class="admin-mini" title="查看该层 Admin 治理连接" data-edge="E_ADMIN_L3">管理 ↔</button>
  </div>
 <div class="stage-row" data-filter-status="blocked">
-   <button class="flow-node stage blocked" data-node="D04"><span class="num">D04</span><span>人文发现与解释</span><small>点击查看实现</small></button>
+   <button class="flow-node stage blocked" data-node="D04"><span class="num">D04</span><span>人文发现与解释</span><small>候选代码存在 · 交接未实证</small></button>
    <span class="arrow">→</span>
    <button class="flow-node candidate blocked" data-node="L4_CANDIDATE"><span class="num">L4 · 候选入库</span><small>source / revision / 状态</small></button>
    <span class="arrow">→</span>
-   <button class="flow-node gate blocked" data-node="G4"><span class="num">G4 审核</span><small>独立机器 / 专业Reviewer</small></button>
+   <button class="flow-node gate blocked" data-node="G4"><span class="num">G4 审核</span><small>有Gate代码 · 精确资格未证</small></button>
    <span class="arrow">→</span>
    <button class="flow-node qualified blocked" data-node="L4_QUALIFIED"><span class="num">L4 当前合格</span><small>同层资格视图</small></button>
    <span class="from-qualified">↘</span>
    <button class="admin-mini" title="查看该层 Admin 治理连接" data-edge="E_ADMIN_L4">管理 ↔</button>
  </div>
 <div class="stage-row" data-filter-status="blocked">
-   <button class="flow-node stage blocked" data-node="D05"><span class="num">D05</span><span>知识投影与消费</span><small>点击查看实现</small></button>
+   <button class="flow-node stage blocked" data-node="D05"><span class="num">D05</span><span>知识投影与消费</span><small>投影代码存在 · 消费未实证</small></button>
    <span class="arrow">→</span>
    <button class="flow-node candidate blocked" data-node="L5_CANDIDATE"><span class="num">L5 · 候选入库</span><small>source / revision / 状态</small></button>
    <span class="arrow">→</span>
-   <button class="flow-node gate blocked" data-node="G5"><span class="num">G5 审核</span><small>独立机器 / 专业Reviewer</small></button>
+   <button class="flow-node gate blocked" data-node="G5"><span class="num">G5 审核</span><small>有Gate代码 · 精确资格未证</small></button>
    <span class="arrow">→</span>
    <button class="flow-node qualified blocked" data-node="L5_QUALIFIED"><span class="num">L5 当前合格</span><small>同层资格视图</small></button>
    <span class="from-qualified">↘</span>
    <button class="admin-mini" title="查看该层 Admin 治理连接" data-edge="E_ADMIN_L5">管理 ↔</button>
  </div></div>
-<div class="legend"><span><i class="dot"></i>部分代码，非PASS</span><span><i class="dot orange"></i>实际接口/审签待接通</span><span><i class="dot purple"></i>未来预留</span></div>
+<p class="note" style="background:#f1f5f6;border-radius:10px;padding:10px 12px"><b>颜色是分层含义：</b> 蓝灰阶段卡表示“已有相关代码、但整链交接未证”；橙色Gate/资格视图表示“当前审签或用途消费HOLD”，并非缺少整个模块。所有代码/连接状态都须经最新SHA与实跑回执复核。</p><div class="legend"><span><i class="dot"></i>部分代码，非PASS</span><span><i class="dot orange"></i>实际接口/审签待接通</span><span><i class="dot purple"></i>未来预留</span></div>
 <section class="section" id="crosscutting"><h2>② 内外AI协作与13类知识资产（横向能力）</h2><p class="note">与生产主链共同支撑同一Root Task。不是额外Runner或Gate；实际D/L/G状态仍须逐连接验证。</p><div class="creation"><button data-node="MIXED_COLLABORATION">Agent + 外部Provider / Receipt<small>同Root贡献与费用回执待整链证实</small></button><button data-node="KNOWLEDGE_ASSETS">13类工作知识资产<small>精确revision、用途与复用/失效</small></button><button data-node="STUDIO_CREATIVE">H1/H2/H3 + 19组件<small>真实研究与作品表达待逐项验收</small></button></div></section><section class="section"><h2>③ Studio 可按需消费 L0—L5 全部合格成果</h2><p class="note">这里不是再造一套知识库。六个箭头代表按当次用途调用既有合格知识；书影显示、原文引用、外部模型处理的许可须分别核实。</p><div class="layers"><button class="layer-chip" data-edge="E_L0_TO_CREATIVE">L0 <span>原件 / 书影</span><i>↗</i></button><button class="layer-chip" data-edge="E_L1_TO_CREATIVE">L1 <span>原文 / 阅读</span><i>↗</i></button><button class="layer-chip" data-edge="E_L2_TO_CREATIVE">L2 <span>证据 / 引文</span><i>↗</i></button><button class="layer-chip" data-edge="E_L3_TO_CREATIVE">L3 <span>历史事实 / 关系</span><i>↗</i></button><button class="layer-chip" data-edge="E_L4_TO_CREATIVE">L4 <span>人文发现</span><i>↗</i></button><button class="layer-chip" data-edge="E_L5_TO_CREATIVE">L5 <span>地图 / 叙事投影</span><i>↗</i></button></div><div class="join">↓　来源 / 版本 / 用途 / 当前Gate资格 / 逐动作权限 / use_events</div><div class="creation"><button data-node="QUALIFIED_CONSUMPTION">受权知识读取</button><span class="arrow">→</span><button data-node="STUDIO_CREATIVE">Studio H1/H2/H3</button><span class="arrow">→</span><button data-node="WORK_REVISION">不可变 WorkRevision</button></div></section>
 <section class="section"><h2>④ 审核、发布、观看与撤权</h2><div class="downstream"><button data-node="EDITORIAL">Admin 作品审核<small>不得替代专业Gate</small></button><button data-node="PUBLISH">精确修订发布<small>G5 / 媒资许可</small></button><button data-node="WATCH">WATCH 消费<small>每次请求重新核资格</small></button><button data-node="REVOKE">失效 / 撤权<small>阻断新请求和依赖消费</small></button></div><div class="futurezone"><span style="font-size:12px;color:#647b81">未来体验扩展：</span><button data-node="EXP">EXP 自由探索 · 预留</button><span class="note">连接各层合格资产及作品，当前不计为M5已完成。</span></div></section>
 </section>
