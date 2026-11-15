@@ -4130,3 +4130,13 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **实际最远节点**：可信Studio项目/私有原件登记→受审Private Adapter→唯一Runner D00-only启动输入/Worker Y07本地字节回读→候选与独立Gate核验HOLD的代码闭合和CI。**没有**由真实持久原件经过单root Runner实际生成D00候选及独立G0 PASS的具名验收记录；明确`NOT_RUN/DEFERRED_ENV`，不拼接组件级签发。
 - **下一个最前阻断**：具名非生产隔离环境、真实Owner受权原件/精确source/version/rights、低权Worker/独立G0审签及可回读的同run证据。若来源许可/Reviewer条件不足，应保持G0 HOLD与费用预留对账，不擅自释放预留或重复计费。M5整体`M5_REMEDIATION_ACTIVE / M5_OVERALL_HOLD`；后续M6—M8不启动。
 
+
+---
+
+## 2026-11-15｜M5实际代码核查补档：历史D00—D05生产能力继承与新私有主链断点
+
+- **背景**：上一轮从前到后扫描源码的结论只留在聊天中，未落GitHub；本轮从旧真实成果和历史实现复核，作为代码核查补档。唯一标准仍 `PLAN.md V1.7 §3.5 B/C`，没有新任务书/分母。
+- **核实主干**：`main@fbaa76243020dccc9d93bf8e053b08cca123c165`；历史金泽 `SAMPLE-TRIAL-12`、A001 `5176ade3-2892-4179-96d0-c27184b42ebd`/旧 `layer1-adapters.mjs`、历史 `a4e597f` 的 Producer 直接写 Gate 审计、当下 `private-evidence-stage.mjs`/Adapter、Runner/Registry/independent Gate、Studio 触发/旧新修订/预算。历史五主题 K7K8 主要是检索和评分重跑，不能等同五次全 D 链。
+- **归因纠偏**：旧 D00—D05 的专业 DeepSeek 内容生产和 L5 多类型投影真实存在且仍有代码；新私有链引入字节/来源/分权/独立资格，但缺专业 typed request 自动生成及部分 Studio 受控 Provider/新修订衔接；不能据此推断旧 D00—D05 从未闭环，也不得重用旧写 Gate PASS 模式冒充新 Reviewer。
+- **具体优先问题**：Studio `--to D00`；当前 D00 已构造 D01 request，不是完全无接口；文本 C01 无 extent+quote，C02 只校验页图非 OCR；D01 产物未转换到 D02 observation；D02-D04 的旧 LLM 处理未接新合法执行器；D05 私有只投影；Studio 新旧导演作品链路并存；生产预算预留无终态核销。每项对应源码/适用原证据/尚缺验证详见 `tasks/results/MAB/M5_DLG_LEGACY_INHERITANCE_CODE_AUDIT_20261115.md`。
+- **证据限制**：`SOURCE_REVIEWED + HISTORICAL_RUN_DOCUMENTED + CURRENT_CODE_AUDITED`；没有完成63方法/13资产/19组件全量检查，没有本次 PG/HTTP/Provider/Gate 真人正签，没碰生产。下步优先在合法持久隔离环境核同一 Studio D00 候选及独立 G0 的资格，再定向接 C01/C02 与 D01→D02，沿到真实作品；`M5_OVERALL_HOLD`。

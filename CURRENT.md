@@ -22,6 +22,13 @@
 - **最高运行证明仍受限**：`CODE_PRESENT + MAIN_CI_SUCCESS`。当前无具名持久非生产的真实Owner原件字节/合法rights、低权Private Worker、授权服务、独立Reviewer会话可贯通本批同一run，**D00候选落库、独立G0签PASS与现行资格回读仍`NOT_RUN/DEFERRED_ENV`**；不可把Y07本地读取称为馆藏下载/使用许可，也不可把新HOLD回读当作生产成功。原Studio生产预留因现行费用回执严格要求仍需受控核销，不能自动解锁/重试。M5八维保持`M5_OVERALL_HOLD`。
 - **下个实际施工关注点**：沿同一Studio项目/任务核实际持久环境签名授权与首次D00候选→独立G0当前资格；材料、权利或签发不足时保留来源/阶段/原因和对账阻断，再定向接合法恢复与D01；不得重建Runner、Y01、Gate或模拟PASS。
 
+## 2026-11-15｜历史六阶段能力与当前主链的源码继承复核
+
+- **新增实际代码核查结果**：[M5 D/L/G 历史继承代码核查](tasks/results/MAB/M5_DLG_LEGACY_INHERITANCE_CODE_AUDIT_20261115.md)，源代码基线 `main@fbaa76243020dccc9d93bf8e053b08cca123c165`。此前该轮代码核查仅在对话中，现已补齐 GitHub 现有成果目录并在下列唯一进度档案登记；本文件不替代 PLAN 标准。
+- **纠正误判**：金泽样板 `SAMPLE-TRIAL-12`、A001 绿之丘 `STRAT-PROD-A001/P2` 确有 D00—D05/DeepSeek/库表/L5/前端历史运行成果，原 `layer1-adapters.mjs` 专业实现仍存在；不能称六阶段从未跑通。2026-10 历史 Gate 代码曾由 Producer Adapter 直接插入 `gate_audits PASS/current_valid`，当前独立 G 签发语义不能直接继承该旧 PASS。
+- **最前现行源代码断点**：Studio 仍以 `--to D00` 实跑；新 D00 有 typed D01 交接，**文本 C01 需要的 byte-range+quote 未从 D00 构造**；D01→D02 以及后续阶段没有把上一阶段实际候选经合规专业方法转换为下一阶段 typed input；原旧 LLM 能力尚未接入新受控 Provider/来源权限/费用回执；D05 私有路径仅世界投影，Studio 新旧修订链并存；生产预算 reserved 未完成终态对账。详见链接文件逐项定位，不将旧代码/新空接口/测试混为完整运行证明。
+- **核查范围与未验证**：本次完成主要生产主干及历史版本针对性源码追踪，**不是整仓 2631 个路径或 63 方法/13 类资产/19 组件的全量逐文件核验**，也未在隔离持久实机重新运行同一作品/Reviewer/PG/HTTP/Provider。下次只沿同一 root 真实调用的**最前可证邻接缺口**定向修复验证，避免重建旧生产能力。M5 仍 `M5_OVERALL_HOLD`。
+
 ## 2. 最新可核的质量与发布事实
 
 | 门 | SHA与可核结果 | 不能推出 |
