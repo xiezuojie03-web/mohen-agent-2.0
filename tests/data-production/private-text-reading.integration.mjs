@@ -78,6 +78,17 @@ try {
  assert.equal(sql(`select locator_hash from source.read_units where read_unit_id='${saved.read_unit_id}'`),extent.quote_sha256);
  assert.equal(sql(`select raw_item_id from source.read_runs where read_run_id='${saved.read_run_id}'`),raw);
  assert.equal(sql(`select control.artifact_revision_for('read_unit','${saved.read_unit_id}')`),saved.artifact_revision);
+ const contextRead=await repo.listByOriginal(originalId,token(a));
+ assert.equal(contextRead.direct_storage_reference_exposed,false);
+ assert.equal(contextRead.original_id,originalId);
+ const l1=contextRead.readings.find(item=>item.read_unit_id===saved.read_unit_id);
+ assert.ok(l1,'a persisted C01 read must be visible to the authorized Studio L1/L2 consumer');
+ assert.equal(l1.locator_schema,'utf8_byte_range/v1');
+ assert.equal(l1.locator.quote_sha256,extent.quote_sha256);
+ assert.equal(l1.source_version_id,version);
+ assert.equal(l1.qualification,'UNASSESSED','L1 persistence never self-qualifies a Gate');
+ assert.ok(!JSON.stringify(contextRead).includes('mohen-private-originals/'),'private original storage path must not appear in the read model');
+ await assert.rejects(()=>repo.listByOriginal(originalId,token(b)),/ORIGINAL_NOT_FOUND|STUDIO_IDENTITY_REQUIRED/);
  const reopened=createPrivateTextReadingRepository(workerPool,{verificationKey:key,keyVersion:kid});
  assert.deepEqual(await reopened.save(input,token(a)),saved,'reopen/ACK retry returns exact durable candidate');
  const concurrent=await Promise.all([repo.save(input,token(a)),repo.save(input,token(a))]);assert.deepEqual(concurrent,[saved,saved]);
