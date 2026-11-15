@@ -4191,3 +4191,10 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - G0源代码：`tools/rule-gate-reviewer.mjs` 机器审核receipt未携stage_binding；`packages/data-access/src/gate-stage-qualification.mjs`、`tools/local-gate-service.mjs`必须校验当前独立审签的job、Reviewer、input/output digest，同一Run应严格HOLD而非伪PASS。属**现有能力之间合同不匹配**。
 - D01→D02源代码：D01读取/原件回读与D02 H05持久化均有部分实现，但缺经合格G1结果组织D02 typed request的受控连接；`orchestrator.mjs` 正确返回 `PRIVATE_NEXT_STAGE_REQUEST_NOT_READY`。属**缺中间适配代码**，不是D02全无代码。
 - 既有CI/PG/HTTP定向回执成功，未开展Owner真实同Root+独立Reviewer/Provider/持久原件整链试验。继续 `M5_OVERALL_HOLD`；M5八维唯一标准不变；下一步先G0精确签发和合法读取，再跟进D01/G1→D02转换并逐批证实。
+
+
+## 2026-11-15｜M5机器导航三层状态语义与交互升级（纯文档）
+
+- 保留37节点、54连接ID及原位路径；每对象记录◆能力、⇄连接、●运行三个独立状态/证据，五状态PASS/PARTIAL/HOLD/NOT_VERIFIED/FUTURE。
+- 7条已有定向源码归因据实分类；43条未逐接口核查的M5边保持NOT_VERIFIED，2条EXP保持FUTURE，无任何运行层PASS。
+- 状态和故障原因分离，必须逐层证据更新；只修改三份导航及记录，不改Runner、Gate或PLAN唯一验收。

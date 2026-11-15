@@ -126,7 +126,33 @@
       "code_paths": [
         "apps/web/app/studio/StudioWorkbench.tsx",
         "apps/web/lib/studio-production.ts"
-      ]
+      ],
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "apps/web/app/studio/StudioWorkbench.tsx",
+            "apps/web/lib/studio-production.ts"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "AGENT_PLAN",
@@ -142,7 +168,35 @@
         1,
         2
       ],
-      "evidence_level": "SOURCE_INSPECTED_RUNTIME_NOT_VERIFIED"
+      "evidence_level": "SOURCE_INSPECTED_RUNTIME_NOT_VERIFIED",
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "apps/web/app/api/studio/director-plans/route.ts",
+            "apps/web/lib/studio-creation.ts"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "PARTIAL",
+          "reason": "受权私有原件申请已有局部流程，通用来源和混合协作仍未贯通",
+          "evidence_refs": [
+            "apps/web/lib/studio-production.ts"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "D00",
@@ -163,6 +217,33 @@
         "code": "RELATED_PRODUCER_CODE_EXISTS",
         "handoff": "PARTIAL_ONLY",
         "runtime": "NOT_ROOT_E2E_VERIFIED"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "pipelines/data-production/workers/private-evidence-stage.mjs",
+            "pipelines/data-production/adapters/private-evidence-adapters.mjs",
+            "pipelines/data-production/adapters/layer1-adapters.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -176,7 +257,34 @@
         "pipelines/data-production/adapters/private-evidence-adapters.mjs",
         "pipelines/data-production/adapters/layer1-adapters.mjs"
       ],
-      "qualification": "UNASSESSED / HOLD / REJECT / REVOKED可保留数据和审核历史"
+      "qualification": "UNASSESSED / HOLD / REJECT / REVOKED可保留数据和审核历史",
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "pipelines/data-production/workers/private-evidence-stage.mjs",
+            "pipelines/data-production/adapters/private-evidence-adapters.mjs",
+            "pipelines/data-production/adapters/layer1-adapters.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "G0",
@@ -199,6 +307,36 @@
         "code": "INDEPENDENT_GATE_CODE_EXISTS",
         "handoff": "EXACT_SIGNED_STAGE_BINDING_NOT_VERIFIED",
         "runtime": "NOT_ROOT_E2E_VERIFIED"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "tools/rule-gate-reviewer.mjs",
+            "tools/local-gate-service.mjs",
+            "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "HOLD",
+          "reason": "G0对象签发记录缺Runner所要求的独立精确stage_binding",
+          "evidence_refs": [
+            "tools/rule-gate-reviewer.mjs",
+            "packages/data-access/src/gate-stage-qualification.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -212,7 +350,37 @@
         "pipelines/data-production/adapters/private-evidence-adapters.mjs",
         "pipelines/data-production/adapters/layer1-adapters.mjs"
       ],
-      "storage_identity": "same-layer-as-L0_CANDIDATE"
+      "storage_identity": "same-layer-as-L0_CANDIDATE",
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "pipelines/data-production/workers/private-evidence-stage.mjs",
+            "pipelines/data-production/adapters/private-evidence-adapters.mjs",
+            "pipelines/data-production/adapters/layer1-adapters.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "HOLD",
+          "reason": "G0对象签发记录缺Runner所要求的独立精确stage_binding",
+          "evidence_refs": [
+            "tools/rule-gate-reviewer.mjs",
+            "packages/data-access/src/gate-stage-qualification.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "D01",
@@ -233,6 +401,35 @@
         "code": "RELATED_PRODUCER_CODE_EXISTS",
         "handoff": "PARTIAL_ONLY",
         "runtime": "NOT_ROOT_E2E_VERIFIED"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "pipelines/data-production/workers/private-evidence-stage.mjs",
+            "packages/data-access/src/private-text-reading-repository.mjs",
+            "supabase/migrations/20261115130000_mab_m5_private_text_read_context_consistency.sql"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "PARTIAL",
+          "reason": "D00→D01有局部可信代码接线，但缺同Root G0/G1审签证明",
+          "evidence_refs": [
+            "apps/web/lib/studio-production.ts"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -246,7 +443,34 @@
         "packages/data-access/src/private-text-reading-repository.mjs",
         "supabase/migrations/20261115130000_mab_m5_private_text_read_context_consistency.sql"
       ],
-      "qualification": "UNASSESSED / HOLD / REJECT / REVOKED可保留数据和审核历史"
+      "qualification": "UNASSESSED / HOLD / REJECT / REVOKED可保留数据和审核历史",
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "pipelines/data-production/workers/private-evidence-stage.mjs",
+            "packages/data-access/src/private-text-reading-repository.mjs",
+            "supabase/migrations/20261115130000_mab_m5_private_text_read_context_consistency.sql"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "G1",
@@ -269,6 +493,33 @@
         "code": "INDEPENDENT_GATE_CODE_EXISTS",
         "handoff": "EXACT_SIGNED_STAGE_BINDING_NOT_VERIFIED",
         "runtime": "NOT_ROOT_E2E_VERIFIED"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "tools/rule-gate-reviewer.mjs",
+            "tools/local-gate-service.mjs",
+            "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -282,7 +533,34 @@
         "packages/data-access/src/private-text-reading-repository.mjs",
         "supabase/migrations/20261115130000_mab_m5_private_text_read_context_consistency.sql"
       ],
-      "storage_identity": "same-layer-as-L1_CANDIDATE"
+      "storage_identity": "same-layer-as-L1_CANDIDATE",
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "pipelines/data-production/workers/private-evidence-stage.mjs",
+            "packages/data-access/src/private-text-reading-repository.mjs",
+            "supabase/migrations/20261115130000_mab_m5_private_text_read_context_consistency.sql"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "D02",
@@ -303,6 +581,35 @@
         "code": "RELATED_PRODUCER_CODE_EXISTS",
         "handoff": "CANDIDATE_CODE_EXISTS_NO_NEXT_STAGE_E2E",
         "runtime": "NOT_ROOT_E2E_VERIFIED"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "pipelines/data-production/adapters/layer1-adapters.mjs",
+            "pipelines/data-production/workers/private-evidence-stage.mjs",
+            "supabase/migrations/20261113170000_mab_m5_d02_text_plain_observation.sql"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "HOLD",
+          "reason": "合格L1读取结果尚不能转为D02 H05合法typed专业请求",
+          "evidence_refs": [
+            "pipelines/data-production/orchestrator/orchestrator.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -316,7 +623,34 @@
         "pipelines/data-production/workers/private-evidence-stage.mjs",
         "supabase/migrations/20261113170000_mab_m5_d02_text_plain_observation.sql"
       ],
-      "qualification": "UNASSESSED / HOLD / REJECT / REVOKED可保留数据和审核历史"
+      "qualification": "UNASSESSED / HOLD / REJECT / REVOKED可保留数据和审核历史",
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "pipelines/data-production/adapters/layer1-adapters.mjs",
+            "pipelines/data-production/workers/private-evidence-stage.mjs",
+            "supabase/migrations/20261113170000_mab_m5_d02_text_plain_observation.sql"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "G2",
@@ -339,6 +673,33 @@
         "code": "INDEPENDENT_GATE_CODE_EXISTS",
         "handoff": "EXACT_SIGNED_STAGE_BINDING_NOT_VERIFIED",
         "runtime": "NOT_ROOT_E2E_VERIFIED"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "tools/rule-gate-reviewer.mjs",
+            "tools/local-gate-service.mjs",
+            "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -352,7 +713,34 @@
         "pipelines/data-production/workers/private-evidence-stage.mjs",
         "supabase/migrations/20261113170000_mab_m5_d02_text_plain_observation.sql"
       ],
-      "storage_identity": "same-layer-as-L2_CANDIDATE"
+      "storage_identity": "same-layer-as-L2_CANDIDATE",
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "pipelines/data-production/adapters/layer1-adapters.mjs",
+            "pipelines/data-production/workers/private-evidence-stage.mjs",
+            "supabase/migrations/20261113170000_mab_m5_d02_text_plain_observation.sql"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "D03",
@@ -372,6 +760,32 @@
         "code": "RELATED_PRODUCER_CODE_EXISTS",
         "handoff": "CANDIDATE_CODE_EXISTS_NO_NEXT_STAGE_E2E",
         "runtime": "NOT_ROOT_E2E_VERIFIED"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "pipelines/data-production/adapters/layer1-adapters.mjs",
+            "pipelines/data-production/workers/private-evidence-stage.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -384,7 +798,33 @@
         "pipelines/data-production/adapters/layer1-adapters.mjs",
         "pipelines/data-production/workers/private-evidence-stage.mjs"
       ],
-      "qualification": "UNASSESSED / HOLD / REJECT / REVOKED可保留数据和审核历史"
+      "qualification": "UNASSESSED / HOLD / REJECT / REVOKED可保留数据和审核历史",
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "pipelines/data-production/adapters/layer1-adapters.mjs",
+            "pipelines/data-production/workers/private-evidence-stage.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "G3",
@@ -407,6 +847,33 @@
         "code": "INDEPENDENT_GATE_CODE_EXISTS",
         "handoff": "EXACT_SIGNED_STAGE_BINDING_NOT_VERIFIED",
         "runtime": "NOT_ROOT_E2E_VERIFIED"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "tools/rule-gate-reviewer.mjs",
+            "tools/local-gate-service.mjs",
+            "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -419,7 +886,33 @@
         "pipelines/data-production/adapters/layer1-adapters.mjs",
         "pipelines/data-production/workers/private-evidence-stage.mjs"
       ],
-      "storage_identity": "same-layer-as-L3_CANDIDATE"
+      "storage_identity": "same-layer-as-L3_CANDIDATE",
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "pipelines/data-production/adapters/layer1-adapters.mjs",
+            "pipelines/data-production/workers/private-evidence-stage.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "D04",
@@ -439,6 +932,32 @@
         "code": "RELATED_PRODUCER_CODE_EXISTS",
         "handoff": "CANDIDATE_CODE_EXISTS_NO_NEXT_STAGE_E2E",
         "runtime": "NOT_ROOT_E2E_VERIFIED"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "pipelines/data-production/adapters/layer1-adapters.mjs",
+            "pipelines/data-production/workers/private-evidence-stage.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -451,7 +970,33 @@
         "pipelines/data-production/adapters/layer1-adapters.mjs",
         "pipelines/data-production/workers/private-evidence-stage.mjs"
       ],
-      "qualification": "UNASSESSED / HOLD / REJECT / REVOKED可保留数据和审核历史"
+      "qualification": "UNASSESSED / HOLD / REJECT / REVOKED可保留数据和审核历史",
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "pipelines/data-production/adapters/layer1-adapters.mjs",
+            "pipelines/data-production/workers/private-evidence-stage.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "G4",
@@ -474,6 +1019,33 @@
         "code": "INDEPENDENT_GATE_CODE_EXISTS",
         "handoff": "EXACT_SIGNED_STAGE_BINDING_NOT_VERIFIED",
         "runtime": "NOT_ROOT_E2E_VERIFIED"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "tools/rule-gate-reviewer.mjs",
+            "tools/local-gate-service.mjs",
+            "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -486,7 +1058,33 @@
         "pipelines/data-production/adapters/layer1-adapters.mjs",
         "pipelines/data-production/workers/private-evidence-stage.mjs"
       ],
-      "storage_identity": "same-layer-as-L4_CANDIDATE"
+      "storage_identity": "same-layer-as-L4_CANDIDATE",
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "pipelines/data-production/adapters/layer1-adapters.mjs",
+            "pipelines/data-production/workers/private-evidence-stage.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "D05",
@@ -507,6 +1105,33 @@
         "code": "RELATED_PRODUCER_CODE_EXISTS",
         "handoff": "CANDIDATE_CODE_EXISTS_NO_NEXT_STAGE_E2E",
         "runtime": "NOT_ROOT_E2E_VERIFIED"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "pipelines/data-production/adapters/layer1-adapters.mjs",
+            "pipelines/data-production/workers/private-evidence-stage.mjs",
+            "apps/web/lib/read-model-bridge.ts"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -520,7 +1145,34 @@
         "pipelines/data-production/workers/private-evidence-stage.mjs",
         "apps/web/lib/read-model-bridge.ts"
       ],
-      "qualification": "UNASSESSED / HOLD / REJECT / REVOKED可保留数据和审核历史"
+      "qualification": "UNASSESSED / HOLD / REJECT / REVOKED可保留数据和审核历史",
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "pipelines/data-production/adapters/layer1-adapters.mjs",
+            "pipelines/data-production/workers/private-evidence-stage.mjs",
+            "apps/web/lib/read-model-bridge.ts"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "G5",
@@ -543,6 +1195,33 @@
         "code": "INDEPENDENT_GATE_CODE_EXISTS",
         "handoff": "EXACT_SIGNED_STAGE_BINDING_NOT_VERIFIED",
         "runtime": "NOT_ROOT_E2E_VERIFIED"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "tools/rule-gate-reviewer.mjs",
+            "tools/local-gate-service.mjs",
+            "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -556,7 +1235,34 @@
         "pipelines/data-production/workers/private-evidence-stage.mjs",
         "apps/web/lib/read-model-bridge.ts"
       ],
-      "storage_identity": "same-layer-as-L5_CANDIDATE"
+      "storage_identity": "same-layer-as-L5_CANDIDATE",
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "pipelines/data-production/adapters/layer1-adapters.mjs",
+            "pipelines/data-production/workers/private-evidence-stage.mjs",
+            "apps/web/lib/read-model-bridge.ts"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "QUALIFIED_CONSUMPTION",
@@ -573,7 +1279,34 @@
         3,
         4,
         5
-      ]
+      ],
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "apps/web/lib/studio-research-read.ts",
+            "apps/web/lib/read-model-bridge.ts",
+            "apps/web/lib/work-publish-qualification.ts"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "STUDIO_CREATIVE",
@@ -590,7 +1323,34 @@
         5
       ],
       "experience_contract": "H1历史叙事、H2导演、H3协同验证与19组件逐项真实作品验证",
-      "evidence_level": "SOURCE_INSPECTED_RUNTIME_NOT_VERIFIED"
+      "evidence_level": "SOURCE_INSPECTED_RUNTIME_NOT_VERIFIED",
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "apps/web/lib/studio-creation.ts",
+            "apps/web/lib/studio-director.ts",
+            "specs/experience-ui/H1_H2_H3_AND_COMPONENTS_CONTRACT.md"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "WORK_REVISION",
@@ -601,7 +1361,33 @@
       "code_paths": [
         "apps/web/lib/studio-director.ts",
         "apps/web/app/api/studio/works/[id]/revisions/route.ts"
-      ]
+      ],
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "apps/web/lib/studio-director.ts",
+            "apps/web/app/api/studio/works/[id]/revisions/route.ts"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "ADMIN",
@@ -615,7 +1401,33 @@
       ],
       "acceptance_dimensions": [
         6
-      ]
+      ],
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "apps/web/lib/admin-assets.ts",
+            "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "EDITORIAL",
@@ -626,7 +1438,33 @@
       "code_paths": [
         "apps/web/app/api/admin/submissions/[id]/decision/route.ts",
         "apps/web/lib/publication.ts"
-      ]
+      ],
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "apps/web/app/api/admin/submissions/[id]/decision/route.ts",
+            "apps/web/lib/publication.ts"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "PUBLISH",
@@ -640,7 +1478,33 @@
       ],
       "acceptance_dimensions": [
         7
-      ]
+      ],
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "apps/web/lib/publication.ts",
+            "apps/web/lib/work-publish-qualification.ts"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "WATCH",
@@ -654,7 +1518,33 @@
       ],
       "acceptance_dimensions": [
         8
-      ]
+      ],
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "apps/web/lib/publication-watch-sql.mjs",
+            "apps/web/lib/watch-studio-content.ts"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "REVOKE",
@@ -668,7 +1558,33 @@
       ],
       "acceptance_dimensions": [
         8
-      ]
+      ],
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "apps/web/app/api/admin/assets/[id]/invalidation-requests/route.ts",
+            "apps/web/lib/publication.ts"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "EXP",
@@ -678,7 +1594,36 @@
       "summary": "以后接入受权L0-L5与作品/关系探索；不计入本次M5已实现",
       "code_paths": [
         "tasks/implementation/MAB/PLAN.md"
-      ]
+      ],
+      "verification_layers": {
+        "capability": {
+          "status": "FUTURE",
+          "reason": "后续阶段预留，不计当前M5",
+          "evidence_refs": [
+            "tasks/implementation/MAB/PLAN.md"
+          ],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "FUTURE",
+          "reason": "后续阶段预留，不计当前M5",
+          "evidence_refs": [
+            "tasks/implementation/MAB/PLAN.md"
+          ],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "FUTURE",
+          "reason": "后续阶段预留，不计当前M5",
+          "evidence_refs": [
+            "tasks/implementation/MAB/PLAN.md"
+          ],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "MIXED_COLLABORATION",
@@ -695,7 +1640,34 @@
         2
       ],
       "evidence_level": "CODE_AND_CONTRACT_FOUND_E2E_NOT_RUN",
-      "next_required": "合法DelegationEnvelope、明确Creator授权、provider/model/version与input/output hash、实际费用Receipt及恢复回执"
+      "next_required": "合法DelegationEnvelope、明确Creator授权、provider/model/version与input/output hash、实际费用Receipt及恢复回执",
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "apps/web/lib/studio/tool-ledger.ts",
+            "apps/web/lib/studio-execution-authority.ts",
+            "specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     },
     {
       "id": "KNOWLEDGE_ASSETS",
@@ -727,7 +1699,33 @@
         6
       ],
       "evidence_level": "CONTRACT_AND_ADJACENT_CODE_FOUND_FULL_VALIDATION_NOT_RUN",
-      "next_required": "类型字段、source/locator/revision、rights/ACL、CAS/幂等、dependency/use_events、正反与撤权；真实作品只生成适用类型"
+      "next_required": "类型字段、source/locator/revision、rights/ACL、CAS/幂等、dependency/use_events、正反与撤权；真实作品只生成适用类型",
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "evidence_refs": [
+            "apps/web/lib/studio-assets.ts",
+            "specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "尚未完成本节点全部真实输入输出及当前资格交接核验",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
+      }
     }
   ],
   "edges": [
@@ -763,6 +1761,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -798,6 +1819,35 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "两端有相关模块或局部业务实现，但不代表完整能力已验",
+          "evidence_refs": [
+            "apps/web/lib/studio-production.ts",
+            "CURRENT.md"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "HOLD",
+          "reason": "Studio入口具备受控私有原件生产路径，通用合法资源发现/获得到D00尚未达到原计划要求；不是D00完全无代码",
+          "evidence_refs": [
+            "apps/web/lib/studio-production.ts",
+            "CURRENT.md"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -833,6 +1883,35 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "相关模块存在及有局部隔离验证，但未达到完整功能PASS",
+          "evidence_refs": [
+            "pipelines/data-production/workers/private-evidence-stage.mjs",
+            "CURRENT.md"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "PARTIAL",
+          "reason": "局部代码交接已存在，但未证明真实同Root及全部约束",
+          "evidence_refs": [
+            "pipelines/data-production/workers/private-evidence-stage.mjs",
+            "CURRENT.md"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -867,6 +1946,35 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "两端有相关模块或局部业务实现，但不代表完整能力已验",
+          "evidence_refs": [
+            "tools/rule-gate-reviewer.mjs#decide-receipt",
+            "tools/local-gate-service.mjs#autoSign"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "HOLD",
+          "reason": "独立机器审核器PASS receipt未构造stage_binding；候选对象签发不等于当前Runner job/输入/输出审签",
+          "evidence_refs": [
+            "tools/rule-gate-reviewer.mjs#decide-receipt",
+            "tools/local-gate-service.mjs#autoSign"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -904,6 +2012,35 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "两端有相关模块或局部业务实现，但不代表完整能力已验",
+          "evidence_refs": [
+            "packages/data-access/src/gate-stage-qualification.mjs#auditHasExactStageBinding",
+            "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "HOLD",
+          "reason": "当前资格读取端必须校验job_id/reviewer_binding_ref/input_digest/output_digest；既有机器审核PASS回执尚不能满足",
+          "evidence_refs": [
+            "packages/data-access/src/gate-stage-qualification.mjs#auditHasExactStageBinding",
+            "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -938,6 +2075,35 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "相关模块存在及有局部隔离验证，但未达到完整功能PASS",
+          "evidence_refs": [
+            "pipelines/data-production/workers/private-evidence-stage.mjs",
+            "apps/web/lib/studio-production.ts"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "PARTIAL",
+          "reason": "局部代码交接已存在，但未证明真实同Root及全部约束",
+          "evidence_refs": [
+            "pipelines/data-production/workers/private-evidence-stage.mjs",
+            "apps/web/lib/studio-production.ts"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -977,6 +2143,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1013,6 +2202,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1048,6 +2260,35 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "相关模块存在及有局部隔离验证，但未达到完整功能PASS",
+          "evidence_refs": [
+            "packages/data-access/src/private-text-reading-repository.mjs",
+            "supabase/migrations/20261115130000_mab_m5_private_text_read_context_consistency.sql"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "PARTIAL",
+          "reason": "局部代码交接已存在，但未证明真实同Root及全部约束",
+          "evidence_refs": [
+            "packages/data-access/src/private-text-reading-repository.mjs",
+            "supabase/migrations/20261115130000_mab_m5_private_text_read_context_consistency.sql"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1081,6 +2322,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1120,6 +2384,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1154,6 +2441,35 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "PARTIAL",
+          "reason": "两端有相关模块或局部业务实现，但不代表完整能力已验",
+          "evidence_refs": [
+            "pipelines/data-production/orchestrator/orchestrator.mjs#PRIVATE_NEXT_STAGE_REQUEST_NOT_READY",
+            "pipelines/data-production/adapters/private-evidence-adapters.mjs#CANDIDATE_REF_SPECS"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "handoff": {
+          "status": "HOLD",
+          "reason": "D01有reading candidate，D02已有H05观察持久化，但Runner尚无把现行合格L1变为D02 typed专业观察请求的受控转换",
+          "evidence_refs": [
+            "pipelines/data-production/orchestrator/orchestrator.mjs#PRIVATE_NEXT_STAGE_REQUEST_NOT_READY",
+            "pipelines/data-production/adapters/private-evidence-adapters.mjs#CANDIDATE_REF_SPECS"
+          ],
+          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+          "observed_on": "2026-11-15"
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1193,6 +2509,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1229,6 +2568,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1265,6 +2627,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1298,6 +2683,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1337,6 +2745,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1370,6 +2801,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1409,6 +2863,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1445,6 +2922,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1479,6 +2979,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1512,6 +3035,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1551,6 +3097,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1584,6 +3153,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1623,6 +3215,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1659,6 +3274,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1693,6 +3331,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1726,6 +3387,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1765,6 +3449,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1798,6 +3505,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1837,6 +3567,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1873,6 +3626,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1909,6 +3685,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1942,6 +3741,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -1981,6 +3803,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2020,6 +3865,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2056,6 +3924,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2091,6 +3982,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2128,6 +4042,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2165,6 +4102,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2202,6 +4162,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2237,6 +4220,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2272,6 +4278,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2307,6 +4336,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2343,6 +4395,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2371,6 +4446,35 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "FUTURE",
+          "reason": "未来用途，不计当前M5",
+          "evidence_refs": [
+            "tasks/implementation/MAB/PLAN.md"
+          ],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "FUTURE",
+          "reason": "未来用途，不计当前M5",
+          "evidence_refs": [
+            "tasks/implementation/MAB/PLAN.md"
+          ],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "FUTURE",
+          "reason": "未来用途，不计当前M5",
+          "evidence_refs": [
+            "tasks/implementation/MAB/PLAN.md"
+          ],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2399,6 +4503,35 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "FUTURE",
+          "reason": "未来用途，不计当前M5",
+          "evidence_refs": [
+            "tasks/implementation/MAB/PLAN.md"
+          ],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "FUTURE",
+          "reason": "未来用途，不计当前M5",
+          "evidence_refs": [
+            "tasks/implementation/MAB/PLAN.md"
+          ],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "FUTURE",
+          "reason": "未来用途，不计当前M5",
+          "evidence_refs": [
+            "tasks/implementation/MAB/PLAN.md"
+          ],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2436,6 +4569,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2476,6 +4632,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2516,6 +4695,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2555,6 +4757,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2597,6 +4822,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2635,6 +4883,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     },
     {
@@ -2675,6 +4946,29 @@
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
+      },
+      "verification_layers": {
+        "capability": {
+          "status": "NOT_VERIFIED",
+          "reason": "仅源码位置被找到，未逐接口确认本连接必需能力",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "handoff": {
+          "status": "NOT_VERIFIED",
+          "reason": "本连接typed接口与权限/资格接收尚未逐项核查",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        },
+        "runtime": {
+          "status": "NOT_VERIFIED",
+          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "evidence_refs": [],
+          "verified_source_sha": null,
+          "observed_on": null
+        }
       }
     }
   ],
@@ -2858,14 +5152,14 @@
     "read_order": [
       "CURRENT.md（最新已证事实与最前HOLD）",
       "tasks/implementation/MAB/PLAN.md §3.5 B/C（唯一准出与施工规则）",
-      "tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json（Agent机器逐边核对）",
+      "tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json（先读layer_status_model，再按每个nodes/edges.verification_layers三层逐项核查）",
       "tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.md（解释/人工校对）",
       "tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.html（交互观察）",
       "精确工程代码/相关CI/隔离PG HTTP Provider与最新progress证据"
     ],
     "on_every_m5_handoff": "执行方在选择下一个断点前读取机器JSON及CURRENT/PLAN，并对仍有效的旧证据继承；状态先核当前HEAD与真实证据",
     "refresh_trigger": "任何影响节点/边/资格/计划与当前最前阻断的代码、真实运行回执或设计合同变化",
-    "refresh_rule": "三份导航同一事务/提交原位同步，不新增权威或验收标准；旧事实标过期，不把NOT_RUN升PASS 断点归因仅在有新增源码或实跑证据时更改，禁止把橙色块当无代码。",
+    "refresh_rule": "JSON/MD/HTML同一提交同步，相关代码或证据改变时仅刷新受影响层；保留其他NOT_VERIFIED，不凭文件存在或旧status推断PASS。",
     "acceptance_rule": "准出唯一以PLAN §3.5 B八维真实作品正反验收为准",
     "source_ref_policy": "源码链接锁定source_sha；当前HEAD变化时先比较影响范围再复核，不以HEAD自动判过期"
   },
@@ -2882,7 +5176,8 @@
     "verified_at": "2026-11-15",
     "evidence_rule": "RELATED_CODE_PATH_EXISTS只证明路径存在及可能关联，不证明实际接口、资格或整链成功",
     "verified_edge_locator_paths": 30,
-    "evidence_scope": "已复核30条唯一边级路径均存在；仅7条边完成针对性诊断，其余未按接口/实跑归因；非54条实证"
+    "evidence_scope": "已复核30条唯一边级路径均存在；仅7条边完成针对性诊断，其余未按接口/实跑归因；非54条实证",
+    "layer_visualization_note": "2026-11-15：本次仅把此前7条定向边诊断及节点局部源码事实转换为三层状态，不是54条连线完整复核或同Root运行实证。"
   },
   "diagnosis_taxonomy": {
     "CONTRACT_MISMATCH": "有代码｜签发/资格接口不匹配",
@@ -2914,5 +5209,57 @@
     ],
     "next_batch": "修现有G0精确签发合同并完成同Root独立G0实测；随后验证D01/G1→D02 H05 typed转换和持久候选；两端复用现有代码，不再造第二Gate或Runner",
     "gate": "PLAN.md §3.5 B/C；缺实际独立Reviewer/持久私有原件/Provider授权环境则HOLD/NOT_RUN"
+  },
+  "layer_status_model": {
+    "version": "1.0",
+    "layers": {
+      "capability": {
+        "symbol": "◆",
+        "label": "能力",
+        "question": "代码/数据结构/专业方法是否齐备"
+      },
+      "handoff": {
+        "symbol": "⇄",
+        "label": "连接",
+        "question": "上下游真实输出、输入、身份、权限和版本是否合法衔接"
+      },
+      "runtime": {
+        "symbol": "●",
+        "label": "运行",
+        "question": "是否有同Root的正反、持久化、恢复及消费实证"
+      }
+    },
+    "statuses": {
+      "PASS": {
+        "label": "已验证通过",
+        "color": "green"
+      },
+      "PARTIAL": {
+        "label": "部分完成",
+        "color": "blue"
+      },
+      "HOLD": {
+        "label": "明确阻断",
+        "color": "orange"
+      },
+      "NOT_VERIFIED": {
+        "label": "尚未核实",
+        "color": "gray"
+      },
+      "FUTURE": {
+        "label": "未来预留",
+        "color": "purple"
+      }
+    },
+    "interpretation": "◆能力⇄连接●运行独立判定；代码存在不推导连接PASS，连接局部成功不推导同Root运行PASS；FUTURE为范围标记",
+    "legacy_status": "原status为历史兼容字段，非分层状态权威；新的UI只消费verification_layers",
+    "update_rule": "仅证据驱动修改受影响层；PASS必须真实匹配有效精确源码与正反/运行回执、环境、scope、日期；未核实不自动标HOLD；不从其他节点/层推导",
+    "evidence_contract": {
+      "PASS": "真实有效URI或回执+准确SHA/Root+环境+正反范围+时间",
+      "PARTIAL": "有实际局部代码/合同依据且注明欠缺",
+      "HOLD": "可复查的具体故障或缺失前置",
+      "NOT_VERIFIED": "证据不足，非失败/非缺代码",
+      "FUTURE": "来源于批准计划的未来范围"
+    }
   }
 }
