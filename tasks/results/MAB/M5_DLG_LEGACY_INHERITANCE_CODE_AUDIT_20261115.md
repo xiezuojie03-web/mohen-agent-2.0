@@ -50,3 +50,14 @@
 5. **证据等级**：本报告只达到 `SOURCE_REVIEWED + HISTORICAL_RUN_DOCUMENTED + CURRENT_CODE_AUDITED`；无本次新业务代码提交/真实数据库操作/真实 Provider 调用/独立 Gate 正签或 Owner 验收。准出保持 `M5_REMEDIATION_ACTIVE / M5_OVERALL_HOLD`。
 
 **追踪与归档**：本报告是 `tasks/results/MAB/` 下的现有工程证据文件；`CURRENT.md` 只增加本次准确断点与链接；`tasks/implementation/MAB/progress.md` 只追加本次查询的源码、事实和下一入口；不修改 `PLAN.md` V1.7，也不创造并列施工标准。
+
+## 6. 仓库、分支与代码位置清点（2026-11-15）
+
+本节是针对 Owner“到底有几个仓库、代码有几个位置、为什么按线查仍漏”的事实补充，不改变 PLAN、验收标准或当前施工路线。
+
+- **GitHub 账户 `xiezuojie03-web` 可见且归其所有的仓库共 6 个**：`mohen-agent-2.0`（现行墨痕主工程，private），`hushang-jingwei`（沪上经纬历史工程，private），`modu-guzhen-zhilue`（早期古镇工程，private），`OpenSH-mcp`（外部开源 fork），`jiangshan-map`（外部开源 fork），`-`（其他历史仓库；尚无当前施工职责证据）。**M5 正式工程只有 `mohen-agent-2.0` 一个主仓库**；外部 fork/历史工程不作为第二主链。
+- **当前主仓库有 3 个远端分支**：`main`（唯一可写现行基线），`mab/m4-provider-spend-controls-20261107`、`mab/owner-led-execution-plan-20261107`（历史分支，仅在证据需要时只读）。不以“分支存在”认定其中藏有更新的合格工程。
+- **当前仓库按技术职责分目录，而不是按 D00—D05 线性分仓**：`apps/web/`（UI、Studio、Admin、WATCH及 API），`pipelines/data-production/`（唯一生产 Runner、Registry 调用、Adapter、Worker；同一目录同时存在旧 `layer1-adapters.mjs` 与新 `private-evidence-adapters.mjs`），`packages/`（Agent 运行时和数据库访问），`supabase/migrations/`（结构/权限 SQL），`skills/`（专业方法声明），`scripts/` 与 `tools/`（工具/脚本），`tests/`（验证），`governance/`、`specs/`（权威设计/合同），`tasks/results/`（历史成果及证据）。`pipelines/research/`、`pipelines/legacy/` 和 `archive/` 保留历史材料，不能当现行 Runner。根目录实际树已查：2632 个树项（文件+目录），不是2632个要逐一重写的代码文件。
+- **三种“位置”不可混为一谈**：① GitHub `main` 是当前应审查的远端源码基线；② Trae/其他开发工具的本地 Git 工作树可能含未提交/未推送代码，本轮无法直接访问，**不能证明完全同步**；③ Vercel 部署是另一个精确 SHA 的构建副本，Supabase 运行库是数据/模式状态，均不等于 GitHub 最新源码。不能把旧部署当现行运行事实。
+- **漏查根因（本次责任归属）**：初次核查只顺着目前 Studio 调用的私有 Adapter→Worker 读，虽然看过 Runner，却**没有同时对照同一目录下仍存在的旧 layer1 内容生产函数、历史运行代码及其 Gate 语义**，还没有把 `apps/web` 各真实消费者/业务路径完全反向追踪。由于动态加载、Registry 的双 Adapter 绑定、历史与当前并存，在只看“当前执行路径”时就可能漏掉“必须继承的可用实现”。这不是六个仓库引起，也不是必须先跑程序才可发现，是**我对代码范围与继承核查不完整**。
+- **后续同一路线的正确核法**：先钉住 `main@SHA` 和本地差异可知性，逐段记录实际调用者→被调用实现→输入/输出契约→旧可继承实现→DB/Gate/权限/费用→后续消费者；每个节点同时核对“在用、已实现但未接线、历史仅供移植、未实现”四类。**源代码路径走通和 Owner 实机验收是两种不同证据**；没有查过的节点标未查，不写“已查全”。
