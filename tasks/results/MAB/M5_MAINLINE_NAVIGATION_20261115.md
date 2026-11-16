@@ -852,3 +852,11 @@ flowchart TB
 - **本批跟踪**：原JSON `audit_tracking.last_execution_batch` 与两条`edges[].engineering_diagnosis / verification_layers / source_paths`已同步；HTML内嵌同一JSON，37节点/54连接原样保持。提交后CI需按新HEAD核验并写回实证；无真实Reviewer签名或Runner证明不得改判。
 
 **BATCH-05提交后验收回读**：代码提交 [`51be179df365`](https://github.com/xiezuojie03-web/mohen-agent-2.0/commit/51be179df365464d99166003c6031921030f9fb2)；[主CI 43825974690](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43825974690) **SUCCESS（270 PASS/0 FAIL）**；[隔离PG17 43825974705](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43825974705) **SUCCESS（原GateService/Reviewer/原件库安全边界及回滚）**。但PG脚本报告`MAB_PRIVATE_ORIGINAL_STORAGE_HOLD`，本批未覆盖官方隔离Storage字节工作流；本批HTTP未重跑（沿用BATCH-04 43819354334），云端同Root阶段资格仍HOLD/NOT_VERIFIED。
+
+
+## 2026-11-16｜M5-G0-ROOT-01｜同Root独立机器G0签发及Runner资格消费PG17连贯验证
+
+- **已证实的隔离能力**：同Owner/Project/Root/Run持久D00 C01候选，经独立Machine Reviewer真实PG17签发精确G0，现有Gate Service受限Reader合法查询，Runner原资格校验器成功消费。负例：错Root、错Project、篡改输出、撤权后失效。
+- **代码和CI**：[同Root实证用例](https://github.com/xiezuojie03-web/mohen-agent-2.0/blob/main/tests/data-production/m5-root-g0-handoff.integration.mjs)，[PG17 43830993636](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43830993636) **SUCCESS**， [主CI 43830993640](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43830993640) **SUCCESS**，实际调用日志`M5_ROOT_G0_PG_HANDOFF_PASS`。用例使用合成数据库登记，未验证官方Storage字节和真实完整Runner连续执行。
+- **当前交接**：[E_D00_REVIEW](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_REVIEW) 与 [E_D00_QUALIFY](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_QUALIFY) 在**云端和真实Owner层仍HOLD／NOT_VERIFIED**；隔离PG实证仅证已有代码链成立，不替代验收。Studio现有代码本来就写入`scope.project_id/root_task_id`；原20条run空scope为历史，不再次重建。
+- **真实剩余阻断**：mohen-cloud没有M2私有原件/官方Storage、独立Reviewer角色/凭据/绑定、当前真实G0候选；只有受控备份、恢复、权限及真实Owner原件俱备，才能继续环境接入并到D01/G1→D02。37节点/54边、M5八维与本图三层状态不改判。文档存GitHub，ChatGPT资料库未同步。
