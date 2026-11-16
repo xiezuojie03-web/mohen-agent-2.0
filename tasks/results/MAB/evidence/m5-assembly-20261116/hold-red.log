@@ -1,0 +1,40 @@
+✔ private inputs require the exact reviewed stage binding; legacy and nested requests always reject (1.836962ms)
+✔ typed private requests require the exact reviewed alternative binding (0.167166ms)
+✔ private adapter fails closed without trusted Owner worker, session and Registry (0.610448ms)
+✔ private D01/D02/D03 adapters only return unassessed producer candidates (1.045098ms)
+✔ mismatched stage or self-qualified worker candidate never enters handoff (0.419527ms)
+✔ private adapter lazily binds the configured runtime only for an exact Registry/Stage request (0.3472ms)
+✔ D00 source intake returns a typed D01 request and UNASSESSED candidate refs with a trusted runtime (0.572492ms)
+✔ D00 hands a real text/plain C01 request to D01 without turning it into a scanned page (1.02655ms)
+✔ D00 refuses an unsupported carrier before forwarding a mislabelled D01 request (0.318779ms)
+✔ D00 fails closed without scope or without a trusted runtime (0.277238ms)
+✔ D00 rejects a self-qualified or unpersisted source candidate (0.57799ms)
+✔ D01 routes a scanned-page request to readScannedPage, never the text reader (0.431926ms)
+✔ D01 scanned-page request fails closed when the runtime lacks the page reader (0.177952ms)
+✔ D01 exposes only durable candidate refs outside qualified outputs and refuses an in-memory-only candidate (0.397795ms)
+✔ D02 observation form routes to observeMaterial and emits material_evidence refs (0.384705ms)
+✔ D03 claim form routes to assertWorldClaim and emits claim_revision refs (0.297698ms)
+✔ D04/D05 emit finding and world_projection refs on the new forms (0.575426ms)
+✔ D04/D05 hold on wrong stage and fail closed on unpersisted candidates (0.42822ms)
+✖ D02 generation failure is a bounded recoverable HOLD with no leaked source/provider error (0.457493ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 18
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 115.838956
+
+✖ failing tests:
+
+test at tests/data-production/private-evidence-adapters.test.mjs:373:1
+✖ D02 generation failure is a bounded recoverable HOLD with no leaked source/provider error (0.457493ms)
+  Error: sensitive provider text
+      at Object.observeMaterial (file:///workspace/mohen-agent-2.0/tests/data-production/private-evidence-adapters.test.mjs:377:39)
+      at Object.D02 (file:///workspace/mohen-agent-2.0/pipelines/data-production/adapters/private-evidence-adapters.mjs:138:41)
+      at async TestContext.<anonymous> (file:///workspace/mohen-agent-2.0/tests/data-production/private-evidence-adapters.test.mjs:374:15)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    code: 'DISPATCH_UNCERTAIN'
+  }

@@ -1,0 +1,51 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/provider-dispatcher.test.ts (23 tests | 1 failed) 50ms
+   ✓ provider-pricing > prices known models and treats unknown models as unpriced (fail closed) 1ms
+   ✓ authorizeProviderDispatch > authorizes a fully-granted delegation with rights and budget, issues a one-time handle 3ms
+   ✓ authorizeProviderDispatch > denies sources without explicit external-processing rights before any fetch 2ms
+   ✓ authorizeProviderDispatch > no longer accepts legacy rights self-description as an external-processing grant 1ms
+   ✓ authorizeProviderDispatch > denies when the rights row is unparsable or missing rather than defaulting to allow 1ms
+   ✓ authorizeProviderDispatch > holds when the budget cannot cover the worst-case estimate 1ms
+   ✓ authorizeProviderDispatch > uses UTF-8 bytes rather than character count as a conservative input-token bound 1ms
+   ✓ authorizeProviderDispatch > counts every known billable receipt state, not only ACCEPT_AS_CANDIDATE 1ms
+   ✓ authorizeProviderDispatch > rejects expired delegations, wrong actions, non-granted transfer and unpriced models 1ms
+   ✓ dispatchAuthorizedCall > dispatches one real call and persists an ESTIMATED receipt with usage and hashes 3ms
+   ✓ dispatchAuthorizedCall > uses provider JSON mode for structured Studio actions but not narration prose 1ms
+   ✓ dispatchAuthorizedCall > replays an identical input without a second fetch or a second charge, even if remaining budget is insufficient 1ms
+   ✓ dispatchAuthorizedCall > writes a HOLD receipt and never retries on timeout 10ms
+   ✓ dispatchAuthorizedCall > keeps the timeout active until the response body has been fully read 12ms
+   ✓ dispatchAuthorizedCall > writes a HOLD receipt on provider HTTP failure and never retries 1ms
+   ✓ dispatchAuthorizedCall > refuses forged or consumed handles 0ms
+   ✓ studio-creation blocker wiring > stays fail-closed without a handle and opens only for a real authorized handle 1ms
+   ✓ authorizeStudioDispatchGrant / dispatchWithGrant（M5 批次 G） > issues a usable grant for a fully-authorized delegation and blocker accepts it 1ms
+   ✓ authorizeStudioDispatchGrant / dispatchWithGrant（M5 批次 G） > rejects a delegation belonging to another project even when the Owner can read both projects 0ms
+   ✓ authorizeStudioDispatchGrant / dispatchWithGrant（M5 批次 G） > rejects unknown actions, actions outside the delegation, denied rights and short budget 1ms
+   ✓ authorizeStudioDispatchGrant / dispatchWithGrant（M5 批次 G） > dispatches real calls through the grant, persists receipts and enforces maxCalls 1ms
+   ✓ authorizeStudioDispatchGrant / dispatchWithGrant（M5 批次 G） > rejects an action not covered by the grant and forged grants before any fetch 0ms
+   × private Worker composition > uses the explicitly injected Owner-scoped pool and rights reader instead of Producer DATABASE_URL 5ms
+     → DATABASE_URL 未设置（serverless 消费层需显式注入）
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/provider-dispatcher.test.ts > private Worker composition > uses the explicitly injected Owner-scoped pool and rights reader instead of Producer DATABASE_URL
+Error: DATABASE_URL 未设置（serverless 消费层需显式注入）
+ ❯ Module.getNodePgPool packages/data-access/src/node-pg-client.mjs:28:19
+     26|   if (_pool) return _pool;
+     27|   const url = process.env.DATABASE_URL;
+     28|   if (!url) throw new Error("DATABASE_URL 未设置（serverless 消费层需显式注入）");
+       |                   ^
+     29|   const local = isLocalHost(url);
+     30|   const connection = new URL(url);
+ ❯ createStudioDispatcherDeps apps/web/lib/studio/provider-dispatcher.ts:484:27
+ ❯ tests/unit/provider-dispatcher.test.ts:404:14
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 22 passed (23)
+   Start at  20:02:51
+   Duration  472ms (transform 162ms, setup 0ms, collect 247ms, tests 50ms, environment 0ms, prepare 51ms)
+

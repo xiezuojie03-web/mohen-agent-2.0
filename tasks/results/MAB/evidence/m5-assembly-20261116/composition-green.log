@@ -1,0 +1,10 @@
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ✓ tests/unit/provider-dispatcher.test.ts (23 tests) 61ms
+
+ Test Files  1 passed (1)
+      Tests  23 passed (23)
+   Start at  20:03:22
+   Duration  590ms (transform 196ms, setup 0ms, collect 298ms, tests 61ms, environment 0ms, prepare 65ms)
+

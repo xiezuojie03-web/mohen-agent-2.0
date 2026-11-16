@@ -1,0 +1,60 @@
+[execution-authority] verifier rejected status: 409 body: {}
+[execution-authority] verifier fetch failed: verifier rejected url: https://execution-verifier.example.invalid/verify ca: /usr/local/share/ca-certificates/environment-proxy-ca.crt
+[execution-authority] verifier rejected status: 409 body: {}
+[execution-authority] verifier fetch failed: verifier rejected url: https://execution-verifier.example.invalid/verify ca: /usr/local/share/ca-certificates/environment-proxy-ca.crt
+[execution-authority] verifier rejected status: 409 body: {}
+[execution-authority] verifier fetch failed: verifier rejected url: https://execution-verifier.example.invalid/verify ca: /usr/local/share/ca-certificates/environment-proxy-ca.crt
+[execution-authority] verifier rejected status: 409 body: {}
+[execution-authority] verifier fetch failed: verifier rejected url: https://execution-verifier.example.invalid/verify ca: /usr/local/share/ca-certificates/environment-proxy-ca.crt
+✔ D02 observeMaterial persists one H05 candidate under a real stage grant (34.784706ms)
+✔ D02 observeMaterial rejects authorized-but-invalid inputs before any persistence (14.40515ms)
+✔ D02 observeMaterial requires the persistence repository and a persisted result (1.736283ms)
+✔ D03 assertWorldClaim persists one W07 candidate under a real stage grant (1.879413ms)
+✔ D03 assertWorldClaim rejects authorized-but-invalid claims before any persistence (5.715964ms)
+✔ D03 assertWorldClaim requires the persistence repository and a persisted result (1.430673ms)
+✔ D04 recordHumanisticFinding persists one A06 candidate under a real stage grant (2.72078ms)
+✔ D04 recordHumanisticFinding rejects authorized-but-invalid findings before any persistence (14.622951ms)
+✔ D04 recordHumanisticFinding requires the persistence repository and a persisted result (2.107239ms)
+✔ D05 projectWorld persists one P02 candidate under a real stage grant (2.240114ms)
+✔ D05 projectWorld rejects authorized-but-invalid projections before any persistence (6.445987ms)
+✔ D05 projectWorld requires the persistence repository and a persisted result (1.378406ms)
+✔ a private stage cannot be constructed without candidate submission or audit read (0.375171ms)
+✔ D00 verifySourceIntake submits exactly one G0 source_version candidate (5.689636ms)
+✔ D00 carries the consumer C method plan as typed refs on the G0 candidate (1.736193ms)
+✔ D00 rejects a malformed consumer method plan before submitting any candidate (4.079608ms)
+✔ D00 records intake observation then Y02/Y04/Y03/Y06 in order and exposes the written ids (1.812965ms)
+✔ D00 derives the Y04 intake coverage conclusion from the recorded acquisition attempt (1.418606ms)
+✔ D00 fails closed when the Y04 coverage conclusion cannot be recorded (3.334573ms)
+✔ D00 writes only the intake observation when the caller supplies no extra material (1.954243ms)
+✔ D00 fails closed on malformed or unwritable Y02—Y07 material (8.723567ms)
+✔ D01 refuses to read a page when G0 has not approved a consumer method plan (1.432136ms)
+✔ D01 draftTextReading submits one G1 read_unit candidate against the extent source version (1.820286ms)
+✔ D01 C01 consumes the D00 text locator, proves exact UTF-8 bytes and submits only an unassessed G1 candidate (1.477703ms)
+✔ D01 C01 full-text request denies unapproved G0 before reading any private bytes (1.092056ms)
+✔ D01 C01 full-text request refuses oversized or non-UTF8 bytes instead of silently inventing an extent (2.10151ms)
+✔ D02 observeMaterial submits one G2 material_evidence candidate with the signed G1 dependency (1.34658ms)
+✔ D03 assertWorldClaim submits one G3 claim_revision candidate with the signed G2 dependency (1.854147ms)
+✔ D04 recordHumanisticFinding submits one G4 finding candidate with the signed G3 dependency (0.940653ms)
+✔ D05 projectWorld submits one G5 world_projection candidate with the signed G4 dependency (1.019869ms)
+✔ candidate submission fails closed on a missing project scope, a non-hex revision and empty evidence refs (3.234115ms)
+✖ D02 generates a professionally attributed candidate from current exact C01/G1 and verified bytes (1.335333ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 31
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 225.796897
+
+✖ failing tests:
+
+test at tests/data-production/private-candidate-worker.test.mjs:1155:1
+✖ D02 generates a professionally attributed candidate from current exact C01/G1 and verified bytes (1.335333ms)
+  Error: PRIVATE_MATERIAL_OBSERVATION_INVALID
+      at Object.observeMaterial (file:///workspace/mohen-agent-2.0/pipelines/data-production/workers/private-evidence-stage.mjs:577:15)
+      at async file:///workspace/mohen-agent-2.0/tests/data-production/private-candidate-worker.test.mjs:1174:18
+      at async withStageAuthority (file:///workspace/mohen-agent-2.0/tests/data-production/private-candidate-worker.test.mjs:54:12)
+      at async TestContext.<anonymous> (file:///workspace/mohen-agent-2.0/tests/data-production/private-candidate-worker.test.mjs:1157:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)

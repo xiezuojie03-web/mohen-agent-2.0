@@ -1,0 +1,75 @@
+[execution-authority] verifier rejected status: 409 body: {}
+[execution-authority] verifier fetch failed: verifier rejected url: https://execution-verifier.example.invalid/verify ca: /usr/local/share/ca-certificates/environment-proxy-ca.crt
+[execution-authority] verifier rejected status: 409 body: {}
+[execution-authority] verifier fetch failed: verifier rejected url: https://execution-verifier.example.invalid/verify ca: /usr/local/share/ca-certificates/environment-proxy-ca.crt
+[execution-authority] verifier rejected status: 409 body: {}
+[execution-authority] verifier fetch failed: verifier rejected url: https://execution-verifier.example.invalid/verify ca: /usr/local/share/ca-certificates/environment-proxy-ca.crt
+[execution-authority] verifier rejected status: 409 body: {}
+[execution-authority] verifier fetch failed: verifier rejected url: https://execution-verifier.example.invalid/verify ca: /usr/local/share/ca-certificates/environment-proxy-ca.crt
+✔ D02 observeMaterial persists one H05 candidate under a real stage grant (38.702755ms)
+✔ D02 observeMaterial rejects authorized-but-invalid inputs before any persistence (18.498483ms)
+✔ D02 observeMaterial requires the persistence repository and a persisted result (1.866826ms)
+✔ D03 assertWorldClaim persists one W07 candidate under a real stage grant (1.662446ms)
+✔ D03 assertWorldClaim rejects authorized-but-invalid claims before any persistence (6.479682ms)
+✔ D03 assertWorldClaim requires the persistence repository and a persisted result (2.001765ms)
+✔ D04 recordHumanisticFinding persists one A06 candidate under a real stage grant (2.65126ms)
+✔ D04 recordHumanisticFinding rejects authorized-but-invalid findings before any persistence (14.620719ms)
+✔ D04 recordHumanisticFinding requires the persistence repository and a persisted result (2.506438ms)
+✔ D05 projectWorld persists one P02 candidate under a real stage grant (2.722194ms)
+✔ D05 projectWorld rejects authorized-but-invalid projections before any persistence (6.486462ms)
+✔ D05 projectWorld requires the persistence repository and a persisted result (1.633673ms)
+✔ a private stage cannot be constructed without candidate submission or audit read (0.428851ms)
+✔ D00 verifySourceIntake submits exactly one G0 source_version candidate (6.324684ms)
+✔ D00 carries the consumer C method plan as typed refs on the G0 candidate (2.280205ms)
+✔ D00 rejects a malformed consumer method plan before submitting any candidate (4.734045ms)
+✔ D00 records intake observation then Y02/Y04/Y03/Y06 in order and exposes the written ids (2.228789ms)
+✔ D00 derives the Y04 intake coverage conclusion from the recorded acquisition attempt (2.511494ms)
+✔ D00 fails closed when the Y04 coverage conclusion cannot be recorded (3.492508ms)
+✔ D00 writes only the intake observation when the caller supplies no extra material (2.384287ms)
+✔ D00 fails closed on malformed or unwritable Y02—Y07 material (9.936818ms)
+✔ D01 refuses to read a page when G0 has not approved a consumer method plan (1.582659ms)
+✔ D01 draftTextReading submits one G1 read_unit candidate against the extent source version (1.788991ms)
+✔ D01 C01 consumes the D00 text locator, proves exact UTF-8 bytes and submits only an unassessed G1 candidate (1.574156ms)
+✔ D01 C01 full-text request denies unapproved G0 before reading any private bytes (1.163802ms)
+✔ D01 C01 full-text request refuses oversized or non-UTF8 bytes instead of silently inventing an extent (3.215911ms)
+✔ D02 observeMaterial submits one G2 material_evidence candidate with the signed G1 dependency (1.157323ms)
+✔ D03 assertWorldClaim submits one G3 claim_revision candidate with the signed G2 dependency (0.952592ms)
+✔ D04 recordHumanisticFinding submits one G4 finding candidate with the signed G3 dependency (0.968054ms)
+✔ D05 projectWorld submits one G5 world_projection candidate with the signed G4 dependency (1.309286ms)
+✔ candidate submission fails closed on a missing project scope, a non-hex revision and empty evidence refs (2.931552ms)
+✔ D02 generates a professionally attributed candidate from current exact C01/G1 and verified bytes (1.622226ms)
+✔ D02 generation rejects wrong root without persistence (0.759467ms)
+✔ D02 generation rejects wrong project without persistence (0.831984ms)
+✔ D02 generation rejects wrong immutable revision without persistence (0.65942ms)
+✔ D02 generation rejects revoked G1 without persistence (0.653211ms)
+✔ D02 generation rejects foreign source without persistence (0.639631ms)
+✔ D02 generation rejects tampered bytes without persistence (0.684366ms)
+✔ D02 generation rejects mixed hand-authored content without persistence (0.903809ms)
+✔ D02 revocation during generation refuses persistence (0.907505ms)
+✖ D02 refuses an object-only historical G1 from another run (1.418326ms)
+ℹ tests 41
+ℹ suites 0
+ℹ pass 40
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 292.305635
+
+✖ failing tests:
+
+test at tests/data-production/private-candidate-worker.test.mjs:1195:1
+✖ D02 refuses an object-only historical G1 from another run (1.418326ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async file:///workspace/mohen-agent-2.0/tests/data-production/private-candidate-worker.test.mjs:1174:15
+      at async withStageAuthority (file:///workspace/mohen-agent-2.0/tests/data-production/private-candidate-worker.test.mjs:54:12)
+      at async exerciseGeneration (file:///workspace/mohen-agent-2.0/tests/data-production/private-candidate-worker.test.mjs:1157:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /PRIVATE_D02_G1_NOT_CURRENT/,
+    operator: 'rejects',
+    diff: 'simple'
+  }

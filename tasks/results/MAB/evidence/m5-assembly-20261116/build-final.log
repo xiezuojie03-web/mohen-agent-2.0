@@ -1,0 +1,156 @@
+
+> mohen-agent-2.0@0.1.0 build /workspace/mohen-agent-2.0
+> pnpm --filter @mohen/web build
+
+
+> @mohen/web@0.1.0 build /workspace/mohen-agent-2.0/apps/web
+> next build
+
+   ▲ Next.js 15.5.28
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 5.0s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/13) ...
+   Generating static pages (3/13) 
+   Generating static pages (6/13) 
+   Generating static pages (9/13) 
+ ✓ Generating static pages (13/13)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                                   Size  First Load JS
+┌ ○ /                                                        165 B         106 kB
+├ ○ /_not-found                                              994 B         104 kB
+├ ○ /admin                                                 8.21 kB         111 kB
+├ ○ /admin/sources                                         1.32 kB         104 kB
+├ ƒ /api/admin/acl                                           393 B         103 kB
+├ ƒ /api/admin/assets                                        393 B         103 kB
+├ ƒ /api/admin/assets/[id]/invalidation-requests             393 B         103 kB
+├ ƒ /api/admin/assets/[id]/promote                           393 B         103 kB
+├ ƒ /api/admin/assets/candidates                             393 B         103 kB
+├ ƒ /api/admin/gates/audits                                  393 B         103 kB
+├ ƒ /api/admin/jobs                                          393 B         103 kB
+├ ƒ /api/admin/metrics                                       393 B         103 kB
+├ ƒ /api/admin/metrics/[id]                                  393 B         103 kB
+├ ƒ /api/admin/metrics/engagement                            393 B         103 kB
+├ ƒ /api/admin/navigation                                    393 B         103 kB
+├ ƒ /api/admin/publications                                  393 B         103 kB
+├ ƒ /api/admin/publications/[id]/unpublish                   393 B         103 kB
+├ ƒ /api/admin/publications/schedules                        393 B         103 kB
+├ ƒ /api/admin/rights/invalidate                             393 B         103 kB
+├ ƒ /api/admin/session                                       393 B         103 kB
+├ ƒ /api/admin/settings                                      393 B         103 kB
+├ ƒ /api/admin/sources                                       393 B         103 kB
+├ ƒ /api/admin/submissions                                   393 B         103 kB
+├ ƒ /api/admin/submissions/[id]                              393 B         103 kB
+├ ƒ /api/admin/submissions/[id]/decision                     393 B         103 kB
+├ ƒ /api/admin/submissions/batch                             393 B         103 kB
+├ ƒ /api/admin/users                                         393 B         103 kB
+├ ƒ /api/admin/users/[id]/status                             393 B         103 kB
+├ ƒ /api/auth/login                                          393 B         103 kB
+├ ƒ /api/auth/logout                                         393 B         103 kB
+├ ƒ /api/auth/me                                             393 B         103 kB
+├ ƒ /api/auth/register                                       393 B         103 kB
+├ ƒ /api/explore/entities/[id]                               393 B         103 kB
+├ ƒ /api/explore/events/[id]                                 393 B         103 kB
+├ ƒ /api/explore/relations/[id]                              393 B         103 kB
+├ ƒ /api/explore/search                                      393 B         103 kB
+├ ƒ /api/explore/sessions                                    393 B         103 kB
+├ ƒ /api/explore/sessions/[id]                               393 B         103 kB
+├ ƒ /api/explore/sessions/[id]/insight-views                 393 B         103 kB
+├ ƒ /api/explore/sessions/[id]/query                         393 B         103 kB
+├ ƒ /api/explore/sessions/[id]/return                        393 B         103 kB
+├ ƒ /api/explore/sessions/[id]/share                         393 B         103 kB
+├ ƒ /api/explore/sessions/[id]/surfaces                      393 B         103 kB
+├ ƒ /api/explore/spatial                                     393 B         103 kB
+├ ƒ /api/explore/spatial/compare                             393 B         103 kB
+├ ƒ /api/governance/gates/decisions                          393 B         103 kB
+├ ƒ /api/governance/gates/pending                            393 B         103 kB
+├ ƒ /api/governance/gates/requests                           393 B         103 kB
+├ ƒ /api/governance/gates/revoke                             393 B         103 kB
+├ ƒ /api/help/articles/[id]                                  393 B         103 kB
+├ ƒ /api/mohen/ask                                           393 B         103 kB
+├ ƒ /api/mohen/materials                                     393 B         103 kB
+├ ƒ /api/notifications                                       393 B         103 kB
+├ ƒ /api/public/evidence/[id]                                393 B         103 kB
+├ ƒ /api/public/policies                                     393 B         103 kB
+├ ƒ /api/public/works                                        393 B         103 kB
+├ ƒ /api/public/works/[id]                                   393 B         103 kB
+├ ƒ /api/public/works/[id]/eligibility                       393 B         103 kB
+├ ƒ /api/public/works/[id]/program                           393 B         103 kB
+├ ƒ /api/public/works/[id]/related                           393 B         103 kB
+├ ƒ /api/public/works/[id]/share                             393 B         103 kB
+├ ƒ /api/search                                              393 B         103 kB
+├ ƒ /api/session/me                                          393 B         103 kB
+├ ƒ /api/studio/assets                                       393 B         103 kB
+├ ƒ /api/studio/assets/withdraw                              393 B         103 kB
+├ ƒ /api/studio/attachments                                  393 B         103 kB
+├ ƒ /api/studio/conversations                                393 B         103 kB
+├ ƒ /api/studio/conversations/[id]                           393 B         103 kB
+├ ƒ /api/studio/create                                       393 B         103 kB
+├ ƒ /api/studio/delegations/[id]                             393 B         103 kB
+├ ƒ /api/studio/delegations/[id]/controls                    393 B         103 kB
+├ ƒ /api/studio/direct                                       393 B         103 kB
+├ ƒ /api/studio/director-plans                               393 B         103 kB
+├ ƒ /api/studio/director-plans/[id]                          393 B         103 kB
+├ ƒ /api/studio/director-plans/[id]/panels                   393 B         103 kB
+├ ƒ /api/studio/director-plans/[id]/select                   393 B         103 kB
+├ ƒ /api/studio/dispatch-authorizations                      393 B         103 kB
+├ ƒ /api/studio/materials/[id]                               393 B         103 kB
+├ ƒ /api/studio/materials/import                             393 B         103 kB
+├ ƒ /api/studio/plans                                        393 B         103 kB
+├ ƒ /api/studio/projects                                     393 B         103 kB
+├ ƒ /api/studio/research-read                                393 B         103 kB
+├ ƒ /api/studio/research-tasks                               393 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/events                   393 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/materials                393 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/messages                 393 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/production               393 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/resume                   393 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/stages/[stage]           393 B         103 kB
+├ ƒ /api/studio/research-tasks/[id]/status                   393 B         103 kB
+├ ƒ /api/studio/tasks                                        393 B         103 kB
+├ ƒ /api/studio/works                                        393 B         103 kB
+├ ƒ /api/studio/works/[id]/beat-order                        393 B         103 kB
+├ ƒ /api/studio/works/[id]/fork                              393 B         103 kB
+├ ƒ /api/studio/works/[id]/media-candidates                  393 B         103 kB
+├ ƒ /api/studio/works/[id]/media-selection                   393 B         103 kB
+├ ƒ /api/studio/works/[id]/narration                         393 B         103 kB
+├ ƒ /api/studio/works/[id]/narration-suggestions             393 B         103 kB
+├ ƒ /api/studio/works/[id]/preview                           393 B         103 kB
+├ ƒ /api/studio/works/[id]/restore                           393 B         103 kB
+├ ƒ /api/studio/works/[id]/revisions                         393 B         103 kB
+├ ƒ /api/studio/works/[id]/revisions/[rev]                   393 B         103 kB
+├ ƒ /api/studio/works/[id]/revisions/[rev]/panels/[panel]    393 B         103 kB
+├ ƒ /api/studio/works/[id]/rewrite-beat                      393 B         103 kB
+├ ƒ /api/studio/works/[id]/rewrite-decisions                 393 B         103 kB
+├ ƒ /api/studio/works/[id]/stages                            393 B         103 kB
+├ ƒ /api/studio/works/[id]/status                            393 B         103 kB
+├ ƒ /api/studio/works/[id]/submissions                       393 B         103 kB
+├ ƒ /api/watch/sessions                                      393 B         103 kB
+├ ƒ /api/works                                               393 B         103 kB
+├ ƒ /api/works/[id]/publish                                  393 B         103 kB
+├ ƒ /api/works/[id]/submit                                   393 B         103 kB
+├ ƒ /api/works/media/[assetId]                               393 B         103 kB
+├ ƒ /api/works/published                                     393 B         103 kB
+├ ƒ /api/works/submitted                                     393 B         103 kB
+├ ○ /experience/jinze-water-net                            29.6 kB         139 kB
+├ ƒ /experience/lvzhiqiu                                   9.48 kB         112 kB
+├ ○ /explore                                               5.62 kB         115 kB
+├ ○ /foundation                                              393 B         103 kB
+├ ○ /login                                                 1.19 kB         107 kB
+├ ○ /register                                               1.3 kB         107 kB
+├ ƒ /studio                                                11.8 kB         122 kB
+├ ƒ /studio/desk                                           6.52 kB         109 kB
+└ ○ /watch                                                 3.87 kB         106 kB
++ First Load JS shared by all                               103 kB
+  ├ chunks/2261-c75fbc820b437d5c.js                        46.4 kB
+  ├ chunks/91a23b3f-712a30abddb1ae63.js                    54.2 kB
+  └ other shared chunks (total)                            1.95 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

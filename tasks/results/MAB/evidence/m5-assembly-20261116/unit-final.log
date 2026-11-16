@@ -1,0 +1,164 @@
+
+> mohen-agent-2.0@0.1.0 test:unit /workspace/mohen-agent-2.0
+> vitest run --config vitest.unit.config.ts
+
+
+ RUN  v3.2.7 /workspace/mohen-agent-2.0
+
+ ❯ tests/unit/commons-materials.test.ts (1 test | 1 failed) 10177ms
+   × K3 Wikimedia Commons 图像来源 > 检索朱家角/苏州河，返回图像 + 许可 + 快照 10176ms
+     → expected true to be false // Object.is equality
+ ✓ tests/unit/loc-materials.test.ts (1 test) 5078ms
+   ✓ K3 LOC 适配器（优雅降级） > 200 时有图/权利；403/超时则 degraded=true 且不抛错  5077ms
+ ✓ tests/unit/private-original-storage.test.ts (16 tests) 800ms
+   ✓ bounds persistent GET 5xx attempts and never treats upstream failure as absence or uploads  306ms
+ ✓ tests/unit/source-discovery.test.ts (5 tests) 547ms
+   ✓ discoverExternalSources (Y02/Y03) > merges candidate leads from several channels and records a trace per channel  537ms
+ ✓ tests/unit/k3-traceability.test.ts (5 tests) 273ms
+ ✓ tests/unit/studio-receive-candidate.test.mjs (17 tests) 61ms
+ ✓ tests/unit/provider-dispatcher.test.ts (23 tests) 63ms
+ ✓ tests/unit/studio-original-attachment-route.test.ts (18 tests) 35ms
+ ✓ tests/unit/studio-candidate-assessment.test.mjs (7 tests) 47ms
+ ✓ tests/unit/mab-m3-independent-revocation-boundary.test.ts (3 tests) 49ms
+ ✓ tests/unit/studio-plan.test.mjs (13 tests) 51ms
+ ✓ tests/unit/studio-plans-route.test.ts (11 tests) 51ms
+ ✓ tests/unit/studio-asset-routes.test.ts (12 tests) 40ms
+ ✓ tests/unit/private-evidence-binding.test.ts (8 tests) 21ms
+ ✓ tests/unit/mab-hp08-research-resume.test.ts (19 tests) 47ms
+ ✓ tests/unit/independent-gate-client.test.ts (6 tests) 46ms
+ ✓ tests/unit/studio-attachment-storage.test.ts (4 tests) 26ms
+ ✓ tests/unit/mab-hp02-session-revocation.test.ts (12 tests) 17ms
+ ✓ tests/unit/imported-material-route.test.ts (13 tests) 18ms
+ ✓ tests/unit/admin-authorization.test.ts (9 tests) 31ms
+ ✓ tests/unit/studio-execution-route.test.ts (4 tests) 39ms
+ ✓ tests/unit/studio-plan-service.test.ts (5 tests) 26ms
+ ✓ tests/unit/studio-delegation-route.test.ts (7 tests) 33ms
+ ✓ tests/unit/mab-hp08-studio-routes.test.ts (11 tests) 16ms
+ ✓ tests/unit/mab-hp11-review-route.test.ts (8 tests) 14ms
+ ✓ tests/unit/rule-gate-reviewer.test.ts (16 tests) 14ms
+ ✓ tests/unit/private-evidence-stage.test.ts (14 tests) 12ms
+ ✓ tests/unit/studio-research-read-route.test.ts (10 tests) 16ms
+ ✓ tests/unit/submission-routes.test.ts (12 tests) 13ms
+ ✓ tests/unit/mab-m5-material-cache.test.ts (6 tests) 13ms
+ ✓ tests/unit/public-evidence-qualification.test.ts (8 tests) 15ms
+ ✓ tests/unit/mab-hp03-asset-history-route.test.ts (4 tests) 14ms
+ ✓ tests/unit/studio-jsonb.test.ts (26 tests) 10ms
+ ✓ tests/unit/middleware-authorization.test.ts (6 tests) 12ms
+ ✓ tests/unit/studio-research-read.test.ts (8 tests) 13ms
+ ✓ tests/unit/kad1-route.test.mjs (10 tests) 12ms
+ ✓ tests/unit/studio-adjacent-rewrite-routes.test.ts (15 tests) 16ms
+ ✓ tests/unit/studio-private-source-production-route.test.ts (5 tests) 17ms
+ ✓ tests/unit/studio-director-project-route.test.ts (4 tests) 11ms
+ ✓ tests/unit/mab-m5-fork-restore.test.ts (6 tests) 11ms
+ ✓ tests/unit/mab-m5-public-consumers.test.ts (6 tests) 10ms
+ ✓ tests/unit/mab-hp08-tool-ledger.test.ts (12 tests) 11ms
+stderr | tests/unit/mab-m5-a001-current-g5.test.ts > fails closed if current dependency qualification cannot be checked
+[a001-experience-data] 读取真实发布成果失败： qualification unavailable
+
+ ✓ tests/unit/mab-m5-a001-current-g5.test.ts (14 tests) 9ms
+ ✓ tests/unit/private-text-reading-repository.test.ts (5 tests) 10ms
+ ✓ tests/unit/studio-work-stages-boundary.test.ts (7 tests) 10ms
+ ✓ tests/unit/studio-work-status-current.test.ts (4 tests) 8ms
+ ✓ tests/unit/studio-media-boundary.test.ts (4 tests) 8ms
+ ✓ tests/unit/mab-m3-revocation-http.test.ts (4 tests) 8ms
+ ✓ tests/unit/mab-m5-publication-atomic.test.ts (13 tests) 9ms
+ ✓ tests/unit/studio-rewrite-route-validation.test.ts (6 tests) 9ms
+stderr | tests/unit/mab-hp07-visual-current-g5.test.ts > HP07 visual stage exact current G5 and safe topic filtering > fails closed rather than displaying old legacy PASS data when the DB qualifier fails
+[read-model-bridge] 读取真实发布成果失败： CURRENT_G5_UNAVAILABLE
+
+ ✓ tests/unit/mab-hp07-visual-current-g5.test.ts (6 tests) 8ms
+ ✓ tests/unit/auth-session.test.ts (10 tests) 10ms
+ ✓ tests/unit/mab-m5-preview.test.ts (9 tests) 8ms
+ ✓ tests/unit/private-original-source-binding.test.ts (5 tests) 6ms
+ ✓ tests/unit/rights-actions.test.ts (17 tests) 6ms
+stderr | tests/unit/mab-m5-qualified-retrieve.test.ts > missing server qualification context refuses even legacy PASS rows before querying
+[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+
+stderr | tests/unit/mab-m5-qualified-retrieve.test.ts > invalid context refuses before querying: {}
+[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+
+stderr | tests/unit/mab-m5-qualified-retrieve.test.ts > invalid context refuses before querying: {"consumer":"agent","purpose":{"namespace":"G5","code":"fixture","version":"1"},"scope":{}}
+[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+
+stderr | tests/unit/mab-m5-qualified-retrieve.test.ts > invalid context refuses before querying: {"consumer":"agent","purpose":{"namespace":"G5","code":"fixture","version":"1"},"scope":{}}
+[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+
+stderr | tests/unit/mab-m5-qualified-retrieve.test.ts > invalid context refuses before querying: {"consumer":"watch","purpose":{"namespace":"G5","code":"fixture","version":"1"},"scope":{"project":"fixture"}}
+[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+
+stderr | tests/unit/mab-m5-qualified-retrieve.test.ts > invalid context refuses before querying: {"consumer":"agent","purpose":{"namespace":"G5","code":"fixture","version":""},"scope":{"project":"fixture"}}
+[mohen/retrieve] 检索失败： QUALIFICATION_CONTEXT_REQUIRED
+
+stderr | tests/unit/mab-m5-qualified-retrieve.test.ts > returns no materials when current qualification database is unavailable
+[mohen/retrieve] 检索失败： synthetic database unavailable
+
+ ✓ tests/unit/mab-m5-qualified-retrieve.test.ts (8 tests) 8ms
+ ✓ tests/unit/mab-hp08-ledger-reconciliation.test.ts (5 tests) 6ms
+ ✓ tests/unit/mab-m5-director-commit.test.ts (6 tests) 8ms
+ ✓ tests/unit/publication-submission.test.ts (6 tests) 5ms
+ ✓ tests/unit/studio-task-material-routes.test.ts (3 tests) 7ms
+ ✓ tests/unit/mab-hp08-production-reservation.test.ts (10 tests) 8ms
+ ✓ tests/unit/studio-director-transfer-boundary.test.ts (4 tests) 7ms
+ ✓ tests/unit/mab-hp06-signer-connection.test.ts (7 tests) 7ms
+ ✓ tests/unit/mab-m4-tool-receipt-failure.test.ts (3 tests) 5ms
+ ✓ tests/unit/m3-gate-preflight.test.ts (6 tests) 6ms
+ ✓ tests/unit/kad1-policy.test.mjs (10 tests) 6ms
+ ✓ tests/unit/studio-delegation.test.mjs (8 tests) 6ms
+ ✓ tests/unit/mab-hp11-review-revision.test.ts (5 tests) 5ms
+ ✓ tests/unit/mab-hp11-knowledge-inspector-contract.test.ts (8 tests) 5ms
+ ✓ tests/unit/private-worker-pool.test.ts (2 tests) 5ms
+ ✓ tests/unit/studio-task-material-read.test.ts (5 tests) 5ms
+ ✓ tests/unit/b2-source-discovery-preparation.test.ts (10 tests) 5ms
+ ✓ tests/unit/private-original-project-list.test.ts (3 tests) 5ms
+ ✓ tests/unit/qr05-single-rights-action-dictionary.test.ts (5 tests) 7ms
+ ✓ tests/unit/mab-m4-tool-registration.test.ts (3 tests) 5ms
+ ✓ tests/unit/studio-task-status-revalidation.test.ts (2 tests) 7ms
+ ✓ tests/unit/studio-execution.test.mjs (7 tests) 5ms
+ ✓ tests/unit/mab-m5-revision-cas.test.ts (4 tests) 5ms
+ ✓ tests/unit/query-plan.test.ts (4 tests) 5ms
+ ✓ tests/unit/b1-free-mission-entry.test.ts (8 tests) 5ms
+ ✓ tests/unit/studio-director-project-binding.test.ts (3 tests) 7ms
+ ✓ tests/unit/studio-candidate-validation.test.ts (14 tests) 4ms
+ ✓ tests/unit/watch-studio-content.test.ts (4 tests) 4ms
+ ✓ tests/unit/governance-boundary.test.ts (3 tests) 4ms
+ ✓ tests/unit/material-score.test.ts (6 tests) 4ms
+ ✓ tests/unit/studio-dispatch-session-scope.test.ts (2 tests) 4ms
+ ✓ tests/unit/database-session.test.ts (2 tests) 4ms
+ ✓ tests/unit/production-trigger.test.ts (1 test) 3ms
+ ✓ tests/unit/studio-private-handoff.test.ts (4 tests) 3ms
+ ✓ tests/unit/mab-m5-research-prerequisites.test.ts (1 test) 3ms
+ ✓ tests/unit/mab-hp12-g5-hold.test.ts (5 tests) 4ms
+ ✓ tests/unit/imported-material-rights.test.ts (2 tests) 3ms
+ ✓ tests/unit/conversation-ownership.test.ts (2 tests) 2ms
+ ✓ tests/unit/mab-m5-work-binding.test.mjs (1 test) 2ms
+ ↓ tests/unit/k7-five-themes.test.ts (1 test | 1 skipped)
+ ↓ tests/unit/shl-materials.test.ts (1 test | 1 skipped)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/commons-materials.test.ts > K3 Wikimedia Commons 图像来源 > 检索朱家角/苏州河，返回图像 + 许可 + 快照
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/unit/commons-materials.test.ts:10:24
+      8|     const mod = await import("../../apps/web/lib/mohen-agent/retrieve-…
+      9|     const r = await mod.searchCommonsMaterials(["Zhujiajiao", "Suzhou …
+     10|     expect(r.degraded).toBe(false);
+       |                        ^
+     11|     expect(r.materials.length).toBeGreaterThan(0);
+     12| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 93 passed | 2 skipped (96)
+      Tests  1 failed | 701 passed | 2 skipped (704)
+   Start at  20:05:09
+   Duration  41.00s (transform 1.76s, setup 0ms, collect 5.13s, tests 18.13s, environment 14ms, prepare 5.46s)
+
+ ELIFECYCLE  Command failed with exit code 1.

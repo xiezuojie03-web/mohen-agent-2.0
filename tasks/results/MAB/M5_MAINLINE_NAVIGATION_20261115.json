@@ -3,7 +3,7 @@
   "snapshot_date": "2026-11-15",
   "repository": "xiezuojie03-web/mohen-agent-2.0",
   "branch": "main",
-  "source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
+  "source_sha": "712a08b021bbef12977ed907a8c64d136eeca3bc",
   "authority": "tasks/implementation/MAB/PLAN.md#3.5 B/C",
   "document_role": "non_authoritative_navigation_and_gap_index",
   "notice": "非新任务书、非完整架构权威、非真实整链PASS；以精确代码和CI/真实PG/HTTP/Provider证据为最终依据。",
@@ -66,7 +66,7 @@
         "pipelines/data-production/workers/private-evidence-stage.mjs",
         "supabase/migrations/20261113170000_mab_m5_d02_text_plain_observation.sql"
       ],
-      "blocker": "E_L1_TO_D02：PRIVATE_NEXT_STAGE_REQUEST_NOT_READY（邻接转换缺口，不是D02不存在）",
+      "blocker": "E_L1_TO_D02：C01 typed/受控生成代码已验；真实同Root G1消费、云函数/运行身份与G2当前资格仍HOLD，C02不推定通过",
       "next_input": "合格H05证据@revision + G2审签"
     },
     {
@@ -2603,38 +2603,44 @@
       ],
       "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
       "engineering_diagnosis": {
-        "category": "MISSING_HANDOFF_TRANSFORM",
+        "category": "C01_HANDOFF_CODE_VERIFIED_LIVE_BLOCKED",
         "confidence": "SOURCE_CONFIRMED",
-        "diagnosis": "已复读现行main：D01 reading candidate、D02 observeMaterial及H05持久Worker均有实现；runProduction在合格L1后若不是D02 typed专业请求，会保守返回PRIVATE_NEXT_STAGE_REQUEST_NOT_READY。仅缺两端受控转换，不应重新开发原件、D01/G1或D02。",
+        "diagnosis": "712a08b已实现C01精确G1→D02 typed reading请求，D02获执行授权后Owner读回L1/revision/locator/当前G1与原件SHA，复用原M4派发器生成明确分类/声源/疑点的H05候选及永久Receipt，再交原observeMaterial；定向及DB-free回归通过，非云端真实G2。C02自动转录、真实Owner/同Root/低权服务、缺失云函数及G2精确绑定仍需实证。",
         "evidence": [
-          "pipelines/data-production/orchestrator/orchestrator.mjs#PRIVATE_NEXT_STAGE_REQUEST_NOT_READY",
-          "pipelines/data-production/adapters/private-evidence-adapters.mjs#CANDIDATE_REF_SPECS"
+          "pipelines/data-production/orchestrator/orchestrator.mjs",
+          "pipelines/data-production/workers/private-evidence-stage.mjs",
+          "pipelines/data-production/workers/private-material-generation.mjs",
+          "tasks/results/MAB/evidence/m5-assembly-20261116/receipt.json"
         ],
-        "next": "在原单Runner专业承接位置，消费精确合格L1/G1与来源权利，生成受控D02 typed观察请求；沿现有observeMaterial Worker验证POS/NEG及资格/撤权；无需再跑旧样板。",
+        "next": "先恢复具名Owner/Project/Root、持续Runner/独立Reviewer及原云函数，核真实累计Receipt与外发权，再同任务实证G1→D02；C02和后续相邻typed输入不推定通过。",
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
-        "interface_pass": "NOT_PROVEN",
+        "interface_pass": "DB_FREE_C01_TESTS_ONLY",
         "runtime_pass": "NOT_PROVEN"
       },
       "verification_layers": {
         "capability": {
           "status": "PARTIAL",
-          "reason": "两端有相关模块或局部业务实现，但不代表完整能力已验",
+          "reason": "712a08b已实现C01精确G1→D02 typed reading请求，D02获执行授权后Owner读回L1/revision/locator/当前G1与原件SHA，复用原M4派发器生成明确分类/声源/疑点的H05候选及永久Receipt，再交原observeMaterial；定向及DB-free回归通过，非云端真实G2。C02自动转录、真实Owner/同Root/低权服务、缺失云函数及G2精确绑定仍需实证。",
           "evidence_refs": [
-            "pipelines/data-production/orchestrator/orchestrator.mjs#PRIVATE_NEXT_STAGE_REQUEST_NOT_READY",
-            "pipelines/data-production/adapters/private-evidence-adapters.mjs#CANDIDATE_REF_SPECS"
+            "pipelines/data-production/orchestrator/orchestrator.mjs",
+            "pipelines/data-production/workers/private-evidence-stage.mjs",
+            "pipelines/data-production/workers/private-material-generation.mjs",
+            "tasks/results/MAB/evidence/m5-assembly-20261116/receipt.json"
           ],
-          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
-          "observed_on": "2026-11-15"
+          "verified_source_sha": "712a08b021bbef12977ed907a8c64d136eeca3bc",
+          "observed_on": "2026-11-16"
         },
         "handoff": {
           "status": "HOLD",
-          "reason": "D01有reading candidate，D02已有H05观察持久化，但Runner尚无把现行合格L1变为D02 typed专业观察请求的受控转换",
+          "reason": "712a08b已实现C01精确G1→D02 typed reading请求，D02获执行授权后Owner读回L1/revision/locator/当前G1与原件SHA，复用原M4派发器生成明确分类/声源/疑点的H05候选及永久Receipt，再交原observeMaterial；定向及DB-free回归通过，非云端真实G2。C02自动转录、真实Owner/同Root/低权服务、缺失云函数及G2精确绑定仍需实证。",
           "evidence_refs": [
-            "pipelines/data-production/orchestrator/orchestrator.mjs#PRIVATE_NEXT_STAGE_REQUEST_NOT_READY",
-            "pipelines/data-production/adapters/private-evidence-adapters.mjs#CANDIDATE_REF_SPECS"
+            "pipelines/data-production/orchestrator/orchestrator.mjs",
+            "pipelines/data-production/workers/private-evidence-stage.mjs",
+            "pipelines/data-production/workers/private-material-generation.mjs",
+            "tasks/results/MAB/evidence/m5-assembly-20261116/receipt.json"
           ],
-          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
-          "observed_on": "2026-11-15"
+          "verified_source_sha": "712a08b021bbef12977ed907a8c64d136eeca3bc",
+          "observed_on": "2026-11-16"
         },
         "runtime": {
           "status": "NOT_VERIFIED",
@@ -5190,7 +5196,7 @@
   ],
   "earliest_verified_code_point": "历史真实来源/原件入库和D01/G1均有隔离环境实际成功；现云端M2私有原件/Storage/M3 Gate Service底座已安装。现行同Root PG17模拟业务场景G0审签/资格消费测试通过，不等于moHen-cloud真实Studio连续运行。",
   "earliest_runtime_blocker": "mohen-cloud当前M2/M3底座已安装，但原件对象0、当前Studio Root0、Reviewer策略/绑定/凭据0、机器LOGIN与持久运行宿主未验；同一真实Root的云端G0阶段独立签发/消费仍HOLD。历史本地真实原件上传/来源登记不得误判为功能缺失。",
-  "next_real_code_blocker": "已知且经现行main源码定位：E_L1_TO_D02合格L1/G1→D02 typed专业请求适配缺口，Runner保守返回PRIVATE_NEXT_STAGE_REQUEST_NOT_READY；已有D01/G1、D02 observeMaterial等能力须继承，仅修相邻转换。云端G0是当前运行集成验证前沿，不是重造Gate的代码前沿。",
+  "next_real_code_blocker": "E_L1_TO_D02的C01 typed/受控专业生成已作最小接线及DB-free正反，运行仍HOLD；需先验证真实同Root下游接收，不能预设后续typed转换、完整D02质量或G2绑定已完成。",
   "acceptance_basis": "PLAN V1.7 M5八维同一真实作品，绝不以本图状态代替验收",
   "acceptance_dimensions": [
     {
@@ -5429,7 +5435,7 @@
     "findings": [
       "30条唯一边级定位路径在固定源码SHA全部存在，但不能据此断言54条边已实现",
       "机器审核器PASS receipt缺独立stage_binding，而资格读取和Runner要求精确job/reviewer/input/output摘要；G0对象PASS≠Runner阶段PASS",
-      "D01读取候选与D02 H05专业证据各自存在；缺已签G1合格L1→D02 typed request转换，Runner返回PRIVATE_NEXT_STAGE_REQUEST_NOT_READY",
+      "712a08b已实现C01精确G1→D02 typed reading请求，D02获执行授权后Owner读回L1/revision/locator/当前G1与原件SHA，复用原M4派发器生成明确分类/声源/疑点的H05候选及永久Receipt，再交原observeMaterial；定向及DB-free回归通过，非云端真实G2。C02自动转录、真实Owner/同Root/低权服务、缺失云函数及G2精确绑定仍需实证。",
       "代码级与已有CI/隔离PG/HTTP成功不等于同一真实Creator/Root/Reviewer/Provider E2E",
       "BATCH-05原候选定位未核control.production_runs.scope.project_id与candidate.allowed_scope.project_id，现已在原SQL增加同Run项目匹配（代码/CI验证与同Root运行证据分别标注）。"
     ],
@@ -11896,7 +11902,9 @@
         "当前云端真实Original/Storage对象与Owner Studio Root运行（现存0）",
         "当前云端独立Reviewer LOGIN、Policy、Binding和凭据（现存0）",
         "同一Root的云端G0独立签发、Runner当前资格消费与后续G1/D02",
-        "持久Runner宿主与真正受权的HTTP/Provider环境"
+        "持久Runner宿主与真正受权的HTTP/Provider环境",
+        "实时函数缺口：read_private_text_reading与D02—D05候选函数尚未安装；最小权利动作投影迁移被自动审批拒绝，云DDL未变",
+        "真实累计费用未核证；当前云execution_receipts=0不等于历史累计¥0"
       ]
     },
     "frontiers": [
@@ -11915,8 +11923,8 @@
         "edge_ids": [
           "E_L1_TO_D02"
         ],
-        "state": "CONFIRMED_TYPED_HANDOFF_HOLD",
-        "description": "Runner对已合格L1到D02仍报PRIVATE_NEXT_STAGE_REQUEST_NOT_READY，D01读取与D02 observeMaterial能力已存在；仅补G1当前资格下的typed D02专业输入转换，不重写D01识读或D02。",
+        "state": "C01_CODE_VERIFIED_LIVE_HOLD",
+        "description": "712a08b已实现C01精确G1→D02 typed reading请求，D02获执行授权后Owner读回L1/revision/locator/当前G1与原件SHA，复用原M4派发器生成明确分类/声源/疑点的H05候选及永久Receipt，再交原observeMaterial；定向及DB-free回归通过，非云端真实G2。C02自动转录、真实Owner/同Root/低权服务、缺失云函数及G2精确绑定仍需实证。",
         "completion": "同Run L1/G1合格→D02专业请求正确接收、持久候选和负例HOLD；不得人工伪造观察自动化"
       }
     ],
@@ -11925,6 +11933,30 @@
       "不要重复做已经通过的本地隔离G0/G1、R01—R11历史样板，或新建第二Gate/Runner",
       "不要把M2/M3架构迁移成功或历史成功写成目前云端同Root PASS"
     ],
-    "next_execution_rule": "先继承并以最小正反验证锁定环境/当前资格的确切差异，同时以E_L1_TO_D02为下一处已确认代码适配缺口；每做完一处修复须原位同步JSON/MD/HTML、CURRENT与progress，维护具体证据和实时状态。"
+    "next_execution_rule": "先继承并以最小正反验证锁定环境/当前资格的确切差异，同时以E_L1_TO_D02为下一处已确认代码适配缺口；每做完一处修复须原位同步JSON/MD/HTML、CURRENT与progress，维护具体证据和实时状态。",
+    "last_execution": {
+      "batch": "M5-ASSEMBLY-01/02",
+      "code_sha": "712a08b021bbef12977ed907a8c64d136eeca3bc",
+      "evidence": "tasks/results/MAB/evidence/m5-assembly-20261116/receipt.json",
+      "result": "DB_FREE_CODE_VERIFIED_LIVE_NOT_RUN",
+      "cloud_ddl": "AUTO_REVIEW_REJECTED_NOT_EXECUTED",
+      "live_owner_project_root_work": "NOT_CREATED_NO_AUTHENTICATED_OWNER_SESSION",
+      "dimensions": "ALL_8_HOLD",
+      "next": "恢复Owner会话与具名持续宿主/低权配置；审批云函数最小修订后PG/HTTP/Storage/独立G0/G1及真实G1→D02",
+      "ci": {
+        "main": {
+          "run_id": 43863607094,
+          "result": "SUCCESS"
+        },
+        "isolated_pg17": {
+          "run_id": 43863607054,
+          "result": "SUCCESS"
+        },
+        "http": {
+          "run_id": 43863607169,
+          "result": "SUCCESS"
+        }
+      }
+    }
   }
 }

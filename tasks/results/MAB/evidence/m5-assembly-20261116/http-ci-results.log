@@ -1,0 +1,17 @@
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-16T12:09:02.4379519Z MAB_ST01_BRIEF_HTTP_PASS project-bound-immutable-origin idempotent-replay prerequisite-HOLD zero-tool-charge no-auto-ST04 owner-only
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-16T12:09:03.5351848Z MAB_FEEDBACK_WITHDRAW_HTTP_PASS explicit-opt-in Owner-only immutable-CAS idempotency history-redacted no-reactivation
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-16T12:09:20.6306052Z MAB_PRODUCT_CONSUMER_HTTP_PASS visual_stage POS purpose/scope/consumer/action/expiry/revision/ancestor/cache/service-recovery NEG
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-16T12:09:36.0271429Z MAB_PRODUCT_CONSUMER_HTTP_PASS agent POS purpose/scope/consumer/action/expiry/revision/ancestor/cache/service-recovery NEG
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-16T12:09:53.1206108Z MAB_PRODUCT_CONSUMER_HTTP_PASS evidence_on_demand POS purpose/scope/consumer/action/expiry/revision/ancestor/cache/service-recovery NEG
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-16T12:09:59.4221739Z MAB_ST08_ST09_HTTP_PASS exact-submit separate-editor operator-publish ancestor-recheck withdraw
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-16T12:09:59.4223475Z MAB_WORK_G5_HTTP_PASS WATCH POS/NEG/current-ancestor-revoke four-consumer-real-PG-service
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-16T12:10:03.5531086Z MAB_ST02_CANDIDATE_HTTP_PASS current-revision owner-only no-store no-provider no-formal-G
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-16T12:10:07.1022631Z MAB_HTTP_ASSET_KIND_PASS research_brief
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-16T12:10:07.3786731Z MAB_HTTP_ASSET_KIND_PASS humanistic_insight
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-16T12:10:07.4840233Z MAB_HTTP_ASSET_KIND_PASS research_collection
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-16T12:10:07.5898287Z MAB_HTTP_ASSET_KIND_PASS citation_snapshot
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-16T12:10:07.7030937Z MAB_HTTP_ASSET_KIND_PASS consented_feedback
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-16T12:10:08.4285500Z MAB_ADMIN_EXACT_REVISION_HTTP_PASS own-item history rights exact-use-event
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-16T12:10:08.7566849Z MAB_ADMIN_FEEDBACK_WITHDRAW_HTTP_PASS two-step-confirmation exact-Owner revoked-head no-old-body
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-16T12:10:09.0946318Z   24 passed (1.3m)
+isolated-m1-http	Assert synthetic instance marker and run actual HTTP/browser suite	2026-11-16T12:10:09.1073733Z MAB_HTTP_BROWSER_PASS no-production-data no-paid-provider-calls
