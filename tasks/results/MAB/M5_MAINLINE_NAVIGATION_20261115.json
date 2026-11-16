@@ -5253,7 +5253,8 @@
     "refresh_rule": "JSON/MD/HTML同一提交同步，相关代码或证据改变时仅刷新受影响层；保留其他NOT_VERIFIED，不凭文件存在或旧status推断PASS。 非D/L/G模块细读分组只编排既有nodes/edges，统计以primary_domain互斥分组且状态按原verification_layers源字段重算；状态改变时同时校验statistics。",
     "acceptance_rule": "准出唯一以PLAN §3.5 B八维真实作品正反验收为准",
     "source_ref_policy": "源码链接锁定source_sha；当前HEAD变化时先比较影响范围再复核，不以HEAD自动判过期",
-    "module_chain_read_rule": "主图37节点/54边三层状态后，深入module_internal_chains.modules[]：按步骤input/operation/output/guard/code_locators及handoffs[]逐点查；细分链接只作诊断，不加原54条与M5八维分母。"
+    "module_chain_read_rule": "主图37节点/54边三层状态后，深入module_internal_chains.modules[]：按步骤input/operation/output/guard/code_locators及handoffs[]逐点查；细分链接只作诊断，不加原54条与M5八维分母。",
+    "audit_tracking_read_rule": "优先读取audit_tracking.next_frontier及groups定位小批核查；状态仍以nodes[]/edges[].verification_layers为准。只在当前Root走到的相邻点排查、修复、回归、三文件同步，并把真实证据写CURRENT/progress。"
   },
   "source_audit": {
     "frozen_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
@@ -11343,5 +11344,294 @@
     "drilldown_model": "Each module stays on the overall canvas while expanding within its own module card; step, internal check and root edge details show in place. Full node/edge evidence remains accessible.",
     "legacy_canvas": "Original D/L/G and lower module card components retained as static fallback only; integrated view owns default interaction.",
     "no_state_change": true
+  },
+  "audit_tracking": {
+    "schema": "mohen.m5.navigation-audit-tracker.v1",
+    "review_date": "2026-11-16",
+    "review_source_head": "31be2feacf3e6fc6e9dac74c9f771ad914483f17",
+    "label": "按需核查组｜分批排查与分批施工的定位索引，非另一套施工计划或验收分母",
+    "authority": "tasks/implementation/MAB/PLAN.md §0, §3.5 B/C",
+    "baseline": {
+      "root_nodes": 37,
+      "root_edges": 54,
+      "current_m5_edges": 52,
+      "future_edges": 2,
+      "diagnosed_m5_edges": 7,
+      "unclassified_m5_edges": 45,
+      "node_endpoint_check": "PASS_STATIC",
+      "root_orphan_node_check": "PASS_STATIC",
+      "root_edge_id_check": "PASS_STATIC",
+      "nonproduction_root_anchor_check": "PASS_STATIC",
+      "source_file_tree_commit": "31be2feacf3e6fc6e9dac74c9f771ad914483f17",
+      "tree_truncated": false,
+      "tree_file_count": 2218,
+      "root_locator_unique": 30,
+      "root_locators_present": 30,
+      "internal_locator_unique": 34,
+      "internal_locators_present": 34,
+      "drilling": "10个业务模块、68个可定位步骤与58个可能交接；58条不是经证实的直接调用链，均未实跑核证",
+      "qualification": "仅静态结构完整性及路径存在，不能宣称架构语义完全无遗漏、接口打通或整体运行成功"
+    },
+    "ownership_rule": "以下F01—F08仅将52条M5边互斥归档以便找责任；不是串行八阶段计划。遇到必需Provider/资产/权限支管必须随当前最前断点同步核验。每次施工只检查已到达的相邻边，符合证据则立即补接口和回归，不待整组或52边先审完。",
+    "next_frontier": {
+      "edge_ids": [
+        "E_D00_REVIEW",
+        "E_D00_QUALIFY"
+      ],
+      "then_edge_ids": [
+        "E_D01_REVIEW",
+        "E_D01_QUALIFY",
+        "E_L1_TO_D02"
+      ],
+      "state_source": "原edges[].verification_layers，状态不在此处重复存储",
+      "reason": "独立Reviewer精确stage_binding未获同源签发/回读；其后L1→D02 typed professional request未接通"
+    },
+    "groups": [
+      {
+        "id": "F01",
+        "label": "Studio入口与G0独立资格",
+        "risk": "高",
+        "edge_ids": [
+          "E00",
+          "E01",
+          "E_D00_WRITE",
+          "E_D00_REVIEW",
+          "E_D00_QUALIFY",
+          "E_L0_TO_D01",
+          "E_ADMIN_L0"
+        ],
+        "priority_focus": [
+          "E_D00_REVIEW",
+          "E_D00_QUALIFY"
+        ],
+        "execution_trigger": "同一Creator/Project/Root需要从D00候选进入D01",
+        "inspection_target": "独立G0机器审签不可变stage_binding和Runner当前资格读取对齐；Studio入口/来源权限按实际接入",
+        "repair_rule": "若两端已有实现仅协议不合，则修现有Reviewer/资格读取交接，不新建Gate/Runner。先实测当前最前两边；该组其余边按需要同行检查。",
+        "required_evidence": [
+          "精确run/job/stage/reviewer/input/output摘要",
+          "有权真实source和RightsDecision",
+          "独立签发及错误digest/撤权负例",
+          "同Root持久HOLD、恢复及消费回执"
+        ]
+      },
+      {
+        "id": "F02",
+        "label": "D01识读→G1→D02专业请求",
+        "risk": "高",
+        "edge_ids": [
+          "E_D01_WRITE",
+          "E_D01_REVIEW",
+          "E_D01_QUALIFY",
+          "E_L1_TO_D02",
+          "E_D02_WRITE",
+          "E_D02_REVIEW",
+          "E_D02_QUALIFY",
+          "E_ADMIN_L1",
+          "E_ADMIN_L2"
+        ],
+        "priority_focus": [
+          "E_D01_REVIEW",
+          "E_D01_QUALIFY",
+          "E_L1_TO_D02"
+        ],
+        "execution_trigger": "已能合法读取当前G0资格并取得真实D01候选",
+        "inspection_target": "当前G1合格阅读单元→D02 H05 typed observation request，包含原件定位和独立审核",
+        "repair_rule": "沿唯一Runner做最小类型转换；缺资格/权利时保留PRIVATE_NEXT_STAGE_REQUEST_NOT_READY/HOLD，不用假数据通关。",
+        "required_evidence": [
+          "L1 source/version/locator/reading revision",
+          "G1当前独立资格",
+          "D02请求schema/Worker真实接收",
+          "不合格输入/HOLD/恢复及PG证据"
+        ]
+      },
+      {
+        "id": "F03",
+        "label": "D03与D04知识生产邻接",
+        "risk": "高",
+        "edge_ids": [
+          "E_L2_TO_D03",
+          "E_D03_WRITE",
+          "E_D03_REVIEW",
+          "E_D03_QUALIFY",
+          "E_L3_TO_D04",
+          "E_D04_WRITE",
+          "E_D04_REVIEW",
+          "E_D04_QUALIFY",
+          "E_ADMIN_L3",
+          "E_ADMIN_L4"
+        ],
+        "priority_focus": [
+          "E_L2_TO_D03",
+          "E_L3_TO_D04"
+        ],
+        "execution_trigger": "D02/G2已有合法输出可供真实主张和人文解释",
+        "inspection_target": "L2→D03主张/时空关系、L3→D04人文发现的受控typed接口及资格；与原件、推断保持区分",
+        "repair_rule": "仅沿受阻阶段补现有专业方法/Adapter缺口；可在所需位置分更小施工批次。",
+        "required_evidence": [
+          "真实L2/G2与L3/G3上游修订",
+          "typed claim/finding与独立Reviewer",
+          "反证/时空精度与来源回链",
+          "实际HOLD和恢复"
+        ]
+      },
+      {
+        "id": "F04",
+        "label": "D05公开知识分面与G5",
+        "risk": "高",
+        "edge_ids": [
+          "E_L4_TO_D05",
+          "E_D05_WRITE",
+          "E_D05_REVIEW",
+          "E_D05_QUALIFY",
+          "E_ADMIN_L5"
+        ],
+        "priority_focus": [
+          "E_L4_TO_D05",
+          "E_D05_QUALIFY"
+        ],
+        "execution_trigger": "上游已有当前适用资格且需要形成合法公开L5分面",
+        "inspection_target": "有据G3事实或G4解释按合法路径形成D05/L5及独立G5；不得强制要求所有作品有G4",
+        "repair_rule": "沿已有L5分面与独立G5合同核差异；不得给Agent/Admin出版审核代签G5。",
+        "required_evidence": [
+          "上游合格source revision及消费范围",
+          "L5投影schema与G5独立资格",
+          "不同consumer/action/rights正反",
+          "撤权后失效"
+        ]
+      },
+      {
+        "id": "F05",
+        "label": "Agent与外部Provider真实混合协作",
+        "risk": "高",
+        "edge_ids": [
+          "E_AGENT_TO_MIXED",
+          "E_MIXED_TO_D00",
+          "E_MIXED_TO_CREATIVE"
+        ],
+        "priority_focus": [
+          "E_AGENT_TO_MIXED",
+          "E_MIXED_TO_D00"
+        ],
+        "execution_trigger": "真实Root调用外部AI/Skill或G0修复需要其来源/费用前置",
+        "inspection_target": "Creator有界委托、逐源外发权、Provider真实调用、预算结算、双主体贡献和Receipt",
+        "repair_rule": "必需的身份/权利/成本随主干节点提前进入；不能机械等F01—F04全部完成。",
+        "required_evidence": [
+          "同Project/Root/授权的实际输入",
+          "真实Agent和Provider不同贡献",
+          "provider/模型/输入输出hash与真实费用",
+          "并发/超额/未知费用/幂等及失败恢复"
+        ]
+      },
+      {
+        "id": "F06",
+        "label": "L0—L5研究读取及消费者资格",
+        "risk": "中高",
+        "edge_ids": [
+          "E_L0_TO_CREATIVE",
+          "E_L1_TO_CREATIVE",
+          "E_L2_TO_CREATIVE",
+          "E_L3_TO_CREATIVE",
+          "E_L4_TO_CREATIVE",
+          "E_L5_TO_CREATIVE",
+          "E_REUSE_TO_STUDIO"
+        ],
+        "priority_focus": [
+          "E_REUSE_TO_STUDIO",
+          "E_L0_TO_CREATIVE",
+          "E_L1_TO_CREATIVE"
+        ],
+        "execution_trigger": "Studio需要使用已合格知识或生产链首份合格L知识可以被消费",
+        "inspection_target": "按用途合法复用已有L0—L5，精确source@revision、身份、G资格与媒资动作权",
+        "repair_rule": "复用现有读取/资格服务，不为已合格资产重新走D；随首个实际读请求逐层推进。",
+        "required_evidence": [
+          "合法Owner项目/consumer/purpose",
+          "可用L@rev与当前独立G",
+          "media quote/display/retain单独权利",
+          "旧版/撤权/错Owner拒绝"
+        ]
+      },
+      {
+        "id": "F07",
+        "label": "13类资产与Studio作品修订",
+        "risk": "高",
+        "edge_ids": [
+          "E_REUSE_TO_ASSETS",
+          "E_CREATIVE_TO_ASSETS",
+          "E_ASSETS_TO_CREATIVE",
+          "E_ASSETS_TO_ADMIN",
+          "E_STUDIO_TO_REV",
+          "E_REV_TO_EDITORIAL"
+        ],
+        "priority_focus": [
+          "E_REUSE_TO_ASSETS",
+          "E_CREATIVE_TO_ASSETS",
+          "E_STUDIO_TO_REV"
+        ],
+        "execution_trigger": "真实研究产生需保存的资产或合法知识足以形成DirectorPlan/WorkRevision",
+        "inspection_target": "13类类型级合同、不变修订/ACL/canonical主本、研究复用/Creator明确提交、H1/H2/H3与19组件",
+        "repair_rule": "真实作品只生成实际发生的asset_kind；正式知识资产仍按独立G，不以13条空记录充数。",
+        "required_evidence": [
+          "真实资产source、rights、links、use_events、CAS",
+          "Creator版本与导演/媒体主本精确引用",
+          "Agent建议与用户定向改稿差异",
+          "同Root作品保存/恢复和负例"
+        ]
+      },
+      {
+        "id": "F08",
+        "label": "Admin运营、原子发布及WATCH撤权",
+        "risk": "高",
+        "edge_ids": [
+          "E_ADMIN_TO_EDITORIAL",
+          "E_ADMIN_TO_REVOKE",
+          "E_EDITORIAL_TO_PUBLISH",
+          "E_PUBLISH_TO_WATCH",
+          "E_REVOKE_TO_WATCH"
+        ],
+        "priority_focus": [
+          "E_ADMIN_TO_EDITORIAL",
+          "E_EDITORIAL_TO_PUBLISH",
+          "E_PUBLISH_TO_WATCH"
+        ],
+        "execution_trigger": "同一WorkRevision由Creator提交并具备合法运营与G5/媒体前置",
+        "inspection_target": "Operator与独立Reviewer分权、G5/媒资许可、精确WorkRevision原子发布、WATCH逐请求消费和立即撤权",
+        "repair_rule": "按真实投稿稿件和角色签发，不允许凭Admin按钮或G5局部CI结果推断发布/消费PASS。",
+        "required_evidence": [
+          "Creator submission@rev和运营签核",
+          "独立G5及media逐动作权",
+          "发布指针原子性/并发幂等",
+          "同一WATCH修订及新请求撤权拒绝"
+        ]
+      },
+      {
+        "id": "FUTURE",
+        "label": "EXP未来探索接口（不计M5）",
+        "risk": "不参与当前M5",
+        "edge_ids": [
+          "E_REUSE_TO_EXP",
+          "E_WORKREV_TO_EXP"
+        ],
+        "priority_focus": [],
+        "execution_trigger": "由后续授权交付正式设计并进入相应实施阶段",
+        "inspection_target": "已存在页面/服务与完整对象持续探索区分；WATCH→EXP需用户明确接受",
+        "repair_rule": "不拿当前UI研究原型或局部EXP代码增加M5八维验收。",
+        "required_evidence": []
+      }
+    ],
+    "batch_entry_rule": [
+      "同步读当前main/CI与CURRENT、PLAN §3.5 B/C、该JSON根边状态及当前批次相关内部检查点；若代码将要变化，先实证main与自动生产部署隔离",
+      "只在最前相邻边追踪真实Creator/Owner/Project/Root/Source@rev/Rights/用途/G/Receipt/input→typed output，并核当前代码与上次证据是否仍有效",
+      "发现明确设计/接口缺口则同一小批定向修复、记录最小正反回归和恢复，不能仅因另一组边未核而推迟主链；需要未授权生产/第三方/费用动作必须HOLD",
+      "按真实代码、环境、SHA、同Root receipt只改受影响原edges/nodes[].verification_layers与engineering_diagnosis；不得从代码文件存在或UI交互直接赋PASS",
+      "按已改变的结构和状态重算statistics，JSON/MD/HTML同一次受控main提交；运行事实写CURRENT、证据写progress，回读确认HTML内嵌JSON与机器JSON语义相同、主图总数和根ID没有漂移"
+    ],
+    "tracking_mechanism": {
+      "anchor": "原edges[].verification_layers三层及工程诊断是唯一连接状态源；本跟踪器只记录分组、核查焦点和静态范围，不复制PASS/HOLD为第二套真相",
+      "when_to_refresh": "新的代码/专业合同/真实运行证据/撤权影响了受影响原节点或边，或发现导航错误/缺漏；纯讨论不改变事实状态",
+      "completion_rule": "每批要报告上游准确输出、下游实际接收、权限与独立资格、正反/HOLD/恢复、精确commit和环境；未运行写NOT_RUN/DEFERRED_ENV",
+      "audit_to_build_switch": "若证据显示缺的是接口、转换、守卫或真实能力，立即修最前必要部位；若仅缺环境或回执，不伪造已施工缺口而应明确具名阻断",
+      "scope_guard": "FUTURE EXP不算M5，M7跨题复用不插入当期必经主干；全线QA和19组件/13类类型级按PLAN相应进入真实实例，不为了检查队列新增Gate",
+      "no_auto_runtime_claim": true
+    }
   }
 }
