@@ -28,13 +28,13 @@
       "name": "来源发现与准入",
       "substrate": "来源、版本、馆藏、数字资产、原件字节、权利与SHA",
       "status": "partial",
-      "state": "来源候选的持久化已有代码；通用外部资源获取到Studio的连接与真实G0签发待闭环",
+      "state": "D00候选持久化与C01输出独立重构代码已具备；Reviewer精确stage_binding签发接口mock CI通过，真实持久PG/Runner当前资格仍HOLD。",
       "code": [
         "pipelines/data-production/workers/private-evidence-stage.mjs",
         "pipelines/data-production/adapters/private-evidence-adapters.mjs",
         "pipelines/data-production/adapters/layer1-adapters.mjs"
       ],
-      "blocker": "Studio 当前仍要求已登记私有原件；独立Reviewer精确签发尚未由同一真实Run验证",
+      "blocker": "M5-G0-PG-01：尚未确认具名持久非生产PG，无法完成真实独立Reviewer签发、Runner同Root当前资格读取、撤权与恢复。",
       "next_input": "合法原件 source_version + raw_item + G0 审批与消费范围"
     },
     {
@@ -205,7 +205,7 @@
       "label": "D00 · 来源发现与准入",
       "kind": "producer",
       "status": "partial",
-      "summary": "来源候选的持久化已有代码；通用外部资源获取到Studio的连接与真实G0签发待闭环",
+      "summary": "来源候选持久化与D00/C01输出独立重构代码已具备；Reviewer stage_binding模拟签发CI通过，真实持久PG签发及Runner当前资格仍HOLD；C02/G1未证。",
       "code_paths": [
         "pipelines/data-production/workers/private-evidence-stage.mjs",
         "pipelines/data-production/adapters/private-evidence-adapters.mjs",
@@ -295,7 +295,7 @@
       "label": "G0 · 独立质量审核",
       "kind": "gate",
       "status": "blocked",
-      "summary": "既有机器规则与独立Gate合同；精确stage_binding合法签发及同Root实证尚未完成",
+      "summary": "既有机器规则与独立Gate；C01精确stage_binding签发代码及mock正反回归已通过，持久PG真实签发、Runner当前资格、撤权/恢复同Root未验证。",
       "code_paths": [
         "tools/rule-gate-reviewer.mjs",
         "tools/local-gate-service.mjs",
@@ -309,34 +309,39 @@
       ],
       "code_vs_integration": {
         "code": "INDEPENDENT_GATE_CODE_EXISTS",
-        "handoff": "EXACT_SIGNED_STAGE_BINDING_NOT_VERIFIED",
+        "handoff": "STAGE_BINDING_CODE_AND_MOCK_REGRESSION_PASS_PERSISTENT_PG_NOT_VERIFIED",
         "runtime": "NOT_ROOT_E2E_VERIFIED"
       },
       "verification_layers": {
         "capability": {
           "status": "PARTIAL",
-          "reason": "已定位相关模块或候选代码，完整专业能力未获验证",
+          "reason": "现有独立Reviewer/Signer与G0规则直接继承；C01输出重构和stage_binding写入既有签发receipt的代码已通过mock DB回归，尚非真实PG签发证明。",
           "evidence_refs": [
-            "tools/rule-gate-reviewer.mjs",
-            "tools/local-gate-service.mjs",
-            "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+            "tools/gate-stage-output-attestation.mjs@501829ac1509",
+            "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
+            "tests/data-production/gate-stage-output-attestation.test.mjs@501829ac1509",
+            "CI@43800172713:SUCCESS:270_PASS_0_FAIL:MOCK_DB_ONLY"
           ],
-          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
-          "observed_on": "2026-11-15"
+          "verified_source_sha": "501829ac1509b2e5eb11d454be2247be7e01c8ed",
+          "observed_on": "2026-11-16"
         },
         "handoff": {
           "status": "HOLD",
-          "reason": "G0对象签发记录缺Runner所要求的独立精确stage_binding",
+          "reason": "D00/C01独立输出重构与精确stage_binding签发代码已存在，mock DB正反CI通过；真实持久非生产PG中的Signer签发、Runner同Root资格读取/撤权/恢复未运行，保持HOLD。",
           "evidence_refs": [
-            "tools/rule-gate-reviewer.mjs",
-            "packages/data-access/src/gate-stage-qualification.mjs"
+            "tools/gate-stage-output-attestation.mjs@501829ac1509",
+            "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
+            "tests/data-production/gate-stage-output-attestation.test.mjs@501829ac1509",
+            "CI@43800172713:SUCCESS:270_PASS_0_FAIL:MOCK_DB_ONLY",
+            "CURRENT.md#M5-G0-BATCH-03",
+            "tasks/implementation/MAB/progress.md#M5-G0-BATCH-03"
           ],
-          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
-          "observed_on": "2026-11-15"
+          "verified_source_sha": "501829ac1509b2e5eb11d454be2247be7e01c8ed",
+          "observed_on": "2026-11-16"
         },
         "runtime": {
           "status": "NOT_VERIFIED",
-          "reason": "同一真实Root Task连续正反及持久环境证据未完成",
+          "reason": "未确认可用的持久非生产PG环境；本轮没有真实PG/HTTP/同Root Reviewer签发、Runner资格消费、撤权或恢复回执，保持NOT_VERIFIED。",
           "evidence_refs": [],
           "verified_source_sha": null,
           "observed_on": null
@@ -370,13 +375,15 @@
         },
         "handoff": {
           "status": "HOLD",
-          "reason": "G0对象签发记录缺Runner所要求的独立精确stage_binding",
+          "reason": "当前资格读取代码严格要求独立Reviewer的精确stage_binding、当前资格和未撤权；mock DB签发回归已通过，但持久PG中真实签发→Runner同Root读取→撤权仍未运行。",
           "evidence_refs": [
-            "tools/rule-gate-reviewer.mjs",
-            "packages/data-access/src/gate-stage-qualification.mjs"
+            "packages/data-access/src/gate-stage-qualification.mjs#auditHasExactStageBinding",
+            "pipelines/data-production/orchestrator/independent-stage-qualification.mjs@501829ac1509",
+            "tests/data-production/gate-stage-output-attestation.test.mjs@501829ac1509",
+            "CI@43800172713:SUCCESS:MOCK_DB_ONLY"
           ],
-          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
-          "observed_on": "2026-11-15"
+          "verified_source_sha": "501829ac1509b2e5eb11d454be2247be7e01c8ed",
+          "observed_on": "2026-11-16"
         },
         "runtime": {
           "status": "NOT_VERIFIED",
@@ -1973,20 +1980,20 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "evidence_level": "CODE_AND_MOCK_REGRESSION_PASS_PERSISTENT_PG_NOT_RUN",
       "engineering_diagnosis": {
-        "category": "CONTRACT_MISMATCH",
-        "confidence": "SOURCE_CONFIRMED",
-        "diagnosis": "独立机器审核器PASS receipt未构造stage_binding；候选对象签发不等于当前Runner job/输入/输出审签",
+        "category": "CODE_PRESENT_NO_ROOT_E2E",
+        "confidence": "SOURCE_AND_MOCK_CI_CONFIRMED",
+        "diagnosis": "D00/C01阶段输出已由独立Reviewer从持久source/raw/original事实重构，并写入既有不可变签发回执的精确stage_binding；现有证据仅为mock DB签发回归，真实持久PG同Root签发、Runner资格读取与撤权未验证。",
         "evidence": [
-          "tools/rule-gate-reviewer.mjs#decide-receipt",
-          "tools/local-gate-service.mjs#autoSign",
-          "tools/gate-stage-candidate-selection.mjs@718503e6f5ce",
-          "tests/data-production/gate-stage-candidate-selection.test.mjs@718503e6f5ce",
-          "tools/gate-stage-output-attestation.mjs",
-          "tests/data-production/gate-stage-output-attestation.test.mjs"
+          "tools/gate-stage-output-attestation.mjs@501829ac1509",
+          "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
+          "tests/data-production/gate-stage-output-attestation.test.mjs@501829ac1509",
+          "CI@43800172713:SUCCESS:270_PASS_0_FAIL:MOCK_DB_ONLY",
+          "CURRENT.md#M5-G0-BATCH-03",
+          "tasks/implementation/MAB/progress.md#M5-G0-BATCH-03"
         ],
-        "next": "D00 C01文本已增Reviewer只读来源重构及独立output_digest校验的受控代码（CI待验）；真实同Root machine signer/PG/HTTP及撤权尚未实证。C02/G1仍HOLD，禁止对象PASS替代stage_binding。",
+        "next": "BATCH-02代码与mock签发正反已通过；下一步只在具名持久非生产PG中验证独立Signer真实签发、精确stage_binding、Runner同Root当前资格读取、错digest/错身份/撤权与恢复。环境未确认时保持M5-G0-PG-01 HOLD，不重建Gate/Reviewer/Runner，不进入D01/G1/D02。",
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
@@ -1994,27 +2001,33 @@
       "verification_layers": {
         "capability": {
           "status": "PARTIAL",
-          "reason": "两端有相关模块或局部业务实现，但不代表完整能力已验",
+          "reason": "C01输出独立重构与stage_binding签发代码已存在，mock DB正反CI通过；尚未由持久PG证明实际独立签发。",
           "evidence_refs": [
-            "tools/rule-gate-reviewer.mjs#decide-receipt",
-            "tools/local-gate-service.mjs#autoSign"
+            "tools/gate-stage-output-attestation.mjs@501829ac1509",
+            "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
+            "tests/data-production/gate-stage-output-attestation.test.mjs@501829ac1509",
+            "CI@43800172713:SUCCESS:270_PASS_0_FAIL:MOCK_DB_ONLY"
           ],
-          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
-          "observed_on": "2026-11-15"
+          "verified_source_sha": "501829ac1509b2e5eb11d454be2247be7e01c8ed",
+          "observed_on": "2026-11-16"
         },
         "handoff": {
           "status": "HOLD",
-          "reason": "独立机器审核器PASS receipt未构造stage_binding；候选对象签发不等于当前Runner job/输入/输出审签",
+          "reason": "D00/C01独立输出重构与精确stage_binding签发代码已存在，mock DB正反CI通过；真实持久非生产PG中的Signer签发、Runner同Root资格读取/撤权/恢复未运行，保持HOLD。",
           "evidence_refs": [
-            "tools/rule-gate-reviewer.mjs#decide-receipt",
-            "tools/local-gate-service.mjs#autoSign"
+            "tools/gate-stage-output-attestation.mjs@501829ac1509",
+            "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
+            "tests/data-production/gate-stage-output-attestation.test.mjs@501829ac1509",
+            "CI@43800172713:SUCCESS:270_PASS_0_FAIL:MOCK_DB_ONLY",
+            "CURRENT.md#M5-G0-BATCH-03",
+            "tasks/implementation/MAB/progress.md#M5-G0-BATCH-03"
           ],
-          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
-          "observed_on": "2026-11-15"
+          "verified_source_sha": "501829ac1509b2e5eb11d454be2247be7e01c8ed",
+          "observed_on": "2026-11-16"
         },
         "runtime": {
           "status": "NOT_VERIFIED",
-          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "reason": "未确认可用的持久非生产PG环境；本轮没有真实PG/HTTP/同Root Reviewer签发、Runner资格消费、撤权或恢复回执，保持NOT_VERIFIED。",
           "evidence_refs": [],
           "verified_source_sha": null,
           "observed_on": null
@@ -2044,18 +2057,20 @@
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "RELATED_CODE_PATH_EXISTS_EDGE_E2E_NOT_VERIFIED",
+      "evidence_level": "CODE_AND_MOCK_REGRESSION_PASS_PERSISTENT_PG_NOT_RUN",
       "engineering_diagnosis": {
-        "category": "CONTRACT_MISMATCH",
-        "confidence": "SOURCE_CONFIRMED",
-        "diagnosis": "当前资格读取端必须校验job_id/reviewer_binding_ref/input_digest/output_digest；既有机器审核PASS回执尚不能满足",
+        "category": "CODE_PRESENT_NO_ROOT_E2E",
+        "confidence": "SOURCE_AND_MOCK_CI_CONFIRMED",
+        "diagnosis": "资格读取器和Runner已严格核run/job/stage/gate/reviewer/input/output/consumer及当前有效性；签发端的stage_binding代码与mock DB回归已通过，但真实持久PG签发receipt被同Root Runner读取及撤权仍未验证。",
         "evidence": [
-          "packages/data-access/src/gate-stage-qualification.mjs#auditHasExactStageBinding",
-          "pipelines/data-production/orchestrator/independent-stage-qualification.mjs",
-          "tools/gate-stage-output-attestation.mjs",
-          "tests/data-production/gate-stage-output-attestation.test.mjs"
+          "tools/gate-stage-output-attestation.mjs@501829ac1509",
+          "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
+          "tests/data-production/gate-stage-output-attestation.test.mjs@501829ac1509",
+          "CI@43800172713:SUCCESS:270_PASS_0_FAIL:MOCK_DB_ONLY",
+          "CURRENT.md#M5-G0-BATCH-03",
+          "tasks/implementation/MAB/progress.md#M5-G0-BATCH-03"
         ],
-        "next": "候选C01在独立Signer中重构摘要后可申请精确stage_binding；仍需真实持久DB签发与Runner当前资格/撤权证明，不能把源码候选评审当实跑通过。",
+        "next": "BATCH-02代码与mock签发正反已通过；下一步只在具名持久非生产PG中验证独立Signer真实签发、精确stage_binding、Runner同Root当前资格读取、错digest/错身份/撤权与恢复。环境未确认时保持M5-G0-PG-01 HOLD，不重建Gate/Reviewer/Runner，不进入D01/G1/D02。",
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
@@ -2063,27 +2078,33 @@
       "verification_layers": {
         "capability": {
           "status": "PARTIAL",
-          "reason": "两端有相关模块或局部业务实现，但不代表完整能力已验",
+          "reason": "C01输出独立重构与stage_binding签发代码已存在，mock DB正反CI通过；尚未由持久PG证明实际独立签发。",
           "evidence_refs": [
-            "packages/data-access/src/gate-stage-qualification.mjs#auditHasExactStageBinding",
-            "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+            "tools/gate-stage-output-attestation.mjs@501829ac1509",
+            "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
+            "tests/data-production/gate-stage-output-attestation.test.mjs@501829ac1509",
+            "CI@43800172713:SUCCESS:270_PASS_0_FAIL:MOCK_DB_ONLY"
           ],
-          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
-          "observed_on": "2026-11-15"
+          "verified_source_sha": "501829ac1509b2e5eb11d454be2247be7e01c8ed",
+          "observed_on": "2026-11-16"
         },
         "handoff": {
           "status": "HOLD",
-          "reason": "当前资格读取端必须校验job_id/reviewer_binding_ref/input_digest/output_digest；既有机器审核PASS回执尚不能满足",
+          "reason": "D00/C01独立输出重构与精确stage_binding签发代码已存在，mock DB正反CI通过；真实持久非生产PG中的Signer签发、Runner同Root资格读取/撤权/恢复未运行，保持HOLD。",
           "evidence_refs": [
-            "packages/data-access/src/gate-stage-qualification.mjs#auditHasExactStageBinding",
-            "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+            "tools/gate-stage-output-attestation.mjs@501829ac1509",
+            "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
+            "tests/data-production/gate-stage-output-attestation.test.mjs@501829ac1509",
+            "CI@43800172713:SUCCESS:270_PASS_0_FAIL:MOCK_DB_ONLY",
+            "CURRENT.md#M5-G0-BATCH-03",
+            "tasks/implementation/MAB/progress.md#M5-G0-BATCH-03"
           ],
-          "verified_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
-          "observed_on": "2026-11-15"
+          "verified_source_sha": "501829ac1509b2e5eb11d454be2247be7e01c8ed",
+          "observed_on": "2026-11-16"
         },
         "runtime": {
           "status": "NOT_VERIFIED",
-          "reason": "没有充分的同Root正反/持久/恢复实证",
+          "reason": "未确认可用的持久非生产PG环境；本轮没有真实PG/HTTP/同Root Reviewer签发、Runner资格消费、撤权或恢复回执，保持NOT_VERIFIED。",
           "evidence_refs": [],
           "verified_source_sha": null,
           "observed_on": null
@@ -5069,9 +5090,9 @@
       "primary_domain": "assets"
     }
   ],
-  "earliest_verified_code_point": "D00→D01 C01代码接线、合格候选读模型修改、自动验证（不代表同Root G0真实签发）",
-  "earliest_runtime_blocker": "Studio/D00真实同Root独立G0当前精确签发及合法D01消费仍未实测",
-  "next_real_code_blocker": "严格G0精确签发的正确回执绑定；其后D01合格候选→D02专业类型请求生成",
+  "earliest_verified_code_point": "D00→D01 C01真实文本请求代码与独立Reviewer精确stage_binding签发接口已在main实现并通过mock DB正反CI；不代表持久PG同Root资格消费。",
+  "earliest_runtime_blocker": "具名持久非生产PG中独立Signer真实签发、Runner同Root当前资格读取、负例/撤权/恢复未运行；当前连接仅发现mohen-cloud项目且无开发分支，环境角色未确认。",
+  "next_real_code_blocker": "先取得获准的持久非生产PG入口，验证E_D00_REVIEW/E_D00_QUALIFY的真实Signer签发、精确stage_binding、Runner同Root当前资格读取、错digest/错身份/撤权与恢复；通过后再进入G1→D02 typed交接。",
   "acceptance_basis": "PLAN V1.7 M5八维同一真实作品，绝不以本图状态代替验收",
   "acceptance_dimensions": [
     {
@@ -5261,7 +5282,7 @@
     "source_ref_policy": "源码链接锁定source_sha；当前HEAD变化时先比较影响范围再复核，不以HEAD自动判过期",
     "module_chain_read_rule": "主图37节点/54边三层状态后，深入module_internal_chains.modules[]：按步骤input/operation/output/guard/code_locators及handoffs[]逐点查；细分链接只作诊断，不加原54条与M5八维分母。",
     "audit_tracking_read_rule": "优先读取audit_tracking.next_frontier及groups定位小批核查；状态仍以nodes[]/edges[].verification_layers为准。只在当前Root走到的相邻点排查、修复、回归、三文件同步，并把真实证据写CURRENT/progress。",
-    "batch_deep_link_rule": "本批直达HTML #edge-E_D00_REVIEW 和 #edge-E_D00_QUALIFY；以原edges[].verification_layers确认三层状态，局部代码修复不等于G0整边PASS。"
+    "batch_deep_link_rule": "本轮直达HTML #edge-E_D00_REVIEW 和 #edge-E_D00_QUALIFY；C01精确stage_binding代码与mock CI通过，但真实持久PG同Root签发/资格/撤权未验，原边handoff保持HOLD、runtime保持NOT_VERIFIED。"
   },
   "source_audit": {
     "frozen_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
@@ -11391,7 +11412,7 @@
         "E_L1_TO_D02"
       ],
       "state_source": "原edges[].verification_layers，状态不在此处重复存储",
-      "reason": "第二批业务代码CI@56ac0ccb SUCCESS(269P/0F)，Reviewer签发接口增强CI@501829ac SUCCESS(270P/0F)；独立重构C01输出的可信签发逻辑有代码+mock DB正反验证，但没有持久真实PG/HTTP signer/Runner同Root资格及撤权；G0仍HOLD。生产最新部署旧SHA83560224，无新生产发布。C02/G1后续仍HOLD，不施工D02。"
+      "reason": "BATCH-02业务代码@56ac0ccb与签发接口增强@501829ac的CI均SUCCESS（270P/0F，mock DB）；现有Reviewer重构C01输出并写入既有不可变stage_binding回执。BATCH-03确认当前无可确认的持久非生产PG：唯一可见Supabase项目mohen-cloud无开发分支且环境角色未确认；标准CI不连DB，mab-isolated-db仅临时合成PG17。G0保持HOLD，不重建功能；环境具备后完成真实同Root签发/资格/撤权/恢复，再进入G1/D02。Vercel生产最新SHA仍83560224，未部署本批。"
     },
     "groups": [
       {
@@ -11643,28 +11664,80 @@
       "live_coverage_dashboard": "HTML主图首页的已定向归因数量、未逐接口核查数量、分组归因均从最新嵌入的root edges[].engineering_diagnosis与primary_domain计算，杜绝硬编码7/52变成未来虚假当前状态；snapshot字段仅作历史证据。"
     },
     "last_execution_batch": {
-      "id": "M5-G0-BATCH-02",
+      "id": "M5-G0-BATCH-03",
       "date": "2026-11-16",
-      "code_commit": "56ac0ccb14f6154a8f203eb37712047c622d8f61",
-      "ci": {
-        "run_id": 43799675858,
-        "url": "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43799675858",
-        "conclusion": "SUCCESS",
-        "scope": "Typecheck, Unit, data-production boundary (269 PASS, 0 FAIL), Build and Auth coverage; NOT real Owner/Signer PG/HTTP"
-      },
+      "code_commit": "501829ac1509b2e5eb11d454be2247be7e01c8ed",
+      "reviewed_main_head": "339b6b3f35186c6ca3b5374670c236e39ea013db",
       "scope_edges": [
         "E_D00_REVIEW",
         "E_D00_QUALIFY"
       ],
-      "inherited_from": "M5-G0-BATCH-01@718503e6f5ce9166a25628bcff437c2daab5ded1",
-      "scoped_fix": "Independent G0 C01 text stage output reconstructs from Reviewer-visible persisted source/raw/original plus method_plan and exact Registry job; independently recomputed executionDigest signed into immutable existing receipt",
+      "inherited_from": "M5-G0-BATCH-02@501829ac1509b2e5eb11d454be2247be7e01c8ed",
+      "inherited_history_ids": [
+        "R01",
+        "R02",
+        "R05",
+        "R06",
+        "R07",
+        "R08",
+        "R09",
+        "R10"
+      ],
+      "downstream_history_ids": [
+        "R03",
+        "R04"
+      ],
+      "scoped_fix": "No business-code change. Read current Reviewer/Signer/qualification/Runner contracts and CI evidence; confirmed exact C01 stage_binding code and mock regression are present, then recorded the persistent-PG environment HOLD. No Gate/Reviewer/Runner/Registry/method rebuilt.",
       "code_paths": [
         "tools/gate-stage-output-attestation.mjs",
         "tools/rule-gate-reviewer.mjs",
         "tools/local-gate-service.mjs",
-        "tests/data-production/gate-stage-output-attestation.test.mjs"
+        "packages/data-access/src/gate-stage-qualification.mjs",
+        "pipelines/data-production/orchestrator/independent-stage-qualification.mjs",
+        "pipelines/data-production/orchestrator/orchestrator.mjs",
+        "tests/data-production/gate-stage-output-attestation.test.mjs",
+        ".github/workflows/mab-isolated-db.yml"
       ],
-      "remaining_blocker": "No real signer PG/HTTP same-root receipt or revocation; D00 non-text and G1-G5 stage output not yet independently reproducible",
+      "ci": {
+        "run_id": 43800172713,
+        "url": "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43800172713",
+        "conclusion": "SUCCESS",
+        "scope": "270 PASS / 0 FAIL; Typecheck, Unit, Production boundary regression, Build and Auth coverage; mock DB only, no persistent PG/HTTP"
+      },
+      "main_head_ci": {
+        "run_id": 43810300382,
+        "url": "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43810300382",
+        "conclusion": "SUCCESS",
+        "scope": "main HEAD Build check only"
+      },
+      "database_environment_verification": {
+        "provider": "Supabase",
+        "discovered_projects": [
+          {
+            "name": "mohen-cloud",
+            "project_ref": "fwrhxddcpkibsnmddcfl",
+            "status": "ACTIVE_HEALTHY"
+          }
+        ],
+        "development_branches": 0,
+        "environment_role": "NOT_CONFIRMED_NON_PRODUCTION",
+        "database_queries_executed": false,
+        "database_writes_executed": false,
+        "conclusion": "M5-G0-PG-01 HOLD"
+      },
+      "isolated_db_workflow": {
+        "path": ".github/workflows/mab-isolated-db.yml",
+        "mode": "DISPOSABLE_SYNTHETIC_POSTGRES_17",
+        "cleanup": "database container and socket directory removed after run",
+        "conclusion": "NOT_A_PERSISTENT_OWNER_PRIVATE_STORAGE_REVIEWER_ENVIRONMENT"
+      },
+      "production_deployment_verification": {
+        "source": "Vercel deployments list (read-only) + vercel.json",
+        "git_deployment_enabled": false,
+        "latest_production_git_sha": "835602242cab31b1fcb372c7ff5efd4fc41dfd89",
+        "batch_deployed": false
+      },
+      "remaining_blocker": "M5-G0-PG-01: no confirmed named persistent non-production PG available to execute the real independent Reviewer signing, exact stage_binding persistence, same-root Runner current-qualification read, wrong-digest/identity/revocation negatives and recovery.",
       "handoff_state_changed": false,
       "runtime_verified": false,
       "m5_exit": "HOLD",
@@ -11673,20 +11746,8 @@
         "#edge-E_D00_QUALIFY"
       ],
       "source_of_status": "edges[].verification_layers",
-      "signer_receipt_regression": "Added Reviewer.review -> original authority.decide receipt stage_binding pass, and tampered output_digest reject before sign; mock DB only",
-      "signer_receipt_regression_ci": {
-        "run_id": 43800172713,
-        "url": "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43800172713",
-        "conclusion": "SUCCESS",
-        "suite": "production boundary 270 PASS / 0 FAIL; Typecheck, Unit, Build and Auth coverage PASS",
-        "evidence_level": "mock-database and source regression, NOT independent persistent PG/HTTP"
-      },
-      "signer_receipt_regression_commit": "501829ac1509b2e5eb11d454be2247be7e01c8ed",
-      "production_deployment_verification": {
-        "source": "Vercel deployments list (read-only)",
-        "latest_production_git_sha": "835602242cab31b1fcb372c7ff5efd4fc41dfd89",
-        "batch_deployed": false
-      }
+      "business_code_changed": false,
+      "environment_hold_id": "M5-G0-PG-01"
     }
   }
 }

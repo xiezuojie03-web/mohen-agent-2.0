@@ -4244,3 +4244,26 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **输出**：`tasks/results/MAB/M5_D00_D05_FULL_CHAIN_INHERITANCE_CURRENT.md`，R01—R10按执行性质区分，其中11月13日朱家角与七宝分别计入；逐D段列可继承代码/原始证据/新路径最小差异；11月9日真六门分段、11月10日独立G0但Runner HOLD、11月14日组件真签不冒充同Root；11月16日候选唯一定位与C01 stage_binding mock正反保留。
 - **必读落点**：`tasks/implementation/MAB/PLAN.md` 第0章“D00—D05全链断点修复必读继承证据”；本账“使用方法”索引；`CURRENT.md` 事实入口。无第二Gate、第二Runner、新施工阶段、新标准或压缩包。
 - **证明等级**：`HISTORICAL_EVIDENCE_RECONCILED / DOCUMENT_ONLY`。未在当前机器执行历史PG/模型/真实Reviewer、未产生新资格；沿用`CURRENT.md`的G0与M5 HOLD，未改变导航JSON/MD/HTML的运行状态或旧审计。
+
+## 2026-11-16｜M5-G0-BATCH-03：持久隔离PG环境核验（具名HOLD，无业务代码改动）
+
+- **范围与当前断点**：只处理导航原边 `E_D00_REVIEW`、`E_D00_QUALIFY`。本批不进入D01/G1或D02；上游G0真实独立签发与Runner当前资格尚未在持久环境证明，不能越过前置。
+- **继承的历史R编号与证据**：
+  - **R01/R02**：金泽、绿之丘已跑过D00—D05及旧Gate/专业内容生产；继承其真实史料、方法、内容和投影能力，但旧Producer自签语义不冒充现行独立Signer。
+  - **R05**：11月9日《松江府志》第51页真PG六门分段机器签+Owner签、资格与撤权正反；继承六门独立签发及资格存储能力，不把分段run拼成同Root。
+  - **R06**：11月10日独立G0 PASS、当前资格有效，但同份证据Runner仍HOLD；继承Reviewer规则与持久签发能力，不把对象PASS当阶段输出PASS。
+  - **R07/R08**：11月13日朱家角、七宝两个非模板Project的真实来源与G0—G5分段签审；继承多项目和C01/H05/W07/A05/A09/P02/P04方法能力，不扩大为自动连续Runner证明。
+  - **R09**：11月14日真实隔离DB/8789服务G0—G5逐门组件签发；继承独立组件能力，不冒充同Root连续执行。
+  - **R10**：11月16日BATCH-01候选唯一定位/Project作用域、BATCH-02 C01输出独立重构与 `stage_binding` 签发接口模拟正反；本批直接承接，不重做。
+  - **R03/R04**：此前作品创建、发布、WATCH及撤权/恢复能力保留给后续八维；本批不重复运行、不拿来代替G0同Root证据。
+- **当前代码与合同核对**：
+  - `tools/gate-stage-output-attestation.mjs` 从持久source/raw/original事实独立重构D00/C01的D01文本请求与摘要；`tools/rule-gate-reviewer.mjs` 将精确job/reviewer/input/output/consumer的 `stage_binding` 写入既有 `control.sign_gate_candidate` 不可变回执。
+  - `tools/local-gate-service.mjs` 仍以专用机器Reviewer身份读取/审签；`packages/data-access/src/gate-stage-qualification.mjs` 严格读取当前独立资格；`independent-stage-qualification.mjs` 及唯一Runner继续核同run/stage/job/reviewer/input/output/consumer及有效期。代码路径存在，不能替代持久运行证据。
+- **环境核验与具名阻断**：
+  - 当前连接仅发现Supabase项目 `mohen-cloud`，无开发分支；现有信息无法确认它是PLAN §0.2 B要求的持久非生产隔离库。本批未对该项目执行任何数据库查询或写入。
+  - 标准CI [43800172713](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43800172713) 的270 PASS/0 FAIL来自mock DB/代码边界回归；其步骤明确为无数据库测试。当前main HEAD [339b6b3](https://github.com/xiezuojie03-web/mohen-agent-2.0/commit/339b6b3f35186c6ca3b5374670c236e39ea013db) 的Build检查 [43810300382](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43810300382) SUCCESS。
+  - `.github/workflows/mab-isolated-db.yml` 使用一次性合成数据PostgreSQL 17并在结束时清理；它不提供持久私有原件/Storage/真实Owner/Reviewer环境，不能替代本批要求。
+  - Vercel `git.deploymentEnabled=false`；只读部署列表最新Production仍为旧SHA `835602242cab31b1fcb372c7ff5efd4fc41dfd89`，本批未部署。
+- **施工改动**：没有修改业务代码、Registry、Runner、Gate、Reviewer、专业方法或数据库；仅更新本批进度、当前事实与三份导航，记录具名环境HOLD。
+- **正反测试及下游接收**：既有CI已覆盖独立输出重构正例、错误output_digest在签发前拒绝、错job/reviewer/project、来源字节不一致、缺失/重复原件等模拟正反；真实持久PG Reviewer签发、同Root Runner资格读取、撤权、恢复均为 `NOT_RUN/DEFERRED_ENV`。下游Runner代码严格拒绝无当前精确stage_binding的PASS，但本批没有真实receipt供其消费；`E_D00_QUALIFY`继续HOLD，D01/G1与D02未启动。
+- **结论**：具名HOLD：`M5-G0-PG-01`（持久非生产PG环境未确认）。`E_D00_REVIEW` / `E_D00_QUALIFY`交接层保持HOLD、运行层保持NOT_VERIFIED；M5八维仍HOLD。取得获准持久非生产PG入口后，直接复用现有代码与R05/R06/R09历史证据完成真实同Root POS/NEG/撤权/恢复，不重建任何生产链组件。
