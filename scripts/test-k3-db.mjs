@@ -188,6 +188,10 @@ try {
     runTest("RIGHTS_BY_ACTION", "tests/data-production/rights-by-action.integration.mjs");
     runTest("PRIVATE_WORKER_ACL", "tests/data-production/private-worker-acl.integration.mjs");
     runTest("MACHINE_REVIEWER_BOUNDARY", "tests/data-production/machine-reviewer-boundary.integration.mjs");
+    // One actual disposable PG run now binds the existing independent G0 machine
+    // Reviewer to the exact Runner qualification check for a single Root.
+    // This is not a cloud/official-Storage acceptance substitute.
+    runTest("M5_ROOT_G0_HANDOFF", "tests/data-production/m5-root-g0-handoff.integration.mjs");
     runTest("ARTIFACT_CONTENT_REVISION", "tests/data-production/artifact-content-revision.integration.mjs");
     if (process.env.MOHEN_TEST_STORAGE_CONFIG) {
       runTest("PRIVATE_ORIGINAL_WORKFLOW", "tests/data-production/private-original-workflow.integration.mjs");
