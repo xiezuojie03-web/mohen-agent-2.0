@@ -1,5 +1,7 @@
 # 墨痕 M5 全链路导航｜持续维护基线（非权威标准）
 
+> **M5-ASSEMBLY-03更新**：Owner明确批准后原件登记rights_by_action投影迁移20261116121153 SUCCESS，权限与无会话拒绝通过；其他5个原云函数的安装仍被自动审批拒绝，准备SQL为 `evidence/m5-assembly-20261116/cloud-function-inheritance-NOT_APPLIED.sql`，未应用。无真实Owner/Root运行，八维仍HOLD。此条优先于下方此前云DDL全HOLD的历史说明。
+
 > **2026-11-16 M5-ASSEMBLY-01/02（优先于下方旧断点描述）**：712a08b已实现C01精确G1→D02 typed reading请求，D02获执行授权后Owner读回L1/revision/locator/当前G1与原件SHA，复用原M4派发器生成明确分类/声源/疑点的H05候选及永久Receipt，再交原observeMaterial；定向及DB-free回归通过，非云端真实G2。C02自动转录、真实Owner/同Root/低权服务、缺失云函数及G2精确绑定仍需实证。 原边保持◆PARTIAL/⇄HOLD/●NOT_VERIFIED；原37节点/54边/八维及统计不变。代码与原始检查回执见 `evidence/m5-assembly-20261116/receipt.json`。云端函数修订被自动审批拒绝未执行；真实Owner/Root尚未合法建立，当前最前运行阻断仍为E_D00_REVIEW/E_D00_QUALIFY。
 
 > 源码核对基线：`xiezuojie03-web/mohen-agent-2.0@2c4db01783ccdb24d21f1fc99e1b28abca82d3fc`；核查日期 2026-11-15。唯一施工与准出标准仍为 `tasks/implementation/MAB/PLAN.md` V1.7 §3.5 B/C。每次施工必须先回读 `CURRENT.md` 与最新 main、CI/实际运行证据。
