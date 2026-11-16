@@ -11632,7 +11632,8 @@
       "audit_to_build_switch": "若证据显示缺的是接口、转换、守卫或真实能力，立即修最前必要部位；若仅缺环境或回执，不伪造已施工缺口而应明确具名阻断",
       "scope_guard": "FUTURE EXP不算M5，M7跨题复用不插入当期必经主干；全线QA和19组件/13类类型级按PLAN相应进入真实实例，不为了检查队列新增Gate",
       "no_auto_runtime_claim": true,
-      "live_display_rule": "HTML核查归因数每次从原edges[].engineering_diagnosis与primary_domain动态计算，不能复用审计起始baseline的7/52作为最新值；baseline只记录2026-11-16静态快照。"
+      "live_display_rule": "HTML核查归因数每次从原edges[].engineering_diagnosis与primary_domain动态计算，不能复用审计起始baseline的7/52作为最新值；baseline只记录2026-11-16静态快照。",
+      "live_coverage_dashboard": "HTML主图首页的已定向归因数量、未逐接口核查数量、分组归因均从最新嵌入的root edges[].engineering_diagnosis与primary_domain计算，杜绝硬编码7/52变成未来虚假当前状态；snapshot字段仅作历史证据。"
     }
   }
 }

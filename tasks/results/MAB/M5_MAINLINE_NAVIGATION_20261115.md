@@ -96,6 +96,8 @@
 
 **最前执行入口**：先核`E_D00_REVIEW`与`E_D00_QUALIFY`现有规则Reviewer的独立`stage_binding`签发和Runner当前资格读取；如缺合法持久隔离Reviewer/真实来源，标具名环境HOLD而非假PASS。具备条件后先完成同Root G0正反，再核`E_D01_REVIEW`/`E_D01_QUALIFY`与`E_L1_TO_D02`类型化输入。真实Provider、费用、项目权利属于随节点必须接入的支管，**不等F01—F04全部做完才处理**。
 
+**导航首页覆盖率自动取数**：原总览中的7/52、45/52只代表本次审计时点。HTML总览、跟踪分组均改为从JSON根边即时派生，后续发生定向诊断变化不用再手工改旧数字；诊断覆盖率不是通过率。
+
 **跟踪显示的唯一数据来源**：分组的“已定向归因”数量随`edges[].engineering_diagnosis`实时派生，不使用2026-11-16的7/52作为永久最新计数；`audit_tracking.baseline`只是本次结构审计的历史快照。判定PASS仍只读原`verification_layers`三层，而不是归因数量。
 
 **每批成果如何同步**：先`CURRENT.md → PLAN §3.5 B/C → JSON audit_tracking.next_frontier → 原边三层状态 → 相关模块58细分候选`；只对新证据影响的边更新`engineering_diagnosis`和`verification_layers`、相关内部交接证据并重算`statistics`；JSON、MD、HTML在同一main提交同步校验，真实运行进度记录`CURRENT.md`，精确SHA/环境/Root/POS-NEG/恢复回执记录`progress.md`。有证据才改状态，无证据不改、不能把NOT_VERIFIED当失败。未来正式设计交付入仓时再单独评估对UI链路的影响。
