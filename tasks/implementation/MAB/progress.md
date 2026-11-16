@@ -4351,3 +4351,5 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **验证**：`git diff --check`、MHKA权威路由守卫、开发Skill静态布局守卫、文档预算检查通过；定向文档检查验证相对链接、R01—R11/13类/19组件/QR-10/费用/M6—M8引用，以及导航除新增policy引用外与基线完全相同。检查中补齐R06/精确edge显式引用并去掉新增行尾空格，修订后检查通过。以上只为文档一致性证据，不是运行或专业Gate。PG/Storage/HTTP/Provider/真实Reviewer/Owner体验本批NOT_RUN。
 - **保存与回退**：仅七个现有文档；main小批提交推送后回读准确SHA与CI，结果另追加。回退本次文字及导航policy引用即可，不涉及业务数据恢复；不得因此覆盖未来其他执行方的成果。
 - **下一动作**：当前窗口结束于交付文档和执行指令；新窗口收到Owner指令后，按PLAN §3.5 D合并有界准备与首个真实入口工作组，引用旧成果、复核现场、修最前真实差异，继续所有已授权可执行工作。M5_OVERALL_HOLD不变。
+
+- **提交后回读**：方案及七文档同步提交`45a4febcdba42d0aedff7edfe5b6d0cce06471e1`已推送main并核远端一致；[主CI 43860203505](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43860203505) SUCCESS，Typecheck、Unit、Production-boundary、Build、鉴权/路由/fixture守卫通过。74目标哈希审计仍是既有informational/允许失败项，不能据CI成功宣称74目标语义完成。首次推送因提交邮箱隐私保护GH007被拒；仅将本批尚未发布提交的身份改用GitHub noreply后普通push成功，未更改账号隐私设置、未强推。后续回执提交只追加本条事实；真实PG/Storage/HTTP/Provider/Owner体验仍NOT_RUN，M5_OVERALL_HOLD不变。
