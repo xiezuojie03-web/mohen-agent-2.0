@@ -479,13 +479,16 @@ export async function dispatchAuthorizedCall(
  * 默认依赖（真实库 + 真实 fetch）。仅在持有真实句柄的执行路径上惰性构建；
  * 无句柄时不会被调用。逐来源权利读取使用同一会话身份（RLS 下可见范围）。
  */
-export async function createStudioDispatcherDeps(): Promise<DispatcherDeps> {
+export async function createStudioDispatcherDeps(options: {
+  pool?: Parameters<typeof import("@mohen/data-access").createStudioDelegationRepository>[0];
+  readSourceRights?: DispatcherDeps["readSourceRights"];
+} = {}): Promise<DispatcherDeps> {
   const dataAccess = await import("@mohen/data-access");
-  const pool = dataAccess.getNodePgPool();
+  const pool = options.pool ?? dataAccess.getNodePgPool();
   const delegations = dataAccess.createStudioDelegationRepository(pool);
   return {
     delegations,
-    readSourceRights: async (sourceIds, token) => {
+    readSourceRights: options.readSourceRights ?? (async (sourceIds, token) => {
       const ids = sourceIds.filter((s) => uuidPattern.test(s));
       if (ids.length !== sourceIds.length || !ids.length) return [];
       const list = ids.map((id) => `'${id}'::uuid`).join(",");
@@ -499,7 +502,7 @@ export async function createStudioDispatcherDeps(): Promise<DispatcherDeps> {
           where s.source_id = any(array[${list}])`,
         { token }
       ) as unknown as Promise<Array<{ source_id: string; rights_by_action: Record<string, unknown> | string | null }>>;
-    },
+    }),
   };
 }
 

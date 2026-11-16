@@ -4353,3 +4353,30 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **下一动作**：当前窗口结束于交付文档和执行指令；新窗口收到Owner指令后，按PLAN §3.5 D合并有界准备与首个真实入口工作组，引用旧成果、复核现场、修最前真实差异，继续所有已授权可执行工作。M5_OVERALL_HOLD不变。
 
 - **提交后回读**：方案及七文档同步提交`45a4febcdba42d0aedff7edfe5b6d0cce06471e1`已推送main并核远端一致；[主CI 43860203505](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43860203505) SUCCESS，Typecheck、Unit、Production-boundary、Build、鉴权/路由/fixture守卫通过。74目标哈希审计仍是既有informational/允许失败项，不能据CI成功宣称74目标语义完成。首次推送因提交邮箱隐私保护GH007被拒；仅将本批尚未发布提交的身份改用GitHub noreply后普通push成功，未更改账号隐私设置、未强推。后续回执提交只追加本条事实；真实PG/Storage/HTTP/Provider/Owner体验仍NOT_RUN，M5_OVERALL_HOLD不变。
+
+## 2026-11-16｜M5-ASSEMBLY-01｜真实入口核验与 E_L1_TO_D02 有界施工检查点（进行中）
+
+- **基线/继承**：远端main `ed372cd7ccb5db57d5da0a47ebdd3b91f8d2d1fb`；初始本地`work@759dbbd`干净且无独有成果，取最新远端后快进并将当前唯一施工分支改名main，无新分支/PR/reset/强推。继承R01/R02/R05/R07/R08的D02专业生成与候选存储、R10当前唯一Runner、R11及原M2/M3云端安装；原始回执为继承索引§2—6及progress中M5-NAV-CORRECTION-01、M5-DEV-M2-01/M3-02、M5-G0-ROOT-01。未引用交付包文件，未覆盖原专业实现。
+- **现场**：Vercel get_project/get_deployment实际回读production `dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc` READY仍为`835602242cab31b1fcb372c7ff5efd4fc41dfd89`，仓库`vercel.json git.deploymentEnabled=false`，后续main提交未自动发布；当前宿主无MOHEN/DATABASE/SUPABASE/GATE/Provider运行配置。Supabase mohen-cloud PG17实时只读计数：studio.projects=0、private_originals=0、私有桶对象=0、gate_service_credentials=0、gate_candidates=0。没有合法Owner会话/既有Studio任务可恢复，不代登录/不填样例身份：Creator/Project/Root/作品/来源版本尚未产生。本次不改变数据库、Storage或独立Reviewer，不调用收费Provider。
+- **五项差异与最小改动**：旧D01 C01/独立G1和D02 observeMaterial存在；原Runner即使核过精确G1仍把reading candidate直交下一阶段，复现PRIVATE_NEXT_STAGE_REQUEST_NOT_READY。只补G1后精确C01→D02请求；D02授权后Owner读回同一read_unit/revision/locator、当前G1、原件字节SHA及source绑定，随后调用受控专业生成，再交原observeMaterial持久化；无当前资格/精确范围/内容生成不允许直通。C02没有可据此继承的自动转录，保持原HOLD。发现现有method-plan-ref只允许C类，不向G0方法预选强加H05；H分类由原D02专业生成明确给出，不能按载体默认H05。
+- **RED→GREEN检查点**：新Runner正验先失败（D02未收到请求），新Worker正验先失败PRIVATE_MATERIAL_OBSERVATION_INVALID；最小实现后原命令`node --test tests/data-production/orchestrator.test.mjs tests/data-production/private-candidate-worker.test.mjs tests/data-production/private-evidence-adapters.test.mjs`=66 PASS/0 FAIL。包含错Root/Project、修订不符、G1撤权、外源、篡改字节、混合手填内容、生成期间撤权等负例；均合成依赖，非真实G1/G2。日志暂存work/batch1-tests.log。尚须下一小批把实际受控派发器/永久Receipt绑定到运行组合根并验证费用、拒绝、恢复；本检查点不宣称交接整体完成。
+- **环境修复**：依仓库锁文件使用pnpm 9.15.4（Corepack/XDG/store置于workspace），修复旧node_modules缺ajv的宿主安装问题；未改package/lockfile。首次缺ajv与默认home缓存路径失败保留work日志；改前置后安装成功。
+- **八维/最远节点/最前阻断**：1自然语言、2混合协作、3真实D/L/G、4资产、5Studio作品、6Admin、7发布、8WATCH同一真实作品均HOLD/本批NOT_RUN，不扩大用户可用范围。当前真实任务未能合法建立，不能把历史不同任务或合成fixture填入同Root；最前阻断为Owner有效Studio会话及具名持续Web/Runner/独立Reviewer运行凭据未注入，而非缺M2/M3代码或需要付费分支。继续不依赖它的受控D02接线。
+- **工作量**：当前断点的受控生成接线及定向回归估计1—3个有界批；运行凭据/真实来源绑定恢复后入口/G0/G1估计2—5批（每批≤3关联操作）。后续L2→D05、资产/作品、Admin/发布/WATCH、八维收口均待首个真实G1→D02实测估算；依赖Owner合法会话、私有Storage/独立服务、来源外发权及真实累计Receipt核证。可用执行时段以本会话持续在线为假设，不承诺无依据日期；首个真实G1→D02前不给M5日期区间。M6/M7/M8尚未启动。
+
+### M5-ASSEMBLY-02｜受控专业生成接线检查点
+
+- 继承同批前述基线及原M4 `apps/web/lib/studio/provider-dispatcher.ts`、studio.delegations/execution_receipts；不另建Provider客户端、预算账本或签发器。新增`private-material-generation.mjs`仅为原D02的专业输入适配：显式同Root/Project委托、`d02_material_observation`动作、显式model，派发前原逐来源external_processing/预算/未知费用守卫，候选含永久Receipt引用；模型必须明确H05分类及依据、声源、不确定性、逐字原文，否则HOLD，不能默认方法/官方声源或改写原文。运行组合根惰性绑定原派发器，缺配置不外发。
+- D02授权后经原Owner读上下文、精确L1@revision、当前G1审计同run/project、source binding、实际字节/locator/SHA，再生成观察；生成期间G1撤权重读拒绝持久化。原私有Adapter仅把已知生成拒绝转为可恢复HOLD，过滤Provider原始错误避免私有内容进入公开回执；其他真实持久化异常不隐瞒。C02与后续typed连接保持原守卫。
+- 定向82 PASS/0 FAIL；全生产边界292 PASS/0 FAIL；typecheck全包通过；authority/dev-skill/doc-budget/stage-handoff/cross-layer-write/gate-enforcement通过。全量unit=700 PASS/1 FAIL/2 SKIP，唯一FAIL为原`commons-materials.test.ts`真实Wikimedia查询返回degraded（外网依赖），未跳过或修改。build在workspace Corepack/XDG路径与Next telemetry关闭后成功；初始宿主pnpm版本嵌套/只读home缓存失败保留work/build日志，不改项目锁文件。
+- 新现场差异：云端原`read_private_text_reading(uuid)`及D02—D05 candidate函数未安装（metadata实测，不再泛称M2/M3全缺），mohen_app_runtime无source.sources SELECT、已有delegations SELECT。不能为生成增加广泛来源读取权限；原Provider组合根的权利读取仍须按实际Owner路径验证。云端execution_receipts当前0行，只证明当前库无记录，不能推定历史Provider累计费用为¥0；本批真实外部调用NOT_RUN/新增费用无。
+- 代码级回退：回退本批新增C01转换/生成绑定及对应测试，保留原typed HOLD和所有原候选/专业Gate/Registry；不删除资料、审计或Receipt，不把旧签名恢复为当前资格。尚无真实G1→D02候选落地，M5八维与用户可用范围不变。继续精确源码复核及原迁移差异处理；文档导航只更新受影响代码层，运行层仍NOT_VERIFIED。
+
+### M5-ASSEMBLY-02｜复核修正与真实云动作阻断
+
+- 按requesting-code-review技能做只读独立复核；发现原Provider默认工厂会误取Producer的DATABASE_URL，不能SET ROLE mohen_app_runtime。已用先失败/后通过的组合回归修复：原工厂可显式注入已验证Worker pool与Owner-scoped rights reader，绑定沿同原件每次重读`private_source_registration`，不增加source.sources SELECT。`tests/unit/provider-dispatcher.test.ts`=23 PASS（新增回归先报DATABASE_URL未设置，修后用显式pool成功）；原23项与模型/预算/Receipt语义保留。没有Minor延期，未再次派发重复审查。
+- 原`20261107230000_mab_m2_private_source_registration_source_revision.sql`仅追加返回`rights_by_action=to_jsonb(s)->'rights_by_action'`；缺字段时返回null，仍未知拒绝，不推断为allowed。原权限/来源/hash/版本检查全保留，未新增宽权限或另一来源存储。
+- **云DDL实际被自动审批拒绝，未执行**：尝试用Supabase apply_migration将上述原函数最小修订应用开发库；审批器理由为“云端SECURITY DEFINER函数持久替换及授权行为需要单独迁移授权”，另担心rights_by_action字段缺席。原SQL使用to_jsonb(s)提取可选键而非直接引用不存在列，但仍暂停该云动作，不绕过执行；当前数据库未改。原`read_private_text_reading`/D02—D05函数缺席继续具名HOLD。完成不依赖云DDL的代码/测试/证据保存，待具体云函数修订获准再实证权限与Owner正反。Supabase security advisor的既有INFO RLS无policy不等于本批新发现可任意开放；未修改policy。
+- 辅助CLI：Supabase latest在受限home初始化失败，旧2.75.0安装/帮助也失败；没有改HOME或提升沙箱权限，没有生成虚构迁移名；本次只修订既有原迁移文件，apply_migration工具未获放行。既有原read-context函数重放尚未尝试，避免绕过同类拒绝。
+- 最终代码检查：全生产边界292 PASS；全包typecheck PASS；build PASS；原guard:isolated-db-fixtures全87迁移已登记。全unit最后为701 PASS/1 FAIL/2 SKIP（新增组合回归PASS，唯一FAIL仍原Wikimedia实网degraded；未改该测试或以CI=true遮盖）。脱敏原始RED/GREEN/FAIL、build/typecheck实录与hash清单保存`tasks/results/MAB/evidence/m5-assembly-20261116/`，不是业务PASS或另一进度台账。
+- 复核结论范围：代码可用C01精确G1交接/受控生成分支已定向验证；持久云/真实Owner/Storage/正式Reviewer/真实Provider/真实G2均NOT_RUN。原知识合同D02还有完整分类/声源/提及/依赖质量要求，本次复用原H05候选落点，不将有限观察候选称完整专业G2。费用新增请求0，累计历史账未知。八维、同任务最远节点及最前阻断不变；下一可执行工作是main精确提交CI与三份导航同步，而不是扩展业务范围。

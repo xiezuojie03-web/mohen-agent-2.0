@@ -1,0 +1,62 @@
+{
+  "batch": "M5-ASSEMBLY-01/02",
+  "base_sha": "ed372cd7ccb5db57d5da0a47ebdd3b91f8d2d1fb",
+  "scope": "C01 exact G1 -> D02 typed request and original controlled Provider input generation; code-only, NOT live G2",
+  "logs": {
+    "handoff-red.log": {
+      "sha256": "920b305dff7df619c0de439dbd9da2ed0117bc9ad01724780215ab80bea0e43b",
+      "bytes": 1630
+    },
+    "generation-red.log": {
+      "sha256": "3bef097eb49524c878cd801cd16ee2be42b0ed63ae553b5cd9698e17087fa7cd",
+      "bytes": 5205
+    },
+    "run-scope-red.log": {
+      "sha256": "05e12a70177d5bff908c4a7ae8dcd612ca37ca443e65ec604b9e414f0bf5012f",
+      "bytes": 5900
+    },
+    "composition-red.log": {
+      "sha256": "22585325a66f620f4ab4fb453cf99b4b61f0b309d3ec235323694f0893b478ea",
+      "bytes": 4143
+    },
+    "composition-green.log": {
+      "sha256": "0a2f170995fa72160ff01ac63432ab794137359a670e7e04e125e03ecf06430b",
+      "bytes": 286
+    },
+    "hold-red.log": {
+      "sha256": "9783ab38afd463ebf8bc7f8ded6eba8dd1a5357aad602760454525d70921d3a7",
+      "bytes": 2755
+    },
+    "production-boundary-final.log": {
+      "sha256": "63a5ffc55771b581eed80b108e0ba3bb048e74c523c0c4c8d79cfffc7a5032b5",
+      "bytes": 28576
+    },
+    "unit-final.log": {
+      "sha256": "5aabca1ffe4e17ff7a4812e806b2cc50f6352e17cd89031727e66c139eefd973",
+      "bytes": 9833
+    },
+    "typecheck.log": {
+      "sha256": "0ae9ea97e4f6d53052e6fbf93ba1b765a260b8e14639c5b9ef5c3bbd3a6cf61a",
+      "bytes": 574
+    },
+    "build-final.log": {
+      "sha256": "f325066f849a308496e69a918b4eccf8f0597dee68589b3f2a4133d7afaaa934",
+      "bytes": 11594
+    }
+  },
+  "live_business": "NOT_RUN",
+  "owner_project_root_work": "NOT_CREATED_NO_AUTHENTICATED_OWNER_SESSION",
+  "cloud_counts": {
+    "projects": 0,
+    "originals": 0,
+    "private_objects": 0,
+    "gate_credentials": 0,
+    "gate_candidates": 0,
+    "execution_receipts": 0
+  },
+  "cloud_ddl": "AUTO_REVIEW_REJECTED_NO_CHANGE",
+  "provider_calls": 0,
+  "historical_cumulative_cost": "UNKNOWN_EMPTY_CURRENT_LEDGER_NOT_PROOF_OF_ZERO",
+  "automatic_deployment": "git.deploymentEnabled=false; Vercel production remains 835602242cab31b1fcb372c7ff5efd4fc41dfd89",
+  "rollback": "Revert code patch only; preserve existing typed HOLD, original candidates, Gates, Registry and receipts."
+}

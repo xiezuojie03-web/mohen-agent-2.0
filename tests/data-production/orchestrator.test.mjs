@@ -117,3 +117,44 @@ test("stale, forged or mismatched Gate receipt never advances a stage", async ()
   assert.equal(done.stage_results.length,1);
   assert.equal(done.stage_results[0].hold.reason_code,"INDEPENDENT_GATE_NOT_VERIFIED");
 });
+
+// M5 E_L1_TO_D02: actual Runner authorization/qualification boundaries, synthetic dependencies.
+test("qualified C01 reading becomes an exact D02 generation request before D02 authorization", async()=>{
+  const {withExecutionAuthority,activeFixtureRegistry}=await import('./authorized-fixture.mjs');
+  await withExecutionAuthority(async({grant})=>{
+    const registry=activeFixtureRegistry(loadRegistry(root));
+    const originalId="11111111-1111-4111-8111-111111111111";
+    const run=createRunState({research_intent:"test",scope:{original_id:originalId,
+      project_id:"22222222-2222-4222-8222-222222222222",root_task_id:"77777777-7777-4777-8777-777777777777"}});
+    const candidate={stage:'D01',candidate_kind:'private_text_reading',gate_code:'G1',qualification:'UNASSESSED',
+      original_id:originalId,source_version_id:'33333333-3333-4333-8333-333333333333',
+      raw_item_id:'44444444-4444-4444-8444-444444444444',raw_sha256:'a'.repeat(64),
+      read_unit_id:'55555555-5555-4555-8555-555555555555',read_run_id:'66666666-6666-4666-8666-666666666666',
+      artifact_revision:'b'.repeat(64),request_digest:'c'.repeat(64),
+      extent:{kind:'utf8_byte_range/v1',start_byte:0,end_byte:3,quote_sha256:'d'.repeat(64)}};
+    let received,authorized;
+    const {runProduction:realRunner}=await import('../../pipelines/data-production/orchestrator/orchestrator.mjs');
+    const done=await realRunner({run,registry,from_stage:'D01',to_stage:'D02',context:{
+      resume_input:{schema:'mohen.private-evidence-stage-request.v1',stage:'D01',originalId},
+      adapters:{...passAdapters,D01:async()=>({disposition:'PASS',output:candidate}),
+        D02:async({input})=>{received=input;return {disposition:'HOLD',hold:{missing_requirement:'synthetic generator unavailable'}};}},
+      fetchStageToken:async({stage,job,run,input})=>{if(stage==='D02')authorized=input;return grant(registry,job,run,input);},
+      verifyStageQualification:async({run,job,stage,gate,input_digest,output_digest})=>({
+        qualification_current:true,decision_origin:'independent_gate',result:'PASS',
+        gate_audit_id:'88888888-8888-4888-8888-888888888888',artifact_revision:candidate.artifact_revision,
+        object_type:'read_unit',object_id:candidate.read_unit_id,valid_until:new Date(Date.now()+60000).toISOString(),
+        run_id:run.run_id,job_id:job.job_id,reviewer_binding_ref:job.implementation.gate_reviewer_binding,
+        consumer:'producer',stage,gate_code:gate,input_digest,output_digest}),
+    }});
+    assert.equal(done.current_stage,'D02');
+    assert.ok(received,'the real D02 adapter must receive the typed handoff');
+    assert.equal(received.stage,'D02');assert.equal(received.originalId,originalId);
+    assert.equal(received.readUnitId,candidate.read_unit_id);
+    assert.equal(received.reading.artifact_revision,candidate.artifact_revision);
+    assert.equal(received.reading.gate_audit_id,'88888888-8888-4888-8888-888888888888');
+    assert.equal(received.reading.run_id,run.run_id);
+    assert.equal(received.observation,undefined,'no fabricated professional content');
+    assert.deepEqual(received,authorized,'grant must bind the transformed input, not the prior candidate');
+    assert.equal(done.stage_results[1].disposition,'HOLD','generation never implies G2');
+  });
+});

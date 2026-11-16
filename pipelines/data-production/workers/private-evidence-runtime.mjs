@@ -31,7 +31,7 @@ export function createPrivateEvidenceRuntimeLoader({environment=process.env,
       }
       const workerFactory=createWorker??(await import('./private-evidence-binding.mjs')).createBoundPrivateEvidenceStageWorker;
       return {privateEvidenceWorker:workerFactory({pool,storage,
-        verificationKey:config.verificationKey,keyVersion:config.keyVersion}),
+        verificationKey:config.verificationKey,keyVersion:config.keyVersion,environment}),
         privateEvidenceOwnerSessionToken:config.session};
     }catch(error){await pool.end();pool=undefined;throw error;}
   }

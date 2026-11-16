@@ -23,11 +23,12 @@ async function withStageAuthority({stage,input},body) {
   process.env.MOHEN_EXECUTION_AUTH_VERIFY_URL='https://execution-verifier.example.invalid/verify';
   process.env.MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL='synthetic-execution-verifier-credential-32-chars';
   const job={stage,job_id:'fixture-'+stage.toLowerCase(),
-    implementation:{gate_reviewer_binding:'independent-G'+stage.slice(-1)},
+    implementation:{gate_reviewer_binding:'independent-G'+stage.slice(-1),
+      private_evidence_adapter_binding:'pipelines/data-production/adapters/private-evidence-adapters.mjs'},
     execution_policy:{enabled:true,attended:true,enable_requires:[]}};
   const registry={status:'ACTIVE_AUTHORIZED',activation:{enabled:true},
     architecture_generation:'mohen.six-stage.v1',jobs:[job]};
-  const run={run_id:id(),execution_mode:'attended',current_stage:stage,scope:{project_id:id()}};
+  const run={run_id:input?.reading?.run_id??id(),execution_mode:'attended',current_stage:stage,scope:{project_id:input?.reading?.project_id??id(),root_task_id:input?.reading?.root_task_id??id()}};
   const now=Math.floor(Date.now()/1000);
   const claims={iss:'mohen-independent-execution-authorizer',aud:'mohen-production-stage',
     run_id:run.run_id,stage,job_id:job.job_id,mode:'attended',
@@ -1137,3 +1138,59 @@ test('candidate submission fails closed on a missing project scope, a non-hex re
     });
   }
 });
+
+// M5: generation consumes verified C01/G1, not caller-authored observation text.
+const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+function generationFixture(){
+  const originalId=id(),readUnitId=id(),sourceVersionId=id(),rawItemId=id(),readRunId=id(),auditId=id();
+  const bytes=Buffer.from('县志记载古桥。'),rawHash=hash(bytes),revision='b'.repeat(64);
+  const locator={kind:'utf8_byte_range/v1',source_version_id:sourceVersionId,raw_item_id:rawItemId,
+    raw_sha256:rawHash,start_byte:0,end_byte:bytes.length,quote_sha256:rawHash};
+  const input={schema:'mohen.private-evidence-stage-request.v1',stage:'D02',originalId,readUnitId,
+    reading:{schema:'mohen.qualified-private-reading.v1',project_id:id(),root_task_id:id(),run_id:id(),gate_audit_id:auditId,
+      artifact_revision:revision,read_run_id:readRunId,source_version_id:sourceVersionId,raw_item_id:rawItemId,
+      raw_sha256:rawHash,extent:locator}};
+  return {input,bytes,revision,auditId,originalId,readUnitId,sourceVersionId,rawItemId,readRunId,locator};
+}
+async function exerciseGeneration({mutateInput=()=>{},override=()=>({}),error,expectedGenerated=0}={}){
+  const f=generationFixture();mutateInput(f.input);let generated=0,persisted=0;
+  await withStageAuthority({stage:'D02',input:f.input},async({registry,job,run,context})=>{
+    const deps={...gateStub,bridge:bridgeStub,verifySourceBinding:async()=>true,
+      readOriginal:async()=>({record:{original_id:f.originalId,project_id:run.scope.project_id,
+        state:'STORED_VERIFIED',content_type:'text/plain',sha256:hash(f.bytes),byte_size:f.bytes.length},bytes:f.bytes}),
+      readReadingContext:async()=>({original_id:f.originalId,project_id:run.scope.project_id,readings:[{
+        read_unit_id:f.readUnitId,read_run_id:f.readRunId,source_version_id:f.sourceVersionId,
+        raw_item_id:f.rawItemId,source_id:id(),artifact_revision:f.revision,method_code:'C01',locator:f.locator}]}),
+      readGateAudit:async()=>({gate_audit_id:f.auditId,artifact_revision:f.revision,qualification_digest:'c'.repeat(64),run_id:run.run_id,allowed_scope:{project_id:run.scope.project_id}}),
+      generateMaterialObservation:async({quote,reading,run:boundRun})=>{generated++;
+        assert.equal(quote,f.bytes.toString());assert.equal(reading.read_unit_id,f.readUnitId);assert.equal(boundRun.run_id,run.run_id);
+        return {h_type:'H05',literal_reading:quote,source_voice:'official_gazetteer',evidence_type:'gazetteer_observation',
+          research_proposition:'该县志记载有古桥；非桥址事实裁决。',uncertainty:{qualification:'UNASSESSED',basis:'single_source',classification_basis:'县志编纂体例；单源待核'}};},
+      persistMaterialObservation:async({observation})=>{persisted++;assert.equal(observation.literal_reading,f.bytes.toString());
+        return {evidence_id:id(),reading_unit_id:id(),link_id:id(),read_unit_id:f.readUnitId,read_run_id:f.readRunId,
+          artifact_revision:'d'.repeat(64),request_digest:'e'.repeat(64)};}};
+    const worker=createPrivateEvidenceStageWorker({...deps,...override(f,run)});
+    const execute=()=>worker.observeMaterial({run,job,registry,context,input:f.input,token:'owner-session'});
+    if(error){await assert.rejects(execute,error);assert.equal(persisted,0);assert.equal(generated,expectedGenerated);return;}
+    const result=await execute();
+    assert.equal(result.qualification,'UNASSESSED');assert.equal(generated,1);assert.equal(persisted,1);
+  });
+}
+
+test('D02 generates a professionally attributed candidate from current exact C01/G1 and verified bytes',()=>exerciseGeneration());
+for(const [label,options] of [
+  ['wrong root',{override:(_f,run)=>{run.scope.root_task_id=id();return {};},error:/PRIVATE_D02_READING_SCOPE_INVALID/}],
+  ['wrong project',{override:(_f,run)=>{run.scope.project_id=id();return {};},error:/PRIVATE_D02_READING_SCOPE_INVALID/}],
+  ['wrong immutable revision',{override:()=>({readReadingContext:async()=>({readings:[]})}),error:/PRIVATE_D02_READING_MISMATCH/}],
+  ['revoked G1',{override:()=>({readGateAudit:async()=>null}),error:/PRIVATE_D02_G1_NOT_CURRENT/}],
+  ['foreign source',{override:()=>({verifySourceBinding:async()=>false}),error:/PRIVATE_D02_SOURCE_NOT_BOUND/}],
+  ['tampered bytes',{override:f=>({readOriginal:async()=>({record:{},bytes:Buffer.from('tampered')})}),error:/PRIVATE_D02_BYTES_UNVERIFIED/}],
+  ['mixed hand-authored content',{mutateInput:x=>{x.observation=observation();},error:/PRIVATE_D02_MIXED_INPUT/}],
+])test('D02 generation rejects '+label+' without persistence',()=>exerciseGeneration(options));
+test('D02 revocation during generation refuses persistence',()=>{
+ let calls=0;return exerciseGeneration({expectedGenerated:1,error:/PRIVATE_D02_G1_NOT_CURRENT/,
+   override:(f,run)=>({readGateAudit:async()=>++calls===1?{gate_audit_id:f.auditId,artifact_revision:f.revision,run_id:run.run_id,allowed_scope:{project_id:run.scope.project_id}}:null})});
+});
+
+test('D02 refuses an object-only historical G1 from another run',()=>exerciseGeneration({
+ override:f=>({readGateAudit:async()=>({gate_audit_id:f.auditId,artifact_revision:f.revision,run_id:id()})}),error:/PRIVATE_D02_G1_NOT_CURRENT/}));

@@ -392,3 +392,19 @@ describe('authorizeStudioDispatchGrant / dispatchWithGrant（M5 批次 G）', ()
     expect(deps.fetchImpl).not.toHaveBeenCalled();
   });
 });
+
+describe('private Worker composition',()=>{
+ it('uses the explicitly injected Owner-scoped pool and rights reader instead of Producer DATABASE_URL',async()=>{
+  const {createStudioDispatcherDeps}=await import('../../apps/web/lib/studio/provider-dispatcher');
+  let connects=0;
+  const client={query:vi.fn(async(sql:string)=>({rows:sql.includes('current_app_user_id')?[{user_id:PROJECT_ID}]:
+    sql.includes('studio.delegations')?[makeDelegation()]:[]})),release:vi.fn()};
+  const pool={connect:async()=>{connects++;return client;}};
+  const rights=vi.fn(async()=>[{source_id:SOURCE_OK,rights_by_action:{external_processing:'allowed'}}]);
+  const deps=await createStudioDispatcherDeps({pool,readSourceRights:rights});
+  const actual=await deps.delegations.getDelegation(DELEGATION_ID,'synthetic-owner');
+  expect(actual?.delegation_id).toBe(DELEGATION_ID);expect(connects).toBe(1);
+  expect(await deps.readSourceRights([SOURCE_OK],'synthetic-owner')).toEqual(await rights());
+  expect(client.query).toHaveBeenCalledWith('set local role mohen_app_runtime');
+ });
+});

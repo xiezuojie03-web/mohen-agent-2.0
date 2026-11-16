@@ -40,7 +40,7 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
   recordSourceNeed,readProjectStock,registerAcquisitionMethod,appendAcquisitionAttempt,
   recordCatalogEntry,recordProviderTrace,recordAcquisitionCoverage,recordCandidateVerification,recordPriorityAssessment,
   readVolumeCoverage,
-  submitGateCandidate,readGateAudit,readApprovedMethodPlan}={}) {
+  submitGateCandidate,readGateAudit,readApprovedMethodPlan,readReadingContext,generateMaterialObservation}={}) {
   if(typeof readOriginal!=='function'||typeof verifySourceBinding!=='function'||
      typeof bridge?.linkReading!=='function'||typeof bridge?.linkClaim!=='function')throw Error('PRIVATE_EVIDENCE_BRIDGE_REQUIRED');
   // A real stage must never silently skip candidate submission: the existing
@@ -560,7 +560,56 @@ export function createPrivateEvidenceStageWorker({readOriginal,bridge,verifySour
     async observeMaterial({run,job,registry,context={},input,token}) {
       await authorized({stage:'D02',run,job,registry,context,input,token});
       if(typeof persistMaterialObservation!=='function')throw Error('PRIVATE_CANDIDATE_PERSISTENCE_REQUIRED');
-      const {originalId,readUnitId,observation}=input??{};
+      const {originalId,readUnitId}=input??{};
+      let {observation}=input??{};
+      if(input?.reading){
+        if(observation!==undefined)throw Error('PRIVATE_D02_MIXED_INPUT');
+        const ref=input.reading;
+        if(ref.schema!=='mohen.qualified-private-reading.v1'||ref.run_id!==run.run_id||
+          ref.project_id!==run.scope?.project_id||ref.root_task_id!==run.scope?.root_task_id||
+          !UUID.test(ref.root_task_id??'')||!UUID.test(ref.gate_audit_id??'')||
+          !HEX.test(ref.artifact_revision??''))throw Error('PRIVATE_D02_READING_SCOPE_INVALID');
+        if(typeof readReadingContext!=='function'||typeof generateMaterialObservation!=='function')
+          throw Error('PRIVATE_D02_GENERATION_RUNTIME_REQUIRED');
+        // Resolve exact Owner-visible persisted L1; references alone grant no access.
+        const stored=await readReadingContext(originalId,token);
+        const matches=stored?.readings?.filter(r=>r.read_unit_id===readUnitId)??[];
+        const reading=matches[0];
+        if(stored?.project_id!==run.scope.project_id||matches.length!==1||
+          reading.read_run_id!==ref.read_run_id||reading.artifact_revision!==ref.artifact_revision||
+          reading.source_version_id!==ref.source_version_id||reading.raw_item_id!==ref.raw_item_id||
+          reading.method_code!=='C01'||digestOf(reading.locator)!==digestOf(ref.extent)||
+          !UUID.test(reading.source_id??''))throw Error('PRIVATE_D02_READING_MISMATCH');
+        const current=async()=>{
+          const audit=await readGateAudit({gateCode:'G1',objectType:'read_unit',objectId:readUnitId});
+          if(audit?.gate_audit_id!==ref.gate_audit_id||audit.artifact_revision!==ref.artifact_revision||
+            audit.run_id!==run.run_id||audit.allowed_scope?.project_id!==run.scope.project_id)
+            throw Error('PRIVATE_D02_G1_NOT_CURRENT');
+        };
+        await current();
+        if(await verifySourceBinding({originalId,sourceVersionId:ref.source_version_id,
+          rawItemId:ref.raw_item_id,rawSha256:ref.raw_sha256},token)!==true)
+          throw Error('PRIVATE_D02_SOURCE_NOT_BOUND');
+        const {record,bytes}=await readOriginal(originalId,token);
+        const e=ref.extent;
+        if(!Buffer.isBuffer(bytes)||record?.project_id!==run.scope.project_id||record?.original_id!==originalId||
+          record?.state!=='STORED_VERIFIED'||record.content_type!=='text/plain'||
+          record.sha256!==ref.raw_sha256||hash(bytes)!==ref.raw_sha256||record.byte_size!==bytes.length||
+          e?.kind!=='utf8_byte_range/v1'||e.source_version_id!==ref.source_version_id||e.raw_item_id!==ref.raw_item_id||
+          e.raw_sha256!==ref.raw_sha256||!Number.isSafeInteger(e.start_byte)||!Number.isSafeInteger(e.end_byte)||
+          e.start_byte<0||e.end_byte<=e.start_byte||e.end_byte>bytes.length||e.end_byte-e.start_byte>32768)
+          throw Error('PRIVATE_D02_BYTES_UNVERIFIED');
+        const selected=bytes.subarray(e.start_byte,e.end_byte),quote=selected.toString('utf8');
+        if(hash(selected)!==e.quote_sha256||!Buffer.from(quote,'utf8').equals(selected))
+          throw Error('PRIVATE_D02_BYTES_UNVERIFIED');
+        observation=await generateMaterialObservation({run,reading,quote,token,originalId});
+        if(typeof observation?.uncertainty?.classification_basis!=='string'||!observation.uncertainty.classification_basis.trim())
+          throw Error('PRIVATE_D02_CLASSIFICATION_REQUIRED');
+        // The model cannot invent or silently rewrite the source quotation.
+        if(typeof observation?.literal_reading!=='string'||!observation.literal_reading||
+          !quote.includes(observation.literal_reading))throw Error('PRIVATE_D02_GENERATED_QUOTE_MISMATCH');
+        await current(); // revocation during a provider call prevents persistence
+      }
       if(typeof originalId!=='string'||!UUID.test(originalId)||
          typeof readUnitId!=='string'||!UUID.test(readUnitId)||
          !observation||typeof observation!=='object'||

@@ -13,6 +13,7 @@ import {
   createSourceDiscoveryRepository,
 } from '../../../packages/data-access/src/index.mjs';
 import { createDataProductionRepository } from '../../../packages/data-access/src/data-production-repository.mjs';
+import {createPrivateMaterialGenerator} from './private-material-generation.mjs';
 import { createPrivateEvidenceStageWorker } from './private-evidence-stage.mjs';
 
 // D01 消费预选：只从"已签、当前、Producer 可消费"的 G0 审计里读方法预选。
@@ -80,6 +81,7 @@ export function createVolumeCoverageReader(pool) {
 }
 
 export function createBoundPrivateEvidenceStageWorker({ pool, storage, verificationKey, keyVersion='mab-original-bridge-v1',
+  environment=process.env,
 } = {}) {
   if (!pool || typeof pool.connect !== 'function') {
     throw new Error('PRIVATE_STAGE_DATABASE_REQUIRED');
@@ -117,7 +119,7 @@ export function createBoundPrivateEvidenceStageWorker({ pool, storage, verificat
   // candidate keeps an empty dependency_snapshot instead of a faked ancestor.
   async function readGateAudit({gateCode,objectType,objectId}={}) {
     const {rows}=await pool.query(
-      `select a.gate_audit_id::text as gate_audit_id, a.qualification_digest, a.artifact_revision
+      `select a.gate_audit_id::text as gate_audit_id, a.qualification_digest, a.artifact_revision, a.run_id::text as run_id, a.allowed_scope
        from control.qualification_current q
        join control.gate_audits a on a.gate_audit_id=q.gate_audit_id
        where q.gate_code=$1 and q.object_type=$2 and q.object_id=$3::uuid
@@ -129,12 +131,35 @@ export function createBoundPrivateEvidenceStageWorker({ pool, storage, verificat
     if(!row||typeof row.gate_audit_id!=='string'||typeof row.qualification_digest!=='string'||
       typeof row.artifact_revision!=='string')return null;
     return {gate_audit_id:row.gate_audit_id,qualification_digest:row.qualification_digest,
-      artifact_revision:row.artifact_revision};
+      artifact_revision:row.artifact_revision,run_id:row.run_id,allowed_scope:row.allowed_scope};
   }
   const readApprovedMethodPlan = createApprovedMethodPlanReader(pool);
   // Y01 的存量清点与原件读回走同一个 Owner RLS 作用域，不另开一条读取通道。
   const readProjectStock = ({projectId, token}) => repository.projectStock(projectId, token);
+  // Reuse the original M4 Provider/receipt composition. Its own Owner-scoped
+  // source-rights checks and budget gate still apply; private Worker credentials
+  // never become Provider/Reviewer credentials. No config means no paid call.
+  async function generateMaterialObservation(args){
+    let generate;
+    if(!environment.MOHEN_PRIVATE_D02_DELEGATION_ID||!environment.MOHEN_PRIVATE_D02_MODEL)
+      throw Error('PRIVATE_D02_GENERATION_CONFIG_REQUIRED');
+    {
+      const {createStudioDispatcherDeps}=await import('../../../apps/web/lib/studio/provider-dispatcher.ts');
+      generate=createPrivateMaterialGenerator({delegationId:environment.MOHEN_PRIVATE_D02_DELEGATION_ID,
+        model:environment.MOHEN_PRIVATE_D02_MODEL,deps:await createStudioDispatcherDeps({pool,
+          readSourceRights:async(sourceIds,token)=>{
+            // Re-read the original Owner-scoped registration on every call,
+            // including paid replay. No source-table SELECT or inferred rights.
+            const registration=await registrations.lookup(args.originalId,token);
+            if(registration.project_id!==args.run.scope.project_id||sourceIds.length!==1||
+              sourceIds[0]!==registration.source_id)return [];
+            return [{source_id:registration.source_id,rights_by_action:registration.rights_by_action??null}];
+          }})});
+    }
+    return generate(args);
+  }
   return createPrivateEvidenceStageWorker({ readOriginal, bridge, verifySourceBinding,
+    readReadingContext:readings.listByOriginal,generateMaterialObservation,
     persistReading:readings.save, readRegistration:registrations.lookup,
     persistPageReading:pageReadings.save,
     persistMaterialObservation:candidates.saveMaterialObservation,

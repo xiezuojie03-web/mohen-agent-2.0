@@ -30,7 +30,11 @@ begin
   'content_type',original.content_type,
   'storage_ref',original.storage_bucket||'/'||original.storage_key,
   'provider',s.provider,'title',s.title,'source_type',s.source_type,'carrier_type',s.carrier_type,
-  'rights',s.rights,'asset_revision_id',original.asset_revision_id,
+  'rights',s.rights,
+  -- Additive, Owner-scoped projection of the canonical action dictionary.
+  -- On older schemas a missing column is null: unknown never becomes allowed.
+  'rights_by_action',to_jsonb(s)->'rights_by_action',
+  'asset_revision_id',original.asset_revision_id,
   'artifact_revision',control.artifact_revision_for('raw_item',raw.raw_item_id),
   'source_version_artifact_revision',control.artifact_revision_for('source_version',v.source_version_id));
 end $$;

@@ -22,6 +22,27 @@ export function buildSourceIntakeInput({ research_intent, scope, consumer_method
   };
 }
 
+// Only C01 has a byte-verifiable text path here. C02 needs an independently
+// supported transcription and remains at the existing typed-request HOLD.
+function privateD02Request(run,candidate,qualified){
+  const uuid=v=>typeof v==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(v);
+  const hash=v=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v);
+  if(candidate?.candidate_kind!=='private_text_reading'||candidate.stage!=='D01'||candidate.gate_code!=='G1'||
+    candidate.original_id!==run.scope?.original_id||!uuid(run.scope?.project_id)||!uuid(run.scope?.root_task_id)||
+    ![candidate.original_id,candidate.read_unit_id,candidate.read_run_id,candidate.source_version_id,candidate.raw_item_id].every(uuid)||
+    ![candidate.artifact_revision,candidate.raw_sha256].every(hash)||
+    qualified?.object_type!=='read_unit'||qualified.object_id!==candidate.read_unit_id||
+    qualified.artifact_revision!==candidate.artifact_revision||
+    candidate.extent?.kind!=='utf8_byte_range/v1')return null;
+  return {schema:'mohen.private-evidence-stage-request.v1',stage:'D02',
+    originalId:candidate.original_id,readUnitId:candidate.read_unit_id,
+    reading:{schema:'mohen.qualified-private-reading.v1',run_id:run.run_id,
+      project_id:run.scope.project_id,root_task_id:run.scope.root_task_id,
+      gate_audit_id:qualified.gate_audit_id,artifact_revision:candidate.artifact_revision,
+      read_run_id:candidate.read_run_id,source_version_id:candidate.source_version_id,
+      raw_item_id:candidate.raw_item_id,raw_sha256:candidate.raw_sha256,extent:structuredClone(candidate.extent)}};
+}
+
 export async function runProduction({ run, registry, context = {}, from_stage = "D00", to_stage = "D05" }) {
   const start = STAGE_ORDER.indexOf(from_stage);
   const end = STAGE_ORDER.indexOf(to_stage);
@@ -85,7 +106,10 @@ export async function runProduction({ run, registry, context = {}, from_stage = 
     // A qualified producer candidate is NOT automatically a valid request for
     // another private stage. Fail closed with a persisted, stage-specific HOLD
     // rather than attempting to sign/execute a mismatched next-stage payload.
-    const nextInput = result.outputs[STAGE_CONTRACTS[stage].output];
+    let nextInput = result.outputs[STAGE_CONTRACTS[stage].output];
+    if(stage==="D01" && state.scope?.original_id!==undefined && STAGE_ORDER.indexOf("D02")<=end){
+      nextInput=privateD02Request(state,nextInput,result.independent_qualification)??nextInput;
+    }
     const nextStage = STAGE_ORDER[STAGE_ORDER.indexOf(stage) + 1];
     if(nextStage && STAGE_ORDER.indexOf(nextStage) <= end &&
        state.scope?.original_id !== undefined &&

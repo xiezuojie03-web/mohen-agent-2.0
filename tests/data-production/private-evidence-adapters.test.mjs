@@ -369,3 +369,14 @@ test('D04/D05 hold on wrong stage and fail closed on unpersisted candidates',asy
         artifact_revision:'a'.repeat(64),request_digest:'b'.repeat(64)})}}}),
     /PRIVATE_STAGE_CANDIDATE_NOT_PERSISTED/);
 });
+
+test('D02 generation failure is a bounded recoverable HOLD with no leaked source/provider error',async()=>{
+ const result=await adapters.D02({run:{run_id:randomUUID()},job:job('D02'),
+  input:{...request('D02'),readUnitId:randomUUID(),reading:{schema:'mohen.qualified-private-reading.v1'}},
+  context:{registry:{},privateEvidenceOwnerSessionToken:'synthetic-owner',privateEvidenceWorker:{
+    observeMaterial:async()=>{const e=Error('sensitive provider text');e.code='DISPATCH_UNCERTAIN';throw e;}}}});
+ assert.equal(result.disposition,'HOLD');assert.equal(result.hold.reason_code,'PRIVATE_D02_GENERATION_NOT_READY');
+ assert.equal(result.hold.verification_error,'DISPATCH_UNCERTAIN');
+ assert.equal(JSON.stringify(result).includes('sensitive provider text'),false);
+ assert.equal(result.output,undefined);
+});

@@ -125,7 +125,7 @@ function privateCandidateAdapter(stage) {
       throw Error('PRIVATE_STAGE_ADAPTER_NOT_BOUND');
     }
     const action=stage==='D01'&&input?.page?.kind==='scanned_page/v1'?'readScannedPage'
-      :stage==='D02'&&input?.observation?'observeMaterial'
+      :stage==='D02'&&(input?.observation||input?.reading)?'observeMaterial'
       :stage==='D03'&&input?.claim?'assertWorldClaim'
       :ACTIONS[stage];
     const runtime=await loadRuntime(context);
@@ -135,9 +135,20 @@ function privateCandidateAdapter(stage) {
         typeof token!=='string' || !token) {
       return hold('PRIVATE_STAGE_RUNTIME_NOT_BOUND','Bind a trusted Owner-scoped private worker and short-lived session');
     }
-    const candidate=await worker[action]({
-      run,job,registry:context.registry,context,input,token,
-    });
+    let candidate;
+    try{
+      candidate=await worker[action]({run,job,registry:context.registry,context,input,token});
+    }catch(error){
+      const code=String(error?.code??error?.message??'');
+      // Only known generation refusals become a recoverable stage HOLD; raw
+      // Provider/SQL text (which may contain private bytes) never enters it.
+      if(stage!=='D02'||!input.reading||
+        !/^(PRIVATE_D02_[A-Z_]+|DISPATCH_[A-Z_]+|TRANSFER_DENIED|HOLD_BUDGET)$/.test(code))throw error;
+      const blocked=hold('PRIVATE_D02_GENERATION_NOT_READY',
+        'Restore exact current G1, Owner-readable C01 bytes, supported professional classification and same-root authorized Provider delegation/rights/budget; reconcile uncertain receipts before resuming');
+      blocked.hold.verification_error=code;
+      return blocked;
+    }
     if(candidate?.qualification!=='UNASSESSED' || candidate?.stage!==stage ||
        candidate?.gate_code!=='G'+stage.slice(-1)) {
       throw Error('PRIVATE_STAGE_CANDIDATE_INVALID');
