@@ -4,7 +4,7 @@
 // the very same current-qualification validator invoked by the Runner.
 // No official Storage bytes, browser, paid model or cloud writes are claimed.
 import assert from "node:assert/strict";
-import { randomUUID,createHash,createHmac } from "node:crypto";
+import { randomUUID,randomBytes,createHash,createHmac } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
 import {
@@ -12,7 +12,7 @@ import {
 } from "../../packages/data-access/src/index.mjs";
 import { createDataProductionRepository } from "../../packages/data-access/src/data-production-repository.mjs";
 import { createGateAuthorityRepository } from "../../packages/data-access/src/gate-authority-repository.mjs";
-import { createGateStageQualificationReader } from "../../packages/data-access/src/gate-stage-qualification.mjs";
+import { createIndependentGateService } from "../../pipelines/data-production/orchestrator/independent-gate-service.mjs";
 import { buildMethodPlanRefs } from "../../packages/data-access/src/method-plan-ref.mjs";
 import { createRuleGateReviewer } from "../../tools/rule-gate-reviewer.mjs";
 import {
@@ -82,9 +82,20 @@ const reviewRequest={
   reviewer_binding_ref:job.implementation.gate_reviewer_binding,
   consumer:"producer",input_digest:executionDigest(input),output_digest:executionDigest(stageOutput),
 };
-const readContext={consumer:"producer",purpose,scope:{project_id:project}};
-const readStage=createGateStageQualificationReader({query:(query,params)=>reader.query(query,params)});
-const verify=async(request)=>readStage(request,readContext);
+const gateService=createIndependentGateService({signerPool:machine,readerPool:reader,databaseSessionKey:key});
+const consumeCredential=randomBytes(32).toString("base64url");
+const foreignCredential=randomBytes(32).toString("base64url");
+const credentialHash=value=>createHash("sha256").update(value).digest("hex");
+const consume=async(request,credential=consumeCredential)=>gateService(new Request("https://fixture.invalid/current",{
+  method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+credential},
+  body:JSON.stringify(request),
+}));
+const verify=async(request)=>{
+  const response=await consume(request);
+  if(response.status===200)return response.json();
+  if(response.status===409||response.status===403)return null;
+  throw Error("GATE_CONSUME_UNEXPECTED:"+response.status+":"+await response.text());
+};
 const stageCheck=({run,job,stage,gate,input_digest,output_digest})=>
   verify({...reviewRequest,run_id:run.run_id,job_id:job.job_id,stage,gate_code:gate,
     input_digest,output_digest,reviewer_binding_ref:job.implementation.gate_reviewer_binding});
@@ -122,8 +133,13 @@ try{
   const rev=(await admin.query("select control.artifact_revision_for('source_version',$1) as revision",[version])).rows[0]?.revision;
   assert.match(rev,/^[a-f0-9]{64}$/);
   await admin.query("insert into control.gate_policy_versions(gate_code,rule_version,required_checks,max_validity,source_ref,enabled)values('G0','m5-local-v1',array['identity_version','rights_by_operation'],interval '7 days','TEST_ONLY:M5_ROOT_G0',true)on conflict(gate_code,rule_version)do nothing");
-  await admin.query("insert into control.gate_reviewer_bindings(reviewer_user_id,db_identity,gate_code,purpose_namespace,purpose_code,purpose_version,consumer,allowed_scope,valid_until,source_ref)values($1,$2,'G0','data-production','m5-remediation','v1','producer',$3::jsonb,now()+interval '1 day','TEST_ONLY:M5_ROOT_G0')",
-    [MACHINE_REVIEWER_USER_ID,MACHINE_SIGNER_LOGIN,JSON.stringify({project_id:project})]);
+  const bindingId=(await admin.query("insert into control.gate_reviewer_bindings(reviewer_user_id,db_identity,gate_code,purpose_namespace,purpose_code,purpose_version,consumer,allowed_scope,valid_until,source_ref)values($1,$2,'G0','data-production','m5-remediation','v1','producer',$3::jsonb,now()+interval '1 day','TEST_ONLY:M5_ROOT_G0') returning binding_id",
+    [MACHINE_REVIEWER_USER_ID,MACHINE_SIGNER_LOGIN,JSON.stringify({project_id:project})])).rows[0].binding_id;
+  for(const [credential,allowedScope] of [
+    [consumeCredential,{project_id:project}],[foreignCredential,{project_id:uuid()}]
+  ])await admin.query("insert into control.gate_service_credentials(token_hash,capability,principal_user_id,db_identity,reviewer_binding_id,job_id,reviewer_binding_ref,gate_code,purpose_namespace,purpose_code,purpose_version,consumer,allowed_scope,valid_until,source_ref)values($1,'consume',$2,$3,$4,$5,$6,'G0','data-production','m5-remediation','v1','producer',$7::jsonb,now()+interval '1 day','TEST_ONLY:M5_ROOT_G0')",
+    [credentialHash(credential),MACHINE_REVIEWER_USER_ID,readerLogin,bindingId,job.job_id,
+      job.implementation.gate_reviewer_binding,JSON.stringify(allowedScope)]);
   const c=await createDataProductionRepository(producer).recordGate({
     runId,stage:"D00",gateCode:"G0",objectType:"source_version",objectId:version,
     artifactRevision:rev,purpose,allowedScope:{project_id:project},
@@ -159,8 +175,8 @@ try{
   }),/INDEPENDENT_STAGE_QUALIFICATION_INVALID/,"tampered D01 input must be denied");
   const foreignRequest={...reviewRequest,run_id:uuid()};
   assert.equal(await verify(foreignRequest),null,"foreign root cannot consume signed G0");
-  assert.equal(await readStage(reviewRequest,{...readContext,scope:{project_id:uuid()}}),null,
-    "foreign project cannot consume signed G0");
+  assert.equal((await consume(reviewRequest,foreignCredential)).status,403,
+    "a foreign-project consume credential cannot bypass server-owned scope");
   const revoked=await authority.revoke({auditId:signed.auditId,requestId:uuid(),reason:"TEST_ONLY M5 root G0 revoke"},machineToken());
   assert.ok(revoked>=1);
   assert.equal(await verify(reviewRequest),null,"revoked Gate must disappear from read-only current view");
