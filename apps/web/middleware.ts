@@ -10,6 +10,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { resolveSession } from "./lib/auth";
 
+import {createCloudProductionAuthenticator} from "../../pipelines/data-production/orchestrator/cloud-production-dispatch.mjs";
+
 const COOKIE = "mohen_role";
 // Fail-closed auth responses must not be cached by the browser or Vercel edge.
 const DENIED_HEADERS = { "Cache-Control": "private, no-store, max-age=0", "Pragma": "no-cache" };
@@ -41,6 +43,14 @@ function isPublic(pathname: string): boolean {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   if (isPublic(pathname)) return NextResponse.next();
+  // Only this machine endpoint uses HMAC instead of a browser cookie.
+  // The receiver repeats auth and verifies Owner/original scope before claiming.
+  if (pathname === "/api/internal/production-execute") {
+    if (process.env.MOHEN_CLOUD_EXECUTION_ENABLED !== "true")
+      return NextResponse.json({ok:false,reason:"cloud_executor_not_configured"},{status:503,headers:DENIED_HEADERS});
+    const result=await createCloudProductionAuthenticator({credential:process.env.MOHEN_CLOUD_EXECUTOR_CREDENTIAL})(req.clone());
+    return result instanceof Response ? result : NextResponse.next();
+  }
 
   const secret = process.env.AUTH_SECRET;
   if (!secret || secret.trim().length < 32) {

@@ -1,0 +1,49 @@
+{
+  "batch": "M5-CLOUD-01",
+  "baseline": "e9a9c0c345dda5d5de6732609960542c21ba4c41",
+  "scope": "bounded request adapter reusing original Runner; disabled until independent low-privilege runtime configured",
+  "verification": {
+    "production_boundary": {
+      "pass": 309,
+      "fail": 0
+    },
+    "studio_targeted": {
+      "pass": 16,
+      "fail": 0
+    },
+    "build": "PASS",
+    "bundle": {
+      "pipelines/data-production/run.mjs": true,
+      "node_modules/ajv/": true,
+      "provider-dispatcher.ts": true,
+      "production-registry.json": true
+    },
+    "typecheck": "PASS_SEQUENTIAL_AFTER_BUILD",
+    "typecheck_prior_attempt": "Concurrent Next build removed generated .next/types, causing TS6053; rerun sequentially; no source suppression"
+  },
+  "cloud_configuration": {
+    "owner_explicitly_approved": true,
+    "preview_sso": "enabled_preview_only",
+    "extended_existing_env_targets": [
+      "DATABASE_URL",
+      "MOHEN_DATABASE_PASSWORD",
+      "MOHEN_DATABASE_SESSION_SECRET",
+      "MOHEN_DATABASE_CA_CERT"
+    ],
+    "decrypted_values": false,
+    "production_deployment_unchanged": "835602242cab31b1fcb372c7ff5efd4fc41dfd89"
+  },
+  "deployment": "NOT_YET_CREATED",
+  "live_root": "NOT_CREATED",
+  "eight_dimensions": "ALL_HOLD",
+  "known_failure": "Prior full local unit suite: Commons Wikimedia live-network test failed; not suppressed",
+  "review": "Two Important findings fixed with RED/GREEN: dynamic empty token map; post-claim setup exception persisted HOLD",
+  "files_sha256": {
+    "cloud-production-final.log.txt": "840ce771c3569f72d29645dda47906056d53d91321aab01d41aa57b697e58b14",
+    "cloud-build-final.log.txt": "d7b1b18897355b186d11644c826cce8c1532db6dc2927f4f63b7ee10f0985ffa",
+    "cloud-reviewed-green.log.txt": "8bebcf8676583d2d5d176c4a88e91a60ae51ab39a0f3250d74da3b0c629f487d",
+    "cloud-typecheck-final.log.txt": "d847d8fb5e11d8e314ad268fa1e95b84752937c00ee655dc982faec8cddbea8a",
+    "studio-cloud-final.log.txt": "06e3b4d0f65c5004eb333c07d604b8376db31117f47a19c9c2b76dd92a980a25",
+    "cloud-middleware-red.log.txt": "79fdebbaf3902334ffda7c85887d4f42d869654111b9f67ddcf3746c09c3d6c9"
+  }
+}

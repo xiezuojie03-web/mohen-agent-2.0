@@ -1,0 +1,1 @@
+export function createCloudProductionServer(options:{environment?:NodeJS.ProcessEnv;projectRoot:string;db:{queryRows:Function};verifyOwnerOriginal?:Function;execute?:Function}):(request:Request)=>Promise<Response>;

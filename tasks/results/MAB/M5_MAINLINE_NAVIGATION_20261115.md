@@ -1,5 +1,7 @@
 # 墨痕 M5 全链路导航｜持续维护基线（非权威标准）
 
+> **2026-11-16｜M5-CLOUD-01（优先于历史宿主建议）**：Owner要求云端优先，并已明确批准受保护研发Preview。现Preview登录保护启用，四项既有数据库变量仅追加Preview范围、未读取解密值，Production部署仍83560224。继承原Runner增加有界请求执行适配、原run原子认领及异常HOLD；原独立授权/签名与低权身份不放宽。309项生产边界、16项Studio/中间件专项及构建通过，raw Runner/Ajv/Provider/Registry已入部署包；本批提交时新Preview尚未创建，云端生产配置未启用，真实Owner/Project/Root/作品尚未建立，八维全部HOLD。下一步精确CI后部署本批受保护Preview并验证入口，然后接续独立低权执行及审核；不再以回本地为前置。证据：tasks/results/MAB/evidence/m5-cloud-20261116/receipt.json。
+
 > **M5-ENV-REUSE-01当前**：Vercel Production的数据库/认证变量仍已配置，原Windows私有配置不随Git进入Cloud。Owner确认原Windows/CodeBuddy宿主可打开，下一步优先只读核验并复用原宿主；不要把本Cloud未注入当作所有环境失效。现执行授权器仍仅接受本地隔离PG，不关闭守卫、不重置凭据、不解密Production Secret、不与原机并行写main。八维状态不变。
 
 > **M5-ASSEMBLY-04当前（优先于下方历史段）**：两项获Owner明确批准的云迁移均成功（20261116121153/20261116122301），五函数ACL/无会话拒绝已验；原C01 SQL分号修复在6214153主CI/PG17/HTTP三绿。旧审批阻断已消除；当前只缺合法Owner会话、持续宿主与安全注入的低权运行配置。八维仍HOLD，真实G1→D02/G2未运行。

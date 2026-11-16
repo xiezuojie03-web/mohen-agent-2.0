@@ -4419,3 +4419,13 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 精确实现差异：apps/web/lib/studio-execution-authority.ts isExecutionAuthorityReady要求原本地授权文件，并只接受DATABASE_URL指向127.0.0.1/localhost，排除production标志/服务密钥。原配置复制到新Cloud不能自动满足它；不得把此实现约束误称为用户忘配，也不得为云集成直接放宽守卫。原Windows的.secrets/.env.local/执行授权目录本来就gitignored、不随克隆继承。
 - Owner已回答原Windows电脑和CodeBuddy工程窗口能打开。因此优先继承原宿主：仅请原窗口只读核现有工作树/服务/配置可用性/原Creator-Project-Root；不拉齐覆盖独有成果、不迁移/重置/新建密钥、不并行写main。当前Cloud仍为唯一施工写入方，原机只读取证。原机本地服务是否运行、凭据是否有效及是否已存在真实作品任务仍待该宿主实证，不能从历史文件推断PASS。
 - 正反/回退：本批无业务写入，未改变自动部署隔离或任何权限，不需DB回退；仅追加脱敏receipt环境证据及同步CURRENT/原导航三份。37节点54边/全部层状态/八维准出保持不变。用户此前配置未被判无效，不要求重复配置全部服务。八维HOLD、同任务最远仍未取得当前合法Owner/Root实跑；下一最前阻断缩小为原可用宿主的只读可用性与真实入口取证，而非重新找ChatGPT设置页面。
+
+
+## 2026-11-16｜M5-CLOUD-01｜原Runner云端有界执行接线与批准Preview配置
+
+**2026-11-16｜M5-CLOUD-01（优先于历史宿主建议）**：Owner要求云端优先，并已明确批准受保护研发Preview。现Preview登录保护启用，四项既有数据库变量仅追加Preview范围、未读取解密值，Production部署仍83560224。继承原Runner增加有界请求执行适配、原run原子认领及异常HOLD；原独立授权/签名与低权身份不放宽。309项生产边界、16项Studio/中间件专项及构建通过，raw Runner/Ajv/Provider/Registry已入部署包；本批提交时新Preview尚未创建，云端生产配置未启用，真实Owner/Project/Root/作品尚未建立，八维全部HOLD。下一步精确CI后部署本批受保护Preview并验证入口，然后接续独立低权执行及审核；不再以回本地为前置。证据：tasks/results/MAB/evidence/m5-cloud-20261116/receipt.json。
+
+- 继承依据：原run.mjs、production_runs、private worker/source registration、Provider dispatcher、签名执行授权及独立Gate。不重建调度器/Registry/Gate/存储。差异：Studio原spawn/unref及本地授权文件不能直接承载云端请求；最小适配为签名内部请求、精确scope/digest认领、等待原CLI至240秒、超时/异常HOLD、无自动重试。无签名授权/低权配置时503关闭，不启用Gate、不调用收费Provider。
+- Reviewer两项Important已RED→GREEN修复：动态授权模式显式空token map；认领后设置异常落持久HOLD。17专项包含真实CLI启动负例。全生产边界309/0，Studio/中间件专项16/0；原本地全单测Commons实网1失败仍保留，不宣称全套通过。原stage/cross-layer/fixture守卫通过。
+- 回退：关闭MOHEN_CLOUD_EXECUTION_ENABLED即停用适配，保留run/审计；Preview不绑定正式域名，不改变production自动部署隔离。真实任务尚未建立，业务POS/恢复及同Root G1→D02 NOT_RUN。八维全部HOLD；最远真实节点尚未建立；下一最前阻断=精确CI及受保护Preview部署，然后Owner会话/低权独立运行配置。
+- 补验发现原中间件会拒绝无浏览器Cookie的机器请求，已先记录RED，再让精确内部路由在中间件复用同一HMAC认证；接收器重复校验并执行Owner原件归属核验。未列入公开白名单；合法签名无浏览器Cookie及无签名拒绝均实测，16项专项通过。鉴权覆盖守卫仅识别精确已审阅接收器调用，112路由无缺项；此静态识别不冒充实际授权。

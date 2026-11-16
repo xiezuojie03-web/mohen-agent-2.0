@@ -47,3 +47,16 @@ it("missing production auth secret fails closed and is not cached",async()=>{
   expect(response.status).toBe(503);
   expect(response.headers.get("cache-control")).toContain("no-store");
 });
+
+it('cloud receiver requires its signed transport before bypassing browser-session auth',async()=>{
+ vi.stubEnv('MOHEN_CLOUD_EXECUTION_ENABLED','true');
+ vi.stubEnv('MOHEN_CLOUD_EXECUTOR_CREDENTIAL','synthetic-cloud-credential-at-least-32-chars');
+ const {createCloudProductionDispatch}=await import('../../pipelines/data-production/orchestrator/cloud-production-dispatch.mjs');
+ let accepted:NextRequest|undefined;
+ const send=createCloudProductionDispatch({url:'https://test.invalid/api/internal/production-execute',credential:process.env.MOHEN_CLOUD_EXECUTOR_CREDENTIAL,
+ fetchImpl:async(url,options)=>{accepted=new NextRequest(String(url),options);const response=await middleware(accepted);expect(response.status).toBe(200);return Response.json({run_id:uid,status:'HOLD',stage:'D00',reason_code:'TEST_HOLD'});}});
+ await send({run_id:uid,research_intent:'synthetic test',scope:{project_id:uid,root_task_id:uid,original_id:uid,page_number:1},consumer_method_plan:{methods:[{method_id:'C01',method_version:'v1'}]},owner_session_token:'synthetic-owner-token'});
+ expect(db.queryRows).not.toHaveBeenCalled();
+ const denied=await middleware(new NextRequest('https://test.invalid/api/internal/production-execute',{method:'POST',headers:{'content-type':'application/json'},body:'{}'}));
+ expect(denied.status).toBe(401);
+});

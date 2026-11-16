@@ -12,6 +12,8 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import {createCloudProductionDispatch} from "../../../pipelines/data-production/orchestrator/cloud-production-dispatch.mjs";
+import {cloudProductionInputDigest} from "../../../pipelines/data-production/orchestrator/cloud-production-runtime.mjs";
 import { run as dbRun, queryRows } from "@mohen/data-access";
 import { loadRegistry } from "../../../pipelines/data-production/orchestrator/registry.mjs";
 import {
@@ -102,6 +104,12 @@ async function addEvent(taskId: string, stage: string, event: string, payload: u
   }
 }
 
+function cloudProductionDispatch(){
+  return createCloudProductionDispatch({url:process.env.MOHEN_CLOUD_EXECUTOR_URL,
+    credential:process.env.MOHEN_CLOUD_EXECUTOR_CREDENTIAL,
+    protectionBypass:process.env.MOHEN_CLOUD_EXECUTOR_PROTECTION_BYPASS});
+}
+
 function productionBlocker(projectRoot: string, source?:ProductionOriginal): string | null {
   try {
     const registry = loadRegistry(projectRoot);
@@ -111,7 +119,9 @@ function productionBlocker(projectRoot: string, source?:ProductionOriginal): str
     if(sourceBlocker)return sourceBlocker;
     // Studio 触发生产需要本地隔离执行授权（签名密钥 + evidence + 验证器）。
     // 未就绪则失败关闭，不允许裸调 run.mjs。
-    if (!isExecutionAuthorityReady()) return "production_input_binding_required";
+    if(process.env.MOHEN_CLOUD_EXECUTION_ENABLED==="true"){
+      try{cloudProductionDispatch();}catch{return "production_cloud_executor_not_configured";}
+    }else if (!isExecutionAuthorityReady()) return "production_input_binding_required";
     return null;
   } catch { return "production_registry_invalid"; }
 }
@@ -143,7 +153,8 @@ export async function triggerProduction(taskId: string, intent: string, projectI
   const runPath = path.join(projectRoot, "pipelines", "data-production", "run.mjs");
   const adaptersPath = path.join(projectRoot, PRIVATE_STAGE_ADAPTER);
 
-  if (!fs.existsSync(runPath) || !fs.existsSync(adaptersPath)) {
+  const cloud=process.env.MOHEN_CLOUD_EXECUTION_ENABLED==="true";
+  if (!cloud && (!fs.existsSync(runPath) || !fs.existsSync(adaptersPath))) {
     return { runId: "", started: false, reason: "production_entry_missing" };
   }
   const blocker = productionBlocker(projectRoot,source);
@@ -163,14 +174,18 @@ export async function triggerProduction(taskId: string, intent: string, projectI
     asset_revision_id:source.assetRevisionId,raw_sha256:source.sha256,
     upload_started_at:source.uploadStartedAt,upload_verified_at:source.uploadVerifiedAt};
 
+  const cloudInput={run_id:runId,research_intent:intent,scope,
+    consumer_method_plan:{methods:[{method_id:methodId,method_version:"v1"}]},owner_session_token:ownerSessionToken};
+  const metadata=cloud?{cloud_dispatch:{input_digest:cloudProductionInputDigest(cloudInput)}}:{};
+
   // 1) 预登记 production_runs（RUNNING），前端立即可查；D00 的 on conflict 会复用。
   try {
     await dbRun(
       `insert into control.production_runs
        (run_id, research_intent, scope, execution_mode, status, started_at, metadata, architecture_generation)
-       values (:'run_id'::uuid, :'intent', :'scope'::jsonb, :'mode', 'RUNNING', now(), '{}'::jsonb, :'arch')
+       values (:'run_id'::uuid, :'intent', :'scope'::jsonb, :'mode', 'RUNNING', now(), :'metadata'::jsonb, :'arch')
        on conflict (run_id) do nothing`,
-      { run_id: runId, intent, scope: JSON.stringify(scope), mode: EXECUTION_MODE, arch: ARCH }
+      { run_id: runId, intent, scope: JSON.stringify(scope), mode: EXECUTION_MODE, arch: ARCH, metadata:JSON.stringify(metadata) }
     );
   } catch (e) {
     return { runId: "", started: false, reason: "production_run_register_failed" };
@@ -185,7 +200,26 @@ export async function triggerProduction(taskId: string, intent: string, projectI
   } catch (e) {
     console.error(`[studio-production] 关联 run_id 失败 task=${taskId}:`, e);
   }
-  await addEvent(taskId, "D00", "production_started", { run_id: runId, mode: EXECUTION_MODE });
+  await addEvent(taskId, "D00", cloud?"production_cloud_dispatch_requested":"production_started", { run_id: runId, mode: EXECUTION_MODE });
+
+  if(cloud){
+    try{
+      const terminal=await cloudProductionDispatch()(cloudInput);
+      await addEvent(taskId,terminal.stage,"production_cloud_result",{run_id:runId,
+        disposition:terminal.status,reason_code:terminal.reason_code});
+      return terminal.reason_code?.startsWith("CLOUD_EXECUTOR_")
+        ? {runId,started:false,reason:"production_cloud_execution_hold"}
+        : {runId,started:true};
+    }catch{
+      // The remote Runner may already have claimed/persisted work. Keep its
+      // exact identity and terminal state; never fall back to a local spawn.
+      await dbRun(`update control.production_runs set metadata=coalesce(metadata,'{}'::jsonb)||
+        jsonb_build_object('cloud_dispatch_uncertain',true)
+        where run_id=:'id'::uuid`,{id:runId});
+      await addEvent(taskId,"D00","production_cloud_dispatch_uncertain",{run_id:runId});
+      return {runId,started:false,reason:"production_cloud_dispatch_uncertain"};
+    }
+  }
 
   // 3) 生成 D00 scope 文件（与 Runner 同源拼装，签名覆盖的 input_digest 必须等于实跑输入）
   // No sample project. The Gate candidate is tied to the Owner's actual project.

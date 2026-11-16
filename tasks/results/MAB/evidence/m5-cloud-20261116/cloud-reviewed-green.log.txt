@@ -1,0 +1,25 @@
+✔ cloud handoff waits for the existing Runner and returns a bounded honest HOLD (51.157547ms)
+✔ cloud dispatch rejects missing config, credentials in URL and non-TLS destinations (0.772256ms)
+✔ same run is claimed only once; replay cannot start a second Runner (2.419288ms)
+✔ tampered root, project or source is rejected before durable claim or execution (6.270643ms)
+✔ expired signature and arbitrary executable fields never reach the Runner (1.008193ms)
+✔ a network failure is uncertain and never automatically retried (0.467367ms)
+✔ executor error and oversized requests return bounded codes without private error text (1.115601ms)
+✔ claim uses existing production run with exact frozen input, after Owner original verification (2.159736ms)
+✔ Owner denial, frozen-scope mismatch and repeat claims never authorize execution (1.375373ms)
+✔ short-lived Owner token is not part of immutable work identity and is never persisted (0.347101ms)
+✔ CLI receiver invokes the original Runner with server-owned arguments and awaits its exit (7.617242ms)
+✔ missing independent execution authority stops before opening a child process (0.447998ms)
+✔ timeout is persisted as HOLD, never auto-retried or reported completed (1.613453ms)
+✔ cloud child keeps Producer identity and excludes parent Web secrets and password override (1.540505ms)
+✔ real CLI reaches dynamic token validation without any pre-issued stage tokens (210.85711ms)
+✔ default cloud server refuses incomplete independent authority before claiming any durable run (18.490885ms)
+✔ post-claim setup failure becomes durable HOLD without replaying the same claimed run (4.624892ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 551.365558

@@ -70,7 +70,12 @@ const rows = [];
 for (const r of walk(API_ROOT)) {
   const src = fs.readFileSync(r.file, "utf8");
   const isPublic = PUBLIC_EXACT.has(r.rel) || PUBLIC_PREFIX.some((p) => r.rel.startsWith(p));
-  const hasAuth = AUTH_TOKENS.test(src);
+  // This internal receiver authenticates HMAC before any durable claim and
+  // rechecks Owner/original scope in the reviewed server adapter. Never public.
+  const cloudReceiver = r.rel === "internal/production-execute"
+    && /import\s*\{createCloudProductionServer\}\s*from/.test(src)
+    && /await createCloudProductionServer\([\s\S]*\)\(request\)/.test(src);
+  const hasAuth = AUTH_TOKENS.test(src) || cloudReceiver;
   const hasOwner = OWNER_TOKENS.test(src);
   const hasRole = ROLE_TOKENS.test(src);
   const isContent = CONTENT_PREFIX.test(r.rel);

@@ -9,6 +9,7 @@ import { getSession, isOperatorSession } from "../../../../../../lib/session";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 300;
 
 // API POST /api/studio/research-tasks/:id/production —— 触发该研究任务进入 D 链生产
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
