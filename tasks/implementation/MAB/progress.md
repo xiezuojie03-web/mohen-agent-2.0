@@ -4232,4 +4232,4 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **直达**：交互HTML `#edge-E_D00_REVIEW`和`#edge-E_D00_QUALIFY`，导航JSON的audit_tracking.last_execution_batch记本批。M5保持M5_OVERALL_HOLD。
 
 
-- **BATCH-02审签边界增强（2026-11-16，待CI）**：第二批补充真实Reviewer签发请求边界的接口模拟正反：正常将独立重构的stage_binding提交至既有decide；恶意output_digest在decide前拒绝。测试仅mock独立DB签署，不属于持久PG/HTTP G0实跑；提交待CI复核。
+- **BATCH-02审签边界增强（2026-11-16，CI通过）**：第二批补充真实Reviewer签发请求边界的接口模拟正反：正常将独立重构的stage_binding提交至既有decide；恶意output_digest在decide前拒绝。测试仅mock独立DB签署，不属于持久PG/HTTP G0实跑；精确提交`501829ac1509b2e5eb11d454be2247be7e01c8ed` CI [43800172713](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43800172713) **SUCCESS**，Production boundary 270 PASS/0 FAIL、Typecheck/Build/Auth coverage PASS。Vercel生产部署只读查验最新仍为83560224（未包含本批SHA）；运行层HOLD。

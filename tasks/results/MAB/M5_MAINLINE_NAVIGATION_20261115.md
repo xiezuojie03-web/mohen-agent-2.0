@@ -808,4 +808,4 @@ flowchart TB
 
 **交互直达：** [G0独立审核精确断点](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_REVIEW) · [G0当前资格读取精确断点](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_QUALIFY)。
 
-**BATCH-02审签接口回归增强（CI待核）**：第二批补充真实Reviewer签发请求边界的接口模拟正反：正常将独立重构的stage_binding提交至既有decide；恶意output_digest在decide前拒绝。测试仅mock独立DB签署，不属于持久PG/HTTP G0实跑；提交待CI复核。
+**BATCH-02审签接口回归增强（CI通过）**：第二批补充真实Reviewer签发请求边界的接口模拟正反：正常将独立重构的stage_binding提交至既有decide；恶意output_digest在decide前拒绝。模拟DB Reviewer签发回执正反完成，补充提交 `501829ac1509b2e5eb11d454be2247be7e01c8ed` CI [43800172713](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43800172713) **SUCCESS**（数据生产边界270 PASS/0 FAIL，Typecheck、Build等通过）；Vercel最新production旧SHA`83560224`，本批未生产部署。持久隔离PG/HTTP真签与撤权依然NOT_RUN；G0和M5仍HOLD。

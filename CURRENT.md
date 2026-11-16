@@ -15,7 +15,9 @@
 - **生产隔离与恢复**：vercel.json git.deploymentEnabled=false；未写生产DB、未使用真实凭据或触发正式Gate/收费Provider。若生产类正反实跑不可得，保留代码和严格HOLD，不回退到旧output_digest回显。
 - **直达**：交互HTML `#edge-E_D00_REVIEW`和`#edge-E_D00_QUALIFY`，导航JSON的audit_tracking.last_execution_batch记本批。M5保持M5_OVERALL_HOLD。
 
-- **补充接口级签发回归（待CI）**：第二批补充真实Reviewer签发请求边界的接口模拟正反：正常将独立重构的stage_binding提交至既有decide；恶意output_digest在decide前拒绝。测试仅mock独立DB签署，不属于持久PG/HTTP G0实跑；提交待CI复核。
+- **补充接口级签发回归（CI通过）**：第二批补充真实Reviewer签发请求边界的接口模拟正反：正常将独立重构的stage_binding提交至既有decide；恶意output_digest在decide前拒绝。测试使用模拟DB签发上下文，不属于持久PG/HTTP G0实跑；补充提交 `501829ac1509b2e5eb11d454be2247be7e01c8ed` 的CI [43800172713](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43800172713) **SUCCESS**，数据生产边界回归270 PASS/0 FAIL。
+
+- **本批生产发布隔离实证补记**：已只读核对Vercel deployment list，最新production仍为`835602242cab31b1fcb372c7ff5efd4fc41dfd89`（早于本批），本批业务／测试提交未产生生产部署。无真实独立G0机器签发/撤权、PG或Owner HTTP实测；G0与M5均HOLD。
 
 ## 2026-11-16｜M5-G0-BATCH-01：精确候选定位与真实项目作用域修复（局部施工，G0仍HOLD）
 
