@@ -735,6 +735,8 @@ export function createRuleGateReviewer({
   // 评审作用域必须可传入：机器评审原先写死 CP1 样本项目，导致任何新建项目
   // （如通用入口产出的非模板题材项目）都没有 G0 决策可签。规则与检查项不变。
   projectId = PROJECT_ID,
+  // Explicitly injected by the independent Reviewer service, never by Producer.
+  attestStageOutput = null,
   log = line => console.log(line),
 } = {}) {
   if (typeof query !== "function" || typeof decide !== "function") throw Error("RULE_REVIEWER_DEPENDENCIES_REQUIRED");
@@ -805,7 +807,7 @@ export function createRuleGateReviewer({
     return found[0];
   }
 
-  async function review({ gate, dryRun = false, candidateId = null }) {
+  async function review({ gate, dryRun = false, candidateId = null, stageRequest = null }) {
     if (!RULE_VERSION_BY_GATE[gate]) throw Error("GATE_ARGUMENT_INVALID");
     const ruleVersion = RULE_VERSION_BY_GATE[gate];
     const policy = await query(`select required_checks::text as required_checks, max_validity::text as max_validity
@@ -848,6 +850,15 @@ export function createRuleGateReviewer({
       log(`RULE_GATE_REVIEW ${gate} FAIL checks=${failed.join(",")} reason=${results[failed[0]].reason}`);
       return { status: "FAIL", gate, candidateId: candidate.candidate_id, checks: results, failed };
     }
+    // Object-level rule PASS is insufficient for Runner handoff. An exact
+    // stage receipt is signed only after independent reconstruction from
+    // persisted source facts; missing evidence fails before authority.decide.
+    let stageBinding = null;
+    if (stageRequest != null) {
+      if (typeof attestStageOutput !== 'function') throw Error('STAGE_OUTPUT_ATTESTER_REQUIRED');
+      stageBinding = await attestStageOutput({candidate,gate,request:stageRequest,projectId});
+      if (!stageBinding) throw Error('STAGE_OUTPUT_ATTESTATION_REQUIRED');
+    }
     if (dryRun) {
       log(`RULE_GATE_REVIEW ${gate} DRY_RUN_PASS audit=none checks=${evaluators.map(([name]) => name).join(",")}`);
       return { status: "DRY_RUN_PASS", gate, candidateId: candidate.candidate_id, checks: results };
@@ -883,6 +894,7 @@ export function createRuleGateReviewer({
         checks,
         rationale: `MACHINE_RULE_REVIEW:${ruleVersion}:all deterministic checks passed`,
         evidence_refs: candidate.evidence_refs,
+        ...(stageBinding ? {stage_binding:stageBinding} : {}),
       },
     }, sessionToken);
     if (typeof auditId !== "string" || !auditId) throw Error("GATE_DECISION_NOT_PERSISTED");

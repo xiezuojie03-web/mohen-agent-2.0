@@ -4218,3 +4218,16 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **仍HOLD**：机器规则Reviewer对象PASS receipt未包含**Reviewer独立核验的精确stage_binding**；G0两条根图边⇄HOLD和●NOT_VERIFIED不改。D01/G1→D02 typed仍是下一邻接，M5八维未通过。
 - **导航同步**：JSON新增`audit_tracking.last_execution_batch`，MD记本批，HTML增加同图内定位按钮与`#edge-E_D00_REVIEW`深链；不改变37/54主图、58内部候选交接数量或旧统计。下批务必先核现行签署数据的可信输出来源，不能复制Producer请求摘要签“通过”。
 
+
+---
+
+## 2026-11-16｜M5-G0-BATCH-02：独立Reviewer D00/C01阶段输出定向重构（代码待CI，运行未验）
+
+- **边与范围**：E_D00_REVIEW／E_D00_QUALIFY，仅D00纯文本C01的同一阶段输出摘要；继承BATCH-01候选唯一定位和项目作用域修复，未重复核查。唯一依据PLAN V1.7 §0/§3.5 B/C/§6。
+- **受控改动（本次提交中，CI待取）**：`tools/gate-stage-output-attestation.mjs`独立从G0 SUBMITTED候选中取method_plan及source_version的版本化引用；机器Reviewer只读source.raw_items与studio.private_originals的实际匹配关系（唯一性、真实project、STORED_VERIFIED、text/plain、SHA和长度相符），重构现有D00 adapter输出的D01 C01类型化请求，并以既有executionDigest重算摘要。Reviewer核当前Registry的D00 job/reviewer绑定及候选input_fingerprint，只有全部吻合时把完整stage_binding置入**现有control.sign_gate_candidate不可变receipt**，而不是信任请求output_digest或新建Gate。
+- **范围限制**：当前尚未重构扫页C02和G1—G5阶段输出；不能从Producer请求/对象PASS补签旧audit；空/重复原件匹配、摘要错、job/reviewer错、项目错、来源不可信均拒绝。独立签发后的当前资格读取仍由原严格stage_binding及撤权检查执行。
+- **测试计划及真实状态**：新增`tests/data-production/gate-stage-output-attestation.test.mjs`覆盖重构正例与错digest/身份/权限作用域/原件字节/多候选/非文本负例。此写入时CI=PENDING；独立机器PG签发、Reviewer进程、Owner真实原件与同Root持久HTTP=NOT_RUN/DEFERRED_ENV；不将单测模拟库视为真实G0 PASS。
+- **下个阻断**：先核本批CI与真实隔离DB中C01原件source/raw唯一对应、Reviewer物理身份和签收/撤权、Runner相同run的当前资格。若环境缺失仍HOLD；C02需要可独立重构页码/扫页输出的持久字段，不借文本例放行；不启动D02。
+- **生产隔离与恢复**：vercel.json git.deploymentEnabled=false；未写生产DB、未使用真实凭据或触发正式Gate/收费Provider。若生产类正反实跑不可得，保留代码和严格HOLD，不回退到旧output_digest回显。
+- **直达**：交互HTML `#edge-E_D00_REVIEW`和`#edge-E_D00_QUALIFY`，导航JSON的audit_tracking.last_execution_batch记本批。M5保持M5_OVERALL_HOLD。
+

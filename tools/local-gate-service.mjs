@@ -19,6 +19,7 @@ import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createRuleGateReviewer, RULE_VERSION_BY_GATE } from "./rule-gate-reviewer.mjs";
 import { selectExactStageCandidate } from "./gate-stage-candidate-selection.mjs";
+import { attestG0TextStageOutput } from "./gate-stage-output-attestation.mjs";
 import {
   openMachineQuery,
 } from "./machine-reviewer-session.mjs";
@@ -26,6 +27,9 @@ import { createGateAuthorityRepository } from "../packages/data-access/src/gate-
 import {assertStageQualificationRequest,auditHasExactStageBinding} from "../packages/data-access/src/gate-stage-qualification.mjs";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
+// Independent machine signer pins the reviewed job and Reviewer binding to
+// the same repository Registry; caller-supplied job strings are not authority.
+const REVIEW_REGISTRY = JSON.parse(fs.readFileSync(path.resolve(ROOT,"../specs/data-production/production-registry.json"),"utf8"));
 
 // pg lives in packages/data-access/node_modules; load it via a require rooted there.
 const requireFromDataAccess = createRequire(pathToFileURL(path.resolve(ROOT, "..", "packages", "data-access", "src", "index.mjs")).href);
@@ -109,12 +113,16 @@ async function autoSign(query, request) {
       query,
       decide: decideThroughAuthority,
       projectId: selected.projectId,
+      attestStageOutput: ({candidate,request:stageRequest}) =>
+        attestG0TextStageOutput({query,candidate,request:stageRequest,
+          registry:REVIEW_REGISTRY,projectId:selected.projectId}),
       log: () => {},
     });
     // Reviewer verifies the candidate's actual project + stable identity.
-    // This is NOT an output-digest attestation: findCurrentAudit still rejects
-    // any PASS without the independently signed exact stage_binding.
-    const outcome = await reviewer.review({ gate: gate_code, candidateId: selected.candidateId });
+    // Only D00/C01 text currently has a reproducible persisted output. G1-G5
+    // and D00 image/carrier gaps fail closed instead of copying request hashes.
+    const outcome = await reviewer.review({ gate: gate_code,
+      candidateId: selected.candidateId,stageRequest:request });
     if (outcome.status !== "PASS") return null;
     // A rule PASS without an immutable stage_binding is not an output-qualified
     // PASS for this Runner. The caller remains HOLD until the reviewed output

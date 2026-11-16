@@ -1982,9 +1982,11 @@
           "tools/rule-gate-reviewer.mjs#decide-receipt",
           "tools/local-gate-service.mjs#autoSign",
           "tools/gate-stage-candidate-selection.mjs@718503e6f5ce",
-          "tests/data-production/gate-stage-candidate-selection.test.mjs@718503e6f5ce"
+          "tests/data-production/gate-stage-candidate-selection.test.mjs@718503e6f5ce",
+          "tools/gate-stage-output-attestation.mjs",
+          "tests/data-production/gate-stage-output-attestation.test.mjs"
         ],
-        "next": "候选唯一定位与真实project作用域已按G0-BATCH-01修复；仍须使独立Reviewer从可信持久stage输出重建/验证精确output_digest，在不可变audit内签stage_binding；不得拷贝Producer请求值，再核同Root正反及撤权。",
+        "next": "D00 C01文本已增Reviewer只读来源重构及独立output_digest校验的受控代码（CI待验）；真实同Root machine signer/PG/HTTP及撤权尚未实证。C02/G1仍HOLD，禁止对象PASS替代stage_binding。",
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
@@ -2049,9 +2051,11 @@
         "diagnosis": "当前资格读取端必须校验job_id/reviewer_binding_ref/input_digest/output_digest；既有机器审核PASS回执尚不能满足",
         "evidence": [
           "packages/data-access/src/gate-stage-qualification.mjs#auditHasExactStageBinding",
-          "pipelines/data-production/orchestrator/independent-stage-qualification.mjs"
+          "pipelines/data-production/orchestrator/independent-stage-qualification.mjs",
+          "tools/gate-stage-output-attestation.mjs",
+          "tests/data-production/gate-stage-output-attestation.test.mjs"
         ],
-        "next": "同一真实Run校验签发记录与资格读取记录逐字段一致，包含过期/撤权和假绑定负例",
+        "next": "候选C01在独立Signer中重构摘要后可申请精确stage_binding；仍需真实持久DB签发与Runner当前资格/撤权证明，不能把源码候选评审当实跑通过。",
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
@@ -11387,7 +11391,7 @@
         "E_L1_TO_D02"
       ],
       "state_source": "原edges[].verification_layers，状态不在此处重复存储",
-      "reason": "G0候选真实项目作用域/唯一性已做局部修复且CI通过；独立Reviewer尚未签署同Root精确stage_binding，原E_D00_REVIEW/E_D00_QUALIFY仍HOLD"
+      "reason": "BATCH-02仅在D00/C01纯文本范围增加独立输出摘要重构+签发代码；待CI和持久独立Signer PG/HTTP正反，不得记录G0运行PASS。C02与G1仍须独立可信输出来源，E_D00_REVIEW/E_D00_QUALIFY继续HOLD。"
     },
     "groups": [
       {
@@ -11639,27 +11643,26 @@
       "live_coverage_dashboard": "HTML主图首页的已定向归因数量、未逐接口核查数量、分组归因均从最新嵌入的root edges[].engineering_diagnosis与primary_domain计算，杜绝硬编码7/52变成未来虚假当前状态；snapshot字段仅作历史证据。"
     },
     "last_execution_batch": {
-      "id": "M5-G0-BATCH-01",
+      "id": "M5-G0-BATCH-02",
       "date": "2026-11-16",
-      "code_commit": "718503e6f5ce9166a25628bcff437c2daab5ded1",
+      "code_commit": "PENDING_MAIN_COMMIT",
       "ci": {
-        "run_id": 43797796219,
-        "url": "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43797796219",
-        "conclusion": "SUCCESS",
-        "scope": "ci-unit-and-production-boundary-not-real-owner-e2e"
+        "conclusion": "PENDING",
+        "scope": "source-and-unit-not-real-owner-e2e"
       },
       "scope_edges": [
         "E_D00_REVIEW",
         "E_D00_QUALIFY"
       ],
-      "defect": "本地Gate autoSign固定PROJECT_ID+run/gate/input的limit1，错选及新项目拒绝风险；与独立stage_binding缺口不同",
-      "fixed": "严格run/stage/gate/consumer/SUBMITTED/input选出唯一候选，并从已入库allowed_scope.project_id提取合法项目身份",
+      "inherited_from": "M5-G0-BATCH-01@718503e6f5ce9166a25628bcff437c2daab5ded1",
+      "scoped_fix": "Independent G0 C01 text stage output reconstructs from Reviewer-visible persisted source/raw/original plus method_plan and exact Registry job; independently recomputed executionDigest signed into immutable existing receipt",
       "code_paths": [
+        "tools/gate-stage-output-attestation.mjs",
+        "tools/rule-gate-reviewer.mjs",
         "tools/local-gate-service.mjs",
-        "tools/gate-stage-candidate-selection.mjs",
-        "tests/data-production/gate-stage-candidate-selection.test.mjs"
+        "tests/data-production/gate-stage-output-attestation.test.mjs"
       ],
-      "remaining_blocker": "签署审核记录仍无独立Reviewer对stage输出的真实复核并持久绑定；不能把Producer output_digest当独立签发证据",
+      "remaining_blocker": "No real signer PG/HTTP same-root receipt or revocation; D00 non-text and G1-G5 stage output not yet independently reproducible",
       "handoff_state_changed": false,
       "runtime_verified": false,
       "m5_exit": "HOLD",
@@ -11667,7 +11670,7 @@
         "#edge-E_D00_REVIEW",
         "#edge-E_D00_QUALIFY"
       ],
-      "source_of_status": "edges[].verification_layers，非本批总结字段"
+      "source_of_status": "edges[].verification_layers"
     }
   }
 }

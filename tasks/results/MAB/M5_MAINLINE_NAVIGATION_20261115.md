@@ -798,3 +798,12 @@ flowchart TB
 4. **准出判断：** 只用 `PLAN.md` §3.5 B八维同一真实作品正反验收；WATCH属于M5当前目标，EXP未来预留。生产部署仍需独立授权。
 
 **直接机器入口：** `tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json`；可视化入口：`tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.html`。本导航在阶段性收口后继续服务M5施工及随后合法扩展，不能因收口而停更。
+
+
+## M5-G0-BATCH-02｜2026-11-16 独立Reviewer D00/C01输出审签施工（待CI，运行HOLD）
+
+继承上一批G0候选唯一匹配与项目作用域修复，不复查、不重复署名。新增`tools/gate-stage-output-attestation.mjs`只对真实D00纯文本C01从库内source/raw/original、方法计划及Registry稳定工作定义独立重构D01请求与executionDigest；`rule-gate-reviewer.mjs`只在重构匹配时写入既有不可变签发回执的stage_binding；`local-gate-service.mjs`仍拒绝无独立精确字段的旧PASS。
+
+当前证据级别仅为**代码提交待CI**，真实Signer/PG/HTTP/同Root/撤权均NOT_RUN；非文本C02及G1—G5未接通，**⇄HOLD／●NOT_VERIFIED保持**，不提前D02。测试见`tests/data-production/gate-stage-output-attestation.test.mjs`；详情与恢复见CURRENT及progress。机器批次在`audit_tracking.last_execution_batch`，状态只读原`edges[].verification_layers`。
+
+**交互直达：** [G0独立审核精确断点](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_REVIEW) · [G0当前资格读取精确断点](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_QUALIFY)。
