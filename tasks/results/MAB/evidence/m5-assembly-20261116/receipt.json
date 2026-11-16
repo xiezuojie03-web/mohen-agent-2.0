@@ -180,5 +180,176 @@
       "result": "SUCCESS"
     }
   },
-  "current_blocker": "Cloud environment secrets=[] and runtime_variables=[]; no callable shared desktop tool; no legitimate Owner session/project/root/work yet; persistent Web/Runner/Reviewer low-privilege runtime not configured. No paid Provider request or live G1→D02/G2."
+  "current_blocker": "Cloud environment secrets=[] and runtime_variables=[]; no callable shared desktop tool; no legitimate Owner session/project/root/work yet; persistent Web/Runner/Reviewer low-privilege runtime not configured. No paid Provider request or live G1→D02/G2.",
+  "environment_reuse_audit": {
+    "checked_main": "699bb1730f3d535a08db9015e666a1ce96db34db",
+    "vercel": {
+      "project": "mohen-agent-2-0",
+      "decrypted_values_requested": false,
+      "variables": [
+        {
+          "key": "MOHEN_DATABASE_PASSWORD",
+          "type": "sensitive",
+          "targets": [
+            "production"
+          ],
+          "visibility": "secret"
+        },
+        {
+          "key": "AUTH_SECRET",
+          "type": "encrypted",
+          "targets": [
+            "preview",
+            "development"
+          ],
+          "visibility": null
+        },
+        {
+          "key": "MOHEN_DATABASE_SESSION_SECRET",
+          "type": "sensitive",
+          "targets": [
+            "production"
+          ],
+          "visibility": "secret"
+        },
+        {
+          "key": "MOHEN_DATABASE_CA_CERT",
+          "type": "plain",
+          "targets": [
+            "production"
+          ],
+          "visibility": null
+        },
+        {
+          "key": "MOHEN_INVITE_CODE",
+          "type": "encrypted",
+          "targets": [
+            "production",
+            "preview",
+            "development"
+          ],
+          "visibility": null
+        },
+        {
+          "key": "MOHEN_DB_DRIVER",
+          "type": "plain",
+          "targets": [
+            "production",
+            "preview",
+            "development"
+          ],
+          "visibility": null
+        },
+        {
+          "key": "OPS_PASSWORD",
+          "type": "encrypted",
+          "targets": [
+            "production",
+            "preview",
+            "development"
+          ],
+          "visibility": null
+        },
+        {
+          "key": "OPS_USERNAME",
+          "type": "plain",
+          "targets": [
+            "production",
+            "preview",
+            "development"
+          ],
+          "visibility": null
+        },
+        {
+          "key": "AMAP_WEB_KEY",
+          "type": "encrypted",
+          "targets": [
+            "production",
+            "preview",
+            "development"
+          ],
+          "visibility": null
+        },
+        {
+          "key": "SHANGHAI_LIBRARY_KEY",
+          "type": "encrypted",
+          "targets": [
+            "production",
+            "preview",
+            "development"
+          ],
+          "visibility": null
+        },
+        {
+          "key": "DEEPSEEK_API_KEY",
+          "type": "encrypted",
+          "targets": [
+            "production",
+            "preview",
+            "development"
+          ],
+          "visibility": null
+        },
+        {
+          "key": "OWNER_EMAIL",
+          "type": "plain",
+          "targets": [
+            "production",
+            "preview",
+            "development"
+          ],
+          "visibility": null
+        },
+        {
+          "key": "AUTH_SECRET",
+          "type": "sensitive",
+          "targets": [
+            "production"
+          ],
+          "visibility": "secret"
+        },
+        {
+          "key": "DATABASE_URL",
+          "type": "plain",
+          "targets": [
+            "production"
+          ],
+          "visibility": null
+        }
+      ],
+      "production_sha": "835602242cab31b1fcb372c7ff5efd4fc41dfd89",
+      "latest_preview_sha": "1fbe77bf907c443d9bdeb73a75ec9fe4a721db71",
+      "secret_validity": "NOT_TESTED_NO_DECRYPTION_OR_PAID_REQUEST"
+    },
+    "old_host": {
+      "type": "Windows CodeBuddy",
+      "owner_confirmed_available": true,
+      "configuration_locations": [
+        ".secrets/",
+        ".env.local",
+        "D:/MoHen/keys/execution-auth"
+      ],
+      "files_or_services_validity": "NOT_VERIFIED_FROM_CLOUD"
+    },
+    "cloud": {
+      "runtime_config": "NOT_INJECTED_ON_THIS_MACHINE_ONLY",
+      "can_operate_original_windows": false
+    },
+    "source_blocker": {
+      "path": "apps/web/lib/studio-execution-authority.ts",
+      "function": "isExecutionAuthorityReady",
+      "allowed_database_hosts": [
+        "127.0.0.1",
+        "localhost"
+      ],
+      "meaning": "Copying Vercel production configuration to Cloud cannot by itself satisfy the current local-isolated execution-authority profile. Preserve guard; verify original host first."
+    },
+    "http_probe": {
+      "homepage": 200,
+      "studio": "redirected to /login",
+      "auth_me_status": 200,
+      "scope": "anonymous GET only; not signed-in or DB validity proof"
+    },
+    "next": "Read-only original-host evidence; no new credentials, deploy, reset, migration or parallel main writer"
+  }
 }

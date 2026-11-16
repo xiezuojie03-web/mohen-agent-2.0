@@ -4410,3 +4410,12 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - before/after：control.artifact_revision_for定义MD5均`2762d1873ede9bd5d839d1001168281b`；gate_audits=711、candidates=0、projects=0、private_originals=0；runtime source.sources SELECT=false。Advisor前后均40 INFO无policy和16 WARN可变search_path既有项，不新增/不宣称消除既有项。未写Gate决定、正式绑定、原件字节或Provider收费请求，未部署/公众开放。
 - 继承/回退：只安装已存在的Owner读与候选函数，未创建第二方法/Runner/Registry/Gate；明确排除旧artifact_revision_for覆写。失败关闭可撤销这五函数runtime EXECUTE，不删原件/审计/Receipt，不恢复旧许可；首次错误已真实整事务回滚，最终权限负例通过。完整合法Owner/Storage读字节与可恢复持续进程仍NOT_RUN，回退不冒称这些未跑的用例通过。
 - **八维/最远/最前**：1自然语言、2混合协作、3真实D/L/G、4资产、5Studio、6Admin、7发布、8WATCH均HOLD；本批有限工程成果为C01 typed/专业生成接线和两项原云函数迁移安装。真实Creator/Project/Root/作品ID仍尚未产生，未绕过正常UI/API或代登录。旧云函数审批阻断已全部消除；当前最前阻断是本环境secrets/runtime_variables空且缺合法Owner会话、持续Web/Runner/独立Reviewer低权运行配置。已通过问题工具请Owner安全绑定既有配置并完成登录，或提供具名宿主/私有入口，不在聊天传密钥。不再重复请示已批准迁移；无配置/会话前，不新增或臆造后续专业候选，M5日期仍待首个真实G1→D02测量。导航三份/CURRENT及原receipt同批同步；后续M6/M7/M8边界不变。
+
+## 2026-11-16｜M5-ENV-REUSE-01｜既有Vercel与原宿主配置继承只读核证
+
+- before main=699bb1730f3d535a08db9015e666a1ce96db34db，本地干净、远端一致，最新CI43866615248 SUCCESS。没有本批业务代码、迁移、配置修改或部署。继承原运维文档§4/4.5和原Studio执行授权器；本批未引用交付包文件。
+- 使用Vercel env-vars技能读取filter_project_envs(decrypt=false)，只记录key/type/target/visibility，没有读取/保存解密值或将任何值写入仓库。Production存在DATABASE_URL、MOHEN_DATABASE_PASSWORD、MOHEN_DATABASE_SESSION_SECRET、MOHEN_DATABASE_CA_CERT、AUTH_SECRET及原Provider/运营变量。Preview/Development有AUTH_SECRET等通用变量，缺前四项数据库相关配置；变量存在不代表凭据有效。没有自动扩大target、解密Production Secret、改写配置、轮换口令或调用付费Provider。
+- 实时部署：Production仍dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc/83560224；最新列出的Preview是旧分支mab/m4-provider-spend-controls-20261107@1fbe77bf，均不是本批main。匿名GET首页200、/studio转/login、/api/auth/me返回200；只证明旧Web入口可到达，不是Owner已登录或数据库POS。没有提交登录凭据/变更用户身份。
+- 精确实现差异：apps/web/lib/studio-execution-authority.ts isExecutionAuthorityReady要求原本地授权文件，并只接受DATABASE_URL指向127.0.0.1/localhost，排除production标志/服务密钥。原配置复制到新Cloud不能自动满足它；不得把此实现约束误称为用户忘配，也不得为云集成直接放宽守卫。原Windows的.secrets/.env.local/执行授权目录本来就gitignored、不随克隆继承。
+- Owner已回答原Windows电脑和CodeBuddy工程窗口能打开。因此优先继承原宿主：仅请原窗口只读核现有工作树/服务/配置可用性/原Creator-Project-Root；不拉齐覆盖独有成果、不迁移/重置/新建密钥、不并行写main。当前Cloud仍为唯一施工写入方，原机只读取证。原机本地服务是否运行、凭据是否有效及是否已存在真实作品任务仍待该宿主实证，不能从历史文件推断PASS。
+- 正反/回退：本批无业务写入，未改变自动部署隔离或任何权限，不需DB回退；仅追加脱敏receipt环境证据及同步CURRENT/原导航三份。37节点54边/全部层状态/八维准出保持不变。用户此前配置未被判无效，不要求重复配置全部服务。八维HOLD、同任务最远仍未取得当前合法Owner/Root实跑；下一最前阻断缩小为原可用宿主的只读可用性与真实入口取证，而非重新找ChatGPT设置页面。

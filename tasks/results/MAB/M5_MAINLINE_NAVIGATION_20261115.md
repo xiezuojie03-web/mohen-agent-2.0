@@ -1,5 +1,7 @@
 # 墨痕 M5 全链路导航｜持续维护基线（非权威标准）
 
+> **M5-ENV-REUSE-01当前**：Vercel Production的数据库/认证变量仍已配置，原Windows私有配置不随Git进入Cloud。Owner确认原Windows/CodeBuddy宿主可打开，下一步优先只读核验并复用原宿主；不要把本Cloud未注入当作所有环境失效。现执行授权器仍仅接受本地隔离PG，不关闭守卫、不重置凭据、不解密Production Secret、不与原机并行写main。八维状态不变。
+
 > **M5-ASSEMBLY-04当前（优先于下方历史段）**：两项获Owner明确批准的云迁移均成功（20261116121153/20261116122301），五函数ACL/无会话拒绝已验；原C01 SQL分号修复在6214153主CI/PG17/HTTP三绿。旧审批阻断已消除；当前只缺合法Owner会话、持续宿主与安全注入的低权运行配置。八维仍HOLD，真实G1→D02/G2未运行。
 
 > **M5-ASSEMBLY-03更新**：Owner明确批准后原件登记rights_by_action投影迁移20261116121153 SUCCESS，权限与无会话拒绝通过；其他5个原云函数的安装仍被自动审批拒绝，准备SQL为 `evidence/m5-assembly-20261116/cloud-function-inheritance-NOT_APPLIED.sql`，未应用。无真实Owner/Root运行，八维仍HOLD。此条优先于下方此前云DDL全HOLD的历史说明。
