@@ -4429,3 +4429,11 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - Reviewer两项Important已RED→GREEN修复：动态授权模式显式空token map；认领后设置异常落持久HOLD。17专项包含真实CLI启动负例。全生产边界309/0，Studio/中间件专项16/0；原本地全单测Commons实网1失败仍保留，不宣称全套通过。原stage/cross-layer/fixture守卫通过。
 - 回退：关闭MOHEN_CLOUD_EXECUTION_ENABLED即停用适配，保留run/审计；Preview不绑定正式域名，不改变production自动部署隔离。真实任务尚未建立，业务POS/恢复及同Root G1→D02 NOT_RUN。八维全部HOLD；最远真实节点尚未建立；下一最前阻断=精确CI及受保护Preview部署，然后Owner会话/低权独立运行配置。
 - 补验发现原中间件会拒绝无浏览器Cookie的机器请求，已先记录RED，再让精确内部路由在中间件复用同一HMAC认证；接收器重复校验并执行Owner原件归属核验。未列入公开白名单；合法签名无浏览器Cookie及无签名拒绝均实测，16项专项通过。鉴权覆盖守卫仅识别精确已审阅接收器调用，112路由无缺项；此静态识别不冒充实际授权。
+
+### M5-CLOUD-01｜精确CI、受保护Preview实装及实际前沿
+
+**2026-11-16｜M5-CLOUD-01实装回执（优先于下方待部署描述）**：代码d607b12与证据0622618已推main；精确06226189255e30953cb939ba557d8d8775cf689e主CI43876510255、隔离HTTP/Chromium43876510271均SUCCESS。主CI705通过/4跳过（沿用CI实网跳过规则）、生产边界309/0；不覆盖此前本地Commons实网失败。批准的受保护Preview dpl_GqTMGfg5NLzeQBZa4Zq9oUnVjESj已READY，URL https://mohen-agent-2-0-aweuhp9nq-napoles1.vercel.app/login ，精确部署0622618。连接器受权GET登录页200、auth/me为authenticated=false、匿名Studio API401、未配置执行器503/no-store；外部匿名请求仍转Vercel登录，未向公众开放。Production原域名仍200且部署83560224未切换。mohen-cloud只读回查users=1、projects/originals=0、mohen LOGIN=0、Reviewer bindings=0；真实Owner/同Root/生产数据POS尚未建立，八维HOLD。下一最前阻断=Owner在该私有入口登录及独立低权执行/授权/Reviewer配置；不得用Web全权连接代替Producer或自签Gate。实际证据live-preview-receipt.json与anonymous-protection.json。
+
+- 配置操作仅按Owner具体批准执行：Preview SSO保护＋四个既有DB变量追加preview目标，未读取/解密值、未轮换/删production范围。创建部署时省略target按官方API产生preview，gitSource.ref固定已验0622618；返回target=null表示Preview。正式域名、生产部署及git.deploymentEnabled=false保持。未安装/启用正式Reviewer、写原件、签Gate、调用付费Provider。
+- 类型检查曾与Next构建并行，构建清理.next/types导致TS6053；改为构建完成后顺序重跑全量typecheck通过，未改类型断言或skip。新增签名中间件RED/绿色专项已保存。日志按文本仓库规范统一LF/去行末空白并重新计算hash。
+- 用户新增可用操作：通过Vercel保护访问本批最新私有登录页；Owner业务登录尚未验证。真实下游接收NOT_RUN，未建立作品/Creator/Project/Root；不拼隔离PASS。回退关闭云适配flag、不重放已认领run，保留审计；正式环境未替换。

@@ -1,0 +1,59 @@
+{
+  "deployment": {
+    "id": "dpl_GqTMGfg5NLzeQBZa4Zq9oUnVjESj",
+    "sha": "06226189255e30953cb939ba557d8d8775cf689e",
+    "target": "preview",
+    "status": "READY",
+    "url": "https://mohen-agent-2-0-aweuhp9nq-napoles1.vercel.app"
+  },
+  "ci": {
+    "main": 43876510255,
+    "http_chromium": 43876510271,
+    "result": "SUCCESS"
+  },
+  "probes": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "path": "/login",
+        "status": 200,
+        "title": "墨痕 MoHen",
+        "cache": "public, max-age=0, must-revalidate"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "path": "/api/auth/me",
+        "status": 200,
+        "body": "{\"authenticated\":false,\"user\":null}",
+        "cache": "public, max-age=0, must-revalidate"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "path": "/api/studio/research-tasks",
+        "status": 401
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "path": "/api/internal/production-execute",
+        "status": 503,
+        "body": "{\"ok\":false,\"reason\":\"cloud_executor_not_configured\"}",
+        "cache": "private, no-store, max-age=0"
+      }
+    }
+  ],
+  "live_database": {
+    "users": 1,
+    "projects": 0,
+    "originals": 0,
+    "mohen_login_roles": 0,
+    "reviewer_bindings": 0
+  },
+  "eight_dimensions": "ALL_HOLD",
+  "owner_authenticated": "NOT_YET_VERIFIED"
+}

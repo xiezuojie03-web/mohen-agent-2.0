@@ -1,5 +1,7 @@
 # 墨痕 M5 全链路导航｜持续维护基线（非权威标准）
 
+> **2026-11-16｜M5-CLOUD-01实装回执（优先于下方待部署描述）**：代码d607b12与证据0622618已推main；精确06226189255e30953cb939ba557d8d8775cf689e主CI43876510255、隔离HTTP/Chromium43876510271均SUCCESS。主CI705通过/4跳过（沿用CI实网跳过规则）、生产边界309/0；不覆盖此前本地Commons实网失败。批准的受保护Preview dpl_GqTMGfg5NLzeQBZa4Zq9oUnVjESj已READY，URL https://mohen-agent-2-0-aweuhp9nq-napoles1.vercel.app/login ，精确部署0622618。连接器受权GET登录页200、auth/me为authenticated=false、匿名Studio API401、未配置执行器503/no-store；外部匿名请求仍转Vercel登录，未向公众开放。Production原域名仍200且部署83560224未切换。mohen-cloud只读回查users=1、projects/originals=0、mohen LOGIN=0、Reviewer bindings=0；真实Owner/同Root/生产数据POS尚未建立，八维HOLD。下一最前阻断=Owner在该私有入口登录及独立低权执行/授权/Reviewer配置；不得用Web全权连接代替Producer或自签Gate。实际证据live-preview-receipt.json与anonymous-protection.json。
+
 > **2026-11-16｜M5-CLOUD-01（优先于历史宿主建议）**：Owner要求云端优先，并已明确批准受保护研发Preview。现Preview登录保护启用，四项既有数据库变量仅追加Preview范围、未读取解密值，Production部署仍83560224。继承原Runner增加有界请求执行适配、原run原子认领及异常HOLD；原独立授权/签名与低权身份不放宽。309项生产边界、16项Studio/中间件专项及构建通过，raw Runner/Ajv/Provider/Registry已入部署包；本批提交时新Preview尚未创建，云端生产配置未启用，真实Owner/Project/Root/作品尚未建立，八维全部HOLD。下一步精确CI后部署本批受保护Preview并验证入口，然后接续独立低权执行及审核；不再以回本地为前置。证据：tasks/results/MAB/evidence/m5-cloud-20261116/receipt.json。
 
 > **M5-ENV-REUSE-01当前**：Vercel Production的数据库/认证变量仍已配置，原Windows私有配置不随Git进入Cloud。Owner确认原Windows/CodeBuddy宿主可打开，下一步优先只读核验并复用原宿主；不要把本Cloud未注入当作所有环境失效。现执行授权器仍仅接受本地隔离PG，不关闭守卫、不重置凭据、不解密Production Secret、不与原机并行写main。八维状态不变。

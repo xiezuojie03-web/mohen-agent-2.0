@@ -11943,7 +11943,7 @@
       "cloud_ddl": "SUCCESS source registration 20261116121153 + five inherited functions 20261116122301 after explicit Owner approvals; no Gate/rows/source-table grants",
       "live_owner_project_root_work": "NOT_CREATED_NO_AUTHENTICATED_OWNER_SESSION",
       "dimensions": "ALL_8_HOLD",
-      "next": "Owner已改为云端优先；精确CI后部署批准受保护Preview，验证Owner入口，再接独立低权执行及审核；真实同Root尚未建立，八维HOLD。",
+      "next": "受保护Preview已READY；Owner完成既有账号登录并固定真实作品/Project/Root；低权LOGIN=0与Reviewer绑定=0仍需按原授权边界接续，不以Web全权连接或自签Gate冒充运行。八维HOLD。",
       "ci": {
         "main": {
           "run_id": 43863607094,
@@ -11976,7 +11976,12 @@
       "cloud_batch": {
         "batch": "M5-CLOUD-01",
         "evidence": "tasks/results/MAB/evidence/m5-cloud-20261116/receipt.json",
-        "result": "CODE_VERIFIED_DEPLOYMENT_PENDING_LIVE_HOLD"
+        "result": "PROTECTED_PREVIEW_READY_REAL_OWNER_PRODUCTION_HOLD",
+        "deployed_sha": "06226189255e30953cb939ba557d8d8775cf689e",
+        "deployment_id": "dpl_GqTMGfg5NLzeQBZa4Zq9oUnVjESj",
+        "live_evidence": "tasks/results/MAB/evidence/m5-cloud-20261116/live-preview-receipt.json",
+        "ci_main": 43876510255,
+        "ci_http_chromium": 43876510271
       }
     },
     "environment_inheritance": {
