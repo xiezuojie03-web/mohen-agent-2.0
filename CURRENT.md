@@ -5,13 +5,13 @@
 **核验日期：2026-11-15。本轮最新业务/隔离测试代码：`main@9730e527e71fadd94b539f7631eb5dd8fc472683`。** 本轮连续三笔业务代码提交：`ec975c3`（Studio D00→D01 C01 原件读取，主CI [43681077049](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681077049) SUCCESS、隔离PG17 [43681076978](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681076978) SUCCESS）；`f127751`（真实Runner私有D01→D02 typed输入不匹配时持久HOLD，主CI [43681233345](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681233345) SUCCESS）；`977b369`（本地隔离Gate必须校验签署的精确stage_binding而不是复制请求output_digest，主CI [43681613039](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681613039) 最后查询仍在运行，独立Gate撤权合同 [43681613052](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681613052) SUCCESS）。本轮没有实际Owner同一作品持久环境D00/G0→G5/Studio作品实跑，不得以CI当M5 PASS。
 
 
-## 2026-11-16｜M5-G0-BATCH-02：独立Reviewer D00/C01阶段输出定向重构（代码待CI，运行未验）
+## 2026-11-16｜M5-G0-BATCH-02：独立Reviewer D00/C01阶段输出定向重构（CI通过，运行未验）
 
 - **边与范围**：E_D00_REVIEW／E_D00_QUALIFY，仅D00纯文本C01的同一阶段输出摘要；继承BATCH-01候选唯一定位和项目作用域修复，未重复核查。唯一依据PLAN V1.7 §0/§3.5 B/C/§6。
-- **受控改动（本次提交中，CI待取）**：`tools/gate-stage-output-attestation.mjs`独立从G0 SUBMITTED候选中取method_plan及source_version的版本化引用；机器Reviewer只读source.raw_items与studio.private_originals的实际匹配关系（唯一性、真实project、STORED_VERIFIED、text/plain、SHA和长度相符），重构现有D00 adapter输出的D01 C01类型化请求，并以既有executionDigest重算摘要。Reviewer核当前Registry的D00 job/reviewer绑定及候选input_fingerprint，只有全部吻合时把完整stage_binding置入**现有control.sign_gate_candidate不可变receipt**，而不是信任请求output_digest或新建Gate。
+- **受控改动（业务代码main@56ac0ccb14f6154a8f203eb37712047c622d8f61）**：`tools/gate-stage-output-attestation.mjs`独立从G0 SUBMITTED候选中取method_plan及source_version的版本化引用；机器Reviewer只读source.raw_items与studio.private_originals的实际匹配关系（唯一性、真实project、STORED_VERIFIED、text/plain、SHA和长度相符），重构现有D00 adapter输出的D01 C01类型化请求，并以既有executionDigest重算摘要。Reviewer核当前Registry的D00 job/reviewer绑定及候选input_fingerprint，只有全部吻合时把完整stage_binding置入**现有control.sign_gate_candidate不可变receipt**，而不是信任请求output_digest或新建Gate。
 - **范围限制**：当前尚未重构扫页C02和G1—G5阶段输出；不能从Producer请求/对象PASS补签旧audit；空/重复原件匹配、摘要错、job/reviewer错、项目错、来源不可信均拒绝。独立签发后的当前资格读取仍由原严格stage_binding及撤权检查执行。
-- **测试计划及真实状态**：新增`tests/data-production/gate-stage-output-attestation.test.mjs`覆盖重构正例与错digest/身份/权限作用域/原件字节/多候选/非文本负例。此写入时CI=PENDING；独立机器PG签发、Reviewer进程、Owner真实原件与同Root持久HTTP=NOT_RUN/DEFERRED_ENV；不将单测模拟库视为真实G0 PASS。
-- **下个阻断**：先核本批CI与真实隔离DB中C01原件source/raw唯一对应、Reviewer物理身份和签收/撤权、Runner相同run的当前资格。若环境缺失仍HOLD；C02需要可独立重构页码/扫页输出的持久字段，不借文本例放行；不启动D02。
+- **测试与真实状态**：新增`tests/data-production/gate-stage-output-attestation.test.mjs`覆盖重构正例与错digest/身份/权限作用域/原件字节/多候选/非文本负例。业务代码CI [43799675858](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43799675858) **SUCCESS**，Typecheck、Unit、Production boundary regression（含新增D00/C01正反）、Build及Auth coverage均完成；日志中新增D00/C01摘要正反用例成功，数据生产边界共269 PASS/0 FAIL。独立机器PG签发、Reviewer进程、Owner真实原件与同Root持久HTTP=NOT_RUN/DEFERRED_ENV；不将单测模拟库视为真实G0 PASS。
+- **下个阻断**：继续核真实隔离DB中C01原件source/raw唯一对应、Reviewer物理身份和签收/撤权、Runner相同run的当前资格。若环境缺失仍HOLD；C02需要可独立重构页码/扫页输出的持久字段，不借文本例放行；不启动D02。
 - **生产隔离与恢复**：vercel.json git.deploymentEnabled=false；未写生产DB、未使用真实凭据或触发正式Gate/收费Provider。若生产类正反实跑不可得，保留代码和严格HOLD，不回退到旧output_digest回显。
 - **直达**：交互HTML `#edge-E_D00_REVIEW`和`#edge-E_D00_QUALIFY`，导航JSON的audit_tracking.last_execution_batch记本批。M5保持M5_OVERALL_HOLD。
 

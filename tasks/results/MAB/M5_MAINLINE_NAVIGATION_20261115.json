@@ -11391,7 +11391,7 @@
         "E_L1_TO_D02"
       ],
       "state_source": "原edges[].verification_layers，状态不在此处重复存储",
-      "reason": "BATCH-02仅在D00/C01纯文本范围增加独立输出摘要重构+签发代码；待CI和持久独立Signer PG/HTTP正反，不得记录G0运行PASS。C02与G1仍须独立可信输出来源，E_D00_REVIEW/E_D00_QUALIFY继续HOLD。"
+      "reason": "BATCH-02@56ac0ccb14f6154a8f203eb37712047c622d8f61 已实现并通过CI级D00/C01文本独立来源重构和精确stage_binding签发代码正反回归；独立机器PG签发、同Root Runner当前资格、撤权、真实Owner和HTTP/Storage未实测，G0两条原边保持HOLD/NOT_VERIFIED。C02及G1以后仍缺各自可信输出来源；不进入D02。"
     },
     "groups": [
       {
@@ -11645,10 +11645,12 @@
     "last_execution_batch": {
       "id": "M5-G0-BATCH-02",
       "date": "2026-11-16",
-      "code_commit": "PENDING_MAIN_COMMIT",
+      "code_commit": "56ac0ccb14f6154a8f203eb37712047c622d8f61",
       "ci": {
-        "conclusion": "PENDING",
-        "scope": "source-and-unit-not-real-owner-e2e"
+        "run_id": 43799675858,
+        "url": "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43799675858",
+        "conclusion": "SUCCESS",
+        "scope": "Typecheck, Unit, data-production boundary (269 PASS, 0 FAIL), Build and Auth coverage; NOT real Owner/Signer PG/HTTP"
       },
       "scope_edges": [
         "E_D00_REVIEW",
