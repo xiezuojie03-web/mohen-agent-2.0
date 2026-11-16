@@ -65,6 +65,18 @@ try {
   grant mohen_gate_authority to k3_admin with admin true, inherit false, set false;`);
   const migrations = ["202610310900_k3_security_boundary.sql", "202610310910_k3_gate_candidates.sql", "202611010900_k3_independent_gate_authority.sql"];
   for (const file of migrations) apply(file);
+  // The owner must actually revoke PUBLIC EXECUTE, not just emit a GRANT warning.
+  if (query(database, `select count(*) from pg_proc p where
+    p.oid in (
+      'control.sign_gate_candidate(uuid,uuid,text,text,timestamptz,jsonb,uuid)'::regprocedure,
+      'control.revoke_gate_qualification(uuid,uuid,text)'::regprocedure,
+      'control.artifact_revision_for(text,uuid)'::regprocedure,
+      'control.current_qualification_is_valid(uuid)'::regprocedure,
+      'control.qualification_allows(uuid,text,text,text,text,jsonb)'::regprocedure
+    ) and has_function_privilege('anon',p.oid,'EXECUTE')`) !== "0" ||
+      query(database,"select has_function_privilege('mohen_producer','control.sign_gate_candidate(uuid,uuid,text,text,timestamptz,jsonb,uuid)','EXECUTE')") !== "f" ||
+      query(database,"select has_function_privilege('mohen_gate_signer','control.sign_gate_candidate(uuid,uuid,text,text,timestamptz,jsonb,uuid)','EXECUTE')") !== "t")
+    throw new Error("K3_GATE_FUNCTION_PUBLIC_EXECUTE_LEAK");
   // The initial K3 migration must not turn a CREATEROLE bootstrap grant into
   // SET-role authority. The new owner has no CREATE on the control schema.
   if (query(database, `select count(*) from pg_auth_members
