@@ -62,7 +62,592 @@
 | 7. 独立G5、媒资权利与发布 | 3 | 5.8% |
 | 8. WATCH同修订合法消费与撤权 | 3 | 5.8% |
 
-**使用与持续维护**：查看HTML顶部“完整统计”模块，可在“节点/连接”以及“当前M5/全图”之间切换分母；下方可展开9条业务领域的核查步骤并点击已有连接追踪具体证据。机器按`statistics`、`navigation_domains`读取，但**基础真相仍是`nodes[]/edges[].verification_layers`与精准证据**；每次更新必须重新计算校验统计，不能凭百分比改判PASS。
+**使用与持续维护**：查看HTML顶部“完整统计”模块，可在“节点/连接”以及“当前M5/全图”之间切换分母；下方可展开9个业务领域及10组内部业务链路，逐项查看输入/输出/权限和原54条连接。机器按`statistics`、`navigation_domains`读取，但**基础真相仍是`nodes[]/edges[].verification_layers`与精准证据**；每次更新必须重新计算校验统计，不能凭百分比改判PASS。
+
+## 非D00—D05模块内部链路全分解（2026-11-16）
+
+**本轮目标与依据**：本轮在模块职责与Agent讨论已截稿后，直接核对GitHub现存UI、专业合同、U07动作设计、M5 PLAN和源码。**不把资料库CEI研究原型当作现行工程设计**。原37节点、54条跨模块边（其中52条M5，2条EXP未来）、全部原验证三层状态、诊断覆盖和M5八维分母均保留。
+
+新增加 **10组模块内部业务链**（含HOME/用户权限这两条横线），总计**68个可定位业务步骤、58个内部交接检查点**。它们不是58条新增的正式主图边，更不是58个新验收门；只解决原54条粗粒度业务连接内部“到底卡在哪一步”的问题。所有内部交接首次均为**NOT_VERIFIED**，源文件路径是核查入口，不等于完整功能存在，更不等于PASS。
+
+| 内部业务链 | 归属/范围 | 业务步骤 | 细分交接 | 原主图关联 | HTML入口 |
+| --- | --- | ---: | ---: | --- | --- |
+| HOME入口与全局导航 | M5_ENTRY_ONLY | 5 | 4 | E00, E01 | [展开](M5_MAINLINE_NAVIGATION_20261115.html#module-intake) |
+| 账户身份与权限横线 | M5_CROSSCUT_AUTH | 6 | 5 | E_ADMIN_L0, E_ADMIN_L1, E_ADMIN_L2, E_ADMIN_L3, E_ADMIN_L4, E_ADMIN_L5, E_ADMIN_TO_EDITORIAL, E_ADMIN_TO_REVOKE | [展开](M5_MAINLINE_NAVIGATION_20261115.html#module-admin) |
+| Studio自然语言入口与正式生产请求 | M5_DIM_1 | 6 | 5 | E00, E01 | [展开](M5_MAINLINE_NAVIGATION_20261115.html#module-intake) |
+| Agent与外部AI同Root协作 | M5_DIM_2 | 7 | 6 | E_AGENT_TO_MIXED, E_MIXED_TO_D00, E_MIXED_TO_CREATIVE | [展开](M5_MAINLINE_NAVIGATION_20261115.html#module-mixed) |
+| L0—L5合法知识复用链 | M5_DIM_3_5 | 7 | 6 | E_L0_TO_CREATIVE, E_L1_TO_CREATIVE, E_L2_TO_CREATIVE, E_L3_TO_CREATIVE, E_L4_TO_CREATIVE, E_L5_TO_CREATIVE, E_REUSE_TO_STUDIO | [展开](M5_MAINLINE_NAVIGATION_20261115.html#module-knowledge_use) |
+| 13类工作资产持久化和复用 | M5_DIM_4 | 8 | 7 | E_REUSE_TO_ASSETS, E_CREATIVE_TO_ASSETS, E_ASSETS_TO_CREATIVE, E_ASSETS_TO_ADMIN | [展开](M5_MAINLINE_NAVIGATION_20261115.html#module-assets) |
+| Studio导演、作品修订及投稿 | M5_DIM_5 | 8 | 7 | E_STUDIO_TO_REV, E_REV_TO_EDITORIAL | [展开](M5_MAINLINE_NAVIGATION_20261115.html#module-studio) |
+| Admin知识治理、运营和作品审核 | M5_DIM_6 | 8 | 7 | E_ADMIN_L0, E_ADMIN_L1, E_ADMIN_L2, E_ADMIN_L3, E_ADMIN_L4, E_ADMIN_L5, E_ADMIN_TO_EDITORIAL, E_ADMIN_TO_REVOKE | [展开](M5_MAINLINE_NAVIGATION_20261115.html#module-admin) |
+| 发布→WATCH合法消费→撤权 | M5_DIM_7_8 | 8 | 7 | E_EDITORIAL_TO_PUBLISH, E_PUBLISH_TO_WATCH, E_REVOKE_TO_WATCH | [展开](M5_MAINLINE_NAVIGATION_20261115.html#module-publish) |
+| EXP现有能力与未来深链 | FUTURE_NOT_M5 | 5 | 4 | E_REUSE_TO_EXP, E_WORKREV_TO_EXP | [展开](M5_MAINLINE_NAVIGATION_20261115.html#module-exp) |
+
+### 每组链路的输入、动作、输出与守卫
+
+#### HOME入口与全局导航（5个步骤，4条待核交接）
+
+**1. 现有HOME呈现**（public）
+
+- **输入 → 动作 → 输出**：URL/登录态 → 显示价值介绍和合法入口 → 模式卡与空态
+- **权限及失败边界**：空态不可伪造策展世界
+- **当前代码定位**：`apps/web/app/page.tsx`；`apps/web/app/components/GlobalNav.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E00
+- **下一内部交接**：LINK_HOME_01，接收端要求：用户点击入口；状态：NOT_VERIFIED。
+
+**2. 选择Studio或WATCH等入口**（public/member）
+
+- **输入 → 动作 → 输出**：用户点击入口 → 路由到对应工作面 → 有权目标页面
+- **权限及失败边界**：菜单不替代服务端权限
+- **当前代码定位**：`apps/web/app/page.tsx`；`apps/web/app/components/GlobalNav.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E00
+- **下一内部交接**：LINK_HOME_02，接收端要求：查询词和身份；状态：NOT_VERIFIED。
+
+**3. 作品和知识搜索**（member）
+
+- **输入 → 动作 → 输出**：查询词和身份 → 请求当前可见结果 → 作品/知识或空态
+- **权限及失败边界**：跨Owner返回拒绝
+- **当前代码定位**：`apps/web/app/components/GlobalNav.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：所属模块的内部检查点
+- **下一内部交接**：LINK_HOME_03，接收端要求：用户问题/会话；状态：NOT_VERIFIED。
+
+**4. 进入真实创作委托**（creator）
+
+- **输入 → 动作 → 输出**：用户问题/会话 → 进入ST-01输入路径 → 研究委托的起点
+- **权限及失败边界**：不自动触发ST-04
+- **当前代码定位**：`apps/web/app/components/GlobalNav.tsx`；`apps/web/app/studio/StudioWorkbench.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E00
+- **下一内部交接**：LINK_HOME_04，接收端要求：明确的返回动作；状态：NOT_VERIFIED。
+
+**5. 返回主页并重新开始**（public/member）
+
+- **输入 → 动作 → 输出**：明确的返回动作 → 安全重选工作面 → 合法路由与上下文
+- **权限及失败边界**：不得自动运行旧任务/外泄焦点
+- **当前代码定位**：`apps/web/app/components/GlobalNav.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：所属模块的内部检查点
+
+#### 账户身份与权限横线（6个步骤，5条待核交接）
+
+**1. 核当前登录与角色**（member/creator/operator）
+
+- **输入 → 动作 → 输出**：session/角色 → 确认active_user和role → 授权身份或拒绝
+- **权限及失败边界**：前端显示角色不等于服务端权限
+- **当前代码定位**：`apps/web/app/components/GlobalNav.tsx`；`apps/web/app/admin/AdminWorkbench.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：所属模块的内部检查点
+- **下一内部交接**：LINK_IDENTITY_01，接收端要求：project_id/root_task_id；状态：NOT_VERIFIED。
+
+**2. 绑定项目Owner与Root**（creator）
+
+- **输入 → 动作 → 输出**：project_id/root_task_id → 核项目和资源归属 → 有权研究上下文
+- **权限及失败边界**：跨Owner/HOLD
+- **当前代码定位**：`apps/web/app/api/studio/projects/route.ts`；`apps/web/app/studio/StudioWorkbench.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E00、E01
+- **下一内部交接**：LINK_IDENTITY_02，接收端要求：Delegation/rights/预算；状态：NOT_VERIFIED。
+
+**3. 受托外发及预算动作授权**（creator）
+
+- **输入 → 动作 → 输出**：Delegation/rights/预算 → 检查动作许可和执行范围 → grant或拒绝
+- **权限及失败边界**：不能从轻提示永久提权
+- **当前代码定位**：`apps/web/lib/studio-execution-authority.ts`；`apps/web/app/api/studio/dispatch-authorizations/route.ts`；`packages/data-access/src/studio-delegation-repository.mjs`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_AGENT_TO_MIXED
+- **下一内部交接**：LINK_IDENTITY_03，接收端要求：L@rev/consumer/purpose；状态：NOT_VERIFIED。
+
+**4. Gate资格与消费者权利**（system）
+
+- **输入 → 动作 → 输出**：L@rev/consumer/purpose → 核当前独立资格与rights → 合法读取或拒绝
+- **权限及失败边界**：运营approved不等于G PASS
+- **当前代码定位**：`packages/data-access/src/gate-stage-qualification.mjs`；`packages/data-access/src/rights-actions.mjs`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_REUSE_TO_STUDIO
+- **下一内部交接**：LINK_IDENTITY_04，接收端要求：active_role/作品修订；状态：NOT_VERIFIED。
+
+**5. 运营与Reviewer角色隔离**（operator/reviewer）
+
+- **输入 → 动作 → 输出**：active_role/作品修订 → 分别审核并记操作身份 → 可审计决定
+- **权限及失败边界**：同人切角色不得自签Gate
+- **当前代码定位**：`apps/web/app/admin/AdminWorkbench.tsx`；`apps/web/app/api/governance/gates/decisions/route.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_ADMIN_TO_EDITORIAL
+- **下一内部交接**：LINK_IDENTITY_05，接收端要求：失效对象及依赖；状态：NOT_VERIFIED。
+
+**6. 撤权后阻断新访问**（system）
+
+- **输入 → 动作 → 输出**：失效对象及依赖 → 按范围重核消费 → 新请求DENY/HOLD
+- **权限及失败边界**：旧缓存不得继续展示失权素材
+- **当前代码定位**：`packages/data-access/src/invalidation.mjs`；`apps/web/app/watch/WatchGallery.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_ADMIN_TO_REVOKE、E_REVOKE_TO_WATCH
+
+#### Studio自然语言入口与正式生产请求（6个步骤，5条待核交接）
+
+**1. Creator提出任意真实问题**（creator）
+
+- **输入 → 动作 → 输出**：自由历史问题 → Studio接收原始意图 → 可追溯问题
+- **权限及失败边界**：不可只接受示例模板
+- **当前代码定位**：`apps/web/app/studio/StudioWorkbench.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E00
+- **下一内部交接**：LINK_INTAKE_01，接收端要求：会话/Owner/旧项目；状态：NOT_VERIFIED。
+
+**2. 建立或恢复研究底稿**（creator）
+
+- **输入 → 动作 → 输出**：会话/Owner/旧项目 → 生成或重开project → project_id与合法历史
+- **权限及失败边界**：不得跨Owner恢复
+- **当前代码定位**：`apps/web/app/api/studio/projects/route.ts`；`apps/web/app/studio/StudioWorkbench.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E00
+- **下一内部交接**：LINK_INTAKE_02，接收端要求：项目/问题/幂等键；状态：NOT_VERIFIED。
+
+**3. 正式保存ST-01研究任务**（creator）
+
+- **输入 → 动作 → 输出**：项目/问题/幂等键 → 受控提交research-task → task_id和状态
+- **权限及失败边界**：研究任务不是正式G资格
+- **当前代码定位**：`apps/web/app/api/studio/research-tasks/route.ts`；`apps/web/app/studio/StudioWorkbench.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E00
+- **下一内部交接**：LINK_INTAKE_03，接收端要求：任务和获权材料；状态：NOT_VERIFIED。
+
+**4. Agent研究规划与缺口说明**（agent）
+
+- **输入 → 动作 → 输出**：任务和获权材料 → 检索、解释及HOLD → AgentDecision或明确不足
+- **权限及失败边界**：不能无材料编造PASS
+- **当前代码定位**：`apps/web/app/api/studio/research-tasks/route.ts`；`specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E00
+- **下一内部交接**：LINK_INTAKE_04，接收端要求：任务/已绑定原件/页码；状态：NOT_VERIFIED。
+
+**5. Creator另行请求ST-04**（creator）
+
+- **输入 → 动作 → 输出**：任务/已绑定原件/页码 → 发起受控正式生产 → run_id或拒因
+- **权限及失败边界**：提问不自动越过授权
+- **当前代码定位**：`apps/web/app/studio/StudioWorkbench.tsx`；`apps/web/lib/studio-production.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E01
+- **下一内部交接**：LINK_INTAKE_05，接收端要求：真实run/revision；状态：NOT_VERIFIED。
+
+**6. 当前阶段回读与合法恢复**（creator）
+
+- **输入 → 动作 → 输出**：真实run/revision → 读取阶段、HOLD与恢复依据 → 真实生产进度和补证项
+- **权限及失败边界**：无独立G不显示qualified
+- **当前代码定位**：`apps/web/app/studio/StudioWorkbench.tsx`；`apps/web/lib/studio-production.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E01
+
+#### Agent与外部AI同Root协作（7个步骤，6条待核交接）
+
+**1. 确定Agent和外部AI的工作分工**（agent）
+
+- **输入 → 动作 → 输出**：Creator委托与Root → 建立受控Delegation → 工作边界和任务上下文
+- **权限及失败边界**：不能让Provider代G
+- **当前代码定位**：`apps/web/app/api/studio/research-tasks/route.ts`；`specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_AGENT_TO_MIXED
+- **下一内部交接**：LINK_MIXED_01，接收端要求：来源/用途/模型身份；状态：NOT_VERIFIED。
+
+**2. 逐源权利与出域许可**（creator/agent）
+
+- **输入 → 动作 → 输出**：来源/用途/模型身份 → 申请最小外发范围 → 有权grant或HOLD
+- **权限及失败边界**：研究读不自动授权外发
+- **当前代码定位**：`apps/web/lib/studio-execution-authority.ts`；`apps/web/app/api/studio/dispatch-authorizations/route.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_AGENT_TO_MIXED
+- **下一内部交接**：LINK_MIXED_02，接收端要求：root/预算/限额；状态：NOT_VERIFIED。
+
+**3. 费用预算预留与幂等**（system）
+
+- **输入 → 动作 → 输出**：root/预算/限额 → 核费用与执行次数 → 成本授权回执
+- **权限及失败边界**：无权重试不得多扣费
+- **当前代码定位**：`apps/web/lib/studio/tool-ledger.ts`；`apps/web/lib/studio-execution-authority.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_AGENT_TO_MIXED
+- **下一内部交接**：LINK_MIXED_03，接收端要求：有权最小输入/模型版本；状态：NOT_VERIFIED。
+
+**4. 调用真实Provider或专业工具**（agent/provider）
+
+- **输入 → 动作 → 输出**：有权最小输入/模型版本 → 执行真实服务 → 可核输出与工具结果
+- **权限及失败边界**：模拟内容不当真实贡献
+- **当前代码定位**：`apps/web/lib/studio/provider-dispatcher.ts`；`packages/data-access/src/studio-execution-repository.mjs`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_MIXED_TO_D00
+- **下一内部交接**：LINK_MIXED_04，接收端要求：真实输入输出hash/费用；状态：NOT_VERIFIED。
+
+**5. 记录Agent/Provider独立贡献**（system）
+
+- **输入 → 动作 → 输出**：真实输入输出hash/费用 → 持久入账ExecutionReceipt → 同Root贡献链和成本
+- **权限及失败边界**：不能事后从聊天反造回执
+- **当前代码定位**：`packages/data-access/src/studio-delegation-repository.mjs`；`packages/data-access/src/studio-execution-repository.mjs`；`apps/web/lib/studio/tool-ledger.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_MIXED_TO_CREATIVE
+- **下一内部交接**：LINK_MIXED_05，接收端要求：来源与合法回执；状态：NOT_VERIFIED。
+
+**6. 合法成果交D00**（creator/agent）
+
+- **输入 → 动作 → 输出**：来源与合法回执 → 按Creator请求进入D00 → 受控候选或HOLD
+- **权限及失败边界**：Provider不是专业资格签发者
+- **当前代码定位**：`apps/web/lib/studio-production.ts`；`apps/web/lib/studio/provider-dispatcher.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_MIXED_TO_D00
+- **下一内部交接**：LINK_MIXED_06，接收端要求：有权L知识/修订/回执；状态：NOT_VERIFIED。
+
+**7. 合法成果进入H1/H2/H3**（creator/agent）
+
+- **输入 → 动作 → 输出**：有权L知识/修订/回执 → 形成可审导演建议 → 真实差异方案与出处
+- **权限及失败边界**：无权模型推断不得发表为史实
+- **当前代码定位**：`apps/web/app/api/studio/director-plans/route.ts`；`apps/web/app/studio/StudioWorkbench.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_MIXED_TO_CREATIVE
+
+#### L0—L5合法知识复用链（7个步骤，6条待核交接）
+
+**1. Studio/Agent提出材料需求**（creator/agent）
+
+- **输入 → 动作 → 输出**：项目/问题/用途 → 受控调用研究读取 → 目标知识要求
+- **权限及失败边界**：不直读所有私表
+- **当前代码定位**：`apps/web/app/api/studio/research-read/route.ts`；`apps/web/app/studio/StudioWorkbench.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_REUSE_TO_STUDIO
+- **下一内部交接**：LINK_KNOWLEDGE_USE_01，接收端要求：层级、对象与revision；状态：NOT_VERIFIED。
+
+**2. 按L0—L5精确查版本**（system）
+
+- **输入 → 动作 → 输出**：层级、对象与revision → 定位已有可用L知识 → L@rev和来源locator
+- **权限及失败边界**：不强迫每次重新生产
+- **当前代码定位**：`packages/data-access/src/read-model-repository.mjs`；`apps/web/app/api/studio/research-read/route.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_L0_TO_CREATIVE、E_L1_TO_CREATIVE、E_L2_TO_CREATIVE、E_L3_TO_CREATIVE、E_L4_TO_CREATIVE、E_L5_TO_CREATIVE
+- **下一内部交接**：LINK_KNOWLEDGE_USE_02，接收端要求：L@rev/consumer/purpose；状态：NOT_VERIFIED。
+
+**3. 独立G当前用途资格检查**（system）
+
+- **输入 → 动作 → 输出**：L@rev/consumer/purpose → 核同层专业签发和失效 → 当前适用资格或HOLD
+- **权限及失败边界**：旧PASS不永久有效
+- **当前代码定位**：`packages/data-access/src/gate-stage-qualification.mjs`；`apps/web/app/api/studio/research-read/route.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_REUSE_TO_STUDIO
+- **下一内部交接**：LINK_KNOWLEDGE_USE_03，接收端要求：身份/machine_read/quote/display；状态：NOT_VERIFIED。
+
+**4. Owner与动作权利检查**（system）
+
+- **输入 → 动作 → 输出**：身份/machine_read/quote/display → 检验逐动作许可 → RightsDecision
+- **权限及失败边界**：内部读取不推出公开展示书影权
+- **当前代码定位**：`packages/data-access/src/rights-actions.mjs`；`apps/web/app/api/studio/research-read/route.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_REUSE_TO_STUDIO
+- **下一内部交接**：LINK_KNOWLEDGE_USE_04，接收端要求：有效L和有权来源；状态：NOT_VERIFIED。
+
+**5. 返回合法只读材料**（system）
+
+- **输入 → 动作 → 输出**：有效L和有权来源 → 形成Studio研究输入 → 可追踪真实材料和缺口
+- **权限及失败边界**：不得泄漏私有原件字节
+- **当前代码定位**：`packages/data-access/src/read-model-repository.mjs`；`apps/web/app/studio/StudioWorkbench.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_REUSE_TO_STUDIO
+- **下一内部交接**：LINK_KNOWLEDGE_USE_05，接收端要求：合法L@rev/项目；状态：NOT_VERIFIED。
+
+**6. 引用进作品及工作资产**（creator/agent）
+
+- **输入 → 动作 → 输出**：合法L@rev/项目 → 绑定依赖与使用记录 → 被引用修订及来路
+- **权限及失败边界**：不能复制第二知识真源
+- **当前代码定位**：`packages/data-access/src/studio-asset-repository.mjs`；`apps/web/app/studio/StudioWorkbench.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_REUSE_TO_ASSETS
+- **下一内部交接**：LINK_KNOWLEDGE_USE_06，接收端要求：revocation与依赖；状态：NOT_VERIFIED。
+
+**7. 撤权导致消费HOLD**（system）
+
+- **输入 → 动作 → 输出**：revocation与依赖 → 重新核资格并阻断 → 受限状态与恢复条件
+- **权限及失败边界**：旧缓存不能重放
+- **当前代码定位**：`packages/data-access/src/invalidation.mjs`；`packages/data-access/src/gate-stage-qualification.mjs`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_REUSE_TO_STUDIO
+
+#### 13类工作资产持久化和复用（8个步骤，7条待核交接）
+
+**1. 识别真实知识/创作增量**（creator/agent）
+
+- **输入 → 动作 → 输出**：研究材料或新作品行动 → 识别应保存的工作对象 → 有价值候选
+- **权限及失败边界**：不为13种类型凑空数
+- **当前代码定位**：`apps/web/app/studio/StudioWorkbench.tsx`；`apps/web/app/api/studio/assets/route.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_CREATIVE_TO_ASSETS
+- **下一内部交接**：LINK_ASSETS_01，接收端要求：语义与原项目；状态：NOT_VERIFIED。
+
+**2. 采用既有asset_kind合同**（system）
+
+- **输入 → 动作 → 输出**：语义与原项目 → 映射13种枚举和数据形态 → 类型身份
+- **权限及失败边界**：不擅自增加新类型
+- **当前代码定位**：`packages/data-access/src/studio-asset-repository.mjs`；`specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_CREATIVE_TO_ASSETS
+- **下一内部交接**：LINK_ASSETS_02，接收端要求：Owner/project/type；状态：NOT_VERIFIED。
+
+**3. 保存asset_heads的长期身份**（system）
+
+- **输入 → 动作 → 输出**：Owner/project/type → 创建稳定资产头 → asset_id与ACL
+- **权限及失败边界**：短研究task不能冒充长期资产
+- **当前代码定位**：`packages/data-access/src/studio-asset-repository.mjs`；`apps/web/app/api/studio/assets/route.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_CREATIVE_TO_ASSETS
+- **下一内部交接**：LINK_ASSETS_03，接收端要求：内容hash/旧revision/来源；状态：NOT_VERIFIED。
+
+**4. 保存不可变revision和真实来源**（creator/agent）
+
+- **输入 → 动作 → 输出**：内容hash/旧revision/来源 → CAS保存asset@rev → 不可变修订与出处
+- **权限及失败边界**：冲突不能覆盖旧版
+- **当前代码定位**：`packages/data-access/src/studio-asset-repository.mjs`；`apps/web/app/api/studio/assets/route.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_CREATIVE_TO_ASSETS
+- **下一内部交接**：LINK_ASSETS_04，接收端要求：canonical对象及修订；状态：NOT_VERIFIED。
+
+**5. 关联正规导演/媒体/作品主本**（system）
+
+- **输入 → 动作 → 输出**：canonical对象及修订 → 建立指向唯一主本的引用 → 规范化关联
+- **权限及失败边界**：不能绕开CANONICAL_BINDING_REQUIRED
+- **当前代码定位**：`packages/data-access/src/studio-asset-repository.mjs`；`specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_CREATIVE_TO_ASSETS
+- **下一内部交接**：LINK_ASSETS_05，接收端要求：L@rev/工作资产/权限；状态：NOT_VERIFIED。
+
+**6. 保存rights与依赖关系**（system）
+
+- **输入 → 动作 → 输出**：L@rev/工作资产/权限 → 维护asset_links与可复用状态 → 依赖闭包及认识身份
+- **权限及失败边界**：reuse_ready不等于G资格
+- **当前代码定位**：`packages/data-access/src/studio-asset-repository.mjs`；`packages/data-access/src/rights-actions.mjs`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_REUSE_TO_ASSETS
+- **下一内部交接**：LINK_ASSETS_06，接收端要求：A精确rev/B项目许可；状态：NOT_VERIFIED。
+
+**7. 授权复用并记录实际use_event**（creator/agent）
+
+- **输入 → 动作 → 输出**：A精确rev/B项目许可 → 真实复用/必要Fork并形成新认知 → 实际使用记录和新修订
+- **权限及失败边界**：搜索命中不等于真实复用
+- **当前代码定位**：`packages/data-access/src/studio-asset-repository.mjs`；`packages/data-access/src/studio-delegation-repository.mjs`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_ASSETS_TO_CREATIVE
+- **下一内部交接**：LINK_ASSETS_07，接收端要求：资产身份/使用史/撤权；状态：NOT_VERIFIED。
+
+**8. Admin检查资产及失效后果**（operator）
+
+- **输入 → 动作 → 输出**：资产身份/使用史/撤权 → 审计来源、版本和下游 → 可解释影响清单
+- **权限及失败边界**：不能静默删不相关历史
+- **当前代码定位**：`apps/web/app/admin/KnowledgeAssetInspector.tsx`；`apps/web/app/admin/AdminWorkbench.tsx`；`packages/data-access/src/studio-asset-repository.mjs`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_ASSETS_TO_ADMIN
+
+#### Studio导演、作品修订及投稿（8个步骤，7条待核交接）
+
+**1. 构造合法导演材料上下文**（creator/agent）
+
+- **输入 → 动作 → 输出**：研究Brief与合格L0—L5 → 形成有权证据与创作主题 → 导演可读材料集
+- **权限及失败边界**：未G私有假说不当已证事实
+- **当前代码定位**：`apps/web/app/api/studio/research-read/route.ts`；`apps/web/app/studio/StudioWorkbench.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_REUSE_TO_STUDIO
+- **下一内部交接**：LINK_STUDIO_01，接收端要求：材料/模型授权/预算；状态：NOT_VERIFIED。
+
+**2. 在许可内生成A/B导演方案**（creator/agent）
+
+- **输入 → 动作 → 输出**：材料/模型授权/预算 → 请求H1/H2/H3真实不同计划 → 可比较DirectorPlan与Receipt
+- **权限及失败边界**：不可无权外发
+- **当前代码定位**：`apps/web/app/api/studio/director-plans/route.ts`；`apps/web/app/api/studio/dispatch-authorizations/route.ts`；`apps/web/app/studio/StudioWorkbench.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_MIXED_TO_CREATIVE
+- **下一内部交接**：LINK_STUDIO_02，接收端要求：两份方案及具体差异；状态：NOT_VERIFIED。
+
+**3. Creator选择并锁定导演方向**（creator）
+
+- **输入 → 动作 → 输出**：两份方案及具体差异 → 采纳一个方向 → 选中计划的精确身份
+- **权限及失败边界**：换标题不能冒充方案比较
+- **当前代码定位**：`apps/web/app/studio/StudioWorkbench.tsx`；`apps/web/app/api/studio/director-plans/route.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_STUDIO_TO_REV
+- **下一内部交接**：LINK_STUDIO_03，接收端要求：合法材料/选中导演；状态：NOT_VERIFIED。
+
+**4. 生成可编辑节拍和分镜**（agent）
+
+- **输入 → 动作 → 输出**：合法材料/选中导演 → 生产真实面板和旁白 → WorkPanels候选
+- **权限及失败边界**：不以模板占位充作品
+- **当前代码定位**：`apps/web/app/studio/StudioWorkbench.tsx`；`apps/web/app/api/studio/director-plans/route.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_STUDIO_TO_REV
+- **下一内部交接**：LINK_STUDIO_04，接收端要求：原件/媒体来源和用途；状态：NOT_VERIFIED。
+
+**5. 媒资与引文逐动作核权**（creator/system）
+
+- **输入 → 动作 → 输出**：原件/媒体来源和用途 → 选择合法材料绑定面板 → 有权素材列表或缺口
+- **权限及失败边界**：不展示未授权书影
+- **当前代码定位**：`apps/web/app/studio/StudioWorkbench.tsx`；`packages/data-access/src/rights-actions.mjs`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_STUDIO_TO_REV
+- **下一内部交接**：LINK_STUDIO_05，接收端要求：指定修改范围和当前稿；状态：NOT_VERIFIED。
+
+**6. 局部改稿及预览**（creator/agent）
+
+- **输入 → 动作 → 输出**：指定修改范围和当前稿 → 保留未改部分并生成差异 → 真实可观察作品预览
+- **权限及失败边界**：不能静默重写全部内容
+- **当前代码定位**：`apps/web/app/studio/StudioWorkbench.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_STUDIO_TO_REV
+- **下一内部交接**：LINK_STUDIO_06，接收端要求：正文/来源/版本；状态：NOT_VERIFIED。
+
+**7. 保存不可变WorkRevision**（creator/system）
+
+- **输入 → 动作 → 输出**：正文/来源/版本 → 保存新版本并回读 → work_id与revision_id
+- **权限及失败边界**：CAS冲突不能覆盖旧版
+- **当前代码定位**：`apps/web/app/studio/StudioWorkbench.tsx`；`packages/data-access/src/studio-asset-repository.mjs`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_STUDIO_TO_REV
+- **下一内部交接**：LINK_STUDIO_07，接收端要求：选定稿件和出处；状态：NOT_VERIFIED。
+
+**8. Creator提交确切修订审核**（creator）
+
+- **输入 → 动作 → 输出**：选定稿件和出处 → 单独POST submit → 冻结作品审查对象
+- **权限及失败边界**：预览/保存不等于发布
+- **当前代码定位**：`apps/web/app/studio/StudioWorkbench.tsx`；`apps/web/app/api/works/[id]/submit/route.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_REV_TO_EDITORIAL
+
+#### Admin知识治理、运营和作品审核（8个步骤，7条待核交接）
+
+**1. 核有权运营/Reviewer登录**（operator/reviewer）
+
+- **输入 → 动作 → 输出**：session/active_role → 确认后台功能权限 → 可操作角色或拒绝
+- **权限及失败边界**：不能由前台菜单提权
+- **当前代码定位**：`apps/web/app/admin/AdminWorkbench.tsx`；`apps/web/app/components/GlobalNav.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_ADMIN_TO_EDITORIAL
+- **下一内部交接**：LINK_ADMIN_01，接收端要求：L候选/G记录/来源；状态：NOT_VERIFIED。
+
+**2. 横向检查L0—L5资格历史**（operator）
+
+- **输入 → 动作 → 输出**：L候选/G记录/来源 → 逐层查看资格与问题 → 可定位专业历史
+- **权限及失败边界**：Admin浏览不是G签发
+- **当前代码定位**：`apps/web/app/admin/AdminWorkbench.tsx`；`apps/web/app/admin/KnowledgeAssetInspector.tsx`；`packages/data-access/src/gate-stage-qualification.mjs`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_ADMIN_L0、E_ADMIN_L1、E_ADMIN_L2、E_ADMIN_L3、E_ADMIN_L4、E_ADMIN_L5
+- **下一内部交接**：LINK_ADMIN_02，接收端要求：asset@rev/rights/use_events；状态：NOT_VERIFIED。
+
+**3. 审计13类资产依赖**（operator）
+
+- **输入 → 动作 → 输出**：asset@rev/rights/use_events → 核来源、权限和受影响对象 → 治理依据
+- **权限及失败边界**：工作资产状态不能冒充正式G
+- **当前代码定位**：`apps/web/app/admin/KnowledgeAssetInspector.tsx`；`packages/data-access/src/studio-asset-repository.mjs`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_ASSETS_TO_ADMIN
+- **下一内部交接**：LINK_ADMIN_03，接收端要求：Creator submitted revision；状态：NOT_VERIFIED。
+
+**4. 读取投稿冻结修订**（operator）
+
+- **输入 → 动作 → 输出**：Creator submitted revision → 读取待审稿和依赖 → 指定稿件及缺口
+- **权限及失败边界**：不能自动换成latest
+- **当前代码定位**：`apps/web/app/admin/AdminWorkbench.tsx`；`apps/web/app/api/governance/gates/pending/route.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_REV_TO_EDITORIAL
+- **下一内部交接**：LINK_ADMIN_04，接收端要求：各自授权与申请；状态：NOT_VERIFIED。
+
+**5. 运营审核与独立Reviewer分权**（operator/reviewer）
+
+- **输入 → 动作 → 输出**：各自授权与申请 → 分别形成决定和资格 → 运营/专业两类回执
+- **权限及失败边界**：Admin/Agent不能代签G
+- **当前代码定位**：`apps/web/app/admin/AdminWorkbench.tsx`；`apps/web/app/api/governance/gates/decisions/route.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_ADMIN_TO_EDITORIAL
+- **下一内部交接**：LINK_ADMIN_05，接收端要求：G5/运营决定/rights；状态：NOT_VERIFIED。
+
+**6. 发布前汇总资格与媒资许可**（operator）
+
+- **输入 → 动作 → 输出**：G5/运营决定/rights → 核准或HOLD → 准确可发布条件
+- **权限及失败边界**：运营批准不代G5
+- **当前代码定位**：`apps/web/app/admin/AdminWorkbench.tsx`；`apps/web/app/api/works/[id]/publish/route.ts`；`packages/data-access/src/rights-actions.mjs`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_EDITORIAL_TO_PUBLISH
+- **下一内部交接**：LINK_ADMIN_06，接收端要求：失效请求及具体对象；状态：NOT_VERIFIED。
+
+**7. 授权撤权和依赖重核**（operator）
+
+- **输入 → 动作 → 输出**：失效请求及具体对象 → 触发撤权与受影响消费检查 → 撤权回执与范围
+- **权限及失败边界**：已交付离线字节不能假称回收
+- **当前代码定位**：`apps/web/app/admin/AdminWorkbench.tsx`；`packages/data-access/src/invalidation.mjs`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_ADMIN_TO_REVOKE
+- **下一内部交接**：LINK_ADMIN_07，接收端要求：审计结果、版本和HOLD；状态：NOT_VERIFIED。
+
+**8. 返回退回原因与责任人**（operator）
+
+- **输入 → 动作 → 输出**：审计结果、版本和HOLD → 反馈需要补证的行动 → 可回查下一步
+- **权限及失败边界**：不能只给PASS计数
+- **当前代码定位**：`apps/web/app/admin/AdminWorkbench.tsx`；`apps/web/app/admin/KnowledgeAssetInspector.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_ADMIN_TO_EDITORIAL
+
+#### 发布→WATCH合法消费→撤权（8个步骤，7条待核交接）
+
+**1. 接收Creator冻结投稿修订**（operator）
+
+- **输入 → 动作 → 输出**：WorkRevision@rev及提交记录 → 锁定待发布对象 → submitted修订
+- **权限及失败边界**：不能偷换成编辑中的稿
+- **当前代码定位**：`apps/web/app/api/works/[id]/submit/route.ts`；`apps/web/app/admin/AdminWorkbench.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_REV_TO_EDITORIAL
+- **下一内部交接**：LINK_PUBLISH_01，接收端要求：专业签发与编辑决定；状态：NOT_VERIFIED。
+
+**2. 独立资格和运营审核分离**（reviewer/operator）
+
+- **输入 → 动作 → 输出**：专业签发与编辑决定 → 验证两种不同决定 → 各自审计状态
+- **权限及失败边界**：运营approved不等于G5
+- **当前代码定位**：`apps/web/app/admin/AdminWorkbench.tsx`；`apps/web/app/api/governance/gates/decisions/route.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_EDITORIAL_TO_PUBLISH
+- **下一内部交接**：LINK_PUBLISH_02，接收端要求：revision/consumer/display权限；状态：NOT_VERIFIED。
+
+**3. 核G5和媒资逐动作权利**（system）
+
+- **输入 → 动作 → 输出**：revision/consumer/display权限 → 合法发布前核对 → 可发布或HOLD
+- **权限及失败边界**：旧资格和无权图像不能过关
+- **当前代码定位**：`packages/data-access/src/gate-stage-qualification.mjs`；`packages/data-access/src/rights-actions.mjs`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_EDITORIAL_TO_PUBLISH
+- **下一内部交接**：LINK_PUBLISH_03，接收端要求：所有资格齐备的准确稿；状态：NOT_VERIFIED。
+
+**4. 原子发布准确修订指针**（operator/system）
+
+- **输入 → 动作 → 输出**：所有资格齐备的准确稿 → 提交发布事务 → PublicationPointer和审计
+- **权限及失败边界**：不能产生一半成功的指针
+- **当前代码定位**：`apps/web/app/api/works/[id]/publish/route.ts`；`apps/web/app/admin/AdminWorkbench.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_EDITORIAL_TO_PUBLISH
+- **下一内部交接**：LINK_PUBLISH_04，接收端要求：发布指针与当前资格；状态：NOT_VERIFIED。
+
+**5. WATCH显示合法公开目录**（public）
+
+- **输入 → 动作 → 输出**：发布指针与当前资格 → 只读取可消费作品 → 列表及明确空态
+- **权限及失败边界**：撤权作品不能进入新请求
+- **当前代码定位**：`apps/web/app/api/works/published/route.ts`；`apps/web/app/watch/WatchGallery.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_PUBLISH_TO_WATCH
+- **下一内部交接**：LINK_PUBLISH_05，接收端要求：WorkRevision/媒体id/用途；状态：NOT_VERIFIED。
+
+**6. 作品章节和媒体每请求重核**（public）
+
+- **输入 → 动作 → 输出**：WorkRevision/媒体id/用途 → 核新请求资格和权利 → 合法章节及真实素材
+- **权限及失败边界**：旧URL不能绕撤权
+- **当前代码定位**：`apps/web/app/watch/WatchGallery.tsx`；`packages/data-access/src/gate-stage-qualification.mjs`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_PUBLISH_TO_WATCH
+- **下一内部交接**：LINK_PUBLISH_06，接收端要求：已发布作品与时码；状态：NOT_VERIFIED。
+
+**7. 播放章节与来源返查**（public）
+
+- **输入 → 动作 → 输出**：已发布作品与时码 → 观看、暂停、按需证据 → 同一rev的有据观看
+- **权限及失败边界**：私有草稿不得补成正式事实
+- **当前代码定位**：`apps/web/app/watch/WatchGallery.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_PUBLISH_TO_WATCH
+- **下一内部交接**：LINK_PUBLISH_07，接收端要求：revocation和依赖；状态：NOT_VERIFIED。
+
+**8. 撤权立即阻断后续消费**（operator/system）
+
+- **输入 → 动作 → 输出**：revocation和依赖 → 失效资格/指针并拒绝新请求 → HOLD/原因/回溯记录
+- **权限及失败边界**：不得谎称收回已下载字节
+- **当前代码定位**：`apps/web/app/watch/WatchGallery.tsx`；`packages/data-access/src/invalidation.mjs`；`packages/data-access/src/rights-actions.mjs`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_REVOKE_TO_WATCH
+
+#### EXP现有能力与未来深链（5个步骤，4条待核交接）
+
+**1. 进入独立EXP页面**（public）
+
+- **输入 → 动作 → 输出**：合法入口URL → 展示现有探索页 → 有权的基础UI
+- **权限及失败边界**：完整EXP不计当期M5
+- **当前代码定位**：`apps/web/app/explore/ExploreWorkbench.tsx`；`apps/web/app/page.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_REUSE_TO_EXP
+- **下一内部交接**：LINK_EXP_01，接收端要求：consumer/purpose/当前资格；状态：NOT_VERIFIED。
+
+**2. 仅读取合格公开L5**（public）
+
+- **输入 → 动作 → 输出**：consumer/purpose/当前资格 → 取得合法关系/时间/空间知识 → 合格L5片段或空态
+- **权限及失败边界**：私有Studio未G候选不得公开
+- **当前代码定位**：`apps/web/app/explore/ExploreWorkbench.tsx`；`packages/data-access/src/read-model-repository.mjs`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_REUSE_TO_EXP
+- **下一内部交接**：LINK_EXP_02，接收端要求：问题/session_id；状态：NOT_VERIFIED。
+
+**3. 用户提问触发Agent会话**（public）
+
+- **输入 → 动作 → 输出**：问题/session_id → 调用受权探索query → AgentDecision或缺口
+- **权限及失败边界**：有问答不等于连续舞台联动
+- **当前代码定位**：`apps/web/app/explore/ExploreWorkbench.tsx`；`apps/web/app/api/explore/sessions/route.ts`；`apps/web/app/api/explore/sessions/[id]/query/route.ts`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_REUSE_TO_EXP
+- **下一内部交接**：LINK_EXP_03，接收端要求：真实材料与视图选择；状态：NOT_VERIFIED。
+
+**4. 四种视图和叙事证据呈现**（public）
+
+- **输入 → 动作 → 输出**：真实材料与视图选择 → 关系/时间/空间/故事显示 → 现有舞台/证据组件
+- **权限及失败边界**：静态SVG及固定HINT非主动发现
+- **当前代码定位**：`apps/web/app/explore/ExploreWorkbench.tsx`；`apps/web/app/explore/ExplorePresentation.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_REUSE_TO_EXP
+- **下一内部交接**：LINK_EXP_04，接收端要求：作品rev/OriginSnapshot/焦点；状态：NOT_VERIFIED。
+
+**5. WATCH转EXP并有权返回**（public）
+
+- **输入 → 动作 → 输出**：作品rev/OriginSnapshot/焦点 → 未来用户接受后才跳转 → 待实现的独立探索与回跳
+- **权限及失败边界**：现有WATCH相关探索禁用
+- **当前代码定位**：`apps/web/app/watch/WatchGallery.tsx`；`apps/web/app/explore/ExploreWorkbench.tsx`；这是路径定位而非接口验收。
+- **原主图交接锚点**：E_WORKREV_TO_EXP
+
+### 正式工程核查次序与纪律
+
+1. 按CURRENT/PLAN §3.5 B/C先找最前实证阻断；当前顺序仍是独立G0精确stage_binding审核与资格，以及其后的合格G1/L1→D02 typed请求。
+2. 找到对应根图业务边，再在本页10组内部检查链定位真实输入、下游期待输出、当前角色/权利、源码与失败回执；**先根图定位，后内部下钻**。
+3. 逐连接核代码、真实HTTP/PG/Provider/Gate、同Root正反与恢复。若能证明真实状态变更，再更新原根图nodes[]/edges[].verification_layers；内部链填相同证据引用与准确结果，不凭源码文件存在把内部链标PASS。
+4. 每次工程事实变化时同步JSON/MD/HTML，并使HTML嵌入的JSON与独立JSON语义完全一致；统计仍由37/54原图生成。真实状态由CURRENT、回执由progress维护，导航不是第二工程Truth。
+5. EXP内部链即使已有UI与Agent代码，也属于**FUTURE_NOT_M5**，不计入本轮M5通过条件；CEI未来完成正式交付后才做设计增量映射。
+
+**机器入口**：JSON中的module_internal_chains.modules[].steps[]/handoffs[]。本轮结构来源为GitHub main@787a5944a02006cdfa970270fc5664e3eb47f75b；原主图source_sha维持2026-11-15固定审查基线。**结构分解完成 ≠ 58个内部交接已验证**。
 
 ## 正式三层状态模型（2026-11-15）
 
