@@ -11271,5 +11271,77 @@
       "root_m5_edges": 52
     },
     "code_source_sha": "787a5944a02006cdfa970270fc5664e3eb47f75b"
+  },
+  "ui_presentation": {
+    "schema": "mohen.m5.integrated-navigation-view.v1",
+    "default_view": "INTEGRATED_SINGLE_ARCHITECTURE",
+    "presentation_only": true,
+    "view_description": "Same architecture canvas, in-place expandable module nodes; no jump to separately listed module cards. M5 edge and status authority remains nodes/edges verification_layers.",
+    "crosscutting_module": "identity",
+    "lanes": [
+      {
+        "id": "entry",
+        "label": "用户入口与受托研究",
+        "modules": [
+          "home",
+          "intake",
+          "mixed"
+        ],
+        "links": [
+          "E00",
+          "E01",
+          "E_AGENT_TO_MIXED",
+          "E_MIXED_TO_D00"
+        ]
+      },
+      {
+        "id": "knowledge",
+        "label": "知识生产、合法消费与研究资产",
+        "modules": [
+          "production",
+          "knowledge_use",
+          "assets"
+        ],
+        "links": [
+          "E_D00_REVIEW",
+          "E_D00_QUALIFY",
+          "E_L1_TO_D02",
+          "E_REUSE_TO_STUDIO",
+          "E_REUSE_TO_ASSETS",
+          "E_ASSETS_TO_CREATIVE"
+        ]
+      },
+      {
+        "id": "creation",
+        "label": "创作、治理和合法交付",
+        "modules": [
+          "studio",
+          "admin",
+          "publish"
+        ],
+        "links": [
+          "E_STUDIO_TO_REV",
+          "E_REV_TO_EDITORIAL",
+          "E_EDITORIAL_TO_PUBLISH",
+          "E_PUBLISH_TO_WATCH",
+          "E_REVOKE_TO_WATCH"
+        ]
+      },
+      {
+        "id": "future",
+        "label": "未来知识探索（非M5准出）",
+        "modules": [
+          "exp"
+        ],
+        "links": [
+          "E_REUSE_TO_EXP",
+          "E_WORKREV_TO_EXP"
+        ]
+      }
+    ],
+    "design_guard": "The lanes are explanatory business groupings with conditional/parallel relationships; not a mandatory sequential runtime workflow or a new Agent/UI contract.",
+    "drilldown_model": "Each module stays on the overall canvas while expanding within its own module card; step, internal check and root edge details show in place. Full node/edge evidence remains accessible.",
+    "legacy_canvas": "Original D/L/G and lower module card components retained as static fallback only; integrated view owns default interaction.",
+    "no_state_change": true
   }
 }
