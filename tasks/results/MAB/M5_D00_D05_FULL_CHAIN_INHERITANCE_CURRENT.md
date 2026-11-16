@@ -2,7 +2,7 @@
 
 > **用途和权威边界（2026-11-16）**：这是面向 M5 后续 D00—D05 全链断点修复的**历史实跑证据、可继承能力与缺口索引**；不是新任务书、设计合同、技术方案或新验收标准。唯一施工依据仍为 `tasks/implementation/MAB/PLAN.md` V1.7 第0章、第3.5 B/C节及第6章，当前事实见 `CURRENT.md`，原始逐批记录见 `tasks/implementation/MAB/progress.md`。**施工前必须读本索引第2—6节及当次断点的原始记录**；本索引只判历史可复用范围，不宣布当前 G0/G5 或 M5 运行PASS。
 >
-> **核查方法**：先检查原始历史运行报告、2026-11-07—16期间 `progress.md` 相关批次、11月10日结构化正反回执、11月15日既有遗产源码核查，再对照 GitHub `main` 的原 Runner、两类 Adapter、Private Worker、Reviewer、Registry、Signer、当前资格读取和11月16日两批代码及 CI。**原始材料与当前源码是不同证据层**；以下“验证”按原记录的当时环境与运行身份解释，本轮没有重新启动持久PG、正式Reviewer、生产DB、Storage或真实模型。
+> **核查方法**：先检查原始历史运行报告、2026-11-07—16期间 `progress.md` 相关批次、11月10日结构化正反回执、11月15日既有遗产源码核查，再对照 GitHub `main` 的原 Runner、两类 Adapter、Private Worker、Reviewer、Registry、Signer、当前资格读取和11月16日两批代码及 CI。**原始材料与当前源码是不同证据层**；以下“验证”按原记录的当时环境与运行身份解释，本索引初稿未重新连接PG；R11已在现有`mohen-cloud`真实PG17实装K3基础及ACL修复，但未启动正式Reviewer、私有Storage、同Root业务Gate或付费模型。
 >
 > **现行全局结论**：历史上多次跑通真实阶段与专业审核；旧版整链、独立Gate逐门、真实项目多题材与作品垂直切片均有可继承实现和证据。**尚未证实**同一 Studio/Creator/Project/root 在现行受控私有路径中、由真实 Runner 连续产生精确输入输出摘要、独立 Reviewer 签发每一阶段 `stage_binding`、资格逐次消费、受控Provider与费用、资产/作品/Admin/WATCH的M5八维全链。此差异是集成缺口，不准误述为 D00—D05 从未实现。
 
@@ -27,8 +27,9 @@
 | R08 · 11-13 | **七宝**非模板主题，同上，原件1121B | 第二个独立Project/Topic的真实取件→G0、C01读取/G1、H05/G2、W07/G3、A09/G4、P02/G5，P04两分面独立G5，验证多项目和A方法泛化，不依赖金泽样板固定项目 | 同R07的分段run/人工专业输入/用途范围限制；不是第二次自动全链作品验收 |
 | R09 · 11-14 | 自由题材 `layer1` 六门，`progress.md`「A'逐门落地 G1～G5」；样例 `dead0003`；G0→G5均有审计 | **真实隔离DB+真实本地8789服务**，逐门建对象/候选、按依赖独立签发，G0 `113f71d9…`、G1 `d3a84419…`、G2 `8094994e…`、G3 `93611955…`、G4 `9c2b27fb…`、G5 `78114b50…`； `layer1` 非私有来源审核/方法/对象绑定已修 | 每门**组件级正向**，不是 Studio→单Runner→六门顺序真实串联；部分DB对象手工构造；该执行环境子进程spawn `EPERM`，同Root运行未证；当时tests/data-production记录243P/3环境失败，不能说全套0失败 |
 | R10 · 11-15/16 | M5受控私有链：D00→D01 C01、D01→D02 HOLD、G0签署精确 `stage_binding` 的安全改造；`CURRENT.md`及本账末批 | 原私有 Worker/可信来源的C01读取、typed D01请求、Runner边界HOLD已进入main；11-16 BATCH-01 `718503e6` 精确唯一候选+真实Project；BATCH-02 `56ac0ccb` 独立从持久字段重构C01请求digest，签署接口增强 `501829ac`；CI分别SUCCESS，BATCH-02边界回归270P/0F | **这不是新增的一次G0真实PASS**。BATCH-02仍为模拟DB Reviewer接口与CI；持久PG独立机器Signer、同Root资格读/撤权、真实Owner/Storage/HTTP = `NOT_RUN/DEFERRED_ENV`。C02及G1—G5的同类型绑定不能借C01代码推定通过 |
+| R11 · 11-16 | 云端PG17 K3兼容与安全ACL实装；`dd954921`、`3ac4fd3`、`1c5b131`及本账BATCH-04 | `mohen-cloud`成功装入原K3签发/资格/撤权事务，SECURITY DEFINER函数PUBLIC EXECUTE被修复；Producer/anon不能签发、Signer可签；旧711审计原字段摘要不变；复用原PG17/HTTP测试链 | **非当前G0 PASS**：云端M2原件表、Storage及正式机器Reviewer策略/绑定未接入，当前签名/资格均0；同Root Runner、撤权/恢复尚未实跑 |
 
-**计数口径**：R01、R02、R05、R07、R08是至少五个不同历史主题/试验对象的六段生产或逐段资格验证记录；R03、R04属作品垂直切片，R06属独立G0专项，R09属六门组件验证，R10属代码/CI修复。它们**不能累加为十次同等验收标准的“一次运行全PASS”**，也不能被抹成“只做过两次”。R05与R07/R08已证明**新独立Gate体系下多次分段签发**，不能重新实现同义G0—G5能力。
+**计数口径**：R01、R02、R05、R07、R08是至少五个不同历史主题/试验对象的六段生产或逐段资格验证记录；R03、R04属作品垂直切片，R06属独立G0专项，R09属六门组件验证，R10属代码/CI修复，R11属云端K3迁移与安全ACL实证（不属于新增G0业务签发）。它们**不能累加为十次同等验收标准的“一次运行全PASS”**，也不能被抹成“只做过两次”。R05与R07/R08已证明**新独立Gate体系下多次分段签发**，不能重新实现同义G0—G5能力。
 
 ## 3. D00—D05逐段：能直接继承的实际资产与尚缺的最小接口
 
@@ -57,7 +58,7 @@
 
 ## 5. 现行D00→D05断点次序与不可重复施工项（截至2026-11-16）
 
-1. **首先仅核 `E_D00_REVIEW` → `E_D00_QUALIFY`**：R05/R06/R07/R08/R09的G0规则、真签名和资格有效性是继承前提；11-16 BATCH-01（`718503e6f5ce9166a25628bcff437c2daab5ded1`，CI `43797796219` SUCCESS）已修候选唯一性/真实项目；BATCH-02（`56ac0ccb14f6154a8f203eb37712047c622d8f61`、`501829ac1509b2e5eb11d454be2247be7e01c8ed`，CI `43799675858`、`43800172713` SUCCESS，270正/反PASS）已修C01摘要独立重构及决定接口。**不要再写一份功能相同的候选选择器、Gate Reviewer或签发器。** 下一证据只缺真持久隔离PG中Signer与Owner/Worker/Runner本run的正反签名、读取、撤权；无条件则标HOLD，不反向改坏已签接口。
+1. **首先仅核 `E_D00_REVIEW` → `E_D00_QUALIFY`**：R05/R06/R07/R08/R09的G0规则、真签名和资格有效性是继承前提；11-16 BATCH-01（`718503e6f5ce9166a25628bcff437c2daab5ded1`，CI `43797796219` SUCCESS）已修候选唯一性/真实项目；BATCH-02（`56ac0ccb14f6154a8f203eb37712047c622d8f61`、`501829ac1509b2e5eb11d454be2247be7e01c8ed`，CI `43799675858`、`43800172713` SUCCESS，270正/反PASS）已修C01摘要独立重构及决定接口。**不要再写一份功能相同的候选选择器、Gate Reviewer或签发器。** R11已确认现有云库可用、K3函数及ACL已接入，环境不再被描述为“缺少非生产PG”；尚缺原M2/Storage/机器Reviewer策略与真实Owner/Worker/Runner同Root的正反签名、读取、撤权；未具备条件则继续HOLD。
 2. **随后 `E_L0_TO_D01`、`E_D01_REVIEW`、`E_D01_QUALIFY` 与 `E_L1_TO_D02`**：R05/R07/R08已证明C01/C02、G1和真实L1读取能力；优先定位同run真实typed承接，缺 `stage_binding` 与G1当前消费才补合同，不重建识读/G1规则。
 3. **再按实际首阻断逐段到G5**：从L1/G1→H05/D02/G2→W07/D03/G3→A/D04/G4→P/D05/G5逐段接合法typed输入、源与rights/用途、专业调用、模型/预算回执及资格签后消费；每段用R01/R02/R05/R07/R08/R09既成实现与正反基准，**不会因为新输入类型HOLD就宣称“D02—D05没实现”**。
 4. **最终仍按PLAN八维而非本索引收口**：真实同Root内容、资产版本、Studio编导作品、Admin审核、发布、WATCH/撤权和实际用户体验；历史分段成果不能拼为一次新PASS，生产迁移/正式服务启用/公众开放仍需独立授权。
@@ -78,13 +79,14 @@
 - `tasks/results/MAB/evidence/method-plan-gate/d00-g0-method-plan.json`：11-10 19项真库审核，**同时包含独立G0 PASS及Runner HOLD**；工具 `tools/verify-d00-g0-method-plan.mjs`。
 - `tasks/results/MAB/evidence/method-isolation/d00c2-stage-wiring.json`、`d00c4-remaining-stages.json`、`tasks/results/MAB/evidence/d00-real-run/d00-sections-real-run.json`：D00方法/存储/执行子项的已验限度（一些仅表结构/隔离脚本，不得拔高为外部资源生产全通过）。
 - `tools/verify-3-gate-chain.mjs`、`tools/rule-gate-reviewer.mjs`、`tools/local-gate-verifier.mjs`、`tools/local-gate-service.mjs`、`packages/data-access/src/gate-stage-qualification.mjs`；`supabase/migrations/202610310910_k3_gate_candidates.sql`、`202611010900_k3_independent_gate_authority.sql`（文件名按完整路径拼接）。
+- 11-16 R11云端K3：`supabase/migrations/202611010900_k3_independent_gate_authority.sql`及`20261116080000_m5_k3_gate_function_acl_owner_fix.sql`；实装、安全正反、旧审计校验见`CURRENT.md`与`progress.md`的BATCH-04。无需新Gate。
 - 11-16精确修复：`tools/gate-stage-candidate-selection.mjs`、`tools/gate-stage-output-attestation.mjs`； `tests/data-production/gate-stage-candidate-selection.test.mjs`、`gate-stage-output-attestation.test.mjs`；对应3条CI SUCCESS。**未发生真持久机器Signer的当批运行验证**。
 
 ### 6.3 现行总图/档案对应
 
 - `tasks/results/MAB/M5_DLG_LEGACY_INHERITANCE_CODE_AUDIT_20261115.md`：**历史版本有限源码核查**，只有金泽/A001/五主题是其主要历史样本；不能用它取代本报告中新增的11月7—14执行证据。
 - `tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json`、同名 `.md/.html`：当前最前 `E_D00_REVIEW`、`E_D00_QUALIFY`；HTML本地打开后可通过 `#edge-E_D00_REVIEW`、`#edge-E_D00_QUALIFY` 定位。导航的三层运行状态目前仍 NOT_VERIFIED/HOLD；**索引历史PASS不修改当前边状态**。
-- `CURRENT.md` 2026-11-16 BATCH-01/02； `tasks/implementation/MAB/progress.md` 对应最近两批的CI/缺口； `PLAN.md` 第3.5 B/C和第6章是唯一准出/试验/日志标准。
+- `CURRENT.md` 2026-11-16 BATCH-01—04； `tasks/implementation/MAB/progress.md` 对应最近两批的CI/缺口； `PLAN.md` 第3.5 B/C和第6章是唯一准出/试验/日志标准。
 
 ## 7. 本轮成果、核查边界和持续原位维护
 
