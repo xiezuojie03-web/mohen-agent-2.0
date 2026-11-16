@@ -1,12 +1,34 @@
 -- Independent Gate transactions. No live reviewer or policy is provisioned here.
 begin;
+-- PostgreSQL 17 non-superuser CREATEROLE grants ADMIN-only membership
+-- (INHERIT FALSE, SET FALSE) to its creator. Supabase uses this bootstrap
+-- membership, which is not a usable Gate signer/authority session.
+-- No unrelated role membership, SET/INHERIT membership, or elevated role
+-- attributes are permitted, even when the role already exists.
 do $$ begin
  if not exists(select from pg_roles where rolname='mohen_gate_authority') then
-   create role mohen_gate_authority nologin noinherit nosuperuser nobypassrls;
+   create role mohen_gate_authority nologin noinherit nosuperuser nobypassrls
+     nocreatedb nocreaterole noreplication;
  end if;
- if exists(select from pg_roles where rolname='mohen_gate_authority' and (rolcanlogin or rolsuper or rolbypassrls))
- or exists(select from pg_auth_members where roleid='mohen_gate_authority'::regrole or member='mohen_gate_authority'::regrole)
+ if exists(select from pg_roles where rolname='mohen_gate_authority' and
+   (rolcanlogin or rolsuper or rolbypassrls or rolinherit or
+    rolcreaterole or rolcreatedb or rolreplication))
+ or exists(select from pg_auth_members m where
+   m.member='mohen_gate_authority'::regrole
+   or (m.roleid='mohen_gate_authority'::regrole and not
+     (m.member=(select oid from pg_roles where rolname=current_user)
+      and m.admin_option and not m.inherit_option and not m.set_option)))
  then raise exception 'UNSAFE_GATE_AUTHORITY_ROLE'; end if;
+end $$;
+-- Non-superuser ALTER FUNCTION ... OWNER requires SET membership and schema
+-- CREATE for the future owner. Grant only inside this migration transaction,
+-- then revoke both before COMMIT. The original local superuser fixture
+-- does not require any temporary privilege.
+do $$ begin
+ if not (select rolsuper from pg_roles where rolname=current_user) then
+   execute format('grant mohen_gate_authority to %I with admin false, inherit false, set true',current_user);
+   grant create on schema control to mohen_gate_authority;
+ end if;
 end $$;
 create table if not exists control.gate_policy_versions (
  gate_code text not null check(gate_code in ('G0','G1','G2','G3','G4','G5')),
@@ -345,4 +367,21 @@ end $$;
 alter function control.revoke_gate_qualification(uuid,uuid,text) owner to mohen_gate_authority;
 revoke all on function control.revoke_gate_qualification(uuid,uuid,text) from public;
 grant execute on function control.revoke_gate_qualification(uuid,uuid,text) to mohen_gate_signer;
+-- A managed CREATEROLE creator may retain only its original PG17
+-- ADMIN-only bootstrap membership. No SET or schema CREATE may leak.
+do $$ begin
+ if not (select rolsuper from pg_roles where rolname=current_user) then
+   revoke create on schema control from mohen_gate_authority;
+   execute format('revoke mohen_gate_authority from %I granted by %I',current_user,current_user);
+ end if;
+ if not (select rolsuper from pg_roles where rolname=current_user)
+    and has_schema_privilege('mohen_gate_authority','control','CREATE')
+ then raise exception 'GATE_AUTHORITY_SCHEMA_CREATE_LEAK'; end if;
+ if exists(select from pg_auth_members m where
+   m.member='mohen_gate_authority'::regrole
+   or (m.roleid='mohen_gate_authority'::regrole and not
+     (m.member=(select oid from pg_roles where rolname=current_user)
+      and m.admin_option and not m.inherit_option and not m.set_option)))
+ then raise exception 'GATE_AUTHORITY_MEMBERSHIP_LEAK'; end if;
+end $$;
 commit;

@@ -55,8 +55,23 @@ try {
   const columns = query(database, "select string_agg(quote_ident(attname),',' order by attnum) from pg_attribute where attrelid='control.gate_audits'::regclass and attnum>0 and not attisdropped");
   const snapshotSql = `select md5(jsonb_agg(to_jsonb(g) order by gate_audit_id)::text) from (select ${columns} from control.gate_audits where object_type='fixture_legacy') g`;
   const before = query(database, snapshotSql);
+  // PG17 managed CREATEROLE produces an ADMIN-only membership for the creator.
+  // Simulate it inside the existing isolated PG fixture; do not add a new Gate.
+  query(database, `do $$ begin
+    if not exists(select from pg_roles where rolname='mohen_gate_authority') then
+      create role mohen_gate_authority nologin noinherit nosuperuser nobypassrls nocreatedb nocreaterole noreplication;
+    end if;
+  end $$;
+  grant mohen_gate_authority to k3_admin with admin true, inherit false, set false;`);
   const migrations = ["202610310900_k3_security_boundary.sql", "202610310910_k3_gate_candidates.sql", "202611010900_k3_independent_gate_authority.sql"];
   for (const file of migrations) apply(file);
+  // The initial K3 migration must not turn a CREATEROLE bootstrap grant into
+  // SET-role authority. The new owner has no CREATE on the control schema.
+  if (query(database, `select count(*) from pg_auth_members
+      where roleid='mohen_gate_authority'::regrole and member='k3_admin'::regrole
+        and admin_option and not inherit_option and not set_option`) !== "1" ||
+      query(database, "select has_schema_privilege('mohen_gate_authority','control','CREATE')") !== "f")
+    throw new Error("K3_GATE_AUTHORITY_BOOTSTRAP_LEAK");
   // KAD1 (2026-11-02) sits between the K3 authority migrations and the MAB studio work in the
   // production timeline, so it is applied at the same point here. It replaces
   // control.qualification_allows, which means the read-model suites below exercise the KAD1
