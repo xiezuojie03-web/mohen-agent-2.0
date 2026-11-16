@@ -40,10 +40,11 @@
   "review": "Two Important findings fixed with RED/GREEN: dynamic empty token map; post-claim setup exception persisted HOLD",
   "files_sha256": {
     "cloud-production-final.log.txt": "840ce771c3569f72d29645dda47906056d53d91321aab01d41aa57b697e58b14",
-    "cloud-build-final.log.txt": "d7b1b18897355b186d11644c826cce8c1532db6dc2927f4f63b7ee10f0985ffa",
+    "cloud-build-final.log.txt": "08b4629900cf38d7bdc73b6fa49a67e49039d17168a1eaef1cb175afe841420a",
     "cloud-reviewed-green.log.txt": "8bebcf8676583d2d5d176c4a88e91a60ae51ab39a0f3250d74da3b0c629f487d",
     "cloud-typecheck-final.log.txt": "d847d8fb5e11d8e314ad268fa1e95b84752937c00ee655dc982faec8cddbea8a",
-    "studio-cloud-final.log.txt": "06e3b4d0f65c5004eb333c07d604b8376db31117f47a19c9c2b76dd92a980a25",
-    "cloud-middleware-red.log.txt": "79fdebbaf3902334ffda7c85887d4f42d869654111b9f67ddcf3746c09c3d6c9"
-  }
+    "studio-cloud-final.log.txt": "4c337813ecfe1acc680704115ac6bfa7e19e6e3d33cd313e184a10bf575132a2",
+    "cloud-middleware-red.log.txt": "f4d22ade00ba107c23df80488dd0c2130e00003f30cdcffe3b37a3f414368e37"
+  },
+  "log_normalization": "UTF-8 LF, trailing whitespace and terminal blank lines removed; assertions/outcomes unchanged"
 }
