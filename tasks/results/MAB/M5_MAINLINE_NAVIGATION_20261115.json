@@ -28,13 +28,13 @@
       "name": "来源发现与准入",
       "substrate": "来源、版本、馆藏、数字资产、原件字节、权利与SHA",
       "status": "partial",
-      "state": "既有D00/C01独立输出重构和精确stage_binding接口直接继承；本批在mohen-cloud真实PG17已迁入原K3签发、资格及撤权函数并修复公共执行权限，但尚未发生独立Signer阶段签发与同Root Runner消费。",
+      "state": "历史合法原件字节/SHA回读与source/version/raw登记已在本地实际实现；现mohen-cloud已安装M2私有原件、Storage、来源登记查询及M3 Gate Service DB/ACL。当前缺的不是原件接入功能，而是同一真实Root在当前云端的受权运行/独立G0签发消费实证。",
       "code": [
         "pipelines/data-production/workers/private-evidence-stage.mjs",
         "pipelines/data-production/adapters/private-evidence-adapters.mjs",
         "pipelines/data-production/adapters/layer1-adapters.mjs"
       ],
-      "blocker": "M5-G0-ROOT-01：当前云端M2私有原件表、Storage桶、正式机器Reviewer身份/策略/绑定未接入；现行stage_binding未真实签发，旧711条legacy audit不具备本次资格。",
+      "blocker": "当前云端真实原件/Runner/机器Reviewer/Policy/Binding/凭据及同Root验证未就绪，不重建已实现的原件、Gate和Runner。",
       "next_input": "合法原件 source_version + raw_item + G0 审批与消费范围"
     },
     {
@@ -44,13 +44,13 @@
       "name": "原件读取与识读",
       "substrate": "read_unit、原文摘录、页/字节定位、识读质量、不确定性",
       "status": "partial",
-      "state": "C01文本真实字节读取与Studio授权读回已修；C02专业OCR、完整G1资格仍待实证",
+      "state": "2026-11-13朱家角/七宝的C01真实读取与独立G1已在本地隔离库通过；C02读法与Studio读回有继承实现。现云端同Root当前G1尚未验证，不能把历史分段成果归零或冒充现云端PASS。",
       "code": [
         "pipelines/data-production/workers/private-evidence-stage.mjs",
         "packages/data-access/src/private-text-reading-repository.mjs",
         "supabase/migrations/20261115130000_mab_m5_private_text_read_context_consistency.sql"
       ],
-      "blocker": "G1精确审签与D01→D02专业请求生成未连通",
+      "blocker": "当前云端G1签后消费实证未完成；已知后继E_L1_TO_D02 typed请求尚需适配。",
       "next_input": "read_unit + 现行G1资格 + 精确locator和方法"
     },
     {
@@ -60,13 +60,13 @@
       "name": "材料理解与证据",
       "substrate": "material_evidence、证据链接、引文及事实/解释分离",
       "status": "blocked",
-      "state": "旧D02专业内容生成与新H05候选持久化都存在，但尚未受控连接",
+      "state": "原D02专业观察/H05的Worker持久能力与历史真实分段例均已存在；现在Runner没有将现行合格L1/G1合法转换为D02 typed观察输入的连续交接。",
       "code": [
         "pipelines/data-production/adapters/layer1-adapters.mjs",
         "pipelines/data-production/workers/private-evidence-stage.mjs",
         "supabase/migrations/20261113170000_mab_m5_d02_text_plain_observation.sql"
       ],
-      "blocker": "PRIVATE_NEXT_STAGE_REQUEST_NOT_READY；需要从合格L1组织真实观察输入",
+      "blocker": "E_L1_TO_D02：PRIVATE_NEXT_STAGE_REQUEST_NOT_READY（邻接转换缺口，不是D02不存在）",
       "next_input": "合格H05证据@revision + G2审签"
     },
     {
@@ -205,7 +205,7 @@
       "label": "D00 · 来源发现与准入",
       "kind": "producer",
       "status": "partial",
-      "summary": "来源候选持久化与D00/C01输出独立重构代码已具备；Reviewer stage_binding模拟签发CI通过，真实持久PG签发及Runner当前资格仍HOLD；C02/G1未证。",
+      "summary": "来源获取、原件字节回读及source/version/raw历史已真正落地；当前云端M2/M3结构已就位，运行差异是当前同Root原件/G0资格而非重新接入原件。",
       "code_paths": [
         "pipelines/data-production/workers/private-evidence-stage.mjs",
         "pipelines/data-production/adapters/private-evidence-adapters.mjs",
@@ -295,7 +295,7 @@
       "label": "G0 · 独立质量审核",
       "kind": "gate",
       "status": "blocked",
-      "summary": "原独立Gate/Reviewer/Runner代码和C01精确stage_binding继承；云端已实际安装K3权威函数并修复ACL，但正式机器Reviewer、原件/Storage和同Root真实签发尚未具备。",
+      "summary": "原独立Gate/Reviewer/Runner和PG17同Root签发/资格/撤权已有验证，现云端M3 Gate Service DB已实装；当前真实Reviewer/Policy/Binding与业务同Root签发尚待运行。",
       "code_paths": [
         "tools/rule-gate-reviewer.mjs",
         "tools/local-gate-service.mjs",
@@ -418,7 +418,7 @@
       "label": "D01 · 原件读取与识读",
       "kind": "producer",
       "status": "partial",
-      "summary": "C01文本真实字节读取与Studio授权读回已修；C02专业OCR、完整G1资格仍待实证",
+      "summary": "本地隔离真实朱家角/七宝C01读取及独立G1已有PASS；现云端同Root G1待验，不重建识读。",
       "code_paths": [
         "pipelines/data-production/workers/private-evidence-stage.mjs",
         "packages/data-access/src/private-text-reading-repository.mjs",
@@ -602,7 +602,7 @@
       "label": "D02 · 材料理解与证据",
       "kind": "producer",
       "status": "blocked",
-      "summary": "旧D02专业内容生成与新H05候选持久化都存在，但尚未受控连接",
+      "summary": "历史D02材料观察/H05能力已实现；当前真正的代码交接缺口是G1合格L1→D02受控typed请求。",
       "code_paths": [
         "pipelines/data-production/adapters/layer1-adapters.mjs",
         "pipelines/data-production/workers/private-evidence-stage.mjs",
@@ -1861,7 +1861,7 @@
         "budget",
         "source availability"
       ],
-      "notes": "Studio入口仍要求已有私有原件，广源发现/取得尚未从自然语言充分接线",
+      "notes": "Studio受控私有原件路径及历史真实上传/来源登记能力可继承；当前云端空对象与UI入口到通用发现的差异须分别核证，不得把原件功能归零。",
       "source_paths": [
         "apps/web/lib/studio-production.ts"
       ],
@@ -1878,7 +1878,7 @@
           "apps/web/lib/studio-production.ts",
           "CURRENT.md"
         ],
-        "next": "在合法授权范围内验证新题材来源发现、取得、逐动作权利与Studio→D00交接；不因仅已有私有原件可跑而签通用能力",
+        "next": "首先复用R05/R07/R08与原件获取/登记既有工具及真实用户已见原件的功能；只核当前UI是否可调用、云端对象/合法来源如何接续，不新造原件入库模块。",
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
@@ -1944,7 +1944,7 @@
           "CURRENT.md",
           "SUPABASE@mohen-cloud:2026-11-16:M2_PRIVATE_ORIGINAL_BUCKET_BRIDGE_C01_C02_SOURCE_REGISTRATION_SCHEMA+ACL_ACTUAL"
         ],
-        "next": "保留已实装M2/PG17独立G0成果，下一处仅核Studio真实上传→source/version/raw合法登记与权益动作，受限Storage字节回读后再接原Reviewer/Runner进行同Root实证。",
+        "next": "继承既有原件入库、SHA、source/version/raw绑定与M2实际迁移；最小实证当前云端同Root可用性，不做重新开发原件接入。",
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
@@ -1963,7 +1963,7 @@
         },
         "handoff": {
           "status": "PARTIAL",
-          "reason": "局部代码交接已存在，但未证明真实同Root及全部约束 现有M2数据库结构具备，Studio附件上传到合法source/version/raw的真实API调用尚未完成，实际root交接仍非PASS。",
+          "reason": "已有原件登记、存储与来源绑定实现和历史真实回读；当前云端M2底座已装但同Root对象实际消费尚未验证，故仍PARTIAL。",
           "evidence_refs": [
             "pipelines/data-production/workers/private-evidence-stage.mjs",
             "CURRENT.md"
@@ -2005,7 +2005,7 @@
       "engineering_diagnosis": {
         "category": "CODE_PRESENT_NO_ROOT_E2E",
         "confidence": "SOURCE_AND_MOCK_CI_CONFIRMED",
-        "diagnosis": "原独立G0 Reviewer/C01输出重构可复用；本批修补candidate.project_id必须与已持久化同run.scope.project_id一致的缺口（仅接口守卫）。 云端无私有原件/Storage、独立机器Reviewer登录/策略/绑定，业务同Root仍HOLD。 本次已由真实隔离PG17合成同Root签发＋原Runner资格校验器正反/撤权验证（非官方Storage/云端完整Runner运行）。",
+        "diagnosis": "既有独立Gate/Reviewer/Runner、C01精确stage_binding及一次性PG17同Root G0正反/撤权可继承；当前mohen-cloud的M2/M3底座实际已安装，但原件对象/机器Reviewer策略绑定凭据和同Root业务签发尚未运行。运行HOLD不是能力不存在或要求重新建原件接入。",
         "evidence": [
           "tools/gate-stage-output-attestation.mjs@501829ac1509",
           "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
@@ -2027,9 +2027,10 @@
           "CI@43830993636:SUCCESS:DISPOSABLE_PG17_SAME_ROOT_MACHINE_G0_EXACT_RUNNER_VALIDATOR_POS_NEG_REVOKE_NO_STORAGE",
           "READ_ONLY_ENV@2026-11-16:NO_M2_STORAGE_REVIEWER_OR_STUDIO_PROJECTS_PREVIEW_DB_NOT_READY",
           "SUPABASE@mohen-cloud:2026-11-16:M2_PRIVATE_ORIGINAL_BUCKET_BRIDGE_C01_C02_SOURCE_REGISTRATION_SCHEMA+ACL_ACTUAL",
-          "SUPABASE@mohen-cloud:2026-11-16:M3_GATE_SERVICE_AUTH_PG17_ACL_INSTALLED_REAL"
+          "SUPABASE@mohen-cloud:2026-11-16:M3_GATE_SERVICE_AUTH_PG17_ACL_INSTALLED_REAL",
+          "tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json#construction_tracking"
         ],
-        "next": "保留已验证M2与M3服务Schema权限以及PG17的G0签署/资格消费；只修真实Studio上传→来源/版本/raw及合法rights登记和官方Storage对象字节，接机器Reviewer专用LOGIN、凭据与持续服务后由原Runner运行同Root。",
+        "next": "使用原件/来源登记及原Gate/Runner既有能力，定向验证当前云端Owner/Project/Root实际取件、Reviewer签署和Runner资格消费；仅在实证发现的相邻故障处修复。",
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "PARTIAL_SOURCE_GUARD_CODE_NO_LIVE_SIGNING",
         "runtime_pass": "NOT_PROVEN"
@@ -2037,7 +2038,7 @@
       "verification_layers": {
         "capability": {
           "status": "PARTIAL",
-          "reason": "原C01独立重构及K3可继承，G0候选持久Run项目一致性守卫已提交51be179d；主CI 270/0、隔离PG17安全回归均SUCCESS。但云端机器Reviewer/Storage未激活，不能算实际同Root G0签发。 追加隔离PG17同Root签名＋Runner资格校验成功（43830993636）；不等于云端真运行。 2026-11-16云端M2私有登记表、受限Storage桶、桥接/C01/C02/来源查询函数和最小权限均实装且SQL回读通过；并无真实上传或stage审签，不以Schema完成判PASS。 M3 Gate Service的凭据表/NOLOGIN Reader/受限身份及资格函数已在真实PG17云端实装、ACL检查通过；无真实机器LOGIN、凭据、政策及运行资格，能力仍PARTIAL。",
+          "reason": "已继承Reviewer/Signer/Runner及精确stage_binding；当前云端已实装M2私有表/桶及M3 Gate Service与ACL，但机器执行/策略未实证，不能升为PASS。",
           "evidence_refs": [
             "tools/gate-stage-output-attestation.mjs@501829ac1509",
             "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
@@ -2063,7 +2064,7 @@
         },
         "handoff": {
           "status": "HOLD",
-          "reason": "同Run project scope守卫已做最小代码变更，云端历史20个run.scope皆空且M2/Storage及Reviewer策略未部署；尚无合法新Root G0签名与Runner同根资格，HOLD。 隔离PG17根内签发/校验PASS，但云端及完整Run未执行，交接仍HOLD。 BATCH-06只读预检：云端无M2/Storage/Reviewer与Studio项目，Preview缺DB配置；实际上传还需source/version/raw登记，仍HOLD。 本轮仅解除M2结构/私有桶缺席；云端实际上传/来源合法绑定/独立Reviewer与完整Runner同Root仍HOLD。 M3服务函数云端已在，但机器Review与Consume真实登录服务未启用、候选0；实际handoff仍HOLD。",
+          "reason": "一次性PG17同Root独立G0合格实证不直接迁移当前云端；现云端无实际原件/候选/Reviewer绑定凭据，同Root Reviewer→Runner交接HOLD。",
           "evidence_refs": [
             "tools/gate-stage-output-attestation.mjs@501829ac1509",
             "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
@@ -2120,7 +2121,7 @@
       "engineering_diagnosis": {
         "category": "CODE_PRESENT_NO_ROOT_E2E",
         "confidence": "SOURCE_AND_MOCK_CI_CONFIRMED",
-        "diagnosis": "K3资格/Signer/Runner精确stage_binding消费既有能力可复用，但本批G0候选与持久run项目scope新增守卫，未生成有效审计。 云端无私有原件/Storage、独立机器Reviewer登录/策略/绑定，业务同Root仍HOLD。 本次已由真实隔离PG17合成同Root签发＋原Runner资格校验器正反/撤权验证（非官方Storage/云端完整Runner运行）。",
+        "diagnosis": "既有独立Gate/Reviewer/Runner、C01精确stage_binding及一次性PG17同Root G0正反/撤权可继承；当前mohen-cloud的M2/M3底座实际已安装，但原件对象/机器Reviewer策略绑定凭据和同Root业务签发尚未运行。运行HOLD不是能力不存在或要求重新建原件接入。",
         "evidence": [
           "tools/gate-stage-output-attestation.mjs@501829ac1509",
           "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
@@ -2142,9 +2143,10 @@
           "CI@43830993636:SUCCESS:DISPOSABLE_PG17_SAME_ROOT_MACHINE_G0_EXACT_RUNNER_VALIDATOR_POS_NEG_REVOKE_NO_STORAGE",
           "READ_ONLY_ENV@2026-11-16:NO_M2_STORAGE_REVIEWER_OR_STUDIO_PROJECTS_PREVIEW_DB_NOT_READY",
           "SUPABASE@mohen-cloud:2026-11-16:M2_PRIVATE_ORIGINAL_BUCKET_BRIDGE_C01_C02_SOURCE_REGISTRATION_SCHEMA+ACL_ACTUAL",
-          "SUPABASE@mohen-cloud:2026-11-16:M3_GATE_SERVICE_AUTH_PG17_ACL_INSTALLED_REAL"
+          "SUPABASE@mohen-cloud:2026-11-16:M3_GATE_SERVICE_AUTH_PG17_ACL_INSTALLED_REAL",
+          "tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json#construction_tracking"
         ],
-        "next": "保留已验证M2与M3服务Schema权限以及PG17的G0签署/资格消费；只修真实Studio上传→来源/版本/raw及合法rights登记和官方Storage对象字节，接机器Reviewer专用LOGIN、凭据与持续服务后由原Runner运行同Root。",
+        "next": "使用原件/来源登记及原Gate/Runner既有能力，定向验证当前云端Owner/Project/Root实际取件、Reviewer签署和Runner资格消费；仅在实证发现的相邻故障处修复。",
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "PARTIAL_SOURCE_GUARD_CODE_NO_LIVE_SIGNING",
         "runtime_pass": "NOT_PROVEN"
@@ -2152,7 +2154,7 @@
       "verification_layers": {
         "capability": {
           "status": "PARTIAL",
-          "reason": "原C01独立重构及K3可继承，G0候选持久Run项目一致性守卫已提交51be179d；主CI 270/0、隔离PG17安全回归均SUCCESS。但云端机器Reviewer/Storage未激活，不能算实际同Root G0签发。 追加隔离PG17同Root签名＋Runner资格校验成功（43830993636）；不等于云端真运行。 2026-11-16云端M2私有登记表、受限Storage桶、桥接/C01/C02/来源查询函数和最小权限均实装且SQL回读通过；并无真实上传或stage审签，不以Schema完成判PASS。 M3 Gate Service的凭据表/NOLOGIN Reader/受限身份及资格函数已在真实PG17云端实装、ACL检查通过；无真实机器LOGIN、凭据、政策及运行资格，能力仍PARTIAL。",
+          "reason": "已继承Reviewer/Signer/Runner及精确stage_binding；当前云端已实装M2私有表/桶及M3 Gate Service与ACL，但机器执行/策略未实证，不能升为PASS。",
           "evidence_refs": [
             "tools/gate-stage-output-attestation.mjs@501829ac1509",
             "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
@@ -2178,7 +2180,7 @@
         },
         "handoff": {
           "status": "HOLD",
-          "reason": "同Run project scope守卫已做最小代码变更，云端历史20个run.scope皆空且M2/Storage及Reviewer策略未部署；尚无合法新Root G0签名与Runner同根资格，HOLD。 隔离PG17根内签发/校验PASS，但云端及完整Run未执行，交接仍HOLD。 BATCH-06只读预检：云端无M2/Storage/Reviewer与Studio项目，Preview缺DB配置；实际上传还需source/version/raw登记，仍HOLD。 本轮仅解除M2结构/私有桶缺席；云端实际上传/来源合法绑定/独立Reviewer与完整Runner同Root仍HOLD。 M3服务函数云端已在，但机器Review与Consume真实登录服务未启用、候选0；实际handoff仍HOLD。",
+          "reason": "一次性PG17同Root独立G0合格实证不直接迁移当前云端；现云端无实际原件/候选/Reviewer绑定凭据，同Root Reviewer→Runner交接HOLD。",
           "evidence_refs": [
             "tools/gate-stage-output-attestation.mjs@501829ac1509",
             "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
@@ -2603,12 +2605,12 @@
       "engineering_diagnosis": {
         "category": "MISSING_HANDOFF_TRANSFORM",
         "confidence": "SOURCE_CONFIRMED",
-        "diagnosis": "D01有reading candidate，D02已有H05观察持久化，但Runner尚无把现行合格L1变为D02 typed专业观察请求的受控转换",
+        "diagnosis": "已复读现行main：D01 reading candidate、D02 observeMaterial及H05持久Worker均有实现；runProduction在合格L1后若不是D02 typed专业请求，会保守返回PRIVATE_NEXT_STAGE_REQUEST_NOT_READY。仅缺两端受控转换，不应重新开发原件、D01/G1或D02。",
         "evidence": [
           "pipelines/data-production/orchestrator/orchestrator.mjs#PRIVATE_NEXT_STAGE_REQUEST_NOT_READY",
           "pipelines/data-production/adapters/private-evidence-adapters.mjs#CANDIDATE_REF_SPECS"
         ],
-        "next": "在唯一Runner/Registry内依据G1现行资格及精确locator形成D02 typed请求；真实证据与权利输入、负例及持久HOLD验证",
+        "next": "在原单Runner专业承接位置，消费精确合格L1/G1与来源权利，生成受控D02 typed观察请求；沿现有observeMaterial Worker验证POS/NEG及资格/撤权；无需再跑旧样板。",
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
@@ -5186,9 +5188,9 @@
       "primary_domain": "assets"
     }
   ],
-  "earliest_verified_code_point": "D00→D01 C01真实文本请求代码与独立Reviewer精确stage_binding签发接口已在main实现并通过mock DB正反CI；不代表持久PG同Root资格消费。",
-  "earliest_runtime_blocker": "mohen-cloud PG17.11仅K3底座入云；M2 private_originals、受控Storage、真实机器Reviewer登录及Policy/Binding未就绪，历史run.scope 20/20均无project/root；没有同Root独立G0签发及Runner消费、撤权恢复实证（NOT_RUN）。",
-  "next_real_code_blocker": "M5-G0-ROOT-01：首先核同一Root的control.production_runs.scope.project_id持久登记与候选一致；获准隔离环境和M2/Storage备份/策略/回滚后接入既有machine Reviewer身份/Policy/binding，运行真实C01 G0 stage_binding→Runner资格/负例/撤权恢复；通过后仅补D01/G1→D02 typed交接。",
+  "earliest_verified_code_point": "历史真实来源/原件入库和D01/G1均有隔离环境实际成功；现云端M2私有原件/Storage/M3 Gate Service底座已安装。现行同Root PG17模拟业务场景G0审签/资格消费测试通过，不等于moHen-cloud真实Studio连续运行。",
+  "earliest_runtime_blocker": "mohen-cloud当前M2/M3底座已安装，但原件对象0、当前Studio Root0、Reviewer策略/绑定/凭据0、机器LOGIN与持久运行宿主未验；同一真实Root的云端G0阶段独立签发/消费仍HOLD。历史本地真实原件上传/来源登记不得误判为功能缺失。",
+  "next_real_code_blocker": "已知且经现行main源码定位：E_L1_TO_D02合格L1/G1→D02 typed专业请求适配缺口，Runner保守返回PRIVATE_NEXT_STAGE_REQUEST_NOT_READY；已有D01/G1、D02 observeMaterial等能力须继承，仅修相邻转换。云端G0是当前运行集成验证前沿，不是重造Gate的代码前沿。",
   "acceptance_basis": "PLAN V1.7 M5八维同一真实作品，绝不以本图状态代替验收",
   "acceptance_dimensions": [
     {
@@ -5378,7 +5380,7 @@
     "source_ref_policy": "源码链接锁定source_sha；当前HEAD变化时先比较影响范围再复核，不以HEAD自动判过期",
     "module_chain_read_rule": "主图37节点/54边三层状态后，深入module_internal_chains.modules[]：按步骤input/operation/output/guard/code_locators及handoffs[]逐点查；细分链接只作诊断，不加原54条与M5八维分母。",
     "audit_tracking_read_rule": "优先读取audit_tracking.next_frontier及groups定位小批核查；状态仍以nodes[]/edges[].verification_layers为准。只在当前Root走到的相邻点排查、修复、回归、三文件同步，并把真实证据写CURRENT/progress。",
-    "batch_deep_link_rule": "本轮直达HTML #edge-E_D00_REVIEW 和 #edge-E_D00_QUALIFY；C01精确stage_binding代码与mock CI通过，但真实持久PG同Root签发/资格/撤权未验，原边handoff保持HOLD、runtime保持NOT_VERIFIED。"
+    "batch_deep_link_rule": "运行前沿 HTML #edge-E_D00_REVIEW / #edge-E_D00_QUALIFY：云端已有M2/M3但同Root Reviewer资格仍HOLD；代码前沿 #edge-E_L1_TO_D02：G1合格到D02 typed转换明确缺口；原件真实入库及D01/G1的本地既有PASS单列历史，不改判云端PASS。"
   },
   "source_audit": {
     "frozen_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
@@ -11473,7 +11475,7 @@
   "audit_tracking": {
     "schema": "mohen.m5.navigation-audit-tracker.v1",
     "review_date": "2026-11-16",
-    "review_source_head": "08ba2aec09096ffb32fe993bd0aedacb3b00fe95",
+    "review_source_head": "aaf74700230d945c230164cc715acac7397d4563",
     "label": "按需核查组｜分批排查与分批施工的定位索引，非另一套施工计划或验收分母",
     "authority": "tasks/implementation/MAB/PLAN.md §0, §3.5 B/C",
     "baseline": {
@@ -11509,7 +11511,12 @@
         "E_L1_TO_D02"
       ],
       "state_source": "原edges[].verification_layers，状态不在此处重复存储",
-      "reason": "mohen-cloud为研发测试库，原M2私有元数据、桶、C01/C02、来源查询及M3 Gate Service数据库底座已真实实装和SQL ACL回读；M3用K3已验PG17临时SET/OWNER最终ACL修法。云端无reviewer策略/绑定、专用机器LOGIN/凭据、真实原件或G0候选；最前阻断是Studio附件上传后合法source/version/raw及rights登记与官方Storage字节回读，然后沿原独立Gate Service和Runner接续G0→D01。不可重造Gate或以隔离PG17冒充云端PASS。"
+      "reason": "研发云库mohen-cloud的原M2私有原件/Storage及M3受限Gate Service已实装；历史本地Owner真实原件字节回读、来源登记、D01/G1与隔离PG17同Root独立G0验证均可继承，禁止当作尚未建设。当前运行前沿E_D00_REVIEW/E_D00_QUALIFY仍缺云端真实Owner/Root、Reviewer LOGIN/策略/凭据和受权Runner同Root实证；独立的已确认代码交接缺口是E_L1_TO_D02。",
+      "code_edge_ids": [
+        "E_L1_TO_D02"
+      ],
+      "reuse_first": "历史原件保存/来源登记/字节读取功能、G0/G1独立审核与D02专业Worker均继承；新环境空表只说明尚未导入可用测试对象，不等于功能未实现",
+      "next_batch_rule": "先按现有能力进行真实同Root最小集成核证；对E_L1_TO_D02仅修typed请求适配，不重新开发原件上传或另造Gate/Runner。"
     },
     "groups": [
       {
@@ -11815,6 +11822,104 @@
         "#edge-E_D00_QUALIFY"
       ],
       "source_of_status": "edges[].verification_layers"
+    },
+    "last_documentation_correction": {
+      "date": "2026-11-16",
+      "source_head": "aaf74700230d945c230164cc715acac7397d4563",
+      "note": "纠正将现库数据为空/历史案例不在现库误判成Studio真实原件功能未实现；同步刷新三份导航，阶段仍HOLD，没有施工新PASS。"
     }
+  },
+  "construction_tracking": {
+    "schema": "mohen.m5.construction-tracking.v1",
+    "updated_on": "2026-11-16",
+    "checked_main_sha": "aaf74700230d945c230164cc715acac7397d4563",
+    "purpose": "面向用户与执行方的当前施工定位：历史可继承成功、现有研发云库已装底座、未完成的真实运行和代码交接严格分开。不新增验收标准。",
+    "overall": "M5_OVERALL_HOLD",
+    "historical_delivered": [
+      {
+        "key": "H01",
+        "status": "VERIFIED_HISTORICAL_LOCAL",
+        "title": "原件已真实取得、展示与回读；来源登记曾真实落库",
+        "detail": "2026-11-07本地Owner可观看真实作品；2026-11-08上图《松江府志》第51页JPEG 236005字节，经私有存储回读SHA256一致，source.sources/source_versions/raw_items及studio.private_source_registration真实匹配。2026-11-10 Y07另有NAJ单幅690947字节取得、存储与source绑定回读。不是当前mohen-cloud已经存入同一原件。",
+        "references": [
+          "tasks/implementation/MAB/progress.md#cp2-e-第二步上图真实原件已落库2026-11-08本地隔离-mohen_dev",
+          "tools/land-shl-original.mjs",
+          "tools/acquire-http-file.mjs"
+        ]
+      },
+      {
+        "key": "H02",
+        "status": "VERIFIED_HISTORICAL_ISOLATED",
+        "title": "D01/G1与后续专业方法已有真实分段验证",
+        "detail": "2026-11-13朱家角和七宝两个真实题材在本地隔离库取得C01 read_unit并各获独立G1 current PASS；原D02 H05与G2、后续专业方法也有分段验证。不能合并声称当前云端同一Root PASS。",
+        "references": [
+          "tasks/implementation/MAB/progress.md#2026-11-13st-02-d01g1-两例通过本地隔离库verified_isolated",
+          "tasks/results/MAB/M5_D00_D05_FULL_CHAIN_INHERITANCE_CURRENT.md"
+        ]
+      },
+      {
+        "key": "H03",
+        "status": "VERIFIED_DISPOSABLE_PG17",
+        "title": "同Root独立G0精确签发及Runner资格消费在一次性PG17通过",
+        "detail": "CI 43830993636成功，覆盖签发、资格读取、错Root/Project/output和撤权负例；不等于目前mohen-cloud真实Studio工作回执。",
+        "references": [
+          "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43830993636",
+          "CURRENT.md#M5-G0-ROOT-01"
+        ]
+      },
+      {
+        "key": "H04",
+        "status": "VERIFIED_CURRENT_DEV_SCHEMA",
+        "title": "mohen-cloud M2原件/Storage与M3独立Gate服务数据库底座已经实装",
+        "detail": "2026-11-16实际云端PG17回读：studio.private_originals表/RLS、非公开mohen-private-originals桶、C01/C02与来源查询、control.gate_service_credentials、mohen_gate_reader、认证/当前资格函数及ACL均已安装。当前原件对象0、Gate服务凭据0、Reviewer策略/绑定0，不能因此声称真实Studio→G0云端运行。",
+        "references": [
+          "CURRENT.md#M5-DEV-M2-01",
+          "CURRENT.md#M5-DEV-M3-02",
+          "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43846502086"
+        ]
+      }
+    ],
+    "current_dev_environment": {
+      "name": "mohen-cloud",
+      "state": "BASE_INSTALLED_BUSINESS_E2E_NOT_VERIFIED",
+      "confirmed": [
+        "M2私有原件表、RLS与不可变保护",
+        "受控私有Storage桶、M2证据桥接及C01/C02来源读取SQL",
+        "K3独立签发/资格权限与M3受限Gate Service DB/ACL"
+      ],
+      "unproven": [
+        "当前云端真实Original/Storage对象与Owner Studio Root运行（现存0）",
+        "当前云端独立Reviewer LOGIN、Policy、Binding和凭据（现存0）",
+        "同一Root的云端G0独立签发、Runner当前资格消费与后续G1/D02",
+        "持久Runner宿主与真正受权的HTTP/Provider环境"
+      ]
+    },
+    "frontiers": [
+      {
+        "kind": "RUNTIME_INTEGRATION",
+        "edge_ids": [
+          "E_D00_REVIEW",
+          "E_D00_QUALIFY"
+        ],
+        "state": "HOLD_NOT_VERIFIED",
+        "description": "沿既有真实原件/来源登记能力与当前云端M2/M3底座，针对相同Creator/Project/Root证明有权原件可读取、原Runner可持续运行、原Reviewer精确签发/资格消费；只解决实际跨环境条件，不重新制作原件接入功能或G0规则。",
+        "completion": "真实同Root原件byte/hash/source/version/raw/rights、G0签署与当前资格以及错权/错digest/撤权/恢复回执"
+      },
+      {
+        "kind": "KNOWN_CODE_HANDOFF",
+        "edge_ids": [
+          "E_L1_TO_D02"
+        ],
+        "state": "CONFIRMED_TYPED_HANDOFF_HOLD",
+        "description": "Runner对已合格L1到D02仍报PRIVATE_NEXT_STAGE_REQUEST_NOT_READY，D01读取与D02 observeMaterial能力已存在；仅补G1当前资格下的typed D02专业输入转换，不重写D01识读或D02。",
+        "completion": "同Run L1/G1合格→D02专业请求正确接收、持久候选和负例HOLD；不得人工伪造观察自动化"
+      }
+    ],
+    "do_not_repeat": [
+      "不要因为mohen-cloud新库原件数为0，重建已实现的上传、真实原件存储、SHA回读、source/version/raw登记能力",
+      "不要重复做已经通过的本地隔离G0/G1、R01—R11历史样板，或新建第二Gate/Runner",
+      "不要把M2/M3架构迁移成功或历史成功写成目前云端同Root PASS"
+    ],
+    "next_execution_rule": "先继承并以最小正反验证锁定环境/当前资格的确切差异，同时以E_L1_TO_D02为下一处已确认代码适配缺口；每做完一处修复须原位同步JSON/MD/HTML、CURRENT与progress，维护具体证据和实时状态。"
   }
 }

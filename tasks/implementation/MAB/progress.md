@@ -4330,3 +4330,13 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **文件与精准回执**：`supabase/migrations/20261103234154_mab_m3_gate_service_auth.sql`（仅兼容托管PG17非superuser OWNER转换和其后ACL）、`scripts/guards/check-isolated-db-fixtures.mjs`（Supabase Storage托管Schema不在裸PG17的具名登记）；主CI 43846502152 SUCCESS，PG17 43846502086 SUCCESS；云端正式迁移登记`20261116101440` SUCCESS。
 - **POS/NEG/AUTH证据**：真实云库Reader NOLOGIN、函数权限：signer认证true、Reader current true、anon/authenticated/producer对应执行false、临时SET撤回及schema CREATE=false。原K3审计711条不变。缺真实Reader LOGIN、Gate Service私有凭据与独立进程的HTTP/PG正反，不能宣称实际独立签发或撤权。
 - **继续入口和状态**：首先补Studio上传后`source/source_version/raw_item`正式绑定与合法`rights_by_action`，验证真实Storage字节双重回读/Owner权限，再启用已安装M3服务合同的独立Reviewer/Runner、G0→D01/G1。E_D00_REVIEW/E_D00_QUALIFY保持云端HOLD、运行NOT_VERIFIED，M5八维HOLD。进度与CURRENT及原导航JSON/MD/HTML同批原位同步；ChatGPT资料库尚未同步。无需用户对测试数据内容逐条审核，未来对外运营另行授权。
+
+
+## 2026-11-16｜M5-NAV-CORRECTION-01｜原件与生产链继承纠偏、施工导航三文件同步
+
+- **施工起点与变更边界**：GitHub main原HEAD `aaf74700230d945c230164cc715acac7397d4563`。本批只更新工程事实与施工跟踪文档，不修改专业代码、Gate/Runner/Registry、PG/Storage、费用或部署。原`PLAN.md`不变，M5_OVERALL_HOLD。
+- **纠错来源**：2026-11-08本地隔离上图《松江府志》第51页原件236005字节私有落库、SHA256回读、source/version/raw精确登记与L0查询；2026-11-07本地作品观看；2026-11-10 Y07对NAJ原件的真实获取与登记；2026-11-13朱家角/七宝C01和独立G1当前PASS；2026-11-16 PG17隔离同Root G0签发/Reader/Runner资格及负例PASS（CI 43830993636）；2026-11-16开发云库M2/M3迁移及ACL回读（CI 43846502086/43846502152）。这些成功均有适用环境边界，不能拼接为现云端完整八维准出。
+- **此次纠正的错误**：把mohen-cloud现有Studio项目0、原件0、Storage对象0，误当成“Studio真实原件接入能力未实现”；还把旧HTML的“无持久PG/缺M2/无Storage”当作现状。历史本地实际实现+当前云端底座已安装，禁止重复建设原件上传/登记/SHA、D01/G1、独立Gate或Runner。
+- **最新两类前沿**：当前云端运行集成仍须实证同Root的Owner原件/来源/权限、持久Runner/Reviewer独立G0资格（`E_D00_REVIEW`/`E_D00_QUALIFY`仍◆PARTIAL／⇄HOLD／●NOT_VERIFIED）；已定位代码交接缺口`E_L1_TO_D02`：现有Reader/observeMaterial之间缺精确已签G1→D02 typed专业请求转换，`PRIVATE_NEXT_STAGE_REQUEST_NOT_READY`是合法fail-close，不表示D02未实现。
+- **同批文件**：`tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json/.md/.html`；`CURRENT.md`；本progress；`tasks/results/MAB/M5_D00_D05_FULL_CHAIN_INHERITANCE_CURRENT.md`。HTML顶部增加“已完成/当前HOLD/下一缺口”跟踪卡，原37节点54连线与原状态统计保留；机器JSON增加`construction_tracking`。原HTML旧云端环境说法已原位纠正。
+- **未实际完成**：未新提交业务代码、未产生当前云端同Root审核签发、未更改任一边运行层为PASS；因此不声称施工断点已经关闭。下一批须沿原有代码仅核第一处真实集成差异，并针对`E_L1_TO_D02`定向适配，不重跑历史样板。

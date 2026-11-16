@@ -4,6 +4,25 @@
 >
 > **角色：** 本图为后续任务的“指南针”，可以在阶段性定向收口后持续生长。不是系统已跑通的证明，不构成第二套架构权威、Runner、Gate、知识库或M5验收标准。三份导航（JSON/MD/HTML）必须同步更新。
 
+## 2026-11-16｜施工跟踪平台最新纠偏：已完成、当前状态与下一处
+
+> **本节是最新工程定位，覆盖本文件下方仍留存的旧时点“无持久PG/缺M2/先重新接入原件”等判断。** 来源核对：main@`aaf74700230d`、CURRENT最近M2/M3云端安装、progress历史原件真链与ST-02/G1、现行Runner和Private Worker源码。原固定导航源码快照@`2c4db017`仅是早期定位依据；**不代表本节的实时跟踪已回到11月15日**。
+
+### 已完成与可直接继承（不是重新施工清单）
+
+- **真实原件、来源与展示链：已实际实现过。** 11月7日本地隔离Studio作品可观看；11月8日上图《松江府志》第51页JPEG **236,005字节** 经私有原件存储、SHA256真实回读与`source/source_version/raw_item`精确绑定，后续Y07还取得NAJ真实单幅原件并入库。**当前云端对象0，不代表原件上传、存储或来源绑定功能不存在。**
+- **D01/G1与后续专业方法：历史隔离真PASS可继承。** 11月13日朱家角、七宝分别产生真实C01读取单元并由独立G1签为current PASS；D02 H05及更后段的独立分段试验也已存在。不可将这些历史实证拼成现云端一次连续M5 PASS。
+- **当前开发云库底座：M2/M3已经实际安装。** `mohen-cloud` PG17上的`studio.private_originals`、非公开`mohen-private-originals`桶、证据桥接、C01/C02、source查询，以及M3受限Gate Service凭据表、`mohen_gate_reader`和ACL均已回读；隔离PG17同Root G0精确签发/资格/撤权CI `43830993636` PASS。没有理由重造这些表、Gate或Runner。
+
+### 当前仍未通过（不得标成已完成）
+
+- **运行集成前沿：** [`E_D00_REVIEW`](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_REVIEW) 与 [`E_D00_QUALIFY`](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_QUALIFY) 仍 `◆PARTIAL / ⇄HOLD / ●NOT_VERIFIED`。云端已装底座，但当前云端真实原件、Studio同Root业务Run、机器Reviewer凭据/策略/绑定和Runner持续宿主、独立G0消费尚无可信完整运行回执。只处理**跨环境实际交接**，不能把“空数据”说成“缺原件功能”。
+- **已确认代码交接缺口：** [`E_L1_TO_D02`](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_L1_TO_D02) 为`◆PARTIAL / ⇄HOLD / ●NOT_VERIFIED`。现Runner在合格L1→D02时会报`PRIVATE_NEXT_STAGE_REQUEST_NOT_READY`，而D01读取、独立G1及D02 `observeMaterial` 专业代码已存在。下一处定向代码施工只补**精确L1/G1→D02 typed请求转换**，不重复原件、识读、Gate、Runner或H05能力。
+
+**两类前沿不要混为一谈：** 当前云端没有完成的同Root业务验证 ≠ 下一处需要重新开发的业务功能；已知代码修复是L1→D02，运行验收须按Studio→G0→G1的依赖实证再继续。M5仍按PLAN §3.5 B八维验收，总体`M5_OVERALL_HOLD`，**本批是纠正导航状态说明，不声称新增代码或新运行PASS**。
+
+**机器与视觉保持同源：** `M5_MAINLINE_NAVIGATION_20261115.json#construction_tracking`记录历史已交付、当前研发云库、运行前沿与代码前沿；HTML顶部施工跟踪卡与原两类边锚点一一对应；37节点/54连接及所有三层PASS/HOLD计数没有擅自改变。用户无需再次审定原施工目标，此处仅修复跟踪失真。
+
 ## 分模块展开与完整统计（沿用37节点/54连接）
 
 导航把现有对象划成9个互斥主归属领域（`nodes[].primary_domain`、`edges[].primary_domain`），保持原37节点和54条结构连接不变。D00—D05继续显示完整六段主链；其它领域在HTML中可展开为有输入、责任与验收检查的业务步骤。**这些步骤是核查说明，不是新的节点、代码或已通过测试。**

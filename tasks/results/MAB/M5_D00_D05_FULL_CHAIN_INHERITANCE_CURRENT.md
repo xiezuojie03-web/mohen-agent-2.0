@@ -1,5 +1,8 @@
 # M5｜D00—D05／G0—G5 全链历史施工成果继承核查（现行必读索引）
 
+
+> **2026-11-16 更新优先说明（M5-NAV-CORRECTION-01）**：本文R01—R11及§3/§5中的“尚缺原M2/Storage”保留为先前时点的判断，现已过时；`mohen-cloud`的M2私有表、Storage桶、C01/C02与来源查询、M3受限Gate Service和ACL均在2026-11-16安装并回读。2026-11-08本地真实原件（236005字节、SHA、source/version/raw）、11-13朱家角/七宝D01/G1真实分段、11-16隔离PG17同Root G0签发资格验证继续有效，禁止重复造“原件接入”及Gate/Runner。**当前云端运行HOLD**是尚无当前同Root原件/机器Reviewer/持续Runner实际消费，**下一处已确认代码缺口**是`E_L1_TO_D02`的L1/G1→D02 typed转换，不是重做上游或D02。实时工作入口见`tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json#construction_tracking`与`CURRENT.md`最新M5-NAV-CORRECTION-01；历史原段不得当作最新缺口指令。
+
 > **用途和权威边界（2026-11-16）**：这是面向 M5 后续 D00—D05 全链断点修复的**历史实跑证据、可继承能力与缺口索引**；不是新任务书、设计合同、技术方案或新验收标准。唯一施工依据仍为 `tasks/implementation/MAB/PLAN.md` V1.7 第0章、第3.5 B/C节及第6章，当前事实见 `CURRENT.md`，原始逐批记录见 `tasks/implementation/MAB/progress.md`。**施工前必须读本索引第2—6节及当次断点的原始记录**；本索引只判历史可复用范围，不宣布当前 G0/G5 或 M5 运行PASS。
 >
 > **核查方法**：先检查原始历史运行报告、2026-11-07—16期间 `progress.md` 相关批次、11月10日结构化正反回执、11月15日既有遗产源码核查，再对照 GitHub `main` 的原 Runner、两类 Adapter、Private Worker、Reviewer、Registry、Signer、当前资格读取和11月16日两批代码及 CI。**原始材料与当前源码是不同证据层**；以下“验证”按原记录的当时环境与运行身份解释，本索引初稿未重新连接PG；R11已在现有`mohen-cloud`真实PG17实装K3基础及ACL修复，但未启动正式Reviewer、私有Storage、同Root业务Gate或付费模型。
