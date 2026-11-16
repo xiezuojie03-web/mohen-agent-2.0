@@ -26,6 +26,13 @@ const LEGACY_SUPERSEDED = "pre-V2-baseline legacy migration, superseded by 20261
 // 需要它们在 HTTP 链生效时，应连同对应路由一起进链，而不是靠本登记绕过。
 const M5_STUDIO_AXIS_DB_ONLY = "M5 Studio 业务轴 DB 层迁移，由专门隔离脚本单独应用（不进 k3 / mab-http 链）";
 const UNCHAINED = new Map([
+  // Supabase-managed Storage schema/API is absent from disposable vanilla
+  // PostgreSQL17 (both isolated chains). This is not a silently skipped
+  // business migration: actual mohen-cloud bucket SQL applied and checked
+  // public=false, 10MB, permitted MIME, RLS, 0 policies.
+  // Real upload/read-byte/storage authorization still NOT_RUN.
+  ["20261116173500_mab_m5_dev_private_original_bucket.sql",
+    "Supabase-managed Storage bucket config: isolated vanilla PG17 lacks storage schema; real mohen-cloud private bucket created/read back, Storage API byte test pending"],
   ...["008_cultural_world_objects.sql", "202609210001_foundation.sql", "202609210002_data_factory.sql",
     "202609210003_human_review.sql", "202609220004_knowledge_weave.sql", "202609220006_visual_linkage.sql",
     "202609220007_historical_spatial_reconstruction.sql", "202610020008_visual_asset_promotion_gate.sql",
