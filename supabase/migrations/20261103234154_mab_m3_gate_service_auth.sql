@@ -4,13 +4,13 @@ begin;
 -- Reuse the K3 migration's already validated temporary SET membership
 -- and schema CREATE contract for ALTER FUNCTION ... OWNER. All elevated
 -- grants are removed in this same transaction before COMMIT.
-do $ begin
+do $$ begin
  if not (select rolsuper from pg_roles where rolname=current_user) then
    execute format('grant mohen_gate_authority to %I with admin false, inherit false, set true',current_user);
    grant create on schema control to mohen_gate_authority;
  end if;
-end $;
-do $begin
+end $$;
+do $$begin
  if not exists(select from pg_roles where rolname='mohen_gate_reader')then
   create role mohen_gate_reader nologin noinherit nosuperuser nobypassrls nocreatedb nocreaterole noreplication;
  end if;
@@ -174,7 +174,7 @@ grant execute on function control.read_gate_stage_qualification(text,jsonb)to mo
 reset role;
 -- Remove temporary role/schema grants; the original K3 ADMIN-only bootstrap
 -- membership may remain but must not carry usable SET or inherited access.
-do $ begin
+do $$ begin
  if not (select rolsuper from pg_roles where rolname=current_user) then
    revoke create on schema control from mohen_gate_authority;
    execute format('revoke mohen_gate_authority from %I granted by %I',current_user,current_user);
@@ -188,9 +188,9 @@ do $ begin
       (m.member=(select oid from pg_roles where rolname=current_user)
        and m.admin_option and not m.inherit_option and not m.set_option)))
  then raise exception 'GATE_SERVICE_AUTHORITY_MEMBERSHIP_LEAK';end if;
-end $;
+end $$;
 -- Fail the migration if PUBLIC or Producer still executes privileged Gate API.
-do $ begin
+do $$ begin
  if has_function_privilege('anon','control.authenticate_gate_service(text,text)','EXECUTE')
  or has_function_privilege('anon','control.read_gate_stage_qualification(text,jsonb)','EXECUTE')
  or has_function_privilege('mohen_producer','control.authenticate_gate_service(text,text)','EXECUTE')
@@ -199,5 +199,5 @@ do $ begin
  or not has_function_privilege('mohen_gate_reader','control.read_gate_stage_qualification(text,jsonb)','EXECUTE')
  or not has_function_privilege('mohen_gate_signer','control.authenticate_gate_service(text,text)','EXECUTE')
  then raise exception 'GATE_SERVICE_EXECUTE_ACL_UNSAFE';end if;
-end $;
+end $$;
 commit;
