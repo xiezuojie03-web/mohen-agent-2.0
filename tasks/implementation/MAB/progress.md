@@ -4,7 +4,7 @@
 
 ## 使用方法与更新边界（2026-11-14统一）
 
-- **D00—D05全链断点修复必读历史继承索引（2026-11-16）**：[`M5_D00_D05_FULL_CHAIN_INHERITANCE_CURRENT.md`](../../results/MAB/M5_D00_D05_FULL_CHAIN_INHERITANCE_CURRENT.md)，读取R01—R10原证据、D00—D05可复用资产、Gate精确资格差异；施工必须先在本账新批记录所继承R编号/当前差异，不得仅凭旧简化核查判断能力不存在。此索引非新验收标准。
+- **D00—D05已有成果按需定位（2026-11-16统一）**：[`历史成果索引`](../../results/MAB/M5_D00_D05_FULL_CHAIN_INHERITANCE_CURRENT.md)只查本次受影响阶段/连接及必要原始证据，不把全量继承核查或R编号完备作为每批前置。按PLAN §0/§3.5 D记录可用基础、当前差异、实际改动、下游接收、回归与HOLD/恢复；没有新证据不重开已完成工作。
 
 
 - **接续读法**：先核GitHub最新main与CI → 读`CURRENT.md`当前事实 → 读`PLAN.md`相应阶段/QR/CP → **只读本账末尾最新实际批次、相关历史ID/证据**，不要求每次从头扫描数千行。
@@ -4437,3 +4437,16 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 配置操作仅按Owner具体批准执行：Preview SSO保护＋四个既有DB变量追加preview目标，未读取/解密值、未轮换/删production范围。创建部署时省略target按官方API产生preview，gitSource.ref固定已验0622618；返回target=null表示Preview。正式域名、生产部署及git.deploymentEnabled=false保持。未安装/启用正式Reviewer、写原件、签Gate、调用付费Provider。
 - 类型检查曾与Next构建并行，构建清理.next/types导致TS6053；改为构建完成后顺序重跑全量typecheck通过，未改类型断言或skip。新增签名中间件RED/绿色专项已保存。日志按文本仓库规范统一LF/去行末空白并重新计算hash。
 - 用户新增可用操作：通过Vercel保护访问本批最新私有登录页；Owner业务登录尚未验证。真实下游接收NOT_RUN，未建立作品/Creator/Project/Root；不拼隔离PASS。回退关闭云适配flag、不重放已认领run，保留审计；正式环境未替换。
+
+
+<a id="m5-doc-continuity-01"></a>
+
+## 2026-11-16｜M5-DOC-CONTINUITY-01｜施工要求一致性与持续接续修订（文档，非业务准出）
+
+- Owner本轮要求：“不强求继承”意在以现行设计构建真正可运行系统，同时明确继续利用已施工成果；本批授权为检查施工计划及相关文档、保障要求一致且计划可持续，不启动新业务生产或改变产品设计。before main=`110fc586cf2753b3b16493505f4f12d70ac59550`，远端同SHA、工作树原先干净；本批只修改原文档/导航与既有目标账元数据，不创建第二计划。
+- 实际冲突与修正：① PLAN/历史索引/progress使用说明仍把每批R编号与§2—6历史核查作为前置，改为受影响条目按需查阅；② 开发Skill写死ST-02优先级，改为当前同任务最前断点；③ 计划/接续/导航仍要求重做C01→D02转换，改为已有代码先验真实接收、实际失败才修；④ 导航可见卡片仍称五函数未装、先回Windows或Preview待部署，按既有已证回执纠正；⑤ 固定PLAN/接续锚点并保留旧锚点兼容。可用成果直接复用，缺接口/配置定向补，不符合设计者在原职责内有理由地修复或替换；保留唯一Runner/Registry/Gate/账本。
+- 受影响路径：`.agents/skills/mohen-dev-continuation/SKILL.md`、`AGENTS.md`、`CURRENT.md`、`specs/OPERATIONS_DEPLOYMENT.md`、`tasks/implementation/MAB/ENGINEERING_HANDOFF_CURRENT.md`、`tasks/implementation/MAB/PLAN.md`、`tasks/implementation/MAB/progress.md`、`tasks/results/MAB/M5_D00_D05_FULL_CHAIN_INHERITANCE_CURRENT.md`、`tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.html`、`tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json`、`tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.md`。`target-diff.csv`仅对既有AGENTS/运维目标行追加本批文档证据元数据，74个目标ID/旧哈希/原状态不变；其他文档路径在本段记录，不新增目标分母。
+- 验证：MHKA authority-routing guard PASS；developer Skill layout guard PASS；`node --test tests/dev-skills/*.test.mjs` 14 PASS/0 FAIL；定向一致性核验通过：MHKA原文、PLAN §3.5 B八维及第6章后原要求不变，37节点/54边身份、三层证据状态/源码SHA及统计不变，HTML内嵌JSON等于机器JSON，60个独立节点/边/模块源码定位存在，新/兼容锚点有效，导航JS语法有效，全部带日期历史progress原文保留。`git diff --check`通过；精确提交/CI以本批Git记录及后续回执核实，不用文档检查代替业务运行。
+- 当前工程事实沿用已有实证：main@110fc58主CI43877666170 SUCCESS，受保护Preview部署0622618 READY；mohen-cloud现有底座/函数已装，真实Owner/Project/Root、低权LOGIN/授权/Reviewer配置与同Root连续资格仍未贯通。只读查询projects/originals/private_objects/mohen_LOGIN/reviewer_bindings/gate_service_credentials/execution_receipts均0、users=1，不据此推断功能缺失或历史费用为零。
+- 八维/最远/下一步：ALL_HOLD不变；本批交付是一致且可持续执行的原计划/指引，未扩大用户业务可用范围。下一批按PLAN §0/§3.5 D复用受保护云端入口，接低权执行/授权及独立Reviewer，正常Studio入口固定同一真实任务，推进G0/G1并验现有C01→D02真实接收；某操作具名阻断时继续不依赖它的已授权工作，不重跑全量继承审计或回到旧阶段流水线。
+- 原设计包引用：本批未引用交付包文件；直接核当前MHKA、PLAN、CURRENT、接续指引、导航、开发Skill及既有云端/程序集成回执。未更改业务代码、DB/Storage、密钥、Provider费用、部署、正式Gate或公众访问。文档回退可定向还原本批文档差异，不操作数据库或覆盖历史审计；M6/M7/M8及独立授权边界不变。

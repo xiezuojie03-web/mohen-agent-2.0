@@ -2,6 +2,14 @@
 
 > **职责**：当前代码与运行证据及剩余阻断，不规定工程施工标准。唯一计划：`tasks/implementation/MAB/PLAN.md` V1.7；历史逐批证据：`tasks/implementation/MAB/progress.md`。每次施工仍须实时查询GitHub `main` HEAD、CI、PG/HTTP及部署，不能把本页SHA当永久最新版本。
 
+**当前接续摘要（2026-11-16；事实基线main@110fc58，后续仍须实时核验）**：受保护Preview已READY，部署0622618；main@110fc58主CI43877666170 SUCCESS。现有mohen-cloud已装私有原件/Storage、M3 Gate服务及Owner读/D02—D05候选函数；只读核查users=1、projects=0、private_originals=0、私有桶对象=0、mohen LOGIN=0、Reviewer bindings=0、Gate service credentials=0、execution_receipts=0。C01 G1→D02 typed/受控生成已有代码接线，云端真实同任务G1→D02/G2尚未验证；现有云端适配范围到D02，不是已交付六阶段自动整链。M5八维继续HOLD。
+
+**执行要求只读PLAN §0/§3.5 D**：复用可用成果，修接口/配置，必要时在原职责内替换；历史继承审计不再是每批前置。当前最前工作是既有受保护入口的低权执行/授权及独立Reviewer接线，并在同一真实Studio任务推进G0/G1→D02；仅Owner登录等确属Owner的操作由Owner完成。环境阻断不阻止其他已授权且不依赖它的工作。
+
+## 带时点的既有回执（只追溯，不直接执行其中旧“下一步”）
+
+以下内容保留原批次事实；旧“待部署/云函数未安装/先回Windows/先买开发分支/typed转换缺失”等描述已被后续批次覆盖，不再作为当前指令。当前事实优先读本页顶端，施工标准只读PLAN。
+
 **2026-11-16｜M5-CLOUD-01实装回执（优先于下方待部署描述）**：代码d607b12与证据0622618已推main；精确06226189255e30953cb939ba557d8d8775cf689e主CI43876510255、隔离HTTP/Chromium43876510271均SUCCESS。主CI705通过/4跳过（沿用CI实网跳过规则）、生产边界309/0；不覆盖此前本地Commons实网失败。批准的受保护Preview dpl_GqTMGfg5NLzeQBZa4Zq9oUnVjESj已READY，URL https://mohen-agent-2-0-aweuhp9nq-napoles1.vercel.app/login ，精确部署0622618。连接器受权GET登录页200、auth/me为authenticated=false、匿名Studio API401、未配置执行器503/no-store；外部匿名请求仍转Vercel登录，未向公众开放。Production原域名仍200且部署83560224未切换。mohen-cloud只读回查users=1、projects/originals=0、mohen LOGIN=0、Reviewer bindings=0；真实Owner/同Root/生产数据POS尚未建立，八维HOLD。下一最前阻断=Owner在该私有入口登录及独立低权执行/授权/Reviewer配置；不得用Web全权连接代替Producer或自签Gate。实际证据live-preview-receipt.json与anonymous-protection.json。
 
 **2026-11-16｜M5-CLOUD-01（优先于历史宿主建议）**：Owner要求云端优先，并已明确批准受保护研发Preview。现Preview登录保护启用，四项既有数据库变量仅追加Preview范围、未读取解密值，Production部署仍83560224。继承原Runner增加有界请求执行适配、原run原子认领及异常HOLD；原独立授权/签名与低权身份不放宽。309项生产边界、16项Studio/中间件专项及构建通过，raw Runner/Ajv/Provider/Registry已入部署包；本批提交时新Preview尚未创建，云端生产配置未启用，真实Owner/Project/Root/作品尚未建立，八维全部HOLD。下一步精确CI后部署本批受保护Preview并验证入口，然后接续独立低权执行及审核；不再以回本地为前置。证据：tasks/results/MAB/evidence/m5-cloud-20261116/receipt.json。

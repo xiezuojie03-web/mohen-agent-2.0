@@ -1,9 +1,11 @@
-# M5｜D00—D05／G0—G5 全链历史施工成果继承核查（现行必读索引）
+# M5｜D00—D05／G0—G5 全链历史施工成果继承核查（按需复用索引）
+
+> **持续施工说明（2026-11-16）**：本索引用于利用已有成果，不设全量继承核查门槛。当前实现能用就用，接口/配置缺口定向修，不符合现行设计者在原职责内受控替换；详见PLAN §0/§3.5 D。下文带历史时点的缺口不作为当前施工命令。
 
 
-> **2026-11-16 更新优先说明（M5-NAV-CORRECTION-01）**：本文R01—R11及§3/§5中的“尚缺原M2/Storage”保留为先前时点的判断，现已过时；`mohen-cloud`的M2私有表、Storage桶、C01/C02与来源查询、M3受限Gate Service和ACL均在2026-11-16安装并回读。2026-11-08本地真实原件（236005字节、SHA、source/version/raw）、11-13朱家角/七宝D01/G1真实分段、11-16隔离PG17同Root G0签发资格验证继续有效，禁止重复造“原件接入”及Gate/Runner。**当前云端运行HOLD**是尚无当前同Root原件/机器Reviewer/持续Runner实际消费，**下一处已确认代码缺口**是`E_L1_TO_D02`的L1/G1→D02 typed转换，不是重做上游或D02。实时工作入口见`tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json#construction_tracking`与`CURRENT.md`最新M5-NAV-CORRECTION-01；历史原段不得当作最新缺口指令。
+> **2026-11-16 更新优先说明（M5-NAV-CORRECTION-01）**：本文R01—R11及§3/§5中的“尚缺原M2/Storage”保留为先前时点的判断，现已过时；`mohen-cloud`的M2私有表、Storage桶、C01/C02与来源查询、M3受限Gate Service和ACL均在2026-11-16安装并回读。2026-11-08本地真实原件（236005字节、SHA、source/version/raw）、11-13朱家角/七宝D01/G1真实分段、11-16隔离PG17同Root G0签发资格验证继续有效，禁止重复造“原件接入”及Gate/Runner。**当前云端运行HOLD**是尚无当前同Root原件/机器Reviewer/持续Runner实际消费，C01 `E_L1_TO_D02` typed转换与受控H05生成现已由712a08b补齐代码接线，Owner读及D02—D05候选函数已由20261116122301安装；接续应验证真实同Root G1→D02/G2，C02及后续接口另核，不照旧缺口重做。实时工作入口见`tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json#construction_tracking`与`CURRENT.md`顶端最新事实；历史原段不得当作最新缺口指令。
 
-> **用途和权威边界（2026-11-16）**：这是面向 M5 后续 D00—D05 全链断点修复的**历史实跑证据、可继承能力与缺口索引**；不是新任务书、设计合同、技术方案或新验收标准。唯一施工依据仍为 `tasks/implementation/MAB/PLAN.md` V1.7 第0章、第3.5 B/C节及第6章，当前事实见 `CURRENT.md`，原始逐批记录见 `tasks/implementation/MAB/progress.md`。**施工前必须读本索引第2—6节及当次断点的原始记录**；本索引只判历史可复用范围，不宣布当前 G0/G5 或 M5 运行PASS。
+> **用途和权威边界（2026-11-16）**：这是面向 M5 后续 D00—D05 全链断点修复的**历史实跑证据、可继承能力与缺口索引**；不是新任务书、设计合同、技术方案或新验收标准。唯一施工依据仍为 `tasks/implementation/MAB/PLAN.md` V1.7 第0章、第3.5 B/C节及第6章，当前事实见 `CURRENT.md`，原始逐批记录见 `tasks/implementation/MAB/progress.md`。**只按本次受影响阶段/连接查阅相关条目及必要原始记录；不要求每批通读第2—6节或补齐全部R编号**；本索引只判历史可复用范围，不宣布当前 G0/G5 或 M5 运行PASS。
 >
 > **核查方法**：先检查原始历史运行报告、2026-11-07—16期间 `progress.md` 相关批次、11月10日结构化正反回执、11月15日既有遗产源码核查，再对照 GitHub `main` 的原 Runner、两类 Adapter、Private Worker、Reviewer、Registry、Signer、当前资格读取和11月16日两批代码及 CI。**原始材料与当前源码是不同证据层**；以下“验证”按原记录的当时环境与运行身份解释，本索引初稿未重新连接PG；R11已在现有`mohen-cloud`真实PG17实装K3基础及ACL修复，但未启动正式Reviewer、私有Storage、同Root业务Gate或付费模型。
 >
@@ -11,11 +13,11 @@
 
 ## 1. 机器和后续执行方的最短入口
 
-**2026-11-16执行安排入口**：Owner要求的完整继承/连续总装已写入唯一[PLAN §3.5 D](../../implementation/MAB/PLAN.md#d-m5完整成果继承与连续总装执行安排owner要求落文2026-11-16)，覆盖原件、G/Runner、专业方法、Agent/费用、资产、Studio、Admin/发布/WATCH及回归的逐域复用与六个工作包；新窗口指令在[工程交接入口§4](../../implementation/MAB/ENGINEERING_HANDOFF_CURRENT.md#4-完整继承施工接续与新窗口执行指令)。本索引继续只管历史证据，不另立顺序；下文§3—5的历史环境缺口须结合顶端更新、实时CURRENT和PLAN判断，不能据旧“先核G0”无限重复上游或阻止独立代码修复。此次只有执行安排落文，未新增任何业务运行PASS。
+**2026-11-16执行安排入口**：Owner要求的完整继承/连续总装已写入唯一[PLAN §3.5 D](../../implementation/MAB/PLAN.md#m5-continuous-assembly)，覆盖原件、G/Runner、专业方法、Agent/费用、资产、Studio、Admin/发布/WATCH及回归的逐域复用与六个工作包；新窗口指令在[工程交接入口§4](../../implementation/MAB/ENGINEERING_HANDOFF_CURRENT.md#m5-continuation)。本索引继续只管历史证据，不另立顺序；下文§3—5的历史环境缺口须结合顶端更新、实时CURRENT和PLAN判断，不能据旧“先核G0”无限重复上游或阻止独立代码修复。此次只有执行安排落文，未新增任何业务运行PASS。
 
 1. 先从 `PLAN.md` 第0章及第3.5 B/C节确认本次主干边与唯一八维，不从历史报告中的“下一步”决定当前顺序。
 2. **本文件第2节是历次成功证据目录，第3节是 D00—D05 逐段继承清单，第4节是 Gate 与 Runner 交接差异，第5节是当前最小断点，第6节是原文件定位。** 只顺着当前边阅读关联条目，不必每次重读整个数千行施工账。
-3. 对被修边记录：以前哪个主题／run／审计曾成功，**成功的权限/环境/方法/输出合同**，当前哪一项不同；能引用旧源码或测试的直接继承，唯有**新差异**允许改动；没有运行环境标 `NOT_RUN/DEFERRED_ENV`，不能说“原能力不存在”。
+3. 对被修边记录：以前哪个主题／run／审计曾成功，**成功的权限/环境/方法/输出合同**，当前哪一项不同；能引用旧源码或测试的直接继承，按当前设计和实际差异决定复用、修复或在原职责内替换；没有运行环境标 `NOT_RUN/DEFERRED_ENV`，不能说“原能力不存在”。
 4. 精确实跑后将新证据追加 `progress.md`，事实变化更新 `CURRENT.md`；对应导航边在 `M5_MAINLINE_NAVIGATION_20261115.json/MD/HTML` 原位更新三层状态，不因为把旧成功写入本索引就调为PASS。若未来有更高等级的可重复实证可对本索引**原位增补**，不另建并行台账。
 
 ## 2. 历次施工、真实运行与验证记录（按日期；不可混算“跑通次数”）
@@ -61,7 +63,7 @@
 
 **特殊警戒：同名不同合同。** 旧10月 `gate_audits.current_valid`、11月新 `control.qualification_current`/`current_qualification_is_valid`、签发对象 `PASS`、单Runner的 `stage_binding`，是不同的资格证明面。11月14日 `layer1` 的“非私有来源fallback”与新Private Worker `STORED_VERIFIED` 不同，不得把较弱的证据校验嫁接到Private路线。旧人工/超级用户在本地登记候选不证明现行低权限Producer已可连续运行。
 
-## 5. 现行D00→D05断点次序与不可重复施工项（截至2026-11-16）
+## 5. 历史断点定位与不可重复施工项（逐条时点见证据；当前顺序回PLAN/CURRENT）
 
 1. **首先仅核 `E_D00_REVIEW` → `E_D00_QUALIFY`**：R05/R06/R07/R08/R09的G0规则、真签名和资格有效性是继承前提；11-16 BATCH-01（`718503e6f5ce9166a25628bcff437c2daab5ded1`，CI `43797796219` SUCCESS）已修候选唯一性/真实项目；BATCH-02（`56ac0ccb14f6154a8f203eb37712047c622d8f61`、`501829ac1509b2e5eb11d454be2247be7e01c8ed`，CI `43799675858`、`43800172713` SUCCESS，270正/反PASS）已修C01摘要独立重构及决定接口。**不要再写一份功能相同的候选选择器、Gate Reviewer或签发器。** R11已确认现有云库可用、K3函数及ACL已接入，环境不再被描述为“缺少非生产PG”；尚缺原M2/Storage/机器Reviewer策略与真实Owner/Worker/Runner同Root的正反签名、读取、撤权；未具备条件则继续HOLD。
 2. **随后 `E_L0_TO_D01`、`E_D01_REVIEW`、`E_D01_QUALIFY` 与 `E_L1_TO_D02`**：R05/R07/R08已证明C01/C02、G1和真实L1读取能力；优先定位同run真实typed承接，缺 `stage_binding` 与G1当前消费才补合同，不重建识读/G1规则。

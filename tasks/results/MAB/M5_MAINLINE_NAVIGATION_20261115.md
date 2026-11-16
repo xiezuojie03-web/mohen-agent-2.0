@@ -1,22 +1,16 @@
 # 墨痕 M5 全链路导航｜持续维护基线（非权威标准）
 
+> **持续施工统一口径（2026-11-16）**：按PLAN §0/§3.5 D，可用成果直接复用、缺接口/配置定向修、必要时在原职责内替换；历史继承按需查阅，不设每批全量审计前置。复用现有受保护云端Preview，先接低权执行/授权及独立Reviewer，沿同一真实任务推进。三层状态与八维HOLD不因本次文档修订提升。
+
 > **2026-11-16｜M5-CLOUD-01实装回执（优先于下方待部署描述）**：代码d607b12与证据0622618已推main；精确06226189255e30953cb939ba557d8d8775cf689e主CI43876510255、隔离HTTP/Chromium43876510271均SUCCESS。主CI705通过/4跳过（沿用CI实网跳过规则）、生产边界309/0；不覆盖此前本地Commons实网失败。批准的受保护Preview dpl_GqTMGfg5NLzeQBZa4Zq9oUnVjESj已READY，URL https://mohen-agent-2-0-aweuhp9nq-napoles1.vercel.app/login ，精确部署0622618。连接器受权GET登录页200、auth/me为authenticated=false、匿名Studio API401、未配置执行器503/no-store；外部匿名请求仍转Vercel登录，未向公众开放。Production原域名仍200且部署83560224未切换。mohen-cloud只读回查users=1、projects/originals=0、mohen LOGIN=0、Reviewer bindings=0；真实Owner/同Root/生产数据POS尚未建立，八维HOLD。下一最前阻断=Owner在该私有入口登录及独立低权执行/授权/Reviewer配置；不得用Web全权连接代替Producer或自签Gate。实际证据live-preview-receipt.json与anonymous-protection.json。
 
-> **2026-11-16｜M5-CLOUD-01（优先于历史宿主建议）**：Owner要求云端优先，并已明确批准受保护研发Preview。现Preview登录保护启用，四项既有数据库变量仅追加Preview范围、未读取解密值，Production部署仍83560224。继承原Runner增加有界请求执行适配、原run原子认领及异常HOLD；原独立授权/签名与低权身份不放宽。309项生产边界、16项Studio/中间件专项及构建通过，raw Runner/Ajv/Provider/Registry已入部署包；本批提交时新Preview尚未创建，云端生产配置未启用，真实Owner/Project/Root/作品尚未建立，八维全部HOLD。下一步精确CI后部署本批受保护Preview并验证入口，然后接续独立低权执行及审核；不再以回本地为前置。证据：tasks/results/MAB/evidence/m5-cloud-20261116/receipt.json。
-
-> **M5-ENV-REUSE-01当前**：Vercel Production的数据库/认证变量仍已配置，原Windows私有配置不随Git进入Cloud。Owner确认原Windows/CodeBuddy宿主可打开，下一步优先只读核验并复用原宿主；不要把本Cloud未注入当作所有环境失效。现执行授权器仍仅接受本地隔离PG，不关闭守卫、不重置凭据、不解密Production Secret、不与原机并行写main。八维状态不变。
-
-> **M5-ASSEMBLY-04当前（优先于下方历史段）**：两项获Owner明确批准的云迁移均成功（20261116121153/20261116122301），五函数ACL/无会话拒绝已验；原C01 SQL分号修复在6214153主CI/PG17/HTTP三绿。旧审批阻断已消除；当前只缺合法Owner会话、持续宿主与安全注入的低权运行配置。八维仍HOLD，真实G1→D02/G2未运行。
-
-> **M5-ASSEMBLY-03更新**：Owner明确批准后原件登记rights_by_action投影迁移20261116121153 SUCCESS，权限与无会话拒绝通过；其他5个原云函数的安装仍被自动审批拒绝，准备SQL为 `evidence/m5-assembly-20261116/cloud-function-inheritance-NOT_APPLIED.sql`，未应用。无真实Owner/Root运行，八维仍HOLD。此条优先于下方此前云DDL全HOLD的历史说明。
-
-> **2026-11-16 M5-ASSEMBLY-01/02（优先于下方旧断点描述）**：712a08b已实现C01精确G1→D02 typed reading请求，D02获执行授权后Owner读回L1/revision/locator/当前G1与原件SHA，复用原M4派发器生成明确分类/声源/疑点的H05候选及永久Receipt，再交原observeMaterial；定向及DB-free回归通过，非云端真实G2。C02自动转录、真实Owner/同Root/低权服务、缺失云函数及G2精确绑定仍需实证。 原边保持◆PARTIAL/⇄HOLD/●NOT_VERIFIED；原37节点/54边/八维及统计不变。代码与原始检查回执见 `evidence/m5-assembly-20261116/receipt.json`。云端函数修订被自动审批拒绝未执行；真实Owner/Root尚未合法建立，当前最前运行阻断仍为E_D00_REVIEW/E_D00_QUALIFY。
+> **现行接续说明**：已批准受保护云端优先路径；Owner读和D02—D05候选函数已安装，C01→D02接线已补。先接低权执行/授权及独立Reviewer，验证同一真实任务G0/G1→D02/G2。原Windows核查、云函数审批失败和Preview待部署属于旧时点，历史失败及后续修复证据见 `progress.md`、`evidence/m5-assembly-20261116/receipt.json` 与 `evidence/m5-cloud-20261116/live-preview-receipt.json`；不得按旧描述重复部署/迁移/造模块。
 
 > 源码核对基线：`xiezuojie03-web/mohen-agent-2.0@2c4db01783ccdb24d21f1fc99e1b28abca82d3fc`；核查日期 2026-11-15。唯一施工与准出标准仍为 `tasks/implementation/MAB/PLAN.md` V1.7 §3.5 B/C。每次施工必须先回读 `CURRENT.md` 与最新 main、CI/实际运行证据。
 >
 > **角色：** 本图为后续任务的“指南针”，可以在阶段性定向收口后持续生长。不是系统已跑通的证明，不构成第二套架构权威、Runner、Gate、知识库或M5验收标准。三份导航（JSON/MD/HTML）必须同步更新。
 
-> **完整继承执行入口（2026-11-16）**：按[PLAN §3.5 D](../../implementation/MAB/PLAN.md#d-m5完整成果继承与连续总装执行安排owner要求落文2026-11-16)逐域继承、差异修复、同任务连续总装；[新窗口指令](../../implementation/MAB/ENGINEERING_HANDOFF_CURRENT.md#4-完整继承施工接续与新窗口执行指令)。本次仅补入口，不改变本图节点/边/三层状态、历史核验SHA或八维准出。
+> **按设计持续总装入口（2026-11-16）**：按[PLAN §3.5 D](../../implementation/MAB/PLAN.md#m5-continuous-assembly)按需复用、差异修复、同任务连续总装；[新窗口指令](../../implementation/MAB/ENGINEERING_HANDOFF_CURRENT.md#m5-continuation)。本次仅补入口，不改变本图节点/边/三层状态、历史核验SHA或八维准出。
 
 ## 2026-11-16｜施工跟踪平台最新纠偏：已完成、当前状态与下一处
 
@@ -31,9 +25,9 @@
 ### 当前仍未通过（不得标成已完成）
 
 - **运行集成前沿：** [`E_D00_REVIEW`](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_REVIEW) 与 [`E_D00_QUALIFY`](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_QUALIFY) 仍 `◆PARTIAL / ⇄HOLD / ●NOT_VERIFIED`。云端已装底座，但当前云端真实原件、Studio同Root业务Run、机器Reviewer凭据/策略/绑定和Runner持续宿主、独立G0消费尚无可信完整运行回执。只处理**跨环境实际交接**，不能把“空数据”说成“缺原件功能”。
-- **已确认代码交接缺口：** [`E_L1_TO_D02`](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_L1_TO_D02) 为`◆PARTIAL / ⇄HOLD / ●NOT_VERIFIED`。现Runner在合格L1→D02时会报`PRIVATE_NEXT_STAGE_REQUEST_NOT_READY`，而D01读取、独立G1及D02 `observeMaterial` 专业代码已存在。下一处定向代码施工只补**精确L1/G1→D02 typed请求转换**，不重复原件、识读、Gate、Runner或H05能力。
+- **已补代码、待真实接收的交接：** [`E_L1_TO_D02`](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_L1_TO_D02) 为`◆PARTIAL / ⇄HOLD / ●NOT_VERIFIED`。712a08b已补C01精确L1/G1→D02 typed请求和受控H05生成；所需Owner读及D02—D05候选云函数也已安装。当前验证真实同Root接收与独立G2，C02自动转录另核。仅当当前失败证明仍有差异时修复，不重复原件、识读、Gate、Runner或已补C01适配。
 
-**两类前沿不要混为一谈：** 当前云端没有完成的同Root业务验证 ≠ 下一处需要重新开发的业务功能；已知代码修复是L1→D02，运行验收须按Studio→G0→G1的依赖实证再继续。M5仍按PLAN §3.5 B八维验收，总体`M5_OVERALL_HOLD`，**本批是纠正导航状态说明，不声称新增代码或新运行PASS**。
+**两类前沿不要混为一谈：** 当前云端没有完成的同Root业务验证 ≠ 下一处需要重新开发的业务功能；C01代码接线已补而真实运行待验；验收按Studio→G0→G1→D02的当前依赖推进。M5仍按PLAN §3.5 B八维验收，总体`M5_OVERALL_HOLD`，**本批是纠正导航状态说明，不声称新增代码或新运行PASS**。
 
 **机器与视觉保持同源：** `M5_MAINLINE_NAVIGATION_20261115.json#construction_tracking`记录历史已交付、当前研发云库、运行前沿与代码前沿；HTML顶部施工跟踪卡与原两类边锚点一一对应；37节点/54连接及所有三层PASS/HOLD计数没有擅自改变。用户无需再次审定原施工目标，此处仅修复跟踪失真。
 

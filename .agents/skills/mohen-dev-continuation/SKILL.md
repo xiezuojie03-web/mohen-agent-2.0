@@ -9,7 +9,7 @@ This is a **developer-tool workflow** for authorized `CTX-ENG` tasks. It does no
 ## Enter and choose the task
 1. Record the actual remote `main` SHA, current worktree/branch, permissions, available execution environment and corresponding CI/job results. Never presume a previous conversation's SHA or success remains current. Re-fetch after another tool writes to main.
 2. Read `AGENTS.md`, relevant MHKA chapters and professional contracts, `tasks/implementation/MAB/PLAN.md`, `progress.md`, `target-diff.csv`, `CURRENT.md`, and the latest handoff notes. Read only the contract slices relevant to this task; do not start an unbounded architecture audit.
-3. Select the next *eligible* existing task in MAB dependency order, reusing existing source/tests and previously verified evidence. Current BUILD priority is M5 ST-02 after ST-01, subject to actual main/CI inspection; unrelated pre-existing errors may require a bounded prerequisite fix. Do not reopen completed work without new evidence.
+3. Select the next *eligible* existing task in MAB dependency order, reusing existing source/tests and previously verified evidence. Select the current earliest failing handoff of the same real M5 task from PLAN §0/§3.5 B/C/D, CURRENT and live evidence; do not hardcode ST-02, an old code gap or a local host as the next task. Reuse working implementations and unaffected evidence; repair interfaces/configuration or replace incompatible implementation within the existing design and single production line. Historical inheritance is a lookup aid, not a per-batch audit prerequisite. Do not reopen completed work without new evidence.
 4. Identify whether the goal is BUILD (implement approved MAB work) or MAINTAIN (later authorized fault fix, compatibility, security, dependency or version change). Both use the same source-of-truth, test and handoff discipline; MAINTAIN must not invent product requirements.
 
 ## Execute one bounded work group
@@ -51,7 +51,7 @@ this canonical file/product Registry. Analysis failure does not block authorized
 
 ## Remaining-work triage (v0.2.1)
 
-Inventory every original MAB task, reuse exact verified evidence, then distinguish READY,
+For the affected work group, reuse current implementations and valid evidence, then distinguish READY,
 DATA_BLOCKED, GATE_BLOCKED and OWNER_BLOCKED. Record code completeness separately from
 live qualification. Propagate external blockers to dependent work, continue independent
 READY tasks, and do not call a source/schema absence a universal environment blocker.
