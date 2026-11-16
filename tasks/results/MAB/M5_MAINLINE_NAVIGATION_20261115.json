@@ -6524,7 +6524,7 @@
     "owner": "原M5主导航的工程检查下钻，不是新施工阶段/知识Truth/验收标准",
     "authority": "tasks/implementation/MAB/PLAN.md §3.5 B/C",
     "preservation": "主图37 nodes/54 edges（M5 52+EXP future2），以及已有三层证据、诊断统计全部保持；细分子链接不计入54条边的分母",
-    "status_rule": "新细分链全部NOT_VERIFIED；文件路径为静态候选定位，绝不能根据路径存在填PASS。仅代码/真实POST/GET及同Root PG/HTTP/Provider/Gate回执能改判",
+    "status_rule": "新细分链全部NOT_VERIFIED；文件路径为静态候选定位，绝不能根据路径存在填PASS。仅代码/真实POST/GET及同Root PG/HTTP/Provider/Gate回执能改判 内部handoffs[]是相邻检查点/可能交接，不证明它们在当前代码里必然直接调用；模块可存在分支、可选项与不同Owner横线。",
     "modules": [
       {
         "id": "home",
@@ -6698,7 +6698,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_ENTRY_ONLY"
+            "scope": "M5_ENTRY_ONLY",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "入口、搜索和返回是多种可选用户操作，不是一条每次都要走完的流水线"
           },
           {
             "id": "LINK_HOME_02",
@@ -6741,7 +6744,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_ENTRY_ONLY"
+            "scope": "M5_ENTRY_ONLY",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "入口、搜索和返回是多种可选用户操作，不是一条每次都要走完的流水线"
           },
           {
             "id": "LINK_HOME_03",
@@ -6784,7 +6790,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_ENTRY_ONLY"
+            "scope": "M5_ENTRY_ONLY",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "入口、搜索和返回是多种可选用户操作，不是一条每次都要走完的流水线"
           },
           {
             "id": "LINK_HOME_04",
@@ -6827,9 +6836,14 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_ENTRY_ONLY"
+            "scope": "M5_ENTRY_ONLY",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "入口、搜索和返回是多种可选用户操作，不是一条每次都要走完的流水线"
           }
-        ]
+        ],
+        "flow_structure": "ALTERNATIVE_USER_PATHS",
+        "flow_note": "入口、搜索和返回是多种可选用户操作，不是一条每次都要走完的流水线"
       },
       {
         "id": "identity",
@@ -7052,7 +7066,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_CROSSCUT_AUTH"
+            "scope": "M5_CROSSCUT_AUTH",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "用户与权限横线对所有模块独立施加条件，六个检查点并非必须前后调用"
           },
           {
             "id": "LINK_IDENTITY_02",
@@ -7100,7 +7117,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_CROSSCUT_AUTH"
+            "scope": "M5_CROSSCUT_AUTH",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "用户与权限横线对所有模块独立施加条件，六个检查点并非必须前后调用"
           },
           {
             "id": "LINK_IDENTITY_03",
@@ -7147,7 +7167,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_CROSSCUT_AUTH"
+            "scope": "M5_CROSSCUT_AUTH",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "用户与权限横线对所有模块独立施加条件，六个检查点并非必须前后调用"
           },
           {
             "id": "LINK_IDENTITY_04",
@@ -7193,7 +7216,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_CROSSCUT_AUTH"
+            "scope": "M5_CROSSCUT_AUTH",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "用户与权限横线对所有模块独立施加条件，六个检查点并非必须前后调用"
           },
           {
             "id": "LINK_IDENTITY_05",
@@ -7240,9 +7266,14 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_CROSSCUT_AUTH"
+            "scope": "M5_CROSSCUT_AUTH",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "用户与权限横线对所有模块独立施加条件，六个检查点并非必须前后调用"
           }
-        ]
+        ],
+        "flow_structure": "CROSSCUTTING_GUARD_PATHS",
+        "flow_note": "用户与权限横线对所有模块独立施加条件，六个检查点并非必须前后调用"
       },
       {
         "id": "intake",
@@ -7448,7 +7479,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_1"
+            "scope": "M5_DIM_1",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "正式ST-04只有需要新知识正式生产且Creator有权申请时才进入；合法既有L可直接复用"
           },
           {
             "id": "LINK_INTAKE_02",
@@ -7492,7 +7526,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_1"
+            "scope": "M5_DIM_1",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "正式ST-04只有需要新知识正式生产且Creator有权申请时才进入；合法既有L可直接复用"
           },
           {
             "id": "LINK_INTAKE_03",
@@ -7536,7 +7573,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_1"
+            "scope": "M5_DIM_1",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "正式ST-04只有需要新知识正式生产且Creator有权申请时才进入；合法既有L可直接复用"
           },
           {
             "id": "LINK_INTAKE_04",
@@ -7582,7 +7622,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_1"
+            "scope": "M5_DIM_1",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "正式ST-04只有需要新知识正式生产且Creator有权申请时才进入；合法既有L可直接复用"
           },
           {
             "id": "LINK_INTAKE_05",
@@ -7625,9 +7668,14 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_1"
+            "scope": "M5_DIM_1",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "正式ST-04只有需要新知识正式生产且Creator有权申请时才进入；合法既有L可直接复用"
           }
-        ]
+        ],
+        "flow_structure": "CONDITIONAL_FORMAL_PRODUCTION",
+        "flow_note": "正式ST-04只有需要新知识正式生产且Creator有权申请时才进入；合法既有L可直接复用"
       },
       {
         "id": "mixed",
@@ -7867,7 +7915,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_2"
+            "scope": "M5_DIM_2",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "外部Provider授权与调用按实际任务触发；成果可按资格分别进入D00或Studio，不要求两条出口顺序穿行"
           },
           {
             "id": "LINK_MIXED_02",
@@ -7911,7 +7962,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_2"
+            "scope": "M5_DIM_2",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "外部Provider授权与调用按实际任务触发；成果可按资格分别进入D00或Studio，不要求两条出口顺序穿行"
           },
           {
             "id": "LINK_MIXED_03",
@@ -7957,7 +8011,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_2"
+            "scope": "M5_DIM_2",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "外部Provider授权与调用按实际任务触发；成果可按资格分别进入D00或Studio，不要求两条出口顺序穿行"
           },
           {
             "id": "LINK_MIXED_04",
@@ -8003,7 +8060,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_2"
+            "scope": "M5_DIM_2",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "外部Provider授权与调用按实际任务触发；成果可按资格分别进入D00或Studio，不要求两条出口顺序穿行"
           },
           {
             "id": "LINK_MIXED_05",
@@ -8050,7 +8110,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_2"
+            "scope": "M5_DIM_2",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "外部Provider授权与调用按实际任务触发；成果可按资格分别进入D00或Studio，不要求两条出口顺序穿行"
           },
           {
             "id": "LINK_MIXED_06",
@@ -8096,9 +8159,14 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_2"
+            "scope": "M5_DIM_2",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "外部Provider授权与调用按实际任务触发；成果可按资格分别进入D00或Studio，不要求两条出口顺序穿行"
           }
-        ]
+        ],
+        "flow_structure": "AUTHORIZED_FORKS",
+        "flow_note": "外部Provider授权与调用按实际任务触发；成果可按资格分别进入D00或Studio，不要求两条出口顺序穿行"
       },
       {
         "id": "knowledge_use",
@@ -8349,7 +8417,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_3_5"
+            "scope": "M5_DIM_3_5",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "L0—L5根据材料类型有选择地读取，并非六层或所有检查分支必经"
           },
           {
             "id": "LINK_KNOWLEDGE_USE_02",
@@ -8399,7 +8470,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_3_5"
+            "scope": "M5_DIM_3_5",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "L0—L5根据材料类型有选择地读取，并非六层或所有检查分支必经"
           },
           {
             "id": "LINK_KNOWLEDGE_USE_03",
@@ -8443,7 +8517,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_3_5"
+            "scope": "M5_DIM_3_5",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "L0—L5根据材料类型有选择地读取，并非六层或所有检查分支必经"
           },
           {
             "id": "LINK_KNOWLEDGE_USE_04",
@@ -8488,7 +8565,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_3_5"
+            "scope": "M5_DIM_3_5",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "L0—L5根据材料类型有选择地读取，并非六层或所有检查分支必经"
           },
           {
             "id": "LINK_KNOWLEDGE_USE_05",
@@ -8533,7 +8613,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_3_5"
+            "scope": "M5_DIM_3_5",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "L0—L5根据材料类型有选择地读取，并非六层或所有检查分支必经"
           },
           {
             "id": "LINK_KNOWLEDGE_USE_06",
@@ -8579,9 +8662,14 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_3_5"
+            "scope": "M5_DIM_3_5",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "L0—L5根据材料类型有选择地读取，并非六层或所有检查分支必经"
           }
-        ]
+        ],
+        "flow_structure": "SELECTIVE_KNOWLEDGE_LAYERS",
+        "flow_note": "L0—L5根据材料类型有选择地读取，并非六层或所有检查分支必经"
       },
       {
         "id": "assets",
@@ -8846,7 +8934,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_4"
+            "scope": "M5_DIM_4",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "13种资产按实际增量产生；跨课题Fork/复用属于M7进一步验证，非每次M5创作的必经步骤"
           },
           {
             "id": "LINK_ASSETS_02",
@@ -8890,7 +8981,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_4"
+            "scope": "M5_DIM_4",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "13种资产按实际增量产生；跨课题Fork/复用属于M7进一步验证，非每次M5创作的必经步骤"
           },
           {
             "id": "LINK_ASSETS_03",
@@ -8933,7 +9027,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_4"
+            "scope": "M5_DIM_4",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "13种资产按实际增量产生；跨课题Fork/复用属于M7进一步验证，非每次M5创作的必经步骤"
           },
           {
             "id": "LINK_ASSETS_04",
@@ -8977,7 +9074,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_4"
+            "scope": "M5_DIM_4",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "13种资产按实际增量产生；跨课题Fork/复用属于M7进一步验证，非每次M5创作的必经步骤"
           },
           {
             "id": "LINK_ASSETS_05",
@@ -9022,7 +9122,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_4"
+            "scope": "M5_DIM_4",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "13种资产按实际增量产生；跨课题Fork/复用属于M7进一步验证，非每次M5创作的必经步骤"
           },
           {
             "id": "LINK_ASSETS_06",
@@ -9067,7 +9170,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_4"
+            "scope": "M5_DIM_4",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "13种资产按实际增量产生；跨课题Fork/复用属于M7进一步验证，非每次M5创作的必经步骤"
           },
           {
             "id": "LINK_ASSETS_07",
@@ -9113,9 +9219,14 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_4"
+            "scope": "M5_DIM_4",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "13种资产按实际增量产生；跨课题Fork/复用属于M7进一步验证，非每次M5创作的必经步骤"
           }
-        ]
+        ],
+        "flow_structure": "LIFECYCLE_OPTIONAL_REUSE",
+        "flow_note": "13种资产按实际增量产生；跨课题Fork/复用属于M7进一步验证，非每次M5创作的必经步骤"
       },
       {
         "id": "studio",
@@ -9376,7 +9487,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_5"
+            "scope": "M5_DIM_5",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "调用外部AI、选择媒资和局部改稿按合法需要触发；投稿须Creator明确提出"
           },
           {
             "id": "LINK_STUDIO_02",
@@ -9421,7 +9535,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_5"
+            "scope": "M5_DIM_5",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "调用外部AI、选择媒资和局部改稿按合法需要触发；投稿须Creator明确提出"
           },
           {
             "id": "LINK_STUDIO_03",
@@ -9464,7 +9581,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_5"
+            "scope": "M5_DIM_5",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "调用外部AI、选择媒资和局部改稿按合法需要触发；投稿须Creator明确提出"
           },
           {
             "id": "LINK_STUDIO_04",
@@ -9508,7 +9628,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_5"
+            "scope": "M5_DIM_5",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "调用外部AI、选择媒资和局部改稿按合法需要触发；投稿须Creator明确提出"
           },
           {
             "id": "LINK_STUDIO_05",
@@ -9551,7 +9674,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_5"
+            "scope": "M5_DIM_5",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "调用外部AI、选择媒资和局部改稿按合法需要触发；投稿须Creator明确提出"
           },
           {
             "id": "LINK_STUDIO_06",
@@ -9594,7 +9720,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_5"
+            "scope": "M5_DIM_5",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "调用外部AI、选择媒资和局部改稿按合法需要触发；投稿须Creator明确提出"
           },
           {
             "id": "LINK_STUDIO_07",
@@ -9639,9 +9768,14 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_5"
+            "scope": "M5_DIM_5",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "调用外部AI、选择媒资和局部改稿按合法需要触发；投稿须Creator明确提出"
           }
-        ]
+        ],
+        "flow_structure": "CONDITIONAL_CREATIVE_ACTIONS",
+        "flow_note": "调用外部AI、选择媒资和局部改稿按合法需要触发；投稿须Creator明确提出"
       },
       {
         "id": "admin",
@@ -9926,7 +10060,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_6"
+            "scope": "M5_DIM_6",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "知识治理、稿件审核、失效撤权是横向不同工作，不应串成一个审批流水线"
           },
           {
             "id": "LINK_ADMIN_02",
@@ -9977,7 +10114,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_6"
+            "scope": "M5_DIM_6",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "知识治理、稿件审核、失效撤权是横向不同工作，不应串成一个审批流水线"
           },
           {
             "id": "LINK_ADMIN_03",
@@ -10023,7 +10163,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_6"
+            "scope": "M5_DIM_6",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "知识治理、稿件审核、失效撤权是横向不同工作，不应串成一个审批流水线"
           },
           {
             "id": "LINK_ADMIN_04",
@@ -10068,7 +10211,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_6"
+            "scope": "M5_DIM_6",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "知识治理、稿件审核、失效撤权是横向不同工作，不应串成一个审批流水线"
           },
           {
             "id": "LINK_ADMIN_05",
@@ -10114,7 +10260,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_6"
+            "scope": "M5_DIM_6",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "知识治理、稿件审核、失效撤权是横向不同工作，不应串成一个审批流水线"
           },
           {
             "id": "LINK_ADMIN_06",
@@ -10160,7 +10309,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_6"
+            "scope": "M5_DIM_6",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "知识治理、稿件审核、失效撤权是横向不同工作，不应串成一个审批流水线"
           },
           {
             "id": "LINK_ADMIN_07",
@@ -10205,9 +10357,14 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_6"
+            "scope": "M5_DIM_6",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "知识治理、稿件审核、失效撤权是横向不同工作，不应串成一个审批流水线"
           }
-        ]
+        ],
+        "flow_structure": "PARALLEL_GOVERNANCE_FLOWS",
+        "flow_note": "知识治理、稿件审核、失效撤权是横向不同工作，不应串成一个审批流水线"
       },
       {
         "id": "publish",
@@ -10470,7 +10627,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_7_8"
+            "scope": "M5_DIM_7_8",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "实际播放/出处返查由观看者选择；撤权仅在发生失效时启动，不是每次正常发布的必要终点"
           },
           {
             "id": "LINK_PUBLISH_02",
@@ -10515,7 +10675,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_7_8"
+            "scope": "M5_DIM_7_8",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "实际播放/出处返查由观看者选择；撤权仅在发生失效时启动，不是每次正常发布的必要终点"
           },
           {
             "id": "LINK_PUBLISH_03",
@@ -10560,7 +10723,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_7_8"
+            "scope": "M5_DIM_7_8",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "实际播放/出处返查由观看者选择；撤权仅在发生失效时启动，不是每次正常发布的必要终点"
           },
           {
             "id": "LINK_PUBLISH_04",
@@ -10606,7 +10772,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_7_8"
+            "scope": "M5_DIM_7_8",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "实际播放/出处返查由观看者选择；撤权仅在发生失效时启动，不是每次正常发布的必要终点"
           },
           {
             "id": "LINK_PUBLISH_05",
@@ -10650,7 +10819,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_7_8"
+            "scope": "M5_DIM_7_8",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "实际播放/出处返查由观看者选择；撤权仅在发生失效时启动，不是每次正常发布的必要终点"
           },
           {
             "id": "LINK_PUBLISH_06",
@@ -10693,7 +10865,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_7_8"
+            "scope": "M5_DIM_7_8",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "实际播放/出处返查由观看者选择；撤权仅在发生失效时启动，不是每次正常发布的必要终点"
           },
           {
             "id": "LINK_PUBLISH_07",
@@ -10738,9 +10913,14 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "M5_DIM_7_8"
+            "scope": "M5_DIM_7_8",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "实际播放/出处返查由观看者选择；撤权仅在发生失效时启动，不是每次正常发布的必要终点"
           }
-        ]
+        ],
+        "flow_structure": "PUBLISH_AND_EVENTUAL_REVOKE",
+        "flow_note": "实际播放/出处返查由观看者选择；撤权仅在发生失效时启动，不是每次正常发布的必要终点"
       },
       {
         "id": "exp",
@@ -10928,7 +11108,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "FUTURE_NOT_M5"
+            "scope": "FUTURE_NOT_M5",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "完整EXP及WATCH→EXP返回是后续体验；现有局部UI源码不能将其转为M5准出"
           },
           {
             "id": "LINK_EXP_02",
@@ -10973,7 +11156,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "FUTURE_NOT_M5"
+            "scope": "FUTURE_NOT_M5",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "完整EXP及WATCH→EXP返回是后续体验；现有局部UI源码不能将其转为M5准出"
           },
           {
             "id": "LINK_EXP_03",
@@ -11018,7 +11204,10 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "FUTURE_NOT_M5"
+            "scope": "FUTURE_NOT_M5",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "完整EXP及WATCH→EXP返回是后续体验；现有局部UI源码不能将其转为M5准出"
           },
           {
             "id": "LINK_EXP_04",
@@ -11063,9 +11252,14 @@
               }
             },
             "acceptance_note": "原M5八维已有职责的诊断细分，不增加独立验收分母",
-            "scope": "FUTURE_NOT_M5"
+            "scope": "FUTURE_NOT_M5",
+            "relation_assertion": "INSPECTION_ORDER_OR_POTENTIAL_HANDOFF_NOT_YET_PROVEN_AS_DIRECT_CALL",
+            "mandatory_for_every_task": false,
+            "conditionality_note": "完整EXP及WATCH→EXP返回是后续体验；现有局部UI源码不能将其转为M5准出"
           }
-        ]
+        ],
+        "flow_structure": "FUTURE_INTERFACE_NOT_M5",
+        "flow_note": "完整EXP及WATCH→EXP返回是后续体验；现有局部UI源码不能将其转为M5准出"
       }
     ],
     "summary": {

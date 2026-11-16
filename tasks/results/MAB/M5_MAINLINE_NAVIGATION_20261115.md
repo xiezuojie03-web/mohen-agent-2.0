@@ -83,6 +83,8 @@
 | 发布→WATCH合法消费→撤权 | M5_DIM_7_8 | 8 | 7 | E_EDITORIAL_TO_PUBLISH, E_PUBLISH_TO_WATCH, E_REVOKE_TO_WATCH | [展开](M5_MAINLINE_NAVIGATION_20261115.html#module-publish) |
 | EXP现有能力与未来深链 | FUTURE_NOT_M5 | 5 | 4 | E_REUSE_TO_EXP, E_WORKREV_TO_EXP | [展开](M5_MAINLINE_NAVIGATION_20261115.html#module-exp) |
 
+**业务拓扑特别说明**：表中的68个步骤是**核查覆盖清单**，58个内部交接是**相邻业务依赖的候选检查点**，**不是每次用户任务必须串行走完的58道步骤，也尚未证明代码中存在对应的58次直接函数调用**。例如HOME的搜索与返回、Admin的资产审计与作品审核均可独立发生；Studio可合法复用已有L而不启动ST-04；Agent研究可按授权进入D00或创作；资产跨项目Fork归M7；撤权仅在相关事件发生后启动。内部关系初始全为NOT_VERIFIED，真实调用链须后续按代码和同Root回执逐条定向确认。
+
 ### 每组链路的输入、动作、输出与守卫
 
 #### HOME入口与全局导航（5个步骤，4条待核交接）
