@@ -833,3 +833,12 @@ flowchart TB
 - **施工改动**：没有修改业务代码、Registry、Runner、Gate、Reviewer、专业方法或数据库；仅更新本批进度、当前事实与三份导航，记录具名环境HOLD。
 - **正反测试及下游接收**：既有CI已覆盖独立输出重构正例、错误output_digest在签发前拒绝、错job/reviewer/project、来源字节不一致、缺失/重复原件等模拟正反；真实持久PG Reviewer签发、同Root Runner资格读取、撤权、恢复均为 `NOT_RUN/DEFERRED_ENV`。下游Runner代码严格拒绝无当前精确stage_binding的PASS，但本批没有真实receipt供其消费；`E_D00_QUALIFY`继续HOLD，D01/G1与D02未启动。
 - **结论**：具名HOLD：`M5-G0-PG-01`（持久非生产PG环境未确认）。`E_D00_REVIEW` / `E_D00_QUALIFY`交接层保持HOLD、运行层保持NOT_VERIFIED；M5八维仍HOLD。取得获准持久非生产PG入口后，直接复用现有代码与R05/R06/R09历史证据完成真实同Root POS/NEG/撤权/恢复，不重建任何生产链组件。
+
+## 2026-11-16｜M5-G0-BATCH-04：现有云端PG17 K3实装与权限ACL纠偏
+
+- **继承关系**：R05/R06/R07/R08/R09独立Gate及多题材分段实跑、R10独立C01摘要重构和stage_binding接口已继承；不重建Reviewer、Gate、Runner、Registry，不改旧资格与专业方法。
+- **本批真实工程证据**：原K3迁移修复PG17 CREATEROLE管理员关系并在`mohen-cloud`成功应用；深入ACL核查又发现五个SECURITY DEFINER函数在OWNER转移后保留PUBLIC EXECUTE，已按真正所有者身份修复并在云库独立增量迁移成功。复核：anon/Producer/Runtime不能签发，Signer可签，Producer不能撤权；旧711审计原列摘要`ff6c66130220f35c2ebeaa5a100b7971`保持一致，新独立签名、当前资格、策略/Reviewer绑定均0。提交：[K3迁移dd954921](https://github.com/xiezuojie03-web/mohen-agent-2.0/commit/dd954921a07953b14ce61786307bd5f76f7bb846)、[ACL安全3ac4fd3](https://github.com/xiezuojie03-web/mohen-agent-2.0/commit/3ac4fd3a4c0ad53443b2979ed565413d3b78e83b)、[原测试链同步1c5b131](https://github.com/xiezuojie03-web/mohen-agent-2.0/commit/1c5b131ca27ec71d41805819ae3aafbd49b187b3)。
+- **CI透明记录**：首次K3兼容[隔离PG17 43818213717](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43818213717)及[标准CI 43818213671](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43818213671) SUCCESS；增量迁移未登记两条fixture使[43819078584](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43819078584)迁移静态预检FAIL，已在原链补齐，触发[主CI 43819354344](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43819354344)、[PG17 43819354362](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43819354362)、[HTTP 43819354334](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43819354334)，最终结论须按运行页复核。
+- **最前真实断点**：[E_D00_REVIEW](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_REVIEW) 与 [E_D00_QUALIFY](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_QUALIFY)：云端K3权限基础已验证，但M2私有原件表与Storage、机器Reviewer身份/策略/绑定尚未部署，暂无同Root阶段签名、资格消费或撤权恢复；◆PARTIAL／⇄HOLD／●NOT_VERIFIED和M5八维HOLD不变。
+- **下一步**：继承现有M2/M3专业能力，在原M2迁移明确的备份、桶策略、跨Owner、恢复前置满足后按缺口逐项入云；再走真实Owner→D00/G0独立签名/Runner消费，随后D01/G1→D02。没有必要另建数据库或新Gate。
+
