@@ -10,6 +10,7 @@ on:
       - ".github/workflows/mab-isolated-db.yml"
       - "tests/data-production/private-original-source-binding.integration.mjs"
       - "scripts/test-k3-db.mjs"
+      - "tests/data-production/m5-root-g0-handoff.integration.mjs"
       - "supabase/migrations/202611010900_k3_independent_gate_authority.sql"
       - "supabase/migrations/20261116080000_m5_k3_gate_function_acl_owner_fix.sql"
       - "tools/gate-stage-candidate-selection.mjs"
