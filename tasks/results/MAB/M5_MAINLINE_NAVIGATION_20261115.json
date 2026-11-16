@@ -1993,16 +1993,17 @@
       ],
       "notes": "独立Reviewer须绑定精确对象、输入输出、policy/scope",
       "source_paths": [
-        "tools/local-gate-service.mjs"
+        "tools/local-gate-service.mjs",
+        "tools/gate-stage-candidate-selection.mjs"
       ],
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "REAL_CLOUD_PG17_K3_SECURITY_VERIFIED_NO_ROOT_GATE_PASS",
+      "evidence_level": "SOURCE_GUARD_PATCHED_CI_PENDING_NO_ROOT_PASS",
       "engineering_diagnosis": {
         "category": "CODE_PRESENT_NO_ROOT_E2E",
         "confidence": "SOURCE_AND_MOCK_CI_CONFIRMED",
-        "diagnosis": "D00/C01可信阶段输出重构和独立stage_binding签发接口已经存在；实际mohen-cloud已迁入K3权威/策略基础及安全ACL，仍无M2私有原件/Storage和合法机器Reviewer绑定，不能产生现行阶段签名。",
+        "diagnosis": "原独立G0 Reviewer/C01输出重构可复用；本批修补candidate.project_id必须与已持久化同run.scope.project_id一致的缺口（仅接口守卫）。 云端无私有原件/Storage、独立机器Reviewer登录/策略/绑定，业务同Root仍HOLD。",
         "evidence": [
           "tools/gate-stage-output-attestation.mjs@501829ac1509",
           "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
@@ -2015,17 +2016,20 @@
           "SUPABASE@mohen-cloud:PG17_K3_SIGN_REVOKE_READ_INSTALLED_ACL_VERIFIED",
           "CI@43818213717:SUCCESS:DISPOSABLE_REAL_PG17",
           "CURRENT.md#M5-G0-BATCH-04",
-          "tasks/implementation/MAB/progress.md#M5-G0-BATCH-04"
+          "tasks/implementation/MAB/progress.md#M5-G0-BATCH-04",
+          "tools/gate-stage-candidate-selection.mjs@M5-G0-BATCH-05",
+          "tests/data-production/gate-stage-candidate-selection.test.mjs@M5-G0-BATCH-05",
+          "SUPABASE@mohen-cloud:READ_ONLY:20_RUN_SCOPES_EMPTY_NO_M2_STORAGE_MACHINE_LOGIN"
         ],
-        "next": "已确认可沿用现有mohen-cloud，K3函数及权限基础安全；定向核已有M2私有原件/Storage/机器Reviewer策略与绑定的安全激活前置，再按原C01路径跑真实Owner/Project/Root独立G0签发、Runner资格读取及错digest/跨Owner/撤权恢复。不得重造Gate或转正旧PASS。",
+        "next": "确认云端DB及Storage同批备份/策略/回滚和获准非生产用途后，分批激活已有M2/M3与machine Reviewer，再确保新run.scope.project_id与合法Root及candidate严格一致，真签D00/C01 stage_binding、Runner负例/撤权/恢复，通过后再进D01/G1→D02。",
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
-        "interface_pass": "NOT_PROVEN",
+        "interface_pass": "PARTIAL_SOURCE_GUARD_CODE_NO_LIVE_SIGNING",
         "runtime_pass": "NOT_PROVEN"
       },
       "verification_layers": {
         "capability": {
           "status": "PARTIAL",
-          "reason": "C01输出独立重构与stage_binding签发代码已存在，mock DB正反CI通过；尚未由持久PG证明实际独立签发。",
+          "reason": "继承原C01独立输出重构与既有K3；本批增加G0 candidate对持久production_runs的project scope匹配代码；CI提交后核验，尚未云端真实签发。",
           "evidence_refs": [
             "tools/gate-stage-output-attestation.mjs@501829ac1509",
             "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
@@ -2036,14 +2040,16 @@
             "SUPABASE@mohen-cloud:PG17_K3_SIGN_REVOKE_READ_INSTALLED_ACL_VERIFIED",
             "CI@43818213717:SUCCESS:DISPOSABLE_REAL_PG17",
             "CURRENT.md#M5-G0-BATCH-04",
-            "tasks/implementation/MAB/progress.md#M5-G0-BATCH-04"
+            "tasks/implementation/MAB/progress.md#M5-G0-BATCH-04",
+            "tools/gate-stage-candidate-selection.mjs@M5-G0-BATCH-05",
+            "tests/data-production/gate-stage-candidate-selection.test.mjs@M5-G0-BATCH-05"
           ],
           "verified_source_sha": "501829ac1509b2e5eb11d454be2247be7e01c8ed",
           "observed_on": "2026-11-16"
         },
         "handoff": {
           "status": "HOLD",
-          "reason": "真实云端K3权限已实现并验证，但无Owner原件/Storage和有效Reviewer/policy/binding；精确stage_binding未签、Runner尚无同Root资格可读，HOLD。",
+          "reason": "同Run project scope守卫已做最小代码变更，云端历史20个run.scope皆空且M2/Storage及Reviewer策略未部署；尚无合法新Root G0签名与Runner同根资格，HOLD。",
           "evidence_refs": [
             "tools/gate-stage-output-attestation.mjs@501829ac1509",
             "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
@@ -2063,7 +2069,7 @@
         },
         "runtime": {
           "status": "NOT_VERIFIED",
-          "reason": "云端数据库ACL验证不构成此边的业务运行，未出现真实stage_binding/同Root Reviewer与Runner正反回执，NOT_VERIFIED。",
+          "reason": "本批只读环境与新增源码/模拟单测，真实Owner/Project/Root机器独立G0签发和下游Runner/撤权未运行，NOT_VERIFIED。",
           "evidence_refs": [],
           "verified_source_sha": null,
           "observed_on": null
@@ -2088,16 +2094,17 @@
         "tools/local-gate-service.mjs",
         "tools/rule-gate-reviewer.mjs",
         "pipelines/data-production/orchestrator/independent-stage-qualification.mjs",
-        "pipelines/data-production/workers/private-evidence-stage.mjs"
+        "pipelines/data-production/workers/private-evidence-stage.mjs",
+        "tools/gate-stage-candidate-selection.mjs"
       ],
       "acceptance_dimensions": [
         3
       ],
-      "evidence_level": "REAL_CLOUD_PG17_K3_SECURITY_VERIFIED_NO_ROOT_GATE_PASS",
+      "evidence_level": "SOURCE_GUARD_PATCHED_CI_PENDING_NO_ROOT_PASS",
       "engineering_diagnosis": {
         "category": "CODE_PRESENT_NO_ROOT_E2E",
         "confidence": "SOURCE_AND_MOCK_CI_CONFIRMED",
-        "diagnosis": "原Runner当前资格检查和K3签发/资格读函数已在真实云库存在且ACL正反通过；仍没有云端独立G0审计的精确stage_binding供Runner同Root消费。",
+        "diagnosis": "K3资格/Signer/Runner精确stage_binding消费既有能力可复用，但本批G0候选与持久run项目scope新增守卫，未生成有效审计。 云端无私有原件/Storage、独立机器Reviewer登录/策略/绑定，业务同Root仍HOLD。",
         "evidence": [
           "tools/gate-stage-output-attestation.mjs@501829ac1509",
           "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
@@ -2110,17 +2117,20 @@
           "SUPABASE@mohen-cloud:PG17_K3_SIGN_REVOKE_READ_INSTALLED_ACL_VERIFIED",
           "CI@43818213717:SUCCESS:DISPOSABLE_REAL_PG17",
           "CURRENT.md#M5-G0-BATCH-04",
-          "tasks/implementation/MAB/progress.md#M5-G0-BATCH-04"
+          "tasks/implementation/MAB/progress.md#M5-G0-BATCH-04",
+          "tools/gate-stage-candidate-selection.mjs@M5-G0-BATCH-05",
+          "tests/data-production/gate-stage-candidate-selection.test.mjs@M5-G0-BATCH-05",
+          "SUPABASE@mohen-cloud:READ_ONLY:20_RUN_SCOPES_EMPTY_NO_M2_STORAGE_MACHINE_LOGIN"
         ],
-        "next": "已确认可沿用现有mohen-cloud，K3函数及权限基础安全；定向核已有M2私有原件/Storage/机器Reviewer策略与绑定的安全激活前置，再按原C01路径跑真实Owner/Project/Root独立G0签发、Runner资格读取及错digest/跨Owner/撤权恢复。不得重造Gate或转正旧PASS。",
+        "next": "确认云端DB及Storage同批备份/策略/回滚和获准非生产用途后，分批激活已有M2/M3与machine Reviewer，再确保新run.scope.project_id与合法Root及candidate严格一致，真签D00/C01 stage_binding、Runner负例/撤权/恢复，通过后再进D01/G1→D02。",
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
-        "interface_pass": "NOT_PROVEN",
+        "interface_pass": "PARTIAL_SOURCE_GUARD_CODE_NO_LIVE_SIGNING",
         "runtime_pass": "NOT_PROVEN"
       },
       "verification_layers": {
         "capability": {
           "status": "PARTIAL",
-          "reason": "C01输出独立重构与stage_binding签发代码已存在，mock DB正反CI通过；尚未由持久PG证明实际独立签发。",
+          "reason": "继承原C01独立输出重构与既有K3；本批增加G0 candidate对持久production_runs的project scope匹配代码；CI提交后核验，尚未云端真实签发。",
           "evidence_refs": [
             "tools/gate-stage-output-attestation.mjs@501829ac1509",
             "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
@@ -2131,14 +2141,16 @@
             "SUPABASE@mohen-cloud:PG17_K3_SIGN_REVOKE_READ_INSTALLED_ACL_VERIFIED",
             "CI@43818213717:SUCCESS:DISPOSABLE_REAL_PG17",
             "CURRENT.md#M5-G0-BATCH-04",
-            "tasks/implementation/MAB/progress.md#M5-G0-BATCH-04"
+            "tasks/implementation/MAB/progress.md#M5-G0-BATCH-04",
+            "tools/gate-stage-candidate-selection.mjs@M5-G0-BATCH-05",
+            "tests/data-production/gate-stage-candidate-selection.test.mjs@M5-G0-BATCH-05"
           ],
           "verified_source_sha": "501829ac1509b2e5eb11d454be2247be7e01c8ed",
           "observed_on": "2026-11-16"
         },
         "handoff": {
           "status": "HOLD",
-          "reason": "真实云端K3权限已实现并验证，但无Owner原件/Storage和有效Reviewer/policy/binding；精确stage_binding未签、Runner尚无同Root资格可读，HOLD。",
+          "reason": "同Run project scope守卫已做最小代码变更，云端历史20个run.scope皆空且M2/Storage及Reviewer策略未部署；尚无合法新Root G0签名与Runner同根资格，HOLD。",
           "evidence_refs": [
             "tools/gate-stage-output-attestation.mjs@501829ac1509",
             "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
@@ -2158,7 +2170,7 @@
         },
         "runtime": {
           "status": "NOT_VERIFIED",
-          "reason": "云端数据库ACL验证不构成此边的业务运行，未出现真实stage_binding/同Root Reviewer与Runner正反回执，NOT_VERIFIED。",
+          "reason": "本批只读环境与新增源码/模拟单测，真实Owner/Project/Root机器独立G0签发和下游Runner/撤权未运行，NOT_VERIFIED。",
           "evidence_refs": [],
           "verified_source_sha": null,
           "observed_on": null
@@ -5145,8 +5157,8 @@
     }
   ],
   "earliest_verified_code_point": "D00→D01 C01真实文本请求代码与独立Reviewer精确stage_binding签发接口已在main实现并通过mock DB正反CI；不代表持久PG同Root资格消费。",
-  "earliest_runtime_blocker": "具名持久非生产PG中独立Signer真实签发、Runner同Root当前资格读取、负例/撤权/恢复未运行；当前连接仅发现mohen-cloud项目且无开发分支，环境角色未确认。",
-  "next_real_code_blocker": "先取得获准的持久非生产PG入口，验证E_D00_REVIEW/E_D00_QUALIFY的真实Signer签发、精确stage_binding、Runner同Root当前资格读取、错digest/错身份/撤权与恢复；通过后再进入G1→D02 typed交接。",
+  "earliest_runtime_blocker": "mohen-cloud PG17.11仅K3底座入云；M2 private_originals、受控Storage、真实机器Reviewer登录及Policy/Binding未就绪，历史run.scope 20/20均无project/root；没有同Root独立G0签发及Runner消费、撤权恢复实证（NOT_RUN）。",
+  "next_real_code_blocker": "M5-G0-ROOT-01：首先核同一Root的control.production_runs.scope.project_id持久登记与候选一致；获准隔离环境和M2/Storage备份/策略/回滚后接入既有machine Reviewer身份/Policy/binding，运行真实C01 G0 stage_binding→Runner资格/负例/撤权恢复；通过后仅补D01/G1→D02 typed交接。",
   "acceptance_basis": "PLAN V1.7 M5八维同一真实作品，绝不以本图状态代替验收",
   "acceptance_dimensions": [
     {
@@ -5381,9 +5393,10 @@
       "30条唯一边级定位路径在固定源码SHA全部存在，但不能据此断言54条边已实现",
       "机器审核器PASS receipt缺独立stage_binding，而资格读取和Runner要求精确job/reviewer/input/output摘要；G0对象PASS≠Runner阶段PASS",
       "D01读取候选与D02 H05专业证据各自存在；缺已签G1合格L1→D02 typed request转换，Runner返回PRIVATE_NEXT_STAGE_REQUEST_NOT_READY",
-      "代码级与已有CI/隔离PG/HTTP成功不等于同一真实Creator/Root/Reviewer/Provider E2E"
+      "代码级与已有CI/隔离PG/HTTP成功不等于同一真实Creator/Root/Reviewer/Provider E2E",
+      "BATCH-05原候选定位未核control.production_runs.scope.project_id与candidate.allowed_scope.project_id，现已在原SQL增加同Run项目匹配（代码/CI验证与同Root运行证据分别标注）。"
     ],
-    "next_batch": "修现有G0精确签发合同并完成同Root独立G0实测；随后验证D01/G1→D02 H05 typed转换和持久候选；两端复用现有代码，不再造第二Gate或Runner",
+    "next_batch": "先完成获准持久隔离DB/Storage/Reviewer环境激活前置和同Project/Root运行登记，再实测原G0阶段精确签发与Runner资格，之后才进D01/G1→D02；不重跑旧样板。",
     "gate": "PLAN.md §3.5 B/C；缺实际独立Reviewer/持久私有原件/Provider授权环境则HOLD/NOT_RUN"
   },
   "layer_status_model": {
@@ -11430,7 +11443,7 @@
   "audit_tracking": {
     "schema": "mohen.m5.navigation-audit-tracker.v1",
     "review_date": "2026-11-16",
-    "review_source_head": "31be2feacf3e6fc6e9dac74c9f771ad914483f17",
+    "review_source_head": "1d8c3bb263d613b5c998188ad600721d8c5c7e80",
     "label": "按需核查组｜分批排查与分批施工的定位索引，非另一套施工计划或验收分母",
     "authority": "tasks/implementation/MAB/PLAN.md §0, §3.5 B/C",
     "baseline": {
@@ -11466,7 +11479,7 @@
         "E_L1_TO_D02"
       ],
       "state_source": "原edges[].verification_layers，状态不在此处重复存储",
-      "reason": "BATCH-02业务代码@56ac0ccb与签发接口增强@501829ac的CI均SUCCESS（270P/0F，mock DB）；现有Reviewer重构C01输出并写入既有不可变stage_binding回执。BATCH-03确认当前无可确认的持久非生产PG：唯一可见Supabase项目mohen-cloud无开发分支且环境角色未确认；标准CI不连DB；mab-isolated-db使用临时合成PG17并清理且触发路径未覆盖当前Reviewer文件；mab-m1-isolated-http也使用临时PG/合成用户并清理；mab-m3-independent-revocation为synthetic/no-DB。G0保持HOLD，不重建功能；环境具备后完成真实同Root签发/资格/撤权/恢复，再进入G1/D02。Vercel生产最新SHA仍83560224，未部署本批。"
+      "reason": "BATCH-05从BATCH-04已验云库K3安全底座继承；原G0候选定位缺少candidate.project_id与control.production_runs.scope.project_id核对，本批只对原接口定向加JOIN并增反例。云端mohen-cloud PG17.11仍无M2 private_originals/Storage、真实machine Reviewer登录及绑定；现有20条历史run.scope为空。M2须先DB/Storage同批备份、桶RLS/跨Owner/恢复核验，不授权生产变更。代码守卫不等于合法同Root G0 stage_binding或Runner消费；E_D00_REVIEW/E_D00_QUALIFY仍HOLD，之后D01/G1→D02暂未启动。"
     },
     "groups": [
       {
@@ -11718,100 +11731,61 @@
       "live_coverage_dashboard": "HTML主图首页的已定向归因数量、未逐接口核查数量、分组归因均从最新嵌入的root edges[].engineering_diagnosis与primary_domain计算，杜绝硬编码7/52变成未来虚假当前状态；snapshot字段仅作历史证据。"
     },
     "last_execution_batch": {
-      "id": "M5-G0-BATCH-04",
+      "id": "M5-G0-BATCH-05",
       "date": "2026-11-16",
-      "code_commit": "1c5b131ca27ec71d41805819ae3aafbd49b187b3",
-      "reviewed_main_head": "1c5b131ca27ec71d41805819ae3aafbd49b187b3",
+      "code_commit": "THIS_COMMIT",
+      "reviewed_main_head": "1d8c3bb263d613b5c998188ad600721d8c5c7e80",
       "scope_edges": [
         "E_D00_REVIEW",
         "E_D00_QUALIFY"
       ],
       "inherited_history_ids": [
-        "R01",
-        "R02",
-        "R03",
-        "R04",
         "R05",
         "R06",
         "R07",
         "R08",
         "R09",
-        "R10"
+        "R10",
+        "R11"
       ],
-      "inherited_new_evidence_id": "R11",
+      "inherited_new_evidence_id": null,
       "inherited_batches": [
-        "M5-G0-BATCH-01",
-        "M5-G0-BATCH-02",
-        "M5-G0-BATCH-03"
+        "M5-G0-BATCH-04"
       ],
-      "scoped_fix": "Use existing K3 migration and Gate functions in real cloud PG17; repair managed role bootstrap and security-definer ACL, not create new Gate/Reviewer/Runner.",
+      "scoped_fix": "Existing G0 candidate selector now joins persisted production_runs and refuses missing/mismatched run.scope.project_id; no new Gate/Runner or cloud DDL.",
       "code_paths": [
-        "supabase/migrations/202611010900_k3_independent_gate_authority.sql",
-        "supabase/migrations/20261116080000_m5_k3_gate_function_acl_owner_fix.sql",
-        "scripts/test-k3-db.mjs",
-        "scripts/test-mab-http.mjs",
-        ".github/workflows/mab-isolated-db.yml"
+        "tools/gate-stage-candidate-selection.mjs",
+        "tests/data-production/gate-stage-candidate-selection.test.mjs"
       ],
       "cloud_database": {
         "project": "mohen-cloud",
         "ref": "fwrhxddcpkibsnmddcfl",
-        "pg_version": "17",
-        "installed_migrations": [
-          "m5_inherit_k3_independent_gate_authority",
-          "m5_k3_gate_function_acl_owner_fix"
-        ],
-        "signer_acl": {
-          "anon": false,
-          "producer": false,
-          "runtime": false,
-          "signer": true
-        },
-        "producer_can_revoke": false,
-        "gate_authority_login": false,
-        "gate_authority_set_role_grant": false,
-        "legacy_gate_audits": 711,
-        "original_column_md5": "ff6c66130220f35c2ebeaa5a100b7971",
-        "independent_gate_signatures": 0,
-        "current_qualifications": 0,
+        "pg_version": "17.11",
+        "studio_private_originals": false,
+        "storage_buckets": 0,
+        "gate_service_credentials": false,
+        "machine_reviewer_login": false,
+        "gate_reader_role": false,
         "reviewer_bindings": 0,
         "policies": 0,
-        "studio_private_originals": false,
-        "storage_buckets": 0
+        "candidates": 0,
+        "production_runs_total": 20,
+        "production_runs_with_project_scope": 0,
+        "write_actions": "NONE_READ_ONLY"
       },
-      "ci": [
-        {
-          "run_id": 43818213717,
-          "conclusion": "SUCCESS",
-          "scope": "REAL_DISPOSABLE_ISOLATED_PG17_K3_SUITE"
-        },
-        {
-          "run_id": 43818213671,
-          "conclusion": "SUCCESS",
-          "scope": "MAIN_CI"
-        },
-        {
-          "run_id": 43819078584,
-          "conclusion": "FAILURE",
-          "scope": "MISSING_NEW_ACL_MIGRATION_IN_TWO_ISOLATED_FIXTURE_CHAINS_CORRECTED"
-        }
-      ],
+      "ci": [],
       "followup_ci": {
         "main": {
-          "run_id": 43819354344,
-          "conclusion": "SUCCESS"
+          "conclusion": "PENDING_CHECK"
         },
         "pg17": {
-          "run_id": 43819354362,
-          "conclusion": "SUCCESS"
+          "conclusion": "PENDING_CHECK"
         },
         "isolated_http": {
-          "run_id": 43819354334,
-          "conclusion": "SUCCESS"
-        },
-        "verified_at_date": "2026-11-16",
-        "attestation_limit": "ISOLATED_FIXTURE_AND_BOUNDARY_NOT_ACTUAL_OWNER_REVIEWER_RUNNER_ROOT_E2E"
+          "conclusion": "PENDING_CHECK"
+        }
       },
-      "remaining_blocker": "M5-G0-ROOT-01: cloud M2 private original/Storage, reviewer physical machine login, policy/binding not ready; no actual signed same-Root G0 stage_binding/Runner qualified read or revoke/recovery. Existing M2 migration requires backup/bucket policy/cross-owner verification before activation.",
+      "remaining_blocker": "M5-G0-ROOT-01: legal cloud M2+Storage and independent machine reviewer/policy/binding missing; legacy runs have no owner/project/root scope, current sameRoot signed stage_binding and Runner read/negative/revoke/recovery NOT_RUN.",
       "handoff_state_changed": false,
       "runtime_verified": false,
       "m5_exit": "HOLD",
@@ -11821,11 +11795,11 @@
       ],
       "source_of_status": "edges[].verification_layers",
       "environment_hold_id": "M5-G0-ROOT-01",
-      "business_code_changed": false,
+      "business_code_changed": true,
       "docs_sync_commit": "THIS_COMMIT",
       "production_deployment": {
         "requested": false,
-        "git_deployment_enabled": false
+        "git_deployment_enabled": "NOT_RECHECKED_THIS_BATCH"
       }
     }
   }

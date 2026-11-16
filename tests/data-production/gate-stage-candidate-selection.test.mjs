@@ -13,13 +13,15 @@ test('selects exactly one staged G0 candidate and derives project from persisted
   const calls=[];
   const query=async (sql,params)=>{
     calls.push({sql,params});
-    assert.match(sql,/stage=:'stage'/);
-    assert.match(sql,/consumer='producer'/);
-    assert.match(sql,/candidate_status='SUBMITTED'/);
-    assert.match(sql,/input_fingerprint=:'fp'/);
+    assert.match(sql,/join control\.production_runs r on r\.run_id=c\.run_id/);
+    assert.match(sql,/r\.scope->>'project_id'=c\.allowed_scope->>'project_id'/);
+    assert.match(sql,/c\.stage=:'stage'/);
+    assert.match(sql,/c\.consumer='producer'/);
+    assert.match(sql,/c\.candidate_status='SUBMITTED'/);
+    assert.match(sql,/c\.input_fingerprint=:'fp'/);
     assert.match(sql,/limit 2/);
     assert.doesNotMatch(sql,/output_digest/);
-    return [{candidate_id:candidate,project_id:project}];
+    return [{candidate_id:candidate,project_id:project,run_project_id:project}];
   };
   assert.deepEqual(await selectExactStageCandidate(query,request),
     {candidateId:candidate,projectId:project});
@@ -29,13 +31,19 @@ test('selects exactly one staged G0 candidate and derives project from persisted
 
 test('rejects missing or ambiguous persisted candidates and any invalid project identity',async()=>{
   for(const rows of [[],[
-    {candidate_id:candidate,project_id:project},{candidate_id:id,project_id:project}
+    {candidate_id:candidate,project_id:project,run_project_id:project},{candidate_id:id,project_id:project}
   ],[{candidate_id:candidate,project_id:null}],
-  [{candidate_id:candidate,project_id:'fixture-project'}],
+  [{candidate_id:candidate,project_id:'fixture-project',run_project_id:'fixture-project'}],
+  [{candidate_id:candidate,project_id:project,run_project_id:null}],
+  [{candidate_id:candidate,project_id:project,run_project_id:id}],
+  [{candidate_id:candidate,project_id:project}],
   [{candidate_id:'not-a-uuid',project_id:project}]]) {
     assert.equal(await selectExactStageCandidate(async()=>rows,request),null);
   }
   assert.equal(await selectExactStageCandidate(async()=>null,request),null);
+  // Real SQL returns no row if the persisted run has empty/foreign project
+  // scope; the selector also fails closed against malformed query adapters.
+  assert.equal(await selectExactStageCandidate(async()=>[],request),null);
 });
 
 test('rejects stage/gate mismatch or malformed input before querying independent DB',async()=>{
@@ -50,7 +58,7 @@ test('rejects stage/gate mismatch or malformed input before querying independent
 });
 
 test('selection never attests the Producer supplied output digest',async()=>{
-  const query=async()=>[{candidate_id:candidate,project_id:project}];
+  const query=async()=>[{candidate_id:candidate,project_id:project,run_project_id:project}];
   const a=await selectExactStageCandidate(query,request);
   const b=await selectExactStageCandidate(query,{...request,output_digest:'f'.repeat(64)});
   assert.deepEqual(a,b); // output is checked only against independently signed stage_binding later

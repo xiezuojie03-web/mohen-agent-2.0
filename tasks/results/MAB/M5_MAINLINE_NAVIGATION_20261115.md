@@ -842,3 +842,11 @@ flowchart TB
 - **最前真实断点**：[E_D00_REVIEW](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_REVIEW) 与 [E_D00_QUALIFY](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_QUALIFY)：云端K3权限基础已验证，但M2私有原件表与Storage、机器Reviewer身份/策略/绑定尚未部署，暂无同Root阶段签名、资格消费或撤权恢复；◆PARTIAL／⇄HOLD／●NOT_VERIFIED和M5八维HOLD不变。
 - **下一步**：继承现有M2/M3专业能力，在原M2迁移明确的备份、桶策略、跨Owner、恢复前置满足后按缺口逐项入云；再走真实Owner→D00/G0独立签名/Runner消费，随后D01/G1→D02。没有必要另建数据库或新Gate。
 
+
+
+## 2026-11-16｜M5-G0-BATCH-05：原G0候选对持久Run项目作用域的安全接线
+
+- **原断点（[E_D00_REVIEW](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_REVIEW) → [E_D00_QUALIFY](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_QUALIFY)）**：继承R05—R11已实现Gate/Reviewer/Runner/精确stage_binding；本批在原`tools/gate-stage-candidate-selection.mjs`加`control.production_runs.scope.project_id`与候选`allowed_scope.project_id`的同Run匹配，不再凭候选单方宣称项目归属。空历史scope和异项目直接拒绝；测试见原`tests/data-production/gate-stage-candidate-selection.test.mjs`。
+- **云端事实（只读）**：mohen-cloud PG17.11，M2原件表/Storage桶未激活、机器Reviewer登录/Policy/Binding不存在，20条历史run的scope全空；本批未迁移云库、未改桶权限或创建人工PASS。原M2迁移须先备份、低权跨Owner和Storage恢复验证。
+- **证据分层**：本批源码守卫提交与测试是**能力级增量**，不意味着G0交接PASS。两原边◆PARTIAL／⇄HOLD／●NOT_VERIFIED不变；E_D01_REVIEW/E_D01_QUALIFY/E_L1_TO_D02暂未启动，M5八维均未新增同Root PASS。
+- **本批跟踪**：原JSON `audit_tracking.last_execution_batch` 与两条`edges[].engineering_diagnosis / verification_layers / source_paths`已同步；HTML内嵌同一JSON，37节点/54连接原样保持。提交后CI需按新HEAD核验并写回实证；无真实Reviewer签名或Runner证明不得改判。
