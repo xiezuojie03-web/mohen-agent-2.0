@@ -100,7 +100,7 @@ const stageCheck=({run,job,stage,gate,input_digest,output_digest})=>
   verify({...reviewRequest,run_id:run.run_id,job_id:job.job_id,stage,gate_code:gate,
     input_digest,output_digest,reviewer_binding_ref:job.implementation.gate_reviewer_binding});
 const run=createRunState({research_intent:input.research_intent,scope,run_id:runId});
-const runnerResult={disposition:"PASS",outputs:{source_asset:stageOutput}};
+const runnerResult={disposition:"PASS",outputs:{qualified_source:stageOutput}};
 const assertRunner=()=>requireIndependentStageQualification({
   context:{verifyStageQualification:stageCheck},run,stage:"D00",job,input,result:runnerResult,
 });
@@ -169,7 +169,7 @@ try{
   assert.equal((await assertRunner()).gate_audit_id,signed.auditId,
     "Runner's actual exact current-qualification validator must consume this PG-backed G0");
   assert.equal(stageOutput.stage,"D01","signed D00 output becomes the typed D01 input");
-  const evilResult={...runnerResult,outputs:{source_asset:{...stageOutput,originalId:uuid()}}};
+  const evilResult={...runnerResult,outputs:{qualified_source:{...stageOutput,originalId:uuid()}}};
   await assert.rejects(()=>requireIndependentStageQualification({
     context:{verifyStageQualification:stageCheck},run,stage:"D00",job,input,result:evilResult,
   }),/INDEPENDENT_STAGE_QUALIFICATION_INVALID/,"tampered D01 input must be denied");
