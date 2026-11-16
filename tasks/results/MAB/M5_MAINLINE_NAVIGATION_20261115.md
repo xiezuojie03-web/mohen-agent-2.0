@@ -850,3 +850,5 @@ flowchart TB
 - **云端事实（只读）**：mohen-cloud PG17.11，M2原件表/Storage桶未激活、机器Reviewer登录/Policy/Binding不存在，20条历史run的scope全空；本批未迁移云库、未改桶权限或创建人工PASS。原M2迁移须先备份、低权跨Owner和Storage恢复验证。
 - **证据分层**：本批源码守卫提交与测试是**能力级增量**，不意味着G0交接PASS。两原边◆PARTIAL／⇄HOLD／●NOT_VERIFIED不变；E_D01_REVIEW/E_D01_QUALIFY/E_L1_TO_D02暂未启动，M5八维均未新增同Root PASS。
 - **本批跟踪**：原JSON `audit_tracking.last_execution_batch` 与两条`edges[].engineering_diagnosis / verification_layers / source_paths`已同步；HTML内嵌同一JSON，37节点/54连接原样保持。提交后CI需按新HEAD核验并写回实证；无真实Reviewer签名或Runner证明不得改判。
+
+**BATCH-05提交后验收回读**：代码提交 [`51be179df365`](https://github.com/xiezuojie03-web/mohen-agent-2.0/commit/51be179df365464d99166003c6031921030f9fb2)；[主CI 43825974690](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43825974690) **SUCCESS（270 PASS/0 FAIL）**；[隔离PG17 43825974705](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43825974705) **SUCCESS（原GateService/Reviewer/原件库安全边界及回滚）**。但PG脚本报告`MAB_PRIVATE_ORIGINAL_STORAGE_HOLD`，本批未覆盖官方隔离Storage字节工作流；本批HTTP未重跑（沿用BATCH-04 43819354334），云端同Root阶段资格仍HOLD/NOT_VERIFIED。
