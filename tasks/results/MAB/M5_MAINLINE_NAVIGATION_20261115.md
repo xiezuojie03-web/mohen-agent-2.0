@@ -827,7 +827,7 @@ flowchart TB
   - `tools/local-gate-service.mjs` 仍以专用机器Reviewer身份读取/审签；`packages/data-access/src/gate-stage-qualification.mjs` 严格读取当前独立资格；`independent-stage-qualification.mjs` 及唯一Runner继续核同run/stage/job/reviewer/input/output/consumer及有效期。代码路径存在，不能替代持久运行证据。
 - **环境核验与具名阻断**：
   - 当前连接仅发现Supabase项目 `mohen-cloud`，无开发分支；现有信息无法确认它是PLAN §0.2 B要求的持久非生产隔离库。本批未对该项目执行任何数据库查询或写入。
-  - 标准CI [43800172713](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43800172713) 的270 PASS/0 FAIL来自mock DB/代码边界回归；其步骤明确为无数据库测试。当前main HEAD [339b6b3](https://github.com/xiezuojie03-web/mohen-agent-2.0/commit/339b6b3f35186c6ca3b5374670c236e39ea013db) 的Build检查 [43810300382](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43810300382) SUCCESS。
+  - 标准CI [43800172713](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43800172713) 的270 PASS/0 FAIL来自mock DB/代码边界回归；其步骤明确为无数据库测试。本批核查起点main HEAD [339b6b3](https://github.com/xiezuojie03-web/mohen-agent-2.0/commit/339b6b3f35186c6ca3b5374670c236e39ea013db) 的Build检查 [43810300382](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43810300382) SUCCESS；文档同步提交 [104907608fa1](https://github.com/xiezuojie03-web/mohen-agent-2.0/commit/104907608fa1c726a45ca85c937a346209f27497) 的CI [43812632618](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43812632618) SUCCESS。
   - `.github/workflows/mab-isolated-db.yml` 使用一次性合成数据PostgreSQL 17并在结束时清理；它不提供持久私有原件/Storage/真实Owner/Reviewer环境，不能替代本批要求。
   - Vercel `git.deploymentEnabled=false`；只读部署列表最新Production仍为旧SHA `835602242cab31b1fcb372c7ff5efd4fc41dfd89`，本批未部署。
 - **施工改动**：没有修改业务代码、Registry、Runner、Gate、Reviewer、专业方法或数据库；仅更新本批进度、当前事实与三份导航，记录具名环境HOLD。

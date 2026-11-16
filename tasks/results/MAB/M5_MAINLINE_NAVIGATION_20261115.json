@@ -11412,7 +11412,7 @@
         "E_L1_TO_D02"
       ],
       "state_source": "原edges[].verification_layers，状态不在此处重复存储",
-      "reason": "BATCH-02业务代码@56ac0ccb与签发接口增强@501829ac的CI均SUCCESS（270P/0F，mock DB）；现有Reviewer重构C01输出并写入既有不可变stage_binding回执。BATCH-03确认当前无可确认的持久非生产PG：唯一可见Supabase项目mohen-cloud无开发分支且环境角色未确认；标准CI不连DB，mab-isolated-db仅临时合成PG17。G0保持HOLD，不重建功能；环境具备后完成真实同Root签发/资格/撤权/恢复，再进入G1/D02。Vercel生产最新SHA仍83560224，未部署本批。"
+      "reason": "BATCH-02业务代码@56ac0ccb与签发接口增强@501829ac的CI均SUCCESS（270P/0F，mock DB）；现有Reviewer重构C01输出并写入既有不可变stage_binding回执。BATCH-03确认当前无可确认的持久非生产PG：唯一可见Supabase项目mohen-cloud无开发分支且环境角色未确认；标准CI不连DB；mab-isolated-db使用临时合成PG17并清理且触发路径未覆盖当前Reviewer文件；mab-m1-isolated-http也使用临时PG/合成用户并清理；mab-m3-independent-revocation为synthetic/no-DB。G0保持HOLD，不重建功能；环境具备后完成真实同Root签发/资格/撤权/恢复，再进入G1/D02。Vercel生产最新SHA仍83560224，未部署本批。"
     },
     "groups": [
       {
@@ -11728,7 +11728,9 @@
       "isolated_db_workflow": {
         "path": ".github/workflows/mab-isolated-db.yml",
         "mode": "DISPOSABLE_SYNTHETIC_POSTGRES_17",
-        "cleanup": "database container and socket directory removed after run",
+        "trigger_paths_include_current_reviewer_files": false,
+        "workflow_dispatch": true,
+        "cleanup": "docker container removed and /workspace/mab-isolated-pg socket directory removed after run",
         "conclusion": "NOT_A_PERSISTENT_OWNER_PRIVATE_STORAGE_REVIEWER_ENVIRONMENT"
       },
       "production_deployment_verification": {
@@ -11747,7 +11749,28 @@
       ],
       "source_of_status": "edges[].verification_layers",
       "business_code_changed": false,
-      "environment_hold_id": "M5-G0-PG-01"
+      "environment_hold_id": "M5-G0-PG-01",
+      "documentation_sync_commit": "104907608fa1c726a45ca85c937a346209f27497",
+      "documentation_sync_ci": {
+        "run_id": 43812632618,
+        "url": "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43812632618",
+        "conclusion": "SUCCESS",
+        "scope": "Typecheck, Unit, Production boundary regression, K3 traceability, static isolated-DB fixture preflight, Build and Auth coverage; no database runtime"
+      },
+      "isolated_http_workflow": {
+        "path": ".github/workflows/mab-m1-isolated-http.yml",
+        "mode": "DISPOSABLE_SYNTHETIC_POSTGRES_17_PLUS_LOCAL_NEXT_CHROMIUM",
+        "synthetic_users_only": true,
+        "cloud_storage": false,
+        "cleanup": "docker container removed and isolated socket directory removed after run",
+        "conclusion": "NOT_A_PERSISTENT_OWNER_PRIVATE_STORAGE_REVIEWER_ENVIRONMENT"
+      },
+      "revocation_workflow": {
+        "path": ".github/workflows/mab-m3-independent-revocation.yml",
+        "mode": "PURE_NODE_SYNTHETIC_POOLS_AND_EPHEMERAL_LOCALHOST_HTTPS",
+        "database_connection": false,
+        "conclusion": "PROTOCOL_REGRESSION_ONLY_NOT_PERSISTENT_PG_REVOCATION"
+      }
     }
   }
 }
