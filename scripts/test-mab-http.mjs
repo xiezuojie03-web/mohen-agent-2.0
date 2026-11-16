@@ -39,6 +39,7 @@ try {
   const names=['202610070100_data_production_v2_baseline.sql',
     ...fs.readdirSync(migrations).filter(n=>n>='202610160300'&&n<='202610292100_imported_materials.sql'&&!n.startsWith('202610160400')),
     '202610310900_k3_security_boundary.sql','202610310910_k3_gate_candidates.sql','202611010900_k3_independent_gate_authority.sql',
+    '20261116080000_m5_k3_gate_function_acl_owner_fix.sql',
     '202611020900_kad1_watch_revision_isolation.sql','202611020910_kad1_consumption_blocks.sql','202611020920_kad1_account_transactions.sql',
     studioMigration,'20261108090000_director_plans_source_ids.sql','20261108100000_mab_m5_director_plan_project_binding.sql',
     '20261102140000_mab_m2_private_originals.sql','20261109130000_mab_cp2f_asset_backlink.sql',

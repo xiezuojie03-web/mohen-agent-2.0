@@ -65,6 +65,9 @@ try {
   grant mohen_gate_authority to k3_admin with admin true, inherit false, set false;`);
   const migrations = ["202610310900_k3_security_boundary.sql", "202610310910_k3_gate_candidates.sql", "202611010900_k3_independent_gate_authority.sql"];
   for (const file of migrations) apply(file);
+  // The corrective migration is needed on managed PG17 that ran the old K3
+  // owner-transfer grant sequence. Replay it here too (safe and idempotent).
+  apply("20261116080000_m5_k3_gate_function_acl_owner_fix.sql");
   // The owner must actually revoke PUBLIC EXECUTE, not just emit a GRANT warning.
   if (query(database, `select count(*) from pg_proc p where
     p.oid in (
