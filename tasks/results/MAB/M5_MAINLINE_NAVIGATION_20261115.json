@@ -11796,10 +11796,20 @@
         }
       ],
       "followup_ci": {
-        "main": 43819354344,
-        "pg17": 43819354362,
-        "isolated_http": 43819354334,
-        "conclusion_at_first_record": "PENDING_VERIFICATION"
+        "main": {
+          "run_id": 43819354344,
+          "conclusion": "SUCCESS"
+        },
+        "pg17": {
+          "run_id": 43819354362,
+          "conclusion": "SUCCESS"
+        },
+        "isolated_http": {
+          "run_id": 43819354334,
+          "conclusion": "SUCCESS"
+        },
+        "verified_at_date": "2026-11-16",
+        "attestation_limit": "ISOLATED_FIXTURE_AND_BOUNDARY_NOT_ACTUAL_OWNER_REVIEWER_RUNNER_ROOT_E2E"
       },
       "remaining_blocker": "M5-G0-ROOT-01: cloud M2 private original/Storage, reviewer physical machine login, policy/binding not ready; no actual signed same-Root G0 stage_binding/Runner qualified read or revoke/recovery. Existing M2 migration requires backup/bucket policy/cross-owner verification before activation.",
       "handoff_state_changed": false,
