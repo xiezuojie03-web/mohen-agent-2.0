@@ -3,7 +3,7 @@
   "snapshot_date": "2026-11-15",
   "repository": "xiezuojie03-web/mohen-agent-2.0",
   "branch": "main",
-  "source_sha": "712a08b021bbef12977ed907a8c64d136eeca3bc",
+  "source_sha": "62141531ef90c868b8b5a579433fb8bde0b9cbda",
   "authority": "tasks/implementation/MAB/PLAN.md#3.5 B/C",
   "document_role": "non_authoritative_navigation_and_gap_index",
   "notice": "非新任务书、非完整架构权威、非真实整链PASS；以精确代码和CI/真实PG/HTTP/Provider证据为最终依据。",
@@ -11897,14 +11897,14 @@
         "M2私有原件表、RLS与不可变保护",
         "受控私有Storage桶、M2证据桥接及C01/C02来源读取SQL",
         "K3独立签发/资格权限与M3受限Gate Service DB/ACL",
-        "M5-ASSEMBLY-03：20261116121153原件登记rights_by_action字段实装；Owner/权限不扩张、无会话拒绝已验"
+        "M5-ASSEMBLY-03：20261116121153原件登记rights_by_action字段实装；Owner/权限不扩张、无会话拒绝已验",
+        "M5-ASSEMBLY-04：Owner L1/L2读上下文及D02—D05五函数迁移20261116122301实装，ACL/五项无会话拒绝通过，原artifact_revision_for与711审计保留"
       ],
       "unproven": [
         "当前云端真实Original/Storage对象与Owner Studio Root运行（现存0）",
         "当前云端独立Reviewer LOGIN、Policy、Binding和凭据（现存0）",
         "同一Root的云端G0独立签发、Runner当前资格消费与后续G1/D02",
         "持久Runner宿主与真正受权的HTTP/Provider环境",
-        "实时函数缺口：read_private_text_reading与D02—D05候选函数尚未安装；仅原件登记权利投影已获Owner批准实装，其余函数迁移仍被自动审批拒绝",
         "真实累计费用未核证；当前云execution_receipts=0不等于历史累计¥0"
       ]
     },
@@ -11936,14 +11936,14 @@
     ],
     "next_execution_rule": "先继承并以最小正反验证锁定环境/当前资格的确切差异，同时以E_L1_TO_D02为下一处已确认代码适配缺口；每做完一处修复须原位同步JSON/MD/HTML、CURRENT与progress，维护具体证据和实时状态。",
     "last_execution": {
-      "batch": "M5-ASSEMBLY-01/02",
+      "batch": "M5-ASSEMBLY-01/02/03/04",
       "code_sha": "712a08b021bbef12977ed907a8c64d136eeca3bc",
       "evidence": "tasks/results/MAB/evidence/m5-assembly-20261116/receipt.json",
       "result": "DB_FREE_CODE_VERIFIED_LIVE_NOT_RUN",
-      "cloud_ddl": "SOURCE_REGISTRATION_APPLIED_20261116121153_AFTER_OWNER_APPROVAL; OTHER_FIVE_FUNCTIONS_AUTO_REVIEW_HOLD_NOT_APPLIED",
+      "cloud_ddl": "SUCCESS source registration 20261116121153 + five inherited functions 20261116122301 after explicit Owner approvals; no Gate/rows/source-table grants",
       "live_owner_project_root_work": "NOT_CREATED_NO_AUTHENTICATED_OWNER_SESSION",
       "dimensions": "ALL_8_HOLD",
-      "next": "恢复合法Owner会话与具名持续宿主/低权配置；审批已备5个原函数继承批，再同一真实任务G0/G1→D02",
+      "next": "Cloud environment secrets=[] and runtime_variables=[]; no callable shared desktop tool; no legitimate Owner session/project/root/work yet; persistent Web/Runner/Reviewer low-privilege runtime not configured. No paid Provider request or live G1→D02/G2.",
       "ci": {
         "main": {
           "run_id": 43863607094,
@@ -11955,6 +11955,21 @@
         },
         "http": {
           "run_id": 43863607169,
+          "result": "SUCCESS"
+        }
+      },
+      "syntax_repair_ci": {
+        "sha": "62141531ef90c868b8b5a579433fb8bde0b9cbda",
+        "main": {
+          "run_id": 43865486574,
+          "result": "SUCCESS"
+        },
+        "isolated_pg17": {
+          "run_id": 43865486923,
+          "result": "SUCCESS"
+        },
+        "http_chromium": {
+          "run_id": 43865486525,
           "result": "SUCCESS"
         }
       }

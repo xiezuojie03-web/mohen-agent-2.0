@@ -52,6 +52,16 @@
       "sha256": "9c4bb1026fcd3338382ac6f57eb4aecc54be2447bca9740a349c053b99a88641",
       "bytes": 3308,
       "scope": "Extracted result markers only; full CI log retained at GitHub run URL"
+    },
+    "pg17-c01-ci-results.log": {
+      "sha256": "6650bdcbdb7cd34dadd395a8f7673521fb8a05302e817eef0bf1c6428eb86c69",
+      "bytes": 13435,
+      "scope": "Actual disposable CI result markers; not live cloud or Owner acceptance"
+    },
+    "http-c01-ci-results.log": {
+      "sha256": "32d979dcb7b50ecf0b470a0285184c90745d381df9db396fd84ffef13510aa1f",
+      "bytes": 3308,
+      "scope": "Actual disposable CI result markers; not live cloud or Owner acceptance"
     }
   },
   "live_business": "NOT_RUN",
@@ -75,7 +85,7 @@
       "no_session": "STUDIO_IDENTITY_REQUIRED"
     },
     "remaining_functions": {
-      "result": "AUTO_REVIEW_REJECTED_NOT_APPLIED",
+      "result": "SUCCESS_AFTER_EXPLICIT_OWNER_APPROVAL_AND_SYNTAX_REPAIR",
       "prepared_sql": "tasks/results/MAB/evidence/m5-assembly-20261116/cloud-function-inheritance-NOT_APPLIED.sql",
       "sha256": "dedcaeced921de6ece88bdb6e6259c129040455b97aa400b445ecbd1814d003e",
       "source_files": [
@@ -87,7 +97,8 @@
         {
           "path": "supabase/migrations/20261113170000_mab_m5_d02_text_plain_observation.sql",
           "sha256": "238aba9879073802a33679404a3a511f4ac4f95fa2271fe2c310064734671765",
-          "range": "whole original function file; transaction wrappers removed"
+          "range": "whole original function file; transaction wrappers removed",
+          "executed_source_sha256": "a785065a7dc4adc5d4c500d74631942aee22a6d598b87c3810f3379f22abc83d"
         },
         {
           "path": "supabase/migrations/20261107200000_mab_m5_d02_d05_private_candidates.sql",
@@ -101,7 +112,26 @@
         "persist_private_world_claim",
         "persist_private_humanistic_finding",
         "persist_private_world_projection"
-      ]
+      ],
+      "migration_version": "20261116122301",
+      "reviewed_sql_sha256": "dedcaeced921de6ece88bdb6e6259c129040455b97aa400b445ecbd1814d003e",
+      "executed_sql_sha256": "2aad69a14cde100c487804aaf478922e90dab9f6d5c834af043540ab4c74ffa5",
+      "first_attempt": {
+        "sqlstate": "42601",
+        "error": "syntax error at or near revoke; inherited C01 SQL lacked dollar-quote command terminator",
+        "all_five_functions_after_rollback": 0
+      },
+      "syntax_change": "Only END/dollar-quote semicolons in existing C01 migration; included in original two disposable PG chains",
+      "file_label": "NOT_APPLIED filename preserves the reviewed artifact link; this applied receipt is current",
+      "acl": {
+        "runtime_execute_all": true,
+        "anon_authenticated_service_role_producer_signer_execute_all": false,
+        "source_table_select": false
+      },
+      "no_session_rejections": 5,
+      "artifact_revision_function_md5_before_after": "2762d1873ede9bd5d839d1001168281b",
+      "gate_audits_before_after": 711,
+      "projects_originals_candidates": 0
     }
   },
   "provider_calls": 0,
@@ -134,5 +164,21 @@
     "sha": "b62d0b479cfb95165440ed6db44b638ad71e09a0",
     "run_id": 43864329512,
     "result": "SUCCESS"
-  }
+  },
+  "ci_after_syntax_repair": {
+    "sha": "62141531ef90c868b8b5a579433fb8bde0b9cbda",
+    "main": {
+      "run_id": 43865486574,
+      "result": "SUCCESS"
+    },
+    "isolated_pg17": {
+      "run_id": 43865486923,
+      "result": "SUCCESS"
+    },
+    "http_chromium": {
+      "run_id": 43865486525,
+      "result": "SUCCESS"
+    }
+  },
+  "current_blocker": "Cloud environment secrets=[] and runtime_variables=[]; no callable shared desktop tool; no legitimate Owner session/project/root/work yet; persistent Web/Runner/Reviewer low-privilege runtime not configured. No paid Provider request or live G1→D02/G2."
 }

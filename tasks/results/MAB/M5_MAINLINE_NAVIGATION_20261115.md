@@ -1,5 +1,7 @@
 # 墨痕 M5 全链路导航｜持续维护基线（非权威标准）
 
+> **M5-ASSEMBLY-04当前（优先于下方历史段）**：两项获Owner明确批准的云迁移均成功（20261116121153/20261116122301），五函数ACL/无会话拒绝已验；原C01 SQL分号修复在6214153主CI/PG17/HTTP三绿。旧审批阻断已消除；当前只缺合法Owner会话、持续宿主与安全注入的低权运行配置。八维仍HOLD，真实G1→D02/G2未运行。
+
 > **M5-ASSEMBLY-03更新**：Owner明确批准后原件登记rights_by_action投影迁移20261116121153 SUCCESS，权限与无会话拒绝通过；其他5个原云函数的安装仍被自动审批拒绝，准备SQL为 `evidence/m5-assembly-20261116/cloud-function-inheritance-NOT_APPLIED.sql`，未应用。无真实Owner/Root运行，八维仍HOLD。此条优先于下方此前云DDL全HOLD的历史说明。
 
 > **2026-11-16 M5-ASSEMBLY-01/02（优先于下方旧断点描述）**：712a08b已实现C01精确G1→D02 typed reading请求，D02获执行授权后Owner读回L1/revision/locator/当前G1与原件SHA，复用原M4派发器生成明确分类/声源/疑点的H05候选及永久Receipt，再交原observeMaterial；定向及DB-free回归通过，非云端真实G2。C02自动转录、真实Owner/同Root/低权服务、缺失云函数及G2精确绑定仍需实证。 原边保持◆PARTIAL/⇄HOLD/●NOT_VERIFIED；原37节点/54边/八维及统计不变。代码与原始检查回执见 `evidence/m5-assembly-20261116/receipt.json`。云端函数修订被自动审批拒绝未执行；真实Owner/Root尚未合法建立，当前最前运行阻断仍为E_D00_REVIEW/E_D00_QUALIFY。
