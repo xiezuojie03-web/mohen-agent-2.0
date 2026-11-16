@@ -145,6 +145,7 @@ try {
       "20261107120000_mab_m2_private_scanned_page.sql",
       "20261107160000_mab_m2_1_producer_run_progress.sql",
       "20261107200000_mab_m5_d02_d05_private_candidates.sql",
+      "20261113170000_mab_m5_d02_text_plain_observation.sql",
       "20261107210000_mab_m3_private_gate_candidate_submission.sql",
       "20261107211000_mab_m3_local_owner_gate_signer.sql",
       "20261107220000_mab_m5_machine_rule_reviewer.sql",

@@ -40,7 +40,6 @@ const UNCHAINED = new Map([
     "202610050011_second_promotion_gate.sql", "202610070200_legacy_v1_to_v2_backfill.sql"].map(f => [f, LEGACY_SUPERSEDED]),
   ...["20261113150000_mab_m5_reviewer_scope_follows_candidates.sql",
     "20261113160000_mab_gate_scope_rule_for_studio_projects.sql",
-    "20261113170000_mab_m5_d02_text_plain_observation.sql",
     "20261113180000_mab_g3_world_purpose_binding.sql",
     "20261113190000_mab_m5_d04_meaning_finding_generalize.sql",
     "20261114090000_mab_m5_d05_p04_story_seed.sql",

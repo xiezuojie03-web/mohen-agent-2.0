@@ -413,7 +413,7 @@ begin
 
   'artifact_revision',control.artifact_revision_for('material_evidence',p_evidence));
 
-end $function$
+end; $function$;
 
 revoke all on function studio.persist_private_material_observation(uuid,uuid,uuid,uuid,text,uuid,jsonb,text)
  from public,anon,authenticated,service_role,mohen_producer,mohen_gate_signer;

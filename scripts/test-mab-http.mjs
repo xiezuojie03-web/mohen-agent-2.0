@@ -48,7 +48,7 @@ try {
     '20261105110000_mab_m5_studio_research_read.sql',
      '20261115130000_mab_m5_private_text_read_context_consistency.sql',
      '20261107120000_mab_m2_private_scanned_page.sql',
-    '20261107160000_mab_m2_1_producer_run_progress.sql','20261107200000_mab_m5_d02_d05_private_candidates.sql',
+    '20261107160000_mab_m2_1_producer_run_progress.sql','20261107200000_mab_m5_d02_d05_private_candidates.sql','20261113170000_mab_m5_d02_text_plain_observation.sql',
     '20261107210000_mab_m3_private_gate_candidate_submission.sql','20261107211000_mab_m3_local_owner_gate_signer.sql',
     '20261107220000_mab_m5_machine_rule_reviewer.sql','20261107230000_mab_m2_private_source_registration_source_revision.sql',
     '20261107240000_mab_m5_claim_revision_artifact_read_policy.sql','20261108110000_mab_m5_source_rights_actions.sql',
