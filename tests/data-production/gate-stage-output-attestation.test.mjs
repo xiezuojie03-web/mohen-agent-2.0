@@ -95,3 +95,59 @@ test('refuses missing/ambiguous persisted originals (no choose-first), and never
     {request:{...request,stage:'D01',gate_code:'G1'}})),
     /STAGE_OUTPUT_ATTESTATION_NOT_SUPPORTED/);
 });
+
+
+import {createRuleGateReviewer} from '../../tools/rule-gate-reviewer.mjs';
+import {MACHINE_REVIEWER_USER_ID,MACHINE_SIGNER_LOGIN} from '../../tools/machine-reviewer-session.mjs';
+
+test('existing independent Reviewer includes independently reconstructed binding in its signed decision, not merely the helper result',async()=>{
+  const signedId='77777777-7777-4777-8777-777777777777';
+  const decisions=[];
+  const calls=[];
+  const q=async (sql,params)=>{
+    calls.push(sql);
+    if(sql.includes('from control.gate_policy_versions'))
+      return [{required_checks:'["identity_version"]',max_validity:'6 days'}];
+    if(sql.includes('from control.gate_candidates'))
+      return [{...candidate,scope:candidate.scope,
+        purpose_namespace:'data-production',purpose_code:'m5-remediation',purpose_version:'v1',
+        evidence_refs:JSON.stringify(candidate.evidence_refs),dependency_snapshot:'[]',
+        submitted_at:'2026-11-16T00:00:00Z'}];
+    if(sql.includes('control.artifact_revision_for'))return [{revision:rev}];
+    if(sql.includes('from source.raw_items'))return [row];
+    if(sql.includes('from control.qualification_current'))return [];
+    if(sql.includes('from control.gate_audits'))return [{
+      gate_code:'G0',result:'PASS',decision_origin:'independent_gate',consumer:'producer',
+      reviewer_user_id:MACHINE_REVIEWER_USER_ID,
+      reviewer_db_identity:MACHINE_SIGNER_LOGIN,current:true,
+    }];
+    throw Error('UNEXPECTED_SIGNER_QUERY:'+sql.slice(0,60));
+  };
+  const makeReviewer=()=>createRuleGateReviewer({
+    query:q,projectId:project,log:()=>{},
+    mintToken:()=> 'test-only-mock-session',randomId:()=>run,
+    attestStageOutput:({candidate:candidateRead,request:stageRequest,projectId:pid})=>
+      attestG0TextStageOutput({query:q,candidate:candidateRead,request:stageRequest,
+        registry,projectId:pid}),
+    decide:async (decision,sessionToken)=>{decisions.push({decision,sessionToken});return signedId;}
+  });
+  const signed=await makeReviewer().review({gate:'G0',candidateId:cid,stageRequest:request});
+  assert.equal(signed.status,'PASS');
+  assert.equal(signed.auditId,signedId);
+  assert.equal(decisions.length,1);
+  assert.deepEqual(decisions[0].decision.receipt.stage_binding,{
+    job_id:request.job_id,reviewer_binding_ref:request.reviewer_binding_ref,
+    input_digest:request.input_digest,output_digest:request.output_digest,
+    consumer:'producer'});
+  assert.equal(auditHasExactStageBinding({
+    stage:'D00',consumer:'producer',input_fingerprint:request.input_digest,
+    stage_binding:decisions[0].decision.receipt.stage_binding
+  },request),true);
+  assert.equal(decisions[0].decision.result,'PASS');
+  assert.equal(decisions[0].sessionToken,'test-only-mock-session');
+  await assert.rejects(makeReviewer().review({gate:'G0',candidateId:cid,
+    stageRequest:{...request,output_digest:'c'.repeat(64)}}),
+    /STAGE_OUTPUT_DIGEST_NOT_REPRODUCIBLE/);
+  assert.equal(decisions.length,1,'bad output must be denied BEFORE authority.decide');
+  assert.ok(calls.some(sql=>sql.includes('from source.raw_items')));
+});

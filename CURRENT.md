@@ -15,6 +15,8 @@
 - **生产隔离与恢复**：vercel.json git.deploymentEnabled=false；未写生产DB、未使用真实凭据或触发正式Gate/收费Provider。若生产类正反实跑不可得，保留代码和严格HOLD，不回退到旧output_digest回显。
 - **直达**：交互HTML `#edge-E_D00_REVIEW`和`#edge-E_D00_QUALIFY`，导航JSON的audit_tracking.last_execution_batch记本批。M5保持M5_OVERALL_HOLD。
 
+- **补充接口级签发回归（待CI）**：第二批补充真实Reviewer签发请求边界的接口模拟正反：正常将独立重构的stage_binding提交至既有decide；恶意output_digest在decide前拒绝。测试仅mock独立DB签署，不属于持久PG/HTTP G0实跑；提交待CI复核。
+
 ## 2026-11-16｜M5-G0-BATCH-01：精确候选定位与真实项目作用域修复（局部施工，G0仍HOLD）
 
 - **当前业务代码**：`718503e6f5ce9166a25628bcff437c2daab5ded1`。本批修改`tools/local-gate-service.mjs`；新增无副作用候选定位`tools/gate-stage-candidate-selection.mjs`和`tests/data-production/gate-stage-candidate-selection.test.mjs`。没有修改生产数据库、正式Gate、Registry、唯一Runner或专业签发合同。

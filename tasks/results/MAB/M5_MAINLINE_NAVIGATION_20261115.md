@@ -807,3 +807,5 @@ flowchart TB
 代码提交 **[`56ac0ccb14f6`](https://github.com/xiezuojie03-web/mohen-agent-2.0/commit/56ac0ccb14f6154a8f203eb37712047c622d8f61)** 主CI [43799675858](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43799675858) **SUCCESS**（Typecheck、Unit、Production boundary 269 PASS/0 FAIL、Build、Auth coverage）。真实Signer/PG/HTTP/同Root/撤权均NOT_RUN；非文本C02及G1—G5未接通，**⇄HOLD／●NOT_VERIFIED保持**，不提前D02。测试见`tests/data-production/gate-stage-output-attestation.test.mjs`；详情与恢复见CURRENT及progress。机器批次在`audit_tracking.last_execution_batch`，状态只读原`edges[].verification_layers`。
 
 **交互直达：** [G0独立审核精确断点](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_REVIEW) · [G0当前资格读取精确断点](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_QUALIFY)。
+
+**BATCH-02审签接口回归增强（CI待核）**：第二批补充真实Reviewer签发请求边界的接口模拟正反：正常将独立重构的stage_binding提交至既有decide；恶意output_digest在decide前拒绝。测试仅mock独立DB签署，不属于持久PG/HTTP G0实跑；提交待CI复核。

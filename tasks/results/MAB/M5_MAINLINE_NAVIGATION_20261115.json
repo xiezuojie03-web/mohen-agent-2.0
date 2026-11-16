@@ -11672,7 +11672,9 @@
         "#edge-E_D00_REVIEW",
         "#edge-E_D00_QUALIFY"
       ],
-      "source_of_status": "edges[].verification_layers"
+      "source_of_status": "edges[].verification_layers",
+      "signer_receipt_regression": "Added Reviewer.review -> original authority.decide receipt stage_binding pass, and tampered output_digest reject before sign; mock DB only",
+      "signer_receipt_regression_ci": "PENDING_NEW_COMMIT"
     }
   }
 }

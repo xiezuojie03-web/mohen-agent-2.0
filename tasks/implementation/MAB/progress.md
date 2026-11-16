@@ -4231,3 +4231,5 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **生产隔离与恢复**：vercel.json git.deploymentEnabled=false；未写生产DB、未使用真实凭据或触发正式Gate/收费Provider。若生产类正反实跑不可得，保留代码和严格HOLD，不回退到旧output_digest回显。
 - **直达**：交互HTML `#edge-E_D00_REVIEW`和`#edge-E_D00_QUALIFY`，导航JSON的audit_tracking.last_execution_batch记本批。M5保持M5_OVERALL_HOLD。
 
+
+- **BATCH-02审签边界增强（2026-11-16，待CI）**：第二批补充真实Reviewer签发请求边界的接口模拟正反：正常将独立重构的stage_binding提交至既有decide；恶意output_digest在decide前拒绝。测试仅mock独立DB签署，不属于持久PG/HTTP G0实跑；提交待CI复核。
