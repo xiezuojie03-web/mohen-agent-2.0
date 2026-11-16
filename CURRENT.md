@@ -5,6 +5,16 @@
 **核验日期：2026-11-15。本轮最新业务/隔离测试代码：`main@9730e527e71fadd94b539f7631eb5dd8fc472683`。** 本轮连续三笔业务代码提交：`ec975c3`（Studio D00→D01 C01 原件读取，主CI [43681077049](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681077049) SUCCESS、隔离PG17 [43681076978](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681076978) SUCCESS）；`f127751`（真实Runner私有D01→D02 typed输入不匹配时持久HOLD，主CI [43681233345](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681233345) SUCCESS）；`977b369`（本地隔离Gate必须校验签署的精确stage_binding而不是复制请求output_digest，主CI [43681613039](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681613039) 最后查询仍在运行，独立Gate撤权合同 [43681613052](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681613052) SUCCESS）。本轮没有实际Owner同一作品持久环境D00/G0→G5/Studio作品实跑，不得以CI当M5 PASS。
 
 
+## 2026-11-16｜M5-G0-BATCH-01：精确候选定位与真实项目作用域修复（局部施工，G0仍HOLD）
+
+- **当前业务代码**：`718503e6f5ce9166a25628bcff437c2daab5ded1`。本批修改`tools/local-gate-service.mjs`；新增无副作用候选定位`tools/gate-stage-candidate-selection.mjs`和`tests/data-production/gate-stage-candidate-selection.test.mjs`。没有修改生产数据库、正式Gate、Registry、唯一Runner或专业签发合同。
+- **断点位置**：导航原边`E_D00_REVIEW`（L0候选→独立G0）及相邻`E_D00_QUALIFY`（G0→L0当前资格），属于M5八维第3项。本批定向接口核验：G0本地隔离服务`autoSign`此前仅按run/Gate/input查候选并按提交时间取第一个，再以固定`PROJECT_ID`创建规则Reviewer；因此新项目有候选但无法按真实项目授权匹配，且同Run多候选可能被任意挑选。修为`tools/gate-stage-candidate-selection.mjs`：在独立机器数据库查询中按run_id、stage、gate_code、consumer=producer、SUBMITTED、input_fingerprint精确匹配；最多2行，必须唯一；由候选已入库`allowed_scope.project_id`取得并校验真实UUID，再传给既有规则Reviewer。无候选、多个候选、无效项目或错阶段全部拒绝，不从Producer请求取得项目ID，也不凭请求output_digest签发资格。
+- **已证测试**：GitHub主CI [43797796219](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43797796219) **SUCCESS**（提交`718503e6f5ce9166a25628bcff437c2daab5ded1`）；包含新候选唯一匹配、真实project来源、重复/无效project、错stage/gate、禁止输出digest自证等单元正反；既有类型、生产边界、构建均按CI结果。**未运行本批持久Owner/Private Worker/独立Reviewer同Root PG/HTTP正反，不能记G0运行PASS**。
+- **仍未解除**：现行`tools/rule-gate-reviewer.mjs`签发的对象级PASS审核receipt还没有Reviewer独立核验并写入不可变的精确`stage_binding(job/reviewer/input/output)`；`gate-stage-qualification.mjs`及`local-gate-service.mjs`仍然严格拒绝旧PASS回显，故`E_D00_REVIEW`和`E_D00_QUALIFY`的⇄HOLD、●NOT_VERIFIED均保持，不冒充全链修复；D01/G1→D02的typed请求仍后置。
+- **生产隔离**：本批修改前已复核`vercel.json`包含`git.deploymentEnabled=false`，Vercel production最近READY仍来自`835602242cab31b1fcb372c7ff5efd4fc41dfd89`，未见本批提交自动部署；未触碰正式DB/Storage、生产审核凭据或公开部署。
+- **下一最小施工**：在独立Signer信任边界内找到并独立校验真实持久stage输出的可重构来源，然后最小受控签发精确stage_binding和正反/撤权测试；不能只把Producer传入的`output_digest`复制到签名字段。随后重跑同Root G0→当前资格；条件不足保持`NOT_RUN/DEFERRED_ENV`且将缺失具体化。
+- **交互入口**：`tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_REVIEW`，打开HTML后自动展开D00—D05中的G0断点，并可切换`#edge-E_D00_QUALIFY`查看资格读；JSON的`audit_tracking.last_execution_batch`仅记本批施工与证据，原边三层状态仍唯一可信。
+
 ## 2026-11-15｜批次C：Studio文本读取、D01→D02错误交接和独立Gate输出绑定
 
 - **已实现**：Studio现在按`--to D02`启动同一Runner，D00对文本按G0预选C01形成不含私有原文的D01 typed request，对图像保留C02页请求；低权D01只在源版本绑定、G0当前批准方法后读取校验原件UTF8字节，保存精确extent/quote候选，大于32KiB或非无损UTF8拒绝；不在报告/跨进程阶段输出暴露全文。来源、Gate、身份和费用底线不变。

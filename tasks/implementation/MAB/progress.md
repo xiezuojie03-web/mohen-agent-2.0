@@ -4207,3 +4207,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 本次不涉及生产代码、Gate、Registry、PLAN唯一八维验收及真实Owner运行。
 
 - 精准补入知识资产合同13种asset_kind、体验专业合同19组件(W11/X2/C5/F1)完整目录作为非计数的合同检查清单，未给任何条目无证据赋予PASS；X族及其它跨模式组件没有全部当作Studio实现。
+
+## 2026-11-16｜M5-G0-BATCH-01（G0候选定位与项目权限真实接线）
+
+- **根图边**：`E_D00_REVIEW`／`E_D00_QUALIFY`；同一业务主线D00候选→G0独立审核→当前资格。施工前main=`e33e039f9e3fef0f0bfafae0dd6f19f8b3dd5765`，代码提交`718503e6f5ce9166a25628bcff437c2daab5ded1`。
+- **发现与归因**：`tools/local-gate-service.mjs`原`autoSign`以固定样板`PROJECT_ID`请求Reviewer，不能正确承接Studio任意真实项目；检索缺stage/consumer的精确约束并用`limit 1`，存在错误候选选择风险。与独立stage_binding签名缺口并存，是可单独修复的现有候选→Reviewer邻接问题。
+- **已修改**：旧local服务精确范围改为DB内`run_id+stage+gate_code+consumer+SUBMITTED+input_fingerprint`且`limit 2`单行判断；只从真实候选`allowed_scope.project_id`读取合法UUID用于Reviewer's项目限制。新增纯函数`tools/gate-stage-candidate-selection.mjs`与无DB正反测试。审核仍由原`control.sign_gate_candidate`签，不新建Signer，且`findCurrentAudit`仍验证独立签署的job/reviewer/input/output；无相符stage_binding时HOLD。
+- **测试与证据**：主CI [43797796219](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43797796219) **SUCCESS**，代码SHA=`718503e6f5ce9166a25628bcff437c2daab5ded1`，新增4组纯函数测试（正常唯一选择、重复/无效候选拒绝、非法请求先拒绝、output_digest不参与候选信任）。CI通过不等于有Owner真实项目与独立签发同Root的PG/HTTP运行回执。未进行新的真实DB或外部Provider调用。
+- **发布隔离**：写main前复核`vercel.json`自动Git发布关闭，Vercel最近生产READY仍是旧SHA `83560224`；未操作正式数据或发布。
+- **仍HOLD**：机器规则Reviewer对象PASS receipt未包含**Reviewer独立核验的精确stage_binding**；G0两条根图边⇄HOLD和●NOT_VERIFIED不改。D01/G1→D02 typed仍是下一邻接，M5八维未通过。
+- **导航同步**：JSON新增`audit_tracking.last_execution_batch`，MD记本批，HTML增加同图内定位按钮与`#edge-E_D00_REVIEW`深链；不改变37/54主图、58内部候选交接数量或旧统计。下批务必先核现行签署数据的可信输出来源，不能复制Producer请求摘要签“通过”。
+

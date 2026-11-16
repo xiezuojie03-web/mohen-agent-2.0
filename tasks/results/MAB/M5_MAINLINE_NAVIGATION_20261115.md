@@ -102,6 +102,14 @@
 
 **每批成果如何同步**：先`CURRENT.md → PLAN §3.5 B/C → JSON audit_tracking.next_frontier → 原边三层状态 → 相关模块58细分候选`；只对新证据影响的边更新`engineering_diagnosis`和`verification_layers`、相关内部交接证据并重算`statistics`；JSON、MD、HTML在同一main提交同步校验，真实运行进度记录`CURRENT.md`，精确SHA/环境/Root/POS-NEG/恢复回执记录`progress.md`。有证据才改状态，无证据不改、不能把NOT_VERIFIED当失败。未来正式设计交付入仓时再单独评估对UI链路的影响。
 
+## 2026-11-16｜M5-G0-BATCH-01：已修候选定位，G0资格仍HOLD
+
+- **目标断点**：[`E_D00_REVIEW` 进入导航定位](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_REVIEW)（L0候选→G0独立审核）；[`E_D00_QUALIFY` 进入导航定位](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_QUALIFY)（G0→当前资格）。在下载的交互HTML中，以上锚点自动展开D00—D05模块并显示对应断点；页面顶部另有“本批G0”两个按钮。
+- **本批完成**：`tools/local-gate-service.mjs`不再用固定样板`PROJECT_ID`；新增`tools/gate-stage-candidate-selection.mjs`严格匹配当前run/stage/Gate/input及SUBMITTED/producer，只接受唯一候选并从其数据库存储的项目范围建立Reviewer限制。防止混选候选和错用样板项目。
+- **测试**：主CI [43797796219](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43797796219) **SUCCESS**，对应代码提交 [`718503e6f5ce`](https://github.com/xiezuojie03-web/mohen-agent-2.0/commit/718503e6f5ce9166a25628bcff437c2daab5ded1)，含4组新正反边界测试；这是CI/静态接口证据，非持久Owner-Reviewer-G0同Root正反验收。
+- **未完成且不能伪绿**：现行独立审查对象级PASS记录尚未获得Reviewer独立核定的`stage_binding`；`E_D00_REVIEW`和`E_D00_QUALIFY`原能力PARTIAL、交接HOLD、运行NOT_VERIFIED保持不变。下一批解决可信stage输出→独立签署的真实同源证明，再做真实资格读取；仍不得以Producer请求output_digest补写PASS。
+- **跟踪规则**：本批事实在JSON `audit_tracking.last_execution_batch`；详细时间、文件和证据在`tasks/implementation/MAB/progress.md`；工程状态在`CURRENT.md`。后续每批继续用**相同原根边ID、精确源码SHA和真实回执**回填导航；不新增工程阶段或Gate。
+
 ## 非D00—D05模块内部链路全分解（2026-11-16）
 
 **本轮目标与依据**：本轮在模块职责与Agent讨论已截稿后，直接核对GitHub现存UI、专业合同、U07动作设计、M5 PLAN和源码。**不把资料库CEI研究原型当作现行工程设计**。原37节点、54条跨模块边（其中52条M5，2条EXP未来）、全部原验证三层状态、诊断覆盖和M5八维分母均保留。

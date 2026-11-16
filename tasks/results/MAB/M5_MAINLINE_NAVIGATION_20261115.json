@@ -1980,9 +1980,11 @@
         "diagnosis": "独立机器审核器PASS receipt未构造stage_binding；候选对象签发不等于当前Runner job/输入/输出审签",
         "evidence": [
           "tools/rule-gate-reviewer.mjs#decide-receipt",
-          "tools/local-gate-service.mjs#autoSign"
+          "tools/local-gate-service.mjs#autoSign",
+          "tools/gate-stage-candidate-selection.mjs@718503e6f5ce",
+          "tests/data-production/gate-stage-candidate-selection.test.mjs@718503e6f5ce"
         ],
-        "next": "复用唯一Gate签发入口，在独立Reviewer合法重核后把stage_binding作为不可变签发事实入账；验证无绑定/错digest均拒绝",
+        "next": "候选唯一定位与真实project作用域已按G0-BATCH-01修复；仍须使独立Reviewer从可信持久stage输出重建/验证精确output_digest，在不可变audit内签stage_binding；不得拷贝Producer请求值，再核同Root正反及撤权。",
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "NOT_PROVEN",
         "runtime_pass": "NOT_PROVEN"
@@ -5254,7 +5256,8 @@
     "acceptance_rule": "准出唯一以PLAN §3.5 B八维真实作品正反验收为准",
     "source_ref_policy": "源码链接锁定source_sha；当前HEAD变化时先比较影响范围再复核，不以HEAD自动判过期",
     "module_chain_read_rule": "主图37节点/54边三层状态后，深入module_internal_chains.modules[]：按步骤input/operation/output/guard/code_locators及handoffs[]逐点查；细分链接只作诊断，不加原54条与M5八维分母。",
-    "audit_tracking_read_rule": "优先读取audit_tracking.next_frontier及groups定位小批核查；状态仍以nodes[]/edges[].verification_layers为准。只在当前Root走到的相邻点排查、修复、回归、三文件同步，并把真实证据写CURRENT/progress。"
+    "audit_tracking_read_rule": "优先读取audit_tracking.next_frontier及groups定位小批核查；状态仍以nodes[]/edges[].verification_layers为准。只在当前Root走到的相邻点排查、修复、回归、三文件同步，并把真实证据写CURRENT/progress。",
+    "batch_deep_link_rule": "本批直达HTML #edge-E_D00_REVIEW 和 #edge-E_D00_QUALIFY；以原edges[].verification_layers确认三层状态，局部代码修复不等于G0整边PASS。"
   },
   "source_audit": {
     "frozen_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
@@ -11384,7 +11387,7 @@
         "E_L1_TO_D02"
       ],
       "state_source": "原edges[].verification_layers，状态不在此处重复存储",
-      "reason": "独立Reviewer精确stage_binding未获同源签发/回读；其后L1→D02 typed professional request未接通"
+      "reason": "G0候选真实项目作用域/唯一性已做局部修复且CI通过；独立Reviewer尚未签署同Root精确stage_binding，原E_D00_REVIEW/E_D00_QUALIFY仍HOLD"
     },
     "groups": [
       {
@@ -11634,6 +11637,37 @@
       "no_auto_runtime_claim": true,
       "live_display_rule": "HTML核查归因数每次从原edges[].engineering_diagnosis与primary_domain动态计算，不能复用审计起始baseline的7/52作为最新值；baseline只记录2026-11-16静态快照。",
       "live_coverage_dashboard": "HTML主图首页的已定向归因数量、未逐接口核查数量、分组归因均从最新嵌入的root edges[].engineering_diagnosis与primary_domain计算，杜绝硬编码7/52变成未来虚假当前状态；snapshot字段仅作历史证据。"
+    },
+    "last_execution_batch": {
+      "id": "M5-G0-BATCH-01",
+      "date": "2026-11-16",
+      "code_commit": "718503e6f5ce9166a25628bcff437c2daab5ded1",
+      "ci": {
+        "run_id": 43797796219,
+        "url": "https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43797796219",
+        "conclusion": "SUCCESS",
+        "scope": "ci-unit-and-production-boundary-not-real-owner-e2e"
+      },
+      "scope_edges": [
+        "E_D00_REVIEW",
+        "E_D00_QUALIFY"
+      ],
+      "defect": "本地Gate autoSign固定PROJECT_ID+run/gate/input的limit1，错选及新项目拒绝风险；与独立stage_binding缺口不同",
+      "fixed": "严格run/stage/gate/consumer/SUBMITTED/input选出唯一候选，并从已入库allowed_scope.project_id提取合法项目身份",
+      "code_paths": [
+        "tools/local-gate-service.mjs",
+        "tools/gate-stage-candidate-selection.mjs",
+        "tests/data-production/gate-stage-candidate-selection.test.mjs"
+      ],
+      "remaining_blocker": "签署审核记录仍无独立Reviewer对stage输出的真实复核并持久绑定；不能把Producer output_digest当独立签发证据",
+      "handoff_state_changed": false,
+      "runtime_verified": false,
+      "m5_exit": "HOLD",
+      "deep_links": [
+        "#edge-E_D00_REVIEW",
+        "#edge-E_D00_QUALIFY"
+      ],
+      "source_of_status": "edges[].verification_layers，非本批总结字段"
     }
   }
 }
