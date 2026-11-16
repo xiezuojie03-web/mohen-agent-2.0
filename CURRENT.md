@@ -2,6 +2,8 @@
 
 > **职责**：当前代码与运行证据及剩余阻断，不规定工程施工标准。唯一计划：`tasks/implementation/MAB/PLAN.md` V1.7；历史逐批证据：`tasks/implementation/MAB/progress.md`。每次施工仍须实时查询GitHub `main` HEAD、CI、PG/HTTP及部署，不能把本页SHA当永久最新版本。
 
+**2026-11-16 D00—D05历史全链成果继承排查（文档归档，非新增运行PASS）**：已将10月金泽/A001、11月7/8日作品链、11月9日六门分段真签、11月10日独立G0 PASS但Runner HOLD、11月13日朱家角/七宝两个非模板主题六阶段分段签审、11月14日自由主题六门组件正向及11月16日G0签署接口修复，收拢为[全链继承必读清单](tasks/results/MAB/M5_D00_D05_FULL_CHAIN_INHERITANCE_CURRENT.md)（R01—R10，逐D段可复用和差异）。`PLAN.md` 第0章已加入强制前置阅读和逐批继承引用；本轮只改文档/索引，**没有真PG/HTTP/Reviewer复跑，G0与M5原HOLD不变**。后续应从旧真签名能力继承到本批精确stage_binding的同Root验证，而非再重建G0规则。
+
 **核验日期：2026-11-15。本轮最新业务/隔离测试代码：`main@9730e527e71fadd94b539f7631eb5dd8fc472683`。** 本轮连续三笔业务代码提交：`ec975c3`（Studio D00→D01 C01 原件读取，主CI [43681077049](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681077049) SUCCESS、隔离PG17 [43681076978](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681076978) SUCCESS）；`f127751`（真实Runner私有D01→D02 typed输入不匹配时持久HOLD，主CI [43681233345](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681233345) SUCCESS）；`977b369`（本地隔离Gate必须校验签署的精确stage_binding而不是复制请求output_digest，主CI [43681613039](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681613039) 最后查询仍在运行，独立Gate撤权合同 [43681613052](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43681613052) SUCCESS）。本轮没有实际Owner同一作品持久环境D00/G0→G5/Studio作品实跑，不得以CI当M5 PASS。
 
 

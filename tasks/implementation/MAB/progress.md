@@ -4,6 +4,9 @@
 
 ## 使用方法与更新边界（2026-11-14统一）
 
+- **D00—D05全链断点修复必读历史继承索引（2026-11-16）**：[`M5_D00_D05_FULL_CHAIN_INHERITANCE_CURRENT.md`](../../results/MAB/M5_D00_D05_FULL_CHAIN_INHERITANCE_CURRENT.md)，读取R01—R10原证据、D00—D05可复用资产、Gate精确资格差异；施工必须先在本账新批记录所继承R编号/当前差异，不得仅凭旧简化核查判断能力不存在。此索引非新验收标准。
+
+
 - **接续读法**：先核GitHub最新main与CI → 读`CURRENT.md`当前事实 → 读`PLAN.md`相应阶段/QR/CP → **只读本账末尾最新实际批次、相关历史ID/证据**，不要求每次从头扫描数千行。
 - **时间口径**：历史PASS/HOLD、旧HEAD及推送计划只对原批次和环境有效；后续批次可能推翻旧结果，必须以精确SHA、执行环境和真实回执区分`CODE_PRESENT / VERIFIED_ISOLATED / VERIFIED_LIVE / HOLD / NOT_RUN`。
 - **写入原则**：历史账不删除、不整段重写、不以“清爽”为由丢掉原始证据；新施工按时间**追加**批次记录，含需求ID、before/after SHA、受影响文件、正反权限测试、PG/HTTP/真实数据、费用（适用时）、HOLD/回退和下一精确动作。只有运行事实变化才改`CURRENT.md`；仅执行标准变更才改`PLAN.md`。
@@ -4233,3 +4236,11 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 
 - **BATCH-02审签边界增强（2026-11-16，CI通过）**：第二批补充真实Reviewer签发请求边界的接口模拟正反：正常将独立重构的stage_binding提交至既有decide；恶意output_digest在decide前拒绝。测试仅mock独立DB签署，不属于持久PG/HTTP G0实跑；精确提交`501829ac1509b2e5eb11d454be2247be7e01c8ed` CI [43800172713](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/43800172713) **SUCCESS**，Production boundary 270 PASS/0 FAIL、Typecheck/Build/Auth coverage PASS。Vercel生产部署只读查验最新仍为83560224（未包含本批SHA）；运行层HOLD。
+
+
+## 2026-11-16｜D00—D05全链历史施工成果继承排查与PLAN必读索引（仅文档，不触运行）
+
+- **Owner任务**：全面拉出现有可访问的D00—D05真实样板、隔离PG、独立G0—G5、Studio作品链及现行G0修补记录；避免已做能力反复施工。
+- **输出**：`tasks/results/MAB/M5_D00_D05_FULL_CHAIN_INHERITANCE_CURRENT.md`，R01—R10按执行性质区分，其中11月13日朱家角与七宝分别计入；逐D段列可继承代码/原始证据/新路径最小差异；11月9日真六门分段、11月10日独立G0但Runner HOLD、11月14日组件真签不冒充同Root；11月16日候选唯一定位与C01 stage_binding mock正反保留。
+- **必读落点**：`tasks/implementation/MAB/PLAN.md` 第0章“D00—D05全链断点修复必读继承证据”；本账“使用方法”索引；`CURRENT.md` 事实入口。无第二Gate、第二Runner、新施工阶段、新标准或压缩包。
+- **证明等级**：`HISTORICAL_EVIDENCE_RECONCILED / DOCUMENT_ONLY`。未在当前机器执行历史PG/模型/真实Reviewer、未产生新资格；沿用`CURRENT.md`的G0与M5 HOLD，未改变导航JSON/MD/HTML的运行状态或旧审计。
