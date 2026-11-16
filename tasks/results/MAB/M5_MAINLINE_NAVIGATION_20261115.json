@@ -2026,9 +2026,10 @@
           "CI@43825974705:SUCCESS:REAL_DISPOSABLE_PG17_GATE_REVIEWER_M2_DB_NO_OFFICIAL_STORAGE",
           "CI@43830993636:SUCCESS:DISPOSABLE_PG17_SAME_ROOT_MACHINE_G0_EXACT_RUNNER_VALIDATOR_POS_NEG_REVOKE_NO_STORAGE",
           "READ_ONLY_ENV@2026-11-16:NO_M2_STORAGE_REVIEWER_OR_STUDIO_PROJECTS_PREVIEW_DB_NOT_READY",
-          "SUPABASE@mohen-cloud:2026-11-16:M2_PRIVATE_ORIGINAL_BUCKET_BRIDGE_C01_C02_SOURCE_REGISTRATION_SCHEMA+ACL_ACTUAL"
+          "SUPABASE@mohen-cloud:2026-11-16:M2_PRIVATE_ORIGINAL_BUCKET_BRIDGE_C01_C02_SOURCE_REGISTRATION_SCHEMA+ACL_ACTUAL",
+          "SUPABASE@mohen-cloud:2026-11-16:M3_GATE_SERVICE_AUTH_PG17_ACL_INSTALLED_REAL"
         ],
-        "next": "保留已实装M2/PG17独立G0成果，下一处仅核Studio真实上传→source/version/raw合法登记与权益动作，受限Storage字节回读后再接原Reviewer/Runner进行同Root实证。",
+        "next": "保留已验证M2与M3服务Schema权限以及PG17的G0签署/资格消费；只修真实Studio上传→来源/版本/raw及合法rights登记和官方Storage对象字节，接机器Reviewer专用LOGIN、凭据与持续服务后由原Runner运行同Root。",
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "PARTIAL_SOURCE_GUARD_CODE_NO_LIVE_SIGNING",
         "runtime_pass": "NOT_PROVEN"
@@ -2036,7 +2037,7 @@
       "verification_layers": {
         "capability": {
           "status": "PARTIAL",
-          "reason": "原C01独立重构及K3可继承，G0候选持久Run项目一致性守卫已提交51be179d；主CI 270/0、隔离PG17安全回归均SUCCESS。但云端机器Reviewer/Storage未激活，不能算实际同Root G0签发。 追加隔离PG17同Root签名＋Runner资格校验成功（43830993636）；不等于云端真运行。 2026-11-16云端M2私有登记表、受限Storage桶、桥接/C01/C02/来源查询函数和最小权限均实装且SQL回读通过；并无真实上传或stage审签，不以Schema完成判PASS。",
+          "reason": "原C01独立重构及K3可继承，G0候选持久Run项目一致性守卫已提交51be179d；主CI 270/0、隔离PG17安全回归均SUCCESS。但云端机器Reviewer/Storage未激活，不能算实际同Root G0签发。 追加隔离PG17同Root签名＋Runner资格校验成功（43830993636）；不等于云端真运行。 2026-11-16云端M2私有登记表、受限Storage桶、桥接/C01/C02/来源查询函数和最小权限均实装且SQL回读通过；并无真实上传或stage审签，不以Schema完成判PASS。 M3 Gate Service的凭据表/NOLOGIN Reader/受限身份及资格函数已在真实PG17云端实装、ACL检查通过；无真实机器LOGIN、凭据、政策及运行资格，能力仍PARTIAL。",
           "evidence_refs": [
             "tools/gate-stage-output-attestation.mjs@501829ac1509",
             "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
@@ -2054,14 +2055,15 @@
             "CI@43825974705:SUCCESS:REAL_PG17_STORAGE_HOLD",
             "CI@43830993636:SUCCESS:DISPOSABLE_PG17_SAME_ROOT_MACHINE_G0_EXACT_RUNNER_VALIDATOR_POS_NEG_REVOKE_NO_STORAGE",
             "READ_ONLY_ENV@2026-11-16:NO_M2_STORAGE_REVIEWER_OR_STUDIO_PROJECTS_PREVIEW_DB_NOT_READY",
-            "SUPABASE@mohen-cloud:2026-11-16:M2_PRIVATE_ORIGINAL_BUCKET_BRIDGE_C01_C02_SOURCE_REGISTRATION_SCHEMA+ACL_ACTUAL"
+            "SUPABASE@mohen-cloud:2026-11-16:M2_PRIVATE_ORIGINAL_BUCKET_BRIDGE_C01_C02_SOURCE_REGISTRATION_SCHEMA+ACL_ACTUAL",
+            "SUPABASE@mohen-cloud:2026-11-16:M3_GATE_SERVICE_AUTH_PG17_ACL_INSTALLED_REAL"
           ],
           "verified_source_sha": "501829ac1509b2e5eb11d454be2247be7e01c8ed",
           "observed_on": "2026-11-16"
         },
         "handoff": {
           "status": "HOLD",
-          "reason": "同Run project scope守卫已做最小代码变更，云端历史20个run.scope皆空且M2/Storage及Reviewer策略未部署；尚无合法新Root G0签名与Runner同根资格，HOLD。 隔离PG17根内签发/校验PASS，但云端及完整Run未执行，交接仍HOLD。 BATCH-06只读预检：云端无M2/Storage/Reviewer与Studio项目，Preview缺DB配置；实际上传还需source/version/raw登记，仍HOLD。 本轮仅解除M2结构/私有桶缺席；云端实际上传/来源合法绑定/独立Reviewer与完整Runner同Root仍HOLD。",
+          "reason": "同Run project scope守卫已做最小代码变更，云端历史20个run.scope皆空且M2/Storage及Reviewer策略未部署；尚无合法新Root G0签名与Runner同根资格，HOLD。 隔离PG17根内签发/校验PASS，但云端及完整Run未执行，交接仍HOLD。 BATCH-06只读预检：云端无M2/Storage/Reviewer与Studio项目，Preview缺DB配置；实际上传还需source/version/raw登记，仍HOLD。 本轮仅解除M2结构/私有桶缺席；云端实际上传/来源合法绑定/独立Reviewer与完整Runner同Root仍HOLD。 M3服务函数云端已在，但机器Review与Consume真实登录服务未启用、候选0；实际handoff仍HOLD。",
           "evidence_refs": [
             "tools/gate-stage-output-attestation.mjs@501829ac1509",
             "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
@@ -2139,9 +2141,10 @@
           "CI@43825974705:SUCCESS:REAL_DISPOSABLE_PG17_GATE_REVIEWER_M2_DB_NO_OFFICIAL_STORAGE",
           "CI@43830993636:SUCCESS:DISPOSABLE_PG17_SAME_ROOT_MACHINE_G0_EXACT_RUNNER_VALIDATOR_POS_NEG_REVOKE_NO_STORAGE",
           "READ_ONLY_ENV@2026-11-16:NO_M2_STORAGE_REVIEWER_OR_STUDIO_PROJECTS_PREVIEW_DB_NOT_READY",
-          "SUPABASE@mohen-cloud:2026-11-16:M2_PRIVATE_ORIGINAL_BUCKET_BRIDGE_C01_C02_SOURCE_REGISTRATION_SCHEMA+ACL_ACTUAL"
+          "SUPABASE@mohen-cloud:2026-11-16:M2_PRIVATE_ORIGINAL_BUCKET_BRIDGE_C01_C02_SOURCE_REGISTRATION_SCHEMA+ACL_ACTUAL",
+          "SUPABASE@mohen-cloud:2026-11-16:M3_GATE_SERVICE_AUTH_PG17_ACL_INSTALLED_REAL"
         ],
-        "next": "保留已实装M2/PG17独立G0成果，下一处仅核Studio真实上传→source/version/raw合法登记与权益动作，受限Storage字节回读后再接原Reviewer/Runner进行同Root实证。",
+        "next": "保留已验证M2与M3服务Schema权限以及PG17的G0签署/资格消费；只修真实Studio上传→来源/版本/raw及合法rights登记和官方Storage对象字节，接机器Reviewer专用LOGIN、凭据与持续服务后由原Runner运行同Root。",
         "code_presence": "REFERENCED_SOURCE_PATHS_EXIST",
         "interface_pass": "PARTIAL_SOURCE_GUARD_CODE_NO_LIVE_SIGNING",
         "runtime_pass": "NOT_PROVEN"
@@ -2149,7 +2152,7 @@
       "verification_layers": {
         "capability": {
           "status": "PARTIAL",
-          "reason": "原C01独立重构及K3可继承，G0候选持久Run项目一致性守卫已提交51be179d；主CI 270/0、隔离PG17安全回归均SUCCESS。但云端机器Reviewer/Storage未激活，不能算实际同Root G0签发。 追加隔离PG17同Root签名＋Runner资格校验成功（43830993636）；不等于云端真运行。 2026-11-16云端M2私有登记表、受限Storage桶、桥接/C01/C02/来源查询函数和最小权限均实装且SQL回读通过；并无真实上传或stage审签，不以Schema完成判PASS。",
+          "reason": "原C01独立重构及K3可继承，G0候选持久Run项目一致性守卫已提交51be179d；主CI 270/0、隔离PG17安全回归均SUCCESS。但云端机器Reviewer/Storage未激活，不能算实际同Root G0签发。 追加隔离PG17同Root签名＋Runner资格校验成功（43830993636）；不等于云端真运行。 2026-11-16云端M2私有登记表、受限Storage桶、桥接/C01/C02/来源查询函数和最小权限均实装且SQL回读通过；并无真实上传或stage审签，不以Schema完成判PASS。 M3 Gate Service的凭据表/NOLOGIN Reader/受限身份及资格函数已在真实PG17云端实装、ACL检查通过；无真实机器LOGIN、凭据、政策及运行资格，能力仍PARTIAL。",
           "evidence_refs": [
             "tools/gate-stage-output-attestation.mjs@501829ac1509",
             "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
@@ -2167,14 +2170,15 @@
             "CI@43825974705:SUCCESS:REAL_PG17_STORAGE_HOLD",
             "CI@43830993636:SUCCESS:DISPOSABLE_PG17_SAME_ROOT_MACHINE_G0_EXACT_RUNNER_VALIDATOR_POS_NEG_REVOKE_NO_STORAGE",
             "READ_ONLY_ENV@2026-11-16:NO_M2_STORAGE_REVIEWER_OR_STUDIO_PROJECTS_PREVIEW_DB_NOT_READY",
-            "SUPABASE@mohen-cloud:2026-11-16:M2_PRIVATE_ORIGINAL_BUCKET_BRIDGE_C01_C02_SOURCE_REGISTRATION_SCHEMA+ACL_ACTUAL"
+            "SUPABASE@mohen-cloud:2026-11-16:M2_PRIVATE_ORIGINAL_BUCKET_BRIDGE_C01_C02_SOURCE_REGISTRATION_SCHEMA+ACL_ACTUAL",
+            "SUPABASE@mohen-cloud:2026-11-16:M3_GATE_SERVICE_AUTH_PG17_ACL_INSTALLED_REAL"
           ],
           "verified_source_sha": "501829ac1509b2e5eb11d454be2247be7e01c8ed",
           "observed_on": "2026-11-16"
         },
         "handoff": {
           "status": "HOLD",
-          "reason": "同Run project scope守卫已做最小代码变更，云端历史20个run.scope皆空且M2/Storage及Reviewer策略未部署；尚无合法新Root G0签名与Runner同根资格，HOLD。 隔离PG17根内签发/校验PASS，但云端及完整Run未执行，交接仍HOLD。 BATCH-06只读预检：云端无M2/Storage/Reviewer与Studio项目，Preview缺DB配置；实际上传还需source/version/raw登记，仍HOLD。 本轮仅解除M2结构/私有桶缺席；云端实际上传/来源合法绑定/独立Reviewer与完整Runner同Root仍HOLD。",
+          "reason": "同Run project scope守卫已做最小代码变更，云端历史20个run.scope皆空且M2/Storage及Reviewer策略未部署；尚无合法新Root G0签名与Runner同根资格，HOLD。 隔离PG17根内签发/校验PASS，但云端及完整Run未执行，交接仍HOLD。 BATCH-06只读预检：云端无M2/Storage/Reviewer与Studio项目，Preview缺DB配置；实际上传还需source/version/raw登记，仍HOLD。 本轮仅解除M2结构/私有桶缺席；云端实际上传/来源合法绑定/独立Reviewer与完整Runner同Root仍HOLD。 M3服务函数云端已在，但机器Review与Consume真实登录服务未启用、候选0；实际handoff仍HOLD。",
           "evidence_refs": [
             "tools/gate-stage-output-attestation.mjs@501829ac1509",
             "tools/rule-gate-reviewer.mjs#review.stageBinding@501829ac1509",
@@ -11469,7 +11473,7 @@
   "audit_tracking": {
     "schema": "mohen.m5.navigation-audit-tracker.v1",
     "review_date": "2026-11-16",
-    "review_source_head": "63c6f8428e41ec5bf7d71740ce1fa7981c7e9a81",
+    "review_source_head": "08ba2aec09096ffb32fe993bd0aedacb3b00fe95",
     "label": "按需核查组｜分批排查与分批施工的定位索引，非另一套施工计划或验收分母",
     "authority": "tasks/implementation/MAB/PLAN.md §0, §3.5 B/C",
     "baseline": {
@@ -11505,7 +11509,7 @@
         "E_L1_TO_D02"
       ],
       "state_source": "原edges[].verification_layers，状态不在此处重复存储",
-      "reason": "Owner已确认mohen-cloud为现行尚未运营的试验开发库；原M2五份仓库迁移+私有Storage桶已真实云端安装，原件表RLS、C01/C02与来源查询函数和权限SQL回读通过（M5-DEV-M2-01）；无需另开收费分支，不再当正式运营数据保护。下个最前断点是STUDIO attachments上传后合法source/version/raw与权利动作登记，以及实际私有Storage对象字节回读；不能用元数据已安装冒充真实Owner G0或D01资格。独立G0签发与Runner资格组件按PG17证据继承，不重建。"
+      "reason": "mohen-cloud为研发测试库，原M2私有元数据、桶、C01/C02、来源查询及M3 Gate Service数据库底座已真实实装和SQL ACL回读；M3用K3已验PG17临时SET/OWNER最终ACL修法。云端无reviewer策略/绑定、专用机器LOGIN/凭据、真实原件或G0候选；最前阻断是Studio附件上传后合法source/version/raw及rights登记与官方Storage字节回读，然后沿原独立Gate Service和Runner接续G0→D01。不可重造Gate或以隔离PG17冒充云端PASS。"
     },
     "groups": [
       {
@@ -11757,19 +11761,10 @@
       "live_coverage_dashboard": "HTML主图首页的已定向归因数量、未逐接口核查数量、分组归因均从最新嵌入的root edges[].engineering_diagnosis与primary_domain计算，杜绝硬编码7/52变成未来虚假当前状态；snapshot字段仅作历史证据。"
     },
     "last_execution_batch": {
-      "id": "M5-DEV-M2-01",
+      "id": "M5-DEV-M3-02",
       "date": "2026-11-16",
-      "reviewed_main_head": "63c6f8428e41ec5bf7d71740ce1fa7981c7e9a81",
-      "scope_edges": [
-        "E_D00_WRITE",
-        "E_D00_REVIEW",
-        "E_D00_QUALIFY"
-      ],
+      "reviewed_main_head": "08ba2aec09096ffb32fe993bd0aedacb3b00fe95",
       "inherited_history_ids": [
-        "R01",
-        "R02",
-        "R03",
-        "R04",
         "R05",
         "R06",
         "R07",
@@ -11779,48 +11774,47 @@
         "R11"
       ],
       "inherited_batches": [
-        "M5-ENV-BATCH-06",
+        "M5-DEV-M2-01",
         "M5-G0-ROOT-01-CONTINUOUS-PG17"
       ],
-      "cloud_project": "mohen-cloud",
-      "development_only": true,
-      "cloud_executed": true,
-      "production_launched": false,
-      "plan_ruling_commit": "63c6f8428e41ec5bf7d71740ce1fa7981c7e9a81",
-      "migration_names": [
-        "m5_reuse_existing_m2_private_originals",
-        "mab_m5_dev_private_original_bucket",
-        "m5_reuse_existing_m2_evidence_bridge",
-        "m5_reuse_existing_m2_private_text_reading",
-        "m5_reuse_existing_m2_private_scanned_page",
-        "m5_reuse_existing_m2_private_source_registration_source_revision"
+      "affected_edges": [
+        "E_D00_REVIEW",
+        "E_D00_QUALIFY"
       ],
-      "migration_status": "ALL_6_APPLIED_SUCCESS_AND_SQL_READBACK",
-      "original_table": "INSTALLED_RLS_OWNER_IMMUTABLE",
-      "storage_bucket": "PRIVATE_10MB_6_MIME",
-      "source_registration_function": "INSTALLED_APP_EXECUTE_ANON_DENIED",
-      "c01_reading_function": "INSTALLED_APP_EXECUTE_ANON_DENIED",
-      "c02_reading_function": "INSTALLED_APP_EXECUTE_ANON_DENIED",
-      "legacy_audits": 711,
-      "stored_originals": 0,
-      "storage_objects": 0,
-      "studio_projects": 0,
-      "source_registration_via_studio_upload": "NOT_PROVEN",
-      "real_owner_upload": "NOT_RUN",
-      "independent_g0_live": "NOT_RUN",
-      "d01_live": "NOT_RUN",
-      "m5_exit": "HOLD",
+      "source_migration": "supabase/migrations/20261103234154_mab_m3_gate_service_auth.sql",
+      "cloud_migration_id": "20261116101440",
+      "status": "REAL_PG17_GATE_SERVICE_SCHEMA_ACL_INSTALLED",
+      "pg17_ci": {
+        "run_id": 43846502086,
+        "conclusion": "SUCCESS"
+      },
+      "main_ci": {
+        "run_id": 43846502152,
+        "conclusion": "SUCCESS"
+      },
+      "legacy_gate_audits": 711,
+      "reader_role": "NOLOGIN",
+      "credential_table": true,
+      "credential_rows": 0,
+      "gate_policy_rows": 0,
+      "reviewer_bindings": 0,
+      "candidates": 0,
+      "actual_machine_service": "NOT_CONFIGURED",
+      "actual_owner_storage_upload": "NOT_RUN",
+      "real_root_g0_signed": "NOT_RUN",
+      "real_d01": "NOT_RUN",
+      "source_registration_gap": "studio attachments do not yet prove source/version/raw and rights",
       "runtime_verified": false,
       "handoff_state_changed": false,
-      "blocked_next": "Studio original upload has no proven source/source_version/raw_item and explicit rights registration; real Storage API credentials, independent reviewer and persistent Runner still missing",
-      "source_of_status": "edges[].verification_layers",
+      "m5_exit": "HOLD",
+      "approach": "REUSE_EXISTING_K3_OWNER_ACL_FIX_NOT_NEW_GATE",
+      "docs_sync_commit": "THIS_COMMIT",
+      "library_sync": "NOT_DONE",
       "deep_links": [
-        "#edge-E_D00_WRITE",
         "#edge-E_D00_REVIEW",
         "#edge-E_D00_QUALIFY"
       ],
-      "docs_sync_commit": "THIS_COMMIT",
-      "library_sync": "NOT_DONE"
+      "source_of_status": "edges[].verification_layers"
     }
   }
 }
