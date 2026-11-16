@@ -17,7 +17,8 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { createRuleGateReviewer, RULE_VERSION_BY_GATE, PROJECT_ID } from "./rule-gate-reviewer.mjs";
+import { createRuleGateReviewer, RULE_VERSION_BY_GATE } from "./rule-gate-reviewer.mjs";
+import { selectExactStageCandidate } from "./gate-stage-candidate-selection.mjs";
 import {
   openMachineQuery,
 } from "./machine-reviewer-session.mjs";
@@ -95,31 +96,25 @@ async function findCurrentAudit(query, request) {
 // On-demand signing: find a SUBMITTED candidate for this run+gate+input and
 // run the deterministic rule reviewer. Returns the new audit or null.
 async function autoSign(query, request) {
-  const {run_id,gate_code,input_digest,stage}=request;
+  const {gate_code}=request;
   const ruleVersion = RULE_VERSION_BY_GATE[gate_code];
   if (!ruleVersion) return null;
-  // Find a SUBMITTED candidate with matching input_fingerprint.
-  const cands = await query(
-    `select candidate_id::text as candidate_id, object_type, object_id::text as object_id
-     from control.gate_candidates
-     where run_id=:'run'::uuid and gate_code=:'gate' and candidate_status='SUBMITTED'
-       and input_fingerprint=:'fp'
-     order by submitted_at asc
-     limit 1`,
-    { run: run_id, gate: gate_code, fp: input_digest });
-  if (!cands.length) return null;
+  // Independently locate one exact SUBMITTED stage candidate. Its project
+  // scope comes from the signed-in Reviewer's DB read, never from the Producer
+  // request or the historical fixed fixture project.
+  const selected = await selectExactStageCandidate(query, request);
+  if (!selected) return null;
   try {
     const reviewer = createRuleGateReviewer({
       query,
       decide: decideThroughAuthority,
-      projectId: PROJECT_ID,
+      projectId: selected.projectId,
       log: () => {},
     });
-    // The reviewer's loadCandidate filters by project_id; our candidate already
-    // carries the right scope, so review({gate}) finds and signs it.
-    // 精确指向按 input_fingerprint 命中的候选，避免误评同 gate+project 下
-    // 更晚提交的其它候选（如未授权照片 HOLD 之外的 PASS 文本候选顺序问题）。
-    const outcome = await reviewer.review({ gate: gate_code, candidateId: cands[0].candidate_id });
+    // Reviewer verifies the candidate's actual project + stable identity.
+    // This is NOT an output-digest attestation: findCurrentAudit still rejects
+    // any PASS without the independently signed exact stage_binding.
+    const outcome = await reviewer.review({ gate: gate_code, candidateId: selected.candidateId });
     if (outcome.status !== "PASS") return null;
     // A rule PASS without an immutable stage_binding is not an output-qualified
     // PASS for this Runner. The caller remains HOLD until the reviewed output
