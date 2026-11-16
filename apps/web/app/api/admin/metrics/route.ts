@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { queryValue } from "@mohen/data-access";
 import { OPERATOR_COOKIE, isOperator } from "../../../../lib/auth";
+import {cloudExecutionReadiness} from '../../../../../../pipelines/data-production/orchestrator/cloud-execution-readiness.mjs';
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,6 +17,7 @@ export async function GET(req: NextRequest) {
   const researchTasks = await queryValue("select count(*)::int from public.research_tasks");
   return NextResponse.json({
     ok: true,
+    execution_readiness:cloudExecutionReadiness(process.env),
     metrics: {
       works: Number(works ?? 0),
       published: Number(published ?? 0),
@@ -23,5 +25,5 @@ export async function GET(req: NextRequest) {
       research_tasks: Number(researchTasks ?? 0),
       noted_at: new Date().toISOString(),
     },
-  });
+  },{headers:{'cache-control':'private, no-store, max-age=0'}});
 }

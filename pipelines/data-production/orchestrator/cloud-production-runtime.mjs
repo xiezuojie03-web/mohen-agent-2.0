@@ -1,7 +1,9 @@
 // Cloud request-lifetime adapter for the existing CLI. No second Runner,
 // Registry, job queue, Gate signer or professional method is introduced.
 import fs from 'node:fs/promises';import os from 'node:os';import path from 'node:path';import {spawn} from 'node:child_process';
-import {executionDigest,assertExecutionAuthorityConfigured} from './execution-authority.mjs';
+import {executionDigest} from './execution-authority.mjs';
+import {assertCloudExecutionConfiguration} from './cloud-execution-readiness.mjs';
+export {assertCloudExecutionConfiguration,cloudExecutionReadiness} from './cloud-execution-readiness.mjs';
 export function cloudProductionInputDigest(v){return executionDigest({run_id:v.run_id,research_intent:v.research_intent,scope:v.scope,consumer_method_plan:v.consumer_method_plan});}
 export async function claimCloudProductionRun({db,input,verifyOwnerOriginal}){
  if(typeof verifyOwnerOriginal!=='function')throw Error('CLOUD_OWNER_VERIFIER_REQUIRED');
@@ -40,16 +42,6 @@ function runnerEnvironment(environment,ownerToken){
   MOHEN_DB_DRIVER:'pg',MOHEN_EXECUTION_AUTH_TOKENS:environment.MOHEN_EXECUTION_AUTH_TOKENS??'{}',MOHEN_PRIVATE_WORKER_OWNER_SESSION:ownerToken,MOHEN_PRIVATE_EVIDENCE_WORKER_ENABLED:'true',
   MOHEN_TOPIC_JSON_FILE:'',MOHEN_TOPIC_CONFIG:''};
 }
-export function assertCloudExecutionConfiguration(environment){
- const required=['MOHEN_EXECUTION_AUTH_PUBLIC_KEY','MOHEN_EXECUTION_AUTH_VERIFY_URL','MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL','MOHEN_EXECUTION_AUTH_DYNAMIC_URL','MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL'];
- if(required.some(k=>typeof environment[k]!=='string'||!environment[k].trim())||
-   !environment.MOHEN_EXECUTION_AUTH_DYNAMIC_URL.startsWith('https://')||environment.MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL.length<32)
-   throw Error('CLOUD_EXECUTION_AUTHORITY_REQUIRED');
- if(['MOHEN_GATE_SIGNER_DATABASE_URL','MOHEN_GATE_MACHINE_DATABASE_URL','MOHEN_GATE_DATABASE_SESSION_KEY','SUPABASE_SERVICE_ROLE_KEY'].some(k=>environment[k]))
-   throw Error('CLOUD_EXECUTOR_SIGNER_CREDENTIAL_FORBIDDEN');
- try{assertExecutionAuthorityConfigured(environment.MOHEN_EXECUTION_AUTH_TOKENS??'{}',environment);}
- catch{throw Error('CLOUD_EXECUTION_AUTHORITY_REQUIRED');}
-}
 export async function executeCloudProductionCli({input,projectRoot,environment=process.env,runChild=awaitProductionChild,readTerminal,holdRun}){
  assertCloudExecutionConfiguration(environment);
  const root=path.resolve(projectRoot);await fs.access(path.join(root,'pipelines/data-production/run.mjs'));
@@ -63,8 +55,12 @@ export async function executeCloudProductionCli({input,projectRoot,environment=p
     {cwd:root,env:runnerEnvironment(environment,input.owner_session_token)});
   if(result.timedOut)await holdRun(input,'CLOUD_EXECUTOR_DEADLINE');
   else if(result.code!==0)await holdRun(input,'CLOUD_EXECUTOR_PROCESS_FAILED');
-  const terminal=await readTerminal(input.run_id);
-  if(!terminal)throw Error('CLOUD_EXECUTOR_TERMINAL_UNAVAILABLE');
+  let terminal=await readTerminal(input.run_id);
+  if(!terminal||!['PASS','HOLD','REJECT','FAILED'].includes(terminal.status)){
+   await holdRun(input,'CLOUD_EXECUTOR_TERMINAL_UNAVAILABLE');
+   terminal=await readTerminal(input.run_id);
+  }
+  if(!terminal||!['PASS','HOLD','REJECT','FAILED'].includes(terminal.status))throw Error('CLOUD_EXECUTOR_TERMINAL_UNAVAILABLE');
   return terminal;
  }finally{await fs.rm(temp,{recursive:true,force:true});}
 }

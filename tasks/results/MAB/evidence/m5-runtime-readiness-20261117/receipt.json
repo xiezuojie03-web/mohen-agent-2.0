@@ -1,0 +1,56 @@
+{
+  "batch": "M5-RUNTIME-READY-01 / M5-OWNER-LOGIN-01",
+  "baseline_sha": "640bdc7fc400f3909faff6cb3811c9c172c670c6",
+  "scope": [
+    "existing cloud Runner configuration preflight and missing-terminal HOLD",
+    "operator-only readiness view using existing metrics route",
+    "Owner-requested Preview-only one-time password setup for existing account"
+  ],
+  "verification": {
+    "production_boundary": {
+      "passed": 319,
+      "failed": 0
+    },
+    "unit_local": {
+      "passed": 724,
+      "failed": 1,
+      "skipped": 2,
+      "failure": "commons-materials.test.ts live Wikimedia degraded; preexisting; assertions unchanged"
+    },
+    "focused_unit": {
+      "passed": 22,
+      "failed": 0
+    },
+    "typecheck": "PASS all package configs; Web rerun after build",
+    "build": "PASS",
+    "browser": {
+      "result": "PASS",
+      "scope": "synthetic intercepted setup API, fragment removal / mismatch rejection / successful UI / no local or session storage; not real Owner login"
+    },
+    "auth_matrix": {
+      "routes": 113,
+      "public": 20,
+      "protected": 93,
+      "missing_auth": 0,
+      "missing_owner": 0
+    }
+  },
+  "review": {
+    "independent": "One Important finding: private Ed25519 PEM accepted through public-key config",
+    "fixed": "SPKI public-only validation; negative test RED then GREEN; production suite 319/0"
+  },
+  "cloud_changes": {
+    "session_revocation_migration": "20261116230714 m5_dev_enable_existing_web_session_revocation; original 20261103095024 SQL reused",
+    "verified": "session_not_before and invalidation trigger present; existing user count remains 1",
+    "preview_only_variable": "MOHEN_REVOCABLE_SESSIONS_ENABLED=true",
+    "password_setup_capability": "NOT_ISSUED_BEFORE_TESTED_PREVIEW_DEPLOYMENT",
+    "production_deployment": "NOT_CHANGED"
+  },
+  "runtime": {
+    "real_owner_login": "NOT_RUN",
+    "same_root_g0_g1_d02": "NOT_RUN",
+    "eight_dimensions": "ALL_HOLD",
+    "next": "Owner selects password and logs in; continue actual Project/Root, least-privilege authority/Reviewer binding with scope; no synthetic Root or producer self-signing"
+  },
+  "paid_provider_requests": 0
+}

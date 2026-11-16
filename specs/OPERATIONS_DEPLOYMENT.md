@@ -154,3 +154,12 @@ curl -X PATCH "https://api.vercel.com/v9/projects/<projectId>?teamId=<orgId>" \
   -H "Authorization: Bearer <token>" -H "Content-Type: application/json" \
   --data-binary '{"ssoProtection":null}'   # null=关闭(公开)；{"deploymentType":"all_except_custom_domains"}=开启
 ```
+
+
+## 受保护Preview：运行前检与Owner自主密码设置（2026-11-17）
+
+- 现有Admin“系统设置”通过运营限定的`GET /api/admin/metrics`读取配置缺项；只返回键名/状态，不返回值。配置通过仍需真实低权LOGIN/TLS、授权/Gate服务、原件权利与同Root验证，不授予运行PASS；独立Signer/私钥不得进入执行器。
+- Owner指定的现有账号忘记自动分配密码时，由获授权维护方在受保护Preview代码通过后签发限时256bit单次设置能力，仅将域分隔SHA256摘要及到期标记保存到该账号现有password_hash，保留账号ID/角色。无公开发行/重置接口；不把密码或原始能力写Git/运行日志，不代Owner登录。
+- `/account/setup`从URL fragment读取能力后清除地址栏；Owner自行输入并确认密码。`POST /api/auth/password-setup`仅Preview、同源、有界JSON且会话撤销已启用时接受；服务端精确CAS与DB时钟再次核有效期，成功后仅存scrypt、能力失效，Owner再通过原登录页登录。
+- 复用原`20261103095024_mab_web_session_revocation.sql`的研发云实装为`20261116230714`；仅Preview设置`MOHEN_REVOCABLE_SESSIONS_ENABLED=true`。密码变更推进session_not_before，Preview拒绝旧会话；不宣称未启用该检查的历史Production也已切换。已启用的会话撤销不可通过关闭开关复活旧会话；撤销设置能力可重新签发或失效化待设置标记，不恢复遗忘的旧密码。
+- 当前执行器仍默认关闭。`.env.example`补齐非秘密占位名称；真实低权配置与独立Reviewer绑定必须在实际Project/Root作用域接续，不能用原Web连接或自动给全项目资格。

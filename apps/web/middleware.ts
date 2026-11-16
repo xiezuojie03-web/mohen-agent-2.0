@@ -25,6 +25,7 @@ const PUBLIC_PREFIXES = [
 const PUBLIC_EXACT = new Set([
   "/api/auth/login",
   "/api/auth/register",
+  "/api/auth/password-setup",
   "/api/auth/logout",
   "/api/auth/me",
   "/api/session/me",

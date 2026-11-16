@@ -1,5 +1,8 @@
 # 墨痕 M5 全链路导航｜持续维护基线（非权威标准）
 
+> **2026-11-17｜M5-RUNTIME-READY-01 / M5-OWNER-LOGIN-01**：现有执行器补认领前独立授权/Worker/存储/Gate配置检查和无终态HOLD；原Admin系统设置可看配置缺项。Owner要求为原账号自行设置密码，新增仅受保护Preview的限时单次入口及原会话撤销机制，角色不变。319生产边界通过、构建/类型通过；尚待精确CI与受保护Preview部署后发行个人入口，真实Owner/Root未建立，八维HOLD。详见 `evidence/m5-runtime-readiness-20261117/receipt.json`。本条不改变原节点/边状态，也不把配置齐备称运行PASS。
+
+
 > **持续施工统一口径（2026-11-16）**：按PLAN §0/§3.5 D，可用成果直接复用、缺接口/配置定向修、必要时在原职责内替换；历史继承按需查阅，不设每批全量审计前置。复用现有受保护云端Preview，先接低权执行/授权及独立Reviewer，沿同一真实任务推进。三层状态与八维HOLD不因本次文档修订提升。
 
 > **2026-11-16｜M5-CLOUD-01实装回执（优先于下方待部署描述）**：代码d607b12与证据0622618已推main；精确06226189255e30953cb939ba557d8d8775cf689e主CI43876510255、隔离HTTP/Chromium43876510271均SUCCESS。主CI705通过/4跳过（沿用CI实网跳过规则）、生产边界309/0；不覆盖此前本地Commons实网失败。批准的受保护Preview dpl_GqTMGfg5NLzeQBZa4Zq9oUnVjESj已READY，URL https://mohen-agent-2-0-aweuhp9nq-napoles1.vercel.app/login ，精确部署0622618。连接器受权GET登录页200、auth/me为authenticated=false、匿名Studio API401、未配置执行器503/no-store；外部匿名请求仍转Vercel登录，未向公众开放。Production原域名仍200且部署83560224未切换。mohen-cloud只读回查users=1、projects/originals=0、mohen LOGIN=0、Reviewer bindings=0；真实Owner/同Root/生产数据POS尚未建立，八维HOLD。下一最前阻断=Owner在该私有入口登录及独立低权执行/授权/Reviewer配置；不得用Web全权连接代替Producer或自签Gate。实际证据live-preview-receipt.json与anonymous-protection.json。

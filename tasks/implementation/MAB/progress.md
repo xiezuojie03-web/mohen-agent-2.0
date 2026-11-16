@@ -4450,3 +4450,16 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 当前工程事实沿用已有实证：main@110fc58主CI43877666170 SUCCESS，受保护Preview部署0622618 READY；mohen-cloud现有底座/函数已装，真实Owner/Project/Root、低权LOGIN/授权/Reviewer配置与同Root连续资格仍未贯通。只读查询projects/originals/private_objects/mohen_LOGIN/reviewer_bindings/gate_service_credentials/execution_receipts均0、users=1，不据此推断功能缺失或历史费用为零。
 - 八维/最远/下一步：ALL_HOLD不变；本批交付是一致且可持续执行的原计划/指引，未扩大用户业务可用范围。下一批按PLAN §0/§3.5 D复用受保护云端入口，接低权执行/授权及独立Reviewer，正常Studio入口固定同一真实任务，推进G0/G1并验现有C01→D02真实接收；某操作具名阻断时继续不依赖它的已授权工作，不重跑全量继承审计或回到旧阶段流水线。
 - 原设计包引用：本批未引用交付包文件；直接核当前MHKA、PLAN、CURRENT、接续指引、导航、开发Skill及既有云端/程序集成回执。未更改业务代码、DB/Storage、密钥、Provider费用、部署、正式Gate或公众访问。文档回退可定向还原本批文档差异，不操作数据库或覆盖历史审计；M6/M7/M8及独立授权边界不变。
+
+
+## 2026-11-17｜M5-RUNTIME-READY-01 / M5-OWNER-LOGIN-01｜云执行前置接线与Owner自主密码设置
+
+- before main=`640bdc7fc400f3909faff6cb3811c9c172c670c6`，干净且远端一致；Owner授权按现行PLAN持续施工，并补充指定现有邮箱账号、忘记旧自动分配密码、要求设置登录。本批复用原Runner/云派发、Admin metrics、现有账号/scrypt及会话撤销机制，不重建平台/账号/角色，不读取旧密码。
+- 运行前置实查：Vercel Preview只有既有Web/Provider变量，缺Producer/Worker/独立授权/Gate配置；云端五个mohen基础角色均NOLOGIN、Reviewer绑定仍0。不存在可核真实Project/Root，不伪造绑定或用Web全权连接执行/自签。依PLAN继续不依赖真实身份的三项关联实现：① 共享配置前检补Worker/私有原件/独立G/TLS与公钥格式、同身份/危险连接拒绝，配置不齐在Owner查询/持久认领之前拒绝；② 子进程结束但终态缺失时回写HOLD，保持同run且不自动重试；③ 原Admin系统设置接运营限定的缺项视图，明确配置检查不等于真实运行/Gate资格。
+- Owner登录子批：指定账号真实存在且active，原角色保持不变。新增仅受保护Preview可用的一次性密码设置页/API；随机256bit能力由获授权维护方限时签发，服务端仅存域分隔SHA256摘要与到期标记；URL fragment进页面后清除、不持久化；同源、限体、限时、CAS单次更新现有password_hash，不签新会话、不改角色。无公开发行/找回接口；部署实测前不向账号写待设置标记、不生成自动分配密码。
+- 实际研发云变更：复用原`20261103095024_mab_web_session_revocation.sql`，apply `20261116230714 m5_dev_enable_existing_web_session_revocation` SUCCESS，回读session_not_before、账号变更撤销trigger均存在，用户数仍1；仅Preview新增`MOHEN_REVOCABLE_SESSIONS_ENABLED=true`，Production变量/部署及正式Gate未切换。新页尚待精确CI后受保护Preview部署及错误令牌/无权限负验，真实用户密码由Owner自己在页面输入。
+- RED→GREEN：配置缺少Gate/Worker/Storage、公钥或危险URL原先未拒绝，新8项失败后通过；子进程无终态原先未落HOLD，新用例失败后通过；既有metrics缺配置诊断与no-store，新增用例失败后通过；一次性设置原无能力，新正例失败后9项通过。独立复核发现createPublicKey接受private PEM，新增负例先失败，修为仅允许SPKI公钥后通过；无其他Important/Critical。复用现有测试夹具但补完整合成配置，不放宽断言。
+- 验证：生产边界319P/0F；聚焦单测22P/0F；全量本地单测724P/1F/2S，唯一FAIL=原Commons Wikimedia实网degraded，保留原始日志；构建PASS，各包类型PASS；鉴权矩阵113路由、缺鉴权/归属0；MHKA/fixture/traceability守卫通过。Chromium本地真实页面验证fragment清除、密码不一致不提交、提交成功提示及不落浏览器存储，API拦截为合成回执，不冒充云端真实Owner/POS。证据原位`tasks/results/MAB/evidence/m5-runtime-readiness-20261117/receipt.json`及日志。
+- 工具环境故障如实保留：初次pnpm安装缺TTY，CI标志后依赖已装但esbuild安装脚本受策略阻止；不添加安装放行或修改工作区策略，直接现有Node工具运行验证。初次Next构建遥测试图写只读HOME失败，改NEXT_TELEMETRY_DISABLED与workspace XDG_CONFIG_HOME后通过；不改变HOME。初次typecheck沿pnpm依赖自检失败，改各包原tsc命令，Web路由类型错误修正后构建和类型均过。没有据此宣称最初命令PASS。
+- 当前可用增量：已有云端任务获得更完整的前置拒绝及终态恢复；运营配置缺项可见；Owner密码设置代码/页面可用，待受保护部署后签发个人一次性入口。M5八维及同Root业务仍HOLD，真实G0/G1→D02未执行，无新增Provider请求/费用。Reviewer运行配置/授权需在真实项目scope下接续；不能因本批构建或会话机制实装即宣布生产可用。
+- 持续与回退：保留原角色/账号ID/原Runner/账本；配置或执行异常均失败关闭，既有run可定位且不重计费。已启用的会话撤销不能回退为旧Cookie可复活；密码设置成功后旧能力失效，过期需重新签发，不恢复旧密码/旧会话。未使用新设计交付包文件；代码变更按原MHKA/PLAN及当前专业接口执行。下一步：精确CI/受保护Preview/负验→Owner自设密码并登录→同一真实任务与低权服务、独立审核的实际接线；不以批次结束为另行工程批准停点。

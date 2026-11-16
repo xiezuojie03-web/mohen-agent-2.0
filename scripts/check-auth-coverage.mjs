@@ -22,6 +22,8 @@ const OUT = outIdx >= 0 ? process.argv[outIdx + 1] : path.join(ROOT, "tasks", "r
 const PUBLIC_EXACT = new Set([
   "auth/login",
   "auth/register",
+  // One-time capability, Preview-only; no unauthenticated issuance endpoint.
+  "auth/password-setup",
   "auth/logout",
   "auth/me",
   "session/me",

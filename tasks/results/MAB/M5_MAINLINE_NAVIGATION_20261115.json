@@ -11983,6 +11983,20 @@
         "live_evidence": "tasks/results/MAB/evidence/m5-cloud-20261116/live-preview-receipt.json",
         "ci_main": 43876510255,
         "ci_http_chromium": 43876510271
+      },
+      "runtime_readiness_batch": {
+        "batch": "M5-RUNTIME-READY-01 / M5-OWNER-LOGIN-01",
+        "observed_on": "2026-11-17",
+        "baseline_sha": "640bdc7fc400f3909faff6cb3811c9c172c670c6",
+        "evidence": "tasks/results/MAB/evidence/m5-runtime-readiness-20261117/receipt.json",
+        "result": "CODE_AND_SYNTHETIC_BROWSER_VERIFIED_LIVE_ROOT_HOLD",
+        "facts": [
+          "认领前检查独立授权/低权Worker/私有存储/独立Gate配置；配置不授运行许可",
+          "子进程无终态时持久HOLD；既有Admin配置缺项视图",
+          "Owner申请原账号自主密码设置；Preview-only单次能力/CAS/会话撤销，未改角色",
+          "原会话撤销迁移20261116230714实装，Preview开关true，真实Root仍未建立"
+        ],
+        "next": "精确CI/受保护Preview负验后签发一次性密码设置入口；Owner自行设密码登录，再接真实Project/Root与低权执行及独立Reviewer；八维HOLD"
       }
     },
     "environment_inheritance": {

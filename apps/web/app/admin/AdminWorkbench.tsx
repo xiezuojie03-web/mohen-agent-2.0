@@ -5,6 +5,7 @@ import type { ProductionRelationSummary } from "../../lib/read-model-bridge";
 import type { SubmittedWork } from "../../lib/publication";
 import type { Beat } from "../../lib/studio-creation";
 import KnowledgeAssetInspector from "./KnowledgeAssetInspector";
+import ExecutionReadiness from './ExecutionReadiness';
 
 function parseBeats(content: string): Beat[] {
   try {
@@ -602,7 +603,7 @@ export default function AdminWorkbench({ summary }: { summary: ProductionRelatio
           {active === 8 && (
             <div className="admin__panel">
               <h2>系统设置</h2>
-              <div className="admin__empty">系统健康、任务恢复与模型预算等设置待接入。</div>
+              <ExecutionReadiness enabled={isOperator} />
             </div>
           )}
         </main>

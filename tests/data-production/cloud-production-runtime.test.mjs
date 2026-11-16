@@ -1,3 +1,4 @@
+import {cloudEnvironment} from './fixtures/cloud-execution-environment.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import {randomUUID} from 'node:crypto';
 import {cloudProductionInputDigest,claimCloudProductionRun,executeCloudProductionCli} from '../../pipelines/data-production/orchestrator/cloud-production-runtime.mjs';
 const id=()=>randomUUID();
@@ -17,7 +18,7 @@ test('short-lived Owner token is not part of immutable work identity and is neve
 });
 test('CLI receiver invokes the original Runner with server-owned arguments and awaits its exit',async()=>{
  const e=input();let called=false;
- const result=await executeCloudProductionCli({input:e,projectRoot:process.cwd(),environment:{MOHEN_EXECUTION_AUTH_PUBLIC_KEY:'fixture',MOHEN_EXECUTION_AUTH_VERIFY_URL:'https://independent.invalid/consume',MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL:'synthetic-credential-at-least-32-characters',MOHEN_EXECUTION_AUTH_DYNAMIC_URL:'https://independent.invalid/token',MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL:'synthetic-credential-at-least-32-characters'},
+ const result=await executeCloudProductionCli({input:e,projectRoot:process.cwd(),environment:{...cloudEnvironment(),MOHEN_EXECUTION_AUTH_VERIFY_URL:'https://independent.invalid/consume',MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL:'synthetic-credential-at-least-32-characters',MOHEN_EXECUTION_AUTH_DYNAMIC_URL:'https://independent.invalid/token',MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL:'synthetic-credential-at-least-32-characters'},
   runChild:async(command,args,options)=>{called=true;assert.equal(command,process.execPath);assert.match(args[0],/pipelines.*data-production.*run.mjs$/);assert.equal(args[args.indexOf('--run-id')+1],e.run_id);assert.equal(options.env.MOHEN_PRIVATE_WORKER_OWNER_SESSION,e.owner_session_token);assert.equal(args.includes('--report-dir'),true);return {code:0,timedOut:false};},
   readTerminal:async()=>({run_id:e.run_id,status:'HOLD',stage:'D00',reason_code:'INDEPENDENT_GATE_NOT_VERIFIED'}),holdRun:async()=>{throw Error('must not mark fail');}});
  assert.equal(called,true);assert.equal(result.status,'HOLD');
@@ -27,13 +28,24 @@ test('missing independent execution authority stops before opening a child proce
 });
 test('timeout is persisted as HOLD, never auto-retried or reported completed',async()=>{
  const e=input();let calls=0,held;
- const result=await executeCloudProductionCli({input:e,projectRoot:process.cwd(),environment:{MOHEN_EXECUTION_AUTH_PUBLIC_KEY:'fixture',MOHEN_EXECUTION_AUTH_VERIFY_URL:'https://independent.invalid/consume',MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL:'synthetic-credential-at-least-32-characters',MOHEN_EXECUTION_AUTH_DYNAMIC_URL:'https://independent.invalid/token',MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL:'synthetic-credential-at-least-32-characters'},runChild:async()=>{calls++;return {code:null,timedOut:true};},holdRun:async(v,reason)=>{held=reason;},readTerminal:async()=>({run_id:e.run_id,status:'HOLD',stage:'D00',reason_code:held})});
+ const result=await executeCloudProductionCli({input:e,projectRoot:process.cwd(),environment:{...cloudEnvironment(),MOHEN_EXECUTION_AUTH_VERIFY_URL:'https://independent.invalid/consume',MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL:'synthetic-credential-at-least-32-characters',MOHEN_EXECUTION_AUTH_DYNAMIC_URL:'https://independent.invalid/token',MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL:'synthetic-credential-at-least-32-characters'},runChild:async()=>{calls++;return {code:null,timedOut:true};},holdRun:async(v,reason)=>{held=reason;},readTerminal:async()=>({run_id:e.run_id,status:'HOLD',stage:'D00',reason_code:held})});
  assert.equal(calls,1);assert.equal(held,'CLOUD_EXECUTOR_DEADLINE');assert.equal(result.status,'HOLD');
 });
 
+test('a child exit without a terminal row persists HOLD instead of leaving a claimed RUNNING task',async()=>{
+ for(const initial of [null,{status:'RUNNING'}]){
+  const e=input();let reason,reads=0;
+  const result=await executeCloudProductionCli({input:e,projectRoot:process.cwd(),environment:cloudEnvironment(),
+   runChild:async()=>({code:0,timedOut:false}),
+   readTerminal:async()=>++reads===1?initial:{run_id:e.run_id,status:'HOLD',stage:'D00',reason_code:reason},
+   holdRun:async(_v,code)=>{reason=code;}});
+  assert.equal(reason,'CLOUD_EXECUTOR_TERMINAL_UNAVAILABLE');assert.equal(result.status,'HOLD');
+ }
+});
+
 test('cloud child keeps Producer identity and excludes parent Web secrets and password override',async()=>{
- const e=input();await executeCloudProductionCli({input:e,projectRoot:process.cwd(),environment:{
-  MOHEN_EXECUTION_AUTH_PUBLIC_KEY:'fixture',MOHEN_EXECUTION_AUTH_VERIFY_URL:'https://independent.invalid/consume',MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL:'synthetic-credential-at-least-32-characters',MOHEN_EXECUTION_AUTH_DYNAMIC_URL:'https://independent.invalid/token',MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL:'synthetic-credential-at-least-32-characters',
+ const e=input();await executeCloudProductionCli({input:e,projectRoot:process.cwd(),environment:{...cloudEnvironment(),
+  MOHEN_EXECUTION_AUTH_VERIFY_URL:'https://independent.invalid/consume',MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL:'synthetic-credential-at-least-32-characters',MOHEN_EXECUTION_AUTH_DYNAMIC_URL:'https://independent.invalid/token',MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL:'synthetic-credential-at-least-32-characters',
   DATABASE_URL:'postgresql://old_web:secret@db.invalid/test',MOHEN_DATABASE_PASSWORD:'old-web-password',MOHEN_DATABASE_SESSION_SECRET:'web-session-secret',AUTH_SECRET:'browser-secret',MOHEN_PRODUCER_DATABASE_URL:'postgresql://mohen_producer:synthetic@db.invalid/test'},
   runChild:async(_c,_a,o)=>{assert.equal(o.env.DATABASE_URL,'postgresql://mohen_producer:synthetic@db.invalid/test');for(const key of ['MOHEN_DATABASE_PASSWORD','MOHEN_DATABASE_SESSION_SECRET','AUTH_SECRET'])assert.equal(o.env[key],undefined);return {code:0,timedOut:false};},
   holdRun:async()=>{},readTerminal:async()=>({run_id:e.run_id,status:'HOLD',stage:'D00',reason_code:'WAITING_GATE'})});
@@ -44,7 +56,7 @@ test('real CLI reaches dynamic token validation without any pre-issued stage tok
  await fs.writeFile(loader,"globalThis.fetch=async()=>Response.json({token:'synthetic-malformed-stage-grant'});\n");
  const e=input();let stderr='';
  try{
-  await executeCloudProductionCli({input:e,projectRoot:process.cwd(),environment:{MOHEN_EXECUTION_AUTH_PUBLIC_KEY:'fixture',MOHEN_EXECUTION_AUTH_VERIFY_URL:'https://independent.invalid/consume',MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL:'synthetic-verifier-credential-32-characters',MOHEN_EXECUTION_AUTH_DYNAMIC_URL:'https://independent.invalid/token',MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL:'synthetic-issuer-credential-32-characters'},
+  await executeCloudProductionCli({input:e,projectRoot:process.cwd(),environment:{...cloudEnvironment(),MOHEN_EXECUTION_AUTH_VERIFY_URL:'https://independent.invalid/consume',MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL:'synthetic-verifier-credential-32-characters',MOHEN_EXECUTION_AUTH_DYNAMIC_URL:'https://independent.invalid/token',MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL:'synthetic-issuer-credential-32-characters'},
    runChild:async(c,args,o)=>{const child=cp.spawnSync(c,['--import',loader,...args],{...o,encoding:'utf8',timeout:10000});stderr=child.stderr??'';return {code:child.status,timedOut:false};},
    holdRun:async()=>{},readTerminal:async()=>({run_id:e.run_id,status:'HOLD',stage:'D00',reason_code:'EXPECTED_TEST_REFUSAL'})});
   assert.equal(stderr.includes('EXECUTION_SIGNED_GRANT_MISSING'),false,stderr);

@@ -218,6 +218,30 @@ export async function findUserCredentials(
   return { ...rowToUser(rows[0]), password_hash: String(rows[0].password_hash) };
 }
 
+/** Redeem an engineering-issued, expiring capability for an existing account.
+ * No issuance API, role changes, auto-login, or plaintext password persistence.
+ * The existing account-change trigger invalidates all earlier browser sessions.
+ */
+export async function completePasswordSetup(input:{email:unknown;token:unknown;password:unknown}):Promise<boolean> {
+  if(!revocableSessionsEnabled()||typeof input.email!=='string'||typeof input.token!=='string'||
+    !/^[a-f0-9]{64}$/.test(input.token)||typeof input.password!=='string'||input.password.length<8||
+    Buffer.byteLength(input.password)>1024)return false;
+  const email=input.email.trim().toLowerCase();
+  if(!email||email.length>254)return false;
+  const account=await findUserCredentials(email);
+  if(!account||account.status!=='active')return false;
+  const match=/^setup-v1\$(\d{13})\$([a-f0-9]{64})$/.exec(account.password_hash);
+  if(!match||Number(match[1])<=Date.now())return false;
+  const digest=crypto.createHash('sha256').update('mohen-password-setup-v1\n'+input.token).digest('hex');
+  if(!crypto.timingSafeEqual(Buffer.from(digest,'hex'),Buffer.from(match[2],'hex')))return false;
+  const rows=await queryRows(`update public.users set password_hash=:'hash',updated_at=now()
+    where user_id=:'id'::uuid and password_hash=:'expected' and status='active'
+      and extract(epoch from clock_timestamp())*1000 < :'expires'::numeric
+    returning user_id::text`,{id:account.user_id,expected:account.password_hash,
+    hash:hashPassword(input.password),expires:match[1]});
+  return rows.length===1&&String(rows[0].user_id)===account.user_id;
+}
+
 export async function findUserById(userId: string): Promise<AuthUser | null> {
   const rows = await queryRows(
     "select user_id::text as user_id, email, username, array_to_string(roles, ',') as roles, status " +
