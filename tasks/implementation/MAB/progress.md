@@ -4340,3 +4340,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **最新两类前沿**：当前云端运行集成仍须实证同Root的Owner原件/来源/权限、持久Runner/Reviewer独立G0资格（`E_D00_REVIEW`/`E_D00_QUALIFY`仍◆PARTIAL／⇄HOLD／●NOT_VERIFIED）；已定位代码交接缺口`E_L1_TO_D02`：现有Reader/observeMaterial之间缺精确已签G1→D02 typed专业请求转换，`PRIVATE_NEXT_STAGE_REQUEST_NOT_READY`是合法fail-close，不表示D02未实现。
 - **同批文件**：`tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json/.md/.html`；`CURRENT.md`；本progress；`tasks/results/MAB/M5_D00_D05_FULL_CHAIN_INHERITANCE_CURRENT.md`。HTML顶部增加“已完成/当前HOLD/下一缺口”跟踪卡，原37节点54连线与原状态统计保留；机器JSON增加`construction_tracking`。原HTML旧云端环境说法已原位纠正。
 - **未实际完成**：未新提交业务代码、未产生当前云端同Root审核签发、未更改任一边运行层为PASS；因此不声称施工断点已经关闭。下一批须沿原有代码仅核第一处真实集成差异，并针对`E_L1_TO_D02`定向适配，不重跑历史样板。
+
+
+## 2026-11-16｜M5完整继承与连续总装安排落文（仅文档，未启动业务施工）
+
+- **Owner要求与基线**：本会话先评估长期反复，Owner明确要求“完整继承施工方案，写入文档，再给新窗口执行指令”。重新fetch核远端main与本地均为`13cfe1baaba04aa301034defcb687853099a4d81`，工作树起点干净、当前main；不新建施工分支/PR。本批仅文档，不代表Owner已签M5，不把文档中的引用指令当成已启动运行。
+- **继承与精确差异**：继承R01—R11、原M0—M4目标/证据、11-08原件/作品、11-13双题材、同Root G0隔离PG及M2/M3云端安装记录。此次差异是此前安排没有逐工作包明确“复用哪项成果、只补哪处接口、谁实际接收、怎样防重复”，不是缺少另一Runner/Gate/原件平台。原始专业实现、Gate规则、Registry、数据库、Storage、费用均未改。
+- **唯一计划原位更新**：`PLAN.md` §3.5 D增加五项继承前置、逐域复用表、固定真实任务/运行宿主、六个连续总装工作包及相关路径/定向测试、正反/恢复/回退、两次相同失败止损、每批最多三项操作与有条件连续执行、工作量/工期估算更新时点。代码前沿`E_L1_TO_D02`与真实运行前沿分开，环境阻断不扩大为全部停工；八维、QR/CP/ST及M6—M8边界不改，不添加验收分母。
+- **交接与导航**：现行`ENGINEERING_HANDOFF_CURRENT.md` §4保存可复制的新窗口完整执行指令；旧`CODEX_HANDOFF_CURRENT.md`不存在，未重建同义文件。继承索引增加直达PLAN/交接链接。导航JSON/MD/HTML同批只增执行安排引用，JSON与HTML嵌入数据相等，原37节点/54边、全部三层状态、源码核验SHA及原统计均不变。CURRENT无真实运行事实变化，不刷新；target-diff无业务路径/74目标实现差异，不添加文档伪完成列。ChatGPT资料库未同步。
+- **验证**：`git diff --check`、MHKA权威路由守卫、开发Skill静态布局守卫、文档预算检查通过；定向文档检查验证相对链接、R01—R11/13类/19组件/QR-10/费用/M6—M8引用，以及导航除新增policy引用外与基线完全相同。检查中补齐R06/精确edge显式引用并去掉新增行尾空格，修订后检查通过。以上只为文档一致性证据，不是运行或专业Gate。PG/Storage/HTTP/Provider/真实Reviewer/Owner体验本批NOT_RUN。
+- **保存与回退**：仅七个现有文档；main小批提交推送后回读准确SHA与CI，结果另追加。回退本次文字及导航policy引用即可，不涉及业务数据恢复；不得因此覆盖未来其他执行方的成果。
+- **下一动作**：当前窗口结束于交付文档和执行指令；新窗口收到Owner指令后，按PLAN §3.5 D合并有界准备与首个真实入口工作组，引用旧成果、复核现场、修最前真实差异，继续所有已授权可执行工作。M5_OVERALL_HOLD不变。

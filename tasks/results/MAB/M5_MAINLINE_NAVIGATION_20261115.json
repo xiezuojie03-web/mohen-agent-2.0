@@ -5380,7 +5380,12 @@
     "source_ref_policy": "源码链接锁定source_sha；当前HEAD变化时先比较影响范围再复核，不以HEAD自动判过期",
     "module_chain_read_rule": "主图37节点/54边三层状态后，深入module_internal_chains.modules[]：按步骤input/operation/output/guard/code_locators及handoffs[]逐点查；细分链接只作诊断，不加原54条与M5八维分母。",
     "audit_tracking_read_rule": "优先读取audit_tracking.next_frontier及groups定位小批核查；状态仍以nodes[]/edges[].verification_layers为准。只在当前Root走到的相邻点排查、修复、回归、三文件同步，并把真实证据写CURRENT/progress。",
-    "batch_deep_link_rule": "运行前沿 HTML #edge-E_D00_REVIEW / #edge-E_D00_QUALIFY：云端已有M2/M3但同Root Reviewer资格仍HOLD；代码前沿 #edge-E_L1_TO_D02：G1合格到D02 typed转换明确缺口；原件真实入库及D01/G1的本地既有PASS单列历史，不改判云端PASS。"
+    "batch_deep_link_rule": "运行前沿 HTML #edge-E_D00_REVIEW / #edge-E_D00_QUALIFY：云端已有M2/M3但同Root Reviewer资格仍HOLD；代码前沿 #edge-E_L1_TO_D02：G1合格到D02 typed转换明确缺口；原件真实入库及D01/G1的本地既有PASS单列历史，不改判云端PASS。",
+    "execution_arrangement_ref": {
+      "plan": "tasks/implementation/MAB/PLAN.md#3.5-D",
+      "handoff": "tasks/implementation/MAB/ENGINEERING_HANDOFF_CURRENT.md#4",
+      "scope": "完整继承与连续总装执行安排；唯一准出仍为PLAN §3.5 B；本次只同步文档入口，不更新节点/边/运行状态或源码核验SHA"
+    }
   },
   "source_audit": {
     "frozen_source_sha": "2c4db01783ccdb24d21f1fc99e1b28abca82d3fc",
