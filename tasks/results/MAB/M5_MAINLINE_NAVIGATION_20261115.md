@@ -1,5 +1,8 @@
 # 墨痕 M5 全链路导航｜持续维护基线（非权威标准）
 
+> **2026-11-17｜M5-PROTECTED-PREVIEW-SYNC-01**：已把PG17机器LOGIN和受限Writer正反验证通过的代码`d3fa11d4`部署到Vercel受保护Preview `dpl_5QWHWdkcktgFCb87B8oCpr6RfDFw` READY，SSO保护仍开，Production仍旧`83560224`。**但云端机器数据库密码NULL、Reviewer/执行Authority及真实Owner/Root未配置，E_D00_REVIEW/E_D00_QUALIFY依然HOLD，八维真实同作品准出0/8**。
+
+
 > **2026-11-17｜M5-PRODUCER-LOGIN-PG17-01**：独立Producer/Worker机器LOGIN已在隔离PG17真实调用受限Owner/Project/Root阶段/终态接口并通过权限正反；代码`d3fa11d4`主CI`44009970406`、隔离PG17`44009970286`均SUCCESS。**但mohen-cloud角色密码NULL、Preview缺有效机器连接，真实Studio Project/Root及独立G0→D02未运行，M5八维同作品准出仍0/8（HOLD）**。参见CURRENT及progress。
 
 

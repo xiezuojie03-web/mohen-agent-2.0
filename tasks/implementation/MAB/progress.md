@@ -4531,3 +4531,10 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **NEG/AUTH**：无效Owner会话、合法外部Owner、错误Project/Root、未认领Run、阶段D00→D02跳跃、Worker调用Producer RPC、Producer直接读运行表、未签独立G0伪造PASS、终态重放，均按现有失败关闭规则拒绝；无独立资格时不得出现虚假PASS。
 - **验证**：精确SHA主CI`44009970406` completed/SUCCESS；真实隔离PG17`44009970286` completed/SUCCESS且日志`M5_PRODUCER_SCOPED_PROGRESS_PG_PASS`；过去已绿的HTTP/其他专业模块回归继承，不将其标成当前SHA重新跑过。没有当前`mohen-cloud`真实机器密码/TLS连接/Owner Studio Source/Reviewer G0使用或费用Receipt。
 - **同Root总装边界**：受影响连接仍`E_D00_REVIEW`/`E_D00_QUALIFY`，仅关闭“数据库LOGIN到受限Writer未在真实PG17调用”的隔离层不确定性；云端Owner/机器凭据+持续执行宿主+独立Reviewer仍是最前环境与授权阻断，`E_D01_REVIEW/E_D01_QUALIFY/E_L1_TO_D02`继续在下游待真实接收。同一真实作品八维0/8完成，`M5=HOLD`。不设新的M5 Gate/验收分母。
+
+## 2026-11-17｜M5-PROTECTED-PREVIEW-SYNC-01｜受保护Preview已实际部署到验证代码
+
+- **代码与验收来源**：运行代码`d3fa11d4d4a9a4cf3162d3cd4e5a95d404ceba93`，主CI`44009970406` SUCCESS，隔离PG17`44009970286` SUCCESS，含独立机器LOGIN写回与非法PASS拒绝回归。后续`b0bc3dd4`只同步施工记录、导航，主CI`44010456470` SUCCESS，没有较新业务代码。
+- **实际部署**：使用现有Vercel项目`mohen-agent-2-0`手动`gitSource:github@d3fa11d4`，不使用Production目标，不改项目设置；新Preview`dpl_5QWHWdkcktgFCb87B8oCpr6RfDFw` BUILDING→READY，精确Git SHA回读、预览域名`https://mohen-agent-2-0-pn1gtf7ky-napoles1.vercel.app`；Next.js 构建日志显示成功。项目`ssoProtection.enabled=true`且仅Preview；未实测Owner凭据登录/内部HTTP业务执行，不将READY冒充端到端业务PASS。
+- **保护与正式环境负例**：最新Production部署`dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc`仍SHA`83560224`；`vercel.json`的`git.deploymentEnabled=false`未变。数据库两机器角色仍`rolpassword IS NULL`（目前不可凭密码登录），Preview两个敏感连接项仍为显式不可用占位，未激活独立Reviewer政策/签发凭据及执行授权宿主，未发生付费Provider使用或公开发布。
+- **前沿和下一动作**：关闭“私有Preview还运行旧代码”这一部署版本差异；开发库生产注册与Writer、Private Worker、G0底座直接继承。恢复所需仍是有权安全密钥下发完成Producer/Worker真实TLS会话、现有Execution Authority与独立Gate Reviewer服务正常运行、Owner从正常Studio建立真实Project/Root/来源，随后同Root从D00/G0延伸到D01/G1/D02；`E_D00_REVIEW`/`E_D00_QUALIFY`的runtime仍NOT_VERIFIED，M5八维0/8。
