@@ -275,7 +275,7 @@ export async function runResearch(
   // or an automatic D00 request from an empty local result.
   const knowledgeRoute=studioContext?planStudioKnowledgeRoute({
     qualifiedL5,qualifiedFormalL0L4:formalRead?.refs??[],
-    projectSnapshot,lookupDegraded:degraded||formalRead?.degraded===true,
+    projectSnapshot,lookupDegraded:degraded,formalLookupDegraded:formalRead?.degraded===true,
     projectFormalCoverageComplete:formalRead?.projectQualifiedCoverage==="COMPLETE",
     sharedL0L4CoverageComplete:false,
   }):undefined;
