@@ -122,3 +122,22 @@ test('an empty verified project formal scan is not a verified shared/global sour
  assert.equal(r.disposition,'SOURCE_GAP_UNCONFIRMED');
  assert.equal(r.should_discover_sources,false);
 });
+
+
+test('current qualified L5 survives independent formal lookup failure without D00',()=>{
+ const r=planStudioKnowledgeRoute({projectSnapshot:completeEmpty,qualifiedL5:[qualified],
+  formalLookupDegraded:true});
+ assert.equal(r.disposition,'REUSE_QUALIFIED');
+ assert.equal(r.may_reuse_l5,true);
+ assert.equal(r.should_discover_sources,false);
+});
+test('current G3 survives unrelated G5 lookup degradation, but missing layers still hold',()=>{
+ const r=planStudioKnowledgeRoute({projectSnapshot:completeEmpty,lookupDegraded:true,
+  projectFormalCoverageComplete:true,
+  qualifiedFormalL0L4:[{layer:'L3',gate:'G3',objectId:'current-relation',revision:'current-rev'}]});
+ assert.equal(r.disposition,'REUSE_FORMAL_QUALIFIED');
+ assert.equal(r.should_discover_sources,false);
+ const missing=planStudioKnowledgeRoute({projectSnapshot:completeEmpty,formalLookupDegraded:true});
+ assert.equal(missing.disposition,'HOLD');
+ assert.equal(missing.should_discover_sources,false);
+});
