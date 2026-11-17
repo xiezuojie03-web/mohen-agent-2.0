@@ -11,6 +11,7 @@ const object=x=>x&&typeof x==='object'&&!Array.isArray(x)?x:{};
 
 export function planStudioKnowledgeRoute({
   qualifiedL5=[], qualifiedFormalL0L4=[], projectSnapshot=null, lookupDegraded=false,
+  formalLookupDegraded=false,
   projectFormalCoverageComplete=false, sharedL0L4CoverageComplete=false,
 }={}){
   const snapshot=object(projectSnapshot);
@@ -45,9 +46,9 @@ export function planStudioKnowledgeRoute({
     shared_l0_l4_coverage:sharedL0L4CoverageComplete?'VERIFIED_COMPLETE':'NOT_VERIFIED',
   };
   let disposition, nextAction, reason;
-  if(lookupDegraded||!projectSnapshot) {
+  if(!projectSnapshot) {
     disposition='HOLD'; nextAction='RETRY_AUTHORIZED_READ';
-    reason='PROJECT_OR_QUALIFIED_READ_UNAVAILABLE';
+    reason='PROJECT_READ_UNAVAILABLE';
   } else if(eligibleL5.length) {
     disposition='REUSE_QUALIFIED';nextAction='REUSE_L5';
     reason='MATCHED_CURRENT_G5_READ_MODEL';
@@ -60,6 +61,11 @@ export function planStudioKnowledgeRoute({
   } else if(formalL0) {
     disposition='QUALIFIED_INPUT_AVAILABLE';nextAction='REUSE_CURRENT_L0_CHECK_READ_RIGHTS_BEFORE_D01';
     reason='MATCHED_CURRENT_G0_NO_D00_REPEAT';
+  } else if(lookupDegraded||formalLookupDegraded) {
+    // A valid current Gate result is usable even when the *other* formal
+    // index is unavailable, but absent results cannot prove a source gap.
+    disposition='HOLD';nextAction='RETRY_AUTHORIZED_READ';
+    reason='QUALIFIED_LAYER_QUERY_UNAVAILABLE';
   } else if(incomplete) {
     disposition='HOLD';nextAction='REVIEW_TRUNCATED_COVERAGE';
     reason='PROJECT_ASSET_COVERAGE_TRUNCATED';
