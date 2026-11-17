@@ -11,6 +11,7 @@ import {
   type Material,
 } from "@mohen/agent-runtime";
 import { retrieveMaterials } from "./retrieve";
+import { retrieveQualifiedFormalProject, type FormalQualifiedRead } from "./retrieve-formal";
 import { readStudioResearchProject } from "../studio-research-read";
 import { planStudioKnowledgeRoute, type StudioKnowledgeRouting } from "./knowledge-routing.mjs";
 import { extractExternalEntities, type ShlMaterial } from "./retrieve-shl";
@@ -242,24 +243,44 @@ export async function runResearch(
     understanding.objects.length === 0 ? dedupe([...terms, ...profile.fallback]) : terms;
   const effectiveTerms = anchoredTerms.length ? anchoredTerms : profile.fallback;
 
-  let { materials, degraded } = await retrieveMaterials(effectiveTerms, 24, {
-    qualification,
-    objectAliases: profile.labelAliases,
-  });
-  if (!materials.length && !degraded) {
-    const retry = await retrieveMaterials(profile.fallback, 24, { qualification, objectAliases: profile.labelAliases });
-    materials = retry.materials;
-    degraded = retry.degraded;
-  }
 
-  // Private Studio candidates cannot become factual answers by mere presence.
-  // Existing L5 keeps the original G5-scoped qualified retrieval. Shared L0-L4
-  // has no complete authorized search implementation yet, so an empty project
-  // is NOT permission to automatically start D00.
-  const knowledgeRoute = studioContext ? planStudioKnowledgeRoute({
-    qualifiedL5:materials,projectSnapshot,lookupDegraded:degraded,
+  // For non-template Studio missions an empty term list is NOT authorization
+  // to enumerate unrelated L5 content: fail toward question refinement.
+  let { materials, degraded } = studioContext && !effectiveTerms.length
+    ? {materials:[] as Material[],degraded:false}
+    : await retrieveMaterials(effectiveTerms, 24, {
+        qualification,objectAliases:profile.labelAliases,
+      });
+  if (!materials.length && !degraded && (!studioContext || profile.fallback.length>0)) {
+    const retry=await retrieveMaterials(profile.fallback,24,{
+      qualification,objectAliases:profile.labelAliases,
+    });
+    materials=retry.materials;degraded=retry.degraded;
+  }
+  const qualifiedL5=materials;
+  let formalRead:FormalQualifiedRead|undefined;
+  if(studioContext){
+    try{
+      formalRead=await useTool(ledger,"retrieve-local",()=>
+        retrieveQualifiedFormalProject(studioContext.projectId,effectiveTerms,qualification));
+    }catch(error){
+      if(error instanceof BudgetHoldError||error instanceof ToolExecutionUncertainError||
+         error instanceof ToolReceiptPersistenceError)throw error;
+      throw new ResearchPrerequisiteHold(["FORMAL_G0_G4_READ_NOT_AUTHORIZED_OR_UNAVAILABLE"]);
+    }
+  }
+  // An eligible L2-L4 Gate result is scoped to the current Owner's Project.
+  // The separately authorized cross-Project sharing index does NOT exist in
+  // the first-phase Owner-only ACL contract. Never infer full shared coverage
+  // or an automatic D00 request from an empty local result.
+  const knowledgeRoute=studioContext?planStudioKnowledgeRoute({
+    qualifiedL5,qualifiedFormalL0L4:formalRead?.refs??[],
+    projectSnapshot,lookupDegraded:degraded||formalRead?.degraded===true,
+    projectFormalCoverageComplete:formalRead?.projectQualifiedCoverage==="COMPLETE",
     sharedL0L4CoverageComplete:false,
-  }) : undefined;
+  }):undefined;
+  materials=[...materials,...(formalRead?.materials??[])];
+  degraded=degraded||formalRead?.degraded===true;
   let externalEntities: string[] = [];
   let externalMaterials: Material[] = [];
   let discoveryGaps: string[] = [];
@@ -309,6 +330,7 @@ export async function runResearch(
       SOURCE_GAP_UNCONFIRMED:"当前项目和G5读模型未查到可直接引用的知识，但合法共享L0—L4尚未完成检索，不能判定全库缺来源。",
       HOLD:"知识检索范围或当前资格未能可靠核对，暂停来源调度。",
       SOURCE_GAP_CONFIRMED:"已完成授权范围检索且确认缺少来源，可以启动受控D00来源发现。",
+      QUALIFIED_INPUT_AVAILABLE:"现有正式L0/L1已获本次项目用途的独立资格；只评估下一必要D阶段，不能重做D00或省略读取/权利前提。",
     };
     const gap=routeGap[knowledgeRoute.disposition];
     if(gap && !finalGaps.includes(gap)) finalGaps.push(gap);
