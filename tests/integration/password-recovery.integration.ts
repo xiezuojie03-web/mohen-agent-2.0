@@ -13,7 +13,7 @@ vi.mock('../../apps/web/lib/password-reset-mail',()=>({
   passwordResetMailConfig:()=>({origin:'https://preview.invalid'}),sendPasswordResetMail:fx.mail,
 }));
 import {requestPasswordReset,completePasswordReset} from '../../apps/web/lib/password-recovery';
-import {hashPassword,verifyPassword,signSessionToken,resolveSession} from '../../apps/web/lib/auth';
+import {hashPassword,verifyPassword,signSessionToken,resolveSession,resetPreviewOwnerPassword} from '../../apps/web/lib/auth';
 let bootstrap:any,database:string,userId:string,email:string,oldPassword:string;
 const tokenFromMail=()=>new URLSearchParams(new URL(fx.mail.mock.calls.at(-1)![1]).hash.slice(1)).get('token')!;
 beforeAll(async()=>{
@@ -67,6 +67,27 @@ it('keeps original password until verified; concurrency consumes exactly once an
   expect(verifyPassword('my-new-password',account.password_hash)).toBe(true);expect(account.roles).toEqual(['member','creator']);
   expect((await resolveSession(cookie)).state).toBe('unauthenticated');
   expect((await resolveSession(signSessionToken(userId,['member']))).state).toBe('authenticated');
+});
+it('permanent Preview Owner recovery resets repeatedly without email and revokes existing sessions',async()=>{
+  await fx.pool.query("update public.users set roles=$1",[["member","creator","operator"]]);
+  const cookie=signSessionToken(userId,['member','creator','operator']);
+  expect((await resolveSession(cookie)).state).toBe('authenticated');
+  const first='preview-owner-first-password';
+  expect(await resetPreviewOwnerPassword(first)).toBe(true);
+  let account=(await fx.pool.query('select password_hash,roles from public.users where user_id=$1',[userId])).rows[0];
+  expect(verifyPassword(first,account.password_hash)).toBe(true);
+  expect(account.roles).toEqual(['member','creator','operator']);
+  expect((await resolveSession(cookie)).state).toBe('unauthenticated');
+  expect(fx.mail).not.toHaveBeenCalled();
+
+  // The same permanent route remains usable again; no temporary token is issued or consumed.
+  const second='preview-owner-second-password';
+  expect(await resetPreviewOwnerPassword(second)).toBe(true);
+  account=(await fx.pool.query('select password_hash,roles from public.users where user_id=$1',[userId])).rows[0];
+  expect(verifyPassword(second,account.password_hash)).toBe(true);
+  expect(verifyPassword(first,account.password_hash)).toBe(false);
+  expect(account.roles).toEqual(['member','creator','operator']);
+  expect(fx.mail).not.toHaveBeenCalled();
 });
 it('durably enforces cooldown and reissue invalidates the earlier link',async()=>{
   await requestPasswordReset(email);const old=tokenFromMail();await requestPasswordReset(email);expect(fx.mail).toHaveBeenCalledTimes(1);
