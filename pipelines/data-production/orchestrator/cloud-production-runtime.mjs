@@ -2,7 +2,7 @@
 // Registry, job queue, Gate signer or professional method is introduced.
 import fs from 'node:fs/promises';import os from 'node:os';import path from 'node:path';import {spawn} from 'node:child_process';
 import {executionDigest} from './execution-authority.mjs';
-import {assertCloudExecutionConfiguration} from './cloud-execution-readiness.mjs';
+import {assertCloudExecutionConfiguration,resolveMachineDatabaseUrl} from './cloud-execution-readiness.mjs';
 export {assertCloudExecutionConfiguration,cloudExecutionReadiness} from './cloud-execution-readiness.mjs';
 export function cloudProductionInputDigest(v){return executionDigest({run_id:v.run_id,research_intent:v.research_intent,scope:v.scope,consumer_method_plan:v.consumer_method_plan});}
 export async function claimCloudProductionRun({db,input,verifyOwnerOriginal}){
@@ -40,10 +40,16 @@ function runnerEnvironment(environment,ownerToken){
  const env=Object.fromEntries(keys.filter(k=>environment[k]!==undefined).map(k=>[k,environment[k]]));
  // Never fall back to the web application's generic (potentially privileged)
  // DATABASE_URL. The Runner must use the dedicated limited Producer login.
- const producerDatabaseUrl=environment.MOHEN_PRODUCER_DATABASE_URL;
+ const producerDatabaseUrl=resolveMachineDatabaseUrl(
+   environment.MOHEN_PRODUCER_DATABASE_URL,environment.MOHEN_PRODUCER_DATABASE_PASSWORD);
+ const workerDatabaseUrl=resolveMachineDatabaseUrl(
+   environment.MOHEN_PRIVATE_WORKER_DATABASE_URL,environment.MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD);
  if(typeof producerDatabaseUrl!=='string'||!producerDatabaseUrl.trim())
    throw Error('CLOUD_PRODUCER_REQUIRED');
- return {...env,DATABASE_URL:producerDatabaseUrl,
+ if(typeof workerDatabaseUrl!=='string'||!workerDatabaseUrl.trim())
+   throw Error('CLOUD_PRIVATE_WORKER_REQUIRED');
+ // The child receives only resolved protected URLs, not raw password Secrets.
+ return {...env,MOHEN_PRIVATE_WORKER_DATABASE_URL:workerDatabaseUrl,DATABASE_URL:producerDatabaseUrl,
   MOHEN_DB_DRIVER:'pg',MOHEN_EXECUTION_AUTH_TOKENS:environment.MOHEN_EXECUTION_AUTH_TOKENS??'{}',MOHEN_PRIVATE_WORKER_OWNER_SESSION:ownerToken,MOHEN_PRIVATE_EVIDENCE_WORKER_ENABLED:'true',MOHEN_CLOUD_RUN_PROGRESS_RPC:'true',
   MOHEN_TOPIC_JSON_FILE:'',MOHEN_TOPIC_CONFIG:''};
 }
