@@ -173,18 +173,9 @@
 - Producer/Worker LOGIN 角色存在，但数据库密码未激活；`mohen-private-originals`桶存在。
 - Preview `GET /api/works/published` HTTP 200，返回 `{"works":[]}`；这是当前资格过滤后的空列表，不是发布成功。
 
-## 5. 下一步按 Studio 主线施工的顺序
+## 5. 现行施工顺序的唯一引用（旧列表已归档）
 
-> **顺序补正**：本节原始核查后曾将“把正式原件上传POST接入Studio”列为第一项。Owner反馈后，该顺序已由§7.6修正，不得将上传UI作为所有研究任务的第一前置。当前第一优先级是统一L0—L5存量检索/资格路由，只有明确缺口才启动D00发现与获取；用户上传仅为可选输入。请以§7.6为当前顺序。
-
-1. **先补正式原件入口，不重建原件能力**：把现有 `POST /api/studio/attachments` 接到 Studio 可见的上传操作；在受控 Preview 安全配置中补齐现有功能开关和 Storage 服务凭据；验证原件字节写入、重新读取、SHA/长度、source_version 登记、Owner RLS 与幂等恢复。
-2. **接通现有云执行宿主**：在获准的安全凭据界面激活既有 Producer/Worker 低权数据库身份；配置 Preview Cloud Executor；验证真实 TLS、数据库角色、最小权限及执行授权。不要改造第二个 Runner，不重建 Registry。
-3. **接通独立专业 Gate**：沿既有 Gate Service 配置有效 Policy、Reviewer Binding 和服务凭据，正反验证同一 Project/Root 的 G0/G1 签发、资格消费、撤权；之后真实验证已存在的 C01 G1→D02 typed 接收和 G2 回执。
-4. **继续同一 Root 的知识资产和创作**：复用 Research Read、13类资产、H1/H2/H3、19组件及现有 WorkRevision 代码；定向收口 Studio资产修订与最终 WorkRevision 的 canonical 映射。
-5. **完成 Admin 两把钥匙与精确发布**：准备独立于 Operator 的 Reviewer 身份；验证作品级 Reviewer 决策、独立专业 G5、来源引用、媒体逐动作权利、精确 revision、Operator 原子发布。不能让同一账号自审自发。
-6. Admin 发布成功后，再沿同一 WorkRevision 验证 WATCH 合法消费与撤权；这仍是 M5 八维的下游要求。
-
-**本次没有要求 Owner 开始实际创作或执行验收。** 只有工程把原件入口、云端执行、独立Gate和同Root连续运行准备好后，才安排最小必要的 Owner 操作。
+**本节不再另列步骤。** Owner于2026-11-17纠正的唯一业务顺序见本报告[§7.6](#76-修正后的施工优先顺序)；正式施工以[PLAN §3.5 B/C/D](../../implementation/MAB/PLAN.md)为准。原先把“正式原件上传POST”列为通用第一步的旧清单已原样移至[旧口径留档](archive/M5_ACTIVE_DOCUMENTS_BEFORE_20261117_CONSISTENCY_CLEANUP.md)，不得执行。当前最前**业务功能**缺口是统一L0—L5检索与缺口路由；云端独立G0运行前沿属于新来源D00子路径，不代表所有研究都先做D00。
 
 ## 6. 边界声明
 
@@ -251,4 +242,4 @@ D00是来源发现与获取链，不应简化为一个上传按钮。正确顺�
 5. 将`/studio/desk`有价值的资料与过程观察能力收敛到主Studio的上下文视图；不再以“接上传按钮”作为Studio主链唯一首要任务。
 6. 在作品发布阶段再准备独立Reviewer测试身份，并完成作品级Reviewer、专业G5、Operator三者职责验证。
 
-本节只纠正架构语义和后续施工顺序；不修改PLAN唯一任务书，不提升任何导航节点/边或M5八维状态。
+本节是2026-11-17当批审计的设计与代码差异判断；其原则已汇入现行PLAN §3.3与§3.5 C。后续执行以PLAN为唯一权威，不因报告与PLAN重复而产生第二套标准。本次整理未提升任何导航节点/边或M5八维状态。
