@@ -4604,3 +4604,11 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **变更**：复用原`publication-watch-sql.mjs`和`publication.ts`，针对明确缺失Studio专用表/列的42P01/42703退回合法旧版作品只读查询，不把其他DB凭据/权限/旧正式Schema错误当可降级；所有候选仍由`listWatchEligible`对每件作品原有`requireCurrentWorkConsumerQualification`验收。未添加表、伪造发布、跳过G5或修改Runner/Registry。
 - **提交与回归**：`5f4b96c4`发布SQL与错误分类；`f7249939`调用者降级；`5adb82b3`追加缺表正反回归`tests/data-production/publication-watch-schema-fallback.test.mjs`；`2830f462`补足既有`publication-watch-sql.d.mts`的类型导出以修复真实Preview首次构建错误。
 - **验证层级**：首次Vercel Preview`dpl_GDmVY4jkJPfTZNnSoroHjL99kjjn`在Next构建TS阶段`missing_export`失败，没有发布或声称PASS。补正后第二次精确代码部署`dpl_6cNbCqaHKGJWfdhqKkxFneKK3aYv`已启动；提交本条时构建/HTTP结果尚待实测，**仍记NOT_VERIFIED**。该修复不涉及项目初始化、独立G0/G1或Studio新版作品正式投运；八维不变。
+
+
+### M5-WATCH-LEGACY-PUBLICATION-SCHEMA-COMPAT-01｜线上追加验证（2026-11-17）
+
+- 第二轮受保护Preview `dpl_6cNbCqaHKGJWfdhqKkxFneKK3aYv`，Vercel状态**READY**，精确代码SHA `2830f46256b5f7cc6aa8395f9d7c3c7e863e22a8`。前一轮`dpl_GDmVY4jkJPfTZNnSoroHjL99kjjn`的TypeScript `missing_export`构建失败已通过`.d.mts`声明定向修复，本次构建检查通过。
+- 实际受保护Preview地址`https://mohen-agent-2-0-idmd3wmtc-napoles1.vercel.app`：通过Vercel受保护部署访问实测 `GET /api/works/published` 返回**HTTP 200**、`{"works":[]}`，旧版本同接口为HTTP 500/`42P01`。证明当前开发Schema下WATCH发布列表不再因缺失Studio新版表崩溃。
+- 空结果不代表真实WATCH作品、独立G5资格或发布动作通过；本轮未使用Owner浏览器会话，未创建Project/Root/原件，未签发Gate。新增单测文件已提交到main，但本条没有独立`node --test`本地执行回执；已验证的是Vercel代码构建及目标HTTP正例，不冒称测试套件全绿。
+- 本次只部署隔离Preview，Production未手工重新发布，Git自动部署保持`deploymentEnabled=false`；机器角色凭据和独立Gate仍未激活，同Root D00/G0→D02 NOT_RUN、八维0/8 OVERALL_HOLD。
