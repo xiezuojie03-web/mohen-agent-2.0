@@ -211,13 +211,38 @@ export async function triggerProduction(taskId: string, intent: string, projectI
         ? {runId,started:false,reason:"production_cloud_execution_hold"}
         : {runId,started:true};
     }catch{
-      // The remote Runner may already have claimed/persisted work. Keep its
-      // exact identity and terminal state; never fall back to a local spawn.
-      await dbRun(`update control.production_runs set metadata=coalesce(metadata,'{}'::jsonb)||
-        jsonb_build_object('cloud_dispatch_uncertain',true)
-        where run_id=:'id'::uuid`,{id:runId});
-      await addEvent(taskId,"D00","production_cloud_dispatch_uncertain",{run_id:runId});
-      return {runId,started:false,reason:"production_cloud_dispatch_uncertain"};
+      // A network/setup failure can happen before the executor claims this run.
+      // Atomically stop only the exact unclaimed input, so the genuine remote
+      // claim (if racing) cannot later start an already-HOLD task.
+      // Never overwrite a claimed RUNNING run or an existing Gate terminal.
+      let unclaimedHold=false;
+      try{
+        const settled=await queryRows(`update control.production_runs
+          set status='HOLD',finished_at=now(),current_stage=coalesce(current_stage,'D00'),
+            metadata=coalesce(metadata,'{}'::jsonb)||
+              jsonb_build_object('cloud_dispatch_uncertain',true,'m5_terminal',
+                jsonb_build_object('stage','D00','gate_code','G0','disposition','HOLD',
+                  'reason_code','CLOUD_DISPATCH_UNCLAIMED'))
+          where run_id=:'id'::uuid and status='RUNNING'
+            and metadata->'cloud_dispatch'->>'input_digest'=:'digest'
+            and metadata->'cloud_dispatch'->>'claimed_at' is null
+          returning run_id::text as run_id`,{id:runId,digest:cloudProductionInputDigest(cloudInput)});
+        unclaimedHold=settled?.length===1&&settled[0]?.run_id===runId;
+      }catch{
+        // Persistence uncertainty is not proof the remote Runner is stopped.
+      }
+      if(!unclaimedHold){
+        try{await dbRun(`update control.production_runs
+          set metadata=coalesce(metadata,'{}'::jsonb)||
+            jsonb_build_object('cloud_dispatch_uncertain',true)
+          where run_id=:'id'::uuid and status='RUNNING'
+            and metadata->'cloud_dispatch'->>'input_digest'=:'digest'`,
+          {id:runId,digest:cloudProductionInputDigest(cloudInput)});}
+        catch{/* Do not re-dispatch or alter a terminal Gate receipt. */}
+      }
+      const reason=unclaimedHold?"production_cloud_unclaimed_hold":"production_cloud_dispatch_uncertain";
+      await addEvent(taskId,"D00",reason,{run_id:runId});
+      return {runId,started:false,reason};
     }
   }
 

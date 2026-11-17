@@ -15,10 +15,37 @@ it('cloud profile uses authenticated remote dispatch, retaining independent auth
  const e=fx.dispatch.mock.calls[0][0];expect(e.scope.root_task_id).toBe(id);expect(e.scope.project_id).toBe(id);expect(e.consumer_method_plan.methods[0].method_id).toBe('C01');
  expect(fx.run.mock.calls[0][1].metadata).toContain('input_digest');expect(fx.run.mock.calls[0][1].metadata).not.toContain('synthetic-owner-session');
 });
-it('network uncertainty leaves original run identity and no local fallback or automatic redispatch',async()=>{
+it('network uncertainty after a claimed run retains exact identity and does not force HOLD or redispatch',async()=>{
+ fx.queryRows.mockResolvedValue([]);
  fx.dispatch.mockRejectedValue(Error('CLOUD_EXECUTOR_UNCERTAIN'));const r=await triggerProduction(id,'cloud test',id,source,'synthetic-owner-session');
  expect(r.started).toBe(false);expect(r.runId).not.toBe('');expect(r.reason).toBe('production_cloud_dispatch_uncertain');expect(fx.dispatch).toHaveBeenCalledTimes(1);expect(fx.spawn).not.toHaveBeenCalled();
- expect(fx.run.mock.calls.some(c=>String(c[0]).includes('cloud_dispatch_uncertain'))).toBe(true);
+ const sql=String(fx.queryRows.mock.calls.find(c=>String(c[0]).includes("CLOUD_DISPATCH_UNCLAIMED"))?.[0]);
+ expect(sql).toContain("'claimed_at' is null");
+ expect(fx.run.mock.calls.some(c=>String(c[0]).includes('cloud_dispatch_uncertain')&&String(c[0]).includes("status='RUNNING'"))).toBe(true);
+});
+it('failed delivery before claim atomically records a bounded HOLD, without inventing Gate PASS',async()=>{
+ fx.dispatch.mockRejectedValue(Error('CLOUD_EXECUTOR_UNCERTAIN'));
+ fx.queryRows.mockImplementation(async (_sql,params)=>params?.id?[{run_id:params.id}]:[]);
+ const r=await triggerProduction(id,'cloud test',id,source,'synthetic-owner-session');
+ expect(r.started).toBe(false);expect(r.runId).toBeTruthy();
+ expect(r.reason).toBe('production_cloud_unclaimed_hold');
+ const update=fx.queryRows.mock.calls.find(c=>String(c[0]).includes('CLOUD_DISPATCH_UNCLAIMED'));
+ expect(update).toBeDefined();
+ expect(String(update![0])).toContain("status='RUNNING'");
+ expect(String(update![0])).toContain("'claimed_at' is null");
+ expect(String(update![0])).toContain("set status='HOLD'");
+ expect(String(update![0])).toContain("'disposition','HOLD'");
+ expect(update![1].id).toBe(r.runId);
+ expect(fx.run.mock.calls.some(c=>String(c[0]).includes('cloud_dispatch_uncertain'))).toBe(false);
+ expect(fx.dispatch).toHaveBeenCalledTimes(1);
+ expect(fx.spawn).not.toHaveBeenCalled();
+});
+it('failed persistence cannot falsely report the cloud Runner as stopped',async()=>{
+ fx.dispatch.mockRejectedValue(Error('CLOUD_EXECUTOR_UNCERTAIN'));
+ fx.queryRows.mockRejectedValue(Error('DB unavailable'));
+ const r=await triggerProduction(id,'cloud test',id,source,'synthetic-owner-session');
+ expect(r.reason).toBe('production_cloud_dispatch_uncertain');
+ expect(r.started).toBe(false);expect(fx.spawn).not.toHaveBeenCalled();
 });
 it('malformed cloud configuration blocks before run registration',async()=>{
  fx.factory.mockImplementation(()=>{throw Error('CLOUD_EXECUTOR_CONFIG_INVALID')});const r=await triggerProduction(id,'cloud test',id,source,'synthetic-owner-session');
