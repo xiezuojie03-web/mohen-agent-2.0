@@ -4557,3 +4557,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **定向邻接代码检查**：现行`cloud-production-server.mjs`在认领Run前调用真正Producer TLS session身份验证；`cloud-execution-readiness.mjs`的`add()`已会将缺失的Private Storage键识别为MISSING，故不因误读再改守卫；既有`tools/local-gate-service.mjs`明确为本地隔离服务并监听127.0.0.1，不能把其源码存在冒充云端已部署独立Reviewer。
 - **本批实际结果与阻断**：这次是新的持久云事实核验及最前配置阻断定位，**没有修复代码、没有激活密码、没有建立Preview有效TLS会话、没有在任何Project/Root签G0或G1、没有D02接收**。跨Supabase与Vercel的高强度机器凭据未取得获准且不泄露的安全同步通道，不能将密码明文写SQL日志、GitHub、聊天或施工记录；亦不得从现存Vercel变量解密/复制未知凭据假装完成。独立Reviewer的实际策略/绑定/机器授权与Owner真实会话也未完成；当前`M5=0/8 / OVERALL_HOLD`，相关三层导航状态未变化，故不重写CURRENT或导航JSON/MD/HTML。
 - **准确恢复条件**：在Owner控制的安全配置环境，用独立强密码激活两个已有机器LOGIN，并将它们与Supabase Connect实际提供的**Session pooler**（非猜测host）两条最小权限TLS连接配对到现有Vercel **Preview-only sensitive**变量；不得通过聊天/代码/日志传递密钥。之后实测Producer/Worker分别TLS认证及正反权限，再接既有受权Execution Authority持续宿主和独立Reviewer受权策略/服务（不由Producer自签）；Owner本人在既有受保护Studio登录，使用正常UI/API建立真实Project/Root/合法原件及字节，按同Root D00/G0→D01/G1→D02持续实跑。本批无新增Provider成本、无代码/DB/环境变更，回滚不适用。
+
+## 2026-11-17｜M5-PREVIEW-STORAGE-ENDPOINT-01｜Preview真实配置一项公开Storage端点（无密钥）
+
+- **输入与最小动作**：承接上批`M5-CLOUD-CREDENTIAL-BOUNDARY-20261117-B`查明的Preview私有Storage连接键缺失，仅使用Supabase官方连接器读取当前开发项目`mohen-cloud`的**公开项目API URL**；用Vercel连接器在既有项目`mohen-agent-2-0`新增`MOHEN_SUPABASE_URL`环境变量，类型`plain`，目标**仅Preview**，变量ID`gtcmuzKLxc2FGnhc`。未获取或转存任何数据库口令、service_role、桥接Secret或原件字节；未改Supabase DB/Storage记录或源码。
+- **实际回读**：Vercel非解密变量元数据确认该键存在、type=plain、target=[preview]、ID与创建回执一致；同一次部署列表确认Production最新精确代码仍`835602242cab31b1fcb372c7ff5efd4fc41dfd89`，无正式发布变化。未强制部署Preview：现READY旧部署不能自动继承新增变量，须后续按完整受权配置创建/验证新受保护Preview。
+- **边界与后续**：此批只关闭`CLOUD_PRIVATE_STORAGE_REQUIRED`项中**项目API URL缺失**这一子前置，不得升级为配置整体CONFIGURED、存储Worker认证或真实原件回读PASS。剩余`MOHEN_PRIVATE_STORAGE_SERVICE_KEY`、`MOHEN_ORIGINAL_BRIDGE_SECRET`及实际密钥版本、两个Producer/Worker有效LOGIN密码、独立Execution Authority/Gate和Owner真实会话仍未就绪。最远同Root D/L/G节点不变：NOT_RUN；`M5=0/8 / OVERALL_HOLD`。JSON/MD/HTML原边三层状态未改变，故不作虚假升级；当前运行配置变化同步写CURRENT。
