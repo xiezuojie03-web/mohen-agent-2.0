@@ -102,12 +102,17 @@ test('inconsistent Gate/layer identity cannot be promoted by a route payload',()
 test('project-scoped formal Gate index cannot authorize cross-project sharing by inference',()=>{
  const research=readFileSync(new URL('../../apps/web/lib/mohen-agent/research.ts',import.meta.url),'utf8');
  const formal=readFileSync(new URL('../../apps/web/lib/mohen-agent/retrieve-formal.ts',import.meta.url),'utf8');
- assert.match(research,/retrieveQualifiedFormalProject\(studioContext\.projectId,effectiveTerms,qualification\)/);
+ assert.match(research,/retrieveQualifiedFormalProject\(studioContext\.projectId,effectiveTerms,qualification,studioContext\.sessionToken\)/);
  assert.match(research,/sharedL0L4CoverageComplete:false/);
  assert.match(formal,/control\.qualification_current/);
  assert.match(formal,/control\.qualification_allows/);
  assert.match(formal,/project_id:projectId/);
  assert.match(formal,/projectId:string/);
+ assert.match(formal,/createAppTransaction\(getNodePgPool\(\)/);
+ assert.match(formal,/owner_user_id=\$2::uuid/);
+ assert.match(formal,/SET LOCAL mohen_app_runtime/);
+ assert.doesNotMatch(formal,/queryRows\(/);
+
  assert.doesNotMatch(formal,/SECURITY DEFINER/i);
 });
 test('an empty verified project formal scan is not a verified shared/global source gap',()=>{
