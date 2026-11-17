@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { appendResearchMessage } from "../../../../../../lib/studio-research";
+import {getSession} from "../../../../../../lib/session";
+import {signDatabaseSessionToken} from "../../../../../../lib/auth";
 import { guardRoute } from "../../../../../../lib/guard";
 
 export const runtime = "nodejs";
@@ -20,7 +22,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (typeof message !== "string" || !message.trim()) {
     return NextResponse.json({ ok: false, reason: "message_required" }, { status: 400 });
   }
-  const result = await appendResearchMessage(id, message.trim());
+  const session=await getSession();
+  if(!session)return NextResponse.json({ok:false,reason:"login_required"},{status:401});
+  const result = await appendResearchMessage(id,message.trim(),signDatabaseSessionToken(session));
   if (!result.ok) {
     return NextResponse.json(
       { ok: false, reason: result.reason },
