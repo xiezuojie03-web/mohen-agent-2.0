@@ -43,14 +43,26 @@
     "session_revocation_migration": "20261116230714 m5_dev_enable_existing_web_session_revocation; original 20261103095024 SQL reused",
     "verified": "session_not_before and invalidation trigger present; existing user count remains 1",
     "preview_only_variable": "MOHEN_REVOCABLE_SESSIONS_ENABLED=true",
-    "password_setup_capability": "NOT_ISSUED_BEFORE_TESTED_PREVIEW_DEPLOYMENT",
-    "production_deployment": "NOT_CHANGED"
+    "password_setup_capability": "ISSUED_ON_RENEWED_EXPLICIT_OWNER_REQUEST; one-hour direct link delivered; no raw token/password in Git",
+    "production_deployment": "NOT_CHANGED",
+    "protected_preview": {
+      "id": "dpl_87V8q98FWUG9okHVxQYRUyHqmf9U",
+      "sha": "5df8673263f8b6d0a757efe03f2fb4822a99cd55",
+      "state": "READY",
+      "url": "https://mohen-agent-2-0-hc7eokidv-napoles1.vercel.app"
+    }
   },
   "runtime": {
     "real_owner_login": "NOT_RUN",
     "same_root_g0_g1_d02": "NOT_RUN",
     "eight_dimensions": "ALL_HOLD",
-    "next": "Owner selects password and logs in; continue actual Project/Root, least-privilege authority/Reviewer binding with scope; no synthetic Root or producer self-signing"
+    "next": "Owner uses delivered protected setup link and logs in; regular QQ email recovery code verified but SMTP credential not configured; then same Project/Root execution/Reviewer wiring"
   },
-  "paid_provider_requests": 0
+  "paid_provider_requests": 0,
+  "code_sha": "5df8673263f8b6d0a757efe03f2fb4822a99cd55",
+  "ci": {
+    "main": 43978016071,
+    "http_chromium": 43978016065,
+    "result": "SUCCESS"
+  }
 }

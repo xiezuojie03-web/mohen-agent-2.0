@@ -10,7 +10,7 @@ const nextConfig = {
   },
   transpilePackages: ["@mohen/experience-engine", "@mohen/agent-runtime", "@mohen/data-access"],
   // K4：PDF 文本抽取走 Node 原生模块，不参与前端打包。
-  serverExternalPackages: ["pdf-parse"],
+  serverExternalPackages: ["pdf-parse", "nodemailer"],
 };
 export default async function configure(){
   // The existing Runner executes as raw Node rather than as a webpack chunk.

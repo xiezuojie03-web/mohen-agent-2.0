@@ -11843,7 +11843,7 @@
   },
   "construction_tracking": {
     "schema": "mohen.m5.construction-tracking.v1",
-    "updated_on": "2026-11-16",
+    "updated_on": "2026-11-17",
     "checked_main_sha": "aaf74700230d945c230164cc715acac7397d4563",
     "purpose": "面向用户与执行方的当前施工定位：历史可继承成功、现有研发云库已装底座、未完成的真实运行和代码交接严格分开。不新增验收标准。",
     "overall": "M5_OVERALL_HOLD",
@@ -11996,7 +11996,23 @@
           "Owner申请原账号自主密码设置；Preview-only单次能力/CAS/会话撤销，未改角色",
           "原会话撤销迁移20261116230714实装，Preview开关true，真实Root仍未建立"
         ],
-        "next": "精确CI/受保护Preview负验后签发一次性密码设置入口；Owner自行设密码登录，再接真实Project/Root与低权执行及独立Reviewer；八维HOLD"
+        "next": "Owner uses directly delivered protected setup link (renewed explicit request); verify own password/login; regular QQ recovery module replaces manual assistance as normal path once SMTP configured; actual same Root still HOLD",
+        "code_sha": "5df8673263f8b6d0a757efe03f2fb4822a99cd55",
+        "ci_main": 43978016071,
+        "ci_http_chromium": 43978016065,
+        "deployment_id": "dpl_87V8q98FWUG9okHVxQYRUyHqmf9U",
+        "deployment_state": "READY"
+      },
+      "account_recovery_batch": {
+        "batch": "M5-ACCOUNT-RECOVERY-01",
+        "observed_on": "2026-11-17",
+        "baseline_sha": "5df8673263f8b6d0a757efe03f2fb4822a99cd55",
+        "evidence": "tasks/results/MAB/evidence/m5-runtime-readiness-20261117/password-recovery.receipt.json",
+        "result": "CODE_VERIFIED_QQ_DELIVERY_HOLD_OWNER_SETUP_LINK_DELIVERED",
+        "facts": [
+          "2026-11-17｜M5-ACCOUNT-RECOVERY-01：正式忘记密码页面/API与QQ SMTP接线完成，申请不改原密码、30分钟摘要令牌原子消费、旧会话撤销和持久限流；24专项/10真实隔离PG/747 CI口径单测及HTTPS浏览器链通过，QQ真实发信未配置且未投递。Owner要求立即协助，已在READY的5df受保护入口发行个人一小时设置链接（不写Git），Owner设置/登录未确认。本批新代码待精确CI和受保护Preview，八维仍HOLD。"
+        ],
+        "next": "exact CI/protected Preview; Owner self-set password; configure QQ SMTP privately for normal recovery; same real Project/Root executor/Reviewer integration remains HOLD"
       }
     },
     "environment_inheritance": {

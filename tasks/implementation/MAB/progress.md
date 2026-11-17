@@ -4463,3 +4463,22 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 工具环境故障如实保留：初次pnpm安装缺TTY，CI标志后依赖已装但esbuild安装脚本受策略阻止；不添加安装放行或修改工作区策略，直接现有Node工具运行验证。初次Next构建遥测试图写只读HOME失败，改NEXT_TELEMETRY_DISABLED与workspace XDG_CONFIG_HOME后通过；不改变HOME。初次typecheck沿pnpm依赖自检失败，改各包原tsc命令，Web路由类型错误修正后构建和类型均过。没有据此宣称最初命令PASS。
 - 当前可用增量：已有云端任务获得更完整的前置拒绝及终态恢复；运营配置缺项可见；Owner密码设置代码/页面可用，待受保护部署后签发个人一次性入口。M5八维及同Root业务仍HOLD，真实G0/G1→D02未执行，无新增Provider请求/费用。Reviewer运行配置/授权需在真实项目scope下接续；不能因本批构建或会话机制实装即宣布生产可用。
 - 持续与回退：保留原角色/账号ID/原Runner/账本；配置或执行异常均失败关闭，既有run可定位且不重计费。已启用的会话撤销不能回退为旧Cookie可复活；密码设置成功后旧能力失效，过期需重新签发，不恢复旧密码/旧会话。未使用新设计交付包文件；代码变更按原MHKA/PLAN及当前专业接口执行。下一步：精确CI/受保护Preview/负验→Owner自设密码并登录→同一真实任务与低权服务、独立审核的实际接线；不以批次结束为另行工程批准停点。
+
+## 2026-11-17｜M5-ACCOUNT-RECOVERY-01｜正式邮箱找回密码（施工中）
+
+- Owner已批准并要求连续执行正常“忘记密码→邮箱验证→自主重置→登录”，不再以人工签发setup入口代替常规功能。基线main=5df8673263f8b6d0a757efe03f2fb4822a99cd55；自动生产部署仍关闭。沿用MHKA-05、原账号/scrypt/撤销机制及唯一PLAN，不另立系统。
+- 本批实施顺序：①先写RED测试，新增独立reset摘要/到期/账号会话epoch及跨实例限流表；申请不改原密码、只向原注册邮箱发信，验证成功原子消费并撤销旧会话；②同源限体API、登录页忘记入口、申请与重置页及失效重发导航，秘密不落日志/URL query；③单测/隔离PG/浏览器/构建/鉴权守卫与独立审核，main小批提交、精确CI及受保护Preview，核实邮件配置。
+- 接口：lib/password-recovery.ts的requestPasswordReset(email)、completePasswordReset({email,token,password})；lib/password-reset-mail.ts负责固定Resend HTTPS发送及受信站点origin配置；api/auth/forgot-password和reset-password；account/forgot-password、account/reset-password。256bit令牌仅邮箱fragment传送、服务端SHA256摘要，30分钟到期、单账号60秒冷却/每小时5次、全局每分钟30次持久限流；账号状态/密码/角色变更后epoch不符即拒绝。
+- 工程判断：Vercel项目无邮件集成，非解密配置键列表无邮件变量；实现可部署的Resend事务邮件适配，无新增npm依赖、不创建付费服务、不读取个人邮箱代发。邮件真实投递只在安全注入发信凭据及验证发件地址后验证；无配置统一503并明确提示不可用，绝不声称已寄出。现有人工setup代码留作兼容但不再发行新能力，不改用户现有密码。
+- 审核重点：申请不能锁住原密码；并发消费仅一次；账号/角色撤销使链接失效；邮件服务失败和未知邮箱不泄露账号；Host伪造/跨域/超大JSON/原始令牌和密码不进入响应或Git。回退关闭reset新发行开关，保留会话撤销与现有账号；M5八维仍HOLD。
+
+- 首轮RED：恢复/邮件模块16失败、API6失败；实现后22通过。新增反向代理请求URL用例先失败，再按部署配置Origin校验通过（23P），邮件链接仍只取可信环境配置，未放宽跨域；真实Next HTTPS代理曾403正好暴露该问题。
+- 独立审核Important：并发consume期间reissue会沿旧快照epoch发出立即失效链接；真实PG确定性用例先9P/1F，再统一account→reset加锁修复后10P/0F。Minor：数据库写入差异的统计时序枚举加固未专项证明，API状态/正文统一且发信延迟移到托管after；未宣称恒定耗时。
+- 云开发库增量迁移mab_dev_web_password_recovery已SUCCESS；回读两表RLS=true，anon/authenticated无CRUD，现有用户未改密码/角色。新增表deny-all无policy由advisors列INFO，符合非DataAPI消费者设计；既有其他告警未宣称修复。Supabase CLI首次npm缓存只读、重定向缓存后CLI又访问只读HOME而失败；不改变HOME/权限，按仓库既有迁移命名生成原SQL，并用官方apply_migration留史，隔离PG验证幂等后应用。
+- 验证环境实情：默认test-isolated入口因本机缺.env.local未执行，不连云库充测试；全量本地单测746P/1原Commons实网F/2S，未改断言。319生产边界PASS。构建首次apps/web工作目录通过，后来从根目录带apps/web参数触发原experience相对路径ENOENT；恢复原工作目录重建验证，不为此改体验业务。
+
+- Owner明确QQ邮箱发信后切换QQ SMTP（固定465隐式TLS）适配；Nodemailer10.6.0及类型8.0.2精确锁定，禁协议日志/外部附件读取，接受收件人核验并关闭连接。新增QQ正负测试先2F/4P，再按真实模块解析修正Vitest别名；不放宽邮件行为断言。pnpm仍因原esbuild安装策略返回1，但依赖已装，自动插入的allowBuilds提示行已恢复，不新增脚本放行。
+- Owner再次明确“要么直接重置，要么做好功能”，为立即解除登录阻断，复用已READY的5df受保护Preview及已通过CI的原setup代码，获授权向唯一既有active账号设置一小时256bit摘要标记；SQL实际issued=1、prior_sessions_invalidated=true，已把个人设置链接直接交给Owner。未设自动密码、不改账号角色、不代登录、不要求先配置SMTP、不创建Vercel分享链接；原始能力仅短期私有scratch与Owner直达链接，禁止进入Git。本操作取代前述“本轮不发行能力”的临时选择；功能开发继续，邮箱投递仍待安全配置。
+
+- 最终本地核验：专项24P/0F，CI口径完整单测747P/0F/4S（沿用原实网跳过规则，未掩盖上述本地Commons失败）；真实隔离PG17十项PASS，QQ适配后HTTPS Chromium→真实Next API→一次性PG→合成QQ邮件→重置→登录PASS，原Cookie拒绝/重放拒绝/密码不一致不提交/fragment清除/无浏览器存储/跨域拒绝均验。QQ发送总时限15秒并关闭transport的审核意见以stalled用例RED→GREEN修复；未真实发邮件。清理发现pgPool.end可能先于socket关闭，FORCE删测试库造成57P01；改等待连接清零再无FORCE删除后测试无未处理错误，不把十项通过伴随未处理错误算PASS。
+- 当前可用：原5df受保护入口READY、个人设置能力已交付Owner；新正常找回代码/表/隔离验证已具备，QQ SMTP授权码未安全注入，故正常邮件找回暂503，不要求Owner先配邮箱才能使用人工协助入口。Owner实际设置/登录尚未确认；无Provider付费调用、无公众开放、无正式G或真实Root运行，八维HOLD。

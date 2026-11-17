@@ -2,7 +2,9 @@
 
 > **职责**：当前代码与运行证据及剩余阻断，不规定工程施工标准。唯一计划：`tasks/implementation/MAB/PLAN.md` V1.7；历史逐批证据：`tasks/implementation/MAB/progress.md`。每次施工仍须实时查询GitHub `main` HEAD、CI、PG/HTTP及部署，不能把本页SHA当永久最新版本。
 
-**2026-11-17｜M5-RUNTIME-READY-01 / M5-OWNER-LOGIN-01（代码与研发会话机制，非M5准出）**：云执行前检已覆盖独立授权、低权连接/Worker、私有原件与独立G配置，未齐备在认领前拒绝；子进程无终态落HOLD；原Admin系统设置新增受限配置缺项视图。Owner要求为原账号自主设置密码，新增限时单次、仅受保护Preview、CAS替换密码的入口，不改角色/不自动登录。原会话撤销迁移已实装mohen-cloud（20261116230714），Preview开关true；本批代码待精确CI/受保护Preview部署后才签发个人设置入口。319生产边界通过、构建/类型通过；本地单测724P/1原Commons实网F/2S。真实Owner登录、同Project/Root G0/G1→D02仍NOT_RUN，低权LOGIN/Reviewer尚未激活，八维HOLD。证据见progress末批及`tasks/results/MAB/evidence/m5-runtime-readiness-20261117/receipt.json`。
+**2026-11-17｜M5-ACCOUNT-RECOVERY-01：正式忘记密码页面/API与QQ SMTP接线完成，申请不改原密码、30分钟摘要令牌原子消费、旧会话撤销和持久限流；24专项/10真实隔离PG/747 CI口径单测及HTTPS浏览器链通过，QQ真实发信未配置且未投递。Owner要求立即协助，已在READY的5df受保护入口发行个人一小时设置链接（不写Git），Owner设置/登录未确认。本批新代码待精确CI和受保护Preview，八维仍HOLD。**
+
+**2026-11-17｜M5-RUNTIME-READY-01 / M5-OWNER-LOGIN-01（代码与研发会话机制，非M5准出）**：云执行前检已覆盖独立授权、低权连接/Worker、私有原件与独立G配置，未齐备在认领前拒绝；子进程无终态落HOLD；原Admin系统设置新增受限配置缺项视图。Owner要求为原账号自主设置密码，新增限时单次、仅受保护Preview、CAS替换密码的入口，不改角色/不自动登录。原会话撤销迁移已实装mohen-cloud（20261116230714），Preview开关true；5df精确CI43978016071及HTTP43978016065 SUCCESS，受保护Preview dpl_87V8q98FWUG9okHVxQYRUyHqmf9U READY；Owner再次要求直接重置后已发行个人一小时设置入口，未确认Owner保存/登录。319生产边界通过、构建/类型通过；本地单测724P/1原Commons实网F/2S。真实Owner登录、同Project/Root G0/G1→D02仍NOT_RUN，低权LOGIN/Reviewer尚未激活，八维HOLD。证据见progress末批及`tasks/results/MAB/evidence/m5-runtime-readiness-20261117/receipt.json`。
 
 **当前接续摘要（2026-11-16；事实基线main@110fc58，后续仍须实时核验）**：受保护Preview已READY，部署0622618；main@110fc58主CI43877666170 SUCCESS。现有mohen-cloud已装私有原件/Storage、M3 Gate服务及Owner读/D02—D05候选函数；只读核查users=1、projects=0、private_originals=0、私有桶对象=0、mohen LOGIN=0、Reviewer bindings=0、Gate service credentials=0、execution_receipts=0。C01 G1→D02 typed/受控生成已有代码接线，云端真实同任务G1→D02/G2尚未验证；现有云端适配范围到D02，不是已交付六阶段自动整链。M5八维继续HOLD。
 

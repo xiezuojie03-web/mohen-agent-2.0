@@ -159,7 +159,11 @@ curl -X PATCH "https://api.vercel.com/v9/projects/<projectId>?teamId=<orgId>" \
 ## 受保护Preview：运行前检与Owner自主密码设置（2026-11-17）
 
 - 现有Admin“系统设置”通过运营限定的`GET /api/admin/metrics`读取配置缺项；只返回键名/状态，不返回值。配置通过仍需真实低权LOGIN/TLS、授权/Gate服务、原件权利与同Root验证，不授予运行PASS；独立Signer/私钥不得进入执行器。
-- Owner指定的现有账号忘记自动分配密码时，由获授权维护方在受保护Preview代码通过后签发限时256bit单次设置能力，仅将域分隔SHA256摘要及到期标记保存到该账号现有password_hash，保留账号ID/角色。无公开发行/重置接口；不把密码或原始能力写Git/运行日志，不代Owner登录。
-- `/account/setup`从URL fragment读取能力后清除地址栏；Owner自行输入并确认密码。`POST /api/auth/password-setup`仅Preview、同源、有界JSON且会话撤销已启用时接受；服务端精确CAS与DB时钟再次核有效期，成功后仅存scrypt、能力失效，Owner再通过原登录页登录。
-- 复用原`20261103095024_mab_web_session_revocation.sql`的研发云实装为`20261116230714`；仅Preview设置`MOHEN_REVOCABLE_SESSIONS_ENABLED=true`。密码变更推进session_not_before，Preview拒绝旧会话；不宣称未启用该检查的历史Production也已切换。已启用的会话撤销不可通过关闭开关复活旧会话；撤销设置能力可重新签发或失效化待设置标记，不恢复遗忘的旧密码。
+- 正式找回密码走登录页“忘记密码？”→`/account/forgot-password`→注册邮箱验证链接→`/account/reset-password`→原登录页。无需旧密码、不自动登录、不改账号ID或角色，申请时不改原密码。此前人工`/account/setup`保留用于Owner明确授权的人工协助：Owner再次要求直接重置时已向现有账号发行一小时链接并交付，未向Git记录能力或密码；常规找回仍走邮箱流程。
+- 仅服务端环境变量：`MOHEN_PASSWORD_RESET_ENABLED=true`、`MOHEN_REVOCABLE_SESSIONS_ENABLED=true`、`MOHEN_QQ_SMTP_AUTH_CODE`和QQ/foxmail发件地址`MOHEN_AUTH_MAIL_FROM`（纯邮箱，SMTP账号与发件地址一致）。`MOHEN_AUTH_PUBLIC_ORIGIN`必须HTTPS origin、无路径/参数/凭据；受保护Preview留空可用平台`VERCEL_URL`，不信任请求Host。Production未获本批发布授权，不追加Production范围、不启用Production功能。配置后必须重新部署、验证真实收件；API接受发送请求不等于邮件已投递。
+- 发信凭据通过Vercel后台安全注入，禁止发到聊天或Git。QQ SMTP固定`smtp.qq.com:465`、TLS证书验证开启、连接/问候/空闲10秒超时、禁协议日志及附件外部访问；只发文本事务邮件。QQ邮箱须开启SMTP并在Vercel安全保存SMTP授权码，不是墨痕或QQ登录密码；不新增付费邮件服务。无发信配置统一503，页面明确“服务暂时不可用”；未知/停用/限流账号统一202，避免透露账号存在性。发信在Next托管`after()`执行；失败只记录固定`PASSWORD_RESET_MAIL_FAILED`，不记邮箱/原始链接/供应商详情，并按摘要条件失效当前令牌。
+- `control.web_password_resets`只存256bit能力的域分隔SHA256摘要、30分钟到期与账号epoch；每账号60秒冷却/每小时最多5次、全局每分钟30次，PG持久化跨实例。只发给数据库登记邮箱。重发使旧链接失效；密码/角色/状态变更后epoch不符即拒绝。账号优先、重置记录其次的相同加锁顺序避免并发重发写入旧epoch；原子更新scrypt和消费令牌。
+- 复用原`20261103095024_mab_web_session_revocation.sql`，研发云会话迁移为`20261116230714`，Preview开关true；新`20261117080000_mab_web_password_recovery.sql`为增量私有恢复表，RLS开启、无consumer/Producer/Gate读取或写入授权。密码变更推进session_not_before，已启用该检查的环境拒绝旧会话；不能声称历史Production也已切换。关闭新发行开关可停止找回功能，但不得关闭会话撤销来复活旧Cookie；保留已生效密码/撤销记录，不恢复遗忘旧密码。
+- 验证：单测、一次性标记PG17并发/过期/撤销/ACL、真实Chromium HTTPS→Next API→隔离PG→合成邮件→重置→登录，分别记账。`MOHEN_PASSWORD_RECOVERY_TEST=isolated-pg17 MOHEN_PASSWORD_RECOVERY_TEST_URL=<marked-loopback-instance> node node_modules/vitest/vitest.mjs run --config vitest.password-recovery-db.config.ts`；浏览器脚本`tests/integration/password-recovery.browser.mjs`同变量、先按apps/web工作目录完成build，PG实例需已由上述测试建立NOLOGIN夹具角色。测试不接受云数据库，邮件只在测试进程拦截、不触真实邮箱；不得把它当Owner真实收件/签收。
+- 实际邮件可能先遇Vercel访问验证，这是研发部署保护；完成自己的Vercel验证后重新打开邮件原链接，保留fragment。不得创建分享链接、关闭SSO或用访问绕过替代。
 - 当前执行器仍默认关闭。`.env.example`补齐非秘密占位名称；真实低权配置与独立Reviewer绑定必须在实际Project/Root作用域接续，不能用原Web连接或自动给全项目资格。

@@ -6,6 +6,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@mohen/data-access": path.resolve(__dirname, "packages/data-access/src/index.mjs"),
+      "nodemailer": path.resolve(__dirname, "apps/web/node_modules/nodemailer/dist/cjs/nodemailer.js"),
       "next/headers": path.resolve(__dirname, "apps/web/node_modules/next/headers.js"),
       "next/server": path.resolve(__dirname, "apps/web/node_modules/next/server.js"),
     },

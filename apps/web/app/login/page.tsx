@@ -81,6 +81,8 @@ export default function LoginPage() {
 
         {err && <p className="auth-err">{err}</p>}
 
+        <p className="auth-switch"><Link href="/account/forgot-password">忘记密码？</Link></p>
+
         <p className="auth-switch">
           还没有账号？<Link href="/register">去注册</Link>
         </p>

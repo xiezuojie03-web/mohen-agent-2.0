@@ -26,6 +26,8 @@ const PUBLIC_EXACT = new Set([
   "/api/auth/login",
   "/api/auth/register",
   "/api/auth/password-setup",
+  "/api/auth/forgot-password",
+  "/api/auth/reset-password",
   "/api/auth/logout",
   "/api/auth/me",
   "/api/session/me",

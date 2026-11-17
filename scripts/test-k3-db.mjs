@@ -201,6 +201,7 @@ try {
   }
   runTest("GATE_SERVICE", "tests/data-production/gate-service.integration.mjs");
   apply("20261103095024_mab_web_session_revocation.sql");
+  apply("20261117080000_mab_web_password_recovery.sql");
   runTest("WEB_SESSION_REVOCATION", "tests/data-production/web-session-revocation.integration.mjs");
   const sessionSnapshot=query(database,"select md5(jsonb_agg(to_jsonb(r) order by token_hash)::text) from control.web_session_revocations r");
   apply("20261103095024_mab_web_session_revocation.sql");
@@ -210,6 +211,10 @@ try {
   console.log("MAB_WEB_SESSION_ROLLBACK_PASS tombstones-retained runtime-closed migration-repeatable");
   const researchUrl=new URL(`postgresql://k3_admin:synthetic@localhost:${port}/${database}`);
   researchUrl.searchParams.set('host',host);
+  if(runTest('PASSWORD_RECOVERY_POSTGRES',path.join(root,'node_modules/vitest/vitest.mjs'),{
+    args:['run','--config','vitest.password-recovery-db.config.ts'],
+    env:{MOHEN_PASSWORD_RECOVERY_TEST:'isolated-pg17',MOHEN_PASSWORD_RECOVERY_TEST_URL:researchUrl.toString()}}))
+    console.log('MAB_PASSWORD_RECOVERY_PG_PASS concurrent-single-consume original-password-intact epoch-revoked cooldown-ACL');
   if (runTest('RESEARCH_RESUME_POSTGRES',path.join(root,'node_modules/vitest/vitest.mjs'),{
     args:['run','--config','vitest.research-db.config.ts'],
     env:{MOHEN_RESEARCH_RESUME_TEST:'isolated-pg17',DATABASE_URL:researchUrl.toString(),MOHEN_DATABASE_PASSWORD:'synthetic',

@@ -1,6 +1,9 @@
 # 墨痕 M5 全链路导航｜持续维护基线（非权威标准）
 
-> **2026-11-17｜M5-RUNTIME-READY-01 / M5-OWNER-LOGIN-01**：现有执行器补认领前独立授权/Worker/存储/Gate配置检查和无终态HOLD；原Admin系统设置可看配置缺项。Owner要求为原账号自行设置密码，新增仅受保护Preview的限时单次入口及原会话撤销机制，角色不变。319生产边界通过、构建/类型通过；尚待精确CI与受保护Preview部署后发行个人入口，真实Owner/Root未建立，八维HOLD。详见 `evidence/m5-runtime-readiness-20261117/receipt.json`。本条不改变原节点/边状态，也不把配置齐备称运行PASS。
+> **2026-11-17｜M5-ACCOUNT-RECOVERY-01：正式忘记密码页面/API与QQ SMTP接线完成，申请不改原密码、30分钟摘要令牌原子消费、旧会话撤销和持久限流；24专项/10真实隔离PG/747 CI口径单测及HTTPS浏览器链通过，QQ真实发信未配置且未投递。Owner要求立即协助，已在READY的5df受保护入口发行个人一小时设置链接（不写Git），Owner设置/登录未确认。本批新代码待精确CI和受保护Preview，八维仍HOLD。**
+
+
+> **2026-11-17｜M5-RUNTIME-READY-01 / M5-OWNER-LOGIN-01**：现有执行器补认领前独立授权/Worker/存储/Gate配置检查和无终态HOLD；原Admin系统设置可看配置缺项。Owner要求为原账号自行设置密码，新增仅受保护Preview的限时单次入口及原会话撤销机制，角色不变。319生产边界通过、构建/类型通过；5df精确CI与受保护Preview已READY，Owner再次要求直接重置后个人入口已发行，真实Owner/Root未建立，八维HOLD。详见 `evidence/m5-runtime-readiness-20261117/receipt.json`。本条不改变原节点/边状态，也不把配置齐备称运行PASS。
 
 
 > **持续施工统一口径（2026-11-16）**：按PLAN §0/§3.5 D，可用成果直接复用、缺接口/配置定向修、必要时在原职责内替换；历史继承按需查阅，不设每批全量审计前置。复用现有受保护云端Preview，先接低权执行/授权及独立Reviewer，沿同一真实任务推进。三层状态与八维HOLD不因本次文档修订提升。
