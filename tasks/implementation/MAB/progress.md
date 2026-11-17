@@ -4660,3 +4660,10 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **下游状态**：M5八维仍`0/8 OVERALL_HOLD`；新增代码可编译，不代表真实用户已能调用完整L0—L5或D00→D01。当前已实现的入口API返回路由分类，但真实Owner会话HTTP、项目/知识真实正反、共享查询、外部取得及费用均未实跑。
 - **下一精确施工**：第一先完成合法共享L0—L4的有界授权检索与资格/权利核验，做到同一Project/Root已有合格资产直接用、错Owner/撤权负例拒绝、真正无源才允许D00候选检索；只复用现有repository/Gate服务并做好精确版本/读模型桥接。与此同时验证本批9组单测GitHub CI/运行证据，继续以安全面板配对云低权机器账号及独立Gate/Executor（没有授权密钥不能擅自生成）。当前配置阻断不应挡住有授权的源代码/单元测试施工。
 - **范围外与回退**：无数据库迁移、无云库业务行改写、无独立Gate签发、无原件公开、无新增Provider充值/调用、无Production发布。若发现当前路由导致已授权场景不能用，以本批精确SHA定位原文件和新路由模块小范围回退；禁止重置整仓及清理现有历史试验数据作为默认修复。
+
+
+### 2026-11-17｜M5-STUDIO-UNIFIED-KNOWLEDGE-ROUTING-01 后续最终受控构建回执（不提升业务准出）
+- 受保护Vercel staging `dpl_6nUPbgonYdjiktnBkcrosJp2Qadj` READY；部署代码精确main SHA `fb7e5c52d383a4b2a909ed001640661a9ffb3caa`，覆盖此前`adb1c0a6`的Studio任务API响应增量及导航/状态文件。Vercel事件显示Next 15.5.28编译、类型检查、静态页面与函数追踪构建成功。Preview SSO已回查enabled=true，deploymentType=preview。
+- Production查询的最近部署依然`dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc`，SHA `835602242cab31b1fcb372c7ff5efd4fc41dfd89`，READY，没有自动发布本批main。
+- Supabase mohen-cloud只读复核：`mohen_m5_producer_login`和`mohen_m5_worker_login`均`rolcanlogin=true`但`rolpassword IS NOT NULL=false`；没有改写凭据/门禁、没有Owner代操作、没有激活Cloud Executor/Reviewer。云端同Root各Gate仍NOT_RUN。
+- **证据边界**：构建/类型检查PASS（精确SHA如上），新增9组Node单测的GitHub CI实际结果仍NOT_VERIFIED，未运行Owner当前项目正反数据。业务首批未准出，M5总8维0/8 HOLD。
