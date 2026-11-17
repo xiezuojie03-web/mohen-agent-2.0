@@ -66,3 +66,52 @@ test('passing Producer preflight preserves one-time claim and bounded terminal',
  assert.equal(result.status,'HOLD');assert.equal(result.reason_code,'WAITING_GATE');
  assert.equal(probes,1);assert.equal(claimed,1);assert.equal(executed,1);
 });
+
+test('both server preflight pools accept split secrets with verified TLS before rejecting an unsafe Producer',async t=>{
+ const {createPrivateWorkerPool}=await import('../../packages/data-access/src/private-worker-pool.mjs');
+ const {cloudEnvironment}=await import('./fixtures/cloud-execution-environment.mjs');
+ const fixturePool=createPrivateWorkerPool('postgresql://fixture:synthetic@db.invalid/test');
+ const poolPrototype=Object.getPrototypeOf(Object.getPrototypeOf(fixturePool));
+ await fixturePool.end();
+ const e=input(),scope=e.scope;
+ scope.source_version_id=randomUUID();
+ scope.asset_revision_id=randomUUID();
+ scope.raw_sha256='a'.repeat(64);
+ const connected=[];
+ let claims=0;
+ t.mock.method(poolPrototype,'query',async function(){
+  const {user,password,ssl}=this.options;
+  connected.push({user,password,tls:ssl.rejectUnauthorized});
+  if(connected.length===1)return {rows:[{db_identity:user,login_identity:user,can_login:true,app_worker:true,unsafe_membership:false}]};
+  return {rows:[{role:user,login_role:user,is_superuser:false,bypass_rls:false,can_sign:true}]};
+ });
+ t.mock.method(poolPrototype,'connect',async function(){
+  const {user,password,ssl}=this.options;
+  connected.push({user,password,tls:ssl.rejectUnauthorized});
+  return {release(){},async query(sql){
+   if(sql.includes('current_app_user_id'))return {rows:[{user_id:randomUUID()}]};
+   if(!sql.includes('studio.private_source_registration'))return {rows:[]};
+   return {rows:[{registration:{schema:'mohen.private-source-registration.v1',original_id:scope.original_id,
+    source_id:randomUUID(),raw_item_id:randomUUID(),project_id:scope.project_id,source_version_id:scope.source_version_id,
+    asset_revision_id:scope.asset_revision_id,sha256:scope.raw_sha256,artifact_revision:'b'.repeat(64),
+    content_type:'text/plain',byte_size:1,storage_ref:'fixture-path',rights:{}}}]};
+  }};
+ });
+ const handle=createCloudProductionServer({environment:cloudEnvironment({
+  MOHEN_CLOUD_EXECUTOR_CREDENTIAL:credential,
+  MOHEN_PRODUCER_DATABASE_URL:'postgresql://fixture_producer@db.invalid/test?sslmode=verify-full',
+  MOHEN_PRODUCER_DATABASE_PASSWORD:'test%producer',
+  MOHEN_PRIVATE_WORKER_DATABASE_URL:'postgresql://fixture_worker@db.invalid/test?sslmode=verify-full',
+  MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD:'test@worker',
+ }),projectRoot:process.cwd(),
+ db:{queryRows:async()=>{claims++;return [{run_id:e.run_id}];}}});
+ const dispatch=createCloudProductionDispatch({url:'https://worker.invalid/execute',credential,
+  fetchImpl:async(url,options)=>handle(new Request(url,options))});
+ await assert.rejects(()=>dispatch(e),/CLOUD_EXECUTOR_UNCERTAIN/);
+ assert.deepEqual(connected,[
+  {user:'fixture_worker',password:'test@worker',tls:true},
+  {user:'fixture_worker',password:'test@worker',tls:true},
+  {user:'fixture_producer',password:'test%producer',tls:true},
+ ]);
+ assert.equal(claims,0);
+});

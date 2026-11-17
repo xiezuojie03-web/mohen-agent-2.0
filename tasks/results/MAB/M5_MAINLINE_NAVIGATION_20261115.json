@@ -11952,7 +11952,7 @@
       "不要重复做已经通过的本地隔离G0/G1、R01—R11历史样板，或新建第二Gate/Runner",
       "不要把M2/M3架构迁移成功或历史成功写成目前云端同Root PASS"
     ],
-    "next_execution_rule": "Producer/Worker四项Preview URL+Secret均已核实存在，Owner无需再操作。最新dpl_Gzbgit2J8N8QXhv2vGhxvkJuyuk5为READY但target=staging；项目SSO元数据仅Preview且Custom Environments为空，Preview变量注入和SSO保护范围尚未证实。先运行Node专项测试/CI并只读厘清环境映射，再在明确受保护且变量注入的非生产部署验证真实TLS及低权限正反；不可触Production。Owner Project/Root、Gate Policy/Reviewer Binding仍0，M5 0/8 HOLD。",
+    "next_execution_rule": "先在既有受保护非生产部署取得四项机器变量的服务端存在性回执，仅返回布尔值；注入及保护均确认后，复用专用连接池和身份检查完成 Producer/Worker TLS、允许/拒绝、原始 Secret 不透传验证。GitHub Actions 恢复 runner 后重跑精确 main SHA。真实 Project/Root 和独立 Policy/Reviewer Binding 进入既有合法业务路径后，再验证同作品闭环。",
     "last_execution": {
       "batch": "M5-ASSEMBLY-01/02/03/04",
       "code_sha": "712a08b021bbef12977ed907a8c64d136eeca3bc",
@@ -12282,6 +12282,26 @@
       "worker_password": "VERIFIED_PRESENT_PREVIEW_SENSITIVE_VALUE_NOT_READ",
       "next": "NODE_TESTS_CI_AND_VERIFY_DEPLOYMENT_SCOPE_THEN_TLS",
       "production_changed": false
+    },
+    "codex_cloud_first_batch": {
+      "baseline_sha": "d3e2f00494386c171075f4aec4d7ddc5a26957e4",
+      "node_data_production": {
+        "passed": 357,
+        "failed": 0
+      },
+      "github_actions_baseline": {
+        "run_id": 44157133157,
+        "attempts": 2,
+        "state": "BLOCKED_BEFORE_RUNNER_BILLING_OR_SPENDING_LIMIT"
+      },
+      "git_auto_deployment_enabled": false,
+      "production_sha": "835602242cab31b1fcb372c7ff5efd4fc41dfd89",
+      "staging_deployment": "dpl_Gzbgit2J8N8QXhv2vGhxvkJuyuk5",
+      "staging_anonymous_login": "HTTP_302_VERCEL_SSO",
+      "staging_preview_environment_mapping": "VERCEL_PREVIEW_AND_STAGING_FILTERS_RETURN_SAME_DEPLOYMENTS",
+      "preview_machine_variable_injection": "NOT_VERIFIED",
+      "live_tls_and_acl": "NOT_RUN",
+      "m5": "0/8 OVERALL_HOLD"
     }
   },
   "creative_mainline_routing": {
@@ -12365,7 +12385,7 @@
       "scope": "新增来源或需要D00/G0准入的生产子路径",
       "description": "现有独立Gate与Runner应继承；云端低权身份、Executor、策略/绑定与真实同Root回执未完成"
     },
-    "next_build_task": "A线已有窄读权限桥不重做。B线四项Producer/Worker Preview URL+Secret均已存在，无Owner配置动作。先运行Node测试/CI并厘清最新staging部署与Preview变量/SSO保护映射；确认受保护且变量注入后做真实TLS和低权限正反，再接既有Executor与独立Gate。Owner Project/Root、Policy/Reviewer仍0；不可触Production。",
+    "next_build_task": "先在既有受保护非生产部署取得四项机器变量的服务端存在性回执，仅返回布尔值；注入及保护均确认后，复用专用连接池和身份检查完成 Producer/Worker TLS、允许/拒绝、原始 Secret 不透传验证。GitHub Actions 恢复 runner 后重跑精确 main SHA。真实 Project/Root 和独立 Policy/Reviewer Binding 进入既有合法业务路径后，再验证同作品闭环。",
     "source_locators": [
       "apps/web/lib/mohen-agent/research.ts",
       "apps/web/lib/mohen-agent/retrieve.ts",

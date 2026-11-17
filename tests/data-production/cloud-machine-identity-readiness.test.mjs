@@ -86,3 +86,31 @@ test('split machine secrets are not passed to Runner environment as separate val
  assert.doesNotMatch(runtime,/['"]MOHEN_PRODUCER_DATABASE_PASSWORD['"]/);
  assert.doesNotMatch(runtime,/['"]MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD['"]/);
 });
+
+test('dedicated machine pool pins certificate verification and rejects URI overrides',async()=>{
+  const {createPrivateWorkerPool}=await import('../../packages/data-access/src/private-worker-pool.mjs');
+  const pool=createPrivateWorkerPool(worker());
+  assert.equal(pool.options.ssl.rejectUnauthorized,true);
+  await pool.end();
+  for(const suffix of ['?sslmode=require','?sslmode=verify-full&sslmode=verify-full',
+    '?sslmode=verify-full&options=-crole%3Dpostgres','?sslmode=verify-full#fragment']){
+    assert.throws(()=>createPrivateWorkerPool(worker(suffix)),/PRIVATE_WORKER_DATABASE_CONFIG_INVALID/);
+  }
+});
+
+test('operator readiness can attest each injected machine variable without exposing its value',()=>{
+  const env={
+    MOHEN_PRODUCER_DATABASE_URL:'postgresql://fixture_producer@db.invalid/test?sslmode=verify-full',
+    MOHEN_PRODUCER_DATABASE_PASSWORD:'synthetic-producer-secret',
+    MOHEN_PRIVATE_WORKER_DATABASE_URL:'postgresql://fixture_worker@db.invalid/test?sslmode=verify-full',
+  };
+  const report=cloudExecutionReadiness(env);
+  assert.deepEqual(report.machine_variable_presence,{
+    MOHEN_PRODUCER_DATABASE_URL:true,
+    MOHEN_PRODUCER_DATABASE_PASSWORD:true,
+    MOHEN_PRIVATE_WORKER_DATABASE_URL:true,
+    MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD:false,
+  });
+  for(const value of Object.values(env))assert.equal(JSON.stringify(report).includes(value),false);
+  assert.equal(report.runtime_verified,false);
+});

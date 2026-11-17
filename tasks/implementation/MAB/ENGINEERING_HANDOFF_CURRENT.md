@@ -4,7 +4,7 @@
 
 ## 1. 必读入口与权威层级
 
-1. AGENTS.md：仓库级执行约束。
+1. AGENTS.md：仓库级执行约束及 MHKA-00—05 权威路由。
 2. tasks/implementation/MAB/PLAN.md：唯一施工计划和M5八维准出标准，重点§0、§0.2、§3.5 B/C/D。
 3. CURRENT.md：当前真实工程事实与最前断点。
 4. tasks/implementation/MAB/progress.md：历史追加式施工证据账；只读末尾最新批次及受影响历史，不从头扫描。
@@ -39,33 +39,14 @@
   - MOHEN_PRODUCER_DATABASE_PASSWORD
   - MOHEN_PRIVATE_WORKER_DATABASE_URL
   - MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD
-- 最新部署dpl_Gzbgit2J8N8QXhv2vGhxvkJuyuk5，SHA 954760da7d6cc33b7fd8116e8d64f07ae27edce3，READY，target=staging。项目SSO Protection元数据为deploymentType=preview，Custom Environments列表为空。**四项Preview变量是否注入该staging部署、该部署是否受SSO保护尚未证实。**
+- 最新部署dpl_Gzbgit2J8N8QXhv2vGhxvkJuyuk5，SHA 954760da7d6cc33b7fd8116e8d64f07ae27edce3，READY，target=staging。项目SSO Protection元数据为deploymentType=preview，Custom Environments列表为空。匿名 HTTP 实测该 staging 部署受 SSO 保护，部署列表的 Preview 和 staging 过滤返回同组部署。**四项 Preview 变量的实际注入仍未证实。**
 - Producer/Worker真实TLS、实际数据库身份、低权限正反、Secret不透传均未验证。变量存在与密码已激活不能代替连接成功。
 
 ## 4. Codex Cloud或ChatGPT均可直接执行的下一批（无需Owner参与）
 
-**第一优先：源码测试与CI回执。**
-- 核最新main与SHA；读取package scripts、CI workflow及相关AGENTS/Skill。
-- 执行tests/data-production/studio-knowledge-routing.test.mjs、tests/data-production/cloud-machine-identity-readiness.test.mjs及其依赖的相关Node测试。
-- 对照精确SHA检查GitHub Actions；修复真实失败，不跳过、不降级断言。
-- 检查窄读桥、Owner签名事务、URL/Secret拆分、TLS verify-full、无通用DATABASE_URL回退、Secret不透传、Producer/Gate职责隔离。
-- 更新progress记录真实命令、执行环境、通过/失败数量、SHA和CI链接。
-
-**第二优先：只读厘清Vercel环境映射与保护。**
-- 核实target=staging的环境语义、四项Preview变量注入范围和SSO实际保护范围。
-- 不读取Secret值、不创建Custom Environment、不改变Production、不关闭任何保护。
-- 如果当前部署不能证明安全，则保持真实TLS NOT_RUN，先准备明确受保护的非生产部署验证方案。
-
-**第三优先：代码级Executor与独立Gate预检。**
-- 复用现有Cloud Executor、唯一Runner/Registry及独立Reviewer/Gate。
-- 为配置缺失、身份不符、TLS不符、Policy/Binding缺失、Producer尝试自签等补齐fail-closed正反测试。
-- 不创建真实Policy/Binding，不签发资格，不构造Owner Project/Root，不产生付费Provider调用。
-
-**第四优先：安全条件满足后真实TLS。**
-- 只有确认目标部署受保护且四项Preview变量确实注入，才运行Producer/Worker真实TLS登录、数据库身份、最小权限正反和Secret不透传。
-- 保留可复验的脱敏回执，不记录连接串或密码。
-
-完成以上无需Owner的工作后，继续推进不依赖Owner数据/授权的代码工作；只有真实Owner Project/Root、独立Reviewer授权或最终产品体验确实成为前置时，才向Owner提出一次明确、最小的操作请求。
+- 首批解决旧测试夹具与现行 TLS/Owner 会话合同不一致的问题，并修复 Executor 认领前未解析拆分密码、专用池拒绝 `sslmode=verify-full`。Node 数据生产回归通过 357/357。精确 GitHub Actions 回执及隔离 PG 见 progress。GitHub 托管 runner 的账单/支出上限恢复后重跑最新 main。
+- staging 唯一部署 URL 的登录、Admin readiness 和 Executor 入口匿名请求均实测 302 至 Vercel SSO。项目级四项配置均仅 Preview。部署实际注入仍 HOLD。在既有受保护非生产部署路径可用时，以新 main 构建并由现有合法 Operator 访问 Admin readiness 的 `machine_variable_presence`，四项均为 true 才进入真实 TLS 验证。确认保护与注入后，复用低权池及身份检查运行云端 TLS、允许/拒绝和 Secret 隔离验证。
+- 真实同作品沿 PLAN §3.5 B/C/D 继续。待业务路径产生真实 Project/Root 及独立 Reviewer/Policy，再执行权限内的正向读、独立签发、发布和撤权。无需重复机器密码或变量配置。
 
 ## 5. 停止与切换协议
 

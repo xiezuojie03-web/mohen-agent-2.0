@@ -71,7 +71,13 @@ export function cloudExecutionReadiness(environment={}) {
     https(environment.MOHEN_SUPABASE_URL)&&credential(environment.MOHEN_ORIGINAL_BRIDGE_SECRET)&&
     environment.MOHEN_PRIVATE_ORIGINAL_LOCAL_FS!=='true');
   return {schema:'mohen.cloud-execution-readiness.v1',configuration_ready:components.every(c=>c.status==='CONFIGURED'),
-    runtime_verified:false,gate_qualification:'NOT_VERIFIED',components};
+    runtime_verified:false,gate_qualification:'NOT_VERIFIED',components,
+    machine_variable_presence:{
+      MOHEN_PRODUCER_DATABASE_URL:present(environment.MOHEN_PRODUCER_DATABASE_URL),
+      MOHEN_PRODUCER_DATABASE_PASSWORD:present(environment.MOHEN_PRODUCER_DATABASE_PASSWORD),
+      MOHEN_PRIVATE_WORKER_DATABASE_URL:present(environment.MOHEN_PRIVATE_WORKER_DATABASE_URL),
+      MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD:present(environment.MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD),
+    }};
 }
 
 export function assertCloudExecutionConfiguration(environment) {

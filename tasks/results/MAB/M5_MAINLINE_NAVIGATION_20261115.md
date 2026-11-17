@@ -1,4 +1,4 @@
-> **2026-11-18第七批配置核验更新**：Producer/Worker两条无密码URL与两条独立密码Secret四项均已核实存在，均仅Preview/Sensitive；Owner无需再配置或重置。最新部署dpl_Gzbgit2J8N8QXhv2vGhxvkJuyuk5 READY、target=staging，但项目SSO元数据仅明确Preview且Custom Environments为空，故变量注入与保护范围尚未证实。先做Node测试/CI和环境只读核验，再决定真实TLS；M5仍0/8 HOLD。
+> **2026-11-18｜Codex Cloud 首批：Node 数据生产套件 357/357 通过；GitHub Actions 在 runner 启动前因账单或支出上限拦截。Vercel staging 唯一部署 URL 的匿名 /login 返回 302 至 Vercel SSO，Preview 与 staging 过滤均返回同组部署，Custom Environments 为空，四项机器变量仅 Preview，部署实际注入仍待证实。Production 自动 Git 部署已关闭，正式域仍指向 83560224。机器真实 TLS、低权限云端验证及同作品八维仍 HOLD。**
 
 # 墨痕 M5 全链路导航｜现行主线分流与工程断点（非权威）
 
@@ -52,10 +52,9 @@ Creator投稿→作品Reviewer审核＋独立专业G5＋媒体权限→Operator�
 
 ## 4. 下一项无需Owner参与的工程任务
 
-1. 在Codex Cloud或ChatGPT接续最新main，执行现有Node专项测试与GitHub Actions核验；对真实失败定向修复，不跳过测试。
-2. 只读厘清Vercel staging target与Preview变量/SSO保护的实际映射。四项变量已存在，不得再要求Owner重复输入；不读取Secret值、不创建环境、不改Production。
-3. 复用现有Cloud Executor、Runner/Registry和独立Gate/Reviewer，补配置缺失、身份错误、TLS不符、Producer自签等fail-closed自动化测试。
-4. 只有证明部署受保护且四项Preview变量实际注入后，才做Producer/Worker真实TLS、数据库身份及低权限正反测试。
-5. Owner Project/当前Gate资格/Policy/Reviewer Binding仍为0；不得伪造正向业务PASS，等合法业务数据自然形成后再验A线正向读取与撤权。
+1. 取得既有受保护非生产部署上四项机器变量的服务端存在性回执。只记录部署 ID、环境标识及布尔值。
+2. 保护与注入同时证实后，复用专用连接池及身份检查完成真实 TLS、允许与拒绝、Secret 不透传验证。
+3. GitHub Actions 恢复 runner 后重跑精确 main SHA，回读每个受影响作业。
+4. 等合法 Project/Root、当前资格、独立 Policy/Reviewer Binding 就绪，再验证同作品从 Studio 到 WATCH 及撤权。
 
 Codex Cloud按额度启停，不是永久模式。每批必须把代码、测试、SHA、部署/运行回执和下一断点同步GitHub；任何未提交成果必须显式保留并标记，ChatGPT接手只以GitHub main和本账为准。

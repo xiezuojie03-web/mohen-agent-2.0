@@ -70,7 +70,8 @@ try {
     '20261114220000_mab_m5_restore_registered_content_revision.sql',
     // Same Owner-scoped Producer progress RPC as the K3 PG fixture.
     '20261117010000_mab_m5_scoped_producer_run_progress.sql',
-    '20261117020000_mab_m5_dev_machine_login_roles.sql'];
+    '20261117020000_mab_m5_dev_machine_login_roles.sql',
+    '20261118025600_m5_scoped_formal_project_gate_read.sql'];
   names.push('20261103095024_mab_web_session_revocation.sql','20261117080000_mab_web_password_recovery.sql');
   for(const name of names)execFileSync(psql,[...base,'-d',database,'-f',path.join(migrations,name)],{stdio:['ignore','pipe','pipe']});
   if(process.env.MOHEN_TEST_STORAGE_CONFIG){

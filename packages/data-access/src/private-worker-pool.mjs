@@ -9,7 +9,8 @@ export function createPrivateWorkerPool(connectionString,{ca}={}) {
     if(!['postgres:','postgresql:'].includes(url.protocol)||!url.hostname||!url.username||!url.password||!url.pathname.slice(1))throw Error();
     // Explicit fields only: URI query options must not switch identity,
     // transport, socket, SSL verification or PostgreSQL startup role.
-    if(url.search||url.hash)throw Error();
+    const options=[...url.searchParams];
+    if(url.hash||options.length>1||options.some(([key,value])=>key!=='sslmode'||value!=='verify-full'))throw Error();
     user=decodeURIComponent(url.username);password=decodeURIComponent(url.password);
     database=decodeURIComponent(url.pathname.slice(1));
   }catch{throw Error('PRIVATE_WORKER_DATABASE_CONFIG_INVALID');}

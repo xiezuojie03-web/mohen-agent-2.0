@@ -32,13 +32,13 @@ test('a private signing key cannot be smuggled into the Producer through the pub
   assert.throws(()=>runtime.assertCloudExecutionConfiguration(cloudEnvironment({MOHEN_EXECUTION_AUTH_PUBLIC_KEY:key})),/CLOUD_EXECUTION_AUTHORITY_REQUIRED/);
 });
 test('Producer cannot borrow Web identity, Worker identity or an unsafe connection URI',()=>{
-  for(const uri of [undefined,'postgresql://postgres:secret@db.invalid/test','postgresql://mohen_private_worker:secret@db.invalid/test','postgresql://mohen_producer:secret@db.invalid/test?sslmode=disable'])
+  for(const uri of [undefined,'postgresql://postgres:secret@db.invalid/test?sslmode=verify-full','postgresql://mohen_private_worker:secret@db.invalid/test?sslmode=verify-full','postgresql://mohen_producer:secret@db.invalid/test?sslmode=disable'])
     assert.throws(()=>runtime.assertCloudExecutionConfiguration(cloudEnvironment({MOHEN_PRODUCER_DATABASE_URL:uri})),/CLOUD_PRODUCER_REQUIRED|CLOUD_PRIVATE_WORKER_REQUIRED/);
 });
 test('NOLOGIN duty roles cannot be mistaken for dedicated machine database logins',()=>{
   for(const role of ['mohen_producer','mohen_app_runtime','mohen_gate_signer','mohen_gate_reader','mohen_gate_authority']){
     for(const key of ['MOHEN_PRODUCER_DATABASE_URL','MOHEN_PRIVATE_WORKER_DATABASE_URL']){
-      const env=cloudEnvironment({[key]:`postgresql://${role}:synthetic-password@db.invalid/test`});
+      const env=cloudEnvironment({[key]:`postgresql://${role}:synthetic-password@db.invalid/test?sslmode=verify-full`});
       assert.throws(()=>runtime.assertCloudExecutionConfiguration(env),
         /CLOUD_(PRODUCER|PRIVATE_WORKER)_REQUIRED/,`${role} as ${key}`);
     }

@@ -5,8 +5,8 @@ export function cloudEnvironment(overrides={}) {
   return {
     MOHEN_CLOUD_EXECUTION_ENABLED:'true',
     MOHEN_CLOUD_EXECUTOR_CREDENTIAL:'synthetic-cloud-credential-at-least-32',
-    MOHEN_PRODUCER_DATABASE_URL:'postgresql://mohen_producer_machine:synthetic-db-password@db.invalid/test',
-    MOHEN_PRIVATE_WORKER_DATABASE_URL:'postgresql://mohen_private_worker:synthetic-worker-password@db.invalid/test',
+    MOHEN_PRODUCER_DATABASE_URL:'postgresql://mohen_producer_machine:synthetic-db-password@db.invalid/test?sslmode=verify-full',
+    MOHEN_PRIVATE_WORKER_DATABASE_URL:'postgresql://mohen_private_worker:synthetic-worker-password@db.invalid/test?sslmode=verify-full',
     MOHEN_EXECUTION_AUTH_PUBLIC_KEY:publicKey.export({type:'spki',format:'pem'}),
     MOHEN_EXECUTION_AUTH_VERIFY_URL:'https://authority.invalid/consume',
     MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL:'synthetic-verifier-credential-at-least-32',

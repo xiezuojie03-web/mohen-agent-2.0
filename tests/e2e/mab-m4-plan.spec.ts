@@ -65,7 +65,7 @@ test('ST-01 creates one project-bound immutable brief before research; HOLD and 
  const body=await response.json();
  expect(response.status()).toBe(200);expect(body.status).toBe('hold');expect(body.hold_reason).toBe('research_prerequisites');
  expect(body.decision).toBeNull();expect(body.production).toBeNull();expect(body.replayed).toBe(false);
- expect(body.missing_requirements).toEqual(expect.arrayContaining(['REAL_PROVIDER_UNAVAILABLE','SOURCE_ACQUISITION_UNAVAILABLE']));
+ expect(body.missing_requirements).toEqual(['REAL_PROVIDER_UNAVAILABLE']);
  expect(requestBody).toMatchObject({prompt,project_id:project.project_id});
  expect(requestBody.idempotency_key).toMatch(/^[a-f0-9-]{36}$/);
  await expect(page.getByText('委托已保存，研究暂停，尚未完成。',{exact:true})).toBeVisible();

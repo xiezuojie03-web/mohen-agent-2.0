@@ -36,6 +36,14 @@ for(const role of ['mohen_producer','mohen_app_runtime']) assert.throws(()=>sql(
 const c=candidate();
 assert.throws(()=>sql(`set role mohen_gate_signer; ${sign(c)}`),/REVIEWER_IDENTITY_REQUIRED/,'A role or claimed cookie roles do not prove reviewer identity');
 assert.throws(()=>sql(asSigner(sign(c,randomUUID(),null,'{}'))),/REVIEW_RECEIPT_INVALID/);
+// Exercise the actual policy lookup with a valid reviewer and candidate.
+sql("update control.gate_policy_versions set enabled=false where gate_code='G0' and rule_version='fixture-rule'");
+try {
+ assert.throws(()=>sql(asSigner(sign(c))),/GATE_POLICY_NOT_ACTIVE/);
+ assert.equal(sql(`select candidate_status from control.gate_candidates where candidate_id='${c}'`),'SUBMITTED');
+} finally {
+ sql("update control.gate_policy_versions set enabled=true where gate_code='G0' and rule_version='fixture-rule'");
+}
 const request=randomUUID();
 const audit=sql(asSigner(sign(c,request)));
 assert.match(audit,/^[a-f0-9-]{36}$/);

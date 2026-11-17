@@ -4,6 +4,8 @@ const {guardRoute,getTaskStatus,resumeResearchTask,appendResearchMessage}=vi.hoi
   resumeResearchTask:vi.fn(),appendResearchMessage:vi.fn(),
 }));
 vi.mock("../../apps/web/lib/guard",()=>({guardRoute}));
+vi.mock("../../apps/web/lib/session",()=>({getSession:async()=>({userId:"fixture-owner"})}));
+vi.mock("../../apps/web/lib/auth",()=>({signDatabaseSessionToken:()=>"fixture-database-session"}));
 vi.mock("../../apps/web/lib/studio-research",()=>({
   getTaskStatus,resumeResearchTask,appendResearchMessage,
 }));
@@ -26,7 +28,7 @@ describe("HP08 Studio HTTP explicit budget and anti-replay",()=>{
     const res=await resume(post("/api/studio/research-tasks/"+taskId+"/resume",{}) as never,{params});
     expect(res.status).toBe(409);
     expect((await res.json()).reason).toBe("resume_step_checkpoint_required");
-    expect(resumeResearchTask).toHaveBeenCalledWith(taskId);
+    expect(resumeResearchTask).toHaveBeenCalledWith(taskId,undefined,"fixture-database-session");
   });
   it("does not use appendResearchMessage to replay a budget HOLD",async()=>{
     resumeResearchTask.mockResolvedValue({
@@ -35,7 +37,7 @@ describe("HP08 Studio HTTP explicit budget and anti-replay",()=>{
     const res=await resume(post("/api/studio/research-tasks/"+taskId+"/resume",{}) as never,{params});
     expect(res.status).toBe(409);
     expect((await res.json()).reason).toBe("reconciliation_required");
-    expect(resumeResearchTask).toHaveBeenCalledWith(taskId);
+    expect(resumeResearchTask).toHaveBeenCalledWith(taskId,undefined,"fixture-database-session");
     expect(appendResearchMessage).not.toHaveBeenCalled();
   });
   it("rejects resume of a non-held task rather than running charged research again",async()=>{
@@ -56,7 +58,7 @@ describe("HP08 Studio HTTP explicit budget and anti-replay",()=>{
     expect(res.status).toBe(409);
     expect(res.headers.get("cache-control")).toBe("no-store");
     expect((await res.json()).reason).toBe("receipt_uncertain");
-    expect(appendResearchMessage).toHaveBeenCalledWith(taskId,"another question");
+    expect(appendResearchMessage).toHaveBeenCalledWith(taskId,"another question","fixture-database-session");
   });
   it("denies requests at the ownership guard before touching any task",async()=>{
     const {NextResponse}=await import("next/server");

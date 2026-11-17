@@ -20,6 +20,8 @@ import {ResearchPrerequisiteHold} from '../../apps/web/lib/mohen-agent/research-
 const taskId="123e4567-e89b-42d3-a456-426614174001";
 const owner="123e4567-e89b-42d3-a456-426614174002";
 const projectId="123e4567-e89b-42d3-a456-426614174003";
+const studio={project_id:projectId};
+const sessionToken="synthetic-signed-session";
 function prepareBoundTask(){
   queryRows.mockResolvedValueOnce([]).mockResolvedValueOnce([{task_id:taskId}]).mockResolvedValueOnce([{task_id:taskId}]);
   saveRevision.mockResolvedValue({asset_id:"123e4567-e89b-42d3-a456-426614174004",
@@ -67,9 +69,9 @@ describe("HP08 task-level budget and safe restart boundaries",()=>{
     expect(run.mock.calls.some(([sql,params]:[string,{event?:string}])=>sql.includes('research_events')&&params.event==='research_done')).toBe(false);
   });
   it('rechecks zero-spend prerequisite HOLD through the existing CAS without inventing funding',async()=>{
-    queryRows.mockResolvedValueOnce([{prompt:'original commission',topic:'generic',checkpoint:{holdReason:'research_prerequisites',holdAt:{toolId:'llm-understand'},budgetSpent:0,reserved:0,ceiling:8}}]).mockResolvedValueOnce([{task_id:taskId}]);
+    queryRows.mockResolvedValueOnce([{prompt:'original commission',topic:'generic',checkpoint:{studio,holdReason:'research_prerequisites',holdAt:{toolId:'llm-understand'},budgetSpent:0,reserved:0,ceiling:8}}]).mockResolvedValueOnce([{task_id:taskId}]);
     runResearch.mockRejectedValue(new ResearchPrerequisiteHold(['REAL_PROVIDER_UNAVAILABLE']));
-    expect(await resumeResearchTask(taskId)).toMatchObject({taskId,status:'hold',holdReason:'research_prerequisites'});
+    expect(await resumeResearchTask(taskId,undefined,sessionToken)).toMatchObject({taskId,status:'hold',holdReason:'research_prerequisites'});
     expect(runResearch).toHaveBeenCalledOnce();
     expect(queryRows.mock.calls[1][0]).toContain("status = 'hold'");
     expect(JSON.parse(checkpointWrites().at(-1)![1].cp).budgetSpent).toBe(0);
@@ -152,8 +154,8 @@ describe("HP08 task-level budget and safe restart boundaries",()=>{
     expect(runResearch).not.toHaveBeenCalled();expect(run).not.toHaveBeenCalled();
   });
   it("claims a zero-spend first-step resume using only the saved ceiling",async()=>{
-    queryRows.mockResolvedValueOnce([{prompt:"prior",topic:"generic",checkpoint:{holdReason:"budget",holdAt:{toolId:"llm-understand"},budgetSpent:0,reserved:0,ceiling:8}}]).mockResolvedValueOnce([{task_id:taskId}]);
-    const task=await resumeResearchTask(taskId);
+    queryRows.mockResolvedValueOnce([{prompt:"prior",topic:"generic",checkpoint:{studio,holdReason:"budget",holdAt:{toolId:"llm-understand"},budgetSpent:0,reserved:0,ceiling:8}}]).mockResolvedValueOnce([{task_id:taskId}]);
+    const task=await resumeResearchTask(taskId,undefined,sessionToken);
     expect(task.status).toBe("done");expect(runResearch.mock.calls[0][2].budget.ceiling).toBe(8);
     expect(queryRows.mock.calls[1][0]).toContain("status = 'hold'");
     const claimed=JSON.parse(queryRows.mock.calls[1][1].next);
@@ -183,13 +185,13 @@ describe("HP08 task-level budget and safe restart boundaries",()=>{
   it("atomically claims a ready task before a follow-up and preserves cumulative cost",async()=>{
     queryRows
       .mockResolvedValueOnce([{status:"done",topic:"generic",
-        checkpoint:JSON.stringify({budgetSpent:2,reserved:0,ceiling:8})}])
+        checkpoint:JSON.stringify({studio,budgetSpent:2,reserved:0,ceiling:8})}])
       .mockResolvedValueOnce([{task_id:taskId}]);
     runResearch.mockImplementation(async (_prompt:string,_topic:string,ledger:{budget:{spent:number}})=>{
       ledger.budget.spent+=1;
       return result;
     });
-    expect(await appendResearchMessage(taskId,"follow up")).toEqual({ok:true});
+    expect(await appendResearchMessage(taskId,"follow up",sessionToken)).toEqual({ok:true});
     expect(queryRows.mock.calls[1][0]).toContain("status = 'done' returning task_id");
     expect(JSON.parse(checkpointWrites().at(-1)![1].cp)).toMatchObject({
       budgetSpent:3,ceiling:8,reserved:0,
@@ -209,12 +211,12 @@ describe("HP08 task-level budget and safe restart boundaries",()=>{
   it("persists a non-replay HOLD on receipt loss during a follow-up",async()=>{
     queryRows
       .mockResolvedValueOnce([{status:"done",topic:"generic",
-        checkpoint:JSON.stringify({budgetSpent:2,reserved:0,ceiling:8})}])
+        checkpoint:JSON.stringify({studio,budgetSpent:2,reserved:0,ceiling:8})}])
       .mockResolvedValueOnce([{task_id:taskId}]);
     runResearch.mockImplementation(async()=>{throw new ToolReceiptPersistenceError(
       taskId,"llm-polish","inv-synthetic",
     );});
-    expect(await appendResearchMessage(taskId,"follow up")).toEqual({
+    expect(await appendResearchMessage(taskId,"follow up",sessionToken)).toEqual({
       ok:false,reason:"receipt_uncertain",
     });
     const saved=JSON.parse(checkpointWrites().at(-1)![1].cp);

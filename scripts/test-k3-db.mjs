@@ -183,7 +183,8 @@ try {
       "20261114220000_mab_m5_restore_registered_content_revision.sql",
       // Producer must have Owner+Root-scoped terminal RPC; no broad production_runs RLS.
       "20261117010000_mab_m5_scoped_producer_run_progress.sql",
-      "20261117020000_mab_m5_dev_machine_login_roles.sql"]) apply(file);
+      "20261117020000_mab_m5_dev_machine_login_roles.sql",
+      "20261118025600_m5_scoped_formal_project_gate_read.sql"]) apply(file);
     // Capability assertions for the migrations applied immediately above. They can only run at
     // this point in the chain: the rights columns, the private worker, the machine reviewer and
     // the content-based sign_gate_candidate semantics do not exist any earlier.

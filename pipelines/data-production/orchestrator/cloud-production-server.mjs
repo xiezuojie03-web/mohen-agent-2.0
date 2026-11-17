@@ -4,6 +4,7 @@ import path from 'node:path';
 import {loadRegistry} from './registry.mjs';
 import {createCloudProductionHandler} from './cloud-production-dispatch.mjs';
 import {claimCloudProductionRun,executeCloudProductionCli,assertCloudExecutionConfiguration} from './cloud-production-runtime.mjs';
+import {resolveMachineDatabaseUrl} from './cloud-execution-readiness.mjs';
 import {createPrivateWorkerPool,createDedicatedMachinePool,assertPrivateWorkerIdentity} from '../../../packages/data-access/src/private-worker-pool.mjs';
 import {assertProducerIdentity} from '../../../packages/data-access/src/producer-identity.mjs';
 import {createPrivateSourceRegistrationRepository} from '../../../packages/data-access/src/private-source-registration-repository.mjs';
@@ -17,7 +18,8 @@ export function createCloudProductionServer({environment=process.env,projectRoot
  // database credentials from irreversibly consuming the single cloud claim.
  async function verifyProducerLogin(){
   if(verifyProducerConnection)return verifyProducerConnection();
-  const pool=createDedicatedMachinePool(environment.MOHEN_PRODUCER_DATABASE_URL,{ca:environment.MOHEN_DATABASE_CA_CERT});
+  const url=resolveMachineDatabaseUrl(environment.MOHEN_PRODUCER_DATABASE_URL,environment.MOHEN_PRODUCER_DATABASE_PASSWORD);
+  const pool=createDedicatedMachinePool(url,{ca:environment.MOHEN_DATABASE_CA_CERT});
   try{
    await assertProducerIdentity(async query=>(await pool.query(query)).rows,{cloud:true});
   }finally{await pool.end();}
@@ -25,8 +27,9 @@ export function createCloudProductionServer({environment=process.env,projectRoot
  async function verify(v){
   if(verifyOwnerOriginal)await verifyOwnerOriginal(v);
   else{
-   if(!environment.MOHEN_PRIVATE_WORKER_DATABASE_URL)throw Error('CLOUD_PRIVATE_WORKER_REQUIRED');
-   const pool=createPrivateWorkerPool(environment.MOHEN_PRIVATE_WORKER_DATABASE_URL,{ca:environment.MOHEN_DATABASE_CA_CERT});
+   const url=resolveMachineDatabaseUrl(environment.MOHEN_PRIVATE_WORKER_DATABASE_URL,environment.MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD);
+   if(!url)throw Error('CLOUD_PRIVATE_WORKER_REQUIRED');
+   const pool=createPrivateWorkerPool(url,{ca:environment.MOHEN_DATABASE_CA_CERT});
    try{
     await assertPrivateWorkerIdentity(pool);
     const r=await createPrivateSourceRegistrationRepository(pool).lookup(v.scope.original_id,v.owner_session_token);

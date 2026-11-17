@@ -9,11 +9,14 @@ const url=new URL(process.env.DATABASE_URL??'https://invalid.invalid');
 if(process.env.MOHEN_RESEARCH_RESUME_TEST!=='isolated-pg17'||!(localTcpHost||socket?.startsWith('/workspace/'))||
  !/^mohen_k3_[a-z0-9_]*test$/.test(database??'')||url.protocol!=='postgresql:'||url.hostname!=='localhost'||
  url.pathname!=='/'+database||url.searchParams.get('host')!==socket||process.env.MOHEN_DB_DRIVER!=='pg')throw Error('MARKED_ISOLATED_RESEARCH_DATABASE_REQUIRED');
-const owner=randomUUID();let taskId:string;
-const checkpoint={prompt:'synthetic',topic:'generic',holdReason:'budget',holdAt:{toolId:'llm-understand'},budgetSpent:0,reserved:0,ceiling:8};
+const owner=randomUUID(),projectId=randomUUID();
+const mockResearchSession='synthetic-resume-session';
+let taskId:string;
+const checkpoint={prompt:'synthetic',topic:'generic',holdReason:'budget',holdAt:{toolId:'llm-understand'},budgetSpent:0,reserved:0,ceiling:8,studio:{project_id:projectId}};
 beforeAll(async()=>{
  expect(await queryValue("select current_setting('mohen.test_instance',true)")).toBe('codex-k3-isolated');
  await run("insert into public.users(user_id,email,username,password_hash)values(:'id',:'email','resume fixture','synthetic')",{id:owner,email:owner+'@example.invalid'});
+ await run("insert into studio.projects(project_id,owner_user_id,project_title)values(:'project',:'owner','Resume fixture')",{project:projectId,owner});
 });
 beforeEach(async()=>{
  model.run.mockReset().mockImplementation(async()=>{
@@ -31,10 +34,11 @@ it('does not grant client credit or execute tools from a numeric resume argument
  expect(row.status).toBe('hold');expect((row.checkpoint as unknown as {ceiling:number}).ceiling).toBe(8);
 });
 it('allows one atomic resume winner across independent PostgreSQL connections',async()=>{
- const results=await Promise.all([resumeResearchTask(taskId),resumeResearchTask(taskId)]);
+ const results=await Promise.all([resumeResearchTask(taskId,undefined,mockResearchSession),resumeResearchTask(taskId,undefined,mockResearchSession)]);
  expect(results.filter(r=>r.status==='done')).toHaveLength(1);
  expect(results.filter(r=>r.status==='hold')).toHaveLength(1);expect(model.run).toHaveBeenCalledTimes(1);
  expect(model.run.mock.calls[0][2].budget.ceiling).toBe(8);
+ expect(model.run.mock.calls[0][3]).toEqual({projectId,sessionToken:mockResearchSession});
  expect(Number(await queryValue("select count(*) from public.research_events where task_id=:'id' and event='resumed'",{id:taskId}))).toBe(1);
 });
 it('preserves a durable prerequisite HOLD when a resumed research result is degraded',async()=>{
@@ -42,7 +46,7 @@ it('preserves a durable prerequisite HOLD when a resumed research result is degr
   decision:{verdict:'partial',materials:[],gaps:['synthetic source unavailable'],confidence:0.5},
   degraded:true,researchLeads:[]
  }));
- const result=await resumeResearchTask(taskId);
+ const result=await resumeResearchTask(taskId,undefined,mockResearchSession);
  expect(result).toMatchObject({status:'hold',holdReason:'research_prerequisites',
   missingRequirements:['SOURCE_OR_QUALIFICATION_UNAVAILABLE']});
  const [row]=await queryRows("select status,checkpoint from public.research_tasks where task_id=:'id'",{id:taskId});
