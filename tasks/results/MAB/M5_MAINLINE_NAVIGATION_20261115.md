@@ -1,5 +1,8 @@
 # 墨痕 M5 全链路导航｜持续维护基线（非权威标准）
 
+> **2026-11-17｜M5-PRODUCER-LOGIN-PG17-01**：独立Producer/Worker机器LOGIN已在隔离PG17真实调用受限Owner/Project/Root阶段/终态接口并通过权限正反；代码`d3fa11d4`主CI`44009970406`、隔离PG17`44009970286`均SUCCESS。**但mohen-cloud角色密码NULL、Preview缺有效机器连接，真实Studio Project/Root及独立G0→D02未运行，M5八维同作品准出仍0/8（HOLD）**。参见CURRENT及progress。
+
+
 > **2026-11-17｜M5-DEV-MACHINE-LOGIN-01**：开发云库两个独立机器LOGIN已实际安装（Supabase migration `20261117030122`，CI/PG17/HTTP SUCCESS），但数据库密码均为NULL，Preview两个敏感变量尚未有效配对，**机器连接不构成VERIFIED_LIVE**。继续使用原Runner/Gate，下一处E_D00_REVIEW/E_D00_QUALIFY仍HOLD，同Root真实Owner/Project/Root/G0/G1→D02尚未运行，八维不升PASS；完整事实和失败关闭见CURRENT/progress。
 
 

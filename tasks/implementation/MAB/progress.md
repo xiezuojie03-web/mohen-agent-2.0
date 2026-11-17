@@ -4522,3 +4522,12 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **完整回归与云端实装**：主CI`44006779472`、真实隔离PG17`44006779646`、隔离HTTP`44006779739`全部SUCCESS；云端`mohen-cloud`以SQL事务安装迁移`20261117030122`，返回成功并逐角色回读。Producer: LOGIN true / INHERIT true / producer_member true / progress_rpc true / worker_member false / signer false；Worker: LOGIN true / INHERIT false / worker_member true / SET true / progress_rpc false / producer_member false / signer false。两者SUPER/BYPASSRLS/CREATEROLE均false。无Owner原件与机器正例，**不能声称已实际登录、G0合格或G1→D02成功**。
 - **敏感凭据处理与安全停点**：跨Supabase/Vercel的密码同步在当前受限工具环境未完成。Vercel Preview曾创建两个专用`sensitive`环境变量，随后将其明确设置为不可用占位标记；数据库`pg_authid`确认两LOGIN角色密码均为NULL，故不能登入。通过非解密环境变量元数据复核两变量仅Preview、不是Production；敏感变量内容不可作为已实装凭据证据。没有把任何密码、服务角色密钥、原件数据、URL带密钥值放入仓库、日志或本报告。
 - **回退与下游**：`supabase/rollback/20261117020000_mab_m5_dev_machine_login_roles.rollback.sql`可在确认无实际登录占用时撤销职责成员与开发账号，不执行CASCADE、不影响历史Gate/Root。下游第一步是有权限宿主安全一致配置Preview+数据库的两个机器口令及真实TLS身份；随后接现有持续Execution Authority/独立Reviewer低权服务、Owner真实登录并从正常Studio创建Project/Root及合法私有原件，验证同Root G0/G1→D02。当前Preview云执行仍CLOUD_EXECUTOR_NOT_CONFIGURED；前沿HOLD，M5八维不提升，Production不变，Provider调用0。
+
+## 2026-11-17｜M5-PRODUCER-LOGIN-PG17-01｜隔离数据库通过真实LOGIN校验Writer而非仅静态ACL
+
+- **实际继承与定位**：继承上一批`ddecd85f`已安装的职责分离登录、`control.m5_write_production_progress` Owner/Root受限RPC及云执行器、旧K3隔离PG17工作流，不重建G0 Reviewer/Runner/原件；云端密码仍NULL、受保护Preview仍未有有效机器连线。
+- **代码增量**：唯一`main`提交`d3fa11d4d4a9a4cf3162d3cd4e5a95d404ceba93`，新增`tests/data-production/m5-producer-run-progress.integration.mjs`，在`scripts/test-k3-db.mjs`原`M5_ROOT_G0_HANDOFF`后插入新定向回归；未修改表、运行RPC、Gate规则、Studio前端或生产部署。
+- **真实隔离PG17 POS**：在合成Owner/Project/Root/已认领Run、签名session的PG17临时实例，以数据库真实专用LOGIN身份（不是`SET ROLE postgres`）运行`assertProducerIdentity`和`assertPrivateWorkerIdentity`，调用现有`persistStageProgress`写`D00`，再调用`finalizeRun`写`HOLD`；读取`control.production_runs`核对阶段、终态与有界`m5_terminal`证据，机器报表不含私密token。
+- **NEG/AUTH**：无效Owner会话、合法外部Owner、错误Project/Root、未认领Run、阶段D00→D02跳跃、Worker调用Producer RPC、Producer直接读运行表、未签独立G0伪造PASS、终态重放，均按现有失败关闭规则拒绝；无独立资格时不得出现虚假PASS。
+- **验证**：精确SHA主CI`44009970406` completed/SUCCESS；真实隔离PG17`44009970286` completed/SUCCESS且日志`M5_PRODUCER_SCOPED_PROGRESS_PG_PASS`；过去已绿的HTTP/其他专业模块回归继承，不将其标成当前SHA重新跑过。没有当前`mohen-cloud`真实机器密码/TLS连接/Owner Studio Source/Reviewer G0使用或费用Receipt。
+- **同Root总装边界**：受影响连接仍`E_D00_REVIEW`/`E_D00_QUALIFY`，仅关闭“数据库LOGIN到受限Writer未在真实PG17调用”的隔离层不确定性；云端Owner/机器凭据+持续执行宿主+独立Reviewer仍是最前环境与授权阻断，`E_D01_REVIEW/E_D01_QUALIFY/E_L1_TO_D02`继续在下游待真实接收。同一真实作品八维0/8完成，`M5=HOLD`。不设新的M5 Gate/验收分母。
