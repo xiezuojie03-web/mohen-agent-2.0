@@ -16,16 +16,16 @@
 
 每批先定位可复用实现→确认唯一差异→最小修复→POS/NEG/AUTH及必要真实下游验证→追加progress记录。只在事实改变时更新CURRENT；如果影响导航语义，同步更新JSON/MD/HTML，并按精确证据维持HOLD/PASS。PLAN仅在正式执行规则变化时修改。施工遵循既有单main和生产部署隔离要求，不允许未经授权的生产发布、密钥或新费用。账号已经恢复，不要重复重置Owner账号。
 
-## 3. 当前最前行动与阻断
+## 3. 当前最前行动与阻断（2026-11-18第四批）
 
-**本轮已完成的代码增量（2026-11-18第三批）**：继续继承`runResearch`、当前Project L0—L4候选/G5合格读和已有G0—G4检索适配器。将正式G0—G4检索改接已有`createAppTransaction`（当前Owner签名会话、`SET LOCAL mohen_app_runtime`、同连接核实ACTIVE Project/Owner）而不是通用DB查询；查询截断不再声称全覆盖。独立记录G5与正式G0—G4检索故障：**已找到当前有效知识仍可定向复用，尚不能判断无源的部分必须HOLD**。云端`cloud-execution-readiness.mjs`远程机器连接只接受`sslmode=verify-full`，`cloud-production-runtime.mjs`彻底取消Producer URL缺失时退回通用`DATABASE_URL`。新增云端机器身份拒绝负测6组，Studio路由用例累计16组；单独V8实际执行当前路由8/8 PASS，只代表纯决策逻辑，GitHub/Node正式测试仍NOT_VERIFIED。受保护Preview的代码构建须按最新精确SHA核对，不能用旧快照。
+**A线完成并有云端证据**：`supabase/migrations/20261118025600_m5_scoped_formal_project_gate_read.sql`已在开发`mohen-cloud`实际迁移成功（云迁移台账`20261117172439`）；按现有`createAppTransaction`签名Owner/ACTIVE Project会话调用**唯一窄读接口**`studio.search_qualified_project_layers`，仅开放`mohen_app_runtime` EXECUTE，不授`control/source/evidence/world/meaning`裸表SELECT、无新的Gate签发器。应用适配器`retrieve-formal.ts`已经切换到受限函数；非生产Vercel Preview代码`3d0ace33` READY/编译/类型检查通过。真实SQL权限证据：anon/authenticated/service_role/Producer执行权均false，app_runtime true；无签名Owner`42501`，anon/Producer实际调用拒绝，虚假Gate audit当前有效性false。**不要重做这一批**。
 
-**业务/代码当前最前差异**：`control.qualification_current=0`，无可用于真实同Project正向测例的当前Gate资格；`mohen_app_runtime`具独立资格函数EXECUTE却没有需要的部分正式对象SELECT，不能为了返回结果给postgres/public/anon全表读权；现行第一阶段Owner-only合同没有跨Project共享授权索引。优先沿既有MHKA-05/Gate授权合同补定向安全只读桥接，做同Owner/错Owner/错purpose/资格撤权正反、再证明本研究确实缺来源后才调用既有D00；不重做已交付适配器、D00、Registry或Runner。
+**A线剩余的业务验收阻断**：开发云库当前`studio.projects=0`、`control.qualification_current=0`、启用Policy=0、active Reviewer绑定=0；因此**真实有权同Project的G0—G4正向读取、错Owner、错目的、撤权再消费、来源动作权利**不能凭空造PASS，等经原业务机制合法形成相同Owner/Root当前资格后直接复测。无合法跨Project共享授权索引，不称全局无来源；不因为某层检索失效而复取D00或重写Gate。GitHub Node测试套件实际CI仍NOT_VERIFIED，不以Vercel构建替代。
 
-**B线当前最前差异**：两个专用低权机器LOGIN均存在但数据库密码仍NULL；本工具安全检查拒绝直接写入密码，Vercel两个Preview敏感URL只保留**不可登录占位**，无Production变更。需要经安全管理员通道对原角色初始化各自独立凭据（不得索取/重用Owner个人账户密码），同步Preview密钥并实测TLS、角色读写权限和越权拒绝。Cloud Executor URL/凭据、Storage服务钥匙仍不齐；独立Gate Policy/Reviewer active binding均0，不得将「机器登录成功」等同「Gate可签发」。这只阻断依赖云执行的路径，A线合法代码/测试继续。
+**B线仍需一次安全管理员凭据初始化，当前工具做不到**：已有`mohen_m5_producer_login`、`mohen_m5_worker_login` LOGIN存在但`rolpassword IS NOT NULL=false`、`BYPASSRLS=false`，并已证Producer/Worker都不能直接写Gate。Vercel两项仅Preview机器URL为不可登录敏感占位；当前Supabase插件无自定义数据库Role密码的受保护管理动作、此前SQL设置被安全拦截。**禁止借用Owner个人密码、把明文机器密码放SQL/对话/GitHub，或通过其他执行入口绕过被阻断操作。** 需要拥有安全管理员数据库连接的本地运维环境对**现有角色**分别执行`psql`交互式`\\password mohen_m5_producer_login`、`\\password mohen_m5_worker_login`（不同随机密码，不显示、不留下SQL历史），随后在Vercel项目Preview受保护敏感环境变量`MOHEN_PRODUCER_DATABASE_URL`、`MOHEN_PRIVATE_WORKER_DATABASE_URL`中设置相应低权限连接URL及`sslmode=verify-full`；不改Production。完成之后才可实测每个角色TLS登录、许可操作与跨角色/写Gate拒绝，最后在Owner授权的有效Policy/Reviewer Binding下对接既有Cloud Executor/独立Gate。当前Cloud Executor URL/credential、独立Gate verify及Storage钥匙仍不齐，不因密码初始化自动解封。
 
-**M5整体仍`0/8 OVERALL_HOLD`**，代码BUILD、纯决策V8、隔离PG、云端同Root和Owner实际验收不能互替；只需追加`progress.md`最近一批，不重新全仓盘点。
+**唯一准出**：M5`0/8 OVERALL_HOLD`。不重建Studio登录、G0/G1/Runner、原件接入；只沿可信现行Gate与同Project后续实际业务验证推进。证据见`progress.md`末尾`M5-FORMAL-READ-BRIDGE-04`。
 
 ## 4. 新窗口最短指令
 
-> 请按最新main的AGENTS.md、PLAN.md §3.5 B/C/D、CURRENT.md与本交接入口，从第三批已接入可信Owner事务的当前Project候选/G0—G4/G5统一路由继续，先补最小正式读授权桥及真实Gate资格正反，共享ACL未生效不宣布无源；B线独立机器密码激活经安全管理员通道，验证成功才启动Cloud Executor，继承原能力；并行推进云端安全配置中可授权的独立运行阻断。对同一真实Project/Root逐节点验证实际下游，保持独立Gate、最小权限、单main及生产部署隔离。按批追加progress，真实事实有变才更新CURRENT，导航变化时JSON/MD/HTML同提交同步。只按唯一八维验收，不从上传或G0重头施工，也不把已完成历史工作重新做一遍。
+> 请按最新main `AGENTS.md`、`PLAN.md §3.5 B/C/D`、`CURRENT.md`与本交接入口继续；A线直接继承第四批已经在mohen-cloud安装并通过拒绝回执的Studio Owner窄读函数，**不再修这条权限桥**，等合规当前Gate资格与真实Owner Project出现后验证正向/错权/撤权，未出现前推进不依赖它的Studio最小生产调度。B线机器角色密码初始化已超出当前连接工具的安全能力，只接受受保护管理员渠道，不索取用户密码、不绕过安全阻断；配置完成才做真实TLS/Cloud Executor/独立Gate。逐批真实验证并写入progress/CURRENT，导航JSON/MD/HTML同步，仅按M5八维验收，仍0/8 HOLD。
