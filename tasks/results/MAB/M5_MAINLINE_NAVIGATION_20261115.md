@@ -1,6 +1,6 @@
 # 墨痕 M5 全链路导航｜现行主线分流与工程断点（非权威）
 
-> **2026-11-18第三批最新真实证据**：Studio G0—G4正式读取已经接入现有签名Owner会话、受限应用角色和ACTIVE Project同连接核验；有当前有效G5/G3可定向复用，查不全仍HOLD。Cloud机器远程TLS只允许`verify-full`，Runner禁止缺专用Producer连接时回退通用DB。受保护非生产staging代码`b6c4c45` READY（编译/类型检查），独立V8对实际路由源码8/8 PASS，GitHub Node套件尚未实际核实。Gate当前资格0、Policy0、Reviewer绑定0、应用正式表受限读取HOLD；Producer/Worker密码仍NULL，Preview仅无效占位。**M5 0/8 OVERALL_HOLD**，原37节点54边及历史证据不提升。
+> **2026-11-18第四批（真实数据库变更与拒绝验收）**：已在开发`mohen-cloud`实际应用`studio.search_qualified_project_layers`受控窄读函数（云迁移`20261117172439`），Studio经现有签名Owner会话、受限角色事务、ACTIVE Project归属核验后调用；不向应用账号开放正式表SELECT。PG实测：app_runtime可执行，匿名、认证、service_role、Producer无执行权；无合法Owner会话42501拒绝。受保护staging精确代码`3d0ace33` READY/类型检查通过，GitHub Node CI仍NOT_VERIFIED。**当前项目0、有效Gate资格0、Policy0、active Reviewer0；真实正向复用和撤权均未通过。** B线机器角色密码仍NULL，Preview为无效占位、必须安全管理员通道激活；Production未改。**M5 0/8 OVERALL_HOLD**；37节点54连接状态未提升。
 
 
 > **2026-11-17｜第一批真实代码进展**：GitHub main已接Studio当前Project L0—L4**候选**与既有G5 L5**合格**读模型，安全路由仅做缺口与资格判断，不擅触D00；受保护非生产构建`344a763d` READY（Next类型/页面构建通过），单测CI未获可核回执、Owner同Root云运行未执行。**共享全局L0—L4合格检索仍是最前实际代码缺口，M5仍0/8 HOLD。** 精确批次详见[progress](../../implementation/MAB/progress.md)。
@@ -34,7 +34,7 @@ Creator投稿→作品Reviewer审核＋独立专业G5＋媒体权限→Operator�
 
 | 前沿 | 适用范围 | 事实与下一动作 |
 |---|---|---|
-| **业务功能最前断点** `STUDIO_UNIFIED_L0_L5_ROUTING` | 所有Studio研究决策入口 | 已接Project候选、现行G0—G4/G5资格读取和签名Owner受限事务；代码`b6c4c45`受保护构建READY。**当前资格0、最小受控正式读桥及共享ACL未通**；纯路由V8 8/8，Node/真实同Root仍NOT_VERIFIED |
+| **业务功能最前断点** `STUDIO_UNIFIED_L0_L5_ROUTING` | Studio研究决策入口 | 已接Project候选/现行G0—G4/G5及开发DB实际受控窄读桥，代码`3d0ace33`受保护Preview READY，PG负权限通过。**当前没有Owner Project或有效Gate资格，合法正向/错权/撤权和共享ACL仍HOLD**；不得误启动D00 |
 | **子路径云端运行HOLD** `E_D00_REVIEW`、`E_D00_QUALIFY` | 任务确实选择新来源/补来源准入时 | 低权Producer/Worker、Executor、独立Gate策略/绑定/凭据以及同Root真实资格消费仍未接通；继承原件、Runner、Reviewer，不重建 |
 | **后续实际接收待验** `E_L1_TO_D02` | 已有同Root当前L1/G1且目标需D02 | C01 typed接口已有代码，待真实云端接收、独立G2及负例；不要把旧接口当缺代码重做 |
 
