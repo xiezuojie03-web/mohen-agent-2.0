@@ -9,7 +9,7 @@
 ## 2. 最近有据可核的云端事实（2026-11-17）
 
 - **本批新进展**：M5-STUDIO-UNIFIED-KNOWLEDGE-ROUTING-01代码已推main（测试文件提交`344a763d`，API响应增量`adb1c0a6`）。新增项目内L0—L4候选＋已合格G5 L5的有界路由、缺口分类及Studio三个研究动作的Owner上下文接线；无需外部来源密钥即可尝试库内检索。**仍没有合法共享L0—L4的全局资格检索，空项目只能判`SOURCE_GAP_UNCONFIRMED`，不能自动调D00；业务同Root尚未实跑。**代码/文档回执见`progress.md#M5-STUDIO-UNIFIED-KNOWLEDGE-ROUTING-01`。
-- **受控构建证据**：Vercel非生产staging部署`dpl_3kbNeBYWFK1WCMijUb6zoVKZQGN6` READY、精确代码`344a763d`，Next编译/类型检查/页面构建通过；不覆盖稍后的`adb1c0a6`。**GitHub 9组新增单测、PG/HTTP实测结果尚未得到可信回执**，NOT_VERIFIED，不报PASS。Production最新部署仍`dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc` SHA`83560224`。
+- **受控构建证据**：最终Vercel非生产staging部署`dpl_6nUPbgonYdjiktnBkcrosJp2Qadj` READY、精确代码main@`fb7e5c52`（涵盖`adb1c0a6`），Next编译/类型检查/页面构建通过，Preview SSO开启；**GitHub 9组新增单测、PG/HTTP/真实Owner读尚无可信运行回执**，NOT_VERIFIED，绝不报PASS。Production仍`dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc` SHA`83560224`。开发云库只读复查Producer/Worker的LOGIN均存在，但数据库密码仍NULL，云端执行与独立Gate尚未激活。
 
 - 最近审计记录的业务代码Preview `dpl_6cNbCqaHKGJWfdhqKkxFneKK3aYv` READY，精确代码SHA `2830f462`、SSO保护；`/studio`、`/admin` 页面GET 200，`/api/works/published` GET 200且为空列表。这只证明页面/空列表可访问，不证明真实创作、G5与发布。
 - Owner本人已确认受保护Preview登录；执行方没有Owner浏览器Cookie，不得代Owner执行创建、上传和提交。
