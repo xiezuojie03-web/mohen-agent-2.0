@@ -8,6 +8,9 @@
 
 ## 2. 最近有据可核的云端事实（2026-11-17）
 
+- **本批新进展**：M5-STUDIO-UNIFIED-KNOWLEDGE-ROUTING-01代码已推main（测试文件提交`344a763d`，API响应增量`adb1c0a6`）。新增项目内L0—L4候选＋已合格G5 L5的有界路由、缺口分类及Studio三个研究动作的Owner上下文接线；无需外部来源密钥即可尝试库内检索。**仍没有合法共享L0—L4的全局资格检索，空项目只能判`SOURCE_GAP_UNCONFIRMED`，不能自动调D00；业务同Root尚未实跑。**代码/文档回执见`progress.md#M5-STUDIO-UNIFIED-KNOWLEDGE-ROUTING-01`。
+- **受控构建证据**：Vercel非生产staging部署`dpl_3kbNeBYWFK1WCMijUb6zoVKZQGN6` READY、精确代码`344a763d`，Next编译/类型检查/页面构建通过；不覆盖稍后的`adb1c0a6`。**GitHub 9组新增单测、PG/HTTP实测结果尚未得到可信回执**，NOT_VERIFIED，不报PASS。Production最新部署仍`dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc` SHA`83560224`。
+
 - 最近审计记录的业务代码Preview `dpl_6cNbCqaHKGJWfdhqKkxFneKK3aYv` READY，精确代码SHA `2830f462`、SSO保护；`/studio`、`/admin` 页面GET 200，`/api/works/published` GET 200且为空列表。这只证明页面/空列表可访问，不证明真实创作、G5与发布。
 - Owner本人已确认受保护Preview登录；执行方没有Owner浏览器Cookie，不得代Owner执行创建、上传和提交。
 - `mohen-cloud`最近只读审计：`studio.projects=0`、`studio.private_originals=0`、`studio.asset_heads/revisions/links/use_events=0`；23条旧research_tasks的Studio Project绑定=0；20条旧production_runs的Project scope=0；旧publication修订和指针不可冒充新同Root作品。
@@ -17,7 +20,7 @@
 
 ## 3. 当前两种前沿（不能混淆）
 
-1. **业务/代码最前缺口**：Studio的`runResearch`主要用L5读模型，项目内L0—L4读取和全局L5目前分离；尚无统一L0—L5资产/ACL/权利/资格检索及按缺口最小D路径编排。外部source discovery仍以研究线索为主，不等于合法获取、下载、登记、G0。以此为**整条Studio创作主线的第一接线重心**。
+1. **业务/代码最前缺口（已局部前移）**：`runResearch`现已组合当前Owner Project的L0—L4候选读取和G5合格L5读取，并产出有界`knowledge_route`：复用、缺当前资格、有L0未完成读取、受限/截断、范围未审、确证缺来源等分类。**仍缺合法共享全局L0—L4的当前权限/资格读取和来源缺口闭合证明；尚未把分流真正接入连续D00—D05的自动执行**。下一批优先补共享查询和真正缺口判断，不能按无项目材料即D00。
 2. **真实云端生产前沿**：既有Producer/Worker凭据、Cloud Executor、独立Reviewer/Gate服务未完成有效运行配置；`E_D00_REVIEW`和`E_D00_QUALIFY`只代表“选择了新原件的D00→G0子路径”当前运行阻断，**不能再当作所有Studio研究的统一入口或首个代码任务**。同Root G0/G1→D02仍未实跑。
 
 **M5整体：0/8，OVERALL_HOLD**（同一真实作品八维整链尚无准出证据；不是代码完成率）。
