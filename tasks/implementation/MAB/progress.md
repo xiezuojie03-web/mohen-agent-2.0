@@ -4575,3 +4575,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **真实云账号状态**：对mohen-cloud只读聚合回查：活跃Operator=1、仍处于待设置标记=1；会话撤销表和密码/角色变更触发器存在。本批未提交任何真实账号密码更新，未调用Owner恢复API、未创建登录会话、未修改真实账号记录。Owner下一步只需打开 https://mohen-agent-2-0-dtuq9o6gh-napoles1.vercel.app/account/forgot-password，通过现有Vercel SSO后自行设置并确认新密码，再回登录页正常登录。无需执行SQL、提供密码、配置SMTP或向聊天发送凭据。
 - **M5主线影响**：这只让Owner登录恢复入口具备可用条件，不代表Owner已经登录。Project/Root/合法原件仍未由Owner真实操作建立；同Root D00/G0→D01/G1→D02仍NOT_RUN，M5八维0/8、OVERALL_HOLD。未改变M5主线导航JSON/MD/HTML及D/L/G状态；未修改PLAN、Producer/Worker凭据、Gate/Reviewer、Storage业务数据或Production。
 
+## 2026-11-17｜M5-OWNER-PASSWORD-RUNTIME-HOLD-03｜Owner实际重置失败：数据库认证阻断，不能以部署READY代替可用
+
+- **复核触发**：Owner报告已能看见密码重置页面但仍无法重置。此前`M5-OWNER-PREVIEW-PASSWORD-RECOVERY-02`只通过代码/合成隔离PG17和Preview构建，没有调用当前真实mohen-cloud连接路径；错误判读为可用。
+- **真实HTTP证据**：连接Vercel官方授权访问工具，Preview部署`dpl_B1Z4fT4goZqqut1WHKFa5U2wQtXz`的`GET /account/forgot-password` 200（标题“重置 Owner 密码”）；`GET /api/works/published` 500（request `qgcxz-1794898095269-6f14b1d89adb`）。Vercel Runtime日志`2026-11-17T06:48:17.288Z`指出`28P01 password authentication failed for user "postgres"`。Production既有部署`dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc`真实相同GET亦500，`2026-11-17T06:49:21/27Z`同28P01，证实问题横跨两个现存环境而非页面单点。
+- **只读数据库证据**：Supabase项目mohen-cloud`ACTIVE_HEALTHY`；public.users活跃operator=1，仍持有`setup-v1`密码设置标记=1，已生效标准scrypt哈希=0。未改变用户密码。Vercel env有DATABASE_URL和MOHEN_DATABASE_PASSWORD，URI ref/Pooler地区/账号形态匹配；密钥有效性未验证，实际PG认证已失败。不得输出、猜测或迁移旧口令。
+- **恢复路径与安全边界**：唯一优先阻断是当前PG连接凭据`28P01`。Owner通过Supabase官方安全控制台核对或重设DB密码（区别于墨痕App账号密码），在Vercel对应项目安全配置中只更改现有`MOHEN_DATABASE_PASSWORD`敏感变量的有效值（如变更目标环境须覆盖Preview与现有Production配置）。随后重新部署受保护Preview，在不修改账户前先验证云HTTP读取与PG连接正常，再由Owner通过Preview重置表单自行设置新密码，复核Supabase哈希状态、成功登录与旧会话失效。凭据不得发在聊天或GitHub；未拿到有效凭据时不得声称已修好。此批不修改源码、DB或部署配置，不触及机器Producer/Worker凭据、独立Gate、M5八维。
