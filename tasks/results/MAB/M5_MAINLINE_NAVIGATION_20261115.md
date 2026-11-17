@@ -1,5 +1,8 @@
 # 墨痕 M5 全链路导航｜持续维护基线（非权威标准）
 
+> **2026-11-17｜M5-CLOUD-PRECLAIM-STATE-01**：云执行器Producer真实TLS身份前置claim（6556），Studio仅对已证未claim失败的run原子转HOLD（c5f9），均通过对应主CI及隔离回归；受保护Preview `dpl_4aA57qStFXdBfrxmHNemYAuLGGNz` 已READY，Production未变。**云端密码仍NULL，未接持续授权/独立Reviewer及真实Owner同Root任务，G0/G1→D02 NOT_RUN，M5八维0/8，HOLD。**
+
+
 > **2026-11-17｜M5-PROTECTED-PREVIEW-SYNC-01**：已把PG17机器LOGIN和受限Writer正反验证通过的代码`d3fa11d4`部署到Vercel受保护Preview `dpl_5QWHWdkcktgFCb87B8oCpr6RfDFw` READY，SSO保护仍开，Production仍旧`83560224`。**但云端机器数据库密码NULL、Reviewer/执行Authority及真实Owner/Root未配置，E_D00_REVIEW/E_D00_QUALIFY依然HOLD，八维真实同作品准出0/8**。
 
 

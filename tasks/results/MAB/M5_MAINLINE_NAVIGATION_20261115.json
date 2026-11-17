@@ -11523,7 +11523,7 @@
         "E_L1_TO_D02"
       ],
       "state_source": "原edges[].verification_layers，状态不在此处重复存储",
-      "reason": "已把主CI/PG17验证过的d3fa11d4代码手动部署至Vercel受保护Preview：dpl_5QWHWdkcktgFCb87B8oCpr6RfDFw READY、SSO仅Preview、Production保持83560224。环境仍未启用Producer/Worker数据库密码、独立Reviewer签发/持续执行Authority与真实Owner Project/Root，故同Root G0/G1→D02 NOT_RUN。E_D00_REVIEW/E_D00_QUALIFY两边runtime不变、M5八维0/8整体验收、HOLD；继续须先安全激活凭据与实际授权，再进行正常用户任务实跑。",
+      "reason": "本轮已修复cloud Producer真正LOGIN/TLS/身份校验必须发生于run claim之前；Studio远程调度失败若SQL原子证明未认领则HOLD+有界CLOUD_DISPATCH_UNCLAIMED，已认领run不覆盖。精确代码c5f9ff1d主CI SUCCESS、相关隔离PG17/HTTP对应6556 SUCCESS，受保护Preview dpl_4aA57qStFXdBfrxmHNemYAuLGGNz READY且Production旧SHA不变。仍无真实云机器口令/持久Execution Authority/独立Reviewer策略/Owner Project/Root/原件，G0/G1→D02 NOT_RUN；E_D00_REVIEW/E_D00_QUALIFY runtime NOT_VERIFIED，M5八维0/8、HOLD。",
       "code_edge_ids": [
         "E_L1_TO_D02"
       ],
@@ -11780,43 +11780,55 @@
       "live_coverage_dashboard": "HTML主图首页的已定向归因数量、未逐接口核查数量、分组归因均从最新嵌入的root edges[].engineering_diagnosis与primary_domain计算，杜绝硬编码7/52变成未来虚假当前状态；snapshot字段仅作历史证据。"
     },
     "last_execution_batch": {
-      "id": "M5-PROTECTED-PREVIEW-SYNC-01",
+      "id": "M5-CLOUD-PRECLAIM-STATE-01",
       "date": "2026-11-17",
-      "reviewed_main_head": "b0bc3dd45c03915c6d2a6ebffa3abe56b83f6ef3",
+      "reviewed_main_head": "c5f9ff1d1d2b840baa7aeda6b4278e2998c235b4",
       "inherited_batches": [
         "M5-DEV-MACHINE-LOGIN-01",
-        "M5-PRODUCER-LOGIN-PG17-01"
+        "M5-PRODUCER-LOGIN-PG17-01",
+        "M5-PROTECTED-PREVIEW-SYNC-01"
       ],
       "affected_edges": [
         "E_D00_REVIEW",
         "E_D00_QUALIFY"
       ],
-      "status": "VERIFIED_CI_AND_ISOLATED_PG_CODE_DEPLOYED_PROTECTED_PREVIEW_NO_LIVE_ROOT",
-      "source_code_sha": "d3fa11d4d4a9a4cf3162d3cd4e5a95d404ceba93",
-      "source_ci": {
-        "run_id": 44009970406,
+      "status": "CLOUD_PRECLAIM_PRODUCER_IDENTITY_GUARD_AND_UNCLAIMED_RUN_HOLD_CODE_VERIFIED",
+      "preclaim_sha": "6556daf2873202badc6e069f1e254e2616cd3278",
+      "preclaim_ci": {
+        "run_id": 44012254216,
         "conclusion": "SUCCESS"
       },
-      "source_pg17_ci": {
-        "run_id": 44009970286,
+      "preclaim_pg17": {
+        "run_id": 44012254255,
         "conclusion": "SUCCESS"
       },
-      "preview_deployment_id": "dpl_5QWHWdkcktgFCb87B8oCpr6RfDFw",
+      "preclaim_http": {
+        "run_id": 44012254219,
+        "conclusion": "SUCCESS"
+      },
+      "studio_terminal_sha": "c5f9ff1d1d2b840baa7aeda6b4278e2998c235b4",
+      "studio_terminal_ci": {
+        "run_id": 44012848844,
+        "conclusion": "SUCCESS"
+      },
+      "cloud_unclaimed_sql": "EXPLAIN_VERIFIED_NO_ROWS_MODIFIED",
+      "preview_deployment_id": "dpl_4aA57qStFXdBfrxmHNemYAuLGGNz",
       "preview_deployment_state": "READY",
+      "preview_deployment_sha": "c5f9ff1d1d2b840baa7aeda6b4278e2998c235b4",
       "preview_sso_protected": true,
-      "preview_target": "preview",
       "production_deployment_sha": "835602242cab31b1fcb372c7ff5efd4fc41dfd89",
-      "dev_role_passwords": "NULL_DISABLED",
-      "actual_machine_service": "NOT_CONFIGURED",
-      "owner_actual_project_root": "NOT_RUN",
-      "independent_g0": "NOT_RUN",
-      "d01_g1_d02": "NOT_RUN",
+      "cloud_machine_passwords": "NULL_DISABLED",
+      "live_tls_login": "NOT_RUN",
+      "execution_authority_live": "NOT_CONFIGURED",
+      "gate_reviewer_live": "NOT_CONFIGURED",
+      "studio_root_cloud": "NONE",
+      "stage_g0_g1_d02_cloud": "NOT_RUN",
       "runtime_verified": false,
       "handoff_state_changed": false,
       "m5_full_eight_dimensions_passed": 0,
       "m5_exit": "HOLD",
-      "source_of_status": "edges[].verification_layers",
       "docs_sync_commit": "THIS_COMMIT",
+      "source_of_status": "edges[].verification_layers",
       "deep_links": [
         "#edge-E_D00_REVIEW",
         "#edge-E_D00_QUALIFY"
