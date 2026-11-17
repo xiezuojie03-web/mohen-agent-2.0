@@ -151,7 +151,7 @@ AssertionError: expected true to be false // Object.is equality
      10|     expect(r.degraded).toBe(false);
        |                        ^
      11|     expect(r.materials.length).toBeGreaterThan(0);
-     12| 
+     12|
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
 
@@ -160,4 +160,3 @@ AssertionError: expected true to be false // Object.is equality
       Tests  1 failed | 724 passed | 2 skipped (727)
    Start at  07:08:54
    Duration  38.14s (transform 1.73s, setup 0ms, collect 4.69s, tests 18.02s, environment 13ms, prepare 4.82s)
-

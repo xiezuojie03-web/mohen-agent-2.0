@@ -12010,9 +12010,33 @@
         "evidence": "tasks/results/MAB/evidence/m5-runtime-readiness-20261117/password-recovery.receipt.json",
         "result": "CODE_VERIFIED_QQ_DELIVERY_HOLD_OWNER_SETUP_LINK_DELIVERED",
         "facts": [
-          "2026-11-17｜M5-ACCOUNT-RECOVERY-01：正式忘记密码页面/API与QQ SMTP接线完成，申请不改原密码、30分钟摘要令牌原子消费、旧会话撤销和持久限流；24专项/10真实隔离PG/747 CI口径单测及HTTPS浏览器链通过，QQ真实发信未配置且未投递。Owner要求立即协助，已在READY的5df受保护入口发行个人一小时设置链接（不写Git），Owner设置/登录未确认。本批新代码待精确CI和受保护Preview，八维仍HOLD。"
+          "2026-11-17｜M5-ACCOUNT-RECOVERY-01：代码98c5e78已推main，主CI43984227771 SUCCESS；新版受保护Preview dpl_7EwV1zWWHvxYHER9or7StyUp4txf READY，精确部署98c5e78，匿名登录入口302保护仍在。24专项/10真实隔离PG/747 CI口径单测及HTTPS浏览器链通过；精确隔离云CI PG43984227735/HTTP43984227834也已SUCCESS。QQ真实SMTP未配置且未投递，Owner已收到5df现有入口的个人一小时设置链接，不依赖邮件；Owner保存/登录未确认，八维仍HOLD。"
         ],
-        "next": "exact CI/protected Preview; Owner self-set password; configure QQ SMTP privately for normal recovery; same real Project/Root executor/Reviewer integration remains HOLD"
+        "next": "Owner uses already delivered protected setup link and confirms own password/login; configure QQ SMTP privately for regular email recovery; continue same real Project/Root least-privilege execution/Reviewer wiring",
+        "code_sha": "98c5e7827db32945cd7c5025a1dadf000453638e",
+        "ci": {
+          "main": {
+            "run_id": 43984227771,
+            "result": "SUCCESS"
+          },
+          "isolated_pg17": {
+            "run_id": 43984227735,
+            "result": "SUCCESS"
+          },
+          "http_chromium": {
+            "run_id": 43984227834,
+            "result": "SUCCESS"
+          }
+        },
+        "deployment": {
+          "id": "dpl_7EwV1zWWHvxYHER9or7StyUp4txf",
+          "state": "READY",
+          "deployed_sha": "98c5e7827db32945cd7c5025a1dadf000453638e",
+          "url": "https://mohen-agent-2-0-q7x38i4zq-napoles1.vercel.app",
+          "target": null,
+          "anonymous_login_status": 302,
+          "protection": "Vercel protection retained; no sharing/bypass link"
+        }
       }
     },
     "environment_inheritance": {

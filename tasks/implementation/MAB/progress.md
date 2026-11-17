@@ -4482,3 +4482,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 - 最终本地核验：专项24P/0F，CI口径完整单测747P/0F/4S（沿用原实网跳过规则，未掩盖上述本地Commons失败）；真实隔离PG17十项PASS，QQ适配后HTTPS Chromium→真实Next API→一次性PG→合成QQ邮件→重置→登录PASS，原Cookie拒绝/重放拒绝/密码不一致不提交/fragment清除/无浏览器存储/跨域拒绝均验。QQ发送总时限15秒并关闭transport的审核意见以stalled用例RED→GREEN修复；未真实发邮件。清理发现pgPool.end可能先于socket关闭，FORCE删测试库造成57P01；改等待连接清零再无FORCE删除后测试无未处理错误，不把十项通过伴随未处理错误算PASS。
 - 当前可用：原5df受保护入口READY、个人设置能力已交付Owner；新正常找回代码/表/隔离验证已具备，QQ SMTP授权码未安全注入，故正常邮件找回暂503，不要求Owner先配邮箱才能使用人工协助入口。Owner实际设置/登录尚未确认；无Provider付费调用、无公众开放、无正式G或真实Root运行，八维HOLD。
+
+- 代码提交98c5e7827db32945cd7c5025a1dadf000453638e已推main；新版受保护Preview dpl_7EwV1zWWHvxYHER9or7StyUp4txf开始构建，精确CI43984227771/PG43984227735/HTTP43984227834运行中。首次部署API带withLatestCommit但无deploymentId返回400，改为精确gitSource.ref且省略该字段后成功创建；未重试分享链接或变更SSO。初次stage新日志暴露输出尾空格（此前tracked diff检查不含untracked日志），仅规范化证据文本尾空格/末尾空行，原命令/断言/结果不变；此轮提交前再次完整diff检查。
+
+- 线上代码98c5e78主CI43984227771已回读SUCCESS；受保护Preview dpl_7EwV1zWWHvxYHER9or7StyUp4txf READY、target=null、精确SHA98c5e78，匿名GET/login302，未公开、未创建绕过分享链接。隔离PG43984227735与HTTP43984227834仍在运行，暂不记PASS。真实QQ发信仍未配置、不要求它挡住已交付个人设置链接；Owner实际保存/登录未确认。同Root/八维保持HOLD；下一最前操作按Owner实际登录状态继续原Project/Root与低权执行/Reviewer，不重造平台。一次性本地PG容器已停止移除，无遗留测试服务。
+
+- 最终精确代码98c5e7827db32945cd7c5025a1dadf000453638e三组CI已全部回读completed/success：主43984227771、隔离PG17 run 43984227735、HTTP/Chromium43984227834。上述运行中状态仅保留为过程时点，此条覆盖其当前状态。Preview仍READY/精确98c5e78/target=null，匿名入口302；Production未切换。导航三份同步，37nodes/54edges和八维原状态未变；个人能力逐文件扫描未进入Git，日志只规范化尾空白，最终diff --check通过。正规QQ恢复的真实发信仍HOLD，人工协助已交付Owner，尚无Owner保存/登录回执；不把CI/部署当用户验收或M5整链PASS。
