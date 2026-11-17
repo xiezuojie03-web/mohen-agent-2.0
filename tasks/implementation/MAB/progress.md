@@ -4749,3 +4749,12 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 实际代码与测试精确SHA `3d0ace33699693e9c672e76fe7454932b1885fec`，受保护Vercel **staging**部署`dpl_DSJsyAxRL2Eh6hYxkmUCB7WJyTxa`状态**READY**，Next.js编译、Lint/TS类型校验、静态页面及Serverless函数打包、部署完成。Preview SSO继续保护。最终纯文档提交不改变该已验代码SHA。
 - 隔离SQL的负例实际执行：`SET LOCAL ROLE anon`调用私有受控读函数被拒，`SET LOCAL ROLE mohen_m5_producer_login`调用被拒；`SET LOCAL ROLE mohen_app_runtime`在无有效签名会话下得到`42501 M5_FORMAL_READ_OWNER_REQUIRED`；不存在的资格audit的`control.current_qualification_is_valid`为false。这不替代当前资格正向/撤权真实场景。
 - Production部署未变，仍`dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc`/SHA`835602242cab31b1fcb372c7ff5efd4fc41dfd89`。GitHub Node专项测试文件已写，但CI真实执行结果仍`NOT_VERIFIED`。
+
+
+## 2026-11-18｜M5-IPAD-MACHINE-SECRETS-05｜双机角色密码真实激活，URL与Secret分离避免手工转义
+
+- **用户安全动作（2026-11-18）**：Owner在iPad上通过Supabase Dashboard→Database→Roles，分别对已存在的`mohen_m5_producer_login`及`mohen_m5_worker_login`执行`Reset password`，密码只保存在Owner的本机密码管理器；AI未收到、请求或读回密码。助手后续以Supabase只读SQL实际核验二者`rolcanlogin=true`、`rolpassword IS NOT NULL=true`、`rolbypassrls=false`。**原阻断“机器角色没有数据库密码”已解决**，不能让Owner重复执行。
+- **最小适配（不重做现有D/G/Runner）**：`pipelines/data-production/orchestrator/cloud-execution-readiness.mjs`新增`resolveMachineDatabaseUrl(baseUrl,rawSecret)`；`cloud-production-runtime.mjs`在独立Cloud子进程前使用保护环境中的两种密码在内存做`encodeURIComponent`并填入无密码低权URL。机器凭据格式允许两条`MOHEN_PRODUCER_DATABASE_URL`、`MOHEN_PRIVATE_WORKER_DATABASE_URL`（无密码但保持`?sslmode=verify-full`）分别搭配新建的Vercel Preview-only Secret `MOHEN_PRODUCER_DATABASE_PASSWORD`、`MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD`。保留旧完整URL机制向后兼容，但URL内密码与单独Secret并存故意判INVALID，避免含混覆盖。云端child只接到最终拼好的两条连接URL，不透传两个独立原始密码环境变量，也不从`DATABASE_URL`退回高权身份。**密钥不写进GitHub、日志或对话。**
+- **增量测试文件**：`tests/data-production/cloud-machine-identity-readiness.test.mjs`包含分离密码的特殊字符往返、TLS保持、缺失密码、密钥冲突及原始secret不透传校验；已提交源码，**GitHub正式Node测试仍NOT_VERIFIED**。另外本地Node URL特殊符号编码行为用示例字符串实测可正确往返，非真实机器登录。
+- **受控Preview构建实证**：精确代码SHA`eaf233f5afc55154cbb2eaf7626254050f020ed0`，Vercel非生产staging`dpl_CN6GFun3DfGSLfmrgYG8Up253WNP`状态**READY**，Next编译、类型检查、页面构建与部署完成；受保护Preview SSO仍开，**Production仍原SHA`835602242cab31b1fcb372c7ff5efd4fc41dfd89`，无任何生产推广**。
+- **实际下一步**：Vercel两条Preview机器URL目前还是**无效占位**，新的两条拆分密码Secret尚未由Owner填写。Owner当前位于Vercel`MOHEN_PRODUCER_DATABASE_URL`的Edit页面，只需填写不含密码的Session Pooler URL并Save；再从密码App将原始Producer密码粘贴到新Secret变量，Worker重复。**该界面不得展示密码截图**。两组就绪后再核验角色真实TLS、非越权权限、Cloud Executor与独立Gate的真实配置。独立Policy/Reviewer仍不齐，M5仍`0/8 OVERALL_HOLD`。
