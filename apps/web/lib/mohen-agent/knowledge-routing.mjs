@@ -10,8 +10,8 @@ const entries=x=>Array.isArray(x)?x:[];
 const object=x=>x&&typeof x==='object'&&!Array.isArray(x)?x:{};
 
 export function planStudioKnowledgeRoute({
-  qualifiedL5=[], projectSnapshot=null, lookupDegraded=false,
-  sharedL0L4CoverageComplete=false,
+  qualifiedL5=[], qualifiedFormalL0L4=[], projectSnapshot=null, lookupDegraded=false,
+  projectFormalCoverageComplete=false, sharedL0L4CoverageComplete=false,
 }={}){
   const snapshot=object(projectSnapshot);
   const coverage=object(snapshot.layer_coverage);
@@ -21,6 +21,16 @@ export function planStudioKnowledgeRoute({
   const originals=entries(snapshot.original_refs);
   const eligibleL5=entries(qualifiedL5).filter(m=>m&&qualifiedTags.has(m.epistemic)&&
     typeof m.id==='string'&&m.id.length>0);
+  // Formal refs come ONLY from the project-bound independent current-Gate read.
+  // Mere Studio candidate presence cannot manufacture this array.
+  const formal=entries(qualifiedFormalL0L4).filter(x=>x&&
+    ['L0','L1','L2','L3','L4'].includes(x.layer)&&
+    typeof x.objectId==='string'&&x.objectId.length>0&&
+    typeof x.revision==='string'&&x.revision.length>0&&
+    x.gate==='G'+x.layer.slice(1));
+  const formalContent=formal.filter(x=>['L2','L3','L4'].includes(x.layer));
+  const formalL1=formal.find(x=>x.layer==='L1');
+  const formalL0=formal.find(x=>x.layer==='L0');
   const readingCount=integer(l1.read_units);
   const evidenceCount=integer(l2.verified_links);
   const hasCandidates=readingCount>0||evidenceCount>0||refs.length>0;
@@ -30,6 +40,8 @@ export function planStudioKnowledgeRoute({
     qualified_l5:eligibleL5.length,project_l0:originals.length,
     project_l1_read_units:readingCount,project_l2_links:evidenceCount,
     project_asset_candidates:refs.length,blocked_asset_candidates:blocked.length,
+    current_formal_l0_l4_refs:formal.length,
+    project_formal_l0_l4_coverage:projectFormalCoverageComplete?'VERIFIED_COMPLETE':'NOT_VERIFIED',
     shared_l0_l4_coverage:sharedL0L4CoverageComplete?'VERIFIED_COMPLETE':'NOT_VERIFIED',
   };
   let disposition, nextAction, reason;
@@ -39,6 +51,15 @@ export function planStudioKnowledgeRoute({
   } else if(eligibleL5.length) {
     disposition='REUSE_QUALIFIED';nextAction='REUSE_L5';
     reason='MATCHED_CURRENT_G5_READ_MODEL';
+  } else if(formalContent.length) {
+    disposition='REUSE_FORMAL_QUALIFIED';nextAction='REUSE_CURRENT_L2_L4_WITH_PURPOSE_GUARD';
+    reason='MATCHED_PROJECT_SCOPED_INDEPENDENT_G2_G4';
+  } else if(formalL1) {
+    disposition='QUALIFIED_INPUT_AVAILABLE';nextAction='REUSE_CURRENT_L1_CHECK_D02_DEPENDENCIES';
+    reason='MATCHED_CURRENT_G1_NO_D00_OR_D01_REPEAT';
+  } else if(formalL0) {
+    disposition='QUALIFIED_INPUT_AVAILABLE';nextAction='REUSE_CURRENT_L0_CHECK_READ_RIGHTS_BEFORE_D01';
+    reason='MATCHED_CURRENT_G0_NO_D00_REPEAT';
   } else if(incomplete) {
     disposition='HOLD';nextAction='REVIEW_TRUNCATED_COVERAGE';
     reason='PROJECT_ASSET_COVERAGE_TRUNCATED';
@@ -63,6 +84,7 @@ export function planStudioKnowledgeRoute({
     disposition,next_action:nextAction,reason,coverage:summary,
     should_discover_sources:disposition==='SOURCE_GAP_CONFIRMED',
     may_reuse_l5:disposition==='REUSE_QUALIFIED',
+    may_reuse_formal:disposition==='REUSE_FORMAL_QUALIFIED'||disposition==='QUALIFIED_INPUT_AVAILABLE',
     may_use_project_candidates_as_facts:false,
     production_started:false,
     gate_signed:false,
