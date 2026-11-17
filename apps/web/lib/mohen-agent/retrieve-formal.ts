@@ -4,7 +4,7 @@
 // Do not treat other projects' private records as "shared" merely because a
 // service DB credential can SELECT them. Explicit cross-project sharing remains
 // NOT_VERIFIED until its authorized ACL contract and index exist.
-import { queryRows, assertQualificationContext, type QualificationReadOptions } from "@mohen/data-access";
+import { getNodePgPool, createAppTransaction, assertQualificationContext, type QualificationReadOptions } from "@mohen/data-access";
 import type { Material } from "@mohen/agent-runtime";
 
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
@@ -31,8 +31,7 @@ with qualified as (
    and q.object_type in ('source','read_run','material_evidence','relation_claim','finding')
    and q.gate_code=g.gate_code and q.object_type=g.object_type and q.object_id=g.object_id
    and q.artifact_revision=g.artifact_revision
-   and control.qualification_allows(g.gate_audit_id,:'consumer',
-     :'purpose_namespace',:'purpose_code',:'purpose_version',:'scope'::jsonb)
+   and control.qualification_allows(g.gate_audit_id,$1,$2,$3,$4,$5::jsonb)
 ), matched as (
  select 'L0'::text as layer,'G0'::text as gate,q.object_type,q.object_id::text as object_id,
   q.artifact_revision as revision,coalesce(s.title,'') as snippet,
@@ -70,7 +69,7 @@ with qualified as (
  from qualified q join meaning.findings m on m.finding_id=q.object_id
  where q.gate_code='G4' and q.object_type='finding'
 ), terms as (
- select trim(t) as term from unnest(string_to_array(:'terms','|')) t
+ select trim(t) as term from unnest(string_to_array($6,'|')) t
  where length(trim(t))>1
 )
 select layer,gate,object_type,object_id,revision,snippet,source_ref
@@ -81,9 +80,10 @@ order by case layer when 'L4' then 1 when 'L3' then 2 when 'L2' then 3 when 'L1'
 `;
 const RESULT_LIMIT=24;
 export async function retrieveQualifiedFormalProject(
-  projectId:string,terms:string[],qualification:QualificationReadOptions,
+  projectId:string,terms:string[],qualification:QualificationReadOptions,sessionToken:string,
 ):Promise<FormalQualifiedRead>{
   if(!UUID.test(projectId))throw new Error("STUDIO_PROJECT_REQUIRED");
+  if(typeof sessionToken!=="string"||!sessionToken)throw new Error("STUDIO_IDENTITY_REQUIRED");
   const {consumer,purpose,scope}=assertQualificationContext(qualification);
   if(consumer!=="agent"||scope.requested_action!=="read"||
     (scope.project_id!==undefined&&scope.project_id!==projectId))
@@ -94,10 +94,20 @@ export async function retrieveQualifiedFormalProject(
     projectQualifiedCoverage:"NOT_SEARCHED",sharedQualifiedCoverage:"NOT_VERIFIED",truncated:false};
   if(!safeTerms.length)return empty;
   try{
-    const rows=await queryRows(SQL.replace("__LIMIT__",String(RESULT_LIMIT+1)),{
-      consumer,purpose_namespace:purpose.namespace,purpose_code:purpose.code,
-      purpose_version:purpose.version,scope:JSON.stringify({...scope,project_id:projectId}),
-      terms:safeTerms.join("|"),
+    // Reuse the existing signed-app transaction (SET LOCAL mohen_app_runtime).
+    // Verify the active Owner and Project on the SAME connection as Gate lookup;
+    // generic DATABASE_URL alone is not proof of reading permission.
+    const transaction=createAppTransaction(getNodePgPool(),"STUDIO_IDENTITY_REQUIRED");
+    const rows=await transaction(sessionToken,async(client,actorId)=>{
+      const owner=await client.query(
+        "select 1 from studio.projects where project_id=$1::uuid and owner_user_id=$2::uuid and lifecycle_status='ACTIVE'",
+        [projectId,actorId]);
+      if(owner.rows.length!==1)throw new Error("STUDIO_PROJECT_NOT_FOUND");
+      const qualified=await client.query(SQL.replace("__LIMIT__",String(RESULT_LIMIT+1)),[
+        consumer,purpose.namespace,purpose.code,purpose.version,
+        JSON.stringify({...scope,project_id:projectId}),safeTerms.join("|"),
+      ]);
+      return qualified.rows;
     });
     const truncated=rows.length>RESULT_LIMIT;
     const refRows=rows.slice(0,RESULT_LIMIT);
