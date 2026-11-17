@@ -14,7 +14,7 @@ export interface FormalQualifiedRead {
   refs:FormalQualifiedRef[];
   materials:Material[];
   degraded:boolean;
-  projectQualifiedCoverage:"COMPLETE"|"NOT_SEARCHED"|"UNAVAILABLE";
+  projectQualifiedCoverage:"COMPLETE"|"PARTIAL"|"NOT_SEARCHED"|"UNAVAILABLE";
   sharedQualifiedCoverage:"NOT_VERIFIED";
   truncated:boolean;
 }
@@ -123,7 +123,7 @@ export async function retrieveQualifiedFormalProject(
       epistemic:r.layer==="L3"?"FACT_EVIDENCED":"SUPPORTED_CANDIDATE",
       year:null,score:0.8,matchScore:1,
     }));
-    return {refs,materials,degraded:false,projectQualifiedCoverage:"COMPLETE",
+    return {refs,materials,degraded:false,projectQualifiedCoverage:truncated?"PARTIAL":"COMPLETE",
       sharedQualifiedCoverage:"NOT_VERIFIED",truncated};
   }catch(error){
     console.warn("[mohen/formal] 当前项目G0-G4资格检索不可用",
