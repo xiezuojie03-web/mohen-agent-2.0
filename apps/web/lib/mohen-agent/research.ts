@@ -11,9 +11,11 @@ import {
   type Material,
 } from "@mohen/agent-runtime";
 import { retrieveMaterials } from "./retrieve";
+import { readStudioResearchProject } from "../studio-research-read";
+import { planStudioKnowledgeRoute, type StudioKnowledgeRouting } from "./knowledge-routing.mjs";
 import { extractExternalEntities, type ShlMaterial } from "./retrieve-shl";
 import { discoverExternalSources } from "./source-discovery";
-import { useTool, type Ledger } from "../studio/tool-ledger";
+import { useTool, BudgetHoldError, type Ledger } from "../studio/tool-ledger";
 import {requireResearchPrerequisites, ResearchPrerequisiteHold} from './research-prerequisites';
 
 function dedupe(xs: string[]): string[] {
@@ -97,6 +99,12 @@ export interface ResearchResult {
   degraded: boolean;
   /** 外部检索线索（上海图书馆等），与本地合格知识分开，供前端如实标注呈现 */
   researchLeads: Material[];
+  knowledgeRoute?: StudioKnowledgeRouting;
+}
+
+export interface StudioResearchContext {
+  projectId: string;
+  sessionToken: string;
 }
 
 export const TOPIC_NAMES = { jinze: "金泽", a001: "绿之丘", generic: "通用" } as const;
@@ -201,10 +209,27 @@ function toExternalMaterial(lead: ShlMaterial): Material {
 export async function runResearch(
   question: string,
   topic: TopicKey = "generic",
-  ledger?: Ledger
+  ledger?: Ledger,
+  studioContext?: StudioResearchContext
 ): Promise<ResearchResult> {
   const qualification = requireResearchPrerequisites(ledger);
   const profile = TOPIC_PROFILES[topic];
+  // ACL and current rights are checked before spending on intent extraction.
+  // This service returns private L0-L4 as candidates only, never qualified facts.
+  let projectSnapshot: Record<string,unknown> | null = null;
+  if (studioContext) {
+    if (!studioContext.projectId || !studioContext.sessionToken)
+      throw new ResearchPrerequisiteHold(["STUDIO_PROJECT_READ_CONTEXT_REQUIRED"]);
+    try {
+      const read = await useTool(ledger, "retrieve-local", () =>
+        readStudioResearchProject(studioContext.projectId,studioContext.sessionToken,{persistReadingNotes:false})
+      );
+      projectSnapshot = read.snapshot;
+    } catch (error) {
+      if (error instanceof BudgetHoldError) throw error;
+      throw new ResearchPrerequisiteHold(["STUDIO_KNOWLEDGE_READ_NOT_AUTHORIZED_OR_UNAVAILABLE"]);
+    }
+  }
   const understanding = await useTool(ledger, "llm-understand", () => understand(question, profile.aliases));
   // 前置校验看"模型是否真的接通并作答"，不看意图最终取自哪一档：
   // 自由委托常被判为 unknown，这属于合法结果，不能因此阻断研究。
@@ -226,16 +251,29 @@ export async function runResearch(
     degraded = retry.degraded;
   }
 
-  // 外部找资料（D00 来源发现 Y02/Y03）：先抽具体实体名（LLM，优先），
-  // 再按查询梯子多渠道检索（上海图书馆 / Commons / 国会图书馆 / 维基文库）；
-  // 结果只作「检索线索」，不是合格知识，也不冒充原件。
-  const externalEntities = await useTool(ledger, "llm-extract-entities", () =>
-    extractExternalEntities(question)
-  );
-  const discovery = await useTool(ledger, "retrieve-external", () =>
-    discoverExternalSources(question, { localMaterialCount: materials.length, entities: externalEntities })
-  );
-  const externalMaterials = discovery.leads.map(toExternalMaterial);
+  // Private Studio candidates cannot become factual answers by mere presence.
+  // Existing L5 keeps the original G5-scoped qualified retrieval. Shared L0-L4
+  // has no complete authorized search implementation yet, so an empty project
+  // is NOT permission to automatically start D00.
+  const knowledgeRoute = studioContext ? planStudioKnowledgeRoute({
+    qualifiedL5:materials,projectSnapshot,lookupDegraded:degraded,
+    sharedL0L4CoverageComplete:false,
+  }) : undefined;
+  let externalEntities: string[] = [];
+  let externalMaterials: Material[] = [];
+  let discoveryGaps: string[] = [];
+  // Non-Studio ask keeps its prior behavior. Studio only discovers external
+  // leads when a complete qualified inventory has established a source gap.
+  if (!studioContext || knowledgeRoute?.should_discover_sources) {
+    externalEntities = await useTool(ledger, "llm-extract-entities", () =>
+      extractExternalEntities(question)
+    );
+    const discovery = await useTool(ledger, "retrieve-external", () =>
+      discoverExternalSources(question, {localMaterialCount:materials.length,entities:externalEntities})
+    );
+    externalMaterials = discovery.leads.map(toExternalMaterial);
+    discoveryGaps = discovery.gaps;
+  }
   materials = [...materials, ...externalMaterials];
 
   let materialsForDecision = materials;
@@ -261,8 +299,19 @@ export async function runResearch(
   if (degraded) finalGaps.push("暂时查不到库里的材料");
   // 外部渠道的缺口逐个如实列出：单渠道不可用不再整体中断研究，
   // 但"四个渠道都没有线索"必须显式说出，不能当作"没有资料"。
-  for (const gap of discovery.gaps) {
+  for (const gap of discoveryGaps) {
     if (!finalGaps.includes(gap)) finalGaps.push(gap);
   }
-  return { decision: { ...decision, gaps: finalGaps }, degraded, researchLeads: externalMaterials };
+  if (knowledgeRoute && !knowledgeRoute.may_reuse_l5) {
+    const routeGap: Record<string,string> = {
+      QUALIFICATION_REQUIRED:"项目内已有来源或研究候选，但尚未证明本次用途所需独立资格；先定向核验，不重新获取。",
+      SOURCE_GAP_UNCONFIRMED:"当前项目和G5读模型未查到可直接引用的知识，但合法共享L0—L4尚未完成检索，不能判定全库缺来源。",
+      HOLD:"知识检索范围或当前资格未能可靠核对，暂停来源调度。",
+      SOURCE_GAP_CONFIRMED:"已完成授权范围检索且确认缺少来源，可以启动受控D00来源发现。",
+    };
+    const gap=routeGap[knowledgeRoute.disposition];
+    if(gap && !finalGaps.includes(gap)) finalGaps.push(gap);
+  }
+  return { decision: { ...decision, gaps: finalGaps }, degraded,
+    researchLeads: externalMaterials,...(knowledgeRoute?{knowledgeRoute}:{}) };
 }
