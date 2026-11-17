@@ -4717,3 +4717,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **不改变验收分母：M5 0/8 OVERALL_HOLD**。代码就绪、纯函数正反、云端BUILD、正式Gate/Studio真实授权运行互不替代。
 
 **接下来仅保留精确前沿：** A先依据已有MHKA-05、Gate权限合同定向解决`mohen_app_runtime`授权项目与当前Gate只读函数/正式表间的最小权限读取合同（不准给postgres/public加普遍SELECT），需要当前独立资格才可正向真实复用；明确Owner-only阶段不推定共享全局。B由安全管理员通道对已有两个LOGIN安全初始化和轮换独立凭据、写Preview敏感变量，先验证TLS及允拒/否Gate自签，然后配置现有Cloud Executor和经Owner授权的Reviewer/Policy/Binding；不碰Production及个人登录密码。其他代码与原模块直接继承，不重复这一批。
+
+
+### M5-SECURE-MACHINE-READY-03｜最终受保护构建核验
+- 2026-11-18受保护Vercel `staging`：`dpl_EhZKtPbJ7o3RupsxqFv6gRA4GAzt` READY，代码精确SHA `b6c4c45c12507a47bb73dea4b1c0c44a9d90e6a3`，构建日志确认 Next.js 15.5.28编译、Lint/类型检查、15页静态生成、函数打包及部署完成。该构建覆盖前面所有本批代码及测试文件，不包含稍后的纯文档记录提交。Preview SSO未解除。
+- 独立复核Production最近仍为`dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc` SHA `835602242cab31b1fcb372c7ff5efd4fc41dfd89`。未发布或改写正式部署。
+- 新增的22条Node测试用例已作为源码提交；**尚无GitHub Node测试执行回执**，不得因为构建READY把测试计为PASS。实际独立执行的是仓库源码`planStudioKnowledgeRoute`函数8个受控V8场景，8/8通过；不含真实数据库、网络或Gate签署测试。
