@@ -31,6 +31,34 @@ export const PUBLISHED_WORKS_SQL = `
       )
     order by published_at desc`;
 
+/** Existing editorial pointer read for installations that have not yet installed
+ * the Studio publication schema. Qualification is STILL checked by
+ * listWatchEligible for each exact legacy revision; Studio rows are never
+ * inferred or projected from missing tables. */
+export const LEGACY_PUBLISHED_WORKS_SQL = `
+    select w.work_id::text as work_id, r.revision_id::text as revision_id,
+           r.title as title, r.description as description, r.revision_no::text as revision_no,
+           r.content::text as content, p.published_at::text as published_at,
+           null::text as studio_beats,
+           'publication'::text as source_schema
+    from publication.published_pointers p
+    join publication.works w on w.work_id = p.work_id
+    join publication.work_revisions r on r.revision_id = p.revision_id
+    where r.status = 'published'
+    order by p.published_at desc`;
+
+/** Narrow compatibility boundary, never a fallback for bad credentials,
+ * permission failures, or missing *legacy* publication tables/columns. */
+export function isAbsentStudioPublicationSchema(error) {
+  if (!error || typeof error !== 'object') return false;
+  const code = error.code;
+  const message = typeof error.message === 'string' ? error.message : '';
+  return (code === '42P01' &&
+     /relation "(?:studio\.work_revisions|publication\.withdrawals)" does not exist/.test(message)) ||
+    (code === '42703' &&
+     /column (?:p\.(?:studio_revision_id|source_schema|publication_id)|r\.beats) does not exist/.test(message));
+}
+
 /** Current recheck for one studio work revision. It repeats exactly the
  * conditions `publication.publish_exact_revision` refused to publish without:
  * the pointer still holds this exact revision + its publication snapshot, the
