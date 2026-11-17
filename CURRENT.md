@@ -6,7 +6,11 @@
 
 以 [PLAN.md §3.5 B/C/D](tasks/implementation/MAB/PLAN.md) 为唯一执行和验收标准：一项真实Creator/Project/Root任务，从Studio自然语言问题→统一L0—L5可访问知识资产检索与当前资格/权利判断→按缺口选择D00—D05必要能力及独立G0—G5→知识资产积累→H1/H2/H3作品修订→Admin独立审核/运营发布→WATCH同修订消费和撤权。用户上传/指定原件是**可选输入**；有合格存量不重复获取和读取。对应定向事实与旧语义纠偏见[Studio主链审计 §7](tasks/results/MAB/M5_STUDIO_TO_ADMIN_CHAIN_AUDIT_20261117.md)。
 
-## 2. 最近有据可核的云端事实（2026-11-17）
+## 2. 最近有据可核的云端事实（2026-11-17，补入2026-11-18定向工程证据）
+
+- **2026-11-18 A线新增（M5-STUDIO-UNIFIED-KNOWLEDGE-ROUTING-02）**：新增`apps/web/lib/mohen-agent/retrieve-formal.ts`，复用既有`control.qualification_current`/`gate_audits`/资格函数读取限定当前Project的G0—G4正式知识；在Studio `runResearch`联入原Project候选/G5读模型，路由能区分当前G0/G1合格上游和G2—G4合格知识，避免重跑D00。已有受保护非生产staging `dpl_CeeUpSCcEuULZ2BxRcs7dyp9MYTN` 对代码SHA `b4bbd1cc82447ccf2efeb61f8540967aed55fc60` 构建READY、编译/类型检查通过。新增正反测试共14项，**GitHub真实测试回执尚未取得，NOT_VERIFIED**。当前云库`qualification_current=0`，旧711条gate_audits不等于现行资格。正式查询使用当前postgres测试身份被资格函数EXECUTE权限拒绝；`mohen_app_runtime`虽然有函数EXECUTE但缺正式知识表SELECT，**真实授权读取及同Owner Project测试仍HOLD**。仅SQL结构只读验证通过（以false替代授权谓词），不是资格PASS。
+- **2026-11-18 B线（CLOUD-IDENTITY-PREP-01）**：Producer/Worker角色存在、LOGIN许可且不绕过RLS，但角色密码仍NULL，**未激活**；当前执行通道阻止安全执行密码设置。Vercel两项仅Preview敏感连接变量已复位为不可登录占位，Production变量/服务未改；Cloud Executor及独立Gate策略、绑定、凭据均未启用。需要具备安全凭据写入的独立授权管理通道后，再做实际TLS、允许/越权正反测试，不得伪造连接。
+
 
 - **本批新进展**：M5-STUDIO-UNIFIED-KNOWLEDGE-ROUTING-01代码已推main（测试文件提交`344a763d`，API响应增量`adb1c0a6`）。新增项目内L0—L4候选＋已合格G5 L5的有界路由、缺口分类及Studio三个研究动作的Owner上下文接线；无需外部来源密钥即可尝试库内检索。**仍没有合法共享L0—L4的全局资格检索，空项目只能判`SOURCE_GAP_UNCONFIRMED`，不能自动调D00；业务同Root尚未实跑。**代码/文档回执见`progress.md#M5-STUDIO-UNIFIED-KNOWLEDGE-ROUTING-01`。
 - **受控构建证据**：最终Vercel非生产staging部署`dpl_6nUPbgonYdjiktnBkcrosJp2Qadj` READY、精确代码main@`fb7e5c52`（涵盖`adb1c0a6`），Next编译/类型检查/页面构建通过，Preview SSO开启；**GitHub 9组新增单测、PG/HTTP/真实Owner读尚无可信运行回执**，NOT_VERIFIED，绝不报PASS。Production仍`dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc` SHA`83560224`。开发云库只读复查Producer/Worker的LOGIN均存在，但数据库密码仍NULL，云端执行与独立Gate尚未激活。
@@ -20,7 +24,7 @@
 
 ## 3. 当前两种前沿（不能混淆）
 
-1. **业务/代码最前缺口（已局部前移）**：`runResearch`现已组合当前Owner Project的L0—L4候选读取和G5合格L5读取，并产出有界`knowledge_route`：复用、缺当前资格、有L0未完成读取、受限/截断、范围未审、确证缺来源等分类。**仍缺合法共享全局L0—L4的当前权限/资格读取和来源缺口闭合证明；尚未把分流真正接入连续D00—D05的自动执行**。下一批优先补共享查询和真正缺口判断，不能按无项目材料即D00。
+1. **业务/代码最前缺口（2026-11-18进一步前移）**：Studio已接当前Owner Project的L0—L4未评估候选、按当前G0—G4资格尝试读取的正式资产、G5合格L5及安全缺口路由。**但现行有效Gate投影为空、正式读服务角色函数EXECUTE与表SELECT权限未统一，真实同Project读取未通过；跨Project合法共享ACL目前没有可验证的授权索引。**优先在原授权合同内定向补安全读身份/受控数据访问（不得随意GRANT全局读权）、验证真实当前资格/撤权/错权，再按确证缺口接已有D阶段；不重做已完成接线。
 2. **真实云端生产前沿**：既有Producer/Worker凭据、Cloud Executor、独立Reviewer/Gate服务未完成有效运行配置；`E_D00_REVIEW`和`E_D00_QUALIFY`只代表“选择了新原件的D00→G0子路径”当前运行阻断，**不能再当作所有Studio研究的统一入口或首个代码任务**。同Root G0/G1→D02仍未实跑。
 
 **M5整体：0/8，OVERALL_HOLD**（同一真实作品八维整链尚无准出证据；不是代码完成率）。
