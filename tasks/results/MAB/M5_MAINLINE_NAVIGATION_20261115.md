@@ -1,3 +1,5 @@
+> **2026-11-18第六批机器凭据配置更新**：Producer URL与密码Secret已由Vercel只读清单核实为Preview敏感变量（未读取密码）；Worker无密码Session Pooler URL已由工程侧写入Preview。当前只待Owner新增`MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD`（Secret/Sensitive、Preview）。四项齐备后须重新部署受保护Preview，再验证真实TLS与低权权限正反；此前构建READY不等于连接成功。Production未改，M5仍0/8 HOLD。
+
 # 墨痕 M5 全链路导航｜现行主线分流与工程断点（非权威）
 
 > **2026-11-18第五批机器凭据更新**：Owner经Supabase iPad网页已安全初始化Producer/Worker两专用LOGIN密码，数据库只读确认均已配置、无BYPASSRLS；无需再重复重置。为避免用户手工编码特殊字符，已在现有Cloud Runner加入两条URL（不含密码）＋两条Vercel仅Preview Secret原始密码的独立内存编码能力；精确代码`eaf233f5`受保护staging构建READY，尚未配置4项Vercel变量，真实TLS未测。后续先配置Preview、再测低权限/独立Gate，不得提交密码到对话/GitHub；M5仍0/8。
