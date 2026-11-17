@@ -4694,3 +4694,26 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 1. A线：项目范围内形式资格查询代码完成、构建通过，但Gate read角色授权与真实Owner Project查询未闭合；跨Project/共享ACL索引尚无合法可用合同，不得以表全局SELECT替代共享授权。下一批优先定向解决“只读应用身份能合法调用当前资格函数+所需对象读取”的原权限合同/运行配置，随后验证同Project有权/错Project/撤权/错用途和失权后的缺口分类；若没有共享授权证据，仍HOLD，不假造正式分享。
 2. B线：机器凭据激活**BLOCKED_BY_SECURE_CREDENTIAL_TOOL_PATH**，对应Preview变量明确invalid；用户授权持续有效，但当前工具不能安全完成。等待可信管理员级安全通道配置后才可真机连接，云端Gate独立Policy/Binding仍另行受控激活。
 3. M5唯一准出保持`0/8 OVERALL_HOLD`；这批只交付可构建、未真实云端授权读的代码及真实阻断调查，不得报14测试PASS、G0/G1真通过或Studio同Root创作已可用。既有原件/Runner/Registry/Gate工程及上轮Project候选/G5入口直接继承。
+
+
+## 2026-11-18｜M5-SECURE-MACHINE-READY-03｜延续双线：复用正式身份与只读事务、修正云端机器准入
+
+**Owner批准的长期机制**：Owner/Creator使用已有墨痕登录身份；Producer、Worker与独立Gate分别使用最小权限机器身份。禁止将用户个人密码代替机器连接凭据，禁止为测试另起临时认证体系。继承AGENTS/PLAN §3.5 B/C/D、唯一Runner/Registry/Gate、现有Studio project token事务、既有Project候选和L5合格读取。
+
+**本轮确实落入GitHub main的增量：**
+1. B线`pipelines/data-production/orchestrator/cloud-execution-readiness.mjs`：远程机器URL只接受单一`?sslmode=verify-full`（真实证书和主机名校验）；拒绝无TLS、降级参数、附加URL参数和高权角色；保持本地隔离连接兼容。对应代码提交`2286a82d`、`46c4dbc4`。
+2. B线`pipelines/data-production/orchestrator/cloud-production-runtime.mjs`：**删除专用Producer数据库URL缺失时回退到通用`DATABASE_URL`的路径**，缺失则明确`CLOUD_PRODUCER_REQUIRED` fail closed，既有Runner不变。提交`f89e6caa`。
+3. B线新增`tests/data-production/cloud-machine-identity-readiness.test.mjs`：6组预配置正反场景（正确远程TLS、无/降级TLS、错误/高权/重复角色、无效占位、本地隔离、禁止通用DB回退）。提交`5bb4b8e8`。文件存在不等于Node测试已经执行。
+4. A线`packages/data-access/src/index.mjs`及`index.d.mts`：只导出**已有**`createAppTransaction`可信事务及类型，不建立第二DB接口，提交`620e6a1e`、`d10a44b8`。
+5. A线`apps/web/lib/mohen-agent/retrieve-formal.ts`：原有Project限定G0—G4正式资格读适配器改为必须取得当前Owner签名`sessionToken`，通过已有事务`SET LOCAL ROLE mohen_app_runtime`和`control.current_app_user_id()`验证身份，**同一DB连接**再次核`studio.projects.project_id/owner_user_id/ACTIVE`后才按当前Gate/purpose/scope检索；不再用通用`queryRows()`身份发起正式读，不能因服务端DB高权而跨Project读取。扫描超限标`PARTIAL`而不误报完整。提交`b5b32aeb`、`889fe8f9`。
+6. A线`apps/web/lib/mohen-agent/research.ts`：沿已有`readStudioResearchProject`项目会话向正式读事务传真实签名Token；单独跟踪L5失败与正式G0—G4失败，已有一种有效资格时允许定向复用，缺失的查询不能用来证明缺来源或自动D00。配套`knowledge-routing.mjs`/`.d.mts`。提交`ec916574`、`ecb50e80`、`838d9910`、`8c136442`。
+7. A线`tests/data-production/studio-knowledge-routing.test.mjs`：补Owner可信事务及超限覆盖断言、G5有效而G0—G4不可用/G3有效而G5不可用的正反用例。提交`11b4d9dc`、`c4474347`、`b6c4c45c`。
+
+**可核验证据及严格分层：**
+- 本轮针对`knowledge-routing.mjs`原GitHub源码在隔离V8执行8个决策情形，8/8 PASS（仅**纯决策函数**：有合法G5/G3则可复用、项目权限缺失/正式查询失败则不假冒无源、错误Gate拒升格、原件缺G0定向待审、受限资产不能当空白）。不是GitHub Node测试套件或真实SQL/HTTP/同Root业务PASS。
+- Cloud机器预配置代码可在Vercel受保护非生产部署的Next编译/类型检查后判BUILD；独立`node:test`的22个已有与新增用例在GitHub CI仍**NOT_VERIFIED**，不报PASS。正式Producer/Worker的真实TLS登录/允拒SQL为`NOT_RUN`，独立Gate签发`NOT_RUN`。
+- Supabase `mohen-cloud`只读当前状态：Producer和Worker两个LOGIN仍有`rolcanlogin=true`但`rolpassword IS NOT NULL=false`，且`BYPASSRLS=false`；独立`control.qualification_current=0`，现行已启用Gate policy=0、active Reviewer binding=0；`mohen_app_runtime`具资格函数EXECUTE但缺部分正式业务表SELECT。**因此本批A代码虽遵守Owner事务，真实G0—G4读取仍HOLD**；不得因旧Gate audit PASS冒充当前资格，也不得擅授原始表全局SELECT。
+- Vercel两个仅Preview的敏感连接变量仍为不可登录占位；Cloud Executor URL/credential、独立Gate verify URL/credential、Private Storage key等未正式配置。**机密数据库角色密码变更在本会话安全执行通道受阻，未再换接口绕过**。需要另行受保护的运维凭据管理操作（非用户个人登录密码）且验证后才启动受控Cloud Executor。Production部署未改，Preview SSO继续保持启用。
+- **不改变验收分母：M5 0/8 OVERALL_HOLD**。代码就绪、纯函数正反、云端BUILD、正式Gate/Studio真实授权运行互不替代。
+
+**接下来仅保留精确前沿：** A先依据已有MHKA-05、Gate权限合同定向解决`mohen_app_runtime`授权项目与当前Gate只读函数/正式表间的最小权限读取合同（不准给postgres/public加普遍SELECT），需要当前独立资格才可正向真实复用；明确Owner-only阶段不推定共享全局。B由安全管理员通道对已有两个LOGIN安全初始化和轮换独立凭据、写Preview敏感变量，先验证TLS及允拒/否Gate自签，然后配置现有Cloud Executor和经Owner授权的Reviewer/Policy/Binding；不碰Production及个人登录密码。其他代码与原模块直接继承，不重复这一批。
