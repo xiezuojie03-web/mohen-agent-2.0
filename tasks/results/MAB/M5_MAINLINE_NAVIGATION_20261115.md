@@ -1,5 +1,7 @@
 # 墨痕 M5 全链路导航｜现行主线分流与工程断点（非权威）
 
+> **2026-11-18第五批机器凭据更新**：Owner经Supabase iPad网页已安全初始化Producer/Worker两专用LOGIN密码，数据库只读确认均已配置、无BYPASSRLS；无需再重复重置。为避免用户手工编码特殊字符，已在现有Cloud Runner加入两条URL（不含密码）＋两条Vercel仅Preview Secret原始密码的独立内存编码能力；精确代码`eaf233f5`受保护staging构建READY，尚未配置4项Vercel变量，真实TLS未测。后续先配置Preview、再测低权限/独立Gate，不得提交密码到对话/GitHub；M5仍0/8。
+
 > **2026-11-18第四批（真实数据库变更与拒绝验收）**：已在开发`mohen-cloud`实际应用`studio.search_qualified_project_layers`受控窄读函数（云迁移`20261117172439`），Studio经现有签名Owner会话、受限角色事务、ACTIVE Project归属核验后调用；不向应用账号开放正式表SELECT。PG实测：app_runtime可执行，匿名、认证、service_role、Producer无执行权；无合法Owner会话42501拒绝。受保护staging精确代码`3d0ace33` READY/类型检查通过，GitHub Node CI仍NOT_VERIFIED。**当前项目0、有效Gate资格0、Policy0、active Reviewer0；真实正向复用和撤权均未通过。** B线机器角色密码仍NULL，Preview为无效占位、必须安全管理员通道激活；Production未改。**M5 0/8 OVERALL_HOLD**；37节点54连接状态未提升。
 
 
