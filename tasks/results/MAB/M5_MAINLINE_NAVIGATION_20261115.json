@@ -8,6 +8,7 @@
   "document_role": "non_authoritative_navigation_and_gap_index",
   "notice": "非新任务书、非完整架构权威、非真实整链PASS；以精确代码和CI/真实PG/HTTP/Provider证据为最终依据。",
   "principles": [
+    "【2026-11-17现行】Studio先统一检索L0—L5当前可用知识及资格/权限/权利，再按实际缺口选D00—D05必要阶段；上传可选，D00/G0不是所有研究必经起点",
     "Studio可按需消费L0-L5的当前合格成果；是否可展示/外发由每次用途、权利、消费者和精确版本决定",
     "D生产，L保存候选及历史，G独立签当前资格；L候选与L合格为同层不同状态而非两套真值库",
     "Admin横向管理L0-L5对象与状态，不能直接签G0-G5或改写签署历史",
@@ -5372,6 +5373,7 @@
   "navigation_policy": {
     "role": "持续维护的主链工程定位/断点索引，不是新验收体系",
     "read_order": [
+      "先读creative_mainline_routing：业务前沿与新增来源G0子路径运行前沿不得混同",
       "CURRENT.md（最新已证事实与最前HOLD）",
       "tasks/implementation/MAB/PLAN.md §3.5 B/C（唯一准出与施工规则）",
       "tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json（先读layer_status_model，再按每个nodes/edges.verification_layers三层逐项核查）",
@@ -5385,8 +5387,8 @@
     "acceptance_rule": "准出唯一以PLAN §3.5 B八维真实作品正反验收为准",
     "source_ref_policy": "源码链接锁定source_sha；当前HEAD变化时先比较影响范围再复核，不以HEAD自动判过期",
     "module_chain_read_rule": "主图37节点/54边三层状态后，深入module_internal_chains.modules[]：按步骤input/operation/output/guard/code_locators及handoffs[]逐点查；细分链接只作诊断，不加原54条与M5八维分母。",
-    "audit_tracking_read_rule": "优先读取audit_tracking.next_frontier及groups定位小批核查；状态仍以nodes[]/edges[].verification_layers为准。只在当前Root走到的相邻点排查、修复、回归、三文件同步，并把真实证据写CURRENT/progress。",
-    "batch_deep_link_rule": "运行前沿HTML #edge-E_D00_REVIEW / #edge-E_D00_QUALIFY：复用已装M2/M3与受保护Preview，接低权执行及独立审核并验证同Root资格；#edge-E_L1_TO_D02的C01 typed/受控生成已补，先验真实接收，C02另核，不重做已补接口。",
+    "audit_tracking_read_rule": "先读取creative_mainline_routing.business_frontier决定Studio主线功能任务；audit_tracking.next_frontier.edge_ids仅为新增来源D00/G0生产子路径运行HOLD，不能覆盖统一检索与缺口路由。分组/边状态以原verification_layers证据为准。",
+    "batch_deep_link_rule": "Studio主线首先定位creative_mainline_routing.business_frontier；#creative-route为整体分流可视入口。#edge-E_D00_REVIEW/#edge-E_D00_QUALIFY只作新增原件的云端独立G0子路径运行HOLD；#edge-E_L1_TO_D02已补C01 typed接线但待真实同Root接收。不重复已验证组件。",
     "execution_arrangement_ref": {
       "plan": "tasks/implementation/MAB/PLAN.md#m5-continuous-assembly",
       "handoff": "tasks/implementation/MAB/ENGINEERING_HANDOFF_CURRENT.md#m5-continuation",
@@ -11416,7 +11418,7 @@
     "schema": "mohen.m5.integrated-navigation-view.v1",
     "default_view": "INTEGRATED_SINGLE_ARCHITECTURE",
     "presentation_only": true,
-    "view_description": "Same architecture canvas, in-place expandable module nodes; no jump to separately listed module cards. M5 edge and status authority remains nodes/edges verification_layers.",
+    "view_description": "Same integrated architecture; show Studio-first unified L0-L5 retrieval and condition-based reuse/production before expandable existing modules. 37 nodes/54 edges and verification_layers unchanged.",
     "crosscutting_module": "identity",
     "lanes": [
       {
@@ -11482,7 +11484,13 @@
     "design_guard": "The lanes are explanatory business groupings with conditional/parallel relationships; not a mandatory sequential runtime workflow or a new Agent/UI contract.",
     "drilldown_model": "Each module stays on the overall canvas while expanding within its own module card; step, internal check and root edge details show in place. Full node/edge evidence remains accessible.",
     "legacy_canvas": "Original D/L/G and lower module card components retained as static fallback only; integrated view owns default interaction.",
-    "no_state_change": true
+    "no_state_change": true,
+    "creative_route_panel": {
+      "id": "creative-route",
+      "reference": "creative_mainline_routing",
+      "display": "VISIBLE_BEFORE_ARCHITECTURE",
+      "not_a_new_graph_edge": true
+    }
   },
   "audit_tracking": {
     "schema": "mohen.m5.navigation-audit-tracker.v1",
@@ -11528,7 +11536,9 @@
         "E_L1_TO_D02"
       ],
       "reuse_first": "历史原件保存/来源登记/字节读取功能、G0/G1独立审核与D02专业Worker均继承；新环境空表只说明尚未导入可用测试对象，不等于功能未实现",
-      "next_batch_rule": "按当前最前运行阻断接低权执行/授权/Reviewer并核同Root G0/G1；已补C01 E_L1_TO_D02先验真实接收，实际失败才定向修。历史索引按需查，不以全量审计或旧环境可达为开工条件。"
+      "next_batch_rule": "主线优先统一L0—L5检索及缺口路由；同时按授权补云执行低权凭据、Executor与独立Gate配置。仅当真实任务走新增来源分支时按edge_ids核D00/G0运行；C01 G1→D02待真实接收，不重建已补接口。",
+      "scope": "D00/G0新增来源生产子路径运行前沿，非整条Studio业务第一施工任务",
+      "business_frontier_ref": "creative_mainline_routing.business_frontier"
     },
     "groups": [
       {
@@ -11910,6 +11920,14 @@
     },
     "frontiers": [
       {
+        "kind": "BUSINESS_ORCHESTRATION",
+        "id": "STUDIO_UNIFIED_L0_L5_ROUTING",
+        "edge_ids": [],
+        "state": "CODE_GAP_NOT_LIVE_VERIFIED",
+        "description": "Studio首要功能缺口：统一L0—L5检索、资格权利判断、来源缺口及按需生产调度，见creative_mainline_routing；不新增正式节点/边和验收分母",
+        "completion": "同Project/Root合法已有L资产直用、需补G、已有L0缺L1、确缺源及权限拒绝的可追溯正反分流"
+      },
+      {
         "kind": "RUNTIME_INTEGRATION",
         "edge_ids": [
           "E_D00_REVIEW",
@@ -11934,7 +11952,7 @@
       "不要重复做已经通过的本地隔离G0/G1、R01—R11历史样板，或新建第二Gate/Runner",
       "不要把M2/M3架构迁移成功或历史成功写成目前云端同Root PASS"
     ],
-    "next_execution_rule": "按当前最前运行阻断接低权执行/授权/Reviewer并核同Root G0/G1；已补C01 E_L1_TO_D02先验真实接收，实际失败才定向修。历史索引按需查，不以全量审计或旧环境可达为开工条件。",
+    "next_execution_rule": "先按creative_mainline_routing实现Studio统一L0—L5合法检索/资格和缺口路由；云执行配置按所需生产子路径并行解决。原E_D00_REVIEW/E_D00_QUALIFY仅是D00/G0运行HOLD，不能要求所有Studio研究从上传/G0开始。",
     "last_execution": {
       "batch": "M5-ASSEMBLY-01/02/03/04",
       "code_sha": "712a08b021bbef12977ed907a8c64d136eeca3bc",
@@ -12209,5 +12227,84 @@
       },
       "next": "历史ENV-REUSE-01只作配置来源；现按已批准云端优先路径复用受保护Preview，核低权执行/独立授权/Reviewer的具体配置与同Root运行，不要求先回原Windows。"
     }
+  },
+  "creative_mainline_routing": {
+    "schema": "mohen.m5.creative-routing.v1",
+    "updated_on": "2026-11-17",
+    "authoritative_plan": "tasks/implementation/MAB/PLAN.md §3.5 B/C/D",
+    "kind": "NON_AUTHORITATIVE_ROUTING_DESCRIPTION",
+    "status": "TARGET_NOT_LIVE_VERIFIED",
+    "entry": "Studio自然语言研究与创作问题（Creator/Project/Root）",
+    "ordering_rule": "先统一检索当前用户/项目可访问与合法共享的L0—L5，逐项核源版本、Owner/Project/ACL、逐动作权利、purpose/consumer/scope、当前对应Gate资格；从研究成果需求和局部缺口确定最小必要生产路径；禁止把D00/G0当所有Studio研究的必经起点",
+    "branches": [
+      {
+        "id": "REUSE",
+        "condition": "已有本次用途所需的合格L0—L5成果",
+        "action": "精确版本/当前资格直接复用；混合层级资产可以同时复用",
+        "requires": "Owner/Project/ACL、rights、purpose、consumer、scope、当前G、source/version",
+        "avoid": "不重取来源、不重做已有合格读取或专业生产"
+      },
+      {
+        "id": "QUALIFICATION_ONLY",
+        "condition": "已有原件或候选成果，但缺相应登记/当前资格",
+        "action": "只补必须的source/version、证据和独立Gate，不重新搜索或下载",
+        "requires": "明确的原件/候选与本次Gate准入合同",
+        "avoid": "不得将未签发候选直接当合格知识"
+      },
+      {
+        "id": "READ_EXISTING",
+        "condition": "已有合格L0但缺L1读取成果",
+        "action": "从D01/G1所需阶段继续，依现有typed input/Registry及资格控制",
+        "requires": "合格L0、现行G0及读取权利",
+        "avoid": "不重复D00"
+      },
+      {
+        "id": "ACQUIRE_SOURCE",
+        "condition": "存量不足，确有来源缺口",
+        "action": "D00 Y01—Y08来源发现、合法获取、私有字节/SHA回读、source/version/raw登记、提交独立G0候选；必要时进入D01及后续",
+        "requires": "获取/存储/外发权利、适用授权、Provider费用/Receipt",
+        "avoid": "来源发现线索不等于已取得原件"
+      },
+      {
+        "id": "OWNER_SUPPLIED",
+        "condition": "用户自愿上传/指定资料",
+        "action": "作为可选输入，识别原件、研究成果、笔记或创作素材并按各自合同接入",
+        "requires": "类型、Owner/Project、权利及当前资格",
+        "avoid": "上传不等于G0合格；不是所有任务的必经步骤"
+      },
+      {
+        "id": "DOWNSTREAM_GAP",
+        "condition": "已有合格L1—L5，但仅缺某下游研究/作品成果",
+        "action": "从现有Registry/Runner支持的最早必要阶段补下游；已有合格资产复用",
+        "requires": "精确typed input与上游当前资格",
+        "avoid": "不得假设任意不连续阶段跳转已有实现"
+      }
+    ],
+    "shared_downstream": "合法研究知识/13类适用资产→H1/H2/H3导演与唯一WorkRevision→Creator投稿→作品Reviewer与独立专业G5/媒资许可→Operator精确发布→WATCH同修订消费及撤权",
+    "runtime_dependency": "Producer/Worker有效TLS低权身份、Cloud Executor、独立Gate/Reviewer/Storage等按进入的真实生产分支验证；配置HOLD不阻断无需该依赖的合法资产复用/代码施工",
+    "business_frontier": {
+      "id": "STUDIO_UNIFIED_L0_L5_ROUTING",
+      "state": "CODE_GAP_NOT_LIVE_VERIFIED",
+      "scope": "全Studio主线",
+      "description": "runResearch当前偏L5、项目L0—L4读取分离；缺统一可访问资产/资格检索与缺口调度",
+      "source": "tasks/results/MAB/M5_STUDIO_TO_ADMIN_CHAIN_AUDIT_20261117.md §7.3/7.6"
+    },
+    "runtime_subpath_frontier": {
+      "edge_ids": [
+        "E_D00_REVIEW",
+        "E_D00_QUALIFY"
+      ],
+      "state": "HOLD_NOT_VERIFIED",
+      "scope": "新增来源或需要D00/G0准入的生产子路径",
+      "description": "现有独立Gate与Runner应继承；云端低权身份、Executor、策略/绑定与真实同Root回执未完成"
+    },
+    "next_build_task": "复用现有runResearch/retrieveMaterials、readStudioResearchProject、L5合格读模型和Studio资格/ACL服务，实现统一L0—L5检索及缺口判断的最小接线，完成可复用/无权/缺源/已有L0缺L1等正反分流；并行处理运行凭据具名HOLD，不重做Gate和原件模块",
+    "source_locators": [
+      "apps/web/lib/mohen-agent/research.ts",
+      "apps/web/lib/mohen-agent/retrieve.ts",
+      "apps/web/lib/studio-research-read.ts",
+      "apps/web/lib/mohen-agent/source-discovery.ts",
+      "apps/web/app/studio/StudioWorkbench.tsx"
+    ]
   }
 }
