@@ -102,11 +102,18 @@ test('inconsistent Gate/layer identity cannot be promoted by a route payload',()
 test('project-scoped formal Gate index cannot authorize cross-project sharing by inference',()=>{
  const research=readFileSync(new URL('../../apps/web/lib/mohen-agent/research.ts',import.meta.url),'utf8');
  const formal=readFileSync(new URL('../../apps/web/lib/mohen-agent/retrieve-formal.ts',import.meta.url),'utf8');
+ const bridge=readFileSync(new URL('../../supabase/migrations/20261118025600_m5_scoped_formal_project_gate_read.sql',import.meta.url),'utf8');
  assert.match(research,/retrieveQualifiedFormalProject\(studioContext\.projectId,effectiveTerms,qualification,studioContext\.sessionToken\)/);
  assert.match(research,/sharedL0L4CoverageComplete:false/);
- assert.match(formal,/control\.qualification_current/);
- assert.match(formal,/control\.qualification_allows/);
  assert.match(formal,/project_id:projectId/);
+ assert.match(formal,/studio\.search_qualified_project_layers/);
+ assert.match(bridge,/control\.qualification_current/);
+ assert.match(bridge,/control\.qualification_allows/);
+ assert.match(bridge,/current_app_user_id\(\)/);
+ assert.match(bridge,/owner_user_id=app_user/);
+ assert.match(bridge,/REVOKE ALL ON FUNCTION studio\.search_qualified_project_layers/);
+ assert.match(bridge,/FROM PUBLIC/);
+ assert.match(bridge,/TO mohen_app_runtime/);
  assert.match(formal,/projectId:string/);
  assert.match(formal,/createAppTransaction\(getNodePgPool\(\)/);
  assert.match(formal,/owner_user_id=\$2::uuid/);
