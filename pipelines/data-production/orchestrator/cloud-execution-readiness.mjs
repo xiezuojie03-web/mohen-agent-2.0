@@ -23,6 +23,21 @@ function principal(value) {
   }catch{return null;}
 }
 
+// Optional password-as-Secret form for iPad/console setup: keep the URL
+// passwordless and the raw password in a *separate* protected environment
+// variable. Encode it in memory, never in the browser, logs, or GitHub.
+// Existing full connection URLs remain supported for backwards compatibility.
+export function resolveMachineDatabaseUrl(baseUrl,rawSecret) {
+  if(rawSecret===undefined)return baseUrl;
+  if(!present(baseUrl)||typeof rawSecret!=='string'||!rawSecret.length)return null;
+  try {
+    const url=new URL(baseUrl);
+    if(url.password||!url.username||url.hash)return null; // no ambiguous credential precedence
+    url.password=encodeURIComponent(rawSecret);
+    return url.toString();
+  }catch{return null;}
+}
+
 // Configuration diagnostics only: never network/SQL, secret values, or a Gate PASS.
 // This is shared by the existing CLI receiver and the operator readiness view.
 export function cloudExecutionReadiness(environment={}) {
@@ -46,7 +61,8 @@ export function cloudExecutionReadiness(environment={}) {
   const forbidden=['MOHEN_GATE_DATABASE_URL','MOHEN_GATE_SIGNER_DATABASE_URL','MOHEN_GATE_MACHINE_DATABASE_URL',
     'MOHEN_GATE_DATABASE_SESSION_KEY','MOHEN_EXECUTION_AUTH_PRIVATE_KEY','SUPABASE_SERVICE_ROLE_KEY'];
   add('credential_separation','CLOUD_EXECUTOR_SIGNER_CREDENTIAL_FORBIDDEN',[],!forbidden.some(k=>present(environment[k])));
-  const producer=principal(environment.MOHEN_PRODUCER_DATABASE_URL),worker=principal(environment.MOHEN_PRIVATE_WORKER_DATABASE_URL);
+  const producer=principal(resolveMachineDatabaseUrl(environment.MOHEN_PRODUCER_DATABASE_URL,environment.MOHEN_PRODUCER_DATABASE_PASSWORD)),
+    worker=principal(resolveMachineDatabaseUrl(environment.MOHEN_PRIVATE_WORKER_DATABASE_URL,environment.MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD));
   add('producer','CLOUD_PRODUCER_REQUIRED',['MOHEN_PRODUCER_DATABASE_URL'],!!producer);
   add('private_worker','CLOUD_PRIVATE_WORKER_REQUIRED',['MOHEN_PRIVATE_WORKER_DATABASE_URL'],!!worker&&worker!==producer);
   add('independent_gate','CLOUD_INDEPENDENT_GATE_REQUIRED',['MOHEN_INDEPENDENT_GATE_VERIFY_URL','MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL'],
