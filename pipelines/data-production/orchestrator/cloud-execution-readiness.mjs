@@ -9,8 +9,16 @@ function https(value) {
 function principal(value) {
   try {
     const u=new URL(value),user=decodeURIComponent(u.username);
-    if(!['postgres:','postgresql:'].includes(u.protocol)||!u.hostname||!user||!u.password||!u.pathname.slice(1)||u.search||u.hash)return null;
-    if(/^(postgres|supabase_admin|mohen_app_runtime|mohen_producer|mohen_gate_signer|mohen_gate_authority|mohen_gate_reader)(\.|$)/i.test(user))return null;
+    if(!['postgres:','postgresql:'].includes(u.protocol)||!u.hostname||!user||
+      !u.password||!u.pathname.slice(1)||u.hash)return null;
+    // Remote connections require full TLS certificate and hostname checks.
+    // Previously forbidding all URL query parameters also rejected the secure
+    // ?sslmode=verify-full syntax used by the existing node-pg connector.
+    const local=['127.0.0.1','localhost','[::1]'].includes(u.hostname.toLowerCase());
+    const opts=[...u.searchParams.entries()];
+    if(opts.length>1||opts.some(([k,v])=>k!=='sslmode'||v!=='verify-full')||
+      (!local&&opts.length!==1))return null;
+    if(/^(postgres|supabase_admin|mohen_app_runtime|mohen_producer|mohen_gate_signer|mohen_gate_authority|mohen_gate_reader)(\\.|$)/i.test(user))return null;
     return user;
   }catch{return null;}
 }
