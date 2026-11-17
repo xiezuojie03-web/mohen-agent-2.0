@@ -1,4 +1,4 @@
-> **2026-11-18第六批机器凭据配置更新**：Producer URL与密码Secret已由Vercel只读清单核实为Preview敏感变量（未读取密码）；Worker无密码Session Pooler URL已由工程侧写入Preview。当前只待Owner新增`MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD`（Secret/Sensitive、Preview）。四项齐备后须重新部署受保护Preview，再验证真实TLS与低权权限正反；此前构建READY不等于连接成功。Production未改，M5仍0/8 HOLD。
+> **2026-11-18第七批配置核验更新**：Producer/Worker两条无密码URL与两条独立密码Secret四项均已核实存在，均仅Preview/Sensitive；Owner无需再配置或重置。最新部署dpl_Gzbgit2J8N8QXhv2vGhxvkJuyuk5 READY、target=staging，但项目SSO元数据仅明确Preview且Custom Environments为空，故变量注入与保护范围尚未证实。先做Node测试/CI和环境只读核验，再决定真实TLS；M5仍0/8 HOLD。
 
 # 墨痕 M5 全链路导航｜现行主线分流与工程断点（非权威）
 
@@ -50,6 +50,12 @@ Creator投稿→作品Reviewer审核＋独立专业G5＋媒体权限→Operator�
 - [HTML交互主图](M5_MAINLINE_NAVIGATION_20261115.html#creative-route)：顶部先展示新增分流；旧37节点、54连接仍按原图展开定位。D00独立签发可点[审核](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_REVIEW)与[资格](M5_MAINLINE_NAVIGATION_20261115.html#edge-E_D00_QUALIFY)。
 - **证据不变**：37节点、54连接（M5 52条，EXP未来2条），原`verification_layers`、历史SHA/回执、8维分母、10组内部链均不提升、不删除。新分流是顶层条件编排说明，不是假造新增主图边或生产Gate。
 
-## 4. 经Owner审阅后下一项施工任务（尚未启动）
+## 4. 下一项无需Owner参与的工程任务
 
-继承2026-11-17第一批已实现的`knowledge-routing.mjs`及Owner项目L0—L4候选/G5合格L5初步接线；**下一批首先补全合法共享L0—L4当前资格检索、证实缺源及按需D分支调用**，随后基于同Root真实资产正反运行。原计划曾要求：继承`apps/web/lib/mohen-agent/research.ts`、`retrieve.ts`、`studio-research-read.ts`、G5读模型及现有ACL/资格服务。先做现有资产直接复用、无权限拒绝、已有L0缺L1、确实缺来源与用户可选上传的最小可验证分流，不新建知识库/Runner/Gate。对云执行低权角色、Executor、独立Reviewer配置可并行做授权范围内的准备；真实同Root运行仍按依赖推进。每批实际回执入progress，相关状态才更新CURRENT及三件导航；不以文档同步冒充业务施工。
+1. 在Codex Cloud或ChatGPT接续最新main，执行现有Node专项测试与GitHub Actions核验；对真实失败定向修复，不跳过测试。
+2. 只读厘清Vercel staging target与Preview变量/SSO保护的实际映射。四项变量已存在，不得再要求Owner重复输入；不读取Secret值、不创建环境、不改Production。
+3. 复用现有Cloud Executor、Runner/Registry和独立Gate/Reviewer，补配置缺失、身份错误、TLS不符、Producer自签等fail-closed自动化测试。
+4. 只有证明部署受保护且四项Preview变量实际注入后，才做Producer/Worker真实TLS、数据库身份及低权限正反测试。
+5. Owner Project/当前Gate资格/Policy/Reviewer Binding仍为0；不得伪造正向业务PASS，等合法业务数据自然形成后再验A线正向读取与撤权。
+
+Codex Cloud按额度启停，不是永久模式。每批必须把代码、测试、SHA、部署/运行回执和下一断点同步GitHub；任何未提交成果必须显式保留并标记，ChatGPT接手只以GitHub main和本账为准。
