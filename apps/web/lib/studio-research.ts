@@ -39,6 +39,7 @@ export interface CreatedTask {
   replayed?: boolean;
   materialRead?: {state:string;reason?:string};
   briefAssetRef?: {asset_id:string;revision_id:string;revision_no:number};
+  knowledgeRoute?: import("./mohen-agent/knowledge-routing.mjs").StudioKnowledgeRouting;
 }
 
 type StudioBriefBinding = {
@@ -76,7 +77,7 @@ async function taskResult(taskId:string,status:string,saved:Record<string,unknow
       (status==='running'?'task_in_progress':undefined),
     missingRequirements:Array.isArray(checkpoint.missingRequirements)?checkpoint.missingRequirements.map(String):[],
     researchLeads:Array.isArray(checkpoint.researchLeads)?checkpoint.researchLeads as Material[]:[],
-    replayed,briefAssetRef:briefRef(checkpoint.studio),
+    replayed,knowledgeRoute:checkpoint.knowledgeRoute as CreatedTask['knowledgeRoute'],briefAssetRef:briefRef(checkpoint.studio),
     materialRead:checkpoint.materialRead as CreatedTask["materialRead"],
   };
 }
@@ -219,17 +220,19 @@ export async function createResearchTask(
 
   const ledger:Ledger={taskId,budget};
   try {
-    const {decision,degraded,researchLeads}=await runResearch(prompt,topic,ledger);
+    const {decision,degraded,researchLeads,knowledgeRoute}=await runResearch(prompt,topic,ledger,
+      {projectId:binding.projectId,sessionToken:binding.sessionToken});
     if(degraded)throw new ResearchPrerequisiteHold(['SOURCE_OR_QUALIFICATION_UNAVAILABLE'],{decision,degraded,researchLeads});
-    await addEvent(taskId,'D04','retrieved',{materials:decision.materials.length,externalLeads:researchLeads.length,degraded});
-    const checkpoint={prompt,topic,degraded,decision,researchLeads,budgetSpent:budget.spent,
+    await addEvent(taskId,'D04','retrieved',{materials:decision.materials.length,externalLeads:researchLeads.length,degraded,
+      route:knowledgeRoute?.disposition??'NOT_AVAILABLE'});
+    const checkpoint={prompt,topic,degraded,decision,researchLeads,knowledgeRoute,budgetSpent:budget.spent,
       reserved:budget.reserved,ceiling:budget.ceiling,studio:studioContext};
     await run("update public.research_tasks set status='done',checkpoint=:'cp'::jsonb,updated_at=now() where task_id=:'id'",
       {id:taskId,cp:JSON.stringify(checkpoint)});
     await writeReceipt({taskId,kind:'checkpoint',stage:'D04',status:'settled',
       payload:{budgetSpent:budget.spent,externalLeads:researchLeads.length}});
     await addEvent(taskId,'D04','research_done',{verdict:decision.verdict});
-    return {taskId,status:'done',decision,degraded,researchLeads,briefAssetRef:briefRef(studioContext)};
+    return {taskId,status:'done',decision,degraded,researchLeads,knowledgeRoute,briefAssetRef:briefRef(studioContext)};
   } catch(error) {
     if(error instanceof ResearchPrerequisiteHold)
       return holdResearchPrerequisites(taskId,prompt,topic,budget,error,studioContext);
@@ -379,7 +382,8 @@ export async function requestProduction(
 /** Resume only a verified zero-spend first step within the persisted ceiling. */
 export async function resumeResearchTask(
   taskId: string,
-  additionalCeiling?: number
+  additionalCeiling?: number,
+  sessionToken?: string
 ): Promise<CreatedTask> {
   const row = await queryRows(
     "select prompt, topic, checkpoint from public.research_tasks where task_id = :'id' and status = 'hold'",
@@ -439,16 +443,19 @@ export async function resumeResearchTask(
   const ledger: Ledger = { taskId, budget };
   try {
     await addEvent(taskId, "D04", "resumed", {ceiling:previousCeiling,resumeClaimRef:next.resume_claim_ref});
-    const { decision, degraded, researchLeads } = await runResearch(prompt, topic, ledger);
+    if (!sessionToken || typeof studioContext.project_id!=='string')
+      throw new ResearchPrerequisiteHold(['STUDIO_PROJECT_READ_CONTEXT_REQUIRED']);
+    const { decision, degraded, researchLeads, knowledgeRoute } = await runResearch(prompt, topic, ledger,
+      {projectId:studioContext.project_id,sessionToken});
     if (degraded) throw new ResearchPrerequisiteHold(['SOURCE_OR_QUALIFICATION_UNAVAILABLE'],{decision,degraded,researchLeads});
-    const checkpoint = { prompt, topic, degraded, decision, researchLeads, budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling, studio:studioContext };
+    const checkpoint = { prompt, topic, degraded, decision, researchLeads, knowledgeRoute, budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling, studio:studioContext };
     await run(
       "update public.research_tasks set status = 'done', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
       { id: taskId, cp: JSON.stringify(checkpoint) }
     );
     await writeReceipt({ taskId, kind: "checkpoint", stage: "D04", status: "settled", payload: { budgetSpent: budget.spent } });
     await addEvent(taskId, "D04", "research_done", { verdict: decision.verdict });
-    return { taskId, status: "done", decision, degraded, researchLeads };
+    return { taskId, status: "done", decision, degraded, researchLeads, knowledgeRoute };
   } catch (e) {
     if (e instanceof ResearchPrerequisiteHold)
       return holdResearchPrerequisites(taskId,prompt,topic,budget,e,studioContext);
@@ -477,7 +484,7 @@ export async function resumeResearchTask(
  * required, so two simultaneous requests cannot both spend the same credit.
  */
 export async function appendResearchMessage(
-  taskId: string, message: string
+  taskId: string, message: string, sessionToken?: string
 ): Promise<{ ok: boolean; reason?: string }> {
   const rows = await queryRows(
     "select topic, status, checkpoint from public.research_tasks where task_id = :'id'",
@@ -508,12 +515,14 @@ export async function appendResearchMessage(
   const topic = resolveTopic(rows[0].topic);
   const budget: BudgetState = { ceiling, reserved, spent };
   try {
-    const { decision, degraded, researchLeads } = await runResearch(
-      message, topic, { taskId, budget }
+    if (!sessionToken || typeof studioContext.project_id!=='string')
+      throw new ResearchPrerequisiteHold(['STUDIO_PROJECT_READ_CONTEXT_REQUIRED']);
+    const { decision, degraded, researchLeads, knowledgeRoute } = await runResearch(
+      message, topic, { taskId, budget }, {projectId:studioContext.project_id,sessionToken}
     );
     if (degraded) throw new ResearchPrerequisiteHold(['SOURCE_OR_QUALIFICATION_UNAVAILABLE'],{decision,degraded,researchLeads});
     const checkpoint = {
-      prompt: message, topic, degraded, decision, researchLeads,
+      prompt: message, topic, degraded, decision, researchLeads, knowledgeRoute,
       budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling, studio:studioContext,
     };
     await run(
