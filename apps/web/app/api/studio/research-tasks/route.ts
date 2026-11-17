@@ -64,6 +64,7 @@ export async function POST(req:Request){
     ok:true,status:created.status,hold_reason:created.holdReason??null,
     missing_requirements:created.missingRequirements??[],task_id:created.taskId,
     brief_asset_ref:created.briefAssetRef??null,replayed:created.replayed===true,
-    degraded:created.degraded,decision:created.decision,research_leads:created.researchLeads,production:null,
+    degraded:created.degraded,decision:created.decision,research_leads:created.researchLeads,
+    knowledge_route:created.knowledgeRoute??null,production:null,
   });
 }
