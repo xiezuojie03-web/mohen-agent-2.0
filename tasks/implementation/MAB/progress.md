@@ -4800,3 +4800,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 施工提交 `7e792641618bd846417005fe1f79c77821b1ac8e` 已从 `d3e2f00494386c171075f4aec4d7ddc5a26957e4` 快进至 GitHub `main`。首次推送被 GH007 邮箱隐私保护拒绝，使用 GitHub noreply 后成功，测试过的 Git tree 保持一致。
 - 该精确 SHA 的 [主 CI 44161077994](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44161077994)、[隔离 PG 44161078025](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44161078025)、[隔离 HTTP 44161078020](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44161078020) 均 completed/failure，各自 0 步、未分配 runner。三个 job 注释均为账单或支出上限拦截。恢复后重跑三个作业；保留本批隔离实跑回执。
 - 推送后只读回查 Production 最新部署和正式域仍为 `dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc`、`835602242cab31b1fcb372c7ff5efd4fc41dfd89`。本次回执仅更新 `CURRENT.md` 和 `progress.md`，编排和导航语义未变。回查 Git 变更与权威路由守卫。
+
+## 2026-11-18｜M5-CODEX-CLOUD-02｜隔离机器 TLS 正反实测
+
+- 施工前远端 main 为 `9788059daabd922438edf5110d239127bdf2bc5f`，工作树干净。复核 GitHub 最新主 CI [44161226508](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44161226508) 仍为 runner 启动前账单/支出上限拦截；Vercel 最近部署仍为 staging `dpl_Gzbgit2J8N8QXhv2vGhxvkJuyuk5`、`954760da7d6cc33b7fd8116e8d64f07ae27edce3`，未包含布尔诊断提交。
+- 使用仅监听本机的临时 Docker PostgreSQL 17、一次性证书、合成 Producer/Worker、SCRAM 和 hostssl。执行 `node tests/data-production/private-worker-tls.integration.mjs` 获 `MAB_PRIVATE_WORKER_TLS_PASS`；实际 PG 会话启用 TLS、Worker 低权身份通过、不受信证书拒绝。用原有拆分 URL 解析及专用池执行 Producer 真实连接，获 `M5_ISOLATED_PRODUCER_TLS_PASS`；`pg_stat_ssl` 为加密会话、两种身份互换拒绝、错误主机名报 `ERR_TLS_CERT_ALTNAME_INVALID`、错误密码报 `28P01`。已停止并删除临时容器及证书材料。
+- 实际修改 `CURRENT.md`、本文件；`git diff --check` 与权威路由守卫通过。导航语义及运行阻断未变。生产未操作、真实 Preview 变量未解密，真实云端 TLS/ACL 仍 NOT_RUN。下一步仍需受保护非生产部署的服务端注入回执，以及有效 Operator 路径；托管 runner 恢复后核对精确提交。无正式 Gate 签发或真实作品准出，M5 为 0/8 HOLD。

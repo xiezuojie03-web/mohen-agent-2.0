@@ -15,6 +15,7 @@
 - **CI**：交接 SHA `d3e2f00494386c171075f4aec4d7ddc5a26957e4` 的 GitHub Actions [44157133157](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44157133157) 两次均在 runner 启动前被账单或支出上限拦截。本地 Node 22 数据生产套件原有 8 项失败，定向修复后 357/357 PASS。施工代码 SHA `7e792641618bd846417005fe1f79c77821b1ac8e` 已推 main，主 CI、隔离 PG 和隔离 HTTP 三个托管作业均因同一原因未启动 runner。Codex Cloud 的隔离 PG17 与 Chromium 回归通过，详情见 progress。
 - **Production 自动部署隔离**：`vercel.json` 的 `git.deploymentEnabled=false` 自 `5b02081bf49683ee0cb16bd039ce96c4ef50a920` 保持，正式域仍指向 `dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc`（`835602242cab31b1fcb372c7ff5efd4fc41dfd89`）。隔离开启后的 main 提交未更新 Production；本轮未改 Vercel 或 Production。
 - **Executor 配置预检**：复用现有 Runner、Registry 和 SQL 权限判定。修复 Executor 认领前两处连接漏用拆分密码，以及专用池拒绝合法 `sslmode=verify-full`。池仍强制证书校验且拒绝其他 URI 参数。原始拆分密码不会作为独立变量传给 Runner。既有 Operator readiness 新增逐变量布尔状态，待经既有受保护部署路径上线核验。
+- **隔离机器 TLS**：一次性 PG17 对 Worker 和 Producer 实测证书校验、加密连接、低权身份。Worker 拒绝不受信证书；Producer 拒绝错误主机名、错误密码及互换身份。此回执只覆盖隔离库；Vercel 注入与真实云端 TLS 仍待验证。
 - **独立Gate**：真实启用Policy=0、active Reviewer Binding=0；Cloud Executor、独立Gate真实运行/签发尚未验证。
 - **M5整体**：0/8 OVERALL_HOLD，不是代码完成率。
 
