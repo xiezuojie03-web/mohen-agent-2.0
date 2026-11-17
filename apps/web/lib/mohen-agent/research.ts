@@ -262,7 +262,7 @@ export async function runResearch(
   if(studioContext){
     try{
       formalRead=await useTool(ledger,"retrieve-local",()=>
-        retrieveQualifiedFormalProject(studioContext.projectId,effectiveTerms,qualification));
+        retrieveQualifiedFormalProject(studioContext.projectId,effectiveTerms,qualification,studioContext.sessionToken));
     }catch(error){
       if(error instanceof BudgetHoldError||error instanceof ToolExecutionUncertainError||
          error instanceof ToolReceiptPersistenceError)throw error;
