@@ -11923,8 +11923,8 @@
         "kind": "BUSINESS_ORCHESTRATION",
         "id": "STUDIO_UNIFIED_L0_L5_ROUTING",
         "edge_ids": [],
-        "state": "SIGNED_OWNER_FORMAL_READ_CODE_READY_REAL_GATE_AND_SHARED_ACL_HOLD",
-        "description": "第三批受保护staging READY、纯路由V8 8/8，Owner/Project签名受限事务已接正式G0-G4。当前Gate资格0、app_runtime缺正式表受控读桥、共享ACL未授权、云端同Root未验。",
+        "state": "SCOPED_FORMAL_GATE_BRIDGE_DB_APPLIED_CODE_READY_REAL_OWNER_GATE_HOLD",
+        "description": "2026-11-18第四批现行G0-G4窄读桥数据库已安装并集成Studio；安全拒绝数据库实测，通过受保护staging精确代码构建。开发库Owner Project0/当前资格0，真实正向与撤权未测，跨Project共享授权未立，M5整体0/8。",
         "completion": "同Project/Root合法已有L资产直用、需补G、已有L0缺L1、确缺源及权限拒绝的可追溯正反分流"
       },
       {
@@ -11952,7 +11952,7 @@
       "不要重复做已经通过的本地隔离G0/G1、R01—R11历史样板，或新建第二Gate/Runner",
       "不要把M2/M3架构迁移成功或历史成功写成目前云端同Root PASS"
     ],
-    "next_execution_rule": "不得重做已完成Project候选/G5/G0-G4读适配器、签名Owner事务、TLS强制预检、原D00/Runner/Gate。A先在现有权限合同内补正式资格读桥及真实Owner/Project正反，合法无源才选择D00。B两个机器角色密码仍NULL，安全工具禁止直接写密钥；经受保护管理员途径激活、验证TLS再接Executor/Gate，不自动签政策。",
+    "next_execution_rule": "继承第四批窄读SQL迁移及Studio可信Owner事务/知识路由，不重复授权桥。A等当前合法Gate/Owner项目数据后仅定向POS/NEG/AUTH验证，无法满足则保留HOLD并推进无依赖业务；B需独立安全管理员通道设置现有Producer/Worker密码后才实测TLS/执行与独立Gate，不借用户密码、不改Production；主线绝非从D00/G0每次开始。",
     "last_execution": {
       "batch": "M5-ASSEMBLY-01/02/03/04",
       "code_sha": "712a08b021bbef12977ed907a8c64d136eeca3bc",
@@ -12228,31 +12228,30 @@
       "next": "历史ENV-REUSE-01只作配置来源；现按已批准云端优先路径复用受保护Preview，核低权执行/独立授权/Reviewer的具体配置与同Root运行，不要求先回原Windows。"
     },
     "last_studio_routing_batch": {
-      "id": "M5-SECURE-MACHINE-READY-03",
-      "code_sha": "b6c4c45c12507a47bb73dea4b1c0c44a9d90e6a3",
-      "preview_deployment": "dpl_EhZKtPbJ7o3RupsxqFv6gRA4GAzt",
-      "build": "READY_TYPECHECK",
-      "isolated_routing_v8": "8_OF_8_PASS",
-      "github_node_test": "NOT_VERIFIED",
-      "formal_read": "HOLD_NO_CURRENT_GATE_OR_APP_RUNTIME_TABLE_ACCESS",
-      "active_qualified_gate": 0,
-      "active_gate_policy": 0,
-      "active_reviewer_binding": 0,
-      "shared_l0_l4": "NOT_AUTHORIZED",
+      "id": "M5-FORMAL-READ-BRIDGE-04",
+      "code_sha": "3d0ace33699693e9c672e76fe7454932b1885fec",
+      "preview_deployment": "dpl_DSJsyAxRL2Eh6hYxkmUCB7WJyTxa",
+      "build": "READY_BUILD_TYPECHECK",
+      "live_db_migration": "20261117172439_m5_scoped_formal_project_gate_read",
+      "scoped_sql_exec": "PASS_APP_RUNTIME_ONLY",
+      "other_roles_denied": "PASS_ANON_AUTH_SERVICE_PRODUCER",
+      "unsigned_owner_denied": "PASS_42501",
+      "raw_table_grant": "NONE",
+      "actual_owner_current_gate": "NOT_RUN_PROJECTS_0_QUALIFICATION_0",
       "same_root": "NOT_RUN",
+      "node_ci": "NOT_VERIFIED",
       "m5": "0/8 OVERALL_HOLD",
-      "receipt": "tasks/implementation/MAB/progress.md#2026-11-18m5-secure-machine-ready-03延续双线复用正式身份与只读事务修正云端机器准入"
+      "receipt": "tasks/implementation/MAB/progress.md#2026-11-18m5-formal-read-bridge-04a真实权限读桥已部署b安全初始化仍hold"
     },
     "last_cloud_identity_preparation": {
-      "id": "M5-SECURE-MACHINE-READY-03-B",
-      "status": "HOLD_SECURE_ADMIN_CREDENTIAL_ACTIVATION",
-      "producer_password_active": false,
-      "worker_password_active": false,
-      "preview_variables": "SENSITIVE_INVALID_PLACEHOLDERS",
-      "remote_machine_tls": "VERIFY_FULL_ENFORCED_IN_CODE",
-      "generic_database_fallback": "REMOVED",
+      "id": "CLOUD-IDENTITY-PREP-04",
+      "status": "HOLD_NEEDS_SECURE_ADMIN_ROLE_PASSWORD_CHANNEL",
+      "producer_db_password_active": false,
+      "worker_db_password_active": false,
+      "preview_connection_urls": "SENSITIVE_PREVIEW_ONLY_INVALID_PLACEHOLDERS",
+      "producer_worker_gate_write": "DENIED",
       "cloud_executor": "NOT_CONFIGURED",
-      "independent_gate": "POLICY_0_REVIEWER_0",
+      "independent_gate": "POLICY_0_REVIEWER_BINDING_0",
       "production_changed": false
     }
   },
@@ -12261,7 +12260,7 @@
     "updated_on": "2026-11-18",
     "authoritative_plan": "tasks/implementation/MAB/PLAN.md §3.5 B/C/D",
     "kind": "NON_AUTHORITATIVE_ROUTING_DESCRIPTION",
-    "status": "SIGNED_OWNER_FORMAL_READ_BUILD_READY_RUNTIME_HOLD",
+    "status": "OWNER_SCOPED_GATE_READ_BRIDGE_APPLIED_AND_BUILD_READY_REAL_QUALIFICATION_HOLD",
     "entry": "Studio自然语言研究与创作问题（Creator/Project/Root）",
     "ordering_rule": "先统一检索当前用户/项目可访问与合法共享的L0—L5，逐项核源版本、Owner/Project/ACL、逐动作权利、purpose/consumer/scope、当前对应Gate资格；从研究成果需求和局部缺口确定最小必要生产路径；禁止把D00/G0当所有Studio研究的必经起点",
     "branches": [
@@ -12312,17 +12311,19 @@
     "runtime_dependency": "Producer/Worker有效TLS低权身份、Cloud Executor、独立Gate/Reviewer/Storage等按进入的真实生产分支验证；配置HOLD不阻断无需该依赖的合法资产复用/代码施工",
     "business_frontier": {
       "id": "STUDIO_UNIFIED_L0_L5_ROUTING",
-      "state": "SIGNED_OWNER_G0_G4_READ_BUILD_READY_REAL_GATE_HOLD",
+      "state": "M5_PROJECT_FORMAL_READ_BRIDGE_APPLIED_POSITIVE_GATE_HOLD",
       "scope": "全Studio主线",
-      "description": "第三批：Studio G0-G4正式读已复用签名Owner事务与mohen_app_runtime/ACTIVE Project核验，不允许通用DB身份绕过；L5/G3已有合法资格在其他层读取失败时仍可定向复用，无权判断缺来源时HOLD。Cloud机器预检要求远程TLS verify-full，Runner缺Producer专用凭据拒绝回退通用DATABASE_URL。当前Gate投影0、应用正式表读权限未通，机器密码仍NULL；纯决策隔离V8 8/8，真实Node CI/Owner Root未验。",
+      "description": "M5第四批：mohen-cloud迁移台账20261117172439已实际建成单Owner/Project当前Gate的studio.search_qualified_project_layers窄读接口；Web runResearch经原签名Owner事务调用它，禁止app_runtime直接读正式表。PG证实app_runtime有EXECUTE，anon/authenticated/service_role/Producer拒绝；无有效签名Owner 42501，错误角色调用拒绝，历史资格不得冒充当前。代码3d0ace33的受保护staging READY，Node CI未验。studio.projects=0、当前G0-G4资格0、Gate Policy和Reviewer Binding均0，真实正向/撤权/同Root仍HOLD。",
       "source": "tasks/results/MAB/M5_STUDIO_TO_ADMIN_CHAIN_AUDIT_20261117.md §7.3/7.6",
       "verified_code_build": {
-        "deployment_id": "dpl_EhZKtPbJ7o3RupsxqFv6gRA4GAzt",
-        "sha": "b6c4c45c12507a47bb73dea4b1c0c44a9d90e6a3",
+        "deployment_id": "dpl_DSJsyAxRL2Eh6hYxkmUCB7WJyTxa",
+        "sha": "3d0ace33699693e9c672e76fe7454932b1885fec",
         "state": "READY_BUILD_TYPECHECK",
-        "isolated_routing_v8": "8_OF_8_PASS_PURE_DECISION_ONLY",
-        "github_node_tests": "NOT_VERIFIED",
-        "live_gate_current_count": 0,
+        "supabase_migration": "20261117172439_m5_scoped_formal_project_gate_read",
+        "sql_privilege_negatives": "PASS_ANON_AUTH_SERVICE_PRODUCER_DENY_AND_UNSIGNED_OWNER_42501",
+        "direct_formal_table_grants": "NONE_TO_APP_RUNTIME",
+        "positive_owner_current_gate": "NOT_RUN_NO_PROJECT_NO_CURRENT_GATE",
+        "github_node_ci": "NOT_VERIFIED",
         "production_sha_unchanged": "83560224"
       }
     },
@@ -12335,7 +12336,7 @@
       "scope": "新增来源或需要D00/G0准入的生产子路径",
       "description": "现有独立Gate与Runner应继承；云端低权身份、Executor、策略/绑定与真实同Root回执未完成"
     },
-    "next_build_task": "继承已完成签名Owner事务和正式G0-G4/G5接线，按现行授权合同补最小Gate正式知识读桥、验证真实Owner/Project与当前资格/撤权；Owner-only设计无跨Project授权索引，不能据空项目启动D00。并行经安全管理员通道激活Producer/Worker专用登录，再按授权准备Executor及独立Gate Policy/Reviewer。",
+    "next_build_task": "A现有窄读权限桥已部署，不再补新GRANT；依原Owner/Project与独立Gate合法业务形成当前合格研究对象后做正向/错Owner/错purpose/资格撤权及来源权利验证。B两低权LOGIN密码仍NULL，需受保护安全管理员通道初始化并写Preview敏感变量，随后真实TLS/权限允拒与已有Cloud Executor/Gate Policy Reviewer；禁止使用用户密码或绕安全阻断。",
     "source_locators": [
       "apps/web/lib/mohen-agent/research.ts",
       "apps/web/lib/mohen-agent/retrieve.ts",
