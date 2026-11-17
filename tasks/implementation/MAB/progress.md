@@ -4743,3 +4743,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 已有代码继承：Cloud Machine TLS强制和缺Producer URL禁止回退通用DB前批已完成，不在本批重做。
 
 **唯一八维**：`M5 0/8 OVERALL_HOLD`。A仅数据库窄桥部署＋安全拒绝实际回执；用户真实知识复用/撤权/同Root专业生产尚无足够数据；B仍需安全管理员操作。后续只做有根据的正向验证和机器凭据投运，不全仓盘点、不将另一次空态/编译计准出。
+
+
+### M5-FORMAL-READ-BRIDGE-04｜最终构建与云端版本复核
+- 实际代码与测试精确SHA `3d0ace33699693e9c672e76fe7454932b1885fec`，受保护Vercel **staging**部署`dpl_DSJsyAxRL2Eh6hYxkmUCB7WJyTxa`状态**READY**，Next.js编译、Lint/TS类型校验、静态页面及Serverless函数打包、部署完成。Preview SSO继续保护。最终纯文档提交不改变该已验代码SHA。
+- 隔离SQL的负例实际执行：`SET LOCAL ROLE anon`调用私有受控读函数被拒，`SET LOCAL ROLE mohen_m5_producer_login`调用被拒；`SET LOCAL ROLE mohen_app_runtime`在无有效签名会话下得到`42501 M5_FORMAL_READ_OWNER_REQUIRED`；不存在的资格audit的`control.current_qualification_is_valid`为false。这不替代当前资格正向/撤权真实场景。
+- Production部署未变，仍`dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc`/SHA`835602242cab31b1fcb372c7ff5efd4fc41dfd89`。GitHub Node专项测试文件已写，但CI真实执行结果仍`NOT_VERIFIED`。
