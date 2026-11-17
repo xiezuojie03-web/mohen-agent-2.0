@@ -111,6 +111,8 @@ test('project-scoped formal Gate index cannot authorize cross-project sharing by
  assert.match(formal,/createAppTransaction\(getNodePgPool\(\)/);
  assert.match(formal,/owner_user_id=\$2::uuid/);
  assert.match(formal,/SET LOCAL mohen_app_runtime/);
+ assert.match(formal,/projectQualifiedCoverage:truncated\?"PARTIAL":"COMPLETE"/);
+
  assert.doesNotMatch(formal,/queryRows\(/);
 
  assert.doesNotMatch(formal,/SECURITY DEFINER/i);
