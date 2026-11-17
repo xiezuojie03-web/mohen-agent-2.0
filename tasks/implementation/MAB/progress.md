@@ -4758,3 +4758,12 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **增量测试文件**：`tests/data-production/cloud-machine-identity-readiness.test.mjs`包含分离密码的特殊字符往返、TLS保持、缺失密码、密钥冲突及原始secret不透传校验；已提交源码，**GitHub正式Node测试仍NOT_VERIFIED**。另外本地Node URL特殊符号编码行为用示例字符串实测可正确往返，非真实机器登录。
 - **受控Preview构建实证**：精确代码SHA`eaf233f5afc55154cbb2eaf7626254050f020ed0`，Vercel非生产staging`dpl_CN6GFun3DfGSLfmrgYG8Up253WNP`状态**READY**，Next编译、类型检查、页面构建与部署完成；受保护Preview SSO仍开，**Production仍原SHA`835602242cab31b1fcb372c7ff5efd4fc41dfd89`，无任何生产推广**。
 - **实际下一步**：Vercel两条Preview机器URL目前还是**无效占位**，新的两条拆分密码Secret尚未由Owner填写。Owner当前位于Vercel`MOHEN_PRODUCER_DATABASE_URL`的Edit页面，只需填写不含密码的Session Pooler URL并Save；再从密码App将原始Producer密码粘贴到新Secret变量，Worker重复。**该界面不得展示密码截图**。两组就绪后再核验角色真实TLS、非越权权限、Cloud Executor与独立Gate的真实配置。独立Policy/Reviewer仍不齐，M5仍`0/8 OVERALL_HOLD`。
+
+
+## 2026-11-18｜M5-IPAD-MACHINE-SECRETS-06｜Producer配置核验、Worker无密码URL由工程侧写入
+
+- **Vercel只读核验**：`MOHEN_PRODUCER_DATABASE_URL` 与 `MOHEN_PRODUCER_DATABASE_PASSWORD` 均已存在，范围仅`preview`、类型`sensitive`；密码值未读取。用户确认Producer密码保存完成。
+- **Worker URL配置**：工程侧通过Vercel项目环境变量接口，将`MOHEN_PRIVATE_WORKER_DATABASE_URL`写为Worker专用LOGIN角色的Session Pooler URI（不含密码，`sslmode=verify-full`），范围仅`preview`、类型`sensitive`。不需要Owner再编辑或复制Worker URL。
+- **当前唯一待Owner动作**：新增`MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD`，Value从Owner本机密码管理器粘贴Worker原始密码；类型Secret/Sensitive，环境仅Preview。密码不得发送给AI或写入GitHub。
+- **配置后的必要工程动作**：四项Preview变量齐备后必须触发新的受保护Preview部署（旧部署不会自动获得新环境变量），再执行真实TLS登录、角色权限正反测试和密码未透传检查。当前`eaf233f5`受保护staging构建READY只是构建证据，不是真实连接成功。
+- **边界**：Production环境与生产SHA未改；Producer/Worker Gate写权限仍拒绝；Policy/Reviewer Binding仍0；A线真实Owner Project/Root及当前Gate仍0；M5仍`0/8 OVERALL_HOLD`。
