@@ -24,6 +24,8 @@ const PUBLIC_EXACT = new Set([
   "auth/register",
   // One-time capability, Preview-only; no unauthenticated issuance endpoint.
   "auth/password-setup",
+  // Preview-only Owner recovery; protected upstream by Vercel Preview SSO.
+  "auth/preview-owner-password",
   // Email-verified capability; same-origin, bounded body and persistent throttling.
   "auth/forgot-password",
   "auth/reset-password",

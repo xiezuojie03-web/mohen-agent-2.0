@@ -26,6 +26,8 @@ const PUBLIC_EXACT = new Set([
   "/api/auth/login",
   "/api/auth/register",
   "/api/auth/password-setup",
+  // Preview-only Owner recovery; the Vercel deployment SSO gate is mandatory.
+  "/api/auth/preview-owner-password",
   "/api/auth/forgot-password",
   "/api/auth/reset-password",
   "/api/auth/logout",

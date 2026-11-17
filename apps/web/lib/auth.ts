@@ -242,6 +242,32 @@ export async function completePasswordSetup(input:{email:unknown;token:unknown;p
   return rows.length===1&&String(rows[0].user_id)===account.user_id;
 }
 
+/**
+ * Reset the single active Owner password on a protected development Preview.
+ * The Vercel Preview SSO gate is the human recovery proof; no email, old password,
+ * temporary capability, or new account is required. The DB trigger revokes old sessions.
+ */
+export async function resetPreviewOwnerPassword(password: unknown): Promise<boolean> {
+  if (!revocableSessionsEnabled() || typeof password !== "string" ||
+      password.length < 8 || Buffer.byteLength(password) > 1024) return false;
+  const rows = await queryRows(`
+    with sole_owner as materialized (
+      select user_id
+      from public.users
+      where status = 'active' and 'operator' = any(roles)
+        and (select count(*) from public.users
+             where status = 'active' and 'operator' = any(roles)) = 1
+      for update
+    )
+    update public.users as u
+    set password_hash = :'hash', updated_at = clock_timestamp()
+    from sole_owner as owner
+    where u.user_id = owner.user_id and u.status = 'active'
+    returning u.user_id::text as user_id
+  `, { hash: hashPassword(password) });
+  return rows.length === 1;
+}
+
 export async function findUserById(userId: string): Promise<AuthUser | null> {
   const rows = await queryRows(
     "select user_id::text as user_id, email, username, array_to_string(roles, ',') as roles, status " +
