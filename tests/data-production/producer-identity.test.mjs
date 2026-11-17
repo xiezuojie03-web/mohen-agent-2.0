@@ -16,3 +16,15 @@ test("unknown role inspection cannot be accepted as safe", async () => {
   await assert.rejects(assertProducerIdentity(async () => []), /PRODUCER_DATABASE_IDENTITY_UNSAFE/);
   await assert.rejects(assertProducerIdentity(async () => [{ role: "mohen_producer" }]), /PRODUCER_DATABASE_IDENTITY_UNSAFE/);
 });
+
+test("cloud Producer accepts only a real, separate LOGIN with producer membership",async()=>{
+ const good={role:"mohen_m5_producer_login",login_role:"mohen_m5_producer_login",
+  can_login:true,producer_member:true,is_superuser:false,bypass_rls:false,can_create_role:false,
+  can_sign:false,can_read_gate:false,gate_authority_member:false,app_member:false,all_read:false,all_write:false};
+ await assertProducerIdentity(async()=>[good],{cloud:true});
+ for(const changed of [
+  {can_login:false},{login_role:"postgres"},{producer_member:false},{app_member:true},
+  {can_read_gate:true},{gate_authority_member:true},{can_create_role:true},{all_write:true},
+  {role:"mohen_producer",login_role:"mohen_producer"}
+ ])await assert.rejects(assertProducerIdentity(async()=>[{...good,...changed}],{cloud:true}),/PRODUCER_DATABASE_IDENTITY_UNSAFE/);
+});

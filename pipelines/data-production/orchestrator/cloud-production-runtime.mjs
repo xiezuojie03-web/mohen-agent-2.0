@@ -39,7 +39,7 @@ function runnerEnvironment(environment,ownerToken){
   'MOHEN_PRIVATE_D02_MODEL','MOHEN_LLM_API_KEY','DEEPSEEK_API_KEY','MOHEN_LLM_BASE_URL'];
  const env=Object.fromEntries(keys.filter(k=>environment[k]!==undefined).map(k=>[k,environment[k]]));
  return {...env,DATABASE_URL:environment.MOHEN_PRODUCER_DATABASE_URL??environment.DATABASE_URL,
-  MOHEN_DB_DRIVER:'pg',MOHEN_EXECUTION_AUTH_TOKENS:environment.MOHEN_EXECUTION_AUTH_TOKENS??'{}',MOHEN_PRIVATE_WORKER_OWNER_SESSION:ownerToken,MOHEN_PRIVATE_EVIDENCE_WORKER_ENABLED:'true',
+  MOHEN_DB_DRIVER:'pg',MOHEN_EXECUTION_AUTH_TOKENS:environment.MOHEN_EXECUTION_AUTH_TOKENS??'{}',MOHEN_PRIVATE_WORKER_OWNER_SESSION:ownerToken,MOHEN_PRIVATE_EVIDENCE_WORKER_ENABLED:'true',MOHEN_CLOUD_RUN_PROGRESS_RPC:'true',
   MOHEN_TOPIC_JSON_FILE:'',MOHEN_TOPIC_CONFIG:''};
 }
 export async function executeCloudProductionCli({input,projectRoot,environment=process.env,runChild=awaitProductionChild,readTerminal,holdRun}){

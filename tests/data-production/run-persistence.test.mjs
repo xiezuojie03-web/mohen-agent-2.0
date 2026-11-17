@@ -66,3 +66,24 @@ test("a stage candidate and arbitrary error text cannot become a G0 PASS receipt
     assert.equal(terminal.verification_error, null);
   } finally { fs.rmSync(directory, { recursive: true, force: true }); }
 });
+
+test("cloud progress uses the existing Owner-scoped SQL RPC, never broad direct UPDATE",async()=>{
+ const runId="11111111-1111-4111-8111-111111111111",ownerToken="signed-owner-fixture";
+ let query,params;
+ const db={queryRows:async(q,p)=>{query=q;params=p;return [{run_id:runId}];}};
+ await persistStageProgress({runId,stage:"D00",db,ownerSessionToken:ownerToken});
+ assert.match(query,/control\.m5_write_production_progress/);
+ assert.doesNotMatch(query,/update control\.production_runs/i);
+ assert.equal(params.owner_token,ownerToken);
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),"mohen-cloud-scoped-run-"));
+ try{
+  const run={run_id:runId,status:"HOLD",current_stage:"D00",research_intent:"test",scope:{},stage_results:[{
+   disposition:"HOLD",hold:{reason_code:"INDEPENDENT_GATE_NOT_VERIFIED"}}]};
+  await finalizeRun({run,db,outDir:dir,ownerSessionToken:ownerToken});
+  assert.match(query,/control\.m5_write_production_progress/);
+  assert.equal(params.status,"HOLD");
+  assert.equal(params.stage,"D00");
+  assert.equal(JSON.parse(params.terminal).reason_code,"INDEPENDENT_GATE_NOT_VERIFIED");
+  assert.equal(JSON.stringify(JSON.parse(fs.readFileSync(path.join(dir,"machine-report.json"),"utf8"))).includes(ownerToken),false);
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});

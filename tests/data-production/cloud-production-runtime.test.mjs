@@ -19,7 +19,7 @@ test('short-lived Owner token is not part of immutable work identity and is neve
 test('CLI receiver invokes the original Runner with server-owned arguments and awaits its exit',async()=>{
  const e=input();let called=false;
  const result=await executeCloudProductionCli({input:e,projectRoot:process.cwd(),environment:{...cloudEnvironment(),MOHEN_EXECUTION_AUTH_VERIFY_URL:'https://independent.invalid/consume',MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL:'synthetic-credential-at-least-32-characters',MOHEN_EXECUTION_AUTH_DYNAMIC_URL:'https://independent.invalid/token',MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL:'synthetic-credential-at-least-32-characters'},
-  runChild:async(command,args,options)=>{called=true;assert.equal(command,process.execPath);assert.match(args[0],/pipelines.*data-production.*run.mjs$/);assert.equal(args[args.indexOf('--run-id')+1],e.run_id);assert.equal(options.env.MOHEN_PRIVATE_WORKER_OWNER_SESSION,e.owner_session_token);assert.equal(args.includes('--report-dir'),true);return {code:0,timedOut:false};},
+  runChild:async(command,args,options)=>{called=true;assert.equal(command,process.execPath);assert.match(args[0],/pipelines.*data-production.*run.mjs$/);assert.equal(args[args.indexOf('--run-id')+1],e.run_id);assert.equal(options.env.MOHEN_PRIVATE_WORKER_OWNER_SESSION,e.owner_session_token);assert.equal(options.env.MOHEN_CLOUD_RUN_PROGRESS_RPC,'true');assert.equal(args.includes('--report-dir'),true);return {code:0,timedOut:false};},
   readTerminal:async()=>({run_id:e.run_id,status:'HOLD',stage:'D00',reason_code:'INDEPENDENT_GATE_NOT_VERIFIED'}),holdRun:async()=>{throw Error('must not mark fail');}});
  assert.equal(called,true);assert.equal(result.status,'HOLD');
 });

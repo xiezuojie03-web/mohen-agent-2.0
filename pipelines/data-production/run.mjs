@@ -138,17 +138,21 @@ finished = await runProduction({
       assertAdapterBinding(projectRoot, registry, adaptersModule, selectedStages, run.scope);
       const { assertProducerIdentity } = await import("../../packages/data-access/src/producer-identity.mjs");
       const db = await import("../../packages/data-access/src/index.mjs");
-      await assertProducerIdentity(db.queryRows);
+      await assertProducerIdentity(db.queryRows, {cloud:process.env.MOHEN_CLOUD_RUN_PROGRESS_RPC==='true'});
       const mod = await import(pathToFileURL(path.resolve(adaptersModule)).href);
       if (!mod.adapters) throw new Error("ADAPTER_MODULE_MUST_EXPORT:adapters");
       return mod.adapters;
     },
     onStage: async (stage) => {
-      await persistStageProgress({ runId: run.run_id, stage, db: { queryRows } });
+      await persistStageProgress({ runId: run.run_id, stage, db: { queryRows },
+        ...(process.env.MOHEN_CLOUD_RUN_PROGRESS_RPC==='true'
+          ? {ownerSessionToken:process.env.MOHEN_PRIVATE_WORKER_OWNER_SESSION}: {}) });
     },
   },
 });
-reports = await finalizeRun({ run: finished, db: { queryRows }, outDir: reportDir });
+reports = await finalizeRun({ run: finished, db: { queryRows }, outDir: reportDir,
+  ...(process.env.MOHEN_CLOUD_RUN_PROGRESS_RPC==='true'
+    ? {ownerSessionToken:process.env.MOHEN_PRIVATE_WORKER_OWNER_SESSION}: {}) });
 }finally{await privateRuntime.close();}
 console.log(JSON.stringify({ run_id: finished.run_id, status: finished.status, reports }, null, 2));
 process.exit(finished.status === "PASS" ? 0 : finished.status === "HOLD" ? 2 : 1);

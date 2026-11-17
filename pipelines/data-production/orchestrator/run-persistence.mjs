@@ -4,9 +4,16 @@ function requireRunAcknowledgment(rows, runId) {
   if (rows.length !== 1 || String(rows[0].run_id) !== runId) throw new Error("PRODUCTION_RUN_PERSISTENCE_MISSING");
 }
 
-export async function persistStageProgress({ runId, stage, db }) {
-  const rows = await db.queryRows(`update control.production_runs set current_stage=:'stage', status='RUNNING'
-    where run_id=:'run_id'::uuid returning run_id::text as run_id`, { stage, run_id: runId });
+export async function persistStageProgress({ runId, stage, db, ownerSessionToken }) {
+  // The cloud Producer cannot UPDATE the shared run table directly. The existing
+  // database owner verifies the signed Owner identity and exact pre-claimed Root.
+  const scoped=typeof ownerSessionToken==='string'&&ownerSessionToken.length>0;
+  const rows=scoped
+    ? await db.queryRows(`select control.m5_write_production_progress(
+        :'run_id'::uuid, :'owner_token', 'stage', :'stage', null, null) as run_id`,
+      {run_id:runId,owner_token:ownerSessionToken,stage})
+    : await db.queryRows(`update control.production_runs set current_stage=:'stage', status='RUNNING'
+        where run_id=:'run_id'::uuid returning run_id::text as run_id`,{run_id:runId,stage});
   requireRunAcknowledgment(rows, runId);
 }
 
@@ -27,12 +34,18 @@ export function terminalRunEvidence(run) {
   };
 }
 
-export async function finalizeRun({ run, db, outDir }) {
-  const rows = await db.queryRows(`update control.production_runs
-    set status=:'status', finished_at=now(),
-        metadata=coalesce(metadata,'{}'::jsonb) || jsonb_build_object('m5_terminal', :'terminal'::jsonb)
-    where run_id=:'run_id'::uuid returning run_id::text as run_id`,
-    { status: run.status, run_id: run.run_id, terminal: JSON.stringify(terminalRunEvidence(run)) });
-  requireRunAcknowledgment(rows, run.run_id);
-  return writeReports({ run, outDir });
+export async function finalizeRun({ run, db, outDir, ownerSessionToken }) {
+  const scoped=typeof ownerSessionToken==='string'&&ownerSessionToken.length>0;
+  const terminal=JSON.stringify(terminalRunEvidence(run));
+  const rows=scoped
+    ? await db.queryRows(`select control.m5_write_production_progress(
+        :'run_id'::uuid, :'owner_token', 'terminal', :'stage', :'status', :'terminal'::jsonb) as run_id`,
+      {run_id:run.run_id,owner_token:ownerSessionToken,stage:run.current_stage,status:run.status,terminal})
+    : await db.queryRows(`update control.production_runs
+        set status=:'status', finished_at=now(),
+            metadata=coalesce(metadata,'{}'::jsonb) || jsonb_build_object('m5_terminal', :'terminal'::jsonb)
+        where run_id=:'run_id'::uuid returning run_id::text as run_id`,
+      {status:run.status,run_id:run.run_id,terminal});
+  requireRunAcknowledgment(rows,run.run_id);
+  return writeReports({run,outDir});
 }
