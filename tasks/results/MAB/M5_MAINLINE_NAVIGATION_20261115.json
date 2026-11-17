@@ -11952,7 +11952,7 @@
       "不要重复做已经通过的本地隔离G0/G1、R01—R11历史样板，或新建第二Gate/Runner",
       "不要把M2/M3架构迁移成功或历史成功写成目前云端同Root PASS"
     ],
-    "next_execution_rule": "继承第四批窄读SQL迁移及Studio可信Owner事务/知识路由，不重复授权桥。A等当前合法Gate/Owner项目数据后仅定向POS/NEG/AUTH验证，无法满足则保留HOLD并推进无依赖业务；B需独立安全管理员通道设置现有Producer/Worker密码后才实测TLS/执行与独立Gate，不借用户密码、不改Production；主线绝非从D00/G0每次开始。",
+    "next_execution_rule": "继承第五批的低权机器密码安全初始化及split-Secret适配器，不重复重置角色、不要求Owner做URL编码或将秘密发对话；现阶段只需Owner完成Vercel四个Preview配置，随后重新部署并真实TLS正反验证。A线待实际有效Gate与Owner项目后才做正向/错权/撤权，M5仍0/8 HOLD。",
     "last_execution": {
       "batch": "M5-ASSEMBLY-01/02/03/04",
       "code_sha": "712a08b021bbef12977ed907a8c64d136eeca3bc",
@@ -12244,11 +12244,14 @@
       "receipt": "tasks/implementation/MAB/progress.md#2026-11-18m5-formal-read-bridge-04a真实权限读桥已部署b安全初始化仍hold"
     },
     "last_cloud_identity_preparation": {
-      "id": "CLOUD-IDENTITY-PREP-04",
-      "status": "HOLD_NEEDS_SECURE_ADMIN_ROLE_PASSWORD_CHANNEL",
-      "producer_db_password_active": false,
-      "worker_db_password_active": false,
-      "preview_connection_urls": "SENSITIVE_PREVIEW_ONLY_INVALID_PLACEHOLDERS",
+      "id": "M5-IPAD-MACHINE-SECRETS-05",
+      "status": "PASSWORDS_INITIALIZED_PREVIEW_CONFIGURATION_PENDING",
+      "producer_db_password_active": true,
+      "worker_db_password_active": true,
+      "preview_connection_urls": "INVALID_PLACEHOLDER_USER_NOT_CONFIGURED",
+      "split_secret_variables": "NOT_CONFIGURED_YET",
+      "split_secret_adapter_code_sha": "eaf233f5afc55154cbb2eaf7626254050f020ed0",
+      "split_secret_adapter_staging": "dpl_CN6GFun3DfGSLfmrgYG8Up253WNP_READY_BUILD_TYPECHECK",
       "producer_worker_gate_write": "DENIED",
       "cloud_executor": "NOT_CONFIGURED",
       "independent_gate": "POLICY_0_REVIEWER_BINDING_0",
@@ -12336,7 +12339,7 @@
       "scope": "新增来源或需要D00/G0准入的生产子路径",
       "description": "现有独立Gate与Runner应继承；云端低权身份、Executor、策略/绑定与真实同Root回执未完成"
     },
-    "next_build_task": "A现有窄读权限桥已部署，不再补新GRANT；依原Owner/Project与独立Gate合法业务形成当前合格研究对象后做正向/错Owner/错purpose/资格撤权及来源权利验证。B两低权LOGIN密码仍NULL，需受保护安全管理员通道初始化并写Preview敏感变量，随后真实TLS/权限允拒与已有Cloud Executor/Gate Policy Reviewer；禁止使用用户密码或绕安全阻断。",
+    "next_build_task": "A现有窄读权限桥已部署，不重做。B两台机器角色密码已经由Owner在iPad通过Supabase网页安全初始化，当前需将两个不含密码的Session Pooler URL与两个仅Preview的Secret密码分别保存到Vercel，内存URL编码由既有Runner增量适配器负责（staging SHA eaf233f5 READY）。然后测试真实低权TLS/允拒、Executor、独立Gate Policy/Reviewer（仍0）；不可向AI提供密码，不可触Production。",
     "source_locators": [
       "apps/web/lib/mohen-agent/research.ts",
       "apps/web/lib/mohen-agent/retrieve.ts",
