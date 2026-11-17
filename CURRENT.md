@@ -8,6 +8,10 @@
 
 ## 2. 最近有据可核的云端事实（2026-11-17，补入2026-11-18定向工程证据）
 
+- **2026-11-18最新A线（M5-FORMAL-READ-BRIDGE-04）**：开发Supabase`mohen-cloud`实际已应用迁移台账`20261117172439 m5_scoped_formal_project_gate_read`，新增单Project、签名Owner会话、当前G0—G4限定用途的**窄读函数**，只授受限`mohen_app_runtime` EXECUTE，不授正式表SELECT；anon/authenticated/service_role/Producer均不可调用。已实测无签名Owner时`42501`拒绝、anon/Producer调用拒绝、无现行资格返回false。Studio现经原`createAppTransaction`调用新接口，不再裸查正式表；当前代码`3d0ace33699693e9c672e76fe7454932b1885fec`的受保护非生产staging`dpl_DSJsyAxRL2Eh6hYxkmUCB7WJyTxa` **READY/编译/类型检查通过**。真实Owner同Project合格读取、跨Owner、错用途、撤权场景仍NOT_RUN：`studio.projects=0`、`control.qualification_current=0`。新函数使用受限EXECUTE且函数内再验签名Owner/项目/目的/当前Gate（刻意SECURITY DEFINER，固定search_path，不能被public直接执行），不能当成任意高权读许可。GitHub Node专项测试尚无独立执行回执。
+- **2026-11-18最新B线**：两个现有机器LOGIN依然**无密码**且不绕RLS；只读权限核对确认Producer/Worker均不能直接写Gate审计/当前资格，也不能执行Studio窄读函数。当前可用Supabase连接工具无自定义role密码的**受保护管理动作**，此前安全通道拒绝的SQL密码写未绕行；Preview仍只有无效机器URL占位。Cloud Executor/独立Gate的激活还受安全管理员密码配置、Gate Policy/Binding(当前均0)与真实低权TLS/允拒测试阻断。**Production未改，M5仍0/8**。
+
+
 - **2026-11-18最新：M5-SECURE-MACHINE-READY-03（已推main、非生产构建通过）**：承接既有Studio L0—L4候选、正式G0—G4/G5读。正式G0—G4适配器现**必须经已有签名Owner会话及`createAppTransaction`受限应用角色，在同一事务核实ACTIVE Project归属后**才尝试当前独立Gate查询；不用通用DB身份冒充项目权限。不同L层查询单独降级，已经确证合格的G5/G3知识可复用，未可核实的缺口仍HOLD；超限扫描为PARTIAL。云端机器预检远程必须`sslmode=verify-full`，并彻底删除Runner缺专用Producer URL时回退到通用`DATABASE_URL`的风险。GitHub精确代码`b6c4c45c12507a47bb73dea4b1c0c44a9d90e6a3`在受保护**非生产staging** `dpl_EhZKtPbJ7o3RupsxqFv6gRA4GAzt`状态**READY**，编译/类型检查通过；当前源码纯路由隔离V8 **8/8 PASS**，**GitHub完整Node测试未取得执行回执，NOT_VERIFIED**。Producer/Worker角色密码依然NULL、Preview敏感连接变量仍为无效占位；Cloud Executor/独立Gate/Storage尚无必备凭据，现行Gate资格0、启用Policy0、active Reviewer绑定0，真实Owner Project/Root仍未运行；M5仍0/8。Production仍旧SHA`83560224`，无本批发布。
 
 
@@ -27,7 +31,7 @@
 
 ## 3. 当前两种前沿（不能混淆）
 
-1. **业务/代码最前缺口（第三批后）**：Studio已继承Project候选、G5合格读并完成Project限定G0—G4当前资格读适配器及签名Owner事务/缺口路由。**但现行资格投影为0、受限应用角色仅有资格函数EXECUTE而缺对应业务表的受控SELECT/读桥，真实合格读取尚未验通；跨Project合法共享没有授权索引。**下一批只定向解决现有Gate/Studio授权读取边界，做真实同Project有权/错权/当前资格和撤权正反，确认真正缺来源后再进入已有D阶段；不重做以上已接代码或扩大全表授权。
+1. **业务/代码最前缺口（第四批后）**：已将现有Owner/Project可信事务＋正式G0—G4资格读取接入在开发DB**实际部署**的窄读函数，并实测匿名、Producer、无有效签名Owner拒绝；受保护Preview构建READY。下一步不是重写适配器或重开GRANT，而是先有真实Owner Project与**合法当下独立Gate资格**，证明有权读取/错用途/错Owner/资格撤权并核对来源动作权利；当前资格0、项目0不允许伪造PASS。跨Project共享仍无受权索引，不能将空项目推为全局无源。
 2. **真实云端生产前沿**：既有Producer/Worker凭据、Cloud Executor、独立Reviewer/Gate服务未完成有效运行配置；`E_D00_REVIEW`和`E_D00_QUALIFY`只代表“选择了新原件的D00→G0子路径”当前运行阻断，**不能再当作所有Studio研究的统一入口或首个代码任务**。同Root G0/G1→D02仍未实跑。
 
 **M5整体：0/8，OVERALL_HOLD**（同一真实作品八维整链尚无准出证据；不是代码完成率）。
