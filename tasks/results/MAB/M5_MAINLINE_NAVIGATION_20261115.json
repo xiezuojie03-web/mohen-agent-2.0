@@ -11952,7 +11952,7 @@
       "不要重复做已经通过的本地隔离G0/G1、R01—R11历史样板，或新建第二Gate/Runner",
       "不要把M2/M3架构迁移成功或历史成功写成目前云端同Root PASS"
     ],
-    "next_execution_rule": "Producer URL与Producer Preview Secret已核实存在；Worker无密码Preview URL已由工程侧写入，不需Owner重复编辑。当前只待Owner在Vercel新增MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD（Preview/Sensitive），从本机密码管理器粘贴原始Worker密码。四项齐备后触发新的受保护Preview部署，再实测真实TLS、低权角色权限正反与Secret不透传；不可触Production。Owner Project/Root、Gate Policy/Reviewer Binding仍0，M5 0/8 HOLD。",
+    "next_execution_rule": "Producer/Worker四项Preview URL+Secret均已核实存在，Owner无需再操作。最新dpl_Gzbgit2J8N8QXhv2vGhxvkJuyuk5为READY但target=staging；项目SSO元数据仅Preview且Custom Environments为空，Preview变量注入和SSO保护范围尚未证实。先运行Node专项测试/CI并只读厘清环境映射，再在明确受保护且变量注入的非生产部署验证真实TLS及低权限正反；不可触Production。Owner Project/Root、Gate Policy/Reviewer Binding仍0，M5 0/8 HOLD。",
     "last_execution": {
       "batch": "M5-ASSEMBLY-01/02/03/04",
       "code_sha": "712a08b021bbef12977ed907a8c64d136eeca3bc",
@@ -12244,12 +12244,12 @@
       "receipt": "tasks/implementation/MAB/progress.md#2026-11-18m5-formal-read-bridge-04a真实权限读桥已部署b安全初始化仍hold"
     },
     "last_cloud_identity_preparation": {
-      "id": "M5-IPAD-MACHINE-SECRETS-06",
-      "status": "PRODUCER_PREVIEW_URL_AND_SECRET_VERIFIED_WORKER_URL_CONFIGURED_WORKER_SECRET_PENDING",
+      "id": "M5-CLOUD-OWNER-CONFIG-COMPLETE-07",
+      "status": "FOUR_PREVIEW_SENSITIVE_VARIABLES_PRESENT_DEPLOYMENT_SCOPE_UNVERIFIED",
       "producer_db_password_active": true,
       "worker_db_password_active": true,
-      "preview_connection_urls": "BOTH_PREVIEW_URLS_CONFIGURED",
-      "split_secret_variables": "PRODUCER_URL_PASSWORD_AND_WORKER_URL_CONFIGURED_WORKER_PASSWORD_PENDING",
+      "preview_connection_urls": "BOTH_PREVIEW_URLS_PRESENT_PREVIEW_SENSITIVE",
+      "split_secret_variables": "PRODUCER_URL_PASSWORD_AND_WORKER_URL_PASSWORD_ALL_PRESENT_PREVIEW_SENSITIVE",
       "split_secret_adapter_code_sha": "eaf233f5afc55154cbb2eaf7626254050f020ed0",
       "split_secret_adapter_staging": "dpl_CN6GFun3DfGSLfmrgYG8Up253WNP_READY_BUILD_TYPECHECK",
       "producer_worker_gate_write": "DENIED",
@@ -12259,21 +12259,28 @@
       "producer_url_configured": true,
       "producer_password_secret_configured": true,
       "worker_url_configured": true,
-      "worker_password_secret_configured": false,
+      "worker_password_secret_configured": true,
       "worker_url_write": "VERCEL_API_UPSERT_SUCCESS_PREVIEW_SENSITIVE_NO_PASSWORD",
       "producer_password_value_read": false,
       "worker_password_value_read": false,
-      "next_owner_action": "ADD_MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD_AS_PREVIEW_SENSITIVE_SECRET",
-      "next_engineering_action": "FRESH_PROTECTED_PREVIEW_DEPLOY_THEN_REAL_TLS_AND_LOW_PRIVILEGE_POSITIVE_NEGATIVE_TESTS",
-      "actual_tls": "NOT_TESTED_AWAITING_WORKER_SECRET_AND_FRESH_DEPLOYMENT"
+      "next_owner_action": "NONE_CURRENTLY_REQUIRED",
+      "next_engineering_action": "RUN_NODE_TESTS_AND_CI; VERIFY_STAGING_PREVIEW_VARIABLE_AND_SSO_SCOPE; THEN REAL_TLS_PERMISSION_TESTS",
+      "actual_tls": "NOT_TESTED",
+      "latest_deployment": "dpl_Gzbgit2J8N8QXhv2vGhxvkJuyuk5",
+      "latest_deployment_sha": "954760da7d6cc33b7fd8116e8d64f07ae27edce3",
+      "latest_deployment_target": "staging",
+      "latest_deployment_state": "READY",
+      "preview_sso_protection": "PROJECT_METADATA_PREVIEW_ONLY",
+      "custom_environments": "NONE_LISTED",
+      "preview_variable_injection_into_latest_deployment": "NOT_VERIFIED"
     },
     "last_cloud_identity_configuration": {
-      "batch": "M5-IPAD-MACHINE-SECRETS-06",
-      "producer_url": "VERIFIED_PRESENT_PREVIEW_SENSITIVE",
+      "batch": "M5-CLOUD-OWNER-CONFIG-COMPLETE-07",
+      "producer_url": "VERIFIED_PRESENT_PREVIEW_SENSITIVE_VALUE_NOT_READ",
       "producer_password": "VERIFIED_PRESENT_PREVIEW_SENSITIVE_VALUE_NOT_READ",
-      "worker_url": "UPSERTED_BY_ENGINEERING_PREVIEW_SENSITIVE_NO_PASSWORD",
-      "worker_password": "PENDING_OWNER_ENTRY",
-      "next": "ADD_WORKER_SECRET_THEN_FRESH_PREVIEW_DEPLOY_AND_REAL_TLS_PERMISSION_TESTS",
+      "worker_url": "VERIFIED_PRESENT_PREVIEW_SENSITIVE_VALUE_NOT_READ",
+      "worker_password": "VERIFIED_PRESENT_PREVIEW_SENSITIVE_VALUE_NOT_READ",
+      "next": "NODE_TESTS_CI_AND_VERIFY_DEPLOYMENT_SCOPE_THEN_TLS",
       "production_changed": false
     }
   },
@@ -12358,7 +12365,7 @@
       "scope": "新增来源或需要D00/G0准入的生产子路径",
       "description": "现有独立Gate与Runner应继承；云端低权身份、Executor、策略/绑定与真实同Root回执未完成"
     },
-    "next_build_task": "A线已有窄读权限桥不重做。B线Producer Preview URL+Secret已核实，Worker无密码Preview URL已由工程侧配置；仅待Owner新增MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD（Preview/Sensitive）。四项齐备后重新部署受保护Preview，实际验证Producer/Worker真实TLS登录、低权权限正反、Executor与独立Gate。Policy/Reviewer仍0，真实Owner Project/Root仍0；不可触Production。",
+    "next_build_task": "A线已有窄读权限桥不重做。B线四项Producer/Worker Preview URL+Secret均已存在，无Owner配置动作。先运行Node测试/CI并厘清最新staging部署与Preview变量/SSO保护映射；确认受保护且变量注入后做真实TLS和低权限正反，再接既有Executor与独立Gate。Owner Project/Root、Policy/Reviewer仍0；不可触Production。",
     "source_locators": [
       "apps/web/lib/mohen-agent/research.ts",
       "apps/web/lib/mohen-agent/retrieve.ts",
