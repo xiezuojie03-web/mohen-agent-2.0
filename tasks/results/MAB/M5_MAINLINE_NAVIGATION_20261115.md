@@ -1,5 +1,8 @@
 # 墨痕 M5 全链路导航｜现行主线分流与工程断点（非权威）
 
+> **2026-11-17｜第一批真实代码进展**：GitHub main已接Studio当前Project L0—L4**候选**与既有G5 L5**合格**读模型，安全路由仅做缺口与资格判断，不擅触D00；受保护非生产构建`344a763d` READY（Next类型/页面构建通过），单测CI未获可核回执、Owner同Root云运行未执行。**共享全局L0—L4合格检索仍是最前实际代码缺口，M5仍0/8 HOLD。** 精确批次详见[progress](../../implementation/MAB/progress.md)。
+
+
 > 2026-11-17定向同步。**本文件是机器JSON的可读解释，不是第二任务书**。唯一施工顺序：[PLAN §3.5 B/C/D](../../implementation/MAB/PLAN.md)；最近云端事实：[CURRENT](../../../CURRENT.md)；精确代码问题：[Studio→Admin审计 §7](M5_STUDIO_TO_ADMIN_CHAIN_AUDIT_20261117.md)。同步前全文已[原样归档](archive/M5_MAINLINE_NAVIGATION_MD_PRE_ROUTING_20261117.md)，其中历史“下一步”不得执行。
 
 ## 1. 唯一现行业务主线：先检索，再决定是否生产
@@ -28,7 +31,7 @@ Creator投稿→作品Reviewer审核＋独立专业G5＋媒体权限→Operator�
 
 | 前沿 | 适用范围 | 事实与下一动作 |
 |---|---|---|
-| **业务功能最前断点** `STUDIO_UNIFIED_L0_L5_ROUTING` | 所有Studio研究的决策入口 | `runResearch`当前主要取L5；项目内L0—L4与全局L5尚未统一。先接已有检索/ACL/G资格、权利和缺口判断，证明有资产直用与缺口分流 |
+| **业务功能最前断点** `STUDIO_UNIFIED_L0_L5_ROUTING` | 所有Studio研究的决策入口 | **已做第一批最小接线**：`runResearch`组合Owner当前项目L0—L4未评估候选与G5合格L5；`knowledge_route`有显式分流。**仍缺合法共享全局L0—L4授权/当前资格检索**，无源只能标`SOURCE_GAP_UNCONFIRMED`而不自动D00。受控Preview精确344a763代码构建READY，单测和同Root实跑未验 |
 | **子路径云端运行HOLD** `E_D00_REVIEW`、`E_D00_QUALIFY` | 任务确实选择新来源/补来源准入时 | 低权Producer/Worker、Executor、独立Gate策略/绑定/凭据以及同Root真实资格消费仍未接通；继承原件、Runner、Reviewer，不重建 |
 | **后续实际接收待验** `E_L1_TO_D02` | 已有同Root当前L1/G1且目标需D02 | C01 typed接口已有代码，待真实云端接收、独立G2及负例；不要把旧接口当缺代码重做 |
 
@@ -42,4 +45,4 @@ Creator投稿→作品Reviewer审核＋独立专业G5＋媒体权限→Operator�
 
 ## 4. 经Owner审阅后下一项施工任务（尚未启动）
 
-在最新main上以Studio统一L0—L5检索与缺口调度为第一批实际功能接线：继承`apps/web/lib/mohen-agent/research.ts`、`retrieve.ts`、`studio-research-read.ts`、G5读模型及现有ACL/资格服务。先做现有资产直接复用、无权限拒绝、已有L0缺L1、确实缺来源与用户可选上传的最小可验证分流，不新建知识库/Runner/Gate。对云执行低权角色、Executor、独立Reviewer配置可并行做授权范围内的准备；真实同Root运行仍按依赖推进。每批实际回执入progress，相关状态才更新CURRENT及三件导航；不以文档同步冒充业务施工。
+继承2026-11-17第一批已实现的`knowledge-routing.mjs`及Owner项目L0—L4候选/G5合格L5初步接线；**下一批首先补全合法共享L0—L4当前资格检索、证实缺源及按需D分支调用**，随后基于同Root真实资产正反运行。原计划曾要求：继承`apps/web/lib/mohen-agent/research.ts`、`retrieve.ts`、`studio-research-read.ts`、G5读模型及现有ACL/资格服务。先做现有资产直接复用、无权限拒绝、已有L0缺L1、确实缺来源与用户可选上传的最小可验证分流，不新建知识库/Runner/Gate。对云执行低权角色、Executor、独立Reviewer配置可并行做授权范围内的准备；真实同Root运行仍按依赖推进。每批实际回执入progress，相关状态才更新CURRENT及三件导航；不以文档同步冒充业务施工。
