@@ -5,5 +5,8 @@ revoke all on function control.m5_write_production_progress(uuid,text,text,text,
        mohen_gate_signer,mohen_gate_reader,mohen_gate_authority;
 drop function if exists control.m5_write_production_progress(uuid,text,text,text,text,jsonb);
 revoke all on control.production_runs from mohen_producer;
+-- The historical M2.1 migration also granted COLUMN-level UPDATE; table REVOKE alone
+-- does not remove those column grants, even after its unsafe RLS policy is dropped.
+revoke update (current_stage,status,finished_at) on control.production_runs from mohen_producer;
 drop policy if exists producer_run_progress on control.production_runs;
 commit;

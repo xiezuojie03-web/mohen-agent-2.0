@@ -4,6 +4,9 @@
 -- This file is for the current authorized development integration database.
 begin;
 revoke all on control.production_runs from mohen_producer;
+-- The historical M2.1 migration also granted COLUMN-level UPDATE; table REVOKE alone
+-- does not remove those column grants, even after its unsafe RLS policy is dropped.
+revoke update (current_stage,status,finished_at) on control.production_runs from mohen_producer;
 drop policy if exists producer_run_progress on control.production_runs;
 create or replace function control.m5_write_production_progress(
  p_run_id uuid,p_owner_token text,p_action text,p_stage text,p_status text,p_terminal jsonb
