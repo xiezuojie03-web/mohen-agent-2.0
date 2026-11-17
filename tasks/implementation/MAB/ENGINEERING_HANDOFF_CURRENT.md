@@ -18,8 +18,8 @@
 
 ## 3. 当前最前行动与阻断
 
-**业务/代码最前差异（2026-11-17第一批后）**：已提交`apps/web/lib/mohen-agent/knowledge-routing.mjs`及Studio研究上下文接线；现能将当前Owner项目L0—L4候选与现有G5合格L5纳入保守路由，`SOURCE_GAP_UNCONFIRMED`不自动D00；精确受保护staging构建`fb7e5c52` READY。**下一批只补尚未实现的合法共享全局L0—L4当前资格/ACL/rights查询、确定真正缺源、并接现有D阶段路径**；不可重做已接的Project候选/L5、安全分类或原件/G0。新增9组单测GitHub CI未获回执，运行验收保持NOT_VERIFIED。**运行并行阻断**：机器登录密码、Cloud Executor与独立Gate/Reviewer、安全Storage配置尚未完成真实云端验证；只影响依赖这些条件的动作，其余已授权代码/测试工作继续。发布前另解决精确WorkRevision映射及Reviewer/Operator独立身份。当前M5 0/8 OVERALL_HOLD，不能将页面GET200、历史原件PASS或空列表变成业务准出。
+**业务/代码最前差异（2026-11-18第二批后）**：已在原`runResearch`接当前Owner Project内的L0—L4候选、受控正式G0—G4资格查询适配器、G5 L5合格读取及保守缺口路由；受保护staging对代码SHA `b4bbd1cc`构建READY，新增14组单测的执行回执仍NOT_VERIFIED。**当前真实问题**是开发库现行资格投影0、正式读身份无法同时获得限定资格函数EXECUTE及所需表SELECT，且尚无跨Project共享授权索引；不能为了搜索“全局资产”越过Owner-only合同，缺源保持`SOURCE_GAP_UNCONFIRMED`。下一步定向核实既有`mohen_app_runtime`/Gate读角色权限及最小合法读接口，用真实当前Project和有效独立Gate资格正反验证；然后才允许确证缺源接D00。不得重做已有Project候选/G5/G0—G4适配器或重新设计D/L/G。**运行并行阻断**：Producer/Worker两个现有LOGIN角色仍无密码（2026-11-18只读回证），安全执行通道拒绝密码配置；Preview两项敏感连接变量已恢复为明确不可登录占位，未有半激活。须通过受控安全凭据配置入口激活并完成真实TLS及低权正反，再按既有合同补Cloud Executor、独立Gate/Reviewer/Storage，不得扩大权限或用旧历史PASS；只影响依赖这些条件的动作，其余已授权代码/测试工作继续。发布前另解决精确WorkRevision映射及Reviewer/Operator独立身份。当前M5 0/8 OVERALL_HOLD，不能将页面GET200、历史原件PASS或空列表变成业务准出。
 
 ## 4. 新窗口最短指令
 
-> 请按最新main的AGENTS.md、PLAN.md §3.5 B/C/D、CURRENT.md与本交接入口，从2026-11-17已实现的Studio项目候选+G5合格L5路由断点继续，优先补合法共享L0—L4当前资格检索及确证缺口，验证已有合格直接复用/错权拒绝，不重复第一批代码，继承原能力；并行推进云端安全配置中可授权的独立运行阻断。对同一真实Project/Root逐节点验证实际下游，保持独立Gate、最小权限、单main及生产部署隔离。按批追加progress，真实事实有变才更新CURRENT，导航变化时JSON/MD/HTML同提交同步。只按唯一八维验收，不从上传或G0重头施工，也不把已完成历史工作重新做一遍。
+> 请按最新main的AGENTS.md、PLAN.md §3.5 B/C/D、CURRENT.md与本交接入口，从2026-11-18已提交的项目候选＋G5合格读＋正式G0—G4按项目资格检索适配器继续，优先修复受控授权读身份与正式对象读取的合同衔接、取得实际Gate正反回执，并核实共享ACL后才判断无源；不重新写已接模块。机器密码激活另走经批准的安全管理通道，验证成功才启动Cloud Executor，继承原能力；并行推进云端安全配置中可授权的独立运行阻断。对同一真实Project/Root逐节点验证实际下游，保持独立Gate、最小权限、单main及生产部署隔离。按批追加progress，真实事实有变才更新CURRENT，导航变化时JSON/MD/HTML同提交同步。只按唯一八维验收，不从上传或G0重头施工，也不把已完成历史工作重新做一遍。
