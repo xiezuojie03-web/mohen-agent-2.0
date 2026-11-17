@@ -1,5 +1,8 @@
 # 墨痕 M5 全链路导航｜持续维护基线（非权威标准）
 
+> **2026-11-17｜M5-CLOUD-PROGRESS-01**：现行Runner云端运行进度/终态已接入Owner签名会话与真实Project/Root作用域RPC；开发库`mohen-cloud`迁移`20261117010309`安装并正反回读，Producer无运行表直接读写权，独立Gate签发权限不变。代码`46a95654`主CI`43992065391` SUCCESS；隔离PG17`43992021553`及HTTP`43992021166` SUCCESS（隔离对应`6ec8112b`）。**同Root真实G0/G1→D02仍NOT_RUN，Owner登录、机器低权LOGIN与独立Reviewer服务未就位，E_D00_REVIEW/E_D00_QUALIFY与八维仍HOLD**。完整证据见`CURRENT.md`、`progress.md`，此更新不提升节点或边的三层状态。
+
+
 > **2026-11-17｜M5-ACCOUNT-RECOVERY-01：代码98c5e78已推main，主CI43984227771 SUCCESS；新版受保护Preview dpl_7EwV1zWWHvxYHER9or7StyUp4txf READY，精确部署98c5e78，匿名登录入口302保护仍在。24专项/10真实隔离PG/747 CI口径单测及HTTPS浏览器链通过；精确隔离云CI PG43984227735/HTTP43984227834也已SUCCESS。QQ真实SMTP未配置且未投递，Owner已收到5df现有入口的个人一小时设置链接，不依赖邮件；Owner保存/登录未确认，八维仍HOLD。**
 
 
