@@ -220,17 +220,17 @@ D00是来源发现与获取链，不应简化为一个上传按钮。正确顺�
 
 ### 7.3 当前代码真实情况：尚未形成上述统一路由
 
-- [`runResearch`](../../../../apps/web/lib/mohen-agent/research.ts) 当前调用 [`retrieveMaterials`](../../../../apps/web/lib/mohen-agent/retrieve.ts) 检索现有六类L5 read-model成果，再调用 [`discoverExternalSources`](../../../../apps/web/lib/mohen-agent/source-discovery.ts) 检索上海图书馆、Commons、国会图书馆、维基文库候选。后者输出的是`RESEARCH_LEAD`线索，不是已下载原件或合格知识。
+- [`runResearch`](../../../apps/web/lib/mohen-agent/research.ts) 当前调用 [`retrieveMaterials`](../../../apps/web/lib/mohen-agent/retrieve.ts) 检索现有六类L5 read-model成果，再调用 [`discoverExternalSources`](../../../apps/web/lib/mohen-agent/source-discovery.ts) 检索上海图书馆、Commons、国会图书馆、维基文库候选。后者输出的是`RESEARCH_LEAD`线索，不是已下载原件或合格知识。
 - 当前`source-discovery.ts`的`diagnoseSourceNeed`只接收`localMaterialCount`；而`runResearch`传入的数量来自L5检索结果，不是全局L0—L5存量。且`discoverExternalSources`即使有本地材料，仍会执行外部候选检索。因此它尚不是完整的“全层级存量盘点→只对缺口获取”编排。
-- [`readStudioResearchProject`](../../../../apps/web/lib/studio-research-read.ts) 已有项目内读取能力：Owner当前Project的L0私有原件、L1阅读单元、L2证据链接及项目L3/L4候选；L1/L2在该路径中仍标为`UNASSESSED_CANDIDATE`。L5走单独的G5合格读模型。该读取服务目前是项目作用域，不是全库共享L0—L4检索；新建Research Task的初始`runResearch`路径没有调用它。
-- [`verifySourceIntake`](../../../../pipelines/data-production/workers/private-evidence-stage.mjs) 的D00 Worker要求原件已经`STORED_VERIFIED`并完成source registration，然后复核字节/SHA、项目作用域、来源绑定，记录Y01—Y08相关准入/获取账，最后提交G0候选。这是“实际取得后”的私有来源准入实现，不是外部资源搜索/下载本身。
-- [`StudioWorkbench`](../../../../apps/web/app/studio/StudioWorkbench.tsx) 当前正式生产操作要求用户从本Project原件清单中手动选择一个已登记原件并输入页码；这只是用户提供/已入库原件的受控生产入口，不应被提升为所有Studio研究的普遍入口。
+- [`readStudioResearchProject`](../../../apps/web/lib/studio-research-read.ts) 已有项目内读取能力：Owner当前Project的L0私有原件、L1阅读单元、L2证据链接及项目L3/L4候选；L1/L2在该路径中仍标为`UNASSESSED_CANDIDATE`。L5走单独的G5合格读模型。该读取服务目前是项目作用域，不是全库共享L0—L4检索；新建Research Task的初始`runResearch`路径没有调用它。
+- [`verifySourceIntake`](../../../pipelines/data-production/workers/private-evidence-stage.mjs) 的D00 Worker要求原件已经`STORED_VERIFIED`并完成source registration，然后复核字节/SHA、项目作用域、来源绑定，记录Y01—Y08相关准入/获取账，最后提交G0候选。这是“实际取得后”的私有来源准入实现，不是外部资源搜索/下载本身。
+- [`StudioWorkbench`](../../../apps/web/app/studio/StudioWorkbench.tsx) 当前正式生产操作要求用户从本Project原件清单中手动选择一个已登记原件并输入页码；这只是用户提供/已入库原件的受控生产入口，不应被提升为所有Studio研究的普遍入口。
 - 因此当前真正缺少的是**统一的L0—L5知识存量检索/资格路由，以及“发现缺口→D00合法获取→原件存储登记→G0”的连续编排**。单独把上传POST加到Studio UI，并不能解决这个核心问题。上传应保留为用户提供原件的一种可选方式。
 
 ### 7.4 两个Studio页面的实际职责
 
-- [`/studio`](../../../../apps/web/app/studio/StudioWorkbench.tsx)：当前主自然语言研究/创作工作台，自动建立Project/Research Task，显示研究结果和缺口，承载导演、分镜、作品修订及投稿。
-- [`/studio/desk`](../../../../apps/web/app/studio/desk/page.tsx)：历史保留的资料台/辅助观察页，包含旧`ImportForm`（写入`public.imported_materials`，不是正式私有原件）、`ProjectNotebook`（Project/研究资产手工记录）、材料篮以及D00 Y01—Y08来源/获取回执展示。
+- [`/studio`](../../../apps/web/app/studio/StudioWorkbench.tsx)：当前主自然语言研究/创作工作台，自动建立Project/Research Task，显示研究结果和缺口，承载导演、分镜、作品修订及投稿。
+- [`/studio/desk`](../../../apps/web/app/studio/desk/page.tsx)：历史保留的资料台/辅助观察页，包含旧`ImportForm`（写入`public.imported_materials`，不是正式私有原件）、`ProjectNotebook`（Project/研究资产手工记录）、材料篮以及D00 Y01—Y08来源/获取回执展示。
 - 现行上位架构没有要求用户必须面对两个独立Studio入口。长期以`/studio`为唯一主入口；资料台中仍有价值的资料详情、记录和D00观察能力作为Studio上下文子视图/辅助诊断保留。先继承功能，不把旧导入流程当正式原件流程，也不因入口重复立即删除页面。
 
 ### 7.5 Admin角色补充说明
