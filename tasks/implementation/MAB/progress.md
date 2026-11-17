@@ -4642,3 +4642,21 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **施工优先级已改正**：不再把“上传POST接入Studio UI”单独当作第一主线。第一优先工作包为“Studio知识可得性与按需D/L/G路由”，先把已有L5 read-model、项目内L0—L4读取、外部来源发现和D00正式获取准入整合成一个Agent调度决策，再按实际缺口触发相应工序；上传能力作为可选来源入口一并纳入。
 - **下一步工程动作**：定向读取并对比`runResearch/retrieveMaterials`、`readStudioResearchProject`、`discoverExternalSources/diagnoseSourceNeed`、`verifySourceIntake`与现有资产Repository的输入/输出/资格合同，形成最小接口映射；继而实施统一检索与缺口路由，确保不重建既有模块。先做代码路径与现有数据结构定向验证，不再做全仓盘点。
 - **状态边界**：本次只修订计划及记录，尚未完成统一路由代码，也未提升任何M5节点/八维状态。M5真实Project/Root及同Root D00/G0→D01/G1→D02云端回执仍未验证。
+
+
+## 2026-11-17｜M5-STUDIO-UNIFIED-KNOWLEDGE-ROUTING-01｜第一批最小真实接线（CODE_BUILD_READY / UNIT_NOT_CONFIRMED / CLOUD_E2E_HOLD）
+
+- **Owner授权目标**：Studio先复用L0—L5知识、核对当前资格/权利/ACL，再按确证缺口进入既有D阶段；上传可选。仅在已有代码上最小接线，不重建库、D00、Runner/Registry、Gate。唯一准出依然PLAN §3.5 B八维。
+- **施工前可信基线**：main@97dd312553cbe23efd9f7decca388fc25283716b，审计报告§7、PLAN §3.5 C/D，已有`runResearch/retrieveMaterials`仅L5合格读且每次触发外部source-discovery；`readStudioResearchProject`具Owner-RLS私有L0—L4读取但只给未评估候选，`createResearchTask`使用真实signed session/project；专业D/G/原件原流程直接继承。Vercel生产Git自动部署开关`deploymentEnabled:false`，本批不改生产。
+- **当前已实改的文件**：
+  - 新建`apps/web/lib/mohen-agent/knowledge-routing.mjs`及`.d.mts`：纯路由决策，仅把符合当前G5 read-model读取的L5当可复用材料；私有L0/L1—L4与被拒资产只作缺口/资格线索，绝不升级成已签Gate知识；合法范围未查全时明示`SOURCE_GAP_UNCONFIRMED`，禁止自动D00。
+  - `apps/web/lib/mohen-agent/research.ts`：Studio绑定当前Owner/Project私有读取，资格服务仍复用L5原通道；项目读取在付费模型理解前完成；Studio不再无条件抽实体/外部检索；原非Studio问答通道保持原语义；预算/Receipt不确定仍fail closed。
+  - `apps/web/lib/mohen-agent/research-prerequisites.ts`：上海图书馆外部获取密钥不再是所有库内研究通用前置；模型、独立资格和持久工具账本仍校验。
+  - `apps/web/lib/studio-research.ts`：新建、恢复、追加研究均带project及signed session进行路由，将`knowledgeRoute`保存到checkpoint并记检索事件。两个follow-up API路由传当前认证token，研究任务POST显式返回`knowledge_route`；生产仍仅ST-04 Creator显式请求。
+  - 新建`tests/data-production/studio-knowledge-routing.test.mjs`9组正反/边界断言，涵盖合格知识复用、候选失格、L0需G0、受限资产、数据不可达、截断、不确定缺口、完整覆盖后才来源发现与接线静态断言。
+- **代码精确提交**：`f9ebfac2`、`e9bf0026`、`2bf0c46e`、`cfa7c4a2`、`e10f7447`、`eb36e646`、`926ff144`、`ca909874`、`344a763d`、`adb1c0a6`（完整SHA以GitHub提交记录为准）。
+- **实际构建证据**：已授权非生产Vercel`staging`部署`dpl_3kbNeBYWFK1WCMijUb6zoVKZQGN6`，精确代码`344a763d7bdb9b7af01e76d865915adc2c83122e`状态READY，Next.js编译、类型检查、页面生成全部通过；它不覆盖最终更晚的`adb1c0a6`API响应微改。Production最新核得`dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc`精确SHA`835602242cab31b1fcb372c7ff5efd4fc41dfd89`未变。GitHub独立单测CI/PG/HTTP未获得明确回执，本批标**NOT_VERIFIED**，不得将测试文件存在、Vercel READY或建构成功写成9组单测PASS。
+- **未闭合的核心差异**：现有`readStudioResearchProject`仅Owner当前Project L0—L4候选，尚没有**合法共享全局L0—L4的统一已授权检索与Gate状态绑定**；因此尚不能可信判全库真正无来源，现行缺口采用`SOURCE_GAP_UNCONFIRMED`安全HOLD而非盲目D00。已取得私有原件未检证当前G0亦不能自动进入D01。现有Runner支持的stage区间与正式授权尚需真正消费路径。当前Cloud Producer/Worker LOGIN口令、Cloud Executor、独立Gate Policy/Reviewer Binding/Service Credential及真实Owner/Root生产回执仍按最近云端审计HOLD；本批未修改任何凭据、云数据库或生产授权。该批没有证明实际L0—L5统一合格查询成功或业务同Root闭环。
+- **下游状态**：M5八维仍`0/8 OVERALL_HOLD`；新增代码可编译，不代表真实用户已能调用完整L0—L5或D00→D01。当前已实现的入口API返回路由分类，但真实Owner会话HTTP、项目/知识真实正反、共享查询、外部取得及费用均未实跑。
+- **下一精确施工**：第一先完成合法共享L0—L4的有界授权检索与资格/权利核验，做到同一Project/Root已有合格资产直接用、错Owner/撤权负例拒绝、真正无源才允许D00候选检索；只复用现有repository/Gate服务并做好精确版本/读模型桥接。与此同时验证本批9组单测GitHub CI/运行证据，继续以安全面板配对云低权机器账号及独立Gate/Executor（没有授权密钥不能擅自生成）。当前配置阻断不应挡住有授权的源代码/单元测试施工。
+- **范围外与回退**：无数据库迁移、无云库业务行改写、无独立Gate签发、无原件公开、无新增Provider充值/调用、无Production发布。若发现当前路由导致已授权场景不能用，以本批精确SHA定位原文件和新路由模块小范围回退；禁止重置整仓及清理现有历史试验数据作为默认修复。
