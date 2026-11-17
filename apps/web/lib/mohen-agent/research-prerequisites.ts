@@ -17,8 +17,8 @@ export function requireResearchPrerequisites(ledger?: Ledger) {
   // entity-extraction fallback key. Presence is readiness, never spend authority.
   if (!process.env.MOHEN_LLM_BASE_URL?.trim() || !process.env.MOHEN_LLM_API_KEY?.trim())
     missing.push('REAL_PROVIDER_UNAVAILABLE');
-  if (!(process.env.SHANGHAI_LIBRARY_KEY || process.env.SHANGHAI_LIBRARY_API_KEY)?.trim())
-    missing.push('SOURCE_ACQUISITION_UNAVAILABLE');
+  // Source acquisition credentials belong to a verified D00 need, not to
+  // every Studio research/read request. No source fetch is authorized here.
   const context = consumerContext('agent');
   if (!context || context.scope.requested_action !== 'read')
     missing.push('AGENT_QUALIFICATION_CONTEXT_REQUIRED');
