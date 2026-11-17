@@ -190,3 +190,63 @@
 - 不将历史隔离 PASS、旧 Project 外的 Run、旧作品发布指针、Preview READY 或单个 HTTP 200 拼接成当前整链 PASS。
 - 不新增收费环境、不切换正式 Production、不公开部署；不输出密钥、不代用 Owner 浏览器会话。
 - 施工顺序和最终验收继续以 [PLAN V1.7 §3.5](https://github.com/xiezuojie03-web/mohen-agent-2.0/blob/main/tasks/implementation/MAB/PLAN.md) 为唯一权威。
+
+
+## 7. Owner反馈后的架构语义补正（2026-11-17）
+
+> 本节纠正第5节将“正式原件上传接入Studio”过度表述为第一主线的偏差。不得把“原件字节→SHA→Source Version→D00→G0”理解为每次Studio研究的必经顺序；该序列只描述“新增/用户提供原件”完成存储登记后进入私有来源准入的一条路径。
+
+### 7.1 正确业务分流：先查可复用存量，再决定是否D00
+
+Studio收到自然语言问题后，Agent应先检索墨痕所有当前可访问的L0—L5知识/来源资产，逐项核对Owner/Project/共享ACL、当前revision、来源身份、逐动作权利、consumer、purpose、scope及对应当前Gate资格，再作分流：
+
+- **已有L0**：可直接将原件作为研究来源调用；若尚无可用L1读取成果，才需要依批准方法进入D01/G1读取。L0原件存在不等于其内容已被读取。
+- **已有L1**：若其来源版本、定位、当前G1资格及本次用途/权限均有效，可直接复用L1，不重新执行D00或D01。若仅有未签发/未评估的L1候选，可作为待核线索，不能冒充合格事实。
+- **已有L2—L5**：按当前层级资格、用途和消费权限直接复用；只对研究中确实缺少的下游成果继续生产。L5仍走现有G5/consumer/purpose/scope合格读模型。
+- **只有在可用存量不足或存在明确缺口时**，才为缺失部分启动D00来源发现与获取；不得为已经存在且合格的资产重复获取、重复读取或重复生产。
+
+“数据库里有合法资源”是可调用的必要条件，但不是无条件全库可读：还须满足身份/项目/共享范围、来源版本与权利逐动作许可、用途和consumer限制、当前资格。允许人工读取也不自动等于允许发给外部模型处理、公开展示或发布。
+
+### 7.2 新增资源时的完整D00路径
+
+D00是来源发现与获取链，不应简化为一个上传按钮。正确顺序为：
+
+1. Y01：先盘点全局/当前作用域的可用存量与本题研究需求，确定真实缺口。
+2. Y02/Y03：仅对缺口开展机构目录、多渠道检索、异名/时代/跨语言扩展，产生可追溯候选。
+3. Y04—Y06：核对目录回溯、取得覆盖、来源身份、权利线索与优先级。
+4. Y07：形成合法获取方案并执行实际取得；必要时由Agent调用允许的外部资源服务，也允许Owner提供原件作为其中一种输入方式。
+5. 对实际取得的字节进行私有存储、SHA/长度回读、source/source_version/raw_item身份登记和获取尝试/覆盖记录。
+6. Y08形成取得回执并提交G0候选；独立G0核准来源和D01方法计划后，D01才按批准方法读取，随后G1、D02/G2等按实际缺口继续。
+
+### 7.3 当前代码真实情况：尚未形成上述统一路由
+
+- [`runResearch`](../../../../apps/web/lib/mohen-agent/research.ts) 当前调用 [`retrieveMaterials`](../../../../apps/web/lib/mohen-agent/retrieve.ts) 检索现有六类L5 read-model成果，再调用 [`discoverExternalSources`](../../../../apps/web/lib/mohen-agent/source-discovery.ts) 检索上海图书馆、Commons、国会图书馆、维基文库候选。后者输出的是`RESEARCH_LEAD`线索，不是已下载原件或合格知识。
+- 当前`source-discovery.ts`的`diagnoseSourceNeed`只接收`localMaterialCount`；而`runResearch`传入的数量来自L5检索结果，不是全局L0—L5存量。且`discoverExternalSources`即使有本地材料，仍会执行外部候选检索。因此它尚不是完整的“全层级存量盘点→只对缺口获取”编排。
+- [`readStudioResearchProject`](../../../../apps/web/lib/studio-research-read.ts) 已有项目内读取能力：Owner当前Project的L0私有原件、L1阅读单元、L2证据链接及项目L3/L4候选；L1/L2在该路径中仍标为`UNASSESSED_CANDIDATE`。L5走单独的G5合格读模型。该读取服务目前是项目作用域，不是全库共享L0—L4检索；新建Research Task的初始`runResearch`路径没有调用它。
+- [`verifySourceIntake`](../../../../pipelines/data-production/workers/private-evidence-stage.mjs) 的D00 Worker要求原件已经`STORED_VERIFIED`并完成source registration，然后复核字节/SHA、项目作用域、来源绑定，记录Y01—Y08相关准入/获取账，最后提交G0候选。这是“实际取得后”的私有来源准入实现，不是外部资源搜索/下载本身。
+- [`StudioWorkbench`](../../../../apps/web/app/studio/StudioWorkbench.tsx) 当前正式生产操作要求用户从本Project原件清单中手动选择一个已登记原件并输入页码；这只是用户提供/已入库原件的受控生产入口，不应被提升为所有Studio研究的普遍入口。
+- 因此当前真正缺少的是**统一的L0—L5知识存量检索/资格路由，以及“发现缺口→D00合法获取→原件存储登记→G0”的连续编排**。单独把上传POST加到Studio UI，并不能解决这个核心问题。上传应保留为用户提供原件的一种可选方式。
+
+### 7.4 两个Studio页面的实际职责
+
+- [`/studio`](../../../../apps/web/app/studio/StudioWorkbench.tsx)：当前主自然语言研究/创作工作台，自动建立Project/Research Task，显示研究结果和缺口，承载导演、分镜、作品修订及投稿。
+- [`/studio/desk`](../../../../apps/web/app/studio/desk/page.tsx)：历史保留的资料台/辅助观察页，包含旧`ImportForm`（写入`public.imported_materials`，不是正式私有原件）、`ProjectNotebook`（Project/研究资产手工记录）、材料篮以及D00 Y01—Y08来源/获取回执展示。
+- 现行上位架构没有要求用户必须面对两个独立Studio入口。长期以`/studio`为唯一主入口；资料台中仍有价值的资料详情、记录和D00观察能力作为Studio上下文子视图/辅助诊断保留。先继承功能，不把旧导入流程当正式原件流程，也不因入口重复立即删除页面。
+
+### 7.5 Admin角色补充说明
+
+- `Admin`是管理工作台，不是独立用户角色；现行登录角色为`member/creator/operator/reviewer`。
+- 登录角色`reviewer`签署作品级精确WorkRevision审核决定；`operator`执行发布/撤回。二者可以出现在同一Admin工作台，但同一身份不能对同一作品既审核又发布。
+- 作品Reviewer决定不等于专业G0—G5/G5；专业Gate资格仍由独立资格服务验证。
+- 当前单一Owner账号同时持有Operator与Reviewer，阻断的是“同一身份真实签核后再发布”的正向集成验收，不阻断开发、模块测试或分别验证两种权限。最终真实发布测试时再准备Reviewer-only测试身份；当前Admin用户管理页面没有角色分配操作，需通过受控配置授予，不可把普通注册账号自动视为Reviewer。
+
+### 7.6 修正后的施工优先顺序
+
+1. 先实现Studio统一的L0—L5存量检索与当前资格/权限路由，覆盖项目私有和可共享的全局知识范围。
+2. 只有检测到明确缺口时才启动D00；把现有多渠道候选发现、合法获取/下载、私有存储与source_version登记、Y01—Y08记录和G0候选连成一条可恢复链。
+3. 对已有L1及以上成果直接按资格复用；只有L0缺少读取成果时才进入D01/G1；下游按缺口继续。
+4. 用户上传/指定原件保留为可选来源输入，不是每次研究必填项。
+5. 将`/studio/desk`有价值的资料与过程观察能力收敛到主Studio的上下文视图；不再以“接上传按钮”作为Studio主链唯一首要任务。
+6. 在作品发布阶段再准备独立Reviewer测试身份，并完成作品级Reviewer、专业G5、Operator三者职责验证。
+
+本节只纠正架构语义和后续施工顺序；不修改PLAN唯一任务书，不提升任何导航节点/边或M5八维状态。
