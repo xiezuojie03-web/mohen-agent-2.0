@@ -4667,3 +4667,30 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - Production查询的最近部署依然`dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc`，SHA `835602242cab31b1fcb372c7ff5efd4fc41dfd89`，READY，没有自动发布本批main。
 - Supabase mohen-cloud只读复核：`mohen_m5_producer_login`和`mohen_m5_worker_login`均`rolcanlogin=true`但`rolpassword IS NOT NULL=false`；没有改写凭据/门禁、没有Owner代操作、没有激活Cloud Executor/Reviewer。云端同Root各Gate仍NOT_RUN。
 - **证据边界**：构建/类型检查PASS（精确SHA如上），新增9组Node单测的GitHub CI实际结果仍NOT_VERIFIED，未运行Owner当前项目正反数据。业务首批未准出，M5总8维0/8 HOLD。
+
+
+## 2026-11-18｜M5-STUDIO-UNIFIED-KNOWLEDGE-ROUTING-02 + CLOUD-IDENTITY-PREP-01｜Owner授权双线接续（部分代码构建通过／云端身份HOLD）
+
+**授权与唯一主线**：本轮Owner批准并行A（Studio合法共享L0—L4检索/资格及真实缺口判断）、B（激活已有Producer/Worker与Cloud Executor/独立Gate）。仅遵循PLAN §3.5 B/C/D；不新建第二库、D00/Runner/Gate，不自动启动收费生产，不修改Production及真实Owner数据。
+
+**A线沿已有成果的最小变更，已推main：**
+- `apps/web/lib/mohen-agent/retrieve-formal.ts`（`44d5b067`）：新增**现有正式L0—L4表的只读适配器**。严格联查原`control.qualification_current`、`gate_audits`及`control.qualification_allows`，每个匹配绑定实际对象类型、精确revision、consumer/purpose/version与来自已验Owner/Project的`project_id`权限范围。L0/G0、L1/G1只提示下一生产阶段，不当历史事实；L2—L4仅在相应当前独立G2—G4资格满足后作为有来源/版本的研究材料。禁止跨Project自动共享；不读取私有字节/Storage密钥、不新增表与Gate签发。
+- `knowledge-routing.mjs`及`.d.mts`（`1663f50e`、`24d9fce5`）：新增`REUSE_FORMAL_QUALIFIED`及`QUALIFIED_INPUT_AVAILABLE`，分别表示已有L2—L4合格知识直用、已有L0/L1只补后续必要能力；不重跑D00、不假装已触发生产。原私有候选仍不晋级历史事实。
+- `research.ts`（`8e666b06`）：Studio已验项目上下文下检索原L5合格读模型与新增L0—L4当前资格引用，继续按D/L/G最小缺口分流；非模板且无检索词不再扫出无关L5记录；仅授权材料进入Agent裁决。**显式保留**`sharedL0L4CoverageComplete:false`，项目查无资料仍为`SOURCE_GAP_UNCONFIRMED`，不能启动D00。非Studio入口原外部来源线索行为保留。
+- `tests/data-production/studio-knowledge-routing.test.mjs`（`b4bbd1cc`）：追加5条G0/G1/G3精确复用、错误Gate不可升格、跨Project不得推定共享和项目扫描为空仍不代表全局缺源的静态/单元断言；与前轮9组共14组。**GitHub CI Node测试结果未取得，不得报PASS**。
+
+**真实验证**：
+- 受保护Vercel非生产staging精确部署`dpl_CeeUpSCcEuULZ2BxRcs7dyp9MYTN`，代码SHA`b4bbd1cc82447ccf2efeb61f8540967aed55fc60`，状态READY；Next编译/类型检查、页面/Serverless构建通过。Production最新独立核验仍是`83560224`，Preview SSO仍开启。
+- 开发数据库只读精确校验：`control.qualification_current`当前 **0条**；原`control.gate_audits`历史共711条，**不得当当前合格**。新SQL的物理schema/语法在隔离授权谓词替换为FALSE后只读解析成功（0行；仅语法验证，不代表Gate运行）。真实权限谓词查询在`postgres`测试身份下被拒`permission denied for function qualification_allows`；现有`mohen_app_runtime`有函数EXECUTE但无各正式表SELECT，故**授权读身份/GRANT合同衔接真实HOLD**。不得为测试而向postgres、public、anon或服务端高权用户扩大资格权限；没有测试出正向真实同Project合格结果。
+- 当前物理`studio.projects=0`（最后已知快照），本轮未借数据库管理员身份构造假Owner Project；没有真实用户请求、跨Owner负例或同Root Gate运行PASS。对共享全局L0—L4的显式可见ACL/跨Project合法授权索引，现行Owner-only第一阶段设计未落库，不能推定全库检索完整；`SOURCE_GAP_UNCONFIRMED`继续HOLD。
+
+**B线安全配置执行与回退**：
+- Supabase`mohen-cloud`既有角色`mohen_m5_producer_login`及`mohen_m5_worker_login`再次核对：LOGIN存在、`BYPASSRLS=false`、无超级权限、连接上限5；密码初始均NULL。
+- 已核Vercel Preview敏感变量槽位`MOHEN_PRODUCER_DATABASE_URL`、`MOHEN_PRIVATE_WORKER_DATABASE_URL`，其配置严格仅Preview，Production未修改。初次编辑失败的具体原因是敏感变量不可在PATCH中修改key；改为只更新value后Vercel配置写入路径可用。
+- 尝试在已确认事务局部抑制日志、无明文文件/仓库的条件下激活机器登录，但数据库密码修改调用受到执行通道安全拦截，故**未激活**。未绕过拦截、未签发Gate、未开启Cloud Executor。两个Preview变量均回退成不可登录的明确占位值`M5_INVALID_PENDING_SECURE_ROLE_ACTIVATION`，重新只读查询确认两个角色密码仍NULL（`has_password=false`）。不存在半激活或可用密钥。
+- 云端激活需经受控的角色密码安全配置途径（独立管理员界面/受保护`psql \\password`等），直接写入对应Preview敏感连接变量；先验真实TLS和允许/越权权限正反，再根据既有合同接Cloud Executor与独立Reviewer/Policy/Binding。**禁止在SQL历史、GitHub、聊天和日志中传明文密钥，也不得为打开HOLD而新建高权账号**。
+
+**当前技术HOLD及下一步**：
+1. A线：项目范围内形式资格查询代码完成、构建通过，但Gate read角色授权与真实Owner Project查询未闭合；跨Project/共享ACL索引尚无合法可用合同，不得以表全局SELECT替代共享授权。下一批优先定向解决“只读应用身份能合法调用当前资格函数+所需对象读取”的原权限合同/运行配置，随后验证同Project有权/错Project/撤权/错用途和失权后的缺口分类；若没有共享授权证据，仍HOLD，不假造正式分享。
+2. B线：机器凭据激活**BLOCKED_BY_SECURE_CREDENTIAL_TOOL_PATH**，对应Preview变量明确invalid；用户授权持续有效，但当前工具不能安全完成。等待可信管理员级安全通道配置后才可真机连接，云端Gate独立Policy/Binding仍另行受控激活。
+3. M5唯一准出保持`0/8 OVERALL_HOLD`；这批只交付可构建、未真实云端授权读的代码及真实阻断调查，不得报14测试PASS、G0/G1真通过或Studio同Root创作已可用。既有原件/Runner/Registry/Gate工程及上轮Project候选/G5入口直接继承。
