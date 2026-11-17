@@ -79,11 +79,11 @@ test("cloud progress uses the existing Owner-scoped SQL RPC, never broad direct 
  try{
   const run={run_id:runId,status:"HOLD",current_stage:"D00",research_intent:"test",scope:{},stage_results:[{
    disposition:"HOLD",hold:{reason_code:"INDEPENDENT_GATE_NOT_VERIFIED"}}]};
-  await finalizeRun({run,db,outDir:dir,ownerSessionToken:ownerToken});
+  const reports=await finalizeRun({run,db,outDir:dir,ownerSessionToken:ownerToken});
   assert.match(query,/control\.m5_write_production_progress/);
   assert.equal(params.status,"HOLD");
   assert.equal(params.stage,"D00");
   assert.equal(JSON.parse(params.terminal).reason_code,"INDEPENDENT_GATE_NOT_VERIFIED");
-  assert.equal(JSON.stringify(JSON.parse(fs.readFileSync(path.join(dir,"machine-report.json"),"utf8"))).includes(ownerToken),false);
+  assert.equal(JSON.stringify(JSON.parse(fs.readFileSync(reports.machine_report,"utf8"))).includes(ownerToken),false);
  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
