@@ -4794,3 +4794,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **隔离 PG17.12**：`pnpm test:k3-db` 首轮 2 项续跑夹具失败，原因是旧 checkpoint 无 Project、调用无现行会话。夹具补齐项目绑定与传给 mock 模型的测试会话后，重跑退出 0，回执 `K3_DB_TEST_PASS`、`MAB_RESEARCH_RESUME_PG_PASS`。实际 PG 覆盖禁用 Policy、Reviewer 范围、Producer 禁止自签、Worker 最小权限、两机器角色分离及 Root 进度。官方 Storage 未配置，仍 HOLD。
 - **隔离 HTTP/Chromium**：`CI=true MOHEN_REVOCABLE_SESSIONS_ENABLED=true pnpm test:mab:http` 在另一一次性 PG17 库重跑，24 过/0 失败/1 个官方 Storage 既有跳过，回执 `MAB_HTTP_BROWSER_PASS`。初轮 6 个失败中，5 个由本地 psql 启动路径未满足现有夹具守卫引起，1 个由 ST-01 旧断言要求无条件获取来源引起。使用允许路径和现行 D00 可选合同后，保留原有 Owner 隔离、会话撤销、零计费、幂等、准确发布和即时撤权断言。
 - **恢复条件**：Actions 恢复 runner 后核精确 main SHA。先从既有受 SSO 和 Operator 保护的环境，以含四项布尔诊断的精确代码取得同部署服务端回执，再确认四项注入，再仅用两组专用机器连接执行身份/TLS、预期允许及越权拒绝、禁止 Gate 签发、Secret 不透传；接入前核 Policy/Reviewer Binding。M5 同一真实作品仍 `0/8 OVERALL_HOLD`。当前没有同任务的已验运行节点；A 线部署与拒绝证据可继承，等待合法 Project/Root、当前资格及独立 Reviewer 后验证正向与撤权。未发生付费 Provider 请求。
+
+### 推送后精确回执
+
+- 施工提交 `7e792641618bd846417005fe1f79c77821b1ac8e` 已从 `d3e2f00494386c171075f4aec4d7ddc5a26957e4` 快进至 GitHub `main`。首次推送被 GH007 邮箱隐私保护拒绝，使用 GitHub noreply 后成功，测试过的 Git tree 保持一致。
+- 该精确 SHA 的 [主 CI 44161077994](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44161077994)、[隔离 PG 44161078025](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44161078025)、[隔离 HTTP 44161078020](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44161078020) 均 completed/failure，各自 0 步、未分配 runner。三个 job 注释均为账单或支出上限拦截。恢复后重跑三个作业；保留本批隔离实跑回执。
+- 推送后只读回查 Production 最新部署和正式域仍为 `dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc`、`835602242cab31b1fcb372c7ff5efd4fc41dfd89`。本次回执仅更新 `CURRENT.md` 和 `progress.md`，编排和导航语义未变。回查 Git 变更与权威路由守卫。
