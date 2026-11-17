@@ -11923,8 +11923,8 @@
         "kind": "BUSINESS_ORCHESTRATION",
         "id": "STUDIO_UNIFIED_L0_L5_ROUTING",
         "edge_ids": [],
-        "state": "PARTIAL_CODE_BUILD_READY_SHARED_SCOPE_HOLD",
-        "description": "2026-11-17 Studio项目L0-L4候选＋G5合格L5已接入主研究路径，含fail-closed缺口判定和显式路由结果；共享全局L0-L4真实合格检索及按需D阶段生产未接，单测及同Root云运行未证实。",
+        "state": "PROJECT_G0_G4_CODE_BUILD_READY_GATE_RUNTIME_AND_SHARED_SCOPE_HOLD",
+        "description": "2026-11-18正式L0-L4的Project限定资格读取适配器和Studio调度已构建通过；数据库现行资格0，资格函数及表ACL未打通，真实用户同Root未运行；历史Gate 711条不可升级，跨Project共享不可推定。",
         "completion": "同Project/Root合法已有L资产直用、需补G、已有L0缺L1、确缺源及权限拒绝的可追溯正反分流"
       },
       {
@@ -11952,7 +11952,7 @@
       "不要重复做已经通过的本地隔离G0/G1、R01—R11历史样板，或新建第二Gate/Runner",
       "不要把M2/M3架构迁移成功或历史成功写成目前云端同Root PASS"
     ],
-    "next_execution_rule": "优先补合法共享全局L0-L4的权限/资格检索、确证缺源及按需D阶段衔接；继承本批knowledge-routing及Studio签名上下文，已完成Project候选/L5接线不得重做。云端Producer/Worker/Executor/独立Gate真实运行配置按权并行。G0边仅为新增来源子路径HOLD。",
+    "next_execution_rule": "继承本批已有project候选/G5/G0-G4资格读代码，优先定向完成现行授权读角色+当前资格真实Owner/Project正反，显式共享授权不可推定；机密凭据必须安全配置，Producer/Worker密码仍NULL并行HOLD，不能绕安全工具限制；现有D00/G0边只属来源子路径。",
     "last_execution": {
       "batch": "M5-ASSEMBLY-01/02/03/04",
       "code_sha": "712a08b021bbef12977ed907a8c64d136eeca3bc",
@@ -12228,16 +12228,27 @@
       "next": "历史ENV-REUSE-01只作配置来源；现按已批准云端优先路径复用受保护Preview，核低权执行/独立授权/Reviewer的具体配置与同Root运行，不要求先回原Windows。"
     },
     "last_studio_routing_batch": {
-      "id": "M5-STUDIO-UNIFIED-KNOWLEDGE-ROUTING-01",
-      "last_code_sha": "adb1c0a680d2073d148dbdc62a7d687d19450c04",
-      "build_sha": "344a763d7bdb9b7af01e76d865915adc2c83122e",
-      "preview_deployment": "dpl_3kbNeBYWFK1WCMijUb6zoVKZQGN6",
-      "code_build": "READY",
+      "id": "M5-STUDIO-UNIFIED-KNOWLEDGE-ROUTING-02",
+      "code_sha": "b4bbd1cc82447ccf2efeb61f8540967aed55fc60",
+      "preview_deployment": "dpl_CeeUpSCcEuULZ2BxRcs7dyp9MYTN",
+      "build": "READY_TYPECHECK",
       "unit_ci": "NOT_VERIFIED",
-      "cloud_owner_root": "NOT_RUN",
-      "shared_l0_l4": "HOLD_UNIMPLEMENTED",
-      "m5_dimensions": "0/8 OVERALL_HOLD",
-      "receipt": "tasks/implementation/MAB/progress.md#M5-STUDIO-UNIFIED-KNOWLEDGE-ROUTING-01"
+      "formal_current_gate_rows": 0,
+      "formal_read_live": "HOLD_APP_ROLE_ACL",
+      "cross_project_sharing": "NOT_AUTHORIZED_NOT_VERIFIED",
+      "same_root": "NOT_RUN",
+      "m5": "0/8 OVERALL_HOLD",
+      "receipt": "tasks/implementation/MAB/progress.md#2026-11-18m5-studio-unified-knowledge-routing-02-cloud-identity-prep-01owner授权双线接续部分代码构建通过云端身份hold"
+    },
+    "last_cloud_identity_preparation": {
+      "id": "CLOUD-IDENTITY-PREP-01",
+      "status": "HOLD_SECURE_CREDENTIAL_ACTIVATION",
+      "producer_db_password_active": false,
+      "worker_db_password_active": false,
+      "preview_variables": "SENSITIVE_PREVIEW_ONLY_INVALID_PLACEHOLDERS",
+      "cloud_executor": "NOT_ACTIVATED",
+      "independent_gate": "NOT_ACTIVATED",
+      "production_changed": false
     }
   },
   "creative_mainline_routing": {
@@ -12245,7 +12256,7 @@
     "updated_on": "2026-11-17",
     "authoritative_plan": "tasks/implementation/MAB/PLAN.md §3.5 B/C/D",
     "kind": "NON_AUTHORITATIVE_ROUTING_DESCRIPTION",
-    "status": "PARTIAL_CODE_BUILD_READY_RUNTIME_NOT_VERIFIED",
+    "status": "PARTIAL_CODE_BUILD_READY_AUTHORIZED_GATE_RUNTIME_HOLD",
     "entry": "Studio自然语言研究与创作问题（Creator/Project/Root）",
     "ordering_rule": "先统一检索当前用户/项目可访问与合法共享的L0—L5，逐项核源版本、Owner/Project/ACL、逐动作权利、purpose/consumer/scope、当前对应Gate资格；从研究成果需求和局部缺口确定最小必要生产路径；禁止把D00/G0当所有Studio研究的必经起点",
     "branches": [
@@ -12296,15 +12307,16 @@
     "runtime_dependency": "Producer/Worker有效TLS低权身份、Cloud Executor、独立Gate/Reviewer/Storage等按进入的真实生产分支验证；配置HOLD不阻断无需该依赖的合法资产复用/代码施工",
     "business_frontier": {
       "id": "STUDIO_UNIFIED_L0_L5_ROUTING",
-      "state": "PARTIAL_STUDIO_PROJECT_PLUS_G5_ROUTING_SHARED_SCOPE_HOLD",
+      "state": "PROJECT_G0_G4_ADAPTER_BUILT_GATE_READ_ROLE_AND_SHARED_ACL_HOLD",
       "scope": "全Studio主线",
-      "description": "本批runResearch已接Owner Project L0-L4候选读取、已有G5合格L5读取和安全缺口分类；但合法共享全局L0-L4当前资格读取缺失，缺源无法证实，现行默认SOURCE_GAP_UNCONFIRMED阻止自动D00；运行同Root未验。",
+      "description": "2026-11-18已沿用原项目候选及G5读取，新增Project限定的当前G0-G4正式资格适配器并接入runResearch，staging精确SHA b4bbd1cc BUILD_READY；资格投影0，测试postgres无法EXECUTE资格函数，app_runtime可EXECUTE却缺正式表SELECT，真实授权读取NOT_VERIFIED；无跨Project共享授权索引，仍不可确认全库无来源。",
       "source": "tasks/results/MAB/M5_STUDIO_TO_ADMIN_CHAIN_AUDIT_20261117.md §7.3/7.6",
       "verified_code_build": {
-        "deployment_id": "dpl_3kbNeBYWFK1WCMijUb6zoVKZQGN6",
-        "sha": "344a763d7bdb9b7af01e76d865915adc2c83122e",
-        "state": "READY_NEXT_BUILD_TYPECHECK_PASS",
-        "tests": "NOT_VERIFIED",
+        "deployment_id": "dpl_CeeUpSCcEuULZ2BxRcs7dyp9MYTN",
+        "sha": "b4bbd1cc82447ccf2efeb61f8540967aed55fc60",
+        "state": "READY_BUILD_TYPECHECK",
+        "node_tests": "NOT_VERIFIED",
+        "live_project_gate_query": "HOLD_NO_CURRENT_QUALIFICATIONS_AND_GRANTS",
         "production_unchanged": "83560224"
       }
     },
@@ -12317,7 +12329,7 @@
       "scope": "新增来源或需要D00/G0准入的生产子路径",
       "description": "现有独立Gate与Runner应继承；云端低权身份、Executor、策略/绑定与真实同Root回执未完成"
     },
-    "next_build_task": "接入合法共享全局L0-L4的授权资产查找及精确current Gate/rights/ACL/purpose/consumer判断，使已合格资产直接复用、受限资产拒绝、确认缺来源才走D00；真实Owner/Root任务正反测试与Cloud安全配置继续。",
+    "next_build_task": "保留G0-G4项目授权只读适配器，先定向核当前数据库正式读角色合法权限与适用Gate当前投影，以真实Owner Project正反验证；跨Project共享须先有显式ACL合同；合法无源才启动受控D00。并行安全通道激活现有Producer/Worker及Gate，当前密码仍NULL。",
     "source_locators": [
       "apps/web/lib/mohen-agent/research.ts",
       "apps/web/lib/mohen-agent/retrieve.ts",
