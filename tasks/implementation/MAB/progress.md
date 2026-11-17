@@ -4767,3 +4767,17 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **当前唯一待Owner动作**：新增`MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD`，Value从Owner本机密码管理器粘贴Worker原始密码；类型Secret/Sensitive，环境仅Preview。密码不得发送给AI或写入GitHub。
 - **配置后的必要工程动作**：四项Preview变量齐备后必须触发新的受保护Preview部署（旧部署不会自动获得新环境变量），再执行真实TLS登录、角色权限正反测试和密码未透传检查。当前`eaf233f5`受保护staging构建READY只是构建证据，不是真实连接成功。
 - **边界**：Production环境与生产SHA未改；Producer/Worker Gate写权限仍拒绝；Policy/Reviewer Binding仍0；A线真实Owner Project/Root及当前Gate仍0；M5仍`0/8 OVERALL_HOLD`。
+
+
+## 2026-11-18｜M5-CLOUD-OWNER-CONFIG-COMPLETE-07｜四项Preview机器配置已存在，转入无需Owner参与的工程验证
+
+**本批依据**：接续M5-IPAD-MACHINE-SECRETS-06及Owner随后在Vercel界面完成的操作。只记录配置存在性和部署元数据，不读取或输出任何Secret原值。
+
+- **Vercel环境变量只读核验**：以下四项均已存在，类型均为Sensitive/Secret，环境范围均为Preview：MOHEN_PRODUCER_DATABASE_URL、MOHEN_PRODUCER_DATABASE_PASSWORD、MOHEN_PRIVATE_WORKER_DATABASE_URL、MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD。两条密码值均未读取；URL值也不在施工账中复制。此前“等待Owner补Worker密码”的记录自本批起失效，**不得再次要求Owner重置或粘贴这四项配置**。
+- **最新部署只读核验**：Vercel部署dpl_Gzbgit2J8N8QXhv2vGhxvkJuyuk5，代码SHA 954760da7d6cc33b7fd8116e8d64f07ae27edce3，状态READY，部署target标记为staging；GitHub该SHA的combined status目前只显示Vercel success。项目Protection元数据显示SSO的deploymentType为preview；项目Custom Environments列表为空。由于四项变量仅作用于Preview，而最新部署target为staging，**当前尚无证据证明这次部署实际注入了四项Preview变量，也尚无证据证明该staging部署受Preview SSO保护**。不得把READY推导为TLS连接或密钥注入成功；先由工程执行方只读厘清target/环境映射及保护范围，再选用明确受保护、确实加载Preview变量的非生产部署。
+- **尚未取得的运行证据**：Producer/Worker真实TLS登录、数据库当前身份核验、最小权限允许/拒绝、原始密码不透传、Cloud Executor真实运行、独立Gate/Reviewer真实签发仍未通过；不得以变量存在或构建成功代替。
+- **A线继承**：studio.search_qualified_project_layers窄读迁移和Studio适配已完成；匿名/认证/service_role/Producer拒绝、无签名Owner拒绝已有PG实证。真实Owner Project=0、当前资格=0、Policy=0、Reviewer Binding=0；不重做读桥，不伪造正向或撤权PASS。
+- **当前无Owner前置动作**：四项变量均已登记。接下来先执行无需Owner的代码与环境工作：①在Codex Cloud核最新main、跑现有Node专项测试及CI并修复真实失败；②只读核清Vercel staging/Preview环境、变量注入和SSO保护映射；③补齐Producer/Worker/Cloud Executor/独立Gate配置预检及权限拒绝的自动化测试；④在安全环境明确后再执行真实TLS正反测试。所有测试必须区分源码测试、隔离PG、真实云端运行。
+- **生产边界与准出**：Production仍未修改；不读取Secret、不将密码写入仓库/日志/聊天，不创建新Owner数据，不启动收费Provider。M5仍0/8 OVERALL_HOLD。
+
+**Codex Cloud接续约束**：Codex Cloud是可按额度启停的执行载体，不是永久施工模式。每次启动先读本文件末尾、本批CURRENT、PLAN §3.5 B/C/D和交接文件；每批把代码、测试、SHA、运行回执、HOLD及下一精确动作写回GitHub。停止前必须保证无仅留在云工作区的未提交成果；如有未提交修改，先保留在当前任务工作区并明确标记，不得宣称已入库。恢复到ChatGPT施工时，以GitHub main和最新progress为准，不依赖上次平台会话记忆。
