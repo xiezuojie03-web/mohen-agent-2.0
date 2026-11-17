@@ -70,6 +70,10 @@ it('keeps original password until verified; concurrency consumes exactly once an
 });
 it('permanent Preview Owner recovery resets repeatedly without email and revokes existing sessions',async()=>{
   await fx.pool.query("update public.users set roles=$1",[["member","creator","operator"]]);
+  // The existing role-change trigger advances the session cutoff to wall-clock milliseconds.
+  // Wait for the next millisecond before issuing the cookie under the new role set.
+  const cutoff=Number((await fx.pool.query('select session_not_before from public.users where user_id=$1',[userId])).rows[0].session_not_before);
+  while(Date.now()<=cutoff) await new Promise(resolve=>setTimeout(resolve,1));
   const cookie=signSessionToken(userId,['member','creator','operator']);
   expect((await resolveSession(cookie)).state).toBe('authenticated');
   const first='preview-owner-first-password';
