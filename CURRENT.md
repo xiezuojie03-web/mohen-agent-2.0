@@ -8,6 +8,9 @@
 
 ## 2. 最近有据可核的云端事实（2026-11-17，补入2026-11-18定向工程证据）
 
+- **2026-11-18最新：M5-SECURE-MACHINE-READY-03（已推main、非生产构建通过）**：承接既有Studio L0—L4候选、正式G0—G4/G5读。正式G0—G4适配器现**必须经已有签名Owner会话及`createAppTransaction`受限应用角色，在同一事务核实ACTIVE Project归属后**才尝试当前独立Gate查询；不用通用DB身份冒充项目权限。不同L层查询单独降级，已经确证合格的G5/G3知识可复用，未可核实的缺口仍HOLD；超限扫描为PARTIAL。云端机器预检远程必须`sslmode=verify-full`，并彻底删除Runner缺专用Producer URL时回退到通用`DATABASE_URL`的风险。GitHub精确代码`b6c4c45c12507a47bb73dea4b1c0c44a9d90e6a3`在受保护**非生产staging** `dpl_EhZKtPbJ7o3RupsxqFv6gRA4GAzt`状态**READY**，编译/类型检查通过；当前源码纯路由隔离V8 **8/8 PASS**，**GitHub完整Node测试未取得执行回执，NOT_VERIFIED**。Producer/Worker角色密码依然NULL、Preview敏感连接变量仍为无效占位；Cloud Executor/独立Gate/Storage尚无必备凭据，现行Gate资格0、启用Policy0、active Reviewer绑定0，真实Owner Project/Root仍未运行；M5仍0/8。Production仍旧SHA`83560224`，无本批发布。
+
+
 - **2026-11-18 A线新增（M5-STUDIO-UNIFIED-KNOWLEDGE-ROUTING-02）**：新增`apps/web/lib/mohen-agent/retrieve-formal.ts`，复用既有`control.qualification_current`/`gate_audits`/资格函数读取限定当前Project的G0—G4正式知识；在Studio `runResearch`联入原Project候选/G5读模型，路由能区分当前G0/G1合格上游和G2—G4合格知识，避免重跑D00。已有受保护非生产staging `dpl_CeeUpSCcEuULZ2BxRcs7dyp9MYTN` 对代码SHA `b4bbd1cc82447ccf2efeb61f8540967aed55fc60` 构建READY、编译/类型检查通过。新增正反测试共14项，**GitHub真实测试回执尚未取得，NOT_VERIFIED**。当前云库`qualification_current=0`，旧711条gate_audits不等于现行资格。正式查询使用当前postgres测试身份被资格函数EXECUTE权限拒绝；`mohen_app_runtime`虽然有函数EXECUTE但缺正式知识表SELECT，**真实授权读取及同Owner Project测试仍HOLD**。仅SQL结构只读验证通过（以false替代授权谓词），不是资格PASS。
 - **2026-11-18 B线（CLOUD-IDENTITY-PREP-01）**：Producer/Worker角色存在、LOGIN许可且不绕过RLS，但角色密码仍NULL，**未激活**；当前执行通道阻止安全执行密码设置。Vercel两项仅Preview敏感连接变量已复位为不可登录占位，Production变量/服务未改；Cloud Executor及独立Gate策略、绑定、凭据均未启用。需要具备安全凭据写入的独立授权管理通道后，再做实际TLS、允许/越权正反测试，不得伪造连接。
 
@@ -24,7 +27,7 @@
 
 ## 3. 当前两种前沿（不能混淆）
 
-1. **业务/代码最前缺口（2026-11-18进一步前移）**：Studio已接当前Owner Project的L0—L4未评估候选、按当前G0—G4资格尝试读取的正式资产、G5合格L5及安全缺口路由。**但现行有效Gate投影为空、正式读服务角色函数EXECUTE与表SELECT权限未统一，真实同Project读取未通过；跨Project合法共享ACL目前没有可验证的授权索引。**优先在原授权合同内定向补安全读身份/受控数据访问（不得随意GRANT全局读权）、验证真实当前资格/撤权/错权，再按确证缺口接已有D阶段；不重做已完成接线。
+1. **业务/代码最前缺口（第三批后）**：Studio已继承Project候选、G5合格读并完成Project限定G0—G4当前资格读适配器及签名Owner事务/缺口路由。**但现行资格投影为0、受限应用角色仅有资格函数EXECUTE而缺对应业务表的受控SELECT/读桥，真实合格读取尚未验通；跨Project合法共享没有授权索引。**下一批只定向解决现有Gate/Studio授权读取边界，做真实同Project有权/错权/当前资格和撤权正反，确认真正缺来源后再进入已有D阶段；不重做以上已接代码或扩大全表授权。
 2. **真实云端生产前沿**：既有Producer/Worker凭据、Cloud Executor、独立Reviewer/Gate服务未完成有效运行配置；`E_D00_REVIEW`和`E_D00_QUALIFY`只代表“选择了新原件的D00→G0子路径”当前运行阻断，**不能再当作所有Studio研究的统一入口或首个代码任务**。同Root G0/G1→D02仍未实跑。
 
 **M5整体：0/8，OVERALL_HOLD**（同一真实作品八维整链尚无准出证据；不是代码完成率）。
