@@ -5,7 +5,7 @@ import { readJsonColumn } from "./db-json";
 import { queryRows, queryValue, run } from "@mohen/data-access";
 import { reflowWorkToAssets } from "./asset-reflow";
 import { requireIndependentWorkPublicationG5, requireCurrentWorkConsumerQualification } from "./work-publish-qualification";
-import { PUBLISHED_WORKS_SQL, STUDIO_REVISION_WATCHABLE_SQL } from "./publication-watch-sql.mjs";
+import { PUBLISHED_WORKS_SQL, STUDIO_REVISION_WATCHABLE_SQL, LEGACY_PUBLISHED_WORKS_SQL, isAbsentStudioPublicationSchema } from "./publication-watch-sql.mjs";
 import { createHash, randomUUID } from "node:crypto";
 
 const canonicalUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id) ? id.toLowerCase() : null;
@@ -313,7 +313,16 @@ export { studioContentForWatch };
 /** 读已发布作品（WATCH 消费）。同一张公开指针表同时承载 legacy 作品与
  * MHKA Studio 精确修订；Studio 行经 studio.work_revisions 连接，撤回即失效。 */
 export async function listPublished(): Promise<PublishedWork[]> {
-  const rows = (await queryRows(PUBLISHED_WORKS_SQL)) as unknown as PublishedWork[];
+  // Some development databases have the legacy publication tables but not the
+  // Studio publication migration. A missing Studio-only relation/column must
+  // not make the entire WATCH list 500; never treat it as a Gate PASS.
+  let rows: PublishedWork[];
+  try {
+    rows = (await queryRows(PUBLISHED_WORKS_SQL)) as unknown as PublishedWork[];
+  } catch (error) {
+    if (!isAbsentStudioPublicationSchema(error)) throw error;
+    rows = (await queryRows(LEGACY_PUBLISHED_WORKS_SQL)) as unknown as PublishedWork[];
+  }
   return rows.map((row) => (row.source_schema === "studio"
     ? { ...row, content: studioContentForWatch(row.content, row.studio_beats) }
     : row));
