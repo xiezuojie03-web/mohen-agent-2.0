@@ -4624,3 +4624,13 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **报告归档**：完整链路、每类GitHub文件链接、API入口、DB/RUNTIME现场与下一施工顺序已存`tasks/results/MAB/M5_STUDIO_TO_ADMIN_CHAIN_AUDIT_20261117.md`；CURRENT已同步摘要。该核查不改变导航节点/边状态，不升任何M5八维PASS，M5仍0/8 OVERALL_HOLD。
 - **下一批按主线顺序**：①把正式私有原件POST接入Studio可见操作并补Preview Storage开关/服务凭据；②安全激活Producer/Worker并接Cloud Executor；③补齐独立Gate Policy/Binding/Service Credential并跑同Root G0/G1→D02；④收口Studio asset→canonical WorkRevision→Submit→Admin的同修订映射；⑤建立独立于Operator的Reviewer身份，验证G5/媒体rights/精确发布。此轮未要求Owner创作或验收。
 
+
+## 2026-11-17｜M5-STUDIO-D00-ROUTING-CORRECTION｜Owner反馈：先复用知识，缺口才D00
+
+- **纠正前轮表述**：“原件字节→SHA→Source Version→D00→G0”仅是已取得/已提供原件进入私有来源准入的一条输入路径，不是每次Studio研究的强制顺序；“先把正式原件上传POST接入Studio”也不是当前主线的完整首要任务。
+- **正确原则**：Studio收到问题先检索所有当前可访问且满足身份/项目或共享ACL、来源版本、逐动作权利、consumer/purpose/scope和当前资格的L0—L5。已有L0可作为来源，只有缺L1时才D01/G1；已有当前有效合格L1或更高层成果直接复用，不重跑已完成工序。只有明确知识存量缺口才启动D00。
+- **代码证据与差距**：`runResearch`当前只从L5 read-model检索，再调用外部`discoverExternalSources`生成RESEARCH_LEAD候选；`diagnoseSourceNeed`的localMaterialCount来自L5检索，不是L0—L5全量盘点；source-discovery不下载/存储原件。独立`readStudioResearchProject`只读当前Project的L0/L1/L2与L3/L4项目候选，L1/L2未签发时为UNASSESSED，且新研究初始路径没有调用它。D00私有Worker的`verifySourceIntake`要求已STORED_VERIFIED和source registration，属于取得后的准入/账本/G0候选，不是外部发现下载本身。
+- **修正后的最前工程差异**：统一Studio Agent的全层级L0—L5存量检索/资格路由（项目私有+可共享全局知识）；缺口时才调用D00完整发现、合法获取/下载、私有存储/SHA/source_version、Y01—Y08、G0；之后按缺口进入D01及下游。用户上传只是一种可选输入。
+- **双入口裁决建议**：`/studio`为唯一主自然语言工作台；`/studio/desk`是历史资料台，保留有价值的ProjectNotebook、材料篮和D00观察作为上下文子视图/辅助诊断。旧ImportForm写`public.imported_materials`，不能代替正式原件接入；不将它作为第二主入口。
+- **角色澄清**：Admin是管理工作台，不是auth角色；reviewer签作品级精确WorkRevision决定，operator发布；同身份不可自审自发。作品Reviewer不等于专业G0-G5/G5 Gate。单账号不阻断开发，只阻断同身份审核后发布的正向集成测试；发布阶段再受控配置Reviewer-only测试身份，普通注册默认member，当前Admin用户页无角色分配。
+- **归档**：完整补正见`tasks/results/MAB/M5_STUDIO_TO_ADMIN_CHAIN_AUDIT_20261117.md` §7。未修改PLAN唯一任务书；未提升导航节点/边及M5八维状态。
