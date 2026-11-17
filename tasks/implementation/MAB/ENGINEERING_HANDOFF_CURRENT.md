@@ -27,6 +27,8 @@
 
 本入口不自行宣布实时CI、Vercel部署状态或准出结论：旧记录曾出现代码质量红灯与自动部署未隔离，但**这些属于历史事实，不能当作现在的状态**。实时HEAD/CI、部署隔离及同一真实Studio作品八维HOLD以GitHub与`CURRENT.md`最新事实核实；恢复顺序及准出只读`PLAN.md` §3.5 B/C；具体连接从上述导航定位并再次验证，不能把导航静态状态当作最新证据。
 
+**Owner登录恢复入口（2026-11-17实装）**：受保护Preview的登录页“忘记密码？”会进入永久无邮件Owner恢复表单：https://mohen-agent-2-0-dtuq9o6gh-napoles1.vercel.app/account/forgot-password。先通过Vercel Preview SSO，再由Owner自行输入并确认新密码；服务端仅允许唯一活跃Operator、使用现有scrypt及会话撤销trigger。Preview功能开关仅Preview；Production邮件恢复流程不变。代码/隔离PG17测试/部署证据见CURRENT.md最新M5-OWNER-PREVIEW-PASSWORD-RECOVERY-02与progress.md同名批次。这不是Owner真实登录回执：只有Owner完成设置并实际登录后，才能继续建立Project/Root及D00/G0；不得把恢复入口READY写成M5主线已启动。
+
 **授权边界保持不变**：生产数据库/Storage迁移、正式独立Gate/Reviewer启用、发布或公众开放、Provider新增费用/凭据及来源外发等必须满足原任务书与PLAN既定授权；密钥、私有字节、数据库dump不得进入GitHub/日志/对话。遇到无权、环境不可达或证据不足，标`HOLD/NOT_RUN/DEFERRED_ENV`并说明具体恢复条件；不能以切换执行工具代替验证。
 
 <a id="m5-continuation"></a>

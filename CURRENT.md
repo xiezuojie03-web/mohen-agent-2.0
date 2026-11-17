@@ -1,5 +1,8 @@
 # 墨痕｜当前工程事实快照
 
+**2026-11-17｜M5-OWNER-PREVIEW-PASSWORD-RECOVERY-02｜永久研发Owner密码恢复入口已部署（Owner尚未实际重置）**：登录页原“忘记密码”入口在受保护Preview现改为无邮件、无旧密码、可反复使用的Owner恢复页；Production仍保留邮件验证找回。应用代码提交 86834e86（同源校验按部署控制的MOHEN_AUTH_PUBLIC_ORIGIN/VERCEL_URL，不信任反向代理内部Host），最终main ac99482e仅补隔离测试夹具时间边界。CI 44031426645 SUCCESS，M1隔离HTTP 44031262620 SUCCESS，真实隔离PG17 44031426654 SUCCESS（密码恢复集成11/11）。Vercel Preview部署 dpl_B1Z4fT4goZqqut1WHKFa5U2wQtXz READY，精确SHA ac99482e，URL：https://mohen-agent-2-0-dtuq9o6gh-napoles1.vercel.app/account/forgot-password；项目SSO protection仍enabled且仅Preview，未登录访问实测返回 login_required。开关 MOHEN_OWNER_PASSWORD_RECOVERY_ENABLED=true 仅Preview（变量ID K3kL9WgGZWNA8Hq3）；Production最新SHA仍 83560224。开发云库只读回查：唯一活跃Owner=1、待设置标记=1、session revocation表与密码/角色变更失效trigger存在；本批未改真实账号密码，Owner需本人打开链接、通过Vercel SSO后自行设置新密码并登录。此项不代表Owner已登录、Project/Root已建立或D00/G0已运行；M5仍0/8、OVERALL_HOLD，导航D/L/G状态不变。
+
+
 > **职责**：当前代码与运行证据及剩余阻断，不规定工程施工标准。唯一计划：`tasks/implementation/MAB/PLAN.md` V1.7；历史逐批证据：`tasks/implementation/MAB/progress.md`。每次施工仍须实时查询GitHub `main` HEAD、CI、PG/HTTP及部署，不能把本页SHA当永久最新版本。
 
 **2026-11-17｜M5-PREVIEW-STORAGE-ENDPOINT-01｜Preview公开Storage入口已实际配置（安全前置局部收口，真实主链仍HOLD）**：Supabase项目URL经连接器准确读取，Vercel项目`mohen-agent-2-0`已新增`MOHEN_SUPABASE_URL`，仅Preview、`plain`、变量ID`gtcmuzKLxc2FGnhc`，随后非解密元数据回读一致；Production部署仍精确SHA`83560224`，未改Production/数据库/密钥/源码/公开发布。此项只解决Private Storage前置中的项目API URL缺失；Service Key、原件桥接Secret/版本、独立Execution Authority/Gate、Producer/Worker有效数据库密码及Owner真实Studio会话仍未建立，现有READY Preview不能视为使用了新增变量，也未真实TLS认证。G0/G1→D02同Root运行仍NOT_RUN、M5八维0/8、OVERALL_HOLD，导航三层未改变。具体回执见`progress.md#M5-PREVIEW-STORAGE-ENDPOINT-01`。
