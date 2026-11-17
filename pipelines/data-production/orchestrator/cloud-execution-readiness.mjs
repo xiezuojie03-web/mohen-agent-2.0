@@ -10,7 +10,7 @@ function principal(value) {
   try {
     const u=new URL(value),user=decodeURIComponent(u.username);
     if(!['postgres:','postgresql:'].includes(u.protocol)||!u.hostname||!user||!u.password||!u.pathname.slice(1)||u.search||u.hash)return null;
-    if(/^(postgres|supabase_admin|mohen_app_runtime|mohen_gate_signer|mohen_gate_authority|mohen_gate_reader)(\.|$)/i.test(user))return null;
+    if(/^(postgres|supabase_admin|mohen_app_runtime|mohen_producer|mohen_gate_signer|mohen_gate_authority|mohen_gate_reader)(\.|$)/i.test(user))return null;
     return user;
   }catch{return null;}
 }

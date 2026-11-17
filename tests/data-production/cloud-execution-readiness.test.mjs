@@ -35,6 +35,15 @@ test('Producer cannot borrow Web identity, Worker identity or an unsafe connecti
   for(const uri of [undefined,'postgresql://postgres:secret@db.invalid/test','postgresql://mohen_private_worker:secret@db.invalid/test','postgresql://mohen_producer:secret@db.invalid/test?sslmode=disable'])
     assert.throws(()=>runtime.assertCloudExecutionConfiguration(cloudEnvironment({MOHEN_PRODUCER_DATABASE_URL:uri})),/CLOUD_PRODUCER_REQUIRED|CLOUD_PRIVATE_WORKER_REQUIRED/);
 });
+test('NOLOGIN duty roles cannot be mistaken for dedicated machine database logins',()=>{
+  for(const role of ['mohen_producer','mohen_app_runtime','mohen_gate_signer','mohen_gate_reader','mohen_gate_authority']){
+    for(const key of ['MOHEN_PRODUCER_DATABASE_URL','MOHEN_PRIVATE_WORKER_DATABASE_URL']){
+      const env=cloudEnvironment({[key]:`postgresql://${role}:synthetic-password@db.invalid/test`});
+      assert.throws(()=>runtime.assertCloudExecutionConfiguration(env),
+        /CLOUD_(PRODUCER|PRIVATE_WORKER)_REQUIRED/,`${role} as ${key}`);
+    }
+  }
+});
 test('all signer connection aliases and private signing keys remain outside the executor',()=>{
   for(const key of ['MOHEN_GATE_DATABASE_URL','MOHEN_GATE_SIGNER_DATABASE_URL','MOHEN_GATE_MACHINE_DATABASE_URL','MOHEN_GATE_DATABASE_SESSION_KEY','MOHEN_EXECUTION_AUTH_PRIVATE_KEY'])
     assert.throws(()=>runtime.assertCloudExecutionConfiguration(cloudEnvironment({[key]:'synthetic-forbidden-value'})),/CLOUD_EXECUTOR_SIGNER_CREDENTIAL_FORBIDDEN/);

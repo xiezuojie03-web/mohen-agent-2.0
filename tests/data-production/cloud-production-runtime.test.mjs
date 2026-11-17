@@ -46,8 +46,8 @@ test('a child exit without a terminal row persists HOLD instead of leaving a cla
 test('cloud child keeps Producer identity and excludes parent Web secrets and password override',async()=>{
  const e=input();await executeCloudProductionCli({input:e,projectRoot:process.cwd(),environment:{...cloudEnvironment(),
   MOHEN_EXECUTION_AUTH_VERIFY_URL:'https://independent.invalid/consume',MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL:'synthetic-credential-at-least-32-characters',MOHEN_EXECUTION_AUTH_DYNAMIC_URL:'https://independent.invalid/token',MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL:'synthetic-credential-at-least-32-characters',
-  DATABASE_URL:'postgresql://old_web:secret@db.invalid/test',MOHEN_DATABASE_PASSWORD:'old-web-password',MOHEN_DATABASE_SESSION_SECRET:'web-session-secret',AUTH_SECRET:'browser-secret',MOHEN_PRODUCER_DATABASE_URL:'postgresql://mohen_producer:synthetic@db.invalid/test'},
-  runChild:async(_c,_a,o)=>{assert.equal(o.env.DATABASE_URL,'postgresql://mohen_producer:synthetic@db.invalid/test');for(const key of ['MOHEN_DATABASE_PASSWORD','MOHEN_DATABASE_SESSION_SECRET','AUTH_SECRET'])assert.equal(o.env[key],undefined);return {code:0,timedOut:false};},
+  DATABASE_URL:'postgresql://old_web:secret@db.invalid/test',MOHEN_DATABASE_PASSWORD:'old-web-password',MOHEN_DATABASE_SESSION_SECRET:'web-session-secret',AUTH_SECRET:'browser-secret',MOHEN_PRODUCER_DATABASE_URL:'postgresql://mohen_producer_machine:synthetic@db.invalid/test'},
+  runChild:async(_c,_a,o)=>{assert.equal(o.env.DATABASE_URL,'postgresql://mohen_producer_machine:synthetic@db.invalid/test');for(const key of ['MOHEN_DATABASE_PASSWORD','MOHEN_DATABASE_SESSION_SECRET','AUTH_SECRET'])assert.equal(o.env[key],undefined);return {code:0,timedOut:false};},
   holdRun:async()=>{},readTerminal:async()=>({run_id:e.run_id,status:'HOLD',stage:'D00',reason_code:'WAITING_GATE'})});
 });
 test('real CLI reaches dynamic token validation without any pre-issued stage tokens',async()=>{
