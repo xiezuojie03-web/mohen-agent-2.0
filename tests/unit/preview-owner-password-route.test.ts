@@ -17,6 +17,7 @@ beforeEach(()=>{
   vi.clearAllMocks();
   vi.stubEnv('VERCEL_ENV','preview');
   vi.stubEnv('MOHEN_OWNER_PASSWORD_RECOVERY_ENABLED','true');
+  vi.stubEnv('VERCEL_URL','preview.invalid');
   fx.configured.mockReturnValue(true);
   fx.revocable.mockReturnValue(true);
   fx.reset.mockResolvedValue(true);
@@ -38,6 +39,24 @@ it.each([
   vi.stubEnv('VERCEL_ENV',environment);
   vi.stubEnv('MOHEN_OWNER_PASSWORD_RECOVERY_ENABLED',enabled);
   expect((await POST(request())).status).toBe(503);
+  expect(fx.reset).not.toHaveBeenCalled();
+});
+
+it('accepts the deployment-controlled browser origin when the reverse proxy exposes an internal request URL',async()=>{
+  const internal=new Request('http://127.0.0.1:4187/api/auth/preview-owner-password',{
+    method:'POST',
+    headers:{origin,'content-type':'application/json'},
+    body:JSON.stringify(valid),
+  });
+  const response=await POST(internal);
+  expect(response.status).toBe(200);
+  expect(fx.reset).toHaveBeenCalledWith(valid.password);
+});
+
+it('fails closed when no deployment-controlled public origin is configured',async()=>{
+  vi.stubEnv('VERCEL_URL','');
+  const response=await POST(request());
+  expect(response.status).toBe(503);
   expect(fx.reset).not.toHaveBeenCalled();
 });
 

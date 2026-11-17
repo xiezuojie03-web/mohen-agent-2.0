@@ -17,7 +17,18 @@ export async function POST(request:Request) {
      !isAuthConfigured() || !revocableSessionsEnabled())
     return reply(503,'owner_recovery_unavailable');
 
-  if(request.headers.get('origin')!==new URL(request.url).origin)
+  // Reverse proxies may expose an internal request.url. Compare Origin to a deployment-controlled
+  // public Preview origin instead of trusting Host or forwarded headers from the request.
+  const configuredOrigin=process.env.MOHEN_AUTH_PUBLIC_ORIGIN?.trim() ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '');
+  let expectedOrigin='';
+  try {
+    const parsed=new URL(configuredOrigin);
+    if(parsed.protocol==='https:' && !parsed.username && !parsed.password &&
+       !parsed.search && !parsed.hash && parsed.pathname==='/') expectedOrigin=parsed.origin;
+  } catch {}
+  if(!expectedOrigin)return reply(503,'owner_recovery_unavailable');
+  if(request.headers.get('origin')!==expectedOrigin)
     return reply(403,'invalid_request');
   if((request.headers.get('content-type')??'').split(';')[0].trim()!=='application/json')
     return reply(415,'json_required');
