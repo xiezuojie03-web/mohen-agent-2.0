@@ -13,6 +13,7 @@ test('post-claim setup failure becomes durable HOLD without replaying the same c
  const e=input();let status='RUNNING',claimed=false,reason;
  const handle=createCloudProductionServer({environment,projectRoot:process.cwd(),verifyOwnerOriginal:async()=>{},
   execute:async()=>{throw Error('untrusted secret error must not appear');},
+  verifyProducerConnection:async()=>{},
   db:{queryRows:async(sql,p)=>{
     if(sql.startsWith('update')&&sql.includes('claimed_at')){if(claimed)return [];claimed=true;return [{run_id:e.run_id}];}
     if(sql.startsWith('update')&&sql.includes("status='HOLD'")){status='HOLD';reason=p.reason;return [{run_id:e.run_id}];}
@@ -22,4 +23,46 @@ test('post-claim setup failure becomes durable HOLD without replaying the same c
  const result=await dispatch(e);assert.equal(status,'HOLD');assert.equal(result.status,'HOLD');assert.equal(result.reason_code,'CLOUD_EXECUTOR_SETUP_FAILED');
  assert.equal(JSON.stringify(result).includes('untrusted secret'),false);
  await assert.rejects(()=>dispatch(e),/CLOUD_EXECUTOR_ALREADY_CLAIMED/);
+});
+
+
+test('invalid actual Producer TLS login is denied before claiming a run',async()=>{
+ const e=input();let ownerChecks=0,claims=0,executed=0,preflight=0;
+ const handle=createCloudProductionServer({environment,projectRoot:process.cwd(),
+   verifyOwnerOriginal:async()=>{ownerChecks++;},
+   verifyProducerConnection:async()=>{preflight++;throw Error('sensitive connection failure, do not expose');},
+   execute:async()=>{executed++;return {run_id:e.run_id,status:'HOLD',stage:'D00'};},
+   db:{queryRows:async()=>{claims++;return [{run_id:e.run_id}];}}});
+ const dispatch=createCloudProductionDispatch({url:'https://worker.invalid/execute',credential,
+   fetchImpl:async(url,options)=>handle(new Request(url,options))});
+ await assert.rejects(()=>dispatch(e),/CLOUD_EXECUTOR_UNCERTAIN/);
+ assert.equal(ownerChecks,1);assert.equal(preflight,1);assert.equal(claims,0);assert.equal(executed,0);
+ const fake=new Request('https://worker.invalid/execute',{method:'GET'});
+ assert.equal((await handle(fake)).status,405,'unauthenticated calls must not perform a login probe');
+ assert.equal(preflight,1);
+});
+
+test('Owner validation still precedes Producer preflight and run claim',async()=>{
+ const e=input();let probes=0,claims=0;
+ const handle=createCloudProductionServer({environment,projectRoot:process.cwd(),
+   verifyOwnerOriginal:async()=>{throw Error('OWNER_DENIED');},
+   verifyProducerConnection:async()=>{probes++;},execute:async()=>{},
+   db:{queryRows:async()=>{claims++;return [{run_id:e.run_id}];}}});
+ const dispatch=createCloudProductionDispatch({url:'https://worker.invalid/execute',credential,
+   fetchImpl:async(url,options)=>handle(new Request(url,options))});
+ await assert.rejects(()=>dispatch(e),/CLOUD_EXECUTOR_UNCERTAIN/);
+ assert.equal(probes,0);assert.equal(claims,0);
+});
+
+test('passing Producer preflight preserves one-time claim and bounded terminal',async()=>{
+ const e=input();let probes=0,claimed=0,executed=0;
+ const handle=createCloudProductionServer({environment,projectRoot:process.cwd(),
+   verifyOwnerOriginal:async()=>{},verifyProducerConnection:async()=>{probes++;},
+   execute:async()=>{executed++;return {run_id:e.run_id,status:'HOLD',stage:'D00',reason_code:'WAITING_GATE'};},
+   db:{queryRows:async()=>{claimed++;return [{run_id:e.run_id}];}}});
+ const dispatch=createCloudProductionDispatch({url:'https://worker.invalid/execute',credential,
+   fetchImpl:async(url,options)=>handle(new Request(url,options))});
+ const result=await dispatch(e);
+ assert.equal(result.status,'HOLD');assert.equal(result.reason_code,'WAITING_GATE');
+ assert.equal(probes,1);assert.equal(claimed,1);assert.equal(executed,1);
 });

@@ -35,3 +35,8 @@ export async function assertPrivateWorkerIdentity(pool) {
     ['mohen_app_runtime','mohen_producer','mohen_gate_signer','mohen_gate_authority'].includes(identity.login_identity))
     throw Error('PRIVATE_WORKER_DATABASE_IDENTITY_UNSAFE');
 }
+
+// TLS-only connection factory reused for separate dedicated machine roles.
+// It does not grant permissions or validate the role; call the appropriate
+// actual-session identity checker immediately after connecting.
+export const createDedicatedMachinePool=createPrivateWorkerPool;
