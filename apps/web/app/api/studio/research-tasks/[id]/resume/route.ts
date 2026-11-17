@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { getTaskStatus, resumeResearchTask } from "../../../../../../lib/studio-research";
+import {getSession} from "../../../../../../lib/session";
+import {signDatabaseSessionToken} from "../../../../../../lib/auth";
 import { guardRoute } from "../../../../../../lib/guard";
 
 export const runtime = "nodejs";
@@ -36,7 +38,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ok:false,reason:"additional_budget_requires_authorization"},
       {status:409,headers:{"cache-control":"no-store"}});
   }
-  const result = await resumeResearchTask(id);
+  const session=await getSession();
+  if(!session)return NextResponse.json({ok:false,reason:"login_required"},{status:401});
+  const result = await resumeResearchTask(id,undefined,signDatabaseSessionToken(session));
   if (result.status !== "done") {
     return NextResponse.json(
       { ok: false, reason: result.holdReason || "resume_hold" },
