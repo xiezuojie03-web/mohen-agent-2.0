@@ -18,7 +18,7 @@ function principal(value) {
     const opts=[...u.searchParams.entries()];
     if(opts.length>1||opts.some(([k,v])=>k!=='sslmode'||v!=='verify-full')||
       (!local&&opts.length!==1))return null;
-    if(/^(postgres|supabase_admin|mohen_app_runtime|mohen_producer|mohen_gate_signer|mohen_gate_authority|mohen_gate_reader)(\\.|$)/i.test(user))return null;
+    if(['postgres','supabase_admin','mohen_app_runtime','mohen_producer','mohen_gate_signer','mohen_gate_authority','mohen_gate_reader'].some(name=>user===name||user.startsWith(name+'.')))return null;
     return user;
   }catch{return null;}
 }
