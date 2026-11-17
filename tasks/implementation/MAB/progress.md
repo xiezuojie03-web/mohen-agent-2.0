@@ -4634,3 +4634,11 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **双入口裁决建议**：`/studio`为唯一主自然语言工作台；`/studio/desk`是历史资料台，保留有价值的ProjectNotebook、材料篮和D00观察作为上下文子视图/辅助诊断。旧ImportForm写`public.imported_materials`，不能代替正式原件接入；不将它作为第二主入口。
 - **角色澄清**：Admin是管理工作台，不是auth角色；reviewer签作品级精确WorkRevision决定，operator发布；同身份不可自审自发。作品Reviewer不等于专业G0-G5/G5 Gate。单账号不阻断开发，只阻断同身份审核后发布的正向集成测试；发布阶段再受控配置Reviewer-only测试身份，普通注册默认member，当前Admin用户页无角色分配。
 - **归档**：完整补正见`tasks/results/MAB/M5_STUDIO_TO_ADMIN_CHAIN_AUDIT_20261117.md` §7。未修改PLAN唯一任务书；未提升导航节点/边及M5八维状态。
+
+## 2026-11-17｜M5-STUDIO-KNOWLEDGE-ROUTING-PLAN-UPDATE｜将Owner确认的知识复用与按需D/L/G规则写入唯一施工计划
+
+- **唯一计划原位修订**：`tasks/implementation/MAB/PLAN.md` V1.7 §3.5 C 增加“Studio知识复用与按需生产规则”，并修订主干描述及第一施工工作包。不是新增任务书/验收标准，不改变§3.5 B八维准出、D00—D05/L0—L5/G0—G5专业合同或唯一Runner/Gate。
+- **已写入的决策**：Studio支持用户随时上传/指定资料，但上传为可选输入；Agent先检索当前可访问/可共享L0—L5，核对版本、来源、权利、ACL、purpose、consumer、scope及当前Gate资格；已有有效L0/G0可直接作为来源，缺读取成果才D01/G1；有效L1—L5直接复用；只有来源缺失才D00发现/合法获取/下载/存档/登记/G0；原件已在库但只缺登记/G0只补准入；一个任务可同时复用不同层级并补多个局部缺口；上传文件识别原件/研究成果/笔记/创作素材，不一律按L0处理。
+- **施工优先级已改正**：不再把“上传POST接入Studio UI”单独当作第一主线。第一优先工作包为“Studio知识可得性与按需D/L/G路由”，先把已有L5 read-model、项目内L0—L4读取、外部来源发现和D00正式获取准入整合成一个Agent调度决策，再按实际缺口触发相应工序；上传能力作为可选来源入口一并纳入。
+- **下一步工程动作**：定向读取并对比`runResearch/retrieveMaterials`、`readStudioResearchProject`、`discoverExternalSources/diagnoseSourceNeed`、`verifySourceIntake`与现有资产Repository的输入/输出/资格合同，形成最小接口映射；继而实施统一检索与缺口路由，确保不重建既有模块。先做代码路径与现有数据结构定向验证，不再做全仓盘点。
+- **状态边界**：本次只修订计划及记录，尚未完成统一路由代码，也未提升任何M5节点/八维状态。M5真实Project/Root及同Root D00/G0→D01/G1→D02云端回执仍未验证。
