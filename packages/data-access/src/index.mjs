@@ -280,6 +280,8 @@ export default {
 export { createImportedMaterialRepository } from './imported-material-repository.mjs';
 export { getNodePgPool } from './node-pg-client.mjs';
 export { createStudioAssetRepository } from './studio-asset-repository.mjs';
+// Shared trusted app transaction: SET LOCAL mohen_app_runtime, verify signed session.
+export {createAppTransaction} from './app-transaction.mjs';
 
 export { createPrivateOriginalRepository, createPrivateOriginalWorkflow } from './private-original-repository.mjs';
 
