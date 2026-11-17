@@ -23,5 +23,6 @@ export function planStudioKnowledgeRoute(options?:{
   qualifiedFormalL0L4?:Array<{layer:string;gate:string;objectId:string;revision:string}>;
   projectFormalCoverageComplete?:boolean;
   lookupDegraded?:boolean;
+  formalLookupDegraded?:boolean;
   sharedL0L4CoverageComplete?:boolean;
 }):StudioKnowledgeRouting;
