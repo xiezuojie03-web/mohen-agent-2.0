@@ -18,8 +18,14 @@
 
 ## 3. 当前最前行动与阻断
 
-**业务/代码最前差异（2026-11-18第二批后）**：已在原`runResearch`接当前Owner Project内的L0—L4候选、受控正式G0—G4资格查询适配器、G5 L5合格读取及保守缺口路由；受保护staging对代码SHA `b4bbd1cc`构建READY，新增14组单测的执行回执仍NOT_VERIFIED。**当前真实问题**是开发库现行资格投影0、正式读身份无法同时获得限定资格函数EXECUTE及所需表SELECT，且尚无跨Project共享授权索引；不能为了搜索“全局资产”越过Owner-only合同，缺源保持`SOURCE_GAP_UNCONFIRMED`。下一步定向核实既有`mohen_app_runtime`/Gate读角色权限及最小合法读接口，用真实当前Project和有效独立Gate资格正反验证；然后才允许确证缺源接D00。不得重做已有Project候选/G5/G0—G4适配器或重新设计D/L/G。**运行并行阻断**：Producer/Worker两个现有LOGIN角色仍无密码（2026-11-18只读回证），安全执行通道拒绝密码配置；Preview两项敏感连接变量已恢复为明确不可登录占位，未有半激活。须通过受控安全凭据配置入口激活并完成真实TLS及低权正反，再按既有合同补Cloud Executor、独立Gate/Reviewer/Storage，不得扩大权限或用旧历史PASS；只影响依赖这些条件的动作，其余已授权代码/测试工作继续。发布前另解决精确WorkRevision映射及Reviewer/Operator独立身份。当前M5 0/8 OVERALL_HOLD，不能将页面GET200、历史原件PASS或空列表变成业务准出。
+**本轮已完成的代码增量（2026-11-18第三批）**：继续继承`runResearch`、当前Project L0—L4候选/G5合格读和已有G0—G4检索适配器。将正式G0—G4检索改接已有`createAppTransaction`（当前Owner签名会话、`SET LOCAL mohen_app_runtime`、同连接核实ACTIVE Project/Owner）而不是通用DB查询；查询截断不再声称全覆盖。独立记录G5与正式G0—G4检索故障：**已找到当前有效知识仍可定向复用，尚不能判断无源的部分必须HOLD**。云端`cloud-execution-readiness.mjs`远程机器连接只接受`sslmode=verify-full`，`cloud-production-runtime.mjs`彻底取消Producer URL缺失时退回通用`DATABASE_URL`。新增云端机器身份拒绝负测6组，Studio路由用例累计16组；单独V8实际执行当前路由8/8 PASS，只代表纯决策逻辑，GitHub/Node正式测试仍NOT_VERIFIED。受保护Preview的代码构建须按最新精确SHA核对，不能用旧快照。
+
+**业务/代码当前最前差异**：`control.qualification_current=0`，无可用于真实同Project正向测例的当前Gate资格；`mohen_app_runtime`具独立资格函数EXECUTE却没有需要的部分正式对象SELECT，不能为了返回结果给postgres/public/anon全表读权；现行第一阶段Owner-only合同没有跨Project共享授权索引。优先沿既有MHKA-05/Gate授权合同补定向安全只读桥接，做同Owner/错Owner/错purpose/资格撤权正反、再证明本研究确实缺来源后才调用既有D00；不重做已交付适配器、D00、Registry或Runner。
+
+**B线当前最前差异**：两个专用低权机器LOGIN均存在但数据库密码仍NULL；本工具安全检查拒绝直接写入密码，Vercel两个Preview敏感URL只保留**不可登录占位**，无Production变更。需要经安全管理员通道对原角色初始化各自独立凭据（不得索取/重用Owner个人账户密码），同步Preview密钥并实测TLS、角色读写权限和越权拒绝。Cloud Executor URL/凭据、Storage服务钥匙仍不齐；独立Gate Policy/Reviewer active binding均0，不得将「机器登录成功」等同「Gate可签发」。这只阻断依赖云执行的路径，A线合法代码/测试继续。
+
+**M5整体仍`0/8 OVERALL_HOLD`**，代码BUILD、纯决策V8、隔离PG、云端同Root和Owner实际验收不能互替；只需追加`progress.md`最近一批，不重新全仓盘点。
 
 ## 4. 新窗口最短指令
 
-> 请按最新main的AGENTS.md、PLAN.md §3.5 B/C/D、CURRENT.md与本交接入口，从2026-11-18已提交的项目候选＋G5合格读＋正式G0—G4按项目资格检索适配器继续，优先修复受控授权读身份与正式对象读取的合同衔接、取得实际Gate正反回执，并核实共享ACL后才判断无源；不重新写已接模块。机器密码激活另走经批准的安全管理通道，验证成功才启动Cloud Executor，继承原能力；并行推进云端安全配置中可授权的独立运行阻断。对同一真实Project/Root逐节点验证实际下游，保持独立Gate、最小权限、单main及生产部署隔离。按批追加progress，真实事实有变才更新CURRENT，导航变化时JSON/MD/HTML同提交同步。只按唯一八维验收，不从上传或G0重头施工，也不把已完成历史工作重新做一遍。
+> 请按最新main的AGENTS.md、PLAN.md §3.5 B/C/D、CURRENT.md与本交接入口，从第三批已接入可信Owner事务的当前Project候选/G0—G4/G5统一路由继续，先补最小正式读授权桥及真实Gate资格正反，共享ACL未生效不宣布无源；B线独立机器密码激活经安全管理员通道，验证成功才启动Cloud Executor，继承原能力；并行推进云端安全配置中可授权的独立运行阻断。对同一真实Project/Root逐节点验证实际下游，保持独立Gate、最小权限、单main及生产部署隔离。按批追加progress，真实事实有变才更新CURRENT，导航变化时JSON/MD/HTML同提交同步。只按唯一八维验收，不从上传或G0重头施工，也不把已完成历史工作重新做一遍。
