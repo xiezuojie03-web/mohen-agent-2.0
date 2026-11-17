@@ -27,7 +27,7 @@
 
 本入口不自行宣布实时CI、Vercel部署状态或准出结论：旧记录曾出现代码质量红灯与自动部署未隔离，但**这些属于历史事实，不能当作现在的状态**。实时HEAD/CI、部署隔离及同一真实Studio作品八维HOLD以GitHub与`CURRENT.md`最新事实核实；恢复顺序及准出只读`PLAN.md` §3.5 B/C；具体连接从上述导航定位并再次验证，不能把导航静态状态当作最新证据。
 
-**Owner账号已恢复（2026-11-17现行）**：Owner本人确认已登录受保护Preview，mohen-cloud证明唯一活跃Owner使用正式scrypt密码，旧setup-v1标记及web_password_resets临时记录均为0。无需再申请临时密码、重置账号或重复操作恢复页；永久找回密码功能保留。先使用现有Owner浏览器会话访问`https://mohen-agent-2-0-nqmy664f7-napoles1.vercel.app/studio`，按真实UI建立Project/Root及合法原件；执行方不能冒用该Cookie或通过SQL人工伪造Owner实操。当前机器Producer/Worker密码尚未激活，独立Gate/Authority与同Root D00/G0→D02继续HOLD；下一动作依CURRENT、PLAN §3.5及导航最前边定位。
+**Owner账号已恢复（2026-11-17现行）**：Owner本人确认已登录受保护Preview，mohen-cloud证明唯一活跃Owner使用正式scrypt密码，旧setup-v1标记及web_password_resets临时记录均为0。无需再申请临时密码、重置账号或重复操作恢复页；永久找回密码功能保留。先使用现有Owner浏览器会话访问`https://mohen-agent-2-0-idmd3wmtc-napoles1.vercel.app/studio`，按真实UI建立Project/Root及合法原件；执行方不能冒用该Cookie或通过SQL人工伪造Owner实操。当前机器Producer/Worker密码尚未激活，独立Gate/Authority与同Root D00/G0→D02继续HOLD；下一动作依CURRENT、PLAN §3.5及导航最前边定位。
 
 **授权边界保持不变**：生产数据库/Storage迁移、正式独立Gate/Reviewer启用、发布或公众开放、Provider新增费用/凭据及来源外发等必须满足原任务书与PLAN既定授权；密钥、私有字节、数据库dump不得进入GitHub/日志/对话。遇到无权、环境不可达或证据不足，标`HOLD/NOT_RUN/DEFERRED_ENV`并说明具体恢复条件；不能以切换执行工具代替验证。
 
