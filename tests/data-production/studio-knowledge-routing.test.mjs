@@ -150,3 +150,23 @@ test('current G3 survives unrelated G5 lookup degradation, but missing layers st
  assert.equal(missing.disposition,'HOLD');
  assert.equal(missing.should_discover_sources,false);
 });
+
+test('M5 private read bridge must never grant raw formal tables',()=>{
+ const bridge=readFileSync(new URL('../../supabase/migrations/20261118025600_m5_scoped_formal_project_gate_read.sql',import.meta.url),'utf8');
+ const formal=readFileSync(new URL('../../apps/web/lib/mohen-agent/retrieve-formal.ts',import.meta.url),'utf8');
+ assert.match(bridge,/SECURITY DEFINER/);
+ assert.match(bridge,/SET search_path TO 'pg_catalog'/);
+ assert.match(bridge,/current_setting\('role',true\)/);
+ assert.match(bridge,/control\.current_app_user_id\(\)/);
+ assert.match(bridge,/owner_user_id=app_user/);
+ assert.match(bridge,/control\.qualification_allows/);
+ assert.match(bridge,/p_scope->>'project_id'/);
+ assert.match(bridge,/p_scope->>'requested_action'/);
+ assert.match(bridge,/REVOKE ALL ON FUNCTION/);
+ assert.match(bridge,/FROM PUBLIC/);
+ assert.match(bridge,/GRANT EXECUTE ON FUNCTION/);
+ assert.doesNotMatch(bridge,/GRANT\s+SELECT\s+ON\s+(?:ALL\s+)?TABLES/i);
+ assert.match(formal,/createAppTransaction\(getNodePgPool\(\)/);
+ assert.match(formal,/studio\.search_qualified_project_layers/);
+ assert.doesNotMatch(formal,/from control\.qualification_current/i);
+});
