@@ -15,7 +15,7 @@ import { readStudioResearchProject } from "../studio-research-read";
 import { planStudioKnowledgeRoute, type StudioKnowledgeRouting } from "./knowledge-routing.mjs";
 import { extractExternalEntities, type ShlMaterial } from "./retrieve-shl";
 import { discoverExternalSources } from "./source-discovery";
-import { useTool, BudgetHoldError, type Ledger } from "../studio/tool-ledger";
+import { useTool, BudgetHoldError, ToolExecutionUncertainError, ToolReceiptPersistenceError, type Ledger } from "../studio/tool-ledger";
 import {requireResearchPrerequisites, ResearchPrerequisiteHold} from './research-prerequisites';
 
 function dedupe(xs: string[]): string[] {
@@ -226,7 +226,8 @@ export async function runResearch(
       );
       projectSnapshot = read.snapshot;
     } catch (error) {
-      if (error instanceof BudgetHoldError) throw error;
+      if (error instanceof BudgetHoldError || error instanceof ToolExecutionUncertainError ||
+          error instanceof ToolReceiptPersistenceError) throw error;
       throw new ResearchPrerequisiteHold(["STUDIO_KNOWLEDGE_READ_NOT_AUTHORIZED_OR_UNAVAILABLE"]);
     }
   }
