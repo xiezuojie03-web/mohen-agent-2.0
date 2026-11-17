@@ -69,3 +69,51 @@ test('Studio wiring uses existing Owner-scoped project read and does not promote
  assert.match(task,/knowledgeRoute/);
  assert.doesNotMatch(pre,/missing\.push\('SOURCE_ACQUISITION_UNAVAILABLE'\)/);
 });
+
+
+test('current project-qualified G3 knowledge reuses L3 without assuming G5 or redoing D00',()=>{
+ const r=planStudioKnowledgeRoute({projectSnapshot:completeEmpty,
+  projectFormalCoverageComplete:true,
+  qualifiedFormalL0L4:[{layer:'L3',gate:'G3',objectId:'claim-1',revision:'rev-1'}]});
+ assert.equal(r.disposition,'REUSE_FORMAL_QUALIFIED');
+ assert.equal(r.may_reuse_formal,true);
+ assert.equal(r.may_reuse_l5,false);
+ assert.equal(r.should_discover_sources,false);
+ assert.equal(r.coverage.project_formal_l0_l4_coverage,'VERIFIED_COMPLETE');
+});
+test('current G1/G0 only authorizes the earliest necessary downstream review, not production',()=>{
+ const l1=planStudioKnowledgeRoute({projectSnapshot:completeEmpty,
+  qualifiedFormalL0L4:[{layer:'L1',gate:'G1',objectId:'read-1',revision:'r1'}]});
+ assert.equal(l1.disposition,'QUALIFIED_INPUT_AVAILABLE');
+ assert.equal(l1.next_action,'REUSE_CURRENT_L1_CHECK_D02_DEPENDENCIES');
+ assert.equal(l1.production_started,false);
+ const l0=planStudioKnowledgeRoute({projectSnapshot:completeEmpty,
+  qualifiedFormalL0L4:[{layer:'L0',gate:'G0',objectId:'source-1',revision:'v1'}]});
+ assert.equal(l0.next_action,'REUSE_CURRENT_L0_CHECK_READ_RIGHTS_BEFORE_D01');
+ assert.equal(l0.should_discover_sources,false);
+});
+test('inconsistent Gate/layer identity cannot be promoted by a route payload',()=>{
+ const r=planStudioKnowledgeRoute({projectSnapshot:completeEmpty,
+  qualifiedFormalL0L4:[{layer:'L3',gate:'G0',objectId:'claim',revision:'revision'}],
+  projectFormalCoverageComplete:true});
+ assert.equal(r.disposition,'SOURCE_GAP_UNCONFIRMED');
+ assert.equal(r.may_reuse_formal,false);
+});
+test('project-scoped formal Gate index cannot authorize cross-project sharing by inference',()=>{
+ const research=readFileSync(new URL('../../apps/web/lib/mohen-agent/research.ts',import.meta.url),'utf8');
+ const formal=readFileSync(new URL('../../apps/web/lib/mohen-agent/retrieve-formal.ts',import.meta.url),'utf8');
+ assert.match(research,/retrieveQualifiedFormalProject\(studioContext\.projectId,effectiveTerms,qualification\)/);
+ assert.match(research,/sharedL0L4CoverageComplete:false/);
+ assert.match(formal,/control\.qualification_current/);
+ assert.match(formal,/control\.qualification_allows/);
+ assert.match(formal,/project_id:projectId/);
+ assert.match(formal,/projectId:string/);
+ assert.doesNotMatch(formal,/SECURITY DEFINER/i);
+});
+test('an empty verified project formal scan is not a verified shared/global source gap',()=>{
+ const r=planStudioKnowledgeRoute({projectSnapshot:completeEmpty,
+  projectFormalCoverageComplete:true,qualifiedFormalL0L4:[],
+  sharedL0L4CoverageComplete:false});
+ assert.equal(r.disposition,'SOURCE_GAP_UNCONFIRMED');
+ assert.equal(r.should_discover_sources,false);
+});
