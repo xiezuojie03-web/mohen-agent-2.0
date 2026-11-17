@@ -124,6 +124,12 @@ export interface StudioAssetRepository {
   } | null>;
 }
 export declare function createStudioAssetRepository(pool: {connect: Function}): StudioAssetRepository;
+/** Existing signed-session, SET LOCAL mohen_app_runtime transaction boundary. */
+export declare function createAppTransaction(pool:{connect:Function},identityError:string):
+  <T>(sessionToken:string,operation:(client:{
+    query(sql:string,params?:unknown[]):Promise<{rows:Array<Record<string,any>>}>;
+  },actorId:string)=>Promise<T>)=>Promise<T>;
+
 
 export interface PrivateOriginalRecord {
  original_id:string;project_id:string;asset_id:string;asset_revision_id:string|null;
