@@ -4581,3 +4581,11 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **真实HTTP证据**：连接Vercel官方授权访问工具，Preview部署`dpl_B1Z4fT4goZqqut1WHKFa5U2wQtXz`的`GET /account/forgot-password` 200（标题“重置 Owner 密码”）；`GET /api/works/published` 500（request `qgcxz-1794898095269-6f14b1d89adb`）。Vercel Runtime日志`2026-11-17T06:48:17.288Z`指出`28P01 password authentication failed for user "postgres"`。Production既有部署`dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc`真实相同GET亦500，`2026-11-17T06:49:21/27Z`同28P01，证实问题横跨两个现存环境而非页面单点。
 - **只读数据库证据**：Supabase项目mohen-cloud`ACTIVE_HEALTHY`；public.users活跃operator=1，仍持有`setup-v1`密码设置标记=1，已生效标准scrypt哈希=0。未改变用户密码。Vercel env有DATABASE_URL和MOHEN_DATABASE_PASSWORD，URI ref/Pooler地区/账号形态匹配；密钥有效性未验证，实际PG认证已失败。不得输出、猜测或迁移旧口令。
 - **恢复路径与安全边界**：唯一优先阻断是当前PG连接凭据`28P01`。Owner通过Supabase官方安全控制台核对或重设DB密码（区别于墨痕App账号密码），在Vercel对应项目安全配置中只更改现有`MOHEN_DATABASE_PASSWORD`敏感变量的有效值（如变更目标环境须覆盖Preview与现有Production配置）。随后重新部署受保护Preview，在不修改账户前先验证云HTTP读取与PG连接正常，再由Owner通过Preview重置表单自行设置新密码，复核Supabase哈希状态、成功登录与旧会话失效。凭据不得发在聊天或GitHub；未拿到有效凭据时不得声称已修好。此批不修改源码、DB或部署配置，不触及机器Producer/Worker凭据、独立Gate、M5八维。
+
+## 2026-11-17｜M5-OWNER-PASSWORD-DB-CONNECTION-REPAIR-04｜Preview数据库认证修复与新部署验证
+
+- **变更**：Vercel项目现有`MOHEN_DATABASE_PASSWORD`敏感变量（target仍为Preview+Production）更新为同项目`DATABASE_URL`中现有密码字段，解决两项配置可能不一致。没有改Supabase数据库密码，没有改用户记录、schema或业务数据。
+- **部署**：从既有受保护Preview部署重部署，Vercel部署`dpl_2frDTycEUhuKDgbGcdQ1cqMLhwH2` READY，target=staging，runtime日志明确environment=preview，代码SHA`ac99482e07d8e53a0c4e1d3358db3c0eaa91deec`。新入口`https://mohen-agent-2-0-nqmy664f7-napoles1.vercel.app/account/forgot-password`。
+- **真实HTTP与日志**：新部署GET恢复页面HTTP 200；`GET /api/auth/me` HTTP 200；`GET /api/works/published` HTTP 500，但runtime error由旧部署的PostgreSQL认证失败`28P01`变为`42P01 relation "studio.work_revisions" does not exist`。这是SQL已成功通过数据库认证后遇到的独立作品查询schema缺表，不再是数据库口令认证失败。不得把作品读取API的此项缺表与Owner恢复接口混为一谈。
+- **账号事实**：Supabase只读回查仍为活跃Owner=1、setup标记=1、有效scrypt哈希=0；本批未改Owner密码。恢复POST真实提交尚未执行，因为该路径需要Owner本人通过Vercel SSO的浏览器会话并自行选定长期密码。代码路径`resetPreviewOwnerPassword`只更新唯一活跃Owner的`public.users.password_hash`，数据库会话撤销由既有trigger负责；仍需Owner完成页面提交及登录回归。
+- **边界**：未重部署Production，未修改Supabase DB password、schema、Owner/其他用户、Producer/Worker凭据、Gate/Reviewer或M5主链。M5仍0/8、OVERALL_HOLD。下一步入口为上述新Preview恢复页，旧`dtuq9o6gh`页面链接不再使用。
