@@ -11523,7 +11523,7 @@
         "E_L1_TO_D02"
       ],
       "state_source": "原edges[].verification_layers，状态不在此处重复存储",
-      "reason": "本轮已完成mohen-cloud开发库Owner/Root受限生产阶段/终态写回RPC（migration 20261117010309）及主CI/隔离PG17/HTTP正反；Producer不具有原control.production_runs直接读写，独立Gate签发规则未重做。当前最前仍E_D00_REVIEW/E_D00_QUALIFY：真实Owner登录、Project/Root/原件、独立低权Producer/Worker机器LOGIN、持续Execution Authority和独立Reviewer策略/服务凭据均未贯通；同Root G0/G1→D02仍NOT_RUN，三层runtime NOT_VERIFIED，M5八维HOLD。",
+      "reason": "已在mohen-cloud开发库安装两条独立低权机器LOGIN及最小成员权限（migration 20261117030122），三个隔离/CI通过；但账户password NULL、Preview仅有敏感变量位置且已设置不可用占位，实际机器登录及TLS连接未验证。持续Execution Authority、独立Reviewer机器服务/Policy/Binding、Owner真实Project/Root/原件均未贯通。E_D00_REVIEW/E_D00_QUALIFY的handoff/runtime保持HOLD/NOT_VERIFIED，M5八维HOLD。请先在有权安全下发环境完成密码与Preview配置，再沿现有Runner做同Root实跑；不得为配置缺口重新设计G0。",
       "code_edge_ids": [
         "E_L1_TO_D02"
       ],
@@ -11780,45 +11780,34 @@
       "live_coverage_dashboard": "HTML主图首页的已定向归因数量、未逐接口核查数量、分组归因均从最新嵌入的root edges[].engineering_diagnosis与primary_domain计算，杜绝硬编码7/52变成未来虚假当前状态；snapshot字段仅作历史证据。"
     },
     "last_execution_batch": {
-      "id": "M5-CLOUD-PROGRESS-01",
+      "id": "M5-DEV-MACHINE-LOGIN-01",
       "date": "2026-11-17",
-      "reviewed_main_head": "46a956541552132e6797efedb9c910d337420244",
-      "inherited_history_ids": [
-        "R05",
-        "R06",
-        "R07",
-        "R08",
-        "R09",
-        "R10",
-        "R11"
-      ],
-      "inherited_batches": [
-        "M5-DEV-M3-02",
-        "M5-CLOUD-LIVE-PREFLIGHT-02",
-        "M5-CLOUD-IDENTITY-GUARD-01"
-      ],
+      "reviewed_main_head": "ddecd85fbe55e03f9c1cf95ffe124a6165f74a69",
       "affected_edges": [
         "E_D00_REVIEW",
         "E_D00_QUALIFY"
       ],
-      "source_migration": "supabase/migrations/20261117010000_mab_m5_scoped_producer_run_progress.sql",
-      "cloud_migration_id": "20261117010309",
-      "status": "DEV_ROOT_SCOPED_RUN_PROGRESS_RPC_INSTALLED_ACL_NEG_VERIFIED",
+      "source_migration": "supabase/migrations/20261117020000_mab_m5_dev_machine_login_roles.sql",
+      "cloud_migration_id": "20261117030122",
+      "status": "DEV_PRODUCER_WORKER_LOGIN_ROLES_INSTALLED_PASSWORD_NULL",
       "main_ci": {
-        "run_id": 43992065391,
+        "run_id": 44006779472,
         "conclusion": "SUCCESS",
-        "code_sha": "46a956541552132e6797efedb9c910d337420244"
+        "code_sha": "ddecd85fbe55e03f9c1cf95ffe124a6165f74a69"
       },
       "pg17_ci": {
-        "run_id": 43992021553,
+        "run_id": 44006779646,
         "conclusion": "SUCCESS",
-        "code_sha": "6ec8112b2827621f7ad6bea46d91fac94304f3b7"
+        "code_sha": "ddecd85fbe55e03f9c1cf95ffe124a6165f74a69"
       },
       "isolated_http_ci": {
-        "run_id": 43992021166,
+        "run_id": 44006779739,
         "conclusion": "SUCCESS",
-        "code_sha": "6ec8112b2827621f7ad6bea46d91fac94304f3b7"
+        "code_sha": "ddecd85fbe55e03f9c1cf95ffe124a6165f74a69"
       },
+      "producer_worker_roles": "REAL_DEV_DB_ROLES_VERIFIED",
+      "producer_worker_passwords": "NULL_DISABLED",
+      "preview_env": "TWO_PREVIEW_ONLY_SENSITIVE_PLACEHOLDERS_NOT_VALID_CREDENTIALS",
       "actual_machine_service": "NOT_CONFIGURED",
       "actual_owner_storage_upload": "NOT_RUN",
       "real_root_g0_signed": "NOT_RUN",
@@ -11827,14 +11816,13 @@
       "runtime_verified": false,
       "handoff_state_changed": false,
       "m5_exit": "HOLD",
-      "approach": "REUSE_EXISTING_RUNNER_AND_GATE; ADD_OWNER_SCOPED_PROGRESS_RPC_NO_BROAD_RLS",
+      "approach": "REUSE_EXISTING_ROLE_GROUPS_AND_RUNNER; LOGIN_SPLIT_ONLY; NO_GATE_SIGNING",
       "docs_sync_commit": "THIS_COMMIT",
       "deep_links": [
         "#edge-E_D00_REVIEW",
         "#edge-E_D00_QUALIFY"
       ],
-      "source_of_status": "edges[].verification_layers",
-      "result_note": "开发数据库DDL与拒绝案例已验证；现行真实任务未跑，节点边状态未提升；三份导航同步附录，CURRENT/progress留完整证据。"
+      "source_of_status": "edges[].verification_layers"
     },
     "last_documentation_correction": {
       "date": "2026-11-16",

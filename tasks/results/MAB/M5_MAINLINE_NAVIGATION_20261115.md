@@ -1,5 +1,8 @@
 # 墨痕 M5 全链路导航｜持续维护基线（非权威标准）
 
+> **2026-11-17｜M5-DEV-MACHINE-LOGIN-01**：开发云库两个独立机器LOGIN已实际安装（Supabase migration `20261117030122`，CI/PG17/HTTP SUCCESS），但数据库密码均为NULL，Preview两个敏感变量尚未有效配对，**机器连接不构成VERIFIED_LIVE**。继续使用原Runner/Gate，下一处E_D00_REVIEW/E_D00_QUALIFY仍HOLD，同Root真实Owner/Project/Root/G0/G1→D02尚未运行，八维不升PASS；完整事实和失败关闭见CURRENT/progress。
+
+
 > **2026-11-17｜M5-CLOUD-PROGRESS-01**：现行Runner云端运行进度/终态已接入Owner签名会话与真实Project/Root作用域RPC；开发库`mohen-cloud`迁移`20261117010309`安装并正反回读，Producer无运行表直接读写权，独立Gate签发权限不变。代码`46a95654`主CI`43992065391` SUCCESS；隔离PG17`43992021553`及HTTP`43992021166` SUCCESS（隔离对应`6ec8112b`）。**同Root真实G0/G1→D02仍NOT_RUN，Owner登录、机器低权LOGIN与独立Reviewer服务未就位，E_D00_REVIEW/E_D00_QUALIFY与八维仍HOLD**。完整证据见`CURRENT.md`、`progress.md`，此更新不提升节点或边的三层状态。
 
 
