@@ -4589,3 +4589,18 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **真实HTTP与日志**：新部署GET恢复页面HTTP 200；`GET /api/auth/me` HTTP 200；`GET /api/works/published` HTTP 500，但runtime error由旧部署的PostgreSQL认证失败`28P01`变为`42P01 relation "studio.work_revisions" does not exist`。这是SQL已成功通过数据库认证后遇到的独立作品查询schema缺表，不再是数据库口令认证失败。不得把作品读取API的此项缺表与Owner恢复接口混为一谈。
 - **账号事实**：Supabase只读回查仍为活跃Owner=1、setup标记=1、有效scrypt哈希=0；本批未改Owner密码。恢复POST真实提交尚未执行，因为该路径需要Owner本人通过Vercel SSO的浏览器会话并自行选定长期密码。代码路径`resetPreviewOwnerPassword`只更新唯一活跃Owner的`public.users.password_hash`，数据库会话撤销由既有trigger负责；仍需Owner完成页面提交及登录回归。
 - **边界**：未重部署Production，未修改Supabase DB password、schema、Owner/其他用户、Producer/Worker凭据、Gate/Reviewer或M5主链。M5仍0/8、OVERALL_HOLD。下一步入口为上述新Preview恢复页，旧`dtuq9o6gh`页面链接不再使用。
+
+
+## 2026-11-17｜M5-OWNER-LOGIN-TEMP-RECORDS-CLOSE-05｜Owner已登录，开发期临时密码记录核销
+
+- **真实账号事实**：Owner本人在本轮对话确认已登录；mohen-cloud只读SQL查到活跃operator=1、scrypt正式密码哈希账户=1、旧`setup-v1`标记=0；`control.web_password_resets`与`control.web_password_reset_request_budget`均为0条。不存在需要删除的临时口令记录；**不改唯一Owner账户、正式密码或已成立的会话撤销机制**。不复用过往一次性链接、不推断仍需重置。
+- **文档善后**：`CURRENT.md`已删除三条以“密码尚待设置”为当下状态的过期快照，历史失败及排障经过仍按本账原批保留；`ENGINEERING_HANDOFF_CURRENT.md`已把接续入口改为正式Owner浏览器会话下的Studio。长期密码找回功能保留，避免将来再次被锁在登录外。
+- **边界与机器角色**：执行方不持有也不获取Owner浏览器Cookie，未代Owner写Studio Project/Root；只读SQL证实当前Project=0、private original=0。生产者/私有Worker两个受限LOGIN仍无可用密码。尝试通过此管理连接安全同步机器角色密码与Preview安全变量被平台安全检查拦截，工具调用没有执行写入；随后只读回查`rolpassword IS NOT NULL`均FALSE。没有绕过该限制、没有修改用户数据、Gate或生产环境。真实M5八维0/8、OVERALL_HOLD。
+- **下一缺口**：由有权的受控安全环境激活Producer/Worker并检查真实TLS低权身份、独立Execution Authority/Reviewer和G0；Owner从自己的会话在Studio创建真实项目/Root、上传合法原件（不可SQL伪造UI操作）。不要再重复账户恢复流程或D00—D05旧构建。
+
+## 2026-11-17｜M5-WATCH-LEGACY-PUBLICATION-SCHEMA-COMPAT-01｜真实缺表500的最小只读兼容修复
+
+- **Before**：既有Vercel Preview`dpl_2frDTycEUhuKDgbGcdQ1cqMLhwH2`的`GET /api/works/published`在DB密码认证已恢复后报HTTP 500 / SQLSTATE`42P01`，确切缺表`studio.work_revisions`。开发云库只读证明`publication.works`、`publication.work_revisions`及旧`publication.published_pointers`均存在，但Studio发布新版Schema及新版指针列未安装。
+- **变更**：复用原`publication-watch-sql.mjs`和`publication.ts`，针对明确缺失Studio专用表/列的42P01/42703退回合法旧版作品只读查询，不把其他DB凭据/权限/旧正式Schema错误当可降级；所有候选仍由`listWatchEligible`对每件作品原有`requireCurrentWorkConsumerQualification`验收。未添加表、伪造发布、跳过G5或修改Runner/Registry。
+- **提交与回归**：`5f4b96c4`发布SQL与错误分类；`f7249939`调用者降级；`5adb82b3`追加缺表正反回归`tests/data-production/publication-watch-schema-fallback.test.mjs`；`2830f462`补足既有`publication-watch-sql.d.mts`的类型导出以修复真实Preview首次构建错误。
+- **验证层级**：首次Vercel Preview`dpl_GDmVY4jkJPfTZNnSoroHjL99kjjn`在Next构建TS阶段`missing_export`失败，没有发布或声称PASS。补正后第二次精确代码部署`dpl_6cNbCqaHKGJWfdhqKkxFneKK3aYv`已启动；提交本条时构建/HTTP结果尚待实测，**仍记NOT_VERIFIED**。该修复不涉及项目初始化、独立G0/G1或Studio新版作品正式投运；八维不变。
