@@ -196,6 +196,9 @@ try {
     // Reviewer to the exact Runner qualification check for a single Root.
     // This is not a cloud/official-Storage acceptance substitute.
     runTest("M5_ROOT_G0_HANDOFF", "tests/data-production/m5-root-g0-handoff.integration.mjs");
+    // Dedicated LIVE LOGIN Owner/Root progress persistence on disposable PG17.
+    // This is not a persistent cloud/TLS/Reviewer credential proof.
+    runTest("M5_PRODUCER_SCOPED_PROGRESS", "tests/data-production/m5-producer-run-progress.integration.mjs");
     runTest("ARTIFACT_CONTENT_REVISION", "tests/data-production/artifact-content-revision.integration.mjs");
     if (process.env.MOHEN_TEST_STORAGE_CONFIG) {
       runTest("PRIVATE_ORIGINAL_WORKFLOW", "tests/data-production/private-original-workflow.integration.mjs");
