@@ -22,7 +22,7 @@ begin
  if p_run_id is null or p_reason is null or length(trim(p_reason))<8 or length(trim(p_reason))>300 then
    raise exception 'M5_RECONCILIATION_INPUT_INVALID';
  end if;
- select * into r from control.production_runs where run_id=p_run_id for update;
+ select pr.* into r from control.production_runs pr where pr.run_id=p_run_id for update;
  if not found then raise exception 'M5_RECONCILIATION_RUN_NOT_FOUND'; end if;
  if r.status<>'RUNNING' then raise exception 'M5_RECONCILIATION_NOT_RUNNING'; end if;
  if r.started_at is null or r.started_at>now()-interval '24 hours' then
