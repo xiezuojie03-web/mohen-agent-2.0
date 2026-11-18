@@ -1,4 +1,4 @@
-import {hasLlmProviderConfiguration} from '@mohen/agent-runtime';
+import {hasLlmProviderConfiguration, type Understanding} from '@mohen/agent-runtime';
 import {consumerContext} from '../kad1-policy.mjs';
 import type {Ledger} from '../studio/tool-ledger';
 
@@ -6,17 +6,17 @@ import type {Ledger} from '../studio/tool-ledger';
 export class ResearchPrerequisiteHold extends Error {
   constructor(public readonly missingRequirements: string[], public readonly partialResult?: {
     decision: unknown; degraded: boolean; researchLeads: unknown[];
-  }) {
+  }, public readonly settledUnderstanding?: Understanding) {
     super('RESEARCH_PREREQUISITES_HOLD');
     this.name = 'ResearchPrerequisiteHold';
   }
 }
 
-export function requireResearchPrerequisites(ledger?: Ledger) {
+export function requireResearchPrerequisites(ledger?: Ledger, hasSettledUnderstanding = false) {
   const missing: string[] = [];
   // Match the actual llmUnderstand configuration, not the unrelated optional
   // entity-extraction fallback key. Presence is readiness, never spend authority.
-  if (!hasLlmProviderConfiguration())
+  if (!hasSettledUnderstanding && !hasLlmProviderConfiguration())
     missing.push('REAL_PROVIDER_UNAVAILABLE');
   // Source acquisition credentials belong to a verified D00 need, not to
   // every Studio research/read request. No source fetch is authorized here.

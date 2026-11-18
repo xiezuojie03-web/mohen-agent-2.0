@@ -76,6 +76,27 @@ describe("HP08 task-level budget and safe restart boundaries",()=>{
     expect(queryRows.mock.calls[1][0]).toContain("status = 'hold'");
     expect(JSON.parse(checkpointWrites().at(-1)![1].cp).budgetSpent).toBe(0);
   });
+  it("resumes a settled intent after a formal read failure without resetting spent", async () => {
+    const understanding = {
+      intent: "unknown", objects: [], terms: ["朱家角"], timeHint: null,
+      confidence: 0.5, source: "deterministic", llmResponded: true,
+      needsClarification: false, clarifyQuestion: null,
+    };
+    runResearch.mockImplementationOnce(async (_prompt, _topic, ledger) => {
+      ledger.budget.spent = 1;
+      throw new ResearchPrerequisiteHold(["FORMAL_G0_G4_READ_NOT_AUTHORIZED_OR_UNAVAILABLE"], undefined, understanding);
+    });
+    await createBoundTask("研究朱家角");
+    const checkpoint = JSON.parse(checkpointWrites().at(-1)![1].cp);
+    expect(checkpoint).toMatchObject({budgetSpent: 1, settledUnderstanding: understanding});
+    queryRows.mockResolvedValueOnce([{prompt: "研究朱家角", topic: "generic", checkpoint}])
+      .mockResolvedValueOnce([{task_id: taskId}]);
+
+    expect(await resumeResearchTask(taskId, undefined, sessionToken)).toMatchObject({taskId, status: "done"});
+    expect(runResearch.mock.calls.at(-1)?.[3]).toMatchObject({projectId, sessionToken, settledUnderstanding: understanding});
+    expect(JSON.parse(checkpointWrites().at(-1)![1].cp).budgetSpent).toBe(1);
+  });
+
   it('preserves partial results but never marks degraded research as completed',async()=>{
     runResearch.mockResolvedValue({...result,degraded:true});
     const task=await createBoundTask('来源服务失败时保存有限结果');

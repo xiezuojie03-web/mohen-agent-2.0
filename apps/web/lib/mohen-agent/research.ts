@@ -9,6 +9,7 @@ import {
   type EntityAliases,
   type AgentDecision,
   type Material,
+  type Understanding,
 } from "@mohen/agent-runtime";
 import { retrieveMaterials } from "./retrieve";
 import { retrieveQualifiedFormalProject, type FormalQualifiedRead } from "./retrieve-formal";
@@ -106,6 +107,7 @@ export interface ResearchResult {
 export interface StudioResearchContext {
   projectId: string;
   sessionToken: string;
+  settledUnderstanding?: Understanding;
 }
 
 export const TOPIC_NAMES = { jinze: "金泽", a001: "绿之丘", generic: "通用" } as const;
@@ -213,7 +215,7 @@ export async function runResearch(
   ledger?: Ledger,
   studioContext?: StudioResearchContext
 ): Promise<ResearchResult> {
-  const qualification = requireResearchPrerequisites(ledger);
+  const qualification = requireResearchPrerequisites(ledger, Boolean(studioContext?.settledUnderstanding));
   const profile = TOPIC_PROFILES[topic];
   // ACL and current rights are checked before spending on intent extraction.
   // This service returns private L0-L4 as candidates only, never qualified facts.
@@ -232,7 +234,8 @@ export async function runResearch(
       throw new ResearchPrerequisiteHold(["STUDIO_KNOWLEDGE_READ_NOT_AUTHORIZED_OR_UNAVAILABLE"]);
     }
   }
-  const understanding = await useTool(ledger, "llm-understand", () => understand(question, profile.aliases));
+  const understanding = studioContext?.settledUnderstanding ??
+    await useTool(ledger, "llm-understand", () => understand(question, profile.aliases));
   // 前置校验看"模型是否真的接通并作答"，不看意图最终取自哪一档：
   // 自由委托常被判为 unknown，这属于合法结果，不能因此阻断研究。
   if (!understanding.llmResponded)
@@ -266,7 +269,7 @@ export async function runResearch(
     }catch(error){
       if(error instanceof BudgetHoldError||error instanceof ToolExecutionUncertainError||
          error instanceof ToolReceiptPersistenceError)throw error;
-      throw new ResearchPrerequisiteHold(["FORMAL_G0_G4_READ_NOT_AUTHORIZED_OR_UNAVAILABLE"]);
+      throw new ResearchPrerequisiteHold(["FORMAL_G0_G4_READ_NOT_AUTHORIZED_OR_UNAVAILABLE"], undefined, understanding);
     }
   }
   // An eligible L2-L4 Gate result is scoped to the current Owner's Project.

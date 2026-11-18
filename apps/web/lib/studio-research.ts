@@ -5,7 +5,7 @@ import { queryRows, queryValue, run } from "@mohen/data-access";
 import { runResearch, resolveTopic, type TopicKey } from "./mohen-agent/research";
 import { triggerProduction, getProductionBlocker } from "./studio-production";
 import type { ProductionOriginal } from "./studio-production";
-import type { AgentDecision, Material } from "@mohen/agent-runtime";
+import type { AgentDecision, Material, Understanding } from "@mohen/agent-runtime";
 import { readJsonColumn } from "./db-json";
 import { createHash, randomUUID } from "node:crypto";
 import { studioAssetStore } from "./studio-assets";
@@ -88,7 +88,8 @@ async function holdResearchPrerequisites(
 ):Promise<CreatedTask> {
   const checkpoint={prompt,topic,holdReason:'research_prerequisites',missingRequirements:error.missingRequirements,
     partial_result:error.partialResult,budgetSpent:budget.spent,reserved:budget.reserved,ceiling:budget.ceiling,
-    holdAt:{toolId:'llm-understand'},retry_requires_reconciliation:false,studio:studioContext};
+    holdAt:{toolId:error.settledUnderstanding?'retrieve-local':'llm-understand'},
+    settledUnderstanding:error.settledUnderstanding,retry_requires_reconciliation:false,studio:studioContext};
   await run("update public.research_tasks set status = 'hold', checkpoint = :'cp'::jsonb, updated_at = now() where task_id = :'id'",
     {id:taskId,cp:JSON.stringify(checkpoint)});
   await writeReceipt({taskId,kind:'checkpoint',stage:'hold',status:'hold',payload:checkpoint});
@@ -409,13 +410,18 @@ export async function resumeResearchTask(
       saved.holdReason === "receipt_uncertain")
     return { taskId, status: "hold", decision: null, degraded: false,
       holdReason: "reconciliation_required", researchLeads: [] };
-  // This implementation starts runResearch at its first tool; replaying
-  // steps that already spent money is unsafe until per-step resume exists.
-  const spent = Number(saved.budgetSpent ?? 0);
-  const previousCeiling = Number(saved.ceiling ?? 0);
-  if (typeof saved.budgetSpent !== "number" || !Number.isFinite(spent) || spent !== 0 ||
-      typeof saved.ceiling !== "number" || !Number.isFinite(previousCeiling) || previousCeiling <= 0 ||
-      saved.reserved !== 0)
+  const spent = saved.budgetSpent;
+  const previousCeiling = saved.ceiling;
+  const firstStep = saved.holdAt as {toolId?: unknown} | undefined;
+  const understanding = saved.settledUnderstanding as Understanding | undefined;
+  const canResumeFormalRead = saved.holdReason === "research_prerequisites" &&
+    firstStep?.toolId === "retrieve-local" && saved.prompt === prompt && saved.topic === topic &&
+    spent === getTool("llm-understand")?.cost && understanding?.llmResponded === true &&
+    Array.isArray(understanding.terms) && understanding.terms.every(term => typeof term === "string") &&
+    Array.isArray(understanding.objects) && understanding.objects.every(object => typeof object === "string");
+  if (typeof spent !== "number" || !Number.isFinite(spent) || (spent !== 0 && !canResumeFormalRead) ||
+      typeof previousCeiling !== "number" || !Number.isFinite(previousCeiling) || previousCeiling <= 0 ||
+      spent > previousCeiling || saved.reserved !== 0)
     return { taskId, status: "hold", decision: null, degraded: false,
       holdReason: "resume_step_checkpoint_required", researchLeads: [] };
   // A caller-supplied number is not a durable Owner/provider authorization.
@@ -423,8 +429,7 @@ export async function resumeResearchTask(
   if (additionalCeiling !== undefined)
     return {taskId,status:"hold",decision:null,degraded:false,
       holdReason:"additional_budget_requires_authorization",researchLeads:[]};
-  const firstStep = saved.holdAt as {toolId?: unknown} | undefined;
-  if (!["budget","research_prerequisites"].includes(String(saved.holdReason)) || firstStep?.toolId !== "llm-understand")
+  if (!canResumeFormalRead && (!["budget","research_prerequisites"].includes(String(saved.holdReason)) || firstStep?.toolId !== "llm-understand"))
     return {taskId,status:"hold",decision:null,degraded:false,
       holdReason:"resume_step_checkpoint_required",researchLeads:[]};
   // Persist uncertainty before any external invocation. A process crash must
@@ -440,13 +445,14 @@ export async function resumeResearchTask(
     return {taskId,status:"hold",decision:null,degraded:false,
       holdReason:"task_state_conflict",researchLeads:[]};
   const budget = createBudget(previousCeiling);
+  budget.spent = spent;
   const ledger: Ledger = { taskId, budget };
   try {
     await addEvent(taskId, "D04", "resumed", {ceiling:previousCeiling,resumeClaimRef:next.resume_claim_ref});
     if (!sessionToken || typeof studioContext.project_id!=='string')
       throw new ResearchPrerequisiteHold(['STUDIO_PROJECT_READ_CONTEXT_REQUIRED']);
     const { decision, degraded, researchLeads, knowledgeRoute } = await runResearch(prompt, topic, ledger,
-      {projectId:studioContext.project_id,sessionToken});
+      {projectId:studioContext.project_id,sessionToken,...(canResumeFormalRead?{settledUnderstanding:understanding}:{})});
     if (degraded) throw new ResearchPrerequisiteHold(['SOURCE_OR_QUALIFICATION_UNAVAILABLE'],{decision,degraded,researchLeads});
     const checkpoint = { prompt, topic, degraded, decision, researchLeads, knowledgeRoute, budgetSpent: budget.spent, reserved: budget.reserved, ceiling: budget.ceiling, studio:studioContext };
     await run(
@@ -458,7 +464,9 @@ export async function resumeResearchTask(
     return { taskId, status: "done", decision, degraded, researchLeads, knowledgeRoute };
   } catch (e) {
     if (e instanceof ResearchPrerequisiteHold)
-      return holdResearchPrerequisites(taskId,prompt,topic,budget,e,studioContext);
+      return holdResearchPrerequisites(taskId,prompt,topic,budget,
+        canResumeFormalRead && budget.spent === spent && budget.reserved === 0
+          ? new ResearchPrerequisiteHold(e.missingRequirements,e.partialResult,understanding) : e,studioContext);
     if (e instanceof ToolExecutionUncertainError || e instanceof ToolReceiptPersistenceError)
       return holdUncertainTool(taskId!, prompt, topic, budget, e,studioContext);
     if (e instanceof BudgetHoldError) {
