@@ -9,14 +9,14 @@
 -- independent mohen_gate_signer identity (never mohen_private_worker).
 begin;
 
-do $$ begin
+do $private_worker_role$ begin
   if to_regrole('mohen_private_worker') is null then
     create role mohen_private_worker nologin inherit nosuperuser nobypassrls nocreatedb nocreaterole noreplication;
   end if;
   if exists(select from pg_roles where rolname = 'mohen_private_worker' and (rolsuper or rolbypassrls)) then
     raise exception 'UNSAFE_PRIVATE_WORKER_ROLE';
   end if;
-end $;
+end $private_worker_role$;
 
 -- In the M5 development project the dedicated login may already exist because
 -- machine-login activation was applied before this previously-missing role migration.
