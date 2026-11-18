@@ -2,7 +2,7 @@
 
 版本：V1.7（受控执行口径修订：以M5八维准出为唯一当前目标；2026-11-14；2026-11-18补充Studio→D00断点与AI必读文件同步规则）  
 设计基线：MAB完整设计交付包（2026-11-02）  
-执行安排补充：2026-11-16按Owner最新要求在§0及§3.5 D统一为按设计持续总装：可用成果直接复用，缺交接补交接，不符合设计者定向修改或替换；历史继承审计不再作为每批施工前置。2026-11-18依据真实Studio任务、开发库与当前代码核查，补充§3.5 D第7项定向修复安排；不改变M5八维准出。  
+执行安排补充：2026-11-16按Owner最新要求在§0及§3.5 D统一为按设计持续总装：可用成果直接复用，缺交接补交接，不符合设计者定向修改或替换；历史继承审计不再作为每批施工前置。2026-11-18依据真实Studio任务、开发库与当前代码核查，补充§3.5 D第7项定向修复安排；2026-11-18继续完成正式知识读取函数根因修复与遗留Production Run对账；不改变M5八维准出。  
 维护规则：施工标准与顺序见本计划；运行事实见 CURRENT.md，逐批实际证据见 progress.md；仓库级读取纪律见 AGENTS.md；平台切换接续见 ENGINEERING_HANDOFF_CURRENT.md。信息同步规则见§0.3。
 修订边界：2026-11-14 Owner新裁决取消按M1→M4阶段顺序补缺，将旧M0—M4仅用作既有成果、责任与固定安全条件索引；当前唯一目标是同一真实作品M5八维准出。保留原QR-01—10、CP0—CP5（含4.1—4.4）、ST编号、全部专业Gate/权利/费用/环境门禁及后续M6—M8准出边界；不新增施工体系、分支或第二套验收。
 
@@ -407,11 +407,12 @@ ST-01—ST-09保留既有**业务动作与前后依赖**，不再要求按旧M1�
 1. **Studio真实任务存在，但尚未形成研究结果。** 开发库当前有1个Studio Project：e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5；朱家角研究任务：53ad1a29-22e5-43c2-816d-b02b6e85abbd，状态hold / research_prerequisites，work_id=null。任务已发生一次llm-understand真实Provider结算，成本1、预留0；随后retrieve-local以deterministic_execution_failed进入HOLD，任务缺口为FORMAL_G0_G4_READ_NOT_AUTHORIZED_OR_UNAVAILABLE。
 2. **旧任务没有可安全复用的模型输出。** 当前checkpoint的holdAt.toolId仍为llm-understand，settledUnderstandingSaved=false；对应工具Receipt只保存调用编号，没有保存模型输出。ae2b03a加入的“模型步骤结算后保存结构化理解并续跑”只保护新产生且确实保存了理解结果的checkpoint，不能追溯补齐该旧任务。不得直接重放已结算模型步骤，不得把再次付费调用当作恢复。
 3. **正式知识窄读函数权限边界已建立，但本轮没有证明真实读取成功。** studio.search_qualified_project_layers存在；数据库权限核验显示mohen_app_runtime具有受限EXECUTE，anon、authenticated、service_role无EXECUTE。函数/迁移存在与真实同Owner、同Project、正确用途读取成功是不同证据；当前项目有效资格数量为0，正向有合格对象读取仍未验证。
-4. **开发库当前同作品数据基线。** 朱家角Project有1个当前Asset Head；该Project私有原件0、source.sources 0、source.source_versions 0、source.raw_items 0。全库当前有效资格数量0、启用Gate Policy 0、Active Reviewer Binding 0、Studio Delegation 0、Execution Receipt 0。control.production_runs共20条：14 PASS、5 RUNNING、1 FAILED。5条RUNNING均无finished_at，启动时间为2026-10-17（2条）和2026-10-29（3条）；其中2条current_stage=D00、3条current_stage为空，scope均为空对象。它们是未对账的旧RUNNING记录：不能当作当前确有进程在运行，也不能当作已结束历史。新建Runner生产前必须核对对应Worker/Executor、lease、research_events和阶段Receipt，再通过既有状态机恢复或终结；禁止直接SQL改状态。
-5. **知识路由的安全边界正确，但缺少项目范围内的来源缺口分支。** retrieve-formal.ts明确第一阶段只按Owner/Project授权读取，跨Project共享知识范围为NOT_VERIFIED。因此research.ts将sharedL0L4CoverageComplete保持为false是当前安全边界，**不得简单改为true**。但planStudioKnowledgeRoute只有在sharedL0L4CoverageComplete=true时才会返回SOURCE_GAP_CONFIRMED并触发Studio外部来源发现；当当前Project的完整授权检索已完成、没有合格资产，而跨Project共享范围依法仍未建立时，当前路由没有独立的“项目范围来源缺口已确认”状态，容易停在SOURCE_GAP_UNCONFIRMED。这是需要补齐的业务路由差异，不是放宽共享权限的理由。
-6. **外部来源发现与D00原件接入仍是两条未闭合路径。** source-discovery.ts通过既有渠道产出外部来源候选线索；Studio生产接口要求已经存在且完成登记/字节校验的original_id，现有D00 private-evidence-adapters.mjs也要求scope.original_id并调用可信Worker的verifySourceIntake。当前检查到的主路径没有把外部候选自动衔接为合法获取、权利核验、原件字节持久化、SHA回读、Source/Version/Raw登记及D00输入的完整交接。候选线索不是原件、不是来源权利许可，也不是G0资格。
-7. **云端独立生产仍有真实前置阻断。** 当前有效Gate Policy、Active Reviewer Binding均为0；Cloud Executor和真实云端Producer/Worker TLS/低权身份运行仍未得到同一真实任务的验证。Registry六个Job启用及历史隔离Runner成果不得解释为云端独立Gate已经可签发。Producer/Worker凭据及Preview变量此前已核实存在/初始化，不得重复要求Owner重置密码；具体运行验证按CURRENT现状执行。
-8. **当前HEAD的CI红灯需要独立定位。** ae2b03a对应主CI 44222580550、隔离PG 44222580551、隔离HTTP 44222580507均失败；本轮取得的Job元数据只有失败结论，没有足以确定根因的日志。不得继续沿用更早“账单上限导致Runner未启动”的原因描述，除非本次失败日志重新证实。
+4. **开发库Production Run遗留状态已完成对账。** 朱家角Project有1个当前Asset Head；该Project私有原件0、source.sources 0、source.source_versions 0、source.raw_items 0。全库当前资格0、启用Gate Policy 0、Active Reviewer Binding 0、Studio Delegation 0、Execution Receipt 0。Production Run原20条中，5条旧RUNNING均已核实为无cloud_dispatch认领、无活跃执行证据：2条（2026-10-29 D00）存在production_failed事件，失败原因为read_units_read_run_id_ordinal_method_code_locator_hash_key重复键；另3条（2条2026-10-17、1条2026-10-29）无任何research_event。已通过受限、仅postgres可执行的m5_reconcile_legacy_unclaimed_run完成终态收敛：旧5条中2条FAILED、3条HOLD；当前总分布为14 PASS、3 HOLD、3 FAILED。不得把这些记录当作当前Runner，也不得再次启动对应Run。
+5. **正式项目知识读取的底层故障已定位并修复。** 零费用、同Owner/Project签名事务复现得到两个确定性工程问题：①studio.search_qualified_project_layers的RETURNS TABLE输出列layer与ORDER BY case layer发生PL/pgSQL变量歧义；②该SECURITY DEFINER函数的owner为受管postgres，而其调用的现有SECURITY DEFINER control.qualification_allows已按安全设计撤销PUBLIC EXECUTE，导致owner本身缺少嵌套函数EXECUTE。新增迁移20261118120000_m5_formal_project_read_acl_order_fix.sql改为m.layer/m.object_id排序，并仅补postgres→qualification_allows的嵌套EXECUTE，不向app_runtime放宽任何表权限。实测正确签名/Project返回受控空结果0条；错Project返回M5_FORMAL_READ_OWNER_REQUIRED；错用途返回M5_FORMAL_READ_CONTEXT_INVALID。这一处已不再是当前最前底层故障，但正式任务仍需在真实应用路径回读一次。
+6. **知识路由的安全边界正确，但缺少项目范围内的来源缺口分支。** retrieve-formal.ts明确第一阶段只按Owner/Project授权读取，跨Project共享知识范围为NOT_VERIFIED。因此research.ts将sharedL0L4CoverageComplete保持为false是当前安全边界，**不得简单改为true**。但planStudioKnowledgeRoute只有在sharedL0L4CoverageComplete=true时才会返回SOURCE_GAP_CONFIRMED并触发Studio外部来源发现；当当前Project的完整授权检索已完成、没有合格资产，而跨Project共享范围依法仍未建立时，当前路由没有独立的“项目范围来源缺口已确认”状态，容易停在SOURCE_GAP_UNCONFIRMED。这是下一项业务路由修复，不是放宽共享权限的理由。
+7. **外部来源发现与D00原件接入仍是两条未闭合路径。** source-discovery.ts通过既有渠道产出外部来源候选线索；Studio生产接口要求已经存在且完成登记/字节校验的original_id，现有D00 private-evidence-adapters.mjs也要求scope.original_id并调用可信Worker的verifySourceIntake。当前检查到的主路径没有把外部候选自动衔接为合法获取、权利核验、原件字节持久化、SHA回读、Source/Version/Raw登记及D00输入的完整交接。候选线索不是原件、不是来源权利许可，也不是G0资格。
+8. **云端独立生产仍有真实前置阻断。** 当前有效Gate Policy、Active Reviewer Binding均为0；Cloud Executor和真实云端Producer/Worker TLS/低权身份运行仍未得到同一真实任务的验证。Registry六个Job启用及历史隔离Runner成果不得解释为云端独立Gate已经可签发。Producer/Worker凭据及Preview变量此前已核实存在/初始化，不得重复要求Owner重置密码；具体运行验证按CURRENT现状执行。
+9. **GitHub CI当前更像工作流/Runner层故障，但根因仍未证实。** 2026-11-18的提交09cc1cd、b76fd96对应CI run 44243279147、44243282116均在约4秒内失败，build job没有可读取的steps/logs；44243282116已触发失败job重跑，目前处于queued。由于不同类型提交连续出现相同“零步骤、极短时失败”形态，当前不能把它归因于本轮SQL/测试代码；也不能在没有日志前断言具体是账单、Runner分配或工作流层原因。CI保持HOLD，业务诊断不等待CI恢复。
 
 **B. 根因归类与禁止误修**
 
@@ -424,12 +425,12 @@ ST-01—ST-09保留既有**业务动作与前后依赖**，不再要求按旧M1�
 
 **C. 下一批唯一施工顺序**
 
-1. **零费用定位正式知识读取失败。** 从朱家角同一Project/Owner签名事务和当前Preview/开发库路径复现；在不输出SQL参数、Token、密钥或私有正文的前提下，记录安全错误分类/代码和发生边界。区分Owner/Project校验、用途上下文、受限函数调用、资格查询及事务身份。先验证函数可被正确身份安全调用并返回合法空结果，再在存在合格数据时验证正向命中；错Owner、错Project、错用途、无签名会话必须拒绝。不得再次调用付费模型。
-2. **处理旧任务checkpoint的恢复边界。** 只读核查现有持久Receipt是否存在可验证的结构化模型输出；目前所见Receipt只有invocation_id，不能据此重建输出。若没有可靠持久结果，保留原任务和已花费成本，标记旧任务不可自动从已结算步骤恢复；不得盲目点击续跑、重建同义任务或重复付费。后续若确需新attempt，必须显式关联原Project/Root并保留原始HOLD/费用记录。
-3. **对账开发库遗留RUNNING生产记录。** 当前20条production_runs中有5条状态RUNNING，均始于2026-10-17或2026-10-29且finished_at为空；其中2条停留在D00、3条current_stage为空。逐条检查Worker/Executor实际宿主、租约/认领、research_events、阶段Receipt及相关日志，判断是仍有真实执行、进程丢失还是旧状态未收敛。不得直接改数据库状态或把它们计作正在运行；按既有恢复/终态路径处理。完成对账前，不得为同类任务重复启动新的Runner。
+1. **正式知识读取函数修复后的真实应用回读。** 零费用数据库层故障已定位并修复；下一步只需从朱家角同一Owner/Project真实应用路径重新触发既有retrieve-local，确认应用层收到受控空结果而不再落入FORMAL_G0_G4_READ_NOT_AUTHORIZED_OR_UNAVAILABLE。不得重放已结算模型步骤；若应用层仍报错，只沿精确新回执继续定位。
+2. **处理旧任务checkpoint的恢复边界。** 只读核查现有持久Receipt是否存在可验证的结构化模型输出；目前所见Receipt只有invocation_id，不能据此重建输出。若没有可靠输出，保留原任务和已花费成本，标记旧任务不可自动从已结算步骤恢复；不得盲目点击续跑、重建同义任务或重复付费。后续若确需新attempt，必须显式关联原Project/Root并保留原始HOLD/费用记录。
+3. **遗留Production Run已完成对账。** 5条旧RUNNING均无cloud_dispatch认领；2条依据历史production_failed回执终结为FAILED，3条无任何执行事件终结为HOLD。当前不得再次启动这些Run；保留新的受限reconciliation证据。后续新Runner不得复用这些run_id。
 4. **补齐项目范围来源缺口状态。** 在不改变跨Project共享NOT_VERIFIED的前提下，增加可验证的项目范围分支：当前Project的L0—L4授权检索完整、无截断、无查询降级，L5检索可用且没有命中可复用合格知识、项目内无可用合格来源时，允许返回明确的PROJECT_SOURCE_GAP_CONFIRMED（或等义稳定状态）并触发外部来源候选发现。任何查询不完整、权限异常、结果截断或资格状态不明均保持HOLD/未确认；候选仍是线索，不是合格事实。
 5. **接通外部候选到合法原件获取。** 先查找并复用仓库已有获取/下载/登记适配器；只有确认缺少相邻连接时才在既有职责内补接。链路必须逐项完成来源定位与版本、逐动作权利和外发许可判断、合法字节获取（无法合法获取时仅保留候选并HOLD）、私有对象存储、服务器回读SHA/字节数、Source/Version/Raw登记、Owner/Project绑定和幂等回执，最后形成现有D00 Worker可接受的精确original_id/source binding。不得另建Runner、Registry、Gate或平行原件库。
-6. **恢复真实D00/G0运行前置。** 只有遗留RUNNING记录完成对账，且独立Policy、Reviewer Binding、Cloud Executor和机器身份的相关正反验证具备时，才在同一真实Project/Root执行D00→独立G0；随后按真实输入连续验证D01/G1→D02。尚未具备的云端步骤标NOT_RUN/HOLD，继续可独立完成的代码接线和隔离测试。
+6. **恢复真实D00/G0运行前置。** 只有独立Policy、Reviewer Binding、Cloud Executor和机器身份的相关正反验证具备时，才在同一真实Project/Root执行D00→独立G0；随后按真实输入连续验证D01/G1→D02。尚未具备的云端步骤标NOT_RUN/HOLD，继续可独立完成的代码接线和隔离测试。
 7. **沿同一作品继续创作主线。** D02真实接收后，按§3.5 C/D既有顺序推进必要知识生产、13类资产、H1/H2/H3作品修订、Admin审核/发布和WATCH；不重新创建样板Project，不以局部模块PASS拼成M5通过。
 
 **D. 本项准出**
