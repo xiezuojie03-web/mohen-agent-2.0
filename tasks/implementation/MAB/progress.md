@@ -4839,3 +4839,8 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 基线 `0b36c822231414f3ffa1749cfb9135643082a0f3`。按既有夹具复用上游 Supabase Storage v1.43.0，核验锁文件 SHA256。首次构建发现运行时缺原生模块编译头文件，使用同版 Node 头文件重建 fs-xattr。首次 fixture 启动因上游迁移预期 postgres 角色而失败，仅在新的隔离集群补 NOLOGIN 角色，随后取得 `OFFICIAL_STORAGE_READY`。未改产品代码、云端 Storage 或密钥。
 - 在一次性 PostgreSQL、固定版本官方 Storage 与 Chromium 上执行 `node scripts/test-mab-http.mjs`，25 PASS / 0 FAIL / 0 SKIP，退出 0。此前跳过的 authenticated multipart 私有原件存取、字节一致与跨 Owner 隔离通过。Next 构建成功，取得 `MAB_HTTP_BROWSER_PASS`、`MAB_HTTP_SYNTHETIC_DATABASE_CLEANED`、`OFFICIAL_STORAGE_FIXTURE_CLEANED`，并移除本次合成 fixture 的配置与私钥。
 - [托管 CI 44216166156](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44216166156) 仍为 runner 启动前账单/支出上限拦截。Vercel 对应 Preview 仍 READY 且启用 SSO，应用内 Operator 注入回执仍缺。mohen-cloud 项目、有效资格、启用 Policy 和有效 Reviewer Binding 仍均为零。上述 Storage 结果仅覆盖隔离回归，云端同作品验收仍为 0/8 OVERALL_HOLD。
+
+## 2026-11-18｜M5-STUDIO-LIVE-08｜朱家角真实委托已持久化
+
+- Owner 在受保护 Preview 提交真实 Studio 委托。按现场任务编号只读回查开发库，Project `e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5`、任务 `53ad1a29-22e5-43c2-816d-b02b6e85abbd` 已存在。当前 `hold / research_prerequisites`，缺项 `REAL_PROVIDER_UNAVAILABLE` 与 `AGENT_QUALIFICATION_CONTEXT_REQUIRED`，尚未生成作品。
+- 查源码与 Vercel 变量元数据。真实研究明确要求 `MOHEN_LLM_BASE_URL` 和 `MOHEN_LLM_API_KEY`，并要求合法 agent/read 资格上下文。现有 `DEEPSEEK_API_KEY` 项目变量不能据其存在推断研究模型已接通。未解密任何值，未启动模型、正式生产、审签或发布。

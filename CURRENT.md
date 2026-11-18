@@ -8,7 +8,7 @@
 
 ## 2. 最新已核事实（2026-11-18）
 
-- **A线正式知识窄读桥已完成部署与安全拒绝验证**：开发库迁移20261117172439 m5_scoped_formal_project_gate_read已应用；Studio经原签名Owner会话和createAppTransaction调用studio.search_qualified_project_layers。只授mohen_app_runtime受限EXECUTE，不授正式表SELECT；anon/authenticated/service_role/Producer拒绝，无签名Owner返回42501。真实同Project正向读取、错Owner、错用途、撤权仍NOT_RUN，因为studio.projects=0、当前资格=0、Policy=0、active Reviewer Binding=0。**不重做读桥，不伪造PASS。**
+- **A线正式知识窄读桥已完成部署与安全拒绝验证**：开发库迁移20261117172439 m5_scoped_formal_project_gate_read已应用；Studio经原签名Owner会话和createAppTransaction调用studio.search_qualified_project_layers。只授mohen_app_runtime受限EXECUTE，不授正式表SELECT；anon/authenticated/service_role/Producer拒绝，无签名Owner返回42501。真实同Project正向读取、错Owner、错用途、撤权仍NOT_RUN，当前开发库已有朱家角 Project/Root，研究停在 Provider 与知识读取上下文前置；对应当前资格仍待建立。**不重做读桥，不伪造PASS。**
 - **Producer/Worker机器身份已由Owner安全激活**：Supabase只读核验两个既有LOGIN角色密码均已设置，BYPASSRLS=false。Owner无需再次重置密码。
 - **四项Vercel Preview变量均已存在**：Producer URL、Producer密码Secret、Worker URL、Worker密码Secret，均为Sensitive/Secret且范围为Preview；原始值未读取。此前“等待Owner补Worker密码”的旧记录失效。不得要求Owner重复操作或索取密码。
 - **Vercel 部署与 SSO**：当前已复核精确 SHA `ddc54a53a15fbeb20e721ccd5cb95fe85ae6c5c0` 的非生产 Preview `dpl_BC4Tnp6xv8HSUwmb5Hd83FJYffnV`（API target 为 null）及 staging `dpl_2Wb5hVi78UGN6G6BH8j4nrDW3J1b` 均为 READY。两个部署的 `/login`、`/api/admin/metrics`、`/api/internal/production-execute` 匿名 GET 均返回 302 至 Vercel SSO。目标 SHA 已包含四项布尔诊断。当前执行会话缺应用内 Operator 访问，四项实际注入仍待同部署回执。
@@ -20,6 +20,8 @@
 - **M5整体**：0/8 OVERALL_HOLD，不是代码完成率。
 
 ## 3. 当前唯一工程前沿（先做无需Owner的工作）
+
+- **Studio 同作品已进入真实主线**：朱家角 Project `e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5`、任务 `53ad1a29-22e5-43c2-816d-b02b6e85abbd` 已在开发库回读，状态 `hold / research_prerequisites`。同一任务的下一步是接通现行受控研究 Provider 与 agent 读取上下文，随后在原任务续跑。Vercel 只读元数据仅见 `DEEPSEEK_API_KEY`，未见研究要求的 `MOHEN_LLM_BASE_URL`、`MOHEN_LLM_API_KEY` 或正式资格上下文配置；不得以其他用途的密钥或历史测试上下文冒充。
 
 1. **取得四项服务端注入回执**：在既有受保护非生产部署核实四项配置注入。优先复用现有受 SSO 及 Operator 保护的 Admin readiness，记录部署 ID、环境及脱敏状态；部署/API 元数据不足时，需要同部署服务端布尔回执。保留真实 TLS 为 NOT_RUN，直至保护和注入均确证。
 2. **运行真实机器验证**：用各自专用连接池核对 Producer/Worker 实际登录角色、TLS、允许和越权拒绝、Gate 签发拒绝及原始密码不透传。恢复 GitHub Actions runner 后重跑精确 main SHA 并回读结果。
