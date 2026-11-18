@@ -4919,3 +4919,18 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **未改变的边界**：查询不完整、权限异常、结果截断、资格未知仍HOLD；候选线索仍不是事实/原件/权利许可/Gate资格；未建立第二Runner、Registry、Gate或知识库。
 - **当前前沿**：正式知识数据库层两个故障已修复；旧Run无RUNNING；项目范围来源缺口路由已补齐。下一处实际业务施工转为“外部候选→合法原件获取/权利核验→私有字节存储→SHA→Source/Version/Raw登记→形成D00可接受original_id”的相邻交接。
 - **CI边界**：本轮代码提交后GitHub Actions仍表现为零步骤、约4秒失败；不等待CI恢复，不把该失败当作本批路由测试失败。需要等GitHub runner/workflow层恢复后再做精确CI回归。
+
+
+## 2026-11-18｜M5-QUALITY-16｜八维标准复审、路由/Worker质量修复与D00开发库补齐
+
+- **核验与代码基线**：本批核查基线为main提交`e6f177e140d4f728e2f46455a6a532252bd97e07`；当前代码提交推进至`ddd6e28cca6010104fbb68f353cf3346bfd58672`。施工标准仍为PLAN §3.5 B/C/D，未新建第二套验收分母。
+- **八维标准定向复审**：PLAN提交`d74243db76fa541278ac2372681ed8b111e12f2c`。保留同一真实作品八维全部准出；明确第3维D/L/G知识生产与第7维作品发布审查的边界；13类资产做类型级正反合同验证、19组件逐项验证但不强迫单一作品全部使用；第5维加入历史认识增量、时间/空间/关系发现、当下生活连接、探索乐趣和视觉认识变化；增加能力存在/调用集成/环境验证/同任务证据/Owner验收五类状态报告，均不折算百分比。
+- **路由真实缺陷修复**：提交`c7d48700a21ffe08100ce4a4c26293a37103e1f5`。`PROJECT_SOURCE_GAP_CONFIRMED`已纳入`should_discover_sources`，在项目授权范围完整且无合格来源时可触发既有外部候选发现，同时保持跨Project共享范围`NOT_VERIFIED`。既有正反回归测试覆盖该行为；由于CI Job未启动，尚未获得执行PASS。
+- **Worker最小权限接线修复**：提交`e91e4740a67f4b5a0438830d535eaaa906849796`、`fa19c0240b87d4aceb557c3a6ba2b18de7591996`、`e9a7df57e94ffbdaeb5bf7bcf40703a6d79d2b2c`。新增`createPrivateWorkerScopedQueryPool`，每条D00 ledger/Producer侧Gate候选查询在独立事务内`SET LOCAL ROLE mohen_private_worker`；Owner私有原件读取仍使用`mohen_app_runtime`；新增成功提交与失败回滚单测。更新Worker身份核验，要求登录身份具备private_worker MEMBER/SET，但角色本身NOLOGIN、无superuser/BYPASSRLS；禁止private worker签发或撤销Gate。
+- **迁移授权合同修复**：更新M3/M5机器身份迁移，使当前已存在的`mohen_m5_worker_login`可SET专用`mohen_private_worker`，未来干净安装也保持相同授权；M3函数ACL改为临时SET ROLE到`mohen_gate_authority`（函数所有者）后授予只读资格函数权限，再恢复临时成员关系。修正D00 RLS/C1/C4/Y04迁移，不依赖尚未启用的`mohen_gate_signer_m5_machine`登录身份；独立Reviewer未激活。
+- **mohen-cloud迁移实际安装**：已成功应用并在迁移历史中记录：`20261118113540 mab_m3_private_gate_candidate_submission`、`20261118113649 mab_gate_audits_rls`、`20261118113658 mab_d00c_source_discovery_ledger`、`20261118113706 mab_d00c4_remaining_stages`、`20261118113714 mab_d00_y02_registration_locator`、`20261118113721 mab_d00c5_method_revalidation`、`20261118113729 mab_d00_y04_original_provider_trace`。首次M3安装因函数owner ACL失败，未绕过；修正为Authority owner执行后安装成功。
+- **数据库回读证据**：`mohen_private_worker`已存在且NOLOGIN、非superuser、无BYPASSRLS；`mohen_m5_worker_login`为MEMBER且具SET权；Worker角色可写D00需求/资源目录/Producer Gate候选并读Gate audit，但无Gate签发/撤销函数权限。D00表均已存在且RLS开启。D00新表当前均为0条；全局旧`source.sources/source_versions/raw_items`为39/39/98，但当前朱家角Project范围Source/Version/Raw仍为0，私有原件仍为0。未制造测试业务记录。
+- **持续存在的主线根因已进一步缩窄**：`/api/studio/materials/import`旧导入路径与`/api/studio/attachments`私有原件路径仍分离；后者能存字节/哈希/Asset Revision，但本次链路未发现Source/Version/Raw登记写入者。`private_source_registration`是只读投影；`source-discovery.ts`只产生外部候选线索；D00 Worker仍要求已存在的`original_id`和登记绑定。因此缺口不是再造D00，而是统一上传/候选入口，并由可信D00 Worker完成权利/获取账、私有字节、SHA和Source/Version/Raw登记的连续交接。
+- **CI与部署验证**：GitHub Actions最新main run `44296071457`失败；Job无started_at/runner/steps/logs，失败发生在任何步骤执行前。此前对`44292635178`重跑后仍是零步骤失败。故本批新增单测、路由回归尚未实际运行，不能宣布PASS。Vercel已为精确main提交`ddd6e28`创建Preview部署`dpl_ELFKhL7ULozHkckYRsFYvkEu1NY1`（target=null），最后回读为BUILDING；Production未修改。Preview环境中Producer/Worker数据库URL与密码变量名存在，数据库CA与会话Secret变量存在；未读取或解密任何Secret值，真实TLS登录尚未验证。
+- **未完成/未宣称**：没有私有原件、没有Source/Version/Raw登记、没有真实D00/G0运行、没有D01/G1/D02、没有同一作品WorkRevision、没有Active Reviewer/G5发布/WATCH撤权；M5仍为`0/8 OVERALL_HOLD`。
+- **下一步**：先检查本次Preview构建结果；随后验证专用Worker TLS真实登录和身份断言，并在CI runner恢复后运行新增单测/路由测试。接着实施统一Studio原件接入与Source/Version/Raw登记生产者，打通“候选/Owner上传→权利/取得核验→合法字节→私有存储/SHA→登记→D00”。只有这条桥实际运行后，才推进同一Project/Root的D00/G0→D01/G1→D02。
