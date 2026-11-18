@@ -4934,3 +4934,13 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **CI与部署验证**：GitHub Actions最新main run `44296071457`失败；Job无started_at/runner/steps/logs，失败发生在任何步骤执行前。此前对`44292635178`重跑后仍是零步骤失败。故本批新增单测、路由回归尚未实际运行，不能宣布PASS。Vercel已为精确main提交`ddd6e28`创建Preview部署`dpl_ELFKhL7ULozHkckYRsFYvkEu1NY1`（target=null），最后回读为BUILDING；Production未修改。Preview环境中Producer/Worker数据库URL与密码变量名存在，数据库CA与会话Secret变量存在；未读取或解密任何Secret值，真实TLS登录尚未验证。
 - **未完成/未宣称**：没有私有原件、没有Source/Version/Raw登记、没有真实D00/G0运行、没有D01/G1/D02、没有同一作品WorkRevision、没有Active Reviewer/G5发布/WATCH撤权；M5仍为`0/8 OVERALL_HOLD`。
 - **下一步**：先检查本次Preview构建结果；随后验证专用Worker TLS真实登录和身份断言，并在CI runner恢复后运行新增单测/路由测试。接着实施统一Studio原件接入与Source/Version/Raw登记生产者，打通“候选/Owner上传→权利/取得核验→合法字节→私有存储/SHA→登记→D00”。只有这条桥实际运行后，才推进同一Project/Root的D00/G0→D01/G1→D02。
+
+
+## 2026-11-18｜M5-QUALITY-16-CORRECTION｜Y05来源身份边界与构建环境对齐
+
+- **Y05来源身份质量缺陷修复**：提交`cb8b307bb4207032cb9d573f5d008688080669bc`。原实现虽在注释中声明“不拿提供方冒充收藏”，但当没有明确馆藏机构时仍把`registration.provider`写成`holding.institution`并标记known。现改为：只有登记明确提供`holding_institution`且同时存在馆方目录号/件号，holding层才为known；否则保持unknown并列出缺失证据。提供方仍只表示provider，不再自动成为holding。
+- **回归用例**：提交`ce970f9c5ea4d50a193f8d0582ba42d83c4170c1`。新增“明确馆藏机构+定位”正例，以及缺机构/缺定位反例。当前`private_source_registration`尚未投影`holding_institution`，所以现有来源身份分层会诚实输出holding=unknown，直至未来来源登记生产者确实收集并保存该字段；不补造证据。
+- **Preview构建**：为精确提交`ce970f9`创建Preview `dpl_6h39T1DCBZ7K3PFHV5fQxXf4idPw`，Vercel回读`READY`、target=null。该构建验证了该提交的Next.js构建成功，不等于单测执行或Worker TLS验证。
+- **Node运行时一致性**：核实Vercel项目Node为24.x，GitHub CI原为22。提交`758270d10cc66465b5c25ac1971b02b2e2923b0b`将CI Node对齐为24，以与实际Preview构建环境一致。最新CI run `44298746528`仍在步骤执行前失败；Job无runner/steps/logs，故无法验证该调整是否进入Typecheck/Tests。
+- **部署安全边界**：仓库`vercel.json`明确`git.deploymentEnabled=false`；Preview SSO保护开启。当前所有人工部署均target=null，Production未改动。Vercel Node24与CI Node24现已对齐；CI Runner启动故障仍独立HOLD。
+- **当前判断**：来源身份层的过度推断已修复；路由与Worker角色代码仍待单测执行；D00数据库结构/角色已安装；真正的来源获取/Source-Version-Raw登记生产者仍未实现。下一步继续做统一Studio原件接入和登记桥，不再重复安装本批迁移。
