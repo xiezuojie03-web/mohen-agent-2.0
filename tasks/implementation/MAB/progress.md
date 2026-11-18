@@ -4911,3 +4911,11 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **当前数据库状态**：7 PASS、11 HOLD、2 FAILED、0 RUNNING。2 FAILED为本轮5条遗留RUNNING中有明确production_failed回执的ea3f5ac3-45a0-4a5a-9c50-a987f0dabbad、47c5b936-821b-43a8-9c92-6c2a5fb78b80；3条无执行事件的遗留RUN保持HOLD。8条历史非运行Run保持HOLD只是为了不猜测，不代表它们原始就是失败。
 - **修复实现**：新增20261118130000_m5_repair_historical_run_status_incident.sql，仅允许postgres/supabase_admin执行；7条有精确PASS证据的Run恢复PASS，8条无法逐条恢复的Run明确标记不确定，并在事务内断言最终无RUNNING、7 PASS、11 HOLD、2 FAILED。新增tests/unit/m5-historical-run-repair.test.ts作为边界守卫；该测试文件已修正语法并保留为CI回归入口。
 - **后续纪律**：Production Run状态不得再用无作用域UPDATE修复；所有遗留Run状态处理必须以单Run条件、历史事件/回执和可回读证据为前提。无法恢复的历史状态宁可HOLD并标记不确定，不得凭总数反推具体Run身份。
+
+## 2026-11-18｜M5-DIAG-15｜项目范围来源缺口路由补齐
+
+- **业务判断已落代码**：保持sharedL0L4CoverageComplete=false，不虚构跨Project共享完整性；当同一Project的Owner/Project正式L0-L4检索明确返回COMPLETE、查询未降级/未截断、当前无合格L5/正式L0-L4可复用来源、也没有可消费的原件或被阻断候选时，路由现在返回PROJECT_SOURCE_GAP_CONFIRMED并允许触发既有D00外部来源候选发现。
+- **代码修改**：knowledge-routing.mjs增加PROJECT_SOURCE_GAP_CONFIRMED分支；knowledge-routing.d.mts同步新增稳定枚举；research.ts将该状态映射为“仅项目范围缺口已确认”的可解释缺口文案；tests/data-production/studio-knowledge-routing.test.mjs新增正反用例，确认项目范围缺口可触发D00，同时sharedL0L4Coverage仍为NOT_VERIFIED、不得退化为SOURCE_GAP_CONFIRMED全局缺口。
+- **未改变的边界**：查询不完整、权限异常、结果截断、资格未知仍HOLD；候选线索仍不是事实/原件/权利许可/Gate资格；未建立第二Runner、Registry、Gate或知识库。
+- **当前前沿**：正式知识数据库层两个故障已修复；旧Run无RUNNING；项目范围来源缺口路由已补齐。下一处实际业务施工转为“外部候选→合法原件获取/权利核验→私有字节存储→SHA→Source/Version/Raw登记→形成D00可接受original_id”的相邻交接。
+- **CI边界**：本轮代码提交后GitHub Actions仍表现为零步骤、约4秒失败；不等待CI恢复，不把该失败当作本批路由测试失败。需要等GitHub runner/workflow层恢复后再做精确CI回归。
