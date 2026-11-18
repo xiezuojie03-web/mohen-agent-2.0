@@ -65,7 +65,7 @@ export function deriveSourceIdentityStratification({ registration, record } = {}
           value: { catalog_no: catalogNo, ...(item != null ? { item } : {}) },
           evidence: ['registration.original_locator'] }
       : { layer: 'catalog_record', state: 'unknown',
-          evidence: ['not_in_registration:original_locator.catalog_no'] },
+          evidence: ['not_in_registration:original_locator.catalog_no_or_item'] },
     { layer: 'work', state: 'known',
       value: { title: registration.title.trim() },
       evidence: ['registration.title'] },
@@ -80,10 +80,10 @@ export function deriveSourceIdentityStratification({ registration, record } = {}
       ? { layer: 'holding', state: 'known',
           value: { institution: holdingInstitution,
             locator: { ...(catalogNo ? { catalog_no: catalogNo } : {}), ...(item != null ? { item } : {}) } },
-          evidence: ['registration.holding_institution', 'registration.original_locator'] }
+          evidence: ['registration.original_locator.holding_institution', 'registration.original_locator'] }
       : { layer: 'holding', state: 'unknown',
           evidence: [
-            ...(!holdingInstitution ? ['not_in_registration:holding_institution'] : []),
+            ...(!holdingInstitution ? ['not_in_registration:original_locator.holding_institution'] : []),
             ...(!hasCatalogLocator ? ['not_in_registration:original_locator.catalog_no_or_item'] : []),
           ] },
     { layer: 'digital_asset', state: 'known',
