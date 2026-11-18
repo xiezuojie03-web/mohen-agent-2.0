@@ -1,6 +1,6 @@
 # 墨痕｜当前工程事实与唯一前沿（非施工标准）
 
-> **核验日期：2026-11-18。** 本快照依据main代码基线`ddd6e28cca6010104fbb68f353cf3346bfd58672`、施工计划`PLAN.md`（八维口径修订提交`d74243db76fa541278ac2372681ed8b111e12f2c`）、最新进展记录`progress.md`的`M5-QUALITY-16`及`mohen-cloud`实际回读。此文件只记录当前事实与下一最前阻断，不替代PLAN。
+> **核验日期：2026-11-18。** 本快照依据main代码基线`758270d10cc66465b5c25ac1971b02b2e2923b0b`、施工计划`PLAN.md`（八维口径修订提交`d74243db76fa541278ac2372681ed8b111e12f2c`）、最新进展记录`progress.md`的`M5-QUALITY-16`及`mohen-cloud`实际回读。此文件只记录当前事实与下一最前阻断，不替代PLAN。
 
 ## 1. 唯一业务目标
 
@@ -34,6 +34,7 @@
 
 - **项目范围来源缺口路由**：提交`c7d48700a21ffe08100ce4a4c26293a37103e1f5`。现在`PROJECT_SOURCE_GAP_CONFIRMED`与全局`SOURCE_GAP_CONFIRMED`都能触发既有候选发现，但仍保留范围语义；跨Project共享范围继续为`NOT_VERIFIED`。已有正反回归断言，尚未获得CI执行PASS。
 - **专用Worker角色接线**：`private-evidence-binding.mjs`已改用事务级`createPrivateWorkerScopedQueryPool`执行D00 ledger与Producer侧Gate候选查询；每条查询在事务内`SET LOCAL ROLE mohen_private_worker`。Owner私有原件读取仍走`mohen_app_runtime`。已增加提交/回滚单测，但尚未运行。
+- **Y05来源身份边界**：已修复“提供方被误当作馆藏机构”的过度推断。现在只有明确`holding_institution`与馆方目录号/件号同时存在，holding才标known；否则unknown。现有登记投影尚不提供`holding_institution`，因此当前不会伪造藏所信息。正反测试已增加，尚未由CI执行。
 - **角色迁移合同**：M3/M5迁移文件已对齐：Worker login可SET专用`mohen_private_worker`；角色本身NOLOGIN、无superuser/BYPASSRLS；不授予Gate签发或撤销能力。未激活机器Reviewer。
 - **八维标准**：PLAN §3.5 B已定向修订。保持八维和同一真实作品最终准出；明确知识G5与作品发布审核边界；13类资产类型级验证、19组件逐项验证但不强迫单件作品全部使用；第5维增加人文认识增量、时间/空间/关系、当下生活连接、探索乐趣和视觉认识变化。
 
@@ -70,8 +71,8 @@
 ### 2.6 云端环境、CI与Preview
 
 - Vercel Preview环境中Producer/Worker数据库URL与密码变量名存在，数据库CA和会话Secret变量存在；本轮未读取或解密任何Secret值。变量存在不等于真实TLS身份登录通过。
-- 已为精确main提交`ddd6e28cca6010104fbb68f353cf3346bfd58672`创建Vercel Preview部署：`dpl_ELFKhL7ULozHkckYRsFYvkEu1NY1`，target=null；最后一次回读状态为BUILDING。Production未修改，未发现本轮代码进入Production的证据。
-- GitHub Actions最新main run `44296071457`为失败；Job无started_at、runner、steps或logs，失败发生在步骤执行前。此前对`44292635178`重跑后仍为零步骤失败。因此本轮新增路由与Worker单测尚未执行，不能宣布PASS；当前也没有证据把CI失败归因于本轮业务代码。
+- 已为精确main提交`ce970f9c5ea4d50a193f8d0582ba42d83c4170c1`创建Vercel Preview部署：`dpl_6h39T1DCBZ7K3PFHV5fQxXf4idPw`，target=null，状态`READY`。这证明该提交的Next.js构建成功，不证明单测或Worker TLS通过。仓库`vercel.json`的`git.deploymentEnabled=false`，Preview SSO保护开启；本轮未修改Production。
+- Vercel项目Node运行时为24.x，GitHub CI已从Node22对齐到Node24（提交`758270d`）。最新GitHub Actions run `44298746528`仍在步骤执行前失败，Job无runner、steps或logs；本轮新增路由、Worker、Y05单测尚未执行，不能宣布PASS。
 
 ## 3. 当前唯一工程前沿
 
