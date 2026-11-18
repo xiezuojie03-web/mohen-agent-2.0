@@ -4892,3 +4892,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 5条RUNNING的run_id分别为：8a32171c-dd37-4b35-8674-7eae4691dbdb、ff11231a-424f-4277-9f90-173a70ad6dac、ea3f5ac3-45a0-4a5a-9c50-a987f0dabbad、47c5b936-821b-43a8-9c92-6c2a5fb78b80、382c364e-d29e-46be-9412-8bd8f4d034c0。启动时间为2026-10-17两条、2026-10-29三条，均无finished_at；其中两条current_stage=D00，其余三条为空，scope均为空对象。
 - 这些记录属于超过20天未收敛的RUNNING状态，可能是遗留状态或执行进程异常；当前查询不能证明对应宿主仍活跃。禁止直接SQL改成PASS/FAILED，也禁止无核对地重复启动。下一次Runner生产前先核对Worker/Executor宿主、lease、research_events、阶段Receipt和日志，再使用既有恢复/终态路径处理。
 - 本轮文档同步提交900a6e0cf9921e1193fea274c40d0995cf53ebf9后的CI run 44234626709（build）失败；当前未取得日志，根因未确定。
+
+## 2026-11-18｜M5-DIAG-14｜正式知识读取根因修复与遗留Run对账
+
+- **代码基线与记录**：本轮从09cc1cd14e86a8bda9b49660d28ffa71ec63384、b76fd96f5138c46550c8c83e000faed1d4204aef继续；正式修复迁移为20261118120000_m5_formal_project_read_acl_order_fix.sql，遗留Run对账迁移为20261118123000_m5_legacy_run_reconciliation.sql。最终main基线为e5d1bff0b358417680ebfba0435b3fa7539593dc。未调用付费模型、未读取任何Secret值、未启动真实Provider或新Runner。
+- **正式知识读取根因已确证**：在同一Owner/Project的签名数据库会话中，原studio.search_qualified_project_layers首先因RETURNS TABLE输出变量layer与ORDER BY case layer歧义而失败；修正为显式m.layer/m.object_id后，又暴露第二个确定性问题：外层SECURITY DEFINER owner为managed postgres，而安全ACL已撤销PUBLIC EXECUTE的嵌套control.qualification_allows未授权给该owner，导致permission denied for function qualification_allows。新增迁移只补postgres -> qualification_allows的EXECUTE，不向mohen_app_runtime增加表或跨Project读取权限。
+- **零费用验证结果**：使用数据库内部生成的短时签名Owner会话，不调用模型；正确Project/用途返回matched=0的受控空结果；错Project返回M5_FORMAL_READ_OWNER_REQUIRED；错用途返回M5_FORMAL_READ_CONTEXT_INVALID。说明数据库层窄读桥已恢复到“合法空结果/非法拒绝”状态。下一步必须从真实Studio应用路径再回读一次，确认应用层不再把该结果归并成FORMAL_G0_G4_READ_NOT_AUTHORIZED_OR_UNAVAILABLE。
+- **旧Production Run对账**：原5条RUNNING全部超过20天且无cloud_dispatch认领。ea3f5ac3...与47c5b936...各有D00 production_started + production_failed，失败回执明确为read_units_read_run_id_ordinal_method_code_locator_hash_key重复键；8a32171c...、ff11231a...、382c364e...无任何research_event。新增仅postgres可执行的m5_reconcile_legacy_unclaimed_run后，5条最终收敛为2 FAILED、3 HOLD，当前不可再复用这些run_id。
+- **对账过程中的工程纠偏**：首次实现reconciliation函数时发现UPDATE control.production_runs漏写WHERE run_id=p_run_id，导致5条旧RUNNING在一次调用中同时进入HOLD；该错误立即通过回读发现，随后将函数修正为单Run作用域，并根据已保存的历史事件重新计算每条Run的event_count/failed_event_count，最终证据恢复为“2 FAILED、3 HOLD，prior_status=RUNNING”。这次纠偏已写入同一迁移并保留在progress中，后续不得复用该早期错误版本。
+- **当前Production Run分布**：14 PASS、3 HOLD、3 FAILED（其中2条为本轮历史遗留Run终态，另1条为原有FAILED）。无RUNNING。新Runner不应复用上述5个旧run_id。
+- **CI现状**：09cc1cd对应CI 44243279147、b76fd96对应44243282116均约4秒失败，build job没有可读取steps/logs；已对44243282116执行失败job重跑，目前queued。连续不同类型提交出现相同零步骤短失败形态，因此当前不能把CI红灯归因于本轮SQL/测试代码，也不能在无日志时断言具体是账单、Runner分配或workflow层故障。CI保持HOLD，业务诊断继续。
+- **下一施工入口**：1）真实Studio应用路径回读正式知识函数修复；2）核查并保留旧任务已结算模型成本，Receipt仍只有invocation_id；3）补项目范围来源缺口状态；4）接通外部候选→合法原件获取/登记→D00输入；5）在Policy/Reviewer/Cloud Executor/机器身份真实具备后恢复同Root D00/G0→D01/G1→D02。交互导航不恢复维护，继续以AGENTS→PLAN→CURRENT→progress为AI施工必读链。
