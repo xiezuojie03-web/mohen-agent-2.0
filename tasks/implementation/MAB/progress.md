@@ -4833,3 +4833,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 基线 `fe6a198ce60ea1f95b1f89f725b8eeb75074f95f`。新建带标记的一次性 PostgreSQL 17.12 和 Chromium，执行 `node scripts/test-mab-http.mjs`。首轮容器初始化因自定义 socket 覆盖默认 socket 中断，保留两条 socket 后重跑。Next 构建与 24 项浏览器用例通过，0 失败，1 项官方私有 Storage 字节回读依现有配置跳过。取得 `MAB_HTTP_BROWSER_PASS` 和 `MAB_HTTP_SYNTHETIC_DATABASE_CLEANED`，HTTP 与 Docker 清理退出均为 0。
 - 回执覆盖 ST-01 持久项目 Brief、幂等及不自动触发 ST-04，ST-02 当前候选与错 Owner 拒绝，作品修订并发与精确性，Admin 资产回链，以及 WATCH 精确资格和上游撤权拒绝。只用合成数据，无付费 Provider 或正式发布。
 - [托管 CI 44213696516](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44213696516) 原始注释仍为账单或支出上限拦截。指定 Preview readiness 匿名仍返回 302，应用内 Operator 回执、真实 TLS 与同作品云端节点仍待验证。
+
+## 2026-11-18｜M5-ISOLATED-STORAGE-07｜补齐官方私有 Storage 的浏览器字节回读
+
+- 基线 `0b36c822231414f3ffa1749cfb9135643082a0f3`。按既有夹具复用上游 Supabase Storage v1.43.0，核验锁文件 SHA256。首次构建发现运行时缺原生模块编译头文件，使用同版 Node 头文件重建 fs-xattr。首次 fixture 启动因上游迁移预期 postgres 角色而失败，仅在新的隔离集群补 NOLOGIN 角色，随后取得 `OFFICIAL_STORAGE_READY`。未改产品代码、云端 Storage 或密钥。
+- 在一次性 PostgreSQL、固定版本官方 Storage 与 Chromium 上执行 `node scripts/test-mab-http.mjs`，25 PASS / 0 FAIL / 0 SKIP，退出 0。此前跳过的 authenticated multipart 私有原件存取、字节一致与跨 Owner 隔离通过。Next 构建成功，取得 `MAB_HTTP_BROWSER_PASS`、`MAB_HTTP_SYNTHETIC_DATABASE_CLEANED`、`OFFICIAL_STORAGE_FIXTURE_CLEANED`，并移除本次合成 fixture 的配置与私钥。
+- [托管 CI 44216166156](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44216166156) 仍为 runner 启动前账单/支出上限拦截。Vercel 对应 Preview 仍 READY 且启用 SSO，应用内 Operator 注入回执仍缺。mohen-cloud 项目、有效资格、启用 Policy 和有效 Reviewer Binding 仍均为零。上述 Storage 结果仅覆盖隔离回归，云端同作品验收仍为 0/8 OVERALL_HOLD。
