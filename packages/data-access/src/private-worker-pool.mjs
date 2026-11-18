@@ -23,6 +23,13 @@ export async function assertPrivateWorkerIdentity(pool) {
   const {rows}=await pool.query(`select current_user as db_identity,session_user as login_identity,
     r.rolcanlogin as can_login,
     pg_has_role(session_user,'mohen_app_runtime','MEMBER') as app_worker,
+    exists(select 1 from pg_roles w where w.rolname='mohen_private_worker'
+      and pg_has_role(session_user,w.oid,'MEMBER')) as private_worker_member,
+    exists(select 1 from pg_roles w where w.rolname='mohen_private_worker'
+      and pg_has_role(session_user,w.oid,'SET')) as private_worker_set,
+    exists(select 1 from pg_roles w where w.rolname='mohen_private_worker'
+      and (w.rolcanlogin or w.rolsuper or w.rolbypassrls or w.rolcreatedb or w.rolcreaterole or w.rolreplication))
+      as private_worker_role_unsafe,
     exists(select from pg_roles inherited where pg_has_role(session_user,inherited.oid,'MEMBER')
       and (inherited.rolsuper or inherited.rolbypassrls or inherited.rolcreaterole or inherited.rolcreatedb
         or inherited.rolreplication or inherited.rolname in
@@ -31,10 +38,41 @@ export async function assertPrivateWorkerIdentity(pool) {
     from pg_roles r where r.rolname=session_user`);
   const identity=rows[0];
   if(rows.length!==1||identity.can_login!==true||identity.app_worker!==true||
-    identity.unsafe_membership!==false||identity.db_identity!==identity.login_identity||
+    identity.private_worker_member!==true||identity.private_worker_set!==true||
+    identity.private_worker_role_unsafe!==false||identity.unsafe_membership!==false||
+    identity.db_identity!==identity.login_identity||
     typeof identity.login_identity!=='string'||!identity.login_identity||
     ['mohen_app_runtime','mohen_producer','mohen_gate_signer','mohen_gate_authority'].includes(identity.login_identity))
     throw Error('PRIVATE_WORKER_DATABASE_IDENTITY_UNSAFE');
+}
+
+
+// Every direct D00 ledger / Producer-side Gate query runs as the dedicated
+// NOLOGIN private-worker role. SET LOCAL keeps role state transaction-scoped.
+export function createPrivateWorkerScopedQueryPool(pool) {
+  if (!pool || typeof pool.connect !== 'function') throw new Error('PRIVATE_WORKER_DATABASE_REQUIRED');
+  return {
+    async query(text, values) {
+      if (typeof text !== 'string' || !text.trim()) throw new Error('PRIVATE_WORKER_QUERY_REQUIRED');
+      const client = await pool.connect();
+      let begun = false;
+      let discard = false;
+      try {
+        await client.query('begin'); begun = true;
+        await client.query('set local role mohen_private_worker');
+        const result = await client.query(text, values);
+        await client.query('commit'); begun = false;
+        return result;
+      } catch (error) {
+        if (begun) {
+          try { await client.query('rollback'); } catch { discard = true; }
+        }
+        throw error;
+      } finally {
+        client.release(discard);
+      }
+    },
+  };
 }
 
 // TLS-only connection factory reused for separate dedicated machine roles.
