@@ -42,7 +42,7 @@ test('Y05 分层：已读层逐层带证据，没读的收藏如实 unknown', ()
   assert.equal(layerOf(result, 'version').value.source_version_id, registration().source_version_id);
   assert.equal(layerOf(result, 'version').value.artifact_revision, REV);
   assert.equal(layerOf(result, 'holding').state, 'unknown');
-  assert.deepEqual(layerOf(result, 'holding').evidence, ['not_in_registration:holding_institution']);
+  assert.deepEqual(layerOf(result, 'holding').evidence, ['not_in_registration:original_locator.holding_institution']);
   assert.equal(layerOf(result, 'digital_asset').value.sha256, SHA);
   assert.equal(layerOf(result, 'digital_asset').value.storage_state, 'STORED_VERIFIED');
   assert.deepEqual(result.dependencies.unresolved, ['collection', 'holding']);
@@ -56,20 +56,26 @@ test('Y05 分层：登记没给馆方目录号时目录记录层如实 unknown',
     registration: registration({ original_locator: {} }), record: record() });
   assert.equal(layerOf(result, 'catalog_record').state, 'unknown');
   assert.deepEqual(layerOf(result, 'catalog_record').evidence,
-    ['not_in_registration:original_locator.catalog_no']);
+    ['not_in_registration:original_locator.catalog_no_or_item']);
   assert.equal(layerOf(result, 'holding').state, 'unknown');
   assert.deepEqual(result.dependencies.unresolved.sort(), ['catalog_record', 'collection', 'holding']);
 });
 
 test('Y05 藏所：必须有显式馆藏机构和目录定位，不能用提供方代替', () => {
   const known = deriveSourceIdentityStratification({
-    registration: registration({ holding_institution: '国立公文书馆' }), record: record() });
+    registration: registration({ original_locator: { ...registration().original_locator, holding_institution: '国立公文书馆' } }), record: record() });
   assert.equal(layerOf(known, 'holding').state, 'known');
   assert.equal(layerOf(known, 'holding').value.institution, '国立公文书馆');
+  assert.deepEqual(layerOf(known, 'holding').evidence,
+    ['registration.original_locator.holding_institution', 'registration.original_locator']);
   assert.deepEqual(known.dependencies.unresolved, ['collection']);
 
+  const topLevelOnly = deriveSourceIdentityStratification({
+    registration: registration({ holding_institution: '国立公文书馆' }), record: record() });
+  assert.equal(layerOf(topLevelOnly, 'holding').state, 'unknown');
+
   const missingLocator = deriveSourceIdentityStratification({
-    registration: registration({ holding_institution: '国立公文书馆', original_locator: {} }), record: record() });
+    registration: registration({ original_locator: { holding_institution: '国立公文书馆' } }), record: record() });
   assert.equal(layerOf(missingLocator, 'holding').state, 'unknown');
   assert.deepEqual(missingLocator.dependencies.unresolved.sort(), ['catalog_record', 'collection', 'holding']);
 });
