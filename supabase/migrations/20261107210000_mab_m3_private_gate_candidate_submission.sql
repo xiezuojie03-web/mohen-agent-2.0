@@ -66,11 +66,38 @@ create policy k3_private_worker_qualification_read on control.qualification_curr
   for select to mohen_private_worker
   using (consumer = 'producer');
 
+-- Function ACL is owned by mohen_gate_authority on managed PG17. Temporarily
+-- SET ROLE to that owner exactly as the existing M5 K3 ACL repair does; never
+-- broaden PUBLIC or grant signing/revocation to the private worker.
+do $temporary_authority_membership$
+begin
+  if not (select rolsuper from pg_roles where rolname=current_user) then
+    execute format('grant mohen_gate_authority to %I with admin false, inherit false, set true',current_user);
+  end if;
+end $temporary_authority_membership$;
+set local role mohen_gate_authority;
 grant execute on function control.current_qualification_is_valid(uuid) to mohen_private_worker;
 grant execute on function control.qualification_allows(uuid,text,text,text,text,jsonb) to mohen_private_worker;
-revoke execute on function control.sign_gate_candidate(uuid,uuid,text,text,timestamptz,jsonb,uuid)
-  from mohen_private_worker;
+revoke execute on function control.sign_gate_candidate(uuid,uuid,text,text,timestamptz,jsonb,uuid) from mohen_private_worker;
 revoke execute on function control.revoke_gate_qualification(uuid,uuid,text) from mohen_private_worker;
+reset role;
+do $restore_authority_membership$
+begin
+  if not (select rolsuper from pg_roles where rolname=current_user) then
+    execute format('revoke mohen_gate_authority from %I granted by %I',current_user,current_user);
+  end if;
+end $restore_authority_membership$;
+do $verify_private_worker_acl$
+begin
+  if not has_function_privilege('mohen_private_worker','control.current_qualification_is_valid(uuid)','EXECUTE')
+    or not has_function_privilege('mohen_private_worker','control.qualification_allows(uuid,text,text,text,text,jsonb)','EXECUTE')
+    or has_function_privilege('mohen_private_worker','control.sign_gate_candidate(uuid,uuid,text,text,timestamptz,jsonb,uuid)','EXECUTE')
+    or has_function_privilege('mohen_private_worker','control.revoke_gate_qualification(uuid,uuid,text)','EXECUTE')
+    or pg_has_role('mohen_private_worker','mohen_gate_authority','MEMBER')
+    or pg_has_role('mohen_private_worker','mohen_gate_signer','MEMBER') then
+    raise exception 'M5_PRIVATE_WORKER_FUNCTION_ACL_UNSAFE';
+  end if;
+end $verify_private_worker_acl$;
 
 do $verify_worker_membership$
 begin
