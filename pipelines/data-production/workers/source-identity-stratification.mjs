@@ -50,6 +50,8 @@ export function deriveSourceIdentityStratification({ registration, record } = {}
   const locator = isPlainObject(registration.original_locator) ? registration.original_locator : {};
   const catalogNo = nonEmpty(locator.catalog_no);
   const item = locator.item != null ? locator.item : null;
+  const holdingInstitution = nonEmpty(registration.holding_institution);
+  const hasHoldingLocator = Boolean(catalogNo) || item != null;
 
   const layers = [
     { layer: 'provider', state: 'known',
@@ -73,11 +75,17 @@ export function deriveSourceIdentityStratification({ registration, record } = {}
         ...(nonEmpty(registration.source_type) ? { source_type: registration.source_type } : {}),
         ...(nonEmpty(registration.carrier_type) ? { carrier_type: registration.carrier_type } : {}) },
       evidence: ['registration.source_version_id', 'registration.source_version_artifact_revision'] },
-    // 藏所：登记的提供方同时给出了馆方目录号/件号，即该馆藏品；有没有第二个藏所本次未读。
-    { layer: 'holding', state: 'known',
-      value: { institution: registration.provider.trim(),
-        locator: { ...(catalogNo ? { catalog_no: catalogNo } : {}), ...(item != null ? { item } : {}) } },
-      evidence: ['registration.provider', 'registration.original_locator'] },
+    // 藏所不能由提供方推断：必须同时有明确馆藏机构与馆方目录号/件号。
+    holdingInstitution && hasHoldingLocator
+      ? { layer: 'holding', state: 'known',
+          value: { institution: holdingInstitution,
+            locator: { ...(catalogNo ? { catalog_no: catalogNo } : {}), ...(item != null ? { item } : {}) } },
+          evidence: ['registration.holding_institution', 'registration.original_locator'] }
+      : { layer: 'holding', state: 'unknown',
+          evidence: [
+            ...(!holdingInstitution ? ['not_in_registration:holding_institution'] : []),
+            ...(!hasHoldingLocator ? ['not_in_registration:original_locator.catalog_no_or_item'] : []),
+          ] },
     { layer: 'digital_asset', state: 'known',
       value: { raw_item_id: registration.raw_item_id, sha256: record.sha256,
         byte_size: record.byte_size, content_type: record.content_type,
