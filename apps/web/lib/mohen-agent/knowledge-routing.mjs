@@ -78,6 +78,13 @@ export function planStudioKnowledgeRoute({
   } else if(blocked.length) {
     disposition='HOLD';nextAction='REVIEW_BLOCKED_REFERENCES';
     reason='CANDIDATES_EXIST_BUT_CANNOT_BE_CONSUMED';
+  } else if(projectFormalCoverageComplete) {
+    // The Owner/Project formal scan is complete and empty. This proves only
+    // a project-scoped source gap; it does NOT prove cross-project/global
+    // coverage. D00 discovery may start from this bounded gap without
+    // changing sharedL0L4CoverageComplete.
+    disposition='PROJECT_SOURCE_GAP_CONFIRMED';nextAction='DISCOVER_D00_SOURCE_CANDIDATES';
+    reason='NO_ELIGIBLE_ASSET_IN_COMPLETE_PROJECT_SCOPED_FORMAL_SCAN';
   } else if(sharedL0L4CoverageComplete) {
     disposition='SOURCE_GAP_CONFIRMED';nextAction='DISCOVER_D00_SOURCE_CANDIDATES';
     reason='NO_ELIGIBLE_ASSET_IN_VERIFIED_COMPLETE_SCOPE';
