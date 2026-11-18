@@ -58,6 +58,22 @@ test('only verified full-scope absence may route to D00 source discovery',()=>{
  assert.equal(r.disposition,'SOURCE_GAP_CONFIRMED');
  assert.equal(r.should_discover_sources,true);
 });
+test('complete empty Owner/Project formal coverage confirms only a project-scoped source gap',()=>{
+ const r=planStudioKnowledgeRoute({projectSnapshot:completeEmpty,
+  projectFormalCoverageComplete:true,sharedL0L4CoverageComplete:false});
+ assert.equal(r.disposition,'PROJECT_SOURCE_GAP_CONFIRMED');
+ assert.equal(r.next_action,'DISCOVER_D00_SOURCE_CANDIDATES');
+ assert.equal(r.should_discover_sources,true);
+ assert.equal(r.coverage.project_formal_l0_l4_coverage,'VERIFIED_COMPLETE');
+ assert.equal(r.coverage.shared_l0_l4_coverage,'NOT_VERIFIED');
+});
+
+test('project-scoped source gap is not a global/shared source gap',()=>{
+ const r=planStudioKnowledgeRoute({projectSnapshot:completeEmpty,
+  projectFormalCoverageComplete:true,sharedL0L4CoverageComplete:false});
+ assert.notEqual(r.disposition,'SOURCE_GAP_CONFIRMED');
+ assert.equal(r.coverage.shared_l0_l4_coverage,'NOT_VERIFIED');
+});
 test('Studio wiring uses existing Owner-scoped project read and does not promote candidate text to fact',()=>{
  const research=readFileSync(new URL('../../apps/web/lib/mohen-agent/research.ts',import.meta.url),'utf8');
  const task=readFileSync(new URL('../../apps/web/lib/studio-research.ts',import.meta.url),'utf8');
