@@ -22,7 +22,7 @@
 - 零费用安全诊断已定位该函数此前的两个底层故障：一是RETURNS TABLE输出列layer与ORDER BY case layer发生PL/pgSQL变量歧义；二是SECURITY DEFINER owner为postgres时，调用的control.qualification_allows已撤销PUBLIC EXECUTE，导致owner缺少嵌套函数EXECUTE。新增迁移20261118120000修复排序并仅补postgres对嵌套函数的EXECUTE。
 - 正确Owner/Project签名事务现在可进入函数并返回受控空结果0条；错Project拒绝为M5_FORMAL_READ_OWNER_REQUIRED；错用途拒绝为M5_FORMAL_READ_CONTEXT_INVALID。数据库层不再是此前的FORMAL_G0_G4_READ_NOT_AUTHORIZED_OR_UNAVAILABLE根因；下一步只需从真实Studio应用路径回读，确认应用层正确接收该结果。
 - 当前有效知识资格0、启用Gate Policy 0、Active Reviewer Binding 0、Studio Delegation 0、Execution Receipt 0。Project私有原件/Source/Version/Raw仍为0。
-- 旧Production Run已完成对账：原5条RUNNING均无cloud_dispatch认领；其中2条有D00 production_failed回执并终结FAILED，另3条无执行事件并终结HOLD。当前不可复用这些run_id，也不得把它们视为仍在执行。
+- 旧Production Run已完成对账：原5条RUNNING均无cloud_dispatch认领；其中2条有D00 production_failed回执并终结FAILED，另3条无执行事件并终结HOLD。首次reconciliation实现曾误把全部20条Run写入HOLD，已通过回读发现并修复：7条有精确历史PASS证据的Run恢复PASS；8条历史非运行Run无法逐条恢复原PASS/FAILED身份，保持HOLD并标记historical_status_uncertain；2条原遗留RUNNING为FAILED。当前无RUNNING，当前状态为7 PASS、11 HOLD、2 FAILED。当前不可复用任何旧run_id，也不得把8条不确定HOLD解释成原始失败。
 ### 2.3 知识路由与D00来源获取
 
 - retrieve-formal.ts第一阶段只按Owner/Project读取；跨Project共享范围为NOT_VERIFIED。因此sharedL0L4CoverageComplete=false是当前安全边界，不能为触发D00而强改为true。
@@ -47,7 +47,7 @@
 
 1. **真实应用回读正式知识函数修复**：同一朱家角Project/Owner任务重新进入既有retrieve-local；不重放已结算模型。
 2. **保护旧任务成本**：Receipt仍只有invocation_id，没有可恢复结构化模型输出；维持旧任务HOLD边界。
-3. **旧Production Run对账已完成**：5条旧RUNNING全部收敛为2 FAILED + 3 HOLD，不再复用。
+3. **旧Production Run对账已完成**：5条旧RUNNING全部收敛为2 FAILED + 3 HOLD；另有8条历史非运行Run因诊断状态覆盖无法逐条恢复原PASS/FAILED身份，已保持HOLD并显式标记；7条精确历史PASS已恢复。当前无RUNNING。
 4. **当前下一处业务施工是项目范围来源缺口路由**：在不放宽跨Project共享的情况下，让“项目内完整授权检索无合格来源”进入稳定的PROJECT_SOURCE_GAP_CONFIRMED分支。
 5. **随后补外部候选→合法原件获取/登记→D00输入的相邻交接**；仍不新建Runner/Registry/Gate。
 6. **独立Policy/Reviewer/Cloud Executor/机器身份具备后**，再做同一Root D00/G0→D01/G1→D02真实运行。
