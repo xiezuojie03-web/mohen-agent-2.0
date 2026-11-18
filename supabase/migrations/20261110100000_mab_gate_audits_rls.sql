@@ -4,7 +4,7 @@
 -- mohen_private_worker 实测可读全部审计行（含 legacy_untrusted 与其他消费者行）。
 -- 本迁移启用 RLS 并一次补齐现有读身份的策略，保持既有读面不变：
 --   mohen_gate_authority          —— k3_authority（既有，using true）
---   mohen_gate_signer_m5_machine  —— 新建 k3_gate_signer_audit_read（using true，读面不变）
+--   mohen_gate_signer             —— 既有 NOLOGIN signer group；未绑定登录身份
 --   mohen_private_worker          —— k3_private_worker_gate_audit_read（既有，启用后生效）
 -- 不启用 FORCE ROW LEVEL SECURITY：表属主 k3_admin 保持绕过，
 -- SECURITY DEFINER 的 sign/revoke 函数继续以属主身份写审计。
@@ -15,7 +15,7 @@ alter table control.gate_audits enable row level security;
 
 drop policy if exists k3_gate_signer_audit_read on control.gate_audits;
 create policy k3_gate_signer_audit_read on control.gate_audits
-  for select to mohen_gate_signer, mohen_gate_signer_m5_machine
+  for select to mohen_gate_signer
   using (true);
 
 commit;
