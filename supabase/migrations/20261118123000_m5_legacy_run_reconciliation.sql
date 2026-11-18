@@ -24,7 +24,7 @@ begin
  end if;
  select pr.* into r from control.production_runs pr where pr.run_id=p_run_id for update;
  if not found then raise exception 'M5_RECONCILIATION_RUN_NOT_FOUND'; end if;
- if r.status<>'RUNNING' and not (r.status='HOLD' and r.metadata->'m5_reconciliation'->>'reconciliation_version'='m5.legacy-unclaimed.v1') then raise exception 'M5_RECONCILIATION_NOT_RUNNING'; end if;
+ if r.status<>'RUNNING' and not (r.status in ('HOLD','FAILED') and r.metadata->'m5_reconciliation'->>'reconciliation_version'='m5.legacy-unclaimed.v1') then raise exception 'M5_RECONCILIATION_NOT_RUNNING'; end if;
  if r.started_at is null or r.started_at>now()-interval '24 hours' then
    raise exception 'M5_RECONCILIATION_NOT_STALE';
  end if;
@@ -43,7 +43,7 @@ begin
    'event_count',event_count,
    'production_failed_event_count',failed_event_count,
    'last_event_at',last_event,
-   'prior_status',r.status,
+   'prior_status','RUNNING',
    'prior_current_stage',r.current_stage,
    'prior_scope',coalesce(r.scope,'{}'::jsonb),
    'cloud_dispatch_claimed',false
