@@ -4850,3 +4850,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - `dbfdb42` 统一研究前置与实际 Provider 配置判断。无显式 Provider 配置时，现有 DeepSeek Secret 只用于官方端点。未读取 Secret 值。Vercel 新增 Preview-only `MOHEN_G5_CONTEXTS`，仅含朱家角 Project 的 `mohen.research/agent_read/v1` 及 read 动作。首次 main 分支限定被 Vercel 拒绝，改用 Preview 环境限定并保留 Project 范围。未签发资格。
 - `50f486f` 增加 Studio「继续研究」，调用原任务已有的签名会话、持久预算与 CAS 续跑路径，成功后回读当前状态。Web 类型检查与 21 项前置/续跑单测通过。最终受保护 Preview `dpl_8akfMu4c4M9PFy2X3kHAmTtiwXh1` READY；Studio、Admin readiness 和任务状态匿名均为 302 至 SSO。Production 仍为原部署 `dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc`。
 - 回读原任务仍 `hold/research_prerequisites`、已用预算 0。待现有 Creator 会话触发原任务续跑，工程执行会话未以高权连接替代签名身份。真实研究、独立 Gate、审核发布与 WATCH 验收待实跑。
+
+## 2026-11-18｜M5-STUDIO-UX-10｜三栏联动与暂停态浏览器自检
+
+- 对照 MHKA-02 §3，保留左栏自然语言委托、中栏研究/编导、右栏作品和精确修订送审的三栏职责。修复暂停态仍可请求导演方案和授权、无草稿仍可点击送审的交互。已结算步骤不能直接续跑时给出对应原因。
+- 给既有 ST-01 浏览器用例加入暂停态断言，旧实现实测失败于「生成方案仍可点击」。修复后，以一次性 PG17、Supabase Storage v1.43.0 和 Chromium 重跑，25 项通过、0 失败、0 跳过；Web 类型检查通过。
+- 朱家角原任务已结算一次 llm-understand（账本成本 1），随后第二次 retrieve-local 确定性失败，当前为 FORMAL_G0_G4_READ_NOT_AUTHORIZED_OR_UNAVAILABLE。既有续跑会从第一步开始，已结算任务受 resume_step_checkpoint_required 保护。失败的内部原因尚未确证；未重放模型或变更独立资格、外发授权和发布状态。

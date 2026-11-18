@@ -70,6 +70,10 @@ test('ST-01 creates one project-bound immutable brief before research; HOLD and 
  expect(requestBody.idempotency_key).toMatch(/^[a-f0-9-]{36}$/);
  await expect(page.getByText('委托已保存，研究暂停，尚未完成。',{exact:true})).toBeVisible();
  await expect(page.getByText('研究模型尚未接通',{exact:false})).toBeVisible();
+ await expect(page.getByRole('button',{name:'继续研究',exact:true})).toBeEnabled();
+ await expect(page.getByRole('button',{name:'生成方案',exact:true})).toBeDisabled();
+ await expect(page.getByRole('button',{name:'提交审核',exact:true})).toBeDisabled();
+ await expect(page.getByRole('button',{name:'我同意本次外发处理',exact:true})).toHaveCount(0);
 
  const task=body.task_id,briefRef=body.brief_asset_ref;
  expect(task).toBe(requestBody.idempotency_key);

@@ -396,7 +396,9 @@ export default function StudioWorkbench() {
         const result = await response.json() as {reason?:string};
         setResumeNotice(result.reason === "research_prerequisites"
           ? "研究仍在暂停，模型或知识读取前提尚未就绪。"
-          : "研究暂时无法继续，请查看已保存任务的状态。");
+          : result.reason === "resume_step_checkpoint_required"
+            ? "原委托已有执行回执，须从已完成步骤之后恢复。当前不能重复运行已完成的步骤。"
+            : "研究暂时无法继续，请查看已保存任务的状态。");
         return;
       }
       const status = await fetch(`${path}/status`, {cache:"no-store"});
@@ -504,8 +506,11 @@ export default function StudioWorkbench() {
 
   const lastUserBrief = [...messages].reverse().find((m) => m.role === "user")?.text;
 
+  const canGeneratePlans = currentResearch?.status === "done" && Boolean(lastUserBrief);
+  const hasWorkDraft = Boolean(selectedPlan && adoptedPlanId && beats?.length);
+
   async function authorizeExternal(): Promise<string | null> {
-    if (authorizing) return null;
+    if (!canGeneratePlans || authorizing) return null;
     setAuthorizing(true);
     try {
       const res = await fetch("/api/studio/dispatch-authorizations", {
@@ -539,7 +544,7 @@ export default function StudioWorkbench() {
 
   async function generatePlans(delegationOverride?: string) {
     const brief = lastUserBrief;
-    if (!brief || generating || directing || submitLock.current) return;
+    if (!canGeneratePlans || !brief || generating || directing || submitLock.current) return;
     const effectiveDelegation = delegationOverride ?? delegationId;
     setGenerating(true);
     setPlansError(null);
@@ -987,16 +992,16 @@ export default function StudioWorkbench() {
               <h2>墨痕给的两种方向</h2>
               <button
                 className="studio__ghost-btn"
-                disabled={submitBusy || generating || directing || !lastUserBrief}
+                disabled={!canGeneratePlans || busy || submitBusy || generating || directing}
                 onClick={() => void generatePlans()}
               >
                 {generating ? "构思中…" : "生成方案"}
               </button>
             </div>
 
-            {plansError && <p role="alert" className="studio__submit-msg" style={{ color: "#b0413e" }}>{plansError}</p>}
+            {canGeneratePlans && plansError && <p role="alert" className="studio__submit-msg" style={{ color: "#b0413e" }}>{plansError}</p>}
 
-            {needsAuthorization && (
+            {canGeneratePlans && needsAuthorization && (
               <div className="studio__panel" style={{ borderStyle: "dashed" }}>
                 <p className="studio__asset-meta">
                   点击下面的按钮即表示你明确同意：把本项目的已绑定史料发给外部模型（DeepSeek）参与构思，逐次调用单独记账并留存回执，30 分钟后授权自动失效。
@@ -1013,7 +1018,9 @@ export default function StudioWorkbench() {
 
             {!plans && !generating && (
               <div className="studio__empty">
-                先在左边用一句话委托你的创作意图，然后点“生成方案”，墨痕会基于真实材料给出两种讲故事角度。
+                {currentResearch?.status === "hold"
+                  ? "这份研究仍在暂停。继续原委托并取得研究结果后，才能生成导演方案。"
+                  : "研究完成后，可以在这里生成并比较两种导演方案。"}
               </div>
             )}
 
@@ -1239,13 +1246,13 @@ export default function StudioWorkbench() {
             <input
               className="studio__submit-input"
               placeholder="给这部作品起个标题"
-              disabled={submitBusy}
+              disabled={!hasWorkDraft || submitBusy}
               value={workTitle}
               onChange={(e) => setWorkTitle(e.target.value)}
             />
             <button
               className="studio__action studio__action--primary"
-              disabled={submitBusy || busy || generating || directing}
+              disabled={!hasWorkDraft || !workTitle.trim() || submitBusy || busy || generating || directing}
               onClick={() => void submitWork()}
             >
               {submitBusy ? "提交中…" : "提交审核"}
