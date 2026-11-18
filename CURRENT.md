@@ -1,6 +1,6 @@
 # 墨痕｜当前工程事实与唯一前沿（非施工标准）
 
-> **核验日期：2026-11-18。** 本快照当前代码基线为GitHub main提交e5d1bff0b358417680ebfba0435b3fa7539593dc；本轮修复提交包括09cc1cd14e86a8bda9b49660d28ffa71ec63384、b76fd96f5138c46550c8c83e000faed1d4204aef、86ebb7685926931c4e98a27ed64d8ea37c7990c7、c95e71ef2e8ebc3dff50d12cf40b12ad357132f26、e5d1bff0b358417680ebfba0435b3fa7539593dc。数据库事实来自2026-11-18对mohen-cloud的定向验证。施工标准与顺序只以tasks/implementation/MAB/PLAN.md为准；逐批证据以tasks/implementation/MAB/progress.md为准。
+> **核验日期：2026-11-18。** 本快照当前代码基线为GitHub main提交9da5cad973bb3dca2e9f9b2e8f0e05f429852e97；本轮正式知识读取与遗留Run对账修复均已入main。数据库事实来自2026-11-18对mohen-cloud的定向验证。施工标准与顺序只以tasks/implementation/MAB/PLAN.md为准；逐批证据以tasks/implementation/MAB/progress.md为准。
 
 ## 1. 唯一业务目标
 
