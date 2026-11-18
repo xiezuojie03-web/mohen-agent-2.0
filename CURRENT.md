@@ -21,7 +21,7 @@
 
 ## 3. 当前唯一工程前沿（先做无需Owner的工作）
 
-- **Studio 同作品已进入真实主线**：朱家角 Project `e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5`、任务 `53ad1a29-22e5-43c2-816d-b02b6e85abbd` 已在开发库回读，状态 `hold / research_prerequisites`。同一任务的下一步是接通现行受控研究 Provider 与 agent 读取上下文，随后在原任务续跑。Vercel 只读元数据仅见 `DEEPSEEK_API_KEY`，未见研究要求的 `MOHEN_LLM_BASE_URL`、`MOHEN_LLM_API_KEY` 或正式资格上下文配置；不得以其他用途的密钥或历史测试上下文冒充。
+- **Studio 同作品已进入真实主线**：朱家角 Project `e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5`、任务 `53ad1a29-22e5-43c2-816d-b02b6e85abbd` 已在开发库回读，状态 `hold / research_prerequisites`。包含 DeepSeek 既有配置复用和「继续研究」入口的受保护 Preview `dpl_8akfMu4c4M9PFy2X3kHAmTtiwXh1` 已 READY（`50f486ff080921a6e34b5b11950deba5b36dc69b`）；Preview 配置已登记朱家角 Project 范围的 `mohen.research/agent_read/v1` 查询上下文。同一任务待 Creator 会话调用既有续跑入口；配置回执不代替实际读取资格、Provider 调用或研究结果。
 
 1. **取得四项服务端注入回执**：在既有受保护非生产部署核实四项配置注入。优先复用现有受 SSO 及 Operator 保护的 Admin readiness，记录部署 ID、环境及脱敏状态；部署/API 元数据不足时，需要同部署服务端布尔回执。保留真实 TLS 为 NOT_RUN，直至保护和注入均确证。
 2. **运行真实机器验证**：用各自专用连接池核对 Producer/Worker 实际登录角色、TLS、允许和越权拒绝、Gate 签发拒绝及原始密码不透传。恢复 GitHub Actions runner 后重跑精确 main SHA 并回读结果。

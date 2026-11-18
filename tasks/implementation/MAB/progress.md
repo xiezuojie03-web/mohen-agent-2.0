@@ -4844,3 +4844,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 - Owner 在受保护 Preview 提交真实 Studio 委托。按现场任务编号只读回查开发库，Project `e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5`、任务 `53ad1a29-22e5-43c2-816d-b02b6e85abbd` 已存在。当前 `hold / research_prerequisites`，缺项 `REAL_PROVIDER_UNAVAILABLE` 与 `AGENT_QUALIFICATION_CONTEXT_REQUIRED`，尚未生成作品。
 - 查源码与 Vercel 变量元数据。真实研究明确要求 `MOHEN_LLM_BASE_URL` 和 `MOHEN_LLM_API_KEY`，并要求合法 agent/read 资格上下文。现有 `DEEPSEEK_API_KEY` 项目变量不能据其存在推断研究模型已接通。未解密任何值，未启动模型、正式生产、审签或发布。
+
+## 2026-11-18｜M5-STUDIO-LIVE-09｜同任务续跑入口与受保护部署
+
+- `dbfdb42` 统一研究前置与实际 Provider 配置判断。无显式 Provider 配置时，现有 DeepSeek Secret 只用于官方端点。未读取 Secret 值。Vercel 新增 Preview-only `MOHEN_G5_CONTEXTS`，仅含朱家角 Project 的 `mohen.research/agent_read/v1` 及 read 动作。首次 main 分支限定被 Vercel 拒绝，改用 Preview 环境限定并保留 Project 范围。未签发资格。
+- `50f486f` 增加 Studio「继续研究」，调用原任务已有的签名会话、持久预算与 CAS 续跑路径，成功后回读当前状态。Web 类型检查与 21 项前置/续跑单测通过。最终受保护 Preview `dpl_8akfMu4c4M9PFy2X3kHAmTtiwXh1` READY；Studio、Admin readiness 和任务状态匿名均为 302 至 SSO。Production 仍为原部署 `dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc`。
+- 回读原任务仍 `hold/research_prerequisites`、已用预算 0。待现有 Creator 会话触发原任务续跑，工程执行会话未以高权连接替代签名身份。真实研究、独立 Gate、审核发布与 WATCH 验收待实跑。
