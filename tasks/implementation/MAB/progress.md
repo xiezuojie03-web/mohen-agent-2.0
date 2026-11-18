@@ -4822,3 +4822,8 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - `mohen-cloud` 只读复核 Project、有效资格、启用 Policy、有效 Reviewer Binding 均为零；按完整哈希与字节数查得两个历史版本在私有原件及来源 raw 表皆无匹配。只证明精确版本无匹配，不能据此跳过 Studio 的统一合法检索。
 - Studio 知识路由与云端 readiness 专项 27 PASS / 0 FAIL。一次性 PG17 首轮 Node 客户端无法连接容器端口；补 loopback 映射后重跑，得到独立 Gate、精确资格与撤权、同 Root G0 接力、Producer 权限分离、研究恢复及 `K3_DB_TEST_PASS`，但外层命令退出 1，因此保留具体验证标记，整次命令不登记为全绿。官方 Storage 仍 HOLD。临时数据库容器已清理。
 - 远端 Preview 同部署 Operator 回执仍缺，真实 TLS 与同作品云端验收仍 NOT_RUN。当前没有新增同一真实任务的已验节点，M5 维持 0/8 OVERALL_HOLD。
+
+## 2026-11-18｜M5-ISOLATED-PG-05｜隔离回归退出状态复核
+
+- 基线 `c0d7dfb5ca8c5a3e83b8d63aceed9c7400540613`。在新建、只绑定 loopback 且带隔离标记的 PG17 容器重跑 `node scripts/test-k3-db.mjs`，分别采集 Node 与 Docker 清理退出状态。实测 `NODE_EXIT=0`、`DOCKER_STOP_EXIT=0`，外层退出 0，带 `K3_DB_TEST_PASS`、`MAB_RESEARCH_RESUME_PG_PASS` 等回执。上次外层退出 1 未复现，历史原因未证实。官方 Storage 仍未配置，本轮保持 HOLD。
+- [托管 CI 44211866148](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44211866148) 原始注释仍为账单或支出上限拦截。隔离结果只覆盖本地回归。Preview 注入、真实云端 TLS、同作品签发及 M5 整链状态仍见 CURRENT。
