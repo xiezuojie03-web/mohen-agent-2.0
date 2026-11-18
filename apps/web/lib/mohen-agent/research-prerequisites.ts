@@ -1,3 +1,4 @@
+import {hasLlmProviderConfiguration} from '@mohen/agent-runtime';
 import {consumerContext} from '../kad1-policy.mjs';
 import type {Ledger} from '../studio/tool-ledger';
 
@@ -15,7 +16,7 @@ export function requireResearchPrerequisites(ledger?: Ledger) {
   const missing: string[] = [];
   // Match the actual llmUnderstand configuration, not the unrelated optional
   // entity-extraction fallback key. Presence is readiness, never spend authority.
-  if (!process.env.MOHEN_LLM_BASE_URL?.trim() || !process.env.MOHEN_LLM_API_KEY?.trim())
+  if (!hasLlmProviderConfiguration())
     missing.push('REAL_PROVIDER_UNAVAILABLE');
   // Source acquisition credentials belong to a verified D00 need, not to
   // every Studio research/read request. No source fetch is authorized here.

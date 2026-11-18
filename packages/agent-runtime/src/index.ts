@@ -8,7 +8,7 @@
 export * from "./types";
 export * from "./understand";
 export * from "./select";
-export { llmUnderstand, llmPolish, passesFactGuard } from "./llm";
+export { hasLlmProviderConfiguration, llmUnderstand, llmPolish, passesFactGuard } from "./llm";
 
 /** 包状态标记（供治理审计读取；非运行时逻辑） */
 export const packageStatus = "adr-003-layered" as const;

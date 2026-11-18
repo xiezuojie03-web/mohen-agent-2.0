@@ -24,6 +24,22 @@ function env(name: string): string | undefined {
   return g.process?.env?.[name];
 }
 
+function llmProviderConfig() {
+  const baseUrl = env("MOHEN_LLM_BASE_URL")?.trim();
+  const apiKey = env("MOHEN_LLM_API_KEY")?.trim();
+  if (baseUrl && apiKey) return { baseUrl, apiKey };
+
+  const deepseekKey = env("DEEPSEEK_API_KEY")?.trim();
+  if (!baseUrl && !apiKey && deepseekKey) {
+    return { baseUrl: "https://api.deepseek.com", apiKey: deepseekKey };
+  }
+  return null;
+}
+
+export function hasLlmProviderConfiguration(): boolean {
+  return llmProviderConfig() !== null;
+}
+
 /**
  * 可选 LLM 理解。返回 null 表示「本档不可用」，调用方回退 L0 确定性理解。
  */
@@ -31,9 +47,9 @@ export async function llmUnderstand(
   question: string,
   aliases: EntityAliases
 ): Promise<LlmUnderstanding | null> {
-  const baseUrl = env("MOHEN_LLM_BASE_URL");
-  const apiKey = env("MOHEN_LLM_API_KEY");
-  if (!baseUrl || !apiKey) return null;
+  const config = llmProviderConfig();
+  if (!config) return null;
+  const { baseUrl, apiKey } = config;
 
   const model = env("MOHEN_LLM_MODEL") || "deepseek-chat";
   const vocabulary = Object.entries(aliases)
@@ -94,9 +110,9 @@ export async function llmPolish(
   allowedTerms: string[],
   facts: string[]
 ): Promise<string | null> {
-  const baseUrl = env("MOHEN_LLM_BASE_URL");
-  const apiKey = env("MOHEN_LLM_API_KEY");
-  if (!baseUrl || !apiKey) return null;
+  const config = llmProviderConfig();
+  if (!config) return null;
+  const { baseUrl, apiKey } = config;
 
   const model = env("MOHEN_LLM_MODEL") || "deepseek-chat";
   const system = [
