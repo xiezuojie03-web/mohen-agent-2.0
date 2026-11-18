@@ -7,7 +7,7 @@
 import { getNodePgPool, createAppTransaction, assertQualificationContext, type QualificationReadOptions } from "@mohen/data-access";
 import type { Material } from "@mohen/agent-runtime";
 
-const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 export type FormalLayer="L0"|"L1"|"L2"|"L3"|"L4";
 export interface FormalQualifiedRef {layer:FormalLayer;gate:string;objectType:string;objectId:string;revision:string;}
 export interface FormalQualifiedRead {
