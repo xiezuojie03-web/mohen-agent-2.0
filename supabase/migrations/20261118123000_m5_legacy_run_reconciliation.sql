@@ -24,7 +24,7 @@ begin
  end if;
  select pr.* into r from control.production_runs pr where pr.run_id=p_run_id for update;
  if not found then raise exception 'M5_RECONCILIATION_RUN_NOT_FOUND'; end if;
- if r.status<>'RUNNING' then raise exception 'M5_RECONCILIATION_NOT_RUNNING'; end if;
+ if r.status<>'RUNNING' and not (r.status='HOLD' and r.metadata->'m5_reconciliation'->>'reconciliation_version'='m5.legacy-unclaimed.v1') then raise exception 'M5_RECONCILIATION_NOT_RUNNING'; end if;
  if r.started_at is null or r.started_at>now()-interval '24 hours' then
    raise exception 'M5_RECONCILIATION_NOT_STALE';
  end if;
@@ -48,9 +48,10 @@ begin
    'prior_scope',coalesce(r.scope,'{}'::jsonb),
    'cloud_dispatch_claimed',false
  );
- update control.production_runs
+ update control.production_runs pr
  set status=next_status,finished_at=now(),
-     metadata=coalesce(metadata,'{}'::jsonb)||jsonb_build_object('m5_reconciliation',evidence);
+     metadata=coalesce(pr.metadata,'{}'::jsonb)||jsonb_build_object('m5_reconciliation',evidence)
+ where pr.run_id=p_run_id;
  return query select p_run_id,next_status,evidence;
 end
 $function$;
