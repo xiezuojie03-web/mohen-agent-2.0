@@ -1,34 +1,64 @@
 # 墨痕｜当前工程事实与唯一前沿（非施工标准）
 
-> **2026-11-18最新接续快照**。本页只记当前可信事实与具名阻断；精确施工过程、SHA、测试和失败回执以progress.md为准。旧批次内容只作历史证据，不能把旧“下一步”当现行指令。PLAN.md §3.5 B/C/D仍是唯一施工与验收标准。
+> **核验日期：2026-11-18。** 本快照以GitHub main基线ae2b03abda00dadd0293dc3cce335f086b0dd387及本日对mohen-cloud开发库的只读查询为依据。文档同步提交不会改变本次运行事实。施工标准与顺序只以tasks/implementation/MAB/PLAN.md为准；逐批证据以tasks/implementation/MAB/progress.md为准。
 
 ## 1. 唯一业务目标
 
-以PLAN.md §3.5 B/C/D为唯一准出标准：同一真实Creator/Project/Root任务，从Studio问题→统一L0—L5知识检索及当前资格/权利判断→按缺口选择D00—D05必要能力与独立G0—G5→知识资产积累→H1/H2/H3作品修订→Admin独立审核/运营发布→WATCH同修订消费和撤权。用户上传/指定原件是可选输入；已有合格资产不得重复获取或生产。
+以PLAN §3.5 B/C/D为唯一准出标准：同一真实Creator/Project/Root任务，从Studio问题→L0—L5统一知识检索及当前资格/权利判断→按缺口选择D00—D05必要能力与独立G0—G5→知识资产积累→H1/H2/H3作品修订→Admin独立审核/运营发布→WATCH同修订消费和撤权。用户上传/指定原件是可选输入；已有合格资产不得重复获取或生产。
 
-## 2. 最新已核事实（2026-11-18）
+## 2. 当前已核事实（2026-11-18）
 
-- **A线正式知识窄读桥已完成部署与安全拒绝验证**：开发库迁移20261117172439 m5_scoped_formal_project_gate_read已应用；Studio经原签名Owner会话和createAppTransaction调用studio.search_qualified_project_layers。只授mohen_app_runtime受限EXECUTE，不授正式表SELECT；anon/authenticated/service_role/Producer拒绝，无签名Owner返回42501。真实同Project正向读取、错Owner、错用途、撤权仍NOT_RUN，当前开发库已有朱家角 Project/Root，研究停在 Provider 与知识读取上下文前置；对应当前资格仍待建立。**不重做读桥，不伪造PASS。**
-- **Producer/Worker机器身份已由Owner安全激活**：Supabase只读核验两个既有LOGIN角色密码均已设置，BYPASSRLS=false。Owner无需再次重置密码。
-- **四项Vercel Preview变量均已存在**：Producer URL、Producer密码Secret、Worker URL、Worker密码Secret，均为Sensitive/Secret且范围为Preview；原始值未读取。此前“等待Owner补Worker密码”的旧记录失效。不得要求Owner重复操作或索取密码。
-- **Vercel 部署与 SSO**：当前已复核精确 SHA `ddc54a53a15fbeb20e721ccd5cb95fe85ae6c5c0` 的非生产 Preview `dpl_BC4Tnp6xv8HSUwmb5Hd83FJYffnV`（API target 为 null）及 staging `dpl_2Wb5hVi78UGN6G6BH8j4nrDW3J1b` 均为 READY。两个部署的 `/login`、`/api/admin/metrics`、`/api/internal/production-execute` 匿名 GET 均返回 302 至 Vercel SSO。目标 SHA 已包含四项布尔诊断。当前执行会话缺应用内 Operator 访问，四项实际注入仍待同部署回执。
-- **CI**：回执提交 `339007d` 的 [主 CI 44210656574](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44210656574) 仍在 runner 启动前被账单或支出上限拦截。Preview SHA `ddc54a53a15fbeb20e721ccd5cb95fe85ae6c5c0` 的 [主 CI 44176653194](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44176653194) 在 runner 启动前被账单或支出上限拦截。施工代码 SHA `7e792641618bd846417005fe1f79c77821b1ac8e` 的主 CI、隔离 PG 及隔离 HTTP 托管作业同样受阻。精确 `ddc54a53` 的本地 Node 24 数据生产套件 357/357 PASS，先前 Codex Cloud 隔离 PG17/Chromium 回执见 progress。
-- **Production 自动部署隔离**：`vercel.json` 的 `git.deploymentEnabled=false` 自 `5b02081bf49683ee0cb16bd039ce96c4ef50a920` 保持，正式域仍指向 `dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc`（`835602242cab31b1fcb372c7ff5efd4fc41dfd89`）。隔离开启后的 main 提交未更新 Production；本轮未改 Vercel 或 Production。
-- **Executor 配置预检**：复用现有 Runner、Registry 和 SQL 权限判定。修复 Executor 认领前两处连接漏用拆分密码，以及专用池拒绝合法 `sslmode=verify-full`。池仍强制证书校验且拒绝其他 URI 参数。原始拆分密码不会作为独立变量传给 Runner。既有 Operator readiness 的逐变量布尔状态已进入受保护 Preview，待应用内 Operator 读取。
-- **隔离机器 TLS**：一次性 PG17 对 Worker 和 Producer 实测证书校验、加密连接、低权身份。Worker 拒绝不受信证书；Producer 拒绝错误主机名、错误密码及互换身份。此回执只覆盖隔离库；Vercel 注入与真实云端 TLS 仍待验证。
-- **独立Gate**：真实启用Policy=0、active Reviewer Binding=0；Cloud Executor、独立Gate真实运行/签发尚未验证。
-- **M5整体**：0/8 OVERALL_HOLD，不是代码完成率。
+### 2.1 同一真实Studio任务
 
-## 3. 当前唯一工程前沿（先做无需Owner的工作）
+- 开发库当前有1个Studio Project：e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5。
+- 朱家角研究任务：53ad1a29-22e5-43c2-816d-b02b6e85abbd；状态hold / research_prerequisites，work_id=null，最后更新时间2026-11-18T01:58:09Z。
+- 当前checkpoint缺口：FORMAL_G0_G4_READ_NOT_AUTHORIZED_OR_UNAVAILABLE；holdAt.toolId=llm-understand，已用预算1、预留0，settledUnderstandingSaved=false。
+- 该任务的工具Receipt显示：一次llm-understand已结算（cost=1）；随后retrieve-local以deterministic_execution_failed进入HOLD。Receipt仅有invocation_id，没有结构化模型输出。故旧任务不能仅凭新代码的续跑能力认定可恢复；不得盲目重放已结算模型步骤。
+- Project当前Asset Head数量1；该Project私有原件0、Source记录0、Source Version 0、Raw Item 0。当前尚无可供本任务D00接续的已登记原件。
 
-- **Studio 同作品已进入真实主线**：朱家角 Project `e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5`、任务 `53ad1a29-22e5-43c2-816d-b02b6e85abbd` 已在开发库回读，状态 `hold / research_prerequisites`。包含 DeepSeek 既有配置复用和「继续研究」入口的受保护 Preview `dpl_8akfMu4c4M9PFy2X3kHAmTtiwXh1` 已 READY（`50f486ff080921a6e34b5b11950deba5b36dc69b`）；Preview 配置已登记朱家角 Project 范围的 `mohen.research/agent_read/v1` 查询上下文。同一任务待 Creator 会话调用既有续跑入口；配置回执不代替实际读取资格、Provider 调用或研究结果。
+### 2.2 正式知识读取与权限
 
-1. **取得四项服务端注入回执**：在既有受保护非生产部署核实四项配置注入。优先复用现有受 SSO 及 Operator 保护的 Admin readiness，记录部署 ID、环境及脱敏状态；部署/API 元数据不足时，需要同部署服务端布尔回执。保留真实 TLS 为 NOT_RUN，直至保护和注入均确证。
-2. **运行真实机器验证**：用各自专用连接池核对 Producer/Worker 实际登录角色、TLS、允许和越权拒绝、Gate 签发拒绝及原始密码不透传。恢复 GitHub Actions runner 后重跑精确 main SHA 并回读结果。
-3. **继续合法同作品链路**：已有真实 Project/Root、当前资格及独立 Policy/Reviewer Binding 就绪后，验证 A 线同项目读、错 Owner、错用途及撤权，再沿同一作品推进独立 Gate、Admin 与 WATCH。
+- 数据库函数studio.search_qualified_project_layers存在；本轮权限核验显示受限应用角色mohen_app_runtime有EXECUTE，anon、authenticated、service_role无EXECUTE。此结果证明窄读函数授权边界，不证明Studio真实同Project读取成功。
+- 当前有效知识资格0、启用Gate Policy 0、Active Reviewer Binding 0、Studio Delegation 0、Execution Receipt 0。生产Run累计20条，仅为历史记录，不代表当前20条运行。
+- 当前正式知识读取错误仍被研究主流程归并为FORMAL_G0_G4_READ_NOT_AUTHORIZED_OR_UNAVAILABLE；底层具体异常尚未通过安全诊断确证。不得重做已安装窄读迁移，不得把错误文案当作根因。
 
-同作品验收输入已准备，以朱家角为候选。现行开发库按历史完整哈希和字节数回查，朱家角及七宝两个版本在私有原件表和来源 raw 表均无匹配。按 Studio 路由验证可复用资产及用途资格，具体输入与正反用例见工程交接。
+### 2.3 知识路由与D00来源获取
 
-## 4. 持续施工与平台切换
+- retrieve-formal.ts第一阶段只按Owner/Project读取；跨Project共享范围为NOT_VERIFIED。因此sharedL0L4CoverageComplete=false是当前安全边界，不能为触发D00而强改为true。
+- planStudioKnowledgeRoute目前只在共享范围完整时把无合格资产判为SOURCE_GAP_CONFIRMED并触发Studio外部发现；缺少“当前Project授权范围完整但无合格来源”的独立分支。需要补项目范围来源缺口状态，不得声称全局共享库已检索完整。
+- source-discovery.ts能产生外部来源候选线索；现有Studio生产接口及D00私有Adapter要求已经存在的original_id、登记绑定和可信Worker校验。本轮未发现外部候选到合法原件获取、权利判断、字节持久化、SHA回读、Source/Version/Raw登记及D00输入的完整主线连接。
+- 外部候选不是原件、事实、来源权利许可或Gate资格；无合法字节/权利时必须仅保留线索并HOLD。
 
-Codex Cloud是**按额度启停的执行载体，不是永久模式**。ChatGPT与Codex Cloud可以交替施工，但任何时点只允许一个执行方写main。每次切换以GitHub main、CURRENT.md、progress.md、PLAN.md和交接文件为事实来源；任务结束前将代码、测试、SHA、运行回执、HOLD和下一步写入GitHub。不得留下仅存在于云工作区的未提交成果而声称已交接。
+### 2.4 云端与独立运行条件
+
+- Gate Policy=0、Active Reviewer Binding=0、当前资格=0；Cloud Executor和真实云端Producer/Worker TLS/低权身份尚未在同一真实任务中完成验证。Registry六个Job启用及本地隔离历史成果不能代表云端独立Gate可签发。
+- Producer/Worker登录角色密码此前已由Owner安全初始化，BYPASSRLS=false；Vercel四项Producer/Worker Preview变量此前已核实存在且为Sensitive/Secret，原始值未读取。**不得再次要求Owner重置密码或提供密码**。变量存在不等于云端TLS/真实身份连接通过。
+- 既有受保护Preview和Production隔离状态以此前精确部署回执为准；本轮未改部署、环境变量、Production或数据库配置。
+
+### 2.5 当前CI
+
+当前main基线ae2b03a对应以下工作流均失败：
+- [主CI 44222580550](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44222580550)
+- [隔离PG 44222580551](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44222580551)
+- [隔离HTTP 44222580507](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44222580507)
+
+本轮取得的Job元数据只有失败结论，没有日志足以确证根因。必须读取本次精确失败日志；不得直接沿用旧批次的Runner账单上限解释。
+
+## 3. 当前唯一工程前沿
+
+按PLAN §3.5 D第7项执行，顺序如下：
+
+1. **先做零费用正式知识读取根因诊断**：同一Project/Owner签名事务，不调用模型；把底层异常安全分类并定位，验证正确身份/用途能得到受控结果，错误Owner/Project/用途/匿名必须拒绝。
+2. **保护旧任务已结算成本**：核查是否有可验证的结构化模型输出；当前Receipt只有invocation_id，checkpoint没有settledUnderstanding。没有可靠输出就不得重放付费步骤；保留原任务与费用记录，明确不可自动续跑边界。
+3. **修复项目范围来源缺口路由**：保持跨Project共享NOT_VERIFIED；项目授权检索完整、未降级、未截断且无合格来源时，允许进入项目范围D00候选发现。
+4. **补外部候选到合法原件获取的交接**：优先复用既有适配器；按来源版本、逐动作权利、合法获取、私有存储、SHA、Source/Version/Raw登记、Owner/Project和幂等要求形成D00所需original_id。没有合法字节或许可时只保留候选并HOLD。
+5. **再处理真实云端生产依赖**：在Policy、Reviewer、Cloud Executor和机器身份具备后，同一Project/Root验证D00/G0→D01/G1→D02；未运行部分如实标NOT_RUN/HOLD。
+6. **同一作品继续创作**：D02真实接收后，沿既有知识资产、H1/H2/H3、Admin、发布和WATCH主线推进，不新建样板Project、不重建Runner/Registry/Gate。
+
+## 4. M5整体状态
+
+**0/8 OVERALL_HOLD。** 这表示同一真实作品的八维整体验收尚未完成，不是代码完成率。当前最前运行阻断是正式项目知识读取失败；其后还有项目范围D00路由、外部来源获取交接和独立云端运行条件。
+
+## 5. 文件读取与更新
+
+每批按AGENTS.md与PLAN §0.3读取：AGENTS → PLAN相关章节 → CURRENT → progress最新批次/相关证据；仅平台/环境切换时读取ENGINEERING_HANDOFF_CURRENT。交互导航JSON/MD/HTML已停用，不再维护或作为施工依据。

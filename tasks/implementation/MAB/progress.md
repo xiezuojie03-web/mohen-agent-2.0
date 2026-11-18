@@ -1,6 +1,8 @@
 # MAB工程施工证据账（历史追加式，唯一计划：tasks/implementation/MAB/PLAN.md）
 
 > **本文件不是“当前状态”或施工指令。** 2026-11-02起的批次记录按写入时间保留，包含当时正确但如今过时的HEAD、测试、计划入口、工具分工与`PENDING_PUSH`；不能把任意旧段中的“当前/下一步”直接作为现行裁决。
+>
+> **交互导航停用（Owner裁决，2026-11-18）**：M5_MAINLINE_NAVIGATION JSON/MD/HTML仅为历史快照，不再是AI必读、施工依据或当前状态来源，不再维护或同步。当前必读顺序与各文件职责以AGENTS.md及PLAN §0.3为准。
 
 ## 使用方法与更新边界（2026-11-14统一）
 
@@ -4867,3 +4869,18 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 - 正式读取抛出确定性异常时，把已验证的结构化模型判读随 HOLD checkpoint 保存。原 prompt/topic、首次模型结算成本、零预留及 CAS 匹配时，原任务沿现有签名 Owner 路径重读知识，复用已结算判读并保留 spent。旧回执无判读输出、未知结算、其他付费步骤和客户端增额继续失败关闭。
 - 红测复现 HOLD 丢失模型判读。故障注入验证两次知识读取仅一笔模型调用和结算；任务续跑与累计金额回读检查通过，相关 24 项单测、Web 类型检查及 diff 检查通过。此回执不覆盖已结算历史任务的输出重建及真实云端作品验收。
+
+
+## 2026-11-18｜M5-DIAG-13｜Studio→D00创作链阻断核查与必读文件同步裁决
+
+- **核查基线**：GitHub main = ae2b03abda00dadd0293dc3cce335f086b0dd387。本批对代码、mohen-cloud开发库、当前CI元数据和AI必读文档做定向只读核查；未修改业务代码、数据库、Provider、Vercel环境或Production。
+- **同一真实任务**：Project e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5；研究任务53ad1a29-22e5-43c2-816d-b02b6e85abbd。数据库回读为hold/research_prerequisites，缺口FORMAL_G0_G4_READ_NOT_AUTHORIZED_OR_UNAVAILABLE，预算已用1、预留0、holdAt=llm-understand、未保存settledUnderstanding。工具Receipt显示模型调用已settled但仅存invocation_id；后续retrieve-local为deterministic_execution_failed。旧任务不得盲目重放已结算模型步骤。
+- **开发库计数**：Studio Project 1；当前Project Asset Head 1；私有原件0、Source0、Source Version0、Raw Item0；当前有效资格0、启用Gate Policy0、Active Reviewer Binding0、Studio Delegation0、Execution Receipt0；Production Run累计20（历史，不代表当前运行）。
+- **窄读权限**：studio.search_qualified_project_layers存在，mohen_app_runtime有受限EXECUTE，anon/authenticated/service_role无EXECUTE。权限边界已建立，但本轮未证明真实同Owner/Project读取成功；具体底层异常仍待零费用定位。
+- **知识路由判断修正**：跨Project共享范围未授权/未建立，sharedL0L4CoverageComplete=false应保持，不得改为true。真实缺口是路由缺少“当前Project完整授权检索无合格来源”的项目范围来源缺口状态，导致不能在不声称全局共享检索完整的前提下触发D00外部候选发现。
+- **D00接线差异**：source-discovery.ts产出外部候选；当前Studio生产接口和D00私有Adapter接收已登记的original_id并要求可信Worker校验。未发现候选→合法获取→权利判断→字节持久化→SHA→Source/Version/Raw登记→D00输入的完整主线桥接。候选不得冒充原件或合格知识。
+- **下游运行条件**：Gate Policy、Active Reviewer Binding、当前资格均为0；Cloud Executor及真实云端机器身份/Gate运行仍未验证。不得把六个Registry Job启用或历史隔离测试解释为云端PASS。
+- **CI**：基线SHA的主CI 44222580550、隔离PG 44222580551、隔离HTTP 44222580507均失败；当前取得的Job元数据没有根因日志。需要针对这三个精确SHA/job取失败日志，不沿用更早的账单上限解释。
+- **Owner文档裁决**：将上述诊断与唯一修复顺序写入PLAN §3.5 D第7项；确立AGENTS→PLAN→CURRENT→progress的AI必读顺序；CURRENT只保存当前事实，progress追加证据，handoff只负责平台/环境交接。交互导航JSON/MD/HTML停用，不再维护、不再作为必读或施工依据。
+- **下一步**：按PLAN §3.5 D第7项先零费用定位正式知识读取底层失败，再处理旧checkpoint恢复边界、项目范围来源缺口路由、外部候选到合法原件获取桥，最后在真实Policy/Reviewer/Cloud Executor条件具备后验证同一Project/Root的D00/G0→D01/G1→D02。
+

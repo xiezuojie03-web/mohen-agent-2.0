@@ -1,48 +1,51 @@
 # 墨痕 MoHen｜工程入口与权威导航
 
-> 本文件只回答“到哪里找唯一依据、按什么顺序核实事实”。**不另立施工计划、验收标准、执行平台或生产授权**。2026-11-14起统一按 `tasks/implementation/MAB/PLAN.md` V1.7 的单main、工具无关执行规则。
+> 本文件只定义仓库级权威路由、AI施工必读顺序和通用执行纪律；不另立施工计划、验收标准、执行平台或生产授权。现行施工计划为 tasks/implementation/MAB/PLAN.md V1.7（2026-11-18已补充信息同步规则）。
 
 ## 1. 权威顺序与不可越界的底线
 
-Owner已批准的裁决 → `MHKA-00—05` 相应设计职责 → 现行授权专业合同 → `MAB-ENG-01` 受控任务书 → `tasks/implementation/MAB/PLAN.md` 唯一施工顺序与准出标准。旧C0—C4仅为历史来源与运行兼容，不是当前目标设计权威；M8负责生产启用及旧运行代际受控退役，并非MHKA开始指导施工的时间。
+Owner已批准的裁决 → MHKA-00—05相应设计职责 → 现行授权专业合同 → MAB-ENG-01受控任务书 → tasks/implementation/MAB/PLAN.md唯一施工顺序与准出标准。
 
-**设计、代码、CI、隔离验证、线上验证、Owner签收是不同证据层。** 任何工具不得自签专业Gate、绕过来源权利或权限、擅用生产密钥、迁移生产数据、增加付费或向公众开放。不能因旧代码、部署READY、历史快照或工具输出否定现行合同，也不能因合同存在冒充运行PASS。
+**设计、代码、CI、隔离验证、线上验证、Owner签收是不同证据层。** 任何工具不得自签专业Gate、绕过来源权利或权限、擅用生产密钥、迁移生产数据、增加未经授权的付费或向公众开放。不能因旧代码、部署READY、历史快照或工具输出否定现行合同，也不能因合同存在冒充运行PASS。
 
-## 2. 依任务领域按需读取的唯一索引
+## 2. AI施工必读文件与按需资料
 
-| 需要解决的问题 | 权威入口 |
+| 文件 | 唯一职责与读取要求 |
 |---|---|
-| 治理、Owner裁决 | `governance/mhka/MHKA-00_Governance_Charter.md` |
-| 核心价值与战略 | `governance/mhka/MHKA-01_Value_and_Strategy.md` |
-| 人文产品、Studio/WATCH/EXP | `governance/mhka/MHKA-02_Humanistic_Product_and_Experience.md` |
-| 知识世界、资产、D/L/G | `governance/mhka/MHKA-03_Knowledge_World_and_Data_Architecture.md` |
-| Agent、方法、Skill、混合AI | `governance/mhka/MHKA-04_Agent_and_Professional_Capabilities.md` |
-| 工程、安全与运维 | `governance/mhka/MHKA-05_Software_Engineering_and_Operations.md` |
-| 知识资产生命周期 | `specs/KNOWLEDGE_ASSET_LIFECYCLE_CONTRACT.md` |
-| Agent专业合同 | `specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md` |
-| 运行架构合同 | `specs/SYSTEM_RUNTIME_ARCHITECTURE.md` |
-| 人文叙事与组件 | `specs/experience-ui/H1_H2_H3_AND_COMPONENTS_CONTRACT.md` |
-| 数据生产与Registry | `specs/data-production/MoHen_Data_Production_Protocol.md`；`specs/data-production/production-registry.json` |
-| **唯一施工计划、标准** | `tasks/implementation/MAB/PLAN.md` |
-| **当前工程事实与风险** | `CURRENT.md`（事实仍需对照实时GitHub/CI/DB/部署验证） |
-| **M5主干工程指南针（非权威、持续更新）** | `tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json`（机器按节点/边与八维定位）＋同目录`.md`（人机解释）/`.html`（点击检查），三份同一提交同步；须再对照当前HEAD与实跑证据 |
-| **不可变历史过程与证据** | `tasks/implementation/MAB/progress.md`（优先读顶端说明、末尾最新批及所需历史段落） |
-| 目标级差异与实际接线 | `tasks/implementation/MAB/target-diff.csv` |
-| 快速接续入口 | `tasks/implementation/MAB/ENGINEERING_HANDOFF_CURRENT.md` |
-| 文件归属及执行代码 | `OWNERSHIP_MAP.md`；`pipelines/data-production/run.mjs` |
-| 冻结设计交付包与吸收记录 | `tasks/implementation/MAB/inputs/mab-package-20261102/`；PLAN附录D |
+| AGENTS.md（本文件） | 仓库级权威路由、必读顺序、执行纪律和文件同步规则 |
+| tasks/implementation/MAB/PLAN.md | 唯一施工计划、执行顺序与验收标准；每批读取§0、§0.2、§0.3、§3.5 B/C/D及§6的相关条款 |
+| CURRENT.md | 当前工程事实、真实任务、最前阻断与下一动作；必须核对日期和证据范围 |
+| tasks/implementation/MAB/progress.md | 追加式施工证据账；读取文件开头规则、末尾最新批次及本次所需历史证据，不从头扫描 |
+| tasks/implementation/MAB/ENGINEERING_HANDOFF_CURRENT.md | 仅在更换平台、环境或需要专用宿主交接时读取；不作为第二份施工计划 |
+| tasks/implementation/MAB/target-diff.csv | 需要定位目标/路径差异时按需读取 |
+| governance/mhka/MHKA-00—05 | 按当前任务读取相关章节，不无条件通读全部六份 |
+| 对应专业合同、Registry、迁移、源码和测试 | 只读当前断点及上下游实际涉及的部分；以代码和运行证据核验 |
 
-## 3. 一次施工的最短读取与写入顺序
+**已停用的历史交互导航：** tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json及同目录MD/HTML保留原样，不再作为AI必读文件、施工依据或状态来源，不再维护或同步。其内容可能滞后，不能用于决定当前任务。
 
-1. **先核实现场**：重新取远端`main` HEAD、最新相关CI及生产自动部署隔离状态；用`CURRENT.md`定位已知断点。历史SHA与旧报告不能充作当前基线。
-2. **再读精准合同**：读本PLAN对应阶段/QR/CP和相应MHKA及专业合同，必要时定位`progress.md`最后一批/精确证据；**不从头通读数千行施工史，也不无条件读全部架构文件**。 **M5主干施工必读导航JSON（含 navigation_policy、acceptance_dimensions、nodes[]、edges[]）；再按实际缺口读取MD/HTML。该导航不是准出依据，任何边以当前源码与运行证据核实。**
-3. **只在单main范围施工**：依PLAN §0.2先确认“提交不会自动发布生产”的隔离已实测；未完成只能做获授权的文档/只读任务及不触生产的准备。每批检查受影响文件版本，禁止并行竞争写、强推、重置及新建施工分支/PR。
-4. **验证和留账**：按任务实际执行POS/NEG/AUTH、PG/HTTP、Gate/权限、恢复/撤权等必要用例；没运行标NOT_RUN，遇到阻断标具名HOLD。只把实际SHA/测试/费用/回滚写`progress.md`，运行事实变化时刷新`CURRENT.md`；`PLAN.md`只在任务/规则/验收标准变化时修改。
+## 3. 每批施工的固定读取顺序
 
-**持续施工口径**：只按PLAN §0及§3.5 D选同一真实任务的当前最前断点；可用成果直接复用，缺交接补交接，必要时在原职责内修复或替换。历史继承索引按本次受影响范围查阅，不设每批全量历史审计前置；不因旧记录缺失从零重建。配置阻断只挡依赖它的真实操作，继续其他已授权可执行工作；旧已修断点须先对照当前代码，不能重复施工。
+1. 重新核远端main HEAD、最新相关CI/job、生产自动部署隔离状态及是否存在其他写入方；不得沿用上个窗口的HEAD。
+2. 读取本文件、PLAN相关章节和CURRENT当前快照，确认唯一施工目标、当前事实及最前阻断。
+3. 读取progress开头的使用规则、末尾最新实际批次及所需历史证据；不从头扫描全部施工史。
+4. 按实际断点读取MHKA/专业合同、受影响源码、迁移、测试和环境回执；不做无关全仓盘点。
+5. 只有平台/环境切换或需要交接专用宿主操作时，才读取ENGINEERING_HANDOFF_CURRENT.md。
+6. 按PLAN §0.2在唯一main上执行；写入前重核HEAD与受影响文件SHA，禁止并发写、强推、重置及新建施工分支/PR。
 
-## 4. Owner先前裁决的适用边界
+**持续施工口径**：只按PLAN §0及§3.5选择同一真实任务的当前最前断点；可用成果直接复用，缺交接补交接，必要时在原职责内修复或替换。历史继承索引按本次受影响范围查阅，不设每批全量历史审计前置；不因旧记录缺失从零重建。配置阻断只挡依赖它的真实操作，继续其他已授权可执行工作；旧已修断点须先对照当前代码，不能重复施工。
 
-2026-11-12“本地优先、批量推送”仅用于Owner明确安排且网络/环境无法及时同步的施工窗口；临时未推送提交必须标`PENDING_PUSH`、受控保全并在恢复时对账。**正常连接时按最新PLAN执行小批次main提交**；不得把历史窗口规则误当永久禁令。工具转换不改变唯一执行责任，也不允许多人并发写main。
+## 4. 文件同步与冲突处理
 
-如上位规则造成循环、真实冲突或不可执行障碍，提交条款位置、原始失败、风险和最小修正建议，请Owner裁决；安全底线不得暗中降低。辅助开发Skill `.agents/skills/mohen-dev-continuation/SKILL.md` 只作为方法入口，不具产品Registry、正式Gate或生产权限。
+- PLAN.md只维护施工目标、顺序、任务安排、门禁和验收标准；Owner裁决改变上述内容时先改PLAN再执行。
+- CURRENT.md只维护最新运行事实、真实任务状态、最前阻断和下一动作；事实变化时更新，注明核验时间、HEAD/部署/环境范围及未验证项。
+- progress.md每批追加真实施工证据、SHA、测试、费用、HOLD和恢复条件；不覆盖或改写历史记录。
+- AGENTS.md仅在仓库级读取/执行规则变化时更新。
+- ENGINEERING_HANDOFF_CURRENT.md仅在平台、宿主、环境交接或接续入口变化时更新；具体工程事实以CURRENT为准，施工任务以PLAN为准。
+- 同一事件影响多份核心文件时，优先在同一main提交中同步并回读；若不能同批完成，progress必须标记SYNC_PENDING及未同步文件，完成同步前不得把旧快照当作当前事实。
+- 不复制同一段状态到多份文件，不新增并行进度表，不维护已停用交互导航。遇到文件冲突时：施工标准以PLAN为准，当前状态以最新实证并更新CURRENT，历史事实以progress原始回执为准；任何文件都不能替代实时核验。
+
+## 5. Owner裁决的适用边界
+
+2026-11-12“本地优先、批量推送”仅用于Owner明确安排且网络/环境无法及时同步的施工窗口；临时未推送提交必须标PENDING_PUSH、受控保全并在恢复时对账。**正常连接时按最新PLAN执行小批次main提交**；不得把历史窗口规则误当永久禁令。工具转换不改变唯一执行责任，也不允许多人并发写main。
+
+如上位规则造成循环、真实冲突或不可执行障碍，提交条款位置、原始失败、风险和最小修正建议，请Owner裁决；安全底线不得暗中降低。辅助开发Skill .agents/skills/mohen-dev-continuation/SKILL.md只作为方法入口，不具产品Registry、正式Gate或生产权限。
