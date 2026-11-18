@@ -4806,3 +4806,11 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 施工前远端 main 为 `9788059daabd922438edf5110d239127bdf2bc5f`，工作树干净。复核 GitHub 最新主 CI [44161226508](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44161226508) 仍为 runner 启动前账单/支出上限拦截；Vercel 最近部署仍为 staging `dpl_Gzbgit2J8N8QXhv2vGhxvkJuyuk5`、`954760da7d6cc33b7fd8116e8d64f07ae27edce3`，未包含布尔诊断提交。
 - 使用仅监听本机的临时 Docker PostgreSQL 17、一次性证书、合成 Producer/Worker、SCRAM 和 hostssl。执行 `node tests/data-production/private-worker-tls.integration.mjs` 获 `MAB_PRIVATE_WORKER_TLS_PASS`；实际 PG 会话启用 TLS、Worker 低权身份通过、不受信证书拒绝。用原有拆分 URL 解析及专用池执行 Producer 真实连接，获 `M5_ISOLATED_PRODUCER_TLS_PASS`；`pg_stat_ssl` 为加密会话、两种身份互换拒绝、错误主机名报 `ERR_TLS_CERT_ALTNAME_INVALID`、错误密码报 `28P01`。已停止并删除临时容器及证书材料。
 - 实际修改 `CURRENT.md`、本文件；`git diff --check` 与权威路由守卫通过。导航语义及运行阻断未变。生产未操作、真实 Preview 变量未解密，真实云端 TLS/ACL 仍 NOT_RUN。下一步仍需受保护非生产部署的服务端注入回执，以及有效 Operator 路径；托管 runner 恢复后核对精确提交。无正式 Gate 签发或真实作品准出，M5 为 0/8 HOLD。
+
+
+## 2026-11-18｜M5-CLOUD-PREVIEW-03｜精确 Preview 与 SSO 回执，Operator 注入核验待续
+
+- 远端 `main` 与干净检出均为 `ddc54a53a15fbeb20e721ccd5cb95fe85ae6c5c0`。Vercel 现有 [Preview](https://vercel.com/napoles1/mohen-agent-2-0/BC4Tnp6xv8HSUwmb5Hd83FJYffnV) 和 [staging](https://vercel.com/napoles1/mohen-agent-2-0/2Wb5hVi78UGN6G6BH8j4nrDW3J1b) 均 READY 且绑定该 SHA。两个唯一部署 URL 的 `/login`、`/api/admin/metrics`、`/api/internal/production-execute` 匿名 GET 均返回 302 至 `https://vercel.com/sso-api`。复用现有 Preview，无重复部署。远端 `vercel.json` 仍为 `git.deploymentEnabled=false`，Vercel 最新 Production 仍为 `dpl_JAsr7xw2UyMmqkdZ8uYMBjB4eYmc` / `835602242cab31b1fcb372c7ff5efd4fc41dfd89`。
+- 精确源码的 `GET /api/admin/metrics` 先通过应用内 `isOperator`，再返回 `execution_readiness.machine_variable_presence`，响应为 private/no-store。当前执行会话没有应用内 Operator 访问。SSO 后非 Operator 拒绝和同部署四项布尔回执待实测。真实云端 TLS、实际低权身份、权限与密码不透传仍为 NOT_RUN。已通过既有 Operator 路径请求四项脱敏状态，凭据无需重填。
+- GitHub [CI 44176653194](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44176653194) 的 job `134369681451` 无 runner、零步骤。原始 annotation 确认账单或支出上限拦截，标记 BLOCKED_BEFORE_RUNNER。冻结锁安装依赖后，以 Node 24.19.0/pnpm 9.15.4 执行 `pnpm test:data-production`，357 PASS / 0 FAIL / 0 SKIP。
+- Supabase `mohen-cloud` 只读事务回查：`studio.projects=0`、有效当前资格=0、启用 Policy=0、有效 active Reviewer Binding=0。A 线同作品正向、错 Owner/用途与撤权仍 NOT_RUN。无新同任务实跑节点，M5 仍为 0/8 OVERALL_HOLD。下一步先取现有受保护 Preview 的应用内 Operator 布尔回执，再按权限边界继续云端 TLS 和同作品验证。
