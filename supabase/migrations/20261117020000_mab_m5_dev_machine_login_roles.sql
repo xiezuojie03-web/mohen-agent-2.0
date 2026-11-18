@@ -1,7 +1,7 @@
 -- M5 development environment: distinct, inactive-at-install login identities.
 -- Existing NOLOGIN role groups remain the only privilege owners. No credential
 -- is written to Git; a separate secure rotation must happen before live use.
--- Producer is a Runner only; private Worker alone can SET ROLE app_runtime.
+-- Producer is a Runner only; private Worker can SET ROLE app_runtime for Owner-scoped reads and mohen_private_worker for D00/Gate-candidate operations.
 -- Independent Gate signer/reader and their authorizations are NOT activated.
 begin;
 do $create$
@@ -19,6 +19,7 @@ end $create$;
 -- cannot SET ROLE to hide session identity; Worker can SET LOCAL ROLE only.
 grant mohen_producer to mohen_m5_producer_login with inherit true,set false;
 grant mohen_app_runtime to mohen_m5_worker_login with inherit false,set true;
+grant mohen_private_worker to mohen_m5_worker_login with inherit false,set true;
 do $verify$
 declare bad boolean;
 begin
@@ -37,12 +38,15 @@ begin
     or pg_has_role('mohen_m5_producer_login','mohen_app_runtime','MEMBER')
     or pg_has_role('mohen_m5_producer_login','mohen_gate_signer','MEMBER')
     or pg_has_role('mohen_m5_producer_login','mohen_gate_authority','MEMBER')
+    or pg_has_role('mohen_m5_producer_login','mohen_private_worker','MEMBER')
     or pg_has_role('mohen_m5_producer_login','pg_write_all_data','MEMBER') then
     raise exception 'M5_MACHINE_PRODUCER_MEMBERSHIP_UNSAFE';
   end if;
   if not pg_has_role('mohen_m5_worker_login','mohen_app_runtime','MEMBER')
     or not pg_has_role('mohen_m5_worker_login','mohen_app_runtime','SET')
     or pg_has_role('mohen_m5_worker_login','mohen_app_runtime','USAGE')
+    or not pg_has_role('mohen_m5_worker_login','mohen_private_worker','MEMBER')
+    or not pg_has_role('mohen_m5_worker_login','mohen_private_worker','SET')
     or pg_has_role('mohen_m5_worker_login','mohen_producer','MEMBER')
     or pg_has_role('mohen_m5_worker_login','mohen_gate_signer','MEMBER')
     or pg_has_role('mohen_m5_worker_login','mohen_gate_authority','MEMBER')
