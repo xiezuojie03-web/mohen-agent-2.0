@@ -50,8 +50,8 @@ export function deriveSourceIdentityStratification({ registration, record } = {}
   const locator = isPlainObject(registration.original_locator) ? registration.original_locator : {};
   const catalogNo = nonEmpty(locator.catalog_no);
   const item = locator.item != null ? locator.item : null;
-  const holdingInstitution = nonEmpty(registration.holding_institution);
-  const hasHoldingLocator = Boolean(catalogNo) || item != null;
+  const holdingInstitution = nonEmpty(locator.holding_institution);
+  const hasCatalogLocator = Boolean(catalogNo) || item != null;
 
   const layers = [
     { layer: 'provider', state: 'known',
@@ -60,7 +60,7 @@ export function deriveSourceIdentityStratification({ registration, record } = {}
     // 馆内收藏体系（哪一套/哪一库）本次没有读：如实 unknown，不拿提供方冒充收藏。
     { layer: 'collection', state: 'unknown',
       evidence: ['not_read:this_intake'] },
-    catalogNo
+    hasCatalogLocator
       ? { layer: 'catalog_record', state: 'known',
           value: { catalog_no: catalogNo, ...(item != null ? { item } : {}) },
           evidence: ['registration.original_locator'] }
@@ -76,7 +76,7 @@ export function deriveSourceIdentityStratification({ registration, record } = {}
         ...(nonEmpty(registration.carrier_type) ? { carrier_type: registration.carrier_type } : {}) },
       evidence: ['registration.source_version_id', 'registration.source_version_artifact_revision'] },
     // 藏所不能由提供方推断：必须同时有明确馆藏机构与馆方目录号/件号。
-    holdingInstitution && hasHoldingLocator
+    holdingInstitution && hasCatalogLocator
       ? { layer: 'holding', state: 'known',
           value: { institution: holdingInstitution,
             locator: { ...(catalogNo ? { catalog_no: catalogNo } : {}), ...(item != null ? { item } : {}) } },
@@ -84,7 +84,7 @@ export function deriveSourceIdentityStratification({ registration, record } = {}
       : { layer: 'holding', state: 'unknown',
           evidence: [
             ...(!holdingInstitution ? ['not_in_registration:holding_institution'] : []),
-            ...(!hasHoldingLocator ? ['not_in_registration:original_locator.catalog_no_or_item'] : []),
+            ...(!hasCatalogLocator ? ['not_in_registration:original_locator.catalog_no_or_item'] : []),
           ] },
     { layer: 'digital_asset', state: 'known',
       value: { raw_item_id: registration.raw_item_id, sha256: record.sha256,
