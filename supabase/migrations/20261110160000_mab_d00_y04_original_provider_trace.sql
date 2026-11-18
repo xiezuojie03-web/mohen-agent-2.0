@@ -95,7 +95,7 @@ revoke all on source.original_provider_traces
   from public, anon, authenticated, service_role, mohen_producer, mohen_gate_signer;
 grant select, insert on source.original_provider_traces to mohen_private_worker;
 grant select on source.original_provider_traces
-  to mohen_gate_authority, mohen_gate_signer_m5_machine;
+  to mohen_gate_authority, mohen_gate_signer;
 
 drop policy if exists original_provider_traces_worker_write on source.original_provider_traces;
 create policy original_provider_traces_worker_write on source.original_provider_traces
@@ -105,7 +105,7 @@ create policy original_provider_traces_worker_read on source.original_provider_t
   for select to mohen_private_worker using (true);
 drop policy if exists original_provider_traces_review_read on source.original_provider_traces;
 create policy original_provider_traces_review_read on source.original_provider_traces
-  for select to mohen_gate_authority, mohen_gate_signer_m5_machine using (true);
+  for select to mohen_gate_authority, mohen_gate_signer using (true);
 
 do $$
 begin
