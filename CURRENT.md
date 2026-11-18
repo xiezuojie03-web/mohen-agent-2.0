@@ -1,6 +1,6 @@
 # 墨痕｜当前工程事实与唯一前沿（非施工标准）
 
-> **核验日期：2026-11-18。** 本快照的代码核查基线为GitHub main提交ae2b03abda00dadd0293dc3cce335f086b0dd387；本轮AI必读文档同步提交为900a6e0cf9921e1193fea274c40d0995cf53ebf9。数据库事实来自2026-11-18对mohen-cloud的只读查询。文档提交不改变本次数据库运行事实。施工标准与顺序只以tasks/implementation/MAB/PLAN.md为准；逐批证据以tasks/implementation/MAB/progress.md为准。
+> **核验日期：2026-11-18。** 本快照当前代码基线为GitHub main提交e5d1bff0b358417680ebfba0435b3fa7539593dc；本轮修复提交包括09cc1cd14e86a8bda9b49660d28ffa71ec63384、b76fd96f5138c46550c8c83e000faed1d4204aef、86ebb7685926931c4e98a27ed64d8ea37c7990c7、c95e71ef2e8ebc3dff50d12cf40b12ad357132f26、e5d1bff0b358417680ebfba0435b3fa7539593dc。数据库事实来自2026-11-18对mohen-cloud的定向验证。施工标准与顺序只以tasks/implementation/MAB/PLAN.md为准；逐批证据以tasks/implementation/MAB/progress.md为准。
 
 ## 1. 唯一业务目标
 
@@ -18,10 +18,11 @@
 
 ### 2.2 正式知识读取与权限
 
-- 数据库函数studio.search_qualified_project_layers存在；本轮权限核验显示受限应用角色mohen_app_runtime有EXECUTE，anon、authenticated、service_role无EXECUTE。此结果证明窄读函数授权边界，不证明Studio真实同Project读取成功。
-- 当前有效知识资格0、启用Gate Policy 0、Active Reviewer Binding 0、Studio Delegation 0、Execution Receipt 0。production_runs共20条：14 PASS、5 RUNNING、1 FAILED。5条RUNNING均无finished_at，启动于2026-10-17（2条）和2026-10-29（3条）；2条current_stage=D00、3条current_stage为空，scope均为空对象。它们是未对账的旧RUNNING记录，不能据状态断言Worker仍在执行，也不能当作已结束历史；启动新Runner前必须逐条核对宿主、lease、research_events和阶段Receipt。
-- 当前正式知识读取错误仍被研究主流程归并为FORMAL_G0_G4_READ_NOT_AUTHORIZED_OR_UNAVAILABLE；底层具体异常尚未通过安全诊断确证。不得重做已安装窄读迁移，不得把错误文案当作根因。
-
+- 数据库函数studio.search_qualified_project_layers存在；mohen_app_runtime有受限EXECUTE，anon、authenticated、service_role无EXECUTE。该边界未放宽。
+- 零费用安全诊断已定位该函数此前的两个底层故障：一是RETURNS TABLE输出列layer与ORDER BY case layer发生PL/pgSQL变量歧义；二是SECURITY DEFINER owner为postgres时，调用的control.qualification_allows已撤销PUBLIC EXECUTE，导致owner缺少嵌套函数EXECUTE。新增迁移20261118120000修复排序并仅补postgres对嵌套函数的EXECUTE。
+- 正确Owner/Project签名事务现在可进入函数并返回受控空结果0条；错Project拒绝为M5_FORMAL_READ_OWNER_REQUIRED；错用途拒绝为M5_FORMAL_READ_CONTEXT_INVALID。数据库层不再是此前的FORMAL_G0_G4_READ_NOT_AUTHORIZED_OR_UNAVAILABLE根因；下一步只需从真实Studio应用路径回读，确认应用层正确接收该结果。
+- 当前有效知识资格0、启用Gate Policy 0、Active Reviewer Binding 0、Studio Delegation 0、Execution Receipt 0。Project私有原件/Source/Version/Raw仍为0。
+- 旧Production Run已完成对账：原5条RUNNING均无cloud_dispatch认领；其中2条有D00 production_failed回执并终结FAILED，另3条无执行事件并终结HOLD。当前不可复用这些run_id，也不得把它们视为仍在执行。
 ### 2.3 知识路由与D00来源获取
 
 - retrieve-formal.ts第一阶段只按Owner/Project读取；跨Project共享范围为NOT_VERIFIED。因此sharedL0L4CoverageComplete=false是当前安全边界，不能为触发D00而强改为true。
@@ -37,24 +38,24 @@
 
 ### 2.5 当前CI
 
-当前main基线ae2b03a对应以下工作流均失败：
-- [主CI 44222580550](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44222580550)
-- [隔离PG 44222580551](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44222580551)
-- [隔离HTTP 44222580507](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44222580507)
-
-本轮取得的Job元数据只有失败结论，没有日志足以确证根因。必须读取本次精确失败日志；不得直接沿用旧批次的Runner账单上限解释。文档同步提交900a6e0对应CI run [44234626709](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44234626709)的build job也失败，当前未取得失败日志，不能判断是文档提交触发的代码问题还是runner/账单问题。
+- 主CI连续出现零步骤、极短时失败：09cc1cd对应run 44243279147，b76fd96对应run 44243282116，均约4秒结束；build job没有可读取steps/logs。44243282116已执行失败job重跑，目前处于queued。
+- 因同形态跨不同提交持续出现，当前没有证据把它归因于本轮SQL/测试代码；也没有日志足以确认是账单、Runner分配或工作流层故障。CI继续标HOLD，不把红灯解释成业务失败，也不等待CI才推进零费用业务诊断。
 
 ## 3. 当前唯一工程前沿
 
-按PLAN §3.5 D第7项执行，顺序如下：
+按PLAN §3.5 D执行：
 
-1. **先做零费用正式知识读取根因诊断**：同一Project/Owner签名事务，不调用模型；把底层异常安全分类并定位，验证正确身份/用途能得到受控结果，错误Owner/Project/用途/匿名必须拒绝。
-2. **保护旧任务已结算成本**：核查是否有可验证的结构化模型输出；当前Receipt只有invocation_id，checkpoint没有settledUnderstanding。没有可靠输出就不得重放付费步骤；保留原任务与费用记录，明确不可自动续跑边界。
-3. **对账5条遗留RUNNING记录**：逐条核对2026-10-17/10-29启动、无finished_at的5条Run，查实际Worker/Executor、lease、research_events和阶段Receipt；未核实前不启动新的Runner，不直接改状态。
-4. **修复项目范围来源缺口路由**：保持跨Project共享NOT_VERIFIED；项目授权检索完整、未降级、未截断且无合格来源时，允许进入项目范围D00候选发现。
-5. **补外部候选到合法原件获取的交接**：优先复用既有适配器；按来源版本、逐动作权利、合法获取、私有存储、SHA、Source/Version/Raw登记、Owner/Project和幂等要求形成D00所需original_id。没有合法字节或许可时只保留候选并HOLD。
-6. **再处理真实云端生产依赖**：遗留Run完成对账且Policy、Reviewer、Cloud Executor和机器身份具备后，同一Project/Root验证D00/G0→D01/G1→D02；未运行部分如实标NOT_RUN/HOLD。
-7. **同一作品继续创作**：D02真实接收后，沿既有知识资产、H1/H2/H3、Admin、发布和WATCH主线推进，不新建样板Project、不重建Runner/Registry/Gate。
+1. **真实应用回读正式知识函数修复**：同一朱家角Project/Owner任务重新进入既有retrieve-local；不重放已结算模型。
+2. **保护旧任务成本**：Receipt仍只有invocation_id，没有可恢复结构化模型输出；维持旧任务HOLD边界。
+3. **旧Production Run对账已完成**：5条旧RUNNING全部收敛为2 FAILED + 3 HOLD，不再复用。
+4. **当前下一处业务施工是项目范围来源缺口路由**：在不放宽跨Project共享的情况下，让“项目内完整授权检索无合格来源”进入稳定的PROJECT_SOURCE_GAP_CONFIRMED分支。
+5. **随后补外部候选→合法原件获取/登记→D00输入的相邻交接**；仍不新建Runner/Registry/Gate。
+6. **独立Policy/Reviewer/Cloud Executor/机器身份具备后**，再做同一Root D00/G0→D01/G1→D02真实运行。
+7. **CI**：等待44243282116重跑结果；在无日志前不作根因结论。
+
+## 4. M5整体状态
+
+**0/8 OVERALL_HOLD。** 这表示同一真实作品的八维整体验收尚未完成，不是代码完成率。数据库层正式知识读取函数的两个确定性故障已经修复；当前最前业务阻断转为“真实应用回读确认 → 项目范围来源缺口路由”。其后仍有外部来源获取交接、独立云端运行条件及同一作品后续D/L/G、作品、Admin/WATCH链路。
 
 ## 4. M5整体状态
 
