@@ -16,7 +16,17 @@ do $$ begin
   if exists(select from pg_roles where rolname = 'mohen_private_worker' and (rolsuper or rolbypassrls)) then
     raise exception 'UNSAFE_PRIVATE_WORKER_ROLE';
   end if;
-end $$;
+end $;
+
+-- In the M5 development project the dedicated login may already exist because
+-- machine-login activation was applied before this previously-missing role migration.
+-- Keep privileges on the NOLOGIN group; the login receives SET-only membership.
+do $worker_membership$
+begin
+  if to_regrole('mohen_m5_worker_login') is not null then
+    execute 'grant mohen_private_worker to mohen_m5_worker_login with inherit false, set true';
+  end if;
+end $worker_membership$;
 
 grant usage on schema control to mohen_private_worker;
 
@@ -61,5 +71,14 @@ grant execute on function control.qualification_allows(uuid,text,text,text,text,
 revoke execute on function control.sign_gate_candidate(uuid,uuid,text,text,timestamptz,jsonb,uuid)
   from mohen_private_worker;
 revoke execute on function control.revoke_gate_qualification(uuid,uuid,text) from mohen_private_worker;
+
+do $verify_worker_membership$
+begin
+  if to_regrole('mohen_m5_worker_login') is not null and
+    (not pg_has_role('mohen_m5_worker_login','mohen_private_worker','MEMBER')
+     or not pg_has_role('mohen_m5_worker_login','mohen_private_worker','SET')) then
+    raise exception 'M5_PRIVATE_WORKER_ROLE_MEMBERSHIP_INVALID';
+  end if;
+end $verify_worker_membership$;
 
 commit;
