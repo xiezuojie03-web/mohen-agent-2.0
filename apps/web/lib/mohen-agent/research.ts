@@ -330,6 +330,7 @@ export async function runResearch(
   if (knowledgeRoute && !knowledgeRoute.may_reuse_l5) {
     const routeGap: Record<string,string> = {
       QUALIFICATION_REQUIRED:"项目内已有来源或研究候选，但尚未证明本次用途所需独立资格；先定向核验，不重新获取。",
+      PROJECT_SOURCE_GAP_CONFIRMED:"当前Project的Owner/Project授权正式知识检索已完整、未截断且没有合格来源；仅确认项目范围缺口，可以启动受控D00来源发现，不代表跨Project共享库已完整检索。",
       SOURCE_GAP_UNCONFIRMED:"当前项目和G5读模型未查到可直接引用的知识，但合法共享L0—L4尚未完成检索，不能判定全库缺来源。",
       HOLD:"知识检索范围或当前资格未能可靠核对，暂停来源调度。",
       SOURCE_GAP_CONFIRMED:"已完成授权范围检索且确认缺少来源，可以启动受控D00来源发现。",
