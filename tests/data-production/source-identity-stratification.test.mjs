@@ -41,10 +41,11 @@ test('Y05 分层：已读层逐层带证据，没读的收藏如实 unknown', ()
   assert.equal(layerOf(result, 'work').value.title, '松江府志7');
   assert.equal(layerOf(result, 'version').value.source_version_id, registration().source_version_id);
   assert.equal(layerOf(result, 'version').value.artifact_revision, REV);
-  assert.equal(layerOf(result, 'holding').value.institution, '国立公文书馆（NAJ)');
+  assert.equal(layerOf(result, 'holding').state, 'unknown');
+  assert.deepEqual(layerOf(result, 'holding').evidence, ['not_in_registration:holding_institution']);
   assert.equal(layerOf(result, 'digital_asset').value.sha256, SHA);
   assert.equal(layerOf(result, 'digital_asset').value.storage_state, 'STORED_VERIFIED');
-  assert.deepEqual(result.dependencies.unresolved, ['collection']);
+  assert.deepEqual(result.dependencies.unresolved, ['collection', 'holding']);
   assert.deepEqual(result.dependencies.digital_asset_depends_on, ['version']);
   assert.deepEqual(result.dependencies.version_depends_on, ['work']);
   assert.deepEqual(result.dependencies.work_identified_by, ['catalog_record']);
@@ -56,7 +57,21 @@ test('Y05 分层：登记没给馆方目录号时目录记录层如实 unknown',
   assert.equal(layerOf(result, 'catalog_record').state, 'unknown');
   assert.deepEqual(layerOf(result, 'catalog_record').evidence,
     ['not_in_registration:original_locator.catalog_no']);
-  assert.deepEqual(result.dependencies.unresolved.sort(), ['catalog_record', 'collection']);
+  assert.equal(layerOf(result, 'holding').state, 'unknown');
+  assert.deepEqual(result.dependencies.unresolved.sort(), ['catalog_record', 'collection', 'holding']);
+});
+
+test('Y05 藏所：必须有显式馆藏机构和目录定位，不能用提供方代替', () => {
+  const known = deriveSourceIdentityStratification({
+    registration: registration({ holding_institution: '国立公文书馆' }), record: record() });
+  assert.equal(layerOf(known, 'holding').state, 'known');
+  assert.equal(layerOf(known, 'holding').value.institution, '国立公文书馆');
+  assert.deepEqual(known.dependencies.unresolved, ['collection']);
+
+  const missingLocator = deriveSourceIdentityStratification({
+    registration: registration({ holding_institution: '国立公文书馆', original_locator: {} }), record: record() });
+  assert.equal(layerOf(missingLocator, 'holding').state, 'unknown');
+  assert.deepEqual(missingLocator.dependencies.unresolved.sort(), ['catalog_record', 'collection', 'holding']);
 });
 
 test('Y05 分层：版本没有不可变修订就不是身份，失败关闭', () => {
