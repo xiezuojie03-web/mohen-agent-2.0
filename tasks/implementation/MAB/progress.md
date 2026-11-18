@@ -4827,3 +4827,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 - 基线 `c0d7dfb5ca8c5a3e83b8d63aceed9c7400540613`。在新建、只绑定 loopback 且带隔离标记的 PG17 容器重跑 `node scripts/test-k3-db.mjs`，分别采集 Node 与 Docker 清理退出状态。实测 `NODE_EXIT=0`、`DOCKER_STOP_EXIT=0`，外层退出 0，带 `K3_DB_TEST_PASS`、`MAB_RESEARCH_RESUME_PG_PASS` 等回执。上次外层退出 1 未复现，历史原因未证实。官方 Storage 仍未配置，本轮保持 HOLD。
 - [托管 CI 44211866148](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44211866148) 原始注释仍为账单或支出上限拦截。隔离结果只覆盖本地回归。Preview 注入、真实云端 TLS、同作品签发及 M5 整链状态仍见 CURRENT。
+
+## 2026-11-18｜M5-ISOLATED-HTTP-06｜Studio 到 WATCH 隔离浏览器回归
+
+- 基线 `fe6a198ce60ea1f95b1f89f725b8eeb75074f95f`。新建带标记的一次性 PostgreSQL 17.12 和 Chromium，执行 `node scripts/test-mab-http.mjs`。首轮容器初始化因自定义 socket 覆盖默认 socket 中断，保留两条 socket 后重跑。Next 构建与 24 项浏览器用例通过，0 失败，1 项官方私有 Storage 字节回读依现有配置跳过。取得 `MAB_HTTP_BROWSER_PASS` 和 `MAB_HTTP_SYNTHETIC_DATABASE_CLEANED`，HTTP 与 Docker 清理退出均为 0。
+- 回执覆盖 ST-01 持久项目 Brief、幂等及不自动触发 ST-04，ST-02 当前候选与错 Owner 拒绝，作品修订并发与精确性，Admin 资产回链，以及 WATCH 精确资格和上游撤权拒绝。只用合成数据，无付费 Provider 或正式发布。
+- [托管 CI 44213696516](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44213696516) 原始注释仍为账单或支出上限拦截。指定 Preview readiness 匿名仍返回 302，应用内 Operator 回执、真实 TLS 与同作品云端节点仍待验证。
