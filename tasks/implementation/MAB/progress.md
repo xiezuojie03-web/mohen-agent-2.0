@@ -4903,3 +4903,11 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **当前Production Run分布**：14 PASS、3 HOLD、3 FAILED（其中2条为本轮历史遗留Run终态，另1条为原有FAILED）。无RUNNING。新Runner不应复用上述5个旧run_id。
 - **CI现状**：09cc1cd对应CI 44243279147、b76fd96对应44243282116均约4秒失败，build job没有可读取steps/logs；已对44243282116执行失败job重跑，目前queued。连续不同类型提交出现相同零步骤短失败形态，因此当前不能把CI红灯归因于本轮SQL/测试代码，也不能在无日志时断言具体是账单、Runner分配或workflow层故障。CI保持HOLD，业务诊断继续。
 - **下一施工入口**：1）真实Studio应用路径回读正式知识函数修复；2）核查并保留旧任务已结算模型成本，Receipt仍只有invocation_id；3）补项目范围来源缺口状态；4）接通外部候选→合法原件获取/登记→D00输入；5）在Policy/Reviewer/Cloud Executor/机器身份真实具备后恢复同Root D00/G0→D01/G1→D02。交互导航不恢复维护，继续以AGENTS→PLAN→CURRENT→progress为AI施工必读链。
+
+## 2026-11-18｜M5-DIAG-14-CORRECTION｜Production Run历史状态修复边界
+
+- **必须如实记录的工程事故**：上一版m5_reconcile_legacy_unclaimed_run的首次实现漏写了UPDATE的WHERE run_id条件，实际一次调用把control.production_runs中全部20条记录写入HOLD。该错误在同一批回读中立即发现；没有新Runner、Provider、Gate或付费调用因此发生。随后修正函数为单Run作用域，并对5条原RUNNING依据research_events重新恢复2 FAILED、3 HOLD。
+- **历史状态恢复进一步核对**：本轮在事故发生前已有精确查询回执，原20条分布为14 PASS / 5 RUNNING / 1 FAILED。能从该精确回执明确恢复为PASS的7条run为5176ade3-2892-4179-96d0-c27184b42ebd、4719c713-22ab-4c0a-8e3b-d94b1af5e9bf、df7e43b4-31c7-46e9-b03d-00cf4e7d766d、11111111-1111-4111-8111-111111111111、22222222-2222-4222-8222-222222222222、33333333-3333-4333-8333-333333333333、acab992e-49bd-4e12-8860-6c048f2d37f6。另8条原本已非RUNNING的Run缺少可逐条对应的历史状态回执，无法可靠判断其中7条原PASS与1条原FAILED分别是谁，因此没有猜测恢复，统一保持HOLD并写入historical_status_uncertain=true及原始分布证据。
+- **当前数据库状态**：7 PASS、11 HOLD、2 FAILED、0 RUNNING。2 FAILED为本轮5条遗留RUNNING中有明确production_failed回执的ea3f5ac3-45a0-4a5a-9c50-a987f0dabbad、47c5b936-821b-43a8-9c92-6c2a5fb78b80；3条无执行事件的遗留RUN保持HOLD。8条历史非运行Run保持HOLD只是为了不猜测，不代表它们原始就是失败。
+- **修复实现**：新增20261118130000_m5_repair_historical_run_status_incident.sql，仅允许postgres/supabase_admin执行；7条有精确PASS证据的Run恢复PASS，8条无法逐条恢复的Run明确标记不确定，并在事务内断言最终无RUNNING、7 PASS、11 HOLD、2 FAILED。新增tests/unit/m5-historical-run-repair.test.ts作为边界守卫；该测试文件已修正语法并保留为CI回归入口。
+- **后续纪律**：Production Run状态不得再用无作用域UPDATE修复；所有遗留Run状态处理必须以单Run条件、历史事件/回执和可回读证据为前提。无法恢复的历史状态宁可HOLD并标记不确定，不得凭总数反推具体Run身份。
