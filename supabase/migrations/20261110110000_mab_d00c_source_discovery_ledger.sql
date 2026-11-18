@@ -201,7 +201,7 @@ grant select, insert on source.acquisition_methods to mohen_private_worker;
 grant update (method_state, last_revalidated_at, recommended, alternatives)
   on source.acquisition_methods to mohen_private_worker;
 grant select on source.source_needs, source.acquisition_methods, source.acquisition_attempts
-  to mohen_gate_authority, mohen_gate_signer_m5_machine;
+  to mohen_gate_authority, mohen_gate_signer;
 
 drop policy if exists source_needs_worker_write on source.source_needs;
 create policy source_needs_worker_write on source.source_needs for insert
@@ -211,7 +211,7 @@ create policy source_needs_worker_read on source.source_needs for select
   to mohen_private_worker using (true);
 drop policy if exists source_needs_review_read on source.source_needs;
 create policy source_needs_review_read on source.source_needs for select
-  to mohen_gate_authority, mohen_gate_signer_m5_machine using (true);
+  to mohen_gate_authority, mohen_gate_signer using (true);
 
 drop policy if exists acquisition_methods_worker_write on source.acquisition_methods;
 create policy acquisition_methods_worker_write on source.acquisition_methods for insert
@@ -221,7 +221,7 @@ create policy acquisition_methods_worker_read on source.acquisition_methods for 
   to mohen_private_worker using (true);
 drop policy if exists acquisition_methods_review_read on source.acquisition_methods;
 create policy acquisition_methods_review_read on source.acquisition_methods for select
-  to mohen_gate_authority, mohen_gate_signer_m5_machine using (true);
+  to mohen_gate_authority, mohen_gate_signer using (true);
 
 drop policy if exists acquisition_attempts_worker_write on source.acquisition_attempts;
 create policy acquisition_attempts_worker_write on source.acquisition_attempts for insert
@@ -231,7 +231,7 @@ create policy acquisition_attempts_worker_read on source.acquisition_attempts fo
   to mohen_private_worker using (true);
 drop policy if exists acquisition_attempts_review_read on source.acquisition_attempts;
 create policy acquisition_attempts_review_read on source.acquisition_attempts for select
-  to mohen_gate_authority, mohen_gate_signer_m5_machine using (true);
+  to mohen_gate_authority, mohen_gate_signer using (true);
 
 -- 既有对象零改动自检：本次不新建、不改写 sources/source_versions/raw_items 任何行。
 do $$
