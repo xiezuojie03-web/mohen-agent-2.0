@@ -48,8 +48,8 @@
 1. **真实应用回读正式知识函数修复**：同一朱家角Project/Owner任务重新进入既有retrieve-local；不重放已结算模型。
 2. **保护旧任务成本**：Receipt仍只有invocation_id，没有可恢复结构化模型输出；维持旧任务HOLD边界。
 3. **旧Production Run对账已完成**：5条旧RUNNING全部收敛为2 FAILED + 3 HOLD；另有8条历史非运行Run因诊断状态覆盖无法逐条恢复原PASS/FAILED身份，已保持HOLD并显式标记；7条精确历史PASS已恢复。当前无RUNNING。
-4. **当前下一处业务施工是项目范围来源缺口路由**：在不放宽跨Project共享的情况下，让“项目内完整授权检索无合格来源”进入稳定的PROJECT_SOURCE_GAP_CONFIRMED分支。
-5. **随后补外部候选→合法原件获取/登记→D00输入的相邻交接**；仍不新建Runner/Registry/Gate。
+4. **项目范围来源缺口路由已补齐**：在不放宽跨Project共享的情况下，完整项目授权检索无合格来源现在返回PROJECT_SOURCE_GAP_CONFIRMED并触发既有D00来源候选发现；sharedL0L4Coverage仍NOT_VERIFIED。
+5. **当前下一处业务施工是外部候选→合法原件获取/权利核验→私有字节→SHA→Source/Version/Raw登记→D00 original_id的相邻交接**；仍不新建Runner/Registry/Gate。
 6. **独立Policy/Reviewer/Cloud Executor/机器身份具备后**，再做同一Root D00/G0→D01/G1→D02真实运行。
 7. **CI**：等待44243282116重跑结果；在无日志前不作根因结论。
 
