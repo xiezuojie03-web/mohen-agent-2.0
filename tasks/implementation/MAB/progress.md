@@ -4884,3 +4884,11 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **Owner文档裁决**：将上述诊断与唯一修复顺序写入PLAN §3.5 D第7项；确立AGENTS→PLAN→CURRENT→progress的AI必读顺序；CURRENT只保存当前事实，progress追加证据，handoff只负责平台/环境交接。交互导航JSON/MD/HTML停用，不再维护、不再作为必读或施工依据。
 - **下一步**：按PLAN §3.5 D第7项先零费用定位正式知识读取底层失败，再处理旧checkpoint恢复边界、项目范围来源缺口路由、外部候选到合法原件获取桥，最后在真实Policy/Reviewer/Cloud Executor条件具备后验证同一Project/Root的D00/G0→D01/G1→D02。
 
+
+
+## 2026-11-18｜M5-DIAG-13-CORRECTION｜Production Run状态计数补正
+
+- 本轮进一步查询control.production_runs.status，确认20条记录的实际分布为14 PASS、5 RUNNING、1 FAILED。此前M5-DIAG-13中“20条均为累计历史记录”的表述不准确，现以本补正为准。
+- 5条RUNNING的run_id分别为：8a32171c-dd37-4b35-8674-7eae4691dbdb、ff11231a-424f-4277-9f90-173a70ad6dac、ea3f5ac3-45a0-4a5a-9c50-a987f0dabbad、47c5b936-821b-43a8-9c92-6c2a5fb78b80、382c364e-d29e-46be-9412-8bd8f4d034c0。启动时间为2026-10-17两条、2026-10-29三条，均无finished_at；其中两条current_stage=D00，其余三条为空，scope均为空对象。
+- 这些记录属于超过20天未收敛的RUNNING状态，可能是遗留状态或执行进程异常；当前查询不能证明对应宿主仍活跃。禁止直接SQL改成PASS/FAILED，也禁止无核对地重复启动。下一次Runner生产前先核对Worker/Executor宿主、lease、research_events、阶段Receipt和日志，再使用既有恢复/终态路径处理。
+- 本轮文档同步提交900a6e0cf9921e1193fea274c40d0995cf53ebf9后的CI run 44234626709（build）失败；当前未取得日志，根因未确定。

@@ -25,9 +25,10 @@ tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json及同目录MD/HTML已由O
 **下一动作顺序：**
 1. 零费用定位正式项目知识读取失败的底层原因，保留Owner/Project/用途/当前Gate权限边界。
 2. 核实旧任务是否存在可验证的模型输出；当前证据显示没有。不可恢复时保留原任务及成本，不自动付费重试。
-3. 修复项目范围来源缺口路由；跨Project共享仍为NOT_VERIFIED，不能把它强改为完整。
-4. 接通外部候选与合法原件获取、私有存储、SHA及Source/Version/Raw登记，再进入现有D00 Worker。
-5. 真实Policy/Reviewer/Cloud Executor条件具备后，同一Project/Root验证D00/G0→D01/G1→D02。
+3. 对账开发库5条旧RUNNING production_runs（2026-10-17/10-29启动、无finished_at）；核对宿主、lease、事件和Receipt，未完成前不重复启动Runner。
+4. 修复项目范围来源缺口路由；跨Project共享仍为NOT_VERIFIED，不能把它强改为完整。
+5. 接通外部候选与合法原件获取、私有存储、SHA及Source/Version/Raw登记，再进入现有D00 Worker。
+6. 真实Policy/Reviewer/Cloud Executor条件具备且旧Run完成对账后，同一Project/Root验证D00/G0→D01/G1→D02。
 
 所有具体根因、数据库数量、CI状态和当前证据以CURRENT为准；任务顺序与准出以PLAN为准。
 
