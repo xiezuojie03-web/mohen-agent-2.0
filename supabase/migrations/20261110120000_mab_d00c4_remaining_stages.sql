@@ -190,7 +190,7 @@ grant select, insert on source.resource_catalog, source.acquisition_coverages,
   source.candidate_verifications, source.priority_assessments to mohen_private_worker;
 grant select on source.resource_catalog, source.acquisition_coverages,
   source.candidate_verifications, source.priority_assessments
-  to mohen_gate_authority, mohen_gate_signer_m5_machine;
+  to mohen_gate_authority, mohen_gate_signer;
 
 do $$
 declare t text;
@@ -201,7 +201,7 @@ begin
     execute format('drop policy if exists %I_worker_read on source.%I', t, t);
     execute format('create policy %I_worker_read on source.%I for select to mohen_private_worker using (true)', t, t);
     execute format('drop policy if exists %I_review_read on source.%I', t, t);
-    execute format('create policy %I_review_read on source.%I for select to mohen_gate_authority, mohen_gate_signer_m5_machine using (true)', t, t);
+    execute format('create policy %I_review_read on source.%I for select to mohen_gate_authority, mohen_gate_signer using (true)', t, t);
   end loop;
 end $$;
 
