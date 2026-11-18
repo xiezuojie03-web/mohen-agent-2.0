@@ -4944,3 +4944,21 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **Node运行时一致性**：核实Vercel项目Node为24.x，GitHub CI原为22。提交`758270d10cc66465b5c25ac1971b02b2e2923b0b`将CI Node对齐为24，以与实际Preview构建环境一致。最新CI run `44298746528`仍在步骤执行前失败；Job无runner/steps/logs，故无法验证该调整是否进入Typecheck/Tests。
 - **部署安全边界**：仓库`vercel.json`明确`git.deploymentEnabled=false`；Preview SSO保护开启。当前所有人工部署均target=null，Production未改动。Vercel Node24与CI Node24现已对齐；CI Runner启动故障仍独立HOLD。
 - **当前判断**：来源身份层的过度推断已修复；路由与Worker角色代码仍待单测执行；D00数据库结构/角色已安装；真正的来源获取/Source-Version-Raw登记生产者仍未实现。下一步继续做统一Studio原件接入和登记桥，不再重复安装本批迁移。
+
+
+## 2026-11-18｜M5-QUALITY-16-RECHECK｜中断点复核、Y05证据路径收口与当前业务阻断确认
+
+- **当前main基线**：`ffad0e400f7094d43ca9eea0bca9489f479c2adb`。本次从已提交成果继续，没有重做全仓盘点、D00设计或历史PASS。
+- **Y05最后一处一致性缺陷已修复**：此前代码已把馆藏机构收紧为`registration.original_locator.holding_institution`，但测试fixture仍放在顶层`registration.holding_institution`，导致代码与测试契约不一致。提交`a1455f4d0b21e8d41f704ac64ae7ea3466ec25aa`统一证据路径；提交`ffad0e400f7094d43ca9eea0bca9489f479c2adb`把正例改为`original_locator.holding_institution`、增加“仅顶层字段不得识别为藏所”的反例，并修正unknown证据字段路径。该代码已进入main，但单测仍NOT_RUN（CI无法启动步骤），不可标PASS。
+- **Preview已完成**：精确main提交`ffad0e4`的Vercel Preview部署`dpl_9BzzYYqMCxuvLej2hzwBWDb9fSvC`回读`READY`，target=null，SSO Preview保护保持开启。构建日志确认依赖安装、Next build、Serverless functions生成及Deploying outputs完成。Production未修改。
+- **CI仍未执行测试**：最新run `44302569975`（test commit）与前一run `44302564923`（code commit）均约3–4秒失败；Job记录只有completed/failure，`steps=null`，没有runner_id/runner_name和可读logs。Node 24已与Vercel项目对齐，但该故障发生在任何CI步骤前；现有证据不足以断言是代码失败或具体账单原因。Y05、Worker与路由新增测试全部保持NOT_RUN。
+- **当前真实Studio任务的最前阻断**：只读回读Project `e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5`仍ACTIVE；朱家角任务`53ad1a29-22e5-43c2-816d-b02b6e85abbd`仍`hold`、`work_id=null`，`budgetSpent=1`，缺项为`FORMAL_G0_G4_READ_NOT_AUTHORIZED_OR_UNAVAILABLE`。research_events确认先前`REAL_PROVIDER_UNAVAILABLE / AGENT_QUALIFICATION_CONTEXT_REQUIRED`已解除并续跑；一次`llm-understand`已结算，随后正式知识读取前置再次HOLD。不得重复调用已结算模型步骤。必须先在同一Creator签名会话内验证应用层正式L0—L5读取，不得仅凭数据库函数修复宣称通过。
+- **D00来源登记断点已从代码边界确证**：
+  1. `POST /api/studio/attachments`只接收项目、文件、幂等键和`rights_declared=true`，调用私有原件工作流写`studio.private_originals`与Asset Revision，返回`rights_status=declared_unverified`；没有来源身份/逐动作权利/馆藏定位输入，也不写Source/Version/Raw。
+  2. `GET /api/studio/attachments?project_id=...`只调用`createPrivateSourceRegistrationRepository.lookup`检查既有绑定；该Repository只读。数据库`studio.private_source_registration(uuid)`也是只读投影，不是登记写入器。
+  3. `source-discovery-repository.mjs`明文限定只写D00来源需求、方法、获取尝试、目录、核查、覆盖、优先级和原机构追溯账；不写`source.sources/source_versions/raw_items`。
+  4. Y05/Y07/Y08模块负责分层、获取账校验、回执派生，均不写库；`deriveAttestedPrivateReadbackAcquisition`明确只证明Owner私有存储读回，不证明外部来源取得或权利。
+  5. 因此缺的是可信的**来源登记生产者/交接服务**：在保留Owner上传与外部获取不同证据语义的前提下，统一把合格输入绑定成Source→Version→Raw，并关联私有原件、SHA、字节数、Asset Revision、权利动作和取得账；未核权利必须保持HOLD。
+- **开发数据库回读**：当前朱家角Project的`studio.private_originals`为0；D00八张账表仍全部0。全局历史`source.sources/source_versions/raw_items`为39/39/98，但不能据此认定当前Project已有可用来源。Worker角色仍为NOLOGIN、非superuser、无BYPASSRLS；M5 Worker login为MEMBER且可SET；Worker可写D00账表/Producer候选并读Gate audit，不可签发或撤销Gate。真实Worker TLS连接尚未验证。
+- **当前顺序裁决**：第一，先解决同一Studio任务的应用层正式知识读取HOLD；第二，正式读取能给出完整、未降级的Project范围结果后，才按缺口触发D00来源发现；第三，补可信来源登记生产者，把Owner上传与外部候选/合法取得汇入同一Source/Version/Raw输出合同；第四，并行完成Worker TLS和CI执行验证；第五，使用同一Project/Root真实跑D00/G0→D01/G1→D02。不得把Y05继续打磨、数据库表安装或Preview READY当成D00实跑。
+- **本轮未做**：没有创建私有原件或来源数据；没有调用模型/Provider；没有重跑历史任务；没有创建Reviewer或激活Gate；没有Production部署。
