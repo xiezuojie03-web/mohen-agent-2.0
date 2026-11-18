@@ -95,7 +95,9 @@ export function planStudioKnowledgeRoute({
   return {
     schema:'mohen.studio-knowledge-routing.v1',
     disposition,next_action:nextAction,reason,coverage:summary,
-    should_discover_sources:disposition==='SOURCE_GAP_CONFIRMED',
+    // A complete Owner/Project scan may trigger discovery without claiming shared/global coverage.
+    should_discover_sources:disposition==='SOURCE_GAP_CONFIRMED'||
+      disposition==='PROJECT_SOURCE_GAP_CONFIRMED',
     may_reuse_l5:disposition==='REUSE_QUALIFIED',
     may_reuse_formal:disposition==='REUSE_FORMAL_QUALIFIED'||disposition==='QUALIFIED_INPUT_AVAILABLE',
     may_use_project_candidates_as_facts:false,
