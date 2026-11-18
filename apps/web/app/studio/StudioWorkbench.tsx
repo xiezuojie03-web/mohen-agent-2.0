@@ -384,6 +384,43 @@ export default function StudioWorkbench() {
     }
   }
 
+  async function continueResearch() {
+    if (busy || currentResearch?.status !== "hold") return;
+    const {taskId} = currentResearch;
+    const path = `/api/studio/research-tasks/${encodeURIComponent(taskId)}`;
+    setBusy(true);
+    setResumeNotice(null);
+    try {
+      const response = await fetch(`${path}/resume`, {method:"POST"});
+      if (!response.ok) {
+        const result = await response.json() as {reason?:string};
+        setResumeNotice(result.reason === "research_prerequisites"
+          ? "研究仍在暂停，模型或知识读取前提尚未就绪。"
+          : "研究暂时无法继续，请查看已保存任务的状态。");
+        return;
+      }
+      const status = await fetch(`${path}/status`, {cache:"no-store"});
+      const {task} = await status.json() as {task?:{task_id?:string;status?:string;checkpoint?:unknown}};
+      const raw = task?.checkpoint;
+      const checkpoint = (typeof raw === "string" ? JSON.parse(raw) : raw) as
+        {decision?:AgentDecision;materialRead?:{state?:string}} | undefined;
+      const decision = checkpoint?.decision;
+      if (!status.ok || task?.task_id !== taskId || task.status !== "done" ||
+          checkpoint?.materialRead?.state === "HOLD" || !decision?.mohenLine) {
+        setResumeNotice("续跑已提交，请通过资料台重新打开本项目，核对最新状态。");
+        return;
+      }
+      setCurrentResearch({taskId,status:"done"});
+      setMessages(messages=>[...messages,{role:"mohen",text:decision.mohenLine,taskRef:taskId,
+        materials:decision.materials,gaps:decision.gaps,clarify:decision.clarifyQuestion}]);
+      setResumeNotice("已继续原研究委托。");
+    } catch {
+      setResumeNotice("未能确认续跑结果，请通过资料台核对原任务状态。");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   // Poll only a run confirmed by the ST-04 POST. No synthetic progress or PASS.
   function pollProduction(taskId: string) {
     stopProductionPoll();
@@ -902,7 +939,11 @@ export default function StudioWorkbench() {
               <h3>正式知识生产 · D00—D05</h3>
               <p className="studio__drawer-note">研究委托与研究线索不会自动变为合格史实。申请后须按来源、独立 G0—G5 资格及项目授权逐门核验；本步不发布作品。</p>
               {currentResearch.status === "hold"
-                ? <p role="status" className="studio__drawer-note">研究委托仍处于暂停状态；请先补齐左侧列出的前提，不能启动正式生产。</p>
+                ? <>
+                    <p role="status" className="studio__drawer-note">研究委托仍处于暂停状态。前提就绪后，可继续原委托。</p>
+                    <button className="studio__ghost-btn" disabled={busy || reopening}
+                      onClick={() => void continueResearch()}>{busy ? "正在继续…" : "继续研究"}</button>
+                  </>
                 : <>
                     <label className="studio__drawer-note" htmlFor="studio-production-source">项目内已核验并绑定正式来源的原件</label>
                     <select id="studio-production-source" value={sourceChoice} onChange={e=>setSourceChoice(e.target.value)}
