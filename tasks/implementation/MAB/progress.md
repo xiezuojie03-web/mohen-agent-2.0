@@ -4814,3 +4814,11 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 精确源码的 `GET /api/admin/metrics` 先通过应用内 `isOperator`，再返回 `execution_readiness.machine_variable_presence`，响应为 private/no-store。当前执行会话没有应用内 Operator 访问。SSO 后非 Operator 拒绝和同部署四项布尔回执待实测。真实云端 TLS、实际低权身份、权限与密码不透传仍为 NOT_RUN。已通过既有 Operator 路径请求四项脱敏状态，凭据无需重填。
 - GitHub [CI 44176653194](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44176653194) 的 job `134369681451` 无 runner、零步骤。原始 annotation 确认账单或支出上限拦截，标记 BLOCKED_BEFORE_RUNNER。冻结锁安装依赖后，以 Node 24.19.0/pnpm 9.15.4 执行 `pnpm test:data-production`，357 PASS / 0 FAIL / 0 SKIP。
 - Supabase `mohen-cloud` 只读事务回查：`studio.projects=0`、有效当前资格=0、启用 Policy=0、有效 active Reviewer Binding=0。A 线同作品正向、错 Owner/用途与撤权仍 NOT_RUN。无新同任务实跑节点，M5 仍为 0/8 OVERALL_HOLD。下一步先取现有受保护 Preview 的应用内 Operator 布尔回执，再按权限边界继续云端 TLS 和同作品验证。
+
+## 2026-11-18｜M5-STUDIO-PREP-04｜同作品候选输入、权利与正反验证准备
+
+- 基线 `339007d7dbd5597506e25e7319e90bc770b9d1f4`。对应 [CI 44210656574](https://github.com/xiezuojie03-web/mohen-agent-2.0/actions/runs/44210656574) 的 build job `134487829682` 零步骤，原始 annotation 仍为账单或支出上限拦截。
+- 复用 11-13 的朱家角、七宝真实分段证据和 11-08 权利裁决。交接登记主候选问题、来源与精确历史证据、ST-01 入口、检查顺序及同项目允许、错身份/项目/用途和撤权拒绝验收用例。七宝保留为独立题材。本批未获取、复制或外发正文。
+- `mohen-cloud` 只读复核 Project、有效资格、启用 Policy、有效 Reviewer Binding 均为零；按完整哈希与字节数查得两个历史版本在私有原件及来源 raw 表皆无匹配。只证明精确版本无匹配，不能据此跳过 Studio 的统一合法检索。
+- Studio 知识路由与云端 readiness 专项 27 PASS / 0 FAIL。一次性 PG17 首轮 Node 客户端无法连接容器端口；补 loopback 映射后重跑，得到独立 Gate、精确资格与撤权、同 Root G0 接力、Producer 权限分离、研究恢复及 `K3_DB_TEST_PASS`，但外层命令退出 1，因此保留具体验证标记，整次命令不登记为全绿。官方 Storage 仍 HOLD。临时数据库容器已清理。
+- 远端 Preview 同部署 Operator 回执仍缺，真实 TLS 与同作品云端验收仍 NOT_RUN。当前没有新增同一真实任务的已验节点，M5 维持 0/8 OVERALL_HOLD。

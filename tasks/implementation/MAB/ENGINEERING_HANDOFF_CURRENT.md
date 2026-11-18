@@ -39,14 +39,20 @@
   - MOHEN_PRODUCER_DATABASE_PASSWORD
   - MOHEN_PRIVATE_WORKER_DATABASE_URL
   - MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD
-- 最新部署dpl_Gzbgit2J8N8QXhv2vGhxvkJuyuk5，SHA 954760da7d6cc33b7fd8116e8d64f07ae27edce3，READY，target=staging。项目SSO Protection元数据为deploymentType=preview，Custom Environments列表为空。匿名 HTTP 实测该 staging 部署受 SSO 保护，部署列表的 Preview 和 staging 过滤返回同组部署。**四项 Preview 变量的实际注入仍未证实。**
+- 精确 `ddc54a53` 已有 READY 的受保护 Preview `dpl_BC4Tnp6xv8HSUwmb5Hd83FJYffnV`，含 readiness 四项布尔诊断；匿名实测 302 至 SSO。复用此部署，当前缺有效应用内 Operator 会话及同部署布尔回执。详见 CURRENT 和 M5-CLOUD-PREVIEW-03。
 - Producer/Worker真实TLS、实际数据库身份、低权限正反、Secret不透传均未验证。变量存在与密码已激活不能代替连接成功。
 
 ## 4. Codex Cloud或ChatGPT均可直接执行的下一批（无需Owner参与）
 
-- 首批解决旧测试夹具与现行 TLS/Owner 会话合同不一致的问题，并修复 Executor 认领前未解析拆分密码、专用池拒绝 `sslmode=verify-full`。Node 数据生产回归通过 357/357。精确 GitHub Actions 回执及隔离 PG 见 progress。GitHub 托管 runner 的账单/支出上限恢复后重跑最新 main。
-- staging 唯一部署 URL 的登录、Admin readiness 和 Executor 入口匿名请求均实测 302 至 Vercel SSO。项目级四项配置均仅 Preview。部署实际注入仍 HOLD。在既有受保护非生产部署路径可用时，以新 main 构建并由现有合法 Operator 访问 Admin readiness 的 `machine_variable_presence`，四项均为 true 才进入真实 TLS 验证。确认保护与注入后，复用低权池及身份检查运行云端 TLS、允许/拒绝和 Secret 隔离验证。
-- 真实同作品沿 PLAN §3.5 B/C/D 继续。待业务路径产生真实 Project/Root 及独立 Reviewer/Policy，再执行权限内的正向读、独立签发、发布和撤权。无需重复机器密码或变量配置。
+- 已修复 Executor 认领前的拆分密码解析及专用池对合规 TLS 参数的处理。GitHub 托管 runner 恢复后复测精确 SHA，隔离证据单独留账。
+- 在既有受保护 Preview 由合法 Operator 访问 `GET /api/admin/metrics`；只记录 `execution_readiness.machine_variable_presence`。如四项均为 true，再运行真实云端机器 TLS、身份、权限及 Secret 隔离验证。
+
+### A 线同作品预备输入
+
+- 候选作品使用「朱家角古桥如何联系水路与集镇空间？请区分地方志可证事实与解释，并指出证据不足处」。沿现有 Studio 创建项目、提出研究问题，绑定实际 Creator、Project、Root 和幂等键。ST-01 返回 Brief、知识路由及生产空值，依实际结果决定是否需 Creator 显式申请 ST-04。
+- 候选来源为上海图书馆开放数据《上海地名志》`shnh/dmz`。11-13 隔离证据有 1259 字节和完整 SHA256，见 [原始回执](../../results/MAB/evidence/qr10-generalization-smoke/qr10-generalization-smoke-20261113.json)。当前先检索并查精确版本、用途、权限、逐动作权利与有效 Gate；命中合格结果即复用。已有原件但缺 G0 时仅补准入；仅在合法范围检索确认缺来源时进入 D00。历史对象 ID 只用于回查。当前开发库按历史完整 SHA256 和字节数回查，朱家角、七宝在私有原件表与来源 raw 表均为零匹配；这一结果仅覆盖对应字节版本。
+- 11-08 权利裁决及冻结回执覆盖该平台的数据内部查阅、机器读、留存和引用。当前版本须复核权利证据；展示、下载、改编、再分发及外部模型处理保持 HOLD，需对应明确许可。暂用来源定位及哈希作为候选输入，不复制正文。七宝仍保留作 QR-10 独立题材。
+- 真实验收次序：合法 Owner/Project/用途读取指定修订 → 错 Owner、错 Project、错用途和未签名分别拒绝 → 通过独立 Gate 撤权后同会话重查拒绝。每项附当前来源版本、用途、资格审签引用及脱敏回执。独立 Policy/Reviewer Binding 未就绪时保留真实签发和撤权为 NOT_RUN，继续可用的授权准备与隔离回归。
 
 ## 5. 停止与切换协议
 
