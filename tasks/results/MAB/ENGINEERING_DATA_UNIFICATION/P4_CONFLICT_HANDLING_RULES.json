@@ -1,7 +1,6 @@
 {
   "specialty": "MOHEN-ENGINEERING-DATA-UNIFICATION-01",
   "stage": "P4-PLAN",
-  "generated_at": "2026-11-19",
   "rules": [
     {
       "id": "RULE-1",
@@ -23,9 +22,9 @@
     },
     {
       "id": "RULE-4",
-      "conflict": "用户认证数据（1共有用户password_hash差异 + 7本地用户）",
+      "conflict": "共有用户认证字段差异与历史身份外键",
       "ruling": "AUTH_DATA_EXCLUDED——不迁移凭据，云端现有认证状态优先。",
-      "implementation": "共有用户行（Owner 270bcecf，UUID/email双一致）不迁移不动；6个本地探针用户按原UUID插入身份行：password_hash不可用占位、status=disabled、roles=[member]，历史角色仅入受控Manifest（P4-OWNER-APPROVAL-02修订）；机器Reviewer用户b0a11000按boundary合同受控补齐users行，DB角色保持未激活。"
+      "implementation": "身份落位以 P4_SCHEMA_PREREQUISITES.json PREREQ-2 为准。云端现有认证状态优先，认证凭据及会话排除。"
     },
     {
       "id": "RULE-5",

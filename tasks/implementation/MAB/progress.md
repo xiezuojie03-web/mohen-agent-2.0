@@ -1,20 +1,6 @@
-# MAB工程施工证据账（历史追加式，唯一计划：tasks/implementation/MAB/PLAN.md）
+# MAB 工程施工证据账
 
-> **本文件不是“当前状态”或施工指令。** 2026-11-02起的批次记录按写入时间保留，包含当时正确但如今过时的HEAD、测试、计划入口、工具分工与`PENDING_PUSH`；不能把任意旧段中的“当前/下一步”直接作为现行裁决。
->
-> **交互导航停用（Owner裁决，2026-11-18）**：M5_MAINLINE_NAVIGATION JSON/MD/HTML仅为历史快照，不再是AI必读、施工依据或当前状态来源，不再维护或同步。当前必读顺序与各文件职责以AGENTS.md及PLAN §0.3为准。
-
-## 使用方法与更新边界（2026-11-14统一）
-
-- **D00—D05已有成果按需定位（2026-11-16统一）**：[`历史成果索引`](../../results/MAB/M5_D00_D05_FULL_CHAIN_INHERITANCE_CURRENT.md)只查本次受影响阶段/连接及必要原始证据，不把全量继承核查或R编号完备作为每批前置。按PLAN §0/§3.5 D记录可用基础、当前差异、实际改动、下游接收、回归与HOLD/恢复；没有新证据不重开已完成工作。
-
-
-- **接续读法**：先核GitHub最新main与CI → 读`CURRENT.md`当前事实 → 读`PLAN.md`相应阶段/QR/CP → **只读本账末尾最新实际批次、相关历史ID/证据**，不要求每次从头扫描数千行。
-- **时间口径**：历史PASS/HOLD、旧HEAD及推送计划只对原批次和环境有效；后续批次可能推翻旧结果，必须以精确SHA、执行环境和真实回执区分`CODE_PRESENT / VERIFIED_ISOLATED / VERIFIED_LIVE / HOLD / NOT_RUN`。
-- **写入原则**：历史账不删除、不整段重写、不以“清爽”为由丢掉原始证据；新施工按时间**追加**批次记录，含需求ID、before/after SHA、受影响文件、正反权限测试、PG/HTTP/真实数据、费用（适用时）、HOLD/回退和下一精确动作。只有运行事实变化才改`CURRENT.md`；仅执行标准变更才改`PLAN.md`。
-- **单main边界**：现行Owner裁决以`PLAN.md` V1.7的§3.5 B八维为唯一当前M5准出依据；历史本地批量推送、旧阶段/QR/CP只保留回溯身份，不替代当前单main并发保护或必要专业门禁。
-
----
+本账按批次追加原始证据。通过 [AGENTS](../../../AGENTS.md) 读取，[PLAN](PLAN.md) 定义施工和验收标准，[CURRENT](../../../CURRENT.md) 维护现况。历史状态只对原批次、环境和精确 SHA 有效。新增批次记录依据、改动、正反验证、费用及恢复条件。
 
 ## 历史施工流水（原记录按时序保留）
 
@@ -5133,3 +5119,12 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - L0 备份与恢复演练 PASS：云端全量 pg_dump（1.16MB，SHA256=9100B293D65466C6062018FE473241E07457C61A7044D13F44995E83CB096A59）+ 业务 Schema 定向 dump；本地临时库 mohen_l0_drill 恢复成功，五关键表（production_runs 20/gate_audits 711/sources 39/raw_items 98/qualification_current 0）逐行 MD5 与云端完全一致，迁移账本 29=29，Schema 对象 90=90，VERDICT=L0_PASS。约束：Supabase 平台扩展（supabase_vault 等）不可在 vanilla PG 复原，全量备份完整恢复目标须为 Supabase 实例；backups/ 已加 .gitignore，备份文件不入 GitHub。恢复演练未连接/覆盖真实云端数据库。
 - 文档修订：P4_MIGRATION_EXECUTION_PLAN.md、P4_SCHEMA_PREREQUISITES.json、P4_BATCH_MANIFEST.json（原本已正确）、P4_VALIDATION_MATRIX.json、P4_CONFLICT_HANDLING_RULES.json、P4_BACKUP_AND_RECOVERY_PLAN.md（引用一致）、CURRENT.md、progress.md；新增 L0_RESTORE_DRILL_RESULT.json。
 - 本轮未执行 BATCH-0 及任何业务数据迁移、未调用模型、未产生费用。状态：P4_PLAN_REVISED_PER_OWNER_APPROVAL_02 / L0_VERIFIED / BUSINESS_MIGRATION_NOT_AUTHORIZED。
+
+
+<a id="studio-d00-docs-reconciliation"></a>
+
+## 2026-11-19｜创作主线与文档职责对账
+
+- 编辑基线为 GitHub main `c6337d2e306007025ddbb0481570d8942e7e43fe`。Owner 确认正式读取已用于判断资料缺口，云端统一专项已结束，当前施工转入 Studio 外部候选到 D00 原件接入。历史读取诊断原文保留于 [原 CURRENT §2.9–2.14](https://github.com/xiezuojie03-web/mohen-agent-2.0/blob/c6337d2e306007025ddbb0481570d8942e7e43fe/CURRENT.md)，旧施工方案中的现场回执保留于 [原 PLAN §3.5 D 第7项](https://github.com/xiezuojie03-web/mohen-agent-2.0/blob/c6337d2e306007025ddbb0481570d8942e7e43fe/tasks/implementation/MAB/PLAN.md#L407)。
+- 前轮 Supabase 只读回查（北京时间约 19:05）：迁移账本 41，Run 135，Gate 审计 802，资格 49，Raw 188，Project 17，私有原件元数据 90，发布修订 24。原研究任务回读为 `hold`、`work_id=null`。专项文档保留执行规则和原验收目标；本次未补造未取得的逐批回执。
+- 本次为文档对账，无业务代码、数据库、部署或模型调用变更。Studio 到 D00 的真实交接仍待验收。
