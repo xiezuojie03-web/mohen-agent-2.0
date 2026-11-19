@@ -1,0 +1,1168 @@
+{
+ "specialty": "MOHEN-ENGINEERING-DATA-UNIFICATION-01",
+ "stage": "P2",
+ "generated_at": "2026-11-19T03:36:47.193Z",
+ "tables": {
+  "control.artifact_content_columns": {
+   "pk_columns": [
+    "kind",
+    "column_name"
+   ],
+   "column_count": 3,
+   "local_rows": 234,
+   "cloud_rows": 0,
+   "classification": "LOCAL_ONLY_TABLE",
+   "local_rows_present": true
+  },
+  "control.gate_audits": {
+   "pk_columns": [
+    "gate_audit_id"
+   ],
+   "column_count": 37,
+   "local_rows": 802,
+   "cloud_rows": 711,
+   "identical": 711,
+   "local_only_pks": 91,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "control.gate_candidates": {
+   "pk_columns": [
+    "candidate_id"
+   ],
+   "column_count": 18,
+   "local_rows": 123,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 123,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "control.gate_policy_versions": {
+   "pk_columns": [
+    "gate_code",
+    "rule_version"
+   ],
+   "column_count": 6,
+   "local_rows": 6,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 6,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "control.gate_reviewer_bindings": {
+   "pk_columns": [
+    "binding_id"
+   ],
+   "column_count": 13,
+   "local_rows": 46,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 46,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "control.gate_service_credentials": {
+   "pk_columns": [
+    "credential_id"
+   ],
+   "column_count": 19,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "control.invalidation_events": {
+   "pk_columns": [
+    "invalidation_event_id"
+   ],
+   "column_count": 19,
+   "local_rows": 22,
+   "cloud_rows": 2,
+   "identical": 2,
+   "local_only_pks": 20,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "control.original_bridge_verification_keys": {
+   "pk_columns": [
+    "key_version"
+   ],
+   "column_count": 4,
+   "local_rows": 1,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 1,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "control.owner_reviews": {
+   "pk_columns": [
+    "owner_review_id"
+   ],
+   "column_count": 8,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "control.production_runs": {
+   "pk_columns": [
+    "run_id"
+   ],
+   "column_count": 10,
+   "local_rows": 135,
+   "cloud_rows": 20,
+   "identical": 0,
+   "local_only_pks": 115,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 20
+  },
+  "control.qualification_current": {
+   "pk_columns": [
+    "architecture_generation",
+    "gate_code",
+    "object_type",
+    "object_id",
+    "artifact_revision",
+    "purpose_namespace",
+    "purpose_code",
+    "purpose_version",
+    "consumer"
+   ],
+   "column_count": 16,
+   "local_rows": 49,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 49,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "control.session_verification_keys": {
+   "pk_columns": [
+    "key_slot"
+   ],
+   "column_count": 3,
+   "local_rows": 1,
+   "cloud_rows": 1,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 1
+  },
+  "control.web_session_revocations": {
+   "pk_columns": [
+    "token_hash"
+   ],
+   "column_count": 4,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "control.work_publication_decisions": {
+   "pk_columns": [
+    "decision_id"
+   ],
+   "column_count": 7,
+   "local_rows": 8,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 8,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "evidence.classification_decisions": {
+   "pk_columns": [
+    "decision_id"
+   ],
+   "column_count": 9,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "evidence.material_evidence": {
+   "pk_columns": [
+    "evidence_id"
+   ],
+   "column_count": 27,
+   "local_rows": 176,
+   "cloud_rows": 166,
+   "identical": 166,
+   "local_only_pks": 10,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "evidence.material_mentions": {
+   "pk_columns": [
+    "mention_id"
+   ],
+   "column_count": 8,
+   "local_rows": 488,
+   "cloud_rows": 488,
+   "identical": 488,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "evidence.read_unit_evidence_links": {
+   "pk_columns": [
+    "link_id"
+   ],
+   "column_count": 16,
+   "local_rows": 5,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 5,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "evidence.reading_unit_dependencies": {
+   "pk_columns": [
+    "dependency_id"
+   ],
+   "column_count": 8,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "evidence.reading_units": {
+   "pk_columns": [
+    "reading_unit_id"
+   ],
+   "column_count": 11,
+   "local_rows": 51,
+   "cloud_rows": 38,
+   "identical": 38,
+   "local_only_pks": 13,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "meaning.claim_revisions": {
+   "pk_columns": [
+    "claim_revision_id"
+   ],
+   "column_count": 8,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "meaning.findings": {
+   "pk_columns": [
+    "finding_id"
+   ],
+   "column_count": 15,
+   "local_rows": 56,
+   "cloud_rows": 50,
+   "identical": 50,
+   "local_only_pks": 6,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "meaning.open_questions": {
+   "pk_columns": [
+    "open_question_id"
+   ],
+   "column_count": 7,
+   "local_rows": 76,
+   "cloud_rows": 76,
+   "identical": 76,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "meaning.present_connections": {
+   "pk_columns": [
+    "present_connection_id"
+   ],
+   "column_count": 8,
+   "local_rows": 5,
+   "cloud_rows": 5,
+   "identical": 5,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "public.app_settings": {
+   "pk_columns": [
+    "key"
+   ],
+   "column_count": 3,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "public.assets": {
+   "pk_columns": [
+    "asset_id"
+   ],
+   "column_count": 16,
+   "local_rows": 7,
+   "cloud_rows": 6,
+   "identical": 0,
+   "local_only_pks": 1,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 6
+  },
+  "public.conversations": {
+   "pk_columns": [
+    "conversation_id"
+   ],
+   "column_count": 6,
+   "local_rows": 1,
+   "cloud_rows": 1,
+   "identical": 1,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "public.director_plans": {
+   "pk_columns": [
+    "plan_id"
+   ],
+   "column_count": 14,
+   "local_rows": 21,
+   "cloud_rows": 9,
+   "identical": 0,
+   "local_only_pks": 12,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 9
+  },
+  "public.explore_sessions": {
+   "pk_columns": [
+    "session_id"
+   ],
+   "column_count": 7,
+   "local_rows": 1,
+   "cloud_rows": 1,
+   "identical": 1,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "public.help_articles": {
+   "pk_columns": [
+    "article_id"
+   ],
+   "column_count": 5,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "public.imported_materials": {
+   "pk_columns": [
+    "material_id"
+   ],
+   "column_count": 8,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "public.notifications": {
+   "pk_columns": [
+    "id"
+   ],
+   "column_count": 7,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "public.policies": {
+   "pk_columns": [
+    "policy_id"
+   ],
+   "column_count": 5,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "public.research_events": {
+   "pk_columns": [
+    "id"
+   ],
+   "column_count": 6,
+   "local_rows": 201,
+   "cloud_rows": 82,
+   "identical": 76,
+   "local_only_pks": 125,
+   "cloud_only_pks": 6,
+   "same_id_different_content": 0
+  },
+  "public.research_tasks": {
+   "pk_columns": [
+    "task_id"
+   ],
+   "column_count": 9,
+   "local_rows": 43,
+   "cloud_rows": 24,
+   "identical": 23,
+   "local_only_pks": 20,
+   "cloud_only_pks": 1,
+   "same_id_different_content": 0
+  },
+  "public.study_asset_receipts": {
+   "pk_columns": [
+    "receipt_id"
+   ],
+   "column_count": 10,
+   "local_rows": 312,
+   "cloud_rows": 164,
+   "identical": 156,
+   "local_only_pks": 156,
+   "cloud_only_pks": 8,
+   "same_id_different_content": 0
+  },
+  "public.users": {
+   "pk_columns": [
+    "user_id"
+   ],
+   "column_count": 9,
+   "local_rows": 8,
+   "cloud_rows": 1,
+   "identical": 0,
+   "local_only_pks": 7,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 1
+  },
+  "public.watch_sessions": {
+   "pk_columns": [
+    "work_id"
+   ],
+   "column_count": 3,
+   "local_rows": 2,
+   "cloud_rows": 2,
+   "identical": 2,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "public.work_engagement": {
+   "pk_columns": [
+    "work_id"
+   ],
+   "column_count": 5,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "publication.editorial_decisions": {
+   "pk_columns": [
+    "decision_id"
+   ],
+   "column_count": 16,
+   "local_rows": 5,
+   "cloud_rows": 0,
+   "classification": "LOCAL_ONLY_TABLE",
+   "local_rows_present": true
+  },
+  "publication.publication_schedules": {
+   "pk_columns": [
+    "schedule_id"
+   ],
+   "column_count": 5,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "publication.publication_snapshots": {
+   "pk_columns": [
+    "publication_id"
+   ],
+   "column_count": 12,
+   "local_rows": 3,
+   "cloud_rows": 0,
+   "classification": "LOCAL_ONLY_TABLE",
+   "local_rows_present": true
+  },
+  "publication.published_pointers": {
+   "pk_columns": [
+    "work_id"
+   ],
+   "column_count": 7,
+   "local_rows": 7,
+   "cloud_rows": 4,
+   "identical": 0,
+   "local_only_pks": 3,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 4
+  },
+  "publication.withdrawals": {
+   "pk_columns": [
+    "withdrawal_id"
+   ],
+   "column_count": 7,
+   "local_rows": 1,
+   "cloud_rows": 0,
+   "classification": "LOCAL_ONLY_TABLE",
+   "local_rows_present": true
+  },
+  "publication.work_revisions": {
+   "pk_columns": [
+    "revision_id"
+   ],
+   "column_count": 8,
+   "local_rows": 24,
+   "cloud_rows": 5,
+   "identical": 5,
+   "local_only_pks": 19,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "publication.works": {
+   "pk_columns": [
+    "work_id"
+   ],
+   "column_count": 6,
+   "local_rows": 16,
+   "cloud_rows": 5,
+   "identical": 5,
+   "local_only_pks": 11,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "read_model.agent_contexts": {
+   "pk_columns": [
+    "agent_context_id"
+   ],
+   "column_count": 5,
+   "local_rows": 44,
+   "cloud_rows": 41,
+   "identical": 41,
+   "local_only_pks": 3,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "read_model.discovery_paths": {
+   "pk_columns": [
+    "discovery_path_id"
+   ],
+   "column_count": 5,
+   "local_rows": 63,
+   "cloud_rows": 63,
+   "identical": 63,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "read_model.evidence_pointers": {
+   "pk_columns": [
+    "evidence_pointer_id"
+   ],
+   "column_count": 6,
+   "local_rows": 132,
+   "cloud_rows": 132,
+   "identical": 132,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "read_model.map_timeline_projections": {
+   "pk_columns": [
+    "map_timeline_projection_id"
+   ],
+   "column_count": 5,
+   "local_rows": 9,
+   "cloud_rows": 9,
+   "identical": 9,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "read_model.story_seeds": {
+   "pk_columns": [
+    "story_seed_id"
+   ],
+   "column_count": 8,
+   "local_rows": 46,
+   "cloud_rows": 42,
+   "identical": 42,
+   "local_only_pks": 4,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "read_model.world_projections": {
+   "pk_columns": [
+    "projection_id"
+   ],
+   "column_count": 6,
+   "local_rows": 18,
+   "cloud_rows": 11,
+   "identical": 11,
+   "local_only_pks": 7,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "source.acquisition_attempts": {
+   "pk_columns": [
+    "attempt_id"
+   ],
+   "column_count": 26,
+   "local_rows": 27,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 27,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "source.acquisition_coverages": {
+   "pk_columns": [
+    "coverage_id"
+   ],
+   "column_count": 11,
+   "local_rows": 21,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 21,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "source.acquisition_methods": {
+   "pk_columns": [
+    "method_key",
+    "method_version"
+   ],
+   "column_count": 13,
+   "local_rows": 6,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 6,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "source.candidate_verifications": {
+   "pk_columns": [
+    "verification_id"
+   ],
+   "column_count": 10,
+   "local_rows": 14,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 14,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "source.original_provider_traces": {
+   "pk_columns": [
+    "trace_id"
+   ],
+   "column_count": 15,
+   "local_rows": 5,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 5,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "source.priority_assessments": {
+   "pk_columns": [
+    "assessment_id"
+   ],
+   "column_count": 11,
+   "local_rows": 14,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 14,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "source.raw_items": {
+   "pk_columns": [
+    "raw_item_id"
+   ],
+   "column_count": 7,
+   "local_rows": 188,
+   "cloud_rows": 98,
+   "identical": 98,
+   "local_only_pks": 90,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "source.read_handoffs": {
+   "pk_columns": [
+    "handoff_id"
+   ],
+   "column_count": 8,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "source.read_quality_checks": {
+   "pk_columns": [
+    "check_id"
+   ],
+   "column_count": 13,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "source.read_runs": {
+   "pk_columns": [
+    "read_run_id"
+   ],
+   "column_count": 13,
+   "local_rows": 24,
+   "cloud_rows": 16,
+   "identical": 16,
+   "local_only_pks": 8,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "source.read_units": {
+   "pk_columns": [
+    "read_unit_id"
+   ],
+   "column_count": 13,
+   "local_rows": 259,
+   "cloud_rows": 250,
+   "identical": 250,
+   "local_only_pks": 9,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "source.resource_catalog": {
+   "pk_columns": [
+    "catalog_entry_id"
+   ],
+   "column_count": 16,
+   "local_rows": 23,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 23,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "source.source_needs": {
+   "pk_columns": [
+    "need_id"
+   ],
+   "column_count": 9,
+   "local_rows": 17,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 17,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "source.source_versions": {
+   "pk_columns": [
+    "source_version_id"
+   ],
+   "column_count": 7,
+   "local_rows": 128,
+   "cloud_rows": 39,
+   "identical": 12,
+   "local_only_pks": 89,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 27
+  },
+  "source.sources": {
+   "pk_columns": [
+    "source_id"
+   ],
+   "column_count": 17,
+   "local_rows": 51,
+   "cloud_rows": 39,
+   "identical": 12,
+   "local_only_pks": 12,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 27
+  },
+  "studio.asset_heads": {
+   "pk_columns": [
+    "asset_id"
+   ],
+   "column_count": 5,
+   "local_rows": 110,
+   "cloud_rows": 1,
+   "identical": 0,
+   "local_only_pks": 110,
+   "cloud_only_pks": 1,
+   "same_id_different_content": 0
+  },
+  "studio.asset_links": {
+   "pk_columns": [
+    "link_id"
+   ],
+   "column_count": 9,
+   "local_rows": 3,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 3,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "studio.asset_revisions": {
+   "pk_columns": [
+    "revision_id"
+   ],
+   "column_count": 30,
+   "local_rows": 111,
+   "cloud_rows": 1,
+   "identical": 0,
+   "local_only_pks": 111,
+   "cloud_only_pks": 1,
+   "same_id_different_content": 0
+  },
+  "studio.delegations": {
+   "pk_columns": [
+    "delegation_id"
+   ],
+   "column_count": 23,
+   "local_rows": 25,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 25,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "studio.director_plans": {
+   "pk_columns": [
+    "plan_id"
+   ],
+   "column_count": 16,
+   "local_rows": 3,
+   "cloud_rows": 0,
+   "classification": "LOCAL_ONLY_TABLE",
+   "local_rows_present": true
+  },
+  "studio.execution_control_events": {
+   "pk_columns": [
+    "event_id"
+   ],
+   "column_count": 8,
+   "local_rows": 11,
+   "cloud_rows": 0,
+   "classification": "LOCAL_ONLY_TABLE",
+   "local_rows_present": true
+  },
+  "studio.execution_controls": {
+   "pk_columns": [
+    "delegation_id"
+   ],
+   "column_count": 17,
+   "local_rows": 4,
+   "cloud_rows": 0,
+   "classification": "LOCAL_ONLY_TABLE",
+   "local_rows_present": true
+  },
+  "studio.execution_receipts": {
+   "pk_columns": [
+    "receipt_id"
+   ],
+   "column_count": 17,
+   "local_rows": 23,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 23,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "studio.private_originals": {
+   "pk_columns": [
+    "original_id"
+   ],
+   "column_count": 16,
+   "local_rows": 90,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 90,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "studio.projects": {
+   "pk_columns": [
+    "project_id"
+   ],
+   "column_count": 6,
+   "local_rows": 16,
+   "cloud_rows": 1,
+   "identical": 0,
+   "local_only_pks": 16,
+   "cloud_only_pks": 1,
+   "same_id_different_content": 0
+  },
+  "studio.reference_kinds": {
+   "pk_columns": [
+    "ref_type"
+   ],
+   "column_count": 6,
+   "local_rows": 18,
+   "cloud_rows": 0,
+   "classification": "LOCAL_ONLY_TABLE",
+   "local_rows_present": true
+  },
+  "studio.submission_snapshots": {
+   "pk_columns": [
+    "snapshot_id"
+   ],
+   "column_count": 11,
+   "local_rows": 5,
+   "cloud_rows": 0,
+   "classification": "LOCAL_ONLY_TABLE",
+   "local_rows_present": true
+  },
+  "studio.use_events": {
+   "pk_columns": [
+    "use_event_id"
+   ],
+   "column_count": 9,
+   "local_rows": 8,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 8,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "studio.work_revisions": {
+   "pk_columns": [
+    "revision_id"
+   ],
+   "column_count": 18,
+   "local_rows": 5,
+   "cloud_rows": 0,
+   "classification": "LOCAL_ONLY_TABLE",
+   "local_rows_present": true
+  },
+  "world.changes": {
+   "pk_columns": [
+    "change_id"
+   ],
+   "column_count": 9,
+   "local_rows": 53,
+   "cloud_rows": 48,
+   "identical": 48,
+   "local_only_pks": 5,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "world.claim_evidence_links": {
+   "pk_columns": [
+    "claim_evidence_link_id"
+   ],
+   "column_count": 8,
+   "local_rows": 5,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 5,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "world.claim_revisions": {
+   "pk_columns": [
+    "claim_revision_id"
+   ],
+   "column_count": 13,
+   "local_rows": 95,
+   "cloud_rows": 89,
+   "identical": 89,
+   "local_only_pks": 6,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "world.conflicts": {
+   "pk_columns": [
+    "conflict_id"
+   ],
+   "column_count": 8,
+   "local_rows": 4,
+   "cloud_rows": 4,
+   "identical": 4,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "world.dependency_edges": {
+   "pk_columns": [
+    "dependency_edge_id"
+   ],
+   "column_count": 10,
+   "local_rows": 964,
+   "cloud_rows": 964,
+   "identical": 964,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "world.entities": {
+   "pk_columns": [
+    "entity_id"
+   ],
+   "column_count": 9,
+   "local_rows": 106,
+   "cloud_rows": 106,
+   "identical": 106,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "world.event_participations": {
+   "pk_columns": [
+    "event_participation_id"
+   ],
+   "column_count": 8,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "world.events": {
+   "pk_columns": [
+    "event_id"
+   ],
+   "column_count": 9,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "world.historical_space_claims": {
+   "pk_columns": [
+    "historical_space_claim_id"
+   ],
+   "column_count": 11,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "world.identity_decision_evidence": {
+   "pk_columns": [
+    "identity_decision_evidence_id"
+   ],
+   "column_count": 5,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "world.identity_decisions": {
+   "pk_columns": [
+    "identity_decision_id"
+   ],
+   "column_count": 10,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "world.provenance_assessments": {
+   "pk_columns": [
+    "provenance_assessment_id"
+   ],
+   "column_count": 14,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "world.relation_claims": {
+   "pk_columns": [
+    "relation_claim_id"
+   ],
+   "column_count": 10,
+   "local_rows": 89,
+   "cloud_rows": 89,
+   "identical": 89,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "world.visual_objects": {
+   "pk_columns": [
+    "visual_object_id"
+   ],
+   "column_count": 11,
+   "local_rows": 14,
+   "cloud_rows": 14,
+   "identical": 14,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "world.world_decision_events": {
+   "pk_columns": [
+    "world_decision_event_id"
+   ],
+   "column_count": 10,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "identical": 0,
+   "local_only_pks": 0,
+   "cloud_only_pks": 0,
+   "same_id_different_content": 0
+  },
+  "control.web_password_reset_request_budget": {
+   "pk_columns": [
+    "singleton"
+   ],
+   "column_count": 3,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "classification": "CLOUD_ONLY_TABLE"
+  },
+  "control.web_password_resets": {
+   "pk_columns": [
+    "user_id"
+   ],
+   "column_count": 7,
+   "local_rows": 0,
+   "cloud_rows": 0,
+   "classification": "CLOUD_ONLY_TABLE"
+  }
+ }
+}
