@@ -1,6 +1,8 @@
 # 墨痕｜当前工程事实与唯一前沿（非施工标准）
 
 > **核验日期：2026-11-19。** 本次代码核验基线为main SHA `380428f1866b33ba14abb345b01f83154935cfe3`；上一进展证据追加提交为`c81436648614f9ae485235eefaac50704850e986`。本轮断点01定向诊断记录见progress最新批次。施工标准仍为PLAN V1.7（八维口径提交`d74243db76fa541278ac2372681ed8b111e12f2c`）。本文件只记录当前事实与下一最前阻断，不替代PLAN。
+>
+> **2026-11-19 工程数据统一专项（MOHEN-ENGINEERING-DATA-UNIFICATION-01）P0 已完成：** 本地 main 已由 `b137483` 快进对齐 GitHub main `709f4dd`（本地原落后379提交、零独有提交，无工程成果丢失）。Vercel 最新部署 `dpl_BxpZG6SP455F51fEtoP2t4pEX5hC`（Preview Ready）对应提交 `6e31431`，与 main HEAD 差异仅10个docs-only提交。本地未跟踪文件全部为临时诊断脚本与运行时状态，已备份编目，无归档价值。阶段状态 P0=INVENTORY_COMPLETE。专项交付物见 `tasks/results/MAB/ENGINEERING_DATA_UNIFICATION/`。下一阶段 P1：本地 mohen_dev 与云端 mohen-cloud 数据库结构盘点比较。
 
 ## 1. 唯一业务目标
 

@@ -1,0 +1,70 @@
+{
+  "specialty": "MOHEN-ENGINEERING-DATA-UNIFICATION-01",
+  "stage": "P0",
+  "recorded_at": "2026-11-19",
+  "local_main_head_before_merge": "b137483f52e023bd4b7064747480f30571866192",
+  "origin_main_head": "709f4dde9de5d7dfed46d4065067a63cd442fd02",
+  "local_unique_commits": 0,
+  "remote_unique_commits": 379,
+  "modified_tracked_files": 0,
+  "untracked_entries": [
+    ".mohen/",
+    ".tmp_check_audits.mjs",
+    ".tmp_check_gates.cjs",
+    ".tmp_check_gates.mjs",
+    ".tmp_check_projects.mjs",
+    ".tmp_check_run_scope.mjs",
+    ".tmp_check_runs.mjs",
+    ".tmp_check_runs2.mjs",
+    ".tmp_check_scope.mjs",
+    ".tmp_check_success.mjs",
+    ".tmp_check_task.cjs",
+    ".tmp_dbcheck.mjs",
+    ".tmp_disable_rls.sql",
+    ".tmp_gen_evidence.mjs",
+    "apps/web/.mohen/",
+    "apps/web/.tmp_trigger.ts"
+  ],
+  "classification": {
+    "temporary_diagnostic_scripts": {
+      "files": [
+        ".tmp_check_audits.mjs",
+        ".tmp_check_gates.cjs",
+        ".tmp_check_gates.mjs",
+        ".tmp_check_projects.mjs",
+        ".tmp_check_run_scope.mjs",
+        ".tmp_check_runs.mjs",
+        ".tmp_check_runs2.mjs",
+        ".tmp_check_scope.mjs",
+        ".tmp_check_success.mjs",
+        ".tmp_check_task.cjs",
+        ".tmp_dbcheck.mjs",
+        ".tmp_gen_evidence.mjs",
+        "apps/web/.tmp_trigger.ts"
+      ],
+      "verdict": "one-off breakpoint diagnostics, no archival value, backed up"
+    },
+    "local_runtime_state": {
+      "files": [
+        ".mohen/execution-auth/issued-grants.jsonl",
+        "apps/web/.mohen/execution-auth/issued-grants.jsonl"
+      ],
+      "verdict": "runtime issued grants, must not be committed to git"
+    },
+    "sensitive_temporary_sql": {
+      "files": [".tmp_disable_rls.sql"],
+      "verdict": "RLS disable debug script, never committed, not archived"
+    }
+  },
+  "local_unique_effective_engineering_assets": [],
+  "backup": {
+    "location": "%TEMP%/mohen_p0_backup_20261119",
+    "contents": ["all untracked file copies", "pre-merge local HEAD sha", "untracked list snapshot"]
+  },
+  "merge_action": "git merge --ff-only origin/main (b137483 -> 709f4dd, fast-forward, no conflicts)",
+  "migrations": {
+    "local_unique_migration_files": 0,
+    "remote_new_migration_files": 21,
+    "latest_migration_after_merge": "20261119110000_m5_private_source_rights_projection.sql"
+  }
+}

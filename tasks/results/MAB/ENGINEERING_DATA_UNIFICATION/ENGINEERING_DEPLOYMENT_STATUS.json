@@ -1,0 +1,43 @@
+{
+  "specialty": "MOHEN-ENGINEERING-DATA-UNIFICATION-01",
+  "stage": "P0",
+  "recorded_at": "2026-11-19",
+  "vercel_project": {
+    "projectId": "prj_nzfi9XWLJKuIMxWGKmYUrNpcyLtV",
+    "orgId": "team_hUpVPUMnytgHi0OOs5YVc4NF",
+    "projectName": "mohen-agent-2-0",
+    "team": "napoles1"
+  },
+  "latest_deployment": {
+    "id": "dpl_BxpZG6SP455F51fEtoP2t4pEX5hC",
+    "url": "https://mohen-agent-2-0-f5scpkmg7-napoles1.vercel.app",
+    "alias_git_main": "https://mohen-agent-2-0-git-main-napoles1.vercel.app",
+    "alias_git_main_http_status": 200,
+    "status": "READY",
+    "target": "preview",
+    "created": "2026-11-19T09:36:20+08:00",
+    "git_commit_sha": "6e31431b332b5aed40d47206a0229718f7784807",
+    "git_commit_subject": "fix(studio): correct formal read diagnostic imports",
+    "build_duration": "1m 3s",
+    "triggered_by": "xiezuojie03-web"
+  },
+  "second_latest_deployment": {
+    "url": "https://mohen-agent-2-0-65zv2osqw-napoles1.vercel.app",
+    "status": "READY",
+    "target": "preview",
+    "age_hours": 15
+  },
+  "production_deployments_visible": false,
+  "deployment_vs_main_diff": {
+    "main_head": "709f4dde9de5d7dfed46d4065067a63cd442fd02",
+    "deployed_commit": "6e31431b332b5aed40d47206a0229718f7784807",
+    "commits_ahead_of_deployment": 10,
+    "diff_scope": "docs-only (CURRENT.md, tasks/implementation/MAB/progress.md, tasks/results/MAB/M5_D00_D05_FULL_CHAIN_INHERITANCE_CURRENT.md)",
+    "code_diff": false
+  },
+  "notes": [
+    "All visible deployments are Preview environment; no Production deployment found in the recent deployment list.",
+    "Vercel CLI partial auth: plain 'vercel ls' and 'vercel inspect' worked; '--environment production' and 'project ls' failed with no-credentials error.",
+    "The git-main alias deployment lags main HEAD only by docs-only commits; no code divergence between deployment and main."
+  ]
+}

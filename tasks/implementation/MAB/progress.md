@@ -5059,3 +5059,15 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - pg_dump仅覆盖PostgreSQL六Schema，不含Storage对象、私有文件系统字节、被gitignore排除的raw/staging/exports文件或本机密钥。必须分别核查数据库行、原件字节、Storage对象，不能将“原件字节未上云”推断成“所有派生数据库记录也没上云”。
 - 当前未发现持续CDC/自动双向同步/本地每次生产后推送到云端机制；GitHub push、Vercel deploy、Supabase schema migration均不等于业务数据同步。接下来需要确认原mohen_dev是否仍可访问及其最新备份；再在同一时间点做双端只读manifest，逐表PK集合/行数/关键字段hash对照，优先核验42表初始导入、11月81私有原件增量、相关source/version/raw/read/evidence、Gate/qualification和Studio资产；Storage字节独立核验。此阶段禁止写入/覆盖/回填/重跑。
 - **历史run ID纠错**：云端production_runs实际20条，包含金泽（8a32171c…/ff11231a…/a3cb68ac…）、A001绿之丘多轮（含5176ade3…）和10-29金泽/朱家角等；此前以报告省略号run ID自行补UUID并判断缺失的结论无效，已撤回。原始run精确映射必须以完整machine.json/日志ID为准。
+
+
+## 2026-11-19｜ENGINEERING-DATA-UNIFICATION-01｜P0 工程版本统一完成
+
+- 专项启动：MOHEN-ENGINEERING-DATA-UNIFICATION-01（工程基线统一与历史数据库完整接管）。执行顺序 P0→P7，本轮不提前执行 P4 数据迁移。
+- P0.1 三端核查事实：合并前本地 main HEAD `b137483f52e023bd4b7064747480f30571866192`，工作区0修改、16项未跟踪（全部为历史断点诊断临时脚本与本地运行时状态）；GitHub main HEAD `709f4dde9de5d7dfed46d4065067a63cd442fd02`（2026-11-19 10:48 +0800），本地落后379提交、零独有提交；差异为云端侧2026-11-16起推进的M5正式知识读取/来源权利/D00修复/密码恢复/云端生产调度工程（231文件 +29070/-1174，含21个新迁移文件，本地无独有迁移）。
+- Vercel 部署状态：最新部署 `dpl_BxpZG6SP455F51fEtoP2t4pEX5hC`（Preview Ready，2026-11-19 09:36 +0800），对应 Git SHA `6e31431b332b5aed40d47206a0229718f7784807`，git-main 别名实测 HTTP 200；与 main HEAD 差异为10个 docs-only 提交，无代码分歧；可见部署列表全部为 Preview，无 Production 部署。
+- P0.2 本地成果保护：未跟踪文件已全部备份至 `%TEMP%\mohen_p0_backup_20261101`（含副本、合并前HEAD、清单；实际目录名 mohen_p0_backup_20261119）；分类判定——13个.tmp_*诊断脚本（一次性）、2个.mohen运行时授权状态（不入git）、1个.tmp_disable_rls.sql（高敏临时脚本，从未提交）。**本地独有有效工程成果：无。**
+- P0.3 工程合并：`git merge --ff-only origin/main` 快进 b137483→709f4dd，零冲突零丢失；合并后本地 main = origin/main = 709f4dd，未跟踪文件不受影响。`git fsck` 通过。
+- 本阶段无数据库写入、无模型调用、无费用。云侧既有 M5-HISTORICAL-DATA-INVENTORY-01/02 批次（历史数据存量盘点、本地→云端迁移线索：本地 raw_items 179 vs 云端 98、本地 private_originals 81 vs 云端 0）为 P2/P3 的先行事实输入，本专项继续承接。
+- 交付物：`tasks/results/MAB/ENGINEERING_DATA_UNIFICATION/ENGINEERING_VERSION_RECONCILIATION.md`、`ENGINEERING_LOCAL_ONLY_CHANGES.json`、`ENGINEERING_DEPLOYMENT_STATUS.json`；CURRENT.md 头部已更新专项 P0 状态。
+- 阶段状态：P0 = INVENTORY_COMPLETE（本地基线对齐完成，代码同步事实可追溯）。PENDING_PUSH：本批次提交待 Owner 确认窗口统一推送。下一阶段 P1：数据库结构统一认知（双端真实 Schema 盘点比较，只读）。
