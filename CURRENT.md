@@ -1,6 +1,6 @@
 # 墨痕｜当前工程事实与唯一前沿（非施工标准）
 
-> **核验日期：2026-11-19。** 本次代码核验基线为main SHA `a5933de8a8cb5c1470fd9a30acd1b70da0acd691`；进展证据追加提交为`c81436648614f9ae485235eefaac50704850e986`。施工标准仍为PLAN V1.7（八维口径提交`d74243db76fa541278ac2372681ed8b111e12f2c`）。本文件只记录当前事实与下一最前阻断，不替代PLAN。
+> **核验日期：2026-11-19。** 本次代码核验基线为main SHA `380428f1866b33ba14abb345b01f83154935cfe3`；上一进展证据追加提交为`c81436648614f9ae485235eefaac50704850e986`。本轮断点01定向诊断记录见progress最新批次。施工标准仍为PLAN V1.7（八维口径提交`d74243db76fa541278ac2372681ed8b111e12f2c`）。本文件只记录当前事实与下一最前阻断，不替代PLAN。
 
 ## 1. 唯一业务目标
 
@@ -109,3 +109,16 @@
 ## 5. 文件读取与更新
 
 施工标准只读PLAN相关章节；当前事实只读CURRENT；逐批证据追加progress；仅平台/环境切换时读取ENGINEERING_HANDOFF_CURRENT。交互导航JSON/MD/HTML已停用，不再维护或作为施工依据。
+
+## 2.9 2026-11-19｜断点01 Studio正式知识读取HOLD 定向诊断（未关闭）
+
+- **核验基线**：main HEAD `380428f1866b33ba14abb345b01f83154935cfe3`；本轮只读源码、GitHub Actions、Vercel Preview元数据、mohen-cloud数据库和日志；没有修改业务代码、创建任务/Project/Root或调用模型/Provider。
+- **真实任务**：朱家角任务`53ad1a29-22e5-43c2-816d-b02b6e85abbd`仍为`hold`，`work_id=null`，`budgetSpent=1`、`reserved=0`；最新事件仍为2026-11-18T01:58:10Z的`prerequisites_hold`，缺项`FORMAL_G0_G4_READ_NOT_AUTHORIZED_OR_UNAVAILABLE`，没有新的业务执行事件。
+- **源码定位**：`studio.search_qualified_project_layers`在Owner guard处主动抛出`M5_FORMAL_READ_OWNER_REQUIRED`（SQLSTATE 42501）。应用层`retrieveQualifiedFormalProject`在同一`createAppTransaction`中先校验Owner/Project，再调用该函数；其catch把异常统一转换为`degraded=true / projectQualifiedCoverage=UNAVAILABLE`，上层`research.ts`再转为正式读取前置HOLD。需要区分数据库Owner guard真实失败条件与应用层异常折叠问题。
+- **证据边界**：mohen-cloud历史Postgres日志中的同名错误，其SQL注释标注来源为`POST /mcp`，内容是管理端直接构造数据库会话Token后执行的诊断SQL；它不是当前真实Studio HTTP请求日志。Vercel Preview最近50分钟没有匹配正式读取日志，也没有error/fatal运行日志；无request ID可把Studio Creator请求与数据库异常一一关联。
+- **身份合同**：`signDatabaseSessionToken`使用Vercel环境变量`MOHEN_DATABASE_SESSION_SECRET`签名；数据库`control.current_app_user_id()`使用`control.session_verification_keys`活动槽验证。Preview环境变量名存在且目标含preview，但本轮未读取Secret明文，未完成两端密钥指纹一致性核验。开发库活动验证槽为1个、密钥长度64；Project owner为`270bcecf-9bfb-4865-9432-a0ac9db8df75`。不得以SQL自行构造Owner token替代真实应用会话。
+- **既有修复继承**：`20261118120000_m5_formal_project_read_acl_order_fix.sql`仍是当前main迁移；输出列歧义和嵌套`qualification_allows`授权修复未重做。应用事务仍按`BEGIN → SET LOCAL ROLE mohen_app_runtime → set_config(mohen.session_token) → current_app_user_id()`执行；没有证据支持放宽数据库ACL。
+- **部署/CI**：最近可回读的Vercel Preview为`dpl_9BzzYYqMCxuvLej2hzwBWDb9fSvC`，状态`READY`但target=null、对应旧提交`ffad0e4`，不是当前HEAD的应用层运行验证。main HEAD的CI run `44432723926`失败，build job `135253860067`的`runner_id=0`、`steps=[]`，约3秒结束；Runner/job未启动，测试NOT_RUN，不是测试失败证据。
+- **施工决定**：没有足以证明真实Studio请求中Creator身份在哪一层丢失的证据，故不做猜测性代码修改、不加宽权限、不建诊断后门。当前状态维持`HOLD`，本轮无模型费用。
+- **下一项诊断（仍属断点01）**：取得一次真实Studio受保护Preview请求的request ID/时间戳，并在同一请求关联服务端已验证Creator UID、Project ID、签名数据库会话生成状态（只记录是否生成，不记录Token/Secret）、数据库事务中`current_app_user_id()`解析UID及Owner/Project guard结果；若身份UID匹配但SQL guard仍失败，再用同连接/同事务证据定位上下文差异。安全日志不得包含Token、Secret或原件内容。
+- **关闭判定**：断点01未关闭。合法Creator真实应用读取、错Project/错用途/无效身份反向验证、L0—L5完整结果及Studio消费均未通过本轮真实请求验证；不进入断点02。

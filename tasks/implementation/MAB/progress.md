@@ -4981,3 +4981,16 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **CI阻断证据**：最新main SHA a5933de8a8cb5c1470fd9a30acd1b70da0acd691的CI run 44431800686于2026-11-19T00:47:13Z失败；唯一build job 135250727724的runner_id=0、runner_name为空、steps=[]，约2秒结束。相邻提交的CI/隔离PG/HTTP工作流也同样在步骤启动前失败。结论仅为GitHub Actions runner/job未启动、CI=HOLD/NOT_RUN；根因尚未从当前证据确证，不把它归因于代码测试失败或具体账单原因。
 - **停止点与下一批唯一前沿**：本批停止于“逐动作权利版本投影已安装、代码已入main、数据库合同正反验证通过；CI与真实D00交接未验证”。遵循CURRENT既定顺序，下一批先只解决同一Creator/Project的Studio正式L0—L5读取HOLD，禁止重复调用已结算llm-understand，禁止跳去继续扩写D00登记生产者；正式读取完整、未降级并可回读后，才判断是否进入来源登记写入器。
 - **文件同步**：本条为progress追加式证据；CURRENT同步更新当前HEAD、开发库迁移和CI状态。PLAN V1.7验收标准/顺序未改变；AGENTS通用规则未改变；交互导航JSON/MD/HTML按Owner 2026-11-18裁决继续停用，不修改、不引用为当前状态。
+
+
+## 2026-11-19｜M5-FORMAL-READ-BP01-DIAG-01｜Studio正式知识读取HOLD定向诊断
+
+- 基线：main@380428f1866b33ba14abb345b01f83154935cfe3；CURRENT前版blob 4b263369ee5d505bcf3595ef24c7bc6e0bb2ae71；progress前版blob 8334ce8fd01fd338c5d03c2e66a198ea0e7bf160。施工前再次核HEAD，确认未移动；本轮没有业务代码修改。
+- 朱家角task `53ad1a29-22e5-43c2-816d-b02b6e85abbd`仍HOLD、work_id=null、budgetSpent=1、reserved=0；最新research_event为原HOLD，无新调用/新费用。
+- 源码链：Studio研究→`runResearch`→`retrieveQualifiedFormalProject`→`createAppTransaction`。事务执行BEGIN、SET LOCAL ROLE mohen_app_runtime、设置短期mohen.session_token、调用control.current_app_user_id()确认actor，再在同一连接核Owner/Project并执行`studio.search_qualified_project_layers`。SQL函数在Owner guard处产生`M5_FORMAL_READ_OWNER_REQUIRED`；Repository catch折叠为degraded/UNAVAILABLE；research将其转换为正式读取前置HOLD。
+- `control.current_app_user_id()`验证签名Token的HMAC、exp及active users，使用`control.session_verification_keys`活动槽；应用签发器使用Vercel的`MOHEN_DATABASE_SESSION_SECRET`。Preview变量名存在，但未读取Secret明文，未完成密钥一致性指纹比较。
+- 历史Postgres日志中的同名错误来自`POST /mcp`手工SQL诊断，不等于真实Studio请求。Vercel Preview最近50分钟无正式读取匹配日志或error/fatal日志；没有request ID可关联。
+- Preview最近可见部署为`dpl_9BzzYYqMCxuvLej2hzwBWDb9fSvC`（READY、target=null、commit ffad0e4），不是当前HEAD运行证明。main@380428f1866b33ba14abb345b01f83154935cfe3的CI run `44432723926`失败，job `135253860067` runner_id=0、steps=[]，CI测试NOT_RUN。
+- 本批未重复修复SQL ACL、未重跑已结算模型步骤、未创建新任务/Project/Root、未读取或输出密钥、未修改Production。根因未确证，未进行猜测性代码修复。
+- 下一诊断仅限断点01：必须关联真实Studio Preview HTTP请求request ID/时间戳、服务端Creator UID、Project ID、数据库签名身份解析UID及Owner guard结果；日志不得包含Token/Secret。
+- 结论：CODE_PRESENT；数据库Owner guard曾在管理端手工SQL中复现；真实Studio应用验证NOT_RUN；断点01维持HOLD。
