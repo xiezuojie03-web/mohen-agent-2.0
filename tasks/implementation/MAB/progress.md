@@ -5071,3 +5071,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 本阶段无数据库写入、无模型调用、无费用。云侧既有 M5-HISTORICAL-DATA-INVENTORY-01/02 批次（历史数据存量盘点、本地→云端迁移线索：本地 raw_items 179 vs 云端 98、本地 private_originals 81 vs 云端 0）为 P2/P3 的先行事实输入，本专项继续承接。
 - 交付物：`tasks/results/MAB/ENGINEERING_DATA_UNIFICATION/ENGINEERING_VERSION_RECONCILIATION.md`、`ENGINEERING_LOCAL_ONLY_CHANGES.json`、`ENGINEERING_DEPLOYMENT_STATUS.json`；CURRENT.md 头部已更新专项 P0 状态。
 - 阶段状态：P0 = INVENTORY_COMPLETE（本地基线对齐完成，代码同步事实可追溯）。PENDING_PUSH：本批次提交待 Owner 确认窗口统一推送。下一阶段 P1：数据库结构统一认知（双端真实 Schema 盘点比较，只读）。
+
+## 2026-11-19｜ENGINEERING-DATA-UNIFICATION-01｜P1 数据库结构统一认知完成（只读）
+
+- 双端只读 catalog 盘点：本地 mohen_dev（PG18.6）96 表/1018 列/124 策略/43 触发器/113 函数/无迁移账本；云端 mohen-cloud（PG17.11）88 表/991 列/81 策略/32 触发器/58 函数/29 条迁移账本。盘点脚本 `p1-schema-inventory.mjs` 只执行 SELECT，零写入。
+- 结构差异全部归因：①本地独有 10 张有数据的表（studio.execution_controls/execution_control_events、work_revisions、submission_snapshots、director_plans、reference_kinds、publication.editorial_decisions/publication_snapshots/withdrawals、control.artifact_content_columns）+22 个配套函数+44 条 RLS 策略+11 个触发器，全部来自已合入 main 但云端未安装的 24 个仓库迁移（M4、ST-07/08/09、导演计划、original_media_assets 等）；②云端独有 search_qualified_project_layers 正式知识读取函数、web_password_resets 密码恢复表、m5 对账函数、sources 权利 CHECK（is_rights_actions_valid）——云端为现行设计；③PG18 vs PG17 目录伪差 764 个 NOT NULL 约束项与 37 个 pgcrypto 函数位置差异，不计入真实差异。
+- **重大安全发现：85 张共有表 RLS 云端全部启用、本地全部未启用**，本地 124 条策略因 RLS 关闭全部处于不生效状态。本地库安全基线偏离 MHKA 要求，P4 迁移与 P6 长期机制必须以云端 RLS 基线为准。本阶段未改本地 RLS（属 P4/P6 决策范围）。
+- 本地无 supabase_migrations 账本，本地结构只能以 catalog 实况为准；云端账本 version 为安装时间戳与仓库文件名不同源，已按名称完成人工映射（M1 五条为已退役历史迁移，有 mab_backup 留证）。
+- 双端数据量差异首层线索（DATABASE_SCHEMA_DIFF.json row_count_differences）：source_versions 128/39、raw_items 188/98、private_originals 90/0、asset_heads 110/1、asset_revisions 111/1、projects 16/1、production_runs 135/20、gate_audits 802/711、qualification_current 49/0、gate_candidates 123/0 等，本地全面多于云端。
+- 需设计裁决项（P4 前）：publication.published_pointers.revision_id 本地可空/云端 NOT NULL；本地多出的 published_pointers 列（source_schema/studio_revision_id/publication_id）与云端 work_id 外键来自不同迁移时序。
+- 交付物：DATABASE_SCHEMA_LOCAL.json、DATABASE_SCHEMA_CLOUD.json、DATABASE_SCHEMA_DIFF.json、DATABASE_MIGRATION_VERSION_DIFF.json、cloud_migration_ledger.json、DATABASE_STRUCTURE_RECONCILIATION.md、p1-schema-inventory.mjs、p1-schema-diff.mjs。无数据库写入、无模型调用、无费用。
+- 阶段状态：P1 = INVENTORY_COMPLETE。PENDING_PUSH。下一阶段 P2：双端业务数据完整盘点（只读，含历史资产 Run ID 追踪）。

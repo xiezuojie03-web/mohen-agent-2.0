@@ -1,0 +1,147 @@
+[
+ {
+  "version": "20261102094218",
+  "name": "mab_m1_private_preflight_backup",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261102095611",
+  "name": "mab_m1_security_boundary",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261102104020",
+  "name": "mab_m1_runtime_role_context",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261102105810",
+  "name": "mab_studio_assets",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261102105829",
+  "name": "mab_m1_gate_candidates",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261116064007",
+  "name": "m5_inherit_k3_independent_gate_authority",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261116064636",
+  "name": "m5_k3_gate_function_acl_owner_fix",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261116095629",
+  "name": "m5_reuse_existing_m2_private_originals",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261116095936",
+  "name": "mab_m5_dev_private_original_bucket",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261116100044",
+  "name": "m5_reuse_existing_m2_evidence_bridge",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261116100126",
+  "name": "m5_reuse_existing_m2_private_text_reading",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261116100133",
+  "name": "m5_reuse_existing_m2_private_scanned_page",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261116100141",
+  "name": "m5_reuse_existing_m2_private_source_registration_source_revision",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261116101440",
+  "name": "m5_reuse_existing_m3_gate_service_auth",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261116121153",
+  "name": "mab_m5_private_source_action_rights_projection",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261116122301",
+  "name": "m5_inherit_existing_owner_read_and_d02_d05_candidate_functions",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261116230714",
+  "name": "m5_dev_enable_existing_web_session_revocation",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261116234913",
+  "name": "mab_dev_web_password_recovery",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261117010309",
+  "name": "mab_m5_scoped_producer_run_progress",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261117030122",
+  "name": "mab_m5_dev_machine_login_roles",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261117172439",
+  "name": "m5_scoped_formal_project_gate_read",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261118113540",
+  "name": "mab_m3_private_gate_candidate_submission",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261118113649",
+  "name": "mab_gate_audits_rls",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261118113658",
+  "name": "mab_d00c_source_discovery_ledger",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261118113706",
+  "name": "mab_d00c4_remaining_stages",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261118113714",
+  "name": "mab_d00_y02_registration_locator",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261118113721",
+  "name": "mab_d00c5_method_revalidation",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261118113729",
+  "name": "mab_d00_y04_original_provider_trace",
+  "created_by": "xiezuojie03@gmail.com"
+ },
+ {
+  "version": "20261119004253",
+  "name": "m5_private_source_rights_projection_20261119",
+  "created_by": "xiezuojie03@gmail.com"
+ }
+]

@@ -1,0 +1,5779 @@
+{
+ "specialty": "MOHEN-ENGINEERING-DATA-UNIFICATION-01",
+ "stage": "P1",
+ "generated_at": "2026-11-19T03:27:23.964Z",
+ "server": {
+  "local": {
+   "db": "mohen_dev",
+   "version": "18.6",
+   "connected_as": "postgres"
+  },
+  "cloud": {
+   "db": "postgres",
+   "version": "17.11",
+   "connected_as": "postgres"
+  }
+ },
+ "summary": {
+  "tables": {
+   "local_total": 96,
+   "cloud_total": 88,
+   "identical": 1,
+   "local_only": 10,
+   "cloud_only": 2,
+   "definition_different": 85
+  },
+  "columns": {
+   "local_total": 1018,
+   "cloud_total": 991,
+   "differences": 11
+  },
+  "constraints": {
+   "local_total": 1253,
+   "cloud_total": 432,
+   "local_only": 833,
+   "cloud_only": 12,
+   "different": 1
+  },
+  "policies": {
+   "local_total": 124,
+   "cloud_total": 81,
+   "local_only": 44,
+   "cloud_only": 1,
+   "different": 0
+  },
+  "triggers": {
+   "local_total": 43,
+   "cloud_total": 32,
+   "local_only": 11,
+   "cloud_only": 0,
+   "different": 0
+  },
+  "functions": {
+   "local_total": 113,
+   "cloud_total": 58,
+   "local_only": 59,
+   "cloud_only": 4
+  },
+  "indexes": {
+   "local_total": 196,
+   "cloud_total": 179,
+   "local_only": 20,
+   "cloud_only": 3,
+   "different": 0
+  },
+  "enums": {
+   "local_total": 8,
+   "cloud_total": 8,
+   "local_only": [],
+   "cloud_only": []
+  },
+  "sequences": {
+   "local_total": 0,
+   "cloud_total": 0,
+   "local_only": 0,
+   "cloud_only": 0
+  },
+  "views": {
+   "local_total": 2,
+   "cloud_total": 2,
+   "local_only": [],
+   "cloud_only": []
+  },
+  "roles": {
+   "local_only": [
+    "mohen_app",
+    "mohen_editorial_operator",
+    "mohen_execution_authority",
+    "mohen_gate_signer_m5_machine",
+    "mohen_gate_signer_m5_owner"
+   ],
+   "cloud_only": [
+    "authenticator",
+    "dashboard_user",
+    "mohen_m5_producer_login",
+    "mohen_m5_worker_login",
+    "pgbouncer",
+    "supabase_admin",
+    "supabase_auth_admin",
+    "supabase_etl_admin",
+    "supabase_privileged_role",
+    "supabase_read_only_user",
+    "supabase_realtime_admin",
+    "supabase_replication_admin",
+    "supabase_storage_admin"
+   ]
+  },
+  "extensions": {
+   "local_only": [],
+   "cloud_only": [
+    "pg_stat_statements",
+    "supabase_vault",
+    "uuid-ossp"
+   ],
+   "version_different": [
+    {
+     "name": "pgcrypto",
+     "local": "1.4",
+     "cloud": "1.3"
+    }
+   ]
+  },
+  "storage": {
+   "local_buckets": [
+    "undefined:ERR"
+   ],
+   "cloud_buckets": [
+    "mohen-private-originals"
+   ]
+  },
+  "row_count_differences": {
+   "control.artifact_content_columns": {
+    "local": 234,
+    "cloud": "TABLE_MISSING"
+   },
+   "control.gate_audits": {
+    "local": 802,
+    "cloud": 711
+   },
+   "control.gate_candidates": {
+    "local": 123,
+    "cloud": 0
+   },
+   "control.gate_policy_versions": {
+    "local": 6,
+    "cloud": 0
+   },
+   "control.gate_reviewer_bindings": {
+    "local": 46,
+    "cloud": 0
+   },
+   "control.invalidation_events": {
+    "local": 22,
+    "cloud": 2
+   },
+   "control.original_bridge_verification_keys": {
+    "local": 1,
+    "cloud": 0
+   },
+   "control.production_runs": {
+    "local": 135,
+    "cloud": 20
+   },
+   "control.qualification_current": {
+    "local": 49,
+    "cloud": 0
+   },
+   "control.work_publication_decisions": {
+    "local": 8,
+    "cloud": 0
+   },
+   "evidence.material_evidence": {
+    "local": 176,
+    "cloud": 166
+   },
+   "evidence.read_unit_evidence_links": {
+    "local": 5,
+    "cloud": 0
+   },
+   "evidence.reading_units": {
+    "local": 51,
+    "cloud": 38
+   },
+   "meaning.findings": {
+    "local": 56,
+    "cloud": 50
+   },
+   "public.assets": {
+    "local": 7,
+    "cloud": 6
+   },
+   "public.director_plans": {
+    "local": 21,
+    "cloud": 9
+   },
+   "public.research_events": {
+    "local": 201,
+    "cloud": 82
+   },
+   "public.research_tasks": {
+    "local": 43,
+    "cloud": 24
+   },
+   "public.study_asset_receipts": {
+    "local": 312,
+    "cloud": 164
+   },
+   "public.users": {
+    "local": 8,
+    "cloud": 1
+   },
+   "publication.editorial_decisions": {
+    "local": 5,
+    "cloud": "TABLE_MISSING"
+   },
+   "publication.publication_snapshots": {
+    "local": 3,
+    "cloud": "TABLE_MISSING"
+   },
+   "publication.published_pointers": {
+    "local": 7,
+    "cloud": 4
+   },
+   "publication.withdrawals": {
+    "local": 1,
+    "cloud": "TABLE_MISSING"
+   },
+   "publication.work_revisions": {
+    "local": 24,
+    "cloud": 5
+   },
+   "publication.works": {
+    "local": 16,
+    "cloud": 5
+   },
+   "read_model.agent_contexts": {
+    "local": 44,
+    "cloud": 41
+   },
+   "read_model.story_seeds": {
+    "local": 46,
+    "cloud": 42
+   },
+   "read_model.world_projections": {
+    "local": 18,
+    "cloud": 11
+   },
+   "source.acquisition_attempts": {
+    "local": 27,
+    "cloud": 0
+   },
+   "source.acquisition_coverages": {
+    "local": 21,
+    "cloud": 0
+   },
+   "source.acquisition_methods": {
+    "local": 6,
+    "cloud": 0
+   },
+   "source.candidate_verifications": {
+    "local": 14,
+    "cloud": 0
+   },
+   "source.original_provider_traces": {
+    "local": 5,
+    "cloud": 0
+   },
+   "source.priority_assessments": {
+    "local": 14,
+    "cloud": 0
+   },
+   "source.raw_items": {
+    "local": 188,
+    "cloud": 98
+   },
+   "source.read_runs": {
+    "local": 24,
+    "cloud": 16
+   },
+   "source.read_units": {
+    "local": 259,
+    "cloud": 250
+   },
+   "source.resource_catalog": {
+    "local": 23,
+    "cloud": 0
+   },
+   "source.source_needs": {
+    "local": 17,
+    "cloud": 0
+   },
+   "source.source_versions": {
+    "local": 128,
+    "cloud": 39
+   },
+   "source.sources": {
+    "local": 51,
+    "cloud": 39
+   },
+   "studio.asset_heads": {
+    "local": 110,
+    "cloud": 1
+   },
+   "studio.asset_links": {
+    "local": 3,
+    "cloud": 0
+   },
+   "studio.asset_revisions": {
+    "local": 111,
+    "cloud": 1
+   },
+   "studio.delegations": {
+    "local": 25,
+    "cloud": 0
+   },
+   "studio.director_plans": {
+    "local": 3,
+    "cloud": "TABLE_MISSING"
+   },
+   "studio.execution_control_events": {
+    "local": 11,
+    "cloud": "TABLE_MISSING"
+   },
+   "studio.execution_controls": {
+    "local": 4,
+    "cloud": "TABLE_MISSING"
+   },
+   "studio.execution_receipts": {
+    "local": 23,
+    "cloud": 0
+   },
+   "studio.private_originals": {
+    "local": 90,
+    "cloud": 0
+   },
+   "studio.projects": {
+    "local": 16,
+    "cloud": 1
+   },
+   "studio.reference_kinds": {
+    "local": 18,
+    "cloud": "TABLE_MISSING"
+   },
+   "studio.submission_snapshots": {
+    "local": 5,
+    "cloud": "TABLE_MISSING"
+   },
+   "studio.use_events": {
+    "local": 8,
+    "cloud": 0
+   },
+   "studio.work_revisions": {
+    "local": 5,
+    "cloud": "TABLE_MISSING"
+   },
+   "world.changes": {
+    "local": 53,
+    "cloud": 48
+   },
+   "world.claim_evidence_links": {
+    "local": 5,
+    "cloud": 0
+   },
+   "world.claim_revisions": {
+    "local": 95,
+    "cloud": 89
+   },
+   "control.web_password_reset_request_budget": {
+    "local": "TABLE_MISSING",
+    "cloud": 0
+   },
+   "control.web_password_resets": {
+    "local": "TABLE_MISSING",
+    "cloud": 0
+   }
+  }
+ },
+ "details": {
+  "tables": {
+   "IDENTICAL": [
+    "publication.publication_schedules"
+   ],
+   "LOCAL_ONLY": [
+    "control.artifact_content_columns",
+    "publication.editorial_decisions",
+    "publication.publication_snapshots",
+    "publication.withdrawals",
+    "studio.director_plans",
+    "studio.execution_control_events",
+    "studio.execution_controls",
+    "studio.reference_kinds",
+    "studio.submission_snapshots",
+    "studio.work_revisions"
+   ],
+   "CLOUD_ONLY": [
+    "control.web_password_reset_request_budget",
+    "control.web_password_resets"
+   ],
+   "DEFINITION_DIFFERENT": [
+    {
+     "table": "control.gate_audits",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "control.gate_candidates",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "control.gate_policy_versions",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "control.gate_reviewer_bindings",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "control.gate_service_credentials",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "control.invalidation_events",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "control.original_bridge_verification_keys",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "control.owner_reviews",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "control.production_runs",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "control.qualification_current",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "control.session_verification_keys",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "control.web_session_revocations",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "control.work_publication_decisions",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "evidence.classification_decisions",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "evidence.material_evidence",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "evidence.material_mentions",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "evidence.read_unit_evidence_links",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "evidence.reading_unit_dependencies",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "evidence.reading_units",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "meaning.claim_revisions",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "meaning.findings",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "meaning.open_questions",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "meaning.present_connections",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "public.app_settings",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "public.assets",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "public.conversations",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "public.director_plans",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "public.explore_sessions",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "public.help_articles",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "public.imported_materials",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "public.notifications",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "public.policies",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "public.research_events",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "public.research_tasks",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "public.study_asset_receipts",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "public.users",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "public.watch_sessions",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "public.work_engagement",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "publication.published_pointers",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "publication.work_revisions",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "publication.works",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "read_model.agent_contexts",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "read_model.discovery_paths",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "read_model.evidence_pointers",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "read_model.map_timeline_projections",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "read_model.story_seeds",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "read_model.world_projections",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "source.acquisition_attempts",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "source.acquisition_coverages",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "source.acquisition_methods",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "source.candidate_verifications",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "source.original_provider_traces",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "source.priority_assessments",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "source.raw_items",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "source.read_handoffs",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "source.read_quality_checks",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "source.read_runs",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "source.read_units",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "source.resource_catalog",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "source.source_needs",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "source.source_versions",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "source.sources",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "studio.asset_heads",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "studio.asset_links",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "studio.asset_revisions",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "studio.delegations",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "studio.execution_receipts",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "studio.private_originals",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "studio.projects",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "studio.use_events",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "world.changes",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "world.claim_evidence_links",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "world.claim_revisions",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "world.conflicts",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "world.dependency_edges",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "world.entities",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "world.event_participations",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "world.events",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "world.historical_space_claims",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "world.identity_decision_evidence",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "world.identity_decisions",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "world.provenance_assessments",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "world.relation_claims",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "world.visual_objects",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    },
+    {
+     "table": "world.world_decision_events",
+     "aspect": "rls_enabled",
+     "local": false,
+     "cloud": true
+    }
+   ]
+  },
+  "columns": [
+   {
+    "object": "public.assets.original_id",
+    "kind": "COLUMN_LOCAL_ONLY",
+    "local": "uuid"
+   },
+   {
+    "object": "public.assets.source_id",
+    "kind": "COLUMN_LOCAL_ONLY",
+    "local": "uuid"
+   },
+   {
+    "object": "public.assets.page_locator",
+    "kind": "COLUMN_LOCAL_ONLY",
+    "local": "jsonb"
+   },
+   {
+    "object": "public.assets.content_sha256",
+    "kind": "COLUMN_LOCAL_ONLY",
+    "local": "text"
+   },
+   {
+    "object": "public.assets.rights_by_action",
+    "kind": "COLUMN_LOCAL_ONLY",
+    "local": "jsonb"
+   },
+   {
+    "object": "public.director_plans.source_ids",
+    "kind": "COLUMN_LOCAL_ONLY",
+    "local": "jsonb"
+   },
+   {
+    "object": "public.director_plans.project_id",
+    "kind": "COLUMN_LOCAL_ONLY",
+    "local": "uuid"
+   },
+   {
+    "object": "publication.published_pointers.source_schema",
+    "kind": "COLUMN_LOCAL_ONLY",
+    "local": "text"
+   },
+   {
+    "object": "publication.published_pointers.studio_revision_id",
+    "kind": "COLUMN_LOCAL_ONLY",
+    "local": "uuid"
+   },
+   {
+    "object": "publication.published_pointers.publication_id",
+    "kind": "COLUMN_LOCAL_ONLY",
+    "local": "uuid"
+   },
+   {
+    "object": "publication.published_pointers.revision_id",
+    "kind": "COLUMN_DEFINITION_DIFFERENT",
+    "local": "uuid",
+    "cloud": "uuid NOT NULL"
+   }
+  ],
+  "constraints": [
+   {
+    "object": "control.artifact_content_columns.artifact_content_columns_column_name_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "control.artifact_content_columns.artifact_content_columns_column_name_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.artifact_content_columns.artifact_content_columns_kind_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "control.artifact_content_columns.artifact_content_columns_kind_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.artifact_content_columns.artifact_content_columns_pkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "PRIMARY KEY"
+   },
+   {
+    "object": "control.artifact_content_columns.artifact_content_columns_registered_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_audits.gate_audits_architecture_generation_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_audits.gate_audits_checked_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_audits.gate_audits_current_valid_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_audits.gate_audits_decision_origin_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_audits.gate_audits_details_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_audits.gate_audits_gate_audit_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_audits.gate_audits_gate_code_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_audits.gate_audits_guard_versions_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_audits.gate_audits_object_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_audits.gate_audits_object_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_audits.gate_audits_reason_codes_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_audits.gate_audits_result_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_audits.gate_audits_run_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_audits.gate_audits_stage_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_candidates.gate_candidates_allowed_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_candidates.gate_candidates_artifact_revision_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_candidates.gate_candidates_candidate_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_candidates.gate_candidates_candidate_status_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_candidates.gate_candidates_consumer_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_candidates.gate_candidates_dependency_snapshot_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_candidates.gate_candidates_evidence_refs_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_candidates.gate_candidates_gate_code_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_candidates.gate_candidates_input_fingerprint_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_candidates.gate_candidates_object_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_candidates.gate_candidates_object_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_candidates.gate_candidates_producer_identity_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_candidates.gate_candidates_purpose_code_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_candidates.gate_candidates_purpose_namespace_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_candidates.gate_candidates_purpose_version_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_candidates.gate_candidates_run_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_candidates.gate_candidates_stage_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_candidates.gate_candidates_submitted_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_policy_versions.gate_policy_versions_enabled_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_policy_versions.gate_policy_versions_gate_code_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_policy_versions.gate_policy_versions_max_validity_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_policy_versions.gate_policy_versions_required_checks_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_policy_versions.gate_policy_versions_rule_version_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_policy_versions.gate_policy_versions_source_ref_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_reviewer_bindings.gate_reviewer_bindings_active_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_reviewer_bindings.gate_reviewer_bindings_allowed_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_reviewer_bindings.gate_reviewer_bindings_binding_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_reviewer_bindings.gate_reviewer_bindings_consumer_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_reviewer_bindings.gate_reviewer_bindings_db_identity_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_reviewer_bindings.gate_reviewer_bindings_gate_code_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_reviewer_bindings.gate_reviewer_bindings_purpose_code_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_reviewer_bindings.gate_reviewer_bindings_purpose_namespace_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_reviewer_bindings.gate_reviewer_bindings_purpose_version_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_reviewer_bindings.gate_reviewer_bindings_reviewer_user_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_reviewer_bindings.gate_reviewer_bindings_source_ref_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_reviewer_bindings.gate_reviewer_bindings_valid_from_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_reviewer_bindings.gate_reviewer_bindings_valid_until_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_service_credentials.gate_service_credentials_allowed_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_service_credentials.gate_service_credentials_capability_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_service_credentials.gate_service_credentials_consumer_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_service_credentials.gate_service_credentials_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_service_credentials.gate_service_credentials_credential_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_service_credentials.gate_service_credentials_db_identity_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_service_credentials.gate_service_credentials_gate_code_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_service_credentials.gate_service_credentials_job_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_service_credentials.gate_service_credentials_principal_user_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_service_credentials.gate_service_credentials_purpose_code_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_service_credentials.gate_service_credentials_purpose_namespace_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_service_credentials.gate_service_credentials_purpose_version_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_service_credentials.gate_service_credentials_reviewer_binding_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_service_credentials.gate_service_credentials_reviewer_binding_ref_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_service_credentials.gate_service_credentials_source_ref_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_service_credentials.gate_service_credentials_token_hash_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_service_credentials.gate_service_credentials_valid_from_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.gate_service_credentials.gate_service_credentials_valid_until_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.invalidation_events.invalidation_events_affected_publication_revisions_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.invalidation_events.invalidation_events_affected_purpose_scope_consumers_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.invalidation_events.invalidation_events_change_event_ref_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.invalidation_events.invalidation_events_changed_dependency_ref_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.invalidation_events.invalidation_events_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.invalidation_events.invalidation_events_dependency_paths_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.invalidation_events.invalidation_events_disposition_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.invalidation_events.invalidation_events_invalidation_event_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.invalidation_events.invalidation_events_producer_method_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.invalidation_events.invalidation_events_unknown_dependency_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.original_bridge_verification_keys.original_bridge_verification_keys_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.original_bridge_verification_keys.original_bridge_verification_keys_is_active_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.original_bridge_verification_keys.original_bridge_verification_keys_key_version_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.original_bridge_verification_keys.original_bridge_verification_keys_verification_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.owner_reviews.owner_reviews_decision_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.owner_reviews.owner_reviews_owner_review_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.owner_reviews.owner_reviews_reviewed_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.owner_reviews.owner_reviews_run_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.owner_reviews.owner_reviews_stage_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.production_runs.production_runs_architecture_generation_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.production_runs.production_runs_execution_mode_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.production_runs.production_runs_metadata_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.production_runs.production_runs_research_intent_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.production_runs.production_runs_run_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.production_runs.production_runs_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.production_runs.production_runs_started_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.production_runs.production_runs_status_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.qualification_current.qualification_current_architecture_generation_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.qualification_current.qualification_current_artifact_revision_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.qualification_current.qualification_current_consumer_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.qualification_current.qualification_current_dependency_fingerprint_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.qualification_current.qualification_current_gate_audit_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.qualification_current.qualification_current_gate_code_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.qualification_current.qualification_current_object_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.qualification_current.qualification_current_object_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.qualification_current.qualification_current_purpose_code_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.qualification_current.qualification_current_purpose_namespace_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.qualification_current.qualification_current_purpose_version_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.qualification_current.qualification_current_reviewer_user_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.qualification_current.qualification_current_rule_version_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.qualification_current.qualification_current_scope_digest_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.qualification_current.qualification_current_valid_from_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.qualification_current.qualification_current_valid_until_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.session_verification_keys.session_verification_keys_key_slot_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.session_verification_keys.session_verification_keys_provisioned_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.session_verification_keys.session_verification_keys_verification_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.web_session_revocations.web_session_revocations_expires_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.web_session_revocations.web_session_revocations_revoked_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.web_session_revocations.web_session_revocations_token_hash_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.web_session_revocations.web_session_revocations_user_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.work_publication_decisions.work_publication_decisions_decision_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.work_publication_decisions.work_publication_decisions_decision_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.work_publication_decisions.work_publication_decisions_reviewed_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.work_publication_decisions.work_publication_decisions_reviewer_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.work_publication_decisions.work_publication_decisions_work_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.classification_decisions.classification_decisions_alternatives_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.classification_decisions.classification_decisions_decided_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.classification_decisions.classification_decisions_decision_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.classification_decisions.classification_decisions_reading_unit_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.material_evidence.material_evidence_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.material_evidence.material_evidence_evidence_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.material_evidence.material_evidence_extraction_method_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.material_evidence.material_evidence_locator_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.material_evidence.material_evidence_maturity_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.material_evidence.material_evidence_modality_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.material_evidence.material_evidence_source_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.material_evidence.material_evidence_source_voice_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.material_evidence.material_evidence_uncertainty_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.material_mentions.material_mentions_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.material_mentions.material_mentions_evidence_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.material_mentions.material_mentions_mention_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.material_mentions.material_mentions_precision_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.material_mentions.material_mentions_span_in_evidence_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.material_mentions.material_mentions_uncertainty_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.read_unit_evidence_links.read_unit_evidence_links_evidence_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.read_unit_evidence_links.read_unit_evidence_links_link_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.read_unit_evidence_links.read_unit_evidence_links_read_run_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.read_unit_evidence_links.read_unit_evidence_links_read_unit_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.read_unit_evidence_links.read_unit_evidence_links_recorded_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.reading_unit_dependencies.reading_unit_dependencies_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.reading_unit_dependencies.reading_unit_dependencies_dependency_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.reading_unit_dependencies.reading_unit_dependencies_from_reading_unit_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.reading_units.reading_units_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "evidence.reading_units.reading_units_reading_unit_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.claim_revisions.claim_revisions_claim_revision_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.claim_revisions.claim_revisions_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.claim_revisions.claim_revisions_finding_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.claim_revisions.claim_revisions_producer_method_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.claim_revisions.claim_revisions_revision_content_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.claim_revisions.claim_revisions_revision_no_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.findings.findings_counter_view_or_alternative_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.findings.findings_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.findings.findings_discovery_method_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.findings.findings_expression_rule_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.findings.findings_finding_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.findings.findings_finding_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.findings.findings_interpretive_statement_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.findings.findings_maturity_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.findings.findings_missing_evidence_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.findings.findings_ranking_components_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.findings.findings_supporting_world_objects_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.findings.findings_uncertainty_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.open_questions.open_questions_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.open_questions.open_questions_missing_evidence_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.open_questions.open_questions_open_question_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.open_questions.open_questions_question_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.open_questions.open_questions_status_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.present_connections.present_connections_basis_world_objects_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.present_connections.present_connections_connection_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.present_connections.present_connections_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.present_connections.present_connections_expression_rule_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.present_connections.present_connections_open_questions_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "meaning.present_connections.present_connections_present_connection_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.app_settings.app_settings_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.app_settings.app_settings_updated_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.app_settings.app_settings_value_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.assets.assets_asset_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.assets.assets_content_sha256_format",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "public.assets.assets_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.assets.assets_kind_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.assets.assets_original_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "public.assets.assets_page_locator_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.assets.assets_page_locator_object",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "public.assets.assets_rights_by_action_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.assets.assets_rights_by_action_object",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "public.assets.assets_rights_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.assets.assets_source_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "public.assets.assets_status_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.assets.assets_title_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.conversations.conversations_conversation_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.conversations.conversations_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.conversations.conversations_messages_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.conversations.conversations_title_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.conversations.conversations_updated_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.director_plans.director_plans_beats_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.director_plans.director_plans_brief_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.director_plans.director_plans_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.director_plans.director_plans_facts_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.director_plans.director_plans_finding_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.director_plans.director_plans_plan_a_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.director_plans.director_plans_plan_b_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.director_plans.director_plans_plan_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.director_plans.director_plans_project_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "public.director_plans.director_plans_source_ids_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.director_plans.director_plans_topic_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.director_plans.director_plans_updated_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.explore_sessions.explore_sessions_archived_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.explore_sessions.explore_sessions_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.explore_sessions.explore_sessions_origin_snapshot_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.explore_sessions.explore_sessions_session_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.help_articles.help_articles_article_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.help_articles.help_articles_content_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.help_articles.help_articles_slug_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.help_articles.help_articles_title_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.help_articles.help_articles_updated_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.imported_materials.imported_materials_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.imported_materials.imported_materials_material_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.imported_materials.imported_materials_owner_user_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.imported_materials.imported_materials_rights_declared_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.imported_materials.imported_materials_text_content_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.imported_materials.imported_materials_title_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.notifications.notifications_body_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.notifications.notifications_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.notifications.notifications_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.notifications.notifications_read_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.notifications.notifications_title_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.notifications.notifications_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.notifications.notifications_user_ref_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.policies.policies_content_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.policies.policies_policy_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.policies.policies_slug_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.policies.policies_title_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.policies.policies_updated_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.research_events.research_events_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.research_events.research_events_event_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.research_events.research_events_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.research_events.research_events_payload_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.research_events.research_events_stage_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.research_events.research_events_task_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.research_tasks.research_tasks_checkpoint_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.research_tasks.research_tasks_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.research_tasks.research_tasks_prompt_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.research_tasks.research_tasks_status_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.research_tasks.research_tasks_task_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.research_tasks.research_tasks_topic_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.research_tasks.research_tasks_updated_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.study_asset_receipts.study_asset_receipts_cost_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.study_asset_receipts.study_asset_receipts_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.study_asset_receipts.study_asset_receipts_kind_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.study_asset_receipts.study_asset_receipts_payload_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.study_asset_receipts.study_asset_receipts_receipt_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.study_asset_receipts.study_asset_receipts_stage_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.study_asset_receipts.study_asset_receipts_status_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.study_asset_receipts.study_asset_receipts_task_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.users.users_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.users.users_email_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.users.users_password_hash_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.users.users_roles_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.users.users_session_not_before_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.users.users_status_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.users.users_updated_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.users.users_user_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.users.users_username_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.watch_sessions.watch_sessions_updated_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.watch_sessions.watch_sessions_work_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.work_engagement.work_engagement_comments_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.work_engagement.work_engagement_favorites_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.work_engagement.work_engagement_updated_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.work_engagement.work_engagement_views_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "public.work_engagement.work_engagement_work_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_artifact_revision_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_content_hash_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_decision_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_decision_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_decision_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_idempotency_key_key",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "UNIQUE"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_idempotency_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_knowledge_gate_audit_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_notes_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_operator_id_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_operator_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_operator_role_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_pkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "PRIMARY KEY"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_project_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_project_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_revision_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_revision_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_rights_gaps_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_rights_snapshot_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_submission_snapshot_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_submission_snapshot_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_work_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.publication_schedules.publication_schedules_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.publication_schedules.publication_schedules_publish_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.publication_schedules.publication_schedules_schedule_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.publication_schedules.publication_schedules_status_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.publication_schedules.publication_schedules_work_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_artifact_revision_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_artifact_revision_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_decision_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_decision_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_idempotency_key_key",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "UNIQUE"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_idempotency_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_pkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "PRIMARY KEY"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_project_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_project_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_publication_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_published_by_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_revision_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_revision_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_rights_snapshot_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_scope_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_submission_snapshot_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_submission_snapshot_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_work_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.published_pointers.published_pointers_publication_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "publication.published_pointers.published_pointers_published_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.published_pointers.published_pointers_published_by_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.published_pointers.published_pointers_source_schema_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "publication.published_pointers.published_pointers_source_schema_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.published_pointers.published_pointers_studio_revision_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "publication.published_pointers.published_pointers_target_exclusive",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "publication.published_pointers.published_pointers_work_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.withdrawals.withdrawals_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.withdrawals.withdrawals_idempotency_key_key",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "UNIQUE"
+   },
+   {
+    "object": "publication.withdrawals.withdrawals_idempotency_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.withdrawals.withdrawals_pkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "PRIMARY KEY"
+   },
+   {
+    "object": "publication.withdrawals.withdrawals_publication_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "publication.withdrawals.withdrawals_publication_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.withdrawals.withdrawals_reason_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.withdrawals.withdrawals_withdrawal_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.withdrawals.withdrawals_withdrawn_by_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.withdrawals.withdrawals_work_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.work_revisions.work_revisions_content_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.work_revisions.work_revisions_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.work_revisions.work_revisions_description_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.work_revisions.work_revisions_revision_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.work_revisions.work_revisions_revision_no_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.work_revisions.work_revisions_status_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.work_revisions.work_revisions_title_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.work_revisions.work_revisions_work_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.works.works_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.works.works_creator_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.works.works_title_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.works.works_updated_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "publication.works.works_work_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.agent_contexts.agent_contexts_agent_context_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.agent_contexts.agent_contexts_context_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.agent_contexts.agent_contexts_derived_from_finding_ids_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.agent_contexts.agent_contexts_generated_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.agent_contexts.agent_contexts_payload_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.discovery_paths.discovery_paths_derived_from_finding_ids_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.discovery_paths.discovery_paths_discovery_path_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.discovery_paths.discovery_paths_generated_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.discovery_paths.discovery_paths_path_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.discovery_paths.discovery_paths_steps_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.evidence_pointers.evidence_pointers_display_locator_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.evidence_pointers.evidence_pointers_evidence_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.evidence_pointers.evidence_pointers_evidence_pointer_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.evidence_pointers.evidence_pointers_generated_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.evidence_pointers.evidence_pointers_source_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.map_timeline_projections.map_timeline_projections_derived_from_world_objects_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.map_timeline_projections.map_timeline_projections_generated_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.map_timeline_projections.map_timeline_projections_map_timeline_projection_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.map_timeline_projections.map_timeline_projections_payload_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.map_timeline_projections.map_timeline_projections_projection_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.story_seeds.story_seeds_derived_from_finding_ids_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.story_seeds.story_seeds_evidence_pointer_ids_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.story_seeds.story_seeds_generated_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.story_seeds.story_seeds_payload_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.story_seeds.story_seeds_seed_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.story_seeds.story_seeds_story_seed_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.world_projections.world_projections_derived_from_finding_ids_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.world_projections.world_projections_expression_rule_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.world_projections.world_projections_generated_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.world_projections.world_projections_payload_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.world_projections.world_projections_projection_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "read_model.world_projections.world_projections_projection_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_attempts.acquisition_attempts_access_restrictions_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_attempts.acquisition_attempts_alternatives_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_attempts.acquisition_attempts_attempt_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_attempts.acquisition_attempts_candidate_ref_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_attempts.acquisition_attempts_cost_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_attempts.acquisition_attempts_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_attempts.acquisition_attempts_dependency_refs_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_attempts.acquisition_attempts_execution_environment_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_attempts.acquisition_attempts_method_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_attempts.acquisition_attempts_method_version_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_attempts.acquisition_attempts_need_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_attempts.acquisition_attempts_pagination_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_attempts.acquisition_attempts_project_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_attempts.acquisition_attempts_request_digest_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_attempts.acquisition_attempts_result_state_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_attempts.acquisition_attempts_rights_actions_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_attempts.acquisition_attempts_source_locator_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_attempts.acquisition_attempts_started_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_coverages.acquisition_coverages_attempt_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_coverages.acquisition_coverages_completeness_state_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_coverages.acquisition_coverages_coverage_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_coverages.acquisition_coverages_coverage_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_coverages.acquisition_coverages_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_coverages.acquisition_coverages_missing_parts_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_coverages.acquisition_coverages_project_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_coverages.acquisition_coverages_verified_against_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_methods.acquisition_methods_access_mode_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_methods.acquisition_methods_alternatives_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_methods.acquisition_methods_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_methods.acquisition_methods_failure_modes_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_methods.acquisition_methods_method_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_methods.acquisition_methods_method_state_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_methods.acquisition_methods_method_version_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_methods.acquisition_methods_preconditions_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_methods.acquisition_methods_recommended_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_methods.acquisition_methods_resource_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_methods.acquisition_methods_steps_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.acquisition_methods.acquisition_methods_success_criteria_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.candidate_verifications.candidate_verifications_catalog_entry_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.candidate_verifications.candidate_verifications_checks_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.candidate_verifications.candidate_verifications_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.candidate_verifications.candidate_verifications_method_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.candidate_verifications.candidate_verifications_method_version_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.candidate_verifications.candidate_verifications_project_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.candidate_verifications.candidate_verifications_reason_code_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.candidate_verifications.candidate_verifications_verdict_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.candidate_verifications.candidate_verifications_verification_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.original_provider_traces.original_provider_traces_aggregated_record_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.original_provider_traces.original_provider_traces_checked_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.original_provider_traces.original_provider_traces_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.original_provider_traces.original_provider_traces_holding_ref_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.original_provider_traces.original_provider_traces_origin_state_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.original_provider_traces.original_provider_traces_original_provider_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.original_provider_traces.original_provider_traces_produced_by_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.original_provider_traces.original_provider_traces_project_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.original_provider_traces.original_provider_traces_provenance_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.original_provider_traces.original_provider_traces_rights_layers_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.original_provider_traces.original_provider_traces_trace_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.priority_assessments.priority_assessments_assessment_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.priority_assessments.priority_assessments_catalog_entry_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.priority_assessments.priority_assessments_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.priority_assessments.priority_assessments_criteria_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.priority_assessments.priority_assessments_decision_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.priority_assessments.priority_assessments_method_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.priority_assessments.priority_assessments_method_version_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.priority_assessments.priority_assessments_need_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.priority_assessments.priority_assessments_project_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.priority_assessments.priority_assessments_rationale_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.raw_items.raw_items_checksum_sha256_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.raw_items.raw_items_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.raw_items.raw_items_raw_item_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.raw_items.raw_items_source_version_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.raw_items.raw_items_storage_ref_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.read_handoffs.read_handoffs_consumer_stage_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.read_handoffs.read_handoffs_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.read_handoffs.read_handoffs_handoff_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.read_handoffs.read_handoffs_read_run_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.read_quality_checks.read_quality_checks_check_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.read_quality_checks.read_quality_checks_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.read_quality_checks.read_quality_checks_read_run_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.read_runs.read_runs_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.read_runs.read_runs_input_sha256_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.read_runs.read_runs_read_run_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.read_runs.read_runs_status_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.read_units.read_units_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.read_units.read_units_method_code_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.read_units.read_units_read_run_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.read_units.read_units_read_unit_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.resource_catalog.resource_catalog_availability_state_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.resource_catalog.resource_catalog_catalog_entry_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.resource_catalog.resource_catalog_catalog_title_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.resource_catalog.resource_catalog_coverage_hint_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.resource_catalog.resource_catalog_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.resource_catalog.resource_catalog_discovered_by_method_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.resource_catalog.resource_catalog_evidence_ref_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.resource_catalog.resource_catalog_method_version_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.resource_catalog.resource_catalog_need_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.resource_catalog.resource_catalog_project_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.resource_catalog.resource_catalog_provider_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.resource_catalog.resource_catalog_rights_hint_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.source_needs.source_needs_coverage_dimensions_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.source_needs.source_needs_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.source_needs.source_needs_existing_stock_gap_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.source_needs.source_needs_need_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.source_needs.source_needs_produced_by_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.source_needs.source_needs_project_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.source_needs.source_needs_research_intent_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.source_needs.source_needs_rights_boundary_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.source_needs.source_needs_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.source_versions.source_versions_checksum_sha256_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.source_versions.source_versions_metadata_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.source_versions.source_versions_retrieved_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.source_versions.source_versions_rights_snapshot_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.source_versions.source_versions_source_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.source_versions.source_versions_source_version_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.sources.sources_carrier_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.sources.sources_content_availability_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.sources.sources_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.sources.sources_original_locator_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.sources.sources_provenance_status_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.sources.sources_provider_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.sources.sources_rights_by_action_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.sources.sources_rights_evidence_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.sources.sources_rights_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.sources.sources_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.sources.sources_source_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.sources.sources_source_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "source.sources.sources_title_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_heads.asset_heads_asset_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_heads.asset_heads_asset_kind_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_heads.asset_heads_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_heads.asset_heads_project_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_links.asset_links_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_links.asset_links_link_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_links.asset_links_link_role_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_links.asset_links_project_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_links.asset_links_rights_decision_ref_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_links.asset_links_source_revision_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_links.asset_links_target_kind_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_links.asset_links_target_ref_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_links.asset_links_target_revision_ref_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_access_state_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_actor_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_asset_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_content_hash_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_content_state_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_correlation_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_dependency_refs_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_epistemic_class_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_formal_l_refs_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_freshness_state_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_idempotency_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_origin_kind_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_origin_task_snapshot_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_payload_format_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_permission_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_provenance_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_revision_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_revision_no_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_rights_by_action_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_source_refs_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_validation_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.asset_revisions.asset_revisions_workspace_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_allowed_actions_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_budget_limit_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_currency_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_delegation_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_delegation_revision_no_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_delegation_series_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_engine_version_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_executor_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_expires_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_idempotency_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_input_manifest_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_output_schema_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_policy_version_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_project_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_provider_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_request_hash_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_requester_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_root_task_ref_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_root_task_snapshot_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_subtask_ref_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.delegations.delegations_transfer_rights_decision_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.director_plans.director_plans_alternative_plans_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.director_plans.director_plans_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.director_plans.director_plans_depends_on_agent_contexts_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.director_plans.director_plans_depends_on_projections_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.director_plans.director_plans_depends_on_story_seeds_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.director_plans.director_plans_h1_discovery_refs_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.director_plans.director_plans_h2_decisions_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.director_plans.director_plans_h3_beats_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.director_plans.director_plans_media_refs_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.director_plans.director_plans_method_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.director_plans.director_plans_method_version_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.director_plans.director_plans_payload_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.director_plans.director_plans_pkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "PRIMARY KEY"
+   },
+   {
+    "object": "studio.director_plans.director_plans_plan_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.director_plans.director_plans_project_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "studio.director_plans.director_plans_project_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.director_plans.director_plans_qualification_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.director_plans.director_plans_qualification_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.director_plans.director_plans_title_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_control_events.execution_control_events_actor_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "studio.execution_control_events.execution_control_events_actor_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_control_events.execution_control_events_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_control_events.execution_control_events_delegation_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "studio.execution_control_events.execution_control_events_delegation_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_control_events.execution_control_events_event_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_control_events.execution_control_events_operation_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.execution_control_events.execution_control_events_operation_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_control_events.execution_control_events_pkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "PRIMARY KEY"
+   },
+   {
+    "object": "studio.execution_control_events.execution_control_events_request_id_key",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "UNIQUE"
+   },
+   {
+    "object": "studio.execution_control_events.execution_control_events_request_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_control_events.execution_control_events_request_payload_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.execution_control_events.execution_control_events_request_payload_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_control_events.execution_control_events_result_state_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.execution_control_events.execution_control_events_result_state_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_check1",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_check2",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_checkpoint_payload_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_checkpoint_payload_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_delegation_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_delegation_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_external_attempted_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_input_digest_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_input_digest_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_pkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "PRIMARY KEY"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_policy_version_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_reserved_cost_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_reserved_cost_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_spent_cost_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_spent_cost_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_state_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_state_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_unknown_cost_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_updated_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_version_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_version_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_receipts.execution_receipts_acceptance_state_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_receipts.execution_receipts_actual_engine_version_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_receipts.execution_receipts_actual_provider_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_receipts.execution_receipts_attempt_no_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_receipts.execution_receipts_candidate_refs_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_receipts.execution_receipts_cost_confidence_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_receipts.execution_receipts_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_receipts.execution_receipts_delegation_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_receipts.execution_receipts_receipt_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_receipts.execution_receipts_request_hash_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.execution_receipts.execution_receipts_result_manifest_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.private_originals.private_originals_asset_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.private_originals.private_originals_byte_size_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.private_originals.private_originals_content_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.private_originals.private_originals_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.private_originals.private_originals_file_name_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.private_originals.private_originals_idempotency_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.private_originals.private_originals_original_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.private_originals.private_originals_owner_user_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.private_originals.private_originals_project_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.private_originals.private_originals_rights_declared_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.private_originals.private_originals_sha256_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.private_originals.private_originals_state_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.private_originals.private_originals_storage_bucket_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.private_originals.private_originals_storage_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.projects.projects_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.projects.projects_lifecycle_status_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.projects.projects_owner_user_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.projects.projects_project_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.projects.projects_project_title_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.projects.projects_research_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.reference_kinds.reference_kinds_pkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "PRIMARY KEY"
+   },
+   {
+    "object": "studio.reference_kinds.reference_kinds_ref_type_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.reference_kinds.reference_kinds_ref_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.reference_kinds.reference_kinds_registered_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.reference_kinds.reference_kinds_target_key_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.reference_kinds.reference_kinds_target_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.reference_kinds.reference_kinds_target_schema_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.reference_kinds.reference_kinds_target_schema_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.reference_kinds.reference_kinds_target_table_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.reference_kinds.reference_kinds_target_table_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_artifact_revision_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_artifact_revision_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_content_hash_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_content_hash_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_knowledge_gate_audit_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_payload_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_pkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "PRIMARY KEY"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_project_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_project_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_revision_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_revision_id_key",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "UNIQUE"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_revision_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_revision_no_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_revision_no_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_snapshot_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_submitted_by_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_work_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.use_events.use_events_actor_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.use_events.use_events_asset_revision_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.use_events.use_events_consumer_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.use_events.use_events_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.use_events.use_events_project_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.use_events.use_events_purpose_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.use_events.use_events_requested_action_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.use_events.use_events_rights_decision_ref_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.use_events.use_events_use_event_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_beats_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_content_hash_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_content_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_creator_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_depends_on_agent_contexts_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_depends_on_director_plan_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_depends_on_projections_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_depends_on_story_seeds_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_payload_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_pkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "PRIMARY KEY"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_project_id_fkey",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_project_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_publication_status_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_publication_status_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_qualification_check",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_qualification_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_revision_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_revision_no_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_source_and_rights_refs_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_title_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_work_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_work_id_revision_no_key",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "UNIQUE"
+   },
+   {
+    "object": "world.changes.changes_change_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.changes.changes_change_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.changes.changes_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.changes.changes_expression_rule_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.changes.changes_maturity_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.changes.changes_time_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.claim_evidence_links.claim_evidence_links_claim_evidence_link_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.claim_evidence_links.claim_evidence_links_claim_object_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.claim_evidence_links.claim_evidence_links_claim_object_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.claim_evidence_links.claim_evidence_links_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.claim_evidence_links.claim_evidence_links_evidence_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.claim_evidence_links.claim_evidence_links_support_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.claim_revisions.claim_revisions_claim_revision_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.claim_revisions.claim_revisions_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.claim_revisions.claim_revisions_object_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.claim_revisions.claim_revisions_object_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.claim_revisions.claim_revisions_producer_method_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.claim_revisions.claim_revisions_revision_content_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.claim_revisions.claim_revisions_revision_no_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.conflicts.conflicts_conflict_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.conflicts.conflicts_conflict_key_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.conflicts.conflicts_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.conflicts.conflicts_object_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.conflicts.conflicts_object_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.conflicts.conflicts_resolution_status_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.conflicts.conflicts_variant_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.dependency_edges.dependency_edges_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.dependency_edges.dependency_edges_dependency_edge_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.dependency_edges.dependency_edges_dependency_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.dependency_edges.dependency_edges_from_object_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.dependency_edges.dependency_edges_from_object_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.dependency_edges.dependency_edges_producer_method_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.dependency_edges.dependency_edges_to_object_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.dependency_edges.dependency_edges_to_object_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.entities.entities_aliases_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.entities.entities_attributes_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.entities.entities_canonical_label_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.entities.entities_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.entities.entities_entity_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.entities.entities_entity_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.entities.entities_maturity_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.event_participations.event_participations_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.event_participations.event_participations_entity_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.event_participations.event_participations_event_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.event_participations.event_participations_event_participation_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.event_participations.event_participations_expression_rule_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.event_participations.event_participations_role_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.event_participations.event_participations_temporal_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.events.events_attributes_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.events.events_canonical_label_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.events.events_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.events.events_event_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.events.events_event_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.events.events_maturity_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.events.events_space_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.events.events_time_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.historical_space_claims.historical_space_claims_claim_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.historical_space_claims.historical_space_claims_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.historical_space_claims.historical_space_claims_expression_rule_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.historical_space_claims.historical_space_claims_historical_space_claim_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.historical_space_claims.historical_space_claims_maturity_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.historical_space_claims.historical_space_claims_precision_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.historical_space_claims.historical_space_claims_time_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.historical_space_claims.historical_space_claims_uncertainty_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.identity_decision_evidence.identity_decision_evidence_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.identity_decision_evidence.identity_decision_evidence_evidence_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.identity_decision_evidence.identity_decision_evidence_identity_decision_evidence__not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.identity_decision_evidence.identity_decision_evidence_identity_decision_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.identity_decision_evidence.identity_decision_evidence_support_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.identity_decisions.identity_decisions_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.identity_decisions.identity_decisions_decision_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.identity_decisions.identity_decisions_entity_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.identity_decisions.identity_decisions_identity_decision_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.identity_decisions.identity_decisions_merged_entity_ids_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.identity_decisions.identity_decisions_producer_method_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.identity_decisions.identity_decisions_rationale_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.identity_decisions.identity_decisions_temporal_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.identity_decisions.identity_decisions_upstream_g2_snapshot_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.provenance_assessments.provenance_assessments_assessment_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.provenance_assessments.provenance_assessments_claim_object_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.provenance_assessments.provenance_assessments_claim_object_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.provenance_assessments.provenance_assessments_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.provenance_assessments.provenance_assessments_evidence_input_snapshot_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.provenance_assessments.provenance_assessments_is_independent_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.provenance_assessments.provenance_assessments_producer_method_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.provenance_assessments.provenance_assessments_provenance_assessment_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.provenance_assessments.provenance_assessments_rationale_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.provenance_assessments.provenance_assessments_source_lineage_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.relation_claims.relation_claims_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.relation_claims.relation_claims_expression_rule_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.relation_claims.relation_claims_maturity_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.relation_claims.relation_claims_relation_claim_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.relation_claims.relation_claims_relation_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.relation_claims.relation_claims_space_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.relation_claims.relation_claims_time_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.visual_objects.visual_objects_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.visual_objects.visual_objects_maturity_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.visual_objects.visual_objects_visual_object_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.visual_objects.visual_objects_visual_type_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.world_decision_events.world_decision_events_affected_scope_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.world_decision_events.world_decision_events_created_at_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.world_decision_events.world_decision_events_previous_input_snapshot_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "world.world_decision_events.world_decision_events_world_decision_event_id_not_null",
+    "kind": "CONSTRAINT_LOCAL_ONLY",
+    "type": "n"
+   },
+   {
+    "object": "control.web_password_reset_request_budget.web_password_reset_request_budget_pkey",
+    "kind": "CONSTRAINT_CLOUD_ONLY",
+    "type": "PRIMARY KEY"
+   },
+   {
+    "object": "control.web_password_reset_request_budget.web_password_reset_request_budget_requests_check",
+    "kind": "CONSTRAINT_CLOUD_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "control.web_password_reset_request_budget.web_password_reset_request_budget_singleton_check",
+    "kind": "CONSTRAINT_CLOUD_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "control.web_password_resets.web_password_resets_check",
+    "kind": "CONSTRAINT_CLOUD_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "control.web_password_resets.web_password_resets_pkey",
+    "kind": "CONSTRAINT_CLOUD_ONLY",
+    "type": "PRIMARY KEY"
+   },
+   {
+    "object": "control.web_password_resets.web_password_resets_requests_check",
+    "kind": "CONSTRAINT_CLOUD_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "control.web_password_resets.web_password_resets_session_epoch_check",
+    "kind": "CONSTRAINT_CLOUD_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "control.web_password_resets.web_password_resets_token_hash_check",
+    "kind": "CONSTRAINT_CLOUD_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "control.web_password_resets.web_password_resets_token_hash_key",
+    "kind": "CONSTRAINT_CLOUD_ONLY",
+    "type": "UNIQUE"
+   },
+   {
+    "object": "control.web_password_resets.web_password_resets_user_id_fkey",
+    "kind": "CONSTRAINT_CLOUD_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "publication.published_pointers.published_pointers_work_id_fkey",
+    "kind": "CONSTRAINT_CLOUD_ONLY",
+    "type": "FOREIGN KEY"
+   },
+   {
+    "object": "source.source_versions.source_versions_rights_snapshot_object",
+    "kind": "CONSTRAINT_CLOUD_ONLY",
+    "type": "CHECK"
+   },
+   {
+    "object": "source.sources.sources_rights_by_action_object",
+    "kind": "CONSTRAINT_DEFINITION_DIFFERENT",
+    "local": "CHECK ((jsonb_typeof(rights_by_action) = 'object'::text))",
+    "cloud": "CHECK (((jsonb_typeof(rights_by_action) = 'object'::text) AND source.is_rights_actions_valid(rights_by_action)))"
+   }
+  ],
+  "policies": [
+   {
+    "object": "control.artifact_content_columns.k5_content_columns",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "control.gate_audits.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "control.gate_candidates.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "control.gate_policy_versions.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "control.gate_reviewer_bindings.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "control.original_bridge_verification_keys.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "control.production_runs.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "control.production_runs.producer_run_progress",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "control.qualification_current.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "evidence.material_evidence.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "evidence.read_unit_evidence_links.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "evidence.reading_units.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "meaning.findings.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "public.users.studio_execution_identity",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_app_runtime_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_operator_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_app_runtime_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_operator_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.withdrawals.withdrawals_app_runtime_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.withdrawals.withdrawals_operator_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "read_model.world_projections.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "source.raw_items.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "source.read_runs.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "source.read_units.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "source.source_versions.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "source.sources.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.delegations.studio_execution_delegation",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.director_plans.director_plans_app_runtime_rw",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.director_plans.director_plans_gate_authority_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.execution_control_events.studio_execution_event_authority",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.execution_control_events.studio_execution_event_owner",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.execution_controls.studio_execution_authority",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.execution_controls.studio_execution_owner",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.execution_receipts.studio_execution_receipt",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.private_originals.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.projects.studio_execution_project",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.reference_kinds.studio_reference_kinds_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_app_runtime_rw",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_gate_authority_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_app_runtime_rw",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_gate_authority_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "world.claim_evidence_links.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "world.claim_revisions.k3_artifact_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "world.claim_revisions.m5_machine_reviewer_read",
+    "kind": "POLICY_LOCAL_ONLY"
+   },
+   {
+    "object": "control.gate_audits.k3_gate_signer_audit_read",
+    "kind": "POLICY_CLOUD_ONLY"
+   }
+  ],
+  "triggers": [
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_immutable",
+    "kind": "TRIGGER_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_immutable",
+    "kind": "TRIGGER_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.published_pointers.published_pointers_target_guard",
+    "kind": "TRIGGER_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.withdrawals.withdrawals_immutable",
+    "kind": "TRIGGER_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.asset_revisions.studio_asset_revision_reference_guard",
+    "kind": "TRIGGER_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.execution_control_events.studio_execution_event_no_truncate",
+    "kind": "TRIGGER_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.execution_control_events.studio_execution_event_permanent",
+    "kind": "TRIGGER_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.execution_controls.studio_execution_control_no_truncate",
+    "kind": "TRIGGER_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.execution_controls.studio_execution_control_permanent",
+    "kind": "TRIGGER_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_immutable",
+    "kind": "TRIGGER_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.use_events.studio_use_event_guard",
+    "kind": "TRIGGER_LOCAL_ONLY"
+   }
+  ],
+  "functions": [
+   {
+    "object": "public.armor.bytea",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.armor.bytea, text[], text[]",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.crypt.text, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.dearmor.text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.decrypt.bytea, bytea, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.decrypt_iv.bytea, bytea, bytea, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.digest.text, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.digest.bytea, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.encrypt.bytea, bytea, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.encrypt_iv.bytea, bytea, bytea, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.fips_mode.",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.gen_random_bytes.integer",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.gen_random_uuid.",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.gen_salt.text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.gen_salt.text, integer",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.hmac.text, text, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.hmac.bytea, bytea, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_armor_headers.text, OUT key text, OUT value text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_key_id.bytea",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_pub_decrypt.bytea, bytea, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_pub_decrypt.bytea, bytea",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_pub_decrypt.bytea, bytea, text, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_pub_decrypt_bytea.bytea, bytea",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_pub_decrypt_bytea.bytea, bytea, text, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_pub_decrypt_bytea.bytea, bytea, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_pub_encrypt.text, bytea",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_pub_encrypt.text, bytea, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_pub_encrypt_bytea.bytea, bytea, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_pub_encrypt_bytea.bytea, bytea",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_sym_decrypt.bytea, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_sym_decrypt.bytea, text, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_sym_decrypt_bytea.bytea, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_sym_decrypt_bytea.bytea, text, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_sym_encrypt.text, text, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_sym_encrypt.text, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_sym_encrypt_bytea.bytea, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "public.pgp_sym_encrypt_bytea.bytea, text, text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.decide_editorial.p_decision_id uuid, p_work_id uuid, p_revision_id uuid, p_decision text, p_operator_id text, p_notes text, p_idempotency_key text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.editorial_decisions_immutable.",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.publication_snapshots_immutable.",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.publish_exact_revision.p_publication_id uuid, p_work_id uuid, p_revision_id uuid, p_operator_id text, p_idempotency_key text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.published_pointers_target_guard.",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.withdraw_publication.p_withdrawal_id uuid, p_work_id uuid, p_publication_id uuid, p_operator_id text, p_reason text, p_idempotency_key text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.withdrawals_immutable.",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.apply_execution_control.p_operation text, p_input jsonb",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.asset_consumption_disposition.p_revision_id uuid, p_action text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.asset_verified_original_bindings.p_revision_id uuid",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.guard_asset_revision_references.",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.guard_asset_use_event.",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.persist_private_agent_context.p_context uuid, p_context_key text, p_finding_ids uuid[], p_context_spec jsonb",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.persist_private_director_plan.p_plan_id uuid, p_project_id uuid, p_title text, p_story_seed_ids uuid[], p_agent_context_ids uuid[], p_projection_ids uuid[], p_h1_discovery_refs uuid[], p_h2_decisions jsonb, p_h3_beats jsonb, p_spec jsonb",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.persist_private_story_seed.p_story_seed uuid, p_seed_key text, p_finding_ids uuid[], p_seed_spec jsonb",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.persist_private_submission_snapshot.p_snapshot_id uuid, p_revision_id uuid, p_project_id uuid, p_submitted_by text",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.persist_private_work_revision.p_work_id uuid, p_revision_id uuid, p_revision_no integer, p_expected_revision_no integer, p_project_id uuid, p_creator_id text, p_title text, p_content jsonb, p_beats jsonb, p_source_and_rights_refs jsonb, p_depends_on_director_plan uuid",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.private_work_rights_summary.p_revision_id uuid, p_project_id uuid, p_actions text[]",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.protect_execution_control.",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.resolve_asset_reference.p_ref jsonb",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.resolve_asset_references.p_refs jsonb",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.submission_snapshots_immutable.",
+    "kind": "FUNCTION_LOCAL_ONLY"
+   },
+   {
+    "object": "control.m5_reconcile_legacy_unclaimed_run.p_run_id uuid, p_reason text",
+    "kind": "FUNCTION_CLOUD_ONLY"
+   },
+   {
+    "object": "control.m5_write_production_progress.p_run_id uuid, p_owner_token text, p_action text, p_stage text, p_status text, p_terminal jsonb",
+    "kind": "FUNCTION_CLOUD_ONLY"
+   },
+   {
+    "object": "pgbouncer.get_auth.p_usename text",
+    "kind": "FUNCTION_CLOUD_ONLY"
+   },
+   {
+    "object": "studio.search_qualified_project_layers.p_project_id uuid, p_namespace text, p_code text, p_version text, p_scope jsonb, p_terms text[], p_limit integer",
+    "kind": "FUNCTION_CLOUD_ONLY"
+   }
+  ],
+  "indexes": [
+   {
+    "object": "control.artifact_content_columns.artifact_content_columns_pkey",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "public.assets.assets_original_unique",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "public.director_plans.director_plans_project_id_idx",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_idempotency_key_key",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_pkey",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.editorial_decisions.editorial_decisions_revision_idx",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_idempotency_key_key",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.publication_snapshots.publication_snapshots_pkey",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.withdrawals.withdrawals_idempotency_key_key",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "publication.withdrawals.withdrawals_pkey",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.director_plans.director_plans_pkey",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.execution_control_events.execution_control_events_pkey",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.execution_control_events.execution_control_events_request_id_key",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.execution_control_events.studio_execution_events_delegation",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.execution_controls.execution_controls_pkey",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.reference_kinds.reference_kinds_pkey",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_pkey",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.submission_snapshots.submission_snapshots_revision_id_key",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_pkey",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "studio.work_revisions.work_revisions_work_id_revision_no_key",
+    "kind": "INDEX_LOCAL_ONLY"
+   },
+   {
+    "object": "control.web_password_reset_request_budget.web_password_reset_request_budget_pkey",
+    "kind": "INDEX_CLOUD_ONLY"
+   },
+   {
+    "object": "control.web_password_resets.web_password_resets_pkey",
+    "kind": "INDEX_CLOUD_ONLY"
+   },
+   {
+    "object": "control.web_password_resets.web_password_resets_token_hash_key",
+    "kind": "INDEX_CLOUD_ONLY"
+   }
+  ]
+ }
+}

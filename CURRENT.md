@@ -2,7 +2,9 @@
 
 > **核验日期：2026-11-19。** 本次代码核验基线为main SHA `380428f1866b33ba14abb345b01f83154935cfe3`；上一进展证据追加提交为`c81436648614f9ae485235eefaac50704850e986`。本轮断点01定向诊断记录见progress最新批次。施工标准仍为PLAN V1.7（八维口径提交`d74243db76fa541278ac2372681ed8b111e12f2c`）。本文件只记录当前事实与下一最前阻断，不替代PLAN。
 >
-> **2026-11-19 工程数据统一专项（MOHEN-ENGINEERING-DATA-UNIFICATION-01）P0 已完成：** 本地 main 已由 `b137483` 快进对齐 GitHub main `709f4dd`（本地原落后379提交、零独有提交，无工程成果丢失）。Vercel 最新部署 `dpl_BxpZG6SP455F51fEtoP2t4pEX5hC`（Preview Ready）对应提交 `6e31431`，与 main HEAD 差异仅10个docs-only提交。本地未跟踪文件全部为临时诊断脚本与运行时状态，已备份编目，无归档价值。阶段状态 P0=INVENTORY_COMPLETE。专项交付物见 `tasks/results/MAB/ENGINEERING_DATA_UNIFICATION/`。下一阶段 P1：本地 mohen_dev 与云端 mohen-cloud 数据库结构盘点比较。
+> **2026-11-19 工程数据统一专项（MOHEN-ENGINEERING-DATA-UNIFICATION-01）P0 已完成：** 本地 main 已由 `b137483` 快进对齐 GitHub main `709f4dd`（本地原落后379提交、零独有提交，无工程成果丢失）。Vercel 最新部署 `dpl_BxpZG6SP455F51fEtoP2t4pEX5hC`（Preview Ready）对应提交 `6e31431`，与 main HEAD 差异仅10个docs-only提交。本地未跟踪文件全部为临时诊断脚本与运行时状态，已备份编目，无归档价值。阶段状态 P0=INVENTORY_COMPLETE。专项交付物见 `tasks/results/MAB/ENGINEERING_DATA_UNIFICATION/`。
+>
+> **2026-11-19 专项 P1 已完成（只读盘点）：** 双端数据库结构差异已全部归因：本地 PG18.6 / 云端 PG17.11（764 个 NOT NULL 约束差异为版本伪差）；本地独有 10 张有数据的表（M4 执行控制、ST-07/08/09 出版链、导演计划、artifact_content_columns 等，来自云端未安装的 24 个仓库迁移）；云端独有正式知识读取函数 search_qualified_project_layers、密码恢复表与更强 sources 权利 CHECK；**85 张共有表 RLS 云端全部启用、本地全部未启用**（本地 124 条策略因 RLS 关闭全部不生效，安全基线以云端为准）；本地无迁移账本、云端 29 条账本按名称映射到仓库迁移。交付物：DATABASE_SCHEMA_LOCAL/CLOUD/DIFF.json、DATABASE_MIGRATION_VERSION_DIFF.json、cloud_migration_ledger.json、DATABASE_STRUCTURE_RECONCILIATION.md。阶段状态 P1=INVENTORY_COMPLETE。下一阶段 P2：双端业务数据只读盘点。
 
 ## 1. 唯一业务目标
 
