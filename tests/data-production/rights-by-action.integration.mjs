@@ -1,4 +1,4 @@
-// MAB 5 (20261108110000): the per-action rights columns default to empty objects (unknown =
+// MAB M5 (20261119110000): the per-action rights columns default to empty objects (unknown =
 // HOLD), accept only jsonb objects, and a source-version rights snapshot can be fixed exactly
 // once — afterwards it is immutable. These assertions pin that contract against silent drift.
 import assert from "node:assert/strict";
@@ -28,13 +28,13 @@ const insertSource = (rights = "'{}'", evidence = "'{}'") =>
    values('${sourceId}','TEST_ONLY','TEST_ONLY rights fixture','fixture','text','full_content',${rights},${evidence})`;
 
 // Negative: arrays and bare strings are not objects — the CHECK constraints reject them.
-assert.throws(() => sql(insertSource(`'["read_original"]'`)), /sources_rights_by_action_object/);
-assert.throws(() => sql(insertSource(`'{"read_original":"allowed"}'`, `'["owner-decision"]'`)), /sources_rights_evidence_object/);
-assert.throws(() => sql(insertSource(`'"read_original"'`)), /sources_rights_by_action_object/);
+assert.throws(() => sql(insertSource(`'["machine_read"]'`)), /sources_rights_by_action_object/);
+assert.throws(() => sql(insertSource(`'{"machine_read":"allowed"}'`, `'["owner-decision"]'`)), /sources_rights_evidence_object/);
+assert.throws(() => sql(insertSource(`'"machine_read"'`)), /sources_rights_by_action_object/);
 
 // Positive: explicit per-action objects are accepted and readable.
-sql(insertSource(`'{"read_original":"allowed","publish_excerpt":"unknown"}'`, `'{"read_original":{"basis":"owner-decision","captured_at":"2026-11-09"}}'`));
-assert.equal(sql(`select rights_by_action->>'read_original' from source.sources where source_id='${sourceId}'`), "allowed");
+sql(insertSource(`'{"machine_read":"allowed","display":"unknown"}'`, `'{"machine_read":{"basis":"owner-decision","captured_at":"2026-11-09"}}'`));
+assert.equal(sql(`select rights_by_action->>'machine_read' from source.sources where source_id='${sourceId}'`), "allowed");
 
 // Version fixture: a fresh snapshot starts empty.
 const versionId = "aaaa0000-0000-4000-8000-0000000000a1";
@@ -42,16 +42,16 @@ sql(`insert into source.source_versions(source_version_id,source_id,checksum_sha
 assert.equal(sql(`select rights_snapshot from source.source_versions where source_version_id='${versionId}'`), "{}");
 
 // Positive: the empty snapshot may be fixed once with an explicit object.
-sql(`update source.source_versions set rights_snapshot='{"read_original":"allowed"}' where source_version_id='${versionId}'`);
-assert.equal(sql(`select rights_snapshot->>'read_original' from source.source_versions where source_version_id='${versionId}'`), "allowed");
+sql(`update source.source_versions set rights_snapshot='{"machine_read":"allowed"}' where source_version_id='${versionId}'`);
+assert.equal(sql(`select rights_snapshot->>'machine_read' from source.source_versions where source_version_id='${versionId}'`), "allowed");
 
 // Negative: once non-empty it is immutable, and it can never become a non-object.
-assert.throws(() => sql(`update source.source_versions set rights_snapshot='{"read_original":"denied"}' where source_version_id='${versionId}'`), /RIGHTS_SNAPSHOT_IMMUTABLE/);
+assert.throws(() => sql(`update source.source_versions set rights_snapshot='{"machine_read":"denied"}' where source_version_id='${versionId}'`), /RIGHTS_SNAPSHOT_IMMUTABLE/);
 assert.throws(() => sql(`update source.source_versions set rights_snapshot='[]' where source_version_id='${versionId}'`), /RIGHTS_SNAPSHOT_INVALID/);
 
 // Negative: even the one-time write must be an object (fresh row, still empty).
 const version2 = "aaaa0000-0000-4000-8000-0000000000a2";
 sql(`insert into source.source_versions(source_version_id,source_id,checksum_sha256) values('${version2}','${sourceId}','${"d".repeat(64)}')`);
-assert.throws(() => sql(`update source.source_versions set rights_snapshot='["read_original"]' where source_version_id='${version2}'`), /RIGHTS_SNAPSHOT_INVALID/);
+assert.throws(() => sql(`update source.source_versions set rights_snapshot='["machine_read"]' where source_version_id='${version2}'`), /RIGHTS_SNAPSHOT_INVALID/);
 
 console.log("MAB_RIGHTS_BY_ACTION_PASS columns-default-empty object-checks-enforced snapshot-one-time-write snapshot-immutable");
