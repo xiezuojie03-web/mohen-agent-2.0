@@ -135,10 +135,19 @@
 - 资产盘活先只读盘点：生成对象级清单，追踪source→version→raw→read_run/read_unit→evidence→world/meaning→read_model→gate audit/qualification依赖；按`REUSE_AS_IS`、`REUSE_AFTER_REVIEW`、`REPAIR_PROVENANCE_OR_RIGHTS`、`REBUILD_ONLY_IF_IRRECOVERABLE`分类。不得批量改写历史Gate、手工插入qualification_current或重复付费重跑。
 - 后续外部资源到D00—D05的端到端生产验证，应与历史资产盘活相互衔接：先复用可恢复对象和已验证能力，再仅生产真实缺口；不为证明单Runner而把已有的合格独立对象全部重做。
 
-### 8.4 历史run迁移覆盖并非完整
+### 8.4 历史run ID精确核对与纠错
 
-按run_id直接核对当前云端`control.production_runs`：A001 `5176ade3-2892-4179-96d0-c27184b42ebd`及朱家角 `33333333-3333-4333-8333-333333333333`存在；SAMPLE-TRIAL-12报告中的干净重跑`71901d36-e4bd-4761-bde6-cfc3bc4d4c83`及初次run`bc911496-1fad-4123-8dc1-c54747c92e44`不存在。因此云端数据是部分历史存量，不是所有历史样板的完整数据库迁移。缺失run的内容仍有GitHub报告及机器结果文件可供恢复/核对；若原本地`mohen_dev`数据仍可访问，应优先只读导出与比对，不得重新付费生产。若原库不可访问，则把GitHub结构化结果视为历史证据/可重建输入，而非假称原始数据库记录已迁移。
+当前云端control.production_runs共20条，包含10月17日金泽运行（8a32171c…、ff11231a…、a3cb68ac…）、10月18日A001绿之丘多轮运行（包括5176ade3…）及10月29日金泽/朱家角/作品链运行。此前将报告中省略的run ID擅自补成完整UUID并据此判定缺失，是错误方法，撤销相关缺失结论。后续必须从原始machine.json/日志读取完整ID再做精确映射。
 
-### 8.5 本轮边界
+### 8.5 本地→云端迁移机制与双端差异线索
+
+- specs/OPERATIONS_DEPLOYMENT.md §3记载一次本地mohen_dev六Schema/42表pg_dump→mohen-cloud psql导入；SAMPLE-TRIAL_CLOSURE_ANALYSIS.md将云端42表迁移列入收口成果。该操作属于一次性快照导入，不是持续双向同步。尚未找到迁移前后逐表/逐对象完整校验回执。
+- 本地11-12历史只读盘点：source.raw_items=179、studio.private_originals=81；其中81个JPEG字节已与本地登记SHA 81/81匹配。云端本轮直查：source.raw_items=98、studio.private_originals=0。差值81与本地私有原件数相同，是11月本地新增私有原件及Raw登记未同步的强线索，但不是逐ID证明；由于两端快照时间不同，状态为HIGH_PRIORITY_UNVERIFIED。
+- 云端另有source.sources=39、source_versions=39、read_runs=16、reading_units=38、projects=1、asset_heads=1、asset_revisions=1、gate_candidates=0、qualification_current=0。本地当时项目同为1，但其他资产/Gate/资格计数不同，须按对象ID与依赖映射比较。
+- pg_dump覆盖数据库行，不含Storage对象、私有文件系统字节、gitignore排除的data/raw/staging/exports文件或本机密钥；必须分开盘点。
+- 未发现本地持续CDC/自动双向同步/生产后自动推送服务。GitHub push、Vercel deploy、schema migration均不是业务数据同步。
+- 下一步先确认原mohen_dev及最新备份是否可读；随后同一时间点双端只读manifest，按表/PK集合/行数/关键字段hash比对；优先核验42表初始迁移及11月81私有原件增量，最后独立核Storage对象字节。未核对前禁止批量回填、覆盖或重跑。
+
+### 8.6 本轮边界
 
 本轮只读查询mohen-cloud与GitHub历史报告；无数据库写入、无权限变更、无模型调用。该清单是当前数据库总量快照，不等于全部对象已完成逐条内容/权利/依赖审核；逐对象复用清单仍待按需生产。

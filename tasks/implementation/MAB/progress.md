@@ -5049,4 +5049,13 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 后续顺序：先形成历史对象只读清单与依赖/来源/权利/资格映射，不触碰数据；分类可直接复用、需补证、需重新独立审核、不可恢复/不复用；再通过现行Gate与合法Project关联恢复可用资产。禁止批量把legacy_untrusted改可信、禁止手工填qualification_current、禁止重复付费重跑历史生产。另按Owner已同意方向，以外部资源→D00—D05→Studio读取验证真实生产主链，但先继承能用的历史数据，不以新生产覆盖历史盘活工作。
 - 当前断点01状态不变：Owner真实身份/DB签名/读取调用执行PASS；未登录拒绝PASS；历史对象正向知识读取尚未通过，原因现已进一步定位为资格与Project作用域断层；Studio消费和数据库层错用途反向仍待实证。仍HOLD。
 
-- **历史run逐ID对照补充**：当前云端`control.production_runs`可查到A001 `5176ade3-2892-4179-96d0-c27184b42ebd`及朱家角 `33333333-3333-4333-8333-333333333333`；未查到SAMPLE-TRIAL-12报告中的干净重跑run `71901d36-e4bd-4761-bde6-cfc3bc4d4c83`及初次run `bc911496-1fad-4123-8dc1-c54747c92e44`。因此不能把当前云端存量说成完整承接了全部历史样板；部分历史证据仍只在GitHub报告/机器结果文件或原本地`mohen_dev`环境，具体数据迁移覆盖需逐run核实。
+- **历史run逐项对照纠错**：当前云端control.production_runs共20条，包含10月17日金泽运行（8a32171c…、ff11231a…、a3cb68ac…）、10月18日A001绿之丘多轮运行（404456b4…、fa48dd68…、4ce19c26…、f963e6d1…、a9a9bf99…、490f5543…、1bbf7873…、df7e43b4…、4719c713…、5176ade3…）、10月29日金泽/朱家角/作品链运行等。此前把报告中省略号形式的run ID擅自补成完整UUID后查询并判断缺失，是错误方法；该“缺少71901…/bc911…”结论撤销。应从原始machine.json/历史日志取得完整ID后再做精确一一映射。当前云端有16条read_runs，与16个production_run_id一一对应；不能据此推断所有D/L/G对象都已完整迁移。
+
+
+## 2026-11-19｜M5-HISTORICAL-DATA-INVENTORY-02｜本地→云端迁移路径与差异线索
+
+- 读取specs/OPERATIONS_DEPLOYMENT.md §3及specs/data-production/SAMPLE-TRIAL_CLOSURE_ANALYSIS.md：10月18日前后记录了一次本地mohen_dev六Schema（source/evidence/world/meaning/read_model/control）42表pg_dump→云端mohen-cloud psql导入，云端public另做备份；样板收口报告记载云端42表迁移完成。此为一次性数据库快照导入，不是持续自动同步；尚未找到迁移前后逐表/逐对象完整校验回执。
+- 双端差异线索：本地11-12只读记录source.raw_items=179、studio.private_originals=81，且81个JPEG字节已与本地private_originals和raw SHA 81/81匹配；当前云端直接查询raw_items=98、private_originals=0，差值恰为81。高度提示11月本地新增的私有原件及其raw登记没有同步到云端；因时间点不同且尚未逐ID/版本/SHA比对，标HIGH_PRIORITY_UNVERIFIED，不得直接认定81条逐条缺失。source.sources两端均39；云端source_versions39/read_runs16/reading_units38/projects1/assets1、gate_candidates0/qualification_current0。
+- pg_dump仅覆盖PostgreSQL六Schema，不含Storage对象、私有文件系统字节、被gitignore排除的raw/staging/exports文件或本机密钥。必须分别核查数据库行、原件字节、Storage对象，不能将“原件字节未上云”推断成“所有派生数据库记录也没上云”。
+- 当前未发现持续CDC/自动双向同步/本地每次生产后推送到云端机制；GitHub push、Vercel deploy、Supabase schema migration均不等于业务数据同步。接下来需要确认原mohen_dev是否仍可访问及其最新备份；再在同一时间点做双端只读manifest，逐表PK集合/行数/关键字段hash对照，优先核验42表初始导入、11月81私有原件增量、相关source/version/raw/read/evidence、Gate/qualification和Studio资产；Storage字节独立核验。此阶段禁止写入/覆盖/回填/重跑。
+- **历史run ID纠错**：云端production_runs实际20条，包含金泽（8a32171c…/ff11231a…/a3cb68ac…）、A001绿之丘多轮（含5176ade3…）和10-29金泽/朱家角等；此前以报告省略号run ID自行补UUID并判断缺失的结论无效，已撤回。原始run精确映射必须以完整machine.json/日志ID为准。

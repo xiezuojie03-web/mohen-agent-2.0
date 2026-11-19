@@ -172,4 +172,16 @@
 - **历史成果的价值裁决**：历史来源、版本、Raw、Reading Units、Material Evidence、World Entities/Relations、Findings、L5 Read Models均是独立知识对象/数据资产；应逐对象评估内容、来源、版本、权利、依赖、成熟度、用途和消费者。无需要求所有对象来自同一个完整D00—D05 run；但每个对象要满足自身Gate及其依赖资格/版本合同，才能在相应consumer/purpose下复用。上游失效应按依赖传播影响下游，不应连带抹掉仍有效的原始材料或无依赖关系对象。
 - **本次施工结论**：历史数据没有“全丢失”，当前核心缺口是`legacy_untrusted`历史审计→现行独立资格，以及无Project/Root作用域→Owner可读作用域之间的迁移/重新核验机制。不得批量把legacy标成可信，不得直接填充`qualification_current`，不得重新跑历史模型任务或重复收费。下一步应先生成只读对象级资产清单/血缘清单，识别可直接复用、需补证据/权利、需重新独立审核、不可恢复/不应复用四类；随后按现行Gate对可恢复对象逐对象核验并建立合法Project关联。新的外部资源生产闭环可以并行作为M5真实业务主链，但不应以重跑替代历史资产盘活。
 
-- **历史run逐ID对照补充**：当前云端`control.production_runs`可查到A001 `5176ade3-2892-4179-96d0-c27184b42ebd`及朱家角 `33333333-3333-4333-8333-333333333333`；未查到SAMPLE-TRIAL-12报告中的干净重跑run `71901d36-e4bd-4761-bde6-cfc3bc4d4c83`及初次run `bc911496-1fad-4123-8dc1-c54747c92e44`。因此不能把当前云端存量说成完整承接了全部历史样板；部分历史证据仍只在GitHub报告/机器结果文件或原本地`mohen_dev`环境，具体数据迁移覆盖需逐run核实。
+- **历史run逐项对照纠错**：当前云端control.production_runs共20条，包含10月17日金泽运行（8a32171c…、ff11231a…、a3cb68ac…）、10月18日A001绿之丘多轮运行（404456b4…、fa48dd68…、4ce19c26…、f963e6d1…、a9a9bf99…、490f5543…、1bbf7873…、df7e43b4…、4719c713…、5176ade3…）、10月29日金泽/朱家角/作品链运行等。此前把报告中省略号形式的run ID擅自补成完整UUID后查询并判断缺失，是错误方法；该“缺少71901…/bc911…”结论撤销。应从原始machine.json/历史日志取得完整ID后再做精确一一映射。当前云端有16条read_runs，与16个production_run_id一一对应；不能据此推断所有D/L/G对象都已完整迁移。
+
+
+## 2.14 2026-11-19｜本地→云端历史数据迁移机制与环境差异核查
+
+- **历史迁移方案已找到**：specs/OPERATIONS_DEPLOYMENT.md §3记录2026-10-18前后一次本地→云端六Schema/42表迁移：本地mohen_dev以pg_dump导出source/evidence/world/meaning/read_model/control六Schema，云端mohen-cloud以psql导入；云端原public另行备份后再处理。specs/data-production/SAMPLE-TRIAL_CLOSURE_ANALYSIS.md也将“云端42表迁移”列入SAMPLE-TRIAL-16收尾。该路径是一次性逻辑快照/导入，不是持续双向同步或每次本地写入自动推送。
+- **迁移完整性尚无逐对象回执**：当前已找到迁移操作规程与收口报告，但尚未找到可比较迁移前后每Schema/每表行数、主键集合、对象依赖、内容摘要的完整同一时点回执；因此“42表迁移完成”不等于“所有历史行及关联完整同步”的充分证明。
+- **环境差异线索**：本地mohen_dev 2026-11-12只读盘点记载source.raw_items=179、studio.private_originals=81；当前mohen-cloud直接查询为source.raw_items=98、studio.private_originals=0。差值179-98=81恰与本地81个私有原件数相同；历史记录又称81个JPEG原件已在本地source.raw_items登记且SHA与studio.private_originals 81/81匹配。该线索高度指向：10月基线数据已迁移，但11月本地后续新增的81个私有原件及其Raw登记没有同步到云端。由于本地计数与云端查询不是同一时点、尚未逐ID/版本/SHA比对，当前只能列为HIGH_PRIORITY_UNVERIFIED，不得将差值直接宣布为81条精确缺失记录。
+- **其他现状**：本地11-12盘点source.sources=39与云端当前39一致；云端source.source_versions=39、read_runs=16、reading_units=38、projects=1、asset_heads=1、asset_revisions=1、gate_candidates=0、qualification_current=0。历史本地项目也为1，但资产、Gate与资格数不同；需逐对象映射，不能用总行数相等替代数据一致性。
+- **原件字节与数据库记录分开**：上述pg_dump仅覆盖PostgreSQL六Schema，不自动包含Supabase Storage对象、私有文件系统字节、被.gitignore排除的data/raw|staging|exports及本机.secrets。因此“原件字节可能没迁移”与“source/raw/reading/evidence/read_model等数据库记录是否迁移”必须分别核验。
+- **迁移/同步机制结论**：目前能证实的是一次性六Schema快照导入路径；未发现本地mohen_dev持续向mohen-cloud自动推送数据的同步服务、CDC、双向复制或每次生产完成自动发布机制。GitHub代码推送、Vercel部署、Supabase schema migrations均不等于数据库业务数据同步。
+- **run ID核查纠错**：此前依据报告中的省略run ID擅自补全UUID，得出某些SAMPLE-TRIAL-12 run缺失的结论，已撤销。云端当前20条production_runs包含10月金泽、A001绿之丘、10月29日金泽/朱家角等历史run；原始报告的省略ID须从machine.json/历史日志取得完整值后才可精确核对。
+- **下一步**：先找回/确认原mohen_dev当前可访问性及其可验证备份，不对云端或本地做写操作；建立同一时间点的双端只读导出manifest，按schema/table/PK集合/row count/关键字段hash逐项比较。先核查42表初次迁移，再核查11月本地后续增量（尤其81个private_originals及其source/version/raw/read_units/evidence、项目/资格/审计）；最后单独盘点Storage对象字节。未核对前不执行批量回填、全量覆盖或重复生产。
