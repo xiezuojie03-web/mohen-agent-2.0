@@ -157,3 +157,7 @@
 - **再次尝试的无效身份测试仍未形成**：用户从所提供的测试链接获得与Owner请求完全相同的回执：`identity.authenticated=true`、`dbSessionSigned=true`、Project ownerCheck=evaluated、L0-L4 COMPLETE零命中、L5正常零命中。由此只能确认本次HTTP请求仍携带有效MoHen应用会话并成功签发DB会话；不能记为未登录401，也不能证明请求来自真正无MoHen Cookie的隔离浏览器上下文。无需继续重复同一链接。后续若必须完成未登录负向测试，应使用全新浏览器配置文件/另一浏览器，确认没有MoHen登录Cookie后直接访问正确Project URL；若Preview SSO拦截，则先仅完成平台访问验证，避免登录MoHen账户。
 
 - **无效身份真实浏览器验证PASS（2026-11-19）**：用户更换浏览器后访问正确Project诊断地址，返回 `{"ok":false,"reason":"login_required"}`。与诊断路由源码的未登录分支一致（HTTP 401预期）；请求未进入Creator角色、Project上下文或正式知识Repository。此前同一地址返回 `FORMAL_PROJECT_READ_CONTEXT_REQUIRED` 或Owner成功回执的请求均仍通过了MoHen `getSession()`，不得归类为未登录测试。当前无效身份拒绝已获真实浏览器证据。
+
+- **无效身份真实浏览器验证（2026-11-19）**：用户更换浏览器后访问正确Project诊断URL，返回`{"ok":false,"reason":"login_required"}`，与路由未登录分支一致，记为`UNAUTHENTICATED_APP_REJECTION=PASS`。此前同一地址返回`FORMAL_PROJECT_READ_CONTEXT_REQUIRED`或Owner成功回执的请求均仍通过了MoHen getSession()，不得归类为未登录测试。
+- **用途校验现状**：正式Repository要求consumer=agent、scope.requested_action=read，并在同一事务调用`studio.search_qualified_project_layers`。错误Project被应用层scope-project一致性检查拒绝；尚未执行真实数据库层错误purpose拒绝验证。由于开发库`control.qualification_current`全表为0，错误purpose没有合法资格样本可用于证明资格匹配的正反行为，不能将空结果当作拒绝PASS。
+- **CI现状**：最新main CI run `44442000666`为failure；job runner_id=0、steps=[]，测试NOT_RUN，非测试断言失败。
