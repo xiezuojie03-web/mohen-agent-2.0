@@ -161,3 +161,13 @@
 - **无效身份真实浏览器验证（2026-11-19）**：用户更换浏览器后访问正确Project诊断URL，返回`{"ok":false,"reason":"login_required"}`，与路由未登录分支一致，记为`UNAUTHENTICATED_APP_REJECTION=PASS`。此前同一地址返回`FORMAL_PROJECT_READ_CONTEXT_REQUIRED`或Owner成功回执的请求均仍通过了MoHen getSession()，不得归类为未登录测试。
 - **用途校验现状**：正式Repository要求consumer=agent、scope.requested_action=read，并在同一事务调用`studio.search_qualified_project_layers`。错误Project被应用层scope-project一致性检查拒绝；尚未执行真实数据库层错误purpose拒绝验证。由于开发库`control.qualification_current`全表为0，错误purpose没有合法资格样本可用于证明资格匹配的正反行为，不能将空结果当作拒绝PASS。
 - **CI现状**：最新main CI run `44442000666`为failure；job runner_id=0、steps=[]，测试NOT_RUN，非测试断言失败。
+
+
+## 2.13 2026-11-19｜历史D00—D05数据并未丢失：mohen-cloud现存量与资格/作用域断层
+
+- **直接数据库只读盘点**（项目`mohen-cloud`，未写入/修改任何数据）：`source.sources=39`、`source.source_versions=39`、`source.raw_items=98`、`source.read_runs=16`、`evidence.reading_units=38`、`evidence.material_evidence=166`、`world.entities=106`、`world.relation_claims=89`、`meaning.findings=50`、`read_model.world_projections=11`、`map_timeline_projections=9`、`story_seeds=42`、`agent_contexts=41`、`discovery_paths=63`、`evidence_pointers=132`、`control.gate_audits=711`、`control.production_runs=20`；指定开发Project目前仍仅有1个不合格research_brief asset revision。
+- **历史资格不能直接沿用**：711条`control.gate_audits`聚合核验均为`decision_origin=legacy_untrusted`；历史审计未具备当前独立Reviewer身份、purpose namespace/code等现行资格合同。当前`control.qualification_current=0`。这是当前正式读取不返回历史对象的直接资格原因之一，不等于历史D/L对象没有价值或内容未保存。
+- **作用域断层**：当前39条`source.sources.scope`均为空对象；历史`control.production_runs.scope`也为空对象。历史数据表没有可供当前Owner/Project直接继承的完整Project/Root授权关联。历史运行报告/原始样本文件仍保存在仓库，数据库也保存了不少实体、证据和Read Model内容，但不能仅凭主题名称或旧run状态把它们自动挂到当前Owner Project。
+- **历史运行状态与历史报告分层**：样板报告记载当时真实D00—D05生产及数据库写入；云端`production_runs`部分旧记录后经`m5_reconcile_legacy_unclaimed_run`做了未认领旧RUNNING状态对账，记录历史prior_status及对账证据。此状态修复/对账不是重跑生产，也不抹除数据对象；当前表状态不能反向覆盖历史运行报告。
+- **历史成果的价值裁决**：历史来源、版本、Raw、Reading Units、Material Evidence、World Entities/Relations、Findings、L5 Read Models均是独立知识对象/数据资产；应逐对象评估内容、来源、版本、权利、依赖、成熟度、用途和消费者。无需要求所有对象来自同一个完整D00—D05 run；但每个对象要满足自身Gate及其依赖资格/版本合同，才能在相应consumer/purpose下复用。上游失效应按依赖传播影响下游，不应连带抹掉仍有效的原始材料或无依赖关系对象。
+- **本次施工结论**：历史数据没有“全丢失”，当前核心缺口是`legacy_untrusted`历史审计→现行独立资格，以及无Project/Root作用域→Owner可读作用域之间的迁移/重新核验机制。不得批量把legacy标成可信，不得直接填充`qualification_current`，不得重新跑历史模型任务或重复收费。下一步应先生成只读对象级资产清单/血缘清单，识别可直接复用、需补证据/权利、需重新独立审核、不可恢复/不应复用四类；随后按现行Gate对可恢复对象逐对象核验并建立合法Project关联。新的外部资源生产闭环可以并行作为M5真实业务主链，但不应以重跑替代历史资产盘活。

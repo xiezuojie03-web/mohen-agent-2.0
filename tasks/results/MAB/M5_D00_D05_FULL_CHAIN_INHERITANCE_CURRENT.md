@@ -100,3 +100,41 @@
 - **本轮实际完成**：对R01—R10（其中R07/R08为两个独立主题）已发现的记录做证据性质辨析；按六段及跨段Gate/Studio归类可继承代码、接口、原始记录和剩余合同差异；把“11-10独立G0 PASS但Runner HOLD”“11-09真六门分段”“11-13双主题G0—G5”“11-14真库六门组件”明确纳入可读继承基线。
 - **未做**：不声称已穷尽所有历史运行ID或旧本地未推送日志，不在本轮连接当地 `mohen_dev` 或生产库，不复跑真实模型/私人原件、没有新的独立Gate PASS，也未重新判定 M5八维。旧纪录的成功只对其原环境/修订范围成立；证据冲突时先回原始回执和对应SHA，不能以表格总结覆盖原始事实。
 - **后续维护规则**：新发现历史成功或合同漂移，只修改本文件相应R行、D行、断点及原始链接；真正的工程进展仍写 `CURRENT.md`、逐批 `progress.md` 和导航三层原边；本文件**不累计另一个完成率、不修改PLAN准出条件**。
+
+
+## 8. 2026-11-19 云端历史数据实存盘点与资产复用原则
+
+本节为对R01—R11历史继承索引的当前云端数据库补充，不改变历史运行证据等级，也不把历史PASS升级为当前PASS。
+
+### 8.1 当前mohen-cloud数据实存（只读查询）
+
+| 数据表 | 当前行数 |
+|---|---:|
+| source.sources / source.source_versions / source.raw_items | 39 / 39 / 98 |
+| source.read_runs / evidence.reading_units | 16 / 38 |
+| evidence.material_evidence | 166 |
+| world.entities / world.relation_claims | 106 / 89 |
+| meaning.findings | 50 |
+| read_model.world_projections / map_timeline_projections | 11 / 9 |
+| read_model.story_seeds / agent_contexts | 42 / 41 |
+| read_model.discovery_paths / evidence_pointers | 63 / 132 |
+| control.production_runs / control.gate_audits | 20 / 711 |
+| control.qualification_current | **0** |
+
+### 8.2 为什么已有数据不出现在当前Owner正式读取
+
+1. 711条历史Gate审计的`decision_origin`均为`legacy_untrusted`，历史审计没有形成现行独立Reviewer身份与purpose namespace/code合同；当前`qualification_current`为空。因此历史Gate的`PASS/current_valid`字段只证明旧系统当时记录的状态，不等于现行独立签发的资格。
+2. 当前39条source的`scope`均为`{}`；历史production_runs的scope也为空对象。历史D/L对象未与当前Creator/Owner/Project/Root建立可直接使用的完整作用域关系。现有Studio读取按当前Owner/Project及Gate资格合同执行，故合法返回空结果。
+3. 部分旧production_runs经受限的legacy unclaimed reconciliation对账，历史prior_status及对账原因写入metadata；这是运行终态治理，不是删除数据或重跑生产。应以历史样板报告判断当时真实生产，以当前数据库判断对象是否仍在及当前资格状态。
+
+### 8.3 资产价值与独立复用裁决
+
+- D/L各层的来源、版本、Raw、Read Unit、Material Evidence、Entity、Relation/Claim、Finding、Read Model等都是可独立持久化、可被不同下游消费者使用的知识对象，不因没有同一次完整D00—D05 run而失去价值。
+- **复用判定以对象为单位，不以整条run为单位**：对象自身内容/版本/来源/权利/成熟度及必要依赖均满足现行合同，且通过对应Gate对指定consumer/purpose的当前资格检查，即可在相应范围独立使用。无需强制所有对象来自同一Runner或同一生产run。
+- 但“历史对象可用”与“历史对象值得复用”要分开：旧内容可作为研究资料/候选输入；旧Producer自签Gate、缺少当前Reviewer与用途授权的历史PASS不能直接转为当前资格。依赖关系决定哪些下游对象必须复核；上游资格失效不应无差别撤销没有依赖关系的原始来源或其他独立对象。
+- 资产盘活先只读盘点：生成对象级清单，追踪source→version→raw→read_run/read_unit→evidence→world/meaning→read_model→gate audit/qualification依赖；按`REUSE_AS_IS`、`REUSE_AFTER_REVIEW`、`REPAIR_PROVENANCE_OR_RIGHTS`、`REBUILD_ONLY_IF_IRRECOVERABLE`分类。不得批量改写历史Gate、手工插入qualification_current或重复付费重跑。
+- 后续外部资源到D00—D05的端到端生产验证，应与历史资产盘活相互衔接：先复用可恢复对象和已验证能力，再仅生产真实缺口；不为证明单Runner而把已有的合格独立对象全部重做。
+
+### 8.4 本轮边界
+
+本轮只读查询mohen-cloud与GitHub历史报告；无数据库写入、无权限变更、无模型调用。该清单是当前数据库总量快照，不等于全部对象已完成逐条内容/权利/依赖审核；逐对象复用清单仍待按需生产。

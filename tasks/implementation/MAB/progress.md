@@ -5037,3 +5037,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **无效身份真实浏览器验证（2026-11-19）**：用户更换浏览器后访问正确Project诊断URL，返回`{"ok":false,"reason":"login_required"}`，与路由未登录分支一致，记为`UNAUTHENTICATED_APP_REJECTION=PASS`。此前同一地址返回`FORMAL_PROJECT_READ_CONTEXT_REQUIRED`或Owner成功回执的请求均仍通过了MoHen getSession()，不得归类为未登录测试。
 - **用途校验现状**：正式Repository要求consumer=agent、scope.requested_action=read，并在同一事务调用`studio.search_qualified_project_layers`。错误Project被应用层scope-project一致性检查拒绝；尚未执行真实数据库层错误purpose拒绝验证。由于开发库`control.qualification_current`全表为0，错误purpose没有合法资格样本可用于证明资格匹配的正反行为，不能将空结果当作拒绝PASS。
 - **CI现状**：最新main CI run `44442000666`为failure；job runner_id=0、steps=[]，测试NOT_RUN，非测试断言失败。
+
+
+## 2026-11-19｜M5-HISTORICAL-DATA-INVENTORY-01｜历史D00—D05数据存量与未进入当前读取的原因
+
+- 基线`main@266c0e97bb71be6c597df2a01dd1434d84aaaed6`；只读核查GitHub历史继承索引、样板原始报告及`mohen-cloud`当前数据库，未执行任何INSERT/UPDATE/DELETE、未改数据库权限、未调用模型。
+- 核实历史生产报告：SAMPLE-TRIAL-12（金泽）真实两份方志→D00—D05、G0—G5、source 2/version 2/raw 4、reading units 4、material evidence 4、entities 7、relations 7、findings 4、story seeds 4；SAMPLE-TRIAL-14记录时间/冲突/发现路径等；SAMPLE-TRIAL-15记录真实视觉对象/依赖边/六阶段生产。A001绿之丘、11-09松江府志、11-13朱家角/七宝分段生产等另有历史证据。旧Gate Producer直写与当前独立Reviewer资格合同不同，历史PASS不可直接冒充现行资格。
+- 当前`mohen-cloud`实际行数：sources 39、source_versions 39、raw_items 98、read_runs 16、reading_units 38、material_evidence 166、world.entities 106、world.relation_claims 89、meaning.findings 50、world_projections 11、map_timeline_projections 9、story_seeds 42、agent_contexts 41、discovery_paths 63、evidence_pointers 132、gate_audits 711、production_runs 20；qualification_current 0。
+- 711条历史Gate审计均为`decision_origin=legacy_untrusted`；当前资格表0行。39条source.scope为空对象；历史production_runs.scope为空对象。故历史内容保留，但缺当前独立Reviewer/purpose资格和当前Owner/Project/Root作用域映射，Studio按现行资格/作用域正确不返回。
+- 用户提出的“每一层合格数据独立使用”原则获采纳：对象不要求来自同一D00—D05完整run；按对象级内容、来源/版本、权利、依赖、Gate资格、consumer/purpose逐项判定。只要对象及其必要依赖在当前合同下有效，即可独立复用；不可将一个历史run的PASS扩展到全部对象或当前所有用途。
+- 后续顺序：先形成历史对象只读清单与依赖/来源/权利/资格映射，不触碰数据；分类可直接复用、需补证、需重新独立审核、不可恢复/不复用；再通过现行Gate与合法Project关联恢复可用资产。禁止批量把legacy_untrusted改可信、禁止手工填qualification_current、禁止重复付费重跑历史生产。另按Owner已同意方向，以外部资源→D00—D05→Studio读取验证真实生产主链，但先继承能用的历史数据，不以新生产覆盖历史盘活工作。
+- 当前断点01状态不变：Owner真实身份/DB签名/读取调用执行PASS；未登录拒绝PASS；历史对象正向知识读取尚未通过，原因现已进一步定位为资格与Project作用域断层；Studio消费和数据库层错用途反向仍待实证。仍HOLD。
