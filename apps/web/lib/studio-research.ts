@@ -511,7 +511,7 @@ export async function resumeResearchTask(
     saved.prompt === prompt && saved.topic === topic && Array.isArray(saved.missingRequirements) &&
     saved.missingRequirements.includes("SOURCE_OR_QUALIFICATION_UNAVAILABLE") &&
     spent === 2 * (understandingCost ?? NaN) + (getTool("llm-polish")?.cost ?? NaN);
-  if (!understanding && failedReadAfterRecovery && firstStep?.toolId === "llm-understand" && sessionToken) {
+  if (!understanding && failedReadAfterRecovery && firstStep?.toolId === "llm-understand" && sessionToken && typeof studioContext.project_id === "string") {
     const receipts = await queryRows(
       `select payload->'settledUnderstanding' as understanding
          from public.study_asset_receipts
