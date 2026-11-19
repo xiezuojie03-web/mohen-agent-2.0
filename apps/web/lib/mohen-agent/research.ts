@@ -11,7 +11,7 @@ import {
   type Material,
   type Understanding,
 } from "@mohen/agent-runtime";
-import { retrieveMaterials } from "./retrieve";
+import { retrieveMaterials, type RetrieveResult } from "./retrieve";
 import { retrieveQualifiedFormalProject, type FormalQualifiedRead } from "./retrieve-formal";
 import { readStudioResearchProject } from "../studio-research-read";
 import { planStudioKnowledgeRoute, type StudioKnowledgeRouting } from "./knowledge-routing.mjs";
@@ -249,18 +249,22 @@ export async function runResearch(
 
   // For non-template Studio missions an empty term list is NOT authorization
   // to enumerate unrelated L5 content: fail toward question refinement.
-  let { materials, degraded } = studioContext && !effectiveTerms.length
-    ? {materials:[] as Material[],degraded:false}
+  let l5Search: RetrieveResult = studioContext && !effectiveTerms.length
+    ? { materials: [], degraded: false, coverage: "NOT_SEARCHED" }
     : await retrieveMaterials(effectiveTerms, 24, {
         qualification,objectAliases:profile.labelAliases,
       });
-  if (!materials.length && !degraded && (!studioContext || profile.fallback.length>0)) {
-    const retry=await retrieveMaterials(profile.fallback,24,{
+  if (!l5Search.materials.length && !l5Search.degraded && (!studioContext || profile.fallback.length > 0)) {
+    const fallback = await retrieveMaterials(profile.fallback, 24, {
       qualification,objectAliases:profile.labelAliases,
     });
-    materials=retry.materials;degraded=retry.degraded;
+    l5Search = {
+      ...fallback,
+      coverage: !fallback.degraded && l5Search.coverage === "PARTIAL" ? "PARTIAL" : fallback.coverage,
+    };
   }
-  const qualifiedL5=materials;
+  let { materials, degraded } = l5Search;
+  const qualifiedL5 = materials;
   let formalRead:FormalQualifiedRead|undefined;
   if(studioContext){
     try{
@@ -278,6 +282,7 @@ export async function runResearch(
   // or an automatic D00 request from an empty local result.
   const knowledgeRoute=studioContext?planStudioKnowledgeRoute({
     qualifiedL5,qualifiedFormalL0L4:formalRead?.refs??[],
+    l5Coverage: l5Search.coverage,
     projectSnapshot,lookupDegraded:degraded,formalLookupDegraded:formalRead?.degraded===true,
     projectFormalCoverageComplete:formalRead?.projectQualifiedCoverage==="COMPLETE",
     sharedL0L4CoverageComplete:false,
