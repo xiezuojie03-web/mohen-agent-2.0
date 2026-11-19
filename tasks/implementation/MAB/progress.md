@@ -5173,3 +5173,8 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 原朱家角任务选择回执指向 Commons 文件「朱家角古镇，Zhujiajiao Water Village - panoramio」。对照 [Commons 文件页固定修订](https://commons.wikimedia.org/w/index.php?oldid=1099152026) 与 imageinfo 原始文件元数据，作者 Adazzy.Gonzo，拍摄日期 2009-03-29，源自 Panoramio photo 49535458。原件入口为 JPEG，945 × 630；固定修订与文件版本分别追溯，字节和 SHA 尚未回读。
 - 单件许可为 [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/)。该照片按署名和许可条件可复制保存及作当代视觉材料；对外再利用保留作者、来源、许可及变更说明，发布改编按相同或兼容许可。该图不能独立证明古桥、水路和集镇空间的历史关系。
 - 本批仅作只读公开出处和许可核验。尚未写入 Studio 权利回执、获取原件、私有保存、登记或提交 D00；后续沿同一任务按现有获取及来源登记合同接入。
+
+## 2026-11-19｜第⑤步已选 Commons 原件取回与摘要核验
+
+- 原朱家角委托和已选候选保持原绑定。由 [Commons 固定文件页](https://commons.wikimedia.org/w/index.php?oldid=1099152026) 对应的公开原始文件入口取得 JPEG。回读 260342 字节、945 × 630；文件签名、长度和 Commons imageinfo 的 SHA-1 `9e1b9601c4ebea27bacba2be07bc821331e377fb` 一致。原件 SHA-256 `3a1a7f565c8f57328da9350c3be2f75751d26876af6c0d39663ca5ac6b7e6651`。
+- 本次为工作环境中的取回与内容校验，尚无 Studio 项目私有原件 ID 或权利回执。核对现有附件入口仍要求 Creator 会话，登记仓储为绑定回读。下一交接为在同一 Project/Root 内，将许可证据与已校验字节接入私有原件工作流，并按其回执推进 Source → Version → Raw。本次未调用模型、未写业务数据或提交字节进仓库。
