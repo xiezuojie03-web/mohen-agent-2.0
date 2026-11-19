@@ -1,0 +1,124 @@
+{
+ "performed_at": "2026-11-19T04:49:27.755Z",
+ "results": [
+  {
+   "file": "20261104013351_mab_m4_execution_controls",
+   "status": "PARTIAL",
+   "stmtOk": 1,
+   "stmtFail": 106
+  },
+  {
+   "file": "20261108090000_director_plans_source_ids",
+   "status": "INSTALLED"
+  },
+  {
+   "file": "20261108100000_mab_m5_director_plan_project_binding",
+   "status": "INSTALLED"
+  },
+  {
+   "file": "20261109120000_mab_m5_artifact_content_revision",
+   "status": "PARTIAL",
+   "stmtOk": 1,
+   "stmtFail": 55
+  },
+  {
+   "file": "20261109130000_mab_cp2f_asset_backlink",
+   "status": "INSTALLED"
+  },
+  {
+   "file": "20261110130000_mab_original_media_assets",
+   "status": "INSTALLED"
+  },
+  {
+   "file": "20261113100000_mab_qr05_single_rights_action_dictionary",
+   "status": "INSTALLED"
+  },
+  {
+   "file": "20261113150000_mab_m5_reviewer_scope_follows_candidates",
+   "status": "FAILED",
+   "error": "current transaction is aborted, commands ignored until end of transaction block"
+  },
+  {
+   "file": "20261113160000_mab_gate_scope_rule_for_studio_projects",
+   "status": "FAILED",
+   "error": "current transaction is aborted, commands ignored until end of transaction block"
+  },
+  {
+   "file": "20261113170000_mab_m5_d02_text_plain_observation",
+   "status": "PARTIAL",
+   "stmtOk": 1,
+   "stmtFail": 45
+  },
+  {
+   "file": "20261113180000_mab_g3_world_purpose_binding",
+   "status": "INSTALLED"
+  },
+  {
+   "file": "20261113190000_mab_m5_d04_meaning_finding_generalize",
+   "status": "PARTIAL",
+   "stmtOk": 1,
+   "stmtFail": 42
+  },
+  {
+   "file": "20261114090000_mab_m5_d05_p04_story_seed",
+   "status": "INSTALLED"
+  },
+  {
+   "file": "20261114120000_mab_m5_director_plan",
+   "status": "FAILED",
+   "error": "current transaction is aborted, commands ignored until end of transaction block"
+  },
+  {
+   "file": "20261114150000_mab_m5_st07_work_revision",
+   "status": "PARTIAL",
+   "stmtOk": 1,
+   "stmtFail": 43
+  },
+  {
+   "file": "20261114180000_mab_m5_st08_submission_snapshot",
+   "status": "PARTIAL",
+   "stmtOk": 1,
+   "stmtFail": 66
+  },
+  {
+   "file": "20261114190000_mab_m5_st09_editorial_publish_withdraw",
+   "status": "PARTIAL",
+   "stmtOk": 1,
+   "stmtFail": 162
+  },
+  {
+   "file": "20261114200000_mab_m5_studio_project_title_rename",
+   "status": "INSTALLED"
+  },
+  {
+   "file": "20261114210000_mab_m5_claim_revision_artifact_revision",
+   "status": "PARTIAL",
+   "stmtOk": 1,
+   "stmtFail": 9
+  },
+  {
+   "file": "20261114220000_mab_m5_restore_registered_content_revision",
+   "status": "PARTIAL",
+   "stmtOk": 1,
+   "stmtFail": 11
+  },
+  {
+   "file": "20261115130000_mab_m5_private_text_read_context_consistency",
+   "status": "INSTALLED"
+  },
+  {
+   "file": "20261118120000_m5_formal_project_read_acl_order_fix",
+   "status": "INSTALLED"
+  },
+  {
+   "file": "20261118123000_m5_legacy_run_reconciliation",
+   "status": "INSTALLED"
+  },
+  {
+   "file": "20261118130000_m5_repair_historical_run_status_incident",
+   "status": "PARTIAL",
+   "stmtOk": 1,
+   "stmtFail": 10
+  }
+ ]
+}

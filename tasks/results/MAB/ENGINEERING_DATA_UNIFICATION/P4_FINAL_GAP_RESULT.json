@@ -1,0 +1,19 @@
+{
+ "performed_at": "2026-11-19T05:35:10.657Z",
+ "asset_chain": {
+  "okH": 110,
+  "okR": 111
+ },
+ "private_originals": {
+  "okP": 84,
+  "errP": 0
+ },
+ "fillLog": [
+  "studio.use_events: +8/8 err=0",
+  "studio.asset_links: +3/3 err=0",
+  "public.assets: +1/7 err=0"
+ ],
+ "remaining_gaps": [
+  "publication.published_pointers: local=7 cloud=6 expected=7"
+ ]
+}

@@ -1,0 +1,1243 @@
+{
+ "performed_at": "2026-11-19T05:33:28.256Z",
+ "rights_updates": {
+  "sources": 0,
+  "versions": 113
+ },
+ "shape_updates": {
+  "public.assets": 6,
+  "public.director_plans": 21,
+  "publication.published_pointers": 0
+ },
+ "triggers_managed": [
+  "studio.asset_revisions.studio_asset_revision_immutable",
+  "studio.asset_revisions.studio_asset_revision_reference_guard",
+  "studio.use_events.studio_use_event_guard",
+  "studio.use_events.studio_use_event_immutable",
+  "studio.private_originals.studio_private_original_immutable"
+ ],
+ "table_stats": [
+  {
+   "table": "public.users",
+   "local": 8,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "control.production_runs",
+   "local": 135,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "control.gate_policy_versions",
+   "local": 6,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "control.gate_candidates",
+   "local": 123,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "control.gate_audits",
+   "local": 802,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "control.gate_reviewer_bindings",
+   "local": 46,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "control.qualification_current",
+   "local": 49,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "control.invalidation_events",
+   "local": 22,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "source.sources",
+   "local": 51,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "source.source_versions",
+   "local": 128,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "source.raw_items",
+   "local": 188,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "source.read_runs",
+   "local": 24,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "source.read_units",
+   "local": 259,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "evidence.reading_units",
+   "local": 51,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "evidence.material_evidence",
+   "local": 176,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "studio.projects",
+   "local": 16,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "studio.asset_heads",
+   "local": 110,
+   "inserted": 0,
+   "errors": 110
+  },
+  {
+   "table": "studio.asset_revisions",
+   "local": 111,
+   "inserted": 0,
+   "errors": 111
+  },
+  {
+   "table": "studio.private_originals",
+   "local": 90,
+   "inserted": 0,
+   "errors": 84
+  },
+  {
+   "table": "public.assets",
+   "local": 7,
+   "inserted": 0,
+   "errors": 1
+  },
+  {
+   "table": "public.research_tasks",
+   "local": 43,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "public.research_events",
+   "local": 201,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "source.source_needs",
+   "local": 17,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "source.resource_catalog",
+   "local": 23,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "source.acquisition_methods",
+   "local": 6,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "source.acquisition_attempts",
+   "local": 27,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "source.acquisition_coverages",
+   "local": 21,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "source.candidate_verifications",
+   "local": 14,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "source.priority_assessments",
+   "local": 14,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "source.original_provider_traces",
+   "local": 5,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "studio.work_revisions",
+   "local": 5,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "studio.submission_snapshots",
+   "local": 5,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "publication.editorial_decisions",
+   "local": 5,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "publication.publication_snapshots",
+   "local": 3,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "publication.withdrawals",
+   "local": 1,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "control.owner_reviews",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "read_model.map_timeline_projections",
+   "local": 9,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "source.read_quality_checks",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "source.read_handoffs",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "world.claim_revisions",
+   "local": 95,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "world.world_decision_events",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "world.conflicts",
+   "local": 4,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "world.identity_decisions",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "control.work_publication_decisions",
+   "local": 8,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "public.policies",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "public.notifications",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "control.session_verification_keys",
+   "local": 1,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "public.work_engagement",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "meaning.open_questions",
+   "local": 76,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "meaning.present_connections",
+   "local": 5,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "meaning.findings",
+   "local": 56,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "read_model.agent_contexts",
+   "local": 44,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "read_model.discovery_paths",
+   "local": 63,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "read_model.evidence_pointers",
+   "local": 132,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "read_model.story_seeds",
+   "local": 46,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "control.original_bridge_verification_keys",
+   "local": 1,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "control.gate_service_credentials",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "studio.asset_links",
+   "local": 3,
+   "inserted": 0,
+   "errors": 3
+  },
+  {
+   "table": "studio.use_events",
+   "local": 8,
+   "inserted": 0,
+   "errors": 8
+  },
+  {
+   "table": "studio.delegations",
+   "local": 25,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "control.artifact_content_columns",
+   "local": 234,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "studio.reference_kinds",
+   "local": 18,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "control.web_session_revocations",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "evidence.read_unit_evidence_links",
+   "local": 5,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "evidence.classification_decisions",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "evidence.material_mentions",
+   "local": 488,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "evidence.reading_unit_dependencies",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "meaning.claim_revisions",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "public.help_articles",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "public.app_settings",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "public.watch_sessions",
+   "local": 2,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "public.study_asset_receipts",
+   "local": 312,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "public.imported_materials",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "public.explore_sessions",
+   "local": 1,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "public.director_plans",
+   "local": 21,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "public.conversations",
+   "local": 1,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "publication.work_revisions",
+   "local": 24,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "publication.works",
+   "local": 16,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "publication.publication_schedules",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "publication.published_pointers",
+   "local": 6,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "read_model.world_projections",
+   "local": 18,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "studio.execution_receipts",
+   "local": 23,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "studio.execution_controls",
+   "local": 4,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "studio.execution_control_events",
+   "local": 11,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "studio.director_plans",
+   "local": 3,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "world.claim_evidence_links",
+   "local": 5,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "world.provenance_assessments",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "world.identity_decision_evidence",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "world.dependency_edges",
+   "local": 964,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "world.event_participations",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "world.events",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "world.entities",
+   "local": 106,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "world.changes",
+   "local": 53,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "world.historical_space_claims",
+   "local": 0,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "world.relation_claims",
+   "local": 89,
+   "inserted": 0,
+   "errors": 0
+  },
+  {
+   "table": "world.visual_objects",
+   "local": 14,
+   "inserted": 0,
+   "errors": 0
+  }
+ ],
+ "verify": [
+  {
+   "table": "public.users",
+   "local": 8,
+   "cloud": 8,
+   "ok": true
+  },
+  {
+   "table": "control.production_runs",
+   "local": 135,
+   "cloud": 135,
+   "ok": true
+  },
+  {
+   "table": "control.gate_policy_versions",
+   "local": 6,
+   "cloud": 6,
+   "ok": true
+  },
+  {
+   "table": "control.gate_candidates",
+   "local": 123,
+   "cloud": 123,
+   "ok": true
+  },
+  {
+   "table": "control.gate_audits",
+   "local": 802,
+   "cloud": 802,
+   "ok": true
+  },
+  {
+   "table": "control.gate_reviewer_bindings",
+   "local": 46,
+   "cloud": 46,
+   "ok": true
+  },
+  {
+   "table": "control.qualification_current",
+   "local": 49,
+   "cloud": 49,
+   "ok": true
+  },
+  {
+   "table": "control.invalidation_events",
+   "local": 22,
+   "cloud": 22,
+   "ok": true
+  },
+  {
+   "table": "source.sources",
+   "local": 51,
+   "cloud": 51,
+   "ok": true
+  },
+  {
+   "table": "source.source_versions",
+   "local": 128,
+   "cloud": 128,
+   "ok": true
+  },
+  {
+   "table": "source.raw_items",
+   "local": 188,
+   "cloud": 188,
+   "ok": true
+  },
+  {
+   "table": "source.read_runs",
+   "local": 24,
+   "cloud": 24,
+   "ok": true
+  },
+  {
+   "table": "source.read_units",
+   "local": 259,
+   "cloud": 259,
+   "ok": true
+  },
+  {
+   "table": "evidence.reading_units",
+   "local": 51,
+   "cloud": 51,
+   "ok": true
+  },
+  {
+   "table": "evidence.material_evidence",
+   "local": 176,
+   "cloud": 176,
+   "ok": true
+  },
+  {
+   "table": "studio.projects",
+   "local": 16,
+   "cloud": 17,
+   "ok": false
+  },
+  {
+   "table": "studio.asset_heads",
+   "local": 110,
+   "cloud": 1,
+   "ok": false
+  },
+  {
+   "table": "studio.asset_revisions",
+   "local": 111,
+   "cloud": 1,
+   "ok": false
+  },
+  {
+   "table": "studio.private_originals",
+   "local": 90,
+   "cloud": 6,
+   "ok": false
+  },
+  {
+   "table": "public.assets",
+   "local": 7,
+   "cloud": 6,
+   "ok": false
+  },
+  {
+   "table": "public.research_tasks",
+   "local": 43,
+   "cloud": 44,
+   "ok": false
+  },
+  {
+   "table": "public.research_events",
+   "local": 201,
+   "cloud": 207,
+   "ok": false
+  },
+  {
+   "table": "source.source_needs",
+   "local": 17,
+   "cloud": 17,
+   "ok": true
+  },
+  {
+   "table": "source.resource_catalog",
+   "local": 23,
+   "cloud": 23,
+   "ok": true
+  },
+  {
+   "table": "source.acquisition_methods",
+   "local": 6,
+   "cloud": 6,
+   "ok": true
+  },
+  {
+   "table": "source.acquisition_attempts",
+   "local": 27,
+   "cloud": 27,
+   "ok": true
+  },
+  {
+   "table": "source.acquisition_coverages",
+   "local": 21,
+   "cloud": 21,
+   "ok": true
+  },
+  {
+   "table": "source.candidate_verifications",
+   "local": 14,
+   "cloud": 14,
+   "ok": true
+  },
+  {
+   "table": "source.priority_assessments",
+   "local": 14,
+   "cloud": 14,
+   "ok": true
+  },
+  {
+   "table": "source.original_provider_traces",
+   "local": 5,
+   "cloud": 5,
+   "ok": true
+  },
+  {
+   "table": "studio.work_revisions",
+   "local": 5,
+   "cloud": 5,
+   "ok": true
+  },
+  {
+   "table": "studio.submission_snapshots",
+   "local": 5,
+   "cloud": 5,
+   "ok": true
+  },
+  {
+   "table": "publication.editorial_decisions",
+   "local": 5,
+   "cloud": 5,
+   "ok": true
+  },
+  {
+   "table": "publication.publication_snapshots",
+   "local": 3,
+   "cloud": 3,
+   "ok": true
+  },
+  {
+   "table": "publication.withdrawals",
+   "local": 1,
+   "cloud": 1,
+   "ok": true
+  },
+  {
+   "table": "control.owner_reviews",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "read_model.map_timeline_projections",
+   "local": 9,
+   "cloud": 9,
+   "ok": true
+  },
+  {
+   "table": "source.read_quality_checks",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "source.read_handoffs",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "world.claim_revisions",
+   "local": 95,
+   "cloud": 95,
+   "ok": true
+  },
+  {
+   "table": "world.world_decision_events",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "world.conflicts",
+   "local": 4,
+   "cloud": 4,
+   "ok": true
+  },
+  {
+   "table": "world.identity_decisions",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "control.work_publication_decisions",
+   "local": 8,
+   "cloud": 8,
+   "ok": true
+  },
+  {
+   "table": "public.policies",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "public.notifications",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "control.session_verification_keys",
+   "local": 1,
+   "cloud": 1,
+   "ok": true
+  },
+  {
+   "table": "public.work_engagement",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "meaning.open_questions",
+   "local": 76,
+   "cloud": 76,
+   "ok": true
+  },
+  {
+   "table": "meaning.present_connections",
+   "local": 5,
+   "cloud": 5,
+   "ok": true
+  },
+  {
+   "table": "meaning.findings",
+   "local": 56,
+   "cloud": 56,
+   "ok": true
+  },
+  {
+   "table": "read_model.agent_contexts",
+   "local": 44,
+   "cloud": 44,
+   "ok": true
+  },
+  {
+   "table": "read_model.discovery_paths",
+   "local": 63,
+   "cloud": 63,
+   "ok": true
+  },
+  {
+   "table": "read_model.evidence_pointers",
+   "local": 132,
+   "cloud": 132,
+   "ok": true
+  },
+  {
+   "table": "read_model.story_seeds",
+   "local": 46,
+   "cloud": 46,
+   "ok": true
+  },
+  {
+   "table": "control.original_bridge_verification_keys",
+   "local": 1,
+   "cloud": 1,
+   "ok": true
+  },
+  {
+   "table": "control.gate_service_credentials",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "studio.asset_links",
+   "local": 3,
+   "cloud": 0,
+   "ok": false
+  },
+  {
+   "table": "studio.use_events",
+   "local": 8,
+   "cloud": 0,
+   "ok": false
+  },
+  {
+   "table": "studio.delegations",
+   "local": 25,
+   "cloud": 25,
+   "ok": true
+  },
+  {
+   "table": "control.artifact_content_columns",
+   "local": 234,
+   "cloud": 234,
+   "ok": true
+  },
+  {
+   "table": "studio.reference_kinds",
+   "local": 18,
+   "cloud": 18,
+   "ok": true
+  },
+  {
+   "table": "control.web_session_revocations",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "evidence.read_unit_evidence_links",
+   "local": 5,
+   "cloud": 5,
+   "ok": true
+  },
+  {
+   "table": "evidence.classification_decisions",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "evidence.material_mentions",
+   "local": 488,
+   "cloud": 488,
+   "ok": true
+  },
+  {
+   "table": "evidence.reading_unit_dependencies",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "meaning.claim_revisions",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "public.help_articles",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "public.app_settings",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "public.watch_sessions",
+   "local": 2,
+   "cloud": 2,
+   "ok": true
+  },
+  {
+   "table": "public.study_asset_receipts",
+   "local": 312,
+   "cloud": 320,
+   "ok": false
+  },
+  {
+   "table": "public.imported_materials",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "public.explore_sessions",
+   "local": 1,
+   "cloud": 1,
+   "ok": true
+  },
+  {
+   "table": "public.director_plans",
+   "local": 21,
+   "cloud": 21,
+   "ok": true
+  },
+  {
+   "table": "public.conversations",
+   "local": 1,
+   "cloud": 1,
+   "ok": true
+  },
+  {
+   "table": "publication.work_revisions",
+   "local": 24,
+   "cloud": 24,
+   "ok": true
+  },
+  {
+   "table": "publication.works",
+   "local": 16,
+   "cloud": 16,
+   "ok": true
+  },
+  {
+   "table": "publication.publication_schedules",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "publication.published_pointers",
+   "local": 7,
+   "cloud": 6,
+   "ok": false
+  },
+  {
+   "table": "read_model.world_projections",
+   "local": 18,
+   "cloud": 18,
+   "ok": true
+  },
+  {
+   "table": "studio.execution_receipts",
+   "local": 23,
+   "cloud": 23,
+   "ok": true
+  },
+  {
+   "table": "studio.execution_controls",
+   "local": 4,
+   "cloud": 4,
+   "ok": true
+  },
+  {
+   "table": "studio.execution_control_events",
+   "local": 11,
+   "cloud": 11,
+   "ok": true
+  },
+  {
+   "table": "studio.director_plans",
+   "local": 3,
+   "cloud": 3,
+   "ok": true
+  },
+  {
+   "table": "world.claim_evidence_links",
+   "local": 5,
+   "cloud": 5,
+   "ok": true
+  },
+  {
+   "table": "world.provenance_assessments",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "world.identity_decision_evidence",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "world.dependency_edges",
+   "local": 964,
+   "cloud": 964,
+   "ok": true
+  },
+  {
+   "table": "world.event_participations",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "world.events",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "world.entities",
+   "local": 106,
+   "cloud": 106,
+   "ok": true
+  },
+  {
+   "table": "world.changes",
+   "local": 53,
+   "cloud": 53,
+   "ok": true
+  },
+  {
+   "table": "world.historical_space_claims",
+   "local": 0,
+   "cloud": 0,
+   "ok": true
+  },
+  {
+   "table": "world.relation_claims",
+   "local": 89,
+   "cloud": 89,
+   "ok": true
+  },
+  {
+   "table": "world.visual_objects",
+   "local": 14,
+   "cloud": 14,
+   "ok": true
+  }
+ ],
+ "mismatches": [
+  {
+   "table": "studio.projects",
+   "local": 16,
+   "cloud": 17,
+   "ok": false
+  },
+  {
+   "table": "studio.asset_heads",
+   "local": 110,
+   "cloud": 1,
+   "ok": false
+  },
+  {
+   "table": "studio.asset_revisions",
+   "local": 111,
+   "cloud": 1,
+   "ok": false
+  },
+  {
+   "table": "studio.private_originals",
+   "local": 90,
+   "cloud": 6,
+   "ok": false
+  },
+  {
+   "table": "public.assets",
+   "local": 7,
+   "cloud": 6,
+   "ok": false
+  },
+  {
+   "table": "public.research_tasks",
+   "local": 43,
+   "cloud": 44,
+   "ok": false
+  },
+  {
+   "table": "public.research_events",
+   "local": 201,
+   "cloud": 207,
+   "ok": false
+  },
+  {
+   "table": "studio.asset_links",
+   "local": 3,
+   "cloud": 0,
+   "ok": false
+  },
+  {
+   "table": "studio.use_events",
+   "local": 8,
+   "cloud": 0,
+   "ok": false
+  },
+  {
+   "table": "public.study_asset_receipts",
+   "local": 312,
+   "cloud": 320,
+   "ok": false
+  },
+  {
+   "table": "publication.published_pointers",
+   "local": 7,
+   "cloud": 6,
+   "ok": false
+  }
+ ]
+}

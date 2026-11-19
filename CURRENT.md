@@ -8,7 +8,7 @@
 >
 > **2026-11-19 专项 P4 计划已编制完成（未执行）：** Owner 裁决 27 组权利按原始授权证据迁移（4 动作 allowed+完整 rights_evidence，5 held 动作保持 HOLD，属历史授权事实迁移非重新授权）。P4 六份计划交付物已产出，批次设计 BATCH-0 结构补装→B1 运行治理→B2 来源材料→B3 知识对象→B4 Studio→B5 发布链，全 INSERT ON CONFLICT 幂等、受控 UPDATE 统一口径（2 规则 5 语句 73 行）逐条留痕、云端独有数据结构性保护。
 >
-> **2026-11-19 P4-OWNER-APPROVAL-02 定向修订与 L0 完成：** Owner 原则通过 P4 方案；PREREQ-2 有条件批准并已按裁决修订（6 个探针用户原 UUID+disabled+member+不可用密码占位，历史角色仅入 Manifest；Owner 用户已在云端不动；机器 Reviewer b0a11000 云端核查不存在、按 boundary 合同受控补齐 users 行、DB 角色保持未激活；无 UUID/email/会话冲突）。数量矛盾核实：gate_reviewer_bindings=46（6 为策略版本数的笔误，已修正）；production_runs 迁移后=135（非155，已修正）。L0 备份完成（全量 dump SHA256=9100B293…096A59，backups/ 已 gitignore 不入 GitHub），本地 mohen_l0_drill 恢复演练五关键表逐行 MD5 全一致、账本 29=29、Schema 对象 90=90，VERDICT=L0_PASS。业务数据迁移（B1-B5）未获授权未执行；BATCH-0 待单独报告。状态：P4_PLAN_REVISED_PER_OWNER_APPROVAL_02 / L0_VERIFIED / BUSINESS_MIGRATION_NOT_AUTHORIZED。
+> **2026-11-19 P4 数据推送云端完成（Owner 简化指令）：** Owner 裁决以尽快推送为唯一目标、砍掉繁重仪式后，本地 mohen_dev 全部业务数据已推送云端 mohen-cloud 并核验通过（37 张关键表行数=本地+云端独有增量，production_runs 155/gate_audits 802/qualification_current 49/private_originals 90/asset_heads 111/D00 账本全系/出版链全系等）。结构补装：11 个迁移正式安装 + 13 个改用定向 DDL 直装（10 表+3 列+61 函数+3 休眠角色），账本已清理假登记。权利裁决落实（113 版本快照+27 组 sources 权利与证据）；认证隔离（7 用户降权插入，凭据不迁）；云端独有数据全部保留。唯一例外：published_pointers 1 行空 revision_id 有意跳过。状态：P4 = DATA_RECONCILIATION_PASS。下一步（P6/P7 可选）：长期一致性机制与归档收尾。
 
 ## 1. 唯一业务目标
 

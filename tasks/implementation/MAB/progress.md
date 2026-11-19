@@ -5133,3 +5133,15 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - L0 备份与恢复演练 PASS：云端全量 pg_dump（1.16MB，SHA256=9100B293D65466C6062018FE473241E07457C61A7044D13F44995E83CB096A59）+ 业务 Schema 定向 dump；本地临时库 mohen_l0_drill 恢复成功，五关键表（production_runs 20/gate_audits 711/sources 39/raw_items 98/qualification_current 0）逐行 MD5 与云端完全一致，迁移账本 29=29，Schema 对象 90=90，VERDICT=L0_PASS。约束：Supabase 平台扩展（supabase_vault 等）不可在 vanilla PG 复原，全量备份完整恢复目标须为 Supabase 实例；backups/ 已加 .gitignore，备份文件不入 GitHub。恢复演练未连接/覆盖真实云端数据库。
 - 文档修订：P4_MIGRATION_EXECUTION_PLAN.md、P4_SCHEMA_PREREQUISITES.json、P4_BATCH_MANIFEST.json（原本已正确）、P4_VALIDATION_MATRIX.json、P4_CONFLICT_HANDLING_RULES.json、P4_BACKUP_AND_RECOVERY_PLAN.md（引用一致）、CURRENT.md、progress.md；新增 L0_RESTORE_DRILL_RESULT.json。
 - 本轮未执行 BATCH-0 及任何业务数据迁移、未调用模型、未产生费用。状态：P4_PLAN_REVISED_PER_OWNER_APPROVAL_02 / L0_VERIFIED / BUSINESS_MIGRATION_NOT_AUTHORIZED。
+
+## 2026-11-19｜ENGINEERING-DATA-UNIFICATION-01｜P4 数据推送云端完成（Owner简化指令执行）
+
+- Owner 2026-11-19 简化裁决：目标为尽快将本地数据库真实推送到云端作为后续试运行测试数据（数据为样板试验性生产，价值在让 ChatGPT 清楚系统具备的能力与有试用数据可调），与前发繁重指令冲突之处以本裁决为准，砍掉逐批 Manifest/受控适配器仪式。
+- 执行结果：本地 mohen_dev 全部业务数据已推送云端 mohen-cloud。37 张关键表核验通过（行数=本地+云端独有增量）：production_runs 155（115 迁移+40 云端）、gate_audits 802、gate_candidates 123、qualification_current 49、sources 51、source_versions 128、raw_items 188、private_originals 90、asset_heads 111、asset_revisions 112、projects 17、findings 56、material_evidence 176、D00 账本全系、ST-07/08/09 出版链全系、M4 执行控制全系等。
+- 结构补装：24 个未装迁移中 11 个正式装成；13 个因依赖/角色/幂等问题改用定向 DDL 直装（10 张缺失表 + 3 列 + 61 个函数 + 3 个休眠角色 mohen_app/mohen_editorial_operator/mohen_execution_authority，gate signer 角色维持未激活）；云端迁移账本清理 10 条假登记并登记直装记录 p4_direct_schema_transfer_9_tables_3_columns。
+- 数据迁移方法：多行批量 INSERT ON CONFLICT DO NOTHING（幂等，无 DELETE，云端独有数据结构性保留）+ 5 个强校验触发器迁移期间临时停用后全部恢复 + 3 个云端过严 CHECK 约束对齐本地定义 + asset_heads↔asset_revisions 循环外键用单事务延迟约束解决。
+- Owner 权利裁决落实：113 个 source_versions 权利快照更新 + 27 组 sources 权利与证据迁移（rights_by_action 4 动作 allowed + 完整 rights_evidence）；5 个 held 动作保持 HOLD；形差异行补齐（assets 6、director_plans 21）。
+- 认证隔离：Owner 用户不动；7 个本地用户按裁决降权插入（password_hash 占位、disabled、member，session_not_before 保留原值）；密码/凭据/会话未迁移。
+- 唯一已知例外：publication.published_pointers 1 行（本地 revision_id 为空、云端 NOT NULL）有意跳过，已记录于 P4_FINAL_GAP_RESULT.json。
+- 交付物：p4a-install-migrations.mjs、p4b-migrate-data.mjs、p4b2-migrate-fixed.mjs、p4b3-migrate-bulk.mjs、p4-final-gaps.mjs（脚本）、P4_PHASE_A_MIGRATION_LOG.json、P4_MIGRATION_RESULT.json、P4_FINAL_GAP_RESULT.json（结果）。
+- 状态：P4 数据推送 = DATA_RECONCILIATION_PASS（37 表核验全过、1 行已记录例外）。本地 mohen_dev 全程只读未动；云端独有数据（开发 Project e03c4ba8、诊断行）全部保留。
