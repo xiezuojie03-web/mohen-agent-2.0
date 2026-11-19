@@ -1,6 +1,6 @@
 # 墨痕｜当前工程事实与唯一前沿（非施工标准）
 
-> **核验日期：2026-11-18。** 本快照依据main代码基线`ffad0e400f7094d43ca9eea0bca9489f479c2adb`、施工计划`PLAN.md`（八维口径修订提交`d74243db76fa541278ac2372681ed8b111e12f2c`）、最新进展记录`progress.md`的`M5-QUALITY-16-RECHECK`及`mohen-cloud`实际回读。此文件只记录当前事实与下一最前阻断，不替代PLAN。
+> **核验日期：2026-11-19。** 本次代码核验基线为main SHA `a5933de8a8cb5c1470fd9a30acd1b70da0acd691`；进展证据追加提交为`c81436648614f9ae485235eefaac50704850e986`。施工标准仍为PLAN V1.7（八维口径提交`d74243db76fa541278ac2372681ed8b111e12f2c`）。本文件只记录当前事实与下一最前阻断，不替代PLAN。
 
 ## 1. 唯一业务目标
 
@@ -75,11 +75,28 @@
 - 已为精确main提交`ffad0e400f7094d43ca9eea0bca9489f479c2adb`创建Vercel Preview部署：`dpl_9BzzYYqMCxuvLej2hzwBWDb9fSvC`，target=null，状态`READY`。构建日志确认Next build、Serverless functions和Deploying outputs完成；不证明单测或Worker TLS通过。仓库`vercel.json`的`git.deploymentEnabled=false`，Preview SSO保护开启；Production未修改。
 - Vercel项目Node运行时为24.x，GitHub CI已从Node22对齐到Node24（提交`758270d`）。最新GitHub Actions run `44302569975`与`44302564923`均约3–4秒失败，Job的`steps=null`，没有可读runner/logs；失败发生在任何CI步骤前。新增路由、Worker、Y05单测均NOT_RUN，不能宣布PASS。
 
+
+## 2.7 2026-11-19来源权利快照合同补齐
+
+- GitHub main新增迁移文件`supabase/migrations/20261119110000_m5_private_source_rights_projection.sql`，并已在非生产开发库`mohen-cloud`实际应用；Supabase迁移历史记录为`20261119004253_m5_private_source_rights_projection_20261119`。
+- `source.sources`新增`rights_by_action/rights_evidence`；`source.source_versions`新增`rights_snapshot`。三者均NOT NULL、默认空对象；只接受既有唯一权利词典的规范动作/取值，空/缺失动作仍为unknown/HOLD，未从旧rights自由文本推断许可。
+- Source Version权利快照可从空对象固定一次，非空后不可改。只读投影`studio.private_source_registration(uuid)`返回版本快照及权利证据；执行权限仅`mohen_app_runtime`，Worker、anon、authenticated均无执行权。
+- 数据库事务内合成fixture正反检查4项全部通过，事务已ROLLBACK，没有留下业务数据。当前Project的私有原件、Source、Version、Raw仍为0。
+- GitHub main相关提交：迁移`67f0a994`；权利测试fixture`7908a229`、负例`a5933de8`；Repository校验`2524b533`；D00 Worker传递`54262812`；D00 Adapter向独立G0候选证据传递`2d325472`；Worker测试fixture`161aa2ae`。完整SHA及逐项证据见progress.md的M5-SOURCE-RIGHTS-01。
+- **状态边界**：这是来源登记合同的一个子缺口修补，不是Source/Version/Raw登记生产者，不是D00运行，不是G0 PASS。Repository/Worker/Adapter的代码回归仍未执行，不能宣布代码测试通过。
+
+## 2.8 最新CI与应用层正式知识读取状态
+
+- main代码SHA `a5933de8a8cb5c1470fd9a30acd1b70da0acd691`对应CI run `44431800686`失败；build job `135250727724`在约2秒内结束，`runner_id=0`、runner_name为空、steps为空数组。相邻main提交的CI、隔离PG17及HTTP作业呈相同“步骤启动前失败”形态。**当前只能判断Runner/job未启动，不能判断本批测试代码失败，也不能在无证据时断言具体账单根因。**
+- 正式知识读取仍HOLD。数据库日志中已有调用以`M5_FORMAL_READ_OWNER_REQUIRED`拒绝；本批没有完成真实Studio Creator会话→签名DB会话→`studio.search_qualified_project_layers`的端到端正向回读。不得用postgres高权查询或临时伪造Owner身份替代。
+- 不得重复调用朱家角任务已结算的`llm-understand`；不创建新Project/Root、不启动Provider、不增加模型费用。
+
+
 ## 3. 当前唯一工程前沿
 
 按PLAN §3.5 D推进，不重建D00—D05、Runner、Registry或Gate：
 
-1. **先解除朱家角Studio任务的正式知识读取HOLD**：在同一Creator签名会话内验证应用层正式L0—L5读取；若SQL层已通过而应用层仍失败，沿签名上下文、应用事务与读取函数调用边界定位。不得重跑已结算的`llm-understand`，不得以高权限直连代替Owner应用身份。
+1. **唯一下一断点：解除朱家角Studio任务的正式知识读取HOLD**。只沿同一Creator会话→服务端签名数据库会话→受限应用事务→`studio.search_qualified_project_layers`这条真实路径核验身份与Project归属，定位`M5_FORMAL_READ_OWNER_REQUIRED`的实际产生点；用原任务做零模型调用的正式读取回归，必须同时得到完整、未降级的Project范围结果和错Project/错用途拒绝。不得重跑已结算的`llm-understand`，不得用postgres高权直连或人工构造身份代替真实Owner路径。
 2. **再判断是否触发D00来源发现**：只有正式读取返回完整、未降级的Project范围结果，且确认无可复用合格来源/原件后，才由既有路由触发D00；读取未授权、截断或不完整时继续HOLD。
 3. **补可信Source/Version/Raw登记生产者**：把Owner上传与外部候选/合法取得汇入同一登记输出合同，保留两种输入的不同来源与权利证据；将登记、私有原件、SHA、Asset Revision和D00获取账做成可回读连续交接。
 4. **并行完成Worker TLS与CI回归**：真实Worker TLS身份/SET正反验证；GitHub runner恢复后运行Y05、Worker、路由及相关回归。当前Preview已READY，CI仍在步骤执行前失败。
