@@ -1,8 +1,8 @@
-# P4 历史业务数据迁移规程
+# P4｜历史专项归档
 
-适用于 MOHEN-ENGINEERING-DATA-UNIFICATION-01。实施与回读证据见 [施工证据账](../../../implementation/MAB/progress.md#studio-d00-docs-reconciliation)。
+本目录保存 MOHEN-ENGINEERING-DATA-UNIFICATION-01 的旧方案与回执，供历史追溯。旧方案已停用。执行现况与 Owner 裁决见 [归档证据](https://github.com/xiezuojie03-web/mohen-agent-2.0/blob/341c6892bf9a63369edb4dcb99ed49518d789d7b/tasks/implementation/MAB/progress.md#studio-d00-docs-reconciliation)。
 
-## 执行合同
+## 原方案范围
 
 - 单向迁移至开发库。保留原主键、时间戳、版本、Reviewer 身份、审计来源与资格状态。原件迁移范围为元数据、SHA、存储引用和权利证据。
 - 批次依赖、对象归属及写入规则以 [批次清单](P4_BATCH_MANIFEST.json) 为准。按 [前置条件](P4_SCHEMA_PREREQUISITES.json) 补装结构并处理身份外键。

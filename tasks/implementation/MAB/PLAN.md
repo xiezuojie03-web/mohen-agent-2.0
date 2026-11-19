@@ -16,13 +16,7 @@
 
 **持续施工与复用原则**：目标是依MHKA及授权专业合同，把已有工程总装成可持续运行的系统。已实现、已验证且未受变更影响的成果直接复用；接口不合则修接口，配置缺失则补配置；确不符合现行设计的实现可在原职责/唯一生产链内定向修改或替换，并记录理由和受影响回归。不得为了历史继承完整而全仓重审、逐项证明R01—R11或重复已有阶段；也不得以“不强求继承”为由从零重建。每批只需核当前受影响实现、合同差异和相关有效证据，历史证据仅按定位/回归需要查阅。无法访问旧环境不阻止以当前合法环境重新验证；历史PASS不能充当当前同Root资格。此原则同样约束§3.5 D、接续指引及开发Skill；交互导航文件已按Owner裁决停用，不构成施工前置，也不改变专业Gate/权利/预算/权限和M6—M8边界。
 
-**开发环境授权与试验数据处置**：墨痕尚未投入运营；[环境交接](ENGINEERING_HANDOFF_CURRENT.md)所指开发库用于开发和集成测试，所含用户、任务、Run、审计、素材等均为系统建设期间的试验数据，数据内容本身没有必须保留的正式业务价值。**保留价值的是已实现的工程能力、可复验证据、失败教训与代码／迁移／施工记录**。因此可在现有`mohen-cloud`直接开展依赖已核实的M2/M3增量迁移、私有Storage建立、低权Reviewer接线及必要的试验数据整理，不得再仅以历史记录存在、Vercel部署目标名称为Production或尚无第二项目为由停止开发、重建分支或要求付费扩容。实际修改仍应小批执行、验证身份/RLS/存储字节/哈希及回滚或失败关闭，并在操作前记录最小基线、操作后记录效果；不可把真实安全规则或独立Gate签发权当作可任意清理的实验数据。**本裁决只适用于当前尚未运营的开发项目，不自动授权未来真实用户数据破坏、公众开放、正式生产切换或付费服务**。§0.2与§1.2凡提到“持久非生产集成环境”，在均以已有的授权开发环境为优先实现载体，而不是必须另建收费分支；同一Root真实验收不允许用CI或模拟数据替代。
-
 **单main前置**：唯一可写代码分支为`main`，不创建施工分支或PR。工程执行责任属于Owner当前授权的唯一执行方，不固化到某一平台。**在修改业务代码之前**，须实证隔离main提交与Vercel自动生产部署，未完成时仅可进行已授权文档修订、只读核验及不触生产的测试准备。修改前核HEAD和版本，提交后核对应CI；红灯不得记PASS或自动发布。部署隔离与安全发布的规则集中见§0.2 B和§6。
-
-**M5断点推进**：按已归档的系统路线图V0.4识别业务交集与上下游，但图本身不是批准设计、施工规范或实时工程证据。以Studio真实UI→项目/Root Task→受权来源/候选→唯一Runner/D-L-G及独立G→知识资产/内部研究读→Studio WorkRevision→Admin/运营审核/精确发布→WATCH及撤权为连贯用户任务，逐节点核真实输入输出与失败回执。必需的权限、原件/私有Worker、Agent与外部AI费用、当前知识用途资格、存储及恢复随主干节点接入；已合格知识可合法绕过新知识生产。阶段来源可登记但不得决定下一修复顺序。
-
-**M5主干交互导航文件停用**：tasks/results/MAB/M5_MAINLINE_NAVIGATION_20261115.json及同目录MD/HTML保留为历史快照，**不再作为AI必读文件、施工依据或当前状态来源，也不再维护、同步或修订**。不得因导航文件未更新而阻断施工；不得根据其中旧节点、旧边、旧G0前沿或旧状态决定下一任务。需要理解当前业务链时，按本PLAN §3.5 B/C/D、CURRENT.md和最新progress.md证据读取；如确需追溯旧图，只能作为历史参考并重新核实源码和运行事实。
 
 **D00—D05已有成果按需定位（非施工前置审计）**：[历史成果索引](../../results/MAB/M5_D00_D05_FULL_CHAIN_INHERITANCE_CURRENT.md)用于找到已有方法、接口与原始证据；只读本次受影响阶段/连接的相关条目。不得强制每批重读§2—6或填写全部R编号。先核当前代码与实际输入输出，已有能力直接复用；缺口或改判说明具体证据及最小修复/替换理由。旧摘要与新代码/回执冲突时回查精确来源，不能照旧“下一步”重复施工。无当前运行条件则具名HOLD并继续不依赖它的已授权工作，不伪造同Root PASS。
 
@@ -300,7 +294,6 @@ ST-01—ST-09保留既有**业务动作与前后依赖**，不再要求按旧M1�
 |---|---|---|
 | 旧M0盘点、74目标和M1身份/安全局部回归；既有`target-diff.csv`、`progress.md` | 现有项目ACL、数据库事务身份、会话隔离、Delegation与守卫；沿目标原路径找实现 | 仅补当前动作涉及的身份/RLS/安全缺口；不重做M0或按M1→M4逐阶段重新验收；旧安全HOLD也不能无新证据关闭 |
 | 原件取得、展示、私有存储、SHA回读、source/version/raw真实登记；11-08原始记录、R05/R07/R08 | `apps/web/app/api/studio/attachments/route.ts`；`packages/data-access/src/private-original-repository.mjs`、`private-original-storage.mjs`、`private-source-registration-repository.mjs`；现有原件workflow | 复用上传/回读/登记落点，精确查当前上传→来源绑定入口是否缺接线；不得因上传成功自动赋machine_read/retain/display许可，不重造原件模块 |
-| 研发云库M2/M3迁移、私有桶、C01/C02及ACL；`progress.md`的M5-DEV-M2-01/M3-02和R11 | `supabase/migrations/`既有M2/M3/K3原迁移；已安装对象及原rollback、现有Storage适配 | 先查实际已安装版本，差异才增量迁移；按§0直接使用现有开发项目，不为“Production”标签/无第二项目再建付费库。安装表/函数不等于真实上传、签发或恢复通过 |
 | 金泽、绿之丘旧六段与实际模型成果；R01/R02及原样板/A001报告 | `pipelines/data-production/adapters/layer1-adapters.mjs`的专业方法、提示词、结构处理、实体/关系/投影及数据模型 | 迁移专业内容能力到现行授权、来源权利、独立G与受控Provider合同；禁止恢复Producer直写Gate PASS、旧直接计费路径或固定样板输入 |
 | 独立Gate逐门、方法预选、CAS/当前资格/撤权；R05/R06/R07/R08/R09/R11；隔离同Root G0回执见原progress | `tools/rule-gate-reviewer.mjs`、`local-gate-service.mjs`、`gate-stage-candidate-selection.mjs`、`gate-stage-output-attestation.mjs`；`packages/data-access/src/gate-stage-qualification.mjs` | 只接真实低权机器身份、政策/绑定、独立运行服务及当前精确stage_binding消费；不得重建签发器。对象资格、旧current_valid和Runner本次精确资格分开，不互相代替 |
 | 唯一Runner/Registry、Private Worker、D00→D01接线与下一阶段HOLD；R10 | `pipelines/data-production/run.mjs`、`orchestrator/orchestrator.mjs`、`adapters/private-evidence-adapters.mjs`、`workers/private-evidence-stage.mjs`；既有Registry | 只修被证实的阶段转换/授权/恢复差异；依据当前代码和回执选择最前断点，不把已接的C01 `E_L1_TO_D02`当缺代码重做；不改空typed请求为PASS，不另建Studio快速链 |
@@ -329,7 +322,7 @@ ST-01—ST-09保留既有**业务动作与前后依赖**，不再要求按旧M1�
 | 工作包（八维关联） | 继承与改动入口 | 本包动作和真实可见交付 | 受影响正反/恢复及回退 |
 |---|---|---|---|
 | **Studio统一知识资产检索与生产能力统筹调度**（1/3，涉及2时同步） | 继承原件/M2/M3、R01—R11、六阶段唯一Runner/Registry、现有L5 read-model、项目内L0—L4读取、外部来源发现、私有原件/Reviewer/Gate | 先从Studio自然语言→Brief/Plan，建立统一L0—L5知识资产视图/检索契约，汇合现有项目内资产读取与G5合格发布知识读取；逐项核精确版本、来源/权利、Owner/Project/共享范围、用途/consumer/scope及对应资格。Agent依据目标成果和局部缺口，从D00—D05整体生产体系选择最小必要阶段/依赖子图；复用已合格成果，不重跑已完成上游；上传原件/研究成果/笔记/创作素材作为可选输入并正确归类。沿用现有唯一Runner/Registry与独立Gate，不新建平行资产库/生产链。打通同Root实际运行、真实Receipt、Studio显示统一资产状态/生产进度/HOLD及恢复；底层存储分区仅作为适配器，不暴露成两套用户流程 | Owner/Project/共享范围、L层资格、用途/consumer、权利/版本/locator、错root、重复/过期Receipt、对已有各层级成果重复获取、重复读取、重复生产均做正反；跨Owner、匿名、撤权拒绝；进程中断和重复请求不丢任务、不重复收费。失败关闭相关新写入，保留合法既有知识、原件及审计 |
-| **D00—D05连续生产与独立Gate交接**（2/3） | 继承R01/R02/R05/R07/R08/R10，原`orchestrator.mjs`、私有Adapter/Worker及H05存储 | 以唯一Registry为阶段/层级/Gate映射，逐一核对D00—D05的真实输入输出、持久对象、精确artifact revision、依赖快照和独立Gate当前资格；继承现有私有原件Worker、Runner、stage adapters及D01→D02 typed接线，按本次真实任务的可用合格输入选择合法起点与连续执行区间。优先验证已有G1合格读取能否由现有Runner真实交接至D02/G2，再沿D02→D03→D04→必要D05逐个相邻交接推进；不得把这些阶段拆成新的独立生产系统，也不得仅包装字段、编造观察/默认方法/默认PASS。只有真实邻接合同失败才定向修复；专业内容确需模型时先满足本节费用和合法外发条件 | 无当前G1/错read_unit/revision/project/root、篡改内容/摘要、无权外发/超预算拒绝；模型超时/未知费用持久HOLD并对账；失败维持原typed守卫和已合格L1，不回滚为候选直通 |
+| **D00—D05连续生产与独立Gate交接**（2/3） | 继承R01/R02/R05/R07/R08/R10，原`orchestrator.mjs`、私有Adapter/Worker及H05存储 | 以唯一Registry为阶段/层级/Gate映射，逐一核对D00—D05的真实输入输出、持久对象、精确artifact revision、依赖快照和独立Gate当前资格；继承现有私有原件Worker、Runner、stage adapters及D01→D02 typed接线，按本次真实任务的可用合格输入选择合法起点与连续执行区间。按 CURRENT 定位同一任务已到达的节点，只验证下一处实际交接；不得把这些阶段拆成新的独立生产系统，也不得仅包装字段、编造观察/默认方法/默认PASS。只有真实邻接合同失败才定向修复；专业内容确需模型时先满足本节费用和合法外发条件 | 无当前G1/错read_unit/revision/project/root、篡改内容/摘要、无权外发/超预算拒绝；模型超时/未知费用持久HOLD并对账；失败维持原typed守卫和已合格L1，不回滚为候选直通 |
 | **知识资产合法消费与研究成果深化**（2/3） | 继承R01/R02/R05/R07/R08/R09及现有W/A/P实现；同一Runner逐个相邻接口 | 承接同一知识生产链已取得资格的成果，按研究需要形成主张、时空关系、人文解释及必要的L5消费分面；统一呈现为同一知识资产体系中的不同层级成果，不另建“L2之后”的第二条链。每次仍核精确输入输出、依赖/用途/consumer和对应独立Gate；模型解释、原文、转引、推断分层；同Root记录Agent/Provider各自真实贡献、hash/Receipt，不把一次Provider调用称互补 | 错来源/范围/用途/方法、过期上游、冲突/反证、撤权和摘要不符拒绝；检查恢复不重复生成/计费。失败保留上一合格成果，按合法checkpoint恢复；不得搬回旧自签/直接Provider路径 |
 | **研究消费→资产→Studio作品修订**（4/5，1/2随任务回核） | 继承R03/R04和13类资产/研究读、现有导演/组件/修订服务 | 已有合法研究读在允许L层即可接入，不人为等所有L5分面；同作品保存来源/依赖/使用史，实际预览、局部编辑、保存、退出/重启恢复并形成不可变WorkRevision；在真实内容中逐项核H1/H2/H3、19组件职责 | 跨Owner、无权来源、旧revision、并发CAS、重复提交、任务删除后永久资产保留；禁止内部研究缓存绕过公众资格。失败恢复合法旧修订、关闭不合格新发布，不覆盖资产正文 |
 | **Admin→精确审核/发布→WATCH/撤权**（6/7/8） | 继承R03/R04及原Admin/资格桥接/运营/消费/撤权实现 | Admin对本作品实际条目逐条回链；独立资格及媒资逐动作许可、运营审批齐备后，在具名非公众集成入口原子发布精确WorkRevision；WATCH读取同修订，实际退回/修订/撤回/恢复。不得因本包文字而生产部署、公众开放 | Reviewer分权、错revision/媒体许可/consumer、发布半失败/重复发布、权限过期/撤权后的新请求及缓存失效；保留已交付字节不可逆边界。先阻断失权消费，恢复不得复活旧许可或覆盖撤权审计 |
@@ -377,11 +370,11 @@ ST-01—ST-09保留既有**业务动作与前后依赖**，不再要求按旧M1�
 
 ### M0｜现场盘点与三方差分
 
-状态：M0_AUDIT_EXIT_PASS。已完成分支/HEAD/部署/迁移/连接身份、234路径、74目标、20责任、85 API、152动作、63方法、19 Skill及数据库/权限/Storage/Gate审查。M0冻结继承；只有出现具体源码/目标冲突时，才对受影响条目定向更新，不重做全量盘点。
+M0 作为责任与证据索引。出现具体源码或目标冲突时定向核对受影响条目。
 
 ### M1｜安全底座与兼容迁移准备
 
-完成安全身份、Owner事务、RLS/ACL、匿名/跨Owner/禁用/过期/登出、会话撤销、低权限Worker、备份/恢复和兼容迁移。按3.1关闭固定条件；不得默认重复轮换已经可能完成的数据库密码，先核既有失效回执。
+完成安全身份、Owner事务、RLS/ACL、匿名/跨Owner/禁用/过期/登出、会话撤销、低权限Worker、备份/恢复和兼容迁移。按3.1关闭固定条件。
 
 ### M2｜私有原件、九层映射与长期资产
 
@@ -399,7 +392,7 @@ ST-01—ST-09保留既有**业务动作与前后依赖**，不再要求按旧M1�
 
 按3.5和本文件八维度矩阵完成同一真实作品全链。未满足专业G5/媒资权利不得公开消费；M5隔离验收不等于生产启用。
 
-- [x] 吸收②（附录D）：消费侧 7 路由目标（admin/acl、admin/publications、admin/users/[id]/status、explore entities/events/relations、watch/sessions）与 7 份 Skill 更新按交付包目标三方合并施工，禁止整文件覆盖；未完成不得关闭 M5。（2026-11-12 本地批完成，PENDING_PUSH：7 路由以包目标为骨架落地 KAD1 生成代语义——acl/users 收敛库内事务 `control.kad1_change_account`、publications 到期发布显式化、explore 详情 423 资格投影失败关闭、watch/sessions 会话隔离逐请求核发布指针；7 Skill 逐字节采用包版（HEAD==基线，含 D00 纳入调用阶段与独立 Gate 表述）。适配两处：UUID 正则硬化、`processDueSchedules` 无参调用。实证 typecheck 6/6、unit 650P/2S、guard:auth:strict 111 路由 0 缺口、structure/gate-enforcement PASS；PG/HTTP 实证与生产 kad1 迁移应用仍按原门禁 HOLD。回执见 progress.md 2026-11-12 批。）
+- 消费侧 7 路由及 7 份 Skill 的交付范围见附录 D 索引。按相关合同验证本次受影响的能力。
 
 ### M6｜全量合同回归与延期能力闭环
 

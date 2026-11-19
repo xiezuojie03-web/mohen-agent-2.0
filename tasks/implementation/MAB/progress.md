@@ -5123,8 +5123,7 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 <a id="studio-d00-docs-reconciliation"></a>
 
-## 2026-11-19｜创作主线与文档职责对账
+## 2026-11-19｜创作主线文档对账
 
-- 编辑基线为 GitHub main `c6337d2e306007025ddbb0481570d8942e7e43fe`。Owner 确认正式读取已用于判断资料缺口，云端统一专项已结束，当前施工转入 Studio 外部候选到 D00 原件接入。历史读取诊断原文保留于 [原 CURRENT §2.9–2.14](https://github.com/xiezuojie03-web/mohen-agent-2.0/blob/c6337d2e306007025ddbb0481570d8942e7e43fe/CURRENT.md)，旧施工方案中的现场回执保留于 [原 PLAN §3.5 D 第7项](https://github.com/xiezuojie03-web/mohen-agent-2.0/blob/c6337d2e306007025ddbb0481570d8942e7e43fe/tasks/implementation/MAB/PLAN.md#L407)。
-- 前轮 Supabase 只读回查（北京时间约 19:05）：迁移账本 41，Run 135，Gate 审计 802，资格 49，Raw 188，Project 17，私有原件元数据 90，发布修订 24。原研究任务回读为 `hold`、`work_id=null`。专项文档保留执行规则和原验收目标；本次未补造未取得的逐批回执。
-- 本次为文档对账，无业务代码、数据库、部署或模型调用变更。Studio 到 D00 的真实交接仍待验收。
+- [原文档整理记录](https://github.com/xiezuojie03-web/mohen-agent-2.0/blob/341c6892bf9a63369edb4dcb99ed49518d789d7b/tasks/implementation/MAB/progress.md#studio-d00-docs-reconciliation)保留上一批原始证据。当前断点和验收入口见 [CURRENT](../../../CURRENT.md)。
+- 本轮复核活跃文档的职责、重复说明与接续指令，仅更新文档。
