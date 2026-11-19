@@ -5167,3 +5167,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 ## 2026-11-19｜第④步原任务真实候选选择已保存
 
 - Preview 原 Creator 选择「朱家角古镇，Zhujiajiao Water Village - panoramio」，服务端回读 SELECTED，Project 和 Root 与原任务一致。其余候选按钮原先禁用但仍像可点，本批在选定后保留候选信息并移除不可用按钮，保存中显示进度。TSX 转译通过。真实刷新与同候选重试未单独验收；选中仅为待核验获取的线索。
+
+## 2026-11-19｜第⑤步原任务候选定位与公开许可核验
+
+- 原朱家角任务选择回执指向 Commons 文件「朱家角古镇，Zhujiajiao Water Village - panoramio」。对照 [Commons 文件页固定修订](https://commons.wikimedia.org/w/index.php?oldid=1099152026) 与 imageinfo 原始文件元数据，作者 Adazzy.Gonzo，拍摄日期 2009-03-29，源自 Panoramio photo 49535458。原件入口为 JPEG，945 × 630；固定修订与文件版本分别追溯，字节和 SHA 尚未回读。
+- 单件许可为 [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/)。该照片按署名和许可条件可复制保存及作当代视觉材料；对外再利用保留作者、来源、许可及变更说明，发布改编按相同或兼容许可。该图不能独立证明古桥、水路和集镇空间的历史关系。
+- 本批仅作只读公开出处和许可核验。尚未写入 Studio 权利回执、获取原件、私有保存、登记或提交 D00；后续沿同一任务按现有获取及来源登记合同接入。
