@@ -197,3 +197,42 @@ export async function acquireSelectedCommonsOriginal(taskId: string, ownerId: st
     client.release();
   }
 }
+
+/** Read-only checks in the same server runtime as acquisition. */
+export async function diagnoseSelectedCommonsOriginal(taskId: string, ownerId: string) {
+  const pool = getNodePgPool();
+  const row = (await pool.query(taskSql, [taskId, ownerId])).rows[0] as TaskRow | undefined;
+  if (!row) throw new Error("STUDIO_SOURCE_SELECTION_REQUIRED");
+  const selected = selectedOriginal(row, taskId);
+  let upstream: string;
+  try {
+    await obtainCommonsOriginal(selected.locator);
+    upstream = "COMMONS_ORIGINAL_VERIFIED";
+  } catch (error) {
+    const code = error instanceof Error ? error.message : "";
+    upstream = /^COMMONS_[A-Z_]+$/.test(code) ? code : "COMMONS_REQUEST_FAILED";
+  }
+  let storage: string;
+  try {
+    const endpoint = process.env.SUPABASE_URL ?? process.env.MOHEN_SUPABASE_URL;
+    const token = process.env.MOHEN_PRIVATE_STORAGE_SERVICE_KEY;
+    if (process.env.MOHEN_PRIVATE_ORIGINAL_UPLOAD_ENABLED !== "true") storage = "UPLOAD_DISABLED";
+    else if (!endpoint || !token) storage = "STORAGE_NOT_CONFIGURED";
+    else {
+      const base = new URL(endpoint);
+      if (base.protocol !== "https:" || base.username || base.password || base.search || base.hash || base.pathname !== "/")
+        storage = "STORAGE_ENDPOINT_INVALID";
+      else {
+        const response = await fetch(base.origin + "/storage/v1/bucket/mohen-private-originals", {
+          redirect: "error", cache: "no-store", signal: AbortSignal.timeout(8000),
+          headers: {apikey: token, Authorization: "Bearer " + token},
+        });
+        if (!response.ok) storage = `STORAGE_HTTP_${response.status}`;
+        else storage = (await response.json()).public === false ? "STORAGE_PRIVATE_BUCKET_REACHABLE" : "STORAGE_BUCKET_NOT_PRIVATE";
+      }
+    }
+  } catch {
+    storage = "STORAGE_REQUEST_FAILED";
+  }
+  return { upstream, storage, original_registered: !!row.checkpoint.commonsOriginal };
+}

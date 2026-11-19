@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "../../../../../../lib/session";
 import { signDatabaseSessionToken } from "../../../../../../lib/auth";
-import { acquireSelectedCommonsOriginal } from "../../../../../../lib/studio-commons-acquisition";
+import { acquireSelectedCommonsOriginal, diagnoseSelectedCommonsOriginal } from "../../../../../../lib/studio-commons-acquisition";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -27,7 +27,21 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ ok: true, receipt }, { headers: noStore });
   } catch (error) {
     const code = error instanceof Error ? error.message : "";
+    const known = /^(COMMONS_|STUDIO_SOURCE_|ORIGINAL_|PRIVATE_SOURCE_)[A-Z_]+$/.test(code);
+    console.warn("[studio/source-acquisition] failed", known ? code : "UNCLASSIFIED");
     const reason = blocked.has(code) ? code : "source_acquisition_unavailable";
     return NextResponse.json({ ok: false, reason }, { status: blocked.has(code) ? 409 : 503, headers: noStore });
+  }
+}
+
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401, headers: noStore });
+  const { id } = await params;
+  if (!uuid.test(id)) return NextResponse.json({ ok: false, reason: "bad_request" }, { status: 400, headers: noStore });
+  try {
+    return NextResponse.json({ ok: true, ...await diagnoseSelectedCommonsOriginal(id, session.uid) }, { headers: noStore });
+  } catch {
+    return NextResponse.json({ ok: false, reason: "task_or_candidate_unavailable" }, { status: 404, headers: noStore });
   }
 }
