@@ -122,3 +122,11 @@
 - **施工决定**：没有足以证明真实Studio请求中Creator身份在哪一层丢失的证据，故不做猜测性代码修改、不加宽权限、不建诊断后门。当前状态维持`HOLD`，本轮无模型费用。
 - **下一项诊断（仍属断点01）**：取得一次真实Studio受保护Preview请求的request ID/时间戳，并在同一请求关联服务端已验证Creator UID、Project ID、签名数据库会话生成状态（只记录是否生成，不记录Token/Secret）、数据库事务中`current_app_user_id()`解析UID及Owner/Project guard结果；若身份UID匹配但SQL guard仍失败，再用同连接/同事务证据定位上下文差异。安全日志不得包含Token、Secret或原件内容。
 - **关闭判定**：断点01未关闭。合法Creator真实应用读取、错Project/错用途/无效身份反向验证、L0—L5完整结果及Studio消费均未通过本轮真实请求验证；不进入断点02。
+
+
+## 2.10 2026-11-19｜断点01零模型正式知识读取诊断入口（待真实Owner请求验证）
+
+- 在既有正式读取Repository增加安全错误分类：只记录规范化错误码，不记录SQL参数、Token、Secret或原件内容；返回`failureCode`供诊断区分Owner/Project失败与未知数据库故障。没有改变Owner/Project ACL、Gate资格或数据库授权。
+- 新增只读Studio诊断路由`GET /api/studio/projects/[projectId]/formal-read`：使用真实登录Cookie解析Creator身份、同一`signDatabaseSessionToken`签发短期DB身份；调用既有`retrieveQualifiedFormalProject`（L0-L4）及`retrieveMaterials`（L5），零模型、零写入，只返回数量/覆盖/错误码，不返回材料正文或标识。
+- 路由受Creator/Operator会话保护；正式读取Repository仍执行原Owner/Project与Gate资格校验。该路由不是第二套读取机制，仅为真实应用身份的零费用验收入口。
+- 真实Owner请求尚未执行；未取得request ID/运行回执前，不得宣布应用验证PASS或断点关闭。原朱家角任务未恢复、未重放模型调用。

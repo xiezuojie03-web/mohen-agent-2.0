@@ -17,6 +17,7 @@ export interface FormalQualifiedRead {
   projectQualifiedCoverage:"COMPLETE"|"PARTIAL"|"NOT_SEARCHED"|"UNAVAILABLE";
   sharedQualifiedCoverage:"NOT_VERIFIED";
   truncated:boolean;
+  failureCode?:string;
 }
 // One narrow database function performs the exact current independent Gate,
 // active signed-Owner and Project guard. Never GRANT raw formal tables to
@@ -72,8 +73,9 @@ export async function retrieveQualifiedFormalProject(
     return {refs,materials,degraded:false,projectQualifiedCoverage:truncated?"PARTIAL":"COMPLETE",
       sharedQualifiedCoverage:"NOT_VERIFIED",truncated};
   }catch(error){
-    console.warn("[mohen/formal] 当前项目G0-G4资格检索不可用",
-      error instanceof Error?error.name:"unknown");
-    return {...empty,degraded:true,projectQualifiedCoverage:"UNAVAILABLE"};
+    const failureCode=error instanceof Error && /^[A-Z0-9_]{3,80}$/.test(error.message)
+      ? error.message : "FORMAL_READ_UNKNOWN";
+    console.warn("[mohen/formal] 当前项目G0-G4资格检索不可用",{failureCode});
+    return {...empty,degraded:true,projectQualifiedCoverage:"UNAVAILABLE",failureCode};
   }
 }

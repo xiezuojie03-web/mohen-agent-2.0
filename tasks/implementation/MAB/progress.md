@@ -4994,3 +4994,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 本批未重复修复SQL ACL、未重跑已结算模型步骤、未创建新任务/Project/Root、未读取或输出密钥、未修改Production。根因未确证，未进行猜测性代码修复。
 - 下一诊断仅限断点01：必须关联真实Studio Preview HTTP请求request ID/时间戳、服务端Creator UID、Project ID、数据库签名身份解析UID及Owner guard结果；日志不得包含Token/Secret。
 - 结论：CODE_PRESENT；数据库Owner guard曾在管理端手工SQL中复现；真实Studio应用验证NOT_RUN；断点01维持HOLD。
+
+
+## 2026-11-19｜M5-FORMAL-READ-BP01-DIAG-02｜建立零模型真实应用读取诊断入口
+
+- 基线main@30c2f9cb8c4bce642cae3fe1ad77578b41be7947；写入前核对CURRENT blob 9f5e163257834bfa8591a8dd6c887518134c0766、progress blob c3fd25c4f731829947502591cf2b12e85aded11f、Repository blob cc569d0b32c8376102582afffe83cae2b971767c。
+- `apps/web/lib/mohen-agent/retrieve-formal.ts`：保留既有事务与Owner/Project/Gate合同；catch只输出规范化错误码，并在结果中返回`failureCode`，避免将所有异常变成不可诊断的UNAVAILABLE。未改变权限或SQL读取机制。
+- 新增`apps/web/app/api/studio/projects/[projectId]/formal-read/route.ts`：真实登录Creator/Operator身份→既有DB签名→既有L0-L4正式Repository＋既有L5 retrieveMaterials；只读、零模型、零数据库写入；响应只包含各层计数、覆盖状态及规范化失败码，不包含原件/知识正文、记录ID、Token或Secret。
+- 反向保护：未登录401、非Creator/Operator 403、非法Project ID/terms 400；真实Owner/错Project/错用途/无效身份仍需后续应用请求实测，路由不会绕过Repository的Owner/Project/Gate guard。
+- 本批没有创建Project/Root/研究任务，没有恢复朱家角任务，没有触发Provider/模型，没有改动数据库schema/ACL，没有触碰Production。
+- 测试状态：代码已写入；GitHub Actions Runner近期为runner_id=0/steps=[]，因此新增路由与Repository单测尚未执行，标记NOT_RUN。下一步以当前main精确提交创建受保护Preview，Owner通过浏览器当前登录会话访问该只读路由，取得真实运行回执；若返回身份/Owner/Project失败码，再依据真实证据定向修复。
+- 本断点仍HOLD，未宣称真实应用PASS。
