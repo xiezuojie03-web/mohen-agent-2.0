@@ -22,9 +22,11 @@ function commonsFile(value: string) {
 }
 
 async function boundedFetch(url: string, limit: number, accept: string) {
+  const stage = accept === "application/json" ? "METADATA" : "ORIGINAL";
   const response = await fetch(url, { redirect: "error", cache: "no-store", signal: AbortSignal.timeout(15000),
-    headers: { Accept: accept, "User-Agent": "MoHen Studio Commons acquisition/1.0" } });
-  if (!response.ok || !response.body) throw new Error("COMMONS_SOURCE_UNAVAILABLE");
+    headers: { Accept: accept, "User-Agent": "MoHenStudio/1.0 (https://github.com/xiezuojie03-web)" } });
+  if (!response.ok) throw new Error("COMMONS_" + stage + "_HTTP_" + response.status);
+  if (!response.body) throw new Error("COMMONS_" + stage + "_BODY_MISSING");
   const reader = response.body.getReader();
   const chunks: Uint8Array[] = [];
   let size = 0;
@@ -210,7 +212,7 @@ export async function diagnoseSelectedCommonsOriginal(taskId: string, ownerId: s
     upstream = "COMMONS_ORIGINAL_VERIFIED";
   } catch (error) {
     const code = error instanceof Error ? error.message : "";
-    upstream = /^COMMONS_[A-Z_]+$/.test(code) ? code : "COMMONS_REQUEST_FAILED";
+    upstream = /^COMMONS_[A-Z_0-9]+$/.test(code) ? code : "COMMONS_REQUEST_FAILED";
   }
   let storage: string;
   try {

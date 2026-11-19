@@ -27,7 +27,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ ok: true, receipt }, { headers: noStore });
   } catch (error) {
     const code = error instanceof Error ? error.message : "";
-    const known = /^(COMMONS_|STUDIO_SOURCE_|ORIGINAL_|PRIVATE_SOURCE_)[A-Z_]+$/.test(code);
+    const known = /^(COMMONS_|STUDIO_SOURCE_|ORIGINAL_|PRIVATE_SOURCE_)[A-Z_0-9]+$/.test(code);
     console.warn("[studio/source-acquisition] failed", known ? code : "UNCLASSIFIED");
     const reason = blocked.has(code) ? code : "source_acquisition_unavailable";
     return NextResponse.json({ ok: false, reason }, { status: blocked.has(code) ? 409 : 503, headers: noStore });
