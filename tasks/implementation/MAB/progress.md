@@ -5031,3 +5031,5 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **所谓退出后的无效身份测试未成立（2026-11-19）**：用户再次访问错Project诊断URL，仍返回 `FORMAL_PROJECT_READ_CONTEXT_REQUIRED`。回读当前Preview路由源码确认执行顺序为 `getSession()`→无会话返回401 `login_required`→角色校验→Project ID/terms→`consumerContext`→Repository。因此该响应说明本次请求仍通过了应用登录检查，但在Project/用途上下文阶段被拒绝；它不是无效身份拒绝测试，不能记为401 PASS。下一次无效身份测试应在无MoHen Cookie的独立浏览器隐私窗口进行（仍需通过Preview SSO时单独完成平台验证），再访问正确Project诊断地址；预期应用层返回401 `login_required`。不要求用户反复执行未完成的登出动作。
 
 - **再次尝试的无效身份测试仍未形成**：用户从所提供的测试链接获得与Owner请求完全相同的回执：`identity.authenticated=true`、`dbSessionSigned=true`、Project ownerCheck=evaluated、L0-L4 COMPLETE零命中、L5正常零命中。由此只能确认本次HTTP请求仍携带有效MoHen应用会话并成功签发DB会话；不能记为未登录401，也不能证明请求来自真正无MoHen Cookie的隔离浏览器上下文。无需继续重复同一链接。后续若必须完成未登录负向测试，应使用全新浏览器配置文件/另一浏览器，确认没有MoHen登录Cookie后直接访问正确Project URL；若Preview SSO拦截，则先仅完成平台访问验证，避免登录MoHen账户。
+
+- **无效身份真实浏览器验证PASS（2026-11-19）**：用户更换浏览器后访问正确Project诊断地址，返回 `{"ok":false,"reason":"login_required"}`。与诊断路由源码的未登录分支一致（HTTP 401预期）；请求未进入Creator角色、Project上下文或正式知识Repository。此前同一地址返回 `FORMAL_PROJECT_READ_CONTEXT_REQUIRED` 或Owner成功回执的请求均仍通过了MoHen `getSession()`，不得归类为未登录测试。当前无效身份拒绝已获真实浏览器证据。
