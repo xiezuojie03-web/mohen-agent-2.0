@@ -157,7 +157,7 @@ export default function StudioWorkbench() {
       const tasksBody=await tasksResponse.json() as {ok?:boolean;tasks?:SavedResearchTask[]};
       if (!tasksResponse.ok || !tasksBody.ok || !Array.isArray(tasksBody.tasks)) throw new Error("已保存研究任务暂时无法读取。");
       const task=tasksBody.tasks.find(t=>t.project_id===project.project_id);
-      let restored:{taskId:string;status:"done"|"hold";prompt:string;decision:AgentDecision|null}|null=null;
+      let restored:{taskId:string;status:"done"|"hold";prompt:string;decision:AgentDecision|null;materialsPending:boolean}|null=null;
       let priorProduction:StudioProductionReadback|null=null;
       if (task) {
         const statusResponse=await fetch(`/api/studio/research-tasks/${encodeURIComponent(task.task_id)}/status`,{cache:"no-store"});
@@ -181,8 +181,8 @@ export default function StudioWorkbench() {
         const decision=checkpoint.decision;
         const validDecision=!unavailable&&decision&&typeof decision==="object"&&!Array.isArray(decision)
           ?decision as AgentDecision:null;
-        restored={taskId:task.task_id,status:statusBody.task.status==="done"&&!!validDecision?"done":"hold",
-          prompt:statusBody.task.prompt??task.prompt,decision:validDecision};
+        restored={taskId:task.task_id,status:statusBody.task.status==="done"?"done":"hold",
+          prompt:statusBody.task.prompt??task.prompt,decision:validDecision,materialsPending:!validDecision};
         const prodResponse=await fetch(`/api/studio/research-tasks/${encodeURIComponent(task.task_id)}/production`,{cache:"no-store"});
         if (prodResponse.ok) {
           const p=await prodResponse.json() as {ok?:boolean;production?:StudioProductionReadback|null};
@@ -193,7 +193,7 @@ export default function StudioWorkbench() {
       setProjectId(project.project_id);
       if (restored) {
         lastTaskIdRef.current=restored.taskId;
-        setCurrentResearch({taskId:restored.taskId,status:restored.status});
+        setCurrentResearch({taskId:restored.taskId,status:restored.status,materialsPending:restored.materialsPending});
         setMessages([
           {role:"user",text:restored.prompt},
           {role:"mohen",
@@ -247,7 +247,7 @@ export default function StudioWorkbench() {
 
   // 生产进度（委托后异步 D00–D05 生产，轮询 control.production_runs）
   const [production, setProduction] = useState<StudioProductionReadback | null>(null);
-  const [currentResearch, setCurrentResearch] = useState<{ taskId: string; status: "done" | "hold" } | null>(null);
+  const [currentResearch, setCurrentResearch] = useState<{ taskId: string; status: "done" | "hold"; materialsPending?: boolean } | null>(null);
   const [sourceChoices, setSourceChoices] = useState<{
     taskId: string; candidates: {id: string; title: string; provider: string}[];
     selectedId: string | null; saving: boolean; error: string | null;
@@ -459,12 +459,16 @@ export default function StudioWorkbench() {
       const checkpoint = (typeof raw === "string" ? JSON.parse(raw) : raw) as
         {decision?:AgentDecision;materialRead?:{state?:string}} | undefined;
       const decision = checkpoint?.decision;
-      if (!status.ok || task?.task_id !== taskId || task.status !== "done" ||
-          checkpoint?.materialRead?.state === "HOLD" || !decision?.mohenLine) {
+      if (!status.ok || task?.task_id !== taskId || task.status !== "done") {
         setResumeNotice("续跑已提交，请通过资料台重新打开本项目，核对最新状态。");
         return;
       }
-      setCurrentResearch({taskId,status:"done"});
+      const materialsPending = checkpoint?.materialRead?.state === "HOLD" || !decision?.mohenLine;
+      setCurrentResearch({taskId,status:"done",materialsPending});
+      if (materialsPending || !decision) {
+        setResumeNotice("原委托已完成查找。可在待验证候选中选择来源，材料仍待核验。");
+        return;
+      }
       setMessages(messages=>[...messages,{role:"mohen",text:decision.mohenLine,taskRef:taskId,
         materials:decision.materials,gaps:decision.gaps,clarify:decision.clarifyQuestion}]);
       setResumeNotice("已继续原研究委托。");
@@ -558,7 +562,7 @@ export default function StudioWorkbench() {
 
   const lastUserBrief = [...messages].reverse().find((m) => m.role === "user")?.text;
 
-  const canGeneratePlans = currentResearch?.status === "done" && Boolean(lastUserBrief);
+  const canGeneratePlans = currentResearch?.status === "done" && !currentResearch.materialsPending && Boolean(lastUserBrief);
   const hasWorkDraft = Boolean(selectedPlan && adoptedPlanId && beats?.length);
 
   async function authorizeExternal(): Promise<string | null> {
@@ -1098,7 +1102,9 @@ export default function StudioWorkbench() {
               <div className="studio__empty">
                 {currentResearch?.status === "hold"
                   ? "这份研究仍在暂停。继续原委托并取得研究结果后，才能生成导演方案。"
-                  : "研究完成后，可以在这里生成并比较两种导演方案。"}
+                  : currentResearch?.materialsPending
+                    ? "来源和材料核验后，可以生成导演方案。"
+                    : "研究完成后，可以在这里生成并比较两种导演方案。"}
               </div>
             )}
 
