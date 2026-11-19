@@ -150,3 +150,4 @@
 - **费用保护**：朱家角task `53ad1a29-22e5-43c2-816d-b02b6e85abbd`未恢复、未重建、未调用模型；没有新Project/Root；本次诊断零模型费用、零业务写入。
 - **下一步（仍为断点01）**：先确认是否存在可合法复用的当前G0-G5资格对象，且属于同一Project或已有明确授权共享范围；若无，当前环境只能标记正向知识命中`NOT_RUN / NO_QUALIFIED_FIXTURE`，不能为了让测试通过而制造资格、伪造知识或放宽Gate。随后在不触发模型的情况下完成真实Preview的错Project/错用途/无效身份拒绝测试，并把断点结论明确拆分为`IDENTITY_PATH_PASS`、`READ_QUERY_PASS_EMPTY`、`QUALIFIED_KNOWLEDGE_POSITIVE_NOT_RUN`。
 - **关闭判定**：断点01尚未关闭。身份和读取调用链的主要正向路径已PASS，但“读取自己Project下具有合法资格的L0-L5知识资产”尚无真实正向样本，反向应用测试亦未全部完成。不得转入断点02。
+- **真实Preview错Project反向请求（2026-11-19）**：使用不存在且与当前Consumer上下文不匹配的Project UUID访问正式读取诊断入口，返回 `ok=false / FORMAL_PROJECT_READ_CONTEXT_REQUIRED`。确认请求在 `retrieveQualifiedFormalProject` 的应用层上下文一致性检查处被拒绝，未进入数据库Owner guard；因此应用层Project上下文隔离反向测试PASS，但数据库层跨Owner拒绝尚未单独实测。不得将该结果描述为数据库Owner guard PASS。

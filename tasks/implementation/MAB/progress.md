@@ -5026,3 +5026,4 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 当前错误不再指向Creator身份丢失或Owner guard；本环境实际缺口是没有当前有效的G0-G5资格对象。L0-L4 coverage COMPLETE表示查询未截断且无异常，不表示资产存在。
 - 错Project、错用途、无效/过期身份的真实Preview反向验证尚未执行。未恢复朱家角任务、未重建Project/Root、未产生模型费用。
 - 断点01继续HOLD；正向身份/查询执行已PASS，正向合格知识命中为NOT_RUN（NO_QUALIFIED_FIXTURE），反向真实应用验证未完成。下一步只做断点01的真实Preview负向验证与现有资格对象合法性核对；不制造资格、不放宽Gate、不进入断点02。
+- **真实Preview错Project反向请求（2026-11-19）**：使用不存在且与当前Consumer上下文不匹配的Project UUID访问正式读取诊断入口，返回 `ok=false / FORMAL_PROJECT_READ_CONTEXT_REQUIRED`。确认请求在 `retrieveQualifiedFormalProject` 的应用层上下文一致性检查处被拒绝，未进入数据库Owner guard；因此应用层Project上下文隔离反向测试PASS，但数据库层跨Owner拒绝尚未单独实测。不得将该结果描述为数据库Owner guard PASS。
