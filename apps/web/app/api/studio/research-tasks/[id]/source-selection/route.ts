@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "../../../../../../lib/session";
-import { selectResearchAcquisitionCandidate } from "../../../../../../lib/studio-research";
+import { readResearchSourceSelection, selectResearchAcquisitionCandidate } from "../../../../../../lib/studio-research";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,6 +26,20 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   try {
     const result = await selectResearchAcquisitionCandidate(id, session.uid, candidateId);
     return NextResponse.json(result, { status: result.ok ? 200 : 409, headers: noStore });
+  } catch {
+    return NextResponse.json({ ok: false, reason: "candidate_selection_unavailable" }, { status: 503, headers: noStore });
+  }
+}
+
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401, headers: noStore });
+  const { id } = await params;
+  if (!uuid.test(id)) return NextResponse.json({ ok: false, reason: "candidate_selection_invalid" }, { status: 400, headers: noStore });
+  try {
+    const result = await readResearchSourceSelection(id, session.uid);
+    if (!result) return NextResponse.json({ ok: false, reason: "task_not_ready_or_unavailable" }, { status: 404, headers: noStore });
+    return NextResponse.json({ ok: true, ...result }, { headers: noStore });
   } catch {
     return NextResponse.json({ ok: false, reason: "candidate_selection_unavailable" }, { status: 503, headers: noStore });
   }

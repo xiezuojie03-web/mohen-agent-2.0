@@ -252,20 +252,41 @@ export async function createResearchTask(
     throw error;
   }
 }
+async function readSourceSelectionCheckpoint(taskId: string, ownerUserId: string) {
+  const [row] = await queryRows(
+    `select t.checkpoint
+       from public.research_tasks t
+       join studio.projects p on p.project_id::text = t.checkpoint->'studio'->>'project_id'
+      where t.task_id=:'id'::uuid and t.owner_user_id=:'owner'::uuid and t.status='done'
+        and p.owner_user_id=t.owner_user_id and p.lifecycle_status='ACTIVE'`,
+    { id: taskId, owner: ownerUserId }
+  );
+  return row ? readJsonColumn<Record<string, unknown>>(row.checkpoint, {}) : null;
+}
+
+export async function readResearchSourceSelection(taskId: string, ownerUserId: string) {
+  const checkpoint = await readSourceSelectionCheckpoint(taskId, ownerUserId);
+  if (!checkpoint) return null;
+  const route = checkpoint.knowledgeRoute as CreatedTask["knowledgeRoute"];
+  const leads = route?.should_discover_sources && Array.isArray(checkpoint.researchLeads)
+    ? checkpoint.researchLeads : [];
+  const candidates = leads.flatMap(lead => {
+    const candidate = lead?.acquisition_candidate;
+    if (lead?.epistemic !== "RESEARCH_LEAD" || typeof lead.id !== "string" ||
+        typeof candidate?.locator !== "string" || typeof candidate.title !== "string" ||
+        typeof candidate.provider !== "string" || !candidate.provider) return [];
+    return [{ id: lead.id, title: candidate.title, provider: candidate.provider }];
+  });
+  const saved = checkpoint.sourceAcquisitionSelection as {state?:string; candidate_id?:string; project_id?:string; root_task_id?:string} | undefined;
+  const studio = checkpoint.studio as {project_id: string};
+  const selected = saved?.state === "SELECTED" && saved.root_task_id === taskId &&
+    saved.project_id === studio.project_id && candidates.some(item => item.id === saved.candidate_id);
+  return { candidates, selected_candidate_id: selected ? saved?.candidate_id ?? null : null };
+}
+
 export async function selectResearchAcquisitionCandidate(taskId: string, ownerUserId: string, candidateId: string) {
   const params = { id: taskId, owner: ownerUserId };
-  const readCheckpoint = async () => {
-    const [row] = await queryRows(
-      `select t.checkpoint
-         from public.research_tasks t
-         join studio.projects p on p.project_id::text = t.checkpoint->'studio'->>'project_id'
-        where t.task_id=:'id'::uuid and t.owner_user_id=:'owner'::uuid and t.status='done'
-          and p.owner_user_id=t.owner_user_id and p.lifecycle_status='ACTIVE'`,
-      params
-    );
-    return row ? readJsonColumn<Record<string, unknown>>(row.checkpoint, {}) : null;
-  };
-  const checkpoint = await readCheckpoint();
+  const checkpoint = await readSourceSelectionCheckpoint(taskId, ownerUserId);
   if (!checkpoint) return { ok: false, reason: "task_not_ready_or_unavailable" } as const;
 
   const studio = checkpoint.studio as { project_id: string };
@@ -304,7 +325,7 @@ export async function selectResearchAcquisitionCandidate(taskId: string, ownerUs
       next: JSON.stringify({ ...checkpoint, sourceAcquisitionSelection: selection }) }
   );
   if (written.length) return { ok: true, selection, replayed: false } as const;
-  if (matches((await readCheckpoint())?.sourceAcquisitionSelection))
+  if (matches((await readSourceSelectionCheckpoint(taskId, ownerUserId))?.sourceAcquisitionSelection))
     return { ok: true, selection, replayed: true } as const;
   return { ok: false, reason: "candidate_selection_conflict" } as const;
 }

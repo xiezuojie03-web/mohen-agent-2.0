@@ -248,6 +248,48 @@ export default function StudioWorkbench() {
   // 生产进度（委托后异步 D00–D05 生产，轮询 control.production_runs）
   const [production, setProduction] = useState<StudioProductionReadback | null>(null);
   const [currentResearch, setCurrentResearch] = useState<{ taskId: string; status: "done" | "hold" } | null>(null);
+  const [sourceChoices, setSourceChoices] = useState<{
+    taskId: string; candidates: {id: string; title: string; provider: string}[];
+    selectedId: string | null; saving: boolean; error: string | null;
+  } | null>(null);
+  const sourceTaskId = currentResearch?.taskId;
+  useEffect(() => {
+    if (!sourceTaskId) return;
+    const controller = new AbortController();
+    const taskId = sourceTaskId;
+    void (async () => {
+      try {
+        const response = await fetch(`/api/studio/research-tasks/${encodeURIComponent(taskId)}/source-selection`,
+          { cache: "no-store", signal: controller.signal });
+        if (response.status === 404) return;
+        const body = await response.json();
+        if (!response.ok || body.ok !== true || !Array.isArray(body.candidates)) throw new Error();
+        if (!controller.signal.aborted) setSourceChoices({taskId, candidates: body.candidates,
+          selectedId: body.selected_candidate_id ?? null, saving: false, error: null});
+      } catch {
+        if (!controller.signal.aborted) setSourceChoices({taskId, candidates: [], selectedId: null,
+          saving: false, error: "暂时无法读取可选来源。"});
+      }
+    })();
+    return () => controller.abort();
+  }, [sourceTaskId, currentResearch?.status]);
+
+  async function selectSource(taskId: string, candidateId: string) {
+    setSourceChoices(previous => previous?.taskId === taskId ? {...previous, saving: true, error: null} : previous);
+    try {
+      const response = await fetch(`/api/studio/research-tasks/${encodeURIComponent(taskId)}/source-selection`, {
+        method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({candidate_id: candidateId}),
+      });
+      const body = await response.json();
+      if (!response.ok || body.ok !== true || body.selection?.candidate_id !== candidateId) throw new Error();
+      setSourceChoices(previous => previous?.taskId === taskId
+        ? {...previous, selectedId: candidateId, saving: false} : previous);
+    } catch {
+      setSourceChoices(previous => previous?.taskId === taskId
+        ? {...previous, saving: false, error: "未能确认候选选择。可以重试同一候选。"} : previous);
+    }
+  }
+
   const [productionBusy, setProductionBusy] = useState(false);
   const [productionError, setProductionError] = useState<string | null>(null);
   const [privateSources, setPrivateSources] = useState<Array<{
@@ -766,7 +808,9 @@ export default function StudioWorkbench() {
   const materials = [...new Map(messages.flatMap((message) => message.materials ?? []).map((material) => [material.id, material])).values()];
   // 中栏只放真实回执：有资料支持的进「这次查到的」，其余进「待验证候选」，缺口原样列出。
   const evidenced = materials.filter((material) => material.epistemic === "FACT_EVIDENCED");
-  const candidates = materials.filter((material) => material.epistemic !== "FACT_EVIDENCED");
+  const activeSourceChoices = sourceChoices?.taskId === sourceTaskId ? sourceChoices : null;
+  const candidates = materials.filter(material => material.epistemic !== "FACT_EVIDENCED" &&
+    !activeSourceChoices?.candidates.some(candidate => candidate.id === material.id));
   const gaps = [...new Set(messages.flatMap((message) => message.gaps ?? []))];
   const materialCard = (material: Material) => {
     const label = humanEpistemic(material.epistemic, false);
@@ -932,7 +976,24 @@ export default function StudioWorkbench() {
 
           <div className="studio__research-block">
             <h3>待验证候选</h3>
-            {candidates.length === 0 ? (
+            {activeSourceChoices && (
+              <>
+                {activeSourceChoices.candidates.map(candidate => (
+                  <div className="studio__material" key={candidate.id}>
+                    <div>{candidate.title} · {candidate.provider}</div>
+                    {activeSourceChoices.selectedId === candidate.id ? (
+                      <p role="status">已选择，待核验获取条件</p>
+                    ) : (
+                      <button type="button" className="studio__link-btn"
+                        disabled={activeSourceChoices.saving || activeSourceChoices.selectedId !== null}
+                        onClick={() => void selectSource(activeSourceChoices.taskId, candidate.id)}>选择来源候选</button>
+                    )}
+                  </div>
+                ))}
+                {activeSourceChoices.error && <p role="status">{activeSourceChoices.error}</p>}
+              </>
+            )}
+            {candidates.length === 0 && !activeSourceChoices?.candidates.length ? (
               <p className="studio__drawer-note">还没有待验证的判断。</p>
             ) : (
               <div className="studio__materials">{candidates.map(materialCard)}</div>
