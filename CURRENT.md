@@ -130,3 +130,11 @@
 - 新增只读Studio诊断路由`GET /api/studio/projects/[projectId]/formal-read`：使用真实登录Cookie解析Creator身份、同一`signDatabaseSessionToken`签发短期DB身份；调用既有`retrieveQualifiedFormalProject`（L0-L4）及`retrieveMaterials`（L5），零模型、零写入，只返回数量/覆盖/错误码，不返回材料正文或标识。
 - 路由受Creator/Operator会话保护；正式读取Repository仍执行原Owner/Project与Gate资格校验。该路由不是第二套读取机制，仅为真实应用身份的零费用验收入口。
 - 真实Owner请求尚未执行；未取得request ID/运行回执前，不得宣布应用验证PASS或断点关闭。原朱家角任务未恢复、未重放模型调用。
+
+
+## 2.11 2026-11-19｜BP01诊断Preview部署完成
+
+- 当前代码提交`6e31431b332b5aed40d47206a0229718f7784807`已部署到受保护Vercel Preview：`dpl_BxpZG6SP455F51fEtoP2t4pEX5hC`，URL `https://mohen-agent-2-0-f5scpkmg7-napoles1.vercel.app`，部署状态`READY`，target=null（Preview），Production未修改。
+- Vercel构建日志确认Next.js优化构建成功、TypeScript类型检查阶段通过、静态页生成完成并产出Serverless路由。该结果是BUILD PASS，不是Studio真实Creator身份/正式知识读取PASS。
+- 零模型诊断入口：`/api/studio/projects/{projectId}/formal-read?term=...`。必须通过Vercel Preview SSO及MoHen Creator登录Cookie；只读调用既有L0-L4/L5 Repository，返回各层数量/覆盖/规范错误码，不返回材料正文或记录标识。
+- 下一步必须取得Owner在此Preview中的一次真实请求回执；未发生Owner请求前，真实应用验证仍NOT_RUN，断点01保持HOLD。

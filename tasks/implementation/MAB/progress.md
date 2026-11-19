@@ -5009,3 +5009,10 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 ### 2026-11-19｜BP01-DIAG-02路径复核修正
 - 复核新诊断路由相对导入路径时发现目录层级少回退一级；已修正为从`apps/web/app/api/studio/projects/[projectId]/formal-read`准确指向`apps/web/lib`的六级相对路径。该修正发生在部署前，未影响任何运行环境。
+
+
+### 2026-11-19｜BP01-DIAG-02 Preview BUILD PASS
+- Vercel部署：`dpl_BxpZG6SP455F51fEtoP2t4pEX5hC`，精确Git SHA `6e31431b332b5aed40d47206a0229718f7784807`，Preview URL `https://mohen-agent-2-0-f5scpkmg7-napoles1.vercel.app`，状态READY、target=null。
+- 构建事件：Next optimized build compiled successfully (10.9s)；Linting/type validity check已进入并完成；静态页15/15生成；build trace和动态API路由输出完成。该证据仅证明Preview BUILD PASS。
+- GitHub Actions run `44438122930`仍failure；job runner_id=0、steps=[]，测试未执行（NOT_RUN）。
+- 等待Owner使用真实Creator会话访问只读诊断入口，才可验证Creator签名身份→DB会话→受限事务→Project Owner guard→L0-L4/L5正式读取。无模型调用、无写入、无新增费用。
