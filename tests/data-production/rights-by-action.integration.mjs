@@ -29,6 +29,8 @@ const insertSource = (rights = "'{}'", evidence = "'{}'") =>
 
 // Negative: arrays and bare strings are not objects — the CHECK constraints reject them.
 assert.throws(() => sql(insertSource(`'["machine_read"]'`)), /sources_rights_by_action_object/);
+assert.throws(() => sql(insertSource(`'{"read_original":"allowed"}'`)), /sources_rights_by_action_object/,
+  "unknown legacy action names must not enter the canonical dictionary");
 assert.throws(() => sql(insertSource(`'{"machine_read":"allowed"}'`, `'["owner-decision"]'`)), /sources_rights_evidence_object/);
 assert.throws(() => sql(insertSource(`'"machine_read"'`)), /sources_rights_by_action_object/);
 
