@@ -4962,3 +4962,22 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **开发数据库回读**：当前朱家角Project的`studio.private_originals`为0；D00八张账表仍全部0。全局历史`source.sources/source_versions/raw_items`为39/39/98，但不能据此认定当前Project已有可用来源。Worker角色仍为NOLOGIN、非superuser、无BYPASSRLS；M5 Worker login为MEMBER且可SET；Worker可写D00账表/Producer候选并读Gate audit，不可签发或撤销Gate。真实Worker TLS连接尚未验证。
 - **当前顺序裁决**：第一，先解决同一Studio任务的应用层正式知识读取HOLD；第二，正式读取能给出完整、未降级的Project范围结果后，才按缺口触发D00来源发现；第三，补可信来源登记生产者，把Owner上传与外部候选/合法取得汇入同一Source/Version/Raw输出合同；第四，并行完成Worker TLS和CI执行验证；第五，使用同一Project/Root真实跑D00/G0→D01/G1→D02。不得把Y05继续打磨、数据库表安装或Preview READY当成D00实跑。
 - **本轮未做**：没有创建私有原件或来源数据；没有调用模型/Provider；没有重跑历史任务；没有创建Reviewer或激活Gate；没有Production部署。
+
+
+## 2026-11-19｜M5-SOURCE-RIGHTS-01｜来源权利快照合同补齐与停止点归档
+
+- **接续基线**：本批从main@ffad0e400f7094d43ca9eea0bca9489f479c2adb所记录的M5-QUALITY-16-RECHECK事实继续；执行期间main连续提交至a5933de8a8cb5c1470fd9a30acd1b70da0acd691。唯一写入分支仍为main，无施工分支、PR或强推。
+- **本批范围**：只处理来源登记交接中“逐动作权利必须进入不可变Source Version投影，并被D00/独立G0证据读取”的数据库/代码合同；不声称完成来源登记生产者，不创建Source/Version/Raw业务记录，不触发模型或Provider，不启动新Runner。
+- **GitHub main代码提交**：
+  - 67f0a9949528eaef596cff22d843dcc97be5c493：新增supabase/migrations/20261119110000_m5_private_source_rights_projection.sql，定义规范动作字典校验、来源权利字段、版本权利快照及只读登记投影。
+  - 7908a22972181bb0a2a59a4a2572ad6f20148cbe：更新权利动作集成测试fixture，采用既有唯一词典中的machine_read/display，不再使用非规范动作名。
+  - 2524b533f0427ba40dda92020df19a10071dd4e0：登记Repository校验完整权利投影、版本快照与规范动作字典。
+  - 54262812af753284b4b30932dc4ac9df2da5aea8：D00 Worker把登记回执中的rights_by_action/rights_snapshot/rights_evidence传入后续证据。
+  - 2d325472e1ec4c2559cadde4584e638f63a1162c：D00 Adapter把逐动作权利与证据放入独立G0候选证据；仍为UNASSESSED，不自签Gate。
+  - 161aa2ae450bf50d665625b49b56d6a085afee25、a5933de8a8cb5c1470fd9a30acd1b70da0acd691：补充Worker测试fixture与非规范动作名负例。
+- **开发数据库真实迁移**：Supabase mohen-cloud（project fwrhxddcpkibsnmddcfl）已成功应用迁移20261119004253_m5_private_source_rights_projection_20261119。回读确认source.sources.rights_by_action/rights_evidence与source.source_versions.rights_snapshot均为NOT NULL JSONB、默认空对象；规范动作/值受CHECK约束；版本快照允许从空对象固定一次，非空后不可改；studio.private_source_registration(uuid)返回版本快照及证据。函数执行权仅mohen_app_runtime，Worker、anon、authenticated均无执行权。
+- **真实数据库事务测试**：在事务内使用合成fixture并ROLLBACK，4项正反断言均通过：拒绝非规范动作键、允许一次性版本快照、拒绝快照重写、拒绝非规范快照动作键。没有写入持久业务fixture；Project当前私有原件/Source/Version/Raw数量未被本批改变。
+- **未完成/不得误报**：没有实现Source/Version/Raw可信登记写入器；没有完成Owner上传与外部合法取得的统一准入交接；没有同一Project真实D00/G0→D01/G1→D02运行；没有作品WorkRevision、Admin审核、发布、WATCH消费/撤权。Repository/Worker/G0 Adapter改动尚未通过GitHub CI或独立隔离PG17作业；不能把SQL事务测试替代代码测试。
+- **CI阻断证据**：最新main SHA a5933de8a8cb5c1470fd9a30acd1b70da0acd691的CI run 44431800686于2026-11-19T00:47:13Z失败；唯一build job 135250727724的runner_id=0、runner_name为空、steps=[]，约2秒结束。相邻提交的CI/隔离PG/HTTP工作流也同样在步骤启动前失败。结论仅为GitHub Actions runner/job未启动、CI=HOLD/NOT_RUN；根因尚未从当前证据确证，不把它归因于代码测试失败或具体账单原因。
+- **停止点与下一批唯一前沿**：本批停止于“逐动作权利版本投影已安装、代码已入main、数据库合同正反验证通过；CI与真实D00交接未验证”。遵循CURRENT既定顺序，下一批先只解决同一Creator/Project的Studio正式L0—L5读取HOLD，禁止重复调用已结算llm-understand，禁止跳去继续扩写D00登记生产者；正式读取完整、未降级并可回读后，才判断是否进入来源登记写入器。
+- **文件同步**：本条为progress追加式证据；CURRENT同步更新当前HEAD、开发库迁移和CI状态。PLAN V1.7验收标准/顺序未改变；AGENTS通用规则未改变；交互导航JSON/MD/HTML按Owner 2026-11-18裁决继续停用，不修改、不引用为当前状态。
