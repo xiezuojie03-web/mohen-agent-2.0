@@ -1,0 +1,308 @@
+{
+ "specialty": "MOHEN-ENGINEERING-DATA-UNIFICATION-01",
+ "stage": "P3",
+ "generated_at": "2026-11-19T03:46:59.430Z",
+ "conflicts": {
+  "production_runs_status_20": {
+   "classification": "CONFLICT_PENDING / PRESERVE_CLOUD 倾向",
+   "detail": [
+    {
+     "run_id": "8a32171c-dd37-4b35-8674-7eae4691dbdb",
+     "local_status": "RUNNING",
+     "cloud_status": "HOLD",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 0, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": null, \"prior_current_stage\": null, \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 0}}"
+    },
+    {
+     "run_id": "ff11231a-424f-4277-9f90-173a70ad6dac",
+     "local_status": "RUNNING",
+     "cloud_status": "HOLD",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 0, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": null, \"prior_current_stage\": null, \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 0}}"
+    },
+    {
+     "run_id": "a3cb68ac-3d04-42c2-98e3-e7847b139f7d",
+     "local_status": "PASS",
+     "cloud_status": "HOLD",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 0, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": null, \"prior_current_stage\": null, \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 0}, \"m5_historical_status_repair\": {\"source\": \"M5-DIAG-13-CORRECTION pre-i"
+    },
+    {
+     "run_id": "404456b4-83de-4499-b44c-b01f19371424",
+     "local_status": "PASS",
+     "cloud_status": "HOLD",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 0, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": null, \"prior_current_stage\": null, \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 0}, \"m5_historical_status_repair\": {\"source\": \"M5-DIAG-13-CORRECTION pre-i"
+    },
+    {
+     "run_id": "fa48dd68-0859-47f7-a11c-206f4b95983f",
+     "local_status": "PASS",
+     "cloud_status": "HOLD",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 0, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": null, \"prior_current_stage\": null, \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 0}, \"m5_historical_status_repair\": {\"source\": \"M5-DIAG-13-CORRECTION pre-i"
+    },
+    {
+     "run_id": "4ce19c26-a1de-4ec8-a8bd-3b72e37e7121",
+     "local_status": "PASS",
+     "cloud_status": "HOLD",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 0, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": null, \"prior_current_stage\": null, \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 0}, \"m5_historical_status_repair\": {\"source\": \"M5-DIAG-13-CORRECTION pre-i"
+    },
+    {
+     "run_id": "f963e6d1-d939-4e4a-b398-cd1e4c6ef2d9",
+     "local_status": "PASS",
+     "cloud_status": "HOLD",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 0, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": null, \"prior_current_stage\": null, \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 0}, \"m5_historical_status_repair\": {\"source\": \"M5-DIAG-13-CORRECTION pre-i"
+    },
+    {
+     "run_id": "a9a9bf99-473f-4fe1-a5db-1ec3fcc9de67",
+     "local_status": "PASS",
+     "cloud_status": "HOLD",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 0, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": null, \"prior_current_stage\": null, \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 0}, \"m5_historical_status_repair\": {\"source\": \"M5-DIAG-13-CORRECTION pre-i"
+    },
+    {
+     "run_id": "490f5543-b223-4bac-b572-044e57e7cd94",
+     "local_status": "PASS",
+     "cloud_status": "HOLD",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 0, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": null, \"prior_current_stage\": null, \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 0}, \"m5_historical_status_repair\": {\"source\": \"M5-DIAG-13-CORRECTION pre-i"
+    },
+    {
+     "run_id": "df7e43b4-31c7-46e9-b03d-00cf4e7d766d",
+     "local_status": "PASS",
+     "cloud_status": "PASS",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 0, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": null, \"prior_current_stage\": null, \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 0}, \"m5_historical_status_repair\": {\"source\": \"M5-DIAG-13-CORRECTION pre-i"
+    },
+    {
+     "run_id": "4719c713-22ab-4c0a-8e3b-d94b1af5e9bf",
+     "local_status": "PASS",
+     "cloud_status": "PASS",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 0, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": null, \"prior_current_stage\": null, \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 0}, \"m5_historical_status_repair\": {\"source\": \"M5-DIAG-13-CORRECTION pre-i"
+    },
+    {
+     "run_id": "1bbf7873-e3d9-44f9-a59f-10fe7b675ed0",
+     "local_status": "FAILED",
+     "cloud_status": "HOLD",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 0, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": null, \"prior_current_stage\": null, \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 0}, \"m5_historical_status_repair\": {\"source\": \"M5-DIAG-13-CORRECTION pre-i"
+    },
+    {
+     "run_id": "5176ade3-2892-4179-96d0-c27184b42ebd",
+     "local_status": "PASS",
+     "cloud_status": "PASS",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 0, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": null, \"prior_current_stage\": null, \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 0}, \"m5_historical_status_repair\": {\"source\": \"M5-DIAG-13-CORRECTION pre-i"
+    },
+    {
+     "run_id": "11111111-1111-4111-8111-111111111111",
+     "local_status": "PASS",
+     "cloud_status": "PASS",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 0, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": null, \"prior_current_stage\": null, \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 0}, \"m5_historical_status_repair\": {\"source\": \"M5-DIAG-13-CORRECTION pre-i"
+    },
+    {
+     "run_id": "22222222-2222-4222-8222-222222222222",
+     "local_status": "PASS",
+     "cloud_status": "PASS",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 0, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": null, \"prior_current_stage\": null, \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 0}, \"m5_historical_status_repair\": {\"source\": \"M5-DIAG-13-CORRECTION pre-i"
+    },
+    {
+     "run_id": "33333333-3333-4333-8333-333333333333",
+     "local_status": "PASS",
+     "cloud_status": "PASS",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 0, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": null, \"prior_current_stage\": null, \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 0}, \"m5_historical_status_repair\": {\"source\": \"M5-DIAG-13-CORRECTION pre-i"
+    },
+    {
+     "run_id": "ea3f5ac3-45a0-4a5a-9c50-a987f0dabbad",
+     "local_status": "RUNNING",
+     "cloud_status": "FAILED",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 2, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": \"2026-10-29T06:15:08.008756+00:00\", \"prior_current_stage\": \"D00\", \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 1}}"
+    },
+    {
+     "run_id": "47c5b936-821b-43a8-9c92-6c2a5fb78b80",
+     "local_status": "RUNNING",
+     "cloud_status": "FAILED",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 2, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": \"2026-10-29T06:20:22.389143+00:00\", \"prior_current_stage\": \"D00\", \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 1}}"
+    },
+    {
+     "run_id": "acab992e-49bd-4e12-8860-6c048f2d37f6",
+     "local_status": "PASS",
+     "cloud_status": "PASS",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 0, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": null, \"prior_current_stage\": null, \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 0}, \"m5_historical_status_repair\": {\"source\": \"M5-DIAG-13-CORRECTION pre-i"
+    },
+    {
+     "run_id": "382c364e-d29e-46be-9412-8bd8f4d034c0",
+     "local_status": "RUNNING",
+     "cloud_status": "HOLD",
+     "local_metadata": "{}",
+     "cloud_metadata": "{\"m5_reconciliation\": {\"event_count\": 0, \"prior_scope\": {}, \"reason_code\": \"M5-DIAG-13 legacy unclaimed RUNNING reconciliation\", \"prior_status\": \"RUNNING\", \"last_event_at\": null, \"prior_current_stage\": null, \"cloud_dispatch_claimed\": false, \"reconciliation_version\": \"m5.legacy-unclaimed.v1\", \"production_failed_event_count\": 0}}"
+    }
+   ],
+   "evidence": "云端迁移 20261118123000_m5_legacy_run_reconciliation 与 20261118130000_m5_repair_historical_run_status_incident 有意改写；本地为原始状态。需逐run比对metadata中的对账理由后裁决，不得无证据恢复本地旧值。"
+  },
+  "sources_rights_27": {
+   "classification": "CONFLICT_PENDING",
+   "detail_sample": [
+    {
+     "source_id": "2735612f-d612-4a11-bcc7-558492092589",
+     "local_rights": {
+      "adapt": "unknown",
+      "quote": "allowed",
+      "retain": "allowed",
+      "display": "unknown",
+      "download": "unknown",
+      "access_view": "allowed",
+      "machine_read": "allowed",
+      "redistribute": "unknown",
+      "external_processing": "unknown"
+     },
+     "cloud_rights": {}
+    },
+    {
+     "source_id": "d2bbc37c-c2d9-46d7-a50f-80e437b23399",
+     "local_rights": {
+      "adapt": "unknown",
+      "quote": "allowed",
+      "retain": "allowed",
+      "display": "unknown",
+      "download": "unknown",
+      "access_view": "allowed",
+      "machine_read": "allowed",
+      "redistribute": "unknown",
+      "external_processing": "unknown"
+     },
+     "cloud_rights": {}
+    },
+    {
+     "source_id": "a1a5fe19-5c26-40bf-b0e5-ec19575eba29",
+     "local_rights": {
+      "adapt": "unknown",
+      "quote": "allowed",
+      "retain": "allowed",
+      "display": "unknown",
+      "download": "unknown",
+      "access_view": "allowed",
+      "machine_read": "allowed",
+      "redistribute": "unknown",
+      "external_processing": "unknown"
+     },
+     "cloud_rights": {}
+    },
+    {
+     "source_id": "1b78aa9a-ed16-4ef4-b167-e544d81d2a62",
+     "local_rights": {
+      "adapt": "unknown",
+      "quote": "allowed",
+      "retain": "allowed",
+      "display": "unknown",
+      "download": "unknown",
+      "access_view": "allowed",
+      "machine_read": "allowed",
+      "redistribute": "unknown",
+      "external_processing": "unknown"
+     },
+     "cloud_rights": {}
+    },
+    {
+     "source_id": "75520029-b56a-4010-a427-15f034a1712d",
+     "local_rights": {
+      "adapt": "unknown",
+      "quote": "allowed",
+      "retain": "allowed",
+      "display": "unknown",
+      "download": "unknown",
+      "access_view": "allowed",
+      "machine_read": "allowed",
+      "redistribute": "unknown",
+      "external_processing": "unknown"
+     },
+     "cloud_rights": {}
+    }
+   ],
+   "detail_count": 27,
+   "evidence": "云端迁移 mab_m5_private_source_action_rights_projection（20261116121153）改写 rights_by_action；本地保留原值。需比对语义（动作键规范 vs 内容变化）后裁决。"
+  },
+  "source_versions_rights_snapshot": {
+   "count": 27,
+   "ids": [
+    "cb6917c6-cb60-4e1f-8e40-63ce9abf9010",
+    "97d3c387-065b-48e9-9886-88b4e1297f1c",
+    "d3beebf7-2ddc-4b06-aef9-def91952978a",
+    "d6f73b7c-a5b5-4343-b4b7-9d7c1ff616fa",
+    "2c69a767-a3e2-450d-9d88-74514346be0f",
+    "62def5c3-83d8-4b08-b0f1-e900a795e3ec",
+    "db0f1905-5557-4a4e-a98b-96f8f1b117a1",
+    "8093b8fe-69a7-4002-bafb-6d9d2c455ea8",
+    "d05f4e27-c5b7-4aa6-bc87-b20bbc09ab5d",
+    "65e171e0-1e8b-4f65-aed1-87b1e33b34d1",
+    "8bd4d6ca-ba00-43cc-9d13-06610bf16beb",
+    "eb53b942-0d7f-44de-9cb9-adc80bbad328",
+    "cd43f060-9cc5-4e6c-a25b-05cc901594bb",
+    "3e428bce-9cc5-4f8a-bdb8-47eb76135f00",
+    "f96a440a-4935-4572-b9e2-230d69b6b04e",
+    "6e508b67-3af9-4ba1-b8e9-368a8a74274e",
+    "7b32d176-36bb-4b12-bfcd-5d7536aa3fbe",
+    "130ee39e-a66c-4e1b-9e63-318246fb51fe",
+    "587b39e7-600a-49c6-9224-fbdc41f4c068",
+    "5ad686a9-e5c0-4dfd-8c5a-b027931b13c9",
+    "1b32b761-2903-4ffc-beb6-1d37c63c8699",
+    "1188d974-fef2-46cd-8bb2-ee578e1305ef",
+    "443e6fa9-4d04-4925-adc7-1298149a5c63",
+    "1ec1b00c-7c80-4158-92d2-1604fa43dfb7",
+    "b0bbb321-2c7a-4155-8669-f8114a27866b",
+    "256dd0ec-8bea-4677-b5d1-3b55e8c65afc",
+    "d242cf1e-7cf8-484a-8615-aecd0732eda2"
+   ],
+   "classification": "CONFLICT_PENDING"
+  },
+  "users_auth_1": {
+   "classification": "AUTH_DATA_EXCLUDED",
+   "detail": "共有用户 270bcecf-9bfb-4865-9432-a0ac9db8df75 的 password_hash/session_not_before/updated_at 不一致（云端密码恢复流程更新）。认证数据不纳入业务迁移，云端现状优先保持不变。"
+  },
+  "shape_driven_diffs": {
+   "classification": "CONFLICT_PENDING（表形差异所致，P4结构对齐后重估）",
+   "tables": [
+    "public.assets",
+    "public.director_plans",
+    "publication.published_pointers",
+    "control.session_verification_keys"
+   ],
+   "note": "本地表列多于云端（P1结构差异），同ID行内容差异主要由列集不同与云端work_id外键重构引起。"
+  }
+ },
+ "cloud_migration_evidence": [
+  {
+   "version": "20261116095629",
+   "name": "m5_reuse_existing_m2_private_originals"
+  },
+  {
+   "version": "20261116100141",
+   "name": "m5_reuse_existing_m2_private_source_registration_source_revision"
+  },
+  {
+   "version": "20261116121153",
+   "name": "mab_m5_private_source_action_rights_projection"
+  },
+  {
+   "version": "20261116122301",
+   "name": "m5_inherit_existing_owner_read_and_d02_d05_candidate_functions"
+  },
+  {
+   "version": "20261117172439",
+   "name": "m5_scoped_formal_project_gate_read"
+  },
+  {
+   "version": "20261119004253",
+   "name": "m5_private_source_rights_projection_20261119"
+  }
+ ]
+}

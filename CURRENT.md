@@ -4,7 +4,7 @@
 >
 > **2026-11-19 工程数据统一专项（MOHEN-ENGINEERING-DATA-UNIFICATION-01）P0 已完成：** 本地 main 已由 `b137483` 快进对齐 GitHub main `709f4dd`（本地原落后379提交、零独有提交，无工程成果丢失）。Vercel 最新部署 `dpl_BxpZG6SP455F51fEtoP2t4pEX5hC`（Preview Ready）对应提交 `6e31431`，与 main HEAD 差异仅10个docs-only提交。本地未跟踪文件全部为临时诊断脚本与运行时状态，已备份编目，无归档价值。阶段状态 P0=INVENTORY_COMPLETE。专项交付物见 `tasks/results/MAB/ENGINEERING_DATA_UNIFICATION/`。
 >
-> **2026-11-19 专项 P1 已完成（只读盘点）：** 双端数据库结构差异已全部归因：本地 PG18.6 / 云端 PG17.11（764 个 NOT NULL 约束差异为版本伪差）；本地独有 10 张有数据的表（M4 执行控制、ST-07/08/09 出版链、导演计划、artifact_content_columns 等，来自云端未安装的 24 个仓库迁移）；云端独有正式知识读取函数 search_qualified_project_layers、密码恢复表与更强 sources 权利 CHECK；**85 张共有表 RLS 云端全部启用、本地全部未启用**（本地 124 条策略因 RLS 关闭全部不生效，安全基线以云端为准）；本地无迁移账本、云端 29 条账本按名称映射到仓库迁移。交付物：DATABASE_SCHEMA_LOCAL/CLOUD/DIFF.json、DATABASE_MIGRATION_VERSION_DIFF.json、cloud_migration_ledger.json、DATABASE_STRUCTURE_RECONCILIATION.md。阶段状态 P1=INVENTORY_COMPLETE。下一阶段 P2：双端业务数据只读盘点。
+> **2026-11-19 专项 P3 已完成（只读冲突分析）：** 本地独有 91 条 Gate 审计全部为真实独立签发（83 机器 Reviewer + 7 Owner + 1 早期签发者，decision_origin=independent_gate，全部 PASS），非 legacy；49 条资格全部六阶段架构代、36 有效 13 过期；123 候选（81 CONSUMED/32 SUBMITTED/10 HOLD）。云端 20 个共有 Run 的 HOLD 改写有完整 m5_reconciliation metadata 证据链（PRESERVE_CLOUD）；27 组 source/version 权利字段为本地有值 vs 云端空对象（CONFLICT_PENDING，待 Owner 裁决）；用户认证数据排除迁移。115 个本地独有 Run 血缘映射完成（22 有审计、21 有资格、7 有读取链）；五个历史样板映射完成：七宝与松江府志云端全缺（松江 80 raw/8 gate/3 资格待迁），朱家角本地多 1 source+1 gate+1 资格，金泽/绿之丘双端一致。P4 分批顺序已在 P3 报告形成建议。交付物 7 份见 `tasks/results/MAB/ENGINEERING_DATA_UNIFICATION/`。阶段状态 P3=INVENTORY_COMPLETE。待 Owner 裁决 27 组权利冲突后方可提出 P4 执行计划。
 
 ## 1. 唯一业务目标
 

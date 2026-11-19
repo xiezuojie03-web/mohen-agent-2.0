@@ -5095,3 +5095,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - P2.3 历史资产追踪：金泽 5 sources 双端同 ID；绿之丘 1 双端同 ID；朱家角本地 2（1871f304/9aa03207）云端 1；七宝本地 4（782071dd/730b69ed/46852177/c837bd80）云端 0；松江本地 2（b0a11000/09b78c7e）云端 0。云端 20 个 run ID 全部存在于本地（含 1111…/2222…/3333… 测试模式 run）。真实 Run ID 均取自数据库实际记录，未自行补全任何 UUID。
 - 结论：双端数据差异 = 「本地 11 月持续生产未上云」（主体）+「云端侧对账/权利投影/密码恢复有意改写 20 run + 27 sources/versions」+「云端诊断实验新增少量行」。差异方向明确，具备进入 P3 冲突分类与 P4 迁移计划的条件。
 - 阶段状态：P2 = INVENTORY_COMPLETE。PENDING_PUSH。无数据库写入、无模型调用、无费用。下一阶段 P3：差异与冲突分析（含资格保护与资产独立性原则核查）。
+
+## 2026-11-19｜ENGINEERING-DATA-UNIFICATION-01｜P3 历史数据差异与冲突分析完成（只读）
+
+- 以 P2 主键/MD5 底账为唯一比较基线，双端只读核查，零写入零模型零费用。P0-P2 提交 4884eec/3c86afa/eb1d75d 完整保留。交付 7 份：LOCAL_ONLY_ASSET_CLASSIFICATION.json、CLOUD_ONLY_ASSET_CLASSIFICATION.json、SHARED_DATA_SEMANTIC_CONFLICTS.json、HISTORICAL_RUN_DEPENDENCY_MAPPING.json、GATE_QUALIFICATION_RECONCILIATION.json、SAMPLE_ASSET_MAPPING.json、P3_RECONCILIATION_REPORT.md。
+- 115 个本地独有 Run 血缘映射完成：7 个有 read_runs、22 个有 gate_audits、21 个有资格，其余为研究/编排运行记录；本地对象链无悬空引用（49/49 资格依赖审计全在本地，90/90 原件 SHA 对应）。
+- Gate 核账重点结论：91 条本地独有审计全部真实独立签发（mohen_gate_signer_m5_machine 83 + mohen_gate_signer_m5_owner 7 + mohen_gate_signer 1，decision_origin=independent_gate，全 PASS）；711 条共有审计为 reviewer NULL 的 legacy 记录（双端一致）。123 候选：81 CONSUMED/32 SUBMITTED/10 HOLD。49 资格：全部 mohen.six-stage.v1 代，36 有效 13 过期。未发现 legacy 升级、伪造或自签。
+- 云端改写判定：20 个共有 Run 的 HOLD 状态带完整 m5_reconciliation metadata 证据（reason_code=M5-DIAG-13 legacy unclaimed RUNNING reconciliation）——有意状态治理，PRESERVE_CLOUD，禁止恢复本地旧值。27 组 source/version 权利字段：本地含实际动作值、云端为空对象 {}（云端 20261116121153 投影改写所致），语义待判（失败关闭清空 vs 投影误清），CONFLICT_PENDING 待 Owner 裁决。用户密码哈希/会话秘密 AUTH_DATA_EXCLUDED，云端认证现状优先。
+- 样板映射：金泽 5/5 source、14/14 raw 双端一致；绿之丘 1/1、7/7 一致；朱家角本地多 1 source+1 raw+1 gate+1 资格；七宝 4 source/4 raw/1 gate/1 资格云端全缺；松江府志 2 source/80 raw/8 gate/3 资格云端全缺。
+- 本地独有数据分类汇总：MIGRATE_AS_IS 35 表（知识对象+控制层，原主键拓扑迁移）；MIGRATE_WITH_MAPPING 19 表（10 张本地独有表需先补装结构迁移+Studio/出版映射）；MIGRATE_AFTER_REVIEW 3 表（run/sources/versions 语义复核）；AUTH_DATA_EXCLUDED 1；BINARY_REFERENCE_ONLY 1（90 原件仅迁元数据+SHA）。
+- P4 分批顺序建议已形成（结构补装→Run/审计/资格→来源层→知识对象层→Studio 层→出版链层），待 Owner 裁决 27 组权利冲突后可提出 P4 执行计划。
+- 阶段状态：P3 = INVENTORY_COMPLETE。PENDING_PUSH。

@@ -1,0 +1,232 @@
+{
+ "specialty": "MOHEN-ENGINEERING-DATA-UNIFICATION-01",
+ "stage": "P3",
+ "generated_at": "2026-11-19T03:47:01.229Z",
+ "method": "以source标题检索样板来源，沿 FK 链 sources→versions→raws→read_runs→read_units/reading_units→material_evidence 及 run→gate_audits→qualification 统计。全部只读。",
+ "samples": {
+  "金泽": {
+   "local_source_ids": [
+    "a1a5fe19-5c26-40bf-b0e5-ec19575eba29",
+    "1b78aa9a-ed16-4ef4-b167-e544d81d2a62",
+    "7a4203b9-fc08-481e-a6c1-f3a8564bb46c",
+    "efeb94ca-266b-4503-8894-65cbf26a6c56",
+    "de495559-12d9-4e1b-95da-24217784c794"
+   ],
+   "cloud_source_ids": [
+    "de495559-12d9-4e1b-95da-24217784c794",
+    "efeb94ca-266b-4503-8894-65cbf26a6c56",
+    "1b78aa9a-ed16-4ef4-b167-e544d81d2a62",
+    "7a4203b9-fc08-481e-a6c1-f3a8564bb46c",
+    "a1a5fe19-5c26-40bf-b0e5-ec19575eba29"
+   ],
+   "object_counts": {
+    "local": {
+     "sources": 5,
+     "source_versions": 5,
+     "raw_items": 14,
+     "read_runs": 0,
+     "read_units": 0,
+     "reading_units": 4,
+     "material_evidence": 38,
+     "gate_audits": 0,
+     "qualifications": 0
+    },
+    "cloud": {
+     "sources": 5,
+     "source_versions": 5,
+     "raw_items": 14,
+     "read_runs": 0,
+     "read_units": 0,
+     "reading_units": 4,
+     "material_evidence": 38,
+     "gate_audits": 0,
+     "qualifications": 0,
+     "_runIds": [],
+     "_shas": [
+      "162306bcc0562735cbe3fd7cbf9fd44f30222fb9f550b02b1ba0a5bb9685f245",
+      "835cf79f6a381f1896092996d54220ba39972318e427d861a88f81d85f309a2d",
+      "90f95c3ec655be4a50a660dbd3d07cd89265555322acb7cb61eff8fe6574e519",
+      "3cca91dd1c4684a5065e2c4648b3e9ead1232b3ef7338e8b964d367f29091032",
+      "96eba510edf50eb93cfdb1844e3a0b69aae761b358e3528ccb53ca7b89731014",
+      "326adb0ffca278093a8fba9ae1dbfa92c59e3321fd0e2990cc4a5bf89279f077",
+      "a2671d8cae1685d80041b4eaee85e38af5c6a3abb94af49ee702d464d14e709c",
+      "0fff1ea8eb9bd6e4d341ab6e07b4703600810c2e2575a4c44c0decd3da93b2a3",
+      "17b4292d1d9378db500f10fc432d8f6cd54e3cfde7be91aa67a4a9a98286b2ac",
+      "1fad2f87cd71309fc0254ee6ead528bd4d0f5fd839b2a3f81f209566506a90de",
+      "3a8a6887d79c2ae25b4643ca10e83602459980de392f86cfa4c60dc6bbb2df3c",
+      "388ad523b59cc7a917e3cdc533049ca4fbf8f752fcb82a8fa2feafee513e6c71",
+      "2a2661dacd38dcbf7610f6e65ead1b042c86474a7c728f2f80d2cc72f107dfb9",
+      "da6435971fb66e110f3ad4117d1f0b090b2ba51970457d2a513fddfff7c443e2"
+     ]
+    }
+   },
+   "sha_overlap": 14,
+   "local_run_ids": [],
+   "cloud_run_ids": []
+  },
+  "绿之丘": {
+   "local_source_ids": [
+    "a458041f-6e88-462a-80b4-2830beb559a9"
+   ],
+   "cloud_source_ids": [
+    "a458041f-6e88-462a-80b4-2830beb559a9"
+   ],
+   "object_counts": {
+    "local": {
+     "sources": 1,
+     "source_versions": 1,
+     "raw_items": 7,
+     "read_runs": 0,
+     "read_units": 0,
+     "reading_units": 7,
+     "material_evidence": 56,
+     "gate_audits": 0,
+     "qualifications": 0
+    },
+    "cloud": {
+     "sources": 1,
+     "source_versions": 1,
+     "raw_items": 7,
+     "read_runs": 0,
+     "read_units": 0,
+     "reading_units": 7,
+     "material_evidence": 56,
+     "gate_audits": 0,
+     "qualifications": 0,
+     "_runIds": [],
+     "_shas": [
+      "248ae38a406dc3731c91edfd872009462fde14bfd7365e061136710edb701ea7",
+      "7b64239625b616953c04d94a19807b3c979edf514f5c4f9f26571c52d0aec65f",
+      "6fd79e721aaf9b2d6f7dca862a408003f3b3c8cd96a9e8f92527edc418417b97",
+      "7278920574ba951f45f732944ba87452d6cf091e72b90886357ad31c53263d13",
+      "501be573f33afc6b2387d542f15f926b5eb8cea2300c1efca0d8a6dd393e7cf6",
+      "c63e3e14d3d745d155b37a91cf85e57c520387cc98b9aaeda2e7a09a20437b6a",
+      "c8ca51c043e0fe3058d5f2f26182190022c371fd6416d407d6725efef6ec78cf"
+     ]
+    }
+   },
+   "sha_overlap": 7,
+   "local_run_ids": [],
+   "cloud_run_ids": []
+  },
+  "朱家角": {
+   "local_source_ids": [
+    "1871f304-d831-4817-9059-6d32e57de8bd",
+    "9aa03207-6d60-4984-8c1f-347df2532842"
+   ],
+   "cloud_source_ids": [
+    "1871f304-d831-4817-9059-6d32e57de8bd"
+   ],
+   "object_counts": {
+    "local": {
+     "sources": 2,
+     "source_versions": 2,
+     "raw_items": 3,
+     "read_runs": 1,
+     "read_units": 1,
+     "reading_units": 3,
+     "material_evidence": 2,
+     "gate_audits": 1,
+     "qualifications": 1
+    },
+    "cloud": {
+     "sources": 1,
+     "source_versions": 1,
+     "raw_items": 2,
+     "read_runs": 0,
+     "read_units": 0,
+     "reading_units": 2,
+     "material_evidence": 1,
+     "gate_audits": 0,
+     "qualifications": 0,
+     "_runIds": [],
+     "_shas": [
+      "72e47bea51083b3c7e82a1efbdc9a70ec67166e39fcd74a96b7236feec76c738",
+      "da6435971fb66e110f3ad4117d1f0b090b2ba51970457d2a513fddfff7c443e2"
+     ]
+    }
+   },
+   "sha_overlap": 2,
+   "local_run_ids": [
+    "146fd8da-415c-458e-806b-1608c2dd6afa"
+   ],
+   "cloud_run_ids": []
+  },
+  "七宝": {
+   "local_source_ids": [
+    "782071dd-3591-406d-a4b3-c3c2c995ba14",
+    "730b69ed-9a85-48b7-bc7a-8b6c0dc64f53",
+    "46852177-113e-46fd-87b8-fd760947f859",
+    "c837bd80-0b45-4c00-af88-5f28c2a0b8b0"
+   ],
+   "cloud_source_ids": [],
+   "object_counts": {
+    "local": {
+     "sources": 4,
+     "source_versions": 4,
+     "raw_items": 4,
+     "read_runs": 1,
+     "read_units": 1,
+     "reading_units": 1,
+     "material_evidence": 1,
+     "gate_audits": 1,
+     "qualifications": 1
+    },
+    "cloud": {
+     "sources": 0,
+     "source_versions": 0,
+     "raw_items": 0,
+     "read_runs": 0,
+     "read_units": 0,
+     "reading_units": 0,
+     "material_evidence": 0,
+     "gate_audits": 0,
+     "qualifications": 0
+    }
+   },
+   "sha_overlap": 0,
+   "local_run_ids": [
+    "e8b20f8d-80fa-4033-b224-846f7acefd10"
+   ]
+  },
+  "松江府志": {
+   "local_source_ids": [
+    "b0a11000-0000-4000-8000-000000000004",
+    "09b78c7e-e1a3-4c01-90b4-cfa39ffff7b9"
+   ],
+   "cloud_source_ids": [],
+   "object_counts": {
+    "local": {
+     "sources": 2,
+     "source_versions": 79,
+     "raw_items": 80,
+     "read_runs": 5,
+     "read_units": 5,
+     "reading_units": 11,
+     "material_evidence": 7,
+     "gate_audits": 8,
+     "qualifications": 3
+    },
+    "cloud": {
+     "sources": 0,
+     "source_versions": 0,
+     "raw_items": 0,
+     "read_runs": 0,
+     "read_units": 0,
+     "reading_units": 0,
+     "material_evidence": 0,
+     "gate_audits": 0,
+     "qualifications": 0
+    }
+   },
+   "sha_overlap": 0,
+   "local_run_ids": [
+    "c0a12000-0000-4000-8000-000000000001",
+    "227cff63-797a-4c69-a78b-8e029dc65408",
+    "51005de1-2648-40cf-8157-740a3f2ae422",
+    "5ade3712-8806-45f3-bc29-b231793f923a",
+    "c0a12000-0000-4000-8000-000000000010"
+   ]
+  }
+ }
+}

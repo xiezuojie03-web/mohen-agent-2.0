@@ -1,0 +1,190 @@
+{
+ "specialty": "MOHEN-ENGINEERING-DATA-UNIFICATION-01",
+ "stage": "P3",
+ "generated_at": "2026-11-19T03:46:59.053Z",
+ "local_only_gate_audits_91": {
+  "by_decision_origin_result": [
+   {
+    "decision_origin": "independent_gate",
+    "result": "PASS",
+    "c": 91
+   }
+  ],
+  "by_reviewer": [
+   {
+    "reviewer_user_id": "b0a11000-0000-4000-8000-0000000000a1",
+    "reviewer_db_identity": "mohen_gate_signer_m5_machine",
+    "c": 83
+   },
+   {
+    "reviewer_user_id": "270bcecf-9bfb-4865-9432-a0ac9db8df75",
+    "reviewer_db_identity": "mohen_gate_signer_m5_owner",
+    "c": 7
+   },
+   {
+    "reviewer_user_id": "270bcecf-9bfb-4865-9432-a0ac9db8df75",
+    "reviewer_db_identity": "mohen_gate_signer",
+    "c": 1
+   }
+  ],
+  "by_stage_gate": [
+   {
+    "stage": "D05",
+    "gate_code": "G5",
+    "c": 51
+   },
+   {
+    "stage": "D00",
+    "gate_code": "G0",
+    "c": 12
+   },
+   {
+    "stage": "D03",
+    "gate_code": "G3",
+    "c": 7
+   },
+   {
+    "stage": "D01",
+    "gate_code": "G1",
+    "c": 7
+   },
+   {
+    "stage": "D04",
+    "gate_code": "G4",
+    "c": 7
+   },
+   {
+    "stage": "D02",
+    "gate_code": "G2",
+    "c": 7
+   }
+  ],
+  "note": "历史审计逐项保留原始记录，不因迁移改变 decision_origin。legacy_untrusted 保持原样。"
+ },
+ "local_only_candidates_123": {
+  "by_status": [
+   {
+    "candidate_status": "CONSUMED",
+    "c": 81
+   },
+   {
+    "candidate_status": "SUBMITTED",
+    "c": 32
+   },
+   {
+    "candidate_status": "HOLD",
+    "c": 10
+   }
+  ]
+ },
+ "local_only_qualifications_49": {
+  "by_gate_code": [
+   {
+    "gate_code": "G5",
+    "c": 22,
+    "from_min": "2026-11-07",
+    "until_max": "2027-12-30",
+    "expired": 2
+   },
+   {
+    "gate_code": "G0",
+    "c": 7,
+    "from_min": "2026-11-09",
+    "until_max": "2026-11-20",
+    "expired": 3
+   },
+   {
+    "gate_code": "G4",
+    "c": 5,
+    "from_min": "2026-11-09",
+    "until_max": "2026-11-20",
+    "expired": 2
+   },
+   {
+    "gate_code": "G2",
+    "c": 5,
+    "from_min": "2026-11-09",
+    "until_max": "2026-11-20",
+    "expired": 2
+   },
+   {
+    "gate_code": "G1",
+    "c": 5,
+    "from_min": "2026-11-09",
+    "until_max": "2026-11-20",
+    "expired": 2
+   },
+   {
+    "gate_code": "G3",
+    "c": 5,
+    "from_min": "2026-11-09",
+    "until_max": "2026-11-20",
+    "expired": 2
+   }
+  ],
+  "validity": {
+   "total": 49,
+   "no_expiry": 0,
+   "expired": 13,
+   "active": 36
+  },
+  "by_audit_decision_origin": [
+   {
+    "decision_origin": "independent_gate",
+    "c": 49
+   }
+  ],
+  "by_object_type": [
+   {
+    "object_type": "world_projection",
+    "c": 7
+   },
+   {
+    "object_type": "source_version",
+    "c": 7
+   },
+   {
+    "object_type": "material_evidence",
+    "c": 5
+   },
+   {
+    "object_type": "finding",
+    "c": 5
+   },
+   {
+    "object_type": "read_unit",
+    "c": 5
+   },
+   {
+    "object_type": "work_revision",
+    "c": 5
+   },
+   {
+    "object_type": "claim_revision",
+    "c": 5
+   },
+   {
+    "object_type": "story_seed",
+    "c": 4
+   },
+   {
+    "object_type": "director_plan",
+    "c": 3
+   },
+   {
+    "object_type": "agent_context",
+    "c": 3
+   }
+  ],
+  "audit_dependency_intact": 49,
+  "note": "资格依赖的gate_audit全部在本地；迁移时须先迁审计后迁资格（依赖拓扑）。"
+ },
+ "local_only_invalidation_events_20": {
+  "by_disposition": [
+   {
+    "disposition": "BLOCKED",
+    "c": 20
+   }
+  ]
+ }
+}

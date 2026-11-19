@@ -1,0 +1,50 @@
+{
+ "specialty": "MOHEN-ENGINEERING-DATA-UNIFICATION-01",
+ "stage": "P3",
+ "generated_at": "2026-11-19T03:47:01.234Z",
+ "classification": [
+  {
+   "table": "public.research_events",
+   "count": 6,
+   "class": "PRESERVE_CLOUD",
+   "reason": "云端独有（11月正式读取诊断实验等产生），保留不删除"
+  },
+  {
+   "table": "public.research_tasks",
+   "count": 1,
+   "class": "PRESERVE_CLOUD",
+   "reason": "云端独有（11月正式读取诊断实验等产生），保留不删除"
+  },
+  {
+   "table": "public.study_asset_receipts",
+   "count": 8,
+   "class": "PRESERVE_CLOUD",
+   "reason": "云端独有（11月正式读取诊断实验等产生），保留不删除"
+  },
+  {
+   "table": "studio.asset_heads",
+   "count": 1,
+   "class": "PRESERVE_CLOUD",
+   "reason": "云端独有（11月正式读取诊断实验等产生），保留不删除"
+  },
+  {
+   "table": "studio.asset_revisions",
+   "count": 1,
+   "class": "PRESERVE_CLOUD",
+   "reason": "云端独有（11月正式读取诊断实验等产生），保留不删除"
+  },
+  {
+   "table": "studio.projects",
+   "count": 1,
+   "class": "PRESERVE_CLOUD",
+   "reason": "云端独有（11月正式读取诊断实验等产生），保留不删除"
+  }
+ ],
+ "cloud_only_project": {
+  "id": [
+   "e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5"
+  ],
+  "class": "PRESERVE_CLOUD",
+  "note": "云端开发Project（e03c4ba8）及其资产，本地没有，保留云端现状"
+ }
+}

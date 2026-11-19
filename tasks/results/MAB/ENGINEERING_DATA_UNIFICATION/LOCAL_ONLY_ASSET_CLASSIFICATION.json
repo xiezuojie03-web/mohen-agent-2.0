@@ -1,0 +1,378 @@
+{
+ "specialty": "MOHEN-ENGINEERING-DATA-UNIFICATION-01",
+ "stage": "P3",
+ "generated_at": "2026-11-19T03:47:01.233Z",
+ "summary": {
+  "MIGRATE_WITH_MAPPING": 19,
+  "MIGRATE_AS_IS": 35,
+  "MIGRATE_AFTER_REVIEW": 3,
+  "AUTH_DATA_EXCLUDED": 1,
+  "BINARY_REFERENCE_ONLY": 1
+ },
+ "classification": [
+  {
+   "table": "control.artifact_content_columns",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 234,
+   "reason": "本地独有表（云端缺结构），须先安装对应迁移再迁数据",
+   "source_migration": "见 DATABASE_MIGRATION_VERSION_DIFF.json"
+  },
+  {
+   "table": "control.gate_audits",
+   "class": "MIGRATE_AS_IS",
+   "count": 91,
+   "reason": "Gate审计/候选/资格/撤权等历史记录，保留原始主键与身份迁移，decision_origin不改"
+  },
+  {
+   "table": "control.gate_candidates",
+   "class": "MIGRATE_AS_IS",
+   "count": 123,
+   "reason": "Gate审计/候选/资格/撤权等历史记录，保留原始主键与身份迁移，decision_origin不改"
+  },
+  {
+   "table": "control.gate_policy_versions",
+   "class": "MIGRATE_AS_IS",
+   "count": 6,
+   "reason": "Gate审计/候选/资格/撤权等历史记录，保留原始主键与身份迁移，decision_origin不改"
+  },
+  {
+   "table": "control.gate_reviewer_bindings",
+   "class": "MIGRATE_AS_IS",
+   "count": 46,
+   "reason": "Gate审计/候选/资格/撤权等历史记录，保留原始主键与身份迁移，decision_origin不改"
+  },
+  {
+   "table": "control.invalidation_events",
+   "class": "MIGRATE_AS_IS",
+   "count": 20,
+   "reason": "Gate审计/候选/资格/撤权等历史记录，保留原始主键与身份迁移，decision_origin不改"
+  },
+  {
+   "table": "control.original_bridge_verification_keys",
+   "class": "MIGRATE_AS_IS",
+   "count": 1,
+   "reason": "Gate审计/候选/资格/撤权等历史记录，保留原始主键与身份迁移，decision_origin不改"
+  },
+  {
+   "table": "control.production_runs",
+   "class": "MIGRATE_AFTER_REVIEW",
+   "count": 115,
+   "reason": "20个共有run已被云端对账改写，本地115个独有run须逐个核对状态语义后迁移"
+  },
+  {
+   "table": "control.qualification_current",
+   "class": "MIGRATE_AS_IS",
+   "count": 49,
+   "reason": "Gate审计/候选/资格/撤权等历史记录，保留原始主键与身份迁移，decision_origin不改"
+  },
+  {
+   "table": "control.work_publication_decisions",
+   "class": "MIGRATE_AS_IS",
+   "count": 8,
+   "reason": "Gate审计/候选/资格/撤权等历史记录，保留原始主键与身份迁移，decision_origin不改"
+  },
+  {
+   "table": "evidence.material_evidence",
+   "class": "MIGRATE_AS_IS",
+   "count": 10,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "evidence.read_unit_evidence_links",
+   "class": "MIGRATE_AS_IS",
+   "count": 5,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "evidence.reading_units",
+   "class": "MIGRATE_AS_IS",
+   "count": 13,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "meaning.findings",
+   "class": "MIGRATE_AS_IS",
+   "count": 6,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "public.assets",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 1,
+   "reason": "本地列多于云端（权利追踪列/项目绑定列），需先装列扩展迁移"
+  },
+  {
+   "table": "public.director_plans",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 12,
+   "reason": "本地列多于云端（权利追踪列/项目绑定列），需先装列扩展迁移"
+  },
+  {
+   "table": "public.research_events",
+   "class": "MIGRATE_AS_IS",
+   "count": 125,
+   "reason": "一般业务数据，原主键幂等迁移"
+  },
+  {
+   "table": "public.research_tasks",
+   "class": "MIGRATE_AS_IS",
+   "count": 20,
+   "reason": "一般业务数据，原主键幂等迁移"
+  },
+  {
+   "table": "public.study_asset_receipts",
+   "class": "MIGRATE_AS_IS",
+   "count": 156,
+   "reason": "一般业务数据，原主键幂等迁移"
+  },
+  {
+   "table": "public.users",
+   "class": "AUTH_DATA_EXCLUDED",
+   "count": 7,
+   "reason": "用户账户与认证数据，除ID映射外不迁移"
+  },
+  {
+   "table": "publication.editorial_decisions",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 5,
+   "reason": "本地独有表（云端缺结构），须先安装对应迁移再迁数据",
+   "source_migration": "见 DATABASE_MIGRATION_VERSION_DIFF.json"
+  },
+  {
+   "table": "publication.publication_snapshots",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 3,
+   "reason": "本地独有表（云端缺结构），须先安装对应迁移再迁数据",
+   "source_migration": "见 DATABASE_MIGRATION_VERSION_DIFF.json"
+  },
+  {
+   "table": "publication.published_pointers",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 3,
+   "reason": "出版链路表形双端有差异（published_pointers列集不同），需映射后迁移"
+  },
+  {
+   "table": "publication.withdrawals",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 1,
+   "reason": "本地独有表（云端缺结构），须先安装对应迁移再迁数据",
+   "source_migration": "见 DATABASE_MIGRATION_VERSION_DIFF.json"
+  },
+  {
+   "table": "publication.work_revisions",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 19,
+   "reason": "出版链路表形双端有差异（published_pointers列集不同），需映射后迁移"
+  },
+  {
+   "table": "publication.works",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 11,
+   "reason": "出版链路表形双端有差异（published_pointers列集不同），需映射后迁移"
+  },
+  {
+   "table": "read_model.agent_contexts",
+   "class": "MIGRATE_AS_IS",
+   "count": 3,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "read_model.story_seeds",
+   "class": "MIGRATE_AS_IS",
+   "count": 4,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "read_model.world_projections",
+   "class": "MIGRATE_AS_IS",
+   "count": 7,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "source.acquisition_attempts",
+   "class": "MIGRATE_AS_IS",
+   "count": 27,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "source.acquisition_coverages",
+   "class": "MIGRATE_AS_IS",
+   "count": 21,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "source.acquisition_methods",
+   "class": "MIGRATE_AS_IS",
+   "count": 6,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "source.candidate_verifications",
+   "class": "MIGRATE_AS_IS",
+   "count": 14,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "source.original_provider_traces",
+   "class": "MIGRATE_AS_IS",
+   "count": 5,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "source.priority_assessments",
+   "class": "MIGRATE_AS_IS",
+   "count": 14,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "source.raw_items",
+   "class": "MIGRATE_AS_IS",
+   "count": 90,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "source.read_runs",
+   "class": "MIGRATE_AS_IS",
+   "count": 8,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "source.read_units",
+   "class": "MIGRATE_AS_IS",
+   "count": 9,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "source.resource_catalog",
+   "class": "MIGRATE_AS_IS",
+   "count": 23,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "source.source_needs",
+   "class": "MIGRATE_AS_IS",
+   "count": 17,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "source.source_versions",
+   "class": "MIGRATE_AFTER_REVIEW",
+   "count": 89,
+   "reason": "27个共有记录权利字段被云端投影改写，本地独有12/89条须核对权利语义（动作键规范）后迁移"
+  },
+  {
+   "table": "source.sources",
+   "class": "MIGRATE_AFTER_REVIEW",
+   "count": 12,
+   "reason": "27个共有记录权利字段被云端投影改写，本地独有12/89条须核对权利语义（动作键规范）后迁移"
+  },
+  {
+   "table": "studio.asset_heads",
+   "class": "MIGRATE_AS_IS",
+   "count": 110,
+   "reason": "Studio项目/资产层；10张本地独有表需先在云端补装对应结构迁移"
+  },
+  {
+   "table": "studio.asset_links",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 3,
+   "reason": "Studio项目/资产层；10张本地独有表需先在云端补装对应结构迁移"
+  },
+  {
+   "table": "studio.asset_revisions",
+   "class": "MIGRATE_AS_IS",
+   "count": 111,
+   "reason": "Studio项目/资产层；10张本地独有表需先在云端补装对应结构迁移"
+  },
+  {
+   "table": "studio.delegations",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 25,
+   "reason": "Studio项目/资产层；10张本地独有表需先在云端补装对应结构迁移"
+  },
+  {
+   "table": "studio.director_plans",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 3,
+   "reason": "本地独有表（云端缺结构），须先安装对应迁移再迁数据",
+   "source_migration": "见 DATABASE_MIGRATION_VERSION_DIFF.json"
+  },
+  {
+   "table": "studio.execution_control_events",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 11,
+   "reason": "本地独有表（云端缺结构），须先安装对应迁移再迁数据",
+   "source_migration": "见 DATABASE_MIGRATION_VERSION_DIFF.json"
+  },
+  {
+   "table": "studio.execution_controls",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 4,
+   "reason": "本地独有表（云端缺结构），须先安装对应迁移再迁数据",
+   "source_migration": "见 DATABASE_MIGRATION_VERSION_DIFF.json"
+  },
+  {
+   "table": "studio.execution_receipts",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 23,
+   "reason": "Studio项目/资产层；10张本地独有表需先在云端补装对应结构迁移"
+  },
+  {
+   "table": "studio.private_originals",
+   "class": "BINARY_REFERENCE_ONLY",
+   "count": 90,
+   "reason": "90个原件字节留本地/待另行存储策略，仅迁移元数据+SHA（90/90与本地独有raw_items SHA对应）"
+  },
+  {
+   "table": "studio.projects",
+   "class": "MIGRATE_AS_IS",
+   "count": 16,
+   "reason": "Studio项目/资产层；10张本地独有表需先在云端补装对应结构迁移"
+  },
+  {
+   "table": "studio.reference_kinds",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 18,
+   "reason": "本地独有表（云端缺结构），须先安装对应迁移再迁数据",
+   "source_migration": "见 DATABASE_MIGRATION_VERSION_DIFF.json"
+  },
+  {
+   "table": "studio.submission_snapshots",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 5,
+   "reason": "本地独有表（云端缺结构），须先安装对应迁移再迁数据",
+   "source_migration": "见 DATABASE_MIGRATION_VERSION_DIFF.json"
+  },
+  {
+   "table": "studio.use_events",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 8,
+   "reason": "Studio项目/资产层；10张本地独有表需先在云端补装对应结构迁移"
+  },
+  {
+   "table": "studio.work_revisions",
+   "class": "MIGRATE_WITH_MAPPING",
+   "count": 5,
+   "reason": "本地独有表（云端缺结构），须先安装对应迁移再迁数据",
+   "source_migration": "见 DATABASE_MIGRATION_VERSION_DIFF.json"
+  },
+  {
+   "table": "world.changes",
+   "class": "MIGRATE_AS_IS",
+   "count": 5,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "world.claim_evidence_links",
+   "class": "MIGRATE_AS_IS",
+   "count": 5,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  },
+  {
+   "table": "world.claim_revisions",
+   "class": "MIGRATE_AS_IS",
+   "count": 6,
+   "reason": "知识对象层，依赖拓扑排序后按原主键幂等迁移"
+  }
+ ]
+}
