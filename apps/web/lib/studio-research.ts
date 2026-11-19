@@ -252,6 +252,63 @@ export async function createResearchTask(
     throw error;
   }
 }
+export async function selectResearchAcquisitionCandidate(taskId: string, ownerUserId: string, candidateId: string) {
+  const params = { id: taskId, owner: ownerUserId };
+  const readCheckpoint = async () => {
+    const [row] = await queryRows(
+      `select t.checkpoint
+         from public.research_tasks t
+         join studio.projects p on p.project_id::text = t.checkpoint->'studio'->>'project_id'
+        where t.task_id=:'id'::uuid and t.owner_user_id=:'owner'::uuid and t.status='done'
+          and p.owner_user_id=t.owner_user_id and p.lifecycle_status='ACTIVE'`,
+      params
+    );
+    return row ? readJsonColumn<Record<string, unknown>>(row.checkpoint, {}) : null;
+  };
+  const checkpoint = await readCheckpoint();
+  if (!checkpoint) return { ok: false, reason: "task_not_ready_or_unavailable" } as const;
+
+  const studio = checkpoint.studio as { project_id: string };
+  const knowledgeRoute = checkpoint.knowledgeRoute as CreatedTask["knowledgeRoute"];
+  if (!knowledgeRoute?.should_discover_sources)
+    return { ok: false, reason: "candidate_discovery_not_authorized_for_task" } as const;
+
+  const leads = Array.isArray(checkpoint.researchLeads) ? checkpoint.researchLeads : [];
+  const lead = leads.find((item) => item?.id === candidateId && item.epistemic === "RESEARCH_LEAD");
+  if (!lead) return { ok: false, reason: "candidate_not_found" } as const;
+  const candidate = lead.acquisition_candidate;
+  if (typeof candidate?.locator !== "string" || typeof candidate.provider !== "string" || !candidate.provider)
+    return { ok: false, reason: "candidate_locator_required" } as const;
+
+  const selection = {
+    state: "SELECTED", candidate_id: candidateId, project_id: studio.project_id, root_task_id: taskId,
+  } as const;
+  const matches = (saved: unknown) => {
+    const receipt = saved as Partial<typeof selection> | null;
+    return receipt?.state === selection.state && receipt.candidate_id === candidateId &&
+      receipt.project_id === selection.project_id && receipt.root_task_id === taskId;
+  };
+  if (matches(checkpoint.sourceAcquisitionSelection)) return { ok: true, selection, replayed: true } as const;
+  if (checkpoint.sourceAcquisitionSelection != null)
+    return { ok: false, reason: "candidate_selection_already_exists" } as const;
+
+  const written = await queryRows(
+    `update public.research_tasks t
+        set checkpoint=:'next'::jsonb, updated_at=now()
+      where t.task_id=:'id'::uuid and t.owner_user_id=:'owner'::uuid and t.status='done'
+        and t.checkpoint=:'previous'::jsonb
+        and exists (select 1 from studio.projects p where p.project_id=:'project'::uuid
+          and p.owner_user_id=t.owner_user_id and p.lifecycle_status='ACTIVE')
+      returning t.task_id`,
+    { ...params, project: selection.project_id, previous: JSON.stringify(checkpoint),
+      next: JSON.stringify({ ...checkpoint, sourceAcquisitionSelection: selection }) }
+  );
+  if (written.length) return { ok: true, selection, replayed: false } as const;
+  if (matches((await readCheckpoint())?.sourceAcquisitionSelection))
+    return { ok: true, selection, replayed: true } as const;
+  return { ok: false, reason: "candidate_selection_conflict" } as const;
+}
+
 /**
  * D 阶段触发（governed interface，CR-16）：从 Studio 经受控接口发起生产，不逐主题改代码。
  * 真实触发：child_process spawn `run.mjs`（唯一生产入口），异步跑 D00–D05；run_id 关联 research_task。
