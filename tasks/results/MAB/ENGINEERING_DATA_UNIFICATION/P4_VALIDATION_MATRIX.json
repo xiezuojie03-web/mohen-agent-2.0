@@ -15,7 +15,7 @@
     {
       "batch": "BATCH-1",
       "acceptance": [
-        "云端production_runs=135+20=155；gate_audits=802；gate_candidates=123；qualification_current=49",
+        "云端production_runs=135（云端既有20+迁移115）；gate_audits=802；gate_candidates=123；gate_reviewer_bindings=46；gate_policy_versions=6；qualification_current=49",
         "91条审计reviewer身份/decision_origin/valid_from签名原样（MD5摘要与本地一致）",
         "20个共有Run仍为HOLD且metadata不变；13条过期资格valid_until不变"
       ],
@@ -51,7 +51,7 @@
       "batch": "BATCH-5",
       "acceptance": [
         "publication各表计数=本地+云端原有；发布状态与审核证据原样（不可变触发器在位且未报错）",
-        "17条受控UPDATE（27权利+6/9/4形差异组）前后值全部存档于冲突记录表",
+        "受控UPDATE统一口径：2规则5语句73行（RULE-1：sources 27+source_versions 27；RULE-5：assets 6+director_plans 9+published_pointers 4），前后值全部存档于冲突记录表",
         "无未审核作品被改为已发布（publication_status逐行断言）"
       ],
       "method": "MD5回读+冲突记录完整性+状态断言"

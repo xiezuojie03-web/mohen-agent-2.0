@@ -5124,3 +5124,12 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 安全设计要点：全计划仅 INSERT ON CONFLICT DO NOTHING（幂等、无 DELETE、云端独有数据结构性不可删）+两条受控 UPDATE（27组权利、11组形差异，逐条前后值存档）；不关 RLS 不删触发器，Immutable 表走受控 INSERT 适配器；20 云端 HOLD run/13 过期资格/共有用户/云端独有 15 行全部保护断言。
 - 唯一待 Owner 确认：PREREQ-2 用户身份行落位（本地 7 用户+机器 Reviewer 用户 b0a11000 按原 ID 插入云端、password_hash 置不可用占位、不迁凭据，满足 FK 依赖；推荐方案）。
 - 本轮零数据库写入、零模型调用、零费用。阶段状态：P4_PLAN_READY_FOR_OWNER_APPROVAL / NOT_EXECUTED。
+
+## 2026-11-19｜ENGINEERING-DATA-UNIFICATION-01｜P4-OWNER-APPROVAL-02 定向修订与 L0 完成
+
+- Owner 裁决（P4-OWNER-APPROVAL-02）：P4 方案原则上通过；PREREQ-2 有条件批准；允许 L0 备份与恢复演练；暂不允许业务数据迁移（B1-B5）；BATCH-0 结构补装须在计划修订和 L0 验证后单独报告执行结果（本轮未执行）。
+- PREREQ-2 修订落实：本地 8 用户核查——Owner 用户 270bcecf 已在云端且 UUID/email 双一致（不动）；6 个探针用户按裁决修订为原 UUID+password_hash 不可用占位+status=disabled+roles=[member]，历史角色仅入受控 Manifest；机器 Reviewer b0a11000 云端核查不存在，按 machine-reviewer-boundary 正式合同受控补齐 users 行，DB 角色 mohen_gate_signer_m5_machine 维持未激活不创建，不扩大 Gate 权限。冲突核查：无 UUID/email 冲突，双端 web_session_revocations 均 0。
+- 三项数量矛盾核实（以 P2 主键集合为唯一基线）：①gate_reviewer_bindings=46（计划正文"6绑定"为笔误，6 是 gate_policy_versions 数，已修正为"46评审绑定→6策略版本"）；②production_runs 迁移后云端=135（20 既有+115 迁移，Validation Matrix 原"155"错误已修正）；③受控 UPDATE 统一口径=2 规则 5 语句 73 行（RULE-1：sources 27+source_versions 27；RULE-5：assets 6+director_plans 9+published_pointers 4），四处文档已统一。
+- L0 备份与恢复演练 PASS：云端全量 pg_dump（1.16MB，SHA256=9100B293D65466C6062018FE473241E07457C61A7044D13F44995E83CB096A59）+ 业务 Schema 定向 dump；本地临时库 mohen_l0_drill 恢复成功，五关键表（production_runs 20/gate_audits 711/sources 39/raw_items 98/qualification_current 0）逐行 MD5 与云端完全一致，迁移账本 29=29，Schema 对象 90=90，VERDICT=L0_PASS。约束：Supabase 平台扩展（supabase_vault 等）不可在 vanilla PG 复原，全量备份完整恢复目标须为 Supabase 实例；backups/ 已加 .gitignore，备份文件不入 GitHub。恢复演练未连接/覆盖真实云端数据库。
+- 文档修订：P4_MIGRATION_EXECUTION_PLAN.md、P4_SCHEMA_PREREQUISITES.json、P4_BATCH_MANIFEST.json（原本已正确）、P4_VALIDATION_MATRIX.json、P4_CONFLICT_HANDLING_RULES.json、P4_BACKUP_AND_RECOVERY_PLAN.md（引用一致）、CURRENT.md、progress.md；新增 L0_RESTORE_DRILL_RESULT.json。
+- 本轮未执行 BATCH-0 及任何业务数据迁移、未调用模型、未产生费用。状态：P4_PLAN_REVISED_PER_OWNER_APPROVAL_02 / L0_VERIFIED / BUSINESS_MIGRATION_NOT_AUTHORIZED。

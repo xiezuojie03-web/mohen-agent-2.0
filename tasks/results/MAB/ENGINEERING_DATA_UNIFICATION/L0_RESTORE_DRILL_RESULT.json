@@ -1,0 +1,42 @@
+{
+ "specialty": "MOHEN-ENGINEERING-DATA-UNIFICATION-01",
+ "performed_at": "2026-11-19T04:31:52.756Z",
+ "result": {
+  "control.production_runs": {
+   "cloud_rows": 20,
+   "drill_rows": 20,
+   "digests_identical": true
+  },
+  "control.gate_audits": {
+   "cloud_rows": 711,
+   "drill_rows": 711,
+   "digests_identical": true
+  },
+  "source.sources": {
+   "cloud_rows": 39,
+   "drill_rows": 39,
+   "digests_identical": true
+  },
+  "source.raw_items": {
+   "cloud_rows": 98,
+   "drill_rows": 98,
+   "digests_identical": true
+  },
+  "control.qualification_current": {
+   "cloud_rows": 0,
+   "drill_rows": 0,
+   "digests_identical": true
+  },
+  "migration_ledger": {
+   "cloud": 29,
+   "drill": 29,
+   "identical": true
+  },
+  "schema_objects": {
+   "cloud": 90,
+   "drill": 90,
+   "identical": true
+  },
+  "verdict": "L0_PASS"
+ }
+}

@@ -25,7 +25,7 @@
       "id": "RULE-4",
       "conflict": "用户认证数据（1共有用户password_hash差异 + 7本地用户）",
       "ruling": "AUTH_DATA_EXCLUDED——不迁移凭据，云端现有认证状态优先。",
-      "implementation": "共有用户行不迁移；7本地用户+机器Reviewer用户按PREREQ-2方案仅迁身份行（password_hash不可用占位），待Owner确认。"
+      "implementation": "共有用户行（Owner 270bcecf，UUID/email双一致）不迁移不动；6个本地探针用户按原UUID插入身份行：password_hash不可用占位、status=disabled、roles=[member]，历史角色仅入受控Manifest（P4-OWNER-APPROVAL-02修订）；机器Reviewer用户b0a11000按boundary合同受控补齐users行，DB角色保持未激活。"
     },
     {
       "id": "RULE-5",

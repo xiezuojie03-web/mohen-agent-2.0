@@ -19,7 +19,7 @@
 ```
 BATCH-0 结构与迁移适配（24个迁移补装+身份映射）
    ↓
-BATCH-1 运行与治理历史（115 run→91审计→123候选→6绑定→49资格→20撤权→1桥接键）
+BATCH-1 运行与治理历史（115 run→91审计→123候选→46评审绑定→6策略版本→49资格→20撤权→1桥接键）
    ↓
 BATCH-2 来源与原始材料（12 source→89 version→90 raw→90原件元数据→27+12权利→D00账本→8 read_run）
    ↓
@@ -52,7 +52,11 @@ BATCH-5 发布链与消费链（works→work_revisions→editorial/snapshots/wit
 | 幂等与回滚方案 | ✅ 全INSERT ON CONFLICT + 分批事务 + L0/L1/L2备份分层 |
 | 云端独有数据不覆盖 | ✅ 结构性保证（无DELETE/UPDATE限定主键集） |
 
-**唯一待Owner确认项**：PREREQ-2 用户身份行落位——本地7个用户+机器Reviewer用户按原ID插入云端（password_hash置不可用占位、账户不可登录直至密码恢复），以满足research_tasks/gate_reviewer_bindings/projects等表的外键。推荐此方案（保身份、不迁凭据）；备选是外键引用重映射（会破坏身份连续性，不推荐）。
+**PREREQ-2 已按 Owner P4-OWNER-APPROVAL-02 裁决修订（有条件批准）**：6 个本地探针用户按原 UUID 插入云端身份行（password_hash 不可用占位、status=disabled、roles=[member]、历史角色仅入受控 Manifest）；Owner 用户 270bcecf 已在云端且 UUID/email 双一致，不动；机器 Reviewer 用户 b0a11000 云端核查不存在，按 machine-reviewer-boundary 正式合同受控补齐 users 行，DB 角色 mohen_gate_signer_m5_machine 维持未激活状态不创建，不自动扩大 Gate 权限。冲突核查：无 UUID/email/会话冲突（双端 web_session_revocations 均 0）。
+
+**L0 备份与恢复演练已完成（2026-11-19）**：云端全量备份 SHA256 已登记（9100B293…096A59）；本地 mohen_l0_drill 恢复演练五张关键表（production_runs/gate_audits/sources/raw_items/qualification_current）逐行 MD5 与云端完全一致、迁移账本 29=29、Schema 对象 90=90，**VERDICT=L0_PASS**。约束说明：Supabase 平台扩展不可在 vanilla PG 复原，全量备份完整恢复目标须为 Supabase 实例；业务完整性以业务 Schema 定向演练验证。备份文件不入 GitHub（backups/ 已 gitignore）。
+
+**受控 UPDATE 统一口径**（P2 主键集合为唯一数量基线）：共 2 条规则 5 条语句、影响 73 行——RULE-1 权利迁移（BATCH-2）：sources 27 行 + source_versions 27 行（2 条语句，54 行）；RULE-5 形差异对齐（BATCH-5）：public.assets 6 行 + public.director_plans 9 行 + publication.published_pointers 4 行（3 条语句，19 行）。全部逐条前后值存档。
 
 ## 5. 风险与缓解
 
@@ -74,6 +78,7 @@ BATCH-5 发布链与消费链（works→work_revisions→editorial/snapshots/wit
 
 ## 8. 本轮状态
 
-- **P4_PLAN_READY_FOR_OWNER_APPROVAL / NOT_EXECUTED**
-- 未写入任何数据库、未调用模型、未产生费用。
-- 提交链 4884eec→3c86afa→eb1d75d→83d2a70→25ffe1b 已全部推送 GitHub main（origin/main=main=25ffe1b，28个专项目录文件零差异）。
+- **P4_PLAN_REVISED_PER_OWNER_APPROVAL_02 / L0_VERIFIED / BUSINESS_MIGRATION_NOT_AUTHORIZED**
+- Owner P4-OWNER-APPROVAL-02：方案原则上通过；PREREQ-2 有条件批准并已按裁决修订；L0 备份与恢复演练已完成 PASS；BATCH-0 结构补装将在计划修订与 L0 验证后单独报告执行结果（尚未执行）；BATCH-1 至 BATCH-5 业务数据迁移未获授权、未执行。
+- 本轮未执行业务数据迁移、未调用模型、未产生费用。
+- 提交链 4884eec→3c86afa→eb1d75d→83d2a70→25ffe1b→7b590b7 已全部推送 GitHub main。
