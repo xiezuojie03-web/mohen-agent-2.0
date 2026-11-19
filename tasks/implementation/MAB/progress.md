@@ -5106,3 +5106,12 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 本地独有数据分类汇总：MIGRATE_AS_IS 35 表（知识对象+控制层，原主键拓扑迁移）；MIGRATE_WITH_MAPPING 19 表（10 张本地独有表需先补装结构迁移+Studio/出版映射）；MIGRATE_AFTER_REVIEW 3 表（run/sources/versions 语义复核）；AUTH_DATA_EXCLUDED 1；BINARY_REFERENCE_ONLY 1（90 原件仅迁元数据+SHA）。
 - P4 分批顺序建议已形成（结构补装→Run/审计/资格→来源层→知识对象层→Studio 层→出版链层），待 Owner 裁决 27 组权利冲突后可提出 P4 执行计划。
 - 阶段状态：P3 = INVENTORY_COMPLETE。PENDING_PUSH。
+
+## 2026-11-19｜M5-P3-RIGHTS-RECONCILIATION-01｜27组权利字段冲突证据核查完成（只读）
+
+- 双端只读核查27组共有source权利差异，交付 RIGHTS_27_GROUPS_EVIDENCE_RECONCILIATION.json（27组逐条+动作级分类+云端迁移语句全文）与 RIGHTS_27_GROUPS_OWNER_DECISION_REPORT.md。零写入零模型零费用。
+- 核心结论：云端非"清空损失"——云端权利投影迁移（20261116121153/20261119004253）只新增列默认空对象，Owner 授权标定工具（tools/stamp-shl-open-data-rights.mjs，2026-11-08 决定）从未在云端执行，云端列生来为空。无 HISTORICAL_VALUE_LOST。
+- 27组全部为 shanghai-library 提供方，本地值模式完全一致：4动作 allowed（quote/retain/access_view/machine_read，共108个 EVIDENCE_SUPPORTED_ALLOWED）+ 5动作 unknown（adapt/display/download/redistribute/external_processing，共135个 NO_EVIDENCE，双端一致 HOLD）。
+- 证据结构（27组同一份）：basis=owner_authorization、owner_decision_at=2026-11-08、dataset=上海图书馆开放数据平台、scope=project_internal_research、granted/held 动作清单、schema=mohen.rights-evidence.v1。版本 rights_snapshot 与来源值一致，触发器保护下合法写入。
+- 本地值与云端更严约束（9键白名单+值域+is_rights_actions_valid）完全兼容，迁移不违反云端现行约束。
+- 处理建议（待Owner裁决）：P4 将本地 rights_by_action+rights_evidence 连同授权证据一起迁移（迁移的是Owner授权记录本身，非推断继承）；5个held动作云端保持空/unknown 双端一致HOLD；无不可恢复信息。本轮状态 EVIDENCE_RECONCILIATION_COMPLETE / OWNER_DECISION_PENDING。
