@@ -5178,3 +5178,8 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 - 原朱家角委托和已选候选保持原绑定。由 [Commons 固定文件页](https://commons.wikimedia.org/w/index.php?oldid=1099152026) 对应的公开原始文件入口取得 JPEG。回读 260342 字节、945 × 630；文件签名、长度和 Commons imageinfo 的 SHA-1 `9e1b9601c4ebea27bacba2be07bc821331e377fb` 一致。原件 SHA-256 `3a1a7f565c8f57328da9350c3be2f75751d26876af6c0d39663ca5ac6b7e6651`。
 - 本次为工作环境中的取回与内容校验，尚无 Studio 项目私有原件 ID 或权利回执。核对现有附件入口仍要求 Creator 会话，登记仓储为绑定回读。下一交接为在同一 Project/Root 内，将许可证据与已校验字节接入私有原件工作流，并按其回执推进 Source → Version → Raw。本次未调用模型、未写业务数据或提交字节进仓库。
+
+## 2026-11-19｜第⑤步 Commons 获取、私有保存和来源登记接线
+
+- Studio 仅用本任务已选、可定位的 Commons JPEG 候选。重新核验文件单件署名、CC BY-SA 3.0 和原文件 SHA-1；复用 Creator 私有原件工作流。在同一事务绑定 Source / Version / Raw 与原任务，版本冻结已核授权动作，保留许可证据和署名义务。回执重复读取须重新核对存储 SHA 和登记窄口。
+- 对选中照片实际复验 Commons 文件与摘要；模拟角色拒绝、完整登记与回读、幂等重试通过。真实 Creator 私有保存和独立 D00 执行仍需 Preview 回执，未运行模型或 Runner。

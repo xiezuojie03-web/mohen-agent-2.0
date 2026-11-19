@@ -274,6 +274,30 @@ export default function StudioWorkbench() {
     return () => controller.abort();
   }, [sourceTaskId, currentResearch?.status]);
 
+  const [sourceAcquisition, setSourceAcquisition] = useState<{taskId:string; busy:boolean; message:string; originalId?:string} | null>(null);
+  async function acquireSource(taskId: string) {
+    setSourceAcquisition({taskId, busy:true, message:"正在核验许可并保存原件…"});
+    try {
+      const response = await fetch(`/api/studio/research-tasks/${encodeURIComponent(taskId)}/source-acquisition`, {
+        method:"POST", headers:{"content-type":"application/json"}, body:"{}",
+      });
+      const body = await response.json();
+      const reasons: Record<string,string> = {
+        COMMONS_LOCATOR_UNSUPPORTED:"此候选的原件入口不受支持。",
+        COMMONS_LICENSE_NOT_VERIFIED:"该文件的署名或许可未通过核验。",
+        COMMONS_ORIGINAL_NOT_VERIFIED:"原件字节未通过文件版本校验。",
+        ORIGINAL_IDEMPOTENCY_CONFLICT:"原件版本已变化，请核对已保存的记录。",
+      };
+      const originalId = response.ok && body.ok === true && typeof body.receipt?.original_id === "string"
+        ? body.receipt.original_id as string : undefined;
+      setSourceAcquisition({taskId, busy:false, originalId, message:originalId
+        ? "原件已私有保存，来源登记已回读。"
+        : reasons[body.reason] ?? "暂时无法确认保存，可重试同一来源。"});
+    } catch {
+      setSourceAcquisition({taskId, busy:false, message:"暂时无法确认保存，可重试同一来源。"});
+    }
+  }
+
   async function selectSource(taskId: string, candidateId: string) {
     setSourceChoices(previous => previous?.taskId === taskId ? {...previous, saving: true, error: null} : previous);
     try {
@@ -299,6 +323,7 @@ export default function StudioWorkbench() {
   const [sourceChoice,setSourceChoice]=useState("");
   const [sourcePage,setSourcePage]=useState("");
   const [sourceReadError,setSourceReadError]=useState<string|null>(null);
+  const acquiredOriginalId = sourceAcquisition?.taskId === currentResearch?.taskId ? sourceAcquisition?.originalId : undefined;
   useEffect(()=>{
     if(!projectId || !currentResearch){setPrivateSources([]);setSourceChoice("");setSourceReadError(null);return;}
     const controller=new AbortController();
@@ -313,11 +338,17 @@ export default function StudioWorkbench() {
           registration_state:"BOUND"|"UNBOUND";source_version_id:string|null;
         }>};
         if(!response.ok||body.ok!==true||!Array.isArray(body.originals))throw Error("source_unavailable");
-        if(!controller.signal.aborted)setPrivateSources(body.originals);
+        if(!controller.signal.aborted) {
+          setPrivateSources(body.originals);
+          if (body.originals.some(original => original.original_id === acquiredOriginalId && original.registration_state === "BOUND")) {
+            setSourceChoice(acquiredOriginalId ?? "");
+            setSourcePage("1");
+          }
+        }
       }catch{if(!controller.signal.aborted)setSourceReadError("项目私有原件或正式来源登记暂时无法核验；不得自动启动D00。");}
     })();
     return()=>controller.abort();
-  },[projectId,currentResearch?.taskId]);
+  },[projectId,currentResearch?.taskId,acquiredOriginalId]);
   const productionPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   useEffect(() => () => {
     if (productionPollRef.current !== null) clearInterval(productionPollRef.current);
@@ -999,7 +1030,16 @@ export default function StudioWorkbench() {
                   <div className="studio__material" key={candidate.id}>
                     <div>{candidate.title} · {candidate.provider}</div>
                     {activeSourceChoices.selectedId === candidate.id ? (
-                      <p role="status">已选择，待核验获取条件</p>
+                      <>
+                        <p>已选择，待核验获取条件</p>
+                        {candidate.provider === "wikimedia-commons" && (
+                          <button type="button" className="studio__link-btn"
+                            disabled={sourceAcquisition?.taskId === activeSourceChoices.taskId && sourceAcquisition.busy}
+                            onClick={() => void acquireSource(activeSourceChoices.taskId)}>核验并保存原件</button>
+                        )}
+                        {sourceAcquisition?.taskId === activeSourceChoices.taskId &&
+                          <p role="status">{sourceAcquisition.message}</p>}
+                      </>
                     ) : activeSourceChoices.selectedId === null ? (
                       <button type="button" className="studio__link-btn"
                         disabled={activeSourceChoices.saving}
