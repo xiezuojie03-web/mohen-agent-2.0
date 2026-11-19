@@ -505,10 +505,31 @@ export async function resumeResearchTask(
       holdReason: "understanding_recovery_unavailable", researchLeads: [] };
   const previousCeiling = saved.ceiling;
   const firstStep = saved.holdAt as {toolId?: unknown} | undefined;
-  const understanding = saved.settledUnderstanding as Understanding | undefined;
+  let understanding = saved.settledUnderstanding as Understanding | undefined;
+  const failedReadAfterRecovery = saved.holdReason === "research_prerequisites" &&
+    typeof priorRecovery === "string" && typeof studioContext.project_id === "string" &&
+    saved.prompt === prompt && saved.topic === topic && Array.isArray(saved.missingRequirements) &&
+    saved.missingRequirements.includes("SOURCE_OR_QUALIFICATION_UNAVAILABLE") &&
+    spent === 2 * (understandingCost ?? NaN) + (getTool("llm-polish")?.cost ?? NaN);
+  if (!understanding && failedReadAfterRecovery && firstStep?.toolId === "llm-understand" && sessionToken) {
+    const receipts = await queryRows(
+      `select payload->'settledUnderstanding' as understanding
+         from public.study_asset_receipts
+        where task_id=:'id' and kind='checkpoint' and stage='hold'
+          and payload->'studio'->>'legacy_understanding_attempt'=:'attempt'
+          and payload->'studio'->>'project_id'=:'project'
+          and payload->>'prompt'=:'prompt' and payload->>'topic'=:'topic'
+          and payload->'holdAt'->>'toolId'='retrieve-local'
+          and payload->'settledUnderstanding'->>'llmResponded'='true'
+        limit 2`,
+      { id: taskId, attempt: priorRecovery, project: studioContext.project_id, prompt, topic }
+    );
+    if (receipts.length === 1)
+      understanding = readJsonColumn<Understanding | undefined>(receipts[0].understanding, undefined);
+  }
   const canResumeFormalRead = saved.holdReason === "research_prerequisites" &&
-    firstStep?.toolId === "retrieve-local" && saved.prompt === prompt && saved.topic === topic &&
-    (spent === understandingCost || (priorRecovery != null && spent === 2 * (understandingCost ?? NaN))) &&
+    (firstStep?.toolId === "retrieve-local" || failedReadAfterRecovery) && saved.prompt === prompt && saved.topic === topic &&
+    (spent === understandingCost || (priorRecovery != null && spent === 2 * (understandingCost ?? NaN)) || failedReadAfterRecovery) &&
     understanding?.llmResponded === true &&
     Array.isArray(understanding.terms) && understanding.terms.every(term => typeof term === "string") &&
     Array.isArray(understanding.objects) && understanding.objects.every(object => typeof object === "string");

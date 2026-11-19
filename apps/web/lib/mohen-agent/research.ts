@@ -326,6 +326,9 @@ export async function runResearch(
   }):undefined;
   materials=[...materials,...(formalRead?.materials??[])];
   degraded=degraded||formalRead?.degraded===true;
+  if (studioContext && degraded) {
+    throw new ResearchPrerequisiteHold(["SOURCE_OR_QUALIFICATION_UNAVAILABLE"], undefined, understanding);
+  }
   let externalEntities: string[] = [];
   let externalMaterials: Material[] = [];
   let researchLeads: ExternalResearchLead[] = [];
