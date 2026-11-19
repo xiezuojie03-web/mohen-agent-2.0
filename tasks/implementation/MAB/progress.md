@@ -5016,3 +5016,13 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 构建事件：Next optimized build compiled successfully (10.9s)；Linting/type validity check已进入并完成；静态页15/15生成；build trace和动态API路由输出完成。该证据仅证明Preview BUILD PASS。
 - GitHub Actions run `44438122930`仍failure；job runner_id=0、steps=[]，测试未执行（NOT_RUN）。
 - 等待Owner使用真实Creator会话访问只读诊断入口，才可验证Creator签名身份→DB会话→受限事务→Project Owner guard→L0-L4/L5正式读取。无模型调用、无写入、无新增费用。
+
+
+## 2026-11-19｜M5-FORMAL-READ-BP01-OWNER-REQ-01｜真实Owner请求成功，确认资格存量为空
+
+- Owner真实Preview请求返回`ok=true`；Creator身份authenticated、DB签名会话signed、Project ownerCheck evaluated；L0-L4 COMPLETE、degraded=false、failureCode=null、truncated=false但count=0；L5 degraded=false但count=0。真实应用身份链与查询执行路径通过，知识命中不通过。
+- mohen-cloud `control.qualification_current`全表0行，指定Project关联资格0行。L5 Read Model有11/9/41/42/63/132条各类对象，但当前G5资格记录为0，因此按制度不能返回为合格知识。
+- 指定Project仅有1个asset_head及1个revision；该revision为research_brief/editorial/WORKING/RESTRICTED/UNKNOWN_DEPENDENCY，formal_l_refs为空，不能作为L0-L4正式知识正向样本。
+- 当前错误不再指向Creator身份丢失或Owner guard；本环境实际缺口是没有当前有效的G0-G5资格对象。L0-L4 coverage COMPLETE表示查询未截断且无异常，不表示资产存在。
+- 错Project、错用途、无效/过期身份的真实Preview反向验证尚未执行。未恢复朱家角任务、未重建Project/Root、未产生模型费用。
+- 断点01继续HOLD；正向身份/查询执行已PASS，正向合格知识命中为NOT_RUN（NO_QUALIFIED_FIXTURE），反向真实应用验证未完成。下一步只做断点01的真实Preview负向验证与现有资格对象合法性核对；不制造资格、不放宽Gate、不进入断点02。

@@ -138,3 +138,15 @@
 - Vercel构建日志确认Next.js优化构建成功、TypeScript类型检查阶段通过、静态页生成完成并产出Serverless路由。该结果是BUILD PASS，不是Studio真实Creator身份/正式知识读取PASS。
 - 零模型诊断入口：`/api/studio/projects/{projectId}/formal-read?term=...`。必须通过Vercel Preview SSO及MoHen Creator登录Cookie；只读调用既有L0-L4/L5 Repository，返回各层数量/覆盖/规范错误码，不返回材料正文或记录标识。
 - 下一步必须取得Owner在此Preview中的一次真实请求回执；未发生Owner请求前，真实应用验证仍NOT_RUN，断点01保持HOLD。
+
+
+## 2.12 2026-11-19｜断点01真实Owner请求通过，知识资格存量为空（未关闭）
+
+- **真实应用请求证据**：Owner在精确Preview `dpl_BxpZG6SP455F51fEtoP2t4pEX5hC`完成登录后访问原Project诊断入口，回执：`ok=true`、`identity.authenticated=true`、`dbSessionSigned=true`、`project.ownerCheck=evaluated`；L0-L4 `coverage=COMPLETE`、`degraded=false`、`failureCode=null`、`truncated=false`、`count=0`；L5 `degraded=false`、`count=0`。因此Creator浏览器会话、应用层身份解析、数据库签名会话生成、Owner/Project读取路径和两个Repository的无异常执行均获真实应用请求PASS；这不是知识命中PASS。
+- **开发库资格存量核查**：`control.qualification_current`全表当前为0行；按Project关联`control.qualification_current`为0行。故该开发库没有任何当前有效的G0-G5资格记录可供正向知识命中测试。L5六类Read Model当前有存量：world_projections=11、map_timeline_projections=9、agent_contexts=41、story_seeds=42、discovery_paths=63、evidence_pointers=132；但对应当前G5资格记录为0，按现行读取合同必须全部拒绝作为合格知识返回。
+- **Project资产情况**：指定Project有1个asset_head、1个current asset_revision、0个asset_links、0个关联当前qualification。该revision为`research_brief / editorial / WORKING / RESTRICTED / UNKNOWN_DEPENDENCY`，formal_l_refs为空；它不是L0-L4正式合格知识资产，不能拿来伪造正向命中。
+- **根因边界更新**：原始`M5_FORMAL_READ_OWNER_REQUIRED`身份/Owner故障在本次真实Owner请求中未复现。当前HOLD不再有证据指向应用Creator身份丢失或数据库Owner guard；实际缺口是测试环境不存在可用于正向读取的当前资格知识资产。L0-L4的`coverage=COMPLETE`表示检索执行未截断且无异常，不代表有资产；L5同样是成功执行但零命中。
+- **反向验证**：本次只验证正确Owner/正确Project正向身份路径。错误Project、错误用途、无效/过期身份仍未通过真实应用请求实测；数据库函数已有Owner/Project与用途guard，不能将历史SQL测试替代本次真实应用反向验证。
+- **费用保护**：朱家角task `53ad1a29-22e5-43c2-816d-b02b6e85abbd`未恢复、未重建、未调用模型；没有新Project/Root；本次诊断零模型费用、零业务写入。
+- **下一步（仍为断点01）**：先确认是否存在可合法复用的当前G0-G5资格对象，且属于同一Project或已有明确授权共享范围；若无，当前环境只能标记正向知识命中`NOT_RUN / NO_QUALIFIED_FIXTURE`，不能为了让测试通过而制造资格、伪造知识或放宽Gate。随后在不触发模型的情况下完成真实Preview的错Project/错用途/无效身份拒绝测试，并把断点结论明确拆分为`IDENTITY_PATH_PASS`、`READ_QUERY_PASS_EMPTY`、`QUALIFIED_KNOWLEDGE_POSITIVE_NOT_RUN`。
+- **关闭判定**：断点01尚未关闭。身份和读取调用链的主要正向路径已PASS，但“读取自己Project下具有合法资格的L0-L5知识资产”尚无真实正向样本，反向应用测试亦未全部完成。不得转入断点02。
