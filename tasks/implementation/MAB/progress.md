@@ -5005,3 +5005,7 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 本批没有创建Project/Root/研究任务，没有恢复朱家角任务，没有触发Provider/模型，没有改动数据库schema/ACL，没有触碰Production。
 - 测试状态：代码已写入；GitHub Actions Runner近期为runner_id=0/steps=[]，因此新增路由与Repository单测尚未执行，标记NOT_RUN。下一步以当前main精确提交创建受保护Preview，Owner通过浏览器当前登录会话访问该只读路由，取得真实运行回执；若返回身份/Owner/Project失败码，再依据真实证据定向修复。
 - 本断点仍HOLD，未宣称真实应用PASS。
+
+
+### 2026-11-19｜BP01-DIAG-02路径复核修正
+- 复核新诊断路由相对导入路径时发现目录层级少回退一级；已修正为从`apps/web/app/api/studio/projects/[projectId]/formal-read`准确指向`apps/web/lib`的六级相对路径。该修正发生在部署前，未影响任何运行环境。
