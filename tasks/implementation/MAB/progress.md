@@ -5183,3 +5183,8 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 - Studio 仅用本任务已选、可定位的 Commons JPEG 候选。重新核验文件单件署名、CC BY-SA 3.0 和原文件 SHA-1；复用 Creator 私有原件工作流。在同一事务绑定 Source / Version / Raw 与原任务，版本冻结已核授权动作，保留许可证据和署名义务。回执重复读取须重新核对存储 SHA 和登记窄口。
 - 对选中照片实际复验 Commons 文件与摘要；模拟角色拒绝、完整登记与回读、幂等重试通过。真实 Creator 私有保存和独立 D00 执行仍需 Preview 回执，未运行模型或 Runner。
+
+## 2026-11-20｜第⑤步原件与登记已落地，修复回读权限
+
+- 固定 Preview 的原 Creator 保存已生成原任务回执，私有对象存在，原件状态 STORED_VERIFIED，260342 字节与已核 Commons SHA-256 一致。Source / Version / Raw / Asset Revision 绑定均通过回读。页面通用失败发生于提交后回读；确认登记函数定义者缺内部 artifact_revision_for 调用权。
+- 开发库定向补齐登记函数定义者调用权。两个已登记对象版本摘要均通过，应用运行角色无此内部函数的直接调用权限。尚待 Creator 路径回读确认；D00 Runner 本批未执行。
