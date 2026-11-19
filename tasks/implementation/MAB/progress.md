@@ -5188,3 +5188,8 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 - 固定 Preview 的原 Creator 保存已生成原任务回执，私有对象存在，原件状态 STORED_VERIFIED，260342 字节与已核 Commons SHA-256 一致。Source / Version / Raw / Asset Revision 绑定均通过回读。页面通用失败发生于提交后回读；确认登记函数定义者缺内部 artifact_revision_for 调用权。
 - 开发库定向补齐登记函数定义者调用权。两个已登记对象版本摘要均通过，应用运行角色无此内部函数的直接调用权限。尚待 Creator 路径回读确认；D00 Runner 本批未执行。
+
+## 2026-11-20｜第⑤步登记权利投影同步
+
+- 固定 Preview 第二次回读进入登记校验，返回 PRIVATE_SOURCE_REGISTRATION_INVALID。云端登记函数仍用旧投影，少 rights_by_action / rights_snapshot / rights_evidence。只恢复三字段，沿用已有版本快照和证据，未改资格或权限模型。
+- 云端回读函数定义及 ACL；从原任务实际保存字段取得同形投影，直接运行 Studio 登记校验器并通过。Creator HTTP 回读仍待验证。machine_read 仍为 unknown，G0 与 D00 执行均未通过或启动。
