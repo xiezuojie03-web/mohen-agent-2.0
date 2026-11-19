@@ -118,7 +118,7 @@ export async function acquireSelectedCommonsOriginal(taskId: string, ownerId: st
     throw new Error("ORIGINAL_STORAGE_NOT_CONFIGURED");
   const pool = getNodePgPool();
   const args = [taskId, ownerId];
-  const first = (await pool.query<TaskRow>(taskSql, args)).rows[0];
+  const first = (await pool.query(taskSql, args)).rows[0] as TaskRow | undefined;
   const selected = selectedOriginal(first, taskId);
   const repository = createPrivateOriginalRepository(pool);
   const storage = process.env.MOHEN_PRIVATE_ORIGINAL_LOCAL_FS === "true"
@@ -145,10 +145,13 @@ export async function acquireSelectedCommonsOriginal(taskId: string, ownerId: st
     bytes: original.bytes, fileName: "commons-original.jpg", contentType,
   }, sessionToken);
 
-  const client = await pool.connect();
+  const client = await pool.connect() as {
+    query(sql: string, params?: unknown[]): Promise<{rows: Array<Record<string, unknown>>}>;
+    release(): void;
+  };
   try {
     await client.query("begin");
-    const current = (await client.query<TaskRow>(taskSql + " for update of t, p", args)).rows[0];
+    const current = (await client.query(taskSql + " for update of t, p", args)).rows[0] as TaskRow | undefined;
     if (!current) throw new Error("STUDIO_SOURCE_SELECTION_CHANGED");
     const confirmed = selectedOriginal(current, taskId);
     if (confirmed.candidateId !== selected.candidateId || confirmed.projectId !== selected.projectId ||
@@ -158,13 +161,13 @@ export async function acquireSelectedCommonsOriginal(taskId: string, ownerId: st
       await client.query("commit");
       return readback(replay);
     }
-    const verified = (await client.query<{ storage_ref: string }>(
+    const verified = (await client.query(
       `select storage_bucket||'/'||storage_key as storage_ref from studio.private_originals
         where original_id=$1 and project_id=$2 and owner_user_id=$3 and state='STORED_VERIFIED'
           and sha256=$4 and byte_size=$5 and asset_revision_id=$6`,
       [stored.original_id, selected.projectId, ownerId, stored.sha256, stored.byte_size, stored.asset_revision_id]
     )).rows[0];
-    if (!verified) throw new Error("STUDIO_SOURCE_READBACK_MISMATCH");
+    if (typeof verified?.storage_ref !== "string") throw new Error("STUDIO_SOURCE_READBACK_MISMATCH");
     const sourceId = randomUUID(), versionId = randomUUID(), rawId = randomUUID();
     const locator = { url: original.evidence.file_url, file_page: original.evidence.file_page, page_number: 1 };
     await client.query(`insert into source.sources
