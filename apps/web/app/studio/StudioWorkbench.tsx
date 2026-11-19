@@ -992,16 +992,21 @@ export default function StudioWorkbench() {
             <h3>待验证候选</h3>
             {activeSourceChoices && (
               <>
+                {activeSourceChoices.selectedId !== null && (
+                  <p className="studio__drawer-note">本次委托已选定一条来源。其余候选保留供查看。</p>
+                )}
                 {activeSourceChoices.candidates.map(candidate => (
                   <div className="studio__material" key={candidate.id}>
                     <div>{candidate.title} · {candidate.provider}</div>
                     {activeSourceChoices.selectedId === candidate.id ? (
                       <p role="status">已选择，待核验获取条件</p>
-                    ) : (
+                    ) : activeSourceChoices.selectedId === null ? (
                       <button type="button" className="studio__link-btn"
-                        disabled={activeSourceChoices.saving || activeSourceChoices.selectedId !== null}
-                        onClick={() => void selectSource(activeSourceChoices.taskId, candidate.id)}>选择来源候选</button>
-                    )}
+                        disabled={activeSourceChoices.saving}
+                        onClick={() => void selectSource(activeSourceChoices.taskId, candidate.id)}>
+                        {activeSourceChoices.saving ? "正在保存选择…" : "选择来源候选"}
+                      </button>
+                    ) : null}
                   </div>
                 ))}
                 {activeSourceChoices.error && <p role="status">{activeSourceChoices.error}</p>}
