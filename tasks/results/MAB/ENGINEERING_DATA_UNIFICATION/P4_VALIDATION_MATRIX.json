@@ -1,0 +1,70 @@
+{
+  "specialty": "MOHEN-ENGINEERING-DATA-UNIFICATION-01",
+  "stage": "P4-PLAN",
+  "generated_at": "2026-11-19",
+  "validation_matrix": [
+    {
+      "batch": "BATCH-0",
+      "acceptance": [
+        "24个迁移全部在云端supabase_migrations账本登记",
+        "重跑p1-schema-inventory.mjs cloud：10张本地独有表存在、列扩展齐备、RLS启用、触发器在位",
+        "云端 e03c4ba8 Project及资产行数不变（1/1/1）"
+      ],
+      "method": "catalog回读+与DATABASE_SCHEMA_LOCAL.json比对"
+    },
+    {
+      "batch": "BATCH-1",
+      "acceptance": [
+        "云端production_runs=135+20=155；gate_audits=802；gate_candidates=123；qualification_current=49",
+        "91条审计reviewer身份/decision_origin/valid_from签名原样（MD5摘要与本地一致）",
+        "20个共有Run仍为HOLD且metadata不变；13条过期资格valid_until不变"
+      ],
+      "method": "P2同源方法：UTC会话+整行MD5逐对象回读比对"
+    },
+    {
+      "batch": "BATCH-2",
+      "acceptance": [
+        "云端sources=51、source_versions=128、raw_items=188、private_originals=90、D00账本各表计数与本地一致",
+        "27组权利记录的4动作=allowed+rights_evidence完整（Owner裁决落实）；5 held动作云端仍为空对象",
+        "90个私有原件sha256与raw_items checksum一一对应（云端复验90/90）"
+      ],
+      "method": "逐主键MD5回读+SHA集合比对"
+    },
+    {
+      "batch": "BATCH-3",
+      "acceptance": [
+        "reading_units=51、material_evidence=176、findings=56、story_seeds=46、agent_contexts=44、world_projections=18等与本地一致",
+        "全部外键依赖可解析（无悬空引用）"
+      ],
+      "method": "行数+主键集合+MD5+FK完整性查询"
+    },
+    {
+      "batch": "BATCH-4",
+      "acceptance": [
+        "projects=17（本地16+云端1）、asset_heads=111、asset_revisions=112、M4/ST-07-09表计数与本地一致",
+        "e03c4ba8及其资产原样（MD5不变）；云端独有15行业务行原样",
+        "research_tasks=25、research_events=207、study_asset_receipts=172（本地+云端独有）"
+      ],
+      "method": "MD5逐对象回读+保护对象摘要不变断言"
+    },
+    {
+      "batch": "BATCH-5",
+      "acceptance": [
+        "publication各表计数=本地+云端原有；发布状态与审核证据原样（不可变触发器在位且未报错）",
+        "17条受控UPDATE（27权利+6/9/4形差异组）前后值全部存档于冲突记录表",
+        "无未审核作品被改为已发布（publication_status逐行断言）"
+      ],
+      "method": "MD5回读+冲突记录完整性+状态断言"
+    },
+    {
+      "batch": "FINAL (P5)",
+      "acceptance": [
+        "全表MD5比对：MIGRATED_AND_VERIFIED / ALREADY_IDENTICAL / CONFLICT_PENDING / BINARY_NOT_MIGRATED 分类账与P3清单一致",
+        "正式知识读取函数能识别迁移后的合格对象（不改判资格，仅验证可查询性）",
+        "RLS策略数量/触发器数量与迁移前一致（安全基线未动）"
+      ],
+      "method": "p2-data-inventory.mjs compare复跑 + search_qualified_project_layers只读冒烟"
+    }
+  ],
+  "rollback_criteria": "任一批次回读不一致且无法定位：暂停后续批次，保留已完成批次（幂等可续），以批次回执定位影响范围，从备份恢复仅限灾难场景（Owner批准后执行）"
+}

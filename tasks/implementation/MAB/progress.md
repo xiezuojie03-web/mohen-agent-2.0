@@ -5115,3 +5115,12 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 证据结构（27组同一份）：basis=owner_authorization、owner_decision_at=2026-11-08、dataset=上海图书馆开放数据平台、scope=project_internal_research、granted/held 动作清单、schema=mohen.rights-evidence.v1。版本 rights_snapshot 与来源值一致，触发器保护下合法写入。
 - 本地值与云端更严约束（9键白名单+值域+is_rights_actions_valid）完全兼容，迁移不违反云端现行约束。
 - 处理建议（待Owner裁决）：P4 将本地 rights_by_action+rights_evidence 连同授权证据一起迁移（迁移的是Owner授权记录本身，非推断继承）；5个held动作云端保持空/unknown 双端一致HOLD；无不可恢复信息。本轮状态 EVIDENCE_RECONCILIATION_COMPLETE / OWNER_DECISION_PENDING。
+
+## 2026-11-19｜ENGINEERING-DATA-UNIFICATION-01｜P4 迁移执行计划编制完成（未执行）
+
+- Owner 裁决固化（2026-11-19）：27组权利按原始授权证据迁移——quote/retain/access_view/machine_read 四动作 allowed 值连同完整 rights_evidence（owner_authorization、2026-11-08、project_internal_research、granted/held 清单、版本快照、写入审计）迁移；adapt/display/download/redistribute/external_processing 五动作保持 HOLD 不新增授权；云端空对象不统一改写；属历史 Owner 授权事实迁移非重新授权。
+- 提交链保护与推送：本地累计 5 提交（4884eec→3c86afa→eb1d75d→83d2a70→25ffe1b）经核查关系完整、工作区干净、交付物齐备，本轮按 Owner 指示执行批量推送，GitHub main=local main=25ffe1b，专项目录 28 文件远端零差异，PENDING_PUSH 全部销项。
+- P4 六份计划交付物：P4_MIGRATION_EXECUTION_PLAN.md（总纲）、P4_BATCH_MANIFEST.json（BATCH-0 结构补装 24 迁移→B1 运行治理 115run/91审计/123候选/49资格/20撤权→B2 来源材料 12source/89version/90raw/90原件元数据/27+12权利/D00账本→B3 知识对象→B4 Studio 16项目/110资产头/111修订/M4/ST表→B5 发布链 11works/19revisions/3pointers + 11 组受控UPDATE）、P4_SCHEMA_PREREQUISITES.json（6项前置）、P4_CONFLICT_HANDLING_RULES.json（8条规则）、P4_BACKUP_AND_RECOVERY_PLAN.md（L0/L1/L2 分层备份+分级恢复+执行前演练）、P4_VALIDATION_MATRIX.json（逐批验收标准）。
+- 安全设计要点：全计划仅 INSERT ON CONFLICT DO NOTHING（幂等、无 DELETE、云端独有数据结构性不可删）+两条受控 UPDATE（27组权利、11组形差异，逐条前后值存档）；不关 RLS 不删触发器，Immutable 表走受控 INSERT 适配器；20 云端 HOLD run/13 过期资格/共有用户/云端独有 15 行全部保护断言。
+- 唯一待 Owner 确认：PREREQ-2 用户身份行落位（本地 7 用户+机器 Reviewer 用户 b0a11000 按原 ID 插入云端、password_hash 置不可用占位、不迁凭据，满足 FK 依赖；推荐方案）。
+- 本轮零数据库写入、零模型调用、零费用。阶段状态：P4_PLAN_READY_FOR_OWNER_APPROVAL / NOT_EXECUTED。

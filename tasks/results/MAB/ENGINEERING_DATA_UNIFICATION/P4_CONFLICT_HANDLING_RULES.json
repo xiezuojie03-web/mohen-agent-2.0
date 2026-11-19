@@ -1,0 +1,55 @@
+{
+  "specialty": "MOHEN-ENGINEERING-DATA-UNIFICATION-01",
+  "stage": "P4-PLAN",
+  "generated_at": "2026-11-19",
+  "rules": [
+    {
+      "id": "RULE-1",
+      "conflict": "27组共有source/version权利字段（本地有值 vs 云端空）",
+      "ruling": "Owner 2026-11-19：4动作（quote/retain/access_view/machine_read）allowed 值连同完整 rights_evidence 迁移（owner_authorization、owner_decision_at=2026-11-08、scope=project_internal_research、granted/held清单、版本快照、写入来源审计）。5个held动作保持HOLD不新增授权；云端空对象不改写成显式unknown。属历史授权事实迁移非重新授权。",
+      "implementation": "对27组共有行执行一次受控UPDATE（仅这27个source_id与对应version的rights_by_action/rights_evidence/rights_snapshot三字段，UPDATE前后值全部存入冲突记录）；12条本地独有source随INSERT原样带入。该UPDATE是全计划中唯一非INSERT操作，逐条留存前后值。"
+    },
+    {
+      "id": "RULE-2",
+      "conflict": "20个共有Run状态（本地原始 vs 云端HOLD）",
+      "ruling": "PRESERVE_CLOUD——云端 m5_reconciliation 有意改写保留，本地115个独有Run按原始状态INSERT，两套事实并存不覆盖。",
+      "implementation": "迁移SQL仅含本地独有run_id的INSERT；共有20个run_id不在迁移集，结构性保证不覆盖。"
+    },
+    {
+      "id": "RULE-3",
+      "conflict": "13条过期资格",
+      "ruling": "valid_until 原样迁移保持过期，不复活、不自动填 qualification 语义。",
+      "implementation": "INSERT原样；迁移后云端 qualification_current 含历史行，但正式读取按现行合同判定有效期。"
+    },
+    {
+      "id": "RULE-4",
+      "conflict": "用户认证数据（1共有用户password_hash差异 + 7本地用户）",
+      "ruling": "AUTH_DATA_EXCLUDED——不迁移凭据，云端现有认证状态优先。",
+      "implementation": "共有用户行不迁移；7本地用户+机器Reviewer用户按PREREQ-2方案仅迁身份行（password_hash不可用占位），待Owner确认。"
+    },
+    {
+      "id": "RULE-5",
+      "conflict": "表形差异驱动的同ID异内容（assets 6/director_plans 9/published_pointers 4）",
+      "ruling": "BATCH-0列对齐后，本地为完整版本（多列有值），云端为缺列旧版。",
+      "implementation": "BATCH-5中逐条比对：本地值覆盖写入（UPDATE指定列），云端旧值先存入冲突记录；published_pointers的云端独有work_id列值保留，本地缺该值时置NULL并记冲突清单待Owner裁决。"
+    },
+    {
+      "id": "RULE-6",
+      "conflict": "云端独有数据（15行诊断数据 + e03c4ba8 Project资产）",
+      "ruling": "PRESERVE_CLOUD——保留不删除不覆盖。",
+      "implementation": "全计划SQL仅INSERT ON CONFLICT DO NOTHING + RULE-1/5两条受控UPDATE（限定的主键集合）；无任何DELETE/TRUNCATE；RLS与不可变触发器全程不关闭。"
+    },
+    {
+      "id": "RULE-7",
+      "conflict": "BINARY资产引用",
+      "ruling": "90个原件字节不迁移；元数据+SHA+存储引用+权利证据完整迁移（BINARY_REFERENCE_ONLY）。",
+      "implementation": "private_originals表全行INSERT（元数据），storage_bucket/storage_key原样指向本地或后续存储策略，读取层按引用判空处理。"
+    },
+    {
+      "id": "RULE-8",
+      "invariant": "不可变表与触发器保护",
+      "ruling": "不关闭RLS/不删触发器/不绕过业务合同；Immutable表（editorial_decisions/publication_snapshots/withdrawals/execution_controls等）通过受控INSERT适配器迁移。",
+      "implementation": "迁移连接使用具备INSERT权限的受控角色（如mohen_m5_worker_login或按K3合同授权的迁移专用角色），写入路径走与生产相同的触发器校验；失败的行进冲突隔离表，不重试绕过。"
+    }
+  ]
+}

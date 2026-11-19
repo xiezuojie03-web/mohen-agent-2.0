@@ -1,0 +1,55 @@
+{
+  "specialty": "MOHEN-ENGINEERING-DATA-UNIFICATION-01",
+  "stage": "P4-PLAN",
+  "generated_at": "2026-11-19",
+  "structural_prerequisites": [
+    {
+      "id": "PREREQ-1",
+      "item": "云端补装24个未安装仓库迁移",
+      "detail": "见 DATABASE_MIGRATION_VERSION_DIFF.json repo_migrations_not_installed_on_cloud（24项）。全部为已合入 main 的正式迁移，多数带 if exists/if not exists 幂等守卫；逐个执行并回读结构确认。",
+      "verification": "每装一个迁移后回读 pg_catalog 对应对象（表/列/函数/触发器/约束），与 DATABASE_SCHEMA_LOCAL.json 比对",
+      "owner_decision_required": false
+    },
+    {
+      "id": "PREREQ-2",
+      "item": "用户身份行落位（外键前置）",
+      "detail": "本地7个本地独有用户 + 机器Reviewer用户 b0a11000-0000-4000-8000-0000000000a1 是 gate_reviewer_bindings/research_tasks/studio.projects 等表的外键目标。云端无这些用户行。方案（推荐）：按原 user_id 插入用户身份行（email/display 等非凭据字段原样），password_hash 置为不可用占位（不迁移任何凭据，账户保持不可登录直至走密码恢复）。云端现有用户行不动。",
+      "verification": "外键依赖表试插入前检查全部 user_id 可解析",
+      "owner_decision_required": true,
+      "note": "涉及在云端新建不可登录的身份行，需Owner确认后执行"
+    },
+    {
+      "id": "PREREQ-3",
+      "item": "云端完整备份可恢复验证",
+      "detail": "迁移前对云端全库 pg_dump（经 session pooler 5432），落本地文件并校验可恢复（restore 到本地临时库做行数+抽查比对）。",
+      "verification": "备份文件SHA256登记；恢复演练后关键表行数与备份源一致",
+      "owner_decision_required": false
+    },
+    {
+      "id": "PREREQ-4",
+      "item": "表结构对齐核验",
+      "detail": "PREREQ-1 完成后重新运行 p1-schema-inventory.mjs cloud，确认：10张本地独有表已建、assets/director_plans/published_pointers 列已齐、RLS与不可变触发器在位且未被绕过。",
+      "verification": "DATABASE_SCHEMA_DIFF 重新生成，LOCAL_ONLY 结构项归零（pg版本伪差除外）",
+      "owner_decision_required": false
+    },
+    {
+      "id": "PREREQ-5",
+      "item": "冲突分类与裁决固化",
+      "detail": "P3冲突已全部分类；27组权利Owner裁决（2026-11-19）已固化于 RIGHTＳ_27_GROUPS_OWNER_DECISION_REPORT.md 与本计划。认证数据排除、20 Run HOLD保留、13过期资格不复活均写入 P4_CONFLICT_HANDLING_RULES.json。",
+      "verification": "规则文件与Owner裁决文本一致",
+      "owner_decision_required": false
+    },
+    {
+      "id": "PREREQ-6",
+      "item": "幂等与回滚方案就绪",
+      "detail": "每批迁移以 INSERT ... ON CONFLICT DO NOTHING + 迁移前存在性检查实现幂等；每批记录批次ID与写入回执；不可变表通过受控适配器插入（不UPDATE不DELETE）。",
+      "verification": "P4_BACKUP_AND_RECOVERY_PLAN.md 所列演练通过",
+      "owner_decision_required": false
+    }
+  ],
+  "execution_readiness_summary": {
+    "ready": ["PREREQ-1 可直接执行", "PREREQ-3 备份流程明确", "PREREQ-5 裁决已固化", "PREREQ-6 方案已设计"],
+    "pending_owner": ["PREREQ-2 用户身份行落位方式（推荐：原ID+不可登录占位）"],
+    "cloud_only_protection": "e03c4ba8 Project及资产、云端独有15行：迁移SQL全部为按主键INSERT ON CONFLICT DO NOTHING，无UPDATE/DELETE路径，结构性保证不覆盖"
+  }
+}

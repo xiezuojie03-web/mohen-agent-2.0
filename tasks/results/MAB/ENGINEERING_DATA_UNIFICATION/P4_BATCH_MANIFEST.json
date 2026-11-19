@@ -1,0 +1,145 @@
+{
+  "specialty": "MOHEN-ENGINEERING-DATA-UNIFICATION-01",
+  "stage": "P4-PLAN",
+  "generated_at": "2026-11-19",
+  "owner_ruling": "2026-11-19：27组权利按原始授权证据迁移（quote/retain/access_view/machine_read=allowed，连同完整 rights_evidence：owner_authorization、owner_decision_at=2026-11-08、scope=project_internal_research、granted/held 清单、版本快照、写入来源审计）。5个held动作保持HOLD不新增授权。云端空对象不统一改写。属历史Owner授权事实迁移，非重新授权。",
+  "batches": [
+    {
+      "id": "BATCH-0",
+      "name": "结构与迁移适配",
+      "order": 0,
+      "prerequisite": "无（首批）",
+      "objects": {
+        "install_migrations_on_cloud": "24个未安装的仓库迁移（清单见 DATABASE_MIGRATION_VERSION_DIFF.json repo_migrations_not_installed_on_cloud）：M4执行控制20261104013351、ST-07/08/09出版链20261114150000/14180000/14190000、导演计划20261114120000、artifact_content_columns 20261109120000、original_media_assets列扩展20261110130000、director_plans列扩展20261108090000/20261108100000、权利词典20261113100000、D02-D05泛化系列20261113170000/13180000/13190000、20261114090000、claim_revision系列20261114210000/20261114220000、20261115130000、20261114200000、gate_audits_rls等",
+        "resulting_tables": "studio.execution_controls/execution_control_events/work_revisions/submission_snapshots/director_plans/reference_kinds、publication.editorial_decisions/publication_snapshots/withdrawals、control.artifact_content_columns 等10张本地独有表",
+        "column_extensions": "public.assets(original_id/source_id/page_locator/content_sha256/rights_by_action)、public.director_plans(source_ids/project_id)、publication.published_pointers(source_schema/studio_revision_id/publication_id)",
+        "identity_mapping": "云端开发Project e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5 及其资产（asset_heads/revisions各1）保护为PRESERVE_CLOUD，本地16个Project按原ID插入（无主键冲突，P2证实无交集）"
+      },
+      "risk": "结构变更必须逐个通过正式迁移脚本在云端执行并核对；迁移已按依赖整理，20261119004253已装新权利约束，重装旧迁移需逐条核对幂等性（if exists 守卫）",
+      "rollback": "每个迁移文件执行前留存云端 schema 快照；supabase/rollback/ 下已有2个回滚脚本，其余按迁移文件自身的幂等守卫处理"
+    },
+    {
+      "id": "BATCH-1",
+      "name": "运行与治理历史",
+      "order": 1,
+      "prerequisite": "BATCH-0",
+      "objects": {
+        "production_runs_local_only": 115,
+        "gate_audits_local_only": 91,
+        "gate_candidates_local_only": 123,
+        "gate_policy_versions_local_only": 6,
+        "gate_reviewer_bindings_local_only": 46,
+        "qualification_current_local_only": 49,
+        "invalidation_events_local_only": 20,
+        "original_bridge_verification_keys_local_only": 1,
+        "session_verification_keys": "1条同ID异内容（AUTH_DATA_EXCLUDED，不迁移该差异，云端现状保留）"
+      },
+      "rules": [
+        "保持原始ID/时间戳/Reviewer身份（83 machine+7 owner+1 early）/decision_origin=original",
+        "20个云端HOLD Run保持不变（PRESERVE_CLOUD）",
+        "13条过期资格保持过期（valid_until原样，不复活）",
+        "49条资格仅作为历史证据与身份迁移，不构成现行读取自动放行",
+        "依赖拓扑：runs→audits→candidates/qualifications→invalidation_events",
+        "gate_reviewer_bindings依赖users(b0a11000机器Reviewer用户)——见P4_SCHEMA_PREREQUISITES身份映射项"
+      ]
+    },
+    {
+      "id": "BATCH-2",
+      "name": "来源与原始材料",
+      "order": 2,
+      "prerequisite": "BATCH-0/BATCH-1",
+      "objects": {
+        "sources_local_only": 12,
+        "source_versions_local_only": 89,
+        "raw_items_local_only": 90,
+        "private_originals_metadata": 90,
+        "rights_records_owner_ruled": "27组共有source权利+证据按Owner裁决迁移；12条本地独有source的rights_by_action+rights_evidence同规则迁移",
+        "d00_ledger": "source_needs 17、resource_catalog 23、acquisition_methods 6、acquisition_attempts 27、acquisition_coverages 21、candidate_verifications 14、priority_assessments 14、original_provider_traces 5",
+        "read_runs_local_only": 8
+      },
+      "rules": [
+        "原件字节不迁移；SHA/byte_size/file_name/content_type/storage_ref/locator/rights_evidence全保留",
+        "90个私有原件90/90 SHA+大小与本地独有raw_items精确对应（P2已验证）",
+        "版本rights_snapshot不可变触发器：历史快照随版本行原样写入（触发器只禁止UPDATE非空快照，INSERT不受限）",
+        "27+12条source的27组权利值已确认与云端is_rights_actions_valid约束兼容"
+      ]
+    },
+    {
+      "id": "BATCH-3",
+      "name": "知识对象",
+      "order": 3,
+      "prerequisite": "BATCH-2",
+      "objects": {
+        "reading_units_local_only": 13,
+        "material_evidence_local_only": 10,
+        "read_unit_evidence_links_local_only": 5,
+        "read_units_local_only": 9,
+        "findings_local_only": 6,
+        "story_seeds_local_only": 4,
+        "agent_contexts_local_only": 3,
+        "world_projections_local_only": 7,
+        "changes_local_only": 5,
+        "claim_revisions_local_only": 6,
+        "claim_evidence_links_local_only": 5
+      },
+      "rules": [
+        "允许合格知识对象独立迁移，不要求同一Production Run（P3资产独立性原则）",
+        "依赖拓扑：raw_items→read_units→reading_units→material_evidence；findings→story_seeds/agent_contexts/world_projections；claim_revisions→claim_evidence_links"
+      ]
+    },
+    {
+      "id": "BATCH-4",
+      "name": "Studio资产",
+      "order": 4,
+      "prerequisite": "BATCH-0/BATCH-1",
+      "objects": {
+        "projects_local_only": 16,
+        "asset_heads_local_only": 110,
+        "asset_revisions_local_only": 111,
+        "asset_links_local_only": 3,
+        "delegations_local_only": 25,
+        "execution_receipts_local_only": 23,
+        "use_events_local_only": 8,
+        "m4_tables": "execution_controls 4、execution_control_events 11",
+        "st07_09_tables": "work_revisions 5、submission_snapshots 5",
+        "director_plan_tables": "studio.director_plans 3、reference_kinds 18、public.director_plans本地独有12",
+        "research_tasks_local_only": 20,
+        "research_events_local_only": 125,
+        "study_asset_receipts_local_only": 156,
+        "artifact_content_columns_local_only": 234
+      },
+      "rules": [
+        "云端开发Project e03c4ba8及其资产不覆盖不删除（PRESERVE_CLOUD）",
+        "research_tasks/research_events/study_asset_receipts的云端独有行（1/6/8条）保留",
+        "users身份映射前置（见P4_SCHEMA_PREREQUISITES）：本地7用户+机器Reviewer用户按原ID插入（无凭据迁移），或全部user_id外键引用先于数据批次落位"
+      ]
+    },
+    {
+      "id": "BATCH-5",
+      "name": "发布链与消费链",
+      "order": 5,
+      "prerequisite": "BATCH-4",
+      "objects": {
+        "publication_works_local_only": 11,
+        "publication_work_revisions_local_only": 19,
+        "published_pointers_local_only": 3,
+        "editorial_decisions_local_only": 5,
+        "publication_snapshots_local_only": 3,
+        "withdrawals_local_only": 1,
+        "work_publication_decisions_local_only": 8,
+        "public_assets_local_only": 1,
+        "shape_conflicts": "public.assets 6、public.director_plans 9、publication.published_pointers 4条同ID异内容（BATCH-0列对齐后逐条比对，本地值为完整版本、云端缺列 → 以本地完整值覆盖写入，写入前云端旧值存入冲突记录）"
+      },
+      "rules": [
+        "保留原发布状态与审核证据：editorial_decisions/publication_snapshots/withdrawals不可变触发器保护下原样插入",
+        "不得把未审核作品改成已发布：publication_status等字段原样迁移",
+        "published_pointers的work_id外键（云端独有列）在列对齐后按本地source_schema/studio_revision_id映射补值，缺work_id的指针行保留NULL并记入冲突清单"
+      ]
+    }
+  ],
+  "excluded": {
+    "auth_data": "public.users的password_hash/session_not_before不迁移；云端现有认证状态优先；本地7个本地独有用户仅迁身份行（见prerequisites）",
+    "binary_bytes": "90个原件字节留本地/后续另行存储策略，仅迁元数据",
+    "cloud_only_rows": "云端独有15行（research_events 6/research_tasks 1/study_asset_receipts 8）+云端开发Project资产保留不删"
+  }
+}

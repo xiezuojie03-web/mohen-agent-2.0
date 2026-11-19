@@ -4,7 +4,9 @@
 >
 > **2026-11-19 工程数据统一专项（MOHEN-ENGINEERING-DATA-UNIFICATION-01）P0 已完成：** 本地 main 已由 `b137483` 快进对齐 GitHub main `709f4dd`（本地原落后379提交、零独有提交，无工程成果丢失）。Vercel 最新部署 `dpl_BxpZG6SP455F51fEtoP2t4pEX5hC`（Preview Ready）对应提交 `6e31431`，与 main HEAD 差异仅10个docs-only提交。本地未跟踪文件全部为临时诊断脚本与运行时状态，已备份编目，无归档价值。阶段状态 P0=INVENTORY_COMPLETE。专项交付物见 `tasks/results/MAB/ENGINEERING_DATA_UNIFICATION/`。
 >
-> **2026-11-19 专项 P3 已完成（只读冲突分析）：** 本地独有 91 条 Gate 审计全部为真实独立签发（83 机器 Reviewer + 7 Owner + 1 早期签发者，decision_origin=independent_gate，全部 PASS），非 legacy；49 条资格全部六阶段架构代、36 有效 13 过期；123 候选（81 CONSUMED/32 SUBMITTED/10 HOLD）。云端 20 个共有 Run 的 HOLD 改写有完整 m5_reconciliation metadata 证据链（PRESERVE_CLOUD）；27 组 source/version 权利字段为本地有值 vs 云端空对象（CONFLICT_PENDING，待 Owner 裁决）；用户认证数据排除迁移。115 个本地独有 Run 血缘映射完成（22 有审计、21 有资格、7 有读取链）；五个历史样板映射完成：七宝与松江府志云端全缺（松江 80 raw/8 gate/3 资格待迁），朱家角本地多 1 source+1 gate+1 资格，金泽/绿之丘双端一致。P4 分批顺序已在 P3 报告形成建议。交付物 7 份见 `tasks/results/MAB/ENGINEERING_DATA_UNIFICATION/`。阶段状态 P3=INVENTORY_COMPLETE。待 Owner 裁决 27 组权利冲突后方可提出 P4 执行计划。
+> **2026-11-19 专项 P3 及权利核查已完成（只读）：** 本地独有 91 条 Gate 审计全部为真实独立签发（83 机器 Reviewer + 7 Owner + 1 早期签发者，decision_origin=independent_gate，全部 PASS），非 legacy；49 条资格全部六阶段架构代、36 有效 13 过期；123 候选（81 CONSUMED/32 SUBMITTED/10 HOLD）。云端 20 个共有 Run 的 HOLD 改写有完整 m5_reconciliation metadata 证据链（PRESERVE_CLOUD）；用户认证数据排除迁移。115 个本地独有 Run 血缘映射完成（22 有审计、21 有资格、7 有读取链）；五个历史样板映射完成：七宝与松江府志云端全缺（松江 80 raw/8 gate/3 资格待迁），朱家角本地多 1 source+1 gate+1 资格，金泽/绿之丘双端一致。27 组权利冲突经 M5-P3-RIGHTS-RECONCILIATION-01 逐条核查：云端空值源于 Owner 授权标定（2026-11-08，shanghai-library 数据集）从未在云端执行，非数据损失；108 个动作 EVIDENCE_SUPPORTED_ALLOWED、135 个 NO_EVIDENCE，原始依据完整保留于本地 rights_evidence 与版本快照。
+>
+> **2026-11-19 专项 P4 计划已编制完成（未执行）：** Owner 裁决 27 组权利按原始授权证据迁移（4 动作 allowed+完整 rights_evidence，5 held 动作保持 HOLD，属历史授权事实迁移非重新授权）。P4 六份计划交付物已产出（P4_MIGRATION_EXECUTION_PLAN.md 等），批次设计 BATCH-0 结构补装→B1 运行治理→B2 来源材料→B3 知识对象→B4 Studio→B5 发布链，全 INSERT ON CONFLICT 幂等、两条受控 UPDATE 逐条留痕、云端独有数据结构性保护。唯一待确认项：PREREQ-2 用户身份行落位（原ID+不可登录占位，满足FK且不迁凭据）。状态：P4_PLAN_READY_FOR_OWNER_APPROVAL / NOT_EXECUTED。本地5提交已全部推送 GitHub main（origin=main=25ffe1b）。
 
 ## 1. 唯一业务目标
 
