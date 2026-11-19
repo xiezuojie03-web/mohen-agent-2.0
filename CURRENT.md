@@ -151,3 +151,5 @@
 - **下一步（仍为断点01）**：先确认是否存在可合法复用的当前G0-G5资格对象，且属于同一Project或已有明确授权共享范围；若无，当前环境只能标记正向知识命中`NOT_RUN / NO_QUALIFIED_FIXTURE`，不能为了让测试通过而制造资格、伪造知识或放宽Gate。随后在不触发模型的情况下完成真实Preview的错Project/错用途/无效身份拒绝测试，并把断点结论明确拆分为`IDENTITY_PATH_PASS`、`READ_QUERY_PASS_EMPTY`、`QUALIFIED_KNOWLEDGE_POSITIVE_NOT_RUN`。
 - **关闭判定**：断点01尚未关闭。身份和读取调用链的主要正向路径已PASS，但“读取自己Project下具有合法资格的L0-L5知识资产”尚无真实正向样本，反向应用测试亦未全部完成。不得转入断点02。
 - **真实Preview错Project反向请求（2026-11-19）**：使用不存在且与当前Consumer上下文不匹配的Project UUID访问正式读取诊断入口，返回 `ok=false / FORMAL_PROJECT_READ_CONTEXT_REQUIRED`。确认请求在 `retrieveQualifiedFormalProject` 的应用层上下文一致性检查处被拒绝，未进入数据库Owner guard；因此应用层Project上下文隔离反向测试PASS，但数据库层跨Owner拒绝尚未单独实测。不得将该结果描述为数据库Owner guard PASS。
+
+- **所谓退出后的无效身份测试未成立（2026-11-19）**：用户再次访问错Project诊断URL，仍返回 `FORMAL_PROJECT_READ_CONTEXT_REQUIRED`。回读当前Preview路由源码确认执行顺序为 `getSession()`→无会话返回401 `login_required`→角色校验→Project ID/terms→`consumerContext`→Repository。因此该响应说明本次请求仍通过了应用登录检查，但在Project/用途上下文阶段被拒绝；它不是无效身份拒绝测试，不能记为401 PASS。下一次无效身份测试应在无MoHen Cookie的独立浏览器隐私窗口进行（仍需通过Preview SSO时单独完成平台验证），再访问正确Project诊断地址；预期应用层返回401 `login_required`。不要求用户反复执行未完成的登出动作。

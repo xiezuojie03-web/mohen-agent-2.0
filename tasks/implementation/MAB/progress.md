@@ -5027,3 +5027,5 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 错Project、错用途、无效/过期身份的真实Preview反向验证尚未执行。未恢复朱家角任务、未重建Project/Root、未产生模型费用。
 - 断点01继续HOLD；正向身份/查询执行已PASS，正向合格知识命中为NOT_RUN（NO_QUALIFIED_FIXTURE），反向真实应用验证未完成。下一步只做断点01的真实Preview负向验证与现有资格对象合法性核对；不制造资格、不放宽Gate、不进入断点02。
 - **真实Preview错Project反向请求（2026-11-19）**：使用不存在且与当前Consumer上下文不匹配的Project UUID访问正式读取诊断入口，返回 `ok=false / FORMAL_PROJECT_READ_CONTEXT_REQUIRED`。确认请求在 `retrieveQualifiedFormalProject` 的应用层上下文一致性检查处被拒绝，未进入数据库Owner guard；因此应用层Project上下文隔离反向测试PASS，但数据库层跨Owner拒绝尚未单独实测。不得将该结果描述为数据库Owner guard PASS。
+
+- **所谓退出后的无效身份测试未成立（2026-11-19）**：用户再次访问错Project诊断URL，仍返回 `FORMAL_PROJECT_READ_CONTEXT_REQUIRED`。回读当前Preview路由源码确认执行顺序为 `getSession()`→无会话返回401 `login_required`→角色校验→Project ID/terms→`consumerContext`→Repository。因此该响应说明本次请求仍通过了应用登录检查，但在Project/用途上下文阶段被拒绝；它不是无效身份拒绝测试，不能记为401 PASS。下一次无效身份测试应在无MoHen Cookie的独立浏览器隐私窗口进行（仍需通过Preview SSO时单独完成平台验证），再访问正确Project诊断地址；预期应用层返回401 `login_required`。不要求用户反复执行未完成的登出动作。
