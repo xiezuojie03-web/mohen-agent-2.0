@@ -105,8 +105,11 @@ function privateSourceIntakeAdapter() {
     // PASS here is *producer completion*, NEVER a signed G0 PASS.
     return {disposition:'PASS',output:request,control_outputs,
       gate_evidence:{candidate_kind:candidate.candidate_kind,stage:'D00',gate_code:'G0',
-        qualification:'UNASSESSED',rights:candidate.rights,provider:candidate.provider,
-        title:candidate.title,source_type:candidate.source_type,carrier_type:candidate.carrier_type,
+        qualification:'UNASSESSED',rights:candidate.rights,
+        rights_by_action:candidate.rights_by_action,
+        rights_snapshot:candidate.rights_snapshot,
+        rights_evidence:candidate.rights_evidence,
+        provider:candidate.provider,title:candidate.title,source_type:candidate.source_type,carrier_type:candidate.carrier_type,
         sha256:candidate.sha256,byte_size:candidate.byte_size,content_type:candidate.content_type,
         candidate_refs:control_outputs.candidate_refs},
       content_stats:{sources:1},review_records:[]};
