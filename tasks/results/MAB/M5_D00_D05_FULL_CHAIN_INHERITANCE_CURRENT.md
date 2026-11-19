@@ -135,6 +135,10 @@
 - 资产盘活先只读盘点：生成对象级清单，追踪source→version→raw→read_run/read_unit→evidence→world/meaning→read_model→gate audit/qualification依赖；按`REUSE_AS_IS`、`REUSE_AFTER_REVIEW`、`REPAIR_PROVENANCE_OR_RIGHTS`、`REBUILD_ONLY_IF_IRRECOVERABLE`分类。不得批量改写历史Gate、手工插入qualification_current或重复付费重跑。
 - 后续外部资源到D00—D05的端到端生产验证，应与历史资产盘活相互衔接：先复用可恢复对象和已验证能力，再仅生产真实缺口；不为证明单Runner而把已有的合格独立对象全部重做。
 
-### 8.4 本轮边界
+### 8.4 历史run迁移覆盖并非完整
+
+按run_id直接核对当前云端`control.production_runs`：A001 `5176ade3-2892-4179-96d0-c27184b42ebd`及朱家角 `33333333-3333-4333-8333-333333333333`存在；SAMPLE-TRIAL-12报告中的干净重跑`71901d36-e4bd-4761-bde6-cfc3bc4d4c83`及初次run`bc911496-1fad-4123-8dc1-c54747c92e44`不存在。因此云端数据是部分历史存量，不是所有历史样板的完整数据库迁移。缺失run的内容仍有GitHub报告及机器结果文件可供恢复/核对；若原本地`mohen_dev`数据仍可访问，应优先只读导出与比对，不得重新付费生产。若原库不可访问，则把GitHub结构化结果视为历史证据/可重建输入，而非假称原始数据库记录已迁移。
+
+### 8.5 本轮边界
 
 本轮只读查询mohen-cloud与GitHub历史报告；无数据库写入、无权限变更、无模型调用。该清单是当前数据库总量快照，不等于全部对象已完成逐条内容/权利/依赖审核；逐对象复用清单仍待按需生产。
