@@ -5,13 +5,14 @@ import { queryRows, queryValue, run } from "@mohen/data-access";
 import { runResearch, resolveTopic, type TopicKey } from "./mohen-agent/research";
 import { triggerProduction, getProductionBlocker } from "./studio-production";
 import type { ProductionOriginal } from "./studio-production";
-import type { AgentDecision, Material, Understanding } from "@mohen/agent-runtime";
+import { understand, type AgentDecision, type Material, type Understanding } from "@mohen/agent-runtime";
 import { readJsonColumn } from "./db-json";
 import { createHash, randomUUID } from "node:crypto";
 import { studioAssetStore } from "./studio-assets";
 import {ResearchPrerequisiteHold} from './mohen-agent/research-prerequisites';
 import {
   createBudget,
+  useTool,
   writeReceipt,
   getTool,
   BudgetHoldError,
@@ -462,7 +463,8 @@ export async function requestProduction(
 export async function resumeResearchTask(
   taskId: string,
   additionalCeiling?: number,
-  sessionToken?: string
+  sessionToken?: string,
+  recoveryOwnerId?: string
 ): Promise<CreatedTask> {
   const row = await queryRows(
     "select prompt, topic, checkpoint from public.research_tasks where task_id = :'id' and status = 'hold'",
@@ -480,7 +482,7 @@ export async function resumeResearchTask(
   if (!saved || typeof saved !== "object" || Array.isArray(saved))
     return {taskId,status:"hold",decision:null,degraded:false,holdReason:"budget_checkpoint_invalid",researchLeads:[]};
   const studioContext=saved.studio&&typeof saved.studio==='object'&&!Array.isArray(saved.studio)
-    ?saved.studio as Record<string,unknown>:{};
+    ?{...saved.studio as Record<string,unknown>}:{};
   // A tool may have executed and charged without a committed receipt.
   // Such checkpoints cannot be restarted by adding budget.
   if (saved.retry_requires_reconciliation === true ||
@@ -489,17 +491,30 @@ export async function resumeResearchTask(
     return { taskId, status: "hold", decision: null, degraded: false,
       holdReason: "reconciliation_required", researchLeads: [] };
   const spent = saved.budgetSpent;
+  const priorRecovery = studioContext.legacy_understanding_attempt;
+  const understandingCost = getTool("llm-understand")?.cost;
+  const canRecoverUnderstanding = !!recoveryOwnerId && !!sessionToken &&
+    typeof studioContext.project_id === "string" && priorRecovery == null &&
+    saved.holdReason === "research_prerequisites" &&
+    (saved.holdAt as {toolId?:unknown} | undefined)?.toolId === "llm-understand" &&
+    Array.isArray(saved.missingRequirements) &&
+    saved.missingRequirements.includes("FORMAL_G0_G4_READ_NOT_AUTHORIZED_OR_UNAVAILABLE") &&
+    saved.settledUnderstanding == null && spent === understandingCost;
+  if (recoveryOwnerId && !canRecoverUnderstanding)
+    return { taskId, status: "hold", decision: null, degraded: false,
+      holdReason: "understanding_recovery_unavailable", researchLeads: [] };
   const previousCeiling = saved.ceiling;
   const firstStep = saved.holdAt as {toolId?: unknown} | undefined;
   const understanding = saved.settledUnderstanding as Understanding | undefined;
   const canResumeFormalRead = saved.holdReason === "research_prerequisites" &&
     firstStep?.toolId === "retrieve-local" && saved.prompt === prompt && saved.topic === topic &&
-    spent === getTool("llm-understand")?.cost && understanding?.llmResponded === true &&
+    (spent === understandingCost || (priorRecovery != null && spent === 2 * (understandingCost ?? NaN))) &&
+    understanding?.llmResponded === true &&
     Array.isArray(understanding.terms) && understanding.terms.every(term => typeof term === "string") &&
     Array.isArray(understanding.objects) && understanding.objects.every(object => typeof object === "string");
-  if (typeof spent !== "number" || !Number.isFinite(spent) || (spent !== 0 && !canResumeFormalRead) ||
+  if (typeof spent !== "number" || !Number.isFinite(spent) || (spent !== 0 && !canResumeFormalRead && !canRecoverUnderstanding) ||
       typeof previousCeiling !== "number" || !Number.isFinite(previousCeiling) || previousCeiling <= 0 ||
-      spent > previousCeiling || saved.reserved !== 0)
+      spent > previousCeiling || (canRecoverUnderstanding && spent + (understandingCost ?? Infinity) > previousCeiling) || saved.reserved !== 0)
     return { taskId, status: "hold", decision: null, degraded: false,
       holdReason: "resume_step_checkpoint_required", researchLeads: [] };
   // A caller-supplied number is not a durable Owner/provider authorization.
@@ -507,12 +522,28 @@ export async function resumeResearchTask(
   if (additionalCeiling !== undefined)
     return {taskId,status:"hold",decision:null,degraded:false,
       holdReason:"additional_budget_requires_authorization",researchLeads:[]};
-  if (!canResumeFormalRead && (!["budget","research_prerequisites"].includes(String(saved.holdReason)) || firstStep?.toolId !== "llm-understand"))
+  if (!canResumeFormalRead && !canRecoverUnderstanding && (!["budget","research_prerequisites"].includes(String(saved.holdReason)) || firstStep?.toolId !== "llm-understand"))
     return {taskId,status:"hold",decision:null,degraded:false,
       holdReason:"resume_step_checkpoint_required",researchLeads:[]};
+  if (canRecoverUnderstanding) {
+    const owned = await queryRows(
+      `select t.task_id from public.research_tasks t
+        join studio.projects p on p.project_id::text=t.checkpoint->'studio'->>'project_id'
+       where t.task_id=:'id' and t.owner_user_id=:'owner' and p.owner_user_id=t.owner_user_id
+         and p.lifecycle_status='ACTIVE'
+         and 1=(select count(*) from public.study_asset_receipts r where r.task_id=t.task_id
+           and r.tool_id='llm-understand' and r.status='settled')`,
+      { id: taskId, owner: recoveryOwnerId }
+    );
+    if (owned.length !== 1)
+      return { taskId, status: "hold", decision: null, degraded: false,
+        holdReason: "understanding_recovery_unavailable", researchLeads: [] };
+  }
+  const recoveryRef = canRecoverUnderstanding ? randomUUID() : null;
+  if (recoveryRef) studioContext.legacy_understanding_attempt = recoveryRef;
   // Persist uncertainty before any external invocation. A process crash must
   // not leave a zero-spend checkpoint which can be reset and replayed blindly.
-  const next = {...saved,holdReason:"resume_claimed",resume_claim_ref:randomUUID(),
+  const next = {...saved,studio:studioContext,holdReason:"resume_claimed",resume_claim_ref:recoveryRef ?? randomUUID(),
     retry_requires_reconciliation:true};
   const claimed = await queryRows(
     "update public.research_tasks set status = 'running', checkpoint = :'next'::jsonb, updated_at = now() " +
@@ -529,6 +560,18 @@ export async function resumeResearchTask(
     await addEvent(taskId, "D04", "resumed", {ceiling:previousCeiling,resumeClaimRef:next.resume_claim_ref});
     if (!sessionToken || typeof studioContext.project_id!=='string')
       throw new ResearchPrerequisiteHold(['STUDIO_PROJECT_READ_CONTEXT_REQUIRED']);
+    if (recoveryRef) {
+      await writeReceipt({ taskId, kind: "checkpoint", stage: "understanding_recovery", status: "hold",
+        payload: { attempt_id: recoveryRef, prior_budget_spent: spent, next_tool: "llm-understand" } });
+      const recovered = await useTool(ledger, "llm-understand", () => understand(prompt, {}));
+      const valid = recovered.llmResponded === true && Array.isArray(recovered.terms) && Array.isArray(recovered.objects) && recovered.terms.every(term => typeof term === "string") &&
+        recovered.objects.every(object => typeof object === "string");
+      const result = await holdResearchPrerequisites(taskId, prompt, topic, budget, new ResearchPrerequisiteHold(
+        valid ? ["FORMAL_READ_RESUME_READY"] : ["PROVIDER_UNDERSTANDING_NOT_VERIFIED"], undefined,
+        valid ? recovered : undefined
+      ), studioContext);
+      return { ...result, holdReason: valid ? "understanding_recovered" : result.holdReason };
+    }
     const { decision, degraded, researchLeads, knowledgeRoute } = await runResearch(prompt, topic, ledger,
       {projectId:studioContext.project_id,sessionToken,...(canResumeFormalRead?{settledUnderstanding:understanding}:{})});
     if (degraded) throw new ResearchPrerequisiteHold(['SOURCE_OR_QUALIFICATION_UNAVAILABLE'],{decision,degraded,researchLeads});

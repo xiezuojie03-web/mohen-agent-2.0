@@ -426,21 +426,31 @@ export default function StudioWorkbench() {
     }
   }
 
-  async function continueResearch() {
+  const [canRequestUnderstandingRecovery, setCanRequestUnderstandingRecovery] = useState<string | null>(null);
+
+  async function continueResearch(recoverUnderstanding = false) {
     if (busy || currentResearch?.status !== "hold") return;
     const {taskId} = currentResearch;
     const path = `/api/studio/research-tasks/${encodeURIComponent(taskId)}`;
     setBusy(true);
     setResumeNotice(null);
     try {
-      const response = await fetch(`${path}/resume`, {method:"POST"});
+      const response = await fetch(`${path}/resume`, recoverUnderstanding
+        ? {method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({recover_understanding:true})}
+        : {method:"POST"});
       if (!response.ok) {
         const result = await response.json() as {reason?:string};
+        setCanRequestUnderstandingRecovery(result.reason === "resume_step_checkpoint_required" ? taskId : null);
         setResumeNotice(result.reason === "research_prerequisites"
           ? "研究仍在暂停，模型或知识读取前提尚未就绪。"
           : result.reason === "resume_step_checkpoint_required"
             ? "原委托已有执行回执，须从已完成步骤之后恢复。当前不能重复运行已完成的步骤。"
             : "研究暂时无法继续，请查看已保存任务的状态。");
+        return;
+      }
+      if (recoverUnderstanding) {
+        setCanRequestUnderstandingRecovery(null);
+        setResumeNotice("已补跑一次问题理解并保存结果。下一步可从正式检索继续原委托。");
         return;
       }
       const status = await fetch(`${path}/status`, {cache:"no-store"});
@@ -1009,6 +1019,13 @@ export default function StudioWorkbench() {
                     <p role="status" className="studio__drawer-note">研究委托仍处于暂停状态。前提就绪后，可继续原委托。</p>
                     <button className="studio__ghost-btn" disabled={busy || reopening}
                       onClick={() => void continueResearch()}>{busy ? "正在继续…" : "继续研究"}</button>
+                    {canRequestUnderstandingRecovery === currentResearch.taskId && (
+                      <button type="button" className="studio__link-btn" disabled={busy}
+                        onClick={() => {
+                          if (window.confirm("原任务缺少可恢复的理解结果。允许在原预算内补跑一次模型理解并保留原结算记录？"))
+                            void continueResearch(true);
+                        }}>补跑一次问题理解</button>
+                    )}
                   </>
                 : <>
                     <label className="studio__drawer-note" htmlFor="studio-production-source">项目内已核验并绑定正式来源的原件</label>
