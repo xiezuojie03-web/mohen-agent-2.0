@@ -51,12 +51,17 @@ export function createCloudProductionServer({environment=process.env,projectRoot
  async function holdRun(v,reason){
   await db.queryRows(`update control.production_runs set status='HOLD',finished_at=now(),current_stage=coalesce(current_stage,'D00'),
     metadata=coalesce(metadata,'{}'::jsonb)||jsonb_build_object('m5_terminal',jsonb_build_object('stage',coalesce(current_stage,'D00'),
-    'disposition','HOLD','reason_code',:'reason')) where run_id=:'id'::uuid and status='RUNNING' returning run_id::text`,{id:v.run_id,reason});
+    'disposition','HOLD','reason_code',:'reason'::text)) where run_id=:'id'::uuid and status='RUNNING' returning run_id::text`,{id:v.run_id,reason});
  }
  return createCloudProductionHandler({credential:environment.MOHEN_CLOUD_EXECUTOR_CREDENTIAL,
   claim:input=>claimCloudProductionRun({db,input,verifyOwnerOriginal:verify}),
   execute:async input=>{
     try{return await (execute?execute(input):executeCloudProductionCli({input,projectRoot:path.resolve(projectRoot),environment,readTerminal,holdRun}));}
-    catch{await holdRun(input,'CLOUD_EXECUTOR_SETUP_FAILED');return readTerminal(input.run_id);}
+    catch(error){
+     const reason=['CLOUD_EXECUTOR_RUNNER_FILE_UNAVAILABLE','CLOUD_EXECUTOR_PROCESS_UNAVAILABLE'].includes(error?.message)
+       ? error.message : 'CLOUD_EXECUTOR_SETUP_FAILED';
+     await holdRun(input,reason);
+     return readTerminal(input.run_id);
+    }
   }});
 }

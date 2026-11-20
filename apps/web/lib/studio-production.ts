@@ -152,7 +152,7 @@ export async function failProductionRun(runId: string, reason = "PRODUCTION_PROC
   // a RUNNING row indefinitely. Never overwrite a legitimate HOLD/Gate result.
   await dbRun(`update control.production_runs set status='FAILED', finished_at=now(),
       metadata=coalesce(metadata,'{}'::jsonb) ||
-        jsonb_build_object('m5_terminal',jsonb_build_object('disposition','FAILED','reason_code',:'reason'))
+        jsonb_build_object('m5_terminal',jsonb_build_object('disposition','FAILED','reason_code',:'reason'::text))
       where run_id=:'id'::uuid and status='RUNNING'`, { id: runId, reason });
 }
 

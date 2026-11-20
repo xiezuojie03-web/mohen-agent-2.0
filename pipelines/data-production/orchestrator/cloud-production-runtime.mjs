@@ -62,7 +62,9 @@ function runnerEnvironment(environment,ownerToken){
 export async function executeCloudProductionCli({input,projectRoot,environment=process.env,runChild=awaitProductionChild,readTerminal,holdRun}){
  const endStage=cloudProductionEndStage(input);
  assertCloudExecutionConfiguration(environment);
- const root=path.resolve(projectRoot);await fs.access(path.join(root,'pipelines/data-production/run.mjs'));
+ const root=path.resolve(projectRoot);
+ try{await fs.access(path.join(root,'pipelines/data-production/run.mjs'));}
+ catch{throw Error('CLOUD_EXECUTOR_RUNNER_FILE_UNAVAILABLE');}
  const temp=await fs.mkdtemp(path.join(os.tmpdir(),'mohen-cloud-run-'));await fs.chmod(temp,0o700);
  try{
   const scopeFile=path.join(temp,'scope.json');await fs.writeFile(scopeFile,JSON.stringify(input.scope),{mode:0o600});
