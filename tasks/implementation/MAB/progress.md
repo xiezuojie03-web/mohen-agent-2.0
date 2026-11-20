@@ -5568,3 +5568,13 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **证据边界（不过度解读）**：runner_ready = 宿主配置就绪 + 静态启动图 exit 0（按 `cloud-production-runtime.mjs:58-72`、probe 停在 Owner session/DB 凭据/可变状态之前）；**不是**真实 D00→D01、不是 Gate 资格通过、不是八维证据（`cloud-execution-readiness.mjs:74` 明写 `runtime_verified:false, gate_qualification:NOT_VERIFIED`）。
 - **零写入**：本批未改 DB/Gate/env/凭据/源码（除 CURRENT.md 状态同步），未碰 Production、未公众开放、未新增付费。八维维持 0/8。
 - **下一动作（需授权）**：真实 D00→D01（带终态 reader 消费，验托管 /current 端到端）会产生真实执行与费用，须 Owner 明确授权后发起，本会话不擅自触发；D01→D02 typed 仍未实现。CI 宿主 DEFERRED_ENV，不伪装 PASS。
+
+## 2026-11-20｜授权发起真实 D00→D01 的前置核查：遇 Owner 会话硬约束 + 缺续跑入口（未发起，零写入）
+
+- **Owner 指令**："现在开始"（真实 D00→D01，带终态 reader 消费，验托管 /current 端到端；已授权真实执行/费用）。本批先做只读前置核查，未擅自发起，未产生新执行或费用。
+- **云端真实状态（只读，admin+CA 强校验，NOW 14:09Z）**：run `bfcdfad6` = HOLD@D00 / reason `CLOUD_EXECUTOR_PROCESS_FAILED`（历史外层收尾）；D00 grant journal `consumed_at=05:46:28Z`（一次性、不可重签/重放）；候选 `48766904` 已 SUBMITTED；G0 审计 `888db9e6` = PASS / independent_gate / `current_valid=true` / valid_until `2026-11-26T11:03Z`，stage_binding input `478a8668…`/output `002bb07f…` 完整；`qualification_current` 有 G0 行（object `67839b1e`、revision `28de6385…`、consumer producer）。结论：**数据面前置全就绪**——真实合格源版本已产出、G0 当前有效、终态 reader 已验证能读到。
+- **硬约束1（发起主体）**：真实生产入口 `POST /api/studio/research-tasks/:id/production` 必须 Owner 已登录会话 cookie → `getSession()` → 30 秒短期 RLS token → 原件 `getStored(originalId,token)` + 云端 private-worker 二次复核（route.ts:17-27,53-87；auth.ts:280-288；cloud-production-server.mjs:35-39）。AI 只有服务器 env + gitignored 密钥，无 Owner 浏览器会话，不能合法生成 owner_session_token；伪造会话/自签/绕 RLS 均为安全红线，不因授权而解除。
+- **硬约束2（产品入口缺口）**：当前无"复用已合格 G0 续跑 D01"的 Studio/云端入口。CLI 层有 `--from D01 --resume-input-file`（run.mjs:46-48,77-80；resume-input.mjs:41-66）+ 独立签名 grant，但云执行器只传 `--to`（cloud-production-runtime.mjs:113-117）、生产 API 不接受 from/resume（production/route.ts:46-48）。按钮"仅接收原件（D00）"因 approved run 已登记 + grant 已消费必失败（studio-production.ts:212-214；d00-execution-journal.mjs:5-21）；按钮"申请进入 D00—D05"会用新 run_id 重跑 D00，不推进旧 run（studio-production.ts:200,207-217）。
+- **综合结论**：Owner 已授权真实执行，但（a）发起动作必须其本人在已登录 Preview 会话内完成，（b）即便本人操作，现有 UI 也无任何按钮能把已合格的 bfcdfad6 推进到 D01。真实 D00→D01 当前被"产品入口缺失"阻断，非凭据、非配置、非 Gate 资格问题。不伪造 PASS，不空转重跑 D00。
+- **待 Owner 裁决的方向**：①补"基于已合格 G0 续跑 D01"的 Studio/云执行器入口（需新增 from_stage/resume 传输 + 独立 D01 grant 签发路径，属产品+工程改造）；或②批准一个全新 run 从 D00 重跑（新 grant、新费用，但这会重新走已完成的 D00）。二者都需要明确选择，本会话不擅自定夺。
+- **零写入**：未改 DB/Gate/env/凭据/源码，未部署、未发起生产、未产生费用。临时只读脚本已删。八维维持 0/8。

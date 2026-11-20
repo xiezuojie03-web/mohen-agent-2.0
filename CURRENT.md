@@ -29,6 +29,8 @@
 
 **probe 回归已闭环（2026-11-20，`VERIFIED_LIVE`，零写入）**：修复提交 `d9ace70` 已推 main、无缓存重部署 `7ad46u6ba`（SHA 精确匹配）READY 后，Owner 本人 SSO 浏览器跑只读 GET probe 回执原文 `{"ok":true,"reason":"runner_ready"}`。`runner_module_unavailable` 回归解除，本轮"长期可用"修复闭环。精确含义仍按源码边界：证明宿主配置就绪 + `run.mjs --check-startup` 静态图 exit 0；**不证明**真实 D00→D01 已跑、Gate 资格通过、八维证据（`cloud-execution-readiness.mjs` 明写 `runtime_verified:false, gate_qualification:NOT_VERIFIED`）。
 
-**下一动作（非阻断）**：真实 D00→D01（带终态 reader 消费，验托管 `/current` 端到端）会产生真实执行/费用，须 Owner 明确授权后再发起，本会话不擅自触发。D01→D02 非 C01 typed 转换仍未实现（`PRIVATE_NEXT_STAGE_REQUEST_NOT_READY`，C02 需独立转录+G1）。CI 宿主仍 `DEFERRED_ENV`，不伪装 PASS。八维维持 `0/8 OVERALL_HOLD`——终态 reader 与 probe 恢复均为运行前置，非八维证据。
+**真实 D00→D01 发起前置核查（2026-11-20，Owner 已授权"现在开始"，但被产品入口阻断，未发起/零写入）**：云端只读实证（NOW 14:09Z）：数据面前置全就绪——候选 `48766904` SUBMITTED、G0 审计 `888db9e6` PASS/current(valid_until `2026-11-26`)、qualification_current 有 G0 行、终态 reader 已验证能读；run `bfcdfad6` 外层 HOLD@D00（`CLOUD_EXECUTOR_PROCESS_FAILED`）、D00 grant `consumed_at=05:46:28Z` 一次性消费。两处硬阻断：①发起必须 Owner 已登录 Studio 会话（30 秒 RLS token + 原件 RLS 复核），AI 无会话、不得伪造；②**无"复用已合格 G0 续跑 D01"产品入口**——CLI 有 `--from D01 --resume-input-file`，但云执行器只传 `--to`、生产 API 不接受 resume；UI 两个按钮一个必败（approved run 已登记+grant 已消费）、一个新建 run 重跑 D00。非凭据/配置/Gate 资格问题。
+
+**下一动作（待 Owner 二选一裁决）**：①补"基于已合格 G0 续跑 D01"的 Studio/云执行器入口（新增 from_stage/resume 传输 + 独立 D01 grant 签发路径，产品+工程改造）；或②批准全新 run 从 D00 重跑（新 grant、新费用，重走已完成的 D00）。两者都须 Owner 定夺，本会话不擅自发起、不伪造 PASS。D01→D02 非 C01 typed 仍未实现。CI 宿主 `DEFERRED_ENV`。八维维持 `0/8 OVERALL_HOLD`。
 
 [施工与验收标准](tasks/implementation/MAB/PLAN.md#studio-d00-handoff) · [施工证据账](tasks/implementation/MAB/progress.md)
