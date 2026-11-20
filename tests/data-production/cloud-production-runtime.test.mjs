@@ -84,3 +84,11 @@ test('D00 scope is part of the frozen run and constrains the original Runner',as
   readTerminal:async()=>terminal,holdRun:async()=>{}});
  assert.deepEqual(result,terminal);
 });
+
+test('Runner startup probe evaluates the actual entry graph without running a task',async()=>{
+ const {probeCloudProductionRunner}=await import('../../pipelines/data-production/orchestrator/cloud-production-runtime.mjs');
+ const result=await probeCloudProductionRunner({projectRoot:process.cwd(),environment:cloudEnvironment()});
+ assert.deepEqual(result,{ok:true,reason:'runner_ready'});
+ const missing=await probeCloudProductionRunner({projectRoot:process.cwd()+'/missing-runner-fixture',environment:cloudEnvironment()});
+ assert.deepEqual(missing,{ok:false,reason:'runner_file_unavailable'});
+});

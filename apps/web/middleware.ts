@@ -51,6 +51,8 @@ export async function middleware(req: NextRequest) {
   // Only this machine endpoint uses HMAC instead of a browser cookie.
   // The receiver repeats auth and verifies Owner/original scope before claiming.
   if (pathname === "/api/internal/production-execute") {
+    if(req.method==="GET"&&process.env.VERCEL_ENV==="preview"&&process.env.MOHEN_D00_RUNNER_PROBE_ENABLED==="true")
+      return NextResponse.next();
     if (process.env.MOHEN_CLOUD_EXECUTION_ENABLED !== "true")
       return NextResponse.json({ok:false,reason:"cloud_executor_not_configured"},{status:503,headers:DENIED_HEADERS});
     const result=await createCloudProductionAuthenticator({credential:process.env.MOHEN_CLOUD_EXECUTOR_CREDENTIAL})(req.clone());

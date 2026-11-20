@@ -32,6 +32,23 @@ export function awaitProductionChild(command,args,options,{timeoutMs=240000}={})
   child.once('close',code=>{clear();resolve({code,timedOut});});
  });
 }
+// The probe loads the same static graph as the CLI and stops before any run
+// arguments, Owner session, database credentials or mutable state are used.
+export async function probeCloudProductionRunner({projectRoot,environment=process.env,runChild=awaitProductionChild}){
+ try{assertCloudExecutionConfiguration(environment);}
+ catch{return {ok:false,reason:'executor_configuration_invalid'};}
+ const root=path.resolve(projectRoot);
+ const entry=path.join(root,'pipelines/data-production/run.mjs');
+ try{await fs.access(entry);}
+ catch{return {ok:false,reason:'runner_file_unavailable'};}
+ try{
+  const result=await runChild(process.execPath,[entry,'--check-startup'],
+   {cwd:root,env:{PATH:environment.PATH??''}},{timeoutMs:8000});
+  if(result.timedOut)return {ok:false,reason:'runner_probe_timeout'};
+  return result.code===0?{ok:true,reason:'runner_ready'}:{ok:false,reason:'runner_import_failed'};
+ }catch{return {ok:false,reason:'runner_process_unavailable'};}
+}
+
 // Parent Web secrets and database-password overrides must never reach Producer.
 function runnerEnvironment(environment,ownerToken){
  const keys=['PATH','NODE_ENV','TMPDIR','TMP','TEMP','SYSTEMROOT','WINDIR','NODE_EXTRA_CA_CERTS',

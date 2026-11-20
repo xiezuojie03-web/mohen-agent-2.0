@@ -14,6 +14,9 @@ import { createOptionalIndependentGateClient } from "./orchestrator/independent-
 import { persistStageProgress, finalizeRun } from "./orchestrator/run-persistence.mjs";
 import {createPrivateEvidenceRuntimeLoader} from "./workers/private-evidence-runtime.mjs";
 
+// The protected deployment probe stops after evaluating the real entry graph.
+if(process.argv.length===3&&process.argv[2]==='--check-startup')process.exit(0);
+
 // Load .env.local before createOptionalIndependentGateClient() reads
 // MOHEN_INDEPENDENT_GATE_VERIFY_URL / _CREDENTIAL. data-access/index.mjs also
 // loads dotenv, but it is imported lazily (queryRows) and would run too late.
