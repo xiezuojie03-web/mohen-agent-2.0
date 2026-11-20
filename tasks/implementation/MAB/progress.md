@@ -5494,3 +5494,10 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **只读 probe 受阻**：Preview 部署 `dpl_EVdqiA6StwBUroBcxqwat5YAwt9b`（`...nh9hxf6wk...vercel.app`）的 `GET /api/internal/production-execute`（现成只读 runner-probe）返回 302 → `vercel.com/sso-api`，body 为 "Protected by Vercel Authentication"。本机无 `vercel` CLI，无法用 `vercel curl` 带 SSO 凭据访问。故现有宿主配置是否端到端生效，本环境无法从外部证明，维持 DEFERRED_ENV。
 - **零写入**：本批未写 Vercel env、未写生产 DB/Storage、未签发 Gate、未跑 Runner、未部署。创建的两个 `.tmp_*` 只读脚本已删除；其余 `.tmp_*` 为历史遗留、未触碰。
 - **下一动作**：需 Owner 通过 Vercel Dashboard 用本人 SSO 打开受保护 Preview 的 `/api/internal/production-execute` GET（只读 probe），把返回贴回（不含任何密钥）；据此判断宿主 5 键是否真有效，再决定是否只需补 G5 资格绑定而非重配环境变量。CI 账单上限仍未解。
+
+## 2026-11-20｜Owner SSO 只读 probe 回执与证据边界（VERIFIED_LIVE，零写）
+
+- **Owner 实测**：以本人 Vercel SSO 打开受保护 Preview `...nh9hxf6wk...vercel.app/api/internal/production-execute`（GET 只读 probe），返回原文 `{"ok":true,"reason":"runner_ready"}`。这是本环境首次从宿主端拿到的真实运行回执。
+- **精确含义（按源码，不过度解读）**：`cloud-production-runtime.mjs:58-72` 的 probe = `assertCloudExecutionConfiguration(environment)` 通过（6 组件全 CONFIGURED：execution_authority 的 5 键格式/https/凭据长度/Ed25519 公钥、credential_separation 无禁变量、producer、private_worker、independent_gate、private_storage）+ `run.mjs --check-startup` 子进程 exit 0。它**停在 Owner session/DB 凭据/可变状态之前**（源码注释 58-59），且 `cloud-execution-readiness.mjs:74` 明写 `runtime_verified:false, gate_qualification:NOT_VERIFIED`。因此 runner_ready 证明的是"配置就绪 + Runner 可启动"，**不是**真实 D00→D01 已跑、不是 Gate 资格通过、不是 M5 八维证据。
+- **结论修正**：宿主执行授权配置有效，上一批"需 Owner 重配 5 键"的担心不成立；真正剩余缺口回到 CURRENT.md 已记录的三项：①持久低权 reader URL+consume credential（上批临时验证后撤销，未留持久值）；②D01→D02 非 C01 typed（C02 需独立转录+G1 独立签发）；③当前 project 的 G5 资格绑定。runner_ready 不改变 0/8 OVERALL_HOLD。
+- **零写入**：本批仅记录 Owner 提供的只读回执，未写 Vercel/DB/Gate/Runner/生产。
