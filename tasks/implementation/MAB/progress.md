@@ -5271,3 +5271,8 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - Owner 明确许可账本表和低权角色例外后，Supabase `mohen-cloud` 的目标脚本获批应用。回读确认账本零行、RLS 开启、三条策略、专用角色为 NOLOGIN／非超管／无绕过 RLS，anon 与 authenticated 无读取权限。
 - Studio 支持在 D00 单阶段请求中读取服务端 `MOHEN_D00_APPROVED_RUN`，校验 Runner 同源的规范化输入摘要后使用预批准 UUID。重复 UUID 在写 checkpoint 或派发之前拒绝。未配置时沿用现有路径。新绑定与授权定向测试 11 项通过，TypeScript 语法检查通过。
 - 尚待配置独立服务最低权限登录、部署受保护入口和完成 Creator HTTP 复验。原任务 D00 仍 HOLD / NOT_RUN，未签发正式许可或 G0。
+
+## 2026-11-20｜第⑤步单次运行绑定的受保护 Preview
+
+- 从 GitHub main 功能 SHA `7669e287f821a233de25eb6376d0117227ae6cd8` 部署 Vercel Preview `dpl_ADtjJNbGUD34WNAcKNxe2MVpAiaR`，达到 READY。Vercel 认证访问应用接收路由返回 503 `cloud_executor_not_configured`。未发送签名派发。
+- 云库 `mohen_gate_reader` 已有 `authenticate_gate_service` 和 `read_gate_stage_qualification` 执行权。D00 专用账本仍需独立服务低权登录与托管入口，未以管理连接替代。原任务接收仍 HOLD / NOT_RUN。
