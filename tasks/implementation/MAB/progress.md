@@ -5239,3 +5239,8 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 - 现有独立 HTTPS Gate 服务支持显式 `MOHEN_INDEPENDENT_GATE_READ_ONLY=true`。只装配 Reader 连接，禁止注入 Signer URL 与审签会话密钥。保留 `/current` 的独立身份与能力校验；`/decide`、`/revoke` 请求拒绝于 SQL 之前。既有完整服务仍按原配置启动。
 - 独立 Gate 服务与 HTTPS 运行时定向测试 10 项通过。此项为代码和隔离验证，尚未配置云 Reader 登录或部署服务。原任务 D00 仍 HOLD / NOT_RUN，待独立执行许可签发、一次性核验、云 Reader 和原件桥接。
+
+## 2026-11-20｜第⑤步单次 D00 执行许可核心
+
+- 独立授权端可用现有 Runner 识别的 Ed25519 格式，为预先批准的单一 D00 run、规范化输入与 Registry 摘要签发许可。要求所有启用条件均有独立批准，签发与消费交由持久账本原子判定；账本拒绝、输入不符和重放均关闭。
+- 新增授权核心与消费回归测试；连同既有 Runner 授权、Gate 及真实 HTTPS 测试共 16 项通过。测试使用夹具账本，尚未接入云持久账本、HTTP 服务和真实 run 审批绑定。D00 仍 HOLD / NOT_RUN。
