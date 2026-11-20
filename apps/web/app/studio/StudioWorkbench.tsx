@@ -79,7 +79,8 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
   const [projectBusy,setProjectBusy]=useState(false);
   const [projectError,setProjectError]=useState<string|null>(null);
   const [draftsOpen,setDraftsOpen]=useState(false);
-  const [reopening,setReopening]=useState(false);
+  const [reopeningProjectId,setReopeningProjectId]=useState<string|null>(null);
+  const reopening=reopeningProjectId!==null;
   const [resumeNotice,setResumeNotice]=useState<string|null>(null);
   // 底稿改名：只改显示名称，不合并档案、不改 project_id。
   const [renaming,setRenaming]=useState<{id:string;title:string}|null>(null);
@@ -151,7 +152,7 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
   type SavedResearchTask = { task_id:string;project_id:string|null;prompt:string;status:string };
   async function reopenProject(project:StudioProject) {
     if (reopening || busy || projectBusy || productionBusy || production?.status === "RUNNING") return;
-    setReopening(true);setProjectError(null);
+    setReopeningProjectId(project.project_id);setProjectError(null);
     try {
       const tasksResponse=await fetch("/api/studio/tasks",{cache:"no-store"});
       const tasksBody=await tasksResponse.json() as {ok?:boolean;tasks?:SavedResearchTask[]};
@@ -211,7 +212,7 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
       }
       setDraftsOpen(false);
     }catch(error){setProjectError(error instanceof Error?error.message:"暂时无法恢复研究项目。");}
-    finally{setReopening(false);}
+    finally{setReopeningProjectId(null);}
   }
 
   // 创作流程状态
@@ -917,7 +918,7 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
                       <span className="studio__rename">
                         <span>{p.project_title}</span>
                         <button type="button" className="studio__link-btn" disabled={reopening||busy||productionBusy}
-                          onClick={()=>void reopenProject(p)}>{reopening?"核验中…":"继续"}</button>
+                          onClick={()=>void reopenProject(p)}>{reopeningProjectId===p.project_id?"核验中…":"继续"}</button>
                         <button type="button" className="studio__link-btn studio__link-btn--muted"
                           onClick={()=>{setRenameError(null);setRenaming({id:p.project_id,title:p.project_title});}}>改名</button>
                       </span>
