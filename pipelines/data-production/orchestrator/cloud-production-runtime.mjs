@@ -128,7 +128,10 @@ export async function executeCloudProductionCli({input,projectRoot,environment=p
    let tokens={};try{tokens=JSON.parse(environment.MOHEN_EXECUTION_AUTH_TOKENS??'{}');}catch{tokens={};}
    if(!tokens||typeof tokens!=='object'||Array.isArray(tokens))tokens={};
    tokens[fromStage]=resume.token;
-   childEnvironment={MOHEN_EXECUTION_AUTH_TOKENS:JSON.stringify(tokens)};
+   // The Runner's loadTrustedResumeInput requires the resume file to sit
+   // directly inside a trusted absolute directory; that directory is this
+   // request's private 0700 temp dir, never shared across runs.
+   childEnvironment={MOHEN_EXECUTION_AUTH_TOKENS:JSON.stringify(tokens),MOHEN_TRUSTED_RESUME_INPUT_DIR:temp};
    resumeArgs=['--from',fromStage,'--resume-input-file',resumeFile];
   }
   const bootstrap=await runnerBootstrap(root);
@@ -146,7 +149,11 @@ export async function executeCloudProductionCli({input,projectRoot,environment=p
   }
   if(!terminal||!['PASS','HOLD','REJECT','FAILED'].includes(terminal.status))throw Error('CLOUD_EXECUTOR_TERMINAL_UNAVAILABLE');
   if(endStage==='D00'&&terminal.stage!=='D00')throw Error('CLOUD_EXECUTOR_TERMINAL_SCOPE_MISMATCH');
-  if(fromStage!=='D00'&&Number(terminal.stage.slice(1))<Number(fromStage.slice(1)))throw Error('CLOUD_EXECUTOR_TERMINAL_SCOPE_MISMATCH');
+  // A resumed run must have genuinely advanced to (or past) from_stage when it
+  // reports PASS; a HOLD/REJECT at an earlier stage is a legitimate terminal
+  // and must surface its own reason_code rather than a scope mismatch.
+  if(fromStage!=='D00'&&terminal.status==='PASS'&&
+     Number(terminal.stage.slice(1))<Number(fromStage.slice(1)))throw Error('CLOUD_EXECUTOR_TERMINAL_SCOPE_MISMATCH');
   return terminal;
  }finally{await fs.rm(temp,{recursive:true,force:true});}
 }
