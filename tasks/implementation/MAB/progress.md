@@ -5432,3 +5432,17 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 **真实数据干跑（只读，不签发）**：`backups/_dryrun_image_attest_real_20261120.mjs` 对真实候选 `48766904` 只读重建：method_ids=[C02]、content_type=image/jpeg、page_number=1 → **DRY_ATTEST_PASS，DIGEST_MATCH=true，output_digest=`002bb07f…`**。证明能力对真实候选可用；但真审计 `802c740f` 仍无 `stage_binding`，须带 `stageRequest` 重签才生效。
 
 **HOLD/下一动作（需 Owner 授权写操作，合并为一份最小清单）**：①独立 signer 带 `stageRequest` 重签含 `stage_binding` 的 G0（新审计，不覆盖 `802c740f`）；②新建未过期 consume credential + `mohen_gate_reader` 低权跑通 `/current` + `requireIndependentStageQualification`；③再评估 D01 typed input 贯通。零生产部署、零公众开放、零新增付费、密钥未入 git/日志/对话。回滚＝本批仅新增/修改离线工具与测试，git revert 即可，不影响已落库审计。
+
+## 2026-11-20｜Owner 授权三写操作：G0 带 stage_binding 重签 + 低权 reader consume 回读（`VERIFIED_LIVE`）
+
+**Owner 授权与边界**：Owner "授权，继续"，明确授权三项写操作（重签 G0、建 consume credential + reader 回读、评估 D01 typed input）；红线仍守：不伪造 Gate、不灌假资格、不擅改核心函数、不部署生产、不公众开放、不新增付费、密钥不进 git/日志/对话。基线 HEAD `6cb8038`=origin/main 分叉 0/0。所有云端操作脚本置于 gitignored `backups/`，口令/token 仅进程内。
+
+**§3.5 D 有界五项**：可用基础＝图片 attester 能力（上批 `CODE_PRESENT`+23 测）+ 旧 G0 审计 `802c740f` + 精确 binding `d2307be3`（有效至 2026-12-20）+ 真实候选/原件；当前实现＝旧审计无 stage_binding、回读被阻；具体差异＝需新候选（sign_gate_candidate 拒 CONSUMED 候选）+ 真实 stageRequest（digest 由 signer 独立重建）+ 低权 reader 会话；最小改动＝零应用代码/DDL 改动，仅云端数据写入（新候选、新审计、临时凭据/登录），核心函数原样；证据继承＝image attester 单测 23/23 + signer 连接只读预检 `SIGNER_ATTEST_PASS`（`_preflight_resign_signer_20261120.mjs`）。
+
+**重签（`VERIFIED_LIVE`）**：`backups/_cloud_resign_g0_stage_20261120.mjs`。前置核验 PRE_CURRENT=`802c740f`、PRE_SUBMITTED=[]、artifact_revision 与 `control.artifact_revision_for` 一致；以真实候选 `48766904` 全字段原样复制新建 SUBMITTED 候选 `c50a941c-5f1b-4bea-90c5-43f5070c4fc2`（`producer_identity=mohen_private_worker`）；stageRequest 由真实 run scope（page_number=1）+ DB 原件（image/jpeg）+ C02 method_plan 独立重建，output_digest=`002bb07ffd0ba9a1d8e20d50ef812915a4e95d75c5ce8404461cae4e9508975f`；机器 signer（`mohen_gate_signer_m5_machine`）+ image attester + authority.decide；`DRY_RUN_PASS` 后实签 → **SIGN_OUTCOME PASS，auditId=`888db9e6-87bd-42b5-a932-4489e0270a5b`**。回读验证：新审计 PASS/independent_gate/current=true/valid_until `2026-11-26T11:03:30Z`，`details.stage_binding`={job_id d00.source-intake, consumer producer, input_digest `478a8668…`, output_digest `002bb07f…`, reviewer_binding_ref m5-owner-reviewer-g0g1-producer}；旧审计 `802c740f` sb=null 原样保留、非当前；`qualification_current` 已指向 `888db9e6`。CAS 用签发前读到的 current=`802c740f`，未删任何资格绕过。
+
+**consume 回读（`VERIFIED_LIVE`）**：`backups/_cloud_consume_readback_20261120.mjs`。因 Owner 原 reader 口令为 SCRAM 配置且不在本地，新建临时非特权 LOGIN `mohen_g0_readback_20261120`（super=false、bypassrls=false、member of mohen_gate_reader），以进程内生成的 token/口令安装 3 天有效 consume credential（principal `270bcecf…` active、精确 binding `d2307be3`、scope `{"project_id":e03c4ba8…}`）；以该低权会话调真实 `control.read_gate_stage_qualification(token, request)` → **PASS receipt**：audit `888db9e6`、双 digest 对、`qualification_current=true`、`result=PASS`、`decision_origin=independent_gate`、valid_until 一致。负例：错 output_digest→null、错 run_id→null（均 receipt_null=true）。验证后 `update gate_service_credentials set revoked_at=now()` + `drop role` 清理完成（CLEANUP_DONE）。
+
+**测试/环境/费用**：POS＝重签审计带 stage_binding 且 current、回读 receipt PASS；NEG＝错 digest/错 run 均 null、旧审计非当前；AUTH＝reader 会话非特权、凭据绑精确 scope+有效 binding；DB/HTTP＝真实云端写（新候选/新审计/临时凭据）+ 清理，无生产部署、无公众开放、无付费；费用 ¥0。CI 宿主仍 `DEFERRED_ENV`。回滚＝新审计与旧审计并存、旧审计未删，如需回退可重新签发指向旧资格（不自动执行）。
+
+**下一动作（非阻断）**：Runner 进程内把 `requireIndependentStageQualification` / `/current` 接到低权 reader（需 Owner 侧持久 reader 口令/托管入口）；再评估 D01 typed input 贯通。三写操作目标已全部达成，本阶段无剩余 HOLD 阻断。
