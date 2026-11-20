@@ -5282,3 +5282,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - GitHub main 功能 SHA 3283311 打包独立授权函数，入口为 /api/token 与 /api/consume。运行环境需为 Preview 并显式启用。7 项定向测试与未配置时失败关闭的函数探测通过。
 - 创建独立项目 napoles1/mohen-d00-authority，已开启 Preview SSO。首次部署请求由平台收为该新项目的 Production 并达到 READY，取消返回 400。该部署未注入授权密钥，实测 /api/token 返回 503 execution_authority_not_configured。Studio Production 无本批部署。
 - 显式 target=preview 被平台以无效 target 拒绝，后续部署提交未生成 Preview。低权登录、云端授权及 Gate 查询接线仍待完成。原委托 D00 保持 HOLD / NOT_RUN。
+
+## 2026-11-20｜第⑤步授权预览限制与原任务输入摘要
+
+- Vercel 独立授权项目的 Git 部署入口被自动审批拒绝，理由是该入口会建立自动部署连接并从生产分支发起部署，审批认定超出已授权的一次性 Preview 边界。本批未通过替代路径触发该操作。
+- 用原任务 checkpoint 与同一已登记 JPEG 的数据库绑定，只读生成第 1 页 D00 输入候选摘要 ed2f50ffdfafd7c3a73f29d280213b1866bb268ba896fb2dfde25265c7f3da37。未导出研究提示或原始字节。须在 Creator HTTP 路径复核同源摘要后才可用于签发。
+- 独立授权 Preview 与低权登录仍待接入，原委托 D00 保持 HOLD / NOT_RUN。
