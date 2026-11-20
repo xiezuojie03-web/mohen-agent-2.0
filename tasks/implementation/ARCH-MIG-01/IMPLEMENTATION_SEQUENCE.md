@@ -1,5 +1,7 @@
 # ARCH-MIG-01工程任务顺序（交付任务，未发令）
 
+> **失效标注（2026-11-20）**：本文件属 ARCH-MIG-01 历史批次方案，现行唯一施工依据为 `tasks/implementation/MAB/PLAN.md` V1.7。本文第3行"不再盘点 HEAD/分支/worktree"的表述与现行 AGENTS §3、PLAN §0.2「写入前核远端 HEAD」相反，不得据此免除写入前核验。保留原文仅作历史追溯，不作为当前施工顺序。
+
 状态：PACKAGE_AUTHORIZED / DESIGN_TARGET_NOT_APPLIED；用户2026-10-16明确确认：GitHub仓库就是CodeBuddy上一轮执行并同步的工程，执行完已停止一切工程任务，等待新架构迁移。直接采用handoff/local-b-20260930@8966d1bf62d7c2ea199d6568cc1b16bba664bd26作为已确认工程基线；不再开展GitHub与本地同步/差异审计，也不要求重新盘点HEAD、分支、worktree、未提交状态作为M0准出项。
 
 用户已审阅宪法并授权文件补齐与核验后打包。此文件不授权M0或工程写入。

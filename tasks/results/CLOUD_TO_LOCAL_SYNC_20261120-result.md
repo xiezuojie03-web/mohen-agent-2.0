@@ -13,7 +13,7 @@ Owner 2026-11-20 授权「远端已无施工，同意方案，请执行」。方
 ## 阶段 1｜GitHub 回写（完成）
 - 从 `c6337d2` 分叉点 merge `origin/main`（66 个提交）到本地 `7ad8506`。
 - 两处文档冲突按规则解决：`CURRENT.md` 取远端当前 D00 断点并附 P4 历史回执引用；`progress.md` 保留本地 P4 批次与远端 D00 全部证据。
-- 合并提交 `ca8f4a5`；本地 main 现领先远端 2 个提交（P4 提交 + 合并提交），未 push。
+- 合并提交 `ca8f4a5`；后经 Owner 授权 push，当前 local=remote=`c456f8c`（含结案文档提交），分叉 0/0。
 - 工作区 P0 CSV 的 6 行修改经 stash→pop 完整恢复。
 
 ## 阶段 2｜Supabase 回写（完成）
@@ -39,6 +39,6 @@ Owner 2026-11-20 授权「远端已无施工，同意方案，请执行」。方
 - 原始证据文件：`backups/manifest_*.json`、`diff_20261120.json`、`pkdiff_20261120.json`、`structcheck_20261120.json`、`sync_final_result_20261120_apply.json` 及全部诊断脚本，均位于已 gitignore 的 backups 目录。
 
 ## 结论
-GitHub 与 Supabase 云端已安全回写本地。业务数据双端对齐，本地独有的 P4 证据、认证隔离与有意例外全部保留。未 push、未部署、未产生模型费用。
+GitHub 与 Supabase 云端已安全回写本地。业务数据双端对齐，本地独有的 P4 证据、认证隔离与有意例外全部保留。经 Owner 授权已 push（local=remote=`c456f8c`）；未部署、未产生模型费用。
 
 **P4 事项已结案**：关于 P4 数据、空 `revision_id` 例外、本地领先远端提交等问题的唯一权威结论见 [P4 结案书](P4_CLOSURE_20261120.md)，本文件不再作为该类问题的解释入口。

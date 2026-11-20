@@ -5355,3 +5355,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 原 Creator 从 Studio Preview dpl_EVdqiA6StwBUroBcxqwat5YAwt9b 只发起 D00。运行 bfcdfad6-bbcb-4b68-946a-82e1302eeb80 的独立许可已一次性消费，D00 Worker 持久提交候选 48766904-c409-4b37-b602-9339a582b7e6，候选状态 SUBMITTED。
 - 同一条云库关联查询核对原任务 53ad1a29-22e5-43c2-816d-b02b6e85abbd、Project e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5、同 Root、原件 4ca22839-e3e9-4d14-8ec7-677cd740aa0e 和原 SHA、Source Version 67839b1e-a344-4dd4-adf8-f7798ddf82d7、Raw Item 5fe7f057-a797-42cd-81b8-0892d4c271b6 均一致。接收验收通过。
 - 外层运行收尾仍为 HOLD / CLOUD_EXECUTOR_PROCESS_FAILED，保留该记录。独立 Gate 决定零条、后续阶段候选零条。关闭⑤接收断点，停在独立 G0 审核前。
+## 2026-11-20｜云端→本地回写 + push + 设计/计划一致性评估（只读施工账同步）
+
+- 应 Owner 授权完成 GitHub 远端 main（66 提交）merge 到本地（ca8f4a5）并 push，当前 HEAD/local/remote = c456f8c，分叉 0/0；本地 P4 数据回执证据保留。P4 数据统一事项已结案，唯一结论见 tasks/results/P4_CLOSURE_20261120.md。
+- Supabase 云端→本地增量回写 77 行业务数据（20 张表，逐主键内容比对 0 失败）+ control.d00_execution_grant_journal 1 行，事务内完成并通过校验。回写后本地实测：qualification_current 49、gate_policy_enabled 6、gate_reviewer_bindings_active 46、gate_audits 802（independent_gate 91）、private_originals 91、sources 52、raw_items 189、delegations 25、execution_receipts 23。认证数据、mab_backup/vault/密码重置平台表、published_pointers 空 revision_id 合法行均未改动。全库 pg_dump 备份标签 backup/local-before-cloud-sync-20261120 与证据在 tasks/results/MAB/ENGINEERING_DATA_UNIFICATION/backups/。
+- 只读评估：设计文件 vs 工程实况见 tasks/results/DESIGN_VS_REALITY_ASSESSMENT_20261120.md；PLAN vs 审查缺陷见 tasks/results/PLAN_VS_AUDIT_MATCH_20261120.md；三问结论见 tasks/results/THREE_QUESTIONS_ANSWER_20261120.md。结论：设计/代码/DDL 结构性匹配，证据链脱节；PLAN 原则不需改，仅补 CI 宿主级失败口径与 Skill 自生长验收落点。
+- 文档一致性审计发现并修正本批评估文档的 push 状态/引用错配；既有文档不一致清单与处理建议见 THREE_QUESTIONS_ANSWER_20261120.md。施工断点未变：仍停在独立 G0 审核前，下一动作仍为同一 D00 候选交独立 Reviewer 回读 G0。未部署、未启用正式 Gate、未公众开放、未新增付费。

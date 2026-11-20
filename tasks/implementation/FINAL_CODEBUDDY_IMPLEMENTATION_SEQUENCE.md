@@ -1,5 +1,7 @@
 # Final CodeBuddy Implementation Sequence V1.0
 
+> **失效标注（2026-11-20）**：本文件为历史方案草案，非现行施工顺序。唯一施工依据是 `tasks/implementation/MAB/PLAN.md` V1.7；本文件 16 步（含 V2 基线迁移、G0—G4 re-gating、归档旧路由等）均未被当前授权，不得执行。保留原文仅作历史追溯。
+
 1. Cold backup / repo status / DB schema snapshot.
 2. Install final category-based directory tree.
 3. Update AGENTS / CURRENT / OWNERSHIP_MAP.
