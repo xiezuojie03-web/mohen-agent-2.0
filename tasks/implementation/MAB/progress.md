@@ -5510,3 +5510,16 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **方案修正**：终态长期 reader 应落在**托管 `/current` 路径**（d00-authority 侧持久 reader LOGIN + 长期 consume credential + 3 个 Vercel 变量），不是给 Runner 进程内 reader 配凭据；否则凭据建了也进不了 Runner。这是"长期可用"的正确接线。
 - **零写入**：未建角色/凭据、未改环境变量、未改代码、未跑 Runner；临时只读脚本已删。CI 账单上限仍未解。
 - **下一动作**：按托管 `/current` 路径，先核对 d00-authority 现有 3 键状态（键名/是否在 preview），再由 Owner 平台操作建持久 reader + 长期凭据，我写 SQL/脚本与验证。
+
+## 2026-11-20｜终态低权 Gate reader 落地（Owner 明确授权，VERIFIED_LIVE，长期可用）
+
+- **授权原文**：Owner 明示「授权你直接用云端 admin 连接串建持久低权 reader 凭据，并写入 Vercel 变量，按长期可用终态执行」。据此在云端建持久 reader + 长期 consume 凭据并经 Vercel REST 写变量。
+- **前置（只读实测）**：active owner `270bcecf…` / machine reviewer 存在；G0 binding `d2307be3…`（project e03c4ba8、到 2026-12-20）有效；`mohen_gate_reader` 角色安全；runner_ready 回执已证明宿主 6 组配置就绪。
+- **落地动作**：
+  1. 新增受控工具 `tools/provision-terminal-gate-reader.mjs`：先撤销早期 NOINHERIT 尝试的旧凭据+角色，再建持久 LOGIN `mohen_runner_reader_v2`（INHERIT、NOSUPERUSER/NOCREATE*/NOBYPASSRLS/ NOREPLICATION、member of mohen_gate_reader、非 signer），插入长期 consume 凭据 `e7a89d2f…`（绑 `d2307be3`、project 精确 scope、valid_until `2027-12-20`、只存 SHA-256 token_hash）；明文 bearer/URL/credential_id 只写 `.secrets/gate-reader-{bearer,database-url,credential-id}.txt`（mode 0600、gitignored），不打印/不入仓。
+  2. 新增 `tools/verify-terminal-gate-reader.mjs`：以真低权会话（session_user=mohen_runner_reader_v2、非 super/bypassrls）调 `control.read_gate_stage_qualification` → **正例 PASS**（audit `888db9e6`、双 digest/current 全对）+ **两负例 null**（错 output_digest、错 run_id）；凭据 capability=consume、未撤销、有效到 2027-12-20。`VERIFY_TERMINAL_READER` 全绿。
+  3. 新增 `tools/apply-terminal-gate-vercel-env.mjs` + `verify-terminal-gate-vercel-env.mjs`：经 Vercel REST（代理 51081 + NODE_USE_ENV_PROXY）写 Preview 变量 `MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL`(=raw bearer)、`MOHEN_D00_GATE_READER_ENABLED`=true、`MOHEN_D00_GATE_READER_DATABASE_URL`、`MOHEN_D00_GATE_APPROVED_RUN_ID`、`MOHEN_D00_AUTHORITY_DATABASE_CA`，全部 201；复核前 4 键 present+preview+encrypted。保留既有 `MOHEN_INDEPENDENT_GATE_VERIFY_URL` 不动（runner_ready 已验证它有效）。
+- **关键修正（过程中发现）**：①初版角色 NOINHERIT 导致 `permission denied for schema control` → 改 INHERIT；②托管 admin 无 ALTER role 权限 → 改 drop+create；③drop+create 触发 pooler 旧 OID 缓存 `invalid role OID` → 换新角色名 `_v2` 避缓存；④RPC 需 Bearer 的 SHA-256（与独立 Gate 服务一致），验证脚本初版传明文 token 导致正例假失败，修哈希后 PASS。以上均为验证脚本/角色配置修正，终态方案未变。
+- **证据边界**：Vercel 变量写入返回 201 且键可见，但 list API 值脱敏，外部不能断言值相等；新变量需 Preview **重新部署**才在运行实例生效，本批未触发部署。M5 仍 `0/8 OVERALL_HOLD`——终态 reader 是运行前置，不是八维证据。
+- **零越界**：未部署/未公众开放/未改 CI 账单/未伪造 PASS；密钥未进 git/日志/对话。CI 宿主仍 DEFERRED_ENV。
+- **下一动作**： Preview 重部署后由 Owner 用 SSO 再跑一次只读 probe + 真实 Creator 发起一轮 D00→D01（带 reader 消费），验证托管 /current 端到端；随后 D01→D02 typed（C02 需独立转录+G1）。
