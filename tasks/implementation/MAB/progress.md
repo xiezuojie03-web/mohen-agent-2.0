@@ -5310,3 +5310,10 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 独立授权 Preview dpl_HHQktgigNQfkW5aMMvxcY711BCZk 已 READY。认证 GET /api/current 返回 405，确认只读 POST 路由到达应用。Gate 签署未启用。
 - 签名私钥仅保存在独立授权项目 Preview。Studio Preview 已记录公钥、独立签发/核验调用凭据、原件桥接、签发与消费 URL 以及只读 Gate URL。Studio 的 OIDC 接线 SHA 3f0e31a 已部署至 dpl_2aZ8xc9XR4vsDKBPEyt3CfMQpYvR 且 READY。16 项定向测试通过。
 - 受保护跨项目访问仍需 Studio Preview → 授权 Preview 的 Trusted Sources 规则。原 Creator HTTP 会话与作用域内只读 Gate 能力待核，执行开关保留关闭，原任务未派发。
+
+## 2026-11-20｜第⑤步原 Creator 回读与单次派发接线就绪
+
+- Owner 提供 Creator Studio 页面，任务编号一致，选定 Commons 项显示「原件已私有保存，来源登记已回读」。用云库绑定与 Runner 同源规范化算法复核 D00 第 1 页输入摘要一致。
+- Vercel Trusted Sources 已回读为 Studio Preview → 独立授权 Preview 单一规则。只读 Gate 使用短时 consume 凭据，HTTPS 查询限预批准 D00 run 与 G0，未配审签能力。
+- 独立授权 Preview dpl_3B21Vi3miAaaQeZX4ozvxV5WwnqE 与 Studio Preview dpl_3rtiZ4x1aNMbjWLsETZVjvaBX7UR 均 READY。前检返回 HTTP 200，Studio 接收路由认证 GET 返回应用层 405，表示已进入启用后的方法检查。运行开关、精确许可和 Creator 的仅 D00 操作已就绪。
+- 等待原 Creator 点击一次；初次云库核对运行零条、签发零条、消费零条。⑤待真实接收回执，独立 G0 待审。
