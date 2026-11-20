@@ -5304,3 +5304,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 - 独立授权 Preview dpl_HN51dRMsS62DCPQiAJuCB8ppD5pL 为 READY，认证访问 /api/readiness 返回 200，journal=ready、gateReader=ready。实际函数宿主已验证证书和低权数据库身份，两条连接均可用。
 - 前检只读取身份和权限，不消费发行账本、不签发 D00 或 G0。低权 Gate 可连接，资格查询端点和原任务对应的读取能力凭据仍待接入；原委托 D00 未派发。
+
+## 2026-11-20｜第⑤步独立 Gate 路由与 Preview 信任接线
+
+- 独立授权 Preview dpl_HHQktgigNQfkW5aMMvxcY711BCZk 已 READY。认证 GET /api/current 返回 405，确认只读 POST 路由到达应用。Gate 签署未启用。
+- 签名私钥仅保存在独立授权项目 Preview。Studio Preview 已记录公钥、独立签发/核验调用凭据、原件桥接、签发与消费 URL 以及只读 Gate URL。Studio 的 OIDC 接线 SHA 3f0e31a 已部署至 dpl_2aZ8xc9XR4vsDKBPEyt3CfMQpYvR 且 READY。16 项定向测试通过。
+- 受保护跨项目访问仍需 Studio Preview → 授权 Preview 的 Trusted Sources 规则。原 Creator HTTP 会话与作用域内只读 Gate 能力待核，执行开关保留关闭，原任务未派发。
