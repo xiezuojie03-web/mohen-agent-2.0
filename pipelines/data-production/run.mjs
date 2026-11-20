@@ -11,6 +11,7 @@ import { runProduction } from "./orchestrator/orchestrator.mjs";
 import { assertAdapterBinding } from "./orchestrator/adapter-binding.mjs";
 import { assertExecutionAuthorityConfigured } from "./orchestrator/execution-authority.mjs";
 import { createOptionalIndependentGateClient } from "./orchestrator/independent-gate-client.mjs";
+import { createOptionalInProcessGateReaderVerifier } from "./orchestrator/inprocess-gate-reader-verifier.mjs";
 import { persistStageProgress, finalizeRun } from "./orchestrator/run-persistence.mjs";
 import {createPrivateEvidenceRuntimeLoader} from "./workers/private-evidence-runtime.mjs";
 
@@ -126,7 +127,10 @@ async function fetchStageToken({ stage, job, run, input }) {
 
 // This is only a READ-ONLY qualification check. No credentials means the
 // existing independent-Gate guard holds every Producer PASS (never a fallback).
-const gateVerifier = createOptionalIndependentGateClient(process.env,stageFetch);
+// Prefer an in-process low-privilege /current reader when configured; otherwise
+// fall back to the hosted HTTPS /current client. Both reach the same SQL RPC.
+const gateVerifier = createOptionalInProcessGateReaderVerifier(process.env) ??
+  createOptionalIndependentGateClient(process.env,stageFetch);
 
 const privateRuntime=createPrivateEvidenceRuntimeLoader();
 let finished,reports;

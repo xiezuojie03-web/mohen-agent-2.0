@@ -66,7 +66,51 @@ export function isTypedPrivateStageRequest(stage,input) {
     input?.schema===PRIVATE_REQUEST_SCHEMA && input.stage===stage &&
     typeof input.originalId==="string" &&
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input.originalId) &&
-    !["private_evidence","private_original","mab_private_evidence"].some(k=>input[k]!==undefined);
+    !["private_evidence","private_original","mab_private_evidence"].some(k=>input[k]!==undefined) &&
+    // D01 adds a carrier that MUST be typed and consistent; the G0 stage_binding
+    // signs exactly this shape, so a loose D01 request is not a typed handoff.
+    (stage!=="D01" || isTypedD01Carrier(input));
+}
+
+const UUID_RE=/^[0-9a-f]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+const SHA_RE=/^[0-9a-f]{64}$/;
+const METHOD_RE=/^[A-Z][0-9]+$/;
+/** Pure, authorization-free shape check of the D01 carrier bound by G0.
+ * When a method_plan is present it must agree with exactly one well-formed
+ * carrier. Legacy/resume inputs without a method_plan keep their historical
+ * shape (the professional Worker still performs all professional validation). */
+export function isTypedD01Carrier(input) {
+  if(!input||input.schema!==PRIVATE_REQUEST_SCHEMA||input.stage!=="D01"||
+     !UUID_RE.test(input.originalId??''))return false;
+  const page=input.page,text=input.text;
+  const plan=input.method_plan;
+  if(plan===undefined){
+    // No method plan bound: preserve the pre-existing typed shape. A carrier,
+    // if supplied, must be internally well-formed; a bare typed request (as in
+    // historical resume fixtures) is still accepted here. Professional Workers
+    // independently reject any request they cannot act on.
+    if(page&&text)return false;
+    if(page)return page.kind==='scanned_page/v1'&&UUID_RE.test(page.source_version_id??'');
+    if(text)return text.kind==='verified_utf8_full/v1'&&UUID_RE.test(text.source_version_id??'');
+    return true;
+  }
+  if(Boolean(page)===Boolean(text))return false; // exactly one carrier when bound
+  if(!Array.isArray(plan)||plan.length<1||plan.length>8||
+     !plan.every(r=>r&&r.kind==='method_plan'&&METHOD_RE.test(r.method_id??'')&&
+       typeof r.method_version==='string'&&r.method_version.length>0))return false;
+  if(plan.some(r=>r.method_id==='C02')){
+    return Boolean(page&&page.kind==='scanned_page/v1'&&
+      Number.isInteger(page.page_number)&&page.page_number>=1&&page.page_number<=10000&&
+      UUID_RE.test(page.source_version_id??'')&&UUID_RE.test(page.raw_item_id??'')&&
+      SHA_RE.test(page.raw_sha256??'')&&SHA_RE.test(page.page_sha256??'')&&
+      page.raw_sha256===page.page_sha256);
+  }
+  if(plan.some(r=>r.method_id==='C01')){
+    return Boolean(text&&text.kind==='verified_utf8_full/v1'&&
+      UUID_RE.test(text.source_version_id??'')&&UUID_RE.test(text.raw_item_id??'')&&
+      SHA_RE.test(text.raw_sha256??''));
+  }
+  return false;
 }
 
 function containsPrivateRequest(input) {

@@ -4,8 +4,32 @@ import path from "node:path";
 import fs from "node:fs";
 import os from "node:os";
 import { loadRegistry } from "../../pipelines/data-production/orchestrator/registry.mjs";
-import { assertAdapterBinding, assertNoUnboundTopicInputs, assertNoUnboundPrivateEvidenceInput } from "../../pipelines/data-production/orchestrator/adapter-binding.mjs";
+import { assertAdapterBinding, assertNoUnboundTopicInputs, assertNoUnboundPrivateEvidenceInput, isTypedPrivateStageRequest, isTypedD01Carrier } from "../../pipelines/data-production/orchestrator/adapter-binding.mjs";
 const root = path.resolve(import.meta.dirname, "../..");
+
+test("D01 typed handoff binds method plan to exactly one well-formed carrier",()=>{
+  const oid="11111111-1111-4111-8111-111111111111",sv="22222222-2222-4222-8222-222222222222",ri="33333333-3333-4333-8333-333333333333";
+  const sha="a".repeat(64);
+  const c02={kind:"method_plan",id:"C02@v1",method_id:"C02",method_version:"v1"};
+  const c01={kind:"method_plan",id:"C01@v1",method_id:"C01",method_version:"v1"};
+  const pageReq=(method_plan,over={})=>({schema:"mohen.private-evidence-stage-request.v1",stage:"D01",originalId:oid,
+    method_plan,page:{kind:"scanned_page/v1",page_number:1,source_version_id:sv,raw_item_id:ri,raw_sha256:sha,page_sha256:sha,...over}});
+  const textReq=(method_plan,over={})=>({schema:"mohen.private-evidence-stage-request.v1",stage:"D01",originalId:oid,
+    method_plan,text:{kind:"verified_utf8_full/v1",source_version_id:sv,raw_item_id:ri,raw_sha256:sha,...over}});
+  assert.equal(isTypedPrivateStageRequest("D01",pageReq([c02])),true);
+  assert.equal(isTypedPrivateStageRequest("D01",textReq([c01])),true);
+  // carrier/method mismatch and malformed page are refused
+  assert.equal(isTypedPrivateStageRequest("D01",textReq([c02])),false);
+  assert.equal(isTypedPrivateStageRequest("D01",pageReq([c01])),false);
+  assert.equal(isTypedD01Carrier(pageReq([c02],{page_sha256:"b".repeat(64)})),false);
+  assert.equal(isTypedD01Carrier(pageReq([c02],{page_number:0})),false);
+  assert.equal(isTypedD01Carrier({...pageReq([c02]),text:textReq([c01]).text}),false);
+  assert.equal(isTypedD01Carrier({...pageReq([c02]),method_plan:[{...c02,method_id:"X9"}]}),false);
+  // legacy/resume request without method_plan keeps historical shape
+  assert.equal(isTypedPrivateStageRequest("D01",{schema:"mohen.private-evidence-stage-request.v1",stage:"D01",originalId:oid}),true);
+  // D02-D05 shape check is unchanged by the D01 carrier rule
+  assert.equal(isTypedPrivateStageRequest("D02",{schema:"mohen.private-evidence-stage-request.v1",stage:"D02",originalId:oid}),true);
+});
 test("CLI adapter choice must match the signed registry binding", () => {
   // 8963c9d 起 D00-D05 的 registry adapter_binding 切至 layer1-adapters（自由主题闭环）；
   // 私有原件路径仍走 private-evidence-adapters（runtime loader，不经 registry 绑定）。
