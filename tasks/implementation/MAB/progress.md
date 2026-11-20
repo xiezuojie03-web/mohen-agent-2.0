@@ -5560,3 +5560,11 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **证据边界**：本地启动图 PASS + 部署 READY 均不等于云端 probe 闭环；team-scoped token 的 `vercel curl/whoami` 报 User not found，本会话无法绕过 Vercel Authentication 自测。必须 Owner 用本人 SSO 浏览器 GET `https://mohen-agent-2-0-7ad46u6ba-napoles1.vercel.app/api/internal/production-execute` 贴回原文。
 - **零写入**：本批未改 DB/Gate/env/凭据，未碰 Production。临时诊断脚本已删。八维维持 0/8。
 - **下一动作**：Owner SSO probe 回 `runner_ready` → 闭环，再议真实 D00→D01（需明确授权）；若仍 module 错，扩大诊断到函数产物层（本地 `vercel build` 产物树 / 注入运行时依赖目录探针）。
+
+## 2026-11-20｜probe 回归闭环：Owner SSO 回执 runner_ready（VERIFIED_LIVE，零写入）
+
+- **闭环回执**：修复提交 `d9ace70` 推 main、无缓存重部署 `7ad46u6ba`（dpl_GwH7FZevdpL54F1Emci71xWzUM5Y，SHA `d9ace70fbf0b13634b70c246725968a57a63bfd6`）READY 后，Owner 本人 SSO 浏览器跑受保护 Preview 的 GET `/api/internal/production-execute`，回执原文 `{"ok":true,"reason":"runner_ready"}`。`runner_module_unavailable` 回归解除。
+- **证据链闭合**：旧可用 `102636e` → 回归 `d808f44`/`baa612f`（module 错）→ git 二分定位 `7ca2398` 顶层 require(pg) → 代码修复 `d9ace70` → force 无缓存 `7ad46u6ba` → Owner SSO `runner_ready`。本地最小 env `--check-startup` code:0 与云端真实 probe 一致，长期可用性修复验证完成。
+- **证据边界（不过度解读）**：runner_ready = 宿主配置就绪 + 静态启动图 exit 0（按 `cloud-production-runtime.mjs:58-72`、probe 停在 Owner session/DB 凭据/可变状态之前）；**不是**真实 D00→D01、不是 Gate 资格通过、不是八维证据（`cloud-execution-readiness.mjs:74` 明写 `runtime_verified:false, gate_qualification:NOT_VERIFIED`）。
+- **零写入**：本批未改 DB/Gate/env/凭据/源码（除 CURRENT.md 状态同步），未碰 Production、未公众开放、未新增付费。八维维持 0/8。
+- **下一动作（需授权）**：真实 D00→D01（带终态 reader 消费，验托管 /current 端到端）会产生真实执行与费用，须 Owner 明确授权后发起，本会话不擅自触发；D01→D02 typed 仍未实现。CI 宿主 DEFERRED_ENV，不伪装 PASS。

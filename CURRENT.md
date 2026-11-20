@@ -27,6 +27,8 @@
 
 **Preview probe 回归与修复（2026-11-20，最前阻断）**：新部署 `d808f44`/`baa612f` 的 Owner SSO 只读 probe 均 `{"ok":false,"reason":"runner_module_unavailable"}`，旧部署 `102636e` 曾 `runner_ready`。git 二分定位真实根因：`7ca2398` 让 `run.mjs` 静态导入 `inprocess-gate-reader-verifier.mjs`，后者在**模块顶层** `createRequire(...) require("pg")`；云端该 CJS 路径取不到 pg，--check-startup 加载完整静态图即 MODULE_NOT_FOUND。该进程内 reader 在云端是死路径（runnerEnvironment 白名单不含 `MOHEN_RUNNER_GATE_READER_*`，必返回 null），真正生效的是回退的托管 HTTPS /current（终态 reader）。已修复：`run.mjs` 移除该 import、gateVerifier 恢复单一托管 client；verifier 的 pg 改为懒加载；新增回归测试。本地最小 env `run.mjs --check-startup` 得 `{"code":0}`、相关测试 15/16 PASS（1 失败为既有 Windows --import 路径问题）。**上一批"构建缓存丢 bundle"判断已证伪，force 无缓存部署仍红。**
 
-**下一动作（阻断中）**：提交本修复 → `vercel deploy --force` 无缓存重部署 Preview → Owner SSO 复跑 GET probe 期望 `runner_ready`（这是闭环唯一判据，本地 PASS 不算）→ 之后才议真实 D00→D01（会产生真实执行/费用，需明确授权）。D01→D02 非 C01 typed 转换仍未实现（`PRIVATE_NEXT_STAGE_REQUEST_NOT_READY`，C02 需独立转录+G1）。CI 宿主仍 `DEFERRED_ENV`，不伪装 PASS。八维维持 `0/8 OVERALL_HOLD`——终态 reader 与 probe 恢复均为运行前置，非八维证据。
+**probe 回归已闭环（2026-11-20，`VERIFIED_LIVE`，零写入）**：修复提交 `d9ace70` 已推 main、无缓存重部署 `7ad46u6ba`（SHA 精确匹配）READY 后，Owner 本人 SSO 浏览器跑只读 GET probe 回执原文 `{"ok":true,"reason":"runner_ready"}`。`runner_module_unavailable` 回归解除，本轮"长期可用"修复闭环。精确含义仍按源码边界：证明宿主配置就绪 + `run.mjs --check-startup` 静态图 exit 0；**不证明**真实 D00→D01 已跑、Gate 资格通过、八维证据（`cloud-execution-readiness.mjs` 明写 `runtime_verified:false, gate_qualification:NOT_VERIFIED`）。
+
+**下一动作（非阻断）**：真实 D00→D01（带终态 reader 消费，验托管 `/current` 端到端）会产生真实执行/费用，须 Owner 明确授权后再发起，本会话不擅自触发。D01→D02 非 C01 typed 转换仍未实现（`PRIVATE_NEXT_STAGE_REQUEST_NOT_READY`，C02 需独立转录+G1）。CI 宿主仍 `DEFERRED_ENV`，不伪装 PASS。八维维持 `0/8 OVERALL_HOLD`——终态 reader 与 probe 恢复均为运行前置，非八维证据。
 
 [施工与验收标准](tasks/implementation/MAB/PLAN.md#studio-d00-handoff) · [施工证据账](tasks/implementation/MAB/progress.md)
