@@ -5330,3 +5330,4 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - Preview 无副作用探测复现 runner_ajv_unavailable。构建时为 raw Node Runner 打包 Ajv 与 PostgreSQL 驱动，子进程仅重定向这两个模块。在 Node 子进程验证两个包可加载，25 项定向测试通过。修复 SHA 1d2bf6a 的 Vercel Probe Preview 返回 HTTP 200 runner_ready。
 - 原运行仍为 HOLD，零许可、零候选。精确对账原调用的零成本预留，清除预留锁并追加零成本回执 fdd14903-6d38-49b4-807d-c9a81c2ceaea，记录结果为 hold_before_grant、d00_received=false。
 - 独立授权已部署一份新的受保护 Preview，许可编号绑定原任务同一 D00 输入，旧运行未重放。原 Creator 的新请求仍待发起。
+- 恢复用 Studio Preview dpl_9uJ2YbLsjyMRt4YmTDVrqSVzTmTA 返回 200 runner_ready。同一批准 run 的授权 Preview dpl_798htptghYDFLMpWGjvKQSFSKz3E 返回 200，账本和只读 Gate 登录均 ready。保持原任务、Project、Root、原件和输入摘要，新运行只待原 Creator 发起。
