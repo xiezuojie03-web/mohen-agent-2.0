@@ -31,6 +31,7 @@ export const TOOL_REGISTRY: Record<string, ToolSpec> = {
   "retrieve-external": { toolId: "retrieve-external", capability: "多渠道来源发现（Y02/Y03）", cost: 1, trustTier: "external", idempotent: true },
   "llm-extract-entities": { toolId: "llm-extract-entities", capability: "外部检索实体名抽取", cost: 1, trustTier: "llm", idempotent: true },
   "llm-polish": { toolId: "llm-polish", capability: "措辞润色", cost: 1, trustTier: "llm", idempotent: true },
+  "production-d00-intake": { toolId: "production-d00-intake", capability: "D00 私有原件接收与候选回执", cost: 0, trustTier: "production", idempotent: false },
   "production-run": { toolId: "production-run", capability: "D阶段生产（D00-D05）", cost: 5, trustTier: "production", idempotent: false },
 };
 

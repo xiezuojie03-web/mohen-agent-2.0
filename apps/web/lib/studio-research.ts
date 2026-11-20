@@ -375,8 +375,9 @@ export async function requestProduction(
 
   if (endStage === "D00" && process.env.MOHEN_CLOUD_EXECUTION_ENABLED !== "true")
     return { ok: false, reason: "production_d00_cloud_executor_required" };
-  const spec = getTool("production-run");
-  if (!spec || !Number.isFinite(spec.cost) || spec.cost <= 0)
+  const intakeOnly = endStage === "D00";
+  const spec = getTool(intakeOnly ? "production-d00-intake" : "production-run");
+  if (!spec || !Number.isFinite(spec.cost) || (intakeOnly ? spec.cost !== 0 : spec.cost <= 0))
     return { ok: false, reason: "production_tool_unpriced" };
   if (extraBudget !== undefined)
     return { ok: false, reason: "additional_budget_requires_authorization" };
@@ -404,7 +405,7 @@ export async function requestProduction(
     ...saved,
     reserved: reserved + spec.cost,
     productionReservation: {
-      invocation_id: invocationId, tool_id: "production-run",
+      invocation_id: invocationId, tool_id: spec.toolId,
       cost: spec.cost, status: "reserved", requires_receipt_reconciliation: true,
     },
   };
@@ -426,8 +427,8 @@ export async function requestProduction(
   try {
     await writeReceipt({
       taskId, kind: "tool", stage: "D00",
-      toolId: "production-run", cost: spec.cost, status: "reserved",
-      payload: { invocation_id: invocationId, terms: terms ?? [] },
+      toolId: spec.toolId, cost: spec.cost, status: "reserved",
+      payload: { invocation_id: invocationId, terms: terms ?? [], ...(intakeOnly ? { to_stage: "D00" } : {}) },
     });
   } catch {
     // The checkpoint already holds the reservation. Never call the Runner
@@ -444,7 +445,7 @@ export async function requestProduction(
     try {
       await writeReceipt({
         taskId, kind: "tool", stage: "D00",
-        toolId: "production-run", cost: spec.cost, status: "hold",
+        toolId: spec.toolId, cost: spec.cost, status: "hold",
         payload: {
           invocation_id: invocationId, run_id: trig.runId || null,
           reason: trig.reason || "production_not_started",
