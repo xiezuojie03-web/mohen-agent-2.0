@@ -205,7 +205,8 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
             taskRef:restored.taskId},
         ]);
         setProduction(priorProduction);
-        if(priorProduction?.status==="RUNNING")pollProduction(restored.taskId);
+        setResumeD01Eligible(false);
+        pollProduction(restored.taskId);
         setResumeNotice("已从受授权的持久任务恢复；材料按当前资格重新核验，未自动启动或重发任何模型请求。");
       } else {
         setResumeNotice("已打开保存的项目，但尚无可恢复的研究任务。你可以从这里继续提问。");
@@ -248,6 +249,7 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
 
   // 生产进度（委托后异步 D00–D05 生产，轮询 control.production_runs）
   const [production, setProduction] = useState<StudioProductionReadback | null>(null);
+  const [resumeD01Eligible, setResumeD01Eligible] = useState(false);
   const [currentResearch, setCurrentResearch] = useState<{ taskId: string; status: "done" | "hold"; materialsPending?: boolean } | null>(null);
   const [sourceChoices, setSourceChoices] = useState<{
     taskId: string; candidates: {id: string; title: string; provider: string}[];
@@ -387,6 +389,7 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
     setSourceChoice("");setSourcePage("");
     lastTaskIdRef.current = null;
     setProduction(null);
+    setResumeD01Eligible(false);
     setProductionError(null);
     setMessages((m) => [...m, { role: "user", text }]);
     setInput("");
@@ -521,6 +524,7 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
           const body = (await response.json()) as {
             ok?: boolean;
             production?: StudioProductionReadback | null;
+            resume_d01_eligible?: boolean;
           };
           if (!response.ok || !body.ok || !body.production) {
             stopProductionPoll();
@@ -529,6 +533,7 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
             return;
           }
           setProduction(body.production);
+          setResumeD01Eligible(body.resume_d01_eligible === true);
           if (body.production.status !== "RUNNING") stopProductionPoll();
         } catch {
           stopProductionPoll();
@@ -539,7 +544,7 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
     }, 2000);
   }
 
-  async function requestFormalProduction(endStage?: "D00") {
+  async function requestFormalProduction(endStage?: "D00", fromStage?: "D01") {
     if (!currentResearch || currentResearch.status !== "done" || productionBusy || busy ||
         projectBusy || production?.status === "RUNNING") return;
     const taskId = currentResearch.taskId;
@@ -554,7 +559,7 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
     try {
       const response = await fetch(`/api/studio/research-tasks/${encodeURIComponent(taskId)}/production`, {
         method: "POST", headers: { "content-type": "application/json" },
-        body:JSON.stringify({original_id:source.original_id,page_number:pageNumber,...(endStage ? {to_stage:endStage} : {})}),cache: "no-store",
+        body:JSON.stringify({original_id:source.original_id,page_number:pageNumber,...(endStage ? {to_stage:endStage} : {}),...(fromStage ? {from_stage:fromStage} : {})}),cache: "no-store",
       });
       const result = (await response.json()) as { ok?: boolean; run_id?: string; reason?: string };
       if (!response.ok || !result.ok || !result.run_id) {
@@ -577,6 +582,12 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
           production_reservation_receipt_uncertain: "预算回执未能确认，需先对账",
           production_reservation_conflict: "另一次请求已占用生产预算，请核对原任务",
           budget_hold: "当前研究任务预算不足",
+          production_from_stage_invalid: "只支持从已合格的 D00 续跑 D01",
+          production_stage_conflict: "续跑与仅接收原件不能同时指定",
+          production_resume_run_binding_required: "续跑必须指向该任务已登记的同一运行",
+          production_resume_run_scope_mismatch: "已有运行的原件/页码与当前选择不一致",
+          production_resume_no_reservation: "未找到可复用的原预算预留，不能续跑",
+          production_resume_run_dispatched: "续跑 D01 已派发",
         };
         if(result.run_id){
           setProduction({ status: "UNKNOWN", current_stage: null });
@@ -847,6 +858,7 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
     setSubmitted(false);
     setSavedWork(null);
     setProduction(null);
+    setResumeD01Eligible(false);
     setMediaCandidates(null);
     creationRequests.current.clear();
     return true;
@@ -1106,6 +1118,14 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
                       onClick={() => void requestFormalProduction(currentResearch.taskId === d00TaskId ? "D00" : undefined)}>
                       {productionBusy ? "正在核对生产前提…" : currentResearch.taskId === d00TaskId ? "仅接收原件（D00）" : "申请进入 D00—D05"}
                     </button>
+                    {currentResearch.taskId !== d00TaskId && resumeD01Eligible &&
+                      <button type="button" className="studio__ghost-btn"
+                        disabled={productionBusy || busy || projectBusy || production?.status==="RUNNING"||
+                          !privateSources.some(x=>x.original_id===sourceChoice&&x.registration_state==="BOUND")||
+                          !Number.isSafeInteger(Number(sourcePage))||Number(sourcePage)<1}
+                        onClick={() => void requestFormalProduction(undefined,"D01")}>
+                        {productionBusy ? "正在核对续跑前提…" : "从已合格 D00 续跑 D01（复用预算）"}
+                      </button>}
                   </>}
               {productionError && <p role="alert" className="studio__submit-msg">{productionError}</p>}
             </div>

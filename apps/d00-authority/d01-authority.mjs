@@ -1,6 +1,8 @@
 // Independent D01-resume execution authority composition.
 // Owns the D01 signing key; verifies an upstream CURRENT independent G0 with a
-// separate low-privilege reader before signing a one-use D01 stage grant.
+// separate low-privilege reader, rebuilds the real D01 input from persisted
+// facts via a dedicated attestor read connection, then signs a one-use D01
+// grant. Never runs in the web/Runner process.
 import { createPrivateKey } from 'node:crypto';
 import { Readable } from 'node:stream';
 import pg from 'pg';
@@ -8,11 +10,14 @@ import registry from '../../specs/data-production/production-registry.json' with
 import { createD01ResumeAuthorizer } from '../../pipelines/data-production/orchestrator/d01-resume-authorizer.mjs';
 import { createD01ResumeJournal } from '../../pipelines/data-production/orchestrator/d01-resume-journal.mjs';
 import { createD00ExecutionAuthorityHandler } from '../../pipelines/data-production/orchestrator/d00-execution-authority-http.mjs';
+import { createD01IssueEndpoint } from '../../pipelines/data-production/orchestrator/d01-resume-issue.mjs';
 import { createG0ResumeQualificationChecker } from '../../pipelines/data-production/orchestrator/d01-g0-qualification.mjs';
 import { createIndependentGateService } from '../../pipelines/data-production/orchestrator/independent-gate-service.mjs';
 import { independentGatePoolOptions } from '../../pipelines/data-production/orchestrator/independent-gate-service-runtime.mjs';
 
-let handler;
+let handlers;
+
+const json=v=>typeof v==='string'?JSON.parse(v):v;
 
 function configure(env){
  const d00Job=registry.jobs.find(j=>j.stage==='D00');
@@ -21,9 +26,11 @@ function configure(env){
  journalPool.on('error',()=>{});
  const readerPool=new pg.Pool({...independentGatePoolOptions(env.MOHEN_D00_GATE_READER_DATABASE_URL,{ca}),max:2});
  readerPool.on('error',()=>{});
- let gateService;
+ const attestorPool=new pg.Pool({...independentGatePoolOptions(env.MOHEN_D01_ATTESTOR_DATABASE_URL,{ca}),max:2});
+ attestorPool.on('error',()=>{});
  try{
-  gateService=createIndependentGateService({readOnly:true,readerPool});
+  // CURRENT independent G0 check via the low-privilege gate reader.
+  const gateService=createIndependentGateService({readOnly:true,readerPool});
   const bearer=env.MOHEN_GATE_CONSUME_CREDENTIAL;
   if(typeof bearer!=='string'||!bearer.trim())throw Error('gate consume credential required');
   const readG0=async ({run_id})=>{
@@ -41,12 +48,53 @@ function configure(env){
    registry,holdEpoch:env.MOHEN_D01_RESUME_HOLD_EPOCH,
    privateKey:createPrivateKey(env.MOHEN_D01_RESUME_SIGNING_KEY),
    journal:createD01ResumeJournal(journalPool),qualificationChecker});
-  return createD00ExecutionAuthorityHandler({
+  const grantHandler=createD00ExecutionAuthorityHandler({
    authority,issueCredential:env.MOHEN_D01_ISSUE_CREDENTIAL,
    verifyCredential:env.MOHEN_D01_VERIFY_CREDENTIAL,
   });
+  // Attestor queries: only CURRENT independent G0 candidates for this exact run.
+  const attestorQuery=async (sql,params={})=>{
+   const values=[];const text=sql.replace(/:'([^']+)'/g,(_f,n)=>{values.push(params[n]);return '$'+values.length;});
+   return (await attestorPool.query(text,values)).rows;
+  };
+  const loadCandidate=async ({run_id})=>{
+   const rows=await attestorQuery([
+    "select c.candidate_id::text as candidate_id, c.object_id::text as object_id,",
+    "  c.object_type, c.gate_code, c.stage, c.consumer, c.artifact_revision,",
+    "  c.scope::text as scope, c.evidence_refs::text as evidence_refs",
+    "from control.gate_candidates c",
+    "join control.gate_audits a on a.candidate_id=c.candidate_id",
+    "where a.run_id=:'run'::uuid and a.stage='D00' and a.gate_code='G0'",
+    "  and a.result='PASS' and a.decision_origin='independent_gate'",
+    "  and a.current_valid=true and c.consumer='producer'",
+    "  and (a.valid_until is null or a.valid_until > now())",
+    "order by a.checked_at desc limit 2"
+   ].join(' '),{run:run_id});
+   if(rows.length!==1)return null;
+   return {...rows[0],scope:json(rows[0].scope),evidence_refs:json(rows[0].evidence_refs)??[]};
+  };
+  const loadG0Request=async ({run_id,candidate})=>{
+   const rows=await attestorQuery([
+    "select output_fingerprint from control.gate_audits",
+    "where run_id=:'run'::uuid and stage='D00' and gate_code='G0'",
+    "  and candidate_id=:'candidate'::uuid and result='PASS'",
+    "  and decision_origin='independent_gate' and current_valid=true",
+    "  and (valid_until is null or valid_until > now()) limit 1"
+   ].join(' '),{run:run_id,candidate:candidate.candidate_id});
+   if(rows.length!==1||typeof rows[0].output_fingerprint!=='string'||
+      !/^[a-f0-9]{64}$/.test(rows[0].output_fingerprint))return null;
+   return {run_id,stage:'D00',gate_code:'G0',output_digest:rows[0].output_fingerprint};
+  };
+  const issueEndpoint=createD01IssueEndpoint({
+   credential:env.MOHEN_D01_ISSUE_CREDENTIAL,attestorQuery,loadCandidate,loadG0Request,authority,registry,
+  });
+  return {
+   '/token':grantHandler,
+   '/consume':grantHandler,
+   '/d01-issue':issueEndpoint,
+  };
  }catch(error){
-  void journalPool.end();void readerPool.end();
+  void journalPool.end();void readerPool.end();void attestorPool.end();
   throw error;
  }
 }
@@ -58,7 +106,9 @@ export async function d01AuthorityEndpoint(route,req,res){
   res.statusCode=503;res.end('{"ok":false,"reason":"d01_authority_not_configured"}');return;
  }
  try{
-  handler??=configure(process.env);
+  handlers??=configure(process.env);
+  const handler=handlers[route];
+  if(!handler){res.statusCode=404;res.end('{"ok":false,"reason":"not_found"}');return;}
   const headers=new Headers();
   for(const [key,value] of Object.entries(req.headers))if(value!==undefined)headers.set(key,Array.isArray(value)?value.join(', '):value);
   const requestUrl=new URL(req.url,'https://d01-authority.invalid');

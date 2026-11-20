@@ -342,7 +342,8 @@ export async function requestProduction(
   extraBudget?: number,
   source?: ProductionOriginal,
   ownerSessionToken?:string,
-  endStage?:"D00"
+  endStage?:"D00",
+  resume?:{ runId: string; fromStage: "D01" }
 ): Promise<{ ok: boolean; reason?: string; run_id?: string }> {
   if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(ownerUserId))
     return { ok: false, reason: "forbidden" };
@@ -386,6 +387,21 @@ export async function requestProduction(
   if (blocker) return { ok: false, reason: blocker };
   const intent = String(rows[0].prompt ?? "").trim();
   if (!intent) return { ok: false, reason: "intent_missing" };
+
+  // Stage resume reuses the already-registered D00-qualified run and its existing
+  // budget reservation. It must NOT create a new reservation or spend again.
+  if (resume) {
+    if (saved.production_run_id !== resume.runId)
+      return { ok: false, reason: "production_resume_run_binding_required" };
+    if (!saved.productionReservation || typeof saved.productionReservation !== "object")
+      return { ok: false, reason: "production_resume_no_reservation" };
+    let trig: { runId: string; started: boolean; reason?: string };
+    try { trig = await triggerProduction(taskId, intent, projectId, source, ownerSessionToken, undefined, resume); }
+    catch { trig = { runId: resume.runId, started: false, reason: "production_resume_start_uncertain" }; }
+    await addEvent(taskId, resume.fromStage, trig.started ? "production_resume_dispatched" : "production_resume_failed",
+      { run_id: resume.runId, reason: trig.reason ?? null });
+    return { ok: trig.started, reason: trig.reason, run_id: resume.runId };
+  }
 
   const spent = Number(saved.budgetSpent);
   const reserved = Number(saved.reserved ?? 0);

@@ -83,5 +83,28 @@ it("passes only rechecked source/version/locator to the existing governed Runner
    originalId,pageNumber:3,sourceVersionId,sha256:bytesSha,
    assetRevisionId,contentType:"image/jpeg",byteSize:125,
    uploadStartedAt:"2026-11-10T00:00:00.000Z",uploadVerifiedAt:"2026-11-10T00:01:00.000Z",
- },"owner-session");
+ },"owner-session",undefined,undefined);
+});
+const runId="123e4567-e89b-42d3-a456-426614174007";
+it("rejects an unsupported from_stage before any original lookup",async()=>{
+ const res=await submit({original_id:originalId,page_number:3,from_stage:"D02"});
+ expect(res.status).toBe(400);
+ expect((await res.json()).reason).toBe("production_from_stage_invalid");
+ expect(s.production).not.toHaveBeenCalled();
+});
+it("requires the resumed run to be bound in the task checkpoint",async()=>{
+ const res=await submit({original_id:originalId,page_number:3,from_stage:"D01"});
+ expect(res.status).toBe(409);
+ expect((await res.json()).reason).toBe("production_resume_run_binding_required");
+ expect(s.production).not.toHaveBeenCalled();
+});
+it("passes the checkpoint-bound run as resume to requestProduction",async()=>{
+ s.task.mockResolvedValueOnce({task_id:taskId,status:"done",
+   checkpoint:{studio:{project_id:project},production_run_id:runId}});
+ s.production.mockResolvedValueOnce({ok:true,run_id:runId});
+ const res=await submit({original_id:originalId,page_number:3,from_stage:"D01"});
+ expect(res.status).toBe(200);
+ expect((await res.json()).run_id).toBe(runId);
+ expect(s.production).toHaveBeenCalledWith(taskId,owner,undefined,undefined,expect.anything(),"owner-session",
+   undefined,{runId,fromStage:"D01"});
 });

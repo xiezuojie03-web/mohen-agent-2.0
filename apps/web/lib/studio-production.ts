@@ -160,7 +160,8 @@ export async function failProductionRun(runId: string, reason = "PRODUCTION_PROC
  * 触发一次真实生产（D00–D05）。fire-and-forget：本函数只负责登记 + 启动进程并返回 run_id，
  * 生产进度与终态由 run.mjs 内部回写 control.production_runs。
  */
-export async function triggerProduction(taskId: string, intent: string, projectId: string, source?:ProductionOriginal, ownerSessionToken?:string, endStage?:"D00"): Promise<ProductionTrigger> {
+export interface StageResume { runId: string; fromStage: "D01" }
+export async function triggerProduction(taskId: string, intent: string, projectId: string, source?:ProductionOriginal, ownerSessionToken?:string, endStage?:"D00", resume?:StageResume): Promise<ProductionTrigger> {
   if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(projectId))
     return { runId: "", started: false, reason: "production_project_binding_required" };
   const projectRoot = resolveProjectRoot();
@@ -197,26 +198,37 @@ export async function triggerProduction(taskId: string, intent: string, projectI
   } catch {
     return {runId:"",started:false,reason:"production_d00_approval_binding_required"};
   }
-  const runId = approvedRun ?? randomUUID();
+  const runId = resume?.runId ?? approvedRun ?? randomUUID();
   const cloudInput={run_id:runId,...stageInput,owner_session_token:ownerSessionToken,
-    ...(endStage ? {to_stage:endStage} : {})};
+    ...(endStage ? {to_stage:endStage} : {}),...(resume ? {from_stage:resume.fromStage} : {})};
   const metadata=cloud?{cloud_dispatch:{input_digest:cloudProductionInputDigest(cloudInput)}}:{};
 
-  // 1) 预登记 production_runs（RUNNING），前端立即可查；D00 的 on conflict 会复用。
-  try {
-    const insertRun = `insert into control.production_runs
-       (run_id, research_intent, scope, execution_mode, status, started_at, metadata, architecture_generation)
-       values (:'run_id'::uuid, :'intent', :'scope'::jsonb, :'mode', 'RUNNING', now(), :'metadata'::jsonb, :'arch')
-       on conflict (run_id) do nothing`;
-    const params = { run_id: runId, intent, scope: JSON.stringify(scope), mode: EXECUTION_MODE, arch: ARCH, metadata:JSON.stringify(metadata) };
-    if (approvedRun) {
-      const inserted = await queryRows(insertRun + " returning run_id::text", params);
-      if (inserted.length !== 1) return {runId:"",started:false,reason:"production_d00_approved_run_already_registered"};
-    } else {
-      await dbRun(insertRun, params);
+  if (resume) {
+    // Resuming an already-registered, D00-qualified run: never create a new
+    // run or re-spend budget. The row must already exist and match this exact
+    // project/root/original scope; the cloud executor advances its stage.
+    const existing = await queryRows(
+      `select run_id::text from control.production_runs
+       where run_id=:'run'::uuid and scope=:'scope'::jsonb`,
+      { run: runId, scope: JSON.stringify(scope) });
+    if (existing.length !== 1) return {runId:"",started:false,reason:"production_resume_run_scope_mismatch"};
+  } else {
+    // 1) 预登记 production_runs（RUNNING），前端立即可查；D00 的 on conflict 会复用。
+    try {
+      const insertRun = `insert into control.production_runs
+         (run_id, research_intent, scope, execution_mode, status, started_at, metadata, architecture_generation)
+         values (:'run_id'::uuid, :'intent', :'scope'::jsonb, :'mode', 'RUNNING', now(), :'metadata'::jsonb, :'arch')
+         on conflict (run_id) do nothing`;
+      const params = { run_id: runId, intent, scope: JSON.stringify(scope), mode: EXECUTION_MODE, arch: ARCH, metadata:JSON.stringify(metadata) };
+      if (approvedRun) {
+        const inserted = await queryRows(insertRun + " returning run_id::text", params);
+        if (inserted.length !== 1) return {runId:"",started:false,reason:"production_d00_approved_run_already_registered"};
+      } else {
+        await dbRun(insertRun, params);
+      }
+    } catch (e) {
+      return { runId: "", started: false, reason: "production_run_register_failed" };
     }
-  } catch (e) {
-    return { runId: "", started: false, reason: "production_run_register_failed" };
   }
 
   // 2) 关联 research_task ↔ run_id（checkpoint 存 run_id）+ 事件

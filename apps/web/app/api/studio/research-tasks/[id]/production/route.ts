@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getTaskStatus, requestProduction } from "../../../../../../lib/studio-research";
 import { canAccess } from "../../../../../../lib/ownership";
 import { signDatabaseSessionToken } from "../../../../../../lib/auth";
-import { createPrivateOriginalRepository, getNodePgPool } from "@mohen/data-access";
+import { createPrivateOriginalRepository, getNodePgPool, queryRows } from "@mohen/data-access";
 import type { ProductionOriginal } from "../../../../../../lib/studio-production";
 import { createPrivateSourceRegistrationRepository } from "../../../../../../../../packages/data-access/src/private-source-registration-repository.mjs";
 import { getSession, isOperatorSession } from "../../../../../../lib/session";
@@ -45,7 +45,17 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const data=body&&typeof body==="object"&&!Array.isArray(body)?body as Record<string,unknown>:{};
   if (data.to_stage !== undefined && data.to_stage !== "D00")
     return NextResponse.json({ok:false,reason:"production_stage_invalid"},{status:400});
+  if (data.from_stage !== undefined && data.from_stage !== "D01")
+    return NextResponse.json({ok:false,reason:"production_from_stage_invalid"},{status:400});
+  if (data.to_stage === "D00" && data.from_stage !== undefined)
+    return NextResponse.json({ok:false,reason:"production_stage_conflict"},{status:400});
   const endStage = data.to_stage === "D00" ? data.to_stage : undefined;
+  const resumeRunId = data.from_stage === "D01"
+    ? (checkpoint && typeof checkpoint==="object" && !Array.isArray(checkpoint)
+        ? (checkpoint as Record<string,unknown>).production_run_id : null)
+    : null;
+  if (data.from_stage === "D01" && (typeof resumeRunId!=="string"||!UUID.test(resumeRunId)))
+    return NextResponse.json({ok:false,reason:"production_resume_run_binding_required"},{status:409});
   const originalId=data.original_id,page=data.page_number;
   if(typeof originalId!=="string"||!UUID.test(originalId)||!Number.isSafeInteger(page)||
      (page as number)<1||(page as number)>10000)
@@ -84,7 +94,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ok:false,reason:"production_original_check_unavailable"},{status:503});
   }
 
-  const result = await requestProduction(id, session.uid, undefined, undefined, source, ownerSessionToken, endStage);
+  const result = await requestProduction(id, session.uid, undefined, undefined, source, ownerSessionToken, endStage,
+    data.from_stage === "D01" ? { runId: resumeRunId as string, fromStage: "D01" } : undefined);
   if (!result.ok) {
     const status = result.reason === "task_not_found" ? 404
       : result.reason === "task_not_ready" ? 409
@@ -125,5 +136,19 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
   const { getProductionStatus } = await import("../../../../../../lib/studio-production");
   const production = await getProductionStatus(runId);
-  return NextResponse.json({ ok: true, production });
+  // Resume eligibility is derived from a CURRENT independent G0 qualification
+  // for this exact run, never from a client-claimed D00 PASS. Fail closed.
+  let resume_d01_eligible = false;
+  try {
+    const rows = await queryRows(
+      `select 1 from control.qualification_current q
+       join control.gate_audits a on a.gate_audit_id = q.gate_audit_id
+       where q.current_valid = true and q.consumer = 'producer'
+         and a.run_id = :'run'::uuid and a.stage = 'D00' and a.gate_code = 'G0'
+         and a.result = 'PASS' and a.decision_origin = 'independent_gate'
+         and (a.valid_until is null or a.valid_until > now()) limit 1`,
+      { run: runId });
+    resume_d01_eligible = rows.length === 1;
+  } catch { resume_d01_eligible = false; }
+  return NextResponse.json({ ok: true, production, resume_d01_eligible });
 }
