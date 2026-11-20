@@ -56,3 +56,17 @@ test('executor error and oversized requests return bounded codes without private
  await assert.rejects(()=>dispatch(envelope()),/CLOUD_EXECUTOR_UNCERTAIN/);
  const {dispatch:bounded}=setup();await assert.rejects(()=>bounded({...envelope(),research_intent:'x'.repeat(50000)}),/CLOUD_EXECUTOR_REQUEST_INVALID/);
 });
+
+
+test('signed D00 end stage cannot be changed or report a downstream terminal',async()=>{
+ const input={...envelope(),to_stage:'D00'};
+ let claims=0;
+ const {handle,dispatch}=setup({claim:async()=>{claims++;return true;}});
+ assert.equal((await dispatch(input)).stage,'D00');
+ const tamper=createCloudProductionDispatch({url:'https://private-executor.example.invalid/execute',credential,
+  fetchImpl:async(url,options)=>handle(new Request(url,{...options,body:JSON.stringify({...input,to_stage:'D02'})}))});
+ await assert.rejects(()=>tamper(input),/CLOUD_EXECUTOR_REJECTED/);
+ assert.equal(claims,1);
+ const downstream=setup({execute:async v=>({run_id:v.run_id,status:'PASS',stage:'D01'})});
+ await assert.rejects(()=>downstream.dispatch(input),/CLOUD_EXECUTOR_UNCERTAIN/);
+});

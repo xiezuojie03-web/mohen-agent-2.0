@@ -11,7 +11,7 @@ const object=x=>x&&typeof x==='object'&&!Array.isArray(x)?x:{};
 
 export function planStudioKnowledgeRoute({
   qualifiedL5=[], qualifiedFormalL0L4=[], projectSnapshot=null, lookupDegraded=false,
-  formalLookupDegraded=false,
+  formalLookupDegraded=false, l5Coverage,
   projectFormalCoverageComplete=false, sharedL0L4CoverageComplete=false,
 }={}){
   const snapshot=object(projectSnapshot);
@@ -39,6 +39,7 @@ export function planStudioKnowledgeRoute({
     snapshot.readings_truncated||snapshot.materials_truncated);
   const summary={
     qualified_l5:eligibleL5.length,project_l0:originals.length,
+    l5_coverage:l5Coverage??'NOT_VERIFIED',
     project_l1_read_units:readingCount,project_l2_links:evidenceCount,
     project_asset_candidates:refs.length,blocked_asset_candidates:blocked.length,
     current_formal_l0_l4_refs:formal.length,
@@ -61,7 +62,7 @@ export function planStudioKnowledgeRoute({
   } else if(formalL0) {
     disposition='QUALIFIED_INPUT_AVAILABLE';nextAction='REUSE_CURRENT_L0_CHECK_READ_RIGHTS_BEFORE_D01';
     reason='MATCHED_CURRENT_G0_NO_D00_REPEAT';
-  } else if(lookupDegraded||formalLookupDegraded) {
+  } else if(lookupDegraded||formalLookupDegraded||l5Coverage==='UNAVAILABLE') {
     // A valid current Gate result is usable even when the *other* formal
     // index is unavailable, but absent results cannot prove a source gap.
     disposition='HOLD';nextAction='RETRY_AUTHORIZED_READ';
@@ -78,6 +79,9 @@ export function planStudioKnowledgeRoute({
   } else if(blocked.length) {
     disposition='HOLD';nextAction='REVIEW_BLOCKED_REFERENCES';
     reason='CANDIDATES_EXIST_BUT_CANNOT_BE_CONSUMED';
+  } else if(l5Coverage==='PARTIAL'||l5Coverage==='NOT_SEARCHED') {
+    disposition='HOLD'; nextAction='COMPLETE_AUTHORIZED_L5_SEARCH';
+    reason=l5Coverage==='PARTIAL'?'L5_SEARCH_COVERAGE_PARTIAL':'L5_SEARCH_NOT_PERFORMED';
   } else if(projectFormalCoverageComplete) {
     // The Owner/Project formal scan is complete and empty. This proves only
     // a project-scoped source gap; it does NOT prove cross-project/global

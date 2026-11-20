@@ -1,9 +1,12 @@
+type L5SearchCoverage = "COMPLETE" | "PARTIAL" | "NOT_SEARCHED" | "UNAVAILABLE";
+
 export interface StudioKnowledgeRouting {
   schema:"mohen.studio-knowledge-routing.v1";
   disposition:"HOLD"|"REUSE_QUALIFIED"|"REUSE_FORMAL_QUALIFIED"|"QUALIFIED_INPUT_AVAILABLE"|"QUALIFICATION_REQUIRED"|"PROJECT_SOURCE_GAP_CONFIRMED"|"SOURCE_GAP_CONFIRMED"|"SOURCE_GAP_UNCONFIRMED";
   next_action:string;
   reason:string;
   coverage:{
+    l5_coverage:L5SearchCoverage|"NOT_VERIFIED";
     qualified_l5:number;project_l0:number;project_l1_read_units:number;
     project_l2_links:number;project_asset_candidates:number;blocked_asset_candidates:number;
     current_formal_l0_l4_refs:number;project_formal_l0_l4_coverage:"VERIFIED_COMPLETE"|"NOT_VERIFIED";
@@ -23,6 +26,7 @@ export function planStudioKnowledgeRoute(options?:{
   qualifiedFormalL0L4?:Array<{layer:string;gate:string;objectId:string;revision:string}>;
   projectFormalCoverageComplete?:boolean;
   lookupDegraded?:boolean;
+  l5Coverage?:L5SearchCoverage;
   formalLookupDegraded?:boolean;
   sharedL0L4CoverageComplete?:boolean;
 }):StudioKnowledgeRouting;

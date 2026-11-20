@@ -1,8 +1,6 @@
 {
   "specialty": "MOHEN-ENGINEERING-DATA-UNIFICATION-01",
   "stage": "P4-PLAN",
-  "generated_at": "2026-11-19",
-  "owner_ruling": "2026-11-19：27组权利按原始授权证据迁移（quote/retain/access_view/machine_read=allowed，连同完整 rights_evidence：owner_authorization、owner_decision_at=2026-11-08、scope=project_internal_research、granted/held 清单、版本快照、写入来源审计）。5个held动作保持HOLD不新增授权。云端空对象不统一改写。属历史Owner授权事实迁移，非重新授权。",
   "batches": [
     {
       "id": "BATCH-0",
@@ -13,7 +11,7 @@
         "install_migrations_on_cloud": "24个未安装的仓库迁移（清单见 DATABASE_MIGRATION_VERSION_DIFF.json repo_migrations_not_installed_on_cloud）：M4执行控制20261104013351、ST-07/08/09出版链20261114150000/14180000/14190000、导演计划20261114120000、artifact_content_columns 20261109120000、original_media_assets列扩展20261110130000、director_plans列扩展20261108090000/20261108100000、权利词典20261113100000、D02-D05泛化系列20261113170000/13180000/13190000、20261114090000、claim_revision系列20261114210000/20261114220000、20261115130000、20261114200000、gate_audits_rls等",
         "resulting_tables": "studio.execution_controls/execution_control_events/work_revisions/submission_snapshots/director_plans/reference_kinds、publication.editorial_decisions/publication_snapshots/withdrawals、control.artifact_content_columns 等10张本地独有表",
         "column_extensions": "public.assets(original_id/source_id/page_locator/content_sha256/rights_by_action)、public.director_plans(source_ids/project_id)、publication.published_pointers(source_schema/studio_revision_id/publication_id)",
-        "identity_mapping": "云端开发Project e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5 及其资产（asset_heads/revisions各1）保护为PRESERVE_CLOUD，本地16个Project按原ID插入（无主键冲突，P2证实无交集）"
+        "identity_mapping": "身份外键见 P4_SCHEMA_PREREQUISITES.json PREREQ-2。现有云端 Project 及其资产按 PRESERVE_CLOUD 保护；16 个历史 Project 的业务写入归 BATCH-4。"
       },
       "risk": "结构变更必须逐个通过正式迁移脚本在云端执行并核对；迁移已按依赖整理，20261119004253已装新权利约束，重装旧迁移需逐条核对幂等性（if exists 守卫）",
       "rollback": "每个迁移文件执行前留存云端 schema 快照；supabase/rollback/ 下已有2个回滚脚本，其余按迁移文件自身的幂等守卫处理"
@@ -35,7 +33,7 @@
         "session_verification_keys": "1条同ID异内容（AUTH_DATA_EXCLUDED，不迁移该差异，云端现状保留）"
       },
       "rules": [
-        "保持原始ID/时间戳/Reviewer身份（83 machine+7 owner+1 early）/decision_origin=original",
+        "保持原始 ID、时间戳、Reviewer 身份及原 decision_origin（本批 91 条为 independent_gate）。",
         "20个云端HOLD Run保持不变（PRESERVE_CLOUD）",
         "13条过期资格保持过期（valid_until原样，不复活）",
         "49条资格仅作为历史证据与身份迁移，不构成现行读取自动放行",
@@ -111,7 +109,7 @@
       "rules": [
         "云端开发Project e03c4ba8及其资产不覆盖不删除（PRESERVE_CLOUD）",
         "research_tasks/research_events/study_asset_receipts的云端独有行（1/6/8条）保留",
-        "users身份映射前置（见P4_SCHEMA_PREREQUISITES）：本地7用户+机器Reviewer用户按原ID插入（无凭据迁移），或全部user_id外键引用先于数据批次落位"
+        "用户身份外键依赖 BATCH-0 的 PREREQ-2；执行前核对所有 user_id 可解析。"
       ]
     },
     {
@@ -141,5 +139,6 @@
     "auth_data": "public.users的password_hash/session_not_before不迁移；云端现有认证状态优先；本地7个本地独有用户仅迁身份行（见prerequisites）",
     "binary_bytes": "90个原件字节留本地/后续另行存储策略，仅迁元数据",
     "cloud_only_rows": "云端独有15行（research_events 6/research_tasks 1/study_asset_receipts 8）+云端开发Project资产保留不删"
-  }
+  },
+  "conflict_rules": "P4_CONFLICT_HANDLING_RULES.json"
 }

@@ -22,11 +22,17 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   }
 
   let additionalCeiling: unknown;
+  let recoverUnderstanding = false;
   try {
     const raw = await req.text();
     const body: unknown = raw.trim() ? JSON.parse(raw) : {};
     if (!body || typeof body !== "object" || Array.isArray(body)) throw new Error("BAD_REQUEST");
-    additionalCeiling = (body as {additionalCeiling?: unknown}).additionalCeiling;
+    const options = body as {additionalCeiling?: unknown; recover_understanding?: unknown};
+    additionalCeiling = options.additionalCeiling;
+    if (options.recover_understanding !== undefined && options.recover_understanding !== true) throw new Error("BAD_REQUEST");
+    recoverUnderstanding = options.recover_understanding === true;
+    if (recoverUnderstanding && req.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json")
+      throw new Error("BAD_REQUEST");
   } catch {
     return NextResponse.json({ ok: false, reason: "bad_request" }, { status: 400 });
   }
@@ -40,7 +46,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   }
   const session=await getSession();
   if(!session)return NextResponse.json({ok:false,reason:"login_required"},{status:401});
-  const result = await resumeResearchTask(id,undefined,signDatabaseSessionToken(session));
+  const result = await resumeResearchTask(id,undefined,signDatabaseSessionToken(session),recoverUnderstanding?session.uid:undefined);
+  if (result.holdReason === "understanding_recovered")
+    return NextResponse.json({ok:true,recovered:true},{headers:{"cache-control":"no-store"}});
   if (result.status !== "done") {
     return NextResponse.json(
       { ok: false, reason: result.holdReason || "resume_hold" },

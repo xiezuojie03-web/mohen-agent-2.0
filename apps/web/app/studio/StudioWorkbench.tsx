@@ -70,7 +70,7 @@ function ColumnHead({ no, title, desc }: { no: string; title: string; desc: stri
   );
 }
 
-export default function StudioWorkbench() {
+export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = {}) {
   // Owner 决定：研究「项目」对用户隐形。页面不再要求选择或命名项目；用户发出第一句话时
   // 由后台自动建立一份研究底稿并绑定本次创作，界面只把它当作「以往研究档案」在抽屉里可见。
   const [projects,setProjects]=useState<StudioProject[]>([]);
@@ -79,7 +79,8 @@ export default function StudioWorkbench() {
   const [projectBusy,setProjectBusy]=useState(false);
   const [projectError,setProjectError]=useState<string|null>(null);
   const [draftsOpen,setDraftsOpen]=useState(false);
-  const [reopening,setReopening]=useState(false);
+  const [reopeningProjectId,setReopeningProjectId]=useState<string|null>(null);
+  const reopening=reopeningProjectId!==null;
   const [resumeNotice,setResumeNotice]=useState<string|null>(null);
   // 底稿改名：只改显示名称，不合并档案、不改 project_id。
   const [renaming,setRenaming]=useState<{id:string;title:string}|null>(null);
@@ -151,13 +152,13 @@ export default function StudioWorkbench() {
   type SavedResearchTask = { task_id:string;project_id:string|null;prompt:string;status:string };
   async function reopenProject(project:StudioProject) {
     if (reopening || busy || projectBusy || productionBusy || production?.status === "RUNNING") return;
-    setReopening(true);setProjectError(null);
+    setReopeningProjectId(project.project_id);setProjectError(null);
     try {
       const tasksResponse=await fetch("/api/studio/tasks",{cache:"no-store"});
       const tasksBody=await tasksResponse.json() as {ok?:boolean;tasks?:SavedResearchTask[]};
       if (!tasksResponse.ok || !tasksBody.ok || !Array.isArray(tasksBody.tasks)) throw new Error("已保存研究任务暂时无法读取。");
       const task=tasksBody.tasks.find(t=>t.project_id===project.project_id);
-      let restored:{taskId:string;status:"done"|"hold";prompt:string;decision:AgentDecision|null}|null=null;
+      let restored:{taskId:string;status:"done"|"hold";prompt:string;decision:AgentDecision|null;materialsPending:boolean}|null=null;
       let priorProduction:StudioProductionReadback|null=null;
       if (task) {
         const statusResponse=await fetch(`/api/studio/research-tasks/${encodeURIComponent(task.task_id)}/status`,{cache:"no-store"});
@@ -181,8 +182,8 @@ export default function StudioWorkbench() {
         const decision=checkpoint.decision;
         const validDecision=!unavailable&&decision&&typeof decision==="object"&&!Array.isArray(decision)
           ?decision as AgentDecision:null;
-        restored={taskId:task.task_id,status:statusBody.task.status==="done"&&!!validDecision?"done":"hold",
-          prompt:statusBody.task.prompt??task.prompt,decision:validDecision};
+        restored={taskId:task.task_id,status:statusBody.task.status==="done"?"done":"hold",
+          prompt:statusBody.task.prompt??task.prompt,decision:validDecision,materialsPending:!validDecision};
         const prodResponse=await fetch(`/api/studio/research-tasks/${encodeURIComponent(task.task_id)}/production`,{cache:"no-store"});
         if (prodResponse.ok) {
           const p=await prodResponse.json() as {ok?:boolean;production?:StudioProductionReadback|null};
@@ -193,7 +194,7 @@ export default function StudioWorkbench() {
       setProjectId(project.project_id);
       if (restored) {
         lastTaskIdRef.current=restored.taskId;
-        setCurrentResearch({taskId:restored.taskId,status:restored.status});
+        setCurrentResearch({taskId:restored.taskId,status:restored.status,materialsPending:restored.materialsPending});
         setMessages([
           {role:"user",text:restored.prompt},
           {role:"mohen",
@@ -211,7 +212,7 @@ export default function StudioWorkbench() {
       }
       setDraftsOpen(false);
     }catch(error){setProjectError(error instanceof Error?error.message:"暂时无法恢复研究项目。");}
-    finally{setReopening(false);}
+    finally{setReopeningProjectId(null);}
   }
 
   // 创作流程状态
@@ -247,7 +248,73 @@ export default function StudioWorkbench() {
 
   // 生产进度（委托后异步 D00–D05 生产，轮询 control.production_runs）
   const [production, setProduction] = useState<StudioProductionReadback | null>(null);
-  const [currentResearch, setCurrentResearch] = useState<{ taskId: string; status: "done" | "hold" } | null>(null);
+  const [currentResearch, setCurrentResearch] = useState<{ taskId: string; status: "done" | "hold"; materialsPending?: boolean } | null>(null);
+  const [sourceChoices, setSourceChoices] = useState<{
+    taskId: string; candidates: {id: string; title: string; provider: string}[];
+    selectedId: string | null; saving: boolean; error: string | null;
+  } | null>(null);
+  const sourceTaskId = currentResearch?.taskId;
+  useEffect(() => {
+    if (!sourceTaskId) return;
+    const controller = new AbortController();
+    const taskId = sourceTaskId;
+    void (async () => {
+      try {
+        const response = await fetch(`/api/studio/research-tasks/${encodeURIComponent(taskId)}/source-selection`,
+          { cache: "no-store", signal: controller.signal });
+        if (response.status === 404) return;
+        const body = await response.json();
+        if (!response.ok || body.ok !== true || !Array.isArray(body.candidates)) throw new Error();
+        if (!controller.signal.aborted) setSourceChoices({taskId, candidates: body.candidates,
+          selectedId: body.selected_candidate_id ?? null, saving: false, error: null});
+      } catch {
+        if (!controller.signal.aborted) setSourceChoices({taskId, candidates: [], selectedId: null,
+          saving: false, error: "暂时无法读取可选来源。"});
+      }
+    })();
+    return () => controller.abort();
+  }, [sourceTaskId, currentResearch?.status]);
+
+  const [sourceAcquisition, setSourceAcquisition] = useState<{taskId:string; busy:boolean; message:string; originalId?:string} | null>(null);
+  async function acquireSource(taskId: string) {
+    setSourceAcquisition({taskId, busy:true, message:"正在核验许可并保存原件…"});
+    try {
+      const response = await fetch(`/api/studio/research-tasks/${encodeURIComponent(taskId)}/source-acquisition`, {
+        method:"POST", headers:{"content-type":"application/json"}, body:"{}",
+      });
+      const body = await response.json();
+      const reasons: Record<string,string> = {
+        COMMONS_LOCATOR_UNSUPPORTED:"此候选的原件入口不受支持。",
+        COMMONS_LICENSE_NOT_VERIFIED:"该文件的署名或许可未通过核验。",
+        COMMONS_ORIGINAL_NOT_VERIFIED:"原件字节未通过文件版本校验。",
+        ORIGINAL_IDEMPOTENCY_CONFLICT:"原件版本已变化，请核对已保存的记录。",
+      };
+      const originalId = response.ok && body.ok === true && typeof body.receipt?.original_id === "string"
+        ? body.receipt.original_id as string : undefined;
+      setSourceAcquisition({taskId, busy:false, originalId, message:originalId
+        ? "原件已私有保存，来源登记已回读。"
+        : reasons[body.reason] ?? "暂时无法确认保存，可重试同一来源。"});
+    } catch {
+      setSourceAcquisition({taskId, busy:false, message:"暂时无法确认保存，可重试同一来源。"});
+    }
+  }
+
+  async function selectSource(taskId: string, candidateId: string) {
+    setSourceChoices(previous => previous?.taskId === taskId ? {...previous, saving: true, error: null} : previous);
+    try {
+      const response = await fetch(`/api/studio/research-tasks/${encodeURIComponent(taskId)}/source-selection`, {
+        method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({candidate_id: candidateId}),
+      });
+      const body = await response.json();
+      if (!response.ok || body.ok !== true || body.selection?.candidate_id !== candidateId) throw new Error();
+      setSourceChoices(previous => previous?.taskId === taskId
+        ? {...previous, selectedId: candidateId, saving: false} : previous);
+    } catch {
+      setSourceChoices(previous => previous?.taskId === taskId
+        ? {...previous, saving: false, error: "未能确认候选选择。可以重试同一候选。"} : previous);
+    }
+  }
+
   const [productionBusy, setProductionBusy] = useState(false);
   const [productionError, setProductionError] = useState<string | null>(null);
   const [privateSources, setPrivateSources] = useState<Array<{
@@ -257,6 +324,7 @@ export default function StudioWorkbench() {
   const [sourceChoice,setSourceChoice]=useState("");
   const [sourcePage,setSourcePage]=useState("");
   const [sourceReadError,setSourceReadError]=useState<string|null>(null);
+  const acquiredOriginalId = sourceAcquisition?.taskId === currentResearch?.taskId ? sourceAcquisition?.originalId : undefined;
   useEffect(()=>{
     if(!projectId || !currentResearch){setPrivateSources([]);setSourceChoice("");setSourceReadError(null);return;}
     const controller=new AbortController();
@@ -271,11 +339,17 @@ export default function StudioWorkbench() {
           registration_state:"BOUND"|"UNBOUND";source_version_id:string|null;
         }>};
         if(!response.ok||body.ok!==true||!Array.isArray(body.originals))throw Error("source_unavailable");
-        if(!controller.signal.aborted)setPrivateSources(body.originals);
+        if(!controller.signal.aborted) {
+          setPrivateSources(body.originals);
+          if (body.originals.some(original => original.original_id === acquiredOriginalId && original.registration_state === "BOUND")) {
+            setSourceChoice(acquiredOriginalId ?? "");
+            setSourcePage("1");
+          }
+        }
       }catch{if(!controller.signal.aborted)setSourceReadError("项目私有原件或正式来源登记暂时无法核验；不得自动启动D00。");}
     })();
     return()=>controller.abort();
-  },[projectId,currentResearch?.taskId]);
+  },[projectId,currentResearch?.taskId,acquiredOriginalId]);
   const productionPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   useEffect(() => () => {
     if (productionPollRef.current !== null) clearInterval(productionPollRef.current);
@@ -384,21 +458,31 @@ export default function StudioWorkbench() {
     }
   }
 
-  async function continueResearch() {
+  const [canRequestUnderstandingRecovery, setCanRequestUnderstandingRecovery] = useState<string | null>(null);
+
+  async function continueResearch(recoverUnderstanding = false) {
     if (busy || currentResearch?.status !== "hold") return;
     const {taskId} = currentResearch;
     const path = `/api/studio/research-tasks/${encodeURIComponent(taskId)}`;
     setBusy(true);
     setResumeNotice(null);
     try {
-      const response = await fetch(`${path}/resume`, {method:"POST"});
+      const response = await fetch(`${path}/resume`, recoverUnderstanding
+        ? {method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({recover_understanding:true})}
+        : {method:"POST"});
       if (!response.ok) {
         const result = await response.json() as {reason?:string};
+        setCanRequestUnderstandingRecovery(result.reason === "resume_step_checkpoint_required" ? taskId : null);
         setResumeNotice(result.reason === "research_prerequisites"
           ? "研究仍在暂停，模型或知识读取前提尚未就绪。"
           : result.reason === "resume_step_checkpoint_required"
             ? "原委托已有执行回执，须从已完成步骤之后恢复。当前不能重复运行已完成的步骤。"
             : "研究暂时无法继续，请查看已保存任务的状态。");
+        return;
+      }
+      if (recoverUnderstanding) {
+        setCanRequestUnderstandingRecovery(null);
+        setResumeNotice("已补跑一次问题理解并保存结果。下一步可从正式检索继续原委托。");
         return;
       }
       const status = await fetch(`${path}/status`, {cache:"no-store"});
@@ -407,12 +491,16 @@ export default function StudioWorkbench() {
       const checkpoint = (typeof raw === "string" ? JSON.parse(raw) : raw) as
         {decision?:AgentDecision;materialRead?:{state?:string}} | undefined;
       const decision = checkpoint?.decision;
-      if (!status.ok || task?.task_id !== taskId || task.status !== "done" ||
-          checkpoint?.materialRead?.state === "HOLD" || !decision?.mohenLine) {
+      if (!status.ok || task?.task_id !== taskId || task.status !== "done") {
         setResumeNotice("续跑已提交，请通过资料台重新打开本项目，核对最新状态。");
         return;
       }
-      setCurrentResearch({taskId,status:"done"});
+      const materialsPending = checkpoint?.materialRead?.state === "HOLD" || !decision?.mohenLine;
+      setCurrentResearch({taskId,status:"done",materialsPending});
+      if (materialsPending || !decision) {
+        setResumeNotice("原委托已完成查找。可在待验证候选中选择来源，材料仍待核验。");
+        return;
+      }
       setMessages(messages=>[...messages,{role:"mohen",text:decision.mohenLine,taskRef:taskId,
         materials:decision.materials,gaps:decision.gaps,clarify:decision.clarifyQuestion}]);
       setResumeNotice("已继续原研究委托。");
@@ -451,7 +539,7 @@ export default function StudioWorkbench() {
     }, 2000);
   }
 
-  async function requestFormalProduction() {
+  async function requestFormalProduction(endStage?: "D00") {
     if (!currentResearch || currentResearch.status !== "done" || productionBusy || busy ||
         projectBusy || production?.status === "RUNNING") return;
     const taskId = currentResearch.taskId;
@@ -466,7 +554,7 @@ export default function StudioWorkbench() {
     try {
       const response = await fetch(`/api/studio/research-tasks/${encodeURIComponent(taskId)}/production`, {
         method: "POST", headers: { "content-type": "application/json" },
-        body:JSON.stringify({original_id:source.original_id,page_number:pageNumber}),cache: "no-store",
+        body:JSON.stringify({original_id:source.original_id,page_number:pageNumber,...(endStage ? {to_stage:endStage} : {})}),cache: "no-store",
       });
       const result = (await response.json()) as { ok?: boolean; run_id?: string; reason?: string };
       if (!response.ok || !result.ok || !result.run_id) {
@@ -490,7 +578,12 @@ export default function StudioWorkbench() {
           production_reservation_conflict: "另一次请求已占用生产预算，请核对原任务",
           budget_hold: "当前研究任务预算不足",
         };
-        setProductionError(`正式生产未启动：${reasons[result.reason ?? ""] ?? result.reason ?? "受控生产前提不满足"}。研究委托与已有资料仍保留。`);
+        if(result.run_id){
+          setProduction({ status: "UNKNOWN", current_stage: null });
+          pollProduction(taskId);
+        }
+        const operation = result.run_id ? "已登记运行，正在核对回执" : "正式生产未启动";
+        setProductionError(`${operation}：${reasons[result.reason ?? ""] ?? result.reason ?? "受控生产前提不满足"}。研究委托与已有资料仍保留。`);
         return;
       }
       setProduction({ status: "RUNNING", current_stage: null });
@@ -506,7 +599,7 @@ export default function StudioWorkbench() {
 
   const lastUserBrief = [...messages].reverse().find((m) => m.role === "user")?.text;
 
-  const canGeneratePlans = currentResearch?.status === "done" && Boolean(lastUserBrief);
+  const canGeneratePlans = currentResearch?.status === "done" && !currentResearch.materialsPending && Boolean(lastUserBrief);
   const hasWorkDraft = Boolean(selectedPlan && adoptedPlanId && beats?.length);
 
   async function authorizeExternal(): Promise<string | null> {
@@ -766,7 +859,9 @@ export default function StudioWorkbench() {
   const materials = [...new Map(messages.flatMap((message) => message.materials ?? []).map((material) => [material.id, material])).values()];
   // 中栏只放真实回执：有资料支持的进「这次查到的」，其余进「待验证候选」，缺口原样列出。
   const evidenced = materials.filter((material) => material.epistemic === "FACT_EVIDENCED");
-  const candidates = materials.filter((material) => material.epistemic !== "FACT_EVIDENCED");
+  const activeSourceChoices = sourceChoices?.taskId === sourceTaskId ? sourceChoices : null;
+  const candidates = materials.filter(material => material.epistemic !== "FACT_EVIDENCED" &&
+    !activeSourceChoices?.candidates.some(candidate => candidate.id === material.id));
   const gaps = [...new Set(messages.flatMap((message) => message.gaps ?? []))];
   const materialCard = (material: Material) => {
     const label = humanEpistemic(material.epistemic, false);
@@ -828,7 +923,7 @@ export default function StudioWorkbench() {
                       <span className="studio__rename">
                         <span>{p.project_title}</span>
                         <button type="button" className="studio__link-btn" disabled={reopening||busy||productionBusy}
-                          onClick={()=>void reopenProject(p)}>{reopening?"核验中…":"继续"}</button>
+                          onClick={()=>void reopenProject(p)}>{reopeningProjectId===p.project_id?"核验中…":"继续"}</button>
                         <button type="button" className="studio__link-btn studio__link-btn--muted"
                           onClick={()=>{setRenameError(null);setRenaming({id:p.project_id,title:p.project_title});}}>改名</button>
                       </span>
@@ -932,7 +1027,38 @@ export default function StudioWorkbench() {
 
           <div className="studio__research-block">
             <h3>待验证候选</h3>
-            {candidates.length === 0 ? (
+            {activeSourceChoices && (
+              <>
+                {activeSourceChoices.selectedId !== null && (
+                  <p className="studio__drawer-note">本次委托已选定一条来源。其余候选保留供查看。</p>
+                )}
+                {activeSourceChoices.candidates.map(candidate => (
+                  <div className="studio__material" key={candidate.id}>
+                    <div>{candidate.title} · {candidate.provider}</div>
+                    {activeSourceChoices.selectedId === candidate.id ? (
+                      <>
+                        <p>已选择，待核验获取条件</p>
+                        {candidate.provider === "wikimedia-commons" && (
+                          <button type="button" className="studio__link-btn"
+                            disabled={sourceAcquisition?.taskId === activeSourceChoices.taskId && sourceAcquisition.busy}
+                            onClick={() => void acquireSource(activeSourceChoices.taskId)}>核验并保存原件</button>
+                        )}
+                        {sourceAcquisition?.taskId === activeSourceChoices.taskId &&
+                          <p role="status">{sourceAcquisition.message}</p>}
+                      </>
+                    ) : activeSourceChoices.selectedId === null ? (
+                      <button type="button" className="studio__link-btn"
+                        disabled={activeSourceChoices.saving}
+                        onClick={() => void selectSource(activeSourceChoices.taskId, candidate.id)}>
+                        {activeSourceChoices.saving ? "正在保存选择…" : "选择来源候选"}
+                      </button>
+                    ) : null}
+                  </div>
+                ))}
+                {activeSourceChoices.error && <p role="status">{activeSourceChoices.error}</p>}
+              </>
+            )}
+            {candidates.length === 0 && !activeSourceChoices?.candidates.length ? (
               <p className="studio__drawer-note">还没有待验证的判断。</p>
             ) : (
               <div className="studio__materials">{candidates.map(materialCard)}</div>
@@ -948,6 +1074,13 @@ export default function StudioWorkbench() {
                     <p role="status" className="studio__drawer-note">研究委托仍处于暂停状态。前提就绪后，可继续原委托。</p>
                     <button className="studio__ghost-btn" disabled={busy || reopening}
                       onClick={() => void continueResearch()}>{busy ? "正在继续…" : "继续研究"}</button>
+                    {canRequestUnderstandingRecovery === currentResearch.taskId && (
+                      <button type="button" className="studio__link-btn" disabled={busy}
+                        onClick={() => {
+                          if (window.confirm("原任务缺少可恢复的理解结果。允许在原预算内补跑一次模型理解并保留原结算记录？"))
+                            void continueResearch(true);
+                        }}>补跑一次问题理解</button>
+                    )}
                   </>
                 : <>
                     <label className="studio__drawer-note" htmlFor="studio-production-source">项目内已核验并绑定正式来源的原件</label>
@@ -970,8 +1103,8 @@ export default function StudioWorkbench() {
                       disabled={productionBusy || busy || projectBusy || production?.status==="RUNNING"||
                         !privateSources.some(x=>x.original_id===sourceChoice&&x.registration_state==="BOUND")||
                         !Number.isSafeInteger(Number(sourcePage))||Number(sourcePage)<1}
-                      onClick={() => void requestFormalProduction()}>
-                      {productionBusy ? "正在核对生产前提…" : "申请进入 D00—D05"}
+                      onClick={() => void requestFormalProduction(currentResearch.taskId === d00TaskId ? "D00" : undefined)}>
+                      {productionBusy ? "正在核对生产前提…" : currentResearch.taskId === d00TaskId ? "仅接收原件（D00）" : "申请进入 D00—D05"}
                     </button>
                   </>}
               {productionError && <p role="alert" className="studio__submit-msg">{productionError}</p>}
@@ -1020,7 +1153,9 @@ export default function StudioWorkbench() {
               <div className="studio__empty">
                 {currentResearch?.status === "hold"
                   ? "这份研究仍在暂停。继续原委托并取得研究结果后，才能生成导演方案。"
-                  : "研究完成后，可以在这里生成并比较两种导演方案。"}
+                  : currentResearch?.materialsPending
+                    ? "来源和材料核验后，可以生成导演方案。"
+                    : "研究完成后，可以在这里生成并比较两种导演方案。"}
               </div>
             )}
 

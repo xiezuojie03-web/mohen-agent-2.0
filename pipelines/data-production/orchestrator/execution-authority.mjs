@@ -1,3 +1,4 @@
+import {createTrustedPreviewFetch} from "./trusted-preview-fetch.mjs";
 import { createHash, createPublicKey, verify } from "node:crypto";
 import { assertNoUnboundTopicInputs, assertNoUnboundPrivateEvidenceInput } from "./adapter-binding.mjs";
 
@@ -103,7 +104,7 @@ export async function assertStageExecutionAuthorized({ registry, job, run, input
   }
   let attestation;
   try {
-    const reply = await fetch(endpoint, {
+    const reply = await createTrustedPreviewFetch(process.env)(endpoint, {
       method: "POST", redirect: "error", cache: "no-store", signal: AbortSignal.timeout(5000),
       headers: { "content-type": "application/json", authorization: `Bearer ${credential}` },
       body: JSON.stringify({ jti: claims.jti, run_id: run.run_id, stage: job.stage, job_id: job.job_id, mode,

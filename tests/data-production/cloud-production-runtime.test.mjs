@@ -71,3 +71,24 @@ test('real CLI reaches dynamic token validation without any pre-issued stage tok
   assert.match(stderr,/EXECUTION_SIGNED_GRANT_FORMAT_INVALID/);
  }finally{await fs.rm(dir,{recursive:true,force:true});}
 });
+
+
+test('D00 scope is part of the frozen run and constrains the original Runner',async()=>{
+ const base=input(),e={...base,to_stage:'D00'};
+ assert.notEqual(cloudProductionInputDigest(base),cloudProductionInputDigest(e));
+ assert.throws(()=>cloudProductionInputDigest({...e,to_stage:'D05'}),/CLOUD_EXECUTOR_STAGE_INVALID/);
+ const terminal={run_id:e.run_id,status:'HOLD',stage:'D00',reason_code:'TEST_HOLD'};
+ const result=await executeCloudProductionCli({input:e,projectRoot:process.cwd(),
+  environment:cloudEnvironment(),
+  runChild:async(_command,args)=>{assert.equal(args[args.indexOf('--to')+1],'D00');return {code:2,timedOut:false};},
+  readTerminal:async()=>terminal,holdRun:async()=>{}});
+ assert.deepEqual(result,terminal);
+});
+
+test('Runner startup probe evaluates the actual entry graph without running a task',async()=>{
+ const {probeCloudProductionRunner}=await import('../../pipelines/data-production/orchestrator/cloud-production-runtime.mjs');
+ const result=await probeCloudProductionRunner({projectRoot:process.cwd(),environment:cloudEnvironment()});
+ assert.deepEqual(result,{ok:true,reason:'runner_ready'});
+ const missing=await probeCloudProductionRunner({projectRoot:process.cwd()+'/missing-runner-fixture',environment:cloudEnvironment()});
+ assert.deepEqual(missing,{ok:false,reason:'runner_file_unavailable'});
+});

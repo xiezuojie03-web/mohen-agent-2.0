@@ -1,7 +1,6 @@
 {
   "specialty": "MOHEN-ENGINEERING-DATA-UNIFICATION-01",
   "stage": "P4-PLAN",
-  "generated_at": "2026-11-19",
   "structural_prerequisites": [
     {
       "id": "PREREQ-1",
@@ -15,15 +14,15 @@
       "item": "用户身份行落位（外键前置）",
       "owner_ruling": "P4-OWNER-APPROVAL-02（2026-11-19）有条件批准，按以下修订执行",
       "human_users": {
-        "detail": "本地7个人类用户中，Owner用户270bcecf已在云端存在（UUID与email双一致，P2/本轮核查证实），不动。其余6个探针/测试用户按原UUID插入身份行：password_hash置不可用占位（不迁移任何密码/凭据/会话）；status=disabled；roles=[member]（最低权限）；历史角色信息（原active/member等）仅记录进受控迁移Manifest，不写入云端。email/UUID/会话冲突已核查：无UUID重合（除Owner）、无email冲突、双端web_session_revocations均为0。",
+        "detail": "保留云端现有 Owner 身份。6 个探针用户按原 UUID 落位，status=disabled，roles=[member]，密码为不可用占位。历史角色仅记入受控清单。排除密码、凭据与会话。",
         "verification": "插入后回读status/roles断言；外键依赖表user_id可解析"
       },
       "machine_reviewer": {
-        "detail": "机器Reviewer用户固定UUID b0a11000-0000-4000-8000-0000000000a1（email machine-reviewer@mohen.local）。云端核查结果：users行不存在。按现有正式迁移合同（tests/data-production/machine-reviewer-boundary.integration.mjs）受控补齐users行；DB角色mohen_gate_signer_m5_machine维持CURRENT.md 2.4记载的未激活状态不创建，不自动扩大Gate权限；机器身份与普通Web登录分离（不可用密码占位+非登录邮箱）。",
+        "detail": "按 machine-reviewer-boundary 合同补齐机器 Reviewer 身份行，使用固定 UUID b0a11000-0000-4000-8000-0000000000a1 和非登录邮箱。保持 mohen_gate_signer_m5_machine 角色未激活，签发权限维持原边界。",
         "verification": "插入后回读email/UUID；确认mohen_gate_signer_m5_machine角色仍不存在"
       },
       "owner_decision_required": false,
-      "note": "已按Owner裁决修订完毕，随BATCH-0执行"
+      "note": "随 BATCH-0 执行。"
     },
     {
       "id": "PREREQ-3",
@@ -53,17 +52,5 @@
       "verification": "P4_BACKUP_AND_RECOVERY_PLAN.md 所列演练通过",
       "owner_decision_required": false
     }
-  ],
-  "execution_readiness_summary": {
-    "ready": ["PREREQ-1 可直接执行（BATCH-0，单独报告执行结果）", "PREREQ-2 已按Owner裁决修订并核查完冲突面", "PREREQ-3 L0备份与恢复演练已完成且PASS（2026-11-19，见L0_RESTORE_DRILL_RESULT.json：五表MD5全一致/账本29=29/Schema对象90=90）", "PREREQ-5 裁决已固化", "PREREQ-6 方案已设计"],
-    "pending_owner": ["业务数据迁移（BATCH-1至BATCH-5）暂未获执行授权，须Owner另行批准"],
-    "l0_backup": {
-      "file": "L0_mohen_cloud_20261119.dump（全量1.16MB，含平台Schema，用于云端灾备）+ L0_drill_business_20261119.dump（业务Schema定向导出，用于本地演练）",
-      "sha256_full": "9100B293D65466C6062018FE473241E07457C61A7044D13F44995E83CB096A59",
-      "restore_drill": "本地临时库mohen_l0_drill恢复成功，五关键表逐行MD5与云端完全一致，VERDICT=L0_PASS",
-      "constraint": "Supabase平台扩展（supabase_vault等）不可在vanilla PG复原，全量备份的完整恢复目标须为Supabase实例；业务数据完整性以业务Schema定向演练验证为准",
-      "git": "backups/目录已加入.gitignore，备份文件不入GitHub"
-    },
-    "cloud_only_protection": "e03c4ba8 Project及资产、云端独有15行：迁移SQL全部为按主键INSERT ON CONFLICT DO NOTHING，无UPDATE/DELETE路径，结构性保证不覆盖"
-  }
+  ]
 }

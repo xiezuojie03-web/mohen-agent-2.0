@@ -56,3 +56,19 @@ test('body/auth/path preflight is bounded before opening privileged connections'
  assert.equal(signerPool.events.length,0);
  assert.throws(()=>createIndependentGateService({signerPool,readerPool:pool('reader')}),/GATE_SERVICE_CONFIG_REQUIRED/);
 });
+
+test('read-only service accepts reader configuration and rejects review before SQL',async()=>{
+ const readerPool=pool('reader');
+ const handle=createIndependentGateService({readOnly:true,readerPool});
+ for(const path of ['/decide','/revoke']){
+  const review=new Request('https://independent.example.invalid'+path,req());
+  assert.equal((await handle(review)).status,404);
+ }
+ assert.equal(readerPool.events.length,0);
+ assert.equal((await handle(new Request('https://independent.example.invalid/current',{
+  method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+bearer},body:'{}',
+ }))).status,400);
+ assert.ok(readerPool.events.some(e=>e.sql.includes('authenticate_gate_service')&&e.args[1]==='consume'));
+ assert.equal(readerPool.events.some(e=>e.sql.includes('set_config')),false);
+ assert.throws(()=>createIndependentGateService({readOnly:true,readerPool,signerPool:pool('signer')}),/GATE_SERVICE_CONFIG_REQUIRED/);
+});

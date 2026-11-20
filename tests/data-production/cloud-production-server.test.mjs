@@ -16,7 +16,10 @@ test('post-claim setup failure becomes durable HOLD without replaying the same c
   verifyProducerConnection:async()=>{},
   db:{queryRows:async(sql,p)=>{
     if(sql.startsWith('update')&&sql.includes('claimed_at')){if(claimed)return [];claimed=true;return [{run_id:e.run_id}];}
-    if(sql.startsWith('update')&&sql.includes("status='HOLD'")){status='HOLD';reason=p.reason;return [{run_id:e.run_id}];}
+    if(sql.startsWith('update')&&sql.includes("status='HOLD'")){
+      assert.match(sql,/'reason_code',:'reason'::text/);
+      status='HOLD';reason=p.reason;return [{run_id:e.run_id}];
+    }
     return [{run_id:e.run_id,status,current_stage:'D00',terminal:{reason_code:reason}}];
   }}});
  const dispatch=createCloudProductionDispatch({url:'https://worker.invalid/execute',credential,fetchImpl:async(u,o)=>handle(new Request(u,o))});
@@ -82,7 +85,7 @@ test('both server preflight pools accept split secrets with verified TLS before 
  t.mock.method(poolPrototype,'query',async function(){
   const {user,password,ssl}=this.options;
   connected.push({user,password,tls:ssl.rejectUnauthorized});
-  if(connected.length===1)return {rows:[{db_identity:user,login_identity:user,can_login:true,app_worker:true,unsafe_membership:false}]};
+  if(connected.length===1)return {rows:[{db_identity:user,login_identity:user,can_login:true,app_worker:true,private_worker_member:true,private_worker_set:true,private_worker_role_unsafe:false,unsafe_membership:false}]};
   return {rows:[{role:user,login_role:user,is_superuser:false,bypass_rls:false,can_sign:true}]};
  });
  t.mock.method(poolPrototype,'connect',async function(){
@@ -94,7 +97,9 @@ test('both server preflight pools accept split secrets with verified TLS before 
    return {rows:[{registration:{schema:'mohen.private-source-registration.v1',original_id:scope.original_id,
     source_id:randomUUID(),raw_item_id:randomUUID(),project_id:scope.project_id,source_version_id:scope.source_version_id,
     asset_revision_id:scope.asset_revision_id,sha256:scope.raw_sha256,artifact_revision:'b'.repeat(64),
-    content_type:'text/plain',byte_size:1,storage_ref:'fixture-path',rights:{}}}]};
+    content_type:'text/plain',byte_size:1,storage_ref:'fixture-path',rights:{},
+    source_version_artifact_revision:'c'.repeat(64),rights_by_action:{},rights_snapshot:{},rights_evidence:{},
+    original_locator:{},provenance_status:'fixture',content_availability:'fixture'}}]};
   }};
  });
  const handle=createCloudProductionServer({environment:cloudEnvironment({

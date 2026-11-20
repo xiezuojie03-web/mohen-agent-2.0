@@ -2,9 +2,14 @@
 // Registry, job queue, Gate signer or professional method is introduced.
 import fs from 'node:fs/promises';import os from 'node:os';import path from 'node:path';import {spawn} from 'node:child_process';
 import {executionDigest} from './execution-authority.mjs';
+import {cloudProductionEndStage} from './cloud-production-dispatch.mjs';
 import {assertCloudExecutionConfiguration,resolveMachineDatabaseUrl} from './cloud-execution-readiness.mjs';
 export {assertCloudExecutionConfiguration,cloudExecutionReadiness} from './cloud-execution-readiness.mjs';
-export function cloudProductionInputDigest(v){return executionDigest({run_id:v.run_id,research_intent:v.research_intent,scope:v.scope,consumer_method_plan:v.consumer_method_plan});}
+export function cloudProductionInputDigest(v){
+ cloudProductionEndStage(v);
+ return executionDigest({run_id:v.run_id,research_intent:v.research_intent,scope:v.scope,
+  consumer_method_plan:v.consumer_method_plan,...(v.to_stage===undefined?{}:{to_stage:v.to_stage})});
+}
 export async function claimCloudProductionRun({db,input,verifyOwnerOriginal}){
  if(typeof verifyOwnerOriginal!=='function')throw Error('CLOUD_OWNER_VERIFIER_REQUIRED');
  await verifyOwnerOriginal(input);
@@ -17,22 +22,64 @@ export async function claimCloudProductionRun({db,input,verifyOwnerOriginal}){
    returning run_id::text as run_id`,{id:input.run_id,intent:input.research_intent,scope:JSON.stringify(input.scope),digest:cloudProductionInputDigest(input)});
  return rows.length===1&&rows[0].run_id===input.run_id;
 }
-export function awaitProductionChild(command,args,options,{timeoutMs=240000}={}){
+export function awaitProductionChild(command,args,options,{timeoutMs=240000,startupProbe=false}={}){
  return new Promise((resolve,reject)=>{
-  const child=spawn(command,args,{...options,stdio:['ignore','ignore','ignore'],detached:false});
+  const child=spawn(command,args,{...options,stdio:['ignore','ignore',startupProbe?'pipe':'ignore'],detached:false});
+  let startupError='';
+  child.stderr?.on('data',chunk=>{if(startupError.length<4096)startupError+=chunk.toString().slice(0,4096-startupError.length);});
   let timedOut=false,kill;
   const timer=setTimeout(()=>{timedOut=true;child.kill('SIGTERM');kill=setTimeout(()=>child.kill('SIGKILL'),1000);},timeoutMs);
   const clear=()=>{clearTimeout(timer);clearTimeout(kill);};
   child.once('error',()=>{clear();reject(Error('CLOUD_EXECUTOR_PROCESS_UNAVAILABLE'));});
-  child.once('close',code=>{clear();resolve({code,timedOut});});
+  child.once('close',code=>{
+   clear();
+   let failure;
+   if(startupProbe&&code!==0){
+    if(/Cannot find package ['"]ajv['"]/.test(startupError))failure='runner_ajv_unavailable';
+    else if(/Cannot find package ['"]pg['"]/.test(startupError))failure='runner_pg_unavailable';
+    else if(/ERR_MODULE_NOT_FOUND|MODULE_NOT_FOUND/.test(startupError))failure='runner_module_unavailable';
+    else if(/ERR_UNKNOWN_FILE_EXTENSION/.test(startupError))failure='runner_extension_unsupported';
+    else if(/SyntaxError/.test(startupError))failure='runner_syntax_invalid';
+   }
+   resolve({code,timedOut,...(failure?{failure}:{})});
+  });
  });
 }
+async function runnerBootstrap(root){
+ const directory=path.join(root,'apps/web/cloud-runner-dependencies');
+ try{await fs.access(path.join(directory,'ajv-2020.cjs'));}
+ catch{return {args:[],environment:{}};}
+ return {
+  args:['--import',path.join(root,'pipelines/data-production/orchestrator/cloud-runner-dependency-loader.mjs')],
+  environment:{MOHEN_CLOUD_RUNNER_DEPENDENCY_DIR:directory},
+ };
+}
+
+// The probe loads the same static graph as the CLI and stops before any run
+// arguments, Owner session, database credentials or mutable state are used.
+export async function probeCloudProductionRunner({projectRoot,environment=process.env,runChild=awaitProductionChild}){
+ try{assertCloudExecutionConfiguration(environment);}
+ catch{return {ok:false,reason:'executor_configuration_invalid'};}
+ const root=path.resolve(projectRoot);
+ const entry=path.join(root,'pipelines/data-production/run.mjs');
+ try{await fs.access(entry);}
+ catch{return {ok:false,reason:'runner_file_unavailable'};}
+ try{
+  const bootstrap=await runnerBootstrap(root);
+  const result=await runChild(process.execPath,[...bootstrap.args,entry,'--check-startup'],
+   {cwd:root,env:{PATH:environment.PATH??'',...bootstrap.environment}},{timeoutMs:8000,startupProbe:true});
+  if(result.timedOut)return {ok:false,reason:'runner_probe_timeout'};
+  return result.code===0?{ok:true,reason:'runner_ready'}:{ok:false,reason:result.failure??'runner_import_failed'};
+ }catch{return {ok:false,reason:'runner_process_unavailable'};}
+}
+
 // Parent Web secrets and database-password overrides must never reach Producer.
 function runnerEnvironment(environment,ownerToken){
  const keys=['PATH','NODE_ENV','TMPDIR','TMP','TEMP','SYSTEMROOT','WINDIR','NODE_EXTRA_CA_CERTS',
   'MOHEN_DATABASE_CA_CERT','MOHEN_EXECUTION_AUTH_PUBLIC_KEY','MOHEN_EXECUTION_AUTH_VERIFY_URL',
   'MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL','MOHEN_EXECUTION_AUTH_DYNAMIC_URL','MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL',
   'MOHEN_EXECUTION_AUTH_TOKENS','MOHEN_EXECUTION_AUTH_CA_CERT_PATH',
+  'MOHEN_D00_PREVIEW_OIDC_TOKEN','MOHEN_D00_AUTHORITY_PREVIEW_HOST',
   'MOHEN_INDEPENDENT_GATE_VERIFY_URL','MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL','MOHEN_INDEPENDENT_GATE_CA_CERT_PATH',
   'MOHEN_PRIVATE_WORKER_DATABASE_URL','MOHEN_SUPABASE_URL','MOHEN_PRIVATE_STORAGE_SERVICE_KEY',
   'MOHEN_ORIGINAL_BRIDGE_SECRET','MOHEN_ORIGINAL_BRIDGE_KEY_VERSION','MOHEN_PRIVATE_D02_DELEGATION_ID',
@@ -54,16 +101,20 @@ function runnerEnvironment(environment,ownerToken){
   MOHEN_TOPIC_JSON_FILE:'',MOHEN_TOPIC_CONFIG:''};
 }
 export async function executeCloudProductionCli({input,projectRoot,environment=process.env,runChild=awaitProductionChild,readTerminal,holdRun}){
+ const endStage=cloudProductionEndStage(input);
  assertCloudExecutionConfiguration(environment);
- const root=path.resolve(projectRoot);await fs.access(path.join(root,'pipelines/data-production/run.mjs'));
+ const root=path.resolve(projectRoot);
+ try{await fs.access(path.join(root,'pipelines/data-production/run.mjs'));}
+ catch{throw Error('CLOUD_EXECUTOR_RUNNER_FILE_UNAVAILABLE');}
  const temp=await fs.mkdtemp(path.join(os.tmpdir(),'mohen-cloud-run-'));await fs.chmod(temp,0o700);
  try{
   const scopeFile=path.join(temp,'scope.json');await fs.writeFile(scopeFile,JSON.stringify(input.scope),{mode:0o600});
-  const result=await runChild(process.execPath,[path.join(root,'pipelines/data-production/run.mjs'),
+  const bootstrap=await runnerBootstrap(root);
+  const result=await runChild(process.execPath,[...bootstrap.args,path.join(root,'pipelines/data-production/run.mjs'),
     '--project-root',root,'--intent',input.research_intent,'--adapters','pipelines/data-production/adapters/private-evidence-adapters.mjs',
     '--run-id',input.run_id,'--execution-mode','attended','--scope-file',scopeFile,
-    '--method-plan',JSON.stringify(input.consumer_method_plan),'--to','D02','--report-dir',path.join(temp,'reports')],
-    {cwd:root,env:runnerEnvironment(environment,input.owner_session_token)});
+    '--method-plan',JSON.stringify(input.consumer_method_plan),'--to',endStage,'--report-dir',path.join(temp,'reports')],
+    {cwd:root,env:{...runnerEnvironment(environment,input.owner_session_token),...bootstrap.environment}});
   if(result.timedOut)await holdRun(input,'CLOUD_EXECUTOR_DEADLINE');
   else if(result.code!==0)await holdRun(input,'CLOUD_EXECUTOR_PROCESS_FAILED');
   let terminal=await readTerminal(input.run_id);
@@ -72,6 +123,7 @@ export async function executeCloudProductionCli({input,projectRoot,environment=p
    terminal=await readTerminal(input.run_id);
   }
   if(!terminal||!['PASS','HOLD','REJECT','FAILED'].includes(terminal.status))throw Error('CLOUD_EXECUTOR_TERMINAL_UNAVAILABLE');
+  if(endStage==='D00'&&terminal.stage!=='D00')throw Error('CLOUD_EXECUTOR_TERMINAL_SCOPE_MISMATCH');
   return terminal;
  }finally{await fs.rm(temp,{recursive:true,force:true});}
 }

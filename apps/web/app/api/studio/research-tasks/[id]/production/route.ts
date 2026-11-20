@@ -43,6 +43,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   let body:unknown;
   try{body=await req.json();}catch{return NextResponse.json({ok:false,reason:"bad_request"},{status:400});}
   const data=body&&typeof body==="object"&&!Array.isArray(body)?body as Record<string,unknown>:{};
+  if (data.to_stage !== undefined && data.to_stage !== "D00")
+    return NextResponse.json({ok:false,reason:"production_stage_invalid"},{status:400});
+  const endStage = data.to_stage === "D00" ? data.to_stage : undefined;
   const originalId=data.original_id,page=data.page_number;
   if(typeof originalId!=="string"||!UUID.test(originalId)||!Number.isSafeInteger(page)||
      (page as number)<1||(page as number)>10000)
@@ -81,15 +84,16 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ok:false,reason:"production_original_check_unavailable"},{status:503});
   }
 
-  const result = await requestProduction(id, session.uid, undefined, undefined, source, ownerSessionToken);
+  const result = await requestProduction(id, session.uid, undefined, undefined, source, ownerSessionToken, endStage);
   if (!result.ok) {
     const status = result.reason === "task_not_found" ? 404
       : result.reason === "task_not_ready" ? 409
       : result.reason === "forbidden" || result.reason === "production_project_forbidden" ? 403
+      : result.reason === "production_d00_cloud_executor_required" ? 503
       : result.reason === "production_project_binding_required" ? 409
       : result.reason?.startsWith("production_private_")||result.reason?.startsWith("production_acquisition_")?409
       : 400;
-    return NextResponse.json({ ok: false, reason: result.reason }, { status });
+    return NextResponse.json({ ok: false, reason: result.reason, ...(result.run_id ? { run_id: result.run_id } : {}) }, { status });
   }
 
   return NextResponse.json({ ok: true, run_id: result.run_id });

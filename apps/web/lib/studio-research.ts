@@ -5,13 +5,14 @@ import { queryRows, queryValue, run } from "@mohen/data-access";
 import { runResearch, resolveTopic, type TopicKey } from "./mohen-agent/research";
 import { triggerProduction, getProductionBlocker } from "./studio-production";
 import type { ProductionOriginal } from "./studio-production";
-import type { AgentDecision, Material, Understanding } from "@mohen/agent-runtime";
+import { understand, type AgentDecision, type Material, type Understanding } from "@mohen/agent-runtime";
 import { readJsonColumn } from "./db-json";
 import { createHash, randomUUID } from "node:crypto";
 import { studioAssetStore } from "./studio-assets";
 import {ResearchPrerequisiteHold} from './mohen-agent/research-prerequisites';
 import {
   createBudget,
+  useTool,
   writeReceipt,
   getTool,
   BudgetHoldError,
@@ -252,6 +253,84 @@ export async function createResearchTask(
     throw error;
   }
 }
+async function readSourceSelectionCheckpoint(taskId: string, ownerUserId: string) {
+  const [row] = await queryRows(
+    `select t.checkpoint
+       from public.research_tasks t
+       join studio.projects p on p.project_id::text = t.checkpoint->'studio'->>'project_id'
+      where t.task_id=:'id'::uuid and t.owner_user_id=:'owner'::uuid and t.status='done'
+        and p.owner_user_id=t.owner_user_id and p.lifecycle_status='ACTIVE'`,
+    { id: taskId, owner: ownerUserId }
+  );
+  return row ? readJsonColumn<Record<string, unknown>>(row.checkpoint, {}) : null;
+}
+
+export async function readResearchSourceSelection(taskId: string, ownerUserId: string) {
+  const checkpoint = await readSourceSelectionCheckpoint(taskId, ownerUserId);
+  if (!checkpoint) return null;
+  const route = checkpoint.knowledgeRoute as CreatedTask["knowledgeRoute"];
+  const leads = route?.should_discover_sources && Array.isArray(checkpoint.researchLeads)
+    ? checkpoint.researchLeads : [];
+  const candidates = leads.flatMap(lead => {
+    const candidate = lead?.acquisition_candidate;
+    if (lead?.epistemic !== "RESEARCH_LEAD" || typeof lead.id !== "string" ||
+        typeof candidate?.locator !== "string" || typeof candidate.title !== "string" ||
+        typeof candidate.provider !== "string" || !candidate.provider) return [];
+    return [{ id: lead.id, title: candidate.title, provider: candidate.provider }];
+  });
+  const saved = checkpoint.sourceAcquisitionSelection as {state?:string; candidate_id?:string; project_id?:string; root_task_id?:string} | undefined;
+  const studio = checkpoint.studio as {project_id: string};
+  const selected = saved?.state === "SELECTED" && saved.root_task_id === taskId &&
+    saved.project_id === studio.project_id && candidates.some(item => item.id === saved.candidate_id);
+  return { candidates, selected_candidate_id: selected ? saved?.candidate_id ?? null : null };
+}
+
+export async function selectResearchAcquisitionCandidate(taskId: string, ownerUserId: string, candidateId: string) {
+  const params = { id: taskId, owner: ownerUserId };
+  const checkpoint = await readSourceSelectionCheckpoint(taskId, ownerUserId);
+  if (!checkpoint) return { ok: false, reason: "task_not_ready_or_unavailable" } as const;
+
+  const studio = checkpoint.studio as { project_id: string };
+  const knowledgeRoute = checkpoint.knowledgeRoute as CreatedTask["knowledgeRoute"];
+  if (!knowledgeRoute?.should_discover_sources)
+    return { ok: false, reason: "candidate_discovery_not_authorized_for_task" } as const;
+
+  const leads = Array.isArray(checkpoint.researchLeads) ? checkpoint.researchLeads : [];
+  const lead = leads.find((item) => item?.id === candidateId && item.epistemic === "RESEARCH_LEAD");
+  if (!lead) return { ok: false, reason: "candidate_not_found" } as const;
+  const candidate = lead.acquisition_candidate;
+  if (typeof candidate?.locator !== "string" || typeof candidate.provider !== "string" || !candidate.provider)
+    return { ok: false, reason: "candidate_locator_required" } as const;
+
+  const selection = {
+    state: "SELECTED", candidate_id: candidateId, project_id: studio.project_id, root_task_id: taskId,
+  } as const;
+  const matches = (saved: unknown) => {
+    const receipt = saved as Partial<typeof selection> | null;
+    return receipt?.state === selection.state && receipt.candidate_id === candidateId &&
+      receipt.project_id === selection.project_id && receipt.root_task_id === taskId;
+  };
+  if (matches(checkpoint.sourceAcquisitionSelection)) return { ok: true, selection, replayed: true } as const;
+  if (checkpoint.sourceAcquisitionSelection != null)
+    return { ok: false, reason: "candidate_selection_already_exists" } as const;
+
+  const written = await queryRows(
+    `update public.research_tasks t
+        set checkpoint=:'next'::jsonb, updated_at=now()
+      where t.task_id=:'id'::uuid and t.owner_user_id=:'owner'::uuid and t.status='done'
+        and t.checkpoint=:'previous'::jsonb
+        and exists (select 1 from studio.projects p where p.project_id=:'project'::uuid
+          and p.owner_user_id=t.owner_user_id and p.lifecycle_status='ACTIVE')
+      returning t.task_id`,
+    { ...params, project: selection.project_id, previous: JSON.stringify(checkpoint),
+      next: JSON.stringify({ ...checkpoint, sourceAcquisitionSelection: selection }) }
+  );
+  if (written.length) return { ok: true, selection, replayed: false } as const;
+  if (matches((await readSourceSelectionCheckpoint(taskId, ownerUserId))?.sourceAcquisitionSelection))
+    return { ok: true, selection, replayed: true } as const;
+  return { ok: false, reason: "candidate_selection_conflict" } as const;
+}
+
 /**
  * D 阶段触发（governed interface，CR-16）：从 Studio 经受控接口发起生产，不逐主题改代码。
  * 真实触发：child_process spawn `run.mjs`（唯一生产入口），异步跑 D00–D05；run_id 关联 research_task。
@@ -262,7 +341,8 @@ export async function requestProduction(
   terms?: string[],
   extraBudget?: number,
   source?: ProductionOriginal,
-  ownerSessionToken?:string
+  ownerSessionToken?:string,
+  endStage?:"D00"
 ): Promise<{ ok: boolean; reason?: string; run_id?: string }> {
   if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(ownerUserId))
     return { ok: false, reason: "forbidden" };
@@ -293,8 +373,11 @@ export async function requestProduction(
   if (ownedProjects.length !== 1 || ownedProjects[0].project_id !== projectId)
     return { ok: false, reason: "production_project_forbidden" };
 
-  const spec = getTool("production-run");
-  if (!spec || !Number.isFinite(spec.cost) || spec.cost <= 0)
+  if (endStage === "D00" && process.env.MOHEN_CLOUD_EXECUTION_ENABLED !== "true")
+    return { ok: false, reason: "production_d00_cloud_executor_required" };
+  const intakeOnly = endStage === "D00";
+  const spec = getTool(intakeOnly ? "production-d00-intake" : "production-run");
+  if (!spec || !Number.isFinite(spec.cost) || (intakeOnly ? spec.cost !== 0 : spec.cost <= 0))
     return { ok: false, reason: "production_tool_unpriced" };
   if (extraBudget !== undefined)
     return { ok: false, reason: "additional_budget_requires_authorization" };
@@ -322,7 +405,7 @@ export async function requestProduction(
     ...saved,
     reserved: reserved + spec.cost,
     productionReservation: {
-      invocation_id: invocationId, tool_id: "production-run",
+      invocation_id: invocationId, tool_id: spec.toolId,
       cost: spec.cost, status: "reserved", requires_receipt_reconciliation: true,
     },
   };
@@ -344,8 +427,8 @@ export async function requestProduction(
   try {
     await writeReceipt({
       taskId, kind: "tool", stage: "D00",
-      toolId: "production-run", cost: spec.cost, status: "reserved",
-      payload: { invocation_id: invocationId, terms: terms ?? [] },
+      toolId: spec.toolId, cost: spec.cost, status: "reserved",
+      payload: { invocation_id: invocationId, terms: terms ?? [], ...(intakeOnly ? { to_stage: "D00" } : {}) },
     });
   } catch {
     // The checkpoint already holds the reservation. Never call the Runner
@@ -354,7 +437,7 @@ export async function requestProduction(
   }
 
   let trig: { runId: string; started: boolean; reason?: string };
-  try { trig = await triggerProduction(taskId, intent, projectId, source, ownerSessionToken); }
+  try { trig = await triggerProduction(taskId, intent, projectId, source, ownerSessionToken, endStage); }
   catch {
     trig = { runId: "", started: false, reason: "production_start_uncertain" };
   }
@@ -362,7 +445,7 @@ export async function requestProduction(
     try {
       await writeReceipt({
         taskId, kind: "tool", stage: "D00",
-        toolId: "production-run", cost: spec.cost, status: "hold",
+        toolId: spec.toolId, cost: spec.cost, status: "hold",
         payload: {
           invocation_id: invocationId, run_id: trig.runId || null,
           reason: trig.reason || "production_not_started",
@@ -384,7 +467,8 @@ export async function requestProduction(
 export async function resumeResearchTask(
   taskId: string,
   additionalCeiling?: number,
-  sessionToken?: string
+  sessionToken?: string,
+  recoveryOwnerId?: string
 ): Promise<CreatedTask> {
   const row = await queryRows(
     "select prompt, topic, checkpoint from public.research_tasks where task_id = :'id' and status = 'hold'",
@@ -402,7 +486,7 @@ export async function resumeResearchTask(
   if (!saved || typeof saved !== "object" || Array.isArray(saved))
     return {taskId,status:"hold",decision:null,degraded:false,holdReason:"budget_checkpoint_invalid",researchLeads:[]};
   const studioContext=saved.studio&&typeof saved.studio==='object'&&!Array.isArray(saved.studio)
-    ?saved.studio as Record<string,unknown>:{};
+    ?{...saved.studio as Record<string,unknown>}:{};
   // A tool may have executed and charged without a committed receipt.
   // Such checkpoints cannot be restarted by adding budget.
   if (saved.retry_requires_reconciliation === true ||
@@ -411,17 +495,51 @@ export async function resumeResearchTask(
     return { taskId, status: "hold", decision: null, degraded: false,
       holdReason: "reconciliation_required", researchLeads: [] };
   const spent = saved.budgetSpent;
+  const priorRecovery = studioContext.legacy_understanding_attempt;
+  const understandingCost = getTool("llm-understand")?.cost;
+  const canRecoverUnderstanding = !!recoveryOwnerId && !!sessionToken &&
+    typeof studioContext.project_id === "string" && priorRecovery == null &&
+    saved.holdReason === "research_prerequisites" &&
+    (saved.holdAt as {toolId?:unknown} | undefined)?.toolId === "llm-understand" &&
+    Array.isArray(saved.missingRequirements) &&
+    saved.missingRequirements.includes("FORMAL_G0_G4_READ_NOT_AUTHORIZED_OR_UNAVAILABLE") &&
+    saved.settledUnderstanding == null && spent === understandingCost;
+  if (recoveryOwnerId && !canRecoverUnderstanding)
+    return { taskId, status: "hold", decision: null, degraded: false,
+      holdReason: "understanding_recovery_unavailable", researchLeads: [] };
   const previousCeiling = saved.ceiling;
   const firstStep = saved.holdAt as {toolId?: unknown} | undefined;
-  const understanding = saved.settledUnderstanding as Understanding | undefined;
+  let understanding = saved.settledUnderstanding as Understanding | undefined;
+  const failedReadAfterRecovery = saved.holdReason === "research_prerequisites" &&
+    typeof priorRecovery === "string" && typeof studioContext.project_id === "string" &&
+    saved.prompt === prompt && saved.topic === topic && Array.isArray(saved.missingRequirements) &&
+    saved.missingRequirements.includes("SOURCE_OR_QUALIFICATION_UNAVAILABLE") &&
+    spent === 2 * (understandingCost ?? NaN) + (getTool("llm-polish")?.cost ?? NaN);
+  if (!understanding && failedReadAfterRecovery && firstStep?.toolId === "llm-understand" && sessionToken && typeof studioContext.project_id === "string") {
+    const receipts = await queryRows(
+      `select payload->'settledUnderstanding' as understanding
+         from public.study_asset_receipts
+        where task_id=:'id' and kind='checkpoint' and stage='hold'
+          and payload->'studio'->>'legacy_understanding_attempt'=:'attempt'
+          and payload->'studio'->>'project_id'=:'project'
+          and payload->>'prompt'=:'prompt' and payload->>'topic'=:'topic'
+          and payload->'holdAt'->>'toolId'='retrieve-local'
+          and payload->'settledUnderstanding'->>'llmResponded'='true'
+        limit 2`,
+      { id: taskId, attempt: priorRecovery, project: studioContext.project_id, prompt, topic }
+    );
+    if (receipts.length === 1)
+      understanding = readJsonColumn<Understanding | undefined>(receipts[0].understanding, undefined);
+  }
   const canResumeFormalRead = saved.holdReason === "research_prerequisites" &&
-    firstStep?.toolId === "retrieve-local" && saved.prompt === prompt && saved.topic === topic &&
-    spent === getTool("llm-understand")?.cost && understanding?.llmResponded === true &&
+    (firstStep?.toolId === "retrieve-local" || failedReadAfterRecovery) && saved.prompt === prompt && saved.topic === topic &&
+    (spent === understandingCost || (priorRecovery != null && spent === 2 * (understandingCost ?? NaN)) || failedReadAfterRecovery) &&
+    understanding?.llmResponded === true &&
     Array.isArray(understanding.terms) && understanding.terms.every(term => typeof term === "string") &&
     Array.isArray(understanding.objects) && understanding.objects.every(object => typeof object === "string");
-  if (typeof spent !== "number" || !Number.isFinite(spent) || (spent !== 0 && !canResumeFormalRead) ||
+  if (typeof spent !== "number" || !Number.isFinite(spent) || (spent !== 0 && !canResumeFormalRead && !canRecoverUnderstanding) ||
       typeof previousCeiling !== "number" || !Number.isFinite(previousCeiling) || previousCeiling <= 0 ||
-      spent > previousCeiling || saved.reserved !== 0)
+      spent > previousCeiling || (canRecoverUnderstanding && spent + (understandingCost ?? Infinity) > previousCeiling) || saved.reserved !== 0)
     return { taskId, status: "hold", decision: null, degraded: false,
       holdReason: "resume_step_checkpoint_required", researchLeads: [] };
   // A caller-supplied number is not a durable Owner/provider authorization.
@@ -429,12 +547,28 @@ export async function resumeResearchTask(
   if (additionalCeiling !== undefined)
     return {taskId,status:"hold",decision:null,degraded:false,
       holdReason:"additional_budget_requires_authorization",researchLeads:[]};
-  if (!canResumeFormalRead && (!["budget","research_prerequisites"].includes(String(saved.holdReason)) || firstStep?.toolId !== "llm-understand"))
+  if (!canResumeFormalRead && !canRecoverUnderstanding && (!["budget","research_prerequisites"].includes(String(saved.holdReason)) || firstStep?.toolId !== "llm-understand"))
     return {taskId,status:"hold",decision:null,degraded:false,
       holdReason:"resume_step_checkpoint_required",researchLeads:[]};
+  if (canRecoverUnderstanding) {
+    const owned = await queryRows(
+      `select t.task_id from public.research_tasks t
+        join studio.projects p on p.project_id::text=t.checkpoint->'studio'->>'project_id'
+       where t.task_id=:'id' and t.owner_user_id=:'owner' and p.owner_user_id=t.owner_user_id
+         and p.lifecycle_status='ACTIVE'
+         and 1=(select count(*) from public.study_asset_receipts r where r.task_id=t.task_id
+           and r.tool_id='llm-understand' and r.status='settled')`,
+      { id: taskId, owner: recoveryOwnerId }
+    );
+    if (owned.length !== 1)
+      return { taskId, status: "hold", decision: null, degraded: false,
+        holdReason: "understanding_recovery_unavailable", researchLeads: [] };
+  }
+  const recoveryRef = canRecoverUnderstanding ? randomUUID() : null;
+  if (recoveryRef) studioContext.legacy_understanding_attempt = recoveryRef;
   // Persist uncertainty before any external invocation. A process crash must
   // not leave a zero-spend checkpoint which can be reset and replayed blindly.
-  const next = {...saved,holdReason:"resume_claimed",resume_claim_ref:randomUUID(),
+  const next = {...saved,studio:studioContext,holdReason:"resume_claimed",resume_claim_ref:recoveryRef ?? randomUUID(),
     retry_requires_reconciliation:true};
   const claimed = await queryRows(
     "update public.research_tasks set status = 'running', checkpoint = :'next'::jsonb, updated_at = now() " +
@@ -451,6 +585,18 @@ export async function resumeResearchTask(
     await addEvent(taskId, "D04", "resumed", {ceiling:previousCeiling,resumeClaimRef:next.resume_claim_ref});
     if (!sessionToken || typeof studioContext.project_id!=='string')
       throw new ResearchPrerequisiteHold(['STUDIO_PROJECT_READ_CONTEXT_REQUIRED']);
+    if (recoveryRef) {
+      await writeReceipt({ taskId, kind: "checkpoint", stage: "understanding_recovery", status: "hold",
+        payload: { attempt_id: recoveryRef, prior_budget_spent: spent, next_tool: "llm-understand" } });
+      const recovered = await useTool(ledger, "llm-understand", () => understand(prompt, {}));
+      const valid = recovered.llmResponded === true && Array.isArray(recovered.terms) && Array.isArray(recovered.objects) && recovered.terms.every(term => typeof term === "string") &&
+        recovered.objects.every(object => typeof object === "string");
+      const result = await holdResearchPrerequisites(taskId, prompt, topic, budget, new ResearchPrerequisiteHold(
+        valid ? ["FORMAL_READ_RESUME_READY"] : ["PROVIDER_UNDERSTANDING_NOT_VERIFIED"], undefined,
+        valid ? recovered : undefined
+      ), studioContext);
+      return { ...result, holdReason: valid ? "understanding_recovered" : result.holdReason };
+    }
     const { decision, degraded, researchLeads, knowledgeRoute } = await runResearch(prompt, topic, ledger,
       {projectId:studioContext.project_id,sessionToken,...(canResumeFormalRead?{settledUnderstanding:understanding}:{})});
     if (degraded) throw new ResearchPrerequisiteHold(['SOURCE_OR_QUALIFICATION_UNAVAILABLE'],{decision,degraded,researchLeads});

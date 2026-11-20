@@ -1,20 +1,6 @@
-# MAB工程施工证据账（历史追加式，唯一计划：tasks/implementation/MAB/PLAN.md）
+# MAB 工程施工证据账
 
-> **本文件不是“当前状态”或施工指令。** 2026-11-02起的批次记录按写入时间保留，包含当时正确但如今过时的HEAD、测试、计划入口、工具分工与`PENDING_PUSH`；不能把任意旧段中的“当前/下一步”直接作为现行裁决。
->
-> **交互导航停用（Owner裁决，2026-11-18）**：M5_MAINLINE_NAVIGATION JSON/MD/HTML仅为历史快照，不再是AI必读、施工依据或当前状态来源，不再维护或同步。当前必读顺序与各文件职责以AGENTS.md及PLAN §0.3为准。
-
-## 使用方法与更新边界（2026-11-14统一）
-
-- **D00—D05已有成果按需定位（2026-11-16统一）**：[`历史成果索引`](../../results/MAB/M5_D00_D05_FULL_CHAIN_INHERITANCE_CURRENT.md)只查本次受影响阶段/连接及必要原始证据，不把全量继承核查或R编号完备作为每批前置。按PLAN §0/§3.5 D记录可用基础、当前差异、实际改动、下游接收、回归与HOLD/恢复；没有新证据不重开已完成工作。
-
-
-- **接续读法**：先核GitHub最新main与CI → 读`CURRENT.md`当前事实 → 读`PLAN.md`相应阶段/QR/CP → **只读本账末尾最新实际批次、相关历史ID/证据**，不要求每次从头扫描数千行。
-- **时间口径**：历史PASS/HOLD、旧HEAD及推送计划只对原批次和环境有效；后续批次可能推翻旧结果，必须以精确SHA、执行环境和真实回执区分`CODE_PRESENT / VERIFIED_ISOLATED / VERIFIED_LIVE / HOLD / NOT_RUN`。
-- **写入原则**：历史账不删除、不整段重写、不以“清爽”为由丢掉原始证据；新施工按时间**追加**批次记录，含需求ID、before/after SHA、受影响文件、正反权限测试、PG/HTTP/真实数据、费用（适用时）、HOLD/回退和下一精确动作。只有运行事实变化才改`CURRENT.md`；仅执行标准变更才改`PLAN.md`。
-- **单main边界**：现行Owner裁决以`PLAN.md` V1.7的§3.5 B八维为唯一当前M5准出依据；历史本地批量推送、旧阶段/QR/CP只保留回溯身份，不替代当前单main并发保护或必要专业门禁。
-
----
+本账按批次追加原始证据。通过 [AGENTS](../../../AGENTS.md) 读取，[PLAN](PLAN.md) 定义施工和验收标准，[CURRENT](../../../CURRENT.md) 维护现况。历史状态只对原批次、环境和精确 SHA 有效。新增批次记录依据、改动、正反验证、费用及恢复条件。
 
 ## 历史施工流水（原记录按时序保留）
 
@@ -5145,3 +5131,227 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 唯一已知例外：publication.published_pointers 1 行（本地 revision_id 为空、云端 NOT NULL）有意跳过，已记录于 P4_FINAL_GAP_RESULT.json。
 - 交付物：p4a-install-migrations.mjs、p4b-migrate-data.mjs、p4b2-migrate-fixed.mjs、p4b3-migrate-bulk.mjs、p4-final-gaps.mjs（脚本）、P4_PHASE_A_MIGRATION_LOG.json、P4_MIGRATION_RESULT.json、P4_FINAL_GAP_RESULT.json（结果）。
 - 状态：P4 数据推送 = DATA_RECONCILIATION_PASS（37 表核验全过、1 行已记录例外）。本地 mohen_dev 全程只读未动；云端独有数据（开发 Project e03c4ba8、诊断行）全部保留。
+
+<a id="studio-d00-docs-reconciliation"></a>
+
+## 2026-11-19｜创作主线文档对账
+
+- [原文档整理记录](https://github.com/xiezuojie03-web/mohen-agent-2.0/blob/341c6892bf9a63369edb4dcb99ed49518d789d7b/tasks/implementation/MAB/progress.md#studio-d00-docs-reconciliation)保留上一批原始证据。当前断点和验收入口见 [CURRENT](../../../CURRENT.md)。
+- 本轮复核活跃文档的职责、重复说明与接续指令，仅更新文档。
+
+## 2026-11-19｜Studio 正式检索到候选发现：覆盖状态交接
+
+- 基线 `f1cba2c01fdd559ad94a0b5a245a01ab32a31d12`。Studio 统一判断两路检索结果，保留 L0–L4 和 L5 查询适配器及权限校验。L5 返回有界查询覆盖状态，路由保留范围与原因；候选发现需要已执行且覆盖完整的 L5 查询。明确有资格的命中仍可复用。原有项目范围缺口语义及共享范围未证状态保留。
+- Node 24 定向验证：改前 `NOT_SEARCHED` 误触发候选发现，断言失败；改后验证未搜索、部分、失败、完整但无命中、带合格命中的部分结果、另一路合格命中、共享范围未证和旧调用兼容。
+- 本批仅覆盖检索路由接线。完整 CI、真实 Studio HTTP、候选到合法获取/登记/D00 接收仍待验证。零模型调用、零部署、零费用。
+
+## 2026-11-19｜Studio 外部候选获取交接：保留候选来源信息
+
+- 基线 `cc84680c05363365d6af41e10937dafe3d266b5d`。核对候选投影、任务 checkpoint、文本导入、正式生产入口与既有获取账。候选原先只保留展示材料，生产入口要求已登记原件。Studio 现沿既有 research_leads 保留提供方、定位、内容可用性和待核权利线索，仍标为 RESEARCH_LEAD；分析材料与非 Studio 输出沿用原投影。快照路径排除。
+- Node 24：原投影结构断言失败；更新后 8 个定向检查及 TypeScript 语法解析通过。原任务 Creator 请求、获取入口接收、原件登记与 D00 仍待真实回执。本批无模型调用、部署或新增费用。
+
+## 2026-11-19｜Studio 候选选择回执
+
+- 基线 `32f5de75213a8d42bb639c7daa341489ec83cdd3`。已登记原件入口与获取账不接收未经获取的线索。新增同一研究任务下的候选选择入口，服务端以任务 checkpoint、Owner、活动 Project 和来源缺口路由核对候选 ID。选择回执写入既有 checkpoint，同候选重放返回原选择。并发更新用原 checkpoint 比对保护。
+- Node 24 通过 7 个定向选择场景及 TypeScript 语法检查。未在 Preview 执行 Creator 请求，未验证实际持久化或获取执行。选择回执仅表示上游已选中线索。下一交接为把选择交给合法获取执行能力。无部署、模型调用、取件或额外费用。
+
+## 2026-11-19｜Studio 候选选择界面与回读
+
+- 基线 `3f1b37493c14391d7cea817f00add6251e1fd06c`。候选字段保留与服务端选择已接通。本批在现有候选区加入选择动作，并通过同任务、同 Owner、活动 Project 的只读接口提供候选标题、提供方与已选状态。继续沿用研究材料的资格回读保护。
+- 5 个定向回读场景、TypeScript 语法解析及 Workbench TSX 转译通过。对应提交的受保护 Preview 尚未验证真实 Creator 选择、回读与重试。合法获取执行仍未接通。本批无部署、模型调用或原件获取。
+
+## 2026-11-19｜旧研究任务理解结果的一次性恢复
+
+- 原任务有已结算理解回执，缺持久理解结果。Owner 已授权一次关联原任务的补跑。增加 Creator 显式确认入口，核验同任务与项目归属、原结算回执、原预算和一次性标记，先持久化尝试编号及回执，再调用一次理解。
+- 本动作止于保存可从正式检索继续的 checkpoint。定向模拟覆盖默认拒绝、归属拒绝、并发认领、单次调用和重放拒绝，TS/TSX 解析通过。真实 Creator 操作及候选选择待验。
+
+## 2026-11-19｜第④步真实续跑：检索故障与回执恢复
+
+- 原任务已保存一次性补跑的理解结果。实际 Preview 续跑暴露 SHA-256 调用限定在错误的扩展 schema，L5 检索报错。定向迁移 20261119125821 已应用开发环境，改用 PostgreSQL 内置 SHA-256，标准向量、严格空值和原执行 ACL 回读通过。
+- Studio 检索降级时先暂停并保留理解，避免继续调用润色。此前失败已结算一次润色，原任务累计消耗 3；续跑从唯一匹配的历史 checkpoint 回执读取理解，保留原账。三个定向恢复场景和 TS 转译通过。真实零模型诊断和 Creator 候选验收仍待回执。
+
+## 2026-11-19｜第④步真实候选已生成，修正 Studio 完成状态
+
+- 原朱家角任务以 Creator 会话通过零模型检索后完成续跑，状态 done、PROJECT_SOURCE_GAP_CONFIRMED，保存 12 条可选候选，累计结算 6，预留 0。尚未保存任何选择。
+- Studio 原先把材料待复核误作任务暂停。本批分别显示已查找与材料待核验，允许独立回读候选，导演方案仍要求可用材料。Workbench TSX 转译通过，真实选择、刷新和重试待验。
+
+## 2026-11-19｜第④步原任务真实候选选择已保存
+
+- Preview 原 Creator 选择「朱家角古镇，Zhujiajiao Water Village - panoramio」，服务端回读 SELECTED，Project 和 Root 与原任务一致。其余候选按钮原先禁用但仍像可点，本批在选定后保留候选信息并移除不可用按钮，保存中显示进度。TSX 转译通过。真实刷新与同候选重试未单独验收；选中仅为待核验获取的线索。
+
+## 2026-11-19｜第⑤步原任务候选定位与公开许可核验
+
+- 原朱家角任务选择回执指向 Commons 文件「朱家角古镇，Zhujiajiao Water Village - panoramio」。对照 [Commons 文件页固定修订](https://commons.wikimedia.org/w/index.php?oldid=1099152026) 与 imageinfo 原始文件元数据，作者 Adazzy.Gonzo，拍摄日期 2009-03-29，源自 Panoramio photo 49535458。原件入口为 JPEG，945 × 630；固定修订与文件版本分别追溯，字节和 SHA 尚未回读。
+- 单件许可为 [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/)。该照片按署名和许可条件可复制保存及作当代视觉材料；对外再利用保留作者、来源、许可及变更说明，发布改编按相同或兼容许可。该图不能独立证明古桥、水路和集镇空间的历史关系。
+- 本批仅作只读公开出处和许可核验。尚未写入 Studio 权利回执、获取原件、私有保存、登记或提交 D00；后续沿同一任务按现有获取及来源登记合同接入。
+
+## 2026-11-19｜第⑤步已选 Commons 原件取回与摘要核验
+
+- 原朱家角委托和已选候选保持原绑定。由 [Commons 固定文件页](https://commons.wikimedia.org/w/index.php?oldid=1099152026) 对应的公开原始文件入口取得 JPEG。回读 260342 字节、945 × 630；文件签名、长度和 Commons imageinfo 的 SHA-1 `9e1b9601c4ebea27bacba2be07bc821331e377fb` 一致。原件 SHA-256 `3a1a7f565c8f57328da9350c3be2f75751d26876af6c0d39663ca5ac6b7e6651`。
+- 本次为工作环境中的取回与内容校验，尚无 Studio 项目私有原件 ID 或权利回执。核对现有附件入口仍要求 Creator 会话，登记仓储为绑定回读。下一交接为在同一 Project/Root 内，将许可证据与已校验字节接入私有原件工作流，并按其回执推进 Source → Version → Raw。本次未调用模型、未写业务数据或提交字节进仓库。
+
+## 2026-11-19｜第⑤步 Commons 获取、私有保存和来源登记接线
+
+- Studio 仅用本任务已选、可定位的 Commons JPEG 候选。重新核验文件单件署名、CC BY-SA 3.0 和原文件 SHA-1；复用 Creator 私有原件工作流。在同一事务绑定 Source / Version / Raw 与原任务，版本冻结已核授权动作，保留许可证据和署名义务。回执重复读取须重新核对存储 SHA 和登记窄口。
+- 对选中照片实际复验 Commons 文件与摘要；模拟角色拒绝、完整登记与回读、幂等重试通过。真实 Creator 私有保存和独立 D00 执行仍需 Preview 回执，未运行模型或 Runner。
+
+## 2026-11-20｜第⑤步原件与登记已落地，修复回读权限
+
+- 固定 Preview 的原 Creator 保存已生成原任务回执，私有对象存在，原件状态 STORED_VERIFIED，260342 字节与已核 Commons SHA-256 一致。Source / Version / Raw / Asset Revision 绑定均通过回读。页面通用失败发生于提交后回读；确认登记函数定义者缺内部 artifact_revision_for 调用权。
+- 开发库定向补齐登记函数定义者调用权。两个已登记对象版本摘要均通过，应用运行角色无此内部函数的直接调用权限。尚待 Creator 路径回读确认；D00 Runner 本批未执行。
+
+## 2026-11-20｜第⑤步登记权利投影同步
+
+- 固定 Preview 第二次回读进入登记校验，返回 PRIVATE_SOURCE_REGISTRATION_INVALID。云端登记函数仍用旧投影，少 rights_by_action / rights_snapshot / rights_evidence。只恢复三字段，沿用已有版本快照和证据，未改资格或权限模型。
+- 云端回读函数定义及 ACL；从原任务实际保存字段取得同形投影，直接运行 Studio 登记校验器并通过。Creator HTTP 回读仍待验证。machine_read 仍为 unknown，G0 与 D00 执行均未通过或启动。
+
+## 2026-11-20｜第⑤步授权 D00 接收前置核查
+
+- 原朱家角已验证原件和登记可绑定，Creator HTTP 回读待复验。CLI 支持 D00→D00，Studio 本地 spawn 和云执行器均硬编码终点 D02；云派发签名输入摘要当前也不携带阶段终点。现有 production-run 记账 5，原任务可用 2。
+- 只查 Preview 变量名称，未读凭据。云执行器 URL/凭据、执行授权公钥与验证/动态端点，以及独立 Gate 验证端点均未配置。本地执行授权依赖已受控宿主。未启动 Runner、改动预算或将登记回读冒充 D00。
+
+## 2026-11-20｜签名派发支持显式 D00 终点
+
+- 云派发请求允许签名字段 to_stage=D00；终点同时纳入冻结摘要，执行器将其传给既有 Runner，并拒绝后续阶段的终态。既有请求缺省保持 D02 和原摘要规则。未改变 Studio 计费、Creator 入口或执行权限。
+- 基线不能接受 D00 独立请求；改后 17 项派发/运行定向测试通过。完整 CLI 测试需要远端文件副本之外的依赖，未验证。云端真实验收仍缺已授权的执行服务与 Creator 派发入口。
+
+## 2026-11-20｜Studio 接入显式 D00 派发
+
+- 现有 Creator 生产入口接受显式 D00 终点并交给签名云派发；缺云执行器时在预算认领前拒绝。普通生产调用维持缺省范围和旧入口；沿用现有额度和令牌授权。
+- 4 个隔离场景通过：无云执行器失败关闭、余额不足不认领、D00 显式传递、旧调用兼容。修改文件均通过 TypeScript 语法解析。原任务缺真实签名执行环境且剩余预算低于现有执行费用，未启动。
+
+## 2026-11-20｜D00 独立接收按零模型操作记账
+
+- D00 私有原件接收路径仅执行授权、哈希回读、登记与候选回执。显式 D00 请求使用 production-d00-intake，模型预算计 0；保留原来的签名准入、原子认领、非自动重试和回执对账。普通生产仍按原 5 单位校验。
+- 4 个针对性模拟通过：全链仍不足额拒绝、非零 D00 配置拒绝、D00 在已花费 6/8 的原额度下零预留、重复请求不重发。未修改原委托预算，未运行真实 Runner。真实验收仍依赖签名执行服务。
+
+## 2026-11-20｜①–④接续确认与⑤远端就绪核对
+
+- 基线为 GitHub `main` 的 `f6543e86d5c59b785c8e31c22252909dd58b1aab`。Vercel `napoles1/mohen-agent-2-0` 对应 Preview `dpl_GmMQ59fJtEBZsmt5oihbEGqZ9voq` 为 READY。
+- 原任务 `53ad1a29-22e5-43c2-816d-b02b6e85abbd` 与 Project `e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5` 复用①–④及既有 Root、原件登记。Creator HTTP 回读仍待复验。
+- Preview 只核对变量名称。执行器、独立执行授权、独立 Gate 查询和原件桥接缺项见[部署手册](../../../specs/OPERATIONS_DEPLOYMENT.md#受保护-preview-的-d00-接续2026-11-20)。查过 Vercel 团队项目与 Connector、GitHub 可见仓库、远端工作流及交接记录，未找到可接入的正式独立授权入口。GitHub 可列 Preview 环境与近期运行，但 Actions Secrets、Variables、自托管 Runner 和 Preview 环境 Secrets 元数据查询均返回集成权限 403。
+- Vercel 认证访问固定 Preview 接收路由，应用返回 HTTP 503（`cloud_executor_not_configured`）。复查 23 个 Preview 变量条目，四类缺项仍未配置。
+- ⑤为 HOLD / NOT_RUN，未认领生产运行、未增加模型操作或费用。等待正式服务配置；恢复后只运行 D00 并按 [PLAN](PLAN.md#studio-d00-handoff) 回读验收，独立 G0 待审。
+
+## 2026-11-20｜第⑤步正式授权接入前的云端只读核查
+
+- Owner 已授权独立执行授权组件接入，沿用受保护 Preview 与既有接收路由，执行范围锁定原委托 D00。
+- Supabase `mohen-cloud` 可读且处于 ACTIVE_HEALTHY，Edge Functions 列表为空。数据库目录中已有 Producer 与 Private Worker 专用 LOGIN；执行授权与 Gate Reader／Signer 现有角色均为 NOLOGIN，未查到已接入的独立服务登录。
+- 按原 Project 回查有一条 STORED_VERIFIED 原件；按原 root_task_id 查 `control.production_runs.scope` 命中零条运行。该只读结果不替代 Creator HTTP 回读或 D00 持久接收回执。
+- 历史本地授权工具主动拒绝云库，独立审核工作流为协议测试。当前⑤保持 HOLD / NOT_RUN。接续使用既有执行器合同，补齐独立签发与一次性核验、低权 Gate 查询和原件桥接之后再派发。未执行模型、迁移、G0 审签或生产运行。
+
+## 2026-11-20｜第⑤步精确派发输入的云端回读
+
+- 原任务 `53ad1a29-22e5-43c2-816d-b02b6e85abbd` 的 checkpoint 关联 Project `e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5`、原件 `4ca22839-e3e9-4d14-8ec7-677cd740aa0e`、Source Version `67839b1e-a344-4dd4-adf8-f7798ddf82d7`、Raw Item `5fe7f057-a797-42cd-81b8-0892d4c271b6`。原件行状态 STORED_VERIFIED，Project 与 SHA 均同 checkpoint 一致。执行器以原 task ID 作为 D00 scope.root_task_id。
+- 云端任务行 status=done，checkpoint 无 production_run_id，与按 Root 回查生产运行零条一致。D00 接收仍 HOLD / NOT_RUN，独立 G0 待审。
+- Runner 要求 Ed25519 许可同时绑定 run、stage、job、mode、Registry 和输入摘要，并通过独立端点确认 nonce 已一次性消费。数据库目录中未找到现成的 nonce 或阶段许可核验函数。现有独立 Gate 服务启动合同同时要求 Signer 与 Reader 连接，本批仍需只读查询入口；不得启用自动 G0 审签。
+
+## 2026-11-20｜第⑤步独立 Gate 只读运行模式
+
+- 现有独立 HTTPS Gate 服务支持显式 `MOHEN_INDEPENDENT_GATE_READ_ONLY=true`。只装配 Reader 连接，禁止注入 Signer URL 与审签会话密钥。保留 `/current` 的独立身份与能力校验；`/decide`、`/revoke` 请求拒绝于 SQL 之前。既有完整服务仍按原配置启动。
+- 独立 Gate 服务与 HTTPS 运行时定向测试 10 项通过。此项为代码和隔离验证，尚未配置云 Reader 登录或部署服务。原任务 D00 仍 HOLD / NOT_RUN，待独立执行许可签发、一次性核验、云 Reader 和原件桥接。
+
+## 2026-11-20｜第⑤步单次 D00 执行许可核心
+
+- 独立授权端可用现有 Runner 识别的 Ed25519 格式，为预先批准的单一 D00 run、规范化输入与 Registry 摘要签发许可。要求所有启用条件均有独立批准，签发与消费交由持久账本原子判定；账本拒绝、输入不符和重放均关闭。
+- 新增授权核心与消费回归测试；连同既有 Runner 授权、Gate 及真实 HTTPS 测试共 16 项通过。测试使用夹具账本，尚未接入云持久账本、HTTP 服务和真实 run 审批绑定。D00 仍 HOLD / NOT_RUN。
+
+## 2026-11-20｜第⑤步授权 HTTP 接口与持久账本
+
+- 独立授权端已增加 Runner 所需的 `/token` 与 `/consume` 请求处理器，分离凭据并限制请求体。授权失败和服务错误返回固定状态。
+- 增加独立 PostgreSQL 账本适配与最小角色建表脚本。发行采用唯一 run 原子插入，消费要求完整绑定、未消费且未过期，以单条 UPDATE 原子完成。未向云端应用该脚本，也未配置实际 LOGIN。
+- 19 项定向 Node 测试覆盖授权、HTTP、账本适配和只读 Gate。账本数据库集成与云服务装配仍待验证，原委托 D00 保持 HOLD / NOT_RUN。
+
+## 2026-11-20｜第⑤步账本数据库集成与云变更准入
+
+- 在一次性隔离 PostgreSQL 17 实例应用账本脚本，以实际低权 LOGIN 通过两个数据库连接并发执行仓库账本适配器。并发签发与并发消费各一次成功，错绑定、过期许可和重放均未通过，普通应用 LOGIN 的签发和消费均以 42501 拒绝。
+- 对 Supabase `mohen-cloud` 的账本建表与独立角色变更被自动审批拒绝，理由为目标被认定为生产库且请求此前排除了重开数据库迁移专项。随后只读确认云库中账本表与角色均未创建。未改用其他路径应用脚本，未派发原委托 D00。
+
+## 2026-11-20｜第⑤步独立授权 HTTPS 服务入口
+
+- 新增独立授权进程，显式开启后装配 Registry、单次独立批准、Ed25519 签名、专用 PostgreSQL 账本和两条独立凭据保护的 HTTPS 路由。默认关闭，配置不足时在读取密钥或启动监听前拒绝。复用现有独立 Gate 的有界 HTTPS 传输及数据库 TLS 校验。
+- 授权和独立 Gate 定向测试 20 项通过。服务尚未接入受保护 Preview；云账本建表与角色操作仍保留上一批自动审批拒绝。原委托未派发 D00，无接收回执。
+
+## 2026-11-20｜第⑤步独立授权 HTTPS 与数据库 TLS 联调
+
+- 在一次性 PostgreSQL 17 与临时 HTTPS 证书环境运行仓库的独立授权入口。客户端校验证书，授权服务通过校验主机名及证书的 TLS 连接账本数据库。用夹具批准和临时 Ed25519 密钥验证许可签名。
+- 错凭据返回 401，错输入返回 403，并发签发只成功一次。重启授权进程后并发消费只成功一次，再次重启后重放仍被拒绝。此为隔离联调，未接触云库写入、原任务或独立 G0。云账本审批阻断仍有效。
+
+## 2026-11-20｜第⑤步云账本准入与 Studio 单次运行绑定
+
+- Owner 明确许可账本表和低权角色例外后，Supabase `mohen-cloud` 的目标脚本获批应用。回读确认账本零行、RLS 开启、三条策略、专用角色为 NOLOGIN／非超管／无绕过 RLS，anon 与 authenticated 无读取权限。
+- Studio 支持在 D00 单阶段请求中读取服务端 `MOHEN_D00_APPROVED_RUN`，校验 Runner 同源的规范化输入摘要后使用预批准 UUID。重复 UUID 在写 checkpoint 或派发之前拒绝。未配置时沿用现有路径。新绑定与授权定向测试 11 项通过，TypeScript 语法检查通过。
+- 尚待配置独立服务最低权限登录、部署受保护入口和完成 Creator HTTP 复验。原任务 D00 仍 HOLD / NOT_RUN，未签发正式许可或 G0。
+
+## 2026-11-20｜第⑤步单次运行绑定的受保护 Preview
+
+- 从 GitHub main 功能 SHA `7669e287f821a233de25eb6376d0117227ae6cd8` 部署 Vercel Preview `dpl_ADtjJNbGUD34WNAcKNxe2MVpAiaR`，达到 READY。Vercel 认证访问应用接收路由返回 503 `cloud_executor_not_configured`。未发送签名派发。
+- 云库 `mohen_gate_reader` 已有 `authenticate_gate_service` 和 `read_gate_stage_qualification` 执行权。D00 专用账本仍需独立服务低权登录与托管入口，未以管理连接替代。原任务接收仍 HOLD / NOT_RUN。
+
+## 2026-11-20｜第⑤步独立授权 Vercel 构件与平台准入
+
+- GitHub main 功能 SHA 3283311 打包独立授权函数，入口为 /api/token 与 /api/consume。运行环境需为 Preview 并显式启用。7 项定向测试与未配置时失败关闭的函数探测通过。
+- 创建独立项目 napoles1/mohen-d00-authority，已开启 Preview SSO。首次部署请求由平台收为该新项目的 Production 并达到 READY，取消返回 400。该部署未注入授权密钥，实测 /api/token 返回 503 execution_authority_not_configured。Studio Production 无本批部署。
+- 显式 target=preview 被平台以无效 target 拒绝，后续部署提交未生成 Preview。低权登录、云端授权及 Gate 查询接线仍待完成。原委托 D00 保持 HOLD / NOT_RUN。
+
+## 2026-11-20｜第⑤步授权预览限制与原任务输入摘要
+
+- Vercel 独立授权项目的 Git 部署入口被自动审批拒绝，理由是该入口会建立自动部署连接并从生产分支发起部署，审批认定超出已授权的一次性 Preview 边界。本批未通过替代路径触发该操作。
+- 用原任务 checkpoint 与同一已登记 JPEG 的数据库绑定，只读生成第 1 页 D00 输入候选摘要 ed2f50ffdfafd7c3a73f29d280213b1866bb268ba896fb2dfde25265c7f3da37。未导出研究提示或原始字节。须在 Creator HTTP 路径复核同源摘要后才可用于签发。
+- 独立授权 Preview 与低权登录仍待接入，原委托 D00 保持 HOLD / NOT_RUN。
+
+## 2026-11-20｜第⑤步云端 CLI 与独立授权受保护 Preview
+
+- 云端 Vercel CLI 66.5.0 已验证 xiezuojie03-web 登录，既有 Vercel 连接器查到 napoles1。CLI 显式以 Preview 环境部署独立授权项目，部署 dpl_H1NJTGyVaY7KDC3JN6nk9uNQSTnV 为 READY，Vercel Authentication 生效。
+- 认证探测签发路由返回 execution_authority_not_configured。探测时 CLI 自动新增的访问凭据已撤销，匿名探测返回 302。独立服务没有签发正式许可，原委托 D00 保持 HOLD / NOT_RUN。
+
+## 2026-11-20｜第⑤步独立服务云登录与 Preview 凭据接线
+
+- Supabase mohen-cloud 上创建两个受限独立 LOGIN。目录回读确认授权登录只属于账本角色，Gate 登录只属于 Reader 角色，二者均无超管或绕过 RLS 权限。口令通过 SCRAM 验证器配置，角色定义记录于 Git，凭据不入库。
+- Vercel napoles1/mohen-d00-authority 已新增仅 Preview 的账本数据库 URL 与 CA。云施工终端到 Supabase 连接池尝试返回 ECONNREFUSED，Vercel 函数宿主的实际低权 TLS 登录仍待验证。
+- 独立签发尚未启用，原委托未派发。继续接入两条受保护 Preview 间的服务访问、只读 Gate 和原件桥接。
+
+## 2026-11-20｜第⑤步 Vercel 宿主低权 TLS 通过
+
+- 独立授权 Preview dpl_HN51dRMsS62DCPQiAJuCB8ppD5pL 为 READY，认证访问 /api/readiness 返回 200，journal=ready、gateReader=ready。实际函数宿主已验证证书和低权数据库身份，两条连接均可用。
+- 前检只读取身份和权限，不消费发行账本、不签发 D00 或 G0。低权 Gate 可连接，资格查询端点和原任务对应的读取能力凭据仍待接入；原委托 D00 未派发。
+
+## 2026-11-20｜第⑤步独立 Gate 路由与 Preview 信任接线
+
+- 独立授权 Preview dpl_HHQktgigNQfkW5aMMvxcY711BCZk 已 READY。认证 GET /api/current 返回 405，确认只读 POST 路由到达应用。Gate 签署未启用。
+- 签名私钥仅保存在独立授权项目 Preview。Studio Preview 已记录公钥、独立签发/核验调用凭据、原件桥接、签发与消费 URL 以及只读 Gate URL。Studio 的 OIDC 接线 SHA 3f0e31a 已部署至 dpl_2aZ8xc9XR4vsDKBPEyt3CfMQpYvR 且 READY。16 项定向测试通过。
+- 受保护跨项目访问仍需 Studio Preview → 授权 Preview 的 Trusted Sources 规则。原 Creator HTTP 会话与作用域内只读 Gate 能力待核，执行开关保留关闭，原任务未派发。
+
+## 2026-11-20｜第⑤步原 Creator 回读与单次派发接线就绪
+
+- Owner 提供 Creator Studio 页面，任务编号一致，选定 Commons 项显示「原件已私有保存，来源登记已回读」。用云库绑定与 Runner 同源规范化算法复核 D00 第 1 页输入摘要一致。
+- Vercel Trusted Sources 已回读为 Studio Preview → 独立授权 Preview 单一规则。只读 Gate 使用短时 consume 凭据，HTTPS 查询限预批准 D00 run 与 G0，未配审签能力。
+- 独立授权 Preview dpl_3B21Vi3miAaaQeZX4ozvxV5WwnqE 与 Studio Preview dpl_3rtiZ4x1aNMbjWLsETZVjvaBX7UR 均 READY。前检返回 HTTP 200，Studio 接收路由认证 GET 返回应用层 405，表示已进入启用后的方法检查。运行开关、精确许可和 Creator 的仅 D00 操作已就绪。
+- 等待原 Creator 点击一次；初次云库核对运行零条、签发零条、消费零条。⑤待真实接收回执，独立 G0 待审。
+
+## 2026-11-20｜第⑤步真实 Creator 派发已认领，修复错误回执
+
+- 原 Creator 从 Studio 执行单次 D00，请求注册并由执行器认领 run 4b0e6a25-62fb-4ce4-bfe8-de8277f76f18。Vercel 请求日志显示执行器 POST 返回 503，独立签发未观察到对应 POST。云库运行仍 RUNNING、无阶段、无终态、无发放许可及 D00 候选。
+- 在云端 PostgreSQL 用 PREPARE 复现 jsonb_build_object 无类型参数报 42P18。失败回执的原因值已显式转换为 text，并增加受控 Runner 文件与进程错误码。定向测试 24 项通过。真实接收尚未完成，暂不重派。
+
+- 执行窗口结束后，原运行按精确原任务、Project、原件及无许可、无候选的条件结记 HOLD / CLOUD_EXECUTOR_ACK_UNCERTAIN，保留认领记录。修复 SHA dbf6b09 对应受保护 Preview dpl_FR53wN3Xmn2PMfYpUdzdFayJQejV 已 READY。旧运行未重放，最初 Runner 启动失败仍需核验。
+
+## 2026-11-20｜第⑤步真实 Runner 打包修复及安全恢复准备
+
+- Preview 无副作用探测复现 runner_ajv_unavailable。构建时为 raw Node Runner 打包 Ajv 与 PostgreSQL 驱动，子进程仅重定向这两个模块。在 Node 子进程验证两个包可加载，25 项定向测试通过。修复 SHA 1d2bf6a 的 Vercel Probe Preview 返回 HTTP 200 runner_ready。
+- 原运行仍为 HOLD，零许可、零候选。精确对账原调用的零成本预留，清除预留锁并追加零成本回执 fdd14903-6d38-49b4-807d-c9a81c2ceaea，记录结果为 hold_before_grant、d00_received=false。
+- 独立授权已部署一份新的受保护 Preview，许可编号绑定原任务同一 D00 输入，旧运行未重放。原 Creator 的新请求仍待发起。
+- 恢复用 Studio Preview dpl_9uJ2YbLsjyMRt4YmTDVrqSVzTmTA 返回 200 runner_ready。同一批准 run 的授权 Preview dpl_798htptghYDFLMpWGjvKQSFSKz3E 返回 200，账本和只读 Gate 登录均 ready。保持原任务、Project、Root、原件和输入摘要，新运行只待原 Creator 发起。
+
+## 2026-11-20｜第⑤步 Runner 输入摘要失配修复
+
+- 恢复运行 ddc28b7f-af21-4cd0-b3db-bfecad4fde36 已认领并到达独立签发 POST，授权服务返回 403，运行持久写入 HOLD / CLOUD_EXECUTOR_PROCESS_FAILED。无账本许可、无 D00 候选。页面旧卡片仍显示前次回执。
+- 修复 Studio 审批摘要使用传输包装 {methods:[...]}、Runner 使用解析数组的差异，复用 Runner 方法计划解析函数。持久化运行输入重算得到 478a8668c699fae2d66b771a536251cb05e6c1e4fc85ce212b60cd85db5a2199，使用同一输入测试签发通过。23 项定向测试通过。API 失败时保留安全的运行编号以刷新回执。
+- 原运行零成本预留精确对账，追加零成本回执 94479572-189a-4d2c-bfac-33db212211a0。签发仍待原 Creator 触发，新批准保留原任务、Project、Root、原件以及第 1 页。独立 G0 未签。
+- 新版 Studio Preview dpl_EVdqiA6StwBUroBcxqwat5YAwt9b 与独立授权 Preview dpl_Hiis45UgGYLtn5wFzu5jzXrRL6x7 READY，分别返回 200 runner_ready 和 200 journal/gateReader ready。依然待原 Creator 触发，接收未验收。
+
+## 2026-11-20｜第⑤步原 Studio 委托真实 D00 接收验收
+
+- 原 Creator 从 Studio Preview dpl_EVdqiA6StwBUroBcxqwat5YAwt9b 只发起 D00。运行 bfcdfad6-bbcb-4b68-946a-82e1302eeb80 的独立许可已一次性消费，D00 Worker 持久提交候选 48766904-c409-4b37-b602-9339a582b7e6，候选状态 SUBMITTED。
+- 同一条云库关联查询核对原任务 53ad1a29-22e5-43c2-816d-b02b6e85abbd、Project e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5、同 Root、原件 4ca22839-e3e9-4d14-8ec7-677cd740aa0e 和原 SHA、Source Version 67839b1e-a344-4dd4-adf8-f7798ddf82d7、Raw Item 5fe7f057-a797-42cd-81b8-0892d4c271b6 均一致。接收验收通过。
+- 外层运行收尾仍为 HOLD / CLOUD_EXECUTOR_PROCESS_FAILED，保留该记录。独立 Gate 决定零条、后续阶段候选零条。关闭⑤接收断点，停在独立 G0 审核前。

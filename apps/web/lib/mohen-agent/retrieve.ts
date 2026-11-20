@@ -362,7 +362,10 @@ function humanizeRelation(
   return { snippet: `${subject} · ${predHuman} · ${object}${aliasSuffix}`, entityIds: [subject, object] };
 }
 
+export type KnowledgeSearchCoverage = "COMPLETE" | "PARTIAL" | "NOT_SEARCHED" | "UNAVAILABLE";
+
 export interface RetrieveResult {
+  coverage: KnowledgeSearchCoverage;
   materials: Material[];
   /** 库不可用时为 true —— 上层必须明确告知用户，不得假装查到了 */
   degraded: boolean;
@@ -393,7 +396,8 @@ export async function retrieveMaterials(
   limit = 12,
   opts: RetrieveOptions = {}
 ): Promise<RetrieveResult> {
-  const safeTerms = terms.filter((t) => t.trim().length > 0).slice(0, 8);
+  const nonemptyTerms = terms.filter((term) => term.trim().length > 0);
+  const safeTerms = nonemptyTerms.slice(0, 8);
   const lim = Math.max(1, Math.min(MAX_LIMIT, Math.trunc(limit)));
   // town/others 保留入参契约；L5 发布成果已由 G5 门禁与上游资格保证归属，不再做镇名排除。
   void opts.town;
@@ -421,10 +425,15 @@ export async function retrieveMaterials(
         return m;
       })
       .filter((m): m is Material => m !== null);
-    return { materials, degraded: false };
+    const coverage = !safeTerms.length
+      ? "NOT_SEARCHED"
+      : rows.length >= lim || nonemptyTerms.length > safeTerms.length
+        ? "PARTIAL"
+        : "COMPLETE";
+    return { materials, degraded: false, coverage };
   } catch (e) {
     // 诊断留痕：库不可用必须有据可查，不许静默降级后假装「查过了」
     console.warn("[mohen/retrieve] 检索失败：", e instanceof Error ? e.message : String(e));
-    return { materials: [], degraded: true };
+    return { materials: [], degraded: true, coverage: "UNAVAILABLE" };
   }
 }

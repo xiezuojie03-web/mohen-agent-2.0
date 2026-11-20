@@ -11,7 +11,7 @@ import {
   type Material,
   type Understanding,
 } from "@mohen/agent-runtime";
-import { retrieveMaterials } from "./retrieve";
+import { retrieveMaterials, type RetrieveResult } from "./retrieve";
 import { retrieveQualifiedFormalProject, type FormalQualifiedRead } from "./retrieve-formal";
 import { readStudioResearchProject } from "../studio-research-read";
 import { planStudioKnowledgeRoute, type StudioKnowledgeRouting } from "./knowledge-routing.mjs";
@@ -100,7 +100,7 @@ export interface ResearchResult {
   decision: AgentDecision;
   degraded: boolean;
   /** 外部检索线索（上海图书馆等），与本地合格知识分开，供前端如实标注呈现 */
-  researchLeads: Material[];
+  researchLeads: ExternalResearchLead[];
   knowledgeRoute?: StudioKnowledgeRouting;
 }
 
@@ -192,7 +192,32 @@ export function applyFreeMissionEntry(
 }
 
 /** 外部线索 → 材料（epistemic 固定 RESEARCH_LEAD，不得冒充合格知识） */
-function toExternalMaterial(lead: ShlMaterial): Material {
+type ExternalResearchLead = Material & {
+  acquisition_candidate?: {
+    provider: string;
+    title: string;
+    locator: string | null;
+    source_type: string;
+    carrier_type: string;
+    content_availability: ShlMaterial["content_availability"];
+    provider_license_hint: string;
+    provider_rights_hint: ShlMaterial["rights_clear"];
+  };
+};
+
+function candidateLocator(value: string): string | null {
+  try {
+    const url = new URL(value);
+    if ((url.protocol === "https:" || url.protocol === "http:") && !url.username && !url.password) {
+      return value;
+    }
+  } catch {
+    // Some catalog entries have no actionable URI.
+  }
+  return null;
+}
+
+function toExternalMaterial(lead: ShlMaterial, includeCandidate = false): ExternalResearchLead {
   const text = lead.fragments.join(" ");
   const yearMatch = text.match(/(1\d{3}|2\d{3})/);
   return {
@@ -205,6 +230,18 @@ function toExternalMaterial(lead: ShlMaterial): Material {
     year: yearMatch ? Number(yearMatch[1]) : null,
     score: 0.4,
     matchScore: 0,
+    ...(includeCandidate ? {
+      acquisition_candidate: {
+        provider: lead.provider,
+        title: lead.title,
+        locator: candidateLocator(lead.url),
+        source_type: lead.source_type,
+        carrier_type: lead.carrier_type,
+        content_availability: lead.content_availability,
+        provider_license_hint: lead.license,
+        provider_rights_hint: lead.rights_clear,
+      },
+    } : {}),
   };
 }
 
@@ -249,18 +286,22 @@ export async function runResearch(
 
   // For non-template Studio missions an empty term list is NOT authorization
   // to enumerate unrelated L5 content: fail toward question refinement.
-  let { materials, degraded } = studioContext && !effectiveTerms.length
-    ? {materials:[] as Material[],degraded:false}
+  let l5Search: RetrieveResult = studioContext && !effectiveTerms.length
+    ? { materials: [], degraded: false, coverage: "NOT_SEARCHED" }
     : await retrieveMaterials(effectiveTerms, 24, {
         qualification,objectAliases:profile.labelAliases,
       });
-  if (!materials.length && !degraded && (!studioContext || profile.fallback.length>0)) {
-    const retry=await retrieveMaterials(profile.fallback,24,{
+  if (!l5Search.materials.length && !l5Search.degraded && (!studioContext || profile.fallback.length > 0)) {
+    const fallback = await retrieveMaterials(profile.fallback, 24, {
       qualification,objectAliases:profile.labelAliases,
     });
-    materials=retry.materials;degraded=retry.degraded;
+    l5Search = {
+      ...fallback,
+      coverage: !fallback.degraded && l5Search.coverage === "PARTIAL" ? "PARTIAL" : fallback.coverage,
+    };
   }
-  const qualifiedL5=materials;
+  let { materials, degraded } = l5Search;
+  const qualifiedL5 = materials;
   let formalRead:FormalQualifiedRead|undefined;
   if(studioContext){
     try{
@@ -278,14 +319,19 @@ export async function runResearch(
   // or an automatic D00 request from an empty local result.
   const knowledgeRoute=studioContext?planStudioKnowledgeRoute({
     qualifiedL5,qualifiedFormalL0L4:formalRead?.refs??[],
+    l5Coverage: l5Search.coverage,
     projectSnapshot,lookupDegraded:degraded,formalLookupDegraded:formalRead?.degraded===true,
     projectFormalCoverageComplete:formalRead?.projectQualifiedCoverage==="COMPLETE",
     sharedL0L4CoverageComplete:false,
   }):undefined;
   materials=[...materials,...(formalRead?.materials??[])];
   degraded=degraded||formalRead?.degraded===true;
+  if (studioContext && degraded) {
+    throw new ResearchPrerequisiteHold(["SOURCE_OR_QUALIFICATION_UNAVAILABLE"], undefined, understanding);
+  }
   let externalEntities: string[] = [];
   let externalMaterials: Material[] = [];
+  let researchLeads: ExternalResearchLead[] = [];
   let discoveryGaps: string[] = [];
   // Non-Studio ask keeps its prior behavior. Studio only discovers external
   // leads when a complete qualified inventory has established a source gap.
@@ -296,7 +342,10 @@ export async function runResearch(
     const discovery = await useTool(ledger, "retrieve-external", () =>
       discoverExternalSources(question, {localMaterialCount:materials.length,entities:externalEntities})
     );
-    externalMaterials = discovery.leads.map(toExternalMaterial);
+    externalMaterials = discovery.leads.map((lead) => toExternalMaterial(lead));
+    researchLeads = studioContext
+      ? discovery.leads.map((lead) => toExternalMaterial(lead, true))
+      : externalMaterials;
     discoveryGaps = discovery.gaps;
   }
   materials = [...materials, ...externalMaterials];
@@ -340,5 +389,5 @@ export async function runResearch(
     if(gap && !finalGaps.includes(gap)) finalGaps.push(gap);
   }
   return { decision: { ...decision, gaps: finalGaps }, degraded,
-    researchLeads: externalMaterials,...(knowledgeRoute?{knowledgeRoute}:{}) };
+    researchLeads,...(knowledgeRoute?{knowledgeRoute}:{}) };
 }
