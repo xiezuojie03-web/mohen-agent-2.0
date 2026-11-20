@@ -4,11 +4,11 @@
 // 创作者浏览器会话——只用 Owner 的服务端短时会话做原件 RLS 复核。
 import { NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { getTaskStatus, requestProduction } from "../../../../../lib/studio-research";
-import { signDatabaseSessionToken } from "../../../../../lib/auth";
+import { getTaskStatus, requestProduction } from "../../../../lib/studio-research";
+import { signDatabaseSessionToken } from "../../../../lib/auth";
 import { createPrivateOriginalRepository, getNodePgPool } from "@mohen/data-access";
-import type { ProductionOriginal } from "../../../../../lib/studio-production";
-import { createPrivateSourceRegistrationRepository } from "../../../../../../../packages/data-access/src/private-source-registration-repository.mjs";
+import type { ProductionOriginal } from "../../../../lib/studio-production";
+import { createPrivateSourceRegistrationRepository } from "../../../../../../packages/data-access/src/private-source-registration-repository.mjs";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
