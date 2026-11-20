@@ -70,7 +70,7 @@ function ColumnHead({ no, title, desc }: { no: string; title: string; desc: stri
   );
 }
 
-export default function StudioWorkbench() {
+export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = {}) {
   // Owner 决定：研究「项目」对用户隐形。页面不再要求选择或命名项目；用户发出第一句话时
   // 由后台自动建立一份研究底稿并绑定本次创作，界面只把它当作「以往研究档案」在抽屉里可见。
   const [projects,setProjects]=useState<StudioProject[]>([]);
@@ -538,7 +538,7 @@ export default function StudioWorkbench() {
     }, 2000);
   }
 
-  async function requestFormalProduction() {
+  async function requestFormalProduction(endStage?: "D00") {
     if (!currentResearch || currentResearch.status !== "done" || productionBusy || busy ||
         projectBusy || production?.status === "RUNNING") return;
     const taskId = currentResearch.taskId;
@@ -553,7 +553,7 @@ export default function StudioWorkbench() {
     try {
       const response = await fetch(`/api/studio/research-tasks/${encodeURIComponent(taskId)}/production`, {
         method: "POST", headers: { "content-type": "application/json" },
-        body:JSON.stringify({original_id:source.original_id,page_number:pageNumber}),cache: "no-store",
+        body:JSON.stringify({original_id:source.original_id,page_number:pageNumber,...(endStage ? {to_stage:endStage} : {})}),cache: "no-store",
       });
       const result = (await response.json()) as { ok?: boolean; run_id?: string; reason?: string };
       if (!response.ok || !result.ok || !result.run_id) {
@@ -1097,8 +1097,8 @@ export default function StudioWorkbench() {
                       disabled={productionBusy || busy || projectBusy || production?.status==="RUNNING"||
                         !privateSources.some(x=>x.original_id===sourceChoice&&x.registration_state==="BOUND")||
                         !Number.isSafeInteger(Number(sourcePage))||Number(sourcePage)<1}
-                      onClick={() => void requestFormalProduction()}>
-                      {productionBusy ? "正在核对生产前提…" : "申请进入 D00—D05"}
+                      onClick={() => void requestFormalProduction(currentResearch.taskId === d00TaskId ? "D00" : undefined)}>
+                      {productionBusy ? "正在核对生产前提…" : currentResearch.taskId === d00TaskId ? "仅接收原件（D00）" : "申请进入 D00—D05"}
                     </button>
                   </>}
               {productionError && <p role="alert" className="studio__submit-msg">{productionError}</p>}

@@ -9,6 +9,8 @@ export const metadata = { title: "创作 Studio · 墨痕" };
 export default async function StudioPage() {
   const session = await getSession();
   if (!session) redirect("/login");
+  const d00TaskId = process.env.VERCEL_ENV === "preview" && process.env.MOHEN_D00_APPROVED_RUN
+    ? process.env.MOHEN_D00_CREATOR_TASK_ID : undefined;
   return (
     <>
       <a
@@ -28,7 +30,7 @@ export default async function StudioPage() {
       >
         资料台
       </a>
-      <StudioWorkbench />
+      <StudioWorkbench d00TaskId={d00TaskId} />
     </>
   );
 }
