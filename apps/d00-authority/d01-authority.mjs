@@ -21,11 +21,14 @@ const json=v=>typeof v==='string'?JSON.parse(v):v;
 
 function configure(env){
  const d00Job=registry.jobs.find(j=>j.stage==='D00');
- const ca=env.MOHEN_D00_AUTHORITY_DATABASE_CA;
- const journalPool=new pg.Pool({...independentGatePoolOptions(env.MOHEN_D00_AUTHORITY_DATABASE_URL,{ca}),max:2});
- journalPool.on('error',()=>{});
- const readerPool=new pg.Pool({...independentGatePoolOptions(env.MOHEN_D00_GATE_READER_DATABASE_URL,{ca}),max:2});
- readerPool.on('error',()=>{});
+ const ca=env.MOHEN_D01_DATABASE_CA;
+ // A single D01-dedicated low-privilege login is a MEMBER of both
+ // mohen_d00_grant_journal (journal write) and mohen_gate_reader (G0 read);
+ // this keeps the D00 preview-only credentials out of any production env.
+ const authorityPool=new pg.Pool({...independentGatePoolOptions(env.MOHEN_D01_AUTHORITY_DATABASE_URL,{ca}),max:2});
+ authorityPool.on('error',()=>{});
+ const readerPool=authorityPool;
+ const journalPool=authorityPool;
  const attestorPool=new pg.Pool({...independentGatePoolOptions(env.MOHEN_D01_ATTESTOR_DATABASE_URL,{ca}),max:2});
  attestorPool.on('error',()=>{});
  try{
@@ -100,7 +103,7 @@ function configure(env){
    '/d01-issue':issueEndpoint,
   };
  }catch(error){
-  void journalPool.end();void readerPool.end();void attestorPool.end();
+  void authorityPool.end();void attestorPool.end();
   throw error;
  }
 }
