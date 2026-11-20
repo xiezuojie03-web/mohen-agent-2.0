@@ -5299,3 +5299,8 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - Supabase mohen-cloud 上创建两个受限独立 LOGIN。目录回读确认授权登录只属于账本角色，Gate 登录只属于 Reader 角色，二者均无超管或绕过 RLS 权限。口令通过 SCRAM 验证器配置，角色定义记录于 Git，凭据不入库。
 - Vercel napoles1/mohen-d00-authority 已新增仅 Preview 的账本数据库 URL 与 CA。云施工终端到 Supabase 连接池尝试返回 ECONNREFUSED，Vercel 函数宿主的实际低权 TLS 登录仍待验证。
 - 独立签发尚未启用，原委托未派发。继续接入两条受保护 Preview 间的服务访问、只读 Gate 和原件桥接。
+
+## 2026-11-20｜第⑤步 Vercel 宿主低权 TLS 通过
+
+- 独立授权 Preview dpl_HN51dRMsS62DCPQiAJuCB8ppD5pL 为 READY，认证访问 /api/readiness 返回 200，journal=ready、gateReader=ready。实际函数宿主已验证证书和低权数据库身份，两条连接均可用。
+- 前检只读取身份和权限，不消费发行账本、不签发 D00 或 G0。低权 Gate 可连接，资格查询端点和原任务对应的读取能力凭据仍待接入；原委托 D00 未派发。
