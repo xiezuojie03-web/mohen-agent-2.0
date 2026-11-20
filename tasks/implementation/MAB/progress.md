@@ -5213,3 +5213,10 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 - D00 私有原件接收路径仅执行授权、哈希回读、登记与候选回执。显式 D00 请求使用 production-d00-intake，模型预算计 0；保留原来的签名准入、原子认领、非自动重试和回执对账。普通生产仍按原 5 单位校验。
 - 4 个针对性模拟通过：全链仍不足额拒绝、非零 D00 配置拒绝、D00 在已花费 6/8 的原额度下零预留、重复请求不重发。未修改原委托预算，未运行真实 Runner。真实验收仍依赖签名执行服务。
+
+## 2026-11-20｜①–④接续确认与⑤远端就绪核对
+
+- 基线为 GitHub `main` 的 `f6543e86d5c59b785c8e31c22252909dd58b1aab`。Vercel `napoles1/mohen-agent-2-0` 对应 Preview `dpl_GmMQ59fJtEBZsmt5oihbEGqZ9voq` 为 READY。
+- 原任务 `53ad1a29-22e5-43c2-816d-b02b6e85abbd` 与 Project `e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5` 复用①–④及既有 Root、原件登记。Creator HTTP 回读仍待复验。
+- Preview 只核对变量名称。执行器、独立执行授权、独立 Gate 查询和原件桥接缺项见[部署手册](../../../specs/OPERATIONS_DEPLOYMENT.md#受保护-preview-的-d00-接续2026-11-20)。查过 Vercel 团队项目与 Connector、GitHub 可见仓库、远端工作流及交接记录，未找到可接入的正式独立授权入口。GitHub 可列 Preview 环境与近期运行，但 Actions Secrets、Variables、自托管 Runner 和 Preview 环境 Secrets 元数据查询均返回集成权限 403。
+- ⑤为 HOLD / NOT_RUN，未认领生产运行、未增加模型操作或费用。等待正式服务配置；恢复后只运行 D00 并按 [PLAN](PLAN.md#studio-d00-handoff) 回读验收，独立 G0 待审。
