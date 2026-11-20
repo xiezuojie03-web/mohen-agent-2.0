@@ -4,4 +4,5 @@
 
 - 仓库：`xiezuojie03-web/mohen-agent-2.0`。交接时交付精确 main SHA、相关 CI 或部署回执、未提交成果及其恢复位置，并明确唯一写入方。
 - 环境交接记录宿主、受保护入口、所需角色和连接状态。凭据通过既有受控渠道处理。
-- 接手方按 [CURRENT](../../../CURRENT.md) 定位实际任务与施工前沿，按 [PLAN](PLAN.md) 执行，按 [progress](progress.md) 恢复所需证据。
+- 接手方按 [CURRENT](../../../CURRENT.md) 定位实际任务与施工前沿，按 [PLAN](PLAN.md) 执行，按 [progress](progress.md) 恢复所需证据；设计职责以 MHKA-00—05 为准，逐域按需读取，见 [AGENTS](../../../AGENTS.md)。
+- 本页不另立任务或状态：施工标准以 PLAN 为准、当前事实以 CURRENT 为准、历史回执以 progress 原始记录为准；平台/宿主切换只更新本页交接信息。

@@ -4,7 +4,18 @@
 
 ## 1. 权威顺序与不可越界的底线
 
-Owner已批准的裁决 → MHKA-00—05相应设计职责 → 现行授权专业合同 → MAB-ENG-01受控任务书 → tasks/implementation/MAB/PLAN.md唯一施工顺序与准出标准。
+Owner已批准的裁决 → MHKA-00—05相应设计职责 → 现行授权专业合同 → MAB-ENG-01受控任务书 → tasks/implementation/MAB/PLAN.md唯一施工顺序与准出标准。旧C0—C4仅为历史来源与运行兼容，不是当前目标设计权威；M8负责生产启用、正式投运激活及旧运行代际受控退役，并非MHKA开始指导施工的时间。
+
+**MHKA 治理入口（逐份按需读取，不无条件通读）：**
+
+| 治理域 | 权威文件 |
+|---|---|
+| 治理、Owner裁决 | `governance/mhka/MHKA-00_Governance_Charter.md` |
+| 核心价值与战略 | `governance/mhka/MHKA-01_Value_and_Strategy.md` |
+| 人文产品、Studio/WATCH/EXP | `governance/mhka/MHKA-02_Humanistic_Product_and_Experience.md` |
+| 知识世界、资产、D/L/G | `governance/mhka/MHKA-03_Knowledge_World_and_Data_Architecture.md` |
+| Agent、方法、Skill、混合AI | `governance/mhka/MHKA-04_Agent_and_Professional_Capabilities.md` |
+| 工程、安全与运维 | `governance/mhka/MHKA-05_Software_Engineering_and_Operations.md` |
 
 **设计、代码、CI、隔离验证、线上验证、Owner签收是不同证据层。** 任何工具不得自签专业Gate、绕过来源权利或权限、擅用生产密钥、迁移生产数据、增加未经授权的付费或向公众开放。不能因旧代码、部署READY、历史快照或工具输出否定现行合同，也不能因合同存在冒充运行PASS。
 

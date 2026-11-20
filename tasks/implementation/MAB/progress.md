@@ -5460,3 +5460,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 **真实云端（VERIFIED_LIVE）**：`backups/_verify_inprocess_verifier_live_20261120.mjs` 临时建非特权 reader LOGIN + 1 天 consume credential，进程内 verifier 读真审计 `888db9e6` → `INPROC_LIVE_RECEIPT` audit 一致/current=true/双 digest（in `478a8668…`、out `002bb07f…`），错 output_digest→拒绝（`INPROC_LIVE_RESULT pass=true,negative_rejected=true`），验证后凭据撤销+登录删除。溯源确认 `478a8668…` 由 D00 grant journal 绑定；当前 `production_runs.scope` 在执行后被追加字段，故不能用现行 scope 反推原 input 做整链重放——真实 Runner 的 input 在执行期内存中天然匹配，此为探针重建限制非产品缺陷（`_probe_recover_input_20261120.mjs` 穷举无匹配）。
 
 **HOLD/下一动作（非阻断）**：真正跑带 reader 的 D00→D01 Runner 需在托管环境注入持久低权 reader URL + consume credential（本批按最小权限用临时登录验证能力，未留持久凭据）；D01→D02 非 C01 typed 转换仍未实现（`PRIVATE_NEXT_STAGE_REQUEST_NOT_READY`）。零生产部署、零公众开放、零新增付费、密钥未入 git/日志/对话；回滚＝git revert 本批代码/测试即可，不改已落库审计。CI 宿主仍 `DEFERRED_ENV`。
+
+## 2026-11-20｜CI 静态 guard 回归修复（ST 施工前置，文档锚点补强）
+
+- **发现**：本窗口核实发现 `.github/workflows/ci.yml:27-31` 两个必跑静态 guard 在本机 FAIL——`check-authority-routing.mjs` 报 6×`UNROUTED_MHKA` + `NO_M8_RUNTIME_BOUNDARY` + `PLAN_RUNTIME_SCOPE_MISSING` + `HANDOFF_NO_MHKA_DECISION`；`check-dev-skill-layout.mjs` 报 `UNROUTED_CANONICAL:PLAN.md`；连带 `tests/dev-skills` 5 号测试失败（13/14）。CI 宿主因账单/支出上限 runner 启动前拦截，掩盖了该红灯。
+- **根因（git -S 实证）**：guard 在 `8356022`(11-14) 要求 AGENTS.md 逐份 MHKA 反引号路径、PLAN.md 含 `M8 所等待的是正式生产激活`、canonical skill 路由；随后 `900a6e0`(11-18) 与 `ea63a88`(11-20) 把这些锚点精简掉，且均为 HEAD 祖先。属文档—guard 表示漂移，不是 guard 逻辑错误。
+- **修法（遵循 PLAN §0.2 B 禁止放松断言伪绿）**：补强文档而非放宽 guard。AGENTS.md 恢复 6 份 MHKA 逐份路由表 + `M8负责生产启用…旧运行代际受控退役` 边界；PLAN.md §5 补回 M8 运行时范围语句 + canonical skill 路由；ENGINEERING_HANDOFF_CURRENT.md 补回 MHKA 权威锚点。guard 脚本与断言**未改**。
+- **变更**：`git diff --numstat` = AGENTS.md +12/-1、PLAN.md +3/-1、HANDOFF +2/-1；17 插入 3 删除，删除均为整行替换且保留原语义。基线 HEAD=`7ca2398`，写入前 local=origin 分叉 0/0；`P0_鉴权矩阵.csv` 的既有未提交改动非本批、未触碰。
+- **验证（本机真实执行）**：`node scripts/dev-skills/continuation.mjs verify --profile static --json` → `mhka-route PASS` + `dev-skill-layout PASS`；`node --test tests/dev-skills/*.test.mjs` → **14 pass / 0 fail**（修复前 13/1）；guard 脚本 `git status` 无改动，断言完整保留。未跑 CI 宿主/DB/Gate/生产（DEFERRED_ENV）。
+- **性质/边界**：纯静态文档锚点修复，不是 ST 业务动作缺口、不是 M5 八维证据、不是 Gate 或生产启用。`checkoutHead` 仍报 `7ca2398`（工作区改动未提交，CLI 按 HEAD 报告）。
+- **回滚**：`git revert` 本批提交即可；不改任何审计、凭据、库数据或已签名对象。
+- **HOLD/下一动作**：本批只恢复可信取证基线；ST-01—ST-09 动作代码已全部就位（无空壳），真正断点在 ST-04 后的持久低权 reader 凭据、D01→D02 非 C01 typed 转换（C02 需独立转录+G1 独立签发）、当前 project 的 G5 资格绑定——均需 Owner 环境/Gate 授权，未擅动。
