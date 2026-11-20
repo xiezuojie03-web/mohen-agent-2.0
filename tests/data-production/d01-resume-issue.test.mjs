@@ -3,6 +3,7 @@ import test from 'node:test';
 import {createHmac} from 'node:crypto';
 import {createD01IssueEndpoint} from '../../pipelines/data-production/orchestrator/d01-resume-issue.mjs';
 import {buildMethodPlanRefs} from '../../packages/data-access/src/method-plan-ref.mjs';
+import {executionDigest} from '../../pipelines/data-production/orchestrator/execution-authority.mjs';
 
 const SCHEMA='mohen.d01-resume-request.v1';
 const credential='synthetic-d01-issue-credential-32-characters';
@@ -34,7 +35,8 @@ const attestorQuery=async(sql)=>{
 const g0Request={run_id:runId,stage:'D00',gate_code:'G0',output_digest:'b'.repeat(64)};
 function req(b=body,sigOverride){
  const time=String(Date.now());
- const sig=sigOverride??createHmac('sha256',credential).update(SCHEMA+'\n'+time+'\n'+JSON.stringify(b)).digest('hex');
+ const digest=executionDigest({run_id:b.run_id,from_stage:b.from_stage,scope:b.scope,project_id:b.project_id});
+ const sig=sigOverride??createHmac('sha256',credential).update(SCHEMA+'\n'+time+'\n'+digest).digest('hex');
  return new Request('https://authority.invalid/d01-issue',{method:'POST',
   headers:{'content-type':'application/json','x-mohen-d01-time':time,'x-mohen-d01-signature':sig},body:JSON.stringify(b)});
 }

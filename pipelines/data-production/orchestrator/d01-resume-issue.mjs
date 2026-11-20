@@ -6,10 +6,14 @@
 import {createHmac,timingSafeEqual} from 'node:crypto';
 import {readBoundedGateJson} from './bounded-gate-request.mjs';
 import {rebuildD01ResumeInput} from './d01-resume-input.mjs';
+import {executionDigest} from './execution-authority.mjs';
 const SCHEMA='mohen.d01-resume-request.v1';
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const deny=status=>Response.json({ok:false,reason:'d01_issue_denied'},{status,headers:{'cache-control':'no-store'}});
-function signature(credential,time,v){return createHmac('sha256',credential).update(SCHEMA+'\n'+time+'\n'+JSON.stringify(v)).digest('hex');}
+// MUST match d01-resume-provider.mjs byte-for-byte: the canonical digest is
+// the signature payload, never a raw JSON.stringify (key order is unstable).
+const requestDigest=v=>executionDigest({run_id:v.run_id,from_stage:v.from_stage,scope:v.scope,project_id:v.project_id});
+function signature(credential,time,v){return createHmac('sha256',credential).update(SCHEMA+'\n'+time+'\n'+requestDigest(v)).digest('hex');}
 function valid(v){
  return v&&typeof v==='object'&&!Array.isArray(v)&&UUID.test(v.run_id??'')&&v.from_stage==='D01'&&
   UUID.test(v.project_id??'')&&v.scope?.project_id===v.project_id&&UUID.test(v.scope?.original_id??'')&&
