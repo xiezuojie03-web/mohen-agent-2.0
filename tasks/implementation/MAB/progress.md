@@ -5471,3 +5471,17 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **性质/边界**：纯静态文档锚点修复，不是 ST 业务动作缺口、不是 M5 八维证据、不是 Gate 或生产启用。`checkoutHead` 仍报 `7ca2398`（工作区改动未提交，CLI 按 HEAD 报告）。
 - **回滚**：`git revert` 本批提交即可；不改任何审计、凭据、库数据或已签名对象。
 - **HOLD/下一动作**：本批只恢复可信取证基线；ST-01—ST-09 动作代码已全部就位（无空壳），真正断点在 ST-04 后的持久低权 reader 凭据、D01→D02 非 C01 typed 转换（C02 需独立转录+G1 独立签发）、当前 project 的 G5 资格绑定——均需 Owner 环境/Gate 授权，未擅动。
+
+## 2026-11-20｜Owner 全阻断授权后的可执行性核验（推送+断点复核，零越权写）
+
+- **推送（已完成）**：guard 修复批提交 `ab11358a9774c43517c2e21c4e4a29ee38c0e63e`，`git -c http.proxy= -c https.proxy= push origin main` 成功；推送后 local=origin=ab11358，分叉 0/0。`P0_鉴权矩阵.csv` 既有未提交改动非本批、未暂存未提交。
+- **Owner 授权**：本批 Owner 明示「授权所有阻断，继续按施工计划施工」。授权=许可，不等于物理凭据/宿主配置已存在；按 PLAN §0.2 D 与 skill 边界，不因授权而自签 Gate、伪造凭据或虚构 PASS。
+- **CI 状态**：新 SHA `ab11358` 经 GitHub REST（web）查询 run 返回 404/需鉴权，`DEFERRED_ENV` 不变；Vercel 令牌本机 `UND_ERR_CONNECT_TIMEOUT`（check-credentials 3 PASS/1 FAIL）。CI 宿主拦截非授权可解。
+- **真实运行前置核验（只读，仅键名/存在性，不读取任何值）**：
+  - 云库连通：`check-credentials` Supabase pooler `SELECT 1` PASS；本地库 PASS；GitHub PASS。
+  - `.env.local` 已有 DB 身份键（DATABASE_URL、PRODUCER/PRIVATE_WORKER/GATE_MACHINE DATABASE_URL、INDEPENDENT_GATE_VERIFY_URL/CREDENTIAL）。
+  - **Runner 执行授权验签键全部缺失**：`MOHEN_EXECUTION_AUTH_VERIFY_URL`、`_CREDENTIAL`、`_PUBLIC_KEY`、`MOHEN_EXECUTION_AUTH_DYNAMIC_TOKEN_URL`、`_DYNAMIC_CREDENTIAL` 均不在 .env.local；`MOHEN_RUNNER_GATE_READER_DATABASE_URL`/`_CONSUME_CREDENTIAL` 亦未配置（上批按最小权限用临时登录验能力后已撤销，未留持久值）。`assertExecutionAuthorityConfigured` 与 `run.mjs:132` 在这些缺失下必然 fail-closed（HOLD），非代码缺陷。
+  - 独立 Gate 机器签发脚本留存于 `tasks/results/MAB/ENGINEERING_DATA_UNIFICATION/backups/`（gitignore）；当前 project 的 G5 资格绑定仍为 0（B1 诊断）。
+- **判定**：D00→D01 真实 Runner 的硬前置是托管宿主的 execution-authority 验签/动态令牌配置 + 持久低权 reader 凭据；这些是宿主配置与密钥注入问题，不是"授权"或改代码可补。D01→D02 非 C01 typed 需独立转录+G1 独立签发（Gate 授权动作，不可由 Producer 代签）。因此本批不写库、不签发、不运行 Runner、不部署，避免伪造运行证据。
+- **回滚/边界**：无仓库文件新增改动（本批仅只读核验）；无生产 DB/Storage/Gate/付费/公众变更。
+- **下一动作（具名宿主前置，非泛称缺环境）**：需在执行宿主注入 5 个 execution-authority 键 + 2 个 reader 键的具名值（经受控渠道，不入仓/日志/对话），并提供 CI 宿主恢复（账单/支出上限）后，才能跑真实 D00→D01 与后续 D01→D02；在此之前 M5 维持 `0/8 OVERALL_HOLD`。
