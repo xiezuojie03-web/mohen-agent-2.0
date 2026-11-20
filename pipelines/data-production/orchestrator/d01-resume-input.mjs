@@ -71,8 +71,10 @@ export async function rebuildD01ResumeInput({query,candidate,request,registry,pr
  const pageNumber=runScope?.page_number;
  if(runScope?.project_id!==projectId||runScope?.source_version_id!==candidate.object_id||
     runScope?.original_id!==row.original_id||runScope?.raw_sha256!==row.original_sha256||
-    !(Number.isSafeInteger(pageNumber)&&pageNumber>=1&&pageNumber<=10000)||
-    pageNumber!==scope?.page_number)fail('D01_RESUME_PAGE_SCOPE_MISMATCH');
+    !(Number.isSafeInteger(pageNumber)&&pageNumber>=1&&pageNumber<=10000))fail('D01_RESUME_PAGE_SCOPE_MISMATCH');
+    // The G0 candidate's allowed_scope may carry only project_id; the exact page
+    // is an execution authorization fact held solely in the run scope above.
+    if(scope?.page_number!==undefined&&scope.page_number!==pageNumber)fail('D01_RESUME_PAGE_SCOPE_MISMATCH');
  // EXACT D00 adapter output shape (see private-evidence-adapters.mjs:87-98).
  const resumeInput=imageOnly
   ? {schema:SCHEMA,stage:'D01',originalId:row.original_id,method_plan:methodPlan,

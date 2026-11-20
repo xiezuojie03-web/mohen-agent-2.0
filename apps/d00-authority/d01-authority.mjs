@@ -57,33 +57,39 @@ function configure(env){
    const values=[];const text=sql.replace(/:'([^']+)'/g,(_f,n)=>{values.push(params[n]);return '$'+values.length;});
    return (await attestorPool.query(text,values)).rows;
   };
+  // The authoritative "current qualification" is a row in qualification_current
+  // whose valid_until is still live, joined to its independent G0 audit carrying
+  // a stage_binding.output_digest. This selects exactly one candidate, avoiding
+  // older current_valid audits that were superseded without a qualification row.
+  const currentG0=async (run_id)=>{
+   const rows=await attestorQuery([
+    "select a.gate_audit_id::text as audit_id, a.candidate_id::text as candidate_id,",
+    "  a.details->'stage_binding'->>'output_digest' as output_digest",
+    "from control.qualification_current q",
+    "join control.gate_audits a on a.gate_audit_id=q.gate_audit_id",
+    "where a.run_id=:'run'::uuid and a.stage='D00' and a.gate_code='G0'",
+    "  and a.result='PASS' and a.decision_origin='independent_gate' and a.current_valid=true",
+    "  and q.consumer='producer' and q.object_type='source_version'",
+    "  and (q.valid_until is null or q.valid_until > now())",
+    "  and (a.valid_until is null or a.valid_until > now()) limit 2"
+   ].join(' '),{run:run_id});
+   if(rows.length!==1||!/^[a-f0-9]{64}$/.test(rows[0].output_digest??''))return null;
+   return rows[0];
+  };
   const loadCandidate=async ({run_id})=>{
+   const g0=await currentG0(run_id);if(!g0)return null;
    const rows=await attestorQuery([
     "select c.candidate_id::text as candidate_id, c.object_id::text as object_id,",
     "  c.object_type, c.gate_code, c.stage, c.consumer, c.artifact_revision,",
-    "  c.scope::text as scope, c.evidence_refs::text as evidence_refs",
-    "from control.gate_candidates c",
-    "join control.gate_audits a on a.candidate_id=c.candidate_id",
-    "where a.run_id=:'run'::uuid and a.stage='D00' and a.gate_code='G0'",
-    "  and a.result='PASS' and a.decision_origin='independent_gate'",
-    "  and a.current_valid=true and c.consumer='producer'",
-    "  and (a.valid_until is null or a.valid_until > now())",
-    "order by a.checked_at desc limit 2"
-   ].join(' '),{run:run_id});
+    "  c.allowed_scope::text as scope, c.evidence_refs::text as evidence_refs",
+    "from control.gate_candidates c where c.candidate_id=:'candidate'::uuid and c.consumer='producer' limit 1"
+   ].join(' '),{candidate:g0.candidate_id});
    if(rows.length!==1)return null;
    return {...rows[0],scope:json(rows[0].scope),evidence_refs:json(rows[0].evidence_refs)??[]};
   };
-  const loadG0Request=async ({run_id,candidate})=>{
-   const rows=await attestorQuery([
-    "select output_fingerprint from control.gate_audits",
-    "where run_id=:'run'::uuid and stage='D00' and gate_code='G0'",
-    "  and candidate_id=:'candidate'::uuid and result='PASS'",
-    "  and decision_origin='independent_gate' and current_valid=true",
-    "  and (valid_until is null or valid_until > now()) limit 1"
-   ].join(' '),{run:run_id,candidate:candidate.candidate_id});
-   if(rows.length!==1||typeof rows[0].output_fingerprint!=='string'||
-      !/^[a-f0-9]{64}$/.test(rows[0].output_fingerprint))return null;
-   return {run_id,stage:'D00',gate_code:'G0',output_digest:rows[0].output_fingerprint};
+  const loadG0Request=async ({run_id})=>{
+   const g0=await currentG0(run_id);if(!g0)return null;
+   return {run_id,stage:'D00',gate_code:'G0',output_digest:g0.output_digest};
   };
   const issueEndpoint=createD01IssueEndpoint({
    credential:env.MOHEN_D01_ISSUE_CREDENTIAL,attestorQuery,loadCandidate,loadG0Request,authority,registry,

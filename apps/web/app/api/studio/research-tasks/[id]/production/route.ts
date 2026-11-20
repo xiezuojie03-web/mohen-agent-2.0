@@ -143,9 +143,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     const rows = await queryRows(
       `select 1 from control.qualification_current q
        join control.gate_audits a on a.gate_audit_id = q.gate_audit_id
-       where q.current_valid = true and q.consumer = 'producer'
+       where q.consumer = 'producer'
          and a.run_id = :'run'::uuid and a.stage = 'D00' and a.gate_code = 'G0'
          and a.result = 'PASS' and a.decision_origin = 'independent_gate'
+         and a.current_valid = true
+         and (q.valid_until is null or q.valid_until > now())
          and (a.valid_until is null or a.valid_until > now()) limit 1`,
       { run: runId });
     resume_d01_eligible = rows.length === 1;
