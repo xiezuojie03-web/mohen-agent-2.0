@@ -5361,3 +5361,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - Supabase 云端→本地增量回写 77 行业务数据（20 张表，逐主键内容比对 0 失败）+ control.d00_execution_grant_journal 1 行，事务内完成并通过校验。回写后本地实测：qualification_current 49、gate_policy_enabled 6、gate_reviewer_bindings_active 46、gate_audits 802（independent_gate 91）、private_originals 91、sources 52、raw_items 189、delegations 25、execution_receipts 23。认证数据、mab_backup/vault/密码重置平台表、published_pointers 空 revision_id 合法行均未改动。全库 pg_dump 备份标签 backup/local-before-cloud-sync-20261120 与证据在 tasks/results/MAB/ENGINEERING_DATA_UNIFICATION/backups/。
 - 只读评估：设计文件 vs 工程实况见 tasks/results/DESIGN_VS_REALITY_ASSESSMENT_20261120.md；PLAN vs 审查缺陷见 tasks/results/PLAN_VS_AUDIT_MATCH_20261120.md；三问结论见 tasks/results/THREE_QUESTIONS_ANSWER_20261120.md。结论：设计/代码/DDL 结构性匹配，证据链脱节；PLAN 原则不需改，仅补 CI 宿主级失败口径与 Skill 自生长验收落点。
 - 文档一致性审计发现并修正本批评估文档的 push 状态/引用错配；既有文档不一致清单与处理建议见 THREE_QUESTIONS_ANSWER_20261120.md。施工断点未变：仍停在独立 G0 审核前，下一动作仍为同一 D00 候选交独立 Reviewer 回读 G0。未部署、未启用正式 Gate、未公众开放、未新增付费。
+
+## 2026-11-20｜首批施工前置核验 + B1 资格命中只读诊断
+
+- 施工前置：HEAD=4a8d282，local=remote 分叉 0/0；CI 经 gh CLI 缺失与 GitHub 页面不可达无法确证，按今日补入 PLAN 的口径记 CI_BLOCKED；生产部署隔离未证实。独立 Gate 入口存在（rule-gate-reviewer.mjs / independent-gate-service.mjs / apps/d00-authority），但需专用低权凭据、TLS、session key 与 Owner 具名放行，历史无真实成功签发。
+- B1 只读诊断（当前 Project e03c4ba8）：qualification_current 共 49 条（G0=7/G1=5/G2=5/G3=5/G4=5/G5=22），以 allowed_scope.project_id 精确匹配的为 0；资格 scope 实际绑定在机器/测试 project b0a11000…/d9d48901…/b1ecefa4…，抽样 current_qualification_is_valid=false。结论：统一门面读不到真实知识的根因=资格对当前 Project 无 scope 命中且不当前有效，与停在独立 G0 审核前一致；未改任何数据，不得用其他 Project 资格冒填。
+- 首批任务清单与红线见 tasks/results/FIRST_BATCH_CONSTRUCTION_TASKS_20261120.md。真正推进 G0 受授权阻断（须独立低权身份 + Owner 具名放行），CI 受环境阻断；本批仅完成文档修正与只读诊断，未签发 Gate、未部署、未启用正式资格。
