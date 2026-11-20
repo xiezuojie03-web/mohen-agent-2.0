@@ -5551,3 +5551,12 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **验证（本地实证）**：用探针同款最小 env（仅 PATH）跑 `run.mjs --check-startup` → `{"code":0,"timedOut":false}`；相关测试 16 条 15 PASS，唯一失败是既有 Windows `ERR_UNSUPPORTED_ESM_URL_SCHEME`（测试 fixture 用 `C:\` 作 --import 路径，与本次改动无关）；新增回归测试 PASS；lints 0。
 - **证据边界**：本地启动图恢复 ≠ 云端已恢复；必须无缓存重部署后由 Owner SSO 复跑 probe 才算闭环。未改 Vercel env/DB/Gate/凭据。八维维持 0/8。
 - **下一动作**：提交本修复 → `vercel deploy --force` 无缓存重部署 Preview → Owner SSO GET probe 期望 `runner_ready` → 再议真实 D00→D01（会产生真实执行/费用，需明确授权）。
+
+## 2026-11-20｜根因修复后无缓存重部署（待 Owner SSO probe 闭环）
+
+- **提交与推送**：`d9ace70` fix(studio) 移除 run.mjs 进程内 reader 顶层 require(pg)、verifier 改懒加载、加回归测试；`git push origin main` 成功（`e2ebaa7..d9ace70`，用 `git -c http.proxy= -c https.proxy=` 绕过 git 代理卡住）。
+- **部署**：`tools/check-credentials.mjs` 四项全 PASS 后，用 Vercel CLI **66.2.0**（缓存 `67eb4586ca667318`，34.4.0 因 .vercel 项目读取失败被弃用）+ 小写 http_proxy/https_proxy + `vercel deploy --token --yes --force` 无缓存部署 Preview（非 --prod），新 URL `https://mohen-agent-2-0-7ad46u6ba-napoles1.vercel.app`，READY（2m）。
+- **部署实证**：REST 回读新部署 `dpl_GwH7FZevdpL54F1Emci71xWzUM5Y` state=READY、SHA `d9ace70fbf0b13634b70c246725968a57a63bfd6` = 修复提交精确匹配；build log 为 `Skipping build cache` + esbuild 0.28.2 安装 + `Compiled successfully` + trace 完成。`v9/.../functions` API 404，无法从 API 直接读函数产物确认 bundle。
+- **证据边界**：本地启动图 PASS + 部署 READY 均不等于云端 probe 闭环；team-scoped token 的 `vercel curl/whoami` 报 User not found，本会话无法绕过 Vercel Authentication 自测。必须 Owner 用本人 SSO 浏览器 GET `https://mohen-agent-2-0-7ad46u6ba-napoles1.vercel.app/api/internal/production-execute` 贴回原文。
+- **零写入**：本批未改 DB/Gate/env/凭据，未碰 Production。临时诊断脚本已删。八维维持 0/8。
+- **下一动作**：Owner SSO probe 回 `runner_ready` → 闭环，再议真实 D00→D01（需明确授权）；若仍 module 错，扩大诊断到函数产物层（本地 `vercel build` 产物树 / 注入运行时依赖目录探针）。
