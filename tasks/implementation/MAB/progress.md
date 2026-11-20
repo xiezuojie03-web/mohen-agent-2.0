@@ -5485,3 +5485,12 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **判定**：D00→D01 真实 Runner 的硬前置是托管宿主的 execution-authority 验签/动态令牌配置 + 持久低权 reader 凭据；这些是宿主配置与密钥注入问题，不是"授权"或改代码可补。D01→D02 非 C01 typed 需独立转录+G1 独立签发（Gate 授权动作，不可由 Producer 代签）。因此本批不写库、不签发、不运行 Runner、不部署，避免伪造运行证据。
 - **回滚/边界**：无仓库文件新增改动（本批仅只读核验）；无生产 DB/Storage/Gate/付费/公众变更。
 - **下一动作（具名宿主前置，非泛称缺环境）**：需在执行宿主注入 5 个 execution-authority 键 + 2 个 reader 键的具名值（经受控渠道，不入仓/日志/对话），并提供 CI 宿主恢复（账单/支出上限）后，才能跑真实 D00→D01 与后续 D01→D02；在此之前 M5 维持 `0/8 OVERALL_HOLD`。
+
+## 2026-11-20｜Owner 开 VPN 后的宿主连通与配置核验（纠错+只读，零写）
+
+- **纠错（重要）**：上一批记"宿主 7 键全部缺失"是错误推断——我用本机 `.env.local` 缺失去推断 Vercel 宿主。实测 Vercel Preview（项目 `napoles1/mohen-agent-2-0`）共 41 条环境变量，5 个 execution-authority 键（`VERIFY_URL/VERIFY_CREDENTIAL/PUBLIC_KEY/DYNAMIC_URL/DYNAMIC_CREDENTIAL`，注意真实名是 `DYNAMIC_URL` 非我此前误写的 `DYNAMIC_TOKEN_URL`）+ `MOHEN_INDEPENDENT_GATE_VERIFY_URL/CREDENTIAL` + `CLOUD_EXECUTION_ENABLED/CREDENTIAL` + `D00_APPROVED_RUN/AUTHORITY_PREVIEW_HOST` 均已定义（preview scope）。此前"缺 7 键"结论对宿主无效，仅对本机 .env.local 成立。
+- **Vercel 连通修复（真实）**：本机 git 配了 `http.proxy=http://127.0.0.1:51081` 但 shell 未导出；Node fetch(undici) 默认忽略代理。解法：`$env:HTTPS_PROXY/$env:HTTP_PROXY='http://127.0.0.1:51081'; $env:NODE_USE_ENV_PROXY='1'`。之后 `node tools/check-credentials.mjs` 四项全 PASS（Supabase/Vercel GET /v9/projects 200/GitHub/本地库）。此命令为本环境后续 Vercel 操作的唯一可用姿势，PowerShell `node -e` 会吞引号，须用脚本文件。
+- **值不可读**：Vercel `GET /v10/projects/{id}/env` 返回值脱敏（value len=0 是 redaction，非空值证明）。因此不能据该 API 断言键有效，也不盲目覆盖可能已有效的配置。
+- **只读 probe 受阻**：Preview 部署 `dpl_EVdqiA6StwBUroBcxqwat5YAwt9b`（`...nh9hxf6wk...vercel.app`）的 `GET /api/internal/production-execute`（现成只读 runner-probe）返回 302 → `vercel.com/sso-api`，body 为 "Protected by Vercel Authentication"。本机无 `vercel` CLI，无法用 `vercel curl` 带 SSO 凭据访问。故现有宿主配置是否端到端生效，本环境无法从外部证明，维持 DEFERRED_ENV。
+- **零写入**：本批未写 Vercel env、未写生产 DB/Storage、未签发 Gate、未跑 Runner、未部署。创建的两个 `.tmp_*` 只读脚本已删除；其余 `.tmp_*` 为历史遗留、未触碰。
+- **下一动作**：需 Owner 通过 Vercel Dashboard 用本人 SSO 打开受保护 Preview 的 `/api/internal/production-execute` GET（只读 probe），把返回贴回（不含任何密钥）；据此判断宿主 5 键是否真有效，再决定是否只需补 G5 资格绑定而非重配环境变量。CI 账单上限仍未解。
