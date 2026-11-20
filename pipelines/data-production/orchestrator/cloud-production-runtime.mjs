@@ -2,13 +2,15 @@
 // Registry, job queue, Gate signer or professional method is introduced.
 import fs from 'node:fs/promises';import os from 'node:os';import path from 'node:path';import {spawn} from 'node:child_process';
 import {executionDigest} from './execution-authority.mjs';
-import {cloudProductionEndStage} from './cloud-production-dispatch.mjs';
+import {cloudProductionEndStage,cloudProductionFromStage} from './cloud-production-dispatch.mjs';
 import {assertCloudExecutionConfiguration,resolveMachineDatabaseUrl} from './cloud-execution-readiness.mjs';
 export {assertCloudExecutionConfiguration,cloudExecutionReadiness} from './cloud-execution-readiness.mjs';
 export function cloudProductionInputDigest(v){
+ const from=cloudProductionFromStage(v);
  cloudProductionEndStage(v);
  return executionDigest({run_id:v.run_id,research_intent:v.research_intent,scope:v.scope,
-  consumer_method_plan:v.consumer_method_plan,...(v.to_stage===undefined?{}:{to_stage:v.to_stage})});
+  consumer_method_plan:v.consumer_method_plan,...(v.to_stage===undefined?{}:{to_stage:v.to_stage}),
+  ...(from==='D00'?{}:{from_stage:from})});
 }
 export async function claimCloudProductionRun({db,input,verifyOwnerOriginal}){
  if(typeof verifyOwnerOriginal!=='function')throw Error('CLOUD_OWNER_VERIFIER_REQUIRED');
@@ -100,8 +102,9 @@ function runnerEnvironment(environment,ownerToken){
   MOHEN_DB_DRIVER:'pg',MOHEN_EXECUTION_AUTH_TOKENS:environment.MOHEN_EXECUTION_AUTH_TOKENS??'{}',MOHEN_PRIVATE_WORKER_OWNER_SESSION:ownerToken,MOHEN_PRIVATE_EVIDENCE_WORKER_ENABLED:'true',MOHEN_CLOUD_RUN_PROGRESS_RPC:'true',
   MOHEN_TOPIC_JSON_FILE:'',MOHEN_TOPIC_CONFIG:''};
 }
-export async function executeCloudProductionCli({input,projectRoot,environment=process.env,runChild=awaitProductionChild,readTerminal,holdRun}){
+export async function executeCloudProductionCli({input,projectRoot,environment=process.env,runChild=awaitProductionChild,readTerminal,holdRun,resumeProvider}){
  const endStage=cloudProductionEndStage(input);
+ const fromStage=cloudProductionFromStage(input);
  assertCloudExecutionConfiguration(environment);
  const root=path.resolve(projectRoot);
  try{await fs.access(path.join(root,'pipelines/data-production/run.mjs'));}
@@ -109,12 +112,30 @@ export async function executeCloudProductionCli({input,projectRoot,environment=p
  const temp=await fs.mkdtemp(path.join(os.tmpdir(),'mohen-cloud-run-'));await fs.chmod(temp,0o700);
  try{
   const scopeFile=path.join(temp,'scope.json');await fs.writeFile(scopeFile,JSON.stringify(input.scope),{mode:0o600});
+  // A resumed run obtains its trusted input and one-use stage grant ONLY from
+  // the injected server-side authority callback. The browser-signed body never
+  // carries the resume JSON or a private signature.
+  let resumeArgs=[],childEnvironment={};
+  if(fromStage!=='D00'){
+   if(typeof resumeProvider!=='function')throw Error('CLOUD_EXECUTOR_RESUME_PROVIDER_REQUIRED');
+   const resume=await resumeProvider({input,fromStage});
+   if(!resume||typeof resume!=='object'||!resume.resume_input||typeof resume.resume_input!=='object'||
+      Array.isArray(resume.resume_input)||typeof resume.token!=='string'||!resume.token.trim())
+     throw Error('CLOUD_EXECUTOR_RESUME_INVALID');
+   const resumeFile=path.join(temp,'resume-input.json');
+   await fs.writeFile(resumeFile,JSON.stringify(resume.resume_input),{mode:0o600});
+   let tokens={};try{tokens=JSON.parse(environment.MOHEN_EXECUTION_AUTH_TOKENS??'{}');}catch{tokens={};}
+   if(!tokens||typeof tokens!=='object'||Array.isArray(tokens))tokens={};
+   tokens[fromStage]=resume.token;
+   childEnvironment={MOHEN_EXECUTION_AUTH_TOKENS:JSON.stringify(tokens)};
+   resumeArgs=['--from',fromStage,'--resume-input-file',resumeFile];
+  }
   const bootstrap=await runnerBootstrap(root);
   const result=await runChild(process.execPath,[...bootstrap.args,path.join(root,'pipelines/data-production/run.mjs'),
     '--project-root',root,'--intent',input.research_intent,'--adapters','pipelines/data-production/adapters/private-evidence-adapters.mjs',
     '--run-id',input.run_id,'--execution-mode','attended','--scope-file',scopeFile,
-    '--method-plan',JSON.stringify(input.consumer_method_plan),'--to',endStage,'--report-dir',path.join(temp,'reports')],
-    {cwd:root,env:{...runnerEnvironment(environment,input.owner_session_token),...bootstrap.environment}});
+    '--method-plan',JSON.stringify(input.consumer_method_plan),...resumeArgs,'--to',endStage,'--report-dir',path.join(temp,'reports')],
+    {cwd:root,env:{...runnerEnvironment(environment,input.owner_session_token),...childEnvironment,...bootstrap.environment}});
   if(result.timedOut)await holdRun(input,'CLOUD_EXECUTOR_DEADLINE');
   else if(result.code!==0)await holdRun(input,'CLOUD_EXECUTOR_PROCESS_FAILED');
   let terminal=await readTerminal(input.run_id);
@@ -124,6 +145,7 @@ export async function executeCloudProductionCli({input,projectRoot,environment=p
   }
   if(!terminal||!['PASS','HOLD','REJECT','FAILED'].includes(terminal.status))throw Error('CLOUD_EXECUTOR_TERMINAL_UNAVAILABLE');
   if(endStage==='D00'&&terminal.stage!=='D00')throw Error('CLOUD_EXECUTOR_TERMINAL_SCOPE_MISMATCH');
+  if(fromStage!=='D00'&&Number(terminal.stage.slice(1))<Number(fromStage.slice(1)))throw Error('CLOUD_EXECUTOR_TERMINAL_SCOPE_MISMATCH');
   return terminal;
  }finally{await fs.rm(temp,{recursive:true,force:true});}
 }

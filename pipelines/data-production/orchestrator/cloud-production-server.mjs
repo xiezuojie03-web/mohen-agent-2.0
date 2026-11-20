@@ -9,7 +9,7 @@ import {createPrivateWorkerPool,createDedicatedMachinePool,assertPrivateWorkerId
 import {assertProducerIdentity} from '../../../packages/data-access/src/producer-identity.mjs';
 import {createPrivateSourceRegistrationRepository} from '../../../packages/data-access/src/private-source-registration-repository.mjs';
 const fail=()=>Response.json({ok:false,reason:'cloud_executor_not_configured'},{status:503,headers:{'cache-control':'no-store'}});
-export function createCloudProductionServer({environment=process.env,projectRoot,db,verifyOwnerOriginal,verifyProducerConnection,execute}={}){
+export function createCloudProductionServer({environment=process.env,projectRoot,db,verifyOwnerOriginal,verifyProducerConnection,execute,resumeProvider}={}){
  if(environment.MOHEN_CLOUD_EXECUTION_ENABLED!=='true'||!projectRoot||!db||
   !environment.MOHEN_CLOUD_EXECUTOR_CREDENTIAL||!environment.MOHEN_PRODUCER_DATABASE_URL)return async()=>fail();
  if(!execute){try{assertCloudExecutionConfiguration(environment);loadRegistry(projectRoot);}catch{return async()=>fail();}}
@@ -56,7 +56,7 @@ export function createCloudProductionServer({environment=process.env,projectRoot
  return createCloudProductionHandler({credential:environment.MOHEN_CLOUD_EXECUTOR_CREDENTIAL,
   claim:input=>claimCloudProductionRun({db,input,verifyOwnerOriginal:verify}),
   execute:async input=>{
-    try{return await (execute?execute(input):executeCloudProductionCli({input,projectRoot:path.resolve(projectRoot),environment,readTerminal,holdRun}));}
+    try{return await (execute?execute(input):executeCloudProductionCli({input,projectRoot:path.resolve(projectRoot),environment,readTerminal,holdRun,resumeProvider}));}
     catch(error){
      const reason=['CLOUD_EXECUTOR_RUNNER_FILE_UNAVAILABLE','CLOUD_EXECUTOR_PROCESS_UNAVAILABLE'].includes(error?.message)
        ? error.message : 'CLOUD_EXECUTOR_SETUP_FAILED';

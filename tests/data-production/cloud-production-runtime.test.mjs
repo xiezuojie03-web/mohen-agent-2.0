@@ -23,6 +23,24 @@ test('CLI receiver invokes the original Runner with server-owned arguments and a
   readTerminal:async()=>({run_id:e.run_id,status:'HOLD',stage:'D00',reason_code:'INDEPENDENT_GATE_NOT_VERIFIED'}),holdRun:async()=>{throw Error('must not mark fail');}});
  assert.equal(called,true);assert.equal(result.status,'HOLD');
 });
+test('D01 resume passes --from/--resume-input-file, injects only the D01 grant token, and needs a trusted provider',async()=>{
+ const e={...input(),from_stage:'D01'};
+ const env={...cloudEnvironment(),MOHEN_EXECUTION_AUTH_VERIFY_URL:'https://independent.invalid/consume',MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL:'synthetic-credential-at-least-32-characters',MOHEN_EXECUTION_AUTH_DYNAMIC_URL:'https://independent.invalid/token',MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL:'synthetic-credential-at-least-32-characters',MOHEN_EXECUTION_AUTH_TOKENS:'{"D00":"old-d00-token"}'};
+ let seenArgs,seenEnv;
+ const resumeInput={schema:'mohen.private-evidence-stage-request.v1',stage:'D01',originalId:e.scope.original_id,page:{kind:'scanned_page/v1',page_number:1}};
+ const result=await executeCloudProductionCli({input:e,projectRoot:process.cwd(),environment:env,
+  resumeProvider:async({fromStage,input})=>{assert.equal(fromStage,'D01');assert.equal(input.run_id,e.run_id);return {resume_input:resumeInput,token:'signed-d01-grant'};},
+  runChild:async(_c,args,opts)=>{seenArgs=args;seenEnv=opts.env;return {code:0,timedOut:false};},
+  readTerminal:async()=>({run_id:e.run_id,status:'HOLD',stage:'D01',reason_code:'G1_NOT_VERIFIED'}),holdRun:async()=>{throw Error('must not hold');}});
+ assert.equal(seenArgs[seenArgs.indexOf('--from')+1],'D01');
+ const resumeFile=seenArgs[seenArgs.indexOf('--resume-input-file')+1];assert.match(resumeFile,/resume-input\.json$/);
+ const childTokens=JSON.parse(seenEnv.MOHEN_EXECUTION_AUTH_TOKENS);
+ assert.equal(childTokens.D01,'signed-d01-grant');assert.equal(childTokens.D00,'old-d00-token');
+ assert.equal(result.stage,'D01');
+ await assert.rejects(()=>executeCloudProductionCli({input:e,projectRoot:process.cwd(),environment:env,
+   runChild:async()=>({code:0,timedOut:false}),readTerminal:async()=>({}),holdRun:async()=>{}}),/CLOUD_EXECUTOR_RESUME_PROVIDER_REQUIRED/);
+ const fresh=input();assert.notEqual(cloudProductionInputDigest({...fresh,from_stage:'D01'}),cloudProductionInputDigest(fresh));
+});
 test('missing independent execution authority stops before opening a child process',async()=>{
  let calls=0;await assert.rejects(()=>executeCloudProductionCli({input:input(),projectRoot:process.cwd(),environment:{},runChild:async()=>{calls++;}}),/CLOUD_EXECUTION_AUTHORITY_REQUIRED/);assert.equal(calls,0);
 });
