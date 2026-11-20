@@ -5,8 +5,14 @@ import {executionDigest} from './execution-authority.mjs';
 import {readBoundedGateJson} from './bounded-gate-request.mjs';
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const SCHEMA='mohen.cloud-production-dispatch.v1';
-const FIELDS=new Set(['run_id','research_intent','scope','consumer_method_plan','owner_session_token']);
+const FIELDS=new Set(['run_id','research_intent','scope','consumer_method_plan','owner_session_token','to_stage']);
 const SCOPE=new Set(['project_id','root_task_id','original_id','page_number','source_version_id','asset_revision_id','raw_sha256','upload_started_at','upload_verified_at']);
+export function cloudProductionEndStage(input){
+ const stage=input?.to_stage;
+ if(stage===undefined)return 'D02';
+ if(stage!=='D00'&&stage!=='D02')throw Error('CLOUD_EXECUTOR_STAGE_INVALID');
+ return stage;
+}
 function valid(v){
  if(!v||typeof v!=='object'||Array.isArray(v)||Object.keys(v).some(k=>!FIELDS.has(k))||!UUID.test(v.run_id??'')||
    typeof v.research_intent!=='string'||!v.research_intent.trim()||v.research_intent.length>2000||
@@ -18,10 +24,13 @@ function valid(v){
    !['C01','C02'].includes(v.consumer_method_plan.methods[0]?.method_id)||
    v.consumer_method_plan.methods[0]?.method_version!=='v1'||Buffer.byteLength(JSON.stringify(v))>16384)
    throw Error('CLOUD_EXECUTOR_REQUEST_INVALID');
+ cloudProductionEndStage(v);
 }
 function signature(credential,time,v){return createHmac('sha256',credential).update(SCHEMA+'\n'+time+'\n'+executionDigest(v)).digest('hex');}
 function configured(credential){return typeof credential==='string'&&credential.length>=32&&credential.length<=256;}
-function boundedResult(v,id){
+function boundedResult(v,input){
+ const id=input.run_id;
+ if(input.to_stage==='D00'&&v?.stage!=='D00')throw Error('CLOUD_EXECUTOR_UNCERTAIN');
  if(v?.run_id!==id||!['PASS','HOLD','REJECT','FAILED'].includes(v.status)||!/^D0[0-5]$/.test(v.stage??''))
   throw Error('CLOUD_EXECUTOR_UNCERTAIN');
  const code=typeof v.reason_code==='string'&&/^[A-Z0-9_]{3,100}$/.test(v.reason_code)?v.reason_code:null;
@@ -43,7 +52,7 @@ export function createCloudProductionDispatch({url,credential,protectionBypass,f
   if(reply.status>=500)throw Error('CLOUD_EXECUTOR_UNCERTAIN');
   if(!reply.ok)throw Error('CLOUD_EXECUTOR_REJECTED');
   let result;try{result=await reply.json();}catch{throw Error('CLOUD_EXECUTOR_UNCERTAIN');}
-  return boundedResult(result,v.run_id);
+  return boundedResult(result,v);
  };
 }
 export function createCloudProductionAuthenticator({credential,now=Date.now}={}){
@@ -72,7 +81,7 @@ export function createCloudProductionHandler({credential,claim,execute,now=Date.
   if(v instanceof Response)return v;
   try{
    if(await claim(v)!==true)return reply(409,'run_already_claimed_or_mismatched');
-   const result=boundedResult(await execute(v),v.run_id);
+   const result=boundedResult(await execute(v),v);
    return Response.json(result,{headers:{'cache-control':'no-store'}});
   }catch{return reply(503,'cloud_executor_uncertain');}
  };

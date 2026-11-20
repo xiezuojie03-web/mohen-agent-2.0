@@ -2,9 +2,14 @@
 // Registry, job queue, Gate signer or professional method is introduced.
 import fs from 'node:fs/promises';import os from 'node:os';import path from 'node:path';import {spawn} from 'node:child_process';
 import {executionDigest} from './execution-authority.mjs';
+import {cloudProductionEndStage} from './cloud-production-dispatch.mjs';
 import {assertCloudExecutionConfiguration,resolveMachineDatabaseUrl} from './cloud-execution-readiness.mjs';
 export {assertCloudExecutionConfiguration,cloudExecutionReadiness} from './cloud-execution-readiness.mjs';
-export function cloudProductionInputDigest(v){return executionDigest({run_id:v.run_id,research_intent:v.research_intent,scope:v.scope,consumer_method_plan:v.consumer_method_plan});}
+export function cloudProductionInputDigest(v){
+ cloudProductionEndStage(v);
+ return executionDigest({run_id:v.run_id,research_intent:v.research_intent,scope:v.scope,
+  consumer_method_plan:v.consumer_method_plan,...(v.to_stage===undefined?{}:{to_stage:v.to_stage})});
+}
 export async function claimCloudProductionRun({db,input,verifyOwnerOriginal}){
  if(typeof verifyOwnerOriginal!=='function')throw Error('CLOUD_OWNER_VERIFIER_REQUIRED');
  await verifyOwnerOriginal(input);
@@ -54,6 +59,7 @@ function runnerEnvironment(environment,ownerToken){
   MOHEN_TOPIC_JSON_FILE:'',MOHEN_TOPIC_CONFIG:''};
 }
 export async function executeCloudProductionCli({input,projectRoot,environment=process.env,runChild=awaitProductionChild,readTerminal,holdRun}){
+ const endStage=cloudProductionEndStage(input);
  assertCloudExecutionConfiguration(environment);
  const root=path.resolve(projectRoot);await fs.access(path.join(root,'pipelines/data-production/run.mjs'));
  const temp=await fs.mkdtemp(path.join(os.tmpdir(),'mohen-cloud-run-'));await fs.chmod(temp,0o700);
@@ -62,7 +68,7 @@ export async function executeCloudProductionCli({input,projectRoot,environment=p
   const result=await runChild(process.execPath,[path.join(root,'pipelines/data-production/run.mjs'),
     '--project-root',root,'--intent',input.research_intent,'--adapters','pipelines/data-production/adapters/private-evidence-adapters.mjs',
     '--run-id',input.run_id,'--execution-mode','attended','--scope-file',scopeFile,
-    '--method-plan',JSON.stringify(input.consumer_method_plan),'--to','D02','--report-dir',path.join(temp,'reports')],
+    '--method-plan',JSON.stringify(input.consumer_method_plan),'--to',endStage,'--report-dir',path.join(temp,'reports')],
     {cwd:root,env:runnerEnvironment(environment,input.owner_session_token)});
   if(result.timedOut)await holdRun(input,'CLOUD_EXECUTOR_DEADLINE');
   else if(result.code!==0)await holdRun(input,'CLOUD_EXECUTOR_PROCESS_FAILED');
@@ -72,6 +78,7 @@ export async function executeCloudProductionCli({input,projectRoot,environment=p
    terminal=await readTerminal(input.run_id);
   }
   if(!terminal||!['PASS','HOLD','REJECT','FAILED'].includes(terminal.status))throw Error('CLOUD_EXECUTOR_TERMINAL_UNAVAILABLE');
+  if(endStage==='D00'&&terminal.stage!=='D00')throw Error('CLOUD_EXECUTOR_TERMINAL_SCOPE_MISMATCH');
   return terminal;
  }finally{await fs.rm(temp,{recursive:true,force:true});}
 }

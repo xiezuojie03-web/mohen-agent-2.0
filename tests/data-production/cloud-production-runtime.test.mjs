@@ -71,3 +71,16 @@ test('real CLI reaches dynamic token validation without any pre-issued stage tok
   assert.match(stderr,/EXECUTION_SIGNED_GRANT_FORMAT_INVALID/);
  }finally{await fs.rm(dir,{recursive:true,force:true});}
 });
+
+
+test('D00 scope is part of the frozen run and constrains the original Runner',async()=>{
+ const base=input(),e={...base,to_stage:'D00'};
+ assert.notEqual(cloudProductionInputDigest(base),cloudProductionInputDigest(e));
+ assert.throws(()=>cloudProductionInputDigest({...e,to_stage:'D05'}),/CLOUD_EXECUTOR_STAGE_INVALID/);
+ const terminal={run_id:e.run_id,status:'HOLD',stage:'D00',reason_code:'TEST_HOLD'};
+ const result=await executeCloudProductionCli({input:e,projectRoot:process.cwd(),
+  environment:cloudEnvironment(),
+  runChild:async(_command,args)=>{assert.equal(args[args.indexOf('--to')+1],'D00');return {code:2,timedOut:false};},
+  readTerminal:async()=>terminal,holdRun:async()=>{}});
+ assert.deepEqual(result,terminal);
+});
