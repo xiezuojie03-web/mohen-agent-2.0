@@ -170,7 +170,7 @@ curl -X PATCH "https://api.vercel.com/v9/projects/<projectId>?teamId=<orgId>" \
 
 ## 受保护 Preview 的 D00 接续（2026-11-20）
 
-当前目标为 `napoles1/mohen-agent-2-0` 的受保护 Preview。功能 SHA `f6543e8` 对应部署 `dpl_GmMQ59fJtEBZsmt5oihbEGqZ9voq` 为 READY，现成接收路由为 `/api/internal/production-execute`。核对 Preview 变量名称后，⑤仍为 HOLD / NOT_RUN。
+当前目标为 `napoles1/mohen-agent-2-0` 的受保护 Preview。功能 SHA `f6543e8` 对应部署 `dpl_GmMQ59fJtEBZsmt5oihbEGqZ9voq` 为 READY，现成接收路由为 `/api/internal/production-execute`。以 Vercel 认证访问该部署的接收路由，应用返回 HTTP 503（`cloud_executor_not_configured`）。重新核对 23 个 Preview 变量条目，以下四类配置均未出现，⑤仍为 HOLD / NOT_RUN。
 
 - 执行器接入需要 `MOHEN_CLOUD_EXECUTION_ENABLED`、`MOHEN_CLOUD_EXECUTOR_URL`、`MOHEN_CLOUD_EXECUTOR_CREDENTIAL`。
 - 独立执行授权需要 `MOHEN_EXECUTION_AUTH_PUBLIC_KEY`、`MOHEN_EXECUTION_AUTH_VERIFY_URL`、`MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL`、`MOHEN_EXECUTION_AUTH_DYNAMIC_URL`、`MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL`。授权服务保管签名私钥并核验一次性授权。

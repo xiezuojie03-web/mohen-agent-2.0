@@ -5219,4 +5219,5 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 基线为 GitHub `main` 的 `f6543e86d5c59b785c8e31c22252909dd58b1aab`。Vercel `napoles1/mohen-agent-2-0` 对应 Preview `dpl_GmMQ59fJtEBZsmt5oihbEGqZ9voq` 为 READY。
 - 原任务 `53ad1a29-22e5-43c2-816d-b02b6e85abbd` 与 Project `e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5` 复用①–④及既有 Root、原件登记。Creator HTTP 回读仍待复验。
 - Preview 只核对变量名称。执行器、独立执行授权、独立 Gate 查询和原件桥接缺项见[部署手册](../../../specs/OPERATIONS_DEPLOYMENT.md#受保护-preview-的-d00-接续2026-11-20)。查过 Vercel 团队项目与 Connector、GitHub 可见仓库、远端工作流及交接记录，未找到可接入的正式独立授权入口。GitHub 可列 Preview 环境与近期运行，但 Actions Secrets、Variables、自托管 Runner 和 Preview 环境 Secrets 元数据查询均返回集成权限 403。
+- Vercel 认证访问固定 Preview 接收路由，应用返回 HTTP 503（`cloud_executor_not_configured`）。复查 23 个 Preview 变量条目，四类缺项仍未配置。
 - ⑤为 HOLD / NOT_RUN，未认领生产运行、未增加模型操作或费用。等待正式服务配置；恢复后只运行 D00 并按 [PLAN](PLAN.md#studio-d00-handoff) 回读验收，独立 G0 待审。
