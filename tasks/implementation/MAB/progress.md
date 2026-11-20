@@ -5600,3 +5600,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **阻断（真实凭据缺口，非权限授权可解）**：d00-authority 是独立 Vercel 项目 `napoles1/mohen-d00-authority`（progress 5294/5305：云端 CLI 以 xiezuojie03-web 登录部署，开 Preview SSO），而当前工程会话 `.secrets/vercel-token.txt` 所在 team 只有主 web 项目——实测按项目名查 d00-authority 返回 404 Project not found；Vercel CLI 本机 `whoami`=Logged out、无 credentials；无其它 token 文件。**因此无法用现有凭据给 d00-authority 写 D01 env 或部署 `/api/d01-issue`。** 主 web 的 `MOHEN_D01_ISSUE_URL` 也依赖 d00-authority 的部署 host，故一并暂缓。
 - **未完成/零写入边界**：未改 Vercel env、未部署任何 Preview、未发起真实生产、未改 D00 既有行/约束。DB 侧仅 additive 新表 + 新 login 角色（均已验证）。八维仍 0/8；run `bfcdfad6` 仍 HOLD@D00、G0 `888db9e6` current PASS。
 - **待 Owner 提供（唯一缺口）**：d00-authority 项目的 Vercel 访问方式（该项目 token，或由 Owner 在云端终端按其既有登录态执行本批生成的 env/部署指令）。凭据到位后按启用清单②→③→④收口，最后 Owner 本人 SSO 点续跑按钮。
+
+## 2026-11-21｜D01 生产启用收口：authority production 化 + 主 web issue URL 接线（一次登录覆盖两项目）
+
+- **钥匙澄清（Owner 多轮追问后实证）**：墨痕是一个仓库+一个产品，Vercel 层拆 `mohen-agent-2-0`(主 web, root=仓库根) 与 `mohen-d00-authority`(独立授权, root=apps/d00-authority) 两个部署单元，仅因签名私钥须与 web 执行权分离。`.secrets/vercel-token.txt` 是项目级令牌(只能列主 web、查 user 报 404)，本机 CLI 未登录。Owner 授权后 `vercel login`（xiezuojie03-web）成功，账号级登录态覆盖 team `napoles1` 下三个项目(mohen-agent-2-0 / mohen-d00-authority / hushang-jingwei，后者不碰)。**一把账号级钥匙覆盖全部。**
+- **架构修正（Owner 质疑"本该一个项目"后）**：不再另建 HTTP 端点/新项目，D01 issue 复用既有独立授权项目。关键决策：issue 端点 HMAC 保护、允许 production 稳定域名 `mohen-d00-authority.vercel.app`（ssoProtection 仅 preview，production 靠 HMAC），token/consume 保持 preview-only。
+- **凭据最小化**：新建 `mohen_d01_authority_login`（login/nosuperuser/nobypassrls/inherit，MEMBERS = mohen_d00_grant_journal 写 journal + mohen_gate_reader 读 G0），连接串写 `.secrets/d01-authority-database-url.txt`；`d01-authority.mjs` 改为 journal+reader 共用一个 D01 专用连接 + `MOHEN_D01_DATABASE_CA`，不再依赖 D00 preview-only 的 `MOHEN_D00_AUTHORITY_DATABASE_URL`/`GATE_READER_DATABASE_URL`/CA。
+- **Vercel env 写入（账号级 CLI token 走 REST，target 区分）**：authority preview+production 各 7 个 D01 变量 + production 补 `MOHEN_D01_AUTHORITY_DATABASE_URL`/`MOHEN_D01_DATABASE_CA`；主 web preview `MOHEN_D01_ISSUE_CREDENTIAL`+`MOHEN_D01_ISSUE_URL=https://mohen-d00-authority.vercel.app/api/d01-issue`。
+- **部署**：authority production（`3ritlw1y7`→`iw2ig9ncn`，alias `mohen-d00-authority.vercel.app`）+ preview（`tjagbyjjs`）；主 web preview `8zc3mv1vf`（SHA `5a6e443` 精确匹配）。
+- **验证（VERIFIED_LIVE）**：production `/api/d01-issue` 无签名 POST 返回 `401 d01_issue_denied`（端点上线+HMAC 校验生效，非 404 非 SSO 页）；attestor/重建/digest 上批已 `MATCH=true`。
+- **仍待 Owner（最后一步，AI 不代点）**：Owner 本人 SSO 登录主 web Preview `https://mohen-agent-2-0-8zc3mv1vf-napoles1.vercel.app` 的 Studio，进入真实任务 `53ad1a29-…`，确认"从已合格 D00 续跑 D01"按钮出现并点击；回读 run `bfcdfad6` 终态与 D01 证据。八维仍 0/8；D01 无 G1 则 HOLD 属真实。
+- **零写入边界**：未改 D00 既有行/约束、未发起真实生产、未公众开放、未新增付费；DB 侧仅 additive 新表+新 login 角色（均已验证）。
