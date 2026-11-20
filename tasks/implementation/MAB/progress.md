@@ -5523,3 +5523,10 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **证据边界**：Vercel 变量写入返回 201 且键可见，但 list API 值脱敏，外部不能断言值相等；新变量需 Preview **重新部署**才在运行实例生效，本批未触发部署。M5 仍 `0/8 OVERALL_HOLD`——终态 reader 是运行前置，不是八维证据。
 - **零越界**：未部署/未公众开放/未改 CI 账单/未伪造 PASS；密钥未进 git/日志/对话。CI 宿主仍 DEFERRED_ENV。
 - **下一动作**： Preview 重部署后由 Owner 用 SSO 再跑一次只读 probe + 真实 Creator 发起一轮 D00→D01（带 reader 消费），验证托管 /current 端到端；随后 D01→D02 typed（C02 需独立转录+G1）。
+
+## 2026-11-20｜终态 reader 变量随 Preview 重部署生效（Owner "你来" 授权）
+
+- **部署方式查证（只读）**：项目 `mohen-agent-2-0` 无 gitSource、`vercel.json:git.deploymentEnabled=false`，历史全为 Vercel CLI 源上传 + `github@SHA` 元数据；SSO protection=preview-only。本机无 PATH vercel，但 npm-cache 存有 CLI 66.2.0（`..._npx\67eb4586ca667318\...\vercel.cmd`），用 `.secrets/vercel-token.txt` 作 `--token`。CLI 的 fetch 只认**小写** `http_proxy/https_proxy=127.0.0.1:51081`（大写环境变量被忽略，报 `fetch failed`）；Node fetch 反之要 `NODE_USE_ENV_PROXY=1` + 大写。
+- **部署动作**：`vercel deploy --token <token> --yes`（非 --prod）触发 Preview 上传当前工作区源码；新部署 **dpl_E41kDGXz8XyfhQNFptuW8rJ6aVis** 轮询至 **READY**，URL `https://mohen-agent-2-0-hyezg8tjm-napoles1.vercel.app`，精确 SHA `d808f447191a9787848953a455566185415d9e4a` = 本窗口 HEAD（含终态 reader 工具与 5 个新 Vercel 变量）。未部署 Production、未公众开放、未改 SSO。
+- **证据边界**：部署 READY 证明源码+项目级 env 已上新实例；Vercel list API 值脱敏，外部不能逐值断言。`GET /api/internal/production-execute` 只读 probe 从本会话仍够不到：team-scoped token 使 `vercel whoami/curl --token` 报 `User not found`，无交互登录；不伪造 probe 结果。上一 SHA `102636e` 的旧 Preview 保留。
+- **下一动作**：Owner 用本人 SSO 浏览器打开新 URL 的 `/api/internal/production-execute`（GET，只读）贴回 → 确认 runner_ready；再由 Creator 从新 Preview 发起一轮真实 D00→D01（带终态 reader 消费），验托管 `/current` 端到端；之后 D01→D02 typed。八维维持 0/8，M5 未准出。CI 宿主账单仍未解。
