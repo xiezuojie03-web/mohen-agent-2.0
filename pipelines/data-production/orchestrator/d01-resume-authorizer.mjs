@@ -45,15 +45,18 @@ export function createD01ResumeAuthorizer({registry,holdEpoch,privateKey,journal
  return {
   async issue(request){
    if(!matchesStage(request)||!uuid.test(request.run_id??'')||
-      typeof request.input!=='object'||request.input===null||Array.isArray(request.input))throw denied();
+      typeof request.input!=='object'||request.input===null||Array.isArray(request.input)||
+      !hexDigest.test(request.d00_input_digest??''))throw denied();
    // Digest is always recomputed from the body by the authority, never trusted
    // from the caller. A caller-supplied digest, if present, must still agree.
    const inputDigest=executionDigest(request.input);
    if(request.input_digest!==undefined&&request.input_digest!==inputDigest)throw denied();
    // The signing authority independently confirms the upstream G0 is current
-   // and binds EXACTLY this D01 input. No Producer-supplied claim is trusted.
+   // and binds EXACTLY this D01 input (whose digest is the G0 output). No
+   // Producer-supplied claim is trusted.
    let qualified;
-   try{qualified=await qualificationChecker({run_id:request.run_id,d01_input_digest:inputDigest});}
+   try{qualified=await qualificationChecker({run_id:request.run_id,d01_input_digest:inputDigest,
+     d00_input_digest:request.d00_input_digest});}
    catch{throw denied();}
    if(qualified!==true)throw denied();
    const iat=Math.floor(now()/1000);

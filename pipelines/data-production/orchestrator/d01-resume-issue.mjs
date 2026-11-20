@@ -39,7 +39,7 @@ export function createD01IssueEndpoint({credential,attestorQuery,loadCandidate,l
    if(resumeInput.stage!=='D01'||resumeInput.originalId!==v.scope.original_id||pageMismatch||textMismatch)return deny(403);
    const d01JobId=registry.jobs.find(j=>j.stage==='D01')?.job_id;
    const {token}=await authority.issue({run_id:v.run_id,stage:'D01',job_id:d01JobId,
-    mode:'attended',input:resumeInput});
+    mode:'attended',input:resumeInput,d00_input_digest:g0.input_digest});
    return Response.json({resume_input:resumeInput,token},{headers:{'cache-control':'no-store'}});
   }catch{return deny(503);}
  };

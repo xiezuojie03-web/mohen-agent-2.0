@@ -13,7 +13,8 @@ const registry={status:'ACTIVE_AUTHORIZED',activation:{enabled:true},architectur
  {stage:'D01',job_id:'d01.private-evidence-read',execution_policy:{enabled:true,attended:true,enable_requires:['evidence']}},
 ]};
 const inputDigest=executionDigest(input);
-const request={run_id:runId,stage:'D01',job_id:'d01.private-evidence-read',mode:'attended',input,input_digest:inputDigest};
+const request={run_id:runId,stage:'D01',job_id:'d01.private-evidence-read',mode:'attended',input,input_digest:inputDigest,
+ d00_input_digest:'a'.repeat(64)};
 function fixture(overrides={}){
  let issued,used=false;
  const journal={

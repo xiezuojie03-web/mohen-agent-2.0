@@ -16,8 +16,9 @@ const validReceipt={qualification_current:true,decision_origin:'independent_gate
 const checker=(receipt,err)=>createG0ResumeQualificationChecker({d00JobId:jobId,gateReviewerBinding:binding,
  readG0:async()=>{if(err)throw err;return receipt;}});
 
+const args={run_id:runId,d01_input_digest:d01InputDigest,d00_input_digest:d00InputDigest};
 test('current independent G0 whose output binds the D01 input is accepted',async()=>{
- assert.equal(await checker(validReceipt)({run_id:runId,d01_input_digest:d01InputDigest}),true);
+ assert.equal(await checker(validReceipt)(args),true);
 });
 
 test('non-current / mismatched output / wrong reviewer / expired G0 is denied',async()=>{
@@ -31,11 +32,12 @@ test('non-current / mismatched output / wrong reviewer / expired G0 is denied',a
   {...validReceipt,run_id:'11111111-1111-4111-8111-111111111111'},
   {...validReceipt,stage:'D01'},
  ];
- for(const receipt of cases)assert.equal(await checker(receipt)({run_id:runId,d01_input_digest:d01InputDigest}),false);
+ for(const receipt of cases)assert.equal(await checker(receipt)(args),false);
 });
 
 test('reader failure and malformed arguments fail closed',async()=>{
- assert.equal(await checker(null,Error('reader down'))({run_id:runId,d01_input_digest:d01InputDigest}),false);
- assert.equal(await checker(validReceipt)({run_id:'bad',d01_input_digest:d01InputDigest}),false);
- assert.equal(await checker(validReceipt)({run_id:runId,d01_input_digest:'short'}),false);
+ assert.equal(await checker(null,Error('reader down'))(args),false);
+ assert.equal(await checker(validReceipt)({run_id:'bad',d01_input_digest:d01InputDigest,d00_input_digest:d00InputDigest}),false);
+ assert.equal(await checker(validReceipt)({run_id:runId,d01_input_digest:'short',d00_input_digest:d00InputDigest}),false);
+ assert.equal(await checker(validReceipt)({run_id:runId,d01_input_digest:d01InputDigest,d00_input_digest:'short'}),false);
 });

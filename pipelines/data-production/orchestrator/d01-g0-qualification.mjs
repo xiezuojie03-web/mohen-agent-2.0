@@ -16,10 +16,10 @@ const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 export function createG0ResumeQualificationChecker({readG0,d00JobId,gateReviewerBinding}={}){
  if(typeof readG0!=='function'||typeof d00JobId!=='string'||!d00JobId||
     typeof gateReviewerBinding!=='string'||!gateReviewerBinding)throw Error('G0_RESUME_CHECKER_CONFIG_INVALID');
- return async ({run_id,d01_input_digest})=>{
-  if(!UUID.test(run_id??'')||!SHA.test(d01_input_digest??''))return false;
+ return async ({run_id,d01_input_digest,d00_input_digest})=>{
+  if(!UUID.test(run_id??'')||!SHA.test(d01_input_digest??'')||!SHA.test(d00_input_digest??''))return false;
   let receipt;
-  try{receipt=await readG0({run_id});}catch{return false;}
+  try{receipt=await readG0({run_id,input_digest:d00_input_digest,output_digest:d01_input_digest});}catch{return false;}
   if(!receipt||typeof receipt!=='object'||Array.isArray(receipt))return false;
   // Validate every binding that makes this receipt a current, independent,
   // producer-consumable G0 for THIS run whose OUTPUT is the D01 input.

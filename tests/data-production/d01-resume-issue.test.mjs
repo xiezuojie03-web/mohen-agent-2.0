@@ -32,7 +32,7 @@ const attestorQuery=async(sql)=>{
  if(sql.includes('from control.production_runs'))return [{scope:JSON.stringify({project_id:project,page_number:1,source_version_id:sv,original_id:original,raw_sha256:sha})}];
  return [];
 };
-const g0Request={run_id:runId,stage:'D00',gate_code:'G0',output_digest:'b'.repeat(64)};
+const g0Request={run_id:runId,stage:'D00',gate_code:'G0',input_digest:'a'.repeat(64),output_digest:'b'.repeat(64)};
 function req(b=body,sigOverride){
  const time=String(Date.now());
  const digest=executionDigest({run_id:b.run_id,from_stage:b.from_stage,scope:b.scope,project_id:b.project_id});

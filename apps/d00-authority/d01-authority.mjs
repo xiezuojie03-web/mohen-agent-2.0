@@ -22,13 +22,15 @@ const json=v=>typeof v==='string'?JSON.parse(v):v;
 function configure(env){
  const d00Job=registry.jobs.find(j=>j.stage==='D00');
  const ca=env.MOHEN_D01_DATABASE_CA;
- // A single D01-dedicated low-privilege login is a MEMBER of both
- // mohen_d00_grant_journal (journal write) and mohen_gate_reader (G0 read);
- // this keeps the D00 preview-only credentials out of any production env.
- const authorityPool=new pg.Pool({...independentGatePoolOptions(env.MOHEN_D01_AUTHORITY_DATABASE_URL,{ca}),max:2});
- authorityPool.on('error',()=>{});
- const readerPool=authorityPool;
- const journalPool=authorityPool;
+ // Two distinct low-privilege connections: the journal writer (a D01-dedicated
+ // login that is a MEMBER of mohen_d00_grant_journal) and the G0 gate reader
+ // (the identity bound to the long-lived consume credential). They cannot be
+ // one login, because authenticate_gate_service checks the login against the
+ // credential's bound principal.
+ const journalPool=new pg.Pool({...independentGatePoolOptions(env.MOHEN_D01_AUTHORITY_DATABASE_URL,{ca}),max:2});
+ journalPool.on('error',()=>{});
+ const readerPool=new pg.Pool({...independentGatePoolOptions(env.MOHEN_D01_GATE_READER_DATABASE_URL,{ca}),max:2});
+ readerPool.on('error',()=>{});
  const attestorPool=new pg.Pool({...independentGatePoolOptions(env.MOHEN_D01_ATTESTOR_DATABASE_URL,{ca}),max:2});
  attestorPool.on('error',()=>{});
  try{
@@ -36,10 +38,11 @@ function configure(env){
   const gateService=createIndependentGateService({readOnly:true,readerPool});
   const bearer=env.MOHEN_GATE_CONSUME_CREDENTIAL;
   if(typeof bearer!=='string'||!bearer.trim())throw Error('gate consume credential required');
-  const readG0=async ({run_id})=>{
+  const readG0=async ({run_id,input_digest,output_digest})=>{
    const url=new URL('https://d01-authority.invalid/current');
-   const body=JSON.stringify({run_id,stage:'D00',gate_code:'G0',
-    reviewer_binding_ref:d00Job?.implementation?.gate_reviewer_binding??null,consumer:'producer'});
+   const body=JSON.stringify({schema:'mohen.independent-gate-current-check.v1',run_id,
+    job_id:d00Job?.job_id,stage:'D00',gate_code:'G0',input_digest,output_digest,
+    reviewer_binding_ref:d00Job?.implementation?.gate_reviewer_binding,consumer:'producer'});
    const reply=await gateService(new Request(url,{method:'POST',
     headers:{'content-type':'application/json',authorization:'Bearer '+bearer.trim()},body}));
    if(!reply.ok)return null;
@@ -67,6 +70,7 @@ function configure(env){
   const currentG0=async (run_id)=>{
    const rows=await attestorQuery([
     "select a.gate_audit_id::text as audit_id, a.candidate_id::text as candidate_id,",
+    "  a.input_fingerprint as input_digest,",
     "  a.details->'stage_binding'->>'output_digest' as output_digest",
     "from control.qualification_current q",
     "join control.gate_audits a on a.gate_audit_id=q.gate_audit_id",
@@ -76,7 +80,8 @@ function configure(env){
     "  and (q.valid_until is null or q.valid_until > now())",
     "  and (a.valid_until is null or a.valid_until > now()) limit 2"
    ].join(' '),{run:run_id});
-   if(rows.length!==1||!/^[a-f0-9]{64}$/.test(rows[0].output_digest??''))return null;
+   if(rows.length!==1||!/^[a-f0-9]{64}$/.test(rows[0].input_digest??'')||
+      !/^[a-f0-9]{64}$/.test(rows[0].output_digest??''))return null;
    return rows[0];
   };
   const loadCandidate=async ({run_id})=>{
@@ -92,7 +97,7 @@ function configure(env){
   };
   const loadG0Request=async ({run_id})=>{
    const g0=await currentG0(run_id);if(!g0)return null;
-   return {run_id,stage:'D00',gate_code:'G0',output_digest:g0.output_digest};
+   return {run_id,stage:'D00',gate_code:'G0',input_digest:g0.input_digest,output_digest:g0.output_digest};
   };
   const issueEndpoint=createD01IssueEndpoint({
    credential:env.MOHEN_D01_ISSUE_CREDENTIAL,attestorQuery,loadCandidate,loadG0Request,authority,registry,
@@ -103,7 +108,7 @@ function configure(env){
    '/d01-issue':issueEndpoint,
   };
  }catch(error){
-  void authorityPool.end();void attestorPool.end();
+  void journalPool.end();void readerPool.end();void attestorPool.end();
   throw error;
  }
 }
