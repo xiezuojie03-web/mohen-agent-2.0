@@ -5541,3 +5541,13 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **长期可用性缺口（如实记录）**：Runner 启动依赖 gitignored、构建时生成的 bundle；一旦构建缓存跨部署复用且产物缺 bundle，probe 即 `runner_module_unavailable`。这是"长期可用"必须解决的结构性问题，候选修法：把 bundle 生成纳入受控构建后断言存在（缺失即 fail build），或改为不依赖该目录的解析策略。本次未改代码。
 - **零写入**：未改 DB/Gate/env/源码；临时脚本已删。CI 账单仍未解，八维维持 0/8。
 - **下一动作**：网络恢复后回读 `1owjb4d7p` 部署 state 并请 Owner SSO 复跑 probe；若仍 module 错，按"长期可用"原则修构建断言（缺 bundle 即 fail build）后重部署，不用缓存。
+
+## 2026-11-20｜runner_module_unavailable 真实根因闭环：进程内 reader 顶层 require(pg)（Owner 复测驱动，代码修复）
+
+- **Owner 复测**：VPN 开后 `check-credentials` 四项全 PASS；新部署 `...1owjb4d7p...`（force 无缓存，`dpl_3fjjAZcbJSziQedwqHUo27P2wsLq`，SHA `baa612f`，build log 实证跳过缓存+esbuild 安装+编译成功）probe 仍 `{"ok":false,"reason":"runner_module_unavailable"}`。上一批"构建缓存丢 bundle"判断被证伪，不沿用。
+- **真实根因（git 二分定位）**：`102636e`（曾 runner_ready）..HEAD 的关键文件 diff 为空——非 next.config/loader/runtime 变更。回归来自 `7ca2398`（落在两部署之间）：`run.mjs:14` 静态导入 `inprocess-gate-reader-verifier.mjs`，而该 verifier 第 17 行在**模块顶层**用 `createRequire(...packages/data-access...) require("pg")`。云端函数该 CJS 解析路径取不到 pg → `Cannot find module 'pg'`（MODULE_NOT_FOUND）→ 归类 `runner_module_unavailable`。--check-startup 探针也加载完整静态图，故必现。
+- **为何是死路径**：`cloud-production-runtime.mjs:77-102` 的 runnerEnvironment 白名单不含 `MOHEN_RUNNER_GATE_READER_*`，云端 Runner 永远拿不到进程内 reader 配置，`createOptionalInProcessGateReaderVerifier()` 必返回 null；真正生效的是回退的托管 HTTPS /current client（终态 reader 方案）。进程内 reader 只在顶层 import 时把 pg 带进启动图，无任何运行时收益。
+- **修复（代码）**：①`run.mjs` 删除该静态 import 并把 gateVerifier 恢复为单一 `createOptionalIndependentGateClient(process.env,stageFetch)`；②`inprocess-gate-reader-verifier.mjs` 的 pg 改为 `getPool()` 懒加载，消除顶层 require（保留该文件与测试供本地/未来用，不再进云端启动图）；③新增回归测试锁定"启动图无进程内 reader、verifier 无顶层 require(pg)"。
+- **验证（本地实证）**：用探针同款最小 env（仅 PATH）跑 `run.mjs --check-startup` → `{"code":0,"timedOut":false}`；相关测试 16 条 15 PASS，唯一失败是既有 Windows `ERR_UNSUPPORTED_ESM_URL_SCHEME`（测试 fixture 用 `C:\` 作 --import 路径，与本次改动无关）；新增回归测试 PASS；lints 0。
+- **证据边界**：本地启动图恢复 ≠ 云端已恢复；必须无缓存重部署后由 Owner SSO 复跑 probe 才算闭环。未改 Vercel env/DB/Gate/凭据。八维维持 0/8。
+- **下一动作**：提交本修复 → `vercel deploy --force` 无缓存重部署 Preview → Owner SSO GET probe 期望 `runner_ready` → 再议真实 D00→D01（会产生真实执行/费用，需明确授权）。

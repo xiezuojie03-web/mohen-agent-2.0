@@ -14,7 +14,9 @@ import { independentGatePoolOptions } from "./independent-gate-service-runtime.m
 const { fileURLToPath } = await import("node:url");
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const require = createRequire(path.join(repoRoot, "packages/data-access/package.json"));
-const { Pool } = require("pg");
+// pg is resolved lazily: importing this module must never load a runtime
+// dependency, otherwise the cloud --check-startup probe fails with MODULE_NOT_FOUND.
+const getPool = () => require("pg").Pool;
 
 const ENDPOINT = "https://independent.invalid/current";
 
@@ -27,7 +29,7 @@ export function createInProcessGateReaderVerifier({
   readerDatabaseUrl,
   credential,
   ca,
-  poolFactory = url => new Pool(independentGatePoolOptions(url, ca ? { ca } : {})),
+  poolFactory = url => new (getPool())(independentGatePoolOptions(url, ca ? { ca } : {})),
 } = {}) {
   if (typeof readerDatabaseUrl !== "string" || !readerDatabaseUrl ||
       typeof credential !== "string" || credential.length < 32)

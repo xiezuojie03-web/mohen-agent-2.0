@@ -92,3 +92,10 @@ test('Runner startup probe evaluates the actual entry graph without running a ta
  const missing=await probeCloudProductionRunner({projectRoot:process.cwd()+'/missing-runner-fixture',environment:cloudEnvironment()});
  assert.deepEqual(missing,{ok:false,reason:'runner_file_unavailable'});
 });
+test('Runner startup graph has no in-process gate reader (cloud-only MODULE_NOT_FOUND regression)',async()=>{
+ const fs=await import('node:fs/promises'),path=await import('node:path');
+ const source=await fs.readFile(path.join(process.cwd(),'pipelines/data-production/run.mjs'),'utf8');
+ assert.equal(source.includes('inprocess-gate-reader-verifier'),false);
+ const verifier=await fs.readFile(path.join(process.cwd(),'pipelines/data-production/orchestrator/inprocess-gate-reader-verifier.mjs'),'utf8');
+ assert.equal(/^const \{ Pool \} = require\(/m.test(verifier),false);
+});
