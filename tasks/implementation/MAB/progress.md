@@ -5221,3 +5221,10 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - Preview 只核对变量名称。执行器、独立执行授权、独立 Gate 查询和原件桥接缺项见[部署手册](../../../specs/OPERATIONS_DEPLOYMENT.md#受保护-preview-的-d00-接续2026-11-20)。查过 Vercel 团队项目与 Connector、GitHub 可见仓库、远端工作流及交接记录，未找到可接入的正式独立授权入口。GitHub 可列 Preview 环境与近期运行，但 Actions Secrets、Variables、自托管 Runner 和 Preview 环境 Secrets 元数据查询均返回集成权限 403。
 - Vercel 认证访问固定 Preview 接收路由，应用返回 HTTP 503（`cloud_executor_not_configured`）。复查 23 个 Preview 变量条目，四类缺项仍未配置。
 - ⑤为 HOLD / NOT_RUN，未认领生产运行、未增加模型操作或费用。等待正式服务配置；恢复后只运行 D00 并按 [PLAN](PLAN.md#studio-d00-handoff) 回读验收，独立 G0 待审。
+
+## 2026-11-20｜第⑤步正式授权接入前的云端只读核查
+
+- Owner 已授权独立执行授权组件接入，沿用受保护 Preview 与既有接收路由，执行范围锁定原委托 D00。
+- Supabase `mohen-cloud` 可读且处于 ACTIVE_HEALTHY，Edge Functions 列表为空。数据库目录中已有 Producer 与 Private Worker 专用 LOGIN；执行授权与 Gate Reader／Signer 现有角色均为 NOLOGIN，未查到已接入的独立服务登录。
+- 按原 Project 回查有一条 STORED_VERIFIED 原件；按原 root_task_id 查 `control.production_runs.scope` 命中零条运行。该只读结果不替代 Creator HTTP 回读或 D00 持久接收回执。
+- 历史本地授权工具主动拒绝云库，独立审核工作流为协议测试。当前⑤保持 HOLD / NOT_RUN。接续使用既有执行器合同，补齐独立签发与一次性核验、低权 Gate 查询和原件桥接之后再派发。未执行模型、迁移、G0 审签或生产运行。
