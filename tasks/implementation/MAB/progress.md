@@ -5288,3 +5288,8 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - Vercel 独立授权项目的 Git 部署入口被自动审批拒绝，理由是该入口会建立自动部署连接并从生产分支发起部署，审批认定超出已授权的一次性 Preview 边界。本批未通过替代路径触发该操作。
 - 用原任务 checkpoint 与同一已登记 JPEG 的数据库绑定，只读生成第 1 页 D00 输入候选摘要 ed2f50ffdfafd7c3a73f29d280213b1866bb268ba896fb2dfde25265c7f3da37。未导出研究提示或原始字节。须在 Creator HTTP 路径复核同源摘要后才可用于签发。
 - 独立授权 Preview 与低权登录仍待接入，原委托 D00 保持 HOLD / NOT_RUN。
+
+## 2026-11-20｜第⑤步云端 CLI 与独立授权受保护 Preview
+
+- 云端 Vercel CLI 66.5.0 已验证 xiezuojie03-web 登录，既有 Vercel 连接器查到 napoles1。CLI 显式以 Preview 环境部署独立授权项目，部署 dpl_H1NJTGyVaY7KDC3JN6nk9uNQSTnV 为 READY，Vercel Authentication 生效。
+- 认证探测签发路由返回 execution_authority_not_configured。探测时 CLI 自动新增的访问凭据已撤销，匿名探测返回 302。独立服务没有签发正式许可，原委托 D00 保持 HOLD / NOT_RUN。
