@@ -31,6 +31,8 @@
 
 **真实 D00→D01 发起前置核查（2026-11-20，Owner 已授权"现在开始"，但被产品入口阻断，未发起/零写入）**：云端只读实证（NOW 14:09Z）：数据面前置全就绪——候选 `48766904` SUBMITTED、G0 审计 `888db9e6` PASS/current(valid_until `2026-11-26`)、qualification_current 有 G0 行、终态 reader 已验证能读；run `bfcdfad6` 外层 HOLD@D00（`CLOUD_EXECUTOR_PROCESS_FAILED`）、D00 grant `consumed_at=05:46:28Z` 一次性消费。两处硬阻断：①发起必须 Owner 已登录 Studio 会话（30 秒 RLS token + 原件 RLS 复核），AI 无会话、不得伪造；②**无"复用已合格 G0 续跑 D01"产品入口**——CLI 有 `--from D01 --resume-input-file`，但云执行器只传 `--to`、生产 API 不接受 resume；UI 两个按钮一个必败（approved run 已登记+grant 已消费）、一个新建 run 重跑 D00。非凭据/配置/Gate 资格问题。
 
-**下一动作（待 Owner 二选一裁决）**：①补"基于已合格 G0 续跑 D01"的 Studio/云执行器入口（新增 from_stage/resume 传输 + 独立 D01 grant 签发路径，产品+工程改造）；或②批准全新 run 从 D00 重跑（新 grant、新费用，重走已完成的 D00）。两者都须 Owner 定夺，本会话不擅自发起、不伪造 PASS。D01→D02 非 C01 typed 仍未实现。CI 宿主 `DEFERRED_ENV`。八维维持 `0/8 OVERALL_HOLD`。
+**续跑 D01 入口施工（2026-11-20，Owner 选方案①并全面授权，代码已落地、生产未启用）**：A/B/C/D 四段完成并推 main（段 A `4fd763d`、B `7f8cfa5`、C `73b84c8`、D `da0df48`）：独立一次性 D01 grant（签发前 CURRENT G0 校验 + 低权 reader）、从 DB 事实重建 D01 输入、dispatch `from_stage` HMAC 传输、runtime 受限 resume 文件 + `--from D01` + 仅注入 D01 token、Studio"续跑 D01"按钮（仅后端确认 G0 current PASS 时出现）、预算复用（不新增预留/不重复扣费）。测试：D01/data-production 46/47（1 为既有 Windows --import fixture 问题）、vitest 路由 19/19、tsc 无新增错误。设计见 `tasks/results/MAB/D01_RESUME_DESIGN_20261120.md`，生产启用清单见 `D01_RESUME_ENABLEMENT_CHECKLIST.md`。
+
+**下一动作（阻断：生产启用配置，非代码）**：须先完成启用清单——①执行 additive 迁移 `20261120150000_d01_resume_grant_journal.sql` + 建/确认受限 attestor 只读角色（含 source/raw 只读）；②d00-authority 配 D01 signing key/issue-verify credential/attestor URL 等 env 并部署 `/api/d01-issue`；③web 配 `MOHEN_D01_ISSUE_URL`/`MOHEN_D01_ISSUE_CREDENTIAL` 并无缓存重部署 Preview；④Owner 本人 SSO 在 Studio 点"续跑 D01"（AI 不代点、不伪造会话）。未完成前按钮不显示或 fail closed，属预期。八维维持 `0/8 OVERALL_HOLD`；续跑 D01 复用 D00 预算、不调用 LLM，无 G1 则 HOLD 属真实状态。CI 宿主 `DEFERRED_ENV`。
 
 [施工与验收标准](tasks/implementation/MAB/PLAN.md#studio-d00-handoff) · [施工证据账](tasks/implementation/MAB/progress.md)

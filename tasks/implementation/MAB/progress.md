@@ -5578,3 +5578,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **综合结论**：Owner 已授权真实执行，但（a）发起动作必须其本人在已登录 Preview 会话内完成，（b）即便本人操作，现有 UI 也无任何按钮能把已合格的 bfcdfad6 推进到 D01。真实 D00→D01 当前被"产品入口缺失"阻断，非凭据、非配置、非 Gate 资格问题。不伪造 PASS，不空转重跑 D00。
 - **待 Owner 裁决的方向**：①补"基于已合格 G0 续跑 D01"的 Studio/云执行器入口（需新增 from_stage/resume 传输 + 独立 D01 grant 签发路径，属产品+工程改造）；或②批准一个全新 run 从 D00 重跑（新 grant、新费用，但这会重新走已完成的 D00）。二者都需要明确选择，本会话不擅自定夺。
 - **零写入**：未改 DB/Gate/env/凭据/源码，未部署、未发起生产、未产生费用。临时只读脚本已删。八维维持 0/8。
+
+## 2026-11-20｜Owner 选方案①全面授权：D00→D01 续跑入口 A/B/C/D 四段落地（代码完成，生产未启用，零真实执行/零费用）
+
+- **授权**：Owner "走方案①，全面授权"——补"复用已合格 G0、只跑 D01"的流水线入口，不重跑 D00、不新增费用。本批只改代码/测试/文档，未发起真实生产、未改生产数据/env、未产生费用。
+- **段 A（4fd763d）**：`d01-resume-authorizer.mjs` 独立一次性 D01 grant（binding=run+stage+job，journal `(run_id,stage)` 语义）；签发前注入 `d01-g0-qualification.mjs`（低权 reader 读 CURRENT independent G0，校验 output_digest=D01 输入 digest、reviewer_binding、current_valid、valid_until）。修复真实 bug：journal binding 在 issue/consume 必须 jsonb 精确一致（fixture 改精确匹配测试）。6/6 单测。
+- **段 B（7f8cfa5）**：`d01-resume-input.mjs` 从 DB 事实确定性重建 D01 resume_input（复用 attestation 已验证路径）；`resume-input.mjs` D01 复用权威 `isTypedD01Carrier`，纳入 D00 真实产出 method_plan/page/text。修复 run-scope 页码须等于候选 scope 的 fail-closed 校验。11/11 resume 单测。
+- **段 C（73b84c8）**：`cloud-production-dispatch.mjs` 加 `from_stage`(仅 D01) 入 HMAC 摘要/白名单/结果区间校验；`cloud-production-runtime.mjs` 注入 resumeProvider、落 0600 resume 文件、`--from D01 --resume-input-file`、仅把 D01 token 注入子进程 tokens；`d01-resume-provider.mjs`/`d01-resume-issue.mjs` 的 HMAC+bounded 契约；`d01-issue` 端点单测 3/3。
+- **段 D（da0df48）**：StudioWorkbench"从已合格 D00 续跑 D01"按钮（仅当后端 `resume_d01_eligible`=真实 G0 current PASS 时出现）；production route 接受 `from_stage`、从 checkpoint 取绑定 run_id；GET 用 qualification_current+gate_audits 实算资格（fail closed）；`requestProduction`/`triggerProduction` 续跑分支复用已有 run + 预算预留，不新增预留/不重复扣费；d01-authority `/d01-issue` 用 attestor 只读连接 + 真实 G0 candidate loader 接线。新 vitest 3 例 + 修正既有断言，路由 19/19。
+- **验证**：D01/data-production node 单测 46/47（1 为既有 Windows --import `C:\` fixture 问题，与本次无关）；vitest 路由 19/19；tsc 无新增错误（剩 4 条为既有 @vercel/oidc/nodemailer 依赖未安装）；所有新 .mjs 语法检查通过。证据边界：本地测试 PASS ≠ 生产可用。
+- **生产启用（阻断，未做）**：见 `tasks/results/MAB/D01_RESUME_ENABLEMENT_CHECKLIST.md`——①additive 迁移 `20261120150000_d01_resume_grant_journal.sql` + 受限 attestor 只读角色（含 source/raw 只读、非 super/BYPASSRLS/无写）；②d00-authority 配 signing key/issue-verify credential/attestor URL 等 env 并部署 `/api/d01-issue`；③web 配 `MOHEN_D01_ISSUE_URL`/`MOHEN_D01_ISSUE_CREDENTIAL` 无缓存重部署 Preview；④Owner 本人 SSO 点按钮（AI 不代点）。未完成前按钮不显示或 fail closed，属预期非 bug。
+- **零写入/零费用**：未执行 DDL、未改 env/凭据、未发起生产、未碰 Production、未公众开放、未新增付费。八维维持 0/8；run `bfcdfad6` 仍 HOLD@D00、G0 `888db9e6` 仍 current PASS 到 11-26。
