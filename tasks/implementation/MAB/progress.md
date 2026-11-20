@@ -5322,3 +5322,5 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 - 原 Creator 从 Studio 执行单次 D00，请求注册并由执行器认领 run 4b0e6a25-62fb-4ce4-bfe8-de8277f76f18。Vercel 请求日志显示执行器 POST 返回 503，独立签发未观察到对应 POST。云库运行仍 RUNNING、无阶段、无终态、无发放许可及 D00 候选。
 - 在云端 PostgreSQL 用 PREPARE 复现 jsonb_build_object 无类型参数报 42P18。失败回执的原因值已显式转换为 text，并增加受控 Runner 文件与进程错误码。定向测试 24 项通过。真实接收尚未完成，暂不重派。
+
+- 执行窗口结束后，原运行按精确原任务、Project、原件及无许可、无候选的条件结记 HOLD / CLOUD_EXECUTOR_ACK_UNCERTAIN，保留认领记录。修复 SHA dbf6b09 对应受保护 Preview dpl_FR53wN3Xmn2PMfYpUdzdFayJQejV 已 READY。旧运行未重放，最初 Runner 启动失败仍需核验。
