@@ -2,7 +2,7 @@
 
 **Studio 已登记原件 → D00 接收已验收，停在独立 G0 审核前。**
 
-> **历史回执（2026-11-19 工程数据统一专项 P0–P4，含本地→云端数据推送与核验）**：完整证据见 [progress.md 对应批次](tasks/implementation/MAB/progress.md) 与 `tasks/results/MAB/ENGINEERING_DATA_UNIFICATION/`。
+> **历史回执（2026-11-19 工程数据统一专项 P0–P4）已结案**：唯一结论见 [P4 结案书](tasks/results/P4_CLOSURE_20261120.md)，完整证据见 `tasks/results/MAB/ENGINEERING_DATA_UNIFICATION/`。背景细节不再重述。
 
 朱家角任务 `53ad1a29-22e5-43c2-816d-b02b6e85abbd`、Project `e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5`、同一 Root 与原件 `4ca22839-e3e9-4d14-8ec7-677cd740aa0e` 已在持久回执中核对。Creator 已在受保护 Preview 发起单次 D00，执行许可已消费，运行 `bfcdfad6-bbcb-4b68-946a-82e1302eeb80` 已提交 D00 接收候选 `48766904-c409-4b37-b602-9339a582b7e6`（SUBMITTED），绑定原 Source Version `67839b1e-a344-4dd4-adf8-f7798ddf82d7`。原件 SHA 和 Raw 关联通过回读。
 
