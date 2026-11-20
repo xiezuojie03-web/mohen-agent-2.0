@@ -1,6 +1,6 @@
 # 墨痕｜当前施工断点
 
-> 核验时间 2026-11-20 14:57 +08:00｜HEAD `c456f8c`｜local=remote 分叉 0/0｜环境：本地 mohen_dev（回写后）+ 受保护 Preview；未验证项：CI 宿主（连续启动前失败）、独立 G0、正式读取命中。今日已完成云端→本地回写与 push（详见 progress 今日批次）。
+> 核验时间 2026-11-20 15:35 +08:00｜HEAD `a1453cd`（G0 signer 安装固化提交；CURRENT 更新同批推送）｜local=remote 分叉以本批推送后为准｜环境：本地 mohen_dev（回写后）+ 云端 mohen-cloud；未验证项：CI 宿主、独立 G0 签发、正式读取命中。今日已完成云端→本地回写与 push，并完成 B 路径第①项云端 signer 安装（详见 progress 今日批次）。
 
 **Studio 已登记原件 → D00 接收已验收，停在独立 G0 审核前。**
 
@@ -10,6 +10,8 @@
 
 ⑤接收断点关闭。执行器外层仍记录 HOLD / CLOUD_EXECUTOR_PROCESS_FAILED，保留该收尾结果。独立 G0 决定与后续阶段候选均为零，machine_read 仍为 unknown。按原范围在此停止。
 
-**下一动作**：按授权范围，将同一 D00 候选及来源版本、原件完整性和权利证据交给独立 Reviewer，回读该候选的 G0 决定。
+**B 路径进展（2026-11-20）**：云端机器审核账号已恢复（active/reviewer），G0 专用低权 signer `mohen_gate_signer_m5_machine` 已安装且只读回读 VERIFY: PASS（非 super/非 bypassrls/仅继承签名执行权/无 Gate 写权，RLS scope=真实 project）。但前置核查确认：当前 project `e03c4ba8` 上 `gate_reviewer_bindings` 与 `gate_service_credentials` 的 G0 精确 scope 命中均为 0，现有机器 binding 绑测试 project 或通配 scope，不可冒用；因此独立 G0 签发仍会 HOLD。G0 policy（enabled=true）、session key、执行许可 journal 1 条已齐备。
+
+**下一动作**：先为当前真实 project 安装合法受限的 G0 reviewer binding 与 service consume credential（须 Owner 具名放行；不写 qualification_current、不伪造 Gate），再由 Owner 设置 signer/reader 登录口令，最后由工程侧用本地 Node 双连接池驱动真实 G0 签发并回读 gate_audits。Vercel Preview 10 个环境变量与 Ed25519 私钥注入是否必需，待本地签发路径确认后决定，避免重复配置。
 
 [施工与验收标准](tasks/implementation/MAB/PLAN.md#studio-d00-handoff) · [施工证据账](tasks/implementation/MAB/progress.md)
