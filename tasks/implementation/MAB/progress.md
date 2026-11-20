@@ -5276,3 +5276,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 - 从 GitHub main 功能 SHA `7669e287f821a233de25eb6376d0117227ae6cd8` 部署 Vercel Preview `dpl_ADtjJNbGUD34WNAcKNxe2MVpAiaR`，达到 READY。Vercel 认证访问应用接收路由返回 503 `cloud_executor_not_configured`。未发送签名派发。
 - 云库 `mohen_gate_reader` 已有 `authenticate_gate_service` 和 `read_gate_stage_qualification` 执行权。D00 专用账本仍需独立服务低权登录与托管入口，未以管理连接替代。原任务接收仍 HOLD / NOT_RUN。
+
+## 2026-11-20｜第⑤步独立授权 Vercel 构件与平台准入
+
+- GitHub main 功能 SHA 3283311 打包独立授权函数，入口为 /api/token 与 /api/consume。运行环境需为 Preview 并显式启用。7 项定向测试与未配置时失败关闭的函数探测通过。
+- 创建独立项目 napoles1/mohen-d00-authority，已开启 Preview SSO。首次部署请求由平台收为该新项目的 Production 并达到 READY，取消返回 400。该部署未注入授权密钥，实测 /api/token 返回 503 execution_authority_not_configured。Studio Production 无本批部署。
+- 显式 target=preview 被平台以无效 target 拒绝，后续部署提交未生成 Preview。低权登录、云端授权及 Gate 查询接线仍待完成。原委托 D00 保持 HOLD / NOT_RUN。
