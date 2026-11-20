@@ -12,6 +12,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import { getVercelOidcToken } from "@vercel/oidc";
 import { resolveD00ApprovedRun } from "../../../pipelines/data-production/orchestrator/d00-approved-run.mjs";
 import {createCloudProductionDispatch} from "../../../pipelines/data-production/orchestrator/cloud-production-dispatch.mjs";
 import {cloudProductionInputDigest} from "../../../pipelines/data-production/orchestrator/cloud-production-runtime.mjs";
@@ -106,9 +107,21 @@ async function addEvent(taskId: string, stage: string, event: string, payload: u
 }
 
 function cloudProductionDispatch(){
-  return createCloudProductionDispatch({url:process.env.MOHEN_CLOUD_EXECUTOR_URL,
+  const previewHost=process.env.VERCEL_ENV==="preview"&&process.env.MOHEN_D00_TRUSTED_PREVIEW_ACCESS==="true"
+    ? process.env.VERCEL_URL : undefined;
+  const url=previewHost?.endsWith(".vercel.app")
+    ? `https://${previewHost}/api/internal/production-execute`
+    : process.env.MOHEN_CLOUD_EXECUTOR_URL;
+  return createCloudProductionDispatch({url,
     credential:process.env.MOHEN_CLOUD_EXECUTOR_CREDENTIAL,
-    protectionBypass:process.env.MOHEN_CLOUD_EXECUTOR_PROTECTION_BYPASS});
+    protectionBypass:process.env.MOHEN_CLOUD_EXECUTOR_PROTECTION_BYPASS,
+    fetchImpl:async (input,init) =>{
+      const endpoint = new URL(String(input));
+      if(!previewHost||endpoint.hostname!==previewHost) return fetch(input,init);
+      const headers=new Headers(init?.headers);
+      headers.set("x-vercel-trusted-oidc-idp-token",await getVercelOidcToken());
+      return fetch(input,{...init,headers});
+    }});
 }
 
 function productionBlocker(projectRoot: string, source?:ProductionOriginal): string | null {

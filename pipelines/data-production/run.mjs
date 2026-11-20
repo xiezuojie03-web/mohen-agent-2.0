@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {createTrustedPreviewFetch} from "./orchestrator/trusted-preview-fetch.mjs";
 import path from "node:path";
 import fs from "node:fs";
 import {STAGE_ORDER} from "./orchestrator/contracts.mjs";
@@ -98,13 +99,14 @@ const tokens = process.env.MOHEN_EXECUTION_AUTH_TOKENS
 // 动态令牌获取：当 MOHEN_EXECUTION_AUTH_TOKENS 中没有某 stage 的预签令牌时，
 // 从本地授权服务按需签发（D01–D05 输入依赖上一阶段产出，无法预签）。
 // 授权服务必须验证 run_id/stage/job/input 后才签发，Producer 不能自造令牌。
+const stageFetch=createTrustedPreviewFetch(process.env);
 const dynamicTokenUrl = process.env.MOHEN_EXECUTION_AUTH_DYNAMIC_URL;
 const dynamicTokenCredential = process.env.MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL;
 async function fetchStageToken({ stage, job, run, input }) {
   if (!dynamicTokenUrl || !dynamicTokenCredential) {
     throw new Error("EXECUTION_DYNAMIC_TOKEN_ENDPOINT_NOT_CONFIGURED");
   }
-  const reply = await fetch(dynamicTokenUrl, {
+  const reply = await stageFetch(dynamicTokenUrl, {
     method: "POST", redirect: "error", cache: "no-store",
     signal: AbortSignal.timeout(10000),
     headers: { "content-type": "application/json", authorization: `Bearer ${dynamicTokenCredential}` },
@@ -121,7 +123,7 @@ async function fetchStageToken({ stage, job, run, input }) {
 
 // This is only a READ-ONLY qualification check. No credentials means the
 // existing independent-Gate guard holds every Producer PASS (never a fallback).
-const gateVerifier = createOptionalIndependentGateClient();
+const gateVerifier = createOptionalIndependentGateClient(process.env,stageFetch);
 
 const privateRuntime=createPrivateEvidenceRuntimeLoader();
 let finished,reports;
