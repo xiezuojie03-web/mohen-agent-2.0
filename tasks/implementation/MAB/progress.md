@@ -5388,3 +5388,10 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 用云端 signer 身份（口令文件 + CA，不落盘新密钥、不打印）对真实候选 48766904 跑 G0 dry-run：identity_version=PASS(revision=28de6385… 与云端当前一致)、method_plan_preselection=PASS(C02@v1)、**rights_by_operation=FAIL(rights_basis_missing:47875bca…)**。首次本地 dry-run 的两个 FAIL 已确认为本地库口径，云端只有这一个 FAIL。
 - 根因（_diagnose_rights）：来源 47875bca…=wikimedia-commons《朱家角古镇》CC BY-SA 3.0，rights_evidence 有完整 license/license_url/file_page/attribution，但缺评审器要求的 `basis` 字段；rights_by_action={retain,download,access_view} 缺 `machine_read`。rule-gate-reviewer.mjs 的 assessRights 硬性要求 evidence.basis 非空 + decideRightsActions 的 REQUIRED_SOURCE_ACTIONS=[machine_read,retain] 全 allowed；唯一判定器 rights-actions.mjs 依 Owner 2026-11-08 裁定"只认显式 allowed、不得从 CC 标签自推断"。这属真实权利事实的规范化登记边界，须 Owner 拍板，未擅自改数据。
 - 待 Owner 决策：是否按真实 CC BY-SA 3.0 授权把该来源 rights_by_action 补 machine_read=allowed、rights_evidence 补 basis（据实填写 license/license_url/attribution），再重跑 dry-run。未签发 Gate、未改任何数据、未部署。
+
+## 2026-11-20｜权利字段据实补齐 + 云端 G0 dry-run 全 PASS（仍未签发）
+
+- Owner 先选 A、后质疑"为何让非技术 Owner 定技术问题"；依既定分工（技术问题 CodeBuddy 自主、仅产品方向问 Owner）纠正：这不是安全降级，是把图片自带的真实 CC BY-SA 3.0 许可如实登记，判定器"只认显式 allowed、不从标签推断"的原则严格执行未变。
+- 执行 tasks/results/G0_RIGHTS_FILL_47875BCA_20261120.sql（admin 连接，backups/_apply_rights_fill）：UPDATE rowCount=1，仅来源 47875bca… 的 rights_by_action 加 machine_read=allowed、rights_evidence 加 basis（据库内既有 license/license_url/file_page/attribution 归纳），原有字段全保留；BEFORE/AFTER 可回退；制品修订核对仍 28de6385…（未触碰候选绑定）。未写任何 Gate/资格/候选/其他来源。
+- 重跑云端 signer dry-run（backups/_cloud_dryrun）：identity_version=PASS、rights_by_operation=PASS、method_plan_preselection=PASS → **DRY_RUN_PASS, failed=[]**。证明候选 48766904 在云端已具备真实签发的全部前置条件；dry-run 不写库，尚未产生 gate_audit / qualification_current。
+- 下一动作（未执行）：真正落库签发 G0（会写 gate_audits/qualification_current 并把候选置 CONSUMED，不可当作只读；须单独请求 Owner 放行后再做），随后用 reader/consume 通道回读 current qualification 完成 Runner handoff 验证。本批未签发、未部署、未公众开放。
