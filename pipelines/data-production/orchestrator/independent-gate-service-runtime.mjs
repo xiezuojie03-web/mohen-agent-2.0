@@ -28,11 +28,11 @@ function requestBody(incoming) {
     cancel(){detach();},
   });
 }
-export function createIndependentGateHttpsServer({enabled=false,signerPool,readerPool,
+export function createIndependentGateHttpsServer({enabled=false,readOnly=false,signerPool,readerPool,
   databaseSessionKey,tlsCert,tlsKey,bodyReadTimeoutMs=5000}={}) {
   if(enabled!==true)return null;
   if(!tlsCert?.length||!tlsKey?.length)throw Error('GATE_SERVICE_TLS_REQUIRED');
-  const handle=createIndependentGateService({signerPool,readerPool,databaseSessionKey,bodyReadTimeoutMs});
+  const handle=createIndependentGateService({readOnly,signerPool,readerPool,databaseSessionKey,bodyReadTimeoutMs});
   const server=https.createServer({cert:tlsCert,key:tlsKey,minVersion:'TLSv1.2'},async(incoming,outgoing)=>{
     const stream=requestBody(incoming);
     let result;
@@ -84,39 +84,44 @@ export function independentGatePoolOptions(connectionString,{ca}={}) {
 
 export async function startIndependentGateHttpsRuntime({env=process.env}={}) {
   if(env.MOHEN_INDEPENDENT_GATE_SERVICE_ENABLED!=='true')return null;
+  const readOnly=env.MOHEN_INDEPENDENT_GATE_READ_ONLY==='true';
   const signerUrl=env.MOHEN_GATE_SIGNER_DATABASE_URL,readerUrl=env.MOHEN_GATE_READER_DATABASE_URL;
   const databaseSessionKey=env.MOHEN_GATE_DATABASE_SESSION_KEY;
   const certPath=env.MOHEN_GATE_TLS_CERT_PATH,keyPath=env.MOHEN_GATE_TLS_KEY_PATH;
-  if(!signerUrl||!readerUrl||signerUrl===readerUrl||!databaseSessionKey||databaseSessionKey.length<32||!certPath||!keyPath)
+  const validSignerConfig=readOnly
+    ? signerUrl===undefined&&databaseSessionKey===undefined
+    : !!signerUrl&&signerUrl!==readerUrl&&typeof databaseSessionKey==='string'&&databaseSessionKey.length>=32;
+  if(!readerUrl||!validSignerConfig||!certPath||!keyPath)
     throw Error('GATE_SERVICE_CONFIG_REQUIRED');
   const port=Number(env.MOHEN_GATE_PORT??8443);
   if(!Number.isInteger(port)||port<1||port>65535)throw Error('GATE_SERVICE_CONFIG_REQUIRED');
   // Validate URL policy before opening files, pools, or sockets.
-  independentGatePoolOptions(signerUrl);independentGatePoolOptions(readerUrl);
+  if(!readOnly)independentGatePoolOptions(signerUrl);
+  independentGatePoolOptions(readerUrl);
   const [tlsCert,tlsKey,signerCa,readerCa]=await Promise.all([
     readFile(certPath),readFile(keyPath),
-    env.MOHEN_GATE_SIGNER_DATABASE_CA_PATH?readFile(env.MOHEN_GATE_SIGNER_DATABASE_CA_PATH,'utf8'):undefined,
+    !readOnly&&env.MOHEN_GATE_SIGNER_DATABASE_CA_PATH?readFile(env.MOHEN_GATE_SIGNER_DATABASE_CA_PATH,'utf8'):undefined,
     env.MOHEN_GATE_READER_DATABASE_CA_PATH?readFile(env.MOHEN_GATE_READER_DATABASE_CA_PATH,'utf8'):undefined,
   ]);
   // Resolve the declared data-access dependency rather than a global pg install.
   const require=createRequire(new URL('../../../packages/data-access/package.json',import.meta.url));
   const {Pool}=require('pg');
-  const signerPool=new Pool(independentGatePoolOptions(signerUrl,{ca:signerCa}));
+  const signerPool=readOnly?undefined:new Pool(independentGatePoolOptions(signerUrl,{ca:signerCa}));
   const readerPool=new Pool(independentGatePoolOptions(readerUrl,{ca:readerCa}));
   // Pool idle errors never log credentials or raw database errors.
-  signerPool.on('error',()=>{});readerPool.on('error',()=>{});
+  signerPool?.on('error',()=>{});readerPool.on('error',()=>{});
   let server;
   try {
-    server=createIndependentGateHttpsServer({enabled:true,signerPool,readerPool,databaseSessionKey,tlsCert,tlsKey});
+    server=createIndependentGateHttpsServer({enabled:true,readOnly,signerPool,readerPool,databaseSessionKey,tlsCert,tlsKey});
     await new Promise((resolve,reject)=>{
       server.once('error',reject);
       server.listen(port,env.MOHEN_GATE_HOST??'127.0.0.1',()=>{server.removeListener('error',reject);resolve();});
     });
-  }catch(error){await Promise.allSettled([signerPool.end(),readerPool.end()]);throw error;}
+  }catch(error){await Promise.allSettled([signerPool?.end(),readerPool.end()]);throw error;}
   let closing;
   const close=()=>closing??=(async()=>{
     await new Promise(resolve=>{server.close(resolve);server.closeAllConnections();});
-    await Promise.allSettled([signerPool.end(),readerPool.end()]);
+    await Promise.allSettled([signerPool?.end(),readerPool.end()]);
   })();
   return {server,close};
 }

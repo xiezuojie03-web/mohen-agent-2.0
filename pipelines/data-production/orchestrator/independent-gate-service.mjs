@@ -10,14 +10,17 @@ const response=(status,reason)=>Response.json({ok:false,reason},{status,headers:
 class Rejected extends Error {constructor(result){super('GATE_REQUEST_REJECTED');this.result=result;}}
 const hash=token=>createHash('sha256').update(token).digest('hex');
 const field=x=>typeof x==='string'&&x.trim().length>0&&x.length<=128;
-export function createIndependentGateService({signerPool,readerPool,databaseSessionKey,bodyReadTimeoutMs=5000}={}) {
-  if(typeof signerPool?.connect!=='function'||typeof readerPool?.connect!=='function'||
-    typeof databaseSessionKey!=='string'||databaseSessionKey.length<32||signerPool===readerPool)
+export function createIndependentGateService({readOnly=false,signerPool,readerPool,databaseSessionKey,bodyReadTimeoutMs=5000}={}) {
+  const validSignerConfig=readOnly===true
+    ? signerPool===undefined&&databaseSessionKey===undefined
+    : typeof signerPool?.connect==='function'&&typeof databaseSessionKey==='string'&&
+      databaseSessionKey.length>=32&&signerPool!==readerPool;
+  if(typeof readerPool?.connect!=='function'||!validSignerConfig)
     throw Error('GATE_SERVICE_CONFIG_REQUIRED');
   return async request=>{
     let url;try{url=new URL(request.url);}catch{return response(400,'invalid_request');}
     const kind=url.pathname==='/current'?'consume':['/decide','/revoke'].includes(url.pathname)?'review':null;
-    if(!kind)return response(404,'not_found');
+    if(!kind||(readOnly===true&&kind==='review'))return response(404,'not_found');
     if(url.search||url.hash)return response(400,'invalid_request');
     if(request.method!=='POST')return response(405,'method_not_allowed');
     const bearer=request.headers.get('authorization')??'';

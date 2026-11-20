@@ -5234,3 +5234,8 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 原任务 `53ad1a29-22e5-43c2-816d-b02b6e85abbd` 的 checkpoint 关联 Project `e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5`、原件 `4ca22839-e3e9-4d14-8ec7-677cd740aa0e`、Source Version `67839b1e-a344-4dd4-adf8-f7798ddf82d7`、Raw Item `5fe7f057-a797-42cd-81b8-0892d4c271b6`。原件行状态 STORED_VERIFIED，Project 与 SHA 均同 checkpoint 一致。执行器以原 task ID 作为 D00 scope.root_task_id。
 - 云端任务行 status=done，checkpoint 无 production_run_id，与按 Root 回查生产运行零条一致。D00 接收仍 HOLD / NOT_RUN，独立 G0 待审。
 - Runner 要求 Ed25519 许可同时绑定 run、stage、job、mode、Registry 和输入摘要，并通过独立端点确认 nonce 已一次性消费。数据库目录中未找到现成的 nonce 或阶段许可核验函数。现有独立 Gate 服务启动合同同时要求 Signer 与 Reader 连接，本批仍需只读查询入口；不得启用自动 G0 审签。
+
+## 2026-11-20｜第⑤步独立 Gate 只读运行模式
+
+- 现有独立 HTTPS Gate 服务支持显式 `MOHEN_INDEPENDENT_GATE_READ_ONLY=true`。只装配 Reader 连接，禁止注入 Signer URL 与审签会话密钥。保留 `/current` 的独立身份与能力校验；`/decide`、`/revoke` 请求拒绝于 SQL 之前。既有完整服务仍按原配置启动。
+- 独立 Gate 服务与 HTTPS 运行时定向测试 10 项通过。此项为代码和隔离验证，尚未配置云 Reader 登录或部署服务。原任务 D00 仍 HOLD / NOT_RUN，待独立执行许可签发、一次性核验、云 Reader 和原件桥接。

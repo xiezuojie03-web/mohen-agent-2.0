@@ -64,7 +64,9 @@ test('HTTPS current route reads only through explicit reader pool and preserves 
   if(sql.includes('read_gate_stage_qualification'))return {rows:[{receipt}]};
   return {command:sql==='commit'?'COMMIT':undefined,rows:[]};
  },release:()=>events.push({sql:'release'})})};
- const port=await listening(t,{readerPool});
+ const port=await listening(t,{readOnly:true,readerPool,signerPool:undefined,databaseSessionKey:undefined});
+ assert.equal((await send(port,{path:'/decide'})).status,404);
+ assert.equal(events.length,0);
  const body=JSON.stringify({schema:'mohen.independent-gate-current-check.v1',run_id:id,job_id:'fixture-job',stage:'D01',gate_code:'G1',input_digest:'a'.repeat(64),output_digest:'b'.repeat(64),reviewer_binding_ref:'fixture-binding',consumer:'producer'});
  const res=await send(port,{path:'/current',body,headers:{'content-length':String(Buffer.byteLength(body))}});
  assert.equal(res.status,200);assert.deepEqual(JSON.parse(res.body),receipt);
