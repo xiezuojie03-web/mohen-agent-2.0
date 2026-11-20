@@ -33,6 +33,11 @@ export function createIndependentGateHttpsServer({enabled=false,readOnly=false,s
   if(enabled!==true)return null;
   if(!tlsCert?.length||!tlsKey?.length)throw Error('GATE_SERVICE_TLS_REQUIRED');
   const handle=createIndependentGateService({readOnly,signerPool,readerPool,databaseSessionKey,bodyReadTimeoutMs});
+  return createIndependentHttpsServer({handle,tlsCert,tlsKey});
+}
+
+export function createIndependentHttpsServer({handle,tlsCert,tlsKey}) {
+  if(typeof handle!=='function'||!tlsCert?.length||!tlsKey?.length)throw Error('INDEPENDENT_HTTPS_CONFIG_INVALID');
   const server=https.createServer({cert:tlsCert,key:tlsKey,minVersion:'TLSv1.2'},async(incoming,outgoing)=>{
     const stream=requestBody(incoming);
     let result;
@@ -43,7 +48,7 @@ export function createIndependentGateHttpsServer({enabled=false,readOnly=false,s
         const headers=new Headers();
         for(const [key,value] of Object.entries(incoming.headers))if(value!==undefined)
           headers.set(key,Array.isArray(value)?value.join(', '):value);
-        const request=new Request('https://independent-gate.invalid'+incoming.url,{
+        const request=new Request('https://independent-service.invalid'+incoming.url,{
           method:incoming.method,headers,
           ...(!['GET','HEAD'].includes(incoming.method)?{body:stream,duplex:'half'}:{}),
         });
