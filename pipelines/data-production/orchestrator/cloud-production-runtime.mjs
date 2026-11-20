@@ -22,14 +22,27 @@ export async function claimCloudProductionRun({db,input,verifyOwnerOriginal}){
    returning run_id::text as run_id`,{id:input.run_id,intent:input.research_intent,scope:JSON.stringify(input.scope),digest:cloudProductionInputDigest(input)});
  return rows.length===1&&rows[0].run_id===input.run_id;
 }
-export function awaitProductionChild(command,args,options,{timeoutMs=240000}={}){
+export function awaitProductionChild(command,args,options,{timeoutMs=240000,startupProbe=false}={}){
  return new Promise((resolve,reject)=>{
-  const child=spawn(command,args,{...options,stdio:['ignore','ignore','ignore'],detached:false});
+  const child=spawn(command,args,{...options,stdio:['ignore','ignore',startupProbe?'pipe':'ignore'],detached:false});
+  let startupError='';
+  child.stderr?.on('data',chunk=>{if(startupError.length<4096)startupError+=chunk.toString().slice(0,4096-startupError.length);});
   let timedOut=false,kill;
   const timer=setTimeout(()=>{timedOut=true;child.kill('SIGTERM');kill=setTimeout(()=>child.kill('SIGKILL'),1000);},timeoutMs);
   const clear=()=>{clearTimeout(timer);clearTimeout(kill);};
   child.once('error',()=>{clear();reject(Error('CLOUD_EXECUTOR_PROCESS_UNAVAILABLE'));});
-  child.once('close',code=>{clear();resolve({code,timedOut});});
+  child.once('close',code=>{
+   clear();
+   let failure;
+   if(startupProbe&&code!==0){
+    if(/Cannot find package ['"]ajv['"]/.test(startupError))failure='runner_ajv_unavailable';
+    else if(/Cannot find package ['"]pg['"]/.test(startupError))failure='runner_pg_unavailable';
+    else if(/ERR_MODULE_NOT_FOUND|MODULE_NOT_FOUND/.test(startupError))failure='runner_module_unavailable';
+    else if(/ERR_UNKNOWN_FILE_EXTENSION/.test(startupError))failure='runner_extension_unsupported';
+    else if(/SyntaxError/.test(startupError))failure='runner_syntax_invalid';
+   }
+   resolve({code,timedOut,...(failure?{failure}:{})});
+  });
  });
 }
 // The probe loads the same static graph as the CLI and stops before any run
@@ -43,9 +56,9 @@ export async function probeCloudProductionRunner({projectRoot,environment=proces
  catch{return {ok:false,reason:'runner_file_unavailable'};}
  try{
   const result=await runChild(process.execPath,[entry,'--check-startup'],
-   {cwd:root,env:{PATH:environment.PATH??''}},{timeoutMs:8000});
+   {cwd:root,env:{PATH:environment.PATH??''}},{timeoutMs:8000,startupProbe:true});
   if(result.timedOut)return {ok:false,reason:'runner_probe_timeout'};
-  return result.code===0?{ok:true,reason:'runner_ready'}:{ok:false,reason:'runner_import_failed'};
+  return result.code===0?{ok:true,reason:'runner_ready'}:{ok:false,reason:result.failure??'runner_import_failed'};
  }catch{return {ok:false,reason:'runner_process_unavailable'};}
 }
 
