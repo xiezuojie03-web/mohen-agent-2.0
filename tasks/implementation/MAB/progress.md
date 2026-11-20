@@ -5193,3 +5193,8 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 - 固定 Preview 第二次回读进入登记校验，返回 PRIVATE_SOURCE_REGISTRATION_INVALID。云端登记函数仍用旧投影，少 rights_by_action / rights_snapshot / rights_evidence。只恢复三字段，沿用已有版本快照和证据，未改资格或权限模型。
 - 云端回读函数定义及 ACL；从原任务实际保存字段取得同形投影，直接运行 Studio 登记校验器并通过。Creator HTTP 回读仍待验证。machine_read 仍为 unknown，G0 与 D00 执行均未通过或启动。
+
+## 2026-11-20｜第⑤步授权 D00 接收前置核查
+
+- 原朱家角已验证原件和登记可绑定，Creator HTTP 回读待复验。CLI 支持 D00→D00，Studio 本地 spawn 和云执行器均硬编码终点 D02；云派发签名输入摘要当前也不携带阶段终点。现有 production-run 记账 5，原任务可用 2。
+- 只查 Preview 变量名称，未读凭据。云执行器 URL/凭据、执行授权公钥与验证/动态端点，以及独立 Gate 验证端点均未配置。本地执行授权依赖已受控宿主。未启动 Runner、改动预算或将登记回读冒充 D00。
