@@ -12,6 +12,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import { resolveD00ApprovedRun } from "../../../pipelines/data-production/orchestrator/d00-approved-run.mjs";
 import {createCloudProductionDispatch} from "../../../pipelines/data-production/orchestrator/cloud-production-dispatch.mjs";
 import {cloudProductionInputDigest} from "../../../pipelines/data-production/orchestrator/cloud-production-runtime.mjs";
 import { run as dbRun, queryRows } from "@mohen/data-access";
@@ -168,7 +169,6 @@ export async function triggerProduction(taskId: string, intent: string, projectI
     return {runId:"",started:false,reason:"production_private_owner_session_required"};
   const methodId=privateD01MethodForCarrier(source.contentType);
   if(!methodId)return {runId:"",started:false,reason:"production_private_read_method_unavailable"};
-  const runId = randomUUID();
   // Signed D00 input: exact project/root, immutable original and chosen page.
   // The Worker independently verifies these references against live RLS/bytes.
   const scope = {project_id:projectId,root_task_id:taskId,original_id:source.originalId,
@@ -176,20 +176,32 @@ export async function triggerProduction(taskId: string, intent: string, projectI
     asset_revision_id:source.assetRevisionId,raw_sha256:source.sha256,
     upload_started_at:source.uploadStartedAt,upload_verified_at:source.uploadVerifiedAt};
 
-  const cloudInput={run_id:runId,research_intent:intent,scope,
-    consumer_method_plan:{methods:[{method_id:methodId,method_version:"v1"}]},owner_session_token:ownerSessionToken,
+  const stageInput={research_intent:intent,scope,
+    consumer_method_plan:{methods:[{method_id:methodId,method_version:"v1"}]}};
+  let approvedRun: string | null = null;
+  try {
+    if (endStage === "D00") approvedRun = resolveD00ApprovedRun(process.env.MOHEN_D00_APPROVED_RUN,stageInput);
+  } catch {
+    return {runId:"",started:false,reason:"production_d00_approval_binding_required"};
+  }
+  const runId = approvedRun ?? randomUUID();
+  const cloudInput={run_id:runId,...stageInput,owner_session_token:ownerSessionToken,
     ...(endStage ? {to_stage:endStage} : {})};
   const metadata=cloud?{cloud_dispatch:{input_digest:cloudProductionInputDigest(cloudInput)}}:{};
 
   // 1) 预登记 production_runs（RUNNING），前端立即可查；D00 的 on conflict 会复用。
   try {
-    await dbRun(
-      `insert into control.production_runs
+    const insertRun = `insert into control.production_runs
        (run_id, research_intent, scope, execution_mode, status, started_at, metadata, architecture_generation)
        values (:'run_id'::uuid, :'intent', :'scope'::jsonb, :'mode', 'RUNNING', now(), :'metadata'::jsonb, :'arch')
-       on conflict (run_id) do nothing`,
-      { run_id: runId, intent, scope: JSON.stringify(scope), mode: EXECUTION_MODE, arch: ARCH, metadata:JSON.stringify(metadata) }
-    );
+       on conflict (run_id) do nothing`;
+    const params = { run_id: runId, intent, scope: JSON.stringify(scope), mode: EXECUTION_MODE, arch: ARCH, metadata:JSON.stringify(metadata) };
+    if (approvedRun) {
+      const inserted = await queryRows(insertRun + " returning run_id::text", params);
+      if (inserted.length !== 1) return {runId:"",started:false,reason:"production_d00_approved_run_already_registered"};
+    } else {
+      await dbRun(insertRun, params);
+    }
   } catch (e) {
     return { runId: "", started: false, reason: "production_run_register_failed" };
   }
