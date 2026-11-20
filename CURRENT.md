@@ -1,6 +1,6 @@
 # 墨痕｜当前施工断点
 
-> 核验时间 2026-11-20 15:35 +08:00｜HEAD `a1453cd`（G0 signer 安装固化提交；CURRENT 更新同批推送）｜local=remote 分叉以本批推送后为准｜环境：本地 mohen_dev（回写后）+ 云端 mohen-cloud；未验证项：CI 宿主、独立 G0 签发、正式读取命中。今日已完成云端→本地回写与 push，并完成 B 路径第①项云端 signer 安装（详见 progress 今日批次）。
+> 核验时间 2026-11-20 15:40 +08:00｜HEAD `5996574`｜local=remote **分叉 ahead 2 / behind 0 — PENDING_PUSH**（本机代理 127.0.0.1 连不上 github.com:443，非文档问题；恢复后须 push 两个本地提交 `a1453cd`、`5996574`）｜环境：本地 mohen_dev（回写后）+ 云端 mohen-cloud；未验证项：CI 宿主、独立 G0 签发、正式读取命中。今日已完成云端→本地回写与 push，并完成 B 路径第①项云端 signer 安装（详见 progress 今日批次）。
 
 **Studio 已登记原件 → D00 接收已验收，停在独立 G0 审核前。**
 
