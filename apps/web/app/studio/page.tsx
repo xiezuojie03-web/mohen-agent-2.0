@@ -11,26 +11,7 @@ export default async function StudioPage() {
   if (!session) redirect("/login");
   const d00TaskId = process.env.VERCEL_ENV === "preview" && process.env.MOHEN_D00_APPROVED_RUN
     ? process.env.MOHEN_D00_CREATOR_TASK_ID : undefined;
-  return (
-    <>
-      <a
-        href="/studio/desk"
-        style={{
-          position: "fixed",
-          right: 18,
-          top: 10,
-          zIndex: 60,
-          background: "#1f3a2d",
-          color: "#fff",
-          borderRadius: 4,
-          padding: "5px 10px",
-          fontSize: 12,
-          textDecoration: "none",
-        }}
-      >
-        资料台
-      </a>
-      <StudioWorkbench d00TaskId={d00TaskId} />
-    </>
-  );
+  // 不再渲染右上角固定悬浮的「资料台」链接：它悬浮在生产操作动线上，
+  // 反复造成误触跳页。资料台入口保留在工作台内的「打开完整研究记录」。
+  return <StudioWorkbench d00TaskId={d00TaskId} />;
 }
