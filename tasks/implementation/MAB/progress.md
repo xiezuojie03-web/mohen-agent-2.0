@@ -5324,3 +5324,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 在云端 PostgreSQL 用 PREPARE 复现 jsonb_build_object 无类型参数报 42P18。失败回执的原因值已显式转换为 text，并增加受控 Runner 文件与进程错误码。定向测试 24 项通过。真实接收尚未完成，暂不重派。
 
 - 执行窗口结束后，原运行按精确原任务、Project、原件及无许可、无候选的条件结记 HOLD / CLOUD_EXECUTOR_ACK_UNCERTAIN，保留认领记录。修复 SHA dbf6b09 对应受保护 Preview dpl_FR53wN3Xmn2PMfYpUdzdFayJQejV 已 READY。旧运行未重放，最初 Runner 启动失败仍需核验。
+
+## 2026-11-20｜第⑤步真实 Runner 打包修复及安全恢复准备
+
+- Preview 无副作用探测复现 runner_ajv_unavailable。构建时为 raw Node Runner 打包 Ajv 与 PostgreSQL 驱动，子进程仅重定向这两个模块。在 Node 子进程验证两个包可加载，25 项定向测试通过。修复 SHA 1d2bf6a 的 Vercel Probe Preview 返回 HTTP 200 runner_ready。
+- 原运行仍为 HOLD，零许可、零候选。精确对账原调用的零成本预留，清除预留锁并追加零成本回执 fdd14903-6d38-49b4-807d-c9a81c2ceaea，记录结果为 hold_before_grant、d00_received=false。
+- 独立授权已部署一份新的受保护 Preview，许可编号绑定原任务同一 D00 输入，旧运行未重放。原 Creator 的新请求仍待发起。
