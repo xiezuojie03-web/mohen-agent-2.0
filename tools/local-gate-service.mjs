@@ -19,7 +19,7 @@ import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createRuleGateReviewer, RULE_VERSION_BY_GATE } from "./rule-gate-reviewer.mjs";
 import { selectExactStageCandidate } from "./gate-stage-candidate-selection.mjs";
-import { attestG0TextStageOutput } from "./gate-stage-output-attestation.mjs";
+import { attestG0TextStageOutput, attestG0ImageStageOutput } from "./gate-stage-output-attestation.mjs";
 import {
   openMachineQuery,
 } from "./machine-reviewer-session.mjs";
@@ -113,14 +113,27 @@ async function autoSign(query, request) {
       query,
       decide: decideThroughAuthority,
       projectId: selected.projectId,
-      attestStageOutput: ({candidate,request:stageRequest}) =>
-        attestG0TextStageOutput({query,candidate,request:stageRequest,
-          registry:REVIEW_REGISTRY,projectId:selected.projectId}),
+      // Carrier is chosen from the candidate's PERSISTED method_plan, never from
+      // the Producer request. Each attester independently re-reads content_type
+      // and source facts, so a wrong carrier or supplied digest fails closed.
+      attestStageOutput: ({candidate,request:stageRequest}) => {
+        const refs=Array.isArray(candidate?.evidence_refs)?candidate.evidence_refs:[];
+        const methodIds=new Set(refs.filter(r=>r?.kind==='method_plan')
+          .map(r=>String(r.method_id??'')));
+        if(methodIds.size===0||methodIds.size>1)
+          throw Error('STAGE_OUTPUT_CARRIER_METHOD_AMBIGUOUS');
+        const methodId=[...methodIds][0];
+        const args={query,candidate,request:stageRequest,
+          registry:REVIEW_REGISTRY,projectId:selected.projectId};
+        if(methodId==='C02')return attestG0ImageStageOutput(args);
+        if(methodId==='C01')return attestG0TextStageOutput(args);
+        throw Error('STAGE_OUTPUT_CARRIER_NOT_SUPPORTED');
+      },
       log: () => {},
     });
     // Reviewer verifies the candidate's actual project + stable identity.
-    // Only D00/C01 text currently has a reproducible persisted output. G1-G5
-    // and D00 image/carrier gaps fail closed instead of copying request hashes.
+    // D00/C01 text and D00/C02 scanned-page images have reproducible persisted
+    // outputs. G1-G5 and other carriers fail closed instead of copying hashes.
     const outcome = await reviewer.review({ gate: gate_code,
       candidateId: selected.candidateId,stageRequest:request });
     if (outcome.status !== "PASS") return null;

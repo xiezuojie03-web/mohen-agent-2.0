@@ -5416,3 +5416,19 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 **测试与验证**：POS＝`qualification_allows(...,producer,data-production,m5-remediation,v1,project scope)` true、审计 current_valid=true；NEG＝审计 `has_stage_binding=false`、image attester 负例、reader 直连 permission denied；AUTH＝consume credential 仅 hash、reader 登录不可重建；DB/HTTP＝仅 admin 只读 SQL，无写、无 HTTP consume、无 Gate 签发、无 provider、费用 ¥0。回滚＝无写入无需回滚。下游接收＝D00→D01 handoff 仍 HOLD。
 
 **HOLD 与下一动作（需 Owner 单独授权）**：①按媒介扩展独立 attester（`attestG0ImageStageOutput` + `local-gate-service` 分派 + image 正反隔离 PG/单测）；②独立 signer 带 `stageRequest` 重新签发含 `stage_binding` 的 G0（新审计，不覆盖 `802c740f`）；③新建未过期 consume credential、以 `mohen_gate_reader` 低权跑通 `/current` + `requireIndependentStageQualification`；④再评估 D01 typed input。未部署生产、未公众开放、未新增付费、密钥未入 git/日志/对话。
+
+## 2026-11-20｜缺口2 能力补齐：C02 图片 G0 阶段输出独立 attester（`CODE_PRESENT`+`VERIFIED_ISOLATED`，零 Gate 写入）
+
+**Owner 授权与边界**：Owner 明确"同意，请继续"，授权把图片阶段绑定能力（技术项）补齐；重签 Gate / 注入凭据仍列为需授权写操作，本批不做。基线 HEAD `6643f19`（上批文档提交）= origin/main、分叉 0/0。
+
+**§3.5 D 有界五项**：可用基础＝隔离全链 C01 handoff（批次 H/I/J）+ 真实 G0 审计 `802c740f`；当前实现＝`tools/gate-stage-output-attestation.mjs` 唯一 attester（text/C01）、`local-gate-service.mjs:116-118` 硬编码 text；具体差异＝图片 C02 无独立输出重构，`page_number` 全仓无受信任持久化列（仅 Producer 内存与 D01 `read_units.ordinal`，G0 签署时不存在），硬凑 `=1` 不成立；最小改动＝①新增 `attestG0ImageStageOutput`、②`local-gate-service` 按候选持久 `method_plan` 分派、③新增 image 正反单测，零 DDL、零核心 Gate 函数改动；证据继承＝text attester 6 例 + gate-stage 全套 23 例回归。
+
+**非循环设计（实测支撑）**：只读探针确认真实 run `bfcdfad6` 的 `control.production_runs.scope` 持久化 `{project_id,original_id,source_version_id,raw_sha256,page_number:1}`，由 D00 grant journal（binding.input_digest=`478a8668…`）与 claim 绑定，属执行前授权事实；signer `mohen_gate_signer_m5_machine` 对该表有 SELECT + RLS `m5_machine_reviewer_read`(qual=true)。因此 `page_number` 从 run scope 读（非 Producer 请求），carrier/原件 sha/byte 从 signer 自己 RLS 读 `source.raw_items JOIN studio.private_originals` 复核，method_plan 必须含 C02 且摘要自洽，重建 `scanned_page/v1` D01 输出后 `executionDigest` 必须等于 `request.output_digest`，否则 `STAGE_OUTPUT_DIGEST_NOT_REPRODUCIBLE`。与 `privateSourceIntakeAdapter:87-98` 输出形状逐字段一致。
+
+**变更（CODE_PRESENT）**：`tools/gate-stage-output-attestation.mjs` 新增导出 `attestG0ImageStageOutput`（98 行，镜像 text 失败关闭风格）；`tools/local-gate-service.mjs` 按 `candidate.evidence_refs` 的 method_plan 唯一方法分派（C02→image / C01→text / 多值或空→`STAGE_OUTPUT_CARRIER_METHOD_AMBIGUOUS` 失败关闭），不再硬编码 text；新增 `tests/data-production/gate-stage-image-attestation.test.mjs`（8 例）。
+
+**测试（VERIFIED_ISOLATED）**：`node --test tests/data-production/gate-stage-image-attestation.test.mjs` 8/8 PASS；text 回归 6/6 PASS；gate-stage 全套（output/image/candidate-selection/qualification）23/23 PASS。POS＝C02/image/jpeg/png/webp、digest 可重建；NEG＝篡改 output_digest、篡改 page_number、run scope 与原值不符（sha/page=0）、重复/缺失 run scope、C01-only 计划、重复/缺失 method_plan、text/plain carrier、sha/byte 不符、错 job/reviewer/stage/disabled registry；AUTH＝method_plan 多值/空失败关闭；`read_lints` 0 诊断。
+
+**真实数据干跑（只读，不签发）**：`backups/_dryrun_image_attest_real_20261120.mjs` 对真实候选 `48766904` 只读重建：method_ids=[C02]、content_type=image/jpeg、page_number=1 → **DRY_ATTEST_PASS，DIGEST_MATCH=true，output_digest=`002bb07f…`**。证明能力对真实候选可用；但真审计 `802c740f` 仍无 `stage_binding`，须带 `stageRequest` 重签才生效。
+
+**HOLD/下一动作（需 Owner 授权写操作，合并为一份最小清单）**：①独立 signer 带 `stageRequest` 重签含 `stage_binding` 的 G0（新审计，不覆盖 `802c740f`）；②新建未过期 consume credential + `mohen_gate_reader` 低权跑通 `/current` + `requireIndependentStageQualification`；③再评估 D01 typed input 贯通。零生产部署、零公众开放、零新增付费、密钥未入 git/日志/对话。回滚＝本批仅新增/修改离线工具与测试，git revert 即可，不影响已落库审计。
