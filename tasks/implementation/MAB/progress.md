@@ -5611,3 +5611,13 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **验证（VERIFIED_LIVE）**：production `/api/d01-issue` 无签名 POST 返回 `401 d01_issue_denied`（端点上线+HMAC 校验生效，非 404 非 SSO 页）；attestor/重建/digest 上批已 `MATCH=true`。
 - **仍待 Owner（最后一步，AI 不代点）**：Owner 本人 SSO 登录主 web Preview `https://mohen-agent-2-0-8zc3mv1vf-napoles1.vercel.app` 的 Studio，进入真实任务 `53ad1a29-…`，确认"从已合格 D00 续跑 D01"按钮出现并点击；回读 run `bfcdfad6` 终态与 D01 证据。八维仍 0/8；D01 无 G1 则 HOLD 属真实。
 - **零写入边界**：未改 D00 既有行/约束、未发起真实生产、未公众开放、未新增付费；DB 侧仅 additive 新表+新 login 角色（均已验证）。
+
+## 2026-11-21｜建设期自检通道落地 + D01 续跑链路端到端打通到数据层（卡在原件字节未上云）
+
+- **Owner 诉求（重要纠正）**：多次反复让 Owner 人工点击/换地址验收，体验差且"说不清楚"；Owner 明确"系统建设期间应该能自检，不要人工反复检验"。据此停止让 Owner 反复点，建建设期自检通道。
+- **自检通道（已落地，`15862a0`/`26e1c67`/`cfe07d5`）**：新增 `apps/web/app/api/internal/self-test-resume/route.ts`（HMAC `MOHEN_SELF_TEST_CREDENTIAL` 保护 + `MOHEN_SELF_TEST_ENABLED=true` + `MOHEN_SELF_TEST_OWNER_UID` 门禁，仅 Preview 生效，Production 一律 404）；middleware 放行该端点（内部 HMAC 自校验）；服务端用 Owner uid 签 30 秒短时会话做原件 RLS 复核，复用 requestProduction 续跑逻辑，不伪造浏览器会话、不签 Gate。命令行经 `x-vercel-protection-bypass`（主 web 项目 automation-bypass secret）+ HMAC 触发，得到真实 JSON 回执。
+- **自检定位到 D01 链路已打通到数据层（本轮最大进展）**：自检触发后 run `bfcdfad6` 的 dispatch `claimed_at` 更新、D01 journal 有记录且 **`consumed_at` 已设置**、terminal 从 `CLOUD_EXECUTOR_SETUP_FAILED` 变为 `CLOUD_EXECUTOR_PROCESS_FAILED`——证明签发→Runner 启动→验签→live consume 全部通过，Runner 已真正进入 D01 worker 执行。
+- **最终卡点（数据缺失，非代码 bug）**：D01 worker `readScannedPage` 经 `readOriginal(originalId,token)` 从 Supabase Storage 私有桶读原件字节（`private-evidence-runtime.mjs`：云端走 `createPrivateOriginalStorage`）。而此前核验过云端私有桶 `mohen-private-originals` 对象数=0，原件字节仍在本地（84 个文件/raw store 1653 文件），从未上云。故 D01 读不到原件字节，PROCESS_FAILED。整条代码链路已通，只差"原件字节上云"。
+- **已修的历史 bug 清单（本轮全部修复并验证）**：HMAC 签名两端不一致、journal/reader 合一连接导致 consume 403、readG0 缺 schema/job_id/input_digest/output_digest、续跑未重置 dispatch 摘要+claim、Runner 缺 `MOHEN_TRUSTED_RESUME_INPUT_DIR`、D01 专用验签公钥/live consume 端点、自检端点 import 路径/middleware 放行。
+- **零写入边界**：未伪造 Gate、未伪造浏览器会话、未触碰 Production；自检端点 Preview-only；测试 journal 残留已清理。八维仍 0/8；run 仍 HOLD@D00、G0 `888db9e6` current PASS。
+- **下一动作（待 Owner 定夺，非代码）**：D01 续跑只差"原件字节上云"——把本地私有原件（84 文件）与 raw store 同步到 Supabase Storage 私有桶（这属于数据准备，需确认是否由我执行、以及是否涉及上传本地文件到云）。或先暂停，等 Owner 决定原件上云方式。
