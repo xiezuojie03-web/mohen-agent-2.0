@@ -111,12 +111,13 @@ function configure(env){
 export async function d01AuthorityEndpoint(route,req,res){
  res.setHeader('content-type','application/json');
  res.setHeader('cache-control','no-store');
- // The issue endpoint is authenticated by HMAC signature (never SSO identity)
- // and may serve the stable production domain; token/consume stay preview-only.
+ // The issue and consume endpoints are authenticated by HMAC signature (never
+ // SSO identity) and may serve the stable production domain; the D00 token
+ // issuer stays preview-only.
  const env=process.env.VERCEL_ENV;
- const issueOk=route==='/d01-issue'&&(env==='preview'||env==='production');
- const grantOk=route!=='/d01-issue'&&env==='preview';
- if(process.env.MOHEN_D01_RESUME_AUTHORITY_ENABLED!=='true'||(!issueOk&&!grantOk)){
+ const prodOk=(route==='/d01-issue'||route==='/consume')&&(env==='preview'||env==='production');
+ const previewOk=env==='preview';
+ if(process.env.MOHEN_D01_RESUME_AUTHORITY_ENABLED!=='true'||(!prodOk&&!previewOk)){
   res.statusCode=503;res.end('{"ok":false,"reason":"d01_authority_not_configured"}');return;
  }
  try{

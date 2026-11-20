@@ -68,7 +68,11 @@ export async function assertStageExecutionAuthorized({ registry, job, run, input
   if (!token && typeof context.fetchStageToken === "function") {
     token = await context.fetchStageToken({ stage: job.stage, job, run, input });
   }
-  const publicKey = process.env.MOHEN_EXECUTION_AUTH_PUBLIC_KEY;
+  // A resumed D01 grant is signed by the independent D01 authority's own key
+  // and consumed by that authority's journal, so each stage may bring its own
+  // public key and live-verify endpoint. Defaults keep D00 behaviour intact.
+  const stageSuffix = job.stage === "D01" ? "_D01" : "";
+  const publicKey = process.env[`MOHEN_EXECUTION_AUTH_PUBLIC_KEY${stageSuffix}`] ?? process.env.MOHEN_EXECUTION_AUTH_PUBLIC_KEY;
   if (typeof token !== "string" || !publicKey) throw new Error("EXECUTION_SIGNED_GRANT_MISSING");
   const parts = token.split(".");
   let header, claims;
@@ -96,8 +100,8 @@ export async function assertStageExecutionAuthorized({ registry, job, run, input
     throw new Error(`EXECUTION_SIGNED_GRANT_SCOPE_INVALID:${job.stage}`);
   }
   let endpoint;
-  try { endpoint = new URL(process.env.MOHEN_EXECUTION_AUTH_VERIFY_URL); } catch { /* checked below */ }
-  const credential = process.env.MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL;
+  try { endpoint = new URL(process.env[`MOHEN_EXECUTION_AUTH_VERIFY_URL${stageSuffix}`] ?? process.env.MOHEN_EXECUTION_AUTH_VERIFY_URL); } catch { /* checked below */ }
+  const credential = process.env[`MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL${stageSuffix}`] ?? process.env.MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL;
   if (!endpoint || endpoint.protocol !== "https:" || endpoint.username || endpoint.password ||
       typeof credential !== "string" || credential.length < 32) {
     throw new Error("EXECUTION_TRUSTED_VERIFIER_NOT_CONFIGURED");

@@ -204,14 +204,20 @@ export async function triggerProduction(taskId: string, intent: string, projectI
   const metadata=cloud?{cloud_dispatch:{input_digest:cloudProductionInputDigest(cloudInput)}}:{};
 
   if (resume) {
-    // Resuming an already-registered, D00-qualified run: never create a new
-    // run or re-spend budget. The row must already exist and match this exact
-    // project/root/original scope; the cloud executor advances its stage.
-    const existing = await queryRows(
-      `select run_id::text from control.production_runs
-       where run_id=:'run'::uuid and scope=:'scope'::jsonb`,
-      { run: runId, scope: JSON.stringify(scope) });
-    if (existing.length !== 1) return {runId:"",started:false,reason:"production_resume_run_scope_mismatch"};
+    // Re-claim the same run for the resumed stage. The prior D00 dispatch left
+    // its own digest and a consumed claim marker in cloud_dispatch, so the
+    // resumed dispatch must refresh both (from_stage changes the digest) and
+    // bring the HOLD row back to RUNNING — only then can the cloud executor's
+    // atomic claim match. Scope must be byte-identical to the original intake.
+    const resumed = await queryRows(
+      `update control.production_runs
+       set status='RUNNING', finished_at=null,
+         metadata = coalesce(metadata,'{}'::jsonb) || jsonb_build_object(
+           'cloud_dispatch', jsonb_build_object('input_digest', :'digest'::text))
+       where run_id=:'run'::uuid and scope=:'scope'::jsonb
+       returning run_id::text as run_id`,
+      { run: runId, scope: JSON.stringify(scope), digest: cloudProductionInputDigest(cloudInput) });
+    if (resumed.length !== 1) return {runId:"",started:false,reason:"production_resume_run_scope_mismatch"};
   } else {
     // 1) 预登记 production_runs（RUNNING），前端立即可查；D00 的 on conflict 会复用。
     try {
