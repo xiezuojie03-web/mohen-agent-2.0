@@ -146,7 +146,7 @@ export async function failProductionRun(runId: string, reason = "PRODUCTION_PROC
  * 触发一次真实生产（D00–D05）。fire-and-forget：本函数只负责登记 + 启动进程并返回 run_id，
  * 生产进度与终态由 run.mjs 内部回写 control.production_runs。
  */
-export async function triggerProduction(taskId: string, intent: string, projectId: string, source?:ProductionOriginal, ownerSessionToken?:string): Promise<ProductionTrigger> {
+export async function triggerProduction(taskId: string, intent: string, projectId: string, source?:ProductionOriginal, ownerSessionToken?:string, endStage?:"D00"): Promise<ProductionTrigger> {
   if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(projectId))
     return { runId: "", started: false, reason: "production_project_binding_required" };
   const projectRoot = resolveProjectRoot();
@@ -154,6 +154,8 @@ export async function triggerProduction(taskId: string, intent: string, projectI
   const adaptersPath = path.join(projectRoot, PRIVATE_STAGE_ADAPTER);
 
   const cloud=process.env.MOHEN_CLOUD_EXECUTION_ENABLED==="true";
+  if (endStage === "D00" && !cloud)
+    return { runId: "", started: false, reason: "production_d00_cloud_executor_required" };
   if (!cloud && (!fs.existsSync(runPath) || !fs.existsSync(adaptersPath))) {
     return { runId: "", started: false, reason: "production_entry_missing" };
   }
@@ -175,7 +177,8 @@ export async function triggerProduction(taskId: string, intent: string, projectI
     upload_started_at:source.uploadStartedAt,upload_verified_at:source.uploadVerifiedAt};
 
   const cloudInput={run_id:runId,research_intent:intent,scope,
-    consumer_method_plan:{methods:[{method_id:methodId,method_version:"v1"}]},owner_session_token:ownerSessionToken};
+    consumer_method_plan:{methods:[{method_id:methodId,method_version:"v1"}]},owner_session_token:ownerSessionToken,
+    ...(endStage ? {to_stage:endStage} : {})};
   const metadata=cloud?{cloud_dispatch:{input_digest:cloudProductionInputDigest(cloudInput)}}:{};
 
   // 1) 预登记 production_runs（RUNNING），前端立即可查；D00 的 on conflict 会复用。

@@ -341,7 +341,8 @@ export async function requestProduction(
   terms?: string[],
   extraBudget?: number,
   source?: ProductionOriginal,
-  ownerSessionToken?:string
+  ownerSessionToken?:string,
+  endStage?:"D00"
 ): Promise<{ ok: boolean; reason?: string; run_id?: string }> {
   if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(ownerUserId))
     return { ok: false, reason: "forbidden" };
@@ -372,6 +373,8 @@ export async function requestProduction(
   if (ownedProjects.length !== 1 || ownedProjects[0].project_id !== projectId)
     return { ok: false, reason: "production_project_forbidden" };
 
+  if (endStage === "D00" && process.env.MOHEN_CLOUD_EXECUTION_ENABLED !== "true")
+    return { ok: false, reason: "production_d00_cloud_executor_required" };
   const spec = getTool("production-run");
   if (!spec || !Number.isFinite(spec.cost) || spec.cost <= 0)
     return { ok: false, reason: "production_tool_unpriced" };
@@ -433,7 +436,7 @@ export async function requestProduction(
   }
 
   let trig: { runId: string; started: boolean; reason?: string };
-  try { trig = await triggerProduction(taskId, intent, projectId, source, ownerSessionToken); }
+  try { trig = await triggerProduction(taskId, intent, projectId, source, ownerSessionToken, endStage); }
   catch {
     trig = { runId: "", started: false, reason: "production_start_uncertain" };
   }
