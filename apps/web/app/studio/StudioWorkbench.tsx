@@ -578,7 +578,12 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
           production_reservation_conflict: "另一次请求已占用生产预算，请核对原任务",
           budget_hold: "当前研究任务预算不足",
         };
-        setProductionError(`正式生产未启动：${reasons[result.reason ?? ""] ?? result.reason ?? "受控生产前提不满足"}。研究委托与已有资料仍保留。`);
+        if(result.run_id){
+          setProduction({ status: "UNKNOWN", current_stage: null });
+          pollProduction(taskId);
+        }
+        const operation = result.run_id ? "已登记运行，正在核对回执" : "正式生产未启动";
+        setProductionError(`${operation}：${reasons[result.reason ?? ""] ?? result.reason ?? "受控生产前提不满足"}。研究委托与已有资料仍保留。`);
         return;
       }
       setProduction({ status: "RUNNING", current_stage: null });

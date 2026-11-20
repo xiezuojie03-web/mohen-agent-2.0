@@ -4,9 +4,9 @@ import {executionDigest} from '../../pipelines/data-production/orchestrator/exec
 import {resolveD00ApprovedRun} from '../../pipelines/data-production/orchestrator/d00-approved-run.mjs';
 
 test('a pinned D00 run is available only for the approved canonical input',()=>{
- const input={research_intent:'fixture',scope:{original_id:'fixture'},consumer_method_plan:{methods:[]}};
+ const input={research_intent:'fixture',scope:{original_id:'fixture'},consumer_method_plan:{methods:[{method_id:"C02",method_version:"v1"}]}};
  const runId='56ce4a31-df35-4b24-911d-b899202e0775';
- const approval=JSON.stringify({runId,inputDigest:executionDigest(input)});
+ const approval=JSON.stringify({runId,inputDigest:executionDigest({...input,consumer_method_plan:input.consumer_method_plan.methods})});
  assert.equal(resolveD00ApprovedRun(undefined,input),null);
  assert.equal(resolveD00ApprovedRun(approval,input),runId);
  assert.throws(()=>resolveD00ApprovedRun(approval,{...input,scope:{original_id:'other'}}),/MISMATCH/);

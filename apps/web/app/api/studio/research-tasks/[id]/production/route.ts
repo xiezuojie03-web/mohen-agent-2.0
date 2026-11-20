@@ -93,7 +93,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       : result.reason === "production_project_binding_required" ? 409
       : result.reason?.startsWith("production_private_")||result.reason?.startsWith("production_acquisition_")?409
       : 400;
-    return NextResponse.json({ ok: false, reason: result.reason }, { status });
+    return NextResponse.json({ ok: false, reason: result.reason, ...(result.run_id ? { run_id: result.run_id } : {}) }, { status });
   }
 
   return NextResponse.json({ ok: true, run_id: result.run_id });
