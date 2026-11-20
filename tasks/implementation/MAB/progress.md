@@ -5317,3 +5317,8 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - Vercel Trusted Sources 已回读为 Studio Preview → 独立授权 Preview 单一规则。只读 Gate 使用短时 consume 凭据，HTTPS 查询限预批准 D00 run 与 G0，未配审签能力。
 - 独立授权 Preview dpl_3B21Vi3miAaaQeZX4ozvxV5WwnqE 与 Studio Preview dpl_3rtiZ4x1aNMbjWLsETZVjvaBX7UR 均 READY。前检返回 HTTP 200，Studio 接收路由认证 GET 返回应用层 405，表示已进入启用后的方法检查。运行开关、精确许可和 Creator 的仅 D00 操作已就绪。
 - 等待原 Creator 点击一次；初次云库核对运行零条、签发零条、消费零条。⑤待真实接收回执，独立 G0 待审。
+
+## 2026-11-20｜第⑤步真实 Creator 派发已认领，修复错误回执
+
+- 原 Creator 从 Studio 执行单次 D00，请求注册并由执行器认领 run 4b0e6a25-62fb-4ce4-bfe8-de8277f76f18。Vercel 请求日志显示执行器 POST 返回 503，独立签发未观察到对应 POST。云库运行仍 RUNNING、无阶段、无终态、无发放许可及 D00 候选。
+- 在云端 PostgreSQL 用 PREPARE 复现 jsonb_build_object 无类型参数报 42P18。失败回执的原因值已显式转换为 text，并增加受控 Runner 文件与进程错误码。定向测试 24 项通过。真实接收尚未完成，暂不重派。
