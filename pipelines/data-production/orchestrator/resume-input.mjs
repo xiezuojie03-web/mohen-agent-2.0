@@ -2,14 +2,18 @@
 // stage. Reading a file grants no execution, Owner access, or Gate PASS.
 import fs from "node:fs";
 import path from "node:path";
+import { isTypedD01Carrier } from "./adapter-binding.mjs";
 
 const MAX=128*1024;
 const STAGES=new Set(["D01","D02","D03","D04","D05"]);
 const PRIVATE="mohen.private-evidence-stage-request.v1";
 const PRIVATE_FIELDS={
-  // D01 accepts either a text-byte-range reading request, or the typed
-  // scanned-page request the bound D00 adapter hands to D01.
-  D01:new Set(["schema","stage","originalId","extent","quote","page"]),
+  // D01 accepts the exact typed request the bound D00 adapter produces
+  // (schema/stage/originalId + method_plan + page|text), and the legacy
+  // text-byte-range (extent/quote) or bare scanned-page forms. Shape is
+  // validated by isTypedD01Carrier, the same authority used by Gate binding;
+  // this list only bounds the allowed key set.
+  D01:new Set(["schema","stage","originalId","extent","quote","page","text","method_plan"]),
   // D02 accepts either the new H05 observation form, or the legacy text
   // bridge link form. D03 accepts either the new W07 claim form, or the
   // legacy claim link form. D04/D05 have exactly one form each.
@@ -21,10 +25,11 @@ const PRIVATE_FIELDS={
 };
 const PRIVATE_SHAPE={
   D01(value){
+    // Legacy text-byte-range form (no method_plan carrier).
     if(value.extent||value.quote)return !value.extent||!value.quote?"invalid":"text";
-    if(value.page)return value.page?.kind==="scanned_page/v1"&&
-      Number.isSafeInteger(value.page?.page_number)?"scanned_page":"invalid";
-    return "invalid";
+    // D00's real typed output and the bare typed carrier forms are validated by
+    // the same authority the Gate binding uses, so resume and Gate agree.
+    return isTypedD01Carrier(value)?"scanned_page":"invalid";
   },
   // D02/D03 互斥形态：observation 或 link 二选一，混用即失败关闭。
   D02(value){
