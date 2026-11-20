@@ -58,6 +58,10 @@ export async function middleware(req: NextRequest) {
     const result=await createCloudProductionAuthenticator({credential:process.env.MOHEN_CLOUD_EXECUTOR_CREDENTIAL})(req.clone());
     return result instanceof Response ? result : NextResponse.next();
   }
+  // 建设期自检端点：路由内部自己做 HMAC 校验 + Preview-only 门禁，不要求浏览器 cookie。
+  if (pathname === "/api/internal/self-test-resume") {
+    return NextResponse.next();
+  }
 
   const secret = process.env.AUTH_SECRET;
   if (!secret || secret.trim().length < 32) {
