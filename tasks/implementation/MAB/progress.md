@@ -5530,3 +5530,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **部署动作**：`vercel deploy --token <token> --yes`（非 --prod）触发 Preview 上传当前工作区源码；新部署 **dpl_E41kDGXz8XyfhQNFptuW8rJ6aVis** 轮询至 **READY**，URL `https://mohen-agent-2-0-hyezg8tjm-napoles1.vercel.app`，精确 SHA `d808f447191a9787848953a455566185415d9e4a` = 本窗口 HEAD（含终态 reader 工具与 5 个新 Vercel 变量）。未部署 Production、未公众开放、未改 SSO。
 - **证据边界**：部署 READY 证明源码+项目级 env 已上新实例；Vercel list API 值脱敏，外部不能逐值断言。`GET /api/internal/production-execute` 只读 probe 从本会话仍够不到：team-scoped token 使 `vercel whoami/curl --token` 报 `User not found`，无交互登录；不伪造 probe 结果。上一 SHA `102636e` 的旧 Preview 保留。
 - **下一动作**：Owner 用本人 SSO 浏览器打开新 URL 的 `/api/internal/production-execute`（GET，只读）贴回 → 确认 runner_ready；再由 Creator 从新 Preview 发起一轮真实 D00→D01（带终态 reader 消费），验托管 `/current` 端到端；之后 D01→D02 typed。八维维持 0/8，M5 未准出。CI 宿主账单仍未解。
+
+## 2026-11-20｜Preview probe runner_module_unavailable：定位为构建缓存丢 bundle，force 无缓存重部署（Owner 回执驱动）
+
+- **Owner 回执**：新部署 `...hyezg8tjm...` 的只读 probe 返回 `{"ok":false,"reason":"runner_module_unavailable"}`，旧部署曾 `runner_ready`——真实回归，按证据处理，不伪造。
+- **源码定位**：`cloud-production-runtime.mjs:40` 把 `--check-startup` stderr 的 `ERR_MODULE_NOT_FOUND|MODULE_NOT_FOUND` 归为 `runner_module_unavailable`。`runnerBootstrap`(:48-55) 依赖 `apps/web/cloud-runner-dependencies/{ajv-2020.cjs,pg.cjs}` 两个 bundle（该目录被 .gitignore 忽略），由 `apps/web/next.config.mjs:21-31` 在 `phase-production-build` 用 esbuild 生成；loader `cloud-runner-dependency-loader.mjs` 把 `ajv/dist/2020.js`、`pg` 重定向到它们。
+- **构建日志实证**：新部署 `dpl_E41kDGXz8XyfhQNFptuW8rJ6aVis` 的 build events 显示 "Restored build cache from previous deployment (EVdqiA6StwBUroBcxqwat5YAwt9b)"、`Compiled successfully`、无 esbuild/bundle 相关输出。判定：构建缓存恢复了旧 output 但 trace/产物缺两个 bundle，导致 probe 启动子进程 MODULE_NOT_FOUND。非代码、非凭据、非 Gate 回归。
+- **修复动作**：用缓存的 Vercel CLI 66.2.0 + token（`--token`）、小写 `http_proxy/https_proxy=127.0.0.1:51081` 触发 **`vercel deploy --force`（不带 --with-cache）** 无缓存重部署 Preview（非 --prod），新 URL `https://mohen-agent-2-0-1owjb4d7p-napoles1.vercel.app`。部署请求已被 CLI 接受并返回 URL。
+- **证据边界（未闭环）**：force 部署后 Vercel 代理/VPN 中途掉线，`check-credentials` 的 Vercel 项与轮询脚本均 `UND_ERR_CONNECT_TIMEOUT`，**未能回读新部署 state/READY、未能确认 bundle 是否随无缓存构建生成、未能复跑 probe**。不冒充成功。
+- **长期可用性缺口（如实记录）**：Runner 启动依赖 gitignored、构建时生成的 bundle；一旦构建缓存跨部署复用且产物缺 bundle，probe 即 `runner_module_unavailable`。这是"长期可用"必须解决的结构性问题，候选修法：把 bundle 生成纳入受控构建后断言存在（缺失即 fail build），或改为不依赖该目录的解析策略。本次未改代码。
+- **零写入**：未改 DB/Gate/env/源码；临时脚本已删。CI 账单仍未解，八维维持 0/8。
+- **下一动作**：网络恢复后回读 `1owjb4d7p` 部署 state 并请 Owner SSO 复跑 probe；若仍 module 错，按"长期可用"原则修构建断言（缺 bundle 即 fail build）后重部署，不用缓存。
