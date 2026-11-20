@@ -5293,3 +5293,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 - 云端 Vercel CLI 66.5.0 已验证 xiezuojie03-web 登录，既有 Vercel 连接器查到 napoles1。CLI 显式以 Preview 环境部署独立授权项目，部署 dpl_H1NJTGyVaY7KDC3JN6nk9uNQSTnV 为 READY，Vercel Authentication 生效。
 - 认证探测签发路由返回 execution_authority_not_configured。探测时 CLI 自动新增的访问凭据已撤销，匿名探测返回 302。独立服务没有签发正式许可，原委托 D00 保持 HOLD / NOT_RUN。
+
+## 2026-11-20｜第⑤步独立服务云登录与 Preview 凭据接线
+
+- Supabase mohen-cloud 上创建两个受限独立 LOGIN。目录回读确认授权登录只属于账本角色，Gate 登录只属于 Reader 角色，二者均无超管或绕过 RLS 权限。口令通过 SCRAM 验证器配置，角色定义记录于 Git，凭据不入库。
+- Vercel napoles1/mohen-d00-authority 已新增仅 Preview 的账本数据库 URL 与 CA。云施工终端到 Supabase 连接池尝试返回 ECONNREFUSED，Vercel 函数宿主的实际低权 TLS 登录仍待验证。
+- 独立签发尚未启用，原委托未派发。继续接入两条受保护 Preview 间的服务访问、只读 Gate 和原件桥接。
