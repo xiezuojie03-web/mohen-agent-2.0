@@ -5501,3 +5501,12 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **精确含义（按源码，不过度解读）**：`cloud-production-runtime.mjs:58-72` 的 probe = `assertCloudExecutionConfiguration(environment)` 通过（6 组件全 CONFIGURED：execution_authority 的 5 键格式/https/凭据长度/Ed25519 公钥、credential_separation 无禁变量、producer、private_worker、independent_gate、private_storage）+ `run.mjs --check-startup` 子进程 exit 0。它**停在 Owner session/DB 凭据/可变状态之前**（源码注释 58-59），且 `cloud-execution-readiness.mjs:74` 明写 `runtime_verified:false, gate_qualification:NOT_VERIFIED`。因此 runner_ready 证明的是"配置就绪 + Runner 可启动"，**不是**真实 D00→D01 已跑、不是 Gate 资格通过、不是 M5 八维证据。
 - **结论修正**：宿主执行授权配置有效，上一批"需 Owner 重配 5 键"的担心不成立；真正剩余缺口回到 CURRENT.md 已记录的三项：①持久低权 reader URL+consume credential（上批临时验证后撤销，未留持久值）；②D01→D02 非 C01 typed（C02 需独立转录+G1 独立签发）；③当前 project 的 G5 资格绑定。runner_ready 不改变 0/8 OVERALL_HOLD。
 - **零写入**：本批仅记录 Owner 提供的只读回执，未写 Vercel/DB/Gate/Runner/生产。
+
+## 2026-11-20｜长期可用原则下的 reader 前置深核（发现云端 Runner 接线缺口，零写）
+
+- **Owner 产品裁决**：长期可用是唯一目标，其余全部匹配；所有凭据/配置按终态建，废弃"验证后撤销"临时模式。
+- **云端前置核查（只读，`.secrets/supabase-db-url.txt` pooler 连接）**：active owner `270bcecf…` 与 machine reviewer `b0a1…a1` 存在；**有效 G0 binding `d2307be3…`**（project e03c4ba8、data-production/m5-remediation/v1、consumer=producer、active 到 2026-12-20）；`mohen_gate_reader` 角色存在（NOLOGIN/非super/无bypassrls）；历史 6 条 consume credential 全部已 revoked（最小权限正确）。历史上 reader 创建+consume 凭据机制已在 `backups/_cloud_consume_readback_20261120.mjs` 验证成功（真 RPC PASS + 两负例 null）。
+- **关键接线缺口（新发现，决定方案）**：`cloud-production-runtime.mjs:78-86` 的 `runnerEnvironment` 白名单**不含** `MOHEN_RUNNER_GATE_READER_DATABASE_URL` / `MOHEN_RUNNER_GATE_CONSUME_CREDENTIAL` / `MOHEN_RUNNER_GATE_READER_CA_PATH`——即在 Vercel 里配了这三个键，云端 Runner 子进程也拿不到，`run.mjs:132` 的 in-process reader 只在本地/隔离生效。云端实际可用的 reader 路径是 HTTPS `/current`：需 d00-authority 侧 `MOHEN_D00_GATE_READER_ENABLED=true`、`MOHEN_D00_GATE_READER_DATABASE_URL`、`MOHEN_D00_GATE_APPROVED_RUN_ID`（`apps/d00-authority/api/current.mjs`），Runner 侧只需白名单里已有的 `MOHEN_INDEPENDENT_GATE_VERIFY_URL/CREDENTIAL`。
+- **方案修正**：终态长期 reader 应落在**托管 `/current` 路径**（d00-authority 侧持久 reader LOGIN + 长期 consume credential + 3 个 Vercel 变量），不是给 Runner 进程内 reader 配凭据；否则凭据建了也进不了 Runner。这是"长期可用"的正确接线。
+- **零写入**：未建角色/凭据、未改环境变量、未改代码、未跑 Runner；临时只读脚本已删。CI 账单上限仍未解。
+- **下一动作**：按托管 `/current` 路径，先核对 d00-authority 现有 3 键状态（键名/是否在 preview），再由 Owner 平台操作建持久 reader + 长期凭据，我写 SQL/脚本与验证。
