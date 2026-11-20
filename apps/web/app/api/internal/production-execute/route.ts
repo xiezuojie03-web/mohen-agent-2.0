@@ -15,7 +15,7 @@ export async function POST(request:Request){
   let resumeProvider;
   if (environment.MOHEN_D01_ISSUE_URL && environment.MOHEN_D01_ISSUE_CREDENTIAL) {
     resumeProvider = createD01ResumeProvider({url:environment.MOHEN_D01_ISSUE_URL,
-      credential:environment.MOHEN_D01_ISSUE_CREDENTIAL});
+      credential:environment.MOHEN_D01_ISSUE_CREDENTIAL, environment});
   }
   // @ts-expect-error .mjs module has no emitted declaration
   return await createCloudProductionServer({environment,projectRoot:root(),db:{queryRows},resumeProvider})(request);

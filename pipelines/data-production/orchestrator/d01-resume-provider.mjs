@@ -5,6 +5,7 @@
 import {createHmac,timingSafeEqual} from 'node:crypto';
 import {executionDigest} from './execution-authority.mjs';
 import {readBoundedGateJson} from './bounded-gate-request.mjs';
+import {createTrustedPreviewFetch} from './trusted-preview-fetch.mjs';
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const SCHEMA='mohen.d01-resume-request.v1';
 
@@ -25,12 +26,15 @@ function validReply(v){
   throw Error('D01_RESUME_REPLY_INVALID');
  return {resume_input:v.resume_input,token:v.token};
 }
-export function createD01ResumeProvider({url,credential,now=Date.now,fetchImpl=fetch,timeoutMs=15000}={}){
+export function createD01ResumeProvider({url,credential,environment,now=Date.now,fetchImpl=fetch,timeoutMs=15000}={}){
  let endpoint;try{endpoint=new URL(url);}catch{throw Error('D01_RESUME_PROVIDER_CONFIG_INVALID');}
  if(endpoint.protocol!=='https:'||endpoint.username||endpoint.password||endpoint.search||endpoint.hash||
    !['/d01-issue','/api/d01-issue'].includes(endpoint.pathname)||
    typeof credential!=='string'||credential.length<32||credential.length>256)
   throw Error('D01_RESUME_PROVIDER_CONFIG_INVALID');
+ // The independent authority Preview is SSO-protected; forward Vercel's
+ // short-lived service identity only to that exact host (same as D00 verify).
+ const trusted=createTrustedPreviewFetch(environment??{},fetchImpl);
  return async ({input,fromStage})=>{
   if(fromStage!=='D01')throw Error('D01_RESUME_STAGE_INVALID');
   const v={run_id:input.run_id,from_stage:'D01',project_id:input.scope.project_id,
@@ -39,7 +43,7 @@ export function createD01ResumeProvider({url,credential,now=Date.now,fetchImpl=f
   valid(v);
   const time=String(now());
   let reply;
-  try{reply=await fetchImpl(endpoint.href,{method:'POST',redirect:'error',cache:'no-store',signal:AbortSignal.timeout(timeoutMs),
+  try{reply=await trusted(endpoint.href,{method:'POST',redirect:'error',cache:'no-store',signal:AbortSignal.timeout(timeoutMs),
    headers:{'content-type':'application/json','x-mohen-d01-time':time,'x-mohen-d01-signature':signature(credential,time,v)},
    body:JSON.stringify(v)});}
   catch{throw Error('D01_RESUME_UNCERTAIN');}
