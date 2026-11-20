@@ -168,13 +168,11 @@ curl -X PATCH "https://api.vercel.com/v9/projects/<projectId>?teamId=<orgId>" \
 - 实际邮件可能先遇Vercel访问验证，这是研发部署保护；完成自己的Vercel验证后重新打开邮件原链接，保留fragment。不得创建分享链接、关闭SSO或用访问绕过替代。
 - 当前执行器仍默认关闭。`.env.example`补齐非秘密占位名称；真实低权配置与独立Reviewer绑定必须在实际Project/Root作用域接续，不能用原Web连接或自动给全项目资格。
 
-## 受保护 Preview 的 D00 接续（2026-11-20）
+## 受保护 Preview 的 D00 配置与前检
 
-当前目标为 `napoles1/mohen-agent-2-0` 的受保护 Preview。功能 SHA `7669e28` 对应部署 `dpl_ADtjJNbGUD34WNAcKNxe2MVpAiaR` 为 READY，现成接收路由为 `/api/internal/production-execute`。以 Vercel 认证访问该部署的接收路由，应用返回 HTTP 503（`cloud_executor_not_configured`）。重新核对 23 个 Preview 变量条目，以下四类配置均未出现，⑤仍为 HOLD / NOT_RUN。
+在 `napoles1/mohen-agent-2-0` 的受保护 Preview 核对 `/api/internal/production-execute`。实际部署与任务状态见 [CURRENT](../CURRENT.md)，历史探测和配置证据见 [施工证据账](../tasks/implementation/MAB/progress.md)。
 
 - 执行器接入需要 `MOHEN_CLOUD_EXECUTION_ENABLED`、`MOHEN_CLOUD_EXECUTOR_URL`、`MOHEN_CLOUD_EXECUTOR_CREDENTIAL`。
 - 独立执行授权需要 `MOHEN_EXECUTION_AUTH_PUBLIC_KEY`、`MOHEN_EXECUTION_AUTH_VERIFY_URL`、`MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL`、`MOHEN_EXECUTION_AUTH_DYNAMIC_URL`、`MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL`。授权服务保管签名私钥并核验一次性授权。
-- 现有执行器前检还要求 `MOHEN_INDEPENDENT_GATE_VERIFY_URL`、`MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL`、`MOHEN_ORIGINAL_BRIDGE_SECRET`、`MOHEN_ORIGINAL_BRIDGE_KEY_VERSION`。这些配置也缺失。Producer 与 Private Worker 连接变量和私有存储配置已列出，低权 TLS 登录与角色仍需实测。
-- 由管理方在 Preview 安全接入正式服务；若已有 GitHub Actions 托管入口，提供现有授权部署入口。配置就位后部署 Preview，先复验 Creator HTTP 与低权身份，再对 [CURRENT](../CURRENT.md) 的原委托单次派发 D00 → D00。回读持久接收，核对原任务、Project、Root、既有登记原件，随后留待独立 G0 审核。
-
-- 2026-11-20 实际接收状态见 [CURRENT](../CURRENT.md)。已验证原朱家角委托 D00 持久候选，独立 G0 未审签。以上旧部署和缺项保留作当次运维记录。
+- 现有执行器前检还要求 `MOHEN_INDEPENDENT_GATE_VERIFY_URL`、`MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL`、`MOHEN_ORIGINAL_BRIDGE_SECRET`、`MOHEN_ORIGINAL_BRIDGE_KEY_VERSION`。配置后实测 Producer 与 Private Worker 的低权 TLS 登录、角色和私有存储连接。
+- 在 Preview 安全接入服务并重新部署，复验 Creator HTTP 与低权身份。执行范围和 D00 接收标准见 [施工计划](../tasks/implementation/MAB/PLAN.md#studio-d00-handoff)。
