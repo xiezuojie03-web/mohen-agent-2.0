@@ -1118,7 +1118,7 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
                       onClick={() => void requestFormalProduction(currentResearch.taskId === d00TaskId ? "D00" : undefined)}>
                       {productionBusy ? "正在核对生产前提…" : currentResearch.taskId === d00TaskId ? "仅接收原件（D00）" : "申请进入 D00—D05"}
                     </button>
-                    {currentResearch.taskId !== d00TaskId && resumeD01Eligible &&
+                    {resumeD01Eligible &&
                       <button type="button" className="studio__ghost-btn"
                         disabled={productionBusy || busy || projectBusy || production?.status==="RUNNING"||
                           !privateSources.some(x=>x.original_id===sourceChoice&&x.registration_state==="BOUND")||
