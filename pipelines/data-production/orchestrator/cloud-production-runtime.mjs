@@ -45,6 +45,16 @@ export function awaitProductionChild(command,args,options,{timeoutMs=240000,star
   });
  });
 }
+async function runnerBootstrap(root){
+ const directory=path.join(root,'apps/web/cloud-runner-dependencies');
+ try{await fs.access(path.join(directory,'ajv-2020.cjs'));}
+ catch{return {args:[],environment:{}};}
+ return {
+  args:['--import',path.join(root,'pipelines/data-production/orchestrator/cloud-runner-dependency-loader.mjs')],
+  environment:{MOHEN_CLOUD_RUNNER_DEPENDENCY_DIR:directory},
+ };
+}
+
 // The probe loads the same static graph as the CLI and stops before any run
 // arguments, Owner session, database credentials or mutable state are used.
 export async function probeCloudProductionRunner({projectRoot,environment=process.env,runChild=awaitProductionChild}){
@@ -55,8 +65,9 @@ export async function probeCloudProductionRunner({projectRoot,environment=proces
  try{await fs.access(entry);}
  catch{return {ok:false,reason:'runner_file_unavailable'};}
  try{
-  const result=await runChild(process.execPath,[entry,'--check-startup'],
-   {cwd:root,env:{PATH:environment.PATH??''}},{timeoutMs:8000,startupProbe:true});
+  const bootstrap=await runnerBootstrap(root);
+  const result=await runChild(process.execPath,[...bootstrap.args,entry,'--check-startup'],
+   {cwd:root,env:{PATH:environment.PATH??'',...bootstrap.environment}},{timeoutMs:8000,startupProbe:true});
   if(result.timedOut)return {ok:false,reason:'runner_probe_timeout'};
   return result.code===0?{ok:true,reason:'runner_ready'}:{ok:false,reason:result.failure??'runner_import_failed'};
  }catch{return {ok:false,reason:'runner_process_unavailable'};}
@@ -98,11 +109,12 @@ export async function executeCloudProductionCli({input,projectRoot,environment=p
  const temp=await fs.mkdtemp(path.join(os.tmpdir(),'mohen-cloud-run-'));await fs.chmod(temp,0o700);
  try{
   const scopeFile=path.join(temp,'scope.json');await fs.writeFile(scopeFile,JSON.stringify(input.scope),{mode:0o600});
-  const result=await runChild(process.execPath,[path.join(root,'pipelines/data-production/run.mjs'),
+  const bootstrap=await runnerBootstrap(root);
+  const result=await runChild(process.execPath,[...bootstrap.args,path.join(root,'pipelines/data-production/run.mjs'),
     '--project-root',root,'--intent',input.research_intent,'--adapters','pipelines/data-production/adapters/private-evidence-adapters.mjs',
     '--run-id',input.run_id,'--execution-mode','attended','--scope-file',scopeFile,
     '--method-plan',JSON.stringify(input.consumer_method_plan),'--to',endStage,'--report-dir',path.join(temp,'reports')],
-    {cwd:root,env:runnerEnvironment(environment,input.owner_session_token)});
+    {cwd:root,env:{...runnerEnvironment(environment,input.owner_session_token),...bootstrap.environment}});
   if(result.timedOut)await holdRun(input,'CLOUD_EXECUTOR_DEADLINE');
   else if(result.code!==0)await holdRun(input,'CLOUD_EXECUTOR_PROCESS_FAILED');
   let terminal=await readTerminal(input.run_id);
