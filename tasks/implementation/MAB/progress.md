@@ -5331,3 +5331,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 原运行仍为 HOLD，零许可、零候选。精确对账原调用的零成本预留，清除预留锁并追加零成本回执 fdd14903-6d38-49b4-807d-c9a81c2ceaea，记录结果为 hold_before_grant、d00_received=false。
 - 独立授权已部署一份新的受保护 Preview，许可编号绑定原任务同一 D00 输入，旧运行未重放。原 Creator 的新请求仍待发起。
 - 恢复用 Studio Preview dpl_9uJ2YbLsjyMRt4YmTDVrqSVzTmTA 返回 200 runner_ready。同一批准 run 的授权 Preview dpl_798htptghYDFLMpWGjvKQSFSKz3E 返回 200，账本和只读 Gate 登录均 ready。保持原任务、Project、Root、原件和输入摘要，新运行只待原 Creator 发起。
+
+## 2026-11-20｜第⑤步 Runner 输入摘要失配修复
+
+- 恢复运行 ddc28b7f-af21-4cd0-b3db-bfecad4fde36 已认领并到达独立签发 POST，授权服务返回 403，运行持久写入 HOLD / CLOUD_EXECUTOR_PROCESS_FAILED。无账本许可、无 D00 候选。页面旧卡片仍显示前次回执。
+- 修复 Studio 审批摘要使用传输包装 {methods:[...]}、Runner 使用解析数组的差异，复用 Runner 方法计划解析函数。持久化运行输入重算得到 478a8668c699fae2d66b771a536251cb05e6c1e4fc85ce212b60cd85db5a2199，使用同一输入测试签发通过。23 项定向测试通过。API 失败时保留安全的运行编号以刷新回执。
+- 原运行零成本预留精确对账，追加零成本回执 94479572-189a-4d2c-bfac-33db212211a0。签发仍待原 Creator 触发，新批准保留原任务、Project、Root、原件以及第 1 页。独立 G0 未签。
