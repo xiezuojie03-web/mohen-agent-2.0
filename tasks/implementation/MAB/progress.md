@@ -5338,3 +5338,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 修复 Studio 审批摘要使用传输包装 {methods:[...]}、Runner 使用解析数组的差异，复用 Runner 方法计划解析函数。持久化运行输入重算得到 478a8668c699fae2d66b771a536251cb05e6c1e4fc85ce212b60cd85db5a2199，使用同一输入测试签发通过。23 项定向测试通过。API 失败时保留安全的运行编号以刷新回执。
 - 原运行零成本预留精确对账，追加零成本回执 94479572-189a-4d2c-bfac-33db212211a0。签发仍待原 Creator 触发，新批准保留原任务、Project、Root、原件以及第 1 页。独立 G0 未签。
 - 新版 Studio Preview dpl_EVdqiA6StwBUroBcxqwat5YAwt9b 与独立授权 Preview dpl_Hiis45UgGYLtn5wFzu5jzXrRL6x7 READY，分别返回 200 runner_ready 和 200 journal/gateReader ready。依然待原 Creator 触发，接收未验收。
+
+## 2026-11-20｜第⑤步原 Studio 委托真实 D00 接收验收
+
+- 原 Creator 从 Studio Preview dpl_EVdqiA6StwBUroBcxqwat5YAwt9b 只发起 D00。运行 bfcdfad6-bbcb-4b68-946a-82e1302eeb80 的独立许可已一次性消费，D00 Worker 持久提交候选 48766904-c409-4b37-b602-9339a582b7e6，候选状态 SUBMITTED。
+- 同一条云库关联查询核对原任务 53ad1a29-22e5-43c2-816d-b02b6e85abbd、Project e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5、同 Root、原件 4ca22839-e3e9-4d14-8ec7-677cd740aa0e 和原 SHA、Source Version 67839b1e-a344-4dd4-adf8-f7798ddf82d7、Raw Item 5fe7f057-a797-42cd-81b8-0892d4c271b6 均一致。接收验收通过。
+- 外层运行收尾仍为 HOLD / CLOUD_EXECUTOR_PROCESS_FAILED，保留该记录。独立 Gate 决定零条、后续阶段候选零条。关闭⑤接收断点，停在独立 G0 审核前。

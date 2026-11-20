@@ -1,11 +1,9 @@
 # 墨痕｜当前施工断点
 
-**Studio 已登记原件 → 同一任务的 D00 接收。**
+**Studio 已登记原件 → D00 接收已验收，停在独立 G0 审核前。**
 
-朱家角任务 `53ad1a29-22e5-43c2-816d-b02b6e85abbd`，Project `e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5`。已选 Commons 照片，完成私有保存、SHA 校验、Source → Version → Raw 登记和服务端绑定回读。Owner 提供的 Creator 页面确认已显示原件私有保存与来源登记回读。
+朱家角任务 `53ad1a29-22e5-43c2-816d-b02b6e85abbd`、Project `e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5`、同一 Root 与原件 `4ca22839-e3e9-4d14-8ec7-677cd740aa0e` 已在持久回执中核对。Creator 已在受保护 Preview 发起单次 D00，执行许可已消费，运行 `bfcdfad6-bbcb-4b68-946a-82e1302eeb80` 已提交 D00 接收候选 `48766904-c409-4b37-b602-9339a582b7e6`（SUBMITTED），绑定原 Source Version `67839b1e-a344-4dd4-adf8-f7798ddf82d7`。原件 SHA 和 Raw 关联通过回读。
 
-①–④已完成，沿用原任务、Project、Root 和既有原件。⑤ Creator 已发起单次接收，执行器已认领，返回派发未确认。仍待真实接收回执。独立授权 [Preview](https://vercel.com/napoles1/mohen-d00-authority/Hiis45UgGYLtn5wFzu5jzXrRL6x7) 和 [Studio Preview](https://vercel.com/napoles1/mohen-agent-2-0/EVdqiA6StwBUroBcxqwat5YAwt9b) 均 READY。两项目仅信任 Preview → Preview，签发及只读查询限预批准的同一 D00 运行。原运行 4b0e6a25-62fb-4ce4-bfe8-de8277f76f18 已认领，Vercel 执行器返回 503。未查到许可或 D00 候选。执行窗口结束后，原运行已结记 HOLD / CLOUD_EXECUTOR_ACK_UNCERTAIN。PostgreSQL 失败回执参数类型已修复并部署到受保护 Preview，随后定位为 Vercel 子进程 Ajv 缺失。打包已修复，恢复用 Studio Preview 真实启动探测返回 runner_ready。首次恢复运行 ddc28b7f-af21-4cd0-b3db-bfecad4fde36 到达签发端口后因审批摘要输入形状不一致保持 HOLD。摘要统一使用 Runner 解析结果，两次零成本预留均已对账。新版 Preview 前检通过，等待 Creator 发起更新后的单次运行。
+⑤接收断点关闭。执行器外层仍记录 HOLD / CLOUD_EXECUTOR_PROCESS_FAILED，保留该收尾结果。独立 G0 决定与后续阶段候选均为零，machine_read 仍为 unknown。按原范围在此停止。
 
-接续顺序为核验原运行终态和无副作用证据，必要时修复并在原任务范围安全恢复，随后服务端回读原任务／Project／Root／同一登记原件与持久接收状态。以真实接收回执关闭⑤，独立 G0 留待审核，D01 留待后续；当前版本的 `machine_read` 为 `unknown`。
-
-[施工与验收标准](tasks/implementation/MAB/PLAN.md#studio-d00-handoff)
+[施工与验收标准](tasks/implementation/MAB/PLAN.md#studio-d00-handoff) · [施工证据账](tasks/implementation/MAB/progress.md)

@@ -176,3 +176,5 @@ curl -X PATCH "https://api.vercel.com/v9/projects/<projectId>?teamId=<orgId>" \
 - 独立执行授权需要 `MOHEN_EXECUTION_AUTH_PUBLIC_KEY`、`MOHEN_EXECUTION_AUTH_VERIFY_URL`、`MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL`、`MOHEN_EXECUTION_AUTH_DYNAMIC_URL`、`MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL`。授权服务保管签名私钥并核验一次性授权。
 - 现有执行器前检还要求 `MOHEN_INDEPENDENT_GATE_VERIFY_URL`、`MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL`、`MOHEN_ORIGINAL_BRIDGE_SECRET`、`MOHEN_ORIGINAL_BRIDGE_KEY_VERSION`。这些配置也缺失。Producer 与 Private Worker 连接变量和私有存储配置已列出，低权 TLS 登录与角色仍需实测。
 - 由管理方在 Preview 安全接入正式服务；若已有 GitHub Actions 托管入口，提供现有授权部署入口。配置就位后部署 Preview，先复验 Creator HTTP 与低权身份，再对 [CURRENT](../CURRENT.md) 的原委托单次派发 D00 → D00。回读持久接收，核对原任务、Project、Root、既有登记原件，随后留待独立 G0 审核。
+
+- 2026-11-20 实际接收状态见 [CURRENT](../CURRENT.md)。已验证原朱家角委托 D00 持久候选，独立 G0 未审签。以上旧部署和缺项保留作当次运维记录。
