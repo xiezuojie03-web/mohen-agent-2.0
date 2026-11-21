@@ -5834,3 +5834,40 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 **边界**：零付费、未签 Gate、未改迁移、未改方法表绑定、未改 `b2143002` checkpoint（保留真实 HOLD 留痕）。MAB 交付包引用：本批未引用归档/吸收文件（无对应用途）。
 
 **下一步（建议，待 Owner 裁决其一）**：①Owner 在 Vercel 侧让 main 推送恢复 preview 部署（或给施工预览开放 bypass），则 executor 自派发可用；②补 `requires_receipt_reconciliation` 的对账入口（代码），使任务可再次 intake；③由 Owner 提供独立 Gate 读服务的当前项目/地址并把预批准 run 换成新 run，同时补 G1 入口。
+
+---
+
+## 2026-11-21 第十一批（施工中断，真实现状）
+
+**本批 HEAD**：`2d1a7d5`（已在 origin/main）。本批三处提交：`996a2de`、`7b44e51`、`2d1a7d5`。
+
+**已完成的实证**
+
+1. **执行器配置诊断通道**（`7b44e51`）：`/api/internal/self-test-resume` 增加 `{"diag":"readiness"}`，只回 `cloudExecutionReadiness` 与三个端点 host+path。在 staging 部署实测 `configuration_ready=true`，`execution_authority / credential_separation / producer / private_worker` 全 CONFIGURED。
+2. **子进程脱敏诊断**（`2d1a7d5`）：`cloud-production-runtime.mjs` 新增 `redactChildDiagnostic`（掩掉数据库 URL、Bearer、≥40 字符长串），经 `cloud-production-server.mjs` 的 `holdRun(input,reason,diagnostic)` 写入 `metadata.cloud_dispatch.executor_diagnostic`（截尾 1200 字符）。定向测试 12/13（失败 1 条为 Windows 既有基线：`--import` 绝对路径触发 `ERR_UNSUPPORTED_ESM_URL_SCHEME`）。
+3. **G1 读服务范围缺陷已修**（`996a2de`）：`apps/d00-authority/api/current.mjs` 由"单 run + 单一 D00/G0"改为预批准 run 集合 + stage/gate 成对表；库内 `control.read_gate_stage_qualification` 仍是唯一判定。
+4. **对账缺口已补**（`996a2de`）：`reconcileUnclaimedProduction` 允许 `CLOUD_EXECUTOR_PROCESS_FAILED` 在 `cost=0` 且该 run 无任何 `control.gate_candidates` 时释放保留。
+5. **授权登录口令已轮换**（超管执行）：`mohen_d00_authority_login`、`mohen_m5_producer_login`、`mohen_m5_worker_login`；口令落 `.secrets/d00-authority-password.txt`、`producer-password.txt`、`worker-password.txt`，并已同步写入 Vercel preview `MOHEN_PRODUCER_DATABASE_PASSWORD` / `MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD`。
+6. **新的 D00 授权密钥对已生成**（Ed25519），私钥只在本机与 `.secrets/`，公钥已写入 Vercel preview `MOHEN_EXECUTION_AUTH_PUBLIC_KEY`。
+
+**本批开出的真实 run（全部 HOLD@D00，无一伪造）**
+
+| run | 原因码 | 说明 |
+|---|---|---|
+| `455ae77e` | `CLOUD_EXECUTOR_PROCESS_FAILED` | 授权端点 503（旧授权服务 production 域 `/token` preview 守卫） |
+| `48b18ebf` | `CLOUD_DISPATCH_UNCLAIMED` | 口令轮换后未同步 → producer/worker 登录失败，claim 未成立 |
+| `1bb02f59` | `CLOUD_EXECUTOR_PROCESS_FAILED` | **已取到真实 stderr（脱敏）**：`EXECUTION_DYNAMIC_TOKEN_REJECTED:502` |
+
+**最前阻断（本批新增，施工侧已尽力，属平台/网络边界）**
+
+1. **无法新建 Vercel 项目**：现有 `vercel-token` 为受限令牌，`POST /v11/projects` 返回 `403 You don't have permission to create the project`；`GET /v2/teams` 返回 403；个人作用域返回 400。原独立授权服务 `mohen-d00-authority.vercel.app` 经代理实测**存活**（`/api/d01-issue` 401、`/api/token` 503、`/api/readiness` 404），即部署在 **production** 环境，而 `authority.mjs`/`readiness.mjs`/`current.mjs` 仍是 preview-only 守卫 → `/token`、`/api/current` 在该域永久不可用，且该团队外项目无法由本令牌重新部署。
+2. **公有隧道不可用**：`serveo.net` 隧道可短暂建立（本机回环实测 401），但 `Vercel → 隧道` 返回 **502**；`localhost.run` 建立的 `app.lhr.life` 隧道从本机直连与经代理均 **502**，本地授权服务**未收到任何请求**。serveo 约 40 分钟后自行过期，重连出现 `Connection reset`。故"授权服务跑在本机 + 隧道暴露给云端执行器"这条唯一可行的 attended 通道当前不成立。
+3. **一次性预批准**：`MOHEN_D00_APPROVED_RUN` 绑定的 run 一旦登记，同一 runId 无法复用（`production_d00_approved_run_already_registered`）。每次重试需同时更新云端 env 与本地 approval 并重新部署（约 2.5 分钟一轮）。
+
+**本批对云端配置的实际改动（重要，需保留事实）**
+
+- preview 环境已写入：`MOHEN_EXECUTION_AUTH_PUBLIC_KEY/VERIFY_URL/VERIFY_CREDENTIAL/DYNAMIC_URL/DYNAMIC_CREDENTIAL`、`MOHEN_INDEPENDENT_GATE_VERIFY_URL`、`MOHEN_D00_APPROVED_RUN`(=run `1bb02f59` + digest `8a19ba7a…`)、`MOHEN_CLOUD_EXECUTION_ENABLED=true`、`MOHEN_D00_TRUSTED_PREVIEW_ACCESS=true`、两个数据库口令。
+- **这些 URL 指向已失效的隧道**（`4ca06eae974db4.app.lhr.life`），即当前 preview 执行器配置处于"形状合法、地址不可达"状态，不可据此判定 PASS。
+- `inputDigest` 复算为 `8a19ba7ad6380b4b04276fd0d3dfa27cc8d853e919f52aa429f38077108bd00a`，与历史记录 `8a19ba7a…` 一致，证明 D00 绑定口径正确。
+
+**边界**：零付费；未签发任何 Gate（G0/G1 均未产生）；未伪造会话/资格/回执；未改迁移与方法表绑定；密钥未入 git（`.secrets/` 与 `.tmp_*` 均未提交）。
