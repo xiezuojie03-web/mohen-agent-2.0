@@ -5895,3 +5895,11 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 **新的最前阻断**：原件元数据齐全但字节取不到。`studio.private_originals.f474b91b` 为 `state=STORED_VERIFIED`、`byte_size=1259`、`storage_bucket=mohen-private-originals`、`storage_key=d9d48901-.../f474b91b-....bin`；run `ec1fbe83` 的 scope 与之一致（project_id / original_id / asset_revision_id 全对得上），却取对象返回 missing。需核实该 bucket 内对象是否真实存在，或桥接服务使用的 storage 凭据能否读该 bucket。
 
 **待办**：账号令牌 14:36:24Z 过期，下一窗口若已过期需重新 `vercel login` 或改用覆盖两项目的长效令牌；`.tmp_round.mjs` 已把"新 runId + 双项目改绑 + 双部署 + 等 READY"自动化，可直接复用。
+
+**第十一批·三（ORIGINAL_NOT_FOUND 根因定案）**
+
+- 桥接读取失败不是权限问题：`studio.private_bridge_original` 的两处 `ORIGINAL_NOT_FOUND` 前置条件都满足——`studio.private_originals.f474b91b` 为 `STORED_VERIFIED` 且属主 `270bcecf…`，`studio.projects.d9d48901…` 为 `ACTIVE` 且属主相同，`public.users` 状态 `active`。
+- **真实原因：字节从未进桶。** `storage.buckets.mohen-private-originals` 存在（private），但 `storage.objects` 里该桶**只有 1 个对象**：`e03c4ba8-…/4ca22839-….bin`。三条 `text/plain` 原件的元数据齐全，桶内无字节。
+- 字节只存在于本机本地后端：`work/private-originals/d9d48901-…/f474b91b-….bin`，`len=1259`、`sha256=273222eef548dfbbd1d5cf45633bca28abd312c03c53f818be7226b8fb5b6777`，与 `private_originals.sha256` 完全一致。即：**原件是真的，只是用了 `MOHEN_PRIVATE_ORIGINAL_LOCAL_FS` 本地后端落库，云端执行器走 Supabase Storage 因而取不到。**
+- 无法用超管直连补写：`app.settings.jwt_secret` 等不可读，拿不到 service_role；直接插 `storage.objects` 只会造悬空行。
+- **下一步**：用 `.env.local` 的 `MOHEN_DATABASE_SESSION_SECRET` 铸造属主 DB 会话，调用主应用既有 `/api/studio/attachments` 摄取路径把该 1259 B 以同一 key `d9d48901-…/f474b91b-….bin` 写入桶（幂等键复用，不产生新原件），随后即可重跑 D00。切勿用新 original_id 绕开，否则绑定关系失真。
