@@ -335,6 +335,78 @@ export async function selectResearchAcquisitionCandidate(taskId: string, ownerUs
  * D 阶段触发（governed interface，CR-16）：从 Studio 经受控接口发起生产，不逐主题改代码。
  * 真实触发：child_process spawn `run.mjs`（唯一生产入口），异步跑 D00–D05；run_id 关联 research_task。
  */
+type ReconciliationResult =
+  | { ok: true; checkpoint: Record<string, unknown> }
+  | { ok: false; reason: string };
+
+/** 释放"派发未被接手"的零成本保留。只认执行器未 claim / 执行器不可用这类
+ * 从未真正执行的原因；一旦 Runner 跑过（settled）一律拒绝，避免在这里退真账。
+ */
+async function reconcileUnclaimedProduction(
+  taskId: string,
+  saved: Record<string, unknown>,
+): Promise<ReconciliationResult> {
+  const reservation = saved.productionReservation;
+  if (!reservation || typeof reservation !== "object" || Array.isArray(reservation))
+    return { ok: false, reason: "production_reservation_reconciliation_required" };
+  const r = reservation as Record<string, unknown>;
+  if (r.requires_receipt_reconciliation !== true)
+    return { ok: false, reason: "production_reservation_reconciliation_required" };
+  const cost = Number(r.cost);
+  const invocationId = typeof r.invocation_id === "string" ? r.invocation_id : "";
+  const runId = typeof saved.production_run_id === "string" ? saved.production_run_id : "";
+  if (!Number.isFinite(cost) || cost < 0 || !invocationId || !/^[0-9a-f-]{36}$/i.test(runId))
+    return { ok: false, reason: "production_reservation_reconciliation_required" };
+  const runs = await queryRows(
+    `select status, coalesce(metadata->'m5_terminal'->>'reason_code','') as reason_code
+       from control.production_runs where run_id = :'id'::uuid`,
+    { id: runId },
+  );
+  const NEVER_EXECUTED = [
+    "CLOUD_DISPATCH_UNCLAIMED",
+    "CLOUD_EXECUTOR_SETUP_FAILED",
+    "CLOUD_EXECUTOR_PROCESS_UNAVAILABLE",
+    "CLOUD_EXECUTOR_RUNNER_FILE_UNAVAILABLE",
+  ];
+  if (runs.length !== 1 || runs[0].status !== "HOLD" ||
+      !NEVER_EXECUTED.includes(String(runs[0].reason_code ?? "")))
+    return { ok: false, reason: "production_reservation_reconciliation_required" };
+  const settled = await queryRows(
+    `select 1 from public.study_asset_receipts
+      where task_id = :'id'::uuid and payload->>'invocation_id' = :'inv' and status = 'settled'
+      limit 1`,
+    { id: taskId, inv: invocationId },
+  );
+  if (settled.length) return { ok: false, reason: "production_reservation_reconciliation_required" };
+  const reservedNow = Number(saved.reserved ?? 0);
+  const next: Record<string, unknown> = {
+    ...saved,
+    reserved: Math.max(0, (Number.isFinite(reservedNow) ? reservedNow : 0) - cost),
+  };
+  delete next.productionReservation;
+  const claimed = await queryRows(
+    `update public.research_tasks
+        set checkpoint = :'next'::jsonb, updated_at = now()
+      where task_id = :'id' and status = 'done' and checkpoint = :'previous'::jsonb
+      returning task_id`,
+    { id: taskId, previous: JSON.stringify(saved), next: JSON.stringify(next) },
+  );
+  if (!claimed.length) return { ok: false, reason: "production_reservation_conflict" };
+  try {
+    await writeReceipt({
+      taskId, kind: "tool", stage: "D00",
+      toolId: String(r.tool_id ?? "production-d00-intake"), cost, status: "hold",
+      payload: {
+        invocation_id: invocationId, run_id: runId,
+        reconciliation: "unclaimed_dispatch_released", released: cost,
+      },
+    });
+  } catch {
+    // 回执照写失败不回滚已生效的对账；保留 checkpoint 事实。
+  }
+  return { ok: true, checkpoint: next };
+}
+
 export async function requestProduction(
   taskId: string,
   ownerUserId: string,
@@ -404,15 +476,21 @@ export async function requestProduction(
   }
 
   const spent = Number(saved.budgetSpent);
-  const reserved = Number(saved.reserved ?? 0);
   const ceiling = Number(saved.ceiling);
   if (!Number.isFinite(spent) || spent < 0 ||
-      !Number.isFinite(reserved) || reserved < 0 ||
-      !Number.isFinite(ceiling) || ceiling <= 0 ||
-      spent + reserved > ceiling)
+      !Number.isFinite(ceiling) || ceiling <= 0)
     return { ok: false, reason: "budget_checkpoint_required" };
-  if (saved.productionReservation)
-    return { ok: false, reason: "production_reservation_reconciliation_required" };
+  if (saved.productionReservation) {
+    // 上一次派发没被执行器接手时，预算留下 requires_receipt_reconciliation 标记，
+    // 任务就再也不能发起接收。此处按真实回执对账：只有当关联 run 确因"未 claim /
+    // 执行器不可用"收尾、且回执从未 settled（真的没花钱）时才释放保留。
+    const reconciled = await reconcileUnclaimedProduction(taskId, saved);
+    if (!reconciled.ok) return { ok: false, reason: reconciled.reason };
+    saved = reconciled.checkpoint;
+  }
+  const reserved = Number(saved.reserved ?? 0);
+  if (!Number.isFinite(reserved) || reserved < 0 || spent + reserved > ceiling)
+    return { ok: false, reason: "budget_checkpoint_required" };
   if (ceiling - spent - reserved < spec.cost)
     return { ok: false, reason: "budget_hold" };
 
