@@ -5809,3 +5809,28 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 **保留**：`2c11cee` 的 C04 观察契约（`c04-observation-contract.mjs`，18/18）保留在库中——它是模型无关的形状与边界判定，工作站到位后可原样启用；**方法表中 C04 仍为 `implementation_binding: HOLD`**，本批未改任何绑定。
 
 **下一步**：主线回到文本/结构化数据；具体任务见 `CURRENT.md` 顶部与 PLAN 相应章节。
+
+## 2026-11-21 第十批｜云端真实 run：上图地名志正文 D00 开出，executor 未 claim
+
+**Owner 裁定（本批依据）**：暂停 C04 视觉路径，主线回到文本 C01 直读与结构化数据 C05；本窗口用云端已落库的上图地名志授权正文新起一条真实 run，走 D00→G0→D01（C01 全文，32 KiB 上限、extent 335—995）→G1，D02 前停在付费 Provider 缺口。
+
+**批次起始核验**：HEAD `eaef9d7`（local=remote 0/0）；云端 `postgres 17.11`；迁移账本 46 条、max `20261120045054`（仓库另有 `20261120150000_d01_resume_grant_journal`、`20261121060000_d01_resume_journal_reissue` 未入账本，但 `control.d01_resume_grant_journal` 等相关表已存在 → 记为账本与仓库不一致，未做任何迁移写入）。
+
+**材料回读（云端）**：`source 9aa03207`（上海地名志·朱家角，`text_record`）、`source_version 36ea7ffc`（`extent_kind=utf8_byte_range/v1`、`start_byte=335`、`end_byte=995`、含 `quote_sha256`）、`raw_item c26c07cc`（1,259 B）、`rights_by_action` 含 `machine_read: allowed`；原件 `f474b91b`（`text/plain`、1,259 B、`sha256=273222ee…`、`verified_at=2026-11-13T05:46:01Z`）属项目 `d9d48901`，任务 `b2143002`（`done`、`ceiling 8 / spent 4 / 无 reservation`）。**云端无「朱家角镇」1,411 B 那条**（`private_originals` 仅 1,259 / 1,121 / 1,015 B 三条文本原件），补传需私有存储服务密钥（sensitive 不可读）→ 本批只用 1,259 B 那条，未伪造上传身份。
+
+**新开出的 run**：`06512899-d17f-4863-97e5-940bebcd9be4`。经自检通道 `end_stage:"D00"`（新代码，价 0）+ 服务端 `MOHEN_D00_APPROVED_RUN={runId, inputDigest:8a19ba7a…}` 预批准绑定；`control.production_runs.scope` 回读与原件一致（project `d9d48901`、original `f474b91b`、source_version `36ea7ffc`、`raw_sha256=273222ee…`、page 1）。终态 `HOLD`，`current_stage=D00`，`metadata.m5_terminal.reason_code=CLOUD_DISPATCH_UNCLAIMED`，`cloud_dispatch.input_digest=2c2ef0fe…`，`cloud_dispatch_uncertain=true`；task 预算留痕 `production-d00-intake / cost 0 / reserved / requires_receipt_reconciliation=true`（invocation `aead4077…`）。
+
+**根因（实测+代码）**：`apps/web/lib/studio-production.ts:109-125` `cloudProductionDispatch()` 仅在 `VERCEL_ENV==='preview'` 且 `MOHEN_D00_TRUSTED_PREVIEW_ACCESS==='true'` 时派回自身；否则回落 `MOHEN_CLOUD_EXECUTOR_URL`（未配置）。本批唯一可访问部署是自定义环境 `staging`（`VERCEL_ENV='staging'`）→ 派发目标为空 → executor 从未 claim，run 以 `CLOUD_DISPATCH_UNCLAIMED` 收尾。
+
+**三处硬阻断（需 Owner 侧动作）**：
+1. **部署通道**：main 推送只产生 production 目标（`dpl_8aEaSYWf…`、`dpl_4RAZg1M5…` 均以 "the commit didn't affect this project" 取消），不再自动产生 preview；`POST /v13/deployments` 拒绝 `target:'preview'`、拒绝 `customEnvironmentSlug`；自定义环境 `staging` 受 Vercel Authentication 保护，`x-vercel-protection-bypass` 只有 query 参数形式有效。→ 新提交无法以可访问 preview 上线。
+2. **intake 对账缺口**：`studio-research.ts:414` 在 `requires_receipt_reconciliation:true` 时返回 `production_reservation_reconciliation_required`，仓库**无对账/恢复实现** → 任务 `b2143002` 无法再次发起 intake；旧通道另受预算限制（`production-run` 价 5 > 可用 4）。
+3. **独立 Gate 读服务**：`apps/d00-authority/api/current.mjs` 只接受单一预批准 run 且 `stage==='D00' && gate_code==='G0'`，G1 无入口（与 `bfcdfad6` 在 G1 判 `INDEPENDENT_GATE_VERIFY_DENIED` 一致）；该服务所在 Vercel 项目不在本 token 可见团队（`/v9/projects` 仅 `mohen-agent-2-0`），`mohen-d00-authority.vercel.app/api/current|readiness` 均 404，实际地址未定位（未据此断言线上行为，仅代码级事实）。
+
+**本批代码（`afa3cc1`，已推送）**：`apps/web/app/api/internal/self-test-resume/route.ts` 支持 `end_stage:"D00"`（与 `from_stage` 互斥；仍只认服务端预批准绑定；Preview + HMAC 保护；不发 Gate、不造会话）。可控验证：`POST` 伪造 task_id → `404 task_not_found`（通道与 HMAC 生效）。
+
+**清理**：删除临时 tag `preview-selftest-d00-20261121`（本地+远端）、删除重复 staging 部署 `dpl_2cH4Zt3…`；保留 `mohen-agent-2-0-bwgxkafm9-napoles1.vercel.app`（`afa3cc1` 唯一可访问部署）供下一批复用。
+
+**边界**：零付费、未签 Gate、未改迁移、未改方法表绑定、未改 `b2143002` checkpoint（保留真实 HOLD 留痕）。MAB 交付包引用：本批未引用归档/吸收文件（无对应用途）。
+
+**下一步（建议，待 Owner 裁决其一）**：①Owner 在 Vercel 侧让 main 推送恢复 preview 部署（或给施工预览开放 bypass），则 executor 自派发可用；②补 `requires_receipt_reconciliation` 的对账入口（代码），使任务可再次 intake；③由 Owner 提供独立 Gate 读服务的当前项目/地址并把预批准 run 换成新 run，同时补 G1 入口。

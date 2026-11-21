@@ -1,5 +1,23 @@
 # 墨痕｜当前施工断点
 
+> 核验时间 2026-11-21 第十批（批次起始 HEAD `eaef9d7`，local=remote 分叉 0/0；本批实测 Vercel 对 main 推送只产生 production 目标部署且被 "the commit didn't affect this project" 取消，不再自动产生 preview 部署）｜环境：云端真实库实测（`postgres 17.11`，`.secrets/` 凭据可用）；未验证项：云端 executor 实际执行（本批未 claim）、独立 Gate 读服务的实际部署地址。
+
+**本批（2026-11-21 第十批）结论：云端真实 run 已用上图地名志正文开出，但 executor 未 claim → `HOLD@D00 / CLOUD_DISPATCH_UNCLAIMED`；未进入 G0/D01/G1。**
+
+- **材料（云端实况，已回读）**：`source 9aa03207-6d60-4984-8c1f-347df2532842`「上海地名志·朱家角」、`source_version 36ea7ffc`（`extent_kind=utf8_byte_range/v1`、`start_byte=335`、`end_byte=995`）、`raw_item c26c07cc`（1,259 B）、`rights_by_action` 含 `machine_read: allowed`；原件 `studio.private_originals.f474b91b`（`text/plain`、`verified_at=2026-11-13T05:46:01Z`、`sha256 273222ee…`）属项目 `d9d48901`，任务 `b2143002`（`status=done`、`ceiling 8 / spent 4 / 无 reservation`）。**第二条「朱家角镇」1,411 B 不在云端**：云端 `private_originals` 仅 3 条文本原件（1,259 / 1,121 / 1,015 B），补传需私有存储服务密钥（sensitive 不可读），施工侧不得伪造上传身份。
+- **本批开出的 run**：`06512899-d17f-4863-97e5-940bebcd9be4`（新代码路径：自检通道 `end_stage:"D00"`，价 0，经 `MOHEN_D00_APPROVED_RUN` 预批准绑定 digest `8a19ba7a…`）。`scope` = 上述 project/original/source_version/raw_sha256/page 1 全部一致；终态 `HOLD@D00`、`reason_code=CLOUD_DISPATCH_UNCLAIMED`、`metadata.cloud_dispatch.input_digest=2c2ef0fe…`、`cloud_dispatch_uncertain=true`；task 预算留痕 `cost 0 / production-d00-intake / requires_receipt_reconciliation=true`。
+- **根因（代码+实测）**：`apps/web/lib/studio-production.ts:109-125` 的 `cloudProductionDispatch()` 只有在 `VERCEL_ENV==='preview'` 且 `MOHEN_D00_TRUSTED_PREVIEW_ACCESS==='true'` 时把任务派回**自身** `/api/internal/production-execute`；否则回落到 `MOHEN_CLOUD_EXECUTOR_URL`（未配置）。本批唯一可访问的部署是自定义环境 `staging`（`VERCEL_ENV='staging'`）→ 派发目标为空 → executor 从未 claim。
+
+**三处硬阻断（需 Owner 侧动作，施工侧无法自行解锁）**
+
+1. **部署通道**：main 推送只生成 production 目标（两次均被 "the commit didn't affect this project" 取消）；`POST /v13/deployments` 明确拒绝 `target:'preview'`；`customEnvironmentSlug` 不被接受；自定义环境 `staging` 受 Vercel Authentication 保护，`x-vercel-protection-bypass` 仅 query 参数形式有效但 staging 无对应 bypass 变量。→ 新提交目前**无法以可访问的 preview 部署上线**，云端 executor 自派发通道因此不可用。
+2. **intake 对账缺口**：`requires_receipt_reconciliation: true` 后，`studio-research.ts:414` 直接返回 `production_reservation_reconciliation_required`，而仓库只有写入该标记、**没有对账/恢复实现** → 任务 `b2143002` 现在无法再次发起 intake。旧通道（不带 `end_stage`）还会被预算挡住：`production-run` 价 5 > 可用 4。
+3. **独立 Gate 读服务**：`apps/d00-authority/api/current.mjs` 只接受单一预批准 run 且 `stage==='D00' && gate_code==='G0'`，G1 无对应入口（与 run `bfcdfad6` 在 G1 被判 `INDEPENDENT_GATE_VERIFY_DENIED` 一致）。该服务所在 Vercel 项目不在本 token 可见团队内（`/v9/projects` 仅 `mohen-agent-2-0`），`mohen-d00-authority.vercel.app/api/current|readiness` 均 404，实际地址未定位。
+
+**本批代码（`afa3cc1`，已推送）**：`apps/web/app/api/internal/self-test-resume/route.ts` 增加 `end_stage:"D00"`（`end_stage` 与 `from_stage` 互斥；仍只认服务端 `MOHEN_D00_APPROVED_RUN` 预批准绑定，不发 Gate、不造会话）。该提交的唯一可访问部署：`mohen-agent-2-0-bwgxkafm9-napoles1.vercel.app`（staging，需 query 形式 bypass）。
+
+**本批边界**：零付费、未签任何 Gate、未改迁移与方法表绑定、未伪造会话/资格；未改 `b2143002` 的 checkpoint（保留真实 HOLD 留痕）。
+
 > 核验时间 2026-11-21 第八批（批次起始 HEAD `b804e75`，local=remote 分叉 0/0）｜环境：本地隔离库 + 云端只读实测（凭据在 `.secrets/`，**云端可达**，`postgres 17.11`，前批"C4 无凭据"已更正）；未验证项：CI 宿主（本机 gh 缺失 → `DEFERRED_ENV`）、模型执行者（未接任何模型）。
 
 **本批（2026-11-21 第九批）裁定：暂缓视觉（C04）路径，主线回到文本 C01 直读与结构化数据 C05。** 依据：本机 i7-8550U / 7.8 GB RAM / MX150，无可用 CUDA 栈，8B 级视觉模型不可用；`ollama.com` 安装包重定向到 GitHub Releases（1,857,946,272 B），直连与失效系统代理（`127.0.0.1:11719` 无监听）均在传输中被重置，`gh-proxy.com` 仅 0.16 MB/s、`hf-mirror.com` 约 1.0—1.5 MB/s。`D:\temp` 下载痕迹（合计约 1.57 GB）已全部删除，未安装 Ollama、无 `~/.ollama`。C04 观察契约（`2c11cee`，18/18 测试）保留备用，**方法表 C04 仍 `HOLD`，本批未改任何绑定、零付费**。
