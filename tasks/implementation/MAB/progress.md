@@ -5903,3 +5903,11 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 字节只存在于本机本地后端：`work/private-originals/d9d48901-…/f474b91b-….bin`，`len=1259`、`sha256=273222eef548dfbbd1d5cf45633bca28abd312c03c53f818be7226b8fb5b6777`，与 `private_originals.sha256` 完全一致。即：**原件是真的，只是用了 `MOHEN_PRIVATE_ORIGINAL_LOCAL_FS` 本地后端落库，云端执行器走 Supabase Storage 因而取不到。**
 - 无法用超管直连补写：`app.settings.jwt_secret` 等不可读，拿不到 service_role；直接插 `storage.objects` 只会造悬空行。
 - **下一步**：用 `.env.local` 的 `MOHEN_DATABASE_SESSION_SECRET` 铸造属主 DB 会话，调用主应用既有 `/api/studio/attachments` 摄取路径把该 1259 B 以同一 key `d9d48901-…/f474b91b-….bin` 写入桶（幂等键复用，不产生新原件），随后即可重跑 D00。切勿用新 original_id 绕开，否则绑定关系失真。
+
+**第十一批·四（首个真实 D00 候选产出）**
+
+- 修复手段：`f2fdbec` 在自检通道增加 `repair:"original_bytes"`——只接受与 `private_originals.sha256` 完全一致的字节，按同一 `storage_key` 写入，不能借此注入新内容；仍受 preview + `MOHEN_SELF_TEST_ENABLED` + HMAC 三重守卫。
+- 回执：`{"ok":true,"repaired":true,"key":"d9d48901-…/f474b91b-….bin","sha256":"273222ee…b5b6777","byte_size":1259}`；`storage.objects` 实测该 key 已存在（2026-11-21T14:06:24Z），桶内对象数 1→2。
+- **run `b9989b90-fd8a-4d50-b4b4-6f3cca7fb049` 真实跑完 D00**：`status=HOLD`、`current_stage=D00`、`reason=INDEPENDENT_GATE_NOT_VERIFIED`，**产出 G0 候选 `9c55df1e-2f91-404e-a6a1-4649717b25f1`（SUBMITTED）**。这是本主线第一次在云端用上图地名志正文走通 D00 并留下真实候选（此前全部停在执行许可/原件读取）。
+- 该 `INDEPENDENT_GATE_NOT_VERIFIED` 是预期态：候选已提交，尚无 G0 签发；与历史 `bfcdfad6` 同一位置。
+- 下一步：用 `tools/rule-gate-reviewer.mjs` + `mohen_gate_signer_m5_machine`（`gate-signer-password`）签 G0，再用 `/api/current` 复核 CURRENT，然后 `from_stage:"D01"` 续跑 C01 全文 → G1。
