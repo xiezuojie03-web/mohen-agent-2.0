@@ -1,8 +1,12 @@
 # 墨痕｜当前施工断点
 
-> 核验时间 2026-11-21 第四批（批次起始 HEAD `da1494d`，local=remote 分叉 0/0，无其他写入方）｜环境：本地隔离库真实取件与登记回读 + 外网来源实测；未验证项：云端库（本会话无凭据，未做任何云端写入）、CI 宿主（本机 gh 缺失 → `DEFERRED_ENV`）、私有原件落库（本地缺少合规 worker 登录角色）。
+> 核验时间 2026-11-21 第八批（批次起始 HEAD `b804e75`，local=remote 分叉 0/0）｜环境：本地隔离库 + 云端只读实测（凭据在 `.secrets/`，**云端可达**，`postgres 17.11`，前批"C4 无凭据"已更正）；未验证项：CI 宿主（本机 gh 缺失 → `DEFERRED_ENV`）、模型执行者（未接任何模型）。
 
-**本批（2026-11-21 第四批）结论：生产链已能自己找到并核验真实史料，但取件落库被环境身份挡住、真实 run 因无云端凭据本批无法推进。**
+**本批（2026-11-21 第八批）结论：C04 视觉观察契约已可执行（18/18 测试），但 C04 在方法表仍 `implementation_binding: HOLD`——契约备好、模型执行者未接入。**
+
+**分工口径（Owner 2026-11-21 裁定）**：古文字层优先用既有免费转录走 C01 直读，C02 只对"有字但无可靠转录"兜底；多模态的主战场是**无字可读的视觉材料 → C04**。新增 `pipelines/data-production/adapters/c04-observation-contract.mjs`：`routeVisualMaterial()` 检出文字即转 C02、未做文字检测一律 HOLD；`validateC04Observation()` 按 C01-C08 规范 C04 章原文落判定（框坐标/像素尺寸、图题与观察分离、增强须可逆、低清不得确定断言、不得断言人物年代地名同一性）。
+
+**前期（2026-11-21 第四批）结论（保留）：生产链已能自己找到并核验真实史料；本地取件落库受环境身份限制。**
 
 **已找到的真实材料（可复现）**：维基文库《欽定大清一統志（四庫全書本）》卷058（松江府），固定修订 `oldid 745167`，`action=raw&oldid=745167` 取件 **55,958 字节**、SHA-256 `6cd08f0a…3523`（三次独立取件一致）；内证「珠街鎮（在青浦縣西十里，商賈輻輳，為邑巨鎮）」「朱家角」「津梁」。**关键段落字节位置：珠街鎮 43,629、朱家角 45,775、津梁 47,033**——均超过单次全文读取上限 32768 B，D01 只能走有界片段 extent（且须 G0 批准的 C01 范围），不能再用"全文直读"。
 
@@ -14,7 +18,7 @@
 
 **通道可用性（实测，第五批已更正）**：archive.org 443 超时；`shidianguji.com` robots 全站 Disallow；`圖書集成` 職方典松江府各卷为 423 B 占位；`三呉水考/卷04`(33,717 B)、`江南通志/卷025`(39,929 B) 均超 32 KiB；**上图通道本身可用——上一批"Key 失效"的判断是错的**：`gj/webapi/works`、`gj/webapi/instances`、`shnh/dmz/webapi/geonames` 在 `data1.library.sh.cn` 上已一律 `{"result":"-1"}`，同一套 query 换到 `data.library.sh.cn` 才正常返回（已改 BASE 并实跑验证）。
 
-**云端真实 run `bfcdfad6-bbcb-4b68-946a-82e1302eeb80` 仍为 `HOLD@D01`**（上批事实，未变）：G0 `888db9e6`、G1 `292792c8` 均 PASS/current；L1 仅一条 `read_unit 215b61ef`（C02 页定位、`interpretation=not_performed`）；原件为 Commons 照片（无 `external_processing`、C04 仍 `HOLD`）；D02 生成仍需付费 Provider（`MOHEN_PRIVATE_D02_DELEGATION_ID`/`MODEL`），云端无 D02 阶段授权端点。八维维持 `0/8 OVERALL_HOLD`；本批 ¥0。
+**云端真实 run `bfcdfad6-bbcb-4b68-946a-82e1302eeb80` 仍为 `HOLD@D01`**（上批事实，未变）：G0 `888db9e6`、G1 `292792c8` 均 PASS/current；L1 仅一条 `read_unit 215b61ef`（C02 页定位、`interpretation=not_performed`）；原件为 Commons 照片（无 `external_processing`；`C04` 方法绑定仍 `implementation_binding: HOLD`，观察契约已实现但模型执行者未接入）；D02 生成仍需付费 Provider（`MOHEN_PRIVATE_D02_DELEGATION_ID`/`MODEL`），云端无 D02 阶段授权端点。八维维持 `0/8 OVERALL_HOLD`；本批 ¥0。
 
 **上批（2026-11-21 第二批）结论：D02 续跑输入合约已补齐，但真实 run 无法离开 D01——阻断不在代码能力，而在三处授权/素材条件。**
 

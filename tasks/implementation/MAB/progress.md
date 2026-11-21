@@ -5777,3 +5777,20 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 **结论**：本机 dev 库的"私有原件 → L0 → D00"绑定链路现已打通，两条上图授权文本可作为 D00 输入（含既有照片路线的同类绑定也据此恢复）。**仍未解决**：云端库本会话不可达（真实 run `bfcdfad6` 未推进）；D02 生成仍需付费 Provider 与云端 D02 阶段授权端点。
 
 **证据边界**：一次性 DDL = 函数替换（与仓库迁移逐字一致，非新写 SQL）；零付费、未签 Gate、未改 Gate/Worker 判据。回滚：以同路径执行 `20261119235412` 之前的旧版定义即可（该旧版已在第六批 `bind` 记录中留证）。
+
+## 2026-11-21 第八批｜C04 视觉观察契约（照片/版画/插图）落为可执行规则
+
+**背景（Owner 裁定）**：古籍文字已大量存在免费转录（维基文库/识典/CText 等），文字层应走 C01 直读、C02 只作兜底；多模态的主战场是**无字可读的视觉材料**（照片、版画、舆图）＝C04。故本批先定契约与路由，不接任何模型、零费用。
+
+**新增**：`pipelines/data-production/adapters/c04-observation-contract.mjs`（`c04-observation/v1`，纯规则、不触原件字节、不写 Gate）。
+- `routeVisualMaterial()`：图内检出文字区域 → 选 **C02**（视觉模型不得代替读字）；确认无字 → **C04**；**未做文字检测 → HOLD `C04_TEXT_DETECTION_REQUIRED`**（失败关闭，不猜）；非图片 → HOLD。
+- `validateC04Observation()`：按《规范_P1_C01-C08》C04 章原文落判定——观察项必须有框坐标与像素尺寸、图题/背注须独立且记来源（`C04_CAPTION_MERGED_INTO_OBSERVATION`）、不可逆图像增强即 HOLD、低清局部（短边 < 48px）不得确定断言、遮挡/模糊不得 `visible`、不得由文件名或生成细节推导画面、不得断言人物/年代/地名同一性（`C04_IDENTITY_CLAIM_OUT_OF_SCOPE`）。
+
+**测试**：新增 `tests/data-production/c04-observation-contract.test.ts`，**18/18 PASS**（路由 5 例 + 契约 13 例）。
+- 定向：`npx vitest run tests/data-production/c04-observation-contract.test.ts`（`DATABASE_URL` 指 `mohen_dev_test`）18 passed。
+
+**顺手修一处既有失败（非本批引入）**：`tests/unit/shl-materials.test.ts` 断言词表写成 `full_text|excerpt|metadata_only`，而实现与下游 `material-score.ts` 实际用 `full_content|catalog_only|image_scan`；用旧主机 `data1.library.sh.cn` 复跑同样在 L28 失败，证明该失败早于本批主机修正。已把断言改为真实词表，并保留"书目不得冒充全文"的原意（`source_type=bibliography` 不得为 `full_content`）→ 1 passed。
+
+**全量**：`pnpm test` = 111 files（102 passed / 7 failed / 2 skipped），失败 14 例集中在 `private-evidence-binding`(4)、`mab-hp08-studio-routes`(2)、`mab-m5-qualified-retrieve`(7)、`mab-hp08-production-reservation`(1) 与 3 个因本地缺 `@vercel/oidc` 而无法加载的套件（`production-trigger`/`studio-cloud-production`/`studio-private-handoff`）；均为既有基线，与本批改动无交集。`ISOLATION_VERDICT real_db_untouched=YES`。
+
+**边界**：零付费、未调用任何模型、未改 Gate/Worker 判据、未写库结构、未推进真实 run。C04 在方法表仍是 `implementation_binding: HOLD`——**契约已可执行，模型执行者尚未接入**；这属 Owner 决定项（本地模型 vs 按量 API vs 保持 HOLD）。

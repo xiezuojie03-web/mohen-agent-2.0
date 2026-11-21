@@ -23,10 +23,13 @@ describe.skipIf(!KEY)("K2 上海图书馆材料加固", () => {
     expect(r.degraded).toBe(false);
     expect(r.materials.length).toBeGreaterThan(0);
 
-    const allowed = new Set(["full_text", "excerpt", "metadata_only"]);
+    // 词表以实现与下游（material-score）为准：full_content | catalog_only | image_scan。
+    // 旧断言写的是 full_text/excerpt/metadata_only，三者在本仓实现里从未存在（2026-11-21 核）。
+    const allowed = new Set(["full_content", "catalog_only", "image_scan"]);
     for (const m of r.materials) {
       expect(allowed.has(m.content_availability)).toBe(true);
-      expect(m.content_availability).not.toBe("full_content" as never);
+      // 只有真取到正文才允许 full_content；纯书目/题名必须落 catalog_only。
+      if (m.source_type === "bibliography") expect(m.content_availability).not.toBe("full_content");
       expect(m.license.length).toBeGreaterThan(0);
       expect(["unknown", "per_item", "clear"]).toContain(m.rights_clear);
     }
