@@ -5761,3 +5761,19 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 建议最小修正：新增一条迁移，在 `studio.private_source_registration` 的 `jsonb_build_object` 中补 `rights_by_action`（`s.rights_by_action`）、`rights_snapshot`（`v.rights_snapshot`）、`rights_evidence`（`s.rights_evidence`），并同步更新校验器对 `rights`/`rights_by_action` 的一致要求；本地应用后重跑本批 land 命令即可验证 `d00_lookup.ok=true`。未擅自改 DDL（需与应用顺序一致，且云端需同步）。
 
 **证据边界**：零 DDL、零付费、未签 Gate；口令/Key 未打印未落盘；云端仍不可达（无凭据），真实 run `bfcdfad6` 未推进。回滚：`git revert` 本批（库内两来源与两原件可用撤权或新记录覆盖，不删历史）。
+
+## 2026-11-21 第七批｜修复库内 SQL 缺失字段：本地应用仓库既有迁移，D00 绑定转为 OK
+
+**范围更正（重要）**：第六批判断"库内 SQL 落后"只对**本机 dev 库**成立。仓库 `supabase/migrations/20261119110000_m5_private_source_rights_projection.sql` 与 `20261119235412_restore_private_source_registration_rights_projection.sql` 早已存在补字段版本（云端账本中亦有同名迁移，故云端 D00 接收此前能通过）；问题出在本地 `mohen_dev` 无迁移账本、结构靠历年 SQL 直接应用，函数停在了旧版。
+
+**本批动作**：`node .tmp_apply_mig.mjs` 以 `run()` 执行 `20261119235412_restore_private_source_registration_rights_projection.sql`（`CREATE OR REPLACE FUNCTION`，纯函数替换、无表结构变更、无数据变更）。
+- 应用前：`pg_get_functiondef` 中无 `rights_by_action`。
+- 应用后：`'rights_by_action'=true、'rights_snapshot'=true、'rights_evidence'=true`（三者分别取 `v.rights_snapshot`、`v.rights_snapshot`、`s.rights_evidence`）。
+
+**验证（真实回读）**：重跑两条 land 命令，均得 `SHL_LAND_TEXT_OK`：
+- 朱家角：`d00_lookup.ok=true`，`artifact_revision=6a96873d…3bf0`、`source_version_artifact_revision=8206612e…5ca6`，原件 `6a74fb44…`，extent 335—995。
+- 朱家角镇：`d00_lookup.ok=true`，`artifact_revision=99b728d1…ff69`、`source_version_artifact_revision=dd537101…b652`，原件 `947abaa9…`，extent 338—1147。
+
+**结论**：本机 dev 库的"私有原件 → L0 → D00"绑定链路现已打通，两条上图授权文本可作为 D00 输入（含既有照片路线的同类绑定也据此恢复）。**仍未解决**：云端库本会话不可达（真实 run `bfcdfad6` 未推进）；D02 生成仍需付费 Provider 与云端 D02 阶段授权端点。
+
+**证据边界**：一次性 DDL = 函数替换（与仓库迁移逐字一致，非新写 SQL）；零付费、未签 Gate、未改 Gate/Worker 判据。回滚：以同路径执行 `20261119235412` 之前的旧版定义即可（该旧版已在第六批 `bind` 记录中留证）。
