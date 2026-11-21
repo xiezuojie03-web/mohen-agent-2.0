@@ -37,6 +37,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, reason: "self_test_denied" }, { status: 401 });
 
   const taskId = body.task_id;
+  // 配置诊断：只回报"哪些键缺失/无效"与三个授权端点的 host+path（不含凭据、不含 query），
+  // 不联网、不读库、不签发任何 Gate。用于施工侧定位云端执行器的授权缺口。
+  if (body.diag === "readiness") {
+    const { cloudExecutionReadiness } = await import("../../../../../../pipelines/data-production/orchestrator/cloud-execution-readiness.mjs");
+    const endpoints: Record<string, string | null> = {};
+    for (const key of ["MOHEN_EXECUTION_AUTH_VERIFY_URL", "MOHEN_EXECUTION_AUTH_DYNAMIC_URL", "MOHEN_INDEPENDENT_GATE_VERIFY_URL"]) {
+      const raw = process.env[key];
+      try { const u = new URL(String(raw)); endpoints[key] = `${u.protocol}//${u.host}${u.pathname}`; }
+      catch { endpoints[key] = null; }
+    }
+    return NextResponse.json({ ok: true, readiness: cloudExecutionReadiness(process.env), endpoints }, { headers: { "cache-control": "no-store" } });
+  }
   const originalId = body.original_id;
   const page = body.page_number;
   const fromStage = body.from_stage === "D01" ? "D01" : undefined;
