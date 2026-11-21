@@ -58,7 +58,7 @@ export async function POST(req: Request) {
       "select storage_key, sha256, content_type from studio.private_originals where original_id = $1 and state = 'STORED_VERIFIED'",
       [originalId]);
     if (!rows.rows.length) return NextResponse.json({ ok: false, reason: "original_not_found" }, { status: 404 });
-    const row = rows.rows[0];
+    const row = rows.rows[0] as { storage_key: string; sha256: string; content_type: string | null };
     const bytes = Buffer.from(String(body.bytes_b64 ?? ""), "base64");
     if (!bytes.length) return NextResponse.json({ ok: false, reason: "bytes_required" }, { status: 400 });
     const sha = createHash("sha256").update(bytes).digest("hex");
