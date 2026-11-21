@@ -1,5 +1,16 @@
 # 墨痕｜当前施工断点
 
+> 核验时间 2026-11-21 第十二批（批次起始 HEAD `d0d208d`）｜环境：云端真实库实测（`postgres 17.11`，`.secrets/` 凭据可用）；未验证项：云端 Runner 对 G0 的实际消费（需部署侧 env，见阻断）、D01 执行、G1。
+
+**本批（2026-11-21 第十二批）结论：D00 真实候选的独立 G0 已按设计合同签发并经低权 reader 回读 PASS；run 仍 `HOLD@D00`，下一步受阻于部署侧验证通道配置（Vercel 账号令牌已过期）。**
+
+- **签发回执（云端实库）**：候选 `9c55df1e` → `CONSUMED`；`gate_audits.c0ee5a2f-77df-4bbb-8b46-8f4b55ba150e` = G0/PASS/`independent_gate`/`consumer=producer`/`reviewer= b0a11000…（机器评审）/db=mohen_gate_signer_m5_machine`；`details.stage_binding` = `{job_id d00.source-intake, consumer producer, input_digest 8a19ba7a…, output_digest 54278096…, reviewer_binding_ref m5-owner-reviewer-g0g1-producer}`；`qualification_current` 已指向该审计（有效至 `2026-11-27T14:47:43Z`）。三项确定性检查 `identity_version / rights_by_operation / method_plan_preselection` 全 PASS。
+- **两处云端漂移按设计迁移消除**：①`studio.private_originals` 的机器评审只读策略恢复为 `20261113150000` 的"跟随有 SUBMITTED 候选的项目"（原为写死旧项目 `e03c4ba8`）；②`control.sign_gate_candidate` 与 `control.current_qualification_is_valid` 恢复为 `20261113160000` 设计版（含 `scope_kind=studio_project` 规则分支；CAS 按对象键取当前资格，不再按 `artifact_revision` 过滤——原漂移导致 `QUALIFICATION_CAS_CONFLICT`）。该迁移末尾的规则化绑定 INSERT 未执行（云端已有 26 条同类绑定）。
+- **授权与只读凭据**：新增 `tasks/results/G0_MACHINE_BINDING_D9D48901_20261121.sql`，为机器评审装一条**仅本项目 + G0** 的精确范围绑定 `65dd1fae-e7a3-46dd-a97f-b9613bf71578`（30 天，`source_ref=plan-3.5C-2026-11-21…`）；新建 consume 凭据 `b0bb78fa-19a9-45af-ae31-96b7b51bbbcb`（scope 仅 `project_id d9d48901`，绑定上条绑定，token 明文只在 `.secrets/gate-reader-bearer-d9d48901.txt`）。旧凭据 `e7a89d2f`（旧项目）未撤销。
+- **回读证据（真实低权路径）**：以 `mohen_runner_reader_v2` + 新凭据走 `createInProcessGateReaderVerifier` → `control.read_gate_stage_qualification` 返回完整 receipt（`qualification_current=true`、双 digest 对、`gate_audit_id c0ee5a2f…`）；负例（篡改 `output_digest`）返回 `INDEPENDENT_GATE_VERIFY_DENIED`。
+- **最前阻断（需平台凭据）**：云端 Runner 的验证通道指向已部署读服务，而 `https://mohen-d00-authority.vercel.app/api/current` 对 run `b9989b90` 与历史 `bfcdfad6` 均返回 **403**（部署侧 `MOHEN_D00_GATE_APPROVED_RUN_ID` 未含这些 run）；同时 Vercel **账号令牌已于 `2026-11-21T14:36:24Z` 过期**（`/v9/projects` → 403），本批无法改 env 或重新部署。→ 因此本批**未发起 D01**，run 保持既有 `HOLD@D00 / INDEPENDENT_GATE_NOT_VERIFIED` 记录（该记录形成于签发前，未回改）。
+- **零付费/零伪造**：未调用 Provider、未新增付费；未伪造会话/资格/PASS；密钥与 token 未入 git（`.secrets/` gitignored）；未触碰生产 DB 迁移与公众开放。
+
 > 核验时间 2026-11-21 第十批（批次起始 HEAD `eaef9d7`，local=remote 分叉 0/0；本批实测 Vercel 对 main 推送只产生 production 目标部署且被 "the commit didn't affect this project" 取消，不再自动产生 preview 部署）｜环境：云端真实库实测（`postgres 17.11`，`.secrets/` 凭据可用）；未验证项：云端 executor 实际执行（本批未 claim）、独立 Gate 读服务的实际部署地址。
 
 **本批（2026-11-21 第十批）结论：云端真实 run 已用上图地名志正文开出，但 executor 未 claim → `HOLD@D00 / CLOUD_DISPATCH_UNCLAIMED`；未进入 G0/D01/G1。**

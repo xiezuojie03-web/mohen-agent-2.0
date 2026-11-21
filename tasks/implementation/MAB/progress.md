@@ -5911,3 +5911,22 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **run `b9989b90-fd8a-4d50-b4b4-6f3cca7fb049` 真实跑完 D00**：`status=HOLD`、`current_stage=D00`、`reason=INDEPENDENT_GATE_NOT_VERIFIED`，**产出 G0 候选 `9c55df1e-2f91-404e-a6a1-4649717b25f1`（SUBMITTED）**。这是本主线第一次在云端用上图地名志正文走通 D00 并留下真实候选（此前全部停在执行许可/原件读取）。
 - 该 `INDEPENDENT_GATE_NOT_VERIFIED` 是预期态：候选已提交，尚无 G0 签发；与历史 `bfcdfad6` 同一位置。
 - 下一步：用 `tools/rule-gate-reviewer.mjs` + `mohen_gate_signer_m5_machine`（`gate-signer-password`）签 G0，再用 `/api/current` 复核 CURRENT，然后 `from_stage:"D01"` 续跑 C01 全文 → G1。
+
+## 2026-11-21｜D00 真实候选的独立 G0 签发 + 两处云端设计漂移消除（`VERIFIED_LIVE`，停在部署侧验证通道）
+
+**基线**：批次起始 HEAD `d0d208d`=origin/main；工作树仅历史未跟踪 `.tmp_*`／`.mohen/` 与既存未提交 `tasks/results/P0_鉴权矩阵_20261029.csv`（非本批，不动）。云端实库（`postgres 17.11`）只读核验后动手。
+
+**§3.5 D 有界五项**：可用基础＝云端真实 run `b9989b90` 与候选 `9c55df1e`（SUBMITTED）、真实原件 `f474b91b`（`text/plain` 1259 B、sha `273222ee…`、`STORED_VERIFIED`）、既有机器评审身份与唯一签发函数；当前实现＝`tools/rule-gate-reviewer.mjs`（确定性检查）+ `tools/gate-stage-output-attestation.mjs`（独立重建 D00→D01 typed 输出）+ `control.sign_gate_candidate`（经 `gate-authority-repository`）；具体差异＝①云端 `sign_gate_candidate`/`current_qualification_is_valid` 为旧版（无 `scope_kind=studio_project` 分支，CAS 按 `artifact_revision` 过滤 → 遇历史过期资格必抛 `QUALIFICATION_CAS_CONFLICT`）②`studio.private_originals` 机器评审只读策略写死旧项目 ③本项目无 G0 授权、无本项目 consume 凭据；最小改动＝应用仓库既有设计迁移 `20261113150000`、`20261113160000`（仅函数部分，绑定 INSERT 因已存在跳过）+ 新增一份本项目 G0 精确绑定 SQL + 新建本项目 consume 凭据；证据继承＝隔离全链 C01 handoff、image/text attester 23 例、真实 G0 `888db9e6`。
+
+**签发（`VERIFIED_LIVE`）**：`node` 内进程完成"机器评审只读连接 → 云端 `session_verification_keys` 进程内铸机器评审令牌（不打印不落盘）→ 独立重建输出摘要 `54278096…` → 三项检查 PASS → `control.sign_gate_candidate`"。回执：**audit `c0ee5a2f-77df-4bbb-8b46-8f4b55ba150e`，G0/PASS/`independent_gate`/`consumer=producer`/`db_identity=mohen_gate_signer_m5_machine`/`stage_binding` 四项齐全/`valid_until 2026-11-27T14:47:43Z`**；候选 `9c55df1e`→`CONSUMED`；`qualification_current` 指向该审计。
+
+**消除漂移（两处，均按仓库既有设计迁移原文）**：①`studio.private_originals` 的 `m5_machine_reviewer_read` 恢复为"跟随有 SUBMITTED 候选的项目"（`20261113150000`）；②以函数所有者身份恢复 `20261113160000` 的 `sign_gate_candidate` 与 `current_qualification_is_valid`（含规则分支 + CAS 口径一致），迁移末尾规则化绑定 INSERT 未执行（云端已有 26 条）。执行时 `postgres` 非超管，按 `20261116080000` 既有做法临时取得 `set`/`create` 权限并在同一事务内收回。
+
+**授权与凭据（最小、可逆）**：`tasks/results/G0_MACHINE_BINDING_D9D48901_20261121.sql` 装机器评审"仅本项目 + G0"精确绑定 `65dd1fae-e7a3-46dd-a97f-b9613bf71578`（30 天）；新建 consume 凭据 `b0bb78fa-19a9-45af-ae31-96b7b51bbbcb`（scope 仅 `project_id d9d48901`，绑定上条），token 仅落 `.secrets/gate-reader-bearer-d9d48901.txt`（gitignored）。旧凭据 `e7a89d2f`（旧项目）保持有效、未撤销。
+
+**回读与正反（`VERIFIED_LIVE`）**：以 `mohen_runner_reader_v2` 低权会话走 `createInProcessGateReaderVerifier` → `control.read_gate_stage_qualification` 返回完整 receipt（`qualification_current=true`、`gate_audit_id c0ee5a2f…`、双 digest 与 `stage_binding` 精确匹配、`valid_until` 一致）；负例（篡改 `output_digest`）→ `INDEPENDENT_GATE_VERIFY_DENIED`。
+
+**最前阻断（`BLOCKED_ENV`，平台凭据）**：云端 Runner 与续跑入口的验证都经部署侧读服务，而 `https://mohen-d00-authority.vercel.app/api/current` 对 run `b9989b90` 与历史 `bfcdfad6` 一律 **403**（部署侧 `MOHEN_D00_GATE_APPROVED_RUN_ID` 未含这些 run）；Vercel **账号令牌 `2026-11-21T14:36:24Z` 已过期**（`/v9/projects`→403），本批无法更新 `MOHEN_D00_GATE_APPROVED_RUN_ID`／`MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL`，也无法重新部署。故本批**未发起 D01**；run 保持签发前形成的 `HOLD@D00 / INDEPENDENT_GATE_NOT_VERIFIED` 记录，不回改历史终态。
+
+**边界与费用**：零 Provider 调用、零新增付费；未伪造会话/资格/PASS；密钥/token 未入 git/日志/对话；未做生产迁移、未启用正式 Gate、未公众开放。八维持 0/8。
+**下一步**：拿到可用 Vercel 凭据后 ①把本 run 加入读服务 `MOHEN_D00_GATE_APPROVED_RUN_ID` 并把验证凭据换成 `b0bb78fa` 的 token ②`from_stage:"D01"` 续跑 C01 全文（32 KiB 上限、extent 335—995）③D01 产出后按 G1 同样路径签发独立 G1，停在 D02 付费 Provider 缺口。
