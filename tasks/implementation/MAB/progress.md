@@ -5738,3 +5738,26 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 **待办（下一批）**：用已修正的通道把 `shnh/dmz` 地名志正文（朱家角 / 朱家角镇 两条 `description`）作为**上图（Owner 明确授权来源）**的 L0 文本取回并登记，替换本批之前以 wikisource 卷058 试点的取件对象——该正文同时含"放生桥""淀浦河/朱昆河/朱泖河""聚落跨井亭港两侧"，正对研究问题的集镇—水路—桥梁三要素，且体量远小于 32 KiB，可直接走 C01 全文读取。
 
 **证据边界**：本批零 DDL、零付费、未签 Gate、未改 Gate/Worker 判据；Key 仅注入 query，未打印未落盘。回滚：`git revert` 本批。
+
+## 2026-11-21 第六批｜上图地名志正文落库成功；D00 绑定被 SQL/校验器字段不一致挡住
+
+**按第五批方案执行**：用修好的通道取 `shnh/dmz` 地名志正文并走仓库既有的 CP2-E 文本落库路线（`tools/fetch-shl-dmz-text.mjs` → `tools/land-shl-original.mjs --mode text` → `tools/stamp-shl-open-data-rights.mjs`）。
+
+**真实取件（可复现）**：
+- `type=3&freetext=朱家角`：HTTP 200、**1,259 字节**、sha256 `273222ee…6777`，落盘 `D:\MoHen\data\shl-dmz\dmz-type3-朱家角.json`；`description` 字段 extent **335—995（660 字节）**，quote sha256 `72e47bea…c738`。正文含：在县境中部…朱家角镇人民政府驻地…曾名朱家村、珠街阁、珠溪、珠里，俗名角里…聚落跨井亭港两侧分布…有王昶祠堂、天主教堂、**放生桥**。**淀浦河、朱昆河、朱泖河流经**。
+- `type=2&freetext=朱家角镇`：HTTP 200、**1,411 字节**、sha256 `f65ccf11…a056f`，落盘 `dmz-type2-朱家角镇.json`；含建制沿革与"境内河塘密布，港汊纵横…主要河流有淀浦河、朱泖河、朱昆河"。
+
+**库内结果（回读核验，本地隔离库）**：
+- 来源 `879cb42a-e0be-40a2-b98a-474addf34b69`（朱家角）与 `e97724c8-038d-4cb3-86b8-bb0cad7fc81a`（朱家角镇）：provider `shanghai-library`、`carrier_type=text_record`、`content_availability=structured_content`、`provenance_status=verified_original`，各 1 版本 + 1 raw_item。
+- 权利按 Owner 2026-11-08 裁定写入：`access_view/machine_read/retain/quote=allowed`，`display/download/adapt/redistribute/external_processing=unknown`；版本 `rights_snapshot` 与来源 `rights_by_action` 回读一致。
+- 私有原件 `6a74fb44-d42e-4628-80bd-101e6947f0e4`（1,259 B）与 `947abaa9-f451-4f5d-80be-f359ed40b541`（1,411 B），均 `text/plain` / `STORED_VERIFIED`。
+
+**本批修复的工具缺陷（`tools/land-shl-original.mjs`）**：
+1. `ensureVersion` 从未写 `rights_snapshot`，而 D00 绑定要求它与来源 `rights_by_action` 相等 → 改为写入来源当前权利快照。
+2. 幂等重跑时 `reserve()` 按 idempotency_key 命中既有原件（其 `original_id` 与本次随机值不同），后续仍用随机 id → 报 `ORIGINAL_NOT_FOUND`；改为全过程使用命中记录的 `original_id`。
+3. 自检失败会整批报 `SHL_LAND_FAILED`，掩盖"原件/来源/版本/raw_item 已写入"的事实 → 改为 `SHL_LAND_TEXT_APPLIED_REGISTRATION_UNVERIFIED` 并输出已落库事实。
+
+**新阻断（已定位到函数级，不是猜）**：`d00_lookup.ok=false`，错误 `PRIVATE_SOURCE_REGISTRATION_INVALID`。核对库内 `studio.private_source_registration(uuid)` 定义：它返回 `schema/original_id/project_id/source_id/source_version_id/raw_item_id/sha256/byte_size/content_type/storage_ref/provider/title/source_type/carrier_type/rights/asset_revision_id/original_locator/provenance_status/content_availability/artifact_revision/source_version_artifact_revision`，**但没有 `rights_by_action`、`rights_snapshot`、`rights_evidence` 三个字段**；而 [private-source-registration-repository.mjs](file:///d:/work%20Buddy/2026-08-23-23-12-38/mohen-agent-2.0/packages/data-access/src/private-source-registration-repository.mjs#L27-L29) 的校验器要求这三者都是对象 → **当前库版本下私有登记校验恒为 INVALID**，与本次数据无关（既有的照片原件同样会失败）。这与 2026-11-20 遇到的"云端 `sign_gate_candidate` 仍是旧版"同类：库内 SQL 落后于代码契约。
+- 建议最小修正：新增一条迁移，在 `studio.private_source_registration` 的 `jsonb_build_object` 中补 `rights_by_action`（`s.rights_by_action`）、`rights_snapshot`（`v.rights_snapshot`）、`rights_evidence`（`s.rights_evidence`），并同步更新校验器对 `rights`/`rights_by_action` 的一致要求；本地应用后重跑本批 land 命令即可验证 `d00_lookup.ok=true`。未擅自改 DDL（需与应用顺序一致，且云端需同步）。
+
+**证据边界**：零 DDL、零付费、未签 Gate；口令/Key 未打印未落盘；云端仍不可达（无凭据），真实 run `bfcdfad6` 未推进。回滚：`git revert` 本批（库内两来源与两原件可用撤权或新记录覆盖，不删历史）。

@@ -95,15 +95,18 @@ async function ensureTextSource({ title, projectId, endpoint }) {
   return rows[0].source_id;
 }
 
-async function ensureVersion({ sourceId, label, sha256, metadata }) {
+async function ensureVersion({ sourceId, label, sha256, metadata, rightsSnapshot }) {
   const existing = await queryRows(
     `select source_version_id::text from source.source_versions where source_id=:'s'::uuid and checksum_sha256=:'h'`,
     { s: sourceId, h: sha256 });
   if (existing.length === 1) return existing[0].source_version_id;
+  // 版本必须携带与来源一致的权利快照：D00 私有登记绑定要求
+  // rights_by_action 与 rights_snapshot 规范化后完全相等，缺一即 INVALID。
   const rows = await queryRows(
-    `insert into source.source_versions(source_id,version_label,retrieved_at,checksum_sha256,metadata)
-     values (:'s'::uuid,:'l',now(),:'h',:'m'::jsonb) returning source_version_id::text as id`,
-    { s: sourceId, l: label, h: sha256, m: JSON.stringify(metadata) });
+    `insert into source.source_versions(source_id,version_label,retrieved_at,checksum_sha256,metadata,rights_snapshot)
+     values (:'s'::uuid,:'l',now(),:'h',:'m'::jsonb,:'r'::jsonb) returning source_version_id::text as id`,
+    { s: sourceId, l: label, h: sha256, m: JSON.stringify(metadata),
+      r: JSON.stringify(rightsSnapshot ?? {}) });
   return rows[0].id;
 }
 
@@ -193,6 +196,9 @@ async function landText() {
     fileName: `shl-dmz-${sha256.slice(0, 12)}.json.txt`,
     contentType: "text/plain",
   }, token);
+  // 幂等重跑时 reserve 按 idempotency_key 命中既有记录，其 original_id 可能与本次随机值不同；
+  // 后续 finalize/查询必须用命中记录的 id，否则会被误报 ORIGINAL_NOT_FOUND。
+  const effectiveOriginalId = reserved.original_id ?? originalId;
   let alreadyStored = false;
   try {
     const previous = await storage.readVerified(reserved.storage_key, sha256, bytes.length);
@@ -205,16 +211,20 @@ async function landText() {
     if (!missing) throw error;
   }
   if (!alreadyStored) await storage.putVerified(reserved.storage_key, bytes, "text/plain");
-  const finalRecord = await repository.finalize(originalId, sha256, token);
-  summary.original = { state: finalRecord.state, sha256: finalRecord.sha256, byte_size: finalRecord.byte_size,
+  const finalRecord = await repository.finalize(effectiveOriginalId, sha256, token);
+  summary.original = { original_id: effectiveOriginalId, state: finalRecord.state, sha256: finalRecord.sha256, byte_size: finalRecord.byte_size,
     asset_revision_id: finalRecord.asset_revision_id, already_stored: alreadyStored };
 
   const actualStorageRef = (await queryRows(
     `select storage_bucket||'/'||storage_key as ref from studio.private_originals where original_id=:'o'::uuid`,
-    { o: originalId }))[0].ref;
+    { o: effectiveOriginalId }))[0].ref;
   const sourceId = await ensureTextSource({ title, projectId, endpoint });
+  const sourceRights = (await queryRows(
+    `select rights_by_action::text as rights from source.sources where source_id=:'id'::uuid`,
+    { id: sourceId }))[0]?.rights ?? "{}";
   const versionId = await ensureVersion({
     sourceId, label: `dmz-${sha256.slice(0, 16)}`, sha256,
+    rightsSnapshot: JSON.parse(sourceRights),
     metadata: {
       schema: "mohen.shl-text-original.v1",
       dataset: "Shanghai Library Open Data Platform",
@@ -230,22 +240,30 @@ async function landText() {
   summary.registration = { source_id: sourceId, source_version_id: versionId, raw_item_id: rawItemId, storage_ref: actualStorageRef };
 
   const registrations = createPrivateSourceRegistrationRepository(pool);
-  const registration = await registrations.lookup(originalId, token);
-  summary.d00_lookup = {
-    ok: registration.sha256 === sha256 && registration.raw_item_id === rawItemId &&
-      registration.source_version_id === versionId && registration.provider === PROVIDER,
-    provider: registration.provider, title: registration.title,
-    carrier_type: registration.carrier_type, content_type: registration.content_type,
-    artifact_revision: registration.artifact_revision,
-    source_version_artifact_revision: registration.source_version_artifact_revision,
-  };
+  // 自检可能因身份/绑定不成立而失败（例如本机没有 studio 身份、或版本权利快照尚未一致）。
+  // 此时原件、来源、版本、raw_item 已经写入，不能再报"整批失败"把人误导成什么都没落。
+  try {
+    const registration = await registrations.lookup(effectiveOriginalId, token);
+    summary.d00_lookup = {
+      ok: registration.sha256 === sha256 && registration.raw_item_id === rawItemId &&
+        registration.source_version_id === versionId && registration.provider === PROVIDER,
+      provider: registration.provider, title: registration.title,
+      carrier_type: registration.carrier_type, content_type: registration.content_type,
+      artifact_revision: registration.artifact_revision,
+      source_version_artifact_revision: registration.source_version_artifact_revision,
+    };
+  } catch (error) {
+    summary.d00_lookup = { ok: false, error: String(error?.message ?? error).slice(0, 200) };
+  }
   summary.reading_input = {
-    original_id: originalId, raw_item_id: rawItemId, source_version_id: versionId,
+    original_id: effectiveOriginalId, raw_item_id: rawItemId, source_version_id: versionId,
     raw_sha256: sha256, kind: "utf8_byte_range/v1",
     start_byte: extent.start_byte, end_byte: extent.end_byte,
     quote_sha256: extent.quote_sha256, quote: extent.quote,
   };
-  summary.status = summary.d00_lookup.ok ? "SHL_LAND_TEXT_OK" : "SHL_LAND_TEXT_NOT_BOUND";
+  summary.status = summary.d00_lookup.ok
+    ? "SHL_LAND_TEXT_OK"
+    : "SHL_LAND_TEXT_APPLIED_REGISTRATION_UNVERIFIED";
   await pool.end();
   console.log(JSON.stringify(summary, null, 2));
   if (!summary.d00_lookup.ok) process.exitCode = 1;

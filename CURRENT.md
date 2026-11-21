@@ -24,7 +24,7 @@
 
 **上批能力（`CODE_PRESENT`+`VERIFIED_ISOLATED`）**：①`adapter-binding.mjs` 新增 `isTypedD02ReadingRequest`（D02 生成请求的纯形状校验，无授权语义）；②`resume-input.mjs` D02 受信输入接受 orchestrator 派生的 `readUnitId + reading` 形态，并把 qualified reading / observation / legacy link 定为三选一互斥——修复前该派生请求会被续跑入口拒绝，即"G1 合格也无法续跑 D02"；③测试：定向 15/15 PASS，全量 `tests/data-production` 409 tests / 405 pass / 4 fail（4 条为既有基线）。零 DDL、零付费、未改核心 Gate 与 Worker 判据。
 
-**上上批（第三批）已确认 A′ 中"由 Owner 上传有字原件"这一步不再需要**：本批生产链已自行找到并核验文本原件（见上）。现在的前置条件换成三条：①云端库凭据（登记与推进必须发生在真实 run 所在库）；②C01 片段读取范围须由 G0 批准（关键段落在 43,629—47,033 B，超出全文 32 KiB 上限）；③D02 生成仍需付费 Provider 与云端 D02 阶段授权端点。
+**上上批（第三批）已确认 A′ 中"由 Owner 上传有字原件"这一步不再需要**：第六批已用上图通道取到并落库两条地名志正文（`朱家角` 1,259 B / `朱家角镇` 1,411 B，含"放生桥""淀浦河/朱昆河/朱泖河""聚落跨井亭港两侧"），来源 `879cb42a…`、`e97724c8…` 各 1 版本 + 1 raw_item，权利按 Owner 2026-11-08 裁定写入。当前前置条件变为：①**D00 私有登记绑定在库内恒失败**——`studio.private_source_registration` 缺 `rights_by_action/rights_snapshot/rights_evidence` 三字段，而校验器要求它们存在，需一条补字段迁移（本批未擅自改 DDL）；②云端库凭据（真实 run 在云端，本会话无凭据）；③D02 生成仍需付费 Provider 与云端 D02 阶段授权端点。
 
 **其余最前阻断（承接上批）**：②D02 H05 生成需付费 Provider 委派/预算/权利（`MOHEN_PRIVATE_D02_DELEGATION_ID`/`MODEL`，现零付费）；③云端无 D02 阶段授权端点与一次性 journal（现仅 D00/D01 有 `token`/`issue`/`consume`）。另：既有 `privateD02Request` 仅覆盖 C01 文本，C02 扫页一律落 `PRIVATE_NEXT_STAGE_REQUEST_NOT_READY`；D00 把照片登记为 `carrier_type=scanned_page` 并预选 C02 属方法选择错误，应在新材料/新 run 中纠正，不改旧 L1。八维维持 `0/8 OVERALL_HOLD`；本批 ¥0。
 
