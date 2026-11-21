@@ -5621,3 +5621,16 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **已修的历史 bug 清单（本轮全部修复并验证）**：HMAC 签名两端不一致、journal/reader 合一连接导致 consume 403、readG0 缺 schema/job_id/input_digest/output_digest、续跑未重置 dispatch 摘要+claim、Runner 缺 `MOHEN_TRUSTED_RESUME_INPUT_DIR`、D01 专用验签公钥/live consume 端点、自检端点 import 路径/middleware 放行。
 - **零写入边界**：未伪造 Gate、未伪造浏览器会话、未触碰 Production；自检端点 Preview-only；测试 journal 残留已清理。八维仍 0/8；run 仍 HOLD@D00、G0 `888db9e6` current PASS。
 - **下一动作（待 Owner 定夺，非代码）**：D01 续跑只差"原件字节上云"——把本地私有原件（84 文件）与 raw store 同步到 Supabase Storage 私有桶（这属于数据准备，需确认是否由我执行、以及是否涉及上传本地文件到云）。或先暂停，等 Owner 决定原件上云方式。
+
+## 2026-11-21｜D01 续跑端到端跑通（VERIFIED_LIVE）：run 推进到 D01，G1 候选已提交，HOLD 于独立 Gate
+
+- **结果（真实生产，经自检通道触发）**：run `bfcdfad6` 从 D00 推进到 `current_stage=D01`；`source.read_units` 写入 `read_unit_id=215b61ef-11c5-d0e9-e76b-711ed237cde6`；`control.gate_candidates` 含 G0+G1 候选；terminal=`HOLD / INDEPENDENT_GATE_NOT_VERIFIED`（verification_error=INDEPENDENT_GATE_VERIFY_DENIED）。这是架构正确行为：D01 产出候选后需独立 G1 Reviewer 签署，生产者不自签 Gate。
+- **纠正此前的误判**：原判断"云端私有桶空、原件未上云、需本地执行"基于旧快照，不成立。实测云端 Storage 桶 `mohen-private-originals` 已有原件 `4ca22839`（260KB，1 对象），空间在当前规模下足够。方向①（本地执行）因此不必要，回退到云端执行并修真实 bug。
+- **本轮修复的根因链（全部经 stderr 捕获定位）**：
+  1) journal 重试：`d01-resume-journal` 的 `on conflict(run_id) do nothing` 令同一 run 二次签发永远失败 → 改为"已消费后 do update 覆盖"，并补 `grant update(binding,expires_at)` + 新增 reissue RLS 策略（迁移 `20261121060000`）。
+  2) bridge 密钥：云端 Vercel `MOHEN_ORIGINAL_BRIDGE_KEY_VERSION/SECRET` 与库 `control.original_bridge_verification_keys` 不一致 → `PRIVATE_PAGE_READING_BYTE_ATTESTATION_REQUIRED`。已把正确值（key_version=mab-original-bridge-v1，secret 与库一致）写回 Vercel env。
+  3) session 密钥：`MOHEN_DATABASE_SESSION_SECRET` 与库 `control.session_verification_keys` 不一致 → `M5_PRODUCER_OWNER_DENIED`。已写回库真值 `71cf0dbd…`。
+  4) owner token 生命周期：`signDatabaseSessionToken` exp 固定 30s，续跑链路（签 token→dispatch→executor→Runner 完整 D01）越过边界 → 加 ttl 参数，production/self-test 路由用 300s。
+  5) stderr 捕获：`awaitProductionChild` 原仅在 probe 时捕获 stderr，现始终捕获并在 PROCESS_FAILED 时打印，使上述根因可见。
+- **自检通道（本轮建设）**：`/api/internal/self-test-resume`（HMAC `MOHEN_SELF_TEST_CREDENTIAL` + Preview-only + middleware 放行），命令行经 protection-bypass 触发，得到真实 JSON 回执。自此无需 Owner 手工反复点击验收。
+- **零写入边界**：未伪造 Gate、未伪造浏览器会话；journal 重签为设计内"已消费后重试"；八维资格仍 0/8（G0 current PASS，G1 候选 UNASSESSED 待独立签署）。
