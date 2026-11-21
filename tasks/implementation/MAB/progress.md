@@ -5634,3 +5634,24 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
   5) stderr 捕获：`awaitProductionChild` 原仅在 probe 时捕获 stderr，现始终捕获并在 PROCESS_FAILED 时打印，使上述根因可见。
 - **自检通道（本轮建设）**：`/api/internal/self-test-resume`（HMAC `MOHEN_SELF_TEST_CREDENTIAL` + Preview-only + middleware 放行），命令行经 protection-bypass 触发，得到真实 JSON 回执。自此无需 Owner 手工反复点击验收。
 - **零写入边界**：未伪造 Gate、未伪造浏览器会话；journal 重签为设计内"已消费后重试"；八维资格仍 0/8（G0 current PASS，G1 候选 UNASSESSED 待独立签署）。
+
+## 2026-11-21｜D01→G1 独立签发闭环（`CODE_PRESENT`+`VERIFIED_LIVE`，真实作品首个 G1）
+
+**基线核验**：HEAD `6b6a29c` = origin/main，分叉 0/0，无其他写入方；工作树仅未跟踪 `.tmp_*`/`.mohen/` 与既有未提交 `tasks/results/P0_鉴权矩阵_20261029.csv`（非本批，不动）。CI 宿主本机无 `gh` → `DEFERRED_ENV`，不写 PASS。
+
+**只读事实核对（云端 NOW 09:1xZ）**：run `bfcdfad6` = `HOLD@D01`、终态 `INDEPENDENT_GATE_NOT_VERIFIED / INDEPENDENT_GATE_VERIFY_DENIED`；G0 `888db9e6` PASS/current（valid_until 11-26）；G1 **候选 3 条全 SUBMITTED**、输入指纹同为 `002bb07f…`、同一 `read_unit 215b61ef`/revision `dc8f0ec9`；**无任何 G1 审计**、`qualification_current` 无 G1 行。三处真实缺口：①托管独立 Gate 服务为只读（`/decide` 404），云端无签发方；②`gate-stage-output-attestation.mjs` 原两个 attester 硬性要求 `stage=D00/gate=G0`，任何 D01 阶段输出无法独立重建（Runner 又强制 `details.stage_binding` 精确匹配）；③重复候选令 `selectExactStageCandidate`（要求唯一）永久选不出；另真实项目缺 G1 精确 scope binding。
+
+**变更（CODE_PRESENT，零 DDL、零核心 Gate 函数改动）**：
+- `tools/gate-stage-output-attestation.mjs`：新增 `deriveD01ReadingFacts` / `deriveD01ReadingStageDigests` / `attestG1ReadingStageOutput` / `attestStageOutputForRequest`。非循环口径与 G0 一致：D01 **输入**由 G0 当前批准的方法计划 + `control.production_runs.scope` + 原件事实独立重建；**输出**由 `source.read_units.locator`、`source.read_runs.config->>'request_digest'`、`control.artifact_revision_for('read_unit',…)`、G0 当前审计的 method_plan 批准对象重建，`gate_candidate_id` 取被评候选行自身；C02 扫页与 C01 全文可重建，C01 片段（引文正文不在只读事实内）一律 `STAGE_OUTPUT_TEXT_QUOTE_NOT_ATTESTABLE` 失败关闭。
+- `tools/gate-stage-candidate-selection.mjs`：新增 `selectDigestBoundStageCandidate`——重复 SUBMITTED 候选逐个重建、只认重建摘要与请求严格相符的**唯一**一条，0 条或多条一律 HOLD，不做"取最新/取第一条"。
+- `tools/local-gate-service.mjs`：分派收敛为 `attestStageOutputForRequest`；G1 精确选择失败时回退摘要绑定定位。
+- `tools/rule-gate-reviewer.mjs`：CLI 新增 `--candidate` / `--attest-stage-binding`（signer 自derive 阶段绑定，输入摘要必须等于候选已存 `input_fingerprint` 才继续）；`decide` 失败保留权威层真实拒绝原因（原仅 `command failed`）。
+
+**测试（VERIFIED_ISOLATED）**：`node --test tests/data-production/gate-stage-output-attestation.test.mjs` **12/12 PASS**（新增 6 例：C02 精确重建与 `auditHasExactStageBinding` 通过、Producer 伪造摘要拒绝、stage/gate/job/reviewer/disabled registry/无或双 G0 计划负例、持久事实含糊与篡改负例、C01 全文通过+片段失败关闭、摘要绑定定位唯一/0/多匹配）；全量 `tests/data-production/*.test.mjs` **403 pass / 4 fail**，4 条为既有基线（Windows `--import`/ESM 路径、private-candidate holding、studio 知识路由 source-gap 两例），与本批改动文件无因果。
+
+**真实云端（VERIFIED_LIVE，Owner 本批授权"按此方案开工"）**：①只读重建核对——3 条候选的独立重建输入摘要均等于已存指纹 `002bb07f…`（`input_reproduced=true`），输出摘要按候选各自不同（确认重复候选必须按摘要定位）；②新增机器 signer 的 **G1 精确 scope binding** `ba571016-659f-4503-80c4-54f627050745`（镜像 G0 `d2307be3` 口径：purpose `data-production/m5-remediation/v1`、consumer producer、`{"project_id":e03c4ba8…}`、30 天、active）；③signer 身份 dry-run → `RULE_GATE_REVIEW G1 DRY_RUN_PASS`（identity_version PASS revision `dc8f0ec9`、read_unit_binding PASS `215b61ef`）；④真实签发 → **G1 audit `292792c8-aad1-485d-9e3d-b73d5914c14d` = PASS / independent_gate / consumer producer / current=true / valid_until `2026-11-27T07:38:30Z`**，`details.stage_binding`={job_id `d01.carrier-reading`、consumer producer、input `002bb07f…`、output `fa256f6d…`、reviewer_binding_ref `m5-owner-reviewer-g0g1-producer`}；`qualification_current` 新增 G1 行（`read_unit 215b61ef`、revision `dc8f0ec9`）；候选 `ee37c47b` → `CONSUMED`，另两条重复候选原样保留 SUBMITTED（不可变、不删，后续由摘要绑定选择规避）。
+- **云端连接口径（复现要点，不含凭据）**：signer 走 Supabase pooler 时 URL 用户名需带租户后缀 `mohen_gate_signer_m5_machine.<project-ref>`（写成 `<role>.<ref>.pooler.supabase.com` 主机名会 `ENOTFOUND`，裸角色名会 `ENOIDENTIFIER`）；`authority` CLI 自建池只开 `verify-full` 且不带 CA，必须给子进程 `NODE_EXTRA_CA_CERTS`；读路径用 `MOHEN_DB_DRIVER=pg` + `MOHEN_DATABASE_CA_CERT`；机器审核令牌用云端 `control.session_verification_keys` 进程内派生。诊断附注：`postgres` 角色无 `control.current_qualification_is_valid` 的 EXECUTE（signer 有），admin 探针需等价改写，非判定为 false。
+
+**证据边界（如实记录）**：①原 Runner 进程已退出，D01 那次尝试的 Producer `output_digest` 无留存可比对，本次 `output_digest` 是 **signer 自己从持久事实重建**后绑定（输入侧有候选已存指纹作独立交叉校验）；②单测用 stub query、真实链路证据来自云端实签与回读；③未部署生产、未公众开放、未调用任何付费模型（费用 ¥0）、密钥未入 git/日志/对话。
+
+**HOLD/下一动作**：run 仍 `HOLD@D01`；G1 资格已在库内成立，但 **D01→D02 typed 转换未实现**（现行 `PRIVATE_NEXT_STAGE_REQUEST_NOT_READY`），需另批做 D02 typed 请求 + D02 续跑路径；八维维持 `0/8`。回滚：代码 `git revert` 本批即可；已落库审计与 binding 不删（如需回退可再签新审计使其非当前）。

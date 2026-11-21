@@ -19,6 +19,9 @@ import {
 import { decideRightsActions } from "../packages/data-access/src/rights-actions.mjs";
 // D00-B：C 方法预选以 evidence_refs 类型化引用承载，G0 由本评审器强制校验。
 import { inspectMethodPlanRef, isMethodPlanRef } from "../packages/data-access/src/method-plan-ref.mjs";
+// D01/G1：独立签发时由 signer 自己从库内事实重建阶段输入/输出摘要。
+import { attestStageOutputForRequest, deriveD01ReadingStageDigests } from "./gate-stage-output-attestation.mjs";
+import registry from "../specs/data-production/production-registry.json" with { type: "json" };
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const AUTHORITY_CLI = path.join(ROOT, "..", "packages", "data-access", "scripts", "gate-authority.mjs");
@@ -926,11 +929,18 @@ function argument(name) {
 async function decideThroughAuthority(decision, sessionToken) {
   const url = process.env.MOHEN_GATE_MACHINE_DATABASE_URL;
   if (!url) throw Error("MACHINE_GATE_DATABASE_URL_REQUIRED");
-  const output = execFileSync(process.execPath, [AUTHORITY_CLI, "decide"], {
-    input: JSON.stringify({ decision, sessionToken }),
-    env: { ...process.env, MOHEN_GATE_DATABASE_URL: url },
-    encoding: "utf8",
-  });
+  let output;
+  try {
+    output = execFileSync(process.execPath, [AUTHORITY_CLI, "decide"], {
+      input: JSON.stringify({ decision, sessionToken }),
+      env: { ...process.env, MOHEN_GATE_DATABASE_URL: url },
+      encoding: "utf8",
+    });
+  } catch (error) {
+    // 保留权威层真实拒绝原因（不含凭据），否则只剩一句 command failed。
+    const detail = String(error?.stderr || "").trim().split("\n").slice(0, 4).join(" | ");
+    throw Error(`GATE_DECISION_FAILED ${detail || String(error?.message ?? error).split("\n")[0]}`.slice(0, 600));
+  }
   const parsed = JSON.parse(output.trim() || "{}");
   if (!parsed.gate_audit_id) throw Error("GATE_DECISION_NOT_PERSISTED");
   return parsed.gate_audit_id;
@@ -943,9 +953,43 @@ async function main() {
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(projectId)) {
     throw Error("PROJECT_ARGUMENT_INVALID");
   }
+  const candidateId = argument("candidate");
+  const deriveBinding = process.argv.includes("--attest-stage-binding");
   const query = await openMachineQuery();
-  const reviewer = createRuleGateReviewer({ query, decide: decideThroughAuthority, projectId });
-  const outcome = await reviewer.review({ gate, dryRun: process.argv.includes("--dry-run") });
+  let stageRequest = null;
+  if (deriveBinding) {
+    // The signer derives both stage digests from persisted facts. The
+    // candidate's stored input fingerprint independently cross-checks the input
+    // reconstruction. The output digest has no surviving Producer claim after a
+    // HOLD run, so it is the signer's own derivation and is recorded as such.
+    const rows = await query(`select candidate_id::text as candidate_id, gate_code, stage,
+        object_type, object_id::text as object_id, artifact_revision,
+        allowed_scope::text as scope, consumer, evidence_refs::text as evidence_refs,
+        input_fingerprint, run_id::text as run_id,
+        allowed_scope->>'project_id' as project_id
+      from control.gate_candidates
+      where candidate_id = :'cid'::uuid and gate_code = :'gate'
+        and consumer = 'producer' and candidate_status = 'SUBMITTED'
+      limit 2`, { cid: candidateId, gate });
+    if (!Array.isArray(rows) || rows.length !== 1) throw Error("STAGE_BINDING_CANDIDATE_NOT_UNIQUE");
+    const row = rows[0];
+    if (row.project_id !== projectId) throw Error("STAGE_BINDING_PROJECT_MISMATCH");
+    const candidate = {...row, evidence_refs: JSON.parse(row.evidence_refs || "[]")};
+    const facts = await deriveD01ReadingStageDigests({ query, candidate, projectId, runId: row.run_id });
+    if (facts.input_digest !== row.input_fingerprint) throw Error("STAGE_BINDING_INPUT_NOT_REPRODUCIBLE");
+    const job = registry.jobs?.find(j => j.stage === row.stage);
+    if (!job || job.exit_gate !== gate) throw Error("STAGE_BINDING_JOB_NOT_FOUND");
+    stageRequest = { schema: "mohen.independent-gate-current-check.v1",
+      run_id: row.run_id, job_id: job.job_id, stage: row.stage, gate_code: gate,
+      reviewer_binding_ref: job.implementation?.gate_reviewer_binding,
+      input_digest: row.input_fingerprint, output_digest: facts.output_digest,
+      consumer: "producer" };
+  }
+  const reviewer = createRuleGateReviewer({ query, decide: decideThroughAuthority, projectId,
+    ...(stageRequest ? { attestStageOutput: ({candidate, request}) =>
+      attestStageOutputForRequest({ query, candidate, request, registry, projectId }) } : {}) });
+  const outcome = await reviewer.review({ gate, dryRun: process.argv.includes("--dry-run"),
+    candidateId: candidateId ?? null, stageRequest });
   if (outcome.status === "FAIL") process.exitCode = 1;
 }
 

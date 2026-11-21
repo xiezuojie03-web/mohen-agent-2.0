@@ -18,8 +18,8 @@ import crypto from "node:crypto";
 import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createRuleGateReviewer, RULE_VERSION_BY_GATE } from "./rule-gate-reviewer.mjs";
-import { selectExactStageCandidate } from "./gate-stage-candidate-selection.mjs";
-import { attestG0TextStageOutput, attestG0ImageStageOutput } from "./gate-stage-output-attestation.mjs";
+import { selectExactStageCandidate, selectDigestBoundStageCandidate } from "./gate-stage-candidate-selection.mjs";
+import { attestStageOutputForRequest } from "./gate-stage-output-attestation.mjs";
 import {
   openMachineQuery,
 } from "./machine-reviewer-session.mjs";
@@ -97,6 +97,14 @@ async function findCurrentAudit(query, request) {
   return null;
 }
 
+// Independently reconstruct the reviewed stage output from persisted facts.
+// D00/C01 text, D00/C02 images and D01 readings (C02 page / C01 full text) are
+// reproducible; any other stage keeps failing closed instead of copying hashes.
+function attestStageOutputFor(query, projectId) {
+  return ({candidate, request:stageRequest}) => attestStageOutputForRequest({
+    query, candidate, request:stageRequest, registry:REVIEW_REGISTRY, projectId });
+}
+
 // On-demand signing: find a SUBMITTED candidate for this run+gate+input and
 // run the deterministic rule reviewer. Returns the new audit or null.
 async function autoSign(query, request) {
@@ -106,7 +114,16 @@ async function autoSign(query, request) {
   // Independently locate one exact SUBMITTED stage candidate. Its project
   // scope comes from the signed-in Reviewer's DB read, never from the Producer
   // request or the historical fixed fixture project.
-  const selected = await selectExactStageCandidate(query, request);
+  let selected = await selectExactStageCandidate(query, request);
+  // D01/G1 output embeds its own persisted candidate id, so repeated attempts
+  // leave several SUBMITTED candidates with the same input fingerprint. Locate
+  // the single one whose independently rebuilt output reproduces the requested
+  // digest; zero or several matches stay HOLD.
+  if (!selected && gate_code === "G1")
+    selected = await selectDigestBoundStageCandidate(query, request, {
+      attest: ({candidate, request: stageRequest, projectId}) =>
+        attestStageOutputFor(query, projectId)({candidate, request: stageRequest}),
+    });
   if (!selected) return null;
   try {
     const reviewer = createRuleGateReviewer({
@@ -116,19 +133,7 @@ async function autoSign(query, request) {
       // Carrier is chosen from the candidate's PERSISTED method_plan, never from
       // the Producer request. Each attester independently re-reads content_type
       // and source facts, so a wrong carrier or supplied digest fails closed.
-      attestStageOutput: ({candidate,request:stageRequest}) => {
-        const refs=Array.isArray(candidate?.evidence_refs)?candidate.evidence_refs:[];
-        const methodIds=new Set(refs.filter(r=>r?.kind==='method_plan')
-          .map(r=>String(r.method_id??'')));
-        if(methodIds.size===0||methodIds.size>1)
-          throw Error('STAGE_OUTPUT_CARRIER_METHOD_AMBIGUOUS');
-        const methodId=[...methodIds][0];
-        const args={query,candidate,request:stageRequest,
-          registry:REVIEW_REGISTRY,projectId:selected.projectId};
-        if(methodId==='C02')return attestG0ImageStageOutput(args);
-        if(methodId==='C01')return attestG0TextStageOutput(args);
-        throw Error('STAGE_OUTPUT_CARRIER_NOT_SUPPORTED');
-      },
+      attestStageOutput: attestStageOutputFor(query, selected.projectId),
       log: () => {},
     });
     // Reviewer verifies the candidate's actual project + stable identity.
