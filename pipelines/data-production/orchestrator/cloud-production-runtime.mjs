@@ -26,9 +26,9 @@ export async function claimCloudProductionRun({db,input,verifyOwnerOriginal}){
 }
 export function awaitProductionChild(command,args,options,{timeoutMs=240000,startupProbe=false}={}){
  return new Promise((resolve,reject)=>{
-  const child=spawn(command,args,{...options,stdio:['ignore','ignore',startupProbe?'pipe':'ignore'],detached:false});
+  const child=spawn(command,args,{...options,stdio:['ignore','ignore','pipe'],detached:false});
   let startupError='';
-  child.stderr?.on('data',chunk=>{if(startupError.length<4096)startupError+=chunk.toString().slice(0,4096-startupError.length);});
+  child.stderr?.on('data',chunk=>{if(startupError.length<8192)startupError+=chunk.toString().slice(0,8192-startupError.length);});
   let timedOut=false,kill;
   const timer=setTimeout(()=>{timedOut=true;child.kill('SIGTERM');kill=setTimeout(()=>child.kill('SIGKILL'),1000);},timeoutMs);
   const clear=()=>{clearTimeout(timer);clearTimeout(kill);};
@@ -43,7 +43,7 @@ export function awaitProductionChild(command,args,options,{timeoutMs=240000,star
     else if(/ERR_UNKNOWN_FILE_EXTENSION/.test(startupError))failure='runner_extension_unsupported';
     else if(/SyntaxError/.test(startupError))failure='runner_syntax_invalid';
    }
-   resolve({code,timedOut,...(failure?{failure}:{})});
+   resolve({code,timedOut,stderr:startupError,...(failure?{failure}:{})});
   });
  });
 }
@@ -141,7 +141,10 @@ export async function executeCloudProductionCli({input,projectRoot,environment=p
     '--method-plan',JSON.stringify(input.consumer_method_plan),...resumeArgs,'--to',endStage,'--report-dir',path.join(temp,'reports')],
     {cwd:root,env:{...runnerEnvironment(environment,input.owner_session_token),...childEnvironment,...bootstrap.environment}});
   if(result.timedOut)await holdRun(input,'CLOUD_EXECUTOR_DEADLINE');
-  else if(result.code!==0)await holdRun(input,'CLOUD_EXECUTOR_PROCESS_FAILED');
+  else if(result.code!==0){
+   if(result.stderr)console.error('[runner-stderr]\n'+result.stderr);
+   await holdRun(input,'CLOUD_EXECUTOR_PROCESS_FAILED');
+  }
   let terminal=await readTerminal(input.run_id);
   if(!terminal||!['PASS','HOLD','REJECT','FAILED'].includes(terminal.status)){
    await holdRun(input,'CLOUD_EXECUTOR_TERMINAL_UNAVAILABLE');
