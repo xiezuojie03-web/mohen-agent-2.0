@@ -20,7 +20,9 @@ import https from "node:https";
 
 const PROJECT_ROOT = "D:/work Buddy/2026-08-23-23-12-38/mohen-agent-2.0";
 const RAW_STORE = process.env.MOHEN_RAW_STORE_PATH || "D:/MoHen/data/raw";
-const BASE = "https://data1.library.sh.cn";
+// 2026-11-21 实测：检索端点（gj/*、shnh/dmz/*）在 data1.library.sh.cn 上一律 {"result":"-1"}，
+// 换到 data.library.sh.cn 才正常；BASE 改指后者并保留 SHL_BASE 覆盖。
+const BASE = process.env.SHL_BASE || "https://data.library.sh.cn";
 const USER_AGENT = "MoHenAgent2.0/0.1 (TASK-0011 evidence closure)";
 const THROTTLE_MS = 900;
 const RATE_MSG = ["操作频繁", "請稍後", "请稍后", "稍后再试", "稍後再試", "频繁"];

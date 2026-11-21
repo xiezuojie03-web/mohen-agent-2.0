@@ -8,7 +8,9 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 
-const BASE = process.env.SHL_BASE ?? "https://data1.library.sh.cn";
+// 2026-11-21 实测：dmz 地名志检索在 data1.library.sh.cn 上返回 {"result":"-1"}，
+// 换到 data.library.sh.cn 才返回正文（type=3&freetext=朱家角 有 description 全文）。
+const BASE = process.env.SHL_BASE ?? "https://data.library.sh.cn";
 const arg = (n, d = null) => {
   const i = process.argv.indexOf(`--${n}`);
   return i >= 0 ? process.argv[i + 1] : d;

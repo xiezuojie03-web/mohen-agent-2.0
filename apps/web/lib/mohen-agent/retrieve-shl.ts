@@ -29,7 +29,10 @@ export interface ShlLead {
   endpoint: string;
 }
 
-const BASE = "https://data1.library.sh.cn";
+// 2026-11-21 实测：检索端点（gj/webapi/works、gj/webapi/instances、shnh/dmz/webapi/geonames）
+// 在 data1.library.sh.cn 上已一律返回 {"result":"-1"}（含历史上成功过的 title=松江府志、freetext=金泽），
+// 同一套 query 换到 data.library.sh.cn 才正常返回数据。故 BASE 改指后者，并保留 SHL_BASE 覆盖。
+const BASE = process.env.SHL_BASE || "https://data.library.sh.cn";
 // 实际 .env.local 的变量名是 SHANGHAI_LIBRARY_KEY；旧脚本用 SHANGHAI_LIBRARY_API_KEY，一并兼容。
 const KEY = process.env.SHANGHAI_LIBRARY_KEY || process.env.SHANGHAI_LIBRARY_API_KEY;
 

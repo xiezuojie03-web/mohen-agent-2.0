@@ -12,7 +12,7 @@
 
 **新阻断（环境身份，非代码）**：落私有原件需合规私有 worker 登录；`assertPrivateWorkerIdentity` 拒绝以 NOLOGIN 的 `mohen_private_worker` 直连，而本机 dev 库无 `mohen_m5_worker_login`（迁移 `20261117020000` 未在本机应用，且要求上线前单独轮换口令）→ 按纪律不自行造角色/口令绕过。
 
-**通道可用性（实测）**：archive.org 443 超时；`shidianguji.com` robots 全站 Disallow；`圖書集成` 職方典松江府各卷为 423 B 占位；`三呉水考/卷04`(33,717 B)、`江南通志/卷025`(39,929 B) 均超 32 KiB；**上图开放数据 `gj/webapi/works` 连同既有健康查询一律 `{"result":"-1"}` → 唯一"明确授权来源"通道当前不可用，须 Owner 更换 Key。**
+**通道可用性（实测，第五批已更正）**：archive.org 443 超时；`shidianguji.com` robots 全站 Disallow；`圖書集成` 職方典松江府各卷为 423 B 占位；`三呉水考/卷04`(33,717 B)、`江南通志/卷025`(39,929 B) 均超 32 KiB；**上图通道本身可用——上一批"Key 失效"的判断是错的**：`gj/webapi/works`、`gj/webapi/instances`、`shnh/dmz/webapi/geonames` 在 `data1.library.sh.cn` 上已一律 `{"result":"-1"}`，同一套 query 换到 `data.library.sh.cn` 才正常返回（已改 BASE 并实跑验证）。
 
 **云端真实 run `bfcdfad6-bbcb-4b68-946a-82e1302eeb80` 仍为 `HOLD@D01`**（上批事实，未变）：G0 `888db9e6`、G1 `292792c8` 均 PASS/current；L1 仅一条 `read_unit 215b61ef`（C02 页定位、`interpretation=not_performed`）；原件为 Commons 照片（无 `external_processing`、C04 仍 `HOLD`）；D02 生成仍需付费 Provider（`MOHEN_PRIVATE_D02_DELEGATION_ID`/`MODEL`），云端无 D02 阶段授权端点。八维维持 `0/8 OVERALL_HOLD`；本批 ¥0。
 

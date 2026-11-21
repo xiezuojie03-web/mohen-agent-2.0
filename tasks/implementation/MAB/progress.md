@@ -5720,3 +5720,21 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 **证据边界**：零 DDL、零付费、未签 Gate、未伪造会话与上传。`CODE_PRESENT`（三处工具修复）+ `VERIFIED_ISOLATED`（真实取件字节/SHA、权利 Guard `blocked=[]`、需求与来源登记回读）+ `DEFERRED_ENV`（私有原件落库、云端推进）。回滚：`git revert` 本批；库内新增两行可用撤权或新记录覆盖，不删历史。
 
+
+## 2026-11-21 第五批｜上图通道复核：不是通道坏，是主机/端点用错（Owner 纠正）
+
+**Owner 反馈**：「不可能是坏的，是不是方法不对？」→ 复核成立，上一批结论错误，本批更正并修代码。
+
+**复核证据（全部实跑，同一把 `.env.local` 内的 Key）**：
+- 不带 key：`data1/gj/webapi/works?...` 返回 `{"result":"-1","data":"缺少参数Key"}` → **Key 是被识别的**，上一批"通道坏/需换 Key"的判断不成立。
+- 带 key 但主机为 `data1.library.sh.cn`：`works?title=松江府志`、`works?title=青浦县志`、`works?title=金泽小志`、`shnh/dmz/webapi/geonames/list?type=3&freetext=金泽`（历史上均成功过）**一律 `{"result":"-1"}`**，与参数无关；`works`/`geonames` 的 POST 返回 `550 Request method 'POST' not supported`（GET 方法本身正确）。
+- 同一套 query 换主机 `data.library.sh.cn`：`works?title=松江府志` → `result:0`（多部 work，uri 指向 `data.library.sh.cn`）；`works?title=青浦县志` → `青浦縣志三十首`/`青浦縣誌` 2 条；`instances?freetext=金泽` → 民国地志之屬等版本记录；`instanceInfo?uri=…青浦縣誌` → `result:0` 有数据；`geonames?type=3&freetext=朱家角` → **返回正文**：`description` 含"曾名朱家村、珠街阁、珠溪、珠里…聚落跨井亭港两侧分布…有王昶祠堂、天主教堂、放生桥。淀浦河、朱昆河、朱泖河流经"；`type=2&freetext=朱家角`（镇）→ 建制沿革 + "境内河塘密布，港汊纵横…主要河流有淀浦河、朱泖河、朱昆河"。
+- 与主机无关、两处都可用：`webapi/hsly/route/getEventList`（两主机都返回朱家角相关叙事）、`/sparql`、`webapi/kg/list`（两主机均 0 命中的检索式一致）。
+
+**结论**：检索类端点（`gj/*`、`shnh/dmz/*`）已迁到 `data.library.sh.cn`；仓库三个客户端仍硬编码 `data1.library.sh.cn`，因此在生产链里表现为"通道坏"。
+
+**变更（CODE_PRESENT + VERIFIED_LIVE 冒烟）**：`apps/web/lib/mohen-agent/retrieve-shl.ts`、`pipelines/historical-spatial/shl-client.mjs` 的 BASE 改为 `process.env.SHL_BASE || "https://data.library.sh.cn"`；`tools/fetch-shl-dmz-text.mjs` 的默认值同步改（原本已可 env 覆盖）。以 `node --experimental-strip-types` 直连真实接口调用 `searchShanghaiLibraryMaterials(["金泽","朱家角"])`：`degraded=false`、12 条材料（金澤小志/金澤史氏家譜等书目）——修正前该调用因主机不对而 degraded。
+
+**待办（下一批）**：用已修正的通道把 `shnh/dmz` 地名志正文（朱家角 / 朱家角镇 两条 `description`）作为**上图（Owner 明确授权来源）**的 L0 文本取回并登记，替换本批之前以 wikisource 卷058 试点的取件对象——该正文同时含"放生桥""淀浦河/朱昆河/朱泖河""聚落跨井亭港两侧"，正对研究问题的集镇—水路—桥梁三要素，且体量远小于 32 KiB，可直接走 C01 全文读取。
+
+**证据边界**：本批零 DDL、零付费、未签 Gate、未改 Gate/Worker 判据；Key 仅注入 query，未打印未落盘。回滚：`git revert` 本批。
