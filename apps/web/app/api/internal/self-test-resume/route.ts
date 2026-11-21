@@ -1,7 +1,8 @@
 // 建设期自检通道：只在 Preview + MOHEN_SELF_TEST_ENABLED=true 时启用，受 HMAC
-// 凭据保护。它让施工方（而非 Owner 本人）能从命令行触发一次续跑并读取真实
-// 回执，用于端到端自检。绝不在 Production 生效，绝不签发 Gate、绝不伪造
-// 创作者浏览器会话——只用 Owner 的服务端短时会话做原件 RLS 复核。
+// 凭据保护。它让施工方（而非 Owner 本人）能从命令行触发一次 D00 接收或一次续跑
+// 并读取真实回执，用于端到端自检。D00 接收仍受服务端 MOHEN_D00_APPROVED_RUN
+// 预批准绑定约束。绝不在 Production 生效，绝不签发 Gate、绝不伪造创作者浏览器
+// 会话——只用 Owner 的服务端短时会话做原件 RLS 复核。
 import { NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { getTaskStatus, requestProduction } from "../../../../lib/studio-research";
@@ -39,8 +40,12 @@ export async function POST(req: Request) {
   const originalId = body.original_id;
   const page = body.page_number;
   const fromStage = body.from_stage === "D01" ? "D01" : undefined;
+  // D00 接收同样只经本通道：它不开新的生产入口，仍由服务端 MOHEN_D00_APPROVED_RUN
+  // 预批准绑定（run_id + 输入摘要）把关，未预批准一律拒绝。
+  const endStage = body.end_stage === "D00" ? "D00" : undefined;
   if (!UUID.test(String(taskId)) || !UUID.test(String(originalId)) ||
-      !Number.isSafeInteger(page) || Number(page) < 1 || Number(page) > 10000)
+      !Number.isSafeInteger(page) || Number(page) < 1 || Number(page) > 10000 ||
+      (endStage !== undefined && fromStage !== undefined))
     return NextResponse.json({ ok: false, reason: "self_test_invalid_input" }, { status: 400 });
 
   const task = await getTaskStatus(String(taskId));
@@ -89,7 +94,7 @@ export async function POST(req: Request) {
   const resumeRunId = checkpoint && typeof checkpoint === "object" && !Array.isArray(checkpoint)
     ? (checkpoint as Record<string, unknown>).production_run_id : null;
   const result = await requestProduction(
-    String(taskId), ownerUid as string, undefined, undefined, source, ownerSessionToken, undefined,
+    String(taskId), ownerUid as string, undefined, undefined, source, ownerSessionToken, endStage,
     fromStage === "D01" ? { runId: String(resumeRunId), fromStage: "D01" } : undefined,
   );
   return NextResponse.json({ ok: result.ok, reason: result.reason, run_id: result.run_id });
