@@ -156,5 +156,15 @@ test("qualified C01 reading becomes an exact D02 generation request before D02 a
     assert.equal(received.observation,undefined,'no fabricated professional content');
     assert.deepEqual(received,authorized,'grant must bind the transformed input, not the prior candidate');
     assert.equal(done.stage_results[1].disposition,'HOLD','generation never implies G2');
+    // 同一派生请求必须能被 D02 续跑入口当受信输入接收：否则 G1 合格后仍无法续跑 D02。
+    const {loadTrustedResumeInput}=await import('../../pipelines/data-production/orchestrator/resume-input.mjs');
+    const fs=await import('node:fs'),os=await import('node:os'),path2=await import('node:path');
+    const dir=fs.mkdtempSync(path2.join(os.tmpdir(),'mohen-d02-resume-'));
+    fs.chmodSync(dir,0o700);
+    const file=path2.join(dir,'D02.json');
+    fs.writeFileSync(file,JSON.stringify(received),{mode:0o600});
+    try{
+      assert.deepEqual(loadTrustedResumeInput({stage:'D02',filePath:file,trustedDirectory:dir}),received);
+    }finally{fs.rmSync(dir,{recursive:true,force:true});}
   });
 });

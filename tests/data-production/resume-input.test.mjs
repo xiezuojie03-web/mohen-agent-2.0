@@ -79,8 +79,46 @@ test("M5 batch C parses the D02 observation/link, D03 claim/link and D04/D05 for
   }finally{fs.rmSync(f.root,{recursive:true,force:true});}
  }
 });
-test("M5 batch C rejects mixed D02/D03 shapes, unknown fields and wrong-stage files",()=>{
- const mixed=privateFixture("D02",{readUnitId:randomUUID(),
+function qualifiedReading(){
+ const sourceVersionId=randomUUID(),rawItemId=randomUUID(),rawSha="a".repeat(64);
+ return {schema:"mohen.qualified-private-reading.v1",run_id:randomUUID(),project_id:randomUUID(),
+  root_task_id:randomUUID(),gate_audit_id:randomUUID(),artifact_revision:"b".repeat(64),
+  read_run_id:randomUUID(),source_version_id:sourceVersionId,raw_item_id:rawItemId,raw_sha256:rawSha,
+  extent:{kind:"utf8_byte_range/v1",source_version_id:sourceVersionId,raw_item_id:rawItemId,
+   raw_sha256:rawSha,start_byte:0,end_byte:3,quote_sha256:"d".repeat(64)}};
+}
+test("M5 D02 resume accepts exactly the qualified-reading request the Runner derives",()=>{
+ const f=privateFixture("D02",{readUnitId:randomUUID(),reading:qualifiedReading()});
+ try{
+  assert.deepEqual(loadTrustedResumeInput({stage:"D02",filePath:f.file,trustedDirectory:f.root}),f.input);
+ }finally{fs.rmSync(f.root,{recursive:true,force:true});}
+});
+test("M5 D02 resume refuses loose, mixed or non-contract reading requests",()=>{
+ const malformed=[
+  // 松散读取：缺 readUnitId
+  {reading:qualifiedReading()},
+  // 与 observation 混用
+  {readUnitId:randomUUID(),reading:qualifiedReading(),
+   observation:{h_type:"H05",literal_reading:"均科"}},
+  // 与 legacy link 混用
+  {readUnitId:randomUUID(),reading:qualifiedReading(),evidenceId:randomUUID()},
+  // 非合约 locator 类型
+  {readUnitId:randomUUID(),reading:{...qualifiedReading(),
+   extent:{...qualifiedReading().extent,kind:"scanned_page/v1"}}},
+  // 非 SHA-256 修订号
+  {readUnitId:randomUUID(),reading:{...qualifiedReading(),artifact_revision:"b".repeat(12)}},
+  // 缺当前 G1 审计
+  {readUnitId:randomUUID(),reading:{...qualifiedReading(),gate_audit_id:undefined}},
+ ];
+ for(const extra of malformed){
+  const f=privateFixture("D02",extra);
+  try{
+   assert.throws(()=>loadTrustedResumeInput({stage:"D02",filePath:f.file,trustedDirectory:f.root}),
+     /PRIVATE_EVIDENCE_RESUME_SHAPE_INVALID/);
+  }finally{fs.rmSync(f.root,{recursive:true,force:true});}
+ }
+});
+test("M5 batch C rejects mixed D02/D03 shapes, unknown fields and wrong-stage files",()=>{ const mixed=privateFixture("D02",{readUnitId:randomUUID(),
    observation:{h_type:"H05",literal_reading:"均科",source_voice:"official_gazetteer",
      evidence_type:"gazetteer_tax_quota_observation",uncertainty:{qualification:"UNASSESSED"}},
    evidenceId:randomUUID(),extent:{start_byte:0,end_byte:3},quote:"江",extentOrder:1});

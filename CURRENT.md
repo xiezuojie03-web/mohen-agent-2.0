@@ -1,14 +1,16 @@
 # 墨痕｜当前施工断点
 
-> 核验时间 2026-11-21（批次起始 HEAD `6b6a29c`，local=remote 分叉 0/0，无其他写入方；云端 DB now `2026-11-21T09:1xZ`）｜环境：本地定向测试 + 云端 mohen-cloud 真实签发/回读（机器 signer 与 admin 只读双连接池）；未验证项：CI 宿主（本机 gh 缺失 → `DEFERRED_ENV`，不伪造结论）。B 路径已完成云端 signer 安装、权利事实登记、G0/G1 精确 scope binding、真实 G0 签发与重签（`888db9e6` current）、Runner 低权 reader 消费、D01 typed 校验。**本批（2026-11-21）完成 D01→G1 独立签发闭环**：补齐 D01 阶段输出的独立重建 attester + 重复候选的摘要绑定定位，云端真实签发 G1 审计 `292792c8` 并写入资格。旧审计与旧候选原样保留（详见 progress 2026-11-21 批）。
+> 核验时间 2026-11-21 第二批（批次起始 HEAD `6fc424d`，local=remote 分叉 0/0，无其他写入方）｜环境：本地定向/全量测试 + 云端 admin 只读事实核对；未验证项：CI 宿主（本机 gh 缺失 → `DEFERRED_ENV`）、Vercel 侧 Provider 环境变量（未做未授权外部调用）。
 
-**Studio 已登记原件 → D00 接收已验收 → 独立 G0（`888db9e6`）与 G1（`292792c8`）均已签发 PASS，当前停在 D01→D02 typed 转换前。**
+**本批（2026-11-21 第二批）结论：D02 续跑输入合约已补齐，但真实 run 无法离开 D01——阻断不在代码能力，而在三处授权/素材条件（见下）。**
 
-**真实 run `bfcdfad6-bbcb-4b68-946a-82e1302eeb80` 现状**：`current_stage=D01`、`HOLD`，终态 `INDEPENDENT_GATE_NOT_VERIFIED / INDEPENDENT_GATE_VERIFY_DENIED`（该终态产生于本批签发之前，未重跑）。资格层已成立：G0 `888db9e6` PASS/current（valid_until 11-26）、**G1 `292792c8-aad1-485d-9e3d-b73d5914c14d` PASS/independent_gate/current（valid_until 2026-11-27T07:38Z）**，`qualification_current` 含 `read_unit 215b61ef-11c5-d0e9-e76b-711ed237cde6`（revision `dc8f0ec9…`）；`stage_binding` = {job `d01.carrier-reading`、input `002bb07f…`、output `fa256f6d…`、reviewer `m5-owner-reviewer-g0g1-producer`}。候选 `ee37c47b` = CONSUMED，另两条同输入指纹的重复候选保留 SUBMITTED（不可变，不删）。
+**Studio 已登记原件 → D00 接收已验收 → 独立 G0（`888db9e6`）与 G1（`292792c8`）均已签发 PASS。**
 
-**本批能力（`CODE_PRESENT`+`VERIFIED_ISOLATED`+`VERIFIED_LIVE`）**：①`tools/gate-stage-output-attestation.mjs` 新增 `attestG1ReadingStageOutput`/`deriveD01ReadingStageDigests`/`attestStageOutputForRequest`——D01 输入与输出均从持久事实独立重建（G0 当前批准方法计划、run scope、`read_units.locator`、`read_runs.config.request_digest`、`artifact_revision_for`），C01 仅全文可重建、片段失败关闭；②`selectDigestBoundStageCandidate` 解决重复候选：只认重建摘要严格相符的唯一一条，0/多匹配 HOLD；③`rule-gate-reviewer.mjs` CLI 支持 `--candidate`/`--attest-stage-binding`；④测试 12/12 PASS，全量 `tests/data-production` 403/4（4 条为既有基线）。证据边界：原 Runner 已退出，D01 那次 Producer 的 `output_digest` 无留存，本次绑定摘要为 signer 独立重建（输入侧有候选指纹交叉校验）。
+**真实 run `bfcdfad6-bbcb-4b68-946a-82e1302eeb80` 现状**：`current_stage=D01`、`HOLD`，终态 `INDEPENDENT_GATE_NOT_VERIFIED / INDEPENDENT_GATE_VERIFY_DENIED`（早于 G1 签发，未重跑）。资格层已成立：G0 `888db9e6` PASS/current（valid_until 11-26）、G1 `292792c8-aad1-485d-9e3d-b73d5914c14d` PASS/independent_gate/current（valid_until 2026-11-27T07:38Z）；`stage_binding` = {job `d01.carrier-reading`、input `002bb07f…`、output `fa256f6d…`、reviewer `m5-owner-reviewer-g0g1-producer`}。**本批只读回读：L1 仅一条 `read_unit 215b61ef` = `C02`/`page`/`scanned_page/v1`/`uncertainty.interpretation=not_performed`；项目原件仅 1 份 `image/jpeg`（260,342 B），无 text/plain 原件。**
 
-**下一动作（唯一最前阻断，非凭据问题）**：D01→D02 typed 转换未实现（`PRIVATE_NEXT_STAGE_REQUEST_NOT_READY`），且云执行器只传 `--to`、无 D02 续跑入口；需另批做 D02 typed 请求 + D02 续跑路径，随后才能让真实 run 离开 D01。八维维持 `0/8 OVERALL_HOLD`；零付费模型调用（本批 ¥0）。
+**本批能力（`CODE_PRESENT`+`VERIFIED_ISOLATED`）**：①`adapter-binding.mjs` 新增 `isTypedD02ReadingRequest`（D02 生成请求的纯形状校验，无授权语义）；②`resume-input.mjs` D02 受信输入接受 orchestrator 派生的 `readUnitId + reading` 形态，并把 qualified reading / observation / legacy link 定为三选一互斥——修复前该派生请求会被续跑入口拒绝，即"G1 合格也无法续跑 D02"；③测试：定向 15/15 PASS，全量 `tests/data-production` 409 tests / 405 pass / 4 fail（4 条为既有基线）。零 DDL、零付费、未改核心 Gate 与 Worker 判据。
+
+**下一动作（最前阻断，需 Owner 裁决，三者缺一不可）**：①C02 扫页 → 可验文本的转录路径（授权 OCR/VLM Tool，或改用 `text/plain` 原件；D02 Worker 硬性要求 `method_code==='C01'` + 原文 `text/plain` + `utf8_byte_range/v1`）；②D02 H05 生成的付费 Provider 委派/预算/权利（`MOHEN_PRIVATE_D02_DELEGATION_ID`/`MODEL`，现为零付费窗口）；③云端 D02 阶段授权端点与一次性 journal（现仅 D00/D01 有 `token`/`issue`/`consume`）。另：既有 `privateD02Request` 仅覆盖 C01 文本，C02 扫页一律落 `PRIVATE_NEXT_STAGE_REQUEST_NOT_READY`。八维维持 `0/8 OVERALL_HOLD`；本批 ¥0。
 
 > **历史回执（2026-11-19 工程数据统一专项 P0–P4）已结案**：唯一结论见 [P4 结案书](tasks/results/P4_CLOSURE_20261120.md)，完整证据见 `tasks/results/MAB/ENGINEERING_DATA_UNIFICATION/`。背景细节不再重述。
 

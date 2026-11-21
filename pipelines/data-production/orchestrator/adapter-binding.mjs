@@ -113,6 +113,28 @@ export function isTypedD01Carrier(input) {
   return false;
 }
 
+/** Pure, authorization-free shape check of the D02 generation request the
+ * orchestrator derives from a current-qualified C01 reading. D02's professional
+ * Worker independently re-reads every field (read_unit, revision, locator,
+ * G1 current, original bytes) and still owns all access decisions; this only
+ * keeps a resumed D02 input inside the one contract shape instead of accepting
+ * any object that happens to carry schema/stage/originalId. */
+export function isTypedD02ReadingRequest(input) {
+  if(!input||input.schema!==PRIVATE_REQUEST_SCHEMA||input.stage!=="D02"||
+     !UUID_RE.test(input.originalId??'')||!UUID_RE.test(input.readUnitId??''))return false;
+  const r=input.reading;
+  if(!r||typeof r!=="object"||Array.isArray(r))return false;
+  if(r.schema!=="mohen.qualified-private-reading.v1"||
+     ![r.run_id,r.project_id,r.root_task_id,r.gate_audit_id,r.read_run_id,
+       r.source_version_id,r.raw_item_id].every(v=>UUID_RE.test(v??''))||
+     ![r.artifact_revision,r.raw_sha256].every(v=>SHA_RE.test(v??'')))return false;
+  const e=r.extent;
+  return Boolean(e&&typeof e==="object"&&e.kind==="utf8_byte_range/v1"&&
+    SHA_RE.test(e.quote_sha256??'')&&
+    Number.isSafeInteger(e.start_byte)&&Number.isSafeInteger(e.end_byte)&&
+    e.start_byte>=0&&e.end_byte>e.start_byte);
+}
+
 function containsPrivateRequest(input) {
   const seen = new WeakSet();
   function visit(value) {

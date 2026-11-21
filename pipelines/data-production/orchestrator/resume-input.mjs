@@ -2,7 +2,7 @@
 // stage. Reading a file grants no execution, Owner access, or Gate PASS.
 import fs from "node:fs";
 import path from "node:path";
-import { isTypedD01Carrier } from "./adapter-binding.mjs";
+import { isTypedD01Carrier, isTypedD02ReadingRequest } from "./adapter-binding.mjs";
 
 const MAX=128*1024;
 const STAGES=new Set(["D01","D02","D03","D04","D05"]);
@@ -14,10 +14,11 @@ const PRIVATE_FIELDS={
   // validated by isTypedD01Carrier, the same authority used by Gate binding;
   // this list only bounds the allowed key set.
   D01:new Set(["schema","stage","originalId","extent","quote","page","text","method_plan"]),
-  // D02 accepts either the new H05 observation form, or the legacy text
+  // D02 accepts the H05 observation form the orchestrator derives from a
+  // current-qualified C01 reading (readUnitId + reading), or the legacy text
   // bridge link form. D03 accepts either the new W07 claim form, or the
   // legacy claim link form. D04/D05 have exactly one form each.
-  D02:new Set(["schema","stage","originalId","readUnitId","observation",
+  D02:new Set(["schema","stage","originalId","readUnitId","reading","observation",
     "evidenceId","extent","quote","extentOrder"]),
   D03:new Set(["schema","stage","originalId","evidenceId","claim","claimRevisionId","supportType"]),
   D04:new Set(["schema","stage","originalId","claimRevisionId","finding"]),
@@ -31,8 +32,12 @@ const PRIVATE_SHAPE={
     // the same authority the Gate binding uses, so resume and Gate agree.
     return isTypedD01Carrier(value)?"scanned_page":"invalid";
   },
-  // D02/D03 互斥形态：observation 或 link 二选一，混用即失败关闭。
+  // D02/D03 互斥形态：qualified reading、observation 或 link 三选一，混用即失败关闭。
   D02(value){
+    if(value.reading!==undefined)
+      return value.observation===undefined&&value.evidenceId===undefined&&
+        value.extent===undefined&&value.quote===undefined&&value.extentOrder===undefined&&
+        isTypedD02ReadingRequest(value)?"qualified_reading":"invalid";
     if(value.observation)return value.evidenceId===undefined&&value.extent===undefined&&
       value.quote===undefined&&value.extentOrder===undefined?"observation":"invalid";
     return value.evidenceId!==undefined&&value.extent!==undefined&&value.quote!==undefined?"link":"invalid";

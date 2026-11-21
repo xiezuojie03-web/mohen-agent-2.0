@@ -5655,3 +5655,27 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 **证据边界（如实记录）**：①原 Runner 进程已退出，D01 那次尝试的 Producer `output_digest` 无留存可比对，本次 `output_digest` 是 **signer 自己从持久事实重建**后绑定（输入侧有候选已存指纹作独立交叉校验）；②单测用 stub query、真实链路证据来自云端实签与回读；③未部署生产、未公众开放、未调用任何付费模型（费用 ¥0）、密钥未入 git/日志/对话。
 
 **HOLD/下一动作**：run 仍 `HOLD@D01`；G1 资格已在库内成立，但 **D01→D02 typed 转换未实现**（现行 `PRIVATE_NEXT_STAGE_REQUEST_NOT_READY`），需另批做 D02 typed 请求 + D02 续跑路径；八维维持 `0/8`。回滚：代码 `git revert` 本批即可；已落库审计与 binding 不删（如需回退可再签新审计使其非当前）。
+
+## 2026-11-21 第二批｜D02 续跑输入合约补齐与 D02 真实阻断定位（`CODE_PRESENT`+`VERIFIED_ISOLATED`，无 live 推进）
+
+**基线核验**：HEAD `6fc424d` = origin/main，分叉 0/0；工作树仅既有未提交 `tasks/results/P0_鉴权矩阵_20261029.csv`（非本批，不动）与未跟踪 `.tmp_*`/`.mohen/`。CI 宿主本机无 `gh` → `DEFERRED_ENV`。
+
+**设计核对（先读设计再动手）**：`tasks/results/MAB/D01_RESUME_DESIGN_20261120.md` 段 A—E、`M5_D00_D05_FULL_CHAIN_INHERITANCE_CURRENT.md` §3 D02 行（"先消费真实 L1/G1 并构造符合合同的 D02 输入…不新建 D02 或用手工观察冒充自动生成"）、`governance/mhka/MHKA-03/04`（OCR/VLM 属未连接的 Tool；未连接即 HOLD）。
+
+**只读事实核对（云端 admin 只读连接）**：run `bfcdfad6` scope = project `e03c4ba8…` / original `4ca22839…` / page 1 / root `53ad1a29…`；L1 仅一条 **`read_unit 215b61ef` = method_code `C02`、kind `page`、locator `scanned_page/v1`、`uncertainty.interpretation=not_performed`**；项目原件仅 1 份 `image/jpeg`（260,342 B，`STORED_VERIFIED`），**无 text/plain 原件**。
+
+**本批定位的四处真实缺口（非凭据问题）**：
+1. **C01→D02 typed 派生早已存在**（`orchestrator.mjs` `privateD02Request`，712a08b 起）：CURRENT 旧表述"D01→D02 typed 转换未实现"不精确——缺的是 **C02 扫页**这一情形，且该函数对 `candidate_kind!=='private_text_reading'`/`extent.kind!=='utf8_byte_range/v1'` 一律返回 null → 落到通用 `PRIVATE_NEXT_STAGE_REQUEST_NOT_READY`。
+2. **D02 专业 Worker 只吃 C01 文本**：`observeMaterial` 的 `reading` 形态硬性要求 `reading.method_code==='C01'`、原件 `content_type==='text/plain'`、`utf8_byte_range/v1` 字节区间；扫页图无转录可验，按 MHKA-03/04，OCR/VLM Tool 未连接时保持 HOLD，不得手工编造观察。
+3. **D02 生成必须付费用 Provider**：`private-evidence-binding.mjs` `generateMaterialObservation` 缺 `MOHEN_PRIVATE_D02_DELEGATION_ID`/`MOHEN_PRIVATE_D02_MODEL` 即 `PRIVATE_D02_GENERATION_CONFIG_REQUIRED`；本批零付费授权，未调用任何模型。
+4. **云端无 D02 执行授权入口**：`apps/d00-authority/api` 仅 `token`/`consume`/`current` 与 D01 的 `d01-token`/`d01-issue`/`d01-consume`；D02 无阶段 grant 端点，`run.mjs --from D02` 拿不到阶段令牌。
+
+**变更（CODE_PRESENT，零 DDL、零付费、未动核心 Gate 与 Worker 判据）**：
+- `pipelines/data-production/orchestrator/adapter-binding.mjs`：新增 `isTypedD02ReadingRequest`——纯形状校验（schema/stage/originalId/readUnitId + `mohen.qualified-private-reading.v1` 的 run/project/root/gate_audit/read_run/source_version/raw_item UUID、两条 SHA-256、`utf8_byte_range/v1` 区间与 `quote_sha256`），不含任何授权语义，Worker 仍独立重读全部字段。
+- `pipelines/data-production/orchestrator/resume-input.mjs`：D02 受信输入白名单补 `reading`，形态判据改为 **qualified reading / observation / legacy link 三选一互斥**。修复前，Runner 自己派生的 D02 typed 请求会在续跑入口被判 `PRIVATE_EVIDENCE_RESUME_SHAPE_INVALID`（G1 合格也无法续跑 D02），属两个既有特性的接口不一致。
+
+**测试（VERIFIED_ISOLATED）**：定向 `node --test tests/data-production/resume-input.test.mjs tests/data-production/orchestrator.test.mjs` **15/15 PASS**（新增 2 例：派生请求被受信续跑入口逐字接收；6 类松散/混用/非合约形态全部失败关闭；另在既有 E_L1_TO_D02 用例中加"派生的 D02 请求写盘后由 `loadTrustedResumeInput` 回读"闭环断言）。全量 `node --test "tests/data-production/*.test.mjs"` **409 tests / 405 pass / 4 fail**，4 条与上批同源既有基线（真实 CLI 动态令牌、D00 intake observation、路由 payload 越界、空项目 source gap），与本批改动文件无因果。
+
+**证据边界（如实记录）**：本批**没有**推进真实 run；无 live 签发、无 DDL、无付费调用（¥0）、密钥未入 git/日志/对话。真实 run 仍 `HOLD@D01`。
+
+**HOLD/下一动作**：要把真实 run 推进到 D02，必须先由 Owner 在三件事上裁决（缺一不可）：①C02 扫页 → 可验文本的转录路径（需授权 OCR/VLM Tool，或改走 `text/plain` 原件）；②D02 H05 生成的付费 Provider 委派/预算/权利（现为零付费窗口）；③D02 阶段授权端点与其一次性 journal（现只有 D00/D01）。回滚：`git revert` 本批即可，无持久副作用。
