@@ -4,7 +4,7 @@
 // 预批准绑定约束。绝不在 Production 生效，绝不签发 Gate、绝不伪造创作者浏览器
 // 会话——只用 Owner 的服务端短时会话做原件 RLS 复核。
 import { NextResponse } from "next/server";
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { getTaskStatus, requestProduction } from "../../../../lib/studio-research";
 import { signDatabaseSessionToken } from "../../../../lib/auth";
 import { createPrivateOriginalRepository, getNodePgPool } from "@mohen/data-access";
@@ -48,6 +48,24 @@ export async function POST(req: Request) {
       catch { endpoints[key] = null; }
     }
     return NextResponse.json({ ok: true, readiness: cloudExecutionReadiness(process.env), endpoints }, { headers: { "cache-control": "no-store" } });
+  }
+  // 落库修复：把已在库内登记为 STORED_VERIFIED、但对象字节缺失的原件，按同一 storage key
+  // 重放字节。只接受与 private_originals.sha256 完全一致的字节，因此无法借此写入新内容。
+  if (body.repair === "original_bytes") {
+    const originalId = String(body.original_id ?? "");
+    if (!UUID.test(originalId)) return NextResponse.json({ ok: false, reason: "invalid_original" }, { status: 400 });
+    const rows = await getNodePgPool().query(
+      "select storage_key, sha256, content_type from studio.private_originals where original_id = $1 and state = 'STORED_VERIFIED'",
+      [originalId]);
+    if (!rows.rows.length) return NextResponse.json({ ok: false, reason: "original_not_found" }, { status: 404 });
+    const row = rows.rows[0];
+    const bytes = Buffer.from(String(body.bytes_b64 ?? ""), "base64");
+    if (!bytes.length) return NextResponse.json({ ok: false, reason: "bytes_required" }, { status: 400 });
+    const sha = createHash("sha256").update(bytes).digest("hex");
+    if (sha !== row.sha256) return NextResponse.json({ ok: false, reason: "byte_sha_mismatch" }, { status: 409 });
+    const { createPrivateOriginalStorage } = await import("@mohen/data-access");
+    await createPrivateOriginalStorage().putVerified(row.storage_key, bytes, String(row.content_type ?? "application/octet-stream"));
+    return NextResponse.json({ ok: true, repaired: true, key: row.storage_key, sha256: sha, byte_size: bytes.length }, { headers: { "cache-control": "no-store" } });
   }
   const originalId = body.original_id;
   const page = body.page_number;
