@@ -65,7 +65,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   let source:ProductionOriginal;
   let ownerSessionToken:string;
   try{
-    const pool=getNodePgPool(),token=signDatabaseSessionToken(session);
+    const pool=getNodePgPool(),token=signDatabaseSessionToken(session,300_000);
     ownerSessionToken=token;
     const original=await createPrivateOriginalRepository(pool).getStored(originalId,token);
     if(!original||original.project_id!==project||original.state!=="STORED_VERIFIED"||

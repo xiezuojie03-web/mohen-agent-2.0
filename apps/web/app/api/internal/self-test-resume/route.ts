@@ -60,7 +60,7 @@ export async function POST(req: Request) {
   let ownerSessionToken: string;
   try {
     const pool = getNodePgPool();
-    const token = signDatabaseSessionToken({ uid: ownerUid as string, r: [] });
+    const token = signDatabaseSessionToken({ uid: ownerUid as string, r: [] }, 300_000);
     ownerSessionToken = token;
     const original = await createPrivateOriginalRepository(pool).getStored(String(originalId), token);
     if (!original || original.project_id !== project || original.state !== "STORED_VERIFIED" ||
