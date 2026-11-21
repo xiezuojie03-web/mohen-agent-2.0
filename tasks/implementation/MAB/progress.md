@@ -5794,3 +5794,18 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 **全量**：`pnpm test` = 111 files（102 passed / 7 failed / 2 skipped），失败 14 例集中在 `private-evidence-binding`(4)、`mab-hp08-studio-routes`(2)、`mab-m5-qualified-retrieve`(7)、`mab-hp08-production-reservation`(1) 与 3 个因本地缺 `@vercel/oidc` 而无法加载的套件（`production-trigger`/`studio-cloud-production`/`studio-private-handoff`）；均为既有基线，与本批改动无交集。`ISOLATION_VERDICT real_db_untouched=YES`。
 
 **边界**：零付费、未调用任何模型、未改 Gate/Worker 判据、未写库结构、未推进真实 run。C04 在方法表仍是 `implementation_binding: HOLD`——**契约已可执行，模型执行者尚未接入**；这属 Owner 决定项（本地模型 vs 按量 API vs 保持 HOLD）。
+
+## 2026-11-21 第九批｜Owner 裁定：暂缓视觉路径，主线转文本/结构化数据
+
+**裁定**：本批按 Owner 2026-11-21 指示放弃"本机跑 2B 视觉模型"的实测路径，主线回到**文本（C01 直读）与结构化数据（C05）**。
+
+**已执行的技术核实（保留为结论，不再重复试）**：
+- 本机硬件：i7-8550U（4C8T）/ 7.8 GB RAM / MX150（系统报 4 GB，以专用显存实测为准）/ D 盘 225.5 GB；无 `nvidia-smi`、无 Ollama，Python 3.14.7 + torch 2.13.0+**CPU**（`cuda=False`）。→ 8B 级视觉模型不可用（权重 5—6 GB 超出显存与内存卸载能力）。
+- 网络：`ollama.com/download/OllamaSetup.exe` 307 重定向到 GitHub Releases（实测总长 **1,857,946,272 B**）；直连与系统代理（`127.0.0.1:11719` **无监听**）均在传输中被重置；`gh-proxy.com` 可通但速率仅 **0.16 MB/s**（余量需约 100 分钟）；`hf-mirror.com` 可通且较快（实测 20 MB 拉取顺畅、模型约 1.0—1.5 MB/s）；`registry.ollama.ai` 可达（`/v2/` 返回 404 属正常）。
+- 结论：本机即便装上也只能得到"每张图十几秒到分钟级"的不可用性能，与工作站的 24 GB+ 显存方案相比无决策价值。
+
+**清理**：删除 `D:\temp` 全部下载痕迹（`OllamaSetup.exe` 804.6 MB、`qv2b-q4km.gguf` 708.4 MB、`llama-vulkan.zip` 37.1 MB、`_speedtest.bin` 20 MB 及空目录），未安装 Ollama，无 `~/.ollama` 残留。
+
+**保留**：`2c11cee` 的 C04 观察契约（`c04-observation-contract.mjs`，18/18）保留在库中——它是模型无关的形状与边界判定，工作站到位后可原样启用；**方法表中 C04 仍为 `implementation_binding: HOLD`**，本批未改任何绑定。
+
+**下一步**：主线回到文本/结构化数据；具体任务见 `CURRENT.md` 顶部与 PLAN 相应章节。
