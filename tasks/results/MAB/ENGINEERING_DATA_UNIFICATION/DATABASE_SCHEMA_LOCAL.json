@@ -1,6 +1,5 @@
 {
- "label": "local",
- "extracted_at": "2026-11-19T03:25:26.799Z",
+ "extracted_at": "2026-11-21T10:43:48.700Z",
  "server": {
   "db": "mohen_dev",
   "version": "18.6",
@@ -51,6 +50,42 @@
     "not_null": true,
     "default_expr": "now()",
     "ordinal": 3
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "column": "run_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 1
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "column": "binding",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 2
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "column": "expires_at",
+    "type": "timestamp with time zone",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 3
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "column": "consumed_at",
+    "type": "timestamp with time zone",
+    "not_null": false,
+    "default_expr": null,
+    "ordinal": 4
    },
    {
     "schema": "control",
@@ -9197,6 +9232,12 @@
    },
    {
     "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "rls_enabled": true,
+    "rls_forced": false
+   },
+   {
+    "schema": "control",
     "table": "gate_audits",
     "rls_enabled": false,
     "rls_forced": false
@@ -9808,6 +9849,48 @@
     "name": "artifact_content_columns_registered_at_not_null",
     "type": "n",
     "definition": "NOT NULL registered_at"
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "name": "d00_execution_grant_journal_binding_check",
+    "type": "CHECK",
+    "definition": "CHECK ((jsonb_typeof(binding) = 'object'::text))"
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "name": "d00_execution_grant_journal_binding_not_null",
+    "type": "n",
+    "definition": "NOT NULL binding"
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "name": "d00_execution_grant_journal_check",
+    "type": "CHECK",
+    "definition": "CHECK (((((binding ->> 'run_id'::text) = (run_id)::text) AND ((binding ->> 'stage'::text) = 'D00'::text) AND ((binding ->> 'job_id'::text) = 'd00.source-intake'::text) AND ((binding ->> 'mode'::text) = 'attended'::text)) IS TRUE))"
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "name": "d00_execution_grant_journal_expires_at_not_null",
+    "type": "n",
+    "definition": "NOT NULL expires_at"
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "name": "d00_execution_grant_journal_pkey",
+    "type": "PRIMARY KEY",
+    "definition": "PRIMARY KEY (run_id)"
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "name": "d00_execution_grant_journal_run_id_not_null",
+    "type": "n",
+    "definition": "NOT NULL run_id"
    },
    {
     "schema": "control",
@@ -18548,6 +18631,12 @@
    },
    {
     "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "name": "d00_execution_grant_journal_pkey",
+    "definition": "CREATE UNIQUE INDEX d00_execution_grant_journal_pkey ON control.d00_execution_grant_journal USING btree (run_id)"
+   },
+   {
+    "schema": "control",
     "table": "gate_audits",
     "name": "gate_audits_pkey",
     "definition": "CREATE UNIQUE INDEX gate_audits_pkey ON control.gate_audits USING btree (gate_audit_id)"
@@ -19724,6 +19813,33 @@
     "name": "k5_content_columns",
     "command": "SELECT",
     "roles": "{mohen_gate_authority}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "name": "d00_grant_journal_consume",
+    "command": "UPDATE",
+    "roles": "{mohen_d00_grant_journal}",
+    "qual": "((consumed_at IS NULL) AND (expires_at > statement_timestamp()))",
+    "with_check": "(consumed_at = statement_timestamp())"
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "name": "d00_grant_journal_issue",
+    "command": "INSERT",
+    "roles": "{mohen_d00_grant_journal}",
+    "qual": null,
+    "with_check": "((consumed_at IS NULL) AND (expires_at > statement_timestamp()) AND (expires_at <= (statement_timestamp() + '00:05:00'::interval)))"
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "name": "d00_grant_journal_read",
+    "command": "SELECT",
+    "roles": "{mohen_d00_grant_journal}",
     "qual": "true",
     "with_check": null
    },
@@ -22098,6 +22214,13 @@
     "memberships": null
    },
    {
+    "name": "mohen_d00_grant_journal",
+    "rolsuper": false,
+    "rolbypassrls": false,
+    "rolcanlogin": false,
+    "memberships": null
+   },
+   {
     "name": "mohen_editorial_operator",
     "rolsuper": false,
     "rolbypassrls": false,
@@ -22196,6 +22319,36 @@
    {
     "table_schema": "control",
     "table_name": "artifact_content_columns",
+    "grantee": "mohen_producer",
+    "privilege_type": "UPDATE"
+   },
+   {
+    "table_schema": "control",
+    "table_name": "d00_execution_grant_journal",
+    "grantee": "mohen_d00_grant_journal",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "control",
+    "table_name": "d00_execution_grant_journal",
+    "grantee": "mohen_producer",
+    "privilege_type": "DELETE"
+   },
+   {
+    "table_schema": "control",
+    "table_name": "d00_execution_grant_journal",
+    "grantee": "mohen_producer",
+    "privilege_type": "INSERT"
+   },
+   {
+    "table_schema": "control",
+    "table_name": "d00_execution_grant_journal",
+    "grantee": "mohen_producer",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "control",
+    "table_name": "d00_execution_grant_journal",
     "grantee": "mohen_producer",
     "privilege_type": "UPDATE"
    },
@@ -25427,15 +25580,16 @@
  ],
  "row_counts": {
   "control.artifact_content_columns": 234,
+  "control.d00_execution_grant_journal": 1,
   "control.gate_audits": 802,
-  "control.gate_candidates": 123,
+  "control.gate_candidates": 124,
   "control.gate_policy_versions": 6,
   "control.gate_reviewer_bindings": 46,
-  "control.gate_service_credentials": 0,
+  "control.gate_service_credentials": 1,
   "control.invalidation_events": 22,
   "control.original_bridge_verification_keys": 1,
   "control.owner_reviews": 0,
-  "control.production_runs": 135,
+  "control.production_runs": 138,
   "control.qualification_current": 49,
   "control.session_verification_keys": 1,
   "control.web_session_revocations": 0,
@@ -25459,9 +25613,9 @@
   "public.imported_materials": 0,
   "public.notifications": 0,
   "public.policies": 0,
-  "public.research_events": 201,
-  "public.research_tasks": 43,
-  "public.study_asset_receipts": 312,
+  "public.research_events": 219,
+  "public.research_tasks": 44,
+  "public.study_asset_receipts": 350,
   "public.users": 8,
   "public.watch_sessions": 2,
   "public.work_engagement": 0,
@@ -25478,31 +25632,31 @@
   "read_model.map_timeline_projections": 9,
   "read_model.story_seeds": 46,
   "read_model.world_projections": 18,
-  "source.acquisition_attempts": 27,
-  "source.acquisition_coverages": 21,
-  "source.acquisition_methods": 6,
-  "source.candidate_verifications": 14,
+  "source.acquisition_attempts": 28,
+  "source.acquisition_coverages": 22,
+  "source.acquisition_methods": 7,
+  "source.candidate_verifications": 15,
   "source.original_provider_traces": 5,
-  "source.priority_assessments": 14,
-  "source.raw_items": 188,
+  "source.priority_assessments": 15,
+  "source.raw_items": 191,
   "source.read_handoffs": 0,
   "source.read_quality_checks": 0,
   "source.read_runs": 24,
   "source.read_units": 259,
-  "source.resource_catalog": 23,
-  "source.source_needs": 17,
-  "source.source_versions": 128,
-  "source.sources": 51,
-  "studio.asset_heads": 110,
+  "source.resource_catalog": 24,
+  "source.source_needs": 19,
+  "source.source_versions": 131,
+  "source.sources": 55,
+  "studio.asset_heads": 114,
   "studio.asset_links": 3,
-  "studio.asset_revisions": 111,
+  "studio.asset_revisions": 115,
   "studio.delegations": 25,
   "studio.director_plans": 3,
   "studio.execution_control_events": 11,
   "studio.execution_controls": 4,
   "studio.execution_receipts": 23,
-  "studio.private_originals": 90,
-  "studio.projects": 16,
+  "studio.private_originals": 93,
+  "studio.projects": 17,
   "studio.reference_kinds": 18,
   "studio.submission_snapshots": 5,
   "studio.use_events": 8,

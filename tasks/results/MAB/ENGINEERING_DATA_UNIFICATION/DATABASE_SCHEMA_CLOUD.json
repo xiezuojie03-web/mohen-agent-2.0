@@ -1,6 +1,6 @@
 {
  "label": "cloud",
- "extracted_at": "2026-11-19T03:25:38.573Z",
+ "extracted_at": "2026-11-21T10:43:58.295Z",
  "server": {
   "db": "postgres",
   "version": "17.11",
@@ -21,6 +21,105 @@
    "world"
   ],
   "columns": [
+   {
+    "schema": "control",
+    "table": "artifact_content_columns",
+    "column": "kind",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 1
+   },
+   {
+    "schema": "control",
+    "table": "artifact_content_columns",
+    "column": "column_name",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 2
+   },
+   {
+    "schema": "control",
+    "table": "artifact_content_columns",
+    "column": "registered_at",
+    "type": "timestamp with time zone",
+    "not_null": true,
+    "default_expr": "now()",
+    "ordinal": 3
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "column": "run_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 1
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "column": "binding",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 2
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "column": "expires_at",
+    "type": "timestamp with time zone",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 3
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "column": "consumed_at",
+    "type": "timestamp with time zone",
+    "not_null": false,
+    "default_expr": null,
+    "ordinal": 4
+   },
+   {
+    "schema": "control",
+    "table": "d01_resume_grant_journal",
+    "column": "run_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 1
+   },
+   {
+    "schema": "control",
+    "table": "d01_resume_grant_journal",
+    "column": "binding",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 2
+   },
+   {
+    "schema": "control",
+    "table": "d01_resume_grant_journal",
+    "column": "expires_at",
+    "type": "timestamp with time zone",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 3
+   },
+   {
+    "schema": "control",
+    "table": "d01_resume_grant_journal",
+    "column": "consumed_at",
+    "type": "timestamp with time zone",
+    "not_null": false,
+    "default_expr": null,
+    "ordinal": 4
+   },
    {
     "schema": "control",
     "table": "gate_audits",
@@ -3551,6 +3650,51 @@
    },
    {
     "schema": "public",
+    "table": "assets",
+    "column": "original_id",
+    "type": "uuid",
+    "not_null": false,
+    "default_expr": null,
+    "ordinal": 12
+   },
+   {
+    "schema": "public",
+    "table": "assets",
+    "column": "source_id",
+    "type": "uuid",
+    "not_null": false,
+    "default_expr": null,
+    "ordinal": 13
+   },
+   {
+    "schema": "public",
+    "table": "assets",
+    "column": "page_locator",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": "'{}'::jsonb",
+    "ordinal": 14
+   },
+   {
+    "schema": "public",
+    "table": "assets",
+    "column": "content_sha256",
+    "type": "text",
+    "not_null": false,
+    "default_expr": null,
+    "ordinal": 15
+   },
+   {
+    "schema": "public",
+    "table": "assets",
+    "column": "rights_by_action",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": "'{}'::jsonb",
+    "ordinal": 16
+   },
+   {
+    "schema": "public",
     "table": "conversations",
     "column": "conversation_id",
     "type": "uuid",
@@ -3710,6 +3854,24 @@
     "not_null": false,
     "default_expr": null,
     "ordinal": 12
+   },
+   {
+    "schema": "public",
+    "table": "director_plans",
+    "column": "source_ids",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": "'[]'::jsonb",
+    "ordinal": 13
+   },
+   {
+    "schema": "public",
+    "table": "director_plans",
+    "column": "project_id",
+    "type": "uuid",
+    "not_null": false,
+    "default_expr": null,
+    "ordinal": 14
    },
    {
     "schema": "public",
@@ -4379,6 +4541,150 @@
    },
    {
     "schema": "publication",
+    "table": "editorial_decisions",
+    "column": "decision_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 1
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "column": "work_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 2
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "column": "revision_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 3
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "column": "project_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 4
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "column": "submission_snapshot_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 5
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "column": "decision",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 6
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "column": "operator_id",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 7
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "column": "operator_role",
+    "type": "text",
+    "not_null": true,
+    "default_expr": "'editorial_operator'::text",
+    "ordinal": 8
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "column": "content_hash",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 9
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "column": "artifact_revision",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 10
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "column": "knowledge_gate_audit_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 11
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "column": "rights_snapshot",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": "'{}'::jsonb",
+    "ordinal": 12
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "column": "rights_gaps",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": "'[]'::jsonb",
+    "ordinal": 13
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "column": "notes",
+    "type": "text",
+    "not_null": true,
+    "default_expr": "''::text",
+    "ordinal": 14
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "column": "idempotency_key",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 15
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "column": "created_at",
+    "type": "timestamp with time zone",
+    "not_null": true,
+    "default_expr": "now()",
+    "ordinal": 16
+   },
+   {
+    "schema": "publication",
     "table": "publication_schedules",
     "column": "schedule_id",
     "type": "uuid",
@@ -4424,6 +4730,114 @@
    },
    {
     "schema": "publication",
+    "table": "publication_snapshots",
+    "column": "publication_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 1
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "column": "work_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 2
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "column": "revision_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 3
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "column": "project_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 4
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "column": "decision_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 5
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "column": "submission_snapshot_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 6
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "column": "artifact_revision",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 7
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "column": "scope",
+    "type": "text",
+    "not_null": true,
+    "default_expr": "'PUBLIC'::text",
+    "ordinal": 8
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "column": "published_by",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 9
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "column": "rights_snapshot",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": "'{}'::jsonb",
+    "ordinal": 10
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "column": "idempotency_key",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 11
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "column": "created_at",
+    "type": "timestamp with time zone",
+    "not_null": true,
+    "default_expr": "now()",
+    "ordinal": 12
+   },
+   {
+    "schema": "publication",
     "table": "published_pointers",
     "column": "work_id",
     "type": "uuid",
@@ -4457,6 +4871,96 @@
     "not_null": true,
     "default_expr": "'operator'::text",
     "ordinal": 4
+   },
+   {
+    "schema": "publication",
+    "table": "published_pointers",
+    "column": "studio_revision_id",
+    "type": "uuid",
+    "not_null": false,
+    "default_expr": null,
+    "ordinal": 5
+   },
+   {
+    "schema": "publication",
+    "table": "published_pointers",
+    "column": "publication_id",
+    "type": "uuid",
+    "not_null": false,
+    "default_expr": null,
+    "ordinal": 6
+   },
+   {
+    "schema": "publication",
+    "table": "published_pointers",
+    "column": "source_schema",
+    "type": "text",
+    "not_null": false,
+    "default_expr": null,
+    "ordinal": 7
+   },
+   {
+    "schema": "publication",
+    "table": "withdrawals",
+    "column": "withdrawal_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 1
+   },
+   {
+    "schema": "publication",
+    "table": "withdrawals",
+    "column": "work_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 2
+   },
+   {
+    "schema": "publication",
+    "table": "withdrawals",
+    "column": "publication_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 3
+   },
+   {
+    "schema": "publication",
+    "table": "withdrawals",
+    "column": "withdrawn_by",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 4
+   },
+   {
+    "schema": "publication",
+    "table": "withdrawals",
+    "column": "reason",
+    "type": "text",
+    "not_null": true,
+    "default_expr": "''::text",
+    "ordinal": 5
+   },
+   {
+    "schema": "publication",
+    "table": "withdrawals",
+    "column": "idempotency_key",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 6
+   },
+   {
+    "schema": "publication",
+    "table": "withdrawals",
+    "column": "created_at",
+    "type": "timestamp with time zone",
+    "not_null": true,
+    "default_expr": "now()",
+    "ordinal": 7
    },
    {
     "schema": "publication",
@@ -6867,7 +7371,7 @@
     "column": "rights_by_action",
     "type": "jsonb",
     "not_null": true,
-    "default_expr": "'{\"read\": \"unknown\", \"adapt\": \"unknown\", \"quote\": \"unknown\", \"display\": \"unknown\", \"download\": \"unknown\", \"external_processing\": \"unknown\"}'::jsonb",
+    "default_expr": "'{\"adapt\": \"unknown\", \"quote\": \"unknown\", \"retain\": \"unknown\", \"display\": \"unknown\", \"download\": \"unknown\", \"access_view\": \"unknown\", \"machine_read\": \"unknown\", \"redistribute\": \"unknown\", \"external_processing\": \"unknown\"}'::jsonb",
     "ordinal": 16
    },
    {
@@ -7202,6 +7706,375 @@
     "not_null": true,
     "default_expr": "now()",
     "ordinal": 23
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "column": "plan_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 1
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "column": "project_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 2
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "column": "title",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 3
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "column": "method_id",
+    "type": "text",
+    "not_null": true,
+    "default_expr": "'H1H2H3'::text",
+    "ordinal": 4
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "column": "method_version",
+    "type": "text",
+    "not_null": true,
+    "default_expr": "'source-sha256:mab-m5-isolated'::text",
+    "ordinal": 5
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "column": "h1_discovery_refs",
+    "type": "uuid[]",
+    "not_null": true,
+    "default_expr": "'{}'::uuid[]",
+    "ordinal": 6
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "column": "h2_decisions",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": "'{}'::jsonb",
+    "ordinal": 7
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "column": "h3_beats",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": "'[]'::jsonb",
+    "ordinal": 8
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "column": "alternative_plans",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": "'{}'::jsonb",
+    "ordinal": 9
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "column": "media_refs",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": "'[]'::jsonb",
+    "ordinal": 10
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "column": "depends_on_story_seeds",
+    "type": "uuid[]",
+    "not_null": true,
+    "default_expr": "'{}'::uuid[]",
+    "ordinal": 11
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "column": "depends_on_agent_contexts",
+    "type": "uuid[]",
+    "not_null": true,
+    "default_expr": "'{}'::uuid[]",
+    "ordinal": 12
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "column": "depends_on_projections",
+    "type": "uuid[]",
+    "not_null": true,
+    "default_expr": "'{}'::uuid[]",
+    "ordinal": 13
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "column": "qualification",
+    "type": "text",
+    "not_null": true,
+    "default_expr": "'UNASSESSED'::text",
+    "ordinal": 14
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "column": "payload",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": "'{}'::jsonb",
+    "ordinal": 15
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "column": "created_at",
+    "type": "timestamp with time zone",
+    "not_null": true,
+    "default_expr": "now()",
+    "ordinal": 16
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "column": "event_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": "gen_random_uuid()",
+    "ordinal": 1
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "column": "delegation_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 2
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "column": "request_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 3
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "column": "actor_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 4
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "column": "operation",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 5
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "column": "request_payload",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 6
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "column": "result_state",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 7
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "column": "created_at",
+    "type": "timestamp with time zone",
+    "not_null": true,
+    "default_expr": "clock_timestamp()",
+    "ordinal": 8
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "column": "delegation_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 1
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "column": "version",
+    "type": "bigint",
+    "not_null": true,
+    "default_expr": "0",
+    "ordinal": 2
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "column": "state",
+    "type": "text",
+    "not_null": true,
+    "default_expr": "'READY'::text",
+    "ordinal": 3
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "column": "revoked_at",
+    "type": "timestamp with time zone",
+    "not_null": false,
+    "default_expr": null,
+    "ordinal": 4
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "column": "revoke_reason",
+    "type": "text",
+    "not_null": false,
+    "default_expr": null,
+    "ordinal": 5
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "column": "lease_id",
+    "type": "uuid",
+    "not_null": false,
+    "default_expr": null,
+    "ordinal": 6
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "column": "lease_owner",
+    "type": "text",
+    "not_null": false,
+    "default_expr": null,
+    "ordinal": 7
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "column": "lease_expires_at",
+    "type": "timestamp with time zone",
+    "not_null": false,
+    "default_expr": null,
+    "ordinal": 8
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "column": "input_digest",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 9
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "column": "policy_version",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 10
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "column": "external_attempted",
+    "type": "boolean",
+    "not_null": true,
+    "default_expr": "false",
+    "ordinal": 11
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "column": "unknown_cost",
+    "type": "boolean",
+    "not_null": true,
+    "default_expr": "false",
+    "ordinal": 12
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "column": "reserved_cost",
+    "type": "numeric(14,6)",
+    "not_null": true,
+    "default_expr": "0",
+    "ordinal": 13
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "column": "spent_cost",
+    "type": "numeric(14,6)",
+    "not_null": true,
+    "default_expr": "0",
+    "ordinal": 14
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "column": "checkpoint_payload",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": "'{}'::jsonb",
+    "ordinal": 15
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "column": "created_at",
+    "type": "timestamp with time zone",
+    "not_null": true,
+    "default_expr": "clock_timestamp()",
+    "ordinal": 16
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "column": "updated_at",
+    "type": "timestamp with time zone",
+    "not_null": true,
+    "default_expr": "clock_timestamp()",
+    "ordinal": 17
    },
    {
     "schema": "studio",
@@ -7556,6 +8429,159 @@
    },
    {
     "schema": "studio",
+    "table": "reference_kinds",
+    "column": "ref_type",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 1
+   },
+   {
+    "schema": "studio",
+    "table": "reference_kinds",
+    "column": "target_schema",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 2
+   },
+   {
+    "schema": "studio",
+    "table": "reference_kinds",
+    "column": "target_table",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 3
+   },
+   {
+    "schema": "studio",
+    "table": "reference_kinds",
+    "column": "target_key",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 4
+   },
+   {
+    "schema": "studio",
+    "table": "reference_kinds",
+    "column": "revision_key",
+    "type": "text",
+    "not_null": false,
+    "default_expr": null,
+    "ordinal": 5
+   },
+   {
+    "schema": "studio",
+    "table": "reference_kinds",
+    "column": "registered_at",
+    "type": "timestamp with time zone",
+    "not_null": true,
+    "default_expr": "now()",
+    "ordinal": 6
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "column": "snapshot_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 1
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "column": "work_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 2
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "column": "revision_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 3
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "column": "revision_no",
+    "type": "integer",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 4
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "column": "project_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 5
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "column": "content_hash",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 6
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "column": "artifact_revision",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 7
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "column": "knowledge_gate_audit_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 8
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "column": "submitted_by",
+    "type": "text",
+    "not_null": true,
+    "default_expr": "''::text",
+    "ordinal": 9
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "column": "payload",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": "'{}'::jsonb",
+    "ordinal": 10
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "column": "created_at",
+    "type": "timestamp with time zone",
+    "not_null": true,
+    "default_expr": "now()",
+    "ordinal": 11
+   },
+   {
+    "schema": "studio",
     "table": "use_events",
     "column": "use_event_id",
     "type": "uuid",
@@ -7634,6 +8660,168 @@
     "not_null": true,
     "default_expr": "now()",
     "ordinal": 9
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "column": "work_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 1
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "column": "revision_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 2
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "column": "revision_no",
+    "type": "integer",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 3
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "column": "project_id",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 4
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "column": "creator_id",
+    "type": "text",
+    "not_null": true,
+    "default_expr": "''::text",
+    "ordinal": 5
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "column": "title",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 6
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "column": "content_hash",
+    "type": "text",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 7
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "column": "content",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": "'{}'::jsonb",
+    "ordinal": 8
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "column": "beats",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": "'[]'::jsonb",
+    "ordinal": 9
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "column": "source_and_rights_refs",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": "'{}'::jsonb",
+    "ordinal": 10
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "column": "depends_on_director_plan",
+    "type": "uuid",
+    "not_null": true,
+    "default_expr": null,
+    "ordinal": 11
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "column": "depends_on_story_seeds",
+    "type": "uuid[]",
+    "not_null": true,
+    "default_expr": "'{}'::uuid[]",
+    "ordinal": 12
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "column": "depends_on_agent_contexts",
+    "type": "uuid[]",
+    "not_null": true,
+    "default_expr": "'{}'::uuid[]",
+    "ordinal": 13
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "column": "depends_on_projections",
+    "type": "uuid[]",
+    "not_null": true,
+    "default_expr": "'{}'::uuid[]",
+    "ordinal": 14
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "column": "publication_status",
+    "type": "text",
+    "not_null": true,
+    "default_expr": "'draft'::text",
+    "ordinal": 15
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "column": "qualification",
+    "type": "text",
+    "not_null": true,
+    "default_expr": "'UNASSESSED'::text",
+    "ordinal": 16
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "column": "payload",
+    "type": "jsonb",
+    "not_null": true,
+    "default_expr": "'{}'::jsonb",
+    "ordinal": 17
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "column": "created_at",
+    "type": "timestamp with time zone",
+    "not_null": true,
+    "default_expr": "now()",
+    "ordinal": 18
    },
    {
     "schema": "world",
@@ -8944,6 +10132,24 @@
   "tables": [
    {
     "schema": "control",
+    "table": "artifact_content_columns",
+    "rls_enabled": false,
+    "rls_forced": false
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "rls_enabled": true,
+    "rls_forced": false
+   },
+   {
+    "schema": "control",
+    "table": "d01_resume_grant_journal",
+    "rls_enabled": true,
+    "rls_forced": false
+   },
+   {
+    "schema": "control",
     "table": "gate_audits",
     "rls_enabled": true,
     "rls_forced": false
@@ -9214,7 +10420,19 @@
    },
    {
     "schema": "publication",
+    "table": "editorial_decisions",
+    "rls_enabled": false,
+    "rls_forced": false
+   },
+   {
+    "schema": "publication",
     "table": "publication_schedules",
+    "rls_enabled": false,
+    "rls_forced": false
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
     "rls_enabled": false,
     "rls_forced": false
    },
@@ -9222,6 +10440,12 @@
     "schema": "publication",
     "table": "published_pointers",
     "rls_enabled": true,
+    "rls_forced": false
+   },
+   {
+    "schema": "publication",
+    "table": "withdrawals",
+    "rls_enabled": false,
     "rls_forced": false
    },
    {
@@ -9388,6 +10612,24 @@
    },
    {
     "schema": "studio",
+    "table": "director_plans",
+    "rls_enabled": false,
+    "rls_forced": false
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "rls_enabled": false,
+    "rls_forced": false
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "rls_enabled": false,
+    "rls_forced": false
+   },
+   {
+    "schema": "studio",
     "table": "execution_receipts",
     "rls_enabled": true,
     "rls_forced": false
@@ -9406,8 +10648,26 @@
    },
    {
     "schema": "studio",
+    "table": "reference_kinds",
+    "rls_enabled": true,
+    "rls_forced": false
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "rls_enabled": false,
+    "rls_forced": false
+   },
+   {
+    "schema": "studio",
     "table": "use_events",
     "rls_enabled": true,
+    "rls_forced": false
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "rls_enabled": false,
     "rls_forced": false
    },
    {
@@ -9502,6 +10762,69 @@
    }
   ],
   "constraints": [
+   {
+    "schema": "control",
+    "table": "artifact_content_columns",
+    "name": "artifact_content_columns_column_name_check",
+    "type": "CHECK",
+    "definition": "CHECK ((length(column_name) > 0))"
+   },
+   {
+    "schema": "control",
+    "table": "artifact_content_columns",
+    "name": "artifact_content_columns_kind_check",
+    "type": "CHECK",
+    "definition": "CHECK ((length(kind) > 0))"
+   },
+   {
+    "schema": "control",
+    "table": "artifact_content_columns",
+    "name": "artifact_content_columns_pkey",
+    "type": "PRIMARY KEY",
+    "definition": "PRIMARY KEY (kind, column_name)"
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "name": "d00_execution_grant_journal_binding_check",
+    "type": "CHECK",
+    "definition": "CHECK ((jsonb_typeof(binding) = 'object'::text))"
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "name": "d00_execution_grant_journal_check",
+    "type": "CHECK",
+    "definition": "CHECK (((((binding ->> 'run_id'::text) = (run_id)::text) AND ((binding ->> 'stage'::text) = 'D00'::text) AND ((binding ->> 'job_id'::text) = 'd00.source-intake'::text) AND ((binding ->> 'mode'::text) = 'attended'::text)) IS TRUE))"
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "name": "d00_execution_grant_journal_pkey",
+    "type": "PRIMARY KEY",
+    "definition": "PRIMARY KEY (run_id)"
+   },
+   {
+    "schema": "control",
+    "table": "d01_resume_grant_journal",
+    "name": "d01_resume_grant_journal_binding_check",
+    "type": "CHECK",
+    "definition": "CHECK ((jsonb_typeof(binding) = 'object'::text))"
+   },
+   {
+    "schema": "control",
+    "table": "d01_resume_grant_journal",
+    "name": "d01_resume_grant_journal_check",
+    "type": "CHECK",
+    "definition": "CHECK (((((binding ->> 'run_id'::text) = (run_id)::text) AND ((binding ->> 'stage'::text) = 'D01'::text) AND ((binding ->> 'mode'::text) = 'attended'::text)) IS TRUE))"
+   },
+   {
+    "schema": "control",
+    "table": "d01_resume_grant_journal",
+    "name": "d01_resume_grant_journal_pkey",
+    "type": "PRIMARY KEY",
+    "definition": "PRIMARY KEY (run_id)"
+   },
    {
     "schema": "control",
     "table": "gate_audits",
@@ -10310,9 +11633,44 @@
    {
     "schema": "public",
     "table": "assets",
+    "name": "assets_content_sha256_format",
+    "type": "CHECK",
+    "definition": "CHECK (((content_sha256 IS NULL) OR (content_sha256 ~ '^[a-f0-9]{64}$'::text)))"
+   },
+   {
+    "schema": "public",
+    "table": "assets",
+    "name": "assets_original_id_fkey",
+    "type": "FOREIGN KEY",
+    "definition": "FOREIGN KEY (original_id) REFERENCES studio.private_originals(original_id) ON DELETE RESTRICT"
+   },
+   {
+    "schema": "public",
+    "table": "assets",
+    "name": "assets_page_locator_object",
+    "type": "CHECK",
+    "definition": "CHECK ((jsonb_typeof(page_locator) = 'object'::text))"
+   },
+   {
+    "schema": "public",
+    "table": "assets",
     "name": "assets_pkey",
     "type": "PRIMARY KEY",
     "definition": "PRIMARY KEY (asset_id)"
+   },
+   {
+    "schema": "public",
+    "table": "assets",
+    "name": "assets_rights_by_action_object",
+    "type": "CHECK",
+    "definition": "CHECK ((jsonb_typeof(rights_by_action) = 'object'::text))"
+   },
+   {
+    "schema": "public",
+    "table": "assets",
+    "name": "assets_source_id_fkey",
+    "type": "FOREIGN KEY",
+    "definition": "FOREIGN KEY (source_id) REFERENCES source.sources(source_id) ON DELETE RESTRICT"
    },
    {
     "schema": "public",
@@ -10348,6 +11706,13 @@
     "name": "director_plans_pkey",
     "type": "PRIMARY KEY",
     "definition": "PRIMARY KEY (plan_id)"
+   },
+   {
+    "schema": "public",
+    "table": "director_plans",
+    "name": "director_plans_project_id_fkey",
+    "type": "FOREIGN KEY",
+    "definition": "FOREIGN KEY (project_id) REFERENCES studio.projects(project_id) ON DELETE RESTRICT"
    },
    {
     "schema": "public",
@@ -10519,6 +11884,55 @@
    },
    {
     "schema": "publication",
+    "table": "editorial_decisions",
+    "name": "editorial_decisions_decision_check",
+    "type": "CHECK",
+    "definition": "CHECK ((decision = ANY (ARRAY['APPROVED'::text, 'CHANGES_REQUESTED'::text, 'REJECTED'::text])))"
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "name": "editorial_decisions_idempotency_key_key",
+    "type": "UNIQUE",
+    "definition": "UNIQUE (idempotency_key)"
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "name": "editorial_decisions_operator_id_check",
+    "type": "CHECK",
+    "definition": "CHECK ((length(btrim(operator_id)) > 0))"
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "name": "editorial_decisions_pkey",
+    "type": "PRIMARY KEY",
+    "definition": "PRIMARY KEY (decision_id)"
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "name": "editorial_decisions_project_id_fkey",
+    "type": "FOREIGN KEY",
+    "definition": "FOREIGN KEY (project_id) REFERENCES studio.projects(project_id)"
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "name": "editorial_decisions_revision_id_fkey",
+    "type": "FOREIGN KEY",
+    "definition": "FOREIGN KEY (revision_id) REFERENCES studio.work_revisions(revision_id)"
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "name": "editorial_decisions_submission_snapshot_id_fkey",
+    "type": "FOREIGN KEY",
+    "definition": "FOREIGN KEY (submission_snapshot_id) REFERENCES studio.submission_snapshots(snapshot_id)"
+   },
+   {
+    "schema": "publication",
     "table": "publication_schedules",
     "name": "publication_schedules_pkey",
     "type": "PRIMARY KEY",
@@ -10530,6 +11944,62 @@
     "name": "publication_schedules_status_check",
     "type": "CHECK",
     "definition": "CHECK ((status = ANY (ARRAY['pending'::text, 'done'::text, 'cancelled'::text])))"
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "name": "publication_snapshots_artifact_revision_check",
+    "type": "CHECK",
+    "definition": "CHECK ((artifact_revision ~ '^[0-9a-f]{64}$'::text))"
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "name": "publication_snapshots_decision_id_fkey",
+    "type": "FOREIGN KEY",
+    "definition": "FOREIGN KEY (decision_id) REFERENCES publication.editorial_decisions(decision_id)"
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "name": "publication_snapshots_idempotency_key_key",
+    "type": "UNIQUE",
+    "definition": "UNIQUE (idempotency_key)"
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "name": "publication_snapshots_pkey",
+    "type": "PRIMARY KEY",
+    "definition": "PRIMARY KEY (publication_id)"
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "name": "publication_snapshots_project_id_fkey",
+    "type": "FOREIGN KEY",
+    "definition": "FOREIGN KEY (project_id) REFERENCES studio.projects(project_id)"
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "name": "publication_snapshots_revision_id_fkey",
+    "type": "FOREIGN KEY",
+    "definition": "FOREIGN KEY (revision_id) REFERENCES studio.work_revisions(revision_id)"
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "name": "publication_snapshots_scope_check",
+    "type": "CHECK",
+    "definition": "CHECK ((scope = 'PUBLIC'::text))"
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "name": "publication_snapshots_submission_snapshot_id_fkey",
+    "type": "FOREIGN KEY",
+    "definition": "FOREIGN KEY (submission_snapshot_id) REFERENCES studio.submission_snapshots(snapshot_id)"
    },
    {
     "schema": "publication",
@@ -10551,6 +12021,27 @@
     "name": "published_pointers_work_id_fkey",
     "type": "FOREIGN KEY",
     "definition": "FOREIGN KEY (work_id) REFERENCES publication.works(work_id) ON DELETE CASCADE"
+   },
+   {
+    "schema": "publication",
+    "table": "withdrawals",
+    "name": "withdrawals_idempotency_key_key",
+    "type": "UNIQUE",
+    "definition": "UNIQUE (idempotency_key)"
+   },
+   {
+    "schema": "publication",
+    "table": "withdrawals",
+    "name": "withdrawals_pkey",
+    "type": "PRIMARY KEY",
+    "definition": "PRIMARY KEY (withdrawal_id)"
+   },
+   {
+    "schema": "publication",
+    "table": "withdrawals",
+    "name": "withdrawals_publication_id_fkey",
+    "type": "FOREIGN KEY",
+    "definition": "FOREIGN KEY (publication_id) REFERENCES publication.publication_snapshots(publication_id)"
    },
    {
     "schema": "publication",
@@ -11884,6 +13375,153 @@
    },
    {
     "schema": "studio",
+    "table": "director_plans",
+    "name": "director_plans_pkey",
+    "type": "PRIMARY KEY",
+    "definition": "PRIMARY KEY (plan_id)"
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "name": "director_plans_project_id_fkey",
+    "type": "FOREIGN KEY",
+    "definition": "FOREIGN KEY (project_id) REFERENCES studio.projects(project_id)"
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "name": "director_plans_qualification_check",
+    "type": "CHECK",
+    "definition": "CHECK ((qualification = ANY (ARRAY['UNASSESSED'::text, 'SUBMITTED'::text, 'PASS'::text, 'HOLD'::text, 'REJECT'::text, 'REVOKED'::text])))"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "name": "execution_control_events_actor_id_fkey",
+    "type": "FOREIGN KEY",
+    "definition": "FOREIGN KEY (actor_id) REFERENCES users(user_id) ON DELETE RESTRICT"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "name": "execution_control_events_delegation_id_fkey",
+    "type": "FOREIGN KEY",
+    "definition": "FOREIGN KEY (delegation_id) REFERENCES studio.execution_controls(delegation_id) ON DELETE RESTRICT"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "name": "execution_control_events_operation_check",
+    "type": "CHECK",
+    "definition": "CHECK ((operation = ANY (ARRAY['CLAIM'::text, 'CHECKPOINT'::text, 'REVOKE'::text])))"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "name": "execution_control_events_pkey",
+    "type": "PRIMARY KEY",
+    "definition": "PRIMARY KEY (event_id)"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "name": "execution_control_events_request_id_key",
+    "type": "UNIQUE",
+    "definition": "UNIQUE (request_id)"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "name": "execution_control_events_request_payload_check",
+    "type": "CHECK",
+    "definition": "CHECK ((jsonb_typeof(request_payload) = 'object'::text))"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "name": "execution_control_events_result_state_check",
+    "type": "CHECK",
+    "definition": "CHECK ((jsonb_typeof(result_state) = 'object'::text))"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "name": "execution_controls_check",
+    "type": "CHECK",
+    "definition": "CHECK (((revoked_at IS NOT NULL) = (state = 'REVOKED'::text)))"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "name": "execution_controls_check1",
+    "type": "CHECK",
+    "definition": "CHECK (((revoked_at IS NULL) = (revoke_reason IS NULL)))"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "name": "execution_controls_check2",
+    "type": "CHECK",
+    "definition": "CHECK ((((lease_id IS NULL) = (lease_owner IS NULL)) AND ((lease_id IS NULL) = (lease_expires_at IS NULL))))"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "name": "execution_controls_checkpoint_payload_check",
+    "type": "CHECK",
+    "definition": "CHECK ((jsonb_typeof(checkpoint_payload) = 'object'::text))"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "name": "execution_controls_delegation_id_fkey",
+    "type": "FOREIGN KEY",
+    "definition": "FOREIGN KEY (delegation_id) REFERENCES studio.delegations(delegation_id) ON DELETE RESTRICT"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "name": "execution_controls_input_digest_check",
+    "type": "CHECK",
+    "definition": "CHECK ((input_digest ~ '^[a-f0-9]{64}$'::text))"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "name": "execution_controls_pkey",
+    "type": "PRIMARY KEY",
+    "definition": "PRIMARY KEY (delegation_id)"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "name": "execution_controls_reserved_cost_check",
+    "type": "CHECK",
+    "definition": "CHECK ((reserved_cost >= (0)::numeric))"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "name": "execution_controls_spent_cost_check",
+    "type": "CHECK",
+    "definition": "CHECK ((spent_cost >= (0)::numeric))"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "name": "execution_controls_state_check",
+    "type": "CHECK",
+    "definition": "CHECK ((state = ANY (ARRAY['READY'::text, 'LEASED'::text, 'IN_FLIGHT'::text, 'HOLD'::text, 'COMPLETED'::text, 'REVOKED'::text])))"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "name": "execution_controls_version_check",
+    "type": "CHECK",
+    "definition": "CHECK (((version >= 0) AND (version <= '9007199254740991'::bigint)))"
+   },
+   {
+    "schema": "studio",
     "table": "execution_receipts",
     "name": "execution_receipts_acceptance_state_check",
     "type": "CHECK",
@@ -12157,6 +13795,90 @@
    },
    {
     "schema": "studio",
+    "table": "reference_kinds",
+    "name": "reference_kinds_pkey",
+    "type": "PRIMARY KEY",
+    "definition": "PRIMARY KEY (ref_type)"
+   },
+   {
+    "schema": "studio",
+    "table": "reference_kinds",
+    "name": "reference_kinds_ref_type_check",
+    "type": "CHECK",
+    "definition": "CHECK ((ref_type ~ '^[a-z][a-z0-9_]{0,63}$'::text))"
+   },
+   {
+    "schema": "studio",
+    "table": "reference_kinds",
+    "name": "reference_kinds_target_key_check",
+    "type": "CHECK",
+    "definition": "CHECK ((length(target_key) > 0))"
+   },
+   {
+    "schema": "studio",
+    "table": "reference_kinds",
+    "name": "reference_kinds_target_schema_check",
+    "type": "CHECK",
+    "definition": "CHECK ((length(target_schema) > 0))"
+   },
+   {
+    "schema": "studio",
+    "table": "reference_kinds",
+    "name": "reference_kinds_target_table_check",
+    "type": "CHECK",
+    "definition": "CHECK ((length(target_table) > 0))"
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "name": "submission_snapshots_artifact_revision_check",
+    "type": "CHECK",
+    "definition": "CHECK ((artifact_revision ~ '^[0-9a-f]{64}$'::text))"
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "name": "submission_snapshots_content_hash_check",
+    "type": "CHECK",
+    "definition": "CHECK ((content_hash ~ '^[0-9a-f]{64}$'::text))"
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "name": "submission_snapshots_pkey",
+    "type": "PRIMARY KEY",
+    "definition": "PRIMARY KEY (snapshot_id)"
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "name": "submission_snapshots_project_id_fkey",
+    "type": "FOREIGN KEY",
+    "definition": "FOREIGN KEY (project_id) REFERENCES studio.projects(project_id)"
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "name": "submission_snapshots_revision_id_fkey",
+    "type": "FOREIGN KEY",
+    "definition": "FOREIGN KEY (revision_id) REFERENCES studio.work_revisions(revision_id)"
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "name": "submission_snapshots_revision_id_key",
+    "type": "UNIQUE",
+    "definition": "UNIQUE (revision_id)"
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "name": "submission_snapshots_revision_no_check",
+    "type": "CHECK",
+    "definition": "CHECK ((revision_no >= 1))"
+   },
+   {
+    "schema": "studio",
     "table": "use_events",
     "name": "use_events_actor_id_fkey",
     "type": "FOREIGN KEY",
@@ -12182,6 +13904,41 @@
     "name": "use_events_project_id_fkey",
     "type": "FOREIGN KEY",
     "definition": "FOREIGN KEY (project_id) REFERENCES studio.projects(project_id) ON DELETE RESTRICT"
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "name": "work_revisions_pkey",
+    "type": "PRIMARY KEY",
+    "definition": "PRIMARY KEY (revision_id)"
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "name": "work_revisions_project_id_fkey",
+    "type": "FOREIGN KEY",
+    "definition": "FOREIGN KEY (project_id) REFERENCES studio.projects(project_id)"
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "name": "work_revisions_publication_status_check",
+    "type": "CHECK",
+    "definition": "CHECK ((publication_status = ANY (ARRAY['draft'::text, 'submitted'::text, 'rejected'::text, 'accepted'::text])))"
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "name": "work_revisions_qualification_check",
+    "type": "CHECK",
+    "definition": "CHECK ((qualification = ANY (ARRAY['UNASSESSED'::text, 'SUBMITTED'::text, 'PASS'::text, 'HOLD'::text, 'REJECT'::text, 'REVOKED'::text])))"
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "name": "work_revisions_work_id_revision_no_key",
+    "type": "UNIQUE",
+    "definition": "UNIQUE (work_id, revision_no)"
    },
    {
     "schema": "world",
@@ -12530,6 +14287,24 @@
   "indexes": [
    {
     "schema": "control",
+    "table": "artifact_content_columns",
+    "name": "artifact_content_columns_pkey",
+    "definition": "CREATE UNIQUE INDEX artifact_content_columns_pkey ON control.artifact_content_columns USING btree (kind, column_name)"
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "name": "d00_execution_grant_journal_pkey",
+    "definition": "CREATE UNIQUE INDEX d00_execution_grant_journal_pkey ON control.d00_execution_grant_journal USING btree (run_id)"
+   },
+   {
+    "schema": "control",
+    "table": "d01_resume_grant_journal",
+    "name": "d01_resume_grant_journal_pkey",
+    "definition": "CREATE UNIQUE INDEX d01_resume_grant_journal_pkey ON control.d01_resume_grant_journal USING btree (run_id)"
+   },
+   {
+    "schema": "control",
     "table": "gate_audits",
     "name": "gate_audits_pkey",
     "definition": "CREATE UNIQUE INDEX gate_audits_pkey ON control.gate_audits USING btree (gate_audit_id)"
@@ -12795,6 +14570,12 @@
    {
     "schema": "public",
     "table": "assets",
+    "name": "assets_original_unique",
+    "definition": "CREATE UNIQUE INDEX assets_original_unique ON public.assets USING btree (original_id) WHERE (original_id IS NOT NULL)"
+   },
+   {
+    "schema": "public",
+    "table": "assets",
     "name": "assets_pkey",
     "definition": "CREATE UNIQUE INDEX assets_pkey ON public.assets USING btree (asset_id)"
    },
@@ -12821,6 +14602,12 @@
     "table": "director_plans",
     "name": "director_plans_pkey",
     "definition": "CREATE UNIQUE INDEX director_plans_pkey ON public.director_plans USING btree (plan_id)"
+   },
+   {
+    "schema": "public",
+    "table": "director_plans",
+    "name": "director_plans_project_id_idx",
+    "definition": "CREATE INDEX director_plans_project_id_idx ON public.director_plans USING btree (project_id, created_at DESC) WHERE (project_id IS NOT NULL)"
    },
    {
     "schema": "public",
@@ -12938,6 +14725,24 @@
    },
    {
     "schema": "publication",
+    "table": "editorial_decisions",
+    "name": "editorial_decisions_idempotency_key_key",
+    "definition": "CREATE UNIQUE INDEX editorial_decisions_idempotency_key_key ON publication.editorial_decisions USING btree (idempotency_key)"
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "name": "editorial_decisions_pkey",
+    "definition": "CREATE UNIQUE INDEX editorial_decisions_pkey ON publication.editorial_decisions USING btree (decision_id)"
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "name": "editorial_decisions_revision_idx",
+    "definition": "CREATE INDEX editorial_decisions_revision_idx ON publication.editorial_decisions USING btree (revision_id, created_at DESC)"
+   },
+   {
+    "schema": "publication",
     "table": "publication_schedules",
     "name": "publication_schedules_due_idx",
     "definition": "CREATE INDEX publication_schedules_due_idx ON publication.publication_schedules USING btree (status, publish_at)"
@@ -12950,9 +14755,33 @@
    },
    {
     "schema": "publication",
+    "table": "publication_snapshots",
+    "name": "publication_snapshots_idempotency_key_key",
+    "definition": "CREATE UNIQUE INDEX publication_snapshots_idempotency_key_key ON publication.publication_snapshots USING btree (idempotency_key)"
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "name": "publication_snapshots_pkey",
+    "definition": "CREATE UNIQUE INDEX publication_snapshots_pkey ON publication.publication_snapshots USING btree (publication_id)"
+   },
+   {
+    "schema": "publication",
     "table": "published_pointers",
     "name": "published_pointers_pkey",
     "definition": "CREATE UNIQUE INDEX published_pointers_pkey ON publication.published_pointers USING btree (work_id)"
+   },
+   {
+    "schema": "publication",
+    "table": "withdrawals",
+    "name": "withdrawals_idempotency_key_key",
+    "definition": "CREATE UNIQUE INDEX withdrawals_idempotency_key_key ON publication.withdrawals USING btree (idempotency_key)"
+   },
+   {
+    "schema": "publication",
+    "table": "withdrawals",
+    "name": "withdrawals_pkey",
+    "definition": "CREATE UNIQUE INDEX withdrawals_pkey ON publication.withdrawals USING btree (withdrawal_id)"
    },
    {
     "schema": "publication",
@@ -13352,6 +15181,36 @@
    },
    {
     "schema": "studio",
+    "table": "director_plans",
+    "name": "director_plans_pkey",
+    "definition": "CREATE UNIQUE INDEX director_plans_pkey ON studio.director_plans USING btree (plan_id)"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "name": "execution_control_events_pkey",
+    "definition": "CREATE UNIQUE INDEX execution_control_events_pkey ON studio.execution_control_events USING btree (event_id)"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "name": "execution_control_events_request_id_key",
+    "definition": "CREATE UNIQUE INDEX execution_control_events_request_id_key ON studio.execution_control_events USING btree (request_id)"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "name": "studio_execution_events_delegation",
+    "definition": "CREATE INDEX studio_execution_events_delegation ON studio.execution_control_events USING btree (delegation_id, created_at, event_id)"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "name": "execution_controls_pkey",
+    "definition": "CREATE UNIQUE INDEX execution_controls_pkey ON studio.execution_controls USING btree (delegation_id)"
+   },
+   {
+    "schema": "studio",
     "table": "execution_receipts",
     "name": "execution_receipts_delegation_id_attempt_no_key",
     "definition": "CREATE UNIQUE INDEX execution_receipts_delegation_id_attempt_no_key ON studio.execution_receipts USING btree (delegation_id, attempt_no)"
@@ -13424,6 +15283,24 @@
    },
    {
     "schema": "studio",
+    "table": "reference_kinds",
+    "name": "reference_kinds_pkey",
+    "definition": "CREATE UNIQUE INDEX reference_kinds_pkey ON studio.reference_kinds USING btree (ref_type)"
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "name": "submission_snapshots_pkey",
+    "definition": "CREATE UNIQUE INDEX submission_snapshots_pkey ON studio.submission_snapshots USING btree (snapshot_id)"
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "name": "submission_snapshots_revision_id_key",
+    "definition": "CREATE UNIQUE INDEX submission_snapshots_revision_id_key ON studio.submission_snapshots USING btree (revision_id)"
+   },
+   {
+    "schema": "studio",
     "table": "use_events",
     "name": "studio_use_events_project",
     "definition": "CREATE INDEX studio_use_events_project ON studio.use_events USING btree (project_id, created_at DESC)"
@@ -13439,6 +15316,18 @@
     "table": "use_events",
     "name": "use_events_pkey",
     "definition": "CREATE UNIQUE INDEX use_events_pkey ON studio.use_events USING btree (use_event_id)"
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "name": "work_revisions_pkey",
+    "definition": "CREATE UNIQUE INDEX work_revisions_pkey ON studio.work_revisions USING btree (revision_id)"
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "name": "work_revisions_work_id_revision_no_key",
+    "definition": "CREATE UNIQUE INDEX work_revisions_work_id_revision_no_key ON studio.work_revisions USING btree (work_id, revision_no)"
    },
    {
     "schema": "world",
@@ -13606,6 +15495,78 @@
   "policies": [
    {
     "schema": "control",
+    "table": "artifact_content_columns",
+    "name": "k5_content_columns",
+    "command": "SELECT",
+    "roles": "{mohen_gate_authority}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "name": "d00_grant_journal_consume",
+    "command": "UPDATE",
+    "roles": "{mohen_d00_grant_journal}",
+    "qual": "((consumed_at IS NULL) AND (expires_at > statement_timestamp()))",
+    "with_check": "(consumed_at = statement_timestamp())"
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "name": "d00_grant_journal_issue",
+    "command": "INSERT",
+    "roles": "{mohen_d00_grant_journal}",
+    "qual": null,
+    "with_check": "((consumed_at IS NULL) AND (expires_at > statement_timestamp()) AND (expires_at <= (statement_timestamp() + '00:05:00'::interval)))"
+   },
+   {
+    "schema": "control",
+    "table": "d00_execution_grant_journal",
+    "name": "d00_grant_journal_read",
+    "command": "SELECT",
+    "roles": "{mohen_d00_grant_journal}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "control",
+    "table": "d01_resume_grant_journal",
+    "name": "d01_resume_grant_journal_consume",
+    "command": "UPDATE",
+    "roles": "{mohen_d00_grant_journal}",
+    "qual": "((consumed_at IS NULL) AND (expires_at > statement_timestamp()))",
+    "with_check": "(consumed_at = statement_timestamp())"
+   },
+   {
+    "schema": "control",
+    "table": "d01_resume_grant_journal",
+    "name": "d01_resume_grant_journal_issue",
+    "command": "INSERT",
+    "roles": "{mohen_d00_grant_journal}",
+    "qual": null,
+    "with_check": "((consumed_at IS NULL) AND (expires_at > statement_timestamp()) AND (expires_at <= (statement_timestamp() + '00:05:00'::interval)))"
+   },
+   {
+    "schema": "control",
+    "table": "d01_resume_grant_journal",
+    "name": "d01_resume_grant_journal_read",
+    "command": "SELECT",
+    "roles": "{mohen_d00_grant_journal}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "control",
+    "table": "d01_resume_grant_journal",
+    "name": "d01_resume_grant_journal_reissue",
+    "command": "UPDATE",
+    "roles": "{mohen_d00_grant_journal}",
+    "qual": "(consumed_at IS NOT NULL)",
+    "with_check": "((consumed_at IS NULL) AND (expires_at > statement_timestamp()) AND (expires_at <= (statement_timestamp() + '00:05:00'::interval)))"
+   },
+   {
+    "schema": "control",
     "table": "gate_audits",
     "name": "k3_authority",
     "command": "ALL",
@@ -13629,6 +15590,15 @@
     "command": "SELECT",
     "roles": "{mohen_private_worker}",
     "qual": "((consumer = 'producer'::text) AND (decision_origin = 'independent_gate'::text))",
+    "with_check": null
+   },
+   {
+    "schema": "control",
+    "table": "gate_audits",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
+    "qual": "true",
     "with_check": null
    },
    {
@@ -13669,6 +15639,15 @@
    },
    {
     "schema": "control",
+    "table": "gate_candidates",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "control",
     "table": "gate_policy_versions",
     "name": "k3_authority",
     "command": "ALL",
@@ -13678,12 +15657,30 @@
    },
    {
     "schema": "control",
+    "table": "gate_policy_versions",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "control",
     "table": "gate_reviewer_bindings",
     "name": "k3_authority",
     "command": "ALL",
     "roles": "{mohen_gate_authority}",
     "qual": "true",
     "with_check": "true"
+   },
+   {
+    "schema": "control",
+    "table": "gate_reviewer_bindings",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
+    "qual": "true",
+    "with_check": null
    },
    {
     "schema": "control",
@@ -13705,6 +15702,24 @@
    },
    {
     "schema": "control",
+    "table": "original_bridge_verification_keys",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "control",
+    "table": "production_runs",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "control",
     "table": "qualification_current",
     "name": "k3_authority",
     "command": "ALL",
@@ -13719,6 +15734,15 @@
     "command": "SELECT",
     "roles": "{mohen_private_worker}",
     "qual": "(consumer = 'producer'::text)",
+    "with_check": null
+   },
+   {
+    "schema": "control",
+    "table": "qualification_current",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
+    "qual": "true",
     "with_check": null
    },
    {
@@ -13740,11 +15764,47 @@
     "with_check": null
    },
    {
+    "schema": "evidence",
+    "table": "material_evidence",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "evidence",
+    "table": "read_unit_evidence_links",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "evidence",
+    "table": "reading_units",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
     "schema": "meaning",
     "table": "findings",
     "name": "k3_artifact_read",
     "command": "SELECT",
     "roles": "{mohen_gate_authority}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "meaning",
+    "table": "findings",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
     "qual": "true",
     "with_check": null
    },
@@ -13813,10 +15873,64 @@
    },
    {
     "schema": "publication",
+    "table": "editorial_decisions",
+    "name": "editorial_decisions_app_runtime_read",
+    "command": "SELECT",
+    "roles": "{mohen_app_runtime}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "name": "editorial_decisions_operator_read",
+    "command": "SELECT",
+    "roles": "{mohen_editorial_operator}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "name": "publication_snapshots_app_runtime_read",
+    "command": "SELECT",
+    "roles": "{mohen_app_runtime}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "name": "publication_snapshots_operator_read",
+    "command": "SELECT",
+    "roles": "{mohen_editorial_operator}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "publication",
     "table": "published_pointers",
     "name": "published_pointers_public_read",
     "command": "SELECT",
     "roles": "{public}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "publication",
+    "table": "withdrawals",
+    "name": "withdrawals_app_runtime_read",
+    "command": "SELECT",
+    "roles": "{mohen_app_runtime}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "publication",
+    "table": "withdrawals",
+    "name": "withdrawals_operator_read",
+    "command": "SELECT",
+    "roles": "{mohen_editorial_operator}",
     "qual": "true",
     "with_check": null
    },
@@ -13925,6 +16039,15 @@
     "name": "k3_artifact_read",
     "command": "SELECT",
     "roles": "{mohen_gate_authority}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "read_model",
+    "table": "world_projections",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
     "qual": "true",
     "with_check": null
    },
@@ -14119,6 +16242,15 @@
    },
    {
     "schema": "source",
+    "table": "raw_items",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "source",
     "table": "read_runs",
     "name": "k3_artifact_read",
     "command": "SELECT",
@@ -14128,10 +16260,28 @@
    },
    {
     "schema": "source",
+    "table": "read_runs",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "source",
     "table": "read_units",
     "name": "k3_artifact_read",
     "command": "SELECT",
     "roles": "{mohen_gate_authority}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "source",
+    "table": "read_units",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
     "qual": "true",
     "with_check": null
    },
@@ -14200,10 +16350,28 @@
    },
    {
     "schema": "source",
+    "table": "source_versions",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "source",
     "table": "sources",
     "name": "k3_artifact_read",
     "command": "SELECT",
     "roles": "{mohen_gate_authority}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "source",
+    "table": "sources",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
     "qual": "true",
     "with_check": null
    },
@@ -14245,12 +16413,75 @@
    },
    {
     "schema": "studio",
+    "table": "director_plans",
+    "name": "director_plans_app_runtime_rw",
+    "command": "ALL",
+    "roles": "{mohen_app_runtime}",
+    "qual": "true",
+    "with_check": "true"
+   },
+   {
+    "schema": "studio",
+    "table": "director_plans",
+    "name": "director_plans_gate_authority_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_authority}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "name": "studio_execution_event_authority",
+    "command": "ALL",
+    "roles": "{mohen_execution_authority}",
+    "qual": "true",
+    "with_check": "true"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "name": "studio_execution_event_owner",
+    "command": "SELECT",
+    "roles": "{mohen_app_runtime}",
+    "qual": "(EXISTS ( SELECT\n   FROM studio.execution_controls c\n  WHERE (c.delegation_id = execution_control_events.delegation_id)))",
+    "with_check": null
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "name": "studio_execution_authority",
+    "command": "ALL",
+    "roles": "{mohen_execution_authority}",
+    "qual": "true",
+    "with_check": "true"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "name": "studio_execution_owner",
+    "command": "SELECT",
+    "roles": "{mohen_app_runtime}",
+    "qual": "(EXISTS ( SELECT\n   FROM (studio.delegations d\n     JOIN studio.projects p USING (project_id))\n  WHERE ((d.delegation_id = execution_controls.delegation_id) AND (p.owner_user_id = ( SELECT control.current_app_user_id() AS current_app_user_id)) AND (p.lifecycle_status = 'ACTIVE'::text))))",
+    "with_check": null
+   },
+   {
+    "schema": "studio",
     "table": "execution_receipts",
     "name": "studio_receipt_owner",
     "command": "ALL",
     "roles": "{mohen_app_runtime}",
     "qual": "(EXISTS ( SELECT\n   FROM studio.delegations d\n  WHERE (d.delegation_id = execution_receipts.delegation_id)))",
     "with_check": "(EXISTS ( SELECT\n   FROM studio.delegations d\n  WHERE (d.delegation_id = execution_receipts.delegation_id)))"
+   },
+   {
+    "schema": "studio",
+    "table": "private_originals",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
+    "qual": "(project_id = 'e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5'::uuid)",
+    "with_check": null
    },
    {
     "schema": "studio",
@@ -14272,6 +16503,33 @@
    },
    {
     "schema": "studio",
+    "table": "reference_kinds",
+    "name": "studio_reference_kinds_read",
+    "command": "SELECT",
+    "roles": "{mohen_app_runtime,mohen_gate_authority}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "name": "submission_snapshots_app_runtime_rw",
+    "command": "ALL",
+    "roles": "{mohen_app_runtime}",
+    "qual": "true",
+    "with_check": "true"
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "name": "submission_snapshots_gate_authority_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_authority}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "studio",
     "table": "use_events",
     "name": "studio_use_owner",
     "command": "ALL",
@@ -14280,11 +16538,47 @@
     "with_check": "((actor_id = ( SELECT control.current_app_user_id() AS current_app_user_id)) AND (EXISTS ( SELECT\n   FROM studio.projects p\n  WHERE (p.project_id = use_events.project_id))) AND (EXISTS ( SELECT\n   FROM studio.asset_revisions r\n  WHERE (r.revision_id = use_events.asset_revision_id))))"
    },
    {
+    "schema": "studio",
+    "table": "work_revisions",
+    "name": "work_revisions_app_runtime_rw",
+    "command": "ALL",
+    "roles": "{mohen_app_runtime}",
+    "qual": "true",
+    "with_check": "true"
+   },
+   {
+    "schema": "studio",
+    "table": "work_revisions",
+    "name": "work_revisions_gate_authority_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_authority}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
     "schema": "world",
     "table": "changes",
     "name": "k3_artifact_read",
     "command": "SELECT",
     "roles": "{mohen_gate_authority}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "world",
+    "table": "claim_evidence_links",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
+    "qual": "true",
+    "with_check": null
+   },
+   {
+    "schema": "world",
+    "table": "claim_revisions",
+    "name": "m5_machine_reviewer_read",
+    "command": "SELECT",
+    "roles": "{mohen_gate_signer_m5_machine}",
     "qual": "true",
     "with_check": null
    },
@@ -14364,6 +16658,24 @@
     "table": "users",
     "name": "invalidate_web_sessions_on_account_change",
     "definition": "CREATE TRIGGER invalidate_web_sessions_on_account_change BEFORE UPDATE ON public.users FOR EACH ROW EXECUTE FUNCTION control.invalidate_web_sessions_on_account_change()"
+   },
+   {
+    "schema": "publication",
+    "table": "editorial_decisions",
+    "name": "editorial_decisions_immutable",
+    "definition": "CREATE TRIGGER editorial_decisions_immutable BEFORE DELETE OR UPDATE ON publication.editorial_decisions FOR EACH ROW EXECUTE FUNCTION publication.editorial_decisions_immutable()"
+   },
+   {
+    "schema": "publication",
+    "table": "publication_snapshots",
+    "name": "publication_snapshots_immutable",
+    "definition": "CREATE TRIGGER publication_snapshots_immutable BEFORE DELETE OR UPDATE ON publication.publication_snapshots FOR EACH ROW EXECUTE FUNCTION publication.publication_snapshots_immutable()"
+   },
+   {
+    "schema": "publication",
+    "table": "withdrawals",
+    "name": "withdrawals_immutable",
+    "definition": "CREATE TRIGGER withdrawals_immutable BEFORE DELETE OR UPDATE ON publication.withdrawals FOR EACH ROW EXECUTE FUNCTION publication.withdrawals_immutable()"
    },
    {
     "schema": "source",
@@ -14493,9 +16805,39 @@
    },
    {
     "schema": "studio",
+    "table": "asset_revisions",
+    "name": "studio_asset_revision_reference_guard",
+    "definition": "CREATE TRIGGER studio_asset_revision_reference_guard BEFORE INSERT ON studio.asset_revisions FOR EACH ROW EXECUTE FUNCTION studio.guard_asset_revision_references()"
+   },
+   {
+    "schema": "studio",
     "table": "delegations",
     "name": "studio_delegation_immutable",
     "definition": "CREATE TRIGGER studio_delegation_immutable BEFORE DELETE OR UPDATE ON studio.delegations FOR EACH ROW EXECUTE FUNCTION studio.protect_permanent_receipt()"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "name": "studio_execution_event_no_truncate",
+    "definition": "CREATE TRIGGER studio_execution_event_no_truncate BEFORE TRUNCATE ON studio.execution_control_events FOR EACH STATEMENT EXECUTE FUNCTION studio.protect_permanent_receipt()"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_control_events",
+    "name": "studio_execution_event_permanent",
+    "definition": "CREATE TRIGGER studio_execution_event_permanent BEFORE DELETE OR UPDATE ON studio.execution_control_events FOR EACH ROW EXECUTE FUNCTION studio.protect_permanent_receipt()"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "name": "studio_execution_control_no_truncate",
+    "definition": "CREATE TRIGGER studio_execution_control_no_truncate BEFORE TRUNCATE ON studio.execution_controls FOR EACH STATEMENT EXECUTE FUNCTION studio.protect_execution_control()"
+   },
+   {
+    "schema": "studio",
+    "table": "execution_controls",
+    "name": "studio_execution_control_permanent",
+    "definition": "CREATE TRIGGER studio_execution_control_permanent BEFORE DELETE OR UPDATE ON studio.execution_controls FOR EACH ROW EXECUTE FUNCTION studio.protect_execution_control()"
    },
    {
     "schema": "studio",
@@ -14508,6 +16850,18 @@
     "table": "private_originals",
     "name": "studio_private_original_immutable",
     "definition": "CREATE TRIGGER studio_private_original_immutable BEFORE INSERT OR DELETE OR UPDATE ON studio.private_originals FOR EACH ROW EXECUTE FUNCTION studio.protect_private_original()"
+   },
+   {
+    "schema": "studio",
+    "table": "submission_snapshots",
+    "name": "submission_snapshots_immutable",
+    "definition": "CREATE TRIGGER submission_snapshots_immutable BEFORE DELETE OR UPDATE ON studio.submission_snapshots FOR EACH ROW EXECUTE FUNCTION studio.submission_snapshots_immutable()"
+   },
+   {
+    "schema": "studio",
+    "table": "use_events",
+    "name": "studio_use_event_guard",
+    "definition": "CREATE TRIGGER studio_use_event_guard BEFORE INSERT ON studio.use_events FOR EACH ROW EXECUTE FUNCTION studio.guard_asset_use_event()"
    },
    {
     "schema": "studio",
@@ -14786,6 +17140,62 @@
     "language": "plpgsql"
    },
    {
+    "schema": "publication",
+    "name": "decide_editorial",
+    "args": "p_decision_id uuid, p_work_id uuid, p_revision_id uuid, p_decision text, p_operator_id text, p_notes text, p_idempotency_key text",
+    "returns": "jsonb",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "publication",
+    "name": "editorial_decisions_immutable",
+    "args": "",
+    "returns": "trigger",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "publication",
+    "name": "publication_snapshots_immutable",
+    "args": "",
+    "returns": "trigger",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "publication",
+    "name": "publish_exact_revision",
+    "args": "p_publication_id uuid, p_work_id uuid, p_revision_id uuid, p_operator_id text, p_idempotency_key text",
+    "returns": "jsonb",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "publication",
+    "name": "published_pointers_target_guard",
+    "args": "",
+    "returns": "trigger",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "publication",
+    "name": "withdraw_publication",
+    "args": "p_withdrawal_id uuid, p_work_id uuid, p_publication_id uuid, p_operator_id text, p_reason text, p_idempotency_key text",
+    "returns": "jsonb",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "publication",
+    "name": "withdrawals_immutable",
+    "args": "",
+    "returns": "trigger",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
     "schema": "source",
     "name": "forbid_d00_history_mutation",
     "args": "",
@@ -14843,6 +17253,30 @@
    },
    {
     "schema": "studio",
+    "name": "apply_execution_control",
+    "args": "p_operation text, p_input jsonb",
+    "returns": "jsonb",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "studio",
+    "name": "asset_consumption_disposition",
+    "args": "p_revision_id uuid, p_action text",
+    "returns": "jsonb",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "studio",
+    "name": "asset_verified_original_bindings",
+    "args": "p_revision_id uuid",
+    "returns": "integer",
+    "kind": "function",
+    "language": "sql"
+   },
+   {
+    "schema": "studio",
     "name": "bind_private_claim_evidence",
     "args": "p_original uuid, p_revision uuid, p_evidence uuid, p_support text",
     "returns": "uuid",
@@ -14854,6 +17288,38 @@
     "name": "bind_private_read_evidence",
     "args": "p_original uuid, p_evidence uuid, p_unit uuid, p_extent jsonb, p_quote text, p_order integer, p_attestation text",
     "returns": "uuid",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "studio",
+    "name": "guard_asset_revision_references",
+    "args": "",
+    "returns": "trigger",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "studio",
+    "name": "guard_asset_use_event",
+    "args": "",
+    "returns": "trigger",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "studio",
+    "name": "persist_private_agent_context",
+    "args": "p_context uuid, p_context_key text, p_finding_ids uuid[], p_context_spec jsonb",
+    "returns": "jsonb",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "studio",
+    "name": "persist_private_director_plan",
+    "args": "p_plan_id uuid, p_project_id uuid, p_title text, p_story_seed_ids uuid[], p_agent_context_ids uuid[], p_projection_ids uuid[], p_h1_discovery_refs uuid[], p_h2_decisions jsonb, p_h3_beats jsonb, p_spec jsonb",
+    "returns": "jsonb",
     "kind": "function",
     "language": "plpgsql"
    },
@@ -14883,8 +17349,32 @@
    },
    {
     "schema": "studio",
+    "name": "persist_private_story_seed",
+    "args": "p_story_seed uuid, p_seed_key text, p_finding_ids uuid[], p_seed_spec jsonb",
+    "returns": "jsonb",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "studio",
+    "name": "persist_private_submission_snapshot",
+    "args": "p_snapshot_id uuid, p_revision_id uuid, p_project_id uuid, p_submitted_by text",
+    "returns": "jsonb",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "studio",
     "name": "persist_private_text_reading",
     "args": "p_original uuid, p_read_run uuid, p_read_unit uuid, p_digest text, p_run uuid, p_extent jsonb, p_quote text, p_attestation text",
+    "returns": "jsonb",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "studio",
+    "name": "persist_private_work_revision",
+    "args": "p_work_id uuid, p_revision_id uuid, p_revision_no integer, p_expected_revision_no integer, p_project_id uuid, p_creator_id text, p_title text, p_content jsonb, p_beats jsonb, p_source_and_rights_refs jsonb, p_depends_on_director_plan uuid",
     "returns": "jsonb",
     "kind": "function",
     "language": "plpgsql"
@@ -14931,7 +17421,23 @@
    },
    {
     "schema": "studio",
+    "name": "private_work_rights_summary",
+    "args": "p_revision_id uuid, p_project_id uuid, p_actions text[]",
+    "returns": "jsonb",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "studio",
     "name": "protect_asset_revision",
+    "args": "",
+    "returns": "trigger",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "studio",
+    "name": "protect_execution_control",
     "args": "",
     "returns": "trigger",
     "kind": "function",
@@ -14979,9 +17485,33 @@
    },
    {
     "schema": "studio",
+    "name": "resolve_asset_reference",
+    "args": "p_ref jsonb",
+    "returns": "jsonb",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "studio",
+    "name": "resolve_asset_references",
+    "args": "p_refs jsonb",
+    "returns": "jsonb",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "studio",
     "name": "search_qualified_project_layers",
     "args": "p_project_id uuid, p_namespace text, p_code text, p_version text, p_scope jsonb, p_terms text[], p_limit integer",
     "returns": "TABLE(layer text, gate text, object_type text, object_id text, revision text, snippet text, source_ref text)",
+    "kind": "function",
+    "language": "plpgsql"
+   },
+   {
+    "schema": "studio",
+    "name": "submission_snapshots_immutable",
+    "args": "",
+    "returns": "trigger",
     "kind": "function",
     "language": "plpgsql"
    },
@@ -15093,7 +17623,7 @@
     "rolsuper": false,
     "rolbypassrls": false,
     "rolcanlogin": true,
-    "memberships": "{anon,authenticated,service_role}"
+    "memberships": "{authenticated,anon,service_role}"
    },
    {
     "name": "dashboard_user",
@@ -15103,7 +17633,63 @@
     "memberships": null
    },
    {
+    "name": "mohen_app",
+    "rolsuper": false,
+    "rolbypassrls": false,
+    "rolcanlogin": false,
+    "memberships": null
+   },
+   {
     "name": "mohen_app_runtime",
+    "rolsuper": false,
+    "rolbypassrls": false,
+    "rolcanlogin": false,
+    "memberships": null
+   },
+   {
+    "name": "mohen_d00_authority_login",
+    "rolsuper": false,
+    "rolbypassrls": false,
+    "rolcanlogin": true,
+    "memberships": "{mohen_d00_grant_journal}"
+   },
+   {
+    "name": "mohen_d00_gate_reader_login",
+    "rolsuper": false,
+    "rolbypassrls": false,
+    "rolcanlogin": true,
+    "memberships": "{mohen_gate_reader}"
+   },
+   {
+    "name": "mohen_d00_grant_journal",
+    "rolsuper": false,
+    "rolbypassrls": false,
+    "rolcanlogin": false,
+    "memberships": null
+   },
+   {
+    "name": "mohen_d01_attestor_login",
+    "rolsuper": false,
+    "rolbypassrls": false,
+    "rolcanlogin": true,
+    "memberships": "{mohen_gate_signer_m5_machine}"
+   },
+   {
+    "name": "mohen_d01_authority_login",
+    "rolsuper": false,
+    "rolbypassrls": false,
+    "rolcanlogin": true,
+    "memberships": "{mohen_gate_reader,mohen_d00_grant_journal}"
+   },
+   {
+    "name": "mohen_editorial_operator",
+    "rolsuper": false,
+    "rolbypassrls": false,
+    "rolcanlogin": false,
+    "memberships": null
+   },
+   {
+    "name": "mohen_execution_authority",
     "rolsuper": false,
     "rolbypassrls": false,
     "rolcanlogin": false,
@@ -15129,6 +17715,13 @@
     "rolbypassrls": false,
     "rolcanlogin": false,
     "memberships": null
+   },
+   {
+    "name": "mohen_gate_signer_m5_machine",
+    "rolsuper": false,
+    "rolbypassrls": false,
+    "rolcanlogin": true,
+    "memberships": "{mohen_gate_signer}"
    },
    {
     "name": "mohen_m5_producer_login",
@@ -15157,6 +17750,13 @@
     "rolbypassrls": false,
     "rolcanlogin": false,
     "memberships": null
+   },
+   {
+    "name": "mohen_runner_reader_v2",
+    "rolsuper": false,
+    "rolbypassrls": false,
+    "rolcanlogin": true,
+    "memberships": "{mohen_gate_reader}"
    },
    {
     "name": "pgbouncer",
@@ -15191,7 +17791,7 @@
     "rolsuper": false,
     "rolbypassrls": true,
     "rolcanlogin": true,
-    "memberships": "{pg_monitor,pg_read_all_data,supabase_privileged_role}"
+    "memberships": "{pg_read_all_data,pg_monitor,supabase_privileged_role}"
    },
    {
     "name": "supabase_privileged_role",
@@ -15205,14 +17805,14 @@
     "rolsuper": false,
     "rolbypassrls": true,
     "rolcanlogin": true,
-    "memberships": "{pg_monitor,pg_read_all_data}"
+    "memberships": "{pg_read_all_data,pg_monitor}"
    },
    {
     "name": "supabase_realtime_admin",
     "rolsuper": false,
     "rolbypassrls": false,
     "rolcanlogin": false,
-    "memberships": "{anon,authenticated,service_role}"
+    "memberships": "{authenticated,anon,service_role}"
    },
    {
     "name": "supabase_replication_admin",
@@ -15232,6 +17832,18 @@
   "table_grants": [
    {
     "table_schema": "control",
+    "table_name": "d00_execution_grant_journal",
+    "grantee": "mohen_d00_grant_journal",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "control",
+    "table_name": "d01_resume_grant_journal",
+    "grantee": "mohen_d00_grant_journal",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "control",
     "table_name": "gate_audits",
     "grantee": "mohen_gate_authority",
     "privilege_type": "INSERT"
@@ -15245,6 +17857,12 @@
    {
     "table_schema": "control",
     "table_name": "gate_audits",
+    "grantee": "mohen_gate_signer_m5_machine",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "control",
+    "table_name": "gate_audits",
     "grantee": "mohen_private_worker",
     "privilege_type": "SELECT"
    },
@@ -15252,6 +17870,12 @@
     "table_schema": "control",
     "table_name": "gate_candidates",
     "grantee": "mohen_gate_authority",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "control",
+    "table_name": "gate_candidates",
+    "grantee": "mohen_gate_signer_m5_machine",
     "privilege_type": "SELECT"
    },
    {
@@ -15274,8 +17898,20 @@
    },
    {
     "table_schema": "control",
+    "table_name": "gate_policy_versions",
+    "grantee": "mohen_gate_signer_m5_machine",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "control",
     "table_name": "gate_reviewer_bindings",
     "grantee": "mohen_gate_authority",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "control",
+    "table_name": "gate_reviewer_bindings",
+    "grantee": "mohen_gate_signer_m5_machine",
     "privilege_type": "SELECT"
    },
    {
@@ -15294,6 +17930,18 @@
     "table_schema": "control",
     "table_name": "invalidation_events",
     "grantee": "mohen_gate_authority",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "control",
+    "table_name": "original_bridge_verification_keys",
+    "grantee": "mohen_gate_signer_m5_machine",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "control",
+    "table_name": "production_runs",
+    "grantee": "mohen_gate_signer_m5_machine",
     "privilege_type": "SELECT"
    },
    {
@@ -15323,6 +17971,12 @@
    {
     "table_schema": "control",
     "table_name": "qualification_current",
+    "grantee": "mohen_gate_signer_m5_machine",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "control",
+    "table_name": "qualification_current",
     "grantee": "mohen_private_worker",
     "privilege_type": "SELECT"
    },
@@ -15345,9 +17999,33 @@
     "privilege_type": "SELECT"
    },
    {
+    "table_schema": "evidence",
+    "table_name": "material_evidence",
+    "grantee": "mohen_gate_signer_m5_machine",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "evidence",
+    "table_name": "read_unit_evidence_links",
+    "grantee": "mohen_gate_signer_m5_machine",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "evidence",
+    "table_name": "reading_units",
+    "grantee": "mohen_gate_signer_m5_machine",
+    "privilege_type": "SELECT"
+   },
+   {
     "table_schema": "meaning",
     "table_name": "findings",
     "grantee": "mohen_gate_authority",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "meaning",
+    "table_name": "findings",
+    "grantee": "mohen_gate_signer_m5_machine",
     "privilege_type": "SELECT"
    },
    {
@@ -17205,6 +19883,12 @@
     "privilege_type": "SELECT"
    },
    {
+    "table_schema": "read_model",
+    "table_name": "world_projections",
+    "grantee": "mohen_gate_signer_m5_machine",
+    "privilege_type": "SELECT"
+   },
+   {
     "table_schema": "source",
     "table_name": "acquisition_attempts",
     "grantee": "mohen_gate_authority",
@@ -17356,14 +20040,32 @@
    },
    {
     "table_schema": "source",
+    "table_name": "raw_items",
+    "grantee": "mohen_gate_signer_m5_machine",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "source",
     "table_name": "read_runs",
     "grantee": "mohen_gate_authority",
     "privilege_type": "SELECT"
    },
    {
     "table_schema": "source",
+    "table_name": "read_runs",
+    "grantee": "mohen_gate_signer_m5_machine",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "source",
     "table_name": "read_units",
     "grantee": "mohen_gate_authority",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "source",
+    "table_name": "read_units",
+    "grantee": "mohen_gate_signer_m5_machine",
     "privilege_type": "SELECT"
    },
    {
@@ -17422,11 +20124,23 @@
    },
    {
     "table_schema": "source",
+    "table_name": "source_versions",
+    "grantee": "mohen_gate_signer_m5_machine",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "source",
     "table_name": "sources",
     "grantee": "mohen_gate_authority",
     "privilege_type": "SELECT"
    },
    {
+    "table_schema": "source",
+    "table_name": "sources",
+    "grantee": "mohen_gate_signer_m5_machine",
+    "privilege_type": "SELECT"
+   },
+   {
     "table_schema": "studio",
     "table_name": "asset_heads",
     "grantee": "mohen_app_runtime",
@@ -17500,6 +20214,12 @@
    },
    {
     "table_schema": "studio",
+    "table_name": "private_originals",
+    "grantee": "mohen_gate_signer_m5_machine",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "studio",
     "table_name": "projects",
     "grantee": "mohen_app_runtime",
     "privilege_type": "INSERT"
@@ -17508,6 +20228,18 @@
     "table_schema": "studio",
     "table_name": "projects",
     "grantee": "mohen_app_runtime",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "studio",
+    "table_name": "reference_kinds",
+    "grantee": "mohen_app_runtime",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "studio",
+    "table_name": "reference_kinds",
+    "grantee": "mohen_gate_authority",
     "privilege_type": "SELECT"
    },
    {
@@ -17526,6 +20258,18 @@
     "table_schema": "world",
     "table_name": "changes",
     "grantee": "mohen_gate_authority",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "world",
+    "table_name": "claim_evidence_links",
+    "grantee": "mohen_gate_signer_m5_machine",
+    "privilege_type": "SELECT"
+   },
+   {
+    "table_schema": "world",
+    "table_name": "claim_revisions",
+    "grantee": "mohen_gate_signer_m5_machine",
     "privilege_type": "SELECT"
    },
    {
@@ -17566,6 +20310,15 @@
   "20261102104020",
   "20261102105810",
   "20261102105829",
+  "20261108090000",
+  "20261108100000",
+  "20261109130000",
+  "20261110130000",
+  "20261113100000",
+  "20261113180000",
+  "20261114090000",
+  "20261114200000",
+  "20261115130000",
   "20261116064007",
   "20261116064636",
   "20261116095629",
@@ -17589,7 +20342,15 @@
   "20261118113714",
   "20261118113721",
   "20261118113729",
-  "20261119004253"
+  "20261118120000",
+  "20261118123000",
+  "20261119004253",
+  "20261119120000",
+  "20261119125821",
+  "20261119235044",
+  "20261119235412",
+  "20261120013721",
+  "20261120045054"
  ],
  "storage_buckets": [
   {
@@ -17609,87 +20370,99 @@
  ],
  "storage_policies": [],
  "row_counts": {
-  "control.gate_audits": 711,
-  "control.gate_candidates": 0,
-  "control.gate_policy_versions": 0,
-  "control.gate_reviewer_bindings": 0,
-  "control.gate_service_credentials": 0,
-  "control.invalidation_events": 2,
-  "control.original_bridge_verification_keys": 0,
+  "control.artifact_content_columns": 234,
+  "control.d00_execution_grant_journal": 1,
+  "control.d01_resume_grant_journal": 2,
+  "control.gate_audits": 805,
+  "control.gate_candidates": 128,
+  "control.gate_policy_versions": 6,
+  "control.gate_reviewer_bindings": 48,
+  "control.gate_service_credentials": 8,
+  "control.invalidation_events": 22,
+  "control.original_bridge_verification_keys": 1,
   "control.owner_reviews": 0,
-  "control.production_runs": 20,
-  "control.qualification_current": 0,
+  "control.production_runs": 138,
+  "control.qualification_current": 51,
   "control.session_verification_keys": 1,
   "control.web_password_reset_request_budget": 0,
   "control.web_password_resets": 0,
   "control.web_session_revocations": 0,
-  "control.work_publication_decisions": 0,
+  "control.work_publication_decisions": 8,
   "evidence.classification_decisions": 0,
-  "evidence.material_evidence": 166,
+  "evidence.material_evidence": 176,
   "evidence.material_mentions": 488,
-  "evidence.read_unit_evidence_links": 0,
+  "evidence.read_unit_evidence_links": 5,
   "evidence.reading_unit_dependencies": 0,
-  "evidence.reading_units": 38,
+  "evidence.reading_units": 51,
   "mab_backup.m1_columns_20261102": 35,
   "mab_backup.m1_conversations_20261102": 1,
   "mab_backup.m1_gate_audits_20261102": 711,
   "mab_backup.m1_grants_20261102": 63,
   "mab_backup.m1_imported_materials_20261102": 0,
   "meaning.claim_revisions": 0,
-  "meaning.findings": 50,
+  "meaning.findings": 56,
   "meaning.open_questions": 76,
   "meaning.present_connections": 5,
   "public.app_settings": 0,
-  "public.assets": 6,
+  "public.assets": 7,
   "public.conversations": 1,
-  "public.director_plans": 9,
+  "public.director_plans": 21,
   "public.explore_sessions": 1,
   "public.help_articles": 0,
   "public.imported_materials": 0,
   "public.notifications": 0,
   "public.policies": 0,
-  "public.research_events": 82,
-  "public.research_tasks": 24,
-  "public.study_asset_receipts": 164,
-  "public.users": 1,
+  "public.research_events": 252,
+  "public.research_tasks": 44,
+  "public.study_asset_receipts": 350,
+  "public.users": 8,
   "public.watch_sessions": 2,
   "public.work_engagement": 0,
+  "publication.editorial_decisions": 5,
   "publication.publication_schedules": 0,
-  "publication.published_pointers": 4,
-  "publication.work_revisions": 5,
-  "publication.works": 5,
-  "read_model.agent_contexts": 41,
+  "publication.publication_snapshots": 3,
+  "publication.published_pointers": 6,
+  "publication.withdrawals": 1,
+  "publication.work_revisions": 24,
+  "publication.works": 16,
+  "read_model.agent_contexts": 44,
   "read_model.discovery_paths": 63,
   "read_model.evidence_pointers": 132,
   "read_model.map_timeline_projections": 9,
-  "read_model.story_seeds": 42,
-  "read_model.world_projections": 11,
-  "source.acquisition_attempts": 0,
-  "source.acquisition_coverages": 0,
-  "source.acquisition_methods": 0,
-  "source.candidate_verifications": 0,
-  "source.original_provider_traces": 0,
-  "source.priority_assessments": 0,
-  "source.raw_items": 98,
+  "read_model.story_seeds": 46,
+  "read_model.world_projections": 18,
+  "source.acquisition_attempts": 28,
+  "source.acquisition_coverages": 22,
+  "source.acquisition_methods": 7,
+  "source.candidate_verifications": 15,
+  "source.original_provider_traces": 5,
+  "source.priority_assessments": 15,
+  "source.raw_items": 189,
   "source.read_handoffs": 0,
   "source.read_quality_checks": 0,
-  "source.read_runs": 16,
-  "source.read_units": 250,
-  "source.resource_catalog": 0,
-  "source.source_needs": 0,
-  "source.source_versions": 39,
-  "source.sources": 39,
-  "studio.asset_heads": 1,
-  "studio.asset_links": 0,
-  "studio.asset_revisions": 1,
-  "studio.delegations": 0,
-  "studio.execution_receipts": 0,
-  "studio.private_originals": 0,
-  "studio.projects": 1,
-  "studio.use_events": 0,
-  "world.changes": 48,
-  "world.claim_evidence_links": 0,
-  "world.claim_revisions": 89,
+  "source.read_runs": 25,
+  "source.read_units": 260,
+  "source.resource_catalog": 24,
+  "source.source_needs": 18,
+  "source.source_versions": 129,
+  "source.sources": 52,
+  "studio.asset_heads": 112,
+  "studio.asset_links": 3,
+  "studio.asset_revisions": 113,
+  "studio.delegations": 25,
+  "studio.director_plans": 3,
+  "studio.execution_control_events": 11,
+  "studio.execution_controls": 4,
+  "studio.execution_receipts": 23,
+  "studio.private_originals": 91,
+  "studio.projects": 17,
+  "studio.reference_kinds": 18,
+  "studio.submission_snapshots": 5,
+  "studio.use_events": 8,
+  "studio.work_revisions": 5,
+  "world.changes": 53,
+  "world.claim_evidence_links": 5,
+  "world.claim_revisions": 95,
   "world.conflicts": 4,
   "world.dependency_edges": 964,
   "world.entities": 106,
