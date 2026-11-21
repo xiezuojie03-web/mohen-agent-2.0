@@ -368,8 +368,13 @@ async function reconcileUnclaimedProduction(
     "CLOUD_EXECUTOR_PROCESS_UNAVAILABLE",
     "CLOUD_EXECUTOR_RUNNER_FILE_UNAVAILABLE",
   ];
+  const reasonCode = runs.length === 1 ? String(runs[0].reason_code ?? "") : "";
+  // 执行器进程失败（非"未派发"）也允许对账，但只在确实什么都没产出时：本次 intake
+  // 成本为 0，且该 run 没有任何 Gate 候选。凡跑出候选或产出的一律拒绝，避免在此退真账。
+  const processFailedNothingProduced = reasonCode === "CLOUD_EXECUTOR_PROCESS_FAILED" && cost === 0 &&
+    (await queryRows(`select 1 from control.gate_candidates where run_id = :'id'::uuid limit 1`, { id: runId })).length === 0;
   if (runs.length !== 1 || runs[0].status !== "HOLD" ||
-      !NEVER_EXECUTED.includes(String(runs[0].reason_code ?? "")))
+      !(NEVER_EXECUTED.includes(reasonCode) || processFailedNothingProduced))
     return { ok: false, reason: "production_reservation_reconciliation_required" };
   const settled = await queryRows(
     `select 1 from public.study_asset_receipts

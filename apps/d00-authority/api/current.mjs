@@ -34,8 +34,12 @@ export default async function current(req,res){
    if(typeof value==='string')headers.set(name,value);
   }
   const incoming=new Request(url,{method:'POST',headers,body:Readable.toWeb(req),duplex:'half'});
-  const approvedRun=process.env.MOHEN_D00_GATE_APPROVED_RUN_ID;
-  if(!approvedRun){
+  // 预批准 run 可以是逗号分隔的集合：D00/G0 与后续阶段的 G1…G5 都属于同一条 run，
+  // 因此不能把读服务钉在单一 run + 单一 D00/G0 上。这里只做"服务范围"预过滤，
+  // 真正的 CURRENT 资格仍由 read_gate_stage_qualification 在库内判定。
+  const approvedRuns=String(process.env.MOHEN_D00_GATE_APPROVED_RUN_ID??'')
+    .split(/[\s,]+/).map(v=>v.trim()).filter(Boolean);
+  if(!approvedRuns.length){
    res.statusCode=503;res.end('{"ok":false,"reason":"gate_run_not_configured"}');return;
   }
   let body;
@@ -44,7 +48,10 @@ export default async function current(req,res){
    res.statusCode=error.message==='REQUEST_TOO_LARGE'?413:error.message==='REQUEST_BODY_TIMEOUT'?408:400;
    res.end('{"ok":false,"reason":"invalid_current_request"}');return;
   }
-  if(body?.run_id!==approvedRun||body?.stage!=='D00'||body?.gate_code!=='G0'){
+  // 阶段与门禁必须成对（D00→G0、D01→G1…）；具体候选是否 CURRENT 由库内判定。
+  const stageGate={D00:'G0',D01:'G1',D02:'G2',D03:'G3',D04:'G4',D05:'G5'};
+  if(typeof body?.run_id!=='string'||!approvedRuns.includes(body.run_id)||
+     typeof body?.stage!=='string'||stageGate[body.stage]!==body.gate_code){
    res.statusCode=403;res.end('{"ok":false,"reason":"gate_run_scope_denied"}');return;
   }
   headers.delete('content-length');
