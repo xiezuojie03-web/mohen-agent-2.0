@@ -9,7 +9,7 @@ let handle;
 export default async function current(req,res){
  res.setHeader('content-type','application/json');
  res.setHeader('cache-control','no-store');
- if(process.env.VERCEL_ENV!=='preview'||process.env.MOHEN_D00_GATE_READER_ENABLED!=='true'){
+ if(!['preview','production'].includes(process.env.VERCEL_ENV)||process.env.MOHEN_D00_GATE_READER_ENABLED!=='true'){
   res.statusCode=404;
   res.end('{"ok":false,"reason":"not_found"}');
   return;

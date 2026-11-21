@@ -32,7 +32,7 @@ function configure(env){
 export async function authorityEndpoint(route,req,res){
  res.setHeader('content-type','application/json');
  res.setHeader('cache-control','no-store');
- if(process.env.VERCEL_ENV!=='preview'||process.env.MOHEN_D00_AUTHORITY_ENABLED!=='true'){
+ if(!['preview','production'].includes(process.env.VERCEL_ENV)||process.env.MOHEN_D00_AUTHORITY_ENABLED!=='true'){
   res.statusCode=503;res.end('{"ok":false,"reason":"execution_authority_not_configured"}');return;
  }
  try{

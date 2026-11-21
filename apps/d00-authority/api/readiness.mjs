@@ -21,7 +21,7 @@ async function check(url,ca,verify){
 export default async function readiness(req,res){
  res.setHeader('content-type','application/json');
  res.setHeader('cache-control','no-store');
- if(process.env.VERCEL_ENV!=='preview'||process.env.MOHEN_D00_READINESS_ENABLED!=='true'){
+ if(!['preview','production'].includes(process.env.VERCEL_ENV)||process.env.MOHEN_D00_READINESS_ENABLED!=='true'){
   res.statusCode=404;
   res.end('{"ok":false}');
   return;
