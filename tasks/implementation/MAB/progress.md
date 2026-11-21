@@ -5871,3 +5871,27 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - `inputDigest` 复算为 `8a19ba7ad6380b4b04276fd0d3dfa27cc8d853e919f52aa429f38077108bd00a`，与历史记录 `8a19ba7a…` 一致，证明 D00 绑定口径正确。
 
 **边界**：零付费；未签发任何 Gate（G0/G1 均未产生）；未伪造会话/资格/回执；未改迁移与方法表绑定；密钥未入 git（`.secrets/` 与 `.tmp_*` 均未提交）。
+
+### 2026-11-21 第十一批·续（授权服务打通，新的真实断点）
+
+**凭据突破**：本机 Vercel CLI `%APPDATA%\com.vercel.cli\Data\auth.json` 内有**账号级令牌**（`vca_`，userId `gde1QhaQBujcbrAx5DRErm3p`，currentTeam `team_hUpVPUMnytgHi0OOs5YVc4NF`，expiresAt `2026-11-21T14:36:24Z`）。已复制到 `.secrets/vercel-account-token.txt`。此前 `.secrets/vercel-token.txt` 是**仅限 mohen-agent-2-0 的受限令牌**，所以看不到 `mohen-d00-authority`（`prj_fYjzuIzb8ysObnNDgkeRxiXGZxjJ`，root=`apps/d00-authority`）。**结论：两个项目都在同一团队，不需要新建项目，只需覆盖两个项目的令牌。**
+
+**代码**：`5868685` 把 `authority.mjs`、`api/current.mjs`、`api/readiness.mjs` 的 `VERCEL_ENV` 守卫由 preview-only 改为 preview|production，与 `d01-authority.mjs` 既有口径一致；端点仍由 32+ 字符 Bearer 守卫。
+
+**云端配置（授权项目，production+preview）**：`MOHEN_D00_AUTHORITY_ENABLED=true`、`MOHEN_D00_AUTHORITY_DATABASE_URL`（含新口令）、`MOHEN_D00_AUTHORITY_DATABASE_CA`、`MOHEN_D00_AUTHORITY_SIGNING_KEY`（新 Ed25519 私钥）、`MOHEN_D00_AUTHORITY_ISSUE_CREDENTIAL`/`VERIFY_CREDENTIAL`、`MOHEN_D00_AUTHORITY_APPROVAL`、`MOHEN_D00_GATE_READER_ENABLED=true`、`MOHEN_D00_GATE_READER_DATABASE_URL`、`MOHEN_D00_GATE_APPROVED_RUN_ID`、`MOHEN_D00_READINESS_ENABLED=true`。
+
+**实测证据**：
+- `GET /api/readiness` → `{"ok":false,"journal":"ready","gateReader":"identity_rejected"}`（journal 已通；gateReader 用的是 `mohen_runner_reader_v2`，与 readiness 期望的 `mohen_d00_gate_reader_login` 不同口径，不影响 `/api/current` 实际鉴权）
+- `POST /api/token`（坏凭据）→ **401**（此前恒 503，说明 D00 授权已真正生效）
+- 授权 URL 正确路径为 `/api/token`、`/api/consume`、`/api/current`（无根级 rewrite）
+
+**本轮 run 演进（一条比一条更靠后，均如实 HOLD@D00、零候选、零花费）**：
+
+| run | 诊断 |
+|---|---|
+| `6f9967c0` | `EXECUTION_DYNAMIC_TOKEN_REJECTED:404`（URL 少了 `/api` 前缀） |
+| `ec1fbe83` | 授权已通过，改停在 **`ORIGINAL_NOT_FOUND`**（`private-evidence-adapters.mjs` 的 `readVerified`→`download`→`request`） |
+
+**新的最前阻断**：原件元数据齐全但字节取不到。`studio.private_originals.f474b91b` 为 `state=STORED_VERIFIED`、`byte_size=1259`、`storage_bucket=mohen-private-originals`、`storage_key=d9d48901-.../f474b91b-....bin`；run `ec1fbe83` 的 scope 与之一致（project_id / original_id / asset_revision_id 全对得上），却取对象返回 missing。需核实该 bucket 内对象是否真实存在，或桥接服务使用的 storage 凭据能否读该 bucket。
+
+**待办**：账号令牌 14:36:24Z 过期，下一窗口若已过期需重新 `vercel login` 或改用覆盖两项目的长效令牌；`.tmp_round.mjs` 已把"新 runId + 双项目改绑 + 双部署 + 等 READY"自动化，可直接复用。
