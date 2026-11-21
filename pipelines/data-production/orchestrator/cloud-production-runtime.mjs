@@ -103,6 +103,17 @@ function runnerEnvironment(environment,ownerToken){
   MOHEN_DB_DRIVER:'pg',MOHEN_EXECUTION_AUTH_TOKENS:environment.MOHEN_EXECUTION_AUTH_TOKENS??'{}',MOHEN_PRIVATE_WORKER_OWNER_SESSION:ownerToken,MOHEN_PRIVATE_EVIDENCE_WORKER_ENABLED:'true',MOHEN_CLOUD_RUN_PROGRESS_RPC:'true',
   MOHEN_TOPIC_JSON_FILE:'',MOHEN_TOPIC_CONFIG:''};
 }
+// A failed child otherwise leaves only an opaque reason code. Keep a bounded,
+// redacted tail so the failure is diagnosable without exposing URLs, bearers,
+// session tokens or digests to anyone who can read the run row.
+export function redactChildDiagnostic(stderr){
+ if(typeof stderr!=='string'||!stderr.trim())return null;
+ return stderr
+  .replace(/postgres(?:ql)?:\/\/[^\s"']+/gi,'<redacted-database-url>')
+  .replace(/Bearer\s+[A-Za-z0-9._~+/=-]+/gi,'Bearer <redacted>')
+  .replace(/[A-Za-z0-9+/=_-]{40,}/g,'<redacted-token>')
+  .slice(-1200);
+}
 export async function executeCloudProductionCli({input,projectRoot,environment=process.env,runChild=awaitProductionChild,readTerminal,holdRun,resumeProvider}){
  const endStage=cloudProductionEndStage(input);
  const fromStage=cloudProductionFromStage(input);
@@ -143,7 +154,7 @@ export async function executeCloudProductionCli({input,projectRoot,environment=p
   if(result.timedOut)await holdRun(input,'CLOUD_EXECUTOR_DEADLINE');
   else if(result.code!==0){
    if(result.stderr)console.error('[runner-stderr]\n'+result.stderr);
-   await holdRun(input,'CLOUD_EXECUTOR_PROCESS_FAILED');
+   await holdRun(input,'CLOUD_EXECUTOR_PROCESS_FAILED',redactChildDiagnostic(result.stderr));
   }
   let terminal=await readTerminal(input.run_id);
   if(!terminal||!['PASS','HOLD','REJECT','FAILED'].includes(terminal.status)){

@@ -48,10 +48,14 @@ export function createCloudProductionServer({environment=process.env,projectRoot
   if(typeof terminal==='string'){try{terminal=JSON.parse(terminal);}catch{terminal=null;}}
   return {run_id:r.run_id,status:r.status,stage:r.current_stage??'D00',reason_code:terminal?.reason_code??null};
  }
- async function holdRun(v,reason){
+ async function holdRun(v,reason,diagnostic){
   await db.queryRows(`update control.production_runs set status='HOLD',finished_at=now(),current_stage=coalesce(current_stage,'D00'),
     metadata=coalesce(metadata,'{}'::jsonb)||jsonb_build_object('m5_terminal',jsonb_build_object('stage',coalesce(current_stage,'D00'),
-    'disposition','HOLD','reason_code',:'reason'::text)) where run_id=:'id'::uuid and status='RUNNING' returning run_id::text`,{id:v.run_id,reason});
+    'disposition','HOLD','reason_code',:'reason'::text))
+    ||(case when coalesce(:'diag'::text,'')='' then '{}'::jsonb else jsonb_build_object('cloud_dispatch',
+      coalesce(metadata->'cloud_dispatch','{}'::jsonb)||jsonb_build_object('executor_diagnostic',:'diag'::text)) end)
+    where run_id=:'id'::uuid and status='RUNNING' returning run_id::text`,
+   {id:v.run_id,reason,diag:typeof diagnostic==='string'?diagnostic:''});
  }
  return createCloudProductionHandler({credential:environment.MOHEN_CLOUD_EXECUTOR_CREDENTIAL,
   claim:input=>claimCloudProductionRun({db,input,verifyOwnerOriginal:verify}),
