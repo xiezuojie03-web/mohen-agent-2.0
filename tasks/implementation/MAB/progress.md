@@ -5679,3 +5679,20 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 **证据边界（如实记录）**：本批**没有**推进真实 run；无 live 签发、无 DDL、无付费调用（¥0）、密钥未入 git/日志/对话。真实 run 仍 `HOLD@D01`。
 
 **HOLD/下一动作**：要把真实 run 推进到 D02，必须先由 Owner 在三件事上裁决（缺一不可）：①C02 扫页 → 可验文本的转录路径（需授权 OCR/VLM Tool，或改走 `text/plain` 原件）；②D02 H05 生成的付费 Provider 委派/预算/权利（现为零付费窗口）；③D02 阶段授权端点与其一次性 journal（现只有 D00/D01）。回滚：`git revert` 本批即可，无持久副作用。
+
+## 2026-11-21 第三批｜Owner 选 A 后的设计核对：材料是照片，OCR 转录前提不成立（无代码变更）
+
+**前置**：Owner 选 A（授权 OCR/VLM 转录 Tool）。按"先读设计再动手"，动工前核对材料与方法合同，结论是 A 的前提对本原件不成立，故本批**不写 OCR 代码**，只登记事实与拆解。
+
+**设计依据（逐份读）**：`specs/data-production/standards/d01/规范_P1_C01-C08载体与复合材料专业读取.md` C02（扫描书影与影像PDF：按阅读序 OCR 多候选、原字形与校订文字分离、记录 CER 与抽检、失败回退须新建读取版本）与 C04（照片、版画与插图）；`契约_P1_D01至D02可信交接.md` §2（D02 可接收定位原文/技读候选/版面序/原图框/缺失区/质量限制）；`契约_P1_新L1持久化与L2字段所有权.md`（L1 权威字段含 `transcription_candidates,raw_payload_ref,uncertainty`；L2 `literal_reading` 只是核准快照，不得复制全部 OCR 作第二套权威原文）；`AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md` 第 4 行（扫描书影转定位原文用 SPECIALIST_TOOL/有界 VLM 候选，工具未接通则 HOLD）与 VS-N01/VS-N03（OCR 缺版次/bbox 或疑字被隐去即 HOLD）；`MoHen_Data_Production_Protocol.md`（外部模型/OCR 另核 `external_processing`；照片/舆图须出 read_unit + Visual Observation，禁止标题识别替代读图）。
+
+**只读事实（云端 admin 只读连接）**：
+- `source 47875bca…` = provider `wikimedia-commons`、title `朱家角古镇，Zhujiajiao Water Village - panoramio.jpg`、`source_type=image`、`content_availability=image_scan`；`carrier_type=scanned_page` 仅为本系统 D00 登记标签。
+- `rights_by_action` = `{retain,download,access_view,machine_read}=allowed`，**无 `external_processing`**。
+- `source.read_runs 08fb4579…`：`config.schema=mab.private-scanned-page-reading.v1`、`status=done`；`source.read_units` 仅 1 行 C02 页定位，`uncertainty.interpretation=not_performed`（未做任何识字）。
+- 方法表：`C04` `implementation_binding="HOLD"`；`read_units.method_code` CHECK 限 C01—C08，`kind/locator_schema/payload_ref/uncertainty/revision_of` 均为既有多值列，无新 DDL 需求即可承载"转录候选"。
+- Commons 原件本次公网取件被限流（HTTP 429 / 缩略图 400），未取得像素副本；结论不依赖像素——Panoramio 风景照无印刷文字，且 `source_type=image` 已足以判定不是书影。
+
+**结论（三处独立否决）**：①材料不是书影，无字可转录，C02/OCR 属方法错配（D00 把照片登记为 `carrier_type=scanned_page` 并预选 C02）；②即便做外部 OCR/VLM，`external_processing` 未获权；③本地视觉模型在本机（8G 笔记本）不可用，云端 VLM 属付费，与零付费窗口冲突。
+
+**本批产出**：仅文档同步（CURRENT.md 补正材料事实与 A′/A″ 拆解）。零代码、零 DDL、零付费、零 live 推进。回滚：`git revert` 本批即可。
