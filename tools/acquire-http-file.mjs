@@ -23,6 +23,12 @@
 //     --list ./batch.json --title "某某丛书（馆方批量包）" --provider "某某图书馆" --apply
 //   batch.json 形如：{"files":[{"url":"https://…/a.pdf","page":1},{"url":"https://…/b.pdf","page":2}]}
 //   或直接：[{ "url": "…", "page": 1 }]
+//
+// 权利依据（首次为某来源建行时必须显式给出，否则 Guard 失败关闭）：
+//   --rights-evidence ./evidence.json，形如
+//   {"rights_by_action":{"download":"allowed","retain":"allowed","machine_read":"allowed",…},
+//    "rights_evidence":{"schema":"mohen.rights-evidence.v1","basis":"…","references":[…],"obligations":[…]}}
+//   工具不推断、不补全：既有非空权利与本次依据不一致时报 HTTP_SOURCE_RIGHTS_CONFLICT 并停。
 import fs from "node:fs";
 import { createHash, createHmac, randomUUID } from "node:crypto";
 import { getNodePgPool, queryRows } from "../packages/data-access/src/index.mjs";
@@ -52,7 +58,16 @@ const TITLE = arg("title");
 const PROVIDER = arg("provider");
 const CATALOG_NO = arg("catalog-no", "");
 const CARRIER = arg("carrier", "scanned_page");
+// source.sources.content_availability 只有这一组合法值（库内 CHECK 约束）。
+// 此前写死 'file_download' 与该约束冲突，--apply 必然插入失败；改由调用方显式指定。
+const CONTENT_AVAILABILITY = arg("content-availability", "full_content");
+const CONTENT_AVAILABILITY_VALUES = ["full_content", "image_scan", "ocr", "structured_content", "catalog_only", "unavailable"];
 const NEED_ID = arg("need-id");
+// 权利依据必须由调用方显式提供（JSON 文件），工具只登记、不推断：
+// 没有依据就保持空 rights_by_action，由权利 Guard 失败关闭。
+const RIGHTS_FILE = arg("rights-evidence");
+const RIGHTS_EVIDENCE = RIGHTS_FILE ? JSON.parse(fs.readFileSync(RIGHTS_FILE, "utf8")) : null;
+const RIGHTS_BY_ACTION = RIGHTS_EVIDENCE?.rights_by_action ?? null;
 // 同一份文件可能被多个来源引用；默认按 provider+title 建/复用来源行。
 const METHOD_KEY = "M0004";
 const METHOD_VERSION = "v1";
@@ -115,7 +130,9 @@ async function download(url, { attempts = 3, timeoutMs = 180000, chunkSize = CHU
             { cause: error, httpStatus: error.httpStatus, needsPermission: true });
         }
         const status = error?.httpStatus;
-        const retriable = status === 429 || status === 403 || status === 503 || status === 502
+        // 无 HTTP 状态码的失败（DNS/TLS/连接中断）与 429/403/5xx 一样属瞬时问题，同样重试；
+        // 否则一次网络抖动就会让整批取件停在 HTTP_FILE_FETCH_FAILED。
+        const retriable = status == null || status === 429 || status === 403 || status === 503 || status === 502
           || status === 504 || error?.name === "AbortError";
         if (!retriable || i >= (status === 403 ? 2 : attempts)) break;
         await new Promise((resolve) => setTimeout(resolve, (status === 403 ? 5000 : 1500) * i));
@@ -164,21 +181,54 @@ function makeToken(uid, secret) {
   return `${payload}.${sig}`;
 }
 
+// 权利对象按规范化字符串比较：JSON 键序不同不等于权利不同。
+const canonicalJson = (value) =>
+  Array.isArray(value)
+    ? "[" + value.map(canonicalJson).join(",") + "]"
+    : value !== null && typeof value === "object"
+      ? "{" + Object.keys(value).sort().map((k) => JSON.stringify(k) + ":" + canonicalJson(value[k])).join(",") + "}"
+      : JSON.stringify(value);
+
 async function ensureSource(entryUrl) {
   const existing = await queryRows(
-    `select source_id::text as source_id, rights_by_action from source.sources
+    `select source_id::text as source_id, rights_by_action::text as rights_by_action from source.sources
       where provider=:'p' and title=:'t'`, { p: PROVIDER, t: TITLE });
   if (existing.length > 1) throw new Error("HTTP_SOURCE_AMBIGUOUS");
-  if (existing.length === 1) return { ...existing[0], created: false };
-  if (!APPLY) return { source_id: null, rights_by_action: {}, created: false, missing: true };
+  if (RIGHTS_BY_ACTION != null &&
+      (typeof RIGHTS_BY_ACTION !== "object" || Array.isArray(RIGHTS_BY_ACTION)))
+    throw new Error("HTTP_RIGHTS_EVIDENCE_INVALID");
+  if (existing.length === 1) {
+    const current = existing[0].rights_by_action;
+    const empty = current == null || current === "" || current === "{}";
+    if (!empty) {
+      // 已有非空权利：与本次依据不一致就停，不静默改写既有裁定。
+      if (RIGHTS_BY_ACTION != null && canonicalJson(JSON.parse(current)) !== canonicalJson(RIGHTS_BY_ACTION))
+        throw new Error("HTTP_SOURCE_RIGHTS_CONFLICT");
+      return { ...existing[0], created: false };
+    }
+    if (RIGHTS_BY_ACTION == null) return { ...existing[0], created: false };
+    if (!APPLY) return { ...existing[0], rights_by_action: RIGHTS_BY_ACTION, created: false, rights_pending_write: true };
+    await queryRows(
+      `update source.sources set rights_by_action=:'ra'::jsonb, rights_evidence=:'re'::jsonb
+        where source_id=:'s'::uuid`,
+      { s: existing[0].source_id, ra: JSON.stringify(RIGHTS_BY_ACTION),
+        re: JSON.stringify(RIGHTS_EVIDENCE?.rights_evidence ?? {}) });
+    return { ...existing[0], rights_by_action: RIGHTS_BY_ACTION, created: false, rights_written: true };
+  }
+  if (!APPLY) return { source_id: null, rights_by_action: RIGHTS_BY_ACTION ?? {}, created: false, missing: true };
+  if (!CONTENT_AVAILABILITY_VALUES.includes(CONTENT_AVAILABILITY))
+    throw new Error(`HTTP_CONTENT_AVAILABILITY_INVALID:${CONTENT_AVAILABILITY}`);
   const rows = await queryRows(
     `insert into source.sources(provider,title,source_type,carrier_type,content_availability,provenance_status,
-       source_uri_or_catalog_no,original_locator,scope)
-     values (:'p',:'t','gazetteer',:'carrier','file_download','verified',:'no',:'locator'::jsonb,:'scope'::jsonb)
-     returning source_id::text as source_id, rights_by_action`,
-    { p: PROVIDER, t: TITLE, carrier: CARRIER, no: CATALOG_NO,
+       source_uri_or_catalog_no,original_locator,scope,rights_by_action,rights_evidence)
+     values (:'p',:'t','gazetteer',:'carrier',:'availability','verified',:'no',:'locator'::jsonb,:'scope'::jsonb,
+       :'ra'::jsonb,:'re'::jsonb)
+     returning source_id::text as source_id, rights_by_action::text as rights_by_action`,
+    { p: PROVIDER, t: TITLE, carrier: CARRIER, availability: CONTENT_AVAILABILITY, no: CATALOG_NO,
       locator: JSON.stringify({ catalog_no: CATALOG_NO, url: entryUrl }),
-      scope: JSON.stringify({ project_id: PROJECT_ID }) });
+      scope: JSON.stringify({ project_id: PROJECT_ID }),
+      ra: JSON.stringify(RIGHTS_BY_ACTION ?? {}),
+      re: JSON.stringify(RIGHTS_EVIDENCE?.rights_evidence ?? {}) });
   return { ...rows[0], created: true };
 }
 

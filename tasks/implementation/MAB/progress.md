@@ -5696,3 +5696,27 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 **结论（三处独立否决）**：①材料不是书影，无字可转录，C02/OCR 属方法错配（D00 把照片登记为 `carrier_type=scanned_page` 并预选 C02）；②即便做外部 OCR/VLM，`external_processing` 未获权；③本地视觉模型在本机（8G 笔记本）不可用，云端 VLM 属付费，与零付费窗口冲突。
 
 **本批产出**：仅文档同步（CURRENT.md 补正材料事实与 A′/A″ 拆解）。零代码、零 DDL、零付费、零 live 推进。回滚：`git revert` 本批即可。
+
+## 2026-11-21 第四批｜生产链自行找资料：取件工具三处硬缺陷修复 + 真实取件核对 + 环境身份阻断定位
+
+**Owner 指令**：「库里没有，就去找呀。生产不就是为了能够找资料吗？」→ 本批停止等 Owner 上传，改由生产链自行发现并取件。
+
+**基线核验**：HEAD `da1494d` = origin/main，分叉 0/0；工作树仅既有未提交 `tasks/results/P0_鉴权矩阵_20261029.csv`（非本批，不动）与未跟踪 `.tmp_*`/`.mohen/`。
+
+**真实发现（可复现）**：维基文库《欽定大清一統志（四庫全書本）》卷058（松江府），固定修订 **oldid 745167**（rev_timestamp `2016-10-19T09:32:51Z`，页面 sha1 `2d5c6d22…`）；`action=raw&oldid=745167` 取件 **55,958 字节**、SHA-256 `6cd08f0a59ada94c7389ee18b2c3e4d01517a9a123b650bbdc84302fbf7e3523`（三次独立取件一致）。内容含「珠街鎮（在青浦縣西十里，商賈輻輳，為邑巨鎮）」「朱家角」「津梁」等条目；**字节位置：珠街鎮首见 43,629、朱家角 45,775、津梁 47,033**——关键段落均在 32 KiB 之后，单次全文读取路径（≤32768 B）容不下。
+
+**已排除来源（实测，不是猜）**：archive.org 443 连接超时；`www.shidianguji.com` robots 对 `*` 全站 `Disallow: /`；`欽定古今圖書集成` 職方典第 0669/0689—0699 各卷均为 423—427 B 转写占位；`三呉水考/卷04` 33,717 B、`江南通志/卷025` 39,929 B、`讀史方輿紀要/卷二十四` 134,251 B 均超 32 KiB；上图开放数据 `gj/webapi/works` 以 `.env.local` 内 Key 实测（含既有健康查询 `title=金泽`）一律 `{"result":"-1"}` → **唯一「明确授权来源」通道当前不可用，须 Owner 更换 Key**。
+
+**工具缺陷（本批修复，`tools/acquire-http-file.mjs`；此前 Y07 取件落库根本走不通）**：
+1. `content_availability` 写死 `'file_download'`，与库内 CHECK（`full_content/image_scan/ocr/structured_content/catalog_only/unavailable`）冲突 → `--apply` 必然插入失败；改为 `--content-availability`（默认 `full_content`）并在写库前校验取值。
+2. 首次为某来源建行时无法携带任何权利依据（只能空 `rights_by_action`，被权利 Guard 直接拦死）→ 新增 `--rights-evidence <json>`：工具只登记不推断，既有非空权利与本次依据不一致报 `HTTP_SOURCE_RIGHTS_CONFLICT` 并停；权利比较用规范化键序，避免同义权利被误判冲突。
+3. 网络层失败（无 HTTP 状态码的 DNS/TLS/连接中断）不重试 → 一次抖动即整批 `HTTP_FILE_FETCH_FAILED`；改为与 429/403/5xx 同样重试。
+
+**本地隔离库真实写入（回读核验）**：Y01 需求回执 `090b7c4a-73ee-432f-a0b8-aded8ecee132`（produced_by `Y01/production-self-acquisition`，project `e03c4ba8…`）；来源 `b8ca4183-491c-45b4-88e9-2b34f0fe7ae8`（provider `wikisource`、`source_type=gazetteer`、`carrier_type=digital_text`、`content_availability=full_content`、`provenance_status=verified`），携 `rights_by_action`（`access_view/machine_read/retain/download/quote=allowed`；`display/adapt/redistribute/external_processing=denied`）与 `rights_evidence`（basis `public_domain_expired_copyright`、oldid 引用与字节/SHA、CC BY-SA 4.0 转录层署名与相同方式共享义务、Owner 裁决 A 2026-11-10 的本地隔离范围、`boundary_note` 明示未经 Owner 逐条复核）。**字节未落**：`source.source_versions` 计数为 0。
+
+**新阻断（环境身份，非代码缺陷）**：落私有原件需合规私有 worker 登录身份；`assertPrivateWorkerIdentity` 拒绝以 NOLOGIN 角色 `mohen_private_worker` 直连（`PRIVATE_WORKER_DATABASE_IDENTITY_UNSAFE`），而本机 dev 库 `pg_roles` 中**不存在** `mohen_m5_worker_login`/`mohen_m5_producer_login`（迁移 `20261117020000_mab_m5_dev_machine_login_roles.sql` 未在本机应用，且该迁移写明上线前须单独安全轮换口令）。按纪律不自行造角色或口令绕过校验。
+
+**云端不可达（如实）**：本会话无云端库凭据（`.env.local` 全部指向 `127.0.0.1`，无 Vercel CLI 或令牌），真实 run `bfcdfad6`（云端 `HOLD@D01`）本批**无法推进**，未做任何云端写入。
+
+**证据边界**：零 DDL、零付费、未签 Gate、未伪造会话与上传。`CODE_PRESENT`（三处工具修复）+ `VERIFIED_ISOLATED`（真实取件字节/SHA、权利 Guard `blocked=[]`、需求与来源登记回读）+ `DEFERRED_ENV`（私有原件落库、云端推进）。回滚：`git revert` 本批；库内新增两行可用撤权或新记录覆盖，不删历史。
+
