@@ -2,6 +2,7 @@
 // D00 -> D01 stage output (text C01 and scanned-page image C02). This is NOT a
 // Producer supplied digest, new Gate, or authorization to review other stages.
 // Missing facts fail closed.
+import {createHash} from 'node:crypto';
 import {executionDigest} from '../pipelines/data-production/orchestrator/execution-authority.mjs';
 import {inspectMethodPlanRef} from '../packages/data-access/src/method-plan-ref.mjs';
 import {assertStageQualificationRequest} from '../packages/data-access/src/gate-stage-qualification.mjs';
@@ -459,9 +460,16 @@ async function deriveD03WorldClaimFacts({query,candidate,projectId,registry,runI
   // function at execution time; the machine reader cannot recompute it (no
   // sha256_bytes grant), exactly as for G2 we adopt candidate.artifact_revision
   // after cross-checking the independently-readable facts that bind it.
+  // The claim payload's request_digest is the candidate repository's persist
+  // digest (sha256 of {runId,originalId,evidenceId,claim}), distinct from the
+  // stage input digest executionDigest(input). Re-derive it from the persisted
+  // input facts and require an exact match — a Producer cannot re-point it.
+  const persistDigest=createHash('sha256').update(JSON.stringify({runId,
+    originalId:input.originalId,evidenceId:input.evidenceId,claim:input.claim}),'utf8').digest('hex');
   requireFact(row.claim_revision_id===revisionId&&row.evidence_id===input.evidenceId&&
     row.producer_method_id==='W07'&&payload?.qualification==='UNASSESSED'&&
-    payload?.request_digest===inputDigest&&
+    payload?.request_digest===persistDigest&&
+    payload?.original_id===input.originalId&&
     input.claim.change_type===row.change_type&&input.claim.support_type===row.support_type&&
     UUID.test(row.change_id??'')&&UUID.test(row.claim_evidence_link_id??'')&&
     SHA.test(candidate.artifact_revision??''),
