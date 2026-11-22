@@ -7,8 +7,8 @@
     "attempts": 18
   },
   "proposed_after_merge": {
-    "resources": 102,
-    "methods": 83,
+    "resources": 105,
+    "methods": 86,
     "attempts": 18
   },
   "additions": [
@@ -1108,6 +1108,63 @@
         "https://ip.e-dunhuang.com/article/5.html",
         "https://www.gswbj.gov.cn/a/2024/08/26/21789.html"
       ]
+    },
+    {
+      "resource_id": "R0103",
+      "parent_resource_id": null,
+      "level": "专题数据集",
+      "name": "Dataset of 697 Cultural Heritage Sites along the Beijing-Hangzhou Grand Canal (HeritageSitesBHGC)",
+      "provider": "Global Change Data Publishing & Repository / Yangzhou University",
+      "url": "https://doi.org/10.3974/geodb.2026.02.04.V1",
+      "content": "覆盖京杭大运河沿线7个省级行政区的697处文化遗产点：58处世界遗产、200处国家级、439处省级。数据含名称、行政区、保护级别、遗产类型、坐标、建设年代、历史背景、关联人物/事件、保存状况和修缮记录；22个数据文件，XLSX与SHP，合计4.50MB。数据采用多源官方名录汇编，补充高德坐标服务，最终坐标转WGS84。",
+      "access": "论文页面指向DOI数据集；公开免费互联网下载。当前仅核验元数据与共享政策，未点击下载文件、未取得字节。",
+      "rights": "该数据集页面明确：使用须引用；再分发须取得GCdataPR编辑部书面许可并取得数据再分发许可；用于新数据集时遵守10%原则并标注来源。不得将免费获取等同于可任意再分发或商用。",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0083",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.geodoi.ac.cn/WebEn/paper.aspx?Id=184196b8-160c-4604-9a55-4c038921519e",
+        "https://doi.org/10.3974/geodb.2026.02.04.V1"
+      ]
+    },
+    {
+      "resource_id": "R0104",
+      "parent_resource_id": null,
+      "level": "专题数据集",
+      "name": "Spatial Distribution Dataset of 5058 National Key Protected Cultural Relic Units in Eight Batches of China",
+      "provider": "Global Change Data Publishing & Repository / Yangzhou University / Chinese Academy of Sciences / Nanjing Normal University",
+      "url": "https://doi.org/10.3974/geodb.2024.01.09.V1",
+      "content": "依据国务院1961—2019年公布的八批5058处全国重点文物保护单位名录整理，并结合地图地理编码。包含名称、分类编号、类型、年代、批次、地址等属性；SHP与XLS格式，8个数据文件，25.8MB（压缩包839KB）。",
+      "access": "数据集详情页提供数据产品下载链接（PDF说明与RAR数据包）；本轮未实际下载或校验字节。",
+      "rights": "当前详情页未显示明确许可文本或再分发条款；可访问/有下载链接不代表商业使用、机器处理或再分发获准。权利状态R6/HOLD，需向数据发布方确认。",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0084",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.geodoi.ac.cn/\\u005cWebEn/geodoi.aspx?Id=3503",
+        "https://doi.org/10.3974/geodb.2024.01.09.V1"
+      ]
+    },
+    {
+      "resource_id": "R0105",
+      "parent_resource_id": null,
+      "level": "专题数据集",
+      "name": "Dataset of Human Activities in Northern China during the Neolithic Period",
+      "provider": "Global Change Data Publishing & Repository / Institute of Geographic Sciences and Natural Resources Research, Chinese Academy of Sciences",
+      "url": "https://doi.org/10.3974/geodb.2025.05.01.V1",
+      "content": "以中国文物地图集中的13185处考古遗址地点描述为基础，覆盖北纬29.4—53.3、东经92.3—126.1的北方地区及12种代表性史前文化；公开成果并非13185个点位原始表，而是0.5°×0.5°网格NetCDF（1.20MB），核心维度为文化、经度、纬度，变量包括遗址密度、观测最近邻指数、标准化Z值和显著性p值。",
+      "access": "GCdataPR数据详情页、DOI/CSTR元数据与NetCDF文件入口；本轮未下载数据文件。",
+      "rights": "当前已核页面未明确展示该数据集具体许可/再分发条款；需回到数据页或向发布方确认引用、再分发和商业使用条件，暂列R6/HOLD。",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0085",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.geodoi.ac.cn/\\u005cWebEn/geodoi.aspx?Id=3779",
+        "https://doi.org/10.3974/geodb.2025.05.01.V1"
+      ]
     }
   ],
   "methods": [
@@ -1650,6 +1707,36 @@
       "scope": "High-resolution cave/mural/manuscript/creative assets and co-created works",
       "steps": "Register; browse low-res; select asset and intended use; sign electronic authorization and pay; download after approval; attribute Dunhuang Academy; do not transfer or provide to third parties; check special restrictions on whole cave/wall and 300dpi+ images.",
       "limits": "Open Materials means browse/apply, not CC open license; commercial use separately negotiated; no scraping/republication without written authorization."
+    },
+    {
+      "method_id": "M0083",
+      "version": "v0.1",
+      "resource_id": "R0103",
+      "status": "DRAFT",
+      "path": "GCdataPR论文页 → DOI数据集记录 → XLSX/SHP文件获取",
+      "scope": "京杭大运河沿线697处文化遗产点的结构化属性与空间数据",
+      "steps": "先读数据论文和数据集元数据；核验文件清单、坐标参考系、字段字典和数据版本；经DOI进入数据集记录并取得文件；保存发布页与共享政策；引用数据集；再分发或纳入新数据集前申请书面许可并核对10%原则。",
+      "limits": "论文页面明确免费获取，但再分发需书面许可及数据再分发许可；不得将免费获取解释为无条件商用或再分发授权。未实测下载、SHA256和文件读取。"
+    },
+    {
+      "method_id": "M0084",
+      "version": "v0.1",
+      "resource_id": "R0104",
+      "status": "DRAFT",
+      "path": "GCdataPR数据详情页 → DOI/CSTR → RAR数据包下载",
+      "scope": "全国重点文物保护单位5058处空间分布SHP/XLS数据",
+      "steps": "核对八批国务院名录来源与数据版本；保存数据详情、DOI/CSTR及文件列表；下载RAR和数据说明；检查SHP坐标系、属性字段、记录数和文件完整性；联系发布方核实许可。",
+      "limits": "详情页提供下载入口但未核到明确许可文本；在取得权利答复前禁止再分发和商业使用。未实测下载与哈希。"
+    },
+    {
+      "method_id": "M0085",
+      "version": "v0.1",
+      "resource_id": "R0105",
+      "status": "DRAFT",
+      "path": "GCdataPR数据目录 → Neolithic human activity dataset DOI → NetCDF",
+      "scope": "北方新石器时代考古遗址密度及空间统计数据",
+      "steps": "核验DOI/CSTR、数据论文和NetCDF元数据；明确0.5°网格尺度、文化分类和统计变量；取得NetCDF后检查维度、变量、缺失值编码和坐标范围；保留引用与权利证据。",
+      "limits": "13185是原始地点描述基础数量，不是发布文件中的点位记录数；发布成果为0.5°网格统计。许可条款未核清；未实测下载与哈希。"
     }
   ],
   "updates": [
@@ -1790,6 +1877,12 @@
       "fields": {
         "note": "102 resource rows/102 unique resource_id; 83 method rows/82 unique method_id due legacy M0004 duplicate; 18 attempts preserved; 102 category mappings complete; all 83 method resource references resolve. Digital Dunhuang records R0101/R0102 are item/use-case authorization resources, not CC-open."
       }
+    },
+    {
+      "target": "category 04 China archaeological spatial datasets supplement",
+      "fields": {
+        "note": "Added R0103 Dataset of 697 Cultural Heritage Sites along the Beijing-Hangzhou Grand Canal (XLSX/SHP, 4.50MB; free download but redistribution requires written permission and a redistribution license; 10% rule); R0104 Spatial Distribution Dataset of 5058 National Key Protected Cultural Relic Units (SHP/XLS; download link, item license not located, R6/HOLD); R0105 Dataset of Human Activities in Northern China during the Neolithic Period (13,185 source site descriptions summarized as 0.5-degree NetCDF grid, 1.20MB; item license not located, R6/HOLD). Methods M0083-M0085. No original bytes downloaded; new attempts=0. Candidate totals 105 resources / 86 methods / 18 attempts."
+      }
     }
   ],
   "attempt_log": {
@@ -1804,6 +1897,12 @@
     "https://www.archives.gov/developer/national-archives-catalog-dataset",
     "https://www.archives.gov/research/motion-pictures/permissions",
     "https://www.si.edu/termsofuse",
-    "https://github.com/Smithsonian/smithsonian-open-access-api-drupal"
+    "https://github.com/Smithsonian/smithsonian-open-access-api-drupal",
+    "https://www.geodoi.ac.cn/WebEn/paper.aspx?Id=184196b8-160c-4604-9a55-4c038921519e",
+    "https://doi.org/10.3974/geodb.2026.02.04.V1",
+    "https://www.geodoi.ac.cn/\\u005cWebEn/geodoi.aspx?Id=3503",
+    "https://doi.org/10.3974/geodb.2024.01.09.V1",
+    "https://www.geodoi.ac.cn/\\u005cWebEn/geodoi.aspx?Id=3779",
+    "https://doi.org/10.3974/geodb.2025.05.01.V1"
   ]
 }
