@@ -5,9 +5,7 @@
 // refuses to sign. Signing goes through the existing authority repository CLI
 // (control.sign_gate_candidate) — there is no second Gate/audit write path.
 import crypto from "node:crypto";
-import { readFileSync } from "node:fs";
-import path from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { pathToFileURL } from "node:url";
 import {
   MACHINE_REVIEWER_USER_ID,
   MACHINE_SIGNER_LOGIN,
@@ -25,8 +23,12 @@ import { createGateAuthorityRepository } from "../packages/data-access/src/gate-
 // getNodePgPool 复用同一机器身份连接池（openMachineQuery 已把 DATABASE_URL 切到机器签发连接）。
 import { getNodePgPool } from "../packages/data-access/src/node-pg-client.mjs";
 import registry from "../specs/data-production/production-registry.json" with { type: "json" };
+// Static JSON imports (not readFileSync) so the deployed gate-review function's
+// file tracer includes these contracts; all Gate decisions still read them from
+// this single authoritative source.
+import identifierRegistry from "../specs/data-production/identifier-registry.json" with { type: "json" };
+import methodBindingContract from "../specs/data-production/method-binding-contract.json" with { type: "json" };
 
-const ROOT = path.dirname(fileURLToPath(import.meta.url));
 
 export const PROJECT_ID = "b0a11000-0000-4000-8000-000000000001";
 export const RULE_VERSION_BY_GATE = { G0: "m5-local-v1", G1: "m5-local-v1", G2: "m5-local-v1", G3: "m5-local-v1", G4: "m5-local-v1", G5: "v1" };
@@ -78,6 +80,21 @@ function hasRef(refs, kind, id) {
 // ---- deterministic check implementations ------------------------------------
 
 async function checkIdentityVersion(ctx) {
+  // G3/D03 candidates are claim_revisions. control.artifact_revision_for() is
+  // gate-authority-owned and has no claim_revision mapping, so it returns null
+  // for this object type (the same reason persist_private_world_claim had to
+  // compute the row hash inline). For G3 the revision is instead proven by the
+  // mandatory stage-binding attestation: deriveD03WorldClaimFacts re-derives
+  // input/output digests from the persisted claim_revision/change/link rows and
+  // cross-checks candidate.artifact_revision against that persisted object. We
+  // confirm the object still exists here; no weaker path is introduced.
+  if (ctx.gate === "G3" && text(ctx.candidate.object_type) === "claim_revision") {
+    const rows = await ctx.query("select claim_revision_id::text as id from world.claim_revisions where claim_revision_id = :'oid'::uuid limit 2",
+      { oid: ctx.candidate.object_id });
+    if (rows.length !== 1 || rows[0].id !== text(ctx.candidate.object_id) || !HEX.test(text(ctx.candidate.artifact_revision)))
+      return { ok: false, reason: "artifact_revision_unavailable" };
+    return { ok: true, detail: `revision=${text(ctx.candidate.artifact_revision)} (G3 stage-binding attested)` };
+  }
   const rows = await ctx.query("select control.artifact_revision_for(:'objectType', :'objectId') as revision",
     { objectType: ctx.candidate.object_type, objectId: ctx.candidate.object_id });
   const current = text(rows[0]?.revision);
@@ -680,22 +697,19 @@ const CHECKS = {
 // required_checks 来自 control.gate_policy_versions，加检查项需要 DDL；
 // 因此 G0 的"C 方法预选"要求在本进程内强制：候选的 evidence_refs 必须含
 // 合法 method_plan 引用，且方法已登记在唯一身份目录里，否则拒绝签发。
-const REGISTRY_PATH = path.join(ROOT, "..", "specs", "data-production", "identifier-registry.json");
 let professionalCMethods = null;
 function registeredCMethods() {
   if (professionalCMethods) return professionalCMethods;
-  const registry = JSON.parse(readFileSync(REGISTRY_PATH, "utf8"));
-  professionalCMethods = new Set((registry.professional_methods ?? []).map(text).filter(id => /^C\d{2}$/.test(id)));
+  professionalCMethods = new Set((identifierRegistry.professional_methods ?? []).map(text).filter(id => /^C\d{2}$/.test(id)));
   return professionalCMethods;
 }
 
 // D03 当前可执行方法集合来自唯一绑定合同，不在评审器里写死单个方法号。
 // HOLD 的方法（W01-W06/W08-W10）即便将来解冻也须先有可执行绑定与正反测试。
-const METHOD_BINDING_PATH = path.join(ROOT, "..", "specs", "data-production", "method-binding-contract.json");
 let d03MethodsCache = null;
 function d03AuthorizedMethods() {
   if (d03MethodsCache) return d03MethodsCache;
-  const contract = JSON.parse(readFileSync(METHOD_BINDING_PATH, "utf8"));
+  const contract = methodBindingContract;
   const methods = contract.methods ?? contract.bindings ?? [];
   d03MethodsCache = new Set(methods
     .filter(entry => text(entry.stage) === "D03" && text(entry.implementation_binding) && text(entry.implementation_binding) !== "HOLD")
