@@ -41,6 +41,7 @@ function configure(env){
  const d01Job=registry.jobs.find(j=>j.stage==='D01');
  const d02Job=registry.jobs.find(j=>j.stage==='D02');
  const d03Job=registry.jobs.find(j=>j.stage==='D03');
+ const d04Job=registry.jobs.find(j=>j.stage==='D04');
  const ca=env.MOHEN_D01_DATABASE_CA;
  // Two distinct low-privilege connections: the journal writer (a D01-dedicated
  // login that is a MEMBER of mohen_d00_grant_journal) and the G0 gate reader
@@ -308,9 +309,8 @@ async function serve(group,route,req,res){
   res.statusCode=reply.status;
   reply.headers.forEach((value,key)=>res.setHeader(key,value));
   res.end(Buffer.from(await reply.arrayBuffer()));
- }catch(error){
-  const detail=String(error&&error.message?error.message:'unknown').split('\n')[0].replace(/["\\]/g,'').slice(0,120);
-  res.statusCode=503;res.end(JSON.stringify({ok:false,reason:'d01_authority_unavailable',detail}));
+ }catch{
+  res.statusCode=503;res.end('{"ok":false,"reason":"d01_authority_unavailable"}');
  }
 }
 
