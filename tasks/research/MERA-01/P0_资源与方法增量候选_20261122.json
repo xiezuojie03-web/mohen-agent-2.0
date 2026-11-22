@@ -7,8 +7,8 @@
     "attempts": 18
   },
   "proposed_after_merge": {
-    "resources": 74,
-    "methods": 55,
+    "resources": 82,
+    "methods": 63,
     "attempts": 18
   },
   "additions": [
@@ -561,6 +561,165 @@
         "https://www.thebritishacademy.ac.uk/projects/academy-research-projects-prosopography-byzantine-world/",
         "https://digital.humanities.ox.ac.uk/project/prosopography-byzantine-world"
       ]
+    },
+    {
+      "resource_id": "R0075",
+      "parent_resource_id": null,
+      "level": "数字资源标准",
+      "name": "IIIF Image/Presentation/Content Search/Change Discovery APIs",
+      "provider": "International Image Interoperability Framework Consortium",
+      "url": "https://iiif.io/api/",
+      "content": "Image API 3.0.0 for region/size/rotation/quality/format and info.json; Presentation API 3.0.0 for compound objects/Manifest/canvas/annotations; Content Search 2.0; Change Discovery 1.0; Authorization Flow 2.0.",
+      "access": "Standards documents and provider-hosted Image API, Presentation Manifest, info.json, Content Search and auth services.",
+      "rights": "IIIF spec text open licensed; underlying image rights/authentication controlled by source institution. IIIF does not grant image copyright.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0055",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://iiif.io/api/",
+        "https://iiif.io/api/image/3.0/",
+        "https://iiif.io/api/presentation/3.0/"
+      ]
+    },
+    {
+      "resource_id": "R0076",
+      "parent_resource_id": null,
+      "level": "数字文本标准",
+      "name": "PAGE-XML (PRImA / OCR-D PAGE)",
+      "provider": "PRImA Research Lab / OCR-D",
+      "url": "https://ocr-d.de/en/spec/page",
+      "content": "XML format for page layout and recognition results: page boundaries, regions, reading order, TextRegion/TextLine/Word/Glyph, UTF-8 text, confidence, AlternativeImage and processing history; OCR-D uses PAGE as primary exchange format with METS.",
+      "access": "Open PAGE schema/docs, OCR-D conventions, METS/PAGE guidance.",
+      "rights": "Format spec open; original images and recognition text remain under source provider rights. PAGE is not an OCR engine or content license.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0056",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.primaresearch.org/",
+        "https://ocr-d.de/en/spec/page",
+        "https://ocr-d.de/en/gt-guidelines/trans/trPage.html",
+        "https://ocr-d.de/en/spec/mets"
+      ]
+    },
+    {
+      "resource_id": "R0077",
+      "parent_resource_id": null,
+      "level": "数字文本标准",
+      "name": "ALTO XML (Analyzed Layout and Text Object)",
+      "provider": "Library of Congress",
+      "url": "https://www.loc.gov/standards/alto/",
+      "content": "LOC-maintained XML schema for printed page layout and OCR content: page/text block/line/word coordinates, styles, reading order, language and rotation; ALTO 4.4 official schema published 2023-04-07, while page summary still labels current 4.3.",
+      "access": "Official LOC schemas, versioned XSD, ALTO in Action examples, METS integration.",
+      "rights": "ALTO standard text CC BY-SA 4.0 since v4.0; images/OCR text in ALTO files remain source-controlled.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0057",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.loc.gov/standards/alto/",
+        "https://www.loc.gov/standards/alto/description.html",
+        "https://www.loc.gov/standards/alto/v4/alto-4-4.xsd"
+      ]
+    },
+    {
+      "resource_id": "R0078",
+      "parent_resource_id": null,
+      "level": "遥感数据服务",
+      "name": "Copernicus Data Space Ecosystem (Sentinel)",
+      "provider": "European Union / ESA / Copernicus Programme",
+      "url": "https://dataspace.copernicus.eu/",
+      "content": "Sentinel-1 radar, Sentinel-2 multispectral, Sentinel-3 land/ocean and Sentinel-5P atmospheric data; search, visualize, download and cloud processing; useful for landform, hydrology, vegetation, shoreline and land-use change.",
+      "access": "OData, STAC 1.1.0, Sentinel Hub Catalog API, openEO; new STAC v1 endpoint, legacy endpoint deprecated 2025-11-17.",
+      "rights": "Sentinel data free/full/open under Sentinel Data Legal Notice; other portal content non-commercial and not for resale/redistribution. Do not conflate Sentinel data with portal content.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0058",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://dataspace.copernicus.eu/analyse/apis",
+        "https://documentation.dataspace.copernicus.eu/APIs/STAC.html",
+        "https://dataspace.copernicus.eu/terms-and-conditions"
+      ]
+    },
+    {
+      "resource_id": "R0079",
+      "parent_resource_id": null,
+      "level": "遥感数据档案",
+      "name": "USGS Landsat / EarthExplorer / EROS Archive",
+      "provider": "United States Geological Survey / EROS Center",
+      "url": "https://www.usgs.gov/landsat-missions/landsat-data-access",
+      "content": "USGS EROS holds Landsat observations 1972-present and aerial photos from 1937; EarthExplorer searches 120+ datasets; Landsat Collection 2 includes L1/L2/ARD/DEM/reflectance/temperature.",
+      "access": "EarthExplorer web search/download, M2M REST JSON API, bulk download, AWS cloud/STAC, ESPA on-demand processing.",
+      "rights": "USGS Landsat data free and public domain with attribution; other EarthExplorer datasets may have different rights and must be checked individually.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0059",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.usgs.gov/landsat-missions/landsat-data-access",
+        "https://www.usgs.gov/centers/eros/data/",
+        "https://www.usgs.gov/faqs/are-all-acquired-landsat-scenes-held-usgs-landsat-archive"
+      ]
+    },
+    {
+      "resource_id": "R0080",
+      "parent_resource_id": null,
+      "level": "三维文化遗产数据平台",
+      "name": "Open Heritage 3D (CyArk)",
+      "provider": "CyArk / Open Heritage Alliance",
+      "url": "https://openheritage3d.org/",
+      "content": "Hundreds of 3D cultural heritage datasets including LiDAR point clouds, photogrammetric imagery and spatial data; examples include Carthage Amphitheatre, Els Vilars Fortress, Tikal; average download around 25GB per site; each dataset has DOI.",
+      "access": "No account; submit name/organization/email on project page and receive download links by email.",
+      "rights": "Dataset-level Creative Commons licenses; most datasets not commercial; some sites withheld due security/privacy or third-party rights.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0060",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.cyark.org/whatwedo/openaccess",
+        "https://www.openheritage3d.org/faq",
+        "https://www.cyark.org/data-use-policy"
+      ]
+    },
+    {
+      "resource_id": "R0081",
+      "parent_resource_id": null,
+      "level": "地理空间标准接口",
+      "name": "OGC API - Features",
+      "provider": "Open Geospatial Consortium",
+      "url": "https://www.ogc.org/standards/ogcapi-features/",
+      "content": "Modern HTTP/OpenAPI/JSON/HTML standards for geospatial feature discovery and object-level query; GET /collections, /collections/{id}/items, /collections/{id}/items/{featureId}; Part 1 Core, Part 2 CRS, Part 3 Filtering/CQL2.",
+      "access": "Open standards; provider-deployed HTTP GET APIs and OpenAPI definitions.",
+      "rights": "Standard public; underlying datasets, authentication and reuse rights controlled by provider.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0061",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.ogc.org/standards/ogcapi-features/",
+        "https://ogcapi.ogc.org/features/overview.html"
+      ]
+    },
+    {
+      "resource_id": "R0082",
+      "parent_resource_id": null,
+      "level": "时空数据元数据标准",
+      "name": "SpatioTemporal Asset Catalog (STAC)",
+      "provider": "STAC Community",
+      "url": "https://stacspec.org/",
+      "content": "Open metadata specification for spatial-temporal assets using Catalog/Collection/Item/Asset; describes time/geometry/platform/instruments/projection/resolution/cloud cover/bands and links for satellite/aerial/raster/point-cloud data.",
+      "access": "STAC JSON documents, Catalog/Collection/Item APIs, integrated with OData/openEO and cloud storage.",
+      "rights": "STAC specification open; asset file rights depend on provider and must be checked at collection/item/asset level.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0062",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://stacspec.org/",
+        "https://documentation.dataspace.copernicus.eu/APIs/STAC.html"
+      ]
     }
   ],
   "methods": [
@@ -823,6 +982,86 @@
       "scope": "1025-1204 Byzantine persons, factoids, narrative units and seals",
       "steps": "Search person/date/event/seal; inspect linked factoids, dates, reigns and sources; record database version; use only limited personal research/academic quotation unless permission is obtained.",
       "limits": "2016 version; institutional access may be required; no open bulk reuse license confirmed."
+    },
+    {
+      "method_id": "M0055",
+      "version": "v0.1",
+      "resource_id": "R0075",
+      "status": "DRAFT",
+      "path": "IIIF Image/Presentation Manifest → image service and item rights check",
+      "scope": "IIIF images, compound objects, manifests, annotations and change discovery",
+      "steps": "Locate Manifest; inspect Canvas/Sequence/Range/Metadata/Rights/Service; read info.json; request region/size; use Content Search; check Auth Flow and source rights.",
+      "limits": "IIIF is not a content license; image access and reuse controlled by provider."
+    },
+    {
+      "method_id": "M0056",
+      "version": "v0.1",
+      "resource_id": "R0076",
+      "status": "DRAFT",
+      "path": "PAGE-XML structure inspection → source image/layout/text/confidence interpretation",
+      "scope": "Page layout, OCR/HTR results, coordinates, reading order and processing history",
+      "steps": "Inspect PcGts/Page, source image, TextRegion/TextLine/Word/Glyph, Coords, ReadingOrder, TextEquiv/Unicode, confidence and AlternativeImage; record schema version and METS references.",
+      "limits": "Coordinates depend on source image; transformations must map AlternativeImage; format openness does not license source content."
+    },
+    {
+      "method_id": "M0057",
+      "version": "v0.1",
+      "resource_id": "R0077",
+      "status": "DRAFT",
+      "path": "ALTO XML schema/version check → layout/OCR field interpretation",
+      "scope": "Printed text page layout, OCR text, coordinates, styles and reading order",
+      "steps": "Inspect Page/PrintSpace/TextBlock/TextLine/String and position fields; verify versioned XSD, METS association and coordinate units.",
+      "limits": "Official page has v4.4 Official vs old current-version 4.3 label; old alto.xsd may point to old schema; source content rights separate."
+    },
+    {
+      "method_id": "M0058",
+      "version": "v0.1",
+      "resource_id": "R0078",
+      "status": "DRAFT",
+      "path": "Copernicus OData/STAC/openEO → Sentinel collection and license check",
+      "scope": "Sentinel satellite data and cloud EO services",
+      "steps": "Search by place/date/cloud/product level; read Collection/Item; locate assets through OData/STAC; evaluate openEO if processing needed; apply Sentinel Data Legal Notice and attribution; separate third-party/portal content.",
+      "limits": "Sentinel mainly from 2014; STAC covers limited collections; portal content has non-commercial terms."
+    },
+    {
+      "method_id": "M0059",
+      "version": "v0.1",
+      "resource_id": "R0079",
+      "status": "DRAFT",
+      "path": "USGS EarthExplorer/M2M/AWS → Landsat and aerial imagery by time/AOI",
+      "scope": "Landsat 1972-present, aerial photos 1937-present and EROS datasets",
+      "steps": "Search AOI/date/dataset; preview; choose Collection 2 L1/L2/ARD/DEM; use EarthExplorer/M2M; record scene ID/sensor/processing level/date; check rights of non-Landsat datasets.",
+      "limits": "Only Landsat is confirmed public domain; other EarthExplorer datasets vary; cloud processing/storage may cost."
+    },
+    {
+      "method_id": "M0060",
+      "version": "v0.1",
+      "resource_id": "R0080",
+      "status": "DRAFT",
+      "path": "Open Heritage 3D project search → data types/DOI/CC license → request download if needed",
+      "scope": "Cultural heritage LiDAR, photogrammetry and 3D spatial source data",
+      "steps": "Search site/country/contributor; inspect data type/date/DOI/CC license; request download only when needed; use CC BY-NC only for non-commercial research; select CC BY or permission for commercial works.",
+      "limits": "Most datasets non-commercial; average 25GB; some withheld for security/privacy/third-party rights."
+    },
+    {
+      "method_id": "M0061",
+      "version": "v0.1",
+      "resource_id": "R0081",
+      "status": "DRAFT",
+      "path": "OGC API Features capability discovery → collections/items/feature query → provider rights",
+      "scope": "Standardized web API for geospatial feature access",
+      "steps": "Inspect OpenAPI; GET collections; query collection items; retrieve single feature geometry/attributes/CRS; record extent and license; do not treat standard as content provider.",
+      "limits": "Standard does not provide data/license; provider implementations differ in CRS/auth/query."
+    },
+    {
+      "method_id": "M0062",
+      "version": "v0.1",
+      "resource_id": "R0082",
+      "status": "DRAFT",
+      "path": "STAC Catalog/Collection/Item → spatiotemporal asset metadata and file links",
+      "scope": "Remote sensing/aerial/raster/point-cloud asset metadata",
+      "steps": "Read Catalog/Collection/Item JSON; inspect geometry/datetime/platform/instruments/proj/eo/raster/assets/license; query STAC API by time/area; follow asset href to source and check rights.",
+      "limits": "STAC only describes/discovers assets; access/download/commercial rights depend on provider and item/asset."
     }
   ],
   "updates": [
@@ -877,6 +1116,12 @@
       "target": "category 05",
       "fields": {
         "note": "Added R0069 SNAC, R0070 VIAF, R0071 Getty ULAN, R0072 PoMS, R0073 PASE, R0074 PBW; methods M0049-M0054. Candidate totals 74 resources / 55 methods / 18 attempts."
+      }
+    },
+    {
+      "target": "category 08",
+      "fields": {
+        "note": "Added R0075 IIIF, R0076 PAGE-XML, R0077 ALTO XML, R0078 Copernicus, R0079 USGS Landsat, R0080 Open Heritage 3D, R0081 OGC API Features, R0082 STAC; methods M0055-M0062. Candidate totals 82 resources / 63 methods / 18 attempts. No D00/D01 engineering initiated."
       }
     }
   ],
