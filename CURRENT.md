@@ -7,7 +7,7 @@
 - **已建的授权对象**：委托 `3f5585d0…`（仅 `d02_material_observation`、deepseek-flash、`budget_limit=0.050000 USD`、7 天）；来源 `9aa03207` 的 `external_processing` 由 `unknown` → `allowed`（保留原 held 快照与 Owner 决定留痕，其余 4 项仍 HOLD）；G2 读凭据 `31e1fdec…`（job `d02.material-understanding`）。
 - **部署**：preview env 增 `MOHEN_PRIVATE_D02_DELEGATION_ID`、`MOHEN_PRIVATE_D02_MODEL=deepseek-flash`、d01+d02 凭据映射；新 staging 部署 `mohen-agent-2-0-hmfwpnw2p-napoles1.vercel.app`，readiness 六组件全 CONFIGURED。
 - **代码**：`from_stage` 白名单扩为 `D01|D02`（dispatch、自检通道、类型），测试 9/9；未改 Gate 判定规则。
-- **最前阻断**：`production-execute` 只注入 `createD01ResumeProvider`，D02 的独立 stage grant 无签发/核销通道 → 以 `from_stage:"D02"` 续跑无法进入真实执行。下一步按设计补该通道后再续跑，费用额度已批无需再请示。
+- **最前阻断（实测）**：`production-execute` 只注入 `createD01ResumeProvider`，D02 的独立 stage grant 无签发/核销通道。以 `from_stage:"D02"` 续跑后 run `b9989b90` 被 claim（`2026-11-22T03:04:22Z`）但终态 **`HOLD@D01 / CLOUD_EXECUTOR_SETUP_FAILED`**；`studio.execution_receipts` 无新增、任务预留未动 → **零 Provider 调用、本批费用 0 USD**。下一步按设计补 D02 执行授权通道后再续跑；费用额度已批无需再请示。
 - **凭证**：Vercel 账号令牌有效期至 `2026-11-22T17:29:13Z`（到期 `npx vercel whoami` 续期）。
 
 > 核验时间 2026-11-22 第十四批（批次起始 HEAD `a984ef7`）｜环境：云端真实库 + 真实部署实测；未验证项：D02 及以后（付费 Provider）。
