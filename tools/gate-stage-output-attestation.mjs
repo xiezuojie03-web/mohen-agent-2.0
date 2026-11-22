@@ -599,6 +599,99 @@ export async function attestG4FindingStageOutput({query,candidate,request,regist
     reviewer_binding_ref:job.implementation?.gate_reviewer_binding};
 }
 
+// D05 fact branch → G5: independent, read-only reconstruction of the REAL
+// persisted D05 P02 world_projection candidate. The typed input is rebuilt by the
+// SAME module the authority uses (run scope + current G4 finding + G3 claim), and
+// the output is rebuilt from the persisted read_model.world_projections row, not
+// from any Producer-supplied digest. Missing/ambiguous facts fail closed. No paid
+// Provider is involved in this derivation.
+async function deriveD05FactFacts({ query, candidate, projectId, registry, runId } = {}) {
+  requireFact(typeof query === 'function', 'STAGE_OUTPUT_REVIEWER_QUERY_REQUIRED');
+  requireFact(UUID.test(runId ?? '') && UUID.test(projectId ?? ''), 'STAGE_OUTPUT_RUN_REQUIRED');
+  const cid = candidate?.candidate_id, projectionId = candidate?.object_id;
+  requireFact(UUID.test(cid ?? '') && UUID.test(projectionId ?? ''), 'STAGE_OUTPUT_CANDIDATE_SCOPE_MISMATCH');
+  const scope = typeof candidate?.scope === 'string' ? JSON.parse(candidate.scope) : candidate?.scope;
+  requireFact(scope?.project_id === projectId && candidate?.stage === 'D05' && candidate?.gate_code === 'G5' &&
+    candidate?.consumer === 'producer' && candidate?.object_type === 'world_projection' &&
+    SHA.test(candidate?.artifact_revision ?? '') && SHA.test(candidate?.input_fingerprint ?? ''),
+    'STAGE_OUTPUT_CANDIDATE_SCOPE_MISMATCH');
+  const { rebuildD05ResumeInput } = await import(
+    '../pipelines/data-production/orchestrator/d05-resume-input.mjs');
+  const input = await rebuildD05ResumeInput({ query, runId, projectId, registry });
+  const inputDigest = executionDigest(input);
+  requireFact(inputDigest === candidate.input_fingerprint, 'STAGE_OUTPUT_INPUT_NOT_REPRODUCIBLE');
+  // The projection persisted by the private worker is the exact deterministic
+  // spec rebuilt above. Re-derive all of its binding fields from persisted facts.
+  const rows = await query([
+    'select p.projection_id::text as projection_id, p.projection_key,',
+    '  p.payload::text as payload, p.derived_from_finding_ids::text as derived,',
+    '  p.expression_rule::text as rule',
+    'from read_model.world_projections p where p.projection_id=:\'pid\'::uuid limit 2',
+  ].join(' '), { pid: projectionId });
+  requireFact(Array.isArray(rows) && rows.length === 1, 'STAGE_OUTPUT_PROJECTION_NOT_UNIQUE');
+  const row = rows[0];
+  let payload, derived, rule;
+  try { payload = JSON.parse(row.payload); } catch { payload = null; }
+  try { derived = JSON.parse(row.derived); } catch { derived = null; }
+  try { rule = JSON.parse(row.rule); } catch { rule = null; }
+  requireFact(row.projection_key === input.projection.projection_key &&
+    payload?.qualification === 'UNASSESSED' && payload?.finding_id === input.findingId &&
+    payload?.original_id === input.originalId &&
+    JSON.stringify(payload?.body) === JSON.stringify(input.projection.payload) &&
+    SHA.test(payload?.request_digest ?? '') &&
+    Array.isArray(derived) && derived.length === 1 && derived[0] === input.findingId &&
+    rule?.method_id === 'P02' && rule?.qualification === 'UNASSESSED',
+    'STAGE_OUTPUT_PROJECTION_BINDING_MISMATCH');
+  const persistDigest = createHash('sha256').update(JSON.stringify({
+    runId, originalId: input.originalId, findingId: input.findingId, projection: input.projection,
+  }), 'utf8').digest('hex');
+  requireFact(payload.request_digest === persistDigest, 'STAGE_OUTPUT_PROJECTION_PERSIST_DIGEST_MISMATCH');
+  const refs = Array.isArray(candidate?.evidence_refs) ? candidate.evidence_refs : [];
+  requireFact(refs.length === 2 &&
+    refs.some((r) => r?.kind === 'world_projection' && r.id === projectionId && r.artifact_revision === candidate.artifact_revision) &&
+    refs.some((r) => r?.kind === 'finding' && r.id === input.findingId),
+    'STAGE_OUTPUT_CANDIDATE_SCOPE_MISMATCH');
+  // Upstream qualification must be the exact current independent G4 audit that
+  // the rebuilt fact input bound in its lineage.
+  const g4AuditId = input.projection?.payload?.lineage?.g4_audit_id;
+  const dependency = Array.isArray(candidate?.dependency_snapshot) ? candidate.dependency_snapshot : [];
+  requireFact(dependency.length === 1 && UUID.test(dependency[0].gate_audit_id ?? '') &&
+    dependency[0].gate_audit_id === g4AuditId && SHA.test(dependency[0].artifact_revision ?? '') &&
+    SHA.test(dependency[0].qualification_digest ?? ''),
+    'STAGE_OUTPUT_UPSTREAM_QUALIFICATION_MISMATCH');
+  const output = { stage: 'D05', candidate_kind: 'private_world_projection_fact_branch',
+    original_id: input.originalId, projection_id: projectionId, finding_id: input.findingId,
+    artifact_revision: candidate.artifact_revision, request_digest: inputDigest,
+    gate_candidate_id: cid, gate_candidate_status: 'SUBMITTED',
+    qualification: 'UNASSESSED', gate_code: 'G5' };
+  return { input, output, input_digest: inputDigest, output_digest: executionDigest(output) };
+}
+
+export async function deriveD05FactStageDigests(args = {}) {
+  const facts = await deriveD05FactFacts(args);
+  return { input_digest: facts.input_digest, output_digest: facts.output_digest };
+}
+
+export async function attestG5FactStageOutput({ query, candidate, request, registry, projectId } = {}) {
+  requireFact(typeof query === 'function', 'STAGE_OUTPUT_REVIEWER_QUERY_REQUIRED');
+  assertStageQualificationRequest(request);
+  requireFact(request.stage === 'D05' && request.gate_code === 'G5',
+    'STAGE_OUTPUT_ATTESTATION_NOT_SUPPORTED');
+  const jobs = (registry?.jobs ?? []).filter((j) => j.stage === 'D05');
+  requireFact(jobs.length === 1, 'STAGE_OUTPUT_JOB_NOT_UNIQUE');
+  const job = jobs[0];
+  if (request.job_id !== undefined) requireFact(request.job_id === job.job_id, 'STAGE_OUTPUT_JOB_MISMATCH');
+  if (request.reviewer_binding_ref !== undefined)
+    requireFact(request.reviewer_binding_ref === job.implementation?.gate_reviewer_binding,
+      'STAGE_OUTPUT_REVIEWER_BINDING_MISMATCH');
+  const facts = await deriveD05FactFacts({ query, candidate, projectId, registry, runId: request.run_id });
+  requireFact(request.input_digest === facts.input_digest &&
+    request.output_digest === facts.output_digest, 'STAGE_OUTPUT_ATTESTATION_MISMATCH');
+  return { gate_code: 'G5', input_digest: facts.input_digest,
+    output_digest: facts.output_digest, job_id: job.job_id,
+    reviewer_binding_ref: job.implementation?.gate_reviewer_binding };
+}
+
 // Single dispatch used by every independent signer composition (local Gate
 // service and the CLI Reviewer). The carrier is decided by the persisted
 // stage/gate and method plan, never by a Producer-supplied digest.
@@ -612,6 +705,8 @@ export function attestStageOutputForRequest({query,candidate,request,registry,pr
     return attestG3WorldClaimStageOutput({query,candidate,request,registry,projectId});
   if(stage==='D04'&&gate==='G4')
     return attestG4FindingStageOutput({query,candidate,request,registry,projectId});
+  if(stage==='D05'&&gate==='G5')
+    return attestG5FactStageOutput({query,candidate,request,registry,projectId});
   requireFact(stage==='D00'&&gate==='G0','STAGE_OUTPUT_ATTESTATION_NOT_SUPPORTED');
   const refs=Array.isArray(candidate?.evidence_refs)?candidate.evidence_refs:[];
   const methodIds=new Set(refs.filter(r=>r?.kind==='method_plan').map(r=>String(r.method_id??'')));

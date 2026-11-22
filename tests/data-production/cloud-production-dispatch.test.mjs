@@ -59,7 +59,6 @@ test('from_stage resume accepts verified handoff stages D01/D02/D03, rejects unq
  const d03=setup({execute:async e=>({run_id:e.run_id,status:'HOLD',stage:'D03',reason_code:'G3_NOT_VERIFIED'})});
  const r3=await d03.dispatch({...envelope(),from_stage:'D03',to_stage:'D03'});
  assert.equal(r3.stage,'D03');
- await assert.rejects(()=>dispatch({...envelope(),from_stage:'D05'}),/CLOUD_EXECUTOR_FROM_STAGE_INVALID/);
  const before=setup({execute:async e=>({run_id:e.run_id,status:'HOLD',stage:'D00',reason_code:'X'})});
  await assert.rejects(()=>before.dispatch({...envelope(),from_stage:'D01'}),/CLOUD_EXECUTOR_UNCERTAIN/,'resume may not report a stage before D01');
  const beforeD02=setup({execute:async e=>({run_id:e.run_id,status:'HOLD',stage:'D01',reason_code:'X'})});
@@ -73,7 +72,13 @@ test('from_stage D04 resumes after the G3 claim handoff, defaults to end D04, an
  assert.equal(r.stage,'D04');
  const beforeD04=setup({execute:async e=>({run_id:e.run_id,status:'HOLD',stage:'D03',reason_code:'X'})});
  await assert.rejects(()=>beforeD04.dispatch({...envelope(),from_stage:'D04'}),/CLOUD_EXECUTOR_UNCERTAIN/,'resume may not report a stage before D04');
- await assert.rejects(()=>d04.dispatch({...envelope(),from_stage:'D05'}),/CLOUD_EXECUTOR_FROM_STAGE_INVALID/);
+});
+test('from_stage D05 resumes after the G4 finding handoff, defaults to end D05, and bounds the reported stage',async()=>{
+ const d05=setup({execute:async e=>({run_id:e.run_id,status:'HOLD',stage:'D05',reason_code:'G5_NOT_VERIFIED'})});
+ const r=await d05.dispatch({...envelope(),from_stage:'D05'});
+ assert.equal(r.stage,'D05');
+ const beforeD05=setup({execute:async e=>({run_id:e.run_id,status:'HOLD',stage:'D04',reason_code:'X'})});
+ await assert.rejects(()=>beforeD05.dispatch({...envelope(),from_stage:'D05'}),/CLOUD_EXECUTOR_UNCERTAIN/,'resume may not report a stage before D05');
 });
 test('a network failure is uncertain and never automatically retried',async()=>{
  let calls=0;const dispatch=createCloudProductionDispatch({url:'https://private-executor.example.invalid/execute',credential,

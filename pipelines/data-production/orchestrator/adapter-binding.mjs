@@ -180,6 +180,23 @@ export function isTypedD04FindingRequest(input) {
     f.uncertainty.qualification==="UNASSESSED");
 }
 
+/** Pure, authorization-free shape check of the D05 fact-branch request the
+ * authority derives from a current-qualified G4 finding (plus its G3-backed
+ * claim). Exactly one fact form is accepted: originalId + findingId + a
+ * deterministic `projection` spec. No upstream snapshot or caller-supplied
+ * candidate is trusted. This check never authorizes execution by itself. */
+export function isTypedD05FactRequest(input) {
+  if (!input || input.schema !== PRIVATE_REQUEST_SCHEMA || input.stage !== "D05" ||
+      !UUID_RE.test(input.originalId ?? '') || !UUID_RE.test(input.findingId ?? '')) return false;
+  if (input.claim !== undefined || input.finding !== undefined || input.evidenceId !== undefined ||
+      input.projection === undefined) return false;
+  const p = input.projection;
+  return Boolean(p && typeof p === "object" && !Array.isArray(p) &&
+    typeof p.projection_key === "string" && p.projection_key.length > 0 &&
+    Buffer.byteLength(p.projection_key) <= 200 &&
+    p.payload && typeof p.payload === "object" && !Array.isArray(p.payload));
+}
+
 function containsPrivateRequest(input) {
   const seen = new WeakSet();
   function visit(value) {

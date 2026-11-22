@@ -16,15 +16,19 @@ import { createD03ResumeAuthorizer } from '../../pipelines/data-production/orche
 import { createD03ResumeJournal } from '../../pipelines/data-production/orchestrator/d03-resume-journal.mjs';
 import { createD04ResumeAuthorizer } from '../../pipelines/data-production/orchestrator/d04-resume-authorizer.mjs';
 import { createD04ResumeJournal } from '../../pipelines/data-production/orchestrator/d04-resume-journal.mjs';
+import { createD05ResumeAuthorizer } from '../../pipelines/data-production/orchestrator/d05-resume-authorizer.mjs';
+import { createD05ResumeJournal } from '../../pipelines/data-production/orchestrator/d05-resume-journal.mjs';
 import { createD00ExecutionAuthorityHandler } from '../../pipelines/data-production/orchestrator/d00-execution-authority-http.mjs';
 import { createD01IssueEndpoint } from '../../pipelines/data-production/orchestrator/d01-resume-issue.mjs';
 import { createD02IssueEndpoint } from '../../pipelines/data-production/orchestrator/d02-resume-issue.mjs';
 import { createD03IssueEndpoint } from '../../pipelines/data-production/orchestrator/d03-resume-issue.mjs';
 import { createD04IssueEndpoint } from '../../pipelines/data-production/orchestrator/d04-resume-issue.mjs';
+import { createD05IssueEndpoint } from '../../pipelines/data-production/orchestrator/d05-resume-issue.mjs';
 import { createG0ResumeQualificationChecker } from '../../pipelines/data-production/orchestrator/d01-g0-qualification.mjs';
 import { createG1ResumeQualificationChecker } from '../../pipelines/data-production/orchestrator/d02-g1-qualification.mjs';
 import { createG2ResumeQualificationChecker } from '../../pipelines/data-production/orchestrator/d03-g2-qualification.mjs';
 import { createG3ResumeQualificationChecker } from '../../pipelines/data-production/orchestrator/d04-g3-qualification.mjs';
+import { createG4ResumeQualificationChecker } from '../../pipelines/data-production/orchestrator/d05-g4-qualification.mjs';
 import { createIndependentGateService } from '../../pipelines/data-production/orchestrator/independent-gate-service.mjs';
 import { independentGatePoolOptions } from '../../pipelines/data-production/orchestrator/independent-gate-service-runtime.mjs';
 
@@ -228,11 +232,49 @@ function configure(env){
   const d04IssueEndpoint=createD04IssueEndpoint({
    credential:env.MOHEN_D01_ISSUE_CREDENTIAL,attestorQuery,authority:d04Authority,registry,
   });
+  // D05 fact branch: the upstream fact is a CURRENT independent G4 on the exact
+  // persisted L4 finding. Same readers/pools and signing key, but a separate
+  // journal and endpoint; the P02 world projection is derived from G4/G3 facts by
+  // the input builder, never supplied by the Producer. No paid Provider invoked.
+  const currentG4=async (run_id)=>{
+   const rows=await attestorQuery([
+    "select q.object_id::text as finding_id, a.gate_audit_id::text as gate_audit_id,",
+    "  a.artifact_revision, a.stage, a.gate_code, a.result, a.decision_origin,",
+    "  a.current_valid as qualification_current, a.valid_until::text as valid_until,",
+    "  a.details->'stage_binding'->>'job_id' as job_id,",
+    "  a.details->'stage_binding'->>'reviewer_binding_ref' as reviewer_binding_ref,",
+    "  q.consumer::text as consumer",
+    "from control.qualification_current q",
+    "join control.gate_audits a on a.gate_audit_id=q.gate_audit_id",
+    "where a.run_id=:'run'::uuid and a.stage='D04' and a.gate_code='G4'",
+    "  and a.result='PASS' and a.decision_origin='independent_gate' and a.current_valid=true",
+    "  and q.consumer='producer' and q.object_type='finding'",
+    "  and (q.valid_until is null or q.valid_until > now())",
+    "  and (a.valid_until is null or a.valid_until > now()) limit 2"
+   ].join(' '),{run:run_id});
+   if(rows.length!==1)return null;
+   return rows[0];
+  };
+  const d05QualificationChecker=createG4ResumeQualificationChecker({
+   readG4:({run_id})=>currentG4(run_id),d04JobId:d04Job?.job_id,
+   gateReviewerBinding:d04Job?.implementation?.gate_reviewer_binding});
+  const d05Authority=createD05ResumeAuthorizer({
+   registry,holdEpoch:env.MOHEN_D01_RESUME_HOLD_EPOCH,
+   privateKey:createPrivateKey(env.MOHEN_D01_RESUME_SIGNING_KEY),
+   journal:createD05ResumeJournal(journalPool),qualificationChecker:d05QualificationChecker});
+  const d05GrantHandler=createD00ExecutionAuthorityHandler({
+   authority:d05Authority,issueCredential:env.MOHEN_D01_ISSUE_CREDENTIAL,
+   verifyCredential:env.MOHEN_D01_VERIFY_CREDENTIAL,
+  });
+  const d05IssueEndpoint=createD05IssueEndpoint({
+   credential:env.MOHEN_D01_ISSUE_CREDENTIAL,attestorQuery,authority:d05Authority,registry,
+  });
   return {
    d01:{'/token':grantHandler,'/consume':grantHandler,'/d01-issue':issueEndpoint},
    d02:{'/token':d02GrantHandler,'/consume':d02GrantHandler,'/d02-issue':d02IssueEndpoint},
    d03:{'/token':d03GrantHandler,'/consume':d03GrantHandler,'/d03-issue':d03IssueEndpoint},
    d04:{'/token':d04GrantHandler,'/consume':d04GrantHandler,'/d04-issue':d04IssueEndpoint},
+   d05:{'/token':d05GrantHandler,'/consume':d05GrantHandler,'/d05-issue':d05IssueEndpoint},
   };
  }catch(error){
   void journalPool.end();void readerPool.end();void attestorPool.end();
@@ -247,7 +289,7 @@ async function serve(group,route,req,res){
  // SSO identity) and may serve the stable production domain; the D00 token
  // issuer stays preview-only.
  const env=process.env.VERCEL_ENV;
- const prodOk=(route==='/d01-issue'||route==='/d02-issue'||route==='/d03-issue'||route==='/d04-issue'||route==='/consume')&&(env==='preview'||env==='production');
+ const prodOk=(route==='/d01-issue'||route==='/d02-issue'||route==='/d03-issue'||route==='/d04-issue'||route==='/d05-issue'||route==='/consume')&&(env==='preview'||env==='production');
  const previewOk=env==='preview';
  if(process.env.MOHEN_D01_RESUME_AUTHORITY_ENABLED!=='true'||(!prodOk&&!previewOk)){
   res.statusCode=503;res.end('{"ok":false,"reason":"d01_authority_not_configured"}');return;
@@ -285,4 +327,8 @@ export async function d03AuthorityEndpoint(route,req,res){
 
 export async function d04AuthorityEndpoint(route,req,res){
  await serve('d04',route,req,res);
+}
+
+export async function d05AuthorityEndpoint(route,req,res){
+ await serve('d05',route,req,res);
 }

@@ -17,7 +17,7 @@ import { decideRightsActions } from "../packages/data-access/src/rights-actions.
 // D00-B：C 方法预选以 evidence_refs 类型化引用承载，G0 由本评审器强制校验。
 import { inspectMethodPlanRef, isMethodPlanRef } from "../packages/data-access/src/method-plan-ref.mjs";
 // D01/G1：独立签发时由 signer 自己从库内事实重建阶段输入/输出摘要。
-import { attestStageOutputForRequest, deriveD01ReadingStageDigests, deriveD02ObservationStageDigests, deriveD03WorldClaimStageDigests, deriveD04FindingStageDigests } from "./gate-stage-output-attestation.mjs";
+import { attestStageOutputForRequest, deriveD01ReadingStageDigests, deriveD02ObservationStageDigests, deriveD03WorldClaimStageDigests, deriveD04FindingStageDigests, deriveD05FactStageDigests } from "./gate-stage-output-attestation.mjs";
 // 权威签发唯一实现：与 CLI gate-authority.mjs 使用同一 repository（control.sign_gate_candidate）。
 import { createGateAuthorityRepository } from "../packages/data-access/src/gate-authority-repository.mjs";
 // getNodePgPool 复用同一机器身份连接池（openMachineQuery 已把 DATABASE_URL 切到机器签发连接）。
@@ -991,7 +991,8 @@ export async function runGateReview({ gate, projectId = PROJECT_ID, candidateId 
     const candidate = {...row, evidence_refs: JSON.parse(row.evidence_refs || "[]"),
       dependency_snapshot: JSON.parse(row.dependency_snapshot || "[]")};
     // 各阶段的输入/输出摘要由签发方自己从持久事实重建，不接受 Producer 自报。
-    const deriveFacts = row.stage === "D04" ? deriveD04FindingStageDigests
+    const deriveFacts = row.stage === "D05" ? deriveD05FactStageDigests
+      : row.stage === "D04" ? deriveD04FindingStageDigests
       : row.stage === "D03" ? deriveD03WorldClaimStageDigests
       : row.stage === "D02" ? deriveD02ObservationStageDigests : deriveD01ReadingStageDigests;
     const facts = await deriveFacts({ query, candidate, projectId, runId: row.run_id, registry });

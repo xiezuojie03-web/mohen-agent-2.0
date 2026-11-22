@@ -3,6 +3,8 @@
   "git": { "deploymentEnabled": false },
   "rewrites": [
     { "source": "/api/d04-issue", "destination": "/api/d04?route=d04-issue" },
-    { "source": "/api/d04-consume", "destination": "/api/d04?route=d04-consume" }
+    { "source": "/api/d04-consume", "destination": "/api/d04?route=d04-consume" },
+    { "source": "/api/d05-issue", "destination": "/api/d04?route=d05-issue" },
+    { "source": "/api/d05-consume", "destination": "/api/d04?route=d05-consume" }
   ]
 }
