@@ -7,8 +7,8 @@
     "attempts": 18
   },
   "proposed_after_merge": {
-    "resources": 54,
-    "methods": 35,
+    "resources": 57,
+    "methods": 38,
     "attempts": 18
   },
   "additions": [
@@ -166,6 +166,66 @@
       "evidence": [
         "https://www.metmuseum.org/art/collection/search/103551"
       ]
+    },
+    {
+      "resource_id": "R0055",
+      "parent_resource_id": "R0053",
+      "level": "专题馆藏",
+      "name": "The Buttolph Collection of Menus / What's on the Menu",
+      "provider": "New York Public Library Rare Book Division",
+      "url": "https://menus.nypl.org/",
+      "content": "About 25,000 menus, dates approx. 1851-1930; about two-thirds American, over half from New York restaurants, most 1890-1910; includes restaurant, ship and banquet menus; official NYPL guide says fuller extent digitized via What's on the Menu.",
+      "access": "Official portal and NYPL Digital Collections; some menus not fully imaged due binding/fragility; portal/API not technically validated this round.",
+      "rights": "Check current item-level NYPL Rights Statement; do not infer public domain from date/digitization. Legacy Repo API is deprecated.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0035",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://libguides.nypl.org/rare-food/images",
+        "https://digitalcollections.nypl.org/collections/the-buttolph-collection-of-menus",
+        "https://menus.nypl.org/"
+      ]
+    },
+    {
+      "resource_id": "R0056",
+      "parent_resource_id": null,
+      "level": "专题馆藏",
+      "name": "Lowell Folklife Project Collection (AFC 1987/042)",
+      "provider": "Library of Congress American Folklife Center",
+      "url": "https://www.loc.gov/collections/lowell-folklife-project/",
+      "content": "1987-1988 ethnographic documentation of ethnic neighborhoods, occupations and community life linked to industrialization: 196 hours of recordings plus about 23 hours resident recordings; about 10,000 B&W photos and 3,500 color slides; interviews, festivals, religious services, music, parades, ethnic restaurants, neighborhood tours, field notes, questionnaires, maps, reports and transcripts. Most audio/photos online; remainder in reading room.",
+      "access": "Online collection and finding aid; some materials require Folklife Reading Room or formal request.",
+      "rights": "Recording rights may belong to performers, descendants/estates, donors, radio stations or traditional communities; written permission may be required for duplication/distribution; ethical/community considerations apply.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0036",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.loc.gov/collections/lowell-folklife-project/about-this-collection/",
+        "https://findingaids.loc.gov/repositories/3/resources/249",
+        "https://ask.loc.gov/american-folklife/faq/304212"
+      ]
+    },
+    {
+      "resource_id": "R0057",
+      "parent_resource_id": null,
+      "level": "专题馆藏",
+      "name": "National Jukebox",
+      "provider": "Library of Congress National Audio-Visual Conservation Center",
+      "url": "https://www.loc.gov/collections/national-jukebox/",
+      "content": "About 20,150 recordings from 1900-1925 across popular music, ethnic music, opera, classical, musical theater, religious and other genres; about 6,000 recordings downloadable, remainder available by streaming.",
+      "access": "LOC streaming catalogue; Citizen DJ selected public-domain audio subsets and bulk samples.",
+      "rights": "Streaming license does not grant download/reuse rights. Pre-1923 recordings entered US public domain under MMA; 1923-1946 protected 100 years, 1947-1956 protected 110 years. Check each recording; Citizen DJ public-domain subset does not represent the whole catalogue.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0037",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.loc.gov/collections/national-jukebox/",
+        "https://www.loc.gov/collections/national-jukebox/about-this-collection/rights-and-access/",
+        "https://citizen-dj.labs.loc.gov/loc-jukebox-popular/use/"
+      ]
     }
   ],
   "methods": [
@@ -228,6 +288,36 @@
       "scope": "Books, manuscripts, maps, photos, illustrations, video, audio and moving images; API stability HOLD",
       "steps": "Search website by topic/date/collection; inspect item rights; use public-domain GitHub CSV/JSON or DPLA bulk metadata; track refresh frequency and IIIF migration; do not rely on deprecated Repo API.",
       "limits": "Legacy Repo API deprecated 2026-08-01; no public API replacement planned; No Known U.S. Copyright is US-specific; metadata CC0 does not license media."
+    },
+    {
+      "method_id": "M0035",
+      "version": "v0.1",
+      "resource_id": "R0055",
+      "status": "DRAFT",
+      "path": "NYPL What's on the Menu / Buttolph menu collection → menu object/image/date/place search",
+      "scope": "Historical menus for food, consumption, restaurant and urban life history",
+      "steps": "Search by date, restaurant/place, dishes, banquet/ship; connect menu image, title, date, venue, collector and item metadata; check current item Rights Statement; request Rare Book Division assistance for incomplete/fragile items.",
+      "limits": "Legacy NYPL Repo API deprecated; menu portal access not verified this round; item rights not blanket open."
+    },
+    {
+      "method_id": "M0036",
+      "version": "v0.1",
+      "resource_id": "R0056",
+      "status": "DRAFT",
+      "path": "LOC American Folklife Center online collection → Finding Aid → Reading Room/rights consultation",
+      "scope": "Lowell Folklife Project and related ethnographic/oral-history materials",
+      "steps": "Locate audio, photos, maps, field notes and interview transcripts; compare online subset with finding aid; identify performers/donors/communities; obtain written permission before duplication or commercial reuse; consider ethics and privacy.",
+      "limits": "Online materials are partial; copyright and community rights may require written permission; some access is onsite."
+    },
+    {
+      "method_id": "M0037",
+      "version": "v0.1",
+      "resource_id": "R0057",
+      "status": "DRAFT",
+      "path": "National Jukebox web search/streaming → Citizen DJ public-domain subset → item-level rights check",
+      "scope": "1900-1925 historical recordings and sound culture",
+      "steps": "Search by date, genre, language, performer and label; inspect publication year and Rights and Access; use only clearly public-domain items for downloads/reuse; stream-only items remain linked/streamed within LOC permission; check privacy/publicity and cultural sensitivity.",
+      "limits": "Free streaming is not reuse permission; rights differ by recording year and item; Citizen DJ subset is not the full Jukebox."
     }
   ],
   "updates": [
@@ -252,6 +342,12 @@
       "target": "P0 scope / category 06",
       "fields": {
         "note": "Added candidate records R0050-R0054 and methods M0031-M0034. Candidate workbook totals 54 resources / 35 methods / 18 attempts. This JSON is a non-authoritative delta only; sole P0 workbook has not yet been overwritten in Library."
+      }
+    },
+    {
+      "target": "category 06 and category 02 audiovisual supplement",
+      "fields": {
+        "note": "Added R0055 NYPL Buttolph menus, R0056 LOC Lowell Folklife Project, R0057 LOC National Jukebox; methods M0035-M0037. Candidate totals 57 resources / 38 methods / 18 attempts."
       }
     }
   ],
