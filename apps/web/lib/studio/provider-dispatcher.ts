@@ -474,6 +474,12 @@ export async function dispatchAuthorizedCall(
       ? "PROVIDER_CONTENT_TRUNCATED" : "PROVIDER_CONTENT_EMPTY", observed);
     throw new DispatchError("DISPATCH_UNCERTAIN", "PROVIDER_CONTENT_EMPTY");
   }
+  // 被 max_tokens 截断但仍有正文的响应同样是残缺结果（结构化动作会解析失败或半真），
+  // 一律按失败关闭记账，不当作可用正文交给上层。
+  if (finishReason === "length") {
+    await writeHeldReceipt(deps, state, startedAt, "PROVIDER_CONTENT_TRUNCATED", observed);
+    throw new DispatchError("DISPATCH_UNCERTAIN", "PROVIDER_CONTENT_TRUNCATED");
+  }
   const cost = usage ? estimateCostFromUsageUsd(state.model, usage) : null;
   if (!usage || cost === null) {
     await writeHeldReceipt(deps, state, startedAt, "PROVIDER_USAGE_UNKNOWN", observed);
@@ -493,6 +499,7 @@ export async function dispatchAuthorizedCall(
     input_hash: state.inputHash,
     output_hash: sha256(text),
     output_text: text,
+    finish_reason: finishReason,
     worst_case_cost_usd: state.worstCaseUsd,
   };
   let receipt: StudioVerifiedReceiptRecord;

@@ -5,8 +5,8 @@ import {createPrivateMaterialGenerator} from '../../pipelines/data-production/wo
 const id=()=>randomUUID();
 function fixture(){
  const root=id(),project=id(),delegationId=id(),source=id(),receipts=[];let calls=0;
- const quote='县志记载古桥。';
- const observation={h_type:'H05',literal_reading:quote,source_voice:'official_gazetteer',evidence_type:'gazetteer_observation',
+ const quote='县志记载古桥，建于宋代，跨秀州塘。';
+ const observation={h_type:'H05',literal_reading:'县志记载古桥，建于宋代',source_voice:'official_gazetteer',evidence_type:'gazetteer_observation',
   research_proposition:'县志中记载古桥；非桥址事实裁决。',uncertainty:{qualification:'UNASSESSED',classification_basis:'县志编纂体例'}};
  const delegation={delegation_id:delegationId,root_task_id:root,project_id:project,request_hash:'a'.repeat(64),
   expires_at:new Date(Date.now()+600000).toISOString(),allowed_actions:['d02_material_observation'],
@@ -25,7 +25,10 @@ function fixture(){
 test('private H05 generation reuses controlled dispatcher, exact root, receipt and paid replay',async()=>{
  const f=fixture(),generate=createPrivateMaterialGenerator({delegationId:f.delegationId,model:'deepseek-flash',deps:f.deps});
  const first=await generate(f.input),second=await generate(f.input);
- assert.equal(first.literal_reading,f.input.quote);assert.equal(first.uncertainty.qualification,'UNASSESSED');
+ // literal_reading 必须是 quote 的逐字片段；模型不能自造文本，也不必整体抄回。
+ assert.equal(first.literal_reading,f.observation.literal_reading);
+ assert.ok(f.input.quote.includes(first.literal_reading));
+ assert.equal(first.uncertainty.qualification,'UNASSESSED');
  assert.equal(first.uncertainty.provider_receipt_id,f.receipts[0].receipt_id);
  assert.equal(second.uncertainty.provider_receipt_id,first.uncertainty.provider_receipt_id);
  assert.equal(f.calls(),1);assert.equal(f.receipts.length,1);
@@ -44,9 +47,11 @@ test('the D02 classification instruction follows the H01-H25 standard, including
  assert.match(system.content,/数字方志库或开放数据提取的条目/);
  assert.match(system.content,/来源再表示或索引/);
  assert.match(system.content,/不得因此另记一件"现代方志"/);
- // Voice still must be evidenced, and the quote is never rewritten.
+ // Voice still must be evidenced, and the quoted passage must stay verbatim inside the quote.
  assert.match(system.content,/确实判不出时返回\{"hold":"classification_unresolved_or_unsupported"\}/);
- assert.match(system.content,/literal_reading必须逐字等于quote/);
+ assert.match(system.content,/literal_reading只填quote中直接支撑本次观察的逐字段落/);
+ assert.match(system.content,/必须逐字出现在quote内/);
+ assert.match(system.content,/也不要把整段quote全部抄回/);
 });
 for(const [label,change,error] of [
  ['foreign root',f=>{f.delegation.root_task_id=id();},/PRIVATE_D02_DELEGATION_SCOPE_INVALID/],
@@ -70,7 +75,8 @@ test('private generation holds timeout and never silently replays the uncertain 
  assert.equal(f.receipts.length,2);
 });
 test('private generation preserves paid receipt but rejects unsupported classification and invented quote',async()=>{
- for(const mutate of [o=>{o.h_type='H21';},o=>{o.literal_reading='invented';},o=>{delete o.uncertainty.classification_basis;}]){
+ for(const mutate of [o=>{o.h_type='H21';},o=>{o.literal_reading='invented';},
+  o=>{o.literal_reading='志书记载';},o=>{delete o.uncertainty.classification_basis;}]){
   const f=fixture();mutate(f.observation);
   const generate=createPrivateMaterialGenerator({delegationId:f.delegationId,model:'deepseek-flash',deps:f.deps});
   await assert.rejects(()=>generate(f.input),/PRIVATE_D02_GENERATED_OBSERVATION_INVALID/);

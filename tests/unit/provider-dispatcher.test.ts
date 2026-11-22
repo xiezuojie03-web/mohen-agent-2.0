@@ -334,8 +334,18 @@ describe('dispatchAuthorizedCall', () => {
     expect((second.receipts[0] as Record<string, unknown>).error_code).toBe('PROVIDER_CONTENT_EMPTY');
   });
 
-  it('records the missing-usage failure separately from an empty body', async () => {
-    const noUsage = vi.fn(async () => new Response(JSON.stringify({
+  it('refuses a non-empty body that the provider truncated at max_tokens', async () => {
+    const cut = vi.fn(async () => new Response(JSON.stringify({
+      choices: [{ message: { content: '{"h_type":"H05","literal_read' }, finish_reason: 'length' }],
+      usage: { prompt_tokens: 30, completion_tokens: 64 },
+    }), { status: 200 }));
+    const { deps, receipts } = makeDeps({ fetchImpl: cut as never });
+    await expect(dispatchAuthorizedCall(deps, await authorizeProviderDispatch(deps, AUTH_INPUT), CALL))
+      .rejects.toMatchObject({ code: 'DISPATCH_UNCERTAIN' });
+    expect((receipts[0] as Record<string, unknown>).error_code).toBe('PROVIDER_CONTENT_TRUNCATED');
+  });
+
+  it('records the missing-usage failure separately from an empty body', async () => {    const noUsage = vi.fn(async () => new Response(JSON.stringify({
       choices: [{ message: { content: '收到。' }, finish_reason: 'stop' }],
     }), { status: 200 }));
     const { deps, receipts } = makeDeps({ fetchImpl: noUsage as never });
