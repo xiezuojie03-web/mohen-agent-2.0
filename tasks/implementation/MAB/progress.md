@@ -6129,3 +6129,19 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **取证结论**：项目创建于 2026-11-22 01:30:06Z（本地 09:30:06），恰在上一会话"续期 Vercel CLI OAuth 令牌并补 preview 环境变量"的操作窗口（09:27—09:39）内；创建者字段带 `via: Vercel CLI` 应用标记，账号为 xiezuojie03-web。形态为纯空壳：0 部署、0 环境变量、无 git 关联、创建后从未更新；全机仓库代码、全部 Trae 会话记忆、命令历史均无该名称引用（创建命令本身无法从本机证据还原）。
 - **判定**：施工过程自身误执行 CLI 命令的意外副产物，非任何真实任务的产物。Owner 确认施工期间未用其它平台触碰，并于本批批准删除。
 - **执行与核验**：`DELETE /v9/projects/prj_5Xd4LQPzrw4SKhJNkbruIeOMSybx`（删除前核对 name 与部署数为 0，删除后直查 404）；项目列表余 3 个：`mohen-agent-2-0`、`mohen-d00-authority`、`hushang-jingwei`，均完好。主项目与授权服务未受影响。
+
+---
+
+## 第十八批（2026-11-22）：D03 执行授权通道同构落地 + G3 dry_run PASS / 正式签发权限边界 HOLD
+
+- **基线/提交**：批次起始 HEAD `196e0a5`、origin/main 同步；提交 `c2db07d`（D03 通道+测试+迁移）、`e987aa7`（执行器凭据隔离）、`4d229a2`（persist artifact_revision 修复）、`f8add19`（G3 stage digest 派生）、`4425993`（G3 评审读权限+派生修正）、`6e0a974`（persist digest 复刻+RLS 幂等）、`da0478a`（gate-review 依赖打包）、`daa9ff6`（评审器契约静态 import+G3 identity）。作者 `xiezuojie03 <315303392+xiezuojie03-web@users.noreply.github.com>` 全批一致。
+- **真实施工事实（云端库+部署实测）**：
+  - D03 授权通道：`d03-resume-{journal,authorizer,input,issue,provider}.mjs`+`d03-g2-qualification.mjs`；execution-authority stage 后缀 `_D03`；authority `/api/d03-issue`/`/api/d03-consume`（复用 D00 签名私钥/journal 登录，独立表 `control.d03_resume_grant_journal`）。`/api/d03-issue` 未授权探测=401（端点存在）。
+  - 迁移真库回读：`20261122180000`（表/2 条 stage CHECK/RLS 四策略/列级 INSERT+UPDATE 与 D02 逐列一致）、`20261122190000`（persist ACL 仍 `{postgres=X,mohen_app_runtime=X}`）、`20261122200000`（`world.changes` 机器评审角色 SELECT + RLS `m5_machine_reviewer_read`）。
+  - G3 读凭据：`provision-stage-gate-reader.mjs --job-id d03.world-construction` 幂等开通，binding `7f554389`，token 仅写 `.secrets/gate-reader-bearer-d9d48901-g3.txt`；preview env 增 `MOHEN_D03_ISSUE_URL`、`MOHEN_EXECUTION_AUTH_{PUBLIC_KEY,VERIFY_URL,VERIFY_CREDENTIAL}_D03`、per-job G3 映射。
+  - 白名单/类型/provider：dispatch from_stage `D01|D02|D03`、`cloudProductionEndStage` D03 默认 end、self-test-resume、`StageResume.fromStage`、production-execute `createD03ResumeProvider`。dispatch 单测 9/9（含 D03 正例/报账边界），D03 授权通道单测 16/16。
+  - 续跑：`from_stage:"D03"` 经 staging self-test-resume 真实续跑 run `b9989b90-fd8a-4d50-b4b4-6f3cca7fb049` → D03 journal 已签发并核销（jti `fe62e4c3…`、binding stage/job/input_digest `e6f8b230…`）、G3 候选 `91a239c1-a001-4983-aa24-f7d9d96ecc7d`（object_type `claim_revision`、object_id `0617b049…`、artifact_revision `f47212f1…` 64hex、依赖快照精确绑 G2 审计 `1a9402cb`、evidence_refs 含 claim_revision+material_evidence）真实落库；run `HOLD@D03 / INDEPENDENT_GATE_NOT_VERIFIED`。
+  - 费用：D03 零 Provider 调用、0 USD；委托 `3f5585d0…` 累计仍 0.005989 USD。
+- **G3 机器评审**：部署内 `/api/internal/gate-review`（Preview+HMAC+显式开关）dry_run 先失败三连（`STAGE_OUTPUT_CANDIDATE_SCOPE_MISMATCH`→G3 stage_binding 派生走错 D01 分支；`permission denied for table changes`→机器角色缺 world.changes 读；`permission denied for function sha256_bytes`→派生改采用已交叉校验的候选 artifact_revision；`STAGE_OUTPUT_WORLD_CLAIM_BINDING_MISMATCH`→persist digest 与 stage input digest 不同，改复刻 repository digest；`artifact_revision_unavailable`+契约 ENOENT→评审器 G3 identity 特化 + 契约静态 JSON import），最终 `DRY_RUN_PASS`（identity_version + claim_support 全 PASS）。
+- **最前阻断（权限边界，非技术选择）**：正式签发返回 `GATE_DECISION_FAILED ARTIFACT_REVISION_NOT_CURRENT`。根因：`control.sign_gate_candidate`（owner `mohen_gate_authority`）硬校验 `c.artifact_revision = control.artifact_revision_for('claim_revision', c.object_id)`，而该 gate-authority-owned 函数的 kind 映射无 `claim_revision`，恒 null。本环境 DB 用户 `postgres.fwrh…` usesuper=false、不能 `SET ROLE mohen_gate_authority`、无 Supabase access/service token，无法以 owner 身份修函数。**未自签 Gate、未伪造 PASS**。
+- **最小修正建议（需 Owner/DBA 执行）**：以 `mohen_gate_authority` owner / Supabase SQL editor 在 `control.artifact_revision_for` 的 `(values …) as m(kind,ns,tbl,key_col)` 映射增加 `('claim_revision','world','claim_revisions','claim_revision_id')`；随后以同一 G3 候选 `91a239c1…` 重跑 dry_run+正式签发（候选仍 SUBMITTED，无需重跑 D03）。G3 未签发前不得发起 D04。
