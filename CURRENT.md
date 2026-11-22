@@ -2,9 +2,16 @@
 
 > **Owner 授权口径（2026-11-22，长期有效）**：目标是墨痕**真正运行、持久运行**；除**安全问题**与**费用问题**外，施工方自行授权推进，不再逐项请示技术选择。费用边界：D02–D05 模型调用封顶 **0.05 USD**（约 ¥0.36，已建委托 `3f5585d0…`），超出该额度、新增付费来源或扩大用途仍需 Owner 批准。安全底线（密钥不入 git、不自签 Gate、不伪造会话/资格/PASS、不改迁移规避授权）不因该授权放宽。
 
-> 核验时间 2026-11-22 第十六批（批次起始 HEAD `077de49`；本批提交 `14903de`、`6d0987a`、`2dfbe30`，证据回写 `cb04c55`）｜环境：云端真实库 + 真实部署实测；未验证项：D02 之后（G2 及以后）。
+> 核验时间 2026-11-22 第十六批（批次起始 HEAD `077de49`；本批提交 `14903de`、`6d0987a`、`2dfbe30`、`cb04c55`、`2cb0118`、`7596d86`、`403f4bc`）｜环境：云端真实库 + 真实部署实测；未验证项：D02 之后的 G2 机器评审与 G3—G5。
 
-**本批结论：D02 独立执行授权通道已按 D01 同构建成并真实跑通「签发→核销→Runner 启动→G1 资格校验→读出真实阅读上下文」，`PRIVATE_D02_READING_MISMATCH` 与 Runner 依赖解析两个真实缺陷已消除；D02 现停在「版本级权利快照 external_processing=unknown」的外发闸门 `TRANSFER_DENIED`（属来源权利，交 Owner 裁决）。本批 Provider 费用 **0 USD**（`studio.execution_receipts` 无新增）。**
+**本批最新事实（D02 已真实执行并产生付费回执，专业侧失败关闭）**
+- **费用**：真发生 1 次 Provider 调用，回执 `5452ba48-e58f-4aea-b006-32c231949753`，`deepseek` / `deepseek-flash`，**0.000440 USD**（累计占委托 `3f5585d0…` 封顶 0.05 的 0.88%）。
+- **结果**：模型返回 `{"hold":"classification_unresolved_or_unsupported"}`，即专业侧判定「材料性质或声源无法确定」，D02 按契约抛 `PRIVATE_D02_GENERATED_OBSERVATION_INVALID` → run `b9989b90` 停在 `HOLD@D02 / PRIVATE_D02_GENERATION_NOT_READY`。付费回执按规则保留，未重试、未编造文本。
+- **已贯通到这一步**：D02 授权签发/核销 → Runner 启动 → G1 资格复核 → 真实阅读上下文 → 逐来源外发闸门（有效权利投影后放行）→ 真实模型调用 → 永久回执 → 契约校验 → 失败关闭 HOLD。
+- **权利侧长期做法已落地**：`source.effective_rights_by_action()` + `studio.private_source_registration` 改为「版本快照 ∪ 有证据的显式 Owner 决定」，denied/restricted 永不放宽、无证据不放宽、pin 不被写回（迁移 `20261122170000`，含客户端同规则校验与单测）；曾尝试的「写回快照」路径已按 `PRIVATE_READING_IMMUTABLE` 实测回退，零数据改动。
+- **待 Owner 决策**：是否接受本次专业 HOLD（材料不足以判定编载体例），或以更明确的引文区间（如序/凡例）重跑 D01→G1→D02（再产生约 0.0005 USD），或调整 D02 提示词/契约（属 MHKA-04 方法变更）。
+
+**阶段结论（当时状态，后续已推进，见上「本批最新事实」）：D02 独立执行授权通道已按 D01 同构建成并真实跑通「签发→核销→Runner 启动→G1 资格校验→读出真实阅读上下文」，`PRIVATE_D02_READING_MISMATCH` 与 Runner 依赖解析两个真实缺陷已消除；随后停在「版本级权利快照 external_processing=unknown」的外发闸门 `TRANSFER_DENIED`，该阻断已由有效权利投影修复。**
 
 - **新增的授权链路（代码）**：`d02-resume-{journal,authorizer,input,issue,provider}.mjs` + `d02-g1-qualification.mjs`；`execution-authority.mjs` 的 stage 后缀支持 `_D02`；runtime env 白名单加 `MOHEN_EXECUTION_AUTH_{PUBLIC_KEY,VERIFY_URL,VERIFY_CREDENTIAL}_D02`；`production-execute` 按 `from_stage` 选择 provider；authority 增 `/api/d02-issue`、`/api/d02-consume`（复用同一签名私钥与 `mohen_d00_grant_journal` 登录，独立 journal 表与 stage 绑定）。
 - **迁移（本批应用）**：①`20261122130000_d02_resume_grant_journal.sql`（新表 `control.d02_resume_grant_journal`，stage='D02' 校验、无 DELETE、RLS 四策略）；②`20261122140000_d02_resume_journal_reissue_expired.sql`（允许「已过期未核销」的授权被重新签发，否则一次客户端校验失败会永久卡死）；③`20261115130000_mab_m5_private_text_read_context_consistency.sql`（**生产此前未应用**，旧版 `studio.read_private_text_reading` 仍按 `original_revision_id`/`receipt.status` 过滤，导致真实阅读上下文恒为空）。

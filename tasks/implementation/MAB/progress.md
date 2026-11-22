@@ -6073,3 +6073,16 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 与既有事实一致：`tools/stamp-public-domain-rights.mjs` 对同类情形记录 `PRIVATE_READING_IMMUTABLE` 并计入 `pinned_snapshots`，历史批次亦明确“未强改触发器”。
 - 可选后续（需 Owner 裁决）：①以同一内容重建一个新的来源版本（登记时即写入 `external_processing=allowed`），再从 D00/D01 起跑形成新证据链并验证 D02→G2；②设计层新增“钉死后 Owner 权利决定”读取路径（改变外发闸门的权利来源，属设计变更）；③保持 HOLD。
 
+
+**第十六批续：有效权利投影落地 + D02 首次真实付费执行（0.000440 USD）**
+- Owner 选择“怎么长久就怎么做”，据此采用「版本快照 ∪ 有证据的显式 Owner 决定」的长期规则，而不是写回快照：
+  · 迁移 `20261122170000_m5_effective_rights_projection.sql` 新增 `source.effective_rights_by_action(snapshot, live, evidence)` —— 只放大同时满足「来源当前该动作 allowed」「`rights_evidence.<action>_decision.decision='allowed'` 且 `decided_at`/`decided_by` 齐全」「快照该动作不是 denied/restricted」的项，其余保持快照原值（失败关闭）；函数对 public/anon/authenticated/service_role 全部 revoke。
+  · `studio.private_source_registration` 的 `rights_by_action` 改为投影有效权利，`rights_snapshot` 仍返回不可变 pin；**未触碰** `studio.protect_private_text_reading` 与 `source.forbid_rights_snapshot_mutation`。
+  · 客户端同规则校验：`packages/data-access/src/private-source-registration-repository.mjs` 的 `validRegistration` 由「与快照逐动作全等」改为「pin 项不得降级 + 放大项必须有完整决定证据 + denied/restricted 不得放大」，并导出以便测试；新增 `tests/data-production/private-source-registration-rights.test.mjs`（5 项全通过）。
+- 真实库核对：版本 `36ea7ffc` 的有效权利已含 `external_processing=allowed`，同时 `rights_snapshot` 仍为 `unknown`（pin 未被改写）。
+- D02 真实执行（staging `mohen-agent-2-0-jjvtfgoqs-napoles1.vercel.app`）：
+  · 外发闸门放行 → 真实模型调用成功 → 永久回执 `5452ba48-e58f-4aea-b006-32c231949753`（`deepseek` / `deepseek-flash`，usage 804+166 token，`cost=0.000440 USD`，`cost_confidence=ESTIMATED`，`acceptance_state=ACCEPT_AS_CANDIDATE`）。
+  · 模型输出 `{"hold":"classification_unresolved_or_unsupported"}`（专业侧判定材料性质/声源无法确定），D02 按契约抛 `PRIVATE_D02_GENERATED_OBSERVATION_INVALID`，run `b9989b90` 停在 `HOLD@D02 / PRIVATE_D02_GENERATION_NOT_READY`。
+  · 依规则未重试、未编造文本、未猜测费用；回执保留在 `studio.execution_receipts`。累计费用 0.000440 USD（委托 `3f5585d0…` 封顶 0.05 的 0.88%）。
+- 这说明「D02 授权→Runner→资格→阅读上下文→外发许可→真实模型→回执→契约校验→失败关闭」整条链已真实可用；剩下的不是工程阻断，而是专业判定与该材料的引文范围是否足以判定编载体例（是否重跑属费用/产品判断，待 Owner 定）。
+
