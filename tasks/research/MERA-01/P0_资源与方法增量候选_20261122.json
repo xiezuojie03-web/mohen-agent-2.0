@@ -1144,9 +1144,9 @@
       "recommended_method_id": "M0084",
       "checked": "2026-11-22",
       "evidence": [
-        "https://www.geodoi.ac.cn/%5CWebEn/geodoi.aspx?Id=3503",
         "https://doi.org/10.3974/geodb.2024.01.09.V1",
-        "https://www.geodoi.ac.cn/WebEn/paper.aspx?Id=35ac1e68-d289-4598-949f-bd76292e9a3d"
+        "https://www.geodoi.ac.cn/WebEn/paper.aspx?Id=35ac1e68-d289-4598-949f-bd76292e9a3d",
+        "https://www.geodoi.ac.cn/WebEn/geodoi.aspx?ID=3503"
       ],
       "quality": "官方名录为基础，坐标通过百度地图Place API地理编码并由BD09转换为WGS84；行政区按现行边界反向地理编码。数据论文指出不含港澳台。论文属性字段示例Index范围0—5065，与数据集名义5058项存在需要通过实际文件核对的数量/索引差异；坐标精度不能等同于测绘级定位。"
     },
@@ -1165,8 +1165,8 @@
       "recommended_method_id": "M0085",
       "checked": "2026-11-22",
       "evidence": [
-        "https://www.geodoi.ac.cn/%5CWebEn/geodoi.aspx?Id=3779",
         "https://doi.org/10.3974/geodb.2025.05.01.V1",
+        "https://geodoi.ac.cn/weben/doi.aspx?Id=3779",
         "https://geodoi.ac.cn/weben/doi.aspx?Id=3779"
       ]
     },
@@ -1739,7 +1739,7 @@
       "path": "GCdataPR论文页 → DOI数据集记录 → XLSX/SHP文件获取",
       "scope": "京杭大运河沿线697处文化遗产点的结构化属性与空间数据",
       "steps": "先读数据论文和数据集元数据；核验文件清单、坐标参考系、字段字典和数据版本；经DOI进入数据集记录并取得文件；保存发布页与共享政策；引用数据集；再分发或纳入新数据集前申请书面许可并核对10%原则。",
-      "limits": "论文页面明确免费获取，但再分发需书面许可及数据再分发许可；不得将免费获取解释为无条件商用或再分发授权。未实测下载、SHA256和文件读取。"
+      "limits": "GCdataPR论文规定免费获取并引用；再分发需书面许可及数据再分发许可证；新数据集遵守10%原则。坐标服务初值GCJ-02，论文称经校准后为WGS84；实际文件需核对坐标参考、缺失/重复记录和14项字段。商业使用边界按具体用途确认。未下载、未校验SHA256。"
     },
     {
       "method_id": "M0084",
@@ -1749,7 +1749,7 @@
       "path": "GCdataPR数据详情页 → DOI/CSTR → RAR数据包下载",
       "scope": "全国重点文物保护单位5058处空间分布SHP/XLS数据",
       "steps": "核对八批国务院名录来源与数据版本；保存数据详情、DOI/CSTR及文件列表；下载RAR和数据说明；检查SHP坐标系、属性字段、记录数和文件完整性；联系发布方核实许可。",
-      "limits": "详情页提供下载入口但未核到明确许可文本；在取得权利答复前禁止再分发和商业使用。未实测下载与哈希。"
+      "limits": "GCdataPR论文明确：免费在线获取并引用；再分发须编辑部书面许可和数据再分发许可证；用于新数据集须遵守10%原则并标注来源。商业使用边界未单独明确，需按用途确认。坐标来自百度地图Place API地理编码并由BD09转WGS84，行政区使用当前边界反向地理编码；数据不含港澳台。论文Index示例0—5065与名义5058项存在需实物核验的差异；县级空间粒度，不得当作测绘级点位/遗址边界。未下载、未校验SHA256。"
     },
     {
       "method_id": "M0085",
