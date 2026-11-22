@@ -7,8 +7,8 @@
     "attempts": 18
   },
   "proposed_after_merge": {
-    "resources": 95,
-    "methods": 76,
+    "resources": 100,
+    "methods": 81,
     "attempts": 18
   },
   "additions": [
@@ -968,6 +968,106 @@
         "https://shanghai.tianditu.gov.cn/",
         "https://shanghai.tianditu.gov.cn/map/views/about.html?type=3"
       ]
+    },
+    {
+      "resource_id": "R0096",
+      "parent_resource_id": null,
+      "level": "open research repository",
+      "name": "Zenodo",
+      "provider": "CERN / OpenAIRE",
+      "url": "https://zenodo.org/",
+      "content": "Global repository for research datasets, publications, software, reports, posters, videos and other research objects; DOI, versioning, citation, REST API, OAI-PMH and bulk services.",
+      "access": "Web search, REST API, OAI-PMH, DOI; record files may be open, embargoed, restricted or closed.",
+      "rights": "Metadata CC0; file license selected by depositor (CC BY, CC BY-NC, CC0, etc.); record/file-level rights required.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0076",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://help.zenodo.org/docs/deposit/about-records/",
+        "https://developers.zenodo.org/",
+        "https://help.zenodo.org/docs/deposit/describe-records/licenses/"
+      ]
+    },
+    {
+      "resource_id": "R0097",
+      "parent_resource_id": null,
+      "level": "research data repository",
+      "name": "Harvard Dataverse",
+      "provider": "Harvard University IQSS / Dataverse Community",
+      "url": "https://dataverse.harvard.edu/",
+      "content": "Research data repository for social sciences, humanities, archaeology, geography, history and interdisciplinary datasets; dataset DOI, versioning, file metadata, citation, API, OAI-PMH and long-term preservation.",
+      "access": "Web search/download, Search API, Native API, OAI-PMH; files may be open, embargoed or restricted.",
+      "rights": "Dataverse supports CC0 and other/custom licenses; dataset and file access vary; commercial reuse depends on specific dataset/file terms.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0077",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://dataverse.org/",
+        "https://guides.dataverse.org/en/latest/api/",
+        "https://guides.dataverse.org/en/latest/user/dataset-management.html"
+      ]
+    },
+    {
+      "resource_id": "R0098",
+      "parent_resource_id": null,
+      "level": "research outputs graph",
+      "name": "OpenAIRE Research Graph / Explore",
+      "provider": "OpenAIRE",
+      "url": "https://explore.openaire.eu/",
+      "content": "Research graph linking publications, research data, software, projects, organizations, funders and researchers; supports open version discovery, research-data relations and project/institution output discovery.",
+      "access": "Explore search, REST API, graph data dump; open full text links back to source repositories.",
+      "rights": "OpenAIRE Graph metadata CC BY 4.0; underlying paper/data/software rights remain with source repositories and publishers.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0078",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://graph.openaire.eu/",
+        "https://develop.openaire.eu/",
+        "https://explore.openaire.eu/"
+      ]
+    },
+    {
+      "resource_id": "R0099",
+      "parent_resource_id": null,
+      "level": "open access journal index",
+      "name": "Directory of Open Access Journals (DOAJ)",
+      "provider": "DOAJ",
+      "url": "https://doaj.org/",
+      "content": "Global directory of open access journals and articles; journal/article metadata, publisher, DOI, license and full-text links; selection criteria and quality screening; REST API, CSV and public data dumps.",
+      "access": "Web search, REST API, CSV/JSON data dump; full text usually hosted by publisher.",
+      "rights": "DOAJ metadata CC0; journal/article content license varies by publisher and article (CC BY, CC BY-NC, CC BY-ND, etc.); DOAJ is an index, not a full text host.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0079",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://doaj.org/",
+        "https://doaj.org/api/v2/docs",
+        "https://doaj.org/docs/public-data-dump"
+      ]
+    },
+    {
+      "resource_id": "R0100",
+      "parent_resource_id": null,
+      "level": "open access paper aggregator",
+      "name": "CORE (Connecting Repositories)",
+      "provider": "The Open University / CORE",
+      "url": "https://core.ac.uk/about",
+      "content": "Aggregates open-access papers from institutional/subject repositories and OA journals; official page reports about 449M OA articles from 15,000 data providers; offers search, open version discovery, API, bulk dataset and FastSync via OAI-PMH harvesting.",
+      "access": "Web search, API key, bulk dataset, FastSync; full-text access varies by source repository.",
+      "rights": "CORE aggregate data dumps ODC-BY; article full texts retain source repository/author/publisher licenses. Commercial service licensing does not grant blanket commercial rights to full text.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0080",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://core.ac.uk/about",
+        "https://core.ac.uk/documentation/dataset",
+        "https://blog.core.ac.uk/2022/05/23/core-our-commitment-to-the-principles-of-open-scholarly-infrastructure/"
+      ]
     }
   ],
   "methods": [
@@ -1440,6 +1540,56 @@
       "scope": "Shanghai vector/imagery/terrain/land cover/multitemporal imagery and geospatial services",
       "steps": "Browse map service, thematic channels, results catalog and multitemporal imagery; record layer source/time/map approval number; request Key for API; check Shanghai node terms and underlying rights; do not cache/republish tiles commercially.",
       "limits": "Prohibits commercial promotion; timeliness not guaranteed; not a historical map or open-download repository."
+    },
+    {
+      "method_id": "M0076",
+      "version": "v0.1",
+      "resource_id": "R0096",
+      "status": "DRAFT",
+      "path": "Zenodo search → DOI/version/file-level license → download/restriction check",
+      "scope": "Global research datasets, publications, software, reports and multimedia",
+      "steps": "Search by topic/author/institution/DOI; inspect record metadata, version, files, access_right, license and embargo; cite specific DOI version; verify file license and restricted status before reuse.",
+      "limits": "Metadata CC0 does not cover files; files may be embargoed/restricted/closed; licenses differ per record/file."
+    },
+    {
+      "method_id": "M0077",
+      "version": "v0.1",
+      "resource_id": "R0097",
+      "status": "DRAFT",
+      "path": "Harvard Dataverse search → Dataset/Version/File → license/access level verification",
+      "scope": "Humanities, archaeology, history, GIS and social science datasets",
+      "steps": "Search by keyword/author/institution; inspect dataset citation, version, files, terms/license and access status; use Search/Native API for metadata; request restricted files; verify commercial reuse at dataset/file level.",
+      "limits": "Default CC0 is not universal; custom licenses, embargo and privacy restrictions apply."
+    },
+    {
+      "method_id": "M0078",
+      "version": "v0.1",
+      "resource_id": "R0098",
+      "status": "DRAFT",
+      "path": "OpenAIRE Explore/Graph API → publication/data/software/project relations → source verification",
+      "scope": "Global scholarly outputs, research data, software, projects, organizations and funders",
+      "steps": "Search by topic/author/institution/project; follow publication-dataset-software relations; inspect source repository, license, DOI and OA link; attribute OpenAIRE metadata; verify full text at source.",
+      "limits": "Graph metadata CC BY 4.0 does not license underlying content; source records may be incomplete."
+    },
+    {
+      "method_id": "M0079",
+      "version": "v0.1",
+      "resource_id": "R0099",
+      "status": "DRAFT",
+      "path": "DOAJ journal/article search → inclusion and article license → publisher full text check",
+      "scope": "Global OA journals/articles and full-text links",
+      "steps": "Search by subject/country/journal/article; inspect journal status, publisher, DOI, article license and full-text URL; verify article rights at publisher; use DOAJ metadata under CC0.",
+      "limits": "DOAJ is an index; journal inclusion does not make all articles commercially reusable; article-level rights required."
+    },
+    {
+      "method_id": "M0080",
+      "version": "v0.1",
+      "resource_id": "R0100",
+      "status": "DRAFT",
+      "path": "CORE search/API → OA version/source repository/data dump → full-text license check",
+      "scope": "Global institutional repositories and OA journal paper discovery",
+      "steps": "Search by topic/author/DOI; inspect repository source, version, full-text URL, license and OAI ID; use API/dump with CORE attribution; verify full text at source; request commercial service license if needed.",
+      "limits": "ODC-BY aggregate data does not license article full text; commercial services are separately licensed."
     }
   ],
   "updates": [
@@ -1543,6 +1693,12 @@
       "target": "coverage matrix latest revision",
       "fields": {
         "note": "After national geospatial catalog and Tianditu additions, primary-category record counts are C01 32, C02 9, C03 16, C04 6, C05 9, C06 8, C07 4, C08 11. Candidate workbook sheets 八类覆盖矩阵 and 八类覆盖映射 contain 95 mappings. Counts are record counts, not provider counts or exit scores."
+      }
+    },
+    {
+      "target": "category 07 research data and OA discovery supplement",
+      "fields": {
+        "note": "Added R0096 Zenodo, R0097 Harvard Dataverse, R0098 OpenAIRE Research Graph, R0099 DOAJ, R0100 CORE; methods M0076-M0080. Candidate totals 100 resources / 81 methods / 18 attempts. Metadata license and source full-text/data license remain separate."
       }
     }
   ],
