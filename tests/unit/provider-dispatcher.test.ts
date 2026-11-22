@@ -272,8 +272,76 @@ describe('dispatchAuthorizedCall', () => {
     expect(held.acceptance_state).toBe('HOLD');
     expect(held.cost_confidence).toBe('UNKNOWN');
     expect(held.error_code).toBe('PROVIDER_TIMEOUT');
+    // 未定费用的尝试仍留下授权时的最坏上界，供后续预算核算，而不是永久冻结委托。
+    expect(Number((held.result_manifest as Record<string, unknown>).worst_case_cost_usd)).toBeGreaterThan(0);
+  });
+
+  it('accounts an unresolved attempt at its recorded bound instead of freezing the delegation forever', async () => {
+    const timeoutFetch = vi.fn((_url: unknown, init: RequestInit) => new Promise<Response>((_res, reject) => {
+      init.signal?.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')));
+    }));
+    const { deps, receipts } = makeDeps();
+    (deps as any).fetchImpl = timeoutFetch;
+    (deps as any).timeoutMs = 10;
+    await dispatchAuthorizedCall(deps, await authorizeProviderDispatch(deps, AUTH_INPUT), CALL).catch(() => {});
+    // 上界仍未花完预算 → 下一次尝试可以授权（不是静默重放，会另记回执）。
+    expect((await authorizeProviderDispatch(deps, AUTH_INPUT)).replay).toBe(false);
+    // 把委托预算压到只能覆盖一次尝试 → 未定费用按上界计入后必须 HOLD_BUDGET，
+    // 绝不因"费用未知"放行超支。
+    const bound = worstCaseCostUsd('deepseek-flash',
+      Buffer.byteLength(CALL.system, 'utf8') + Buffer.byteLength(CALL.user, 'utf8') + 64, CALL.maxTokens)!;
+    const tight = makeDeps({}, { budget_limit: (bound * 1.5).toFixed(6) });
+    (tight.deps as any).fetchImpl = timeoutFetch;
+    (tight.deps as any).timeoutMs = 10;
+    await dispatchAuthorizedCall(tight.deps, await authorizeProviderDispatch(tight.deps, AUTH_INPUT), CALL).catch(() => {});
+    await expect(authorizeProviderDispatch(tight.deps, AUTH_INPUT))
+      .rejects.toMatchObject({ code: 'HOLD_BUDGET' });
+    expect(receipts.length).toBe(1);
+  });
+
+  it('still requires reconciliation for an unresolved receipt with no usable bound', async () => {
+    const { deps, receipts } = makeDeps();
+    receipts.push({
+      acceptance_state: 'HOLD', cost: null, cost_confidence: 'UNKNOWN',
+      result_manifest: { model: 'deepseek-v4-pro' },
+    });
     await expect(authorizeProviderDispatch(deps, AUTH_INPUT))
       .rejects.toMatchObject({ code: 'DISPATCH_RECONCILIATION_REQUIRED' });
+    expect(deps.fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it('records an empty 200 response as PROVIDER_CONTENT_EMPTY with the finish reason', async () => {
+    const truncated = vi.fn(async () => new Response(JSON.stringify({
+      choices: [{ message: { content: '' }, finish_reason: 'length' }],
+      usage: { prompt_tokens: 30, completion_tokens: 64 },
+    }), { status: 200 }));
+    const { deps, receipts } = makeDeps({ fetchImpl: truncated as never });
+    await expect(dispatchAuthorizedCall(deps, await authorizeProviderDispatch(deps, AUTH_INPUT), CALL))
+      .rejects.toMatchObject({ code: 'DISPATCH_UNCERTAIN' });
+    const held = receipts[0] as Record<string, unknown>;
+    expect(held.error_code).toBe('PROVIDER_CONTENT_TRUNCATED');
+    const manifest = held.result_manifest as Record<string, any>;
+    expect(manifest.finish_reason).toBe('length');
+    expect(manifest.usage.completion_tokens).toBe(64);
+
+    const empty = vi.fn(async () => new Response(JSON.stringify({
+      choices: [{ message: { content: '  ' }, finish_reason: 'stop' }],
+      usage: { prompt_tokens: 30, completion_tokens: 0 },
+    }), { status: 200 }));
+    const second = makeDeps({ fetchImpl: empty as never });
+    await expect(dispatchAuthorizedCall(second.deps, await authorizeProviderDispatch(second.deps, AUTH_INPUT), CALL))
+      .rejects.toMatchObject({ code: 'DISPATCH_UNCERTAIN' });
+    expect((second.receipts[0] as Record<string, unknown>).error_code).toBe('PROVIDER_CONTENT_EMPTY');
+  });
+
+  it('records the missing-usage failure separately from an empty body', async () => {
+    const noUsage = vi.fn(async () => new Response(JSON.stringify({
+      choices: [{ message: { content: '收到。' }, finish_reason: 'stop' }],
+    }), { status: 200 }));
+    const { deps, receipts } = makeDeps({ fetchImpl: noUsage as never });
+    await expect(dispatchAuthorizedCall(deps, await authorizeProviderDispatch(deps, AUTH_INPUT), CALL))
+      .rejects.toMatchObject({ code: 'DISPATCH_UNCERTAIN' });
+    expect((receipts[0] as Record<string, unknown>).error_code).toBe('PROVIDER_USAGE_UNKNOWN');
   });
 
   it('keeps the timeout active until the response body has been fully read', async () => {

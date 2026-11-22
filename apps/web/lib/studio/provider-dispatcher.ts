@@ -175,6 +175,8 @@ interface HandleState {
   sessionToken: string;
   inputHash: string;
   attemptNo: number;
+  /** 授权时算出的最坏费用上界；未定费用的回执也据此计入预算，不会低计。 */
+  worstCaseUsd: number;
   replayReceipt: StudioExecutionReceiptRecord | null;
   consumed: boolean;
 }
@@ -294,15 +296,28 @@ export async function authorizeProviderDispatch(
 
   // Exact accepted replay has no new provider call or charge, so it remains
   // readable when the remaining budget cannot fund another attempt.
-  // Any unresolved receipt still freezes new calls and requires reconciliation.
-  if (receipts.some((r) => r.acceptance_state === "HOLD" || r.cost_confidence === "UNKNOWN" || r.cost === null))
-    throw new DispatchError("DISPATCH_RECONCILIATION_REQUIRED");
+  // 未定费用的真实尝试按「上界」计入预算而不是永久冻结整份委托：一次超时/空正文
+  // 不该让生产链再也不能前进，而账目必须永不低计（上界 ≥ 实际）。回执自带授权时
+  // 记录的上界时直接采用；早于该字段的旧回执，只有同模型尝试才允许按本次上界保守
+  // 顶替，其余一律要求人工对账（失败关闭）。
+  const unresolved = receipts.filter((r) => r.acceptance_state === "HOLD"
+    || r.cost_confidence === "UNKNOWN" || r.cost === null);
+  let unresolvedBound = 0;
+  for (const receipt of unresolved) {
+    const manifest = receipt.result_manifest as Record<string, unknown> | undefined;
+    const recorded = Number(manifest?.worst_case_cost_usd);
+    const bound = Number.isFinite(recorded) && recorded >= 0
+      ? recorded
+      : manifest?.model === input.model ? worst : null;
+    if (bound === null) throw new DispatchError("DISPATCH_RECONCILIATION_REQUIRED");
+    unresolvedBound += bound;
+  }
   if (!replay) {
     const spent = receipts.reduce((sum, r) => {
       const amount = Number(r.cost);
       if (!Number.isFinite(amount) || amount < 0) throw new DispatchError("DISPATCH_RECONCILIATION_REQUIRED");
       return sum + amount;
-    }, 0);
+    }, unresolvedBound);
     if (spent + worst > budget + 1e-9) throw new DispatchError("HOLD_BUDGET");
   }
   const attemptNo = receipts.reduce((max, r) => Math.max(max, Number(r.attempt_no) || 0), 0) + 1;
@@ -310,7 +325,7 @@ export async function authorizeProviderDispatch(
   const handleId = randomUUID();
   handles.set(handleId, {
     delegation, action: input.action, model: input.model, call: { ...input.call },
-    sourceIds, sessionToken: input.sessionToken, inputHash, attemptNo,
+    sourceIds, sessionToken: input.sessionToken, inputHash, attemptNo, worstCaseUsd: worst,
     replayReceipt: replay, consumed: false,
   });
   return { handleId, replay: replay !== null };
@@ -326,14 +341,18 @@ async function writeHeldReceipt(
   deps: DispatcherDeps,
   state: HandleState,
   startedAt: string,
-  errorCode: string
+  errorCode: string,
+  observed: Record<string, unknown> = {}
 ): Promise<void> {
   try {
     await deps.delegations.appendHeldReceipt({
       delegationId: state.delegation.delegation_id,
       attemptNo: state.attemptNo,
       requestHash: state.delegation.request_hash,
-      resultManifest: { input_hash: state.inputHash, model: state.model, phase: "provider_call" },
+      // 未定费用的尝试同样要留下可核上界与可诊断的失败细节（不含模型正文），
+      // 否则后续只能猜是超时、空正文还是缺 usage。
+      resultManifest: { input_hash: state.inputHash, model: state.model, phase: "provider_call",
+        worst_case_cost_usd: state.worstCaseUsd, ...observed },
       candidateRefs: [],
       actualProvider: "deepseek",
       actualEngineVersion: currentPriceTable().priceRef,
@@ -387,7 +406,10 @@ export async function dispatchAuthorizedCall(
   const startedAt = new Date().toISOString();
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
-  type ProviderResponse = { choices?: Array<{ message?: { content?: string } }>; usage?: ProviderUsage };
+  type ProviderResponse = {
+    choices?: Array<{ message?: { content?: string }; finish_reason?: string }>;
+    usage?: ProviderUsage;
+  };
   let json: ProviderResponse | null = null;
   let failureCode: string | null = null;
   try {
@@ -432,9 +454,29 @@ export async function dispatchAuthorizedCall(
   }
   const text = json.choices?.[0]?.message?.content?.trim() || null;
   const usage = json.usage;
-  const cost = text && usage ? estimateCostFromUsageUsd(state.model, usage) : null;
-  if (!text || !usage || cost === null) {
-    await writeHeldReceipt(deps, state, startedAt, "PROVIDER_USAGE_UNKNOWN");
+  const finishReason = typeof json.choices?.[0]?.finish_reason === "string"
+    ? json.choices[0].finish_reason : null;
+  const observed = {
+    finish_reason: finishReason,
+    usage: usage
+      ? {
+        prompt_tokens: usage.prompt_tokens ?? null,
+        completion_tokens: usage.completion_tokens ?? null,
+        prompt_cache_hit_tokens: usage.prompt_cache_hit_tokens ?? null,
+        prompt_cache_miss_tokens: usage.prompt_cache_miss_tokens ?? null,
+      }
+      : null,
+  };
+  // 200 但正文为空（推理型模型常因 max_tokens 被推理耗尽）与「缺 usage / 未定价」
+  // 是两种不同的失败，必须分开记，否则无法判断该调参还是该对账。
+  if (!text) {
+    await writeHeldReceipt(deps, state, startedAt, finishReason === "length"
+      ? "PROVIDER_CONTENT_TRUNCATED" : "PROVIDER_CONTENT_EMPTY", observed);
+    throw new DispatchError("DISPATCH_UNCERTAIN", "PROVIDER_CONTENT_EMPTY");
+  }
+  const cost = usage ? estimateCostFromUsageUsd(state.model, usage) : null;
+  if (!usage || cost === null) {
+    await writeHeldReceipt(deps, state, startedAt, "PROVIDER_USAGE_UNKNOWN", observed);
     throw new DispatchError("DISPATCH_UNCERTAIN", "PROVIDER_USAGE_UNKNOWN");
   }
 
@@ -451,6 +493,7 @@ export async function dispatchAuthorizedCall(
     input_hash: state.inputHash,
     output_hash: sha256(text),
     output_text: text,
+    worst_case_cost_usd: state.worstCaseUsd,
   };
   let receipt: StudioVerifiedReceiptRecord;
   try {

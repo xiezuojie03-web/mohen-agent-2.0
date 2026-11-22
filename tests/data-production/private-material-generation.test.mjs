@@ -15,7 +15,7 @@ function fixture(){
  const deps={apiKey:'synthetic-key',delegations:{getDelegation:async()=>delegation,listReceipts:async()=>receipts,
   appendVerifiedReceipt:async v=>{const r={receipt_id:id(),delegation_id:delegationId,acceptance_state:'ACCEPT_AS_CANDIDATE',
    cost:v.cost,cost_confidence:v.costConfidence,result_manifest:v.resultManifest};receipts.push(r);return r;},
-  appendHeldReceipt:async v=>{const r={receipt_id:id(),acceptance_state:'HOLD',cost:null,cost_confidence:'UNKNOWN',error_code:v.errorCode};receipts.push(r);return r;}},
+  appendHeldReceipt:async v=>{const r={receipt_id:id(),acceptance_state:'HOLD',cost:null,cost_confidence:'UNKNOWN',error_code:v.errorCode,result_manifest:v.resultManifest};receipts.push(r);return r;}},
   readSourceRights:async()=>[{source_id:source,rights_by_action:{external_processing:'allowed'}}],
   fetchImpl:async(_url,init)=>{calls++;sent.push(JSON.parse(init.body));
    return Response.json({choices:[{message:{content:JSON.stringify(observation)}}],usage:{prompt_tokens:30,completion_tokens:80}});}};
@@ -60,12 +60,14 @@ for(const [label,change,error] of [
  const f=fixture();change(f);const generate=createPrivateMaterialGenerator({delegationId:f.delegationId,model:'deepseek-flash',deps:f.deps});
  await assert.rejects(()=>generate(f.input),error);assert.equal(f.calls(),0);
 });
-test('private generation holds timeout and refuses another possibly billable attempt',async()=>{
+test('private generation holds timeout and never silently replays the uncertain attempt',async()=>{
  const f=fixture();f.deps.fetchImpl=async()=>{throw Error('network uncertain');};
  const generate=createPrivateMaterialGenerator({delegationId:f.delegationId,model:'deepseek-flash',deps:f.deps});
  await assert.rejects(()=>generate(f.input),e=>e.code==='DISPATCH_UNCERTAIN');
  assert.equal(f.receipts[0].cost_confidence,'UNKNOWN');
- await assert.rejects(()=>generate(f.input),/DISPATCH_RECONCILIATION_REQUIRED/);
+ // 未定费用的尝试按授权时上界计入预算；第二次是新的真实尝试，不是静默重放。
+ await assert.rejects(()=>generate(f.input),e=>e.code==='DISPATCH_UNCERTAIN');
+ assert.equal(f.receipts.length,2);
 });
 test('private generation preserves paid receipt but rejects unsupported classification and invented quote',async()=>{
  for(const mutate of [o=>{o.h_type='H21';},o=>{o.literal_reading='invented';},o=>{delete o.uncertainty.classification_basis;}]){

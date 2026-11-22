@@ -31,7 +31,7 @@ export function createPrivateMaterialGenerator({delegationId,model,deps}={}){
   // Lazy import: no model, DB or network side effect at module evaluation.
   const {authorizeProviderDispatch,dispatchAuthorizedCall}=await import('../../../apps/web/lib/studio/provider-dispatcher.ts');
   const call={system:SYSTEM,user:JSON.stringify({run_id:run.run_id,root_task_id:run.scope.root_task_id,
-    read_unit_id:reading.read_unit_id,artifact_revision:reading.artifact_revision,quote}),temperature:0,maxTokens:2048};
+    read_unit_id:reading.read_unit_id,artifact_revision:reading.artifact_revision,quote}),temperature:0,maxTokens:4096};
   const handle=await authorizeProviderDispatch(deps,{delegationId,action:'d02_material_observation',model,call,
     sourceIds:[reading.source_id],sessionToken:token,projectId:run.scope.project_id});
   const result=await dispatchAuthorizedCall(deps,handle,call);
