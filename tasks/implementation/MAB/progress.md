@@ -5997,6 +5997,8 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 ### 追加（同批）：preview env 与 staging 部署
 
 - `MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIALS` 已 PATCH 到 `mohen-agent-2-0` 的 **preview** 目标（只含 `{"d01.carrier-reading": <G1 token>}`，值加密存储；production 目标未动）。
-- **staging 部署受阻（`BLOCKED_ENV`，非代码）**：`vercel deploy --target staging` 被 Vercel 以 `COMMIT_AUTHOR_REQUIRED` 阻断——本次提交作者 `MoHen Engineering <engineering@mohen.local>` 未绑定 Vercel 账号。历史可部署提交的作者为仓库 git 配置的 `xiezuojie03 <315303392+xiezuojie03-web@users.noreply.github.com>`；因此后续提交必须沿用该身份，否则新代码无法进入 staging/preview 部署。该提交已推送（不改写历史、不强推），部署改由后续同身份提交触发。
+- **staging 部署（`VERIFIED_LIVE`）**：首次 `vercel deploy --target staging` 被 Vercel 以 `COMMIT_AUTHOR_REQUIRED` 阻断——本批第一笔提交作者 `MoHen Engineering <engineering@mohen.local>` 未绑定 Vercel 账号。历史可部署提交的作者为仓库 git 配置的 `xiezuojie03 <315303392+xiezuojie03-web@users.noreply.github.com>`；因此不改写已推送提交、不强推，改由同身份后续提交触发。新部署 `mohen-agent-2-0-2pj5kd46r-napoles1.vercel.app`（`--environment staging`，READY，含新代码与该 env）。
+- **部署侧 readiness 回读**：`POST /api/internal/self-test-resume`（HMAC，`{"diag":"readiness"}`）→ `configuration_ready=true`，`execution_authority / credential_separation / producer / private_worker / independent_gate / private_storage` 全 `CONFIGURED`，`MOHEN_INDEPENDENT_GATE_VERIFY_URL=https://mohen-d00-authority.vercel.app/api/current`。该诊断只证明配置齐备（`runtime_verified=false`、`gate_qualification=NOT_VERIFIED`），不是 Gate PASS。
+
 
 

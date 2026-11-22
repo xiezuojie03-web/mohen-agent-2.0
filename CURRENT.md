@@ -6,6 +6,7 @@
 
 - **读通道（`VERIFIED_LIVE`）**：新建 G1 精确项目绑定 `75c80b6d…`（`d9d48901`，30 天）与 consume 凭据 `82b2ccb5…`（job `d01.carrier-reading` / G1 / ref `m5-owner-reviewer-g0g1-producer` / scope 仅本项目；token 只在 `.secrets/gate-reader-bearer-d9d48901-g1.txt`）。直连 `https://mohen-d00-authority.vercel.app/api/current`：正例 → **200 + PASS receipt**（`gate_audit_id 113c2bbe…`、`read_unit 43951035…`、双 digest 与 `stage_binding` 精确一致、`valid_until 2026-11-28T02:06:37Z`）；篡改 `output_digest` → **409 `current_qualification_required`**；用 G0 凭据查同一 G1 请求 → **403 `consumer_binding_denied`**。
 - **代码（本批唯一改动，未改 Gate 判定规则）**：`createIndependentGateClient` 支持 `credentials`（`job_id → 凭据`）映射并按 job 选择，未列出的 job 回落默认单值、映射缺 job 且无默认则失败关闭；新增 env `MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIALS`（JSON），已进 cloud runner env 白名单、web spawn 透传与 readiness 判定；新增 `tools/provision-stage-gate-reader.mjs`（按注册表解析 job→stage/gate/ref，幂等开通绑定+凭据，token 只写 `.secrets/`），D02—D05 可复用。
+- **部署（`VERIFIED_LIVE`）**：preview 目标已配 `MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIALS`；新 staging 部署 `mohen-agent-2-0-2pj5kd46r-napoles1.vercel.app` READY，`/api/internal/self-test-resume` readiness 回读 `configuration_ready=true`、`independent_gate` CONFIGURED（只证配置齐备，`runtime_verified=false`）。提交作者须为已绑定 Vercel 的 `xiezuojie03`，否则 `COMMIT_AUTHOR_REQUIRED` 阻断部署。
 - **下一步（唯一最前阻断）**：D02 属付费 Provider。按 PLAN §0.2 D 先核真实费用与累计上限（¥20 累计授权、达 ¥10 先停）并报备，之后才以 `from_stage:"D02"` 续跑并核 G2 交接；在此之前不发起 D02、不产生费用。
 - **凭证**：Vercel 账号令牌有效期至 `2026-11-22T17:29:13Z`（到期 `npx vercel whoami` 续期）。
 
