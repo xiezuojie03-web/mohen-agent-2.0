@@ -1,0 +1,128 @@
+{
+  "date": "2026-11-22",
+  "authority": "Existing P0 workbook remains the sole master. This file is a non-authoritative change set prepared for in-place merge; it is not a second resource registry.",
+  "baseline": {
+    "resources": 46,
+    "methods": 29,
+    "attempts": 18
+  },
+  "proposed_after_merge": {
+    "resources": 49,
+    "methods": 31,
+    "attempts": 18
+  },
+  "additions": [
+    {
+      "resource_id": "R0047",
+      "parent_resource_id": null,
+      "level": "资源集合",
+      "name": "Library of Congress Prints & Photographs Online Catalog（PPOC）",
+      "provider": "美国国会图书馆",
+      "url": "https://www.loc.gov/pictures/",
+      "content": "照片、版画、绘画、海报、建筑与工程图；官方说明目录覆盖该部门约95%馆藏、约150万数字化图像，但并非完整馆藏清单，部分仅缩略图或线下访问。",
+      "access": "网页检索；URL加fo=json的JSON表示；可显示图像可下载，部分高清访问需到馆/复制服务。",
+      "rights": "按单件Rights Advisory；LOC通常不拥有馆藏版权，不提供通用许可；No known restrictions不等于CC0。",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0029",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.loc.gov/research-centers/prints-and-photographs/researcher-resources/prints-and-photographs-online-catalog/",
+        "https://www.loc.gov/apis/additional-apis/prints-and-photographs-api/"
+      ]
+    },
+    {
+      "resource_id": "R0048",
+      "parent_resource_id": null,
+      "level": "资源集合",
+      "name": "National Archives Catalog（NARA）—档案描述、数字对象与特殊媒介",
+      "provider": "美国国家档案和文件管理局（NARA）",
+      "url": "https://catalog.archives.gov/",
+      "content": "联邦档案描述、权威记录、数字对象元数据及OCR文本；照片、航空照片、地图、建筑/工程图、电影、视频、声音记录和数据集。官方AWS数据集说明超过261GB、超过1.48亿数字对象URL；说明页称数据截至2026-03-01并计划每年更新两次，文件名日期口径仍待核。",
+      "access": "网页检索；Catalog API需申请Key，默认每Key每月10,000次；全量/分组元数据另由AWS公开数据集提供。API条款禁止全量抓取并写明不得缓存/存储API响应。",
+      "rights": "政府公务作品在美国通常为公有领域，但NARA馆藏并非全部公有领域；特殊媒介可能含捐赠限制、第三方版权、表演权、隐私权等。NARA不授予通用商业许可。",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0030",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.archives.gov/research/catalog/help/api",
+        "https://www.archives.gov/developer/national-archives-catalog-dataset",
+        "https://www.archives.gov/research/motion-pictures/permissions"
+      ]
+    },
+    {
+      "resource_id": "R0049",
+      "parent_resource_id": "R0047",
+      "level": "单件",
+      "name": "China - Kiangsu province - Shanghai. The Bund",
+      "provider": "Library of Congress Prints and Photographs Division",
+      "url": "https://www.loc.gov/pictures/item/2001705635/",
+      "content": "约1890—1923年上海外滩拥挤码头场景；Carpenter Collection；页面列JPEG约37KB及TIFF约1.6MB下载选项。",
+      "access": "单件页浏览及JPEG/TIFF下载链接。",
+      "rights": "Rights Advisory为No known restrictions on publication；不是CC0或通用商用许可，按具体用途继续核验。",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0029",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.loc.gov/pictures/item/2001705635/"
+      ]
+    }
+  ],
+  "methods": [
+    {
+      "method_id": "M0029",
+      "version": "v0.1",
+      "resource_id": "R0047",
+      "status": "DRAFT",
+      "path": "PPOC网页/JSON API检索→单件/组记录核验→Rights Advisory与数字图像链接",
+      "scope": "LOC PPOC集合与单件；静态图像发现、对象定位、图像链接和目录元数据引用",
+      "steps": "按地点/年代/主题检索；定位Item/Group/Guide；对URL请求fo=json；记录题名、创作者、日期、馆藏、Call Number、Rights Advisory和图像链接；确认是否仅缩略图；按拟用动作核权；仅对选定对象再执行独立下载/校验。",
+      "limits": "API为work in progress；部分图片仅缩略图或需到馆；Rights Advisory不是许可；本轮未取得文件字节。"
+    },
+    {
+      "method_id": "M0030",
+      "version": "v0.1",
+      "resource_id": "R0048",
+      "status": "DRAFT",
+      "path": "NARA Catalog网页/API定向检索 + AWS公开数据集按记录组/集合筛选",
+      "scope": "档案描述、权威记录、特殊媒介对象元数据的发现与定位，不是全量媒体下载方法",
+      "steps": "按主题/机构/记录组/年代筛选；网页或API定位单件与数字对象URL；API响应不缓存/存储；需要持久化目录分析时评估官方AWS数据集的适用子集；媒体对象逐件检查Use Restrictions、来源及捐赠/第三方权利。",
+      "limits": "API需Key且默认10,000次/月；API禁止全量抓取且不得缓存/存储响应；NARA不确认所有特殊媒介权利；本轮未下载媒体原件。"
+    }
+  ],
+  "updates": [
+    {
+      "target": "R0025",
+      "fields": {
+        "access": "补充API需Key；官方Open Access JSON仓库每周刷新。",
+        "rights": "仅明确标记CC0的内容适用CC0；其他内容受额外使用条件约束；隐私、肖像、商标及第三方权利另核。",
+        "last_checked": "2026-11-22"
+      }
+    },
+    {
+      "target": "M0012/v0.1",
+      "fields": {
+        "scope": "明确标记CC0的对象及对应元数据；其他对象不推定CC0。",
+        "prerequisite": "API Key；或使用官方Open Access JSON数据仓库；核对象CC0标记和第三方权利。",
+        "last_checked": "2026-11-22",
+        "note": "官方仓库每周刷新；本轮只复核政策与仓库说明，未取得原件字节。"
+      }
+    }
+  ],
+  "attempt_log": {
+    "new_attempts": 0,
+    "reason": "本轮完成资源内容、官方访问路径与权利条款研究，未执行原始媒体文件下载；不新增获取尝试记录。"
+  },
+  "source_references": [
+    "https://www.loc.gov/research-centers/prints-and-photographs/researcher-resources/prints-and-photographs-online-catalog/",
+    "https://www.loc.gov/apis/additional-apis/prints-and-photographs-api/",
+    "https://www.loc.gov/pictures/item/2001705635/",
+    "https://www.archives.gov/research/catalog/help/api",
+    "https://www.archives.gov/developer/national-archives-catalog-dataset",
+    "https://www.archives.gov/research/motion-pictures/permissions",
+    "https://www.si.edu/termsofuse",
+    "https://github.com/Smithsonian/smithsonian-open-access-api-drupal"
+  ]
+}
