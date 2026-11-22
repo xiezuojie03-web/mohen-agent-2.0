@@ -6123,3 +6123,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 **边界**：未改 Gate 判定规则、未改候选/审计写路径语义、未伪造会话/资格/PASS；密钥未入 git/日志/对话（env 值哈希比对而非明文）。
 
 **下一步（唯一最前缺口）**：D03 无执行授权通道——`from_stage` 白名单 `D01|D02`、无 `MOHEN_EXECUTION_AUTH_*_D03`、无 D03 journal/issue/consume 端点、无 G3 读凭据映射。按 D01/D02 同构补齐后即可 `from_stage:"D03"` 续跑并核 G3 交接。
+
+### 附记（同日）：Vercel 账号清理误建空项目 mohen-brand-dashboard（Owner 批准删除）
+
+- **取证结论**：项目创建于 2026-11-22 01:30:06Z（本地 09:30:06），恰在上一会话"续期 Vercel CLI OAuth 令牌并补 preview 环境变量"的操作窗口（09:27—09:39）内；创建者字段带 `via: Vercel CLI` 应用标记，账号为 xiezuojie03-web。形态为纯空壳：0 部署、0 环境变量、无 git 关联、创建后从未更新；全机仓库代码、全部 Trae 会话记忆、命令历史均无该名称引用（创建命令本身无法从本机证据还原）。
+- **判定**：施工过程自身误执行 CLI 命令的意外副产物，非任何真实任务的产物。Owner 确认施工期间未用其它平台触碰，并于本批批准删除。
+- **执行与核验**：`DELETE /v9/projects/prj_5Xd4LQPzrw4SKhJNkbruIeOMSybx`（删除前核对 name 与部署数为 0，删除后直查 404）；项目列表余 3 个：`mohen-agent-2-0`、`mohen-d00-authority`、`hushang-jingwei`，均完好。主项目与授权服务未受影响。
