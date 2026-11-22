@@ -1209,7 +1209,7 @@
       "url": "https://xronos.ch/",
       "content": "全球考古年代学开放数据基础设施，聚合标准化放射性碳测年及其他年代证据，并关联遗址、地理位置、发掘信息、样品材料、实验室编号、同位素信息、文化阶段和来源文献。当前官网检索摘要显示约314,832条放射性碳日期和70,660处遗址；官网2026-10-07发布v1.3.0，包含去重、关联数据和MIaaRD导出更新。另有Zenodo归档快照（DOI 10.5281/zenodo.14850157，2025-02-11发布，版本标记2024-02-11），单CSV文件data_2025-02-11.csv，85.3MB。",
       "access": "官网提供公开浏览和数据查询；Zenodo归档记录列出data_2025-02-11.csv（85.3MB）直接下载链接。2026-11-22实际点击下载链接时，网页读取器因内容超过其4MB读取限制而返回content length too large；随后容器下载尝试失败，但未取得源站HTTP状态。未获得文件字节、SHA256或本地副本。状态为ACCESSIBLE_NOT_DOWNLOADED，不代表源站拒绝下载。",
-      "rights": "XRONOS官网说明其数据遵循Open Definition，并在网站页脚标示CC BY 4.0；但Zenodo具体归档记录的Rights/License字段未显示明确许可值。网站级许可声明与该CSV归档文件许可不能自动等同，故该文件的再分发、改编和商业使用边界暂列RIGHTS_UNCLEAR；正式利用前须核对当前官网数据政策或向维护团队确认。",
+      "rights": "XRONOS官网说明其数据遵循Open Definition；但Zenodo具体归档记录的Rights/License字段未显示明确许可值。官网层面的开放数据声明与该CSV归档文件许可不能自动等同，故该文件的再分发、改编和商业使用边界暂列RIGHTS_UNCLEAR；正式利用前须核对当前官网数据政策或向维护团队确认。",
       "status": "ACCESSIBLE_NOT_DOWNLOADED",
       "asset_acquired": false,
       "recommended_method_id": "M0087",
