@@ -65,8 +65,14 @@ export function cloudExecutionReadiness(environment={}) {
     worker=principal(resolveMachineDatabaseUrl(environment.MOHEN_PRIVATE_WORKER_DATABASE_URL,environment.MOHEN_PRIVATE_WORKER_DATABASE_PASSWORD));
   add('producer','CLOUD_PRODUCER_REQUIRED',['MOHEN_PRODUCER_DATABASE_URL'],!!producer);
   add('private_worker','CLOUD_PRIVATE_WORKER_REQUIRED',['MOHEN_PRIVATE_WORKER_DATABASE_URL'],!!worker&&worker!==producer);
-  add('independent_gate','CLOUD_INDEPENDENT_GATE_REQUIRED',['MOHEN_INDEPENDENT_GATE_VERIFY_URL','MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL'],
-    https(environment.MOHEN_INDEPENDENT_GATE_VERIFY_URL)&&credential(environment.MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL));
+  let gateCredentialMapValid=false;
+  try{const v=JSON.parse(environment.MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIALS??'{}');
+    gateCredentialMapValid=!!v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).length>0&&
+      Object.values(v).every(x=>credential(x));}catch{}
+  const gateCredentialConfigured=credential(environment.MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL)||gateCredentialMapValid;
+  add('independent_gate','CLOUD_INDEPENDENT_GATE_REQUIRED',
+    gateCredentialConfigured?['MOHEN_INDEPENDENT_GATE_VERIFY_URL']:['MOHEN_INDEPENDENT_GATE_VERIFY_URL','MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL'],
+    https(environment.MOHEN_INDEPENDENT_GATE_VERIFY_URL)&&gateCredentialConfigured);
   add('private_storage','CLOUD_PRIVATE_STORAGE_REQUIRED',['MOHEN_SUPABASE_URL','MOHEN_PRIVATE_STORAGE_SERVICE_KEY','MOHEN_ORIGINAL_BRIDGE_SECRET','MOHEN_ORIGINAL_BRIDGE_KEY_VERSION'],
     https(environment.MOHEN_SUPABASE_URL)&&credential(environment.MOHEN_ORIGINAL_BRIDGE_SECRET)&&
     environment.MOHEN_PRIVATE_ORIGINAL_LOCAL_FS!=='true');

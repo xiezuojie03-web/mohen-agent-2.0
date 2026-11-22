@@ -5968,3 +5968,29 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 实测：`/api/current` 对 `d00.source-intake/G0` 返回 **200**，对 `d01.carrier-reading/G1` 返回 **403 `consumer_binding_denied`**。根因在 `control.authenticate_gate_service`：凭据行携带 `job_id`/`gate_code`，并与绑定逐字段比对；本项目 consume 凭据只绑 D00/G0，故 G1 无匹配。**不是** stage/gate 白名单问题（`apps/d00-authority/api/current.mjs` 已按注册表阶段门配对）。
 
 资格本体在库内成立：`qualification_current` G0→`source_version 36ea7ffc`（`c0ee5a2f`，至 2026-11-27）、G1→`read_unit 43951035`（`113c2bbe`，至 2026-11-28）；两候选均为 `CONSUMED`。→ 进入 D02 前的最小修法：按 job 各建一条凭据并让 runner 侧凭据 env 支持按 job 选择（单值 env 无法表达多阶段），属代码+配置变更，未在付费 Provider 前擅自动工。
+
+## 2026-11-22｜第十四批：多阶段 Gate 读凭据（一 job 一凭据）与 G1 读通道 200（`VERIFIED_LIVE`）
+
+**依据**：PLAN §3.5 C/D（同一真实 run 沿唯一 Runner/Registry 连续推进，逐阶段核独立 Gate 当前资格；不得由 Producer 自签）、§0.2 D（付费 Provider 前先核费用）。第十三批已把最前阻断定位到「`control.gate_service_credentials` 按 `job_id`/`gate_code` 绑定，单值 env 无法覆盖多阶段」。
+
+**改动（仅一处设计缺口，未改 Gate 判定规则）**
+1. `pipelines/data-production/orchestrator/independent-gate-client.mjs`：`createIndependentGateClient` 接受 `credentials`（`job_id → 凭据` 映射），按 `job.job_id` 选择；未列出的 job 回落默认单值 `credential`；映射内缺该 job 且无默认时不发请求，失败关闭为 `INDEPENDENT_GATE_VERIFY_CREDENTIAL_MISSING`。新增 env `MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIALS`（JSON），解析失败即 `INDEPENDENT_GATE_VERIFY_CONFIG_INVALID`，不静默降级。
+2. `cloud-execution-readiness.mjs`：`independent_gate` 组件接受「单值」或「映射」之一为已配置（键名与缺省失败行为不变）。
+3. `cloud-production-runtime.mjs`：runner 子进程 env 白名单加入新变量（父进程其它密钥仍不传入）。
+4. `apps/web/lib/studio-production.ts`：spawn 时透传该映射（缺省时不写入，保持原行为）。
+5. `.env.example`：登记新变量与语义。
+6. 新增 `tools/provision-stage-gate-reader.mjs`：按 `specs/data-production/production-registry.json` 解析 job→stage/exit_gate/`gate_reviewer_binding`，幂等开通「机器评审精确项目绑定 + consume 凭据」，token 只写 `.secrets/`（0600）、不打印；本次用于 `d01.carrier-reading/G1`，D02—D05 可复用同一工具。
+
+**测试（本批实跑）**：`npx vitest run --config vitest.unit.config.ts tests/unit/independent-gate-client.test.ts` → **7/7 pass**（新增按 job 选凭据、默认回落、映射缺 job 失败关闭、短凭据与非法 env 拒绝）；`node --test tests/data-production/cloud-execution-readiness.test.mjs` → **10/10 pass**；`node --test tests/data-production/independent-gate-service.test.mjs tests/data-production/inprocess-gate-reader-verifier.test.mjs` → **8/8 pass**。
+
+**云端授权与凭据（真实库）**：绑定 `75c80b6d-3840-44ff-9596-f0c4e7c32f6b`（G1 / `mohen_gate_signer_m5_machine` / `data-production.m5-remediation.v1` / producer / scope 仅 `{project_id d9d48901}` / 30 天 / `source_ref=plan-3.5C-2026-11-22:g1-machine-exact-project-scope:d9d48901`）；consume 凭据 `82b2ccb5-8ed1-43cc-89b1-3886c8bc8a92`（`mohen_runner_reader_v2` / job `d01.carrier-reading` / G1 / ref `m5-owner-reviewer-g0g1-producer` / 同 scope / 30 天）。明文 token 只在 `.secrets/gate-reader-bearer-d9d48901-g1.txt`（gitignored）。
+
+**读通道回执（`VERIFIED_LIVE`，直连 `https://mohen-d00-authority.vercel.app/api/current`）**
+- 正例（run `b9989b90…`、D01/G1、input `54278096…`、output `df4457db…`）→ **200**，receipt：`gate_audit_id 113c2bbe-300f-4cfa-8c03-02daaa91533e`、`object_type read_unit`、`object_id 43951035…`、`artifact_revision dbf73fae…`、`qualification_current=true`、`decision_origin=independent_gate`、`valid_until 2026-11-28T02:06:37Z`。
+- 负例①篡改 `output_digest` → **409 `current_qualification_required`**（不返回任何 receipt）。
+- 负例②用 G0 凭据查 G1 同一请求 → **403 `consumer_binding_denied`**（凭据不跨 job 借资格）。
+
+**边界与费用**：零 Provider 调用、零新增付费；未签发新 Gate、未改迁移、未改 Gate 判定函数与候选状态；未伪造会话/资格/PASS；token 未入 git/日志/对话。
+
+**下一步（唯一最前阻断）**：D02 需付费 Provider。按 PLAN §0.2 D 先核真实费用与累计上限（¥20 累计授权、达 ¥10 先停）并向 Owner 报备，之后才以 `from_stage:"D02"` 续跑并核 G2 交接；在此之前不发起 D02。web 侧需 PATCH `MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIALS` 并重部署后，runner 才会在跨阶段运行时按 job 取凭据。
+

@@ -64,3 +64,20 @@ it('caps independent response size without interpreting oversize content as PASS
     status:200,headers:{'content-type':'application/json'}}))});
  await expect(verify(args)).rejects.toThrow('INDEPENDENT_GATE_RESPONSE_TOO_LARGE');
 });
+it('selects the Gate read credential bound to the requesting job',async()=>{
+ const d00='g0-consumer-'+'a'.repeat(32),d01='g1-consumer-'+'b'.repeat(32);
+ const fetcher=vi.fn().mockImplementation(async()=>new Response('{}',{status:200,headers:{'content-type':'application/json'}}));
+ const verify=createIndependentGateClient({endpoint,credential:d00,credentials:{'d01.carrier-reading':d01},fetcher});
+ await verify({...args,job:{...args.job,job_id:'d01.carrier-reading',stage:'D01',implementation:{gate_reviewer_binding:'m5-owner-reviewer-g0g1-producer'}},
+   stage:'D01',gate:'G1'});
+ expect(fetcher.mock.calls[0][1].headers.authorization).toBe('Bearer '+d01);
+ await verify(args); // 未列出的 job 回落到默认凭据
+ expect(fetcher.mock.calls[1][1].headers.authorization).toBe('Bearer '+d00);
+ const mapOnly=createIndependentGateClient({endpoint,credentials:{'d01.carrier-reading':d01},fetcher});
+ await expect(mapOnly(args)).rejects.toThrow('INDEPENDENT_GATE_VERIFY_CREDENTIAL_MISSING');
+ expect(()=>createIndependentGateClient({endpoint,credentials:{'d01.carrier-reading':'short'}}))
+   .toThrow('INDEPENDENT_GATE_VERIFY_CONFIG_INVALID');
+ expect(()=>createOptionalIndependentGateClient({MOHEN_INDEPENDENT_GATE_VERIFY_URL:endpoint,
+   MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIALS:'{"d01.carrier-reading":"not-json-token"}'},vi.fn()))
+   .toThrow('INDEPENDENT_GATE_VERIFY_CONFIG_INVALID');
+});

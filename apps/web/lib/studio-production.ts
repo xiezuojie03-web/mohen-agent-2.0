@@ -370,6 +370,11 @@ export async function triggerProduction(taskId: string, intent: string, projectI
               try { return fs.readFileSync(process.env.MOHEN_GATE_VERIFIER_CREDENTIAL_FILE || "D:/MoHen/keys/gate-verifier/credential", "utf8").trim(); }
               catch { return ""; }
             })(),
+          // 跨阶段运行需要按 job 取读凭据：Gate 消费凭据按 job/gate 绑定，
+          // 单值 env 只能覆盖一个 job。缺省时回落到上面的单一凭据。
+          ...(process.env.MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIALS?.trim()
+            ? { MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIALS: process.env.MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIALS.trim() }
+            : {}),
           MOHEN_PRIVATE_EVIDENCE_WORKER_ENABLED: "true",
           ...(process.env.MOHEN_PRIVATE_WORKER_DATABASE_URL
             ? { MOHEN_PRIVATE_WORKER_DATABASE_URL: process.env.MOHEN_PRIVATE_WORKER_DATABASE_URL } : {}),
