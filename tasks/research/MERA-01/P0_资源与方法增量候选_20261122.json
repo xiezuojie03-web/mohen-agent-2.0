@@ -7,8 +7,8 @@
     "attempts": 18
   },
   "proposed_after_merge": {
-    "resources": 61,
-    "methods": 42,
+    "resources": 64,
+    "methods": 45,
     "attempts": 18
   },
   "additions": [
@@ -307,6 +307,67 @@
         "https://help.openalex.org/data/licenses/",
         "https://help.openalex.org/data/works/open-access/"
       ]
+    },
+    {
+      "resource_id": "R0062",
+      "parent_resource_id": null,
+      "level": "资源库",
+      "name": "Archaeology Data Service (ADS)",
+      "provider": "University of York / Archaeology Data Service",
+      "url": "https://archaeologydataservice.ac.uk/",
+      "content": "UK archaeology and historic environment digital repository; Data Catalogue for monuments/events, ADS Library for reports/books/articles, ADS Archives for raw project data; archives may include excavation reports, fieldwork data, GIS, photos, aerial imagery, maps, models and primary records.",
+      "access": "Three search portals; collection download pages; DOI citations; not every catalogue record has a downloadable object.",
+      "rights": "Free access; reuse license varies per dataset: CC BY 4.0, OGL, other CC or legacy ADS terms. Older terms require attribution and prohibit selling materials; commercial use must be checked per dataset.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0042",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://archaeologydataservice.ac.uk/about/policies/use-access-to-data/",
+        "https://archaeologydataservice.ac.uk/help-guidance/faqs/",
+        "https://archaeologydataservice.ac.uk/"
+      ]
+    },
+    {
+      "resource_id": "R0063",
+      "parent_resource_id": null,
+      "level": "资源发现平台",
+      "name": "ARIADNE Portal",
+      "provider": "ARIADNE Research Infrastructure",
+      "url": "https://portal.ariadne-infrastructure.eu/",
+      "content": "Cross-institution archaeological resource catalogue with fieldwork reports, research papers, scientific datasets, sites/monuments, artefacts, inscriptions and burial data; over 2m records by official description and portal index currently displays over 4m resources; filters by time/place/resource type/provider; AO-Cat based on CIDOC CRM and linked vocabularies.",
+      "access": "Web portal and metadata search; individual records link to source provider's resource.",
+      "rights": "Portal mainly provides metadata; source data and licensing are controlled by the original provider. Searchability does not imply downloadable or commercial reuse rights.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0043",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://portal.ariadne-infrastructure.eu/",
+        "https://www.ariadne-research-infrastructure.eu/portal/",
+        "https://ariadne-infrastructure.github.io/docs/Portal_User_Guide/Section-1_What/"
+      ]
+    },
+    {
+      "resource_id": "R0064",
+      "parent_resource_id": null,
+      "level": "研究数据出版平台",
+      "name": "Open Context",
+      "provider": "Alexandria Archive Institute / California Digital Library preservation",
+      "url": "https://opencontext.org/",
+      "content": "Open archaeological/anthropological research data publishing: field notes, diaries, images, maps, vocabularies, typologies, artefact/ecofact data; stable item IDs and dataset DOIs; linked open data relations; faceted/map-based discovery.",
+      "access": "Web search, map visualization, data table downloads, JSON-LD record/search APIs, DOI citations; archived by California Digital Library.",
+      "rights": "Free access; each dataset has its own Creative Commons/open license and community/privacy conditions. Publisher pays one-time data publishing/preservation fees (examples $350/$1,000/$5,000); not an access fee for users.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0044",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://opencontext.org/",
+        "https://opencontext.org/about/services",
+        "https://opencontext.org/about/technology",
+        "https://opencontext.org/about/terms"
+      ]
     }
   ],
   "methods": [
@@ -439,6 +500,36 @@
       "scope": "Global scholarly metadata and relationships, not a full-text archive",
       "steps": "Resolve DOI/ORCID/ROR/ISSN; filter works by topic/date/institution/author/citations; inspect primary_location and license; build a focused research subset; follow full text to publisher/repository; avoid full snapshot download.",
       "limits": "API budget limits; 2026-09 snapshot about 745GB JSONL compressed; core vs expansion counts differ; CC0 metadata does not license full text."
+    },
+    {
+      "method_id": "M0042",
+      "version": "v0.1",
+      "resource_id": "R0062",
+      "status": "DRAFT",
+      "path": "ADS Data Catalogue → ADS Library → ADS Archives; per-dataset license check",
+      "scope": "UK/Ireland archaeology, historic environment, reports, raw project data, GIS and imagery",
+      "steps": "Choose catalogue for monuments/events, Library for reports/publications, Archives for raw data; inspect download page, DOI, depositor, copyright holder and license; download/adapt only when item license permits; preserve citation.",
+      "limits": "Legacy ADS terms differ from CC BY/OGL; attribution and no-sale restrictions; not every record has a file."
+    },
+    {
+      "method_id": "M0043",
+      "version": "v0.1",
+      "resource_id": "R0063",
+      "status": "DRAFT",
+      "path": "ARIADNE portal search → AO-Cat metadata/time/place filters → original provider",
+      "scope": "Cross-institution archaeological discovery and metadata for sites, artefacts, reports and scientific datasets",
+      "steps": "Search by keyword/time/place/resource type/provider; inspect AO-Cat/CIDOC CRM metadata and source links; return to original provider for actual data, access and license.",
+      "limits": "Metadata only; source provider controls access/rights; metadata accuracy/freshness not guaranteed."
+    },
+    {
+      "method_id": "M0044",
+      "version": "v0.1",
+      "resource_id": "R0064",
+      "status": "DRAFT",
+      "path": "Open Context web/JSON-LD API → item/dataset DOI → CC license check",
+      "scope": "Archaeological artefact/ecofact, field notes, images, maps, vocabularies and research data",
+      "steps": "Search by project/site/date/object type; query JSON-LD API; download tables only after checking dataset license, source and community/privacy notes; record DOI, authors, project, version and date.",
+      "limits": "Licenses vary per dataset; publisher service fees are for depositors; community-sensitive data require care."
     }
   ],
   "updates": [
@@ -475,6 +566,12 @@
       "target": "category 07",
       "fields": {
         "note": "Added R0058 JSTOR, R0059 DOAB, R0060 OAPEN, R0061 OpenAlex; methods M0038-M0041. Candidate totals 61 resources / 42 methods / 18 attempts."
+      }
+    },
+    {
+      "target": "category 04",
+      "fields": {
+        "note": "Added R0062 ADS, R0063 ARIADNE, R0064 Open Context; methods M0042-M0044. Chinese National Cultural Relics Data Registry/China Cultural Relics Cloud remains a policy/platform watch item, not a verified public resource. Candidate totals 64 resources / 45 methods / 18 attempts."
       }
     }
   ],
