@@ -308,7 +308,8 @@ async function serve(group,route,req,res){
   res.statusCode=reply.status;
   reply.headers.forEach((value,key)=>res.setHeader(key,value));
   res.end(Buffer.from(await reply.arrayBuffer()));
- }catch{
+ }catch(error){
+  console.error('d01_authority_unavailable_detail', (error&&error.message?String(error.message):'unknown').split('\n')[0]);
   res.statusCode=503;res.end('{"ok":false,"reason":"d01_authority_unavailable"}');
  }
 }
