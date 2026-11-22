@@ -5930,3 +5930,15 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 **边界与费用**：零 Provider 调用、零新增付费；未伪造会话/资格/PASS；密钥/token 未入 git/日志/对话；未做生产迁移、未启用正式 Gate、未公众开放。八维持 0/8。
 **下一步**：拿到可用 Vercel 凭据后 ①把本 run 加入读服务 `MOHEN_D00_GATE_APPROVED_RUN_ID` 并把验证凭据换成 `b0bb78fa` 的 token ②`from_stage:"D01"` 续跑 C01 全文（32 KiB 上限、extent 335—995）③D01 产出后按 G1 同样路径签发独立 G1，停在 D02 付费 Provider 缺口。
+
+## 2026-11-22｜令牌续期 + 验证通道打通 + D01 续跑尝试（`VERIFIED_LIVE` / `BLOCKED_ENV` 续）
+
+**Vercel 账号令牌（Owner 授权重置）**：原 token 为 CLI OAuth 短效访问令牌（`expiresAt` 2026-11-21T14:36:24Z，非永久）；用本机 CLI 会话 `npx vercel whoami` 自动续期成功（新 `expiresAt` 2026-11-22T17:29:13Z），已写回 `.secrets/vercel-account-token.txt`。后续需注意：该 token 约 24h 过期，可再次用 `npx vercel whoami` 续期。
+
+**读服务验证（`VERIFIED_LIVE`）**：用本项目 consume 凭据直连 `https://mohen-d00-authority.vercel.app/api/current` → **200 + 完整 PASS receipt**（`gate_audit_id c0ee5a2f…`、`decision_origin=independent_gate`、双 digest 与 `stage_binding` 精确一致、`valid_until 2026-11-27T14:47:43Z`）。此前 403/409 系旧凭据（旧项目范围）所致，非部署缺陷。
+
+**web 项目配置补正**：`mohen-agent-2-0` 的 Gate 相关 env 只存在于 **preview** 目标（production 无）。已 PATCH：`MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL` → 本项目 consume token、`MOHEN_D00_GATE_APPROVED_RUN_ID` → `b9989b90`；`MOHEN_INDEPENDENT_GATE_VERIFY_URL` 原值确认为 `https://mohen-d00-authority.vercel.app/api/current`。**未改动** production 目标的业务配置。
+
+**新部署**：`vercel redeploy --target staging` 生成 `mohen-agent-2-0-c0uvd94v0-napoles1.vercel.app`（READY，含上述 env）。
+
+**D01 续跑尝试（`BLOCKED_ENV`）**：以自检通道（`vercel curl` 经 Vercel 身份绕过保护）提交 `from_stage:"D01"`，请求已到达路由并越过 HMAC 校验，但返回 `{"ok":false,"reason":"production_cloud_dispatch_uncertain","run_id":"b9989b90…"}`。定位：服务端自派发到自身 `/api/internal/production-execute` 需要保护绕过，而 `MOHEN_CLOUD_EXECUTOR_PROTECTION_BYPASS` 现值仅 11 字符，直接带该值访问受保护部署返回 **401 Protected deployment**；`vercel logs` 无可读回执。→ 需在 Vercel 项目设置里生成/核对 Protection Bypass for Automation 并同步到该 env（或改为经 `vercel curl` 触发的执行入口），随后重试同一续跑请求。run 状态未变，未产生 D01 候选、未签 G1。
