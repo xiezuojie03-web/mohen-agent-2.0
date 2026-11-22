@@ -7,9 +7,9 @@
     "attempts": 18
   },
   "proposed_after_merge": {
-    "resources": 106,
-    "methods": 87,
-    "attempts": 22
+    "resources": 107,
+    "methods": 88,
+    "attempts": 23
   },
   "additions": [
     {
@@ -1198,7 +1198,31 @@
         "https://agent.tinyfish.ai/runs/853db244-d0fd-4379-8632-0bff8fef7dc3",
         "https://www.geodoi.ac.cn/WebEn/geodoi.aspx?Id=3362"
       ],
-      "quality": "undefined 实际获取限制（2026-11-22）：官方页面报告122个文件及XLSX/SHP；浏览器点击报告触发下载，但没有可检查文件字节，故尚未核验文件清单、各表记录数、字段、时间范围和坐标参考。"
+      "quality": "实际获取限制（2026-11-22）：官方页面报告122个文件及XLSX/SHP；浏览器点击报告触发下载，但没有可检查文件字节，故尚未核验文件清单、各表记录数、字段、时间范围和坐标参考。"
+    },
+    {
+      "resource_id": "R0107",
+      "parent_resource_id": null,
+      "level": "专题数据库",
+      "name": "XRONOS — Open Data Infrastructure for Archaeological Chronology",
+      "provider": "XRONOS Core Team / University of Bern and collaborating institutions",
+      "url": "https://xronos.ch/",
+      "content": "全球考古年代学开放数据基础设施，聚合标准化放射性碳测年及其他年代证据，并关联遗址、地理位置、发掘信息、样品材料、实验室编号、同位素信息、文化阶段和来源文献。当前官网检索摘要显示约314,832条放射性碳日期和70,660处遗址；官网2026-10-07发布v1.3.0，包含去重、关联数据和MIaaRD导出更新。另有Zenodo归档快照（DOI 10.5281/zenodo.14850157，2025-02-11发布，版本标记2024-02-11），单CSV文件data_2025-02-11.csv，85.3MB。",
+      "access": "官网提供公开浏览和数据查询；Zenodo归档记录列出data_2025-02-11.csv（85.3MB）直接下载链接。2026-11-22实际点击下载链接时，网页读取器因内容超过其4MB读取限制而返回content length too large；随后容器下载尝试失败，但未取得源站HTTP状态。未获得文件字节、SHA256或本地副本。状态为ACCESSIBLE_NOT_DOWNLOADED，不代表源站拒绝下载。",
+      "rights": "XRONOS官网说明其数据遵循Open Definition，并在网站页脚标示CC BY 4.0；但Zenodo具体归档记录的Rights/License字段未显示明确许可值。网站级许可声明与该CSV归档文件许可不能自动等同，故该文件的再分发、改编和商业使用边界暂列RIGHTS_UNCLEAR；正式利用前须核对当前官网数据政策或向维护团队确认。",
+      "status": "ACCESSIBLE_NOT_DOWNLOADED",
+      "asset_acquired": false,
+      "recommended_method_id": "M0087",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://xronos.ch/",
+        "https://xronos.ch/about/xronos",
+        "https://zenodo.org/records/14850157",
+        "https://doi.org/10.5281/zenodo.14850157",
+        "https://agent.tinyfish.ai/runs/e8c617ed-8084-46c3-af07-d21abe85f38a",
+        "https://github.com/xiezuojie03-web/mohen-agent-2.0/"
+      ],
+      "quality": "必须区分动态官网与静态归档快照：Zenodo记录发布于2025-02-11、版本标记2024-02-11，不能视为2026年官网当前数据快照。官网当前显示的日期数/遗址数与2025年论文报告的约350,000日期/75,000遗址并非同一统计快照，需按版本、计数口径和去重更新解释，不能混用。Zenodo记录提供文件MD5 169e18969f530dc6f47741da1a070c24，但这不是本地实测SHA256。下载未取得，CSV字段、记录数、重复、缺失、坐标及版本差异均未实测。"
     }
   ],
   "methods": [
@@ -1781,6 +1805,16 @@
       "scope": "河西走廊新石器时代至清代古遗址/古城、灾害、饥荒、战争与人口历史记录",
       "steps": "先阅读数据论文和数据集元数据；核对三组数据表、时间范围、空间粒度、古遗址点位数量和字段说明；经DOI/CSTR进入数据产品并取得文件；检查SHP坐标、行政区归属、时间表达和记录来源；保留引用；再分发或将数据纳入新数据集前取得书面许可并遵守10%原则。",
       "limits": "作者明确指出时空不匹配、史料歧义、行政区边界变迁、历史记录冲突会影响分析，县乡尺度精度较低；部分人口序列为基于既有研究推算。数据不能作为无误差的逐事件事实底库；未下载、未计算SHA256。 论文正文与元数据表对文件格式的表述不完全一致（正文称XLSX，元数据列XLSX/SHP），需下载后核对实际文件清单。"
+    },
+    {
+      "method_id": "M0087",
+      "version": "v0.1",
+      "resource_id": "R0107",
+      "status": "DRAFT",
+      "path": "XRONOS官网数据入口 → 数据查询/导出；或Zenodo归档记录 → CSV下载",
+      "scope": "全球考古放射性碳测年及相关年代学记录、遗址元数据与来源关系",
+      "steps": "先确认官网当前数据版本、日期/遗址计数口径和数据政策；分别识别动态在线数据库与Zenodo历史快照；下载CSV或使用官方数据导出；保存版本号、发布时间、文件大小、MD5/其他校验信息；取得字节后计算SHA256并检查字段、记录数、重复、缺失、实验室编号、样品材料、年代值、校准信息、遗址坐标、来源文献和版本追踪字段；抽查记录回溯至原始发表来源。",
+      "limits": "Zenodo快照85.3MB，网页读取器因文件超过4MB限制未能直接读取，容器下载尝试也未取得文件；无SHA256。Zenodo归档页License字段未明确，官网CC BY 4.0声明不能自动替代文件级许可核验。动态官网与2025归档快照版本不同；数据来自多来源整合，需检查来源可追溯性、重复合并和版本更新。"
     }
   ],
   "updates": [
@@ -1933,11 +1967,17 @@
       "fields": {
         "note": "R0104 GCdataPR paper explicitly states free download/citation, redistribution requires written permission and redistribution license, and 10% principle; commercial terms are not explicit. Quality limitations: Baidu Place API geocoding, BD09→WGS84 conversion, current admin boundary reverse geocoding, excludes HK/Macau/Taiwan; paper index sample 0–5065 should be checked against actual 5058 records. R0105 dataset detail confirms DOI/CSTR and NetCDF file but exact item-specific policy remains unverified; do not infer from platform-wide examples. Added R0106 Hexi Corridor historical human activity dataset with explicit GCdataPR policy and author-described uncertainty; method M0086."
       }
+    },
+    {
+      "target": "category 04 archaeological chronology and dating datasets",
+      "fields": {
+        "note": "Added R0107 XRONOS as a global archaeological chronology resource. Current website reports radiocarbon dates and site records and v1.3.0 (2026-10-07) update with deduplication, linked data and MIaaRD export; Zenodo archived CSV snapshot is 85.3MB (2025 record, version 2024-02-11). Actual download not completed; website-level CC BY 4.0 statement does not resolve the Zenodo file's blank license field. Method M0087; new acquisition attempt A0023; rights remain RIGHTS_UNCLEAR."
+      }
     }
   ],
   "attempt_log": {
-    "new_attempts": 4,
-    "reason": "2026-11-22对R0103、R0104、R0106各执行一次资源级实际获取核验。R0103官方页浏览器加载超时；R0104下载按钮无可观察动作且本轮尝试的RAR路径返回404；R0106页面按钮报告触发下载但未获得可读取文件字节。三项均未取得可核验原始文件，未生成SHA256，未新增任何VERIFIED_ACQUIRED记录。 另对R0105执行一次官方NetCDF下载入口核验：定位到DownLoad控件，但自动化结果未提供最终响应和文件字节，故记为ACCESSIBLE_NOT_DOWNLOADED。",
+    "new_attempts": 5,
+    "reason": "2026-11-22对R0103、R0104、R0106各执行一次资源级实际获取核验。R0103官方页浏览器加载超时；R0104下载按钮无可观察动作且本轮尝试的RAR路径返回404；R0106页面按钮报告触发下载但未获得可读取文件字节。三项均未取得可核验原始文件，未生成SHA256，未新增任何VERIFIED_ACQUIRED记录。 另对R0105执行一次官方NetCDF下载入口核验：定位到DownLoad控件，但自动化结果未提供最终响应和文件字节，故记为ACCESSIBLE_NOT_DOWNLOADED。 另对R0107 XRONOS年代学数据执行一次归档文件下载尝试：Zenodo记录可见85.3MB CSV下载链接；网页读取器因超过4MB限制无法读取，容器下载尝试失败但未获得源站HTTP状态；文件字节未取得，许可文件级状态RIGHTS_UNCLEAR。",
     "records": [
       {
         "attempt_id": "A0019",
@@ -1974,6 +2014,15 @@
         "result": "ACCESSIBLE_NOT_DOWNLOADED",
         "evidence": "https://agent.tinyfish.ai/runs/e8c617ed-8084-46c3-af07-d21abe85f38a",
         "detail": "Official DOI page confirms Neolithic_NC_HumanActivity.nc, 1234.36KB, product row ID 3779, and a DownLoad control. Automation result was incomplete and did not provide final response, file URL, or readable bytes; no SHA256."
+      },
+      {
+        "attempt_id": "A0023",
+        "resource_id": "R0107",
+        "date": "2026-11-22",
+        "method": "Zenodo archived CSV download attempt",
+        "result": "ACCESSIBLE_NOT_DOWNLOADED",
+        "evidence": "https://zenodo.org/records/14850157",
+        "detail": "Zenodo record lists data_2025-02-11.csv, 85.3MB. Web reader failed because content exceeded its 4MB read limit; container download attempt failed without source HTTP status. No file bytes or SHA256. Zenodo record's file-level license is blank; rights remain unclear."
       }
     ]
   },
@@ -1994,6 +2043,10 @@
     "https://doi.org/10.3974/geodb.2025.05.01.V1",
     "https://www.geodoi.ac.cn/WebEn/paper.aspx?Id=35ac1e68-d289-4598-949f-bd76292e9a3d",
     "https://www.geodoi.ac.cn/WebEn/paper.aspx?Id=17ef0975-51c8-4fbd-bc1c-29972b745968",
-    "https://geodoi.ac.cn/weben/doi.aspx?Id=3779"
+    "https://geodoi.ac.cn/weben/doi.aspx?Id=3779",
+    "https://xronos.ch/",
+    "https://xronos.ch/about/xronos",
+    "https://zenodo.org/records/14850157",
+    "https://doi.org/10.5281/zenodo.14850157"
   ]
 }
