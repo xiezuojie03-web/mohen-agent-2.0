@@ -1,5 +1,14 @@
 # 墨痕｜当前施工断点
 
+> 核验时间 2026-11-22 第十三批（批次起始 HEAD `fcec37a`）｜环境：云端真实库 + 真实部署实测；未验证项：D02 及以后（付费 Provider）、读服务对 G1+ 的复核入口。
+
+**本批结论：同一真实 run 已连续打通 D00→G0→D01→G1（两个独立 Gate 均为机器评审签发），现停在 D02 前。**
+
+- **run `b9989b90`**：D00 候选 `9c55df1e` → G0 审计 `c0ee5a2f`（input `8a19ba7a…` / output `54278096…`）；`from_stage:"D01"` 续跑成功 → D01 候选 `06b71b4d` → G1 审计 `113c2bbe`（input `54278096…` / output `df4457db…` / carrier `C01`）；run 终态 `HOLD@D01`（形成于签发前，未回改）。
+- **为打通所做的配置（非业务代码）**：web preview 换本项目 consume 凭据、批准 run、Protection Bypass；authority 的 `MOHEN_GATE_CONSUME_CREDENTIAL` 换成本项目凭据（旧值仍指旧项目，是续跑被拒的真因）；新部署 web `h2tpku26l`（staging）、authority `4ptizii5a`（production）。
+- **最前缺口**：`/api/current` 只服务 D00/G0（G1 返回 403）；进入 D02 前需把该读服务放开到注册表 stage/gate 配对，并核付费 Provider 费用后再继续。
+- **凭证**：Vercel 账号令牌已于本批续期（有效期至 `2026-11-22T17:29:13Z`，到期可 `npx vercel whoami` 再续）；新增 `.secrets/vercel-protection-bypass.txt`、`selftest-credential.txt`、`gate-reader-bearer-d9d48901.txt`（均 gitignored）。
+
 > 核验时间 2026-11-21 第十二批（批次起始 HEAD `d0d208d`）｜环境：云端真实库实测（`postgres 17.11`，`.secrets/` 凭据可用）；未验证项：云端 Runner 对 G0 的实际消费（需部署侧 env，见阻断）、D01 执行、G1。
 
 **本批（2026-11-21 第十二批）结论：D00 真实候选的独立 G0 已按设计合同签发并经低权 reader 回读 PASS；run 仍 `HOLD@D00`，下一步受阻于部署侧验证通道配置（Vercel 账号令牌已过期）。**

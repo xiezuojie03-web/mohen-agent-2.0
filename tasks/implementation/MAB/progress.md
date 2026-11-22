@@ -5942,3 +5942,23 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 **新部署**：`vercel redeploy --target staging` 生成 `mohen-agent-2-0-c0uvd94v0-napoles1.vercel.app`（READY，含上述 env）。
 
 **D01 续跑尝试（`BLOCKED_ENV`）**：以自检通道（`vercel curl` 经 Vercel 身份绕过保护）提交 `from_stage:"D01"`，请求已到达路由并越过 HMAC 校验，但返回 `{"ok":false,"reason":"production_cloud_dispatch_uncertain","run_id":"b9989b90…"}`。定位：服务端自派发到自身 `/api/internal/production-execute` 需要保护绕过，而 `MOHEN_CLOUD_EXECUTOR_PROTECTION_BYPASS` 现值仅 11 字符，直接带该值访问受保护部署返回 **401 Protected deployment**；`vercel logs` 无可读回执。→ 需在 Vercel 项目设置里生成/核对 Protection Bypass for Automation 并同步到该 env（或改为经 `vercel curl` 触发的执行入口），随后重试同一续跑请求。run 状态未变，未产生 D01 候选、未签 G1。
+
+## 2026-11-22｜D00→G0→D01→G1 真实全链打通（`VERIFIED_LIVE`，停在 D02 前）
+
+**背景**：上一轮 Vercel 令牌续期后，按 §3.5 C/D 逐一补齐交接配置，最终让同一真实 run `b9989b90` 从 D00 连续推进到 D01 并取得两个独立 Gate。
+
+**本轮实际补的交接（全部为配置/授权，不改业务代码）**
+1. `mohen-agent-2-0`（preview 目标）：`MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL` → 本项目 consume token；`MOHEN_D00_GATE_APPROVED_RUN_ID` → `b9989b90`；`MOHEN_CLOUD_EXECUTOR_PROTECTION_BYPASS` → 新建的 32 位 Protection Bypass for Automation。
+2. `mohen-d00-authority`（production/preview）：`MOHEN_GATE_CONSUME_CREDENTIAL` → 本项目 consume token（这是续跑被拒的真因：旧值仍是旧项目 62 字凭据，导致 `/d01-issue` 的 CURRENT G0 复核读不到）。
+3. 新部署：web `mohen-agent-2-0-h2tpku26l-napoles1`（staging）、authority `mohen-d00-authority-4ptizii5a-napoles1`（production）。
+
+**真实执行证据（`VERIFIED_LIVE`）**
+- 续跑请求 `from_stage:"D01"` 经自检通道返回 `{"ok":true,"run_id":"b9989b90…"}`；run `cloud_dispatch.claimed_at=2026-11-22T02:02:42Z`。
+- **D01 真实产出**：`gate_candidates 06b71b4d-9fc3-43ea-b9c1-f1e82242fdfe`（stage D01 / G1 / `read_unit` / SUBMITTED）。
+- **G0 在续跑前已生效**：runner 从 D01 起步，说明服务端 G0 复核通过（G0 输出摘要 `54278096…` 正是 D01 输入摘要，链路自洽）。
+- **独立 G1 签发**：`gate_audits 113c2bbe-300f-4cfa-8c03-02daaa91533e` = G1/PASS/`independent_gate`；`stage_binding` = `{job_id d01.carrier-reading, input 54278096…, output df4457db…, carrier C01}`；检查 `identity_version`、`read_unit_binding` 全 PASS；候选 `06b71b4d` → CONSUMED。
+- run 终态 `HOLD@D01 / G1 / INDEPENDENT_GATE_NOT_VERIFIED`（形成于签发前，未回改）；即**已满足"D02 前停下"的目标位置**。
+
+**已知残留缺口（不影响本次准出位置）**：`https://mohen-d00-authority.vercel.app/api/current` 仍只服务 D00/G0（G1 请求 403）；D02 及以后阶段的 runner 复核需要把该读服务放开到注册表内的 stage/gate 配对。该改动属代码变更，需在进入 D02 前完成。
+
+**边界**：零 Provider 调用、零新增付费、未伪造会话/资格；consume token、bypass secret 均只落 `.secrets/`（gitignored）；未改生产业务配置（仅 preview/授权服务配置与其部署）。
