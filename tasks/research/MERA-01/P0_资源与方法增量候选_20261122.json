@@ -7,8 +7,8 @@
     "attempts": 18
   },
   "proposed_after_merge": {
-    "resources": 87,
-    "methods": 68,
+    "resources": 92,
+    "methods": 73,
     "attempts": 18
   },
   "additions": [
@@ -818,6 +818,100 @@
         "http://kaogu.cssn.cn/xwzx/bszx/bsdt/202605/t20260529_5998292.shtml",
         "https://www.cssn.cn/was5/web/search?channelid=235362&outlinepage=10&page=15&perpage=10"
       ]
+    },
+    {
+      "resource_id": "R0088",
+      "parent_resource_id": null,
+      "level": "national science data center",
+      "name": "National Earth System Science Data Center (NESSDC)",
+      "provider": "Institute of Geographic Sciences and Natural Resources Research, CAS and partners",
+      "url": "https://www.geodata.cn/",
+      "content": "National earth-system science data sharing center across 18 disciplines and 115 thematic databases; official 2020 baseline 35,000+ datasets and 2.14PB; datasets include GIS, remote sensing, Landsat, DEM, river networks, basin boundaries, climate, hydrology and ecology; records include DOI/CSTR, docs, samples and citations.",
+      "access": "Web search, data samples, online orders with stated purpose and review, some direct downloads; full datasets may require order approval.",
+      "rights": "General terms restrict data to scientific research; no copying/modifying/dissemination/sale without written permission; cite and acknowledge source; individual datasets may add contributor terms.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0068",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.geodata.cn/aboutus.html",
+        "https://www.geodata.cn/data/datadetails.html?dataguid=1505511&docId=15",
+        "https://www.geodata.cn/data/datadetails.html?dataguid=133440016654530"
+      ]
+    },
+    {
+      "resource_id": "R0089",
+      "parent_resource_id": "R0088",
+      "level": "thematic dataset",
+      "name": "Yangtze River (Jiujiang-Hukou to Yangtze Estuary) 1970-1979 time-series remote sensing dataset",
+      "provider": "NESSDC / Nanjing Normal University Geography",
+      "url": "https://www.geodata.cn/data/datadetails.html?dataguid=133440016654530",
+      "content": "358MB Landsat time series for the Yangtze from Jiujiang-Hukou to the estuary, 1970-1979; compiled from project-purchased and publicly downloaded imagery by year; includes docs, DOI and citation metadata.",
+      "access": "Online data order, metadata/docs/sample; full dataset after review.",
+      "rights": "Mixed imagery sources; NESSDC research-only terms apply; commercial use/redistribution requires written permission and source image rights check.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0069",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.geodata.cn/data/datadetails.html?dataguid=133440016654530"
+      ]
+    },
+    {
+      "resource_id": "R0090",
+      "parent_resource_id": "R0088",
+      "level": "thematic dataset",
+      "name": "Yangtze River Basin river network dataset (2020)",
+      "provider": "NESSDC / Hainan University contributor",
+      "url": "https://www.geodata.cn/data/datadetails.html?dataguid=8828927&docid=15",
+      "content": "Vector river network for main Yangtze, tributaries, lake connections and major artificial waterways; data time 2020, size about 478KB, metadata updated 2026-03-25, DOI 10.12041/geodata.8828927.ver1.db and CSTR.",
+      "access": "Online order; DOI/CSTR, docs, sample and citation metadata.",
+      "rights": "NESSDC research-only terms; no copying/modification/dissemination/sale without written permission.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0070",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.geodata.cn/data/datadetails.html?dataguid=8828927&docid=15",
+        "https://www.geodata.cn/main/face_science_detail?guid=8828927"
+      ]
+    },
+    {
+      "resource_id": "R0091",
+      "parent_resource_id": null,
+      "level": "national gazetteer",
+      "name": "China National Place Names Database (2022 edition)",
+      "provider": "Ministry of Civil Affairs, PRC",
+      "url": "https://dmfw.mca.gov.cn/",
+      "content": "Official standard toponym database. 2022 release added 87,400 foreign standard-name translations, 89 international seabed names, 362 Antarctic names and 873 lunar names; updated 2,130 administrative changes, 103 boundary lines, 242 boundary markers; added 204,500 names and removed 194,000.",
+      "access": "MCA website/mini-program search; API/bulk export not verified.",
+      "rights": "Official announcement invites public use but no blanket CC/commercial license or bulk data license located; treat as authoritative name reference pending rights confirmation.",
+      "status": "IDENTIFIED",
+      "asset_acquired": false,
+      "recommended_method_id": "M0071",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://app.www.gov.cn/govdata/gov/202212/25/495555/article.html",
+        "https://dmfw.mca.gov.cn/"
+      ]
+    },
+    {
+      "resource_id": "R0092",
+      "parent_resource_id": null,
+      "level": "government toponym query service",
+      "name": "Ministry of Civil Affairs Historical Place Name Query",
+      "provider": "Ministry of Civil Affairs / National Government Service Platform",
+      "url": "https://app.gjzwfw.gov.cn/jmopen/webapp/html5/lsdmcx/index.html",
+      "content": "Official historical toponym query UI with name input and captcha; result fields include sequence, place name, place code, romanized spelling and type; default page currently returns no results.",
+      "access": "Web query by name plus captcha; no API or bulk export verified.",
+      "rights": "Data source, result availability, update frequency and reuse license unverified; do not treat as operational bulk historical gazetteer until specific queries succeed.",
+      "status": "IDENTIFIED",
+      "asset_acquired": false,
+      "recommended_method_id": "M0072",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://app.gjzwfw.gov.cn/jmopen/webapp/html5/lsdmcx/index.html"
+      ]
     }
   ],
   "methods": [
@@ -1210,6 +1304,56 @@
       "scope": "Chinese archaeology research, fieldwork news, reports, monographs, atlases, datasets and overseas archaeology",
       "steps": "Search by site/region/date/project/institution; record author/date/source; track reports/datasets/lab journals; return to Institute/publisher/project for full text, raw data and rights; do not treat news as primary excavation data.",
       "limits": "Portal is research discovery, not raw-data repository; content copyright restricted; no public bulk raw-data API found."
+    },
+    {
+      "method_id": "M0068",
+      "version": "v0.1",
+      "resource_id": "R0088",
+      "status": "DRAFT",
+      "path": "NESSDC search → DOI/CSTR/sample → order and research/commercial rights check",
+      "scope": "China GIS, remote sensing, river networks, DEM, hydrology/climate/ecology datasets",
+      "steps": "Search by basin/region/time/topic; inspect DOI/CSTR, contributor, temporal/spatial extent, docs, sample and citation; distinguish sample/full data; place order only if needed; obtain written permission for commercial use.",
+      "limits": "2020 total volume baseline is old; platform research-only terms; full data may need approval; contributor terms may differ."
+    },
+    {
+      "method_id": "M0069",
+      "version": "v0.1",
+      "resource_id": "R0089",
+      "status": "DRAFT",
+      "path": "1970-1979 Yangtze remote sensing metadata → DOI/docs → order and source imagery rights check",
+      "scope": "Landsat time series from Jiujiang-Hukou to Yangtze Estuary",
+      "steps": "Check time/area/DOI/CSTR/docs/image inventory and source; order only if needed; verify rights of purchased and public imagery; require written permission for commercial use.",
+      "limits": "Mixed image sources; research-only terms; no bytes acquired."
+    },
+    {
+      "method_id": "M0070",
+      "version": "v0.1",
+      "resource_id": "R0090",
+      "status": "DRAFT",
+      "path": "Yangtze river network dataset metadata → DOI/CSTR → order/license/version check",
+      "scope": "Main/tributary/lake-connection/artificial river vector data",
+      "steps": "Read feature scope/data time/DOI/CSTR/CRS/docs/citation; order if needed; compare as modern baseline with historical maps and older imagery; check written permission for commercial use.",
+      "limits": "2020 data is not a historical river reconstruction; research-only terms."
+    },
+    {
+      "method_id": "M0071",
+      "version": "v0.1",
+      "resource_id": "R0091",
+      "status": "DRAFT",
+      "path": "National Place Names Database → standard name/code/admin reference → version/license check",
+      "scope": "China standard toponyms, codes, romanization, administrative divisions and boundaries",
+      "steps": "Search standard names; record name/code/spelling/type/admin division; compare with 2022 announcement changes; contact MCA for bulk/API and commercial permission.",
+      "limits": "2022 version may be stale; standard gazetteer is not historical toponym evolution; no blanket reuse license."
+    },
+    {
+      "method_id": "M0072",
+      "version": "v0.1",
+      "resource_id": "R0092",
+      "status": "DRAFT",
+      "path": "MCA historical place name query → specific-name validation → source/license verification",
+      "scope": "Official historical toponym query UI",
+      "steps": "Test specific known historical names; capture result name/code/romanization/type; identify source, historical date, update and rights; keep as identified-only until results are verified.",
+      "limits": "Default no results; captcha; no API/bulk; data source and license unknown."
     }
   ],
   "updates": [
@@ -1289,6 +1433,12 @@
       "target": "category 04 Chinese/East Asian supplement",
       "fields": {
         "note": "Added R0086 NCHA Government Service Portal (IDENTIFIED; query UI present but data results not validated) and R0087 Chinese Archaeology Web (research discovery portal); methods M0066-M0067. Candidate totals 87 resources / 68 methods / 18 attempts."
+      }
+    },
+    {
+      "target": "category 03 China/East Asia supplement",
+      "fields": {
+        "note": "Added R0088 NESSDC, R0089 Yangtze 1970-1979 Landsat sample, R0090 Yangtze 2020 river network sample, R0091 China National Place Names Database 2022, R0092 MCA Historical Place Name Query; methods M0068-M0072. Candidate totals 92 resources / 73 methods / 18 attempts. NESSDC research-only policy noted."
       }
     }
   ],
