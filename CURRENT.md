@@ -2,7 +2,13 @@
 
 > **Owner 授权口径（2026-11-22，长期有效）**：目标是墨痕**真正运行、持久运行**；除**安全问题**与**费用问题**外，施工方自行授权推进，不再逐项请示技术选择。费用边界：D02–D05 模型调用封顶 **0.05 USD**（约 ¥0.36，已建委托 `3f5585d0…`），超出该额度、新增付费来源或扩大用途仍需 Owner 批准。安全底线（密钥不入 git、不自签 Gate、不伪造会话/资格/PASS、不改迁移规避授权）不因该授权放宽。
 
-> 核验时间 2026-11-22 第十六批（批次起始 HEAD `077de49`；本批提交 `14903de`、`6d0987a`、`2dfbe30`、`cb04c55`、`2cb0118`、`7596d86`、`403f4bc`）｜环境：云端真实库 + 真实部署实测；未验证项：D02 之后的 G2 机器评审与 G3—G5。
+> 核验时间 2026-11-22 第十六批（批次起始 HEAD `077de49`；本批提交 `14903de`、`6d0987a`、`2dfbe30`、`cb04c55`、`2cb0118`、`7596d86`、`403f4bc`、`6fed448`、`648eaea`）｜环境：云端真实库 + 真实部署实测；未验证项：D02 之后的 G2 机器评审与 G3—G5。
+
+**本批最新事实（D02 第二/三次真实尝试：付费回执与失败分类；派发器上界核算改造已完成，正在重跑）**
+- **已发生费用**：2 次真实 Provider 调用。①回执 `5452ba48…`（`ACCEPT_AS_CANDIDATE`，804+166 token，**0.000440 USD**），模型回 `{"hold":"classification_unresolved_or_unsupported"}` → 按旧提示词拒判；②回执 `7b67d609…`（`HOLD`，`cost=null`、`cost_confidence=UNKNOWN`，`started 04:08:40Z` / `finished 04:08:52Z`），失败码 `PROVIDER_USAGE_UNKNOWN` → run `b9989b90` 停在 `HOLD@D02 / PRIVATE_D02_GENERATION_NOT_READY`，`verification_error=DISPATCH_UNCERTAIN`。已知费用合计 **0.000440 USD**（占 0.05 封顶 0.88%），第二次尝试的实际费用待按上界核算。
+- **按 Owner「设计不到位就改设计」完成的两处改造**（提交 `648eaea`，未触碰权利/资格/Gate 判定）：①派发器把「200 但正文为空 / 缺 usage / 未定价」拆成 `PROVIDER_CONTENT_TRUNCATED`、`PROVIDER_CONTENT_EMPTY`、`PROVIDER_USAGE_UNKNOWN`，并把 `finish_reason`、`usage`、`worst_case_cost_usd` 写入回执（正文不入库）；②预算核算由「任何 HOLD 回执永久冻结委托」改为「未定费用按授权时上界计入 spent」，永不低计且不再让一次瞬时故障永久卡死生产链，只有无上界且模型不可比时才要求人工对账。D02 观察 `maxTokens` 2048→4096。
+- **测试**：派发器 27/27、D02 私密生成 11/11 通过；`tests/data-production/*.test.mjs` 428 项中 4 项失败，其中 3 项经 `git stash` 回退到 `6fed448` 复跑同样失败（与本批无关），1 项为本机 Windows `--import` 已知问题。
+- **待完成**：以新 staging 部署重跑 D02（预计再约 0.006 USD 上界）→ 核回执与费用 → PASS 后按既有路径签发 G2。
 
 **本批最新事实（D02 已真实执行并产生付费回执，专业侧失败关闭）**
 - **费用**：真发生 1 次 Provider 调用，回执 `5452ba48-e58f-4aea-b006-32c231949753`，`deepseek` / `deepseek-flash`，**0.000440 USD**（累计占委托 `3f5585d0…` 封顶 0.05 的 0.88%）。

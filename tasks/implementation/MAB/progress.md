@@ -6086,3 +6086,19 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
   · 依规则未重试、未编造文本、未猜测费用；回执保留在 `studio.execution_receipts`。累计费用 0.000440 USD（委托 `3f5585d0…` 封顶 0.05 的 0.88%）。
 - 这说明「D02 授权→Runner→资格→阅读上下文→外发许可→真实模型→回执→契约校验→失败关闭」整条链已真实可用；剩下的不是工程阻断，而是专业判定与该材料的引文范围是否足以判定编载体例（是否重跑属费用/产品判断，待 Owner 定）。
 
+
+
+**第十六批续二：派发器上界核算与失败分类（D02 maxTokens 上调，费用仍 0.000440 USD）**
+- 触发事实：D02 第二次真实尝试（run `b9989b90`，`2026-11-22T04:08:40Z`→`04:08:52Z`）写入 HOLD 回执 `7b67d609-efb1-4921-8bd1-a73ea53d19b0`（`PROVIDER_USAGE_UNKNOWN`、`cost=null`、`cost_confidence=UNKNOWN`），run 停在 `HOLD@D02 / PRIVATE_D02_GENERATION_NOT_READY`，`verification_error=DISPATCH_UNCERTAIN`。
+- 两个设计缺口（按 Owner「设计不到位就改设计」处置）：
+  · 诊断缺口：旧实现把「200 但正文为空（推理型模型把 max_tokens 耗尽在 reasoning）」「缺 usage」「模型未定价」三种情况一律记成 `PROVIDER_USAGE_UNKNOWN`，且 HOLD 回执不记上界 → 事后无法判断该调参还是该对账。
+  · 可运行性缺口：`authorizeProviderDispatch` 只要看到任何 HOLD/UNKNOWN 回执就抛 `DISPATCH_RECONCILIATION_REQUIRED`，一次瞬时故障即让该委托**永久**不能再用，与 Owner「真正运行、持久运行」直接冲突。
+- 改造（`apps/web/lib/studio/provider-dispatcher.ts`，不触碰权利/资格/Gate 判定）：
+  1. 授权时把最坏费用上界 `worstCaseUsd` 记入一次性句柄；成功回执与 HOLD 回执的 `result_manifest` 都写入 `worst_case_cost_usd`（模型正文不入库）。
+  2. HOLD 回执记录 `finish_reason` 与（若存在）`usage`，可区分调参与对账。
+  3. 失败分类拆开：正文为空且 `finish_reason='length'` → `PROVIDER_CONTENT_TRUNCATED`；正文为空 → `PROVIDER_CONTENT_EMPTY`；缺 usage/未定价 → `PROVIDER_USAGE_UNKNOWN`。
+  4. 预算核算改为「未定费用按上界计入 spent」：永不低计（上界 ≥ 实际），也不再一票冻结；仅当回执既无上界、模型又与本次不同（不可比）时才要求人工对账（失败关闭）。单次尝试仍不重试、不补发。
+- D02 观察器：`maxTokens 2048 → 4096`（与 M5 H3 同类上调先例一致），args 不变。
+- 测试：`tests/unit/provider-dispatcher.test.ts` **27/27 通过**（新增上界核算、空正文两分类、缺 usage 三类断言）；`tests/data-production/private-material-generation.test.mjs` **11/11 通过**（超时后第二次是新的真实尝试并另记回执，不静默重放）。
+- 回归：`tests/data-production/*.test.mjs` 428 项中 4 项失败——1 项为本机 Windows `--import` 绝对路径已知问题；另 3 项（`studio-knowledge-routing.test.mjs` 2 项 `SOURCE_GAP_UNCONFIRMED`、`private-candidate-worker.test.mjs` 1 项）经 `git stash` 回退到 `6fed448` 复跑**同样失败**，与本批无关。`apps/web` tsc 仅 3 处既有缺失依赖（`@vercel/oidc`、`nodemailer`）报错，本批文件无新增类型错误。
+- 费用：本批未发起新的 Provider 调用，累计仍为 **0.000440 USD**（委托 `3f5585d0…` 封顶 0.05 的 0.88%）。
