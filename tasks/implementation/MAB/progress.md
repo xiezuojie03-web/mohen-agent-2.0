@@ -5994,3 +5994,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 **下一步（唯一最前阻断）**：D02 需付费 Provider。按 PLAN §0.2 D 先核真实费用与累计上限（¥20 累计授权、达 ¥10 先停）并向 Owner 报备，之后才以 `from_stage:"D02"` 续跑并核 G2 交接；在此之前不发起 D02。web 侧需 PATCH `MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIALS` 并重部署后，runner 才会在跨阶段运行时按 job 取凭据。
 
+### 追加（同批）：preview env 与 staging 部署
+
+- `MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIALS` 已 PATCH 到 `mohen-agent-2-0` 的 **preview** 目标（只含 `{"d01.carrier-reading": <G1 token>}`，值加密存储；production 目标未动）。
+- **staging 部署受阻（`BLOCKED_ENV`，非代码）**：`vercel deploy --target staging` 被 Vercel 以 `COMMIT_AUTHOR_REQUIRED` 阻断——本次提交作者 `MoHen Engineering <engineering@mohen.local>` 未绑定 Vercel 账号。历史可部署提交的作者为仓库 git 配置的 `xiezuojie03 <315303392+xiezuojie03-web@users.noreply.github.com>`；因此后续提交必须沿用该身份，否则新代码无法进入 staging/preview 部署。该提交已推送（不改写历史、不强推），部署改由后续同身份提交触发。
+
+
