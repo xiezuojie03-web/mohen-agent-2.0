@@ -29,8 +29,11 @@ export function getNodePgPool() {
   const local = isLocalHost(url);
   const connection = new URL(url);
   // Allow rotation without manually editing/escaping a connection URI.
+  // 轮换覆盖值只作用于未内嵌密码的连接串；自带凭据的专用身份连接
+  // （机器评审 mohen_gate_signer_m5_machine、producer、private worker 等）
+  // 不得被主库覆盖值顶掉，否则部署内会以主库密码连专用身份导致认证失败。
   const passwordOverride = process.env.MOHEN_DATABASE_PASSWORD;
-  if (passwordOverride !== undefined) {
+  if (passwordOverride !== undefined && connection.password === "") {
     if (passwordOverride.length === 0) throw new Error("MOHEN_DATABASE_PASSWORD 不能为空");
     connection.password = encodeURIComponent(passwordOverride);
   }
