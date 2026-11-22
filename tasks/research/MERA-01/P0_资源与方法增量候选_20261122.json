@@ -7,8 +7,8 @@
     "attempts": 18
   },
   "proposed_after_merge": {
-    "resources": 64,
-    "methods": 45,
+    "resources": 68,
+    "methods": 49,
     "attempts": 18
   },
   "additions": [
@@ -368,6 +368,85 @@
         "https://opencontext.org/about/technology",
         "https://opencontext.org/about/terms"
       ]
+    },
+    {
+      "resource_id": "R0065",
+      "parent_resource_id": null,
+      "level": "资源集合",
+      "name": "David Rumsey Map Collection",
+      "provider": "David Rumsey Map Center / Stanford University Libraries",
+      "url": "https://www.davidrumsey.com/",
+      "content": "152,373 maps and images; global regions, scales and historical periods; some georeferenced maps can overlay modern earth/maps; selected KML/Google Earth/Maps.",
+      "access": "Web search/view; downloadable full-resolution JP2 through Export/Download 1 where a Download button exists; selected Google Earth/Maps overlays.",
+      "rights": "Map images may be used free in personal and print/digital publications including for-profit/nonprofit; stand-alone facsimile sales require permission; post-1929 maps may remain copyrighted; no Download button means display only.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0045",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.davidrumsey.com/view/georeferenced-maps",
+        "https://www.davidrumsey.com/about/copyright-and-permissions",
+        "https://www.davidrumsey.com/view/view"
+      ]
+    },
+    {
+      "resource_id": "R0066",
+      "parent_resource_id": null,
+      "level": "历史地名知识平台",
+      "name": "World Historical Gazetteer (WHG)",
+      "provider": "World Historical Gazetteer / University of Pittsburgh",
+      "url": "https://whgazetteer.org/",
+      "content": "Historical place index and graph across time/languages: places, aliases, types, geometry, temporal bounds, sources, links and relations; sources include GeoNames, Getty TGN, Wikidata, CHGIS, D-PLACE and Digital Gazetteer of the Song Dynasty.",
+      "access": "Public web browse; v4 Entity and Reconciliation APIs (most endpoints require token); read-only public data via MCP; JSON/Linked Places Format.",
+      "rights": "No blanket license; each source namespace retains its own terms (GeoNames CC BY, Wikidata CC0, OSM ODbL, Getty TGN ODC-By, some non-commercial); WHG curation license is alongside, not instead of, source terms.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0046",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://docs.whgazetteer.org/content/technical/apis.html",
+        "https://docs.whgazetteer.org/content/license.html",
+        "https://docs.whgazetteer.org/content/v4/user-guide/troubleshooting/faq.html"
+      ]
+    },
+    {
+      "resource_id": "R0067",
+      "parent_resource_id": null,
+      "level": "历史地名库",
+      "name": "Pleiades Ancient Places Gazetteer",
+      "provider": "Institute for the Study of the Ancient World / NYU",
+      "url": "https://pleiades.stoa.org/",
+      "content": "Ancient places gazetteer/graph with places, locations, ancient/modern names, connections, types, dates and bibliography; 2025-05-28 v4.1 release contained 41,480 citable place resources; updates continue in Nov 2026.",
+      "access": "No login; item JSON/API; daily full JSON, weekly RDF, quarterly numbered release; GIS CSV/KML/RDF downloads.",
+      "rights": "CC BY 3.0, share/adapt/commercial use with attribution; use numbered releases for static scholarly work, live/daily data for current status.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0047",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://pleiades.stoa.org/downloads",
+        "https://pleiades.stoa.org/api",
+        "https://pleiades.stoa.org/help/using-pleiades-data",
+        "https://pleiades.stoa.org/news/blog/now-available-pleiades-datasets-4.1"
+      ]
+    },
+    {
+      "resource_id": "R0068",
+      "parent_resource_id": null,
+      "level": "地理空间数据馆藏",
+      "name": "Harvard Geospatial Library / Harvard Map Collection",
+      "provider": "Harvard Library / Harvard Map Collection",
+      "url": "https://library.harvard.edu/collections/geospatial-and-mapping-data",
+      "content": "Terabytes of global geospatial data at all scales; demographic, physical and thematic data; thousands of scanned maps as GeoTIFF, including many public-domain historical maps and modern topographic sets.",
+      "access": "Harvard Geospatial Library search/download; HOLLIS discovery; some restricted materials require Map Collection Reading Room access/request.",
+      "rights": "Some historical maps public domain; modern topographic and licensed GIS data restricted; HGL does not include all holdings; per-dataset access/rights check required.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0048",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://library.harvard.edu/collections/geospatial-and-mapping-data"
+      ]
     }
   ],
   "methods": [
@@ -530,6 +609,46 @@
       "scope": "Archaeological artefact/ecofact, field notes, images, maps, vocabularies and research data",
       "steps": "Search by project/site/date/object type; query JSON-LD API; download tables only after checking dataset license, source and community/privacy notes; record DOI, authors, project, version and date.",
       "limits": "Licenses vary per dataset; publisher service fees are for depositors; community-sensitive data require care."
+    },
+    {
+      "method_id": "M0045",
+      "version": "v0.1",
+      "resource_id": "R0065",
+      "status": "DRAFT",
+      "path": "David Rumsey map search → Media Information/Download → georeference and rights check",
+      "scope": "Global historical maps and georeferenced map imagery",
+      "steps": "Search by place/date/map type; inspect Media Information, creator/publisher/date/source; verify Download button; check rights before using full-resolution JP2; record KML/georeference details where available.",
+      "limits": "Stand-alone facsimile sales require permission; post-1929 maps may be copyrighted; no-download items display only."
+    },
+    {
+      "method_id": "M0046",
+      "version": "v0.1",
+      "resource_id": "R0066",
+      "status": "DRAFT",
+      "path": "WHG v4 Entity/Reconciliation API → place match → source namespace/attribution check",
+      "scope": "Historical toponyms, aliases, geometries, temporal bounds and multi-gazetteer relations",
+      "steps": "Search candidate place; use Reconciliation API for names/coordinates; fetch Entity API LPF JSON; inspect geometry/names/types/when/links/source namespace/attribution; treat 503 as temporary and retry, never as missing.",
+      "limits": "Most v4 endpoints require token; mixed source licenses; deprecated v3 endpoints; 503 is upstream temporary failure, not 404."
+    },
+    {
+      "method_id": "M0047",
+      "version": "v0.1",
+      "resource_id": "R0067",
+      "status": "DRAFT",
+      "path": "Pleiades web/API → JSON/GIS CSV/RDF download → numbered release citation",
+      "scope": "Ancient world historical places, names, locations, connections and bibliography",
+      "steps": "Search ancient/modern names and region; fetch item JSON/GeoJSON; bulk use full JSON or GIS CSV; static scholarship cites quarterly numbered release; dynamic queries use current daily JSON; provide CC BY attribution.",
+      "limits": "Ancient world focus, not all-period global gazetteer; legacy CSV deprecated; static releases lag live data."
+    },
+    {
+      "method_id": "M0048",
+      "version": "v0.1",
+      "resource_id": "R0068",
+      "status": "DRAFT",
+      "path": "Harvard Geospatial Library search → GeoTIFF/GIS download → access/license check",
+      "scope": "Global historical maps, GeoTIFF and thematic GIS",
+      "steps": "Search by place/topic/date/data type; inspect format, CRS, license and access; download when permitted; restricted data discovered via HOLLIS/Map Collection Reading Room.",
+      "limits": "Some data not in HGL due license/copyright/format; some require onsite access."
     }
   ],
   "updates": [
@@ -572,6 +691,12 @@
       "target": "category 04",
       "fields": {
         "note": "Added R0062 ADS, R0063 ARIADNE, R0064 Open Context; methods M0042-M0044. Chinese National Cultural Relics Data Registry/China Cultural Relics Cloud remains a policy/platform watch item, not a verified public resource. Candidate totals 64 resources / 45 methods / 18 attempts."
+      }
+    },
+    {
+      "target": "category 03",
+      "fields": {
+        "note": "Added R0065 David Rumsey, R0066 WHG, R0067 Pleiades, R0068 Harvard Geospatial Library; methods M0045-M0048. Candidate totals 68 resources / 49 methods / 18 attempts."
       }
     }
   ],
