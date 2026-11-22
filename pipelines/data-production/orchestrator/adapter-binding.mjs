@@ -135,6 +135,28 @@ export function isTypedD02ReadingRequest(input) {
     e.start_byte>=0&&e.end_byte>e.start_byte);
 }
 
+/** Pure, authorization-free shape check of the D03 world-claim request the
+ * orchestrator/authority derives from a current-qualified G2 material evidence.
+ * D03 accepts exactly one of two mutually exclusive forms (mirrored by
+ * resume-input.mjs PRIVATE_SHAPE.D03): a derived `claim`, or the legacy
+ * `claimRevisionId` + `supportType` link. Mixing them, or carrying observation
+ * fields, fails closed. Worker still re-reads all G2/bytes/rights facts. */
+export function isTypedD03WorldClaimRequest(input) {
+  if(!input||input.schema!==PRIVATE_REQUEST_SCHEMA||input.stage!=="D03"||
+     !UUID_RE.test(input.originalId??'')||!UUID_RE.test(input.evidenceId??''))return false;
+  const hasClaim=input.claim!==undefined;
+  const hasLink=input.claimRevisionId!==undefined||input.supportType!==undefined;
+  if(hasClaim===hasLink)return false; // exactly one form
+  if(hasLink)return UUID_RE.test(input.claimRevisionId??'')&&
+    ['supports','contradicts','contextualizes'].includes(input.supportType);
+  const c=input.claim;
+  return Boolean(c&&typeof c==="object"&&!Array.isArray(c)&&
+    typeof c.assertion==="string"&&c.assertion.length>0&&Buffer.byteLength(c.assertion)<=2000&&
+    typeof c.change_type==="string"&&c.change_type.length>0&&c.change_type.length<=200&&
+    c.time_scope&&typeof c.time_scope==="object"&&!Array.isArray(c.time_scope)&&
+    ['supports','contradicts','contextualizes'].includes(c.support_type));
+}
+
 function containsPrivateRequest(input) {
   const seen = new WeakSet();
   function visit(value) {

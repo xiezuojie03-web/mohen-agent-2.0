@@ -69,7 +69,7 @@ export async function POST(req: Request) {
   }
   const originalId = body.original_id;
   const page = body.page_number;
-  const fromStage = body.from_stage === "D01" || body.from_stage === "D02" ? body.from_stage : undefined;
+  const fromStage = body.from_stage === "D01" || body.from_stage === "D02" || body.from_stage === "D03" ? body.from_stage : undefined;
   // D00 接收同样只经本通道：它不开新的生产入口，仍由服务端 MOHEN_D00_APPROVED_RUN
   // 预批准绑定（run_id + 输入摘要）把关，未预批准一律拒绝。
   const endStage = body.end_stage === "D00" ? "D00" : undefined;

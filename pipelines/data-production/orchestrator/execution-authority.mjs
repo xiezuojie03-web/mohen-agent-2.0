@@ -68,10 +68,10 @@ export async function assertStageExecutionAuthorized({ registry, job, run, input
   if (!token && typeof context.fetchStageToken === "function") {
     token = await context.fetchStageToken({ stage: job.stage, job, run, input });
   }
-  // A resumed D01/D02 grant is signed by the independent resume authority's own
-  // key and consumed by that authority's journal, so each stage may bring its
-  // own public key and live-verify endpoint. Defaults keep D00 behaviour intact.
-  const stageSuffix = job.stage === "D01" || job.stage === "D02" ? `_${job.stage}` : "";
+  // A resumed D01/D02/D03 grant is signed by the independent resume authority's
+  // own key and consumed by that authority's journal, so each stage may bring
+  // its own public key and live-verify endpoint. Defaults keep D00 behaviour intact.
+  const stageSuffix = ["D01","D02","D03"].includes(job.stage) ? `_${job.stage}` : "";
   const publicKey = process.env[`MOHEN_EXECUTION_AUTH_PUBLIC_KEY${stageSuffix}`] ?? process.env.MOHEN_EXECUTION_AUTH_PUBLIC_KEY;
   if (typeof token !== "string" || !publicKey) throw new Error("EXECUTION_SIGNED_GRANT_MISSING");
   const parts = token.split(".");

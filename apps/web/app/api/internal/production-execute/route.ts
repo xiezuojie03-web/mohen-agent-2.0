@@ -7,6 +7,8 @@ import {probeCloudProductionRunner} from '../../../../../../pipelines/data-produ
 import {createD01ResumeProvider} from '../../../../../../pipelines/data-production/orchestrator/d01-resume-provider.mjs';
 // @ts-expect-error .mjs module has no emitted declaration
 import {createD02ResumeProvider} from '../../../../../../pipelines/data-production/orchestrator/d02-resume-provider.mjs';
+// @ts-expect-error .mjs module has no emitted declaration
+import {createD03ResumeProvider} from '../../../../../../pipelines/data-production/orchestrator/d03-resume-provider.mjs';
 export const runtime='nodejs';export const dynamic='force-dynamic';export const maxDuration=300;
 function root(){let dir=process.cwd();for(let i=0;i<6;i++){if(fs.existsSync(path.join(dir,'AGENTS.md')))return dir;dir=path.dirname(dir);}return process.cwd();}
 // Each resumed stage has its own independent authority endpoint and one-use
@@ -18,6 +20,9 @@ function resumeProviderFor(environment:Record<string,string|undefined>){
   providers.D01=createD01ResumeProvider({url:environment.MOHEN_D01_ISSUE_URL,credential,environment});
  if(environment.MOHEN_D02_ISSUE_URL&&credential)
   providers.D02=createD02ResumeProvider({url:environment.MOHEN_D02_ISSUE_URL,credential,environment});
+ const d03Credential=environment.MOHEN_D03_ISSUE_CREDENTIAL??credential;
+ if(environment.MOHEN_D03_ISSUE_URL&&d03Credential)
+  providers.D03=createD03ResumeProvider({url:environment.MOHEN_D03_ISSUE_URL,credential:d03Credential,environment});
  if(!Object.keys(providers).length)return undefined;
  return async(args:{input:never;fromStage:string})=>{
   const provider=providers[args.fromStage];
