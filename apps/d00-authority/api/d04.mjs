@@ -8,8 +8,11 @@ import { d04AuthorityEndpoint } from '../d01-authority.mjs';
 export default async function d04(req,res){
  let route='/d04-issue';
  try{
-  const q=new URL(req.url??'','https://d04-authority.invalid').searchParams.get('route');
-  if(q==='d04-consume')route='/consume';
+  const parsed=new URL(req.url??'','https://d04-authority.invalid');
+  if(parsed.searchParams.get('route')==='d04-consume')route='/consume';
+  // The consume handler rejects any query string; vercel.json's routing hint
+  // must not reach it. The authoritative route comes from `route` above.
+  req.url=parsed.pathname;
  }catch{/* fail closed to the issue route, which rejects malformed requests */}
  await d04AuthorityEndpoint(route,req,res);
 }
