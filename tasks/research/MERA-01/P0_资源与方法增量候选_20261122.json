@@ -7,8 +7,8 @@
     "attempts": 18
   },
   "proposed_after_merge": {
-    "resources": 85,
-    "methods": 66,
+    "resources": 87,
+    "methods": 68,
     "attempts": 18
   },
   "additions": [
@@ -780,6 +780,44 @@
         "https://hathitrust.atlassian.net/wiki/spaces/GS/pages/2387247137/",
         "https://cdlib.org/services/consortial-partnerships/hathitrust/hathitrust-rights-copyright-issues/"
       ]
+    },
+    {
+      "resource_id": "R0086",
+      "parent_resource_id": null,
+      "level": "government register/query service",
+      "name": "National Cultural Heritage Administration Government Service Portal (heritage directory queries)",
+      "provider": "National Cultural Heritage Administration / National Government Service Platform",
+      "url": "https://app.gjzwfw.gov.cn/jmopen/webapp/html5/gjwwjzwfwck/index.html",
+      "content": "Official directory services for historic cities/towns/villages/streets, World Heritage, national key cultural relics protection units, museums, collections, revolutionary heritage areas and related agencies; national key protected units query fields include name/category/batch and result fields number/name/era/address/category/batch.",
+      "access": "Web query pages; name/category/batch filters and captcha; no public API or bulk export verified. Default query currently returns zero rows until filters submitted.",
+      "rights": "Official register discovery; no blanket open license or bulk reuse terms located; check specific published list and source before reuse.",
+      "status": "IDENTIFIED",
+      "asset_acquired": false,
+      "recommended_method_id": "M0066",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://app.gjzwfw.gov.cn/jmopen/webapp/html5/gjwwjqgzdwwbhdwmlcx/index.html",
+        "https://app.gjzwfw.gov.cn/jmopen/webapp/html5/gjwwjzwfwck/index.html"
+      ]
+    },
+    {
+      "resource_id": "R0087",
+      "parent_resource_id": null,
+      "level": "archaeology research portal",
+      "name": "Chinese Archaeology Web (Institute of Archaeology, CASS)",
+      "provider": "Institute of Archaeology, Chinese Academy of Social Sciences / Chinese Academy of History",
+      "url": "http://kaogu.cssn.cn/zwb/",
+      "content": "Research portal with archaeology news, fieldwork, site studies, academic meetings, excavation report/publication information, science archaeology, heritage protection and overseas projects; CSSN full-text search returns about 8,447 results; 2026-05 Institute announced 13 excavation reports, 13 monographs/academic materials/popular books, 8 atlases/essay collections/datasets and 30+ journal reports/papers.",
+      "access": "Website search and article browsing; CSSN search index; original reports/books/data sets obtained from publisher or research institution; no public bulk API for raw excavation data found.",
+      "rights": "CSSN website states content may not be used without written authorization; articles/images/publications have separate rights. Browsing does not make raw excavation data open.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0067",
+      "checked": "2026-11-22",
+      "evidence": [
+        "http://kaogu.cssn.cn/xwzx/bszx/bsdt/202605/t20260529_5998292.shtml",
+        "https://www.cssn.cn/was5/web/search?channelid=235362&outlinepage=10&page=15&perpage=10"
+      ]
     }
   ],
   "methods": [
@@ -1152,6 +1190,26 @@
       "scope": "Global books, journals, government publications, dissertations and OCR text",
       "steps": "Search title/author/place/date/subject; record Full View/Limited and IP region; inspect rights determination; check digitizing source before full-volume download; use HTRC only within account/member and public-domain corpus rules.",
       "limits": "Full View not always full download; Limited is search only; Google scan agreements and member status restrict downloads; region affects rights."
+    },
+    {
+      "method_id": "M0066",
+      "version": "v0.1",
+      "resource_id": "R0086",
+      "status": "DRAFT",
+      "path": "NCHA government service portal → heritage register query → field/update/license verification",
+      "scope": "National key protected units, museums, historic cities/towns/villages/streets and heritage registers",
+      "steps": "Select register; search by name/category/batch; record number/name/era/address/category/batch; check update date and source document; preserve query date; confirm license before reuse.",
+      "limits": "Captcha; default page shows zero results; no public API/bulk export verified; official register page does not provide blanket reuse terms."
+    },
+    {
+      "method_id": "M0067",
+      "version": "v0.1",
+      "resource_id": "R0087",
+      "status": "DRAFT",
+      "path": "Chinese Archaeology Web/CSSN search → project/publication discovery → source institution verification",
+      "scope": "Chinese archaeology research, fieldwork news, reports, monographs, atlases, datasets and overseas archaeology",
+      "steps": "Search by site/region/date/project/institution; record author/date/source; track reports/datasets/lab journals; return to Institute/publisher/project for full text, raw data and rights; do not treat news as primary excavation data.",
+      "limits": "Portal is research discovery, not raw-data repository; content copyright restricted; no public bulk raw-data API found."
     }
   ],
   "updates": [
@@ -1225,6 +1283,12 @@
       "fields": {
         "note": "First-pass research reports now exist for all eight categories. The P0 candidate workbook includes worksheets 八类覆盖矩阵 and 八类覆盖映射. Primary-category record counts (not provider counts): C01 32, C02 9, C03 10, C04 4, C05 9, C06 8, C07 4, C08 9. Existing P0 46 rows consist of 36 resource collections, 9 single items and 1 chapter. These are working classifications, not formal exit results.",
         "next": "Complete China/Asia and non-English coverage, item-level rights checks, update/alternative-source mechanisms, then merge candidate delta into the single P0 master."
+      }
+    },
+    {
+      "target": "category 04 Chinese/East Asian supplement",
+      "fields": {
+        "note": "Added R0086 NCHA Government Service Portal (IDENTIFIED; query UI present but data results not validated) and R0087 Chinese Archaeology Web (research discovery portal); methods M0066-M0067. Candidate totals 87 resources / 68 methods / 18 attempts."
       }
     }
   ],
