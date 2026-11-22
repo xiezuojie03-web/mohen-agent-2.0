@@ -7,8 +7,8 @@
     "attempts": 18
   },
   "proposed_after_merge": {
-    "resources": 49,
-    "methods": 31,
+    "resources": 54,
+    "methods": 35,
     "attempts": 18
   },
   "additions": [
@@ -68,6 +68,104 @@
       "evidence": [
         "https://www.loc.gov/pictures/item/2001705635/"
       ]
+    },
+    {
+      "resource_id": "R0050",
+      "parent_resource_id": null,
+      "level": "资源集合",
+      "name": "The Metropolitan Museum of Art Open Access / Collection API",
+      "provider": "The Metropolitan Museum of Art",
+      "url": "https://www.metmuseum.org/hubs/open-access",
+      "content": "Global art and material culture across 5,000+ years; 492,000+ OA public-domain images; structured object metadata includes objectName, culture, period, medium, dimensions, geography, creators, tags and rights fields; clothing, furniture, ceramics, textiles, musical instruments and objects.",
+      "access": "REST JSON API without key; max recommended 80 requests/sec; Open Access CSV/JSON; current search endpoint v1.1; old v1/search was scheduled for retirement 2026-10-01.",
+      "rights": "Object metadata dataset CC0; images only for OA/public-domain objects. Do not infer image openness from metadata openness; third-party privacy/publicity/trademark rights may remain.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0031",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.metmuseum.org/hubs/open-access",
+        "https://metmuseum.github.io/"
+      ]
+    },
+    {
+      "resource_id": "R0051",
+      "parent_resource_id": null,
+      "level": "资源集合",
+      "name": "Rijksmuseum Collection Online / Data Services",
+      "provider": "Rijksmuseum",
+      "url": "https://data.rijksmuseum.nl/",
+      "content": "800,000+ reusable object metadata records, most with high-resolution images; online collection has 1m+ objects; Search API, OAI-PMH, LDES, PID Resolver, collection downloads and controlled vocabularies; Linked Art/EDM/FAIR data services.",
+      "access": "Search API and OAI-PMH require no API key; LDES, PID resolver, bulk download and SRU for library bibliography. Search API covers museum objects, not library/archive records.",
+      "rights": "Many items PD/CC0 for commercial/non-commercial use; some CC BY 4.0 and some restricted. Check each object rights statement; museum requests attribution.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0032",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://data.rijksmuseum.nl/introduction",
+        "https://data.rijksmuseum.nl/docs/",
+        "https://data.rijksmuseum.nl/policy/"
+      ]
+    },
+    {
+      "resource_id": "R0052",
+      "parent_resource_id": null,
+      "level": "资源集合",
+      "name": "V&A Explore the Collections / Collections API / IIIF",
+      "provider": "Victoria and Albert Museum",
+      "url": "https://www.vam.ac.uk/info/explore-the-collections/",
+      "content": "1m+ object records and 500k+ images; strong design, fashion, textiles, furniture, ceramics, decorative arts and everyday objects; API supports search/filter/clustering; IIIF Image API and Presentation manifests.",
+      "access": "Collections API v2; IIIF Image and Presentation APIs; no key required in current docs but V&A reserves future authentication; high-res images usually max 2500px longest side/A5 300dpi.",
+      "rights": "API terms default to non-commercial personal/educational use; commercial API use requires V&A Images contact. Website non-commercial image use has size/percentage/credit limits; commercial image licensing typically paid.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0033",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://developers.vam.ac.uk/",
+        "https://developers.vam.ac.uk/collections/",
+        "https://developers.vam.ac.uk/images/",
+        "https://www.vam.ac.uk/info/va-websites-terms-conditions"
+      ]
+    },
+    {
+      "resource_id": "R0053",
+      "parent_resource_id": null,
+      "level": "资源集合",
+      "name": "New York Public Library Digital Collections",
+      "provider": "New York Public Library",
+      "url": "https://digitalcollections.nypl.org/",
+      "content": "1m+ digitized items spanning books, videos, maps, manuscripts, illustrations, photographs, audio and moving images; nearly 500k items marked Public Domain/No Known U.S. Copyright Restrictions; date/topic/collection/availability filters; platform moving toward IIIF.",
+      "access": "Website and item downloads; public-domain GitHub CSV/JSON metadata; DPLA bulk metadata; legacy Repo API deprecated from 2026-08-01 and no public API replacement planned according to official API page.",
+      "rights": "Metadata CC0 does not license described content. Rights states include No Known U.S. Copyright, CC0, NYPL-held/managed copyright and Undetermined; privacy/publicity rights remain; API terms limited to non-commercial use.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0034",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://digitalcollections.nypl.org/about",
+        "https://api.repo.nypl.org/",
+        "https://api.repo.nypl.org/terms_conditions"
+      ]
+    },
+    {
+      "resource_id": "R0054",
+      "parent_resource_id": "R0050",
+      "level": "单件",
+      "name": "Dress, American, 1840–49 (The Met Object 103551)",
+      "provider": "The Metropolitan Museum of Art",
+      "url": "https://www.metmuseum.org/art/collection/search/103551",
+      "content": "American cotton dress, 1840–1849, object number 1980.246.1, Costume Institute; useful for dress history, textile materials, social identity and 19th-century everyday life.",
+      "access": "Object page and API record; Open Access image.",
+      "rights": "Object page marked Public Domain; The Met states OA/public-domain images may be used commercially and non-commercially without fee or permission, subject to other third-party rights.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0031",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.metmuseum.org/art/collection/search/103551"
+      ]
     }
   ],
   "methods": [
@@ -90,6 +188,46 @@
       "scope": "档案描述、权威记录、特殊媒介对象元数据的发现与定位，不是全量媒体下载方法",
       "steps": "按主题/机构/记录组/年代筛选；网页或API定位单件与数字对象URL；API响应不缓存/存储；需要持久化目录分析时评估官方AWS数据集的适用子集；媒体对象逐件检查Use Restrictions、来源及捐赠/第三方权利。",
       "limits": "API需Key且默认10,000次/月；API禁止全量抓取且不得缓存/存储响应；NARA不确认所有特殊媒介权利；本轮未下载媒体原件。"
+    },
+    {
+      "method_id": "M0031",
+      "version": "v0.1",
+      "resource_id": "R0050",
+      "status": "DRAFT",
+      "path": "The Met Collection API v1.1 → Object ID/object JSON → OA image and rights check",
+      "scope": "OA metadata and images for clothing, objects, furniture, ceramics, textiles and instruments",
+      "steps": "Search by medium/culture/place/date; use v1.1 pagination; fetch object record; inspect isPublicDomain, objectName, medium, dimensions, geography, tags and image links; use image only when OA/public-domain status is explicit.",
+      "limits": "No API key; recommended max 80 req/s; do not use retired v1/search; metadata CC0 does not imply all images are OA."
+    },
+    {
+      "method_id": "M0032",
+      "version": "v0.1",
+      "resource_id": "R0051",
+      "status": "DRAFT",
+      "path": "Rijksmuseum Search API/OAI-PMH/LDES/PID Resolver → object metadata and image link",
+      "scope": "Rijksmuseum collection object metadata and images; library/archive are separate",
+      "steps": "Search object characteristics; resolve Linked Art identifiers; use OAI-PMH/LDES or collection download for metadata; inspect per-object rights and attribution; retrieve image only under the stated PD/CC0/CC BY terms.",
+      "limits": "No API key; Search API covers museum collection only; not library/archive; mixed PD/CC0/CC BY/restricted rights."
+    },
+    {
+      "method_id": "M0033",
+      "version": "v0.1",
+      "resource_id": "R0052",
+      "status": "DRAFT",
+      "path": "V&A Collections API v2 → IIIF Image/Presentation API → object image and manifest",
+      "scope": "V&A design, fashion, textile, furniture, ceramics and decorative arts; non-commercial research/education",
+      "steps": "Search/filter object; identify image ID; retrieve IIIF Image or Presentation manifest; check item copyright; comply with non-commercial size/credit rules or obtain commercial license.",
+      "limits": "Commercial API use requires contact; commercial image use often fee-based; high-res access under terms; third-party rights remain."
+    },
+    {
+      "method_id": "M0034",
+      "version": "v0.1",
+      "resource_id": "R0053",
+      "status": "DRAFT",
+      "path": "NYPL Digital Collections web search → public-domain filter → GitHub/DPLA metadata bulk alternatives",
+      "scope": "Books, manuscripts, maps, photos, illustrations, video, audio and moving images; API stability HOLD",
+      "steps": "Search website by topic/date/collection; inspect item rights; use public-domain GitHub CSV/JSON or DPLA bulk metadata; track refresh frequency and IIIF migration; do not rely on deprecated Repo API.",
+      "limits": "Legacy Repo API deprecated 2026-08-01; no public API replacement planned; No Known U.S. Copyright is US-specific; metadata CC0 does not license media."
     }
   ],
   "updates": [
@@ -108,6 +246,12 @@
         "prerequisite": "API Key；或使用官方Open Access JSON数据仓库；核对象CC0标记和第三方权利。",
         "last_checked": "2026-11-22",
         "note": "官方仓库每周刷新；本轮只复核政策与仓库说明，未取得原件字节。"
+      }
+    },
+    {
+      "target": "P0 scope / category 06",
+      "fields": {
+        "note": "Added candidate records R0050-R0054 and methods M0031-M0034. Candidate workbook totals 54 resources / 35 methods / 18 attempts. This JSON is a non-authoritative delta only; sole P0 workbook has not yet been overwritten in Library."
       }
     }
   ],
