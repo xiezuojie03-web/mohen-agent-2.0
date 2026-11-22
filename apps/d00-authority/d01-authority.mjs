@@ -14,13 +14,17 @@ import { createD02ResumeAuthorizer } from '../../pipelines/data-production/orche
 import { createD02ResumeJournal } from '../../pipelines/data-production/orchestrator/d02-resume-journal.mjs';
 import { createD03ResumeAuthorizer } from '../../pipelines/data-production/orchestrator/d03-resume-authorizer.mjs';
 import { createD03ResumeJournal } from '../../pipelines/data-production/orchestrator/d03-resume-journal.mjs';
+import { createD04ResumeAuthorizer } from '../../pipelines/data-production/orchestrator/d04-resume-authorizer.mjs';
+import { createD04ResumeJournal } from '../../pipelines/data-production/orchestrator/d04-resume-journal.mjs';
 import { createD00ExecutionAuthorityHandler } from '../../pipelines/data-production/orchestrator/d00-execution-authority-http.mjs';
 import { createD01IssueEndpoint } from '../../pipelines/data-production/orchestrator/d01-resume-issue.mjs';
 import { createD02IssueEndpoint } from '../../pipelines/data-production/orchestrator/d02-resume-issue.mjs';
 import { createD03IssueEndpoint } from '../../pipelines/data-production/orchestrator/d03-resume-issue.mjs';
+import { createD04IssueEndpoint } from '../../pipelines/data-production/orchestrator/d04-resume-issue.mjs';
 import { createG0ResumeQualificationChecker } from '../../pipelines/data-production/orchestrator/d01-g0-qualification.mjs';
 import { createG1ResumeQualificationChecker } from '../../pipelines/data-production/orchestrator/d02-g1-qualification.mjs';
 import { createG2ResumeQualificationChecker } from '../../pipelines/data-production/orchestrator/d03-g2-qualification.mjs';
+import { createG3ResumeQualificationChecker } from '../../pipelines/data-production/orchestrator/d04-g3-qualification.mjs';
 import { createIndependentGateService } from '../../pipelines/data-production/orchestrator/independent-gate-service.mjs';
 import { independentGatePoolOptions } from '../../pipelines/data-production/orchestrator/independent-gate-service-runtime.mjs';
 
@@ -32,6 +36,7 @@ function configure(env){
  const d00Job=registry.jobs.find(j=>j.stage==='D00');
  const d01Job=registry.jobs.find(j=>j.stage==='D01');
  const d02Job=registry.jobs.find(j=>j.stage==='D02');
+ const d03Job=registry.jobs.find(j=>j.stage==='D03');
  const ca=env.MOHEN_D01_DATABASE_CA;
  // Two distinct low-privilege connections: the journal writer (a D01-dedicated
  // login that is a MEMBER of mohen_d00_grant_journal) and the G0 gate reader
@@ -185,10 +190,49 @@ function configure(env){
   const d03IssueEndpoint=createD03IssueEndpoint({
    credential:env.MOHEN_D01_ISSUE_CREDENTIAL,attestorQuery,authority:d03Authority,registry,
   });
+  // D04 resume: the upstream fact is a CURRENT independent G3 on the exact
+  // persisted L3 claim_revision. Same readers/pools and signing key, but a
+  // separate journal and endpoint; the humanistic finding is derived from G3
+  // facts by the input builder, never supplied by the Producer. No paid
+  // Provider is invoked.
+  const currentG3=async (run_id)=>{
+   const rows=await attestorQuery([
+    "select q.object_id::text as claim_revision_id, a.gate_audit_id::text as gate_audit_id,",
+    "  a.artifact_revision, a.stage, a.gate_code, a.result, a.decision_origin,",
+    "  a.current_valid as qualification_current, a.valid_until::text as valid_until,",
+    "  a.details->'stage_binding'->>'job_id' as job_id,",
+    "  a.details->'stage_binding'->>'reviewer_binding_ref' as reviewer_binding_ref,",
+    "  q.consumer::text as consumer",
+    "from control.qualification_current q",
+    "join control.gate_audits a on a.gate_audit_id=q.gate_audit_id",
+    "where a.run_id=:'run'::uuid and a.stage='D03' and a.gate_code='G3'",
+    "  and a.result='PASS' and a.decision_origin='independent_gate' and a.current_valid=true",
+    "  and q.consumer='producer' and q.object_type='claim_revision'",
+    "  and (q.valid_until is null or q.valid_until > now())",
+    "  and (a.valid_until is null or a.valid_until > now()) limit 2"
+   ].join(' '),{run:run_id});
+   if(rows.length!==1)return null;
+   return rows[0];
+  };
+  const d04QualificationChecker=createG3ResumeQualificationChecker({
+   readG3:({run_id})=>currentG3(run_id),d03JobId:d03Job?.job_id,
+   gateReviewerBinding:d03Job?.implementation?.gate_reviewer_binding});
+  const d04Authority=createD04ResumeAuthorizer({
+   registry,holdEpoch:env.MOHEN_D01_RESUME_HOLD_EPOCH,
+   privateKey:createPrivateKey(env.MOHEN_D01_RESUME_SIGNING_KEY),
+   journal:createD04ResumeJournal(journalPool),qualificationChecker:d04QualificationChecker});
+  const d04GrantHandler=createD00ExecutionAuthorityHandler({
+   authority:d04Authority,issueCredential:env.MOHEN_D01_ISSUE_CREDENTIAL,
+   verifyCredential:env.MOHEN_D01_VERIFY_CREDENTIAL,
+  });
+  const d04IssueEndpoint=createD04IssueEndpoint({
+   credential:env.MOHEN_D01_ISSUE_CREDENTIAL,attestorQuery,authority:d04Authority,registry,
+  });
   return {
    d01:{'/token':grantHandler,'/consume':grantHandler,'/d01-issue':issueEndpoint},
    d02:{'/token':d02GrantHandler,'/consume':d02GrantHandler,'/d02-issue':d02IssueEndpoint},
    d03:{'/token':d03GrantHandler,'/consume':d03GrantHandler,'/d03-issue':d03IssueEndpoint},
+   d04:{'/token':d04GrantHandler,'/consume':d04GrantHandler,'/d04-issue':d04IssueEndpoint},
   };
  }catch(error){
   void journalPool.end();void readerPool.end();void attestorPool.end();
@@ -203,7 +247,7 @@ async function serve(group,route,req,res){
  // SSO identity) and may serve the stable production domain; the D00 token
  // issuer stays preview-only.
  const env=process.env.VERCEL_ENV;
- const prodOk=(route==='/d01-issue'||route==='/d02-issue'||route==='/d03-issue'||route==='/consume')&&(env==='preview'||env==='production');
+ const prodOk=(route==='/d01-issue'||route==='/d02-issue'||route==='/d03-issue'||route==='/d04-issue'||route==='/consume')&&(env==='preview'||env==='production');
  const previewOk=env==='preview';
  if(process.env.MOHEN_D01_RESUME_AUTHORITY_ENABLED!=='true'||(!prodOk&&!previewOk)){
   res.statusCode=503;res.end('{"ok":false,"reason":"d01_authority_not_configured"}');return;
@@ -237,4 +281,8 @@ export async function d02AuthorityEndpoint(route,req,res){
 
 export async function d03AuthorityEndpoint(route,req,res){
  await serve('d03',route,req,res);
+}
+
+export async function d04AuthorityEndpoint(route,req,res){
+ await serve('d04',route,req,res);
 }

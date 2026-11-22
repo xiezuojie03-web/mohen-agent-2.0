@@ -46,7 +46,7 @@ test('expired signature and arbitrary executable fields never reach the Runner',
  await assert.rejects(()=>send(e),/CLOUD_EXECUTOR_REJECTED/);assert.equal(claims,0);
  const {dispatch}=setup();await assert.rejects(()=>dispatch({...e,command:'arbitrary executable'}),/CLOUD_EXECUTOR_REQUEST_INVALID/);
 });
-test('from_stage resume accepts verified handoff stages D01/D02/D03, rejects later ones, and bounds the reported stage',async()=>{
+test('from_stage resume accepts verified handoff stages D01/D02/D03, rejects unqualified later ones, and bounds the reported stage',async()=>{
  const {dispatch}=setup({execute:async e=>({run_id:e.run_id,status:'HOLD',stage:'D01',reason_code:'G1_NOT_VERIFIED'})});
  const r=await dispatch({...envelope(),from_stage:'D01'});
  assert.equal(r.stage,'D01');
@@ -59,13 +59,21 @@ test('from_stage resume accepts verified handoff stages D01/D02/D03, rejects lat
  const d03=setup({execute:async e=>({run_id:e.run_id,status:'HOLD',stage:'D03',reason_code:'G3_NOT_VERIFIED'})});
  const r3=await d03.dispatch({...envelope(),from_stage:'D03',to_stage:'D03'});
  assert.equal(r3.stage,'D03');
- await assert.rejects(()=>dispatch({...envelope(),from_stage:'D04'}),/CLOUD_EXECUTOR_FROM_STAGE_INVALID/);
+ await assert.rejects(()=>dispatch({...envelope(),from_stage:'D05'}),/CLOUD_EXECUTOR_FROM_STAGE_INVALID/);
  const before=setup({execute:async e=>({run_id:e.run_id,status:'HOLD',stage:'D00',reason_code:'X'})});
  await assert.rejects(()=>before.dispatch({...envelope(),from_stage:'D01'}),/CLOUD_EXECUTOR_UNCERTAIN/,'resume may not report a stage before D01');
  const beforeD02=setup({execute:async e=>({run_id:e.run_id,status:'HOLD',stage:'D01',reason_code:'X'})});
  await assert.rejects(()=>beforeD02.dispatch({...envelope(),from_stage:'D02'}),/CLOUD_EXECUTOR_UNCERTAIN/,'resume may not report a stage before D02');
  const beforeD03=setup({execute:async e=>({run_id:e.run_id,status:'HOLD',stage:'D02',reason_code:'X'})});
  await assert.rejects(()=>beforeD03.dispatch({...envelope(),from_stage:'D03'}),/CLOUD_EXECUTOR_UNCERTAIN/,'resume may not report a stage before D03');
+});
+test('from_stage D04 resumes after the G3 claim handoff, defaults to end D04, and bounds the reported stage',async()=>{
+ const d04=setup({execute:async e=>({run_id:e.run_id,status:'HOLD',stage:'D04',reason_code:'G4_NOT_VERIFIED'})});
+ const r=await d04.dispatch({...envelope(),from_stage:'D04'});
+ assert.equal(r.stage,'D04');
+ const beforeD04=setup({execute:async e=>({run_id:e.run_id,status:'HOLD',stage:'D03',reason_code:'X'})});
+ await assert.rejects(()=>beforeD04.dispatch({...envelope(),from_stage:'D04'}),/CLOUD_EXECUTOR_UNCERTAIN/,'resume may not report a stage before D04');
+ await assert.rejects(()=>d04.dispatch({...envelope(),from_stage:'D05'}),/CLOUD_EXECUTOR_FROM_STAGE_INVALID/);
 });
 test('a network failure is uncertain and never automatically retried',async()=>{
  let calls=0;const dispatch=createCloudProductionDispatch({url:'https://private-executor.example.invalid/execute',credential,

@@ -420,7 +420,7 @@ export async function requestProduction(
   source?: ProductionOriginal,
   ownerSessionToken?:string,
   endStage?:"D00",
-  resume?:{ runId: string; fromStage: "D01" | "D02" | "D03" }
+  resume?:{ runId: string; fromStage: "D01" | "D02" | "D03" | "D04" }
 ): Promise<{ ok: boolean; reason?: string; run_id?: string }> {
   if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(ownerUserId))
     return { ok: false, reason: "forbidden" };

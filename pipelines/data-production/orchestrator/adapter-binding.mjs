@@ -157,6 +157,29 @@ export function isTypedD03WorldClaimRequest(input) {
     ['supports','contradicts','contextualizes'].includes(c.support_type));
 }
 
+/** Pure, authorization-free shape check of the D04 humanistic-finding request
+ * the authority derives from a current-qualified G3 claim revision. Exactly one
+ * form is accepted: the derived `finding` plus its `claimRevisionId`. No
+ * upstream snapshot or Producer-supplied finding is trusted by the Worker — it
+ * re-reads every field (G3 current, claim bytes, original binding) before the
+ * candidate is persisted. */
+export function isTypedD04FindingRequest(input) {
+  if(!input||input.schema!==PRIVATE_REQUEST_SCHEMA||input.stage!=="D04"||
+     !UUID_RE.test(input.originalId??'')||!UUID_RE.test(input.claimRevisionId??''))return false;
+  if(input.claim!==undefined||input.evidenceId!==undefined||input.finding===undefined)return false;
+  const f=input.finding;
+  return Boolean(f&&typeof f==="object"&&!Array.isArray(f)&&
+    /^A(0[1-9]|1[0-2])$/.test(f.method_id??'')&&
+    typeof f.finding_type==="string"&&f.finding_type.length>0&&Buffer.byteLength(f.finding_type)<=200&&
+    typeof f.human_question==="string"&&f.human_question.length>0&&Buffer.byteLength(f.human_question)<=2000&&
+    typeof f.interpretive_statement==="string"&&f.interpretive_statement.length>0&&Buffer.byteLength(f.interpretive_statement)<=5000&&
+    (f.understanding_delta===undefined||typeof f.understanding_delta==="string")&&
+    Array.isArray(f.counter_view_or_alternative)&&f.counter_view_or_alternative.every(v=>typeof v==="string")&&
+    Array.isArray(f.missing_evidence)&&f.missing_evidence.every(v=>typeof v==="string")&&
+    f.uncertainty&&typeof f.uncertainty==="object"&&!Array.isArray(f.uncertainty)&&
+    f.uncertainty.qualification==="UNASSESSED");
+}
+
 function containsPrivateRequest(input) {
   const seen = new WeakSet();
   function visit(value) {

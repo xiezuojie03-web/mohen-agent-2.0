@@ -13,17 +13,17 @@ const SCOPE=new Set(['project_id','root_task_id','original_id','page_number','so
 // independent authority signs a one-use stage grant before the Runner starts.
 export function cloudProductionEndStage(input){
  const stage=input?.to_stage;
- if(stage===undefined)return input?.from_stage==='D03'?'D03':'D02';
- if(!['D00','D02','D03'].includes(stage))throw Error('CLOUD_EXECUTOR_STAGE_INVALID');
+ if(stage===undefined)return input?.from_stage==='D04'?'D04':input?.from_stage==='D03'?'D03':'D02';
+ if(!['D00','D02','D03','D04'].includes(stage))throw Error('CLOUD_EXECUTOR_STAGE_INVALID');
  return stage;
 }
 export function cloudProductionFromStage(input){
  const stage=input?.from_stage;
  if(stage===undefined)return 'D00';
- // Resume only from a stage whose predecessor交接 has already been verified:
- // D01 needs qualified G0 output, D02 needs qualified G1 reading, D03 needs
- // the qualified G2 material-observation output.
- if(!['D01','D02','D03'].includes(stage))throw Error('CLOUD_EXECUTOR_FROM_STAGE_INVALID');
+ // Resume only from a stage whose predecessor handoff has already been verified:
+ // D01 needs qualified G0 output, D02 needs qualified G1 reading, D03 needs the
+ // qualified G2 material-observation output, D04 needs the qualified G3 claim.
+ if(!['D01','D02','D03','D04'].includes(stage))throw Error('CLOUD_EXECUTOR_FROM_STAGE_INVALID');
  return stage;
 }
 function valid(v){

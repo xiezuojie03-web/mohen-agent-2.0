@@ -160,7 +160,7 @@ export async function failProductionRun(runId: string, reason = "PRODUCTION_PROC
  * 触发一次真实生产（D00–D05）。fire-and-forget：本函数只负责登记 + 启动进程并返回 run_id，
  * 生产进度与终态由 run.mjs 内部回写 control.production_runs。
  */
-export interface StageResume { runId: string; fromStage: "D01" | "D02" | "D03" }
+export interface StageResume { runId: string; fromStage: "D01" | "D02" | "D03" | "D04" }
 export async function triggerProduction(taskId: string, intent: string, projectId: string, source?:ProductionOriginal, ownerSessionToken?:string, endStage?:"D00", resume?:StageResume): Promise<ProductionTrigger> {
   if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(projectId))
     return { runId: "", started: false, reason: "production_project_binding_required" };

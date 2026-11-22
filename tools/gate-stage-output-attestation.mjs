@@ -513,6 +513,92 @@ export async function attestG3WorldClaimStageOutput({query,candidate,request,reg
     reviewer_binding_ref:job.implementation?.gate_reviewer_binding};
 }
 
+// D04 → G4: independent, read-only reconstruction of the REAL persisted D04
+// humanistic-finding candidate. The D04 input is rebuilt by the SAME module the
+// authority uses (run scope + current G3 + persisted L3 claim revision), and the
+// output is rebuilt from the persisted meaning.finding row, not from any
+// Producer-supplied digest. Missing/ambiguous facts fail closed. No paid
+// Provider is involved in this derivation.
+async function deriveD04FindingFacts({query,candidate,projectId,registry,runId}={}){
+  requireFact(typeof query==='function','STAGE_OUTPUT_REVIEWER_QUERY_REQUIRED');
+  requireFact(UUID.test(runId??'')&&UUID.test(projectId??''),'STAGE_OUTPUT_RUN_REQUIRED');
+  const cid=candidate?.candidate_id, findingId=candidate?.object_id;
+  requireFact(UUID.test(cid??'')&&UUID.test(findingId??''),'STAGE_OUTPUT_CANDIDATE_SCOPE_MISMATCH');
+  const scope=typeof candidate?.scope==='string'?JSON.parse(candidate.scope):candidate?.scope;
+  requireFact(scope?.project_id===projectId&&candidate?.stage==='D04'&&candidate?.gate_code==='G4'&&
+    candidate?.consumer==='producer'&&candidate?.object_type==='finding'&&
+    SHA.test(candidate?.artifact_revision??'')&&SHA.test(candidate?.input_fingerprint??''),
+    'STAGE_OUTPUT_CANDIDATE_SCOPE_MISMATCH');
+  const {rebuildD04ResumeInput}=await import(
+    '../pipelines/data-production/orchestrator/d04-resume-input.mjs');
+  const input=await rebuildD04ResumeInput({query,runId,projectId,registry});
+  const inputDigest=executionDigest(input);
+  requireFact(inputDigest===candidate.input_fingerprint,'STAGE_OUTPUT_INPUT_NOT_REPRODUCIBLE');
+  const refs=Array.isArray(candidate?.evidence_refs)?candidate.evidence_refs:[];
+  requireFact(refs.length===2&&
+    refs.some(r=>r?.kind==='finding'&&r.id===findingId&&r.artifact_revision===candidate.artifact_revision)&&
+    refs.some(r=>r?.kind==='claim_revision'&&r.id===input.claimRevisionId),
+    'STAGE_OUTPUT_CANDIDATE_SCOPE_MISMATCH');
+  const rows=await query([
+    "select f.finding_id::text as finding_id, f.discovery_method->>'method_id' as method_id,",
+    "  f.uncertainty->>'qualification' as qualification,",
+    "  f.supporting_world_objects::text as refs, f.discovery_method::text as discovery_method",
+    "from meaning.findings f where f.finding_id=:'fid'::uuid limit 2"
+  ].join(' '),{fid:findingId});
+  requireFact(Array.isArray(rows)&&rows.length===1,'STAGE_OUTPUT_FINDING_NOT_UNIQUE');
+  const row=rows[0];
+  let supporting,method;
+  try{supporting=JSON.parse(row.refs);}catch{supporting=null;}
+  try{method=JSON.parse(row.discovery_method);}catch{method=null;}
+  // The finding must be an UNASSESSED A01-A12 candidate grounded in exactly the
+  // claim revision the authority rebuilt. The persist digest is the repository's
+  // canonical sha256 of {runId,originalId,claimRevisionId,finding}, distinct
+  // from the stage input digest; re-derive it from persisted input facts.
+  const persistDigest=createHash('sha256').update(JSON.stringify({runId,
+    originalId:input.originalId,claimRevisionId:input.claimRevisionId,finding:input.finding}),'utf8').digest('hex');
+  requireFact(row.finding_id===findingId&&/^A(0[1-9]|1[0-2])$/.test(row.method_id??'')&&
+    row.qualification==='UNASSESSED'&&
+    Array.isArray(supporting)&&supporting.some(r=>r?.kind==='claim_revision'&&r.id===input.claimRevisionId)&&
+    method?.request_digest===persistDigest&&SHA.test(candidate.artifact_revision??''),
+    'STAGE_OUTPUT_FINDING_BINDING_MISMATCH');
+  // Upstream qualification must be the exact current independent G3.
+  const dependency=Array.isArray(candidate?.dependency_snapshot)?candidate.dependency_snapshot:[];
+  requireFact(dependency.length===1&&UUID.test(dependency[0].gate_audit_id??'')&&
+    SHA.test(dependency[0].artifact_revision??'')&&SHA.test(dependency[0].qualification_digest??''),
+    'STAGE_OUTPUT_UPSTREAM_QUALIFICATION_MISMATCH');
+  const output={stage:'D04',candidate_kind:'private_humanistic_finding',
+    original_id:input.originalId,finding_id:findingId,
+    claim_revision_id:input.claimRevisionId,artifact_revision:candidate.artifact_revision,
+    request_digest:inputDigest,gate_candidate_id:cid,gate_candidate_status:'SUBMITTED',
+    qualification:'UNASSESSED',gate_code:'G4'};
+  return {input,output,input_digest:inputDigest,output_digest:executionDigest(output)};
+}
+
+export async function deriveD04FindingStageDigests(args={}){
+  const facts=await deriveD04FindingFacts(args);
+  return {input_digest:facts.input_digest,output_digest:facts.output_digest};
+}
+
+export async function attestG4FindingStageOutput({query,candidate,request,registry,projectId}={}){
+  requireFact(typeof query==='function','STAGE_OUTPUT_REVIEWER_QUERY_REQUIRED');
+  assertStageQualificationRequest(request);
+  requireFact(request.stage==='D04'&&request.gate_code==='G4',
+    'STAGE_OUTPUT_ATTESTATION_NOT_SUPPORTED');
+  const jobs=(registry?.jobs??[]).filter(j=>j.stage==='D04');
+  requireFact(jobs.length===1,'STAGE_OUTPUT_JOB_NOT_UNIQUE');
+  const job=jobs[0];
+  if(request.job_id!==undefined)requireFact(request.job_id===job.job_id,'STAGE_OUTPUT_JOB_MISMATCH');
+  if(request.reviewer_binding_ref!==undefined)
+    requireFact(request.reviewer_binding_ref===job.implementation?.gate_reviewer_binding,
+      'STAGE_OUTPUT_REVIEWER_BINDING_MISMATCH');
+  const facts=await deriveD04FindingFacts({query,candidate,projectId,registry,runId:request.run_id});
+  requireFact(request.input_digest===facts.input_digest&&
+    request.output_digest===facts.output_digest,'STAGE_OUTPUT_ATTESTATION_MISMATCH');
+  return {gate_code:'G4',input_digest:facts.input_digest,
+    output_digest:facts.output_digest,job_id:job.job_id,
+    reviewer_binding_ref:job.implementation?.gate_reviewer_binding};
+}
+
 // Single dispatch used by every independent signer composition (local Gate
 // service and the CLI Reviewer). The carrier is decided by the persisted
 // stage/gate and method plan, never by a Producer-supplied digest.
@@ -524,6 +610,8 @@ export function attestStageOutputForRequest({query,candidate,request,registry,pr
     return attestG2ObservationStageOutput({query,candidate,request,registry,projectId});
   if(stage==='D03'&&gate==='G3')
     return attestG3WorldClaimStageOutput({query,candidate,request,registry,projectId});
+  if(stage==='D04'&&gate==='G4')
+    return attestG4FindingStageOutput({query,candidate,request,registry,projectId});
   requireFact(stage==='D00'&&gate==='G0','STAGE_OUTPUT_ATTESTATION_NOT_SUPPORTED');
   const refs=Array.isArray(candidate?.evidence_refs)?candidate.evidence_refs:[];
   const methodIds=new Set(refs.filter(r=>r?.kind==='method_plan').map(r=>String(r.method_id??'')));
