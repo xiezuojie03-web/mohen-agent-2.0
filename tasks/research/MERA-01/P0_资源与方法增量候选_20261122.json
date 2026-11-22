@@ -7,8 +7,8 @@
     "attempts": 18
   },
   "proposed_after_merge": {
-    "resources": 100,
-    "methods": 81,
+    "resources": 102,
+    "methods": 83,
     "attempts": 18
   },
   "additions": [
@@ -1068,6 +1068,46 @@
         "https://core.ac.uk/documentation/dataset",
         "https://blog.core.ac.uk/2022/05/23/core-our-commitment-to-the-principles-of-open-scholarly-infrastructure/"
       ]
+    },
+    {
+      "resource_id": "R0101",
+      "parent_resource_id": null,
+      "level": "digital cultural heritage resource library",
+      "name": "Digital Dunhuang Resource Library",
+      "provider": "Dunhuang Academy",
+      "url": "https://www.e-dunhuang.com/",
+      "content": "2016 official digital resource library sharing whole-cave high-resolution mural digitization for 30 classic Dunhuang caves; online browsing of cave/mural content and scholarly descriptions.",
+      "access": "Official web browsing; no public bulk download/API verified; high-resolution assets routed to authorized materials library.",
+      "rights": "Online viewing does not grant image copyright; no blanket CC license; copying/publication/commercial use requires object-specific authorization.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0081",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.e-dunhuang.com/",
+        "https://www.gswbj.gov.cn/a/2024/08/26/21789.html"
+      ]
+    },
+    {
+      "resource_id": "R0102",
+      "parent_resource_id": null,
+      "level": "digital heritage licensed asset library",
+      "name": "Digital Dunhuang Open Materials Library",
+      "provider": "Dunhuang Academy",
+      "url": "https://ip.e-dunhuang.com/",
+      "content": "Official asset library launched end-2022 with 6,500+ high-resolution digital assets from Dunhuang caves and manuscripts; cave resources, creative resources, art photography and co-created works; low-res browsing, high-res license application and downloads.",
+      "access": "Register; browse low-res; select item/use; sign electronic authorization and pay; download after approval; blockchain/watermark and use tracking.",
+      "rights": "Not a CC-open license. Item/use-case authorization; ordinary licenses non-transferable; commercial partnerships separately negotiated; whole-cave/wall and 300dpi+ raw exhibition images generally not licensed; no scraping/copying/republication without written permission.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0082",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://ip.e-dunhuang.com/article/1.html",
+        "https://ip.e-dunhuang.com/article/3.html",
+        "https://ip.e-dunhuang.com/article/5.html",
+        "https://www.gswbj.gov.cn/a/2024/08/26/21789.html"
+      ]
     }
   ],
   "methods": [
@@ -1590,6 +1630,26 @@
       "scope": "Global institutional repositories and OA journal paper discovery",
       "steps": "Search by topic/author/DOI; inspect repository source, version, full-text URL, license and OAI ID; use API/dump with CORE attribution; verify full text at source; request commercial service license if needed.",
       "limits": "ODC-BY aggregate data does not license article full text; commercial services are separately licensed."
+    },
+    {
+      "method_id": "M0081",
+      "version": "v0.1",
+      "resource_id": "R0101",
+      "status": "DRAFT",
+      "path": "Digital Dunhuang resource library → cave/mural browse → source image rights verification",
+      "scope": "30 classic caves with whole-cave high-resolution mural digitization and scholarly context",
+      "steps": "Search cave/period/mural; record cave number/date/subject/object description/link; use web browse as discovery/citation only; route high-resolution asset requests to Open Materials Library; cite Dunhuang Academy.",
+      "limits": "Online browsing is not download/commercial permission; no blanket CC license or bulk API verified."
+    },
+    {
+      "method_id": "M0082",
+      "version": "v0.1",
+      "resource_id": "R0102",
+      "status": "DRAFT",
+      "path": "Digital Dunhuang Open Materials → item/use-case application → agreement/fee/download authorization",
+      "scope": "High-resolution cave/mural/manuscript/creative assets and co-created works",
+      "steps": "Register; browse low-res; select asset and intended use; sign electronic authorization and pay; download after approval; attribute Dunhuang Academy; do not transfer or provide to third parties; check special restrictions on whole cave/wall and 300dpi+ images.",
+      "limits": "Open Materials means browse/apply, not CC open license; commercial use separately negotiated; no scraping/republication without written authorization."
     }
   ],
   "updates": [
@@ -1711,6 +1771,12 @@
       "target": "candidate workbook integrity check",
       "fields": {
         "note": "Verified 100 resource rows/100 unique resource_id; 81 method rows/80 unique method_id due two legacy M0004 rows (historical-2026-08 HISTORICALLY_VALIDATED_CURRENT_UNVERIFIED and v2026-doc RETIRED), both point to R0007 and are retained; 18 historical attempts preserved; all method resource references resolve; all 100 resources mapped to the eight-category matrix. Use composite (method_id, version, resource_id) for legacy M0004; do not silently renumber."
+      }
+    },
+    {
+      "target": "category 04 Chinese digital heritage supplement",
+      "fields": {
+        "note": "Added R0101 Digital Dunhuang Resource Library (30 classic caves browse) and R0102 Digital Dunhuang Open Materials Library (6,500+ licensed assets); methods M0081-M0082. Candidate totals 102 resources / 83 methods / 18 attempts. Rights are item/use-case licensing, not CC-open; no image bytes acquired."
       }
     }
   ],
