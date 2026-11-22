@@ -9,6 +9,10 @@ const nextConfig = {
   outputFileTracingIncludes: {
     "/api/studio/research-tasks/*/production": ["../../AGENTS.md","../../specs/data-production/production-registry.json","../../specs/data-production/schemas/production-registry.schema.json"],
     "/api/internal/production-execute": ["../../AGENTS.md","../../pipelines/data-production/**/*","../../packages/data-access/**/*","../../specs/data-production/**/*","../../tools/lib/method-plan-input.mjs","../../apps/web/lib/studio/provider-dispatcher.ts"],
+    // Gate machine review runs tools/rule-gate-reviewer.mjs in-process; its
+    // import chain (tools, specs contracts, data-access) must be present in the
+    // deployed function, not just in the production-execute route.
+    "/api/internal/gate-review": ["../../AGENTS.md","../../tools/**/*","../../pipelines/data-production/**/*","../../packages/data-access/**/*","../../specs/data-production/**/*"],
   },
   transpilePackages: ["@mohen/experience-engine", "@mohen/agent-runtime", "@mohen/data-access"],
   // K4：PDF 文本抽取走 Node 原生模块，不参与前端打包。
