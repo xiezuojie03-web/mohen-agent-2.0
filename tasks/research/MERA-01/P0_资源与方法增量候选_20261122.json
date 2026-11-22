@@ -1778,6 +1778,18 @@
       "fields": {
         "note": "Added R0101 Digital Dunhuang Resource Library (30 classic caves browse) and R0102 Digital Dunhuang Open Materials Library (6,500+ licensed assets); methods M0081-M0082. Candidate totals 102 resources / 83 methods / 18 attempts. Rights are item/use-case licensing, not CC-open; no image bytes acquired."
       }
+    },
+    {
+      "target": "coverage matrix latest revision",
+      "fields": {
+        "note": "After Digital Dunhuang resources, primary-category record counts are C01 32, C02 9, C03 16, C04 8, C05 9, C06 8, C07 9, C08 11. Candidate workbook sheets 八类覆盖矩阵 and 八类覆盖映射 contain 102 mappings. Counts are records, not provider counts or exit scores."
+      }
+    },
+    {
+      "target": "candidate workbook integrity latest revision",
+      "fields": {
+        "note": "102 resource rows/102 unique resource_id; 83 method rows/82 unique method_id due legacy M0004 duplicate; 18 attempts preserved; 102 category mappings complete; all 83 method resource references resolve. Digital Dunhuang records R0101/R0102 are item/use-case authorization resources, not CC-open."
+      }
     }
   ],
   "attempt_log": {
