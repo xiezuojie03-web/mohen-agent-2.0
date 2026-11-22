@@ -413,6 +413,94 @@ export async function attestG2ObservationStageOutput({query,candidate,request,re
     reviewer_binding_ref:job.implementation?.gate_reviewer_binding};
 }
 
+// D03 → G3: independent, read-only reconstruction of the REAL persisted D03
+// world-claim candidate. The D03 input is rebuilt by the SAME module the issuer
+// uses (run scope + current G2 + persisted L2 material evidence), and the output
+// is rebuilt from the persisted claim_revision/change/claim_evidence_link rows,
+// not from any Producer-supplied digest. Missing/ambiguous facts fail closed.
+async function deriveD03WorldClaimFacts({query,candidate,projectId,registry,runId}={}){
+  requireFact(typeof query==='function','STAGE_OUTPUT_REVIEWER_QUERY_REQUIRED');
+  requireFact(UUID.test(runId??'')&&UUID.test(projectId??''),'STAGE_OUTPUT_RUN_REQUIRED');
+  const cid=candidate?.candidate_id, revisionId=candidate?.object_id;
+  requireFact(UUID.test(cid??'')&&UUID.test(revisionId??''),'STAGE_OUTPUT_CANDIDATE_SCOPE_MISMATCH');
+  const scope=typeof candidate?.scope==='string'?JSON.parse(candidate.scope):candidate?.scope;
+  requireFact(scope?.project_id===projectId&&candidate?.stage==='D03'&&candidate?.gate_code==='G3'&&
+    candidate?.consumer==='producer'&&candidate?.object_type==='claim_revision'&&
+    SHA.test(candidate?.artifact_revision??'')&&SHA.test(candidate?.input_fingerprint??''),
+    'STAGE_OUTPUT_CANDIDATE_SCOPE_MISMATCH');
+  const {rebuildD03ResumeInput}=await import(
+    '../pipelines/data-production/orchestrator/d03-resume-input.mjs');
+  const input=await rebuildD03ResumeInput({query,runId,projectId,registry});
+  const inputDigest=executionDigest(input);
+  requireFact(inputDigest===candidate.input_fingerprint,'STAGE_OUTPUT_INPUT_NOT_REPRODUCIBLE');
+  // The evidence_refs must point to exactly this claim revision and its
+  // upstream material evidence — never to a different world object.
+  const refs=Array.isArray(candidate?.evidence_refs)?candidate.evidence_refs:[];
+  requireFact(refs.length===2&&
+    refs.some(r=>r?.kind==='claim_revision'&&r.id===revisionId&&r.artifact_revision===candidate.artifact_revision)&&
+    refs.some(r=>r?.kind==='material_evidence'&&r.id===input.evidenceId),
+    'STAGE_OUTPUT_CANDIDATE_SCOPE_MISMATCH');
+  // Persisted world claims of this exact revision, bound to the run's input.
+  const rows=await query([
+    "select cr.claim_revision_id::text as claim_revision_id, cr.subject_id::text as change_id,",
+    "  ch.change_type, cr.producer_method_id, cr.assertion_payload_json::text as payload,",
+    "  l.claim_evidence_link_id::text as claim_evidence_link_id, l.evidence_id::text as evidence_id,",
+    "  l.support_type, control.sha256_bytes(convert_to(to_jsonb(cr)::text,'UTF8')) as artifact_revision",
+    "from world.claim_revisions cr",
+    "join world.changes ch on ch.change_id=cr.subject_id",
+    "join world.claim_evidence_links l on l.claim_revision_id=cr.claim_revision_id",
+    "where cr.claim_revision_id=:'rev'::uuid limit 2"
+  ].join(' '),{rev:revisionId});
+  requireFact(Array.isArray(rows)&&rows.length===1,'STAGE_OUTPUT_WORLD_CLAIM_NOT_UNIQUE');
+  const row=rows[0];
+  let payload;
+  try{payload=JSON.parse(row.payload);}catch{payload=null;}
+  requireFact(row.claim_revision_id===revisionId&&row.evidence_id===input.evidenceId&&
+    row.producer_method_id==='W07'&&payload?.qualification==='UNASSESSED'&&
+    payload?.request_digest===inputDigest&&SHA.test(row.artifact_revision??'')&&
+    row.artifact_revision===candidate.artifact_revision&&
+    input.claim.change_type===row.change_type&&input.claim.support_type===row.support_type&&
+    UUID.test(row.change_id??'')&&UUID.test(row.claim_evidence_link_id??''),
+    'STAGE_OUTPUT_WORLD_CLAIM_BINDING_MISMATCH');
+  // Upstream qualification must be the exact current independent G2.
+  const dependency=Array.isArray(candidate?.dependency_snapshot)?candidate.dependency_snapshot:[];
+  requireFact(dependency.length===1&&UUID.test(dependency[0].gate_audit_id??'')&&
+    SHA.test(dependency[0].artifact_revision??'')&&SHA.test(dependency[0].qualification_digest??''),
+    'STAGE_OUTPUT_UPSTREAM_QUALIFICATION_MISMATCH');
+  const output={stage:'D03',candidate_kind:'private_world_claim',
+    original_id:input.originalId,change_id:row.change_id,
+    claim_revision_id:row.claim_revision_id,claim_evidence_link_id:row.claim_evidence_link_id,
+    evidence_id:row.evidence_id,artifact_revision:row.artifact_revision,
+    request_digest:inputDigest,gate_candidate_id:cid,gate_candidate_status:'SUBMITTED',
+    qualification:'UNASSESSED',gate_code:'G3'};
+  return {input,output,input_digest:inputDigest,output_digest:executionDigest(output)};
+}
+
+export async function deriveD03WorldClaimStageDigests(args={}){
+  const facts=await deriveD03WorldClaimFacts(args);
+  return {input_digest:facts.input_digest,output_digest:facts.output_digest};
+}
+
+export async function attestG3WorldClaimStageOutput({query,candidate,request,registry,projectId}={}){
+  requireFact(typeof query==='function','STAGE_OUTPUT_REVIEWER_QUERY_REQUIRED');
+  assertStageQualificationRequest(request);
+  requireFact(request.stage==='D03'&&request.gate_code==='G3',
+    'STAGE_OUTPUT_ATTESTATION_NOT_SUPPORTED');
+  const jobs=(registry?.jobs??[]).filter(j=>j.stage==='D03');
+  requireFact(jobs.length===1,'STAGE_OUTPUT_JOB_NOT_UNIQUE');
+  const job=jobs[0];
+  if(request.job_id!==undefined)requireFact(request.job_id===job.job_id,'STAGE_OUTPUT_JOB_MISMATCH');
+  if(request.reviewer_binding_ref!==undefined)
+    requireFact(request.reviewer_binding_ref===job.implementation?.gate_reviewer_binding,
+      'STAGE_OUTPUT_REVIEWER_BINDING_MISMATCH');
+  const facts=await deriveD03WorldClaimFacts({query,candidate,projectId,registry,runId:request.run_id});
+  requireFact(request.input_digest===facts.input_digest&&
+    request.output_digest===facts.output_digest,'STAGE_OUTPUT_ATTESTATION_MISMATCH');
+  return {gate_code:'G3',input_digest:facts.input_digest,
+    output_digest:facts.output_digest,job_id:job.job_id,
+    reviewer_binding_ref:job.implementation?.gate_reviewer_binding};
+}
+
 // Single dispatch used by every independent signer composition (local Gate
 // service and the CLI Reviewer). The carrier is decided by the persisted
 // stage/gate and method plan, never by a Producer-supplied digest.
@@ -422,6 +510,8 @@ export function attestStageOutputForRequest({query,candidate,request,registry,pr
     return attestG1ReadingStageOutput({query,candidate,request,registry,projectId});
   if(stage==='D02'&&gate==='G2')
     return attestG2ObservationStageOutput({query,candidate,request,registry,projectId});
+  if(stage==='D03'&&gate==='G3')
+    return attestG3WorldClaimStageOutput({query,candidate,request,registry,projectId});
   requireFact(stage==='D00'&&gate==='G0','STAGE_OUTPUT_ATTESTATION_NOT_SUPPORTED');
   const refs=Array.isArray(candidate?.evidence_refs)?candidate.evidence_refs:[];
   const methodIds=new Set(refs.filter(r=>r?.kind==='method_plan').map(r=>String(r.method_id??'')));
