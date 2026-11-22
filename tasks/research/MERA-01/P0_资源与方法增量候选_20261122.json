@@ -1538,6 +1538,12 @@
       "fields": {
         "note": "Added R0093 National Geospatial Information Resource Catalog, R0094 Tianditu national platform, R0095 Tianditu Shanghai; methods M0073-M0075. Candidate totals 95 resources / 76 methods / 18 attempts. Public 1:250k data currentness is 2012; Tianditu APIs are service interfaces, not bulk data rights."
       }
+    },
+    {
+      "target": "coverage matrix latest revision",
+      "fields": {
+        "note": "After national geospatial catalog and Tianditu additions, primary-category record counts are C01 32, C02 9, C03 16, C04 6, C05 9, C06 8, C07 4, C08 11. Candidate workbook sheets 八类覆盖矩阵 and 八类覆盖映射 contain 95 mappings. Counts are record counts, not provider counts or exit scores."
+      }
     }
   ],
   "attempt_log": {
