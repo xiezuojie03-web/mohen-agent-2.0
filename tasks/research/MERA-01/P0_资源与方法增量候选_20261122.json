@@ -1143,7 +1143,7 @@
       "recommended_method_id": "M0084",
       "checked": "2026-11-22",
       "evidence": [
-        "https://www.geodoi.ac.cn/\\u005cWebEn/geodoi.aspx?Id=3503",
+        "https://www.geodoi.ac.cn/%5CWebEn/geodoi.aspx?Id=3503",
         "https://doi.org/10.3974/geodb.2024.01.09.V1"
       ]
     },
@@ -1162,7 +1162,7 @@
       "recommended_method_id": "M0085",
       "checked": "2026-11-22",
       "evidence": [
-        "https://www.geodoi.ac.cn/\\u005cWebEn/geodoi.aspx?Id=3779",
+        "https://www.geodoi.ac.cn/%5CWebEn/geodoi.aspx?Id=3779",
         "https://doi.org/10.3974/geodb.2025.05.01.V1"
       ]
     }
@@ -1900,9 +1900,9 @@
     "https://github.com/Smithsonian/smithsonian-open-access-api-drupal",
     "https://www.geodoi.ac.cn/WebEn/paper.aspx?Id=184196b8-160c-4604-9a55-4c038921519e",
     "https://doi.org/10.3974/geodb.2026.02.04.V1",
-    "https://www.geodoi.ac.cn/\\u005cWebEn/geodoi.aspx?Id=3503",
+    "https://www.geodoi.ac.cn/%5CWebEn/geodoi.aspx?Id=3503",
     "https://doi.org/10.3974/geodb.2024.01.09.V1",
-    "https://www.geodoi.ac.cn/\\u005cWebEn/geodoi.aspx?Id=3779",
+    "https://www.geodoi.ac.cn/%5CWebEn/geodoi.aspx?Id=3779",
     "https://doi.org/10.3974/geodb.2025.05.01.V1"
   ]
 }
