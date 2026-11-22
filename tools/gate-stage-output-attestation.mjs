@@ -624,7 +624,10 @@ async function deriveD05FactFacts({ query, candidate, projectId, registry, runId
   // spec rebuilt above. Re-derive all of its binding fields from persisted facts.
   const rows = await query([
     'select p.projection_id::text as projection_id, p.projection_key,',
-    '  p.payload::text as payload, p.derived_from_finding_ids::text as derived,',
+    // derived_from_finding_ids is uuid[]: a plain ::text cast yields the Postgres
+    // array literal ({a,b}) which is NOT JSON. Ask the database for JSON so the
+    // reviewer parses the same shape it compares against.
+    '  p.payload::text as payload, array_to_json(p.derived_from_finding_ids)::text as derived,',
     '  p.expression_rule::text as rule',
     'from read_model.world_projections p where p.projection_id=:\'pid\'::uuid limit 2',
   ].join(' '), { pid: projectionId });
@@ -634,10 +637,16 @@ async function deriveD05FactFacts({ query, candidate, projectId, registry, runId
   try { payload = JSON.parse(row.payload); } catch { payload = null; }
   try { derived = JSON.parse(row.derived); } catch { derived = null; }
   try { rule = JSON.parse(row.rule); } catch { rule = null; }
+  // The private worker persists the canonical (key-sorted) projection body, so the
+  // rebuild must be compared by CONTENT, never by JSON key order: a key-order
+  // difference is the same persisted fact, while any real difference still fails.
+  const sameBody = Boolean(payload?.body) && typeof payload.body === 'object' &&
+    !Array.isArray(payload.body) &&
+    executionDigest(payload.body) === executionDigest(input.projection.payload);
   requireFact(row.projection_key === input.projection.projection_key &&
     payload?.qualification === 'UNASSESSED' && payload?.finding_id === input.findingId &&
     payload?.original_id === input.originalId &&
-    JSON.stringify(payload?.body) === JSON.stringify(input.projection.payload) &&
+    sameBody &&
     SHA.test(payload?.request_digest ?? '') &&
     Array.isArray(derived) && derived.length === 1 && derived[0] === input.findingId &&
     rule?.method_id === 'P02' && rule?.qualification === 'UNASSESSED',
