@@ -1,4 +1,4 @@
-# MAB 工程施工证据账
+﻿# MAB 工程施工证据账
 
 本账按批次追加原始证据。通过 [AGENTS](../../../AGENTS.md) 读取，[PLAN](PLAN.md) 定义施工和验收标准，[CURRENT](../../../CURRENT.md) 维护现况。历史状态只对原批次、环境和精确 SHA 有效。新增批次记录依据、改动、正反验证、费用及恢复条件。
 
@@ -6033,7 +6033,7 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 ## 2026-11-22 第十六批｜D02 独立执行授权通道建成并真实跑到外发闸门（费用 0 USD）
 
-**批次起始 HEAD** `077de49` → 本批提交 `14903de`（D02 通道）、`6d0987a`（过期未核销可重签）、`2f0d0d6`（Runner 依赖解析）。
+**批次起始 HEAD** `077de49` → 本批提交 `14903de`（D02 通道）、`6d0987a`（过期未核销可重签）、`2dfbe30`（Runner 依赖解析）。
 
 **本篇为追加式证据，不覆盖历史。** 环境：云端真实库 + 真实部署（authority production、web staging）；真实 run `b9989b90-fd8a-4d50-b4b4-6f3cca7fb049`。
 
@@ -6059,8 +6059,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 费用取证：`studio.execution_receipts` 近 2 小时无新增（仅 2026-11-12 之前旧记录），即本批**零 Provider 调用、0 USD**；委托 `3f5585d0…` 额度未动。
 
 **部署与配置**
-- authority production：两次 git-source 部署（`14903de`、`2f0d0d6`），`/api/d02-issue` 无签名探测回 401（路由已生效），`/api/d02-consume` 用既有 verify 凭据探测回 503 `execution_authority_unavailable`（凭据被接受、nonce 拒绝，符合预期）。
+- authority production：两次 git-source 部署（`14903de`、`2dfbe30`），`/api/d02-issue` 无签名探测回 401（路由已生效），`/api/d02-consume` 用既有 verify 凭据探测回 503 `execution_authority_unavailable`（凭据被接受、nonce 拒绝，符合预期）。
 - web：staging `mohen-agent-2-0-746ru1hao-napoles1.vercel.app`；preview env 新增 `MOHEN_D02_ISSUE_URL`、`MOHEN_EXECUTION_AUTH_VERIFY_URL_D02`、`MOHEN_EXECUTION_AUTH_PUBLIC_KEY_D02`、`MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL_D02`（后两者改用 CLI 写入多行 PEM）。
 
 **下一步（等 Owner 裁决来源权利投影后）**：以 `from_stage:"D02"` 续跑 → 核 `studio.execution_receipts` 新增与逐项费用 → D02 PASS 后按既有路径签发 G2 → 回写 CURRENT/progress。
+
 
