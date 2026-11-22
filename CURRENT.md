@@ -24,6 +24,22 @@
 - 五道 Gate 当前资格均有效（valid_until 2026-11-28）：G0 `c0ee5a2f` / G1 `113c2bbe` / G2 `1a9402cb` / G3 `f1d9163e` / G4 `ec893e90`，全部 `independent_gate` + `current_valid=true`，`details.checks` 全 true。
 - 八维只作 **M5 准出条件**（同一作品贯通后才逐维判定）；`0/8 OVERALL_HOLD` 不表示进度，已按 Owner 2026-11-22 裁决不再作进展汇报项（见 PLAN §6.2 与 §3.5 B 进度报告口径）。
 
+### 副表：Studio 用户动作可用性（ST-01—ST-09）
+
+分母取自现行权威 [AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md §6.2](specs/AGENT_PROFESSIONAL_CAPABILITIES_CONTRACT.md) R4.5 九项。**这是"Owner 能上手用到什么"的视角**，与上表工程主干是同一任务的两个切面，不互相折算、不另立验收分母。**0 项完整验收、4 项在跑、5 项未启**。
+
+| ST | 动作（§6.2） | 状态 | 同任务实证 / 剩余 |
+|---|---|---|---|
+| ST-01 | CreateWorkBrief | 在跑 | 任务 `b2143002` 已带 topic/prompt/project 绑定；真 UI 入口与问题收敛按 PLAN §84 未完整验收 |
+| ST-02 | StudioResearchRead | 在跑 | G0/G1 读通道真实 200，跨 L 研究读已跑；统一检索视图/契约未完整验收 |
+| ST-03 | AnalyzeAndSaveCandidates | 在跑 | evidence `031dd3d9` / claim `0617b049` / finding `7f713c60` 已落库且带 revision/refs |
+| ST-04 | RequestFormalProduction | 在跑 | run `b9989b90` 已开出并实执行到 D04，G0—G4 PASS；D05/G5 未启 |
+| ST-05 | AssembleDirectorPlan | 未启 | 尚未产生 `director_plan@rev` |
+| ST-06 | PreviewWork | 未启 | 尚未产生 `preview_snapshot` |
+| ST-07 | SaveWorkRevision | 未启 | 尚未产生 `work_revision@rev` |
+| ST-08 | SubmitForEditorialReview | 未启 | 尚未产生 `submission_snapshot` |
+| ST-09 | EditorialDecision/Publish/Withdraw | 未启 | 尚未产生 publication / withdraw 回执 |
+
 ## 本批（第二十批）已落地
 
 - **D04 授权通道**（按 D03 同构，零付费派生）：`d04-resume-{journal,authorizer,input,issue,provider}.mjs` + `d04-g3-qualification.mjs`；authority 增 `/api/d04-issue|/api/d04-consume`（因 Hobby 计划 12 函数上限，两路径合并为单个 `/api/d04` 函数 + vercel.json rewrite，授权逻辑不变）；迁移 `20261122210000_d04_resume_grant_journal.sql`（独立表、stage='D04' CHECK、无 DELETE、RLS 四策略）；`from_stage` 白名单扩 D04（dispatch/self-test/types/stageSuffix），白名单单测 10/10；D04 通道单测 16/16。
