@@ -2,7 +2,7 @@
 
 > **Owner 授权口径（2026-11-22，长期有效）**：目标是墨痕**真正运行、持久运行**；除**安全问题**与**费用问题**外，施工方自行授权推进，不再逐项请示技术选择。费用边界：D02–D05 模型调用封顶 **0.05 USD**（约 ¥0.36，已建委托 `3f5585d0…`），超出该额度、新增付费来源或扩大用途仍需 Owner 批准。安全底线（密钥不入 git、不自签 Gate、不伪造会话/资格/PASS、不改迁移规避授权）不因该授权放宽。
 
-> 核验时间 2026-11-22 第二十批｜环境：云端真实库 + 真实部署实测；HEAD/部署见下。本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
+> 核验时间 2026-11-22 第二十一批（新窗口，远端 main 与本地 HEAD 同为 `17e0b8ce`，`ahead=0 behind=0`）｜环境：云端真实库 + 真实部署实测；HEAD/部署见下。CI 宿主本窗口不可达（无 `gh`/GH_TOKEN、私有库 API 404）记 `DEFERRED_ENV`；生产自动部署 `git.deploymentEnabled=false` 已核隔离。本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
 
 ## 主线进度（按 PLAN §3.5 C 业务主干，同一任务 `b2143002` / Project `d9d48901` / run `b9989b90`）
 
@@ -40,17 +40,20 @@
 | ST-08 | SubmitForEditorialReview | 未启 | 尚未产生 `submission_snapshot` |
 | ST-09 | EditorialDecision/Publish/Withdraw | 未启 | 尚未产生 publication / withdraw 回执 |
 
-## 本批（第二十批）已落地
+## 上一批（第二十批）关键落地（细节只在 progress.md）
 
-- **D04 授权通道**（按 D03 同构，零付费派生）：`d04-resume-{journal,authorizer,input,issue,provider}.mjs` + `d04-g3-qualification.mjs`；authority 增 `/api/d04-issue|/api/d04-consume`（因 Hobby 计划 12 函数上限，两路径合并为单个 `/api/d04` 函数 + vercel.json rewrite，授权逻辑不变）；迁移 `20261122210000_d04_resume_grant_journal.sql`（独立表、stage='D04' CHECK、无 DELETE、RLS 四策略）；`from_stage` 白名单扩 D04（dispatch/self-test/types/stageSuffix），白名单单测 10/10；D04 通道单测 16/16。
-- **D04 真实执行**：staging `from_stage:"D04"` 续跑 run `b9989b90` → journal 签发并核销（`a5a4e8c1…`）；候选 `d2f1da86`（object=finding `7f713c60`，`input_fingerprint=a5a4e8c1…` 与 journal 一致）；typed input 从当前 G3 资格 + 持久 claim_revision `0617b049` 确定性重建，A06 / `G4.interpretation.v1:BE` / `UNASSESSED`，derived_from_claim_revision=`0617b049`、`evidence_refs` 含 finding+claim_revision、`dependency_snapshot` 精确绑 G3 审计 `f1d9163e`，零 Provider/LLM 调用。
-- **G4 正式签发**：部署内 `/api/internal/gate-review` 先 `DRY_RUN_PASS` 再 PASS（审计 `ec893e90-ddfd-4cc3-b6cc-685ca4a85f11`，`identity_version=true` / `finding_grounding=true`，`stage_binding`={job `d04.humanistic-discovery`, input `a5a4e8c1…`, output `8338692b…`, reviewer `m5-owner-reviewer-g2g5-producer`}）；`qualification_current` 新增 finding 行。评审/签名全在部署内完成，非自签。
-- **专业方法层判定**：D04 真实执行前置是「G3 合格 claim + A06 绑定」，无需 N01–N06 付费推理；A01–A12 中 11 项 HOLD 与 N01–N06 属于**人文解释深度**缺口，不阻断本批运行。本批未新增付费来源、未扩大委托用途。
+- D04 授权通道 + 真实续跑 + G4 正式签发：`d2f1da86` finding 候选落库（`a5a4e8c1…` journal 核销、A06/BE/UNASSESSED、零 Provider），部署内 `/api/internal/gate-review` 非自签 PASS（审计 `ec893e90…`，`stage_binding` job `d04.humanistic-discovery`）；`qualification_current` 新增 finding 行。专业方法层：A01–A12 中 11 项 HOLD 与 N01–N06 属人文解释深度缺口，不阻断已跑部分。
+
+## 本批（第二十一批）已落地
+
+- **G4 签发路径无付费失败关闭单测补强**（零生产代码改动）：新增 `tests/unit/gate-review-route.test.ts`（11 项：404/401/400/503/500 分支、精确委派参数、脱敏错误码）与 `tests/data-production/gate-d04-g4-stage-output.test.mjs`（6 项：G4 只读重建、伪造摘要/错绑定/非当前 G3/非 A06 finding 失败关闭）。两文件隔离与全量均 PASS；web typecheck、静态 guard 退出 0。
+- **测试边界**：全量 unit 有 20 项既有基线失败（6 个未触碰文件，含陈旧 `vi.mock`、网络抓取、断言漂移），单独复跑确认可复现、与本批无关；未 skip/未放宽断言，留作独立工作包。CI 本窗口 `DEFERRED_ENV`，未签运行 PASS。
+- 本批未新增付费来源/用途、未碰 D05、未改方法表、未自签、密钥未入 git；主线与 ST 进度不变，未扩大用户可用范围。
 
 ## 最前阻断 / 下一动作
 
 - **最前阻断**：D05（generalize）若需真实解释性推理，须新增/扩大付费委托（现委托 `3f5585d0…` 仅授权 `d02_material_observation`），属**扩大用途**，按授权口径须 Owner 批准；A01–A12 其余 11 项方法绑定与 N01–N06 仍是专业深度缺口。
-- **下一动作**：①若推进 D05，先就付费委托扩用途报备 Owner 并核费用（累计 `0.005989 USD`，达 `0.025 USD` 半封顶须停报）；②纯技术的方法绑定/单测可自行推进；③八维其余维度按 PLAN 逐项取证，不以本批 Gate 链替代作品发布/WATCH 验收。
+- **下一动作**：①若推进 D05，先就付费委托扩用途报备 Owner 并核费用（累计 `0.005989 USD`，达 `0.025 USD` 半封顶须停报）；②纯技术的方法绑定/单测继续按合同推进；③20 项既有基线单测失败按独立工作包在 main 定向修复（不 skip/不放宽）；④八维其余维度按 PLAN 逐项取证，不以本批 Gate 链替代作品发布/WATCH 验收。CI `DEFERRED_ENV` 待宿主恢复后核精确 SHA 再签。
 
 ## 部署 / 费用 / 凭据
 

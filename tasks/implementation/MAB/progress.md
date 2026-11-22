@@ -6180,3 +6180,20 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **口径核对**：PLAN §3.5 B 第 116 行原本已明确 `0/8` 只表示整体未准出、不得解释为完成率或"没有进展"，八维的过程价值在每个维度的五类证据状态（能力已实现 / 上下游已集成 / 环境已验证 / 同任务已有节点证据 / Owner 已验收）。将 `0/8` 当进度数字汇报违反该原口径，Owner 裁决与 PLAN 原意一致。
 - **裁决落地（先改 PLAN 再执行，AGENTS §4）**：PLAN §6.2 的报告口径改为——对 Owner 报进展以 §3.5 C 业务主干的**步骤完成度**为主（主干段标已验/在跑/未启 + 展开 D00—D05、G0—G5 节点），再报同任务最远已验节点与下一最前阻断；八维只保留为准出条件，不再作进展汇报项。步骤计数直接由主干派生，不新增并行进度表、不折算百分比、不替代八维准出。
 - **CURRENT.md 同步**：主线进度表前置，主干共 10 段（0 段完整验收 / 4 段在跑 / 6 段未启），生产链 12 节点已验 10/12，最远已验节点 G4 PASS；八维移为准出条件注记。
+
+
+## 第二十一批｜G4 签发路径无付费失败关闭单测补强（2026-11-22 新窗口接续）
+
+- **基线核验（新窗口，不沿用上批 SHA）**：远端 `main` 与本地 HEAD 同为 `17e0b8ce`（fetch 后 `ahead=0 behind=0`），tracked 工作树干净；Vercel `vercel.json` 为 `git.deploymentEnabled=false`（main 推送不自动生产部署，隔离成立）；`git log` 显示最近 6 提交作者均 `xiezuojie03`，MERA-01 写入停在 `30f7cf8d`（已被本线超越），本窗口无并发写。CI 宿主不可达：本机无 `gh`/GH_TOKEN，私有库 GitHub API 返回 404 → 记 `DEFERRED_ENV`，**不按 PASS 计**。Skill doctor/static 实测：`doctor=ENVIRONMENT_OBSERVED_ONLY`（node v22.22.3/git 2.55.0/pnpm 在 PATH 但 doctor 未解析）；`verify --profile static` 两项 `mhka-route`/`dev-skill-layout` 全 PASS。CURRENT 主线表/ST 副表与实证一致，无需定向改正。
+
+- **有界核对（§3.5 D，零付费）**：可用基础=G4 已由独立机器评审签发（`ec893e90`，非自签），`deriveD04FindingStageDigests`/`attestG4FindingStageOutput`/gate-review 端点实现均在，但两处均无直接单测；当前实现=gate-review 唯一签发路径 `runGateReview` + D04 stage-output 只读重建；精确差异=测试覆盖缺口，非代码/合同缺口；最小改动=仅新增两个测试文件，不碰生产签发/方法表/凭据；证据继承=G4 机器评审与 10/12 节点证据全部有效，本批不重验、不伪造 PASS。
+
+- **改动（新增 2 文件，零生产代码改动）**：
+  - `tests/unit/gate-review-route.test.ts`：11 项测试覆盖 gate-review HTTP 契约的 404（非 preview / 开关关闭）、503（凭据缺失/过短、机器签发连接缺失）、400（坏 JSON、非法 gate/project/candidate）、401（过期/未来/畸形 time、坏签名格式、错签名）与成功委派（精确 gate/project/candidate/dry_run、`cache-control:no-store`、FAIL 结果 `ok:false`、异常只回脱敏首行错误码）。动态 import mock 与端点 `rule-gate-reviewer.mjs` 解析到同一绝对路径，已实测一致。
+  - `tests/data-production/gate-d04-g4-stage-output.test.mjs`：6 项测试覆盖 G4 只读重建精确摘要、生产方伪造 input/output digest 拒绝、错 job/reviewer/stage/registry 拒绝、非当前/歧义 G3 与缺 claim 失败关闭、非 A06/非 UNASSESSED/错支撑引用/错 persistDigest finding 行拒绝、上游快照形状约束、错 scope/object_type/evidence_refs 拒绝。全程内存假 query，零 DB/Provider/付费/真实凭据。
+
+- **测试与回归**：新文件隔离运行 `gate-review-route 11/11`、`gate-d04-g4-stage-output 6/6` 全 PASS；并入全量 `pnpm test:unit` 时两文件同样 PASS（112 文件/800 用例中 780 passed）。`pnpm --filter @mohen/web typecheck` 退出 0；静态 guard `check-runtime-data-boundary`/`check-production-registry`/`check-doc-budget` 退出 0。全量 unit 仍有 **20 项既有基线失败**（6 个未触碰文件：commons-materials 网络抓取、mab-hp08×2、mab-m5-qualified-retrieve、private-evidence-binding、studio-cloud-production 陈旧 `vi.mock` 缺 `cloudProductionFromStage` 导出），单独复跑 studio-cloud-production 确认基线可复现；与本批改动无关，未 skip/未放宽断言，按 §3.5 D 留具名 HOLD，不属本批范围。CI 仍 `DEFERRED_ENV`，未签任何运行 PASS。
+
+- **费用/边界**：本批 **0 次 Provider 调用 / 0 USD 新增**；委托 `3f5585d0…` 累计仍 **0.005989 USD**。未新增付费来源、未扩大用途、未碰 D05、未改方法表 HOLD、未自签 Gate、未伪造会话/资格/PASS、密钥未入 git。
+
+- **HOLD/下一动作**：主线进度与 ST 副表未变（主线 0/4/6、生产链 10/12、ST 0/4/5），本批属工程单测补强，未扩大用户可用范围。最前阻断仍为 D05 需扩大付费委托用途（须 Owner 批准）；A01–A12 其余 11 项方法绑定与 N01–N06 专业深度缺口不阻断已跑部分。下一动作：①纯技术方法绑定/单测继续按合同推进；②20 项既有基线单测失败按独立工作包在 main 定向修复（不 skip/不放宽）；③D05 待 Owner 批准扩用途后再动。
