@@ -7,8 +7,8 @@
     "attempts": 18
   },
   "proposed_after_merge": {
-    "resources": 92,
-    "methods": 73,
+    "resources": 95,
+    "methods": 76,
     "attempts": 18
   },
   "additions": [
@@ -912,6 +912,62 @@
       "evidence": [
         "https://app.gjzwfw.gov.cn/jmopen/webapp/html5/lsdmcx/index.html"
       ]
+    },
+    {
+      "resource_id": "R0093",
+      "parent_resource_id": null,
+      "level": "national basic geospatial data catalog",
+      "name": "National Geospatial Information Resource Catalog Service System",
+      "provider": "Ministry of Natural Resources / National Geomatics Center of China",
+      "url": "https://www.webmap.cn/main.do?method=index1",
+      "content": "National geospatial catalog; 1:250k public edition covers 816 map sheets nationwide and major islands/coastal waters, currentness 2012, CGCS2000 and 1985 elevation datum; seven feature classes include provincial/city/county admin units, boundary lines/points, settlement names and natural names; 716,785 settlement and 648,565 natural place-name features; some public data downloadable.",
+      "access": "Catalog search; partial 1:250k public data downloads; other products may require application/authorization.",
+      "rights": "Website reserves rights and prohibits unauthorized copying/mirroring; partial free download does not imply commercial/republication rights; check product terms.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0073",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.webmap.cn/main.do?method=index1"
+      ]
+    },
+    {
+      "resource_id": "R0094",
+      "parent_resource_id": null,
+      "level": "national geospatial public service platform",
+      "name": "Tianditu (Map World)",
+      "provider": "Ministry of Natural Resources / National Geomatics Center and provincial nodes",
+      "url": "https://www.tianditu.gov.cn/",
+      "content": "National geospatial service with vector/imagery/terrain maps, place names, boundaries, administrative divisions, roads, waterways, geocoding and reverse geocoding APIs; 2025 official explanation cites 1.24m developer registrations, 1m authorized apps and >1bn daily API calls.",
+      "access": "Developer registration/real-name verification, app Key, map/web/WEB/data APIs and quota management.",
+      "rights": "Some basic map/API calls are free, but this does not grant bulk download, offline redistribution or rehosting rights; commercial use and service terms vary by interface and provincial node.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0074",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.tianditu.gov.cn/",
+        "https://www.cgs.gov.cn/tzgg/tzgg/202504/t20250424_805126.html"
+      ]
+    },
+    {
+      "resource_id": "R0095",
+      "parent_resource_id": "R0094",
+      "level": "provincial geospatial public service node",
+      "name": "Tianditu Shanghai",
+      "provider": "Shanghai Municipal Commission of Planning and Natural Resources / Shanghai Institute of Surveying and Mapping",
+      "url": "https://shanghai.tianditu.gov.cn/",
+      "content": "Shanghai node with vector maps, satellite imagery, terrain shading, land cover, hillshade, multi-temporal imagery, standard maps, map APIs, web APIs, data APIs and thematic channels.",
+      "access": "Web map/results catalog; developer registration and API Key; JS/WEB/data APIs; standard map downloads.",
+      "rights": "Shanghai node terms prohibit advertising and commercialized promotion; data freshness not guaranteed; API keys/quotas and underlying data rights must be checked; no offline commercial redistribution assumed.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0075",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://shanghai.tianditu.gov.cn/",
+        "https://shanghai.tianditu.gov.cn/map/views/about.html?type=3"
+      ]
     }
   ],
   "methods": [
@@ -1354,6 +1410,36 @@
       "scope": "Official historical toponym query UI",
       "steps": "Test specific known historical names; capture result name/code/romanization/type; identify source, historical date, update and rights; keep as identified-only until results are verified.",
       "limits": "Default no results; captcha; no API/bulk; data source and license unknown."
+    },
+    {
+      "method_id": "M0073",
+      "version": "v0.1",
+      "resource_id": "R0093",
+      "status": "DRAFT",
+      "path": "National geospatial catalog → 1:250k public map sheets/features → data version and rights check",
+      "scope": "National basic geospatial data, boundaries, toponyms, waterways, roads and terrain",
+      "steps": "Search catalog; record scale/sheet/coverage/CRS/datum/currentness/features; check public edition and download; verify product license before commercial use.",
+      "limits": "2012 currentness; partial public download; copying/mirroring and commercial/republication rights not confirmed."
+    },
+    {
+      "method_id": "M0074",
+      "version": "v0.1",
+      "resource_id": "R0094",
+      "status": "DRAFT",
+      "path": "Tianditu developer service → API/Key/quota → node and commercial authorization check",
+      "scope": "National map/imagery/terrain/place-name/road/waterway/geocoding services",
+      "steps": "Select map/web/WEB/data API; register developer and request Key; inspect service resources; confirm quotas, commercial authorization, caching and tile redistribution restrictions; record node and terms version.",
+      "limits": "Online API service is not open data download; Key/quota and provincial-node terms differ; no default offline/rehosting rights."
+    },
+    {
+      "method_id": "M0075",
+      "version": "v0.1",
+      "resource_id": "R0095",
+      "status": "DRAFT",
+      "path": "Tianditu Shanghai node → multitemporal imagery/catalog/data API → Shanghai terms check",
+      "scope": "Shanghai vector/imagery/terrain/land cover/multitemporal imagery and geospatial services",
+      "steps": "Browse map service, thematic channels, results catalog and multitemporal imagery; record layer source/time/map approval number; request Key for API; check Shanghai node terms and underlying rights; do not cache/republish tiles commercially.",
+      "limits": "Prohibits commercial promotion; timeliness not guaranteed; not a historical map or open-download repository."
     }
   ],
   "updates": [
@@ -1445,6 +1531,12 @@
       "target": "coverage matrix latest revision",
       "fields": {
         "note": "After China archaeology and Yangtze geospatial supplements, primary-category record counts are C01 32, C02 9, C03 15, C04 6, C05 9, C06 8, C07 4, C08 9. Candidate workbook sheets 八类覆盖矩阵 and 八类覆盖映射 contain 92 resource mappings. Counts are records, not provider counts or completion scores."
+      }
+    },
+    {
+      "target": "category 03 China/East Asia supplement 2",
+      "fields": {
+        "note": "Added R0093 National Geospatial Information Resource Catalog, R0094 Tianditu national platform, R0095 Tianditu Shanghai; methods M0073-M0075. Candidate totals 95 resources / 76 methods / 18 attempts. Public 1:250k data currentness is 2012; Tianditu APIs are service interfaces, not bulk data rights."
       }
     }
   ],
