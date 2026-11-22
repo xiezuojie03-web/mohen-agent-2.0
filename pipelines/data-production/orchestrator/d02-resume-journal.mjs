@@ -6,13 +6,18 @@ export function createD02ResumeJournal(db){
  if(typeof db?.query!=='function')throw Error('D02_RESUME_JOURNAL_CONFIG_INVALID');
  return {
   async issueOnce({exp,...binding}){
+   // A run may be resumed again when its previous grant was consumed, or when it
+   // expired unused (a grant that failed before live consumption would otherwise
+   // block every later retry forever). An unexpired, unconsumed grant stays
+   // one-use and rejects a re-issue (rowCount 0).
    const result=await db.query(
     `insert into control.d02_resume_grant_journal (run_id,binding,expires_at)
      select $1::uuid,$2::jsonb,to_timestamp($3)
      where to_timestamp($3) > statement_timestamp()
      on conflict (run_id) do update
        set binding=excluded.binding, expires_at=excluded.expires_at, consumed_at=null
-       where control.d02_resume_grant_journal.consumed_at is not null`,
+       where control.d02_resume_grant_journal.consumed_at is not null
+          or control.d02_resume_grant_journal.expires_at <= statement_timestamp()`,
     [binding.run_id,JSON.stringify(binding),exp]);
    return result.rowCount===1;
   },
