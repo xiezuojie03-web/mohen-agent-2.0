@@ -5962,3 +5962,9 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 **已知残留缺口（不影响本次准出位置）**：`https://mohen-d00-authority.vercel.app/api/current` 仍只服务 D00/G0（G1 请求 403）；D02 及以后阶段的 runner 复核需要把该读服务放开到注册表内的 stage/gate 配对。该改动属代码变更，需在进入 D02 前完成。
 
 **边界**：零 Provider 调用、零新增付费、未伪造会话/资格；consume token、bypass secret 均只落 `.secrets/`（gitignored）；未改生产业务配置（仅 preview/授权服务配置与其部署）。
+
+### 追加（同批）：G1 读通道 403 的精确根因
+
+实测：`/api/current` 对 `d00.source-intake/G0` 返回 **200**，对 `d01.carrier-reading/G1` 返回 **403 `consumer_binding_denied`**。根因在 `control.authenticate_gate_service`：凭据行携带 `job_id`/`gate_code`，并与绑定逐字段比对；本项目 consume 凭据只绑 D00/G0，故 G1 无匹配。**不是** stage/gate 白名单问题（`apps/d00-authority/api/current.mjs` 已按注册表阶段门配对）。
+
+资格本体在库内成立：`qualification_current` G0→`source_version 36ea7ffc`（`c0ee5a2f`，至 2026-11-27）、G1→`read_unit 43951035`（`113c2bbe`，至 2026-11-28）；两候选均为 `CONSUMED`。→ 进入 D02 前的最小修法：按 job 各建一条凭据并让 runner 侧凭据 env 支持按 job 选择（单值 env 无法表达多阶段），属代码+配置变更，未在付费 Provider 前擅自动工。
