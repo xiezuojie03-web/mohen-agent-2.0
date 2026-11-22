@@ -1706,6 +1706,12 @@
       "fields": {
         "note": "After category 07 research data and OA discovery additions, primary-category record counts are C01 32, C02 9, C03 16, C04 6, C05 9, C06 8, C07 9, C08 11. Candidate workbook sheets 八类覆盖矩阵 and 八类覆盖映射 contain 100 mappings. Counts are records, not provider counts or exit scores."
       }
+    },
+    {
+      "target": "candidate workbook integrity check",
+      "fields": {
+        "note": "Verified 100 resource rows/100 unique resource_id; 81 method rows/80 unique method_id due two legacy M0004 rows (historical-2026-08 HISTORICALLY_VALIDATED_CURRENT_UNVERIFIED and v2026-doc RETIRED), both point to R0007 and are retained; 18 historical attempts preserved; all method resource references resolve; all 100 resources mapped to the eight-category matrix. Use composite (method_id, version, resource_id) for legacy M0004; do not silently renumber."
+      }
     }
   ],
   "attempt_log": {
