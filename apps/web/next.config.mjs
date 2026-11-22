@@ -9,7 +9,6 @@ const nextConfig = {
   outputFileTracingIncludes: {
     "/api/studio/research-tasks/*/production": ["../../AGENTS.md","../../specs/data-production/production-registry.json","../../specs/data-production/schemas/production-registry.schema.json"],
     "/api/internal/production-execute": ["../../AGENTS.md","../../pipelines/data-production/**/*","../../packages/data-access/**/*","../../specs/data-production/**/*","../../tools/lib/method-plan-input.mjs","../../apps/web/lib/studio/provider-dispatcher.ts"],
-    "/api/internal/gate-review": ["../../AGENTS.md","../../specs/data-production/**/*","../../packages/data-access/scripts/**/*"],
   },
   transpilePackages: ["@mohen/experience-engine", "@mohen/agent-runtime", "@mohen/data-access"],
   // K4：PDF 文本抽取走 Node 原生模块，不参与前端打包。
@@ -33,9 +32,5 @@ export default async function configure(phase){
   }
   const {fileList}=await nodeFileTrace([root+"pipelines/data-production/run.mjs",root+"apps/web/lib/studio/provider-dispatcher.ts"],{base:root,processCwd:root});
   nextConfig.outputFileTracingIncludes["/api/internal/production-execute"].push(...Array.from(fileList,f=>"../../"+f));
-  // gate-review 在部署内 spawn 权威签发 CLI（gate-authority.mjs），spawn 目标不参与
-  // webpack 追踪，需单独 trace 其依赖树（pg、gate-authority-repository 等）。
-  const {fileList:gateAuthorityFiles}=await nodeFileTrace([root+"packages/data-access/scripts/gate-authority.mjs"],{base:root,processCwd:root});
-  nextConfig.outputFileTracingIncludes["/api/internal/gate-review"].push(...Array.from(gateAuthorityFiles,f=>"../../"+f));
   return nextConfig;
 }

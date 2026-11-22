@@ -6,9 +6,7 @@
 // (control.sign_gate_candidate) — there is no second Gate/audit write path.
 import crypto from "node:crypto";
 import { readFileSync } from "node:fs";
-import { execFileSync } from "node:child_process";
 import path from "node:path";
-import fs from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import {
   MACHINE_REVIEWER_USER_ID,
@@ -22,10 +20,13 @@ import { decideRightsActions } from "../packages/data-access/src/rights-actions.
 import { inspectMethodPlanRef, isMethodPlanRef } from "../packages/data-access/src/method-plan-ref.mjs";
 // D01/G1：独立签发时由 signer 自己从库内事实重建阶段输入/输出摘要。
 import { attestStageOutputForRequest, deriveD01ReadingStageDigests, deriveD02ObservationStageDigests } from "./gate-stage-output-attestation.mjs";
+// 权威签发唯一实现：与 CLI gate-authority.mjs 使用同一 repository（control.sign_gate_candidate）。
+import { createGateAuthorityRepository } from "../packages/data-access/src/gate-authority-repository.mjs";
+// getNodePgPool 复用同一机器身份连接池（openMachineQuery 已把 DATABASE_URL 切到机器签发连接）。
+import { getNodePgPool } from "../packages/data-access/src/node-pg-client.mjs";
 import registry from "../specs/data-production/production-registry.json" with { type: "json" };
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
-const AUTHORITY_CLI = path.join(ROOT, "..", "packages", "data-access", "scripts", "gate-authority.mjs");
 
 export const PROJECT_ID = "b0a11000-0000-4000-8000-000000000001";
 export const RULE_VERSION_BY_GATE = { G0: "m5-local-v1", G1: "m5-local-v1", G2: "m5-local-v1", G3: "m5-local-v1", G4: "m5-local-v1", G5: "v1" };
@@ -928,31 +929,22 @@ function argument(name) {
 }
 
 async function decideThroughAuthority(decision, sessionToken) {
+  // 进程内直呼权威签发 repository（与 CLI gate-authority.mjs 完全同一实现，
+  // control.sign_gate_candidate 唯一写路径不变）。此前经 spawn 子进程执行，
+  // 但 spawn 目标不参与部署文件追踪，lambda 内缺失导致签发必然失败；
+  // 连接复用 openMachineQuery 切换后的机器签发连接池（同一 DATABASE_URL）。
   const url = process.env.MOHEN_GATE_MACHINE_DATABASE_URL;
   if (!url) throw Error("MACHINE_GATE_DATABASE_URL_REQUIRED");
-  if (!fs.existsSync(AUTHORITY_CLI)) {
-    // 部署内 spawn 目标不参与 webpack 追踪，缺失时给出精确路径便于修正文件追踪配置。
-    throw Error(`AUTHORITY_CLI_MISSING ${AUTHORITY_CLI}`);
-  }
-  let output;
   try {
-    output = execFileSync(process.execPath, [AUTHORITY_CLI, "decide"], {
-      input: JSON.stringify({ decision, sessionToken }),
-      env: { ...process.env, MOHEN_GATE_DATABASE_URL: url },
-      encoding: "utf8",
-    });
+    const repo = createGateAuthorityRepository(getNodePgPool());
+    const auditId = await repo.decide(decision, sessionToken);
+    if (!auditId) throw Error("GATE_DECISION_NOT_PERSISTED");
+    return auditId;
   } catch (error) {
-    // 保留权威层真实拒绝原因（不含凭据），否则只剩一句 command failed。
-    // node 子进程的 loader 报错前几行是样板（位置/throw/^^），真正信息在
-    // Error:/Cannot find module 行，优先挑出这些行，避免诊断信息被截断。
-    const stderrLines = String(error?.stderr || "").trim().split("\n");
-    const informative = stderrLines.filter((l) => /Error|Cannot find|require stack|MODULE_NOT_FOUND/.test(l)).slice(0, 4);
-    const detail = (informative.length ? informative : stderrLines.slice(0, 4)).join(" | ");
-    throw Error(`GATE_DECISION_FAILED ${detail || String(error?.message ?? error).split("\n")[0]}`.slice(0, 600));
+    // 权威层机器错误码已是单行大写（repository 约定），原样保留便于诊断。
+    const detail = String(error?.message ?? error).split("\n")[0];
+    throw Error(`GATE_DECISION_FAILED ${detail}`.slice(0, 600));
   }
-  const parsed = JSON.parse(output.trim() || "{}");
-  if (!parsed.gate_audit_id) throw Error("GATE_DECISION_NOT_PERSISTED");
-  return parsed.gate_audit_id;
 }
 
 // 与 CLI main 完全同一份评审逻辑；受控部署入口（/api/internal/gate-review）调用
