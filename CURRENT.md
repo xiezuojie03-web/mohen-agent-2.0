@@ -2,17 +2,17 @@
 
 > **Owner 授权口径（2026-11-22，长期有效）**：目标是墨痕**真正运行、持久运行**；除**安全问题**与**费用问题**外，施工方自行授权推进，不再逐项请示技术选择。费用边界：D02–D05 模型调用封顶 **0.05 USD**（约 ¥0.36，已建委托 `3f5585d0…`），超出该额度、新增付费来源或扩大用途仍需 Owner 批准。安全底线（密钥不入 git、不自签 Gate、不伪造会话/资格/PASS、不改迁移规避授权）不因该授权放宽。
 
-> 核验时间 2026-11-22 第二十二批收口（**施工成果 SHA `48c9169b`**：两部署与提交时 HEAD/origin/main 均为此 SHA；其后仅追加本批文档收口提交，无代码差异，部署不随文档提交重建）｜环境：云端真实库 + 真实部署实测；HEAD/部署见下。CI 宿主本窗口不可达（无 `gh`/GH_TOKEN、私有库 API 404）记 `DEFERRED_ENV`；生产自动部署 `git.deploymentEnabled=false` 已核隔离。本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
+> 核验时间 2026-11-22 第二十三批收口（**施工成果 SHA `e563161c`**：web staging 新部署即此 SHA；authority production 未改动、仍为上一施工成果 `48c9169b`；其后仅追加本批文档收口提交，无代码差异）｜环境：云端真实库 + 真实部署实测；D05 真实续跑与 G5 独立签发均有库内回读证据。CI 宿主本窗口不可达（无 `gh`/GH_TOKEN、私有库 API 404）记 `DEFERRED_ENV`；生产自动部署 `git.deploymentEnabled=false` 已核隔离。本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
 
 ## 主线进度（按 PLAN §3.5 C 业务主干，同一任务 `b2143002` / Project `d9d48901` / run `b9989b90`）
 
-主干共 **10 段**：**0 段完整验收、4 段在跑、6 段未启**；其中生产链 12 个节点已验 **10/12**（D00/G0/D01/G1/D02/G2/D03/G3/D04/G4），**最远已验节点 = D04 UNASSESSED finding 候选落库 + G4 机器评审正式 PASS**。
+主干共 **10 段**：**0 段完整验收、4 段在跑、6 段未启**；其中生产链 12 个节点已验 **12/12**（D00/G0/D01/G1/D02/G2/D03/G3/D04/G4/D05/G5），**最远已验节点 = D05 事实分支 P02 `world_projection` 落库 + G5 独立机器评审正式 PASS（`3aa1c2de`）**。
 
 | # | 主干段（PLAN §3.5 C） | 状态 | 同任务实证 / 剩余 |
 |---|---|---|---|
 | 1 | Studio 受权委托与研究意图 | 在跑 | 真实任务/项目/Root 已固定；ST-01 的真 UI 入口与问题收敛未完整验收 |
 | 2 | 统一检索 L0—L5 并核权利与当前资格 | 在跑 | 权利投影与 Gate 读通道已真实跑通；统一检索视图/契约未完整验收 |
-| 3 | D00—D05 必要工序 + G0—G5 独立资格 | 在跑 | **10/12 节点已验**；剩 D05 事实分支（零付费确定性派生）与 G5 |
+| 3 | D00—D05 必要工序 + G0—G5 独立资格 | 在跑 | **12/12 节点已验**（含 D05 P02 落库与 G5 `3aa1c2de`）；剩 P03/P06 事实分支（方法绑定 HOLD）与 A01–A12 其余 11 项方法绑定 |
 | 4 | 可追溯知识资产与合法研究读 | 在跑 | evidence / finding / claim_revision 已落库且带 revision/refs；13 类资产合同未全验 |
 | 5 | 导演 H1/H2/H3 与 19 组件 → WorkRevision | 未启 | — |
 | 6 | Admin 回链、运营审核、作品资格与媒资许可 | 未启 | — |
@@ -21,7 +21,7 @@
 | 9 | 第二个非模板题材复用验证（PLAN §3.5 C-1） | 未启 | — |
 | 10 | Owner 真实体验与最终签收 | 未启 | — |
 
-- 五道 Gate 当前资格均有效（valid_until 2026-11-28）：G0 `c0ee5a2f` / G1 `113c2bbe` / G2 `1a9402cb` / G3 `f1d9163e` / G4 `ec893e90`，全部 `independent_gate` + `current_valid=true`，`details.checks` 全 true。
+- 六道 Gate 当前资格均有效：G0 `c0ee5a2f` / G1 `113c2bbe` / G2 `1a9402cb` / G3 `f1d9163e` / G4 `ec893e90`（valid_until 2026-11-28）/ G5 `3aa1c2de`（valid_until 2026-11-28），全部 `independent_gate` + `current_valid=true`，`details.checks` 全 true。
 - 八维只作 **M5 准出条件**（同一作品贯通后才逐维判定）；`0/8 OVERALL_HOLD` 不表示进度，已按 Owner 2026-11-22 裁决不再作进展汇报项（见 PLAN §6.2 与 §3.5 B 进度报告口径）。
 
 ### 副表：Studio 用户动作可用性（ST-01—ST-09）
@@ -33,7 +33,7 @@
 | ST-01 | CreateWorkBrief | 在跑 | 任务 `b2143002` 已带 topic/prompt/project 绑定；真 UI 入口与问题收敛按 PLAN §84 未完整验收 |
 | ST-02 | StudioResearchRead | 在跑 | G0/G1 读通道真实 200，跨 L 研究读已跑；统一检索视图/契约未完整验收 |
 | ST-03 | AnalyzeAndSaveCandidates | 在跑 | evidence `031dd3d9` / claim `0617b049` / finding `7f713c60` 已落库且带 revision/refs |
-| ST-04 | RequestFormalProduction | 在跑 | run `b9989b90` 已开出并实执行到 D04，G0—G4 PASS；D05/G5 未启 |
+| ST-04 | RequestFormalProduction | 在跑 | run `b9989b90` 已实执行到 D05：G0—G5 六门 PASS（G5 `3aa1c2de`），P02 `a17059e3` 落库并按资格读通道回读；run 终态仍 HOLD（设计内「独立门已签、run 不自动改写」，与 G3/G4 时一致） |
 | ST-05 | AssembleDirectorPlan | 未启 | 尚未产生 `director_plan@rev` |
 | ST-06 | PreviewWork | 未启 | 尚未产生 `preview_snapshot` |
 | ST-07 | SaveWorkRevision | 未启 | 尚未产生 `work_revision@rev` |
@@ -48,24 +48,29 @@
 
 - G4 签发路径无付费失败关闭单测补强：新增 `tests/unit/gate-review-route.test.ts`（11 项）与 `tests/data-production/gate-d04-g4-stage-output.test.mjs`（6 项），隔离与全量均 PASS；web typecheck、静态 guard 退出 0。全量 unit 20 项既有基线失败（6 个未触碰文件），与本批无关，留独立工作包，未 skip/未放宽。
 
-## 本批（第二十二批）已落地
+## 上一批（第二十二批）关键落地（细节只在 progress.md）
 
-- **D05 事实分支零付费执行链代码已落云端**（提交 `134d6619`，与 D04 同构）：resume/input 重建 + 授权通道（issue/journal/authorizer/qualification checker）+ `from_stage:'D05'` 白名单 + 确定性 fact publish（P02 world_projections）+ G5 stage-output attestation + reviewer 凭据 provision。零 Provider 调用。
-- **authority 组合回归已修**（`edd15508`→`20711edc`→`48c9169b`）：D05 接入时漏定义 `d04Job` 导致 authority 全路由 503（含 D04 回归），已定位并修复；诊断用的错误详情响应体已回退为不透明 503。authority production 重部署后 D04/D05 issue/consume 均返回 401=路由存在且鉴权正常。
-- **配置已落云端**：web preview 已设 D05 issue URL、配对公钥（`d01-resume` 公钥）、verify 凭据、per-job G5 凭据映射；authority 与 web staging 部署 SHA 均 `48c9169b`。
-- **未跑通（如实记录）**：staging 真实续跑 `b9989b90` 触发到 Runner 后停在签名校验（`EXECUTION_SIGNED_GRANT_SIGNATURE_INVALID`，公钥误配已修）→ run 终态 **HOLD**；D05 候选 **0**、G5 **未签**、difficulty 分支未验证通过。按 Owner 收口指令停止施工，未再重试。主线与 ST 进度不变。
+- D05 事实分支零付费执行链代码落云端（`134d6619`，与 D04 同构）+ authority 组合回归修复（`48c9169b`）；staging 首次续跑停在 Runner 签名校验（`EXECUTION_SIGNED_GRANT_SIGNATURE_INVALID`）→ run HOLD、D05 候选 0、G5 未签，公钥误配修正后未重试。
+
+## 本批（第二十三批）已落地
+
+- **Runner 签名校验根因查明并真实跑通**：真因是 D05 用的 `MOHEN_EXECUTION_AUTH_PUBLIC_KEY_D05` 配成了 D00 authority 公钥（签名私钥为 `d01-resume`），2026-11-22T11:45 那次失败用的正是该误配部署 `hoim1whhp`；11:51:49 已改为 `d01-resume` 公钥、部署 `5g38pnq17` 生成于其后但**此前从未重试**。本批用真实授权令牌做正反验证：`d01-resume` 公钥验签 true、D00 公钥验签 false（指纹 `3609187b…` vs `b294474f…`）。
+- **D05 真实执行成功**（`from_stage:'D05'`，staging `5g38pnq17`）：D05 issue→consume 一次性 journal 核销 → Runner 越过签名/资格/在线核销 → 确定性 P02 落库 `read_model.world_projections.a17059e3`（`projection_key=d05-fact-0617b049-7f713c60`，`lineage.g3=f1d9163e` / `lineage.g4=ec893e90`，`provider_calls=0`），并提交 G5 候选 `d6ee7004`（`dependency_snapshot` 精确绑 G4 `ec893e90`，`input_fingerprint=0cabcf63…` 与 journal 一致）。
+- **G5 独立签发 PASS**（部署内 `/api/internal/gate-review`，dry_run `DRY_RUN_PASS` → 正式 `3aa1c2de`）：机器评审 `mohen_gate_signer_m5_machine`、`decision_origin=independent_gate`、`rule_version=v1`、`checks={work_revision_binding,rights_by_operation}=true`、`stage_binding={job d05.read-model-publication, input 0cabcf63…, output 820ddb74…, reviewer m5-owner-reviewer-g2g5-producer}`、valid_until 2026-11-28；候选转 `CONSUMED`，`qualification_current` 新增 G5 行。非自签、无旧 PASS 复用。
+- **G5 只读取证两处缺陷修复**（提交 `e563161c`，失败关闭不得放宽）：①`derived_from_finding_ids` 是 `uuid[]`，`::text` 得到 Postgres 数组字面量非 JSON → 改 `array_to_json(...)::text`；②持久化正文为 canonical（键排序），旧 `JSON.stringify` 比较把同一事实判为不同 → 改按内容 `executionDigest` 比较。两项真因均以真实 G5 候选为对象复现并回放验证（`0cabcf63…`/`820ddb74…` 与签发审计逐字一致）。
+- **回归**：D04→G4 走同一修复模块仍复现签名摘要 `a5a4e8c1…`/`8338692b…`（equal=true）；D04 路由 401、D04/G4 审计仍 `current_valid`；`tests/data-production/*.test.mjs` 全 498 项 489 通过、9 项既有基线失败（与修复前 revision 逐项同名单同数量，未 skip/未放宽）。
 
 ## 最前阻断 / 下一动作
 
-- **最前阻断**：D05 事实分支无付费阻断——按协议 §11、§13.5 与 D05 主规，D05 是对已合格 L3/G3 内容作零付费确定性派生发布（事实型 P02/P03/P06），G5 合同 checks 无付费/推理条件；付费是 choice 非 obligation。上一窗口「D05 必须付费扩用途、须 Owner 批准」的误读已撤销（裁决来源见 progress.md「第二十二批」）。执行链代码与配置已落云端（本批已落地段），**剩余为运行验证缺口**：staging 续跑 `b9989b90` 停在 Runner 签名校验、run 仍 HOLD，公钥误配已修但未重试；D05 候选 0、G5 未签。A01–A12 其余 11 项方法绑定与 N01–N06 是专业深度缺口，不阻断事实分支。
-- **下一动作**（Owner 已令停止施工，以下为恢复施工时的顺序，非本窗口执行项）：①核 Runner 签名校验失败的真实根因并重试 `from_stage:'D05'` 续跑，核实 P02 world_projection 候选落库、`dependency_snapshot` 绑 G4 审计 `ec893e90`，G5 走部署内 `/api/internal/gate-review`（dry_run→正式）；②20 项既有基线单测失败按独立工作包在 main 定向修复（不 skip/不放宽）；③八维其余维度按 PLAN 逐项取证，不以 Gate 链替代作品发布/WATCH 验收。CI `DEFERRED_ENV` 待宿主恢复后核精确 SHA 再签。D05 事实分支零付费，预期 0 次 Provider 调用 / 0 USD。
+- **最前阻断**：本轮 D05/G5 无工程阻断。P03（map_timeline_projections）/P06（evidence_pointers）事实分支仍因 `method-binding-contract.json` 中 `implementation_binding=HOLD` 且 G5 评审器无对应 object_type 分支而**如实不产出**；A01–A12 其余 11 项方法绑定与 N01–N06 人文解释深度缺口不阻断已跑节点。run `b9989b90` 终态仍 HOLD（`INDEPENDENT_GATE_NOT_VERIFIED`），与 G3/G4 时一致：独立门签发不回溯改写 run。
+- **下一动作**：①按 PLAN §3.5 C 进入 L0–L5 统一检索与 Agent 研究成果向 H1/H2/H3 导演计划交接（Studio ST-05→ST-07），不重设计生产体系；②P03/P06 与其余 11 项 A 方法绑定按合同另立工作包；③八维其余维度按 PLAN 逐项取证，不以 Gate 链替代作品发布/WATCH 验收；④CI 仍 `DEFERRED_ENV`，待宿主恢复后核精确 SHA 再签。
 
 ## 部署 / 费用 / 凭据
 
-- web staging：`mohen-agent-2-0-5g38pnq17-napoles1.vercel.app`；authority production：`mohen-d00-authority.vercel.app`（git source，API 端点实测 401=存在）。两部署 SHA 均为施工成果 `48c9169b`（文档收口提交不触发重建）。提交作者须为 `xiezuojie03 <315303392+xiezuojie03-web@users.noreply.github.com>`，否则 Vercel 拒部署；网络经本地代理 `127.0.0.1:51081`，令牌到期先 `npx vercel whoami` 续期。
-- 费用：本批 **0 次 Provider 调用 / 0 USD 新增**；委托 `3f5585d0…` 累计仍 **0.005989 USD**（0.05 封顶 12%），未新增付费来源、未扩大用途。本批含令牌/签名的 19 个 `.tmp_*` 临时脚本已清理，未入 git。
+- web staging：`mohen-agent-2-0-eytp0i3no-napoles1.vercel.app`（`dpl_Cqdz7vPYHrzQTn711rkGEh35rter`，target staging / VERCEL_ENV=preview，SHA `e563161c`）；上一部署 `mohen-agent-2-0-5g38pnq17-napoles1.vercel.app`（`48c9169b`）为本批 D05 真实续跑所用。authority production：`mohen-d00-authority.vercel.app`（未改动，仍 `48c9169b`；D04/D05 issue 未签名探测 401=路由存在）。提交作者须为 `xiezuojie03 <315303392+xiezuojie03-web@users.noreply.github.com>`，否则 Vercel 拒部署；网络经本地代理 `127.0.0.1:51081`。
+- 费用：本批 **0 次 Provider 调用 / 0 USD 新增**（D05 为确定性事实分支；`studio.execution_receipts` 仍 27 条、最新仍 2026-11-22T04:24:08Z）；委托 `3f5585d0…` 累计仍 **0.005989 USD**，未新增付费来源、未扩大用途。含令牌/签名的临时脚本均在 gitignored `work/scratch/`，未入 git。
 - 已知并发写入方：`main` 上有另一执行方传 `tasks/research/MERA-01/*`；推送被拒时 fetch + rebase，绝不 force push / reset / 新建分支。
-- 安全：密钥仅在 `.secrets/`（gitignored），签名私钥与机器签发连接不出部署；G3/G4 均为独立机器评审签发，非自签。
+- 安全：密钥仅在 `.secrets/`（gitignored），签名私钥与机器签发连接不出部署（G5 在部署内签发）；G0—G5 均为独立机器评审签发，非自签。
 
 ## 历史索引（细节只在 progress.md，不在本文件重述）
 
