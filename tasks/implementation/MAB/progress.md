@@ -6102,3 +6102,24 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - 测试：`tests/unit/provider-dispatcher.test.ts` **27/27 通过**（新增上界核算、空正文两分类、缺 usage 三类断言）；`tests/data-production/private-material-generation.test.mjs` **11/11 通过**（超时后第二次是新的真实尝试并另记回执，不静默重放）。
 - 回归：`tests/data-production/*.test.mjs` 428 项中 4 项失败——1 项为本机 Windows `--import` 绝对路径已知问题；另 3 项（`studio-knowledge-routing.test.mjs` 2 项 `SOURCE_GAP_UNCONFIRMED`、`private-candidate-worker.test.mjs` 1 项）经 `git stash` 回退到 `6fed448` 复跑**同样失败**，与本批无关。`apps/web` tsc 仅 3 处既有缺失依赖（`@vercel/oidc`、`nodemailer`）报错，本批文件无新增类型错误。
 - 费用：本批未发起新的 Provider 调用，累计仍为 **0.000440 USD**（委托 `3f5585d0…` 封顶 0.05 的 0.88%）。
+
+## 2026-11-22 第十七批｜G2 机器评审真实签发 PASS（费用 0 USD）
+
+**批次起始 HEAD** `b716339` → 本批提交 `367085f`（密码覆盖修复+单测）、`795361e`（spawn 目标文件追踪，后由 `3b2b01d` 取代）、`8b9cf30`（stderr 诊断增强）、`aa32bcf`（目录通配包含，后由 `3b2b01d` 移除）、`3b2b01d`（进程内权威签发）。
+
+**真实成果（云端实库，已回读）**
+- run `b9989b90` 的 D02 候选 `b42bf519-1841-4a51-b30c-0a458e87693b`（material_evidence `031dd3d9`，上一批 SUBMITTED）→ **CONSUMED**。
+- `gate_audits.1a9402cb-3111-4b2b-86ba-7a06ad1bf78b` = G2/PASS/`independent_gate`/`reviewer_db_identity=mohen_gate_signer_m5_machine`/`rule_version=m5-local-v1`/valid_until `2026-11-28T05:57:44Z`；`stage_binding` = `{job_id d02.material-understanding, input_digest 19df0921…, output_digest d5bd688f…, reviewer_binding_ref m5-owner-reviewer-g2g5-producer}`。
+- `control.qualification_current` 新增 G2 现行行（material_evidence `031dd3d9` / `current_valid=true` / 至 11-28）。dry_run 先返回 `DRY_RUN_PASS`（identity_version + evidence_binding 全过），再正式签发；入口为部署内 `/api/internal/gate-review`（Preview + HMAC `mohen.gate-review.v1` + 显式开关）。
+
+**缺陷 1（环境漂移，`367085f`）**：部署内评审报 `password authentication failed for user mohen_gate_signer_m5_machine`。取证链：`.secrets` 密码本地直连该身份 **成功** → 比对上次写 env 的请求体与 `.secrets` 哈希 **一致** → `vercel env pull` 拉回值哈希 **一致** → 结论：值没错，错在运行时被覆盖。定位 `packages/data-access/src/node-pg-client.mjs`：`MOHEN_DATABASE_PASSWORD`（preview 环境存在、20 天前设置；本地 `.env.local` 无）被无差别应用到所有连接，顶掉专用身份的内嵌密码。修法：覆盖值仅当 `connection.password === ""` 时生效。测试 `tests/unit/node-pg-client-password-override.test.ts` 3/3 通过（内嵌密码不被覆盖/无内嵌密码时覆盖生效/无覆盖值时原样保留）。
+
+**缺陷 2（部署打包，`795361e`→`3b2b01d`）**：dry-run 过后正式签发报 `GATE_DECISION_FAILED … Cannot find module '/vercel/path0/packages/data-access/scripts/gate-authority.mjs'`。本地 `next build` 的 `route.js.nft.json`（199 文件）**确实包含**该 CLI 与 pg，但 Vercel 构建内 `outputFileTracingIncludes` 对该路由的静态单文件与目录通配两种形态**均未生效**（同构型 production-execute 的包含可用）。最终按「唯一实现不变」改为进程内直呼：`createGateAuthorityRepository(getNodePgPool()).decide(decision, sessionToken)` —— 与 CLI `gate-authority.mjs` 完全同一 repository 与 `control.sign_gate_candidate` 唯一写路径；连接池即 `openMachineQuery` 切换后的机器签发连接（同一 DATABASE_URL，内嵌密码不受主库覆盖值影响）。`rule-gate-reviewer.test.ts` 16 项回归通过；`node --check` 语法通过。CLI 文件保留（`bind-original-media-to-work.mjs`、`verify-5m-watch-eligibility.mjs` 等本地工具仍直呼）。
+
+**费用**：本批零 Provider 调用、0 USD 新增。委托 `3f5585d0…` 累计已知费用 0.005989 USD（第 1/3/4 次尝试回执合计，占 0.05 封顶 12.0%；第 2 次 HOLD 回执费用未知，按派发器新规则以授权时上界计入 spent）。
+
+**部署**：本批共 5 次 preview 部署（`kseowgrmx`→`5nqutm8s2`→`andu8cj5u`→`rkb4mfhuu`→`lp5mfehcq`→`5itfot142`，含两次试错部署），最终 `5itfot142` 为当前可用版本。Vercel API 中途断网一次，经本地代理 `127.0.0.1:51081` 恢复。
+
+**边界**：未改 Gate 判定规则、未改候选/审计写路径语义、未伪造会话/资格/PASS；密钥未入 git/日志/对话（env 值哈希比对而非明文）。
+
+**下一步（唯一最前缺口）**：D03 无执行授权通道——`from_stage` 白名单 `D01|D02`、无 `MOHEN_EXECUTION_AUTH_*_D03`、无 D03 journal/issue/consume 端点、无 G3 读凭据映射。按 D01/D02 同构补齐后即可 `from_stage:"D03"` 续跑并核 G3 交接。

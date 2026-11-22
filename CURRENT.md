@@ -2,6 +2,18 @@
 
 > **Owner 授权口径（2026-11-22，长期有效）**：目标是墨痕**真正运行、持久运行**；除**安全问题**与**费用问题**外，施工方自行授权推进，不再逐项请示技术选择。费用边界：D02–D05 模型调用封顶 **0.05 USD**（约 ¥0.36，已建委托 `3f5585d0…`），超出该额度、新增付费来源或扩大用途仍需 Owner 批准。安全底线（密钥不入 git、不自签 Gate、不伪造会话/资格/PASS、不改迁移规避授权）不因该授权放宽。
 
+> 核验时间 2026-11-22 第十七批（批次起始 HEAD `b716339`；本批提交 `367085f`、`795361e`、`8b9cf30`、`aa32bcf`、`3b2b01d`）｜环境：云端真实库 + 真实部署实测；未验证项：D03 及以后（D03 执行授权通道未建）。
+
+**本批结论：G2 已由机器评审按设计合同真实签发 PASS——run `b9989b90` 的 D02 材料观察候选 `b42bf519` 已 CONSUMED，`qualification_current` 新增 G2 行（material_evidence `031dd3d9`，valid_until `2026-11-28T05:57:44Z`）。这是该 run 首次持有现行有效的 G2 资格。本批零 Provider 调用、0 USD 新增费用。**
+
+- **签发回执（云端实库，已回读）**：`gate_audits.1a9402cb-3111-4b2b-86ba-7a06ad1bf78b` = G2/PASS/`independent_gate`/`reviewer_db_identity=mohen_gate_signer_m5_machine`/`rule_version=m5-local-v1`；`stage_binding` = `{job_id d02.material-understanding, input_digest 19df0921…, output_digest d5bd688f…, reviewer_binding_ref m5-owner-reviewer-g2g5-producer}`；identity_version 与 evidence_binding 两项确定性检查全 PASS（dry_run 先 `DRY_RUN_PASS`，再正式签发）。签发入口为部署内 `/api/internal/gate-review`（Preview + HMAC + 显式开关，会话密钥与机器签发连接不出部署）。
+- **修复的缺陷 1（环境漂移型，提交 `367085f`）**：部署内 dry-run 报 `password authentication failed for user mohen_gate_signer_m5_machine`。真因是 preview 环境的 `MOHEN_DATABASE_PASSWORD`（主库密码轮换覆盖值，20 天前设置；本地 `.env.local` 无此变量）被 `getNodePgPool()` 无差别覆盖到所有 data-access 连接，机器签发身份自带内嵌密码被主库密码顶掉。修法：覆盖值仅当连接串未内嵌密码时生效；专用身份（机器评审/producer/private worker）不受影响，主库轮换路径不变。新增 `tests/unit/node-pg-client-password-override.test.ts` 3/3 通过。
+- **修复的缺陷 2（部署打包型，提交 `795361e`→`3b2b01d`）**：正式签发报 `MODULE_NOT_FOUND`——`decideThroughAuthority` spawn 的 `packages/data-access/scripts/gate-authority.mjs` 不参与部署文件追踪（本地 `next build` 的 nft 清单包含它，但 Vercel 构建内静态包含两种形态均未生效）。最终修法：评审器改为**进程内直呼同一权威签发 repository**（`createGateAuthorityRepository(pool).decide(decision, sessionToken)`，与 CLI `gate-authority.mjs` 完全同一实现，`control.sign_gate_candidate` 唯一写路径不变），连接复用 `openMachineQuery` 已切换的机器签发连接池；静态 import 链保证随路由进入 lambda。CLI 本身保留给本地其他工具使用。
+- **费用**：D02 观察已由上一批真实完成（第 3/4 次尝试回执 `48902faa`/`2ffcc3f8`，0.004133 + 0.001416 USD）；本批未发起新的 Provider 调用。委托 `3f5585d0…` 累计已知费用 **0.005989 USD**（占 0.05 封顶 12.0%）。
+- **最前阻断（下一步唯一缺口）**：D03 无执行授权通道——`from_stage` 白名单仍为 `D01|D02`，无 `MOHEN_EXECUTION_AUTH_*_D03`、无 D03 journal/issue/consume 端点、无 G3 读凭据映射（job `d03.…`，可用 `tools/provision-stage-gate-reader.mjs` 幂等开通）。按 D01/D02 同构补齐后即可 `from_stage:"D03"` 续跑。
+- **凭证**：Vercel 账号令牌有效期至 `2026-11-22T17:29:13Z`（到期 `npx vercel whoami` 续期）。本批部署用 CLI 直传（`vercel deploy --yes`，经本地代理），最终部署 `mohen-agent-2-0-5itfot142-napoles1.vercel.app`。
+
+
 > 核验时间 2026-11-22 第十六批（批次起始 HEAD `077de49`；本批提交 `14903de`、`6d0987a`、`2dfbe30`、`cb04c55`、`2cb0118`、`7596d86`、`403f4bc`、`6fed448`、`648eaea`）｜环境：云端真实库 + 真实部署实测；未验证项：D02 之后的 G2 机器评审与 G3—G5。
 
 **本批最新事实（D02 第二/三次真实尝试：付费回执与失败分类；派发器上界核算改造已完成，正在重跑）**
