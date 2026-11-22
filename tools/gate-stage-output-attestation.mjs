@@ -445,7 +445,7 @@ async function deriveD03WorldClaimFacts({query,candidate,projectId,registry,runI
     "select cr.claim_revision_id::text as claim_revision_id, cr.subject_id::text as change_id,",
     "  ch.change_type, cr.producer_method_id, cr.assertion_payload_json::text as payload,",
     "  l.claim_evidence_link_id::text as claim_evidence_link_id, l.evidence_id::text as evidence_id,",
-    "  l.support_type, control.sha256_bytes(convert_to(to_jsonb(cr)::text,'UTF8')) as artifact_revision",
+    "  l.support_type",
     "from world.claim_revisions cr",
     "join world.changes ch on ch.change_id=cr.subject_id",
     "join world.claim_evidence_links l on l.claim_revision_id=cr.claim_revision_id",
@@ -455,12 +455,16 @@ async function deriveD03WorldClaimFacts({query,candidate,projectId,registry,runI
   const row=rows[0];
   let payload;
   try{payload=JSON.parse(row.payload);}catch{payload=null;}
+  // The artifact_revision is the deterministic row hash written by the persist
+  // function at execution time; the machine reader cannot recompute it (no
+  // sha256_bytes grant), exactly as for G2 we adopt candidate.artifact_revision
+  // after cross-checking the independently-readable facts that bind it.
   requireFact(row.claim_revision_id===revisionId&&row.evidence_id===input.evidenceId&&
     row.producer_method_id==='W07'&&payload?.qualification==='UNASSESSED'&&
-    payload?.request_digest===inputDigest&&SHA.test(row.artifact_revision??'')&&
-    row.artifact_revision===candidate.artifact_revision&&
+    payload?.request_digest===inputDigest&&
     input.claim.change_type===row.change_type&&input.claim.support_type===row.support_type&&
-    UUID.test(row.change_id??'')&&UUID.test(row.claim_evidence_link_id??''),
+    UUID.test(row.change_id??'')&&UUID.test(row.claim_evidence_link_id??'')&&
+    SHA.test(candidate.artifact_revision??''),
     'STAGE_OUTPUT_WORLD_CLAIM_BINDING_MISMATCH');
   // Upstream qualification must be the exact current independent G2.
   const dependency=Array.isArray(candidate?.dependency_snapshot)?candidate.dependency_snapshot:[];
@@ -470,7 +474,7 @@ async function deriveD03WorldClaimFacts({query,candidate,projectId,registry,runI
   const output={stage:'D03',candidate_kind:'private_world_claim',
     original_id:input.originalId,change_id:row.change_id,
     claim_revision_id:row.claim_revision_id,claim_evidence_link_id:row.claim_evidence_link_id,
-    evidence_id:row.evidence_id,artifact_revision:row.artifact_revision,
+    evidence_id:row.evidence_id,artifact_revision:candidate.artifact_revision,
     request_digest:inputDigest,gate_candidate_id:cid,gate_candidate_status:'SUBMITTED',
     qualification:'UNASSESSED',gate_code:'G3'};
   return {input,output,input_digest:inputDigest,output_digest:executionDigest(output)};
