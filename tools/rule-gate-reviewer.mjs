@@ -20,7 +20,7 @@ import { decideRightsActions } from "../packages/data-access/src/rights-actions.
 // D00-B：C 方法预选以 evidence_refs 类型化引用承载，G0 由本评审器强制校验。
 import { inspectMethodPlanRef, isMethodPlanRef } from "../packages/data-access/src/method-plan-ref.mjs";
 // D01/G1：独立签发时由 signer 自己从库内事实重建阶段输入/输出摘要。
-import { attestStageOutputForRequest, deriveD01ReadingStageDigests } from "./gate-stage-output-attestation.mjs";
+import { attestStageOutputForRequest, deriveD01ReadingStageDigests, deriveD02ObservationStageDigests } from "./gate-stage-output-attestation.mjs";
 import registry from "../specs/data-production/production-registry.json" with { type: "json" };
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -946,18 +946,17 @@ async function decideThroughAuthority(decision, sessionToken) {
   return parsed.gate_audit_id;
 }
 
-async function main() {
-  const gate = argument("gate");
+// 与 CLI main 完全同一份评审逻辑；受控部署入口（/api/internal/gate-review）调用
+// 本函数在部署内完成评审与签发，机器会话密钥不出部署、不在任何本地进程中物化。
+export async function runGateReview({ gate, projectId = PROJECT_ID, candidateId = null,
+  attestStageBinding = false, dryRun = false } = {}) {
   if (!gate) throw Error("GATE_ARGUMENT_REQUIRED");
-  const projectId = argument("project") ?? PROJECT_ID;
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(projectId)) {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(projectId ?? "")) {
     throw Error("PROJECT_ARGUMENT_INVALID");
   }
-  const candidateId = argument("candidate");
-  const deriveBinding = process.argv.includes("--attest-stage-binding");
   const query = await openMachineQuery();
   let stageRequest = null;
-  if (deriveBinding) {
+  if (attestStageBinding) {
     // The signer derives both stage digests from persisted facts. The
     // candidate's stored input fingerprint independently cross-checks the input
     // reconstruction. The output digest has no surviving Producer claim after a
@@ -965,7 +964,7 @@ async function main() {
     const rows = await query(`select candidate_id::text as candidate_id, gate_code, stage,
         object_type, object_id::text as object_id, artifact_revision,
         allowed_scope::text as scope, consumer, evidence_refs::text as evidence_refs,
-        input_fingerprint, run_id::text as run_id,
+        dependency_snapshot::text as dependency_snapshot, input_fingerprint, run_id::text as run_id,
         allowed_scope->>'project_id' as project_id
       from control.gate_candidates
       where candidate_id = :'cid'::uuid and gate_code = :'gate'
@@ -974,8 +973,11 @@ async function main() {
     if (!Array.isArray(rows) || rows.length !== 1) throw Error("STAGE_BINDING_CANDIDATE_NOT_UNIQUE");
     const row = rows[0];
     if (row.project_id !== projectId) throw Error("STAGE_BINDING_PROJECT_MISMATCH");
-    const candidate = {...row, evidence_refs: JSON.parse(row.evidence_refs || "[]")};
-    const facts = await deriveD01ReadingStageDigests({ query, candidate, projectId, runId: row.run_id });
+    const candidate = {...row, evidence_refs: JSON.parse(row.evidence_refs || "[]"),
+      dependency_snapshot: JSON.parse(row.dependency_snapshot || "[]")};
+    // 各阶段的输入/输出摘要由签发方自己从持久事实重建，不接受 Producer 自报。
+    const deriveFacts = row.stage === "D02" ? deriveD02ObservationStageDigests : deriveD01ReadingStageDigests;
+    const facts = await deriveFacts({ query, candidate, projectId, runId: row.run_id, registry });
     if (facts.input_digest !== row.input_fingerprint) throw Error("STAGE_BINDING_INPUT_NOT_REPRODUCIBLE");
     const job = registry.jobs?.find(j => j.stage === row.stage);
     if (!job || job.exit_gate !== gate) throw Error("STAGE_BINDING_JOB_NOT_FOUND");
@@ -988,8 +990,17 @@ async function main() {
   const reviewer = createRuleGateReviewer({ query, decide: decideThroughAuthority, projectId,
     ...(stageRequest ? { attestStageOutput: ({candidate, request}) =>
       attestStageOutputForRequest({ query, candidate, request, registry, projectId }) } : {}) });
-  const outcome = await reviewer.review({ gate, dryRun: process.argv.includes("--dry-run"),
-    candidateId: candidateId ?? null, stageRequest });
+  return reviewer.review({ gate, dryRun, candidateId: candidateId ?? null, stageRequest });
+}
+
+async function main() {
+  const outcome = await runGateReview({
+    gate: argument("gate"),
+    projectId: argument("project") ?? PROJECT_ID,
+    candidateId: argument("candidate") ?? null,
+    attestStageBinding: process.argv.includes("--attest-stage-binding"),
+    dryRun: process.argv.includes("--dry-run"),
+  });
   if (outcome.status === "FAIL") process.exitCode = 1;
 }
 

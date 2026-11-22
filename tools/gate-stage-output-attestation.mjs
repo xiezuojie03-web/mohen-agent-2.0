@@ -296,6 +296,123 @@ export async function attestG1ReadingStageOutput({query,candidate,request,regist
   };
 }
 
+// M5 D02→G2 BATCH: independent, read-only reconstruction of the REAL persisted
+// D02 material observation. The D02 input is rebuilt by the SAME module the
+// issuer and Runner use (from run scope + current G1 + persisted C01 reading),
+// so a Producer can neither supply its own digest nor re-point the reading.
+async function deriveD02ObservationFacts({query,candidate,projectId,registry,runId}={}){
+  requireFact(typeof query==='function','STAGE_OUTPUT_REVIEWER_QUERY_REQUIRED');
+  requireFact(UUID.test(runId??'')&&UUID.test(projectId??''),'STAGE_OUTPUT_RUN_REQUIRED');
+  const cid=candidate?.candidate_id, evidenceId=candidate?.object_id;
+  requireFact(UUID.test(cid??'')&&UUID.test(evidenceId??''),'STAGE_OUTPUT_CANDIDATE_SCOPE_MISMATCH');
+  const scope=typeof candidate?.scope==='string'?JSON.parse(candidate.scope):candidate?.scope;
+  requireFact(scope?.project_id===projectId&&candidate?.stage==='D02'&&candidate?.gate_code==='G2'&&
+    candidate?.consumer==='producer'&&candidate?.object_type==='material_evidence'&&
+    SHA.test(candidate?.artifact_revision??'')&&
+    typeof candidate?.input_fingerprint==='string'&&SHA.test(candidate.input_fingerprint),
+    'STAGE_OUTPUT_CANDIDATE_SCOPE_MISMATCH');
+  const {rebuildD02ResumeInput}=await import(
+    '../pipelines/data-production/orchestrator/d02-resume-input.mjs');
+  const input=await rebuildD02ResumeInput({query,runId,projectId,registry});
+  const inputDigest=executionDigest(input);
+  requireFact(inputDigest===candidate.input_fingerprint,
+    'STAGE_OUTPUT_INPUT_NOT_REPRODUCIBLE');
+
+  // 取证对象必须是这条 run、这份 C01 阅读单元产出的真实证据行；阅读单元绑定以
+  // 证据链接表为准（material_evidence.reading_unit_id 是证据自身的行标识）。
+  const rows=await query([
+    "select e.evidence_id::text as evidence_id, l.read_unit_id::text as read_unit_id,",
+    "l.read_run_id::text as link_read_run_id, l.selected_extent::text as selected_extent,",
+    "e.source_id::text as source_id, e.source_version_id::text as source_version_id,",
+    "e.raw_item_id::text as raw_item_id, e.locator::text as locator,",
+    "e.literal_reading, e.source_voice, e.evidence_type, e.research_proposition,",
+    "e.uncertainty::text as uncertainty, e.modality",
+    "from evidence.material_evidence e",
+    "join evidence.read_unit_evidence_links l on l.evidence_id=e.evidence_id",
+    "where e.evidence_id=:'ev'::uuid limit 2"
+  ].join(' '),{ev:evidenceId});
+  requireFact(Array.isArray(rows)&&rows.length===1,'STAGE_OUTPUT_OBSERVATION_NOT_UNIQUE');
+  const row=rows[0];
+  requireFact(row.read_unit_id===input.readUnitId&&
+    row.link_read_run_id===input.reading.read_run_id&&
+    row.source_version_id===input.reading.source_version_id&&
+    row.raw_item_id===input.reading.raw_item_id&&
+    row.modality==='text_quote'&&row.literal_reading&&row.source_voice&&
+    row.evidence_type&&row.research_proposition,
+    'STAGE_OUTPUT_OBSERVATION_BINDING_MISMATCH');
+  let selected=row.selected_extent;
+  if(typeof selected==='string'){try{selected=JSON.parse(selected);}catch{selected=null;}}
+  requireFact(selected&&typeof selected==='object'&&
+    selected.source_version_id===input.reading.extent.source_version_id&&
+    selected.raw_item_id===input.reading.extent.raw_item_id&&
+    selected.raw_sha256===input.reading.extent.raw_sha256&&
+    selected.start_byte===input.reading.extent.start_byte&&
+    selected.end_byte===input.reading.extent.end_byte,
+    'STAGE_OUTPUT_OBSERVATION_EXTENT_MISMATCH');
+  let locator=row.locator;
+  if(typeof locator==='string'){try{locator=JSON.parse(locator);}catch{locator=null;}}
+  requireFact(locator&&typeof locator==='object'&&!Array.isArray(locator)&&
+    locator.kind==='utf8_byte_range/v1'&&
+    locator.source_version_id===input.reading.source_version_id&&
+    locator.raw_item_id===input.reading.raw_item_id&&
+    locator.raw_sha256===input.reading.raw_sha256&&
+    locator.quote_sha256===input.reading.raw_sha256,
+    'STAGE_OUTPUT_OBSERVATION_LOCATOR_INVALID');
+  let uncertainty=row.uncertainty;
+  if(typeof uncertainty==='string'){try{uncertainty=JSON.parse(uncertainty);}catch{uncertainty=null;}}
+  requireFact(uncertainty&&typeof uncertainty==='object'&&
+    uncertainty.qualification==='UNASSESSED','STAGE_OUTPUT_OBSERVATION_NOT_UNASSESSED');
+  // 引文必须是该阅读单元的逐字片段：模型不能自造文本。
+  const revision=await query(
+    "select control.artifact_revision_for('material_evidence',:'ev'::uuid) as revision",
+    {ev:evidenceId});
+  requireFact(Array.isArray(revision)&&revision.length===1&&
+    revision[0].revision===candidate.artifact_revision,
+    'STAGE_OUTPUT_ARTIFACT_REVISION_MISMATCH');
+  const dependency=Array.isArray(candidate?.dependency_snapshot)?candidate.dependency_snapshot:[];
+  requireFact(dependency.length===1&&
+    dependency[0].gate_audit_id===input.reading.gate_audit_id&&
+    SHA.test(dependency[0].qualification_digest??''),
+    'STAGE_OUTPUT_UPSTREAM_QUALIFICATION_MISMATCH');
+
+  const output={stage:'D02',candidate_kind:'private_material_observation',
+    evidence_id:evidenceId,read_unit_id:input.readUnitId,
+    source_id:row.source_id,source_version_id:row.source_version_id,
+    raw_item_id:row.raw_item_id,extent:locator,
+    h_type:'H05',literal_reading:row.literal_reading,source_voice:row.source_voice,
+    evidence_type:row.evidence_type,research_proposition:row.research_proposition,
+    uncertainty,artifact_revision:candidate.artifact_revision,
+    gate_candidate_id:cid,gate_candidate_status:'SUBMITTED',
+    qualification:'UNASSESSED',gate_code:'G2'};
+  return {input,output,input_digest:inputDigest,output_digest:executionDigest(output)};
+}
+
+export async function deriveD02ObservationStageDigests(args={}){
+  const facts=await deriveD02ObservationFacts(args);
+  return {input_digest:facts.input_digest,output_digest:facts.output_digest};
+}
+
+export async function attestG2ObservationStageOutput({query,candidate,request,registry,projectId}={}){
+  requireFact(typeof query==='function','STAGE_OUTPUT_REVIEWER_QUERY_REQUIRED');
+  assertStageQualificationRequest(request);
+  requireFact(request.stage==='D02'&&request.gate_code==='G2',
+    'STAGE_OUTPUT_ATTESTATION_NOT_SUPPORTED');
+  const jobs=(registry?.jobs??[]).filter(j=>j.stage==='D02');
+  requireFact(jobs.length===1,'STAGE_OUTPUT_JOB_NOT_UNIQUE');
+  const job=jobs[0];
+  if(request.job_id!==undefined)requireFact(request.job_id===job.job_id,'STAGE_OUTPUT_JOB_MISMATCH');
+  if(request.reviewer_binding_ref!==undefined)
+    requireFact(request.reviewer_binding_ref===job.implementation?.gate_reviewer_binding,
+      'STAGE_OUTPUT_REVIEWER_BINDING_MISMATCH');
+  const facts=await deriveD02ObservationFacts({query,candidate,projectId,registry,
+    runId:request.run_id});
+  requireFact(request.input_digest===facts.input_digest&&
+    request.output_digest===facts.output_digest,'STAGE_OUTPUT_ATTESTATION_MISMATCH');
+  return {gate_code:'G2',input_digest:facts.input_digest,
+    output_digest:facts.output_digest,job_id:job.job_id,
+    reviewer_binding_ref:job.implementation?.gate_reviewer_binding};
+}
+
 // Single dispatch used by every independent signer composition (local Gate
 // service and the CLI Reviewer). The carrier is decided by the persisted
 // stage/gate and method plan, never by a Producer-supplied digest.
@@ -303,6 +420,8 @@ export function attestStageOutputForRequest({query,candidate,request,registry,pr
   const stage=request?.stage, gate=request?.gate_code;
   if(stage==='D01'&&gate==='G1')
     return attestG1ReadingStageOutput({query,candidate,request,registry,projectId});
+  if(stage==='D02'&&gate==='G2')
+    return attestG2ObservationStageOutput({query,candidate,request,registry,projectId});
   requireFact(stage==='D00'&&gate==='G0','STAGE_OUTPUT_ATTESTATION_NOT_SUPPORTED');
   const refs=Array.isArray(candidate?.evidence_refs)?candidate.evidence_refs:[];
   const methodIds=new Set(refs.filter(r=>r?.kind==='method_plan').map(r=>String(r.method_id??'')));
