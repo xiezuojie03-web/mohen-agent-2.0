@@ -1,4 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "git": { "deploymentEnabled": false }
+  "git": { "deploymentEnabled": false },
+  "rewrites": [
+    { "source": "/api/d04-issue", "destination": "/api/d04?route=d04-issue" },
+    { "source": "/api/d04-consume", "destination": "/api/d04?route=d04-consume" }
+  ]
 }
