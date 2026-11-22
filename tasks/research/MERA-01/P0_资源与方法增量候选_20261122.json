@@ -7,8 +7,8 @@
     "attempts": 18
   },
   "proposed_after_merge": {
-    "resources": 82,
-    "methods": 63,
+    "resources": 85,
+    "methods": 66,
     "attempts": 18
   },
   "additions": [
@@ -720,6 +720,66 @@
         "https://stacspec.org/",
         "https://documentation.dataspace.copernicus.eu/APIs/STAC.html"
       ]
+    },
+    {
+      "resource_id": "R0083",
+      "parent_resource_id": null,
+      "level": "资源集合",
+      "name": "British Library Endangered Archives Programme (EAP)",
+      "provider": "British Library / Arcadia",
+      "url": "https://eap.bl.uk/",
+      "content": "500+ projects in 90+ countries and 100+ languages/scripts; 15m+ images and 35k sound tracks; rare printed sources, manuscripts, visual materials, audio and local archives; originals remain in source countries; IIIF manifests for all archive images.",
+      "access": "Free web discovery; IIIF Universal Viewer/Mirador; single JPEG download; low-res images/audio online; source custodians and local archive partners.",
+      "rights": "Copyrighted materials usually CC BY-NC 4.0; even public-domain originals require custodian permission for online publication; further sharing/publication and commercial use require owners/partners; metadata CC0 does not license media.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0063",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://eap.bl.uk/tools",
+        "https://eap.bl.uk/sites/default/files/2023-09/Guide_for_Applicants_September_2023.pdf",
+        "https://eap.bl.uk/reuse-collections-and-takedown-policy"
+      ]
+    },
+    {
+      "resource_id": "R0084",
+      "parent_resource_id": null,
+      "level": "数字图书馆/档案库",
+      "name": "Qatar Digital Library (QDL)",
+      "provider": "Qatar National Library / British Library / Qatar Foundation",
+      "url": "https://www.qdl.qa/en",
+      "content": "Gulf and wider Middle East archives, maps, Arabic manuscripts, audio, photographs and visual arts; politics, people, places, trade, culture and customs; includes Arabic scientific manuscripts from British Library; English and Arabic contextual essays.",
+      "access": "Free web search/browse; item pages link to source archival records; QNL Digital Repository provides Arabic manuscripts, early printed works, periodicals, maps and exploration materials.",
+      "rights": "Item content may be third-party copyright, QDL copyright, public domain or CC. Many editorial pages CC BY-NC 4.0; commercial use of cultural material requires prior informed consent from QDL, holding institutions, third parties and traditional custodians.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0064",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://qdl.qa/en/about",
+        "https://qdl.qa/en/copyright-ethical-terms-reuse",
+        "https://qnl.qa/en/explore/digital-collections"
+      ]
+    },
+    {
+      "resource_id": "R0085",
+      "parent_resource_id": null,
+      "level": "数字图书馆",
+      "name": "HathiTrust Digital Library",
+      "provider": "HathiTrust / Member Research Libraries",
+      "url": "https://www.hathitrust.org/",
+      "content": "Global library digitized books, journals, government publications, dissertations and other works; Full View permits full reading, Limited/Search-only permits full-text search only; 6.8m volumes (~39%) Full View for US IP as of 2026.",
+      "access": "Web search/read; full-view downloads depend on copyright, digitizing source and member affiliation; bibliographic API; HTRC computational environment for public-domain corpus.",
+      "rights": "Full View means public domain or rights-holder permission to read, not necessarily CC0 or full-volume download. Limited is search only. Download restrictions vary by digitizing agent, member status and geographic IP.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0065",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://hathitrust.atlassian.net/wiki/spaces/GS/pages/2386591860/Viewing+and+Reading+Books",
+        "https://hathitrust.atlassian.net/wiki/spaces/GS/pages/2387247137/",
+        "https://cdlib.org/services/consortial-partnerships/hathitrust/hathitrust-rights-copyright-issues/"
+      ]
     }
   ],
   "methods": [
@@ -1062,6 +1122,36 @@
       "scope": "Remote sensing/aerial/raster/point-cloud asset metadata",
       "steps": "Read Catalog/Collection/Item JSON; inspect geometry/datetime/platform/instruments/proj/eo/raster/assets/license; query STAC API by time/area; follow asset href to source and check rights.",
       "limits": "STAC only describes/discovers assets; access/download/commercial rights depend on provider and item/asset."
+    },
+    {
+      "method_id": "M0063",
+      "version": "v0.1",
+      "resource_id": "R0083",
+      "status": "DRAFT",
+      "path": "EAP website/IIIF Manifest → image browse/download → custodian rights check",
+      "scope": "Global endangered local archives, manuscripts, rare print, visual and audio materials",
+      "steps": "Search by country/project/archive type; read item/file page and IIIF Manifest; browse via Mirador/Universal Viewer; use JPEG only for personal study; contact custodian/partner before publishing, sharing or commercial use; keep metadata CC0 separate from media rights.",
+      "limits": "Most copyright material CC BY-NC; even public-domain material requires custodian permission; commercial requests referred to archive owners/partners."
+    },
+    {
+      "method_id": "M0064",
+      "version": "v0.1",
+      "resource_id": "R0084",
+      "status": "DRAFT",
+      "path": "QDL web search → item Rights Statement → source archive/cultural ethics permission",
+      "scope": "Gulf/Middle East archives, Arabic manuscripts, maps, audio and photos",
+      "steps": "Search by person/place/trade/science/manuscript; inspect object page and Usage Terms; distinguish primary material from editorial article; check PD/CC/third-party rights; commercial use requires prior informed consent from QDL, institution, third parties and traditional custodians.",
+      "limits": "Free website does not mean all content commercial; many articles CC BY-NC; cultural heritage ethics apply."
+    },
+    {
+      "method_id": "M0065",
+      "version": "v0.1",
+      "resource_id": "R0085",
+      "status": "DRAFT",
+      "path": "HathiTrust search → Full View/Limited status → download rights and digitization source check",
+      "scope": "Global books, journals, government publications, dissertations and OCR text",
+      "steps": "Search title/author/place/date/subject; record Full View/Limited and IP region; inspect rights determination; check digitizing source before full-volume download; use HTRC only within account/member and public-domain corpus rules.",
+      "limits": "Full View not always full download; Limited is search only; Google scan agreements and member status restrict downloads; region affects rights."
     }
   ],
   "updates": [
@@ -1122,6 +1212,12 @@
       "target": "category 08",
       "fields": {
         "note": "Added R0075 IIIF, R0076 PAGE-XML, R0077 ALTO XML, R0078 Copernicus, R0079 USGS Landsat, R0080 Open Heritage 3D, R0081 OGC API Features, R0082 STAC; methods M0055-M0062. Candidate totals 82 resources / 63 methods / 18 attempts. No D00/D01 engineering initiated."
+      }
+    },
+    {
+      "target": "category 01",
+      "fields": {
+        "note": "Audited 46 P0 entries: 36 collections, 9 single-item objects, 1 chapter. Inherited Shanghai Library and Chinese local collections without repeat survey. Added R0083 EAP, R0084 QDL, R0085 HathiTrust; methods M0063-M0065. Candidate totals 85 resources / 66 methods / 18 attempts."
       }
     }
   ],
