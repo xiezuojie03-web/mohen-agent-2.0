@@ -6029,3 +6029,38 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 
 
+
+
+## 2026-11-22 第十六批｜D02 独立执行授权通道建成并真实跑到外发闸门（费用 0 USD）
+
+**批次起始 HEAD** `077de49` → 本批提交 `14903de`（D02 通道）、`6d0987a`（过期未核销可重签）、`2f0d0d6`（Runner 依赖解析）。
+
+**本篇为追加式证据，不覆盖历史。** 环境：云端真实库 + 真实部署（authority production、web staging）；真实 run `b9989b90-fd8a-4d50-b4b4-6f3cca7fb049`。
+
+**建成的通道（与 D01 同构，独立 journal / 独立端点 / 独立 stage 绑定）**
+- 新模块：`pipelines/data-production/orchestrator/d02-resume-journal.mjs`、`d02-resume-authorizer.mjs`、`d02-resume-input.mjs`、`d02-g1-qualification.mjs`、`d02-resume-issue.mjs`、`d02-resume-provider.mjs`。
+- `execution-authority.mjs`：stage 后缀由仅 `_D01` 扩为 `D01|D02`；`cloud-production-runtime.mjs` env 白名单加 `MOHEN_EXECUTION_AUTH_{PUBLIC_KEY,VERIFY_URL,VERIFY_CREDENTIAL}_D02`。
+- `apps/web/app/api/internal/production-execute/route.ts`：按 `from_stage` 选择 provider（`D01` / `D02`），缺对应端点即失败关闭，不跨 stage 回落。
+- `apps/d00-authority/d01-authority.mjs`：`configure()` 复用同一 journal/reader/attestor 连接池与同一签名私钥，新增 D02 journal + 授权器 + 签发端点；`serve()` 按 group 路由，新增 `api/d02-issue.mjs`、`api/d02-consume.mjs`（production 允许，同 D01）。
+- 输入重建：D02 输入从持久事实独立重建（run scope + `qualification_current`↔G1 审计 + 该 run 的 L1 `read_unit`/raw item/版本），并用 `isTypedD02ReadingRequest` 复用既有形状校验；G1 资格校验要求 `job_id`/`reviewer_binding_ref`/`consumer`/`object_id`/`artifact_revision` 全等且未过期。
+- 测试：新增 `tests/data-production/d02-resume-{input,issue,authorizer}.test.mjs`（13 项全通过）；D01 四份续跑测试回归全通过；`cloud-production-dispatch` 测试通过。`cloud-production-runtime.test.mjs` 有 1 项在本机 Windows 因 `--import` 绝对路径（`ERR_UNSUPPORTED_ESM_URL_SCHEME`）失败，与本批改动无关。
+
+**本批应用的迁移（真实库）**
+1. `20261122130000_d02_resume_grant_journal.sql`：新表 `control.d02_resume_grant_journal`（`binding->>'stage'='D02'` 校验、无 DELETE 授权、RLS 四策略，复用 `mohen_d00_grant_journal` 登录）。
+2. `20261122140000_d02_resume_journal_reissue_expired.sql`：把重签条件从「仅已核销」扩为「已核销或已过期未核销」。真因取证：第一次 D02 尝试在客户端签名校验即失败，授权未核销且未过期，导致后续 3 次续跑全部被 `issueOnce` 拒绝；`consumeOnce` 仍要求 `expires_at > now()`，单次使用语义不变。
+3. `20261115130000_mab_m5_private_text_read_context_consistency.sql`：**生产此前未应用**（部署版 `studio.read_private_text_reading` 仍按 `r.config->>'original_revision_id'` 与 `receipt->>'status'='VERIFIED'` 过滤，而写入端不写这两个键），应用后阅读上下文才可用。
+
+**真实执行与逐层取证（费用 0 USD）**
+- D02 授权：`issued 03:33:07Z`（authority `/api/d02-issue`，HMAC+30s 窗）→ `consumed 03:33:10Z`（`/api/d02-consume`，`d02_resume_grant_journal` 单行，`binding` 精确匹配）。`03:33:21Z` run 停在 D02 失败关闭。
+- 缺陷 1（已修）：`EXECUTION_SIGNED_GRANT_SIGNATURE_INVALID`。真因不是密钥不匹配（已本地验证 `createPublicKey(私钥)` 与 `.secrets/d01-resume-public-key.pem` 一致），而是 Vercel env API 以 400 拒收多行 PEM，单行 PEM 在 Node 下解析失败；改用 `vercel env add … preview` 从 stdin 写入真实换行后签名校验通过。
+- 缺陷 2（已修）：Runner 子进程 `Cannot find package '@mohen/data-access'`。真因：`private-evidence-binding.mjs` 动态导入 `apps/web/lib/studio/provider-dispatcher.ts`，该 TS 静态 `import … from '@mohen/data-access'`，而云端函数无 workspace 软链。修法：`cloud-runner-dependency-loader.mjs` 把该包解析到唯一源码实现 `packages/data-access/src/index.mjs`（不复制第二份逻辑）。
+- 缺陷 3（已修）：`PRIVATE_D02_READING_MISMATCH`。真因：旧版 RPC 过滤条件与写入端不一致，`stored.readings` 恒为空。逐项核对两个真实 read unit（`d26163e9…` 旧、`43951035…` G1 合格）与 `artifact_revision_for`/审计 `artifact_revision` 全等后，定位到过滤键而非数据。
+- 缺陷 4（**当前最前阻断，未修，交 Owner**）：`TRANSFER_DENIED`。`source.source_versions.rights_snapshot`（版本 `36ea7ffc-d5bd-4dd2-909f-ab0724b0b1d3`）为 `{"external_processing":"unknown", …}`；`studio.private_source_registration` 把 `rights_by_action` 投影自该版本快照，故逐来源外发只认「unknown」→ 失败关闭。`source.sources.rights_by_action` 已是 `allowed`（Owner 2026-11-22 决定，留痕 `rights_evidence.external_processing_decision`：scope=project d9d48901 / D02 material observation / single batch、provider deepseek、budget 0.05 USD）。版本快照受 `source.forbid_rights_snapshot_mutation` 保护（非空后不可更新），未获 Owner 授权不绕过、不改投影。
+- 费用取证：`studio.execution_receipts` 近 2 小时无新增（仅 2026-11-12 之前旧记录），即本批**零 Provider 调用、0 USD**；委托 `3f5585d0…` 额度未动。
+
+**部署与配置**
+- authority production：两次 git-source 部署（`14903de`、`2f0d0d6`），`/api/d02-issue` 无签名探测回 401（路由已生效），`/api/d02-consume` 用既有 verify 凭据探测回 503 `execution_authority_unavailable`（凭据被接受、nonce 拒绝，符合预期）。
+- web：staging `mohen-agent-2-0-746ru1hao-napoles1.vercel.app`；preview env 新增 `MOHEN_D02_ISSUE_URL`、`MOHEN_EXECUTION_AUTH_VERIFY_URL_D02`、`MOHEN_EXECUTION_AUTH_PUBLIC_KEY_D02`、`MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL_D02`（后两者改用 CLI 写入多行 PEM）。
+
+**下一步（等 Owner 裁决来源权利投影后）**：以 `from_stage:"D02"` 续跑 → 核 `studio.execution_receipts` 新增与逐项费用 → D02 PASS 后按既有路径签发 G2 → 回写 CURRENT/progress。
+

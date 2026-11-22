@@ -2,6 +2,17 @@
 
 > **Owner 授权口径（2026-11-22，长期有效）**：目标是墨痕**真正运行、持久运行**；除**安全问题**与**费用问题**外，施工方自行授权推进，不再逐项请示技术选择。费用边界：D02–D05 模型调用封顶 **0.05 USD**（约 ¥0.36，已建委托 `3f5585d0…`），超出该额度、新增付费来源或扩大用途仍需 Owner 批准。安全底线（密钥不入 git、不自签 Gate、不伪造会话/资格/PASS、不改迁移规避授权）不因该授权放宽。
 
+> 核验时间 2026-11-22 第十六批（批次起始 HEAD `077de49`，批次末 HEAD `2f0d0d6` 之后）｜环境：云端真实库 + 真实部署实测；未验证项：D02 之后（G2 及以后）。
+
+**本批结论：D02 独立执行授权通道已按 D01 同构建成并真实跑通「签发→核销→Runner 启动→G1 资格校验→读出真实阅读上下文」，`PRIVATE_D02_READING_MISMATCH` 与 Runner 依赖解析两个真实缺陷已消除；D02 现停在「版本级权利快照 external_processing=unknown」的外发闸门 `TRANSFER_DENIED`（属来源权利，交 Owner 裁决）。本批 Provider 费用 **0 USD**（`studio.execution_receipts` 无新增）。**
+
+- **新增的授权链路（代码）**：`d02-resume-{journal,authorizer,input,issue,provider}.mjs` + `d02-g1-qualification.mjs`；`execution-authority.mjs` 的 stage 后缀支持 `_D02`；runtime env 白名单加 `MOHEN_EXECUTION_AUTH_{PUBLIC_KEY,VERIFY_URL,VERIFY_CREDENTIAL}_D02`；`production-execute` 按 `from_stage` 选择 provider；authority 增 `/api/d02-issue`、`/api/d02-consume`（复用同一签名私钥与 `mohen_d00_grant_journal` 登录，独立 journal 表与 stage 绑定）。
+- **迁移（本批应用）**：①`20261122130000_d02_resume_grant_journal.sql`（新表 `control.d02_resume_grant_journal`，stage='D02' 校验、无 DELETE、RLS 四策略）；②`20261122140000_d02_resume_journal_reissue_expired.sql`（允许「已过期未核销」的授权被重新签发，否则一次客户端校验失败会永久卡死）；③`20261115130000_mab_m5_private_text_read_context_consistency.sql`（**生产此前未应用**，旧版 `studio.read_private_text_reading` 仍按 `original_revision_id`/`receipt.status` 过滤，导致真实阅读上下文恒为空）。
+- **真实执行证据（run `b9989b90`）**：D02 授权 `issued 03:33:07Z` / `consumed 03:33:10Z`（表内唯一一行，consumed 后才可重签）；`03:33:21Z` 进入 D02 后失败关闭。逐层取证：①签名校验通过（此前 `EXECUTION_SIGNED_GRANT_SIGNATURE_INVALID` 真因是 Vercel env API 拒收多行 PEM，改用 `vercel env add` 写入真实换行）；②Runner 依赖解析失败真因是云端函数无 workspace 软链、`provider-dispatcher.ts` 静态 `import '@mohen/data-access'` → 在 `cloud-runner-dependency-loader.mjs` 增加该包到唯一源码实现的映射；③`PRIVATE_D02_READING_MISMATCH` 真因是上述未应用迁移。
+- **最前阻断（交 Owner 裁决，非技术选择）**：`source.source_versions.rights_snapshot`（版本 36ea7ffc）中 `external_processing='unknown'`，而「逐来源权利」只认该版本快照（`studio.private_source_registration` 把 `rights_by_action` 投影自 `v.rights_snapshot`），故 D02 外发被 `TRANSFER_DENIED` 拒绝；`source.sources.rights_by_action` 已是 `allowed`（2026-11-22 Owner 决定，留痕在 `rights_evidence.external_processing_decision`）。版本快照受 `source.forbid_rights_snapshot_mutation` 不可变触发器保护，未获 Owner 授权前不绕过。
+- **部署**：authority production（git source，两批改动）、web staging `mohen-agent-2-0-746ru1hao-napoles1.vercel.app`；web preview env 新增 `MOHEN_D02_ISSUE_URL`、`MOHEN_EXECUTION_AUTH_VERIFY_URL_D02`、`MOHEN_EXECUTION_AUTH_PUBLIC_KEY_D02`、`MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL_D02`。
+- **凭证**：Vercel 账号令牌有效期至 `2026-11-22T17:29:13Z`（到期 `npx vercel whoami` 续期）。
+
 > 核验时间 2026-11-22 第十五批（批次起始 HEAD `077de49`）｜环境：云端真实库 + 真实部署实测；未验证项：D02 执行本身（缺 D02 执行授权通道）。
 
 **本批结论：Owner 已批准 D02–D05 的付费边界（0.05 USD 封顶），委托、逐来源外发许可、G2 读凭据与相关 env 已落地；D02 仍无法执行，阻断点是「D02 独立 stage grant 尚无签发通道」，与费用无关。本批 Provider 费用 0 USD。**
