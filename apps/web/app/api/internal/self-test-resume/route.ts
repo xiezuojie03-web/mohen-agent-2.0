@@ -69,7 +69,7 @@ export async function POST(req: Request) {
   }
   const originalId = body.original_id;
   const page = body.page_number;
-  const fromStage = body.from_stage === "D01" ? "D01" : undefined;
+  const fromStage = body.from_stage === "D01" || body.from_stage === "D02" ? body.from_stage : undefined;
   // D00 接收同样只经本通道：它不开新的生产入口，仍由服务端 MOHEN_D00_APPROVED_RUN
   // 预批准绑定（run_id + 输入摘要）把关，未预批准一律拒绝。
   const endStage = body.end_stage === "D00" ? "D00" : undefined;
@@ -125,7 +125,7 @@ export async function POST(req: Request) {
     ? (checkpoint as Record<string, unknown>).production_run_id : null;
   const result = await requestProduction(
     String(taskId), ownerUid as string, undefined, undefined, source, ownerSessionToken, endStage,
-    fromStage === "D01" ? { runId: String(resumeRunId), fromStage: "D01" } : undefined,
+    fromStage ? { runId: String(resumeRunId), fromStage } : undefined,
   );
   return NextResponse.json({ ok: result.ok, reason: result.reason, run_id: result.run_id });
 }

@@ -6000,5 +6000,30 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **staging 部署（`VERIFIED_LIVE`）**：首次 `vercel deploy --target staging` 被 Vercel 以 `COMMIT_AUTHOR_REQUIRED` 阻断——本批第一笔提交作者 `MoHen Engineering <engineering@mohen.local>` 未绑定 Vercel 账号。历史可部署提交的作者为仓库 git 配置的 `xiezuojie03 <315303392+xiezuojie03-web@users.noreply.github.com>`；因此不改写已推送提交、不强推，改由同身份后续提交触发。新部署 `mohen-agent-2-0-2pj5kd46r-napoles1.vercel.app`（`--environment staging`，READY，含新代码与该 env）。
 - **部署侧 readiness 回读**：`POST /api/internal/self-test-resume`（HMAC，`{"diag":"readiness"}`）→ `configuration_ready=true`，`execution_authority / credential_separation / producer / private_worker / independent_gate / private_storage` 全 `CONFIGURED`，`MOHEN_INDEPENDENT_GATE_VERIFY_URL=https://mohen-d00-authority.vercel.app/api/current`。该诊断只证明配置齐备（`runtime_verified=false`、`gate_qualification=NOT_VERIFIED`），不是 Gate PASS。
 
+## 2026-11-22｜第十五批：Owner 批准 D02 付费边界，委托与逐来源外发许可已落地（费用 0）
+
+**授权依据（Owner 2026-11-22 明确同意）**：为朱家角链路开一份模型委托，封顶 0.05 USD（约 ¥0.36），覆盖 D02–D05 所需动作与逐来源外发许可，按次实扣、逐条报账。
+
+**云端授权对象（真实库，可回读）**
+- 委托 `3f5585d0-33c6-404d-8fb5-7b43ae6f10ff`：project `d9d48901`、root_task `b2143002`、`allowed_actions=[d02_material_observation]`、`provider=deepseek`、`engine_version=deepseek/2026-11-07`、`budget_limit=0.050000`、`currency=USD`、有效期至 `2026-11-29`（7 天）、`policy_version=m5.d02.provider-authorization.2026-11-22`。幂等键 `2a07f335…`（重复执行不新增）。SQL 记录：`tasks/results/D02_PROVIDER_DELEGATION_D9D48901_20261122.sql`。
+- 来源外发许可：`source.sources` 源 `9aa03207` 的 `rights_by_action.external_processing` 由 `unknown` → `allowed`；`rights_evidence` 保留 `held_actions_before_2026_11_22` 快照、新增 `released_actions=["external_processing"]` 与 `external_processing_decision`（decided_by=owner、decided_at=2026-11-22、provider、scope、budget_cap_usd）。其余 4 项仍为 HOLD，未改。
+
+**读凭据与部署**
+- G2 读凭据：绑定 `f9e35822…`（G2/仅本项目/30 天）+ consume 凭据 `31e1fdec…`（job `d02.material-understanding`、ref `m5-owner-reviewer-g2g5-producer`），token 只在 `.secrets/gate-reader-bearer-d9d48901-g2.txt`。
+- preview env 更新：`MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIALS`（d01+d02 映射）、`MOHEN_PRIVATE_D02_DELEGATION_ID`、`MOHEN_PRIVATE_D02_MODEL=deepseek-flash`；`DEEPSEEK_API_KEY` 本就存在（sensitive）。
+- 新 staging 部署 `mohen-agent-2-0-hmfwpnw2p-napoles1.vercel.app`，readiness 六组件全 `CONFIGURED`。
+
+**代码（为"D01→D02 续跑"补最小通路，未改 Gate 判定）**
+- `cloud-production-dispatch.mjs`：`from_stage` 白名单由 `D01` 扩为 `D01|D02`（注释写明"仅从前一处已核验的交接续跑"）。
+- `self-test-resume/route.ts`、`studio-research.ts`、`studio-production.ts`：`fromStage` 类型与白名单同步为 `D01|D02`。
+- 测试：`node --test tests/data-production/cloud-production-dispatch.test.mjs` → **9/9 pass**（新增 D02 正例、D03 仍拒、D02 不得回报 D01）。`tsc -p apps/web` 仅报两个与本批无关的缺包错误（`@vercel/oidc`、`nodemailer` 未安装）。
+
+**真实阻断（本批新定位，费用 0）**
+1. 首轮以 `from_stage:"D02"` 续跑 → `production_reservation_reconciliation_required`（旧代码忽略 D02，落到 intake 分支撞旧预留对账）。
+2. 修通后来看真正缺口：`cloud-production-runtime.mjs` 的续跑分支要求 `resumeProvider`，而 `apps/web/app/api/internal/production-execute/route.ts` 只注入 `createD01ResumeProvider`（端点 `MOHEN_D01_ISSUE_URL`）。**D02 的独立 stage grant 尚无签发/核销通道**，因此 D02 仍不能真实执行。本批**未发起任何 Provider 调用，费用 0 USD**。
+
+**下一步**：按设计补 D02 的执行授权通道（D02 stage grant 的独立签发与一次性核销，输入取 G1 合格 `read_unit`），再以 `from_stage:"D02"` 续跑；额度已由 Owner 批准，无需再次请示费用。
+
+
 
 

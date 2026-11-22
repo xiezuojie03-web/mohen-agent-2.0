@@ -20,7 +20,9 @@ export function cloudProductionEndStage(input){
 export function cloudProductionFromStage(input){
  const stage=input?.from_stage;
  if(stage===undefined)return 'D00';
- if(stage!=='D01')throw Error('CLOUD_EXECUTOR_FROM_STAGE_INVALID');
+ // Resume only from a stage whose predecessor交接 has already been verified:
+ // D01 needs the qualified G0 output, D02 needs the qualified G1 reading output.
+ if(stage!=='D01'&&stage!=='D02')throw Error('CLOUD_EXECUTOR_FROM_STAGE_INVALID');
  return stage;
 }
 function valid(v){
