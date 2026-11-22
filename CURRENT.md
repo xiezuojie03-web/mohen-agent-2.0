@@ -2,155 +2,35 @@
 
 > **Owner 授权口径（2026-11-22，长期有效）**：目标是墨痕**真正运行、持久运行**；除**安全问题**与**费用问题**外，施工方自行授权推进，不再逐项请示技术选择。费用边界：D02–D05 模型调用封顶 **0.05 USD**（约 ¥0.36，已建委托 `3f5585d0…`），超出该额度、新增付费来源或扩大用途仍需 Owner 批准。安全底线（密钥不入 git、不自签 Gate、不伪造会话/资格/PASS、不改迁移规避授权）不因该授权放宽。
 
-> 核验时间 2026-11-22 第十九批（承接第十八批；本批含 Owner「选一」授权、Gate 权威函数自助修复、G3 正式签发）｜环境：云端真实库 + 真实部署实测；未验证项：D04 及以后。
+> 核验时间 2026-11-22 第二十批｜环境：云端真实库 + 真实部署实测；HEAD/部署见下。本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
 
-**本批结论：G3 已由机器评审正式签发 PASS——Owner 具名「选一」授权后，以自授 `SET ROLE mohen_gate_authority` 通道在事务内修复 `control.artifact_revision_for` 的 `claim_revision` 映射（验证精确返回候选 artifact revision 且 owner 不变后提交），随后经部署内 `/api/internal/gate-review` 先 dry_run PASS 再正式签发 PASS（审计 `f1d9163e…`，独立机器评审身份 `mohen_gate_signer_m5_machine`，非自签）。候选 `91a239c1` 已 `CONSUMED`，`qualification_current` 新增有效 G3 行（至 2026-11-28）。run `b9989b90` 不再停在 `HOLD@D03`。零 Provider 调用、0 USD 新增费用。当前最前断点推进到 D04 准备。**
+## 当前唯一任务与最远已验节点
 
-- **G3 签发回执（真实库回读）**：`gate_audits.f1d9163e-e770-467a-9b14-774cbdd92c08` = G3/PASS/`independent_gate`/`mohen_gate_signer_m5_machine`/`m5-local-v1`/`current_valid=true`/valid_until 2026-11-28T08:17:02Z，`details.checks={claim_support:true,identity_version:true}`，`stage_binding`={job `d03.world-construction`, input `e6f8b230…`, output `7c48e197…`, reviewer `m5-owner-reviewer-g2g5-producer`}。`qualification_current` 新增 G3 行（object `0617b049…`、artifact `f47212f1…`、audit `f1d9163e…`），G3 资格共 6 行。
-- **最前阻断/下一步（D04 准备）**：已就绪：registry `d04.humanistic-discovery`/G4/A01–A12 定义、method-binding D04 条目、adapter/executor 骨架、输出 schema、G4 reviewer binding、通用凭据 provision 工具。缺口：①D04 授权通道脚本（`d04-resume-{journal,authorizer,input,issue,provider}.mjs`+`d04-g4-qualification.mjs`、authority `/api/d04-issue|consume`、`d04_resume_grant_journal` 迁移）全缺；②`from_stage` 白名单需从 `D01|D02|D03` 扩 D04；③需 provision G4 job 读凭据并配 `MOHEN_EXECUTION_AUTH_*_D04`；④A01–A12 中 11 项 `implementation_binding=HOLD`、N01–N06 推理未注入（专业方法层）。**D04 未发起、未签发 G4、0 USD。**
+- 同一真实任务 `b2143002` / Project `d9d48901` / run `b9989b90`（原件 `f474b91b`，朱家角）已连续贯通 **D00→G0→D01→G1→D02→G2→D03→G3→D04→G4**；**最远已验节点 = D04 UNASSESSED finding 候选落库 + G4 机器评审正式 PASS**。
+- 五道独立 Gate 当前资格均有效（valid_until 2026-11-28）：G0 `c0ee5a2f` / G1 `113c2bbe` / G2 `1a9402cb` / G3 `f1d9163e` / G4 `ec893e90`，全部 `independent_gate` + `current_valid=true`，`details.checks` 全 true。
+- **八维状态：`0/8 OVERALL_HOLD`（M5 整体准出尚未取得，不等于无进展）**；第 3 维（D00–D05 生产与 G0–G5 资格）在同任务已到 G4，其余维度按 PLAN §3.5 B/C/D 分别验收，不得折算完成率。
 
-- **D03 通道落地**：新增 `d03-resume-{journal,authorizer,input,issue,provider}.mjs` + `d03-g2-qualification.mjs`（当前独立 G2 精确绑定 material_evidence）；`execution-authority.mjs` stage 后缀扩 `_D03`；authority 增 `/api/d03-issue`、`/api/d03-consume`（复用 D00 签名私钥与 journal 登录，独立 `control.d03_resume_grant_journal`）；production-execute 按 from_stage 选 provider、白名单扩 `D01|D02|D03`、`cloudProductionEndStage` 支持 D03；provision G3 读凭据（job `d03.world-construction`，binding `7f554389`，token 仅写 `.secrets/gate-reader-bearer-d9d48901-g3.txt`）；preview env 增 `MOHEN_EXECUTION_AUTH_*_D03` 与 per-job G3 凭据映射。D03 claim 由独立授权服务从 G2 已合格 evidence 忠实派生（UNASSESSED 候选），无付费 Provider。
-- **申请材料**：迁移 `20261122180000_d03_resume_grant_journal.sql`（stage 校验、无 DELETE、RLS 四策略、可重签）、`20261122190000_artifact_revision_claim_revision.sql`（修 persist 函数 artifact_revision 返回 null）、`20261122200000_g3_reviewer_changes_read.sql`（G3 评审 world.changes 只读 + RLS），均已在真实库回读验证。新增 D03 授权通道单测 16 项全过；dispatch 白名单测试 9/9。
-- **修复的缺陷**：① 执行器环境被第十七批 gate-review 注入的 `MOHEN_GATE_MACHINE_DATABASE_URL` 污染（readiness credential_separation INVALID）→ production-execute 环境副本剔除 signer 凭据；② `persist_private_world_claim` 的 artifact_revision 依赖 gate-authority 函数不支持的 claim_revision → 改为 postgres 自有函数内联计算行哈希；③ gate-review 部署函数缺契约文件 → 评审器契约改静态 JSON import + gate-review 路由补 tracing include；④ G3 claim_revision 的 identity_version 改由强制 stage_binding 派生产物证明。
-- **最前阻断（需 Owner/DBA，权限边界非技术选择）**：`control.sign_gate_candidate`（owner `mohen_gate_authority`，SECURITY DEFINER）硬校验 `c.artifact_revision = control.artifact_revision_for(c.object_type, c.object_id)`；`control.artifact_revision_for` 的 kind 映射表无 `claim_revision`，对 G3 候选恒返回 null，正式签发报 `GATE_DECISION_FAILED ARTIFACT_REVISION_NOT_CURRENT`。本环境 DB 用户 `postgres.fwrhxddcpkibsnmddcfl` 非 superuser、不能 `SET ROLE mohen_gate_authority`、无任何 Supabase 高权限 token，故无权修改该 owner 函数。**最小修正建议**：以 `mohen_gate_authority` owner/Supabase SQL editor 在 `control.artifact_revision_for` 的映射表增加一行 `('claim_revision','world','claim_revisions','claim_revision_id')`（与已落库的 D03 迁移 20261122190000 对 persist 函数的内联修复等价），随后重跑 `/api/internal/gate-review` G3 dry_run+正式（候选 `91a239c1` 仍 SUBMITTED，无需重跑 D03）。**未自签 Gate、未伪造 PASS，G3 未签发前绝不发起 D04。**
-- **部署/费用**：web staging 最终 `mohen-agent-2-0-gr63w3msj-napoles1.vercel.app`；authority production 由 git source 部署（端点 `/api/d03-issue` 实测 401=存在）。D03 续跑零 LLM 调用，委托 `3f5585d0…` 累计仍 **0.005989 USD**，未新增费用、未扩大用途。
-- **本窗口只读复核（2026-11-22，HEAD 仍 `1f7a925`，无新提交）**：向真实库只读复查 G3 签发前置——候选 `91a239c1` 仍 `SUBMITTED`；`control.artifact_revision_for('claim_revision','0617b049…')` 返回 **null**，`pg_get_functiondef` 无 `claim_revision` token、owner 仍 `mohen_gate_authority`。**最小修正尚未执行，阻断未消除**，正式签发仍会 `ARTIFACT_REVISION_NOT_CURRENT`。未自签、未伪造 PASS、未发起 D04，零 Provider/0 USD。具名上报 Owner/DBA：以 owner 身份在 `control.artifact_revision_for` 映射增加 `('claim_revision','world','claim_revisions','claim_revision_id')` 后重跑 G3 dry_run+正式签发。
+## 本批（第二十批）已落地
 
-> 核验时间 2026-11-22 第十七批（批次起始 HEAD `b716339`；本批提交 `367085f`、`795361e`、`8b9cf30`、`aa32bcf`、`3b2b01d`）｜环境：云端真实库 + 真实部署实测；未验证项：D03 及以后（D03 执行授权通道未建）。
+- **D04 授权通道**（按 D03 同构，零付费派生）：`d04-resume-{journal,authorizer,input,issue,provider}.mjs` + `d04-g3-qualification.mjs`；authority 增 `/api/d04-issue|/api/d04-consume`（因 Hobby 计划 12 函数上限，两路径合并为单个 `/api/d04` 函数 + vercel.json rewrite，授权逻辑不变）；迁移 `20261122210000_d04_resume_grant_journal.sql`（独立表、stage='D04' CHECK、无 DELETE、RLS 四策略）；`from_stage` 白名单扩 D04（dispatch/self-test/types/stageSuffix），白名单单测 10/10；D04 通道单测 16/16。
+- **D04 真实执行**：staging `from_stage:"D04"` 续跑 run `b9989b90` → journal 签发并核销（`a5a4e8c1…`）；候选 `d2f1da86`（object=finding `7f713c60`，`input_fingerprint=a5a4e8c1…` 与 journal 一致）；typed input 从当前 G3 资格 + 持久 claim_revision `0617b049` 确定性重建，A06 / `G4.interpretation.v1:BE` / `UNASSESSED`，derived_from_claim_revision=`0617b049`、`evidence_refs` 含 finding+claim_revision、`dependency_snapshot` 精确绑 G3 审计 `f1d9163e`，零 Provider/LLM 调用。
+- **G4 正式签发**：部署内 `/api/internal/gate-review` 先 `DRY_RUN_PASS` 再 PASS（审计 `ec893e90-ddfd-4cc3-b6cc-685ca4a85f11`，`identity_version=true` / `finding_grounding=true`，`stage_binding`={job `d04.humanistic-discovery`, input `a5a4e8c1…`, output `8338692b…`, reviewer `m5-owner-reviewer-g2g5-producer`}）；`qualification_current` 新增 finding 行。评审/签名全在部署内完成，非自签。
+- **专业方法层判定**：D04 真实执行前置是「G3 合格 claim + A06 绑定」，无需 N01–N06 付费推理；A01–A12 中 11 项 HOLD 与 N01–N06 属于**人文解释深度**缺口，不阻断本批运行。本批未新增付费来源、未扩大委托用途。
 
-**本批结论：G2 已由机器评审按设计合同真实签发 PASS——run `b9989b90` 的 D02 材料观察候选 `b42bf519` 已 CONSUMED，`qualification_current` 新增 G2 行（material_evidence `031dd3d9`，valid_until `2026-11-28T05:57:44Z`）。这是该 run 首次持有现行有效的 G2 资格。本批零 Provider 调用、0 USD 新增费用。**
+## 最前阻断 / 下一动作
 
-- **签发回执（云端实库，已回读）**：`gate_audits.1a9402cb-3111-4b2b-86ba-7a06ad1bf78b` = G2/PASS/`independent_gate`/`reviewer_db_identity=mohen_gate_signer_m5_machine`/`rule_version=m5-local-v1`；`stage_binding` = `{job_id d02.material-understanding, input_digest 19df0921…, output_digest d5bd688f…, reviewer_binding_ref m5-owner-reviewer-g2g5-producer}`；identity_version 与 evidence_binding 两项确定性检查全 PASS（dry_run 先 `DRY_RUN_PASS`，再正式签发）。签发入口为部署内 `/api/internal/gate-review`（Preview + HMAC + 显式开关，会话密钥与机器签发连接不出部署）。
-- **修复的缺陷 1（环境漂移型，提交 `367085f`）**：部署内 dry-run 报 `password authentication failed for user mohen_gate_signer_m5_machine`。真因是 preview 环境的 `MOHEN_DATABASE_PASSWORD`（主库密码轮换覆盖值，20 天前设置；本地 `.env.local` 无此变量）被 `getNodePgPool()` 无差别覆盖到所有 data-access 连接，机器签发身份自带内嵌密码被主库密码顶掉。修法：覆盖值仅当连接串未内嵌密码时生效；专用身份（机器评审/producer/private worker）不受影响，主库轮换路径不变。新增 `tests/unit/node-pg-client-password-override.test.ts` 3/3 通过。
-- **修复的缺陷 2（部署打包型，提交 `795361e`→`3b2b01d`）**：正式签发报 `MODULE_NOT_FOUND`——`decideThroughAuthority` spawn 的 `packages/data-access/scripts/gate-authority.mjs` 不参与部署文件追踪（本地 `next build` 的 nft 清单包含它，但 Vercel 构建内静态包含两种形态均未生效）。最终修法：评审器改为**进程内直呼同一权威签发 repository**（`createGateAuthorityRepository(pool).decide(decision, sessionToken)`，与 CLI `gate-authority.mjs` 完全同一实现，`control.sign_gate_candidate` 唯一写路径不变），连接复用 `openMachineQuery` 已切换的机器签发连接池；静态 import 链保证随路由进入 lambda。CLI 本身保留给本地其他工具使用。
-- **费用**：D02 观察已由上一批真实完成（第 3/4 次尝试回执 `48902faa`/`2ffcc3f8`，0.004133 + 0.001416 USD）；本批未发起新的 Provider 调用。委托 `3f5585d0…` 累计已知费用 **0.005989 USD**（占 0.05 封顶 12.0%）。
-- **最前阻断（下一步唯一缺口）**：D03 无执行授权通道——`from_stage` 白名单仍为 `D01|D02`，无 `MOHEN_EXECUTION_AUTH_*_D03`、无 D03 journal/issue/consume 端点、无 G3 读凭据映射（job `d03.…`，可用 `tools/provision-stage-gate-reader.mjs` 幂等开通）。按 D01/D02 同构补齐后即可 `from_stage:"D03"` 续跑。
-- **凭证**：Vercel 账号令牌有效期至 `2026-11-22T17:29:13Z`（到期 `npx vercel whoami` 续期）。本批部署用 CLI 直传（`vercel deploy --yes`，经本地代理），最终部署 `mohen-agent-2-0-5itfot142-napoles1.vercel.app`。
+- **最前阻断**：D05（generalize）若需真实解释性推理，须新增/扩大付费委托（现委托 `3f5585d0…` 仅授权 `d02_material_observation`），属**扩大用途**，按授权口径须 Owner 批准；A01–A12 其余 11 项方法绑定与 N01–N06 仍是专业深度缺口。
+- **下一动作**：①若推进 D05，先就付费委托扩用途报备 Owner 并核费用（累计 `0.005989 USD`，达 `0.025 USD` 半封顶须停报）；②纯技术的方法绑定/单测可自行推进；③八维其余维度按 PLAN 逐项取证，不以本批 Gate 链替代作品发布/WATCH 验收。
 
+## 部署 / 费用 / 凭据
 
-> 核验时间 2026-11-22 第十六批（批次起始 HEAD `077de49`；本批提交 `14903de`、`6d0987a`、`2dfbe30`、`cb04c55`、`2cb0118`、`7596d86`、`403f4bc`、`6fed448`、`648eaea`）｜环境：云端真实库 + 真实部署实测；未验证项：D02 之后的 G2 机器评审与 G3—G5。
+- web staging：`mohen-agent-2-0-37r2cms8g-napoles1.vercel.app`（本批新部署）；authority production：`mohen-d00-authority.vercel.app`（git source，API 端点实测 401=存在）；提交作者须为 `xiezuojie03 <315303392+xiezuojie03-web@users.noreply.github.com>`，否则 Vercel 拒部署；网络经本地代理 `127.0.0.1:51081`，令牌到期先 `npx vercel whoami` 续期。
+- 费用：本批 **0 次 Provider 调用 / 0 USD 新增**；委托 `3f5585d0…` 累计仍 **0.005989 USD**（0.05 封顶 12%），未新增付费来源、未扩大用途。
+- 已知并发写入方：`main` 上有另一执行方传 `tasks/research/MERA-01/*`；推送被拒时 fetch + rebase，绝不 force push / reset / 新建分支。
+- 安全：密钥仅在 `.secrets/`（gitignored），签名私钥与机器签发连接不出部署；G3/G4 均为独立机器评审签发，非自签。
 
-**本批最新事实（D02 第二/三次真实尝试：付费回执与失败分类；派发器上界核算改造已完成，正在重跑）**
-- **已发生费用**：2 次真实 Provider 调用。①回执 `5452ba48…`（`ACCEPT_AS_CANDIDATE`，804+166 token，**0.000440 USD**），模型回 `{"hold":"classification_unresolved_or_unsupported"}` → 按旧提示词拒判；②回执 `7b67d609…`（`HOLD`，`cost=null`、`cost_confidence=UNKNOWN`，`started 04:08:40Z` / `finished 04:08:52Z`），失败码 `PROVIDER_USAGE_UNKNOWN` → run `b9989b90` 停在 `HOLD@D02 / PRIVATE_D02_GENERATION_NOT_READY`，`verification_error=DISPATCH_UNCERTAIN`。已知费用合计 **0.000440 USD**（占 0.05 封顶 0.88%），第二次尝试的实际费用待按上界核算。
-- **按 Owner「设计不到位就改设计」完成的两处改造**（提交 `648eaea`，未触碰权利/资格/Gate 判定）：①派发器把「200 但正文为空 / 缺 usage / 未定价」拆成 `PROVIDER_CONTENT_TRUNCATED`、`PROVIDER_CONTENT_EMPTY`、`PROVIDER_USAGE_UNKNOWN`，并把 `finish_reason`、`usage`、`worst_case_cost_usd` 写入回执（正文不入库）；②预算核算由「任何 HOLD 回执永久冻结委托」改为「未定费用按授权时上界计入 spent」，永不低计且不再让一次瞬时故障永久卡死生产链，只有无上界且模型不可比时才要求人工对账。D02 观察 `maxTokens` 2048→4096。
-- **测试**：派发器 27/27、D02 私密生成 11/11 通过；`tests/data-production/*.test.mjs` 428 项中 4 项失败，其中 3 项经 `git stash` 回退到 `6fed448` 复跑同样失败（与本批无关），1 项为本机 Windows `--import` 已知问题。
-- **待完成**：以新 staging 部署重跑 D02（预计再约 0.006 USD 上界）→ 核回执与费用 → PASS 后按既有路径签发 G2。
+## 历史索引（细节只在 progress.md，不在本文件重述）
 
-**本批最新事实（D02 已真实执行并产生付费回执，专业侧失败关闭）**
-- **费用**：真发生 1 次 Provider 调用，回执 `5452ba48-e58f-4aea-b006-32c231949753`，`deepseek` / `deepseek-flash`，**0.000440 USD**（累计占委托 `3f5585d0…` 封顶 0.05 的 0.88%）。
-- **结果**：模型返回 `{"hold":"classification_unresolved_or_unsupported"}`，即专业侧判定「材料性质或声源无法确定」，D02 按契约抛 `PRIVATE_D02_GENERATED_OBSERVATION_INVALID` → run `b9989b90` 停在 `HOLD@D02 / PRIVATE_D02_GENERATION_NOT_READY`。付费回执按规则保留，未重试、未编造文本。
-- **已贯通到这一步**：D02 授权签发/核销 → Runner 启动 → G1 资格复核 → 真实阅读上下文 → 逐来源外发闸门（有效权利投影后放行）→ 真实模型调用 → 永久回执 → 契约校验 → 失败关闭 HOLD。
-- **权利侧长期做法已落地**：`source.effective_rights_by_action()` + `studio.private_source_registration` 改为「版本快照 ∪ 有证据的显式 Owner 决定」，denied/restricted 永不放宽、无证据不放宽、pin 不被写回（迁移 `20261122170000`，含客户端同规则校验与单测）；曾尝试的「写回快照」路径已按 `PRIVATE_READING_IMMUTABLE` 实测回退，零数据改动。
-- **待 Owner 决策**：是否接受本次专业 HOLD（材料不足以判定编载体例），或以更明确的引文区间（如序/凡例）重跑 D01→G1→D02（再产生约 0.0005 USD），或调整 D02 提示词/契约（属 MHKA-04 方法变更）。
-
-**阶段结论（当时状态，后续已推进，见上「本批最新事实」）：D02 独立执行授权通道已按 D01 同构建成并真实跑通「签发→核销→Runner 启动→G1 资格校验→读出真实阅读上下文」，`PRIVATE_D02_READING_MISMATCH` 与 Runner 依赖解析两个真实缺陷已消除；随后停在「版本级权利快照 external_processing=unknown」的外发闸门 `TRANSFER_DENIED`，该阻断已由有效权利投影修复。**
-
-- **新增的授权链路（代码）**：`d02-resume-{journal,authorizer,input,issue,provider}.mjs` + `d02-g1-qualification.mjs`；`execution-authority.mjs` 的 stage 后缀支持 `_D02`；runtime env 白名单加 `MOHEN_EXECUTION_AUTH_{PUBLIC_KEY,VERIFY_URL,VERIFY_CREDENTIAL}_D02`；`production-execute` 按 `from_stage` 选择 provider；authority 增 `/api/d02-issue`、`/api/d02-consume`（复用同一签名私钥与 `mohen_d00_grant_journal` 登录，独立 journal 表与 stage 绑定）。
-- **迁移（本批应用）**：①`20261122130000_d02_resume_grant_journal.sql`（新表 `control.d02_resume_grant_journal`，stage='D02' 校验、无 DELETE、RLS 四策略）；②`20261122140000_d02_resume_journal_reissue_expired.sql`（允许「已过期未核销」的授权被重新签发，否则一次客户端校验失败会永久卡死）；③`20261115130000_mab_m5_private_text_read_context_consistency.sql`（**生产此前未应用**，旧版 `studio.read_private_text_reading` 仍按 `original_revision_id`/`receipt.status` 过滤，导致真实阅读上下文恒为空）。
-- **真实执行证据（run `b9989b90`）**：D02 授权 `issued 03:33:07Z` / `consumed 03:33:10Z`（表内唯一一行，consumed 后才可重签）；`03:33:21Z` 进入 D02 后失败关闭。逐层取证：①签名校验通过（此前 `EXECUTION_SIGNED_GRANT_SIGNATURE_INVALID` 真因是 Vercel env API 拒收多行 PEM，改用 `vercel env add` 写入真实换行）；②Runner 依赖解析失败真因是云端函数无 workspace 软链、`provider-dispatcher.ts` 静态 `import '@mohen/data-access'` → 在 `cloud-runner-dependency-loader.mjs` 增加该包到唯一源码实现的映射；③`PRIVATE_D02_READING_MISMATCH` 真因是上述未应用迁移。
-- **最前阻断（交 Owner 裁决，非技术选择）**：`source.source_versions.rights_snapshot`（版本 36ea7ffc）中 `external_processing='unknown'`，而「逐来源权利」只认该版本快照（`studio.private_source_registration` 把 `rights_by_action` 投影自 `v.rights_snapshot`），故 D02 外发被 `TRANSFER_DENIED` 拒绝；`source.sources.rights_by_action` 已是 `allowed`（2026-11-22 Owner 决定，留痕在 `rights_evidence.external_processing_decision`）。
-- **受控投射已尝试并按实测回退（不绕过）**：曾新增 `source.apply_rights_decision(...)` + 审计表并应用到真实库，调用时被 `studio.protect_private_text_reading` 以 **`PRIVATE_READING_IMMUTABLE`** 拒绝——**已被私读覆盖的 `source_version` 任何 update/delete 都被钉死**（先于 `rights_snapshot` 触发器），即「读过即冻结权利」，本轮无法把事后决定投射进该版本。已撤销该函数与审计表、恢复快照触发器原定义、删除未采用的迁移文件，**零数据改动**（快照仍为原值）。这与 `tools/stamp-public-domain-rights.mjs` 记录的同类硬限制一致，未强改触发器。
-- **部署**：authority production（git source，两批改动）、web staging `mohen-agent-2-0-746ru1hao-napoles1.vercel.app`；web preview env 新增 `MOHEN_D02_ISSUE_URL`、`MOHEN_EXECUTION_AUTH_VERIFY_URL_D02`、`MOHEN_EXECUTION_AUTH_PUBLIC_KEY_D02`、`MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL_D02`。
-- **凭证**：Vercel 账号令牌有效期至 `2026-11-22T17:29:13Z`（到期 `npx vercel whoami` 续期）。
-
-> 核验时间 2026-11-22 第十五批（批次起始 HEAD `077de49`）｜环境：云端真实库 + 真实部署实测；未验证项：D02 执行本身（缺 D02 执行授权通道）。
-
-**本批结论：Owner 已批准 D02–D05 的付费边界（0.05 USD 封顶），委托、逐来源外发许可、G2 读凭据与相关 env 已落地；D02 仍无法执行，阻断点是「D02 独立 stage grant 尚无签发通道」，与费用无关。本批 Provider 费用 0 USD。**
-
-- **已建的授权对象**：委托 `3f5585d0…`（仅 `d02_material_observation`、deepseek-flash、`budget_limit=0.050000 USD`、7 天）；来源 `9aa03207` 的 `external_processing` 由 `unknown` → `allowed`（保留原 held 快照与 Owner 决定留痕，其余 4 项仍 HOLD）；G2 读凭据 `31e1fdec…`（job `d02.material-understanding`）。
-- **部署**：preview env 增 `MOHEN_PRIVATE_D02_DELEGATION_ID`、`MOHEN_PRIVATE_D02_MODEL=deepseek-flash`、d01+d02 凭据映射；新 staging 部署 `mohen-agent-2-0-hmfwpnw2p-napoles1.vercel.app`，readiness 六组件全 CONFIGURED。
-- **代码**：`from_stage` 白名单扩为 `D01|D02`（dispatch、自检通道、类型），测试 9/9；未改 Gate 判定规则。
-- **最前阻断（实测）**：`production-execute` 只注入 `createD01ResumeProvider`，D02 的独立 stage grant 无签发/核销通道。以 `from_stage:"D02"` 续跑后 run `b9989b90` 被 claim（`2026-11-22T03:04:22Z`）但终态 **`HOLD@D01 / CLOUD_EXECUTOR_SETUP_FAILED`**；`studio.execution_receipts` 无新增、任务预留未动 → **零 Provider 调用、本批费用 0 USD**。下一步按设计补 D02 执行授权通道后再续跑；费用额度已批无需再请示。
-- **凭证**：Vercel 账号令牌有效期至 `2026-11-22T17:29:13Z`（到期 `npx vercel whoami` 续期）。
-
-> 核验时间 2026-11-22 第十四批（批次起始 HEAD `a984ef7`）｜环境：云端真实库 + 真实部署实测；未验证项：D02 及以后（付费 Provider）。
-
-**本批结论：多阶段 Gate 读凭据按「一 job 一凭据」补齐，G1 读通道实测 200；同一真实 run 仍停在 D02 前（付费 Provider，需先核费用）。**
-
-- **读通道（`VERIFIED_LIVE`）**：新建 G1 精确项目绑定 `75c80b6d…`（`d9d48901`，30 天）与 consume 凭据 `82b2ccb5…`（job `d01.carrier-reading` / G1 / ref `m5-owner-reviewer-g0g1-producer` / scope 仅本项目；token 只在 `.secrets/gate-reader-bearer-d9d48901-g1.txt`）。直连 `https://mohen-d00-authority.vercel.app/api/current`：正例 → **200 + PASS receipt**（`gate_audit_id 113c2bbe…`、`read_unit 43951035…`、双 digest 与 `stage_binding` 精确一致、`valid_until 2026-11-28T02:06:37Z`）；篡改 `output_digest` → **409 `current_qualification_required`**；用 G0 凭据查同一 G1 请求 → **403 `consumer_binding_denied`**。
-- **代码（本批唯一改动，未改 Gate 判定规则）**：`createIndependentGateClient` 支持 `credentials`（`job_id → 凭据`）映射并按 job 选择，未列出的 job 回落默认单值、映射缺 job 且无默认则失败关闭；新增 env `MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIALS`（JSON），已进 cloud runner env 白名单、web spawn 透传与 readiness 判定；新增 `tools/provision-stage-gate-reader.mjs`（按注册表解析 job→stage/gate/ref，幂等开通绑定+凭据，token 只写 `.secrets/`），D02—D05 可复用。
-- **部署（`VERIFIED_LIVE`）**：preview 目标已配 `MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIALS`；新 staging 部署 `mohen-agent-2-0-2pj5kd46r-napoles1.vercel.app` READY，`/api/internal/self-test-resume` readiness 回读 `configuration_ready=true`、`independent_gate` CONFIGURED（只证配置齐备，`runtime_verified=false`）。提交作者须为已绑定 Vercel 的 `xiezuojie03`，否则 `COMMIT_AUTHOR_REQUIRED` 阻断部署。
-- **下一步（唯一最前阻断）**：D02 属付费 Provider。按 PLAN §0.2 D 先核真实费用与累计上限（¥20 累计授权、达 ¥10 先停）并报备，之后才以 `from_stage:"D02"` 续跑并核 G2 交接；在此之前不发起 D02、不产生费用。
-- **凭证**：Vercel 账号令牌有效期至 `2026-11-22T17:29:13Z`（到期 `npx vercel whoami` 续期）。
-
-> 核验时间 2026-11-22 第十三批（批次起始 HEAD `fcec37a`）｜环境：云端真实库 + 真实部署实测；未验证项：D02 及以后（付费 Provider）、读服务对 G1+ 的复核入口。
-
-**本批结论：同一真实 run 已连续打通 D00→G0→D01→G1（两个独立 Gate 均为机器评审签发），现停在 D02 前。**
-
-- **run `b9989b90`**：D00 候选 `9c55df1e` → G0 审计 `c0ee5a2f`（input `8a19ba7a…` / output `54278096…`）；`from_stage:"D01"` 续跑成功 → D01 候选 `06b71b4d` → G1 审计 `113c2bbe`（input `54278096…` / output `df4457db…` / carrier `C01`）；run 终态 `HOLD@D01`（形成于签发前，未回改）。
-- **为打通所做的配置（非业务代码）**：web preview 换本项目 consume 凭据、批准 run、Protection Bypass；authority 的 `MOHEN_GATE_CONSUME_CREDENTIAL` 换成本项目凭据（旧值仍指旧项目，是续跑被拒的真因）；新部署 web `h2tpku26l`（staging）、authority `4ptizii5a`（production）。
-- **最前缺口（已更正定位）**：读服务 `/api/current` 对 G1 返回 403，真因**不是** stage/gate 白名单，而是 `control.gate_service_credentials` **按 job/gate 绑定**：本项目 consume 凭据只绑了 `d00.source-intake/G0`，因此 `authenticate_gate_service` 对 `d01.carrier-reading/G1` 返回空 → `consumer_binding_denied`。资格本身在库内有效：`qualification_current` 中 G0→`source_version 36ea7ffc`（至 11-27）、G1→`read_unit 43951035`（至 11-28）。进入 D02 前需二选一并落地：①按阶段各建一条凭据（并让 `MOHEN_INDEPENDENT_GATE_VERIFY_CREDENTIAL` 支持按 job 选择）；②在该 Gate 读通道上改用可按 job 解析的凭据集合。
-- **凭证**：Vercel 账号令牌已于本批续期（有效期至 `2026-11-22T17:29:13Z`，到期可 `npx vercel whoami` 再续）；新增 `.secrets/vercel-protection-bypass.txt`、`selftest-credential.txt`、`gate-reader-bearer-d9d48901.txt`（均 gitignored）。
-
-> 核验时间 2026-11-21 第十二批（批次起始 HEAD `d0d208d`）｜环境：云端真实库实测（`postgres 17.11`，`.secrets/` 凭据可用）；未验证项：云端 Runner 对 G0 的实际消费（需部署侧 env，见阻断）、D01 执行、G1。
-
-**本批（2026-11-21 第十二批）结论：D00 真实候选的独立 G0 已按设计合同签发并经低权 reader 回读 PASS；run 仍 `HOLD@D00`，下一步受阻于部署侧验证通道配置（Vercel 账号令牌已过期）。**
-
-- **签发回执（云端实库）**：候选 `9c55df1e` → `CONSUMED`；`gate_audits.c0ee5a2f-77df-4bbb-8b46-8f4b55ba150e` = G0/PASS/`independent_gate`/`consumer=producer`/`reviewer= b0a11000…（机器评审）/db=mohen_gate_signer_m5_machine`；`details.stage_binding` = `{job_id d00.source-intake, consumer producer, input_digest 8a19ba7a…, output_digest 54278096…, reviewer_binding_ref m5-owner-reviewer-g0g1-producer}`；`qualification_current` 已指向该审计（有效至 `2026-11-27T14:47:43Z`）。三项确定性检查 `identity_version / rights_by_operation / method_plan_preselection` 全 PASS。
-- **两处云端漂移按设计迁移消除**：①`studio.private_originals` 的机器评审只读策略恢复为 `20261113150000` 的"跟随有 SUBMITTED 候选的项目"（原为写死旧项目 `e03c4ba8`）；②`control.sign_gate_candidate` 与 `control.current_qualification_is_valid` 恢复为 `20261113160000` 设计版（含 `scope_kind=studio_project` 规则分支；CAS 按对象键取当前资格，不再按 `artifact_revision` 过滤——原漂移导致 `QUALIFICATION_CAS_CONFLICT`）。该迁移末尾的规则化绑定 INSERT 未执行（云端已有 26 条同类绑定）。
-- **授权与只读凭据**：新增 `tasks/results/G0_MACHINE_BINDING_D9D48901_20261121.sql`，为机器评审装一条**仅本项目 + G0** 的精确范围绑定 `65dd1fae-e7a3-46dd-a97f-b9613bf71578`（30 天，`source_ref=plan-3.5C-2026-11-21…`）；新建 consume 凭据 `b0bb78fa-19a9-45af-ae31-96b7b51bbbcb`（scope 仅 `project_id d9d48901`，绑定上条绑定，token 明文只在 `.secrets/gate-reader-bearer-d9d48901.txt`）。旧凭据 `e7a89d2f`（旧项目）未撤销。
-- **回读证据（真实低权路径）**：以 `mohen_runner_reader_v2` + 新凭据走 `createInProcessGateReaderVerifier` → `control.read_gate_stage_qualification` 返回完整 receipt（`qualification_current=true`、双 digest 对、`gate_audit_id c0ee5a2f…`）；负例（篡改 `output_digest`）返回 `INDEPENDENT_GATE_VERIFY_DENIED`。
-- **最前阻断（需平台凭据）**：云端 Runner 的验证通道指向已部署读服务，而 `https://mohen-d00-authority.vercel.app/api/current` 对 run `b9989b90` 与历史 `bfcdfad6` 均返回 **403**（部署侧 `MOHEN_D00_GATE_APPROVED_RUN_ID` 未含这些 run）；同时 Vercel **账号令牌已于 `2026-11-21T14:36:24Z` 过期**（`/v9/projects` → 403），本批无法改 env 或重新部署。→ 因此本批**未发起 D01**，run 保持既有 `HOLD@D00 / INDEPENDENT_GATE_NOT_VERIFIED` 记录（该记录形成于签发前，未回改）。
-- **零付费/零伪造**：未调用 Provider、未新增付费；未伪造会话/资格/PASS；密钥与 token 未入 git（`.secrets/` gitignored）；未触碰生产 DB 迁移与公众开放。
-
-> 核验时间 2026-11-21 第十批（批次起始 HEAD `eaef9d7`，local=remote 分叉 0/0；本批实测 Vercel 对 main 推送只产生 production 目标部署且被 "the commit didn't affect this project" 取消，不再自动产生 preview 部署）｜环境：云端真实库实测（`postgres 17.11`，`.secrets/` 凭据可用）；未验证项：云端 executor 实际执行（本批未 claim）、独立 Gate 读服务的实际部署地址。
-
-**本批（2026-11-21 第十批）结论：云端真实 run 已用上图地名志正文开出，但 executor 未 claim → `HOLD@D00 / CLOUD_DISPATCH_UNCLAIMED`；未进入 G0/D01/G1。**
-
-- **材料（云端实况，已回读）**：`source 9aa03207-6d60-4984-8c1f-347df2532842`「上海地名志·朱家角」、`source_version 36ea7ffc`（`extent_kind=utf8_byte_range/v1`、`start_byte=335`、`end_byte=995`）、`raw_item c26c07cc`（1,259 B）、`rights_by_action` 含 `machine_read: allowed`；原件 `studio.private_originals.f474b91b`（`text/plain`、`verified_at=2026-11-13T05:46:01Z`、`sha256 273222ee…`）属项目 `d9d48901`，任务 `b2143002`（`status=done`、`ceiling 8 / spent 4 / 无 reservation`）。**第二条「朱家角镇」1,411 B 不在云端**：云端 `private_originals` 仅 3 条文本原件（1,259 / 1,121 / 1,015 B），补传需私有存储服务密钥（sensitive 不可读），施工侧不得伪造上传身份。
-- **本批开出的 run**：`06512899-d17f-4863-97e5-940bebcd9be4`（新代码路径：自检通道 `end_stage:"D00"`，价 0，经 `MOHEN_D00_APPROVED_RUN` 预批准绑定 digest `8a19ba7a…`）。`scope` = 上述 project/original/source_version/raw_sha256/page 1 全部一致；终态 `HOLD@D00`、`reason_code=CLOUD_DISPATCH_UNCLAIMED`、`metadata.cloud_dispatch.input_digest=2c2ef0fe…`、`cloud_dispatch_uncertain=true`；task 预算留痕 `cost 0 / production-d00-intake / requires_receipt_reconciliation=true`。
-- **根因（代码+实测）**：`apps/web/lib/studio-production.ts:109-125` 的 `cloudProductionDispatch()` 只有在 `VERCEL_ENV==='preview'` 且 `MOHEN_D00_TRUSTED_PREVIEW_ACCESS==='true'` 时把任务派回**自身** `/api/internal/production-execute`；否则回落到 `MOHEN_CLOUD_EXECUTOR_URL`（未配置）。本批唯一可访问的部署是自定义环境 `staging`（`VERCEL_ENV='staging'`）→ 派发目标为空 → executor 从未 claim。
-
-**三处硬阻断（需 Owner 侧动作，施工侧无法自行解锁）**
-
-1. **部署通道**：main 推送只生成 production 目标（两次均被 "the commit didn't affect this project" 取消）；`POST /v13/deployments` 明确拒绝 `target:'preview'`；`customEnvironmentSlug` 不被接受；自定义环境 `staging` 受 Vercel Authentication 保护，`x-vercel-protection-bypass` 仅 query 参数形式有效但 staging 无对应 bypass 变量。→ 新提交目前**无法以可访问的 preview 部署上线**，云端 executor 自派发通道因此不可用。
-2. **intake 对账缺口**：`requires_receipt_reconciliation: true` 后，`studio-research.ts:414` 直接返回 `production_reservation_reconciliation_required`，而仓库只有写入该标记、**没有对账/恢复实现** → 任务 `b2143002` 现在无法再次发起 intake。旧通道（不带 `end_stage`）还会被预算挡住：`production-run` 价 5 > 可用 4。
-3. **独立 Gate 读服务**：`apps/d00-authority/api/current.mjs` 只接受单一预批准 run 且 `stage==='D00' && gate_code==='G0'`，G1 无对应入口（与 run `bfcdfad6` 在 G1 被判 `INDEPENDENT_GATE_VERIFY_DENIED` 一致）。该服务所在 Vercel 项目不在本 token 可见团队内（`/v9/projects` 仅 `mohen-agent-2-0`），`mohen-d00-authority.vercel.app/api/current|readiness` 均 404，实际地址未定位。
-
-**本批代码（`afa3cc1`，已推送）**：`apps/web/app/api/internal/self-test-resume/route.ts` 增加 `end_stage:"D00"`（`end_stage` 与 `from_stage` 互斥；仍只认服务端 `MOHEN_D00_APPROVED_RUN` 预批准绑定，不发 Gate、不造会话）。该提交的唯一可访问部署：`mohen-agent-2-0-bwgxkafm9-napoles1.vercel.app`（staging，需 query 形式 bypass）。
-
-**本批边界**：零付费、未签任何 Gate、未改迁移与方法表绑定、未伪造会话/资格；未改 `b2143002` 的 checkpoint（保留真实 HOLD 留痕）。
-
-> 核验时间 2026-11-21 第八批（批次起始 HEAD `b804e75`，local=remote 分叉 0/0）｜环境：本地隔离库 + 云端只读实测（凭据在 `.secrets/`，**云端可达**，`postgres 17.11`，前批"C4 无凭据"已更正）；未验证项：CI 宿主（本机 gh 缺失 → `DEFERRED_ENV`）、模型执行者（未接任何模型）。
-
-**本批（2026-11-21 第九批）裁定：暂缓视觉（C04）路径，主线回到文本 C01 直读与结构化数据 C05。** 依据：本机 i7-8550U / 7.8 GB RAM / MX150，无可用 CUDA 栈，8B 级视觉模型不可用；`ollama.com` 安装包重定向到 GitHub Releases（1,857,946,272 B），直连与失效系统代理（`127.0.0.1:11719` 无监听）均在传输中被重置，`gh-proxy.com` 仅 0.16 MB/s、`hf-mirror.com` 约 1.0—1.5 MB/s。`D:\temp` 下载痕迹（合计约 1.57 GB）已全部删除，未安装 Ollama、无 `~/.ollama`。C04 观察契约（`2c11cee`，18/18 测试）保留备用，**方法表 C04 仍 `HOLD`，本批未改任何绑定、零付费**。
-
-**本批（2026-11-21 第八批）结论：C04 视觉观察契约已可执行（18/18 测试），但 C04 在方法表仍 `implementation_binding: HOLD`——契约备好、模型执行者未接入。**
-
-**分工口径（Owner 2026-11-21 裁定）**：古文字层优先用既有免费转录走 C01 直读，C02 只对"有字但无可靠转录"兜底；多模态的主战场是**无字可读的视觉材料 → C04**。新增 `pipelines/data-production/adapters/c04-observation-contract.mjs`：`routeVisualMaterial()` 检出文字即转 C02、未做文字检测一律 HOLD；`validateC04Observation()` 按 C01-C08 规范 C04 章原文落判定（框坐标/像素尺寸、图题与观察分离、增强须可逆、低清不得确定断言、不得断言人物年代地名同一性）。
-
-**前期（2026-11-21 第四批）结论（保留）：生产链已能自己找到并核验真实史料；本地取件落库受环境身份限制。**
-
-**已找到的真实材料（可复现）**：维基文库《欽定大清一統志（四庫全書本）》卷058（松江府），固定修订 `oldid 745167`，`action=raw&oldid=745167` 取件 **55,958 字节**、SHA-256 `6cd08f0a…3523`（三次独立取件一致）；内证「珠街鎮（在青浦縣西十里，商賈輻輳，為邑巨鎮）」「朱家角」「津梁」。**关键段落字节位置：珠街鎮 43,629、朱家角 45,775、津梁 47,033**——均超过单次全文读取上限 32768 B，D01 只能走有界片段 extent（且须 G0 批准的 C01 范围），不能再用"全文直读"。
-
-**本批修复的真实缺陷（`tools/acquire-http-file.mjs`，Y07 取件此前根本落不了库）**：①`content_availability` 写死 `file_download` 与库内 CHECK 冲突 → 改 `--content-availability`（默认 `full_content`）；②首次建来源无法带权利依据 → 新增 `--rights-evidence`（只登记不推断，冲突报 `HTTP_SOURCE_RIGHTS_CONFLICT`）；③网络层失败不重试 → 与 429/403/5xx 同规则重试；权利比较改规范化键序。
-
-**本地隔离库已落（回读核验）**：需求回执 `090b7c4a…`（produced_by `Y01/production-self-acquisition`）；来源 `b8ca4183-491c-45b4-88e9-2b34f0fe7ae8`（provider `wikisource`、`digital_text`、`full_content`、`verified`）携显式 `rights_by_action`（读/下载/保有/引用 allowed；展示/改编/再分发/外发模型 denied）与 `rights_evidence`（PD-old + 转录层 CC BY-SA 4.0 署名义务 + 裁决 A 本地隔离范围 + 「未经 Owner 逐条复核」边界声明）。**字节未落**：`source_versions=0`。
-
-**新阻断（环境身份，非代码）**：落私有原件需合规私有 worker 登录；`assertPrivateWorkerIdentity` 拒绝以 NOLOGIN 的 `mohen_private_worker` 直连，而本机 dev 库无 `mohen_m5_worker_login`（迁移 `20261117020000` 未在本机应用，且要求上线前单独轮换口令）→ 按纪律不自行造角色/口令绕过。
-
-**通道可用性（实测，第五批已更正）**：archive.org 443 超时；`shidianguji.com` robots 全站 Disallow；`圖書集成` 職方典松江府各卷为 423 B 占位；`三呉水考/卷04`(33,717 B)、`江南通志/卷025`(39,929 B) 均超 32 KiB；**上图通道本身可用——上一批"Key 失效"的判断是错的**：`gj/webapi/works`、`gj/webapi/instances`、`shnh/dmz/webapi/geonames` 在 `data1.library.sh.cn` 上已一律 `{"result":"-1"}`，同一套 query 换到 `data.library.sh.cn` 才正常返回（已改 BASE 并实跑验证）。
-
-**云端真实 run `bfcdfad6-bbcb-4b68-946a-82e1302eeb80` 仍为 `HOLD@D01`**（上批事实，未变）：G0 `888db9e6`、G1 `292792c8` 均 PASS/current；L1 仅一条 `read_unit 215b61ef`（C02 页定位、`interpretation=not_performed`）；原件为 Commons 照片（无 `external_processing`；`C04` 方法绑定仍 `implementation_binding: HOLD`，观察契约已实现但模型执行者未接入）；D02 生成仍需付费 Provider（`MOHEN_PRIVATE_D02_DELEGATION_ID`/`MODEL`），云端无 D02 阶段授权端点。八维维持 `0/8 OVERALL_HOLD`；本批 ¥0。
-
-**上批（2026-11-21 第二批）结论：D02 续跑输入合约已补齐，但真实 run 无法离开 D01——阻断不在代码能力，而在三处授权/素材条件。**
-
-**Studio 已登记原件 → D00 接收已验收 → 独立 G0（`888db9e6`）与 G1（`292792c8`）均已签发 PASS。**
-
-**真实 run `bfcdfad6-bbcb-4b68-946a-82e1302eeb80` 现状**：`current_stage=D01`、`HOLD`，终态 `INDEPENDENT_GATE_NOT_VERIFIED / INDEPENDENT_GATE_VERIFY_DENIED`（早于 G1 签发，未重跑）。资格层已成立：G0 `888db9e6` PASS/current（valid_until 11-26）、G1 `292792c8-aad1-485d-9e3d-b73d5914c14d` PASS/independent_gate/current（valid_until 2026-11-27T07:38Z）；`stage_binding` = {job `d01.carrier-reading`、input `002bb07f…`、output `fa256f6d…`、reviewer `m5-owner-reviewer-g0g1-producer`}。**本批只读回读（2026-11-21 第三批补正）**：L1 仅一条 `read_unit 215b61ef` = `C02`/`page`/`scanned_page/v1`/`uncertainty.interpretation=not_performed`。**该原件不是书影，而是一张 Commons 照片**：`source 47875bca` = provider `wikimedia-commons`、title `朱家角古镇，Zhujiajiao Water Village - panoramio.jpg`、`source_type=image`、`content_availability=image_scan`（`carrier_type=scanned_page` 为 D00 登记标签，不等于材料是扫描书页）。`rights_by_action` 仅 `retain/download/access_view/machine_read=allowed`，**无 `external_processing`**；`C04`（照片、版画与插图）在方法表中仍是 `implementation_binding:"HOLD"`。因此"OCR 转录"对本材料无字可读、外部 VLM 亦无权利授权。
-
-**上批能力（`CODE_PRESENT`+`VERIFIED_ISOLATED`）**：①`adapter-binding.mjs` 新增 `isTypedD02ReadingRequest`（D02 生成请求的纯形状校验，无授权语义）；②`resume-input.mjs` D02 受信输入接受 orchestrator 派生的 `readUnitId + reading` 形态，并把 qualified reading / observation / legacy link 定为三选一互斥——修复前该派生请求会被续跑入口拒绝，即"G1 合格也无法续跑 D02"；③测试：定向 15/15 PASS，全量 `tests/data-production` 409 tests / 405 pass / 4 fail（4 条为既有基线）。零 DDL、零付费、未改核心 Gate 与 Worker 判据。
-
-**上上批（第三批）已确认 A′ 中"由 Owner 上传有字原件"这一步不再需要**：第六批已用上图通道取到并落库两条地名志正文（`朱家角` 1,259 B / `朱家角镇` 1,411 B，含"放生桥""淀浦河/朱昆河/朱泖河""聚落跨井亭港两侧"），来源 `879cb42a…`、`e97724c8…` 各 1 版本 + 1 raw_item，权利按 Owner 2026-11-08 裁定写入。第七批已在**本机 dev 库**应用仓库既有迁移 `20261119235412`（函数替换），两条来源的 `d00_lookup.ok=true`、`SHL_LAND_TEXT_OK`，私有原件→L0→D00 绑定打通（云端账本早有同名迁移）。当前前置条件仅剩：①**云端库可达且已实测连通**（凭据在 `.secrets/supabase-db-url.txt`；2026-11-21 第四批曾误判"无凭据/不可达"，实为我未定位该目录，已更正）：云端 `postgres 17.11`、迁移账本 46 条（max `20261120045054`）、真实 run `bfcdfad6` 仍 `D01/HOLD`、云端 L1 共 260 条；②D02 生成仍需付费 Provider 与云端 D02 阶段授权端点。**本地/云端一致性**：函数 `studio.private_source_registration` 的 md5 两侧一致（`25267f89…d05a`，2475 字节），三列权利字段两侧都在；结构快照已生成（`DATABASE_SCHEMA_LOCAL.json` / `DATABASE_SCHEMA_CLOUD.json`），差异为云端多 8 张表（`control.d01_resume_grant_journal`、`control.web_password_reset*`、5 张 `mab_backup.*`）与 4 个函数（`control.m5_reconcile_legacy_unclaimed_run`、`control.m5_write_production_progress`、`pgbouncer.get_auth`、`studio.search_qualified_project_layers`），本地无独有表；本地 `mohen_dev` 仍无迁移账本，版本一致性只能靠 catalog 比对。
-
-**其余最前阻断（承接上批）**：②D02 H05 生成需付费 Provider 委派/预算/权利（`MOHEN_PRIVATE_D02_DELEGATION_ID`/`MODEL`，现零付费）；③云端无 D02 阶段授权端点与一次性 journal（现仅 D00/D01 有 `token`/`issue`/`consume`）。另：既有 `privateD02Request` 仅覆盖 C01 文本，C02 扫页一律落 `PRIVATE_NEXT_STAGE_REQUEST_NOT_READY`；D00 把照片登记为 `carrier_type=scanned_page` 并预选 C02 属方法选择错误，应在新材料/新 run 中纠正，不改旧 L1。八维维持 `0/8 OVERALL_HOLD`；本批 ¥0。
-
-> **历史回执（2026-11-19 工程数据统一专项 P0–P4）已结案**：唯一结论见 [P4 结案书](tasks/results/P4_CLOSURE_20261120.md)，完整证据见 `tasks/results/MAB/ENGINEERING_DATA_UNIFICATION/`。背景细节不再重述。
-
-朱家角任务 `53ad1a29-22e5-43c2-816d-b02b6e85abbd`、Project `e03c4ba8-7069-4d6c-92b5-fcae1b6e17c5`、同一 Root 与原件 `4ca22839-e3e9-4d14-8ec7-677cd740aa0e` 已在持久回执中核对。Creator 已在受保护 Preview 发起单次 D00，执行许可已消费，运行 `bfcdfad6` 已提交 D00 接收候选 `48766904`（后由 G0 重签候选 `c50a941c` 承接，均 CONSUMED）。原件 SHA 和 Raw 关联通过回读。
-
-**B 路径历史要点（2026-11-20 已完成，保留）**：云端机器审核账号恢复；低权 signer `mohen_gate_signer_m5_machine` 安装并验登录；按真实 CC BY-SA 3.0 授权据实补来源 `47875bca…` 的 `machine_read=allowed` + `basis`；因云端 `sign_gate_candidate` 仍是旧版（只认精确 scope），新增精确 scope binding `d2307be3`（G0，project e03c4ba8，30 天）与本批 `ba571016`（G1，同口径）；G0 先以 `802c740f` 签发、后带真实 `stage_binding` 重签为 `888db9e6`（旧审计保留非当前）。
-
-**Runner 消费与 D01 续跑历史要点（2026-11-20，保留）**：进程内低权 reader verifier、终态持久 reader 凭据 `e7a89d2f…`（绑 `d2307be3`、valid_until 2027-12-20）、D01 续跑 A/B/C/D 四段（`4fd763d`/`7f8cfa5`/`73b84c8`/`da0df48`）、自检通道 `/api/internal/self-test-resume`、probe 回归闭环（`d9ace70` + 无缓存重部署 `7ad46u6ba` → `runner_ready`）。该链条已支撑真实 D01 执行到 G1。
-
-[施工与验收标准](tasks/implementation/MAB/PLAN.md#studio-d00-handoff) · [施工证据账](tasks/implementation/MAB/progress.md)
+- 第十八批 G3 全过程（含 Owner「选一」授权、`artifact_revision_for(claim_revision)` 修复与 G3 签发）：[progress.md](tasks/implementation/MAB/progress.md) 搜「G3 签发回执」「D04 准备起点」。
+- 第十—十七批（D00→G1、权利投射、D02 付费回执与失败分类、环境漂移修复、G2 签发）：同上按「核验时间 第 N 批」定位。
+- 2026-11-19 工程数据统一专项 P0–P4 已结案：[P4 结案书](tasks/results/P4_CLOSURE_20261120.md)，证据在 `tasks/results/MAB/ENGINEERING_DATA_UNIFICATION/`。
