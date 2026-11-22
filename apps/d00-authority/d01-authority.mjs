@@ -309,8 +309,8 @@ async function serve(group,route,req,res){
   reply.headers.forEach((value,key)=>res.setHeader(key,value));
   res.end(Buffer.from(await reply.arrayBuffer()));
  }catch(error){
-  console.error('d01_authority_unavailable_detail', (error&&error.message?String(error.message):'unknown').split('\n')[0]);
-  res.statusCode=503;res.end('{"ok":false,"reason":"d01_authority_unavailable"}');
+  const detail=String(error&&error.message?error.message:'unknown').split('\n')[0].replace(/["\\]/g,'').slice(0,120);
+  res.statusCode=503;res.end(JSON.stringify({ok:false,reason:'d01_authority_unavailable',detail}));
  }
 }
 
