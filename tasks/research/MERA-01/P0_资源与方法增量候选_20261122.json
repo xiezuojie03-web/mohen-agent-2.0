@@ -1700,6 +1700,12 @@
       "fields": {
         "note": "Added R0096 Zenodo, R0097 Harvard Dataverse, R0098 OpenAIRE Research Graph, R0099 DOAJ, R0100 CORE; methods M0076-M0080. Candidate totals 100 resources / 81 methods / 18 attempts. Metadata license and source full-text/data license remain separate."
       }
+    },
+    {
+      "target": "coverage matrix latest revision",
+      "fields": {
+        "note": "After category 07 research data and OA discovery additions, primary-category record counts are C01 32, C02 9, C03 16, C04 6, C05 9, C06 8, C07 9, C08 11. Candidate workbook sheets 八类覆盖矩阵 and 八类覆盖映射 contain 100 mappings. Counts are records, not provider counts or exit scores."
+      }
     }
   ],
   "attempt_log": {
