@@ -1440,6 +1440,12 @@
       "fields": {
         "note": "Added R0088 NESSDC, R0089 Yangtze 1970-1979 Landsat sample, R0090 Yangtze 2020 river network sample, R0091 China National Place Names Database 2022, R0092 MCA Historical Place Name Query; methods M0068-M0072. Candidate totals 92 resources / 73 methods / 18 attempts. NESSDC research-only policy noted."
       }
+    },
+    {
+      "target": "coverage matrix latest revision",
+      "fields": {
+        "note": "After China archaeology and Yangtze geospatial supplements, primary-category record counts are C01 32, C02 9, C03 15, C04 6, C05 9, C06 8, C07 4, C08 9. Candidate workbook sheets 八类覆盖矩阵 and 八类覆盖映射 contain 92 resource mappings. Counts are records, not provider counts or completion scores."
+      }
     }
   ],
   "attempt_log": {
