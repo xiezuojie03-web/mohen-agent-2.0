@@ -6172,3 +6172,11 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **G4 评审/落库**：部署内 `/api/internal/gate-review` dry_run `DRY_RUN_PASS`（identity_version revision=`65e4fc85…`；finding_grounding method=A06 purpose=BE claim=`0617b049`），正式 HTTP 200 `status=PASS`、`auditId=ec893e90-ddfd-4cc3-b6cc-685ca4a85f11`。真实库回读：`gate_audits.ec893e90…` = D04/G4/PASS/`independent_gate`/`current_valid=true`/valid_until `2026-11-28T08:55:58Z`，`details.checks={identity_version:true,finding_grounding:true}`，`stage_binding`={job `d04.humanistic-discovery`, input `a5a4e8c1…`, output `8338692b1f298e781799ac498a7ba685fdd6932b7eaa1554b8dc0107c72ea98b`, reviewer `m5-owner-reviewer-g2g5-producer`}；`qualification_current` 新增 finding 行（`consumer=producer`）。权威唯一写路径 `control.sign_gate_candidate` 不变，非自签。
 - **费用/边界**：本批 **0 次 Provider 调用 / 0 USD 新增**；委托 `3f5585d0…` 累计仍 **0.005989 USD**。未新增付费来源、未扩大用途、未改方法表 HOLD、未伪造会话/资格/PASS、密钥未入 git。
 - **HOLD/恢复与下一动作**：八维仍 `0/8 OVERALL_HOLD`（整体 M5 未准出）；同任务最远已验节点=G4 PASS。最前阻断：D05 若需真实解释性推理需扩大付费委托用途（现委托仅 `d02_material_observation`），按 Owner 授权口径须先报备并核费用（累计达 `0.025 USD` 半封顶须停报）；A01–A12 其余 11 项方法绑定与 N01–N06 属专业深度缺口，不阻断本批运行。下一动作：付费扩用途报备后再决定 D05；纯技术绑定/测试自行推进；八维其余维度按 PLAN §3.5 分别取证。
+
+
+## Owner 报告口径裁决（2026-11-22，第二十批追加）
+
+- **Owner 指出**：`0/8 OVERALL_HOLD` 对 Owner 无进展信息价值；八维是 M5 准出条件，应只在最终评价时起作用。Owner 要求改用「按施工计划当前主线一共有多少步骤、实际完成多少步骤」作为进展报告。
+- **口径核对**：PLAN §3.5 B 第 116 行原本已明确 `0/8` 只表示整体未准出、不得解释为完成率或"没有进展"，八维的过程价值在每个维度的五类证据状态（能力已实现 / 上下游已集成 / 环境已验证 / 同任务已有节点证据 / Owner 已验收）。将 `0/8` 当进度数字汇报违反该原口径，Owner 裁决与 PLAN 原意一致。
+- **裁决落地（先改 PLAN 再执行，AGENTS §4）**：PLAN §6.2 的报告口径改为——对 Owner 报进展以 §3.5 C 业务主干的**步骤完成度**为主（主干段标已验/在跑/未启 + 展开 D00—D05、G0—G5 节点），再报同任务最远已验节点与下一最前阻断；八维只保留为准出条件，不再作进展汇报项。步骤计数直接由主干派生，不新增并行进度表、不折算百分比、不替代八维准出。
+- **CURRENT.md 同步**：主线进度表前置，主干共 10 段（0 段完整验收 / 4 段在跑 / 6 段未启），生产链 12 节点已验 10/12，最远已验节点 G4 PASS；八维移为准出条件注记。

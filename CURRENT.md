@@ -4,11 +4,25 @@
 
 > 核验时间 2026-11-22 第二十批｜环境：云端真实库 + 真实部署实测；HEAD/部署见下。本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
 
-## 当前唯一任务与最远已验节点
+## 主线进度（按 PLAN §3.5 C 业务主干，同一任务 `b2143002` / Project `d9d48901` / run `b9989b90`）
 
-- 同一真实任务 `b2143002` / Project `d9d48901` / run `b9989b90`（原件 `f474b91b`，朱家角）已连续贯通 **D00→G0→D01→G1→D02→G2→D03→G3→D04→G4**；**最远已验节点 = D04 UNASSESSED finding 候选落库 + G4 机器评审正式 PASS**。
-- 五道独立 Gate 当前资格均有效（valid_until 2026-11-28）：G0 `c0ee5a2f` / G1 `113c2bbe` / G2 `1a9402cb` / G3 `f1d9163e` / G4 `ec893e90`，全部 `independent_gate` + `current_valid=true`，`details.checks` 全 true。
-- **八维状态：`0/8 OVERALL_HOLD`（M5 整体准出尚未取得，不等于无进展）**；第 3 维（D00–D05 生产与 G0–G5 资格）在同任务已到 G4，其余维度按 PLAN §3.5 B/C/D 分别验收，不得折算完成率。
+主干共 **10 段**：**0 段完整验收、4 段在跑、6 段未启**；其中生产链 12 个节点已验 **10/12**（D00/G0/D01/G1/D02/G2/D03/G3/D04/G4），**最远已验节点 = D04 UNASSESSED finding 候选落库 + G4 机器评审正式 PASS**。
+
+| # | 主干段（PLAN §3.5 C） | 状态 | 同任务实证 / 剩余 |
+|---|---|---|---|
+| 1 | Studio 受权委托与研究意图 | 在跑 | 真实任务/项目/Root 已固定；ST-01 的真 UI 入口与问题收敛未完整验收 |
+| 2 | 统一检索 L0—L5 并核权利与当前资格 | 在跑 | 权利投影与 Gate 读通道已真实跑通；统一检索视图/契约未完整验收 |
+| 3 | D00—D05 必要工序 + G0—G5 独立资格 | 在跑 | **10/12 节点已验**；剩 D05（需付费扩用途报备）与 G5 |
+| 4 | 可追溯知识资产与合法研究读 | 在跑 | evidence / finding / claim_revision 已落库且带 revision/refs；13 类资产合同未全验 |
+| 5 | 导演 H1/H2/H3 与 19 组件 → WorkRevision | 未启 | — |
+| 6 | Admin 回链、运营审核、作品资格与媒资许可 | 未启 | — |
+| 7 | 精确发布（发布指针） | 未启 | — |
+| 8 | WATCH 消费与即时撤权 | 未启 | — |
+| 9 | 第二个非模板题材复用验证（PLAN §3.5 C-1） | 未启 | — |
+| 10 | Owner 真实体验与最终签收 | 未启 | — |
+
+- 五道 Gate 当前资格均有效（valid_until 2026-11-28）：G0 `c0ee5a2f` / G1 `113c2bbe` / G2 `1a9402cb` / G3 `f1d9163e` / G4 `ec893e90`，全部 `independent_gate` + `current_valid=true`，`details.checks` 全 true。
+- 八维只作 **M5 准出条件**（同一作品贯通后才逐维判定）；`0/8 OVERALL_HOLD` 不表示进度，已按 Owner 2026-11-22 裁决不再作进展汇报项（见 PLAN §6.2 与 §3.5 B 进度报告口径）。
 
 ## 本批（第二十批）已落地
 
