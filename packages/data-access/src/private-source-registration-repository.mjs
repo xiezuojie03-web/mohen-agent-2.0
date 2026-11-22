@@ -2,14 +2,45 @@
 // Reads the exact L0 registration bound to one immutable private original via a
 // narrow SECURITY DEFINER helper. No direct source-table grants, no Gate writes.
 import { createAppTransaction } from './app-transaction.mjs';
-import { normalizeRightsSnapshot } from './rights-actions.mjs';
+import { RIGHTS_ACTIONS, normalizeRightsSnapshot } from './rights-actions.mjs';
 
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const HASH = /^[a-f0-9]{64}$/;
 
 const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
+const nonEmpty = (value) => typeof value === 'string' && value.trim().length > 0;
 
-function validRegistration(registration, originalId) {
+/**
+ * `rights_by_action` is the effective per-action dictionary: the immutable
+ * source-version snapshot (`rights_snapshot`) widened ONLY by an explicit,
+ * recorded owner decision for that single action. The projection lives in
+ * `source.effective_rights_by_action` (see migration 20261122170000); this check
+ * enforces the same rule on the client side so a downgraded or unevidenced
+ * widening can never be consumed as rights.
+ */
+function validEffectiveRights(effective, snapshot, evidence) {
+  for (const action of RIGHTS_ACTIONS) {
+    const pinned = snapshot.actions[action];
+    const widened = effective.actions[action];
+    if (pinned === 'allowed') {
+      if (widened !== 'allowed') return false;
+      continue;
+    }
+    if (widened !== pinned) {
+      // The only legal difference is a widening of a non-denied action backed by
+      // a complete owner decision record.
+      if (widened !== 'allowed') return false;
+      if (pinned === 'denied' || pinned === 'restricted') return false;
+      const decision = isObject(evidence) ? evidence[`${action}_decision`] : null;
+      if (!isObject(decision)) return false;
+      if (decision.decision !== 'allowed') return false;
+      if (!nonEmpty(decision.decided_at) || !nonEmpty(decision.decided_by)) return false;
+    }
+  }
+  return true;
+}
+
+export function validRegistration(registration, originalId) {
   if (!registration || typeof registration !== 'object' ||
       registration.schema !== 'mohen.private-source-registration.v1' ||
       registration.original_id !== originalId ||
@@ -35,7 +66,7 @@ function validRegistration(registration, originalId) {
   const actionRights = normalizeRightsSnapshot(registration.rights_by_action);
   const versionRights = normalizeRightsSnapshot(registration.rights_snapshot);
   return actionRights.issues.length === 0 && versionRights.issues.length === 0 &&
-    JSON.stringify(actionRights.actions) === JSON.stringify(versionRights.actions);
+    validEffectiveRights(actionRights, versionRights, registration.rights_evidence);
 }
 
 export function createPrivateSourceRegistrationRepository(pool) {
