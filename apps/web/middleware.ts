@@ -62,6 +62,11 @@ export async function middleware(req: NextRequest) {
   if (pathname === "/api/internal/self-test-resume") {
     return NextResponse.next();
   }
+  // 部署内受控 Gate 机器评审端点：同理，路由内部自己做 HMAC + Preview-only 门禁，
+  // 且评审/签发只发生在部署体内（机器会话密钥不出部署）。
+  if (pathname === "/api/internal/gate-review") {
+    return NextResponse.next();
+  }
 
   const secret = process.env.AUTH_SECRET;
   if (!secret || secret.trim().length < 32) {
