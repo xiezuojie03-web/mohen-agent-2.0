@@ -9,7 +9,7 @@ const nextConfig = {
   outputFileTracingIncludes: {
     "/api/studio/research-tasks/*/production": ["../../AGENTS.md","../../specs/data-production/production-registry.json","../../specs/data-production/schemas/production-registry.schema.json"],
     "/api/internal/production-execute": ["../../AGENTS.md","../../pipelines/data-production/**/*","../../packages/data-access/**/*","../../specs/data-production/**/*","../../tools/lib/method-plan-input.mjs","../../apps/web/lib/studio/provider-dispatcher.ts"],
-    "/api/internal/gate-review": ["../../AGENTS.md","../../specs/data-production/**/*","../../packages/data-access/scripts/gate-authority.mjs"],
+    "/api/internal/gate-review": ["../../AGENTS.md","../../specs/data-production/**/*","../../packages/data-access/scripts/**/*"],
   },
   transpilePackages: ["@mohen/experience-engine", "@mohen/agent-runtime", "@mohen/data-access"],
   // K4：PDF 文本抽取走 Node 原生模块，不参与前端打包。

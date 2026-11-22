@@ -8,6 +8,7 @@ import crypto from "node:crypto";
 import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import path from "node:path";
+import fs from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import {
   MACHINE_REVIEWER_USER_ID,
@@ -929,6 +930,10 @@ function argument(name) {
 async function decideThroughAuthority(decision, sessionToken) {
   const url = process.env.MOHEN_GATE_MACHINE_DATABASE_URL;
   if (!url) throw Error("MACHINE_GATE_DATABASE_URL_REQUIRED");
+  if (!fs.existsSync(AUTHORITY_CLI)) {
+    // 部署内 spawn 目标不参与 webpack 追踪，缺失时给出精确路径便于修正文件追踪配置。
+    throw Error(`AUTHORITY_CLI_MISSING ${AUTHORITY_CLI}`);
+  }
   let output;
   try {
     output = execFileSync(process.execPath, [AUTHORITY_CLI, "decide"], {
