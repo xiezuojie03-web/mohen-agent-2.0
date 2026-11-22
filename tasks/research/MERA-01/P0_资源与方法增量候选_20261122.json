@@ -1219,6 +1219,13 @@
       "fields": {
         "note": "Audited 46 P0 entries: 36 collections, 9 single-item objects, 1 chapter. Inherited Shanghai Library and Chinese local collections without repeat survey. Added R0083 EAP, R0084 QDL, R0085 HathiTrust; methods M0063-M0065. Candidate totals 85 resources / 66 methods / 18 attempts."
       }
+    },
+    {
+      "target": "eight-category coverage matrix",
+      "fields": {
+        "note": "First-pass research reports now exist for all eight categories. The P0 candidate workbook includes worksheets 八类覆盖矩阵 and 八类覆盖映射. Primary-category record counts (not provider counts): C01 32, C02 9, C03 10, C04 4, C05 9, C06 8, C07 4, C08 9. Existing P0 46 rows consist of 36 resource collections, 9 single items and 1 chapter. These are working classifications, not formal exit results.",
+        "next": "Complete China/Asia and non-English coverage, item-level rights checks, update/alternative-source mechanisms, then merge candidate delta into the single P0 master."
+      }
     }
   ],
   "attempt_log": {
