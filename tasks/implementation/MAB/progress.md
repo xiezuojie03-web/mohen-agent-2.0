@@ -6151,3 +6151,5 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
   - `pg_get_functiondef` 文本内无 `claim_revision` token；`pg_proc.proowner` = `mohen_gate_authority`（本环境 `postgres.fwrh…` 无权修改）。
   - 按 PLAN §0.2/§6 未自签 Gate、未伪造 PASS、未改候选 `object_type`／Gate 权威函数／迁移规避授权，**未发起 D04**。零 Provider 调用、0 USD，累计仍 0.005989 USD。本次只读脚本已删除。
   - **具名上报（GATE_BLOCKED / OWNER_BLOCKED）**：请 Owner/DBA 以 `mohen_gate_authority` owner 或 Supabase SQL editor 执行上述「最小修正建议」映射行；完成后以同一候选 `91a239c1…` 重跑 `/api/internal/gate-review` G3 dry_run+正式签发，再按 PLAN 推进 D04。
+  - **执行权复核（只读）**：当前连接身份 `postgres`（非 superuser、`rolbypassrls=true`）；`pg_has_role(postgres,'mohen_gate_authority','MEMBER')=true` 但该成员关系 `set_option=false`，实测事务内 `SET LOCAL ROLE mohen_gate_authority` 返回 `42501 permission denied to set role`。确认施工方无合法路径取得 owner 身份，**不能自行修改该 owner-owned 函数**，维持 OWNER_BLOCKED。
+  - **已备一键修正脚本**：`tasks/results/G3_ARTIFACT_REVISION_FIX_FOR_OWNER_20261122.sql`（由真实库 `pg_get_functiondef` 导出原文，仅新增 `('claim_revision','world','claim_revisions','claim_revision_id')` 一行，事务包裹、`SET LOCAL ROLE mohen_gate_authority`、owner/权限不变）供 Owner 在 Supabase SQL editor 直接粘贴执行；本方未执行、未绕过。
