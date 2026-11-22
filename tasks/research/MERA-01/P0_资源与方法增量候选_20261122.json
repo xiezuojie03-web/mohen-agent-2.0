@@ -7,8 +7,8 @@
     "attempts": 18
   },
   "proposed_after_merge": {
-    "resources": 105,
-    "methods": 86,
+    "resources": 106,
+    "methods": 87,
     "attempts": 18
   },
   "additions": [
@@ -1116,7 +1116,7 @@
       "name": "Dataset of 697 Cultural Heritage Sites along the Beijing-Hangzhou Grand Canal (HeritageSitesBHGC)",
       "provider": "Global Change Data Publishing & Repository / Yangzhou University",
       "url": "https://doi.org/10.3974/geodb.2026.02.04.V1",
-      "content": "覆盖京杭大运河沿线7个省级行政区的697处文化遗产点：58处世界遗产、200处国家级、439处省级。数据含名称、行政区、保护级别、遗产类型、坐标、建设年代、历史背景、关联人物/事件、保存状况和修缮记录；22个数据文件，XLSX与SHP，合计4.50MB。数据采用多源官方名录汇编，补充高德坐标服务，最终坐标转WGS84。",
+      "content": "覆盖京杭大运河沿线7个省级行政区的697处文化遗产点：58处世界遗产、200处国家级、439处省级。数据含名称、行政区、保护级别、遗产类型、坐标、建设年代、历史背景、关联人物/事件、保存状况和修缮记录；22个数据文件，XLSX与SHP，合计4.50MB。数据采用多源官方名录汇编，补充高德坐标服务，最终坐标转WGS84。 数据论文进一步说明官方名录为主要来源，高德开放平台坐标服务为补充；获取坐标初值为GCJ-02，经过校准后发布WGS84坐标。论文给出14项核心字段，包含关联事件/人物、保存状况与修缮记录。",
       "access": "论文页面指向DOI数据集；公开免费互联网下载。当前仅核验元数据与共享政策，未点击下载文件、未取得字节。",
       "rights": "该数据集页面明确：使用须引用；再分发须取得GCdataPR编辑部书面许可并取得数据再分发许可；用于新数据集时遵守10%原则并标注来源。不得将免费获取等同于可任意再分发或商用。",
       "status": "ACCESSIBLE",
@@ -1125,7 +1125,8 @@
       "checked": "2026-11-22",
       "evidence": [
         "https://www.geodoi.ac.cn/WebEn/paper.aspx?Id=184196b8-160c-4604-9a55-4c038921519e",
-        "https://doi.org/10.3974/geodb.2026.02.04.V1"
+        "https://doi.org/10.3974/geodb.2026.02.04.V1",
+        "https://www.geodoi.ac.cn/WebEn/paper.aspx?Id=184196b8-160c-4604-9a55-4c038921519e"
       ]
     },
     {
@@ -1137,15 +1138,17 @@
       "url": "https://doi.org/10.3974/geodb.2024.01.09.V1",
       "content": "依据国务院1961—2019年公布的八批5058处全国重点文物保护单位名录整理，并结合地图地理编码。包含名称、分类编号、类型、年代、批次、地址等属性；SHP与XLS格式，8个数据文件，25.8MB（压缩包839KB）。",
       "access": "数据集详情页提供数据产品下载链接（PDF说明与RAR数据包）；本轮未实际下载或校验字节。",
-      "rights": "当前详情页未显示明确许可文本或再分发条款；可访问/有下载链接不代表商业使用、机器处理或再分发获准。权利状态R6/HOLD，需向数据发布方确认。",
+      "rights": "数据论文元数据表明确适用GCdataPR数据共享政策：数据可免费在线获取并鼓励引用；再分发须取得GCdataPR编辑部书面许可并获得数据再分发许可；用于编制新数据集时，所用数据记录不得超过新数据集内容的10%，并须标注来源。该政策没有明确说明商业使用是否可不经额外许可，商业使用边界仍需按具体用途确认。",
       "status": "ACCESSIBLE",
       "asset_acquired": false,
       "recommended_method_id": "M0084",
       "checked": "2026-11-22",
       "evidence": [
         "https://www.geodoi.ac.cn/%5CWebEn/geodoi.aspx?Id=3503",
-        "https://doi.org/10.3974/geodb.2024.01.09.V1"
-      ]
+        "https://doi.org/10.3974/geodb.2024.01.09.V1",
+        "https://www.geodoi.ac.cn/WebEn/paper.aspx?Id=35ac1e68-d289-4598-949f-bd76292e9a3d"
+      ],
+      "quality": "官方名录为基础，坐标通过百度地图Place API地理编码并由BD09转换为WGS84；行政区按现行边界反向地理编码。数据论文指出不含港澳台。论文属性字段示例Index范围0—5065，与数据集名义5058项存在需要通过实际文件核对的数量/索引差异；坐标精度不能等同于测绘级定位。"
     },
     {
       "resource_id": "R0105",
@@ -1156,14 +1159,34 @@
       "url": "https://doi.org/10.3974/geodb.2025.05.01.V1",
       "content": "以中国文物地图集中的13185处考古遗址地点描述为基础，覆盖北纬29.4—53.3、东经92.3—126.1的北方地区及12种代表性史前文化；公开成果并非13185个点位原始表，而是0.5°×0.5°网格NetCDF（1.20MB），核心维度为文化、经度、纬度，变量包括遗址密度、观测最近邻指数、标准化Z值和显著性p值。",
       "access": "GCdataPR数据详情页、DOI/CSTR元数据与NetCDF文件入口；本轮未下载数据文件。",
-      "rights": "当前已核页面未明确展示该数据集具体许可/再分发条款；需回到数据页或向发布方确认引用、再分发和商业使用条件，暂列R6/HOLD。",
+      "rights": "数据详情页确认DOI/CSTR和单个NetCDF文件下载入口，但本轮未找到该数据集对应的数据论文全文或可直接核验的具体共享政策条款。不得仅因平台其他数据集采用GCdataPR通用政策就推定本数据集许可完全相同；引用、再分发和商业使用条件仍需在该数据集页面或向发布方单独确认，维持权利待核。",
       "status": "ACCESSIBLE",
       "asset_acquired": false,
       "recommended_method_id": "M0085",
       "checked": "2026-11-22",
       "evidence": [
         "https://www.geodoi.ac.cn/%5CWebEn/geodoi.aspx?Id=3779",
-        "https://doi.org/10.3974/geodb.2025.05.01.V1"
+        "https://doi.org/10.3974/geodb.2025.05.01.V1",
+        "https://geodoi.ac.cn/weben/doi.aspx?Id=3779"
+      ]
+    },
+    {
+      "resource_id": "R0106",
+      "parent_resource_id": null,
+      "level": "专题数据库",
+      "name": "Historical Records Dataset on Human Activity in the Hexi Corridor of China (from Neolithic to Qing Dynasty) / HexiCorridorHumanActivity",
+      "provider": "Global Change Research Data Publishing & Repository / Lanzhou University",
+      "url": "https://doi.org/10.3974/geodb.2023.07.09.V1",
+      "content": "河西走廊全新世以来人地关系专题数据库，时间范围约公元前4000年至公元1900年，空间分辨率为市县级；包含古遗址与古城（含SHP）、灾害与饥荒、战争等3组数据表，格式XLSX/SHP，约1.78MB。论文报告整理了2077处古遗址/古墓点位（2005处古遗址、72处古墓葬）、1085条灾害记录、238条饥荒记录，并整理战争时间地点类型和人口序列。数据来自数字化历史文献、方志/通史、历史地图、考古资料与现代研究，经过抽取、地理参照和GIS校核。",
+      "access": "GCdataPR数据论文与DOI/CSTR记录可定位；论文声明数据集公开并可免费在线获取。页面给出数据集DOI入口；本轮未下载文件、未校验实际字段和字节。",
+      "rights": "数据论文明确GCdataPR共享政策：免费在线获取、使用须引用；再分发须取得编辑部书面许可及数据再分发许可；用于新数据集须遵守10%原则并标注来源。商业使用的具体边界未单独说明，须按目标用途向发布方确认。",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0086",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.geodoi.ac.cn/WebEn/paper.aspx?Id=17ef0975-51c8-4fbd-bc1c-29972b745968",
+        "https://doi.org/10.3974/geodb.2023.07.09.V1"
       ]
     }
   ],
@@ -1737,6 +1760,16 @@
       "scope": "北方新石器时代考古遗址密度及空间统计数据",
       "steps": "核验DOI/CSTR、数据论文和NetCDF元数据；明确0.5°网格尺度、文化分类和统计变量；取得NetCDF后检查维度、变量、缺失值编码和坐标范围；保留引用与权利证据。",
       "limits": "13185是原始地点描述基础数量，不是发布文件中的点位记录数；发布成果为0.5°网格统计。许可条款未核清；未实测下载与哈希。"
+    },
+    {
+      "method_id": "M0086",
+      "version": "v0.1",
+      "resource_id": "R0106",
+      "status": "DRAFT",
+      "path": "GCdataPR数据论文 → 数据集DOI/CSTR → XLSX/SHP文件获取",
+      "scope": "河西走廊新石器时代至清代古遗址/古城、灾害、饥荒、战争与人口历史记录",
+      "steps": "先阅读数据论文和数据集元数据；核对三组数据表、时间范围、空间粒度、古遗址点位数量和字段说明；经DOI/CSTR进入数据产品并取得文件；检查SHP坐标、行政区归属、时间表达和记录来源；保留引用；再分发或将数据纳入新数据集前取得书面许可并遵守10%原则。",
+      "limits": "作者明确指出时空不匹配、史料歧义、行政区边界变迁、历史记录冲突会影响分析，县乡尺度精度较低；部分人口序列为基于既有研究推算。数据不能作为无误差的逐事件事实底库；未下载、未计算SHA256。"
     }
   ],
   "updates": [
@@ -1883,6 +1916,12 @@
       "fields": {
         "note": "Added R0103 Dataset of 697 Cultural Heritage Sites along the Beijing-Hangzhou Grand Canal (XLSX/SHP, 4.50MB; free download but redistribution requires written permission and a redistribution license; 10% rule); R0104 Spatial Distribution Dataset of 5058 National Key Protected Cultural Relic Units (SHP/XLS; download link, item license not located, R6/HOLD); R0105 Dataset of Human Activities in Northern China during the Neolithic Period (13,185 source site descriptions summarized as 0.5-degree NetCDF grid, 1.20MB; item license not located, R6/HOLD). Methods M0083-M0085. No original bytes downloaded; new attempts=0. Candidate totals 105 resources / 86 methods / 18 attempts."
       }
+    },
+    {
+      "target": "category 04 rights and quality verification / Hexi Corridor human activity dataset",
+      "fields": {
+        "note": "R0104 GCdataPR paper explicitly states free download/citation, redistribution requires written permission and redistribution license, and 10% principle; commercial terms are not explicit. Quality limitations: Baidu Place API geocoding, BD09→WGS84 conversion, current admin boundary reverse geocoding, excludes HK/Macau/Taiwan; paper index sample 0–5065 should be checked against actual 5058 records. R0105 dataset detail confirms DOI/CSTR and NetCDF file but exact item-specific policy remains unverified; do not infer from platform-wide examples. Added R0106 Hexi Corridor historical human activity dataset with explicit GCdataPR policy and author-described uncertainty; method M0086."
+      }
     }
   ],
   "attempt_log": {
@@ -1903,6 +1942,9 @@
     "https://www.geodoi.ac.cn/%5CWebEn/geodoi.aspx?Id=3503",
     "https://doi.org/10.3974/geodb.2024.01.09.V1",
     "https://www.geodoi.ac.cn/%5CWebEn/geodoi.aspx?Id=3779",
-    "https://doi.org/10.3974/geodb.2025.05.01.V1"
+    "https://doi.org/10.3974/geodb.2025.05.01.V1",
+    "https://www.geodoi.ac.cn/WebEn/paper.aspx?Id=35ac1e68-d289-4598-949f-bd76292e9a3d",
+    "https://www.geodoi.ac.cn/WebEn/paper.aspx?Id=17ef0975-51c8-4fbd-bc1c-29972b745968",
+    "https://geodoi.ac.cn/weben/doi.aspx?Id=3779"
   ]
 }
