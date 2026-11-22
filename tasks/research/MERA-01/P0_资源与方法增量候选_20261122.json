@@ -9,7 +9,7 @@
   "proposed_after_merge": {
     "resources": 106,
     "methods": 87,
-    "attempts": 21
+    "attempts": 22
   },
   "additions": [
     {
@@ -1163,17 +1163,20 @@
       "provider": "Global Change Data Publishing & Repository / Institute of Geographic Sciences and Natural Resources Research, Chinese Academy of Sciences",
       "url": "https://doi.org/10.3974/geodb.2025.05.01.V1",
       "content": "以中国文物地图集中的13185处考古遗址地点描述为基础，覆盖北纬29.4—53.3、东经92.3—126.1的北方地区及12种代表性史前文化；公开成果并非13185个点位原始表，而是0.5°×0.5°网格NetCDF（1.20MB），核心维度为文化、经度、纬度，变量包括遗址密度、观测最近邻指数、标准化Z值和显著性p值。",
-      "access": "GCdataPR数据详情页、DOI/CSTR元数据与NetCDF文件入口；本轮未下载数据文件。",
+      "access": "官方DOI数据页已确认Data Product列出Neolithic_NC_HumanActivity.nc（页面标示1234.36KB，页面数据产品记录ID 3779），格式NetCDF，DownLoad操作入口已定位。2026-11-22浏览器自动化点击检测返回结果不完整，未提供最终下载URL、HTTP响应、实际文件或可读取字节；因此登记为ACCESSIBLE_NOT_DOWNLOADED，不认定已取得。",
       "rights": "数据详情页确认DOI/CSTR和单个NetCDF文件下载入口，但本轮未找到该数据集对应的数据论文全文或可直接核验的具体共享政策条款。不得仅因平台其他数据集采用GCdataPR通用政策就推定本数据集许可完全相同；引用、再分发和商业使用条件仍需在该数据集页面或向发布方单独确认，维持权利待核。",
-      "status": "ACCESSIBLE",
+      "status": "ACCESSIBLE_NOT_DOWNLOADED",
       "asset_acquired": false,
       "recommended_method_id": "M0085",
       "checked": "2026-11-22",
       "evidence": [
         "https://doi.org/10.3974/geodb.2025.05.01.V1",
         "https://geodoi.ac.cn/weben/doi.aspx?Id=3779",
-        "https://geodoi.ac.cn/weben/doi.aspx?Id=3779"
-      ]
+        "https://geodoi.ac.cn/weben/doi.aspx?Id=3779",
+        "http://www.geodoi.ac.cn/edoi.aspx?DOI=10.3974/geodb.2025.05.01.V1",
+        "https://agent.tinyfish.ai/runs/e8c617ed-8084-46c3-af07-d21abe85f38a"
+      ],
+      "quality": " 实际获取核验（2026-11-22）：页面确认唯一NetCDF文件Neolithic_NC_HumanActivity.nc，DownLoad入口已定位；本轮自动化结果未返回实际下载响应和文件字节。网格成果不是13,185处遗址点位原始表，0.5°网格与页面四变量限制继续有效。"
     },
     {
       "resource_id": "R0106",
@@ -1933,8 +1936,8 @@
     }
   ],
   "attempt_log": {
-    "new_attempts": 3,
-    "reason": "2026-11-22对R0103、R0104、R0106各执行一次资源级实际获取核验。R0103官方页浏览器加载超时；R0104下载按钮无可观察动作且本轮尝试的RAR路径返回404；R0106页面按钮报告触发下载但未获得可读取文件字节。三项均未取得可核验原始文件，未生成SHA256，未新增任何VERIFIED_ACQUIRED记录。",
+    "new_attempts": 4,
+    "reason": "2026-11-22对R0103、R0104、R0106各执行一次资源级实际获取核验。R0103官方页浏览器加载超时；R0104下载按钮无可观察动作且本轮尝试的RAR路径返回404；R0106页面按钮报告触发下载但未获得可读取文件字节。三项均未取得可核验原始文件，未生成SHA256，未新增任何VERIFIED_ACQUIRED记录。 另对R0105执行一次官方NetCDF下载入口核验：定位到DownLoad控件，但自动化结果未提供最终响应和文件字节，故记为ACCESSIBLE_NOT_DOWNLOADED。",
     "records": [
       {
         "attempt_id": "A0019",
@@ -1962,6 +1965,15 @@
         "result": "ACCESSIBLE_NOT_DOWNLOADED",
         "evidence": "https://agent.tinyfish.ai/runs/853db244-d0fd-4379-8632-0bff8fef7dc3",
         "detail": "Browser automation reported that the RAR download was triggered, but no readable downloaded artifact, byte count, or SHA256 was available for file-level verification."
+      },
+      {
+        "attempt_id": "A0022",
+        "resource_id": "R0105",
+        "date": "2026-11-22",
+        "method": "Official GeoDOI NetCDF download-button attempt",
+        "result": "ACCESSIBLE_NOT_DOWNLOADED",
+        "evidence": "https://agent.tinyfish.ai/runs/e8c617ed-8084-46c3-af07-d21abe85f38a",
+        "detail": "Official DOI page confirms Neolithic_NC_HumanActivity.nc, 1234.36KB, product row ID 3779, and a DownLoad control. Automation result was incomplete and did not provide final response, file URL, or readable bytes; no SHA256."
       }
     ]
   },
