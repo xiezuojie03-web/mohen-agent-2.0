@@ -7,8 +7,8 @@
     "attempts": 18
   },
   "proposed_after_merge": {
-    "resources": 57,
-    "methods": 38,
+    "resources": 61,
+    "methods": 42,
     "attempts": 18
   },
   "additions": [
@@ -226,6 +226,87 @@
         "https://www.loc.gov/collections/national-jukebox/about-this-collection/rights-and-access/",
         "https://citizen-dj.labs.loc.gov/loc-jukebox-popular/use/"
       ]
+    },
+    {
+      "resource_id": "R0058",
+      "parent_resource_id": null,
+      "level": "资源集合",
+      "name": "JSTOR Open Content / Early Journal Content / Open Access Books",
+      "provider": "ITHAKA / JSTOR",
+      "url": "https://www.jstor.org/",
+      "content": "Academic journals, books, chapters, images and primary sources; Open JSTOR Collection includes Early Journal Content, OA Content, Reveal Digital and Open Artstor; 9,000+ OA ebooks; EJC uses rolling 95-year US / 143-year international publication threshold.",
+      "access": "Open Content free; individual free account has limited read-only; institutional subscription; OA books with item-level CC license; EJC text analysis by application.",
+      "rights": "Free reading is not open license; OA ebooks have individual CC licenses; JSTOR Text Analysis Support is non-commercial academic/educational only and prohibits commercial use and LLM training/fine-tuning.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0038",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://support.jstor.org/hc/en-us/articles/115004681927-Open-Access-Content-Free-Content-on-JSTOR",
+        "https://about.jstor.org/terms/",
+        "https://about.jstor.org/terms/text-analysis-support/",
+        "https://guides.jstor.org/for-librarians-books/oaresources"
+      ]
+    },
+    {
+      "resource_id": "R0059",
+      "parent_resource_id": null,
+      "level": "资源目录",
+      "name": "Directory of Open Access Books (DOAB)",
+      "provider": "DOAB Foundation / OAPEN",
+      "url": "https://www.doabooks.org/",
+      "content": "Discovery directory of peer-reviewed open access academic books, with title, author, publisher, subject, date, language, DOI/persistent link, license and full-text URL metadata. DOAB is a discovery/link directory, not host for all full texts.",
+      "access": "Web search, metadata feeds, MARCXML/KBART/ONIX/JSON/CSV, OAI-PMH, selective export and API.",
+      "rights": "DOAB metadata CC0; book full-text license is determined by publisher/host per title.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0039",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://doabooks.org/en/librarians/doab-metadata",
+        "https://doabooks.org/en/researchers/faq"
+      ]
+    },
+    {
+      "resource_id": "R0060",
+      "parent_resource_id": null,
+      "level": "资源库",
+      "name": "OAPEN Library",
+      "provider": "OAPEN Foundation",
+      "url": "https://library.oapen.org/",
+      "content": "Curated quality-controlled open access scholarly books; hosts full texts and preservation, plus metadata. Metadata feeds daily; book and chapter records may or may not contain full-text links.",
+      "access": "Full-text pages; MARCXML, KBART, ONIX, JSON, CSV, RIS; OAI-PMH; selective export up to about 500 titles.",
+      "rights": "Metadata CC0; full-text rights vary by book and publisher; do not assume all titles CC0.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0040",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://oapen.org/librarians/metadata",
+        "https://oapen.org/librarians/services-libraries",
+        "https://oapen.org/publishers/join-oapen-library"
+      ]
+    },
+    {
+      "resource_id": "R0061",
+      "parent_resource_id": null,
+      "level": "知识图谱/元数据平台",
+      "name": "OpenAlex",
+      "provider": "OurResearch / OpenAlex",
+      "url": "https://openalex.org/",
+      "content": "Global scholarly catalog/graph of works, authors, sources, institutions and topics; core corpus 300M+ works; expansion corpus increases coverage; citations, references, author/institution/topic relations, OA locations and license metadata.",
+      "access": "Free REST API without key; free API key raises daily budget 10x; anonymous S3 snapshot in JSONL/Parquet; free public snapshot quarterly.",
+      "rights": "OpenAlex metadata CC0; OA license is attached to each work location and can be CC BY, NC, ND, CC0/public-domain, other-oa or publisher-specific-oa. Metadata CC0 does not license linked full text.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0041",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://help.openalex.org/api/",
+        "https://help.openalex.org/access/snapshot/",
+        "https://help.openalex.org/data/licenses/",
+        "https://help.openalex.org/data/works/open-access/"
+      ]
     }
   ],
   "methods": [
@@ -318,6 +399,46 @@
       "scope": "1900-1925 historical recordings and sound culture",
       "steps": "Search by date, genre, language, performer and label; inspect publication year and Rights and Access; use only clearly public-domain items for downloads/reuse; stream-only items remain linked/streamed within LOC permission; check privacy/publicity and cultural sensitivity.",
       "limits": "Free streaming is not reuse permission; rights differ by recording year and item; Citizen DJ subset is not the full Jukebox."
+    },
+    {
+      "method_id": "M0038",
+      "version": "v0.1",
+      "resource_id": "R0058",
+      "status": "DRAFT",
+      "path": "JSTOR Open Content/Advanced Search → item license check → permitted full text/text analysis",
+      "scope": "JSTOR open journals, OA books, Early Journal Content, primary sources and images",
+      "steps": "Separate Open Content, institutional subscription, free individual reads and JPASS; inspect item CC license; request Text Analysis Support only for non-commercial scholarly research; do not train/fine-tune LLMs or use as commercial corpus.",
+      "limits": "Free reading is not reuse license; licensed content restricted; text analysis support prohibits commercial use and LLM training."
+    },
+    {
+      "method_id": "M0039",
+      "version": "v0.1",
+      "resource_id": "R0059",
+      "status": "DRAFT",
+      "path": "DOAB search → CC0 metadata export/OAI-PMH → publisher full-text license check",
+      "scope": "Discovery and cross-publisher metadata for OA academic books",
+      "steps": "Search by topic/author/publisher/language/year; export metadata or harvest OAI-PMH; select records with full-text URL; check publisher/repository license and edition before use.",
+      "limits": "DOAB is a directory, not host of all full text; metadata CC0 does not license book full text."
+    },
+    {
+      "method_id": "M0040",
+      "version": "v0.1",
+      "resource_id": "R0060",
+      "status": "DRAFT",
+      "path": "OAPEN web/metadata feed/OAI-PMH → full text download → per-book license check",
+      "scope": "OA academic monographs and chapters, with metadata",
+      "steps": "Filter by subject/language/publisher; use JSON/CSV/MARCXML or OAI-PMH; select records with download links; inspect PDF/EPUB and CC license; record version and publisher.",
+      "limits": "Metadata CC0; book full-text license varies; some records have no full-text link."
+    },
+    {
+      "method_id": "M0041",
+      "version": "v0.1",
+      "resource_id": "R0061",
+      "status": "DRAFT",
+      "path": "OpenAlex API targeted search → author/institution/topic/citation graph → OA location/license filter",
+      "scope": "Global scholarly metadata and relationships, not a full-text archive",
+      "steps": "Resolve DOI/ORCID/ROR/ISSN; filter works by topic/date/institution/author/citations; inspect primary_location and license; build a focused research subset; follow full text to publisher/repository; avoid full snapshot download.",
+      "limits": "API budget limits; 2026-09 snapshot about 745GB JSONL compressed; core vs expansion counts differ; CC0 metadata does not license full text."
     }
   ],
   "updates": [
@@ -348,6 +469,12 @@
       "target": "category 06 and category 02 audiovisual supplement",
       "fields": {
         "note": "Added R0055 NYPL Buttolph menus, R0056 LOC Lowell Folklife Project, R0057 LOC National Jukebox; methods M0035-M0037. Candidate totals 57 resources / 38 methods / 18 attempts."
+      }
+    },
+    {
+      "target": "category 07",
+      "fields": {
+        "note": "Added R0058 JSTOR, R0059 DOAB, R0060 OAPEN, R0061 OpenAlex; methods M0038-M0041. Candidate totals 61 resources / 42 methods / 18 attempts."
       }
     }
   ],
