@@ -1,17 +1,22 @@
-// Independent D01-resume execution authority composition.
-// Owns the D01 signing key; verifies an upstream CURRENT independent G0 with a
-// separate low-privilege reader, rebuilds the real D01 input from persisted
-// facts via a dedicated attestor read connection, then signs a one-use D01
-// grant. Never runs in the web/Runner process.
+// Independent resume execution authority composition.
+// Owns the resume signing key; verifies an upstream CURRENT independent gate
+// (G0 for D01, G1 for D02) with a separate low-privilege reader, rebuilds the
+// real next-stage input from persisted facts via a dedicated attestor read
+// connection, then signs a one-use stage grant. Never runs in the web/Runner
+// process. D01 and D02 keep separate journals and endpoints.
 import { createPrivateKey } from 'node:crypto';
 import { Readable } from 'node:stream';
 import pg from 'pg';
 import registry from '../../specs/data-production/production-registry.json' with {type:'json'};
 import { createD01ResumeAuthorizer } from '../../pipelines/data-production/orchestrator/d01-resume-authorizer.mjs';
 import { createD01ResumeJournal } from '../../pipelines/data-production/orchestrator/d01-resume-journal.mjs';
+import { createD02ResumeAuthorizer } from '../../pipelines/data-production/orchestrator/d02-resume-authorizer.mjs';
+import { createD02ResumeJournal } from '../../pipelines/data-production/orchestrator/d02-resume-journal.mjs';
 import { createD00ExecutionAuthorityHandler } from '../../pipelines/data-production/orchestrator/d00-execution-authority-http.mjs';
 import { createD01IssueEndpoint } from '../../pipelines/data-production/orchestrator/d01-resume-issue.mjs';
+import { createD02IssueEndpoint } from '../../pipelines/data-production/orchestrator/d02-resume-issue.mjs';
 import { createG0ResumeQualificationChecker } from '../../pipelines/data-production/orchestrator/d01-g0-qualification.mjs';
+import { createG1ResumeQualificationChecker } from '../../pipelines/data-production/orchestrator/d02-g1-qualification.mjs';
 import { createIndependentGateService } from '../../pipelines/data-production/orchestrator/independent-gate-service.mjs';
 import { independentGatePoolOptions } from '../../pipelines/data-production/orchestrator/independent-gate-service-runtime.mjs';
 
@@ -21,6 +26,7 @@ const json=v=>typeof v==='string'?JSON.parse(v):v;
 
 function configure(env){
  const d00Job=registry.jobs.find(j=>j.stage==='D00');
+ const d01Job=registry.jobs.find(j=>j.stage==='D01');
  const ca=env.MOHEN_D01_DATABASE_CA;
  // Two distinct low-privilege connections: the journal writer (a D01-dedicated
  // login that is a MEMBER of mohen_d00_grant_journal) and the G0 gate reader
@@ -102,10 +108,44 @@ function configure(env){
   const issueEndpoint=createD01IssueEndpoint({
    credential:env.MOHEN_D01_ISSUE_CREDENTIAL,attestorQuery,loadCandidate,loadG0Request,authority,registry,
   });
+  // D02 resume: the upstream fact is a CURRENT independent G1 on the exact
+  // persisted L1 read unit. Same readers/pools, separate journal and endpoint.
+  const currentG1=async (run_id)=>{
+   const rows=await attestorQuery([
+    "select q.object_id::text as read_unit_id, a.gate_audit_id::text as gate_audit_id,",
+    "  a.artifact_revision, a.stage, a.gate_code, a.result, a.decision_origin,",
+    "  a.current_valid as qualification_current, a.valid_until::text as valid_until,",
+    "  a.details->'stage_binding'->>'job_id' as job_id,",
+    "  a.details->'stage_binding'->>'reviewer_binding_ref' as reviewer_binding_ref,",
+    "  a.details->'stage_binding'->>'consumer' as consumer",
+    "from control.qualification_current q",
+    "join control.gate_audits a on a.gate_audit_id=q.gate_audit_id",
+    "where a.run_id=:'run'::uuid and a.stage='D01' and a.gate_code='G1'",
+    "  and a.result='PASS' and a.decision_origin='independent_gate' and a.current_valid=true",
+    "  and q.consumer='producer' and q.object_type='read_unit'",
+    "  and (q.valid_until is null or q.valid_until > now())",
+    "  and (a.valid_until is null or a.valid_until > now()) limit 2"
+   ].join(' '),{run:run_id});
+   if(rows.length!==1)return null;
+   return rows[0];
+  };
+  const d02QualificationChecker=createG1ResumeQualificationChecker({
+   readG1:({run_id})=>currentG1(run_id),d01JobId:d01Job?.job_id,
+   gateReviewerBinding:d01Job?.implementation?.gate_reviewer_binding});
+  const d02Authority=createD02ResumeAuthorizer({
+   registry,holdEpoch:env.MOHEN_D01_RESUME_HOLD_EPOCH,
+   privateKey:createPrivateKey(env.MOHEN_D01_RESUME_SIGNING_KEY),
+   journal:createD02ResumeJournal(journalPool),qualificationChecker:d02QualificationChecker});
+  const d02GrantHandler=createD00ExecutionAuthorityHandler({
+   authority:d02Authority,issueCredential:env.MOHEN_D01_ISSUE_CREDENTIAL,
+   verifyCredential:env.MOHEN_D01_VERIFY_CREDENTIAL,
+  });
+  const d02IssueEndpoint=createD02IssueEndpoint({
+   credential:env.MOHEN_D01_ISSUE_CREDENTIAL,attestorQuery,authority:d02Authority,registry,
+  });
   return {
-   '/token':grantHandler,
-   '/consume':grantHandler,
-   '/d01-issue':issueEndpoint,
+   d01:{'/token':grantHandler,'/consume':grantHandler,'/d01-issue':issueEndpoint},
+   d02:{'/token':d02GrantHandler,'/consume':d02GrantHandler,'/d02-issue':d02IssueEndpoint},
   };
  }catch(error){
   void journalPool.end();void readerPool.end();void attestorPool.end();
@@ -113,21 +153,21 @@ function configure(env){
  }
 }
 
-export async function d01AuthorityEndpoint(route,req,res){
+async function serve(group,route,req,res){
  res.setHeader('content-type','application/json');
  res.setHeader('cache-control','no-store');
  // The issue and consume endpoints are authenticated by HMAC signature (never
  // SSO identity) and may serve the stable production domain; the D00 token
  // issuer stays preview-only.
  const env=process.env.VERCEL_ENV;
- const prodOk=(route==='/d01-issue'||route==='/consume')&&(env==='preview'||env==='production');
+ const prodOk=(route==='/d01-issue'||route==='/d02-issue'||route==='/consume')&&(env==='preview'||env==='production');
  const previewOk=env==='preview';
  if(process.env.MOHEN_D01_RESUME_AUTHORITY_ENABLED!=='true'||(!prodOk&&!previewOk)){
   res.statusCode=503;res.end('{"ok":false,"reason":"d01_authority_not_configured"}');return;
  }
  try{
   handlers??=configure(process.env);
-  const handler=handlers[route];
+  const handler=handlers[group]?.[route];
   if(!handler){res.statusCode=404;res.end('{"ok":false,"reason":"not_found"}');return;}
   const headers=new Headers();
   for(const [key,value] of Object.entries(req.headers))if(value!==undefined)headers.set(key,Array.isArray(value)?value.join(', '):value);
@@ -142,4 +182,12 @@ export async function d01AuthorityEndpoint(route,req,res){
  }catch{
   res.statusCode=503;res.end('{"ok":false,"reason":"d01_authority_unavailable"}');
  }
+}
+
+export async function d01AuthorityEndpoint(route,req,res){
+ await serve('d01',route,req,res);
+}
+
+export async function d02AuthorityEndpoint(route,req,res){
+ await serve('d02',route,req,res);
 }
