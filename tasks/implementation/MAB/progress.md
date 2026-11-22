@@ -6065,3 +6065,11 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 **下一步（等 Owner 裁决来源权利投影后）**：以 `from_stage:"D02"` 续跑 → 核 `studio.execution_receipts` 新增与逐项费用 → D02 PASS 后按既有路径签发 G2 → 回写 CURRENT/progress。
 
 
+
+**第十六批补充：受控权利投射尝试与实测回退（零数据改动）**
+- 依 Owner 选择“受控函数投射”，新增 `source.apply_rights_decision(uuid,text,text,text,text,jsonb)` + 审计表 `source.rights_decision_applications`（仅 owner 可执行；要求动作/决定取值受限、来源逐动作权限已是 allowed、`rights_evidence.<action>_decision.decision='allowed'` 且带 `decided_at`、新快照仍过 `source.is_rights_actions_valid`、每次写审计行），并仅在该函数更新期间用事务级 GUC 放行快照触发器。
+- 应用到版本 `36ea7ffc-d5bd-4dd2-909f-ab0724b0b1d3` 时，被 `studio.protect_private_text_reading` 以 **`PRIVATE_READING_IMMUTABLE`** 拒绝：该触发器对「已被 `mab.private-text-reading.v1` 读取覆盖」的 `source_versions` 直接拒绝任何 update/delete，先于 `rights_snapshot` 触发器执行。即设计意图为「读过即冻结」，事后权利决定不能投射进已读版本。
+- 处理：按「不绕过安全底线」原则回退——`drop function`、`drop table`、把 `source.forbid_rights_snapshot_mutation()` 恢复为原定义（20261119110000 版）；未采用的迁移文件与一次性 SQL 已删除，不留在仓库。核对：快照仍为 `external_processing:"unknown"`，无任何数据变动；委托额度仍未被使用（费用 0 USD）。
+- 与既有事实一致：`tools/stamp-public-domain-rights.mjs` 对同类情形记录 `PRIVATE_READING_IMMUTABLE` 并计入 `pinned_snapshots`，历史批次亦明确“未强改触发器”。
+- 可选后续（需 Owner 裁决）：①以同一内容重建一个新的来源版本（登记时即写入 `external_processing=allowed`），再从 D00/D01 起跑形成新证据链并验证 D02→G2；②设计层新增“钉死后 Owner 权利决定”读取路径（改变外发闸门的权利来源，属设计变更）；③保持 HOLD。
+
