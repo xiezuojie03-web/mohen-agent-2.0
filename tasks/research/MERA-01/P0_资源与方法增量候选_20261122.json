@@ -7,8 +7,8 @@
     "attempts": 18
   },
   "proposed_after_merge": {
-    "resources": 68,
-    "methods": 49,
+    "resources": 74,
+    "methods": 55,
     "attempts": 18
   },
   "additions": [
@@ -447,6 +447,120 @@
       "evidence": [
         "https://library.harvard.edu/collections/geospatial-and-mapping-data"
       ]
+    },
+    {
+      "resource_id": "R0069",
+      "parent_resource_id": null,
+      "level": "档案人物/家族/组织发现平台",
+      "name": "Social Networks and Archival Context (SNAC)",
+      "provider": "SNAC Cooperative",
+      "url": "https://portal.snaccooperative.org/",
+      "content": "Global discovery of historical persons, families and corporate bodies in cultural heritage archival descriptions; members link identities and archival resources such as photos, letters, sound recordings and collections.",
+      "access": "Free web search, SNAC API, API commands/examples, OpenRefine endpoint; links to original repositories.",
+      "rights": "SNAC descriptive records CC0 1.0; SNAC does not own/store original materials; original archive rights controlled by contributing institution.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0049",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://portal.snaccooperative.org/faqs",
+        "https://portal.snaccooperative.org/technical-resources",
+        "https://portal.snaccooperative.org/node/360"
+      ]
+    },
+    {
+      "resource_id": "R0070",
+      "parent_resource_id": null,
+      "level": "国际权威名称库",
+      "name": "Virtual International Authority File (VIAF)",
+      "provider": "OCLC / VIAF",
+      "url": "https://viaf.org/",
+      "content": "Links authority data from 37 agencies in 29 countries; cluster records aggregate multilingual names for the same entity; source records retain original authority entries and see/see-also links.",
+      "access": "Production API search by keyword/local/preferred name/title/source/control number; MARC21/UNIMARC source records.",
+      "rights": "VIAF data under ODC-By; preserve original agency and control number; authority linking is not a full biography/social graph.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0050",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.oclc.org/developer/api/oclc-apis/viaf.en.html"
+      ]
+    },
+    {
+      "resource_id": "R0071",
+      "parent_resource_id": null,
+      "level": "人物权威词表",
+      "name": "Getty Union List of Artist Names (ULAN)",
+      "provider": "J. Paul Getty Trust / Getty Research Institute",
+      "url": "https://www.getty.edu/research/tools/vocabularies/ulan/",
+      "content": "Authority names, variants, roles, nationality/culture, dates, biographies and relationships for artists, architects, craftspeople, studios, patrons and institutions; not a general all-person database.",
+      "access": "Web search; SPARQL; OpenRefine; JSON/RDF/N3/Turtle/N-Triples; full AAT/TGN/ULAN N-Triples monthly.",
+      "rights": "ODC-By 1.0 with attribution; does not license linked images or third-party biographies; old XML web services discontinued in 2026.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0051",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.getty.edu/research-conservation/tools-databases/vocabularies/data-services/",
+        "https://www.getty.edu/research-conservation/tools-databases/vocabularies/faqs/"
+      ]
+    },
+    {
+      "resource_id": "R0072",
+      "parent_resource_id": null,
+      "level": "历史人物关系数据库",
+      "name": "People of Medieval Scotland (PoMS) 1093-1371",
+      "provider": "University of Glasgow / King's College London / University of Edinburgh",
+      "url": "https://www.poms.ac.uk/",
+      "content": "Known Scottish people 1093-1314 with extension to 1371, based on 8,600+ contemporary documents; person, role, date, factoid, charter, land transaction, relationship, source institution; network visualization and maps.",
+      "access": "Free web database, person/place/source/factoid search, network graph/map; KDL RDF/OWL dump (2020 snapshot).",
+      "rights": "KDL dataset catalog labels RDF data CC BY; original charter images and documents require source repository rights check; 2020 RDF dump is historical snapshot.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0052",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.digital-humanities.glasgow.ac.uk/project/?id=35",
+        "https://data.kdl.kcl.ac.uk/dataset/people-of-medieval-scotland-project-1093-1371.html"
+      ]
+    },
+    {
+      "resource_id": "R0073",
+      "parent_resource_id": null,
+      "level": "历史人物关系数据库",
+      "name": "Prosopography of Anglo-Saxon England (PASE)",
+      "provider": "University of Oxford History Faculty / University of Cambridge",
+      "url": "https://pase.ac.uk/",
+      "content": "Relational database of recorded inhabitants of England from late 6th to late 11th centuries, based on chronicles, saints' lives, charters, libri vitae, inscriptions, Domesday Book and coins; supports person, relation and group search.",
+      "access": "Free web relational database; no public API/bulk download confirmed.",
+      "rights": "Public browsing confirmed; overall open license/commercial reuse terms not located; treat bulk and commercial reuse as unconfirmed.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0053",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://pase.ac.uk/",
+        "https://pase.ac.uk/about/introduction/"
+      ]
+    },
+    {
+      "resource_id": "R0074",
+      "parent_resource_id": null,
+      "level": "历史人物关系数据库",
+      "name": "Prosopography of the Byzantine World (PBW)",
+      "provider": "King's College London / British Academy / Oxford Digital Humanities",
+      "url": "https://www.thebritishacademy.ac.uk/projects/academy-research-projects-prosopography-byzantine-world/",
+      "content": "Byzantine persons 1025-1204 and relevant non-Byzantine persons; historical database version contains about 60,000 factoids, 2,774 narrative units, 7,500 seals and 5,000 matrices linked to persons, dates, reigns, events and repositories.",
+      "access": "Online academic database; no public bulk API or open data license confirmed; personal access and limited academic use described by library guides.",
+      "rights": "Not an open dataset; limited personal research/quotation only; commercial or bulk reuse requires permission; current database version status needs recheck.",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0054",
+      "checked": "2026-11-22",
+      "evidence": [
+        "https://www.thebritishacademy.ac.uk/projects/academy-research-projects-prosopography-byzantine-world/",
+        "https://digital.humanities.ox.ac.uk/project/prosopography-byzantine-world"
+      ]
     }
   ],
   "methods": [
@@ -649,6 +763,66 @@
       "scope": "Global historical maps, GeoTIFF and thematic GIS",
       "steps": "Search by place/topic/date/data type; inspect format, CRS, license and access; download when permitted; restricted data discovered via HOLLIS/Map Collection Reading Room.",
       "limits": "Some data not in HGL due license/copyright/format; some require onsite access."
+    },
+    {
+      "method_id": "M0049",
+      "version": "v0.1",
+      "resource_id": "R0069",
+      "status": "DRAFT",
+      "path": "SNAC web/API/OpenRefine → person/family/corporate body → original archival collection",
+      "scope": "Global historical persons, families, organizations and archival links",
+      "steps": "Search names/families/organizations; inspect aliases, relations, institutions and Resources; use API/OpenRefine for matching; follow links to source archive; record original source and rights separately.",
+      "limits": "SNAC records CC0 but not linked originals; duplicates and identity ambiguity require source verification."
+    },
+    {
+      "method_id": "M0050",
+      "version": "v0.1",
+      "resource_id": "R0070",
+      "status": "DRAFT",
+      "path": "VIAF API → cluster/source records → national authority reconciliation",
+      "scope": "Multilingual authority names and cross-national identity linking",
+      "steps": "Search local/preferred name/title/source/control number; compare cluster and source records; preserve agency IDs, variants and ODC-By attribution; verify biography/identity through other sources.",
+      "limits": "Authority file is not full biography/social graph; possible false merges for namesakes."
+    },
+    {
+      "method_id": "M0051",
+      "version": "v0.1",
+      "resource_id": "R0071",
+      "status": "DRAFT",
+      "path": "Getty ULAN web/SPARQL/OpenRefine → LOD records → ODC-By attribution",
+      "scope": "Artists, architects, makers, studios, patrons and visual culture institutions",
+      "steps": "Search name/role/nationality; retrieve preferred/variant names, roles, nationality, dates, biography and relations; reconcile via SPARQL/OpenRefine; use monthly N-Triples and cite Getty/contributors.",
+      "limits": "Not a general people database; linked images/biographies may have separate rights; legacy XML services discontinued."
+    },
+    {
+      "method_id": "M0052",
+      "version": "v0.1",
+      "resource_id": "R0072",
+      "status": "DRAFT",
+      "path": "PoMS database → persons/factoids/documents/relations → RDF snapshot",
+      "scope": "1093-1371 Scotland persons and documentary relationships",
+      "steps": "Search person/place/source/factoid; inspect role/date/document/related persons; use network graph/map; if using RDF, record 2020 snapshot and CC BY; verify original charter rights at holding institution.",
+      "limits": "RDF snapshot differs from live site; charter images require separate rights."
+    },
+    {
+      "method_id": "M0053",
+      "version": "v0.1",
+      "resource_id": "R0073",
+      "status": "DRAFT",
+      "path": "PASE relational database → person/relations/groups → source text verification",
+      "scope": "Late 6th to late 11th century England persons, relations and groups",
+      "steps": "Search persons/relations/groups; record source type; trace chronicles, charters, inscriptions, coins and other sources; contact maintainer before bulk or commercial reuse.",
+      "limits": "No clear open license or public bulk API confirmed; public browsing does not imply reuse rights."
+    },
+    {
+      "method_id": "M0054",
+      "version": "v0.1",
+      "resource_id": "R0074",
+      "status": "DRAFT",
+      "path": "PBW search → factoids/persons/narratives/seals → source and access terms check",
+      "scope": "1025-1204 Byzantine persons, factoids, narrative units and seals",
+      "steps": "Search person/date/event/seal; inspect linked factoids, dates, reigns and sources; record database version; use only limited personal research/academic quotation unless permission is obtained.",
+      "limits": "2016 version; institutional access may be required; no open bulk reuse license confirmed."
     }
   ],
   "updates": [
@@ -697,6 +871,12 @@
       "target": "category 03",
       "fields": {
         "note": "Added R0065 David Rumsey, R0066 WHG, R0067 Pleiades, R0068 Harvard Geospatial Library; methods M0045-M0048. Candidate totals 68 resources / 49 methods / 18 attempts."
+      }
+    },
+    {
+      "target": "category 05",
+      "fields": {
+        "note": "Added R0069 SNAC, R0070 VIAF, R0071 Getty ULAN, R0072 PoMS, R0073 PASE, R0074 PBW; methods M0049-M0054. Candidate totals 74 resources / 55 methods / 18 attempts."
       }
     }
   ],
