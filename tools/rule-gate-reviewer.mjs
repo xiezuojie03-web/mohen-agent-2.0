@@ -938,7 +938,11 @@ async function decideThroughAuthority(decision, sessionToken) {
     });
   } catch (error) {
     // 保留权威层真实拒绝原因（不含凭据），否则只剩一句 command failed。
-    const detail = String(error?.stderr || "").trim().split("\n").slice(0, 4).join(" | ");
+    // node 子进程的 loader 报错前几行是样板（位置/throw/^^），真正信息在
+    // Error:/Cannot find module 行，优先挑出这些行，避免诊断信息被截断。
+    const stderrLines = String(error?.stderr || "").trim().split("\n");
+    const informative = stderrLines.filter((l) => /Error|Cannot find|require stack|MODULE_NOT_FOUND/.test(l)).slice(0, 4);
+    const detail = (informative.length ? informative : stderrLines.slice(0, 4)).join(" | ");
     throw Error(`GATE_DECISION_FAILED ${detail || String(error?.message ?? error).split("\n")[0]}`.slice(0, 600));
   }
   const parsed = JSON.parse(output.trim() || "{}");
