@@ -6308,3 +6308,18 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **测试与静态**：定向单测 32/32（新增 `tests/unit/mab-m5-director-plan-body-authority.test.ts` 4 项 + 既有 st07-body-authority 4 项 + director-commit 10 项 + submission-routes 14 项）；静态守卫 2/2 PASS；web `tsc --noEmit` 退出 0。隔离库 G5 签发均为 `VERIFIED_ISOLATED`，非生产、非自签、非历史 PASS 复用。
 - **边界与证据分层**：本批未改生产库/RLS/数据，未部署，0 Provider 调用/0 USD；临时勘验脚本均在 gitignored `work/scratch/`；CI 宿主级仍 `CI_BLOCKED`（不冒充 PASS）；跨 Project/Owner 项为数据库关联一致性核查（越界行=0）+ App `commitWorkRevision` 同 Project 校验谓词，尚非 HTTP 层主动拒绝证据，留待阶段三/四端到端补强。
 - **下一断点**：阶段三 ST-08 投稿快照绑定正式 revision + 权限/幂等；阶段四 ST-09 审核（Reviewer/Creator 隔离、退回保留快照、新修订新投稿、Operator 批准、三权分离）；阶段五正式发布 CAS 指针 + WATCH 合法消费/撤权（P08）。
+
+## 2026-11-23 M5 主线连续施工（ST-08→ST-09→发布→WATCH，阶段三/四/五，全链贯通）
+
+- **阶段三投稿（VERIFIED_ISOLATED 7/7）**：新增 `scripts/test-st08-formal-submission-isolation.mjs`，复用阶段二正式 work/revision/G5。正向投稿生成冻结快照；快照精确绑定正式 revision_id/content_hash/artifact_revision（均对齐正式正文实时指纹），版本快照 director_plan 指纹读正式正文；幂等（同 revision 返回原快照、快照数=1）；不可变（UPDATE/DELETE 被 SUBMISSION_SNAPSHOT_IMMUTABLE 拒）；无当前 G5 被拒（PRIVATE_SUBMISSION_KNOWLEDGE_NOT_QUALIFIED:no_current_g5）；旧 revision 越过最新被拒（PRIVATE_SUBMISSION_NOT_LATEST_REVISION）。未改 ST-08 SQL——其 `artifact_revision_for` 复核因阶段二归位自动读正式正文。
+- **阶段四/五全链（VERIFIED_ISOLATED 12/12）**：新增 `scripts/test-st09-editorial-publish-watch-isolation.mjs`，导入真实 WATCH SQL（`publication-watch-sql.mjs`）。
+  - 角色隔离：ACL 实证 `decide_editorial` execute 仅 `mohen_editorial_operator`，creator(mohen_app_runtime)/gate_signer 均无（三权分离：运营不代签 G、Gate 不代运营）；自审拒绝 EDITORIAL_OPERATOR_CONFLICT:creator_self_review。
+  - 审核：CHANGES_REQUESTED 退回 appended 且原快照不可变保留；APPROVED 决策 fingerprint 读正式正文、operator 为独立运营、G5 审计数不变（运营批准不构成 G、不代权利）。
+  - 发布：CAS 指针 `source_schema=studio`，studio_revision_id 精确指向已批准 revision、publication_id 对齐发布快照，快照 fingerprint 读正式正文；真实反向——越权(creator)发布被 PUBLISH_OPERATOR_REQUIRED 拒且旧合法指针 publication_id 未变（新版本失败不破坏旧合法发布）；无 APPROVED 决策发布被 PUBLISH_DECISION_REQUIRED 拒（函数分支存在）。
+  - WATCH：`PUBLISHED_WORKS_SQL` 列出已发布作品、`STUDIO_REVISION_WATCHABLE_SQL` 放行（G5 current + 指纹读正式正文 + 无撤回 + 指针持有）；未发布 draft 不被指针引用、不出现在 WATCH。
+  - 撤权（P08）：`withdraw_publication` 追加撤回 + 同事务删指针；撤权后 WATCH 阻断、历史 publication_snapshots 保留不复活；重复撤权幂等。
+- **链路贯通结论**：Creator/Owner → Project/Root → 正式 DirectorPlan(§19.1 指纹归正式正文, G5 `ec8117cb`) → 正式 WorkRevision(publication.work_revisions, G5 `286ca90d`) → ST-08 投稿快照 → ST-09 独立 Operator 审核 → CAS 发布指针 → WATCH 合法消费 → 撤权失效。全链仅在隔离库 `mohen_dev` 验证，均为 VERIFIED_ISOLATED，非生产/非部署/非自签/非历史 PASS 复用。未新建第二套出版真值表（仍 `published_pointers` 一张）；未改评审器；未改 ST-08/09 SQL（归位后其 fingerprint 复核自动读正式正文）。
+- **测试与静态（第二次推送前）**：定向单测 32/32、静态守卫 PASS、web tsc 退出 0。测试残留：隔离库存在早期调试产生的 `idem:self-review` APPROVED 决策（operator=字符串 creator 值，非本次 v2 正式决策），属隔离库测试数据，不构成生产影响；本次正式批准用 `idem:approved-v2`，发布/撤回用 run nonce 保证可重入。
+- **证据边界**：CI 宿主级仍 `CI_BLOCKED`（不冒充 PASS）；跨 Project/Owner 项为数据库关联一致性 + App 校验谓词，HTTP 主动拒绝证据仍待 Web 接线后补（§0.2 E）。
+
+- **下一断点**：本轮最小贯通目标已达成；剩余为 memory 记录的约 40 NEW API / ~100 动作、Owner 体验验收、CI 宿主级修复、Web 按钮接线、隔离库测试数据清理（需 Owner 授权 Remove-Item 类删除）。

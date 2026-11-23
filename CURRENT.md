@@ -75,8 +75,12 @@
 
 ## 最前阻断 / 下一动作
 
-### 本批最新（2026-11-23 连续施工｜阶段一+二，待推送）
-- **基线**：远端/本地 main 均为 `4fd585ea0ea2789faf82f851c8c823c15c0f9905`（0/0）。本批在唯一 main 本地连续施工，达到"阶段一+二完成并验证"集中推送点。
+### 本批最新（2026-11-23 连续施工｜五阶段全链贯通）
+- **推送状态**：阶段一+二已集中推送（远端 main `d47c5d31`，rebase 保留 10 个 MERA-01 文档提交，无冲突）；阶段三/四/五本批待第二次集中推送。
+- **M5 全链贯通（隔离库 VERIFIED_ISOLATED）**：DirectorPlan 正文权威归位(§19.1, G5 `ec8117cb`) → 正式 WorkRevision(publication.work_revisions, G5 `286ca90d`) → ST-08 投稿(7/7) → ST-09 独立 Operator 审核 + 三权分离 + 自审拒绝 + 退回保留快照 + 批准不代 G(12/12) → CAS 发布指针(失败不破坏旧稿) → WATCH 合法消费 → 撤权失效(P08)。全部在隔离库 `mohen_dev`，非生产/非部署/非自签/非历史 PASS 复用；未新建第二套真值表，未改评审器与 ST-08/09 SQL。
+- **新增脚本**：`test-st05-formal-director-body-authority-isolation.mjs`、`test-st07-formal-work-body-authority-isolation.mjs`、`test-st08-formal-submission-isolation.mjs`、`test-st09-editorial-publish-watch-isolation.mjs`（均 loopback 安全围栏）；新增单元测试 `mab-m5-director-plan-body-authority.test.ts`。
+- **测试**：单测 32/32、静态守卫 PASS、web tsc 退出 0。CI 宿主级仍 `CI_BLOCKED`。
+- **历史基线记录（阶段一+二推送点）**：远端/本地 main 曾均为 `4fd585ea0ea2789faf82f851c8c823c15c0f9905`（0/0）。
 - **阶段一（DirectorPlan 正文权威归位，VERIFIED_ISOLATED 7/7）**：新增迁移 `20261123130000_mab_m5_director_plan_formal_body_authority.sql`，把 `artifact_revision_for('director_plan')` 从 `studio.director_plans` 归位到正式正文 `public.director_plans`（合同 §19.1），`artifact_content_columns('director_plan')` 重登记为正式表 16 业务列。新建正式 DirectorPlan + 同 ID 评审封套独立 G5 PASS `ec8117cb`（independent_gate/current），旧 Studio-only 对象指纹 NULL 无法冒充，历史 PASS 原样保留。
 - **阶段二（ST-07 正式作品正文归位，VERIFIED_ISOLATED 7/7）**：新增 `scripts/test-st07-formal-work-body-authority-isolation.mjs`，正式正文写 `publication.work_revisions`、Studio 封套 `formal_revision_id` 绑定同 ID 正式正文；指纹正反+篡改复原、不可变/CAS/幂等、project 关联一致（越界=0）、独立 G5 PASS `286ca90d`。
 - **测试**：定向单测 32/32、静态守卫 2/2、web tsc 退出 0；隔离库 G5 为 VERIFIED_ISOLATED（非生产/非自签/非复用）。CI 宿主级仍 `CI_BLOCKED`。
