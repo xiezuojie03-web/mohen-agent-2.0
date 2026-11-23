@@ -68,8 +68,8 @@
 - **追溯缺口**：现有导演方案未持久绑定delegation/root_task_ref和研究读取snapshot；WorkRevision提交只校验Owner，没有同Project校验。必须补齐Project＋Root＋snapshot的端到端绑定。
 - **安全/迁移**：Supabase安全检查报告10张表RLS未启用；已核的9张Studio/Publication表无anon/authenticated直接表权限，但若干app_runtime策略仍为全行`true`，另有一张publication_schedules无策略。先修策略并正反验证，不一键启用。数据库迁移账止于`20261120045054`，而两张Studio平行表及数据已存在、对应迁移版本未入账；不得盲目重跑或删除。
 - **CI**：最新main SHA `200c68938135`对应run `45114509705`失败于runner启动前（`runner_id=0`、`steps=[]`）；上一run `45028810958`同样失败。均为`CI_BLOCKED`，不是代码测试红灯。
-- **验证条件**：当前Supabase项目没有隔离分支；本轮未执行任何数据库DDL/RLS修改、未改业务代码、未触发部署。第二步需要可验证的隔离PG环境，完成迁移、权限、API、Gate正反测试后才能关闭。
-- **下一动作**：先取得隔离验证环境，再按PLAN §0.4完成单一正文权威、Project/Root/snapshot绑定、G5对象重绑、RLS策略与迁移账修补；完成后Owner再在本地进入第三步M5业务主线。
+- **执行策略（2026-11-23修订）**：Owner已明确不建立临时Supabase开发分支，第二步不再以此为前置条件。代码优先本地施工、运行可执行的静态/定向测试/类型检查/构建，阶段性集中推送唯一main；推送前必须核对远端HEAD及本地未提交/未推送成果。现有Supabase项目继续只读核查；迁移/RLS先完成Schema与迁移账对照、向前迁移/回滚脚本及影响分析。未具备安全验证条件前不对生产库执行DDL/RLS写入、不改数据、不部署。CI宿主级失败仍记CI_BLOCKED；本地测试不能冒充CI通过，缺少真实PG/HTTP/Gate验证的项目标NOT_RUN/DEFERRED_ENV。
+- **下一动作**：按PLAN §0.4在本地开始第二步代码修补：先收敛Studio导演方案/作品修订的正文权威与写入路径，再补Project/Root/snapshot绑定及同Project服务端校验；随后调整ST-05/ST-07验证器与正式对象绑定。数据库迁移/RLS仅先做可审查、可回滚的准备，不擅自写生产库。第二步代码修补及其本地验证完成并归档后，Owner再接续第三步M5业务主线。
 
 ## 部署 / 费用 / 凭据
 
