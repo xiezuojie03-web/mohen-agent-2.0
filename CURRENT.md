@@ -68,8 +68,15 @@
 
 ## 最前阻断 / 下一动作
 
-- **最前阻断**：本轮 D05/G5 无工程阻断。P03（map_timeline_projections）/P06（evidence_pointers）事实分支仍因 `method-binding-contract.json` 中 `implementation_binding=HOLD` 且 G5 评审器无对应 object_type 分支而**如实不产出**；A01–A12 其余 11 项方法绑定与 N01–N06 人文解释深度缺口不阻断已跑节点。run `b9989b90` 终态仍 HOLD（`INDEPENDENT_GATE_NOT_VERIFIED`），与 G3/G4 时一致：独立门签发不回溯改写 run。
-- **下一动作**：①按 PLAN §3.5 C 进入 L0–L5 统一检索与 Agent 研究成果向 H1/H2/H3 导演计划交接（Studio ST-05→ST-07），不重设计生产体系；②P03/P06 与其余 11 项 A 方法绑定按合同另立工作包；③八维其余维度按 PLAN 逐项取证，不以 Gate 链替代作品发布/WATCH 验收；④CI 仍 `DEFERRED_ENV`，待宿主恢复后核精确 SHA 再签。
+- **最前阻断**：ST-05—ST-07前置修补，详见[PLAN §0.4](tasks/implementation/MAB/PLAN.md)。第一步（施工计划与CURRENT同步）已完成；本次策略修订已写入PLAN/CURRENT。第二步已完成代码路径定位与合同差异确认，但尚未修改业务源码或迁移。
+- **正式表与平行表现状**：`public.director_plans` 21行（2条已绑定Project、19条未绑定）；`publication.works` 16行但缺`project_id`列；`publication.work_revisions` 24行。另有`studio.director_plans` 3行、`studio.work_revisions` 5行，与正式表ID不重叠；5条Studio修订均无对应`publication.works`。保留全部历史数据，不猜测合并。
+- **资格边界**：当前5条DirectorPlan G5 PASS、7条WorkRevision G5 PASS均绑定Studio平行表对象，不绑定正式表对象；不转移、不复用。正式对象须重新经过独立G5。
+- **追溯缺口（按合同§19.1精确定位）**：正式`public.director_plans`已有`project_id/source_ids`，但没有`delegation_id/root_task_ref`及研究读取snapshot/hash的持久闭环。`createWorkDraft()`（`apps/web/lib/publication.ts`）新建`publication.works`和首条`publication.work_revisions`时没有Project；正式作品表也没有`project_id`列。`commitWorkRevision()`（`apps/web/lib/studio-director.ts`）只按Owner连接导演方案与作品，CAS INSERT没有同Project校验。需闭合Project＋Root＋snapshot，并保持历史无绑定记录HOLD。
+- **安全/迁移**：Supabase安全检查报告10张表RLS未启用；已核的9张Studio/Publication表无anon/authenticated直接表权限，但若干app_runtime策略仍为全行`true`，另有一张publication_schedules无策略。先修策略并正反验证，不一键启用。数据库迁移账止于`20261120045054`，而两张Studio平行表及数据已存在、对应迁移版本未入账；不得盲目重跑或删除。
+- **CI**：策略修订后的main SHA `163d4c376b5ac9e18de81197f46d95dbaa34d46a`对应run `45116236223`的`build` job失败于runner启动前（`runner_id=0`、`steps=[]`）；前两次`45116198743`、`45115289483`同样失败。均为`CI_BLOCKED`，不是代码测试红灯。之后PLAN状态更新提交`ef568c28cb7c`尚待CI结果。
+- **执行策略（2026-11-23修订）**：Owner已明确不建立临时Supabase开发分支，第二步不再以此为前置条件。代码优先本地施工、运行可执行的静态/定向测试/类型检查/构建，阶段性集中推送唯一main；推送前必须核对远端HEAD及本地未提交/未推送成果。现有Supabase项目继续只读核查；迁移/RLS先完成Schema与迁移账对照、向前迁移/回滚脚本及影响分析。未具备安全验证条件前不对生产库执行DDL/RLS写入、不改数据、不部署。CI宿主级失败仍记CI_BLOCKED；本地测试不能冒充CI通过，缺少真实PG/HTTP/Gate验证的项目标NOT_RUN/DEFERRED_ENV。
+- **代码定位结果（对照合同§19.1）**：`public.director_plans`、`publication.work_revisions`是正文权威；Studio封套应引用，不复制正文。当前`createWorkDraft()`新建作品时未绑定Project，`commitWorkRevision()`只校验Owner；ST-07迁移`20261114150000_mab_m5_st07_work_revision.sql`另建带正文的`studio.work_revisions`，与合同的唯一正文规定冲突。既有Studio平行表和历史G5必须保留，但不能继续充当正式正文/G5对象。精确修补顺序已补入PLAN §0.4。
+- **本轮源码执行边界**：已进一步对照合同§19.1并定位`createWorkDraft()`、`commitWorkRevision()`及ST-07平行正文迁移；尚未修改业务源码/SQL。尝试通过Vercel sandbox建立可运行工作副本，但该私有GitHub仓库不能通过当前sandbox的公开Git源方式直接克隆，当前GitHub连接也只提供文件级读写，没有可执行仓库工作树。因此不能诚实地声称已跑Vitest/typecheck/build。为避免未经验证的业务代码直接写入唯一`main`，本轮不提交业务源码。继续施工需要可运行工作副本；不需要创建Supabase分支，也不需要改生产数据库。第二步代码修补及其本地验证完成并归档后，Owner再接续第三步M5业务主线。
 
 ## 部署 / 费用 / 凭据
 
