@@ -62,8 +62,13 @@
 
 ## 最前阻断 / 下一动作
 
-- **最前阻断**：本轮 D05/G5 无工程阻断。P03（map_timeline_projections）/P06（evidence_pointers）事实分支仍因 `method-binding-contract.json` 中 `implementation_binding=HOLD` 且 G5 评审器无对应 object_type 分支而**如实不产出**；A01–A12 其余 11 项方法绑定与 N01–N06 人文解释深度缺口不阻断已跑节点。run `b9989b90` 终态仍 HOLD（`INDEPENDENT_GATE_NOT_VERIFIED`），与 G3/G4 时一致：独立门签发不回溯改写 run。
-- **下一动作**：①按 PLAN §3.5 C 进入 L0–L5 统一检索与 Agent 研究成果向 H1/H2/H3 导演计划交接（Studio ST-05→ST-07），不重设计生产体系；②P03/P06 与其余 11 项 A 方法绑定按合同另立工作包；③八维其余维度按 PLAN 逐项取证，不以 Gate 链替代作品发布/WATCH 验收；④CI 仍 `DEFERRED_ENV`，待宿主恢复后核精确 SHA 再签。
+- **最前阻断已调整**：不是D05/G5，而是ST-05—ST-07前置修补，详见[PLAN §0.4](tasks/implementation/MAB/PLAN.md)。在该批关闭前，不启动ST-05→ST-07新增业务施工。
+- **正式表与平行表现状**：`public.director_plans` 21行（2条已绑定Project、19条未绑定）；`publication.works` 16行但缺`project_id`；`publication.work_revisions` 24行。另有`studio.director_plans` 3行、`studio.work_revisions` 5行，与正式表ID不重叠；5条Studio修订均无对应`publication.works`。保留全部历史数据，不猜测合并。
+- **资格边界**：当前5条DirectorPlan G5 PASS、7条WorkRevision G5 PASS均绑定Studio平行表对象，不绑定正式表对象；不转移、不复用。正式对象须重新经过独立G5。
+- **追溯缺口**：现有导演方案未持久绑定delegation/root_task_ref和研究读取snapshot；WorkRevision提交只校验Owner，没有同Project校验。必须补齐Project＋Root＋snapshot的端到端绑定。
+- **安全/迁移**：Supabase安全检查报告10张表RLS未启用；已核的9张Studio/Publication表无anon/authenticated直接表权限，但若干app_runtime策略仍为全行`true`，另有一张publication_schedules无策略。先修策略并正反验证，不一键启用。数据库迁移账止于`20261120045054`，而两张Studio平行表及数据已存在、对应迁移版本未入账；不得盲目重跑或删除。
+- **CI**：main SHA `198c40bdfb1c`对应run `45028810958`在步骤启动前失败（`runner_id=0`、`steps=[]`），记`CI_BLOCKED`，不是代码测试失败；当前没有可用的CI通过证据。
+- **下一动作**：先完成PLAN §0.4规定的单一正文权威、Project/Root/snapshot绑定、G5对象重绑、RLS策略与迁移账修补；保持D00—D05/G0—G5成果原样继承。完成并取得可验证证据后，再由Owner在本地进入第三步M5业务主线。
 
 ## 部署 / 费用 / 凭据
 
