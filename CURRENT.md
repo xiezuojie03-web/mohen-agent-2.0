@@ -62,13 +62,14 @@
 
 ## 最前阻断 / 下一动作
 
-- **最前阻断已调整**：不是D05/G5，而是ST-05—ST-07前置修补，详见[PLAN §0.4](tasks/implementation/MAB/PLAN.md)。在该批关闭前，不启动ST-05→ST-07新增业务施工。
-- **正式表与平行表现状**：`public.director_plans` 21行（2条已绑定Project、19条未绑定）；`publication.works` 16行但缺`project_id`；`publication.work_revisions` 24行。另有`studio.director_plans` 3行、`studio.work_revisions` 5行，与正式表ID不重叠；5条Studio修订均无对应`publication.works`。保留全部历史数据，不猜测合并。
+- **最前阻断**：ST-05—ST-07前置修补，详见[PLAN §0.4](tasks/implementation/MAB/PLAN.md)。第一步（施工计划与CURRENT同步）已完成，提交 `200c68938135`；第二步代码/迁移修补尚未开始。
+- **正式表与平行表现状**：`public.director_plans` 21行（2条已绑定Project、19条未绑定）；`publication.works` 16行但缺`project_id`列；`publication.work_revisions` 24行。另有`studio.director_plans` 3行、`studio.work_revisions` 5行，与正式表ID不重叠；5条Studio修订均无对应`publication.works`。保留全部历史数据，不猜测合并。
 - **资格边界**：当前5条DirectorPlan G5 PASS、7条WorkRevision G5 PASS均绑定Studio平行表对象，不绑定正式表对象；不转移、不复用。正式对象须重新经过独立G5。
 - **追溯缺口**：现有导演方案未持久绑定delegation/root_task_ref和研究读取snapshot；WorkRevision提交只校验Owner，没有同Project校验。必须补齐Project＋Root＋snapshot的端到端绑定。
 - **安全/迁移**：Supabase安全检查报告10张表RLS未启用；已核的9张Studio/Publication表无anon/authenticated直接表权限，但若干app_runtime策略仍为全行`true`，另有一张publication_schedules无策略。先修策略并正反验证，不一键启用。数据库迁移账止于`20261120045054`，而两张Studio平行表及数据已存在、对应迁移版本未入账；不得盲目重跑或删除。
-- **CI**：main SHA `198c40bdfb1c`对应run `45028810958`在步骤启动前失败（`runner_id=0`、`steps=[]`），记`CI_BLOCKED`，不是代码测试失败；当前没有可用的CI通过证据。
-- **下一动作**：先完成PLAN §0.4规定的单一正文权威、Project/Root/snapshot绑定、G5对象重绑、RLS策略与迁移账修补；保持D00—D05/G0—G5成果原样继承。完成并取得可验证证据后，再由Owner在本地进入第三步M5业务主线。
+- **CI**：最新main SHA `200c68938135`对应run `45114509705`失败于runner启动前（`runner_id=0`、`steps=[]`）；上一run `45028810958`同样失败。均为`CI_BLOCKED`，不是代码测试红灯。
+- **验证条件**：当前Supabase项目没有隔离分支；本轮未执行任何数据库DDL/RLS修改、未改业务代码、未触发部署。第二步需要可验证的隔离PG环境，完成迁移、权限、API、Gate正反测试后才能关闭。
+- **下一动作**：先取得隔离验证环境，再按PLAN §0.4完成单一正文权威、Project/Root/snapshot绑定、G5对象重绑、RLS策略与迁移账修补；完成后Owner再在本地进入第三步M5业务主线。
 
 ## 部署 / 费用 / 凭据
 

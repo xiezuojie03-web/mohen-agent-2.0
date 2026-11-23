@@ -54,7 +54,9 @@
 - 导演方案目前没有持久绑定`delegation_id/root_task_ref`及本次研究读取的精确snapshot；`studio.delegations`已有root任务字段，但没有闭合到正式导演方案和作品修订。现有19条未绑定项目的旧导演方案不得按题名、Owner或推测回填，后续动作保持HOLD。
 - 真实数据库中Studio/Publication相关9张表及另1张控制表被Supabase安全检查报告RLS未启用；已核的9张Studio/Publication表没有anon/authenticated直接表权限，但若干现有`mohen_app_runtime`策略仍是`USING/WITH CHECK true`，并非项目隔离策略；`publication.publication_schedules`没有策略。不得只执行一键ENABLE RLS，必须先按项目Owner、应用运行角色、Gate/Operator职责修正策略并做正反验证。
 - 真实数据库迁移账当前止于`20261120045054`；`20261114120000`及`20261114150000`对应的Studio表和数据已存在，但版本未出现在迁移账中。不得盲目重跑原迁移或清理数据，先核实漂移与可恢复路径。
-- GitHub main的CI run `45028810958`在步骤启动前失败（`runner_id=0`、`steps=[]`），属于CI宿主级`CI_BLOCKED`，不是代码测试红灯；恢复前不得宣称本批CI通过。
+- GitHub main最新SHA `200c68938135`对应CI run `45114509705`仍在步骤启动前失败（`runner_id=0`、`steps=[]`）；上一SHA `198c40bdfb1c`的run `45028810958`同样如此。属于CI宿主级`CI_BLOCKED`，不是代码测试红灯；恢复前不得宣称本批CI通过。
+
+**当前执行状态：** 第一步（本节任务裁决及CURRENT同步）已于提交`200c68938135`完成；第二步代码/迁移修补尚未开始。原因是当前没有隔离Supabase分支，GitHub CI连续两次均在runner启动前失败，无法在本环境完成数据库迁移、RLS和真实API正反验证。不得以未经验证的源码提交冒充第二步完成；取得隔离验证环境后再施工。
 
 **修补顺序与边界：**
 
