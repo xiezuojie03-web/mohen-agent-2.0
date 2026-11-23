@@ -29,7 +29,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     }
   } catch { return NextResponse.json({ ok: false, reason: "bad_request" }, { status: 400 }); }
   try {
-    const result = await submitWork(id, revisionId);
+    const result = await submitWork(id, revisionId, session.uid);
     return NextResponse.json(result, { status: result.ok ? 200 : result.reason === "revision_required" ? 400 : 409 });
   } catch {
     return NextResponse.json({ ok: false, reason: "submission_unavailable" }, { status: 503 });

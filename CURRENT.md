@@ -75,7 +75,13 @@
 
 ## 最前阻断 / 下一动作
 
-### 本批最新（2026-11-23 连续施工｜五阶段全链贯通）
+### 本批最新（2026-11-23 §0.2 E 前端按钮接线｜Owner 选 B，待推送）
+- **接线已落地**：新增 `apps/web/lib/formal-publication-chain.ts` 适配层，把 Studio 投稿、Admin 审核/发布/撤回从 legacy 表接本轮 ST-08/09 新链（双路径：正式对象走新函数、legacy 保持原行为；前端 API 路径/响应不变、UI 零改动）。无需新迁移/角色切换 helper（postgres 连接可直接执行新链函数）。
+- **独立性守住**：不让前端自签 G5——Reviewer 签核是作品级，缺当前独立 G5 的正式对象由 DB 函数如实 HOLD；本轮已具 G5+封套的正式作品（work `3bb3458b…`）可作体验对象。从零新作需先经独立 Gate 取得 G5（HOLD，不在本批）。
+- **验证**：接线端到端 4/4（真实隔离库：探测/幂等投稿/发布→WATCH 可见→撤权→WATCH 隐藏/无决策拒绝）+ 受影响单测 79/79 + tsc 退出 0 + 静态守卫 PASS。CI 宿主级仍 `CI_BLOCKED`。
+- **下一动作**：Owner 在隔离库 dev server 用该正式作品从 Creator→Admin→WATCH 体验签收；基线 main 仍为 `6a56b8fc`（本批待推送）。
+
+### 历史（2026-11-23 连续施工｜五阶段全链贯通，已推送 d47c5d31/6a56b8fc）
 - **推送状态**：阶段一+二已集中推送（远端 main `d47c5d31`，rebase 保留 10 个 MERA-01 文档提交，无冲突）；阶段三/四/五本批待第二次集中推送。
 - **M5 全链贯通（隔离库 VERIFIED_ISOLATED）**：DirectorPlan 正文权威归位(§19.1, G5 `ec8117cb`) → 正式 WorkRevision(publication.work_revisions, G5 `286ca90d`) → ST-08 投稿(7/7) → ST-09 独立 Operator 审核 + 三权分离 + 自审拒绝 + 退回保留快照 + 批准不代 G(12/12) → CAS 发布指针(失败不破坏旧稿) → WATCH 合法消费 → 撤权失效(P08)。全部在隔离库 `mohen_dev`，非生产/非部署/非自签/非历史 PASS 复用；未新建第二套真值表，未改评审器与 ST-08/09 SQL。
 - **新增脚本**：`test-st05-formal-director-body-authority-isolation.mjs`、`test-st07-formal-work-body-authority-isolation.mjs`、`test-st08-formal-submission-isolation.mjs`、`test-st09-editorial-publish-watch-isolation.mjs`（均 loopback 安全围栏）；新增单元测试 `mab-m5-director-plan-body-authority.test.ts`。

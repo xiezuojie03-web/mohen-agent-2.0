@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { OPERATOR_COOKIE, isOperator } from "../../../../../../lib/auth";
+import { OPERATOR_COOKIE, isOperator, getSessionUser } from "../../../../../../lib/auth";
 import { unpublishWork } from "../../../../../../lib/publication";
 
 export const runtime = "nodejs";
@@ -11,6 +11,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
   }
   const { id } = await params;
-  const done = await unpublishWork(id);
+  const operator = await getSessionUser(req.cookies.get(OPERATOR_COOKIE)?.value);
+  const done = await unpublishWork(id, operator?.uid);
   return NextResponse.json({ ok: done });
 }

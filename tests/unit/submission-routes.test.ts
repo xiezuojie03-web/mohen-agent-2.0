@@ -7,6 +7,16 @@ vi.mock("../../apps/web/lib/session", () => ({ getSession: access.session, isOpe
 vi.mock("../../apps/web/lib/ownership", () => ({ canAccess: access.allowed }));
 vi.mock("../../apps/web/lib/guard", () => ({ guardRoute: access.guard }));
 vi.mock("../../apps/web/lib/auth", () => ({ findUserById: async () => ({ email: "creator@example.invalid" }) }));
+// These route tests target the legacy path. Force the formal-chain probe to
+// report "not a formal object" so the mock queryRows sequence stays aligned.
+vi.mock("../../apps/web/lib/formal-publication-chain", () => ({
+  getFormalRevision: vi.fn().mockResolvedValue(null),
+  formalSubmit: vi.fn(),
+  formalPublish: vi.fn(),
+  formalWithdraw: vi.fn(),
+  listFormalSubmitted: vi.fn().mockResolvedValue([]),
+  formalDecide: vi.fn(),
+}));
 import { POST as submitPublic } from "../../apps/web/app/api/works/[id]/submit/route";
 import { POST as submitStudio } from "../../apps/web/app/api/studio/works/[id]/submissions/route";
 import { POST as create } from "../../apps/web/app/api/works/route";

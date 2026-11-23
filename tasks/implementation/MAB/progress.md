@@ -6323,3 +6323,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **证据边界**：CI 宿主级仍 `CI_BLOCKED`（不冒充 PASS）；跨 Project/Owner 项为数据库关联一致性 + App 校验谓词，HTTP 主动拒绝证据仍待 Web 接线后补（§0.2 E）。
 
 - **下一断点**：本轮最小贯通目标已达成；剩余为 memory 记录的约 40 NEW API / ~100 动作、Owner 体验验收、CI 宿主级修复、Web 按钮接线、隔离库测试数据清理（需 Owner 授权 Remove-Item 类删除）。
+
+## 2026-11-23 M5 §0.2 E 前端按钮接线（ST-08/09 新链接入应用层）
+
+- **Owner 裁决**：Owner 选 B——把 Studio 投稿 / Admin 审核 / 发布 / 撤回按钮从 legacy 表改接本轮新链，使 UI 能驱动正式链路。工程边界自主判断，未问技术决策。
+- **决定性勘验（只读实证）**：①应用层 `DATABASE_URL`=postgres 超级用户，`has_function_privilege(current_user, decide_editorial, EXECUTE)=true`，且 `persist_private_submission_snapshot` 可被直接调用（幂等返回）——故无需新增角色切换 helper、无需改 data-access、无需新迁移。②新链决策/发布函数强制要求 work_revision 当前独立 G5 + 权利 + APPROVED 决策；前端 Reviewer 签核是作品级（`gate-review.ts:7` 合同明确「不是独立 G5」），本接线**不让前端自签 G5**，缺 G5 的对象由 DB 函数如实 HOLD。③本轮已具备完整 G5+封套的正式作品（work `3bb3458b…`/rev `5c459bc3…`）作为体验对象。④前端作品经 `commitWorkRevision` 只写正式正文、无 studio 封套/无 G5，属 legacy，保持原路径。
+- **新增适配层**：`apps/web/lib/formal-publication-chain.ts`。封装 `getFormalRevision`/`getLatestFormalRevisionByWork`（探测 studio 封套 formal_revision_id=revision_id）、`formalSubmit`（ST-08 快照）、`formalDecide`（ST-09 决策，APPROVED/CHANGES_REQUESTED/REJECTED，operator≠creator 自审拒绝）、`formalPublish`（CAS 精确发布）、`formalWithdraw`（append-only 撤权+删指针）、`listFormalSubmitted`（新链待审队列）。幂等键稳定化；publish 刻意用 fresh UUID——撤权后重新发布必须新建 publication 并重装指针，复用固定幂等键会返回已撤回的旧 publication 导致 WATCH 空。
+- **双路径接线（前端 API 路径与响应形状不变，UI 零改动）**：`publication.ts` 的 `submitWork`（正式对象→ST-08 快照，legacy→UPDATE status）、`publishWork`（正式对象→publish_exact_revision，绕过不适用 studio 的 legacy 资格桥接）、`unpublishWork`（studio 指针→withdraw_publication，legacy→删指针）、`listSubmitted`（legacy + 新链队列 union）；`gate-review.ts` 的 `signWorkPublication` 在写作品级决策后，对正式对象镜像写 `editorial_decisions`（reviewer 作 operator，自审由 DB 拒）。两条 submit route + unpublish route 传 session.uid 作 submitted_by/operator。
+- **测试与验证**：新增 `tests/unit/mab-m5-formal-chain-wiring.test.ts`（带 loopback 隔离库安全围栏）4/4——探测封套正反、投稿幂等绑定、发布→WATCH 可见→撤权→WATCH 隐藏（P08）、无决策对象被拒；均为真实 DB 端到端。更新 3 个 legacy 单测的适配层 mock（submission-routes / mab-m5-publication-atomic / mab-hp11-review-revision），保持 legacy 行为契约。受影响单测 9 文件 79/79 全绿；web `tsc --noEmit` 退出 0；静态守卫 PASS。
+- **边界与证据分层**：无新迁移、未改生产库/RLS、未部署、0 Provider 调用/0 USD；CI 宿主级仍 `CI_BLOCKED`（不冒充 PASS）。全仓单测中 `studio-cloud-production`/`private-evidence-binding`/`mab-hp08-studio-routes` 等失败与本批改动文件无关（mock 缺导出/release），属既有状态，未混入本批结论。
+- **Owner 后续**：现可在隔离库 dev server 从 Creator→Admin→WATCH 走本轮正式作品全链体验；从零新建作品需先经独立 Gate 取得 WorkRevision G5（不在本批接线范围，遵守不重建 G0—G5）。
+- **下一断点**：Owner 真实浏览器体验签收；如需让"从零创作作品"也能 UI 全链，需另立任务把 Studio 创作流程接入独立 G5 签发与 studio 封套产出（当前明确 HOLD）。

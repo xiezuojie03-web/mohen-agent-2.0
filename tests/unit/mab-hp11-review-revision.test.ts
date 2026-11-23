@@ -4,6 +4,11 @@ const {queryRows,queryValue}=vi.hoisted(()=>({
 }));
 vi.mock("@mohen/data-access",()=>({queryRows,queryValue}));
 vi.mock("../../apps/web/lib/auth",()=>({hasRole:vi.fn()}));
+// Legacy work-level sign-off tests: force the formal-chain probe to "not formal".
+vi.mock("../../apps/web/lib/formal-publication-chain",()=>({
+  getFormalRevision: vi.fn().mockResolvedValue(null),
+  formalDecide: vi.fn(),
+}));
 import {signWorkPublication} from "../../apps/web/lib/gate-review";
 
 const wid="123e4567-e89b-42d3-a456-426614174001";

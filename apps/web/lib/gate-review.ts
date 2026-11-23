@@ -7,6 +7,7 @@
 // 作品发布审核不是独立专业知识 G5 签发，任何 approval 都不能替代当前知识资格。
 import { queryRows, queryValue } from "@mohen/data-access";
 import { hasRole } from "./auth";
+import { getFormalRevision, formalDecide } from "./formal-publication-chain";
 
 export function isReviewerConfigured(): boolean {
   // Reviewer 来自用户角色，无需外部密钥；始终可用。
@@ -53,6 +54,17 @@ export async function signWorkPublication(
       { wid: workId }
     );
     return { ok: false, reason: existing ? "revision_not_submitted" : "work_not_found" };
+  }
+
+  // Formal chain: mirror the work-level sign-off into ST-09 editorial_decisions
+  // so publish_exact_revision can find an APPROVED decision. The independent
+  // Reviewer identity is used as operator; the DB refuses self-review and
+  // re-verifies current G5 + rights. A failure is surfaced (never silently faked).
+  const formal = await getFormalRevision(revisionId, workId);
+  if (formal) {
+    const mapped = decision === "approved" ? "APPROVED" : "REJECTED";
+    const res = await formalDecide(workId, revisionId, mapped, reviewer, note ?? "");
+    if (!res.ok) return { ok: false, reason: res.reason };
   }
   return { ok: true };
 }

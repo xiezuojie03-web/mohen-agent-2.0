@@ -11,6 +11,13 @@ const {queryRows, queryValue, run, reflowWorkToAssets, requireIndependentWorkPub
 vi.mock("@mohen/data-access", () => ({queryRows,queryValue,run}));
 vi.mock("../../apps/web/lib/asset-reflow", () => ({reflowWorkToAssets}));
 vi.mock("../../apps/web/lib/work-publish-qualification", () => ({requireIndependentWorkPublicationG5, requireCurrentWorkConsumerQualification}));
+// Legacy publish atomicity tests: force the formal-chain probe to "not formal".
+vi.mock("../../apps/web/lib/formal-publication-chain", () => ({
+  getLatestFormalRevisionByWork: vi.fn().mockResolvedValue(null),
+  formalPublish: vi.fn(),
+  formalWithdraw: vi.fn(),
+  listFormalSubmitted: vi.fn().mockResolvedValue([]),
+}));
 
 import {publishWork,listPublished,listPendingReview,listWatchEligible,getWorkStageStatus} from "../../apps/web/lib/publication";
 

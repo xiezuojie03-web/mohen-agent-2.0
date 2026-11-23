@@ -6,6 +6,7 @@ import { queryRows, queryValue, run } from "@mohen/data-access";
 import { reflowWorkToAssets } from "./asset-reflow";
 import { requireIndependentWorkPublicationG5, requireCurrentWorkConsumerQualification } from "./work-publish-qualification";
 import { PUBLISHED_WORKS_SQL, STUDIO_REVISION_WATCHABLE_SQL, LEGACY_PUBLISHED_WORKS_SQL, isAbsentStudioPublicationSchema } from "./publication-watch-sql.mjs";
+import { formalSubmit, formalPublish, formalWithdraw, getFormalRevision, getLatestFormalRevisionByWork, listFormalSubmitted } from "./formal-publication-chain";
 import { createHash, randomUUID } from "node:crypto";
 
 const canonicalUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id) ? id.toLowerCase() : null;
@@ -139,11 +140,16 @@ export async function createWork(title: string, creator: string, ownerUserId: st
 }
 
 export type SubmissionResult =
-  | { ok: true; work_id: string; revision_id: string; status: "submitted" }
-  | { ok: false; reason: "revision_required" | "revision_not_submittable" };
+  | { ok: true; work_id: string; revision_id: string; status: "submitted"; formal?: true }
+  | { ok: false; reason: "revision_required" | "revision_not_submittable" | "knowledge_not_qualified" | "rights_not_allowed" | "not_latest_revision" | "submission_unavailable" };
 
-/** Submit a specific saved revision; legacy callers resolve the latest revision once. */
-export async function submitWork(workId: string, revisionId?: string): Promise<SubmissionResult> {
+/** Submit a specific saved revision; legacy callers resolve the latest revision once.
+ *  Formal objects (studio envelope → authoritative body) travel the ST-08 snapshot chain. */
+export async function submitWork(
+  workId: string,
+  revisionId?: string,
+  submittedBy?: string
+): Promise<SubmissionResult> {
   const wid = workId.toLowerCase();
   const requested = revisionId === undefined
     ? await queryValue("select revision_id::text from publication.work_revisions where work_id = :'wid' order by revision_no desc limit 1", { wid: workId })
@@ -152,6 +158,16 @@ export async function submitWork(workId: string, revisionId?: string): Promise<S
   if (!rid) {
     return { ok: false, reason: "revision_required" };
   }
+
+  // Formal chain: the exact revision has a studio envelope bound to the
+  // authoritative body. Freeze an immutable ST-08 submission snapshot.
+  const formal = await getFormalRevision(rid, wid);
+  if (formal) {
+    const res = await formalSubmit(rid, formal.projectId, submittedBy ?? "system");
+    if (!res.ok) return { ok: false, reason: "submission_unavailable" };
+    return { ok: true, work_id: wid, revision_id: rid, status: "submitted", formal: true };
+  }
+
   const params = { wid, rid };
   const updated = await queryRows(
     "update publication.work_revisions set status = 'submitted' " +
@@ -255,6 +271,23 @@ export async function checkPublishEligibility(
 
 /** 发布：先核独立 Gate/权利（CR-04），再置 published + 写发布指针（operator 专属，不代签 G）。 */
 export async function publishWork(workId: string, by: string): Promise<{ ok: boolean; reason?: string }> {
+  // Formal chain: resolve the latest revision; if it has a studio envelope,
+  // publish via ST-09. The DB function re-verifies current independent G5,
+  // the APPROVED editorial decision and per-action media rights itself.
+  // Legacy eligibility (work_revision_g5_binding) never applies to a studio
+  // revision, so it is intentionally bypassed for formal objects.
+  const formalInfo = await getLatestFormalRevisionByWork(workId);
+  if (formalInfo) {
+    const res = await formalPublish(workId, formalInfo.revisionId, by);
+    if (!res.ok) return { ok: false, reason: res.reason };
+    try {
+      await reflowWorkToAssets(workId, formalInfo.revisionId);
+    } catch (e) {
+      console.warn("[publication] 作品回流失败（不影响发布）：", e instanceof Error ? e.message : String(e));
+    }
+    return { ok: true };
+  }
+
   const elig = await checkPublishEligibility(workId, by);
   if (!elig.ok) return elig;
 
@@ -316,8 +349,17 @@ export async function rejectWork(workId: string): Promise<boolean> {
   return true;
 }
 
-/** 下架：清除发布指针，作品退回（不再公开可见） */
-export async function unpublishWork(workId: string): Promise<boolean> {
+/** 下架：正式作品走 ST-09 撤权（append-only 留痕 + 同事务删指针），legacy 作品清指针。 */
+export async function unpublishWork(workId: string, operatorId?: string): Promise<boolean> {
+  const studioPtr = await queryRows(
+    `select 1 from publication.published_pointers
+      where work_id = :'wid' and source_schema = 'studio' and publication_id is not null`,
+    { wid: workId }
+  );
+  if (studioPtr.length) {
+    const res = await formalWithdraw(workId, operatorId ?? "system", "Owner 通过运营台下架");
+    return res.ok;
+  }
   await run("delete from publication.published_pointers where work_id = :'wid'", { wid: workId });
   return true;
 }
@@ -440,17 +482,21 @@ export function listPendingReview() {
   );
 }
 
-/** 读待审作品（Admin 审核队列） */
-export function listSubmitted(): Promise<SubmittedWork[]> {
-  return queryRows(
+/** 读待审作品（Admin 审核队列）：legacy submitted 修订 + ST-08 正式投稿快照。 */
+export async function listSubmitted(): Promise<SubmittedWork[]> {
+  const legacy = await queryRows(
     `select w.work_id::text as work_id, r.revision_id::text as revision_id,
             r.title as title, r.revision_no::text as revision_no,
             r.content::text as content, r.created_at::text as created_at
      from publication.work_revisions r
      join publication.works w on w.work_id = r.work_id
      where r.status = 'submitted'
-     order by r.created_at asc`
-  ) as unknown as Promise<SubmittedWork[]>;
+       and r.revision_id not in (select revision_id from studio.work_revisions where formal_revision_id = revision_id)`
+  );
+  const formal = await listFormalSubmitted();
+  const rows = [...legacy, ...formal] as unknown as SubmittedWork[];
+  rows.sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)));
+  return rows;
 }
 
 /** 读某作品最新修订（用于审核详情） */
