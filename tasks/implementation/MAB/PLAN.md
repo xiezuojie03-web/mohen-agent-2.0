@@ -54,7 +54,7 @@
 - 导演方案目前没有持久绑定`delegation_id/root_task_ref`及本次研究读取的精确snapshot；`studio.delegations`已有root任务字段，但没有闭合到正式导演方案和作品修订。现有19条未绑定项目的旧导演方案不得按题名、Owner或推测回填，后续动作保持HOLD。
 - 真实数据库中Studio/Publication相关9张表及另1张控制表被Supabase安全检查报告RLS未启用；已核的9张Studio/Publication表没有anon/authenticated直接表权限，但若干现有`mohen_app_runtime`策略仍是`USING/WITH CHECK true`，并非项目隔离策略；`publication.publication_schedules`没有策略。不得只执行一键ENABLE RLS，必须先按项目Owner、应用运行角色、Gate/Operator职责修正策略并做正反验证。
 - 真实数据库迁移账当前止于`20261120045054`；`20261114120000`及`20261114150000`对应的Studio表和数据已存在，但版本未出现在迁移账中。不得盲目重跑原迁移或清理数据，先核实漂移与可恢复路径。
-- GitHub main最新SHA `200c68938135`对应CI run `45114509705`仍在步骤启动前失败（`runner_id=0`、`steps=[]`）；上一SHA `198c40bdfb1c`的run `45028810958`同样如此。属于CI宿主级`CI_BLOCKED`，不是代码测试红灯；恢复前不得宣称本批CI通过。
+- GitHub main文档策略修订后最新SHA `163d4c376b5a`对应CI run `45116236223`仍在步骤启动前失败（job `build`、`runner_id=0`、`steps=[]`）；前一文档提交`5c70ad08ab37`的run `45116198743`及审计归档提交`9c3ceecde8b4`的run `45115289483`也同样如此。属于CI宿主级`CI_BLOCKED`，不是代码测试红灯。属于CI宿主级`CI_BLOCKED`，不是代码测试红灯；恢复前不得宣称本批CI通过。
 
 **当前执行状态（2026-11-23策略修订）：** 第一步（本节任务裁决及CURRENT同步）已于提交`200c68938135`完成；第二步代码/迁移修补进入执行，不以创建临时Supabase分支为前置条件。Owner已明确不建立临时Supabase开发分支；这不等于授权在生产库试错，也不取消M5最终需要持久、可恢复的非生产集成环境这一验收条件。代码修补优先在本地工作区完成，运行可执行的静态检查、定向单测、类型检查和构建；阶段性集中推送到唯一`main`，推送前按§0.2核对远端HEAD和本地未提交/未推送成果。数据库部分先完成实际Schema/迁移账对照、向前迁移与回滚脚本、影响分析及可重复的正反测试设计；只读核查可继续使用现有Supabase项目。任何生产DDL/RLS写入、数据改写或部署仍须满足原有安全门禁与单独授权。GitHub CI宿主级失败继续单列`CI_BLOCKED`，不能把本地测试冒充CI通过；缺少真实PG/HTTP/Gate验证的项目明确标记`NOT_RUN/DEFERRED_ENV`。不得以未经验证的源码提交冒充第二步完成。
 
