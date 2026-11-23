@@ -62,14 +62,15 @@
 
 ## 最前阻断 / 下一动作
 
-- **最前阻断**：ST-05—ST-07前置修补，详见[PLAN §0.4](tasks/implementation/MAB/PLAN.md)。第一步（施工计划与CURRENT同步）已完成，提交 `200c68938135`；第二步代码/迁移修补尚未开始。
+- **最前阻断**：ST-05—ST-07前置修补，详见[PLAN §0.4](tasks/implementation/MAB/PLAN.md)。第一步（施工计划与CURRENT同步）已完成；本次策略修订已写入PLAN/CURRENT。第二步已完成代码路径定位与合同差异确认，但尚未修改业务源码或迁移。
 - **正式表与平行表现状**：`public.director_plans` 21行（2条已绑定Project、19条未绑定）；`publication.works` 16行但缺`project_id`列；`publication.work_revisions` 24行。另有`studio.director_plans` 3行、`studio.work_revisions` 5行，与正式表ID不重叠；5条Studio修订均无对应`publication.works`。保留全部历史数据，不猜测合并。
 - **资格边界**：当前5条DirectorPlan G5 PASS、7条WorkRevision G5 PASS均绑定Studio平行表对象，不绑定正式表对象；不转移、不复用。正式对象须重新经过独立G5。
 - **追溯缺口**：现有导演方案未持久绑定delegation/root_task_ref和研究读取snapshot；WorkRevision提交只校验Owner，没有同Project校验。必须补齐Project＋Root＋snapshot的端到端绑定。
 - **安全/迁移**：Supabase安全检查报告10张表RLS未启用；已核的9张Studio/Publication表无anon/authenticated直接表权限，但若干app_runtime策略仍为全行`true`，另有一张publication_schedules无策略。先修策略并正反验证，不一键启用。数据库迁移账止于`20261120045054`，而两张Studio平行表及数据已存在、对应迁移版本未入账；不得盲目重跑或删除。
-- **CI**：最新main SHA `200c68938135`对应run `45114509705`失败于runner启动前（`runner_id=0`、`steps=[]`）；上一run `45028810958`同样失败。均为`CI_BLOCKED`，不是代码测试红灯。
+- **CI**：策略修订后的main SHA `163d4c376b5ac9e18de81197f46d95dbaa34d46a`对应run `45116236223`的`build` job失败于runner启动前（`runner_id=0`、`steps=[]`）；前两次`45116198743`、`45115289483`同样失败。均为`CI_BLOCKED`，不是代码测试红灯。之后PLAN状态更新提交`ef568c28cb7c`尚待CI结果。
 - **执行策略（2026-11-23修订）**：Owner已明确不建立临时Supabase开发分支，第二步不再以此为前置条件。代码优先本地施工、运行可执行的静态/定向测试/类型检查/构建，阶段性集中推送唯一main；推送前必须核对远端HEAD及本地未提交/未推送成果。现有Supabase项目继续只读核查；迁移/RLS先完成Schema与迁移账对照、向前迁移/回滚脚本及影响分析。未具备安全验证条件前不对生产库执行DDL/RLS写入、不改数据、不部署。CI宿主级失败仍记CI_BLOCKED；本地测试不能冒充CI通过，缺少真实PG/HTTP/Gate验证的项目标NOT_RUN/DEFERRED_ENV。
-- **下一动作**：按PLAN §0.4在本地开始第二步代码修补：先收敛Studio导演方案/作品修订的正文权威与写入路径，再补Project/Root/snapshot绑定及同Project服务端校验；随后调整ST-05/ST-07验证器与正式对象绑定。数据库迁移/RLS仅先做可审查、可回滚的准备，不擅自写生产库。第二步代码修补及其本地验证完成并归档后，Owner再接续第三步M5业务主线。
+- **代码定位结果**：正式Studio API的`createDirectorPlan()`写`public.director_plans`，`commitWorkRevision()`写`publication.work_revisions`；但`publication.works`没有`project_id`，当前保存SQL只按Owner关联导演方案与作品，无法证明同Project。另有ST-05/ST-07隔离迁移/脚本仍以`studio.director_plans`、`studio.work_revisions`作为被测对象，且其历史G5不能迁移给正式对象。需同时修正作品Project持久绑定、服务端同Project校验及验证器/G5对象引用；不能只改一处SQL。
+- **本轮源码执行边界**：已完成只读代码定位；尚未改业务源码或迁移。本窗口目前只有GitHub文件读写接口，没有该私有仓库的可运行工作副本，不能执行本地Vitest/typecheck/build。为避免把未经测试的代码直接写入唯一`main`，本轮没有提交业务代码。取得可运行工作副本后按PLAN本地验证，再阶段性推送；不需要创建Supabase分支。第二步代码修补及其本地验证完成并归档后，Owner再接续第三步M5业务主线。
 
 ## 部署 / 费用 / 凭据
 
