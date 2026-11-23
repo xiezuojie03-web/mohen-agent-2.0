@@ -91,6 +91,16 @@ select 'formal_work_revision', a.attname
  where cl.oid = to_regclass('publication.work_revisions')
 on conflict do nothing;
 
+-- director_plan 的 artifact_revision_for 登记缺口：函数已映射 kind→studio.director_plans，
+-- 但历史迁移从未插入登记行，导致 G5 重签报 ARTIFACT_CONTENT_COLUMNS_NOT_REGISTERED:director_plan。
+-- 登记业务列（排除 created_at 等非内容时间戳）；历史 G5 审计原样留存，不回填旧 revision。
+insert into control.artifact_content_columns(kind,column_name)
+select 'director_plan', a.attname
+  from pg_catalog.pg_class cl
+  join pg_catalog.pg_attribute a on a.attrelid = cl.oid and a.attnum > 0 and not a.attisdropped
+ where cl.oid = to_regclass('studio.director_plans') and a.attname <> 'created_at'
+on conflict do nothing;
+
 -- ========== 4) work_revision 指纹只解析正式正文 ==========
 -- 直接传正式 revision_id 时按正式正文计算；传 Studio 封套 id 时先解析 formal_revision_id。
 -- 无法解析到正式正文时返回 NULL（失败关闭），不回退到 studio.content/beats。
