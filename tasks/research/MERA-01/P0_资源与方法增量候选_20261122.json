@@ -7,7 +7,7 @@
     "attempts": 18
   },
   "proposed_after_merge": {
-    "resources": 107,
+    "resources": 108,
     "methods": 88,
     "attempts": 24
   },
@@ -316,8 +316,8 @@
       "provider": "University of York / Archaeology Data Service",
       "url": "https://archaeologydataservice.ac.uk/",
       "content": "UK archaeology and historic environment digital repository; Data Catalogue for monuments/events, ADS Library for reports/books/articles, ADS Archives for raw project data; archives may include excavation reports, fieldwork data, GIS, photos, aerial imagery, maps, models and primary records.",
-      "access": "Three search portals; collection download pages; DOI citations; not every catalogue record has a downloadable object.",
-      "rights": "Free access; reuse license varies per dataset: CC BY 4.0, OGL, other CC or legacy ADS terms. Older terms require attribution and prohibit selling materials; commercial use must be checked per dataset.",
+      "access": "三类入口：Data Catalogue检索遗址/事件记录，ADS Library检索报告/书籍/文章，ADS Archives检索原始项目数据；进入具体collection后通过Downloads页面按文件对象下载。对象/集合提供DOI和文件级元数据。官方要求按collection和具体文件显示的Access and Rights核验许可；无许可说明时适用ADS Standard Terms of Use and Access。批量获取应遵守ADS使用规则，不把可免费访问等同于统一可商用。",
+      "rights": "所有ADS数据免费访问；复用许可由数据存入方逐collection确定，常见CC BY 4.0、OGL、其他CC许可和旧版ADS Standard Terms。旧版标准条款允许历史环境研究（包括商业部门研究）使用和改编，但要求署名且不得出售数据；具体项目必须以collection/对象级许可为准。",
       "status": "ACCESSIBLE",
       "asset_acquired": false,
       "recommended_method_id": "M0042",
@@ -325,7 +325,8 @@
       "evidence": [
         "https://archaeologydataservice.ac.uk/about/policies/use-access-to-data/",
         "https://archaeologydataservice.ac.uk/help-guidance/faqs/",
-        "https://archaeologydataservice.ac.uk/"
+        "https://archaeologydataservice.ac.uk/",
+        "https://archaeologydataservice.ac.uk/help-guidance/data-reuse/identifying-copyright/"
       ]
     },
     {
@@ -1228,6 +1229,31 @@
         "https://xronos.ch/news/xronos-v130"
       ],
       "quality": "官网当前数据浏览页显示314,832条放射性碳日期，页面版本为XRONOS web v1.3.1（2026-11-23检查）；2026-10-07 v1.3.0已引入自动重复检测与合并、记录supersession和MIaaRD导出。官方API文档提供当前全库CSV/JSON导出。官网2025论文约350,000日期/75,000遗址为历史发表时快照，不可与当前计数直接等同。Zenodo归档CSV 85.3MB、记录日期2025-02-11、版本标记2024-02-11；其MD5是发布方元数据，不是本地SHA256。当前全库文件尚未取得，字段、记录数、重复、缺失、坐标及来源链均未实测。需留意各贡献者许可差异和敏感遗址坐标模糊处理。"
+    },
+    {
+      "resource_id": "R0108",
+      "parent_resource_id": "R0062",
+      "level": "专题资源集合",
+      "name": "Digital Archive from an Archaeological Excavation at Daventry Apex Park, Northamptonshire, 2019",
+      "provider": "Oxford Archaeology (South) / Archaeology Data Service",
+      "url": "https://doi.org/10.5284/1106617",
+      "content": "2019年Daventry Apex Park考古发掘数字档案。集合元数据描述包括图像、报告、现场记录、数据库文件及GIS。研究对象涉及新石器时代/早期青铜时代环沟、炭样放射性碳年代、陶器、燧石及后续铁器时代活动。官方元数据统计：Database 2个对象、GIS 3个、Image 405个、Spreadsheet 12个、Text 11个、Vector 3个；共436个对象（按类型汇总）。",
+      "access": "ADS公开Downloads页面按Text、Image、CAD、Spreadsheets、Databases、GIS、Site Records分类列出对象。代表性对象：Object ID 2306253，文件DRS_DAPA19_table_data-context_records.csv，页面标示17KB，CSV，发布方MD5 32484be2f638a793e30ce2541de4e299；另有Object ID 2305186，DAPA19_polylines.zip，页面标示13KB，ZIP，MD5 4d0b4700a76f606a9cc1c0d3d9c1fbab。以上是ADS页面元数据，不是本地下载字节或SHA256。本轮未执行文件下载。",
+      "rights": "Collection metadata及上述代表性对象均标示Creative Commons Attribution 4.0 International License（CC BY 4.0）；版权方为Oxford Archaeology (South)，ADS为分发/保存机构。可按CC BY 4.0条件复用并署名；仍需保留数据集DOI、具体对象引用及原始来源归属。collection另列ADS Terms of Use and Access为Access Policy，访问政策与CC BY复用许可需区分。",
+      "status": "ACCESSIBLE",
+      "asset_acquired": false,
+      "recommended_method_id": "M0042",
+      "checked": "2026-11-23",
+      "evidence": [
+        "https://archaeologydataservice.ac.uk/archives/collections/view/1005295/metadata.cfm",
+        "https://archaeologydataservice.ac.uk/archives/collections/view/1005295/downloads.cfm",
+        "https://archaeologydataservice.ac.uk/archives/collections/view/object.cfm?object_id=2306253",
+        "https://archaeologydataservice.ac.uk/archives/collections/view/object.cfm?object_id=2305186",
+        "https://archaeologydataservice.ac.uk/about/policies/use-access-to-data/",
+        "https://archaeologydataservice.ac.uk/help-guidance/data-reuse/identifying-copyright/",
+        "https://archaeologydataservice.ac.uk/help-guidance/faqs/"
+      ],
+      "quality": "当前为官方collection及对象元数据级核验，不是文件级实测。collection metadata标示版本1、首次发布2023-04-26、数据创建2019-07-17至2023-01-27，空间位置Daventry Apex Park，坐标52.27566379,-1.18608438。类型计数按官方元数据汇总436个对象。代表性CSV页面标示17KB和MD5，GIS ZIP页面标示13KB和MD5；这些MD5不能替代本地SHA256。CSV字段、实际记录数、缺失/重复、GIS内部CRS/几何、报告PDF页数均未下载检查。"
     }
   ],
   "methods": [
@@ -1978,11 +2004,23 @@
       "fields": {
         "note": "Added R0107 XRONOS as a global archaeological chronology resource. Current website reports radiocarbon dates and site records and v1.3.0 (2026-10-07) update with deduplication, linked data and MIaaRD export; Zenodo archived CSV snapshot is 85.3MB (2025 record, version 2024-02-11). Actual download not completed; website-level CC BY 4.0 statement does not resolve the Zenodo file's blank license field. Method M0087; new acquisition attempt A0023; rights remain RIGHTS_UNCLEAR."
       }
+    },
+    {
+      "target": "R0062 Archaeology Data Service",
+      "fields": {
+        "access": "按Data Catalogue/ADS Library/ADS Archives三入口分工；具体collection的Downloads页按文件对象访问。",
+        "rights": "免费访问不等于统一许可；按collection/对象核验CC BY 4.0、OGL、其他CC或旧版ADS Standard Terms。",
+        "evidence": [
+          "https://archaeologydataservice.ac.uk/about/policies/use-access-to-data/",
+          "https://archaeologydataservice.ac.uk/help-guidance/data-reuse/identifying-copyright/",
+          "https://archaeologydataservice.ac.uk/help-guidance/faqs/"
+        ]
+      }
     }
   ],
   "attempt_log": {
     "new_attempts": 6,
-    "reason": "2026-11-22对R0103、R0104、R0106各执行一次资源级实际获取核验。R0103官方页浏览器加载超时；R0104下载按钮无可观察动作且本轮尝试的RAR路径返回404；R0106页面按钮报告触发下载但未获得可读取文件字节。三项均未取得可核验原始文件，未生成SHA256，未新增任何VERIFIED_ACQUIRED记录。 另对R0105执行一次官方NetCDF下载入口核验：定位到DownLoad控件，但自动化结果未提供最终响应和文件字节，故记为ACCESSIBLE_NOT_DOWNLOADED。 另对R0107 XRONOS年代学数据执行一次归档文件下载尝试：Zenodo记录可见85.3MB CSV下载链接；网页读取器因超过4MB限制无法读取，容器下载尝试失败但未获得源站HTTP状态；文件字节未取得，许可文件级状态RIGHTS_UNCLEAR。 2026-11-23继续核查R0107：发现官方API文档明确提供data.csv/data.json全库导出和使用要求；本轮容器对data.csv请求发生本地DNS解析失败（Temporary failure in name resolution），未建立HTTP连接、无响应头和文件字节，不归因于源站。新增A0024。",
+    "reason": "2026-11-22对R0103、R0104、R0106各执行一次资源级实际获取核验。R0103官方页浏览器加载超时；R0104下载按钮无可观察动作且本轮尝试的RAR路径返回404；R0106页面按钮报告触发下载但未获得可读取文件字节。三项均未取得可核验原始文件，未生成SHA256，未新增任何VERIFIED_ACQUIRED记录。 另对R0105执行一次官方NetCDF下载入口核验：定位到DownLoad控件，但自动化结果未提供最终响应和文件字节，故记为ACCESSIBLE_NOT_DOWNLOADED。 另对R0107 XRONOS年代学数据执行一次归档文件下载尝试：Zenodo记录可见85.3MB CSV下载链接；网页读取器因超过4MB限制无法读取，容器下载尝试失败但未获得源站HTTP状态；文件字节未取得，许可文件级状态RIGHTS_UNCLEAR。 2026-11-23继续核查R0107：发现官方API文档明确提供data.csv/data.json全库导出和使用要求；本轮容器对data.csv请求发生本地DNS解析失败（Temporary failure in name resolution），未建立HTTP连接、无响应头和文件字节，不归因于源站。新增A0024。 R0108为ADS既有资源库R0062下的具体collection对象级调查；本轮核验官方collection metadata、下载清单和对象级权利/文件元数据，未执行实际文件下载，因此不新增获取尝试日志。",
     "records": [
       {
         "attempt_id": "A0019",
