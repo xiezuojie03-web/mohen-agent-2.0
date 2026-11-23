@@ -40,6 +40,12 @@
 | ST-08 | SubmitForEditorialReview | 未启 | 尚未产生 `submission_snapshot` |
 | ST-09 | EditorialDecision/Publish/Withdraw | 未启 | 尚未产生 publication / withdraw 回执 |
 
+### 本批定点修补记录（2026-11-23，ST-05—ST-07）
+- 代码事实：`publication.ts` 的作品创建改为必须经服务端校验 Owner ACTIVE 项目；`studio-director.ts` 的 DirectorPlan 持久绑定项目/委托/root_task_ref/研究 snapshot/source refs，WorkRevision 提交双向校验 Owner+Project 且 CAS/幂等语义保留，正式正文仍写 `publication.work_revisions`；三个相关 API 路由传入服务端会话身份。旧编辑作品创建走独立兼容路径，历史无绑定行不被猜回填。
+- 数据库事实：新增**未执行**的向前迁移 `20261123120000_mab_m5_st05_st07_project_and_body_authority.sql`（补项目/委托列、`studio.work_revisions` 降级封套、G5 指纹解析正式正文）。本批未执行任何生产 DDL/数据迁移，未部署，未签或复用 G5 PASS；web staging 仍 `e563161c`、authority production 仍 `48c9169b`。
+- 验证事实：相关 Vitest `71/71`（作品创建/导演方案/路由/提交/commit）+ ST-07 正文权威静态验收 `4/4` + 作品创建路由 `14/14` 通过；`pnpm typecheck` 通过；`pnpm build` 通过。全量单元首轮 795/817 通过，其中 `submission-routes` 2 项因本批路由变更失败并已修正（复验 14/14）；余 6 文件/20 项为既有失败，相关文件不引入本批改动模块，未 skip/放宽。
+- 环境边界：用户给出基线 `211ed45…` 在本地仓库不是有效 commit；本地 HEAD 与本地 `origin/main` ref 均为 `198c40bd…`。远端 main 实际 HEAD 首次核验网络超时（300s），未据此回退或覆盖；推送前须重新核验。以上状态仅描述本仓库代码/测试结果，不代表远端已归档。
+
 ## 上一批（第二十批）关键落地（细节只在 progress.md）
 
 - D04 授权通道 + 真实续跑 + G4 正式签发：`d2f1da86` finding 候选落库（`a5a4e8c1…` journal 核销、A06/BE/UNASSESSED、零 Provider），部署内 `/api/internal/gate-review` 非自签 PASS（审计 `ec893e90…`，`stage_binding` job `d04.humanistic-discovery`）；`qualification_current` 新增 finding 行。专业方法层：A01–A12 中 11 项 HOLD 与 N01–N06 属人文解释深度缺口，不阻断已跑部分。

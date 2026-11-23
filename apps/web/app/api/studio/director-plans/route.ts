@@ -57,8 +57,15 @@ export async function POST(req: Request) {
         if (!facts.length)
           return NextResponse.json({ ok: false, state: "HOLD", reason: "no_project_materials" },
             { status: 409, headers: { "Cache-Control": "no-store" } });
-        const created = await createDirectorPlan(brief.trim(), "jinze", session.uid,
-          { auth: outcome.grant, facts, sourceIds, projectId });
+        if (typeof read.snapshot?.snapshot_hash !== "string" || !read.snapshot.snapshot_hash
+          || !Array.isArray(read.snapshot.private_material_ids))
+          return NextResponse.json({ ok: false, state: "HOLD", reason: "research_snapshot_unavailable" },
+            { status: 409, headers: { "Cache-Control": "no-store" } });
+        const created = await createDirectorPlan(brief.trim(), "jinze", session.uid, {
+          auth: outcome.grant, facts, sourceIds, projectId, delegationId,
+          researchSnapshotHash: read.snapshot.snapshot_hash,
+          researchSourceRefs: facts,
+        });
         if (!created)
           return NextResponse.json({ ok: false, state: "HOLD", reason: "llm_dispatch_failed" },
             { status: 409, headers: { "Cache-Control": "no-store" } });

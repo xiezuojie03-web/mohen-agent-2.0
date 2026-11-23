@@ -58,3 +58,37 @@ it("idempotent retries acknowledge the already saved exact director source/conte
  await expect(commitWorkRevision(wid,pid,1)).resolves.toMatchObject({revisionId:rid,revisionNo:2});
  expect(db.queryRows.mock.calls.filter(c=>String(c[0]).includes("insert into publication.work_revisions"))).toHaveLength(1);
 });
+
+const project='55555555-5555-4555-8555-555555555555';
+const boundSource={...source,plan_project_id:project,work_project_id:project,
+ plan_owner:'owner-1',work_owner:'owner-1',delegation_id:pid,root_task_ref:'root-task-1',
+ research_snapshot_hash:'a'.repeat(64)};
+it('rejects a plan and work from different projects before any write',async()=>{
+ db.queryRows.mockResolvedValueOnce([]);
+ await expect(commitWorkRevision(wid,pid,undefined,{actorUserId:'owner-1'})).resolves.toBeNull();
+ const sql=String(db.queryRows.mock.calls[0][0]);
+ expect(sql).toContain('d.project_id = w.project_id');
+ expect(sql).toContain('d.project_id is not null and w.project_id is not null');
+ expect(db.queryValue).not.toHaveBeenCalled();
+});
+it('rejects a cross-Owner operation even when project ids match',async()=>{
+ db.queryRows.mockResolvedValueOnce([boundSource]);
+ await expect(commitWorkRevision(wid,pid,undefined,{actorUserId:'different-owner'})).resolves.toBeNull();
+ expect(db.queryRows).toHaveBeenCalledTimes(1);
+ expect(db.queryValue).not.toHaveBeenCalled();
+});
+it('holds legacy rows without a formal project binding instead of guessing one',async()=>{
+ db.queryRows.mockResolvedValueOnce([]);
+ await expect(commitWorkRevision(wid,pid)).resolves.toBeNull();
+ expect(db.queryRows).toHaveBeenCalledTimes(1);
+});
+it('allows the same Owner and same Project and binds identities into the formal revision',async()=>{
+ db.queryRows.mockResolvedValueOnce([boundSource]).mockResolvedValueOnce([base]).mockResolvedValueOnce([{revision_id:rid}]);
+ await expect(commitWorkRevision(wid,pid,1,{actorUserId:'owner-1'})).resolves.toMatchObject({revisionId:rid,revisionNo:2});
+ const insert=db.queryRows.mock.calls.find(([sql]:[string])=>String(sql).includes('insert into publication.work_revisions'));
+ expect(String(insert![0])).toContain('d.project_id=w.project_id');
+ expect(insert![1].actor).toBe('owner-1');
+ expect(JSON.parse(String(insert![1].content)).director_source).toMatchObject({
+  project_id:project,delegation_id:pid,root_task_ref:'root-task-1',research_snapshot_hash:'a'.repeat(64),
+ });
+});

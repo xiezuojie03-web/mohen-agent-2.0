@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { commitWorkRevision } from "../../../../../../lib/studio-director";
 import { guardRoute } from "../../../../../../lib/guard";
+import { getSession } from "../../../../../../lib/session";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,6 +10,8 @@ export const dynamic = "force-dynamic";
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const denied = await guardRoute(params, "publication.works");
   if (denied) return denied;
+  const session = await getSession();
+  if (!session) return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401 });
   const { id } = await params;
   let plan_id: unknown;
   let expected_revision_no: unknown;
@@ -28,7 +31,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ ok: false, reason: "invalid_expected_revision_no" }, { status: 400 });
   }
   const rev = await commitWorkRevision(id, plan_id, expected_revision_no as number | undefined,
-    rights_acknowledged === true ? { rightsAcknowledged: true } : undefined);
+    { ...(rights_acknowledged === true ? { rightsAcknowledged: true } : {}), actorUserId: session.uid });
   if (!rev) {
     return NextResponse.json({ ok: false, reason: "no_selected_plan" }, { status: 400 });
   }

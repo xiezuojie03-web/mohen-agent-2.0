@@ -19,6 +19,7 @@ import {
   submitWork,
 } from "../../apps/web/lib/publication";
 import { requireCurrentWorkConsumerQualification } from "../../apps/web/lib/work-publish-qualification";
+import { readStudioResearchProject } from "../../apps/web/lib/studio-research-read";
 import {
   commitWorkRevision,
   createDirectorPlan,
@@ -141,8 +142,13 @@ describe("M5 批次 H：同一真实作品 ST-05→ST-09 + WATCH + 撤权/恢复
   it("2. ST-05：真实 LLM 导演方案（H1+H2）落库，来源绑定持久化", async () => {
     const brief = "用松江府田赋史料做一集 3 分钟短片，说明清代田赋征收中普通农户的实际负担。";
     state.brief = brief;
-    const created = await createDirectorPlan(brief, "jinze", OWNER,
-      { auth: state.grant, facts: state.facts, sourceIds: state.sourceIds, projectId: PROJECT });
+    const research = await readStudioResearchProject(PROJECT, state.token, { persistReadingNotes: false });
+    const created = await createDirectorPlan(brief, "jinze", OWNER, {
+      auth: state.grant, facts: state.facts, sourceIds: state.sourceIds, projectId: PROJECT,
+      delegationId: state.delegationId,
+      researchSnapshotHash: research.snapshot.snapshot_hash as string,
+      researchSourceRefs: state.facts,
+    });
     expect(created).toBeTruthy();
     expect(created!.planA.angle.length).toBeGreaterThan(0);
     expect(created!.planB.angle.length).toBeGreaterThan(0);
@@ -169,7 +175,7 @@ describe("M5 批次 H：同一真实作品 ST-05→ST-09 + WATCH + 撤权/恢复
 
   it("4. ST-06/07：建作品 + 不可变修订（Creator 显式权利确认）+ 幂等回放", async () => {
     const draft = await createWorkDraft(
-      "松江府田赋：一亩低田的税单（M5 批次 H 真实链）", "MoHen Studio", OWNER, undefined, crypto.randomUUID());
+      "松江府田赋：一亩低田的税单（M5 批次 H 真实链）", "MoHen Studio", OWNER, undefined, crypto.randomUUID(), PROJECT);
     expect(draft.ok).toBe(true);
     if (!draft.ok) throw new Error(`createWorkDraft refused: ${draft.reason}`);
     state.workId = draft.work_id;

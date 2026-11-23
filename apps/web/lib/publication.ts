@@ -38,16 +38,73 @@ export interface SubmittedWork {
 
 export type CreationResult =
   | { ok: true; work_id: string; revision_id: string }
-  | { ok: false; reason: "creation_conflict" | "creation_id_invalid" };
+  | { ok: false; reason: "creation_conflict" | "creation_id_invalid" | "project_binding_required" | "project_binding_migration_required" };
 
-/** Atomic initial revision plus owned, content-bound creation retry. */
+const WORK_PROJECT_UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+
+/** The project column is additive. Never fabricate a project for legacy rows. */
+async function isWorkProjectBindingReady(): Promise<boolean> {
+  const rows = await queryRows(
+    `select exists (
+       select 1 from information_schema.columns
+        where table_schema='publication' and table_name='works' and column_name='project_id'
+     ) as ready`
+  );
+  const ready = rows[0]?.ready as unknown;
+  return ready === true || ready === "true" || ready === "t";
+}
+
+/** Studio work creation: project_id is only a candidate. Ownership and lifecycle
+ * are re-checked against studio.projects with the trusted server-side owner. */
 export async function createWorkDraft(
   title: string,
   creator: string,
   ownerUserId: string,
   content?: unknown,
-  creationId?: string
+  creationId?: string,
+  projectId?: string
 ): Promise<CreationResult> {
+  const pid = typeof projectId === "string" && WORK_PROJECT_UUID.test(projectId) ? projectId.toLowerCase() : null;
+  if (!pid) return { ok: false, reason: "project_binding_required" };
+  if (!(await isWorkProjectBindingReady())) return { ok: false, reason: "project_binding_migration_required" };
+  const bound = await queryRows(
+    `select p.project_id::text as project_id
+       from studio.projects p
+      where p.project_id = :'project'::uuid
+        and p.owner_user_id = :'owner'::uuid
+        and p.lifecycle_status = 'ACTIVE'`,
+    { project: pid, owner: ownerUserId }
+  );
+  if (!bound.length || String(bound[0].project_id).toLowerCase() !== pid)
+    return { ok: false, reason: "project_binding_required" };
+  const wid = creationId === undefined ? randomUUID() : canonicalUuid(creationId);
+  if (!wid) return { ok: false, reason: "creation_id_invalid" };
+  const params = { wid, title, creator, owner: ownerUserId, project: pid, content: content ? JSON.stringify(content) : "{}" };
+  const inserted = await queryRows(
+    `with created_work as (
+       insert into publication.works (work_id,title,creator,owner_user_id,project_id)
+       values (:'wid',:'title',:'creator',:'owner',:'project'::uuid) on conflict (work_id) do nothing returning work_id
+     ) insert into publication.work_revisions (work_id,revision_no,title,content)
+       select work_id,1,:'title',:'content'::jsonb from created_work
+       returning work_id::text as work_id,revision_id::text as revision_id`,
+    params
+  );
+  const acknowledged = inserted.length ? inserted : await queryRows(
+    `select w.work_id::text as work_id,r.revision_id::text as revision_id
+     from publication.works w join publication.work_revisions r on r.work_id=w.work_id
+     where w.work_id=:'wid' and w.owner_user_id=:'owner' and w.project_id=:'project'::uuid and r.revision_no=1
+       and r.title=:'title' and r.content=:'content'::jsonb`,
+    params
+  );
+  const row = acknowledged[0];
+  if (!row || String(row.work_id) !== wid || typeof row.revision_id !== "string" || !row.revision_id) {
+    return { ok: false, reason: "creation_conflict" };
+  }
+  return { ok: true, work_id: wid, revision_id: row.revision_id };
+}
+
+/** Legacy editorial works only; Studio works must use createWorkDraft with a project. */
+async function createLegacyWorkDraft(title: string, creator: string, ownerUserId: string, content?: unknown, creationId?: string): Promise<CreationResult> {
   const wid = creationId === undefined ? randomUUID() : canonicalUuid(creationId);
   if (!wid) return { ok: false, reason: "creation_id_invalid" };
   const params = { wid, title, creator, owner: ownerUserId, content: content ? JSON.stringify(content) : "{}" };
@@ -74,9 +131,9 @@ export async function createWorkDraft(
   return { ok: true, work_id: wid, revision_id: row.revision_id };
 }
 
-/** Compatibility for callers expecting only the saved work identity. */
+/** Compatibility for legacy callers expecting only the saved work identity. */
 export async function createWork(title: string, creator: string, ownerUserId: string, content?: unknown, creationId?: string): Promise<string> {
-  const result = await createWorkDraft(title, creator, ownerUserId, content, creationId);
+  const result = await createLegacyWorkDraft(title, creator, ownerUserId, content, creationId);
   if (!result.ok) throw new Error(result.reason);
   return result.work_id;
 }

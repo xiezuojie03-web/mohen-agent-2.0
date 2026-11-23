@@ -34,11 +34,24 @@ it('binds the saved director plan and every Grant to the selected project',async
  const delegation='22222222-2222-4222-8222-222222222222';
  mocks.listSources.mockResolvedValue(['source-id']);
  mocks.grant.mockResolvedValue({grant:{grantId:'synthetic-grant'}});
- mocks.read.mockResolvedValue({materials:[{snippet:'grounded fact',sourceRef:'source@revision'}]});
+ mocks.read.mockResolvedValue({snapshot:{snapshot_hash:'a'.repeat(64),private_material_ids:['studio:asset@revision']},
+  materials:[{snippet:'grounded fact',sourceRef:'source@revision'}]});
  mocks.create.mockResolvedValue({planId:'plan-id',planA:{},planB:{},facts:['grounded fact'],finding:{}});
  const response=await POST(request({brief:'project-scoped brief',project_id:project,delegation_id:delegation}));
  expect(response.status).toBe(200);
  expect(mocks.grant).toHaveBeenCalledWith(expect.objectContaining({delegationId:delegation,projectId:project}));
  expect(mocks.create).toHaveBeenCalledWith('project-scoped brief','jinze','owner',
-  expect.objectContaining({projectId:project,sourceIds:['source-id']}));
+  expect.objectContaining({projectId:project,delegationId:delegation,
+   researchSnapshotHash:'a'.repeat(64),researchSourceRefs:['grounded fact（出处：source@revision）'],
+   sourceIds:['source-id']}));
+});
+it('holds before generating a plan when the server research snapshot is unavailable',async()=>{
+ const delegation='22222222-2222-4222-8222-222222222222';
+ mocks.listSources.mockResolvedValue(['source-id']);
+ mocks.grant.mockResolvedValue({grant:{grantId:'synthetic-grant'}});
+ mocks.read.mockResolvedValue({materials:[{snippet:'fact',sourceRef:'ref'}]});
+ const response=await POST(request({brief:'brief',project_id:project,delegation_id:delegation}));
+ expect(response.status).toBe(409);
+ expect(await response.json()).toMatchObject({ok:false,state:'HOLD',reason:'research_snapshot_unavailable'});
+ expect(mocks.create).not.toHaveBeenCalled();
 });

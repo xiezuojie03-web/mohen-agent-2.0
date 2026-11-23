@@ -14,9 +14,14 @@ import { POST as create } from "../../apps/web/app/api/works/route";
 const work = "9ab37577-1789-4e5a-9d5a-9e629cffdbf7";
 const revision = "4790013f-43ed-422e-b047-d3f8ddbf22c3";
 const params = () => ({ params: Promise.resolve({ id: work }) });
+const project = "11111111-1111-4111-8111-111111111111";
 const req = (body?: unknown) => new Request("http://test.invalid/submission", {
   method: "POST", ...(body === undefined ? {} : { body: JSON.stringify(body) }),
 });
+const boundProject = (owner = true) => {
+  db.queryRows.mockResolvedValueOnce([{ ready: "true" }]);
+  db.queryRows.mockResolvedValueOnce(owner ? [{ project_id: project }] : []);
+};
 beforeEach(() => {
   vi.clearAllMocks();
   access.session.mockResolvedValue({ uid: "creator", r: ["creator"] });
@@ -58,16 +63,31 @@ for (const [name, submit] of [["public", submitPublic], ["studio", submitStudio]
 }
 
 it("creation returns the initial saved revision, not only the work id", async () => {
-  db.queryValue.mockResolvedValueOnce(work).mockResolvedValueOnce(revision);
+  boundProject();
   db.queryRows.mockResolvedValueOnce([{ work_id: work, revision_id: revision }]);
-  const r = await create(req({ title: "保存的作品", content: { beats: [] }, creation_id: work }));
+  const r = await create(req({ title: "保存的作品", content: { beats: [] }, creation_id: work, project_id: project }));
   expect(r.status).toBe(200);
   expect(await r.json()).toEqual({ ok: true, work_id: work, revision_id: revision });
 });
 
 it("creation refuses a conflicting creation identity without acknowledging a saved revision", async () => {
-  db.queryValue.mockResolvedValueOnce(work).mockResolvedValueOnce(null);
-  const r = await create(req({ title: "保存的作品", content: { beats: [] }, creation_id: work }));
+  boundProject();
+  db.queryRows.mockResolvedValueOnce([]).mockResolvedValueOnce([]);
+  const r = await create(req({ title: "保存的作品", content: { beats: [] }, creation_id: work, project_id: project }));
   expect(r.status).toBe(409);
   expect(await r.json()).toEqual({ ok: false, reason: "creation_conflict" });
+});
+
+it("creation refuses a request without a project binding", async () => {
+  const r = await create(req({ title: "保存的作品", content: { beats: [] }, creation_id: work }));
+  expect(r.status).toBe(400);
+  expect(await r.json()).toEqual({ ok: false, reason: "project_binding_required" });
+  expect(db.queryRows).not.toHaveBeenCalled();
+});
+
+it("creation refuses a project not owned ACTIVE by the session owner", async () => {
+  boundProject(false);
+  const r = await create(req({ title: "保存的作品", content: { beats: [] }, creation_id: work, project_id: project }));
+  expect(r.status).toBe(409);
+  expect(await r.json()).toEqual({ ok: false, reason: "project_binding_required" });
 });

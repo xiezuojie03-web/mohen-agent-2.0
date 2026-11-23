@@ -85,6 +85,7 @@ ST-01—ST-09保留既有**业务动作与前后依赖**，直接复用已验部
 
 - H1/H2/H3与19组件必须绑定真实研究来源、导演、创作、修改和保存；同一作品母本，不复制第二正文。
 - 创建/提交/修订保持既有wire兼容；CAS、幂等和存储失败不得误报成功。
+- ST-05—ST-07按§19.1正文权威：新建Studio作品必须由服务端校验Owner本人的ACTIVE `studio.projects`身份，缺绑定HOLD且不猜回填历史行；DirectorPlan必须持久绑定同一Project、`delegation_id`、`root_task_ref`与服务端研究snapshot/source refs；WorkRevision必须与Work/Plan/DirectorPlan同Project并经CAS与幂等写入`publication.work_revisions`，`studio.work_revisions`只作封套，不作第二正文或正式G5对象。
 - F05 Admin管理Studio真实产生的条目、精确revision、来源、证据、认识状态、权利、purpose、使用史、缺口和撤回。
 - 发布必须核对Operator权限、精确WorkRevision、独立知识G5及媒资逐动作许可；发布指针采用事务或可验证补偿。
 - WATCH、Evidence、visual_stage和Agent消费者逐请求核当前用途、consumer、rights、scope、revision和资格；消费者不得互借资格。

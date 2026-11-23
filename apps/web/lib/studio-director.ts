@@ -50,40 +50,69 @@ export interface CreatedPlan {
   finding: H1Finding;
 }
 
-/** The project binding is additive and may not yet be installed in production.
- * Read it through information_schema so callers can HOLD before a paid model call. */
+/** The binding columns are additive. Never spend a paid model call if any is absent. */
 export async function isDirectorPlanProjectBindingReady(): Promise<boolean> {
   const rows = await queryRows(
-    `select exists (
-       select 1 from information_schema.columns
-        where table_schema='public' and table_name='director_plans' and column_name='project_id'
-     ) as ready`
+    `select count(*) = 5 as ready from information_schema.columns
+      where table_schema='public' and table_name='director_plans'
+        and column_name in ('project_id','delegation_id','root_task_ref','research_snapshot_hash','research_source_refs')`
   );
   const ready = rows[0]?.ready as unknown;
   return ready === true || ready === "true" || ready === "t";
 }
 
-/** 生成 A/B 导演方案（H1→H2）并持久化，返回 plan_id。P0-1：方案归属创建者。
- * opts.facts 存在时走 M5 正道（项目真实材料 + dispatcher grant auth）；
- * sourceIds与projectId由服务端持久化，供后续逐项目/逐来源权利核验。 */
+const UUID_RE = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+
+export interface CreateDirectorPlanOptions {
+  auth?: unknown;
+  facts?: string[];
+  sourceIds?: string[];
+  projectId?: string;
+  delegationId?: string;
+  researchSnapshotHash?: string;
+  researchSourceRefs?: string[];
+}
+
+/** 生成 A/B 导演方案（H1→H2）并持久化，返回 plan_id。
+ * 项目、委托和研究凭证全部由服务端校验，客户端只提供标识候选。 */
 export async function createDirectorPlan(
   brief: string,
   topic = "jinze",
   ownerUserId: string,
-  opts?: { auth?: unknown; facts?: string[]; sourceIds?: string[]; projectId?: string }
+  opts?: CreateDirectorPlanOptions
 ): Promise<CreatedPlan | null> {
-  if (typeof opts?.projectId !== "string" || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(opts.projectId))
-    throw new Error("STUDIO_PROJECT_BINDING_REQUIRED");
+  const pid = typeof opts?.projectId === "string" && UUID_RE.test(opts.projectId) ? opts.projectId.toLowerCase() : null;
+  const did = typeof opts?.delegationId === "string" && UUID_RE.test(opts.delegationId) ? opts.delegationId.toLowerCase() : null;
+  if (!pid || !did) throw new Error("STUDIO_PROJECT_BINDING_REQUIRED");
+  if (typeof opts?.researchSnapshotHash !== "string" || !/^[a-f0-9]{64}$/i.test(opts.researchSnapshotHash)
+    || !Array.isArray(opts?.researchSourceRefs) || !opts.researchSourceRefs.length
+    || !opts.researchSourceRefs.every((ref) => typeof ref === "string" && ref.trim()))
+    throw new Error("STUDIO_RESEARCH_SNAPSHOT_REQUIRED");
   if (!(await isDirectorPlanProjectBindingReady()))
     throw new Error("STUDIO_PROJECT_BINDING_MIGRATION_REQUIRED");
+  const bound = await queryRows(
+    `select d.root_task_ref as root_task_ref
+       from studio.projects p
+       join studio.delegations d on d.project_id = p.project_id
+      where p.project_id = :'project'::uuid
+        and p.owner_user_id = :'owner'::uuid
+        and p.lifecycle_status = 'ACTIVE'
+        and d.delegation_id = :'delegation'::uuid`,
+    { project: pid, owner: ownerUserId, delegation: did }
+  );
+  if (!bound.length || typeof bound[0].root_task_ref !== "string" || !bound[0].root_task_ref.trim())
+    throw new Error("STUDIO_DELEGATION_PROJECT_MISMATCH");
   const result = opts?.facts
     ? await generateDirectorPlansFromFacts(opts.facts, brief, opts.auth)
     : await generateDirectorPlans(brief, topic, opts?.auth);
   if (!result) return null;
   const planId = await queryValue("select gen_random_uuid()::text");
   await run(
-    `insert into public.director_plans (plan_id, brief, topic, plan_a, plan_b, facts, finding, owner_user_id, source_ids, project_id)
-     values (:'id', :'brief', :'topic', :'a'::jsonb, :'b'::jsonb, :'facts'::jsonb, :'finding'::jsonb, :'owner', :'sids'::jsonb, :'project'::uuid)`,
+    `insert into public.director_plans
+       (plan_id, brief, topic, plan_a, plan_b, facts, finding, owner_user_id, source_ids, project_id,
+        delegation_id, root_task_ref, research_snapshot_hash, research_source_refs)
+     values (:'id', :'brief', :'topic', :'a'::jsonb, :'b'::jsonb, :'facts'::jsonb, :'finding'::jsonb,
+             :'owner', :'sids'::jsonb, :'project'::uuid, :'delegation'::uuid, :'root_ref', :'snapshot', :'refs'::jsonb)`,
     {
       id: planId!,
       brief,
@@ -94,7 +123,11 @@ export async function createDirectorPlan(
       finding: JSON.stringify(result.finding),
       owner: ownerUserId,
       sids: JSON.stringify(opts?.sourceIds ?? []),
-      project: opts.projectId,
+      project: pid,
+      delegation: did,
+      root_ref: bound[0].root_task_ref,
+      snapshot: opts.researchSnapshotHash.toLowerCase(),
+      refs: JSON.stringify(opts.researchSourceRefs),
     }
   );
   return { planId: planId!, planA: result.planA, planB: result.planB, facts: result.facts, finding: result.finding };
@@ -102,7 +135,12 @@ export async function createDirectorPlan(
 
 export async function getDirectorPlan(planId: string) {
   const rows = await queryRows(
-    "select plan_id::text as plan_id, to_jsonb(d)->>'project_id' as project_id, brief, topic, plan_a, plan_b, facts, finding, source_ids, selected, beats, created_at::text as created_at from public.director_plans d where plan_id = :'id'",
+    `select plan_id::text as plan_id, to_jsonb(d)->>'project_id' as project_id,
+            to_jsonb(d)->>'delegation_id' as delegation_id, root_task_ref,
+            research_snapshot_hash, research_source_refs,
+            brief, topic, plan_a, plan_b, facts, finding, source_ids, selected, beats,
+            created_at::text as created_at
+       from public.director_plans d where plan_id = :'id'`,
     { id: planId }
   );
   return rows[0] ?? null;
@@ -184,20 +222,29 @@ export async function commitWorkRevision(
   workId: string,
   planId: string,
   expectedRevisionNo?: number,
-  opts?: { rightsAcknowledged?: boolean; media?: WorkMediaItem[] }
+  opts?: { rightsAcknowledged?: boolean; media?: WorkMediaItem[]; actorUserId?: string }
 ): Promise<{ revisionId: string; revisionNo: number; contentHash: string; conflict?: boolean } | null> {
   if (opts?.media !== undefined) assertWorkMedia(opts.media);
-  // The plan is a private Owner source, not a free-standing authorization to
-  // append to an arbitrary work. Check both owners in the same read.
+  // Owning the work is not authority to append a foreign project's plan.
+  // Both project identities must be present and equal; legacy unbound rows HOLD.
   const rows = await queryRows(
-    `select d.plan_a, d.plan_b, d.beats, d.finding, d.selected
+    `select d.plan_a, d.plan_b, d.beats, d.finding, d.selected,
+            d.project_id::text as plan_project_id, d.owner_user_id::text as plan_owner,
+            d.delegation_id::text as delegation_id, d.root_task_ref as root_task_ref,
+            d.research_snapshot_hash as research_snapshot_hash,
+            w.project_id::text as work_project_id, w.owner_user_id::text as work_owner
        from public.director_plans d
        join publication.works w on w.owner_user_id = d.owner_user_id
-      where d.plan_id = :'pid' and w.work_id = :'wid'`,
+      where d.plan_id = :'pid' and w.work_id = :'wid'
+        and d.project_id is not null and w.project_id is not null
+        and d.project_id = w.project_id`,
     { pid: planId, wid: workId }
   );
   const row = rows[0];
   if (!row || (row.selected !== "A" && row.selected !== "B")) return null;
+  const actor = opts?.actorUserId;
+  if (actor && (String(row.plan_owner ?? "").toLowerCase() !== actor.toLowerCase()
+    || String(row.work_owner ?? "").toLowerCase() !== actor.toLowerCase())) return null;
   const which: "A" | "B" = row.selected;
   const plan = readJsonColumn<DirectorPlan>(which === "B" ? row.plan_b : row.plan_a, {} as DirectorPlan);
   const beats = readJsonColumn<Beat[]>(row.beats, []);
@@ -207,7 +254,13 @@ export async function commitWorkRevision(
   // Bind the exact source plan and selected side to the immutable work revision.
   // An unchanged retry must not create a second revision.
   const content = {
-    director_source: { plan_id: planId, selected: which },
+    director_source: {
+      plan_id: planId, selected: which,
+      project_id: row.plan_project_id ? String(row.plan_project_id) : null,
+      delegation_id: row.delegation_id ? String(row.delegation_id) : null,
+      root_task_ref: row.root_task_ref ?? null,
+      research_snapshot_hash: row.research_snapshot_hash ?? null,
+    },
     h1Finding: finding,
     motif: finding.motifCodes ?? [],
     historicalQuestion: finding.historicalQuestion ?? "",
@@ -258,6 +311,9 @@ export async function commitWorkRevision(
           select 1 from public.director_plans d
           join publication.works w on w.owner_user_id=d.owner_user_id
           where d.plan_id=:'pid' and w.work_id=:'wid' and d.selected=:'which'
+            and d.project_id is not null and w.project_id is not null
+            and d.project_id=w.project_id
+            and (:'actor' is null or lower(w.owner_user_id::text)=lower(:'actor'))
             and d.beats=:'beats'::jsonb and d.finding=:'finding'::jsonb
             and (case when d.selected='B' then d.plan_b else d.plan_a end)=:'plan'::jsonb
         )
@@ -268,6 +324,7 @@ export async function commitWorkRevision(
       title: (plan.angle ?? "").slice(0, 80) || "未命名作品",
       desc: finding.understandingDelta ?? "", content: JSON.stringify({ ...content, content_hash: contentHash }),
       pid: planId, which, beats: JSON.stringify(beats), finding: JSON.stringify(finding), plan: JSON.stringify(plan),
+      actor: opts?.actorUserId ?? null,
     }
   );
   if (saved.length === 1 && saved[0].revision_id) {
