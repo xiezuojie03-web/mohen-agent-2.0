@@ -47,21 +47,23 @@
 
 **审计确认的当前事实（2026-11-23只读核验）：**
 
-- 真实PG中`public.director_plans`有21行，其中仅2行有`project_id`，19行未绑定项目；`publication.works`有16行但没有`project_id`列。当前`commitWorkRevision()`只按Owner匹配导演方案与作品，没有验证同一Project。
+- 真实PG中`public.director_plans`有21行，其中仅2行有`project_id`，19行未绑定项目；`publication.works`有16行但没有`project_id`列。当前`commitWorkRevision()`只按Owner匹配导演方案与作品，没有验证同一Project；`createWorkDraft()`创建`publication.works`时也未写入Project身份，正式作品表目前没有`project_id`列。
 - 真实PG另有`studio.director_plans` 3行、`studio.work_revisions` 5行；两组ID与现有正式表无重叠。5条Studio修订均指向Studio导演表中同项目方案，但其`work_id`均不对应`publication.works`。这些行和审计记录必须保留，不得直接删除或猜测合并。
 - 当前5条`director_plan` G5 PASS和7条`work_revision` G5 PASS均绑定`studio.director_plans/studio.work_revisions`中的对象；没有一条绑定到`public.director_plans/publication.work_revisions`。这些PASS是原对象的历史资格证据，**不得转移或冒充正式作品对象的G5资格**。
 - Studio API现有`createDirectorPlan()`写`public.director_plans`，`commitWorkRevision()`写`publication.work_revisions`；但ST-05/ST-07隔离验证脚本和部分发布关系使用新增Studio平行表。必须统一到合同指定的唯一正文，不得让两条链继续各自通过测试。
-- 导演方案目前没有持久绑定`delegation_id/root_task_ref`及本次研究读取的精确snapshot；`studio.delegations`已有root任务字段，但没有闭合到正式导演方案和作品修订。现有19条未绑定项目的旧导演方案不得按题名、Owner或推测回填，后续动作保持HOLD。
+- 正式`public.director_plans`目前虽有`project_id`和`source_ids`，但尚未持久绑定`delegation_id/root_task_ref`及本次研究读取的精确snapshot/hash；`studio.delegations`已有root任务字段，但没有闭合到正式导演方案和作品修订。现有19条未绑定项目的旧导演方案不得按题名、Owner或推测回填，后续动作保持HOLD。
 - 真实数据库中Studio/Publication相关9张表及另1张控制表被Supabase安全检查报告RLS未启用；已核的9张Studio/Publication表没有anon/authenticated直接表权限，但若干现有`mohen_app_runtime`策略仍是`USING/WITH CHECK true`，并非项目隔离策略；`publication.publication_schedules`没有策略。不得只执行一键ENABLE RLS，必须先按项目Owner、应用运行角色、Gate/Operator职责修正策略并做正反验证。
 - 真实数据库迁移账当前止于`20261120045054`；`20261114120000`及`20261114150000`对应的Studio表和数据已存在，但版本未出现在迁移账中。不得盲目重跑原迁移或清理数据，先核实漂移与可恢复路径。
-- GitHub main文档策略修订后最新SHA `163d4c376b5a`对应CI run `45116236223`仍在步骤启动前失败（job `build`、`runner_id=0`、`steps=[]`）；前一文档提交`5c70ad08ab37`的run `45116198743`及审计归档提交`9c3ceecde8b4`的run `45115289483`也同样如此。属于CI宿主级`CI_BLOCKED`，不是代码测试红灯。属于CI宿主级`CI_BLOCKED`，不是代码测试红灯；恢复前不得宣称本批CI通过。
+- GitHub main最新状态提交`13420ed3dedf`对应CI run `45116954344`仍在步骤启动前失败（job `build`、`runner_id=0`、`steps=[]`）；前一PLAN更新提交`ef568c28cb7c`对应run `45116908820`也同样如此。属于CI宿主级`CI_BLOCKED`，不是代码测试红灯；恢复前不得宣称本批CI通过。
 
 **当前执行状态（2026-11-23策略修订）：** 第一步（本节任务裁决及CURRENT同步）已于提交`200c68938135`完成；第二步代码/迁移修补进入执行，不以创建临时Supabase分支为前置条件。Owner已明确不建立临时Supabase开发分支；这不等于授权在生产库试错，也不取消M5最终需要持久、可恢复的非生产集成环境这一验收条件。代码修补优先在本地工作区完成，运行可执行的静态检查、定向单测、类型检查和构建；阶段性集中推送到唯一`main`，推送前按§0.2核对远端HEAD和本地未提交/未推送成果。数据库部分先完成实际Schema/迁移账对照、向前迁移与回滚脚本、影响分析及可重复的正反测试设计；只读核查可继续使用现有Supabase项目。任何生产DDL/RLS写入、数据改写或部署仍须满足原有安全门禁与单独授权。GitHub CI宿主级失败继续单列`CI_BLOCKED`，不能把本地测试冒充CI通过；缺少真实PG/HTTP/Gate验证的项目明确标记`NOT_RUN/DEFERRED_ENV`。不得以未经验证的源码提交冒充第二步完成。
+
+**2026-11-23继续核查后的精确实施边界：** 合同§19.1不仅要求正文权威唯一，也明确`studio.projects`是首期项目身份；既有`public.director_plans`、`publication.work_revisions`和`public.assets`分别是导演、作品修订、媒资正文。Studio资产封套/引用不复制正文。当前`createWorkDraft()`位于`apps/web/lib/publication.ts`，写`publication.works`与首条`publication.work_revisions`，未携带Project；`commitWorkRevision()`位于`apps/web/lib/studio-director.ts`，读取导演方案时仅按`owner_user_id`连接，CAS INSERT也未验证Project。正式导演方案已有`project_id/source_ids`，但尚无`delegation_id/root_task_ref/research snapshot/hash`闭环。ST-07迁移`20261114150000_mab_m5_st07_work_revision.sql`创建了带正文的`studio.work_revisions`，与§19.1的唯一正文规定冲突；必须保留历史表/数据，但停止将其作为正式WorkRevision正文或正式G5对象。
 
 **修补顺序与边界：**
 
 1. **单一正文权威。** 新写入与后续G5/发布读取统一使用`public.director_plans`和`publication.work_revisions`；Studio平行表停止承载新的正式业务写入。现有3+5行及其G5审计仅作保留的历史/隔离验证记录，先登记映射状态，不删除、不自动迁移、不转移资格。Studio资产封套按既有合同引用正文及精确revision，不复制正文。
-2. **闭合Project与Root链。** 为正式作品补齐稳定Project绑定；导演方案保存准确的`delegation_id/root_task_ref`、研究读取snapshot/hash和精确来源refs；WorkRevision绑定同一Project、Root、DirectorPlan及上游snapshot。提交时在服务端/数据库同时校验Owner与Project一致，不能只靠Owner相同放行。无明确映射的旧记录保持HOLD。
+2. **闭合Project与Root链。** 新建Studio作品必须从Owner本人ACTIVE的`studio.projects`取得Project身份，并持久写入正式`publication.works`；初始/后续`publication.work_revisions`需绑定同一Project（通过不可变字段及数据库约束/事务校验），导演方案必须与作品Project一致。导演方案保存准确的`delegation_id/root_task_ref`、研究读取snapshot/hash和精确来源refs；WorkRevision保存其依赖的DirectorPlan及上游snapshot引用。提交时在服务端/数据库同时校验Owner与Project一致，不能只靠Owner相同放行。历史无Project的作品/方案保持HOLD，不猜测回填。
 3. **G5对象重新绑定。** 修正ST-05/ST-07验证器和发布/读取映射，使其针对合同指定的正式对象及精确revision核验。旧Studio平行表上的G5 PASS只保留历史，不转签；正式对象必须重新走独立G5。
 4. **权限与不可变性。** 按真实访问角色修正RLS策略，至少覆盖同Owner同Project正向、跨Owner/跨Project拒绝、匿名拒绝、Gate/Operator最小权限；核验WorkRevision不可覆盖、CAS/幂等及提交/发布快照引用一致。RLS策略未通过验证前不得启用相应新写入口。
 5. **迁移与验证。** 对照实际Schema、迁移账和GitHub迁移文件，形成不丢数据的向前迁移及回滚方案；新增代码/迁移先在可验证环境运行类型、单测、数据库正反测试和构建。CI宿主未恢复时明确记`CI_BLOCKED`，不得伪报PASS。
