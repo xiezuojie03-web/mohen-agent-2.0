@@ -183,24 +183,31 @@ async function main(){
     pass("failed_publish_preserves_old",`越权发布被拒(${msg.slice(0,34)})，旧合法指针 publication_id 未变`);
   }catch(err){fail("failed_publish_preserves_old",err.message);}
 
-  // Step D2 无 APPROVED 决策的发布被拒 + 不动旧指针（用不同 revision 无决策）
-  // 说明：当前 work 已有 APPROVED，这里验证"权利 HOLD 不改指针"通过临时篡改权利的反向在事务内做
+  // Step D2 真实反向：最新决策非 APPROVED 时发布必须被拒，且不动旧合法指针。
+  // 用同一 revision 追加 CHANGES_REQUESTED（新幂等键）使最新决策变为退回态，
+  // 再尝试发布并断言 PUBLISH_DECISION_REQUIRED；随后追加 APPROVED 恢复可发布态。
   try{
-    await db.query("BEGIN");
-    await db.query("SET LOCAL ROLE mohen_editorial_operator");
+    const nonce = `${Date.now()}-${crypto.randomUUID()}`;
+    const changesId = crypto.randomUUID();
+    await asOperator(
+      `select publication.decide_editorial($1::uuid,$2::uuid,$3::uuid,'CHANGES_REQUESTED',$4,'D2 真实反向：退回态',$5) as result`,
+      [changesId,WORK_ID,REVISION_ID,OPERATOR_ID,`idem:d2-changes:${nonce}`]);
     let rejected=false,msg="";
-    const badPub=(()=>{const h=crypto.createHash("sha256").update("mab-st09-formal:bad-pub:"+REVISION_ID).digest("hex").slice(0,32);return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20,32)}`;})();
+    const badPub=(()=>{const h=crypto.createHash("sha256").update("mab-st09-formal:d2:"+nonce).digest("hex").slice(0,32);return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20,32)}`;})();
     try{
-      // 用一个未批准的新 work/revision 尝试发布：缺 APPROVED → 拒
-      await db.query(`select publication.publish_exact_revision($1::uuid,$2::uuid,$3::uuid,$4,$5)`,
-        [badPub,WORK_ID,REVISION_ID,OPERATOR_ID,"idem:bad-pub-no-decision"]);
-    }catch(e){rejected=true;msg=e.message;}
-    // 注意：由于本 revision 已有 APPROVED 决策，此处可能成功 → 用幂等键隔离；若成功则是重复发布，回滚即可
-    await db.query("ROLLBACK");
-    // 更直接的反向：无决策的 revision（阶段三造的 no-g5 场景已回滚），此处验证 publish 对无决策 revision 的行为
-    // 采用只读断言：editorial_decisions 中 APPROVED 存在才允许发布 —— 已由 Step D 的正向与函数逻辑覆盖
-    pass("publish_guard_present",`发布前APPROVED决策校验存在（反向拒绝在函数 PUBLISH_DECISION_REQUIRED 分支；本次 try=${rejected}, ${msg.slice(0,40)}）`);
-  }catch(err){await db.query("rollback").catch(()=>{});fail("publish_guard_present",err.message);}
+      await asOperator(
+        `select publication.publish_exact_revision($1::uuid,$2::uuid,$3::uuid,$4,$5)`,
+        [badPub,WORK_ID,REVISION_ID,OPERATOR_ID,`idem:d2-publish:${nonce}`]);
+    }catch(e){rejected=true;msg=e instanceof Error?e.message:String(e);}
+    if(!rejected||!/PUBLISH_DECISION_REQUIRED/.test(msg))
+      throw new Error(`退回态发布未被拒：rejected=${rejected} msg=${msg.slice(0,120)}`);
+    const ptr=(await db.query("select publication_id::text from publication.published_pointers where work_id=$1",[WORK_ID])).rows[0];
+    if(!ptr||ptr.publication_id!==PUB_ID) throw new Error("退回态发布被拒后旧合法指针被破坏");
+    await asOperator(
+      `select publication.decide_editorial($1::uuid,$2::uuid,$3::uuid,'APPROVED',$4,'D2 恢复可发布态',$5) as result`,
+      [crypto.randomUUID(),WORK_ID,REVISION_ID,OPERATOR_ID,`idem:d2-approved:${nonce}`]);
+    pass("publish_guard_present",`退回态发布真实被拒（${msg.slice(0,42)}），旧合法指针未变，随后恢复 APPROVED`);
+  }catch(err){fail("publish_guard_present",err.message);}
 
   // Step E WATCH 合法消费
   try{
