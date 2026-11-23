@@ -13,7 +13,7 @@ describe.skipIf(!RUN)("K3 Wikimedia Commons 图像来源", () => {
     for (const m of r.materials) {
       expect(m.provider).toBe("wikimedia-commons");
       expect(m.source_type).toBe("image");
-      expect(m.content_availability).toBe("image_only");
+      expect(m.content_availability).toBe("image_scan");
       expect(m.license.length).toBeGreaterThan(0);
       expect(m.url).toMatch(/^https?:\/\//);
     }

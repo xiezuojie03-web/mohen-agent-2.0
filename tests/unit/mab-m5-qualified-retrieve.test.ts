@@ -5,12 +5,12 @@ import {retrieveMaterials} from '../../apps/web/lib/mohen-agent/retrieve';
 const qualification={consumer:'agent' as const,purpose:{namespace:'G5',code:'fixture',version:'1'},scope:{project:'fixture'}};
 beforeEach(()=>{vi.resetAllMocks();db.queryRows.mockResolvedValue([{id:'legacy',kind:'claim',snippet:'unqualified legacy secret',vstatus:'SUPPORTED',conf:'0.7'}]);});
 it('missing server qualification context refuses even legacy PASS rows before querying',async()=>{
- expect(await retrieveMaterials(['secret'])).toEqual({materials:[],degraded:true});
+ expect(await retrieveMaterials(['secret'])).toEqual({materials:[],degraded:true,coverage:"UNAVAILABLE"});
  expect(db.queryRows).not.toHaveBeenCalled();
 });
 it.each([{}, {...qualification,scope:{}},{...qualification,scope:{project:undefined}},{...qualification,consumer:'watch'},{...qualification,purpose:{...qualification.purpose,version:''}}])('invalid context refuses before querying: %j',async invalid=>{
  const result=await retrieveMaterials(['secret'],12,{qualification:invalid} as never);
- expect(result).toEqual({materials:[],degraded:true});expect(db.queryRows).not.toHaveBeenCalled();
+ expect(result).toEqual({materials:[],degraded:true,coverage:"UNAVAILABLE"});expect(db.queryRows).not.toHaveBeenCalled();
 });
 it('uses exact purpose/scope/consumer and current independent qualification on every branch',async()=>{
  await retrieveMaterials(['桥市'],12,{qualification} as never);
@@ -22,5 +22,5 @@ it('uses exact purpose/scope/consumer and current independent qualification on e
 });
 it('returns no materials when current qualification database is unavailable',async()=>{
  db.queryRows.mockRejectedValue(Error('synthetic database unavailable'));
- expect(await retrieveMaterials(['secret'],12,{qualification} as never)).toEqual({materials:[],degraded:true});
+ expect(await retrieveMaterials(['secret'],12,{qualification} as never)).toEqual({materials:[],degraded:true,coverage:"UNAVAILABLE"});
 });
