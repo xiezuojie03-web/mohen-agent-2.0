@@ -147,6 +147,10 @@ begin
  return revision;
 end $$;
 alter function control.artifact_revision_for(text,uuid) owner to mohen_gate_authority;
+-- security definer 的 owner 必须能读到正式正文，否则 work_revision 指纹解析报 42501。
+-- 仅授予该 gate 角色最小只读权限：调用方仍只能通过函数取得指纹，不获得表级读取。
+grant usage on schema publication to mohen_gate_authority;
+grant select on publication.work_revisions to mohen_gate_authority;
 revoke all on function control.artifact_revision_for(text,uuid) from public;
 grant execute on function control.artifact_revision_for(text,uuid) to mohen_producer,mohen_gate_signer,mohen_app_runtime;
 

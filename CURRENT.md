@@ -42,9 +42,16 @@
 
 ### 本批定点修补记录（2026-11-23，ST-05—ST-07）
 - 代码事实：`publication.ts` 的作品创建改为必须经服务端校验 Owner ACTIVE 项目；`studio-director.ts` 的 DirectorPlan 持久绑定项目/委托/root_task_ref/研究 snapshot/source refs，WorkRevision 提交双向校验 Owner+Project 且 CAS/幂等语义保留，正式正文仍写 `publication.work_revisions`；三个相关 API 路由传入服务端会话身份。旧编辑作品创建走独立兼容路径，历史无绑定行不被猜回填。
-- 数据库事实：新增**未执行**的向前迁移 `20261123120000_mab_m5_st05_st07_project_and_body_authority.sql`（补项目/委托列、`studio.work_revisions` 降级封套、G5 指纹解析正式正文）。本批未执行任何生产 DDL/数据迁移，未部署，未签或复用 G5 PASS；web staging 仍 `e563161c`、authority production 仍 `48c9169b`。
+- 数据库事实：向前迁移 `20261123120000_mab_m5_st05_st07_project_and_body_authority.sql`（补项目/委托列、`studio.work_revisions` 降级封套、G5 指纹解析正式正文）已在本机隔离库 `127.0.0.1:5432/mohen_dev` 应用并回读验证；首轮发现 `control.artifact_revision_for` 的 security definer owner `mohen_gate_authority` 对 `publication` 无 USAGE / 对 `publication.work_revisions` 无 SELECT（42501），已定点补最小只读权限并复验通过。未执行任何生产 DDL/数据迁移，未部署，未签或复用 G5 PASS；web staging 仍 `e563161c`、authority production 仍 `48c9169b`。
 - 验证事实：相关 Vitest `71/71`（作品创建/导演方案/路由/提交/commit）+ ST-07 正文权威静态验收 `4/4` + 作品创建路由 `14/14` 通过；`pnpm typecheck` 通过；`pnpm build` 通过。全量单元首轮 795/817 通过，其中 `submission-routes` 2 项因本批路由变更失败并已修正（复验 14/14）；余 6 文件/20 项为既有失败，相关文件不引入本批改动模块，未 skip/放宽。
-- 环境边界：用户给出基线 `211ed45…` 在本地仓库不是有效 commit；本地 HEAD 与本地 `origin/main` ref 均为 `198c40bd…`。远端 main 实际 HEAD 首次核验网络超时（300s），未据此回退或覆盖；推送前须重新核验。以上状态仅描述本仓库代码/测试结果，不代表远端已归档。
+- 归档事实（2026-11-23 本窗口）：本地代码提交 `88d41749…` 与远端另一写入方的 8 个文档提交（`198c40bd…` → `211ed45a…`）从共同祖先分叉；经无冲突 merge 保留双方历史，绕开失效的 `127.0.0.1:51081` 代理直连推送，远端 main 实际 HEAD 已核对为 `cdd74d824021e4ccce26839434113319956c3f6b`。未 force push / reset / 新建分支，未跟踪临时物未动。
+- 环境边界：用户给出基线 `211ed45…` 最初在本地仓库不是有效 commit（fetch 后为远端文档提交）；远端 main 首次核验经代理 300s 超时，直连可达后完成核验与推送。以上代码/测试/迁移验证均为隔离与本地证据，不代表生产部署或独立 Gate 通过。
+
+### 本窗口隔离库迁移回读证据（2026-11-23）
+- 应用前基线：`publication.works` 16 行（无 `project_id`）、`public.director_plans` 21 行（2 行有 project_id）、`publication.work_revisions` 24 行、`studio.work_revisions` 5 行；本地无 `supabase_migrations.schema_migrations` 账表；FK 目标表、四个角色与待加约束均检查通过。
+- 应用后列/约束：`works.project_id`；`director_plans` 的 `delegation_id`/`root_task_ref`/`research_snapshot_hash`/`research_source_refs`；`studio.work_revisions.formal_revision_id` 六列齐备，三条 FK 与两个索引存在，`control.artifact_content_columns(kind='formal_work_revision')` 登记 8 列，函数 owner=`mohen_gate_authority`、`security definer`、`search_path=pg_catalog`。
+- 指纹断言：正式 revision 直接解析得到 3 组 64 位十六进制指纹；Studio 未绑定封套 5 条与随机 UUID 均返回 NULL；在回滚事务内把封套 `formal_revision_id` 绑定正式 revision 后，封套解析值与正式解析值逐字相同，且篡改封套 `content`/`content_hash` 后指纹不变；回滚后 `formal_revision_id` 非空 0 行、伪造行 0，行数仍 16/21/24/5，历史行未被回填或改写。
+- 观察项：`control.artifact_content_columns` 未登记 `director_plan` kind，`artifact_revision_for('director_plan',…)` 仍会抛 `ARTIFACT_CONTENT_COLUMNS_NOT_REGISTERED`；此为迁移前既有状态，不在本轮四项授权断言内，未扩大修改范围。
 
 ## 上一批（第二十批）关键落地（细节只在 progress.md）
 
@@ -68,15 +75,15 @@
 
 ## 最前阻断 / 下一动作
 
-- **最前阻断**：ST-05—ST-07前置修补，详见[PLAN §0.4](tasks/implementation/MAB/PLAN.md)。第一步（施工计划与CURRENT同步）已完成；本次策略修订已写入PLAN/CURRENT。第二步已完成代码路径定位与合同差异确认，但尚未修改业务源码或迁移。
+- **最前阻断**：ST-05—ST-07 前置修补的代码、迁移与隔离库验证已完成并归档至远端 main `cdd74d82…`，详见[PLAN §0.4](tasks/implementation/MAB/PLAN.md)与上方隔离库回读证据。本批无工程阻断；ST-08/ST-09 的正式修订身份改绑须 Owner 另行指令，本轮不转向。全量单测 6 文件/20 项既有失败仍为独立工作包，未 skip/未放宽。
 - **正式表与平行表现状**：`public.director_plans` 21行（2条已绑定Project、19条未绑定）；`publication.works` 16行但缺`project_id`列；`publication.work_revisions` 24行。另有`studio.director_plans` 3行、`studio.work_revisions` 5行，与正式表ID不重叠；5条Studio修订均无对应`publication.works`。保留全部历史数据，不猜测合并。
 - **资格边界**：当前5条DirectorPlan G5 PASS、7条WorkRevision G5 PASS均绑定Studio平行表对象，不绑定正式表对象；不转移、不复用。正式对象须重新经过独立G5。
-- **追溯缺口（按合同§19.1精确定位）**：正式`public.director_plans`已有`project_id/source_ids`，但没有`delegation_id/root_task_ref`及研究读取snapshot/hash的持久闭环。`createWorkDraft()`（`apps/web/lib/publication.ts`）新建`publication.works`和首条`publication.work_revisions`时没有Project；正式作品表也没有`project_id`列。`commitWorkRevision()`（`apps/web/lib/studio-director.ts`）只按Owner连接导演方案与作品，CAS INSERT没有同Project校验。需闭合Project＋Root＋snapshot，并保持历史无绑定记录HOLD。
+- **追溯缺口（按合同§19.1精确定位；以下为修补前诊断，现已由本批代码修补闭合）**：正式`public.director_plans`已有`project_id/source_ids`，但没有`delegation_id/root_task_ref`及研究读取snapshot/hash的持久闭环。`createWorkDraft()`（`apps/web/lib/publication.ts`）新建`publication.works`和首条`publication.work_revisions`时没有Project；正式作品表也没有`project_id`列。`commitWorkRevision()`（`apps/web/lib/studio-director.ts`）只按Owner连接导演方案与作品，CAS INSERT没有同Project校验。需闭合Project＋Root＋snapshot，并保持历史无绑定记录HOLD。
 - **安全/迁移**：Supabase安全检查报告10张表RLS未启用；已核的9张Studio/Publication表无anon/authenticated直接表权限，但若干app_runtime策略仍为全行`true`，另有一张publication_schedules无策略。先修策略并正反验证，不一键启用。数据库迁移账止于`20261120045054`，而两张Studio平行表及数据已存在、对应迁移版本未入账；不得盲目重跑或删除。
 - **CI**：策略修订后的main SHA `163d4c376b5ac9e18de81197f46d95dbaa34d46a`对应run `45116236223`的`build` job失败于runner启动前（`runner_id=0`、`steps=[]`）；前两次`45116198743`、`45115289483`同样失败。均为`CI_BLOCKED`，不是代码测试红灯。之后PLAN状态更新提交`ef568c28cb7c`尚待CI结果。
 - **执行策略（2026-11-23修订）**：Owner已明确不建立临时Supabase开发分支，第二步不再以此为前置条件。代码优先本地施工、运行可执行的静态/定向测试/类型检查/构建，阶段性集中推送唯一main；推送前必须核对远端HEAD及本地未提交/未推送成果。现有Supabase项目继续只读核查；迁移/RLS先完成Schema与迁移账对照、向前迁移/回滚脚本及影响分析。未具备安全验证条件前不对生产库执行DDL/RLS写入、不改数据、不部署。CI宿主级失败仍记CI_BLOCKED；本地测试不能冒充CI通过，缺少真实PG/HTTP/Gate验证的项目标NOT_RUN/DEFERRED_ENV。
-- **代码定位结果（对照合同§19.1）**：`public.director_plans`、`publication.work_revisions`是正文权威；Studio封套应引用，不复制正文。当前`createWorkDraft()`新建作品时未绑定Project，`commitWorkRevision()`只校验Owner；ST-07迁移`20261114150000_mab_m5_st07_work_revision.sql`另建带正文的`studio.work_revisions`，与合同的唯一正文规定冲突。既有Studio平行表和历史G5必须保留，但不能继续充当正式正文/G5对象。精确修补顺序已补入PLAN §0.4。
-- **本轮源码执行边界**：已进一步对照合同§19.1并定位`createWorkDraft()`、`commitWorkRevision()`及ST-07平行正文迁移；尚未修改业务源码/SQL。尝试通过Vercel sandbox建立可运行工作副本，但该私有GitHub仓库不能通过当前sandbox的公开Git源方式直接克隆，当前GitHub连接也只提供文件级读写，没有可执行仓库工作树。因此不能诚实地声称已跑Vitest/typecheck/build。为避免未经验证的业务代码直接写入唯一`main`，本轮不提交业务源码。继续施工需要可运行工作副本；不需要创建Supabase分支，也不需要改生产数据库。第二步代码修补及其本地验证完成并归档后，Owner再接续第三步M5业务主线。
+- **代码定位结果（对照合同§19.1，修补前诊断）**：`public.director_plans`、`publication.work_revisions`是正文权威；Studio封套应引用，不复制正文。当前`createWorkDraft()`新建作品时未绑定Project，`commitWorkRevision()`只校验Owner；ST-07迁移`20261114150000_mab_m5_st07_work_revision.sql`另建带正文的`studio.work_revisions`，与合同的唯一正文规定冲突。既有Studio平行表和历史G5必须保留，但不能继续充当正式正文/G5对象。精确修补顺序已补入PLAN §0.4。
+- **本轮源码执行边界（另一写入方 sandbox 窗口的历史记录，非本窗口状态）**：已进一步对照合同§19.1并定位`createWorkDraft()`、`commitWorkRevision()`及ST-07平行正文迁移；尚未修改业务源码/SQL。尝试通过Vercel sandbox建立可运行工作副本，但该私有GitHub仓库不能通过当前sandbox的公开Git源方式直接克隆，当前GitHub连接也只提供文件级读写，没有可执行仓库工作树。因此不能诚实地声称已跑Vitest/typecheck/build。为避免未经验证的业务代码直接写入唯一`main`，本轮不提交业务源码。继续施工需要可运行工作副本；不需要创建Supabase分支，也不需要改生产数据库。第二步代码修补及其本地验证完成并归档后，Owner再接续第三步M5业务主线。
 
 ## 部署 / 费用 / 凭据
 
