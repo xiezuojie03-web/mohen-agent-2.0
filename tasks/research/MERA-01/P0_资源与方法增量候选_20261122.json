@@ -9,7 +9,7 @@
   "proposed_after_merge": {
     "resources": 107,
     "methods": 88,
-    "attempts": 23
+    "attempts": 24
   },
   "additions": [
     {
@@ -1208,8 +1208,8 @@
       "provider": "XRONOS Core Team / University of Bern and collaborating institutions",
       "url": "https://xronos.ch/",
       "content": "全球考古年代学开放数据基础设施，聚合标准化放射性碳测年及其他年代证据，并关联遗址、地理位置、发掘信息、样品材料、实验室编号、同位素信息、文化阶段和来源文献。当前官网检索摘要显示约314,832条放射性碳日期和70,660处遗址；官网2026-10-07发布v1.3.0，包含去重、关联数据和MIaaRD导出更新。另有Zenodo归档快照（DOI 10.5281/zenodo.14850157，2025-02-11发布，版本标记2024-02-11），单CSV文件data_2025-02-11.csv，85.3MB。",
-      "access": "官网提供公开浏览和数据查询；Zenodo归档记录列出data_2025-02-11.csv（85.3MB）直接下载链接。2026-11-22实际点击下载链接时，网页读取器因内容超过其4MB读取限制而返回content length too large；随后容器下载尝试失败，但未取得源站HTTP状态。未获得文件字节、SHA256或本地副本。状态为ACCESSIBLE_NOT_DOWNLOADED，不代表源站拒绝下载。",
-      "rights": "XRONOS官网说明其数据遵循Open Definition；但Zenodo具体归档记录的Rights/License字段未显示明确许可值。官网层面的开放数据声明与该CSV归档文件许可不能自动等同，故该文件的再分发、改编和商业使用边界暂列RIGHTS_UNCLEAR；正式利用前须核对当前官网数据政策或向维护团队确认。",
+      "access": "官网API文档明确提供当前全库平面文件导出：https://xronos.ch/data.csv（CSV）及https://xronos.ch/data.json（JSON），并提供筛选查询API https://xronos.ch/api/v1/data；官方建议大批量获取使用平面文件导出，避免网页抓取。访问要求：使用可识别项目的User-Agent（含联系邮箱或URL）、遵守robots.txt、低频请求、避免并行抓取并缓存结果。2026-11-23本轮容器直连data.csv失败，错误为本地DNS解析失败（Temporary failure in name resolution），未建立HTTP连接，未取得响应头、文件字节或SHA256。",
+      "rights": "XRONOS关于页面说明其数据遵循Open Definition，目标是允许任何人自由使用、修改和共享；但同时明确个别数据贡献者保留对其数据及许可的完整控制权，并可能出于专业伦理对遗址精确位置进行模糊处理。网站页脚CC BY 4.0声明不能据此推定数据库内每一条贡献数据均采用CC BY 4.0。资源级可开放访问；具体记录/贡献数据的再分发、改编和商业使用须依来源记录及贡献者许可核验。整体资源权利状态暂列RIGHTS_UNCLEAR，不作为统一商用授权。",
       "status": "ACCESSIBLE_NOT_DOWNLOADED",
       "asset_acquired": false,
       "recommended_method_id": "M0087",
@@ -1220,9 +1220,14 @@
         "https://zenodo.org/records/14850157",
         "https://doi.org/10.5281/zenodo.14850157",
         "https://agent.tinyfish.ai/runs/e8c617ed-8084-46c3-af07-d21abe85f38a",
-        "https://github.com/xiezuojie03-web/mohen-agent-2.0/"
+        "https://github.com/xiezuojie03-web/mohen-agent-2.0/",
+        "https://xronos.ch/api",
+        "https://xronos.ch/data.csv",
+        "https://xronos.ch/data.json",
+        "https://xronos.ch/c14s",
+        "https://xronos.ch/news/xronos-v130"
       ],
-      "quality": "必须区分动态官网与静态归档快照：Zenodo记录发布于2025-02-11、版本标记2024-02-11，不能视为2026年官网当前数据快照。官网当前显示的日期数/遗址数与2025年论文报告的约350,000日期/75,000遗址并非同一统计快照，需按版本、计数口径和去重更新解释，不能混用。Zenodo记录提供文件MD5 169e18969f530dc6f47741da1a070c24，但这不是本地实测SHA256。下载未取得，CSV字段、记录数、重复、缺失、坐标及版本差异均未实测。"
+      "quality": "官网当前数据浏览页显示314,832条放射性碳日期，页面版本为XRONOS web v1.3.1（2026-11-23检查）；2026-10-07 v1.3.0已引入自动重复检测与合并、记录supersession和MIaaRD导出。官方API文档提供当前全库CSV/JSON导出。官网2025论文约350,000日期/75,000遗址为历史发表时快照，不可与当前计数直接等同。Zenodo归档CSV 85.3MB、记录日期2025-02-11、版本标记2024-02-11；其MD5是发布方元数据，不是本地SHA256。当前全库文件尚未取得，字段、记录数、重复、缺失、坐标及来源链均未实测。需留意各贡献者许可差异和敏感遗址坐标模糊处理。"
     }
   ],
   "methods": [
@@ -1811,10 +1816,10 @@
       "version": "v0.1",
       "resource_id": "R0107",
       "status": "DRAFT",
-      "path": "XRONOS官网数据入口 → 数据查询/导出；或Zenodo归档记录 → CSV下载",
+      "path": "优先使用XRONOS官方API文档给出的全库平面文件导出：https://xronos.ch/data.csv 或 https://xronos.ch/data.json；必要时用https://xronos.ch/api/v1/data按实验室编号、遗址、国家、材料、物种等条件筛选。Zenodo DOI 10.5281/zenodo.14850157仅用于历史版本快照对照。",
       "scope": "全球考古放射性碳测年及相关年代学记录、遗址元数据与来源关系",
-      "steps": "先确认官网当前数据版本、日期/遗址计数口径和数据政策；分别识别动态在线数据库与Zenodo历史快照；下载CSV或使用官方数据导出；保存版本号、发布时间、文件大小、MD5/其他校验信息；取得字节后计算SHA256并检查字段、记录数、重复、缺失、实验室编号、样品材料、年代值、校准信息、遗址坐标、来源文献和版本追踪字段；抽查记录回溯至原始发表来源。",
-      "limits": "Zenodo快照85.3MB，网页读取器因文件超过4MB限制未能直接读取，容器下载尝试也未取得文件；无SHA256。Zenodo归档页License字段未明确，官网CC BY 4.0声明不能自动替代文件级许可核验。动态官网与2025归档快照版本不同；数据来自多来源整合，需检查来源可追溯性、重复合并和版本更新。"
+      "steps": "阅读官方API和使用期望；为请求设置可识别项目的User-Agent并提供联系URL/邮箱；先检查robots.txt与站点规则；优先一次获取官方CSV或JSON全库导出，不并行抓取、不重复下载，保存原始响应头、最终URL、获取时间、文件名和字节数；计算SHA256；检查字段、记录数、主键、重复/合并记录、缺失、实验室编号、样品材料、测年值、校准信息、遗址坐标、来源文献、记录版本和supersession关系；抽样追溯原始来源；按单条记录/贡献来源核验许可和坐标精度限制。",
+      "limits": "2026-11-23当前环境对https://xronos.ch/data.csv的直接请求发生DNS解析失败，未建立HTTP连接，未获得文件字节或SHA256；不能据此归因于XRONOS源站。官网当前页面显示v1.3.1，官网全库导出与Zenodo 2024版本历史快照必须区分。XRONOS关于页面虽声明数据遵循Open Definition，但个别贡献者保留数据及许可控制权，不能推定每条记录统一CC BY或无条件商用；部分遗址位置可能被模糊化。"
     }
   ],
   "updates": [
@@ -1976,8 +1981,8 @@
     }
   ],
   "attempt_log": {
-    "new_attempts": 5,
-    "reason": "2026-11-22对R0103、R0104、R0106各执行一次资源级实际获取核验。R0103官方页浏览器加载超时；R0104下载按钮无可观察动作且本轮尝试的RAR路径返回404；R0106页面按钮报告触发下载但未获得可读取文件字节。三项均未取得可核验原始文件，未生成SHA256，未新增任何VERIFIED_ACQUIRED记录。 另对R0105执行一次官方NetCDF下载入口核验：定位到DownLoad控件，但自动化结果未提供最终响应和文件字节，故记为ACCESSIBLE_NOT_DOWNLOADED。 另对R0107 XRONOS年代学数据执行一次归档文件下载尝试：Zenodo记录可见85.3MB CSV下载链接；网页读取器因超过4MB限制无法读取，容器下载尝试失败但未获得源站HTTP状态；文件字节未取得，许可文件级状态RIGHTS_UNCLEAR。",
+    "new_attempts": 6,
+    "reason": "2026-11-22对R0103、R0104、R0106各执行一次资源级实际获取核验。R0103官方页浏览器加载超时；R0104下载按钮无可观察动作且本轮尝试的RAR路径返回404；R0106页面按钮报告触发下载但未获得可读取文件字节。三项均未取得可核验原始文件，未生成SHA256，未新增任何VERIFIED_ACQUIRED记录。 另对R0105执行一次官方NetCDF下载入口核验：定位到DownLoad控件，但自动化结果未提供最终响应和文件字节，故记为ACCESSIBLE_NOT_DOWNLOADED。 另对R0107 XRONOS年代学数据执行一次归档文件下载尝试：Zenodo记录可见85.3MB CSV下载链接；网页读取器因超过4MB限制无法读取，容器下载尝试失败但未获得源站HTTP状态；文件字节未取得，许可文件级状态RIGHTS_UNCLEAR。 2026-11-23继续核查R0107：发现官方API文档明确提供data.csv/data.json全库导出和使用要求；本轮容器对data.csv请求发生本地DNS解析失败（Temporary failure in name resolution），未建立HTTP连接、无响应头和文件字节，不归因于源站。新增A0024。",
     "records": [
       {
         "attempt_id": "A0019",
@@ -2023,6 +2028,18 @@
         "result": "ACCESSIBLE_NOT_DOWNLOADED",
         "evidence": "https://zenodo.org/records/14850157",
         "detail": "Zenodo record lists data_2025-02-11.csv, 85.3MB. Web reader failed because content exceeded its 4MB read limit; container download attempt failed without source HTTP status. No file bytes or SHA256. Zenodo record's file-level license is blank; rights remain unclear."
+      },
+      {
+        "attempt_id": "A0024",
+        "resource_id": "R0107",
+        "date": "2026-11-23",
+        "method": "Official XRONOS current full-database CSV export direct request",
+        "result": "ACCESS_FAILED",
+        "evidence": [
+          "https://xronos.ch/api",
+          "https://xronos.ch/data.csv"
+        ],
+        "detail": "Official API documentation confirms data.csv and data.json full-database exports. Direct request from the current execution environment failed before HTTP connection with local DNS resolution error: Temporary failure in name resolution. No HTTP status/headers, bytes, or SHA256. This is an execution-environment DNS failure, not evidence of source-server denial."
       }
     ]
   },
