@@ -2,7 +2,7 @@
 
 > **Owner 授权口径（2026-11-22，长期有效）**：目标是墨痕**真正运行、持久运行**；除**安全问题**与**费用问题**外，施工方自行授权推进，不再逐项请示技术选择。费用边界：D02–D05 模型调用封顶 **0.05 USD**（约 ¥0.36，已建委托 `3f5585d0…`），超出该额度、新增付费来源或扩大用途仍需 Owner 批准。安全底线（密钥不入 git、不自签 Gate、不伪造会话/资格/PASS、不改迁移规避授权）不因该授权放宽。
 
-> 核验时间 2026-11-23 本窗口｜唯一 main `4e58fc6de35a55af2d5301d8751f36c89127e147`（本地 HEAD 与 `origin/main` 一致；`d47c5d31`/`6a56b8fc`/`4e58fc6d` 均为其祖先）｜环境：本地隔离库 `127.0.0.1:5432/mohen_dev` 同对象连续回放 + 本地静态/类型/定向单测；生产库、部署、RLS、Gate 均未在窗口内改动。CI 现 SHA 两个 run 均在 runner 分配前失败（`runner_id=0`、`steps=0`），记 `CI_BLOCKED`。本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
+> 核验时间 2026-11-23 本窗口｜唯一 main `40147e15e444c588ebdf02ed90e674c233b44fc8`（本窗口提交已推送，本地 HEAD 与 `origin/main` 一致；施工基线 `4e58fc6de35a55af2d5301d8751f36c89127e147`，`d47c5d31`/`6a56b8fc`/`4e58fc6d` 均为其祖先）｜环境：本地隔离库 `127.0.0.1:5432/mohen_dev` 同对象连续回放 + 本地静态/类型/定向单测；生产库、部署、RLS、Gate 均未在窗口内改动。CI 施工基线两个 run 与新 SHA run `45199417504`（job `137778554241`）均在 runner 分配前失败（`runner_id=0`、`steps=0`），记 `CI_BLOCKED`。本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
 
 ## 主线进度（按 PLAN §3.5 C 业务主干，同一任务 `b2143002` / Project `d9d48901` / run `b9989b90`）
 
