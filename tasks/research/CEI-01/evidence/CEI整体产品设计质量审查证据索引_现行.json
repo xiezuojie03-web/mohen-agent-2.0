@@ -1,0 +1,297 @@
+{
+  "schema": "CEI-01-G-EvidenceIndex-1.0",
+  "audit_date": "2026-11-24",
+  "repository": "xiezuojie03-web/mohen-agent-2.0",
+  "branch": "main",
+  "main_head_before_index": "98219d3a363c494da0a3b14db574fb018a16a776",
+  "authority": {
+    "path": "tasks/research/CEI-01/CEI-01_Taskbook.md",
+    "version": "V4.1",
+    "blob_sha": "f63acbb3dffdd9186e184cf68db2a0bc825e0247"
+  },
+  "deliverables": [
+    {
+      "path": "tasks/research/CEI-01/reports/CEI整体产品设计质量与竞争力评估报告_现行.md",
+      "blob_sha": "420be3d24f9495cfd1739ee9cca7c3d9bb8c4a59"
+    },
+    {
+      "path": "tasks/research/CEI-01/evidence/CEI整体产品缺陷与返工追踪矩阵_现行.md",
+      "blob_sha": "974ff59d608d4b99a614bc6f24c9c583f54a6a2a"
+    },
+    {
+      "path": "tasks/research/CEI-01/reports/CEI整体产品设计方案比较_现行.md",
+      "blob_sha": "195a6c42360db1cd7cf03455cca3ff4cae82f9c5"
+    },
+    {
+      "path": "tasks/research/CEI-01/evidence/CEI整体产品设计质量审查证据索引_现行.json",
+      "blob_sha": "SELF"
+    },
+    {
+      "path": "tasks/research/CEI-01/CEI-01_Taskbook.md",
+      "blob_sha": "f63acbb3dffdd9186e184cf68db2a0bc825e0247"
+    },
+    {
+      "path": "tasks/research/CEI-01/README.md",
+      "blob_sha": "fc9d7fcd2bd0d50d514367e0a91a086b64b104b5"
+    }
+  ],
+  "mhka_authorities": [
+    {
+      "name": "MHKA-01",
+      "path": "governance/mhka/MHKA-01_Value_and_Strategy.md",
+      "blob_sha": "2fe9641cdfb0d354300c2cc464e893ebddf21b74"
+    },
+    {
+      "name": "MHKA-02",
+      "path": "governance/mhka/MHKA-02_Humanistic_Product_and_Experience.md",
+      "blob_sha": "92caa84b3622cfb1d8f6bc61baab649bc27c340a"
+    },
+    {
+      "name": "MHKA-03",
+      "path": "governance/mhka/MHKA-03_Knowledge_World_and_Data_Architecture.md",
+      "blob_sha": "33444c93f6e95106a091fd07748a31c4ab36cada"
+    },
+    {
+      "name": "MHKA-04",
+      "path": "governance/mhka/MHKA-04_Agent_and_Professional_Capabilities.md",
+      "blob_sha": "1adfc849a2643deea5bf4bbf6c76464808df9a83"
+    },
+    {
+      "name": "MHKA-05",
+      "path": "governance/mhka/MHKA-05_Software_Engineering_and_Operations.md",
+      "blob_sha": "1c2d1c685ffcd308417423114e391c60f96e1138"
+    }
+  ],
+  "ceI_reports": [
+    {
+      "step": "A",
+      "path": "tasks/research/CEI-01/evidence/CEI_设计证据总盘点_现行.md",
+      "blob_sha": "dc191b02447df938e095aa23b5a8aa16f53d1a05"
+    },
+    {
+      "step": "A_INDEX",
+      "path": "tasks/research/CEI-01/evidence/CEI_设计证据总盘点_现行.json",
+      "blob_sha": "06b0b25db77734faaad5a235438fd2514717b8ea"
+    },
+    {
+      "step": "B",
+      "path": "tasks/research/CEI-01/reports/CEI_B_竞品差异化有限复核_现行.md",
+      "blob_sha": "a7cb5a0a1fa43242f27e4915d929a0e996913d84",
+      "conclusion": {
+        "C1": "WEAK",
+        "C2": "NOT_PROVEN",
+        "C3": "NOT_PROVEN"
+      }
+    },
+    {
+      "step": "C",
+      "path": "tasks/research/CEI-01/reports/CEI_C_HOME知识世界呈现专项_现行.md",
+      "blob_sha": "9d3b60aeafd5e04715e3ae31b344fa23a56242a4"
+    },
+    {
+      "step": "D",
+      "path": "tasks/research/CEI-01/reports/CEI_D_EXP探索体验专项_现行.md",
+      "blob_sha": "efa661e877dcbfa708088180f9c5ab07502194fc"
+    },
+    {
+      "step": "E",
+      "path": "tasks/research/CEI-01/reports/CEI_E_Studio与Admin专项_现行.md",
+      "blob_sha": "69a5b9f007653148302a44af48153d6831077c2e"
+    },
+    {
+      "step": "F",
+      "path": "tasks/research/CEI-01/reports/CEI_F_我的墨痕个人空间专项_现行.md",
+      "blob_sha": "8b83a32f77dcafb8528dccf9a5af388db1a45cdf"
+    }
+  ],
+  "library_sources": [
+    {
+      "name": "CEI-4-4_EXP双组件与连续探索设计规格_现行V0.1.md",
+      "library_file_id": "libfile_1face629b4788191a375ac559643ca69",
+      "modified_at": "2026-11-16",
+      "level": "D1_SPEC"
+    },
+    {
+      "name": "UXD3_EXP连续探索体验深化_现行.md",
+      "library_file_id": "libfile_d06df5da936881918dfef24d9570d7ec",
+      "modified_at": "2026-10-31",
+      "level": "D1_SPEC"
+    },
+    {
+      "name": "CEI-4-5_WATCH观看与Studio_Admin职责衔接设计规格_现行V0.1.md",
+      "library_file_id": "libfile_93bee1776f508191b09fe21bcf733c91",
+      "modified_at": "2026-11-17",
+      "level": "D1_SPEC"
+    },
+    {
+      "name": "CEI-4-6_我的墨痕与轻参与设计规格_现行V0.1.md",
+      "library_file_id": "libfile_a8e9876e0064819186c6c2d8ed42bf83",
+      "modified_at": "2026-11-17",
+      "level": "D1_SPEC"
+    },
+    {
+      "name": "CEI-4-4_统一原型核验与阶段裁决_现行.md",
+      "library_file_id": "libfile_6cb78543688081919caef0b4fb092832",
+      "modified_at": "2026-11-17",
+      "level": "D2_TEST"
+    },
+    {
+      "name": "CEI-4-4_EXP自由探索与双组件呈现_关键设计依据_原文完整存档.md",
+      "library_file_id": "libfile_093707b335dc81918c3a9891428fa08f",
+      "modified_at": "2026-11-15",
+      "level": "D3_OWNER_INPUT"
+    },
+    {
+      "name": "CEI-4-5_UI-A_Admin浏览器核验证据_现行.json",
+      "library_file_id": "libfile_de1085bbb89c8191b461a776a49ca179",
+      "modified_at": "2026-11-17",
+      "level": "D2_TEST"
+    },
+    {
+      "name": "CEI-4-5_UI-B_Studio浏览器核验证据_现行.json",
+      "library_file_id": "libfile_dcdf97bff9e881918a50323bd0f71186",
+      "modified_at": "2026-11-17",
+      "level": "D2_TEST"
+    },
+    {
+      "name": "CEI-4-5_UI-C_跨工作面浏览器核验证据_现行.json",
+      "library_file_id": "libfile_c916c461a0d881918d4398728c65c06c",
+      "modified_at": "2026-11-17",
+      "level": "D2_TEST"
+    },
+    {
+      "name": "CEI-4-6_退出身份隐私隔离定向回归证据_现行.json",
+      "library_file_id": "libfile_81a59a74e0888191989e7512420466d3",
+      "modified_at": "2026-11-17",
+      "level": "D2_TEST"
+    },
+    {
+      "name": "CEI-4-5_4-6_Owner审阅与4-7入场回执_现行.md",
+      "library_file_id": "libfile_2a052acadf9881918ba4507fb5c0768c",
+      "modified_at": "2026-11-20",
+      "level": "D3_OWNER_DECISION"
+    }
+  ],
+  "prototype": {
+    "name": "CEI-4_墨痕统一交互原型_HOME_EXP_现行V0.1.html",
+    "size_bytes": 2434874,
+    "outer_sha256": "a5ee9c7db5304080520bd13cbc600ce8e22acfb64532672ace92e1d2f398f6aa",
+    "embedded_source_sha256": {
+      "home": "48a75691a5a7d55cefda42a3978067e7659c473e188758ccba9aad7139e95056",
+      "exp": "1f46f1d2d66943d08faabe3d97e4f6e081c0d2ca61c17bc8066da30d7f025688",
+      "watch": "a5c0fcd93b9fd6ef6bb2d7ce52f78057c501e9c37a33b2c8a1e4f8e2e9f1bcb9",
+      "workflow": "546cd1b4c1492e017679cdffe734dc7acf79de9129b183c05b0a51f3add36d93"
+    },
+    "archive_status": "LIBRARY_ONLY",
+    "reason": "HTML内嵌待核权原件图像，不直接公开上传GitHub；保留SHA和资料库来源追溯。"
+  },
+  "tests": [
+    {
+      "id": "UIA",
+      "result": "108/108 PASS",
+      "level": "D2",
+      "artifact_sha256": "f894a751a46ff5b62bcec942396869712835fa87ddab5ad3daa21a13482eba5",
+      "scope": "Admin角色/签核/发布/撤回模拟"
+    },
+    {
+      "id": "UIB",
+      "result": "87/87 PASS",
+      "level": "D2",
+      "artifact_sha256": "6e3b93e896341f96e00d8e45380bd7c67b029bb1d81d01d5499466440792e7a4",
+      "scope": "Studio三工作面与生产阻断模拟；未验证移动端工作区切换"
+    },
+    {
+      "id": "UIC",
+      "result": "62/62 PASS",
+      "level": "D2",
+      "artifact_sha256": "011b711f322c06e21b1a0882efb2ebf45fa44187e1226506312ec50dd3851d4f",
+      "scope": "Studio/Admin/WATCH/EXP精确修订和播放锚点模拟"
+    },
+    {
+      "id": "MY-PRIVACY",
+      "result": "88/88 PASS",
+      "level": "D2",
+      "artifact_sha256": "a9f2b6e98e8bbc6a3d4dd77c1bbb93ea6e281f2401b903d6c256e99b46bbc407",
+      "scope": "匿名/登录隔离、退出、撤回、删除、许可失效和失权恢复模拟"
+    },
+    {
+      "id": "SC01",
+      "result": "L1 PASS / L2 PARTIAL",
+      "level": "D2",
+      "scope": "LOC图像/地图样板，真实图像接入部分通过"
+    },
+    {
+      "id": "SC02",
+      "result": "L2 PARTIAL",
+      "level": "D2",
+      "scope": "用户图像探索样板，真实图像路径有限"
+    },
+    {
+      "id": "SC03",
+      "result": "L2 PARTIAL",
+      "level": "D2",
+      "scope": "外部馆藏图像接入受网络/来源限制"
+    }
+  ],
+  "evidence_levels": {
+    "D1": "设计合同和规格；不证明实现",
+    "D2": "HTML原型与浏览器模拟；不证明真实服务",
+    "D3": "Owner输入/暂时接受/正式签认必须区分",
+    "D4": "有限竞品参考；不证明竞争优势",
+    "D5": "真实Agent/账户/权限/权利/发布端到端，当前缺失",
+    "D6": "真实目标用户持续使用/市场反馈，当前缺失"
+  },
+  "owner_decisions": {
+    "B": "有限竞品复核范围已认可并关闭；C1 WEAK、C2/C3 NOT_PROVEN",
+    "C": "多尺度策展知识世界建议方向待Owner裁决",
+    "D": "专项完成，Owner review pending",
+    "E": "专项完成，Owner review pending",
+    "F": "专项完成，Owner review pending",
+    "CEI_4_5_4_6": "READY_FOR_OWNER_REVIEW / NOT_SIGNED",
+    "CEI_4_7": "SC01—SC03仅部分L2；无整体Owner L3签认"
+  },
+  "final_assessment": {
+    "scores": {
+      "product_direction": {
+        "score": 3,
+        "decision": "CONDITIONAL_PASS"
+      },
+      "product_structure": {
+        "score": 2,
+        "decision": "REWORK"
+      },
+      "user_experience": {
+        "score": 2,
+        "decision": "REWORK"
+      },
+      "agent_experience": {
+        "score": 1,
+        "decision": "REWORK"
+      },
+      "business_closure": {
+        "score": 2,
+        "decision": "REWORK"
+      },
+      "visual_interaction": {
+        "score": 3,
+        "decision": "CONDITIONAL_PASS"
+      },
+      "sustainability_competitiveness": {
+        "score": 2,
+        "decision": "REWORK"
+      }
+    },
+    "average_reference_only": 2.14,
+    "overall": "REWORK",
+    "p0_found": 0,
+    "p1_items": 18,
+    "p2_items": 13,
+    "owner_review_required": true,
+    "github_inheritance_authorized": false,
+    "engineering_authorized": false
+  },
+  "archive_gaps": [
+    "CEI-4-4/4-5/4-6规格、UXD3及若干测试证据目前为Library-only；后续按权利边界补齐GitHub文本与证据。",
+    "统一HTML含待核权原件图像，不公开上传；保留文件名、SHA、嵌入源SHA和Library来源。"
+  ]
+}
