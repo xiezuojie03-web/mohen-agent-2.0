@@ -6474,4 +6474,19 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **待查项②**：spawn env `MOHEN_ORIGINAL_BRIDGE_KEY_VERSION` 默认值修复已提交但未重建实测（CODE_PRESENT）；ST-03 生产 run 重发未执行。
 - **恢复动作**：Owner/ChatGPT 核查后，从"重建→重发生产 run（D00→D02）"继续，随后 ST-04→ST-06→浏览器端到端。
 
-- **PENDING_PUSH（2026-11-24 交付暂停点记录）**：docs 提交 `bdad9060`（暂停点标注+CI 待查项）因 GitHub 连接超时未推送（main 内容 `6558d647` 已推送成功）。网络恢复后补推；推送后销项。
+- **PENDING_PUSH（2026-11-24 交付暂停点记录）**：docs 提交 `bdad9060`（暂停点标注+CI 待查项）因 GitHub 连接超时未推送（main 内容 `6558d647` 已推送成功）。网络恢复后补推；推送后销项。→ **已销项（2026-11-24 复核窗口）**：`bdad9060`/`da78f399` 连同本窗口新增提交一并变基推送，远端 main 已含。
+
+---
+
+## 2026-11-24 隔离检查归因与修复窗口（isolated-pg 转绿）
+
+- **推送与基线**：本地 3 个 docs 提交（暂停点标注、PENDING_PUSH 记录、Owner 工作协议）变基到远端 `f4613f6a` 之上（远端 18 个 CEI-01 文档提交原样保留，零重叠、零冲突），随后两道修复提交推送：`2acbc4b3`（三处旧账）、`f379eb0b`（链序）。远端 main=`f379eb0b`，本地=远端。
+- **归因结论（有 CI 日志证据）**：isolated-pg 的失败全部是既有漂移，非 Studio 闭环批次（`6558d647`）引入。四处根因：
+  1. `tests/integration/qualified-retrieve.integration.ts:12` 仍按 `{materials:[],degraded:true}` 全等比较，而 `apps/web/lib/mohen-agent/retrieve.ts:437` 自 11-19（`cc84680c`）起降级路径额外返回 `coverage:"UNAVAILABLE"` → 永远不等。
+  2. `private-text-reading` / `private-original-source-binding` 的测试登录只 `grant mohen_app_runtime`；11-18（`e91e4740`）加入的身份护栏还要求 `mohen_private_worker` 的 MEMBER 与 SET → 正例必失败。修法与真实登录迁移一致：`grant mohen_private_worker ... with inherit false, set true`。
+  3. `scripts/test-k3-db.mjs` 的 2026-11 迁移链止于 `20261118025600`，缺 `20261119110000_m5_private_source_rights_projection.sql`，隔离库只有 11-08 的对象型弱约束 → `RIGHTS_BY_ACTION` 的负例（未知动作名/非字符串值）不报错。
+  4. 创建 `mohen_private_worker` 的 `20261107210000` 排在其两个测试之后 → 角色不存在，且 `ON_ERROR_STOP` 使同批 `create role reading_producer_*` 未执行，`finally` 清理再报 role 不存在。修法：把该迁移提前到 `20261103234154`（提供它引用的 `control.gate_service_credentials`）之后应用，并从 11 月批次中移除（应用幂等：`to_regrole` 守卫）。
+- **验证证据（隔离层，非生产）**：commit `f379eb0b` 触发 `ci`（run 45375825606）= success；`MAB isolated PostgreSQL 17 verification`（run 45375825267，job 138381760424）= success（该 runner 任一套件 exit 1 即整体失败，上一轮 45371262258 即如此）。此前中间态 `2acbc4b3` 已把失败从 4 套降到 2 套（RIGHTS_BY_ACTION、QUALIFICATION_CONSUMPTION 先转绿）。
+- **未解决/不声明**：①本地一次性 PG18 实例曾出现 15 套件面状 exit 1，CI PG17 同代码仅 4 套且已修绿——PG18/PG17 环境差异仍未单独解释，本轮不把本地 PG18 结果当作证据；②isolated-m1-http 属既有独立旧问题，本批未涉及。
+- **费用**：0（本窗口无付费模型调用）。
+- **下一动作**：重建→重发生产 run（D00→D02，含一次付费观察调用，额度 0.05 USD 内，Owner 已批准一次）→ST-04 导演→ST-05 成稿→ST-06 投稿/发布/WATCH→浏览器端到端→集中提交。已有效的环节不重跑。

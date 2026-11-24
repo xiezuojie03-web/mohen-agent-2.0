@@ -2,7 +2,7 @@
 
 > **Owner 授权口径（2026-11-22，长期有效）**：目标是墨痕**真正运行、持久运行**；除**安全问题**与**费用问题**外，施工方自行授权推进，不再逐项请示技术选择。费用边界：D02–D05 模型调用封顶 **0.05 USD**（约 ¥0.36，已建委托 `3f5585d0…`），超出该额度、新增付费来源或扩大用途仍需 Owner 批准。安全底线（密钥不入 git、不自签 Gate、不伪造会话/资格/PASS、不改迁移规避授权）不因该授权放宽。
 
-> 核验时间 2026-11-24 Studio 闭环专项窗口｜基线继承 `5bc0aeea`（其代码面等于 `0bc122b4`，CI 全绿）｜本批按 Owner《M5｜Studio完整创作闭环专项施工指令》推进 ST-01→ST-06，已提交推送见文末 main commit。本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
+> 核验时间 2026-11-24（隔离检查归因复核窗口，main=`f379eb0b`，本地=远端）｜基线继承 `5bc0aeea`（其代码面等于 `0bc122b4`）｜本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
 
 ## 本批事实（2026-11-24 Studio 闭环专项，金泽 Project `a2b0cf23`）
 
@@ -15,11 +15,11 @@
 
 ## 最前阻断与下一动作
 
-> **Owner 2026-11-24 指示：暂停施工，交 ChatGPT 核查。** 批次1 已变基集成远端 CEI 提交并推送：main=`6558d647`（本地=远端）。CI：build=success；**isolated-pg=failure（归因待查，见 progress.md 交付暂停点记录）**；isolated-m1-http=failure（既有独立旧问题）。
+> **隔离检查已转绿（2026-11-24 复核，main=`f379eb0b`）**：isolated-pg 的失败归因为既有漂移，非 Studio 闭环批次引入，已修复推送。`ci`=success、`MAB isolated PostgreSQL 17 verification`=success（job 138381760424）。四处根因：①检索测试仍按旧返回值全等比较，漏 11-19 新增 `coverage` 字段；②两个私有读取套件的登录只授 `mohen_app_runtime`，缺 11-18 身份护栏要求的 `mohen_private_worker` 成员与 SET；③隔离迁移链止于 11-18，缺 11-19 严格权限词典；④创建 `mohen_private_worker` 的迁移排在其测试之后。修法只改测试与隔离链脚本，未改产品逻辑。
 
-1. **待查①（交 ChatGPT）**：isolated-pg 失败归因未定——本地 PG18 一次性实例复现为 15 套件面状 exit 1（更像实例/版本环境差异），但本批确有数据库链路代码改动，不能排除；需 admin 令牌取 CI 日志（job 138280271671）或 PG17 复现定论。
-2. **待查②（恢复施工时先做）**：`MOHEN_ORIGINAL_BRIDGE_KEY_VERSION` spawn 默认值修复未重建实测（CODE_PRESENT）；ST-03 生产 run（D00→D02，含一次付费观察调用，额度内）未重发。
-3. **下一动作**：核查结论出来后——若归因本批则修复补推；否则重建→重发生产 run→ST-04 导演→ST-05 成稿修订→ST-06 投稿/发布/WATCH→浏览器端到端→集中提交。
+1. **待查②（继续施工的第一件事）**：`MOHEN_ORIGINAL_BRIDGE_KEY_VERSION` spawn 默认值修复未重建实测（CODE_PRESENT）；ST-03 生产 run（D00→D02，含一次付费观察调用，额度内）未重发。
+2. **下一动作**：重建→重发生产 run（D00→D02）→ST-04 导演→ST-05 成稿修订→ST-06 投稿/发布/WATCH→浏览器端到端→集中提交。不重跑已有有效证据的环节。
+3. isolated-m1-http 仍是既有独立旧问题，本批未涉及，保持原状。
 
 ## 主线进度（按 PLAN §3.5 C 业务主干，同一任务 `b2143002` / Project `d9d48901` / run `b9989b90`）
 
