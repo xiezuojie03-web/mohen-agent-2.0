@@ -6473,3 +6473,5 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **待查项① isolated-pg 失败归因（未完成）**：GitHub API 匿名限流无法下载 CI 日志（job 138280271671，需 admin 令牌）。本地用一次性 PG18 实例（D:\MoHen PG18 + initdb + `mohen.test_instance=codex-k3-isolated`）按 CI 同口径运行 `pnpm test:k3-db` 复现：15 个套件 exit 1（DB_SECURITY/GATE_AUTHORITY/QUALIFICATION_CONSUMPTION/STUDIO_ASSET/STUDIO_EXECUTION_CONTROLS/PRIVATE_TEXT_READING/PRIVATE_SOURCE_BINDING/PRIVATE_ORIGINAL_REPOSITORY/RIGHTS_BY_ACTION/PRIVATE_WORKER_ACL/MACHINE_REVIEWER_BOUNDARY/M5_PRODUCER_SCOPED_PROGRESS/ARTIFACT_CONTENT_REVISION/GATE_SERVICE/WEB_SESSION_REVOCATION），ROLLBACK 类前置检查 PASS。**注意**：本地复现用 PG18，CI 用 PG17，15 套面状失败更像实例/版本级环境差异而非本批代码（本批只改了 retrieve-shl/research/knowledge-routing/acquisition/production 环境），但不能排除——**归因未完成，不得视为已定论**。恢复条件：用 admin 令牌取 CI 日志，或在 PG17 容器复现。
 - **待查项②**：spawn env `MOHEN_ORIGINAL_BRIDGE_KEY_VERSION` 默认值修复已提交但未重建实测（CODE_PRESENT）；ST-03 生产 run 重发未执行。
 - **恢复动作**：Owner/ChatGPT 核查后，从"重建→重发生产 run（D00→D02）"继续，随后 ST-04→ST-06→浏览器端到端。
+
+- **PENDING_PUSH（2026-11-24 交付暂停点记录）**：docs 提交 `bdad9060`（暂停点标注+CI 待查项）因 GitHub 连接超时未推送（main 内容 `6558d647` 已推送成功）。网络恢复后补推；推送后销项。
