@@ -2,16 +2,16 @@
 
 > **依据**：CEI-01任务书V4.1 §3.5；Owner于2026-11-24确认仅复核C1/C2/C3，不扩大竞品数量。  
 > **范围**：有限桌面复核；不新增案例库，不开展市场调查、用户测试、工程继承审查或工程施工。  
-> **状态**：`B_LIMITED_REVIEW_COMPLETE / NO_VERIFIED_COMPETITIVE_MOAT / C_REVIEW_NEXT`  
+> **状态**：`B_LIMITED_REVIEW_COMPLETE / NO_VERIFIED_DIFFERENTIATION / C_REVIEW_NEXT`  
 > **结论性质**：基于既有CEI-1案例证据、GitHub main上MHKA-01—05及少量官方现行资料的设计竞争力判断；不是市场验证。
 
 ## 1. 结论摘要
 
 | 候选 | 本轮判断 | 是否构成已证竞争优势 | 后续处置 |
 |---|---|---|---|
-| C1 历史文化向个人生活的可信转译 | `LIMITED_SUPPORT` | 否。已有明显相邻实践，价值主张不排他 | 保留为产品价值要求，不再作为差异化卖点 |
-| C2 有证据约束的跨媒介、跨时空连续探索 | `CONDITIONAL_POTENTIAL` | 否。单项能力已有先例，组合优势及用户价值未验证 | 保留为最值得继续检验的体验假设 |
-| C3 Studio创作资产反哺平台发现 | `UNVERIFIED` | 否。存在架构与知识工程先例，但未证明形成有效循环或复利 | 保留为运营/资产机制假设，不列为当前竞争优势 |
+| C1 历史文化向个人生活的可信转译 | `WEAK` | 否。已有明显相邻实践，价值主张不排他 | 保留为产品价值要求，不再作为差异化卖点 |
+| C2 有证据约束的跨媒介、跨时空连续探索 | `NOT_PROVEN` | 否。单项能力已有先例，组合优势及用户价值未验证 | 保留为最值得继续检验的体验假设 |
+| C3 Studio创作资产反哺平台发现 | `NOT_PROVEN` | 否。存在架构与知识工程先例，但未证明形成有效循环或复利 | 保留为运营/资产机制假设，不列为当前竞争优势 |
 
 **总判断：现有证据不足以证明墨痕已经拥有可靠、排他的竞品差异化。** 不应继续投入独立竞品扩展研究来寻找“必然存在的护城河”。三项中只有C2值得在后续HOME/EXP设计审查中作为核心体验假设继续检验；C1回归产品价值底线，C3回归长期运营机制，不再单独包装为差异化。
 
@@ -48,7 +48,7 @@ The Met 2026年与Google Arts & Culture公开的“The Met and The World”项�
 
 ### 裁决
 
-`LIMITED_SUPPORT / NOT_DIFFERENTIATED`
+`WEAK / NOT_DIFFERENTIATED`
 
 保留C1作为产品价值与人文验收要求；不再把它单独列为竞争优势。无需为证明C1而继续增加案例。
 
@@ -72,7 +72,7 @@ C2是三个候选中最值得保留的一个，但必须把“能力组合”与
 
 ### 裁决
 
-`CONDITIONAL_POTENTIAL / NOT_VERIFIED_AS_ADVANTAGE`
+`NOT_PROVEN / POTENTIAL_RETAINED_FOR_DESIGN_TEST`
 
 C2作为最重要的产品体验假设保留，后续应在EXP专项审查中通过具体任务路径检验。当前不称其为护城河，不再开展更大规模竞品搜索。是否成立，取决于实际连续探索能否做到“用户愿意继续、每一步有依据、关系可质疑、媒介切换有意义”，而不是功能清单是否齐全。
 
@@ -94,7 +94,7 @@ MHKA-01明确将Studio定位为研究与创作双产出：知识资产可在研�
 
 ### 裁决
 
-`UNVERIFIED / OPERATING_HYPOTHESIS_ONLY`
+`NOT_PROVEN / OPERATING_HYPOTHESIS_ONLY`
 
 保留C3作为长期运营与知识资产机制假设，不列为当前竞争优势，不另开竞品研究。未来只能用真实Studio生产、合格资产增长、EXP/HOME消费和复用成本数据验证。
 
