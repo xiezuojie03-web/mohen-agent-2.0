@@ -48,6 +48,24 @@ test("Studio terminal readback retains exact D00/G0 HOLD reason without claiming
   } finally { fs.rmSync(directory, { recursive: true, force: true }); }
 });
 
+test("a verified PASS terminal carries the exact independent Gate audit id", async () => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "mohen-pass-terminal-"));
+  let terminal;
+  const auditId = "1f50a028-a83c-4d1c-bcda-2a3e1f28ca6f";
+  try {
+    await finalizeRun({ run: { run_id: "run-pass", status: "PASS", current_stage: "D02",
+      research_intent: "fixture", scope: {}, stage_results: [{ disposition: "PASS", hold: null,
+        independent_qualification: { gate_audit_id: auditId } }] },
+      db: { queryRows: async (_sql, params) => {
+        terminal = JSON.parse(params.terminal); return [{ run_id: "run-pass" }];
+      } }, outDir: directory });
+    // A PASS the Owner-scoped writer accepts must name its current G audit; the
+    // previous UUID pattern had an extra group and nulled every real audit id.
+    assert.equal(terminal.independent_gate_audit_id, auditId);
+    assert.equal(terminal.gate_code, "G2");
+  } finally { fs.rmSync(directory, { recursive: true, force: true }); }
+});
+
 test("a stage candidate and arbitrary error text cannot become a G0 PASS receipt", async () => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "mohen-g0-no-sign-"));
   let terminal;

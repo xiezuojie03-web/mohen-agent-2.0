@@ -9,6 +9,7 @@ import { createHash } from 'node:crypto';
 import {
   deriveD04FindingStageDigests, attestG4FindingStageOutput, attestStageOutputForRequest,
 } from '../../tools/gate-stage-output-attestation.mjs';
+import { auditHasExactStageBinding } from '../../packages/data-access/src/gate-stage-qualification.mjs';
 import { executionDigest } from '../../pipelines/data-production/orchestrator/execution-authority.mjs';
 import { rebuildD04ResumeInput } from '../../pipelines/data-production/orchestrator/d04-resume-input.mjs';
 
@@ -104,11 +105,14 @@ function args(patch = {}, q = baseQuery({ findings: [findingRow] })) {
 test('independent signer rebuilds the exact D04 finding output and exact bound digests', async () => {
   assert.equal(digests.input_digest, inputDigest);
   const attested = await attestG4FindingStageOutput(args());
-  assert.deepEqual(attested, { gate_code: 'G4', input_digest: request.input_digest,
-    output_digest: request.output_digest, job_id: 'd04.humanistic-discovery',
-    reviewer_binding_ref: binding });
-  // D04/G4 的 attestation 返回精确到 job/reviewer/input/output；consumer 由
-  // G4 内容检查单独核，故此处不复用 D00/D01 的 auditHasExactStageBinding 断言。
+  assert.deepEqual(attested, { gate_code: 'G4', consumer: 'producer',
+    input_digest: request.input_digest, output_digest: request.output_digest,
+    job_id: 'd04.humanistic-discovery', reviewer_binding_ref: binding });
+  // The verifier accepts a run's handoff only when the signed binding carries
+  // the same consumer as the request; a binding without it signs an audit the
+  // Gate service can never read back (G2-G5 used to omit it).
+  assert.equal(auditHasExactStageBinding({ stage: 'D04', consumer: 'producer',
+    input_fingerprint: request.input_digest, stage_binding: attested }, request), true);
   // 单一派发入口按持久 stage/gate 选择 G4，而非按调用方给的阶段名。
   const dispatched = await attestStageOutputForRequest(args());
   assert.deepEqual(dispatched, attested);

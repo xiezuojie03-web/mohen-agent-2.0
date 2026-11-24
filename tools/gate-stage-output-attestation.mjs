@@ -324,6 +324,8 @@ async function deriveD02ObservationFacts({query,candidate,projectId,registry,run
   const rows=await query([
     "select e.evidence_id::text as evidence_id, l.read_unit_id::text as read_unit_id,",
     "l.read_run_id::text as link_read_run_id, l.selected_extent::text as selected_extent,",
+    "l.link_id::text as link_id, e.reading_unit_id::text as reading_unit_id,",
+    "e.input_fingerprint as request_digest,",
     "e.source_id::text as source_id, e.source_version_id::text as source_version_id,",
     "e.raw_item_id::text as raw_item_id, e.locator::text as locator,",
     "e.literal_reading, e.source_voice, e.evidence_type, e.research_proposition,",
@@ -339,7 +341,9 @@ async function deriveD02ObservationFacts({query,candidate,projectId,registry,run
     row.source_version_id===input.reading.source_version_id&&
     row.raw_item_id===input.reading.raw_item_id&&
     row.modality==='text_quote'&&row.literal_reading&&row.source_voice&&
-    row.evidence_type&&row.research_proposition,
+    row.evidence_type&&row.research_proposition&&
+    UUID.test(row.link_id??'')&&UUID.test(row.reading_unit_id??'')&&
+    SHA.test(row.request_digest??''),
     'STAGE_OUTPUT_OBSERVATION_BINDING_MISMATCH');
   let selected=row.selected_extent;
   if(typeof selected==='string'){try{selected=JSON.parse(selected);}catch{selected=null;}}
@@ -376,21 +380,41 @@ async function deriveD02ObservationFacts({query,candidate,projectId,registry,run
     SHA.test(dependency[0].qualification_digest??''),
     'STAGE_OUTPUT_UPSTREAM_QUALIFICATION_MISMATCH');
 
-  const output={stage:'D02',candidate_kind:'private_material_observation',
-    evidence_id:evidenceId,read_unit_id:input.readUnitId,
-    source_id:row.source_id,source_version_id:row.source_version_id,
-    raw_item_id:row.raw_item_id,extent:locator,
-    h_type:'H05',literal_reading:row.literal_reading,source_voice:row.source_voice,
-    evidence_type:row.evidence_type,research_proposition:row.research_proposition,
-    uncertainty,artifact_revision:candidate.artifact_revision,
-    gate_candidate_id:cid,gate_candidate_status:'SUBMITTED',
-    qualification:'UNASSESSED',gate_code:'G2'};
+  const output=d02ObservationOutput({originalId:input.originalId,evidenceId,
+    readingUnitId:row.reading_unit_id,linkId:row.link_id,readUnitId:row.read_unit_id,
+    readRunId:row.link_read_run_id,artifactRevision:candidate.artifact_revision,
+    requestDigest:row.request_digest,gateCandidateId:cid});
   return {input,output,input_digest:inputDigest,output_digest:executionDigest(output)};
 }
 
 export async function deriveD02ObservationStageDigests(args={}){
   const facts=await deriveD02ObservationFacts(args);
   return {input_digest:facts.input_digest,output_digest:facts.output_digest};
+}
+
+// Exact D02 contract output the Runner hands to G2: the persisted candidate the
+// private worker returns (see private-evidence-stage.mjs observeMaterial). The
+// attester must rebuild THIS object, not a richer variant of its own, or the
+// digest can never reproduce.
+export function d02ObservationOutput({originalId,evidenceId,readingUnitId,linkId,
+  readUnitId,readRunId,artifactRevision,requestDigest,gateCandidateId}={}){
+  return {stage:'D02',candidate_kind:'private_material_observation',
+    original_id:originalId,evidence_id:evidenceId,
+    reading_unit_id:readingUnitId,link_id:linkId,
+    read_unit_id:readUnitId,read_run_id:readRunId,
+    artifact_revision:artifactRevision,request_digest:requestDigest,
+    gate_candidate_id:gateCandidateId,gate_candidate_status:'SUBMITTED',
+    qualification:'UNASSESSED',gate_code:'G2'};
+}
+
+// The exact signed stage_binding contract G2-G5 attesters must return. The
+// read-only verifier matches job, Reviewer binding, both digests and consumer;
+// hand-written copies dropped `consumer`, which signed an audit every later
+// current-qualification read rejects as unreadable.
+export function stageBindingFor(job,facts,gate){
+  return {gate_code:gate,consumer:'producer',
+    input_digest:facts.input_digest,output_digest:facts.output_digest,
+    job_id:job.job_id,reviewer_binding_ref:job.implementation?.gate_reviewer_binding};
 }
 
 export async function attestG2ObservationStageOutput({query,candidate,request,registry,projectId}={}){
@@ -409,9 +433,10 @@ export async function attestG2ObservationStageOutput({query,candidate,request,re
     runId:request.run_id});
   requireFact(request.input_digest===facts.input_digest&&
     request.output_digest===facts.output_digest,'STAGE_OUTPUT_ATTESTATION_MISMATCH');
-  return {gate_code:'G2',input_digest:facts.input_digest,
-    output_digest:facts.output_digest,job_id:job.job_id,
-    reviewer_binding_ref:job.implementation?.gate_reviewer_binding};
+  // The signed stage_binding is what the read-only verifier later accepts as
+  // THIS Producer's handoff, so it must carry the same consumer the G0/G1
+  // bindings do; a missing consumer is unreadable by auditHasExactStageBinding.
+  return stageBindingFor(job,facts,'G2');
 }
 
 // D03 → G3: independent, read-only reconstruction of the REAL persisted D03
@@ -508,9 +533,7 @@ export async function attestG3WorldClaimStageOutput({query,candidate,request,reg
   const facts=await deriveD03WorldClaimFacts({query,candidate,projectId,registry,runId:request.run_id});
   requireFact(request.input_digest===facts.input_digest&&
     request.output_digest===facts.output_digest,'STAGE_OUTPUT_ATTESTATION_MISMATCH');
-  return {gate_code:'G3',input_digest:facts.input_digest,
-    output_digest:facts.output_digest,job_id:job.job_id,
-    reviewer_binding_ref:job.implementation?.gate_reviewer_binding};
+  return stageBindingFor(job,facts,'G3');
 }
 
 // D04 → G4: independent, read-only reconstruction of the REAL persisted D04
@@ -594,9 +617,7 @@ export async function attestG4FindingStageOutput({query,candidate,request,regist
   const facts=await deriveD04FindingFacts({query,candidate,projectId,registry,runId:request.run_id});
   requireFact(request.input_digest===facts.input_digest&&
     request.output_digest===facts.output_digest,'STAGE_OUTPUT_ATTESTATION_MISMATCH');
-  return {gate_code:'G4',input_digest:facts.input_digest,
-    output_digest:facts.output_digest,job_id:job.job_id,
-    reviewer_binding_ref:job.implementation?.gate_reviewer_binding};
+  return stageBindingFor(job,facts,'G4');
 }
 
 // D05 fact branch → G5: independent, read-only reconstruction of the REAL
@@ -696,9 +717,7 @@ export async function attestG5FactStageOutput({ query, candidate, request, regis
   const facts = await deriveD05FactFacts({ query, candidate, projectId, registry, runId: request.run_id });
   requireFact(request.input_digest === facts.input_digest &&
     request.output_digest === facts.output_digest, 'STAGE_OUTPUT_ATTESTATION_MISMATCH');
-  return { gate_code: 'G5', input_digest: facts.input_digest,
-    output_digest: facts.output_digest, job_id: job.job_id,
-    reviewer_binding_ref: job.implementation?.gate_reviewer_binding };
+  return stageBindingFor(job,facts,'G5');
 }
 
 // Single dispatch used by every independent signer composition (local Gate

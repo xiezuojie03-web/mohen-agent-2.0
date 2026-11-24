@@ -28,7 +28,7 @@ export function terminalRunEvidence(run) {
     stage, gate_code: stage ? 'G' + stage.slice(-1) : null,
     disposition: run.status,
     independent_gate_audit_id: typeof audit === 'string' &&
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(audit) ? audit : null,
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(audit) ? audit : null,
     reason_code: code(last?.hold?.reason_code),
     verification_error: code(last?.hold?.verification_error),
   };

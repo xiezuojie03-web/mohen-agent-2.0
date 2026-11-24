@@ -6490,3 +6490,22 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **未解决/不声明**：①本地一次性 PG18 实例曾出现 15 套件面状 exit 1，CI PG17 同代码仅 4 套且已修绿——PG18/PG17 环境差异仍未单独解释，本轮不把本地 PG18 结果当作证据；②isolated-m1-http 属既有独立旧问题，本批未涉及。
 - **费用**：0（本窗口无付费模型调用）。
 - **下一动作**：重建→重发生产 run（D00→D02，含一次付费观察调用，额度 0.05 USD 内，Owner 已批准一次）→ST-04 导演→ST-05 成稿→ST-06 投稿/发布/WATCH→浏览器端到端→集中提交。已有效的环节不重跑。
+
+---
+
+## 2026-11-24 D02/G2 本地闭环窗口（run 21d9603f：D00→D02 真实 PASS，两处接口缺陷修复）
+
+- **基线**：main=`67eb1c7c`（本地=远端）；本地 mohen_dev 隔离库、next start :3100、本地 Gate 服务 :8789（`node --env-file=.env.local tools/local-gate-service.mjs`）。未触生产库/部署/密钥；未新建分支/未强推。
+- **为跑通 D02 补齐的本地环境前提（均为既有对象，非新设计）**：
+  1. 应用既存迁移 `20261115130000_mab_m5_private_text_read_context_consistency.sql`（`read_private_text_reading` 的 `attestation_digest` 校验与 `byte_verification_receipt` 实际形状对齐）；应用前读数 `readings:0`，应用后 `readings:1` 且 locator/source 与 C01 段落一致。
+  2. 应用既存迁移 `20261122170000_m5_effective_rights_projection.sql`（本地此前缺 `source.effective_rights_by_action`，注册回读 `external_processing:"allowed"`）。
+  3. `tasks/results/D02_PROVIDER_DELEGATION_A2B0CF23_20261124.sql`：建立 D02 委托 `c5788552`（allowed_actions `d02_material_observation`、0.05 USD、7 天、幂等键/请求哈希）并给来源 `f889a887` 追加 `external_processing_decision`（owner/2026-11-24/deepseek/单次调用/上限 0.05 USD）。本地 `.env.local`（gitignored）补 `MOHEN_PRIVATE_D02_DELEGATION_ID`/`MOHEN_PRIVATE_D02_MODEL`。
+- **真实付费调用（仅 1 次）**：回执 `f4c034b7-10d6-408d-9496-8a69d8e7405a`，deepseek-flash，usage prompt 998 / completion 2197，`0.002861 USD`（ESTIMATED，ACCEPT_AS_CANDIDATE），证据 `0df18664`（H05 地名释文，逐字引文包含于来源正文）。其后 3 次重发全部按 input_hash 重放（`studio.execution_receipts` 该委托仍 1 条），零新增费用。
+- **缺陷①（已修，有测试）G2—G5 的 `stage_binding` 缺 `consumer`**：`tools/gate-stage-output-attestation.mjs` 的 G2/G3/G4/G5 返回体只有 gate_code/input/output/job/reviewer，而 `packages/data-access/src/gate-stage-qualification.mjs#auditHasExactStageBinding` 与 SQL `control.read_gate_stage_qualification` 都要求 `binding.consumer='producer'`。现场表现：Gate 已把候选签成 audit（候选 `d7773534` CONSUMED），但随后 `findCurrentAudit` 读不回 → 404 `NO_CURRENT_QUALIFICATION` → Producer 侧只看到 `INDEPENDENT_GATE_VERIFY_DENIED`。修法：新增共享 `stageBindingFor(job,facts,gate)`（含 `consumer:'producer'`），G2—G5 统一使用；G4/G5 测试补 `auditHasExactStageBinding` 断言，新增 `tests/data-production/gate-d02-g2-stage-output.test.mjs` 的绑定契约用例（含"去掉 consumer 即不可读"反例）。
+- **缺陷②（已修，有测试）终态审计 id 恒为 null**：`pipelines/data-production/orchestrator/run-persistence.mjs#terminalRunEvidence` 的 UUID 正则多一组（8-4-4-4-4-12），任何真实 audit id 都判非法 → PASS 终态写 `independent_gate_audit_id:null`（云端 Owner 作用域 RPC 会因此抛 `M5_PRODUCER_GATE_REQUIRED`）。修为标准 8-4-4-4-12，并补 `run-persistence` 回归用例断言 PASS 必须带审计 id。
+- **环形修复后的真实终态**：同一 run `21d9603f` 于 11:17:12Z `PASS`（D00→D02），`m5_terminal={stage D02, gate_code G2, disposition PASS, independent_gate_audit_id 4d82b678-400f-4810-9149-6b6ba269715e}`；该审计 `independent_gate`/`current_valid=true`/valid_until 11-30，`stage_binding={job d02.material-understanding, consumer producer, input bc1b215a…, output abf66ed8…}`，绑定候选 `1807e0a9`；机器报告 `verification/data-production-runs/21d9603f-….machine.json`（11:17:05→11:17:12Z）三阶段 PASS 且候选/摘要齐全：D00 `raw_item d694a4aa` input `e23d1164…`/output `4140bc07…`、D01 `read_unit 55144a55` input `b9b19fc3…`/output `4090bdf6…`、D02 `material_evidence 0df18664` input `bc1b215a…`/output `abf66ed8…`。
+- **口径边界（不夸大）**：本机未启 `MOHEN_CLOUD_RUN_PROGRESS_RPC`，终态走既有本地 UPDATE 路径，PASS 与审计 id 由 Runner 写入；云端 Owner 作用域 SQL 的 Gate 强校验本窗口未在云端实测。这是隔离/本地证据，不是生产部署或 CI PASS。
+- **测试**：`node --test tests/data-production/{gate-d02-g2-stage-output,gate-d04-g4-stage-output,gate-d05-g5-stage-output,gate-stage-output-attestation,gate-stage-qualification}.test.mjs` = 38/38 PASS；`run-persistence.test.mjs` + G2 文件 = 10/10 PASS。
+- **遗留（不删、不伪造）**：该 run 累积 7 条 SUBMITTED G0 候选与 1 条 SUBMITTED G2 候选（`97031a7f`，旧指纹 `7680f9f5…`；重发会随 G1 重签产生新指纹 `20f0e242…`/`0f269de0…`/`bc1b215a…`）。候选选择按精确 `input_fingerprint` 唯一匹配，当前无歧义；候选生命周期现无 withdraw/supersede 路径，保持原状，待后续按合同设计再处理。
+- **费用**：0.002861 USD（额度 0.05 USD 内，Owner 已批准一次真实调用）。
+- **下一动作**：核对 D03—D05 取证分支（G3/G4/G5 已随本修包含 consumer；D05 的 `request_digest` 与 G2 语义不同需单独核）→ 同一 run 续跑 D03→D05（付费前先确认可重放）→ ST-04 导演 → ST-05 成稿 → ST-06 投稿/发布/WATCH → 浏览器端到端 → 集中提交。

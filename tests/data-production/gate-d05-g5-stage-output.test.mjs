@@ -15,6 +15,7 @@ import { createHash } from 'node:crypto';
 import {
   deriveD05FactStageDigests, attestG5FactStageOutput, attestStageOutputForRequest,
 } from '../../tools/gate-stage-output-attestation.mjs';
+import { auditHasExactStageBinding } from '../../packages/data-access/src/gate-stage-qualification.mjs';
 import { executionDigest } from '../../pipelines/data-production/orchestrator/execution-authority.mjs';
 import { rebuildD05ResumeInput } from '../../pipelines/data-production/orchestrator/d05-resume-input.mjs';
 
@@ -214,6 +215,9 @@ test('G5 stage-output attestation：一致请求通过，错 job/错摘要失败
     request: stageRequest, registry, projectId: project });
   assert.equal(attested.gate_code, 'G5');
   assert.equal(attested.input_digest, inputDigest);
+  assert.equal(attested.consumer, 'producer');
+  assert.equal(auditHasExactStageBinding({ stage: 'D05', consumer: 'producer',
+    input_fingerprint: inputDigest, stage_binding: attested }, stageRequest), true);
 
   await assert.rejects(attestG5FactStageOutput({ query, candidate: candidate(),
     request: { ...stageRequest, job_id: 'd04.humanistic-discovery' }, registry, projectId: project }),

@@ -2,7 +2,7 @@
 
 > **Owner 授权口径（2026-11-22，长期有效）**：目标是墨痕**真正运行、持久运行**；除**安全问题**与**费用问题**外，施工方自行授权推进，不再逐项请示技术选择。费用边界：D02–D05 模型调用封顶 **0.05 USD**（约 ¥0.36，已建委托 `3f5585d0…`），超出该额度、新增付费来源或扩大用途仍需 Owner 批准。安全底线（密钥不入 git、不自签 Gate、不伪造会话/资格/PASS、不改迁移规避授权）不因该授权放宽。
 
-> 核验时间 2026-11-24（隔离检查归因复核窗口，main=`f379eb0b`，本地=远端）｜基线继承 `5bc0aeea`（其代码面等于 `0bc122b4`）｜本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
+> 核验时间 2026-11-24（D02/G2 本地闭环窗口，基线 main=`67eb1c7c`，本地=远端）｜基线继承 `5bc0aeea`（其代码面等于 `0bc122b4`）｜本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
 
 ## 本批事实（2026-11-24 Studio 闭环专项，金泽 Project `a2b0cf23`）
 
@@ -13,12 +13,20 @@
 - **卫生维护**：新增 `scripts/maintain-qualification-current.mjs` 清理 `control.qualification_current` 32 条自然过期行（gate_audits 历史未动）。
 - 本地实例（next start :3100）+ 本地 Gate 服务（:8789）已在本批真实配置下运行；生产运行器重发在最后一个修复重建后被 Owner 暂停。
 
+### 本批续：D00→D02 本地真实闭环（2026-11-24，run `21d9603f`，PASS）
+- **真实终态**：金泽 Project `a2b0cf23` / 任务 `bca52162` / 原件 `674deb39`，本地 Studio 生产 `D00→D02` 于 11:17:12Z 以 **PASS** 结束（`control.production_runs.status=PASS`，`current_stage=D02`，`m5_terminal.independent_gate_audit_id=4d82b678-400f-4810-9149-6b6ba269715e`）；机器报告 `verification/data-production-runs/21d9603f-….machine.json` 逐阶段留有候选与摘要绑定。
+- **G2 独立签发现场**：`4d82b678` = `independent_gate` / `consumer=producer` / `current_valid=true`（valid_until 11-30），`stage_binding={job d02.material-understanding, consumer producer, input bc1b215a…, output abf66ed8…}`，绑定候选 `1807e0a9`、证据 `0df18664`（H05 地名释文，来自上图《上海地名志·金泽》正文逐字片段）。
+- **付费只发生一次**：`studio.execution_receipts` 该委托（`c5788552`）仅 1 条：`f4c034b7`（deepseek-flash，`0.002861 USD` ESTIMATED，ACCEPT_AS_CANDIDATE）。其后 3 次重发均按精确 input_hash 重放既有回执，**零新增调用/零新增费用**；额度上限 0.05 USD。
+- **本批修掉两个真实接口缺陷（均有回归测试）**：①G2—G5 只读取证返回的 `stage_binding` 缺 `consumer`，Gate 服务签名成功但随后的 current 读回按 `binding.consumer='producer'` 恒不匹配 → Producer 只看到 `INDEPENDENT_GATE_VERIFY_DENIED`、候选却已 CONSUMED；改为共享 `stageBindingFor()`（含 consumer），G2/G4/G5 断言补 `auditHasExactStageBinding`。②`run-persistence.terminalRunEvidence` 的 UUID 正则多一组，任何真实 audit id 都被判非法并写成 `null`（云端 Owner 作用域 RPC 会因此拒写 PASS）；已修正并加回归。
+- **本地口径边界**：本机 `MOHEN_CLOUD_RUN_PROGRESS_RPC!=true`，终态走既有非 Owner 作用域 UPDATE 路径，PASS 记录与其审计 id 由 Runner 自行写入；云端 Owner 作用域 RPC 的 `M5_PRODUCER_GATE_REQUIRED` 强校验本批**未在云端实测**。
+- **遗留候选（不删、不伪造）**：该 run 累积 7 条 SUBMITTED G0 候选与 1 条 SUBMITTED G2 候选（`97031a7f`，旧指纹 `7680f9f5…`）；候选选择按精确 input_fingerprint 唯一匹配，当前不产生歧义；候选生命周期无 withdraw/supersede 路径，保持原状待后续设计。
+
 ## 最前阻断与下一动作
 
 > **隔离检查已转绿（2026-11-24 复核，main=`f379eb0b`）**：isolated-pg 的失败归因为既有漂移，非 Studio 闭环批次引入，已修复推送。`ci`=success、`MAB isolated PostgreSQL 17 verification`=success（job 138381760424）。四处根因：①检索测试仍按旧返回值全等比较，漏 11-19 新增 `coverage` 字段；②两个私有读取套件的登录只授 `mohen_app_runtime`，缺 11-18 身份护栏要求的 `mohen_private_worker` 成员与 SET；③隔离迁移链止于 11-18，缺 11-19 严格权限词典；④创建 `mohen_private_worker` 的迁移排在其测试之后。修法只改测试与隔离链脚本，未改产品逻辑。
 
-1. **待查②（继续施工的第一件事）**：`MOHEN_ORIGINAL_BRIDGE_KEY_VERSION` spawn 默认值修复未重建实测（CODE_PRESENT）；ST-03 生产 run（D00→D02，含一次付费观察调用，额度内）未重发。
-2. **下一动作**：重建→重发生产 run（D00→D02）→ST-04 导演→ST-05 成稿修订→ST-06 投稿/发布/WATCH→浏览器端到端→集中提交。不重跑已有有效证据的环节。
+1. **待查②已转 CODE_PRESENT→本地 VERIFIED（隔离层）**：`MOHEN_ORIGINAL_BRIDGE_KEY_VERSION` spawn 默认值修复与 ST-03 生产 run（D00→D02，含一次付费观察调用）均已在本地真实跑通并留痕（见上节，run `21d9603f` PASS / G2 `4d82b678`）；尚未在生产环境重跑。
+2. **下一动作**：把本批两处接口修合同步核对 D03—D05 分支（G3/G4/G5 已含 consumer，D05 的 `request_digest` 语义与 G2 不同需单独核）→ 续跑 D03→D05（同一 run，仍受 0.05 USD 委托额度约束，付费前先确认可重放）→ST-04 导演→ST-05 成稿修订→ST-06 投稿/发布/WATCH→浏览器端到端→集中提交。不重跑已有有效证据的环节。
 3. isolated-m1-http 仍是既有独立旧问题，本批未涉及，保持原状。
 
 ## 主线进度（按 PLAN §3.5 C 业务主干，同一任务 `b2143002` / Project `d9d48901` / run `b9989b90`）
