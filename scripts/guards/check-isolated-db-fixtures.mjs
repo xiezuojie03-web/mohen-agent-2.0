@@ -47,6 +47,28 @@ const UNCHAINED = new Map([
     "20261114150000_mab_m5_st07_work_revision.sql",
     "20261114180000_mab_m5_st08_submission_snapshot.sql",
     "20261114190000_mab_m5_st09_editorial_publish_withdraw.sql"].map(f => [f, M5_STUDIO_AXIS_DB_ONLY]),
+  // 11-17 之后 M5/D00-D05 执行链、D00-D05 journal、rights projection、formal authority 等 DB 迁移
+  ...["20261118120000_m5_formal_project_read_acl_order_fix.sql",
+    "20261118123000_m5_legacy_run_reconciliation.sql",
+    "20261118130000_m5_repair_historical_run_status_incident.sql",
+    "20261119110000_m5_private_source_rights_projection.sql",
+    "20261119125821_fix_control_sha256_bytes_builtin.sql",
+    "20261119235044_allow_private_registration_owner_artifact_revision.sql",
+    "20261119235412_restore_private_source_registration_rights_projection.sql",
+    "20261120084600_d00_execution_grant_journal.sql",
+    "20261120110300_d00_preview_service_login_roles.sql",
+    "20261120150000_d01_resume_grant_journal.sql",
+    "20261121060000_d01_resume_journal_reissue.sql",
+    "20261122130000_d02_resume_grant_journal.sql",
+    "20261122140000_d02_resume_journal_reissue_expired.sql",
+    "20261122170000_m5_effective_rights_projection.sql",
+    "20261122180000_d03_resume_grant_journal.sql",
+    "20261122190000_artifact_revision_claim_revision.sql",
+    "20261122200000_g3_reviewer_changes_read.sql",
+    "20261122210000_d04_resume_grant_journal.sql",
+    "20261122230000_d05_resume_grant_journal.sql",
+    "20261123120000_mab_m5_st05_st07_project_and_body_authority.sql",
+    "20261123130000_mab_m5_director_plan_formal_body_authority.sql"].map(f => [f, M5_STUDIO_AXIS_DB_ONLY]),
 ]);
 
 const chains = chainFiles.map(file => ({ file, source: fs.readFileSync(path.join(root, file), "utf8") }));
