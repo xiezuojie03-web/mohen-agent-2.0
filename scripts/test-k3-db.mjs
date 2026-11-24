@@ -130,6 +130,11 @@ try {
     apply('20261105110000_mab_m5_studio_research_read.sql');
     apply('20261115130000_mab_m5_private_text_read_context_consistency.sql');
     apply('20261103234154_mab_m3_gate_service_auth.sql');
+    // The dedicated private worker role is created here. It used to be applied only in the
+    // late 2026-11 block below, but the 2026-11-18 identity guard requires the worker login
+    // to be a SET member of mohen_private_worker, so the two private suites that follow need
+    // the role to exist first. Idempotent (guarded by to_regrole).
+    apply('20261107210000_mab_m3_private_gate_candidate_submission.sql');
     runTest("PRIVATE_TEXT_READING", "tests/data-production/private-text-reading.integration.mjs");
     runTest("PRIVATE_SOURCE_BINDING", "tests/data-production/private-original-source-binding.integration.mjs");
     runTest("PRIVATE_ORIGINAL_REPOSITORY", "tests/data-production/private-original-repository.integration.mjs");
@@ -146,7 +151,6 @@ try {
       "20261107160000_mab_m2_1_producer_run_progress.sql",
       "20261107200000_mab_m5_d02_d05_private_candidates.sql",
       "20261113170000_mab_m5_d02_text_plain_observation.sql",
-      "20261107210000_mab_m3_private_gate_candidate_submission.sql",
       "20261107211000_mab_m3_local_owner_gate_signer.sql",
       "20261107220000_mab_m5_machine_rule_reviewer.sql",
       "20261107230000_mab_m2_private_source_registration_source_revision.sql",
