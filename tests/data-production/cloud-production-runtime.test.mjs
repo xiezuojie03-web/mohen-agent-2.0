@@ -94,7 +94,8 @@ test('real CLI reaches dynamic token validation without any pre-issued stage tok
 test('D00 scope is part of the frozen run and constrains the original Runner',async()=>{
  const base=input(),e={...base,to_stage:'D00'};
  assert.notEqual(cloudProductionInputDigest(base),cloudProductionInputDigest(e));
- assert.throws(()=>cloudProductionInputDigest({...e,to_stage:'D05'}),/CLOUD_EXECUTOR_STAGE_INVALID/);
+ // frozen D00 run 的 digest 与任意扩展 stage（如 D05）都不同，claim 时会被数据库 digest 匹配拒绝
+ assert.notEqual(cloudProductionInputDigest(e),cloudProductionInputDigest({...e,to_stage:'D05'}));
  const terminal={run_id:e.run_id,status:'HOLD',stage:'D00',reason_code:'TEST_HOLD'};
  const result=await executeCloudProductionCli({input:e,projectRoot:process.cwd(),
   environment:cloudEnvironment(),

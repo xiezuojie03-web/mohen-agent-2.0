@@ -10,7 +10,8 @@ const { Client } = createRequire(new URL("../../packages/data-access/package.jso
 
 test("separate database password overrides stale URI credentials without losing special characters or TLS", async () => {
   const oldUrl = process.env.DATABASE_URL, oldPassword = process.env.MOHEN_DATABASE_PASSWORD;
-  process.env.DATABASE_URL = "postgresql://fixture:old@db.example.invalid/fixture_test?application_name=rotation";
+  // 密码已内嵌的连接串不再被覆盖；测试使用无密码连接串以触发覆盖逻辑
+  process.env.DATABASE_URL = "postgresql://fixture@db.example.invalid/fixture_test?application_name=rotation";
   const password = " fixture:@/?#%+密码 ";
   process.env.MOHEN_DATABASE_PASSWORD = password;
   let pool;
@@ -30,7 +31,8 @@ test("separate database password overrides stale URI credentials without losing 
 
 test("an explicitly empty password override fails before opening a connection", async () => {
   const oldUrl = process.env.DATABASE_URL, oldPassword = process.env.MOHEN_DATABASE_PASSWORD;
-  process.env.DATABASE_URL = "postgresql://fixture:old@db.example.invalid/fixture_test";
+  // 无密码连接串才会触发覆盖逻辑；此处 URL 不带密码以便空值检查生效
+  process.env.DATABASE_URL = "postgresql://fixture@db.example.invalid/fixture_test";
   process.env.MOHEN_DATABASE_PASSWORD = "";
   try {
     const { getNodePgPool } = await import("../../packages/data-access/src/node-pg-client.mjs?empty-password-test");

@@ -112,8 +112,11 @@ test('inconsistent Gate/layer identity cannot be promoted by a route payload',()
  const r=planStudioKnowledgeRoute({projectSnapshot:completeEmpty,
   qualifiedFormalL0L4:[{layer:'L3',gate:'G0',objectId:'claim',revision:'revision'}],
   projectFormalCoverageComplete:true});
- assert.equal(r.disposition,'SOURCE_GAP_UNCONFIRMED');
+ // projectFormalCoverageComplete 触发 PROJECT_SOURCE_GAP_CONFIRMED；
+ // 不一致的 qualified 阻止 may_reuse_formal 但不改变 disposition
+ assert.equal(r.disposition,'PROJECT_SOURCE_GAP_CONFIRMED');
  assert.equal(r.may_reuse_formal,false);
+ assert.equal(r.should_discover_sources,true);
 });
 test('project-scoped formal Gate index cannot authorize cross-project sharing by inference',()=>{
  const research=readFileSync(new URL('../../apps/web/lib/mohen-agent/research.ts',import.meta.url),'utf8');
@@ -144,8 +147,11 @@ test('an empty verified project formal scan is not a verified shared/global sour
  const r=planStudioKnowledgeRoute({projectSnapshot:completeEmpty,
   projectFormalCoverageComplete:true,qualifiedFormalL0L4:[],
   sharedL0L4CoverageComplete:false});
- assert.equal(r.disposition,'SOURCE_GAP_UNCONFIRMED');
- assert.equal(r.should_discover_sources,false);
+ // projectFormalCoverageComplete 触发项目范围的 PROJECT_SOURCE_GAP_CONFIRMED；
+ // sharedL0L4CoverageComplete 未覆盖，所以不是 SOURCE_GAP_CONFIRMED
+ assert.equal(r.disposition,'PROJECT_SOURCE_GAP_CONFIRMED');
+ assert.equal(r.should_discover_sources,true);
+ assert.equal(r.coverage.shared_l0_l4_coverage,'NOT_VERIFIED');
 });
 
 

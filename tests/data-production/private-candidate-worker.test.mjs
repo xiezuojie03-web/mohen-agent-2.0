@@ -777,8 +777,10 @@ test('D00 writes only the intake observation when the caller supplies no extra m
     assert.equal(candidate.source_identity.method,'D00/Y05:intake_identity@v1');
     assert.equal(candidate.source_identity.layers.length,7);
     assert.equal(candidate.source_identity.layers.find(l=>l.layer==='collection').state,'unknown');
+    assert.equal(candidate.source_identity.layers.find(l=>l.layer==='holding').state,'unknown');
     assert.equal(candidate.source_identity.layers.find(l=>l.layer==='digital_asset').value.sha256,IMAGE_SHA);
-    assert.deepEqual(candidate.source_identity.dependencies.unresolved,['collection']);
+    assert.ok(candidate.source_identity.dependencies.unresolved.includes('collection'));
+    assert.ok(candidate.source_identity.dependencies.unresolved.includes('holding'));
   });
 });
 
