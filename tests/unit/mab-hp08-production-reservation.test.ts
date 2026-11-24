@@ -80,7 +80,7 @@ describe("HP08 paid production preflight and atomic budget reservation",()=>{
     const outcome=await requestProduction(taskId,ownerId);
     expect(outcome).toEqual({ok:true,run_id:"synthetic-run"});
     expect(order).toEqual(["CAS","durable-reservation","RUNNER"]);
-    expect(triggerProduction).toHaveBeenCalledWith(taskId,"historical materials",projectId,undefined,undefined);
+    expect(triggerProduction).toHaveBeenCalledWith(taskId,"historical materials",projectId,undefined,undefined,undefined);
   });
 
   it("does not invoke production if same checkpoint reservation lost the CAS",async()=>{

@@ -3,7 +3,7 @@ const fx=vi.hoisted(()=>({run:vi.fn(),queryRows:vi.fn(),spawn:vi.fn(),local:vi.f
 vi.mock('../../packages/data-access/src/index.mjs',()=>({run:fx.run,queryRows:fx.queryRows}));
 vi.mock('node:child_process',()=>({spawn:fx.spawn}));
 vi.mock('../../apps/web/lib/studio-execution-authority',()=>({isExecutionAuthorityReady:fx.local,startVerifier:vi.fn(),startDynamicTokenService:vi.fn(),buildAuthEnv:vi.fn(),executionDigest:vi.fn()}));
-vi.mock('../../pipelines/data-production/orchestrator/cloud-production-dispatch.mjs',()=>({createCloudProductionDispatch:fx.factory}));
+vi.mock('../../pipelines/data-production/orchestrator/cloud-production-dispatch.mjs',()=>({createCloudProductionDispatch:fx.factory,cloudProductionFromStage:vi.fn(()=>'D00'),cloudProductionEndStage:vi.fn(v=>v?.to_stage??'D02')}));
 import {triggerProduction,getProductionBlocker} from '../../apps/web/lib/studio-production';
 const id='123e4567-e89b-42d3-a456-426614174001';
 const source={originalId:id,pageNumber:1,sourceVersionId:id,sha256:'a'.repeat(64),assetRevisionId:id,contentType:'text/plain',byteSize:10,uploadStartedAt:'2026-11-10T00:00:00.000Z',uploadVerifiedAt:'2026-11-10T00:01:00.000Z'};

@@ -28,7 +28,7 @@ describe("HP08 Studio HTTP explicit budget and anti-replay",()=>{
     const res=await resume(post("/api/studio/research-tasks/"+taskId+"/resume",{}) as never,{params});
     expect(res.status).toBe(409);
     expect((await res.json()).reason).toBe("resume_step_checkpoint_required");
-    expect(resumeResearchTask).toHaveBeenCalledWith(taskId,undefined,"fixture-database-session");
+    expect(resumeResearchTask).toHaveBeenCalledWith(taskId,undefined,"fixture-database-session",undefined);
   });
   it("does not use appendResearchMessage to replay a budget HOLD",async()=>{
     resumeResearchTask.mockResolvedValue({
@@ -37,7 +37,7 @@ describe("HP08 Studio HTTP explicit budget and anti-replay",()=>{
     const res=await resume(post("/api/studio/research-tasks/"+taskId+"/resume",{}) as never,{params});
     expect(res.status).toBe(409);
     expect((await res.json()).reason).toBe("reconciliation_required");
-    expect(resumeResearchTask).toHaveBeenCalledWith(taskId,undefined,"fixture-database-session");
+    expect(resumeResearchTask).toHaveBeenCalledWith(taskId,undefined,"fixture-database-session",undefined);
     expect(appendResearchMessage).not.toHaveBeenCalled();
   });
   it("rejects resume of a non-held task rather than running charged research again",async()=>{

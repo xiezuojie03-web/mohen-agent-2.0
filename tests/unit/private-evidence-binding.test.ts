@@ -35,6 +35,7 @@ const bytes=Buffer.from('江南水乡的合成材料。');
 const quote='江南水乡';
 const originalId='11111111-1111-4111-8111-111111111111';
 const pool={connect:vi.fn(),query:vi.fn()};
+const mockClient={query:pool.query,release:vi.fn()};
 const storage={readVerified:vi.fn()};
 const key='synthetic-m2-private-evidence-hmac-secret';
 const extent={kind:'utf8_byte_range/v1',start_byte:0,end_byte:Buffer.byteLength(quote),
@@ -50,6 +51,7 @@ function args(stage:string,content:unknown){
 }
 beforeEach(()=>{
  vi.clearAllMocks();
+ pool.connect.mockImplementation(()=>Promise.resolve(mockClient));
  // Producer-side candidate submission, signed-audit read and the D01 approved method plan share
  // the same pool; no candidate id or signed upstream audit is fabricated by this mock.
  // D01 现在要求 G0 已批准消费者方法预选，故只对"读批准计划"这一条查询给出合成批准，

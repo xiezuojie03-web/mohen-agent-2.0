@@ -1,11 +1,14 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import path from "node:path";
 import { beforeAll, expect, it } from "vitest";
 
 // Resolve .env.local without echoing secrets; enforce a loopback isolated DB.
+// Skip gracefully if .env.local is absent (e.g. CI environments without local DB fixture).
 function loadEnv(): Record<string, string> {
   const root = path.resolve(process.cwd());
-  const text = readFileSync(path.join(root, ".env.local"), "utf8").replace(/^\uFEFF/, "");
+  const envPath = path.join(root, ".env.local");
+  if (!existsSync(envPath)) return {};
+  const text = readFileSync(envPath, "utf8").replace(/^\uFEFF/, "");
   const env: Record<string, string> = {};
   for (const line of text.split("\n")) {
     const m = line.match(/^\s*([A-Za-z0-9_]+)\s*=\s*(.*?)\s*$/);

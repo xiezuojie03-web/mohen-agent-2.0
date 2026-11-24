@@ -2,6 +2,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 
 const db = vi.hoisted(() => ({ queryRows: vi.fn(), queryValue: vi.fn(), run: vi.fn() }));
 vi.mock("../../packages/data-access/src/index.mjs", () => db);
+vi.mock("../../apps/web/lib/formal-publication-chain", () => ({ getFormalRevision: vi.fn(async () => null), formalSubmit: vi.fn() }));
 import { submitWork } from "../../apps/web/lib/publication";
 
 const work = "9ab37577-1789-4e5a-9d5a-9e629cffdbf7";
