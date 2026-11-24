@@ -2,7 +2,7 @@
 
 > **Owner 授权口径（2026-11-22，长期有效）**：目标是墨痕**真正运行、持久运行**；除**安全问题**与**费用问题**外，施工方自行授权推进，不再逐项请示技术选择。费用边界：D02–D05 模型调用封顶 **0.05 USD**（约 ¥0.36，已建委托 `3f5585d0…`），超出该额度、新增付费来源或扩大用途仍需 Owner 批准。安全底线（密钥不入 git、不自签 Gate、不伪造会话/资格/PASS、不改迁移规避授权）不因该授权放宽。
 
-> 核验时间 2026-11-24 本窗口（Owner 批准公开后续批）｜唯一 main `3517576c818f8c105a6d02e013988c7c456fc303`（本窗口代码提交已推送，本地 HEAD 与 `origin/main` 一致；CEI-01 并发文档提交经 rebase 保留双方历史，未 force push）｜环境：本地隔离库 `127.0.0.1:5432/mohen_dev` 主线对象连续回放 + 本地静态/类型/定向单测；生产库、部署、RLS、Gate 均未在窗口内改动。CI 宿主级仍 `runner_id=0`/`steps=0`，记 `CI_BLOCKED`，非代码红灯。本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
+> 核验时间 2026-11-24 本窗口（Owner 真实浏览器体验 + 创作段修复）｜唯一 main `0866e3df`（创作段两处代码修复已推送，本地 HEAD 与 `origin/main` 一致；基线 `6a13ad3b`，未 force push）｜环境：本地隔离库 `127.0.0.1:5432/mohen_dev` + 本地 dev server `127.0.0.1:3000` 真实 Owner 会话验证；生产库、部署、RLS、Gate 均未在窗口内改动。CI 宿主级仍 `runner_id=0`/`steps=0`，记 `CI_BLOCKED`，非代码红灯。本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
 
 ## 主线进度（按 PLAN §3.5 C 业务主干，同一任务 `b2143002` / Project `d9d48901` / run `b9989b90`）
 
@@ -75,7 +75,14 @@
 
 ## 最前阻断 / 下一动作
 
-### 本批最新（2026-11-24 正式主线作品贯通 + Owner 批准公开后续批，本地隔离库主线真实对象）
+### 本批最新（2026-11-24 Owner 真实浏览器体验 + 创作段修复，main 0866e3df）
+- **Owner 浏览器验收已过**：以真实账号 `20195689@qq.com`（Owner 原密码不可用系邮箱笔误写少一位 + 本地找回邮件开关关闭；已用项目原生 scrypt 算法受控重置为已知密码，实测 `/api/auth/login` 200）登录后，Owner 亲手完成三步：①登录；②WATCH 观看主线 `08ddaaa8`/rev `17b8c278` 的 3 章（`/api/works/published` 实测返回该项）；③Admin「发布管理」下架撤回后 WATCH 不再展示。均 Owner 本人浏览器实操，非脚本冒充。
+- **创作段两项真 bug 修复（main `0866e3df`，已推送）**：① `StudioWorkbench.tsx` 投稿 `POST /api/works` 请求体漏带后端强制的 `project_id`（必然 400 `project_binding_required`），已补。② `studio-task-material-read.ts` 的 `currentTaskCheckpoint` 原以 `researchLeads` 非空一刀切作废整个 decision，造成研究任务永久 `materialRead=HOLD`、"生成方案"按钮永不可用（结构性死锁）；改为外部线索不触发整体作废、但仍逐条严格回读 `decision.materials`，回读失败依旧 fail-closed，通过的才升级为 CURRENT 并从决策中剥离外部线索。`tests/unit/studio-task-material-read.test.ts` 更新+新增 2 例，7/7 PASS；相关回归 26/26 PASS；`pnpm --filter web typecheck` PASS；无新增 lint。
+- **隔离库数据补齐（非伪造、不碰云端/付费）**：主线任务 `b2143002` checkpoint 的 `decision.materials` 由 18 条未核验外部线索升级为 `readStudioResearchProject` 真实回读的项目私有材料 `studio:0a61dbca…@3be26a90…`（1 条，源原件 `f474b91b` 已 BOUND），清空 `researchLeads`/`partial_result`；升级前后均用真实 `currentTaskCheckpoint` 验证返回 CURRENT 才写回，外部线索原始证据仍完整保留在 `research_events`。真实 API 复验：`/status` 返回 `materialRead=CURRENT`、`materials=1`、`leads=undefined`、`mohenLine=true`，导演前置返回 `external_processing_not_authorized`（产品设计正常的 Owner 外发授权门，非 bug）。
+- **创作段真实边界（不夸大）**：从空白输入框提问仍受三道 fail-closed 门约束——①新题材检索需当前 G5 合格 L5 资产（本地检索通道对"金泽"返回 `SOURCE_OR_QUALIFICATION_UNAVAILABLE`，Key/G5 上下文已配，非配置缺失）；②D00 正式生产硬性要求云端执行器（`MOHEN_CLOUD_EXECUTION_ENABLED` 本地未配，无本地 skip）；③"生成方案/采纳"调用 DeepSeek `llm_director_h1/h2/h3` 为付费外发。本窗口按 Owner「本地补齐+修死锁、不碰云端不加付费」决策，未动这三道门、未新增付费/云端调用。可交付的亲手体验范围为：打开已有合格项目→材料 CURRENT→投稿→Admin 审核→发布→WATCH→撤权；如需从零提问/生成方案，须另行授权云端执行器与外发费用。
+- **提交与推送**：本地与远端 main 均 `0866e3df`（基线 `6a13ad3b`），提交作者合规；仅 3 个受控文件入 git，未跟踪临时物未动。
+
+### 上一批（2026-11-24 正式主线作品贯通 + Owner 批准公开后续批，本地隔离库主线真实对象）
 - **闭合的断点**：新增 `scripts/test-m5-mainline-fullchain-isolation.mjs`（loopback 围栏），在隔离库用主线真实对象重签当前有效 G0-G5、建立正式 DirectorPlan `d87d816d…`(G5 `4c0ce973`) + Work + WorkRevision `e1ed5309…`(G5 `652b39dc`) 正文与封套，锚点全部同一 Project/Root/delegation/snapshot；投稿→审核→发布→WATCH→撤权全链贯通。**21 PASS / 0 FAIL / 1 FINDING**（`MAINLINE_VERIFIED_ISOLATED`）。
 - **Owner 2026-11-24 两项决策已落地**：①**批准公开**——新增 `scripts/approve-m5-mainline-display-right.mjs`，把来源 `9aa03207` 的 `display` 权 unknown→allowed，保留 11-08 原证据并追加 `rights_evidence.public_display_authorizations`（决策人/日期/范围/仅 display），download/adapt/redistribute/external_processing 仍 HOLD；发布闸通过后主线 revision `e1ed5309…` 精确发布成功、WATCH 同 revision 放行、撤权即时阻断+历史保留+幂等。②**身份分工**——Owner 账号 `270bcecf` 已具 member/creator/operator/reviewer 四角色，系统早把"角色"与"账号"分离，且 Owner 已登记为唯一 Reviewer（progress 1613、LEDGER 116 `VERIFY_3_ROLE_OWNER_SIGNER PASS`）；`decide_editorial` 的 operator 是文本参数，只要求"审核者≠封套 creator"（自审保护），不强制独立注册账号，故一人可用不同身份标识分饰创作与终审，无需另申请账号。
 - **真实反向**：跨 Project 投稿被拒、自审 `EDITORIAL_OPERATOR_CONFLICT` 被拒、退回态发布 `PUBLISH_DECISION_REQUIRED` 被拒且旧指针不变、越权发布 `PUBLISH_OPERATOR_REQUIRED` 被拒、未发布时 WATCH 不放行、错 revision 不放行、anon 无指针读取权；非自签（机器 Gate signer + rule reviewer）、非历史 PASS 复用、0 Provider。

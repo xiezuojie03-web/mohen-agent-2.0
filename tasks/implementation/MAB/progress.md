@@ -6410,3 +6410,15 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **环境状态**：dev server 保留运行（http://localhost:3000）供 Owner 直接体验；浏览器已关闭；快照归整至 gitignored work/scratch/ui-demo-evidence（归整脚本曾误移 pnpm-lock.yaml/pnpm-workspace.yaml，已 git checkout 还原并核对 status 干净，脚本已修）。
 - **未完成/下一动作**：① 创作段全 UI 打通需修"历史研究资格重核验/受控生产预算"链（HOLD@D00 + 云端合格产出未同步本地），属独立工程批次，需 Owner 决定是否授权云端→本地合格成果同步或提高特定任务预算；② Admin 作品审核 tab 的 publish 状态衔接 UI gap；③ Owner 真实体验入口已就绪：Admin 登录→发布管理看修订2 下架、WATCH 看 3 章节。
 
+
+
+## 2026-11-24｜Owner 真实浏览器验收三步 PASS + 创作段 materialRead 死锁与投稿 project_id 修复（main 0866e3df）
+
+- **对应任务**：Owner 三步验收成功（登录/WATCH 观看/Admin 撤权）后授权"打通创作段"，并选择"本地补齐+修死锁、不碰云端不加付费"。
+- **Owner 登录恢复**：原账号邮箱实为 `20195689@qq.com`（用户记成 `2019689@qq.com` 少一位）；本地找回密码邮件开关关闭致无法自助重置。用项目原生 scrypt 算法（hashPassword 同构，salt 16B+64B hash）受控重置为已知密码，/api/auth/login 实测 200，未改认证机制、未伪造会话。
+- **Owner 浏览器三步实证（本人操作）**：①登录；②WATCH 观主线 `08ddaaa8`/rev `17b8c278` 3 章（/api/works/published 返回该项）；③Admin 发布管理点"下架撤回"后 WATCH 不再展示。均真实 UI，非脚本冒充。
+- **真 bug 修复（main 0866e3df，3 文件，已推送）**：① `StudioWorkbench.tsx:779` 投稿请求体补 project_id（原漏带→后端 400）；② `studio-task-material-read.ts` currentTaskCheckpoint：原 researchLeads 非空即整段作废 decision，构成永久 materialRead=HOLD 死锁、"生成方案"按钮永不可用；改为外部线索不触发整体作废，仍逐条严格回读 decision.materials，回读失败依旧 fail-closed，通过的升级 CURRENT 并从决策剥离线索；③ `tests/unit/studio-task-material-read.test.ts` 更新+新增 2 例。
+- **验证**：material-read 单测 7/7 PASS；相关回归（material-read + work-binding + submission-routes）26/26 PASS；pnpm --filter web typecheck PASS；无新增 lint。
+- **隔离库数据补齐（真实、非伪造、不碰云端/付费）**：主线任务 `b2143002` checkpoint 的 decision.materials 由 18 条未核验外部线索升级为 readStudioResearchProject 真实回读的项目私有材料 `studio:0a61dbca…@3be26a90…`（1 条，源原件 f474b91b 已 BOUND），清 researchLeads/partial_result；升级前后均以真实 currentTaskCheckpoint 验证返回 CURRENT 才写回，原始线索证据仍在 research_events。真实 API 复验 /status：materialRead=CURRENT、materials=1、leads=undefined、mohenLine=true；导演前置 409 external_processing_not_authorized（正常 Owner 外发授权门，非 bug）。
+- **创作段真实边界（不夸大）**：从空白提问仍受三道 fail-closed 门——新题材需当前 G5 合格 L5（金泽返回 SOURCE_OR_QUALIFICATION_UNAVAILABLE，Key/G5 上下文已配）、D00 硬性需云端执行器（MOHEN_CLOUD_EXECUTION_ENABLED 未配、无本地 skip）、生成/采纳方案调用 DeepSeek llm_director_h1/h2/h3 属付费外发。本窗口未动三门、未新增付费/云端。可亲手体验范围：打开已有合格项目→材料 CURRENT→投稿→Admin 审核→发布→WATCH→撤权。既有合格导演方案 `d87d816d`（带 G5+2 beats）可复用，无需重新付费生成。
+- **提交/推送**：本地与远端 main 均 `0866e3df`（基线 `6a13ad3b`），作者合规；仅 3 受控文件入 git，未跟踪临时物未动。CURRENT.md 顶部核验行与"最前阻断"已同步。
