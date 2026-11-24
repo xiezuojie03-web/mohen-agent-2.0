@@ -1,0 +1,69 @@
+{
+  "schema": "mohen.cei01.design-evidence-inventory/1.0",
+  "date": "2026-11-24",
+  "status": "A_INVENTORY_COMPLETE_WITH_SOURCE_GAPS",
+  "taskbook": "tasks/research/CEI-01/CEI-01_Taskbook.md",
+  "current_prototype": {
+    "file": "CEI-4_墨痕统一交互原型_HOME_EXP_现行V0.1.html",
+    "sha256": "a5ee9c7db5304080520bd13cbc600ce8e22acfb64532672ace92e1d2f398f6aa",
+    "bytes": 2434874,
+    "verification": "local exact-byte SHA256 verified; matches SC01 evidence JSON"
+  },
+  "historical_prototype": {
+    "file": "CEI-4_墨痕统一交互原型_HOME_EXP_现行V0.1(20261117-140933).html",
+    "sha256": "63b5c90adfe31e91120c70ab1827bc7229d4d626a28ab265b194de7ecd8b52e8",
+    "bytes": 2406460,
+    "status": "historical snapshot; do not use as current"
+  },
+  "home_v183": {
+    "file": "CEI44_HOME_V1.8.3.html",
+    "sha256": "445cbe13ecbe3d3d0812a0d9a86148b73ef3998b73e0a6d5631097b14b2e0b8e",
+    "bytes": 74434,
+    "status": "approved standalone candidate; embedded source not assumed byte-identical"
+  },
+  "evidence": [
+    {
+      "scope": "competitor",
+      "source": "CEI-01_A-B入口前沿产品范式与技术研究报告_V1.8.md",
+      "status": "desk research; no complete live competitor testing or MoHen user/market test"
+    },
+    {
+      "scope": "HOME",
+      "source": "CEI-4-3_HOME信息架构与双方案设计_现行V0.1.md; CEI44_HOME_V1.8.3.html",
+      "status": "V1.8.3 owner-approved; current world richness requires comparison"
+    },
+    {
+      "scope": "EXP",
+      "source": "CEI-4-4_EXP双组件与连续探索设计规格; UXD3_EXP连续探索体验深化_现行.md",
+      "status": "design and local prototype evidence; true agent and qualified knowledge runtime unproven"
+    },
+    {
+      "scope": "Studio/Admin/WATCH",
+      "source": "CEI-4-5_WATCH观看与Studio_Admin职责衔接设计规格_现行V0.1.md",
+      "status": "design simulation; owner signoff absent"
+    },
+    {
+      "scope": "personal",
+      "source": "CEI-4-6_我的墨痕与轻参与设计规格_现行V0.1.md; CEI-4-6_退出身份隐私隔离定向回归证据_现行.json",
+      "status": "88/88 targeted tests; is_real_db=false; owner signoff absent"
+    },
+    {
+      "scope": "4-7",
+      "source": "CEI-4-7_SC01_1904上海西区道路系统插图连续体验_现行.md; CEI-4-7_SC01_定向核验与浏览器证据_现行.json",
+      "status": "SC01 L1 pass, L2 partial real image integration, owner L3 pending"
+    }
+  ],
+  "contract_gaps": [
+    "MHKA-01",
+    "MHKA-02",
+    "MHKA-03"
+  ],
+  "exclusions": [
+    "GitHub inheritance assessment",
+    "M5 engineering audit or implementation",
+    "re-running unaffected historical tests",
+    "claiming simulated prototype paths as real runtime",
+    "claiming market advantage without user/market evidence"
+  ],
+  "next": "B_COMPETITOR_LIMITED_REVIEW"
+}
