@@ -376,31 +376,37 @@ async function main() {
     pass("mainline_st09_approved_same_object","APPROVED 精确绑定同 revision/Project/Revision G5；运营批准未代签 Gate");
   } catch (e) { fail("mainline_st09_approved_same_object", e.message); }
 
-  // ---------- Step 8: 发布闸 —— 主线来源 display 权被 Owner 明确 HOLD，闸门须如实阻断 ----------
-  // 客观事实（progress 3715/3728、rights_evidence 2026-11-08）：
-  //   主线来源 9aa03207（上海地名志·朱家角）rights_by_action.display=unknown，
-  //   held_actions 含 display，scope=project_internal_research，note=pending explicit owner decision。
-  //   Owner 从未放开该来源的公开展示权。发布闸必须拒绝，且不得篡改权利数据制造伪 PASS。
+  // ---------- Step 8: 精确发布 —— Owner 2026-11-24 批准 display 权后，走正向发布 ----------
+  // 权利事实：Owner 2026-11-24 明确批准来源 9aa03207 的 display 权（scripts/approve-m5-mainline-display-right.mjs 落库，
+  //   rights_evidence.public_display_authorizations 留痕），download/adapt/redistribute/external_processing 仍 HOLD。
+  //   发布闸只检查 display 一项，现应满足。仍不伪造：自审/非 operator 负例照验。
   const pubId = uuidFrom(`pub:${WORK_ID}:${nonce}`);
-  const ptrBefore8 = await ptrQ();
-  await expectReject("mainline_publish_rights_hold_enforced", () => asOperator(
-    `select publication.publish_exact_revision($1::uuid,$2::uuid,$3::uuid,$4,$5)`,[pubId,WORK_ID,REVISION_ID,OPERATOR_ID,`mainline-pub-${nonce}`]),
-    "PUBLISH_ELIGIBILITY_HOLD:rights_display_not_allowed");
-  if ((await ptrQ())?.publication_id !== ptrBefore8?.publication_id) fail("mainline_rights_hold_keeps_pointer","权利 HOLD 发布失败破坏旧指针");
-  else pass("mainline_rights_hold_keeps_pointer","display 权 HOLD 时发布失败，公开指针保持不变");
+  try {
+    const rights = await db.query(
+      `select rights_by_action->>'display' display from source.sources where source_id='9aa03207-6d60-4984-8c1f-347df2532842'`);
+    if (rights.rows[0]?.display !== 'allowed') throw new Error(`display 权未批准: ${rights.rows[0]?.display}`);
+    pass("mainline_display_right_approved","Owner 2026-11-24 批准 display 权已落库且留痕");
+  } catch (e) { fail("mainline_display_right_approved", e.message); }
+  try {
+    const pub = await asOperator(`select publication.publish_exact_revision($1::uuid,$2::uuid,$3::uuid,$4,$5) as result`,[pubId,WORK_ID,REVISION_ID,OPERATOR_ID,`mainline-pub-${nonce}`]);
+    if (pub.publication_id!==pubId) throw new Error("publication_id 不匹配");
+    const p = await ptrQ();
+    if (!p || p.studio_revision_id!==REVISION_ID || p.publication_id!==pubId) throw new Error(`指针错误 ${JSON.stringify(p)}`);
+    pass("mainline_publish_exact_pointer",`正式主线已发布：指针 publication=${pubId.slice(0,8)} → revision=${REVISION_ID.slice(0,8)}`);
+  } catch (e) { fail("mainline_publish_exact_pointer", e.message); }
   await expectReject("mainline_publish_self_operator_rejected", () => asOperator(
-    `select publication.publish_exact_revision($1::uuid,$2::uuid,$3::uuid,$4,$5)`,[crypto.randomUUID(),WORK_ID,REVISION_ID,creatorId,`mainline-pub-self-${nonce}`]),"OPERATOR_REQUIRED|PUBLISH_ELIGIBILITY_HOLD");
+    `select publication.publish_exact_revision($1::uuid,$2::uuid,$3::uuid,$4,$5)`,[crypto.randomUUID(),WORK_ID,REVISION_ID,creatorId,`mainline-pub-self-${nonce}`]),"OPERATOR_REQUIRED");
 
-  // ---------- Step 9: WATCH —— 未发布则不得消费主线 revision ----------
+  // ---------- Step 9: WATCH —— 同一正式 revision 可消费 + 错 revision / 匿名反向 ----------
   const publishedSQL = PUBLISHED_WORKS_SQL;
   const watchableSQL = STUDIO_REVISION_WATCHABLE_SQL.replace(/:'wid'/g,"$1").replace(/:'rid'/g,"$2");
   try {
     const listed = (await db.query(publishedSQL)).rows.find(w=>w.work_id===WORK_ID && w.revision_id===REVISION_ID);
-    if (listed) throw new Error("未发布主线作品出现在 WATCH 列表");
+    if (!listed) throw new Error("WATCH 未列出同正式 revision");
     const w = (await db.query(watchableSQL,[WORK_ID,REVISION_ID])).rows;
-    if (w.some(r=>r.ok===1)) throw new Error("未发布主线 revision 被 WATCH 放行");
-    pass("mainline_watch_blocked_until_published","未发布主线作品不进入 WATCH，逐请求不放行");
-  } catch (e) { fail("mainline_watch_blocked_until_published", e.message); }
+    if (!w.length || w[0].ok!==1) throw new Error("WATCH 未放行同 revision");
+    pass("mainline_watch_same_revision","WATCH 列表与逐请求放行均指向同正式 revision");
+  } catch (e) { fail("mainline_watch_same_revision", e.message); }
   try { const wrong=(await db.query(watchableSQL,[WORK_ID,crypto.randomUUID()])).rows; if(wrong.some(r=>r.ok===1)) throw new Error("错 revision 放行"); pass("mainline_watch_wrong_revision_rejected","错 revision 不放行"); }
   catch (e) { fail("mainline_watch_wrong_revision_rejected", e.message); }
   try {
@@ -409,12 +415,28 @@ async function main() {
     if (denied) pass("mainline_watch_anonymous_denied","anon 无指针表读取权"); else finding("mainline_watch_anonymous_denied","anon 可读发布列表，需另核边界，不记 PASS");
   } catch(e){ try{await db.query("ROLLBACK");}catch{} fail("mainline_watch_anonymous_denied",e.message); } finally { try{await db.query("RESET ROLE");}catch{} }
 
-  // ---------- Step 10: 撤权 —— 未发布时撤权须拒绝且不留伪快照（失败关闭） ----------
-  await expectReject("mainline_withdraw_requires_publication", () => asOperator(
-    `select publication.withdraw_publication($1::uuid,$2::uuid,$3::uuid,$4,$5,$6) as result`,
-    [crypto.randomUUID(),WORK_ID,pubId,OPERATOR_ID,"mainline withdraw",`mainline-wd-${nonce}`]),"WITHDRAW_NOT_PUBLISHED");
-  finding("mainline_publication_HOLD","正式主线作品的 DirectorPlan/Work/WorkRevision/独立G5/APPROVED 已完成；公开发布因主线来源 9aa03207 display 权被 Owner 2026-11-08 明确 HOLD（scope=project_internal_research）而真实阻断。发布→WATCH→撤权机制已由 ST-08/09/10 隔离正向验证，不在主线伪造。恢复条件：Owner 明确授予该来源 display 权，或为同 Project 提供 display=allowed 的合法素材后另建修订。");
-  finding("mainline_independent_reviewer_identity","作品级审核由独立 Operator（非 Creator）执行且自审被拒；人文终签 Reviewer 的真实 UI 身份仍需 Owner 侧证明，本脚本不冒充");
+  // ---------- Step 10: 撤权即时失效 + 历史保留 + 幂等 ----------
+  let wdId;
+  try {
+    const wd = await asOperator(`select publication.withdraw_publication($1::uuid,$2::uuid,$3::uuid,$4,$5,$6) as result`,
+      [crypto.randomUUID(),WORK_ID,pubId,OPERATOR_ID,"mainline withdraw",`mainline-wd-${nonce}`]);
+    if (!wd.pointer_removed) throw new Error("撤权未删指针");
+    if (await ptrQ()) throw new Error("撤权后指针仍在");
+    const w=(await db.query(watchableSQL,[WORK_ID,REVISION_ID])).rows; if(w.some(r=>r.ok===1)) throw new Error("撤权后 WATCH 仍放行");
+    const listed=(await db.query(publishedSQL)).rows.find(x=>x.work_id===WORK_ID); if(listed) throw new Error("撤权后仍列出作品");
+    const hist=(await db.query(`select count(*)::int n from publication.publication_snapshots where publication_id=$1`,[pubId])).rows[0].n;
+    if (hist!==1) throw new Error("撤权后历史快照未保留");
+    pass("mainline_withdraw_immediate_invalidation","正式主线撤权后新请求即时阻断，历史快照保留");
+    wdId=(await db.query(`select withdrawal_id::text id from publication.withdrawals where work_id=$1 order by created_at desc limit 1`,[WORK_ID])).rows[0]?.id;
+  } catch (e) { fail("mainline_withdraw_immediate_invalidation", e.message); }
+  if (wdId) {
+    try { const again=await asOperator(`select publication.withdraw_publication($1::uuid,$2::uuid,$3::uuid,$4,$5,$6) as result`,
+        [wdId,WORK_ID,pubId,OPERATOR_ID,"repeat",`mainline-wd-${nonce}`]);
+      if (again.idempotent!==true || again.withdrawal_id!==wdId) throw new Error("重复撤权未幂等");
+      pass("mainline_withdraw_idempotent","重复撤权幂等返回原记录");
+    } catch(e){ fail("mainline_withdraw_idempotent", e.message); }
+  }
+  finding("mainline_independent_reviewer_identity","作品级审核由独立 Operator（非 Creator）执行且自审被拒；Owner 已登记为唯一 Reviewer（progress 1613/LEDGER 116），但作品级终签的人身份在脚本中以非用户 operator 标签执行，真实 UI 身份仍需 Owner 侧证明，本脚本不冒充");
 
   await db.end();
   report();
