@@ -6397,3 +6397,16 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **未改文件**：本批未改任何 tracked 业务源码/文档（仅隔离库数据与 gitignored 临时脚本）；无新增提交/推送（无源码变更可推）。基线 main 仍 `51bbea04`。
 - **下一动作（3 个 gap 的修复，均为独立批次）**：① 排查 Studio source-selection 404；② 走正规修订流程为主线作品补合规章节 beats（含 G5 重签）；③ Admin 发布管理 tab 接真实数据源 + 撤权按钮。另：Owner 真实体验入口待上述 gap 修复后重开。
 
+
+## 2026-11-24｜完整体验链路修复：Admin 撤权接线 + WATCH 章节 + Provider 复核（Owner "选A"续批）
+
+- **对应任务**：Owner 目标"完整亲手体验创作→投稿→审核→发布→观看→撤权，技术你安排"；Owner 指出 Key 早已配置（复核属实）。
+- **Provider 复核（纠正前批误判）**：`.env.local` 已配 `MOHEN_LLM_API_KEY`/`DEEPSEEK_API_KEY`(sk-4…)/`MOHEN_LLM_BASE_URL=https://api.deepseek.com`/`MOHEN_LLM_MODEL=deepseek-chat`。库中大量 `status=done` 的真实研究任务（金泽/朱家角/七宝/楚国/松江）证明 Provider 可用。前批"缺 Key"判断错误，已纠正。**真正阻断创作段的不是 Key**：①预设委托"金泽古桥与寺院"(b9a14e45) HOLD 原因是 `SOURCE_OR_QUALIFICATION_UNAVAILABLE`；②Studio 恢复历史研究后"材料未通过当前读取复核、独立资格未确认"，"生成方案"按钮 disabled；③选原件+页码后申请 D00—D05 报 `budget_hold`（ceiling=8/spent=6/余2，六阶段生产需额≥3）；④该研究生产 run bfcdfad6 状态 HOLD@D00、隔离库无该项目 G0-G5 审计（合格成果在云端 Project e03c4ba8）。这些均为项目刻意的安全/经济门禁，非 bug；不篡改预算、不伪造资格。
+- **修改文件（已推送 main 7e8cfba1）**：① `apps/web/app/admin/AdminWorkbench.tsx`——发布管理 tab 从硬编码空壳接真实 API（GET /api/admin/publications 列已发布 + POST /{id}/unpublish 下架），新增类型/state/refresh/handler/effect 四处；定时/下架记录子页如实标注 NOT_RUN。② `scripts/add-mainline-chapters.mjs`（新建）——为正式主线作品新建修订2，含 3 个基于真实方志素材、标注"占位·待深化"的合规章节（title/narration/visual/directorTimecodeMs/provenanceRefs），走正规链路：新正文→独立 G5（机器 signer+rule reviewer，非自签）→投稿→APPROVED；幂等可重放，候选 ID 随机化避免重复键。
+- **UI 实证（真实浏览器，playwright chromium + Owner 合法会话）**：① Admin 发布管理列出真实已发布作品（含朱家角），点"下架撤回"→提示"已下架《朱家角·修订1》"且列表刷新消失——Gap A 从空壳变可用，PASS；② WATCH 修订2 显示"01/03"、3 个章节标题/旁白/导演时码(00:00/00:08/00:16)、章节轴 3 按钮、标注占位·待深化——Gap B 从"暂无可阅读章节"到完整可观看，PASS；③ Admin 发布管理列出"朱家角·修订2（含章节）"+下架按钮，PASS。作品审核 tab 的 publish 按钮与 checkPublishEligibility 的预审核要求存在 UI 状态衔接问题（已签核作品不在待审队列显示），未强行编排数据绕过（避免删审计/造状态），记为已知 gap。
+- **关键安全教训（实证）**：改修订2 的 status(draft→submitted) 使 artifact_revision 指纹变化 → 发布报 `PUBLISH_ELIGIBILITY_HOLD:artifact_revision_moved`，资格被正确判失效。修正=按正规顺序"先定稿 status 再签 G5"，重签后发布成功。印证不可变性/指纹绑定是真实生效的，非文档承诺。
+- **测试/验证**：typecheck 7 包 PASS；add-mainline-chapters 6 PASS/0 FAIL；publish_exact_revision(rev2) 成功(publication 360f4811, artifact_revision 668b387a)；WATCH 章节 UI 实证；Admin 下架 UI 实证。CI 宿主级 CI_BLOCKED 持续（非代码红灯）。
+- **GitHub 归档**：三个提交（Admin 修复→补章节脚本→候选ID修复）经 CEI-01 并发 rebase 后推送，最终 main=`7e8cfba1d441d9cf821f678abd2e784ec2d22272`，本地=远端一致，未 force push。
+- **环境状态**：dev server 保留运行（http://localhost:3000）供 Owner 直接体验；浏览器已关闭；快照归整至 gitignored work/scratch/ui-demo-evidence（归整脚本曾误移 pnpm-lock.yaml/pnpm-workspace.yaml，已 git checkout 还原并核对 status 干净，脚本已修）。
+- **未完成/下一动作**：① 创作段全 UI 打通需修"历史研究资格重核验/受控生产预算"链（HOLD@D00 + 云端合格产出未同步本地），属独立工程批次，需 Owner 决定是否授权云端→本地合格成果同步或提高特定任务预算；② Admin 作品审核 tab 的 publish 状态衔接 UI gap；③ Owner 真实体验入口已就绪：Admin 登录→发布管理看修订2 下架、WATCH 看 3 章节。
+
