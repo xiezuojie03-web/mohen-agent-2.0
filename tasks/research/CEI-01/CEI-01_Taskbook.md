@@ -687,7 +687,7 @@ D1/D2不得冒充D5/D6；D4证明竞品或需求机制存在，不证明墨痕�
 
 #### 3.5.8｜当前状态与下一动作
 
-`CEI_PRODUCT_QUALITY_AUDIT_ACTIVE / SC04_SC05_PAUSED / GITHUB_INHERITANCE_NOT_STARTED / ENGINEERING_NOT_AUTHORIZED`。
+`CEI_PRODUCT_QUALITY_AUDIT_COMPLETE / OVERALL_REWORK / OWNER_REVIEW_REQUIRED / SC04_SC05_PAUSED / GITHUB_INHERITANCE_NOT_STARTED / ENGINEERING_NOT_AUTHORIZED`。下一动作：Owner审阅G步整体报告、缺陷矩阵和方案比较，明确接受/拒绝返工方向；未获Owner接受前不进入第二轮GitHub继承审查。
 
 当前先执行A“设计证据总盘点”，随后按B—G完成审查。Owner于2026-11-24提出的六项重点问题已纳入B—F：竞品差异化、HOME知识世界呈现、EXP故事性与交互性、Studio创作者流程与Agent、Admin知识及用户治理、“我的墨痕”正式个人空间。它们是强制审查问题，不是预设返工结论。4-7已形成的SC01—SC03证据保留为局部场景证据，不视为整体体验通过；原4-7其余工作暂缓，不重做4-5/4-6历史测试。审查结束后由Owner审阅整体报告，再决定返工方向与是否恢复原场景验证。
 
@@ -715,6 +715,8 @@ D1/D2不得冒充D5/D6；D4证明竞品或需求机制存在，不证明墨痕�
 
 ## 7｜当前状态与接续索引
 > **状态读取规则**：本章按时间倒序；本节首条为唯一现行状态，后续带日期条目为历史执行记录。旧记录中的`4-7_NOT_STARTED`只代表其记录日期当时的状态，不得覆盖本节最新条目。
+
+> **2026-11-24｜G步整体走查、七维评分与最终裁决完成（本条为当前唯一执行状态）**：交付物：`reports/CEI整体产品设计质量与竞争力评估报告_现行.md`、`evidence/CEI整体产品缺陷与返工追踪矩阵_现行.md`、`reports/CEI整体产品设计方案比较_现行.md`、`evidence/CEI整体产品设计质量审查证据索引_现行.json`。七维评分：产品方向3/5 CONDITIONAL_PASS；产品结构2/5 REWORK；用户体验2/5 REWORK；Agent体验1/5 REWORK；业务闭环2/5 REWORK；视觉与交互3/5 CONDITIONAL_PASS；可持续性与竞争力2/5 REWORK。整体结论：`REWORK`。未发现P0，但HOME/EXP/Studio/Admin/个人空间存在多项P1；真实Agent、真实账户/权限、真实G5/权利/发布端到端和真实用户市场证据均缺失；C1 WEAK、C2/C3 NOT_PROVEN。保留有价值设计基础，按矩阵定向返工，不推倒重建；SC04/SC05继续暂停。当前状态：`CEI_PRODUCT_QUALITY_AUDIT_COMPLETE / OVERALL_REWORK / OWNER_REVIEW_REQUIRED / SC04_SC05_PAUSED / GITHUB_INHERITANCE_NOT_STARTED / ENGINEERING_NOT_AUTHORIZED`。下一步仅为Owner审阅整体报告、方案比较与缺陷矩阵并作明确裁决；Owner接受整体设计质量结论后，才进入第二轮GitHub UI继承审查。当前未授权原型返工、工程继承或M5实施。
 
 > **2026-11-24｜F步“我的墨痕”个人空间专项完成（本条为当前唯一执行状态）**：报告归档：`reports/CEI_F_我的墨痕个人空间专项_现行.md`。结论：当前“我的”虽有一级导航入口，但实际仍是桌面约540px侧抽屉/手机全宽抽屉，仅有“我的旅程、想再看看、分享线索、偏好与隐私”四区；它是轻量个人记录工具，尚未成为正式一级个人空间。V4.1 F要求高于旧4-6抽屉形态，不再以旧规格“非第四模式/抽屉”免审；新方向应是正式个人连续性工作区，但不是第四种历史内容模式。P1：缺个人首页的继续探索/继续创作/待处理入口；缺Studio创作项目与作品修订管理；贡献只有候选提交表单和简单列表，缺审阅反馈/处理历史/授权状态。P2：缺轻量私人知识空间与低频动态提醒。建议结构：我的首页、探索与收藏、创作项目、我的贡献、个人知识空间、账户与隐私。用户管理仍归Admin，个人空间只负责本人账户/隐私控制。个人知识空间应默认私有、可选择交给Agent或提交候选，不自动成为正式知识资产；不建设社交动态/关注/粉丝/积分社区。保留4-6已验证的主动保存、身份分面、精确恢复、撤回删除、失权遮蔽等隐私原则；88/88只是模拟原型D2证据，真实账户/持久化/ACL/删除仍未验证。当前状态：`F_PERSONAL_SPACE_REVIEW_COMPLETE / TARGETED_REDESIGN_RECOMMENDED / OWNER_REVIEW_PENDING / G_OVERALL_REVIEW_NEXT / NO_GITHUB_INHERITANCE_REVIEW / NO_ENGINEERING_AUTHORIZATION`。本轮未修改原型、4-6规格、真实账户或M5工程。下一步按§3.5.5进入G步整体走查、七维评分与裁决；C/D/E/F结论均待Owner整体审阅。CEI-4-6规格、隐私回归证据、Owner回执与统一HTML仍以资料库副本为主，GitHub CEI-01目录尚未完整归档这些支持材料。
 > **2026-11-24｜E步Studio与Admin专项完成（本条为当前唯一执行状态）**：报告归档：`reports/CEI_E_Studio与Admin专项_现行.md`。结论：现有Studio桌面三工作面和研究/资格/修订/发布状态分账值得保留，但当前原型没有证明Agent理解任务、组织来源证据、发现研究缺口或形成可复用知识资产；创作者界面直接暴露D00/G0/L0—L5内部术语；390px窄屏将三个工作区纵向堆叠，不符合MHKA-02要求的三工作区切换。A/B导演方案过于概括，右栏仍是文字分镜演示，项目恢复可见性不足。Admin已正确区分Reviewer、专业G5、媒体权利和Operator发布，但缺知识资产目录/详情治理及用户/平台治理视图。结论：**用户管理应纳入Admin内部平台治理工作区**，覆盖账户、角色/权限、贡献、异常、隐私、安全与审计；“我的墨痕”仍负责用户自己的个人记录、收藏、项目和隐私偏好，两者不混同。Admin知识资产治理须支持逐项查看来源/证据、时地、认识状态、关系、资格/权利、版本、研究使用、贡献和补证缺口，但不得代替专业Gate签发，也不另建独立知识资产平台。历史UI-A 108/108、UI-B 87/87、UI-C 62/62均为局部设计模拟证据；本轮没有重跑未变化测试，没有修改原型、MHKA、CEI-4-5规格或M5工程。状态：`E_STUDIO_ADMIN_REVIEW_COMPLETE / TARGETED_REDESIGN_RECOMMENDED / OWNER_REVIEW_PENDING / F_PERSONAL_SPACE_REVIEW_NEXT / NO_GITHUB_INHERITANCE_REVIEW / NO_ENGINEERING_AUTHORIZATION`。下一步按§3.5.5进入F步“我的墨痕”个人空间专项；C/D/E结论均待Owner整体审阅。CEI-4-5规格、UI-A/B/C证据与统一HTML仍以资料库副本为主，GitHub CEI-01目录未完整归档，含待核权图像的统一HTML未直接公开提交。
