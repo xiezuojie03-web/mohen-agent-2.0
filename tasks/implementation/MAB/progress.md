@@ -6368,3 +6368,18 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **环境边界/费用**：0 Provider 调用/0 USD；未改生产库/Storage/RLS/迁移/部署/密钥；未开放公众访问；云端正文权威 schema 迁移属高性能要求但非本窗口授权，保持 HOLD。浏览器 E2E 本窗口 NOT_RUN（应用源码未改、主线作品未发布、无 Owner 真实会话）。
 - **未完成/下一动作**：① 等 Owner 决定主线来源 display 权（放开则重跑发布→WATCH→撤权正向，不放开则维持真实 HOLD）；② 独立 Reviewer 真实 UI 身份接入；③ 云端正文权威 schema 迁移评估（需单独授权）；④ Owner 真实浏览器体验签收；⑤ CI runner 宿主恢复后重跑。
 
+
+## 2026-11-24｜Owner 决策落地：批准 display 权 + 主线发布/观看/撤权全链贯通 + 身份方案结论（续批）
+
+- **对应 PLAN 任务**：PLAN V1.7 §3.5 B/C 主线第 7—8 段（精确发布 / WATCH 与撤权），承接同日主线贯通批次。
+- **Owner 两项决策（2026-11-24）**：①主线来源 `9aa03207`（上海地名志·朱家角）**批准公开**；②审核身份分工——Owner 一人，问是否需申请两个账号。
+- **决策①落地（批准公开，合规留痕）**：新增 `scripts/approve-m5-mainline-display-right.mjs`（loopback 围栏），dry-run 预览后 `--apply` 写隔离库：仅把 `source.sources` 该来源 `rights_by_action.display` 由 unknown→allowed；保留 11-08 原始 `rights_evidence`，追加 `public_display_authorizations` 记录（decision_at=2026-11-24、decision_by=Owner/C0、scope=public_watch_for_m5_mainline_work、actions=[display]、recorded_by=脚本名）；`held_actions` 移除 display，`granted_actions` 加入 display；download/adapt/redistribute/external_processing 四项仍 HOLD 不变。回读 VERIFY display=allowed。发布闸只检查 display 一项（迁移 20261114190000 第 435-438 行），故只放开该项即满足，未篡改其它权利、未伪造。
+- **决策②结论（身份方案，白话+事实）**：查明系统早已把"角色"与"账号"分离——Owner 账号 `270bcecf`（Napoles）已同时具 member/creator/operator/reviewer 四角色；另有独立机器审核账号 `machine-reviewer@mohen.local`（reviewer 角色，用于 G0—G5 规则签发）；`control.gate_audits` 均 independent_gate 非自签。权威裁决：Owner 为唯一 Reviewer（progress 1613 行、LOCAL-BUILD-LEDGER 116 行 `VERIFY_3_ROLE_OWNER_SIGNER PASS`）。`decide_editorial`/`publish_exact_revision`/`withdraw_publication` 的 operator_id 是文本参数（formal-publication-chain.ts 第 149-170、184-219 行），DB 仅以 `operator_id = creator_id` 做自审保护，不强制审核者为独立注册账号。**结论：Owner 一人无需另申请账号**，用不同身份标识分饰"创作"与"终审"即可满足系统自审保护；若要面向公众宣称"独立自然人终审"则需第二人，属产品决策，非 M5 工程验收要求。
+- **修改文件**：新增 `scripts/approve-m5-mainline-display-right.mjs`；修改 `scripts/test-m5-mainline-fullchain-isolation.mjs`（Step 8—10 由"验证 HOLD"改为"Owner 批准后正向发布→WATCH→撤权→幂等"，并保留全部负例）；同步 `CURRENT.md`、本 `progress.md`。未改任何 apps/web 业务源码/SQL/迁移/RLS/UI；未改 PLAN/HANDOFF。scratch 探针 gitignored 未入 git。
+- **数据库操作（仅隔离库 mohen_dev，非生产）**：上批主线对象（Plan `d87d816d`/Rev `e1ed5309` 等）幂等复用；display 权批准后 publish_exact_revision 精确发布（publication `13632974` → revision `e1ed5309`）、published_pointers 指向精确 revision、WATCH 同 revision 放行、withdraw_publication 撤权即时删指针+历史快照保留+重复撤权幂等。未改生产库/Storage/RLS/部署。
+- **测试结果**：`node scripts/test-m5-mainline-fullchain-isolation.mjs` → **21 PASS / 0 FAIL / 1 FINDING**（`MAINLINE_VERIFIED_ISOLATED`）。新增/变更 PASS：mainline_display_right_approved、mainline_publish_exact_pointer、mainline_watch_same_revision、mainline_withdraw_immediate_invalidation、mainline_withdraw_idempotent；保留负例：跨 Project 投稿、自审、退回态发布拒、越权发布拒、未发布 WATCH 不放行、错 revision 不放行、anon 无指针读取权。FINDING：作品级终签以非用户 operator 标签执行，Owner 真实 UI 身份待浏览器体验证明。
+- **CI 精确 SHA 结果**：宿主级 `CI_BLOCKED` 持续（`runner_id=0`/`steps=0`/数秒 failure），非代码红灯。
+- **GitHub 归档**：代码提交 `e8d2f996`（rebase 后 `3517576c818f8c105a6d02e013988c7c456fc303`）推送前遇 CEI-01 并发 3 提交（`0a74f182`→`8ec71bb7`），评估零重叠后 rebase 重推，本地 HEAD=`origin/main`=`3517576c`，0/0 一致；未 force push/reset/新建分支/PR。文档同步在代码推送后进行。
+- **环境边界/费用**：0 Provider 调用/0 USD；未改生产库/RLS/迁移/部署/密钥；未开放公众访问（本批为隔离库受控发布验证）。
+- **未完成/下一动作**：① Owner 真实浏览器体验（用两个身份标识分别创作/终审，走主线作品发布→观看→撤权）；② 云端正文权威 schema 迁移评估（现云端落后，需单独授权）；③ CI runner 宿主恢复后重跑。
+
