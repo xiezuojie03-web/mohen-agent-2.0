@@ -2,11 +2,11 @@
 
 > **Owner 授权口径（2026-11-22，长期有效）**：目标是墨痕**真正运行、持久运行**；除**安全问题**与**费用问题**外，施工方自行授权推进，不再逐项请示技术选择。费用边界：D02–D05 模型调用封顶 **0.05 USD**（约 ¥0.36，已建委托 `3f5585d0…`），超出该额度、新增付费来源或扩大用途仍需 Owner 批准。安全底线（密钥不入 git、不自签 Gate、不伪造会话/资格/PASS、不改迁移规避授权）不因该授权放宽。
 
-> 核验时间 2026-11-23 本窗口｜唯一 main `40147e15e444c588ebdf02ed90e674c233b44fc8`（本窗口提交已推送，本地 HEAD 与 `origin/main` 一致；施工基线 `4e58fc6de35a55af2d5301d8751f36c89127e147`，`d47c5d31`/`6a56b8fc`/`4e58fc6d` 均为其祖先）｜环境：本地隔离库 `127.0.0.1:5432/mohen_dev` 同对象连续回放 + 本地静态/类型/定向单测；生产库、部署、RLS、Gate 均未在窗口内改动。CI 施工基线两个 run 与新 SHA run `45199417504`（job `137778554241`）均在 runner 分配前失败（`runner_id=0`、`steps=0`），记 `CI_BLOCKED`。本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
+> 核验时间 2026-11-24 本窗口｜唯一 main `5189742914cdb32ec478f9c3644ded26a72894a5`（本窗口代码提交已推送，本地 HEAD 与 `origin/main` 一致；推送前基线 `7ae2c101`，CEI-01 并发文档提交经 rebase 保留双方历史，未 force push）｜环境：本地隔离库 `127.0.0.1:5432/mohen_dev` 主线对象连续回放 + 本地静态/类型/定向单测；生产库、部署、RLS、Gate 均未在窗口内改动。CI 新 SHA `51897429` run `45295876876`（job `build`、`runner_id=0`、`steps=0`、3 秒 `completed/failure`，与历史 `7ae2c101`/`8d5b244f` 同模式）仍在 runner 分配前失败，记 `CI_BLOCKED`，非代码红灯。本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
 
 ## 主线进度（按 PLAN §3.5 C 业务主干，同一任务 `b2143002` / Project `d9d48901` / run `b9989b90`）
 
-主干共 **10 段**：**0 段完整验收、7 段在跑（其中 4 段仅隔离对象集已验）、3 段未启**；生产链 12 个节点已验 **12/12**（最远仍为 D05 P02 `world_projection` + G5 `3aa1c2de`）。本窗口新增的是**同一正式对象集内的连续交接证据**：Project `b0a11000…0001` / root_task_ref `studio-llm-dispatch` / DirectorPlan `c17e3aea…`(G5 `ec8117cb`) / Work `3bb3458b…` / WorkRevision `5c459bc3…`(G5 `286ca90d`) 已在同一进程内连续回放投稿→审核→发布指针→WATCH→撤权并全部正向/反向通过。**该对象集不是** `b2143002` / `d9d48901` 主线；把主线成果接续到正式作品仍是最高优先阻断，不得把本窗口证据记成主线通过。
+主干共 **10 段**：**0 段完整验收、7 段在跑（其中 4 段隔离对象集已验、主线作品链已接续至 APPROVED）、3 段未启**；生产链 12 个节点已验 **12/12**（最远仍为 D05 P02 `world_projection` + G5 `3aa1c2de`）。**本窗口首次把正式主线 `b2143002` / `d9d48901` 的合格知识成果接续到正式作品链**：新增 `scripts/test-m5-mainline-fullchain-isolation.mjs`，在隔离库用主线真实对象（原件 `f474b91b` / 来源 `9aa03207` / G0—G4 主链 / G5 素材）重签当前有效 G0—G5，建立正式 DirectorPlan `d87d816d…`(G5 `4c0ce973`) + Work `…` + WorkRevision `e1ed5309…`(G5 `652b39dc`) 正文与封套，同一 Project/Root/delegation/snapshot 锚点闭合，投稿→独立 Operator 审核（自审拒绝/退回阻断发布/APPROVED）全通，**20 PASS / 0 FAIL / 2 FINDING**（`MAINLINE_VERIFIED_ISOLATED`）。**公开发布如实 HOLD**：主线来源 `9aa03207`（上海地名志·朱家角）`display` 权被 Owner 2026-11-08 明确 HOLD（`scope=project_internal_research`），发布闸正确拒绝 `PUBLISH_ELIGIBILITY_HOLD:rights_display_not_allowed`，未篡改权利数据、未伪造 PASS。历史隔离对象集 `b0a11000…0001` 的 15 PASS 闭环保留为机制证据，不冒充主线。
 
 | # | 主干段（PLAN §3.5 C） | 状态 | 同任务实证 / 剩余 |
 |---|---|---|---|
@@ -14,10 +14,10 @@
 | 2 | 统一检索 L0—L5 并核权利与当前资格 | 在跑 | 权利投影与 Gate 读通道已真实跑通；统一检索视图/契约未完整验收 |
 | 3 | D00—D05 必要工序 + G0—G5 独立资格 | 在跑 | **12/12 节点已验**（含 D05 P02 落库与 G5 `3aa1c2de`）；剩 P03/P06 事实分支（方法绑定 HOLD）与 A01–A12 其余 11 项方法绑定 |
 | 4 | 可追溯知识资产与合法研究读 | 在跑 | evidence / finding / claim_revision 已落库且带 revision/refs；13 类资产合同未全验 |
-| 5 | 导演 H1/H2/H3 与 19 组件 → WorkRevision | 在跑（隔离对象集已验） | 正式 Plan `c17e3aea…`/正式 Rev `5c459bc3…` 正文权威与独立 G5 已回读；H1/H2/H3、19 组件在真实主线作品中的贡献未完整验收 |
-| 6 | Admin 回链、运营审核、作品资格与媒资许可 | 在跑（隔离对象集已验） | ST-09 决策链 12/12 隔离通过；Admin 对真实资产逐条回链未完整验收 |
-| 7 | 精确发布（发布指针） | 在跑（隔离对象集已验） | 同一 revision CAS 指针 + 失败不破坏旧指针已验；生产/公网未发布 |
-| 8 | WATCH 消费与即时撤权 | 在跑（隔离对象集已验） | 同 revision WATCH 放行、错 revision/anon 拒绝、撤权后新请求立即阻断已验；Owner 真实体验未做 |
+| 5 | 导演 H1/H2/H3 与 19 组件 → WorkRevision | 在跑（主线已接续） | 主线正式 Plan `d87d816d…`(G5 `4c0ce973`)/Rev `e1ed5309…`(G5 `652b39dc`) 正文权威与独立 G5 已在隔离库回读、同对象锚点闭合；H1/H2/H3、19 组件真实贡献未完整验收 |
+| 6 | Admin 回链、运营审核、作品资格与媒资许可 | 在跑（主线至 APPROVED） | 主线投稿冻结 + 独立 Operator 审核（自审拒/退回阻断/APPROVED）已验；Admin UI 对真实资产逐条回链未完整验收 |
+| 7 | 精确发布（发布指针） | 阻断（权利 HOLD） | 主线来源 `9aa03207` display 权被 Owner 明确 HOLD，发布闸正确拒绝且旧指针不变；机制已由 ST-10 隔离正向验证 |
+| 8 | WATCH 消费与即时撤权 | 在跑（隔离对象集已验） | 主线未发布故 WATCH 不放行、撤权如实拒绝；同 revision 放行/撤权即时阻断由隔离对象集已验；Owner 真实体验未做 |
 | 9 | 第二个非模板题材复用验证（PLAN §3.5 C-1） | 未启 | — |
 | 10 | Owner 真实体验与最终签收 | 未启 | — |
 
@@ -34,11 +34,11 @@
 | ST-02 | StudioResearchRead | 在跑 | G0/G1 读通道真实 200，跨 L 研究读已跑；统一检索视图/契约未完整验收 |
 | ST-03 | AnalyzeAndSaveCandidates | 在跑 | evidence `031dd3d9` / claim `0617b049` / finding `7f713c60` 已落库且带 revision/refs |
 | ST-04 | RequestFormalProduction | 在跑 | run `b9989b90` 已实执行到 D05：G0—G5 六门 PASS（G5 `3aa1c2de`），P02 `a17059e3` 落库并按资格读通道回读；run 终态仍 HOLD（设计内「独立门已签、run 不自动改写」，与 G3/G4 时一致） |
-| ST-05 | AssembleDirectorPlan | 在跑（隔离已验） | 正式 `c17e3aea…` + G5 `ec8117cb` 已回读；主线 `b2143002` 尚未产生其正式方案 |
+| ST-05 | AssembleDirectorPlan | 在跑（主线已接续） | 主线 `b2143002` 已产生正式方案 `d87d816d…` + 独立 G5 `4c0ce973`，绑定同 Project/delegation/root_task_ref/snapshot（隔离库回读） |
 | ST-06 | PreviewWork | 未启 | 尚未产生 `preview_snapshot` |
-| ST-07 | SaveWorkRevision | 在跑（隔离已验） | 正式 `5c459bc3…` + G5 `286ca90d` 已回读；主线 `b2143002` 尚未产生其正式修订 |
-| ST-08 | SubmitForEditorialReview | 在跑（隔离已验） | 同一 revision 冻结快照幂等绑定；真实主线未投稿 |
-| ST-09 | EditorialDecision/Publish/Withdraw | 在跑（隔离已验） | 独立 Operator 决策/发布/WATCH/撤权 12/12；封套 `creator_id` 为非用户标签，独立 Reviewer 身份仍待真实 UI 对象证明 |
+| ST-07 | SaveWorkRevision | 在跑（主线已接续） | 主线正式修订 `e1ed5309…` + 独立 G5 `652b39dc`，正文权威 `publication.work_revisions` + Studio 封套同 Project 绑定 |
+| ST-08 | SubmitForEditorialReview | 在跑（主线已投稿） | 主线 revision `e1ed5309…` 冻结快照幂等绑定；跨 Project 投稿被拒 |
+| ST-09 | EditorialDecision/Publish/Withdraw | 在跑（主线至 APPROVED） | 主线独立 Operator 审核 APPROVED、自审拒/退回阻断发布；公开发布 display 权 HOLD；封套 `creator_id` 非用户标签，独立 Reviewer 身份仍待真实 UI 对象证明 |
 
 ### 本批定点修补记录（2026-11-23，ST-05—ST-07）
 - 代码事实：`publication.ts` 的作品创建改为必须经服务端校验 Owner ACTIVE 项目；`studio-director.ts` 的 DirectorPlan 持久绑定项目/委托/root_task_ref/研究 snapshot/source refs，WorkRevision 提交双向校验 Owner+Project 且 CAS/幂等语义保留，正式正文仍写 `publication.work_revisions`；三个相关 API 路由传入服务端会话身份。旧编辑作品创建走独立兼容路径，历史无绑定行不被猜回填。
@@ -75,13 +75,13 @@
 
 ## 最前阻断 / 下一动作
 
-### 本批最新（2026-11-23 同一正式对象连续业务交接，本地隔离库）
-- **闭合的断点**：此前 ST-05/07/08/09 是四个独立进程、前置断言要求上阶段产物已经在库，缺少"同一对象一次连续回放"证据。新增 `scripts/test-m5-same-object-business-loop-isolation.mjs`，在 Project `b0a11000…0001` / root `studio-llm-dispatch` / Plan `c17e3aea…` / Work `3bb3458b…` / Revision `5c459bc3…` 上单进程连续回放并逐步断言同一对象；结果 **15 PASS / 0 FAIL / 1 FINDING**（`VERIFIED_ISOLATED with findings`）。
-- **真实反向**：错 Project 投稿被拒、自审被拒、退回态发布真实被 `PUBLISH_DECISION_REQUIRED` 拒绝且旧指针不变、越权发布被拒且旧指针不变、错 revision 不放行、anon 无发布表读取权、撤权后新请求立即隐藏/不放行且历史快照保留、重复撤权幂等；全程未新建 Plan/Work/Revision/G5。
-- **ST-09 测试缺陷修复**：原 `publish_guard_present` 是自声明式通过（脚本注释自承"可能成功"），已替换为退回态真实拒绝 + 旧指针保护 + 恢复 APPROVED；复验 ST-09 **12/12**。
-- **验证/环境**：静态守卫 2/2；`pnpm -r typecheck` 7 包通过；受影响定向单测 8/8；隔离库两个连续脚本均 PASS。`pnpm build` 因 CodeBuddy safe-delete 守卫在清理 `.next`（500 文件阈值）时中止，记 `DEFERRED_ENV`（非代码红灯）；CI 当前 SHA 两个 run 仍 `runner_id=0`/`steps=0`，记 `CI_BLOCKED`。
-- **边界/FINDING**：封套 `creator_id=formal-body-authority` 是非用户文本标签，Owner 作为 operator 的审核**不构成**独立 Reviewer 身份证据；需真实 UI 创建封套后另验。本窗口未改生产库/RLS/迁移/部署，未签 Gate，0 Provider 调用。
-- **下一动作**：把 `b2143002`/`d9d48901` 主线的合格知识成果接续到正式 DirectorPlan/WorkRevision 并取得该对象独立 G5；之后 Owner 真实浏览器体验签收。不得用本窗口对象集冒充主线通过。
+### 本批最新（2026-11-24 正式主线作品贯通，本地隔离库主线真实对象）
+- **闭合的断点**：此前主线 `b2143002`/`d9d48901` 在两库均无 DirectorPlan/Work/WorkRevision（本地库主线 G0-G5 已 11-19 过期、云端有有效 G5 `3aa1c2de` 但正文权威 schema 未应用）。新增 `scripts/test-m5-mainline-fullchain-isolation.mjs`（push SHA `51897429`，loopback 围栏），在隔离库用主线真实对象重签当前有效 G0-G5、建立正式 DirectorPlan `d87d816d…`(G5 `4c0ce973`) + Work + WorkRevision `e1ed5309…`(G5 `652b39dc`) 正文与封套，锚点全部同一 Project/Root/delegation/snapshot；投稿冻结→独立 Operator 审核（自审拒/退回阻断发布/APPROVED）全通。**20 PASS / 0 FAIL / 2 FINDING**（`MAINLINE_VERIFIED_ISOLATED`）。
+- **真实反向**：跨 Project 投稿被拒、自审 `EDITORIAL_OPERATOR_CONFLICT` 被拒、退回态发布 `PUBLISH_DECISION_REQUIRED` 被拒且旧指针不变、越权发布 `PUBLISH_OPERATOR_REQUIRED` 被拒、未发布时 WATCH 不放行/撤权 `WITHDRAW_NOT_PUBLISHED` 被拒、错 revision 不放行、anon 无指针读取权；非自签（机器 Gate signer + rule reviewer）、非历史 PASS 复用、0 Provider。
+- **最前阻断（真实权利闸，非 bug）**：主线来源 `9aa03207`（上海地名志·朱家角）`display` 权被 Owner 2026-11-08 明确 HOLD（`held_actions` 含 display、`scope=project_internal_research`、`pending explicit owner decision`）；发布闸如实拒绝 `PUBLISH_ELIGIBILITY_HOLD:rights_display_not_allowed`，指针不变。不篡改权利数据、不伪造 PASS。恢复条件：**Owner 明确授予该来源 display 权，或为同 Project 提供 display=allowed 的合法素材后另建修订**。发布→WATCH→撤权正向机制已由 ST-08/09/10 隔离对象集验证，不在主线伪造。
+- **验证/环境**：静态守卫 2/2、文档预算 OK（CURRENT 121/180）、`pnpm -r typecheck` 7 包 PASS、rights-actions 单测 17/17、既有同对象闭环 15 PASS 无回归。CI 新 SHA `51897429` run `45295876876`（`runner_id=0`/`steps=0`/3 秒失败）仍 `CI_BLOCKED`；本地测试不冒充 CI PASS。
+- **FINDING**：封套 `creator_id` 为非用户文本标签，Owner 作为 operator 的审核**不构成**独立 Reviewer 身份证据；人文终签真实 UI 身份仍待 Owner 侧证明。本窗口未改生产库/RLS/迁移/部署，未新增付费。
+- **下一动作**：① 等 Owner 就主线来源 display 权决策（放开则重跑发布→WATCH→撤权正向；不放开则此项维持真实 HOLD）；② 独立 Reviewer 真实 UI 身份接入；③ 云端正文权威 schema 迁移评估（现云端 schema 落后，非本窗口授权范围）；④ Owner 真实浏览器体验签收。不得用历史隔离对象集冒充主线通过。
 
 ### 历史（2026-11-23 连续施工｜五阶段全链贯通，已推送 d47c5d31/6a56b8fc）
 - **推送状态**：阶段一+二已推送（`d47c5d31`），阶段三/四/五已推送（`6a56b8fc`），§0.2 E 前端按钮接线已推送（`4e58fc6d`）；本窗口基线即 `4e58fc6d`。
