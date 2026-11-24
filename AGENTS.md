@@ -29,6 +29,7 @@ Owner已批准的裁决 → MHKA-00—05相应设计职责 → 现行授权专�
 | tasks/implementation/MAB/progress.md | 追加式施工证据账；仅按当前动作回查相关历史回执 |
 | tasks/implementation/MAB/ENGINEERING_HANDOFF_CURRENT.md | 仅在更换平台、环境或需要专用宿主交接时读取；不作为第二份施工计划 |
 | tasks/implementation/MAB/target-diff.csv | 需要定位目标/路径差异时按需读取 |
+| tasks/implementation/MAB/OWNER_WORKING_AGREEMENT.md | Owner 协作习惯、汇报格式与本机环境坑；只约束"怎么做、怎么汇报"，不改变 PLAN 的施工顺序与验收标准；每批开工读取一次 |
 | governance/mhka/MHKA-00—05 | 按当前任务读取相关章节，不无条件通读全部六份 |
 | 相关专业合同、Registry、源码和测试 | 按当前断点核对实际依赖与运行证据 |
 
