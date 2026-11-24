@@ -9,7 +9,7 @@ const sql=(input:string)=>execFileSync(psql!,['-X','-q','-At','-v','ON_ERROR_STO
 const context={consumer:'visual_stage' as const,purpose:{namespace:'G5',code:'fixture',version:'1'},scope:{project:'fixture'}};
 it('marked PG proves exact current G5 retrieval and recursive revocation without mock grants',async()=>{
  expect(sql("select current_setting('mohen.test_instance',true)")).toBe('codex-k3-isolated');
- expect(await retrieveMaterials([],12)).toEqual({materials:[],degraded:true});
+ expect(await retrieveMaterials([],12)).toEqual({materials:[],degraded:true,coverage:'UNAVAILABLE'});
  const result=await retrieveMaterials([],24,{qualification:context} as never);
  expect(result.degraded).toBe(false);
  if(phase==='current')expect(result.materials.map(m=>m.id)).toContain(story);

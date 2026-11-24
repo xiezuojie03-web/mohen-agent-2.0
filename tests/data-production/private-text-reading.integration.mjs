@@ -47,6 +47,7 @@ let workerPool,producerPool,signerPool,readerPool,storage;
 let intakeOutputDigest,intakeOutput;
 try {
  sql(`create role ${workerLogin} login nosuperuser nobypassrls nocreatedb nocreaterole noreplication;grant mohen_app_runtime to ${workerLogin};
+  grant mohen_private_worker to ${workerLogin} with inherit false, set true;
   create role ${producerLogin} login nosuperuser nobypassrls nocreatedb nocreaterole noreplication;grant mohen_producer to ${producerLogin};
   insert into public.users(user_id,email,username,password_hash)values('${a}','${a}@example.invalid','A','synthetic'),('${b}','${b}@example.invalid','B','synthetic');
   insert into control.session_verification_keys(verification_key)values('${sessionKey}')on conflict(key_slot)do update set verification_key=excluded.verification_key;

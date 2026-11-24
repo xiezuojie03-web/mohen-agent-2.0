@@ -58,7 +58,8 @@ try{
  await assert.rejects(()=>assertPrivateWorkerIdentity(pool),/PRIVATE_WORKER_DATABASE_IDENTITY_UNSAFE/);
  workerLogin='private_worker_'+randomUUID().replaceAll('-','');
  sql(`create role ${workerLogin} login nosuperuser nobypassrls nocreatedb nocreaterole noreplication;
-   grant mohen_app_runtime to ${workerLogin}`);
+   grant mohen_app_runtime to ${workerLogin};
+   grant mohen_private_worker to ${workerLogin} with inherit false, set true`);
  workerPool=new Pool({host:socket,port:Number(process.env.MOHEN_TEST_PORT??55432),user:workerLogin,database,max:1});
  await assertPrivateWorkerIdentity(workerPool);
  sql(`grant mohen_gate_signer to ${workerLogin}`);

@@ -184,7 +184,12 @@ try {
       // Producer must have Owner+Root-scoped terminal RPC; no broad production_runs RLS.
       "20261117010000_mab_m5_scoped_producer_run_progress.sql",
       "20261117020000_mab_m5_dev_machine_login_roles.sql",
-      "20261118025600_m5_scoped_formal_project_gate_read.sql"]) apply(file);
+      "20261118025600_m5_scoped_formal_project_gate_read.sql",
+      // 2026-11-19 strict rights dictionary. Without it the weaker object-only checks from
+      // 2026110811 make RIGHTS_BY_ACTION pass/fail on the wrong constraint: unknown legacy
+      // action names and non-listed values were accepted here while the dev/cloud database
+      // rejects them.
+      "20261119110000_m5_private_source_rights_projection.sql"]) apply(file);
     // Capability assertions for the migrations applied immediately above. They can only run at
     // this point in the chain: the rights columns, the private worker, the machine reviewer and
     // the content-based sign_gate_candidate semantics do not exist any earlier.
