@@ -2,8 +2,8 @@
 
 > 日期：2026-11-24  
 > 归属：CEI-01 / HOME知识世界呈现  
-> 文档性质：R1—R4综合复核与现行设计输入修订；本报告是四轮研究成果汇合后的唯一综合解释，不替代CEI-01正式任务书。  
-> 当前裁决：`R1-R4_REVIEWED / ONE_COMPLETE_CONCEPT_IMAGE / HTML_PROTOTYPE_HANDOFF_DEFINED / R5_NOT_STARTED`  
+> 文档性质：R1—R4综合复核与现行设计输入修订；本报告是四轮研究成果汇合后的唯一综合解释，不替代CEI-01正式任务书。R5准入结果及当前授权状态以《CEI_HOME正式视觉概念图制作准入评估_R5_现行.md》为准。  
+> 当前裁决：`R1-R4_REVIEWED / ONE_COMPLETE_CONCEPT_IMAGE / HTML_PROTOTYPE_HANDOFF_DEFINED / R5_CONDITIONAL_PASS / OWNER_REVIEW_REQUIRED`  
 > 边界：本轮只修正研究结论和设计输入，不制作正式视觉概念图、不制作HTML原型、不修改HOME/EXP工程代码，不授权工程实施。
 
 ---
@@ -429,8 +429,8 @@ R5结果仍为 `PASS / CONDITIONAL_PASS / HOLD`，由Owner审阅确认。R5通�
 - [x] 建立概念图与HTML原型之间的稳定模块ID和映射字段。
 - [x] 明确静态图不能证明的行为必须由HTML原型验证。
 - [x] 保留历史素材真实性、权利、关系语义和Agent低干扰约束。
-- [x] 明确R5仍未启动，不把本次研究修订冒充Owner准入批准。
+- [x] 明确R5为独立准入审查，不能由R1—R4综合修订自动通过；R5结果及条件以R5现行报告为准。
 
 **综合复核结论：R1—R4研究内容主体仍然有效；其成果组织和正式交付方法需要按本报告重新解释与修正。原R1/R2/R3的阶段研究结论保留，R4关于多张正式图纸的交付建议由本报告取代。**
 
-**当前状态：`R1-R4_REVIEWED / ONE_COMPLETE_CONCEPT_IMAGE / HTML_HANDOFF_DEFINED / R5_NOT_STARTED / IMAGE_PRODUCTION_NOT_AUTHORIZED / HTML_PROTOTYPE_NOT_STARTED / ENGINEERING_NOT_AUTHORIZED`。**
+**当前状态：`R1-R4_REVIEWED / ONE_COMPLETE_CONCEPT_IMAGE / HTML_HANDOFF_DEFINED / R5_CONDITIONAL_PASS / OWNER_REVIEW_REQUIRED / IMAGE_PRODUCTION_NOT_YET_AUTHORIZED / HTML_PROTOTYPE_NOT_STARTED / ENGINEERING_NOT_AUTHORIZED`。**
