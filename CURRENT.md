@@ -15,8 +15,11 @@
 
 ## 最前阻断与下一动作
 
-1. 生产链路修复已全部落码并测试通过，但 **`MOHEN_ORIGINAL_BRIDGE_KEY_VERSION` 修复尚未重建实测**（CODE_PRESENT，非 VERIFIED_ISOLATED）。
-2. 下一动作：重建→重发 run（D00→D02，含一次付费观察调用，额度内）→ 通后推进 ST-04 导演→ST-05 成稿修订→ST-06 投稿/发布/WATCH→浏览器端到端→集中提交。
+> **Owner 2026-11-24 指示：暂停施工，交 ChatGPT 核查。** 批次1 已变基集成远端 CEI 提交并推送：main=`6558d647`（本地=远端）。CI：build=success；**isolated-pg=failure（归因待查，见 progress.md 交付暂停点记录）**；isolated-m1-http=failure（既有独立旧问题）。
+
+1. **待查①（交 ChatGPT）**：isolated-pg 失败归因未定——本地 PG18 一次性实例复现为 15 套件面状 exit 1（更像实例/版本环境差异），但本批确有数据库链路代码改动，不能排除；需 admin 令牌取 CI 日志（job 138280271671）或 PG17 复现定论。
+2. **待查②（恢复施工时先做）**：`MOHEN_ORIGINAL_BRIDGE_KEY_VERSION` spawn 默认值修复未重建实测（CODE_PRESENT）；ST-03 生产 run（D00→D02，含一次付费观察调用，额度内）未重发。
+3. **下一动作**：核查结论出来后——若归因本批则修复补推；否则重建→重发生产 run→ST-04 导演→ST-05 成稿修订→ST-06 投稿/发布/WATCH→浏览器端到端→集中提交。
 
 ## 主线进度（按 PLAN §3.5 C 业务主干，同一任务 `b2143002` / Project `d9d48901` / run `b9989b90`）
 

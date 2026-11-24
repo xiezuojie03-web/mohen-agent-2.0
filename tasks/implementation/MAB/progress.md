@@ -6463,3 +6463,13 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **费用**：委托理解类 LLM 调用 3 次（understand/extract/discover/polish 各别重放），累计约 0.003-0.005 USD 级，额度内；D02 观察付费调用尚未发生。
 - **安全边界**：key 不落库不入日志（SHL key 仅服务端 URL 参数注入）；未自签 Gate（本地 Gate 服务=既有机器评审身份）；未改合同/迁移历史；不动 .tmp_trigger.ts 等非本批残留。
 - **当前断点**：bridge key 修复待重建实测→重发生产 run（D00→D02）→ST-04/05/06→浏览器端到端→集中提交。
+
+---
+
+## 2026-11-24 交付暂停点（Owner 指示：交 ChatGPT 核查，待查项如实标注）
+
+- **推送结果**：批次1（提交 90d4d759）变基集成远端 CEI-01 文档提交（cda03e93）后推送成功，main=`6558d647`，本地与远端一致；未触碰他人提交。
+- **CI 状态（6558d647）**：build（ci.yml：Typecheck→Unit→Boundary regression→preflight→Auth gate→Build 全链）= success；**isolated-pg = failure（待查）**；isolated-m1-http = failure（既有独立旧问题，上批已记录，非本批目标）。
+- **待查项① isolated-pg 失败归因（未完成）**：GitHub API 匿名限流无法下载 CI 日志（job 138280271671，需 admin 令牌）。本地用一次性 PG18 实例（D:\MoHen PG18 + initdb + `mohen.test_instance=codex-k3-isolated`）按 CI 同口径运行 `pnpm test:k3-db` 复现：15 个套件 exit 1（DB_SECURITY/GATE_AUTHORITY/QUALIFICATION_CONSUMPTION/STUDIO_ASSET/STUDIO_EXECUTION_CONTROLS/PRIVATE_TEXT_READING/PRIVATE_SOURCE_BINDING/PRIVATE_ORIGINAL_REPOSITORY/RIGHTS_BY_ACTION/PRIVATE_WORKER_ACL/MACHINE_REVIEWER_BOUNDARY/M5_PRODUCER_SCOPED_PROGRESS/ARTIFACT_CONTENT_REVISION/GATE_SERVICE/WEB_SESSION_REVOCATION），ROLLBACK 类前置检查 PASS。**注意**：本地复现用 PG18，CI 用 PG17，15 套面状失败更像实例/版本级环境差异而非本批代码（本批只改了 retrieve-shl/research/knowledge-routing/acquisition/production 环境），但不能排除——**归因未完成，不得视为已定论**。恢复条件：用 admin 令牌取 CI 日志，或在 PG17 容器复现。
+- **待查项②**：spawn env `MOHEN_ORIGINAL_BRIDGE_KEY_VERSION` 默认值修复已提交但未重建实测（CODE_PRESENT）；ST-03 生产 run 重发未执行。
+- **恢复动作**：Owner/ChatGPT 核查后，从"重建→重发生产 run（D00→D02）"继续，随后 ST-04→ST-06→浏览器端到端。
