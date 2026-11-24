@@ -130,7 +130,7 @@ async function main(){
     if(existing && existing.artifact_revision===rev){ g5=await auditRow(existing.gate_audit_id); pass("rev2_g5_reuse",`复用 G5 ${g5.gate_audit_id.slice(0,8)}`); }
     else {
       await db.query(`delete from control.gate_candidates where gate_code='G5' and object_type='work_revision' and object_id=$1 and candidate_status='SUBMITTED'`,[REV2]);
-      const cid=uuid(`cand:${REV2}`);
+      const cid=uuid(`cand:${REV2}:${Date.now()}:${crypto.randomUUID()}`);
       await db.query(`insert into control.gate_candidates(candidate_id,run_id,stage,gate_code,object_type,object_id,artifact_revision,
           purpose_namespace,purpose_code,purpose_version,allowed_scope,consumer,dependency_snapshot,evidence_refs,input_fingerprint,submitted_at,producer_identity,candidate_status)
         values($1::uuid,$2::uuid,'D05','G5','work_revision',$3::uuid,$4,'data-production','m5-remediation','v1',$5::jsonb,'producer',$6::jsonb,$7::jsonb,$8,now(),'private-evidence-worker','SUBMITTED')`,
