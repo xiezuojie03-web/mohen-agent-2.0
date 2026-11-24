@@ -104,6 +104,15 @@ function args(patch = {}, q = baseQuery({ findings: [findingRow] })) {
 
 test('independent signer rebuilds the exact D04 finding output and exact bound digests', async () => {
   assert.equal(digests.input_digest, inputDigest);
+  // 生产方 recordHumanisticFinding 返回的契约对象：request_digest 是持久化摘要
+  // （不是阶段输入摘要），候选类别为 private_humanistic_finding。
+  assert.equal(digests.output_digest, executionDigest({
+    stage: 'D04', candidate_kind: 'private_humanistic_finding',
+    original_id: input.originalId, finding_id: findingId,
+    claim_revision_id: input.claimRevisionId, artifact_revision: artifactRev,
+    request_digest: persistDigest, gate_candidate_id: cid, gate_candidate_status: 'SUBMITTED',
+    qualification: 'UNASSESSED', gate_code: 'G4',
+  }));
   const attested = await attestG4FindingStageOutput(args());
   assert.deepEqual(attested, { gate_code: 'G4', consumer: 'producer',
     input_digest: request.input_digest, output_digest: request.output_digest,

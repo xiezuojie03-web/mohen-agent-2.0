@@ -148,6 +148,16 @@ test('D05→G5 只读取证：真实形状的候选可通过并复现输入摘�
   const facts = await derive();
   assert.equal(facts.input_digest, inputDigest);
   assert.match(facts.output_digest, /^[a-f0-9]{64}$/);
+  // 生产方 projectWorld 返回的契约对象：候选类别字面量必须是
+  // private_world_projection，request_digest 必须是持久化摘要。此前重建写成
+  // private_world_projection_fact_branch / 阶段输入摘要，真实 G5 恒不匹配。
+  assert.equal(facts.output_digest, executionDigest({
+    stage: 'D05', candidate_kind: 'private_world_projection',
+    original_id: input.originalId, projection_id: projectionId, finding_id: input.findingId,
+    artifact_revision: projectionArtifact, request_digest: persistDigest,
+    gate_candidate_id: cid, gate_candidate_status: 'SUBMITTED',
+    qualification: 'UNASSESSED', gate_code: 'G5',
+  }));
 });
 
 test('D05→G5 只读取证：投影正文仅键序不同（canonical 持久化）仍判一致', async () => {

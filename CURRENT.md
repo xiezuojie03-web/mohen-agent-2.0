@@ -2,7 +2,7 @@
 
 > **Owner 授权口径（2026-11-22，长期有效）**：目标是墨痕**真正运行、持久运行**；除**安全问题**与**费用问题**外，施工方自行授权推进，不再逐项请示技术选择。费用边界：D02–D05 模型调用封顶 **0.05 USD**（约 ¥0.36，已建委托 `3f5585d0…`），超出该额度、新增付费来源或扩大用途仍需 Owner 批准。安全底线（密钥不入 git、不自签 Gate、不伪造会话/资格/PASS、不改迁移规避授权）不因该授权放宽。
 
-> 核验时间 2026-11-24（D02/G2 本地闭环窗口，基线 main=`67eb1c7c`，本地=远端）｜基线继承 `5bc0aeea`（其代码面等于 `0bc122b4`）｜本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
+> 核验时间 2026-11-24（D03→D05 续跑窗口，基线 main=`eac37106`，本地=远端）｜基线继承 `5bc0aeea`（其代码面等于 `0bc122b4`）｜本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
 
 ## 本批事实（2026-11-24 Studio 闭环专项，金泽 Project `a2b0cf23`）
 
@@ -21,12 +21,20 @@
 - **本地口径边界**：本机 `MOHEN_CLOUD_RUN_PROGRESS_RPC!=true`，终态走既有非 Owner 作用域 UPDATE 路径，PASS 记录与其审计 id 由 Runner 自行写入；云端 Owner 作用域 RPC 的 `M5_PRODUCER_GATE_REQUIRED` 强校验本批**未在云端实测**。
 - **遗留候选（不删、不伪造）**：该 run 累积 7 条 SUBMITTED G0 候选与 1 条 SUBMITTED G2 候选（`97031a7f`，旧指纹 `7680f9f5…`）；候选选择按精确 input_fingerprint 唯一匹配，当前不产生歧义；候选生命周期无 withdraw/supersede 路径，保持原状待后续设计。
 
+### 本批续：D03→D05 本地受控续跑（2026-11-24，同 run `21d9603f`，G3/G4/G5 当前有效，0 费用）
+- **六门齐全**：金泽作品在同一 run 上现有当前独立资格 G0（D02 批）/G1/G2 `4d82b678` + **G3 `ea19fafd`**（claim `02ef673c`，W07，上游 evidence `0df18664`）+ **G4 `bf1c64d4`**（finding `e1b13de5`，A06/BE）+ **G5 `dc9a7324`**（world_projection `4dd2a3f3`，P02，来源 `f889a887` machine_read/retain allowed）。全部 `decision_origin=independent_gate`、`consumer=producer`、`current_valid=true`。
+- **路径与边界**：三阶段输入均由服务端确定性重建函数从库内事实生成（零 Provider、零费用），经 **受控 Runner 续跑**（`local-execution-authorizer run` 新增 `--adapters`，只接受 registry 为该 job 声明的 adapter/private binding）。Studio 入口仍写死 `--to D02`，所以本段是受控续跑证据，**不是 Studio UI 证据**。
+- **本机库补应用既有迁移** `20261122200000_g3_reviewer_changes_read.sql`（machine 角色 `world.changes` 只读）。未改生产库。
+- **本批修掉三处真实接口缺口（均有回归测试）**：G3/G4 重建输出把 `request_digest` 写成阶段输入摘要（生产方返回持久化摘要）；G5 重建把 `candidate_kind` 写成 `private_world_projection_fact_branch`（生产方为 `private_world_projection`）且同摘要问题。新增 `gate-d03-g3-stage-output.test.mjs`（3 项），D04/D05 补生产方契约断言；全量 `tests/data-production` **505/505**。
+- **run 终态如实为 `HOLD@D05`**：独立门签发后 run 不回溯改写（既有设计口径，与主线 run `b9989b90` 相同）。这不是失败，也不等于作品链已贯通。
+- **前置证据**：`verify-local-execution-env.mjs` 全量重生成（四项 PASS，绑定 HEAD `eac37106`，契约测试 502/0），否则 authorizer 拒签。
+
 ## 最前阻断与下一动作
 
 > **隔离检查已转绿（2026-11-24 复核，main=`f379eb0b`）**：isolated-pg 的失败归因为既有漂移，非 Studio 闭环批次引入，已修复推送。`ci`=success、`MAB isolated PostgreSQL 17 verification`=success（job 138381760424）。四处根因：①检索测试仍按旧返回值全等比较，漏 11-19 新增 `coverage` 字段；②两个私有读取套件的登录只授 `mohen_app_runtime`，缺 11-18 身份护栏要求的 `mohen_private_worker` 成员与 SET；③隔离迁移链止于 11-18，缺 11-19 严格权限词典；④创建 `mohen_private_worker` 的迁移排在其测试之后。修法只改测试与隔离链脚本，未改产品逻辑。
 
 1. **待查②已转 CODE_PRESENT→本地 VERIFIED（隔离层）**：`MOHEN_ORIGINAL_BRIDGE_KEY_VERSION` spawn 默认值修复与 ST-03 生产 run（D00→D02，含一次付费观察调用）均已在本地真实跑通并留痕（见上节，run `21d9603f` PASS / G2 `4d82b678`）；尚未在生产环境重跑。
-2. **下一动作**：把本批两处接口修合同步核对 D03—D05 分支（G3/G4/G5 已含 consumer，D05 的 `request_digest` 语义与 G2 不同需单独核）→ 续跑 D03→D05（同一 run，仍受 0.05 USD 委托额度约束，付费前先确认可重放）→ST-04 导演→ST-05 成稿修订→ST-06 投稿/发布/WATCH→浏览器端到端→集中提交。不重跑已有有效证据的环节。
+2. **下一动作**：ST-04 导演（DirectorPlan 绑定同 Project `a2b0cf23` / root_task `bca52162` / delegation / 研究 snapshot 与 G5 来源 refs）→ ST-05 WorkRevision（正文权威 `publication.work_revisions`）→ ST-06 投稿 → ST-07 审核/精确发布 → ST-08 WATCH 同修订读取与撤权；浏览器端到端后集中提交。不重跑已有有效证据的环节；继续不触碰生产部署与云库。
 3. isolated-m1-http 仍是既有独立旧问题，本批未涉及，保持原状。
 
 ## 主线进度（按 PLAN §3.5 C 业务主干，同一任务 `b2143002` / Project `d9d48901` / run `b9989b90`）

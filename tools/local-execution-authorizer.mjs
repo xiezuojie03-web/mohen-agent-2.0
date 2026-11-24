@@ -273,6 +273,12 @@ async function run() {
   const registry = await loadRegistryInstance();
   const job = registry.jobs.find(j => j.stage === stage);
   if (!job) throw new Error(`STAGE_JOB_NOT_FOUND:${stage}`);
+  // A resumed private stage runs the candidate-only adapter the Studio and the
+  // cloud executor bind, not a caller-chosen module: only the job's two declared
+  // bindings are accepted, so this flag cannot route around the Registry.
+  const adaptersPath = arg("adapters") || job.implementation.adapter_binding;
+  if (![job.implementation.adapter_binding, job.implementation.private_evidence_adapter_binding]
+    .includes(adaptersPath)) throw new Error("ADAPTER_BINDING_NOT_ALLOWED");
 
   // Control-plane row for this run (the runner only advances existing rows).
   const { run: exec, queryRows, getNodePgPool } = await import("../packages/data-access/src/index.mjs");
@@ -307,7 +313,7 @@ async function run() {
 
   const args = ["pipelines/data-production/run.mjs",
     "--from", stage, "--to", stage,
-    "--adapters", job.implementation.adapter_binding,
+    "--adapters", adaptersPath,
     "--intent", intent, "--run-id", runId,
     ...(scopeFile ? ["--scope-file", scopeFile] : []),
     ...(methodPlanArg ? ["--method-plan", methodPlanArg] : []),

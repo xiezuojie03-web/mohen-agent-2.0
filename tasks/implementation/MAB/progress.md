@@ -6509,3 +6509,27 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **遗留（不删、不伪造）**：该 run 累积 7 条 SUBMITTED G0 候选与 1 条 SUBMITTED G2 候选（`97031a7f`，旧指纹 `7680f9f5…`；重发会随 G1 重签产生新指纹 `20f0e242…`/`0f269de0…`/`bc1b215a…`）。候选选择按精确 `input_fingerprint` 唯一匹配，当前无歧义；候选生命周期现无 withdraw/supersede 路径，保持原状，待后续按合同设计再处理。
 - **费用**：0.002861 USD（额度 0.05 USD 内，Owner 已批准一次真实调用）。
 - **下一动作**：核对 D03—D05 取证分支（G3/G4/G5 已随本修包含 consumer；D05 的 `request_digest` 与 G2 语义不同需单独核）→ 同一 run 续跑 D03→D05（付费前先确认可重放）→ ST-04 导演 → ST-05 成稿 → ST-06 投稿/发布/WATCH → 浏览器端到端 → 集中提交。
+
+---
+
+## 2026-11-24 D03→D05 本地受控续跑（run 21d9603f：G3/G4/G5 当前有效，三处真实接口缺口修复，0 费用）
+
+- **基线**：main=`eac37106`（本地=远端）；本地 mohen_dev、本地 Gate :8789 重启后加载本批修复；未触生产库/部署/密钥，未新建分支/强推。
+- **续跑路径（受控、可复算、零 Provider）**：三阶段输入都由服务端确定性重建函数从库内事实生成（`rebuildD03ResumeInput`/`rebuildD04ResumeInput`/`rebuildD05ResumeInput`，与云端独立 authority 同一实现），resume 文件写入 gitignored `work/scratch/ci/resume/`；启动用 `tools/local-execution-authorizer.mjs run --stage <S> --run-id 21d9603f… --resume-input-file … --adapters pipelines/data-production/adapters/private-evidence-adapters.mjs`。为支持该受控续跑，`local-execution-authorizer run` 新增 `--adapters` 覆盖，**仅接受 registry 为该 job 声明的 `adapter_binding` 或 `private_evidence_adapter_binding`**，其余报 `ADAPTER_BINDING_NOT_ALLOWED`。Studio 入口仍写死 `--to D02`，故本段不是 Studio UI 证据，而是受控 Runner 续跑证据。
+- **本机库补齐既有迁移**：应用仓库内既有 `20261122200000_g3_reviewer_changes_read.sql`（`mohen_gate_signer_m5_machine` 对 `world.changes` 的 SELECT + 只读策略）。应用前 G3 auto-sign 以 psql `对表 changes 权限不够` 失败；应用后同一请求可进入签发。未改生产库。
+- **三处真实接口缺口（均有回归测试）**：
+  1. G3 重建输出 `request_digest` 写成阶段输入摘要（`executionDigest(input)`），而生产方 `recordWorldClaim` 返回落库的持久化摘要 → 真实 D03 首次执行 `STAGE_OUTPUT_ATTESTATION_MISMATCH`。修为重建时重算的 `persistDigest`。
+  2. G4 同因（`recordHumanisticFinding` 返回 `saved.request_digest`）；同修。
+  3. G5 重建 `candidate_kind` 写成 `private_world_projection_fact_branch`，生产方 `projectWorld` 实际返回 `private_world_projection`；且 `request_digest` 同 1/2。两处同修。
+  - 这三处此前从未被真实 D03—D05 走过（G3 连单测都没有），单测自洽所以未暴露。新增 `tests/data-production/gate-d03-g3-stage-output.test.mjs`（3 项：生产方契约摘要、伪造摘要拒绝、载荷/上游/唯一性失败关闭）；D04/D05 各补"重建摘要必须等于生产方契约对象摘要"断言。
+- **真实签发结果（全部 `independent_gate` / `consumer=producer` / `current_valid=true`）**：
+  - G3 `ea19fafd-c752-4637-b800-d5baa8cf9692`：claim_revision `02ef673c-8a2c-8810-3571-8a3c30bb6643`（W07，revision 1），上游 evidence `0df18664`（G2 `4d82b678`），checks `identity_version`/`claim_support` 均 true。
+  - G4 `bf1c64d4-c6e4-494a-a459-414519d88adf`：finding `e1b13de5-b517-cb6b-566d-a0f439201ad3`（A06/BE），上游 G3 `ea19fafd`，checks `identity_version`/`finding_grounding` 均 true。
+  - G5 `dc9a7324-dd6a-4bee-99d3-3ba5a8cd132b`：world_projection `4dd2a3f3-e396-1c67-8088-a94282216809`（P02，`projection_key=d05-fact-02ef673c-e1b13de5`），上游 G4 `bf1c64d4`，checks `work_revision_binding`/`rights_by_operation`（来源 `f889a887` machine_read/retain=allowed）均 true。
+- **run 终态（如实）**：`21d9603f` 现为 `HOLD / current_stage=D05`。独立门签发后 run 不回溯改写，是既有设计口径（主线 run `b9989b90` 同为 HOLD@D05 而 G5 已签）。D03/D04 各自的 HOLD 是缺陷修复前的尝试；未改写任何历史审计或候选。
+- **候选状态（不删）**：D03 `b629c090`(CONSUMED)/`d680c45e`(SUBMITTED，修复后重放遗留，同输入指纹)；D04 `ca441d98`(CONSUMED)；D05 `3df691e6`(CONSUMED)。候选生命周期无 withdraw/supersede，保持原状。
+- **前置证据重生成**：`tools/verify-local-execution-env.mjs` 全量（未用 `--no-tests`）→ 四项 `user_engineering_authorization`/`M0_environment_and_bindings_verified`/`isolation_and_contract_tests_pass`(502/0)/`no_formal_hold_bypass` 全 PASS，证据绑定 HEAD `eac37106`；否则 authorizer 拒绝签 grant（`ENABLE_REQUIRES_EVIDENCE_STALE:git-head`）。
+- **测试**：`node --test tests/data-production/*.test.mjs` **505/505 PASS**（新增 3 项后）。
+- **费用**：0 次 Provider 调用、0 USD 新增（三阶段均是确定性事实分支）。
+- **未做**：未在云端/生产重跑；未改 Studio UI 的 `--to D02` 上限；未做 ST-04 之后的导演/成稿/投稿/发布/WATCH。
+- **下一动作**：ST-04 导演（DirectorPlan 绑定同 Project `a2b0cf23`/root_task `bca52162`/delegation/研究 snapshot 与 G5 来源 refs）→ ST-05 WorkRevision → ST-06 投稿 → ST-07 审核/精确发布 → ST-08 WATCH 同修订读取与撤权。

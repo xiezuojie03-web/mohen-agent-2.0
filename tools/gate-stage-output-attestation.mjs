@@ -508,7 +508,10 @@ async function deriveD03WorldClaimFacts({query,candidate,projectId,registry,runI
     original_id:input.originalId,change_id:row.change_id,
     claim_revision_id:row.claim_revision_id,claim_evidence_link_id:row.claim_evidence_link_id,
     evidence_id:row.evidence_id,artifact_revision:candidate.artifact_revision,
-    request_digest:inputDigest,gate_candidate_id:cid,gate_candidate_status:'SUBMITTED',
+    // The Producer returns the persisted claim digest here, not the stage input
+    // digest; the independent rebuild must reproduce the same field or every
+    // real G3 signing ends in STAGE_OUTPUT_ATTESTATION_MISMATCH.
+    request_digest:persistDigest,gate_candidate_id:cid,gate_candidate_status:'SUBMITTED',
     qualification:'UNASSESSED',gate_code:'G3'};
   return {input,output,input_digest:inputDigest,output_digest:executionDigest(output)};
 }
@@ -592,7 +595,7 @@ async function deriveD04FindingFacts({query,candidate,projectId,registry,runId}=
   const output={stage:'D04',candidate_kind:'private_humanistic_finding',
     original_id:input.originalId,finding_id:findingId,
     claim_revision_id:input.claimRevisionId,artifact_revision:candidate.artifact_revision,
-    request_digest:inputDigest,gate_candidate_id:cid,gate_candidate_status:'SUBMITTED',
+    request_digest:persistDigest,gate_candidate_id:cid,gate_candidate_status:'SUBMITTED',
     qualification:'UNASSESSED',gate_code:'G4'};
   return {input,output,input_digest:inputDigest,output_digest:executionDigest(output)};
 }
@@ -689,9 +692,11 @@ async function deriveD05FactFacts({ query, candidate, projectId, registry, runId
     dependency[0].gate_audit_id === g4AuditId && SHA.test(dependency[0].artifact_revision ?? '') &&
     SHA.test(dependency[0].qualification_digest ?? ''),
     'STAGE_OUTPUT_UPSTREAM_QUALIFICATION_MISMATCH');
-  const output = { stage: 'D05', candidate_kind: 'private_world_projection_fact_branch',
+  // The Producer's projectWorld returns candidate_kind 'private_world_projection';
+  // the rebuild must carry the same literal or the output digest never matches.
+  const output = { stage: 'D05', candidate_kind: 'private_world_projection',
     original_id: input.originalId, projection_id: projectionId, finding_id: input.findingId,
-    artifact_revision: candidate.artifact_revision, request_digest: inputDigest,
+    artifact_revision: candidate.artifact_revision, request_digest: persistDigest,
     gate_candidate_id: cid, gate_candidate_status: 'SUBMITTED',
     qualification: 'UNASSESSED', gate_code: 'G5' };
   return { input, output, input_digest: inputDigest, output_digest: executionDigest(output) };
