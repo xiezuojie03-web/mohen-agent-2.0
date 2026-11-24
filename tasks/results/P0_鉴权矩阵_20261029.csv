@@ -23,10 +23,14 @@
 /api/admin/submissions/batch,protected,yes,n/a,OK
 /api/admin/users,protected,yes,n/a,OK
 /api/admin/users/[id]/status,protected,yes,n/a,OK
+/api/auth/forgot-password,public,no,n/a,OK_PUBLIC
 /api/auth/login,public,no,n/a,OK_PUBLIC
 /api/auth/logout,public,no,n/a,OK_PUBLIC
 /api/auth/me,public,yes,n/a,OK_PUBLIC
+/api/auth/password-setup,public,no,n/a,OK_PUBLIC
+/api/auth/preview-owner-password,public,no,n/a,OK_PUBLIC
 /api/auth/register,public,no,n/a,OK_PUBLIC
+/api/auth/reset-password,public,no,n/a,OK_PUBLIC
 /api/explore/entities/[id],protected,yes,n/a,OK
 /api/explore/events/[id],protected,yes,n/a,OK
 /api/explore/relations/[id],protected,yes,n/a,OK
@@ -45,6 +49,9 @@
 /api/governance/gates/requests,protected,yes,n/a,OK
 /api/governance/gates/revoke,protected,yes,n/a,OK
 /api/help/articles/[id],public,no,n/a,OK_PUBLIC
+/api/internal/gate-review,protected,yes,n/a,OK
+/api/internal/production-execute,protected,yes,n/a,OK
+/api/internal/self-test-resume,protected,yes,n/a,OK
 /api/mohen/ask,public,no,n/a,OK_PUBLIC
 /api/mohen/materials,public,no,n/a,OK_PUBLIC
 /api/notifications,protected,yes,n/a,OK
@@ -76,6 +83,7 @@
 /api/studio/materials/import,protected,yes,n/a,OK
 /api/studio/plans,protected,yes,n/a,OK
 /api/studio/projects,protected,yes,n/a,OK
+/api/studio/projects/[projectId]/formal-read,protected,yes,n/a,OK
 /api/studio/research-read,protected,yes,n/a,OK
 /api/studio/research-tasks,protected,yes,n/a,OK
 /api/studio/research-tasks/[id]/events,protected,yes,yes,OK
@@ -83,6 +91,8 @@
 /api/studio/research-tasks/[id]/messages,protected,yes,yes,OK
 /api/studio/research-tasks/[id]/production,protected,yes,yes,OK
 /api/studio/research-tasks/[id]/resume,protected,yes,yes,OK
+/api/studio/research-tasks/[id]/source-acquisition,protected,yes,yes,OK
+/api/studio/research-tasks/[id]/source-selection,protected,yes,yes,OK
 /api/studio/research-tasks/[id]/stages/[stage],protected,yes,yes,OK
 /api/studio/research-tasks/[id]/status,protected,yes,yes,OK
 /api/studio/tasks,protected,yes,n/a,OK

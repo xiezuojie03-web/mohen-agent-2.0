@@ -216,14 +216,20 @@ export interface ShlMaterial {
   source_type: string;
   carrier_type: string;
   provenance_status: string;
-  /** K2 修正：只有真有正文才是 full_content；书目/题名是 catalog_only，描述/注释是 catalog_only；图像是 image_scan。 */
+  /** K2 修正：只有真有正文才是 full_content；书目/题名与真正的目录性注释是 catalog_only，
+   *  图像是 image_scan。地名志（dmz）条目的 description 是该记录全部正文（CP2-E，2026-11-08），
+   *  属 full_content，可经获取通道落为 D00 原件。 */
   content_availability: "full_content" | "catalog_only" | "image_scan";
   url: string;
   publisher: string;
   /** K2 新增：许可与权利状态（unknown/per_item/clear）。 */
   license: string;
   rights_clear: "unknown" | "per_item" | "clear";
-  /** K2 新增：原始响应快照路径（可复核）；写盘失败为 null。 */
+  /** K2 新增：原始响应快照路径（可复核）；写盘失败为 null。
+   *  D00 获取通道新增：带正文的条目附「可复取的无 key 请求 URL」与「条目原始 URI」，
+   *  获取适配器据此原样复取同一条记录（服务端注入 key），绝不凭题名猜测。 */
+  refetch_url?: string;
+  record_uri?: string;
   snapshot_path: string | null;
   fragments: string[];
 }
@@ -248,7 +254,10 @@ function itemFragments(endpoint: string, item: unknown): ItemFragments | null {
     title = String(it.name || it.placeLabel || "");
     if (it.description) {
       frags.push(String(it.description));
-      availability = "catalog_only";
+      // CP2-E（Owner 2026-11-08 决策）：地名志条目的 description 就是该记录的
+      // 全部正文（自带正文，可直接作为 D00 原件字节），不是目录摘要——
+      // 按 K2 语义标 full_content；kg 注释等真正的目录性文字仍是 catalog_only。
+      availability = "full_content";
     }
     if (it.placeLabel) frags.push(`所属：${String(it.placeLabel)}`);
     if (it.riverLabel) frags.push(`相关水系：${String(it.riverLabel)}`);
@@ -368,6 +377,7 @@ export async function searchShanghaiLibraryMaterials(
           const dedupeKey = `${m.source_type}|${m.title || term}`;
           if (seen.has(dedupeKey)) continue;
           seen.add(dedupeKey);
+          const isDmz = ep.endpoint === "shnh/dmz/webapi/geonames/list";
           materials.push({
             provider: "shanghai-library",
             title: `${ep.label}·${m.title || term}`,
@@ -381,8 +391,13 @@ export async function searchShanghaiLibraryMaterials(
             rights_clear: "unknown",
             snapshot_path: snapshot,
             fragments: m.fragments,
+            // 地名志条目附可复取配方：获取适配器据此原样复取同一条记录并按
+            // record_uri 精确对位，不凭题名猜测。key 永不入线索/日志。
+            ...(isDmz ? {
+              refetch_url: `${BASE}/${ep.endpoint}?${new URLSearchParams({ ...ep.qs, pageSize: String(pageSize), startIndex: String(start) }).toString()}`,
+              record_uri: itemUri(it) ?? undefined,
+            } : {}),
           });
-          if (materials.length >= max) return { materials, degraded: false };
         }
 
         const pager = (parsed as { pager?: { rowCount?: number } } | null)?.pager;
@@ -392,7 +407,16 @@ export async function searchShanghaiLibraryMaterials(
         await new Promise((r) => setTimeout(r, 250));
       }
       await new Promise((r) => setTimeout(r, 300));
+      // 收集池放宽到 3×max：书目/题名条目先到不该把唯一带正文的记录挤出结果，
+      // 也不为凑满上限无限翻页（Y06 价值互补，不是删除）。
+      if (materials.length >= max * 3) break;
     }
   }
-  return { materials, degraded: okCount === 0 };
+  if (!materials.length) return { materials, degraded: okCount === 0 };
+  // Y06：带正文的记录优先进入上限内，其余按原顺序保留；稳定排序不重排同类。
+  const order = new Map(materials.map((m, i) => [m, i]));
+  materials.sort((a, b) =>
+    (a.content_availability === "full_content" ? 0 : 1) - (b.content_availability === "full_content" ? 0 : 1) ||
+    (order.get(a) ?? 0) - (order.get(b) ?? 0));
+  return { materials: materials.slice(0, max), degraded: okCount === 0 };
 }

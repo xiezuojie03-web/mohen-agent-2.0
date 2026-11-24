@@ -6440,3 +6440,26 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **费用/安全边界**：0 USD；无 Provider 调用/DB 写入/外部请求；未改权限/策略；不伪造结果；不降低 gate 严格性。
 - **遗留**：push 同时触发独立 workflow "MAB M1 isolated authenticated HTTP acceptance"（非 ci.yml）Run 45330128490 Step 7 失败——独立问题，不在本 Runner 故障范围。
 - **下一动作**：Owner 核验 GitHub Run 45330128379；独立排查 MAB M1 workflow；回到 Studio/D00-D05 业务主线。
+
+---
+
+## 2026-11-24 Studio完整创作闭环专项·批次1（ST-01/02 验收 + ST-03 获取验收 + 生产链 4 缺陷修复）
+
+- **指令依据**：Owner《M5｜Studio完整创作闭环专项施工指令》（2026-11-24）；基线 5bc0aeea（代码面=0bc122b4，CI 全绿）。
+- **环境**：本地 next start :3100（next build+start）+ 本地 Gate 服务 :8789（HTTPS）；mohen_dev 隔离库；未触生产、未新增付费来源。
+- **ST-01 PASS（真实验证）**：金泽 Project `a2b0cf23` 内自然语言委托→H1→Task `345fde33`/`bca52162`+Brief 持久化；`ensureProject` 自动建底稿；刷新恢复路径存在（UI 从服务端任务列表恢复）。
+- **ST-02 PASS（真实验证）**：
+  - 根因修复：本地库此前缺迁移 `20261118025600_m5_scoped_formal_project_gate_read.sql`+`20261118120000_m5_formal_project_read_acl_order_fix.sql`（云端已有），`studio.search_qualified_project_layers` 不存在导致检索恒 `SOURCE_OR_QUALIFICATION_UNAVAILABLE`。按"已完成迁移直接继承"补齐后，任务 `345fde33` 路由真实输出 `PROJECT_SOURCE_GAP_CONFIRMED`→`DISCOVER_D00_SOURCE_CANDIDATES`，14 条真实外部线索（含上图《金澤小志》书目/古籍全文）。
+  - 真实缺陷修复1：`retrieve-shl.ts` itemFragments 把地名志（dmz）带正文章条目误标 `catalog_only`，与 K2 语义（真有正文=full_content）及 CP2-E（Owner 2026-11-08 dmz 自带正文决策）冲突→改为 `full_content`。
+  - 真实缺陷修复2：上图渠道 works/instances 先占满 maxPerChannel，把唯一带正文的 dmz 记录挤出线索→收集池 3×max + full_content 优先稳定排序。
+  - 线索获取配方：dmz 条目附 `refetch_url`（无 key 复取 URL）+`record_uri`（条目原 URI），acquisition_candidate 透传，获取按原值精确对位不凭题名猜测。
+- **ST-03 获取环节 PASS**：新增 `apps/web/lib/studio-shl-acquisition.ts`（服务端复取→字节损坏/截断/非 JSON 拒绝→workflow.upload 预留/写入/回读校验/定稿→Source→Version→Raw 登记→checkpoint 回执→幂等回放）；获取路由按 provider 分派（shanghai-library→SHL，其余→Commons）；原件 `674deb39-4b3c…`（1015 字节，SHA `b6f030…`）STORED_VERIFIED+登记回读一致。
+- **ST-03 生产环节：4 个真实缺陷修复（全部有回归测试，生产 run 尚未重发实测）**：
+  1. `apps/web/lib/studio/tool-ledger.ts` DEFAULT_BUDGET_CEILING 8→16：默认预算 8<研究4+production-run5+导演3+采纳1=13，任何默认任务永远发不起生产。测试：mab-hp08-tool-ledger/production-reservation/production-trigger/ledger-reconciliation 28/28。
+  2. 执行授权证据过期（git_head 21436301@11-13、超24h）根因含 `cloud-production-runtime.mjs` 3 处 Windows 缺陷：`--import` 裸绝对路径（ERR_UNSUPPORTED_ESM_URL_SCHEME c:）→pathToFileURL；测试对 bootstrap 前缀的硬编码下标→按 runner 入口定位；测试自身 loader 裸路径→pathToFileURL。全量隔离套件 498/0；`tools/verify-local-execution-env.mjs` 重生成 enable-requires-evidence（git_head=当前 HEAD，digest=869dcaaf…）。
+  3. `studio-research.ts` reconcileUnclaimedProduction 只对账云端 NEVER_EXECUTED；本地 spawn 启动失败（PRODUCTION_PROCESS_EXIT_NONZERO）预留 5 单位永久卡死→扩展零产出对账（FAILED+无 Gate 候选+无 settled 回执才释放），补回归测试（mab-hp08-production-reservation 11/11）。
+  4. `studio-production.ts` spawn env 缺 `MOHEN_ORIGINAL_BRIDGE_KEY_VERSION` 默认（与 local-execution-authorizer 口径一致=mab-original-bridge-v1）→已修；**未重建实测，CODE_PRESENT**。
+- **卫生维护**：`control.qualification_current` 32 条 valid_until<=now() 自然过期行滞留导致执行证据第4项（no_formal_hold_bypass）永不过；新增 `scripts/maintain-qualification-current.mjs`（仅回环库、仅删过期行、gate_audits 未动）清理 32 条。
+- **费用**：委托理解类 LLM 调用 3 次（understand/extract/discover/polish 各别重放），累计约 0.003-0.005 USD 级，额度内；D02 观察付费调用尚未发生。
+- **安全边界**：key 不落库不入日志（SHL key 仅服务端 URL 参数注入）；未自签 Gate（本地 Gate 服务=既有机器评审身份）；未改合同/迁移历史；不动 .tmp_trigger.ts 等非本批残留。
+- **当前断点**：bridge key 修复待重建实测→重发生产 run（D00→D02）→ST-04/05/06→浏览器端到端→集中提交。

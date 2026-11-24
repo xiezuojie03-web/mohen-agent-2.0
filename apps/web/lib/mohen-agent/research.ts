@@ -202,6 +202,8 @@ type ExternalResearchLead = Material & {
     content_availability: ShlMaterial["content_availability"];
     provider_license_hint: string;
     provider_rights_hint: ShlMaterial["rights_clear"];
+    /** 带正文条目的原始条目 URI：获取适配器用它对位同一条记录。 */
+    record_uri?: string;
   };
 };
 
@@ -234,12 +236,13 @@ function toExternalMaterial(lead: ShlMaterial, includeCandidate = false): Extern
       acquisition_candidate: {
         provider: lead.provider,
         title: lead.title,
-        locator: candidateLocator(lead.url),
+        locator: lead.refetch_url ?? candidateLocator(lead.url),
         source_type: lead.source_type,
         carrier_type: lead.carrier_type,
         content_availability: lead.content_availability,
         provider_license_hint: lead.license,
         provider_rights_hint: lead.rights_clear,
+        ...(lead.record_uri ? { record_uri: lead.record_uri } : {}),
       },
     } : {}),
   };

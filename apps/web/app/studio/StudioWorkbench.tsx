@@ -290,6 +290,12 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
         COMMONS_LICENSE_NOT_VERIFIED:"该文件的署名或许可未通过核验。",
         COMMONS_ORIGINAL_NOT_VERIFIED:"原件字节未通过文件版本校验。",
         ORIGINAL_IDEMPOTENCY_CONFLICT:"原件版本已变化，请核对已保存的记录。",
+        SHL_LOCATOR_UNSUPPORTED:"此线索不含可复取的正文字节入口。",
+        SHL_KEY_MISSING:"来源获取服务未配置访问凭据，暂不能保存原件。",
+        SHL_RECORD_NOT_RESOLVED:"未能按原线索对位到同一条记录，请改选其他候选。",
+        SHL_BODY_CORRUPTED:"来源返回的正文含损坏字节，未保存；可稍后重试。",
+        SHL_BODY_TRUNCATED:"来源响应不完整，未保存；可稍后重试。",
+        SHL_RESULT_NOT_OK:"来源接口未返回正文数据，未保存；可改选其他候选。",
       };
       const originalId = response.ok && body.ok === true && typeof body.receipt?.original_id === "string"
         ? body.receipt.original_id as string : undefined;

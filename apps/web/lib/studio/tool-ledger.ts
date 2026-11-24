@@ -35,7 +35,13 @@ export const TOOL_REGISTRY: Record<string, ToolSpec> = {
   "production-run": { toolId: "production-run", capability: "D阶段生产（D00-D05）", cost: 5, trustTier: "production", idempotent: false },
 };
 
-export const DEFAULT_BUDGET_CEILING = 8;
+// 默认预算必须覆盖一条完整创作链的最小账（2026-11-24 修正）：
+// 研究 4（understand+extract+discover+polish）+ 正式生产 5（production-run）
+// + 导演方案 3（generate-plans）+ 采纳成稿 1（adopt-plan）= 13。
+// 原默认 8 使「研究完成后永远发不起生产」（4+5=9>8），是 governor 默认值
+// 算术缺陷，不是授权问题：真实外发费用仍受 Owner 既定总额授权（≤20 元）
+// 与按实际回执对账的记账纪律约束，预留未消费的部分对账后释放。
+export const DEFAULT_BUDGET_CEILING = 16;
 
 export interface BudgetState {
   ceiling: number;

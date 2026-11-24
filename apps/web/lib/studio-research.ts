@@ -371,10 +371,18 @@ async function reconcileUnclaimedProduction(
   const reasonCode = runs.length === 1 ? String(runs[0].reason_code ?? "") : "";
   // 执行器进程失败（非"未派发"）也允许对账，但只在确实什么都没产出时：本次 intake
   // 成本为 0，且该 run 没有任何 Gate 候选。凡跑出候选或产出的一律拒绝，避免在此退真账。
+  const nothingProduced = (await queryRows(
+    `select 1 from control.gate_candidates where run_id = :'id'::uuid limit 1`, { id: runId },
+  )).length === 0;
   const processFailedNothingProduced = reasonCode === "CLOUD_EXECUTOR_PROCESS_FAILED" && cost === 0 &&
-    (await queryRows(`select 1 from control.gate_candidates where run_id = :'id'::uuid limit 1`, { id: runId })).length === 0;
-  if (runs.length !== 1 || runs[0].status !== "HOLD" ||
-      !(NEVER_EXECUTED.includes(reasonCode) || processFailedNothingProduced))
+    nothingProduced;
+  // 本地 spawn 路径：run.mjs 在启动阶段（阶段令牌/执行授权）失败退出，同样没有
+  // 产出任何候选；预留从未被真实回执消费，按同一对账纪律释放。
+  const localStartupFailedNothingProduced = reasonCode === "PRODUCTION_PROCESS_EXIT_NONZERO" &&
+    nothingProduced;
+  if (runs.length !== 1 || !(runs[0].status === "HOLD" || runs[0].status === "FAILED") ||
+      !(NEVER_EXECUTED.includes(reasonCode) || processFailedNothingProduced ||
+        localStartupFailedNothingProduced))
     return { ok: false, reason: "production_reservation_reconciliation_required" };
   const settled = await queryRows(
     `select 1 from public.study_asset_receipts

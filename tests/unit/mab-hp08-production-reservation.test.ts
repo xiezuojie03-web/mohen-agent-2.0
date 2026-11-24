@@ -138,6 +138,46 @@ describe("HP08 paid production preflight and atomic budget reservation",()=>{
     expect(JSON.parse(calls[1][1].payload).retry_requires_reconciliation).toBe(true);
   });
 
+  it("reconciles a local-spawn startup failure that produced nothing, then re-reserves",async()=>{
+    const runId="123e4567-e89b-42d3-a456-426614174004";
+    const invocation="123e4567-e89b-42d3-a456-426614174005";
+    const stuck={...prior,reserved:5,production_run_id:runId,
+      productionReservation:{invocation_id:invocation,tool_id:"production-run",cost:5,
+        status:"reserved",requires_receipt_reconciliation:true}};
+    queryRows.mockImplementation(async(sql:string,params:Record<string,string>)=>{
+      if(sql.startsWith("select prompt, status, checkpoint"))return [{
+        prompt:"historical materials",status:"done",checkpoint:JSON.stringify(stuck),
+      }];
+      if(sql.includes("from studio.projects"))return [{project_id:projectId}];
+      if(sql.includes("from control.production_runs"))
+        return [{status:"FAILED",reason_code:"PRODUCTION_PROCESS_EXIT_NONZERO"}];
+      if(sql.includes("from control.gate_candidates"))return [];
+      if(sql.includes("from public.study_asset_receipts"))return [];
+      if(sql.includes("set checkpoint = :'next'::jsonb")){
+        const previous=JSON.parse(params.previous);
+        if(previous.productionReservation){
+          expect(previous.reserved).toBe(5);
+          expect(previous.productionReservation.invocation_id).toBe(invocation);
+          expect(JSON.parse(params.next).reserved).toBe(0);
+          return [{task_id:taskId}];
+        }
+        const next=JSON.parse(params.next);
+        expect(next.reserved).toBe(5);
+        return [{task_id:taskId}];
+      }
+      throw Error("UNEXPECTED_SQL:"+sql);
+    });
+    run.mockImplementation(async(_sql:string,params:Record<string,string>)=>{
+      expect(["hold","reserved"]).toContain(params.status);
+    });
+    triggerProduction.mockResolvedValue({started:true,runId});
+    const outcome=await requestProduction(taskId,ownerId);
+    expect(outcome).toEqual({ok:true,run_id:runId});
+    const receipts=run.mock.calls.map(([,p])=>p.status);
+    expect(receipts).toEqual(["hold","reserved"]);
+    expect(triggerProduction).toHaveBeenCalled();
+  });
+
   it("denies a foreign or archived project before budget reservation and Runner",async()=>{
     queryRows.mockImplementation(async(sql:string)=>{
       if(sql.startsWith("select prompt, status, checkpoint"))return [{

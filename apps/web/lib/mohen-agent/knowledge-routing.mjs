@@ -17,9 +17,15 @@ export function planStudioKnowledgeRoute({
   const snapshot=object(projectSnapshot);
   const coverage=object(snapshot.layer_coverage);
   const l0=object(coverage.L0),l1=object(coverage.L1),l2=object(coverage.L2);
-  const refs=entries(snapshot.asset_refs);
+  const refsAll=entries(snapshot.asset_refs);
   const blocked=entries(snapshot.blocked_asset_refs);
   const originals=entries(snapshot.original_refs);
+  // 原件的 backing asset 同时出现在 original_refs 与 asset_refs 里，它属于 L0
+  // （等待 G0/生产），不是「未过独立 Gate 的 L1-L4 候选」。不排除会把
+  // CHECK_L0_SOURCE_RIGHTS_AND_G0 这条更准确的路径遮蔽成泛泛的候选审阅。
+  const originalAssetIds=new Set(originals.map(o=>object(o).asset_id)
+    .filter(v=>typeof v==='string'&&v.length>0));
+  const refs=refsAll.filter(r=>!originalAssetIds.has(object(r).asset_id));
   const eligibleL5=entries(qualifiedL5).filter(m=>m&&qualifiedTags.has(m.epistemic)&&
     typeof m.id==='string'&&m.id.length>0);
   // Formal refs come ONLY from the project-bound independent current-Gate read.

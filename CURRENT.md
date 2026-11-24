@@ -2,7 +2,21 @@
 
 > **Owner 授权口径（2026-11-22，长期有效）**：目标是墨痕**真正运行、持久运行**；除**安全问题**与**费用问题**外，施工方自行授权推进，不再逐项请示技术选择。费用边界：D02–D05 模型调用封顶 **0.05 USD**（约 ¥0.36，已建委托 `3f5585d0…`），超出该额度、新增付费来源或扩大用途仍需 Owner 批准。安全底线（密钥不入 git、不自签 Gate、不伪造会话/资格/PASS、不改迁移规避授权）不因该授权放宽。
 
-> 核验时间 2026-11-24 本窗口（CI Runner 故障专项施工）｜唯一 main `0bc122b4`（CI 全绿）｜环境：GitHub Actions ubuntu-latest Node 24，正式 CI ci.yml Run 45330128379 conclusion=success，22 步全过（Install→Typecheck→Unit tests→Production boundary regression→K3 traceability→Isolated DB fixture preflight→Build→Auth coverage gate→MAB handoff audit），runner_id=1000001578，runner_name='GitHub Actions 1000001578'。仓库 visibility 临时 public 验证 Runner 分配，后续需 Owner 决策是否保持 public 或改回 private + 升级 Pro（Free 私有 Actions 2000min/月已耗尽，spending limit=0）。本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
+> 核验时间 2026-11-24 Studio 闭环专项窗口｜基线继承 `5bc0aeea`（其代码面等于 `0bc122b4`，CI 全绿）｜本批按 Owner《M5｜Studio完整创作闭环专项施工指令》推进 ST-01→ST-06，已提交推送见文末 main commit。本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
+
+## 本批事实（2026-11-24 Studio 闭环专项，金泽 Project `a2b0cf23`）
+
+- **ST-01 已真实验收**：自然语言委托→H1 理解→Project/Task/Brief 持久化、刷新恢复；任务 `345fde33`、`bca52162` 均由 Studio API 从对话委托真实创建。
+- **ST-02 已真实验收**：本地库补应用既有迁移 `20261118025600`+`20261118120000`（`search_qualified_project_layers` 此前本地缺失，导致一切检索恒 HOLD）；缺口路由真实给出 `PROJECT_SOURCE_GAP_CONFIRMED`→`DISCOVER_D00_SOURCE_CANDIDATES`（任务 `345fde33`，14 条真实外部线索）；修正上图渠道两处真实缺陷：①地名志带正文章条目被误标 `catalog_only`（现按 CP2-E 标 `full_content`），②条目上限排序曾把唯一带正文的记录挤出线索（现 full_content 优先、稳定排序）。
+- **ST-03 获取环节已验收**：新增 Studio 服务端上图文本获取适配器 `apps/web/lib/studio-shl-acquisition.ts`（按 locator+record_uri 原样复取同一条记录、key 不落库不入日志、字节损坏拒绝、Source→Version→Raw 登记+回执），获取路由按 provider 分派；原件 `674deb39`（1015 字节）STORED_VERIFIED + 登记回读校验通过。
+- **ST-03 生产环节 4 个真实缺陷已修复（回归测试齐全）**：①任务预算默认 8<研究4+生产5=9 的算术缺陷（`DEFAULT_BUDGET_CEILING` 8→16，28 项预算/生产测试全过）；②执行授权证据过期+cloud-production-runtime 3 处 Windows 路径缺陷（`--import` 需 file:// URL 等），全量隔离测试 498/0，证据重生成；③本地 spawn 启动失败不在预留对账白名单导致预留永久卡死（扩展 `PRODUCTION_PROCESS_EXIT_NONZERO` 零产出对账，补回归测试）；④spawn 缺 `MOHEN_ORIGINAL_BRIDGE_KEY_VERSION` 默认值（已修代码）。
+- **卫生维护**：新增 `scripts/maintain-qualification-current.mjs` 清理 `control.qualification_current` 32 条自然过期行（gate_audits 历史未动）。
+- 本地实例（next start :3100）+ 本地 Gate 服务（:8789）已在本批真实配置下运行；生产运行器重发在最后一个修复重建后被 Owner 暂停。
+
+## 最前阻断与下一动作
+
+1. 生产链路修复已全部落码并测试通过，但 **`MOHEN_ORIGINAL_BRIDGE_KEY_VERSION` 修复尚未重建实测**（CODE_PRESENT，非 VERIFIED_ISOLATED）。
+2. 下一动作：重建→重发 run（D00→D02，含一次付费观察调用，额度内）→ 通后推进 ST-04 导演→ST-05 成稿修订→ST-06 投稿/发布/WATCH→浏览器端到端→集中提交。
 
 ## 主线进度（按 PLAN §3.5 C 业务主干，同一任务 `b2143002` / Project `d9d48901` / run `b9989b90`）
 

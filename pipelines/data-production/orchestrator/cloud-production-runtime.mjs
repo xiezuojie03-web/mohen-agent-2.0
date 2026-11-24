@@ -1,6 +1,6 @@
 // Cloud request-lifetime adapter for the existing CLI. No second Runner,
 // Registry, job queue, Gate signer or professional method is introduced.
-import fs from 'node:fs/promises';import os from 'node:os';import path from 'node:path';import {spawn} from 'node:child_process';
+import fs from 'node:fs/promises';import os from 'node:os';import path from 'node:path';import {spawn} from 'node:child_process';import {pathToFileURL} from 'node:url';
 import {executionDigest} from './execution-authority.mjs';
 import {cloudProductionEndStage,cloudProductionFromStage} from './cloud-production-dispatch.mjs';
 import {assertCloudExecutionConfiguration,resolveMachineDatabaseUrl} from './cloud-execution-readiness.mjs';
@@ -52,7 +52,9 @@ async function runnerBootstrap(root){
  try{await fs.access(path.join(directory,'ajv-2020.cjs'));}
  catch{return {args:[],environment:{}};}
  return {
-  args:['--import',path.join(root,'pipelines/data-production/orchestrator/cloud-runner-dependency-loader.mjs')],
+  // ESM 加载器参数必须是 file:// URL：Windows 绝对路径（c:\…）会被
+  // ERR_UNSUPPORTED_ESM_URL_SCHEME 拒绝；POSIX 上 pathToFileURL 同样合法。
+  args:['--import',pathToFileURL(path.join(root,'pipelines/data-production/orchestrator/cloud-runner-dependency-loader.mjs')).href],
   environment:{MOHEN_CLOUD_RUNNER_DEPENDENCY_DIR:directory},
  };
 }

@@ -19,7 +19,12 @@ test('short-lived Owner token is not part of immutable work identity and is neve
 test('CLI receiver invokes the original Runner with server-owned arguments and awaits its exit',async()=>{
  const e=input();let called=false;
  const result=await executeCloudProductionCli({input:e,projectRoot:process.cwd(),environment:{...cloudEnvironment(),MOHEN_EXECUTION_AUTH_VERIFY_URL:'https://independent.invalid/consume',MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL:'synthetic-credential-at-least-32-characters',MOHEN_EXECUTION_AUTH_DYNAMIC_URL:'https://independent.invalid/token',MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL:'synthetic-credential-at-least-32-characters'},
-  runChild:async(command,args,options)=>{called=true;assert.equal(command,process.execPath);assert.match(args[0],/pipelines.*data-production.*run.mjs$/);assert.equal(args[args.indexOf('--run-id')+1],e.run_id);assert.equal(options.env.MOHEN_PRIVATE_WORKER_OWNER_SESSION,e.owner_session_token);assert.equal(options.env.MOHEN_CLOUD_RUN_PROGRESS_RPC,'true');assert.equal(args.includes('--report-dir'),true);return {code:0,timedOut:false};},
+  runChild:async(command,args,options)=>{called=true;assert.equal(command,process.execPath);
+   // 本地可能存在 git-ignore 的 cloud-runner-dependencies 预置（--import loader 前缀），
+   // CI 上没有；无论有无前缀，原 Runner 入口都必须以服务端参数出现。
+   const runnerArg=args.find(a=>/pipelines[/\\]data-production[/\\]run\.mjs$/.test(a));
+   assert.ok(runnerArg,'runner entry must be among child args');
+   assert.equal(args[args.indexOf('--run-id')+1],e.run_id);assert.equal(options.env.MOHEN_PRIVATE_WORKER_OWNER_SESSION,e.owner_session_token);assert.equal(options.env.MOHEN_CLOUD_RUN_PROGRESS_RPC,'true');assert.equal(args.includes('--report-dir'),true);return {code:0,timedOut:false};},
   readTerminal:async()=>({run_id:e.run_id,status:'HOLD',stage:'D00',reason_code:'INDEPENDENT_GATE_NOT_VERIFIED'}),holdRun:async()=>{throw Error('must not mark fail');}});
  assert.equal(called,true);assert.equal(result.status,'HOLD');
 });
@@ -77,13 +82,13 @@ test('cloud child keeps Producer identity and excludes parent Web secrets and pa
   holdRun:async()=>{},readTerminal:async()=>({run_id:e.run_id,status:'HOLD',stage:'D00',reason_code:'WAITING_GATE'})});
 });
 test('real CLI reaches dynamic token validation without any pre-issued stage tokens',async()=>{
- const fs=await import('node:fs/promises'),os=await import('node:os'),path=await import('node:path'),cp=await import('node:child_process');
+ const fs=await import('node:fs/promises'),os=await import('node:os'),path=await import('node:path'),cp=await import('node:child_process'),{pathToFileURL}=await import('node:url');
  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'mohen-cli-bootstrap-'));const loader=path.join(dir,'fetch.mjs');
  await fs.writeFile(loader,"globalThis.fetch=async()=>Response.json({token:'synthetic-malformed-stage-grant'});\n");
  const e=input();let stderr='';
  try{
   await executeCloudProductionCli({input:e,projectRoot:process.cwd(),environment:{...cloudEnvironment(),MOHEN_EXECUTION_AUTH_VERIFY_URL:'https://independent.invalid/consume',MOHEN_EXECUTION_AUTH_VERIFY_CREDENTIAL:'synthetic-verifier-credential-32-characters',MOHEN_EXECUTION_AUTH_DYNAMIC_URL:'https://independent.invalid/token',MOHEN_EXECUTION_AUTH_DYNAMIC_CREDENTIAL:'synthetic-issuer-credential-32-characters'},
-   runChild:async(c,args,o)=>{const child=cp.spawnSync(c,['--import',loader,...args],{...o,encoding:'utf8',timeout:10000});stderr=child.stderr??'';return {code:child.status,timedOut:false};},
+   runChild:async(c,args,o)=>{const child=cp.spawnSync(c,['--import',pathToFileURL(loader).href,...args],{...o,encoding:'utf8',timeout:10000});stderr=child.stderr??'';return {code:child.status,timedOut:false};},
    holdRun:async()=>{},readTerminal:async()=>({run_id:e.run_id,status:'HOLD',stage:'D00',reason_code:'EXPECTED_TEST_REFUSAL'})});
   assert.equal(stderr.includes('EXECUTION_SIGNED_GRANT_MISSING'),false,stderr);
   assert.match(stderr,/EXECUTION_SIGNED_GRANT_FORMAT_INVALID/);

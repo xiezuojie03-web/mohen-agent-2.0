@@ -378,6 +378,10 @@ export async function triggerProduction(taskId: string, intent: string, projectI
           MOHEN_PRIVATE_EVIDENCE_WORKER_ENABLED: "true",
           ...(process.env.MOHEN_PRIVATE_WORKER_DATABASE_URL
             ? { MOHEN_PRIVATE_WORKER_DATABASE_URL: process.env.MOHEN_PRIVATE_WORKER_DATABASE_URL } : {}),
+          // 私有阶段运行时的字节校验钥匙版本：与 tools/local-execution-authorizer.mjs
+          // 和 evidence-bridge-repository 的默认口径一致，缺失会使 D00 接收直接失败。
+          MOHEN_ORIGINAL_BRIDGE_KEY_VERSION:
+            process.env.MOHEN_ORIGINAL_BRIDGE_KEY_VERSION?.trim() || "mab-original-bridge-v1",
         },
         stdio: ["ignore", "pipe", "pipe"],
       }
