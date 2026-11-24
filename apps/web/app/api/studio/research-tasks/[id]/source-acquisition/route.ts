@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { getSession } from "../../../../../../lib/session";
+import { getSession, isOperatorSession } from "../../../../../../lib/session";
 import { signDatabaseSessionToken } from "../../../../../../lib/auth";
 import { acquireSelectedCommonsOriginal, diagnoseSelectedCommonsOriginal } from "../../../../../../lib/studio-commons-acquisition";
+import { canAccess } from "../../../../../../lib/ownership";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -22,6 +23,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ ok: false, reason: "json_required" }, { status: 415, headers: noStore });
   const { id } = await params;
   if (!uuid.test(id)) return NextResponse.json({ ok: false, reason: "bad_request" }, { status: 400, headers: noStore });
+  const allowed = await canAccess("public.research_tasks", id, session.uid, isOperatorSession(session));
+  if (!allowed) return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403, headers: noStore });
   try {
     const receipt = await acquireSelectedCommonsOriginal(id, session.uid, signDatabaseSessionToken(session));
     return NextResponse.json({ ok: true, receipt }, { headers: noStore });
@@ -39,6 +42,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   if (!session) return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401, headers: noStore });
   const { id } = await params;
   if (!uuid.test(id)) return NextResponse.json({ ok: false, reason: "bad_request" }, { status: 400, headers: noStore });
+  const allowed = await canAccess("public.research_tasks", id, session.uid, isOperatorSession(session));
+  if (!allowed) return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403, headers: noStore });
   try {
     return NextResponse.json({ ok: true, ...await diagnoseSelectedCommonsOriginal(id, session.uid) }, { headers: noStore });
   } catch {

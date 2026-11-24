@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { getSession } from "../../../../../../lib/session";
+import { getSession, isOperatorSession } from "../../../../../../lib/session";
 import { readResearchSourceSelection, selectResearchAcquisitionCandidate } from "../../../../../../lib/studio-research";
+import { canAccess } from "../../../../../../lib/ownership";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,6 +24,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (!uuid.test(id) || typeof candidateId !== "string" || !candidateId.trim() || candidateId.length > 4096) {
     return NextResponse.json({ ok: false, reason: "candidate_selection_invalid" }, { status: 400, headers: noStore });
   }
+  const allowed = await canAccess("public.research_tasks", id, session.uid, isOperatorSession(session));
+  if (!allowed) return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403, headers: noStore });
   try {
     const result = await selectResearchAcquisitionCandidate(id, session.uid, candidateId);
     return NextResponse.json(result, { status: result.ok ? 200 : 409, headers: noStore });
@@ -36,6 +39,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   if (!session) return NextResponse.json({ ok: false, reason: "login_required" }, { status: 401, headers: noStore });
   const { id } = await params;
   if (!uuid.test(id)) return NextResponse.json({ ok: false, reason: "candidate_selection_invalid" }, { status: 400, headers: noStore });
+  const allowed = await canAccess("public.research_tasks", id, session.uid, isOperatorSession(session));
+  if (!allowed) return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403, headers: noStore });
   try {
     const result = await readResearchSourceSelection(id, session.uid);
     if (!result) return NextResponse.json({ ok: false, reason: "task_not_ready_or_unavailable" }, { status: 404, headers: noStore });

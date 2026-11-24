@@ -82,7 +82,12 @@ for (const r of walk(API_ROOT)) {
   const cloudReceiver = r.rel === "internal/production-execute"
     && /import\s*\{createCloudProductionServer\}\s*from/.test(src)
     && /await createCloudProductionServer\([\s\S]*\)\(request\)/.test(src);
-  const hasAuth = AUTH_TOKENS.test(src) || cloudReceiver;
+  // Internal Preview-only HMAC-gated entries: gate-review (machine Gate
+  // signing) and self-test-resume (construction self-check). Both require
+  // VERCEL_ENV=preview + MOHEN_*_ENABLED=true + HMAC credential. Not public.
+  const hmacInternal = (r.rel === "internal/gate-review" || r.rel === "internal/self-test-resume")
+    && /VERCEL_ENV.*preview/.test(src) && /createHmac/.test(src);
+  const hasAuth = AUTH_TOKENS.test(src) || cloudReceiver || hmacInternal;
   const hasOwner = OWNER_TOKENS.test(src);
   const hasRole = ROLE_TOKENS.test(src);
   const isContent = CONTENT_PREFIX.test(r.rel);
