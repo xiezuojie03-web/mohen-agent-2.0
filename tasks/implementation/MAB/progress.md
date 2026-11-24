@@ -6544,3 +6544,10 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **FINDING**：作品级审核以独立 Operator 标签执行（自审被拒、非 operator 被拒），但操作者的真实用户身份仍需 Owner 侧界面证据，脚本不冒充。
 - **边界**：全部为本机隔离库证据；未部署、未公开、未改生产；未修改任何发布/权利校验代码。
 - **下一动作**：取得 Owner 对来源 `f889a887` `display` 的明确批准后，按既有 `approve-*` 脚本方式落库留痕，重跑本脚本末四步（发布 → WATCH 同修订 → 撤权即时阻断 → 幂等）；未获批准则作品停在“已审核通过、未发布”。
+
+### 2026-11-24 续：Owner 批准金泽来源展示权 → 发布/WATCH/撤权全部通过
+- **Owner 决定**：就“是否放开《上海地名志·金泽条》display”明确答复“同意放开展示权”。按既有主线同构脚本新增 `scripts/approve-m5-shinze-display-right.mjs`（隔离守卫；只改来源 `f889a887`、只放开 `display`；download/adapt/redistribute 仍禁止，`external_processing` 维持既有单次决定），`--apply` 后回读 `display=allowed`，`rights_evidence.public_display_authorizations` 留 2026-11-24/decision_by Owner/recorded_by 本脚本。
+- **重跑 `scripts/test-m5-shinze-fullchain-isolation.mjs`：21 PASS / 0 FAIL / 1 FINDING → `MAINLINE_VERIFIED_ISOLATED`**。新增通过：展示权已落库；精确发布指针 publication→revision；自任 operator 发布被拒；WATCH 列表与逐请求放行指向同 revision；错 revision 不放行；撤权后新请求即时阻断且历史快照保留；重复撤权幂等。
+- **保持在线（撤权验证后重新发布）**：`publication d58ce7b0-c773-4015-b049-888217ed6b83` → work `96073b53-36a0-aede-19ec-6e1ddc03c3d1`（金泽·方志可证事实与解释边界·修订1）→ revision `0445486b`（artifact `3e515546…`）；WATCH 列表命中、`watchable ok=1`。
+- **已知缺口（不冒充）**：该修订 `beats` 为空（脚本按结构验证发布，未生产分镜/解说正文），H1/H2/H3 与 19 组件的真实创作贡献仍未验收；Owner 在浏览器看到的是可读取的骨架作品，不是完整内容作品。
+- **下一动作**：用 Studio 导演流程为同一 revision 生成真实分镜/解说（同 Project/Plan/G5 锚点）→ 形成新 revision → 重新投稿/审核/发布 → Owner 浏览器体验；随后才是 ST-10 与 M5 八维收口。
