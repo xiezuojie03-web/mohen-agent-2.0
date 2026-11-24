@@ -48,6 +48,13 @@ type AdminUser = {
   status: string;
   created_at: string;
 };
+type PublishedWork = {
+  work_id: string;
+  revision_id: string;
+  title: string;
+  revision_no?: string | number;
+  published_at?: string;
+};
 
 export default function AdminWorkbench({ summary }: { summary: ProductionRelationSummary }) {
   const [active, setActive] = useState(0);
@@ -72,6 +79,11 @@ export default function AdminWorkbench({ summary }: { summary: ProductionRelatio
   // 用户列表
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
+
+  // 已发布作品（operator）：接 /api/admin/publications
+  const [published, setPublished] = useState<PublishedWork[]>([]);
+  const [publishedLoading, setPublishedLoading] = useState(false);
+  const [unpublishing, setUnpublishing] = useState<string | null>(null);
 
   // 操作反馈
   const [feedback, setFeedback] = useState<{ ok: boolean; text: string } | null>(null);
@@ -143,6 +155,23 @@ export default function AdminWorkbench({ summary }: { summary: ProductionRelatio
     }
   }, []);
 
+  const refreshPublished = useCallback(async () => {
+    setPublishedLoading(true);
+    try {
+      const res = await fetch("/api/admin/publications");
+      if (res.ok) {
+        const json = (await res.json()) as { publications?: PublishedWork[] };
+        setPublished(json.publications ?? []);
+      } else {
+        setPublished([]);
+      }
+    } catch {
+      setPublished([]);
+    } finally {
+      setPublishedLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     void refreshUser();
   }, [refreshUser]);
@@ -154,6 +183,31 @@ export default function AdminWorkbench({ summary }: { summary: ProductionRelatio
   useEffect(() => {
     if (isReviewer) void refreshPending();
   }, [isReviewer, refreshPending]);
+
+  useEffect(() => {
+    if (active === 3 && isOperator) void refreshPublished();
+  }, [active, isOperator, refreshPublished]);
+
+  async function unpublish(workId: string, title: string) {
+    setFeedback(null);
+    setUnpublishing(workId);
+    try {
+      const res = await fetch(`/api/admin/publications/${encodeURIComponent(workId)}/unpublish`, {
+        method: "POST",
+      });
+      const json = (await res.json()) as { ok?: boolean; reason?: string };
+      if (res.ok && json.ok) {
+        setFeedback({ ok: true, text: `已下架《${title}》，WATCH 将不再展示。` });
+        await refreshPublished();
+      } else {
+        setFeedback({ ok: false, text: `下架失败：${json.reason ?? "未知原因"}` });
+      }
+    } catch {
+      setFeedback({ ok: false, text: "下架失败：网络或服务端错误" });
+    } finally {
+      setUnpublishing(null);
+    }
+  }
 
   async function login() {
     setLoginBusy(true);
@@ -487,11 +541,42 @@ export default function AdminWorkbench({ summary }: { summary: ProductionRelatio
                   </button>
                 ))}
               </div>
-              <div className="admin__empty">
-                已发布的作品会列在这里（含定时发布、下架撤回）。
-                <br />
-                作品在“作品审核”里发布后，自动进入“已发布”。
-              </div>
+              {publishTab === 0 && (
+                !isOperator ? (
+                  <div className="admin__empty">需要运营权限才能查看已发布作品。</div>
+                ) : publishedLoading ? (
+                  <div className="admin__empty">加载中…</div>
+                ) : published.length === 0 ? (
+                  <div className="admin__empty">暂无已发布作品。作品在“作品审核”里通过后，会显示在这里。</div>
+                ) : (
+                  <div className="admin__assets">
+                    {published.map((w) => (
+                      <div className="admin__asset" key={w.work_id}>
+                        <div className="admin__asset-head">
+                          <span className="admin__asset-title">{w.title || "未命名作品"}</span>
+                          <span className="admin__badge">已发布 · 版本 {w.revision_no ?? "?"}</span>
+                        </div>
+                        <p className="admin__asset-text">作品 ID {w.work_id.slice(0, 8)} · 版本 {String(w.revision_id).slice(0, 8)}</p>
+                        {w.published_at && <p className="admin__asset-meta">发布于 {w.published_at}</p>}
+                        <button
+                          className="admin__send"
+                          style={{ borderColor: "#a33", color: "#a33" }}
+                          disabled={unpublishing === w.work_id}
+                          onClick={() => void unpublish(w.work_id, w.title)}
+                        >
+                          {unpublishing === w.work_id ? "下架中…" : "下架撤回"}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )
+              )}
+              {publishTab === 1 && (
+                <div className="admin__empty">定时发布暂未配置可用的任务列表数据源（NOT_RUN）。</div>
+              )}
+              {publishTab === 2 && (
+                <div className="admin__empty">下架记录暂未配置可用的历史数据源；下架操作请在“已发布”列表执行。</div>
+              )}
             </div>
           )}
 
