@@ -29,6 +29,11 @@
 - **run 终态如实为 `HOLD@D05`**：独立门签发后 run 不回溯改写（既有设计口径，与主线 run `b9989b90` 相同）。这不是失败，也不等于作品链已贯通。
 - **前置证据**：`verify-local-execution-env.mjs` 全量重生成（四项 PASS，绑定 HEAD `eac37106`，契约测试 502/0），否则 authorizer 拒签。
 
+### 本批续：金泽作品链受控贯通（2026-11-24，16 PASS，发布卡在来源展示权）
+- **正式作品对象已产生**：DirectorPlan `01daf41f`（独立 G5 `e372b87a`，method H1H2H3，绑定同 Project/Root/delegation/snapshot，depends_on `world_projection 4dd2a3f3`）；WorkRevision `0445486b`（独立 G5 `1a667094`，正文权威 `publication.work_revisions`，Studio 封套同对象）；投稿快照冻结、跨 Project 拒绝、自审拒绝、退回阻断发布、APPROVED 精确绑定、自任 operator 拒绝、错 revision 不进 WATCH、anon 拒绝 —— 均 PASS。
+- **唯一阻断**：来源 `f889a887` 的逐动作权利没有 `display`，发布返回 `PUBLISH_ELIGIBILITY_HOLD:rights_display_not_allowed`；发布指针、WATCH 同修订、撤权三步因此未执行（`WITHDRAW_NOT_PUBLISHED`）。展示权属 Owner 决定，**未自批、未改发布闸**。
+- **入口**：`scripts/test-m5-shinze-fullchain-isolation.mjs`（与主线同构的受控验收脚本，隔离守卫拒绝非 loopback 库）。
+
 ## 最前阻断与下一动作
 
 > **隔离检查已转绿（2026-11-24 复核，main=`f379eb0b`）**：isolated-pg 的失败归因为既有漂移，非 Studio 闭环批次引入，已修复推送。`ci`=success、`MAB isolated PostgreSQL 17 verification`=success（job 138381760424）。四处根因：①检索测试仍按旧返回值全等比较，漏 11-19 新增 `coverage` 字段；②两个私有读取套件的登录只授 `mohen_app_runtime`，缺 11-18 身份护栏要求的 `mohen_private_worker` 成员与 SET；③隔离迁移链止于 11-18，缺 11-19 严格权限词典；④创建 `mohen_private_worker` 的迁移排在其测试之后。修法只改测试与隔离链脚本，未改产品逻辑。

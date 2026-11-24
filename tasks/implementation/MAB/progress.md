@@ -6533,3 +6533,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **费用**：0 次 Provider 调用、0 USD 新增（三阶段均是确定性事实分支）。
 - **未做**：未在云端/生产重跑；未改 Studio UI 的 `--to D02` 上限；未做 ST-04 之后的导演/成稿/投稿/发布/WATCH。
 - **下一动作**：ST-04 导演（DirectorPlan 绑定同 Project `a2b0cf23`/root_task `bca52162`/delegation/研究 snapshot 与 G5 来源 refs）→ ST-05 WorkRevision → ST-06 投稿 → ST-07 审核/精确发布 → ST-08 WATCH 同修订读取与撤权。
+
+---
+
+## 2026-11-24 金泽作品链受控贯通（导演/成稿/审核 16 PASS，发布卡在来源展示权）
+
+- **路径**：新增与主线同构的受控验收脚本 `scripts/test-m5-shinze-fullchain-isolation.mjs`（由 `test-m5-mainline-fullchain-isolation.mjs` 复制改造：项目 `a2b0cf23`、任务 `bca52162`、原件 `674deb39`、来源 `f889a887`、run `21d9603f`、六门对象改为本次真实对象；仅保留 `world_projection` 一项 G5 素材，未制造 story_seed/agent_context）。脚本首行隔离守卫拒绝非 loopback/非 dev 库。
+- **结果 16 PASS**：前置对象齐备；G0—G4 与 G5 素材均为当前有效（`SKIP_VALID`，不重签）；**正式 DirectorPlan `01daf41f-857b-8aa3-1fdd-155950756a89` + 独立 G5 `e372b87a-de49-48b2-97c8-3faa7c3aa819`**（method H1H2H3、depends_on `world_projection 4dd2a3f3`、payload.original_ids、delegation `18762805`、root_task_ref `m5-shinze-bca52162`、research_snapshot_hash 已落库）；**正式 WorkRevision `0445486b-2cc9-c5a1-2ca7-a1154b0a6e6a` + 独立 G5 `1a667094-6920-4d90-90f8-f7954ceee8f3`**（正文权威 `publication.work_revisions`，Studio 封套 `formal_revision_id` 同对象）；同对象锚点（Project/Root/Delegation/Plan/Work/Revision）全部一致；投稿快照冻结并绑定同 revision；跨 Project 投稿被拒；自审被拒（OPERATOR_CONFLICT）；独立 Operator 退回后发布被拒且旧指针未变；APPROVED 精确绑定同 revision/Project/Revison G5；自任 operator 发布被拒；错 revision 不进入 WATCH；anon 无发布表读权。
+- **4 FAIL 同因（权利前置未满足，非代码缺陷）**：`rights_by_action` 对来源 `f889a887` 只有 quote/retain/access_view/machine_read/external_processing，**没有 `display`** → `publish_exact_revision` 返回 `PUBLISH_ELIGIBILITY_HOLD:rights_display_not_allowed`；因此发布指针未建立、WATCH 列表为空、撤权无对象（`WITHDRAW_NOT_PUBLISHED`）。按 PLAN 权利边界，展示权属 Owner 决定，未自批、未绕过、未改发布闸。
+- **FINDING**：作品级审核以独立 Operator 标签执行（自审被拒、非 operator 被拒），但操作者的真实用户身份仍需 Owner 侧界面证据，脚本不冒充。
+- **边界**：全部为本机隔离库证据；未部署、未公开、未改生产；未修改任何发布/权利校验代码。
+- **下一动作**：取得 Owner 对来源 `f889a887` `display` 的明确批准后，按既有 `approve-*` 脚本方式落库留痕，重跑本脚本末四步（发布 → WATCH 同修订 → 撤权即时阻断 → 幂等）；未获批准则作品停在“已审核通过、未发布”。
