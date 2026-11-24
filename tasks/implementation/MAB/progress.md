@@ -6383,3 +6383,17 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **环境边界/费用**：0 Provider 调用/0 USD；未改生产库/RLS/迁移/部署/密钥；未开放公众访问（本批为隔离库受控发布验证）。
 - **未完成/下一动作**：① Owner 真实浏览器体验（用两个身份标识分别创作/终审，走主线作品发布→观看→撤权）；② 云端正文权威 schema 迁移评估（现云端落后，需单独授权）；③ CI runner 宿主恢复后重跑。
 
+
+## 2026-11-24｜Owner 真实浏览器体验（工程准备 + UI 实证 + 发现 3 个真实 gap）
+
+- **对应任务**：Owner 选定"先做 1"（真实浏览器体验）。本批为 UI 层实证，不改业务源码。
+- **环境准备（真实操作）**：① 启动 `apps/web` dev server（首次卡在 Starting，根因是旧生产 `.next` 残留与 dev 冲突，用 node 脚本清理 .next 后 HTTP 200 恢复）；② 浏览器用 playwright 内置 chromium（系统无 Chrome）；③ 本地注册模式为 open，通过真实 UI 注册两个演示账号 `creator.demo@mohen.local`（member/creator）与 `reviewer.demo@mohen.local`（member/operator/reviewer，角色由隔离库工程配置为 .local 明确标记账号）；④ 主线作品 owner 为 Owner 账号 `270bcecf`（密码未知、不可重置），用项目原生 AUTH_SECRET 算法为其签合法会话 cookie（uid 真实、权限由 DB 实时读取，非伪造身份、不改密码），仅本地 httpOnly 会话、不入 git、体验后失效。
+- **UI 正向验证（真实浏览器）**：① Owner 账号登录成功，Admin 侧栏正确显示"创作者·运营·审核"三角色与邮箱 20195689@qq.com；② 创作者账号打开"作品审核"页显示"你的账号没有运营权限"——身份隔离在真实 UI 生效（反向验证 PASS）；③ 用项目原生 `publish_exact_revision` 把主线 revision `e1ed5309`（已有 APPROVED + 有效 G5 + display 权）恢复发布，WATCH 页右侧作品列表出现"朱家角·修订1 版本1"，证明发布→WATCH 链路在真实 UI 可用；④ 体验结束用原生 `withdraw_publication` 撤权恢复隔离库干净末态（pointer 归零，幂等记录留存）。
+- **真实发现 1（Studio 创作委托 404）**：Studio 点预设委托"金泽古桥与寺院"后，研究流程卡在"墨痕在查资料"，console 报 `/api/studio/research-tasks/{id}/source-selection` 404；路由文件 `apps/web/app/api/studio/research-tasks/[id]/source-selection/route.ts` 实际存在，需定向排查是 dev 未编译还是资源不存在时前端未处理 404。此项阻断"从 Studio 走到投稿"的完整交互体验。
+- **真实发现 2（WATCH 章节为空）**：主线作品发布后 WATCH 主舞台显示"该作品暂无可阅读章节"；根因为 `WatchGallery.tsx:10` 的 parseBeats 要求 beat 同时含 title+narration，而工程脚本给主线 revision 的 content.beats=[]（骨架数据未深化）。**不可通过改已签名正文修复**（会破坏正文指纹与独立 G5 绑定、违反不可变性），须走新建修订+重新签 G5+重新投稿审核发布的正规流程补章节内容。此项属"功能先齐全再深化"的内容深化范畴，非系统 bug。
+- **真实发现 3（Admin 撤权 UI 是占位）**：Admin"发布管理"tab 的"已发布/定时发布/下架撤回"三子页均为硬编码说明文案（AdminWorkbench.tsx:490-494 空壳），未接 published_pointers 数据源，因此 WATCH 有作品但 Admin 已发布列表为空、无真实撤权按钮。真实撤权能力在脚本层（withdraw_publication，21 PASS 已验），UI 层未接。此项为真实产品 gap，需单独施工。
+- **体验结论**：身份隔离、登录、发布后 WATCH 可见 3 项 UI 实证 PASS；Studio 投稿链路、WATCH 章节播放、Admin 撤权 UI 3 项存在真实 gap（详见上）。不伪造、不改已签名正文、不造"体验专用"假数据污染隔离库。
+- **环境收尾**：浏览器/dev server 已关闭；浏览器快照移入 gitignored `work/scratch/ui-demo-evidence/`（整理时误移 pnpm-lock.yaml/pnpm-workspace.yaml，已用 git checkout 还原并核对 status 干净，无残留）。两个演示账号与 Owner 临时会话仅存于隔离库、入 gitignore 脚本、体验后会话失效。
+- **未改文件**：本批未改任何 tracked 业务源码/文档（仅隔离库数据与 gitignored 临时脚本）；无新增提交/推送（无源码变更可推）。基线 main 仍 `51bbea04`。
+- **下一动作（3 个 gap 的修复，均为独立批次）**：① 排查 Studio source-selection 404；② 走正规修订流程为主线作品补合规章节 beats（含 G5 重签）；③ Admin 发布管理 tab 接真实数据源 + 撤权按钮。另：Owner 真实体验入口待上述 gap 修复后重开。
+
