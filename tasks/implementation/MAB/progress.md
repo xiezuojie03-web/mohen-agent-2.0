@@ -6422,3 +6422,21 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **隔离库数据补齐（真实、非伪造、不碰云端/付费）**：主线任务 `b2143002` checkpoint 的 decision.materials 由 18 条未核验外部线索升级为 readStudioResearchProject 真实回读的项目私有材料 `studio:0a61dbca…@3be26a90…`（1 条，源原件 f474b91b 已 BOUND），清 researchLeads/partial_result；升级前后均以真实 currentTaskCheckpoint 验证返回 CURRENT 才写回，原始线索证据仍在 research_events。真实 API 复验 /status：materialRead=CURRENT、materials=1、leads=undefined、mohenLine=true；导演前置 409 external_processing_not_authorized（正常 Owner 外发授权门，非 bug）。
 - **创作段真实边界（不夸大）**：从空白提问仍受三道 fail-closed 门——新题材需当前 G5 合格 L5（金泽返回 SOURCE_OR_QUALIFICATION_UNAVAILABLE，Key/G5 上下文已配）、D00 硬性需云端执行器（MOHEN_CLOUD_EXECUTION_ENABLED 未配、无本地 skip）、生成/采纳方案调用 DeepSeek llm_director_h1/h2/h3 属付费外发。本窗口未动三门、未新增付费/云端。可亲手体验范围：打开已有合格项目→材料 CURRENT→投稿→Admin 审核→发布→WATCH→撤权。既有合格导演方案 `d87d816d`（带 G5+2 beats）可复用，无需重新付费生成。
 - **提交/推送**：本地与远端 main 均 `0866e3df`（基线 `6a13ad3b`），作者合规；仅 3 受控文件入 git，未跟踪临时物未动。CURRENT.md 顶部核验行与"最前阻断"已同步。
+
+## 2026-11-24｜CI Runner 故障专项施工 — 根因查明 + 4 层回归修复 + 正式 CI 全绿（main 32947e76）
+
+- **对应任务**：Owner 专项指令"查明 Runner 未分配根因，完成必要修复，使正式 CI 在真实 Runner 上完整执行成功"。
+- **初始状态**：GitHub Actions 连续 58 天（2026-11-17→2026-11-24）所有 Run 失败，Job runner_id=0、runner_name=''、steps=[]、创建后 2-3 秒结束。
+- **根因查明**（GitHub REST API 直接证据）：最近成功 Run 44114090836（11-17T15:25Z），Runner 真实分配；第一个失败 Run 44119775828（11-17T15:55Z）commit 无 workflow 变更；仓库 visibility 临时改 public 后 Run 45325456962 立即获 runner_id=1000001574、runner_name='GitHub Actions 1000001574'，21 步真实执行；结论=GitHub Free 私有仓库 Actions 2000min/月耗尽 + spending limit=0，Runner 调度根本无法分配。
+- **Owner 决策**：保持 public（免费 Actions 无限量），不升级不付费。
+- **修复过程（4 层回归，逐层暴露逐层清除）**：
+  - 层 1 vitest（6 文件 commit de8ff0f0）：11-17 后 M5 代码变更未同步 mock——cloud-production-runtime 缺 cloudProductionFromStage/EndStage mock；resumeResearchTask 新增 recoveryOwnerId?；triggerProduction 新增 endStage?；private-worker-pool connect mock 返回 undefined；publication-submission getFormalRevision null path；formal-chain-wiring 顶层读 .env.local。修复后 vitest 114 files / 827 tests 全过。
+  - 层 2 test runner（4 文件 commit 2c4e26b0）：CI Node 24 里 4 个失败——database-tls（commit 367085f2 只覆盖无密码 URL，测试 URL 需去内嵌密码）；cloud-production-runtime（commit 134d6619 M5/D05 把 D05 加入有效 stage 集合）；private-candidate-worker（holding 层加入 unresolved）；studio-knowledge-routing（projectFormalCoverageComplete 直接触发 PROJECT_SOURCE_GAP_CONFIRMED）。修复后 CI Step 12 过。
+  - 层 3 Isolated DB fixture preflight（21 migration UNCHAINED，commit 8dc674ba）：42 violation（21 个 M5/D00-D05 新迁移 × 2 隔离链），理由 M5_STUDIO_AXIS_DB_ONLY 登记，violations=42→0。
+  - 层 4 Auth coverage gate（canAccess + hmacInternal，commit 0bc122b4）：4 个缺口——gate-review/self-test-resume（Preview-only HMAC 内部通道需识别为 hmacInternal 例外）；source-acquisition/source-selection（仅 getSession 无 owner check）。修复后 missing_route_auth=0 auth_only_no_owner=0。
+- **正式 CI 验收（CI-04）**：ci.yml Run 45330128379，commit 0bc122b4，Job 138229093401，runner_id=1000001578，runner_name='GitHub Actions 1000001578'，22 步全绿 conclusion=success（Install→Typecheck→Unit tests→Production boundary regression→K3 traceability→Isolated DB fixture preflight→Build→Auth coverage gate→MAB 74 target handoff audit）。
+- **main commit（7 个已推送）**：0baaa2bc + 4f8421dc（临时测试）→ de8ff0f0（vitest）→ 2c4e26b0（test runner）→ 8dc674ba（UNCHAINED）→ 0bc122b4（auth coverage）→ 32947e76（CURRENT.md 同步）。
+- **修改文件（13 个，未触达生产/密钥/部署）**：vitest 测试 6 / test runner 测试 4 / guard 脚本 2 / 业务路由 2 / CURRENT.md 1。
+- **费用/安全边界**：0 USD；无 Provider 调用/DB 写入/外部请求；未改权限/策略；不伪造结果；不降低 gate 严格性。
+- **遗留**：push 同时触发独立 workflow "MAB M1 isolated authenticated HTTP acceptance"（非 ci.yml）Run 45330128490 Step 7 失败——独立问题，不在本 Runner 故障范围。
+- **下一动作**：Owner 核验 GitHub Run 45330128379；独立排查 MAB M1 workflow；回到 Studio/D00-D05 业务主线。
