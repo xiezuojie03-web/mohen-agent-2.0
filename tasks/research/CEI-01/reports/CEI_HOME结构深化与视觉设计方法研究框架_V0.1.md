@@ -4,7 +4,7 @@
 > 归属：CEI-01 / HOME知识世界呈现  
 > 上位阶段成果：`CEI_HOME结构研究_发现情境_V0.2_阶段记录.md`  
 > 文档性质：研究路线与执行标准，不是CEI-01正式任务书，不替代任务书，不构成设计准出或工程实施授权。  
-> 当前状态：`RESEARCH_FRAMEWORK_DEFINED / R1_PASS / R2_PASS / R3_PASS / R4_PASS / R5_NOT_STARTED / IMAGE_PRODUCTION_NOT_AUTHORIZED / ENGINEERING_NOT_AUTHORIZED`
+> 当前状态：`RESEARCH_FRAMEWORK_DEFINED / R1_PASS / R2_PASS / R3_PASS / R4_PASS / R5_CONDITIONAL_PASS / OWNER_REVIEW_REQUIRED / IMAGE_PRODUCTION_NOT_YET_AUTHORIZED / ENGINEERING_NOT_AUTHORIZED`
 
 ---
 
@@ -64,10 +64,10 @@
 - R2 HOME整体信息与空间组织：已完成，状态 `R2_PASS`；依据《CEI_HOME整体信息与空间组织研究_R2_现行.md》。
 - R3视觉表达语言：已完成，状态 R3_PASS；依据《CEI_HOME视觉表达语言研究_R3_现行.md》。
 - R4视觉概念图制作方法：已完成，状态 R4_PASS；详见《CEI_HOME视觉概念图制作方法研究_R4_现行.md》。
-- R5正式视觉概念图制作准入评估：未开始，状态 R5_NOT_STARTED；准入对象为一方案一张完整HOME概念图及HTML交接规范。
-- 正式视觉概念图制作：未授权。
+- R5正式视觉概念图制作准入评估：已完成，状态 `R5_CONDITIONAL_PASS / OWNER_REVIEW_REQUIRED`；依据《CEI_HOME正式视觉概念图制作准入评估_R5_现行.md》。
+- 正式视觉概念图制作：尚未授权，须Owner接受R5结论及素材使用条件后启动。
 
-当前唯一下一阶段为R5正式视觉概念图制作准入评估。R1—R4已完成；R5通过并经Owner审阅前，不得启动正式视觉概念图制作。
+当前唯一下一步为Owner审阅R5。R5有条件通过仅表示模块架构、制作方法和HTML设计级映射达到准入要求；正式图像素材须按许可状态使用、授权未清的对象须占位或取得许可。R5不授权HTML原型开发、现有代码继承施工或工程实施。
 
 ---
 
