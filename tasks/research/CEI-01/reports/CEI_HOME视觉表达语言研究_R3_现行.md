@@ -2,7 +2,7 @@
 
 > 日期：2026-11-24  
 > 归属：CEI-01 / HOME知识世界呈现 / R3  
-> 状态：R3_PASS / VISUAL_LANGUAGE_RULES_ESTABLISHED / R4_NOT_STARTED  
+> 状态：R3_PASS / VISUAL_LANGUAGE_RULES_ESTABLISHED / MODULE_APPLICATION_AND_MOTION_RULES_ADDED  
 > 文档性质：视觉表达语言研究报告；不是正式视觉概念图、最终品牌视觉规范、最终UI设计稿或工程施工授权。  
 > 研究依据：HOME结构深化与视觉设计方法研究框架V0.1、发现情境V0.2阶段记录、C步HOME知识世界呈现专项、R1样本验证报告、R2整体信息与空间组织研究报告及CEI-01 README。  
 > 样本边界：仅使用R1-01至R1-06既定样本；不扩充、不替换，不将六组样本解释为所有历史文化内容均已验证。  
