@@ -2,7 +2,7 @@
 
 > **Owner 授权口径（2026-11-22，长期有效）**：目标是墨痕**真正运行、持久运行**；除**安全问题**与**费用问题**外，施工方自行授权推进，不再逐项请示技术选择。费用边界：D02–D05 模型调用封顶 **0.05 USD**（约 ¥0.36，已建委托 `3f5585d0…`），超出该额度、新增付费来源或扩大用途仍需 Owner 批准。安全底线（密钥不入 git、不自签 Gate、不伪造会话/资格/PASS、不改迁移规避授权）不因该授权放宽。
 
-> 核验时间 2026-11-24 本窗口（Owner 真实浏览器体验 + 创作段修复）｜唯一 main `0866e3df`（创作段两处代码修复已推送，本地 HEAD 与 `origin/main` 一致；基线 `6a13ad3b`，未 force push）｜环境：本地隔离库 `127.0.0.1:5432/mohen_dev` + 本地 dev server `127.0.0.1:3000` 真实 Owner 会话验证；生产库、部署、RLS、Gate 均未在窗口内改动。CI 宿主级仍 `runner_id=0`/`steps=0`，记 `CI_BLOCKED`，非代码红灯。本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
+> 核验时间 2026-11-24 本窗口（CI Runner 故障专项施工）｜唯一 main `0bc122b4`（CI 全绿）｜环境：GitHub Actions ubuntu-latest Node 24，正式 CI ci.yml Run 45330128379 conclusion=success，22 步全过（Install→Typecheck→Unit tests→Production boundary regression→K3 traceability→Isolated DB fixture preflight→Build→Auth coverage gate→MAB handoff audit），runner_id=1000001578，runner_name='GitHub Actions 1000001578'。仓库 visibility 临时 public 验证 Runner 分配，后续需 Owner 决策是否保持 public 或改回 private + 升级 Pro（Free 私有 Actions 2000min/月已耗尽，spending limit=0）。本文件只维护**当前事实 / 最前阻断 / 下一动作**；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
 
 ## 主线进度（按 PLAN §3.5 C 业务主干，同一任务 `b2143002` / Project `d9d48901` / run `b9989b90`）
 
