@@ -573,11 +573,11 @@ R1—R4已完成，现阶段不得重复执行。R5仅需读取本框架、R1—
 
 不要全仓库扫描，不重做C步，不重新研究发现情境概念，不重启竞品研究。
 
-R3成果已归档，见《CEI_HOME视觉表达语言研究_R3_现行.md》。R4已完成，见《CEI_HOME视觉概念图制作方法研究_R4_现行.md》。下一步R5仅进行正式视觉概念图制作准入评估，核对R1—R4成果、素材权利、制作输入和评审标准；R5通过并经Owner审阅前，不得启动正式概念图制作。
+R3成果已归档，见《CEI_HOME视觉表达语言研究_R3_现行.md》。R4已完成，见《CEI_HOME视觉概念图制作方法研究_R4_现行.md》。R5正式视觉概念图制作准入评估已完成，结论为`R5_CONDITIONAL_PASS / OWNER_REVIEW_REQUIRED`，详见《CEI_HOME正式视觉概念图制作准入评估_R5_现行.md》。在Owner接受R5结论及素材使用条件前，不得启动正式概念图制作。
 
 ### 当前阶段总状态
 
-`RESEARCH_FRAMEWORK_DEFINED / R1_PASS / R2_PASS / R3_PASS / R4_PASS / R5_NOT_STARTED / IMAGE_PRODUCTION_NOT_AUTHORIZED / ENGINEERING_NOT_AUTHORIZED`
+`RESEARCH_FRAMEWORK_DEFINED / R1_PASS / R2_PASS / R3_PASS / R4_PASS / R5_CONDITIONAL_PASS / OWNER_REVIEW_REQUIRED / IMAGE_PRODUCTION_NOT_YET_AUTHORIZED / ENGINEERING_NOT_AUTHORIZED`
 
 **最终原则：先证明内容结构成立，再证明页面组织成立；先研究视觉表达语言，再研究如何制作视觉概念图；最后通过准入审查，才开始正式出图。视觉概念图是研究成果的表达和验证工具，不是替代研究的捷径。**
 
