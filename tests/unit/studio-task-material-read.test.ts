@@ -21,9 +21,25 @@ it('does not revive a private revision after project or source revocation',async
  const cp=await currentTaskCheckpoint({studio:{project_id:'project'},decision:{materials:[{...material,id:'studio:asset@rev'}]}},'token');
  expect(cp.decision).toBeNull();expect(d.read).toHaveBeenCalledWith('project','token',{persistReadingNotes:false});
 });
-it('rejects leads and nested partial results without a current authority',async()=>{
+it('rejects nested partial results without a current authority',async()=>{
  const cp=await currentTaskCheckpoint({researchLeads:[material],partial_result:{decision:{materials:[material]}}});
  expect(cp).toMatchObject({researchLeads:[],partial_result:null,materialRead:{state:'HOLD'}});
+});
+it('keeps only revalidated materials when external research leads are present',async()=>{
+ d.context.mockReturnValue({purpose:{},scope:{requested_action:'read'}});
+ d.retrieve.mockResolvedValue({materials:[material],degraded:false});
+ const cp=await currentTaskCheckpoint({decision:{materials:[material],answer:'current'},researchLeads:[{id:'lead',snippet:'unverified'}]},'token');
+ expect(cp).toMatchObject({decision:{materials:[material]},materialRead:{state:'CURRENT'}});
+ expect(cp).not.toHaveProperty('researchLeads');
+ expect(JSON.stringify(cp)).not.toContain('unverified');
+});
+it('fails closed when decision materials are only unrevalidated external leads',async()=>{
+ d.context.mockReturnValue({purpose:{},scope:{requested_action:'read'}});
+ d.retrieve.mockResolvedValue({materials:[],degraded:false});
+ const lead={id:'shanghai-library:external',snippet:'external lead',kind:'evidence',sourceRef:'ext',epistemic:'RESEARCH_LEAD'};
+ const cp=await currentTaskCheckpoint({decision:{materials:[lead],answer:'old conclusion'},researchLeads:[lead]},'token');
+ expect(cp).toMatchObject({decision:null,materialRead:{state:'HOLD'}});
+ expect(JSON.stringify(cp)).not.toContain('old conclusion');
 });
 it('never leaks repository errors or returns stale prose on service failure',async()=>{
  d.read.mockRejectedValue(new Error('secret-storage-key'));

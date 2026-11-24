@@ -776,7 +776,7 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
         const createRes = await fetch("/api/works", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ title, content, creation_id: creationId }),
+          body: JSON.stringify({ title, content, creation_id: creationId, project_id: projectId }),
         });
         if (!createRes.ok) throw new Error("creation_unavailable");
         const created = (await createRes.json()) as { ok?: boolean; work_id?: string; revision_id?: string };

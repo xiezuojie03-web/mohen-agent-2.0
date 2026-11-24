@@ -8,12 +8,13 @@ const object=(v:unknown):Obj=>v&&typeof v==='object'&&!Array.isArray(v)?v as Obj
 export async function currentTaskCheckpoint(checkpoint:Obj,sessionToken?:string):Promise<Obj>{
   const decision=object(checkpoint.decision);
   const materials=Array.isArray(decision.materials)?decision.materials as Material[]:[];
-  const hasLeads=Array.isArray(checkpoint.researchLeads)&&checkpoint.researchLeads.length>0;
   const hasPartial=checkpoint.partial_result!=null;
-  if(!materials.length&&!hasLeads&&!hasPartial&&checkpoint.decision==null)return checkpoint;
+  if(!materials.length&&!hasPartial&&checkpoint.decision==null)return checkpoint;
+  // An unfinished partial decision is never a current material grant.
+  if(hasPartial)return {...checkpoint,decision:null,researchLeads:[],partial_result:null,
+    materialRead:{state:'HOLD',reason:'UNREVALIDATED_RESEARCH_RESULT'}};
   let reason='CURRENT_MATERIAL_AUTHORITY_UNAVAILABLE';
   try{
-    if(hasLeads||hasPartial)throw new Error('UNREVALIDATED_RESEARCH_RESULT');
     let privateMaterials:Material[]|undefined;
     const current:Material[]=[];
     for(const saved of materials){
@@ -41,9 +42,13 @@ export async function currentTaskCheckpoint(checkpoint:Obj,sessionToken?:string)
       if(!match)throw new Error('MATERIAL_REVOKED_OR_CHANGED');
       current.push(match);
     }
-    // Empty legacy decisions have no verifiable material basis for their prose.
+    // Empty decisions have no verifiable material basis for their prose.
     if(!current.length)throw new Error('MATERIAL_BASIS_REQUIRED');
-    return {...checkpoint,decision:{...decision,materials:current},materialRead:{state:'CURRENT'}};
+    // External research leads are recovered observation notes, not read grants.
+    // They stay on the checkpoint for provenance but are stripped from the
+    // current decision so unrevalidated lead prose can never be consumed.
+    const {researchLeads:_leads,...rest}=checkpoint;
+    return {...rest,decision:{...decision,materials:current},materialRead:{state:'CURRENT'}};
   }catch(error){
     if(error instanceof Error&&/^[A-Z_]+$/.test(error.message))reason=error.message;
     return {...checkpoint,decision:null,researchLeads:[],partial_result:null,materialRead:{state:'HOLD',reason}};
