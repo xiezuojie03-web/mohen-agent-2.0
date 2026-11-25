@@ -6720,6 +6720,17 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **代码定位结果（对照合同§19.1，修补前诊断）**：`public.director_plans`、`publication.work_revisions`是正文权威；Studio封套应引用，不复制正文。当前`createWorkDraft()`新建作品时未绑定Project，`commitWorkRevision()`只校验Owner；ST-07迁移`20261114150000_mab_m5_st07_work_revision.sql`另建带正文的`studio.work_revisions`，与合同的唯一正文规定冲突。既有Studio平行表和历史G5必须保留，但不能继续充当正式正文/G5对象。精确修补顺序已补入PLAN §0.4。
 - **本轮源码执行边界（另一写入方 sandbox 窗口的历史记录，非本窗口状态）**：已进一步对照合同§19.1并定位`createWorkDraft()`、`commitWorkRevision()`及ST-07平行正文迁移；尚未修改业务源码/SQL。尝试通过Vercel sandbox建立可运行工作副本，但该私有GitHub仓库不能通过当前sandbox的公开Git源方式直接克隆，当前GitHub连接也只提供文件级读写，没有可执行仓库工作树。因此不能诚实地声称已跑Vitest/typecheck/build。为避免未经验证的业务代码直接写入唯一`main`，本轮不提交业务源码。继续施工需要可运行工作副本；不需要创建Supabase分支，也不需要改生产数据库。第二步代码修补及其本地验证完成并归档后，Owner再接续第三步M5业务主线。
 
+## 第二十四批（2026-11-25）：金泽导演真实创作生成 + 修订2落库发布 + WATCH 自验（main 51f5e597，本地领先远端 2 提交）
+
+- **基线/提交**：本地 main `51f5e597`（`bc572ee3` → `51f5e597` 两提交，作者均 `xiezuojie03 <315303392+xiezuojie03-web@users.noreply.github.com>`），远端 `d3e791e5`，ahead 2 / behind 0，无并发写入。本批把金泽作品链从「0 章骨架」推进到「真实 5 章正文已发布」。
+- **变更路径**：`scripts/create-m5-shinze-director-delegation.mjs`（新建导演动作委托，1.00 USD 封顶、external_processing=GRANTED、幂等、loopback 护栏）；`scripts/generate-m5-shinze-content.mjs`（授权通道真实跑 H1→H2→H3 + 四面板，只打印不落库，铁律护栏 `provenanceRefs` 逐字引用输入事实、禁新增年份/地名/人物/关系/事件）；`scripts/persist-m5-shinze-content.mjs`（落修订2 + 独立 G5 + 投稿 + 审批 APPROVED，发布留 Owner）；`apps/web/app/studio/StudioWorkbench.tsx`/`studio.css`（研究五节点 + 素材分类 + 权利提示：FA-016/FA-019-01/FA-019-02，诚实 RIGHTS_UNKNOWN 降级）；`specs/experience-ui/README.md`（权威路由 C4→MHKA-02 修正）。
+- **真实生成与费用**：deepseek-flash 调用 4 次（H1/H2/H3/work_panels），Receipt 4 条，**实际费用 0.007841 USD**（委托上限 1.00 USD）；产出 5 章（金泽得名两层/古名白苎里/「穑人获泽如金」/沿水矩形聚落/并置不推因果），存疑处如实保留，无编造。
+- **落库与资格**：金泽 work `96073b53` 修订2 `4621ebe9`（5 章正文）；G5 `current_valid`（valid_until 2026-12-01，独立机器签发，非自签）；投稿快照 1 条；审批 `APPROVED`（operator `270bcecf…` ≠ creator `owner-browser`，无自审）；rights_gaps 仅 download/adapt/redistribute，`display` 已 allowed（Owner 11-24 批准留痕）。
+- **发布 + WATCH 自验（隔离库 7 PASS）**：`publication.publish_exact_revision` 精确发布 → 指针 CAS 指向 rev2（publication `a09572b9`，旧骨架 rev1 `0445486b` 指针被替换、历史快照保留）；WATCH 列表含 rev2 且 `studio_beats`=5 章；同 revision 逐请求放行（`STUDIO_REVISION_WATCHABLE_SQL` ok=1）、错 revision 拒绝（负例）。
+- **静态/类型**：3 个脚本 `node --check` OK；`pnpm --filter web typecheck` 退出 0。CI 仍 `CI_BLOCKED`（宿主级 runner_id=0/steps=[]，非代码红灯），本地验证不冒充 CI PASS。
+- **边界/HOLD**：仅 loopback 隔离库 `mohen_dev`，未改生产库/RLS/部署/Storage；发布者为机器 operator `b0a11000…b2`（不冒充 Owner 真人 UI 身份）；撤权留 Owner 浏览器体验；4 组未跟踪文件（`.mohen/`、`.trae-html-share-packages/`、`apps/web/.mohen/`、`apps/web/.tmp_trigger.ts`）仍待 Owner 裁决。
+- **下一动作**：交 Owner 浏览器（登录→WATCH 看金泽真实 5 章→Admin 下架撤权，段 9/10）；并行零付费 Admin 逐条回链（段 6）。
+
 ## 部署 / 费用 / 凭据
 
 - web staging：`mohen-agent-2-0-eytp0i3no-napoles1.vercel.app`（`dpl_Cqdz7vPYHrzQTn711rkGEh35rter`，target staging / VERCEL_ENV=preview，SHA `e563161c`）；上一部署 `mohen-agent-2-0-5g38pnq17-napoles1.vercel.app`（`48c9169b`）为本批 D05 真实续跑所用。authority production：`mohen-d00-authority.vercel.app`（未改动，仍 `48c9169b`；D04/D05 issue 未签名探测 401=路由存在）。提交作者须为 `xiezuojie03 <315303392+xiezuojie03-web@users.noreply.github.com>`，否则 Vercel 拒部署；网络经本地代理 `127.0.0.1:51081`。
