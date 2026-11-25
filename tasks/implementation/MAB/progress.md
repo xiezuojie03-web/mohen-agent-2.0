@@ -6746,6 +6746,17 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **费用**：0 新增（零 Provider 调用；LLM 理解/裁决走既有 deepseek 通道按既有委托记账）。撤权/发布未动。
 - **下一动作**：批次2（段5 朱家角主线真实正文，复用金泽导演生成路径）。
 
+## 第二十六批（2026-11-25）：段5 朱家角主线真实正文闭环（main f833e5c5）
+
+- **基线/提交**：本地 `f833e5c5`（基线 `20ea1dcc`），5 个新脚本 +724 行；无并发写入。
+- **变更路径**：`approve-m5-zhujiajiao-external-processing.mjs`（来源 `9aa03207` external_processing unknown→allowed，按 11-25 Owner 外发授权落库留痕，仅此一项）；`create-m5-zhujiajiao-director-delegation.mjs`（委托 `3b7b81df`：llm_director_h1/h2/h3 + llm_work_panels / GRANTED / 1.00 USD 封顶 / 幂等）；`generate-m5-zhujiajiao-content.mjs`（真实生成，含 H1/H2 缓存与 H3 护栏重试）；`persist-m5-zhujiajiao-content.mjs`（落修订3 + G5 + 投稿 + APPROVED）；`publish-m5-zhujiajiao-rev3-watch.mjs`（发布 + WATCH 自验）。
+- **真实生成与费用**：deepseek-flash 7 次调用（含 H3 首次被护栏拒绝——模型改字 provenanceRefs，铁律正确拒绝不迁就；编号清单提示重试后通过）、**0.009299 USD**、委托封顶 1.00 USD；产出 4 章（名字清单/俗称角里/明清繁盛/三泾不如一角），存疑处如实保留，无编造；四面板诚实（音乐=静音+环境声）。
+- **落库与资格**：朱家角 work `08ddaaa8` 修订3 `81e6ee14`（4 章真实正文）；G5 独立签发（非自签）；投稿快照 + `APPROVED`（operator ≠ creator，无自审）；上游 G4 finding `749414aa` + plan G5 `d87d816d` + projection G5 `e76a01ce` 均当前有效复用。
+- **发布 + WATCH 自验（7 PASS）**：`publish_exact_revision` 指针 CAS → rev3（publication `9fc646a0`，占位 rev2 指针被替换、历史保留）；WATCH 列表含 rev3 且 4 章；同修订逐请求放行、错修订拒绝（负例）。
+- **验证**：5 脚本 `node --check` OK；真实 API/DB 证据如上。CI 仍 `CI_BLOCKED`。
+- **费用累计（11-25）**：0.007841（金泽）+ 0.009299（朱家角）= **0.017140 USD**，两委托各 1.00 USD 封顶，未超、未新增付费来源。
+- **下一动作**：批次3（19 组件逐项职责验证）。
+
 ## 部署 / 费用 / 凭据
 
 - web staging：`mohen-agent-2-0-eytp0i3no-napoles1.vercel.app`（`dpl_Cqdz7vPYHrzQTn711rkGEh35rter`，target staging / VERCEL_ENV=preview，SHA `e563161c`）；上一部署 `mohen-agent-2-0-5g38pnq17-napoles1.vercel.app`（`48c9169b`）为本批 D05 真实续跑所用。authority production：`mohen-d00-authority.vercel.app`（未改动，仍 `48c9169b`；D04/D05 issue 未签名探测 401=路由存在）。提交作者须为 `xiezuojie03 <315303392+xiezuojie03-web@users.noreply.github.com>`，否则 Vercel 拒部署；网络经本地代理 `127.0.0.1:51081`。
