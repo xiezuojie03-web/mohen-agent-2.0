@@ -6731,7 +6731,7 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **边界/HOLD**：仅 loopback 隔离库 `mohen_dev`，未改生产库/RLS/部署/Storage；发布者为机器 operator `b0a11000…b2`（不冒充 Owner 真人 UI 身份）；撤权留 Owner 浏览器体验；4 组未跟踪文件（`.mohen/`、`.trae-html-share-packages/`、`apps/web/.mohen/`、`apps/web/.tmp_trigger.ts`）仍待 Owner 裁决。
 - **下一动作**：交 Owner 浏览器（登录→WATCH 看金泽真实 5 章→Admin 下架撤权，段 9/10）；并行零付费 Admin 逐条回链（段 6）。
 
-## 第二十五批（2026-11-25）：段1+2 统一检索「定向核验」闭环贯通（main c61c0684）
+## 第二十五批（2026-11-25）：段1+2 统一检索「定向核验」闭环贯通（main 83cfddfa，rebase 于并发方文档提交 f522536e 之后）
 
 - **基线/提交**：本地 `c61c0684`（基线 `05463afc`），4 文件 +251/-4；跑批前已核远端 `d3e791e5…05463afc` 推送完成，无并发写入。
 - **发现的真断点（段2）**：Studio 提问自然流程 `decision.materials` 只来自 L5 检索 + 正式 G0-G4 桥，两者都按 `qualification_allows(audit,'agent','mohen.research','agent_read','1',scope)` 核资格——但库内 agent 消费审计 297 条 purpose 全为 null（无效），本地评审器候选加载硬编码 `consumer='producer'`，`REVIEW_PROJECT_CANDIDATES` 无任何下游实现 → 新提问永远 materials=0、cannot_answer。金泽项目旧任务 materialRead 亦 HOLD（11-24 只修了朱家角主线）。
