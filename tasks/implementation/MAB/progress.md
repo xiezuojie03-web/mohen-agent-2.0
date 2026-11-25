@@ -6789,6 +6789,14 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **真实作品实际产生的资产类型（按 PLAN「不为凑数伪造」）**：有真实实例——research_brief（每次提问一个 brief 资产，金泽项目 20 条实测）、source_anchor（金泽 `bf9264c4`/朱家角 `0a61dbca`，绑真实原件）、reading_note（ST-02 生成机制在素材读取中实际运行）、director_plan（`d87d816d`/`01daf41f` 正式表）、work_revision（金泽 rev2/朱家角 rev3）。无真实实例（两作品研究走正式 D 链而非 Studio 候选，不伪造）——evidence_note/spacetime_candidate/relation_hypothesis/humanistic_insight/research_collection/media_selection/citation_snapshot/consented_feedback，其合同正反由 K3 矩阵承载（CI 恢复后跑）。
 - **费用**：0。**下一动作**：批次6（段3 收尾：方法绑定合同状态 + 本地可跑绑定测试）。
 
+## 第三十批（2026-11-25）：段3 收尾——方法绑定合同状态核实 + 绑定测试（零代码改动）
+
+- **基线**：`f0b39a8c`。
+- **63 方法绑定合同状态（specs/data-production/method-binding-contract.json 实测）**：**6 个绑定**——D01: C01(draftTextReading)/C02(readScannedPage)、D02: H05(observeMaterial)、D03: W07(assertWorldClaim)、D04: A06(recordHumanisticFinding)、D05: P02(projectWorld)；**57 个 HOLD**（各系分布：C03-C08/H01-H04/H06-H25/W01-W06/W08-W10/A01-A05/A07-A12/P01/P03-P08 全 HOLD）。
+- **本地测试**：`node --test tests/data-production/adapter-binding.test.mjs` **7/7 PASS**（6 个已绑定适配器的确定性验证）。两题材正式链（D00—D05 全跑）用的正是这 6 条绑定——真实运行与合同一致。
+- **判断（如实）**：57 个 HOLD 是**设计状态**（方法适配器未实现 + G 评审器无对应 object_type 分支），其中 P03/P06 在 `d05-fact-publish.mjs` 显式如实不产出。把它们补满是 **M6「全量合同回归」的范围**（新适配器开发 + 评审器分支扩展），不是 M5 批次可零付费完成的验证项；本批不冒充完成，不提前开工 M6。
+- **费用**：0。**下一动作**：批次7（八维工程自验收口 + 对账推送 → 停止节点交 Owner）。
+
 ## 部署 / 费用 / 凭据
 
 - web staging：`mohen-agent-2-0-eytp0i3no-napoles1.vercel.app`（`dpl_Cqdz7vPYHrzQTn711rkGEh35rter`，target staging / VERCEL_ENV=preview，SHA `e563161c`）；上一部署 `mohen-agent-2-0-5g38pnq17-napoles1.vercel.app`（`48c9169b`）为本批 D05 真实续跑所用。authority production：`mohen-d00-authority.vercel.app`（未改动，仍 `48c9169b`；D04/D05 issue 未签名探测 401=路由存在）。提交作者须为 `xiezuojie03 <315303392+xiezuojie03-web@users.noreply.github.com>`，否则 Vercel 拒部署；网络经本地代理 `127.0.0.1:51081`。
