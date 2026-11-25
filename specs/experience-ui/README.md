@@ -2,14 +2,14 @@
 
 本目录是 **Experience / UI 的唯一归属地**（2026-10-02 项目拥有者决定：docs/ 与 prototypes/ 退役，其 UI 内容全部并入此处）。它保存规范、施工图、Canonical 参考与验证证据。
 
-> **Authority 归属**：Human-facing Experience / UI 的当前**唯一 Authority 是 C4**（`governance/C4_MoHen_Agent-native_Human_Experience_UI_Architecture_V2.1.md`）。`specs/archive/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md` 已降为 **SOURCE ARCHIVE / TRACE**，其"CURRENT IMPLEMENTATION AUTHORITY"登记失效（见根目录 `OWNERSHIP_MAP.md` §2）。
+> **Authority 归属（2026-11-05 修订）**：Human-facing Experience / UI 的**上位权威是 MHKA-02**（`governance/mhka/MHKA-02_Humanistic_Product_and_Experience.md`），**本目录为施工规范层**（施工图/组件/方法合同的归属地），不是上位权威。原 C4 已于 2026-11-05 归档至 `governance/archive/`，不再作为新工程 Authority（见根目录 `OWNERSHIP_MAP.md` 与 `governance/archive/C0_C4_TO_MHKA_ARCHIVAL_20261105.md`）。`specs/archive/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md` 已降为 **SOURCE ARCHIVE / TRACE**。
 > 本目录由项目拥有者人工放置；EXP-UI-GOV-01 仅做治理登记与纳入 Git，不搬运、不重命名、不转换、不重建、不改写资产。
 
 ## 1. Authority 关系
 
 | 层 | 路径 | Authority 等级 | 规则 |
 |---|---|---|---|
-| **C4** | `governance/C4_MoHen_Agent-native_Human_Experience_UI_Architecture_V2.1.md` | **CURRENT AUTHORITY（唯一）** | 所有 Human-facing Experience/UI 实施与验收必须服从；开发总工程师无权重新定义其内容。 |
+| **上位：MHKA-02** | `governance/mhka/MHKA-02_Humanistic_Product_and_Experience.md` | **上位权威（体验价值与模式归属）** | 三模式（Studio/WATCH/EXP）与五图（F01–F05）产品目标、体验验收以上位为准；本目录为施工规范层，服从上位。 |
 | **施工图** | `specs/experience-ui/施工图/` | **CURRENT 施工依据（第 3 代，拥有者 2026-10-02 确认）** | 逐帧施工以它为准；尚未接入代码。 |
 | **canonical** | `specs/experience-ui/canonical/` | CANONICAL REFERENCE | 体验基线 2 张 + 原型图谱 8 张（C4 §1/§2 与 PART IV 引用）。 |
 | **规范** | `specs/experience-ui/source/两个组件_尺寸与母题叙事规范- 墨痕 V0.9.1.md`、`specs/experience-ui/source/交互原型- 墨痕 V0.9.1.html` | 有效规范 / 样册 | 双组件、构图、空间与逐帧规范。 |
@@ -17,7 +17,7 @@
 | **evidence** | `specs/experience-ui/evidence/` | VALIDATION / FAILURE EVIDENCE | 用于证明体验结果与漂移；不得作为未来 UI 设计模板。 |
 | **archive** | `specs/archive/MOHEN_EXPERIENCE_UI_BASELINE_V1.0.md` | SOURCE ARCHIVE / TRACE | 历史参考；已不再是 Implementation Authority。 |
 
-**Context Gate 顺序**：① 先读 **C4**（唯一 Required Read）→ ② 读 `施工图/`（当前施工依据）→ ③ 相关时读 `canonical/` → ④ `source/` 与 `specs/archive/` 仅用于追溯。
+**Context Gate 顺序**：① 先读上位 **MHKA-02**（`governance/mhka/`）→ ② 读 `施工图/`（当前施工依据）→ ③ 相关时读 `canonical/` → ④ `source/` 与 `specs/archive/`、`governance/archive/`（含原 C4）仅用于追溯。
 
 ## 2. 当前真实资产清单（实际 Repo 文件名，禁止改名）
 

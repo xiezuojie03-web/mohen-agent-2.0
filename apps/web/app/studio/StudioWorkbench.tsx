@@ -94,6 +94,9 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  // 外部线索的许可/权利提示（research_leads.acquisition_candidate），FA-019-02。
+  const [leadRights, setLeadRights] = useState<Record<string, { license: string; rights: string; availability: string }>>({});
+  const [openNode, setOpenNode] = useState<string | null>(null);
 
   useEffect(()=>{
     const controller=new AbortController();
@@ -421,7 +424,21 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
         hold_reason?: string;
         missing_requirements?: string[];
         production?: { ok?: boolean; run_id?: string; reason?: string } | null;
+        research_leads?: Array<{ id: string; acquisition_candidate?: { provider_license_hint?: string; provider_rights_hint?: string; content_availability?: string } }>;
       };
+      if (json.research_leads) {
+        const map: Record<string, { license: string; rights: string; availability: string }> = {};
+        for (const lead of json.research_leads) {
+          if (lead.acquisition_candidate) {
+            map[lead.id] = {
+              license: lead.acquisition_candidate.provider_license_hint ?? "未知",
+              rights: lead.acquisition_candidate.provider_rights_hint ?? "未核验",
+              availability: lead.acquisition_candidate.content_availability ?? "未知",
+            };
+          }
+        }
+        setLeadRights(map);
+      }
       if(res.ok&&json.ok)requestAttempt.current=null;
       if (res.ok && json.ok && json.task_id) {
         lastTaskIdRef.current = json.task_id;
@@ -875,22 +892,61 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
 
   const lastMohen = [...messages].reverse().find((m) => m.role === "mohen");
   const materials = [...new Map(messages.flatMap((message) => message.materials ?? []).map((material) => [material.id, material])).values()];
-  // 中栏只放真实回执：有资料支持的进「这次查到的」，其余进「待验证候选」，缺口原样列出。
-  const evidenced = materials.filter((material) => material.epistemic === "FACT_EVIDENCED");
+  // FA-019-01：素材按类别（史料/事件/关系/当下，取自真实 kind）分组浏览；身份以徽标区分（MHKA-02 §41）。
+  const materialCategory = (kind: string) =>
+    kind === "event" ? "事件" : kind === "relation" ? "关系" : kind === "present" ? "当下" : "史料";
   const activeSourceChoices = sourceChoices?.taskId === sourceTaskId ? sourceChoices : null;
-  const candidates = materials.filter(material => material.epistemic !== "FACT_EVIDENCED" &&
-    !activeSourceChoices?.candidates.some(candidate => candidate.id === material.id));
+  const categoryGroups = ["史料", "事件", "关系", "当下"]
+    .map((label) => ({ label, items: materials.filter((m) => materialCategory(m.kind) === label) }))
+    .filter((g) => g.items.length > 0);
   const gaps = [...new Set(messages.flatMap((message) => message.gaps ?? []))];
+  // FA-016：研究五节点进展，全部由真实状态派生（非静态进度条）。
+  const evidencedCount = materials.filter((m) => m.epistemic === "FACT_EVIDENCED").length;
+  const researchNodes: Array<{ key: string; label: string; done: boolean; running: boolean; summary: string }> = [
+    { key: "retrieve", label: "资料检索", done: materials.length > 0, running: false, summary: materials.length > 0 ? `查到 ${materials.length} 条` : "未查到" },
+    { key: "filter", label: "筛选", done: materials.length > 0, running: false, summary: materials.length > 0 ? `已核实 ${evidencedCount} · 候选 ${materials.length - evidencedCount}` : "—" },
+    { key: "verify", label: "核验", done: production?.status === "PASS", running: !!production && production?.status === "RUNNING", summary: production ? `${production.current_stage ?? "?"} ${production.status}` : "未申请" },
+    { key: "direct", label: "编导", done: !!plans, running: directing || authorizing, summary: plans ? "A/B 方案" : "未生成" },
+    { key: "storyboard", label: "分镜", done: !!beats?.length, running: generating, summary: beats?.length ? `${beats.length} 章` : "未生成" },
+  ];
+  const nodeDetail = (key: string): string => {
+    switch (key) {
+      case "retrieve": return materials.length > 0 ? `${materials.length} 条研究素材，按类别列在下方。` : "委托后这里会出现检索到的真实素材。";
+      case "filter": return evidencedCount > 0 || materials.length > 0 ? "素材已按「已核实／候选」区分，未接入资格者如实标为研究线索。" : "尚无素材可筛。";
+      case "verify": return production?.terminal
+        ? `独立门 ${production.terminal.gate_code ?? "?"} ${production.terminal.disposition ?? ""}${production.terminal.independent_gate_audit_id ? " · 审计 " + production.terminal.independent_gate_audit_id.slice(0, 8) : ""}`
+        : production ? `生产 ${production.current_stage ?? "?"} 状态 ${production.status}` : "正式生产（D00—D05，逐门 G0—G5）尚未申请。";
+      case "direct": return plans ? `方案A：${plans.planA.angle}；方案B：${plans.planB.angle}` : "选定方案后由 H1/H2 生成 A/B 导演方案。";
+      case "storyboard": return beats?.length ? `已生成分镜：${beats.map((b) => b.title).join("、")}` : "方案选定后由 H3 生成分镜章节。";
+      default: return "";
+    }
+  };
   const materialCard = (material: Material) => {
     const label = humanEpistemic(material.epistemic, false);
     // 引擎可能透出未登记的档位（例如测试夹具的 hypothesis）：不冒充已核实，统一按待核验线索显示。
     const shown = label === material.epistemic ? "待核验线索" : label;
     return (
-      <div className="studio__material" key={material.id}>
-        <span className="studio__material-badge">{shown}</span>
-        <div className="studio__material-snippet">{material.snippet}</div>
-        <div className="studio__material-source">{material.sourceRef}</div>
-      </div>
+      <details className="studio__material" key={material.id}>
+        <summary className="studio__material-summary">
+          <span className="studio__material-badge">{shown}</span>
+          <span className="studio__material-snippet">{material.snippet}</span>
+          <span className="studio__material-source">{material.sourceRef}</span>
+        </summary>
+        <div className="studio__material-detail">
+          <p className="studio__drawer-note">类型：{materialCategory(material.kind)}</p>
+          <p className="studio__drawer-note">认识状态：{shown}</p>
+          <p className="studio__drawer-note">来源：{material.sourceRef}</p>
+          {leadRights[material.id] ? (
+            <>
+              <p className="studio__drawer-note">许可提示：{leadRights[material.id].license}</p>
+              <p className="studio__drawer-note">权利提示：{leadRights[material.id].rights}</p>
+              <p className="studio__drawer-note">内容可得性：{leadRights[material.id].availability}</p>
+            </>
+          ) : (
+            <p className="studio__drawer-note">使用权／许可：尚未接通来源权利的逐项核验（RIGHTS_UNKNOWN），仅作研究线索，不作事实依据。</p>
+          )}
+        </div>
+      </details>
     );
   };
 
@@ -1024,15 +1080,35 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
         <section className="studio__col studio__col--research" aria-label="研究资料与知识资产">
           <ColumnHead no="②" title="墨痕在研究什么" desc="查到什么、缺什么、能不能往下走" />
 
-          <div className="studio__research-block">
-            <h3>这次查到的</h3>
-            {evidenced.length === 0 ? (
-              <p className="studio__drawer-note">还没有材料。你提问后，查到的来源与可信度会留在这里。</p>
-            ) : (
-              <div className="studio__materials">{evidenced.map(materialCard)}</div>
-            )}
-            <p className="studio__drawer-note">这些材料尚未接入当前资格，只是研究线索，不是已签发的史实。</p>
+          <div className="studio__nodes" aria-label="研究五节点进展">
+            {researchNodes.map((node) => (
+              <div className={`studio__node${node.done ? " is-done" : node.running ? " is-running" : ""}`} key={node.key}>
+                <button type="button" className="studio__node-head" aria-expanded={openNode === node.key}
+                  onClick={() => setOpenNode(openNode === node.key ? null : node.key)}>
+                  <span className="studio__node-label">{node.label}</span>
+                  <span className="studio__node-summary">{node.summary}</span>
+                </button>
+                {openNode === node.key && <p className="studio__drawer-note">{nodeDetail(node.key)}</p>}
+              </div>
+            ))}
           </div>
+
+          {categoryGroups.length === 0 ? (
+            <div className="studio__research-block">
+              <h3>这次查到的</h3>
+              <p className="studio__drawer-note">还没有材料。你提问后，查到的来源与可信度会留在这里。</p>
+            </div>
+          ) : (
+            <>
+              {categoryGroups.map((group) => (
+                <div className="studio__research-block" key={group.label}>
+                  <h3>{group.label}</h3>
+                  <div className="studio__materials">{group.items.map(materialCard)}</div>
+                </div>
+              ))}
+              <p className="studio__drawer-note">材料按类别列出，身份以徽标区分；尚未接入当前资格，只是研究线索，不是已签发的史实。</p>
+            </>
+          )}
 
           <div className="studio__research-block">
             <h3>缺口</h3>
@@ -1076,10 +1152,8 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
                 {activeSourceChoices.error && <p role="status">{activeSourceChoices.error}</p>}
               </>
             )}
-            {candidates.length === 0 && !activeSourceChoices?.candidates.length ? (
-              <p className="studio__drawer-note">还没有待验证的判断。</p>
-            ) : (
-              <div className="studio__materials">{candidates.map(materialCard)}</div>
+            {!activeSourceChoices?.candidates.length && (
+              <p className="studio__drawer-note">还没有待验证的来源候选。</p>
             )}
           </div>
 
