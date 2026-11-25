@@ -53,7 +53,11 @@ from (
     select
       p.projection_id::text                                   as id,
       'claim'::text                                           as kind,
-      coalesce(p.payload->>'title', p.projection_key, '')     as snippet,
+      coalesce(
+        nullif(p.payload->>'title',''),
+        (select string_agg(f->>'assertion','；')
+           from jsonb_array_elements(coalesce(p.payload->'body'->'facts', p.payload->'facts','[]'::jsonb)) f),
+        p.projection_key, '')                                 as snippet,
       coalesce(p.payload->>'source_ref', '已发布世界投影')      as source_ref,
       'SUPPORTED'::text                                       as vstatus,
       coalesce(p.payload->>'time_hint', '')                   as time_hint,

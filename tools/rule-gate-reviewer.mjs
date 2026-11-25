@@ -754,6 +754,9 @@ export function createRuleGateReviewer({
   // 评审作用域必须可传入：机器评审原先写死 CP1 样本项目，导致任何新建项目
   // （如通用入口产出的非模板题材项目）都没有 G0 决策可签。规则与检查项不变。
   projectId = PROJECT_ID,
+  // 评审的候选消费方必须可传入：定向核验（knowledge_route QUALIFICATION_REQUIRED）
+  // 需要以 agent 消费用途签发资格审计；默认仍只评审生产候选，检查项不变。
+  consumer = "producer",
   // Explicitly injected by the independent Reviewer service, never by Producer.
   attestStageOutput = null,
   log = line => console.log(line),
@@ -766,10 +769,10 @@ export function createRuleGateReviewer({
         evidence_refs::text as evidence_refs, dependency_snapshot::text as dependency_snapshot,
         input_fingerprint, submitted_at::text as submitted_at
       from control.gate_candidates
-      where gate_code = :'gate' and consumer = 'producer' and candidate_status = 'SUBMITTED'
+      where gate_code = :'gate' and consumer = :'consumer' and candidate_status = 'SUBMITTED'
         and allowed_scope->>'project_id' = :'project'
         ${candidateId ? "and candidate_id = :'cid'" : ""}
-      order by submitted_at desc`, candidateId ? { gate, project: projectId, cid: candidateId } : { gate, project: projectId });
+      order by submitted_at desc`, candidateId ? { gate, project: projectId, consumer, cid: candidateId } : { gate, project: projectId, consumer });
     if (!rows.length) throw Error("NO_SUBMITTED_CANDIDATE");
     if (rows.length > 1) log(`MULTIPLE_SUBMITTED_CANDIDATES ${gate} count=${rows.length} using=${rows[0].candidate_id}`);
     const row = rows[0];
@@ -924,7 +927,7 @@ export function createRuleGateReviewer({
       from control.gate_audits a where a.gate_audit_id = :'id'`, { id: auditId });
     const signed = audit[0];
     if (!signed || text(signed.gate_code) !== gate || text(signed.result) !== "PASS" ||
-        text(signed.decision_origin) !== "independent_gate" || text(signed.consumer) !== "producer" ||
+        text(signed.decision_origin) !== "independent_gate" || text(signed.consumer) !== consumer ||
         text(signed.reviewer_user_id) !== MACHINE_REVIEWER_USER_ID || text(signed.reviewer_db_identity) !== MACHINE_SIGNER_LOGIN) {
       throw Error(`SIGNED_AUDIT_MISMATCH:${auditId}`);
     }

@@ -29,6 +29,35 @@ export async function currentTaskCheckpoint(checkpoint:Obj,sessionToken?:string)
           privateMaterials=(await readStudioResearchProject(projectId,sessionToken,{persistReadingNotes:false})).materials;
         }
         candidates=privateMaterials;
+      }else if(/^(formal:)/.test(saved.id)){
+        // 正式层材料按精确资格复检：材料 id 自带 layer/object/revision，
+        // 重验该对象当前是否仍有 agent 用途的合格审计（与签发时同一判据）。
+        const parsed=/^formal:(L[0-4]):([0-9a-f-]{36})@([0-9a-f]{64})$/i.exec(saved.id);
+        if(!parsed)throw new Error('INVALID_MATERIAL_REFERENCE');
+        const layerMap:Record<string,[string,string]>={
+          L0:['G0','source'],L1:['G1','read_run'],L2:['G2','material_evidence'],
+          L3:['G3','relation_claim'],L4:['G4','finding'],
+        };
+        const [gate,objectType]=layerMap[parsed[1]]??[];
+        if(!gate||!objectType)throw new Error('INVALID_MATERIAL_REFERENCE');
+        const {consumerContext}=await import('./kad1-policy.mjs');
+        const context=consumerContext('agent');
+        if(!context||context.scope.requested_action!=='read')throw new Error('QUALIFICATION_CONTEXT_REQUIRED');
+        const projectId=object(checkpoint.studio).project_id;
+        const {queryRows}=await import('@mohen/data-access');
+        const rows=await queryRows(
+          `select 1 from control.gate_audits g
+            where g.gate_code=:'gate' and g.object_type=:'objectType' and g.object_id=:'objectId'::uuid
+              and g.artifact_revision=:'revision' and g.result='PASS' and g.current_valid
+              and (g.valid_until is null or g.valid_until>now())
+              and control.qualification_allows(g.gate_audit_id,'agent',:'ns',:'code',:'ver',:'scope'::jsonb)
+            limit 1`,
+          {gate,objectType,objectId:parsed[2],revision:parsed[3],
+           ns:context.purpose.namespace,code:context.purpose.code,ver:context.purpose.version,
+           scope:JSON.stringify({...context.scope,project_id:projectId})});
+        if(!rows.length)throw new Error('MATERIAL_REVOKED_OR_CHANGED');
+        current.push(saved);
+        continue;
       }else{
         const {consumerContext}=await import('./kad1-policy.mjs');
         const context=consumerContext('agent');
