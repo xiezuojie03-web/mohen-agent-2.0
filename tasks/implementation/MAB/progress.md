@@ -6780,6 +6780,15 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **FINDING（如实）**：正式知识链对象（evidence/claim/finding/projection 的 G 资格明细）不在「知识资产」视图逐条呈现（该视图是 Studio 项目资产分面；「合格公开知识投影」需 watch 用途 L5 资格——设计层缺口已在批次1 FINDING 记录）；运行概览「当前可见知识投影 0」同因。资格审核面板未逐项验证（段9 Admin 抽样按两题材项目级回链成立收口）。
 - **费用**：0。**下一动作**：批次5（13 类资产合同全验，段4，零付费）。
 
+## 第二十九批（2026-11-25）：段4 13类资产合同验证（矩阵存在+单测过+K3本地阻断具名）
+
+- **基线**：`ecf87165`，零代码改动（验证批）。
+- **13 类矩阵测试已存在且接线**：`tests/data-production/studio-asset-repository.integration.mjs` 覆盖 13 类逐类正反——10 私有类（research_brief/source_anchor/reading_note/evidence_note/spacetime_candidate/relation_hypothesis/humanistic_insight/research_collection/citation_snapshot/consented_feedback）各验：修订不可变/历史/来源依赖回链/幂等/CAS 并发/跨 Owner 拒绝/悬空引用拒绝/证据类无来源拒绝/反馈无 consent 拒绝/使用事件记账/权利 unknown 不冒充 G5；3 canonical 类（director_plan/media_selection/work_revision）拒绝在私有库建第二正文（STUDIO_CANONICAL_BINDING_REQUIRED）。已接线 `.github/workflows/mab-isolated-db.yml`。
+- **本地隔离执行尝试（两败停止，具名阻断）**：发现本机 psql（`D:\MoHen\tools\PostgreSQL\18\bin`，此前记录"无 psql"已过时）；initdb 一次性集群（`work/scratch/k3cluster`，55432，`mohen.test_instance=codex-k3-isolated` 标记实测确认）→ `test-k3-db.mjs` 首连失败：postmaster 子进程反复 `could not reserve shared memory region`（Windows 同机双 PG 18 实例共享内存地址冲突，与 5432 的 mohen_dev 冲突）；重启一次仍同样失败 → 按纪律停止该操作、不碰 5432 实例（开发服务在用）。集群已停、目录留存 gitignored。**恢复条件**：CI 宿主恢复后走 `mab-isolated-db` workflow，或单实例窗口（需停 5432，暂不采用）。
+- **本地可跑证据**：vitest（mohen_dev_test）`studio-asset-routes` + `studio-research-read` **20/20 PASS**。
+- **真实作品实际产生的资产类型（按 PLAN「不为凑数伪造」）**：有真实实例——research_brief（每次提问一个 brief 资产，金泽项目 20 条实测）、source_anchor（金泽 `bf9264c4`/朱家角 `0a61dbca`，绑真实原件）、reading_note（ST-02 生成机制在素材读取中实际运行）、director_plan（`d87d816d`/`01daf41f` 正式表）、work_revision（金泽 rev2/朱家角 rev3）。无真实实例（两作品研究走正式 D 链而非 Studio 候选，不伪造）——evidence_note/spacetime_candidate/relation_hypothesis/humanistic_insight/research_collection/media_selection/citation_snapshot/consented_feedback，其合同正反由 K3 矩阵承载（CI 恢复后跑）。
+- **费用**：0。**下一动作**：批次6（段3 收尾：方法绑定合同状态 + 本地可跑绑定测试）。
+
 ## 部署 / 费用 / 凭据
 
 - web staging：`mohen-agent-2-0-eytp0i3no-napoles1.vercel.app`（`dpl_Cqdz7vPYHrzQTn711rkGEh35rter`，target staging / VERCEL_ENV=preview，SHA `e563161c`）；上一部署 `mohen-agent-2-0-5g38pnq17-napoles1.vercel.app`（`48c9169b`）为本批 D05 真实续跑所用。authority production：`mohen-d00-authority.vercel.app`（未改动，仍 `48c9169b`；D04/D05 issue 未签名探测 401=路由存在）。提交作者须为 `xiezuojie03 <315303392+xiezuojie03-web@users.noreply.github.com>`，否则 Vercel 拒部署；网络经本地代理 `127.0.0.1:51081`。
