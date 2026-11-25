@@ -71,7 +71,12 @@ try {
     // Same Owner-scoped Producer progress RPC as the K3 PG fixture.
     '20261117010000_mab_m5_scoped_producer_run_progress.sql',
     '20261117020000_mab_m5_dev_machine_login_roles.sql',
-    '20261118025600_m5_scoped_formal_project_gate_read.sql'];
+    '20261118025600_m5_scoped_formal_project_gate_read.sql',
+    // 正式链路由（/api/works 等）写入 studio.work_revisions.formal_revision_id 与
+    // publication.works.project_id，正文权威归位迁移必须进 HTTP 链，
+    // 否则合成库缺列导致投稿接口 400（此前按 UNCHAINED 记账的到期债务）。
+    '20261123120000_mab_m5_st05_st07_project_and_body_authority.sql',
+    '20261123130000_mab_m5_director_plan_formal_body_authority.sql'];
   names.push('20261103095024_mab_web_session_revocation.sql','20261117080000_mab_web_password_recovery.sql');
   for(const name of names)execFileSync(psql,[...base,'-d',database,'-f',path.join(migrations,name)],{stdio:['ignore','pipe','pipe']});
   if(process.env.MOHEN_TEST_STORAGE_CONFIG){

@@ -25,6 +25,17 @@ const LEGACY_SUPERSEDED = "pre-V2-baseline legacy migration, superseded by 20261
 // 不并入 k3 / mab-http 两条链。登记在此如实记账，避免"作者写了但无人应用"被静默忘记；
 // 需要它们在 HTTP 链生效时，应连同对应路由一起进链，而不是靠本登记绕过。
 const M5_STUDIO_AXIS_DB_ONLY = "M5 Studio 业务轴 DB 层迁移，由专门隔离脚本单独应用（不进 k3 / mab-http 链）";
+// 仅 HTTP 链需要的 M5 Studio 业务轴迁移：正式链路由（/api/works 投稿等）读写
+// formal_revision_id / publication.works.project_id，合成 HTTP 库必须应用；
+// 但 k3 链是纯 DB 套件，不含 ST-05→ST-09 业务对象（publication.work_revisions 等），
+// 加入 k3 链会因外键目标缺失直接失败。按链豁免必须同时满足：
+// 文件存在 + 确实已进 HTTP 链（否则等于全链未登记，不得静默豁免）。
+const K3_CHAIN_EXEMPT = new Map([
+  ["20261123120000_mab_m5_st05_st07_project_and_body_authority.sql",
+    "仅 HTTP 链（正式链路由需要 formal_revision_id/project_id）；k3 链无 publication.work_revisions 等业务对象"],
+  ["20261123130000_mab_m5_director_plan_formal_body_authority.sql",
+    "仅 HTTP 链（导演方案正式正文权威）；k3 链无该业务对象"],
+]);
 const UNCHAINED = new Map([
   // Supabase-managed Storage schema/API is absent from disposable vanilla
   // PostgreSQL17 (both isolated chains). This is not a silently skipped
@@ -66,9 +77,7 @@ const UNCHAINED = new Map([
     "20261122190000_artifact_revision_claim_revision.sql",
     "20261122200000_g3_reviewer_changes_read.sql",
     "20261122210000_d04_resume_grant_journal.sql",
-    "20261122230000_d05_resume_grant_journal.sql",
-    "20261123120000_mab_m5_st05_st07_project_and_body_authority.sql",
-    "20261123130000_mab_m5_director_plan_formal_body_authority.sql"].map(f => [f, M5_STUDIO_AXIS_DB_ONLY]),
+    "20261122230000_d05_resume_grant_journal.sql"].map(f => [f, M5_STUDIO_AXIS_DB_ONLY]),
 ]);
 
 const chains = chainFiles.map(file => ({ file, source: fs.readFileSync(path.join(root, file), "utf8") }));
@@ -87,8 +96,15 @@ function referencedByChain(chainSource, file) {
 const missing = [];
 for (const chain of chains) {
   for (const file of allMigrations) {
-    if (UNCHAINED.has(file) || referencedByChain(chain.source, file)) continue;
+    const k3Exempt = chain.file.endsWith("test-k3-db.mjs") && K3_CHAIN_EXEMPT.has(file);
+    if (UNCHAINED.has(file) || k3Exempt || referencedByChain(chain.source, file)) continue;
     missing.push({ chain: chain.file, file });
+  }
+}
+const httpChain = chains.find(c => c.file.endsWith("test-mab-http.mjs"));
+for (const [file] of K3_CHAIN_EXEMPT) {
+  if (!httpChain || !referencedByChain(httpChain.source, file)) {
+    missing.push({ chain: "scripts/test-mab-http.mjs", file, note: "K3 链豁免登记但未进 HTTP 链" });
   }
 }
 const violations = [];
@@ -174,8 +190,9 @@ for (const rel of testFiles) {
   }
 }
 
-for (const { chain, file } of missing) violations.push(`supabase/migrations/${file} 未被隔离链 ${chain} 应用，也未在 UNCHAINED 中登记原因`);
+for (const { chain, file, note } of missing) violations.push(`supabase/migrations/${file} 未被隔离链 ${chain} 应用，也未在 UNCHAINED 中登记原因${note ? `（${note}）` : ""}`);
 for (const [file, reason] of UNCHAINED) if (!allMigrations.includes(file)) violations.push(`UNCHAINED 登记的 ${file} 已不存在（${reason}）`);
+for (const [file, reason] of K3_CHAIN_EXEMPT) if (!allMigrations.includes(file)) violations.push(`K3_CHAIN_EXEMPT 登记的 ${file} 已不存在（${reason}）`);
 
 if (violations.length) {
   for (const v of violations) console.error(`VIOLATION ${v}`);

@@ -36,3 +36,11 @@ it('filters single-character noise out of a mixed term list without marking cove
  const [,params]=db.queryRows.mock.calls[0];
  expect(params).toMatchObject({terms:'上海豫园|作品'});
 });
+it('empty term list with valid qualification keeps qualified-enumeration contract (terms empty, no short-circuit)',async()=>{
+ const result=await retrieveMaterials([],24,{qualification} as never);
+ expect(result.degraded).toBe(false);
+ expect(result.materials.map(m=>m.id)).toContain('legacy');
+ expect(result.coverage).toBe("NOT_SEARCHED");
+ const [,params]=db.queryRows.mock.calls[0];
+ expect(params).toMatchObject({terms:''});
+});

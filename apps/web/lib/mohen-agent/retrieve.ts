@@ -413,10 +413,12 @@ export async function retrieveMaterials(
   void opts.excludeTowns;
   try {
     const {consumer,purpose,scope}=assertQualificationContext(opts.qualification);
-    if (!safeTerms.length) {
-      // 不要退化成 terms='' 的全量枚举：没有可检索词时如实标记未检索。
+    if (nonemptyTerms.length > 0 && !safeTerms.length) {
+      // 有检索词但全是单字噪声残片：不作为合格 L5 命中依据，也不退化成全量枚举。
       return { materials: [], degraded: false, coverage: "NOT_SEARCHED" };
     }
+    // 空检索词 + 有效资格是集成契约（tests/integration/qualified-retrieve.integration.ts）：
+    // SQL terms='' 分支按资格全量枚举发布成果，不短路成未检索。
     const rows = await queryRows(SQL.replace("__LIMIT__", String(lim)), {
       terms: safeTerms.join("|"),
       consumer,purpose_namespace:purpose.namespace,purpose_code:purpose.code,purpose_version:purpose.version,
@@ -438,9 +440,11 @@ export async function retrieveMaterials(
         return m;
       })
       .filter((m): m is Material => m !== null);
-    const coverage = rows.length >= lim || searchableTerms.length > safeTerms.length
-      ? "PARTIAL"
-      : "COMPLETE";
+    const coverage = !safeTerms.length
+      ? "NOT_SEARCHED"
+      : rows.length >= lim || searchableTerms.length > safeTerms.length
+        ? "PARTIAL"
+        : "COMPLETE";
     return { materials, degraded: false, coverage };
   } catch (e) {
     // 诊断留痕：库不可用必须有据可查，不许静默降级后假装「查过了」
