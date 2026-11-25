@@ -6769,6 +6769,17 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **费用**：0 新增（无 Provider 调用；生成方案未点同意，授权门止于确认 UI）。
 - **下一动作**：批次4（Admin 逐条回链两题材，段6+9，零付费）。
 
+## 第二十八批（2026-11-25）：段6+9 Admin 逐条回链两题材（真实浏览器验证，零代码改动）
+
+- **基线**：`0d4d0747`，纯验证批；browser-use 真实操作（登录 20195689@qq.com → Admin 工作台）。
+- **Admin 知识资产面板（真实浏览器）**：
+  - **项目级资产列表（两题材均验）**：金泽项目 a2b0cf23 列出 20 条资产（多个 research_brief + source_anchor `bf9264c4`）；朱家角项目 d9d48901 列出 source_anchor `0a61dbca`（11-24 登记的真实私有素材，绑原件 f474b91b）+ research_brief。每条显示：类型/认识状态（editorial·WORKING·RESTRICTED）/缺口（逐条：未登记来源引用等）/来源依赖计数/资产 id+当前修订号。
+  - **source_anchor 下钻「查看来源与历史」（金泽，逐字段验证）**：①保存的来源引用=金泽私有原件 `674deb39` 精确引用（type private_original+revision）；②依赖引用空（如实）；③回链解析「来源 1/1 可解析 · 依赖 0 条（视为未知依赖，不得当作无依赖放行）· 使用事件 10 条」；④**逐动作权利**：read 未判定、quote/display/download/adapt/external_processing 均 BLOCKED(RIGHT_NOT_ALLOWED) + 权利快照 unknown + 存储授权范围 {}；⑤存储验证 UNASSESSED +「不是独立G资格」声明；⑥来源依赖状态 UNKNOWN_DEPENDENCY；⑦历史版本 1 条；⑧**使用事件 10 条逐条可溯**（agent·access_view·权利决定 studio_rights_by_action_v1:access_view·用途 studio_research_context·时间·事件 id——正是批次1 每次 API/浏览器提问的真实记录，11-43 至 12-14）。
+  - **诚实声明齐备**：「独立G资格未由此视图验证，本视图不签发不替代」「运营权限不自动赋予跨用户资料读取权」「私有研究资产与正式G5发布分面分别展示，不能互相替代」；合格公开知识投影=空态（与 watch 用途 L5 资格未签的事实一致，不冒充）。
+- **对照 PLAN §3.5 B 维度6**：类型/内容/认识状态/精确来源/资格声明（不代签）/权利/版本/被何处复用（使用事件）/缺口——逐项有真实浏览器证据；「仅授权Owner可执行管理/撤回」由 Admin 登录+Owner 专项目范围验证（面板顶部身份与项目过滤）。
+- **FINDING（如实）**：正式知识链对象（evidence/claim/finding/projection 的 G 资格明细）不在「知识资产」视图逐条呈现（该视图是 Studio 项目资产分面；「合格公开知识投影」需 watch 用途 L5 资格——设计层缺口已在批次1 FINDING 记录）；运行概览「当前可见知识投影 0」同因。资格审核面板未逐项验证（段9 Admin 抽样按两题材项目级回链成立收口）。
+- **费用**：0。**下一动作**：批次5（13 类资产合同全验，段4，零付费）。
+
 ## 部署 / 费用 / 凭据
 
 - web staging：`mohen-agent-2-0-eytp0i3no-napoles1.vercel.app`（`dpl_Cqdz7vPYHrzQTn711rkGEh35rter`，target staging / VERCEL_ENV=preview，SHA `e563161c`）；上一部署 `mohen-agent-2-0-5g38pnq17-napoles1.vercel.app`（`48c9169b`）为本批 D05 真实续跑所用。authority production：`mohen-d00-authority.vercel.app`（未改动，仍 `48c9169b`；D04/D05 issue 未签名探测 401=路由存在）。提交作者须为 `xiezuojie03 <315303392+xiezuojie03-web@users.noreply.github.com>`，否则 Vercel 拒部署；网络经本地代理 `127.0.0.1:51081`。
