@@ -6731,6 +6731,21 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **边界/HOLD**：仅 loopback 隔离库 `mohen_dev`，未改生产库/RLS/部署/Storage；发布者为机器 operator `b0a11000…b2`（不冒充 Owner 真人 UI 身份）；撤权留 Owner 浏览器体验；4 组未跟踪文件（`.mohen/`、`.trae-html-share-packages/`、`apps/web/.mohen/`、`apps/web/.tmp_trigger.ts`）仍待 Owner 裁决。
 - **下一动作**：交 Owner 浏览器（登录→WATCH 看金泽真实 5 章→Admin 下架撤权，段 9/10）；并行零付费 Admin 逐条回链（段 6）。
 
+## 第二十五批（2026-11-25）：段1+2 统一检索「定向核验」闭环贯通（main c61c0684）
+
+- **基线/提交**：本地 `c61c0684`（基线 `05463afc`），4 文件 +251/-4；跑批前已核远端 `d3e791e5…05463afc` 推送完成，无并发写入。
+- **发现的真断点（段2）**：Studio 提问自然流程 `decision.materials` 只来自 L5 检索 + 正式 G0-G4 桥，两者都按 `qualification_allows(audit,'agent','mohen.research','agent_read','1',scope)` 核资格——但库内 agent 消费审计 297 条 purpose 全为 null（无效），本地评审器候选加载硬编码 `consumer='producer'`，`REVIEW_PROJECT_CANDIDATES` 无任何下游实现 → 新提问永远 materials=0、cannot_answer。金泽项目旧任务 materialRead 亦 HOLD（11-24 只修了朱家角主线）。
+- **修复（3 处代码 + 1 脚本，检查逻辑零放宽）**：
+  1. `tools/rule-gate-reviewer.mjs`：`createRuleGateReviewer` 增加 `consumer` 参数（默认 `'producer'` 不变），loadCandidate 与签发后回读校验用参数值；上游依赖仍强制 producer（设计不变）。
+  2. `apps/web/lib/studio-task-material-read.ts`：`formal:` 前缀材料按 id 自带 layer/object/revision 查 agent 用途当前合格审计精确复检，修掉决策持久化后被误判 `MATERIAL_REVOKED_OR_CHANGED` 抹除的问题。
+  3. `apps/web/lib/mohen-agent/retrieve.ts`：L5 world_projections snippet 回退链兼容 `body.facts`/`facts` 断言文本（两种写入器结构），事实投影对词检索可见。
+  4. `scripts/requalify-shinze-agent-read.mjs`：定向核验脚本（loopback 围栏、幂等、provision 模式声明机器签发者 agent 用途评审绑定），为金泽链 G2 material_evidence `0df18664`、G5 world_projection `4dd2a3f3` 签 agent 用途审计 `c1fa3011`/`256c393c`（独立机器评审、dry-run 全过、非自签、至 12-01）。
+- **实测（真实 API，金泽项目 a2b0cf23）**：提问「金泽的白苎里古名和穑人获泽如金…」→ verdict `partial`、materials=1（`formal:L2:0df18664@496457fe…`）、`route=REUSE_QUALIFIED`（qualified_l5=1 + formal_refs=1）、mohenLine 引用方志原文「在县境西南部、沪青平公路东侧，是金泽镇人民政府驻地…古名白苎里」；status 复检 `materialRead: {"state":"CURRENT"}` 稳定。修复前同问题 materials=0、`QUALIFICATION_REQUIRED`。
+- **回归**：`node --test tests/data-production/studio-knowledge-routing.test.mjs` 19/19；vitest（mohen_dev_test）`mab-m5-qualified-retrieve`/`studio-formal-project-retrieval`/`m5-formal-project-read-migration`/`studio-task-material-read` 17/17；`pnpm --filter web typecheck`、`build` 通过；3100 端口 `next start` 重建重启后实测生效。
+- **FINDING（如实记录，本批不硬改）**：① G3/G4 有用途白名单（world/*、G4.interpretation.v1/*），agent_read 用途不可签 → L3/L4 层 agent 资格结构性不可得；② 正式桥 L0/L1/L3 期望对象类型（source/read_run/relation_claim）与生产链实际（source_version/read_unit/claim_revision）错配；③ Studio 首问 auto-create 项目无去重（c952f110 与 a2b0cf23 同名重复）；④ 意图分类对部分问法（「是什么格局」）判 unknown 走澄清路径；⑤ 3100 端口为 `next start` 产物模式，库改动需 build+重启才生效（此前窗口曾误判为热重载不生效）。①②属设计层缺口需按 MHKA/合同路径另行裁决。
+- **费用**：0 新增（零 Provider 调用；LLM 理解/裁决走既有 deepseek 通道按既有委托记账）。撤权/发布未动。
+- **下一动作**：批次2（段5 朱家角主线真实正文，复用金泽导演生成路径）。
+
 ## 部署 / 费用 / 凭据
 
 - web staging：`mohen-agent-2-0-eytp0i3no-napoles1.vercel.app`（`dpl_Cqdz7vPYHrzQTn711rkGEh35rter`，target staging / VERCEL_ENV=preview，SHA `e563161c`）；上一部署 `mohen-agent-2-0-5g38pnq17-napoles1.vercel.app`（`48c9169b`）为本批 D05 真实续跑所用。authority production：`mohen-d00-authority.vercel.app`（未改动，仍 `48c9169b`；D04/D05 issue 未签名探测 401=路由存在）。提交作者须为 `xiezuojie03 <315303392+xiezuojie03-web@users.noreply.github.com>`，否则 Vercel 拒部署；网络经本地代理 `127.0.0.1:51081`。
