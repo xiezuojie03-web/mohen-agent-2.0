@@ -46,9 +46,9 @@ export async function sourceBindingForWork(workId: string): Promise<{ projectId:
   };
 }
 
-export type GrantOutcome = { grant: DispatchGrant } | { reason: string };
+export type GrantOutcome = { grant: DispatchGrant } | { reason: string; detail?: string };
 
-/** 签发 grant；DispatchError 翻译为简短 reason（路由据此回 409/403）。 */
+/** 签发 grant；DispatchError 翻译为简短 reason + 可选 detail（路由据此回 409/403）。 */
 export async function grantForStudioLlm(input: {
   delegationId: string;
   projectId: string;
@@ -71,6 +71,74 @@ export async function grantForStudioLlm(input: {
     });
     return { grant };
   } catch (error) {
-    return { reason: error instanceof DispatchError ? error.code : "DISPATCH_UNCERTAIN" };
+    if (error instanceof DispatchError)
+      return { reason: error.code, detail: error.message !== error.code ? error.message : undefined };
+    return { reason: "DISPATCH_UNCERTAIN" };
   }
+}
+
+/** Creator 在 Studio 外发确认（ST-04）时把既有 Owner 常设授权落到项目来源上。
+ *  语义边界（与 scripts/approve-m5-*-external-processing.mjs 的批26先例一致）：
+ *  - 只动 external_processing 一项；display/download/adapt/redistribute 保持原状。
+ *  - 仅当来源许可已允许 machine_read（许可本就允许机器处理）才扩展；其余保持
+ *    unknown，由 dispatcher 失败关闭——用户同意不能替代来源许可。
+ *  - 幂等：已 allowed 的来源不重复写；证据追加式，不覆盖历史。
+ */
+export async function ensureExternalProcessingRights(
+  sourceIds: string[],
+  consent: { projectTitle: string; actions: string[]; idempotencyKey: string; consentedBy: string }
+): Promise<{ recorded: string[]; blocked: Array<{ sourceId: string; title: string }> }> {
+  if (!sourceIds.length) return { recorded: [], blocked: [] };
+  const list = sourceIds.map((id) => `'${id}'::uuid`).join(",");
+  const rows = (await queryRows(
+    `select source_id::text as source_id, title, rights_by_action, rights_evidence
+       from source.sources where source_id = any(array[${list}])`
+  )) as unknown as Array<{
+    source_id: string; title: string;
+    rights_by_action: Record<string, unknown> | string | null;
+    rights_evidence: Record<string, unknown> | string | null;
+  }>;
+  const normalize = (v: unknown): Record<string, unknown> => {
+    if (v && typeof v === "object" && !Array.isArray(v)) return v as Record<string, unknown>;
+    if (typeof v === "string" && v.trim()) { try { return JSON.parse(v) as Record<string, unknown>; } catch { return {}; } }
+    return {};
+  };
+  const decisionAt = new Date().toISOString().slice(0, 10);
+  const recorded: string[] = [];
+  const blocked: Array<{ sourceId: string; title: string }> = [];
+  for (const row of rows) {
+    const rights = normalize(row.rights_by_action);
+    const evidence = normalize(row.rights_evidence);
+    const title = String(row.title ?? row.source_id);
+    if (rights.external_processing === "allowed") { recorded.push(title); continue; }
+    if (rights.machine_read !== "allowed") { blocked.push({ sourceId: row.source_id, title }); continue; }
+    const nextRights = { ...rights, external_processing: "allowed" };
+    const auth = Array.isArray(evidence.external_processing_authorizations)
+      ? (evidence.external_processing_authorizations as unknown[])
+      : [];
+    const nextEvidence = {
+      ...evidence,
+      granted_actions: Array.from(new Set([...(Array.isArray(evidence.granted_actions) ? evidence.granted_actions as unknown[] : []), "external_processing"])),
+      external_processing_authorizations: [
+        ...auth,
+        {
+          decision_at: decisionAt,
+          decision_by: `Owner standing authorization 2026-11-25 (M5 director generation), applied via Creator Studio consent by ${consent.consentedBy}`,
+          actions: ["external_processing"],
+          scope: `studio director generation (${consent.actions.join(", ")}) for project「${consent.projectTitle}」; source license already permits machine_read`,
+          note: "Recorded from the Creator's explicit ST-04 dispatch consent (idempotency key recorded below). download/adapt/redistribute remain untouched.",
+          recorded_by: "apps/web/lib/studio/dispatch-grant.ts (Studio consent flow)",
+          consent_idempotency_key: consent.idempotencyKey,
+        },
+      ],
+    };
+    await queryRows(
+      `update source.sources
+          set rights_by_action = :'rights'::jsonb, rights_evidence = :'evidence'::jsonb
+        where source_id = :'sid'::uuid and rights_by_action->>'machine_read' = 'allowed'`,
+      { rights: JSON.stringify(nextRights), evidence: JSON.stringify(nextEvidence), sid: row.source_id }
+    );
+    recorded.push(title);
+  }
+  return { recorded, blocked };
 }

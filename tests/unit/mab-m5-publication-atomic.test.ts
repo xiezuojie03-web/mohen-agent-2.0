@@ -17,6 +17,7 @@ vi.mock("../../apps/web/lib/formal-publication-chain", () => ({
   formalPublish: vi.fn(),
   formalWithdraw: vi.fn(),
   listFormalSubmitted: vi.fn().mockResolvedValue([]),
+  listFormalPendingReview: vi.fn().mockResolvedValue([]),
 }));
 
 import {publishWork,listPublished,listPendingReview,listWatchEligible,getWorkStageStatus} from "../../apps/web/lib/publication";

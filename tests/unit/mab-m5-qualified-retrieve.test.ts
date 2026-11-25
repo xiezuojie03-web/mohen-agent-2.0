@@ -24,3 +24,15 @@ it('returns no materials when current qualification database is unavailable',asy
  db.queryRows.mockRejectedValue(Error('synthetic database unavailable'));
  expect(await retrieveMaterials(['secret'],12,{qualification} as never)).toEqual({materials:[],degraded:true,coverage:"UNAVAILABLE"});
 });
+it('single-character residue terms are not a qualified read-model hit basis',async()=>{
+ const result=await retrieveMaterials(['做','部'],12,{qualification} as never);
+ expect(result).toEqual({materials:[],degraded:false,coverage:"NOT_SEARCHED"});
+ expect(db.queryRows).not.toHaveBeenCalled();
+});
+it('filters single-character noise out of a mixed term list without marking coverage partial',async()=>{
+ db.queryRows.mockResolvedValue([]);
+ const result=await retrieveMaterials(['做','部','上海豫园','作品'],24,{qualification} as never);
+ expect(result).toEqual({materials:[],degraded:false,coverage:"COMPLETE"});
+ const [,params]=db.queryRows.mock.calls[0];
+ expect(params).toMatchObject({terms:'上海豫园|作品'});
+});

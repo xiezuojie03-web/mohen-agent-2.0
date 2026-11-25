@@ -6818,10 +6818,47 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 - **待 CI 恢复事项（CI_BLOCKED 具名）**：mab-isolated-db 全矩阵（13 类资产+D00—D05 套件）、精确 SHA CI 检查。
 - **设计层缺口（Owner 裁决取向，不阻 Owner 验收）**：正式桥 L0/L1/L3 对象类型错配；G3/G4 用途白名单禁止 agent_read；Studio auto-create 项目无去重；意图分类鲁棒性。
 
+## 第三十二批（2026-11-26）：网页端真正创作全程——静安寺第三题材 0→WATCH + 管理后台正式链审批修复
+
+- **基线**：`619a8f9e`（批初与提交前两次重核 本地=远端；推送时网络代理 127.0.0.1:51081 不可达，本批为本地提交，**PENDING_PUSH**，恢复后对账推送）。
+- **Owner 要求与授权**：「按照设计要求和施工计划继续往下吧，实现网页端的真正创作」（2026-11-25 常设授权，费用老规矩：每题材导演 1.00 USD 封顶、逐次回执对账）。全部用户路径用 browser-use 真实浏览器点击，无伪造会话/资格/PASS。
+
+### A. 批1 缺口→申请→外部获取 UI 接线（知识库没有的题材走外部来源）
+
+- **修复**：`retrieve.ts` 单字检索词（「一部」剩「部」）制造噪声命中、误判 MATCHED_CURRENT_G5_READ_MODEL 遮蔽 D00 来源发现 → 单字词不作合格 L5 命中依据，纯单字词如实 NOT_SEARCHED；`retrieve-commons.ts` 线索改用原图 URL（thumb 会被 COMMONS_LOCATOR_UNSUPPORTED 拒绝）；`source-discovery.ts` 图像候选放宽（Commons ≥12 条、描述偶遇图像最多 12、文本最多 2）；`studio-commons-acquisition.ts` 原件超时 15s→120s（代理 220KB/s 实测）、超 10MB 单独报 COMMONS_ORIGINAL_TOO_LARGE、权利证据补 `basis: wikimedia_commons_cc_by_sa_3_0`（许可本身非项目自授）；`studio-research.ts` 未取得原件回执前允许改选、取得后冻结（candidate_selection_frozen_after_acquisition）；`StudioWorkbench.tsx` 补 4 条用户可读错误文案。
+- **真实验证**：静安寺题材提问 → 知识库无内容 → 缺口如实两条 → 外部来源发现（上海图书馆开放数据 2 条 + Commons 图像候选 + Wikisource）→ 选中「上海地名志·静安寺」→ **网页保存私有原件**（original `662493c3`，sha256 `d1f92bb7…`，STORED_VERIFIED，1,834 字节正文）→ D02 材料观察委托 `bf2d6821`（0.05 USD 封顶）实际调用 1 次 **0.003418 USD**（receipt `28483dbe`，deepseek/2026-11-07，ESTIMATED，ACCEPT_AS_CANDIDATE）。
+
+### B. 批2 同意→委托→生成→落稿 UI 接线
+
+- **修复**：`dispatch-grant.ts` 新增 `ensureExternalProcessingRights`（ST-04 同意即落权：只动 external_processing 一项、仅当来源许可已 machine_read 才扩展、幂等追加证据不覆盖历史）；`dispatch-authorizations/route.ts` 落权失败如实 409（transfer_rights_not_available/rights_recording_unavailable）；`director-plans/route.ts` HOLD 响应带 detail；`production/route.ts` 修复 psql --csv 下 jsonb 字符串解析；`source-acquisition/route.ts` 未分类错误留痕具体 message、补 COMMONS_ORIGINAL_TOO_LARGE 白名单；`local-execution-authorizer.mjs` Worker 会话身份改为从 run 的 project owner 数据库事实解析（缺 owner 失败关闭，不再硬编码退回）。
+- **真实验证**：网页外发授权确认 → 导演委托 `2264b757`（1.00 USD 封顶，5 动作）→ deepseek 生成方案 A/B 共 4 次调用 **0.006278 USD**（receipts `30468252`/`80835318`/`4fba1f7b`/`7e7648dd`）→ 用户点采纳方案 A → 3 章分镜（寺名立地/筑路至寺/店铺成市）→ 落稿《静安寺：从寺名到市集》work `fe15af32` 修订2 `7c16dfda`（formal 封套，G5 机器签发审计 `008f0d45`，valid_until 2026-12-01，非自签）→ 网页投稿冻结快照 2026-11-25 23:10:23。画面候选素材面板出现（Wikimedia Commons CC 候选，如实标注许可）。
+
+### C. 批3 投稿→审批→发布→WATCH 串联（管理后台正式链修复）
+
+- **修复**：`formal-publication-chain.ts` 新增 `listFormalPendingReview()`（studio 投稿快照尚无编辑裁决的正式作品并入待签核队列）+ `listFormalSubmitted` 标题 coalesce；`publication.ts` `listPendingReview()` 改为 legacy+formal 并集（排除 formal 封套修订的 legacy 重复行）+ 新增 `listDecidedWorks()`；`gate-review.ts` `signWorkPublication` formal 分支裁决落库后即返回（不再误写 legacy decisions 掩盖已落库裁决）；新路由 `/api/works/decided`（operator 视角已裁决作品）；`AdminWorkbench.tsx` 作品审核四子页（待审核/待修改/已通过/已拒绝）+ 发布失败原因中文文案（含 publish_eligibility_hold「发布资格被门禁拦住，指针未动」）。
+- **真实验证（Owner 会话 20195689@qq.com，operator+reviewer ≠ creator，无自审）**：资格审核队列出现《静安寺》→ 点「签核通过」→ `publication.editorial_decisions` 落 APPOVED（operator 20195689@qq.com、G5 审计 `008f0d45` 绑定、幂等键 web-decide:…）→ 已通过子页出现「发布」按钮。
+- **测试**：5 个受影响单测文件 43/43 PASS（其中 `mab-m5-formal-chain-wiring` 4/4 经 `scripts/test-isolated.mjs --no-run` 重建过期测试库快照后通过——失败原因为测试库缺 `formal_revision_id` 列的环境过期，非代码）；全量 unit 116 文件 **833/833 PASS**；`pnpm --filter @mohen/web typecheck` 干净（`next lint` 为仓库既有交互式配置问题，与本次改动无关，如实记录）。
+
+### D. 批4 发布权利决策 + 精确发布 + WATCH 可见（全程闭环）
+
+- **权利门禁如实拦截**：首次点发布被 ST-09 门禁 HOLD——素材「上海地名志·静安寺」按 Owner 2026-11-08 授权 display=unknown（project_internal_research），`publish_exact_revision` 实时复核 `studio.private_work_rights_summary` 报 rights_display_not_allowed，**指针未动、无越权**（published_pointers 查询为空证）。
+- **Owner 决策（2026-11-26）**：经提问卡确认「批准展示（按金泽先例）」。落地 `scripts/approve-m5-jingan-display-right.mjs`（与金泽 `approve-m5-shinze-display-right.mjs` 同口径）：只改来源 `14fe1fef` 一条、只放开 display 一项、download/adapt/redistribute 保持 HOLD、追加式决策留痕 public_display_authorizations、隔离库守卫、幂等。
+- **发布成功**：重新点「发布」→ POST /api/works/fe15af32/publish 200 → pointer `4c8dfc98`（studio_revision_id `7c16dfda`，published_by 270bcecf，2026-11-26 07:13:15+08）。
+- **WATCH 可见（真实浏览器）**：《静安寺：从寺名到市集》成为 WATCH 首屏第 4 部已发布作品，3 章分镜 + 导演时码（00:00/00:09/00:19）+ 画面文字描述 + 诚实空态（「图文阅读 · 暂无可播放媒体」「本作暂未绑定可展示的原件扫描页」），与金泽/朱家角/每亩多少并列。
+- **费用（本批题材）**：0.003418（D02）+ 0.006278（导演）= **0.009696 USD**；累计（含 11-25 两题材 0.017140）= **0.026836 USD**，导演委托 1.00 封顶内、未新增付费来源、未扩大用途（external_processing 为 Owner 常设授权范围，display 为 Owner 2026-11-26 单独批准）。
+
+### E. 诚实缺口账（不冒充）
+
+- 静安寺作品未绑定可展示原件扫描页（画面为文字描述形态）——WATCH「依据」如实禁用；相关探索 X01 后置如实空态。
+- 本批推送受阻于网络代理不可达 → **PENDING_PUSH**；CI 核验待推送后执行（CI_BLOCKED 宿主问题仍具名）。
+- 权利放行仅 display 一项且仅静安寺一条来源；download/adapt/redistribute 仍 HOLD。
+
+- **下一动作**：网络恢复后推送 + CI 核验；Owner 用户式全程体验交付（localhost:3100，登录 20195689@qq.com 可直接看第 4 部作品）。
+
 ## 部署 / 费用 / 凭据
 
 - web staging：`mohen-agent-2-0-eytp0i3no-napoles1.vercel.app`（`dpl_Cqdz7vPYHrzQTn711rkGEh35rter`，target staging / VERCEL_ENV=preview，SHA `e563161c`）；上一部署 `mohen-agent-2-0-5g38pnq17-napoles1.vercel.app`（`48c9169b`）为本批 D05 真实续跑所用。authority production：`mohen-d00-authority.vercel.app`（未改动，仍 `48c9169b`；D04/D05 issue 未签名探测 401=路由存在）。提交作者须为 `xiezuojie03 <315303392+xiezuojie03-web@users.noreply.github.com>`，否则 Vercel 拒部署；网络经本地代理 `127.0.0.1:51081`。
-- 费用：本批 **0 次 Provider 调用 / 0 USD 新增**（D05 为确定性事实分支；`studio.execution_receipts` 仍 27 条、最新仍 2026-11-22T04:24:08Z）；委托 `3f5585d0…` 累计仍 **0.005989 USD**，未新增付费来源、未扩大用途。含令牌/签名的临时脚本均在 gitignored `work/scratch/`，未入 git。
+- 费用：本批（第三十二批）静安寺题材 **5 次 Provider 调用 / 0.009696 USD**（D02 材料观察 1 次 0.003418 + 导演 4 次 0.006278，receipt 对账见批文）；累计 **0.026836 USD**，导演委托 1.00 封顶内、未新增付费来源、未扩大用途。含令牌/签名的临时脚本均在 gitignored `work/scratch/`，未入 git。
 - 已知并发写入方：`main` 上有另一执行方传 `tasks/research/MERA-01/*`；推送被拒时 fetch + rebase，绝不 force push / reset / 新建分支。
 - 安全：密钥仅在 `.secrets/`（gitignored），签名私钥与机器签发连接不出部署（G5 在部署内签发）；G0—G5 均为独立机器评审签发，非自签。
 

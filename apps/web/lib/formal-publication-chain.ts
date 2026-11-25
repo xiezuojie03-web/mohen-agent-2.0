@@ -258,6 +258,34 @@ export async function formalWithdraw(
   }
 }
 
+/** ST-09 待签核队列：已冻结投稿快照、尚无编辑裁决的正式作品（Admin 资格审核）。 */
+export async function listFormalPendingReview(): Promise<Array<{
+  work_id: string; revision_id: string; title: string;
+  revision_no: string; created_at: string; content: string; formal: true;
+}>> {
+  const rows = await queryRows(
+    `select ss.work_id::text as work_id, ss.revision_id::text as revision_id,
+            coalesce(w.title, r.title) as title, ss.revision_no::text as revision_no,
+            ss.created_at::text as created_at, r.content::text as content
+       from studio.submission_snapshots ss
+       join studio.work_revisions r on r.revision_id = ss.revision_id
+       left join publication.works w on w.work_id = ss.work_id
+      where ss.revision_id not in (
+              select revision_id from publication.editorial_decisions
+             )
+      order by ss.created_at asc`
+  );
+  return rows.map((r) => ({
+    work_id: String(r.work_id),
+    revision_id: String(r.revision_id),
+    title: String(r.title ?? ""),
+    revision_no: String(r.revision_no),
+    created_at: String(r.created_at),
+    content: String(r.content ?? "{}"),
+    formal: true,
+  }));
+}
+
 /** List formal submissions still awaiting an editorial decision (Admin queue). */
 export async function listFormalSubmitted(): Promise<Array<{
   work_id: string; revision_id: string; title: string;
@@ -265,10 +293,11 @@ export async function listFormalSubmitted(): Promise<Array<{
 }>> {
   const rows = await queryRows(
     `select ss.work_id::text as work_id, ss.revision_id::text as revision_id,
-            r.title, ss.revision_no::text as revision_no,
+            coalesce(w.title, r.title) as title, ss.revision_no::text as revision_no,
             ss.created_at::text as created_at, r.content::text as content
        from studio.submission_snapshots ss
        join studio.work_revisions r on r.revision_id = ss.revision_id
+       left join publication.works w on w.work_id = ss.work_id
       where ss.revision_id not in (
               select revision_id from publication.editorial_decisions
              )

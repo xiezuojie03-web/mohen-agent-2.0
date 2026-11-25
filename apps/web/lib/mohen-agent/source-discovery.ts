@@ -126,9 +126,11 @@ export async function discoverExternalSources(
   const fallbackTopic = entities[0] || intent.slice(0, 20);
 
   // Y02：多渠道。上海图书馆内部串行（对方限流），跨渠道并行。
+  // Commons 至少 12 条：太少时可能整批超大或非 BY-SA 3.0，用户无从可选（上限仍受 gsrlimit ≤20 钳制）。
+  const commonsBreadth = Math.max(maxPerChannel, 12);
   const [shl, commons, wikisource] = await Promise.all([
     searchShanghaiLibraryMaterials(terms, maxPerChannel, { pageSize: 10, maxPagesPerTerm: 1 }),
-    searchCommonsForTopic(fallbackTopic, entityTerms.slice(0, 2), maxPerChannel),
+    searchCommonsForTopic(fallbackTopic, entityTerms.slice(0, 2), commonsBreadth),
     searchWikisourceMaterials(terms, maxPerChannel),
   ]);
 
@@ -163,17 +165,23 @@ export async function discoverExternalSources(
     ...wikisource.materials,
   ]);
   // Y06：题名命中的候选优先，仅正文偶遇检索词的限量保留在后面。
+  // 图像单独放宽：题名/描述常用英文（如「Shanghai - Yu Garden - 0035」），无法与
+  // 中文检索词子串命中，却是同一检索词在 Commons 全文索引里的前列结果；图像无法
+  // 靠文字判定相关性，须由用户目验，且许可/体积差异需要多张可选，不能只留 2 张。
+  // 文本渠道维持 2 条，防判决书一类全文噪声灌满首屏。
   const matchTerms = [...terms, ...entityTerms];
   const titled = merged.filter((m) => relevanceTier(m, matchTerms) === "title");
   const bodyOnly = merged.filter((m) => relevanceTier(m, matchTerms) === "body-only");
-  const leads = [...titled, ...bodyOnly.slice(0, 2)];
+  const bodyImages = bodyOnly.filter((m) => m.source_type === "image" || m.carrier_type === "image");
+  const bodyText = bodyOnly.filter((m) => !(m.source_type === "image" || m.carrier_type === "image"));
+  const leads = [...titled, ...bodyImages.slice(0, 12), ...bodyText.slice(0, 2)];
   if (bodyOnly.length > 0) {
     trace.push({
       channel: "relevance-rank",
       label: "相关性优先级（Y06）",
       status: "ok",
       count: leads.length,
-      note: `题名/图像内容命中 ${titled.length} 条；仅正文或描述偶遇检索词 ${bodyOnly.length} 条，降级并最多保留 2 条`,
+      note: `题名/图像内容命中 ${titled.length} 条；仅描述偶遇检索词的图像 ${bodyImages.length} 条（最多 12）、仅正文偶遇的文本 ${bodyText.length} 条（最多 2），降级排后`,
     });
   }
 

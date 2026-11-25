@@ -401,13 +401,22 @@ export async function retrieveMaterials(
   opts: RetrieveOptions = {}
 ): Promise<RetrieveResult> {
   const nonemptyTerms = terms.filter((term) => term.trim().length > 0);
-  const safeTerms = nonemptyTerms.slice(0, 8);
+  // 单字检索词（量词/动词切分残片，如「一部」剩「部」、「想做」剩「做」）在子串匹配里
+  // 只制造噪声命中：豫园任务实测「部」命中无关金泽材料的「西南部」，把不合格读模型
+  // 误判成 MATCHED_CURRENT_G5_READ_MODEL，遮蔽 D00 来源发现。单字词不能作为
+  // 合格 L5 读模型的命中依据（通名靠别名对象携带，不靠裸单字扫描）。
+  const searchableTerms = nonemptyTerms.filter((term) => term.length > 1);
+  const safeTerms = searchableTerms.slice(0, 8);
   const lim = Math.max(1, Math.min(MAX_LIMIT, Math.trunc(limit)));
   // town/others 保留入参契约；L5 发布成果已由 G5 门禁与上游资格保证归属，不再做镇名排除。
   void opts.town;
   void opts.excludeTowns;
   try {
     const {consumer,purpose,scope}=assertQualificationContext(opts.qualification);
+    if (!safeTerms.length) {
+      // 不要退化成 terms='' 的全量枚举：没有可检索词时如实标记未检索。
+      return { materials: [], degraded: false, coverage: "NOT_SEARCHED" };
+    }
     const rows = await queryRows(SQL.replace("__LIMIT__", String(lim)), {
       terms: safeTerms.join("|"),
       consumer,purpose_namespace:purpose.namespace,purpose_code:purpose.code,purpose_version:purpose.version,
@@ -429,11 +438,9 @@ export async function retrieveMaterials(
         return m;
       })
       .filter((m): m is Material => m !== null);
-    const coverage = !safeTerms.length
-      ? "NOT_SEARCHED"
-      : rows.length >= lim || nonemptyTerms.length > safeTerms.length
-        ? "PARTIAL"
-        : "COMPLETE";
+    const coverage = rows.length >= lim || searchableTerms.length > safeTerms.length
+      ? "PARTIAL"
+      : "COMPLETE";
     return { materials, degraded: false, coverage };
   } catch (e) {
     // 诊断留痕：库不可用必须有据可查，不许静默降级后假装「查过了」

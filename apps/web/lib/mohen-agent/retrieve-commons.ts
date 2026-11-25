@@ -130,7 +130,9 @@ export async function searchCommonsMaterials(
         carrier_type: "image",
         provenance_status: "candidate",
         content_availability: "image_scan",
-        url: info.thumburl || info.url || "",
+        // 获取适配器只接受原图 URL（/wikipedia/commons/<hash>/<file>），
+        // thumb 路径会被 COMMONS_LOCATOR_UNSUPPORTED 拒绝——线索必须携带可复取的原图地址。
+        url: info.url || info.thumburl || "",
         publisher: "Wikimedia Commons",
         license: license || "未标注（以文件页为准）",
         rights_clear: license ? "per_item" : "unknown",

@@ -6,7 +6,8 @@ import { queryRows, queryValue, run } from "@mohen/data-access";
 import { reflowWorkToAssets } from "./asset-reflow";
 import { requireIndependentWorkPublicationG5, requireCurrentWorkConsumerQualification } from "./work-publish-qualification";
 import { PUBLISHED_WORKS_SQL, STUDIO_REVISION_WATCHABLE_SQL, LEGACY_PUBLISHED_WORKS_SQL, isAbsentStudioPublicationSchema } from "./publication-watch-sql.mjs";
-import { formalSubmit, formalPublish, formalWithdraw, getFormalRevision, getLatestFormalRevisionByWork, listFormalSubmitted } from "./formal-publication-chain";
+import { formalSubmit, formalPublish, formalWithdraw, getFormalRevision, getLatestFormalRevisionByWork, listFormalSubmitted, listFormalPendingReview } from "./formal-publication-chain";
+import { ensureStudioWorkQualification } from "./studio-formal-qualification";
 import { createHash, randomUUID } from "node:crypto";
 
 const canonicalUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id) ? id.toLowerCase() : null;
@@ -141,7 +142,7 @@ export async function createWork(title: string, creator: string, ownerUserId: st
 
 export type SubmissionResult =
   | { ok: true; work_id: string; revision_id: string; status: "submitted"; formal?: true }
-  | { ok: false; reason: "revision_required" | "revision_not_submittable" | "knowledge_not_qualified" | "rights_not_allowed" | "not_latest_revision" | "submission_unavailable" };
+  | { ok: false; reason: "revision_required" | "revision_not_submittable" | "knowledge_not_qualified" | "rights_not_allowed" | "not_latest_revision" | "submission_unavailable" | "qualification_unavailable" };
 
 /** Submit a specific saved revision; legacy callers resolve the latest revision once.
  *  Formal objects (studio envelope → authoritative body) travel the ST-08 snapshot chain. */
@@ -158,6 +159,12 @@ export async function submitWork(
   if (!rid) {
     return { ok: false, reason: "revision_required" };
   }
+
+  // Studio works must carry their formal qualification chain (plan envelope +
+  // plan G5 + work envelope + work revision G5) before any submission snapshot.
+  // Legacy revisions pass through unchanged; a missing prerequisite fails closed.
+  const qualification = await ensureStudioWorkQualification(rid);
+  if (!qualification.ok) return { ok: false, reason: "qualification_unavailable" };
 
   // Formal chain: the exact revision has a studio envelope bound to the
   // authoritative body. Freeze an immutable ST-08 submission snapshot.
@@ -464,8 +471,55 @@ export async function listWatchEligible(): Promise<PublishedWork[]> {
 }
 
 /** 读待作品 Reviewer 审核的submitted修订；已作approved/rejected决定的精确修订不得重复在待审队列展示。 */
-export function listPendingReview() {
+export interface DecidedWork extends SubmittedWork {
+  decision: "APPROVED" | "CHANGES_REQUESTED" | "REJECTED";
+  decision_at: string;
+  /** 发布指针当前是否正指向该修订（已发布 = 不再需要运营发布按钮）。 */
+  published: boolean;
+}
+
+/** 运营视角：已有编辑裁决（ST-09 editorial_decisions）的作品修订，按作品取最新一条裁决。
+ *  供 Admin「作品审核」的待修改/已通过/已拒绝子页使用——已签核作品必须仍可被运营发布。 */
+export function listDecidedWorks() {
   return queryRows(
+    `select distinct on (d.work_id)
+            d.work_id::text as work_id, d.revision_id::text as revision_id,
+            r.title as title, r.revision_no::text as revision_no,
+            ss.created_at::text as created_at, r.content::text as content,
+            d.decision as decision, d.created_at::text as decision_at,
+            exists (
+              select 1 from publication.published_pointers p
+               where p.work_id = d.work_id and p.studio_revision_id = d.revision_id
+            ) as published
+       from publication.editorial_decisions d
+       join studio.work_revisions r on r.revision_id = d.revision_id
+       join studio.submission_snapshots ss on ss.revision_id = d.revision_id
+      order by d.work_id, d.created_at desc`
+  ).then((rows) =>
+    rows.map((r) => {
+      const pub = r.published as unknown;
+      const decision = String(r.decision ?? "");
+      return {
+        work_id: String(r.work_id),
+        revision_id: String(r.revision_id),
+        title: String(r.title ?? ""),
+        revision_no: String(r.revision_no),
+        created_at: String(r.created_at),
+        content: String(r.content ?? "{}"),
+        decision:
+          decision === "APPROVED" || decision === "CHANGES_REQUESTED" || decision === "REJECTED"
+            ? decision
+            : "APPROVED",
+        decision_at: String(r.decision_at),
+        // data-access 可能把 pg boolean 回成文本 "t"/"f"，必须归一成真布尔
+        published: pub === true || pub === "t" || pub === "true",
+      } as DecidedWork;
+    })
+  );
+}
+
+export async function listPendingReview() {
+  const legacy = await queryRows(
     `select w.work_id::text as work_id, r.revision_id::text as revision_id,
             r.title as title, r.revision_no::text as revision_no, r.content::text as content,
             r.created_at::text as created_at
@@ -478,8 +532,18 @@ export function listPendingReview() {
            and d.revision_id = r.revision_id
            and d.decision in ('approved','rejected')
        )
+       and not exists (
+         select 1 from studio.work_revisions e
+         where e.revision_id = r.revision_id and e.formal_revision_id = e.revision_id
+       )
      order by r.created_at asc`
   );
+  // 正式链投稿（studio 快照）同样需要独立 Reviewer 签核；编辑裁决前的
+  // formal 修订不在 legacy 表 submitted 队列里，必须并入待签核队列。
+  const formal = await listFormalPendingReview();
+  const rows = [...legacy, ...formal];
+  rows.sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)));
+  return rows;
 }
 
 /** 读待审作品（Admin 审核队列）：legacy submitted 修订 + ST-08 正式投稿快照。 */

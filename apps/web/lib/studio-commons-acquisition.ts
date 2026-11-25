@@ -8,7 +8,7 @@ import { createPrivateSourceRegistrationRepository } from "../../../packages/dat
 const provider = "wikimedia-commons";
 const licenseUrl = "https://creativecommons.org/licenses/by-sa/3.0/";
 const contentType = "image/jpeg";
-const rights = { access_view: "allowed", download: "allowed", retain: "allowed" };
+const rights = { access_view: "allowed", download: "allowed", retain: "allowed", machine_read: "allowed" };
 
 function commonsFile(value: string) {
   const url = new URL(value);
@@ -23,7 +23,10 @@ function commonsFile(value: string) {
 
 async function boundedFetch(url: string, limit: number, accept: string) {
   const stage = accept === "application/json" ? "METADATA" : "ORIGINAL";
-  const response = await fetch(url, { redirect: "error", cache: "no-store", signal: AbortSignal.timeout(15000),
+  // 原件上限 10MB：实测代理链路 ~220KB/s，10MB 需 ~47s；60s 余量太小会偶发超时。
+  // 元数据保持 15s。
+  const timeoutMs = stage === "ORIGINAL" ? 120000 : 15000;
+  const response = await fetch(url, { redirect: "error", cache: "no-store", signal: AbortSignal.timeout(timeoutMs),
     headers: { Accept: accept, "User-Agent": "MoHenStudio/1.0 (https://github.com/xiezuojie03-web)" } });
   if (!response.ok) throw new Error("COMMONS_" + stage + "_HTTP_" + response.status);
   if (!response.body) throw new Error("COMMONS_" + stage + "_BODY_MISSING");
@@ -72,8 +75,11 @@ async function obtainCommonsOriginal(locator: string) {
   const size = item?.size;
   const expectedSha1 = item?.sha1;
   if (item?.mime !== contentType || !item.url || commonsFile(item.url).original !== file.original ||
-      typeof size !== "number" || !Number.isSafeInteger(size) || size < 3 || size > MAX_ORIGINAL_BYTES ||
-      typeof expectedSha1 !== "string" || !/^[a-f0-9]{40}$/i.test(expectedSha1))
+      typeof size !== "number" || !Number.isSafeInteger(size) || size < 3)
+    throw new Error("COMMONS_ORIGINAL_NOT_VERIFIED");
+  // 超过私有原件保存上限的文件单独报码：让用户知道是体积上限，而不是字节损坏。
+  if (size > MAX_ORIGINAL_BYTES) throw new Error("COMMONS_ORIGINAL_TOO_LARGE");
+  if (typeof expectedSha1 !== "string" || !/^[a-f0-9]{40}$/i.test(expectedSha1))
     throw new Error("COMMONS_ORIGINAL_NOT_VERIFIED");
   const bytes = await boundedFetch(file.original, size, contentType);
   if (bytes.length !== size || bytes.readUIntBE(0, 3) !== 0xffd8ff ||
@@ -82,6 +88,9 @@ async function obtainCommonsOriginal(locator: string) {
 
   const evidence = {
     schema: "mohen.commons-source-license.v1", provider, attribution,
+    // G0 rights_by_operation（CP2-A 权利词典）要求显式权利依据：这里是 Commons
+    // 文件页声明的 CC BY-SA 3.0 许可本身，不是项目自授。
+    basis: "wikimedia_commons_cc_by_sa_3_0",
     license: "CC BY-SA 3.0", license_url: licenseUrl,
     file_page: `https://commons.wikimedia.org/w/index.php?oldid=${page?.lastrevid}`,
     file_url: file.original, commons_sha1: expectedSha1, file_timestamp: item.timestamp,

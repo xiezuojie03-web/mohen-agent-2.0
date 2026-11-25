@@ -50,7 +50,7 @@ export async function POST(req: Request) {
           sourceIds, maxCalls: 2,
         });
         if (!("grant" in outcome))
-          return NextResponse.json({ ok: false, state: "HOLD", reason: outcome.reason },
+          return NextResponse.json({ ok: false, state: "HOLD", reason: outcome.reason, detail: outcome.detail },
             { status: 409, headers: { "Cache-Control": "no-store" } });
         const read = await readStudioResearchProject(projectId, sessionToken, { persistReadingNotes: false });
         const facts = read.materials.map((m) => `${m.snippet}（出处：${m.sourceRef}）`).filter(Boolean);

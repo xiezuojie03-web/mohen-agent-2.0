@@ -311,8 +311,12 @@ export async function selectResearchAcquisitionCandidate(taskId: string, ownerUs
       receipt.project_id === selection.project_id && receipt.root_task_id === taskId;
   };
   if (matches(checkpoint.sourceAcquisitionSelection)) return { ok: true, selection, replayed: true } as const;
-  if (checkpoint.sourceAcquisitionSelection != null)
-    return { ok: false, reason: "candidate_selection_already_exists" } as const;
+  if (checkpoint.sourceAcquisitionSelection != null) {
+    // 尚未取得原件回执前允许改选：用户可能选中了拿不到原件的候选（如未配置凭据的来源），
+    // 不能把委托锁死在一条无法获取的来源上。一旦已有获取回执，选择即冻结，审计轨迹稳定。
+    const acquired = checkpoint.commonsOriginal ?? checkpoint.shlTextOriginal;
+    if (acquired) return { ok: false, reason: "candidate_selection_frozen_after_acquisition" } as const;
+  }
 
   const written = await queryRows(
     `update public.research_tasks t

@@ -35,6 +35,22 @@ export async function signWorkPublication(
   if (!reviewer || reviewer === "unknown-reviewer")
     return { ok: false, reason: "reviewer_identity_required" };
 
+  // Formal chain: ST-09 editorial decision FIRST. It enforces no-self-review,
+  // submission snapshot and current G5 inside the DB. A refusal must leave no
+  // work-level decision behind — otherwise a failed self-review could still
+  // land an "approved" row and hide the work from the pending queue.
+  const formal = await getFormalRevision(revisionId, workId);
+  if (formal) {
+    const mapped = decision === "approved" ? "APPROVED" : "REJECTED";
+    const res = await formalDecide(workId, revisionId, mapped, reviewer, note ?? "");
+    if (!res.ok) return { ok: false, reason: res.reason };
+    // 正式链的编辑裁决就是作品级 Reviewer 决策；legacy 的
+    // control.work_publication_decisions 只服务于 publication.work_revisions
+    // submitted 行（纯 formal 修订在 legacy 表是 draft），再写会失败并
+    // 掩盖已落库的编辑裁决。
+    return { ok: true };
+  }
+
   // Atomic INSERT ... SELECT pins the decision to a currently submitted
   // revision owned by THIS work. Never store a null or unrelated revision.
   // This is a work-level Reviewer decision, NOT professional independent G5.
@@ -54,17 +70,6 @@ export async function signWorkPublication(
       { wid: workId }
     );
     return { ok: false, reason: existing ? "revision_not_submitted" : "work_not_found" };
-  }
-
-  // Formal chain: mirror the work-level sign-off into ST-09 editorial_decisions
-  // so publish_exact_revision can find an APPROVED decision. The independent
-  // Reviewer identity is used as operator; the DB refuses self-review and
-  // re-verifies current G5 + rights. A failure is surfaced (never silently faked).
-  const formal = await getFormalRevision(revisionId, workId);
-  if (formal) {
-    const mapped = decision === "approved" ? "APPROVED" : "REJECTED";
-    const res = await formalDecide(workId, revisionId, mapped, reviewer, note ?? "");
-    if (!res.ok) return { ok: false, reason: res.reason };
   }
   return { ok: true };
 }

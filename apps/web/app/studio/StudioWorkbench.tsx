@@ -292,6 +292,8 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
         COMMONS_LOCATOR_UNSUPPORTED:"此候选的原件入口不受支持。",
         COMMONS_LICENSE_NOT_VERIFIED:"该文件的署名或许可未通过核验。",
         COMMONS_ORIGINAL_NOT_VERIFIED:"原件字节未通过文件版本校验。",
+        COMMONS_ORIGINAL_TOO_LARGE:"该原件体积超过 10MB 保存上限，请改选其它候选。",
+        COMMONS_SOURCE_TOO_LARGE:"下载体积超过上限，未保存；请改选其它候选。",
         ORIGINAL_IDEMPOTENCY_CONFLICT:"原件版本已变化，请核对已保存的记录。",
         SHL_LOCATOR_UNSUPPORTED:"此线索不含可复取的正文字节入口。",
         SHL_KEY_MISSING:"来源获取服务未配置访问凭据，暂不能保存原件。",
@@ -312,17 +314,24 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
 
   async function selectSource(taskId: string, candidateId: string) {
     setSourceChoices(previous => previous?.taskId === taskId ? {...previous, saving: true, error: null} : previous);
+    let errorMessage = "未能确认候选选择。可以重试同一候选。";
     try {
       const response = await fetch(`/api/studio/research-tasks/${encodeURIComponent(taskId)}/source-selection`, {
         method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({candidate_id: candidateId}),
       });
-      const body = await response.json();
-      if (!response.ok || body.ok !== true || body.selection?.candidate_id !== candidateId) throw new Error();
+      const body = await response.json() as { ok?: boolean; reason?: string; selection?: { candidate_id?: string } };
+      if (!response.ok || body.ok !== true || body.selection?.candidate_id !== candidateId) {
+        const known: Record<string, string> = {
+          candidate_selection_frozen_after_acquisition: "该委托已保存原件回执，来源选择已冻结，不能改选。",
+        };
+        if (body.reason && known[body.reason]) errorMessage = known[body.reason];
+        throw new Error();
+      }
       setSourceChoices(previous => previous?.taskId === taskId
         ? {...previous, selectedId: candidateId, saving: false} : previous);
     } catch {
       setSourceChoices(previous => previous?.taskId === taskId
-        ? {...previous, saving: false, error: "未能确认候选选择。可以重试同一候选。"} : previous);
+        ? {...previous, saving: false, error: errorMessage} : previous);
     }
   }
 
@@ -652,14 +661,20 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
           ttl_minutes: 30,
         }),
       });
-      const json = (await res.json()) as { ok?: boolean; delegation_id?: string };
+      const json = (await res.json()) as { ok?: boolean; delegation_id?: string; reason?: string; blocked_sources?: Array<{ title?: string }> };
       if (res.ok && json.ok && json.delegation_id) {
         setDelegationId(json.delegation_id);
         setNeedsAuthorization(false);
         setPlansError(null);
         return json.delegation_id;
       }
-      setPlansError("授权登记失败，未发起任何外部调用。请重试。");
+      const reasons: Record<string,string> = {
+        project_source_unbound: "当前项目还没有绑定已核验的史料来源，不能外发。请先在研究里选择来源并保存原件。",
+        transfer_rights_not_available: `有来源的许可不支持外发处理（权利不明不放行）${json.blocked_sources?.length ? `：${json.blocked_sources.map(s => s.title ?? "").join("、")}` : ""}，未登记委托。`,
+        rights_recording_unavailable: "外发权利记录暂时不可用，未登记任何委托；可稍后重试。",
+        task_binding_invalid: "这次外发无法绑定当前研究任务，未登记委托。",
+      };
+      setPlansError(`${reasons[json.reason ?? ""] ?? "授权登记失败，未发起任何外部调用。请重试。"}`);
       return null;
     } catch {
       setPlansError("授权登记失败，未发起任何外部调用。请重试。");
@@ -685,6 +700,7 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
       const json = (await res.json()) as {
         ok?: boolean;
         reason?: string;
+        detail?: string;
         plan_id?: string;
         planA?: DirectorPlan;
         planB?: DirectorPlan;
@@ -701,7 +717,9 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
         setPlansError(
           json.reason === "no_material_or_llm"
             ? "没有可用的真实材料或模型，暂时生成不了方案。"
-            : "生成方案失败，请重试。"
+            : json.reason === "TRANSFER_DENIED"
+              ? `有来源的外发处理权尚未核准（权利不明不放行），未发起任何外部调用。${json.detail ? `详情：${json.detail}` : ""}`
+              : "生成方案失败，请重试。"
         );
       }
     } catch {
@@ -1132,7 +1150,7 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
                     {activeSourceChoices.selectedId === candidate.id ? (
                       <>
                         <p>已选择，待核验获取条件</p>
-                        {candidate.provider === "wikimedia-commons" && (
+                        {(candidate.provider === "wikimedia-commons" || candidate.provider === "shanghai-library") && (
                           <button type="button" className="studio__link-btn"
                             disabled={sourceAcquisition?.taskId === activeSourceChoices.taskId && sourceAcquisition.busy}
                             onClick={() => void acquireSource(activeSourceChoices.taskId)}>核验并保存原件</button>
@@ -1140,13 +1158,14 @@ export default function StudioWorkbench({ d00TaskId }: { d00TaskId?: string } = 
                         {sourceAcquisition?.taskId === activeSourceChoices.taskId &&
                           <p role="status">{sourceAcquisition.message}</p>}
                       </>
-                    ) : activeSourceChoices.selectedId === null ? (
+                    ) : (
                       <button type="button" className="studio__link-btn"
                         disabled={activeSourceChoices.saving}
                         onClick={() => void selectSource(activeSourceChoices.taskId, candidate.id)}>
-                        {activeSourceChoices.saving ? "正在保存选择…" : "选择来源候选"}
+                        {activeSourceChoices.saving ? "正在保存选择…"
+                          : activeSourceChoices.selectedId === null ? "选择来源候选" : "改选这条来源"}
                       </button>
-                    ) : null}
+                    )}
                   </div>
                 ))}
                 {activeSourceChoices.error && <p role="status">{activeSourceChoices.error}</p>}

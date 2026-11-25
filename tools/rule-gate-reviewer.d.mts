@@ -16,3 +16,30 @@ export declare function runGateReview(input: {
   attestStageBinding?: boolean;
   dryRun?: boolean;
 }): Promise<GateReviewOutcome>;
+
+export interface GateDecideInput {
+  candidateId: string;
+  requestId: string;
+  result: string;
+  ruleVersion: string;
+  validUntil: string;
+  receipt: Record<string, unknown>;
+  expectedAuditId: string | null;
+}
+export interface GateReviewRequest {
+  gate: string;
+  dryRun?: boolean;
+  candidateId?: string | null;
+  stageRequest?: unknown;
+}
+export interface RuleGateReviewer {
+  review(input: GateReviewRequest): Promise<GateReviewOutcome>;
+}
+export declare function createRuleGateReviewer(deps: {
+  query: (sql: string, params?: Record<string, unknown>) => Promise<unknown[]>;
+  decide: (d: GateDecideInput) => Promise<string>;
+  projectId?: string;
+  consumer?: string;
+  attestStageOutput?: unknown;
+  log?: (line: string) => void;
+}): RuleGateReviewer;

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { ProductionRelationSummary } from "../../lib/read-model-bridge";
-import type { SubmittedWork } from "../../lib/publication";
+import type { DecidedWork, SubmittedWork } from "../../lib/publication";
 import type { Beat } from "../../lib/studio-creation";
 import KnowledgeAssetInspector from "./KnowledgeAssetInspector";
 import ExecutionReadiness from './ExecutionReadiness';
@@ -72,6 +72,10 @@ export default function AdminWorkbench({ summary }: { summary: ProductionRelatio
   const [submitted, setSubmitted] = useState<SubmittedWork[]>([]);
   const [submittedLoading, setSubmittedLoading] = useState(false);
 
+  // 已有编辑裁决（operator）：待修改 / 已通过待发布 / 已拒绝
+  const [decided, setDecided] = useState<DecidedWork[]>([]);
+  const [decidedLoading, setDecidedLoading] = useState(false);
+
   // 资格审核队列（reviewer）
   const [pending, setPending] = useState<PendingWork[]>([]);
   const [pendingLoading, setPendingLoading] = useState(false);
@@ -118,6 +122,23 @@ export default function AdminWorkbench({ summary }: { summary: ProductionRelatio
       setSubmitted([]);
     } finally {
       setSubmittedLoading(false);
+    }
+  }, []);
+
+  const refreshDecided = useCallback(async () => {
+    setDecidedLoading(true);
+    try {
+      const res = await fetch("/api/works/decided");
+      if (res.ok) {
+        const json = (await res.json()) as { works?: DecidedWork[] };
+        setDecided(json.works ?? []);
+      } else {
+        setDecided([]);
+      }
+    } catch {
+      setDecided([]);
+    } finally {
+      setDecidedLoading(false);
     }
   }, []);
 
@@ -177,8 +198,11 @@ export default function AdminWorkbench({ summary }: { summary: ProductionRelatio
   }, [refreshUser]);
 
   useEffect(() => {
-    if (isOperator) void refreshSubmitted();
-  }, [isOperator, refreshSubmitted]);
+    if (isOperator) {
+      void refreshSubmitted();
+      void refreshDecided();
+    }
+  }, [isOperator, refreshSubmitted, refreshDecided]);
 
   useEffect(() => {
     if (isReviewer) void refreshPending();
@@ -257,9 +281,10 @@ export default function AdminWorkbench({ summary }: { summary: ProductionRelatio
     if (res.ok && json.ok) {
       setFeedback({ ok: true, text: decision === "approved" ? "已签核通过，可交给运营发布。" : "已签核拒绝。" });
     } else {
-      setFeedback({ ok: false, text: json.reason === "reviewer_forbidden" ? "无独立审核权限" : "签核失败" });
+      setFeedback({ ok: false, text: json.reason === "reviewer_forbidden" ? "无独立审核权限" : json.reason === "operator_conflict_self_review" ? "不能签核自己创作的作品（不代签、不自审）" : "签核失败" });
     }
     await refreshPending();
+    if (isOperator) await refreshDecided();
   }
 
   async function publish(workId: string) {
@@ -273,10 +298,16 @@ export default function AdminWorkbench({ summary }: { summary: ProductionRelatio
         reviewer_not_approved: "独立审核者尚未签核通过，暂不能发布。",
         no_submitted_revision: "没有待审修订。",
         no_provenance_refs: "作品缺少来源引用，暂不能发布。",
+        decision_required: "该修订还没有通过编辑裁决，请先在资格审核里签核。",
+        publish_eligibility_hold: "发布资格被门禁拦住（知识资格或权利状态变化），指针未动。",
+        knowledge_not_current: "该修订的当前知识资格已失效，需重新走资格签发。",
+        submission_required: "该修订缺少投稿冻结快照，不能发布。",
+        operator_conflict_self_review: "发布人不能是作品创作者本人，请换运营账号操作。",
       };
       setFeedback({ ok: false, text: zh[json.reason ?? ""] ?? "发布失败" });
     }
     await refreshSubmitted();
+    await refreshDecided();
   }
 
   async function toggleUserStatus(userId: string, status: "active" | "disabled") {
@@ -486,40 +517,119 @@ export default function AdminWorkbench({ summary }: { summary: ProductionRelatio
                       </button>
                     ))}
                   </div>
-                  {submittedLoading ? (
-                    <div className="admin__empty">加载中…</div>
-                  ) : submitted.length === 0 ? (
-                    <div className="admin__empty">
-                      暂无投稿作品。
-                      <br />
-                      作品在创作 Studio 里“提交审核”后，会进入这里等待处理。
-                    </div>
-                  ) : (
-                    <div className="admin__assets">
-                      {submitted.map((w) => (
-                        <div className="admin__asset" key={w.work_id}>
-                          <div className="admin__asset-head">
-                            <span className="admin__asset-title">{w.title}</span>
-                            <button className="admin__send" onClick={() => void publish(w.work_id)}>
-                              发布
-                            </button>
-                          </div>
-                          <div className="admin__asset-meta">版本 {w.revision_no} · 提交于 {w.created_at}</div>
-                          {parseBeats(w.content).length > 0 && (
-                            <div className="admin__asset-beats">
-                              {parseBeats(w.content).map((b, i) => (
-                                <div className="admin__asset-beat" key={i}>
-                                  <strong>
-                                    {String(i + 1).padStart(2, "0")} · {b.title}
-                                  </strong>
-                                  <span>{b.narration}</span>
-                                </div>
-                              ))}
+                  {reviewTab === 0 && (
+                    submittedLoading ? (
+                      <div className="admin__empty">加载中…</div>
+                    ) : submitted.length === 0 ? (
+                      <div className="admin__empty">
+                        暂无投稿作品。
+                        <br />
+                        作品在创作 Studio 里“提交审核”后，会进入这里等待处理。
+                      </div>
+                    ) : (
+                      <div className="admin__assets">
+                        {submitted.map((w) => (
+                          <div className="admin__asset" key={w.work_id}>
+                            <div className="admin__asset-head">
+                              <span className="admin__asset-title">{w.title}</span>
+                              <span className="admin__badge">待独立审核者签核</span>
                             </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
+                            <div className="admin__asset-meta">版本 {w.revision_no} · 提交于 {w.created_at}</div>
+                            <p className="admin__asset-text">独立审核者在“资格审核”签核通过后，可到「已通过」子页发布。</p>
+                            {parseBeats(w.content).length > 0 && (
+                              <div className="admin__asset-beats">
+                                {parseBeats(w.content).map((b, i) => (
+                                  <div className="admin__asset-beat" key={i}>
+                                    <strong>
+                                      {String(i + 1).padStart(2, "0")} · {b.title}
+                                    </strong>
+                                    <span>{b.narration}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  )}
+
+                  {reviewTab === 1 && (
+                    decidedLoading ? (
+                      <div className="admin__empty">加载中…</div>
+                    ) : decided.filter((w) => w.decision === "CHANGES_REQUESTED").length === 0 ? (
+                      <div className="admin__empty">暂无退回修改的作品。</div>
+                    ) : (
+                      <div className="admin__assets">
+                        {decided.filter((w) => w.decision === "CHANGES_REQUESTED").map((w) => (
+                          <div className="admin__asset" key={w.work_id}>
+                            <div className="admin__asset-head">
+                              <span className="admin__asset-title">{w.title}</span>
+                              <span className="admin__badge">待修改</span>
+                            </div>
+                            <div className="admin__asset-meta">版本 {w.revision_no} · 裁决于 {w.decision_at}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  )}
+
+                  {reviewTab === 2 && (
+                    decidedLoading ? (
+                      <div className="admin__empty">加载中…</div>
+                    ) : decided.filter((w) => w.decision === "APPROVED").length === 0 ? (
+                      <div className="admin__empty">暂无已通过签核的作品。</div>
+                    ) : (
+                      <div className="admin__assets">
+                        {decided.filter((w) => w.decision === "APPROVED").map((w) => (
+                          <div className="admin__asset" key={w.work_id}>
+                            <div className="admin__asset-head">
+                              <span className="admin__asset-title">{w.title}</span>
+                              {w.published ? (
+                                <span className="admin__badge">已发布</span>
+                              ) : (
+                                <button className="admin__send" onClick={() => void publish(w.work_id)}>
+                                  发布
+                                </button>
+                              )}
+                            </div>
+                            <div className="admin__asset-meta">版本 {w.revision_no} · 签核于 {w.decision_at}</div>
+                            {parseBeats(w.content).length > 0 && (
+                              <div className="admin__asset-beats">
+                                {parseBeats(w.content).map((b, i) => (
+                                  <div className="admin__asset-beat" key={i}>
+                                    <strong>
+                                      {String(i + 1).padStart(2, "0")} · {b.title}
+                                    </strong>
+                                    <span>{b.narration}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  )}
+
+                  {reviewTab === 3 && (
+                    decidedLoading ? (
+                      <div className="admin__empty">加载中…</div>
+                    ) : decided.filter((w) => w.decision === "REJECTED").length === 0 ? (
+                      <div className="admin__empty">暂无被拒绝的作品。</div>
+                    ) : (
+                      <div className="admin__assets">
+                        {decided.filter((w) => w.decision === "REJECTED").map((w) => (
+                          <div className="admin__asset" key={w.work_id}>
+                            <div className="admin__asset-head">
+                              <span className="admin__asset-title">{w.title}</span>
+                              <span className="admin__badge">已拒绝</span>
+                            </div>
+                            <div className="admin__asset-meta">版本 {w.revision_no} · 裁决于 {w.decision_at}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )
                   )}
                 </>
               )}

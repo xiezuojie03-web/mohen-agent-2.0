@@ -1,8 +1,10 @@
 import { beforeEach, expect, it, vi } from "vitest";
 
 const db = vi.hoisted(() => ({ queryRows: vi.fn(), queryValue: vi.fn(), run: vi.fn() }));
+const qual = vi.hoisted(() => ({ ensureStudioWorkQualification: vi.fn() }));
 vi.mock("../../packages/data-access/src/index.mjs", () => db);
 vi.mock("../../apps/web/lib/formal-publication-chain", () => ({ getFormalRevision: vi.fn(async () => null), formalSubmit: vi.fn() }));
+vi.mock("../../apps/web/lib/studio-formal-qualification", () => ({ ensureStudioWorkQualification: qual.ensureStudioWorkQualification }));
 import { submitWork } from "../../apps/web/lib/publication";
 
 const work = "9ab37577-1789-4e5a-9d5a-9e629cffdbf7";
@@ -11,6 +13,13 @@ const revision = "4790013f-43ed-422e-b047-d3f8ddbf22c3";
 beforeEach(() => {
   vi.clearAllMocks();
   db.queryRows.mockResolvedValue([]);
+  qual.ensureStudioWorkQualification.mockResolvedValue({ ok: true, revisionId: revision, planId: "", planG5: "", workG5: "" });
+});
+
+it("fails closed when the studio qualification chain is unavailable", async () => {
+  qual.ensureStudioWorkQualification.mockResolvedValueOnce({ ok: false, reason: "machine_signing_isolation_required" });
+  expect(await submitWork(work, revision)).toEqual({ ok: false, reason: "qualification_unavailable" });
+  expect(db.queryRows).not.toHaveBeenCalled();
 });
 
 it("does not report a submission when no target revision was updated or already submitted", async () => {

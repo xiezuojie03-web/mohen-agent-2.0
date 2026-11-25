@@ -14,7 +14,8 @@ const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const noStore = { "cache-control": "no-store" };
 const blocked = new Set([
   "COMMONS_LOCATOR_UNSUPPORTED", "COMMONS_LICENSE_NOT_VERIFIED", "COMMONS_ORIGINAL_NOT_VERIFIED",
-  "COMMONS_SOURCE_TOO_LARGE", "STUDIO_SOURCE_SELECTION_REQUIRED", "STUDIO_SOURCE_SELECTION_CHANGED",
+  "COMMONS_ORIGINAL_TOO_LARGE", "COMMONS_SOURCE_TOO_LARGE",
+  "STUDIO_SOURCE_SELECTION_REQUIRED", "STUDIO_SOURCE_SELECTION_CHANGED",
   "STUDIO_SOURCE_READBACK_MISMATCH", "ORIGINAL_IDEMPOTENCY_CONFLICT",
   "SHL_LOCATOR_UNSUPPORTED", "SHL_KEY_MISSING", "SHL_SOURCE_TOO_LARGE", "SHL_RECORD_NOT_RESOLVED",
   "SHL_BODY_CORRUPTED", "SHL_BODY_TRUNCATED", "SHL_BODY_NOT_JSON", "SHL_RESULT_NOT_OK",
@@ -61,7 +62,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   } catch (error) {
     const code = error instanceof Error ? error.message : "";
     const known = /^(COMMONS_|SHL_|STUDIO_SOURCE_|ORIGINAL_|PRIVATE_SOURCE_)[A-Z_0-9]+$/.test(code);
-    console.warn("[studio/source-acquisition] failed", known ? code : "UNCLASSIFIED");
+    // 原始错误必须留痕：UNCLASSIFIED 只说"未分类"，定位要靠这里的具体 message。
+    console.warn("[studio/source-acquisition] failed", known ? code : "UNCLASSIFIED",
+      error instanceof Error ? `: ${error.message}` : error);
     const reason = blocked.has(code) ? code : "source_acquisition_unavailable";
     return NextResponse.json({ ok: false, reason }, { status: blocked.has(code) ? 409 : 503, headers: noStore });
   }

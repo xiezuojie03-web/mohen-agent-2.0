@@ -2,11 +2,13 @@ import { beforeEach, expect, it, vi } from "vitest";
 
 const db = vi.hoisted(() => ({ queryRows: vi.fn(), queryValue: vi.fn(), run: vi.fn() }));
 const access = vi.hoisted(() => ({ session: vi.fn(), allowed: vi.fn(), guard: vi.fn() }));
+const qual = vi.hoisted(() => ({ ensureStudioWorkQualification: vi.fn() }));
 vi.mock("../../packages/data-access/src/index.mjs", () => db);
 vi.mock("../../apps/web/lib/session", () => ({ getSession: access.session, isOperatorSession: () => false }));
 vi.mock("../../apps/web/lib/ownership", () => ({ canAccess: access.allowed }));
 vi.mock("../../apps/web/lib/guard", () => ({ guardRoute: access.guard }));
 vi.mock("../../apps/web/lib/auth", () => ({ findUserById: async () => ({ email: "creator@example.invalid" }) }));
+vi.mock("../../apps/web/lib/studio-formal-qualification", () => ({ ensureStudioWorkQualification: qual.ensureStudioWorkQualification }));
 // These route tests target the legacy path. Force the formal-chain probe to
 // report "not a formal object" so the mock queryRows sequence stays aligned.
 vi.mock("../../apps/web/lib/formal-publication-chain", () => ({
@@ -39,6 +41,7 @@ beforeEach(() => {
   access.guard.mockResolvedValue(null);
   db.queryRows.mockResolvedValue([]);
   db.queryValue.mockResolvedValue(revision);
+  qual.ensureStudioWorkQualification.mockResolvedValue({ ok: true, revisionId: revision, planId: "", planG5: "", workG5: "" });
 });
 
 for (const [name, submit] of [["public", submitPublic], ["studio", submitStudio]] as const) {

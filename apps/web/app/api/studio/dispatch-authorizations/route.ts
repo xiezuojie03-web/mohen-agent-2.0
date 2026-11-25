@@ -5,7 +5,7 @@ import { signDatabaseSessionToken } from "../../../../lib/auth";
 import { studioAssetStore } from "../../../../lib/studio-assets";
 import { createStudioDelegationRepository, getNodePgPool } from "@mohen/data-access";
 import { STUDIO_LLM_ACTION_MAX_TOKENS } from "../../../../lib/studio/provider-dispatcher";
-import { listProjectSourceIds } from "../../../../lib/studio/dispatch-grant";
+import { listProjectSourceIds, ensureExternalProcessingRights } from "../../../../lib/studio/dispatch-grant";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -62,6 +62,28 @@ export async function POST(req: Request) {
   const sourceIds = await listProjectSourceIds(projectId, sessionToken);
   if (!sourceIds.length) return privateJson({ ok: false, reason: "project_source_unbound" }, 409);
 
+  // ST-04 同意即落权：外发确认的服务端效果包含把 Owner 常设外发授权（2026-11-25）
+  // 落到项目来源上（幂等、带同意回执与许可证据）。仅当来源许可已允许 machine_read
+  // 才扩展 external_processing；其余保持 unknown，仍由 dispatcher 失败关闭。
+  let rightsApplied: { recorded: string[]; blocked: Array<{ sourceId: string; title: string }> };
+  try {
+    rightsApplied = await ensureExternalProcessingRights(sourceIds, {
+      projectTitle: String(project.project_title ?? projectId),
+      actions: actions as string[],
+      idempotencyKey,
+      consentedBy: session.uid,
+    });
+  } catch {
+    return privateJson({ ok: false, reason: "rights_recording_unavailable" }, 409);
+  }
+  if (rightsApplied.blocked.length) {
+    return privateJson({
+      ok: false,
+      reason: "transfer_rights_not_available",
+      blocked_sources: rightsApplied.blocked,
+    }, 409);
+  }
+
   const expiresAt = new Date(Date.now() + ttlMinutes * 60_000).toISOString();
   // QR-06: rootTaskRef follows the caller's Agent research task when supplied,
   // so that Studio research and external Provider dispatch form the same root DAG.
@@ -107,5 +129,6 @@ export async function POST(req: Request) {
     allowed_actions: delegation.allowed_actions,
     source_ids: sourceIds,
     budget_usd: budgetUsd,
+    rights_recorded: rightsApplied.recorded,
   });
 }

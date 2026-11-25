@@ -292,6 +292,34 @@ async function run() {
   const { token } = await buildGrant({ stage, runId, mode: "attended", intent, scopeFile, inputFile: resumeInputFile, methodPlan, sections });
   const { server, port } = await createVerifier();
 
+  // Worker 会话身份必须是运行所属项目的 owner（与 Studio 以登录创作者会话运行一致），
+  // 否则私有原件归属校验（studio.private_bridge_original 等）会按 ORIGINAL_NOT_FOUND 拒绝。
+  // 身份取自数据库持久事实（run 行的 scope → project owner），不接受调用方指定；
+  // 私有路线解析不到 owner 时失败关闭，绝不退回其他身份。
+  let workerSessionUid = "270bcecf-9bfb-4865-9432-a0ac9db8df75";
+  if (process.env.MOHEN_DATABASE_SESSION_SECRET) {
+    const runRows = await queryRows(
+      "select scope from control.production_runs where run_id=:'run'::uuid", { run: runId });
+    let persistedScope = null;
+    if (runRows.length === 1) {
+      persistedScope = typeof runRows[0].scope === "string"
+        ? JSON.parse(runRows[0].scope) : runRows[0].scope;
+    }
+    const projectId = persistedScope?.project_id ?? scope?.project_id;
+    if (typeof projectId === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(projectId)) {
+      const ownerRows = await queryRows(
+        "select owner_user_id::text as owner_user_id from studio.projects where project_id=:'pid'::uuid",
+        { pid: projectId });
+      if (ownerRows.length === 1 && ownerRows[0].owner_user_id) {
+        workerSessionUid = ownerRows[0].owner_user_id;
+      } else if (persistedScope?.original_id || scope?.original_id) {
+        throw new Error("WORKER_SESSION_OWNER_UNRESOLVED");
+      }
+    } else if (persistedScope?.original_id || scope?.original_id) {
+      throw new Error("WORKER_SESSION_OWNER_UNRESOLVED");
+    }
+  }
+
   const env = {
     ...process.env,
     DATABASE_URL: process.env.MOHEN_PRODUCER_DATABASE_URL,
@@ -304,7 +332,7 @@ async function run() {
     ...(process.env.MOHEN_PRIVATE_WORKER_DATABASE_URL
       ? { MOHEN_PRIVATE_WORKER_DATABASE_URL: process.env.MOHEN_PRIVATE_WORKER_DATABASE_URL } : {}),
     ...(process.env.MOHEN_DATABASE_SESSION_SECRET
-      ? { MOHEN_PRIVATE_WORKER_OWNER_SESSION: makeToken("270bcecf-9bfb-4865-9432-a0ac9db8df75", process.env.MOHEN_DATABASE_SESSION_SECRET) } : {}),
+      ? { MOHEN_PRIVATE_WORKER_OWNER_SESSION: makeToken(workerSessionUid, process.env.MOHEN_DATABASE_SESSION_SECRET) } : {}),
     MOHEN_ORIGINAL_BRIDGE_KEY_VERSION: process.env.MOHEN_ORIGINAL_BRIDGE_KEY_VERSION || "mab-original-bridge-v1",
     MOHEN_DATABASE_CA_CERT: readPem("tls-ca-cert.pem"),
     ...(resumeInputFile ? { MOHEN_TRUSTED_RESUME_INPUT_DIR: path.dirname(path.resolve(resumeInputFile)) } : {}),

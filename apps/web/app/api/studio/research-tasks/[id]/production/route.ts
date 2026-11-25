@@ -127,9 +127,13 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   }
 
   const checkpoint = (task as { checkpoint?: unknown }).checkpoint;
-  const runId = checkpoint && typeof checkpoint === "object"
-    ? (checkpoint as Record<string, unknown>).production_run_id as string | undefined
-    : null;
+  // psql --csv 驱动下 jsonb 列以 JSON 字符串返回，读取前必须先解析。
+  let checkpointObj: Record<string, unknown> | null = null;
+  if (checkpoint && typeof checkpoint === "object") checkpointObj = checkpoint as Record<string, unknown>;
+  else if (typeof checkpoint === "string") {
+    try { checkpointObj = JSON.parse(checkpoint) as Record<string, unknown>; } catch { checkpointObj = null; }
+  }
+  const runId = checkpointObj?.production_run_id as string | undefined ?? null;
   if (!runId) {
     return NextResponse.json({ ok: true, production: null, reason: "no_production" });
   }
