@@ -16,19 +16,15 @@
 
 ## 2. 当前产品深化工作包：PDW-01 HOME CEI工程衔接
 
-**状态：** `IN_PROGRESS / HOLD_OWNER_VISUAL_DIRECTION`。PDW-01-B已完成HOME V1.8.3源码拆解、HOME-00—08逐项映射、main关键代码继承审查、L5/资格/权利/EXP交接映射及正式HOME工程设计规范（详见唯一入口）。
+**状态：** `CLOSED / OWNER_APPROVED`。PDW-01-B已完成HOME V1.8.3源码拆解、HOME-00—08逐项映射、main关键代码继承审查、L5/资格/权利/EXP交接映射、正式HOME工程设计规范及验收矩阵；Owner于2026-11-27接受第11.7节视觉方向：整体明亮化，保留深青绿局部沉浸表达，弱化暖金。
 
-**唯一正式入口：** [PDW-01 HOME CEI工程衔接入口与审查报告 V0.1（现行内容V0.2）](tasks/implementation/PDW/PDW-01_HOME_CEI工程衔接入口与审查报告_V0.1.md)。
+**唯一正式入口：** [PDW-01 HOME CEI工程衔接入口与审查报告 V0.1（现行内容V0.3）](tasks/implementation/PDW/PDW-01_HOME_CEI工程衔接入口与审查报告_V0.1.md)。
 
-**原型基线：** `tasks/research/CEI-01/prototypes/墨痕_全工作面继承整合_HTML原型_明亮雅致版.html`，Blob SHA `52334737b590d2cb0b7068b1c45d9ad0e144bbfa`；已从`home-source`解码HOME V1.8.3（77,131字符），27条原型数据均非当前G5公众合格资产。
+**正式视觉约束：** 温润浅纸/浅青灰为HOME整体基调；深青绿限于局部焦点、沉浸内容面、墨痕浮层或导航强调；暖金仅作少量细节强调。不得恢复全屏深色舞台，也不得改成普通白底后台。
 
-**代码级结论：** `page.tsx`仍是门户式Hero/模式入口/空态；GlobalNav具会话、搜索、通知和角色入口但HOME隐藏主导航；`layout.tsx`可继承；`five-ui.css`保留全局暖纸/青绿/字体token，旧HOME门户专属布局不继承。Explore现有`readProductionRelationSummary(topicKey)`是L5摘要桥，不是HOME策展feed；六类L5读取和G5 consumer/purpose/scope资格语义应复用，不得另建知识库或资格体系。
+**交付边界：** PDW-01关闭代表设计—工程规范和Owner视觉裁决完成，不代表HOME业务页面施工或真实运行验收完成。真实L5内容、媒资权利、浏览器响应式/触屏/键盘、HOME→EXP往返和撤权测试均列入后续HOME实施验收；本轮未执行、不得声称PASS。本轮未修改业务代码、数据库、API、权限、CI或部署。
 
-**视觉裁决建议：** V1.8.3深青绿+暖金舞台有沉浸感和雅致，但大面积暗场不满足Owner明确提出的“明亮、清润”；建议局部调整为温润浅纸/浅青灰基调，保留深青绿作焦点/局部沉浸层，暖金降为细节强调。该视觉建议尚待Owner裁决，不能替Owner作最终决定。
-
-**未做事项与边界：** 未修改业务代码、数据库、API、权限、CI或部署；未做浏览器/真实数据/权限运行验收；未启动HOME施工或PDW-02—PDW-05。真实L5样例与媒体权利正反核验留待后续获准施工前/施工验收；本轮不声称真实数据已存在。
-
-**唯一下一动作：** Owner审阅PDW-01入口第11.7节并接受或修正视觉方向；在此之前保持PDW-01为IN_PROGRESS，不启动后续PDW工作包。
+**下一工作包：** PLAN V1.8 §3.6既定顺序为PDW-02｜Studio设计与工程自检。本轮只完成PDW-01关闭归档，不启动PDW-02。
 
 ## 3. 剩余 HOLD（如实，不阻 Owner 体验）
 
