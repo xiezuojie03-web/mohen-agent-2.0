@@ -16,9 +16,11 @@
 
 ## 2. 下一步（唯一施工顺序）
 
-1. **交付 Owner 用户式全程体验（第 14 项）**：http://localhost:3100，账号 `20195689@qq.com`，密码见 `.secrets/local-owner-password-reset.txt`（本机自用，不入 git）。Owner 可亲手走：Studio 提问任意知识库外的题材 → 看外部获取 → 导演方案 → 落稿 → 投稿 → Admin 资格审核签核 → 发布 → WATCH 看 4 部已发布作品（静安寺 3 章 + 金泽 5 章 + 朱家角 4 章 + 每亩多少）→ Admin 下架撤权体验。
-2. **未跟踪文件裁决（Owner）**：4 组（`.mohen/`、`apps/web/.mohen/`、`.trae-html-share-packages/`、`apps/web/.tmp_trigger.ts`）：保持 / `.gitignore` / 择优提交。
-3. Owner 体验反馈若发现问题，按 PLAN §3.5 C 顺序修复并逐批记账。
+**产品深化工作流已按MAB PLAN V1.8 §3.6正式确定，下一项为PDW-01 HOME CEI工程衔接。** 先盘点现有CEI成果、核实正式文件与版本、评估工程可用性，整理正式交付材料和继承边界；不重新启动HOME设计研究，不提前进入代码施工。
+
+PDW-01关闭后依次执行PDW-02 Studio设计与工程自检、PDW-03 EXP真实主题双组件试验、PDW-04 Admin视觉与Agent辅助治理深化、PDW-05个人空间产品与数据架构规划。不得调序或按CEI交付包历史阶段0—7顺序执行。
+
+M5原有真实作品闭环、八维准出及Owner最终体验责任均保持不变；PDW-02负责将Studio设计/工程差距转化为可操作的Owner验收任务。当前本地服务、真实作品和CI回执仍是已记录的运行事实，不代表PDW-01已开始或M5已签收。未跟踪文件组的裁决暂不作为PDW-01前置条件，按实际需要另行处理。
 
 ## 3. 剩余 HOLD（如实，不阻 Owner 体验）
 
