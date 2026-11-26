@@ -2,7 +2,7 @@
 
 > **工作包**：PLAN V1.8 §3.6 PDW-01  
 > **文档版本**：V0.2（PDW-01-B逐项映射与正式交付规范）  
- > **状态**：`IN_PROGRESS / HOLD_OWNER_VISUAL_DIRECTION`  
+> **状态**：`IN_PROGRESS / HOLD_OWNER_VISUAL_DIRECTION`  
 > **审查日期**：2026-11-26  
 > **审查基线**：`xiezuojie03-web/mohen-agent-2.0`，`main@a6c409d2cf682dd66db90f5a21d0a947ef66ce8c`  
 > **文件职责**：PDW-01唯一工作入口、材料索引、设计质量审查、当前HOME代码继承审查、正式交付边界和关闭条件。  
