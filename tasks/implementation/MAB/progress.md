@@ -35,3 +35,18 @@
 - **验证边界：** 本轮为完整源码静态核验，未进行浏览器视觉、触屏、跨视口和端到端运行验收。
 - **文档同步：** PDW-01入口报告补充第10节；CURRENT更新为`IN_PROGRESS / BLOCKED_DESIGN_ACCEPTANCE_AND_DATA_MAPPING`。
 - **下一动作：** 以该原型完成HOME设计映射、R5 Owner审阅/视觉方向确认、真实内容数据/权利字段及HOME→EXP上下文映射；仍不启动HOME代码施工或PDW-02—PDW-05。
+
+
+## 2026-11-26｜PDW-01-B HOME设计—工程逐项映射审查
+
+- **审查基线：** main HEAD `a6c409d2cf682dd66db90f5a21d0a947ef66ce8c`；Owner指定原型Blob `52334737b590d2cb0b7068b1c45d9ad0e144bbfa`。
+- **原型核验：** 从整合HTML的`home-source`提取独立HOME V1.8.3源码77,131字符；实际六种主题视角+漫游全部，27条数据（4条具名馆藏设计样例但非G5、1条研究夹具、2条未审外链候选、20条无来源绑定策展方向）；逐项检查结构、组件、状态、自动漫游、暂停、鼠标/触屏、键盘、减少动态效果和1050/700/350断点。
+- **设计映射：** HOME-00—08全量映射完成；确认“附近线索”只是原型connections ID推荐，不是地理附近或已证历史因果；原型没有独立页尾模块；卡片缺少部分地域/来源/限制可见性；EXP query传递显示字段而非正式artifact_ref@revision。
+- **工程代码：** 复核`page.tsx`、`ModeEntryCard.tsx`、`GlobalNav.tsx`、`layout.tsx`、`five-ui.css`、Explore page/CSS、`read-model-repository.mjs`及`read-model-bridge.ts`。确认当前HOME仍为门户，GlobalNav首页隐藏主导航，Explore摘要桥非HOME feed；六类L5和G5 visual_stage资格语义可复用。
+- **继承结论：** page.tsx主体REBUILD；ModeEntryCard不作为知识卡片，仅辅助入口KEEP/ADAPT；GlobalNav ADAPT；layout KEEP；全局token KEEP并局部ADAPT；旧门户布局DROP；EXP现有业务不改，只作为交接依赖。
+- **数据合同：** 不新增Schema/API/数据库/Gate。HOME未来只消费当前有效G5 visual_stage、指定purpose/scope/action和逐对象媒资权利；区分原型样例、候选资产、真实知识资产、公众展示合格资产。Explore `readProductionRelationSummary(topicKey)`不是完整HOME策展feed。
+- **视觉裁决建议：** 局部调整ADAPT；深青绿+暖金沉浸感成立，但大面积暗场不满足Owner“明亮清润”目标；建议浅纸/浅青灰主基调、深青绿局部保留、暖金弱化。等待Owner明确接受/修正。
+- **状态：** `IN_PROGRESS / HOLD_OWNER_VISUAL_DIRECTION`；设计规范已写入唯一入口第11节；不关闭、不施工HOME、不启动PDW-02—PDW-05。
+- **验证边界：** 静态源码检查；无浏览器、真实DB、真实HOME feed、权限、EXP往返运行验收；未修改业务代码、数据库、API、权限、CI、部署。
+- **唯一下一动作：** Owner审阅并裁决视觉方向。
+
