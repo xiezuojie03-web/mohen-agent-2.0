@@ -2,7 +2,11 @@
 
 > **Owner 授权口径（2026-11-25，长期有效）**：目标是墨痕**真正运行、持久运行**；除**安全问题**与**费用问题**外，施工方自行授权推进，不再逐项请示技术选择。费用边界：M5 导演生成两题材各封顶 **1.00 USD**（Owner 2026-11-25「费用全权授权、按计划全力推进」已落为可核账委托，逐次真实调用以 Receipt 对账）；超出额度、新增付费来源或扩大用途仍需 Owner 批准。安全底线（密钥不入 git、不自签 Gate、不伪造会话/资格/PASS、不改迁移规避授权）不因该授权放宽。
 
-> 核验时间 2026-11-26（第三十四批收口）｜ main 本地=远端 `e5c36922`（第三十二批 PENDING_PUSH 已随第三十三/三十四批推送对账清零）｜ CI：`ci` 45726227097 **success**、MAB M1 隔离认证 HTTP 验收 45726226950 **success**、mab-isolated-db 45723945111 **success**（宿主级 CI_BLOCKED 解除的直接证据）｜本文件**只保留一个当前断点块**，每批原地替换；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
+> 核验时间 2026-11-26（第三十四批收口）｜工程代码核验基准 `e5c36922`（第三十二批 PENDING_PUSH 已随第三十三/三十四批推送对账清零）；其后main仅增加本轮审计归档文档提交，未修改业务代码｜CI：`ci` 45726227097 **success**、MAB M1 隔离认证 HTTP 验收 45726226950 **success**、mab-isolated-db 45723945111 **success**（宿主级 CI_BLOCKED 解除的直接证据）｜本文件**只保留一个当前断点块**，每批原地替换；逐批原始回执见 [progress.md](tasks/implementation/MAB/progress.md)，施工标准见 [PLAN.md](tasks/implementation/MAB/PLAN.md)。
+
+
+> **工程审计归档（2026-11-26）**：本轮全面审计报告已归档：[《墨痕工程全面审计报告 2026-11-26 V1.0》](tasks/results/MAB/audits/MAB_工程全面审计报告_20261126_V1.0.md)（报告编号 `MAB-AUDIT-20261126-01`；审计基准commit `e89e33101ba5351b12a71f1f1e0805b51f1e5f83`）。报告记录设计实现、施工节点、双维度缺口及后续建议；它是历史审计基准，不替代本文件的当前断点，也不改变PLAN V1.7的施工顺序。归档动作只修改审计报告、PLAN和CURRENT文档，不修改业务代码、数据库或部署。
+
 
 ## 1. 当前断点：M1 隔离认证 HTTP 验收红灯根因修复完成、双绿收口；本地 3100 已含全部修复
 
