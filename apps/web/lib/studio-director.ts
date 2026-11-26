@@ -313,7 +313,7 @@ export async function commitWorkRevision(
           where d.plan_id=:'pid' and w.work_id=:'wid' and d.selected=:'which'
             and d.project_id is not null and w.project_id is not null
             and d.project_id=w.project_id
-            and (:'actor' is null or lower(w.owner_user_id::text)=lower(:'actor'))
+            and (:'actor'::text is null or lower(w.owner_user_id::text)=lower(:'actor'::text))
             and d.beats=:'beats'::jsonb and d.finding=:'finding'::jsonb
             and (case when d.selected='B' then d.plan_b else d.plan_a end)=:'plan'::jsonb
         )

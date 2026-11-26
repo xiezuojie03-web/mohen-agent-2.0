@@ -80,17 +80,21 @@ test('visual stage, Agent materials and Evidence on Demand enforce their own liv
 
 test('legacy published pointer without current G5 discloses no work through public consumers',async({page})=>{
  const request=await browserRequests(page);
- expect((await request.post('/api/auth/register',{data:{email:`m5-${randomUUID()}@example.invalid`,username:'隔离作者',password:randomUUID()}})).status()).toBe(200);
- const workId=randomUUID(),title='M5-private-'+randomUUID(),secret='unqualified-private-'+randomUUID();
- const created=await request.post('/api/works',{data:{creation_id:workId,title,content:{beats:[{narration:secret}]}}});
- expect(created.status()).toBe(200);const {revision_id:revisionId}=await created.json();
- expect(revisionId).toMatch(/^[a-f0-9-]{36}$/);
  const socket=process.env.MOHEN_TEST_SOCKET,database=process.env.MOHEN_TEST_DATABASE,psql=process.env.MOHEN_TEST_PSQL;
  if(!socket?.startsWith('/workspace/')||!/^mohen_k3_http_[a-f0-9]+_test$/.test(database??'')||
   !psql||!(psql==='/usr/bin/psql'||/^\/workspace\/work\/[a-zA-Z0-9_/-]+$/.test(psql)))throw Error('M5_ISOLATED_DATABASE_REQUIRED');
  const args=['-X','-q','-At','-v','ON_ERROR_STOP=1','-h',socket,'-p',process.env.MOHEN_TEST_PORT??'55432','-U','k3_admin','-d',database!];
  const sql=(input:string)=>execFileSync(psql,args,{input,encoding:'utf8'}).trim();
  if(sql("select current_setting('mohen.test_instance',true)")!=='codex-k3-isolated')throw Error('M5_UNMARKED_DATABASE_REFUSED');
+ const registered=await request.post('/api/auth/register',{data:{email:`m5-${randomUUID()}@example.invalid`,username:'隔离作者',password:randomUUID()}});
+ expect(registered.status()).toBe(200);const ownerUserId=String((await registered.json()).user.user_id);
+ // POST /api/works requires an Owner-owned ACTIVE studio.projects binding.
+ const projectId=randomUUID();
+ sql(`insert into studio.projects(project_id,owner_user_id,project_title) values('${projectId}','${ownerUserId}','Synthetic project fixture')`);
+ const workId=randomUUID(),title='M5-private-'+randomUUID(),secret='unqualified-private-'+randomUUID();
+ const created=await request.post('/api/works',{data:{creation_id:workId,title,content:{beats:[{narration:secret}]},project_id:projectId}});
+ expect(created.status()).toBe(200);const {revision_id:revisionId}=await created.json();
+ expect(revisionId).toMatch(/^[a-f0-9-]{36}$/);
  // Deliberately construct a legacy editorial pointer, NOT a signed G5.
  sql(`update publication.work_revisions set status='published' where revision_id='${revisionId}';
  insert into publication.published_pointers(work_id,revision_id,published_by) values('${workId}','${revisionId}','synthetic-legacy');`);

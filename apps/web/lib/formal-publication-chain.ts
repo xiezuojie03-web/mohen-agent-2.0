@@ -50,7 +50,7 @@ export async function getFormalRevision(revisionId: string, workId?: string): Pr
             e.project_id::text as project_id, e.revision_no
        from studio.work_revisions e
       where e.revision_id = :'rid' and e.formal_revision_id = e.revision_id
-        and (:'wid' is null or e.work_id = :'wid'::uuid)`,
+        and (:'wid'::uuid is null or e.work_id = :'wid'::uuid)`,
     { rid: revisionId, wid: workId ?? null }
   );
   const r = rows[0];
