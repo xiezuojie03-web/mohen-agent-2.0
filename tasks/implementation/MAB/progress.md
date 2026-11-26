@@ -18,10 +18,10 @@
 - **实际核验材料：** PLAN V1.8 §3.6、CURRENT、AGENTS、ENGINEERING_HANDOFF_CURRENT、CEI-01 V4.1、HOME V0.2、C步、R1—R5、R1—R4综合修订、CEI UI工程迭代交付包、公众体验视觉规范V1.0及MAB UI反向工程审计报告；另静态读取HOME page.tsx、ModeEntryCard、GlobalNav、layout.tsx、five-ui.css。
 - **研究质量结论：** R1—R4研究主体可用；C步“保留V1.8.3交互基因、深化多尺度策展知识世界”方向成立；R5为`CONDITIONAL_PASS / OWNER_REVIEW_REQUIRED / IMAGE_PRODUCTION_NOT_YET_AUTHORIZED`。研究PASS不代表完整概念图、HTML原型或工程交付已完成。
 - **代码核验结论：** 当前根路由仍为品牌Hero、Studio/WATCH/EXP入口卡及三个空态面板；没有真实策展内容读取和HOME→EXP上下文交接。GlobalNav在HOME隐藏主导航项。five-ui.css有可复用的暖纸/青绿/字体令牌，但当前门户专属结构不应作为V1.8.3继承基线。
-- **阻断证据：** HOME V1.8.3原始交互源和CEI统一HTML原型源未能从当前main取得；R5未获Owner审阅状态；真实内容读模型/权利/EXP字段映射尚未完成。不得猜测缺失原型，不得制作新概念图/HTML，不得提前施工。
+- **首轮阻断记录（已由后续补充核验更新）：** 首轮读取时尚未定位V1.8.3/统一HTML原型；2026-11-26补充审查已取得Owner指定整合原型并解除该项阻断。当前剩余事项见下方补充审查记录。
 - **交付文件：** `tasks/implementation/PDW/PDW-01_HOME_CEI工程衔接入口与审查报告_V0.1.md`；CURRENT已同步为PDW-01进行中并记录阻断。
 - **本轮未做：** 未修改业务代码、数据库、API、权限、CI、部署；未执行浏览器/真实数据/权限验收；未启动PDW-02—PDW-05。
-- **下一动作：** 找回并校验V1.8.3原始交互源与统一HTML原型源，或由Owner明确裁决替代方式；随后完成字段映射、正式设计规范定稿和Owner交付边界确认。
+- **首轮下一动作（已被新证据取代）：** 原型源现已取得；后续按下方补充审查的更新动作执行。
 
 
 ## 2026-11-26｜PDW-01补充核验：全工作面整合HTML原型纳入正式基线
