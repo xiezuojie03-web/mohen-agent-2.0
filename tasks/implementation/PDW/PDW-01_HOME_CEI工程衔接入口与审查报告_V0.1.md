@@ -2,7 +2,7 @@
 
 > **工作包**：PLAN V1.8 §3.6 PDW-01  
 > **文档版本**：V0.2（PDW-01-B逐项映射与正式交付规范）  
- > **状态**：`IN_PROGRESS / BLOCKED_DESIGN_ACCEPTANCE_AND_DATA_MAPPING`  
+ > **状态**：`IN_PROGRESS / HOLD_OWNER_VISUAL_DIRECTION`  
 > **审查日期**：2026-11-26  
 > **审查基线**：`xiezuojie03-web/mohen-agent-2.0`，`main@a6c409d2cf682dd66db90f5a21d0a947ef66ce8c`  
 > **文件职责**：PDW-01唯一工作入口、材料索引、设计质量审查、当前HOME代码继承审查、正式交付边界和关闭条件。  
@@ -24,7 +24,7 @@
 
 施工计划与工作顺序始终以 [MAB PLAN V1.8 §3.6](../MAB/PLAN.md) 为唯一依据。本文件不改变M5—M8、D00—D05、L0—L8、G0—G5、Runner/Registry及现行专业合同。
 
-**当前HOLD：** 原型源缺失问题已解除。Owner指定的整合HTML原型已包含可解码的HOME V1.8.3源；当前阻断改为R5 Owner审阅/视觉准入、深青绿HOME是否符合“明亮清润”目标的确认、真实内容读模型/权利字段及HOME→EXP上下文映射。正式完整视觉概念图仍未单独形成，不得仅凭原型文件名判定视觉验收通过。
+**当前HOLD：** 原型源缺失已解除；PDW-01-B已完成V1.8.3源码拆解、HOME-00—08映射、代码继承判断、L5/权利/EXP映射及正式设计规范。当前唯一Owner裁决阻断为HOME视觉方向：是否接受整体明亮化、深青绿局部保留的ADAPT建议。真实数据与浏览器运行证据未在本轮执行，不得冒充PASS。
 
 ## 1. 本轮核验基线与范围
 
