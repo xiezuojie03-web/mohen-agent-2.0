@@ -1,9 +1,10 @@
 # PDW-01｜HOME CEI 工程衔接入口与审查报告
 
 > **工作包**：PLAN V1.8 §3.6 PDW-01  
+> **文档版本**：V0.2（PDW-01-B逐项映射与正式交付规范）  
  > **状态**：`IN_PROGRESS / BLOCKED_DESIGN_ACCEPTANCE_AND_DATA_MAPPING`  
 > **审查日期**：2026-11-26  
-> **审查基线**：`xiezuojie03-web/mohen-agent-2.0`，`main@00ccd18b731feb7ab20618c53a22db5bfba99056`  
+> **审查基线**：`xiezuojie03-web/mohen-agent-2.0`，`main@a6c409d2cf682dd66db90f5a21d0a947ef66ce8c`  
 > **文件职责**：PDW-01唯一工作入口、材料索引、设计质量审查、当前HOME代码继承审查、正式交付边界和关闭条件。  
 > **重要边界**：本文件不是HOME页面施工授权；本轮未修改业务代码、数据库、API、权限、CI或部署。此入口当前用于约束和接续审查，不代表已具备无条件施工条件。
 
@@ -338,3 +339,261 @@ PDW-01仍不能关闭，剩余事项收敛为：
 - 完成浏览器实测与正式设计交付规范定稿。
 
 **更新状态：** `IN_PROGRESS / BLOCKED_DESIGN_ACCEPTANCE_AND_DATA_MAPPING`。不得再把V1.8.3或统一HTML原型缺失列为当前阻断；不得因此提前启动HOME代码施工。
+
+
+---
+
+## 11. PDW-01-B｜HOME V1.8.3设计—工程逐项映射与交付规范（2026-11-26）
+
+> 本节是本轮正式审查结果，覆盖并修正本文件前文中尚未完成原型解码、逐项映射和数据映射的旧状态描述。前文历史记录保留其当时语境；发生冲突时以本节为当前结论。本文仍是PDW-01唯一正式入口，不另建平行规范。
+
+### 11.1 本轮审查基准与证据等级
+
+- 审查时main HEAD：`a6c409d2cf682dd66db90f5a21d0a947ef66ce8c`。
+- 原型文件：`tasks/research/CEI-01/prototypes/墨痕_全工作面继承整合_HTML原型_明亮雅致版.html`，Blob SHA `52334737b590d2cb0b7068b1c45d9ad0e144bbfa`，完整读取2,399,164字符。
+- 从`home-source`实际解码出独立HTML 77,131字符；页面title为`墨痕 · HOME V1.8.3｜策展世界与墨痕在场`。本节判断依据是内嵌源码，不是外层iframe壳或截图。
+- 当前HOME工程代码文件SHA：`page.tsx 4dfb2218`、`ModeEntryCard.tsx 8a8a8abe`、`GlobalNav.tsx 758c0fb9`、`layout.tsx 837c8451`、`five-ui.css 2d39d431`。均为main实际文件。
+- 业务代码审查是静态源码核验；没有启动浏览器、调用真实HOME数据接口、检查生产DB或执行权限/EXP往返。因此不把设计源码中可运行的原型交互写成生产运行PASS。
+- 原型内嵌HOME不是完整生产数据集：实际`DATA`含27条设计记录，分为4条有具名馆藏的设计场景（S1、`DESIGN_ONLY_NOT_G5`）、1条研究夹具（S2、`H3_RESEARCH_FIXTURE_NOT_CERTIFIED`）、2条外部链接候选（S2、`EXTERNAL_SOURCE_LINK_UNREVIEWED`）及20条未绑定来源的策展方向（S3、`CURATORIAL_THEME_UNBOUND`）。没有一条可仅凭该原型记录视为当前G5公众合格内容。
+
+### 11.2 HOME V1.8.3实际页面结构与职责
+
+| 实际区域/DOM | 源码事实与当前行为 | 产品职责及处理 |
+|---|---|---|
+| 顶部`.topbar`及品牌/导航按钮 | 品牌、主页、探索、观看、创作、管理、我的、登录入口；按钮通过父窗口消息切换工作面 | HOME-00。生产版归并到GlobalNav，不再保留第二套重复导航 |
+| `#curatedFace`主策展面 | 初始激活；承载主题标题、描述、组标记、主题说明及横向内容视口 | HOME-01/02/05的主要舞台；必须保留其“进入即发现”的主导地位 |
+| `#groupdock`主题视角导航 | 由`groups`生成7项：漫游全部、江河与城市、器物与生活、文明与遗迹、文字与思想、艺术与人物、交流与远行 | HOME-02。前6类专题视角不是六个固定内容栏目；“漫游全部”是总览状态 |
+| `#viewport` / `#track` / `.story` | 横向连续轨道；每组按数据筛选，卡片以不同宽高、纵向位置和重点比例交错排布；轨道复制为3个循环段 | HOME-01/02/04/05。保留非网格、非等高卡墙和连续漫游；不照搬固定假数据 |
+| 卡片信息 | 实际显示时代、类别、标题、问题/摘要；有视觉缩略区、附近线索按钮和进入探索提示。region、来源定位、sourceIds、权利限制等虽在数据对象中，但并非全部在卡面可见 | HOME-01/04/05。生产卡片须按认知需要显示时代/地域/媒介和材料身份，不把来源/权利后台字段全部堆到首屏 |
+| `#nearPanel` | “下一处好奇”浮层；按当前记录的`connections`取最多4个关联ID，提供继续聚焦入口 | HOME-03。它是策展关联推荐，不是地理附近搜索；生产版必须为每条关系提供关系类型/证据身份，不得将数组相邻解释为因果 |
+| `#mohen` / `#mohenPanel` | 固定可唤起的墨痕锚点；按当前焦点更新提示；面板含问题输入、文件选择、开始探索、暂时安静/恢复入口 | HOME-07。保留低干扰、上下文感知和用户主动唤起；原型本身不调用生产Agent |
+| `#serviceModal` / toast | 登录等服务入口提示、操作反馈 | 生产版接入真实路由/认证状态；不得沿用“账户登录尚未开放”的演示提示 |
+| 页尾 | HOME独立源没有形成独立内容页尾模块；页面以全屏策展舞台收束 | HOME-08职责仍须满足，但采用极简共享页尾/辅助政策链接即可，不为凑模块新增厚重页尾 |
+| 页面整体 | 全屏深色舞台；内容卡片在视口内连续浏览，不是纵向首页信息流 | 保留舞台式空间组织；需解决明亮清润视觉裁决，见11.7 |
+
+### 11.3 发现情境与内容数据的源码核实
+
+实际`groups`只有“漫游全部”加六种主题视角，六种名称和描述分别为：
+
+- 江河与城市：地图、城市、水岸及居住之地的旧时模样；
+- 器物与生活：器物、饭食、人的生活与技艺；
+- 文明与遗迹：遗址、遗存、文明形成与变迁；
+- 文字与思想：典籍、文字、思想及记忆；
+- 艺术与人物：艺术作品、人物、时代情感与想象；
+- 交流与远行：海洋、道路、城市、迁徙和文化相遇。
+
+`which(d)`按记录的category将对象分配到专题视角；不是独立的主题知识分类服务。实际`DATA`中可确认的样例包括黄浦江两张地图、上海水岸地图与旧照片并置、康熙瓷瓶、古代粟特书信、尼罗河文明、两河流域、巴格达、丝绸之路、餐桌与工艺、港口、普通人等。它们是原型内容样例，不代表这些专题已获得统一证据覆盖。
+
+卡片对象实际字段包括`id/title/era/region/category/tags/sub/summary/art/artBg/source/source2/connections/question/sourceNote/label/chapter/line/visual/sourceIds/cue/first/next/limit/time/place/field/url/url2/assetClass/availability/group/state/motif/district`等（各记录不保证字段齐全）。这些是原型本地数据字段，不是数据库Schema或正式API字段。
+
+**重要语义修正：**
+1. “附近线索”按`connections`中的对象ID生成最多4条建议，未记录谓词、关系证据或关系方向；它只能表达“继续看看”，不能显示成已证历史传播、影响、因果或地理邻近。
+2. 原型卡片虽含`era/region/sourceIds/limit`等数据，但当前卡面仅展示时代、类别、标题和问题摘要；地域、材料身份、来源和未知边界的可见性不足，生产版应按材料类型补齐轻量标识与按需查看入口。
+3. `motif`中地图、城市、海洋、书籍等多数为内嵌SVG示意；瓷瓶样例使用大都会艺术博物馆远程图像。示意图不能冒充历史原件或真实地图；远程图片也不能因可访问就默认获得本产品的公开展示、下载或改编权。
+4. 原型样例中已显式存在`DESIGN_ONLY_NOT_G5`、`DESIGN_FIXTURE_NOT_G5`、`CANDIDATE_ONLY`及`limit`等限制字段。这是有价值的资格意识，但字段和值仍属原型夹具，不可直接成为生产资格判定机制。
+
+### 11.4 状态、交互、键盘与响应式逐项核实
+
+| 交互/状态 | 源码实际行为 | 生产交付要求 |
+|---|---|---|
+| 初始 | `group=all`、`world=curated`、无focus、无EXP、附近面板关闭、quiet=false、flowing=true；首次渲染全部策展组 | 首屏必须直接进入可浏览发现内容；真实内容为空时诚实呈现空/稀疏状态 |
+| 切换主题 | 点击`groupdock`按钮调用`switchGroup`，更新标题、说明、组标记、数据筛选并重绘卡片 | 保持主题身份、当前焦点与必要的浏览位置；切换后不能制造未证实关系 |
+| 连续漫游 | `requestAnimationFrame`推进横向滚动；达到循环边界时回绕；自动流动受暂停状态、页面可见性、悬停、拖动、附近面板、EXP和减少动态效果控制 | 继承“可连续浏览”而非必须自动播放；生产默认应优先用户控制，明确暂停状态 |
+| 暂停/恢复 | `#flowToggle`切换`STATE.flowing`并更新按钮文字及aria-label；拖动、滚轮、左右按钮会短时暂停 | 保留显式暂停/恢复；用户操作后不得立即自动抢夺滚动控制 |
+| 鼠标聚焦 | pointermove时放大/突出当前卡片并调整遮挡卡片；pointerleave清理聚焦 | 保留轻量聚焦反馈；不能只依赖hover |
+| 触屏/拖动 | pointerdown/move/up/cancel实现拖动；wheel将纵向或横向滚轮转换为横向滚动；触屏CSS让附近按钮保持可见 | 触屏不依赖hover；避免拖动与卡片点击误触；浏览器实测待做 |
+| 附近线索 | 打开浮层，展示最多4个关联对象；点击后切换到相应主题并聚焦卡片 | 关系类型和证据边界必须随推荐可见；无有效关系时使用明确的主题探索推荐而非伪造关系 |
+| 墨痕唤起/关闭 | 点击锚点或Enter/Space唤起；关闭按钮和Escape关闭；问题输入与文件选择后进入EXP原型 | 保留可达性；生产版接入真实Agent/上传授权流程，失败时保留用户输入并解释状态 |
+| 静音/安静 | `quiet`切换提示显示，改变nudging，不停止所有内容交互 | 生产需定义偏好持久化与跨页面一致性；不能把安静状态误作关闭Agent能力 |
+| HOME→EXP | 卡片点击调用`openExp`；统一消息`CEI_NAV_EXP`，query包含`from,entry,id,title,era,region,category,question,summary,art,state,availability,limit,url,url2,group`中实际存在的字段；用户自由提问另传question和文件对象 | 生产必须传正式对象ref/revision、主题/问题、来源引用、焦点/观察位置、用途和返回锚点；原型展示字段不能替代正式身份引用 |
+| 捕获/暂停/恢复 | `CEI_HOME_CAPTURE`返回`group/phase/focus/question/world`；`CEI_HOME_PAUSE`暂停并标记EXP；`CEI_HOME_RESTORE`恢复group和phase并延迟自动流动；focus/question没有在恢复函数中显式重设 | 生产状态需可序列化、可校验、可恢复；至少恢复主题、横向位置、焦点和用户问题，并在失效对象被撤权时安全降级 |
+| 键盘 | 卡片为`role=button`和`tabindex=0`，处理Enter；全局Escape关闭弹层；左右箭头移动漫游；墨痕锚点处理Enter/Space；按钮和主题按钮可原生键盘操作 | 卡片需补Space激活；焦点顺序、焦点返回、可见焦点和读屏标签需实测 |
+| 减少动态效果 | CSS含`prefers-reduced-motion: reduce`规则；JS初始化时读取`matchMedia('(prefers-reduced-motion: reduce)').matches`并禁用自动流动 | 继承减少动效；建议监听偏好变化，不只在页面初始化时读取一次 |
+| 断点 | 实际媒体查询：1050px、700px、350px；另有`hover:none`触屏规则 | 与PLAN设计视口1440×900、768、390及320无横向溢出要求一起验收；现有断点不能替代视口测试 |
+| 动态效果 | 卡片hover缩放、横向自动流动、平滑滚动、toast及浮层过渡；减少动态效果时关闭动画/过渡和自动流动 | 不得持续自动运动干扰阅读；动效须可暂停、减少或关闭 |
+
+### 11.5 HOME-00—08职责映射裁决
+
+| HOME职责 | V1.8.3实际对应设计 | 原型位置/组件 | 当前工程实现 | 差距 | 最终处理 |
+|---|---|---|---|---|---|
+| HOME-00 全局导航与定位 | 有品牌及工作面入口；独立原型与外层统一导航存在重复风险 | `.topbar`、brandHome、homeNavBtn及全局工作面按钮 | GlobalNav有品牌、Studio/WATCH/EXP、搜索、通知、会话、Admin角色入口；但`pathname==='/'`时隐藏主导航项 | 缺少HOME上的主导航可达性；原型导航不可原样并存 | ADAPT |
+| HOME-01 主导发现 | 以“整个世界/等你发现”及横向对象漫游为主，不是单一主导对象hero | curatedFace、curatedTitle、viewport、story | 当前page.tsx只有品牌Hero与创作CTA，无策展主导发现 | 设计方向应保留连续发现；需以真实合格对象组织主次 | REBUILD |
+| HOME-02 次级发现 | 六类主题视角+漫游全部，支持异质卡片 | groups、groupdock、story track | 无主题视角和知识内容读取 | 主题名可继承，分类映射和内容集需由真实数据驱动 | ADAPT |
+| HOME-03 关系/比较 | nearby connections按对象ID推荐最多4个线索 | nearPanel、connections、focusCard | 无关系推荐组件；Explore有知识关系摘要但不是HOME策展关系服务 | 原型缺关系谓词、证据与不可比项；不能直接照搬connections | ADAPT |
+| HOME-04 材料观察 | 卡片缩略图、原件链接、来源ID、材料类型及限制字段；部分仅为SVG示意 | motif、art、source/sourceIds/sourceNote/url/visual/limit | page.tsx无材料读取；GlobalNav搜索knowledge不是材料细读 | 需接合格L5证据指针及媒资逐动作权利；材料身份需可见 | REBUILD |
+| HOME-05 时空与生活延展 | 时代/地域/问题/生活字段及主题跨地域并置 | era/region/time/place/field/summary/question/first/next | 当前无时空/生活延展 | 原型有字段但未全部展示；需以有证据关系驱动延展 | ADAPT |
+| HOME-06 继续探索/EXP交接 | 卡片与自由问题统一进入EXP；捕获主题、phase、focus、question | openExp、CEI_HOME_CAPTURE/PAUSE/RESTORE、消息桥 | EXP独立路由存在；HOME未传递对象上下文，也无返回锚点 | 原型query只传显示字段，缺正式typed refs/revision/资格快照；恢复未显式复设focus/question | ADAPT |
+| HOME-07 墨痕Agent | 固定低干扰锚点、按当前焦点提示、问句/材料入口、安静偏好 | mohen、mohenPanel、mohenQuestion、fileInput、mohenQuiet | HOME无Agent入口；Studio Agent能力不能替代HOME情境入口 | 原型仅模拟UI，非真实Agent；需接现有Agent/受控项目与权限边界，不另建Runtime | ADAPT |
+| HOME-08 页尾 | HOME源无独立内容页尾 | 未形成专门footer模块 | 当前page.tsx有关于/指南/联系/版权页尾 | 不应把当前门户footer整段照搬，也不应为满足模块ID造新大区块 | ADAPT |
+
+**冲突裁决：** HOME-00—08是职责索引，不是九个页面区块。HOME-01/02形成主空间，HOME-03/04/05按对象需要融入卡片/浮层/细读；HOME-06多处可达；HOME-07全局低干扰；HOME-08极简收束。不得机械按九项堆叠页面。
+
+### 11.6 当前工程代码逐项继承与成本
+
+| 代码路径 | 当前实际功能 | 对应CEI设计 | 差距与处理 | 成本 |
+|---|---|---|---|---|
+| `apps/web/app/page.tsx` | 服务端门户Hero、Studio CTA、创作三步、三模式卡、三个空态面板、footer | HOME-00/01/02/05/08 | 不继承当前页面主体；重建为策展发现入口。保留必要metadata和空态/失败表达 | 高 |
+| `apps/web/app/components/ModeEntryCard.tsx` | 单纯模式跳转卡 | HOME-00 | 不作为知识卡片；可在辅助入口区或共享模式入口复用 | 低 |
+| `apps/web/app/components/GlobalNav.tsx` | 登录会话、角色识别、搜索作品/知识、通知、退出、Admin入口；首页隐藏主导航 | HOME-00/07 | 保留会话/搜索/通知/角色能力；恢复首页主导航；避免与原型topbar双重导航；不要在本轮改代码 | 中 |
+| `apps/web/app/layout.tsx` | 全站共享布局和样式挂载，GlobalNav全局挂载 | HOME-00 | KEEP共享挂载结构；HOME样式不应污染Studio/Admin/EXP/WATCH | 低 |
+| `apps/web/app/five-ui.css` | 全局暖纸/白/青绿/松柏绿/字体token、导航、门户布局、断点 | HOME-00/视觉底座 | 保留全局token并局部ADAPT；废弃/替换仅服务旧门户的`.mo-hero/.mo-cards/.mo-home-grid`主体规则；避免全站Token重置 | 中 |
+| `apps/web/app/explore/page.tsx` | 服务端调用`readProductionRelationSummary()`并传入ExploreWorkbench | HOME-06依赖 | 可证明EXP已有生产读模型桥接入口，不证明HOME交接已实现；只作只读消费端依赖 | 低（仅复用边界） |
+| `apps/web/app/explore.css` | EXP独立布局与窄屏抽屉化、三域呈现 | HOME-06依赖 | 不修改；HOME只传上下文，不能将EXP三域复制成HOME三栏 | 不施工 |
+| `packages/data-access/src/read-model-repository.mjs` | 六类L5 read_model读取；限定consumer/purpose/scope和qualification context | HOME-01/03/04/05/06 | KEEP为正式知识读取底座；不新增HOME平行库；按需扩展受控查询适配 | 中 |
+| `apps/web/lib/read-model-bridge.ts` | 读取G5 visual_stage世界投影、story_seeds、evidence_pointers、map_timeline_projections及视觉素材 | HOME-01/03/04/05 | 可复用查询/资格语义，但当前`readProductionRelationSummary(topicKey)`返回摘要而非27类策展卡片集合，不能直接满足HOME feed | 中—高 |
+| `apps/web/app/styles.css`与全局样式 | 全站基础样式 | 全局视觉底座 | 只核受影响选择器，避免改动全站字体/背景/导航造成其他工作面回归 | 中 |
+
+**成本判断：** HOME主体重建成本高，原因不是设计复杂度，而是当前页面缺少内容组织和生产读模型入口；共享导航/token局部调整为中低成本。禁止为了“继承原型”把2.4MB Base64/iframe单文件拆包直接复制进生产。
+
+### 11.7 视觉审查与明确建议
+
+**源码事实：** HOME主色变量为`--ink:#0b292d`、`--pine:#103c3e`、`--gold:#efc58e`、`--cream:#fbf3e3`、`--muted:#bdd0c8`；页面背景`#09282b`，整体为深青绿全屏舞台、暖金边线/强调、浅米色文字和多尺度卡片。
+
+**评价：**
+- 优点：空间统一、沉浸感明确；青绿与暖金关系克制；不依赖仿古纹样；卡片大小错落有节奏，符合“历史文化世界”而非后台门户。
+- 问题：大面积深色背景与高比例浅色文字构成暗场，整体不符合Owner已明确提出的“明亮、清润”目标；暖金边线密集时会偏厚重；长时间阅读和大量内容浏览可能产生视觉疲劳。
+- 与现有工程：当前five-ui.css是暖纸白/温润白底、深青文字和青绿强调；若HOME整页保留深色，首页与Explore等浅色工作面切换会形成明显视觉断层。共享字体、圆角、控件和青绿语义可保留，但不能强制所有工作面改成HOME深色。
+
+**裁决建议：局部视觉调整（ADAPT），不原样接受，也不重做为普通白底后台。** 建议将HOME基础漫游背景调整为温润浅纸/浅青灰的明亮舞台；深青绿保留在局部焦点、沉浸对象卡片或墨痕深色浮层；暖金降为细节强调，不再承担大面积边框；真实材料图像作为主要视觉锚点，SVG示意明确标“示意”。保持空间层次、错落布局、横向连续漫游和中式雅致，不增加仿古纹饰。
+
+**Owner决策门：** 该建议尚未得到Owner对“深色舞台局部保留、整体明亮化”的明确接受。本文件不把设计方建议冒充Owner裁决；视觉方向仍为`HOLD_OWNER_VISUAL_DIRECTION`，PDW-01不得关闭。此HOLD只针对视觉取向，不阻止本规范其余内容作为设计映射成果保存。
+
+### 11.8 数据、知识资格、来源与权利映射
+
+本节只定义HOME消费既有合同的方式，不新增Schema/API/数据库或Gate。
+
+| HOME显示对象 | 应使用的既有权威 | 必须满足的资格/字段语义 | 禁止事项 |
+|---|---|---|---|
+| 主题/世界主投影 | L5 `world_projections` | artifact_ref type/id/revision、source_refs、dependency_snapshot、purpose、scope、limitations；当前G5及consumer=visual_stage资格 | 不从候选JSON或旧冻结快照直接拼正式知识 |
+| 发现命题/故事摘要 | L5 `story_seeds`及必要的`discovery_paths` | 绑定同一合格run/依赖；区分事实陈述、解释、策展问题与未决项 | 把story statement直接改写成无边界历史事实 |
+| 关系/比较 | `world_projections.payload`及现有关系/主张引用、必要的`discovery_paths` | 每条关系有主客体、谓词、关系类型、来源/证据和限制；同一关系按G3/G4用途/消费者资格核验 | 仅凭原型`connections:[id]`建立历史因果或传播关系 |
+| 材料/图像/地图 | L5 `evidence_pointers`、`world_projections.payload.visuals`及其上游L3/L4引用 | 来源版本、locator、媒体身份、署名、license/rights、requested_action=display、consumer=visual_stage、当前有效资格 | 将书目URL、外部网页可访问或Met/LOC馆藏ID等同展示许可 |
+| 时间/空间 | `map_timeline_projections`、world projection及来源/证据定位 | 年代精度、时间身份、地点身份、坐标/配准方法与限制随行；Geometry is a Claim | 把现代地名/照片位置/示意地图当作历史坐标或精确路线 |
+| HOME策展选择 | 既有控制/选择记录语义（selection_manifest如当前合同及运行已支持） | 只决定选入顺序/主题，不授予事实资格；内容仍逐项检查G5/权利 | 把策展选中等同G5通过，或另建HOME Truth Store |
+| 墨痕Agent上下文 | L5 `agent_contexts`及Agent既有受控读取合同 | consumer=agent独立资格、purpose/scope/action及项目授权；不得把visual_stage资格自动转成agent权限 | 复用HOME公开展示许可作为Agent原图读取/下载/复刻授权 |
+| HOME→EXP对象 | 正式`artifact_ref@revision`、来源/焦点/问题和探索会话上下文 | 进入EXP时重新核验EXP消费者、用途、权利和撤权；返回锚点为体验状态，不是知识资格 | 只传title/url/summary，不传正式对象版本和资格引用 |
+
+**当前工程真实能力：**
+1. `read-model-repository.mjs`支持六类L5模型：`world_projection`、`agent_context`、`story_seed`、`discovery_path`、`map_timeline_projection`、`evidence_pointer`；读取必须有consumer、purpose、scope和资格上下文。
+2. `read-model-bridge.ts`已使用`consumerContext('visual_stage')`，要求`requested_action==='display'`，查询G5当前资格，并从同一run聚合world projection、story seeds、evidence pointers、map timeline projection和rights cleared的today_photo。
+3. `readProductionRelationSummary(topicKey)`目前是Explore摘要桥，返回entities/relations/storyCount/evidence/stories/timeline/conflicts/openQuestions/visuals及available；不是HOME策展feed，也没有确认现成HOME专用查询API。
+4. 因此HOME未来应在现有read-model/data-access和资格门面内增加必要的受控组合读取/适配，输出UI view model；不得新建表、第二知识库、平行资格、公开静态JSON或未经证明的接口名。字段名须在后续施工时对照实际L5 payload与物理合同逐字段确认。
+
+**四种内容身份必须分开：**
+- 原型设计样例：只用于布局/交互验证；
+- 候选知识资产：有候选身份但未获正式资格；
+- 真实知识资产：存在正式L0—L5对象及其版本/来源；
+- 公众展示合格资产：当前G5对`visual_stage`、指定purpose/scope/action有效，且所有媒体逐动作权利有效。
+以上身份不可互相推导。任何未知权利、未知依赖、资格过期或撤权事件均需HOLD/阻断相应内容，不允许退回旧缓存继续展示。
+
+### 11.9 HOME→EXP与返回恢复正式交付要求
+
+生产接口由后续施工按现有MHKA/EXP合同实现，不在本轮发明新Schema。交接的语义字段至少包括：
+- 精确对象`artifact_ref.type/id/revision`或正式作品/主题ref；
+- 当前发现主题/策展组、用户问题/发现命题；
+- 当前卡片焦点、观察位置/视图状态；
+- 来源与证据引用（含版本/locator），不得只传URL；
+- 进入EXP的来源动作和目的用途；
+- HOME返回锚点（主题组、横向phase/scroll位置、焦点对象、用户问题及必要的UI偏好）。
+
+进入EXP后按EXP consumer/purpose/scope/action重新核验资格；对象撤权/失效时保留可恢复的安全状态，但停止失效材料消费。返回HOME时恢复组、位置和焦点；若原对象已撤权，显示失效提示并选择仍合法的邻近内容，不得复活旧素材。
+
+原型`postMessage('*')`只属于本地演示；生产必须通过同源路由/受控导航或严格校验的消息源，不得通配目标源传递敏感对象/文件信息。
+
+### 11.10 正式HOME工程交付规范（可直接派生施工任务）
+
+**产品目标**
+- HOME首屏即提供可探索的历史文化世界，不以功能模式卡墙或大聊天框作为主视觉。
+- 通过时间、空间、关系、材料与普通生活的多尺度发现，让用户自然发现过去与当下的联系。
+- HOME不是资讯流、历史目录、EXP替代品或Agent聊天首页。
+
+**结构和行为**
+1. 主空间为策展漫游/发现舞台；默认进入“漫游全部”，主题视角为可切换的六种探索方向。
+2. 内容按真实对象、问题、材料、时代、地域和生活场景组织；卡片采用异质尺度与材料适配，不做等高六宫格。
+3. 主导发现、次级发现、关系线索、材料细读、时空/生活延展可融合，不强制九个独立页面区块。
+4. 每张公开内容卡至少有可辨识标题、时代/地域（未知则明确未知）、内容类型、发现问题/价值、材料身份或来源入口；按需展示来源/限制，不把权利字段塞满卡面。
+5. “附近线索”命名可保留为体验语言，但推荐必须区分历史关系、研究解释、策展并置和用户兴趣关联；无证关系只能作为“继续看看”而非历史事实。
+6. 用户可切换主题、聚焦卡片、查看线索、暂停/恢复漫游、键盘浏览、触屏拖动、打开墨痕、进入EXP并返回。
+7. 墨痕默认低干扰、用户主动唤起、上下文相关；输入问题/上传材料必须走现有Agent、项目授权、来源权利和费用合同。
+8. 页尾极简，承载辅助导航、权利/隐私等政策入口；不得成为重复模式入口区。
+9. HOME不复制EXP视觉舞台的三域布局；只传递EXP语义上下文。
+
+**视觉Token与视觉规则（设计值方向，非本轮修改CSS）**
+- 背景主基调：温润浅纸/浅青灰，避免纯白刺眼；深青绿用于局部沉浸面、焦点、Agent浮层或导航强调。
+- 主文字：深青黑；次文字：低对比但可读的灰绿；强调色：青瓷绿；暖金仅用于少量重点/证据提示。
+- 沿用现有`--mo-paper-50`、`--mo-paper-100`、`--mo-ink-900`、`--mo-teal-700`、`--mo-teal-600`、`--mo-font-ui`、`--mo-font-editorial`作为token底座候选；后续统一定义HOME局部Token，禁止全局改色破坏Explore/Studio/Admin/WATCH。
+- 保留横向漫游、错落卡片、空间层次和真实材料优先；不增加仿古纹样、厚重金边或全页暗色遮罩。
+- 图像按地图/器物/典籍/遗址/人物/生活材料各自的认知任务呈现；示意、复原、原件、当代观察需有不同身份标记。
+- 动效默认克制，自动流动必须可暂停；支持减少动态效果，避免自动运动在页面不可见时继续。
+
+**响应式与无障碍**
+- 验收视口：1440×900、768px、390px；320px不得横向溢出。
+- 桌面保持主导发现与漫游舞台；平板调整卡片尺寸/主题导航密度；手机优先单手可触的横向滑动与明显暂停/切换入口，不机械改成等高纵向列表。
+- 卡片需支持Enter和Space；按钮可见焦点；浮层打开后焦点进入，关闭后返回唤起按钮；Escape关闭可关闭浮层。
+- 提供aria-label/role/status；减少动态效果不仅关闭CSS动画，也须停止JS自动流动；偏好动态变化应即时生效。
+- 触屏拖动和卡片点击需区分，不能因pointer捕获吞掉按钮操作。
+
+**内容状态**
+- 页面加载、无内容、仅有候选、G5不可用、权利失效、媒体缺失、接口失败必须分别有可理解状态。
+- 不得将“候选/研究夹具/馆藏链接/设计样例”伪装为正式公开知识资产。
+- 任何一张图片或地图必须按对象核对来源、版本、许可、署名、展示/下载/改编动作及失效状态。
+
+### 11.11 后续工程范围与不施工清单
+
+**后续HOME施工可涉及（PDW-01关闭并另行授权后）：**
+- `apps/web/app/page.tsx`及HOME专属组件重建；
+- `GlobalNav.tsx`首页导航显示与工作面入口整合；
+- `five-ui.css`中HOME门户专属样式替换、局部Token补齐；
+- 现有L5 read-model读取适配，形成真实策展feed；
+- HOME→EXP正式对象ref、上下文、返回锚点与失效恢复；
+- HOME真实内容、媒体许可、无障碍、响应式和浏览器测试。
+
+**不属于HOME施工：**
+- Studio/Admin内部页面重做；
+- EXP双组件体验重构或业务实现；
+- WATCH播放/撤权等M5专业合同工作；
+- 个人空间/me架构和功能建设；
+- 数据库新表/迁移、第二知识库、第二Agent Runtime；
+- D00—D05、L0—L8、G0—G5、Runner/Registry及M5—M8合同改写；
+- 生产部署、公众开放、权限或CI变更。
+
+### 11.12 可执行验收矩阵
+
+| 编号 | 验收条件 | 通过证据 |
+|---|---|---|
+| H01 | 首屏为知识世界发现，不是功能入口墙 | 实际浏览器首屏+真实内容审阅 |
+| H02 | 六种主题视角可切换且内容异质 | 每组真实数据与切换状态测试 |
+| H03 | 卡片主次、尺度、材料表达适配，不形成等高卡墙 | 1440/768/390整页审查 |
+| H04 | 每条关系有语义、来源/证据和限制；无据关系不作历史因果 | 关系正反样例和证据回链 |
+| H05 | 来源/图像/地图展示权按对象、动作、消费者、用途当前有效 | G5与rights正反测试、撤权测试 |
+| H06 | 只显示当前可公开消费内容；候选/研究夹具不混入 | 真实DB资格查询与匿名浏览测试 |
+| H07 | 墨痕低干扰、可唤起/关闭/安静，真实上下文相关 | Agent真实调用及拒绝/失败回执 |
+| H08 | HOME→EXP传递正式对象版本、问题、来源、焦点和用途 | 实际路由/会话payload与EXP接收证据 |
+| H09 | 返回HOME恢复组、位置、焦点；失效对象不复活 | 真实往返和撤权恢复测试 |
+| H10 | 暂停/恢复、拖动、滚轮、卡片点击无误触 | 桌面/触屏浏览器操作录屏或自动化证据 |
+| H11 | 键盘Enter/Space、Escape、焦点返回、读屏标签可用 | 键盘与辅助技术实测 |
+| H12 | prefers-reduced-motion关闭JS自动流动和CSS动效，变化即时生效 | 系统偏好切换实测 |
+| H13 | 1440×900、768、390可用，320无横向溢出 | 四视口浏览器截图/测试 |
+| H14 | 搜索、通知、登录、角色入口和其他工作面不回归 | 全局导航跨页回归 |
+| H15 | 加载、空、候选、无权、撤权、媒体缺失、接口失败状态有区分 | 各状态正反测试 |
+| H16 | 不修改数据库/API专业合同，不产生第二知识库或第二Agent Runtime | 代码diff/合同审查 |
+
+### 11.13 本轮结论、HOLD与关闭判定
+
+**已完成：**
+- [x] 读取并解码Owner指定HOME V1.8.3实际源码；
+- [x] 核实页面结构、六种发现视角、27条样例数据身份；
+- [x] 核实主要交互、状态、动态效果、键盘和断点；
+- [x] HOME-00—08逐项映射；
+- [x] 当前HOME工程关键代码逐项映射和成本判断；
+- [x] 六类L5读模型、Explore摘要桥和公开资格/权利合同映射；
+- [x] 正式HOME工程设计规范与验收矩阵形成。
+
+**仍未满足关闭条件：**
+- [ ] Owner明确接受或修正11.7视觉方向裁决（建议局部调整、整体明亮化）；
+- [ ] 后续HOME施工前，由工程执行方针对实际可用的公开L5内容和媒资权利完成真实数据样例映射/权限正反核验；本轮未查询生产数据，不能伪称数据已存在；
+- [ ] 本轮未进行浏览器视觉/触屏/响应式运行实测；该项应作为后续HOME实现验收，不冒充当前已通过。
+
+**状态：** `IN_PROGRESS / HOLD_OWNER_VISUAL_DIRECTION`。本轮设计—工程映射与规范文本已完成，但因Owner视觉方向尚未裁决，不关闭PDW-01，不启动PDW-02—PDW-05或HOME代码施工。
+
+**唯一下一动作：** Owner审阅11.7的局部视觉调整建议并作出接受/修正裁决；在此之前保持PDW-01打开，其他工作不扩展。
