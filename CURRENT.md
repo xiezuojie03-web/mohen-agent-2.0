@@ -16,15 +16,15 @@
 
 ## 2. 当前产品深化工作包：PDW-01 HOME CEI工程衔接
 
-**状态：** `IN_PROGRESS / BLOCKED_SOURCE_MATERIAL`。本轮已完成CEI研究成果盘点、R1—R5独立质量判断、当前main HOME关键代码静态核查及继承边界初判；尚未达到PLAN V1.8 §3.6关闭条件。
+**状态：** `IN_PROGRESS / BLOCKED_DESIGN_ACCEPTANCE_AND_DATA_MAPPING`。已完成CEI研究成果盘点、R1—R5独立质量判断、当前main HOME关键代码静态核查，并取得Owner指定的全工作面整合HTML原型；尚未达到PLAN V1.8 §3.6关闭条件。
 
 **唯一正式入口：** [PDW-01 HOME CEI工程衔接入口与审查报告 V0.1](tasks/implementation/PDW/PDW-01_HOME_CEI工程衔接入口与审查报告_V0.1.md)。后续平台首先读取该文件；当前状态和施工顺序仍以本文件及MAB PLAN为准。
 
-**主要阻断：** HOME V1.8.3原始交互源、CEI统一HTML原型源未能从当前main取得并回读；R5仍为`OWNER_REVIEW_REQUIRED / IMAGE_PRODUCTION_NOT_YET_AUTHORIZED`；真实HOME内容读模型/字段与HOME→EXP上下文尚未完成精确代码映射。不得据此猜测V1.8.3布局/动效/状态，不得将当前门户作为V1.8.3替代，不得提前进入HOME代码施工。
+**主要阻断：** V1.8.3与统一HTML原型源已由`tasks/research/CEI-01/prototypes/墨痕_全工作面继承整合_HTML原型_明亮雅致版.html`补齐，Blob SHA `52334737b590d2cb0b7068b1c45d9ad0e144bbfa`；当前改为R5 Owner审阅/视觉准入、HOME深青绿视觉是否符合“明亮清润”目标的确认，以及真实内容读模型/权利字段与HOME→EXP上下文精确映射。原型中候选/研究夹具和Studio/Admin/个人空间模拟不构成生产数据或业务能力，不得照搬iframe/Base64封装进入生产代码。
 
 **已完成代码核查范围：** `apps/web/app/page.tsx`、`ModeEntryCard.tsx`、`GlobalNav.tsx`、`layout.tsx`、`five-ui.css`；静态核验确认当前根路由仍是品牌Hero+模式入口卡+三个空态面板，首页隐藏主导航，未见策展主题/对象/关系数据读取或HOME→EXP上下文交接。未进行浏览器、真实数据或权限运行验收。
 
-**下一动作：** 找回并核验V1.8.3原始交互源与统一HTML原型源，或由Owner明确裁决替代方式；再完成内容数据/权利/EXP字段映射和正式设计规范定稿。未达到全部关闭条件前保持`IN_PROGRESS / BLOCKED`，不启动PDW-02—PDW-05，不修改M5及既有D/L/G合同。
+**下一动作：** 以Owner指定的全工作面整合HTML原型为准，完成HOME设计逐项映射、R5审阅/视觉方向确认及真实内容数据/权利/EXP字段映射，随后定稿正式设计规范和验收条款。未达到全部关闭条件前保持`IN_PROGRESS / BLOCKED`，不启动PDW-02—PDW-05，不修改M5及既有D/L/G合同。
 
 ## 3. 剩余 HOLD（如实，不阻 Owner 体验）
 
