@@ -6855,9 +6855,25 @@ Owner 亲验反馈：「为什么两个地方访问还不一样？而且最关�
 
 - **下一动作**：网络恢复后推送 + CI 核验；Owner 用户式全程体验交付（localhost:3100，登录 20195689@qq.com 可直接看第 4 部作品）。
 
+## 第三十三批（2026-11-26）：CI 双红修复——retrieve 空检索词资格枚举契约回归 + M1 HTTP 链补正式正文权威迁移
+
+- **基线**：`cd24e32b`（批初重核 本地=远端；推送成功，PENDING_PUSH 自本批起解除）。提交 `d0bc9e4f`（4 文件，+45/−11）。
+- **修复 1（ci 红灯）**：`apps/web/lib/mohen-agent/retrieve.ts` 空检索词时资格枚举异常——契约要求空检索词不得进入合格 L5 命中判断，补 NOT_SEARCHED 分支；`tests/unit/mab-m5-qualified-retrieve.test.ts` 补 8 行契约断言；`scripts/guards/check-isolated-db-fixtures.mjs` 守卫同步新契约。
+- **修复 2（M1 HTTP 链缺正式正文权威迁移）**：`scripts/test-mab-http.mjs` 显式迁移链补 2026-11-23 两迁移（`20261123120000_mab_m5_st05_st07_project_and_body_authority.sql` 等），使 M1 一次性隔离库具备 `publication.works.project_id` / `studio.work_revisions.formal_revision_id` / `control.artifact_revision_for` 正式正文解析。
+- **CI（推送后真实回执）**：`ci`=45723945044 **success**；MAB isolated PostgreSQL 17 验证=45723945111 **success**（宿主 CI_BLOCKED 解除的直接证据）；MAB M1=45723945084 **failure**——formal_revision_id 缺失错误消失，暴露第二根因（42P18 参数类型推断 + e2e fixture 缺 project 绑定），如实计入下一批。
+
+## 第三十四批（2026-11-26）：M1 503 根因修复——node-pg 参数化 `:'x' is null` 触发 42P18 + e2e fixture 补项目绑定
+
+- **基线**：`d0bc9e4f`（批初与推送前两次重核 本地=远端 `d0bc9e4f`；推送 `d0bc9e4f..e5c36922` 成功）。提交 `e5c36922`（4 文件，+45/−30）。
+- **根因（本批实证）**：`apps/web/lib/formal-publication-chain.ts` `getFormalRevision` 与 `apps/web/lib/studio-director.ts` `commitWorkRevision` 中 `( :'x' is null or … = :'x'::uuid )` 在 node-pg 参数化下报 **42P18「无法确定参数 $n 的数据类型」**（Postgres 对 `$n is null` 分支不做类型推断，即便后续分支带 cast）。本地一次性链式隔离库复现确认后，改为 **cast 前置** `( :'x'::uuid is null or … )`，实证修复（SUBMIT_RESULT ok:true status:submitted）。非 CI 环境问题，是 M1 真实产品缺陷。
+- **修复 2（fixture 现代化）**：POST /api/works 现按 11-23 产品契约要求 Owner 名下 ACTIVE `studio.projects` 绑定——`tests/e2e/mab-m5-private-revisions.spec.ts`（`seedProject` 帮助函数 + draft/director 用例传 `project_id`）与 `tests/e2e/mab-m5-public-consumers.spec.ts`（测试5 先建 project 再建作品）消除 5×400 陈旧 fixture。
+- **本地验证**：隔离库守卫 PASS（112 迁移）、`tsc --noEmit` 干净、全量 unit 116 文件 834 PASS。
+- **CI（推送后真实回执）**：`ci`=45726227097 **success**；MAB M1 隔离认证 HTTP 验收=45726226950 **success**（M1 双根因清零）；mab-isolated-db 路径过滤未触发（本批 4 文件不在其 paths 列表，符合工作流设计）。
+- **体验服务器**：本地 3100 已用本批代码 `next build` 重建并重启（/api/auth/me 200），Owner 体验包含投稿 503 修复。
+
 ## 部署 / 费用 / 凭据
 
-- web staging：`mohen-agent-2-0-eytp0i3no-napoles1.vercel.app`（`dpl_Cqdz7vPYHrzQTn711rkGEh35rter`，target staging / VERCEL_ENV=preview，SHA `e563161c`）；上一部署 `mohen-agent-2-0-5g38pnq17-napoles1.vercel.app`（`48c9169b`）为本批 D05 真实续跑所用。authority production：`mohen-d00-authority.vercel.app`（未改动，仍 `48c9169b`；D04/D05 issue 未签名探测 401=路由存在）。提交作者须为 `xiezuojie03 <315303392+xiezuojie03-web@users.noreply.github.com>`，否则 Vercel 拒部署；网络经本地代理 `127.0.0.1:51081`。
+- web staging：`mohen-agent-2-0-eytp0i3no-napoles1.vercel.app`（`dpl_Cqdz7vPYHrzQTn711rkGEh35rter`，target staging / VERCEL_ENV=preview，SHA `e563161c`）；上一部署 `mohen-agent-2-0-5g38pnq17-napoles1.vercel.app`（`48c9169b`）为本批 D05 真实续跑所用。authority production：`mohen-d00-authority.vercel.app`（未改动，仍 `48c9169b`；D04/D05 issue 未签名探测 401=路由存在）。提交作者须为 `xiezuojie03 <315303392+xiezuojie03-web@users.noreply.github.com>`，否则 Vercel 拒部署；网络经本地代理 `127.0.0.1:51081`（2026-11-26 已恢复，第三十二批 PENDING_PUSH 经第三十三/三十四批推送对账清零）。
 - 费用：本批（第三十二批）静安寺题材 **5 次 Provider 调用 / 0.009696 USD**（D02 材料观察 1 次 0.003418 + 导演 4 次 0.006278，receipt 对账见批文）；累计 **0.026836 USD**，导演委托 1.00 封顶内、未新增付费来源、未扩大用途。含令牌/签名的临时脚本均在 gitignored `work/scratch/`，未入 git。
 - 已知并发写入方：`main` 上有另一执行方传 `tasks/research/MERA-01/*`；推送被拒时 fetch + rebase，绝不 force push / reset / 新建分支。
 - 安全：密钥仅在 `.secrets/`（gitignored），签名私钥与机器签发连接不出部署（G5 在部署内签发）；G0—G5 均为独立机器评审签发，非自签。
