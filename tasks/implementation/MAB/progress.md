@@ -22,3 +22,16 @@
 - **交付文件：** `tasks/implementation/PDW/PDW-01_HOME_CEI工程衔接入口与审查报告_V0.1.md`；CURRENT已同步为PDW-01进行中并记录阻断。
 - **本轮未做：** 未修改业务代码、数据库、API、权限、CI、部署；未执行浏览器/真实数据/权限验收；未启动PDW-02—PDW-05。
 - **下一动作：** 找回并校验V1.8.3原始交互源与统一HTML原型源，或由Owner明确裁决替代方式；随后完成字段映射、正式设计规范定稿和Owner交付边界确认。
+
+
+## 2026-11-26｜PDW-01补充核验：全工作面整合HTML原型纳入正式基线
+
+- **Owner指定原型：** `tasks/research/CEI-01/prototypes/墨痕_全工作面继承整合_HTML原型_明亮雅致版.html`。
+- **Git Blob SHA：** `52334737b590d2cb0b7068b1c45d9ad0e144bbfa`；已读取完整Blob（约2,399,164字符），并解码核验内嵌的`home-source`、`exp-source`、`watch-source`、`workflow-source`四份HTML。
+- **基线裁决：** 接受该文件为PDW-01正式整合原型基线；内嵌HOME明确标注V1.8.3。旧CEI-4统一原型不再作为同级首选依据。原先“原型源未取得”阻断解除。
+- **覆盖范围：** HOME连续策展漫游、七类视角、附近线索、低干扰墨痕、HOME→EXP上下文与返回锚点；同时包含EXP、WATCH、Studio/Admin演示及个人空间抽屉。
+- **关键质量提醒：** HOME主视觉实际采用深青绿+暖金+浅色文字，不是通常意义的明亮浅色UI；可有雅致气质，但是否符合Owner“明亮、清润”目标需明确审阅。原型包含候选主题/研究夹具/未达G5素材，不是正式公开知识资产；Studio/Admin、个人空间和WATCH等均为模拟交互，不是生产业务能力。
+- **工程约束：** 主文件以Base64内嵌HTML、iframe/srcdoc、postMessage编排，约2.4MB；仅继承设计意图与交互契约，不照搬单文件封装。生产实现须按现有路由/权限/知识读模型拆解，postMessage通配目标源不得作为生产安全实现。
+- **验证边界：** 本轮为完整源码静态核验，未进行浏览器视觉、触屏、跨视口和端到端运行验收。
+- **文档同步：** PDW-01入口报告补充第10节；CURRENT更新为`IN_PROGRESS / BLOCKED_DESIGN_ACCEPTANCE_AND_DATA_MAPPING`。
+- **下一动作：** 以该原型完成HOME设计映射、R5 Owner审阅/视觉方向确认、真实内容数据/权利字段及HOME→EXP上下文映射；仍不启动HOME代码施工或PDW-02—PDW-05。
