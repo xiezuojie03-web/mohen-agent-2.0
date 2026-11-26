@@ -16,15 +16,19 @@
 
 ## 2. 当前产品深化工作包：PDW-01 HOME CEI工程衔接
 
-**状态：** `IN_PROGRESS / BLOCKED_DESIGN_ACCEPTANCE_AND_DATA_MAPPING`。已完成CEI研究成果盘点、R1—R5独立质量判断、当前main HOME关键代码静态核查，并取得Owner指定的全工作面整合HTML原型；尚未达到PLAN V1.8 §3.6关闭条件。
+**状态：** `IN_PROGRESS / HOLD_OWNER_VISUAL_DIRECTION`。PDW-01-B已完成HOME V1.8.3源码拆解、HOME-00—08逐项映射、main关键代码继承审查、L5/资格/权利/EXP交接映射及正式HOME工程设计规范（详见唯一入口）。
 
-**唯一正式入口：** [PDW-01 HOME CEI工程衔接入口与审查报告 V0.1](tasks/implementation/PDW/PDW-01_HOME_CEI工程衔接入口与审查报告_V0.1.md)。后续平台首先读取该文件；当前状态和施工顺序仍以本文件及MAB PLAN为准。
+**唯一正式入口：** [PDW-01 HOME CEI工程衔接入口与审查报告 V0.1（现行内容V0.2）](tasks/implementation/PDW/PDW-01_HOME_CEI工程衔接入口与审查报告_V0.1.md)。
 
-**主要阻断：** V1.8.3与统一HTML原型源已由`tasks/research/CEI-01/prototypes/墨痕_全工作面继承整合_HTML原型_明亮雅致版.html`补齐，Blob SHA `52334737b590d2cb0b7068b1c45d9ad0e144bbfa`；当前改为R5 Owner审阅/视觉准入、HOME深青绿视觉是否符合“明亮清润”目标的确认，以及真实内容读模型/权利字段与HOME→EXP上下文精确映射。原型中候选/研究夹具和Studio/Admin/个人空间模拟不构成生产数据或业务能力，不得照搬iframe/Base64封装进入生产代码。
+**原型基线：** `tasks/research/CEI-01/prototypes/墨痕_全工作面继承整合_HTML原型_明亮雅致版.html`，Blob SHA `52334737b590d2cb0b7068b1c45d9ad0e144bbfa`；已从`home-source`解码HOME V1.8.3（77,131字符），27条原型数据均非当前G5公众合格资产。
 
-**已完成代码核查范围：** `apps/web/app/page.tsx`、`ModeEntryCard.tsx`、`GlobalNav.tsx`、`layout.tsx`、`five-ui.css`；静态核验确认当前根路由仍是品牌Hero+模式入口卡+三个空态面板，首页隐藏主导航，未见策展主题/对象/关系数据读取或HOME→EXP上下文交接。未进行浏览器、真实数据或权限运行验收。
+**代码级结论：** `page.tsx`仍是门户式Hero/模式入口/空态；GlobalNav具会话、搜索、通知和角色入口但HOME隐藏主导航；`layout.tsx`可继承；`five-ui.css`保留全局暖纸/青绿/字体token，旧HOME门户专属布局不继承。Explore现有`readProductionRelationSummary(topicKey)`是L5摘要桥，不是HOME策展feed；六类L5读取和G5 consumer/purpose/scope资格语义应复用，不得另建知识库或资格体系。
 
-**下一动作：** 以Owner指定的全工作面整合HTML原型为准，完成HOME设计逐项映射、R5审阅/视觉方向确认及真实内容数据/权利/EXP字段映射，随后定稿正式设计规范和验收条款。未达到全部关闭条件前保持`IN_PROGRESS / BLOCKED`，不启动PDW-02—PDW-05，不修改M5及既有D/L/G合同。
+**视觉裁决建议：** V1.8.3深青绿+暖金舞台有沉浸感和雅致，但大面积暗场不满足Owner明确提出的“明亮、清润”；建议局部调整为温润浅纸/浅青灰基调，保留深青绿作焦点/局部沉浸层，暖金降为细节强调。该视觉建议尚待Owner裁决，不能替Owner作最终决定。
+
+**未做事项与边界：** 未修改业务代码、数据库、API、权限、CI或部署；未做浏览器/真实数据/权限运行验收；未启动HOME施工或PDW-02—PDW-05。真实L5样例与媒体权利正反核验留待后续获准施工前/施工验收；本轮不声称真实数据已存在。
+
+**唯一下一动作：** Owner审阅PDW-01入口第11.7节并接受或修正视觉方向；在此之前保持PDW-01为IN_PROGRESS，不启动后续PDW工作包。
 
 ## 3. 剩余 HOLD（如实，不阻 Owner 体验）
 
