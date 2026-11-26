@@ -14,13 +14,17 @@
 
 **CI 真实回执**：批34 `ci`=success、M1=success；批33 额外 `mab-isolated-db`=success——此前具名的宿主 CI_BLOCKED 已按证据解除。本地 3100 体验服务器已用批34代码重建并重启（/api/auth/me 200），Owner 走网页投稿流程已含 503 修复。
 
-## 2. 下一步（唯一施工顺序）
+## 2. 当前产品深化工作包：PDW-01 HOME CEI工程衔接
 
-**产品深化工作流已按MAB PLAN V1.8 §3.6正式确定，下一项为PDW-01 HOME CEI工程衔接。** 先盘点现有CEI成果、核实正式文件与版本、评估工程可用性，整理正式交付材料和继承边界；不重新启动HOME设计研究，不提前进入代码施工。
+**状态：** `IN_PROGRESS / BLOCKED_SOURCE_MATERIAL`。本轮已完成CEI研究成果盘点、R1—R5独立质量判断、当前main HOME关键代码静态核查及继承边界初判；尚未达到PLAN V1.8 §3.6关闭条件。
 
-PDW-01关闭后依次执行PDW-02 Studio设计与工程自检、PDW-03 EXP真实主题双组件试验、PDW-04 Admin视觉与Agent辅助治理深化、PDW-05个人空间产品与数据架构规划。不得调序或按CEI交付包历史阶段0—7顺序执行。
+**唯一正式入口：** [PDW-01 HOME CEI工程衔接入口与审查报告 V0.1](tasks/implementation/PDW/PDW-01_HOME_CEI工程衔接入口与审查报告_V0.1.md)。后续平台首先读取该文件；当前状态和施工顺序仍以本文件及MAB PLAN为准。
 
-M5原有真实作品闭环、八维准出及Owner最终体验责任均保持不变；PDW-02负责将Studio设计/工程差距转化为可操作的Owner验收任务。当前本地服务、真实作品和CI回执仍是已记录的运行事实，不代表PDW-01已开始或M5已签收。未跟踪文件组的裁决暂不作为PDW-01前置条件，按实际需要另行处理。
+**主要阻断：** HOME V1.8.3原始交互源、CEI统一HTML原型源未能从当前main取得并回读；R5仍为`OWNER_REVIEW_REQUIRED / IMAGE_PRODUCTION_NOT_YET_AUTHORIZED`；真实HOME内容读模型/字段与HOME→EXP上下文尚未完成精确代码映射。不得据此猜测V1.8.3布局/动效/状态，不得将当前门户作为V1.8.3替代，不得提前进入HOME代码施工。
+
+**已完成代码核查范围：** `apps/web/app/page.tsx`、`ModeEntryCard.tsx`、`GlobalNav.tsx`、`layout.tsx`、`five-ui.css`；静态核验确认当前根路由仍是品牌Hero+模式入口卡+三个空态面板，首页隐藏主导航，未见策展主题/对象/关系数据读取或HOME→EXP上下文交接。未进行浏览器、真实数据或权限运行验收。
+
+**下一动作：** 找回并核验V1.8.3原始交互源与统一HTML原型源，或由Owner明确裁决替代方式；再完成内容数据/权利/EXP字段映射和正式设计规范定稿。未达到全部关闭条件前保持`IN_PROGRESS / BLOCKED`，不启动PDW-02—PDW-05，不修改M5及既有D/L/G合同。
 
 ## 3. 剩余 HOLD（如实，不阻 Owner 体验）
 
