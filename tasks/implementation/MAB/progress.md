@@ -203,3 +203,5 @@
 - **文档状态：** PDW-00正式入口内容升为V0.3，CURRENT同步为`DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED`；PLAN V1.11、AGENTS、ENGINEERING_HANDOFF未修改。PDW-00未关闭，Owner未签收，PDW-01/02未启动。
 - **提交证据：** 本轮主要资产提交包括HTML`d76e5350c4aa38867a552a54a0768a0d632151c3`及后续导航/交互补强`8c9a5dd51ccf9bd3ea2eaf98170ef99c50c6e01f`、`7cd905a962c30ec0b17b2c40d5a7b519ec2562d8`；正式入口V0.3提交`12744a2e08b9429a1c8ce57353f859be95bb4183`；概念图提交`924d5725456b8681a9b55dc925b173000eb05389`及SVG格式修正`8596b354cdec286658eba2a97b73a7ef02dcf0fa`。CURRENT同步提交：`361b30f6d3821adae10e86c04d0642840bc07053`。
 - **唯一下一动作：** Owner打开更新后的概念图和HTML，按正式入口O1—O13审阅；提出的具体修订仍归PDW-00，不提前启动PDW-01或PDW-02。
+
+- **静音规则复核：** HTML原型修正为打开全局墨痕面板不会自动解除静音；只有用户明确点击“恢复提示”才恢复主动提示。静音状态仍允许用户主动提问。页尾补充来源/材料权利/个人隐私说明原则。原型脚本语法复核PASS；真实浏览器验收仍NOT_RUN。对应HTML提交SHA：`a0ed7742ab203ecb155d81354c47b6a1e5ee3474`。
