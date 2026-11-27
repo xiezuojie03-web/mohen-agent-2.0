@@ -250,3 +250,6 @@ Owner明确改变策略：PDW-00不再开展HOME、EXP、Studio、WATCH、Admin�
 - **文件状态：** 正式入口V0.6；CURRENT同步PDW-00当前状态；PLAN V1.13未改（任务范围、交付类型、PDW顺序未变化）；progress追加本报告。
 - **质量边界：** 真实源码定向读取PASS；HTML浏览器点击、JS语法执行、多视口、键盘/焦点、屏幕阅读器和真实登录/Agent/权限服务均NOT_RUN。静态审查不冒充浏览器验收。未修改业务代码/API/数据库/Schema/认证/RLS/角色权限/Agent Runtime/D-L-G/Runner/CI/部署。
 - **当前状态：** `DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED`。Owner需体验HTML并签收；未签收不得CLOSED，不启动PDW-01。
+
+
+- **静态脚本检查补充：** 从main回读最新HTML原型，提取唯一内嵌脚本并使用V8编译检查，JavaScript语法`PASS`；27个脚本引用DOM ID均有对应元素；HTML文档闭合、脚本标签成对、六个页面配置、六种身份情境、移动端五项导航、轻提示、任务待确认/执行/完成状态及减少动态偏好均通过静态存在性核对。该检查不等于真实浏览器交互或多视口验收，后者仍`NOT_RUN`。
