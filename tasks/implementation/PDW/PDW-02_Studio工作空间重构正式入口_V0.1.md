@@ -269,7 +269,7 @@ ALTER TABLE "publication"."withdrawals" ENABLE ROW LEVEL SECURITY;
 
 ---
 
-# 11. Studio完整产品设计交付（V0.2）
+## 11. Studio完整产品设计交付（历史设计交付输入V0.2）
 
 > 本节起为PDW-02完整设计交付；第1—10节既有自检报告保留为诊断证据，不重复改写。  
 > 设计基线：Studio业务代码 main 2388af125300efb73e27b3c3804982a56f5a9d36。从自检基线 7ebacda9a9c3f718778462b87c2d8fad21006e5f 到该SHA的比较结果为6个提交，变更仅涉及CURRENT、PLAN、progress和自检报告，无Studio业务代码变更。随后原型/概念图提交也仅增加设计文件。
@@ -528,9 +528,9 @@ ALTER TABLE "publication"."withdrawals" ENABLE ROW LEVEL SECURITY;
 - 原自检诊断证据：本文件第1—10节，保持历史内容，不另复制成第二份报告。
 - 全站视觉上位输入：PDW-01正式入口第11.7节（Owner视觉裁决）及第12节（PDW-00完成后的HOME继承性完善）；PDW-00完成后还必须读取其最终签收规范。
 
-## 11.13 PDW-02当前结论
+## 11.13 原Studio设计阶段结论快照（历史状态，不代表现行任务状态）
 
-**设计交付状态：** DESIGN_REVIEW / OWNER_REVIEW_REQUIRED。
+**历史阶段设计交付状态：** DESIGN_REVIEW / OWNER_REVIEW_REQUIRED（该状态对应旧Studio设计阶段，已被本文件顶部的现行PDW-02整体状态及第12节执行门禁取代）。
 
 已完成：Studio职责边界、信息架构、端到端旅程、Agent交互合同、视觉规范、完整工作面概念图、可操作HTML原型、P0—P3逐项处置、设计—工程映射、Owner体验任务。
 
