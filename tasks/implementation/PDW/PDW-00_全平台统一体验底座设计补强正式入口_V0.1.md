@@ -3,7 +3,7 @@
 > 正式入口编号：PDW-00-20261127-01  
 > 现行内容版本：V0.3（Owner反馈后的继承质量补强）  
 > 日期：2026-11-27  
- > 状态：DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED  
+> 状态：DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED  
 > 归属：PDW产品设计工作流；本文件是PDW-00唯一正式任务入口，执行标准服从PLAN §6及上位设计合同。  
 > 唯一施工计划：`tasks/implementation/MAB/PLAN.md`。  
 > 适用仓库：`xiezuojie03-web/mohen-agent-2.0`，main。
