@@ -113,3 +113,13 @@
 - **状态同步：** PLAN V1.9 §3.6 PDW-02更新为DESIGN_REVIEW / OWNER_REVIEW_REQUIRED；根目录CURRENT更新为当前唯一断点；本记录追加至progress。
 - **边界：** 未修改业务代码、数据库Schema/数据、RLS、API、CI、部署、生产资格；未重做D00—D05/G0—G5；未启动PDW-03/04/05。
 - **下一动作：** Owner按O1—O9体验原型并反馈；按反馈在唯一入口内修订，签收后方可关闭PDW-02。
+
+
+## 2026-11-27｜PDW-02最终文件与状态复核
+
+- **复核基线：** main HEAD 026a9f414d61227ac7685f95b1c8b642716806e5；Studio业务代码基线仍为2388af125300efb73e27b3c3804982a56f5a9d36；本轮没有业务代码变更。
+- **正式入口：** PDW-02唯一入口现行内容V0.2，已含原诊断、自检问题处置、完整用户体验、IA、Agent交互、视觉规范、概念图/原型引用、工程映射和Owner验收任务。
+- **原型最终SHA：** bb77989410fd3fa9bcda48b6f59e15c978353f49；HTML约31516字符；脚本语法复核PASS；核心交互锚点存在。浏览器实测NOT_RUN。
+- **概念图最终SHA：** b96d82899f3b22537141723d456da01b801f8411；SVG源已入库，完整三工作区构图。
+- **计划/状态：** PLAN V1.9 PDW-02为DESIGN_REVIEW / OWNER_REVIEW_REQUIRED；CURRENT已更新；PDW-03—05仍NOT_STARTED。
+- **当前关闭门槛：** 等待Owner完成O1—O9体验并签收；未签收不关闭，不启动PDW-03。
