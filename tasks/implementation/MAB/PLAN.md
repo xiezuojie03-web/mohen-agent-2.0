@@ -340,7 +340,7 @@ M5 按 §3.5 验收。消费侧 7 路由和 7 份 Skill 的交付范围见 §9 �
 
 **工作面目标：** 完成Studio作为历史人文研究室与创作编辑部的完整创作工作空间设计。PDW-02不只是诊断M5缺口；现状自检是设计工作的输入，完整Studio体验方案和工程移交才是本工作包的最终交付。
 
-**当前状态（2026-11-27）：** IN_PROGRESS / AUDIT_COMPLETE_DESIGN_PENDING / OWNER_REVIEW_REQUIRED。既有《PDW-02 Studio设计与工程自检报告 V0.1》已完成诊断交付，但PDW-02整体尚未关闭；须在本工作包内补齐完整Studio设计、概念表达、可操作HTML原型和逐项工程映射。原报告状态PASS_WITH_GAPS / OWNER_REVIEW_REQUIRED只适用于自检报告，不代表PDW-02整体通过。
+**当前状态（2026-11-27）：** DESIGN_REVIEW / OWNER_REVIEW_REQUIRED。既有自检诊断、Studio完整体验设计、整体概念图、可操作HTML原型和设计—工程映射已归入唯一正式入口 tasks/implementation/PDW/PDW-02_Studio设计与工程自检报告_V0.1.md（现行内容V0.2）；原型源与概念图分别见该入口第12节引用。当前等待Owner实际体验与签收；未签收前不得关闭。原自检报告的PASS_WITH_GAPS仅代表诊断交付，不代表Studio代码施工或M5运行闭环通过。
 
 **设计范围必须覆盖完整创作旅程：**
 - Studio入口、项目创建/选择、项目总览、任务/委托与连续Agent协作。

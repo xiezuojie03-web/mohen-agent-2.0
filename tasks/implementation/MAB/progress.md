@@ -95,3 +95,21 @@
 
 - 在PLAN V1.9中补齐OWNER_REVIEW_REQUIRED状态定义，并明确PDW-03、PDW-04、PDW-05均为NOT_STARTED，分别以前一工作包CLOSED / OWNER_APPROVED为启动门槛。
 - 本次仅修正文档状态定义，无代码/数据库测试适用。
+
+
+## 2026-11-27｜PDW-02完整Studio产品设计与工程衔接交付（Owner Review）
+
+- **工作包状态：** DESIGN_REVIEW / OWNER_REVIEW_REQUIRED；未关闭，等待Owner实际体验与签收。
+- **唯一执行计划：** tasks/implementation/MAB/PLAN.md V1.9 §3.6；PDW顺序01→02→03→04→05不变。
+- **基线：** Studio业务代码审查基线2388af125300efb73e27b3c3804982a56f5a9d36；其后仅增加本PDW设计原型/概念图和文档同步，未修改Studio业务代码、API、数据库、RLS、CI或部署。
+- **正式入口：** tasks/implementation/PDW/PDW-02_Studio设计与工程自检报告_V0.1.md，现行内容V0.2；保留原第1—10节自检诊断，新增第11节完整设计交付。
+- **设计交付：** 完成Studio职责/角色边界、三工作区信息架构、项目与研究/证据/知识资产/导演/作品视图关系、16步创作旅程、Agent状态与人工控制点、视觉/响应式/无障碍要求。
+- **概念图：** tasks/implementation/PDW/concepts/PDW-02_Studio整体工作面概念图.svg；另在Owner当前会话展示完整工作面概念渲染。
+- **HTML原型：** tasks/implementation/PDW/prototypes/PDW-02_Studio_完整创作工作空间_可操作原型.html；本地模拟覆盖项目创建/切换、自然语言对话、研究事件视图、证据/资产/导演方案切换、暂停/继续/取消、段落编辑/局部改写、保存/版本差异/恢复、模拟提交资格阻断及窄屏工作区切换。
+- **原型检查：** HTML结构锚点检查PASS；内嵌JavaScript语法检查PASS；关键控件/状态/模拟声明存在。真实浏览器点击、视口、键盘/触屏实测NOT_RUN；真实服务未接线并已明确标注模拟。
+- **继承裁决：** KEEP现有Project/Task/Owner校验、来源/原件链、D/L/G唯一生产链、资产合同、正式导演/作品正文、Admin/WATCH治理链；ADAPT Workbench/desk统一、Agent上下文/事件、知识资产视图、作品编辑恢复、窄屏切换；DROP割裂的第二主入口和技术术语主导航；Owner整合HTML因本轮接口无法回读2.4MB源码，仅作REFERENCE_ONLY。
+- **P0—P3：** 自检报告全部P0/P1/P2/P3问题逐项映射到设计处理、工程归属、M5回归、依赖和授权要求；没有转化为本轮业务代码修改。
+- **Owner验收：** O1—O9任务及失败判据已列入正式入口第11.10节；等待Owner实际体验。
+- **状态同步：** PLAN V1.9 §3.6 PDW-02更新为DESIGN_REVIEW / OWNER_REVIEW_REQUIRED；根目录CURRENT更新为当前唯一断点；本记录追加至progress。
+- **边界：** 未修改业务代码、数据库Schema/数据、RLS、API、CI、部署、生产资格；未重做D00—D05/G0—G5；未启动PDW-03/04/05。
+- **下一动作：** Owner按O1—O9体验原型并反馈；按反馈在唯一入口内修订，签收后方可关闭PDW-02。
