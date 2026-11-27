@@ -130,3 +130,16 @@
 - HTML原型补齐版本选择与指定版本恢复：恢复所选版本载入当前草稿，保存后形成新修订，不覆盖历史版本。
 - 最终HTML blob SHA：15da8db9d6fad343b1feb1fe4495de597b598a7d；JavaScript语法复核PASS。
 - 当前状态不变：DESIGN_REVIEW / OWNER_REVIEW_REQUIRED；等待Owner体验，不提前关闭。
+
+
+## 2026-11-27｜PDW-02全平台统一体验底座与Studio工作空间重构方向归档
+
+- **方向裁决记录：** 新建独立文件 `tasks/implementation/PDW/PDW-02_全平台统一体验底座与Studio工作空间重构方向裁决记录_V0.2.md`（Blob SHA `0162ed7c62e924ce8cf8efd403db85d8f124271c`）。V0.2已完成对既有M5 Agent专项及沪上经纬原始理念/源码的对照，记录Owner方向、继承裁决、任务范围、依赖和关闭条件。
+- **既有Agent研究找回：** `tasks/results/MAB/M5_NAVIGATION_MODULE_ROLES_AGENT_MODES_DISCUSSION_CURRENT.md`，标题《墨痕 M5｜模块职责、Agent参与与研究资产机制——设计讨论定论稿》，原状态DESIGN_DISCUSSION_CLOSED（2026-11-16）。继承其“情境感知、人文发现和智能创作伙伴”、可达/连续/判断/行动、安静在场/对象响应/条件提示/用户询问/受托执行及共享Agent能力按页面情境适配等原则；不将讨论建议误升格为正式合同。
+- **沪上经纬继承核验：** 只读对照仓库 `xiezuojie03-web/hushang-jingwei` 的项目内核纲领§6.4—§6.5、`mohen_consciousness_mockup.html`、`MohenFab.tsx`、`app/api/mohen/route.ts`、TopNav/Footer及布局文件。确认“世界＋意识＋看法”原始模型、全局唤起入口、低打扰提示/展开/静音和页面情境感知具有原型/代码依据；旧代码和触发阈值不直接迁入2.0。
+- **任务拆分：** PDW-02-B｜全平台统一体验底座设计补强（全局墨痕、顶部/底部/移动端导航、全站视觉系统、页面情境适配）；PDW-02-SR｜Studio工作空间结构重构（独立归属原PDW-02）。顺序为B→SR；两项分别交付和签收，PDW-02整体关闭条件不变。
+- **施工计划：** PLAN升级V1.10，§3.6新增PDW-02-B与PDW-02-SR范围、交付和关闭条件；不改变PDW-01→PDW-05顶层顺序及M5—M8工程合同。
+- **相关文档索引：** PDW-02唯一正式入口更新为现行内容V0.3并增加11.14索引；CURRENT改为PDW-02-B为下一设计动作；AGENTS与ENGINEERING_HANDOFF_CURRENT同步子任务读取/执行顺序。
+- **本轮边界：** 仅文档与设计治理更新；未修改业务代码、API、数据库/Schema/数据、权限/RLS、CI、部署、生产资格或旧沪上经纬仓库。未执行浏览器/真实Agent/跨页运行验收；不得宣称全局墨痕、导航或Studio新布局已实现。
+- **当前状态：** PDW-02仍为DESIGN_REVIEW / OWNER_REVIEW_REQUIRED；下一设计任务PDW-02-B，完成并经Owner审阅后执行PDW-02-SR；PDW-03—PDW-05仍未启动。
+- **本批提交：** 独立方向记录 `0162ed7c`；PLAN `9d1d7af4`；PDW-02入口 `bd3fc233`；AGENTS `2b9b1d3b`；CURRENT `4b4cb706`；工程交接 `c657e564`；本progress追加提交待回读确认。
