@@ -218,3 +218,6 @@ Owner提出三项正式修订要求：说明六个页面各自继承的基线；
 - `tasks/implementation/PDW/PDW-02_Studio工作空间重构正式入口_V0.1.md`：更新PDW-02交付标准，唯一原型交付物改为可操作HTML，历史概念图不再验收。
 - 未修改业务代码、API、数据库、Schema、权限/RLS、CI、部署及M5主线；未新制任何图片。
 - PDW-00状态仍为`DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED`，Owner尚未签收，不启动PDW-01或其他后续任务。
+
+
+- **进一步原型基线核验：** 回读PDW-00 HTML与Owner指定整合HTML。确认当前PDW-00 HTML没有复现HOME V1.8.3连续横向流动卡片、自动流动/暂停及策展漫游交互；因此HOME在当前原型中不得标记为已继承。EXP双组件、Studio完整创作旅程、Admin九类治理工作区、WATCH观看链也不能仅凭页面示意视为完成继承；个人空间本来就没有已签收完整页面基线。已将该事实补入PDW-00 §9.12，作为后续HTML修订与Owner验收的明确缺口。
