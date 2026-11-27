@@ -23,7 +23,7 @@ main{min-height:calc(100vh - 280px)}.page-shell{max-width:1200px;margin:auto;pad
 .agent-anchor:hover{transform:translateY(-2px);box-shadow:0 13px 30px #183b3540}
 .agent-panel{position:fixed;right:24px;bottom:92px;z-index:61;width:min(410px,calc(100vw - 28px));max-height:min(72vh,650px);display:none;flex-direction:column;border:1px solid #d5e0d8;border-radius:20px;background:#fffefa;box-shadow:var(--shadow);overflow:hidden}.agent-panel.open{display:flex}
 .agent-head{display:flex;align-items:center;justify-content:space-between;padding:17px 19px;background:#edf3ee;border-bottom:1px solid var(--line)}.agent-head strong{font:600 20px var(--serif)}.agent-head small{color:var(--muted);font-size:11px}.agent-head button,.agent-tools button{border:0;background:transparent;color:#536f64;padding:6px 8px;font-size:12px}
-.agent-body{padding:18px 19px;overflow:auto}.agent-context{font-size:11px;line-height:1.8;color:#74847b;background:#f3f6f1;padding:10px 12px;border-radius:10px}.agent-message{margin:16px 0}.agent-message strong{font:600 16px var(--serif)}.agent-message p{font-size:13px;line-height:1.9;color:#65746c;margin:7px 0}
+.agent-body{padding:18px 19px;overflow:auto}.agent-context{font-size:11px;line-height:1.8;color:#74847b;background:#f3f6f1;padding:10px 12px;border-radius:10px}.agent-message{margin:16px 0}.agent-message strong{font:600 16px var(--serif)}.agent-message p{font-size:13px;line-height:1.9;color:#65746c;margin:7px 0}.prompt-preview{display:none;margin:12px 0 2px;padding:13px 14px;border:1px solid #dbe5dc;border-radius:13px;background:#f5f7f2}.prompt-preview.show{display:block}.prompt-preview b{display:block;font:600 12px var(--serif);margin:8px 0 3px}.prompt-preview p{font-size:11px;line-height:1.8;color:#6e7c74;margin:0}.prompt-preview button{margin-top:10px;border:0;border-radius:18px;background:var(--teal-soft);color:var(--deep);padding:7px 12px;font-size:11px}
 .agent-input{display:flex;gap:8px;padding:13px 15px;border-top:1px solid var(--line)}.agent-input input{flex:1;min-width:0;border:1px solid var(--line);border-radius:22px;padding:10px 13px;background:white;outline-color:#7ba99b;font-size:12px}.agent-input button{border:0;border-radius:22px;background:var(--teal);color:white;padding:0 16px;font-size:12px}
 .agent-tools{display:flex;align-items:center;justify-content:space-between;padding:0 18px 13px;color:#87948d;font-size:10px}
 .mobilebar{display:none}
@@ -51,8 +51,8 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
 <button class="agent-anchor" id="agentToggle" type="button" aria-label="唤起墨痕" title="唤起墨痕">墨</button>
 <section class="agent-panel" id="agentPanel" aria-label="全局墨痕服务面板">
 <header class="agent-head"><div><strong>墨痕</strong><br><small id="agentMode">全局智能服务 · 安静在场</small></div><div><button id="mute" type="button">静音提示</button><button id="closeAgent" type="button">收起</button></div></header>
-<div class="agent-body"><div class="agent-context" id="agentContext"></div><div class="agent-message"><strong id="agentLead">同一个墨痕，贯穿不同工作面</strong><p id="agentReply">我会根据你当前所在位置、主动提供的上下文和当前账户权限，帮助你理解问题、发现联系并推进下一步。页面专属能力由各自工作面负责。</p></div></div>
-<div class="agent-tools"><button id="showBoundary" type="button">服务与权限边界</button><span id="serviceState">等待用户询问</span></div>
+<div class="agent-body"><div class="agent-context" id="agentContext"></div><div class="agent-message"><strong id="agentLead">同一个墨痕，贯穿不同工作面</strong><p id="agentReply">我会根据你当前所在位置、主动提供的上下文和当前账户权限，帮助你理解问题、发现联系并推进下一步。页面专属能力由各自工作面负责。</p></div><div class="prompt-preview" id="promptPreview"><b>墨痕观察到</b><p id="promptObserve"></p><b>这意味着</b><p id="promptInterpret"></p><b>可以继续</b><p>你可以直接向墨痕说明当前目标；是否继续由你决定。</p><button id="promptAction" type="button">向墨痕说明目标</button></div></div>
+<div class="agent-tools"><div><button id="showPreview" type="button">提示结构</button><button id="showBoundary" type="button">服务与权限边界</button></div><span id="serviceState">等待用户询问</span></div>
 <form class="agent-input" id="askForm"><input id="ask" aria-label="向墨痕提问" placeholder="围绕当前页面向墨痕提问…" autocomplete="off"><button type="submit">发送</button></form>
 </section>
 <nav class="mobilebar" id="mobilebar" aria-label="移动端全局导航"></nav>
@@ -82,6 +82,8 @@ document.getElementById("personalShortcut").onclick=()=>go("personal");
 document.getElementById("agentToggle").onclick=openAgent;
 document.getElementById("closeAgent").onclick=closeAgent;
 document.getElementById("mute").onclick=()=>{muted=!muted;updateAgent();};
+document.getElementById("showPreview").onclick=()=>{const box=document.getElementById("promptPreview");box.classList.toggle("show");document.getElementById("promptObserve").textContent="当前页面为"+pages[current].name+"。墨痕只确认当前工作面，不从切页行为推断兴趣。";document.getElementById("promptInterpret").textContent="页面情境可以帮助组织回应，但不改变你的身份、权限或页面本身的业务能力。";};
+document.getElementById("promptAction").onclick=()=>{document.getElementById("ask").focus();};
 document.getElementById("showBoundary").onclick=()=>{document.getElementById("agentReply").textContent="墨痕是全平台唯一智能服务主体。页面和角色只影响当前可见上下文与允许动作；服务端必须重新核验身份、权限、用途、范围、来源权利和对象资格。静音只停止主动提示，不影响你主动提问。";}
 document.getElementById("askForm").onsubmit=e=>{e.preventDefault();const input=document.getElementById("ask");if(!input.value.trim())return;document.getElementById("agentReply").textContent="已收到你的问题意图。此HTML仅验证全局服务入口、情境展示和用户控制；真实检索、回答、工具执行及其权限检查必须由2.0正式服务实现并单独验收。";input.value="";document.getElementById("serviceState").textContent="原型交互 · 未调用真实服务";};
 document.getElementById("role").onchange=e=>{role=e.target.value;if(!allowed(current))current="home";draw();updateAgent();};
