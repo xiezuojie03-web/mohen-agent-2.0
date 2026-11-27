@@ -123,3 +123,10 @@
 - **概念图最终SHA：** b96d82899f3b22537141723d456da01b801f8411；SVG源已入库，完整三工作区构图。
 - **计划/状态：** PLAN V1.9 PDW-02为DESIGN_REVIEW / OWNER_REVIEW_REQUIRED；CURRENT已更新；PDW-03—05仍NOT_STARTED。
 - **当前关闭门槛：** 等待Owner完成O1—O9体验并签收；未签收不关闭，不启动PDW-03。
+
+
+## 2026-11-27｜PDW-02原型修订复核
+
+- HTML原型补齐版本选择与指定版本恢复：恢复所选版本载入当前草稿，保存后形成新修订，不覆盖历史版本。
+- 最终HTML blob SHA：15da8db9d6fad343b1feb1fe4495de597b598a7d；JavaScript语法复核PASS。
+- 当前状态不变：DESIGN_REVIEW / OWNER_REVIEW_REQUIRED；等待Owner体验，不提前关闭。
