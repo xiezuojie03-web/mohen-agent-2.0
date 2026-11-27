@@ -1,9 +1,9 @@
 # 墨痕｜当前施工断点
 
 > 当前核验日期：2026-11-27  
-> PDW-02正式入口最近一次更新提交：bd3fc2339ba10704634dd559d54057f3a3dd0ded；方向裁决记录创建提交：0162ed7c62e924ce8cf8efd403db85d8f124271c；本轮仅文档与设计治理更新，未修改业务代码。  
+> PDW-00与PDW-02正式入口已按Owner裁决完成重新归位；本轮只更新文件治理和索引，未修改业务代码。本轮仅文档与设计治理更新，未修改业务代码。  
 > Studio业务代码审查基线：2388af125300efb73e27b3c3804982a56f5a9d36；其后main提交仅新增/修订PDW-02设计原型与概念图，未修改Studio业务代码。  
-> 唯一施工计划：tasks/implementation/MAB/PLAN.md V1.11 §3.6；唯一main执行。
+> 唯一施工计划：tasks/implementation/MAB/PLAN.md V1.11 §6；唯一main执行。
 
 ## 1. 当前产品深化状态
 
@@ -16,11 +16,11 @@
 唯一入口：[PDW-01正式入口V0.3](tasks/implementation/PDW/PDW-01_HOME_CEI工程衔接入口与审查报告_V0.1.md)。
 
 ### PDW-02｜Studio工作空间结构重构
-状态：DESIGN_REVIEW / OWNER_REVIEW_REQUIRED。完整Studio用户体验、信息架构、Agent交互合同、视觉规范、整体概念图、可操作HTML原型、设计—工程映射、P0—P3处置矩阵及Owner体验任务已归档到唯一正式入口。
+状态：NOT_STARTED / WAITING_PDW00_AND_PDW01。原自检和设计交付作为历史输入；新结构重构尚未启动。
 
-唯一入口：[PDW-02 Studio正式入口（原自检报告路径，现行内容V0.3）](tasks/implementation/PDW/PDW-02_Studio工作空间重构正式入口_V0.1.md)。
+唯一入口：[PDW-02 Studio工作空间重构正式入口V0.4](tasks/implementation/PDW/PDW-02_Studio工作空间重构正式入口_V0.1.md)。
 
-本轮方向裁决：[PDW-02全平台统一体验底座与Studio工作空间重构方向裁决记录V0.2](tasks/implementation/PDW/PDW-00_全平台统一体验底座设计补强正式入口_V0.1.md)。
+PDW-00正式入口保留既有Agent专项和沪上经纬研究依据，不再另设并列方向裁决文件。
 
 PDW-02仅承担Studio工作空间结构重构。其前置为PDW-00完成及PDW-01继承性完善签收；不再包含全局体验底座设计。详细标准见PDW-02正式入口和PLAN V1.11 §6。
 
@@ -52,4 +52,4 @@ PDW-02仅承担Studio工作空间结构重构。其前置为PDW-00完成及PDW-0
 
 - [MAB工程全面审计报告 2026-11-26 V1.0](tasks/results/MAB/audits/MAB_工程全面审计报告_20261126_V1.0.md)。
 - [MAB UI反向工程审计与产品完整性评估 2026-11-26 V1.0](tasks/results/MAB/audits/MAB_UI反向工程审计与产品完整性评估_20261126_V1.0.md)。
-- [MAB施工计划 V1.10](tasks/implementation/MAB/PLAN.md)是唯一施工计划；tasks/implementation/MAB/progress.md记录追加式执行证据。
+- [MAB施工计划 V1.11](tasks/implementation/MAB/PLAN.md)是唯一施工计划；tasks/implementation/MAB/progress.md记录追加式执行证据。
