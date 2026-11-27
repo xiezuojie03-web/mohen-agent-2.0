@@ -3,7 +3,7 @@
 > 当前核验日期：2026-11-27（PDW-00设计交付同步）  
 > PDW-00范围按Owner最新裁决收敛为全局体验底座：统一墨痕Agent、顶部导航、全局页尾、移动端底部导航；六个页面仅保留中性占位，不开展页面专属继承研究。  
 > Studio业务代码审查基线：2388af125300efb73e27b3c3804982a56f5a9d36；其后main提交仅新增/修订PDW-02设计原型与概念图，未修改Studio业务代码。  
-> 唯一施工计划：tasks/implementation/MAB/PLAN.md V1.11 §6；唯一main执行。
+> 唯一施工计划：tasks/implementation/MAB/PLAN.md V1.13 §6；唯一main执行。
 
 ## 1. 当前产品深化状态
 
@@ -22,10 +22,9 @@
 
 PDW-00正式入口保留既有Agent专项和沪上经纬研究依据，不再另设并列方向裁决文件。
 
-PDW-02仅承担Studio工作空间结构重构。其前置为PDW-00完成及PDW-01继承性完善签收；不再包含全局体验底座设计。详细标准见PDW-02正式入口和PLAN V1.11 §6。
+PDW-02仅承担Studio工作空间结构重构。其前置为PDW-00完成及PDW-01继承性完善签收；不再包含全局体验底座设计。详细标准见PDW-02正式入口和PLAN V1.13 §6。
 
-原型：[完整可操作Studio工作空间](tasks/implementation/PDW/prototypes/PDW-02_Studio_完整创作工作空间_可操作原型.html)。  
-概念图：[Studio整体工作面概念图SVG](tasks/implementation/PDW/concepts/PDW-02_Studio整体工作面概念图.svg)。
+原型：[完整可操作Studio工作空间](tasks/implementation/PDW/prototypes/PDW-02_Studio_完整创作工作空间_可操作原型.html)。历史SVG概念图仅作归档，不再更新或验收。
 
 等待Owner实际体验与签收；未签收前不得标记CLOSED / OWNER_APPROVED。
 
