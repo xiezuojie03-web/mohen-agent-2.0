@@ -536,7 +536,7 @@ ALTER TABLE "publication"."withdrawals" ENABLE ROW LEVEL SECURITY;
 
 尚未完成：Owner实际体验并签收；真实浏览器验收；真实Agent/数据库/权限/同一作品发布链运行验收（后者属于M5工程施工，不是PDW-02关闭条件）。
 
-**关闭前唯一关键动作：** Owner按第11.10节体验原型并签收。若体验发现设计缺陷，回到本入口修订后再次提交；Owner未签收前不得标记CLOSED / OWNER_APPROVED，不得启动PDW-03。
+**原阶段Owner验收任务状态：** 第11.10节O1—O9是V0.2三栏原型的历史验收任务，暂不作为PDW-02整体关闭的当前唯一动作。依据第11.14节，先执行PDW-02-B，再执行PDW-02-SR；新结构原型和更新后的Owner任务完成后，统一进行Studio体验签收。Owner未签收前不得标记CLOSED / OWNER_APPROVED，不得启动PDW-03。
 
 **明确声明：** PDW-02关闭只代表Studio产品设计交付和工程移交完成；不代表Studio代码施工完成、M5真实生产闭环通过、Admin/WATCH运行验收通过或公众开放。
 
