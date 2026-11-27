@@ -689,3 +689,19 @@ PDW-00形成跨工作面共用设计依据；后续PDW可在有明确理由时�
 
 **关闭条件：** 9.1—9.9设计标准、概念图、HTML、工程映射、Owner体验任务及失败判据全部经Owner审阅；Owner明确签收；必要修订完成；CURRENT/progress回读一致。Owner未签收前不得标记`CLOSED / OWNER_APPROVED`，唯一下一任务仍为PDW-01继承性完善，但不得提前启动。
 
+
+ 
+#### 9.7.2 关键页面组件级核验补充（2026-11-27）
+
+| 页面/组件 | 当前代码职责与已见事实 | 本轮设计裁决 |
+|---|---|---|
+| HOME `apps/web/app/page.tsx` + `ModeEntryCard.tsx` | HOME是服务端门户页；ModeEntryCard仅为Studio/WATCH/EXP模式跳转卡，不是知识对象卡、也不是双组件策展舞台 | KEEP必要入口/metadata；门户主体与模式卡不作为PDW-00全局底座的设计基线。HOME内容舞台由PDW-01按既有签收成果继承完善 |
+| EXP `ExploreWorkbench.tsx` | 持有问题/会话/回答/错误/关系图等语义状态；调用`/api/explore/sessions`和`/api/explore/sessions/:id/query`，并组装narrative/stage/evidence内容 | KEEP语义/数据工作台；全局墨痕需与其已有“向墨痕提问”协同，不增加重复Agent会话 |
+| EXP `ExplorePresentation.tsx` | 明确标注Presentation only；持有NarrativeVisibility、EvidenceVisibility、停靠、宽度、面板等呈现状态，并处理Escape关闭及焦点返回 | KEEP双组件职责分离；其局部墨痕呈现状态需映射到统一全局身份和组件Token，不把它误认为已实现跨页Context Envelope或全局服务主体 |
+| Studio `StudioWorkbench.tsx` | 持有Project、消息、输入、任务/生产状态等；调用`/api/studio/projects`等接口；已有页面内创作协作，不等于全局墨痕 | KEEP既有创作协作能力；全局墨痕为跨工作面入口和情境服务，不重复创建Studio第二个主聊天工作区；布局由PDW-02负责 |
+| Admin `AdminWorkbench.tsx` | 持有登录用户、角色、审核队列、裁决与发布状态；角色分别识别operator/reviewer；请求提交作品、裁决等服务 | KEEP治理工作台；墨痕只辅助解释/归纳；服务端仍是最终权限边界，不能由前端角色状态授权 |
+| WATCH `WatchGallery.tsx` | 读取`/api/works/published`；验证work_id/revision_id/title/content字段；重新核验当前作品资格，按选中作品revision恢复/重置播放与章节状态 | KEEP作品消费和精确修订语义；墨痕只能解释当前合法消费对象，不能将观看上下文扩展成创作/下载权 |
+| GlobalNav `apps/web/app/components/GlobalNav.tsx` | 当前四项主导航为首页/Studio/WATCH/EXP；调用`/api/session/me`、搜索、通知、退出；operator/reviewer角色显示Admin | ADAPT顺序/选中态/个人入口与移动形态；保留现有会话、搜索、通知和退出能力；不把客户端角色显示视为授权 |
+ 
+**组件层重要结论：** 当前EXP已具备明确的“语义工作台（ExploreWorkbench）＋呈现壳（ExplorePresentation）”双组件分工，这是可继承的结构资产；全局墨痕应作为根布局层的共享服务入口，而不是替换EXP的呈现组件。HOME当前未发现同等的双组件策展结构，只有页面主体和模式入口卡。Studio、Admin、WATCH也各有自己的语义/业务工作台，统一底座只提供共享导航、墨痕、视觉Token和共用交互容器。
+ 
