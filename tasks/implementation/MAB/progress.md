@@ -143,3 +143,13 @@
 - **本轮边界：** 仅文档与设计治理更新；未修改业务代码、API、数据库/Schema/数据、权限/RLS、CI、部署、生产资格或旧沪上经纬仓库。未执行浏览器/真实Agent/跨页运行验收；不得宣称全局墨痕、导航或Studio新布局已实现。
 - **当前状态：** PDW-02仍为DESIGN_REVIEW / OWNER_REVIEW_REQUIRED；下一设计任务PDW-02-B，完成并经Owner审阅后执行PDW-02-SR；PDW-03—PDW-05仍未启动。
 - **本批提交：** 独立方向记录创建 `0162ed7c`；PLAN `9d1d7af4`；PDW-02入口首次索引 `bd3fc233`、补充顺序说明 `87fcb05a`；AGENTS `2b9b1d3b`；CURRENT首次同步 `4b4cb706`、顺序纠正 `3e5261d8`；工程交接 `c657e564`；progress首轮追加 `8e0c9bf6`。
+
+
+## 2026-11-27｜PDW工作流重构与正式入口归位（Owner裁决执行）
+
+- Owner裁决：全平台统一体验底座由原PDW-02-B升格为PDW-00；取消B命名。PDW-00排在PDW-01之前。PDW-01既有HOME成果保持已完成基线，PDW-00后只做继承性完善，不重做。Studio工作空间重构完整归入PDW-02，不再保留SR子任务名称。
+- 正式入口：原全局/Studio方向裁决记录改定位并更名为PDW-00正式入口；原Studio自检报告改定位并更名为PDW-02正式入口。前者保留Agent专项与沪上经纬研究依据并增加正式执行标准；后者保留既有诊断/设计输入并增加完整Studio结构重构标准。
+- 顺序：PDW-00→PDW-01→PDW-02→PDW-03→PDW-04→PDW-05。PDW-02等待PDW-00与PDW-01均经Owner签收。
+- PLAN V1.11恢复M0—M4阶段沿革与条件准出性质，M5保持当前工程重点；M6—M8留在M阶段工程计划；PDW独立为设计工作流章节。第0章清理为执行入口与通用纪律。
+- CURRENT、AGENTS、ENGINEERING_HANDOFF_CURRENT同步新顺序、路径与职责。
+- 本轮仅文档治理；未修改业务代码、API、数据库/Schema/数据、权限/RLS、CI、部署、生产资格或旧沪上经纬仓库。历史自检、概念图、HTML原型和已签收结论保留，不把设计完成写成工程运行PASS。
