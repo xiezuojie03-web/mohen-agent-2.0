@@ -845,12 +845,14 @@ PDW-00形成跨工作面共用设计依据；后续PDW可在有明确理由时�
 
 | 页面 | 正式设计基线 | 当前工程核验基线 | 必须继承的关键体验/结构 | 本轮状态与后续归属 |
 |---|---|---|---|---|
-| HOME | Owner指定的全工作面整合HTML原型（`tasks/research/CEI-01/prototypes/墨痕_全工作面继承整合_HTML原型_明亮雅致版.html`）内嵌home-source，其页面身份为HOME V1.8.3；PDW-01正式入口及其HOME继承裁决 | apps/web/app/page.tsx、ModeEntryCard.tsx、GlobalNav.tsx、five-ui.css；现有门户代码不是V1.8.3策展首页 | 连续横向策展漫游/流动卡片、自动流动可暂停、主题视角、卡片聚焦、对象进入EXP、HOME返回锚点；不能退化为门户入口或普通纵向卡片列表。已认可的全局明亮视觉与顶部导航叠加于此，不替换其内容组织 | PDW-00仅展示全局底座如何附着；不代表HOME已完整复刻V1.8.3。页面继承性完善归PDW-01，且不得推翻Owner已签收的V1.8.3结构，除非Owner另行裁决 |
+| HOME | Owner指定的全工作面整合HTML原型（`tasks/research/CEI-01/prototypes/墨痕_全工作面继承整合_HTML原型_明亮雅致版.html`，Git Blob SHA `52334737b590d2cb0b7068b1c45d9ad0e144bbfa`）内嵌home-source，其页面身份为HOME V1.8.3；PDW-01正式入口及其HOME继承裁决 | apps/web/app/page.tsx、ModeEntryCard.tsx、GlobalNav.tsx、five-ui.css；现有门户代码不是V1.8.3策展首页 | 连续横向策展漫游/流动卡片、自动流动可暂停、主题视角、卡片聚焦、对象进入EXP、HOME返回锚点；不能退化为门户入口或普通纵向卡片列表。已认可的全局明亮视觉与顶部导航叠加于此，不替换其内容组织 | PDW-00仅展示全局底座如何附着；不代表HOME已完整复刻V1.8.3。页面继承性完善归PDW-01，且不得推翻Owner已签收的V1.8.3结构，除非Owner另行裁决 |
 | EXP | 同一整合HTML（`tasks/research/CEI-01/prototypes/墨痕_全工作面继承整合_HTML原型_明亮雅致版.html`）内嵌exp-source及CEI双组件设计成果 | ExploreWorkbench.tsx + ExplorePresentation.tsx及其现有API/状态职责 | 语义工作台与呈现舞台分工、叙事/证据显隐、焦点与对象探索；全局墨痕统一身份，不另造第二会话，也不替换双组件 | PDW-00只定义全局服务接入；完整EXP深化归PDW-03 |
 | Studio | 既有Studio五图UI/已归档Studio设计资产、PDW-02入口第11节历史设计交付及当前可操作原型；其设计输入须与真实main代码交叉核验 | StudioWorkbench.tsx及项目、研究、来源、资产、导演方案、作品修订相关真实组件/API | 保留自然语言委托、项目上下文、研究/证据/知识资产、导演方案、作品舞台与修订/恢复的业务身份；现有三工作区是输入资产，不是不可变布局答案 | PDW-00只定义全局底座适配；完整结构重构归PDW-02。不得把PDW-00演示模板误称Studio继承完成 |
 | Admin | 既有Admin工作面设计资产及整合HTML中的Admin工作面参考；以实际治理职责为准 | AdminWorkbench.tsx及审核、资格、发布、撤回、用户/权限相关工作区 | 继承真实治理任务和角色边界；九类治理工作区不能被通用卡片模板替代；墨痕只辅助解释/归纳，不代替独立Reviewer/Operator裁决 | PDW-00仅定义全局服务与导航；页面专属深化归PDW-04 |
 | WATCH | 整合HTML（`tasks/research/CEI-01/prototypes/墨痕_全工作面继承整合_HTML原型_明亮雅致版.html`）内嵌watch-source及既有观看设计资产 | WatchGallery.tsx及已发布作品读取、精确revision、章节/播放控制和撤权复核 | 合法发布作品目录、作品观看舞台、章节叙事/章节轴、播放控制、依据/引用信息与精确修订身份 | PDW-00仅定义全局底座适配；页面专属深化按后续WATCH范围及既有M5合同处理 |
 | 个人空间 | 整合HTML个人空间抽屉/足迹、收藏、线索和隐私设计，以及既有个人空间架构审计；不存在已签收的完整页面基线 | 当前main未确认正式/me完整页面；相关数据分散于项目/探索/作品等现有模型 | 只继承已明确的个人资产与隐私原则，不把抽屉演示伪装成正式页面，也不建立第二套项目/作品事实源 | 本轮仅为未来空间占位与全局适配示意；完整产品与数据架构归PDW-05 |
+
+**本轮HTML继承现状（必须如实区分）：** 当前PDW-00原型（`tasks/implementation/PDW/prototypes/PDW-00_全平台统一体验底座可操作原型.html`）经源码核对，没有实现HOME V1.8.3的连续横向流动卡片、自动流动/暂停和原有策展漫游交互；因此HOME在当前原型中属于“未完成继承”，不能标记为KEEP完成。EXP虽有舞台布局，但不能仅凭外观认定已继承ExploreWorkbench/ExplorePresentation双组件的真实职责与状态；Studio、Admin、WATCH当前展示也只是设计表达，尚未逐项复刻其真实工作流程；个人空间明确是未来设计示意。以上均须在HTML中按各自基线补齐或明确标记为待后续PDW处理，不能用同构卡片页代替。
 
 **基线优先级：** Owner明确指定并签收的页面设计基线 ＞ 对应PDW正式入口中的继承裁决 ＞ 当前main真实代码（用于核实工程事实与可继承实现）＞ 历史原型/讨论。工程代码与已签收设计冲突时，必须显式登记差异，不得反过来把现有代码当作设计基线；历史原型只在被明确指定或经Owner确认后作为设计基线。
 
