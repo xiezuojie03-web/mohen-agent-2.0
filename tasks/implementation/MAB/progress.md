@@ -237,3 +237,16 @@ Owner明确改变策略：PDW-00不再开展HOME、EXP、Studio、WATCH、Admin�
 
 
 - **最终自检补充：** 清理PDW-00旧版页面适配矩阵、页面组件级审查和逐页继承验收要求；PLAN V1.13 §6、PDW-00 V0.5与CURRENT同步为“全局底座 + 六页占位”。HTML新增可主动查看的“观察—解释—邀约”提示结构预览；静音、恢复提示、收起、主动提问和服务边界说明均保留。HTML内嵌JavaScript语法检查PASS；六个页面路由配置、顶部导航容器、全局页尾、移动端底部导航和墨痕面板结构静态检查PASS。浏览器/多视口/屏幕阅读器实测仍NOT_RUN。
+
+
+## 2026-11-27｜PDW-00全局体验底座最终审查与收口补强（V0.6）
+
+- **执行基线：** `xiezuojie03-web/mohen-agent-2.0` main；PLAN V1.13；PDW-00正式入口内容版本V0.5、状态`DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED`。本轮未改变PDW顺序与任务边界。
+- **P0真实工程审查：** 读取根布局`apps/web/app/layout.tsx`、`GlobalNav.tsx`、`five-ui.css`、登录/退出/Session/认证/角色代码、middleware、Studio/Admin/WATCH/EXP入口与相关工作台、`/api/mohen/ask`、`/api/mohen/materials`及`lib/mohen-agent/research.ts`。确认根布局仅挂载GlobalNav、未挂载全局墨痕/页尾；已有真实研究问答与只读材料检索，但不是全局Agent Runtime；多角色数据形态存在，无真实角色切换器；member被GlobalNav文案误称“访客”；未定位个人空间正式路由；HOME局部Footer不能视为全局Footer；five-ui.css仍有深色导航Token待后续实现对齐。
+- **继承裁决：** Agent“情境感知、人文发现和智能创作伙伴”、可达/连续/判断/行动、五类行为、共享Agent主体、世界＋意识＋看法及旧MohenFab交互理念KEEP/ADAPT；旧API/store、停留/滚动兴趣推断、固定计时阈值、永久兴趣画像DROP或仅作研究参考。现有ask/materials保留为局部真实能力证据，不推导全局能力已实现。
+- **设计补强：** 正式入口升级V0.6，新增§10.1—§10.11，明确符号化墨痕印记、S0安静在场/S1条件轻提示/S2展开对话/S3任务协作/S4结果与收起/Sx异常状态、转换与用户控制、全局能力与页面情境能力责任矩阵、最小Context Envelope、账户/个人空间/角色/工作身份关系、六类账户导航对照、页尾A/B方案比较与A方案选择、全局Token及组件边界。
+- **页尾裁决：** 选择“品牌叙事与透明治理型”，以品牌使命、认识墨痕、来源/证据、材料权利、隐私/授权和帮助为主；不重复顶部四个主入口。移动端固定导航五项，Admin收纳到账户/工作身份入口；Studio/Admin允许紧凑页尾。
+- **HTML原型：** 更新唯一原型，覆盖六个中性占位、访客/普通成员/Creator/Reviewer/Operator/多角色模拟、账户菜单、Admin显隐、移动端五项导航、墨痕五种核心状态及任务待确认/模拟执行/模拟完成、收起、静音/恢复、轻提示和最终页尾。所有账户、任务和Agent交互均明确为模拟，不连接真实服务。
+- **文件状态：** 正式入口V0.6；CURRENT同步PDW-00当前状态；PLAN V1.13未改（任务范围、交付类型、PDW顺序未变化）；progress追加本报告。
+- **质量边界：** 真实源码定向读取PASS；HTML浏览器点击、JS语法执行、多视口、键盘/焦点、屏幕阅读器和真实登录/Agent/权限服务均NOT_RUN。静态审查不冒充浏览器验收。未修改业务代码/API/数据库/Schema/认证/RLS/角色权限/Agent Runtime/D-L-G/Runner/CI/部署。
+- **当前状态：** `DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED`。Owner需体验HTML并签收；未签收不得CLOSED，不启动PDW-01。
