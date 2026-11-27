@@ -89,3 +89,9 @@
 - **继承与边界：** PDW-01保持CLOSED / OWNER_APPROVED，不因本次统一标准而重开；PDW-02保持IN_PROGRESS / AUDIT_COMPLETE_DESIGN_PENDING / OWNER_REVIEW_REQUIRED，不得提前关闭；PDW-03—05保持未开始。
 - **验证：** 已核对PLAN §3.6边界、五个工作包编号/顺序、各自范围/交付/排除项/关闭条件及M5—M8边界；本次仅文档修改，无代码/数据库测试适用。
 - **同步状态：** PLAN已更新；progress追加本记录。CURRENT.md未能通过本轮GitHub文件读取接口定位，未修改；不得将CURRENT同步描述为已完成。后续应在确认其准确路径后，将唯一当前断点同步为PDW-02设计交付待完成。
+
+
+## 2026-11-27｜PDW V1.9状态门禁补充校正
+
+- 在PLAN V1.9中补齐OWNER_REVIEW_REQUIRED状态定义，并明确PDW-03、PDW-04、PDW-05均为NOT_STARTED，分别以前一工作包CLOSED / OWNER_APPROVED为启动门槛。
+- 本次仅修正文档状态定义，无代码/数据库测试适用。
