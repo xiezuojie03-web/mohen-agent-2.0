@@ -61,3 +61,18 @@
 - **工程边界：** 本轮只更新正式文档，没有修改HOME业务代码、数据库、API、权限、CI或部署；关闭不自动授权HOME代码施工。
 - **唯一正式入口：** `tasks/implementation/PDW/PDW-01_HOME_CEI工程衔接入口与审查报告_V0.1.md`，现行内容版本V0.3。
 - **下一工作包：** 按PLAN V1.8 §3.6顺序为PDW-02｜Studio设计与工程自检；本轮不启动。
+
+## 2026-11-27｜PDW-02 Studio设计与工程自检（PASS_WITH_GAPS / OWNER_REVIEW_REQUIRED）
+
+- **审查基线：** GitHub main 7ebacda9a9c3f718778462b87c2d8fad21006e5f；严格按PLAN V1.8 §3.6、PDW-01入口、MHKA-02—04、KAD2及CEI E定位设计与工程依据。
+- **代码核验：** 定向检查Studio主入口/StudioWorkbench/studio.css、项目/研究/来源/生产/导演方案/作品修订/正式发布/Admin/WATCH相关API与服务调用；未遍历无关代码。
+- **设计结论：** 桌面三工作区骨架已存在；项目、任务、材料、知识资产、作品编辑和恢复未形成连续工作空间；连续Agent上下文、实时研究事件、作品编辑、完整恢复及窄屏工作区切换有缺口。
+- **P0代码根因：** studio-formal-qualification.ts仅允许loopback隔离数据库进行机器G5签发，而publication.submitWork调用该资格补齐函数；云端路径失败关闭。
+- **Supabase只读核验：** mohen-cloud有Projects 17、Research Tasks 44、Director Plans 21、Works 16、Work Revisions 24、Studio Director Envelopes 3、Studio Work Envelopes 5、Submission Snapshots 5、Editorial Decisions 5、Publication Snapshots 3；不是空库。
+- **Schema差异：** 当前数据库缺publication.works.project_id、public.director_plans的delegation_id/root_task_ref/research_snapshot_hash/research_source_refs、studio.work_revisions.formal_revision_id；数据库迁移记录最新20261120045054，main已有20261123120000与20261123130000两份迁移未应用。未执行迁移。
+- **权限核验：** 10张私有Schema表RLS未启用；本轮只读权限查询未发现这些表向anon/authenticated开放Schema USAGE或表权限，因此未确认直接公众泄漏；部分服务端策略宽泛，列为P1防御纵深缺口。未执行RLS SQL。
+- **发布衔接：** Admin Reviewer签核→formalDecide→formalPublish及WATCH listWatchEligible读取链在代码中存在；同一作品端到端未运行验证。
+- **运行边界：** 最新READY Preview为e563161c，与本次main基线相差175个提交；当前main浏览器登录操作、同一Project到WATCH全链均NOT_RUN。mohen-cloud与当前Preview的DATABASE_URL映射未确认。
+- **唯一交付：** tasks/implementation/PDW/PDW-02_Studio设计与工程自检报告_V0.1.md；同步CURRENT与PLAN §3.6。
+- **本轮未做：** 未修改业务代码、数据库、API、权限、CI、Vercel部署或环境变量；未启动PDW-03及其他PDW工作包。
+- **下一动作：** Owner审阅报告；P0资格链与Schema/持久集成环境问题回归M5主线，另行授权施工；本轮不自动进入代码施工。
