@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1120" viewBox="0 0 1800 1120" role="img" aria-labelledby="title desc">
+<title id="title">墨痕 MoHen 2.0 全平台统一体验底座概念图</title><desc id="desc">同一历史文化世界、统一墨痕智能服务、统一导航与视觉语言，六个工作面保留各自内容舞台。</desc>
+<defs>
+ <linearGradient id="paper" x2="1" y2="1"><stop stop-color="#fbfaf6"/><stop offset="1" stop-color="#e9eeea"/></linearGradient>
+ <linearGradient id="teal" x2="1" y2="1"><stop stop-color="#285b5a"/><stop offset="1" stop-color="#173b3d"/></linearGradient>
+ <linearGradient id="mist" x2="0" y2="1"><stop stop-color="#f4f6f2"/><stop offset="1" stop-color="#e4ece8"/></linearGradient>
+ <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="9" stdDeviation="12" flood-color="#183a38" flood-opacity=".12"/></filter>
+ <style>
+ .cn{font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;fill:#233b3b}.serif{font-family:"Noto Serif SC","Songti SC",serif;fill:#1d3e3e}.muted{fill:#71827e}.tiny{font-size:13px}.small{font-size:16px}.mid{font-size:21px}.large{font-size:30px;font-weight:600}.pill{font-size:13px;letter-spacing:1px}.line{stroke:#cbd8d2;stroke-width:1.5}
+ </style>
+</defs>
+<rect width="1800" height="1120" fill="url(#paper)"/>
+<text x="76" y="72" class="cn pill" fill="#4b7771">MOHEN 2.0 · PDW-00 · EXPERIENCE FOUNDATION</text>
+<text x="76" y="122" class="serif" font-size="42" font-weight="600">同一个历史文化世界，六种不同的进入方式</text>
+<text x="76" y="158" class="cn small muted">全局墨痕负责感知与协作；导航负责定位与连续；页面舞台负责各自的任务表达。</text>
+<g filter="url(#shadow)">
+ <rect x="70" y="195" width="1660" height="665" rx="28" fill="#fff" stroke="#d8e2dc"/>
+ <rect x="70" y="195" width="1660" height="82" rx="28" fill="#f7f8f4"/>
+ <path d="M70 249V277H1730V249" fill="#f7f8f4"/>
+ <text x="112" y="246" class="serif" font-size="26" font-weight="600">墨痕</text><text x="204" y="245" class="cn tiny muted">MOHEN</text>
+ <g class="cn small"><text x="440" y="244">HOME</text><text x="550" y="244">EXP</text><text x="640" y="244">Studio</text><text x="770" y="244">WATCH</text><text x="900" y="244">Admin</text><text x="1010" y="244">个人空间</text></g>
+ <rect x="427" y="258" width="65" height="3" rx="2" fill="#286b68"/>
+ <rect x="1455" y="218" width="170" height="36" rx="18" fill="#edf2ee" stroke="#d4dfd9"/><text x="1478" y="241" class="cn tiny">当前角色 · Creator</text>
+ <circle cx="1675" cy="236" r="19" fill="url(#teal)"/><text x="1667" y="242" fill="#fff" font-size="17" font-family="sans-serif">人</text>
+</g>
+<g>
+ <rect x="100" y="310" width="1120" height="490" rx="20" fill="url(#mist)" stroke="#d9e4de"/>
+ <text x="136" y="354" class="cn pill" fill="#4c7771">PAGE STAGE · 页面内容舞台</text>
+ <text x="136" y="405" class="serif" font-size="34" font-weight="600">从一条江，发现城市与日常的关系</text>
+ <text x="136" y="439" class="cn small muted">同一知识世界在不同工作面中，以不同任务结构呈现。</text>
+ <rect x="136" y="478" width="500" height="264" rx="18" fill="url(#teal)"/>
+ <path d="M136 660 Q240 580 345 635 T636 612 V742 H136Z" fill="#9bb9ae" opacity=".35"/>
+ <path d="M136 690 Q245 625 360 678 T636 650" stroke="#d4e6dc" stroke-width="4" fill="none" opacity=".75"/>
+ <text x="174" y="542" fill="#dceae3" font-size="14" font-family="sans-serif" letter-spacing="2">时空切片 · 江河与城市</text>
+ <text x="174" y="590" fill="#fff" font-size="29" font-family="serif">一条河如何塑造一座城？</text>
+ <text x="174" y="625" fill="#d8e5de" font-size="15" font-family="sans-serif">地图 · 典籍 · 遗址 · 日常生活</text>
+ <rect x="670" y="478" width="510" height="122" rx="16" fill="#fff" stroke="#d9e3dd"/>
+ <text x="704" y="516" class="cn small" font-weight="600">历史地图与当代河道</text><text x="704" y="548" class="cn tiny muted">并置观察 · 位置精度与证据边界随对象呈现</text>
+ <rect x="670" y="620" width="245" height="122" rx="16" fill="#fff" stroke="#d9e3dd"/>
+ <text x="696" y="662" class="cn small" font-weight="600">城市生活</text><text x="696" y="690" class="cn tiny muted">器物与日常</text>
+ <rect x="935" y="620" width="245" height="122" rx="16" fill="#fff" stroke="#d9e3dd"/>
+ <text x="961" y="662" class="cn small" font-weight="600">继续探索</text><text x="961" y="690" class="cn tiny muted">关系 · 比较 · 时间</text>
+</g>
+<g filter="url(#shadow)">
+ <rect x="1250" y="310" width="445" height="490" rx="20" fill="#fff" stroke="#d5e0da"/>
+ <rect x="1250" y="310" width="445" height="76" rx="20" fill="url(#teal)"/><path d="M1250 360V386H1695V360" fill="url(#teal)"/>
+ <circle cx="1290" cy="348" r="17" fill="#d7e8df"/><path d="M1283 348q7-12 14 0q-7 12-14 0" fill="#285b5a"/>
+ <text x="1320" y="354" fill="#fff" font-size="22" font-family="serif">墨痕</text><text x="1590" y="351" fill="#c8ded5" font-size="13" font-family="sans-serif">当前情境</text>
+ <text x="1282" y="427" class="cn tiny muted">识别到的工作面</text><text x="1282" y="454" class="cn mid" font-weight="600">HOME · 发现漫游</text>
+ <text x="1282" y="498" class="cn tiny muted">当前焦点</text><text x="1282" y="525" class="cn small">河流、城市与普通人的生活</text>
+ <rect x="1282" y="553" width="380" height="92" rx="12" fill="#f0f5f1"/>
+ <text x="1304" y="583" class="cn small" font-weight="600">一个值得继续的问题</text>
+ <text x="1304" y="611" class="cn tiny muted">不把相邻对象当作历史因果；先查看关系证据。</text>
+ <rect x="1282" y="670" width="178" height="42" rx="21" fill="#285b5a"/><text x="1322" y="696" fill="#fff" font-size="14" font-family="sans-serif">查看依据</text>
+ <rect x="1472" y="670" width="190" height="42" rx="21" fill="#fff" stroke="#cbd9d1"/><text x="1510" y="696" class="cn small">继续探索</text>
+ <text x="1282" y="755" class="cn tiny muted">安静在场 · 可忽略 · 可收起 · 可静音</text>
+</g>
+<g>
+ <rect x="100" y="815" width="1595" height="1.5" fill="#d8e2dc"/>
+ <text x="100" y="846" class="cn tiny muted">全局墨痕锚点：固定在视口安全区，不遮挡主操作；展开面板为情境服务层，不替代页面舞台。</text>
+ <circle cx="1660" cy="825" r="25" fill="url(#teal)" stroke="#fff" stroke-width="4" filter="url(#shadow)"/><path d="M1648 825q12-19 24 0q-12 19-24 0" fill="none" stroke="#e4f0e9" stroke-width="2"/>
+</g>
+<text x="76" y="920" class="cn pill" fill="#4b7771">SIX WORKSPACES · SAME FOUNDATION / DISTINCT EXPERIENCE</text>
+<g filter="url(#shadow)">
+ <rect x="76" y="950" width="252" height="120" rx="16" fill="#fff" stroke="#d7e2dc"/><text x="100" y="987" class="serif mid" font-weight="600">HOME</text><text x="100" y="1018" class="cn small">发现漫游 · 世界入口</text><text x="100" y="1045" class="cn tiny muted">策展、时空、生活线索</text>
+ <rect x="346" y="950" width="252" height="120" rx="16" fill="#fff" stroke="#d7e2dc"/><text x="370" y="987" class="serif mid" font-weight="600">EXP</text><text x="370" y="1018" class="cn small">探索舞台 · 深入一个问题</text><text x="370" y="1045" class="cn tiny muted">关系、证据、比较、路径</text>
+ <rect x="616" y="950" width="252" height="120" rx="16" fill="#fff" stroke="#d7e2dc"/><text x="640" y="987" class="serif mid" font-weight="600">Studio</text><text x="640" y="1018" class="cn small">研究室与创作编辑部</text><text x="640" y="1045" class="cn tiny muted">项目授权、研究、作品修订</text>
+ <rect x="886" y="950" width="252" height="120" rx="16" fill="#fff" stroke="#d7e2dc"/><text x="910" y="987" class="serif mid" font-weight="600">WATCH</text><text x="910" y="1018" class="cn small">合法作品消费 · 沉浸观看</text><text x="910" y="1045" class="cn tiny muted">章节、出处、撤权状态</text>
+ <rect x="1156" y="950" width="252" height="120" rx="16" fill="#fff" stroke="#d7e2dc"/><text x="1180" y="987" class="serif mid" font-weight="600">Admin</text><text x="1180" y="1018" class="cn small">治理工作面 · 角色受限</text><text x="1180" y="1045" class="cn tiny muted">审核辅助、证据与审计</text>
+ <rect x="1426" y="950" width="298" height="120" rx="16" fill="#fff" stroke="#d7e2dc"/><text x="1450" y="987" class="serif mid" font-weight="600">个人空间</text><text x="1450" y="1018" class="cn small">我的探索与长期连续性</text><text x="1450" y="1045" class="cn tiny muted">收藏、笔记、项目、隐私</text>
+</g>
+</svg>
