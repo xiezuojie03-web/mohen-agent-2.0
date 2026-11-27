@@ -48,7 +48,7 @@
 | R4概念图方法 | `tasks/research/CEI-01/reports/CEI_HOME视觉概念图制作方法研究_R4_现行.md` | R4_PASS；其多图组合建议已被综合修订取代 | 一方案一张完整图的制作方法基础 | 只采用综合修订后的单图规则，不采用旧多图交付建议 |
 | R1—R4综合修订 | `tasks/research/CEI-01/reports/CEI_HOME完整视觉方案与HTML原型衔接综合修订_R1-R4_现行.md` | R1-R4_REVIEWED；一方案一张完整图；HTML原型未开始 | R1—R4唯一综合解释，定义模块ID、页面职责和HTML映射 | 设计意图权威之一；不代表概念图或HTML已存在 |
 | R5准入审查 | `tasks/research/CEI-01/reports/CEI_HOME正式视觉概念图制作准入评估_R5_现行.md` | R5_CONDITIONAL_PASS / OWNER_REVIEW_REQUIRED / IMAGE_PRODUCTION_NOT_YET_AUTHORIZED | 概念图准入及素材权利条件 | 不得标为无条件PASS；未获授权不得制作图像 |
-| CEI UI工程迭代交付包 | `tasks/implementation/CEI-UI-ITERATION/CEI_UI工程迭代交付包_现行.md` | 当前设计输入；PDW顺序服从PLAN V1.8 | 全工作面选型、继承建议、页面目标和验收依据 | HOME方向输入；其中旧阶段0—7已废止，不能作为施工入口 |
+| CEI UI工程迭代交付包 | `tasks/implementation/CEI-UI-ITERATION/CEI_UI工程迭代交付包_现行.md` | 历史设计输入；当时PDW顺序依据PLAN V1.8，现行顺序服从PLAN V1.11 §6 | 全工作面选型、继承建议、页面目标和验收依据 | HOME方向输入；其中旧阶段0—7已废止，不能作为施工入口 |
 | 公众体验视觉规范 | `tasks/implementation/CEI-UI-ITERATION/CEI_公众体验与个人空间视觉设计规范_现行V1.0.md` | V1.0 DESIGN_STANDARD_READY | HOME/EXP/WATCH/Agent/个人空间/导航/共用底座视觉规范 | HOME部分作为设计约束；Studio/Admin页面内部不在其范围 |
 | UI反向工程审计 | `tasks/results/MAB/audits/MAB_UI反向工程审计与产品完整性评估_20261126_V1.0.md` | V1.0；审计基线b9de0d29；静态代码核验 | 现有产品空间及工程差距的历史审计证据 | 作为审计线索；本轮已对HOME关键代码重新核验 |
 
