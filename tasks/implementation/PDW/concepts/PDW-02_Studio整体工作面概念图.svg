@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900">
+<defs>
+ <linearGradient id="paper" x2="0" y2="1"><stop stop-color="#f8f7f1"/><stop offset="1" stop-color="#eeeee6"/></linearGradient>
+ <linearGradient id="mist" x2="1" y2="1"><stop stop-color="#e4eee6"/><stop offset="1" stop-color="#c8d9cf"/></linearGradient>
+ <linearGradient id="water" x2="0" y2="1"><stop stop-color="#d6e4dc"/><stop offset="1" stop-color="#9db8a9"/></linearGradient>
+ <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#243d34" flood-opacity=".08"/></filter>
+ <style>
+ .cn{font-family:"Noto Sans CJK SC","PingFang SC","Microsoft YaHei",sans-serif;fill:#263c39}
+ .muted{fill:#74827b}.teal{fill:#1c5a55}.tiny{font-size:11px}.small{font-size:13px}.mid{font-size:16px}.heading{font-size:21px;font-weight:700}.serif{font-family:"Noto Serif CJK SC","Songti SC",serif}
+ </style>
+</defs>
+<rect width="1440" height="900" fill="url(#paper)"/>
+<rect x="0" y="0" width="1440" height="66" fill="#fbfaf6"/>
+<path d="M0 66H1440" stroke="#dfe4dc"/>
+<g class="cn"><text x="34" y="38" font-size="27" class="teal serif">墨痕</text><text x="36" y="53" font-size="8" letter-spacing="3" class="muted">MOHEN</text>
+<text x="200" y="40" class="small muted">首页</text><text x="270" y="40" class="small muted">探索</text><text x="340" y="40" class="small muted">观看</text><text x="410" y="40" class="small teal" font-weight="700">Studio</text><path d="M405 65H465" stroke="#1c5a55" stroke-width="3"/>
+<text x="520" y="40" class="small muted">我的项目　›　江南运河城镇与日常生活</text>
+<circle cx="1266" cy="33" r="5" fill="#76a58b"/><text x="1280" y="38" class="tiny muted">演示自动保存 · 14:32</text><circle cx="1390" cy="33" r="16" fill="#e0eae2"/><text x="1384" y="38" class="tiny teal">墨</text></g>
+<g class="cn"><text x="32" y="104" class="tiny teal" letter-spacing="2">STUDIO / PROJECT WORKSPACE</text><text x="32" y="140" class="heading serif">江南运河城镇与日常生活</text><text x="32" y="165" class="small muted">从水路、城镇结构与普通人的生活出发，理解运河如何塑造江南地方社会</text>
+<g transform="translate(650 113)"><path d="M0 8H600" stroke="#d4ddd5" stroke-width="2"/><g><circle cx="0" cy="8" r="11" fill="#1c5a55"/><text x="-4" y="12" font-size="10" fill="white">✓</text><text x="-28" y="37" class="tiny teal">研究探索</text></g><g><circle cx="200" cy="8" r="11" fill="#1c5a55"/><text x="196" y="12" font-size="10" fill="white">2</text><text x="174" y="37" class="tiny teal">导演方案</text></g><g><circle cx="400" cy="8" r="11" fill="#e0e7df"/><text x="396" y="12" font-size="10" class="muted">3</text><text x="374" y="37" class="tiny muted">作品创作</text></g><g><circle cx="600" cy="8" r="11" fill="#e0e7df"/><text x="596" y="12" font-size="10" class="muted">4</text><text x="574" y="37" class="tiny muted">提交审核</text></g></g></g>
+<rect x="24" y="190" width="1392" height="32" rx="8" fill="#eaf1e9" stroke="#d9e6da"/><text x="40" y="211" class="cn tiny">原型模拟说明　当前项目、事件、材料与作品为设计夹具；未接线功能不代表真实Agent、数据库或资格服务已运行。</text>
+<!-- three workspaces -->
+<g filter="url(#shadow)">
+<rect x="24" y="236" width="350" height="638" rx="14" fill="#fffefa" stroke="#e1e6de"/>
+<rect x="388" y="236" width="405" height="638" rx="14" fill="#fffefa" stroke="#e1e6de"/>
+<rect x="807" y="236" width="609" height="638" rx="14" fill="#fffefa" stroke="#e1e6de"/>
+</g>
+<!-- left assistant -->
+<g class="cn"><text x="46" y="270" class="mid" font-weight="700">与墨痕协作</text><text x="295" y="269" class="tiny teal">● 情境协作</text><path d="M24 287H374" stroke="#e6e9e2"/>
+<rect x="43" y="303" width="312" height="54" rx="9" fill="#f6f7f1" stroke="#e2e7df"/><text x="57" y="325" class="small" font-weight="700">江南运河城镇与日常生活</text><text x="57" y="344" class="tiny muted">我的项目 · 最近编辑 14:32</text>
+<rect x="43" y="371" width="312" height="197" rx="11" fill="url(#mist)" stroke="#dbe7dc"/><text x="59" y="399" class="small teal" font-weight="700">墨痕 · 研究伙伴</text><text x="59" y="428" class="small">我已初步梳理了研究方向。</text><text x="59" y="451" class="small">下一步建议明确：你更希望从</text><text x="59" y="474" class="small">水运与城镇形成切入，还是从</text><text x="59" y="497" class="small">沿河居民的日常生活切入？</text><rect x="59" y="518" width="108" height="30" rx="7" fill="#1c5a55"/><text x="78" y="538" font-size="11" fill="white">聚焦前者</text><rect x="176" y="518" width="108" height="30" rx="7" fill="#fffefa" stroke="#b7ccc0"/><text x="195" y="538" class="tiny teal">两者都要</text>
+<text x="45" y="598" class="small" font-weight="700">项目动态</text><path d="M55 624V789" stroke="#cad9cf" stroke-width="2"/><circle cx="55" cy="631" r="5" fill="#1c5a55"/><text x="72" y="635" class="tiny muted">14:32</text><text x="116" y="635" class="small">导演方案已形成</text><text x="116" y="653" class="tiny muted">两种叙事路径，等待选择</text><circle cx="55" cy="692" r="5" fill="#7fa18e"/><text x="72" y="696" class="tiny muted">14:15</text><text x="116" y="696" class="small">研究方向已确认</text><text x="116" y="714" class="tiny muted">水运网络与市井生活并行</text><circle cx="55" cy="753" r="5" fill="#c2cec4"/><text x="72" y="757" class="tiny muted">14:02</text><text x="116" y="757" class="small">项目已创建</text><text x="116" y="775" class="tiny muted">研究目标已保存为项目委托</text>
+<rect x="43" y="807" width="312" height="47" rx="9" fill="#fff" stroke="#dfe5dc"/><text x="58" y="835" class="small muted">继续补充目标、提出问题…</text><rect x="279" y="816" width="63" height="29" rx="7" fill="#1c5a55"/><text x="295" y="835" font-size="11" fill="white">发送 ↗</text></g>
+<!-- center research -->
+<g class="cn"><text x="410" y="270" class="mid" font-weight="700">研究与知识工作区</text><path d="M388 287H793" stroke="#e6e9e2"/>
+<g class="tiny"><text x="410" y="315" class="teal" font-weight="700">研究进展</text><text x="503" y="315" class="muted">证据资料</text><text x="581" y="315" class="muted">知识资产</text><text x="664" y="315" class="muted">导演方案</text></g><path d="M407 324H472" stroke="#1c5a55" stroke-width="2"/>
+<rect x="408" y="342" width="365" height="98" rx="10" fill="#f5f7f2" stroke="#e4eae1"/><text x="426" y="370" class="small" font-weight="700">研究正在推进</text><text x="730" y="370" class="small teal" font-weight="700">68%</text><rect x="426" y="386" width="326" height="7" rx="4" fill="#e0e8df"/><rect x="426" y="386" width="222" height="7" rx="4" fill="#4d8975"/><text x="426" y="419" class="tiny muted">已整理 12 条材料线索 · 3 项待核问题 · 2 项关键证据</text>
+<text x="408" y="474" class="small" font-weight="700">研究事件流</text><circle cx="420" cy="503" r="5" fill="#1c5a55"/><text x="437" y="507" class="small">材料交叉比对</text><text x="437" y="525" class="tiny muted">地方志记载与沿线城镇资料正在核对</text><circle cx="420" cy="556" r="5" fill="#83a792"/><text x="437" y="560" class="small">发现可追问的关系</text><text x="437" y="578" class="tiny muted">水运节点与市镇活动可能有关，仍需活动证据</text>
+<circle cx="420" cy="610" r="5" fill="#c3cec5"/><text x="437" y="614" class="small">整理研究缺口</text><text x="437" y="632" class="tiny muted">居民日常生活的细节材料仍不足</text>
+<rect x="408" y="669" width="365" height="146" rx="10" fill="#fbf2e2" stroke="#efe2c9"/><text x="426" y="699" class="small" fill="#95672e" font-weight="700">研究缺口 · 需要继续补证</text><text x="426" y="727" class="small">当前材料足以提出城镇与水路的</text><text x="426" y="749" class="small">空间关系，但尚不足以证明具体</text><text x="426" y="771" class="small">商业活动的因果机制。</text><text x="426" y="797" class="tiny muted">可继续寻找账簿、契约或地方档案。</text></g>
+<!-- right work canvas -->
+<g class="cn"><text x="830" y="270" class="mid" font-weight="700">作品舞台</text><text x="1132" y="270" class="tiny muted">版本 V1.0 · 草稿</text><rect x="1333" y="250" width="64" height="29" rx="7" fill="#f1f3ed" stroke="#dce2da"/><text x="1345" y="269" class="tiny">对比</text><path d="M807 287H1416" stroke="#e6e9e2"/>
+<g class="tiny"><rect x="830" y="299" width="73" height="28" rx="7" fill="#1c5a55"/><text x="846" y="317" fill="white">认识主线</text><text x="922" y="317" class="muted">导演方案</text><text x="1003" y="317" class="muted">作品编辑</text></g>
+<text x="1110" y="368" text-anchor="middle" class="serif" font-size="25">运河之上，烟火人间</text><text x="1110" y="394" text-anchor="middle" class="small muted">——江南水乡的日常与诗意</text>
+<rect x="832" y="415" width="558" height="150" rx="10" fill="url(#water)"/>
+<path d="M832 495 Q930 467 1030 495 T1230 492 T1390 480V565H832Z" fill="#9bb6a7"/><path d="M832 455L875 432 920 455V510H832ZM1280 454L1327 425 1370 454V510H1280Z" fill="#f3ecdc" stroke="#a4b3a5" stroke-width="3"/><path d="M825 454L875 425 927 455M1270 455L1327 418 1380 455" fill="none" stroke="#718a7d" stroke-width="8"/><path d="M1035 498Q1110 555 1190 498" fill="none" stroke="#e9e3d5" stroke-width="17"/><path d="M832 540Q1000 516 1160 540T1390 534" fill="none" stroke="#dbe8dd" stroke-width="2"/><rect x="1296" y="428" width="82" height="20" rx="10" fill="#fffdf0" opacity=".9"/><text x="1305" y="442" class="tiny muted">场景示意</text>
+<text x="832" y="597" class="small serif">大运河不仅是一条水道，更是一条连接城镇与百姓生活的文化脉络。</text>
+<rect x="832" y="621" width="558" height="76" rx="8" fill="#f3f7f2" stroke="#d7e7db"/><rect x="832" y="621" width="4" height="76" rx="2" fill="#1c5a55"/><text x="850" y="647" class="mid serif">一、河道如何进入城镇生活</text><text x="850" y="674" class="small muted">水路改变了沿岸交通条件，也为货物流通和市镇发展提供空间联系。</text>
+<text x="850" y="729" class="mid serif">二、沿河的人们如何谋生</text><text x="850" y="754" class="small muted">船户、商贩、工匠与沿岸居民的生活节奏，仍需材料逐项核实。</text>
+<path d="M807 789H1416" stroke="#e6e9e2"/><rect x="830" y="807" width="94" height="36" rx="8" fill="#1c5a55"/><text x="849" y="830" font-size="12" fill="white">保存草稿</text><rect x="935" y="807" width="100" height="36" rx="8" fill="#fff" stroke="#dfe5dc"/><text x="950" y="830" class="tiny">版本对比</text><rect x="1045" y="807" width="100" height="36" rx="8" fill="#fff" stroke="#dfe5dc"/><text x="1060" y="830" class="tiny">恢复版本</text><rect x="1160" y="807" width="128" height="36" rx="8" fill="#fbf1df"/><text x="1174" y="830" class="tiny" fill="#95672e">1项权利待核</text><rect x="1297" y="807" width="100" height="36" rx="8" fill="#dfe7df"/><text x="1310" y="830" class="tiny teal">准备投稿</text></g>
+</svg>
