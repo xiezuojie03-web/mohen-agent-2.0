@@ -8,7 +8,7 @@
 ## 1. 当前产品深化状态
 
 ### PDW-00｜全平台统一体验底座设计补强
-状态：DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED。已完成本轮Agent全局身份/状态体系、能力责任矩阵、账户/角色导航和页尾方案补强；正式入口V0.6；HTML原型已更新为可操作的状态与导航情境预览。已核对真实GlobalNav、Session/认证/角色、Agent问答与材料检索API、根布局和相关页面入口。HTML真实浏览器交互、多视口、键盘/焦点、屏幕阅读器及真实服务验收均NOT_RUN；模拟身份/任务不代表工程实现。六页面内部仍为中性占位。唯一入口：[PDW-00正式入口V0.1](tasks/implementation/PDW/PDW-00_全平台统一体验底座设计补强正式入口_V0.1.md)。完成并经Owner签收后启动PDW-01继承性完善。
+状态：DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED。已完成本轮Agent全局身份/状态体系、能力责任矩阵、账户/角色导航和页尾方案补强；正式入口V0.6；HTML原型已更新为可操作的状态与导航情境预览。已核对真实GlobalNav、Session/认证/角色、Agent问答与材料检索API、根布局和相关页面入口。HTML内嵌JavaScript已通过静态语法编译检查；真实浏览器交互、多视口、键盘/焦点、屏幕阅读器及真实服务验收仍NOT_RUN；模拟身份/任务不代表工程实现。六页面内部仍为中性占位。唯一入口：[PDW-00正式入口V0.1](tasks/implementation/PDW/PDW-00_全平台统一体验底座设计补强正式入口_V0.1.md)。完成并经Owner签收后启动PDW-01继承性完善。
 
 ### PDW-01｜HOME CEI工程衔接
 状态：既有HOME专项设计交付CLOSED / OWNER_APPROVED；等待PDW-00完成后进行继承性完善，不重做。Owner已接受整体明亮化、深青绿局部沉浸、弱化暖金的视觉方向。关闭仅代表设计交付和工程衔接规范完成，不代表HOME代码施工或运行验收完成。
