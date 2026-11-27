@@ -2,7 +2,7 @@
 
 版本：V1.11
 
-本计划落实 MAB-ENG-01、MHKA-00—05 和经授权的专业合同。M5 主线见 §3.6 B/C/D，同一真实作品最终验收按 §3.6 B；产品体验深化与设计工程衔接按§6 PDW-00→PDW-01→PDW-02→PDW-03→PDW-04→PDW-05的唯一顺序执行。
+本计划落实 MAB-ENG-01、MHKA-00—05 和经授权的专业合同。M5主线见§3.6 B/C/D，同一真实作品最终验收按§3.6 B；产品体验深化与设计工程衔接按§6 PDW-00→PDW-01→PDW-02→PDW-03→PDW-04→PDW-05的唯一顺序执行。
 
 ## 0. 当前执行裁决与任务入口
 
@@ -374,4 +374,4 @@ PDW关闭只代表该工作面的设计交付与工程衔接完成，不代表�
 
 2026-11-02交付包附录A—D（旧20项责任/74目标登记/交付检查/设计包吸收账）已[原样归档](../../results/MAB/archive/MAB_PLAN_LEGACY_APPENDICES_A_D_20261117.md)。这些内容是**历史来源和追溯证据**，不是当前施工步骤；尤其归档内的“建议批次”“PENDING_PUSH”“本地优先”及当时CREATE/REVISE状态不能覆盖实时main/当前安全与授权事实。
 
-当前需要定位文件级责任，使用[现行target-diff.csv](target-diff.csv)、[progress.md](progress.md)相关批及[CURRENT.md](../../../CURRENT.md)。施工按本PLAN §3.5 B/C/D，M5八维不变；不因移出附录而删除历史证据、已批准专业合同或已完成工程成果。
+当前需要定位文件级责任，使用[现行target-diff.csv](target-diff.csv)、[progress.md](progress.md)相关批及[CURRENT.md](../../../CURRENT.md)。施工按本PLAN §3.6 B/C/D，M5八维不变；不因移出附录而删除历史证据、已批准专业合同或已完成工程成果。
