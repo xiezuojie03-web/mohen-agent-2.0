@@ -1,6 +1,6 @@
 # 墨痕 MoHen｜工程入口与权威导航
 
-> 本文件只定义仓库级权威路由、AI施工必读顺序和通用执行纪律；不另立施工计划、验收标准、执行平台或生产授权。现行施工计划为 tasks/implementation/MAB/PLAN.md（当前版本V1.10）；产品体验深化与设计工程衔接的唯一顺序见PLAN §3.6 PDW-01—PDW-05；PDW-02内部另按PDW-02-B（全平台统一体验底座）→PDW-02-SR（Studio工作空间结构重构）顺序执行，具体范围以PLAN和PDW-02唯一入口索引为准。
+> 本文件只定义仓库级权威路由、AI施工必读顺序和通用执行纪律；不另立施工计划、验收标准、执行平台或生产授权。现行施工计划为 tasks/implementation/MAB/PLAN.md（当前版本V1.11）；产品体验深化与设计工程衔接的唯一顺序见PLAN §6 PDW-00—PDW-05；PDW顺序为PDW-00→PDW-01→PDW-02→PDW-03→PDW-04→PDW-05；PDW-00建立全平台统一体验底座，PDW-01继承性完善HOME，PDW-02独立重构Studio，具体范围以PLAN和各正式入口为准。
 
 ## 1. 权威顺序与不可越界的底线
 
@@ -24,7 +24,7 @@ Owner已批准的裁决 → MHKA-00—05相应设计职责 → 现行授权专�
 | 文件 | 唯一职责与读取要求 |
 |---|---|
 | AGENTS.md（本文件） | 仓库级权威路由、必读顺序、执行纪律和文件同步规则 |
-| tasks/implementation/MAB/PLAN.md | 唯一施工计划、执行顺序与验收标准；每批按需读取§0、§0.2、§0.3、§3.5、§3.6 PDW及§6相关条款；PDW顺序不得由CEI附件或平台自行改写 |
+| tasks/implementation/MAB/PLAN.md | 唯一施工计划、执行顺序与验收标准；每批按需读取§0、§0.2、§0.3、§3.5、§6 PDW及§6相关条款；PDW顺序不得由CEI附件或平台自行改写 |
 | CURRENT.md | 当前工程事实、真实任务、最前阻断与下一动作；必须核对日期和证据范围 |
 | tasks/implementation/MAB/progress.md | 追加式施工证据账；仅按当前动作回查相关历史回执 |
 | tasks/implementation/MAB/ENGINEERING_HANDOFF_CURRENT.md | 仅在更换平台、环境或需要专用宿主交接时读取；不作为第二份施工计划 |
