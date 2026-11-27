@@ -1,9 +1,9 @@
 # 墨痕 PDW-00｜全平台统一体验底座设计补强正式入口
 
 > 正式入口编号：PDW-00-20261127-01  
-> 现行内容版本：V0.2（全平台统一体验底座设计交付）  
+> 现行内容版本：V0.3（Owner反馈后的继承质量补强）  
 > 日期：2026-11-27  
-> 状态：DESIGN_DELIVERY_READY / OWNER_REVIEW_REQUIRED  
+ > 状态：DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED  
 > 归属：PDW产品设计工作流；本文件是PDW-00唯一正式任务入口，执行标准服从PLAN §6及上位设计合同。  
 > 唯一施工计划：`tasks/implementation/MAB/PLAN.md`。  
 > 适用仓库：`xiezuojie03-web/mohen-agent-2.0`，main。
@@ -324,7 +324,7 @@ PDW-00形成跨工作面共用设计依据；后续PDW可在有明确理由时�
  
 ---
 
-## 9. PDW-00正式设计交付｜全局体验底座规范（V0.2）
+## 9. PDW-00正式设计交付｜全局体验底座规范（V0.3）
 
 > 本节及其子节为PDW-00本轮正式设计交付。它们将Owner已确认方向转化为可审阅、可映射、可继承的设计规则。概念图与HTML为设计资产；本规范不代表业务代码、Agent运行时、身份权限或数据合同已实现。
 
@@ -672,22 +672,22 @@ PDW-00形成跨工作面共用设计依据；后续PDW可在有明确理由时�
 
 | 交付项 | 正式路径 | 当前状态 |
 |---|---|---|
-| 唯一正式入口及本轮完整设计规范 | `tasks/implementation/PDW/PDW-00_全平台统一体验底座设计补强正式入口_V0.1.md` | V0.2，已补充设计规范，待Owner审阅 |
-| 完整概念图 | `tasks/implementation/PDW/concepts/PDW-00_全平台统一体验底座完整概念图.svg` | 已提交main；静态资产存在 |
-| 可操作HTML原型 | `tasks/implementation/PDW/prototypes/PDW-00_全平台统一体验底座可操作原型.html` | 已提交main；静态结构已写入，浏览器NOT_RUN |
+| 唯一正式入口及本轮完整设计规范 | `tasks/implementation/PDW/PDW-00_全平台统一体验底座设计补强正式入口_V0.1.md` | V0.3，含Owner反馈继承质量补强，待Owner审阅 |
+| 完整概念图 | `tasks/implementation/PDW/concepts/PDW-00_全平台统一体验底座完整概念图.svg` | 已同步顶部导航账户入口与全局页尾；静态资产存在 |
+| 可操作HTML原型 | `tasks/implementation/PDW/prototypes/PDW-00_全平台统一体验底座可操作原型.html` | 已恢复六页面专属舞台、全局页尾、情境预览与下一步动作；脚本语法检查PASS，浏览器NOT_RUN |
 | Agent/沪上经纬继承裁决 | 本入口§9.1 | 已形成 |
 | 墨痕/导航/视觉/六面/组件规范 | 本入口§9.2—§9.6 | 已形成 |
 | 设计—工程逐项映射 | 本入口§9.7 | 静态映射已形成，未修改业务代码 |
 | Owner体验任务与失败判据 | 本入口§9.9 | 已形成，待执行 |
 | 关闭回执 | 本入口§9.10 | **未关闭；等待Owner审阅和签收** |
 
-**当前状态：** `DESIGN_DELIVERY_READY / OWNER_REVIEW_REQUIRED`。这表示设计文件和两项设计资产已提交，尚不表示Owner签收或真实运行通过。
+**当前状态：** `DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED`。Owner已认可六个工作面的视觉方向与顶部导航；墨痕继承质量、六页面专属设计继承和全局页尾正在按Owner反馈补强，尚未完成本轮最终审阅。
 
-**未完成事项：** 真实浏览器交互/多视口/键盘验收NOT_RUN；SVG与HTML需Owner视觉体验；个人空间工程入口与Agent运行入口尚待进一步核验；当前main业务代码未修改。
+**未完成事项：** 真实浏览器交互/多视口/键盘验收NOT_RUN；SVG与HTML需Owner视觉体验；个人空间工程入口与Agent运行入口尚待进一步核验；CEI原型源文件本轮GitHub读取接口返回空内容，相关HOME继承以PDW-01已签收报告和正式审查记录为准；当前main业务代码未修改。
 
 **明确禁止：** 本轮没有修改业务代码、API、数据库、Schema、数据、权限/RLS、CI、部署、生产资格、D/L/G合同或Agent运行时。不得将设计交付写成工程实现PASS。
 
-**关闭条件：** 9.1—9.9设计标准、概念图、HTML、工程映射、Owner体验任务及失败判据全部经Owner审阅；Owner明确签收；必要修订完成；CURRENT/progress回读一致。Owner未签收前不得标记`CLOSED / OWNER_APPROVED`，唯一下一任务仍为PDW-01继承性完善，但不得提前启动。
+**关闭条件：** 9.1—9.11设计标准、概念图、HTML、工程映射、页面继承登记、Owner体验任务及失败判据全部经Owner审阅；Owner明确签收；必要修订完成；CURRENT/progress回读一致。Owner未签收前不得标记`CLOSED / OWNER_APPROVED`，唯一下一任务仍为PDW-01继承性完善，但不得提前启动。
 
 
  
