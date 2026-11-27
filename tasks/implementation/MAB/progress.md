@@ -166,3 +166,19 @@
 - **现行顺序复核：** PDW-00（本轮唯一启动任务）→PDW-01（仅做HOME继承性完善，不重做已签收成果）→PDW-02（Studio工作空间重构）→PDW-03→PDW-04→PDW-05；每项Owner签收后再启动下一项。
 - **施工边界：** 本轮仅修正文档逻辑和跨文件引用；未修改业务代码、API、数据库/Schema/数据、权限/RLS、CI、部署、生产资格或旧沪上经纬仓库。
 - **当前结论：** 文档结构与任务归属已完成本轮修正；历史过程记录保留。仍须在启动PDW-00时按下述指令读取现行文件，并以最新main内容为准，不得从progress历史描述复原旧任务结构。
+
+ 
+## 2026-11-27｜PDW-00全平台统一体验底座设计交付
+
+- **执行基线：** `xiezuojie03-web/mohen-agent-2.0` main；本轮启动时最近提交为`6b5ca92387aeb8f65970b82ae3ba751a245566c4`。PLAN V1.11；PDW-00正式入口原V0.1，状态`READY_FOR_EXECUTION / NOT_STARTED`。
+- **必读核验：** AGENTS.md、PLAN.md、CURRENT.md、OWNER_WORKING_AGREEMENT.md、ENGINEERING_HANDOFF_CURRENT.md、PDW-00正式入口、Agent专项讨论、PDW-01正式入口、PDW-02正式入口。PDW顺序与文件归属无冲突，未修改PLAN/AGENTS/ENGINEERING_HANDOFF。
+- **继承研究：** Agent四要素/五类行为/共享Agent原则继承；旧仓库“世界＋意识＋看法”理念继承并按MoHen 2.0知识世界/证据/权利/资格层重释。MohenFab、旧API、TopNav、Footer、AskMohenButton、layout已读取；区分理念、原型、源码片段和运行未验证能力。旧红/金视觉、停留计时阈值、兴趣画像、旧store/API不直接迁移。
+- **main代码静态映射：** 读取`apps/web/app/layout.tsx`、`page.tsx`、`components/GlobalNav.tsx`、`explore/page.tsx`、`studio/page.tsx`、`admin/page.tsx`、`watch/page.tsx`及`styles.css/five-ui.css/studio.css/explore.css/watch.css/admin.css`。确认根布局挂载GlobalNav但未挂载全局墨痕；HOME仍为门户；EXP/Studio/Admin/WATCH独立页面存在；个人空间候选路由`me/profile/my`未定位，记VERIFY，不推断仓库绝对不存在。
+- **正式入口：** `tasks/implementation/PDW/PDW-00_全平台统一体验底座设计补强正式入口_V0.1.md`内容升为V0.2；新增§9.1—§9.10，包含继承裁决、墨痕服务规范、Context Envelope、角色/页面矩阵、异常降级、导航、Token、组件边界、六工作面适配、工程映射和Owner验收。
+- **概念图：** 新增`tasks/implementation/PDW/concepts/PDW-00_全平台统一体验底座完整概念图.svg`，提交SHA`44b2cda105818eabd190da730d287448569a7362`。
+- **HTML原型：** 新增`tasks/implementation/PDW/prototypes/PDW-00_全平台统一体验底座可操作原型.html`，提交SHA`fd263f8503e3348bb119294a0067d64b18e8c180`。覆盖六工作面、HOME→EXP→Studio、角色演示、墨痕唤起/收起/静音、上下文封套和离线模拟；模拟数据/角色/Agent响应明确标注。
+- **正式入口提交：** `6294ba23655a003c5edbc6ff1c3c67554f850ee2`。
+- **文档状态：** CURRENT已同步为`DESIGN_DELIVERY_READY / OWNER_REVIEW_REQUIRED`；PDW-00未关闭。PDW-01、PDW-02及后续任务状态未提前改变。
+- **验证边界：** 仅完成静态代码读取与设计文件写入；浏览器点击、键盘、屏幕阅读器、真实移动设备、多视口及运行权限验收均`NOT_RUN`。本轮未修改业务代码、API、数据库、Schema、数据、权限/RLS、CI、部署、生产资格、D/L/G合同或Agent运行时。
+- **Owner验收：** 按PDW-00正式入口§9.9 O1—O8体验；失败判据和未决项按§9.10记录。等待Owner审阅，不得自签`CLOSED / OWNER_APPROVED`。
+- **本轮最终设计状态：** `DESIGN_DELIVERY_READY / OWNER_REVIEW_REQUIRED`。唯一下一动作：Owner审阅PDW-00概念图/HTML并执行体验验收。
