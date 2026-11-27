@@ -182,3 +182,5 @@
 - **验证边界：** 仅完成静态代码读取与设计文件写入；浏览器点击、键盘、屏幕阅读器、真实移动设备、多视口及运行权限验收均`NOT_RUN`。本轮未修改业务代码、API、数据库、Schema、数据、权限/RLS、CI、部署、生产资格、D/L/G合同或Agent运行时。
 - **Owner验收：** 按PDW-00正式入口§9.9 O1—O8体验；失败判据和未决项按§9.10记录。等待Owner审阅，不得自签`CLOSED / OWNER_APPROVED`。
 - **本轮最终设计状态：** `DESIGN_DELIVERY_READY / OWNER_REVIEW_REQUIRED`。唯一下一动作：Owner审阅PDW-00概念图/HTML并执行体验验收。
+
+- **补充修订：** HTML原型追加修正`05c0d60d4ec3a42191ef679f5e9a474f80d0b8c5`，导航按角色显隐Admin，访客进入Studio/个人空间会被演示权限拦截，修复EXP→Studio上下文轨迹重复记录。最新main HEAD核验为`05c0d60d4ec3a42191ef679f5e9a474f80d0b8c5`（2026-11-27 04:56:37Z）。
