@@ -184,3 +184,5 @@
 - **本轮最终设计状态：** `DESIGN_DELIVERY_READY / OWNER_REVIEW_REQUIRED`。唯一下一动作：Owner审阅PDW-00概念图/HTML并执行体验验收。
 
 - **补充修订：** HTML原型追加修正`05c0d60d4ec3a42191ef679f5e9a474f80d0b8c5`，导航按角色显隐Admin，访客进入Studio/个人空间会被演示权限拦截，修复EXP→Studio上下文轨迹重复记录。最新main HEAD核验为`05c0d60d4ec3a42191ef679f5e9a474f80d0b8c5`（2026-11-27 04:56:37Z）。
+
+- **原型交互补强：** `41f822c17e3c92519886d2dd2ff57b5a1c7fb01d`将个人空间从桌面一级主导航调整为账户侧入口（移动端保留个人标签），并实现Escape关闭墨痕面板及焦点返回唤起按钮；正式入口§9.8同步修正。浏览器/键盘实测仍NOT_RUN。
