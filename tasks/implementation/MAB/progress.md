@@ -256,3 +256,6 @@ Owner明确改变策略：PDW-00不再开展HOME、EXP、Studio、WATCH、Admin�
 
 
 - **用户控制补强：** 原型进一步加入“取消委托”和“撤回本次授权”两个明确操作；撤权后的模拟反馈说明正式服务必须阻断后续动作并留下撤权回执。内嵌JavaScript再次通过V8编译检查，所有脚本引用DOM ID均存在。真实浏览器操作仍NOT_RUN。
+
+
+- **最终文件回读与提交收口：** main回读确认PDW-00正式入口V0.6、HTML原型最终Blob `6ef871da4a8440c9d3f1f02f1d429a8413f602a0`、正式入口最终Blob `40ce7e916b54e67bce99da02dd9168b8d3cfe3e3`、CURRENT状态同步、PLAN仍为V1.13。分支核验仅有`main`。最终入口补记原型已具备取消委托、停止任务和撤回本次授权控件；脚本V8编译PASS，DOM引用核验无缺失。真实浏览器验收仍NOT_RUN。
