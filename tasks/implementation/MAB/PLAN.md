@@ -2,7 +2,7 @@
 
 版本：V1.11
 
-本计划落实 MAB-ENG-01、MHKA-00—05 和经授权的专业合同。M5 主线见 §3.6 B/C/D，同一真实作品最终验收按 §3.6 B；产品体验深化与设计工程衔接按 §3.6 PDW-01—PDW-05 的唯一顺序执行。
+本计划落实 MAB-ENG-01、MHKA-00—05 和经授权的专业合同。M5 主线见 §3.6 B/C/D，同一真实作品最终验收按 §3.6 B；产品体验深化与设计工程衔接按§6 PDW-00→PDW-01→PDW-02→PDW-03→PDW-04→PDW-05的唯一顺序执行。
 
 ## 0. 当前执行裁决与任务入口
 
@@ -42,8 +42,6 @@
 - 核验同一运行实例中的`root_task_id → source/version/bytes/locator → D/L/G及独立资格 → Agent/Provider贡献/费用 → asset@revision/refs/use_events → WorkRevision → G5及媒资许可 → publish pointer → WATCH/撤权`。不能通过灌假资料、拼接不同实验、预置PASS或手工更改不可变记录拼出成功。
 - M5先以持久隔离真实原件完成八维；M6回归、M7双课题、M8受控投运分别验收。Owner只在工程真实浏览器/HTTP/PG/Storage/Provider正反自验后，从Creator、Admin、独立Reviewer、Operator、WATCH及实际启用的探索入口做最终真实体验；未交付角色不得假称开放。
 - **独立性边界**：机器/专业Gate签发必须由独立权限执行，Creator/Operator不能代签。此前Owner明确允许“Owner与Creator为同一人时的人文终签例外”，须显式记录，**该例外不等于独立专业Gate合格，也不能把自签记为独立Reviewer验收**。对外开放质量≠向公众开放；私有首用户入口与任何公众开放仍须各自授权。
-
-### 0.3 施工必读文件与信息同步机制
 
 仓库级读取顺序、文件职责和同步规则统一见 [AGENTS](../../../AGENTS.md)。
 
