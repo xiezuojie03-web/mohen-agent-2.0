@@ -188,3 +188,18 @@
 - **原型交互补强：** `41f822c17e3c92519886d2dd2ff57b5a1c7fb01d`将个人空间从桌面一级主导航调整为账户侧入口（移动端保留个人标签），并实现Escape关闭墨痕面板及焦点返回唤起按钮；正式入口§9.8同步修正。浏览器/键盘实测仍NOT_RUN。
 
 - **组件级工程映射补充：** 已回读并检查`ExploreWorkbench.tsx`、`ExplorePresentation.tsx`、`StudioWorkbench.tsx`、`AdminWorkbench.tsx`、`WatchGallery.tsx`及`GlobalNav.tsx`。确认EXP语义工作台/呈现壳双组件职责分离可继承；HOME当前仅page.tsx+ModeEntryCard入口卡，不是同类策展双组件；Studio/Admin/WATCH分别保留既有业务工作台。细节归档PDW-00入口§9.7.2。提交SHA：`c91f4ff8999e33f82ebdfad24779b7ed7cb26894`。
+
+ 
+## 2026-11-27｜PDW-00 Owner反馈后的设计继承质量补强
+
+- **Owner反馈：** 认可六个工作面的视觉风格方向和桌面顶部全局导航，要求保持；指出墨痕继承不足、六页专属设计退化为通用演示、全局页尾不真实且开发说明出现在页面上。
+- **补充研究范围：** 重新读取沪上经纬内核纲领§6.4—§6.5、`MohenFab.tsx`、`lib/store.ts`、`app/api/mohen/route.ts`、旧版`TopNav.tsx/Footer.tsx/AskMohenButton.tsx/layout.tsx`；并对照PDW-01 HOME签收报告、2026-11-26 UI反向工程审计、当前main的GlobalNav、Explore双组件、Studio、Admin、WATCH代码。
+- **墨痕继承补强：** 明确恢复“情境观察→解释→下一步行动”三段式主动提示、低打扰预览、nextSteps直接行动、页面级情境介绍、结构化叙事与统一发问入口；明确摒弃2秒轮询、停留/滚动/悬停兴趣推断、隐形兴趣画像、旧12秒/3分钟阈值及打开FAB自动解除静音。详见PDW-00入口§9.11.2—§9.11.3。
+- **六页继承补强：** HOME保留已签收V1.8.3策展漫游/六类视角/错落编排；EXP保留ExploreWorkbench+ExplorePresentation双组件和专题Experience资产；Studio保留现有真实三工作区和生产能力作为PDW-02输入；Admin保留九个治理工作区；WATCH保留精确修订/沉浸舞台/章节轴/依据侧栏；个人空间明确现无正式页面，按既有审计架构登记为未来建设，不伪装为已实现。详见§9.11.4。
+- **全局页尾：** 确认当前main的`apps/web/app/layout.tsx`未挂载Footer，`GlobalFooter.tsx`路径返回404；HTML原型新增轻量统一产品页尾，移动端底部导航与页面页尾分工明确。无生产业务代码改动。
+- **概念图：** 同步桌面顶部导航的账户入口层级和全局页尾表达，保持原有明亮清润视觉方向。
+- **HTML原型：** 重构为六个不同页面舞台，不再使用统一标题/说明/三卡片模板；保留已认可桌面顶部导航和个人空间账户入口；增加全局页尾、墨痕情境预览、解释层次和下一步动作；移除页面可见的“演示说明/交互演示/模拟数据/demo”等开发文案。原型内容和Agent回应仍是静态设计交互，不连接真实业务服务。
+- **验证：** HTML内嵌JavaScript语法检查PASS；静态检查确认六页面函数、统一页尾、顶部导航、个人空间入口、情境预览、静音和移动端导航均存在；真实浏览器、键盘、屏幕阅读器和多视口实测NOT_RUN。
+- **文档状态：** PDW-00正式入口内容升为V0.3，CURRENT同步为`DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED`；PLAN V1.11、AGENTS、ENGINEERING_HANDOFF未修改。PDW-00未关闭，Owner未签收，PDW-01/02未启动。
+- **提交证据：** 本轮主要资产提交包括HTML`d76e5350c4aa38867a552a54a0768a0d632151c3`及后续导航/交互补强`8c9a5dd51ccf9bd3ea2eaf98170ef99c50c6e01f`、`7cd905a962c30ec0b17b2c40d5a7b519ec2562d8`；正式入口V0.3提交`12744a2e08b9429a1c8ce57353f859be95bb4183`；概念图提交`924d5725456b8681a9b55dc925b173000eb05389`及SVG格式修正`8596b354cdec286658eba2a97b73a7ef02dcf0fa`。CURRENT同步提交：`361b30f6d3821adae10e86c04d0642840bc07053`。
+- **唯一下一动作：** Owner打开更新后的概念图和HTML，按正式入口O1—O13审阅；提出的具体修订仍归PDW-00，不提前启动PDW-01或PDW-02。
