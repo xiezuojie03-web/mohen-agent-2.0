@@ -8,7 +8,7 @@
 ## 1. 当前产品深化状态
 
 ### PDW-00｜全平台统一体验底座设计补强
-状态：DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED。Owner已认可六工作面视觉方向与桌面顶部导航；当前仅完成全局墨痕、统一顶部导航、全局页尾、移动端底部导航和共用Token；六页面内部设计全部留待对应专项。正式入口V0.5；HTML交互原型已改为全局底座+六页面中性占位；真实浏览器验收NOT_RUN。唯一入口：[PDW-00正式入口V0.1](tasks/implementation/PDW/PDW-00_全平台统一体验底座设计补强正式入口_V0.1.md)。完成并经Owner签收后启动PDW-01继承性完善。
+状态：DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED。Owner已认可六工作面视觉方向与桌面顶部导航；当前全局设计与HTML占位交付已整理，待Owner体验验收；范围包括统一墨痕、顶部导航、全局页尾、移动端底部导航和共用Token，六页面内部设计全部留待对应专项。正式入口V0.5；HTML交互原型已改为全局底座+六页面中性占位；真实浏览器验收NOT_RUN。唯一入口：[PDW-00正式入口V0.1](tasks/implementation/PDW/PDW-00_全平台统一体验底座设计补强正式入口_V0.1.md)。完成并经Owner签收后启动PDW-01继承性完善。
 
 ### PDW-01｜HOME CEI工程衔接
 状态：既有HOME专项设计交付CLOSED / OWNER_APPROVED；等待PDW-00完成后进行继承性完善，不重做。Owner已接受整体明亮化、深青绿局部沉浸、弱化暖金的视觉方向。关闭仅代表设计交付和工程衔接规范完成，不代表HOME代码施工或运行验收完成。
