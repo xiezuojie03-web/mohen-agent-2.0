@@ -3,7 +3,7 @@
 > 当前核验日期：2026-11-27  
 > PDW-02设计文件最后一次变更提交：1d68a2fb557525ae2b6c03e2e51217a490076f08（此后仅同步当前状态文档）。  
 > Studio业务代码审查基线：2388af125300efb73e27b3c3804982a56f5a9d36；其后main提交仅新增/修订PDW-02设计原型与概念图，未修改Studio业务代码。  
-> 唯一施工计划：tasks/implementation/MAB/PLAN.md V1.9 §3.6；唯一main执行。
+> 唯一施工计划：tasks/implementation/MAB/PLAN.md V1.10 §3.6；唯一main执行。
 
 ## 1. 当前产品深化状态
 
@@ -15,7 +15,11 @@
 ### PDW-02｜Studio完整产品体验设计与工程衔接
 状态：DESIGN_REVIEW / OWNER_REVIEW_REQUIRED。完整Studio用户体验、信息架构、Agent交互合同、视觉规范、整体概念图、可操作HTML原型、设计—工程映射、P0—P3处置矩阵及Owner体验任务已归档到唯一正式入口。
 
-唯一入口：[PDW-02 Studio正式入口（原自检报告路径，现行内容V0.2）](tasks/implementation/PDW/PDW-02_Studio设计与工程自检报告_V0.1.md)。
+唯一入口：[PDW-02 Studio正式入口（原自检报告路径，现行内容V0.3）](tasks/implementation/PDW/PDW-02_Studio设计与工程自检报告_V0.1.md)。
+
+本轮方向裁决：[PDW-02全平台统一体验底座与Studio工作空间重构方向裁决记录V0.2](tasks/implementation/PDW/PDW-02_全平台统一体验底座与Studio工作空间重构方向裁决记录_V0.2.md)。
+
+PDW-02分两项独立子任务：先执行**PDW-02-B｜全平台统一体验底座设计补强**（墨痕全局智能服务、顶部/底部/移动端导航、全站视觉系统及页面适配）；再执行**PDW-02-SR｜Studio工作空间结构重构**（仍归属PDW-02，独立交付，不与B合并）。详细范围、继承依据和关闭条件见上述方向裁决记录及PLAN V1.10 §3.6。
 
 原型：[完整可操作Studio工作空间](tasks/implementation/PDW/prototypes/PDW-02_Studio_完整创作工作空间_可操作原型.html)。  
 概念图：[Studio整体工作面概念图SVG](tasks/implementation/PDW/concepts/PDW-02_Studio整体工作面概念图.svg)。
@@ -39,10 +43,10 @@
 - Owner按正式入口第11.10节完成Studio原型体验验收，反馈纳入同一入口缺陷闭环。
 - 未经Owner签收不得关闭PDW-02；未关闭不得启动PDW-03。
 - P0/P1业务和Schema问题继续归M5原施工主线，需另行授权；PDW-02不修改业务代码、数据库、RLS、CI、部署或生产资格。
-- 本次PDW-02交付仅新增设计文档、SVG概念图和模拟HTML原型；不代表真实Agent、生产数据或M5闭环通过。
+- 本轮全局方向归档仅新增/更新设计治理文档；未修改业务代码、API、数据库、权限、RLS、CI、部署或生产资格；不代表全局墨痕、导航、Agent或M5闭环已实现/通过。
 
 ## 4. 既有历史审计入口
 
 - [MAB工程全面审计报告 2026-11-26 V1.0](tasks/results/MAB/audits/MAB_工程全面审计报告_20261126_V1.0.md)。
 - [MAB UI反向工程审计与产品完整性评估 2026-11-26 V1.0](tasks/results/MAB/audits/MAB_UI反向工程审计与产品完整性评估_20261126_V1.0.md)。
-- [MAB施工计划 V1.9](tasks/implementation/MAB/PLAN.md)是唯一施工计划；tasks/implementation/MAB/progress.md记录追加式执行证据。
+- [MAB施工计划 V1.10](tasks/implementation/MAB/PLAN.md)是唯一施工计划；tasks/implementation/MAB/progress.md记录追加式执行证据。
