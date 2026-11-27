@@ -1,6 +1,6 @@
 # 墨痕｜当前施工断点
 
-> 当前核验日期：2026-11-27  
+ > 当前核验日期：2026-11-27（PDW-00设计交付同步）  
 > PDW-00与PDW-02正式入口已按Owner裁决完成重新归位；本轮只更新文件治理和索引，未修改业务代码。本轮仅文档与设计治理更新，未修改业务代码。  
 > Studio业务代码审查基线：2388af125300efb73e27b3c3804982a56f5a9d36；其后main提交仅新增/修订PDW-02设计原型与概念图，未修改Studio业务代码。  
 > 唯一施工计划：tasks/implementation/MAB/PLAN.md V1.11 §6；唯一main执行。
@@ -8,7 +8,7 @@
 ## 1. 当前产品深化状态
 
 ### PDW-00｜全平台统一体验底座设计补强
-状态：READY_FOR_EXECUTION / NOT_STARTED。唯一入口：[PDW-00正式入口V0.1](tasks/implementation/PDW/PDW-00_全平台统一体验底座设计补强正式入口_V0.1.md)。完成并经Owner签收后启动PDW-01继承性完善。
+状态：DESIGN_DELIVERY_READY / OWNER_REVIEW_REQUIRED。已完成规范、概念图与可操作HTML首轮交付；真实浏览器验收NOT_RUN。唯一入口：[PDW-00正式入口V0.1](tasks/implementation/PDW/PDW-00_全平台统一体验底座设计补强正式入口_V0.1.md)。完成并经Owner签收后启动PDW-01继承性完善。
 
 ### PDW-01｜HOME CEI工程衔接
 状态：既有HOME专项设计交付CLOSED / OWNER_APPROVED；等待PDW-00完成后进行继承性完善，不重做。Owner已接受整体明亮化、深青绿局部沉浸、弱化暖金的视觉方向。关闭仅代表设计交付和工程衔接规范完成，不代表HOME代码施工或运行验收完成。
@@ -43,7 +43,8 @@ PDW-02仅承担Studio工作空间结构重构。其前置为PDW-00完成及PDW-0
 
 ## 3. 下一步
 
-- 当前设计下一动作是PDW-00。PDW-00完成并经Owner审阅后，先对PDW-01做继承性完善；PDW-01签收后启动PDW-02 Studio工作空间重构。原O1—O9仅作为历史输入，不能替代新结构原型Owner验收。
+- **当前唯一设计断点：PDW-00待Owner体验审阅与签收。** 设计规范V0.2、完整概念图SVG和可操作HTML已写入main；Owner按PDW-00正式入口§9.9执行O1—O8并记录PASS/FAIL。浏览器、键盘、屏幕阅读器和多视口实测仍为NOT_RUN。
+- PDW-00签收后，唯一下一任务为PDW-01 HOME继承性完善；PDW-01签收后才启动PDW-02 Studio工作空间重构。不得提前启动后续任务。
 - 未经Owner签收不得关闭PDW-02；未关闭不得启动PDW-03。
 - P0/P1业务和Schema问题继续归M5原施工主线，需另行授权；PDW-02不修改业务代码、数据库、RLS、CI、部署或生产资格。
 - 本轮全局方向归档仅新增/更新设计治理文档；未修改业务代码、API、数据库、权限、RLS、CI、部署或生产资格；不代表全局墨痕、导航、Agent或M5闭环已实现/通过。
