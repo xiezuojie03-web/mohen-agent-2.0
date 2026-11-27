@@ -205,3 +205,16 @@
 - **唯一下一动作：** Owner打开更新后的概念图和HTML，按正式入口O1—O13审阅；提出的具体修订仍归PDW-00，不提前启动PDW-01或PDW-02。
 
 - **静音规则复核：** HTML原型修正为打开全局墨痕面板不会自动解除静音；只有用户明确点击“恢复提示”才恢复主动提示。静音状态仍允许用户主动提问。页尾补充来源/材料权利/个人隐私说明原则。原型脚本语法复核PASS；真实浏览器验收仍NOT_RUN。对应HTML提交SHA：`a0ed7742ab203ecb155d81354c47b6a1e5ee3474`。
+
+
+## PDW-00交付标准与页面基线澄清（2026-11-27）
+
+Owner提出三项正式修订要求：说明六个页面各自继承的基线；澄清O1—O13编号；取消概念图图片，改为HTML交互原型唯一交付物。
+
+已完成文档修订并推送main：
+- `tasks/implementation/MAB/PLAN.md`：升级V1.12；PDW统一交付标准改为完整可操作HTML交互原型，明确不再制作/要求概念图图片。
+- `tasks/implementation/PDW/PDW-00_全平台统一体验底座设计补强正式入口_V0.1.md`：内容版本V0.4；新增§9.12六页面基线来源与继承边界；明确PDW-00六页展示不等于六页完成继承；将O1—O13改为Owner验收清单，不再使用任务式代号；HTML为唯一原型交付物，既有SVG仅作历史档案。
+- `tasks/implementation/PDW/PDW-01_HOME_CEI工程衔接入口与审查报告_V0.1.md`：追加Owner交付标准变更记录，明确V1.8.3横向策展漫游/流动卡片基线继续有效，R4/R5图像研究仅保留历史记录。
+- `tasks/implementation/PDW/PDW-02_Studio工作空间重构正式入口_V0.1.md`：更新PDW-02交付标准，唯一原型交付物改为可操作HTML，历史概念图不再验收。
+- 未修改业务代码、API、数据库、Schema、权限/RLS、CI、部署及M5主线；未新制任何图片。
+- PDW-00状态仍为`DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED`，Owner尚未签收，不启动PDW-01或其他后续任务。
