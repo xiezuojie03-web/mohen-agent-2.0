@@ -1,6 +1,6 @@
 # 墨痕 MoHen｜工程入口与权威导航
 
-> 本文件只定义仓库级权威路由、AI施工必读顺序和通用执行纪律；不另立施工计划、验收标准、执行平台或生产授权。现行施工计划为 tasks/implementation/MAB/PLAN.md（当前版本V1.11）；产品体验深化与设计工程衔接的唯一顺序见PLAN §6 PDW-00—PDW-05；PDW顺序为PDW-00→PDW-01→PDW-02→PDW-03→PDW-04→PDW-05；PDW-00建立全平台统一体验底座，PDW-01继承性完善HOME，PDW-02独立重构Studio，具体范围以PLAN和各正式入口为准。
+> 本文件只定义仓库级权威路由、AI施工必读顺序和通用执行纪律；不另立施工计划、验收标准、执行平台或生产授权。现行施工计划为 tasks/implementation/MAB/PLAN.md（当前版本V1.11）；产品体验深化与设计工程衔接的唯一顺序见PLAN §6 PDW-00—PDW-05；PDW顺序为PDW-00→PDW-01→PDW-02→PDW-03→PDW-04→PDW-05；PDW-00建立全平台统一体验底座，PDW-01继承性完善HOME，PDW-02独立重构Studio，具体范围以PLAN和各正式入口为准。PDW-00唯一入口：tasks/implementation/PDW/PDW-00_全平台统一体验底座设计补强正式入口_V0.1.md；PDW-02唯一入口：tasks/implementation/PDW/PDW-02_Studio工作空间重构正式入口_V0.1.md。
 
 ## 1. 权威顺序与不可越界的底线
 
