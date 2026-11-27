@@ -31,7 +31,7 @@ main{min-height:70vh}.page-shell{max-width:1480px;margin:auto;padding:34px 4vw 7
 <header class="top">
 <a class="brand" href="#" onclick="return false">墨痕<small>MOHEN 2.0</small></a>
 <nav class="nav" id="nav"></nav>
-<div class="role"><label for="role">角色</label><select id="role"><option value="visitor">访客</option><option value="creator" selected>Creator</option><option value="reviewer">Reviewer</option><option value="operator">Operator</option></select></div>
+<div class="role"><button class="btn small" id="personalShortcut" type="button">个人空间</button><label for="role">角色</label><select id="role"><option value="visitor">访客</option><option value="creator" selected>Creator</option><option value="reviewer">Reviewer</option><option value="operator">Operator</option></select></div>
 </header>
 <main><div class="page-shell"><div id="page"></div></div></main>
 <footer class="global-footer">
@@ -52,7 +52,7 @@ watch:{name:"WATCH",label:"观看",title:"让作品、章节与依据共同构�
 admin:{name:"Admin",label:"治理",title:"让每一项治理判断都有对象、依据与责任人",lead:"面向Reviewer与Operator的治理工作面。审核、发布、知识资产、权限和运行状态各有明确职责。",service:"治理辅助：归纳当前治理对象、解释来源与权利风险、指出缺口并准备可审阅建议；不能代签Gate、代批或代发布。",observation:"治理任务围绕精确作品修订、提交快照、知识资产、权利与权限变更展开。",interpretation:"墨痕提供有依据的分析与建议，最终裁决和运营动作由具名授权角色承担。",next:["归纳当前待审材料","检查来源与权利"],kind:"admin"},
 personal:{name:"个人空间",label:"我的空间",title:"把探索、收藏、研究与作品，连成自己的长期脉络",lead:"个人空间聚合用户自己的探索记录、创作项目、作品与个人收藏；私人笔记和长期上下文由用户决定是否授权。",service:"个人助理：帮助整理本人主动保存的探索、收藏、笔记和项目；不把浏览轨迹默认转成画像，不跨项目共享私有资料。",observation:"个人空间连接探索、创作与观看中的个人成果，不另建项目或作品的第二事实源。",interpretation:"个人资产与正式知识资产分开；私人资料默认不进入墨痕上下文，分享与授权均由用户控制。",next:["继续上次的探索","整理个人收藏"],kind:"personal"}
 };
-const order=["home","exp","studio","watch","admin","personal"];
+const order=["home","exp","studio","watch","admin"];
 let current="home",role="creator",muted=false,offline=false,context={origin:"HOME",object:"当前发现主题",question:"过去如何塑造今天的生活？",trail:["HOME"],returnTo:"HOME"};
 const nav=document.getElementById("nav"),mobile=document.getElementById("mobilebar"),page=document.getElementById("page");
 function roleName(){return {visitor:"访客",creator:"Creator · 创作者",reviewer:"Reviewer · 审核",operator:"Operator · 运营"}[role]}
@@ -81,5 +81,5 @@ document.getElementById("askForm").onsubmit=e=>{e.preventDefault();let v=documen
 document.getElementById("role").onchange=e=>{role=e.target.value;if(current==="admin"&&!permitted("admin"))current="home";if(current==="studio"&&!permitted("studio"))current="home";if(current==="personal"&&!permitted("personal"))current="home";draw();updateAgent()};
 document.querySelectorAll("[data-go]").forEach(b=>b.onclick=e=>{e.preventDefault();go(b.dataset.go)});
 document.getElementById("agentPreview").onclick=e=>{if(e.target.tagName==="BUTTON")return;openAgent()};
-draw();updateAgent();
+draw();updateAgent();document.getElementById("agentPreview").classList.add("show");document.getElementById("personalShortcut").onclick=()=>go("personal");
 </script></body></html>
