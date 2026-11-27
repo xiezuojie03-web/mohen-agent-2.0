@@ -32,7 +32,7 @@
 
 ### 2.1 正式设计依据
 
-- MAB PLAN V1.8 §3.6 PDW-02：真实创作旅程、代码级证据、根因分类、Owner可判断的用户任务及M5缺口回归主线。
+- 历史审查时适用：MAB PLAN V1.8 §3.6（当时的PDW-02编号；仅作审查沿革）：真实创作旅程、代码级证据、根因分类、Owner可判断的用户任务及M5缺口回归主线。
 - MHKA-02《Humanistic Product and Experience》§3、§7、§9：Studio三工作区、连续创作、角色职责、状态与异常表达。
 - MHKA-03《Knowledge World and Data Architecture》：知识资产身份、来源、版本、资格、回流和可追溯性。
 - MHKA-04《Agent and Professional Capabilities》：情境感知、任务理解、工具执行、持续跟踪、确认与恢复。
@@ -259,7 +259,7 @@ ALTER TABLE "publication"."withdrawals" ENABLE ROW LEVEL SECURITY;
 ## 10. 本轮变更与最终状态
 
 - 新增唯一正式结论文件：本报告。
-- 同步更新：MAB PLAN V1.8 §3.6、CURRENT.md、MAB progress.md。
+- 历史同步记录：当时更新MAB PLAN V1.8 §3.6、CURRENT.md、MAB progress.md；现行任务范围与顺序以PLAN V1.11 §6及本文件第12节为准。
 - 未修改业务代码、数据库Schema/数据、API、权限、CI、Vercel部署或环境变量。
 - 本轮数据库查询全部只读；没有执行上述RLS SQL或两份迁移。
 
@@ -522,11 +522,11 @@ ALTER TABLE "publication"."withdrawals" ENABLE ROW LEVEL SECURITY;
 
 ## 11.12 交付文件索引
 
-- 唯一正式入口：本文件 tasks/implementation/PDW/PDW-02_Studio设计与工程自检报告_V0.1.md（现行内容V0.2）。
+- 唯一正式入口：本文件 `tasks/implementation/PDW/PDW-02_Studio工作空间重构正式入口_V0.1.md`（现行内容版本V0.4）。原自检报告路径已废止；本文件第1—10节保留其诊断内容。
 - 完整概念图：tasks/implementation/PDW/concepts/PDW-02_Studio整体工作面概念图.svg。
 - 完整可操作HTML原型：tasks/implementation/PDW/prototypes/PDW-02_Studio_完整创作工作空间_可操作原型.html。
 - 原自检诊断证据：本文件第1—10节，保持历史内容，不另复制成第二份报告。
-- 全站视觉上位输入：PDW-01正式入口第11.7、11.10节。
+- 全站视觉上位输入：PDW-01正式入口第11.7节（Owner视觉裁决）及第12节（PDW-00完成后的HOME继承性完善）；PDW-00完成后还必须读取其最终签收规范。
 
 ## 11.13 PDW-02当前结论
 
@@ -536,7 +536,7 @@ ALTER TABLE "publication"."withdrawals" ENABLE ROW LEVEL SECURITY;
 
 尚未完成：Owner实际体验并签收；真实浏览器验收；真实Agent/数据库/权限/同一作品发布链运行验收（后者属于M5工程施工，不是PDW-02关闭条件）。
 
-**原阶段Owner验收任务状态：** 第11.10节O1—O9是V0.2三栏原型的历史验收任务，暂不作为PDW-02整体关闭的当前唯一动作。依据第11.14节，先执行PDW-02-B，再执行PDW-02-SR；新结构原型和更新后的Owner任务完成后，统一进行Studio体验签收。Owner未签收前不得标记CLOSED / OWNER_APPROVED，不得启动PDW-03。
+**历史验收任务说明：** 第11.10节O1—O9针对旧三栏原型，保留为历史诊断材料，不作为现行PDW-02的完整验收任务。原PDW-02-B与PDW-02-SR拆分方式已废止；全平台统一体验底座现归PDW-00，Studio工作空间重构完整归PDW-02。现行唯一执行标准为第12节，前置门禁为PDW-00与PDW-01继承性完善均经Owner签收。Owner未签收不得标记CLOSED / OWNER_APPROVED，不得启动PDW-03。
 
 **明确声明：** PDW-02关闭只代表Studio产品设计交付和工程移交完成；不代表Studio代码施工完成、M5真实生产闭环通过、Admin/WATCH运行验收通过或公众开放。
 
