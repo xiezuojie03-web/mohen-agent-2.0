@@ -234,3 +234,6 @@ Owner明确改变策略：PDW-00不再开展HOME、EXP、Studio、WATCH、Admin�
 - 未修改业务代码、API、数据库、Schema、数据、权限/RLS、CI、部署、生产资格、D/L/G合同或Agent Runtime；未生成概念图图片。
 
 **验收状态：** 本次已完成HTML/文档修改并提交main；真实浏览器、多视口、键盘/焦点和屏幕阅读器验收尚未执行，记NOT_RUN。PDW-00仍为`DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED`，Owner尚未签收；不得启动PDW-01。
+
+
+- **最终自检补充：** 清理PDW-00旧版页面适配矩阵、页面组件级审查和逐页继承验收要求；PLAN V1.13 §6、PDW-00 V0.5与CURRENT同步为“全局底座 + 六页占位”。HTML新增可主动查看的“观察—解释—邀约”提示结构预览；静音、恢复提示、收起、主动提问和服务边界说明均保留。HTML内嵌JavaScript语法检查PASS；六个页面路由配置、顶部导航容器、全局页尾、移动端底部导航和墨痕面板结构静态检查PASS。浏览器/多视口/屏幕阅读器实测仍NOT_RUN。
