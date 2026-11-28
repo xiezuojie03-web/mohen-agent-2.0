@@ -291,3 +291,19 @@ Owner明确改变策略：PDW-00不再开展HOME、EXP、Studio、WATCH、Admin�
 - **本轮提交记录（main）：** PLAN V1.15 `b493deea6ee6e9ca25a77a98dd42a6dacb1280a6`；PDW-00入口V0.8 `fa26d6eb47dd9ef1a204ab7d83fee32d7d43fed7`，活动引用校正 `123a7e2dd0d5e94c1d7309a4e4503a7ab917cfc1`；PDW-01入口V0.5 `10eebecaf2fdf56bbb5cb6a3662e631573e022af`，活动引用校正 `c513d44ac23a7d184ba2cb33003967d6f38ef31d`；PDW-02入口V0.5 `07b9b30da0a578e9070d25d336cd11020e52ca1f`；CURRENT同步 `f99880c048f587ea26f1c1c08d0e1ff87f4943fc`，引用校正 `9893256b256252f15e8ceeb5eaad92ecf58a6670`。本记录本次追加提交为后续回读核验入口。
 
 - **CURRENT最终引用校正：** 将统一设计—工程交接标准的活动引用由PLAN V1.14同步为V1.15；提交SHA `69662a020dca6833ba1ef662f96af8fe8fd92105`。
+
+
+## 2026-11-28｜PDW-00 V0.9五层交接审计、工程映射与Owner体验准备
+
+- **执行基线：** 仓库 xiezuojie03-web/mohen-agent-2.0，main；审查开始HEAD：bbf45d79076af4f1fcbb485b1232dd64892ee7bb；PLAN V1.15（Blob ea8748613f23b7585cf774c240611d0e3be9ddfc）；PDW-00入口V0.8（原Blob 61853a9d0210361d62a7964db9451ff6ca14f75c）；CURRENT原Blob a93fac69656446d34b7441b65ca78d7f26c36ba5。
+- **权威文件核验：** 直接读取PLAN V1.15 §0、§3、§6.1、§6.1.1、§6.1.2及PDW-00唯一入口；同步读取CURRENT、progress、PDW-01 V0.5和PDW-02 V0.5。确认阶段A/B/C门禁有效；单包Owner签收不授权该包施工；PDW-00签收后只允许启动PDW-01 HOME继承性完善设计。
+- **真实源码核验：** 读取apps/web/app/layout.tsx、apps/web/app/components/GlobalNav.tsx、five-ui.css、styles.css、middleware.ts、auth.ts、session.ts、api/session/me、api/mohen/ask、api/mohen/materials、Admin/page.tsx、AdminWorkbench.tsx、Studio/page.tsx及components目录。确认根布局目前只挂GlobalNav；全局Footer与移动底部导航没有正式挂载组件；全局MohenHost/Mark/Panel未实现；GlobalNav在HOME不显示四个主入口、member文案误标“访客”、缺少个人空间入口与完整键盘/焦点合同；five-ui.css仍保留深色导航Token。现有问答与材料读取仅证明局部服务能力，不证明全局Agent Runtime/任务Receipt已实现。AdminWorkbench按Reviewer/Operator区分显示与操作，但Admin页面级与逐API权限未在本轮完整审计，留M5安全/权限合同。
+- **原型缺陷修正：** 在既有唯一HTML原型上补正任务草拟→等待确认→执行；等待输入/阻塞/恢复；完成、停止、取消、失败、授权撤回独立终态；关闭面板保留任务状态；重新唤起恢复状态查看；账户菜单增加Reviewer/Operator治理入口预览；账户菜单打开焦点进入、Escape关闭后焦点返回。未重做原型，六页面仍为中性占位。
+- **原型静态验证：** 最新main HTML内嵌JavaScript经V8 Function编译PASS；脚本DOM ID引用PASS、无重复ID；桌面导航/移动导航、safe-area、reduced-motion、focus-visible、Admin账户入口、三状态轴与关键任务状态转换入口静态检查PASS。此结果不等于浏览器交互通过。
+- **五层交接补强：** PDW-00正式入口升为V0.9；新增§10.15逐项main代码映射（要求ID、用户情境、设计/可观察验收、组件职责、代码路径/证据、KEEP/ADAPT/REPLACE/ADD/DEFER、依赖/验证、责任/关闭条件）；新增§10.16规范组件命名、输入输出、状态转换、用户控制、权限/数据边界和异常行为契约；新增§10.17未来工程实施与正反验收清单；新增§10.18静态验证记录、Owner体验任务和未决责任；新增§10.19当前交接状态与阶段门确认。没有新建平行任务书或规范文件。
+- **状态同步：** CURRENT同步PDW-00 V0.9、Owner签收待审状态、下一步和阶段门；PLAN V1.15保持不变；PDW-01/02入口不修改。PDW-00仍为DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED；HANDOFF_REVIEW_READY / OWNER_SIGNOFF_PENDING仅表示候选交接包可供审阅，不代表正式签收。
+- **验证边界：** 文档读取/映射静态审查PASS；原型JS静态编译与DOM引用PASS；真实浏览器点击、多视口、键盘/焦点、屏幕阅读器NOT_RUN；真实Session/角色/ACL、Agent Runtime、任务事件/Receipt、数据库/Provider/D-L-G均NOT_RUN或OUT OF SCOPE。浏览器自动化未能启动，外部浏览器执行服务余额不足；未将此记作项目测试失败或PASS。
+- **严格未施工：** 未修改业务页面代码、全局业务组件、Agent Runtime、API、数据库、Schema、数据、RLS/权限、D/L/G、Runner/Registry、CI、部署或生产资格；未启动PDW-01至PDW-05；未启动PDW专项代码施工。
+- **提交与回读：** 原型状态修订提交43143eef5fb24a2ed7f1939abb1ebb27d105e944、90a6d6d480540e3a4455fa985fd12c913fe84183、b13b8450a3d715288ede9f7fbf85dd6a683d6f95、0c6c43359ff56f5df58ff26a2775509e7033a620；原型最终Blob 4bb03f7365d5e1d5ff8aa536dbb3d44820c0fec9。PDW-00入口V0.9提交5e48ba4ba80e2792ed42cfd10f004d93ede6ce0a，基线SHA文字校正提交a7d4fe7fc432edebdd4e9b8bb25fa6e8a05da12e，最终Blob f56aa2d5c7c1a901c6eef0a555f3dfc870dd58d0。CURRENT同步提交7044a12aeb00ceb42d70ffae696c5af13f5e0ab0。
+- **Owner待办：** Owner需按PDW-00入口§10.18.2体验最新HTML，并审阅§10.15—§10.17映射、契约和工程清单；如提出修改，完成后重新体验。Owner未明确签收前不得标记OWNER_APPROVED/CLOSED/DESIGN_COMPLETE。
+- **唯一下一步：** 等待Owner体验与签收；签收后只允许启动PDW-01 HOME继承性完善设计。PDW专项施工继续受PLAN V1.15 §6.1.2阶段B/阶段C门禁禁止。
