@@ -286,3 +286,6 @@ Owner明确改变策略：PDW-00不再开展HOME、EXP、Studio、WATCH、Admin�
 - **CURRENT：** 同步PLAN V1.15及三个入口版本，更新当前三阶段流程和唯一下一设计断点。PDW-00仍待Owner体验审阅与签收；PDW-01/02及后续工作包状态未被提前改为完成。
 - **范围与限制：** 本轮仅修改PLAN、PDW-00/01/02正式入口、CURRENT和progress；未修改业务代码、API、数据库、Schema、数据、权限/RLS、Agent Runtime、D/L/G、Runner/Registry、CI、部署或生产资格；未启动任何页面施工。未新增PDW-03至PDW-05入口或平行任务书。
 - **验证边界：** 本轮仅进行文档规则一致性修订与文件回读核验；未执行浏览器、业务代码、服务、数据库或部署测试。文档阶段门写入成功不等于任何PDW交接已通过。
+
+
+- **本轮提交记录（main）：** PLAN V1.15 `b493deea6ee6e9ca25a77a98dd42a6dacb1280a6`；PDW-00入口V0.8 `fa26d6eb47dd9ef1a204ab7d83fee32d7d43fed7`，活动引用校正 `123a7e2dd0d5e94c1d7309a4e4503a7ab917cfc1`；PDW-01入口V0.5 `10eebecaf2fdf56bbb5cb6a3662e631573e022af`，活动引用校正 `c513d44ac23a7d184ba2cb33003967d6f38ef31d`；PDW-02入口V0.5 `07b9b30da0a578e9070d25d336cd11020e52ca1f`；CURRENT同步 `f99880c048f587ea26f1c1c08d0e1ff87f4943fc`，引用校正 `9893256b256252f15e8ceeb5eaad92ecf58a6670`。本记录本次追加提交为后续回读核验入口。
