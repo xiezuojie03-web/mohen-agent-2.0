@@ -1,7 +1,7 @@
 # 墨痕 PDW-00｜全平台统一体验底座设计补强正式入口
 
 > 正式入口编号：PDW-00-20261127-01  
-> 现行内容版本：V0.8（纳入PDW全局统一施工阶段门）  
+> 现行内容版本：V0.9（五层交接审计、组件行为契约、工程映射与实施验收清单补强）  
 > 日期：2026-11-28  
 > 状态：DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED  
 > 归属：PDW产品设计工作流；本文件是PDW-00唯一正式任务入口，执行标准服从PLAN §6及上位设计合同。  
@@ -1138,3 +1138,276 @@ PDW-00全局设计—工程映射表须至少记录：
 - 本阶段门仅约束PDW专项新实施；M5既有合同、已授权工作及必要阻断修复继续按原计划和授权执行。WATCH仍遵循M5原合同，不因本阶段门扩大或改变范围。
 
 **当前状态不变：** PDW-00仍为`DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED`。本条仅明确未来阶段门，不代表本工作包交接已通过，也不启动PDW-01或任何代码施工。
+
+
+---
+
+## 10.15｜五层交接补充审计与当前main设计—工程映射（V0.9｜2026-11-28）
+
+本节为PDW-00当前main的正式映射记录，落实PLAN V1.15 §6.1.1最低字段。与§9.7的概览表相比，本节增加逐项代码证据、处理裁决、验证条件和责任关闭点；后续实施以本节为准。所有代码证据均来自本轮对main分支的直接读取，不以历史报告或组件名称推断实现。
+
+### 10.15.1 审查基线与证据规则
+
+- 本轮审查基线：仓库 xiezuojie03-web/mohen-agent-2.0，main；审查开始时HEAD为 bb f45d79076af4f1fcbb485b1232dd64892ee7bb（实际SHA：bbf45d79076af4f1fcbb485b1232dd64892ee7bb）。
+- PDW-00正式入口原Blob：61853a9d0210361d62a7964db9451ff6ca14f75c；原型修订前Blob：49b988ea56d2a4ccfc0501abf8467d502d7e384c。
+- 主要代码证据：根布局 apps/web/app/layout.tsx（Blob 837c8451e905cdc110343a2fdfe2902e0dec3d5d）；GlobalNav apps/web/app/components/GlobalNav.tsx（Blob 758c0fb9f25c8f2807a1ff26290095f2aa64d6a5）；five-ui.css（Blob 2d39d4310ea92f34d3134866787caa7a50ce9569）；styles.css（Blob 77f3d88bde2b148d1ce4df20d95e1dcf9f3dab97）。
+- 身份与服务证据：lib/auth.ts（Blob 1d774d82cbe3fd8919125783f417d4663281b5f8）；lib/session.ts（Blob abecfa1bef76245add5c7f6d3721de6f92a04e73）；api/session/me（Blob 582bbe2d9667228ad78c7e315c6c99f21b69b112）；api/mohen/ask（Blob 0fd4c7a3a240be869c2abd3b60201d0d6f8c30fd）；api/mohen/materials（Blob a094f57ffe9627d7159339449ce0e93fcd01a270）。
+- apps/web/app/components目录当前只列出GlobalNav.tsx、ModeEntryCard.tsx、PagePlaceholder.tsx；未发现GlobalFooter、MobilePrimaryNav、MohenHost、MohenMark或MohenPanel组件。目录枚举是当前代码结构证据，不代表仓库其他位置不存在同名字符串。
+- 当前页面目录 apps/web/app/account 仅含forgot-password、reset-password、setup子目录；未发现个人空间首页。账户认证/恢复路由不等于个人空间产品页面。
+- 当前main的Admin入口 apps/web/app/admin/page.tsx（Blob b182ab4bc141d9d40acfdd10af54fcd32888fd88）直接读取运营关系摘要并渲染AdminWorkbench；页面文件本身没有显式的统一服务端角色门禁。AdminWorkbench内部存在角色区分，但本轮没有逐API完成安全审计，因此不得据此宣布Admin访问控制通过。
+- 证据状态区分：IMPLEMENTED仅表示当前源码可直接证实；PARTIAL表示存在局部能力但未满足全局设计；NOT_IMPLEMENTED表示未找到相应全局实现；NOT_RUN表示没有执行相应运行测试。任何原型模拟均不计入真实工程实现。
+
+### 10.15.2 全局设计—工程逐项映射表
+
+| 要求ID / 用户情境 | 设计要求与可观察验收表现 | 组件/模块职责 | 当前main代码路径与实现证据 | 处理裁决 / 当前状态 | 实施约束、验证方法与责任关闭条件 |
+|---|---|---|---|---|---|
+| G00-ROOT 任意页面首次进入 | 六个工作面使用同一根级体验宿主；导航、页尾、墨痕各只挂载一次；页面内容区不重复创建全局组件 | RootLayout负责全局装配 | apps/web/app/layout.tsx只导入全局样式并挂载GlobalNav与children；未挂载Footer、MobilePrimaryNav或墨痕宿主 | ADAPT + ADD；PARTIAL | 阶段C目标：RootLayout装配GlobalNav、MobilePrimaryNav、GlobalFooter、MohenHost；验证六个路由无重复/缺失。责任：PDW统一施工执行方；须待阶段C授权 |
+| G01-DESKTOP-NAV 桌面跨页面切换 | HOME/EXP/Studio/WATCH顺序、品牌、选中态一致；Admin只对Reviewer/Operator显示；HOME也保持全局导航结构 | GlobalNav负责桌面一级导航与账户入口 | apps/web/app/components/GlobalNav.tsx定义NAV_ITEMS、角色判断和active态；但pathname为“/”时modeNavigation为空，HOME不显示四个主入口；Admin按Reviewer/Operator显示。five-ui.css当前.mo-nav背景为深色#17323B | ADAPT；PARTIAL / VISUAL_CONFLICT | 保留既有路由与角色可见性，修正HOME导航一致性并对齐明亮Token；验证六页面、当前项、键盘操作。责任：阶段C全局导航实现方 |
+| G02-ACCOUNT 用户打开账户菜单 | 展示登录身份、真实角色、个人空间入口、账户操作；普通member不得标为访客；不得提供伪角色授权 | AccountMenu负责账户与角色摘要 | GlobalNav.tsx读取/api/session/me，显示email/roles、Admin入口和退出；ROLE_LABELS把member标成“访客”；无个人空间入口，无真实工作身份切换器。lib/auth.ts与lib/session.ts提供会话/角色读取 | ADAPT；PARTIAL | 修正member/访客语义；个人空间链接仅在PDW-05正式路由具备后启用；工作身份选择器未有真实合同前只能作设计预览。验证未登录/member/Creator/Reviewer/Operator/多角色。责任：账户/身份服务Owner；PDW-05处理个人空间 |
+| G03-ADMIN-VISIBILITY Reviewer/Operator进入治理 | 获授权角色可发现Admin；普通成员/访客不显示；直接访问和每个敏感动作仍由服务端授权 | GlobalNav只负责可发现性；Admin页面/API负责真实授权 | GlobalNav.tsx按reviewer/operator显示Admin；apps/web/app/admin/page.tsx无显式页面级角色门禁；AdminWorkbench.tsx存在内部角色区分。当前未完成逐API正反审计 | KEEP UI + DEFER服务端审计；PARTIAL / NOT_RUN | 不得以导航隐藏替代服务端权限。Admin直接URL、匿名、member、Reviewer、Operator和跨用户API正反测试归M5安全/权限合同；未通过前不得标记访问控制PASS。责任：MAB安全/权限Owner，阶段C全局集成前提供证据 |
+| G04-STUDIO-DISCOVERY 用户寻找创作入口 | Studio可被发现；进入后按真实登录、Creator资格、项目ACL和具体动作权限逐层核验 | GlobalNav提供入口；Studio页面/服务端负责访问 | GlobalNav.tsx将Studio列为主入口；apps/web/app/studio/page.tsx执行getSession并重定向未登录用户；Creator/Project授权由后续服务端API核验 | KEEP + VERIFY；PARTIAL | PDW-00不改变Studio业务门禁；仅要求导航不冒充授权。真实项目访问仍按M5/PDW-02合同验收。责任：M5业务权限Owner |
+| G05-MOBILE-NAV 窄屏跨页面切换 | 固定五项HOME/EXP/Studio/WATCH/个人空间；Admin进入账户/工作身份菜单；安全区内不遮挡页面 | MobilePrimaryNav负责移动主导航 | 当前components目录无MobilePrimaryNav；five-ui.css在767px以下仍将.mo-nav做横向滚动，没有五项固定底栏；PDW-00 HTML有五项底栏模拟 | ADD；NOT_IMPLEMENTED | 阶段C新增MobilePrimaryNav目标组件；个人空间路由未具备前显示受限入口或按最终设计裁决；Admin不挤入第六项。验证390×844、320×720、横屏及safe-area。责任：全局导航实现方；个人空间依赖PDW-05 |
+| G06-GLOBAL-FOOTER 页面内容结束/查看信任信息 | 全站页尾统一呈现品牌使命、认识墨痕、来源/证据、材料权利、隐私/授权和帮助；Studio/Admin允许紧凑版 | GlobalFooter负责统一页尾与信息链接 | layout.tsx未挂载页尾；components目录无GlobalFooter；five-ui.css存在.mo-footer样式但没有对应已核验的全局组件/根布局挂载 | ADD；NOT_IMPLEMENTED | 目标组件GlobalFooter，full/compact两种密度；实际链接目标与政策正文须由内容治理确认，不得虚构已上线链接。验证六工作面出现、无重复主导航、工作面紧凑版不遮挡。责任：全局体验实现方；链接内容由Owner/内容治理提供 |
+| G07-MOHEN-HOST 全站加载/切换工作面 | 同一个墨痕服务主体在六个工作面只挂载一次；页面切换更新合法情境，不产生多个Agent实例 | MohenHost负责全局组合与生命周期 | layout.tsx无全局Agent挂载；components目录无MohenHost；现有/api/mohen/ask和materials不是全局Host/Runtime | ADD；NOT_IMPLEMENTED | 目标组件MohenHost；复用既有Agent/Runner/Registry和服务合同，不新建第二Runner/第二Truth/第二Gate。真实运行依赖另行审查和授权。责任：Agent Runtime/MAB工程Owner |
+| G08-MOHEN-MARK 用户随时唤起墨痕 | 右下/移动底栏上方有稳定、低干扰、可访问的墨痕印记；可键盘唤起；不使用强制脉冲 | MohenMark负责唤起入口、焦点与提示控制入口 | 当前全局components目录无对应组件；HTML原型有agentAnchor但仅为本地模拟 | ADD；NOT_IMPLEMENTED | 目标组件MohenMark；唯一实例由MohenHost管理。验证位置、安全区、44px触控目标、aria-label、expanded状态和焦点返回。责任：全局体验实现方 |
+| G09-MOHEN-HINT 有依据的主动轻提示 | 只有具备情境、证据、收益和用户拒绝能力时出现；一次一条；可忽略/关闭/静音；不在顶部导航出现 | MohenHint负责提示呈现；事件来源由Runtime/页面服务提供 | 当前无全局Hint组件或全局事件订阅；/api/mohen/ask是即时问答，不是提示事件服务；HTML仅有手动预览模拟 | ADD + DEFER事件源；NOT_IMPLEMENTED | 不得用停留/滚动/悬停推断触发；静音只抑制主动提示。提示事件必须有来源、去重键、失效条件和可追溯事件。责任：Agent Runtime Owner；触发候选由各页面专项提供 |
+| G10-MOHEN-PANEL 用户主动提问/查看任务/结果 | 面板区分对话、任务协作、结果查看、依据/限制和行动；收起不停止任务；静音不屏蔽主动询问 | MohenPanel负责统一面板UI与交互 | 当前无全局面板组件/根挂载；/api/mohen/ask调用runResearch；/api/mohen/materials只读公开材料。二者均不证明全局面板、全局上下文或任务回执已实现 | ADD + DEFER Runtime接入；NOT_IMPLEMENTED | 面板UI可按本契约实现，但真实回答/任务/事件只能消费服务端回执；不得将即时问答等同长期任务。责任：Agent Runtime Owner；真实接口进入阶段C统一实施基线 |
+| G11-TASK-LIFECYCLE 用户委托、确认、等待、停止或查看结果 | 草拟必须等待用户确认；排队/执行/等待输入/阻塞/完成/部分完成/停止/取消/失败/授权撤回明确区分；所有状态有真实事件与回执 | TaskStatus/TaskConfirmation呈现状态；Runtime/Runner/Registry拥有真实任务事实 | 当前全局组件目录无TaskStatus；/api/mohen/ask不返回全局任务生命周期；Studio任务接口属于既有M5/Studio业务范围，不等于全局Runtime | DEFER Runtime；NOT_IMPLEMENTED（全局层） | 不得新建第二Runner。必须消费现有任务真实事件/Receipt；停止/取消/失败/撤权不可重置为无任务或互相冒充。责任：MAB Agent Runtime Owner；阶段C前确认接口契约 |
+| G12-CONTEXT-ENVELOPE 跨页面继续/返回 | 只传递当前Actor、角色快照引用、页面、对象@revision、Project/Root/Task引用、purpose/scope、rights/qualification引用、return anchor、expiry/correlation；目标端重新核权 | ContextEnvelope是协议，不是权限Token | 当前代码中未定位到全局ContextEnvelope类型/协议；research.ts是研究能力实现，不等同跨页上下文合同 | ADD协议 + DEFER服务接入；NOT_IMPLEMENTED | 目标类型/校验位置须与既有auth/session、Project ACL和M5任务合同对齐；不得传完整私聊历史/私有原件/密钥。责任：Agent Runtime与MAB权限Owner |
+| G13-VISUAL-TOKENS 全站视觉统一 | 浅纸/浅青灰为主、深青绿局部沉浸、弱化暖金；全站共享颜色/字体/间距/层级/状态Token | 共享Token层作为唯一视觉语义来源 | five-ui.css仍有旧深色导航token（如#17323B）；styles.css仍定义旧背景#F3F0E8；当前与PDW-00 V0.8新Token存在多套值 | ADAPT；VISUAL_CONFLICT | 阶段C统一Token源，逐组件迁移并清理冲突；不得在PDW-00本轮修改业务CSS。验收抽查HOME/EXP/Studio/Admin/WATCH/个人空间无颜色语义漂移。责任：全局设计系统实现方 |
+| G14-SHARED-PRIMITIVES 菜单/抽屉/按钮/输入/状态/证据标签 | 统一尺寸、焦点、层级、键盘和状态语义；相同动作保持相同交互语法 | Shared UI primitives负责Button/Input/Tabs/StatusBadge/Popover/Dialog/Drawer/EvidenceLabel | 当前components目录未形成覆盖本契约的共享组件集；部分页面样式/控件分散在CSS与工作台内 | ADAPT + ADD；PARTIAL | 复用现有可用实现，禁止复制多个同义组件；组件清单和唯一Owner在阶段B统一审查中冻结。责任：全局设计系统实现方 |
+| G15-RESP-A11Y 桌面/平板/移动与辅助技术 | 1440×900、1024×768、768×1024、390×844、320×720及横屏均可用；Tab/Enter/Space/Escape、焦点返回、减少动态、AA对比度、44px触控目标 | 全局布局、菜单、浮层、导航和墨痕组件共同负责 | five-ui.css仅有横向导航缩放/滚动；未见固定移动底栏；GlobalNav按钮未完整表达expanded/controls，未核验Escape与焦点返回实现；原型静态样式具focus-visible/reduced-motion规则 | ADAPT + ADD；PARTIAL / NOT_RUN | 阶段C须执行真实浏览器、键盘、屏幕阅读器和设备视口测试；本轮未执行。责任：全局前端实现方与无障碍验收责任人 |
+| G16-NEUTRAL-PLACEHOLDERS 六个工作面进入PDW-00原型 | 六个占位只显示页面名称、全局壳和后续归属，不出现页面专属栏目/业务流程/卡片/舞台 | PDW-00 HTML原型承担设计边界展示 | 唯一原型六个页面均为同构中性占位；实际页面代码仍保留既有业务页面，不由本轮改写 | KEEP；原型STATIC REVIEW PASS | 六个页面内部设计分别留给PDW-01至PDW-05；WATCH遵循M5。验收检查占位不误导为页面完成。责任：各后续PDW工作包Owner |
+| G17-PROTOTYPE-TRUTH 原型演示任务状态 | 原型可展示状态轴与有限模拟路径；所有模拟数据/身份/回答/任务必须清楚标注，不冒充Runtime | HTML仅作为体验验证资产 | 本轮原型已补草拟、等待确认、执行、等待输入、阻塞/恢复、完成、停止、取消、失败、授权撤回的独立模拟状态；身份与任务均标注为预览/模拟 | ADAPT后STATIC CHECK PASS；BROWSER NOT_RUN | V8脚本编译、DOM引用和静态状态入口检查已通过；真实浏览器交互仍NOT_RUN。责任：Owner负责体验签收，工程方未来负责真实实现验收 |
+
+### 10.15.3 映射裁决汇总
+
+- **KEEP：** 现有GlobalNav路由与真实会话读取、Studio既有服务端登录门禁、现有研究问答/公开材料读取作为局部能力、六页中性占位规则。
+- **ADAPT：** 桌面导航、账户角色语义、全局Token、共享交互基础、键盘/焦点行为及根布局装配。
+- **ADD：** MobilePrimaryNav、GlobalFooter、MohenHost、MohenMark、MohenHint、MohenPanel、TaskStatus/TaskConfirmation、ContextEnvelope及统一共享组件规范。
+- **DEFER：** 全局Agent Runtime真实事件与Receipt接入、真实角色/工作身份切换、Admin直接访问及逐API授权审计、个人空间正式页面、页面专属提示事件和跨页对象交接。每项均有上表责任归属和关闭条件。
+- **REPLACE：** 本轮没有批准整体替换现有GlobalNav或既有M5业务组件；未来是否替换须由阶段B全平台统一工程交接审查依据真实冲突决定。
+- **HOLD：** 任何把客户端角色选择当权限、把即时问答当任务完成、把原型模拟当Runtime、把导航显隐当服务端授权的实施均必须HOLD。
+
+---
+
+## 10.16｜全局组件命名、职责与行为契约（V0.9）
+
+### 10.16.1 规范组件命名与历史别名收敛
+
+为避免§9.5与§10.8中出现同一组件多种名称，现统一采用以下规范名称。旧名称只作为历史描述/别名，不得据此新增平行组件。
+
+| 规范名称 | 旧名称/描述性别名 | 唯一职责 |
+|---|---|---|
+| GlobalNav | GlobalHeader | 桌面全局导航与账户入口容器 |
+| AccountMenu | AccountMenu / RoleBadge | 账户身份、真实角色摘要、个人空间入口与账户动作 |
+| MobilePrimaryNav | MobileNav | 移动端五项主导航；Admin收纳到账户/工作身份入口 |
+| GlobalFooter | GlobalFooter | 品牌使命、帮助、来源/权利/隐私信息 |
+| MohenHost | 全局Agent宿主 | 根布局中唯一装配墨痕全局组件并接收合法情境 |
+| MohenMark | MohenServiceAnchor | 墨痕统一印记、唤起入口和焦点控制 |
+| MohenHint | 条件轻提示 | 由有证据的事件触发的一条低干扰提示 |
+| MohenPanel | MohenServicePanel | 统一对话、任务协作、结果查看与边界表达 |
+| ContextEnvelope | ContextHandoff | 最小上下文交接协议；不是权限Token |
+| TaskStatus / TaskConfirmation | 任务状态/确认条 | 真实任务生命周期的UI表达和授权确认 |
+| EvidenceLabel / StatusBadge | 证据/状态标签 | 事实、证据、解释、推测及运行状态的可读标识 |
+
+### 10.16.2 组件行为契约
+
+| 组件 | 输入与输出 | 状态/转换 | 用户控制 | 权限/数据与异常边界 |
+|---|---|---|---|---|
+| GlobalNav | 输入pathname、服务端会话摘要、真实角色快照；输出工作面入口、当前项、账户菜单入口 | 当前路由选中、菜单展开/关闭 | 用户点击/键盘导航；Escape关闭浮层 | 只表达可发现性；不得授予权限；会话加载失败时不得显示伪角色 |
+| AccountMenu | 输入登录态、账户资料、角色数组；输出账户信息、角色摘要、个人空间与账户动作 | closed/open；角色变化由真实服务端会话刷新 | 用户打开/关闭、登录/退出；角色工作视角选择只有真实合同支持后才可用 | 前端预览角色选择不产生授权；退出后清除敏感上下文；未登录不得进入个人空间 |
+| MobilePrimaryNav | 输入当前路由、真实角色摘要和个人空间可用状态；输出五项固定导航 | active route；Admin不占底栏位置 | 触控/键盘可达 | 个人空间路由未具备时按受限状态呈现；底栏避让safe-area与系统手势区 |
+| GlobalFooter | 输入经Owner/治理确认的品牌与政策链接；输出品牌、帮助、来源/权利/隐私入口 | 无业务任务状态；full/compact呈现 | 用户打开链接 | 不编造政策/来源链接；Studio/Admin紧凑模式仍保留必要信任入口 |
+| MohenHost | 输入page_id/route、服务端Actor与role snapshot引用、用户明确选定对象、合法任务事件；输出单一全局墨痕服务界面 | 管理呈现/交互/任务三个独立轴；全站只实例化一次 | 用户唤起、静音、收起、继续或明确授权 | 不直接把客户端上下文当权限；不复制全量聊天历史；Runtime离线时显示真实降级 |
+| MohenMark | 输入当前提示/任务的可见状态；输出可唤起入口和轻量状态提示 | quiet/hint/panel visible由Host控制 | 唤起、关闭、静音/恢复入口 | 默认安静；不闪烁、不持续脉冲；可键盘到达且焦点可见 |
+| MohenHint | 输入经验证的提示事件、证据引用、原因、有效期、去重键和可选动作；输出单条提示 | hidden/visible/dismissed/expired | 忽略、关闭、查看、静音 | 无证据/无收益/无权限即不显示；不自动跳页；同事件去重；静音不屏蔽主动提问 |
+| MohenPanel | 输入合法ContextEnvelope、对话消息、任务事件、证据/限制、可用动作；输出对话、任务、结果与依据 | 面板展开/收起与交互状态独立；可呈现对话/任务/结果 | 主动询问、纠正、确认、拒绝、收起、静音 | 面板收起不停止任务；无权动作不显示或服务端拒绝；失败保留输入并明确未发送/未知 |
+| TaskStatus / TaskConfirmation | 输入真实TaskRef、事件流、状态、回执和待确认动作；输出状态时间线、授权确认与结果摘要 | 草拟→等待确认→已排队→执行中→等待输入/阻塞→完成/部分完成/停止/取消/失败/授权撤回 | 任务草案确认、取消、停止、补充输入、恢复、查看结果 | 草拟不等于授权；只有真实服务事件改变任务事实；不可逆副作用须二次确认；终态不可互相覆盖 |
+| ContextEnvelope | 输入Actor/角色引用、page/route、object@revision、Project/Root/Task引用、purpose/scope、rights/qualification引用、return anchor、expiry/correlation | 创建、传递、目标端重新核验、过期/失效 | 由用户明确的继续/带入/返回动作触发 | 不是权限Token；目标端逐项重核Actor、ACL、consumer、purpose、scope、action、rights、qualification与撤权 |
+| EvidenceLabel / StatusBadge | 输入认识类别或真实运行状态；输出文字标签、图标和可访问语义 | 事实/证据/解释/推测与任务状态各自独立 | 用户可展开依据/说明 | 认识类别不得混入运行状态；不能只靠颜色表达；无证据标注未知/待核 |
+
+### 10.16.3 三个独立状态轴与用户控制偏好
+
+**A. 呈现状态轴（墨痕如何出现在界面）**
+
+- 安静在场：只显示统一印记，不主动占据内容。
+- 条件轻提示：显示一条有证据、有原因、有收益的可忽略提示。
+- 面板展开：显示统一服务面板。
+- 面板收起：面板不可见，但当前任务、对话轨迹和任务事件不因此停止或清空。
+
+**B. 交互状态轴（用户正在进行哪种交互）**
+
+- 待唤起/未交互；
+- 对话交互；
+- 任务协作；
+- 结果查看。
+
+**C. 任务生命周期轴（任务本身真实处于什么状态）**
+
+- 无活动任务；
+- 草拟；
+- 等待确认；
+- 已排队；
+- 执行中；
+- 等待用户输入；
+- 阻塞/HOLD；
+- 已完成；
+- 部分完成；
+- 已停止；
+- 已取消；
+- 已失败；
+- 授权已撤回。
+
+**D. 用户控制偏好（不属于Agent任务事实）**
+
+- 主动提示：正常 / 静音；
+- 面板显示：展开 / 收起；
+- 动效：遵循系统减少动态偏好；
+- 当前提示：忽略 / 关闭。
+
+**状态转换与终态定义：**
+
+1. 新意图只能形成草拟任务；草拟任务必须显示目标、范围、数据对象、可能副作用和授权要求。
+2. 用户确认草案后才能进入已排队/执行阶段；需要额外授权的动作必须对具体对象和副作用再次确认。
+3. 执行中可进入等待用户输入或阻塞；只有用户输入或依赖条件恢复并经必要确认后才能继续。
+4. 已完成表示任务范围全部完成且有真实回执；部分完成必须列出已完成/未完成部分。
+5. 已停止表示已启动任务被明确停止；保留停止前已完成工作和停止回执。
+6. 已取消表示委托在执行前或按合同可取消时被确认取消；不能删除草案和取消事件。
+7. 已失败表示执行失败或结果无法确认；不得把超时/未知响应标记完成，不得自动重复副作用。
+8. 授权已撤回表示授权失效并立即阻断后续动作；已发生的副作用如实保留，不得伪装为普通取消。
+9. 阻塞不是失败；等待输入不是阻塞；停止不是取消；失败不是授权撤回。四者必须使用不同状态标签和回执。
+10. 面板展开/收起和静音/恢复不改变任务生命周期；静音只抑制主动提示，不影响用户主动唤起、必要安全提示或已委托任务的真实回执。
+11. 事实、证据、解释、推测是认识与可信度分类，不是呈现、交互或任务状态。
+
+**真实事件要求：** 全局Runtime必须提供任务ID、事件类型、时间、前后状态、发起主体、授权引用、对象/修订引用、执行结果/Receipt、失败/阻塞原因及恢复条件。当前main未发现全局任务生命周期与统一Receipt服务；本条是未来工程契约，不代表该能力已经实现。
+
+### 10.16.4 统一异常与降级行为
+
+| 异常 | 必须显示 | 必须保持/禁止 | 恢复条件 |
+|---|---|---|---|
+| 会话过期/退出 | 登录状态已变化、当前上下文失效 | 关闭私有面板和敏感菜单；不复用旧授权 | 重新登录并重新核权 |
+| 角色/项目权限变化 | 当前身份或项目访问权限已变化 | 不泄露私有对象内容；不保留旧动作授权 | 服务端重新确认权限 |
+| Agent/模型离线 | 墨痕暂时无法回应 | 保留用户输入；不伪造回答/任务完成 | 服务恢复后用户重试 |
+| Context过期/对象修订变化 | 当前对象/任务需重新选择或确认 | 不猜对象、不复活旧任务 | 用户重新选择并核权 |
+| 权利/资格不足 | 待核/不可展示/不可外发及原因 | 阻断对应动作；不以UI显隐代替服务端拒绝 | 获得当前有效证据/资格 |
+| Provider超时/结果未知 | 执行状态未知，尚未确认完成 | 不重复收费/不可逆动作；先对账 | 确认原请求状态后按幂等合同恢复 |
+| 任务阻塞/等待输入 | 明确阻塞原因或所需输入 | 保留任务与已完成成果，不显示虚假进度 | 条件满足或用户补充输入 |
+| 用户静音/忽略提示 | 显示用户控制状态 | 不再主动提示同一事件；主动提问仍可用 | 用户明确恢复提示或新事件经门槛判断 |
+
+---
+
+## 10.17｜工程实施与验收准备清单（只准备，不施工）
+
+本节是未来阶段C的设计交接清单。它不授权当前执行方修改业务代码、CSS、根布局、Agent Runtime、API、数据库、权限或部署。
+
+| 实施ID | 未来工程工作 | 目标落点/继承对象 | 实施依赖 | 必须提供的验收证据 |
+|---|---|---|---|---|
+| I-01 | 根布局统一装配 | apps/web/app/layout.tsx；GlobalNav、MobilePrimaryNav、GlobalFooter、MohenHost | 阶段C授权；组件唯一Owner与加载顺序冻结 | 六个路由各只挂载一次；无重复导航/Agent/页尾 |
+| I-02 | 桌面全局导航适配 | apps/web/app/components/GlobalNav.tsx、five-ui.css | 本规范G01/G02；真实Session | HOME与其他页面一致；角色可见规则正确；登录/退出回执有效 |
+| I-03 | 账户菜单适配 | GlobalNav/AccountMenu；auth.ts、session.ts、session/me | 真实角色与账户合同；个人空间入口待PDW-05 | member/访客语义正确；角色摘要真实；无伪角色切换；退出清理敏感上下文 |
+| I-04 | Admin入口与授权边界 | GlobalNav、apps/web/app/admin/page.tsx、AdminWorkbench与相关API | M5权限合同/独立Reviewer与Operator边界 | 匿名/member拒绝；Reviewer/Operator按各自动作权限；直接URL与API正反测试 |
+| I-05 | 移动端五项导航 | 新增MobilePrimaryNav；five-ui.css统一Token | 个人空间路由与账户身份依赖；阶段C | 五项可达、Admin在账户入口、320px无溢出、安全区不遮挡 |
+| I-06 | 全局页尾 | 新增GlobalFooter；根布局装配 | Owner确认政策/帮助链接内容 | 六工作面一致；Studio/Admin紧凑版；所有链接有效且内容真实 |
+| I-07 | 全局视觉Token收敛 | five-ui.css、styles.css及相关全局样式 | Owner签收本规范；阶段B确定唯一Token源 | 明亮清润方向一致；深青绿局部使用；暖金不再形成第二主色 |
+| I-08 | 共用基础组件 | Button/Input/Tabs/StatusBadge/Popover/Dialog/Drawer/EvidenceLabel | 阶段B确定复用清单与唯一Owner | 组件状态、键盘、焦点、尺寸、颜色语义统一；无同义重复组件 |
+| I-09 | 墨痕全局宿主与印记 | 新增MohenHost/MohenMark/MohenHint/MohenPanel | Agent Runtime真实事件接口；M5权限与上下文合同 | 全站唯一实例；低干扰；可唤起/关闭/静音；真实服务不可用时明确降级 |
+| I-10 | 墨痕三轴状态与任务事件 | TaskStatus/TaskConfirmation；既有Runner/Registry/Agent Runtime | 真实TaskRef、事件流、Receipt、停止/取消/撤权语义 | 草拟需确认；状态独立；终态不混淆；面板收起不停止任务 |
+| I-11 | ContextEnvelope接入 | 既有auth/session、Agent Runtime和目标页面适配器 | Actor/role/ACL/consumer/purpose/scope/rights/qualification合同 | 跨页最小传递；目标端重新核权；过期/撤权立即失效 |
+| I-12 | 证据/认识状态表达 | EvidenceLabel/StatusBadge及墨痕回答视图 | 现有D/L/G和知识资产合同 | 事实/证据/解释/推测分层；无证降级；运行状态不与认识状态混用 |
+| I-13 | 响应式与辅助技术 | GlobalNav/MobilePrimaryNav/GlobalFooter/MohenHost及共享浮层 | I-01至I-12可集成 | 视口、键盘、屏幕阅读器、触控、对比度、减少动态的实测记录 |
+| I-14 | 跨工作面集成与回归 | HOME/EXP/Studio/Admin/WATCH/个人空间 | PDW-00至PDW-05全部签收；阶段B统一实施基线 | 路由、账户、墨痕、上下文、任务状态、页尾和移动导航无冲突；M5/WATCH合同不被破坏 |
+
+### 10.17.1 未来工程正反向验收最低要求
+
+- 身份情境：未登录、普通member、Creator、Reviewer、Operator、多角色；真实会话与服务端角色为唯一授权依据。
+- 导航情境：HOME/EXP/Studio/WATCH切换；Admin仅获授权角色可见；个人空间只在正式路由可用后开放。
+- 直接访问：匿名/member直接访问Admin和私有Studio项目必须由服务端拒绝；不能只测试导航是否隐藏。
+- 墨痕控制：静音后不出现主动轻提示；用户仍可主动唤起和提问；恢复提示必须由用户明确操作。
+- 任务授权：草拟未确认时不得触发真实执行；确认后产生真实TaskRef/事件；拒绝/取消不产生执行副作用。
+- 任务终态：停止、取消、失败、阻塞、等待输入、授权撤回、完成和部分完成分别有独立状态与回执。
+- 收起/恢复：任务运行中收起面板，刷新或切页后按真实服务事件恢复；不得丢失任务或误报完成。
+- 权限撤回：撤回后后续动作被阻断；缓存/上下文失效；不恢复旧权限。
+- 服务降级：Session、Agent、Provider、材料读取、事件服务不可用时，UI保留输入并显示真实失败/未知/阻塞，不制造假结果。
+- 跨页交接：只传明确对象与最小封套；目标端重新核验Actor、权限、用途、范围、权利、资格和修订。
+- 页面边界：HOME、EXP、Studio、Admin、WATCH、个人空间内部组件和业务流程由各自工作包/既有M5合同负责；全局底座不得复制其页面专属工作流。
+
+### 10.17.2 响应式与可访问性验收矩阵
+
+| 视口/情境 | 必须通过 |
+|---|---|
+| 1440×900 桌面 | 品牌/导航/账户完整；墨痕入口不遮挡页面关键操作；页尾结构完整 |
+| 1024×768 笔记本 | 导航不挤压；菜单/面板可用；内容主区域保留 |
+| 768×1024 平板 | 主导航和页面内容合理重排；无横向溢出 |
+| 390×844 手机 | 五项底栏可达；墨痕入口在底栏上方；面板不遮挡关闭控件 |
+| 320×720 小屏 | 五项导航、账户、面板可用；不出现横向滚动和关键控件重叠 |
+| 横屏/安全区 | safe-area生效；底栏、墨痕和系统手势区不冲突 |
+| 键盘 | Tab顺序正确；Enter/Space激活；Escape关闭浮层并返回触发焦点 |
+| 屏幕阅读器 | 按钮/菜单/面板有语义名称；状态变化由适当live region表达 |
+| 视觉与动效 | WCAG AA对比度；状态不只靠颜色；减少动态偏好生效；触控目标建议不小于44×44px |
+
+---
+
+## 10.18｜本轮静态验证、未执行项目与Owner体验清单
+
+### 10.18.1 本轮已经执行的检查
+
+| 验证层 | 检查内容 | 结果 | 证据边界 |
+|---|---|---|---|
+| 权威文件 | PLAN V1.15、PDW-00 V0.8、CURRENT、progress、PDW-01/02入口 | PASS | 已从main直接读取；不是运行测试 |
+| 源码映射 | layout、GlobalNav、five-ui/styles、auth/session、Admin/Studio入口、Agent问答与材料API | PASS（只读审查） | 仅证明源码事实，不证明真实运行权限/行为 |
+| 原型静态语法 | 最新HTML内嵌JavaScript通过V8 Function编译 | PASS | 不等于浏览器执行 |
+| DOM引用 | 脚本读取的DOM ID均存在 | PASS | 不等于交互路径通过 |
+| 原型静态结构 | 桌面导航、移动导航、safe-area、reduced-motion、focus-visible、账户Admin入口、三状态轴与任务状态转换入口 | PASS | 结构存在性检查 |
+| HTML实际点击 | 导航、账户、墨痕、任务、页尾 | NOT_RUN | 当前未完成真实浏览器交互 |
+| 多视口 | 1440/1024/768/390/320及横屏 | NOT_RUN | CSS静态存在不等于视口通过 |
+| 键盘/焦点 | Tab、Enter、Space、Escape、焦点返回/焦点陷阱 | NOT_RUN | 原型有部分焦点处理，不代表完整通过 |
+| 屏幕阅读器/对比度 | 语义、live region、WCAG AA实测 | NOT_RUN | 未执行辅助技术实测 |
+| 真实Session/角色/ACL | 登录、退出、角色变化、直接URL与API正反 | NOT_RUN | 本轮不改服务端 |
+| Agent Runtime/任务事件 | 真实TaskRef、Receipt、阻塞/恢复/停止/撤权 | NOT_RUN / OUT OF SCOPE | 原型全部是模拟 |
+| 数据库/Provider/D-L-G | 数据、生产链、外部调用与真实任务 | NOT_RUN / OUT OF SCOPE | 本轮禁止修改与施工 |
+
+### 10.18.2 Owner体验任务与失败判据
+
+请按以下顺序直接体验最新HTML：
+
+1. **全局导航：** 逐项切换HOME、EXP、Studio、WATCH；检查Studio导航切换连续性；切换Reviewer/Operator后检查Admin入口；检查六个页面仍为同构中性占位。
+2. **账户与角色：** 体验未登录、member、Creator、Reviewer、Operator、多角色；确认member不是访客；Admin入口在移动端账户菜单内；确认角色选择明确标为模拟，不暗示真实授权。
+3. **移动端导航：** 在390px与320px宽度检查五项底栏、Admin账户入口、墨痕避让、页尾和安全区。
+4. **墨痕默认状态：** 不操作时保持安静在场；顶部导航没有轻提示入口；从面板内触发的轻提示预览明确标记模拟。
+5. **呈现/交互/任务三轴：** 依次体验安静在场、轻提示、面板展开；对话交互、任务协作、结果查看；任务生命周期变化时确认三个轴互不代替。
+6. **草拟与授权：** 发起小任务后先看到草拟；提交草案后进入等待确认；只有点击确认才进入模拟执行。
+7. **等待与恢复：** 模拟等待输入、模拟阻塞、恢复执行；检查任务状态和交互状态不混淆。
+8. **终态区分：** 分别测试完成、停止、取消、失败、授权撤回；每一种状态必须保留自身名称，不能回到“无活动任务”冒充已清除。
+9. **收起与静音：** 执行/等待状态下收起面板，再次唤起；确认任务状态保留。静音后仍可主动提问，打开面板不自动恢复提示。
+10. **键盘与焦点：** 使用Tab/Enter/Escape检查账户菜单和墨痕面板的打开、关闭与焦点返回。
+
+**Owner失败判据：** 导航断裂、Admin入口误导、身份/权限混淆、草拟直接执行、终态混淆、任务因收起而停止或丢失、静音影响主动提问、移动端遮挡关键控件、六页面占位出现业务设计暗示，均视为必须修正项。
+
+### 10.18.3 尚未解决事项与责任
+
+| 编号 | 状态 | 事项/影响 | 责任与关闭条件 |
+|---|---|---|---|
+| U-01 | OWNER_REVIEW_REQUIRED | Owner尚未实际体验并签收最新原型；阻断PDW-00关闭 | Owner按10.18.2体验并明确签收；如有修改，修正后重新体验 |
+| U-02 | NOT_RUN | 真实浏览器点击、多视口、键盘/焦点和屏幕阅读器未执行 | 当前阶段由Owner完成设计体验；阶段C由前端/无障碍验收责任人执行并提供真实记录 |
+| U-03 | DEFERRED / RUNTIME_DEPENDENCY | 全局Agent Host、任务事件、Receipt、ContextEnvelope尚未在当前main实现 | MAB Agent Runtime Owner在阶段B确认复用接口；阶段C按授权实现并提供事件/权限正反证据 |
+| U-04 | DEFERRED / M5_SECURITY | Admin直接URL和逐API权限未完成本轮安全审计 | MAB安全/权限Owner按M5合同提供匿名/member拒绝及Reviewer/Operator正反证据；PDW-00不代替该审计 |
+| U-05 | DEFERRED / PDW-05 | 个人空间正式页面路由未定位；当前account目录仅含认证/恢复子路由 | PDW-05完成个人空间设计和路由/数据边界后再接入正式入口 |
+| U-06 | DEFERRED / CONTENT_GOVERNANCE | 页尾政策、来源、权利和帮助链接的正式URL/正文需治理确认 | Owner/内容治理提供已批准链接和内容；不得用原型占位替代真实政策 |
+| U-07 | DEFERRED / DESIGN_SYSTEM | 当前main仍有旧Token和深色导航样式 | 阶段B冻结唯一Token映射；阶段C统一实施并进行跨页视觉回归 |
+
+---
+
+## 10.19｜PDW-00当前交接状态与阶段门确认（V0.9）
+
+**本轮审计结论：** 五层交接材料已补齐到可供Owner审阅的候选状态：设计规范沿用§9—§10；组件行为契约见§10.16；逐项工程映射见§10.15；可操作HTML见§9.8及本轮最新main原型；工程实施与验收清单见§10.17。上述内容尚待Owner实际体验与签收，不得提前记为正式关闭。
+
+- 当前正式状态：DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED。
+- 当前交接判断：HANDOFF_REVIEW_READY / OWNER_SIGNOFF_PENDING（仅表示交接材料已提交审阅，不替代PLAN规定的Owner签收状态）。
+- 目标状态在Owner签收后方可改为：DESIGN_COMPLETE / HANDOFF_READY / IMPLEMENTATION_NOT_STARTED。
+- 真实浏览器、屏幕阅读器、真实Session/ACL、Agent Runtime、任务Receipt及真实服务验收仍按10.18.1保持NOT_RUN。
+- 本轮没有修改业务页面代码、全局业务组件、Agent Runtime、API、数据库、Schema、RLS/权限、D/L/G、Runner/Registry、CI、部署或生产资格。
+- PDW-00 Owner签收后，唯一允许接续的是PDW-01 HOME继承性完善设计；不得启动PDW-00全局组件或任何页面专项代码施工。
+- PDW-00至PDW-05全部设计与五层交接逐包完成并经Owner签收后，才进入PLAN V1.15 §6.1.2阶段B；全局审查通过并由Owner签署统一实施基线、另行明确施工授权后，才进入阶段C。
+
+**本节是本轮当前状态记录，不是Owner签收回执。Owner未明确确认前，PDW-00不得标记OWNER_APPROVED、CLOSED或DESIGN_COMPLETE。**
