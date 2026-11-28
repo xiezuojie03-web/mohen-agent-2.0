@@ -634,23 +634,23 @@ PDW-00形成跨工作面共用设计依据；后续PDW可在有明确理由时�
 
 Owner签收记录：待体验；不得预填PASS。任何导航断裂、静音失效、越权暗示、遮挡关键控件或页面占位误导均为阻断项。
 
-### 9.10 交付索引、状态与关闭回执（待Owner签收）
+### 9.10 交付索引、状态与关闭回执（2026-11-28正式签收）
 
 | 交付项 | 正式路径 | 当前状态 |
 |---|---|---|
-| 唯一正式入口 | `tasks/implementation/PDW/PDW-00_全平台统一体验底座设计补强正式入口_V0.1.md` | V0.5，全局范围收口，待Owner审阅 |
-| 唯一原型交付 | `tasks/implementation/PDW/prototypes/PDW-00_全平台统一体验底座可操作原型.html` | 六个页面均为中性占位；全局墨痕、顶部导航、全局页尾、移动端底部导航可交互；待Owner体验 |
+| 唯一正式入口 | `tasks/implementation/PDW/PDW-00_全平台统一体验底座设计补强正式入口_V0.1.md` | V0.9，五层交接补强完成，Owner已正式签收 |
+| 唯一原型交付 | `tasks/implementation/PDW/prototypes/PDW-00_全平台统一体验底座可操作原型.html` | 继承既有暂时认可版本；Owner确认维持当前版本并纳入正式签收；模拟交互不代表真实服务 |
 | 历史概念图 | `tasks/implementation/PDW/concepts/PDW-00_全平台统一体验底座完整概念图.svg` | 历史归档，不更新、不验收 |
 | Agent与旧项目研究依据 | 本入口§2—§3、§9.1—§9.2 | 仅用于全局墨痕身份、交互与权限边界 |
 | 全局导航/视觉/组件规范 | 本入口§9.3—§9.5 | 已形成 |
 | 六页面占位规则 | 本入口§9.6 | 已形成；不含页面专属继承研究 |
 | 全局设计—工程映射 | 本入口§9.7 | 仅限根布局、全局导航、页尾、墨痕宿主与移动端导航 |
-| Owner验收 | 本入口§9.9 | 待执行 |
-| 关闭回执 | 本入口§9.10 | 未关闭；等待Owner体验和签收 |
+| Owner验收 | 本入口§9.9及§10.18 | 2026-11-28完成正式设计/交接签收；真实浏览器及服务测试仍NOT_RUN |
+| 关闭回执 | 本入口§9.10及§10.19 | DESIGN_COMPLETE / HANDOFF_READY / OWNER_APPROVED / IMPLEMENTATION_NOT_STARTED |
 
-**当前状态：** `DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED`。本次Owner已重新裁定PDW-00仅处理全局底座，六个页面在本阶段统一使用中性占位。
+**当前状态：** `DESIGN_COMPLETE / HANDOFF_READY / OWNER_APPROVED / IMPLEMENTATION_NOT_STARTED`（2026-11-28）。本节原待签收状态已由§10.19正式签收记录更新；PDW-00仍仅处理全局底座，六个页面在本阶段统一使用中性占位。
 
-**关闭条件：** 全局墨痕规范、顶部导航、全局页尾、移动端底部导航、视觉Token、共用组件边界、HTML交互原型、全局工程映射和Owner验收全部经审阅；Owner明确签收；CURRENT/progress回读一致。不得以任何页面专属设计或继承研究作为PDW-00关闭条件。Owner未签收前不得标记`CLOSED / OWNER_APPROVED`。
+**关闭条件与回执：** 全局墨痕规范、顶部导航、全局页尾、移动端底部导航、视觉Token、共用组件边界、HTML交互原型、全局工程映射和Owner签收记录已完成；CURRENT/progress已同步。PDW-00设计交接正式签收。不得以任何页面专属设计或继承研究作为PDW-00关闭条件。真实浏览器/服务/代码实现验收仍按NOT_RUN保留。
 
 ## 9.11 全局体验底座统一规范与范围收口（2026-11-27）
 
@@ -1413,7 +1413,7 @@ PDW-00全局设计—工程映射表须至少记录：
 - 真实浏览器、屏幕阅读器、真实Session/ACL、Agent Runtime、任务Receipt及真实服务验收仍按10.18.1保持NOT_RUN。
 - 本轮没有修改业务页面代码、全局业务组件、Agent Runtime、API、数据库、Schema、RLS/权限、D/L/G、Runner/Registry、CI、部署或生产资格。
 - PDW-00 Owner签收后，唯一允许接续的是PDW-01 HOME继承性完善设计；不得启动PDW-00全局组件或任何页面专项代码施工。
-- 文档引用待同步：PLAN V1.15 §6.1.2当前入口链接标题仍标V0.8，待Owner签收后在正式状态更新时校正为V0.9；PDW-01入口§12.1仍引用PLAN V1.14，须在PDW-01启动前校正为V1.15。两项均不改变当前阶段门。
+- 文档引用同步：PLAN V1.15 §6.1.2入口版本已更新为V0.9，U-08关闭；PDW-01入口§12.1仍引用PLAN V1.14，U-09保持OPEN，须在PDW-01正式启动前校正为V1.15。该引用维护不改变阶段门。
 - PDW-00至PDW-05全部设计与五层交接逐包完成并经Owner签收后，才进入PLAN V1.15 §6.1.2阶段B；全局审查通过并由Owner签署统一实施基线、另行明确施工授权后，才进入阶段C。
 
 **本节是本轮当前状态记录，不是Owner签收回执。Owner未明确确认前，PDW-00不得标记OWNER_APPROVED、CLOSED或DESIGN_COMPLETE。**
