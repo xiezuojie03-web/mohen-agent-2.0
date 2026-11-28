@@ -3,7 +3,7 @@
 > 正式入口编号：PDW-00-20261127-01  
 > 现行内容版本：V0.9（五层交接审计、组件行为契约、工程映射与实施验收清单补强）  
 > 日期：2026-11-28  
-> 状态：DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED  
+> 状态：DESIGN_COMPLETE / HANDOFF_READY / OWNER_APPROVED / IMPLEMENTATION_NOT_STARTED（Owner于2026-11-28正式签收）  
 > 归属：PDW产品设计工作流；本文件是PDW-00唯一正式任务入口，执行标准服从PLAN §6及上位设计合同。  
 > 唯一施工计划：`tasks/implementation/MAB/PLAN.md`。  
 > 适用仓库：`xiezuojie03-web/mohen-agent-2.0`，main。
@@ -1388,24 +1388,27 @@ PDW-00全局设计—工程映射表须至少记录：
 
 | 编号 | 状态 | 事项/影响 | 责任与关闭条件 |
 |---|---|---|---|
-| U-01 | OWNER_REVIEW_REQUIRED | Owner尚未实际体验并签收最新原型；阻断PDW-00关闭 | Owner按10.18.2体验并明确签收；如有修改，修正后重新体验 |
+| U-01 | CLOSED / OWNER_APPROVED | Owner于2026-11-28确认原型维持此前暂时认可版本，并正式签收PDW-00设计与交接材料 | 已由Owner明确签收；无需为追求可见变化重做原型 |
 | U-02 | NOT_RUN | 真实浏览器点击、多视口、键盘/焦点和屏幕阅读器未执行 | 当前阶段由Owner完成设计体验；阶段C由前端/无障碍验收责任人执行并提供真实记录 |
 | U-03 | DEFERRED / RUNTIME_DEPENDENCY | 全局Agent Host、任务事件、Receipt、ContextEnvelope尚未在当前main实现 | MAB Agent Runtime Owner在阶段B确认复用接口；阶段C按授权实现并提供事件/权限正反证据 |
 | U-04 | DEFERRED / M5_SECURITY | Admin直接URL和逐API权限未完成本轮安全审计 | MAB安全/权限Owner按M5合同提供匿名/member拒绝及Reviewer/Operator正反证据；PDW-00不代替该审计 |
 | U-05 | DEFERRED / PDW-05 | 个人空间正式页面路由未定位；当前account目录仅含认证/恢复子路由 | PDW-05完成个人空间设计和路由/数据边界后再接入正式入口 |
 | U-06 | DEFERRED / CONTENT_GOVERNANCE | 页尾政策、来源、权利和帮助链接的正式URL/正文需治理确认 | Owner/内容治理提供已批准链接和内容；不得用原型占位替代真实政策 |
 | U-07 | DEFERRED / DESIGN_SYSTEM | 当前main仍有旧Token和深色导航样式 | 阶段B冻结唯一Token映射；阶段C统一实施并进行跨页视觉回归 |
-| U-08 | OPEN / REFERENCE_SYNC_PENDING_OWNER_SIGNOFF | PLAN V1.15 §6.1.2的PDW-00入口链接标题仍写V0.8，实际正式入口已更新为V0.9；路径本身有效 | Owner签收后由PLAN维护Owner仅校正入口版本引用，并按实际签收状态更新PDW-00状态；不得改变阶段门。责任：MAB/PLAN维护Owner |
+| U-08 | CLOSED / REFERENCE_SYNCED | PLAN V1.15 §6.1.2原入口标题V0.8已校正为V0.9，并同步正式Owner签收状态 | 已修正PLAN对应工作包状态和入口版本；阶段门未改变 |
 | U-09 | OPEN / REFERENCE_SYNC_BEFORE_PDW01 | PDW-01入口§12.1仍引用PLAN V1.14 §6.1.1，当前权威计划为V1.15 | PDW-01启动前由PDW-01入口维护Owner将引用校正为V1.15并回读；本轮不启动或修改PDW-01。责任：PDW-01工作包Owner |
 
 ---
 
 ## 10.19｜PDW-00当前交接状态与阶段门确认（V0.9）
 
-**本轮审计结论：** 五层交接材料已补齐到可供Owner审阅的候选状态：设计规范沿用§9—§10；组件行为契约见§10.16；逐项工程映射见§10.15；可操作HTML见§9.8及本轮最新main原型；工程实施与验收清单见§10.17。上述内容尚待Owner实际体验与签收，不得提前记为正式关闭。
+**本轮审计结论：** 五层交接材料已完成补强并经Owner于2026-11-28正式签收：设计规范沿用§9—§10；组件行为契约见§10.16；逐项工程映射见§10.15；可操作HTML见§9.8及当前main原型；工程实施与验收清单见§10.17。Owner确认HTML原型维持此前暂时认可版本，不要求为追求明显视觉变化重新制作。技术交接文档、代码映射、证据和状态真实性由执行方负责自检维护。
 
-- 当前正式状态：DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED。
-- 当前交接判断：HANDOFF_REVIEW_READY / OWNER_SIGNOFF_PENDING（仅表示交接材料已提交审阅，不替代PLAN规定的Owner签收状态）。
+- 当前正式状态：`DESIGN_COMPLETE / HANDOFF_READY / OWNER_APPROVED / IMPLEMENTATION_NOT_STARTED`。
+- Owner签收日期：2026-11-28。
+- 签收范围：PDW-00五层设计交接成果及当前可操作HTML原型；不代表真实浏览器、服务、数据或代码实现验收通过。
+- 下一工作包授权：仅允许启动PDW-01 HOME继承性完善设计；不得启动PDW-00或其他PDW专项代码施工。
+- 当前交接判断：正式签收完成；浏览器交互、多视口、键盘/屏幕阅读器及真实服务验收仍按NOT_RUN保留，不因Owner设计签收而改变。
 - 目标状态在Owner签收后方可改为：DESIGN_COMPLETE / HANDOFF_READY / IMPLEMENTATION_NOT_STARTED。
 - 真实浏览器、屏幕阅读器、真实Session/ACL、Agent Runtime、任务Receipt及真实服务验收仍按10.18.1保持NOT_RUN。
 - 本轮没有修改业务页面代码、全局业务组件、Agent Runtime、API、数据库、Schema、RLS/权限、D/L/G、Runner/Registry、CI、部署或生产资格。
