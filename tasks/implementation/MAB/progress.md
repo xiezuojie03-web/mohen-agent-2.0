@@ -321,3 +321,5 @@ Owner明确改变策略：PDW-00不再开展HOME、EXP、Studio、WATCH、Admin�
 - **唯一接续授权：** 依据PLAN V1.15 §6.1.2，PDW-00签收后只允许启动PDW-01 HOME继承性完善设计。不得启动PDW-00全局组件、HOME或其他PDW专项代码施工；PDW-02及后续工作包仍按顺序等待。
 - **当前实施状态：** `IMPLEMENTATION_NOT_STARTED`保持有效；PDW专项施工仍须等待PDW-00至PDW-05全部设计签收、阶段B统一交接审查通过，以及Owner明确签署统一实施基线和施工授权。
 - **文件更新提交：** 本条所述PLAN、PDW-00入口、CURRENT和progress的实际提交SHA及回读结果，以本次更新完成后的GitHub main记录为准。
+
+- **正式签收提交与最终文档一致性复核：** PLAN V1.15签收状态提交 `0d8cf58dddc08843a0047b37e5d0f8b0524d3ed4`；PDW-00入口签收状态提交 `93afa16544afa4a8aefca395f7f6decb0b5b1db3`，随后将§9.10旧待签收交付索引同步为签收回执，提交 `eed300f954d0d6bc2e82bf09afe670c3a89da42f`；CURRENT提交 `bacb14d946b65aed9404e22cb96304a32ed303ad`；progress当前记录提交以本次最终main HEAD为准。已回读确认PLAN入口V0.9、PDW-00入口正式Owner签收、U-01/U-08关闭、U-09保持OPEN；阶段A禁止专项施工、阶段B统一审查门、阶段C统一授权门均未改变。
