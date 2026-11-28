@@ -307,3 +307,6 @@ Owner明确改变策略：PDW-00不再开展HOME、EXP、Studio、WATCH、Admin�
 - **提交与回读：** 原型状态修订提交43143eef5fb24a2ed7f1939abb1ebb27d105e944、90a6d6d480540e3a4455fa985fd12c913fe84183、b13b8450a3d715288ede9f7fbf85dd6a683d6f95、0c6c43359ff56f5df58ff26a2775509e7033a620；原型最终Blob 4bb03f7365d5e1d5ff8aa536dbb3d44820c0fec9。PDW-00入口V0.9提交5e48ba4ba80e2792ed42cfd10f004d93ede6ce0a，基线SHA文字校正提交a7d4fe7fc432edebdd4e9b8bb25fa6e8a05da12e，最终Blob f56aa2d5c7c1a901c6eef0a555f3dfc870dd58d0。CURRENT同步提交7044a12aeb00ceb42d70ffae696c5af13f5e0ab0。
 - **Owner待办：** Owner需按PDW-00入口§10.18.2体验最新HTML，并审阅§10.15—§10.17映射、契约和工程清单；如提出修改，完成后重新体验。Owner未明确签收前不得标记OWNER_APPROVED/CLOSED/DESIGN_COMPLETE。
 - **唯一下一步：** 等待Owner体验与签收；签收后只允许启动PDW-01 HOME继承性完善设计。PDW专项施工继续受PLAN V1.15 §6.1.2阶段B/阶段C门禁禁止。
+
+
+- **引用一致性补充：** 复核PLAN V1.15 §6.1.2发现PDW-00入口链接标题仍标V0.8（实际文件V0.9）；复核PDW-01入口§12.1发现仍引用PLAN V1.14 §6.1.1（当前权威版本V1.15）。已在PDW-00 V0.9 §10.18.3登记U-08/U-09及责任/关闭条件；本轮不修改PLAN、PDW-01或PDW-02，避免在Owner签收前改变权威计划/提前触碰下一工作包。PLAN入口版本标题待Owner签收后的正式状态同步时校正；PDW-01引用须在PDW-01启动前校正。PDW-00入口引用补充提交：5c3fbb130d3b5f82219af4c81b80c5cdc464cdad；CURRENT引用同步提交：97291c5a70901f8e3694021123aea79490f415c7。
