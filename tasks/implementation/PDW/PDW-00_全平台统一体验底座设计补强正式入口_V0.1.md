@@ -1148,7 +1148,7 @@ PDW-00全局设计—工程映射表须至少记录：
 
 ### 10.15.1 审查基线与证据规则
 
-- 本轮审查基线：仓库 xiezuojie03-web/mohen-agent-2.0，main；审查开始时HEAD为 bb f45d79076af4f1fcbb485b1232dd64892ee7bb（实际SHA：bbf45d79076af4f1fcbb485b1232dd64892ee7bb）。
+- 本轮审查基线：仓库 xiezuojie03-web/mohen-agent-2.0，main；审查开始时HEAD为 bbf45d79076af4f1fcbb485b1232dd64892ee7bb。
 - PDW-00正式入口原Blob：61853a9d0210361d62a7964db9451ff6ca14f75c；原型修订前Blob：49b988ea56d2a4ccfc0501abf8467d502d7e384c。
 - 主要代码证据：根布局 apps/web/app/layout.tsx（Blob 837c8451e905cdc110343a2fdfe2902e0dec3d5d）；GlobalNav apps/web/app/components/GlobalNav.tsx（Blob 758c0fb9f25c8f2807a1ff26290095f2aa64d6a5）；five-ui.css（Blob 2d39d4310ea92f34d3134866787caa7a50ce9569）；styles.css（Blob 77f3d88bde2b148d1ce4df20d95e1dcf9f3dab97）。
 - 身份与服务证据：lib/auth.ts（Blob 1d774d82cbe3fd8919125783f417d4663281b5f8）；lib/session.ts（Blob abecfa1bef76245add5c7f6d3721de6f92a04e73）；api/session/me（Blob 582bbe2d9667228ad78c7e315c6c99f21b69b112）；api/mohen/ask（Blob 0fd4c7a3a240be869c2abd3b60201d0d6f8c30fd）；api/mohen/materials（Blob a094f57ffe9627d7159339449ce0e93fcd01a270）。
