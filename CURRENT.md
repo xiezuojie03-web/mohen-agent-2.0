@@ -60,5 +60,5 @@ PDW-02仅承担Studio工作空间结构重构。其前置为PDW-00完成及PDW-0
 
 - [MAB工程全面审计报告 2026-11-26 V1.0](tasks/results/MAB/audits/MAB_工程全面审计报告_20261126_V1.0.md)。
 - [MAB UI反向工程审计与产品完整性评估 2026-11-26 V1.0](tasks/results/MAB/audits/MAB_UI反向工程审计与产品完整性评估_20261126_V1.0.md)。
-- [MAB施工计划 V1.14](tasks/implementation/MAB/PLAN.md)是唯一施工计划；tasks/implementation/MAB/progress.md记录追加式执行证据。
+- [MAB施工计划 V1.15](tasks/implementation/MAB/PLAN.md)是唯一施工计划；tasks/implementation/MAB/progress.md记录追加式执行证据。
 - 2026-11-28 Owner反馈后补强：修复全局导航事件绑定；移除顶部“体验轻提示”，将其归位为墨痕呈现状态；把墨痕状态分为呈现、交互、任务三个独立状态轴及用户控制偏好。最新原型与正式入口已更新，等待Owner复验；真实浏览器验收仍NOT_RUN。
