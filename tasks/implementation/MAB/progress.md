@@ -272,4 +272,4 @@ Owner明确改变策略：PDW-00不再开展HOME、EXP、Studio、WATCH、Admin�
 - **状态同步：** CURRENT更新PLAN V1.14、PDW-00 V0.7、PDW-01 V0.4及当前唯一设计断点。未新增平行任务书或独立规范文件。
 - **范围与限制：** 本次仅更新施工计划、PDW-00/PDW-01正式入口、CURRENT和progress；未修改业务代码、API、数据库、Schema、权限/RLS、Agent Runtime、D/L/G、Runner/Registry、CI、部署或生产资格。未改变PDW顺序；未提前启动PDW-01继承性完善或后续工作包。
 - **准出原则：** PDW-00仍须经Owner体验验收及设计—工程交接完整性审查后才能签收关闭；浏览器、多视口、键盘/焦点、屏幕阅读器及真实服务测试仍按实际执行状态记录NOT_RUN，不得伪造PASS。
-
+- **GitHub提交链：** PLAN V1.14 `74046fa1cb205a45fb791fa396751735c62a81f1`；PDW-00入口V0.7 `38fc5aae8ca25ea2c56f5e8e310010d52a23fca5`；PDW-01入口V0.4 `818efa8af01de71471514670708fc4e9497155a6`；CURRENT版本号校正 `c0d0ab37ec7fed481dbea72df51ab3d3822cbc54`。以上均为main文档提交，不涉及业务代码。
