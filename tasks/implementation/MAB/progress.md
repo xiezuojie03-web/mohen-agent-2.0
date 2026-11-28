@@ -289,3 +289,5 @@ Owner明确改变策略：PDW-00不再开展HOME、EXP、Studio、WATCH、Admin�
 
 
 - **本轮提交记录（main）：** PLAN V1.15 `b493deea6ee6e9ca25a77a98dd42a6dacb1280a6`；PDW-00入口V0.8 `fa26d6eb47dd9ef1a204ab7d83fee32d7d43fed7`，活动引用校正 `123a7e2dd0d5e94c1d7309a4e4503a7ab917cfc1`；PDW-01入口V0.5 `10eebecaf2fdf56bbb5cb6a3662e631573e022af`，活动引用校正 `c513d44ac23a7d184ba2cb33003967d6f38ef31d`；PDW-02入口V0.5 `07b9b30da0a578e9070d25d336cd11020e52ca1f`；CURRENT同步 `f99880c048f587ea26f1c1c08d0e1ff87f4943fc`，引用校正 `9893256b256252f15e8ceeb5eaad92ecf58a6670`。本记录本次追加提交为后续回读核验入口。
+
+- **CURRENT最终引用校正：** 将统一设计—工程交接标准的活动引用由PLAN V1.14同步为V1.15；提交SHA `69662a020dca6833ba1ef662f96af8fe8fd92105`。
