@@ -3,12 +3,12 @@
 > 当前核验日期：2026-11-28（PDW统一设计—工程交接标准补强）  
 > PDW-00范围按Owner最新裁决收敛为全局体验底座：统一墨痕Agent、顶部导航、全局页尾、移动端底部导航；六个页面仅保留中性占位，不开展页面专属继承研究。  
 > Studio业务代码审查基线：2388af125300efb73e27b3c3804982a56f5a9d36；其后main提交仅新增/修订PDW-02设计原型与概念图，未修改Studio业务代码。  
-> 唯一施工计划：tasks/implementation/MAB/PLAN.md V1.13 §6；唯一main执行。
+> 唯一施工计划：tasks/implementation/MAB/PLAN.md V1.14 §6；唯一main执行。
 
 ## 1. 当前产品深化状态
 
 ### PDW-00｜全平台统一体验底座设计补强
-状态：DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED。已完成本轮Agent全局身份/状态体系、能力责任矩阵、账户/角色导航和页尾方案补强；正式入口V0.6；HTML原型已更新为可操作的状态与导航情境预览。已核对真实GlobalNav、Session/认证/角色、Agent问答与材料检索API、根布局和相关页面入口。HTML内嵌JavaScript已通过静态语法编译检查；真实浏览器交互、多视口、键盘/焦点、屏幕阅读器及真实服务验收仍NOT_RUN；模拟身份/任务不代表工程实现。六页面内部仍为中性占位。唯一入口：[PDW-00正式入口V0.1](tasks/implementation/PDW/PDW-00_全平台统一体验底座设计补强正式入口_V0.1.md)。完成并经Owner签收后启动PDW-01继承性完善。
+状态：DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED。已完成本轮Agent全局身份/状态体系、能力责任矩阵、账户/角色导航和页尾方案补强；正式入口V0.7；HTML原型已更新为可操作的状态与导航情境预览。已核对真实GlobalNav、Session/认证/角色、Agent问答与材料检索API、根布局和相关页面入口。HTML内嵌JavaScript已通过静态语法编译检查；真实浏览器交互、多视口、键盘/焦点、屏幕阅读器及真实服务验收仍NOT_RUN；模拟身份/任务不代表工程实现。六页面内部仍为中性占位。唯一入口：[PDW-00正式入口V0.1](tasks/implementation/PDW/PDW-00_全平台统一体验底座设计补强正式入口_V0.1.md)。完成并经Owner签收后启动PDW-01继承性完善。
 
 ### PDW-01｜HOME CEI工程衔接
 状态：既有HOME专项设计交付CLOSED / OWNER_APPROVED；等待PDW-00完成后进行继承性完善，不重做。Owner已接受整体明亮化、深青绿局部沉浸、弱化暖金的视觉方向。关闭仅代表设计交付和工程衔接规范完成，不代表HOME代码施工或运行验收完成。
@@ -42,7 +42,7 @@ PDW-02仅承担Studio工作空间结构重构。其前置为PDW-00完成及PDW-0
 
 ## 3. 下一步
 
-- **当前唯一设计断点：PDW-00 V0.7（2026-11-28交互逻辑纠偏及统一工程交接标准）待Owner体验审阅与签收。** 本轮新增§10：Agent视觉印记与S0—S4/Sx状态体系、全局能力与页面情境能力矩阵、Context Envelope、身份/角色导航矩阵、品牌叙事与透明治理型页尾、Token和原型操作说明。Owner需实际体验HTML原型并审阅未决工程边界；浏览器、键盘、屏幕阅读器和多视口实测仍为NOT_RUN。
+- **当前唯一设计断点：PDW-00 V0.7（2026-11-28交互逻辑纠偏及统一工程交接标准）待Owner体验审阅与签收。** 本轮完善§10：Agent视觉印记与呈现/交互/任务三轴状态体系、全局能力与页面情境能力矩阵、Context Envelope、身份/角色导航矩阵、品牌叙事与透明治理型页尾、Token和原型操作说明。Owner需实际体验HTML原型并审阅未决工程边界；浏览器、键盘、屏幕阅读器和多视口实测仍为NOT_RUN。
 - **统一设计—工程交接标准：** PLAN V1.14 §6.1.1现已明确PDW-00至PDW-05共同适用的五层交付契约：设计规范、组件/行为契约、设计—工程映射、可操作HTML原型、工程实施与验收。PDW-00入口§10.13落实本阶段准出；PDW-01入口§12.1落实后续HOME继承性完善。该标准是验收门，不代表相关交付已自动通过；PDW-00仍须完成Owner体验与交接完整性验收。
 - PDW-00签收后，唯一下一任务为PDW-01 HOME继承性完善；PDW-01签收后才启动PDW-02 Studio工作空间重构。六页面占位不得提前扩展为页面专属设计。不得提前启动后续任务。
 - 未经Owner签收不得关闭PDW-02；未关闭不得启动PDW-03。
@@ -53,5 +53,5 @@ PDW-02仅承担Studio工作空间结构重构。其前置为PDW-00完成及PDW-0
 
 - [MAB工程全面审计报告 2026-11-26 V1.0](tasks/results/MAB/audits/MAB_工程全面审计报告_20261126_V1.0.md)。
 - [MAB UI反向工程审计与产品完整性评估 2026-11-26 V1.0](tasks/results/MAB/audits/MAB_UI反向工程审计与产品完整性评估_20261126_V1.0.md)。
-- [MAB施工计划 V1.11](tasks/implementation/MAB/PLAN.md)是唯一施工计划；tasks/implementation/MAB/progress.md记录追加式执行证据。
+- [MAB施工计划 V1.14](tasks/implementation/MAB/PLAN.md)是唯一施工计划；tasks/implementation/MAB/progress.md记录追加式执行证据。
 - 2026-11-28 Owner反馈后补强：修复全局导航事件绑定；移除顶部“体验轻提示”，将其归位为墨痕呈现状态；把墨痕状态分为呈现、交互、任务三个独立状态轴及用户控制偏好。最新原型与正式入口已更新，等待Owner复验；真实浏览器验收仍NOT_RUN。
