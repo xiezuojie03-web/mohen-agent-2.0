@@ -1395,6 +1395,8 @@ PDW-00全局设计—工程映射表须至少记录：
 | U-05 | DEFERRED / PDW-05 | 个人空间正式页面路由未定位；当前account目录仅含认证/恢复子路由 | PDW-05完成个人空间设计和路由/数据边界后再接入正式入口 |
 | U-06 | DEFERRED / CONTENT_GOVERNANCE | 页尾政策、来源、权利和帮助链接的正式URL/正文需治理确认 | Owner/内容治理提供已批准链接和内容；不得用原型占位替代真实政策 |
 | U-07 | DEFERRED / DESIGN_SYSTEM | 当前main仍有旧Token和深色导航样式 | 阶段B冻结唯一Token映射；阶段C统一实施并进行跨页视觉回归 |
+| U-08 | OPEN / REFERENCE_SYNC_PENDING_OWNER_SIGNOFF | PLAN V1.15 §6.1.2的PDW-00入口链接标题仍写V0.8，实际正式入口已更新为V0.9；路径本身有效 | Owner签收后由PLAN维护Owner仅校正入口版本引用，并按实际签收状态更新PDW-00状态；不得改变阶段门。责任：MAB/PLAN维护Owner |
+| U-09 | OPEN / REFERENCE_SYNC_BEFORE_PDW01 | PDW-01入口§12.1仍引用PLAN V1.14 §6.1.1，当前权威计划为V1.15 | PDW-01启动前由PDW-01入口维护Owner将引用校正为V1.15并回读；本轮不启动或修改PDW-01。责任：PDW-01工作包Owner |
 
 ---
 
@@ -1408,6 +1410,7 @@ PDW-00全局设计—工程映射表须至少记录：
 - 真实浏览器、屏幕阅读器、真实Session/ACL、Agent Runtime、任务Receipt及真实服务验收仍按10.18.1保持NOT_RUN。
 - 本轮没有修改业务页面代码、全局业务组件、Agent Runtime、API、数据库、Schema、RLS/权限、D/L/G、Runner/Registry、CI、部署或生产资格。
 - PDW-00 Owner签收后，唯一允许接续的是PDW-01 HOME继承性完善设计；不得启动PDW-00全局组件或任何页面专项代码施工。
+- 文档引用待同步：PLAN V1.15 §6.1.2当前入口链接标题仍标V0.8，待Owner签收后在正式状态更新时校正为V0.9；PDW-01入口§12.1仍引用PLAN V1.14，须在PDW-01启动前校正为V1.15。两项均不改变当前阶段门。
 - PDW-00至PDW-05全部设计与五层交接逐包完成并经Owner签收后，才进入PLAN V1.15 §6.1.2阶段B；全局审查通过并由Owner签署统一实施基线、另行明确施工授权后，才进入阶段C。
 
 **本节是本轮当前状态记录，不是Owner签收回执。Owner未明确确认前，PDW-00不得标记OWNER_APPROVED、CLOSED或DESIGN_COMPLETE。**
