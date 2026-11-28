@@ -8,7 +8,7 @@
 ## 1. 当前产品深化状态
 
 ### PDW-00｜全平台统一体验底座设计补强
-状态：DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED。正式入口V0.9已完成五层交接补强：新增当前main逐项工程映射、规范组件命名与行为契约、三状态轴/任务生命周期规则、工程实施与验收清单、未决事项责任及Owner体验任务。HTML原型在原有基线上修正草拟→等待确认→执行、等待输入/阻塞/恢复、完成/停止/取消/失败/授权撤回等状态保留，并补充账户菜单Admin预览入口与焦点返回。已核对根布局、GlobalNav、Token/CSS、Session/认证/角色、Admin/Studio入口及墨痕问答/材料API。最新HTML JavaScript V8静态编译PASS、DOM引用PASS、关键状态入口静态检查PASS；真实浏览器交互、多视口、键盘/屏幕阅读器及真实服务验收仍NOT_RUN。模拟身份/任务不代表工程实现。六页面内部仍为中性占位。Owner尚未体验签收，当前保持OWNER_REVIEW_REQUIRED；不得标记OWNER_APPROVED或CLOSED。唯一入口：[PDW-00正式入口V0.1](tasks/implementation/PDW/PDW-00_全平台统一体验底座设计补强正式入口_V0.1.md)。Owner签收后仅允许启动PDW-01 HOME继承性完善设计；PDW-00全局组件及HOME均不得提前施工。PDW-00至PDW-05全部设计与五层交接完成并经Owner签收后，统一执行全平台交接审查；Owner签署统一实施基线并另行授权后，才启动PDW专项施工。
+状态：DESIGN_REFINEMENT_IN_PROGRESS / OWNER_REVIEW_REQUIRED。正式入口V0.9已完成五层交接补强：新增当前main逐项工程映射、规范组件命名与行为契约、三状态轴/任务生命周期规则、工程实施与验收清单、未决事项责任及Owner体验任务。HTML原型在原有基线上修正草拟→等待确认→执行、等待输入/阻塞/恢复、完成/停止/取消/失败/授权撤回等状态保留，并补充账户菜单Admin预览入口与焦点返回。已核对根布局、GlobalNav、Token/CSS、Session/认证/角色、Admin/Studio入口及墨痕问答/材料API。最新HTML JavaScript V8静态编译PASS、DOM引用PASS、关键状态入口静态检查PASS；真实浏览器交互、多视口、键盘/屏幕阅读器及真实服务验收仍NOT_RUN。模拟身份/任务不代表工程实现。六页面内部仍为中性占位。Owner尚未体验签收，当前保持OWNER_REVIEW_REQUIRED；不得标记OWNER_APPROVED或CLOSED。另有两项引用待同步：PLAN V1.15的PDW-00入口标题仍标V0.8，待签收后校正；PDW-01入口§12.1仍引用PLAN V1.14，须在PDW-01启动前校正为V1.15。唯一入口：[PDW-00正式入口V0.1](tasks/implementation/PDW/PDW-00_全平台统一体验底座设计补强正式入口_V0.1.md)。Owner签收后仅允许启动PDW-01 HOME继承性完善设计；PDW-00全局组件及HOME均不得提前施工。PDW-00至PDW-05全部设计与五层交接完成并经Owner签收后，统一执行全平台交接审查；Owner签署统一实施基线并另行授权后，才启动PDW专项施工。
 
 ### PDW-01｜HOME CEI工程衔接
 状态：既有HOME专项设计交付CLOSED / OWNER_APPROVED；等待PDW-00完成后进行继承性完善，不重做。Owner已接受整体明亮化、深青绿局部沉浸、弱化暖金的视觉方向。关闭仅代表设计交付和工程衔接规范完成，不代表HOME代码施工或运行验收完成。
